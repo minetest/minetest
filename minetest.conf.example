@@ -1528,7 +1528,7 @@
 #    Global map generation attributes.
 #    In Mapgen v6 the 'decorations' flag controls all decorations except trees
 #    and junglegrass, in all other mapgens this flag controls all decorations.
-#    Flags that are not specified in the flag string are not modified from the default.
+#    Flags that are not enabled are not modified from the default.
 #    Flags starting with 'no' are used to explicitly disable them.
 #    type: flags possible values: caves, dungeons, light, decorations, nocaves, nodungeons, nolight, nodecorations
 # mg_flags = caves,dungeons,light,decorations
@@ -1540,25 +1540,61 @@
 ## Biome API temperature and humidity noise parameters
 
 #    Temperature variation for biomes.
-#    type: noise_params
-# mg_biome_np_heat = 50, 50, (1000, 1000, 1000), 5349, 3, 0.5, 2.0
+#    type: noise_params_2d
+# mg_biome_np_heat = {
+#    offset      = 50,
+#    scale       = 50,
+#    spread      = (1000, 1000, 1000),
+#    seed        = 5349,
+#    octaves     = 3,
+#    persistence = 0.5,
+#    lacunarity  = 2.0,
+#    flags       = "eased"
+# }
 
 #    Small-scale temperature variation for blending biomes on borders.
-#    type: noise_params
-# mg_biome_np_heat_blend = 0, 1.5, (8, 8, 8), 13, 2, 1.0, 2.0
+#    type: noise_params_2d
+# mg_biome_np_heat_blend = {
+#    offset      = 0,
+#    scale       = 1.5,
+#    spread      = (8, 8, 8),
+#    seed        = 13,
+#    octaves     = 2,
+#    persistence = 1.0,
+#    lacunarity  = 2.0,
+#    flags       = "eased"
+# }
 
 #    Humidity variation for biomes.
-#    type: noise_params
-# mg_biome_np_humidity = 50, 50, (1000, 1000, 1000), 842, 3, 0.5, 2.0
+#    type: noise_params_2d
+# mg_biome_np_humidity = {
+#    offset      = 50,
+#    scale       = 50,
+#    spread      = (1000, 1000, 1000),
+#    seed        = 842,
+#    octaves     = 3,
+#    persistence = 0.5,
+#    lacunarity  = 2.0,
+#    flags       = "eased"
+# }
 
 #    Small-scale humidity variation for blending biomes on borders.
-#    type: noise_params
-# mg_biome_np_humidity_blend = 0, 1.5, (8, 8, 8), 90003, 2, 1.0, 2.0
+#    type: noise_params_2d
+# mg_biome_np_humidity_blend = {
+#    offset      = 0,
+#    scale       = 1.5,
+#    spread      = (8, 8, 8),
+#    seed        = 90003,
+#    octaves     = 2,
+#    persistence = 1.0,
+#    lacunarity  = 2.0,
+#    flags       = "eased"
+# }
 
 ## Mapgen V5
 
 #    Map generation attributes specific to Mapgen v5.
-#    Flags that are not specified in the flag string are not modified from the default.
+#    Flags that are not enabled are not modified from the default.
 #    Flags starting with 'no' are used to explicitly disable them.
 #    type: flags possible values: caverns, nocaverns
 # mgv5_spflags = caverns
@@ -1590,29 +1626,96 @@
 ### Noises
 
 #    Variation of biome filler depth.
-#    type: noise_params
-# mgv5_np_filler_depth = 0, 1, (150, 150, 150), 261, 4, 0.7, 2.0
+#    type: noise_params_2d
+# mgv5_np_filler_depth = {
+#    offset      = 0,
+#    scale       = 1,
+#    spread      = (150, 150, 150),
+#    seed        = 261,
+#    octaves     = 4,
+#    persistence = 0.7,
+#    lacunarity  = 2.0,
+#    flags       = "eased"
+# }
 
 #    Variation of terrain vertical scale.
 #    When noise is < -0.55 terrain is near-flat.
-#    type: noise_params
-# mgv5_np_factor = 0, 1, (250, 250, 250), 920381, 3, 0.45, 2.0
+#    type: noise_params_2d
+# mgv5_np_factor = {
+#    offset      = 0,
+#    scale       = 1,
+#    spread      = (250, 250, 250),
+#    seed        = 920381,
+#    octaves     = 3,
+#    persistence = 0.45,
+#    lacunarity  = 2.0,
+#    flags       = "eased"
+# }
 
 #    Y-level of average terrain surface.
-#    type: noise_params
-# mgv5_np_height = 0, 10, (250, 250, 250), 84174, 4, 0.5, 2.0
+#    type: noise_params_2d
+# mgv5_np_height = {
+#    offset      = 0,
+#    scale       = 10,
+#    spread      = (250, 250, 250),
+#    seed        = 84174,
+#    octaves     = 4,
+#    persistence = 0.5,
+#    lacunarity  = 2.0,
+#    flags       = "eased"
+# }
 
 #    First of 2 3D noises that together define tunnels.
-#    type: noise_params
-# mgv5_np_cave1 = 0, 12, (50, 50, 50), 52534, 4, 0.5, 2.0
+#    type: noise_params_3d
+# mgv5_np_cave1 = {
+#    offset      = 0,
+#    scale       = 12,
+#    spread      = (50, 50, 50),
+#    seed        = 52534,
+#    octaves     = 4,
+#    persistence = 0.5,
+#    lacunarity  = 2.0,
+#    flags       = ""
+# }
 
 #    Second of 2 3D noises that together define tunnels.
-#    type: noise_params
-# mgv5_np_cave2 = 0, 12, (50, 50, 50), 10325, 4, 0.5, 2.0
+#    type: noise_params_3d
+# mgv5_np_cave2 = {
+#    offset      = 0,
+#    scale       = 12,
+#    spread      = (50, 50, 50),
+#    seed        = 10325,
+#    octaves     = 4,
+#    persistence = 0.5,
+#    lacunarity  = 2.0,
+#    flags       = ""
+# }
 
 #    3D noise defining giant caverns.
-#    type: noise_params
-# mgv5_np_cavern = 0, 1, (384, 128, 384), 723, 5, 0.63, 2.0
+#    type: noise_params_3d
+# mgv5_np_cavern = {
+#    offset      = 0,
+#    scale       = 1,
+#    spread      = (384, 128, 384),
+#    seed        = 723,
+#    octaves     = 5,
+#    persistence = 0.63,
+#    lacunarity  = 2.0,
+#    flags       = ""
+# }
+
+#    3D noise defining terrain.
+#    type: noise_params_3d
+# mgv5_np_ground = {
+#    offset      = 0,
+#    scale       = 40,
+#    spread      = (80, 80, 80),
+#    seed        = 983240,
+#    octaves     = 4,
+#    persistence = 0.55,
+#    lacunarity  = 2.0,
+#    flags       = "eased"
+# }
 
 ## Mapgen V6
 
@@ -1620,7 +1723,7 @@
 #    The 'snowbiomes' flag enables the new 5 biome system.
 #    When the new biome system is enabled jungles are automatically enabled and
 #    the 'jungles' flag is ignored.
-#    Flags that are not specified in the flag string are not modified from the default.
+#    Flags that are not enabled are not modified from the default.
 #    Flags starting with 'no' are used to explicitly disable them.
 #    type: flags possible values: jungles, biomeblend, mudflow, snowbiomes, flat, trees, nojungles, nobiomeblend, nomudflow, nosnowbiomes, noflat, notrees
 # mgv6_spflags = jungles,biomeblend,mudflow,snowbiomes,trees
@@ -1637,54 +1740,153 @@
 ### Noises
 
 #    Y-level of lower terrain and lakebeds.
-#    type: noise_params
-# mgv6_np_terrain_base = -4, 20, (250, 250, 250), 82341, 5, 0.6, 2.0
+#    type: noise_params_2d
+# mgv6_np_terrain_base = {
+#    offset      = -4,
+#    scale       = 20,
+#    spread      = (250, 250, 250),
+#    seed        = 82341,
+#    octaves     = 5,
+#    persistence = 0.6,
+#    lacunarity  = 2.0,
+#    flags       = "eased"
+# }
 
 #    Y-level of higher (cliff-top) terrain.
-#    type: noise_params
-# mgv6_np_terrain_higher = 20, 16, (500, 500, 500), 85039, 5, 0.6, 2.0
+#    type: noise_params_2d
+# mgv6_np_terrain_higher = {
+#    offset      = 20,
+#    scale       = 16,
+#    spread      = (500, 500, 500),
+#    seed        = 85039,
+#    octaves     = 5,
+#    persistence = 0.6,
+#    lacunarity  = 2.0,
+#    flags       = "eased"
+# }
 
 #    Varies steepness of cliffs.
-#    type: noise_params
-# mgv6_np_steepness = 0.85, 0.5, (125, 125, 125), -932, 5, 0.7, 2.0
+#    type: noise_params_2d
+# mgv6_np_steepness = {
+#    offset      = 0.85,
+#    scale       = 0.5,
+#    spread      = (125, 125, 125),
+#    seed        = -932,
+#    octaves     = 5,
+#    persistence = 0.7,
+#    lacunarity  = 2.0,
+#    flags       = "eased"
+# }
 
 #    Defines areas of 'terrain_higher' (cliff-top terrain).
-#    type: noise_params
-# mgv6_np_height_select = 0.5, 1, (250, 250, 250), 4213, 5, 0.69, 2.0
+#    type: noise_params_2d
+# mgv6_np_height_select = {
+#    offset      = 0.5,
+#    scale       = 1,
+#    spread      = (250, 250, 250),
+#    seed        = 4213,
+#    octaves     = 5,
+#    persistence = 0.69,
+#    lacunarity  = 2.0,
+#    flags       = "eased"
+# }
 
 #    Varies depth of biome surface nodes.
-#    type: noise_params
-# mgv6_np_mud = 4, 2, (200, 200, 200), 91013, 3, 0.55, 2.0
+#    type: noise_params_2d
+# mgv6_np_mud = {
+#    offset      = 4,
+#    scale       = 2,
+#    spread      = (200, 200, 200),
+#    seed        = 91013,
+#    octaves     = 3,
+#    persistence = 0.55,
+#    lacunarity  = 2.0,
+#    flags       = "eased"
+# }
 
 #    Defines areas with sandy beaches.
-#    type: noise_params
-# mgv6_np_beach = 0, 1, (250, 250, 250), 59420, 3, 0.50, 2.0
+#    type: noise_params_2d
+# mgv6_np_beach = {
+#    offset      = 0,
+#    scale       = 1,
+#    spread      = (250, 250, 250),
+#    seed        = 59420,
+#    octaves     = 3,
+#    persistence = 0.50,
+#    lacunarity  = 2.0,
+#    flags       = "eased"
+# }
 
 #    Temperature variation for biomes.
-#    type: noise_params
-# mgv6_np_biome = 0, 1, (500, 500, 500), 9130, 3, 0.50, 2.0
+#    type: noise_params_2d
+# mgv6_np_biome = {
+#    offset      = 0,
+#    scale       = 1,
+#    spread      = (500, 500, 500),
+#    seed        = 9130,
+#    octaves     = 3,
+#    persistence = 0.50,
+#    lacunarity  = 2.0,
+#    flags       = "eased"
+# }
 
 #    Variation of number of caves.
-#    type: noise_params
-# mgv6_np_cave = 6, 6, (250, 250, 250), 34329, 3, 0.50, 2.0
+#    type: noise_params_2d
+# mgv6_np_cave = {
+#    offset      = 6,
+#    scale       = 6,
+#    spread      = (250, 250, 250),
+#    seed        = 34329,
+#    octaves     = 3,
+#    persistence = 0.50,
+#    lacunarity  = 2.0,
+#    flags       = "eased"
+# }
 
 #    Humidity variation for biomes.
-#    type: noise_params
-# mgv6_np_humidity = 0.5, 0.5, (500, 500, 500), 72384, 3, 0.50, 2.0
+#    type: noise_params_2d
+# mgv6_np_humidity = {
+#    offset      = 0.5,
+#    scale       = 0.5,
+#    spread      = (500, 500, 500),
+#    seed        = 72384,
+#    octaves     = 3,
+#    persistence = 0.50,
+#    lacunarity  = 2.0,
+#    flags       = "eased"
+# }
 
 #    Defines tree areas and tree density.
-#    type: noise_params
-# mgv6_np_trees = 0, 1, (125, 125, 125), 2, 4, 0.66, 2.0
+#    type: noise_params_2d
+# mgv6_np_trees = {
+#    offset      = 0,
+#    scale       = 1,
+#    spread      = (125, 125, 125),
+#    seed        = 2,
+#    octaves     = 4,
+#    persistence = 0.66,
+#    lacunarity  = 2.0,
+#    flags       = "eased"
+# }
 
 #    Defines areas where trees have apples.
-#    type: noise_params
-# mgv6_np_apple_trees = 0, 1, (100, 100, 100), 342902, 3, 0.45, 2.0
+#    type: noise_params_2d
+# mgv6_np_apple_trees = {
+#    offset      = 0,
+#    scale       = 1,
+#    spread      = (100, 100, 100),
+#    seed        = 342902,
+#    octaves     = 3,
+#    persistence = 0.45,
+#    lacunarity  = 2.0,
+#    flags       = "eased"
+# }
 
 ## Mapgen V7
 
 #    Map generation attributes specific to Mapgen v7.
 #    'ridges' enables the rivers.
-#    Flags that are not specified in the flag string are not modified from the default.
+#    Flags that are not enabled are not modified from the default.
 #    Flags starting with 'no' are used to explicitly disable them.
 #    type: flags possible values: mountains, ridges, floatlands, caverns, nomountains, noridges, nofloatlands, nocaverns
 # mgv7_spflags = mountains,ridges,nofloatlands,caverns
@@ -1737,68 +1939,194 @@
 ### Noises
 
 #    Y-level of higher (cliff-top) terrain.
-#    type: noise_params
-# mgv7_np_terrain_base = 4, 70, (600, 600, 600), 82341, 5, 0.6, 2.0
+#    type: noise_params_2d
+# mgv7_np_terrain_base = {
+#    offset      = 4,
+#    scale       = 70,
+#    spread      = (600, 600, 600),
+#    seed        = 82341,
+#    octaves     = 5,
+#    persistence = 0.6,
+#    lacunarity  = 2.0,
+#    flags       = "eased"
+# }
 
 #    Y-level of lower terrain and lakebeds.
-#    type: noise_params
-# mgv7_np_terrain_alt = 4, 25, (600, 600, 600), 5934, 5, 0.6, 2.0
+#    type: noise_params_2d
+# mgv7_np_terrain_alt = {
+#    offset      = 4,
+#    scale       = 25,
+#    spread      = (600, 600, 600),
+#    seed        = 5934,
+#    octaves     = 5,
+#    persistence = 0.6,
+#    lacunarity  = 2.0,
+#    flags       = "eased"
+# }
 
 #    Varies roughness of terrain.
 #    Defines the 'persistence' value for terrain_base and terrain_alt noises.
-#    type: noise_params
-# mgv7_np_terrain_persist = 0.6, 0.1, (2000, 2000, 2000), 539, 3, 0.6, 2.0
+#    type: noise_params_2d
+# mgv7_np_terrain_persist = {
+#    offset      = 0.6,
+#    scale       = 0.1,
+#    spread      = (2000, 2000, 2000),
+#    seed        = 539,
+#    octaves     = 3,
+#    persistence = 0.6,
+#    lacunarity  = 2.0,
+#    flags       = "eased"
+# }
 
 #    Defines areas of higher (cliff-top) terrain and affects steepness of cliffs.
-#    type: noise_params
-# mgv7_np_height_select = -8, 16, (500, 500, 500), 4213, 6, 0.7, 2.0
+#    type: noise_params_2d
+# mgv7_np_height_select = {
+#    offset      = -8,
+#    scale       = 16,
+#    spread      = (500, 500, 500),
+#    seed        = 4213,
+#    octaves     = 6,
+#    persistence = 0.7,
+#    lacunarity  = 2.0,
+#    flags       = "eased"
+# }
 
 #    Variation of biome filler depth.
-#    type: noise_params
-# mgv7_np_filler_depth = 0, 1.2, (150, 150, 150), 261, 3, 0.7, 2.0
+#    type: noise_params_2d
+# mgv7_np_filler_depth = {
+#    offset      = 0,
+#    scale       = 1.2,
+#    spread      = (150, 150, 150),
+#    seed        = 261,
+#    octaves     = 3,
+#    persistence = 0.7,
+#    lacunarity  = 2.0,
+#    flags       = "eased"
+# }
 
 #    Variation of maximum mountain height (in nodes).
-#    type: noise_params
-# mgv7_np_mount_height = 256, 112, (1000, 1000, 1000), 72449, 3, 0.6, 2.0
+#    type: noise_params_2d
+# mgv7_np_mount_height = {
+#    offset      = 256,
+#    scale       = 112,
+#    spread      = (1000, 1000, 1000),
+#    seed        = 72449,
+#    octaves     = 3,
+#    persistence = 0.6,
+#    lacunarity  = 2.0,
+#    flags       = "eased"
+# }
 
 #    Defines large-scale river channel structure.
-#    type: noise_params
-# mgv7_np_ridge_uwater = 0, 1, (1000, 1000, 1000), 85039, 5, 0.6, 2.0
+#    type: noise_params_2d
+# mgv7_np_ridge_uwater = {
+#    offset      = 0,
+#    scale       = 1,
+#    spread      = (1000, 1000, 1000),
+#    seed        = 85039,
+#    octaves     = 5,
+#    persistence = 0.6,
+#    lacunarity  = 2.0,
+#    flags       = "eased"
+# }
 
 #    Defines areas of floatland smooth terrain.
 #    Smooth floatlands occur when noise > 0.
-#    type: noise_params
-# mgv7_np_floatland_base = -0.6, 1.5, (600, 600, 600), 114, 5, 0.6, 2.0
+#    type: noise_params_2d
+# mgv7_np_floatland_base = {
+#    offset      = -0.6,
+#    scale       = 1.5,
+#    spread      = (600, 600, 600),
+#    seed        = 114,
+#    octaves     = 5,
+#    persistence = 0.6,
+#    lacunarity  = 2.0,
+#    flags       = "eased"
+# }
 
 #    Variation of hill height and lake depth on floatland smooth terrain.
-#    type: noise_params
-# mgv7_np_float_base_height = 48, 24, (300, 300, 300), 907, 4, 0.7, 2.0
+#    type: noise_params_2d
+# mgv7_np_float_base_height = {
+#    offset      = 48,
+#    scale       = 24,
+#    spread      = (300, 300, 300),
+#    seed        = 907,
+#    octaves     = 4,
+#    persistence = 0.7,
+#    lacunarity  = 2.0,
+#    flags       = "eased"
+# }
 
 #    3D noise defining mountain structure and height.
 #    Also defines structure of floatland mountain terrain.
-#    type: noise_params
-# mgv7_np_mountain = -0.6, 1, (250, 350, 250), 5333, 5, 0.63, 2.0
+#    type: noise_params_3d
+# mgv7_np_mountain = {
+#    offset      = -0.6,
+#    scale       = 1,
+#    spread      = (250, 350, 250),
+#    seed        = 5333,
+#    octaves     = 5,
+#    persistence = 0.63,
+#    lacunarity  = 2.0,
+#    flags       = ""
+# }
 
 #    3D noise defining structure of river canyon walls.
-#    type: noise_params
-# mgv7_np_ridge = 0, 1, (100, 100, 100), 6467, 4, 0.75, 2.0
+#    type: noise_params_3d
+# mgv7_np_ridge = {
+#    offset      = 0,
+#    scale       = 1,
+#    spread      = (100, 100, 100),
+#    seed        = 6467,
+#    octaves     = 4,
+#    persistence = 0.75,
+#    lacunarity  = 2.0,
+#    flags       = ""
+# }
 
 #    3D noise defining giant caverns.
-#    type: noise_params
-# mgv7_np_cavern = 0, 1, (384, 128, 384), 723, 5, 0.63, 2.0
+#    type: noise_params_3d
+# mgv7_np_cavern = {
+#    offset      = 0,
+#    scale       = 1,
+#    spread      = (384, 128, 384),
+#    seed        = 723,
+#    octaves     = 5,
+#    persistence = 0.63,
+#    lacunarity  = 2.0,
+#    flags       = ""
+# }
 
 #    First of 2 3D noises that together define tunnels.
-#    type: noise_params
-# mgv7_np_cave1 = 0, 12, (61, 61, 61), 52534, 3, 0.5, 2.0
+#    type: noise_params_3d
+# mgv7_np_cave1 = {
+#    offset      = 0,
+#    scale       = 12,
+#    spread      = (61, 61, 61),
+#    seed        = 52534,
+#    octaves     = 3,
+#    persistence = 0.5,
+#    lacunarity  = 2.0,
+#    flags       = ""
+# }
 
 #    Second of 2 3D noises that together define tunnels.
-#    type: noise_params
-# mgv7_np_cave2 = 0, 12, (67, 67, 67), 10325, 3, 0.5, 2.0
+#    type: noise_params_3d
+# mgv7_np_cave2 = {
+#    offset      = 0,
+#    scale       = 12,
+#    spread      = (67, 67, 67),
+#    seed        = 10325,
+#    octaves     = 3,
+#    persistence = 0.5,
+#    lacunarity  = 2.0,
+#    flags       = ""
+# }
 
 ## Mapgen Carpathian
 
 #    Map generation attributes specific to Mapgen Carpathian.
-#    Flags that are not specified in the flag string are not modified from the default.
+#    Flags that are not enabled are not modified from the default.
 #    Flags starting with 'no' are used to explicitly disable them.
 #    type: flags possible values: caverns, nocaverns
 # mgcarpathian_spflags = caverns
@@ -1830,74 +2158,218 @@
 ### Noises
 
 #    2D noise that defines the base ground level.
-#    type: noise_params
-# mgcarpathian_np_base = 12, 1, (2557, 2557, 2557), 6538, 4, 0.8, 0.5
+#    type: noise_params_2d
+# mgcarpathian_np_base = {
+#    offset      = 12,
+#    scale       = 1,
+#    spread      = (2557, 2557, 2557),
+#    seed        = 6538,
+#    octaves     = 4,
+#    persistence = 0.8,
+#    lacunarity  = 0.5,
+#    flags       = "eased"
+# }
 
 #    Variation of biome filler depth.
-#    type: noise_params
-# mgcarpathian_np_filler_depth = 0, 1, (128, 128, 128), 261, 3, 0.7, 2.0
+#    type: noise_params_2d
+# mgcarpathian_np_filler_depth = {
+#    offset      = 0,
+#    scale       = 1,
+#    spread      = (128, 128, 128),
+#    seed        = 261,
+#    octaves     = 3,
+#    persistence = 0.7,
+#    lacunarity  = 2.0,
+#    flags       = "eased"
+# }
 
-#    First of 4 3D noises that together define hill/mountain range height.
-#    type: noise_params
-# mgcarpathian_np_height1 = 0, 5, (251, 251, 251), 9613, 5, 0.5, 2.0
+#    First of 4 2D noises that together define hill/mountain range height.
+#    type: noise_params_2d
+# mgcarpathian_np_height1 = {
+#    offset      = 0,
+#    scale       = 5,
+#    spread      = (251, 251, 251),
+#    seed        = 9613,
+#    octaves     = 5,
+#    persistence = 0.5,
+#    lacunarity  = 2.0,
+#    flags       = "eased"
+# }
 
-#    Second of 4 3D noises that together define hill/mountain range height.
-#    type: noise_params
-# mgcarpathian_np_height2 = 0, 5, (383, 383, 383), 1949, 5, 0.5, 2.0
+#    Second of 4 2D noises that together define hill/mountain range height.
+#    type: noise_params_2d
+# mgcarpathian_np_height2 = {
+#    offset      = 0,
+#    scale       = 5,
+#    spread      = (383, 383, 383),
+#    seed        = 1949,
+#    octaves     = 5,
+#    persistence = 0.5,
+#    lacunarity  = 2.0,
+#    flags       = "eased"
+# }
 
-#    Third of 4 3D noises that together define hill/mountain range height.
-#    type: noise_params
-# mgcarpathian_np_height3 = 0, 5, (509, 509, 509), 3211, 5, 0.5, 2.0
+#    Third of 4 2D noises that together define hill/mountain range height.
+#    type: noise_params_2d
+# mgcarpathian_np_height3 = {
+#    offset      = 0,
+#    scale       = 5,
+#    spread      = (509, 509, 509),
+#    seed        = 3211,
+#    octaves     = 5,
+#    persistence = 0.5,
+#    lacunarity  = 2.0,
+#    flags       = "eased"
+# }
 
-#    Fourth of 4 3D noises that together define hill/mountain range height.
-#    type: noise_params
-# mgcarpathian_np_height4 = 0, 5, (631, 631, 631), 1583, 5, 0.5, 2.0
+#    Fourth of 4 2D noises that together define hill/mountain range height.
+#    type: noise_params_2d
+# mgcarpathian_np_height4 = {
+#    offset      = 0,
+#    scale       = 5,
+#    spread      = (631, 631, 631),
+#    seed        = 1583,
+#    octaves     = 5,
+#    persistence = 0.5,
+#    lacunarity  = 2.0,
+#    flags       = "eased"
+# }
 
 #    2D noise that controls the size/occurance of rolling hills.
-#    type: noise_params
-# mgcarpathian_np_hills_terrain = 1, 1, (1301, 1301, 1301), 1692, 3, 0.5, 2.0
+#    type: noise_params_2d
+# mgcarpathian_np_hills_terrain = {
+#    offset      = 1,
+#    scale       = 1,
+#    spread      = (1301, 1301, 1301),
+#    seed        = 1692,
+#    octaves     = 3,
+#    persistence = 0.5,
+#    lacunarity  = 2.0,
+#    flags       = "eased"
+# }
 
 #    2D noise that controls the size/occurance of ridged mountain ranges.
-#    type: noise_params
-# mgcarpathian_np_ridge_terrain = 1, 1, (1889, 1889, 1889), 3568, 3, 0.5, 2.0
+#    type: noise_params_2d
+# mgcarpathian_np_ridge_terrain = {
+#    offset      = 1,
+#    scale       = 1,
+#    spread      = (1889, 1889, 1889),
+#    seed        = 3568,
+#    octaves     = 3,
+#    persistence = 0.5,
+#    lacunarity  = 2.0,
+#    flags       = "eased"
+# }
 
 #    2D noise that controls the size/occurance of step mountain ranges.
-#    type: noise_params
-# mgcarpathian_np_step_terrain = 1, 1, (1889, 1889, 1889), 4157, 3, 0.5, 2.0
+#    type: noise_params_2d
+# mgcarpathian_np_step_terrain = {
+#    offset      = 1,
+#    scale       = 1,
+#    spread      = (1889, 1889, 1889),
+#    seed        = 4157,
+#    octaves     = 3,
+#    persistence = 0.5,
+#    lacunarity  = 2.0,
+#    flags       = "eased"
+# }
 
 #    2D noise that controls the shape/size of rolling hills.
-#    type: noise_params
-# mgcarpathian_np_hills = 0, 3, (257, 257, 257), 6604, 6, 0.5, 2.0
+#    type: noise_params_2d
+# mgcarpathian_np_hills = {
+#    offset      = 0,
+#    scale       = 3,
+#    spread      = (257, 257, 257),
+#    seed        = 6604,
+#    octaves     = 6,
+#    persistence = 0.5,
+#    lacunarity  = 2.0,
+#    flags       = "eased"
+# }
 
 #    2D noise that controls the shape/size of ridged mountains.
-#    type: noise_params
-# mgcarpathian_np_ridge_mnt = 0, 12, (743, 743, 743), 5520, 6, 0.7, 2.0
+#    type: noise_params_2d
+# mgcarpathian_np_ridge_mnt = {
+#    offset      = 0,
+#    scale       = 12,
+#    spread      = (743, 743, 743),
+#    seed        = 5520,
+#    octaves     = 6,
+#    persistence = 0.7,
+#    lacunarity  = 2.0,
+#    flags       = "eased"
+# }
 
 #    2D noise that controls the shape/size of step mountains.
-#    type: noise_params
-# mgcarpathian_np_step_mnt = 0, 8, (509, 509, 509), 2590, 6, 0.6, 2.0
+#    type: noise_params_2d
+# mgcarpathian_np_step_mnt = {
+#    offset      = 0,
+#    scale       = 8,
+#    spread      = (509, 509, 509),
+#    seed        = 2590,
+#    octaves     = 6,
+#    persistence = 0.6,
+#    lacunarity  = 2.0,
+#    flags       = "eased"
+# }
 
 #    3D noise for mountain overhangs, cliffs, etc. Usually small variations.
-#    type: noise_params
-# mgcarpathian_np_mnt_var = 0, 1, (499, 499, 499), 2490, 5, 0.55, 2.0
+#    type: noise_params_3d
+# mgcarpathian_np_mnt_var = {
+#    offset      = 0,
+#    scale       = 1,
+#    spread      = (499, 499, 499),
+#    seed        = 2490,
+#    octaves     = 5,
+#    persistence = 0.55,
+#    lacunarity  = 2.0,
+#    flags       = ""
+# }
 
 #    First of 2 3D noises that together define tunnels.
-#    type: noise_params
-# mgcarpathian_np_cave1 = 0, 12, (61, 61, 61), 52534, 3, 0.5, 2.0
+#    type: noise_params_3d
+# mgcarpathian_np_cave1 = {
+#    offset      = 0,
+#    scale       = 12,
+#    spread      = (61, 61, 61),
+#    seed        = 52534,
+#    octaves     = 3,
+#    persistence = 0.5,
+#    lacunarity  = 2.0,
+#    flags       = ""
+# }
 
 #    Second of 2 3D noises that together define tunnels.
-#    type: noise_params
-# mgcarpathian_np_cave2 = 0, 12, (67, 67, 67), 10325, 3, 0.5, 2.0
+#    type: noise_params_3d
+# mgcarpathian_np_cave2 = {
+#    offset      = 0,
+#    scale       = 12,
+#    spread      = (67, 67, 67),
+#    seed        = 10325,
+#    octaves     = 3,
+#    persistence = 0.5,
+#    lacunarity  = 2.0,
+#    flags       = ""
+# }
 
 #    3D noise defining giant caverns.
-#    type: noise_params
-# mgcarpathian_np_cavern = 0, 1, (384, 128, 384), 723, 5, 0.63, 2.0
+#    type: noise_params_3d
+# mgcarpathian_np_cavern = {
+#    offset      = 0,
+#    scale       = 1,
+#    spread      = (384, 128, 384),
+#    seed        = 723,
+#    octaves     = 5,
+#    persistence = 0.63,
+#    lacunarity  = 2.0,
+#    flags       = ""
+# }
 
 ## Mapgen Flat
 
 #    Map generation attributes specific to Mapgen flat.
 #    Occasional lakes and hills can be added to the flat world.
-#    Flags that are not specified in the flag string are not modified from the default.
+#    Flags that are not enabled are not modified from the default.
 #    Flags starting with 'no' are used to explicitly disable them.
 #    type: flags possible values: lakes, hills, nolakes, nohills
 # mgflat_spflags = nolakes,nohills
@@ -1941,20 +2413,56 @@
 ### Noises
 
 #    Defines location and terrain of optional hills and lakes.
-#    type: noise_params
-# mgflat_np_terrain = 0, 1, (600, 600, 600), 7244, 5, 0.6, 2.0
+#    type: noise_params_2d
+# mgflat_np_terrain = {
+#    offset      = 0,
+#    scale       = 1,
+#    spread      = (600, 600, 600),
+#    seed        = 7244,
+#    octaves     = 5,
+#    persistence = 0.6,
+#    lacunarity  = 2.0,
+#    flags       = "eased"
+# }
 
 #    Variation of biome filler depth.
-#    type: noise_params
-# mgflat_np_filler_depth = 0, 1.2, (150, 150, 150), 261, 3, 0.7, 2.0
+#    type: noise_params_2d
+# mgflat_np_filler_depth = {
+#    offset      = 0,
+#    scale       = 1.2,
+#    spread      = (150, 150, 150),
+#    seed        = 261,
+#    octaves     = 3,
+#    persistence = 0.7,
+#    lacunarity  = 2.0,
+#    flags       = "eased"
+# }
 
 #    First of 2 3D noises that together define tunnels.
-#    type: noise_params
-# mgflat_np_cave1 = 0, 12, (61, 61, 61), 52534, 3, 0.5, 2.0
+#    type: noise_params_3d
+# mgflat_np_cave1 = {
+#    offset      = 0,
+#    scale       = 12,
+#    spread      = (61, 61, 61),
+#    seed        = 52534,
+#    octaves     = 3,
+#    persistence = 0.5,
+#    lacunarity  = 2.0,
+#    flags       = ""
+# }
 
 #    Second of 2 3D noises that together define tunnels.
-#    type: noise_params
-# mgflat_np_cave2 = 0, 12, (67, 67, 67), 10325, 3, 0.5, 2.0
+#    type: noise_params_3d
+# mgflat_np_cave2 = {
+#    offset      = 0,
+#    scale       = 12,
+#    spread      = (67, 67, 67),
+#    seed        = 10325,
+#    octaves     = 3,
+#    persistence = 0.5,
+#    lacunarity  = 2.0,
+#    flags       = ""
+# }
 
 ## Mapgen Fractal
 
@@ -2039,20 +2547,56 @@
 ### Noises
 
 #    Y-level of seabed.
-#    type: noise_params
-# mgfractal_np_seabed = -14, 9, (600, 600, 600), 41900, 5, 0.6, 2.0
+#    type: noise_params_2d
+# mgfractal_np_seabed = {
+#    offset      = -14,
+#    scale       = 9,
+#    spread      = (600, 600, 600),
+#    seed        = 41900,
+#    octaves     = 5,
+#    persistence = 0.6,
+#    lacunarity  = 2.0,
+#    flags       = "eased"
+# }
 
 #    Variation of biome filler depth.
-#    type: noise_params
-# mgfractal_np_filler_depth = 0, 1.2, (150, 150, 150), 261, 3, 0.7, 2.0
+#    type: noise_params_2d
+# mgfractal_np_filler_depth = {
+#    offset      = 0,
+#    scale       = 1.2,
+#    spread      = (150, 150, 150),
+#    seed        = 261,
+#    octaves     = 3,
+#    persistence = 0.7,
+#    lacunarity  = 2.0,
+#    flags       = "eased"
+# }
 
 #    First of 2 3D noises that together define tunnels.
-#    type: noise_params
-# mgfractal_np_cave1 = 0, 12, (61, 61, 61), 52534, 3, 0.5, 2.0
+#    type: noise_params_3d
+# mgfractal_np_cave1 = {
+#    offset      = 0,
+#    scale       = 12,
+#    spread      = (61, 61, 61),
+#    seed        = 52534,
+#    octaves     = 3,
+#    persistence = 0.5,
+#    lacunarity  = 2.0,
+#    flags       = ""
+# }
 
 #    Second of 2 3D noises that together define tunnels.
-#    type: noise_params
-# mgfractal_np_cave2 = 0, 12, (67, 67, 67), 10325, 3, 0.5, 2.0
+#    type: noise_params_3d
+# mgfractal_np_cave2 = {
+#    offset      = 0,
+#    scale       = 12,
+#    spread      = (67, 67, 67),
+#    seed        = 10325,
+#    octaves     = 3,
+#    persistence = 0.5,
+#    lacunarity  = 2.0,
+#    flags       = ""
+# }
 
 ## Mapgen Valleys
 
@@ -2060,7 +2604,7 @@
 #    'altitude_chill' makes higher elevations colder, which may cause biome issues.
 #    'humid_rivers' modifies the humidity around rivers and in areas where water would tend to pool,
 #    it may interfere with delicately adjusted biomes.
-#    Flags that are not specified in the flag string are not modified from the default.
+#    Flags that are not enabled are not modified from the default.
 #    Flags starting with 'no' are used to explicitly disable them.
 #    type: flags possible values: altitude_chill, noaltitude_chill, humid_rivers, nohumid_rivers
 # mg_valleys_spflags = altitude_chill,humid_rivers
@@ -2102,44 +2646,134 @@
 ### Noises
 
 #    Caves and tunnels form at the intersection of the two noises
-#    type: noise_params
-# mgvalleys_np_cave1 = 0, 12, (61, 61, 61), 52534, 3, 0.5, 2.0
+#    type: noise_params_3d
+# mgvalleys_np_cave1 = {
+#    offset      = 0,
+#    scale       = 12,
+#    spread      = (61, 61, 61),
+#    seed        = 52534,
+#    octaves     = 3,
+#    persistence = 0.5,
+#    lacunarity  = 2.0,
+#    flags       = ""
+# }
 
 #    Caves and tunnels form at the intersection of the two noises
-#    type: noise_params
-# mgvalleys_np_cave2 = 0, 12, (67, 67, 67), 10325, 3, 0.5, 2.0
+#    type: noise_params_3d
+# mgvalleys_np_cave2 = {
+#    offset      = 0,
+#    scale       = 12,
+#    spread      = (67, 67, 67),
+#    seed        = 10325,
+#    octaves     = 3,
+#    persistence = 0.5,
+#    lacunarity  = 2.0,
+#    flags       = ""
+# }
 
 #    The depth of dirt or other filler
-#    type: noise_params
-# mgvalleys_np_filler_depth = 0, 1.2, (256, 256, 256), 1605, 3, 0.5, 2.0
+#    type: noise_params_2d
+# mgvalleys_np_filler_depth = {
+#    offset      = 0,
+#    scale       = 1.2,
+#    spread      = (256, 256, 256),
+#    seed        = 1605,
+#    octaves     = 3,
+#    persistence = 0.5,
+#    lacunarity  = 2.0,
+#    flags       = "eased"
+# }
 
 #    Massive caves form here.
-#    type: noise_params
-# mgvalleys_np_massive_caves = 0, 1, (768, 256, 768), 59033, 6, 0.63, 2.0
+#    type: noise_params_3d
+# mgvalleys_np_massive_caves = {
+#    offset      = 0,
+#    scale       = 1,
+#    spread      = (768, 256, 768),
+#    seed        = 59033,
+#    octaves     = 6,
+#    persistence = 0.63,
+#    lacunarity  = 2.0,
+#    flags       = ""
+# }
 
 #    River noise -- rivers occur close to zero
-#    type: noise_params
-# mgvalleys_np_rivers = 0, 1, (256, 256, 256), -6050, 5, 0.6, 2.0
+#    type: noise_params_2d
+# mgvalleys_np_rivers = {
+#    offset      = 0,
+#    scale       = 1,
+#    spread      = (256, 256, 256),
+#    seed        = -6050,
+#    octaves     = 5,
+#    persistence = 0.6,
+#    lacunarity  = 2.0,
+#    flags       = "eased"
+# }
 
 #    Base terrain height
-#    type: noise_params
-# mgvalleys_np_terrain_height = -10, 50, (1024, 1024, 1024), 5202, 6, 0.4, 2.0
+#    type: noise_params_2d
+# mgvalleys_np_terrain_height = {
+#    offset      = -10,
+#    scale       = 50,
+#    spread      = (1024, 1024, 1024),
+#    seed        = 5202,
+#    octaves     = 6,
+#    persistence = 0.4,
+#    lacunarity  = 2.0,
+#    flags       = "eased"
+# }
 
 #    Raises terrain to make valleys around the rivers
-#    type: noise_params
-# mgvalleys_np_valley_depth = 5, 4, (512, 512, 512), -1914, 1, 1.0, 2.0
+#    type: noise_params_2d
+# mgvalleys_np_valley_depth = {
+#    offset      = 5,
+#    scale       = 4,
+#    spread      = (512, 512, 512),
+#    seed        = -1914,
+#    octaves     = 1,
+#    persistence = 1.0,
+#    lacunarity  = 2.0,
+#    flags       = "eased"
+# }
 
 #    Slope and fill work together to modify the heights
-#    type: noise_params
-# mgvalleys_np_inter_valley_fill = 0, 1, (256, 512, 256), 1993, 6, 0.8, 2.0
+#    type: noise_params_3d
+# mgvalleys_np_inter_valley_fill = {
+#    offset      = 0,
+#    scale       = 1,
+#    spread      = (256, 512, 256),
+#    seed        = 1993,
+#    octaves     = 6,
+#    persistence = 0.8,
+#    lacunarity  = 2.0,
+#    flags       = ""
+# }
 
 #    Amplifies the valleys
-#    type: noise_params
-# mgvalleys_np_valley_profile = 0.6, 0.5, (512, 512, 512), 777, 1, 1.0, 2.0
+#    type: noise_params_2d
+# mgvalleys_np_valley_profile = {
+#    offset      = 0.6,
+#    scale       = 0.5,
+#    spread      = (512, 512, 512),
+#    seed        = 777,
+#    octaves     = 1,
+#    persistence = 1.0,
+#    lacunarity  = 2.0,
+#    flags       = "eased"
+# }
 
 #    Slope and fill work together to modify the heights
-#    type: noise_params
-# mgvalleys_np_inter_valley_slope = 0.5, 0.5, (128, 128, 128), 746, 1, 1.0, 2.0
+#    type: noise_params_2d
+# mgvalleys_np_inter_valley_slope = {
+#    offset      = 0.5,
+#    scale       = 0.5,
+#    spread      = (128, 128, 128),
+#    seed        = 746,
+#    octaves     = 1,
+#    persistence = 1.0,
+#    lacunarity  = 2.0,
+#    flags       = "eased"
+# }
 
 ## Advanced
 
