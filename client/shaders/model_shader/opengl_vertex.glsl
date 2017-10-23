@@ -48,7 +48,7 @@ void main(void)
 	color.rgb = gl_Color.rgb * (outdoorsRatio * dayLight.rgb +
 		gl_Color.a * artificialLight.rgb);
 
-#ifdef ENABLE_DIRECTIONAL_SHADING
+#if defined(ENABLE_DIRECTIONAL_SHADING) && !LIGHT_EMISSIVE
 	vec3 norm = normalize((mWorld * vec4(gl_Normal, 0.0)).xyz);
 
 	// Lighting color

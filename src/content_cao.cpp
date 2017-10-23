@@ -477,7 +477,7 @@ void GenericCAO::addToScene(ITextureSource *tsrc)
 	IShaderSource *shdrsrc = m_client->getShaderSource();
 
 	if (m_enable_shaders) {
-		u32 shader_id = shdrsrc->getShader("model_shader", TILE_MATERIAL_BASIC, NDT_NORMAL);
+		u32 shader_id = shdrsrc->getShader("model_shader", TILE_MATERIAL_BASIC, NDT_NORMAL, (m_glow < 0));
 		m_material_type = shdrsrc->getShaderInfo(shader_id).material;
 	}
 
