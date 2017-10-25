@@ -39,6 +39,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mapnode.h"
 #include <fstream> // Used in applyTextureOverrides()
 #include <algorithm>
+#include <cmath>
 
 /*
 	NodeBox
