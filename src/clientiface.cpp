@@ -125,7 +125,7 @@ void RemoteClient::GetNextBlocks (
 	if (playerspeed.getLength() > 1.0f * BS)
 		playerspeeddir = playerspeed / playerspeed.getLength();
 	// Predict to next block
-	v3f playerpos_predicted = playerpos + playerspeeddir*MAP_BLOCKSIZE*BS;
+	v3f playerpos_predicted = playerpos + playerspeeddir * (MAP_BLOCKSIZE * BS);
 
 	v3s16 center_nodepos = floatToInt(playerpos_predicted, BS);
 
@@ -195,6 +195,14 @@ void RemoteClient::GetNextBlocks (
 	// get view range and camera fov from the client
 	s16 wanted_range = sao->getWantedRange() + 1;
 	float camera_fov = sao->getFov();
+
+	// cos(angle between velocity and camera) * |velocity|
+	// Limit to 0.0f in case player moves backwards.
+	f32 dot = rangelim(camera_dir.dotProduct(playerspeed), 0.0f, 300.0f);
+
+	// Reduce the field of view when a player moves and looks forward.
+	// limit max fov effect to 50%, 60% at 20n/s fly speed
+	camera_fov = camera_fov / (1 + dot / 300.0f);
 
 	const s16 full_d_max = std::min(m_max_send_distance, wanted_range);
 	const s16 d_opt = std::min(m_block_optimize_distance, wanted_range);
