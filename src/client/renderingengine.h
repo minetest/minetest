@@ -180,6 +180,9 @@ private:
 			const video::SColor &skycolor, gui::IGUIEnvironment *guienv,
 			Camera *camera);
 
+	void setCamera(Camera *camera, const v3f &position,
+			const v3f &target);
+
 	irr::IrrlichtDevice *m_device = nullptr;
 	static RenderingEngine *s_singleton;
 };
