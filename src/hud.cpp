@@ -281,7 +281,6 @@ void Hud::drawItems(v2s32 upperleftpos, v2s32 screen_offset, s32 itemcount,
 void Hud::drawLuaElements(const v3s16 &camera_offset)
 {
 	u32 text_height = g_fontengine->getTextHeight();
-	irr::gui::IGUIFont* font = g_fontengine->getFont();
 	for (size_t i = 0; i != player->maxHudId(); i++) {
 		HudElement *e = player->getHud(i);
 		if (!e)
@@ -318,6 +317,10 @@ void Hud::drawLuaElements(const v3s16 &camera_offset)
 										 (e->number >> 0)  & 0xFF);
 				core::rect<s32> size(0, 0, e->scale.X, text_height * e->scale.Y);
 				std::wstring text = unescape_translate(utf8_to_wide(e->text));
+				s32 fontsize = FONT_SIZE_UNSPECIFIED;
+				if (e->size != v2s32())
+					fontsize = e->size.X;
+				irr::gui::IGUIFont *font = g_fontengine->getFont(fontsize, FM_Unspecified);
 				core::dimension2d<u32> textsize = font->getDimension(text.c_str());
 				v2s32 offset((e->align.X - 1.0) * (textsize.Width / 2),
 				             (e->align.Y - 1.0) * (textsize.Height / 2));
@@ -355,6 +358,7 @@ void Hud::drawLuaElements(const v3s16 &camera_offset)
 										 (e->number >> 0)  & 0xFF);
 				core::rect<s32> size(0, 0, 200, 2 * text_height);
 				std::wstring text = unescape_translate(utf8_to_wide(e->name));
+				irr::gui::IGUIFont *font = g_fontengine->getFont();
 				font->draw(text.c_str(), size + pos, color);
 				std::ostringstream os;
 				os << distance << e->text;

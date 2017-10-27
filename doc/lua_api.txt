@@ -4964,7 +4964,7 @@ Definition tables
         offset = {x=0, y=0},
     --  ^ See "HUD Element Types"
         size = { x=100, y=100 },
-    --  ^ Size of element in pixels
+    --  ^ Size of element in pixels. For text size.x is the font size.
     }
 
 ### Particle definition (`add_particle`)
