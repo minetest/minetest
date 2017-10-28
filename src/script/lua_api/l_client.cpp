@@ -190,7 +190,7 @@ int ModApiClient::l_get_node_or_nil(lua_State *L)
 
 int ModApiClient::l_get_language(lua_State *L)
 {
-	char* locale = setlocale(LC_ALL, "");
+	char *locale = setlocale(LC_ALL, "");
 	lua_pushstring(L, locale);
 	return 1;
 }
