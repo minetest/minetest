@@ -618,6 +618,7 @@ Minetest namespace reference
 ### Utilities
 
 * `minetest.get_current_modname()`: returns the currently loading mod's name, when we are loading a mod
+* `minetest.get_language()`: returns the currently set gettext language.
 * `minetest.get_version()`: returns a table containing components of the
    engine version.  Components:
     * `project`: Name of the project, eg, "Minetest"
