@@ -653,8 +653,8 @@ core.register_chatcommand("pulverize", {
 core.rollback_punch_callbacks = {}
 
 core.register_on_punchnode(function(pos, node, puncher)
-	local name = puncher:get_player_name()
-	if core.rollback_punch_callbacks[name] then
+	local name = puncher and puncher:get_player_name()
+	if name and core.rollback_punch_callbacks[name] then
 		core.rollback_punch_callbacks[name](pos, node, puncher)
 		core.rollback_punch_callbacks[name] = nil
 	end
