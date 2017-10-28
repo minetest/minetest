@@ -3701,8 +3701,13 @@ void Game::processPlayerInteraction(f32 dtime, bool show_hud, bool show_debug)
 	} else if (pointed.type == POINTEDTHING_NODE) {
 		ToolCapabilities playeritem_toolcap =
 				playeritem.getToolCapabilities(itemdef_manager);
-		if (playeritem.name.empty() && hand_def.tool_capabilities != NULL) {
-			playeritem_toolcap = *hand_def.tool_capabilities;
+		if (playeritem.name.empty()) {
+			const ToolCapabilities *handToolcap = hlist
+				? &hlist->getItem(0).getToolCapabilities(itemdef_manager)
+				: itemdef_manager->get("").tool_capabilities;
+
+			if (handToolcap != nullptr)
+				playeritem_toolcap = *handToolcap;
 		}
 		handlePointingAtNode(pointed, playeritem_def, playeritem,
 			playeritem_toolcap, dtime);
@@ -4004,9 +4009,9 @@ void Game::handleDigging(const PointedThing &pointed, const v3s16 &nodepos,
 	// If can't dig, try hand
 	if (!params.diggable) {
 		InventoryList *hlist = local_inventory->getList("hand");
-		const ItemDefinition &hand =
-			hlist ? hlist->getItem(0).getDefinition(itemdef_manager) : itemdef_manager->get("");
-		const ToolCapabilities *tp = hand.tool_capabilities;
+		const ToolCapabilities *tp = hlist
+			? &hlist->getItem(0).getToolCapabilities(itemdef_manager)
+			: itemdef_manager->get("").tool_capabilities;
 
 		if (tp)
 			params = getDigParams(nodedef_manager->get(n).groups, tp);
