@@ -188,6 +188,13 @@ int ModApiClient::l_get_node_or_nil(lua_State *L)
 	return 1;
 }
 
+int ModApiClient::l_get_language(lua_State *L)
+{
+	char *locale = setlocale(LC_ALL, "");
+	lua_pushstring(L, locale);
+	return 1;
+}
+
 int ModApiClient::l_get_wielded_item(lua_State *L)
 {
 	Client *client = getClient(L);
@@ -373,4 +380,5 @@ void ModApiClient::Initialize(lua_State *L, int top)
 	API_FCT(take_screenshot);
 	API_FCT(get_privilege_list);
 	API_FCT(get_builtin_path);
+	API_FCT(get_language);
 }
