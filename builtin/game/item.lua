@@ -215,6 +215,8 @@ function core.get_node_drops(node, toolname)
 		end
 		if item.tools ~= nil then
 			good_tool = false
+		end
+		if item.tools ~= nil and toolname then
 			for _, tool in ipairs(item.tools) do
 				if tool:sub(1, 1) == '~' then
 					good_tool = toolname:find(tool:sub(2)) ~= nil
@@ -225,7 +227,7 @@ function core.get_node_drops(node, toolname)
 					break
 				end
 			end
-        	end
+		end
 		if good_rarity and good_tool then
 			got_count = got_count + 1
 			for _, add_item in ipairs(item.items) do
@@ -245,6 +247,20 @@ function core.get_node_drops(node, toolname)
 	return got_items
 end
 
+local function user_name(user)
+	return user and user:get_player_name() or ""
+end
+
+local function is_protected(pos, name)
+	return core.is_protected(pos, name) and
+		not minetest.check_player_privs(name, "protection_bypass")
+end
+
+-- Returns a logging function. For empty names, does not log.
+local function make_log(name)
+	return name ~= "" and core.log or function() end
+end
+
 function core.item_place_node(itemstack, placer, pointed_thing, param2)
 	local def = itemstack:get_definition()
 	if def.type ~= "node" or pointed_thing.type ~= "node" then
@@ -255,10 +271,11 @@ function core.item_place_node(itemstack, placer, pointed_thing, param2)
 	local oldnode_under = core.get_node_or_nil(under)
 	local above = pointed_thing.above
 	local oldnode_above = core.get_node_or_nil(above)
-	local playername = placer:get_player_name()
+	local playername = user_name(placer)
+	local log = make_log(playername)
 
 	if not oldnode_under or not oldnode_above then
-		core.log("info", playername .. " tried to place"
+		log("info", playername .. " tried to place"
 			.. " node in unloaded position " .. core.pos_to_string(above))
 		return itemstack, false
 	end
@@ -269,7 +286,7 @@ function core.item_place_node(itemstack, placer, pointed_thing, param2)
 	olddef_above = olddef_above or core.nodedef_default
 
 	if not olddef_above.buildable_to and not olddef_under.buildable_to then
-		core.log("info", playername .. " tried to place"
+		log("info", playername .. " tried to place"
 			.. " node in invalid position " .. core.pos_to_string(above)
 			.. ", replacing " .. oldnode_above.name)
 		return itemstack, false
@@ -280,13 +297,12 @@ function core.item_place_node(itemstack, placer, pointed_thing, param2)
 
 	-- If node under is buildable_to, place into it instead (eg. snow)
 	if olddef_under.buildable_to then
-		core.log("info", "node under is buildable to")
+		log("info", "node under is buildable to")
 		place_to = {x = under.x, y = under.y, z = under.z}
 	end
 
-	if core.is_protected(place_to, playername) and
-			not minetest.check_player_privs(placer, "protection_bypass") then
-		core.log("action", playername
+	if is_protected(place_to, playername) then
+		log("action", playername
 				.. " tried to place " .. def.name
 				.. " at protected position "
 				.. core.pos_to_string(place_to))
@@ -294,7 +310,7 @@ function core.item_place_node(itemstack, placer, pointed_thing, param2)
 		return itemstack
 	end
 
-	core.log("action", playername .. " places node "
+	log("action", playername .. " places node "
 		.. def.name .. " at " .. core.pos_to_string(place_to))
 
 	local oldnode = core.get_node(place_to)
@@ -314,7 +330,7 @@ function core.item_place_node(itemstack, placer, pointed_thing, param2)
 	-- Calculate the direction for furnaces and chests and stuff
 	elseif (def.paramtype2 == "facedir" or
 			def.paramtype2 == "colorfacedir") and not param2 then
-		local placer_pos = placer:getpos()
+		local placer_pos = placer and placer:getpos()
 		if placer_pos then
 			local dir = {
 				x = above.x - placer_pos.x,
@@ -322,7 +338,7 @@ function core.item_place_node(itemstack, placer, pointed_thing, param2)
 				z = above.z - placer_pos.z
 			}
 			newnode.param2 = core.dir_to_facedir(dir)
-			core.log("action", "facedir: " .. newnode.param2)
+			log("action", "facedir: " .. newnode.param2)
 		end
 	end
 
@@ -348,7 +364,7 @@ function core.item_place_node(itemstack, placer, pointed_thing, param2)
 	-- Check if the node is attached and if it can be placed there
 	if core.get_item_group(def.name, "attached_node") ~= 0 and
 		not builtin_shared.check_attached_node(place_to, newnode) then
-		core.log("action", "attached node " .. def.name ..
+		log("action", "attached node " .. def.name ..
 			" can not be placed at " .. core.pos_to_string(place_to))
 		return itemstack, false
 	end
@@ -419,28 +435,27 @@ function core.item_secondary_use(itemstack, placer)
 end
 
 function core.item_drop(itemstack, dropper, pos)
-	if dropper and dropper:is_player() then
-		local v = dropper:get_look_dir()
-		local p = {x=pos.x, y=pos.y+1.2, z=pos.z}
-		local cs = itemstack:get_count()
+	local dropper_is_player = dropper and dropper:is_player()
+	local p = table.copy(pos)
+	local cnt = itemstack:get_count()
+	if dropper_is_player then
+		p.y = p.y + 1.2
 		if dropper:get_player_control().sneak then
-			cs = 1
+			cnt = 1
 		end
-		local item = itemstack:take_item(cs)
-		local obj = core.add_item(p, item)
-		if obj then
-			v.x = v.x*2
-			v.y = v.y*2 + 2
-			v.z = v.z*2
-			obj:setvelocity(v)
+	end
+	local item = itemstack:take_item(cnt)
+	local obj = core.add_item(p, item)
+	if obj then
+		if dropper_is_player then
+			local dir = dropper:get_look_dir()
+			dir.x = dir.x * 2.9
+			dir.y = dir.y * 2.9 + 2
+			dir.z = dir.z * 2.9
+			obj:set_velocity(dir)
 			obj:get_luaentity().dropped_by = dropper:get_player_name()
-			return itemstack
 		end
-
-	else
-		if core.add_item(pos, itemstack) then
-			return itemstack
-		end
+		return itemstack
 	end
 	-- If we reach this, adding the object to the
 	-- environment failed
@@ -461,7 +476,8 @@ function core.do_item_eat(hp_change, replace_with_item, itemstack, user, pointed
 				itemstack:add_item(replace_with_item)
 			else
 				local inv = user:get_inventory()
-				if inv:room_for_item("main", {name=replace_with_item}) then
+				-- Check if inv is null, since non-players don't have one
+				if inv and inv:room_for_item("main", {name=replace_with_item}) then
 					inv:add_item("main", replace_with_item)
 				else
 					local pos = user:getpos()
@@ -476,7 +492,9 @@ end
 
 function core.item_eat(hp_change, replace_with_item)
 	return function(itemstack, user, pointed_thing)  -- closure
-		return core.do_item_eat(hp_change, replace_with_item, itemstack, user, pointed_thing)
+		if user then
+			return core.do_item_eat(hp_change, replace_with_item, itemstack, user, pointed_thing)
+		end
 	end
 end
 
@@ -493,63 +511,75 @@ end
 
 function core.handle_node_drops(pos, drops, digger)
 	-- Add dropped items to object's inventory
-	if digger:get_inventory() then
-		local _, dropped_item
-		for _, dropped_item in ipairs(drops) do
-			local left = digger:get_inventory():add_item("main", dropped_item)
-			if not left:is_empty() then
-				local p = {
-					x = pos.x + math.random()/2-0.25,
-					y = pos.y + math.random()/2-0.25,
-					z = pos.z + math.random()/2-0.25,
-				}
-				core.add_item(p, left)
-			end
+	local inv = digger and digger:get_inventory()
+	local give_item
+	if inv then
+		give_item = function(item)
+			return inv:add_item("main", item)
+		end
+	else
+		give_item = function(item)
+			return item
+		end
+	end
+
+	for _, dropped_item in pairs(drops) do
+		local left = give_item(dropped_item)
+		if not left:is_empty() then
+			local p = {
+				x = pos.x + math.random()/2-0.25,
+				y = pos.y + math.random()/2-0.25,
+				z = pos.z + math.random()/2-0.25,
+			}
+			core.add_item(p, left)
 		end
 	end
 end
 
 function core.node_dig(pos, node, digger)
+	local diggername = user_name(digger)
+	local log = make_log(diggername)
 	local def = core.registered_nodes[node.name]
 	if def and (not def.diggable or
 			(def.can_dig and not def.can_dig(pos, digger))) then
-		core.log("info", digger:get_player_name() .. " tried to dig "
+		log("info", diggername .. " tried to dig "
 			.. node.name .. " which is not diggable "
 			.. core.pos_to_string(pos))
 		return
 	end
 
-	if core.is_protected(pos, digger:get_player_name()) and
-			not minetest.check_player_privs(digger, "protection_bypass") then
-		core.log("action", digger:get_player_name()
+	if is_protected(pos, diggername) then
+		log("action", diggername
 				.. " tried to dig " .. node.name
 				.. " at protected position "
 				.. core.pos_to_string(pos))
-		core.record_protection_violation(pos, digger:get_player_name())
+		core.record_protection_violation(pos, diggername)
 		return
 	end
 
-	core.log('action', digger:get_player_name() .. " digs "
+	log('action', diggername .. " digs "
 		.. node.name .. " at " .. core.pos_to_string(pos))
 
-	local wielded = digger:get_wielded_item()
-	local drops = core.get_node_drops(node, wielded:get_name())
+	local wielded = digger and digger:get_wielded_item()
+	local drops = core.get_node_drops(node, wielded and wielded:get_name())
 
-	local wdef = wielded:get_definition()
-	local tp = wielded:get_tool_capabilities()
-	local dp = core.get_dig_params(def and def.groups, tp)
-	if wdef and wdef.after_use then
-		wielded = wdef.after_use(wielded, digger, node, dp) or wielded
-	else
-		-- Wear out tool
-		if not core.settings:get_bool("creative_mode") then
-			wielded:add_wear(dp.wear)
-			if wielded:get_count() == 0 and wdef.sound and wdef.sound.breaks then
-				core.sound_play(wdef.sound.breaks, {pos = pos, gain = 0.5})
+	if wielded then
+		local wdef = wielded:get_definition()
+		local tp = wielded:get_tool_capabilities()
+		local dp = core.get_dig_params(def and def.groups, tp)
+		if wdef and wdef.after_use then
+			wielded = wdef.after_use(wielded, digger, node, dp) or wielded
+		else
+			-- Wear out tool
+			if not core.settings:get_bool("creative_mode") then
+				wielded:add_wear(dp.wear)
+				if wielded:get_count() == 0 and wdef.sound and wdef.sound.breaks then
+					core.sound_play(wdef.sound.breaks, {pos = pos, gain = 0.5})
+				end
 			end
 		end
+		digger:set_wielded_item(wielded)
 	end
-	digger:set_wielded_item(wielded)
 
 	-- Handle drops
 	core.handle_node_drops(pos, drops, digger)

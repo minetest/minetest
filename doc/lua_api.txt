@@ -2287,6 +2287,7 @@ Call these functions only at load time!
 * `minetest.register_on_placenode(func(pos, newnode, placer, oldnode, itemstack, pointed_thing))`
     * Called when a node has been placed
     * If return `true` no item is taken from `itemstack`
+    * `placer` may be any valid ObjectRef or nil.
     * **Not recommended**; use `on_construct` or `after_place_node` in node definition
       whenever possible
 * `minetest.register_on_dignode(func(pos, oldnode, digger))`
@@ -2992,6 +2993,7 @@ These functions return the leftover itemstack.
     * Returns true, if player `name` shouldn't be abled to dig at `pos` or do other
       actions, defineable by mods, due to some mod-defined ownership-like concept.
       Returns false or nil, if the player is allowed to do such actions.
+    * `name` will be "" for non-players or unknown players.
     * This function should be overridden by protection mods and should be used to
       check if a player can interact at a position.
     * This function should call the old version of itself if the position is not
@@ -4276,6 +4278,7 @@ Definition tables
         ^ Called after constructing node when node was placed using
           minetest.item_place_node / minetest.place_node
         ^ If return true no item is taken from itemstack
+	^ `placer` may be any valid ObjectRef or nil
         ^ default: nil ]]
         after_dig_node = func(pos, oldnode, oldmetadata, digger), --[[
         ^ oldmetadata is in table format
