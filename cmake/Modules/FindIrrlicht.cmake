@@ -42,12 +42,14 @@ else()
 		PATHS
 		/usr/local/include/irrlicht
 		/usr/include/irrlicht
+		/system/develop/headers/irrlicht #Haiku
 	)
 
 	find_library(IRRLICHT_LIBRARY NAMES libIrrlicht.so libIrrlicht.a Irrlicht
 		PATHS
 		/usr/local/lib
 		/usr/lib
+		/system/develop/lib # Haiku
 	)
 endif()
 
