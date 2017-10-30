@@ -93,6 +93,9 @@ private:
 	// get_version()
 	static int l_get_version(lua_State *L);
 
+	// sha1(string, raw)
+	static int l_sha1(lua_State *L);
+
 public:
 	static void Initialize(lua_State *L, int top);
 	static void InitializeAsync(lua_State *L, int top);
