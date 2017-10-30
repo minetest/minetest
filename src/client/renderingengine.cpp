@@ -34,7 +34,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "inputhandler.h"
 #include "gettext.h"
 
-#if !defined(_WIN32) && !defined(__APPLE__) && !defined(__ANDROID__) && !defined(SERVER)
+#if !defined(_WIN32) && !defined(__APPLE__) && !defined(__ANDROID__) && \
+		!defined(SERVER) && !defined(__HAIKU__)
 #define XORG_USED
 #endif
 #ifdef XORG_USED

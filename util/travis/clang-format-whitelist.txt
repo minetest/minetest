@@ -16,6 +16,7 @@ src/clientiface.cpp
 src/clientiface.h
 src/client/joystick_controller.cpp
 src/client/joystick_controller.h
+src/client/renderingengine.cpp
 src/clientmap.cpp
 src/clientmap.h
 src/clientmedia.cpp
