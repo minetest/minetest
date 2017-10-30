@@ -628,6 +628,9 @@ Minetest namespace reference
   version entirely. To check for the presence of engine features, test
   whether the functions exported by the wanted features exist. For example:
   `if minetest.nodeupdate then ... end`.
+* `minetest.sha1(data, [raw])`: returns the sha1 hash of data
+    * `data`: string of data to hash
+    * `raw`: return raw bytes instead of hex digits, default: false
 
 ### Logging
 * `minetest.debug(...)`
