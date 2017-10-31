@@ -31,6 +31,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "minimap.h"
 #include "clientmap.h"
 #include "renderingengine.h"
+#include "render/core.h"
+#include "render/factory.h"
 #include "inputhandler.h"
 #include "gettext.h"
 
@@ -102,28 +104,28 @@ RenderingEngine::RenderingEngine(IEventReceiver *receiver)
 #endif
 
 	m_device = createDeviceEx(params);
+	driver = m_device->getVideoDriver();
+
 	s_singleton = this;
 }
 
 RenderingEngine::~RenderingEngine()
 {
+	core.reset();
 	m_device->drop();
 	s_singleton = nullptr;
 }
 
 v2u32 RenderingEngine::getWindowSize() const
 {
+	if (core)
+		return core->getVirtualSize();
 	return m_device->getVideoDriver()->getScreenSize();
 }
 
 void RenderingEngine::setResizable(bool resize)
 {
 	m_device->setResizable(resize);
-}
-
-video::IVideoDriver *RenderingEngine::getVideoDriver()
-{
-	return m_device->getVideoDriver();
 }
 
 bool RenderingEngine::print_video_modes()
@@ -213,11 +215,10 @@ bool RenderingEngine::setWindowIcon()
 							       "-xorg-icon-128.png");
 #endif
 #elif defined(_WIN32)
-	const video::SExposedVideoData exposedData =
-			m_device->getVideoDriver()->getExposedVideoData();
+	const video::SExposedVideoData exposedData = driver->getExposedVideoData();
 	HWND hWnd; // Window handle
 
-	switch (m_device->getVideoDriver()->getDriverType()) {
+	switch (driver->getDriverType()) {
 	case video::EDT_DIRECT3D8:
 		hWnd = reinterpret_cast<HWND>(exposedData.D3D8.HWnd);
 		break;
@@ -253,14 +254,12 @@ bool RenderingEngine::setXorgWindowIconFromPath(const std::string &icon_file)
 {
 #ifdef XORG_USED
 
-	video::IVideoDriver *v_driver = m_device->getVideoDriver();
-
 	video::IImageLoader *image_loader = NULL;
-	u32 cnt = v_driver->getImageLoaderCount();
+	u32 cnt = driver->getImageLoaderCount();
 	for (u32 i = 0; i < cnt; i++) {
-		if (v_driver->getImageLoader(i)->isALoadableFileExtension(
+		if (driver->getImageLoader(i)->isALoadableFileExtension(
 				    icon_file.c_str())) {
-			image_loader = v_driver->getImageLoader(i);
+			image_loader = driver->getImageLoader(i);
 			break;
 		}
 	}
@@ -313,7 +312,7 @@ bool RenderingEngine::setXorgWindowIconFromPath(const std::string &icon_file)
 	img->drop();
 	icon_f->drop();
 
-	const video::SExposedVideoData &video_data = v_driver->getExposedVideoData();
+	const video::SExposedVideoData &video_data = driver->getExposedVideoData();
 
 	Display *x11_dpl = (Display *)video_data.OpenGLLinux.X11Display;
 
@@ -442,558 +441,22 @@ std::vector<irr::video::E_DRIVER_TYPE> RenderingEngine::getSupportedVideoDrivers
 	return drivers;
 }
 
-void RenderingEngine::_draw_scene(Camera *camera, Client *client, LocalPlayer *player,
-		Hud *hud, Minimap *mapper, gui::IGUIEnvironment *guienv,
-		const v2u32 &screensize, const video::SColor &skycolor, bool show_hud,
-		bool show_minimap)
+void RenderingEngine::_initialize(Client *client, Hud *hud)
 {
-	bool draw_wield_tool =
-			(show_hud && (player->hud_flags & HUD_FLAG_WIELDITEM_VISIBLE) &&
-					camera->getCameraMode() < CAMERA_MODE_THIRD);
-
-	bool draw_crosshair = ((player->hud_flags & HUD_FLAG_CROSSHAIR_VISIBLE) &&
-			       (camera->getCameraMode() != CAMERA_MODE_THIRD_FRONT));
-
-#ifdef HAVE_TOUCHSCREENGUI
-	try {
-		draw_crosshair = !g_settings->getBool("touchtarget");
-	} catch (SettingNotFoundException) {
-	}
-#endif
-
 	const std::string &draw_mode = g_settings->get("3d_mode");
-
-	if (draw_mode == "anaglyph") {
-		draw_anaglyph_3d_mode(
-				camera, show_hud, hud, draw_wield_tool, client, guienv);
-		draw_crosshair = false;
-	} else if (draw_mode == "interlaced") {
-		draw_interlaced_3d_mode(camera, show_hud, hud, screensize,
-				draw_wield_tool, client, guienv, skycolor);
-		draw_crosshair = false;
-	} else if (draw_mode == "sidebyside") {
-		draw_sidebyside_3d_mode(camera, show_hud, hud, screensize,
-				draw_wield_tool, client, guienv, skycolor);
-		show_hud = false;
-	} else if (draw_mode == "topbottom") {
-		draw_top_bottom_3d_mode(camera, show_hud, hud, screensize,
-				draw_wield_tool, client, guienv, skycolor);
-		show_hud = false;
-	} else if (draw_mode == "pageflip") {
-		draw_pageflip_3d_mode(camera, show_hud, hud, screensize, draw_wield_tool,
-				client, guienv, skycolor);
-		draw_crosshair = false;
-		show_hud = false;
-	} else {
-		draw_plain(camera, show_hud, hud, screensize, draw_wield_tool, client,
-				guienv, skycolor);
-	}
-
-	/*
-		Post effects
-	*/
-	client->getEnv().getClientMap().renderPostFx(camera->getCameraMode());
-
-	// TODO how to make those 3d too
-	if (show_hud) {
-		if (draw_crosshair)
-			hud->drawCrosshair();
-
-		hud->drawHotbar(client->getPlayerItem());
-		hud->drawLuaElements(camera->getOffset());
-		camera->drawNametags();
-
-		if (mapper && show_minimap)
-			mapper->drawMinimap();
-	}
-
-	guienv->drawAll();
+	core.reset(createRenderingCore(draw_mode, m_device, client, hud));
+	core->initialize();
 }
 
-void RenderingEngine::draw_anaglyph_3d_mode(Camera *camera, bool show_hud, Hud *hud,
-		bool draw_wield_tool, Client *client, gui::IGUIEnvironment *guienv)
+void RenderingEngine::_finalize()
 {
-
-	/* preserve old setup*/
-	irr::core::vector3df oldPosition = camera->getCameraNode()->getPosition();
-	irr::core::vector3df oldTarget = camera->getCameraNode()->getTarget();
-
-	irr::core::matrix4 startMatrix =
-			camera->getCameraNode()->getAbsoluteTransformation();
-	irr::core::vector3df focusPoint =
-			(camera->getCameraNode()->getTarget() -
-					camera->getCameraNode()->getAbsolutePosition())
-					.setLength(1) +
-			camera->getCameraNode()->getAbsolutePosition();
-
-	// Left eye...
-	irr::core::vector3df leftEye;
-	irr::core::matrix4 leftMove;
-	leftMove.setTranslation(irr::core::vector3df(
-			-g_settings->getFloat("3d_paralax_strength"), 0.0f, 0.0f));
-	leftEye = (startMatrix * leftMove).getTranslation();
-
-	// clear the depth buffer, and color
-	getVideoDriver()->beginScene(true, true, irr::video::SColor(0, 200, 200, 255));
-	getVideoDriver()->getOverrideMaterial().Material.ColorMask = irr::video::ECP_RED;
-	getVideoDriver()->getOverrideMaterial().EnableFlags = irr::video::EMF_COLOR_MASK;
-	getVideoDriver()->getOverrideMaterial().EnablePasses =
-			irr::scene::ESNRP_SKY_BOX + irr::scene::ESNRP_SOLID +
-			irr::scene::ESNRP_TRANSPARENT +
-			irr::scene::ESNRP_TRANSPARENT_EFFECT + irr::scene::ESNRP_SHADOW;
-	camera->getCameraNode()->setPosition(leftEye);
-	camera->getCameraNode()->setTarget(focusPoint);
-	get_scene_manager()->drawAll();
-	getVideoDriver()->setTransform(video::ETS_WORLD, core::IdentityMatrix);
-	if (show_hud) {
-		hud->drawSelectionMesh();
-		if (draw_wield_tool)
-			camera->drawWieldedTool(&leftMove);
-	}
-
-	guienv->drawAll();
-
-	// Right eye...
-	irr::core::vector3df rightEye;
-	irr::core::matrix4 rightMove;
-	rightMove.setTranslation(irr::core::vector3df(
-			g_settings->getFloat("3d_paralax_strength"), 0.0f, 0.0f));
-	rightEye = (startMatrix * rightMove).getTranslation();
-
-	// clear the depth buffer
-	getVideoDriver()->clearZBuffer();
-	getVideoDriver()->getOverrideMaterial().Material.ColorMask =
-			irr::video::ECP_GREEN + irr::video::ECP_BLUE;
-	getVideoDriver()->getOverrideMaterial().EnableFlags = irr::video::EMF_COLOR_MASK;
-	getVideoDriver()->getOverrideMaterial().EnablePasses =
-			irr::scene::ESNRP_SKY_BOX + irr::scene::ESNRP_SOLID +
-			irr::scene::ESNRP_TRANSPARENT +
-			irr::scene::ESNRP_TRANSPARENT_EFFECT + irr::scene::ESNRP_SHADOW;
-	camera->getCameraNode()->setPosition(rightEye);
-	camera->getCameraNode()->setTarget(focusPoint);
-	get_scene_manager()->drawAll();
-	getVideoDriver()->setTransform(video::ETS_WORLD, core::IdentityMatrix);
-	if (show_hud) {
-		hud->drawSelectionMesh();
-		if (draw_wield_tool)
-			camera->drawWieldedTool(&rightMove);
-	}
-
-	guienv->drawAll();
-
-	getVideoDriver()->getOverrideMaterial().Material.ColorMask = irr::video::ECP_ALL;
-	getVideoDriver()->getOverrideMaterial().EnableFlags = 0;
-	getVideoDriver()->getOverrideMaterial().EnablePasses = 0;
-	camera->getCameraNode()->setPosition(oldPosition);
-	camera->getCameraNode()->setTarget(oldTarget);
+	core.reset();
 }
 
-void RenderingEngine::init_texture(
-		const v2u32 &screensize, video::ITexture **texture, const char *name)
+void RenderingEngine::_draw_scene(video::SColor skycolor, bool show_hud,
+		bool show_minimap, bool draw_wield_tool, bool draw_crosshair)
 {
-	if (*texture) {
-		getVideoDriver()->removeTexture(*texture);
-	}
-	*texture = getVideoDriver()->addRenderTargetTexture(
-			core::dimension2d<u32>(screensize.X, screensize.Y), name,
-			irr::video::ECF_A8R8G8B8);
-}
-
-video::ITexture *RenderingEngine::draw_image(const v2u32 &screensize, parallax_sign psign,
-		const irr::core::matrix4 &startMatrix,
-		const irr::core::vector3df &focusPoint, bool show_hud, Camera *camera,
-		Hud *hud, bool draw_wield_tool, Client *client,
-		gui::IGUIEnvironment *guienv, const video::SColor &skycolor)
-{
-	static video::ITexture *images[2] = {NULL, NULL};
-	static v2u32 last_screensize = v2u32(0, 0);
-
-	video::ITexture *image = NULL;
-
-	if (screensize != last_screensize) {
-		init_texture(screensize, &images[1], "mt_drawimage_img1");
-		init_texture(screensize, &images[0], "mt_drawimage_img2");
-		last_screensize = screensize;
-	}
-
-	if (psign == RIGHT)
-		image = images[1];
-	else
-		image = images[0];
-
-	getVideoDriver()->setRenderTarget(image, true, true,
-			irr::video::SColor(255, skycolor.getRed(), skycolor.getGreen(),
-					skycolor.getBlue()));
-
-	irr::core::vector3df eye_pos;
-	irr::core::matrix4 movement;
-	movement.setTranslation(irr::core::vector3df(
-			(int)psign * g_settings->getFloat("3d_paralax_strength"), 0.0f,
-			0.0f));
-	eye_pos = (startMatrix * movement).getTranslation();
-
-	// clear the depth buffer
-	getVideoDriver()->clearZBuffer();
-	camera->getCameraNode()->setPosition(eye_pos);
-	camera->getCameraNode()->setTarget(focusPoint);
-	get_scene_manager()->drawAll();
-
-	getVideoDriver()->setTransform(video::ETS_WORLD, core::IdentityMatrix);
-
-	if (show_hud) {
-		hud->drawSelectionMesh();
-		if (draw_wield_tool)
-			camera->drawWieldedTool(&movement);
-	}
-
-	guienv->drawAll();
-
-	/* switch back to real renderer */
-	getVideoDriver()->setRenderTarget(0, true, true,
-			irr::video::SColor(0, skycolor.getRed(), skycolor.getGreen(),
-					skycolor.getBlue()));
-
-	return image;
-}
-
-video::ITexture *RenderingEngine::draw_hud(const v2u32 &screensize, bool show_hud,
-		Hud *hud, Client *client, bool draw_crosshair,
-		const video::SColor &skycolor, gui::IGUIEnvironment *guienv,
-		Camera *camera)
-{
-	static video::ITexture *image = nullptr;
-	init_texture(screensize, &image, "mt_drawimage_hud");
-	getVideoDriver()->setRenderTarget(
-			image, true, true, irr::video::SColor(255, 0, 0, 0));
-
-	if (show_hud) {
-		if (draw_crosshair)
-			hud->drawCrosshair();
-		hud->drawHotbar(client->getPlayerItem());
-		hud->drawLuaElements(camera->getOffset());
-		camera->drawNametags();
-		guienv->drawAll();
-	}
-
-	getVideoDriver()->setRenderTarget(0, true, true,
-			irr::video::SColor(0, skycolor.getRed(), skycolor.getGreen(),
-					skycolor.getBlue()));
-
-	return image;
-}
-
-void RenderingEngine::draw_interlaced_3d_mode(Camera *camera, bool show_hud, Hud *hud,
-		const v2u32 &screensize, bool draw_wield_tool, Client *client,
-		gui::IGUIEnvironment *guienv, const video::SColor &skycolor)
-{
-	/* save current info */
-	irr::core::vector3df oldPosition = camera->getCameraNode()->getPosition();
-	irr::core::vector3df oldTarget = camera->getCameraNode()->getTarget();
-	irr::core::matrix4 startMatrix =
-			camera->getCameraNode()->getAbsoluteTransformation();
-	irr::core::vector3df focusPoint =
-			(camera->getCameraNode()->getTarget() -
-					camera->getCameraNode()->getAbsolutePosition())
-					.setLength(1) +
-			camera->getCameraNode()->getAbsolutePosition();
-
-	/* create left view */
-	video::ITexture *left_image = draw_image(screensize, LEFT, startMatrix,
-			focusPoint, show_hud, camera, hud, draw_wield_tool, client,
-			guienv, skycolor);
-
-	// Right eye...
-	irr::core::vector3df rightEye;
-	irr::core::matrix4 rightMove;
-	rightMove.setTranslation(irr::core::vector3df(
-			g_settings->getFloat("3d_paralax_strength"), 0.0f, 0.0f));
-	rightEye = (startMatrix * rightMove).getTranslation();
-
-	// clear the depth buffer
-	getVideoDriver()->clearZBuffer();
-	camera->getCameraNode()->setPosition(rightEye);
-	camera->getCameraNode()->setTarget(focusPoint);
-	get_scene_manager()->drawAll();
-
-	getVideoDriver()->setTransform(video::ETS_WORLD, core::IdentityMatrix);
-
-	if (show_hud) {
-		hud->drawSelectionMesh();
-		if (draw_wield_tool)
-			camera->drawWieldedTool(&rightMove);
-	}
-	guienv->drawAll();
-
-	for (unsigned int i = 0; i < screensize.Y; i += 2) {
-#if (IRRLICHT_VERSION_MAJOR >= 1) && (IRRLICHT_VERSION_MINOR >= 8)
-		getVideoDriver()->draw2DImage(left_image,
-				irr::core::position2d<s32>(0, i),
-#else
-		getVideoDriver()->draw2DImage(left_image,
-				irr::core::position2d<s32>(0, screensize.Y - i),
-#endif
-				irr::core::rect<s32>(0, i, screensize.X, i + 1), 0,
-				irr::video::SColor(255, 255, 255, 255), false);
-	}
-
-	/* cleanup */
-	camera->getCameraNode()->setPosition(oldPosition);
-	camera->getCameraNode()->setTarget(oldTarget);
-}
-
-void RenderingEngine::draw_sidebyside_3d_mode(Camera *camera, bool show_hud, Hud *hud,
-		const v2u32 &screensize, bool draw_wield_tool, Client *client,
-		gui::IGUIEnvironment *guienv, const video::SColor &skycolor)
-{
-	/* save current info */
-	irr::core::vector3df oldPosition = camera->getCameraNode()->getPosition();
-	irr::core::vector3df oldTarget = camera->getCameraNode()->getTarget();
-	irr::core::matrix4 startMatrix =
-			camera->getCameraNode()->getAbsoluteTransformation();
-	irr::core::vector3df focusPoint =
-			(camera->getCameraNode()->getTarget() -
-					camera->getCameraNode()->getAbsolutePosition())
-					.setLength(1) +
-			camera->getCameraNode()->getAbsolutePosition();
-
-	/* create left view */
-	video::ITexture *left_image = draw_image(screensize, LEFT, startMatrix,
-			focusPoint, show_hud, camera, hud, draw_wield_tool, client,
-			guienv, skycolor);
-
-	/* create right view */
-	video::ITexture *right_image = draw_image(screensize, RIGHT, startMatrix,
-			focusPoint, show_hud, camera, hud, draw_wield_tool, client,
-			guienv, skycolor);
-
-	/* create hud overlay */
-	video::ITexture *hudtexture = draw_hud(screensize, show_hud, hud, client, false,
-			skycolor, guienv, camera);
-	getVideoDriver()->makeColorKeyTexture(
-			hudtexture, irr::video::SColor(255, 0, 0, 0));
-	// makeColorKeyTexture mirrors texture so we do it twice to get it right again
-	getVideoDriver()->makeColorKeyTexture(
-			hudtexture, irr::video::SColor(255, 0, 0, 0));
-
-	draw2DImageFilterScaled(getVideoDriver(), left_image,
-			irr::core::rect<s32>(0, 0, screensize.X / 2, screensize.Y),
-			irr::core::rect<s32>(0, 0, screensize.X, screensize.Y), 0, 0,
-			false);
-
-	draw2DImageFilterScaled(getVideoDriver(), hudtexture,
-			irr::core::rect<s32>(0, 0, screensize.X / 2, screensize.Y),
-			irr::core::rect<s32>(0, 0, screensize.X, screensize.Y), 0, 0,
-			true);
-
-	draw2DImageFilterScaled(getVideoDriver(), right_image,
-			irr::core::rect<s32>(
-					screensize.X / 2, 0, screensize.X, screensize.Y),
-			irr::core::rect<s32>(0, 0, screensize.X, screensize.Y), 0, 0,
-			false);
-
-	draw2DImageFilterScaled(getVideoDriver(), hudtexture,
-			irr::core::rect<s32>(
-					screensize.X / 2, 0, screensize.X, screensize.Y),
-			irr::core::rect<s32>(0, 0, screensize.X, screensize.Y), 0, 0,
-			true);
-
-	left_image = nullptr;
-	right_image = nullptr;
-
-	/* cleanup */
-	camera->getCameraNode()->setPosition(oldPosition);
-	camera->getCameraNode()->setTarget(oldTarget);
-}
-
-void RenderingEngine::draw_top_bottom_3d_mode(Camera *camera, bool show_hud, Hud *hud,
-		const v2u32 &screensize, bool draw_wield_tool, Client *client,
-		gui::IGUIEnvironment *guienv, const video::SColor &skycolor)
-{
-	/* save current info */
-	irr::core::vector3df oldPosition = camera->getCameraNode()->getPosition();
-	irr::core::vector3df oldTarget = camera->getCameraNode()->getTarget();
-	irr::core::matrix4 startMatrix =
-			camera->getCameraNode()->getAbsoluteTransformation();
-	irr::core::vector3df focusPoint =
-			(camera->getCameraNode()->getTarget() -
-					camera->getCameraNode()->getAbsolutePosition())
-					.setLength(1) +
-			camera->getCameraNode()->getAbsolutePosition();
-
-	/* create left view */
-	video::ITexture *left_image = draw_image(screensize, LEFT, startMatrix,
-			focusPoint, show_hud, camera, hud, draw_wield_tool, client,
-			guienv, skycolor);
-
-	/* create right view */
-	video::ITexture *right_image = draw_image(screensize, RIGHT, startMatrix,
-			focusPoint, show_hud, camera, hud, draw_wield_tool, client,
-			guienv, skycolor);
-
-	/* create hud overlay */
-	video::ITexture *hudtexture = draw_hud(screensize, show_hud, hud, client, false,
-			skycolor, guienv, camera);
-	getVideoDriver()->makeColorKeyTexture(
-			hudtexture, irr::video::SColor(255, 0, 0, 0));
-	// makeColorKeyTexture mirrors texture so we do it twice to get it right again
-	getVideoDriver()->makeColorKeyTexture(
-			hudtexture, irr::video::SColor(255, 0, 0, 0));
-
-	draw2DImageFilterScaled(getVideoDriver(), left_image,
-			irr::core::rect<s32>(0, 0, screensize.X, screensize.Y / 2),
-			irr::core::rect<s32>(0, 0, screensize.X, screensize.Y), 0, 0,
-			false);
-
-	draw2DImageFilterScaled(getVideoDriver(), hudtexture,
-			irr::core::rect<s32>(0, 0, screensize.X, screensize.Y / 2),
-			irr::core::rect<s32>(0, 0, screensize.X, screensize.Y), 0, 0,
-			true);
-
-	draw2DImageFilterScaled(getVideoDriver(), right_image,
-			irr::core::rect<s32>(
-					0, screensize.Y / 2, screensize.X, screensize.Y),
-			irr::core::rect<s32>(0, 0, screensize.X, screensize.Y), 0, 0,
-			false);
-
-	draw2DImageFilterScaled(getVideoDriver(), hudtexture,
-			irr::core::rect<s32>(
-					0, screensize.Y / 2, screensize.X, screensize.Y),
-			irr::core::rect<s32>(0, 0, screensize.X, screensize.Y), 0, 0,
-			true);
-
-	left_image = NULL;
-	right_image = NULL;
-
-	/* cleanup */
-	camera->getCameraNode()->setPosition(oldPosition);
-	camera->getCameraNode()->setTarget(oldTarget);
-}
-
-void RenderingEngine::draw_pageflip_3d_mode(Camera *camera, bool show_hud, Hud *hud,
-		const v2u32 &screensize, bool draw_wield_tool, Client *client,
-		gui::IGUIEnvironment *guienv, const video::SColor &skycolor)
-{
-#if IRRLICHT_VERSION_MAJOR == 1 && IRRLICHT_VERSION_MINOR > 8
-	errorstream << "Pageflip 3D mode is not supported"
-		    << " with your Irrlicht version!" << std::endl;
-#else
-	/* preserve old setup*/
-	irr::core::vector3df oldPosition = camera->getCameraNode()->getPosition();
-	irr::core::vector3df oldTarget = camera->getCameraNode()->getTarget();
-
-	irr::core::matrix4 startMatrix =
-			camera->getCameraNode()->getAbsoluteTransformation();
-	irr::core::vector3df focusPoint =
-			(camera->getCameraNode()->getTarget() -
-					camera->getCameraNode()->getAbsolutePosition())
-					.setLength(1) +
-			camera->getCameraNode()->getAbsolutePosition();
-
-	// Left eye...
-	getVideoDriver()->setRenderTarget(irr::video::ERT_STEREO_LEFT_BUFFER);
-
-	irr::core::vector3df leftEye;
-	irr::core::matrix4 leftMove;
-	leftMove.setTranslation(irr::core::vector3df(
-			-g_settings->getFloat("3d_paralax_strength"), 0.0f, 0.0f));
-	leftEye = (startMatrix * leftMove).getTranslation();
-
-	// clear the depth buffer, and color
-	getVideoDriver()->beginScene(true, true, irr::video::SColor(200, 200, 200, 255));
-	camera->getCameraNode()->setPosition(leftEye);
-	camera->getCameraNode()->setTarget(focusPoint);
-	get_scene_manager()->drawAll();
-	getVideoDriver()->setTransform(video::ETS_WORLD, core::IdentityMatrix);
-
-	if (show_hud) {
-		hud->drawSelectionMesh();
-		if (draw_wield_tool)
-			camera->drawWieldedTool(&leftMove);
-		hud->drawHotbar(client->getPlayerItem());
-		hud->drawLuaElements(camera->getOffset());
-		camera->drawNametags();
-	}
-
-	guienv->drawAll();
-
-	// Right eye...
-	getVideoDriver()->setRenderTarget(irr::video::ERT_STEREO_RIGHT_BUFFER);
-
-	irr::core::vector3df rightEye;
-	irr::core::matrix4 rightMove;
-	rightMove.setTranslation(irr::core::vector3df(
-			g_settings->getFloat("3d_paralax_strength"), 0.0f, 0.0f));
-	rightEye = (startMatrix * rightMove).getTranslation();
-
-	// clear the depth buffer, and color
-	getVideoDriver()->beginScene(true, true, irr::video::SColor(200, 200, 200, 255));
-	camera->getCameraNode()->setPosition(rightEye);
-	camera->getCameraNode()->setTarget(focusPoint);
-	get_scene_manager()->drawAll();
-	getVideoDriver()->setTransform(video::ETS_WORLD, core::IdentityMatrix);
-
-	if (show_hud) {
-		hud->drawSelectionMesh();
-		if (draw_wield_tool)
-			camera->drawWieldedTool(&rightMove);
-		hud->drawHotbar(client->getPlayerItem());
-		hud->drawLuaElements(camera->getOffset());
-		camera->drawNametags();
-	}
-
-	guienv->drawAll();
-
-	camera->getCameraNode()->setPosition(oldPosition);
-	camera->getCameraNode()->setTarget(oldTarget);
-#endif
-}
-
-// returns (size / coef), rounded upwards
-inline int scaledown(int coef, int size)
-{
-	return (size + coef - 1) / coef;
-}
-
-void RenderingEngine::draw_plain(Camera *camera, bool show_hud, Hud *hud,
-		const v2u32 &screensize, bool draw_wield_tool, Client *client,
-		gui::IGUIEnvironment *guienv, const video::SColor &skycolor)
-{
-	// Undersampling-specific stuff
-	static video::ITexture *image = NULL;
-	static v2u32 last_pixelated_size = v2u32(0, 0);
-	static thread_local int undersampling = g_settings->getU16("undersampling");
-	v2u32 pixelated_size;
-	v2u32 dest_size;
-	if (undersampling > 0) {
-		pixelated_size = v2u32(scaledown(undersampling, screensize.X),
-				scaledown(undersampling, screensize.Y));
-		dest_size = v2u32(undersampling * pixelated_size.X,
-				undersampling * pixelated_size.Y);
-		if (pixelated_size != last_pixelated_size) {
-			init_texture(pixelated_size, &image, "mt_drawimage_img1");
-			last_pixelated_size = pixelated_size;
-		}
-		getVideoDriver()->setRenderTarget(image, true, true, skycolor);
-	}
-
-	// Render
-	get_scene_manager()->drawAll();
-	getVideoDriver()->setTransform(video::ETS_WORLD, core::IdentityMatrix);
-	if (show_hud) {
-		hud->drawSelectionMesh();
-		if (draw_wield_tool) {
-			camera->drawWieldedTool();
-		}
-	}
-
-	// Upscale lowres render
-	if (undersampling > 0) {
-		getVideoDriver()->setRenderTarget(0, true, true);
-		getVideoDriver()->draw2DImage(image,
-				irr::core::rect<s32>(0, 0, dest_size.X, dest_size.Y),
-				irr::core::rect<s32>(0, 0, pixelated_size.X,
-						pixelated_size.Y));
-	}
+	core->draw(skycolor, show_hud, show_minimap, draw_wield_tool, draw_crosshair);
 }
 
 const char *RenderingEngine::getVideoDriverName(irr::video::E_DRIVER_TYPE type)

@@ -608,6 +608,7 @@ fall_bobbing_amount (Fall bobbing factor) float 0.0
 #    -    topbottom: split screen top/bottom.
 #    -    sidebyside: split screen side by side.
 #    -    pageflip: quadbuffer based 3d.
+#    Note that the interlaced mode requires shaders to be enabled.
 3d_mode (3D mode) enum none none,anaglyph,interlaced,topbottom,sidebyside,pageflip
 
 #    In-game chat console height, between 0.1 (10%) and 1.0 (100%).
