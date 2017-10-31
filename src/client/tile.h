@@ -331,3 +331,5 @@ struct TileSpec
 	//! The first is base texture, the second is overlay.
 	TileLayer layers[MAX_TILE_LAYERS];
 };
+
+const std::vector<std::string> &getTextureDirs();
