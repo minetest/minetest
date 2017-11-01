@@ -210,9 +210,29 @@ core.register_entity(":__builtin:item", {
 		end
 	end,
 
-	on_punch = function(self, hitter)
-		local inv = hitter:get_inventory()
-		if inv and self.itemstring ~= "" then
+	on_punch = function(self, hitter, ...)
+		if self.itemstring ~= "" then
+			-- Call the on_pickup callback of item definition.
+			local item_def = core.registered_items[self.itemstring]
+			if item_def and item_def.on_pickup and
+					not item_def.on_pickup(self, hitter, ...) then
+				return
+			end
+			-- Call every function registered on pickup.
+			local success
+			for i = 1, #core.registered_on_item_pickups do
+				success = core.registered_on_item_pickups[i](self, hitter, ...)
+				if success then
+					break
+				elseif success == false then
+					return
+				end
+			end
+			-- Do the default case.
+			local inv = hitter:get_inventory()
+			if not inv then
+				return
+			end
 			local left = inv:add_item("main", self.itemstring)
 			if left and not left:is_empty() then
 				self:set_item(left)
