@@ -119,7 +119,7 @@ public:
 	virtual void affect(u32 now, irr::scene::SParticle *particlearray, u32 count)
 	{
 		for (u32 i = 0; i < count; ++i) {
-			v3f pos = particlearray[i].pos -
+			v3f pos = particlearray[i].pos +
 				intToFloat(env->getCameraOffset(), BS);
 			color = getParticleLightColor(env, pos / BS,
 				gamedef, glow, base_color);
