@@ -718,7 +718,8 @@ v3s16 LocalPlayer::getLightPosition() const
 
 v3f LocalPlayer::getEyeOffset() const
 {
-	float eye_height = camera_barely_in_ceiling ? 1.5f : 1.625f;
+	float eye_height = camera_barely_in_ceiling ?
+		m_eye_height - 0.125f : m_eye_height;
 	return v3f(0, BS * eye_height, 0);
 }
 
