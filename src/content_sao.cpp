@@ -809,6 +809,7 @@ PlayerSAO::PlayerSAO(ServerEnvironment *env_, RemotePlayer *player_, session_t p
 	m_prop.colors.clear();
 	m_prop.colors.emplace_back(255, 255, 255, 255);
 	m_prop.spritediv = v2s16(1,1);
+	m_prop.eye_height = 1.625f;
 	// end of default appearance
 	m_prop.is_visible = true;
 	m_prop.makes_footstep_sound = true;
@@ -834,7 +835,7 @@ void PlayerSAO::finalize(RemotePlayer *player, const std::set<std::string> &priv
 
 v3f PlayerSAO::getEyeOffset() const
 {
-	return v3f(0, BS * 1.625f, 0);
+	return v3f(0, BS * m_prop.eye_height, 0);
 }
 
 std::string PlayerSAO::getDescription()

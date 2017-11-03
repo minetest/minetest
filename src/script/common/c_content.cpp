@@ -266,6 +266,7 @@ void read_object_properties(lua_State *L, int index,
 	if (getfloatfield(L, -1, "stepheight", prop->stepheight))
 		prop->stepheight *= BS;
 	getboolfield(L, -1, "can_zoom", prop->can_zoom);
+	getfloatfield(L, -1, "eye_height", prop->eye_height);
 
 	getfloatfield(L, -1, "automatic_rotate", prop->automatic_rotate);
 	lua_getfield(L, -1, "automatic_face_movement_dir");
@@ -359,7 +360,8 @@ void push_object_properties(lua_State *L, ObjectProperties *prop)
 	lua_setfield(L, -2, "stepheight");
 	lua_pushboolean(L, prop->can_zoom);
 	lua_setfield(L, -2, "can_zoom");
-
+	lua_pushnumber(L, prop->eye_height);
+	lua_setfield(L, -2, "eye_height");
 	lua_pushnumber(L, prop->automatic_rotate);
 	lua_setfield(L, -2, "automatic_rotate");
 	if (prop->automatic_face_movement_dir)

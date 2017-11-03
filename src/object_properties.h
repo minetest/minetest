@@ -59,6 +59,7 @@ struct ObjectProperties
 	//! For dropped items, this contains item information.
 	std::string wield_item;
 	bool static_save = true;
+	float eye_height = 1.625f;
 
 	ObjectProperties();
 	std::string dump();
