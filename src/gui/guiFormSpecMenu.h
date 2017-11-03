@@ -406,7 +406,7 @@ protected:
 	ItemSpec *m_selected_item = nullptr;
 	u16 m_selected_amount = 0;
 	bool m_selected_dragging = false;
-	bool m_selected_black_magic = false;
+	ItemStack m_selected_swap;
 
 	v2s32 m_pointer;
 	v2s32 m_old_pointer;  // Mouse position after previous mouse event

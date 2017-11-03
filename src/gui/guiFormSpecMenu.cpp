@@ -2781,10 +2781,14 @@ ItemStack GUIFormSpecMenu::verifySelectedItem()
 				if(list && (u32) m_selected_item->i < list->getSize())
 				{
 					ItemStack stack = list->getItem(m_selected_item->i);
-					if (!m_selected_black_magic)
+					if (!m_selected_swap.empty()) {
+						if (m_selected_swap.name == stack.name &&
+								m_selected_swap.count == stack.count)
+							m_selected_swap.clear();
+					} else {
 						m_selected_amount = std::min(m_selected_amount, stack.count);
+					}
 
-					m_selected_black_magic = false;
 					if (!stack.empty())
 						return stack;
 				}
@@ -3568,13 +3572,22 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 			// Check how many items can be moved
 			move_amount = stack_from.count = MYMIN(move_amount, stack_from.count);
 			ItemStack leftover = stack_to.addItem(stack_from, m_client->idef());
-			bool swap_items = false;
+			bool move = true;
 			// If source stack cannot be added to destination stack at all,
 			// they are swapped
 			if (leftover.count == stack_from.count &&
 					leftover.name == stack_from.name) {
 
-				swap_items = true;
+				if (m_selected_swap.empty()) {
+					m_selected_amount = stack_to.count;
+					m_selected_dragging = false;
+
+					// WARNING: BLACK MAGIC, BUT IN A REDUCED SET
+					// Skip next validation checks due async inventory calls
+					m_selected_swap = stack_to;
+				} else {
+					move = false;
+				}
 			}
 			// Source stack goes fully into destination stack
 			else if (leftover.empty()) {
@@ -3586,29 +3599,17 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 				m_selected_amount -= move_amount;
 			}
 
-			infostream << "Handing IAction::Move to manager" << std::endl;
-			IMoveAction *a = new IMoveAction();
-			a->count = move_amount;
-			a->from_inv = m_selected_item->inventoryloc;
-			a->from_list = m_selected_item->listname;
-			a->from_i = m_selected_item->i;
-			a->to_inv = s.inventoryloc;
-			a->to_list = s.listname;
-			a->to_i = s.i;
-			m_invmgr->inventoryAction(a);
-
-			if (swap_items) {
-				if (button == BET_RIGHT)
-					m_selected_amount = 1;
-				else if (button == BET_LEFT)
-					m_selected_amount = stack_to.count;
-				else
-					m_selected_amount = std::min<u16>(stack_to.count, 10);
-				m_selected_dragging = false;
-
-				// WARNING: BLACK MAGIC, BUT IN A REDUCED SET
-				// Skip next validation check due async inventory calls
-				m_selected_black_magic = true;
+			if (move) {
+				infostream << "Handing IAction::Move to manager" << std::endl;
+				IMoveAction *a = new IMoveAction();
+				a->count = move_amount;
+				a->from_inv = m_selected_item->inventoryloc;
+				a->from_list = m_selected_item->listname;
+				a->from_i = m_selected_item->i;
+				a->to_inv = s.inventoryloc;
+				a->to_list = s.listname;
+				a->to_i = s.i;
+				m_invmgr->inventoryAction(a);
 			}
 		} else if (shift_move_amount > 0) {
 			u32 mis = m_inventory_rings.size();
