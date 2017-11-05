@@ -1805,7 +1805,8 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 			 * mix high- and low-res textures, or for mods with least-common-denominator
 			 * textures that don't have the resources to offer high-res alternatives.
 			 */
-			s32 scaleto = g_settings->getS32("texture_min_size");
+			const bool filter = m_setting_trilinear_filter || m_setting_bilinear_filter;
+			const s32 scaleto = filter ? g_settings->getS32("texture_min_size") : 1;
 			if (scaleto > 1) {
 				const core::dimension2d<u32> dim = baseimg->getDimension();
 
