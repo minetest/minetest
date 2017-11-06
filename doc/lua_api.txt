@@ -4234,6 +4234,8 @@ Definition tables
     --  ^ For players only. Defaults to `minetest.PLAYER_MAX_BREATH_DEFAULT`
         can_zoom = true,
     --  ^ For players only. Enables the zoom feature. Defaults to true
+        eye_height = 1.625,
+    --  ^ For players only. Camera height above feet position in nodes. Defaults to 1.625
         physical = true,
         collide_with_objects = true, -- collide with other objects if physical = true
         weight = 5,
@@ -4261,15 +4263,16 @@ Definition tables
         backface_culling = true, -- false to disable backface_culling for model
         glow = 0,
     --  ^ Add this much extra lighting when calculating texture color.
-          value < 0 disables light's effect on texture color.
-          For faking self-lighting, UI style entities, or programmatic coloring in mods.
+    --    Value < 0 disables light's effect on texture color.
+    --    For faking self-lighting, UI style entities, or programmatic coloring in mods.
         nametag = "", -- by default empty, for players their name is shown if empty
         nametag_color = <color>, -- sets color of nametag as ColorSpec
         infotext = "", -- by default empty, text to be shown when pointed at object
         static_save = true,
-    --  ^ If false, never save this object statically. It will simply be deleted when the block gets unloaded.
-    --  ^ The get_staticdata() callback is never called then.
-    --  ^ Defaults to 'true'
+    --  ^ If false, never save this object statically. It will simply be deleted when the
+    --    block gets unloaded.
+    --    The get_staticdata() callback is never called then.
+    --    Defaults to 'true'
     }
 
 ### Entity definition (`register_entity`)
