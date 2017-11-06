@@ -1363,3 +1363,11 @@ void MapblockMeshGenerator::generate()
 		drawNode();
 	}
 }
+
+void MapblockMeshGenerator::renderSingle(content_t node)
+{
+	p = {0, 0, 0};
+	n = MapNode(node, 0xff, 0x00);
+	f = &nodedef->get(n);
+	drawNode();
+}

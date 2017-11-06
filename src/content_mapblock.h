@@ -145,4 +145,5 @@ public:
 public:
 	MapblockMeshGenerator(MeshMakeData *input, MeshCollector *output);
 	void generate();
+	void renderSingle(content_t node);
 };
