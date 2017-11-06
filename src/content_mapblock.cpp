@@ -725,7 +725,7 @@ void MapblockMeshGenerator::drawGlasslikeFramedNode()
 			v3s16 n2p = blockpos_nodes + p + g_26dirs[i];
 			MapNode n2 = data->m_vmanip.getNodeNoEx(n2p);
 			content_t n2c = n2.getContent();
-			if (n2c == current || n2c == CONTENT_IGNORE)
+			if (n2c == current)
 				nb[i] = 1;
 		}
 	}
