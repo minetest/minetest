@@ -25,6 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "itemdef.h"
 #include "nodedef.h"
 #include "mesh.h"
+#include "content_mapblock.h"
 #include "mapblock_mesh.h"
 #include "client/tile.h"
 #include "log.h"
@@ -531,30 +532,30 @@ void getItemMesh(Client *client, const ItemStack &item, ItemMesh *result)
 					break;
 				}
 				default: {
-					MeshMakeData mesh_make_data(client, false);
-					MapNode mesh_make_node(id, 255, 0);
-					mesh_make_data.fillSingleNode(&mesh_make_node);
-					MapBlockMesh mapblock_mesh(&mesh_make_data, v3s16(0, 0, 0));
-					mesh = cloneMesh(mapblock_mesh.getMesh());
-					translateMesh(mesh, v3f(-BS, -BS, -BS));
+					MeshMakeData mesh_make_data(client, false, false);
+					MeshCollector collector(false);
+					mesh_make_data.setSmoothLighting(false);
+					MapblockMeshGenerator gen(&mesh_make_data, &collector);
+					gen.renderSingle(id);
+					mesh = new scene::SMesh();
+					result->buffer_colors.clear();
+					for (u8 layer = 0; layer < MAX_TILE_LAYERS; layer++)
+						for (PreMeshBuffer &p : collector.prebuffers[layer]) {
+							if (p.layer.material_flags & MATERIAL_FLAG_ANIMATION)
+								p.layer.texture = (*p.layer.frames)[0].texture;
+							for (video::S3DVertex &v : p.vertices)
+								v.Color.setAlpha(255);
+							scene::SMeshBuffer *buf = new scene::SMeshBuffer();
+							buf->Material.setTexture(0, p.layer.texture);
+							p.layer.applyMaterialOptions(buf->Material);
+							mesh->addMeshBuffer(buf);
+							buf->append(&p.vertices[0], p.vertices.size(),
+									&p.indices[0], p.indices.size());
+							buf->drop();
+							result->buffer_colors.push_back(
+								ItemPartColor(p.layer.has_color, p.layer.color));
+						}
 					scaleMesh(mesh, v3f(0.12, 0.12, 0.12));
-
-					u32 mc = mesh->getMeshBufferCount();
-					for (u32 i = 0; i < mc; ++i) {
-						video::SMaterial &material1 =
-							mesh->getMeshBuffer(i)->getMaterial();
-						video::SMaterial &material2 =
-							mapblock_mesh.getMesh()->getMeshBuffer(i)->getMaterial();
-						material1.setTexture(0, material2.getTexture(0));
-						material1.setTexture(1, material2.getTexture(1));
-						material1.setTexture(2, material2.getTexture(2));
-						material1.setTexture(3, material2.getTexture(3));
-						material1.MaterialType = material2.MaterialType;
-					}
-					// add overlays (since getMesh() returns
-					// the base layer only)
-					postProcessNodeMesh(mesh, f, false, false, nullptr,
-						&result->buffer_colors, f.drawtype == NDT_NORMAL);
 				}
 			}
 		}
