@@ -311,6 +311,8 @@ void WieldMeshSceneNode::setItem(const ItemStack &item, Client *client)
 	const ContentFeatures &f = ndef->get(def.name);
 	content_t id = ndef->getId(def.name);
 
+	scene::SMesh *mesh = nullptr;
+
 	if (m_enable_shaders) {
 		u32 shader_id = shdrsrc->getShader("wielded_shader", TILE_MATERIAL_BASIC, NDT_NORMAL);
 		m_material_type = shdrsrc->getShaderInfo(shader_id).material;
@@ -335,7 +337,7 @@ void WieldMeshSceneNode::setItem(const ItemStack &item, Client *client)
 	if (def.type == ITEM_NODE) {
 		if (f.mesh_ptr[0]) {
 			// e.g. mesh nodes and nodeboxes
-			scene::SMesh *mesh = cloneMesh(f.mesh_ptr[0]);
+			mesh = cloneMesh(f.mesh_ptr[0]);
 			postProcessNodeMesh(mesh, f, m_enable_shaders, true,
 				&m_material_type, &m_colors);
 			changeToMesh(mesh);
@@ -372,19 +374,43 @@ void WieldMeshSceneNode::setItem(const ItemStack &item, Client *client)
 					break;
 				}
 				case NDT_NORMAL:
-				case NDT_ALLFACES: {
+				case NDT_ALLFACES:
+				case NDT_LIQUID:
+				case NDT_FLOWINGLIQUID: {
 					setCube(f, def.wield_scale);
 					break;
 				}
 				default: {
-					MeshMakeData mesh_make_data(client, false);
-					MapNode mesh_make_node(id, 255, 0);
-					mesh_make_data.fillSingleNode(&mesh_make_node);
-					MapBlockMesh mapblock_mesh(&mesh_make_data, v3s16(0, 0, 0));
-					scene::SMesh *mesh = cloneMesh(mapblock_mesh.getMesh());
-					translateMesh(mesh, v3f(-BS, -BS, -BS));
-					postProcessNodeMesh(mesh, f, m_enable_shaders, true,
-						&m_material_type, &m_colors);
+					MeshMakeData mesh_make_data(client, false, false);
+					MeshCollector collector(false);
+					mesh_make_data.setSmoothLighting(false);
+					MapblockMeshGenerator gen(&mesh_make_data, &collector);
+					gen.renderSingle(id);
+					mesh = new scene::SMesh();
+					for (u8 layer = 0; layer < MAX_TILE_LAYERS; layer++)
+						for (PreMeshBuffer &p : collector.prebuffers[layer]) {
+							if (p.layer.material_flags & MATERIAL_FLAG_ANIMATION) {
+								const FrameSpec &frame = (*p.layer.frames)[0];
+								p.layer.texture = frame.texture;
+								p.layer.normal_texture = frame.normal_texture;
+							}
+							for (video::S3DVertex &v : p.vertices)
+								v.Color.setAlpha(255);
+							scene::SMeshBuffer *buf = new scene::SMeshBuffer();
+							buf->Material.MaterialType = m_material_type;
+							buf->Material.setTexture(0, p.layer.texture);
+							if (m_enable_shaders) {
+								buf->Material.setTexture(1, p.layer.normal_texture);
+								buf->Material.setTexture(2, p.layer.flags_texture);
+							}
+							p.layer.applyMaterialOptions(buf->Material);
+							mesh->addMeshBuffer(buf);
+							buf->append(&p.vertices[0], p.vertices.size(),
+									&p.indices[0], p.indices.size());
+							buf->drop();
+							m_colors.push_back(
+								ItemPartColor(p.layer.has_color, p.layer.color));
+						}
 					changeToMesh(mesh);
 					mesh->drop();
 					m_meshnode->setScale(
