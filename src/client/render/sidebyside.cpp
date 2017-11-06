@@ -23,8 +23,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "hud.h"
 
 RenderingCoreSideBySide::RenderingCoreSideBySide(
-		IrrlichtDevice *_device, Client *_client, Hud *_hud, bool _horizontal)
-    : RenderingCoreStereo(_device, _client, _hud), horizontal(_horizontal)
+	IrrlichtDevice *_device, Client *_client, Hud *_hud, bool _horizontal)
+	: RenderingCoreStereo(_device, _client, _hud), horizontal(_horizontal)
 {
 }
 

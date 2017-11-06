@@ -26,9 +26,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "minimap.h"
 
 RenderingCore::RenderingCore(IrrlichtDevice *_device, Client *_client, Hud *_hud)
-    : device(_device), driver(device->getVideoDriver()), smgr(device->getSceneManager()),
-      guienv(device->getGUIEnvironment()), client(_client), camera(client->getCamera()),
-      mapper(client->getMinimap()), hud(_hud)
+	: device(_device), driver(device->getVideoDriver()), smgr(device->getSceneManager()),
+	guienv(device->getGUIEnvironment()), client(_client), camera(client->getCamera()),
+	mapper(client->getMinimap()), hud(_hud)
 {
 	screensize = driver->getScreenSize();
 	virtual_size = screensize;
