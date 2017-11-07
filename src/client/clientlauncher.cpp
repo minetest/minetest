@@ -17,18 +17,18 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#include "mainmenumanager.h"
+#include "gui/mainmenumanager.h"
 #include "clouds.h"
 #include "server.h"
 #include "filesys.h"
-#include "guiMainMenu.h"
+#include "gui/guiMainMenu.h"
 #include "game.h"
 #include "player.h"
 #include "chat.h"
 #include "gettext.h"
 #include "profiler.h"
 #include "serverlist.h"
-#include "guiEngine.h"
+#include "gui/guiEngine.h"
 #include "fontengine.h"
 #include "clientlauncher.h"
 #include "version.h"

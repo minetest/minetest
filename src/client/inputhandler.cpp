@@ -20,7 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "util/numeric.h"
 #include "inputhandler.h"
-#include "mainmenumanager.h"
+#include "gui/mainmenumanager.h"
 
 bool MyEventReceiver::OnEvent(const SEvent &event)
 {

@@ -19,7 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "test.h"
 
-#include "mg_schematic.h"
+#include "mapgen/mg_schematic.h"
 #include "gamedef.h"
 #include "nodedef.h"
 

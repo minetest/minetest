@@ -21,7 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "noise.h"
 #include "settings.h"
-#include "mapgen_v5.h"
+#include "mapgen/mapgen_v5.h"
 #include "util/sha1.h"
 #include "map_settings_manager.h"
 
