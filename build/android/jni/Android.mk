@@ -114,7 +114,7 @@ LOCAL_C_INCLUDES := \
 LOCAL_SRC_FILES := \
 		jni/src/ban.cpp                           \
 		jni/src/camera.cpp                        \
-		jni/src/cavegen.cpp                       \
+		jni/src/mapgen/cavegen.cpp                \
 		jni/src/chat.cpp                          \
 		jni/src/client.cpp                        \
 		jni/src/clientenvironment.cpp             \
@@ -132,13 +132,13 @@ LOCAL_SRC_FILES := \
 		jni/src/content_sao.cpp                   \
 		jni/src/convert_json.cpp                  \
 		jni/src/craftdef.cpp                      \
-		jni/src/database-dummy.cpp                \
-		jni/src/database-files.cpp                \
-		jni/src/database-sqlite3.cpp              \
-		jni/src/database.cpp                      \
+		jni/src/database/database-dummy.cpp       \
+		jni/src/database/database-files.cpp       \
+		jni/src/database/database-sqlite3.cpp     \
+		jni/src/database/database.cpp             \
 		jni/src/debug.cpp                         \
 		jni/src/defaultsettings.cpp               \
-		jni/src/dungeongen.cpp                    \
+		jni/src/mapgen/dungeongen.cpp             \
 		jni/src/emerge.cpp                        \
 		jni/src/environment.cpp                   \
 		jni/src/face_position_cache.cpp           \
@@ -148,20 +148,20 @@ LOCAL_SRC_FILES := \
 		jni/src/game.cpp                          \
 		jni/src/genericobject.cpp                 \
 		jni/src/gettext.cpp                       \
-		jni/src/guiChatConsole.cpp                \
-		jni/src/guiEditBoxWithScrollbar.cpp       \
-		jni/src/guiEngine.cpp                     \
-		jni/src/guiPathSelectMenu.cpp             \
-		jni/src/guiFormSpecMenu.cpp               \
-		jni/src/guiKeyChangeMenu.cpp              \
-		jni/src/guiPasswordChange.cpp             \
-		jni/src/guiTable.cpp                      \
+		jni/src/gui/guiChatConsole.cpp            \
+		jni/src/gui/guiEditBoxWithScrollbar.cpp   \
+		jni/src/gui/guiEngine.cpp                 \
+		jni/src/gui/guiPathSelectMenu.cpp         \
+		jni/src/gui/guiFormSpecMenu.cpp           \
+		jni/src/gui/guiKeyChangeMenu.cpp          \
+		jni/src/gui/guiPasswordChange.cpp         \
+		jni/src/gui/guiTable.cpp                  \
 		jni/src/guiscalingfilter.cpp              \
-		jni/src/guiVolumeChange.cpp               \
+		jni/src/gui/guiVolumeChange.cpp           \
 		jni/src/httpfetch.cpp                     \
 		jni/src/hud.cpp                           \
 		jni/src/imagefilters.cpp                  \
-		jni/src/intlGUIEditBox.cpp                \
+		jni/src/gui/intlGUIEditBox.cpp            \
 		jni/src/inventory.cpp                     \
 		jni/src/inventorymanager.cpp              \
 		jni/src/itemdef.cpp                       \
@@ -175,24 +175,24 @@ LOCAL_SRC_FILES := \
 		jni/src/map_settings_manager.cpp          \
 		jni/src/mapblock.cpp                      \
 		jni/src/mapblock_mesh.cpp                 \
-		jni/src/mapgen.cpp                        \
-		jni/src/mapgen_carpathian.cpp             \
-		jni/src/mapgen_flat.cpp                   \
-		jni/src/mapgen_fractal.cpp                \
-		jni/src/mapgen_singlenode.cpp             \
-		jni/src/mapgen_v5.cpp                     \
-		jni/src/mapgen_v6.cpp                     \
-		jni/src/mapgen_v7.cpp                     \
-		jni/src/mapgen_valleys.cpp                \
+		jni/src/mapgen/mapgen.cpp                 \
+		jni/src/mapgen/mapgen_carpathian.cpp      \
+		jni/src/mapgen/mapgen_flat.cpp            \
+		jni/src/mapgen/mapgen_fractal.cpp         \
+		jni/src/mapgen/mapgen_singlenode.cpp      \
+		jni/src/mapgen/mapgen_v5.cpp              \
+		jni/src/mapgen/mapgen_v6.cpp              \
+		jni/src/mapgen/mapgen_v7.cpp              \
+		jni/src/mapgen/mapgen_valleys.cpp         \
 		jni/src/mapnode.cpp                       \
 		jni/src/mapsector.cpp                     \
 		jni/src/mesh.cpp                          \
 		jni/src/mesh_generator_thread.cpp         \
 		jni/src/metadata.cpp                      \
-		jni/src/mg_biome.cpp                      \
-		jni/src/mg_decoration.cpp                 \
-		jni/src/mg_ore.cpp                        \
-		jni/src/mg_schematic.cpp                  \
+		jni/src/mapgen/mg_biome.cpp               \
+		jni/src/mapgen/mg_decoration.cpp          \
+		jni/src/mapgen/mg_ore.cpp                 \
+		jni/src/mapgen/mg_schematic.cpp           \
 		jni/src/minimap.cpp                       \
 		jni/src/mods.cpp                          \
 		jni/src/nameidmapping.cpp                 \
@@ -228,7 +228,7 @@ LOCAL_SRC_FILES := \
 		jni/src/subgame.cpp                       \
 		jni/src/tileanimation.cpp                 \
 		jni/src/tool.cpp                          \
-		jni/src/treegen.cpp                       \
+		jni/src/mapgen/treegen.cpp                \
 		jni/src/version.cpp                       \
 		jni/src/voxel.cpp                         \
 		jni/src/voxelalgorithms.cpp               \
