@@ -32,9 +32,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/directiontables.h"
 #include "util/numeric.h"
 
-template class MapblockMeshGenerator<false>;
-template class MapblockMeshGenerator<true>;
-
 // Distance of light extrapolation (for oversized nodes)
 // After this distance, it gives up and considers light level constant
 #define SMOOTH_LIGHTING_OVERSIZE 1.0
@@ -1408,3 +1405,6 @@ void MapblockMeshGenerator<use_tangent_vertices>::generate()
 		drawNode();
 	}
 }
+
+template class MapblockMeshGenerator<false>;
+template class MapblockMeshGenerator<true>;

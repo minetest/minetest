@@ -20,9 +20,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "collector.h"
 #include "log.h"
 
-template struct MeshCollector<false>;
-template struct MeshCollector<true>;
-
 template <bool use_tangent_vertices>
 auto MeshCollector<use_tangent_vertices>::getBuffer(u8 layernum,
 		const TileLayer &layer, u32 free_indices_needed) -> PreBuffer *
@@ -130,3 +127,6 @@ void MeshCollector<use_tangent_vertices>::applyTileColors()
 			}
 		}
 }
+
+template struct MeshCollector<false>;
+template struct MeshCollector<true>;
