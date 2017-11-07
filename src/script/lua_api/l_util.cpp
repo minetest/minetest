@@ -356,6 +356,23 @@ int ModApiUtil::l_get_dir_list(lua_State *L)
 	return 1;
 }
 
+// safe_file_write(path, content)
+int ModApiUtil::l_safe_file_write(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	const char *path = luaL_checkstring(L, 1);
+	size_t size;
+	const char *content = luaL_checklstring(L, 2, &size);
+
+	CHECK_SECURE_PATH(L, path, true);
+
+	bool ret = fs::safeWriteToFile(path, std::string(content, size));
+	lua_pushboolean(L, ret);
+
+	return 1;
+}
+
+// request_insecure_environment()
 int ModApiUtil::l_request_insecure_environment(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
@@ -475,6 +492,7 @@ void ModApiUtil::Initialize(lua_State *L, int top)
 
 	API_FCT(mkdir);
 	API_FCT(get_dir_list);
+	API_FCT(safe_file_write);
 
 	API_FCT(request_insecure_environment);
 
