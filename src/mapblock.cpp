@@ -31,7 +31,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "content_nodemeta.h" // For legacy deserialization
 #include "serialization.h"
 #ifndef SERVER
-#include "mapblock_mesh.h"
+#include "meshgen/mapblock_mesh.h"
 #endif
 #include "util/string.h"
 #include "util/serialize.h"

@@ -506,6 +506,7 @@ set(client_SRCS
 	${sound_SRCS}
 	${client_network_SRCS}
 	${client_irrlicht_changes_SRCS}
+	${meshgen_SRCS}
 	camera.cpp
 	client.cpp
 	clientenvironment.cpp
@@ -515,7 +516,6 @@ set(client_SRCS
 	clouds.cpp
 	content_cao.cpp
 	content_cso.cpp
-	content_mapblock.cpp
 	convert_json.cpp
 	filecache.cpp
 	fontengine.cpp
@@ -536,7 +536,6 @@ set(client_SRCS
 	keycode.cpp
 	localplayer.cpp
 	main.cpp
-	mapblock_mesh.cpp
 	mesh.cpp
 	mesh_generator_thread.cpp
 	minimap.cpp

@@ -17,18 +17,20 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#include "content_mapblock.h"
-#include "util/numeric.h"
-#include "util/directiontables.h"
-#include "mapblock_mesh.h"
-#include "settings.h"
-#include "nodedef.h"
-#include "client/tile.h"
-#include "mesh.h"
+#include "special.h"
 #include <IMeshManipulator.h>
-#include "client/renderingengine.h"
 #include "client.h"
+#include "client/renderingengine.h"
+#include "client/tile.h"
+#include "collector.h"
+#include "helpers.h"
+#include "mesh.h"
+#include "nodedef.h"
 #include "noise.h"
+#include "params.h"
+#include "settings.h"
+#include "util/directiontables.h"
+#include "util/numeric.h"
 
 template class MapblockMeshGenerator<false>;
 template class MapblockMeshGenerator<true>;

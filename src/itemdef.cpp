@@ -24,7 +24,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "tool.h"
 #include "inventory.h"
 #ifndef SERVER
-#include "mapblock_mesh.h"
 #include "mesh.h"
 #include "wieldmesh.h"
 #include "client/tile.h"

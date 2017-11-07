@@ -23,6 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <cmath>
 #include <IFileSystem.h>
 #include "client.h"
+#include "config.h"
 #include "network/clientopcodes.h"
 #include "network/connection.h"
 #include "network/networkpacket.h"
@@ -36,7 +37,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/string.h"
 #include "util/srp.h"
 #include "filesys.h"
-#include "mapblock_mesh.h"
 #include "mapblock.h"
 #include "minimap.h"
 #include "modchannels.h"

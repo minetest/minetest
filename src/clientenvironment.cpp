@@ -24,7 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "clientsimpleobject.h"
 #include "clientmap.h"
 #include "scripting_client.h"
-#include "mapblock_mesh.h"
+#include "meshgen/helpers.h"
 #include "event.h"
 #include "collision.h"
 #include "nodedef.h"

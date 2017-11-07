@@ -1,0 +1,9 @@
+set(meshgen_SRCS
+	${CMAKE_CURRENT_SOURCE_DIR}/collector.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/helpers.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/mapblock_mesh.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/params.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/solid.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/special.cpp
+	PARENT_SCOPE
+)

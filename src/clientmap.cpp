@@ -19,7 +19,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "clientmap.h"
 #include "client.h"
-#include "mapblock_mesh.h"
 #include <IMaterialRenderer.h>
 #include <matrix4.h>
 #include "mapsector.h"

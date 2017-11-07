@@ -21,7 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include <ctime>
 #include <mutex>
-#include "mapblock_mesh.h"
+#include "meshgen/mapblock_mesh.h"
 #include "threading/mutex_auto_lock.h"
 #include "util/thread.h"
 
