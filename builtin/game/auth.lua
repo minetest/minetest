@@ -67,16 +67,15 @@ local function save_auth_file()
 		assert(type(stuff.privileges) == "table")
 		assert(stuff.last_login == nil or type(stuff.last_login) == "number")
 	end
-	local file, errmsg = io.open(core.auth_file_path, 'w+b')
-	if not file then
-		error(core.auth_file_path.." could not be opened for writing: "..errmsg)
-	end
+	local content = ""
 	for name, stuff in pairs(core.auth_table) do
 		local priv_string = core.privs_to_string(stuff.privileges)
 		local parts = {name, stuff.password, priv_string, stuff.last_login or ""}
-		file:write(table.concat(parts, ":").."\n")
+		content = content .. table.concat(parts, ":") .. "\n"
 	end
-	io.close(file)
+	if not core.safe_file_write(core.auth_file_path, content) then
+		error(core.auth_file_path.." could not be written to")
+	end
 end
 
 read_auth_file()
