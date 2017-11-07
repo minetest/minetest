@@ -223,6 +223,10 @@ struct MeshCollector {
 	 * Colorizes all vertices in the collector.
 	 */
 	void applyTileColors();
+
+private:
+	PreBuffer *getBuffer(u8 layernum, const TileLayer &layer,
+			u32 free_indices_needed);
 };
 
 /*!

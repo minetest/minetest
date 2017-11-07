@@ -1401,6 +1401,23 @@ void MapBlockMesh::updateCameraOffset(v3s16 camera_offset)
 */
 
 template <bool use_tangent_vertices>
+auto MeshCollector<use_tangent_vertices>::getBuffer(u8 layernum,
+		const TileLayer &layer, u32 free_indices_needed) -> PreBuffer *
+{
+	if (free_indices_needed > 65535) {
+		dstream << "FIXME: MeshCollector: " << free_indices_needed
+			<< " indices requested (limit 65535)" << std::endl;
+		return nullptr;
+	}
+	std::vector<PreBuffer> &buffers = prebuffers[layernum];
+	for (PreBuffer &p : buffers)
+		if (p.layer == layer && p.indices.size() + free_indices_needed <= 65535)
+			return &p;
+	buffers.push_back({layer});
+	return &buffers.back();
+}
+
+template <bool use_tangent_vertices>
 void MeshCollector<use_tangent_vertices>::append(const TileSpec &tile,
 		const video::S3DVertex *vertices, u32 numVertices,
 		const u16 *indices, u32 numIndices)
@@ -1420,27 +1437,9 @@ void MeshCollector<use_tangent_vertices>::append(const TileLayer &layer,
 		const u16 *indices, u32 numIndices, u8 layernum,
 		bool use_scale)
 {
-	if (numIndices > 65535) {
-		dstream << "FIXME: MeshCollector::append() called with numIndices="
-				<< numIndices << " (limit 65535)" << std::endl;
+	PreBuffer *p = getBuffer(layernum, layer, numIndices);
+	if (!p)
 		return;
-	}
-	std::vector<PreBuffer> *buffers = &prebuffers[layernum];
-
-	PreBuffer *p = NULL;
-	for (PreBuffer &pp : *buffers) {
-		if (pp.layer == layer && pp.indices.size() + numIndices <= 65535) {
-			p = &pp;
-			break;
-		}
-	}
-
-	if (p == NULL) {
-		PreBuffer pp;
-		pp.layer = layer;
-		buffers->push_back(pp);
-		p = &(*buffers)[buffers->size() - 1];
-	}
 
 	f32 scale = 1.0;
 	if (use_scale)
@@ -1486,27 +1485,9 @@ void MeshCollector<use_tangent_vertices>::append(const TileLayer &layer,
 		v3f pos, video::SColor c, u8 light_source, u8 layernum,
 		bool use_scale)
 {
-	if (numIndices > 65535) {
-		dstream << "FIXME: MeshCollector::append() called with numIndices="
-				<< numIndices << " (limit 65535)" << std::endl;
+	PreBuffer *p = getBuffer(layernum, layer, numIndices);
+	if (!p)
 		return;
-	}
-	std::vector<PreBuffer> *buffers = &prebuffers[layernum];
-
-	PreBuffer *p = NULL;
-	for (PreBuffer &pp : *buffers) {
-		if (pp.layer == layer && pp.indices.size() + numIndices <= 65535) {
-			p = &pp;
-			break;
-		}
-	}
-
-	if (p == NULL) {
-		PreBuffer pp;
-		pp.layer = layer;
-		buffers->push_back(pp);
-		p = &(*buffers)[buffers->size() - 1];
-	}
 
 	f32 scale = 1.0;
 	if (use_scale)
