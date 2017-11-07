@@ -175,11 +175,8 @@ private:
 	void generate(MeshMakeData *data, v3s16 camera_offset);
 };
 
-template <bool use_tangent_vertices>
-struct VertexType;
-
-template <>
-struct VertexType<false> {
+template <bool use_tangent_vertices = false>
+struct VertexType {
 	typedef video::S3DVertex type;
 };
 
@@ -192,8 +189,7 @@ struct VertexType<true> {
 	This is used because CMeshBuffer::append() is very slow
 */
 template <bool use_tangent_vertices>
-struct PreMeshBuffer
-{
+struct PreMeshBuffer {
 	typedef typename VertexType<use_tangent_vertices>::type Vertex;
 	TileLayer layer;
 	std::vector<u16> indices;
@@ -201,8 +197,7 @@ struct PreMeshBuffer
 };
 
 template <bool use_tangent_vertices>
-struct MeshCollector
-{
+struct MeshCollector {
 	typedef typename VertexType<use_tangent_vertices>::type Vertex;
 	typedef PreMeshBuffer<use_tangent_vertices> PreBuffer;
 	static constexpr bool m_use_tangent_vertices = use_tangent_vertices;
