@@ -204,16 +204,16 @@ struct MeshCollector {
 	std::vector<PreBuffer> prebuffers[MAX_TILE_LAYERS];
 
 	void append(const TileSpec &material,
-				const video::S3DVertex *vertices, u32 numVertices,
-				const u16 *indices, u32 numIndices);
+			const video::S3DVertex *vertices, u32 numVertices,
+			const u16 *indices, u32 numIndices);
 	void append(const TileLayer &material,
 			const video::S3DVertex *vertices, u32 numVertices,
 			const u16 *indices, u32 numIndices, u8 layernum,
 			bool use_scale = false);
 	void append(const TileSpec &material,
-				const video::S3DVertex *vertices, u32 numVertices,
-				const u16 *indices, u32 numIndices, v3f pos,
-				video::SColor c, u8 light_source);
+			const video::S3DVertex *vertices, u32 numVertices,
+			const u16 *indices, u32 numIndices, v3f pos,
+			video::SColor c, u8 light_source);
 	void append(const TileLayer &material,
 			const video::S3DVertex *vertices, u32 numVertices,
 			const u16 *indices, u32 numIndices, v3f pos,

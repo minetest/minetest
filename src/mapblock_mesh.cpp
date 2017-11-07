@@ -1423,10 +1423,10 @@ void MeshCollector<use_tangent_vertices>::append(const TileSpec &tile,
 		const u16 *indices, u32 numIndices)
 {
 	for (int layernum = 0; layernum < MAX_TILE_LAYERS; layernum++) {
-		const TileLayer *layer = &tile.layers[layernum];
-		if (layer->texture_id == 0)
+		const TileLayer &layer = tile.layers[layernum];
+		if (layer.texture_id == 0)
 			continue;
-		append(*layer, vertices, numVertices, indices, numIndices,
+		append(layer, vertices, numVertices, indices, numIndices,
 			layernum, tile.world_aligned);
 	}
 }
@@ -1440,23 +1440,14 @@ void MeshCollector<use_tangent_vertices>::append(const TileLayer &layer,
 	PreBuffer *p = getBuffer(layernum, layer, numIndices);
 	if (!p)
 		return;
-
-	f32 scale = 1.0;
-	if (use_scale)
-		scale = 1.0 / layer.scale;
-
+	f32 scale = use_scale ? 1.0 / layer.scale : 1.0;
 	u32 vertex_count = p->vertices.size();
 	for (u32 i = 0; i < numVertices; i++) {
-		Vertex vert(vertices[i].Pos, vertices[i].Normal,
-				vertices[i].Color, scale * vertices[i].TCoords);
-
-		p->vertices.push_back(vert);
+		const video::S3DVertex &v = vertices[i];
+		p->vertices.emplace_back(v.Pos, v.Normal, v.Color, scale * v.TCoords);
 	}
-
-	for (u32 i = 0; i < numIndices; i++) {
-		u32 j = indices[i] + vertex_count;
-		p->indices.push_back(j);
-	}
+	for (u32 i = 0; i < numIndices; i++)
+		p->indices.push_back(vertex_count + indices[i]);
 }
 
 /*
@@ -1470,10 +1461,10 @@ void MeshCollector<use_tangent_vertices>::append(const TileSpec &tile,
 		v3f pos, video::SColor c, u8 light_source)
 {
 	for (int layernum = 0; layernum < MAX_TILE_LAYERS; layernum++) {
-		const TileLayer *layer = &tile.layers[layernum];
-		if (layer->texture_id == 0)
+		const TileLayer &layer = tile.layers[layernum];
+		if (layer.texture_id == 0)
 			continue;
-		append(*layer, vertices, numVertices, indices, numIndices, pos,
+		append(layer, vertices, numVertices, indices, numIndices, pos,
 				c, light_source, layernum, tile.world_aligned);
 	}
 }
@@ -1488,45 +1479,37 @@ void MeshCollector<use_tangent_vertices>::append(const TileLayer &layer,
 	PreBuffer *p = getBuffer(layernum, layer, numIndices);
 	if (!p)
 		return;
-
-	f32 scale = 1.0;
-	if (use_scale)
-		scale = 1.0 / layer.scale;
-
+	f32 scale = use_scale ? 1.0 / layer.scale : 1.0;
 	video::SColor original_c = c;
 	u32 vertex_count = p->vertices.size();
 	for (u32 i = 0; i < numVertices; i++) {
+		const video::S3DVertex &v = vertices[i];
 		if (!light_source) {
 			c = original_c;
-			applyFacesShading(c, vertices[i].Normal);
+			applyFacesShading(c, v.Normal);
 		}
-		Vertex vert(vertices[i].Pos + pos, vertices[i].Normal, c,
-			scale * vertices[i].TCoords);
-		p->vertices.push_back(vert);
+		p->vertices.emplace_back(v.Pos + pos, v.Normal, c, scale * v.TCoords);
 	}
-
-	for (u32 i = 0; i < numIndices; i++) {
-		u32 j = indices[i] + vertex_count;
-		p->indices.push_back(j);
-	}
+	for (u32 i = 0; i < numIndices; i++)
+		p->indices.push_back(vertex_count + indices[i]);
 }
 
 template <bool use_tangent_vertices>
 void MeshCollector<use_tangent_vertices>::applyTileColors()
 {
-	for (auto &prebuffer : prebuffers) {
+	for (auto &prebuffer : prebuffers)
 		for (PreBuffer &pmb : prebuffer) {
 			video::SColor tc = pmb.layer.color;
 			if (tc == video::SColor(0xFFFFFFFF))
 				continue;
 			for (Vertex &vertex : pmb.vertices) {
 				video::SColor *c = &vertex.Color;
-				c->set(c->getAlpha(), c->getRed() * tc.getRed() / 255,
-					c->getGreen() * tc.getGreen() / 255,
-					c->getBlue() * tc.getBlue() / 255);
+				c->set(c->getAlpha(),
+						c->getRed() * tc.getRed() / 255,
+						c->getGreen() * tc.getGreen() / 255,
+						c->getBlue() * tc.getBlue() / 255);
 			}
 		}
-	}
 }
 
 video::SColor encode_light(u16 light, u8 emissive_light)
