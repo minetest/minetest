@@ -30,6 +30,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client.h"
 #include "noise.h"
 
+template class MapblockMeshGenerator<false>;
+template class MapblockMeshGenerator<true>;
+
 // Distance of light extrapolation (for oversized nodes)
 // After this distance, it gives up and considers light level constant
 #define SMOOTH_LIGHTING_OVERSIZE 1.0

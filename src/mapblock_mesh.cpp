@@ -30,6 +30,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client/renderingengine.h"
 #include <array>
 
+template struct MeshCollector<false>;
+template struct MeshCollector<true>;
+
 /*
 	MeshMakeData
 */
