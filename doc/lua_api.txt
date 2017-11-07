@@ -2223,6 +2223,10 @@ Helper functions
       * nil: return all entries,
       * true: return only subdirectory names, or
       * false: return only file names.
+* `minetest.safe_file_write(path, content)`: returns boolean indicating success
+    * Replaces contents of file at path with new contents in a safe (atomic) way.
+      Use this instead of below code when writing e.g. database files:
+      `local f = io.open(path, "wb"); f:write(content); f:close()`
 * `minetest.get_version()`: returns a table containing components of the
    engine version.  Components:
     * `project`: Name of the project, eg, "Minetest"
