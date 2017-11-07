@@ -56,9 +56,11 @@ static const v3s16 light_dirs[8] = {
 // Standard index set to make a quad on 4 vertices
 static constexpr u16 quad_indices[] = {0, 1, 2, 2, 3, 0};
 
-const std::string MapblockMeshGenerator::raillike_groupname = "connect_to_raillike";
+// name of the group that enables connecting to raillike nodes of different kind
+static const std::string raillike_groupname = "connect_to_raillike";
 
-MapblockMeshGenerator::MapblockMeshGenerator(MeshMakeData *input, MeshCollector *output)
+template <bool use_tangent_vertices>
+MapblockMeshGenerator<use_tangent_vertices>::MapblockMeshGenerator(MeshMakeData *input, MeshCollector<use_tangent_vertices> *output)
 {
 	data      = input;
 	collector = output;
@@ -72,7 +74,8 @@ MapblockMeshGenerator::MapblockMeshGenerator(MeshMakeData *input, MeshCollector 
 	blockpos_nodes = data->m_blockpos * MAP_BLOCKSIZE;
 }
 
-void MapblockMeshGenerator::useTile(int index, u8 set_flags, u8 reset_flags, bool special)
+template <bool use_tangent_vertices>
+void MapblockMeshGenerator<use_tangent_vertices>::useTile(int index, u8 set_flags, u8 reset_flags, bool special)
 {
 	if (special)
 		getSpecialTile(index, &tile, p == data->m_crack_pos_relative);
@@ -88,19 +91,22 @@ void MapblockMeshGenerator::useTile(int index, u8 set_flags, u8 reset_flags, boo
 }
 
 // Returns a tile, ready for use, non-rotated.
-void MapblockMeshGenerator::getTile(int index, TileSpec *tile)
+template <bool use_tangent_vertices>
+void MapblockMeshGenerator<use_tangent_vertices>::getTile(int index, TileSpec *tile)
 {
 	getNodeTileN(n, p, index, data, *tile);
 }
 
 // Returns a tile, ready for use, rotated according to the node facedir.
-void MapblockMeshGenerator::getTile(v3s16 direction, TileSpec *tile)
+template <bool use_tangent_vertices>
+void MapblockMeshGenerator<use_tangent_vertices>::getTile(v3s16 direction, TileSpec *tile)
 {
 	getNodeTile(n, p, direction, data, *tile);
 }
 
 // Returns a special tile, ready for use, non-rotated.
-void MapblockMeshGenerator::getSpecialTile(int index, TileSpec *tile, bool apply_crack)
+template <bool use_tangent_vertices>
+void MapblockMeshGenerator<use_tangent_vertices>::getSpecialTile(int index, TileSpec *tile, bool apply_crack)
 {
 	*tile = f->special_tiles[index];
 	TileLayer *top_layer = NULL;
@@ -118,7 +124,8 @@ void MapblockMeshGenerator::getSpecialTile(int index, TileSpec *tile, bool apply
 		top_layer->material_flags |= MATERIAL_FLAG_CRACK;
 }
 
-void MapblockMeshGenerator::drawQuad(v3f *coords, const v3s16 &normal,
+template <bool use_tangent_vertices>
+void MapblockMeshGenerator<use_tangent_vertices>::drawQuad(v3f *coords, const v3s16 &normal,
 	float vertical_tiling)
 {
 	const v2f tcoords[4] = {v2f(0.0, 0.0), v2f(1.0, 0.0),
@@ -150,7 +157,8 @@ void MapblockMeshGenerator::drawQuad(v3f *coords, const v3s16 &normal,
 //              should be (2+2)*6=24 values in the list. The order of
 //              the faces in the list is up-down-right-left-back-front
 //              (compatible with ContentFeatures).
-void MapblockMeshGenerator::drawCuboid(const aabb3f &box,
+template <bool use_tangent_vertices>
+void MapblockMeshGenerator<use_tangent_vertices>::drawCuboid(const aabb3f &box,
 	TileSpec *tiles, int tilecount, const u16 *lights, const f32 *txc)
 {
 	assert(tilecount >= 1 && tilecount <= 6); // pre-condition
@@ -278,7 +286,8 @@ void MapblockMeshGenerator::drawCuboid(const aabb3f &box,
 }
 
 // Gets the base lighting values for a node
-void MapblockMeshGenerator::getSmoothLightFrame()
+template <bool use_tangent_vertices>
+void MapblockMeshGenerator<use_tangent_vertices>::getSmoothLightFrame()
 {
 	for (int k = 0; k < 8; ++k) {
 		u16 light = getSmoothLightTransparent(blockpos_nodes + p, light_dirs[k], data);
@@ -289,7 +298,8 @@ void MapblockMeshGenerator::getSmoothLightFrame()
 
 // Calculates vertex light level
 //  vertex_pos - vertex position in the node (coordinates are clamped to [0.0, 1.0] or so)
-u16 MapblockMeshGenerator::blendLight(const v3f &vertex_pos)
+template <bool use_tangent_vertices>
+u16 MapblockMeshGenerator<use_tangent_vertices>::blendLight(const v3f &vertex_pos)
 {
 	f32 x = core::clamp(vertex_pos.X / BS + 0.5, 0.0 - SMOOTH_LIGHTING_OVERSIZE, 1.0 + SMOOTH_LIGHTING_OVERSIZE);
 	f32 y = core::clamp(vertex_pos.Y / BS + 0.5, 0.0 - SMOOTH_LIGHTING_OVERSIZE, 1.0 + SMOOTH_LIGHTING_OVERSIZE);
@@ -311,13 +321,15 @@ u16 MapblockMeshGenerator::blendLight(const v3f &vertex_pos)
 // Calculates vertex color to be used in mapblock mesh
 //  vertex_pos - vertex position in the node (coordinates are clamped to [0.0, 1.0] or so)
 //  tile_color - node's tile color
-video::SColor MapblockMeshGenerator::blendLightColor(const v3f &vertex_pos)
+template <bool use_tangent_vertices>
+video::SColor MapblockMeshGenerator<use_tangent_vertices>::blendLightColor(const v3f &vertex_pos)
 {
 	u16 light = blendLight(vertex_pos);
 	return encode_light(light, f->light_source);
 }
 
-video::SColor MapblockMeshGenerator::blendLightColor(const v3f &vertex_pos,
+template <bool use_tangent_vertices>
+video::SColor MapblockMeshGenerator<use_tangent_vertices>::blendLightColor(const v3f &vertex_pos,
 	const v3f &vertex_normal)
 {
 	video::SColor color = blendLightColor(vertex_pos);
@@ -326,7 +338,8 @@ video::SColor MapblockMeshGenerator::blendLightColor(const v3f &vertex_pos,
 	return color;
 }
 
-void MapblockMeshGenerator::generateCuboidTextureCoords(const aabb3f &box, f32 *coords)
+template <bool use_tangent_vertices>
+void MapblockMeshGenerator<use_tangent_vertices>::generateCuboidTextureCoords(const aabb3f &box, f32 *coords)
 {
 	f32 tx1 = (box.MinEdge.X / BS) + 0.5;
 	f32 ty1 = (box.MinEdge.Y / BS) + 0.5;
@@ -346,7 +359,8 @@ void MapblockMeshGenerator::generateCuboidTextureCoords(const aabb3f &box, f32 *
 		coords[i] = txc[i];
 }
 
-void MapblockMeshGenerator::drawAutoLightedCuboid(aabb3f box, const f32 *txc,
+template <bool use_tangent_vertices>
+void MapblockMeshGenerator<use_tangent_vertices>::drawAutoLightedCuboid(aabb3f box, const f32 *txc,
 	TileSpec *tiles, int tile_count)
 {
 	f32 texture_coord_buf[24];
@@ -381,7 +395,8 @@ void MapblockMeshGenerator::drawAutoLightedCuboid(aabb3f box, const f32 *txc,
 	}
 }
 
-void MapblockMeshGenerator::prepareLiquidNodeDrawing()
+template <bool use_tangent_vertices>
+void MapblockMeshGenerator<use_tangent_vertices>::prepareLiquidNodeDrawing()
 {
 	getSpecialTile(0, &tile_liquid_top);
 	getSpecialTile(1, &tile_liquid);
@@ -408,7 +423,8 @@ void MapblockMeshGenerator::prepareLiquidNodeDrawing()
 	color = encode_light(light, f->light_source);
 }
 
-void MapblockMeshGenerator::getLiquidNeighborhood()
+template <bool use_tangent_vertices>
+void MapblockMeshGenerator<use_tangent_vertices>::getLiquidNeighborhood()
 {
 	u8 range = rangelim(nodedef->get(c_flowing).liquid_range, 1, 8);
 
@@ -448,14 +464,16 @@ void MapblockMeshGenerator::getLiquidNeighborhood()
 	}
 }
 
-void MapblockMeshGenerator::calculateCornerLevels()
+template <bool use_tangent_vertices>
+void MapblockMeshGenerator<use_tangent_vertices>::calculateCornerLevels()
 {
 	for (int k = 0; k < 2; k++)
 	for (int i = 0; i < 2; i++)
 		corner_levels[k][i] = getCornerLevel(i, k);
 }
 
-f32 MapblockMeshGenerator::getCornerLevel(int i, int k)
+template <bool use_tangent_vertices>
+f32 MapblockMeshGenerator<use_tangent_vertices>::getCornerLevel(int i, int k)
 {
 	float sum = 0;
 	int count = 0;
@@ -488,7 +506,8 @@ f32 MapblockMeshGenerator::getCornerLevel(int i, int k)
 	return 0;
 }
 
-void MapblockMeshGenerator::drawLiquidSides()
+template <bool use_tangent_vertices>
+void MapblockMeshGenerator<use_tangent_vertices>::drawLiquidSides()
 {
 	struct LiquidFaceDesc {
 		v3s16 dir; // XZ
@@ -548,7 +567,8 @@ void MapblockMeshGenerator::drawLiquidSides()
 	}
 }
 
-void MapblockMeshGenerator::drawLiquidTop()
+template <bool use_tangent_vertices>
+void MapblockMeshGenerator<use_tangent_vertices>::drawLiquidTop()
 {
 	// To get backface culling right, the vertices need to go
 	// clockwise around the front of the face. And we happened to
@@ -597,7 +617,8 @@ void MapblockMeshGenerator::drawLiquidTop()
 	collector->append(tile_liquid_top, vertices, 4, quad_indices, 6);
 }
 
-void MapblockMeshGenerator::drawLiquidNode()
+template <bool use_tangent_vertices>
+void MapblockMeshGenerator<use_tangent_vertices>::drawLiquidNode()
 {
 	prepareLiquidNodeDrawing();
 	getLiquidNeighborhood();
@@ -607,7 +628,8 @@ void MapblockMeshGenerator::drawLiquidNode()
 		drawLiquidTop();
 }
 
-void MapblockMeshGenerator::drawGlasslikeNode()
+template <bool use_tangent_vertices>
+void MapblockMeshGenerator<use_tangent_vertices>::drawGlasslikeNode()
 {
 	useTile(0, 0, 0);
 
@@ -647,7 +669,8 @@ void MapblockMeshGenerator::drawGlasslikeNode()
 	}
 }
 
-void MapblockMeshGenerator::drawGlasslikeFramedNode()
+template <bool use_tangent_vertices>
+void MapblockMeshGenerator<use_tangent_vertices>::drawGlasslikeFramedNode()
 {
 	TileSpec tiles[6];
 	for (int face = 0; face < 6; face++)
@@ -774,14 +797,16 @@ void MapblockMeshGenerator::drawGlasslikeFramedNode()
 	}
 }
 
-void MapblockMeshGenerator::drawAllfacesNode()
+template <bool use_tangent_vertices>
+void MapblockMeshGenerator<use_tangent_vertices>::drawAllfacesNode()
 {
 	static const aabb3f box(-BS / 2, -BS / 2, -BS / 2, BS / 2, BS / 2, BS / 2);
 	useTile(0, 0, 0);
 	drawAutoLightedCuboid(box);
 }
 
-void MapblockMeshGenerator::drawTorchlikeNode()
+template <bool use_tangent_vertices>
+void MapblockMeshGenerator<use_tangent_vertices>::drawTorchlikeNode()
 {
 	u8 wall = n.getWallMounted(nodedef);
 	u8 tileindex = 0;
@@ -819,7 +844,8 @@ void MapblockMeshGenerator::drawTorchlikeNode()
 	drawQuad(vertices);
 }
 
-void MapblockMeshGenerator::drawSignlikeNode()
+template <bool use_tangent_vertices>
+void MapblockMeshGenerator<use_tangent_vertices>::drawSignlikeNode()
 {
 	u8 wall = n.getWallMounted(nodedef);
 	useTile(0, MATERIAL_FLAG_CRACK_OVERLAY, MATERIAL_FLAG_BACKFACE_CULLING);
@@ -852,7 +878,8 @@ void MapblockMeshGenerator::drawSignlikeNode()
 	drawQuad(vertices);
 }
 
-void MapblockMeshGenerator::drawPlantlikeQuad(float rotation, float quad_offset,
+template <bool use_tangent_vertices>
+void MapblockMeshGenerator<use_tangent_vertices>::drawPlantlikeQuad(float rotation, float quad_offset,
 	bool offset_top_only)
 {
 	v3f vertices[4] = {
@@ -876,7 +903,8 @@ void MapblockMeshGenerator::drawPlantlikeQuad(float rotation, float quad_offset,
 	drawQuad(vertices, v3s16(0, 0, 0), plant_height);
 }
 
-void MapblockMeshGenerator::drawPlantlike()
+template <bool use_tangent_vertices>
+void MapblockMeshGenerator<use_tangent_vertices>::drawPlantlike()
 {
 	draw_style = PLANT_STYLE_CROSS;
 	scale = BS / 2 * f->visual_scale;
@@ -945,13 +973,15 @@ void MapblockMeshGenerator::drawPlantlike()
 	}
 }
 
-void MapblockMeshGenerator::drawPlantlikeNode()
+template <bool use_tangent_vertices>
+void MapblockMeshGenerator<use_tangent_vertices>::drawPlantlikeNode()
 {
 	useTile();
 	drawPlantlike();
 }
 
-void MapblockMeshGenerator::drawPlantlikeRootedNode()
+template <bool use_tangent_vertices>
+void MapblockMeshGenerator<use_tangent_vertices>::drawPlantlikeRootedNode()
 {
 	useTile(0, MATERIAL_FLAG_CRACK_OVERLAY, 0, true);
 	origin += v3f(0.0, BS, 0.0);
@@ -966,7 +996,8 @@ void MapblockMeshGenerator::drawPlantlikeRootedNode()
 	p.Y--;
 }
 
-void MapblockMeshGenerator::drawFirelikeQuad(float rotation, float opening_angle,
+template <bool use_tangent_vertices>
+void MapblockMeshGenerator<use_tangent_vertices>::drawFirelikeQuad(float rotation, float opening_angle,
 	float offset_h, float offset_v)
 {
 	v3f vertices[4] = {
@@ -985,7 +1016,8 @@ void MapblockMeshGenerator::drawFirelikeQuad(float rotation, float opening_angle
 	drawQuad(vertices);
 }
 
-void MapblockMeshGenerator::drawFirelikeNode()
+template <bool use_tangent_vertices>
+void MapblockMeshGenerator<use_tangent_vertices>::drawFirelikeNode()
 {
 	useTile();
 	scale = BS / 2 * f->visual_scale;
@@ -1032,7 +1064,8 @@ void MapblockMeshGenerator::drawFirelikeNode()
 	}
 }
 
-void MapblockMeshGenerator::drawFencelikeNode()
+template <bool use_tangent_vertices>
+void MapblockMeshGenerator<use_tangent_vertices>::drawFencelikeNode()
 {
 	useTile(0, 0, 0);
 	TileSpec tile_nocrack = tile;
@@ -1109,7 +1142,8 @@ void MapblockMeshGenerator::drawFencelikeNode()
 	}
 }
 
-bool MapblockMeshGenerator::isSameRail(v3s16 dir)
+template <bool use_tangent_vertices>
+bool MapblockMeshGenerator<use_tangent_vertices>::isSameRail(v3s16 dir)
 {
 	MapNode node2 = data->m_vmanip.getNodeNoEx(blockpos_nodes + p + dir);
 	if (node2.getContent() == n.getContent())
@@ -1119,7 +1153,8 @@ bool MapblockMeshGenerator::isSameRail(v3s16 dir)
 		(def2.getGroup(raillike_groupname) == raillike_group));
 }
 
-void MapblockMeshGenerator::drawRaillikeNode()
+template <bool use_tangent_vertices>
+void MapblockMeshGenerator<use_tangent_vertices>::drawRaillikeNode()
 {
 	static const v3s16 direction[4] = {
 		v3s16( 0, 0,  1),
@@ -1202,7 +1237,8 @@ void MapblockMeshGenerator::drawRaillikeNode()
 	drawQuad(vertices);
 }
 
-void MapblockMeshGenerator::drawNodeboxNode()
+template <bool use_tangent_vertices>
+void MapblockMeshGenerator<use_tangent_vertices>::drawNodeboxNode()
 {
 	static const v3s16 tile_dirs[6] = {
 		v3s16(0, 1, 0),
@@ -1247,7 +1283,8 @@ void MapblockMeshGenerator::drawNodeboxNode()
 		drawAutoLightedCuboid(box, NULL, tiles, 6);
 }
 
-void MapblockMeshGenerator::drawMeshNode()
+template <bool use_tangent_vertices>
+void MapblockMeshGenerator<use_tangent_vertices>::drawMeshNode()
 {
 	u8 facedir = 0;
 	scene::IMesh* mesh;
@@ -1309,13 +1346,15 @@ void MapblockMeshGenerator::drawMeshNode()
 }
 
 // also called when the drawtype is known but should have been pre-converted
-void MapblockMeshGenerator::errorUnknownDrawtype()
+template <bool use_tangent_vertices>
+void MapblockMeshGenerator<use_tangent_vertices>::errorUnknownDrawtype()
 {
 	infostream << "Got drawtype " << f->drawtype << std::endl;
 	FATAL_ERROR("Unknown drawtype");
 }
 
-void MapblockMeshGenerator::drawNode()
+template <bool use_tangent_vertices>
+void MapblockMeshGenerator<use_tangent_vertices>::drawNode()
 {
 	// skip some drawtypes early
 	switch (f->drawtype) {
@@ -1353,7 +1392,8 @@ void MapblockMeshGenerator::drawNode()
 	TODO: Fix alpha blending for special nodes
 	Currently only the last element rendered is blended correct
 */
-void MapblockMeshGenerator::generate()
+template <bool use_tangent_vertices>
+void MapblockMeshGenerator<use_tangent_vertices>::generate()
 {
 	for (p.Z = 0; p.Z < MAP_BLOCKSIZE; p.Z++)
 	for (p.Y = 0; p.Y < MAP_BLOCKSIZE; p.Y++)

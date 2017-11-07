@@ -23,6 +23,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <IMeshManipulator.h>
 
 struct MeshMakeData;
+
+template <bool use_tangent_vertices>
 struct MeshCollector;
 
 struct LightFrame
@@ -31,11 +33,12 @@ struct LightFrame
 	f32 lightsB[8];
 };
 
+template <bool use_tangent_vertices>
 class MapblockMeshGenerator
 {
 public:
 	MeshMakeData *data;
-	MeshCollector *collector;
+	MeshCollector<use_tangent_vertices> *collector;
 
 	INodeDefManager *nodedef;
 	scene::IMeshManipulator *meshmanip;
@@ -102,8 +105,6 @@ public:
 	void drawLiquidTop();
 
 // raillike-specific
-	// name of the group that enables connecting to raillike nodes of different kind
-	static const std::string raillike_groupname;
 	int raillike_group;
 	bool isSameRail(v3s16 dir);
 
@@ -143,6 +144,6 @@ public:
 	void drawNode();
 
 public:
-	MapblockMeshGenerator(MeshMakeData *input, MeshCollector *output);
+	MapblockMeshGenerator(MeshMakeData *input, MeshCollector<use_tangent_vertices> *output);
 	void generate();
 };

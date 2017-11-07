@@ -134,7 +134,7 @@ public:
 	void updateCameraOffset(v3s16 camera_offset);
 
 private:
-	scene::IMesh *m_mesh[MAX_TILE_LAYERS];
+	scene::SMesh *m_mesh[MAX_TILE_LAYERS];
 	MinimapMapblock *m_minimap_mapblock;
 	ITextureSource *m_tsrc;
 	IShaderSource *m_shdrsrc;
@@ -170,30 +170,43 @@ private:
 
 	// Camera offset info -> do we have to translate the mesh?
 	v3s16 m_camera_offset;
+
+	template <bool use_tangent_vertices>
+	void generate(MeshMakeData *data, v3s16 camera_offset);
 };
 
+template <bool use_tangent_vertices>
+struct VertexType;
 
+template <>
+struct VertexType<false> {
+	typedef video::S3DVertex type;
+};
+
+template <>
+struct VertexType<true> {
+	typedef video::S3DVertexTangents type;
+};
 
 /*
 	This is used because CMeshBuffer::append() is very slow
 */
+template <bool use_tangent_vertices>
 struct PreMeshBuffer
 {
+	typedef typename VertexType<use_tangent_vertices>::type Vertex;
 	TileLayer layer;
 	std::vector<u16> indices;
-	std::vector<video::S3DVertex> vertices;
-	std::vector<video::S3DVertexTangents> tangent_vertices;
+	std::vector<Vertex> vertices;
 };
 
+template <bool use_tangent_vertices>
 struct MeshCollector
 {
-	std::vector<PreMeshBuffer> prebuffers[MAX_TILE_LAYERS];
-	bool m_use_tangent_vertices;
-
-	MeshCollector(bool use_tangent_vertices):
-		m_use_tangent_vertices(use_tangent_vertices)
-	{
-	}
+	typedef typename VertexType<use_tangent_vertices>::type Vertex;
+	typedef PreMeshBuffer<use_tangent_vertices> PreBuffer;
+	static constexpr bool m_use_tangent_vertices = use_tangent_vertices;
+	std::vector<PreBuffer> prebuffers[MAX_TILE_LAYERS];
 
 	void append(const TileSpec &material,
 				const video::S3DVertex *vertices, u32 numVertices,
