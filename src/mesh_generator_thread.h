@@ -25,6 +25,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "threading/mutex_auto_lock.h"
 #include "util/thread.h"
 
+class Client;
+class Map;
+struct MapNode;
+
 struct CachedMapBlockData
 {
 	v3s16 p = v3s16(-1337, -1337, -1337);

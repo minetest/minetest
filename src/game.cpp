@@ -46,6 +46,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "guiVolumeChange.h"
 #include "mainmenumanager.h"
 #include "mapblock.h"
+#include "meshgen/helpers.h"
 #include "minimap.h"
 #include "nodedef.h"         // Needed for determining pointing to nodes
 #include "nodemetadata.h"

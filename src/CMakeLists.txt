@@ -371,6 +371,7 @@ add_custom_target(GenerateVersion
 
 
 add_subdirectory(threading)
+add_subdirectory(meshgen)
 add_subdirectory(network)
 add_subdirectory(script)
 add_subdirectory(unittest)
