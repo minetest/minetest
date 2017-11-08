@@ -86,7 +86,7 @@ public:
 		GenerateNotifier *gennotify, DungeonParams *dparams);
 
 	void generate(MMVManip *vm, u32 bseed,
-		v3s16 full_node_min, v3s16 full_node_max);
+		v3s16 full_node_min, v3s16 full_node_max, bool project_dungeons);
 
 	void makeDungeon(v3s16 start_padding);
 	void makeRoom(v3s16 roomsize, v3s16 roomplace);

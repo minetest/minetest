@@ -36,28 +36,28 @@ bool RemotePlayer::m_setting_cache_loaded = false;
 float RemotePlayer::m_setting_chat_message_limit_per_10sec = 0.0f;
 u16 RemotePlayer::m_setting_chat_message_limit_trigger_kick = 0;
 
-RemotePlayer::RemotePlayer(const char *name, IItemDefManager *idef):
+RemotePlayer::RemotePlayer(const char *name, IItemDefManager *idef, Settings *settings):
 	Player(name, idef)
 {
 	if (!RemotePlayer::m_setting_cache_loaded) {
 		RemotePlayer::m_setting_chat_message_limit_per_10sec =
-			g_settings->getFloat("chat_message_limit_per_10sec");
+			settings->getFloat("chat_message_limit_per_10sec");
 		RemotePlayer::m_setting_chat_message_limit_trigger_kick =
-			g_settings->getU16("chat_message_limit_trigger_kick");
+			settings->getU16("chat_message_limit_trigger_kick");
 		RemotePlayer::m_setting_cache_loaded = true;
 	}
-	movement_acceleration_default   = g_settings->getFloat("movement_acceleration_default")   * BS;
-	movement_acceleration_air       = g_settings->getFloat("movement_acceleration_air")       * BS;
-	movement_acceleration_fast      = g_settings->getFloat("movement_acceleration_fast")      * BS;
-	movement_speed_walk             = g_settings->getFloat("movement_speed_walk")             * BS;
-	movement_speed_crouch           = g_settings->getFloat("movement_speed_crouch")           * BS;
-	movement_speed_fast             = g_settings->getFloat("movement_speed_fast")             * BS;
-	movement_speed_climb            = g_settings->getFloat("movement_speed_climb")            * BS;
-	movement_speed_jump             = g_settings->getFloat("movement_speed_jump")             * BS;
-	movement_liquid_fluidity        = g_settings->getFloat("movement_liquid_fluidity")        * BS;
-	movement_liquid_fluidity_smooth = g_settings->getFloat("movement_liquid_fluidity_smooth") * BS;
-	movement_liquid_sink            = g_settings->getFloat("movement_liquid_sink")            * BS;
-	movement_gravity                = g_settings->getFloat("movement_gravity")                * BS;
+	movement_acceleration_default   = settings->getFloat("movement_acceleration_default")   * BS;
+	movement_acceleration_air       = settings->getFloat("movement_acceleration_air")       * BS;
+	movement_acceleration_fast      = settings->getFloat("movement_acceleration_fast")      * BS;
+	movement_speed_walk             = settings->getFloat("movement_speed_walk")             * BS;
+	movement_speed_crouch           = settings->getFloat("movement_speed_crouch")           * BS;
+	movement_speed_fast             = settings->getFloat("movement_speed_fast")             * BS;
+	movement_speed_climb            = settings->getFloat("movement_speed_climb")            * BS;
+	movement_speed_jump             = settings->getFloat("movement_speed_jump")             * BS;
+	movement_liquid_fluidity        = settings->getFloat("movement_liquid_fluidity")        * BS;
+	movement_liquid_fluidity_smooth = settings->getFloat("movement_liquid_fluidity_smooth") * BS;
+	movement_liquid_sink            = settings->getFloat("movement_liquid_sink")            * BS;
+	movement_gravity                = settings->getFloat("movement_gravity")                * BS;
 
 	// copy defaults
 	m_cloud_params.density = 0.4f;

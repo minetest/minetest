@@ -38,6 +38,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "network/address.h"
 #include "network/peerhandler.h"
 #include <fstream>
+#include "settings.h"
 
 #define CLIENT_CHAT_MESSAGE_LIMIT_PER_10S 10.0f
 
@@ -113,6 +114,14 @@ private:
 
 class ClientScripting;
 struct GameUIFlags;
+
+struct ServerInfo {
+	bool enable_damage;
+	bool creative_mode;
+	bool server_announce;
+	bool enable_pvp;
+	std::string server_name;
+};
 
 class Client : public con::PeerHandler, public InventoryManager, public IGameDef
 {
@@ -229,6 +238,7 @@ public:
 	void handleCommand_ModChannelSignal(NetworkPacket *pkt);
 	void handleCommand_SrpBytesSandB(NetworkPacket* pkt);
 	void handleCommand_CSMFlavourLimits(NetworkPacket *pkt);
+	void handleCommand_ServerInfo(NetworkPacket *pkt);
 
 	void ProcessData(NetworkPacket *pkt);
 
@@ -432,6 +442,9 @@ public:
 	bool sendModChannelMessage(const std::string &channel, const std::string &message);
 	ModChannel *getModChannel(const std::string &channel);
 
+	Settings *getSettings() { return g_settings; }
+
+	const ServerInfo *getServerInfo() const { return &m_server_info; }
 private:
 
 	// Virtual methods from con::PeerHandler
@@ -590,4 +603,6 @@ private:
 	u32 m_csm_noderange_limit = 8;
 
 	std::unique_ptr<ModChannelMgr> m_modchannel_mgr;
+
+	ServerInfo m_server_info;
 };

@@ -615,7 +615,7 @@ bool PlayerDatabasePostgreSQL::removePlayer(const std::string &name)
 	return true;
 }
 
-void PlayerDatabasePostgreSQL::listPlayers(std::vector<std::string> &res)
+void PlayerDatabasePostgreSQL::listPlayers(std::vector<std::string> &res, Settings *settings)
 {
 	verifyDatabase();
 

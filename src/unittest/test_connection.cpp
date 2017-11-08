@@ -142,7 +142,7 @@ void TestConnection::testConnectSendReceive()
 	 */
 	std::string bind_str = g_settings->get("bind_address");
 	try {
-		bind_addr.Resolve(bind_str.c_str());
+		bind_addr.Resolve(bind_str.c_str(), g_settings->getBool("enable_ipv6"));
 
 		if (!bind_addr.isIPv6()) {
 			address = bind_addr;
@@ -151,11 +151,12 @@ void TestConnection::testConnectSendReceive()
 	}
 
 	infostream << "** Creating server Connection" << std::endl;
-	con::Connection server(proto_id, 512, 5.0, false, &hand_server);
+	u16 max_packets = g_settings->getU16("max_packets_per_iteration");
+	con::Connection server(proto_id, 512, 5.0, max_packets, false, &hand_server);
 	server.Serve(address);
 
 	infostream << "** Creating client Connection" << std::endl;
-	con::Connection client(proto_id, 512, 5.0, false, &hand_client);
+	con::Connection client(proto_id, 512, 5.0, max_packets, false, &hand_client);
 
 	UASSERT(hand_server.count == 0);
 	UASSERT(hand_client.count == 0);

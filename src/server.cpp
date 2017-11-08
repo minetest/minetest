@@ -159,22 +159,14 @@ Server::Server(
 	m_simple_singleplayer_mode(simple_singleplayer_mode),
 	m_dedicated(dedicated),
 	m_async_fatal_error(""),
-	m_con(std::make_shared<con::Connection>(PROTOCOL_ID,
-			512,
-			CONNECTION_TIMEOUT,
-			m_bind_addr.isIPv6(),
-			this)),
 	m_itemdef(createItemDefManager()),
 	m_nodedef(createNodeDefManager()),
 	m_craftdef(createCraftDefManager()),
 	m_event(new EventManager()),
 	m_uptime(0),
-	m_clients(m_con),
 	m_admin_chat(iface),
 	m_modchannel_mgr(new ModChannelMgr())
 {
-	m_lag = g_settings->getFloat("dedicated_server_step");
-
 	if (path_world.empty())
 		throw ServerError("Supplied empty world path");
 
@@ -192,6 +184,23 @@ Server::Server(
 	// Create world if it doesn't exist
 	if(!loadGameConfAndInitWorld(m_path_world, m_gamespec))
 		throw ServerError("Failed to initialize world");
+
+	// Initialize settings
+	set_default_settings(&m_conf);
+	m_settings_path = path_world + DIR_DELIM + "world.mt";
+	if(!m_conf.readConfigFile(m_settings_path.c_str()))
+		errorstream << "Failed to load config file" << std::endl;
+	override_default_settings(&m_conf, g_settings);
+
+	u16 max_packets = m_conf.getU16("max_packets_per_iteration");
+
+	m_con = std::make_shared<con::Connection>(PROTOCOL_ID,
+			512,
+			CONNECTION_TIMEOUT,
+			max_packets,
+			m_bind_addr.isIPv6(),
+			this);
+	m_clients.SetConnection(m_con);
 
 	// Create server thread
 	m_thread = new ServerThread(this);
@@ -217,6 +226,7 @@ Server::Server(
 	// Create the Map (loads map_meta.txt, overriding configured mapgen params)
 	ServerMap *servermap = new ServerMap(path_world, this, m_emerge);
 
+	m_lag = m_conf.getFloat("dedicated_server_step");
 	// Initialize scripting
 	infostream<<"Server: Initializing Lua"<<std::endl;
 
@@ -253,7 +263,7 @@ Server::Server(
 	m_nodedef->updateAliases(m_itemdef);
 
 	// Apply texture overrides from texturepack/override.txt
-	std::string texture_path = g_settings->get("texture_path");
+	std::string texture_path = m_conf.get("texture_path");
 	if (!texture_path.empty() && fs::IsDir(texture_path))
 		m_nodedef->applyTextureOverrides(texture_path + DIR_DELIM + "override.txt");
 
@@ -279,7 +289,7 @@ Server::Server(
 	// Initialize mapgens
 	m_emerge->initMapgens(servermap->getMapgenParams());
 
-	m_enable_rollback_recording = g_settings->getBool("enable_rollback_recording");
+	m_enable_rollback_recording = m_conf.getBool("enable_rollback_recording");
 	if (m_enable_rollback_recording) {
 		// Create rollback manager
 		m_rollback = new RollbackManager(m_path_world, this);
@@ -299,10 +309,10 @@ Server::Server(
 		m_env->loadDefaultMeta();
 	}
 
-	m_liquid_transform_every = g_settings->getFloat("liquid_update");
-	m_max_chatmessage_length = g_settings->getU16("chat_message_max_size");
-	m_csm_flavour_limits = g_settings->getU64("csm_flavour_limits");
-	m_csm_noderange_limit = g_settings->getU32("csm_flavour_noderange_limit");
+	m_liquid_transform_every = m_conf.getFloat("liquid_update");
+	m_max_chatmessage_length = m_conf.getU16("chat_message_max_size");
+	m_csm_flavour_limits = m_conf.getU64("csm_flavour_limits");
+	m_csm_noderange_limit = m_conf.getU32("csm_flavour_noderange_limit");
 }
 
 Server::~Server()
@@ -330,13 +340,15 @@ Server::~Server()
 			kick_msg = m_shutdown_msg;
 		}
 		if (kick_msg.empty()) {
-			kick_msg = g_settings->get("kick_msg_shutdown");
+			kick_msg = m_conf.get("kick_msg_shutdown");
 		}
 		m_env->kickAllPlayers(SERVER_ACCESSDENIED_SHUTDOWN,
 			kick_msg, reconnect);
 
 		infostream << "Server: Saving environment metadata" << std::endl;
 		m_env->saveMeta();
+		infostream << "Server: Saving settings to file" << std::endl;
+		m_conf.updateConfigFile(m_settings_path.c_str());
 	}
 
 	// Stop threads
@@ -423,8 +435,8 @@ void Server::step(float dtime)
 	if (!async_err.empty()) {
 		if (!m_simple_singleplayer_mode) {
 			m_env->kickAllPlayers(SERVER_ACCESSDENIED_CRASH,
-				g_settings->get("kick_msg_crash"),
-				g_settings->getBool("ask_reconnect_on_crash"));
+				m_conf.get("kick_msg_crash"),
+				m_conf.getBool("ask_reconnect_on_crash"));
 		}
 		throw ServerError("AsyncErr: " + async_err);
 	}
@@ -470,7 +482,7 @@ void Server::AsyncRunStep(bool initial_step)
 	/*
 		Update time of day and overall game time
 	*/
-	m_env->setTimeOfDaySpeed(g_settings->getFloat("time_speed"));
+	m_env->setTimeOfDaySpeed(m_conf.getFloat("time_speed"));
 
 	/*
 		Send to clients at constant intervals
@@ -478,9 +490,9 @@ void Server::AsyncRunStep(bool initial_step)
 
 	m_time_of_day_send_timer -= dtime;
 	if(m_time_of_day_send_timer < 0.0) {
-		m_time_of_day_send_timer = g_settings->getFloat("time_send_interval");
+		m_time_of_day_send_timer = m_conf.getFloat("time_send_interval");
 		u16 time = m_env->getTimeOfDay();
-		float time_speed = g_settings->getFloat("time_speed");
+		float time_speed = m_conf.getFloat("time_speed");
 		SendTimeOfDay(PEER_ID_INEXISTENT, time, time_speed);
 	}
 
@@ -509,7 +521,7 @@ void Server::AsyncRunStep(bool initial_step)
 		// Run Map's timers and unload unused data
 		ScopeProfiler sp(g_profiler, "Server: map timer and unload");
 		m_env->getMap().timerUpdate(map_timer_and_unload_dtime,
-			g_settings->getFloat("server_unload_unused_data_timeout"),
+			m_conf.getFloat("server_unload_unused_data_timeout"),
 			U32_MAX);
 	}
 
@@ -562,10 +574,11 @@ void Server::AsyncRunStep(bool initial_step)
 	{
 		float &counter = m_masterserver_timer;
 		if (!isSingleplayer() && (!counter || counter >= 300.0) &&
-				g_settings->getBool("server_announce")) {
+				m_conf.getBool("server_announce")) {
 			ServerList::sendAnnounce(counter ? ServerList::AA_UPDATE :
-						ServerList::AA_START,
+					ServerList::AA_START,
 					m_bind_addr.getPort(),
+					&m_conf,
 					m_clients.getPlayerNames(),
 					m_uptime.get(),
 					m_env->getGameTime(),
@@ -593,14 +606,14 @@ void Server::AsyncRunStep(bool initial_step)
 
 		// Radius inside which objects are active
 		static thread_local const s16 radius =
-			g_settings->getS16("active_object_send_range_blocks") * MAP_BLOCKSIZE;
+			m_conf.getS16("active_object_send_range_blocks") * MAP_BLOCKSIZE;
 
 		// Radius inside which players are active
 		static thread_local const bool is_transfer_limited =
-			g_settings->exists("unlimited_player_transfer_distance") &&
-			!g_settings->getBool("unlimited_player_transfer_distance");
+			m_conf.exists("unlimited_player_transfer_distance") &&
+			!m_conf.getBool("unlimited_player_transfer_distance");
 		static thread_local const s16 player_transfer_dist =
-			g_settings->getS16("player_transfer_distance") * MAP_BLOCKSIZE;
+			m_conf.getS16("player_transfer_distance") * MAP_BLOCKSIZE;
 		s16 player_radius = player_transfer_dist;
 		if (player_radius == 0 && is_transfer_limited)
 			player_radius = radius;
@@ -710,7 +723,7 @@ void Server::AsyncRunStep(bool initial_step)
 		m_mod_storage_save_timer -= dtime;
 		if (m_mod_storage_save_timer <= 0.0f) {
 			infostream << "Saving registered mod storages." << std::endl;
-			m_mod_storage_save_timer = g_settings->getFloat("server_map_save_interval");
+			m_mod_storage_save_timer = m_conf.getFloat("server_map_save_interval");
 			for (std::unordered_map<std::string, ModMetadata *>::const_iterator
 				it = m_mod_storages.begin(); it != m_mod_storages.end(); ++it) {
 				if (it->second->isModified()) {
@@ -914,7 +927,7 @@ void Server::AsyncRunStep(bool initial_step)
 		float &counter = m_savemap_timer;
 		counter += dtime;
 		static thread_local const float save_interval =
-			g_settings->getFloat("server_map_save_interval");
+			m_conf.getFloat("server_map_save_interval");
 		if (counter >= save_interval) {
 			counter = 0.0;
 			MutexAutoLock lock(m_env_mutex);
@@ -1053,7 +1066,7 @@ PlayerSAO* Server::StageTwoClientInit(session_t peer_id)
 	SendPlayerBreath(playersao);
 
 	// Note things in chat if not in simple singleplayer mode
-	if (!m_simple_singleplayer_mode && g_settings->getBool("show_statusline_on_connect")) {
+	if (!m_simple_singleplayer_mode && m_conf.getBool("show_statusline_on_connect")) {
 		// Send information about server to player in chat
 		SendChatMessage(peer_id, ChatMessage(CHATMESSAGE_TYPE_SYSTEM, getStatusString()));
 	}
@@ -1394,25 +1407,25 @@ void Server::SendMovement(session_t peer_id)
 
 	NetworkPacket pkt(TOCLIENT_MOVEMENT, 12 * sizeof(float), peer_id);
 
-	pkt << g_settings->getFloat("movement_acceleration_default");
-	pkt << g_settings->getFloat("movement_acceleration_air");
-	pkt << g_settings->getFloat("movement_acceleration_fast");
-	pkt << g_settings->getFloat("movement_speed_walk");
-	pkt << g_settings->getFloat("movement_speed_crouch");
-	pkt << g_settings->getFloat("movement_speed_fast");
-	pkt << g_settings->getFloat("movement_speed_climb");
-	pkt << g_settings->getFloat("movement_speed_jump");
-	pkt << g_settings->getFloat("movement_liquid_fluidity");
-	pkt << g_settings->getFloat("movement_liquid_fluidity_smooth");
-	pkt << g_settings->getFloat("movement_liquid_sink");
-	pkt << g_settings->getFloat("movement_gravity");
+	pkt << m_conf.getFloat("movement_acceleration_default");
+	pkt << m_conf.getFloat("movement_acceleration_air");
+	pkt << m_conf.getFloat("movement_acceleration_fast");
+	pkt << m_conf.getFloat("movement_speed_walk");
+	pkt << m_conf.getFloat("movement_speed_crouch");
+	pkt << m_conf.getFloat("movement_speed_fast");
+	pkt << m_conf.getFloat("movement_speed_climb");
+	pkt << m_conf.getFloat("movement_speed_jump");
+	pkt << m_conf.getFloat("movement_liquid_fluidity");
+	pkt << m_conf.getFloat("movement_liquid_fluidity_smooth");
+	pkt << m_conf.getFloat("movement_liquid_sink");
+	pkt << m_conf.getFloat("movement_gravity");
 
 	Send(&pkt);
 }
 
 void Server::SendPlayerHPOrDie(PlayerSAO *playersao)
 {
-	if (!g_settings->getBool("enable_damage"))
+	if (!m_conf.getBool("enable_damage"))
 		return;
 
 	session_t peer_id   = playersao->getPeerID();
@@ -1580,7 +1593,7 @@ void Server::SendSpawnParticle(session_t peer_id, u16 protocol_version,
 				const struct TileAnimationParams &animation, u8 glow)
 {
 	static thread_local const float radius =
-			g_settings->getS16("max_block_send_distance") * MAP_BLOCKSIZE * BS;
+			m_conf.getS16("max_block_send_distance") * MAP_BLOCKSIZE * BS;
 
 	if (peer_id == PEER_ID_INEXISTENT) {
 		std::vector<session_t> clients = m_clients.getClientIDs();
@@ -2212,8 +2225,8 @@ void Server::SendBlocks(float dtime)
 
 	// Maximal total count calculation
 	// The per-client block sends is halved with the maximal online users
-	u32 max_blocks_to_send = (m_env->getPlayerCount() + g_settings->getU32("max_users")) *
-		g_settings->getU32("max_simultaneous_block_sends_per_client") / 4 + 1;
+	u32 max_blocks_to_send = (m_env->getPlayerCount() + m_conf.getU32("max_users")) *
+		m_conf.getU32("max_simultaneous_block_sends_per_client") / 4 + 1;
 
 	for (const PrioritySortedBlockTransfer &block_to_send : queue) {
 		if (total_sending >= max_blocks_to_send)
@@ -2360,7 +2373,7 @@ void Server::sendMediaAnnouncement(session_t peer_id, const std::string &lang_co
 		pkt << i.first << i.second.sha1_digest;
 	}
 
-	pkt << g_settings->get("remote_media");
+	pkt << m_conf.get("remote_media");
 	Send(&pkt);
 }
 
@@ -2616,7 +2629,7 @@ void Server::acceptAuth(session_t peer_id, bool forSudoMode)
 		client->allowed_sudo_mechs = sudo_auth_mechs;
 
 		resp_pkt << v3f(0,0,0) << (u64) m_env->getServerMap().getSeed()
-				<< g_settings->getFloat("dedicated_server_step")
+				<< m_conf.getFloat("dedicated_server_step")
 				<< sudo_auth_mechs;
 
 		Send(&resp_pkt);
@@ -2752,7 +2765,7 @@ std::wstring Server::handleChat(const std::string &name, const std::wstring &wna
 	RollbackScopeActor rollback_scope(m_rollback,
 		std::string("player:") + name);
 
-	if (g_settings->getBool("strip_color_codes"))
+	if (m_conf.getBool("strip_color_codes"))
 		wmessage = unescape_enriched(wmessage);
 
 	if (player) {
@@ -2760,7 +2773,7 @@ std::wstring Server::handleChat(const std::string &name, const std::wstring &wna
 			case RPLAYER_CHATRESULT_FLOODING: {
 				std::wstringstream ws;
 				ws << L"You cannot send more messages. You are limited to "
-				   << g_settings->getFloat("chat_message_limit_per_10sec")
+				   << m_conf.getFloat("chat_message_limit_per_10sec")
 				   << L" messages per 10 seconds.";
 				return ws.str();
 			}
@@ -2907,8 +2920,8 @@ std::wstring Server::getStatusString()
 	if (!((ServerMap*)(&m_env->getMap()))->isSavingEnabled())
 		os<<std::endl<<L"# Server: "<<" WARNING: Map saving is disabled.";
 
-	if (!g_settings->get("motd").empty())
-		os<<std::endl<<L"# Server: "<<narrow_to_wide(g_settings->get("motd"));
+	if (!m_conf.get("motd").empty())
+		os<<std::endl<<L"# Server: "<<narrow_to_wide(m_conf.get("motd"));
 	return os.str();
 }
 
@@ -3398,7 +3411,7 @@ v3f Server::findSpawnPos()
 {
 	ServerMap &map = m_env->getServerMap();
 	v3f nodeposf;
-	if (g_settings->getV3FNoEx("static_spawnpoint", nodeposf)) {
+	if (m_conf.getV3FNoEx("static_spawnpoint", nodeposf)) {
 		return nodeposf * BS;
 	}
 
@@ -3506,7 +3519,7 @@ PlayerSAO* Server::emergePlayer(const char *name, session_t peer_id, u16 proto_v
 	}
 
 	if (!player) {
-		player = new RemotePlayer(name, idef());
+		player = new RemotePlayer(name, idef(), &m_conf);
 	}
 
 	bool newplayer = false;
@@ -3550,14 +3563,15 @@ void Server::unregisterModStorage(const std::string &name)
 
 void dedicated_server_loop(Server &server, bool &kill)
 {
+	Settings *settings = server.getSettings();
 	verbosestream<<"dedicated_server_loop()"<<std::endl;
 
 	IntervalLimiter m_profiler_interval;
 
 	static thread_local const float steplen =
-			g_settings->getFloat("dedicated_server_step");
+			settings->getFloat("dedicated_server_step");
 	static thread_local const float profiler_print_interval =
-			g_settings->getFloat("profiler_print_interval");
+			settings->getFloat("profiler_print_interval");
 
 	for(;;) {
 		// This is kind of a hack but can be done like this
@@ -3586,9 +3600,11 @@ void dedicated_server_loop(Server &server, bool &kill)
 
 	infostream << "Dedicated server quitting" << std::endl;
 #if USE_CURL
-	if (g_settings->getBool("server_announce"))
-		ServerList::sendAnnounce(ServerList::AA_DELETE,
-			server.m_bind_addr.getPort());
+	if (settings->getBool("server_announce"))
+		ServerList::sendAnnounce(
+			ServerList::AA_DELETE,
+			server.m_bind_addr.getPort(),
+			settings);
 #endif
 }
 

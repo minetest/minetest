@@ -65,7 +65,7 @@ void MainMenuScripting::initializeModApi(lua_State *L, int top)
 
 	// Initialize mod API modules
 	ModApiMainMenu::Initialize(L, top);
-	ModApiUtil::Initialize(L, top);
+	ModApiUtil::InitializeMainMenu(L, top);
 	ModApiSound::Initialize(L, top);
 
 	asyncEngine.registerStateInitializer(registerLuaClasses);

@@ -249,6 +249,15 @@ enum ToClientCommand
 
 	TOCLIENT_INIT_LEGACY = 0x10, // Obsolete
 
+	TOCLIENT_SERVER_INFO = 0x11,
+	/*
+	 * u8 enable_damage
+	 * u8 creative_mode
+	 * u8 server_announce
+	 * u8 enable_pvp
+	 * std::string server_name
+	 */
+
 	TOCLIENT_BLOCKDATA = 0x20, //TODO: Multiple blocks
 	TOCLIENT_ADDNODE = 0x21,
 	/*

@@ -48,7 +48,6 @@ local function singleplayer_refresh_gamebar()
 							index = #menudata.worldlist:get_list()
 						end
 					end
-					menu_worldmt_legacy(index)
 					return true
 				end
 			end
@@ -95,12 +94,13 @@ local function get_formspec(tabview, name, tabdata)
 	retval = retval ..
 			"button[4,4.15;2.6,0.5;world_delete;".. fgettext("Delete") .. "]" ..
 			"button[6.5,4.15;2.8,0.5;world_create;".. fgettext("New") .. "]" ..
-			"button[9.2,4.15;2.55,0.5;world_configure;".. fgettext("Configure") .. "]" ..
+			"button[9.2,4.15;2.55,0.5;world_configure;".. fgettext("Configure Mods") .. "]" ..
+			"button[4,5;2.6,0.5;world_settings;".. fgettext("World Settings") .. "]" ..
 			"label[4,-0.25;".. fgettext("Select World:") .. "]"..
 			"checkbox[0.25,0.25;cb_creative_mode;".. fgettext("Creative Mode") .. ";" ..
-			dump(core.settings:get_bool("creative_mode")) .. "]"..
+			get_world_setting(index, "creative_mode") .. "]"..
 			"checkbox[0.25,0.7;cb_enable_damage;".. fgettext("Enable Damage") .. ";" ..
-			dump(core.settings:get_bool("enable_damage")) .. "]"..
+			get_world_setting(index, "enable_damage") .. "]"..
 			"checkbox[0.25,1.15;cb_server;".. fgettext("Host Server") ..";" ..
 			dump(core.settings:get_bool("enable_server")) .. "]" ..
 			"textlist[4,0.25;7.5,3.7;sp_worlds;" ..
@@ -111,7 +111,7 @@ local function get_formspec(tabview, name, tabdata)
 		retval = retval ..
 				"button[8.5,5;3.25,0.5;play;".. fgettext("Host Game") .. "]" ..
 				"checkbox[0.25,1.6;cb_server_announce;" .. fgettext("Announce Server") .. ";" ..
-				dump(core.settings:get_bool("server_announce")) .. "]" ..
+				get_world_setting(index, "server_announce") .. "]" ..
 				"label[0.25,2.2;" .. fgettext("Name/Password") .. "]" ..
 				"field[0.55,3.2;3.5,0.5;te_playername;;" ..
 				core.formspec_escape(core.settings:get("name")) .. "]" ..
@@ -121,13 +121,13 @@ local function get_formspec(tabview, name, tabdata)
 		if bind_addr ~= nil and bind_addr ~= "" then
 			retval = retval ..
 				"field[0.55,5.2;2.25,0.5;te_serveraddr;" .. fgettext("Bind Address") .. ";" ..
-				core.formspec_escape(core.settings:get("bind_address")) .. "]" ..
+				core.formspec_escape(get_world_setting(index, "bind_address")) .. "]" ..
 				"field[2.8,5.2;1.25,0.5;te_serverport;" .. fgettext("Port") .. ";" ..
-				core.formspec_escape(core.settings:get("port")) .. "]"
+				core.formspec_escape(get_world_setting(index, "port")) .. "]"
 		else
 			retval = retval ..
 				"field[0.55,5.2;3.5,0.5;te_serverport;" .. fgettext("Server Port") .. ";" ..
-				core.formspec_escape(core.settings:get("port")) .. "]"
+				core.formspec_escape(get_world_setting(index, "port")) .. "]"
 		end
 	else
 		retval = retval ..
@@ -147,8 +147,6 @@ local function main_button_handler(this, fields, name, tabdata)
 		local event = core.explode_textlist_event(fields["sp_worlds"])
 		local selected = core.get_textlist_index("sp_worlds")
 
-		menu_worldmt_legacy(selected)
-
 		if event.type == "DCL" then
 			world_doubleclick = true
 		end
@@ -165,17 +163,15 @@ local function main_button_handler(this, fields, name, tabdata)
 	end
 
 	if fields["cb_creative_mode"] then
-		core.settings:set("creative_mode", fields["cb_creative_mode"])
 		local selected = core.get_textlist_index("sp_worlds")
-		menu_worldmt(selected, "creative_mode", fields["cb_creative_mode"])
+		set_world_setting(selected, "creative_mode", fields["cb_creative_mode"])
 
 		return true
 	end
 
 	if fields["cb_enable_damage"] then
-		core.settings:set("enable_damage", fields["cb_enable_damage"])
 		local selected = core.get_textlist_index("sp_worlds")
-		menu_worldmt(selected, "enable_damage", fields["cb_enable_damage"])
+		set_world_setting(selected, "enable_damage", fields["cb_enable_damage"])
 
 		return true
 	end
@@ -187,9 +183,8 @@ local function main_button_handler(this, fields, name, tabdata)
 	end
 
 	if fields["cb_server_announce"] then
-		core.settings:set("server_announce", fields["cb_server_announce"])
 		local selected = core.get_textlist_index("srv_worlds")
-		menu_worldmt(selected, "server_announce", fields["cb_server_announce"])
+		set_world_setting(selected, "server_announce", fields["cb_server_announce"])
 
 		return true
 	end
@@ -200,15 +195,14 @@ local function main_button_handler(this, fields, name, tabdata)
 
 		if core.settings:get_bool("enable_server") then
 			if selected ~= nil and gamedata.selected_world ~= 0 then
+				set_world_setting(selected, "port", fields["te_serverport"])
+				set_world_setting(selected, "bind_address", fields["te_serveraddr"])
+				set_world_setting(selected, "name", fields["te_playername"])
+				
 				gamedata.playername     = fields["te_playername"]
 				gamedata.password       = fields["te_passwd"]
 				gamedata.port           = fields["te_serverport"]
 				gamedata.address        = ""
-
-				core.settings:set("port",gamedata.port)
-				if fields["te_serveraddr"] ~= nil then
-					core.settings:set("bind_address",fields["te_serveraddr"])
-				end
 
 				--update last game
 				local world = menudata.worldlist:get_raw_element(gamedata.selected_world)
@@ -278,6 +272,17 @@ local function main_button_handler(this, fields, name, tabdata)
 			end
 		end
 
+		return true
+	end
+	
+	if fields["world_settings"] ~= nil then
+		local selected = core.get_textlist_index("sp_worlds")
+		local adv_settings_dlg = create_world_settings_dlg()
+		adv_settings_dlg.data.settings = get_world_config(selected)
+		adv_settings_dlg:set_parent(this)
+		this:hide()
+		adv_settings_dlg:show()
+		
 		return true
 	end
 end

@@ -192,7 +192,7 @@ void MapgenValleysParams::writeParams(Settings *settings) const
 ///////////////////////////////////////
 
 
-void MapgenValleys::makeChunk(BlockMakeData *data)
+void MapgenValleys::makeChunk(BlockMakeData *data, Settings *server_settings)
 {
 	// Pre-conditions
 	assert(data->vmanip);
@@ -245,7 +245,7 @@ void MapgenValleys::makeChunk(BlockMakeData *data)
 
 	// Dungeon creation
 	if ((flags & MG_DUNGEONS) && node_max.Y < 50)
-		generateDungeons(stone_surface_max_y, mgstone_type, biome_stone);
+		generateDungeons(stone_surface_max_y, mgstone_type, biome_stone, server_settings);
 
 	// Generate the registered decorations
 	if (flags & MG_DECORATIONS)

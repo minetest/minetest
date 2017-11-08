@@ -611,14 +611,13 @@ u64 RemoteClient::uptime() const
 	return porting::getTimeS() - m_connection_time;
 }
 
-ClientInterface::ClientInterface(const std::shared_ptr<con::Connection> & con)
+ClientInterface::ClientInterface()
 :
-	m_con(con),
 	m_env(NULL),
 	m_print_info_timer(0.0f)
 {
-
 }
+
 ClientInterface::~ClientInterface()
 {
 	/*
@@ -632,6 +631,11 @@ ClientInterface::~ClientInterface()
 			delete client_it.second;
 		}
 	}
+}
+
+void ClientInterface::SetConnection(const std::shared_ptr<con::Connection> & con)
+{
+	m_con = con;
 }
 
 std::vector<session_t> ClientInterface::getClientIDs(ClientState min_state)

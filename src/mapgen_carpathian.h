@@ -77,7 +77,7 @@ public:
 	float getSteps(float noise);
 	inline float getLerp(float noise1, float noise2, float mod);
 
-	virtual void makeChunk(BlockMakeData *data);
+	virtual void makeChunk(BlockMakeData *data, Settings *server_settings);
 	int getSpawnLevelAtPoint(v2s16 p);
 
 private:

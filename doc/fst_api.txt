@@ -95,7 +95,7 @@ dialog_create(name, cbf_formspec, cbf_button_handler, cbf_events)
 ^ create a dialog component
 ^ name: name of component (unique per ui)
 ^ cbf_formspec: function to be called to get formspec
-	function(dialogdata)
+	function(dialogdata, name, dialog)
 ^ cbf_button_handler: function to handle buttons
 	function(dialog, fields)
 ^ cbf_events: function to handle events

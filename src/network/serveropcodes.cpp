@@ -130,7 +130,7 @@ const ClientCommandFactory clientCommandFactoryTable[TOCLIENT_NUM_MSG_TYPES] =
 	null_command_factory, // 0x0E
 	null_command_factory, // 0x0F
 	{ "TOCLIENT_INIT",              0, true }, // 0x10
-	null_command_factory,
+	{ "TOCLIENT_SERVER_INFO",       0, true }, // 0x11
 	null_command_factory,
 	null_command_factory,
 	null_command_factory,
@@ -200,8 +200,8 @@ const ClientCommandFactory clientCommandFactoryTable[TOCLIENT_NUM_MSG_TYPES] =
 	{ "TOCLIENT_CLOUD_PARAMS",             0, true }, // 0x54
 	{ "TOCLIENT_FADE_SOUND",               0, true }, // 0x55
 	{ "TOCLIENT_UPDATE_PLAYER_LIST",       0, true }, // 0x56
-	{ "TOCLIENT_MODCHANNEL_MSG",           0, true}, // 0x57
-	{ "TOCLIENT_MODCHANNEL_SIGNAL",        0, true}, // 0x58
+	{ "TOCLIENT_MODCHANNEL_MSG",           0, true }, // 0x57
+	{ "TOCLIENT_MODCHANNEL_SIGNAL",        0, true }, // 0x58
 	null_command_factory,
 	null_command_factory,
 	null_command_factory,

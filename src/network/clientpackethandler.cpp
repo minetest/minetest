@@ -1423,3 +1423,12 @@ void Client::handleCommand_ModChannelSignal(NetworkPacket *pkt)
 	if (valid_signal)
 		m_script->on_modchannel_signal(channel, signal);
 }
+
+void Client::handleCommand_ServerInfo(NetworkPacket *pkt)
+{
+	*pkt >> m_server_info.enable_damage
+		>> m_server_info.creative_mode
+		>> m_server_info.server_announce
+		>> m_server_info.enable_pvp
+		>> m_server_info.server_name;
+}

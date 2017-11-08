@@ -266,15 +266,9 @@ std::vector<WorldSpec> getAvailableWorlds()
 
 bool loadGameConfAndInitWorld(const std::string &path, const SubgameSpec &gamespec)
 {
-	// Override defaults with those provided by the game.
-	// We clear and reload the defaults because the defaults
-	// might have been overridden by other subgame config
-	// files that were loaded before.
-	g_settings->clearDefaults();
-	set_default_settings(g_settings);
-	Settings game_defaults;
-	getGameMinetestConfig(gamespec.path, game_defaults);
-	override_default_settings(g_settings, &game_defaults);
+	Settings conf;
+	set_default_settings(&conf);
+	override_default_settings(&conf, g_settings);
 
 	infostream << "Initializing world at " << path << std::endl;
 
@@ -283,14 +277,11 @@ bool loadGameConfAndInitWorld(const std::string &path, const SubgameSpec &gamesp
 	// Create world.mt if does not already exist
 	std::string worldmt_path = path + DIR_DELIM "world.mt";
 	if (!fs::PathExists(worldmt_path)) {
-		Settings conf;
+		getGameMinetestConfig(gamespec.path, conf);
 
 		conf.set("gameid", gamespec.id);
 		conf.set("backend", "sqlite3");
 		conf.set("player_backend", "sqlite3");
-		conf.setBool("creative_mode", g_settings->getBool("creative_mode"));
-		conf.setBool("enable_damage", g_settings->getBool("enable_damage"));
-
 		if (!conf.updateConfigFile(worldmt_path.c_str()))
 			return false;
 	}
@@ -302,12 +293,12 @@ bool loadGameConfAndInitWorld(const std::string &path, const SubgameSpec &gamesp
 		fs::CreateAllDirs(path);
 		std::ostringstream oss(std::ios_base::binary);
 
-		Settings conf;
+		Settings map_conf;
 		MapgenParams params;
 
-		params.readParams(g_settings);
-		params.writeParams(&conf);
-		conf.writeLines(oss);
+		params.readParams(&conf);
+		params.writeParams(&map_conf);
+		map_conf.writeLines(oss);
 		oss << "[end_of_params]\n";
 
 		fs::safeWriteToFile(map_meta_path, oss.str());

@@ -23,6 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <string>
 #include "database.h"
 #include "exceptions.h"
+#include "settings.h"
 
 extern "C" {
 #include "sqlite3.h"
@@ -38,7 +39,7 @@ public:
 
 	bool initialized() const { return m_initialized; }
 protected:
-	Database_SQLite3(const std::string &savedir, const std::string &dbname);
+	Database_SQLite3(const std::string &savedir, const std::string &dbname, Settings *conf);
 
 	// Open and initialize the database if needed
 	void verifyDatabase();
@@ -125,6 +126,8 @@ private:
 	sqlite3_stmt *m_stmt_begin = nullptr;
 	sqlite3_stmt *m_stmt_end = nullptr;
 
+	Settings *m_conf = nullptr;
+
 	s64 m_busy_handler_data[2];
 
 	static int busyHandler(void *data, int count);
@@ -133,7 +136,7 @@ private:
 class MapDatabaseSQLite3 : private Database_SQLite3, public MapDatabase
 {
 public:
-	MapDatabaseSQLite3(const std::string &savedir);
+	MapDatabaseSQLite3(const std::string &savedir, Settings *conf);
 	virtual ~MapDatabaseSQLite3();
 
 	bool saveBlock(const v3s16 &pos, const std::string &data);
@@ -160,13 +163,13 @@ private:
 class PlayerDatabaseSQLite3 : private Database_SQLite3, public PlayerDatabase
 {
 public:
-	PlayerDatabaseSQLite3(const std::string &savedir);
+	PlayerDatabaseSQLite3(const std::string &savedir, Settings *conf);
 	virtual ~PlayerDatabaseSQLite3();
 
 	void savePlayer(RemotePlayer *player);
 	bool loadPlayer(RemotePlayer *player, PlayerSAO *sao);
 	bool removePlayer(const std::string &name);
-	void listPlayers(std::vector<std::string> &res);
+	void listPlayers(std::vector<std::string> &res, Settings *settings);
 
 protected:
 	virtual void createDatabase();

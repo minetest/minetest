@@ -91,7 +91,7 @@ public:
 
 	virtual MapgenType getType() const { return MAPGEN_VALLEYS; }
 
-	virtual void makeChunk(BlockMakeData *data);
+	virtual void makeChunk(BlockMakeData *data, Settings *server_settings);
 	int getSpawnLevelAtPoint(v2s16 p);
 
 	s16 large_cave_depth;

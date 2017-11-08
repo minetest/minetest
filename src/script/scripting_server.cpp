@@ -58,7 +58,7 @@ ServerScripting::ServerScripting(Server* server)
 
 	SCRIPTAPI_PRECHECKHEADER
 
-	if (g_settings->getBool("secure.enable_security")) {
+	if (server->getSettings()->getBool("secure.enable_security")) {
 		initializeSecurity();
 	}
 
@@ -112,7 +112,7 @@ void ServerScripting::InitializeModApi(lua_State *L, int top)
 	ModApiParticles::Initialize(L, top);
 	ModApiRollback::Initialize(L, top);
 	ModApiServer::Initialize(L, top);
-	ModApiUtil::Initialize(L, top);
+	ModApiUtil::InitializeServer(L, top);
 	ModApiHttp::Initialize(L, top);
 	ModApiStorage::Initialize(L, top);
 	ModApiChannels::Initialize(L, top);

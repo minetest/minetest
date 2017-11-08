@@ -263,7 +263,7 @@ int MapgenV7::getSpawnLevelAtPoint(v2s16 p)
 }
 
 
-void MapgenV7::makeChunk(BlockMakeData *data)
+void MapgenV7::makeChunk(BlockMakeData *data, Settings *server_settings)
 {
 	// Pre-conditions
 	assert(data->vmanip);
@@ -325,7 +325,7 @@ void MapgenV7::makeChunk(BlockMakeData *data)
 
 	// Generate dungeons
 	if (flags & MG_DUNGEONS)
-		generateDungeons(stone_surface_max_y, mgstone_type, biome_stone);
+		generateDungeons(stone_surface_max_y, mgstone_type, biome_stone, server_settings);
 
 	// Generate the registered decorations
 	if (flags & MG_DECORATIONS)

@@ -40,6 +40,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/hex.h"
 #include "util/sha1.h"
 #include <algorithm>
+#include "server.h"
 
 
 // log([level,] text)
@@ -407,7 +408,7 @@ int ModApiUtil::l_request_insecure_environment(lua_State *L)
 
 	// Check secure.trusted_mods
 	const char *mod_name = lua_tostring(L, -1);
-	std::string trusted_mods = g_settings->get("secure.trusted_mods");
+	std::string trusted_mods = getServer(L)->getSettings()->get("secure.trusted_mods");
 	trusted_mods.erase(std::remove_if(trusted_mods.begin(),
 			trusted_mods.end(), static_cast<int(*)(int)>(&std::isspace)),
 			trusted_mods.end());
@@ -502,6 +503,20 @@ void ModApiUtil::Initialize(lua_State *L, int top)
 
 	API_FCT(get_version);
 	API_FCT(sha1);
+}
+
+void ModApiUtil::InitializeServer(lua_State *L, int top)
+{
+	Initialize(L, top);
+
+	Server *server = getServer(L);
+	LuaSettings::create(L, server->getSettings(), server->getSettingsPath());
+	lua_setfield(L, top, "settings");
+}
+
+void ModApiUtil::InitializeMainMenu(lua_State *L, int top)
+{
+	Initialize(L, top);
 
 	LuaSettings::create(L, g_settings, g_settings_path);
 	lua_setfield(L, top, "settings");

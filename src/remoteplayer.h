@@ -22,6 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "player.h"
 #include "cloudparams.h"
+#include "settings.h"
 
 class PlayerSAO;
 
@@ -40,7 +41,7 @@ class RemotePlayer : public Player
 	friend class PlayerDatabaseFiles;
 
 public:
-	RemotePlayer(const char *name, IItemDefManager *idef);
+	RemotePlayer(const char *name, IItemDefManager *idef, Settings *settings);
 	virtual ~RemotePlayer() = default;
 
 	void deSerialize(std::istream &is, const std::string &playername, PlayerSAO *sao);

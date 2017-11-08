@@ -35,7 +35,8 @@ class ConnectionSendThread : public Thread
 public:
 	friend class UDPPeer;
 
-	ConnectionSendThread(unsigned int max_packet_size, float timeout);
+	ConnectionSendThread(
+			unsigned int max_packet_size, float timeout, u16 max_packets);
 
 	void *run();
 
@@ -90,7 +91,7 @@ private:
 class ConnectionReceiveThread : public Thread
 {
 public:
-	ConnectionReceiveThread(unsigned int max_packet_size);
+	ConnectionReceiveThread(unsigned int max_packet_size, u16 max_packets);
 
 	void *run();
 
@@ -145,5 +146,6 @@ private:
 	static const PacketTypeHandler packetTypeRouter[PACKET_TYPE_MAX];
 
 	Connection *m_connection = nullptr;
+	u16 m_max_packet_count;
 };
 }

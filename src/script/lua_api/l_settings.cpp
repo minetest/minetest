@@ -23,10 +23,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "settings.h"
 #include "noise.h"
 #include "log.h"
+#include "server.h"
 
 
 #define SET_SECURITY_CHECK(L, name) \
-	if (o->m_settings == g_settings && ScriptApiSecurity::isSecure(L) && \
+	if ((o->m_settings == g_settings ||(getServer(L) && o->m_settings == getServer(L)->getSettings())) \
+			&& ScriptApiSecurity::isSecure(L) && \
 			name.compare(0, 7, "secure.") == 0) { \
 		throw LuaError("Attempt to set secure setting."); \
 	}

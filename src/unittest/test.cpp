@@ -25,6 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "modchannels.h"
 #include "mods.h"
 #include "util/numeric.h"
+#include "settings.h"
 
 content_t t_CONTENT_STONE;
 content_t t_CONTENT_GRASS;
@@ -65,6 +66,10 @@ public:
 	{
 		static std::vector<ModSpec> testmodspec;
 		return testmodspec;
+	}
+	virtual Settings* getSettings()
+	{
+		return g_settings;
 	}
 	virtual const ModSpec* getModSpec(const std::string &modname) const { return NULL; }
 	virtual std::string getModStoragePath() const { return "."; }

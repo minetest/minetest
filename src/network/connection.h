@@ -659,7 +659,7 @@ public:
 
 	bool getAddress(MTProtocols type, Address& toset);
 
-	void setNonLegacyPeer();
+	void setNonLegacyPeer(u16 max_packets_per_iteration);
 
 	bool getLegacyPeer()
 	{ return m_legacy_peer; }
@@ -774,8 +774,8 @@ public:
 	friend class ConnectionSendThread;
 	friend class ConnectionReceiveThread;
 
-	Connection(u32 protocol_id, u32 max_packet_size, float timeout, bool ipv6,
-			PeerHandler *peerhandler);
+	Connection(u32 protocol_id, u32 max_packet_size, float timeout,
+			u16 max_packets, bool ipv6, PeerHandler *peerhandler);
 	~Connection();
 
 	/* Interface */
