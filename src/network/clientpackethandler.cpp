@@ -32,8 +32,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "server.h"
 #include "util/strfnd.h"
 #include "client/clientevent.h"
+#include "network/clientconnection.h"
 #include "network/clientopcodes.h"
-#include "network/connection.h"
+#include "network/clientconnection.h"
 #include "script/scripting_client.h"
 #include "util/serialize.h"
 #include "util/srp.h"
@@ -56,9 +57,10 @@ void Client::handleCommand_Hello(NetworkPacket* pkt)
 	u16 proto_ver;
 	u16 compression_mode;
 	u32 auth_mechs;
+	session_t session_id;
 	std::string username_legacy; // for case insensitivity
 	*pkt >> serialization_ver >> compression_mode >> proto_ver
-		>> auth_mechs >> username_legacy;
+		>> auth_mechs >> username_legacy >> session_id;
 
 	// Chose an auth method we support
 	AuthMechanism chosen_auth_mechanism = choseAuthMech(auth_mechs);
@@ -97,11 +99,12 @@ void Client::handleCommand_Hello(NetworkPacket* pkt)
 	// Authenticate using that method, or abort if there wasn't any method found
 	if (chosen_auth_mechanism != AUTH_MECHANISM_NONE) {
 		startAuth(chosen_auth_mechanism);
+		m_con->get_connection()->setSessionId(session_id);
 	} else {
 		m_chosen_auth_mech = AUTH_MECHANISM_NONE;
 		m_access_denied = true;
 		m_access_denied_reason = "Unknown";
-		m_con->Disconnect();
+		m_con->stop();
 	}
 
 }
@@ -133,9 +136,8 @@ void Client::handleCommand_AuthAccept(NetworkPacket* pkt)
 	NetworkPacket resp_pkt(TOSERVER_INIT2, sizeof(u16) + lang.size());
 	resp_pkt << lang;
 	Send(&resp_pkt);
-
-	m_state = LC_Init;
 }
+
 void Client::handleCommand_AcceptSudoMode(NetworkPacket* pkt)
 {
 	deleteAuthData();

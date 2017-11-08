@@ -201,6 +201,7 @@ General options:
     ENABLE_SPATIAL         - Build with LibSpatial; Speeds up AreaStores
     ENABLE_SOUND           - Build with OpenAL, libogg & libvorbis; in-game Sounds
     ENABLE_LUAJIT          - Build with LuaJIT (much faster than non-JIT Lua)
+    ENABLE_SYSTEM_ASIO     - Use ASIO from system (not recommended)
     ENABLE_SYSTEM_GMP      - Use GMP from system (much faster than bundled mini-gmp)
     ENABLE_SYSTEM_JSONCPP  - Use JsonCPP from system
     RUN_IN_PLACE           - Create a portable install (worlds, settings etc. in current directory)

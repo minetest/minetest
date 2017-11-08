@@ -22,9 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "log.h"
 #include "settings.h"
 #include "util/serialize.h"
-#include "network/connection.h"
 #include "network/networkpacket.h"
-#include "network/socket.h"
 
 class TestConnection : public TestBase {
 public:
@@ -38,7 +36,6 @@ public:
 
 	void runTests(IGameDef *gamedef);
 
-	void testHelpers();
 	void testConnectSendReceive();
 };
 
@@ -46,80 +43,10 @@ static TestConnection g_test_instance;
 
 void TestConnection::runTests(IGameDef *gamedef)
 {
-	TEST(testHelpers);
 	TEST(testConnectSendReceive);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-
-struct Handler : public con::PeerHandler
-{
-	Handler(const char *a_name) : name(a_name) {}
-
-	void peerAdded(con::Peer *peer)
-	{
-		infostream << "Handler(" << name << ")::peerAdded(): "
-			"id=" << peer->id << std::endl;
-		last_id = peer->id;
-		count++;
-	}
-
-	void deletingPeer(con::Peer *peer, bool timeout)
-	{
-		infostream << "Handler(" << name << ")::deletingPeer(): "
-			"id=" << peer->id << ", timeout=" << timeout << std::endl;
-		last_id = peer->id;
-		count--;
-	}
-
-	s32 count = 0;
-	u16 last_id = 0;
-	const char *name;
-};
-
-void TestConnection::testHelpers()
-{
-	// Some constants for testing
-	u32 proto_id = 0x12345678;
-	session_t peer_id = 123;
-	u8 channel = 2;
-	SharedBuffer<u8> data1(1);
-	data1[0] = 100;
-	Address a(127,0,0,1, 10);
-	const u16 seqnum = 34352;
-
-	con::BufferedPacket p1 = con::makePacket(a, data1,
-			proto_id, peer_id, channel);
-	/*
-		We should now have a packet with this data:
-		Header:
-			[0] u32 protocol_id
-			[4] session_t sender_peer_id
-			[6] u8 channel
-		Data:
-			[7] u8 data1[0]
-	*/
-	UASSERT(readU32(&p1.data[0]) == proto_id);
-	UASSERT(readU16(&p1.data[4]) == peer_id);
-	UASSERT(readU8(&p1.data[6]) == channel);
-	UASSERT(readU8(&p1.data[7]) == data1[0]);
-
-	//infostream<<"initial data1[0]="<<((u32)data1[0]&0xff)<<std::endl;
-
-	SharedBuffer<u8> p2 = con::makeReliablePacket(data1, seqnum);
-
-	/*infostream<<"p2.getSize()="<<p2.getSize()<<", data1.getSize()="
-			<<data1.getSize()<<std::endl;
-	infostream<<"readU8(&p2[3])="<<readU8(&p2[3])
-			<<" p2[3]="<<((u32)p2[3]&0xff)<<std::endl;
-	infostream<<"data1[0]="<<((u32)data1[0]&0xff)<<std::endl;*/
-
-	UASSERT(p2.getSize() == 3 + data1.getSize());
-	UASSERT(readU8(&p2[0]) == con::PACKET_TYPE_RELIABLE);
-	UASSERT(readU16(&p2[1]) == seqnum);
-	UASSERT(readU8(&p2[3]) == data1[0]);
-}
-
 
 void TestConnection::testConnectSendReceive()
 {
@@ -128,7 +55,7 @@ void TestConnection::testConnectSendReceive()
 
 		NOTE: This mostly tests the legacy interface.
 	*/
-
+#if 0
 	u32 proto_id = 0xad26846a;
 
 	Handler hand_server("server");
@@ -339,4 +266,6 @@ void TestConnection::testConnectSendReceive()
 	UASSERT(hand_client.last_id == 1);
 	UASSERT(hand_server.count == 1);
 	UASSERT(hand_server.last_id == 2);
+
+#endif
 }

@@ -31,7 +31,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "settings.h"
 #include "tool.h"
 #include "version.h"
-#include "network/connection.h"
 #include "network/networkprotocol.h"
 #include "network/serveropcodes.h"
 #include "util/auth.h"
@@ -39,6 +38,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/pointedthing.h"
 #include "util/serialize.h"
 #include "util/srp.h"
+#include "networkexceptions.h"
 
 void Server::handleCommand_Deprecated(NetworkPacket* pkt)
 {
@@ -48,16 +48,15 @@ void Server::handleCommand_Deprecated(NetworkPacket* pkt)
 
 void Server::handleCommand_Init(NetworkPacket* pkt)
 {
-
-	if(pkt->getSize() < 1)
+	if (pkt->getSize() < 1)
 		return;
 
 	RemoteClient* client = getClient(pkt->getPeerId(), CS_Created);
 
 	std::string addr_s;
 	try {
-		Address address = getPeerAddress(pkt->getPeerId());
-		addr_s = address.serializeString();
+		asio::ip::address address = getPeerAddress(pkt->getPeerId());
+		addr_s = address.to_string();
 	}
 	catch (con::PeerNotFoundException &e) {
 		/*
@@ -269,7 +268,7 @@ void Server::handleCommand_Init(NetworkPacket* pkt)
 
 	u16 depl_compress_mode = NETPROTO_COMPRESSION_NONE;
 	resp_pkt << depl_serial_v << depl_compress_mode << net_proto_version
-		<< auth_mechs << legacyPlayerNameCasing;
+		<< auth_mechs << legacyPlayerNameCasing << pkt->getPeerId();
 
 	Send(&resp_pkt);
 
@@ -323,7 +322,7 @@ void Server::handleCommand_Init2(NetworkPacket* pkt)
 	SendCSMFlavourLimits(pkt->getPeerId());
 
 	// Warnings about protocol version can be issued here
-	if (getClient(pkt->getPeerId())->net_proto_version < LATEST_PROTOCOL_VERSION) {
+	if (protocol_version < LATEST_PROTOCOL_VERSION) {
 		SendChatMessage(pkt->getPeerId(), ChatMessage(CHATMESSAGE_TYPE_SYSTEM,
 				L"# Server: WARNING: YOUR CLIENT'S VERSION MAY NOT BE FULLY COMPATIBLE "
 				L"WITH THIS SERVER!"));
@@ -392,7 +391,8 @@ void Server::handleCommand_ClientReady(NetworkPacket* pkt)
 	for (const std::string &player: players) {
 		list_pkt <<  player;
 	}
-	m_clients.send(peer_id, 0, &list_pkt, true);
+
+	m_clients.send(peer_id, &list_pkt);
 
 	NetworkPacket notice_pkt(TOCLIENT_UPDATE_PLAYER_LIST, 0, PEER_ID_INEXISTENT);
 	// (u16) 1 + std::string represents a pseudo vector serialization representation
@@ -1491,7 +1491,7 @@ void Server::handleCommand_FirstSrp(NetworkPacket* pkt)
 	std::string salt;
 	std::string verification_key;
 
-	std::string addr_s = getPeerAddress(pkt->getPeerId()).serializeString();
+	std::string addr_s = getPeerAddress(pkt->getPeerId()).to_string();
 	u8 is_empty;
 
 	*pkt >> salt >> verification_key >> is_empty;
@@ -1557,7 +1557,7 @@ void Server::handleCommand_SrpBytesA(NetworkPacket* pkt)
 	if (!((cstate == CS_HelloSent) || (cstate == CS_Active))) {
 		actionstream << "Server: got SRP _A packet in wrong state "
 			<< cstate << " from "
-			<< getPeerAddress(pkt->getPeerId()).serializeString()
+			<< getPeerAddress(pkt->getPeerId()).to_string()
 			<< ". Ignoring." << std::endl;
 		return;
 	}
@@ -1565,7 +1565,7 @@ void Server::handleCommand_SrpBytesA(NetworkPacket* pkt)
 	if (client->chosen_mech != AUTH_MECHANISM_NONE) {
 		actionstream << "Server: got SRP _A packet, while auth"
 			<< "is already going on with mech " << client->chosen_mech
-			<< " from " << getPeerAddress(pkt->getPeerId()).serializeString()
+			<< " from " << getPeerAddress(pkt->getPeerId()).to_string()
 			<< " (wantSudo=" << wantSudo << "). Ignoring." << std::endl;
 		if (wantSudo) {
 			DenySudoAccess(pkt->getPeerId());
@@ -1590,7 +1590,7 @@ void Server::handleCommand_SrpBytesA(NetworkPacket* pkt)
 	if (wantSudo) {
 		if (!client->isSudoMechAllowed(chosen)) {
 			actionstream << "Server: Player \"" << client->getName()
-				<< "\" at " << getPeerAddress(pkt->getPeerId()).serializeString()
+				<< "\" at " << getPeerAddress(pkt->getPeerId()).to_string()
 				<< " tried to change password using unallowed mech "
 				<< chosen << "." << std::endl;
 			DenySudoAccess(pkt->getPeerId());
@@ -1599,7 +1599,7 @@ void Server::handleCommand_SrpBytesA(NetworkPacket* pkt)
 	} else {
 		if (!client->isMechAllowed(chosen)) {
 			actionstream << "Server: Client tried to authenticate from "
-				<< getPeerAddress(pkt->getPeerId()).serializeString()
+				<< getPeerAddress(pkt->getPeerId()).to_string()
 				<< " using unallowed mech " << chosen << "." << std::endl;
 			DenyAccess(pkt->getPeerId(), SERVER_ACCESSDENIED_UNEXPECTED_DATA);
 			return;
@@ -1665,7 +1665,7 @@ void Server::handleCommand_SrpBytesM(NetworkPacket* pkt)
 	if (!((cstate == CS_HelloSent) || (cstate == CS_Active))) {
 		actionstream << "Server: got SRP _M packet in wrong state "
 			<< cstate << " from "
-			<< getPeerAddress(pkt->getPeerId()).serializeString()
+			<< getPeerAddress(pkt->getPeerId()).to_string()
 			<< ". Ignoring." << std::endl;
 		return;
 	}
@@ -1674,7 +1674,7 @@ void Server::handleCommand_SrpBytesM(NetworkPacket* pkt)
 			client->chosen_mech != AUTH_MECHANISM_LEGACY_PASSWORD) {
 		actionstream << "Server: got SRP _M packet, while auth"
 			<< "is going on with mech " << client->chosen_mech
-			<< " from " << getPeerAddress(pkt->getPeerId()).serializeString()
+			<< " from " << getPeerAddress(pkt->getPeerId()).to_string()
 			<< " (wantSudo=" << wantSudo << "). Denying." << std::endl;
 		if (wantSudo) {
 			DenySudoAccess(pkt->getPeerId());
@@ -1691,7 +1691,7 @@ void Server::handleCommand_SrpBytesM(NetworkPacket* pkt)
 	if (srp_verifier_get_session_key_length((SRPVerifier *) client->auth_data)
 			!= bytes_M.size()) {
 		actionstream << "Server: User " << client->getName()
-			<< " at " << getPeerAddress(pkt->getPeerId()).serializeString()
+			<< " at " << getPeerAddress(pkt->getPeerId()).to_string()
 			<< " sent bytes_M with invalid length " << bytes_M.size() << std::endl;
 		DenyAccess(pkt->getPeerId(), SERVER_ACCESSDENIED_UNEXPECTED_DATA);
 		return;
@@ -1705,7 +1705,7 @@ void Server::handleCommand_SrpBytesM(NetworkPacket* pkt)
 	if (!bytes_HAMK) {
 		if (wantSudo) {
 			actionstream << "Server: User " << client->getName()
-				<< " at " << getPeerAddress(pkt->getPeerId()).serializeString()
+				<< " at " << getPeerAddress(pkt->getPeerId()).to_string()
 				<< " tried to change their password, but supplied wrong"
 				<< " (SRP) password for authentication." << std::endl;
 			DenySudoAccess(pkt->getPeerId());
@@ -1713,7 +1713,7 @@ void Server::handleCommand_SrpBytesM(NetworkPacket* pkt)
 		}
 
 		actionstream << "Server: User " << client->getName()
-			<< " at " << getPeerAddress(pkt->getPeerId()).serializeString()
+			<< " at " << getPeerAddress(pkt->getPeerId()).to_string()
 			<< " supplied wrong password (auth mechanism: SRP)."
 			<< std::endl;
 		DenyAccess(pkt->getPeerId(), SERVER_ACCESSDENIED_WRONG_PASSWORD);

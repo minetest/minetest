@@ -50,13 +50,13 @@ void NetworkPacket::checkReadOffset(u32 from_offset, u32 field_size)
 	}
 }
 
-void NetworkPacket::putRawPacket(u8 *data, u32 datasize, session_t peer_id)
+void NetworkPacket::putRawPacket(const std::vector<u8> &data, session_t peer_id)
 {
 	// If a m_command is already set, we are rewriting on same packet
 	// This is not permitted
 	assert(m_command == 0);
 
-	m_datasize = datasize - 2;
+	m_datasize = data.size() - 2;
 	m_peer_id = peer_id;
 
 	m_data.resize(m_datasize);

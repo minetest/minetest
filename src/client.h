@@ -35,9 +35,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mapnode.h"
 #include "tileanimation.h"
 #include "mesh_generator_thread.h"
-#include "network/address.h"
-#include "network/peerhandler.h"
 #include <fstream>
+#include <asio/ip/address.hpp>
 
 #define CLIENT_CHAT_MESSAGE_LIMIT_PER_10S 10.0f
 
@@ -49,7 +48,6 @@ class IWritableTextureSource;
 class IWritableShaderSource;
 class IWritableItemDefManager;
 class IWritableNodeDefManager;
-//class IWritableCraftDefManager;
 class ClientMediaDownloader;
 struct MapDrawControl;
 class ModChannelMgr;
@@ -60,15 +58,9 @@ class Minimap;
 struct MinimapMapblock;
 class Camera;
 class NetworkPacket;
-namespace con {
-class Connection;
+namespace network {
+class ClientConnectionThread;
 }
-
-enum LocalClientState {
-	LC_Created,
-	LC_Init,
-	LC_Ready
-};
 
 /*
 	Packet counter
@@ -114,7 +106,7 @@ private:
 class ClientScripting;
 struct GameUIFlags;
 
-class Client : public con::PeerHandler, public InventoryManager, public IGameDef
+class Client : public InventoryManager, public IGameDef
 {
 public:
 	/*
@@ -124,7 +116,6 @@ public:
 	Client(
 			const char *playername,
 			const std::string &password,
-			const std::string &address_name,
 			MapDrawControl &control,
 			IWritableTextureSource *tsrc,
 			IWritableShaderSource *shsrc,
@@ -163,7 +154,9 @@ public:
 		The name of the local player should already be set when
 		calling this, as it is sent in the initialization.
 	*/
-	void connect(Address address, bool is_local_server);
+	bool connect(const std::string &address, u16 port, bool is_local_server);
+	bool isConnectionInError();
+	std::string getConnectionError();
 
 	/*
 		Stuff that references the environment is valid only as
@@ -323,6 +316,8 @@ public:
 	// Get event from queue. If queue is empty, it triggers an assertion failure.
 	ClientEvent * getClientEvent();
 
+	void sendInit();
+
 	bool accessDenied() const { return m_access_denied; }
 
 	bool reconnectRequested() const { return m_access_denied_reconnect; }
@@ -352,9 +347,6 @@ public:
 	float mediaReceiveProgress();
 
 	void afterContentReceived();
-
-	float getRTT();
-	float getCurRate();
 
 	Minimap* getMinimap() { return m_minimap; }
 	void setCamera(Camera* camera) { m_camera = camera; }
@@ -389,8 +381,6 @@ public:
 	// Send a request for conventional media transfer
 	void request_media(const std::vector<std::string> &file_requests);
 
-	LocalClientState getState() { return m_state; }
-
 	void makeScreenshot();
 
 	inline void pushToChatQueue(ChatMessage *cec)
@@ -410,12 +400,8 @@ public:
 	void showGameFog(bool show = true);
 	void showGameDebug(bool show = true);
 
-	const Address getServerAddress();
-
-	const std::string &getAddressName() const
-	{
-		return m_address_name;
-	}
+	const std::string &getServerAddress() const;
+	u16 getServerPort() const;
 
 	inline bool checkCSMFlavourLimit(CSMFlavourLimit flag) const
 	{
@@ -433,17 +419,10 @@ public:
 	ModChannel *getModChannel(const std::string &channel);
 
 private:
-
-	// Virtual methods from con::PeerHandler
-	void peerAdded(con::Peer *peer);
-	void deletingPeer(con::Peer *peer, bool timeout);
-
-	void initLocalMapSaving(const Address &address,
-			const std::string &hostname,
-			bool is_local_server);
+	void initLocalMapSaving(const std::string &hostname, u16 port, bool is_local_server);
 
 	void ReceiveAll();
-	void Receive();
+	bool Receive();
 
 	void sendPlayerPos();
 	// Send the item number 'item' as player item to the server
@@ -453,7 +432,6 @@ private:
 	// helper method shared with clientpackethandler
 	static AuthMechanism choseAuthMech(const u32 mechs);
 
-	void sendInit(const std::string &playerName);
 	void startAuth(AuthMechanism chosen_auth_mechanism);
 	void sendDeletedBlocks(std::vector<v3s16> &blocks);
 	void sendGotBlocks(v3s16 block);
@@ -466,8 +444,6 @@ private:
 	bool canSendChatMessage() const;
 
 	float m_packetcounter_timer = 0.0f;
-	float m_connection_reinit_timer = 0.1f;
-	float m_avg_rtt_timer = 0.0f;
 	float m_playerpos_send_timer = 0.0f;
 	float m_ignore_damage_timer = 0.0f; // Used after server moves player
 	IntervalLimiter m_map_timer_and_unload_interval;
@@ -483,8 +459,7 @@ private:
 	MeshUpdateThread m_mesh_update_thread;
 	ClientEnvironment m_env;
 	ParticleManager m_particle_manager;
-	std::unique_ptr<con::Connection> m_con;
-	std::string m_address_name;
+	std::unique_ptr<network::ClientConnectionThread> m_con;
 	Camera *m_camera = nullptr;
 	Minimap *m_minimap = nullptr;
 	bool m_minimap_disabled_by_server = false;
@@ -567,9 +542,6 @@ private:
 	StringMap m_mesh_data;
 
 	StringMap m_mod_files;
-
-	// own state
-	LocalClientState m_state;
 
 	// Used for saving server map to disk client-side
 	MapDatabase *m_localdb = nullptr;

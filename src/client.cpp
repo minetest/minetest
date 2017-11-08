@@ -24,7 +24,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <IFileSystem.h>
 #include "client.h"
 #include "network/clientopcodes.h"
-#include "network/connection.h"
+#include "network/clientconnection.h"
+#include "network/networkexceptions.h"
 #include "network/networkpacket.h"
 #include "threading/mutex_auto_lock.h"
 #include "client/clientevent.h"
@@ -64,7 +65,6 @@ extern gui::IGUIEnvironment* guienv;
 Client::Client(
 		const char *playername,
 		const std::string &password,
-		const std::string &address_name,
 		MapDrawControl &control,
 		IWritableTextureSource *tsrc,
 		IWritableShaderSource *shsrc,
@@ -87,14 +87,14 @@ Client::Client(
 		tsrc, this
 	),
 	m_particle_manager(&m_env),
-	m_con(new con::Connection(PROTOCOL_ID, 512, CONNECTION_TIMEOUT, ipv6, this)),
-	m_address_name(address_name),
+	m_con(std::unique_ptr<network::ClientConnectionThread>(
+		new network::ClientConnectionThread())
+	),
 	m_server_ser_ver(SER_FMT_VER_INVALID),
 	m_last_chat_message_sent(time(NULL)),
 	m_password(password),
 	m_chosen_auth_mech(AUTH_MECHANISM_NONE),
 	m_media_downloader(new ClientMediaDownloader()),
-	m_state(LC_Created),
 	m_game_ui_flags(game_ui_flags),
 	m_modchannel_mgr(new ModChannelMgr())
 {
@@ -213,6 +213,9 @@ void Client::Stop()
 		m_localdb->endSave();
 	}
 
+	m_con->stop();
+	m_con->wait();
+
 	delete m_script;
 }
 
@@ -224,7 +227,6 @@ bool Client::isShutdown()
 Client::~Client()
 {
 	m_shutdown = true;
-	m_con->Disconnect();
 
 	m_mesh_update_thread.stop();
 	m_mesh_update_thread.wait();
@@ -233,6 +235,8 @@ Client::~Client()
 		delete r.mesh;
 	}
 
+	m_con->stop();
+	m_con->wait();
 
 	delete m_inventory_from_server;
 
@@ -252,12 +256,21 @@ Client::~Client()
 	delete m_minimap;
 }
 
-void Client::connect(Address address, bool is_local_server)
+bool Client::connect(const std::string &address, u16 port, bool is_local_server)
 {
-	initLocalMapSaving(address, m_address_name, is_local_server);
+	initLocalMapSaving(address, port, is_local_server);
 
-	m_con->SetTimeoutMs(0);
-	m_con->Connect(address);
+	return m_con->get_connection()->connect(address, port) && m_con->start();
+}
+
+bool Client::isConnectionInError()
+{
+	return m_con->get_connection()->isConnectionInError();
+}
+
+std::string Client::getConnectionError()
+{
+	return m_con->get_connection()->getConnectionError();
 }
 
 void Client::step(float dtime)
@@ -294,28 +307,6 @@ void Client::step(float dtime)
 			m_packetcounter.print(infostream);
 			m_packetcounter.clear();
 		}
-	}
-
-	// UGLY hack to fix 2 second startup delay caused by non existent
-	// server client startup synchronization in local server or singleplayer mode
-	static bool initial_step = true;
-	if (initial_step) {
-		initial_step = false;
-	}
-	else if(m_state == LC_Created) {
-		float &counter = m_connection_reinit_timer;
-		counter -= dtime;
-		if(counter <= 0.0) {
-			counter = 2.0;
-
-			LocalPlayer *myplayer = m_env.getLocalPlayer();
-			FATAL_ERROR_IF(myplayer == NULL, "Local player not found in environment.");
-
-			sendInit(myplayer->getName());
-		}
-
-		// Not connected, return
-		return;
 	}
 
 	/*
@@ -409,25 +400,14 @@ void Client::step(float dtime)
 	}
 
 	/*
-		Print some info
-	*/
-	float &counter = m_avg_rtt_timer;
-	counter += dtime;
-	if(counter >= 10) {
-		counter = 0.0;
-		// connectedAndInitialized() is true, peer exists.
-		float avg_rtt = getRTT();
-		infostream << "Client: avg_rtt=" << avg_rtt << std::endl;
-	}
-
-	/*
 		Send player position to server
 	*/
 	{
 		float &counter = m_playerpos_send_timer;
 		counter += dtime;
-		if((m_state == LC_Ready) && (counter >= m_recommended_send_interval))
-		{
+		if(m_con->get_connection()->getState() ==
+				network::ClientConnection::STATE_STARTED &&
+				counter >= m_recommended_send_interval) {
 			counter = 0.0;
 			sendPlayerPos();
 		}
@@ -671,24 +651,6 @@ bool Client::loadMedia(const std::string &data, const std::string &filename)
 	return false;
 }
 
-// Virtual methods from con::PeerHandler
-void Client::peerAdded(con::Peer *peer)
-{
-	infostream << "Client::peerAdded(): peer->id="
-			<< peer->id << std::endl;
-}
-void Client::deletingPeer(con::Peer *peer, bool timeout)
-{
-	infostream << "Client::deletingPeer(): "
-			"Server Peer is getting deleted "
-			<< "(timeout=" << timeout << ")" << std::endl;
-
-	if (timeout) {
-		m_access_denied = true;
-		m_access_denied_reason = gettext("Connection timed out.");
-	}
-}
-
 /*
 	u16 command
 	u16 number of files requested
@@ -720,8 +682,7 @@ void Client::request_media(const std::vector<std::string> &file_requests)
 			<< file_requests.size() << " files. packet size)" << std::endl;
 }
 
-void Client::initLocalMapSaving(const Address &address,
-		const std::string &hostname,
+void Client::initLocalMapSaving(const std::string &hostname, u16 port,
 		bool is_local_server)
 {
 	if (!g_settings->getBool("enable_local_map_saving") || is_local_server) {
@@ -731,7 +692,7 @@ void Client::initLocalMapSaving(const Address &address,
 	const std::string world_path = porting::path_user
 		+ DIR_DELIM + "worlds"
 		+ DIR_DELIM + "server_"
-		+ hostname + "_" + std::to_string(address.getPort());
+		+ hostname + "_" + std::to_string(port);
 
 	fs::CreateAllDirs(world_path);
 
@@ -743,33 +704,34 @@ void Client::initLocalMapSaving(const Address &address,
 void Client::ReceiveAll()
 {
 	u64 start_ms = porting::getTimeMs();
-	for(;;)
-	{
+	for (;;) {
 		// Limit time even if there would be huge amounts of data to
 		// process
-		if(porting::getTimeMs() > start_ms + 100)
-			break;
+		if (porting::getTimeMs() > start_ms + 50)
+			return;
 
 		try {
-			Receive();
+			// Nothing received, break the loop
+			if (!Receive())
+				return;
+
 			g_profiler->graphAdd("client_received_packets", 1);
-		}
-		catch(con::NoIncomingDataException &e) {
-			break;
-		}
-		catch(con::InvalidIncomingDataException &e) {
-			infostream<<"Client::ReceiveAll(): "
-					"InvalidIncomingDataException: what()="
-					<<e.what()<<std::endl;
+		} catch (con::InvalidIncomingDataException &e) {
+			infostream << "Client::ReceiveAll(): InvalidIncomingDataException: what()="
+					<< e.what() << std::endl;
 		}
 	}
 }
 
-void Client::Receive()
+bool Client::Receive()
 {
-	NetworkPacket pkt;
-	m_con->Receive(&pkt);
-	ProcessData(&pkt);
+	NetworkPacket *pkt = m_con->get_connection()->getNextPacket();
+	if (!pkt)
+		return false;
+
+	std::unique_ptr<NetworkPacket> pktPtr(pkt);
+	ProcessData(pktPtr.get());
+	return true;
 }
 
 inline void Client::handleCommand(NetworkPacket* pkt)
@@ -833,10 +795,7 @@ void Client::ProcessData(NetworkPacket *pkt)
 
 void Client::Send(NetworkPacket* pkt)
 {
-	m_con->Send(PEER_ID_SERVER,
-		serverCommandFactoryTable[pkt->getCommand()].channel,
-		pkt,
-		serverCommandFactoryTable[pkt->getCommand()].reliable);
+	m_con->get_connection()->send(pkt);
 }
 
 // Will fill up 12 + 12 + 4 + 4 + 4 bytes
@@ -871,10 +830,9 @@ void writePlayerPos(LocalPlayer *myplayer, ClientMap *clientMap, NetworkPacket *
 
 void Client::interact(u8 action, const PointedThing& pointed)
 {
-	if(m_state != LC_Ready) {
-		errorstream << "Client::interact() "
-				"Canceled (not connected)"
-				<< std::endl;
+	if (m_con->get_connection()->getState() !=
+			network::ClientConnection::STATE_STARTED) {
+		errorstream << "Client::interact() Canceled (not connected)" << std::endl;
 		return;
 	}
 
@@ -947,8 +905,12 @@ AuthMechanism Client::choseAuthMech(const u32 mechs)
 	return AUTH_MECHANISM_NONE;
 }
 
-void Client::sendInit(const std::string &playerName)
+void Client::sendInit()
 {
+	LocalPlayer *myplayer = m_env.getLocalPlayer();
+	FATAL_ERROR_IF(myplayer == NULL, "Local player not found in environment.");
+	std::string playerName(myplayer->getName());
+
 	NetworkPacket pkt(TOSERVER_INIT, 1 + 2 + 2 + (1 + playerName.size()));
 
 	// we don't support network compression yet
@@ -1563,12 +1525,17 @@ ClientEvent *Client::getClientEvent()
 
 bool Client::connectedToServer()
 {
-	return m_con->Connected();
+	return m_con->get_connection()->isConnected();
 }
 
-const Address Client::getServerAddress()
+const std::string &Client::getServerAddress() const
 {
-	return m_con->GetPeerAddress(PEER_ID_SERVER);
+	return m_con->get_connection()->getServerAddress();
+}
+
+u16 Client::getServerPort() const
+{
+	return m_con->get_connection()->getServerPort();
 }
 
 float Client::mediaReceiveProgress()
@@ -1665,7 +1632,7 @@ void Client::afterContentReceived()
 	infostream<<"- Starting mesh update thread"<<std::endl;
 	m_mesh_update_thread.start();
 
-	m_state = LC_Ready;
+	m_con->get_connection()->setState(network::ClientConnection::STATE_STARTED);
 	sendReady();
 
 	if (g_settings->getBool("enable_client_modding")) {
@@ -1677,17 +1644,6 @@ void Client::afterContentReceived()
 	RenderingEngine::draw_load_screen(text, guienv, m_tsrc, 0, 100);
 	infostream<<"Client::afterContentReceived() done"<<std::endl;
 	delete[] text;
-}
-
-float Client::getRTT()
-{
-	return m_con->getPeerStat(PEER_ID_SERVER,con::AVG_RTT);
-}
-
-float Client::getCurRate()
-{
-	return (m_con->getLocalStat(con::CUR_INC_RATE) +
-			m_con->getLocalStat(con::CUR_DL_RATE));
 }
 
 void Client::makeScreenshot()

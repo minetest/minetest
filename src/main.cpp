@@ -36,7 +36,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "config.h"
 #include "player.h"
 #include "porting.h"
-#include "network/socket.h"
 #if USE_CURSES
 	#include "terminal_chat_console.h"
 #endif
@@ -387,7 +386,6 @@ static void setup_log_params(const Settings &cmd_args)
 		dstream << _("Enabling trace level debug output") << std::endl;
 		g_logger.setTraceEnabled(true);
 		dout_con_ptr = &verbosestream; // This is somewhat old
-		socket_enable_debug_output = true; // Sockets doesn't use log.h
 	}
 
 	// In certain cases, output info level on stderr
@@ -423,10 +421,6 @@ static bool init_common(const Settings &cmd_args, int argc, char *argv[])
 {
 	startup_message();
 	set_default_settings(g_settings);
-
-	// Initialize sockets
-	sockets_init();
-	atexit(sockets_cleanup);
 
 	if (!read_config_file(cmd_args))
 		return false;
@@ -781,27 +775,6 @@ static bool run_dedicated_server(const GameParams &game_params, const Settings &
 	verbosestream << _("Using gameid") << " ["
 	              << game_params.game_spec.id << "]" << std::endl;
 
-	// Bind address
-	std::string bind_str = g_settings->get("bind_address");
-	Address bind_addr(0, 0, 0, 0, game_params.socket_port);
-
-	if (g_settings->getBool("ipv6_server")) {
-		bind_addr.setAddress((IPv6AddressBytes*) NULL);
-	}
-	try {
-		bind_addr.Resolve(bind_str.c_str());
-	} catch (ResolveError &e) {
-		infostream << "Resolving bind address \"" << bind_str
-		           << "\" failed: " << e.what()
-		           << " -- Listening on all addresses." << std::endl;
-	}
-	if (bind_addr.isIPv6() && !g_settings->getBool("enable_ipv6")) {
-		errorstream << "Unable to listen on "
-		            << bind_addr.serializeString()
-		            << L" because IPv6 is disabled" << std::endl;
-		return false;
-	}
-
 	// Database migration
 	if (cmd_args.exists("migrate"))
 		return migrate_map_database(game_params, cmd_args);
@@ -838,7 +811,7 @@ static bool run_dedicated_server(const GameParams &game_params, const Settings &
 		try {
 			// Create server
 			Server server(game_params.world_path, game_params.game_spec,
-					false, bind_addr, true, &iface);
+					false, true, 0, &iface);
 
 			g_term_console.setup(&iface, &kill, admin_nick);
 
@@ -871,8 +844,7 @@ static bool run_dedicated_server(const GameParams &game_params, const Settings &
 #endif
 		try {
 			// Create server
-			Server server(game_params.world_path, game_params.game_spec, false,
-				bind_addr, true);
+			Server server(game_params.world_path, game_params.game_spec, false, true);
 			server.start();
 
 			// Run server

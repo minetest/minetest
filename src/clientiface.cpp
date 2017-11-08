@@ -19,7 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include <sstream>
 #include "clientiface.h"
-#include "network/connection.h"
+#include "network/serverconnection.h"
 #include "network/serveropcodes.h"
 #include "remoteplayer.h"
 #include "settings.h"
@@ -32,7 +32,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/srp.h"
 #include "face_position_cache.h"
 
-const char *ClientInterface::statenames[] = {
+const char *ClientIface::statenames[] = {
 	"Invalid",
 	"Disconnecting",
 	"Denied",
@@ -47,7 +47,7 @@ const char *ClientInterface::statenames[] = {
 
 
 
-std::string ClientInterface::state2Name(ClientState state)
+std::string ClientIface::state2Name(ClientState state)
 {
 	return statenames[state];
 }
@@ -611,15 +611,15 @@ u64 RemoteClient::uptime() const
 	return porting::getTimeS() - m_connection_time;
 }
 
-ClientInterface::ClientInterface(const std::shared_ptr<con::Connection> & con)
-:
+ClientIface::ClientIface(
+		const std::shared_ptr<network::ServerConnection> & con) :
 	m_con(con),
 	m_env(NULL),
 	m_print_info_timer(0.0f)
 {
-
+	m_con->setClientIface(this);
 }
-ClientInterface::~ClientInterface()
+ClientIface::~ClientIface()
 {
 	/*
 		Delete clients
@@ -634,7 +634,7 @@ ClientInterface::~ClientInterface()
 	}
 }
 
-std::vector<session_t> ClientInterface::getClientIDs(ClientState min_state)
+std::vector<session_t> ClientIface::getClientIDs(ClientState min_state)
 {
 	std::vector<session_t> reply;
 	MutexAutoLock clientslock(m_clients_mutex);
@@ -652,12 +652,12 @@ std::vector<session_t> ClientInterface::getClientIDs(ClientState min_state)
  * User limit count all clients from HelloSent state (MT protocol user) to Active state
  * @return true if user limit was reached
  */
-bool ClientInterface::isUserLimitReached()
+bool ClientIface::isUserLimitReached()
 {
 	return getClientIDs(CS_HelloSent).size() >= g_settings->getU16("max_users");
 }
 
-void ClientInterface::step(float dtime)
+void ClientIface::step(float dtime)
 {
 	m_print_info_timer += dtime;
 	if (m_print_info_timer >= 30.0f) {
@@ -666,7 +666,7 @@ void ClientInterface::step(float dtime)
 	}
 }
 
-void ClientInterface::UpdatePlayerList()
+void ClientIface::UpdatePlayerList()
 {
 	if (m_env) {
 		std::vector<session_t> clients = getClientIDs();
@@ -696,27 +696,25 @@ void ClientInterface::UpdatePlayerList()
 	}
 }
 
-void ClientInterface::send(session_t peer_id, u8 channelnum,
-		NetworkPacket *pkt, bool reliable)
+void ClientIface::send(session_t peer_id, NetworkPacket *pkt, bool reliable)
 {
-	m_con->Send(peer_id, channelnum, pkt, reliable);
+	m_con->send(peer_id, pkt, reliable);
 }
 
-void ClientInterface::sendToAll(NetworkPacket *pkt)
+void ClientIface::sendToAll(NetworkPacket *pkt)
 {
 	MutexAutoLock clientslock(m_clients_mutex);
 	for (auto &client_it : m_clients) {
 		RemoteClient *client = client_it.second;
 
 		if (client->net_proto_version != 0) {
-			m_con->Send(client->peer_id,
-					clientCommandFactoryTable[pkt->getCommand()].channel, pkt,
-					clientCommandFactoryTable[pkt->getCommand()].reliable);
+			m_con->send(client->peer_id, pkt,
+				clientCommandFactoryTable[pkt->getCommand()].reliable);
 		}
 	}
 }
 
-void ClientInterface::sendToAllCompat(NetworkPacket *pkt, NetworkPacket *legacypkt,
+void ClientIface::sendToAllCompat(NetworkPacket *pkt, NetworkPacket *legacypkt,
 		u16 min_proto_ver)
 {
 	MutexAutoLock clientslock(m_clients_mutex);
@@ -734,14 +732,12 @@ void ClientInterface::sendToAllCompat(NetworkPacket *pkt, NetworkPacket *legacyp
 			continue;
 		}
 
-		m_con->Send(client->peer_id,
-			clientCommandFactoryTable[pkt_to_send->getCommand()].channel,
-			pkt_to_send,
-			clientCommandFactoryTable[pkt_to_send->getCommand()].reliable);
+		m_con->send(client->peer_id, pkt_to_send,
+			clientCommandFactoryTable[pkt->getCommand()].reliable);
 	}
 }
 
-RemoteClient* ClientInterface::getClientNoEx(session_t peer_id, ClientState state_min)
+RemoteClient* ClientIface::getClientNoEx(session_t peer_id, ClientState state_min)
 {
 	MutexAutoLock clientslock(m_clients_mutex);
 	RemoteClientMap::const_iterator n = m_clients.find(peer_id);
@@ -756,7 +752,7 @@ RemoteClient* ClientInterface::getClientNoEx(session_t peer_id, ClientState stat
 	return NULL;
 }
 
-RemoteClient* ClientInterface::lockedGetClientNoEx(session_t peer_id, ClientState state_min)
+RemoteClient* ClientIface::lockedGetClientNoEx(session_t peer_id, ClientState state_min)
 {
 	RemoteClientMap::const_iterator n = m_clients.find(peer_id);
 	// The client may not exist; clients are immediately removed if their
@@ -770,7 +766,7 @@ RemoteClient* ClientInterface::lockedGetClientNoEx(session_t peer_id, ClientStat
 	return NULL;
 }
 
-ClientState ClientInterface::getClientState(session_t peer_id)
+ClientState ClientIface::getClientState(session_t peer_id)
 {
 	MutexAutoLock clientslock(m_clients_mutex);
 	RemoteClientMap::const_iterator n = m_clients.find(peer_id);
@@ -782,7 +778,7 @@ ClientState ClientInterface::getClientState(session_t peer_id)
 	return n->second->getState();
 }
 
-void ClientInterface::setPlayerName(session_t peer_id, const std::string &name)
+void ClientIface::setPlayerName(session_t peer_id, const std::string &name)
 {
 	MutexAutoLock clientslock(m_clients_mutex);
 	RemoteClientMap::iterator n = m_clients.find(peer_id);
@@ -792,7 +788,7 @@ void ClientInterface::setPlayerName(session_t peer_id, const std::string &name)
 		n->second->setName(name);
 }
 
-void ClientInterface::DeleteClient(session_t peer_id)
+void ClientIface::DeleteClient(session_t peer_id)
 {
 	MutexAutoLock conlock(m_clients_mutex);
 
@@ -822,7 +818,7 @@ void ClientInterface::DeleteClient(session_t peer_id)
 	m_clients.erase(peer_id);
 }
 
-void ClientInterface::CreateClient(session_t peer_id)
+void ClientIface::CreateClient(session_t peer_id)
 {
 	MutexAutoLock conlock(m_clients_mutex);
 
@@ -837,7 +833,7 @@ void ClientInterface::CreateClient(session_t peer_id)
 	m_clients[client->peer_id] = client;
 }
 
-void ClientInterface::event(session_t peer_id, ClientStateEvent event)
+void ClientIface::event(session_t peer_id, ClientStateEvent event)
 {
 	{
 		MutexAutoLock clientlock(m_clients_mutex);
@@ -859,7 +855,7 @@ void ClientInterface::event(session_t peer_id, ClientStateEvent event)
 	}
 }
 
-u16 ClientInterface::getProtocolVersion(session_t peer_id)
+u16 ClientIface::getProtocolVersion(session_t peer_id)
 {
 	MutexAutoLock conlock(m_clients_mutex);
 
@@ -873,7 +869,7 @@ u16 ClientInterface::getProtocolVersion(session_t peer_id)
 	return n->second->net_proto_version;
 }
 
-void ClientInterface::setClientVersion(session_t peer_id, u8 major, u8 minor, u8 patch,
+void ClientIface::setClientVersion(session_t peer_id, u8 major, u8 minor, u8 patch,
 		const std::string &full)
 {
 	MutexAutoLock conlock(m_clients_mutex);

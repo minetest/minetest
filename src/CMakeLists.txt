@@ -33,6 +33,10 @@ if(NOT (BUILD_CLIENT OR BUILD_SERVER))
 	set(BUILD_SERVER TRUE)
 endif()
 
+option(ENABLE_SYSTEM_ASIO "Enable using a system-wide JSONCPP. May be outdated buggy version." FALSE)
+if (NOT ENABLE_SYSTEM_ASIO)
+	include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../lib/asio/include)
+endif()
 
 option(ENABLE_CURL "Enable cURL support for fetching media" TRUE)
 set(USE_CURL FALSE)
@@ -259,7 +263,7 @@ if(HAIKU)
 endif()
 
 # Use cmake_config.h
-add_definitions(-DUSE_CMAKE_CONFIG_H)
+add_definitions(-DUSE_CMAKE_CONFIG_H -DASIO_STANDALONE)
 
 if(WIN32)
 	# Windows
@@ -271,10 +275,11 @@ if(WIN32)
 		add_definitions(/D "_USE_MATH_DEFINES")
 		# Dont define min/max macros in minwindef.h
 		add_definitions(/D "NOMINMAX")
+		add_definitions(/D ASIO_MSVC)
 	else() # Probably MinGW = GCC
 		set(PLATFORM_LIBS "")
 	endif()
-	set(PLATFORM_LIBS ws2_32.lib version.lib shlwapi.lib ${PLATFORM_LIBS})
+	set(PLATFORM_LIBS ws2_32.lib version.lib shlwapi.lib wsock32.lib ${PLATFORM_LIBS})
 
 	# Zlib stuff
 	set(ZLIB_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/../../zlib/zlib-1.2.5"
