@@ -40,18 +40,15 @@ core.register_globalstep(function(dtime)
 		local player_name = player:get_player_name()
 		local player_controls = player:get_player_control()
 		for cname, cbool in pairs(player_controls) do
-			--Press a key
 			if cbool==true and players[player_name][cname][1]==false then
 				for _, func in pairs(core.registered_on_key_press) do
 					func(player, cname)
 				end
 				players[player_name][cname] = {true, os.clock()}
-			--Hold a key
 			elseif cbool==true and players[player_name][cname][1]==true then
 				for _, func in pairs(core.registered_on_key_hold) do
 					func(player, cname, os.clock()-players[player_name][cname][2])
 				end
-			--Release a key
 			elseif cbool==false and players[player_name][cname][1]==true then
 				for _, func in pairs(core.registered_on_key_release) do
 					func(player, cname, os.clock()-players[player_name][cname][2])
