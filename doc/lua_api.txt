@@ -2448,6 +2448,14 @@ Call these functions only at load time!
     * **Warning**: If the server terminates abnormally (i.e. crashes), the registered
       callbacks **will likely not be run**. Data should be saved at
       semi-frequent intervals as well as on server shutdown.
+* `minetest.register_on_key_press(func(player, key))`
+    * Called when a player press a key the first time
+* `minetest.register_on_key_hold(func(player, key, time))`
+    * Called when a player hold a key
+    * `time` is a number; It shows how long the player is holding the key in seconds.
+* `minetest.register_on_key_release(func(player, key, time))`
+    * Called when a player release a key
+    * `time` is a number; It shows how long the player is holding the key in seconds.
 * `minetest.register_on_placenode(func(pos, newnode, placer, oldnode, itemstack, pointed_thing))`
     * Called when a node has been placed
     * If return `true` no item is taken from `itemstack`
