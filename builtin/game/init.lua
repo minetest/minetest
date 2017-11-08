@@ -18,6 +18,7 @@ if core.settings:get_bool("profiler.load") then
 end
 
 dofile(commonpath .. "after.lua")
+dofile(gamepath.."keyevents.lua")
 dofile(gamepath.."item_entity.lua")
 dofile(gamepath.."deprecated.lua")
 dofile(gamepath.."misc.lua")
@@ -32,6 +33,5 @@ dofile(gamepath.."features.lua")
 dofile(gamepath.."voxelarea.lua")
 dofile(gamepath.."forceloading.lua")
 dofile(gamepath.."statbars.lua")
-dofile(gamepath.."keyevents.lua")
 
 profiler = nil
