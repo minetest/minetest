@@ -37,11 +37,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "threading/mutex_auto_lock.h"
 #include "filesys.h"
 #include "gameparams.h"
-#include "database-dummy.h"
-#include "database-files.h"
-#include "database-sqlite3.h"
+#include "database/database-dummy.h"
+#include "database/database-files.h"
+#include "database/database-sqlite3.h"
 #if USE_POSTGRESQL
-#include "database-postgresql.h"
+#include "database/database-postgresql.h"
 #endif
 #include <algorithm>
 

@@ -371,6 +371,9 @@ add_custom_target(GenerateVersion
 
 
 add_subdirectory(threading)
+add_subdirectory(database)
+add_subdirectory(gui)
+add_subdirectory(mapgen)
 add_subdirectory(network)
 add_subdirectory(script)
 add_subdirectory(unittest)
@@ -378,8 +381,9 @@ add_subdirectory(util)
 add_subdirectory(irrlicht_changes)
 
 set(common_SRCS
+	${database_SRCS}
+	${mapgen_SRCS}
 	ban.cpp
-	cavegen.cpp
 	chat.cpp
 	clientiface.cpp
 	collision.cpp
@@ -388,16 +392,8 @@ set(common_SRCS
 	content_sao.cpp
 	convert_json.cpp
 	craftdef.cpp
-	database-dummy.cpp
-	database-files.cpp
-	database-leveldb.cpp
-	database-postgresql.cpp
-	database-redis.cpp
-	database-sqlite3.cpp
-	database.cpp
 	debug.cpp
 	defaultsettings.cpp
-	dungeongen.cpp
 	emerge.cpp
 	environment.cpp
 	face_position_cache.cpp
@@ -414,22 +410,9 @@ set(common_SRCS
 	map.cpp
 	map_settings_manager.cpp
 	mapblock.cpp
-	mapgen.cpp
-	mapgen_carpathian.cpp
-	mapgen_flat.cpp
-	mapgen_fractal.cpp
-	mapgen_singlenode.cpp
-	mapgen_v5.cpp
-	mapgen_v6.cpp
-	mapgen_v7.cpp
-	mapgen_valleys.cpp
 	mapnode.cpp
 	mapsector.cpp
 	metadata.cpp
-	mg_biome.cpp
-	mg_decoration.cpp
-	mg_ore.cpp
-	mg_schematic.cpp
 	modchannels.cpp
 	mods.cpp
 	nameidmapping.cpp
@@ -462,7 +445,6 @@ set(common_SRCS
 	tileanimation.cpp
 	tool.cpp
 	translation.cpp
-	treegen.cpp
 	version.cpp
 	voxel.cpp
 	voxelalgorithms.cpp
@@ -503,6 +485,7 @@ endif(BUILD_CLIENT)
 set(client_SRCS
 	${client_SRCS}
 	${common_SRCS}
+	${gui_SRCS}
 	${sound_SRCS}
 	${client_network_SRCS}
 	${client_irrlicht_changes_SRCS}
@@ -520,19 +503,9 @@ set(client_SRCS
 	filecache.cpp
 	fontengine.cpp
 	game.cpp
-	guiChatConsole.cpp
-	guiEditBoxWithScrollbar.cpp
-	guiEngine.cpp
-	guiPathSelectMenu.cpp
-	guiFormSpecMenu.cpp
-	guiKeyChangeMenu.cpp
-	guiPasswordChange.cpp
 	guiscalingfilter.cpp
-	guiTable.cpp
-	guiVolumeChange.cpp
 	hud.cpp
 	imagefilters.cpp
-	intlGUIEditBox.cpp
 	keycode.cpp
 	localplayer.cpp
 	main.cpp

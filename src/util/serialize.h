@@ -19,9 +19,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #pragma once
 
-#include "../irrlichttypes_bloated.h"
-#include "../exceptions.h" // for SerializationError
-#include "../debug.h" // for assert
+#include "irrlichttypes_bloated.h"
+#include "exceptions.h" // for SerializationError
+#include "debug.h" // for assert
 
 #include "config.h"
 #if HAVE_ENDIAN_H

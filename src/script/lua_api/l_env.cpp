@@ -34,7 +34,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "daynightratio.h"
 #include "util/pointedthing.h"
 #include "content_sao.h"
-#include "treegen.h"
+#include "mapgen/treegen.h"
 #include "emerge.h"
 #include "pathfinder.h"
 #include "face_position_cache.h"

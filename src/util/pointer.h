@@ -19,8 +19,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #pragma once
 
-#include "../irrlichttypes.h"
-#include "../debug.h" // For assert()
+#include "irrlichttypes.h"
+#include "debug.h" // For assert()
 #include <cstring>
 
 template <typename T>

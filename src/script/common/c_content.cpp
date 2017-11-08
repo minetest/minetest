@@ -30,7 +30,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "tool.h"
 #include "serverobject.h"
 #include "porting.h"
-#include "mg_schematic.h"
+#include "mapgen/mg_schematic.h"
 #include "noise.h"
 #include "util/pointedthing.h"
 #include "debug.h" // For FATAL_ERROR

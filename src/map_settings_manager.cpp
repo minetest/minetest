@@ -20,7 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "debug.h"
 #include "filesys.h"
 #include "log.h"
-#include "mapgen.h"
+#include "mapgen/mapgen.h"
 #include "settings.h"
 
 #include "map_settings_manager.h"

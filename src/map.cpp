@@ -37,24 +37,24 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "environment.h"
 #include "reflowscan.h"
 #include "emerge.h"
-#include "mapgen_v6.h"
-#include "mg_biome.h"
+#include "mapgen/mapgen_v6.h"
+#include "mapgen/mg_biome.h"
 #include "config.h"
 #include "server.h"
-#include "database.h"
-#include "database-dummy.h"
-#include "database-sqlite3.h"
+#include "database/database.h"
+#include "database/database-dummy.h"
+#include "database/database-sqlite3.h"
 #include "script/scripting_server.h"
 #include <deque>
 #include <queue>
 #if USE_LEVELDB
-#include "database-leveldb.h"
+#include "database/database-leveldb.h"
 #endif
 #if USE_REDIS
-#include "database-redis.h"
+#include "database/database-redis.h"
 #endif
 #if USE_POSTGRESQL
-#include "database-postgresql.h"
+#include "database/database-postgresql.h"
 #endif
 
 
