@@ -4710,6 +4710,13 @@ Definition tables
         ^ interval. Default: nil.
         ^ Warning: making a liquid node 'floodable' does not work and may cause problems. ]]
 
+	preserve_metadata = func(pos, oldnode, oldmeta, drops) --[[
+	^ Called when oldnode is about be converted to an item, but before the
+	  node is deleted from the world or the drops are added.  This is generally
+	  the result of either the node being dug or an attached node becoming detached.
+	^ drops is a table of ItemStacks, so any metadata to be preserved can be
+	  added directly to one or more of the dropped items.  See "ItemStackMetaRef".
+	^ default: nil ]]
         after_place_node = func(pos, placer, itemstack, pointed_thing) --[[
         ^ Called after constructing node when node was placed using
           minetest.item_place_node / minetest.place_node
