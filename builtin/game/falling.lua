@@ -147,7 +147,7 @@ end
 local function drop_attached_node(p)
 	local n = core.get_node(p)
 	local node_meta = core.get_meta(p)
-	local meta_fields = node_meta and node_meta:to_table().fields end
+	local meta_fields = node_meta and node_meta:to_table().fields
 	core.remove_node(p)
 	for _, item in pairs(core.get_node_drops(n, "")) do
 		local pos = {
@@ -158,7 +158,7 @@ local function drop_attached_node(p)
 		-- If it drops itself, preserve its metadata.
 		if item == n and meta_fields then
 			local stack = ItemStack({name=n, count=1})
-			local stack_meta = stack and stack:get_meta() end
+			local stack_meta = stack and stack:get_meta()
 			if stack_meta then
 				for k,v in pairs(meta_fields) do
 					if k ~= "description" and k ~= "infotext" and k ~= "formspec" then
