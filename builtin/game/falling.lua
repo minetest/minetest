@@ -146,6 +146,8 @@ end
 
 local function drop_attached_node(p)
 	local n = core.get_node(p)
+	local node_meta, meta_fields = core.get_meta(p), nil
+	if node_meta then meta_fields = node_meta:to_table().fields end
 	core.remove_node(p)
 	for _, item in pairs(core.get_node_drops(n, "")) do
 		local pos = {
@@ -153,6 +155,19 @@ local function drop_attached_node(p)
 			y = p.y + math.random()/2 - 0.25,
 			z = p.z + math.random()/2 - 0.25,
 		}
+		-- If it drops itself, preserve its metadata.
+		if item == n and meta_fields then
+			local stack, stack_meta = ItemStack({name=n, count=1}), nil
+			if stack then stack_meta = stack:get_meta() end
+			if stack_meta then
+				for k,v in pairs(meta_fields) do
+					if k ~= "description" and k ~= "infotext" and k ~= "formspec" then
+						stack_meta:set_string(k,v )
+					end
+				end
+			end
+			item = stack:to_string()
+		end
 		core.add_item(pos, item)
 	end
 end
