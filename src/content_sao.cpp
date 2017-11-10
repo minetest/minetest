@@ -28,6 +28,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "server.h"
 #include "scripting_server.h"
 #include "genericobject.h"
+#include <algorithm>
 
 std::map<u16, ServerActiveObject::Factory> ServerActiveObject::m_types;
 
@@ -919,9 +920,9 @@ void PlayerSAO::getStaticData(std::string * result) const
 
 void PlayerSAO::step(float dtime, bool send_recommended)
 {
-	if (m_drowning_interval.step(dtime, 2.0)) {
-		// get head position
-		v3s16 p = floatToInt(m_base_position + v3f(0, BS * 1.6, 0), BS);
+	if (m_drowning_interval.step(dtime, 2.0f)) {
+		// Get nose/mouth position, approximate with eye position
+		v3s16 p = floatToInt(getEyePosition(), BS);
 		MapNode n = m_env->getMap().getNodeNoEx(p);
 		const ContentFeatures &c = m_env->getGameDef()->ndef()->get(n);
 		// If node generates drown
@@ -937,32 +938,37 @@ void PlayerSAO::step(float dtime, bool send_recommended)
 		}
 	}
 
-	if (m_breathing_interval.step(dtime, 0.5)) {
-		// get head position
-		v3s16 p = floatToInt(m_base_position + v3f(0, BS * 1.6, 0), BS);
+	if (m_breathing_interval.step(dtime, 0.5f)) {
+		// Get nose/mouth position, approximate with eye position
+		v3s16 p = floatToInt(getEyePosition(), BS);
 		MapNode n = m_env->getMap().getNodeNoEx(p);
 		const ContentFeatures &c = m_env->getGameDef()->ndef()->get(n);
-		// If player is alive & no drowning, breath
+		// If player is alive & no drowning, breathe
 		if (m_hp > 0 && m_breath < m_prop.breath_max && c.drowning == 0)
 			setBreath(m_breath + 1);
 	}
 
-	if (m_node_hurt_interval.step(dtime, 1.0)) {
-		// Feet, middle and head
-		v3s16 p1 = floatToInt(m_base_position + v3f(0, BS*0.1, 0), BS);
-		MapNode n1 = m_env->getMap().getNodeNoEx(p1);
-		v3s16 p2 = floatToInt(m_base_position + v3f(0, BS*0.8, 0), BS);
-		MapNode n2 = m_env->getMap().getNodeNoEx(p2);
-		v3s16 p3 = floatToInt(m_base_position + v3f(0, BS*1.6, 0), BS);
-		MapNode n3 = m_env->getMap().getNodeNoEx(p3);
-
+	if (m_node_hurt_interval.step(dtime, 1.0f)) {
 		u32 damage_per_second = 0;
-		damage_per_second = MYMAX(damage_per_second,
-			m_env->getGameDef()->ndef()->get(n1).damage_per_second);
-		damage_per_second = MYMAX(damage_per_second,
-			m_env->getGameDef()->ndef()->get(n2).damage_per_second);
-		damage_per_second = MYMAX(damage_per_second,
-			m_env->getGameDef()->ndef()->get(n3).damage_per_second);
+		// Lowest and highest damage points are 0.1 within collisionbox
+		float dam_top = m_prop.collisionbox.MaxEdge.Y - 0.1f;
+
+		// Sequence of damage points, starting 0.1 above feet and progressing
+		// upwards in 1 node intervals, stopping below top damage point.
+		for (float dam_height = 0.1f; dam_height < dam_top; dam_height++) {
+			v3s16 p = floatToInt(m_base_position +
+				v3f(0.0f, dam_height * BS, 0.0f), BS);
+			MapNode n = m_env->getMap().getNodeNoEx(p);
+			damage_per_second = std::max(damage_per_second,
+				m_env->getGameDef()->ndef()->get(n).damage_per_second);
+		}
+
+		// Top damage point
+		v3s16 ptop = floatToInt(m_base_position +
+			v3f(0.0f, dam_top * BS, 0.0f), BS);
+		MapNode ntop = m_env->getMap().getNodeNoEx(ptop);
+		damage_per_second = std::max(damage_per_second,
+			m_env->getGameDef()->ndef()->get(ntop).damage_per_second);
 
 		if (damage_per_second != 0 && m_hp > 0) {
 			s16 newhp = ((s32) damage_per_second > m_hp ? 0 : m_hp - damage_per_second);
@@ -980,12 +986,11 @@ void PlayerSAO::step(float dtime, bool send_recommended)
 	}
 
 	// If attached, check that our parent is still there. If it isn't, detach.
-	if(m_attachment_parent_id && !isAttached())
-	{
+	if (m_attachment_parent_id && !isAttached()) {
 		m_attachment_parent_id = 0;
 		m_attachment_bone = "";
-		m_attachment_position = v3f(0,0,0);
-		m_attachment_rotation = v3f(0,0,0);
+		m_attachment_position = v3f(0.0f, 0.0f, 0.0f);
+		m_attachment_rotation = v3f(0.0f, 0.0f, 0.0f);
 		setBasePosition(m_last_good_position);
 		m_env->getGameDef()->SendMovePlayer(m_peer_id);
 	}
@@ -993,8 +998,8 @@ void PlayerSAO::step(float dtime, bool send_recommended)
 	//dstream<<"PlayerSAO::step: dtime: "<<dtime<<std::endl;
 
 	// Set lag pool maximums based on estimated lag
-	const float LAG_POOL_MIN = 5.0;
-	float lag_pool_max = m_env->getMaxLagEstimate() * 2.0;
+	const float LAG_POOL_MIN = 5.0f;
+	float lag_pool_max = m_env->getMaxLagEstimate() * 2.0f;
 	if(lag_pool_max < LAG_POOL_MIN)
 		lag_pool_max = LAG_POOL_MIN;
 	m_dig_pool.setMax(lag_pool_max);
@@ -1007,8 +1012,10 @@ void PlayerSAO::step(float dtime, bool send_recommended)
 	m_time_from_last_punch += dtime;
 	m_nocheat_dig_time += dtime;
 
-	// Each frame, parent position is copied if the object is attached, otherwise it's calculated normally
-	// If the object gets detached this comes into effect automatically from the last known origin
+	// Each frame, parent position is copied if the object is attached,
+	// otherwise it's calculated normally.
+	// If the object gets detached this comes into effect automatically from
+	// the last known origin.
 	if (isAttached()) {
 		v3f pos = m_env->getActiveObject(m_attachment_parent_id)->getBasePosition();
 		m_last_good_position = pos;
@@ -1018,20 +1025,21 @@ void PlayerSAO::step(float dtime, bool send_recommended)
 	if (!send_recommended)
 		return;
 
-	// If the object is attached client-side, don't waste bandwidth sending its position to clients
-	if(m_position_not_sent && !isAttached())
-	{
+	// If the object is attached client-side, don't waste bandwidth sending its
+	// position to clients.
+	if (m_position_not_sent && !isAttached()) {
 		m_position_not_sent = false;
 		float update_interval = m_env->getSendRecommendedInterval();
 		v3f pos;
-		if(isAttached()) // Just in case we ever do send attachment position too
+		if (isAttached()) // Just in case we ever do send attachment position too
 			pos = m_env->getActiveObject(m_attachment_parent_id)->getBasePosition();
 		else
 			pos = m_base_position;
+
 		std::string str = gob_cmd_update_position(
 			pos,
-			v3f(0,0,0),
-			v3f(0,0,0),
+			v3f(0.0f, 0.0f, 0.0f),
+			v3f(0.0f, 0.0f, 0.0f),
 			m_yaw,
 			true,
 			false,
@@ -1083,7 +1091,7 @@ void PlayerSAO::step(float dtime, bool send_recommended)
 		}
 	}
 
-	if (!m_attachment_sent){
+	if (!m_attachment_sent) {
 		m_attachment_sent = true;
 		std::string str = gob_cmd_update_attachment(m_attachment_parent_id,
 				m_attachment_bone, m_attachment_position, m_attachment_rotation);
