@@ -301,6 +301,40 @@ void WieldMeshSceneNode::setExtruded(const std::string &imagename,
 	}
 }
 
+scene::SMesh *createSpecialNodeMesh(Client *client, content_t id, std::vector<ItemPartColor> *colors)
+{
+	MeshMakeData mesh_make_data(client, false, false);
+	MeshCollector collector(false);
+	mesh_make_data.setSmoothLighting(false);
+	MapblockMeshGenerator gen(&mesh_make_data, &collector);
+	gen.renderSingle(id);
+	colors.clear();
+	scene::SMesh *mesh = new scene::SMesh();
+	for (auto &prebuffers : collector.prebuffers)
+		for (PreMeshBuffer &p : prebuffers) {
+			if (p.layer.material_flags & MATERIAL_FLAG_ANIMATION) {
+				const FrameSpec &frame = (*p.layer.frames)[0];
+				p.layer.texture = frame.texture;
+				p.layer.normal_texture = frame.normal_texture;
+			}
+			for (video::S3DVertex &v : p.vertices)
+				v.Color.setAlpha(255);
+			scene::SMeshBuffer *buf = new scene::SMeshBuffer();
+			// always set all textures
+			// with no shaders only texture 0 is ever actually used
+			buf->Material.setTexture(0, p.layer.texture);
+			buf->Material.setTexture(1, p.layer.normal_texture);
+			buf->Material.setTexture(2, p.layer.flags_texture);
+			p.layer.applyMaterialOptions(buf->Material);
+			mesh->addMeshBuffer(buf);
+			buf->append(&p.vertices[0], p.vertices.size(),
+					&p.indices[0], p.indices.size());
+			buf->drop();
+			colors.push_back(
+				ItemPartColor(p.layer.has_color, p.layer.color));
+		}
+}
+
 void WieldMeshSceneNode::setItem(const ItemStack &item, Client *client)
 {
 	ITextureSource *tsrc = client->getTextureSource();
@@ -381,36 +415,7 @@ void WieldMeshSceneNode::setItem(const ItemStack &item, Client *client)
 					break;
 				}
 				default: {
-					MeshMakeData mesh_make_data(client, false, false);
-					MeshCollector collector(false);
-					mesh_make_data.setSmoothLighting(false);
-					MapblockMeshGenerator gen(&mesh_make_data, &collector);
-					gen.renderSingle(id);
-					mesh = new scene::SMesh();
-					for (u8 layer = 0; layer < MAX_TILE_LAYERS; layer++)
-						for (PreMeshBuffer &p : collector.prebuffers[layer]) {
-							if (p.layer.material_flags & MATERIAL_FLAG_ANIMATION) {
-								const FrameSpec &frame = (*p.layer.frames)[0];
-								p.layer.texture = frame.texture;
-								p.layer.normal_texture = frame.normal_texture;
-							}
-							for (video::S3DVertex &v : p.vertices)
-								v.Color.setAlpha(255);
-							scene::SMeshBuffer *buf = new scene::SMeshBuffer();
-							buf->Material.MaterialType = m_material_type;
-							buf->Material.setTexture(0, p.layer.texture);
-							if (m_enable_shaders) {
-								buf->Material.setTexture(1, p.layer.normal_texture);
-								buf->Material.setTexture(2, p.layer.flags_texture);
-							}
-							p.layer.applyMaterialOptions(buf->Material);
-							mesh->addMeshBuffer(buf);
-							buf->append(&p.vertices[0], p.vertices.size(),
-									&p.indices[0], p.indices.size());
-							buf->drop();
-							m_colors.push_back(
-								ItemPartColor(p.layer.has_color, p.layer.color));
-						}
+					mesh = createSpecialNodeMesh(client, id, &m_colors);
 					changeToMesh(mesh);
 					mesh->drop();
 					m_meshnode->setScale(
@@ -422,6 +427,7 @@ void WieldMeshSceneNode::setItem(const ItemStack &item, Client *client)
 		u32 material_count = m_meshnode->getMaterialCount();
 		for (u32 i = 0; i < material_count; ++i) {
 			video::SMaterial &material = m_meshnode->getMaterial(i);
+			material.MaterialType = m_material_type;
 			material.setFlag(video::EMF_BACK_FACE_CULLING, true);
 			material.setFlag(video::EMF_BILINEAR_FILTER, m_bilinear_filter);
 			material.setFlag(video::EMF_TRILINEAR_FILTER, m_trilinear_filter);
@@ -558,29 +564,7 @@ void getItemMesh(Client *client, const ItemStack &item, ItemMesh *result)
 					break;
 				}
 				default: {
-					MeshMakeData mesh_make_data(client, false, false);
-					MeshCollector collector(false);
-					mesh_make_data.setSmoothLighting(false);
-					MapblockMeshGenerator gen(&mesh_make_data, &collector);
-					gen.renderSingle(id);
-					mesh = new scene::SMesh();
-					result->buffer_colors.clear();
-					for (u8 layer = 0; layer < MAX_TILE_LAYERS; layer++)
-						for (PreMeshBuffer &p : collector.prebuffers[layer]) {
-							if (p.layer.material_flags & MATERIAL_FLAG_ANIMATION)
-								p.layer.texture = (*p.layer.frames)[0].texture;
-							for (video::S3DVertex &v : p.vertices)
-								v.Color.setAlpha(255);
-							scene::SMeshBuffer *buf = new scene::SMeshBuffer();
-							buf->Material.setTexture(0, p.layer.texture);
-							p.layer.applyMaterialOptions(buf->Material);
-							mesh->addMeshBuffer(buf);
-							buf->append(&p.vertices[0], p.vertices.size(),
-									&p.indices[0], p.indices.size());
-							buf->drop();
-							result->buffer_colors.push_back(
-								ItemPartColor(p.layer.has_color, p.layer.color));
-						}
+					mesh = createSpecialNodeMesh(client, id, &result->buffer_colors);
 					scaleMesh(mesh, v3f(0.12, 0.12, 0.12));
 				}
 			}

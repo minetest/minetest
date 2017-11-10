@@ -187,7 +187,7 @@ struct PreMeshBuffer
 
 struct MeshCollector
 {
-	std::vector<PreMeshBuffer> prebuffers[MAX_TILE_LAYERS];
+	std::array<std::vector<PreMeshBuffer>, MAX_TILE_LAYERS> prebuffers;
 	bool m_use_tangent_vertices;
 
 	MeshCollector(bool use_tangent_vertices):
