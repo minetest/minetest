@@ -38,6 +38,7 @@ LocalPlayer::LocalPlayer(Client *client, const char *name):
 {
 }
 
+#ifdef MOVED_TO_PLAYER_CPP
 static aabb3f getNodeBoundingBox(const std::vector<aabb3f> &nodeboxes)
 {
 	if (nodeboxes.empty())
@@ -54,7 +55,9 @@ static aabb3f getNodeBoundingBox(const std::vector<aabb3f> &nodeboxes)
 
 	return b_max;
 }
+#endif
 
+#ifdef MOVED_TO_PLAYER_CPP
 bool LocalPlayer::updateSneakNode(Map *map, const v3f &position,
 		const v3f &sneak_max)
 {
@@ -165,6 +168,7 @@ bool LocalPlayer::updateSneakNode(Map *map, const v3f &position,
 	}
 	return true;
 }
+#endif
 
 void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d,
 		std::vector<CollisionInfo> *collision_info)
@@ -843,4 +847,48 @@ void LocalPlayer::triggerJumpEvent()
 {
 	MtEvent *e = new SimpleTriggerEvent("PlayerJump");
 	m_client->event()->put(e);
+}
+
+const NodeDefManager *LocalPlayer::getNodeDefManager() const
+{
+	return m_client ? m_client->ndef() : NULL;
+}
+
+void LocalPlayer::_handleAttachedMove()
+{
+	setPosition(overridePosition);
+}
+
+float LocalPlayer::_getStepHeight() const
+{
+	// Player object property step height is multiplied by BS in
+	// /src/script/common/c_content.cpp and /src/content_sao.cpp
+	return (m_cao == nullptr) ? 0.0f :
+		(touching_ground ? m_cao->getStepHeight() : (0.2f * BS));
+}
+
+//const IGameDef* LocalPlayer::getGameDef() const
+//{
+//	return m_client;
+//}
+
+void LocalPlayer::reportRegainGround()
+{
+	MtEvent *e = new SimpleTriggerEvent("PlayerRegainGround");
+	m_client->event()->put(e);
+
+	// Set camera impact value to be used for view bobbing
+	camera_impact = getSpeed().Y * -1;
+}
+
+void LocalPlayer::calculateCameraInCeiling(Map *map, const NodeDefManager *nodemgr)
+{
+	camera_barely_in_ceiling = false;
+	v3s16 camera_np = floatToInt(getEyePosition(), BS);
+	MapNode n = map->getNodeNoEx(camera_np);
+	if(n.getContent() != CONTENT_IGNORE){
+		if(nodemgr->get(n).walkable && nodemgr->get(n).solidness == 2){
+			camera_barely_in_ceiling = true;
+		}
+	}
 }

@@ -30,6 +30,7 @@ class GenericCAO;
 class ClientActiveObject;
 class ClientEnvironment;
 class IGameDef;
+class NodeDefManager;
 
 enum LocalPlayerAnimations
 {
@@ -121,19 +122,24 @@ protected:
 	virtual bool checkPrivilege(const std::string &priv) const;
 	virtual void triggerJumpEvent();
 
+	virtual const NodeDefManager *getNodeDefManager() const;
+	virtual void _handleAttachedMove();
+	virtual float _getStepHeight() const;
+	//virtual IGameDef* getGameDef() const;
+	virtual void reportRegainGround();
+	virtual void calculateCameraInCeiling(Map *map, const NodeDefManager *nodemgr);
+
 private:
-	bool updateSneakNode(Map *map, const v3f &position, const v3f &sneak_max);
-	float getSlipFactor(Environment *env, const v3f &speedH);
+	//bool updateSneakNode(Map *map, const v3f &position, const v3f &sneak_max);
+	//float getSlipFactor(Environment *env, const v3f &speedH);
+	//void _applyControl(const ControlLogEntry &cle, Environment *env);
 
-	v3f m_position;
-	v3s16 m_standing_node;
-
-	v3s16 m_sneak_node = v3s16(32767, 32767, 32767);
+	//v3s16 m_sneak_node = v3s16(32767, 32767, 32767);
 	// Stores the top bounding box of m_sneak_node
-	aabb3f m_sneak_node_bb_top = aabb3f(0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
+	//aabb3f m_sneak_node_bb_top = aabb3f(0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
 	// Whether a "sneak ladder" structure is detected at the players pos
 	// see detectSneakLadder() in the .cpp for more info (always false if disabled)
-	bool m_sneak_ladder_detected = false;
+	//bool m_sneak_ladder_detected = false;
 
 	// ***** Variables for temporary option of the old move code *****
 	// Stores the max player uplift by m_sneak_node

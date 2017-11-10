@@ -230,3 +230,28 @@ bool RemotePlayer::isAttached() const
 {
 	return m_sao->isAttached();
 }
+
+const NodeDefManager *RemotePlayer::getNodeDefManager() const
+{
+	return m_server ? m_server->getNodeDefManager() : NULL;
+}
+
+void RemotePlayer::_handleAttachedMove()
+{
+	// noop
+	return;
+}
+
+float RemotePlayer::_getStepHeight() const
+{
+	// Player object property step height is multiplied by BS in
+	// /src/script/common/c_content.cpp and /src/content_cao.cpp
+	// TODO: get a better source, this is wrong
+	return (m_sao == nullptr) ? 0.0f :
+		(touching_ground ? (0.6f * BS) : (0.2f * BS));
+}
+
+//const IGameDef* RemotePlayer::getGameDef() const
+//{
+//	return m_server;
+//}

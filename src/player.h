@@ -90,6 +90,7 @@ class Map;
 struct CollisionInfo;
 struct HudElement;
 class Environment;
+class NodeDefManager;
 
 class Player
 {
@@ -101,11 +102,9 @@ public:
 	DISABLE_CLASS_COPY(Player);
 
 	// SERVER SIDE MOVEMENT: should happen here
-	virtual void move(f32 dtime, Environment *env, f32 pos_max_d)
-	{}
+	virtual void move(f32 dtime, Environment *env, f32 pos_max_d);
 	virtual void move(f32 dtime, Environment *env, f32 pos_max_d,
-			std::vector<CollisionInfo> *collision_info)
-	{}
+			std::vector<CollisionInfo> *collision_info);
 
 	const v3f &getSpeed() const
 	{
@@ -207,6 +206,8 @@ public:
 	v3s16 getStandingNodePos();
 	void applyControlLogEntry(const ControlLogEntry &cle, Environment *env);
 
+	void setCollisionbox(const aabb3f &box) { m_collisionbox = box; }
+
 protected:
 	char m_name[PLAYERNAME_SIZE];
 	v3f m_speed;
@@ -219,12 +220,27 @@ protected:
 	void accelerateVertical(const v3f &target_speed, const f32 max_increase);
 	float getSlipFactor(Environment *env, const v3f &speedH);
 	v3f m_position;
+	v3s16 m_standing_node;
 
 	// Whether the player is allowed to sneak
 	bool m_sneak_node_exists = false;
-
-	v3s16 m_standing_node;
 	v3s16 m_sneak_node = v3s16(32767, 32767, 32767);
+	// Stores the top bounding box of m_sneak_node
+	aabb3f m_sneak_node_bb_top = aabb3f(0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
+	// Whether a "sneak ladder" structure is detected at the players pos
+	// see detectSneakLadder() in the .cpp for more info (always false if disabled)
+	bool m_sneak_ladder_detected = false;
+	bool updateSneakNode(Map *map, const v3f &position, const v3f &sneak_max);
+
+	aabb3f m_collisionbox = aabb3f(-BS * 0.30f, 0.0f, -BS * 0.30f, BS * 0.30f,
+			BS * 1.75f, BS * 0.30f);
+
+	virtual const NodeDefManager *getNodeDefManager() const = 0;
+	virtual void _handleAttachedMove() = 0;
+	virtual float _getStepHeight() const = 0;
+	//virtual IGameDef* getGameDef() const = 0;
+	virtual void reportRegainGround() = 0;
+	virtual void calculateCameraInCeiling(Map *map, const NodeDefManager *nodemgr) = 0;
 private:
 	// Protect some critical areas
 	// hud for example can be modified by EmergeThread
