@@ -18,9 +18,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "helpers.h"
-#include "params.h"
+#include <array>
 #include "client.h"
 #include "mesh.h"
+#include "params.h"
 #include "settings.h"
 #include "util/directiontables.h"
 

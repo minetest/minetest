@@ -23,7 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mapnode.h"
 
 struct MeshMakeData;
-struct INodeDefManager;
+class INodeDefManager;
 
 /*!
  * Encodes light of a node.
