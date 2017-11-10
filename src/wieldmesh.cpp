@@ -308,7 +308,7 @@ scene::SMesh *createSpecialNodeMesh(Client *client, content_t id, std::vector<It
 	mesh_make_data.setSmoothLighting(false);
 	MapblockMeshGenerator gen(&mesh_make_data, &collector);
 	gen.renderSingle(id);
-	colors.clear();
+	colors->clear();
 	scene::SMesh *mesh = new scene::SMesh();
 	for (auto &prebuffers : collector.prebuffers)
 		for (PreMeshBuffer &p : prebuffers) {
@@ -330,9 +330,10 @@ scene::SMesh *createSpecialNodeMesh(Client *client, content_t id, std::vector<It
 			buf->append(&p.vertices[0], p.vertices.size(),
 					&p.indices[0], p.indices.size());
 			buf->drop();
-			colors.push_back(
+			colors->push_back(
 				ItemPartColor(p.layer.has_color, p.layer.color));
 		}
+	return mesh;
 }
 
 void WieldMeshSceneNode::setItem(const ItemStack &item, Client *client)
