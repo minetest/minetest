@@ -196,6 +196,19 @@ void RemoteClient::GetNextBlocks (
 	s16 wanted_range = sao->getWantedRange() + 1;
 	float camera_fov = sao->getFov();
 
+	const s16 full_d_max = std::min(adjustDist(m_max_send_distance, camera_fov), wanted_range);
+	const s16 d_opt = std::min(adjustDist(m_block_optimize_distance, camera_fov), wanted_range);
+	const s16 d_blocks_in_sight = full_d_max * BS * MAP_BLOCKSIZE;
+	infostream << "Fov from client " << camera_fov << " full_d_max " << full_d_max << std::endl;
+
+	s16 d_max = full_d_max;
+	s16 d_max_gen = std::min(adjustDist(m_max_gen_distance, camera_fov), wanted_range);
+
+	// Don't loop very much at a time
+	s16 max_d_increment_at_time = 2;
+	if (d_max > d_start + max_d_increment_at_time)
+		d_max = d_start + max_d_increment_at_time;
+
 	// cos(angle between velocity and camera) * |velocity|
 	// Limit to 0.0f in case player moves backwards.
 	f32 dot = rangelim(camera_dir.dotProduct(playerspeed), 0.0f, 300.0f);
@@ -203,21 +216,6 @@ void RemoteClient::GetNextBlocks (
 	// Reduce the field of view when a player moves and looks forward.
 	// limit max fov effect to 50%, 60% at 20n/s fly speed
 	camera_fov = camera_fov / (1 + dot / 300.0f);
-
-	// 1.775 ~= 72 * PI / 180 * 1.4;
-	s16 magnify_adjust = round(sqrt(1.775f / camera_fov));
-	const s16 full_d_max = std::min((s16)(m_max_send_distance * magnify_adjust), wanted_range);
-	const s16 d_opt = std::min((s16)(m_block_optimize_distance * magnify_adjust), wanted_range);
-	const s16 d_blocks_in_sight = full_d_max * BS * MAP_BLOCKSIZE;
-	//infostream << "Fov from client " << camera_fov << " full_d_max " << full_d_max << std::endl;
-
-	s16 d_max = full_d_max;
-	s16 d_max_gen = std::min((s16)(m_max_gen_distance * magnify_adjust), wanted_range);
-
-	// Don't loop very much at a time
-	s16 max_d_increment_at_time = 2;
-	if (d_max > d_start + max_d_increment_at_time)
-		d_max = d_start + max_d_increment_at_time;
 
 	s32 nearest_emerged_d = -1;
 	s32 nearest_emergefull_d = -1;
