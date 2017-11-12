@@ -396,7 +396,7 @@ void MapblockMeshGenerator::prepareLiquidNodeDrawing()
 		// If this liquid emits light and doesn't contain light, draw
 		// it at what it emits, for an increased effect
 		u8 e = decode_light(f->light_source);
-		light = DecodedLight(e, e);
+		light = DecodedLight(std::max(e, light.lightA), std::max(e, light.lightB));
 	} else if (nodedef->get(ntop).param_type == CPT_LIGHT) {
 		// Otherwise, use the light of the node on top if possible
 		light = DecodedLight(getInteriorLight(ntop, 0, nodedef));
