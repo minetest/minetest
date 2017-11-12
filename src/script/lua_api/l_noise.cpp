@@ -141,17 +141,19 @@ const luaL_Reg LuaPerlinNoise::methods[] = {
   LuaPerlinNoiseMap
 */
 
-LuaPerlinNoiseMap::LuaPerlinNoiseMap(NoiseParams *params, s32 seed, v3s16 size)
+LuaPerlinNoiseMap::LuaPerlinNoiseMap(lua_State *L, NoiseParams *params, s32 seed, v3s16 size)
 {
 	m_is3d = size.Z > 1;
 	np = *params;
+	lua_newtable(L);
+	m_table_ref = luaL_ref(L, LUA_REGISTRYINDEX);
+
 	try {
 		noise = new Noise(&np, seed, size.X, size.Y, size.Z);
 	} catch (InvalidNoiseParamsException &e) {
 		throw LuaError(e.what());
 	}
 }
-
 
 LuaPerlinNoiseMap::~LuaPerlinNoiseMap()
 {
@@ -196,7 +198,9 @@ int LuaPerlinNoiseMap::l_get2dMap_flat(lua_State *L)
 
 	size_t maplen = n->sx * n->sy;
 
-	if (use_buffer)
+	if (!o->m_is3d)
+		lua_rawgeti(L, LUA_REGISTRYINDEX, o->m_table_ref);
+	else if (use_buffer)
 		lua_pushvalue(L, 3);
 	else
 		lua_newtable(L);
@@ -246,7 +250,6 @@ int LuaPerlinNoiseMap::l_get3dMap_flat(lua_State *L)
 
 	LuaPerlinNoiseMap *o = checkobject(L, 1);
 	v3f p                = check_v3f(L, 2);
-	bool use_buffer      = lua_istable(L, 3);
 
 	if (!o->m_is3d)
 		return 0;
@@ -256,10 +259,7 @@ int LuaPerlinNoiseMap::l_get3dMap_flat(lua_State *L)
 
 	size_t maplen = n->sx * n->sy * n->sz;
 
-	if (use_buffer)
-		lua_pushvalue(L, 3);
-	else
-		lua_newtable(L);
+	lua_rawgeti(L, LUA_REGISTRYINDEX, o->m_table_ref);
 
 	for (size_t i = 0; i != maplen; i++) {
 		lua_pushnumber(L, n->result[i]);
@@ -331,7 +331,7 @@ int LuaPerlinNoiseMap::create_object(lua_State *L)
 		return 0;
 	v3s16 size = read_v3s16(L, 2);
 
-	LuaPerlinNoiseMap *o = new LuaPerlinNoiseMap(&np, 0, size);
+	LuaPerlinNoiseMap *o = new LuaPerlinNoiseMap(L, &np, 0, size);
 	*(void **)(lua_newuserdata(L, sizeof(void *))) = o;
 	luaL_getmetatable(L, className);
 	lua_setmetatable(L, -2);
@@ -342,6 +342,7 @@ int LuaPerlinNoiseMap::create_object(lua_State *L)
 int LuaPerlinNoiseMap::gc_object(lua_State *L)
 {
 	LuaPerlinNoiseMap *o = *(LuaPerlinNoiseMap **)(lua_touserdata(L, 1));
+	luaL_unref(L, LUA_REGISTRYINDEX, o->m_table_ref);
 	delete o;
 	return 0;
 }

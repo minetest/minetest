@@ -35,6 +35,8 @@ class LuaVoxelManip : public ModApiBase
 private:
 	std::map<v3s16, MapBlock *> modified_blocks;
 	bool is_mapgen_vm = false;
+	static const std::string mg_vm_data_table_ref;
+	static const std::string mg_vm_param2_table_ref;
 
 	static const char className[];
 	static const luaL_Reg methods[];

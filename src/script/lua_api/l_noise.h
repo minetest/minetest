@@ -62,6 +62,7 @@ class LuaPerlinNoiseMap : public ModApiBase
 	NoiseParams np;
 	Noise *noise;
 	bool m_is3d;
+	int m_table_ref;
 	static const char className[];
 	static const luaL_Reg methods[];
 
@@ -80,6 +81,7 @@ class LuaPerlinNoiseMap : public ModApiBase
 	static int l_getMapSlice(lua_State *L);
 
 public:
+	LuaPerlinNoiseMap(lua_State *L, NoiseParams *params, s32 seed, v3s16 size);
 	LuaPerlinNoiseMap(NoiseParams *np, s32 seed, v3s16 size);
 
 	~LuaPerlinNoiseMap();
