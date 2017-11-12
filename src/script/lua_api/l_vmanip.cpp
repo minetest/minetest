@@ -30,6 +30,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mapgen.h"
 #include "voxelalgorithms.h"
 
+const std::string LuaVoxelManip::mg_vm_data_table_ref = "LuaVoxelManip MG Data";
+const std::string LuaVoxelManip::mg_vm_param2_table_ref = "LuaVoxelManip MG Param2";
+
 // garbage collector
 int LuaVoxelManip::gc_object(lua_State *L)
 {
@@ -69,7 +72,10 @@ int LuaVoxelManip::l_get_data(lua_State *L)
 
 	u32 volume = vm->m_area.getVolume();
 
-	if (use_buffer)
+	if (o->is_mapgen_vm) {
+		lua_pushlightuserdata(L, (void *)&mg_vm_data_table_ref);
+		lua_gettable(L, LUA_REGISTRYINDEX);
+	} else if (use_buffer)
 		lua_pushvalue(L, 2);
 	else
 		lua_newtable(L);
@@ -299,7 +305,10 @@ int LuaVoxelManip::l_get_param2_data(lua_State *L)
 
 	u32 volume = vm->m_area.getVolume();
 
-	if (use_buffer)
+	if (o->is_mapgen_vm) {
+		lua_pushlightuserdata(L, (void *)&mg_vm_param2_table_ref);
+		lua_gettable(L, LUA_REGISTRYINDEX);
+	} else if (use_buffer)
 		lua_pushvalue(L, 2);
 	else
 		lua_newtable(L);
@@ -444,6 +453,14 @@ void LuaVoxelManip::Register(lua_State *L)
 
 	luaL_openlib(L, 0, methods, 0);  // fill methodtable
 	lua_pop(L, 1);  // drop methodtable
+
+	lua_pushlightuserdata(L, (void *)&mg_vm_data_table_ref);
+	lua_newtable(L);
+	lua_settable(L, LUA_REGISTRYINDEX);
+
+	lua_pushlightuserdata(L, (void *)&mg_vm_param2_table_ref);
+	lua_newtable(L);
+	lua_settable(L, LUA_REGISTRYINDEX);
 
 	// Can be created from Lua (VoxelManip())
 	lua_register(L, className, create_object);

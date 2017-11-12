@@ -925,7 +925,7 @@ int ModApiEnvMod::l_get_perlin_map(lua_State *L)
 	v3s16 size = read_v3s16(L, 2);
 
 	s32 seed = (s32)(env->getServerMap().getSeed());
-	LuaPerlinNoiseMap *n = new LuaPerlinNoiseMap(&np, seed, size);
+	LuaPerlinNoiseMap *n = new LuaPerlinNoiseMap(L, &np, seed, size);
 	*(void **)(lua_newuserdata(L, sizeof(void *))) = n;
 	luaL_getmetatable(L, "PerlinNoiseMap");
 	lua_setmetatable(L, -2);
