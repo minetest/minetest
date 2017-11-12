@@ -39,6 +39,10 @@ void set_light_table(float gamma)
 // lighting curve derivatives
 	const float alpha = g_settings->getFloat("lighting_alpha");
 	const float beta  = g_settings->getFloat("lighting_beta");
+// mid-range boost
+	const float boost_a = g_settings->getFloat("lighting_boost_level");
+	const float boost_s = 6.0 / g_settings->getFloat("lighting_boost_spread");
+	const float boost_c = g_settings->getFloat("lighting_boost_strength");
 // lighting curve coefficients
 	const float a = alpha + beta - 2;
 	const float b = 3 - 2 * alpha - beta;
@@ -50,7 +54,9 @@ void set_light_table(float gamma)
 		float x = i;
 		x /= LIGHT_MAX;
 		float brightness = a * x * x * x + b * x * x + c * x;
-		brightness = powf(brightness, 1.0 / gamma);
+		float t = boost_s * (x - boost_a);
+		float boost = boost_c * std::exp(t * t);
+		brightness = powf(brightness + boost, 1.0 / gamma);
 		light_LUT[i] = rangelim((u32)(255 * brightness), 0, 255);
 		if (i > 1 && light_LUT[i] <= light_LUT[i - 1])
 			light_LUT[i] = light_LUT[i - 1] + 1;
