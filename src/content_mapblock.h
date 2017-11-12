@@ -25,7 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 struct MeshMakeData;
 struct MeshCollector;
 
-struct DecodedLight {
+struct LightPair {
 	union {
 		u16 light;
 		struct {
@@ -34,10 +34,10 @@ struct DecodedLight {
 		};
 	};
 
-	DecodedLight() = default;
-	explicit DecodedLight(u16 value) : light(value) {}
-	DecodedLight(u8 valueA, u8 valueB) : lightA(valueA), lightB(valueB) {}
-	DecodedLight(float valueA, float valueB) :
+	LightPair() = default;
+	explicit LightPair(u16 value) : light(value) {}
+	LightPair(u8 valueA, u8 valueB) : lightA(valueA), lightB(valueB) {}
+	LightPair(float valueA, float valueB) :
 		lightA(core::clamp(core::round32(valueA), 0, 255)),
 		lightB(core::clamp(core::round32(valueB), 0, 255)) {}
 	operator u16() const { return light; }
@@ -66,7 +66,7 @@ public:
 	v3f origin;
 	MapNode n;
 	const ContentFeatures *f;
-	DecodedLight light;
+	LightPair light;
 	LightFrame frame;
 	video::SColor color;
 	TileSpec tile;
@@ -74,7 +74,7 @@ public:
 
 // lighting
 	void getSmoothLightFrame();
-	DecodedLight blendLight(const v3f &vertex_pos);
+	LightPair blendLight(const v3f &vertex_pos);
 	video::SColor blendLightColor(const v3f &vertex_pos);
 	video::SColor blendLightColor(const v3f &vertex_pos, const v3f &vertex_normal);
 
@@ -90,7 +90,7 @@ public:
 
 // cuboid drawing!
 	void drawCuboid(const aabb3f &box, TileSpec *tiles, int tilecount,
-		const DecodedLight *lights , const f32 *txc);
+		const LightPair *lights , const f32 *txc);
 	void generateCuboidTextureCoords(aabb3f const &box, f32 *coords);
 	void drawAutoLightedCuboid(aabb3f box, const f32 *txc = NULL,
 		TileSpec *tiles = NULL, int tile_count = 0);
