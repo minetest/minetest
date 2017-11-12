@@ -155,16 +155,19 @@ local function drop_attached_node(p)
 			y = p.y + math.random()/2 - 0.25,
 			z = p.z + math.random()/2 - 0.25,
 		}
-		-- If it drops itself, preserve its metadata.  Assume an air block is never attached.
-		if meta_fields and n.name == item.name then
-			local stack = ItemStack({name=n.name, count=1})
-			local stack_meta = stack and stack:get_meta()
-			for k,v in pairs(meta_fields) do
-				if k ~= "description" and k ~= "infotext" and k ~= "formspec" then
-					stack_meta:set_string(k,v )
+		-- If it drops itself, preserve its metadata.
+		if meta_fields then
+			-- item is a table in 0.4.16, but a string in 0.5 - handle both.
+			if (type(item) == "table" and n.name == item.name) or (type(item) == "string" and n.name == item) then
+				local stack = ItemStack({name=n.name, count=1})
+				local stack_meta = stack:get_meta()
+				for k,v in pairs(meta_fields) do
+					if k ~= "description" and k ~= "infotext" and k ~= "formspec" then
+						stack_meta:set_string(k, v)
+					end
 				end
+				item = stack
 			end
-			item = stack
 		end
 		core.add_item(pos, item)
 	end
