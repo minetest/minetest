@@ -176,7 +176,7 @@ end
 
 local function formspec(tabview, name, tabdata)
 	local tab_string =
-		"box[0,0;3.5,4.5;#999999]" ..
+		"box[0,0;3.75,4.5;#999999]" ..
 		"checkbox[0.25,0;cb_smooth_lighting;" .. fgettext("Smooth Lighting") .. ";"
 				.. dump(core.settings:get_bool("smooth_lighting")) .. "]" ..
 		"checkbox[0.25,0.5;cb_particles;" .. fgettext("Particles") .. ";"
@@ -187,38 +187,38 @@ local function formspec(tabview, name, tabdata)
 				.. dump(core.settings:get_bool("opaque_water")) .. "]" ..
 		"checkbox[0.25,2.0;cb_connected_glass;" .. fgettext("Connected Glass") .. ";"
 				.. dump(core.settings:get_bool("connected_glass")) .. "]" ..
-		"dropdown[0.25,2.8;3.3;dd_node_highlighting;" .. dd_options.node_highlighting[1] .. ";"
+		"dropdown[0.25,2.8;3.5;dd_node_highlighting;" .. dd_options.node_highlighting[1] .. ";"
 				.. getSettingIndex.NodeHighlighting() .. "]" ..
-		"dropdown[0.25,3.6;3.3;dd_leaves_style;" .. dd_options.leaves[1] .. ";"
+		"dropdown[0.25,3.6;3.5;dd_leaves_style;" .. dd_options.leaves[1] .. ";"
 				.. getSettingIndex.Leaves() .. "]" ..
-		"box[3.75,0;3.75,4.5;#999999]" ..
-		"label[3.85,0.1;" .. fgettext("Texturing:") .. "]" ..
-		"dropdown[3.85,0.55;3.85;dd_filters;" .. dd_options.filters[1] .. ";"
+		"box[4,0;3.75,4.5;#999999]" ..
+		"label[4.25,0.1;" .. fgettext("Texturing:") .. "]" ..
+		"dropdown[4.25,0.55;3.5;dd_filters;" .. dd_options.filters[1] .. ";"
 				.. getSettingIndex.Filter() .. "]" ..
-		"dropdown[3.85,1.35;3.85;dd_mipmap;" .. dd_options.mipmap[1] .. ";"
+		"dropdown[4.25,1.35;3.5;dd_mipmap;" .. dd_options.mipmap[1] .. ";"
 				.. getSettingIndex.Mipmap() .. "]" ..
-		"label[3.85,2.15;" .. fgettext("Antialiasing:") .. "]" ..
-		"dropdown[3.85,2.6;3.85;dd_antialiasing;" .. dd_options.antialiasing[1] .. ";"
+		"label[4.25,2.15;" .. fgettext("Antialiasing:") .. "]" ..
+		"dropdown[4.25,2.6;3.5;dd_antialiasing;" .. dd_options.antialiasing[1] .. ";"
 				.. getSettingIndex.Antialiasing() .. "]" ..
-		"label[3.85,3.45;" .. fgettext("Screen:") .. "]" ..
-		"checkbox[3.85,3.6;cb_autosave_screensize;" .. fgettext("Autosave screen size") .. ";"
+		"label[4.25,3.45;" .. fgettext("Screen:") .. "]" ..
+		"checkbox[4.25,3.6;cb_autosave_screensize;" .. fgettext("Autosave screen size") .. ";"
 				.. dump(core.settings:get_bool("autosave_screensize")) .. "]" ..
-		"box[7.75,0;4,4.5;#999999]" ..
-		"checkbox[8,0;cb_shaders;" .. fgettext("Shaders") .. ";"
+		"box[8,0;3.75,4.5;#999999]" ..
+		"checkbox[8.25,0;cb_shaders;" .. fgettext("Shaders") .. ";"
 				.. dump(core.settings:get_bool("enable_shaders")) .. "]"
 
 	if PLATFORM == "Android" then
 		tab_string = tab_string ..
-			"button[8,4.75;3.75,0.5;btn_reset_singleplayer;"
+			"button[8,4.75;4.1,1;btn_reset_singleplayer;"
 			.. fgettext("Reset singleplayer world") .. "]"
 	else
 		tab_string = tab_string ..
-			"button[8,4.85;3.75,0.5;btn_change_keys;"
+			"button[8,4.75;4,1;btn_change_keys;"
 			.. fgettext("Change keys") .. "]"
 	end
 
 	tab_string = tab_string ..
-		"button[0,4.85;3.75,0.5;btn_advanced_settings;"
+		"button[0,4.75;4,1;btn_advanced_settings;"
 		.. fgettext("Advanced Settings") .. "]"
 
 
@@ -231,19 +231,19 @@ local function formspec(tabview, name, tabdata)
 
 	if core.settings:get_bool("enable_shaders") then
 		tab_string = tab_string ..
-			"checkbox[8,0.5;cb_bumpmapping;" .. fgettext("Bump Mapping") .. ";"
+			"checkbox[8.25,0.5;cb_bumpmapping;" .. fgettext("Bump Mapping") .. ";"
 					.. dump(core.settings:get_bool("enable_bumpmapping")) .. "]" ..
-			"checkbox[8,1;cb_tonemapping;" .. fgettext("Tone Mapping") .. ";"
+			"checkbox[8.25,1;cb_tonemapping;" .. fgettext("Tone Mapping") .. ";"
 					.. dump(core.settings:get_bool("tone_mapping")) .. "]" ..
-			"checkbox[8,1.5;cb_generate_normalmaps;" .. fgettext("Normal Mapping") .. ";"
+			"checkbox[8.25,1.5;cb_generate_normalmaps;" .. fgettext("Normal Mapping") .. ";"
 					.. dump(core.settings:get_bool("generate_normalmaps")) .. "]" ..
-			"checkbox[8,2;cb_parallax;" .. fgettext("Parallax Occlusion") .. ";"
+			"checkbox[8.25,2;cb_parallax;" .. fgettext("Parallax Occlusion") .. ";"
 					.. dump(core.settings:get_bool("enable_parallax_occlusion")) .. "]" ..
-			"checkbox[8,2.5;cb_waving_water;" .. fgettext("Waving Water") .. ";"
+			"checkbox[8.25,2.5;cb_waving_water;" .. fgettext("Waving Water") .. ";"
 					.. dump(core.settings:get_bool("enable_waving_water")) .. "]" ..
-			"checkbox[8,3;cb_waving_leaves;" .. fgettext("Waving Leaves") .. ";"
+			"checkbox[8.25,3;cb_waving_leaves;" .. fgettext("Waving Leaves") .. ";"
 					.. dump(core.settings:get_bool("enable_waving_leaves")) .. "]" ..
-			"checkbox[8,3.5;cb_waving_plants;" .. fgettext("Waving Plants") .. ";"
+			"checkbox[8.25,3.5;cb_waving_plants;" .. fgettext("Waving Plants") .. ";"
 					.. dump(core.settings:get_bool("enable_waving_plants")) .. "]"
 	else
 		tab_string = tab_string ..
