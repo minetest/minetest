@@ -632,6 +632,13 @@ enum ToClientCommand
 	 	std::string channel name
 	 */
 
+	TOCLIENT_KNOCK_BACK = 0x59,
+	/*
+	 	u16 id_player_knockback
+	 	v3f direction
+	 	f32 time_knockback
+	*/
+
 	TOCLIENT_SRP_BYTES_S_B = 0x60,
 	/*
 		Belonging to AUTH_MECHANISM_SRP.

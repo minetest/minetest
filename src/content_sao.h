@@ -406,6 +406,10 @@ private:
 	f32 m_fov = 0.0f;
 	s16 m_wanted_range = 0.0f;
 
+	// Knockback
+	f32 m_knockback_timer;
+	bool m_knockback;
+
 	PlayerAttributes m_extra_attributes;
 	bool m_extended_attributes_modified = false;
 public:

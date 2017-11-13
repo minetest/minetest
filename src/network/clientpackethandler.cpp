@@ -39,6 +39,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/srp.h"
 #include "tileanimation.h"
 #include "gettext.h"
+#include "content_cao.h"
 
 void Client::handleCommand_Deprecated(NetworkPacket* pkt)
 {
@@ -577,6 +578,33 @@ void Client::handleCommand_MovePlayer(NetworkPacket* pkt)
 	// Ignore damage for a few seconds, so that the player doesn't
 	// get damage from falling on ground
 	m_ignore_damage_timer = 3.0;
+}
+
+void Client::handleCommand_KnockBack(NetworkPacket *pkt)
+{
+	LocalPlayer *player = m_env.getLocalPlayer();
+	assert(player != NULL);
+
+	v3f direction;
+	f32 time_knockback;
+	u16 id_player_knockback;
+
+	*pkt >> id_player_knockback >> direction >> time_knockback;
+
+	GenericCAO *obj = m_env.getGenericCAO(id_player_knockback);
+	if (obj != NULL) {
+		if (obj->isLocalPlayer()) {
+			player->knockback(direction, time_knockback);
+		} else
+			obj->knockback(direction, time_knockback);
+	}
+
+	infostream << "Client got TOCLIENT_KNOCKBACK"
+			<< " direction=" << PP(direction)
+			<< " time_knockback=" << time_knockback
+			<< std::endl;
+
+
 }
 
 void Client::handleCommand_DeathScreen(NetworkPacket* pkt)

@@ -1279,6 +1279,24 @@ void Server::SetBlocksNotSent(std::map<v3s16, MapBlock *>& block)
 	m_clients.unlock();
 }
 
+void Server::SendPacketInRange(const v3f &pos, u32 range, NetworkPacket *pkt)
+{
+	std::vector<u16> clients = m_clients.getClientIDs();
+
+	for (const session_t client_id : clients) {
+		RemotePlayer *player = m_env->getPlayer(client_id);
+		assert(player);
+
+		PlayerSAO *sao = player->getPlayerSAO();
+		assert(sao);
+
+		if (sao->getBasePosition().getDistanceFrom(pos) > range)
+			continue;
+
+		m_clients.send(client_id, 0, pkt, true);
+	}
+}
+
 void Server::peerAdded(con::Peer *peer)
 {
 	verbosestream<<"Server::peerAdded(): peer->id="
@@ -1847,6 +1865,28 @@ void Server::SendMovePlayer(session_t peer_id)
 	}
 
 	Send(&pkt);
+}
+
+void Server::SendKnockBack(const session_t peer_id, const v3f &direction, const f32 time_knockback,
+		u16 id_player_knockback)
+{
+	RemotePlayer *player = m_env->getPlayer(peer_id);
+	assert(player);
+	PlayerSAO *sao = player->getPlayerSAO();
+	assert(sao);
+
+	NetworkPacket pkt(TOCLIENT_KNOCK_BACK, sizeof(u16) + sizeof(v3f) + sizeof(f32));
+	pkt << id_player_knockback << direction << time_knockback;
+
+	verbosestream << "Server : Sending TOCLIENT_KNOCKBACK"
+			<< " id player knockback=" << id_player_knockback
+			<< " direction =" << PP(direction)
+			<< " time_knockback=" << time_knockback
+			<< std::endl;
+
+	// Todo: use active_block_range
+	static const s16 active_block_range = g_settings->getS16("active_block_range");
+	SendPacketInRange(sao->getBasePosition(), 9999999999999, &pkt);
 }
 
 void Server::SendLocalPlayerAnimations(session_t peer_id, v2s32 animation_frames[4],

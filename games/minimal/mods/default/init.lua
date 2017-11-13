@@ -207,6 +207,7 @@ minetest.register_tool("default:sword_stone", {
 			choppy={times={[3]=0.90}, uses=20, maxlevel=0}
 		},
 		damage_groups = {fleshy=4},
+		knockback = 1.5
 	}
 })
 minetest.register_tool("default:sword_steel", {

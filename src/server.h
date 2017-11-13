@@ -337,6 +337,7 @@ public:
 	void SendPlayerBreath(PlayerSAO *sao);
 	void SendInventory(PlayerSAO* playerSAO);
 	void SendMovePlayer(session_t peer_id);
+	void SendKnockBack(const session_t peer_id, const v3f &direction, const f32 time_knockback, u16 id_player_knockback);
 
 	virtual bool registerModStorage(ModMetadata *storage);
 	virtual void unregisterModStorage(const std::string &name);
@@ -371,6 +372,7 @@ private:
 	/* mark blocks not sent for all clients */
 	void SetBlocksNotSent(std::map<v3s16, MapBlock *>& block);
 
+	void SendPacketInRange(const v3f &pos, u32 range, NetworkPacket *pkt);
 
 	void SendChatMessage(session_t peer_id, const ChatMessage &message);
 	void SendTimeOfDay(session_t peer_id, u16 time, f32 time_speed);

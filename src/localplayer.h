@@ -92,6 +92,7 @@ public:
 	unsigned int last_keyPressed = 0;
 	u8 last_camera_fov = 0;
 	u8 last_wanted_range = 0;
+	f32 m_knockback_timer = 0.0f;
 
 	float camera_impact = 0.0f;
 
@@ -144,6 +145,8 @@ public:
 
 	bool getCanZoom() const { return m_can_zoom; }
 	void setCanZoom(bool can_zoom) { m_can_zoom = can_zoom; }
+
+	void knockback(const v3f &direction, f32 time_knockback);
 
 private:
 	void accelerateHorizontal(const v3f &target_speed, const f32 max_increase);

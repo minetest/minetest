@@ -1397,6 +1397,9 @@ ToolCapabilities read_tool_capabilities(
 		}
 	}
 	lua_pop(L, 1);
+
+	getintfield(L, table, "knockback_power", toolcap.knockback_power);
+
 	return toolcap;
 }
 

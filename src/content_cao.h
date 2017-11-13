@@ -107,13 +107,19 @@ private:
 	u8 m_last_light = 255;
 	bool m_is_visible = false;
 	s8 m_glow = 0;
+	f32 m_knockback_timer = 0;
 
 	std::vector<u16> m_children;
+
+	void accelerateHorizontal(const v3f &target_speed, f32 max_increase);
+	void accelerateVertical(const v3f &target_speed, f32 max_increase);
 
 public:
 	GenericCAO(Client *client, ClientEnvironment *env);
 
 	~GenericCAO();
+
+	const std::string &getName() const { return m_name; };
 
 	static ClientActiveObject* create(Client *client, ClientEnvironment *env)
 	{
@@ -205,6 +211,8 @@ public:
 	void updateAttachments();
 
 	void processMessage(const std::string &data);
+
+	void knockback(const v3f &direction, f32 time_knockback);
 
 	bool directReportPunch(v3f dir, const ItemStack *punchitem=NULL,
 			float time_from_last_punch=1000000);
