@@ -201,7 +201,7 @@ local function formspec(tabview, name, tabdata)
 		"dropdown[4.25,2.6;3.5;dd_antialiasing;" .. dd_options.antialiasing[1] .. ";"
 				.. getSettingIndex.Antialiasing() .. "]" ..
 		"label[4.25,3.45;" .. fgettext("Screen:") .. "]" ..
-		"checkbox[4.25,3.6;cb_autosave_screensize;" .. fgettext("Autosave screen size") .. ";"
+		"checkbox[4.25,3.6;cb_autosave_screensize;" .. fgettext("Autosave Screen Size") .. ";"
 				.. dump(core.settings:get_bool("autosave_screensize")) .. "]" ..
 		"box[8,0;3.75,4.5;#999999]" ..
 		"checkbox[8.25,0;cb_shaders;" .. fgettext("Shaders") .. ";"
@@ -214,7 +214,7 @@ local function formspec(tabview, name, tabdata)
 	else
 		tab_string = tab_string ..
 			"button[8,4.75;4,1;btn_change_keys;"
-			.. fgettext("Change keys") .. "]"
+			.. fgettext("Change Keys") .. "]"
 	end
 
 	tab_string = tab_string ..
