@@ -158,8 +158,8 @@ local function drop_attached_node(p)
 		-- If it drops itself, preserve its metadata.
 		if meta_fields then
 			-- item is a table in 0.4.16, but a string in 0.5 - handle both.
-			if (type(item) == "table" and n.name == item.name) or (type(item) == "string" and n.name == item) then
-				local stack = ItemStack({name=n.name, count=1})
+			local stack = ItemStack(item)
+			if stack:get_name() == n.name and stack:get_count() == 1 then
 				local stack_meta = stack:get_meta()
 				for k,v in pairs(meta_fields) do
 					if k ~= "description" and k ~= "infotext" and k ~= "formspec" then
