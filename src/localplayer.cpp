@@ -170,6 +170,7 @@ bool LocalPlayer::updateSneakNode(Map *map, const v3f &position,
 }
 #endif
 
+#ifdef MOVED_TO_PLAYER_CPP
 void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d,
 		std::vector<CollisionInfo> *collision_info)
 {
@@ -468,6 +469,7 @@ void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d)
 {
 	move(dtime, env, pos_max_d, NULL);
 }
+#endif
 
 void LocalPlayer::applyControl(float dtime, Environment *env)
 {

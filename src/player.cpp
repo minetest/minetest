@@ -464,6 +464,11 @@ void Player::move(f32 dtime, Environment *env, f32 pos_max_d,
 		return;
 	}
 
+	// Need an INodeDefManager for all following things
+	if (!nodemgr) {
+		return;
+	}
+
 	/*
 		Collision detection
 	*/

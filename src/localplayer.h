@@ -55,9 +55,11 @@ public:
 
 	v3f overridePosition;
 
+	#ifdef MOVED_TO_PLAYER_H
 	void move(f32 dtime, Environment *env, f32 pos_max_d);
 	void move(f32 dtime, Environment *env, f32 pos_max_d,
 			std::vector<CollisionInfo> *collision_info);
+	#endif
 	// Temporary option for old move code
 	void old_move(f32 dtime, Environment *env, f32 pos_max_d,
 			std::vector<CollisionInfo> *collision_info);
