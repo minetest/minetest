@@ -163,24 +163,15 @@ bool isBlockInSight(v3s16 blockpos_b, v3f camera_pos, v3f camera_dir,
 	return true;
 }
 
-s16 adjustDist(const s16 dist, const float zoomFov)
+s16 adjustDist(s16 dist, float zoomFov)
 {
-	/*
-	 * Here we define a scale starting from a FOV of 10
-	 * and a declared max view distance of 400
-	 * (that's a volume of about 290 mapblocks).
-	 *
-	 * From this starting point we calculate the distance for
-	 * other zooms, by keeping the volume constant.
-	 */
-	const float defaultFov = 1.775f; // ~~ 72 * PI / 180 * aspect
-	const float defaultZoomFov = 0.2875f; // ~~ 10 * PI / 180 * aspect
+	// 1.775 ~= 72 * PI / 180 * 1.4, the default on the client
+	float defaultFov = 1.775f;
 	// heuristic cut-off for zooming
 	if (zoomFov > defaultFov / 2.0f)
 		return dist;
 
-	const s16 zoomDist = 400; // default distance at FOV 10
 	// new_dist = dist * ((1 - cos(FOV / 2)) / (1-cos(zoomFOV /2))) ^ (1/3)
-	return round(zoomDist * cbrt((1.0f - cos(defaultZoomFov / 2.0f)) /
+	return round(dist * cbrt((1.0f - cos(defaultFov / 2.0f)) /
 		(1.0f - cos(zoomFov / 2.0f))));
 }
