@@ -118,14 +118,14 @@ random_input (Random input) bool false
 #    Continuous forward movement, toggled by autoforward key.
 continuous_forward (Continuous forward) bool false
 
-#    Enable Joysticks
-enable_joysticks (Enable Joysticks) bool false
+#    Enable joysticks
+enable_joysticks (Enable joysticks) bool false
 
 #    The identifier of the joystick to use
 joystick_id (Joystick ID) int 0
 
 #    The type of joystick
-joystick_type (Joystick Type) enum auto auto,generic,xbox
+joystick_type (Joystick type) enum auto auto,generic,xbox
 
 #    The time in seconds it takes between repeated events
 #    when holding down a joystick button combination.
@@ -498,7 +498,7 @@ parallax_occlusion_mode (Parallax occlusion mode) int 1 0 1
 parallax_occlusion_iterations (Parallax occlusion iterations) int 4
 
 #    Overall scale of parallax occlusion effect.
-parallax_occlusion_scale (Parallax occlusion Scale) float 0.08
+parallax_occlusion_scale (Parallax occlusion scale) float 0.08
 
 #    Overall bias of parallax occlusion effect, usually scale/2.
 parallax_occlusion_bias (Parallax occlusion bias) float 0.04
@@ -552,7 +552,7 @@ screen_w (Screen width) int 1024
 screen_h (Screen height) int 600
 
 #    Save window size automatically when modified.
-autosave_screensize (Autosave Screen Size) bool true
+autosave_screensize (Autosave screen size) bool true
 
 #    Fullscreen mode.
 fullscreen (Full screen) bool false
@@ -693,7 +693,7 @@ inventory_items_animations (Inventory items animations) bool false
 inventory_image_hack (Inventory image hack) bool false
 
 #    Fraction of the visible distance at which fog starts to be rendered
-fog_start (Fog Start) float 0.4 0.0 0.99
+fog_start (Fog start) float 0.4 0.0 0.99
 
 #    Makes all liquids opaque
 opaque_water (Opaque liquids) bool false
@@ -951,7 +951,7 @@ default_password (Default password) string
 default_privs (Default privileges) string interact, shout
 
 #    Privileges that players with basic_privs can grant
-basic_privs (Basic Privileges) string interact, shout
+basic_privs (Basic privileges) string interact, shout
 
 #    Whether players are shown to clients without any range limit.
 #    Deprecated, use the setting player_transfer_distance instead.
@@ -961,7 +961,7 @@ unlimited_player_transfer_distance (Unlimited player transfer distance) bool tru
 player_transfer_distance (Player transfer distance) int 0
 
 #    Whether to allow players to damage and kill each other.
-enable_pvp (Player versus Player) bool true
+enable_pvp (Player versus player) bool true
 
 #    Enable mod channels support.
 enable_mod_channels (Mod channels) bool false
@@ -1094,7 +1094,7 @@ liquid_update (Liquid update tick) float 1.0
 #    (some blocks will not be rendered under water and in caves, as well as sometimes on land)
 #    Setting this to a value greater than max_block_send_distance disables this optimization.
 #    Stated in mapblocks (16 nodes)
-block_send_optimize_distance (block send optimize distance) int 4 2
+block_send_optimize_distance (Block send optimize distance) int 4 2
 
 #    If enabled the server will perform map block occlusion culling based on
 #    on the eye position of the player. This can reduce the number of blocks
@@ -1126,7 +1126,7 @@ secure.trusted_mods (Trusted mods) string
 
 #	Comma-separated list of mods that are allowed to access HTTP APIs, which
 #	allow them to upload and download data to/from the internet.
-secure.http_mods (HTTP Mods) string
+secure.http_mods (HTTP mods) string
 
 [*Advanced]
 
@@ -1674,27 +1674,27 @@ mgfractal_np_cave2 (Cave2 noise) noise_params_3d 0, 12, (67, 67, 67), 10325, 3, 
 mg_valleys_spflags (Mapgen Valleys specific flags) flags altitude_chill,humid_rivers altitude_chill,noaltitude_chill,humid_rivers,nohumid_rivers
 
 # The altitude at which temperature drops by 20C
-mgvalleys_altitude_chill (Altitude Chill) int 90
+mgvalleys_altitude_chill (Altitude chill) int 90
 
 # Depth below which you'll find large caves.
 mgvalleys_large_cave_depth (Large cave depth) int -33
 
 # Creates unpredictable lava features in caves.
 # These can make mining difficult. Zero disables them. (0-10)
-mgvalleys_lava_features (Lava Features) int 0
+mgvalleys_lava_features (Lava features) int 0
 
 # Depth below which you'll find massive caves.
 mgvalleys_massive_cave_depth (Massive cave depth) int -256
 
 # How deep to make rivers
-mgvalleys_river_depth (River Depth) int 4
+mgvalleys_river_depth (River depth) int 4
 
 # How wide to make rivers
-mgvalleys_river_size (River Size) int 5
+mgvalleys_river_size (River size) int 5
 
 # Creates unpredictable water features in caves.
 # These can make mining difficult. Zero disables them. (0-10)
-mgvalleys_water_features (Water Features) int 0
+mgvalleys_water_features (Water features) int 0
 
 #    Controls width of tunnels, a smaller value creates wider tunnels.
 mgvalleys_cave_width (Cave width) float 0.09
@@ -1708,28 +1708,28 @@ mgvalleys_np_cave1 (Cave noise #1) noise_params_3d 0, 12, (61, 61, 61), 52534, 3
 mgvalleys_np_cave2 (Cave noise #2) noise_params_3d 0, 12, (67, 67, 67), 10325, 3, 0.5, 2.0
 
 # The depth of dirt or other filler
-mgvalleys_np_filler_depth (Filler Depth) noise_params_2d 0, 1.2, (256, 256, 256), 1605, 3, 0.5, 2.0, eased
+mgvalleys_np_filler_depth (Filler depth) noise_params_2d 0, 1.2, (256, 256, 256), 1605, 3, 0.5, 2.0, eased
 
 # Massive caves form here.
 mgvalleys_np_massive_caves (Massive cave noise) noise_params_3d 0, 1, (768, 256, 768), 59033, 6, 0.63, 2.0
 
 # River noise -- rivers occur close to zero
-mgvalleys_np_rivers (River Noise) noise_params_2d 0, 1, (256, 256, 256), -6050, 5, 0.6, 2.0, eased
+mgvalleys_np_rivers (River noise) noise_params_2d 0, 1, (256, 256, 256), -6050, 5, 0.6, 2.0, eased
 
 # Base terrain height
-mgvalleys_np_terrain_height (Terrain Height) noise_params_2d -10, 50, (1024, 1024, 1024), 5202, 6, 0.4, 2.0, eased
+mgvalleys_np_terrain_height (Terrain height) noise_params_2d -10, 50, (1024, 1024, 1024), 5202, 6, 0.4, 2.0, eased
 
 # Raises terrain to make valleys around the rivers
-mgvalleys_np_valley_depth (Valley Depth) noise_params_2d 5, 4, (512, 512, 512), -1914, 1, 1.0, 2.0, eased
+mgvalleys_np_valley_depth (Valley depth) noise_params_2d 5, 4, (512, 512, 512), -1914, 1, 1.0, 2.0, eased
 
 # Slope and fill work together to modify the heights
-mgvalleys_np_inter_valley_fill (Valley Fill) noise_params_3d 0, 1, (256, 512, 256), 1993, 6, 0.8, 2.0
+mgvalleys_np_inter_valley_fill (Valley fill) noise_params_3d 0, 1, (256, 512, 256), 1993, 6, 0.8, 2.0
 
 # Amplifies the valleys
-mgvalleys_np_valley_profile (Valley Profile) noise_params_2d 0.6, 0.5, (512, 512, 512), 777, 1, 1.0, 2.0, eased
+mgvalleys_np_valley_profile (Valley profile) noise_params_2d 0.6, 0.5, (512, 512, 512), 777, 1, 1.0, 2.0, eased
 
 # Slope and fill work together to modify the heights
-mgvalleys_np_inter_valley_slope (Valley Slope) noise_params_2d 0.5, 0.5, (128, 128, 128), 746, 1, 1.0, 2.0, eased
+mgvalleys_np_inter_valley_slope (Valley slope) noise_params_2d 0.5, 0.5, (128, 128, 128), 746, 1, 1.0, 2.0, eased
 
 [*Advanced]
 
