@@ -204,8 +204,9 @@ void RemoteClient::GetNextBlocks (
 	s16 d_max = full_d_max;
 	s16 d_max_gen = std::min(adjustDist(m_max_gen_distance, camera_fov), wanted_range);
 
-	// Don't loop very much at a time
-	s16 max_d_increment_at_time = 2;
+	// Don't loop very much at a time, adjust with distance,
+	// do more work per RTT with greater distances.
+	s16 max_d_increment_at_time = full_d_max / 10 + 1;
 	if (d_max > d_start + max_d_increment_at_time)
 		d_max = d_start + max_d_increment_at_time;
 
