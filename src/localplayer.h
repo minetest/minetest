@@ -55,15 +55,6 @@ public:
 
 	v3f overridePosition;
 
-	#ifdef MOVED_TO_PLAYER_H
-	void move(f32 dtime, Environment *env, f32 pos_max_d);
-	void move(f32 dtime, Environment *env, f32 pos_max_d,
-			std::vector<CollisionInfo> *collision_info);
-	#endif
-	// Temporary option for old move code
-	void old_move(f32 dtime, Environment *env, f32 pos_max_d,
-			std::vector<CollisionInfo> *collision_info);
-
 	void applyControl(float dtime, Environment *env);
 
 	v3s16 getStandingNodePos();
@@ -127,32 +118,10 @@ protected:
 	virtual const NodeDefManager *getNodeDefManager() const;
 	virtual void _handleAttachedMove();
 	virtual float _getStepHeight() const;
-	//virtual IGameDef* getGameDef() const;
 	virtual void reportRegainGround();
 	virtual void calculateCameraInCeiling(Map *map, const NodeDefManager *nodemgr);
 
 private:
-	//bool updateSneakNode(Map *map, const v3f &position, const v3f &sneak_max);
-	//float getSlipFactor(Environment *env, const v3f &speedH);
-	//void _applyControl(const ControlLogEntry &cle, Environment *env);
-
-	//v3s16 m_sneak_node = v3s16(32767, 32767, 32767);
-	// Stores the top bounding box of m_sneak_node
-	//aabb3f m_sneak_node_bb_top = aabb3f(0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
-	// Whether a "sneak ladder" structure is detected at the players pos
-	// see detectSneakLadder() in the .cpp for more info (always false if disabled)
-	//bool m_sneak_ladder_detected = false;
-
-	// ***** Variables for temporary option of the old move code *****
-	// Stores the max player uplift by m_sneak_node
-	f32 m_sneak_node_bb_ymax = 0.0f;
-	// Whether recalculation of m_sneak_node and its top bbox is needed
-	bool m_need_to_get_new_sneak_node = true;
-	// Node below player, used to determine whether it has been removed,
-	// and its old type
-	v3s16 m_old_node_below = v3s16(32767, 32767, 32767);
-	std::string m_old_node_below_type = "air";
-	// ***** End of variables for temporary option *****
 
 	u16 m_breath = PLAYER_MAX_BREATH_DEFAULT;
 	bool camera_barely_in_ceiling = false;
