@@ -83,7 +83,7 @@ std::vector<std::string> GetRecursiveDirs(const std::string &dir);
 void GetRecursiveSubPaths(const std::string &path,
 		  std::vector<std::string> &dst,
 		  bool list_files,
-		  const std::set<char> *ignore = nullptr);
+		  const std::set<char> &ignore = {});
 
 // Tries to delete all, returns false if any failed
 bool DeletePaths(const std::vector<std::string> &paths);

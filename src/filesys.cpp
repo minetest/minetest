@@ -386,7 +386,7 @@ void GetRecursiveDirs(std::vector<std::string> &dirs, const std::string &dir)
 	if (dir.empty() || !IsDir(dir))
 		return;
 	dirs.push_back(dir);
-	fs::GetRecursiveSubPaths(dir, dirs, false, &chars_to_ignore);
+	fs::GetRecursiveSubPaths(dir, dirs, false, chars_to_ignore);
 }
 
 std::vector<std::string> GetRecursiveDirs(const std::string &dir)
@@ -399,12 +399,12 @@ std::vector<std::string> GetRecursiveDirs(const std::string &dir)
 void GetRecursiveSubPaths(const std::string &path,
 		  std::vector<std::string> &dst,
 		  bool list_files,
-		  const std::set<char> *ignore)
+		  const std::set<char> &ignore)
 {
 	std::vector<DirListNode> content = GetDirListing(path);
 	for (const auto &n : content) {
 		std::string fullpath = path + DIR_DELIM + n.name;
-		if (ignore && ignore->count(n.name[0]))
+		if (ignore.count(n.name[0]))
 			continue;
 		if (list_files || n.dir)
 			dst.push_back(fullpath);
