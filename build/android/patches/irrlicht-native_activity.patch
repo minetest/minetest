@@ -1,0 +1,12 @@
+--- irrlicht/source/Irrlicht/CEGLManager.cpp.orig	2017-11-15 18:19:58.467279274 +0000
++++ irrlicht/source/Irrlicht/CEGLManager.cpp	2017-11-15 18:19:54.175279087 +0000
+@@ -8,6 +8,9 @@
+ 
+ #include "irrString.h"
+ #include "os.h"
++#if defined(_IRR_COMPILE_WITH_ANDROID_DEVICE_)
++#include <android/native_activity.h>
++#endif
+ 
+ namespace irr
+ {

@@ -6,7 +6,8 @@ OS := $(shell uname)
 # GPROF = 1
 
 # build for build platform
-APP_PLATFORM = android-9
+API = 14
+APP_PLATFORM = android-$(API)
 
 ANDR_ROOT = $(shell pwd)
 PROJ_ROOT = $(shell realpath $(ANDR_ROOT)/../..)
@@ -30,7 +31,7 @@ TARGET_HOST = arm-linux
 TARGET_ABI = armeabi-v7a
 TARGET_LIBDIR = armeabi-v7a
 TARGET_TOOLCHAIN = arm-linux-androideabi-
-TARGET_CFLAGS_ADDON = -mfloat-abi=softfp -mfpu=vfpv3 -O3
+TARGET_CFLAGS_ADDON = -mfloat-abi=softfp -mfpu=vfpv3 -O3 -D__ANDROID_API__=$(API)
 TARGET_CXXFLAGS_ADDON = $(TARGET_CFLAGS_ADDON)
 TARGET_ARCH = armv7
 CROSS_PREFIX = arm-linux-androideabi-
@@ -131,7 +132,6 @@ SQLITE3_URL = https://www.sqlite.org/2017/$(SQLITE3_FOLDER).zip
 
 ANDROID_SDK = $(shell grep '^sdk\.dir' local.properties | sed 's/^.*=[[:space:]]*//')
 ANDROID_NDK = $(shell grep '^ndk\.dir' local.properties | sed 's/^.*=[[:space:]]*//')
-NDK_MODULE_PATH = $(ANDROID_NDK)/toolchains
 
 #use interim target variable to switch leveldb on or off
 ifeq ($(HAVE_LEVELDB),1)
@@ -217,14 +217,10 @@ $(OPENAL_LIB): $(OPENAL_TIMESTAMP)
 	if [ $$REFRESH -ne 0 ] ; then                                              \
 	echo "changed timestamp for openal detected building...";                  \
 	cd ${OPENAL_DIR};                                                          \
+	export APP_PLATFORM=${APP_PLATFORM};                                       \
+	export TARGET_ABI=${TARGET_ABI};                                           \
 	${ANDROID_NDK}/ndk-build NDEBUG=${NDEBUG}                                  \
-		NDK_MODULE_PATH=${NDK_MODULE_PATH} APP_ABI=${TARGET_ABI}               \
-		TARGET_ARCH_ABI=${TARGET_ABI} APP_PLATFORM=${APP_PLATFORM}             \
-		PRIVATE_CC=${NDK_MODULE_PATH}/${TARGET_TOOLCHAIN}${COMPILER_VERSION}/prebuilt/linux-x86_64/bin/${TARGET_TOOLCHAIN}gcc \
-		PRIVATE_CXX=${NDK_MODULE_PATH}/${TARGET_TOOLCHAIN}${COMPILER_VERSION}/prebuilt/linux-x86_64/bin/${TARGET_TOOLCHAIN}g++ \
-		TARGET_CFLAGS+="${TARGET_CFLAGS_ADDON}"                                \
-		TARGET_LDFLAGS+="${TARGET_LDFLAGS_ADDON}"                              \
-		TARGET_CXXFLAGS+="${TARGET_CXXFLAGS_ADDON}" || exit 1;                 \
+		NDK_APPLICATION_MK=${ANDR_ROOT}/jni/Deps.mk || exit 1;                 \
 	touch ${OPENAL_TIMESTAMP};                                                 \
 	touch ${OPENAL_TIMESTAMP_INT};                                             \
 	else                                                                       \
@@ -248,7 +244,6 @@ ogg_download :
 		git clone ${OGG_URL_GIT}|| exit 1;                                     \
 		cd libvorbis-libogg-android ;                                          \
 		patch -p1 < ${ANDR_ROOT}/patches/libvorbis-libogg-fpu.patch || exit 1; \
-		sed -i 's-:-?-' jni/Application.mk;                                    \
 	fi
 
 ogg : $(OGG_LIB)
@@ -265,14 +260,10 @@ $(OGG_LIB): $(OGG_TIMESTAMP)
 	if [ $$REFRESH -ne 0 ] ; then                                              \
 	echo "changed timestamp for ogg detected building...";                     \
 	cd ${OGG_DIR};                                                             \
+	export APP_PLATFORM=${APP_PLATFORM};                                       \
+	export TARGET_ABI=${TARGET_ABI};                                           \
 	${ANDROID_NDK}/ndk-build NDEBUG=${NDEBUG}                                  \
-		NDK_MODULE_PATH=${NDK_MODULE_PATH}                                     \
-		APP_ABI=${TARGET_ABI} APP_PLATFORM=${APP_PLATFORM}                     \
-		PRIVATE_CC=${NDK_MODULE_PATH}/${TARGET_TOOLCHAIN}${COMPILER_VERSION}/prebuilt/linux-x86_64/bin/${TARGET_TOOLCHAIN}gcc \
-		PRIVATE_CXX=${NDK_MODULE_PATH}/${TARGET_TOOLCHAIN}${COMPILER_VERSION}/prebuilt/linux-x86_64/bin/${TARGET_TOOLCHAIN}g++ \
-		TARGET_CFLAGS+="${TARGET_CFLAGS_ADDON}"                                \
-		TARGET_LDFLAGS+="${TARGET_LDFLAGS_ADDON}"                              \
-		TARGET_CXXFLAGS+="${TARGET_CXXFLAGS_ADDON}" || exit 1;                 \
+		NDK_APPLICATION_MK=${ANDR_ROOT}/jni/Deps.mk || exit 1;                 \
 	touch ${OGG_TIMESTAMP};                                                    \
 	touch ${OGG_TIMESTAMP_INT};                                                \
 	else                                                                       \
@@ -317,7 +308,7 @@ $(OPENSSL_LIB): $(OPENSSL_TIMESTAMP) $(GMP_LIB)
 	export TOOLCHAIN=/tmp/ndk-${TARGET_HOST}-openssl;                          \
 	${ANDROID_NDK}/build/tools/make-standalone-toolchain.sh                    \
 		--toolchain=${TARGET_TOOLCHAIN}${COMPILER_VERSION}                     \
-		--platform=android-9                                                   \
+		--platform=${APP_PLATFORM}                                             \
 		--install-dir=$${TOOLCHAIN};                                           \
 	export PATH="$${TOOLCHAIN}/bin:$${PATH}";                                  \
 	CC=${CROSS_PREFIX}gcc ./Configure enable-gmp -DL_ENDIAN -I${GMP_DIR} -L${GMP_DIR}/usr/lib android-${TARGET_ARCH};\
@@ -368,7 +359,7 @@ $(LEVELDB_LIB): $(LEVELDB_TIMESTAMP)
 	export TOOLCHAIN=/tmp/ndk-${TARGET_HOST}-leveldb;                          \
 	${ANDROID_NDK}/build/tools/make-standalone-toolchain.sh                    \
 		--toolchain=${TARGET_TOOLCHAIN}${COMPILER_VERSION}                     \
-		--platform=android-9                                                   \
+		--platform=${APP_PLATFORM}                                             \
 		--install-dir=$${TOOLCHAIN};                                           \
 	export PATH="$${TOOLCHAIN}/bin:$${PATH}";                                  \
 	export CC=${CROSS_PREFIX}gcc;                                              \
@@ -420,14 +411,10 @@ $(FREETYPE_LIB) : $(FREETYPE_TIMESTAMP)
 	mkdir -p ${FREETYPE_DIR};                                                  \
 	echo "changed timestamp for freetype detected building...";                \
 	cd ${FREETYPE_DIR}/Android/jni;                                            \
+	export APP_PLATFORM=${APP_PLATFORM};                                       \
+	export TARGET_ABI=${TARGET_ABI};                                           \
 	${ANDROID_NDK}/ndk-build NDEBUG=${NDEBUG}                                  \
-		NDK_MODULE_PATH=${NDK_MODULE_PATH}                                     \
-		APP_PLATFORM=${APP_PLATFORM} APP_ABI=${TARGET_ABI}                     \
-		PRIVATE_CC=${NDK_MODULE_PATH}/${TARGET_TOOLCHAIN}${COMPILER_VERSION}/prebuilt/linux-x86_64/bin/${TARGET_TOOLCHAIN}gcc \
-		PRIVATE_CXX=${NDK_MODULE_PATH}/${TARGET_TOOLCHAIN}${COMPILER_VERSION}/prebuilt/linux-x86_64/bin/${TARGET_TOOLCHAIN}g++ \
-		TARGET_CFLAGS+="${TARGET_CFLAGS_ADDON}"                                \
-		TARGET_LDFLAGS+="${TARGET_LDFLAGS_ADDON}"                              \
-		TARGET_CXXFLAGS+="${TARGET_CXXFLAGS_ADDON}" || exit 1;                 \
+		NDK_APPLICATION_MK=${ANDR_ROOT}/jni/Deps.mk || exit 1;                 \
 	touch ${FREETYPE_TIMESTAMP};                                               \
 	touch ${FREETYPE_TIMESTAMP_INT};                                           \
 	else                                                                       \
@@ -478,9 +465,10 @@ $(ICONV_LIB) : $(ICONV_TIMESTAMP)
 	export TOOLCHAIN=/tmp/ndk-${TARGET_HOST}-iconv;                            \
 	${ANDROID_NDK}/build/tools/make-standalone-toolchain.sh                    \
 		--toolchain=${TARGET_TOOLCHAIN}${COMPILER_VERSION}                     \
-		--platform=android-9                                                   \
+		--platform=${APP_PLATFORM}                                             \
 		--install-dir=$${TOOLCHAIN};                                           \
 	export PATH="$${TOOLCHAIN}/bin:$${PATH}";                                  \
+	export CFLAGS="$${CFLAGS} ${TARGET_CFLAGS_ADDON}";                         \
 	export CC=${CROSS_PREFIX}gcc;                                              \
 	export CXX=${CROSS_PREFIX}g++;                                             \
 	export TARGET_OS=OS_ANDROID_CROSSCOMPILE;                                  \
@@ -513,6 +501,7 @@ irrlicht_download :
 		patch -p1 < ${ANDR_ROOT}/patches/irrlicht-touchcount.patch || exit 1;  \
 		patch -p1 < ${ANDR_ROOT}/patches/irrlicht-back_button.patch || exit 1; \
 		patch -p1 < ${ANDR_ROOT}/patches/irrlicht-texturehack.patch || exit 1; \
+		patch -p1 < ${ANDR_ROOT}/patches/irrlicht-native_activity.patch || exit 1; \
 	fi
 
 $(IRRLICHT_TIMESTAMP) : irrlicht_download
@@ -538,14 +527,10 @@ $(IRRLICHT_LIB): $(IRRLICHT_TIMESTAMP) $(FREETYPE_LIB)
 	mkdir -p ${IRRLICHT_DIR};                                                  \
 	echo "changed timestamp for irrlicht detected building...";                \
 	cd deps/irrlicht/source/Irrlicht/Android;                                  \
+	export APP_PLATFORM=${APP_PLATFORM};                                       \
+	export TARGET_ABI=${TARGET_ABI};                                           \
 	${ANDROID_NDK}/ndk-build NDEBUG=${NDEBUG}                                  \
-		NDK_MODULE_PATH=${NDK_MODULE_PATH}                                     \
-		APP_ABI=${TARGET_ABI} APP_PLATFORM=${APP_PLATFORM}                     \
-		PRIVATE_CC=${NDK_MODULE_PATH}/${TARGET_TOOLCHAIN}${COMPILER_VERSION}/prebuilt/linux-x86_64/bin/${TARGET_TOOLCHAIN}gcc \
-		PRIVATE_CXX=${NDK_MODULE_PATH}/${TARGET_TOOLCHAIN}${COMPILER_VERSION}/prebuilt/linux-x86_64/bin/${TARGET_TOOLCHAIN}g++ \
-		TARGET_CFLAGS+="${TARGET_CFLAGS_ADDON}"                                \
-		TARGET_LDFLAGS+="${TARGET_LDFLAGS_ADDON}"                              \
-		TARGET_CXXFLAGS+="${TARGET_CXXFLAGS_ADDON}" || exit 1;                 \
+		NDK_APPLICATION_MK=${ANDR_ROOT}/jni/Irrlicht.mk || exit 1;             \
 	touch ${IRRLICHT_TIMESTAMP};                                               \
 	touch ${IRRLICHT_TIMESTAMP_INT};                                           \
 	else                                                                       \
@@ -593,7 +578,7 @@ $(CURL_LIB): $(CURL_TIMESTAMP) $(OPENSSL_LIB)
 	export TOOLCHAIN=/tmp/ndk-${TARGET_HOST}-curl;                             \
 	${ANDROID_NDK}/build/tools/make-standalone-toolchain.sh                    \
 		--toolchain=${TARGET_TOOLCHAIN}${COMPILER_VERSION}                     \
-		--platform=android-9                                                   \
+		--platform=${APP_PLATFORM}                                             \
 		--install-dir=$${TOOLCHAIN};                                           \
 	export PATH="$${TOOLCHAIN}/bin:$${PATH}";                                  \
 	export CC=${CROSS_PREFIX}gcc;                                              \
@@ -653,7 +638,7 @@ $(GMP_LIB): $(GMP_TIMESTAMP)
 	export TOOLCHAIN=/tmp/ndk-${TARGET_HOST}-gmp;                              \
 	${ANDROID_NDK}/build/tools/make-standalone-toolchain.sh                    \
 		--toolchain=${TARGET_TOOLCHAIN}${COMPILER_VERSION}                     \
-		--platform=android-9                                                   \
+		--platform=${APP_PLATFORM}                                             \
 		--install-dir=$${TOOLCHAIN};                                           \
 	export PATH="$${TOOLCHAIN}/bin:$${PATH}";                                  \
 	export CC=${CROSS_PREFIX}gcc;                                              \
@@ -767,15 +752,11 @@ clean_assets :
 apk: local.properties assets $(ICONV_LIB) $(IRRLICHT_LIB) $(CURL_LIB) $(GMP_LIB) $(LEVELDB_TARGET)       \
 	$(OPENAL_LIB) $(OGG_LIB) prep_srcdir $(ANDR_ROOT)/jni/src/android_version.h    \
 	$(ANDR_ROOT)/jni/src/android_version_githash.h sqlite3_download
-	+ @${ANDROID_NDK}/ndk-build NDK_MODULE_PATH=${NDK_MODULE_PATH}             \
-		GPROF=${GPROF} APP_ABI=${TARGET_ABI} HAVE_LEVELDB=${HAVE_LEVELDB}      \
-		APP_PLATFORM=${APP_PLATFORM}                                           \
-		PRIVATE_CC=${NDK_MODULE_PATH}/${TARGET_TOOLCHAIN}${COMPILER_VERSION}/prebuilt/linux-x86_64/bin/${TARGET_TOOLCHAIN}gcc \
-		PRIVATE_CXX=${NDK_MODULE_PATH}/${TARGET_TOOLCHAIN}${COMPILER_VERSION}/prebuilt/linux-x86_64/bin/${TARGET_TOOLCHAIN}g++ \
-		TARGET_LIBDIR=${TARGET_LIBDIR}                                         \
-		TARGET_CFLAGS+="${TARGET_CFLAGS_ADDON}"                                \
-		TARGET_LDFLAGS+="${TARGET_LDFLAGS_ADDON}"                              \
-		TARGET_CXXFLAGS+="${TARGET_CXXFLAGS_ADDON}" || exit 1;                 \
+	+ @export TARGET_LIBDIR=${TARGET_LIBDIR};                                  \
+	export HAVE_LEVELDB=${HAVE_LEVELDB};                                       \
+	export APP_PLATFORM=${APP_PLATFORM};                                       \
+	export TARGET_ABI=${TARGET_ABI};                                           \
+	${ANDROID_NDK}/ndk-build || exit 1;                                        \
 	if [ ! -e ${APP_ROOT}/jniLibs ]; then                                      \
 		ln -s ${ANDR_ROOT}/libs ${APP_ROOT}/jniLibs || exit 1;                 \
 	fi;                                                                        \
