@@ -206,7 +206,7 @@ void RemoteClient::GetNextBlocks (
 
 	// Don't loop very much at a time, adjust with distance,
 	// do more work per RTT with greater distances.
-	s16 max_d_increment_at_time = full_d_max / 10 + 1;
+	s16 max_d_increment_at_time = full_d_max / 9 + 1;
 	if (d_max > d_start + max_d_increment_at_time)
 		d_max = d_start + max_d_increment_at_time;
 
