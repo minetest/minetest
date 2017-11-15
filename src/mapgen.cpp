@@ -809,7 +809,16 @@ void MapgenBasic::dustTopNodes()
 		}
 
 		content_t c = vm->m_data[vi].getContent();
-		if (!ndef->get(c).buildable_to && c != CONTENT_IGNORE && c != biome->c_dust) {
+		NodeDrawType dtype = ndef->get(c).drawtype;
+		// Only place on walkable cubic non-liquid nodes
+		// Dust check needed due to vertical overgeneration
+		if ((dtype == NDT_NORMAL ||
+				dtype == NDT_ALLFACES_OPTIONAL ||
+				dtype == NDT_GLASSLIKE_FRAMED_OPTIONAL ||
+				dtype == NDT_GLASSLIKE ||
+				dtype == NDT_GLASSLIKE_FRAMED ||
+				dtype == NDT_ALLFACES) &&
+				ndef->get(c).walkable && c != biome->c_dust) {
 			vm->m_area.add_y(em, vi, 1);
 			vm->m_data[vi] = MapNode(biome->c_dust);
 		}
