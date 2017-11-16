@@ -4813,27 +4813,29 @@ Definition tables
 
 ### Ore definition (`register_ore`)
 
+	See 'Ore types' section above for essential information.
+
     {
-        ore_type = "scatter", -- See "Ore types"
+        ore_type = "scatter",
         ore = "default:stone_with_coal",
         ore_param2 = 3,
     --  ^ Facedir rotation. Default is 0 (unchanged rotation)
         wherein = "default:stone",
     --  ^ a list of nodenames is supported too
-        clust_scarcity = 8*8*8,
+        clust_scarcity = 8 * 8 * 8,
     --  ^ Ore has a 1 out of clust_scarcity chance of spawning in a node
-    --  ^ This value should be *MUCH* higher than your intuition might tell you!
+    --  ^ If the desired average distance between ores is 'd', set this to d * d * d.
         clust_num_ores = 8,
     --  ^ Number of ores in a cluster
         clust_size = 3,
     --  ^ Size of the bounding box of the cluster
-    --  ^ In this example, there is a 3x3x3 cluster where 8 out of the 27 nodes
+    --  ^ In this example, there is a 3 * 3 * 3 cluster where 8 out of the 27 nodes
     --  ^ are coal ore.
         y_min = -31000,
         y_max = 64,
     --  ^ Lower and upper limits for ore.
         flags = "",
-    --  ^ Attributes for this ore generation
+    --  ^ Attributes for this ore generation, see 'Ore attributes' section above.
         noise_threshold = 0.5,
     --  ^ If noise is above this threshold, ore is placed. Not needed for a
     --  ^ uniform distribution.
@@ -4847,17 +4849,52 @@ Definition tables
         },
     --  ^ NoiseParams structure describing one of the perlin noises used for ore
     --  ^ distribution.
+    --  ^ Needed by "sheet", "puff", "blob" and "vein" ores.
     --  ^ Omit from "scatter" ore for a uniform ore distribution.
     --  ^ Omit from "stratum ore for a simple horizontal strata from y_min to y_max.
-        random_factor = 1.0,
-    --  ^ Multiplier of the randomness contribution to the noise value at any
-    --  ^ given point to decide if ore should be placed.  Set to 0 for solid veins.
-    --  ^ This parameter is only valid for ore_type == "vein".
         biomes = {"desert", "rainforest"}
     --  ^ List of biomes in which this decoration occurs.
     --  ^ Occurs in all biomes if this is omitted, and ignored if the Mapgen being
     --  ^ used does not support biomes.
     --  ^ Can be a list of (or a single) biome names, IDs, or definitions.
+        column_height_min = 1,
+        column_height_max = 16,
+        column_midpoint_factor = 0.5,
+    --  ^ See 'Ore types' section above.
+    --  ^ The above 3 parameters are only valid for "sheet" ore.
+        np_puff_top = {
+            offset = 4,
+            scale = 2,
+            spread = {x = 100, y = 100, z = 100},
+            seed = 47,
+            octaves = 3,
+            persist = 0.7
+        },
+        np_puff_bottom = {
+            offset = 4,
+            scale = 2,
+            spread = {x = 100, y = 100, z = 100},
+            seed = 11,
+            octaves = 3,
+            persist = 0.7
+        },
+    --  ^ See 'Ore types' section above.
+    --  ^ The above 2 parameters are only valid for "puff" ore.
+    --  ^ Additional noise parameters needed for "puff" ore.
+        random_factor = 1.0,
+    --  ^ See 'Ore types' section above.
+    --  ^ Only valid for "vein" ore.
+        np_stratum_thickness = {
+            offset = 8,
+            scale = 4,
+            spread = {x = 100, y = 100, z = 100},
+            seed = 17,
+            octaves = 3,
+            persist = 0.7
+        },
+    --  ^ See 'Ore types' section above.
+    --  ^ Only valid for "stratum" ore.
+    --  ^ Additional noise parameter needed for "stratum" ore.
     }
 
 ### Biome definition (`register_biome`)
