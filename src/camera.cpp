@@ -458,7 +458,7 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 busytime, f32 tool_r
 	} else {
 		fov_degrees = m_cache_fov;
 	}
-	fov_degrees = rangelim(fov_degrees, 7.0, 160.0);
+	fov_degrees = rangelim(fov_degrees, 1.0, 160.0);
 
 	// FOV and aspect ratio
 	const v2u32 &window_size = RenderingEngine::get_instance()->getWindowSize();
@@ -550,7 +550,8 @@ void Camera::updateViewingRange()
 {
 	f32 viewing_range = g_settings->getFloat("viewing_range");
 	f32 near_plane = g_settings->getFloat("near_plane");
-	m_draw_control.wanted_range = viewing_range;
+
+	m_draw_control.wanted_range = std::fmin(adjustDist(viewing_range, getFovMax()), 4000);
 	m_cameranode->setNearValue(rangelim(near_plane, 0.0f, 0.5f) * BS);
 	if (m_draw_control.range_all) {
 		m_cameranode->setFarValue(100000.0);

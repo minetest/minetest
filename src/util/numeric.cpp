@@ -24,6 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "noise.h" // PseudoRandom, PcgRandom
 #include "threading/mutex_auto_lock.h"
 #include <cstring>
+#include <cmath>
 
 
 // myrand
@@ -160,4 +161,17 @@ bool isBlockInSight(v3s16 blockpos_b, v3f camera_pos, v3f camera_dir,
 		return false;
 
 	return true;
+}
+
+s16 adjustDist(s16 dist, float zoom_fov)
+{
+	// 1.775 ~= 72 * PI / 180 * 1.4, the default on the client
+	const float default_fov = 1.775f;
+	// heuristic cut-off for zooming
+	if (zoom_fov > default_fov / 2.0f)
+		return dist;
+
+	// new_dist = dist * ((1 - cos(FOV / 2)) / (1-cos(zoomFOV /2))) ^ (1/3)
+	return round(dist * cbrt((1.0f - cos(default_fov / 2.0f)) /
+		(1.0f - cos(zoom_fov / 2.0f))));
 }
