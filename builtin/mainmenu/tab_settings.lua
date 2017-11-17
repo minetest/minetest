@@ -209,16 +209,16 @@ local function formspec(tabview, name, tabdata)
 
 	if PLATFORM == "Android" then
 		tab_string = tab_string ..
-			"button[8,4.75;4.1,1;btn_reset_singleplayer;"
+			"button[8,4.75;3.95,1;btn_reset_singleplayer;"
 			.. fgettext("Reset singleplayer world") .. "]"
 	else
 		tab_string = tab_string ..
-			"button[8,4.75;4,1;btn_change_keys;"
+			"button[8,4.75;3.95,1;btn_change_keys;"
 			.. fgettext("Change Keys") .. "]"
 	end
 
 	tab_string = tab_string ..
-		"button[0,4.75;4,1;btn_advanced_settings;"
+		"button[0,4.75;3.95,1;btn_advanced_settings;"
 		.. fgettext("Advanced Settings") .. "]"
 
 
