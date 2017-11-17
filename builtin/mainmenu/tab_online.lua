@@ -33,8 +33,8 @@ local function get_formspec(tabview, name, tabdata)
 
 	local retval =
 		-- Search
-		"field[0.15,0.35;6.05,0.27;te_search;;"..core.formspec_escape(tabdata.search_for).."]"..
-		"button[5.8,0.1;2,0.1;btn_mp_search;" .. fgettext("Search") .. "]" ..
+		"field[0.15,0.075;6.05,1;te_search;;"..core.formspec_escape(tabdata.search_for).."]"..
+		"button[5.8,-0.25;2,1;btn_mp_search;" .. fgettext("Search") .. "]" ..
 
 		-- Address / Port
 		"label[7.75,-0.25;" .. fgettext("Address / Port") .. "]" ..
@@ -53,11 +53,11 @@ local function get_formspec(tabview, name, tabdata)
 		"box[7.73,2.25;4.25,2.6;#999999]"..
 
 		-- Connect
-		"button[10.1,5.15;2,0.5;btn_mp_connect;" .. fgettext("Connect") .. "]"
+		"button[9.88,4.9;2.3,1;btn_mp_connect;" .. fgettext("Connect") .. "]"
 
 	if tabdata.fav_selected and fav_selected then
 		if gamedata.fav then
-			retval = retval .. "button[7.75,5.15;2.3,0.5;btn_delete_favorite;" ..
+			retval = retval .. "button[7.73,4.9;2.3,1;btn_delete_favorite;" ..
 				fgettext("Del. Favorite") .. "]"
 		end
 		if fav_selected.description then
