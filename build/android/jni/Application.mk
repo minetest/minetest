@@ -2,8 +2,8 @@
 
 APP_PLATFORM := android-14
 APP_MODULES := minetest
-APP_STL := c++_static
+APP_STL := gnustl_static
 
-APP_CPPFLAGS += -fexceptions -std=c++11
+APP_CPPFLAGS += -fexceptions
 APP_GNUSTL_FORCE_CPP_FEATURES := rtti
 
