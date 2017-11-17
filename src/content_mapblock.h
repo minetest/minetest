@@ -26,21 +26,16 @@ struct MeshMakeData;
 struct MeshCollector;
 
 struct LightPair {
-	union {
-		u16 light;
-		struct {
-			u8 lightA;
-			u8 lightB;
-		};
-	};
+	u8 lightA;
+	u8 lightB;
 
 	LightPair() = default;
-	explicit LightPair(u16 value) : light(value) {}
+	explicit LightPair(u16 value) : lightA(value & 0xff), lightB(value >> 8) {}
 	LightPair(u8 valueA, u8 valueB) : lightA(valueA), lightB(valueB) {}
 	LightPair(float valueA, float valueB) :
 		lightA(core::clamp(core::round32(valueA), 0, 255)),
 		lightB(core::clamp(core::round32(valueB), 0, 255)) {}
-	operator u16() const { return light; }
+	operator u16() const { return lightA | lightB << 8; }
 };
 
 struct LightFrame {
