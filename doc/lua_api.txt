@@ -1206,19 +1206,24 @@ computationally expensive than any other ore.
 Creates a single undulating ore stratum that is continuous across mapchunk
 borders and horizontally spans the world.
 
-The 2D perlin noise described by `noise_params` varies the Y co-ordinate of the
+The 2D perlin noise described by `noise_params` defines the Y co-ordinate of the
 stratum midpoint. The 2D perlin noise described by `np_stratum_thickness`
-varies the stratum's vertical thickness (in units of nodes). Due to being
+defines the stratum's vertical thickness (in units of nodes). Due to being
 continuous across mapchunk borders the stratum's vertical thickness is
 unlimited.
+
+If the noise parameter `noise_params` is omitted the ore will occur from y_min
+to y_max in a simple horizontal stratum.
+
+A parameter `stratum_thickness` can be provided instead of the noise parameter
+`np_stratum_thickness`, to create a constant thickness.
+
+Leaving out one or both noise parameters makes the ore generation less intensive,
+useful when adding multiple strata.
 
 `y_min` and `y_max` define the limits of the ore generation and for performance
 reasons should be set as close together as possible but without clipping the
 stratum's Y variation.
-
-If either of the 2 noise parameters are omitted the ore will occur from y_min
-to y_max in a simple horizontal stratum. As this does not compute noise
-performance improves, and is ideal for placing many layers.
 
 Each node in the stratum has a 1-in-`clust_scarcity` chance of being ore, so a
 solid-ore stratum would require a `clust_scarcity` of 1.
@@ -4880,7 +4885,6 @@ Definition tables
         },
     --  ^ See 'Ore types' section above.
     --  ^ The above 2 parameters are only valid for "puff" ore.
-    --  ^ Additional noise parameters needed for "puff" ore.
         random_factor = 1.0,
     --  ^ See 'Ore types' section above.
     --  ^ Only valid for "vein" ore.
@@ -4892,9 +4896,9 @@ Definition tables
             octaves = 3,
             persist = 0.7
         },
+        stratum_thickness = 8,
     --  ^ See 'Ore types' section above.
-    --  ^ Only valid for "stratum" ore.
-    --  ^ Additional noise parameter needed for "stratum" ore.
+    --  ^ The above 2 parameters are only valid for "stratum" ore.
     }
 
 ### Biome definition (`register_biome`)

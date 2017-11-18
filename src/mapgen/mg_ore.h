@@ -35,6 +35,7 @@ class MMVManip;
 #define OREFLAG_PUFF_CLIFFS   0x02
 #define OREFLAG_PUFF_ADDITIVE 0x04
 #define OREFLAG_USE_NOISE     0x08
+#define OREFLAG_USE_NOISE2    0x10
 
 enum OreType {
 	ORE_SCATTER,
@@ -139,6 +140,7 @@ public:
 
 	NoiseParams np_stratum_thickness;
 	Noise *noise_stratum_thickness = nullptr;
+	u16 stratum_thickness;
 
 	OreStratum() = default;
 	virtual ~OreStratum();
