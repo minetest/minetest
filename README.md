@@ -124,11 +124,11 @@ Compiling
 |------------|---------|------------|
 | GCC        | 4.9+    | Can be replaced with Clang 3.4+ |
 | CMake      | 2.6+    |            |
-| Irrlicht   | 1.8.0+  |            |
-| SQLite3    | 3.8+    |            |
-| Lua        | 5.1.0+  | Bundled Lua is used if not present; can be replaced with LuaJIT 2.0 |
-| GMP        | 6.0.0+  | Bundled mini-GMP is used if not present |
-| JsonCPP    | 1.7.0+  | Bundled JsonCPP is used if not present |
+| Irrlicht   | 1.7.3+  |            |
+| SQLite3    | 3.0+    |            |
+| LuaJIT     | 2.0+    | Bundled Lua is used if not present |
+| GMP        | 5.0.0+  | Bundled mini-GMP is used if not present |
+| JsonCPP    | 1.0.0+  | Bundled JsonCPP is used if not present |
 
 For Debian/Ubuntu:
 
