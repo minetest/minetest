@@ -165,6 +165,9 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("lighting_alpha", "0.0");
 	settings->setDefault("lighting_beta", "0.0");
 	settings->setDefault("display_gamma", "1.0");
+	settings->setDefault("lighting_boost_level", "0.5");
+	settings->setDefault("lighting_boost_spread", "1.0");
+	settings->setDefault("lighting_boost_strength", "0.5");
 	settings->setDefault("texture_path", "");
 	settings->setDefault("shader_path", "");
 	settings->setDefault("video_driver", "opengl");
