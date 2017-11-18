@@ -126,7 +126,7 @@ Compiling
 | CMake      | 2.6+    |            |
 | Irrlicht   | 1.7.3+  |            |
 | SQLite3    | 3.0+    |            |
-| LuaJIT     | 2.0+    | Bundled Lua is used if not present |
+| LuaJIT     | 2.0+    | Bundled Lua 5.1 is used if not present |
 | GMP        | 5.0.0+  | Bundled mini-GMP is used if not present |
 | JsonCPP    | 1.0.0+  | Bundled JsonCPP is used if not present |
 
