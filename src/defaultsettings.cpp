@@ -163,8 +163,11 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("connected_glass", "false");
 	settings->setDefault("smooth_lighting", "true");
 	settings->setDefault("lighting_alpha", "0.0");
-	settings->setDefault("lighting_beta", "0.0");
+	settings->setDefault("lighting_beta", "1.5");
 	settings->setDefault("display_gamma", "1.0");
+	settings->setDefault("lighting_boost", "0.2");
+	settings->setDefault("lighting_boost_center", "0.5");
+	settings->setDefault("lighting_boost_spread", "0.2");
 	settings->setDefault("texture_path", "");
 	settings->setDefault("shader_path", "");
 	settings->setDefault("video_driver", "opengl");
