@@ -578,12 +578,25 @@ function core.node_dig(pos, node, digger)
 		digger:set_wielded_item(wielded)
 	end
 
-	-- Handle drops
+	-- Handle drops.  If it drops itself, preserve its metadata.
+	local oldmetadata = nil
+	if #drops == 1 then
+		local stack = ItemStack(drops[1])
+		if stack:get_name() == node.name and stack:get_count() == 1 then
+			oldmetadata = core.get_meta(pos):to_table()
+			local stack_meta = stack:get_meta()
+			for k,v in pairs(oldmetadata.fields) do
+				if k ~= "description" and k ~= "infotext" and k ~= "formspec" then
+					stack_meta:set_string(k, v)
+				end
+			end
+			drops[1] = stack
+		end
+	end
 	core.handle_node_drops(pos, drops, digger)
 
-	local oldmetadata = nil
 	if def and def.after_dig_node then
-		oldmetadata = core.get_meta(pos):to_table()
+		oldmetadata = oldmetadata or core.get_meta(pos):to_table()
 	end
 
 	-- Remove node and update
