@@ -72,8 +72,7 @@ Camera::Camera(MapDrawControl &draw_control, Client *client):
 	m_cache_fall_bobbing_amount = g_settings->getFloat("fall_bobbing_amount");
 	m_cache_view_bobbing_amount = g_settings->getFloat("view_bobbing_amount");
 	m_cache_fov                 = g_settings->getFloat("fov");
-	m_cache_zoom_fov            = g_settings->getFloat("zoom_fov");
-	m_arm_inertia		    = g_settings->getBool("arm_inertia");
+	m_arm_inertia               = g_settings->getBool("arm_inertia");
 	m_nametags.clear();
 }
 
@@ -453,12 +452,13 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 busytime, f32 tool_r
 
 	// Get FOV
 	f32 fov_degrees;
-	if (player->getPlayerControl().zoom && player->getCanZoom()) {
-		fov_degrees = m_cache_zoom_fov;
+	// Disable zoom with zoom FOV = 0
+	if (player->getPlayerControl().zoom && player->getZoomFOV() > 0.001f) {
+		fov_degrees = player->getZoomFOV();
 	} else {
 		fov_degrees = m_cache_fov;
 	}
-	fov_degrees = rangelim(fov_degrees, 1.0, 160.0);
+	fov_degrees = rangelim(fov_degrees, 1.0f, 160.0f);
 
 	// FOV and aspect ratio
 	const v2u32 &window_size = RenderingEngine::get_instance()->getWindowSize();

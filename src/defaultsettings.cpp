@@ -147,7 +147,6 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("3d_paralax_strength", "0.025");
 	settings->setDefault("tooltip_show_delay", "400");
 	settings->setDefault("tooltip_append_itemname", "false");
-	settings->setDefault("zoom_fov", "15");
 	settings->setDefault("fps_max", "60");
 	settings->setDefault("pause_fps_max", "20");
 	settings->setDefault("viewing_range", "100");

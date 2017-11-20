@@ -22,6 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "player.h"
 #include "environment.h"
 #include "constants.h"
+#include "settings.h"
 #include <list>
 
 class Client;
@@ -142,8 +143,8 @@ public:
 
 	void setCollisionbox(const aabb3f &box) { m_collisionbox = box; }
 
-	bool getCanZoom() const { return m_can_zoom; }
-	void setCanZoom(bool can_zoom) { m_can_zoom = can_zoom; }
+	float getZoomFOV() const { return m_zoom_fov; }
+	void setZoomFOV(float zoom_fov) { m_zoom_fov = zoom_fov; }
 
 private:
 	void accelerateHorizontal(const v3f &target_speed, const f32 max_increase);
@@ -181,8 +182,8 @@ private:
 	bool camera_barely_in_ceiling = false;
 	aabb3f m_collisionbox = aabb3f(-BS * 0.30f, 0.0f, -BS * 0.30f, BS * 0.30f,
 			BS * 1.75f, BS * 0.30f);
-	bool m_can_zoom = true;
 	float m_eye_height = 1.625f;
+	float m_zoom_fov = 0.0f;
 
 	GenericCAO *m_cao = nullptr;
 	Client *m_client;

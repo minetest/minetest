@@ -183,6 +183,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		Change TileDef serialization format.
 		Add world-aligned tiles.
 		Mod channels
+		Raise ObjectProperties version to 3 for removing 'can_zoom' and adding
+			'zoom_fov'.
 */
 
 #define LATEST_PROTOCOL_VERSION 36
