@@ -28,6 +28,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "server.h"
 #include "scripting_server.h"
 #include "genericobject.h"
+#include "settings.h"
 #include <algorithm>
 
 std::map<u16, ServerActiveObject::Factory> ServerActiveObject::m_types;
@@ -801,7 +802,7 @@ PlayerSAO::PlayerSAO(ServerEnvironment *env_, RemotePlayer *player_, session_t p
 	m_prop.collisionbox = aabb3f(-0.3f, 0.0f, -0.3f, 0.3f, 1.77f, 0.3f);
 	m_prop.selectionbox = aabb3f(-0.3f, 0.0f, -0.3f, 0.3f, 1.77f, 0.3f);
 	m_prop.pointable = true;
-	// start of default appearance, this should be overwritten by LUA
+	// Start of default appearance, this should be overwritten by Lua
 	m_prop.visual = "upright_sprite";
 	m_prop.visual_size = v2f(1, 2);
 	m_prop.textures.clear();
@@ -811,13 +812,14 @@ PlayerSAO::PlayerSAO(ServerEnvironment *env_, RemotePlayer *player_, session_t p
 	m_prop.colors.emplace_back(255, 255, 255, 255);
 	m_prop.spritediv = v2s16(1,1);
 	m_prop.eye_height = 1.625f;
-	// end of default appearance
+	// End of default appearance
 	m_prop.is_visible = true;
 	m_prop.makes_footstep_sound = true;
 	m_prop.stepheight = PLAYER_DEFAULT_STEPHEIGHT * BS;
-	m_prop.can_zoom = true;
 	m_hp = m_prop.hp_max;
 	m_breath = m_prop.breath_max;
+	// Disable zoom in survival mode using a value of 0
+	m_prop.zoom_fov = g_settings->getBool("creative_mode") ? 15.0f : 0.0f;
 }
 
 PlayerSAO::~PlayerSAO()

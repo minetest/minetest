@@ -4319,8 +4319,13 @@ Definition tables
     --  ^ For players: Defaults to `minetest.PLAYER_MAX_HP_DEFAULT`
         breath_max = 0,
     --  ^ For players only. Defaults to `minetest.PLAYER_MAX_BREATH_DEFAULT`
-        can_zoom = true,
-    --  ^ For players only. Enables the zoom feature. Defaults to true
+        zoom_fov = 0.0,
+    --  ^ For players only. Zoom FOV in degrees.
+    --    Note that zoom loads and/or generates world beyond the server's maximum
+    --    send and generate distances, so acts like a telescope.
+    --    Smaller zoomFOV values increase the distance loaded and/or generated.
+    --    Defaults to 15 in creative mode, 0 in survival mode.
+    --    zoom_fov = 0 disables zooming for the player.
         eye_height = 1.625,
     --  ^ For players only. Camera height above feet position in nodes. Defaults to 1.625
         physical = true,

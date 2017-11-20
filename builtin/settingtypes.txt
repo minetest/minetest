@@ -566,10 +566,6 @@ vsync (V-Sync) bool false
 #    Field of view in degrees.
 fov (Field of view) int 72 30 160
 
-#    Field of view while zooming in degrees.
-#    Requires to be allowed by server-sided mods.
-zoom_fov (Field of view for zoom) int 15 7 160
-
 #    Adjust the gamma encoding for the light tables. Higher numbers are brighter.
 #    This setting is for the client only and is ignored by the server.
 display_gamma (Gamma) float 1.0 0.5 3.0

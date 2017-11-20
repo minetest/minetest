@@ -265,7 +265,6 @@ void read_object_properties(lua_State *L, int index,
 	getboolfield(L, -1, "makes_footstep_sound", prop->makes_footstep_sound);
 	if (getfloatfield(L, -1, "stepheight", prop->stepheight))
 		prop->stepheight *= BS;
-	getboolfield(L, -1, "can_zoom", prop->can_zoom);
 	getfloatfield(L, -1, "eye_height", prop->eye_height);
 
 	getfloatfield(L, -1, "automatic_rotate", prop->automatic_rotate);
@@ -303,6 +302,8 @@ void read_object_properties(lua_State *L, int index,
 	if (!lua_isnil(L, -1))
 		prop->wield_item = read_item(L, -1, idef).getItemString();
 	lua_pop(L, 1);
+
+	getfloatfield(L, -1, "zoom_fov", prop->zoom_fov);
 }
 
 /******************************************************************************/
@@ -358,8 +359,6 @@ void push_object_properties(lua_State *L, ObjectProperties *prop)
 	lua_setfield(L, -2, "makes_footstep_sound");
 	lua_pushnumber(L, prop->stepheight / BS);
 	lua_setfield(L, -2, "stepheight");
-	lua_pushboolean(L, prop->can_zoom);
-	lua_setfield(L, -2, "can_zoom");
 	lua_pushnumber(L, prop->eye_height);
 	lua_setfield(L, -2, "eye_height");
 	lua_pushnumber(L, prop->automatic_rotate);
@@ -385,6 +384,8 @@ void push_object_properties(lua_State *L, ObjectProperties *prop)
 	lua_setfield(L, -2, "static_save");
 	lua_pushlstring(L, prop->wield_item.c_str(), prop->wield_item.size());
 	lua_setfield(L, -2, "wield_item");
+	lua_pushnumber(L, prop->zoom_fov);
+	lua_setfield(L, -2, "zoom_fov");
 }
 
 /******************************************************************************/

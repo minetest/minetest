@@ -65,15 +65,15 @@ std::string ObjectProperties::dump()
 			<< "," << nametag_color.getGreen() << "," << nametag_color.getBlue() << "\" ";
 	os << ", selectionbox=" << PP(selectionbox.MinEdge) << "," << PP(selectionbox.MaxEdge);
 	os << ", pointable=" << pointable;
-	os << ", can_zoom=" << can_zoom;
 	os << ", static_save=" << static_save;
 	os << ", eye_height=" << eye_height;
+	os << ", zoom_fov=" << zoom_fov;
 	return os.str();
 }
 
 void ObjectProperties::serialize(std::ostream &os) const
 {
-	writeU8(os, 2); // version, protocol_version >= 36
+	writeU8(os, 3); // version, protocol_version >= 36
 	writeS16(os, hp_max);
 	writeU8(os, physical);
 	writeF1000(os, weight);
@@ -109,10 +109,10 @@ void ObjectProperties::serialize(std::ostream &os) const
 	writeF1000(os, automatic_face_movement_max_rotation_per_sec);
 	os << serializeString(infotext);
 	os << serializeString(wield_item);
-	writeU8(os, can_zoom);
 	writeS8(os, glow);
 	writeU16(os, breath_max);
 	writeF1000(os, eye_height);
+	writeF1000(os, zoom_fov);
 
 	// Add stuff only at the bottom.
 	// Never remove anything, because we don't want new versions of this
@@ -121,7 +121,7 @@ void ObjectProperties::serialize(std::ostream &os) const
 void ObjectProperties::deSerialize(std::istream &is)
 {
 	int version = readU8(is);
-	if (version != 2)
+	if (version != 3)
 		throw SerializationError("unsupported ObjectProperties version");
 
 	hp_max = readS16(is);
@@ -159,11 +159,8 @@ void ObjectProperties::deSerialize(std::istream &is)
 	automatic_face_movement_max_rotation_per_sec = readF1000(is);
 	infotext = deSerializeString(is);
 	wield_item = deSerializeString(is);
-	can_zoom = readU8(is);
-
-	try {
-		glow = readS8(is);
-		breath_max = readU16(is);
-		eye_height = readF1000(is);
-	} catch (SerializationError &e) {}
+	glow = readS8(is);
+	breath_max = readU16(is);
+	eye_height = readF1000(is);
+	zoom_fov = readF1000(is);
 }
