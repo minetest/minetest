@@ -1024,7 +1024,7 @@ void ServerEnvironment::clearObjects(ClearObjectsMode mode)
 		loadable_blocks = loaded_blocks;
 	}
 
-	infostream << "ServerEnvironment::clearObjects(): "
+	actionstream << "ServerEnvironment::clearObjects(): "
 		<< "Now clearing objects in " << loadable_blocks.size()
 		<< " blocks" << std::endl;
 
@@ -1070,7 +1070,7 @@ void ServerEnvironment::clearObjects(ClearObjectsMode mode)
 			num_blocks_checked % report_interval == 0) {
 			float percent = 100.0 * (float)num_blocks_checked /
 				loadable_blocks.size();
-			infostream << "ServerEnvironment::clearObjects(): "
+			actionstream << "ServerEnvironment::clearObjects(): "
 				<< "Cleared " << num_objs_cleared << " objects"
 				<< " in " << num_blocks_cleared << " blocks ("
 				<< percent << "%)" << std::endl;
@@ -1090,7 +1090,7 @@ void ServerEnvironment::clearObjects(ClearObjectsMode mode)
 
 	m_last_clear_objects_time = m_game_time;
 
-	infostream << "ServerEnvironment::clearObjects(): "
+	actionstream << "ServerEnvironment::clearObjects(): "
 		<< "Finished: Cleared " << num_objs_cleared << " objects"
 		<< " in " << num_blocks_cleared << " blocks" << std::endl;
 }
