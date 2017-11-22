@@ -955,18 +955,21 @@ void Server::handleCommand_Respawn(NetworkPacket* pkt)
 bool Server::checkInteractDistance(RemotePlayer *player, const f32 d, const std::string what)
 {
 	PlayerSAO *playersao = player->getPlayerSAO();
+	const InventoryList *hlist = playersao->getInventory()->getList("hand");
 	const ItemDefinition &playeritem_def =
 		playersao->getWieldedItem().getDefinition(m_itemdef);
-	float max_d = BS * playeritem_def.range;
-	const InventoryList *hlist = playersao->getInventory()->getList("hand");
 	const ItemDefinition &hand_def =
-		hlist ? (hlist->getItem(0).getDefinition(m_itemdef)) : (m_itemdef->get(""));
+		hlist ? hlist->getItem(0).getDefinition(m_itemdef) : m_itemdef->get("");
+
+	float max_d = BS * playeritem_def.range;
 	float max_d_hand = BS * hand_def.range;
+
 	if (max_d < 0 && max_d_hand >= 0)
 		max_d = max_d_hand;
 	else if (max_d < 0)
 		max_d = BS * 4.0f;
-	// cube diagonal: sqrt(3) = 1.73
+
+	// cube diagonal: sqrt(3) = 1.732
 	if (d > max_d * 1.732) {
 		actionstream << "Player " << player->getName()
 				<< " tried to access " << what
