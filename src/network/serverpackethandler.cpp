@@ -943,6 +943,18 @@ void Server::handleCommand_InventoryAction(NetworkPacket* pkt)
 			(ma->to_inv.type == InventoryLocation::PLAYER) &&
 			(ma->to_inv.name == player->getName());
 
+		InventoryLocation *remote = from_inv_is_current_player ?
+			&ma->to_inv : &ma->from_inv;
+
+		// Check for out-of-range interaction
+		if (remote->type == InventoryLocation::NODEMETA) {
+			v3f node_pos   = intToFloat(remote->p, BS);
+			v3f player_pos = player->getPlayerSAO()->getBasePosition();
+			f32 d = player_pos.getDistanceFrom(node_pos);
+			if (!checkInteractDistance(player, d, "inventory"))
+				return;
+		}
+
 		/*
 			Disable moving items out of craftpreview
 		*/
@@ -1257,6 +1269,37 @@ void Server::handleCommand_Respawn(NetworkPacket* pkt)
 	// the previous addition has been successfully removed
 }
 
+bool Server::checkInteractDistance(RemotePlayer *player, const f32 d, const std::string what)
+{
+	PlayerSAO *playersao = player->getPlayerSAO();
+	const InventoryList *hlist = playersao->getInventory()->getList("hand");
+	const ItemDefinition &playeritem_def =
+		playersao->getWieldedItem().getDefinition(m_itemdef);
+	const ItemDefinition &hand_def =
+		hlist ? hlist->getItem(0).getDefinition(m_itemdef) : m_itemdef->get("");
+
+	float max_d = BS * playeritem_def.range;
+	float max_d_hand = BS * hand_def.range;
+
+	if (max_d < 0 && max_d_hand >= 0)
+		max_d = max_d_hand;
+	else if (max_d < 0)
+		max_d = BS * 4.0f;
+
+	// cube diagonal: sqrt(3) = 1.732
+	if (d > max_d * 1.732) {
+		actionstream << "Player " << player->getName()
+				<< " tried to access " << what
+				<< " from too far: "
+				<< "d=" << d <<", max_d=" << max_d
+				<< ". ignoring." << std::endl;
+		// Call callbacks
+		m_script->on_cheat(playersao, "interacted_too_far");
+		return false;
+	}
+	return true;
+}
+
 void Server::handleCommand_Interact(NetworkPacket* pkt)
 {
 	/*
@@ -1380,33 +1423,13 @@ void Server::handleCommand_Interact(NetworkPacket* pkt)
 	*/
 	static const bool enable_anticheat = !g_settings->getBool("disable_anticheat");
 	if ((action == 0 || action == 2 || action == 3 || action == 4) &&
-			(enable_anticheat && !isSingleplayer())) {
+			enable_anticheat && !isSingleplayer()) {
 		float d = player_pos.getDistanceFrom(pointed_pos_under);
-		const ItemDefinition &playeritem_def =
-			playersao->getWieldedItem().getDefinition(m_itemdef);
-		float max_d = BS * playeritem_def.range;
-		InventoryList *hlist = playersao->getInventory()->getList("hand");
-		const ItemDefinition &hand_def =
-			hlist ? (hlist->getItem(0).getDefinition(m_itemdef)) : (m_itemdef->get(""));
-		float max_d_hand = BS * hand_def.range;
-		if (max_d < 0 && max_d_hand >= 0)
-			max_d = max_d_hand;
-		else if (max_d < 0)
-			max_d = BS * 4.0;
-		// cube diagonal: sqrt(3) = 1.73
-		if (d > max_d * 1.73) {
-			actionstream << "Player " << player->getName()
-					<< " tried to access " << pointed.dump()
-					<< " from too far: "
-					<< "d=" << d <<", max_d=" << max_d
-					<< ". ignoring." << std::endl;
+		if (!checkInteractDistance(player, d, pointed.dump())) {
 			// Re-send block to revert change on client-side
 			RemoteClient *client = getClient(pkt->getPeerId());
 			v3s16 blockpos = getNodeBlockPos(floatToInt(pointed_pos_under, BS));
 			client->SetBlockNotSent(blockpos);
-			// Call callbacks
-			m_script->on_cheat(playersao, "interacted_too_far");
-			// Do nothing else
 			return;
 		}
 	}
