@@ -481,6 +481,7 @@ private:
 	void RespawnPlayer(u16 peer_id);
 	void DeleteClient(u16 peer_id, ClientDeletionReason reason);
 	void UpdateCrafting(RemotePlayer *player);
+	bool checkInteractDistance(RemotePlayer *player, const f32 d, const std::string what);
 
 	void handleChatInterfaceEvent(ChatEvent *evt);
 
