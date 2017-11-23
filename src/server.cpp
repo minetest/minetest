@@ -1643,15 +1643,18 @@ void Server::SendInventory(PlayerSAO* playerSAO)
 void Server::SendChatMessage(u16 peer_id, const std::wstring &message)
 {
 	DSTACK(FUNCTION_NAME);
-
-	NetworkPacket pkt(TOCLIENT_CHAT_MESSAGE, 0, peer_id);
-	pkt << message;
-
 	if (peer_id != PEER_ID_INEXISTENT) {
+		NetworkPacket pkt(TOCLIENT_CHAT_MESSAGE, 0, peer_id);
+
+		if (m_clients.getProtocolVersion(peer_id) < 27)
+			pkt << unescape_enriched(message);
+		else
+			pkt << message;
+
 		Send(&pkt);
-	}
-	else {
-		m_clients.sendToAll(&pkt);
+	} else {
+		for (u16 id : m_clients.getClientIDs())
+			SendChatMessage(id, message);
 	}
 }
 
@@ -2870,11 +2873,14 @@ void Server::handleChatInterfaceEvent(ChatEvent *evt)
 }
 
 std::wstring Server::handleChat(const std::string &name, const std::wstring &wname,
-	const std::wstring &wmessage, bool check_shout_priv, RemotePlayer *player)
+	std::wstring wmessage, bool check_shout_priv, RemotePlayer *player)
 {
 	// If something goes wrong, this player is to blame
 	RollbackScopeActor rollback_scope(m_rollback,
 		std::string("player:") + name);
+
+	if (g_settings->getBool("strip_color_codes"))
+		wmessage = unescape_enriched(wmessage);
 
 	if (player) {
 		switch (player->canSendChatMessage()) {
@@ -2930,7 +2936,7 @@ std::wstring Server::handleChat(const std::string &name, const std::wstring &wna
 		/*
 			Send the message to others
 		*/
-		actionstream << "CHAT: " << wide_to_narrow(line) << std::endl;
+		actionstream << "CHAT: " << wide_to_narrow(unescape_enriched(line)) << std::endl;
 
 		std::vector<u16> clients = m_clients.getClientIDs();
 
