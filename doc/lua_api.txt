@@ -1175,7 +1175,7 @@ Creates a deformed sphere of ore according to 3d perlin noise described by
 
 ### `vein`
 Creates veins of ore varying in density by according to the intersection of two
-instances of 3d perlin noise with diffferent seeds, both described by
+instances of 3d perlin noise with different seeds, both described by
 `noise_params`.
 
 `random_factor` varies the influence random chance has on placement of an ore
@@ -1276,7 +1276,7 @@ in the form of a table.  This table specifies the following fields:
 
 * The `size` field is a 3D vector containing the dimensions of the provided schematic. (required)
 * The `yslice_prob` field is a table of {ypos, prob} which sets the `ypos`th vertical slice
-  of the schematic to have a `prob / 256 * 100` chance of occuring. (default: 255)
+  of the schematic to have a `prob / 256 * 100` chance of occurring. (default: 255)
 * The `data` field is a flat table of MapNode tables making up the schematic,
   in the order of `[z [y [x]]]`. (required)
   Each MapNode table contains:
@@ -1762,7 +1762,7 @@ the entity itself.
 * `direction` is a unit vector, pointing from the source of the punch to
    the punched object.
 * `damage` damage that will be done to entity
-Return value of this function will determin if damage is done by this function
+Return value of this function will determine if damage is done by this function
 (retval true) or shall be done by engine (retval false)
 
 To punch an entity/object in Lua, call:
@@ -2656,7 +2656,7 @@ Call these functions only at load time!
 ### Authentication
 * `minetest.notify_authentication_modified(name)`
     * Should be called by the authentication handler if privileges changes.
-    * `name`: string, if ommited, everybody is reported
+    * `name`: string, if omitted, everybody is reported
 * `minetest.check_password_entry(name, entry, password)`
     * Returns true if the "db entry" for a player with name matches given
     * password, false otherwise.
@@ -2687,7 +2687,7 @@ Call these functions only at load time!
 * `minetest.get_player_ip(name)`: returns an IP address string
 
 `minetest.set_player_password`, `minetest_set_player_privs`, `minetest_get_player_privs`
-and `minetest.auth_reload` call the authetification handler.
+and `minetest.auth_reload` call the authentication handler.
 
 ### Chat
 * `minetest.chat_send_all(text)`
@@ -3855,7 +3855,7 @@ A fast, bulk perlin noise generator.
 It can be created via `PerlinNoiseMap(noiseparams, size)` or
 `minetest.get_perlin_map(noiseparams, size)`.
 
-Format of `size` is `{x=dimx, y=dimy, z=dimz}`.  The `z` conponent is ommitted
+Format of `size` is `{x=dimx, y=dimy, z=dimz}`.  The `z` component is omitted
 for 2D noise, and it must be must be larger than 1 for 3D noise (otherwise
 `nil` is returned).
 
@@ -4939,7 +4939,7 @@ Definition tables
     --  ^ diagram to result in roughly equal size biomes.
     --  ^ Heat and humidity have average values of 50, vary mostly between
     --  ^ 0 and 100 but also often exceed these values.
-    --  ^ Heat is not in degrees celcius, both values are abstract.
+    --  ^ Heat is not in degrees Celsius, both values are abstract.
     }
 
 ### Decoration definition (`register_decoration`)
@@ -5197,7 +5197,7 @@ Definition tables
         completed = true,
      -- ^ If true, the request has finished (either succeeded, failed or timed out)
         succeeded = true,
-     -- ^ If true, the request was succesful
+     -- ^ If true, the request was successful
         timeout = false,
      -- ^ If true, the request timed out
         code = 200,
