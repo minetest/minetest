@@ -990,7 +990,7 @@ static void updateChat(Client &client, f32 dtime, bool show_debug,
 	s32 chat_y = 5;
 
 	if (show_debug)
-		chat_y += 3 * line_height;
+		chat_y += 2 * line_height;
 
 	// first pass to calculate height of text to be set
 	const v2u32 &window_size = RenderingEngine::get_instance()->getWindowSize();
@@ -1451,7 +1451,6 @@ private:
 	 */
 	gui::IGUIStaticText *guitext;          // First line of debug text
 	gui::IGUIStaticText *guitext2;         // Second line of debug text
-	gui::IGUIStaticText *guitext3;         // Third line of debug text
 	gui::IGUIStaticText *guitext_info;     // At the middle of the screen
 	gui::IGUIStaticText *guitext_status;
 	gui::IGUIStaticText *guitext_chat;	   // Chat text
@@ -2019,12 +2018,6 @@ bool Game::initGui()
 
 	// Second line of debug text
 	guitext2 = addStaticText(guienv,
-			L"",
-			core::rect<s32>(0, 0, 0, 0),
-			false, false, guiroot);
-
-	// Third line of debug text
-	guitext3 = addStaticText(guienv,
 			L"",
 			core::rect<s32>(0, 0, 0, 0),
 			false, false, guiroot);
@@ -4405,7 +4398,7 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 
 inline static const char *yawToDirectionString(int yaw)
 {
-	static const char *direction[4] = {"North [+Z]", "West [-X]", "South [-Z]", "East [+X]"};
+	static const char *direction[4] = {"N +Z", "W -X", "S -Z", "E +X"};
 
 	yaw = wrapDegrees_0_360(yaw);
 	yaw = (yaw + 45) % 360 / 90;
@@ -4427,18 +4420,18 @@ void Game::updateGui(const RunStats &stats, f32 dtime, const CameraOrientation &
 
 		std::ostringstream os(std::ios_base::binary);
 		os << std::fixed
-		   << PROJECT_NAME_C " " << g_version_hash
-		   << ", FPS = " << fps
-		   << ", range_all = " << draw_control->range_all
-		   << std::setprecision(0)
-		   << ", drawtime = " << drawtime_avg << " ms"
-		   << std::setprecision(1)
-		   << ", dtime_jitter = "
-		   << (stats.dtime_jitter.max_fraction * 100.0) << " %"
-		   << std::setprecision(1)
-		   << ", view_range = " << draw_control->wanted_range
-		   << std::setprecision(3)
-		   << ", RTT = " << client->getRTT() << " s";
+			<< PROJECT_NAME_C " " << g_version_hash
+			<< ", FPS " << fps
+			<< std::setprecision(0)
+			<< ", Drawtime " << drawtime_avg << "ms"
+			<< std::setprecision(1)
+			<< ", Dtime jitter "
+			<< (stats.dtime_jitter.max_fraction * 100.0) << "%"
+			<< std::setprecision(1)
+			<< ", View range "
+			<< (draw_control->range_all ? "All" : itos(draw_control->wanted_range))
+			<< std::setprecision(3)
+			<< ", RTT " << client->getRTT() << "s";
 		setStaticText(guitext, utf8_to_wide(os.str()).c_str());
 		guitext->setVisible(true);
 	} else {
@@ -4456,12 +4449,24 @@ void Game::updateGui(const RunStats &stats, f32 dtime, const CameraOrientation &
 	if (flags.show_debug) {
 		std::ostringstream os(std::ios_base::binary);
 		os << std::setprecision(1) << std::fixed
-		   << "pos = (" << (player_position.X / BS)
-		   << ", " << (player_position.Y / BS)
-		   << ", " << (player_position.Z / BS)
-		   << "), yaw = " << (wrapDegrees_0_360(cam.camera_yaw)) << "°"
-		   << " " << yawToDirectionString(cam.camera_yaw)
-		   << ", seed = " << ((u64)client->getMapSeed());
+			<< "Pos (" << (player_position.X / BS)
+			<< ", " << (player_position.Y / BS)
+			<< ", " << (player_position.Z / BS)
+			<< "), Yaw " << (wrapDegrees_0_360(cam.camera_yaw)) << "° "
+			<< yawToDirectionString(cam.camera_yaw)
+			<< ", Seed " << ((u64)client->getMapSeed());
+
+		if (runData.pointed_old.type == POINTEDTHING_NODE) {
+			ClientMap &map = client->getEnv().getClientMap();
+			const INodeDefManager *nodedef = client->getNodeDefManager();
+			MapNode n = map.getNodeNoEx(runData.pointed_old.node_undersurface);
+
+			if (n.getContent() != CONTENT_IGNORE && nodedef->get(n).name != "unknown") {
+				os << ", Pointed " << nodedef->get(n).name
+					<< ", Param2 " << (u64) n.getParam2();
+			}
+		}
+
 		setStaticText(guitext2, utf8_to_wide(os.str()).c_str());
 		guitext2->setVisible(true);
 	} else {
@@ -4474,33 +4479,6 @@ void Game::updateGui(const RunStats &stats, f32 dtime, const CameraOrientation &
 				screensize.X,  5 + g_fontengine->getTextHeight() * 2
 		);
 		guitext2->setRelativePosition(rect);
-	}
-
-	if (flags.show_debug && runData.pointed_old.type == POINTEDTHING_NODE) {
-		ClientMap &map = client->getEnv().getClientMap();
-		const INodeDefManager *nodedef = client->getNodeDefManager();
-		MapNode n = map.getNodeNoEx(runData.pointed_old.node_undersurface);
-
-		if (n.getContent() != CONTENT_IGNORE && nodedef->get(n).name != "unknown") {
-			std::ostringstream os(std::ios_base::binary);
-			os << "pointing_at = (" << nodedef->get(n).name
-			   << ", param2 = " << (u64) n.getParam2()
-			   << ")";
-			setStaticText(guitext3, utf8_to_wide(os.str()).c_str());
-			guitext3->setVisible(true);
-		} else {
-			guitext3->setVisible(false);
-		}
-	} else {
-		guitext3->setVisible(false);
-	}
-
-	if (guitext3->isVisible()) {
-		core::rect<s32> rect(
-				5,             5 + g_fontengine->getTextHeight() * 2,
-				screensize.X,  5 + g_fontengine->getTextHeight() * 3
-		);
-		guitext3->setRelativePosition(rect);
 	}
 
 	setStaticText(guitext_info, translate_string(infotext).c_str());
