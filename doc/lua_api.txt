@@ -3331,7 +3331,7 @@ This is basically a reference to a C++ `ServerActiveObject`
         * `11`: bubbles bar is not shown
 * `set_attribute(attribute, value)`:
     * Sets an extra attribute with value on player.
-    * `value` must be a string.
+    * `value` must be a string, or a number which will be converted to a string.
     * If `value` is `nil`, remove attribute from player.
 * `get_attribute(attribute)`:
     * Returns value (a string) for extra attribute.
