@@ -84,9 +84,7 @@ extern const u8 *light_decode_table;
 // 0 <= return value <= 255
 inline u8 decode_light(u8 light)
 {
-	if (light > LIGHT_MAX)
-		light = LIGHT_MAX;
-
+	assert(light <= LIGHT_SUN);
 	return light_decode_table[light];
 }
 
@@ -98,8 +96,8 @@ inline float decode_light_f(float light_f)
 
 	if (i <= 0)
 		return (float)light_decode_table[0] / 255.0;
-	if (i >= LIGHT_MAX)
-		return (float)light_decode_table[LIGHT_MAX] / 255.0;
+	if (i >= LIGHT_SUN)
+		return (float)light_decode_table[LIGHT_SUN] / 255.0;
 
 	float v1 = (float)light_decode_table[i - 1] / 255.0;
 	float v2 = (float)light_decode_table[i] / 255.0;
