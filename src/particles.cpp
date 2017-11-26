@@ -23,6 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client/clientevent.h"
 #include "client/renderingengine.h"
 #include "util/numeric.h"
+#include "util/serialize.h"
 #include "light.h"
 #include "environment.h"
 #include "clientmap.h"
@@ -31,15 +32,23 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client.h"
 #include "settings.h"
 
+#include <cmath>
+#include <stack>
+
 /*
 	Utility
 */
 
-v3f random_v3f(v3f min, v3f max)
+static inline f32 random_f32(f32 min, f32 max)
 {
-	return v3f( rand()/(float)RAND_MAX*(max.X-min.X)+min.X,
-			rand()/(float)RAND_MAX*(max.Y-min.Y)+min.Y,
-			rand()/(float)RAND_MAX*(max.Z-min.Z)+min.Z);
+	return rand() / (float) RAND_MAX * (max - min) + min;
+}
+
+static v3f random_v3f(v3f min, v3f max)
+{
+	return v3f( random_f32(min.X, max.X),
+		random_f32(min.Y, max.Y),
+		random_f32(min.Z, max.Z));
 }
 
 Particle::Particle(
@@ -237,6 +246,407 @@ void Particle::updateVertices()
 	}
 }
 
+// Should never happen unless particle program is malformed
+class InterpretException : std::exception
+{
+public:
+	InterpretException() = delete;
+	InterpretException(const std::string &some_info) : info(some_info) {}
+	const char* what() const noexcept override { return info.c_str(); }
+
+private:
+	std::string info;
+};
+
+class ProgrammerError : std::exception {};
+
+class ParticleValue
+{
+public:
+	ParticleValue() : ParticleValue(0.0f) {}
+
+	// A scalar is just a vector where all three components are the same.
+	ParticleValue(const f32 scalar) : value(scalar, scalar, scalar) {}
+	
+	ParticleValue(const f32 x, const f32 y, const f32 z) : value(x, y, z) {}
+
+	ParticleValue(const v3f &vector) : value(vector) {}
+
+	f32 asScalar() const
+	{
+		return value.X;
+	}
+
+	const v3f& asVector() const
+	{
+		return value;
+	}
+
+	ParticleValue operator+(const ParticleValue &other) const
+	{
+		return ParticleValue(value + other.value);
+	}
+
+	ParticleValue operator-(const ParticleValue &other) const
+	{
+		return ParticleValue(value - other.value);
+	}
+
+	ParticleValue operator*(const ParticleValue &other) const
+	{
+		return ParticleValue(value * other.value);
+	}
+
+	ParticleValue operator/(const ParticleValue &other) const
+	{
+		return ParticleValue(value / other.value);
+	}
+
+	ParticleValue operator<(const ParticleValue &other) const
+	{
+		v3f result(0.0f);
+		if (value.X < other.value.X)
+			result.X = 1.0f;
+		if (value.Y < other.value.Y)
+			result.Y = 1.0f;
+		if (value.Z < other.value.Z)
+			result.Z = 1.0f;
+
+		return result;
+	}
+
+	ParticleValue operator<=(const ParticleValue &other) const
+	{
+		v3f result(0.0f);
+		if (value.X <= other.value.X)
+			result.X = 1.0f;
+		if (value.Y <= other.value.Y)
+			result.Y = 1.0f;
+		if (value.Z <= other.value.Z)
+			result.Z = 1.0f;
+
+		return result;
+	}
+
+	ParticleValue pow(const ParticleValue &other) const
+	{
+		// Both vectors
+		v3f result;
+		result.X = powf(value.X, other.value.X);
+		result.Y = powf(value.Y, other.value.Y);
+		result.Z = powf(value.Z, other.value.Z);
+		return result;
+	}
+
+	ParticleValue random(const ParticleValue &other) const
+	{
+		return ParticleValue(random_v3f(value, other.value));
+	}
+
+	ParticleValue atan2(const ParticleValue &other) const
+	{
+		return ParticleValue(std::atan2(value.X, other.value.X),
+			std::atan2(value.Y, other.value.Y),
+			std::atan2(value.Z, other.value.Z));
+	}
+
+	typedef float(*pointwiseOp)(float);
+	template<pointwiseOp op>
+	ParticleValue pointwise() const
+	{
+		return ParticleValue(op(value.X), op(value.Y), op(value.Z));
+	}
+
+private:
+	v3f value; // For scalars, just X is set.
+};
+
+class ParticleVM
+{
+public:
+	ParticleVM(size_t varCount) : variables(varCount) {}
+
+	f32 executeScalarProgram(const std::string &program, f32 time)
+	{
+		try {
+			return executeProgram(program, time).asScalar();
+		} catch (InterpretException e) {
+			errorstream << "Particle error: " << e.what() << std::endl;
+			return 0.0f;
+		}
+	}
+
+	v3f executeVectorProgram(const std::string &program, f32 time)
+	{
+		try {
+			return executeProgram(program, time).asVector();
+		} catch (InterpretException e) {
+			errorstream << "Particle error: " << e.what() << std::endl;
+			return v3f(0, 0, 0);
+		}
+	}
+
+private:
+	typedef ParticleShaders ps;
+
+	ParticleValue executeProgram(const std::string &program, f32 time)
+	{
+		std::stringstream is(program); // Easier to work with
+
+		while (!is.eof()) {
+			const u8 possibleOp = readU8(is);
+
+			// Hack required because read* functions from serialize.h don't have
+			// any way of checking operation success like you normally have with
+			// an istream.
+			if (is.eof())
+				break;
+			
+			if (possibleOp < ps::op_push_constant || possibleOp > ps::op_tan)
+				throw InterpretException("Invalid opcode: " + std::to_string(possibleOp));
+			
+			const ps::Opcode op = static_cast<ps::Opcode>(possibleOp);
+			switch(op)
+			{
+			case ps::op_push_constant: {
+				const f32 constant = readF1000(is);
+				executeConstant(constant);
+				break;
+			}
+			case ps::op_push_variable:
+			case ps::op_write_variable: {
+				const u32 var = readU32(is);
+				executeVarOp(op, var);
+				break;
+			}
+			case ps::op_make_vector:
+			case ps::op_index_x:
+			case ps::op_index_y:
+			case ps::op_index_z:
+			case ps::op_push_time:
+			case ps::op_add:
+			case ps::op_subtract:
+			case ps::op_multiply:
+			case ps::op_divide:
+			case ps::op_power:
+			case ps::op_random:
+			case ps::op_lt:
+			case ps::op_le:
+			case ps::op_atan2:
+			case ps::op_acos:
+			case ps::op_asin:
+			case ps::op_atan:
+			case ps::op_ceil:
+			case ps::op_cos:
+			case ps::op_floor:
+			case ps::op_log:
+			case ps::op_sin:
+			case ps::op_tan:
+				executeOp0(op, time);
+				break;
+			default:
+				throw ProgrammerError(); // Opcode is already checked
+			}
+
+			if (is.fail())
+				throw InterpretException("Program ended too early");
+		}
+
+		if (stack.empty())
+			throw InterpretException("Program has no result");
+
+		return pop_stack();
+	}
+
+	void executeIndex(const ps::Opcode op)
+	{
+		const v3f vec = pop_stack().asVector();
+		switch(op) {
+		case ps::op_index_x:
+			stack.push(ParticleValue(vec.X));
+			break;
+		case ps::op_index_y:
+			stack.push(ParticleValue(vec.Y));
+			break;
+		case ps::op_index_z:
+			stack.push(ParticleValue(vec.Z));
+			break;
+		default:
+			throw ProgrammerError();
+		}
+	}
+
+	void executeUnOp(const ps::Opcode op)
+	{
+		typedef ParticleShaders ps;
+
+		const ParticleValue arg = pop_stack();
+
+		switch(op) {
+		case ps::op_acos:
+			stack.push(arg.pointwise<std::acos>());
+			break;
+		case ps::op_asin:
+			stack.push(arg.pointwise<std::asin>());
+			break;
+		case ps::op_atan:
+			stack.push(arg.pointwise<std::atan>());
+			break;
+		case ps::op_ceil:
+			stack.push(arg.pointwise<std::ceil>());
+			break;
+		case ps::op_cos:
+			stack.push(arg.pointwise<std::cos>());
+			break;
+		case ps::op_floor:
+			stack.push(arg.pointwise<std::floor>());
+			break;
+		case ps::op_log:
+			stack.push(arg.pointwise<std::log>());
+			break;
+		case ps::op_sin:
+			stack.push(arg.pointwise<std::sin>());
+			break;
+		case ps::op_tan:
+			stack.push(arg.pointwise<std::tan>());
+			break;
+		default:
+			// Should be unreachable
+			throw ProgrammerError();
+		}
+	}
+	
+	void executeBinOp(const ps::Opcode op)
+	{
+		typedef ParticleShaders ps;
+
+		const ParticleValue arg2 = pop_stack();
+		const ParticleValue arg1 = pop_stack();
+			
+		switch(op) {
+		case ps::op_add:
+			stack.push(arg1 + arg2);
+			break;
+		case ps::op_subtract:
+			stack.push(arg1 - arg2);
+			break;
+		case ps::op_multiply:
+			stack.push(arg1 * arg2);
+			break;
+		case ps::op_divide:
+			stack.push(arg1 / arg2);
+			break;
+		case ps::op_power:
+			stack.push(arg1.pow(arg2));
+			break;
+		case ps::op_random:
+			stack.push(arg1.random(arg2));
+			break;
+		case ps::op_lt:
+			stack.push(arg1 < arg2);
+			break;
+		case ps::op_le:
+			stack.push(arg1 <= arg2);
+			break;
+		case ps::op_atan2:
+			stack.push(arg1.atan2(arg2));
+			break;
+		default:
+			// Should be unreachable
+			throw ProgrammerError();
+		}
+	}
+
+	// Zero-argument operations
+	void executeOp0(const ps::Opcode op, const f32 time)
+	{
+		typedef ParticleShaders ps;
+
+		switch (op) {
+		case ps::op_make_vector: {
+			const f32 z = pop_stack().asScalar();
+			const f32 y = pop_stack().asScalar();
+			const f32 x = pop_stack().asScalar();
+			stack.push(ParticleValue(v3f(x, y, z)));
+			break;
+		}
+		case ps::op_index_x:
+		case ps::op_index_y:
+		case ps::op_index_z:
+			executeIndex(op);
+			break;
+		case ps::op_push_time:
+			stack.push(ParticleValue(time));
+			break;
+		case ps::op_add:
+		case ps::op_subtract:
+		case ps::op_multiply:
+		case ps::op_divide:
+		case ps::op_power:
+		case ps::op_random:
+		case ps::op_lt:
+		case ps::op_le:
+		case ps::op_atan2:
+			executeBinOp(op);
+			break;
+		case ps::op_acos:
+		case ps::op_asin:
+		case ps::op_atan:
+		case ps::op_ceil:
+		case ps::op_cos:
+		case ps::op_floor:
+		case ps::op_log:
+		case ps::op_sin:
+		case ps::op_tan:
+			executeUnOp(op);
+			break;
+		default:
+			// Should be unreachable
+			throw ProgrammerError();
+		}
+	}
+
+	void executeConstant(f32 value)
+	{
+		stack.push(ParticleValue(value));
+	}
+
+	void executeVarOp(ps::Opcode op, size_t var)
+	{
+		if (var < variables.size()) {
+			switch(op) {
+			case ps::op_push_variable:
+				stack.push(variables[var]);
+				break;
+			case ps::op_write_variable:
+				if (stack.empty())
+					throw InterpretException("No variable to copy");
+				// Just copy, don't pop
+				variables[var] = stack.top();
+				break;
+			default:
+				// Should be unreachable
+				throw ProgrammerError();
+			}
+		} else {
+			throw InterpretException("Variable out of bounds");
+		}
+	}
+
+	ParticleValue pop_stack()
+	{
+		if (stack.empty())
+			throw InterpretException("Stack too small");
+
+		ParticleValue value = stack.top();
+		stack.pop();
+		return value;
+	}
+
+	std::vector<ParticleValue> variables;
+	std::stack<ParticleValue> stack;
+};
+
 /*
 	ParticleSpawner
 */
@@ -247,7 +657,7 @@ ParticleSpawner::ParticleSpawner(IGameDef *gamedef, LocalPlayer *player,
 	float minexptime, float maxexptime, float minsize, float maxsize,
 	bool collisiondetection, bool collision_removal, u16 attached_id, bool vertical,
 	video::ITexture *texture, u32 id, const struct TileAnimationParams &anim,
-	u8 glow,
+	u8 glow, const ParticleShaders &particle_shaders,
 	ParticleManager *p_manager) :
 	m_particlemanager(p_manager)
 {
@@ -273,6 +683,7 @@ ParticleSpawner::ParticleSpawner(IGameDef *gamedef, LocalPlayer *player,
 	m_time = 0;
 	m_animation = anim;
 	m_glow = glow;
+	m_shaders = particle_shaders;
 
 	for (u16 i = 0; i<=m_amount; i++)
 	{
@@ -284,9 +695,12 @@ ParticleSpawner::ParticleSpawner(IGameDef *gamedef, LocalPlayer *player,
 void ParticleSpawner::spawnParticle(ClientEnvironment *env, float radius,
 	bool is_attached, const v3f &attached_pos, float attached_yaw)
 {
+	ParticleVM vm(m_shaders.varCount);
 	v3f ppos = m_player->getPosition() / BS;
 	v3f pos = random_v3f(m_minpos, m_maxpos);
-
+	if (!m_shaders.pos.empty())
+		pos += vm.executeVectorProgram(m_shaders.pos, m_time);
+		
 	// Need to apply this first or the following check
 	// will be wrong for attached spawners
 	if (is_attached) {
@@ -298,7 +712,12 @@ void ParticleSpawner::spawnParticle(ClientEnvironment *env, float radius,
 		return;
 
 	v3f vel = random_v3f(m_minvel, m_maxvel);
+	if (!m_shaders.vel.empty())
+		vel += vm.executeVectorProgram(m_shaders.vel, m_time);
+		
 	v3f acc = random_v3f(m_minacc, m_maxacc);
+	if (!m_shaders.acc.empty())
+		acc += vm.executeVectorProgram(m_shaders.acc, m_time);
 
 	if (is_attached) {
 		// Apply attachment yaw
@@ -309,9 +728,14 @@ void ParticleSpawner::spawnParticle(ClientEnvironment *env, float radius,
 	float exptime = rand() / (float)RAND_MAX
 			* (m_maxexptime - m_minexptime)
 			+ m_minexptime;
+	if (!m_shaders.exptime.empty())
+		exptime *= vm.executeScalarProgram(m_shaders.exptime, m_time);
+
 	float size = rand() / (float)RAND_MAX
 			* (m_maxsize - m_minsize)
 			+ m_minsize;
+	if (!m_shaders.size.empty())
+		size *= vm.executeScalarProgram(m_shaders.size, m_time);
 
 	m_particlemanager->addParticle(new Particle(
 		m_gamedef,
@@ -490,6 +914,13 @@ void ParticleManager::handleParticleEvent(ClientEvent *event, Client *client,
 			video::ITexture *texture =
 				client->tsrc()->getTextureForMesh(*(event->add_particlespawner.texture));
 
+			ParticleShaders shaders;
+			// Empty string means no shaders were received
+			if (!event->add_particlespawner.shaders->empty()) {
+				std::stringstream shaderStream(*event->add_particlespawner.shaders);
+				shaders.deSerialize(shaderStream);
+			}
+
 			ParticleSpawner *toadd = new ParticleSpawner(client, player,
 					event->add_particlespawner.amount,
 					event->add_particlespawner.spawntime,
@@ -511,6 +942,7 @@ void ParticleManager::handleParticleEvent(ClientEvent *event, Client *client,
 					event->add_particlespawner.id,
 					event->add_particlespawner.animation,
 					event->add_particlespawner.glow,
+					shaders,
 					this);
 
 			/* delete allocated content of event */
@@ -521,6 +953,7 @@ void ParticleManager::handleParticleEvent(ClientEvent *event, Client *client,
 			delete event->add_particlespawner.minacc;
 			delete event->add_particlespawner.texture;
 			delete event->add_particlespawner.maxacc;
+			delete event->add_particlespawner.shaders;
 
 			{
 				MutexAutoLock lock(m_spawner_list_lock);

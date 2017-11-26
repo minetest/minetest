@@ -56,6 +56,7 @@ class PlayerSAO;
 class IRollbackManager;
 struct RollbackAction;
 class EmergeManager;
+struct ParticleShaders;
 class ServerScripting;
 class ServerEnvironment;
 struct SimpleSoundSpec;
@@ -238,7 +239,7 @@ public:
 		ServerActiveObject *attached,
 		bool vertical, const std::string &texture,
 		const std::string &playername, const struct TileAnimationParams &animation,
-		u8 glow);
+		u8 glow, const ParticleShaders &shaders);
 
 	void deleteParticleSpawner(const std::string &playername, u32 id);
 
@@ -439,7 +440,8 @@ private:
 		bool collisiondetection, bool collision_removal,
 		u16 attached_id,
 		bool vertical, const std::string &texture, u32 id,
-		const struct TileAnimationParams &animation, u8 glow);
+		const struct TileAnimationParams &animation, u8 glow,
+		const ParticleShaders &shaders);
 
 	void SendDeleteParticleSpawner(session_t peer_id, u32 id);
 

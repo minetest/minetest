@@ -3148,6 +3148,52 @@ These functions return the leftover itemstack.
     * If playername is specified, only deletes on the player's client,
     * otherwise on all clients
 
+### Expressions
+Expressions are descriptions of how to generate a vector or scalar. They are used
+to provide custom generation of particle attributes (position, velocity, etc.)
+from particle spawners.
+
+In addition to the operations listed here, they support the operators
++, -, *, /, ^. They also support indexing with the keys `"x"`, `"y"`, or `"z"`,
+which for vector expressions will return the specified value. The operations
+described in this section can take non-expression scalars and vectors, and will
+automatically "upgrade" them to an expression.
+
+Note: operations between expressions will generally pad the arguments so that
+they are the same size.
+
+Debugging
+=========
+* expression.trace(expressions)
+  * `expressions`: A list of expressions.
+  * Prints to standard output a human-readable rendering of the instructions
+    these expressions would be compiled to.
+
+Operations
+==========
+* `expression.ge(a, b)`, `expression.gt(a, b)`,
+  `expression.le(a, b)`, `expression.lt(a, b)`
+    * `a`: an expression
+    * `b`: an expression
+    * Returns an expression that is the result of comparing a and b pointwise with
+      the given operation, using 1 for true and 0 for false.
+* `expression.random(low, high)`
+    * `low`: an expression
+    * `high`: an expression
+    * Returns an expression that generates a value between the two provided.
+* `expression.time()`
+    * Returns an expression that gets the elapsed particle spawner time.
+
+* `expression.abs`, `expression.acos`, `expression.asin`,
+  `expression.atan`, `expression.atan2`, `expression.ceil`,
+  `expression.cos`, `expression.sinh`, `expression.exp`,
+  `expression.floor`, `expression.log`, `expression.max`,
+  `expression.min`, `expression.pow`, `expression.sin`,
+  `expression.sinh`, `expression.sqrt`, `expression.tan`,
+  `expression.tanh`
+  * Performs the same operation as its counterpart in the `math` library, but
+    works on expressions.
+
 ### Schematics
 * `minetest.create_schematic(p1, p2, probability_list, filename, slice_prob_list)`
     * Create a schematic from the volume of map specified by the box formed by p1 and p2.
@@ -5155,6 +5201,15 @@ Definition tables
     --  ^ The particle's properties are random values in between the bounds:
     --  ^ minpos/maxpos, minvel/maxvel (velocity), minacc/maxacc (acceleration),
     --  ^ minsize/maxsize, minexptime/maxexptime (expirationtime)
+        pos_expression = Expression
+        vel_expression = Expression
+        acc_expression = Expression
+    --  ^ See `Expressions`. These should produce vectors, and are added to a
+    --  ^ particle's initial properties.
+        exptime_expression = Expression
+        size_expression = Expression
+    --  ^ See `Expressions`. These should produce scalars, and are multiplied
+    --  ^ with a particle's initial properties.
         collisiondetection = false,
     --  ^ collisiondetection: if true uses collision detection
         collision_removal = false,

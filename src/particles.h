@@ -23,6 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "irrlichttypes_extrabloated.h"
 #include "client/tile.h"
 #include "localplayer.h"
+#include "particleshaders.h"
 #include "tileanimation.h"
 
 struct ClientEvent;
@@ -131,6 +132,7 @@ public:
 		video::ITexture *texture,
 		u32 id,
 		const struct TileAnimationParams &anim, u8 glow,
+		const ParticleShaders &particle_shaders,
 		ParticleManager* p_manager);
 
 	~ParticleSpawner() = default;
@@ -169,6 +171,7 @@ private:
 	u16 m_attached_id;
 	struct TileAnimationParams m_animation;
 	u8 m_glow;
+	ParticleShaders m_shaders;
 };
 
 /**

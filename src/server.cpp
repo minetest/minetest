@@ -65,6 +65,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "chatmessage.h"
 #include "chat_interface.h"
 #include "remoteplayer.h"
+#include "particles.h"
+#include "particleshaders.h"
 
 class ClientNotFoundException : public BaseException
 {
@@ -1627,7 +1629,8 @@ void Server::SendAddParticleSpawner(session_t peer_id, u16 protocol_version,
 	v3f minvel, v3f maxvel, v3f minacc, v3f maxacc, float minexptime, float maxexptime,
 	float minsize, float maxsize, bool collisiondetection, bool collision_removal,
 	u16 attached_id, bool vertical, const std::string &texture, u32 id,
-	const struct TileAnimationParams &animation, u8 glow)
+	const struct TileAnimationParams &animation, u8 glow,
+	const ParticleShaders &shaders)
 {
 	if (peer_id == PEER_ID_INEXISTENT) {
 		// This sucks and should be replaced:
@@ -1640,7 +1643,7 @@ void Server::SendAddParticleSpawner(session_t peer_id, u16 protocol_version,
 					amount, spawntime, minpos, maxpos,
 					minvel, maxvel, minacc, maxacc, minexptime, maxexptime,
 					minsize, maxsize, collisiondetection, collision_removal,
-					attached_id, vertical, texture, id, animation, glow);
+					attached_id, vertical, texture, id, animation, glow, shaders);
 		}
 		return;
 	}
@@ -1661,6 +1664,7 @@ void Server::SendAddParticleSpawner(session_t peer_id, u16 protocol_version,
 	animation.serialize(os, protocol_version);
 	pkt.putRawString(os.str());
 	pkt << glow;
+	pkt.putLongString(shaders.serialize());
 
 	Send(&pkt);
 }
@@ -3212,7 +3216,7 @@ u32 Server::addParticleSpawner(u16 amount, float spawntime,
 	bool collisiondetection, bool collision_removal,
 	ServerActiveObject *attached, bool vertical, const std::string &texture,
 	const std::string &playername, const struct TileAnimationParams &animation,
-	u8 glow)
+	u8 glow, const ParticleShaders &shaders)
 {
 	// m_env will be NULL if the server is initializing
 	if (!m_env)
@@ -3240,7 +3244,7 @@ u32 Server::addParticleSpawner(u16 amount, float spawntime,
 		minpos, maxpos, minvel, maxvel, minacc, maxacc,
 		minexptime, maxexptime, minsize, maxsize,
 		collisiondetection, collision_removal, attached_id, vertical,
-		texture, id, animation, glow);
+		texture, id, animation, glow, shaders);
 
 	return id;
 }

@@ -22,8 +22,130 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "lua_api/l_internal.h"
 #include "common/c_converter.h"
 #include "common/c_content.h"
+#include "util/serialize.h"
 #include "server.h"
 #include "particles.h"
+
+// Takes as input a list of bytecode commands formatted as tables.
+std::string read_particle_bytecode(lua_State *L, int index)
+{
+	typedef ParticleShaders ps;
+
+	if (lua_isnoneornil(L, index))
+		return "";
+
+	std::stringstream os;
+	
+	luaL_checktype(L, index, LUA_TTABLE);
+	const size_t opCount = lua_objlen(L, index);
+
+	for (size_t i = 1; i <= opCount; ++i) {
+		lua_rawgeti(L, index, i);
+		luaL_checktype(L, -1, LUA_TTABLE);
+
+		// Write the opcode
+		lua_getfield(L, -1, "operation");
+		const u8 opcode = (u8) luaL_checkint(L, -1);
+		lua_pop(L, 1);
+
+		writeU8(os, opcode);
+
+		// Write arguments
+		switch(opcode) {
+		case ps::op_push_constant:
+			lua_rawgeti(L, -1, 1);
+			writeF1000(os, luaL_checknumber(L, -1));
+			lua_pop(L, 1);
+			break;
+		case ps::op_push_variable:
+		case ps::op_write_variable:
+			lua_rawgeti(L, -1, 1);
+			writeU32(os, luaL_checkint(L, -1));
+			lua_pop(L, 1);
+			break;
+		default:
+			break;
+		}
+		lua_pop(L, 1);
+	}
+
+	return os.str();
+}
+
+// Returns true if and only if the field is non-nil
+bool getfield_or_zero(lua_State *L, int index, const char* field)
+{
+	lua_getfield(L, index, field);
+	if (lua_isnil(L, -1))
+	{
+		lua_pop(L, 1);
+		lua_pushinteger(L, 0);
+		return false;
+	}
+
+	return true;
+}
+
+void read_particle_shaders(lua_State *L, int index,
+	ParticleShaders& shaders)
+{
+	// We will call the lua-defined compile function
+	lua_getglobal(L, "expression");
+	lua_getfield(L, -1, "compile");
+	
+	// Make argument to compile
+	lua_newtable(L);
+
+	bool posGood = getfield_or_zero(L, index, "pos_expression");
+	lua_rawseti(L, -2, 1);
+
+	bool velGood = getfield_or_zero(L, index, "vel_expression");
+	lua_rawseti(L, -2, 2);
+
+	bool accGood = getfield_or_zero(L, index, "acc_expression");
+	lua_rawseti(L, -2, 3);
+
+	bool expGood = getfield_or_zero(L, index, "exptime_expression");
+	lua_rawseti(L, -2, 4);
+
+	bool sizeGood = getfield_or_zero(L, index, "size_expression");
+	lua_rawseti(L, -2, 5);
+
+	// Put a list of compiled exprs and the variable count on the stack
+	lua_call(L, 1, 2);
+
+	shaders.varCount = luaL_checkint(L, -1);
+
+	if (posGood) {
+		lua_rawgeti(L, -2, 1);
+		shaders.pos = read_particle_bytecode(L, -1);
+		lua_pop(L, 1);
+	}
+
+	if (velGood) {
+		lua_rawgeti(L, -2, 2);
+		shaders.vel = read_particle_bytecode(L, -1);
+		lua_pop(L, 1);
+	}
+
+	if (accGood) {
+		lua_rawgeti(L, -2, 3);
+		shaders.acc = read_particle_bytecode(L, -1);
+		lua_pop(L, 1);
+	}
+
+	if (expGood) {
+		lua_rawgeti(L, -2, 4);
+		shaders.exptime = read_particle_bytecode(L, -1);
+		lua_pop(L, 1);
+	}
+
+	if (sizeGood) {
+		lua_rawgeti(L, -2, 5);
+		shaders.size = read_particle_bytecode(L, -1);
+		lua_pop(L, 1);
+	}
+}
 
 // add_particle({pos=, velocity=, acceleration=, expirationtime=,
 // 		size=, collisiondetection=, collision_removal=, vertical=,
@@ -161,6 +283,7 @@ int ModApiParticles::l_add_particlespawner(lua_State *L)
 	std::string texture;
 	std::string playername;
 	u8 glow = 0;
+	ParticleShaders shaders;
 
 	if (lua_gettop(L) > 1) //deprecated
 	{
@@ -235,6 +358,7 @@ int ModApiParticles::l_add_particlespawner(lua_State *L)
 		texture = getstringfield_default(L, 1, "texture", "");
 		playername = getstringfield_default(L, 1, "playername", "");
 		glow = getintfield_default(L, 1, "glow", 0);
+		read_particle_shaders(L, 1, shaders);
 	}
 
 	u32 id = getServer(L)->addParticleSpawner(amount, time,
@@ -248,7 +372,7 @@ int ModApiParticles::l_add_particlespawner(lua_State *L)
 			attached,
 			vertical,
 			texture, playername,
-			animation, glow);
+			animation, glow, shaders);
 	lua_pushnumber(L, id);
 
 	return 1;

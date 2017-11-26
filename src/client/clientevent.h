@@ -109,6 +109,7 @@ struct ClientEvent
 			u32 id;
 			struct TileAnimationParams animation;
 			u8 glow;
+			std::string *shaders;
 		} add_particlespawner;
 		struct
 		{

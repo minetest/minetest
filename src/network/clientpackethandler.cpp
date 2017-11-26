@@ -971,6 +971,7 @@ void Client::handleCommand_AddParticleSpawner(NetworkPacket* pkt)
 	animation.type = TAT_NONE;
 	u8 glow = 0;
 	u16 attached_id = 0;
+	std::string shaders;
 	try {
 		*pkt >> vertical;
 		*pkt >> collision_removal;
@@ -981,6 +982,7 @@ void Client::handleCommand_AddParticleSpawner(NetworkPacket* pkt)
 		std::istringstream is(datastring, std::ios_base::binary);
 		animation.deSerialize(is, m_proto_ver);
 		glow = readU8(is);
+		shaders = deSerializeLongString(is);
 	} catch (...) {}
 
 	ClientEvent *event = new ClientEvent();
@@ -1005,6 +1007,7 @@ void Client::handleCommand_AddParticleSpawner(NetworkPacket* pkt)
 	event->add_particlespawner.id                 = id;
 	event->add_particlespawner.animation          = animation;
 	event->add_particlespawner.glow               = glow;
+	event->add_particlespawner.shaders            = new std::string(shaders);
 
 	m_client_event_queue.push(event);
 }
