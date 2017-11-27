@@ -1,17 +1,17 @@
 -- Minetest: builtin/auth.lua
 
 --
--- Authentication handler
+-- Builtin authentication handler
 --
 
-core.auth_file_path = core.get_worldpath().."/auth.txt"
-core.auth_table = {}
+local auth_file_path = core.get_worldpath().."/auth.txt"
+local auth_table = {}
 
 local function read_auth_file()
 	local newtable = {}
-	local file, errmsg = io.open(core.auth_file_path, 'rb')
+	local file, errmsg = io.open(auth_file_path, 'rb')
 	if not file then
-		core.log("info", core.auth_file_path.." could not be opened for reading ("..errmsg.."); assuming new world")
+		core.log("info", auth_file_path.." could not be opened for reading ("..errmsg.."); assuming new world")
 		return
 	end
 	for line in file:lines() do
@@ -27,14 +27,14 @@ local function read_auth_file()
 		end
 	end
 	io.close(file)
-	core.auth_table = newtable
+	auth_table = newtable
 	core.notify_authentication_modified()
 end
 
 local function save_auth_file()
 	local newtable = {}
 	-- Check table for validness before attempting to save
-	for name, stuff in pairs(core.auth_table) do
+	for name, stuff in pairs(auth_table) do
 		assert(type(name) == "string")
 		assert(name ~= "")
 		assert(type(stuff) == "table")
@@ -43,13 +43,13 @@ local function save_auth_file()
 		assert(stuff.last_login == nil or type(stuff.last_login) == "number")
 	end
 	local content = ""
-	for name, stuff in pairs(core.auth_table) do
+	for name, stuff in pairs(auth_table) do
 		local priv_string = core.privs_to_string(stuff.privileges)
 		local parts = {name, stuff.password, priv_string, stuff.last_login or ""}
 		content = content .. table.concat(parts, ":") .. "\n"
 	end
-	if not core.safe_file_write(core.auth_file_path, content) then
-		error(core.auth_file_path.." could not be written to")
+	if not core.safe_file_write(auth_file_path, content) then
+		error(auth_file_path.." could not be written to")
 	end
 end
 
@@ -63,13 +63,13 @@ core.builtin_auth_handler = {
 		-- usually empty too)
 		local new_password_hash = ""
 		-- If not in authentication table, return nil
-		if not core.auth_table[name] then
+		if not auth_table[name] then
 			return nil
 		end
 		-- Figure out what privileges the player should have.
 		-- Take a copy of the privilege table
 		local privileges = {}
-		for priv, _ in pairs(core.auth_table[name].privileges) do
+		for priv, _ in pairs(auth_table[name].privileges) do
 			privileges[priv] = true
 		end
 		-- If singleplayer, give all privileges except those marked as give_to_singleplayer = false
@@ -89,17 +89,17 @@ core.builtin_auth_handler = {
 		end
 		-- All done
 		return {
-			password = core.auth_table[name].password,
+			password = auth_table[name].password,
 			privileges = privileges,
 			-- Is set to nil if unknown
-			last_login = core.auth_table[name].last_login,
+			last_login = auth_table[name].last_login,
 		}
 	end,
 	create_auth = function(name, password)
 		assert(type(name) == "string")
 		assert(type(password) == "string")
 		core.log('info', "Built-in authentication handler adding player '"..name.."'")
-		core.auth_table[name] = {
+		auth_table[name] = {
 			password = password,
 			privileges = core.string_to_privs(core.settings:get("default_privs")),
 			last_login = os.time(),
@@ -109,11 +109,11 @@ core.builtin_auth_handler = {
 	set_password = function(name, password)
 		assert(type(name) == "string")
 		assert(type(password) == "string")
-		if not core.auth_table[name] then
+		if not auth_table[name] then
 			core.builtin_auth_handler.create_auth(name, password)
 		else
 			core.log('info', "Built-in authentication handler setting password of player '"..name.."'")
-			core.auth_table[name].password = password
+			auth_table[name].password = password
 			save_auth_file()
 		end
 		return true
@@ -121,7 +121,7 @@ core.builtin_auth_handler = {
 	set_privileges = function(name, privileges)
 		assert(type(name) == "string")
 		assert(type(privileges) == "table")
-		if not core.auth_table[name] then
+		if not auth_table[name] then
 			core.builtin_auth_handler.create_auth(name,
 				core.get_password_hash(name,
 					core.settings:get("default_password")))
@@ -129,19 +129,19 @@ core.builtin_auth_handler = {
 
 		-- Run grant callbacks
 		for priv, _ in pairs(privileges) do
-			if not core.auth_table[name].privileges[priv] then
+			if not auth_table[name].privileges[priv] then
 				core.run_priv_callbacks(name, priv, nil, "grant")
 			end
 		end
 
 		-- Run revoke callbacks
-		for priv, _ in pairs(core.auth_table[name].privileges) do
+		for priv, _ in pairs(auth_table[name].privileges) do
 			if not privileges[priv] then
 				core.run_priv_callbacks(name, priv, nil, "revoke")
 			end
 		end
 
-		core.auth_table[name].privileges = privileges
+		auth_table[name].privileges = privileges
 		core.notify_authentication_modified(name)
 		save_auth_file()
 	end,
@@ -151,10 +151,33 @@ core.builtin_auth_handler = {
 	end,
 	record_login = function(name)
 		assert(type(name) == "string")
-		assert(core.auth_table[name]).last_login = os.time()
+		assert(auth_table[name]).last_login = os.time()
 		save_auth_file()
 	end,
 }
+
+core.register_on_prejoinplayer(function(name, ip)
+	if core.registered_auth_handler ~= nil then
+		return -- Don't do anything if custom auth handler registered
+	end
+	if auth_table[name] ~= nil then
+		return
+	end
+
+	local name_lower = name:lower()
+	for k in pairs(auth_table) do
+		if k:lower() == name_lower then
+			return string.format("\nCannot create new player called '%s'. "..
+					"Another account called '%s' is already registered. "..
+					"Please check the spelling if it's your account "..
+					"or use a different nickname.", name, k)
+		end
+	end
+end)
+
+--
+-- Authentication API
+--
 
 function core.register_authentication_handler(handler)
 	if core.registered_auth_handler then
@@ -183,26 +206,7 @@ core.set_player_password = auth_pass("set_password")
 core.set_player_privs    = auth_pass("set_privileges")
 core.auth_reload         = auth_pass("reload")
 
-
 local record_login = auth_pass("record_login")
-
 core.register_on_joinplayer(function(player)
 	record_login(player:get_player_name())
-end)
-
-core.register_on_prejoinplayer(function(name, ip)
-	local auth = core.auth_table
-	if auth[name] ~= nil then
-		return
-	end
-
-	local name_lower = name:lower()
-	for k in pairs(auth) do
-		if k:lower() == name_lower then
-			return string.format("\nCannot create new player called '%s'. "..
-					"Another account called '%s' is already registered. "..
-					"Please check the spelling if it's your account "..
-					"or use a different nickname.", name, k)
-		end
-	end
 end)
