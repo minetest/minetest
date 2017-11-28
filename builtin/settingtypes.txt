@@ -841,9 +841,6 @@ serverlist_url (Serverlist URL) string servers.minetest.net
 #    File in client/serverlist/ that contains your favorite servers displayed in the Multiplayer Tab.
 serverlist_file (Serverlist file) string favoriteservers.txt
 
-#    Maximum size of the out chat queue. 0 to disable queueing and -1 to make the queue size unlimited
-max_out_chat_queue_size (Maximum size of the out chat queue) int 20
-
 [*Advanced]
 
 #    Timeout for client to remove unused map data from memory.
@@ -1117,7 +1114,6 @@ server_side_occlusion_culling (Server side occlusion culling) bool true
 #    Restricts the access of certain client-side functions on servers
 #    Combine these byteflags below to restrict more client-side features:
 #    LOOKUP_NODES_LIMIT: 1 (limits get_node call client-side to csm_flavour_noderange_limit)
-#    CHAT_MESSAGES: 2 (disable send_chat_message call client-side)
 #    READ_ITEMDEFS: 4 (disable get_item_def call client-side)
 #    READ_NODEDEFS: 8 (disable get_node_def call client-side)
 #    type: int
