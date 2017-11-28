@@ -2685,6 +2685,11 @@ Call these functions only at load time!
 	* `...` is either a list of strings, e.g. `"priva", "privb"` or
 	  a table, e.g. `{ priva = true, privb = true }`.
 * `minetest.get_player_ip(name)`: returns an IP address string
+* `minetest.compare_name_in_auth(playername, comparelower)`
+	* Searches the builtin auth table for the existence of a name
+	* `playername`: the name to search for
+	* `comparelower`: whether to normalize names to lowercase before comparing, defaults to false
+	* Returns true if a match is found. If true, returns as the second value the actual name that matched.
 
 `minetest.set_player_password`, `minetest_set_player_privs`, `minetest_get_player_privs`
 and `minetest.auth_reload` call the authentication handler.

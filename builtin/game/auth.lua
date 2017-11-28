@@ -169,6 +169,29 @@ function core.get_auth_handler()
 	return core.registered_auth_handler or core.builtin_auth_handler
 end
 
+function core.compare_name_in_auth(playername, comparelower)
+	local auth = core.auth_table
+	if comparelower then
+		-- Compare name in lowercase.
+		local namelower = playername:lower()
+		for curname, auth2 in pairs(auth) do
+			if curname:lower() == namelower then
+				-- Returning the matched name is useful because otherwise the caller
+				-- would not know what the actual capitalization of the name was.
+				return true, curname
+			end
+		end
+	else
+		-- Compare name, in the original.
+		for curname, auth2 in pairs(auth) do
+			if curname == playername then
+				-- Same as above, just for consistency.
+				return true, curname
+			end
+		end
+	end
+end
+
 local function auth_pass(name)
 	return function(...)
 		local auth_handler = core.get_auth_handler()
