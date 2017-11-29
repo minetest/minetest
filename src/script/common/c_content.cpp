@@ -1109,7 +1109,7 @@ void warn_if_field_exists(lua_State *L, int table,
 	if (!lua_isnil(L, -1)) {
 		warningstream << "Field \"" << name << "\": "
 				<< message << std::endl;
-		infostream << script_get_backtrace(L) << std::endl;
+		warningstream << script_get_backtrace(L) << std::endl;
 	}
 	lua_pop(L, 1);
 }
