@@ -17,7 +17,7 @@ AllowShortIfStatementsOnASingleLine: false
 IndentCaseLabels: false
 AccessModifierOffset: -8
 ColumnLimit: 90
-AllowShortFunctionsOnASingleLine: Inline
+AllowShortFunctionsOnASingleLine: InlineOnly
 SortIncludes: false
 IncludeCategories:
   - Regex:           '^".*'
@@ -26,3 +26,5 @@ IncludeCategories:
     Priority:        1
 AlignAfterOpenBracket: DontAlign
 ContinuationIndentWidth: 16
+ConstructorInitializerIndentWidth: 16
+BreakConstructorInitializers: AfterColon

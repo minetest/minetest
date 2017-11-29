@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #pragma once
 
 #include <vector>
+#include <memory>
 #include <string>
 #include "irrlichttypes_extrabloated.h"
 #include "debug.h"
@@ -32,6 +33,8 @@ class LocalPlayer;
 class Hud;
 class Minimap;
 
+class RenderingCore;
+
 class RenderingEngine
 {
 public:
@@ -41,7 +44,7 @@ public:
 	v2u32 getWindowSize() const;
 	void setResizable(bool resize);
 
-	video::IVideoDriver *getVideoDriver();
+	video::IVideoDriver *getVideoDriver() { return driver; }
 
 	static const char *getVideoDriverName(irr::video::E_DRIVER_TYPE type);
 	static const char *getVideoDriverFriendlyName(irr::video::E_DRIVER_TYPE type);
@@ -107,14 +110,19 @@ public:
 				text, guienv, tsrc, dtime, percent, clouds);
 	}
 
-	inline static void draw_scene(Camera *camera, Client *client, LocalPlayer *player,
-			Hud *hud, Minimap *mapper, gui::IGUIEnvironment *guienv,
-			const v2u32 &screensize, const video::SColor &skycolor,
-			bool show_hud, bool show_minimap)
+	inline static void draw_scene(video::SColor skycolor, bool show_hud,
+			bool show_minimap, bool draw_wield_tool, bool draw_crosshair)
 	{
-		s_singleton->_draw_scene(camera, client, player, hud, mapper, guienv,
-				screensize, skycolor, show_hud, show_minimap);
+		s_singleton->_draw_scene(skycolor, show_hud, show_minimap,
+				draw_wield_tool, draw_crosshair);
 	}
+
+	inline static void initialize(Client *client, Hud *hud)
+	{
+		s_singleton->_initialize(client, hud);
+	}
+
+	inline static void finalize() { s_singleton->_finalize(); }
 
 	static bool run()
 	{
@@ -126,60 +134,19 @@ public:
 	static std::vector<irr::video::E_DRIVER_TYPE> getSupportedVideoDrivers();
 
 private:
-	enum parallax_sign
-	{
-		LEFT = -1,
-		RIGHT = 1,
-		EYECOUNT = 2
-	};
-
 	void _draw_load_screen(const std::wstring &text, gui::IGUIEnvironment *guienv,
 			ITextureSource *tsrc, float dtime = 0, int percent = 0,
 			bool clouds = true);
 
-	void _draw_scene(Camera *camera, Client *client, LocalPlayer *player, Hud *hud,
-			Minimap *mapper, gui::IGUIEnvironment *guienv,
-			const v2u32 &screensize, const video::SColor &skycolor,
-			bool show_hud, bool show_minimap);
+	void _draw_scene(video::SColor skycolor, bool show_hud, bool show_minimap,
+			bool draw_wield_tool, bool draw_crosshair);
 
-	void draw_anaglyph_3d_mode(Camera *camera, bool show_hud, Hud *hud,
-			bool draw_wield_tool, Client *client,
-			gui::IGUIEnvironment *guienv);
+	void _initialize(Client *client, Hud *hud);
 
-	void draw_interlaced_3d_mode(Camera *camera, bool show_hud, Hud *hud,
-			const v2u32 &screensize, bool draw_wield_tool, Client *client,
-			gui::IGUIEnvironment *guienv, const video::SColor &skycolor);
+	void _finalize();
 
-	void draw_sidebyside_3d_mode(Camera *camera, bool show_hud, Hud *hud,
-			const v2u32 &screensize, bool draw_wield_tool, Client *client,
-			gui::IGUIEnvironment *guienv, const video::SColor &skycolor);
-
-	void draw_top_bottom_3d_mode(Camera *camera, bool show_hud, Hud *hud,
-			const v2u32 &screensize, bool draw_wield_tool, Client *client,
-			gui::IGUIEnvironment *guienv, const video::SColor &skycolor);
-
-	void draw_pageflip_3d_mode(Camera *camera, bool show_hud, Hud *hud,
-			const v2u32 &screensize, bool draw_wield_tool, Client *client,
-			gui::IGUIEnvironment *guienv, const video::SColor &skycolor);
-
-	void draw_plain(Camera *camera, bool show_hud, Hud *hud, const v2u32 &screensize,
-			bool draw_wield_tool, Client *client,
-			gui::IGUIEnvironment *guienv, const video::SColor &skycolor);
-
-	void init_texture(const v2u32 &screensize, video::ITexture **texture,
-			const char *name);
-
-	video::ITexture *draw_image(const v2u32 &screensize, parallax_sign psign,
-			const irr::core::matrix4 &startMatrix,
-			const irr::core::vector3df &focusPoint, bool show_hud,
-			Camera *camera, Hud *hud, bool draw_wield_tool, Client *client,
-			gui::IGUIEnvironment *guienv, const video::SColor &skycolor);
-
-	video::ITexture *draw_hud(const v2u32 &screensize, bool show_hud, Hud *hud,
-			Client *client, bool draw_crosshair,
-			const video::SColor &skycolor, gui::IGUIEnvironment *guienv,
-			Camera *camera);
-
+	std::unique_ptr<RenderingCore> core;
 	irr::IrrlichtDevice *m_device = nullptr;
+	irr::video::IVideoDriver *driver;
 	static RenderingEngine *s_singleton;
 };

@@ -19,8 +19,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "timetaker.h"
 
-#include "../porting.h"
-#include "../log.h"
+#include "porting.h"
+#include "log.h"
 #include <ostream>
 
 TimeTaker::TimeTaker(const std::string &name, u64 *result, TimePrecision prec)

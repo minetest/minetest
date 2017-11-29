@@ -28,6 +28,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "content_mapblock.h"
 #include "util/directiontables.h"
 #include "client/renderingengine.h"
+#include <array>
 
 /*
 	MeshMakeData
@@ -68,7 +69,7 @@ void MeshMakeData::fill(MapBlock *block)
 
 	fillBlockData(v3s16(0,0,0), block->getData());
 
-	// Get map for reading neigbhor blocks
+	// Get map for reading neighbor blocks
 	Map *map = block->getParent();
 
 	for (const v3s16 &dir : g_26dirs) {
@@ -194,19 +195,9 @@ u16 getFaceLight(MapNode n, MapNode n2, v3s16 face_dir, INodeDefManager *ndef)
 	Calculate smooth lighting at the XYZ- corner of p.
 	Both light banks
 */
-static u16 getSmoothLightCombined(const v3s16 &p, MeshMakeData *data)
+static u16 getSmoothLightCombined(const v3s16 &p,
+	const std::array<v3s16,8> &dirs, MeshMakeData *data, bool node_solid)
 {
-	static const v3s16 dirs8[8] = {
-		v3s16(0,0,0),
-		v3s16(0,0,1),
-		v3s16(0,1,0),
-		v3s16(0,1,1),
-		v3s16(1,0,0),
-		v3s16(1,1,0),
-		v3s16(1,0,1),
-		v3s16(1,1,1),
-	};
-
 	INodeDefManager *ndef = data->m_client->ndef();
 
 	u16 ambient_occlusion = 0;
@@ -215,32 +206,58 @@ static u16 getSmoothLightCombined(const v3s16 &p, MeshMakeData *data)
 	u16 light_day = 0;
 	u16 light_night = 0;
 
-	for (const v3s16 &dir : dirs8) {
-		MapNode n = data->m_vmanip.getNodeNoExNoEmerge(p - dir);
-
-		// if it's CONTENT_IGNORE we can't do any light calculations
-		if (n.getContent() == CONTENT_IGNORE)
-			continue;
-
+	auto add_node = [&] (int i) -> const ContentFeatures& {
+		MapNode n = data->m_vmanip.getNodeNoExNoEmerge(p + dirs[i]);
 		const ContentFeatures &f = ndef->get(n);
 		if (f.light_source > light_source_max)
 			light_source_max = f.light_source;
 		// Check f.solidness because fast-style leaves look better this way
 		if (f.param_type == CPT_LIGHT && f.solidness != 2) {
 			light_day += decode_light(n.getLightNoChecks(LIGHTBANK_DAY, &f));
-			light_night += decode_light(
-				n.getLightNoChecks(LIGHTBANK_NIGHT, &f));
+			light_night += decode_light(n.getLightNoChecks(LIGHTBANK_NIGHT, &f));
 			light_count++;
 		} else {
 			ambient_occlusion++;
 		}
+		return f;
+	};
+
+	if (node_solid) {
+		ambient_occlusion = 3;
+		bool corner_obstructed = true;
+		for (int i = 0; i < 2; ++i) {
+			if (add_node(i).light_propagates)
+				corner_obstructed = false;
+		}
+		add_node(2);
+		add_node(3);
+		if (corner_obstructed)
+			ambient_occlusion++;
+		else
+			add_node(4);
+	} else {
+		std::array<bool, 4> obstructed = {{ 1, 1, 1, 1 }};
+		add_node(0);
+		bool opaque1 = !add_node(1).light_propagates;
+		bool opaque2 = !add_node(2).light_propagates;
+		bool opaque3 = !add_node(3).light_propagates;
+		obstructed[0] = opaque1 && opaque2;
+		obstructed[1] = opaque1 && opaque3;
+		obstructed[2] = opaque2 && opaque3;
+		for (int k = 0; k < 4; ++k) {
+			if (obstructed[k])
+				ambient_occlusion++;
+			else if (add_node(k + 4).light_propagates)
+				obstructed[3] = false;
+		}
 	}
 
-	if(light_count == 0)
-		return 0xffff;
-
-	light_day /= light_count;
-	light_night /= light_count;
+	if (light_count == 0) {
+		light_day = light_night = 0;
+	} else {
+		light_day /= light_count;
+		light_night /= light_count;
+	}
 
 	// Boost brightness around light sources
 	bool skip_ambient_occlusion_day = false;
@@ -283,20 +300,70 @@ static u16 getSmoothLightCombined(const v3s16 &p, MeshMakeData *data)
 /*
 	Calculate smooth lighting at the given corner of p.
 	Both light banks.
+	Node at p is solid, and thus the lighting is face-dependent.
 */
-u16 getSmoothLight(v3s16 p, v3s16 corner, MeshMakeData *data)
+u16 getSmoothLightSolid(const v3s16 &p, const v3s16 &face_dir, const v3s16 &corner, MeshMakeData *data)
 {
-	if (corner.X == 1)
-		++p.X;
-	// else corner.X == -1
-	if (corner.Y == 1)
-		++p.Y;
-	// else corner.Y == -1
-	if (corner.Z == 1)
-		++p.Z;
-	// else corner.Z == -1
+	v3s16 neighbor_offset1, neighbor_offset2;
 
-	return getSmoothLightCombined(p, data);
+	/*
+	 * face_dir, neighbor_offset1 and neighbor_offset2 define an
+	 * orthonormal basis which is used to define the offsets of the 8
+	 * surrounding nodes and to differentiate the "distance" (by going only
+	 * along directly neighboring nodes) relative to the node at p.
+	 * Apart from the node at p, only the 4 nodes which contain face_dir
+	 * can contribute light.
+	 */
+	if (face_dir.X != 0) {
+		neighbor_offset1 = v3s16(0, corner.Y, 0);
+		neighbor_offset2 = v3s16(0, 0, corner.Z);
+	} else if (face_dir.Y != 0) {
+		neighbor_offset1 = v3s16(0, 0, corner.Z);
+		neighbor_offset2 = v3s16(corner.X, 0, 0);
+	} else if (face_dir.Z != 0) {
+		neighbor_offset1 = v3s16(corner.X,0,0);
+		neighbor_offset2 = v3s16(0,corner.Y,0);
+	}
+
+	const std::array<v3s16,8> dirs = {{
+		// Always shine light
+		neighbor_offset1 + face_dir,
+		neighbor_offset2 + face_dir,
+		v3s16(0,0,0),
+		face_dir,
+
+		// Can be obstructed
+		neighbor_offset1 + neighbor_offset2 + face_dir,
+
+		// Do not shine light, only for ambient occlusion
+		neighbor_offset1,
+		neighbor_offset2,
+		neighbor_offset1 + neighbor_offset2
+	}};
+	return getSmoothLightCombined(p, dirs, data, true);
+}
+
+/*
+	Calculate smooth lighting at the given corner of p.
+	Both light banks.
+	Node at p is not solid, and the lighting is not face-dependent.
+*/
+u16 getSmoothLightTransparent(const v3s16 &p, const v3s16 &corner, MeshMakeData *data)
+{
+	const std::array<v3s16,8> dirs = {{
+		// Always shine light
+		v3s16(0,0,0),
+		v3s16(corner.X,0,0),
+		v3s16(0,corner.Y,0),
+		v3s16(0,0,corner.Z),
+
+		// Can be obstructed
+		v3s16(corner.X,corner.Y,0),
+		v3s16(corner.X,0,corner.Z),
+		v3s16(0,corner.Y,corner.Z),
+		v3s16(corner.X,corner.Y,corner.Z)
+	}};
+	return getSmoothLightCombined(p, dirs, data, false);
 }
 
 void get_sunlight_color(video::SColorf *sunlight, u32 daynight_ratio){
@@ -399,6 +466,31 @@ static void getNodeVertexDirs(v3s16 dir, v3s16 *vertex_dirs)
 	}
 }
 
+static void getNodeTextureCoords(v3f base, const v3f &scale, v3s16 dir, float *u, float *v)
+{
+	if (dir.X > 0 || dir.Y > 0 || dir.Z < 0)
+		base -= scale;
+	if (dir == v3s16(0,0,1)) {
+		*u = -base.X - 1;
+		*v = -base.Y - 1;
+	} else if (dir == v3s16(0,0,-1)) {
+		*u = base.X + 1;
+		*v = -base.Y - 2;
+	} else if (dir == v3s16(1,0,0)) {
+		*u = base.Z + 1;
+		*v = -base.Y - 2;
+	} else if (dir == v3s16(-1,0,0)) {
+		*u = -base.Z - 1;
+		*v = -base.Y - 1;
+	} else if (dir == v3s16(0,1,0)) {
+		*u = base.X + 1;
+		*v = -base.Z - 2;
+	} else if (dir == v3s16(0,-1,0)) {
+		*u = base.X;
+		*v = base.Z;
+	}
+}
+
 struct FastFace
 {
 	TileLayer layer;
@@ -410,10 +502,11 @@ struct FastFace
 	 */
 	bool vertex_0_2_connected;
 	u8 layernum;
+	bool world_aligned;
 };
 
 static void makeFastFace(const TileSpec &tile, u16 li0, u16 li1, u16 li2, u16 li3,
-	const v3f &p, v3s16 dir, v3f scale, std::vector<FastFace> &dest)
+	v3f tp, v3f p, v3s16 dir, v3f scale, std::vector<FastFace> &dest)
 {
 	// Position is at the center of the cube.
 	v3f pos = p * BS;
@@ -426,6 +519,8 @@ static void makeFastFace(const TileSpec &tile, u16 li0, u16 li1, u16 li2, u16 li
 	v3f vertex_pos[4];
 	v3s16 vertex_dirs[4];
 	getNodeVertexDirs(dir, vertex_dirs);
+	if (tile.world_aligned)
+		getNodeTextureCoords(tp, scale, dir, &x0, &y0);
 
 	v3s16 t;
 	u16 t1;
@@ -604,6 +699,8 @@ static void makeFastFace(const TileSpec &tile, u16 li0, u16 li1, u16 li2, u16 li
 
 		face.layer = *layer;
 		face.layernum = layernum;
+
+		face.world_aligned = tile.world_aligned;
 	}
 }
 
@@ -739,7 +836,7 @@ void getNodeTile(MapNode mn, v3s16 p, v3s16 dir, MeshMakeData *data, TileSpec &t
 	};
 	u16 tile_index = facedir * 16 + dir_i;
 	getNodeTileN(mn, p, dir_to_tile[tile_index], data, tile);
-	tile.rotation = dir_to_tile[tile_index + 1];
+	tile.rotation = tile.world_aligned ? 0 : dir_to_tile[tile_index + 1];
 }
 
 static void getTileInfo(
@@ -816,7 +913,7 @@ static void getTileInfo(
 
 		v3s16 light_p = blockpos_nodes + p_corrected;
 		for (u16 i = 0; i < 4; i++)
-			lights[i] = getSmoothLight(light_p, vertex_dirs[i], data);
+			lights[i] = getSmoothLightSolid(light_p, face_dir_corrected, vertex_dirs[i], data);
 	}
 }
 
@@ -898,7 +995,7 @@ static void updateFastFaceRow(
 					scale.Z = continuous_tiles_count;
 
 				makeFastFace(tile, lights[0], lights[1], lights[2], lights[3],
-						sp, face_dir_corrected, scale, dest);
+						pf, sp, face_dir_corrected, scale, dest);
 
 				g_profiler->avg("Meshgen: faces drawn by tiling", 0);
 				for (int i = 1; i < continuous_tiles_count; i++)
@@ -1025,7 +1122,7 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data, v3s16 camera_offset):
 				f.vertex_0_2_connected ? indices : indices_alternate;
 
 			collector.append(f.layer, f.vertices, 4, indices_p, 6,
-				f.layernum);
+				f.layernum, f.world_aligned);
 		}
 	}
 
@@ -1061,6 +1158,9 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data, v3s16 camera_offset):
 				os << m_tsrc->getTextureName(p.layer.texture_id) << "^[crack";
 				if (p.layer.material_flags & MATERIAL_FLAG_CRACK_OVERLAY)
 					os << "o";  // use ^[cracko
+				u8 tiles = p.layer.scale;
+				if (tiles > 1)
+					os << ":" << (u32)tiles;
 				os << ":" << (u32)p.layer.animation_frame_count << ":";
 				m_crack_materials.insert(std::make_pair(
 						std::pair<u8, u32>(layer, i), os.str()));
@@ -1325,13 +1425,15 @@ void MeshCollector::append(const TileSpec &tile,
 		const TileLayer *layer = &tile.layers[layernum];
 		if (layer->texture_id == 0)
 			continue;
-		append(*layer, vertices, numVertices, indices, numIndices, layernum);
+		append(*layer, vertices, numVertices, indices, numIndices,
+			layernum, tile.world_aligned);
 	}
 }
 
 void MeshCollector::append(const TileLayer &layer,
 		const video::S3DVertex *vertices, u32 numVertices,
-		const u16 *indices, u32 numIndices, u8 layernum)
+		const u16 *indices, u32 numIndices, u8 layernum,
+		bool use_scale)
 {
 	if (numIndices > 65535) {
 		dstream << "FIXME: MeshCollector::append() called with numIndices="
@@ -1355,20 +1457,24 @@ void MeshCollector::append(const TileLayer &layer,
 		p = &(*buffers)[buffers->size() - 1];
 	}
 
+	f32 scale = 1.0;
+	if (use_scale)
+		scale = 1.0 / layer.scale;
+
 	u32 vertex_count;
 	if (m_use_tangent_vertices) {
 		vertex_count = p->tangent_vertices.size();
 		for (u32 i = 0; i < numVertices; i++) {
 
 			video::S3DVertexTangents vert(vertices[i].Pos, vertices[i].Normal,
-					vertices[i].Color, vertices[i].TCoords);
+					vertices[i].Color, scale * vertices[i].TCoords);
 			p->tangent_vertices.push_back(vert);
 		}
 	} else {
 		vertex_count = p->vertices.size();
 		for (u32 i = 0; i < numVertices; i++) {
 			video::S3DVertex vert(vertices[i].Pos, vertices[i].Normal,
-					vertices[i].Color, vertices[i].TCoords);
+					vertices[i].Color, scale * vertices[i].TCoords);
 
 			p->vertices.push_back(vert);
 		}
@@ -1394,14 +1500,15 @@ void MeshCollector::append(const TileSpec &tile,
 		if (layer->texture_id == 0)
 			continue;
 		append(*layer, vertices, numVertices, indices, numIndices, pos,
-				c, light_source, layernum);
+				c, light_source, layernum, tile.world_aligned);
 	}
 }
 
 void MeshCollector::append(const TileLayer &layer,
 		const video::S3DVertex *vertices, u32 numVertices,
 		const u16 *indices, u32 numIndices,
-		v3f pos, video::SColor c, u8 light_source, u8 layernum)
+		v3f pos, video::SColor c, u8 light_source, u8 layernum,
+		bool use_scale)
 {
 	if (numIndices > 65535) {
 		dstream << "FIXME: MeshCollector::append() called with numIndices="
@@ -1425,6 +1532,10 @@ void MeshCollector::append(const TileLayer &layer,
 		p = &(*buffers)[buffers->size() - 1];
 	}
 
+	f32 scale = 1.0;
+	if (use_scale)
+		scale = 1.0 / layer.scale;
+
 	video::SColor original_c = c;
 	u32 vertex_count;
 	if (m_use_tangent_vertices) {
@@ -1435,7 +1546,7 @@ void MeshCollector::append(const TileLayer &layer,
 				applyFacesShading(c, vertices[i].Normal);
 			}
 			video::S3DVertexTangents vert(vertices[i].Pos + pos,
-					vertices[i].Normal, c, vertices[i].TCoords);
+					vertices[i].Normal, c, scale * vertices[i].TCoords);
 			p->tangent_vertices.push_back(vert);
 		}
 	} else {
@@ -1446,7 +1557,7 @@ void MeshCollector::append(const TileLayer &layer,
 				applyFacesShading(c, vertices[i].Normal);
 			}
 			video::S3DVertex vert(vertices[i].Pos + pos, vertices[i].Normal, c,
-				vertices[i].TCoords);
+				scale * vertices[i].TCoords);
 			p->vertices.push_back(vert);
 		}
 	}

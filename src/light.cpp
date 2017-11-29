@@ -24,38 +24,40 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #ifndef SERVER
 
-// Length of LIGHT_MAX+1 means LIGHT_MAX is the last value.
+// Length of LIGHT_MAX + 1 means LIGHT_MAX is the last value.
 // LIGHT_SUN is read as LIGHT_MAX from here.
+u8 light_LUT[LIGHT_MAX + 1];
 
-u8 light_LUT[LIGHT_MAX+1];
-
-// the const ref to light_LUT is what is actually used in the code.
+// The const ref to light_LUT is what is actually used in the code
 const u8 *light_decode_table = light_LUT;
 
-/** Initialize or update the light value tables using the specified \p gamma.
- */
+// Initialize or update the light value tables using the specified gamma
 void set_light_table(float gamma)
 {
-// lighting curve derivatives
+// Lighting curve derivatives
 	const float alpha = g_settings->getFloat("lighting_alpha");
 	const float beta  = g_settings->getFloat("lighting_beta");
-// lighting curve coefficients
-	const float a = alpha + beta - 2;
-	const float b = 3 - 2 * alpha - beta;
+// Lighting curve coefficients
+	const float a = alpha + beta - 2.0f;
+	const float b = 3.0f - 2.0f * alpha - beta;
 	const float c = alpha;
-// gamma correction
-	gamma = rangelim(gamma, 0.5, 3.0);
+// Mid boost
+	const float d = g_settings->getFloat("lighting_boost");
+	const float e = g_settings->getFloat("lighting_boost_center");
+	const float f = g_settings->getFloat("lighting_boost_spread");
+// Gamma correction
+	gamma = rangelim(gamma, 0.5f, 3.0f);
 
 	for (size_t i = 0; i < LIGHT_MAX; i++) {
 		float x = i;
 		x /= LIGHT_MAX;
 		float brightness = a * x * x * x + b * x * x + c * x;
-		brightness = powf(brightness, 1.0 / gamma);
-		light_LUT[i] = rangelim((u32)(255 * brightness), 0, 255);
+		float boost = d * std::exp(-((x - e) * (x - e)) / (2.0f * f * f));
+		brightness = powf(brightness + boost, 1.0f / gamma);
+		light_LUT[i] = rangelim((u32)(255.0f * brightness), 0, 255);
 		if (i > 1 && light_LUT[i] <= light_LUT[i - 1])
 			light_LUT[i] = light_LUT[i - 1] + 1;
 	}
 	light_LUT[LIGHT_MAX] = 255;
 }
 #endif
-

@@ -24,7 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "log.h"
 #include "util/strfnd.h"
 #include "defaultsettings.h"  // for override_default_settings
-#include "mapgen.h"  // for MapgenParams
+#include "mapgen/mapgen.h"  // for MapgenParams
 #include "util/string.h"
 
 #ifndef SERVER

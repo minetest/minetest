@@ -22,7 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "common/c_converter.h"
 #include "log.h"
 #include "environment.h"
-#include "mapgen.h"
+#include "mapgen/mapgen.h"
 #include "lua_api/l_env.h"
 #include "server.h"
 

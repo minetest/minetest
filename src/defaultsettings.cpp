@@ -139,6 +139,8 @@ void set_default_settings(Settings *settings)
 #endif
 	settings->setDefault("fsaa", "0");
 	settings->setDefault("undersampling", "0");
+	settings->setDefault("world_aligned_mode", "enable");
+	settings->setDefault("autoscale_mode", "disable");
 	settings->setDefault("enable_fog", "true");
 	settings->setDefault("fog_start", "0.4");
 	settings->setDefault("3d_mode", "none");
@@ -149,6 +151,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("fps_max", "60");
 	settings->setDefault("pause_fps_max", "20");
 	settings->setDefault("viewing_range", "100");
+	settings->setDefault("near_plane", "0.1");
 	settings->setDefault("screen_w", "1024");
 	settings->setDefault("screen_h", "600");
 	settings->setDefault("autosave_screensize", "true");
@@ -160,8 +163,11 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("connected_glass", "false");
 	settings->setDefault("smooth_lighting", "true");
 	settings->setDefault("lighting_alpha", "0.0");
-	settings->setDefault("lighting_beta", "0.0");
+	settings->setDefault("lighting_beta", "1.5");
 	settings->setDefault("display_gamma", "1.0");
+	settings->setDefault("lighting_boost", "0.2");
+	settings->setDefault("lighting_boost_center", "0.5");
+	settings->setDefault("lighting_boost_spread", "0.2");
 	settings->setDefault("texture_path", "");
 	settings->setDefault("shader_path", "");
 	settings->setDefault("video_driver", "opengl");
@@ -187,6 +193,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("node_highlighting", "box");
 	settings->setDefault("crosshair_color", "(255,255,255)");
 	settings->setDefault("crosshair_alpha", "255");
+	settings->setDefault("recent_chat_messages", "6");
 	settings->setDefault("hud_scaling", "1.0");
 	settings->setDefault("gui_scaling", "1.0");
 	settings->setDefault("gui_scaling_filter", "false");

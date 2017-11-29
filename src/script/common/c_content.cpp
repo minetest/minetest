@@ -30,7 +30,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "tool.h"
 #include "serverobject.h"
 #include "porting.h"
-#include "mg_schematic.h"
+#include "mapgen/mg_schematic.h"
 #include "noise.h"
 #include "util/pointedthing.h"
 #include "debug.h" // For FATAL_ERROR
@@ -266,6 +266,7 @@ void read_object_properties(lua_State *L, int index,
 	if (getfloatfield(L, -1, "stepheight", prop->stepheight))
 		prop->stepheight *= BS;
 	getboolfield(L, -1, "can_zoom", prop->can_zoom);
+	getfloatfield(L, -1, "eye_height", prop->eye_height);
 
 	getfloatfield(L, -1, "automatic_rotate", prop->automatic_rotate);
 	lua_getfield(L, -1, "automatic_face_movement_dir");
@@ -359,7 +360,8 @@ void push_object_properties(lua_State *L, ObjectProperties *prop)
 	lua_setfield(L, -2, "stepheight");
 	lua_pushboolean(L, prop->can_zoom);
 	lua_setfield(L, -2, "can_zoom");
-
+	lua_pushnumber(L, prop->eye_height);
+	lua_setfield(L, -2, "eye_height");
 	lua_pushnumber(L, prop->automatic_rotate);
 	lua_setfield(L, -2, "automatic_rotate");
 	if (prop->automatic_face_movement_dir)
@@ -431,6 +433,16 @@ TileDef read_tiledef(lua_State *L, int index, u8 drawtype)
 			L, index, "tileable_horizontal", default_tiling);
 		tiledef.tileable_vertical = getboolfield_default(
 			L, index, "tileable_vertical", default_tiling);
+		std::string align_style;
+		if (getstringfield(L, index, "align_style", align_style)) {
+			if (align_style == "user")
+				tiledef.align_style = ALIGN_STYLE_USER_DEFINED;
+			else if (align_style == "world")
+				tiledef.align_style = ALIGN_STYLE_WORLD;
+			else
+				tiledef.align_style = ALIGN_STYLE_NODE;
+		}
+		tiledef.scale = getintfield_default(L, index, "scale", 0);
 		// color = ...
 		lua_getfield(L, index, "color");
 		tiledef.has_color = read_color(L, -1, &tiledef.color);
@@ -1576,13 +1588,13 @@ bool read_noiseparams(lua_State *L, int index, NoiseParams *np)
 void push_noiseparams(lua_State *L, NoiseParams *np)
 {
 	lua_newtable(L);
-	lua_pushnumber(L, np->offset);
+	push_float_string(L, np->offset);
 	lua_setfield(L, -2, "offset");
-	lua_pushnumber(L, np->scale);
+	push_float_string(L, np->scale);
 	lua_setfield(L, -2, "scale");
-	lua_pushnumber(L, np->persist);
+	push_float_string(L, np->persist);
 	lua_setfield(L, -2, "persistence");
-	lua_pushnumber(L, np->lacunarity);
+	push_float_string(L, np->lacunarity);
 	lua_setfield(L, -2, "lacunarity");
 	lua_pushnumber(L, np->seed);
 	lua_setfield(L, -2, "seed");
@@ -1593,7 +1605,7 @@ void push_noiseparams(lua_State *L, NoiseParams *np)
 		np->flags);
 	lua_setfield(L, -2, "flags");
 
-	push_v3f(L, np->spread);
+	push_v3_float_string(L, np->spread);
 	lua_setfield(L, -2, "spread");
 }
 

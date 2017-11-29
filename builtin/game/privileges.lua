@@ -11,6 +11,9 @@ function core.register_privilege(name, param)
 		if def.give_to_singleplayer == nil then
 			def.give_to_singleplayer = true
 		end
+		if def.give_to_admin == nil then
+			def.give_to_admin = def.give_to_singleplayer
+		end
 		if def.description == nil then
 			def.description = "(no description)"
 		end
@@ -45,6 +48,7 @@ core.register_privilege("settime", {
 core.register_privilege("server", {
 	description = "Can do server maintenance stuff",
 	give_to_singleplayer = false,
+	give_to_admin = true,
 })
 core.register_privilege("protection_bypass", {
 	description = "Can bypass node protection in the world",
@@ -53,10 +57,12 @@ core.register_privilege("protection_bypass", {
 core.register_privilege("ban", {
 	description = "Can ban and unban players",
 	give_to_singleplayer = false,
+	give_to_admin = true,
 })
 core.register_privilege("kick", {
 	description = "Can kick players",
 	give_to_singleplayer = false,
+	give_to_admin = true,
 })
 core.register_privilege("give", {
 	description = "Can use /give and /giveme",
@@ -65,6 +71,7 @@ core.register_privilege("give", {
 core.register_privilege("password", {
 	description = "Can use /setpassword and /clearpassword",
 	give_to_singleplayer = false,
+	give_to_admin = true,
 })
 core.register_privilege("fly", {
 	description = "Can fly using the free_move mode",
@@ -85,6 +92,7 @@ core.register_privilege("rollback", {
 core.register_privilege("debug", {
 	description = "Allows enabling various debug options that may affect gameplay",
 	give_to_singleplayer = false,
+	give_to_admin = true,
 })
 
 core.register_can_bypass_userlimit(function(name, ip)

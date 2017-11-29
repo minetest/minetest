@@ -52,7 +52,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 // Minimum and maximum fov values for FOV.
 // Zoom FOV setting
-#define ZOOM_FOV_MIN (7)
+#define ZOOM_FOV_MIN (1)
 #define ZOOM_FOV_MAX (160)
 
 // FOV setting

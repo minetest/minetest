@@ -104,11 +104,15 @@ core.register_entity(":__builtin:falling_node", {
 				end
 			end
 			-- Create node and remove entity
-			if core.registered_nodes[self.node.name] then
+			local def = core.registered_nodes[self.node.name]
+			if def then
 				core.add_node(np, self.node)
 				if self.meta then
 					local meta = core.get_meta(np)
 					meta:from_table(self.meta)
+				end
+				if def.sounds and def.sounds.place and def.sounds.place.name then
+					core.sound_play(def.sounds.place, {pos = np})
 				end
 			end
 			self.object:remove()

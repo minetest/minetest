@@ -67,6 +67,7 @@ std::string ObjectProperties::dump()
 	os << ", pointable=" << pointable;
 	os << ", can_zoom=" << can_zoom;
 	os << ", static_save=" << static_save;
+	os << ", eye_height=" << eye_height;
 	return os.str();
 }
 
@@ -99,7 +100,7 @@ void ObjectProperties::serialize(std::ostream &os) const
 		writeARGB8(os, color);
 	}
 	writeU8(os, collideWithObjects);
-	writeF1000(os,stepheight);
+	writeF1000(os, stepheight);
 	writeU8(os, automatic_face_movement_dir);
 	writeF1000(os, automatic_face_movement_dir_offset);
 	writeU8(os, backface_culling);
@@ -111,6 +112,7 @@ void ObjectProperties::serialize(std::ostream &os) const
 	writeU8(os, can_zoom);
 	writeS8(os, glow);
 	writeU16(os, breath_max);
+	writeF1000(os, eye_height);
 
 	// Add stuff only at the bottom.
 	// Never remove anything, because we don't want new versions of this
@@ -162,5 +164,6 @@ void ObjectProperties::deSerialize(std::istream &is)
 	try {
 		glow = readS8(is);
 		breath_max = readU16(is);
+		eye_height = readF1000(is);
 	} catch (SerializationError &e) {}
 }

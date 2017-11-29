@@ -44,8 +44,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "itemdef.h"
 #include "craftdef.h"
 #include "emerge.h"
-#include "mapgen.h"
-#include "mg_biome.h"
+#include "mapgen/mapgen.h"
+#include "mapgen/mg_biome.h"
 #include "content_mapnode.h"
 #include "content_nodemeta.h"
 #include "content_sao.h"
@@ -61,7 +61,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/base64.h"
 #include "util/sha1.h"
 #include "util/hex.h"
-#include "database.h"
+#include "database/database.h"
 #include "chatmessage.h"
 #include "chat_interface.h"
 #include "remoteplayer.h"
@@ -253,9 +253,8 @@ Server::Server(
 	m_nodedef->updateAliases(m_itemdef);
 
 	// Apply texture overrides from texturepack/override.txt
-	std::string texture_path = g_settings->get("texture_path");
-	if (!texture_path.empty() && fs::IsDir(texture_path))
-		m_nodedef->applyTextureOverrides(texture_path + DIR_DELIM + "override.txt");
+	for (const auto &path : fs::GetRecursiveDirs(g_settings->get("texture_path")))
+		m_nodedef->applyTextureOverrides(path + DIR_DELIM + "override.txt");
 
 	m_nodedef->setNodeRegistrationStatus(true);
 
@@ -1015,7 +1014,7 @@ PlayerSAO* Server::StageTwoClientInit(session_t peer_id)
 
 	// If failed, cancel
 	if (!playersao || !player) {
-		if (player && player->peer_id != 0) {
+		if (player && player->getPeerId() != PEER_ID_INEXISTENT) {
 			actionstream << "Server: Failed to emerge player \"" << playername
 					<< "\" (player allocated to an another client)" << std::endl;
 			DenyAccess_Legacy(peer_id, L"Another client is connected with this "
@@ -1057,7 +1056,7 @@ PlayerSAO* Server::StageTwoClientInit(session_t peer_id)
 		// Send information about server to player in chat
 		SendChatMessage(peer_id, ChatMessage(CHATMESSAGE_TYPE_SYSTEM, getStatusString()));
 	}
-	Address addr = getPeerAddress(player->peer_id);
+	Address addr = getPeerAddress(player->getPeerId());
 	std::string ip_str = addr.serializeString();
 	actionstream<<player->getName() <<" [" << ip_str << "] joins game. " << std::endl;
 	/*
@@ -1872,7 +1871,7 @@ void Server::SendPlayerPrivileges(session_t peer_id)
 {
 	RemotePlayer *player = m_env->getPlayer(peer_id);
 	assert(player);
-	if(player->peer_id == PEER_ID_INEXISTENT)
+	if(player->getPeerId() == PEER_ID_INEXISTENT)
 		return;
 
 	std::set<std::string> privs;
@@ -1892,7 +1891,7 @@ void Server::SendPlayerInventoryFormspec(session_t peer_id)
 {
 	RemotePlayer *player = m_env->getPlayer(peer_id);
 	assert(player);
-	if(player->peer_id == PEER_ID_INEXISTENT)
+	if(player->getPeerId() == PEER_ID_INEXISTENT)
 		return;
 
 	NetworkPacket pkt(TOCLIENT_INVENTORY_FORMSPEC, 0, peer_id);
@@ -1948,12 +1947,12 @@ s32 Server::playSound(const SimpleSoundSpec &spec,
 					<<"\" not found"<<std::endl;
 			return -1;
 		}
-		if(player->peer_id == PEER_ID_INEXISTENT){
+		if (player->getPeerId() == PEER_ID_INEXISTENT) {
 			infostream<<"Server::playSound: Player \""<<params.to_player
 					<<"\" not connected"<<std::endl;
 			return -1;
 		}
-		dst_clients.push_back(player->peer_id);
+		dst_clients.push_back(player->getPeerId());
 	} else {
 		std::vector<session_t> clients = m_clients.getClientIDs();
 
@@ -2253,8 +2252,8 @@ void Server::fillMediaCache()
 		paths.push_back(mod.path + DIR_DELIM + "models");
 		paths.push_back(mod.path + DIR_DELIM + "locale");
 	}
-	paths.push_back(porting::path_user + DIR_DELIM + "textures" + DIR_DELIM + "server");
-
+	fs::GetRecursiveDirs(paths, porting::path_user + DIR_DELIM +
+			"textures" + DIR_DELIM + "server");
 	// Collect media file information from paths into cache
 	for (const std::string &mediapath : paths) {
 		std::vector<fs::DirListNode> dirlist = fs::GetDirListing(mediapath);
@@ -2501,7 +2500,7 @@ void Server::sendDetachedInventory(const std::string &name, session_t peer_id)
 			return m_clients.sendToAll(&pkt);
 		RemotePlayer *p = m_env->getPlayer(check.c_str());
 		if (p)
-			m_clients.send(p->peer_id, 0, &pkt, true);
+			m_clients.send(p->getPeerId(), 0, &pkt, true);
 	} else {
 		if (check.empty() || getPlayerName(peer_id) == check)
 			Send(&pkt);
@@ -2765,7 +2764,7 @@ std::wstring Server::handleChat(const std::string &name, const std::wstring &wna
 				return ws.str();
 			}
 			case RPLAYER_CHATRESULT_KICK:
-				DenyAccess_Legacy(player->peer_id,
+				DenyAccess_Legacy(player->getPeerId(),
 						L"You have been kicked due to message flooding.");
 				return L"";
 			case RPLAYER_CHATRESULT_OK:
@@ -2818,7 +2817,9 @@ std::wstring Server::handleChat(const std::string &name, const std::wstring &wna
 		if they are using protocol version >= 29
 	*/
 
-	session_t peer_id_to_avoid_sending = (player ? player->peer_id : PEER_ID_INEXISTENT);
+	session_t peer_id_to_avoid_sending =
+		(player ? player->getPeerId() : PEER_ID_INEXISTENT);
+
 	if (player && player->protocol_version >= 29)
 		peer_id_to_avoid_sending = PEER_ID_INEXISTENT;
 
@@ -2935,7 +2936,7 @@ void Server::reportPrivsModified(const std::string &name)
 		RemotePlayer *player = m_env->getPlayer(name.c_str());
 		if (!player)
 			return;
-		SendPlayerPrivileges(player->peer_id);
+		SendPlayerPrivileges(player->getPeerId());
 		PlayerSAO *sao = player->getPlayerSAO();
 		if(!sao)
 			return;
@@ -2950,7 +2951,7 @@ void Server::reportInventoryFormspecModified(const std::string &name)
 	RemotePlayer *player = m_env->getPlayer(name.c_str());
 	if (!player)
 		return;
-	SendPlayerInventoryFormspec(player->peer_id);
+	SendPlayerInventoryFormspec(player->getPeerId());
 }
 
 void Server::setIpBanned(const std::string &ip, const std::string &name)
@@ -2983,10 +2984,10 @@ void Server::notifyPlayer(const char *name, const std::wstring &msg)
 		return;
 	}
 
-	if (player->peer_id == PEER_ID_INEXISTENT)
+	if (player->getPeerId() == PEER_ID_INEXISTENT)
 		return;
 
-	SendChatMessage(player->peer_id, ChatMessage(msg));
+	SendChatMessage(player->getPeerId(), ChatMessage(msg));
 }
 
 bool Server::showFormspec(const char *playername, const std::string &formspec,
@@ -3000,7 +3001,7 @@ bool Server::showFormspec(const char *playername, const std::string &formspec,
 	if (!player)
 		return false;
 
-	SendShowFormspecMessage(player->peer_id, formspec, formname);
+	SendShowFormspecMessage(player->getPeerId(), formspec, formname);
 	return true;
 }
 
@@ -3011,7 +3012,7 @@ u32 Server::hudAdd(RemotePlayer *player, HudElement *form)
 
 	u32 id = player->addHud(form);
 
-	SendHUDAdd(player->peer_id, id, form);
+	SendHUDAdd(player->getPeerId(), id, form);
 
 	return id;
 }
@@ -3027,7 +3028,7 @@ bool Server::hudRemove(RemotePlayer *player, u32 id) {
 
 	delete todel;
 
-	SendHUDRemove(player->peer_id, id);
+	SendHUDRemove(player->getPeerId(), id);
 	return true;
 }
 
@@ -3036,7 +3037,7 @@ bool Server::hudChange(RemotePlayer *player, u32 id, HudElementStat stat, void *
 	if (!player)
 		return false;
 
-	SendHUDChange(player->peer_id, id, stat, data);
+	SendHUDChange(player->getPeerId(), id, stat, data);
 	return true;
 }
 
@@ -3045,7 +3046,7 @@ bool Server::hudSetFlags(RemotePlayer *player, u32 flags, u32 mask)
 	if (!player)
 		return false;
 
-	SendHUDSetFlags(player->peer_id, flags, mask);
+	SendHUDSetFlags(player->getPeerId(), flags, mask);
 	player->hud_flags &= ~mask;
 	player->hud_flags |= flags;
 
@@ -3069,7 +3070,7 @@ bool Server::hudSetHotbarItemcount(RemotePlayer *player, s32 hotbar_itemcount)
 	player->setHotbarItemcount(hotbar_itemcount);
 	std::ostringstream os(std::ios::binary);
 	writeS32(os, hotbar_itemcount);
-	SendHUDSetParam(player->peer_id, HUD_PARAM_HOTBAR_ITEMCOUNT, os.str());
+	SendHUDSetParam(player->getPeerId(), HUD_PARAM_HOTBAR_ITEMCOUNT, os.str());
 	return true;
 }
 
@@ -3084,7 +3085,7 @@ void Server::hudSetHotbarImage(RemotePlayer *player, std::string name)
 		return;
 
 	player->setHotbarImage(name);
-	SendHUDSetParam(player->peer_id, HUD_PARAM_HOTBAR_IMAGE, name);
+	SendHUDSetParam(player->getPeerId(), HUD_PARAM_HOTBAR_IMAGE, name);
 }
 
 std::string Server::hudGetHotbarImage(RemotePlayer *player)
@@ -3100,7 +3101,7 @@ void Server::hudSetHotbarSelectedImage(RemotePlayer *player, std::string name)
 		return;
 
 	player->setHotbarSelectedImage(name);
-	SendHUDSetParam(player->peer_id, HUD_PARAM_HOTBAR_SELECTED_IMAGE, name);
+	SendHUDSetParam(player->getPeerId(), HUD_PARAM_HOTBAR_SELECTED_IMAGE, name);
 }
 
 const std::string& Server::hudGetHotbarSelectedImage(RemotePlayer *player) const
@@ -3120,7 +3121,7 @@ bool Server::setLocalPlayerAnimations(RemotePlayer *player,
 		return false;
 
 	player->setLocalAnimations(animation_frames, frame_speed);
-	SendLocalPlayerAnimations(player->peer_id, animation_frames, frame_speed);
+	SendLocalPlayerAnimations(player->getPeerId(), animation_frames, frame_speed);
 	return true;
 }
 
@@ -3131,7 +3132,7 @@ bool Server::setPlayerEyeOffset(RemotePlayer *player, v3f first, v3f third)
 
 	player->eye_offset_first = first;
 	player->eye_offset_third = third;
-	SendEyeOffset(player->peer_id, first, third);
+	SendEyeOffset(player->getPeerId(), first, third);
 	return true;
 }
 
@@ -3143,7 +3144,7 @@ bool Server::setSky(RemotePlayer *player, const video::SColor &bgcolor,
 		return false;
 
 	player->setSky(bgcolor, type, params, clouds);
-	SendSetSky(player->peer_id, bgcolor, type, params, clouds);
+	SendSetSky(player->getPeerId(), bgcolor, type, params, clouds);
 	return true;
 }
 
@@ -3157,7 +3158,7 @@ bool Server::setClouds(RemotePlayer *player, float density,
 	if (!player)
 		return false;
 
-	SendCloudParams(player->peer_id, density,
+	SendCloudParams(player->getPeerId(), density,
 			color_bright, color_ambient, height,
 			thickness, speed);
 	return true;
@@ -3170,7 +3171,7 @@ bool Server::overrideDayNightRatio(RemotePlayer *player, bool do_override,
 		return false;
 
 	player->overrideDayNightRatio(do_override, ratio);
-	SendOverrideDayNightRatio(player->peer_id, do_override, ratio);
+	SendOverrideDayNightRatio(player->getPeerId(), do_override, ratio);
 	return true;
 }
 
@@ -3196,7 +3197,7 @@ void Server::spawnParticle(const std::string &playername, v3f pos,
 		RemotePlayer *player = m_env->getPlayer(playername.c_str());
 		if (!player)
 			return;
-		peer_id = player->peer_id;
+		peer_id = player->getPeerId();
 		proto_ver = player->protocol_version;
 	}
 
@@ -3223,7 +3224,7 @@ u32 Server::addParticleSpawner(u16 amount, float spawntime,
 		RemotePlayer *player = m_env->getPlayer(playername.c_str());
 		if (!player)
 			return -1;
-		peer_id = player->peer_id;
+		peer_id = player->getPeerId();
 		proto_ver = player->protocol_version;
 	}
 
@@ -3255,7 +3256,7 @@ void Server::deleteParticleSpawner(const std::string &playername, u32 id)
 		RemotePlayer *player = m_env->getPlayer(playername.c_str());
 		if (!player)
 			return;
-		peer_id = player->peer_id;
+		peer_id = player->getPeerId();
 	}
 
 	m_env->deleteParticleSpawner(id);
@@ -3489,7 +3490,7 @@ PlayerSAO* Server::emergePlayer(const char *name, session_t peer_id, u16 proto_v
 	RemotePlayer *player = m_env->getPlayer(name);
 
 	// If player is already connected, cancel
-	if (player && player->peer_id != 0) {
+	if (player && player->getPeerId() != PEER_ID_INEXISTENT) {
 		infostream<<"emergePlayer(): Player already connected"<<std::endl;
 		return NULL;
 	}

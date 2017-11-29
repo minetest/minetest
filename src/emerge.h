@@ -24,7 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "network/networkprotocol.h"
 #include "irr_v3d.h"
 #include "util/container.h"
-#include "mapgen.h" // for MapgenParams
+#include "mapgen/mapgen.h" // for MapgenParams
 #include "map.h"
 
 #define BLOCK_EMERGE_ALLOW_GEN   (1 << 0)

@@ -26,7 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "renderingengine.h"
 
 #ifdef HAVE_TOUCHSCREENGUI
-#include "touchscreengui.h"
+#include "gui/touchscreengui.h"
 #endif
 
 class KeyList : private std::list<KeyPress>

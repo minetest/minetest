@@ -20,6 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #pragma once
 
 #include "metadata.h"
+#include "tool.h"
 
 class Inventory;
 class IItemDefManager;
@@ -27,6 +28,27 @@ class IItemDefManager;
 class ItemStackMetadata : public Metadata
 {
 public:
+	ItemStackMetadata() : toolcaps_overridden(false) {}
+
+	// Overrides
+	void clear() override;
+	bool setString(const std::string &name, const std::string &var) override;
+
 	void serialize(std::ostream &os) const;
 	void deSerialize(std::istream &is);
+
+	const ToolCapabilities &getToolCapabilities(
+			const ToolCapabilities &default_caps) const
+	{
+		return toolcaps_overridden ? toolcaps_override : default_caps;
+	}
+
+	void setToolCapabilities(const ToolCapabilities &caps);
+	void clearToolCapabilities();
+
+private:
+	void updateToolCapabilities();
+
+	bool toolcaps_overridden;
+	ToolCapabilities toolcaps_override;
 };

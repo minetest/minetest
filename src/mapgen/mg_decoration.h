@@ -42,6 +42,8 @@ enum DecorationType {
 #define DECO_USE_NOISE       0x08
 #define DECO_FORCE_PLACEMENT 0x10
 #define DECO_LIQUID_SURFACE  0x20
+#define DECO_ALL_FLOORS      0x40
+#define DECO_ALL_CEILINGS    0x80
 
 extern FlagDesc flagdesc_deco[];
 
@@ -56,8 +58,7 @@ public:
 	bool canPlaceDecoration(MMVManip *vm, v3s16 p);
 	size_t placeDeco(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax);
 
-	virtual size_t generate(MMVManip *vm, PcgRandom *pr, v3s16 p) = 0;
-	virtual int getHeight() = 0;
+	virtual size_t generate(MMVManip *vm, PcgRandom *pr, v3s16 p, bool ceiling) = 0;
 
 	u32 flags = 0;
 	int mapseed = 0;
@@ -69,6 +70,7 @@ public:
 	NoiseParams np;
 	std::vector<content_t> c_spawnby;
 	s16 nspawnby;
+	s16 place_offset_y = 0;
 
 	std::unordered_set<u8> biomes;
 };
@@ -77,13 +79,13 @@ public:
 class DecoSimple : public Decoration {
 public:
 	virtual void resolveNodeNames();
-	virtual size_t generate(MMVManip *vm, PcgRandom *pr, v3s16 p);
-	virtual int getHeight();
+	virtual size_t generate(MMVManip *vm, PcgRandom *pr, v3s16 p, bool ceiling);
 
 	std::vector<content_t> c_decos;
 	s16 deco_height;
 	s16 deco_height_max;
 	u8 deco_param2;
+	u8 deco_param2_max;
 };
 
 
@@ -91,11 +93,9 @@ class DecoSchematic : public Decoration {
 public:
 	DecoSchematic() = default;
 
-	virtual size_t generate(MMVManip *vm, PcgRandom *pr, v3s16 p);
-	virtual int getHeight();
+	virtual size_t generate(MMVManip *vm, PcgRandom *pr, v3s16 p, bool ceiling);
 
 	Rotation rotation;
-	s16 place_offset_y = 0;
 	Schematic *schematic = nullptr;
 };
 

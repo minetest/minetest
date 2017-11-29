@@ -30,7 +30,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "l_internal.h"
 #include "lua_api/l_item.h"
 #include "lua_api/l_nodemeta.h"
-#include "mainmenumanager.h"
+#include "gui/mainmenumanager.h"
 #include "map.h"
 #include "util/string.h"
 #include "nodedef.h"
@@ -185,6 +185,13 @@ int ModApiClient::l_get_node_or_nil(lua_State *L)
 	} else {
 		lua_pushnil(L);
 	}
+	return 1;
+}
+
+int ModApiClient::l_get_language(lua_State *L)
+{
+	char *locale = setlocale(LC_ALL, "");
+	lua_pushstring(L, locale);
 	return 1;
 }
 
@@ -373,4 +380,5 @@ void ModApiClient::Initialize(lua_State *L, int top)
 	API_FCT(take_screenshot);
 	API_FCT(get_privilege_list);
 	API_FCT(get_builtin_path);
+	API_FCT(get_language);
 }

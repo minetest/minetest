@@ -29,6 +29,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "threading/mutex_auto_lock.h"
 #include "client/clientevent.h"
 #include "client/renderingengine.h"
+#include "client/tile.h"
 #include "util/auth.h"
 #include "util/directiontables.h"
 #include "util/pointedthing.h"
@@ -47,7 +48,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "clientmap.h"
 #include "clientmedia.h"
 #include "version.h"
-#include "database-sqlite3.h"
+#include "database/database-sqlite3.h"
 #include "serialization.h"
 #include "guiscalingfilter.h"
 #include "script/scripting_client.h"
@@ -1190,7 +1191,7 @@ void Client::sendReady()
 void Client::sendPlayerPos()
 {
 	LocalPlayer *myplayer = m_env.getLocalPlayer();
-	if(myplayer == NULL)
+	if (!myplayer)
 		return;
 
 	ClientMap &map = m_env.getClientMap();
@@ -1216,16 +1217,6 @@ void Client::sendPlayerPos()
 	myplayer->last_camera_fov   = camera_fov;
 	myplayer->last_wanted_range = wanted_range;
 
-	//infostream << "Sending Player Position information" << std::endl;
-
-	session_t our_peer_id = m_con->GetPeerID();
-
-	// Set peer id if not set already
-	if(myplayer->peer_id == PEER_ID_INEXISTENT)
-		myplayer->peer_id = our_peer_id;
-
-	assert(myplayer->peer_id == our_peer_id);
-
 	NetworkPacket pkt(TOSERVER_PLAYERPOS, 12 + 12 + 4 + 4 + 4 + 1 + 1);
 
 	writePlayerPos(myplayer, &map, &pkt);
@@ -1236,15 +1227,8 @@ void Client::sendPlayerPos()
 void Client::sendPlayerItem(u16 item)
 {
 	LocalPlayer *myplayer = m_env.getLocalPlayer();
-	if(myplayer == NULL)
+	if (!myplayer)
 		return;
-
-	session_t our_peer_id = m_con->GetPeerID();
-
-	// Set peer id if not set already
-	if(myplayer->peer_id == PEER_ID_INEXISTENT)
-		myplayer->peer_id = our_peer_id;
-	assert(myplayer->peer_id == our_peer_id);
 
 	NetworkPacket pkt(TOSERVER_PLAYERITEM, 2);
 
@@ -1660,9 +1644,8 @@ void Client::afterContentReceived()
 	text = wgettext("Initializing nodes...");
 	RenderingEngine::draw_load_screen(text, guienv, m_tsrc, 0, 72);
 	m_nodedef->updateAliases(m_itemdef);
-	std::string texture_path = g_settings->get("texture_path");
-	if (!texture_path.empty() && fs::IsDir(texture_path))
-		m_nodedef->applyTextureOverrides(texture_path + DIR_DELIM + "override.txt");
+	for (const auto &path : getTextureDirs())
+		m_nodedef->applyTextureOverrides(path + DIR_DELIM + "override.txt");
 	m_nodedef->setNodeRegistrationStatus(true);
 	m_nodedef->runNodeResolveCallbacks();
 	delete[] text;

@@ -53,6 +53,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/string.h" // for parseColorString()
 #include "irrlicht_changes/static_text.h"
 #include "guiscalingfilter.h"
+#include "guiEditBoxWithScrollbar.h"
 
 #if USE_FREETYPE && IRRLICHT_VERSION_MAJOR == 1 && IRRLICHT_VERSION_MINOR < 9
 #include "intlGUIEditBox.h"
@@ -1114,29 +1115,32 @@ void GUIFormSpecMenu::parseTextArea(parserData* data, std::vector<std::string>& 
 		258+m_fields.size()
 	);
 
-	if (name.empty()) {
-		// spec field id to 0, this stops submit searching for a value that isn't there
-		addStaticText(Environment, spec.flabel.c_str(), rect, false, true, this, spec.fid);
-	} else {
+	bool is_editable = !name.empty();
+
+	if (is_editable)
 		spec.send = true;
 
-		gui::IGUIEditBox *e;
+	gui::IGUIEditBox *e = nullptr;
+	const wchar_t *text = spec.fdefault.empty() ?
+		wlabel.c_str() : spec.fdefault.c_str();
+
 #if USE_FREETYPE && IRRLICHT_VERSION_MAJOR == 1 && IRRLICHT_VERSION_MINOR < 9
-		if (g_settings->getBool("freetype")) {
-			e = (gui::IGUIEditBox *) new gui::intlGUIEditBox(spec.fdefault.c_str(),
-				true, Environment, this, spec.fid, rect);
-			e->drop();
-		} else {
+	if (g_settings->getBool("freetype")) {
+		e = (gui::IGUIEditBox *) new gui::intlGUIEditBox(text,
+			true, Environment, this, spec.fid, rect, is_editable, true);
+		e->drop();
+	} else {
 #else
-		{
+	{
 #endif
-			e = Environment->addEditBox(spec.fdefault.c_str(), rect, true, this, spec.fid);
-		}
+		e = new GUIEditBoxWithScrollBar(text, true,
+			Environment, this, spec.fid, rect, is_editable, true);
+	}
 
-		if (spec.fname == data->focused_fieldname) {
-			Environment->setFocus(e);
-		}
+	if (is_editable && spec.fname == data->focused_fieldname)
+		Environment->setFocus(e);
 
+	if (e) {
 		if (type == "textarea")
 		{
 			e->setMultiLine(true);
@@ -1152,14 +1156,13 @@ void GUIFormSpecMenu::parseTextArea(parserData* data, std::vector<std::string>& 
 			evt.KeyInput.PressedDown = true;
 			e->OnEvent(evt);
 		}
+	}
 
-		if (label.length() >= 1)
-		{
-			int font_height = g_fontengine->getTextHeight();
-			rect.UpperLeftCorner.Y -= font_height;
-			rect.LowerRightCorner.Y = rect.UpperLeftCorner.Y + font_height;
-			addStaticText(Environment, spec.flabel.c_str(), rect, false, true, this, 0);
-		}
+	if (is_editable && !label.empty()) {
+		int font_height = g_fontengine->getTextHeight();
+		rect.UpperLeftCorner.Y -= font_height;
+		rect.LowerRightCorner.Y = rect.UpperLeftCorner.Y + font_height;
+		addStaticText(Environment, spec.flabel.c_str(), rect, false, true, this, 0);
 	}
 
 	if (parts.size() >= 6) {
@@ -3446,7 +3449,7 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 						// no shift: select item
 						m_selected_amount = count;
 						m_selected_dragging = true;
-						m_rmouse_auto_place = false;
+						m_auto_place = false;
 					} else {
 						// shift pressed: move item
 						if (button != 1)
@@ -3504,11 +3507,11 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 			}
 
 			m_selected_dragging = false;
-			// Keep count of how many times right mouse button has been
-			// clicked. One click is drag without dropping. Click + release
-			// + click changes to drop one item when moved mode
-			if (button == 1 && m_selected_item != NULL)
-				m_rmouse_auto_place = !m_rmouse_auto_place;
+			// Keep track of whether the mouse button be released
+			// One click is drag without dropping. Click + release
+			// + click changes to drop item when moved mode
+			if (m_selected_item)
+				m_auto_place = true;
 		} else if (updown == -1) {
 			// Mouse has been moved and rmb is down and mouse pointer just
 			// entered a new inventory field (checked in the entry-if, this
@@ -3516,7 +3519,7 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 			if (m_selected_item != NULL && s.isValid()) {
 				// Move 1 item
 				// TODO: middle mouse to move 10 items might be handy
-				if (m_rmouse_auto_place) {
+				if (m_auto_place) {
 					// Only move an item if the destination slot is empty
 					// or contains the same item type as what is going to be
 					// moved

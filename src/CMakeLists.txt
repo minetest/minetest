@@ -252,6 +252,12 @@ if(NOT MSVC)
 	set(USE_GPROF FALSE CACHE BOOL "Use -pg flag for g++")
 endif()
 
+# Haiku endian support
+if(HAIKU)
+	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -D_BSD_SOURCE")
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D_BSD_SOURCE")
+endif()
+
 # Use cmake_config.h
 add_definitions(-DUSE_CMAKE_CONFIG_H)
 
@@ -268,7 +274,7 @@ if(WIN32)
 	else() # Probably MinGW = GCC
 		set(PLATFORM_LIBS "")
 	endif()
-	set(PLATFORM_LIBS ws2_32.lib shlwapi.lib ${PLATFORM_LIBS})
+	set(PLATFORM_LIBS ws2_32.lib version.lib shlwapi.lib ${PLATFORM_LIBS})
 
 	# Zlib stuff
 	set(ZLIB_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/../../zlib/zlib-1.2.5"
@@ -300,7 +306,9 @@ if(WIN32)
 else()
 	# Unix probably
 	if(BUILD_CLIENT)
-		find_package(X11 REQUIRED)
+		if(NOT HAIKU)
+			find_package(X11 REQUIRED)
+		endif(NOT HAIKU)
 		find_package(OpenGL REQUIRED)
 		find_package(JPEG REQUIRED)
 		find_package(BZip2 REQUIRED)
@@ -328,10 +336,12 @@ else()
 		endif(HAVE_LIBRT)
 	endif(APPLE)
 
+	if(NOT HAIKU)
 	# This way Xxf86vm is found on OpenBSD too
-	find_library(XXF86VM_LIBRARY Xxf86vm)
-	mark_as_advanced(XXF86VM_LIBRARY)
-	set(CLIENT_PLATFORM_LIBS ${CLIENT_PLATFORM_LIBS} ${XXF86VM_LIBRARY})
+		find_library(XXF86VM_LIBRARY Xxf86vm)
+		mark_as_advanced(XXF86VM_LIBRARY)
+		set(CLIENT_PLATFORM_LIBS ${CLIENT_PLATFORM_LIBS} ${XXF86VM_LIBRARY})
+	endif(NOT HAIKU)
 
 	# Prefer local iconv if installed
 	find_library(ICONV_LIBRARY iconv)
@@ -361,6 +371,9 @@ add_custom_target(GenerateVersion
 
 
 add_subdirectory(threading)
+add_subdirectory(database)
+add_subdirectory(gui)
+add_subdirectory(mapgen)
 add_subdirectory(network)
 add_subdirectory(script)
 add_subdirectory(unittest)
@@ -368,8 +381,9 @@ add_subdirectory(util)
 add_subdirectory(irrlicht_changes)
 
 set(common_SRCS
+	${database_SRCS}
+	${mapgen_SRCS}
 	ban.cpp
-	cavegen.cpp
 	chat.cpp
 	clientiface.cpp
 	collision.cpp
@@ -378,16 +392,8 @@ set(common_SRCS
 	content_sao.cpp
 	convert_json.cpp
 	craftdef.cpp
-	database-dummy.cpp
-	database-files.cpp
-	database-leveldb.cpp
-	database-postgresql.cpp
-	database-redis.cpp
-	database-sqlite3.cpp
-	database.cpp
 	debug.cpp
 	defaultsettings.cpp
-	dungeongen.cpp
 	emerge.cpp
 	environment.cpp
 	face_position_cache.cpp
@@ -404,22 +410,9 @@ set(common_SRCS
 	map.cpp
 	map_settings_manager.cpp
 	mapblock.cpp
-	mapgen.cpp
-	mapgen_carpathian.cpp
-	mapgen_flat.cpp
-	mapgen_fractal.cpp
-	mapgen_singlenode.cpp
-	mapgen_v5.cpp
-	mapgen_v6.cpp
-	mapgen_v7.cpp
-	mapgen_valleys.cpp
 	mapnode.cpp
 	mapsector.cpp
 	metadata.cpp
-	mg_biome.cpp
-	mg_decoration.cpp
-	mg_ore.cpp
-	mg_schematic.cpp
 	modchannels.cpp
 	mods.cpp
 	nameidmapping.cpp
@@ -452,7 +445,6 @@ set(common_SRCS
 	tileanimation.cpp
 	tool.cpp
 	translation.cpp
-	treegen.cpp
 	version.cpp
 	voxel.cpp
 	voxelalgorithms.cpp
@@ -493,6 +485,7 @@ endif(BUILD_CLIENT)
 set(client_SRCS
 	${client_SRCS}
 	${common_SRCS}
+	${gui_SRCS}
 	${sound_SRCS}
 	${client_network_SRCS}
 	${client_irrlicht_changes_SRCS}
@@ -510,18 +503,9 @@ set(client_SRCS
 	filecache.cpp
 	fontengine.cpp
 	game.cpp
-	guiChatConsole.cpp
-	guiEngine.cpp
-	guiPathSelectMenu.cpp
-	guiFormSpecMenu.cpp
-	guiKeyChangeMenu.cpp
-	guiPasswordChange.cpp
 	guiscalingfilter.cpp
-	guiTable.cpp
-	guiVolumeChange.cpp
 	hud.cpp
 	imagefilters.cpp
-	intlGUIEditBox.cpp
 	keycode.cpp
 	localplayer.cpp
 	main.cpp

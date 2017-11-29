@@ -147,8 +147,6 @@ public:
 	v2s32 local_animations[4];
 	float local_animation_speed;
 
-	session_t peer_id = PEER_ID_INEXISTENT;
-
 	std::string inventory_formspec;
 
 	PlayerControl control;

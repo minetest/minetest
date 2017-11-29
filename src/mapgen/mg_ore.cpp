@@ -433,14 +433,23 @@ void OreStratum::generate(MMVManip *vm, int mapseed, u32 blockseed,
 	PcgRandom pr(blockseed + 4234);
 	MapNode n_ore(c_ore, 0, ore_param2);
 
-	if (!noise) {
-		int sx = nmax.X - nmin.X + 1;
-		int sz = nmax.Z - nmin.Z + 1;
-		noise = new Noise(&np, 0, sx, sz);
-		noise_stratum_thickness = new Noise(&np_stratum_thickness, 0, sx, sz);
+	if (flags & OREFLAG_USE_NOISE) {
+		if (!noise) {
+			int sx = nmax.X - nmin.X + 1;
+			int sz = nmax.Z - nmin.Z + 1;
+			noise = new Noise(&np, 0, sx, sz);
+		}
+		noise->perlinMap2D(nmin.X, nmin.Z);
 	}
-	noise->perlinMap2D(nmin.X, nmin.Z);
-	noise_stratum_thickness->perlinMap2D(nmin.X, nmin.Z);
+
+	if (flags & OREFLAG_USE_NOISE2) {
+		if (!noise_stratum_thickness) {
+			int sx = nmax.X - nmin.X + 1;
+			int sz = nmax.Z - nmin.Z + 1;
+			noise_stratum_thickness = new Noise(&np_stratum_thickness, 0, sx, sz);
+		}
+		noise_stratum_thickness->perlinMap2D(nmin.X, nmin.Z);
+	}
 
 	size_t index = 0;
 
@@ -452,10 +461,20 @@ void OreStratum::generate(MMVManip *vm, int mapseed, u32 blockseed,
 				continue;
 		}
 
-		float nmid = noise->result[index];
-		float nhalfthick = noise_stratum_thickness->result[index] / 2.0f;
-		int y0 = MYMAX(nmin.Y, nmid - nhalfthick);
-		int y1 = MYMIN(nmax.Y, nmid + nhalfthick);
+		int y0;
+		int y1;
+
+		if (flags & OREFLAG_USE_NOISE) {
+			float nhalfthick = ((flags & OREFLAG_USE_NOISE2) ?
+				noise_stratum_thickness->result[index] : (float)stratum_thickness) /
+				2.0f;
+			float nmid = noise->result[index];
+			y0 = MYMAX(nmin.Y, ceil(nmid - nhalfthick));
+			y1 = MYMIN(nmax.Y, nmid + nhalfthick);
+		} else { // Simple horizontal stratum
+			y0 = nmin.Y;
+			y1 = nmax.Y;
+		}
 
 		for (int y = y0; y <= y1; y++) {
 			if (pr.range(1, clust_scarcity) != 1)

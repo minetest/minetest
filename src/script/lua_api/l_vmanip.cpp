@@ -27,7 +27,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "map.h"
 #include "mapblock.h"
 #include "server.h"
-#include "mapgen.h"
+#include "mapgen/mapgen.h"
 #include "voxelalgorithms.h"
 
 // garbage collector

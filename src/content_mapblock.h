@@ -25,8 +25,20 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 struct MeshMakeData;
 struct MeshCollector;
 
-struct LightFrame
-{
+struct LightPair {
+	u8 lightA;
+	u8 lightB;
+
+	LightPair() = default;
+	explicit LightPair(u16 value) : lightA(value & 0xff), lightB(value >> 8) {}
+	LightPair(u8 valueA, u8 valueB) : lightA(valueA), lightB(valueB) {}
+	LightPair(float valueA, float valueB) :
+		lightA(core::clamp(core::round32(valueA), 0, 255)),
+		lightB(core::clamp(core::round32(valueB), 0, 255)) {}
+	operator u16() const { return lightA | lightB << 8; }
+};
+
+struct LightFrame {
 	f32 lightsA[8];
 	f32 lightsB[8];
 };
@@ -49,7 +61,7 @@ public:
 	v3f origin;
 	MapNode n;
 	const ContentFeatures *f;
-	u16 light;
+	LightPair light;
 	LightFrame frame;
 	video::SColor color;
 	TileSpec tile;
@@ -57,12 +69,13 @@ public:
 
 // lighting
 	void getSmoothLightFrame();
-	u16 blendLight(const v3f &vertex_pos);
+	LightPair blendLight(const v3f &vertex_pos);
 	video::SColor blendLightColor(const v3f &vertex_pos);
 	video::SColor blendLightColor(const v3f &vertex_pos, const v3f &vertex_normal);
 
 	void useTile(int index = 0, u8 set_flags = MATERIAL_FLAG_CRACK_OVERLAY,
 		u8 reset_flags = 0, bool special = false);
+	void getTile(int index, TileSpec *tile);
 	void getTile(v3s16 direction, TileSpec *tile);
 	void getSpecialTile(int index, TileSpec *tile, bool apply_crack = false);
 
@@ -72,7 +85,7 @@ public:
 
 // cuboid drawing!
 	void drawCuboid(const aabb3f &box, TileSpec *tiles, int tilecount,
-		const u16 *lights , const f32 *txc);
+		const LightPair *lights , const f32 *txc);
 	void generateCuboidTextureCoords(aabb3f const &box, f32 *coords);
 	void drawAutoLightedCuboid(aabb3f box, const f32 *txc = NULL,
 		TileSpec *tiles = NULL, int tile_count = 0);
@@ -144,4 +157,5 @@ public:
 public:
 	MapblockMeshGenerator(MeshMakeData *input, MeshCollector *output);
 	void generate();
+	void renderSingle(content_t node);
 };

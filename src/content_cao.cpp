@@ -862,16 +862,17 @@ void GenericCAO::step(float dtime, ClientEnvironment *env)
 
 		float moved = lastpos.getDistanceFrom(pos_translator.vect_show);
 		m_step_distance_counter += moved;
-		if(m_step_distance_counter > 1.5*BS)
-		{
-			m_step_distance_counter = 0;
-			if(!m_is_local_player && m_prop.makes_footstep_sound)
-			{
+		if (m_step_distance_counter > 1.5f * BS) {
+			m_step_distance_counter = 0.0f;
+			if (!m_is_local_player && m_prop.makes_footstep_sound) {
 				INodeDefManager *ndef = m_client->ndef();
-				v3s16 p = floatToInt(getPosition() + v3f(0,
-						(m_prop.collisionbox.MinEdge.Y-0.5)*BS, 0), BS);
+				v3s16 p = floatToInt(getPosition() +
+					v3f(0.0f, (m_prop.collisionbox.MinEdge.Y - 0.5f) * BS, 0.0f), BS);
 				MapNode n = m_env->getMap().getNodeNoEx(p);
 				SimpleSoundSpec spec = ndef->get(n).sound_footstep;
+				// Reduce footstep gain, as non-local-player footsteps are
+				// somehow louder.
+				spec.gain *= 0.6f;
 				m_client->sound()->playSoundAt(spec, false, getPosition());
 			}
 		}
@@ -1026,6 +1027,13 @@ void GenericCAO::updateTextures(std::string mod)
 				material.TextureLayer[0].Texture = texture;
 				material.setFlag(video::EMF_LIGHTING, false);
 				material.setFlag(video::EMF_BILINEAR_FILTER, false);
+
+				// don't filter low-res textures, makes them look blurry
+				// player models have a res of 64
+				const core::dimension2d<u32> &size = texture->getOriginalSize();
+				const u32 res = std::min(size.Height, size.Width);
+				use_trilinear_filter &= res > 64;
+				use_bilinear_filter &= res > 64;
 
 				m_animated_meshnode->getMaterial(i)
 						.setFlag(video::EMF_TRILINEAR_FILTER, use_trilinear_filter);
@@ -1252,6 +1260,7 @@ void GenericCAO::processMessage(const std::string &data)
 			collision_box.MaxEdge *= BS;
 			player->setCollisionbox(collision_box);
 			player->setCanZoom(m_prop.can_zoom);
+			player->setEyeHeight(m_prop.eye_height);
 		}
 
 		if ((m_is_player && !m_is_local_player) && m_prop.nametag.empty())

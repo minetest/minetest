@@ -38,6 +38,12 @@ core.register_on_modchannel_signal(function(channel, signal)
 			.. channel)
 end)
 
+core.register_on_inventory_open(function(inventory)
+	print("INVENTORY OPEN")
+	print(dump(inventory))
+	return false
+end)
+
 core.register_on_placenode(function(pointed_thing, node)
 	print("The local player place a node!")
 	print("pointed_thing :" .. dump(pointed_thing))

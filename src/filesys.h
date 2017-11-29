@@ -19,6 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #pragma once
 
+#include <set>
 #include <string>
 #include <vector>
 #include "exceptions.h"
@@ -66,10 +67,23 @@ bool DeleteSingleFileOrEmptyDirectory(const std::string &path);
 // Returns path to temp directory, can return "" on error
 std::string TempPath();
 
+/* Returns a list of subdirectories, including the path itself, but excluding
+       hidden directories (whose names start with . or _)
+*/
+void GetRecursiveDirs(std::vector<std::string> &dirs, const std::string &dir);
+std::vector<std::string> GetRecursiveDirs(const std::string &dir);
+
 /* Multiplatform */
 
-// The path itself not included
-void GetRecursiveSubPaths(const std::string &path, std::vector<std::string> &dst);
+/* The path itself not included, returns a list of all subpaths.
+   dst - vector that contains all the subpaths.
+   list files - include files in the list of subpaths.
+   ignore - paths that start with these charcters will not be listed.
+*/
+void GetRecursiveSubPaths(const std::string &path,
+		  std::vector<std::string> &dst,
+		  bool list_files,
+		  const std::set<char> &ignore = {});
 
 // Tries to delete all, returns false if any failed
 bool DeletePaths(const std::vector<std::string> &paths);

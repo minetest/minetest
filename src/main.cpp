@@ -32,7 +32,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "quicktune.h"
 #include "httpfetch.h"
 #include "gameparams.h"
-#include "database.h"
+#include "database/database.h"
 #include "config.h"
 #include "player.h"
 #include "porting.h"
@@ -41,14 +41,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	#include "terminal_chat_console.h"
 #endif
 #ifndef SERVER
-#include "guiMainMenu.h"
+#include "gui/guiMainMenu.h"
 #include "client/clientlauncher.h"
-#include "guiEngine.h"
-#include "mainmenumanager.h"
+#include "gui/guiEngine.h"
+#include "gui/mainmenumanager.h"
 #endif
 
 #ifdef HAVE_TOUCHSCREENGUI
-	#include "touchscreengui.h"
+	#include "gui/touchscreengui.h"
 #endif
 
 #if !defined(SERVER) && \

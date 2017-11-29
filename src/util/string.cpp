@@ -23,8 +23,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "log.h"
 
 #include "hex.h"
-#include "../porting.h"
-#include "../translation.h"
+#include "porting.h"
+#include "translation.h"
 
 #include <algorithm>
 #include <sstream>

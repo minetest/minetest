@@ -74,7 +74,7 @@ local function get_formspec(tabview, name, tabdata)
 		end
 
 		retval = retval ..
-			"label[5.5,1.7;".. fgettext("Mod information:") .. "]" ..
+			"label[5.5,1.7;".. fgettext("Mod Information:") .. "]" ..
 			"textlist[5.5,2.2;6.2,2.4;description;"
 
 		for i=1,#descriptionlines,1 do
@@ -84,10 +84,10 @@ local function get_formspec(tabview, name, tabdata)
 
 		if selected_mod.is_modpack then
 			retval = retval .. ";0]" ..
-				"button[10,4.85;2,0.5;btn_mod_mgr_rename_modpack;" ..
+				"button[9.9,4.65;2,1;btn_mod_mgr_rename_modpack;" ..
 				fgettext("Rename") .. "]"
-			retval = retval .. "button[5.5,4.85;4.5,0.5;btn_mod_mgr_delete_mod;"
-				.. fgettext("Uninstall selected modpack") .. "]"
+			retval = retval .. "button[5.5,4.65;4.5,1;btn_mod_mgr_delete_mod;"
+				.. fgettext("Uninstall Selected Modpack") .. "]"
 		else
 			--show dependencies
 			local toadd_hard, toadd_soft = modmgr.get_dependencies(selected_mod.path)
@@ -109,8 +109,8 @@ local function get_formspec(tabview, name, tabdata)
 
 			retval = retval .. ";0]"
 
-			retval = retval .. "button[5.5,4.85;4.5,0.5;btn_mod_mgr_delete_mod;"
-				.. fgettext("Uninstall selected mod") .. "]"
+			retval = retval .. "button[5.5,4.65;4.5,1;btn_mod_mgr_delete_mod;"
+				.. fgettext("Uninstall Selected Mod") .. "]"
 		end
 	end
 	return retval

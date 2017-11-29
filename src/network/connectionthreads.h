@@ -21,7 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #pragma once
 
 #include <cassert>
-#include "../threading/thread.h"
+#include "threading/thread.h"
 #include "connection.h"
 
 namespace con

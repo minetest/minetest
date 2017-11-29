@@ -80,6 +80,9 @@ private:
 	// get_dir_list(path, is_dir)
 	static int l_get_dir_list(lua_State *L);
 
+	// safe_file_write(path, content)
+	static int l_safe_file_write(lua_State *L);
+
 	// request_insecure_environment()
 	static int l_request_insecure_environment(lua_State *L);
 
@@ -91,6 +94,9 @@ private:
 
 	// get_version()
 	static int l_get_version(lua_State *L);
+
+	// sha1(string, raw)
+	static int l_sha1(lua_State *L);
 
 public:
 	static void Initialize(lua_State *L, int top);

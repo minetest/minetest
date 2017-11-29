@@ -34,7 +34,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "daynightratio.h"
 #include "util/pointedthing.h"
 #include "content_sao.h"
-#include "treegen.h"
+#include "mapgen/treegen.h"
 #include "emerge.h"
 #include "pathfinder.h"
 #include "face_position_cache.h"
@@ -956,7 +956,7 @@ int ModApiEnvMod::l_clear_objects(lua_State *L)
 {
 	GET_ENV_PTR;
 
-	ClearObjectsMode mode = CLEAR_OBJECTS_MODE_FULL;
+	ClearObjectsMode mode = CLEAR_OBJECTS_MODE_QUICK;
 	if (lua_istable(L, 1)) {
 		mode = (ClearObjectsMode)getenumfield(L, 1, "mode",
 			ModApiEnvMod::es_ClearObjectsMode, mode);

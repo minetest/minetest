@@ -1023,7 +1023,7 @@ int ObjectRef::l_is_player_connected(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
 	RemotePlayer *player = getplayer(ref);
-	lua_pushboolean(L, (player != NULL && player->peer_id != 0));
+	lua_pushboolean(L, (player != NULL && player->getPeerId() != PEER_ID_INEXISTENT));
 	return 1;
 }
 

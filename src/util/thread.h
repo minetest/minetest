@@ -19,9 +19,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #pragma once
 
-#include "../irrlichttypes.h"
-#include "../threading/thread.h"
-#include "../threading/mutex_auto_lock.h"
+#include "irrlichttypes.h"
+#include "threading/thread.h"
+#include "threading/mutex_auto_lock.h"
 #include "porting.h"
 #include "log.h"
 #include "container.h"
