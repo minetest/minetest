@@ -6,7 +6,7 @@ Minetest Lua Client Modding API Reference 0.5.0
 Introduction
 ------------
 
-**WARNING: The client API is currently unstable, and may break/change without warning.**
+** WARNING: The client API is currently unstable, and may break/change without warning. **
 
 Content and functionality can be added to Minetest 0.4.15-dev+ by using Lua
 scripting in run-time loaded mods.
@@ -14,7 +14,7 @@ scripting in run-time loaded mods.
 A mod is a self-contained bunch of scripts, textures and other related
 things that is loaded by and interfaces with Minetest.
 
-Transfering client-sided mods form the server to the client is planned, but not implemented yet.
+Transferring client-sided mods from the server to the client is planned, but not implemented yet.
 
 If you see a deficiency in the API, feel free to attempt to add the
 functionality in the engine and API. You can send such improvements as
@@ -626,7 +626,7 @@ Minetest namespace reference
     * `hash`: Full git version (only set if available), eg, "1.2.3-dev-01234567-dirty"
   Use this for informational purposes only. The information in the returned
   table does not represent the capabilities of the engine, nor is it
-  reliable or verifyable. Compatible forks will have a different name and
+  reliable or verifiable. Compatible forks will have a different name and
   version entirely. To check for the presence of engine features, test
   whether the functions exported by the wanted features exist. For example:
   `if minetest.check_for_falling then ... end`.
@@ -727,7 +727,7 @@ Call these functions only at load time!
 * `minetest.get_node_or_nil(pos)`
     * Returns the node at the given position as table in the format
       `{name="node_name", param1=0, param2=0}`, returns `nil`
-      for unloaded areas or flavour limited areas.
+      for unloaded areas or flavor limited areas.
 * `minetest.find_node_near(pos, radius, nodenames, [search_center])`: returns pos or `nil`
     * `radius`: using a maximum metric
     * `nodenames`: e.g. `{"ignore", "group:tree"}` or `"default:dirt"`
@@ -754,7 +754,7 @@ Call these functions only at load time!
 
 ### Privileges
 * `minetest.get_privilege_list()`
-    * Returns a list of privileges the currect player has in the format `{priv1=true,...}`
+    * Returns a list of privileges the current player has in the format `{priv1=true,...}`
 * `minetest.string_to_privs(str)`: returns `{priv1=true,...}`
 * `minetest.privs_to_string(privs)`: returns `"priv1,priv2,..."`
     * Convert between two privilege representations
@@ -870,9 +870,9 @@ An interface to use mod channels on client and server
     * No more incoming or outgoing messages can be sent to this channel from client mods.
     * This invalidate all future object usage
     * Ensure your set mod_channel to nil after that to free Lua resources
-* `is_writeable()`: returns true if channel is writeable and mod can send over it.
+* `is_writeable()`: returns true if channel is writable and mod can send over it.
 * `send_all(message)`: Send `message` though the mod channel.
-    * If mod channel is not writeable or invalid, message will be dropped.
+    * If mod channel is not writable or invalid, message will be dropped.
     * Message size is limited to 65535 characters by protocol.
 
 ### Minimap
@@ -891,14 +891,14 @@ An interface to manipulate minimap on client UI
 * `get_shape()`: Gets the minimap shape. (0 = square, 1 = round)
 
 ### Camera
-An interface to get or set information about the camera and cameranode.
+An interface to get or set information about the camera and camera-node.
 Please do not try to access the reference until the camera is initialized, otherwise the reference will be nil.
 
 #### Methods
 * `set_camera_mode(mode)`
     * Pass `0` for first-person, `1` for third person, and `2` for third person front
 * `get_camera_mode()`
-    * Returns with same syntax as above
+    * Returns 0, 1, or 2 as described above
 * `get_fov()`
     * Returns:
 
@@ -1136,7 +1136,7 @@ Can be obtained via `minetest.get_meta(pos)`.
 		stack_max = number,             -- Number of items stackable together
 		usable = bool,                  -- Has on_use callback defined
 		liquids_pointable = bool,       -- Whether you can point at liquids with the item
-		tool_capabilities = <table>,    -- If the item is a tool, tool capabiltites of the item
+		tool_capabilities = <table>,    -- If the item is a tool, tool capabilities of the item
 		groups = table,                 -- Groups of the item
 		sound_place = SimpleSoundSpec,  -- Sound played when placed
 		sound_place_failed = SimpleSoundSpec, -- Sound played when placement failed
