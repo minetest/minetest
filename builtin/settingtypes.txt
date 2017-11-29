@@ -831,8 +831,9 @@ enable_local_map_saving (Saving map received from server) bool false
 #    when connecting to the server.
 enable_remote_media_server (Connect to external media server) bool true
 
-#    Enable Lua modding support on client.
+#    Enable Lua modding support on client (currently disabled).
 #    This support is experimental and API can change.
+#    Note: value is ignored as modding support on the client is disabled.
 enable_client_modding (Client modding) bool false
 
 #    URL to the server list displayed in the Multiplayer Tab.
