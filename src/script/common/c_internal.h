@@ -99,9 +99,10 @@ enum RunCallbacksMode
 };
 
 std::string script_get_backtrace(lua_State *L);
+std::string script_get_caller_file_line(lua_State *L, unsigned int offset = 0);
 int script_error_handler(lua_State *L);
 int script_exception_wrapper(lua_State *L, lua_CFunction f);
 void script_error(lua_State *L, int pcall_result, const char *mod, const char *fxn);
 void script_run_callbacks_f(lua_State *L, int nargs,
 	RunCallbacksMode mode, const char *fxn);
-void log_deprecated(lua_State *L, const std::string &message);
+void log_deprecated(lua_State *L, const std::string &message, unsigned int offset = 0);
