@@ -107,7 +107,11 @@ Client::Client(
 	}
 	m_cache_save_interval = g_settings->getU16("server_map_save_interval");
 
-	m_modding_enabled = g_settings->getBool("enable_client_modding");
+
+	// CSM is force disabled, more dev work is needed.
+	//m_modding_enabled = g_settings->getBool("enable_client_modding");
+	m_modding_enabled = false;
+
 	m_script = new ClientScripting(this);
 	m_env.setScript(m_script);
 	m_script->setEnv(&m_env);
