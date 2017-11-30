@@ -725,6 +725,7 @@ Examples of sound parameter tables:
         gain = 1.0, -- default
         fade = 0.0, -- default, change to a value > 0 to fade the sound in
         pitch = 1.0, -- default
+        offset = 0.0, -- default
     }
     -- Play locationless to one player
     {
@@ -732,18 +733,21 @@ Examples of sound parameter tables:
         gain = 1.0, -- default
         fade = 0.0, -- default, change to a value > 0 to fade the sound in
         pitch = 1.0, -- default
+        offset = 0.0, -- default
     }
     -- Play locationless to one player, looped
     {
         to_player = name,
         gain = 1.0, -- default
         loop = true,
+        offset = 0.0, -- default
     }
     -- Play in a location
     {
         pos = {x = 1, y = 2, z = 3},
         gain = 1.0, -- default
         max_hear_distance = 32, -- default, uses an euclidean metric
+        offset = 0.0, -- default
     }
     -- Play connected to an object, looped
     {
@@ -751,10 +755,14 @@ Examples of sound parameter tables:
         gain = 1.0, -- default
         max_hear_distance = 32, -- default, uses an euclidean metric
         loop = true,
+        offset = 0.0, -- default
     }
 
 Looped sounds must either be connected to an object or played locationless to
 one player using `to_player = name,`
+
+`offset` is the offset in the sound file to start playback, expressed as seconds.
+If you choose an invalid offset you will get unexpected results.
 
 ### `SimpleSoundSpec`
 * e.g. `""`

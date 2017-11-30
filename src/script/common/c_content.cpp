@@ -978,6 +978,7 @@ void read_server_sound_params(lua_State *L, int index,
 		getstringfield(L, index, "to_player", params.to_player);
 		getfloatfield(L, index, "fade", params.fade);
 		getfloatfield(L, index, "pitch", params.pitch);
+		getfloatfield(L, index, "offset", params.begin);
 		lua_getfield(L, index, "pos");
 		if(!lua_isnil(L, -1)){
 			v3f p = read_v3f(L, -1)*BS;

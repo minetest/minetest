@@ -1989,7 +1989,8 @@ s32 Server::playSound(const SimpleSoundSpec &spec,
 	NetworkPacket pkt(TOCLIENT_PLAY_SOUND, 0);
 	pkt << id << spec.name << gain
 			<< (u8) params.type << pos << params.object
-			<< params.loop << params.fade << params.pitch;
+			<< params.loop << params.fade << params.pitch
+			<< params.begin;
 
 	// Backwards compability
 	bool play_sound = gain > 0;

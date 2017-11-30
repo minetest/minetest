@@ -393,7 +393,7 @@ public:
 	}
 
 	PlayingSound* createPlayingSound(SoundBuffer *buf, bool loop,
-			float volume, float pitch)
+			float volume, float pitch, float begin)
 	{
 		infostream<<"OpenALSoundManager: Creating playing sound"<<std::endl;
 		assert(buf);
@@ -409,13 +409,15 @@ public:
 		volume = std::fmax(0.0f, volume);
 		alSourcef(sound->source_id, AL_GAIN, volume);
 		alSourcef(sound->source_id, AL_PITCH, pitch);
+		alSourceRewind(sound->source_id);
+		alSourcef(sound->source_id, AL_SEC_OFFSET, begin);
 		alSourcePlay(sound->source_id);
 		warn_if_error(alGetError(), "createPlayingSound");
 		return sound;
 	}
 
 	PlayingSound* createPlayingSoundAt(SoundBuffer *buf, bool loop,
-			float volume, v3f pos, float pitch)
+			float volume, v3f pos, float pitch, float begin)
 	{
 		infostream<<"OpenALSoundManager: Creating positional playing sound"
 				<<std::endl;
@@ -438,15 +440,17 @@ public:
 		volume = std::fmax(0.0f, volume * 3.0f);
 		alSourcef(sound->source_id, AL_GAIN, volume);
 		alSourcef(sound->source_id, AL_PITCH, pitch);
+		alSourceRewind(sound->source_id);
+		alSourcef(sound->source_id, AL_SEC_OFFSET, begin);
 		alSourcePlay(sound->source_id);
 		warn_if_error(alGetError(), "createPlayingSoundAt");
 		return sound;
 	}
 
-	int playSoundRaw(SoundBuffer *buf, bool loop, float volume, float pitch)
+	int playSoundRaw(SoundBuffer *buf, bool loop, float volume, float pitch, float begin)
 	{
 		assert(buf);
-		PlayingSound *sound = createPlayingSound(buf, loop, volume, pitch);
+		PlayingSound *sound = createPlayingSound(buf, loop, volume, pitch, begin);
 		if(!sound)
 			return -1;
 		int id = m_next_id++;
@@ -455,10 +459,10 @@ public:
 	}
 
 	int playSoundRawAt(SoundBuffer *buf, bool loop, float volume, const v3f &pos,
-			float pitch)
+			float pitch, float begin)
 	{
 		assert(buf);
-		PlayingSound *sound = createPlayingSoundAt(buf, loop, volume, pos, pitch);
+		PlayingSound *sound = createPlayingSoundAt(buf, loop, volume, pos, pitch, begin);
 		if(!sound)
 			return -1;
 		int id = m_next_id++;
@@ -563,7 +567,7 @@ public:
 		alListenerf(AL_GAIN, gain);
 	}
 
-	int playSound(const std::string &name, bool loop, float volume, float fade, float pitch)
+	int playSound(const std::string &name, bool loop, float volume, float fade, float pitch, float begin)
 	{
 		maintain();
 		if (name.empty())
@@ -576,15 +580,15 @@ public:
 		}
 		int handle = -1;
 		if (fade > 0) {
-			handle = playSoundRaw(buf, loop, 0.0f, pitch);
+			handle = playSoundRaw(buf, loop, 0.0f, pitch, begin);
 			fadeSound(handle, fade, volume);
 		} else {
-			handle = playSoundRaw(buf, loop, volume, pitch);
+			handle = playSoundRaw(buf, loop, volume, pitch, begin);
 		}
 		return handle;
 	}
 
-	int playSoundAt(const std::string &name, bool loop, float volume, v3f pos, float pitch)
+	int playSoundAt(const std::string &name, bool loop, float volume, v3f pos, float pitch, float begin)
 	{
 		maintain();
 		if (name.empty())
@@ -595,7 +599,7 @@ public:
 					<<std::endl;
 			return -1;
 		}
-		return playSoundRawAt(buf, loop, volume, pos, pitch);
+		return playSoundRawAt(buf, loop, volume, pos, pitch, begin);
 	}
 
 	void stopSound(int sound)
