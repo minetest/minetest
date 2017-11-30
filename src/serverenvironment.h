@@ -426,6 +426,7 @@ private:
 	IntervalLimiter m_active_blocks_nodemetadata_interval;
 	float m_active_block_interval_overload_skip = 1.0f;
 	float m_active_object_interval_overload_skip = 1.0f;
+	float m_avg_ao_time = 0.0f;
 	// Time from the beginning of the game in seconds.
 	// Incremented in step().
 	u32 m_game_time = 0;

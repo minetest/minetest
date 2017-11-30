@@ -1269,8 +1269,8 @@ void ServerEnvironment::step(float dtime)
 	}
 
 	if (m_active_block_modifier_interval.step(dtime, m_cache_abm_interval * m_active_block_interval_overload_skip))
-		float dtime = m_cache_abm_interval * m_active_object_interval_overload_skip;
 		do { // breakable
+			float dtime = m_cache_abm_interval * m_active_object_interval_overload_skip;
 			ScopeProfiler sp(g_profiler, "SEnv: modify in blocks avg per interval", SPT_AVG);
 			TimeTaker timer("modify in active blocks per interval");
 
@@ -1339,15 +1339,16 @@ void ServerEnvironment::step(float dtime)
 			}
 		}
 
-		const u32 time_ms = timer.stop(true);
+		// calculate a simple moving average
+		m_avg_ao_time = m_avg_ao_time * 0.9f + timer.stop(true) * 0.1f;
 		// allow up to 1/5 of the budget interval
 		const u32 max_time_ms = m_cache_ao_interval * 1000 / 5;
-		if (time_ms > max_time_ms) {
+		if (m_avg_ao_time > max_time_ms) {
 			warningstream<<"active objects took "
-				<<time_ms<<"ms (longer than "
+				<<m_avg_ao_time<<"ms (longer than "
 				<<max_time_ms<<"ms)"<<std::endl;
 			// skip a few steps
-			m_active_object_interval_overload_skip = ((float)time_ms / max_time_ms);
+			m_active_object_interval_overload_skip = m_avg_ao_time / max_time_ms;
 		} else {
 			m_active_object_interval_overload_skip = 1.0f;
 		}
