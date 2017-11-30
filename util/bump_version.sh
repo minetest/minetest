@@ -48,13 +48,11 @@ back_to_devel() {
 
 	sed -i -re "s/^set\(VERSION_PATCH [0-9]+\)$/set(VERSION_PATCH $NEXT_VERSION_PATCH)/" CMakeLists.txt
 
-	sed -i -re "1s/[0-9]+\.[0-9]+\.[0-9]+/$NEXT_VERSION/g" doc/lua_api.txt
-
 	sed -i -re "1s/[0-9]+\.[0-9]+\.[0-9]+/$NEXT_VERSION/g" doc/menu_lua_api.txt
 
 	sed -i -re "1s/[0-9]+\.[0-9]+\.[0-9]+/$NEXT_VERSION/g" doc/client_lua_api.md
 
-	git add -f CMakeLists.txt doc/lua_api.txt doc/menu_lua_api.txt doc/client_lua_api.md
+	git add -f CMakeLists.txt doc/menu_lua_api.txt doc/client_lua_api.md
 
 	git commit -m "Continue with $NEXT_VERSION-dev"
 }
