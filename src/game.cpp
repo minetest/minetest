@@ -2146,9 +2146,6 @@ bool Game::connectToServer(const std::string &playername,
 
 		fps_control.last_time = RenderingEngine::get_timer_time();
 
-		client->loadMods();
-		client->initMods();
-
 		while (RenderingEngine::run()) {
 
 			limitFps(&fps_control, &dtime);
@@ -2208,6 +2205,9 @@ bool Game::getServerContent(bool *aborted)
 	f32 dtime; // in seconds
 
 	fps_control.last_time = RenderingEngine::get_timer_time();
+
+	client->loadMods();
+	client->initMods();
 
 	while (RenderingEngine::run()) {
 
