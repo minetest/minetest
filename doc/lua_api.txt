@@ -1,21 +1,21 @@
-Minetest Lua Modding API Reference 0.5.0
-=========================================
+Minetest Lua Modding API Reference
+==================================
 * More information at <http://www.minetest.net/>
 * Developer Wiki: <http://dev.minetest.net/>
 
 Introduction
 ------------
-Content and functionality can be added to Minetest 0.4 by using Lua
-scripting in run-time loaded mods.
+Content and functionality can be added to Minetest using Lua scripting
+in run-time loaded mods.
 
 A mod is a self-contained bunch of scripts, textures and other related
-things that is loaded by and interfaces with Minetest.
+things, which is loaded by and interfaces with Minetest.
 
 Mods are contained and ran solely on the server side. Definitions and media
 files are automatically transferred to the client.
 
 If you see a deficiency in the API, feel free to attempt to add the
-functionality in the engine and API.
+functionality in the engine and API, and to document it here.
 
 Programming in Lua
 ------------------
@@ -153,15 +153,15 @@ List of mods that have to be loaded before loading this mod.
 A single line contains a single modname.
 
 Optional dependencies can be defined by appending a question mark
-to a single modname. Their meaning is that if the specified mod
-is missing, that does not prevent this mod from being loaded.
+to a single modname. This means that if the specified mod
+is missing, it does not prevent this mod from being loaded.
 
 ### `screenshot.png`
 A screenshot shown in the mod manager within the main menu. It should
 have an aspect ratio of 3:2 and a minimum size of 300×200 pixels.
 
 ### `description.txt`
-A File containing description to be shown within mainmenu.
+A file containing a description to be shown in the Mods tab of the mainmenu.
 
 ### `settingtypes.txt`
 A file in the same format as the one in builtin. It will be parsed by the
@@ -219,8 +219,7 @@ Aliases
 Aliases can be added by using `minetest.register_alias(name, convert_to)` or
 `minetest.register_alias_force(name, convert_to)`.
 
-This will make Minetest to convert things called name to things called
-`convert_to`.
+This converts anything called `name` to `convert_to`.
 
 The only difference between `minetest.register_alias` and
 `minetest.register_alias_force` is that if an item called `name` exists,
@@ -229,7 +228,7 @@ The only difference between `minetest.register_alias` and
 
 This can be used for maintaining backwards compatibility.
 
-This can be also used for setting quick access names for things, e.g. if
+This can also set quick access names for things, e.g. if
 you have an item called `epiclylongmodname:stuff`, you could do
 
     minetest.register_alias("stuff", "epiclylongmodname:stuff")
@@ -330,7 +329,7 @@ Example:
 
     default_dirt.png^default_grass_side.png
 
-`default_grass_side.png` is overlayed over `default_dirt.png`.
+`default_grass_side.png` is overlaid over `default_dirt.png`.
 The texture with the lower resolution will be automatically upscaled to
 the higher resolution texture.
 
@@ -1151,7 +1150,7 @@ If `column_height_max` is not specified, this parameter defaults to `clust_size`
 for reverse compatibility.  New code should prefer `column_height_max`.
 
 The `column_midpoint_factor` parameter controls the position of the column at which
-ore eminates from.  If 1, columns grow upward.  If 0, columns grow downward.  If 0.5,
+ore emanates from.  If 1, columns grow upward.  If 0, columns grow downward.  If 0.5,
 columns grow equally starting from each direction.  `column_midpoint_factor` is a
 decimal number ranging in value from 0 to 1.  If this parameter is not specified,
 the default is 0.5.
@@ -2466,7 +2465,7 @@ Strings that need to be translated can contain several escapes, preceded by `@`.
     * `hash`: Full git version (only set if available), eg, "1.2.3-dev-01234567-dirty"
   Use this for informational purposes only. The information in the returned
   table does not represent the capabilities of the engine, nor is it
-  reliable or verifyable. Compatible forks will have a different name and
+  reliable or verifiable. Compatible forks will have a different name and
   version entirely. To check for the presence of engine features, test
   whether the functions exported by the wanted features exist. For example:
   `if minetest.check_for_falling then ... end`.
@@ -3183,7 +3182,7 @@ These functions return the leftover itemstack.
     * Returns nil if the schematic could not be loaded.
 
 * `minetest.place_schematic_on_vmanip(vmanip, pos, schematic, rotation, replacement, force_placement)`:
-    * This function is analagous to minetest.place_schematic, but places a schematic onto the
+    * This function is analogous to minetest.place_schematic, but places a schematic onto the
       specified VoxelManip object `vmanip` instead of the whole map.
     * Returns false if any part of the schematic was cut-off due to the VoxelManip not
       containing the full area required, and true if the whole schematic was able to fit.
@@ -3302,7 +3301,7 @@ These functions return the leftover itemstack.
     * Decodes a string encoded in base64.
 * `minetest.is_protected(pos, name)`: returns boolean
     * Returns true, if player `name` shouldn't be abled to dig at `pos` or do other
-      actions, defineable by mods, due to some mod-defined ownership-like concept.
+      actions, definable by mods, due to some mod-defined ownership-like concept.
       Returns false or nil, if the player is allowed to do such actions.
     * `name` will be "" for non-players or unknown players.
     * This function should be overridden by protection mods and should be used to
