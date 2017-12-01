@@ -51,3 +51,10 @@ register_liquid("land:river_water", "River water", "river_water.png", {
 	liquid_range = 4,
 	post_effect_color = {a = 128, r = 128, g = 192, b = 255},
 })
+
+register_liquid("land:lava", "Lava", "lava.png", {
+	damage_per_second = 6,
+	light_source = 14,
+	liquid_viscosity = 7,
+	post_effect_color = {a = 192, r = 255, g = 128, b = 0},
+})

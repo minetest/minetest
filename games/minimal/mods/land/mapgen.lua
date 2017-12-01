@@ -4,7 +4,7 @@ minetest.register_alias("mapgen_dirt_with_grass", "land:grass")
 minetest.register_alias("mapgen_sand", "land:sand")
 minetest.register_alias("mapgen_water_source", "land:water_source")
 minetest.register_alias("mapgen_river_water_source", "land:river_water_source")
--- minetest.register_alias("mapgen_lava_source", "land:lava_source")
+minetest.register_alias("mapgen_lava_source", "land:lava_source")
 minetest.register_alias("mapgen_gravel", "land:gravel")
 
 minetest.clear_registered_biomes()
