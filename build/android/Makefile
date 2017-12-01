@@ -132,10 +132,6 @@ SQLITE3_URL = https://www.sqlite.org/2017/$(SQLITE3_FOLDER).zip
 
 ANDROID_SDK = $(shell grep '^sdk\.dir' local.properties | sed 's/^.*=[[:space:]]*//')
 ANDROID_NDK = $(shell grep '^ndk\.dir' local.properties | sed 's/^.*=[[:space:]]*//')
-NDK_MODULE_PATH = $(ANDROID_NDK)/toolchains
-
-NDK_CC=${NDK_MODULE_PATH}/${TARGET_TOOLCHAIN}${COMPILER_VERSION}/prebuilt/linux-x86_64/bin/${TARGET_TOOLCHAIN}gcc
-NDK_CXX=${NDK_MODULE_PATH}/${TARGET_TOOLCHAIN}${COMPILER_VERSION}/prebuilt/linux-x86_64/bin/${TARGET_TOOLCHAIN}g++
 
 #use interim target variable to switch leveldb on or off
 ifeq ($(HAVE_LEVELDB),1)

@@ -6,4 +6,3 @@ APP_DEPRECATED_HEADERS := true
 
 APP_CLAFGS += -mfloat-abi=softfp -mfpu=vfpv3 -O3
 APP_CPPFLAGS += -fexceptions
-
