@@ -1,14 +1,7 @@
-minetest.register_node("land:water_source", {
-	description = "Water",
-	use_texture_alpha = true,
-	tiles = {"water.png"},
-	groups = {},
-})
-
-function register_liquid(name, description, texture, props, sprops)
+local function register_liquid(name, description, texture, props, sprops)
 	local n_source = name .. "_source"
 	local n_flowing = name .. "_flowing"
-	desc = {
+	local desc = {
 		tiles = {
 			{name = texture, backface_culling = false},
 		},
