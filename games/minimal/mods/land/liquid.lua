@@ -16,7 +16,6 @@ function register_liquid(name, description, texture, props, sprops)
 			{name = texture, backface_culling = false},
 			{name = texture, backface_culling = true},
 		},
-		use_texture_alpha = true,
 		paramtype = "light",
 		walkable = false,
 		pointable = false,
@@ -42,11 +41,13 @@ function register_liquid(name, description, texture, props, sprops)
 end
 
 register_liquid("land:water", "Water", "water.png", {
+	use_texture_alpha = true,
 	liquid_viscosity = 1,
 	post_effect_color = {a = 64, r = 128, g = 128, b = 255},
 })
 
 register_liquid("land:river_water", "River water", "river_water.png", {
+	alpha = 192,
 	liquid_viscosity = 2,
 	liquid_range = 4,
 	post_effect_color = {a = 128, r = 128, g = 192, b = 255},
