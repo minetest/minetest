@@ -279,17 +279,17 @@ void LBMManager::applyLBMs(ServerEnvironment *env, MapBlock *block, u32 stamp)
 
 void fillRadiusBlock(v3s16 p0, s16 r, std::set<v3s16> &list)
 {
+	const s16 r2 = r * r;
 	v3s16 p;
-	for(p.X=p0.X-r; p.X<=p0.X+r; p.X++)
-		for(p.Y=p0.Y-r; p.Y<=p0.Y+r; p.Y++)
-			for(p.Z=p0.Z-r; p.Z<=p0.Z+r; p.Z++)
-			{
-				// limit to a sphere
-				if (p.getDistanceFrom(p0) <= r) {
-					// Set in list
-					list.insert(p);
-				}
-			}
+	for (p.X = p0.X - r; p.X <= p0.X + r; p.X++)
+	for (p.Y = p0.Y - r; p.Y <= p0.Y + r; p.Y++)
+	for (p.Z = p0.Z - r; p.Z <= p0.Z + r; p.Z++) {
+		// limit to a sphere
+		if (p.getDistanceFromSQ(p0) <= r2) {
+			// Set in list
+			list.insert(p);
+		}
+	}
 }
 
 void fillViewConeBlock(v3s16 p0,
@@ -364,10 +364,7 @@ void ActiveBlockList::update(std::vector<PlayerSAO*> &active_players,
 	/*
 		Update m_list
 	*/
-	m_list.clear();
-	for (v3s16 p : newlist) {
-		m_list.insert(p);
-	}
+	m_list = newlist;
 }
 
 /*
@@ -1271,18 +1268,14 @@ void ServerEnvironment::step(float dtime)
 		}
 	}
 
-	if (m_active_block_modifier_interval.step(dtime, m_cache_abm_interval))
+	if (m_active_block_modifier_interval.step(dtime, m_cache_abm_interval * m_active_block_interval_overload_skip))
 		do { // breakable
-			if (m_active_block_interval_overload_skip > 0) {
-				ScopeProfiler sp(g_profiler, "SEnv: ABM overload skips");
-				m_active_block_interval_overload_skip--;
-				break;
-			}
+			float dtime = m_cache_abm_interval * m_active_object_interval_overload_skip;
 			ScopeProfiler sp(g_profiler, "SEnv: modify in blocks avg per interval", SPT_AVG);
 			TimeTaker timer("modify in active blocks per interval");
 
 			// Initialize handling of ActiveBlockModifiers
-			ABMHandler abmhandler(m_abms, m_cache_abm_interval, this, true);
+			ABMHandler abmhandler(m_abms, dtime, this, true);
 
 			for (const v3s16 &p : m_active_blocks.m_abm_list) {
 				MapBlock *block = m_map->getBlockNoCreateNoEx(p);
@@ -1296,27 +1289,31 @@ void ServerEnvironment::step(float dtime)
 				abmhandler.apply(block);
 			}
 
-			u32 time_ms = timer.stop(true);
-			u32 max_time_ms = 200;
+			const u32 time_ms = timer.stop(true);
+			// allow up to 10% of the budget interval
+			const u32 max_time_ms = m_cache_abm_interval * 1000 / 10;
 			if (time_ms > max_time_ms) {
 				warningstream<<"active block modifiers took "
 					<<time_ms<<"ms (longer than "
 					<<max_time_ms<<"ms)"<<std::endl;
-				m_active_block_interval_overload_skip = (time_ms / max_time_ms) + 1;
+				m_active_block_interval_overload_skip = ((float)time_ms / max_time_ms);
+			} else {
+				m_active_block_interval_overload_skip = 1.0f;
 			}
 		}while(0);
 
 	/*
-		Step script environment (run global on_step())
+	  Step script environment (run global on_step())
 	*/
 	m_script->environment_Step(dtime);
 
 	/*
 		Step active objects
 	*/
-	{
+	if (m_active_object_interval.step(dtime, m_cache_ao_interval * m_active_object_interval_overload_skip)) {
+		float dtime = m_cache_ao_interval * m_active_object_interval_overload_skip;
 		ScopeProfiler sp(g_profiler, "SEnv: step act. objs avg", SPT_AVG);
-		//TimeTaker timer("Step active objects");
+		TimeTaker timer("Step active objects");
 
 		g_profiler->avg("SEnv: num of objects", m_active_objects.size());
 
@@ -1341,6 +1338,20 @@ void ServerEnvironment::step(float dtime)
 				m_active_object_messages.push(obj->m_messages_out.front());
 				obj->m_messages_out.pop();
 			}
+		}
+
+		// calculate a simple moving average
+		m_avg_ao_time = m_avg_ao_time * 0.9f + timer.stop(true) * 0.1f;
+		// allow up to 10% of the budget interval
+		const u32 max_time_ms = m_cache_ao_interval * 1000 / 10;
+		if (m_avg_ao_time > max_time_ms) {
+			infostream<<"active objects took "
+				<<m_avg_ao_time<<"ms (longer than "
+				<<max_time_ms<<"ms)"<<std::endl;
+			// skip a few steps
+			m_active_object_interval_overload_skip = m_avg_ao_time / max_time_ms;
+		} else {
+			m_active_object_interval_overload_skip = 1.0f;
 		}
 	}
 
