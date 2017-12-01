@@ -575,13 +575,13 @@ void GenericCAO::addToScene(ITextureSource *tsrc)
 					m_prop.visual_size.Y,
 					m_prop.visual_size.X));
 			u8 li = m_last_light;
-			setMeshColor(m_animated_meshnode->getMesh(), video::SColor(255,li,li,li));
+			setAnimatedMeshColor(m_animated_meshnode, video::SColor(255,li,li,li));
 
 			bool backface_culling = m_prop.backface_culling;
 			if (m_is_player)
 				backface_culling = false;
 
-			m_animated_meshnode->setMaterialFlag(video::EMF_LIGHTING, false);
+			m_animated_meshnode->setMaterialFlag(video::EMF_LIGHTING, true);
 			m_animated_meshnode->setMaterialFlag(video::EMF_BILINEAR_FILTER, false);
 			m_animated_meshnode->setMaterialType(video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF);
 			m_animated_meshnode->setMaterialFlag(video::EMF_FOG_ENABLE, true);
@@ -669,7 +669,7 @@ void GenericCAO::updateLightNoCheck(u8 light_at_pos)
 		if (m_meshnode) {
 			setMeshColor(m_meshnode->getMesh(), color);
 		} else if (m_animated_meshnode) {
-			setMeshColor(m_animated_meshnode->getMesh(), color);
+			setAnimatedMeshColor(m_animated_meshnode, color);
 		} else if (m_wield_meshnode) {
 			m_wield_meshnode->setColor(color);
 		} else if (m_spritenode) {
@@ -1025,7 +1025,7 @@ void GenericCAO::updateTextures(std::string mod)
 				// Set material flags and texture
 				video::SMaterial& material = m_animated_meshnode->getMaterial(i);
 				material.TextureLayer[0].Texture = texture;
-				material.setFlag(video::EMF_LIGHTING, false);
+				material.setFlag(video::EMF_LIGHTING, true);
 				material.setFlag(video::EMF_BILINEAR_FILTER, false);
 
 				// don't filter low-res textures, makes them look blurry

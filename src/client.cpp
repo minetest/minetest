@@ -1855,10 +1855,7 @@ scene::IAnimatedMesh* Client::getMesh(const std::string &filename)
 
 	scene::IAnimatedMesh *mesh = RenderingEngine::get_scene_manager()->getMesh(rfile);
 	rfile->drop();
-	// NOTE: By playing with Irrlicht refcounts, maybe we could cache a bunch
-	// of uniquely named instances and re-use them
 	mesh->grab();
-	RenderingEngine::get_mesh_cache()->removeMesh(mesh);
 	return mesh;
 }
 
