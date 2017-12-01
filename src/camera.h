@@ -22,9 +22,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "irrlichttypes_extrabloated.h"
 #include "inventory.h"
 #include "client/tile.h"
+#include "util/numeric.h"
+#include "constants.h"
 #include <ICameraSceneNode.h>
 #include <ISceneNode.h>
 #include <list>
+#include "settings.h" // For g_settings
 
 class LocalPlayer;
 struct MapDrawControl;
@@ -86,6 +89,30 @@ public:
 	inline v3s16 getOffset() const
 	{
 		return m_camera_offset;
+	}
+
+	inline void setFov(f32 fov, bool persist)
+	{
+		m_cache_fov = rangelim(fov, FOV_MIN, FOV_MAX);
+		if (persist)
+			g_settings->setFloat("fov", getFov());
+	}
+	
+	inline void setZoomFov(f32 fov, bool persist)
+	{
+		m_cache_zoom_fov = rangelim(fov, ZOOM_FOV_MIN, ZOOM_FOV_MAX);
+		if (persist)
+			g_settings->setFloat("zoom_fov", getZoomFov());
+	}
+	
+	inline f32 getFov() const
+	{
+		return m_cache_fov;
+	}
+	
+	inline f32 getZoomFov() const
+	{
+		return m_cache_zoom_fov;
 	}
 
 	// Horizontal field of view

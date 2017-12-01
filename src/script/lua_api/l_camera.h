@@ -36,6 +36,8 @@ private:
 	static int l_get_camera_mode(lua_State *L);
 
 	static int l_get_fov(lua_State *L);
+	static int l_set_fov(lua_State *L);
+	static int l_set_zoom_fov(lua_State *L);
 
 	static int l_get_pos(lua_State *L);
 	static int l_get_offset(lua_State *L);

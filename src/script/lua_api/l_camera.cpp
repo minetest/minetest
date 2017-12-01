@@ -3,6 +3,7 @@
 #include "l_internal.h"
 #include "content_cao.h"
 #include "camera.h"
+#include "constants.h"
 #include "client.h"
 
 LuaCamera::LuaCamera(Camera *m) : m_camera(m)
@@ -64,11 +65,42 @@ int LuaCamera::l_get_fov(lua_State *L)
 	lua_setfield(L, -2, "x");
 	lua_pushnumber(L, camera->getFovY() * core::DEGTORAD);
 	lua_setfield(L, -2, "y");
-	lua_pushnumber(L, camera->getCameraNode()->getFOV() * core::RADTODEG);
-	lua_setfield(L, -2, "actual");
 	lua_pushnumber(L, camera->getFovMax() * core::RADTODEG);
 	lua_setfield(L, -2, "max");
+	lua_pushnumber(L, camera->getFov());
+	lua_setfield(L, -2, "actual");
+	lua_pushnumber(L, camera->getZoomFov());
+	lua_setfield(L, -2, "zoom");
+
 	return 1;
+}
+
+int LuaCamera::l_set_fov(lua_State *L)
+{
+	Camera *camera = getobject(L, 1);
+
+	float fov = luaL_checknumber(L, 2);
+	bool persist = lua_toboolean(L, 3);
+
+	if (!camera)
+		return 0;
+
+	camera->setFov(fov, persist);
+	return 0;
+}
+
+int LuaCamera::l_set_zoom_fov(lua_State *L)
+{
+	Camera *camera = getobject(L, 1);
+
+	float fov = luaL_checknumber(L, 2);
+	bool persist = lua_toboolean(L, 3);
+
+	if (!camera)
+		return 0;
+
+	camera->setZoomFov(fov, persist);
+	return 0;
 }
 
 int LuaCamera::l_get_pos(lua_State *L)
@@ -193,6 +225,7 @@ void LuaCamera::Register(lua_State *L)
 const char LuaCamera::className[] = "Camera";
 const luaL_Reg LuaCamera::methods[] = {luamethod(LuaCamera, set_camera_mode),
 		luamethod(LuaCamera, get_camera_mode), luamethod(LuaCamera, get_fov),
+		luamethod(LuaCamera, set_fov), luamethod(LuaCamera, set_zoom_fov),
 		luamethod(LuaCamera, get_pos), luamethod(LuaCamera, get_offset),
 		luamethod(LuaCamera, get_look_dir),
 		luamethod(LuaCamera, get_look_vertical),
