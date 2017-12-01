@@ -14,15 +14,16 @@ minetest.register_node("land:dirt", {
 })
 
 minetest.register_node("land:grass", {
-	description = "Dirt",
+	description = "Dirt with grass",
+	use_texture_alpha = true,
 	tiles = {
 		{name="grass.png", align_style="world"},
 		{name="dirt.png", align_style="world"},
 	},
 	overlay_tiles = {
-		nil,
-		nil,
-		{name="grass_overlay.png", align_style="world"}
+		{name="grid.png^compass.png", align_style="world", scale=4},
+		{},
+		{name="grass_overlay.png", align_style="world"},
 	},
 	groups = {crumbly=3, soil=1},
 })
