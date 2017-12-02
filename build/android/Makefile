@@ -217,6 +217,8 @@ $(OPENAL_LIB): $(OPENAL_TIMESTAMP)
 	if [ $$REFRESH -ne 0 ] ; then                                              \
 	echo "changed timestamp for openal detected building...";                  \
 	cd ${OPENAL_DIR};                                                          \
+	export APP_PLATFORM=${APP_PLATFORM};                                       \
+	export TARGET_ABI=${TARGET_ABI};                                           \
 	${ANDROID_NDK}/ndk-build NDEBUG=${NDEBUG}                                  \
 		NDK_APPLICATION_MK=${ANDR_ROOT}/jni/Deps.mk || exit 1;                 \
 	touch ${OPENAL_TIMESTAMP};                                                 \
@@ -258,6 +260,8 @@ $(OGG_LIB): $(OGG_TIMESTAMP)
 	if [ $$REFRESH -ne 0 ] ; then                                              \
 	echo "changed timestamp for ogg detected building...";                     \
 	cd ${OGG_DIR};                                                             \
+	export APP_PLATFORM=${APP_PLATFORM};                                       \
+	export TARGET_ABI=${TARGET_ABI};                                           \
 	${ANDROID_NDK}/ndk-build NDEBUG=${NDEBUG}                                  \
 		NDK_APPLICATION_MK=${ANDR_ROOT}/jni/Deps.mk || exit 1;                 \
 	touch ${OGG_TIMESTAMP};                                                    \
@@ -407,6 +411,8 @@ $(FREETYPE_LIB) : $(FREETYPE_TIMESTAMP)
 	mkdir -p ${FREETYPE_DIR};                                                  \
 	echo "changed timestamp for freetype detected building...";                \
 	cd ${FREETYPE_DIR}/Android/jni;                                            \
+	export APP_PLATFORM=${APP_PLATFORM};                                       \
+	export TARGET_ABI=${TARGET_ABI};                                           \
 	${ANDROID_NDK}/ndk-build NDEBUG=${NDEBUG}                                  \
 		NDK_APPLICATION_MK=${ANDR_ROOT}/jni/Deps.mk || exit 1;                 \
 	touch ${FREETYPE_TIMESTAMP};                                               \
@@ -521,6 +527,8 @@ $(IRRLICHT_LIB): $(IRRLICHT_TIMESTAMP) $(FREETYPE_LIB)
 	mkdir -p ${IRRLICHT_DIR};                                                  \
 	echo "changed timestamp for irrlicht detected building...";                \
 	cd deps/irrlicht/source/Irrlicht/Android;                                  \
+	export APP_PLATFORM=${APP_PLATFORM};                                       \
+	export TARGET_ABI=${TARGET_ABI};                                           \
 	${ANDROID_NDK}/ndk-build NDEBUG=${NDEBUG}                                  \
 		NDK_APPLICATION_MK=${ANDR_ROOT}/jni/Irrlicht.mk || exit 1;             \
 	touch ${IRRLICHT_TIMESTAMP};                                               \
@@ -746,6 +754,8 @@ apk: local.properties assets $(ICONV_LIB) $(IRRLICHT_LIB) $(CURL_LIB) $(GMP_LIB)
 	$(ANDR_ROOT)/jni/src/android_version_githash.h sqlite3_download
 	+ @export TARGET_LIBDIR=${TARGET_LIBDIR};                                  \
 	export HAVE_LEVELDB=${HAVE_LEVELDB};                                       \
+	export APP_PLATFORM=${APP_PLATFORM};                                       \
+	export TARGET_ABI=${TARGET_ABI};                                           \
 	${ANDROID_NDK}/ndk-build || exit 1;                                        \
 	if [ ! -e ${APP_ROOT}/jniLibs ]; then                                      \
 		ln -s ${ANDR_ROOT}/libs ${APP_ROOT}/jniLibs || exit 1;                 \
