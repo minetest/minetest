@@ -563,7 +563,7 @@ void GenericCAO::addToScene(ITextureSource *tsrc)
 	}
 	else if(m_prop.visual == "mesh") {
 		infostream<<"GenericCAO::addToScene(): mesh"<<std::endl;
-		scene::IAnimatedMesh *mesh = m_client->getMesh(m_prop.mesh);
+		scene::IAnimatedMesh *mesh = m_client->getMesh(m_prop.mesh, true);
 		if(mesh)
 		{
 			m_animated_meshnode = RenderingEngine::get_scene_manager()->
