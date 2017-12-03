@@ -136,7 +136,6 @@ protected:
 	bool m_cache_enable_shaders;
 	float m_cache_active_block_mgmt_interval;
 	float m_cache_abm_interval;
-	float m_cache_ao_interval;
 	float m_cache_nodetimer_interval;
 
 	IGameDef *m_gamedef;
