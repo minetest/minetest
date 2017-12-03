@@ -1233,7 +1233,7 @@ void ServerEnvironment::step(float dtime)
 	if (m_active_blocks_nodemetadata_interval.step(dtime, m_cache_nodetimer_interval)) {
 		ScopeProfiler sp(g_profiler, "SEnv: mess in act. blocks avg per interval", SPT_AVG);
 
-		float dtime = m_cache_nodetimer_interval;
+		float elapsed_time = m_cache_nodetimer_interval;
 
 		for (const v3s16 &p: m_active_blocks.m_list) {
 			MapBlock *block = m_map->getBlockNoCreateNoEx(p);
@@ -1252,7 +1252,7 @@ void ServerEnvironment::step(float dtime)
 					MOD_REASON_BLOCK_EXPIRED);
 
 			// Run node timers
-			std::vector<NodeTimer> elapsed_timers = block->m_node_timers.step(dtime);
+			std::vector<NodeTimer> elapsed_timers = block->m_node_timers.step(elapsed_time);
 			if (!elapsed_timers.empty()) {
 				MapNode n;
 				v3s16 p2;
@@ -1270,12 +1270,12 @@ void ServerEnvironment::step(float dtime)
 
 	if (m_active_block_modifier_interval.step(dtime, m_cache_abm_interval * m_active_block_interval_overload_skip))
 		do { // breakable
-			float dtime = m_cache_abm_interval * m_active_object_interval_overload_skip;
+			float elapsed_time = m_cache_abm_interval * m_active_object_interval_overload_skip;
 			ScopeProfiler sp(g_profiler, "SEnv: modify in blocks avg per interval", SPT_AVG);
 			TimeTaker timer("modify in active blocks per interval");
 
 			// Initialize handling of ActiveBlockModifiers
-			ABMHandler abmhandler(m_abms, dtime, this, true);
+			ABMHandler abmhandler(m_abms, elapsed_time, this, true);
 
 			for (const v3s16 &p : m_active_blocks.m_abm_list) {
 				MapBlock *block = m_map->getBlockNoCreateNoEx(p);
@@ -1293,9 +1293,9 @@ void ServerEnvironment::step(float dtime)
 			// allow up to 10% of the budget interval
 			const u32 max_time_ms = m_cache_abm_interval * 1000 / 10;
 			if (time_ms > max_time_ms) {
-				warningstream<<"active block modifiers took "
-					<<time_ms<<"ms (longer than "
-					<<max_time_ms<<"ms)"<<std::endl;
+				warningstream << "active block modifiers took "
+					<< time_ms << "ms (longer than "
+					<< max_time_ms << "ms)" << std::endl;
 				m_active_block_interval_overload_skip = ((float)time_ms / max_time_ms);
 			} else {
 				m_active_block_interval_overload_skip = 1.0f;
@@ -1311,7 +1311,7 @@ void ServerEnvironment::step(float dtime)
 		Step active objects
 	*/
 	if (m_active_object_interval.step(dtime, m_cache_ao_interval * m_active_object_interval_overload_skip)) {
-		float dtime = m_cache_ao_interval * m_active_object_interval_overload_skip;
+		float elapsed_time = m_cache_ao_interval * m_active_object_interval_overload_skip;
 		ScopeProfiler sp(g_profiler, "SEnv: step act. objs avg", SPT_AVG);
 		TimeTaker timer("Step active objects");
 
@@ -1319,7 +1319,7 @@ void ServerEnvironment::step(float dtime)
 
 		// This helps the objects to send data at the same time
 		bool send_recommended = false;
-		m_send_recommended_timer += dtime;
+		m_send_recommended_timer += elapsed_time;
 		if(m_send_recommended_timer > getSendRecommendedInterval())
 		{
 			m_send_recommended_timer -= getSendRecommendedInterval();
@@ -1332,7 +1332,7 @@ void ServerEnvironment::step(float dtime)
 				continue;
 
 			// Step object
-			obj->step(dtime, send_recommended);
+			obj->step(elapsed_time, send_recommended);
 			// Read messages from object
 			while (!obj->m_messages_out.empty()) {
 				m_active_object_messages.push(obj->m_messages_out.front());
@@ -1343,11 +1343,11 @@ void ServerEnvironment::step(float dtime)
 		// calculate a simple moving average
 		m_avg_ao_time = m_avg_ao_time * 0.9f + timer.stop(true) * 0.1f;
 		// allow up to 10% of the budget interval
-		const u32 max_time_ms = m_cache_ao_interval * 1000 / 10;
+		const float max_time_ms = m_cache_ao_interval * 1000 / 10;
 		if (m_avg_ao_time > max_time_ms) {
-			infostream<<"active objects took "
-				<<m_avg_ao_time<<"ms (longer than "
-				<<max_time_ms<<"ms)"<<std::endl;
+			warningstream << "active objects took "
+				<< m_avg_ao_time << "ms (longer than "
+				<< max_time_ms << "ms)" << std::endl;
 			// skip a few steps
 			m_active_object_interval_overload_skip = m_avg_ao_time / max_time_ms;
 		} else {
