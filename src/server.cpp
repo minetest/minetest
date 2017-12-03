@@ -327,17 +327,14 @@ Server::Server(
 
 Server::~Server()
 {
-	infostream<<"Server destructing"<<std::endl;
+	infostream << "Server destructing" << std::endl;
 
 	// Send shutdown message
 	SendChatMessage(PEER_ID_INEXISTENT, L"*** Server shutting down");
 
 	{
 		MutexAutoLock envlock(m_env_mutex);
-
-		// Execute script shutdown hooks
-		m_script->on_shutdown();
-
+		
 		infostream << "Server: Saving players" << std::endl;
 		m_env->saveLoadedPlayers();
 
@@ -353,6 +350,20 @@ Server::~Server()
 		}
 		m_env->kickAllPlayers(SERVER_ACCESSDENIED_SHUTDOWN,
 			kick_msg, reconnect);
+	}
+
+	// Do this before stopping the server in case mapgen callbacks need to access
+	// server-controlled resources (like ModStorages). Also do them before
+	// shutdown callbacks since they may modify state that is finalized in a
+	// callback.
+	m_emerge->stopThreads();
+
+	{
+		MutexAutoLock envlock(m_env_mutex);
+
+		// Execute script shutdown hooks
+		infostream << "Executing shutdown hooks" << std::endl;
+		m_script->on_shutdown();
 
 		infostream << "Server: Saving environment metadata" << std::endl;
 		m_env->saveMeta();
@@ -361,10 +372,6 @@ Server::~Server()
 	// Stop threads
 	stop();
 	delete m_thread;
-
-	// stop all emerge threads before deleting players that may have
-	// requested blocks to be emerged
-	m_emerge->stopThreads();
 
 	// Delete things in the reverse order of creation
 	delete m_emerge;
@@ -377,7 +384,7 @@ Server::~Server()
 	delete m_craftdef;
 
 	// Deinitialize scripting
-	infostream<<"Server: Deinitializing scripting"<<std::endl;
+	infostream << "Server: Deinitializing scripting" << std::endl;
 	delete m_script;
 
 	// Delete detached inventories
