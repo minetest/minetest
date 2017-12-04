@@ -480,6 +480,7 @@ void Server::process_PlayerPos(RemotePlayer *player, PlayerSAO *playersao,
 		// a bunch of lies
 		log.deserialize(logstream);
 		// prune the log of already acknowledged controls
+		log.acknowledge(player->getLastAckedControlLogTime());
 		// check that the remainder does not exceed 2 seconds dtime,
 		//   else reject
 		// replay the log step by step:
@@ -493,6 +494,7 @@ void Server::process_PlayerPos(RemotePlayer *player, PlayerSAO *playersao,
 		u32 ackTime = log.getFinishTime();
 		// send acknowledge
 		SendAckControlLog(pkt->getPeerId(), ackTime);
+		player->setLastAckedControlLogTime(ackTime);
 		//   OR send reset
 	}
 

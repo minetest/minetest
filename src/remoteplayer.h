@@ -142,6 +142,15 @@ public:
 	void setPeerId(session_t peer_id) { m_peer_id = peer_id; }
 	virtual bool isAttached() const;
 
+	u32 getLastAckedControlLogTime() const
+	{
+		return m_last_acked_control_log_time;
+	}
+	void setLastAckedControlLogTime(u32 t)
+	{
+		m_last_acked_control_log_time = t;
+	}
+
 protected:
 	virtual bool checkPrivilege(const std::string &priv) const;
 	virtual void triggerJumpEvent() { /* noop in remote */ };
@@ -186,4 +195,6 @@ private:
 
 	session_t m_peer_id = PEER_ID_INEXISTENT;
 	Server *m_server;
+
+	u32 m_last_acked_control_log_time = 0;
 };

@@ -3473,7 +3473,7 @@ PlayerSAO* Server::emergePlayer(const char *name, session_t peer_id, u16 proto_v
 	}
 
 	if (!player) {
-		player = new RemotePlayer(name, idef());
+		player = new RemotePlayer(name, idef(), this);
 	}
 
 	bool newplayer = false;
