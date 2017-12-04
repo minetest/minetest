@@ -1002,10 +1002,16 @@ kick_msg_crash (Crash message) string This server has experienced an internal er
 ask_reconnect_on_crash (Ask to reconnect after crash) bool false
 
 #    From how far clients know about objects, stated in mapblocks (16 nodes).
+#
+#    Setting this larger than active_block_range will also cause the server
+#    to maintain active objects up to this distance in the direction the
+#    player is looking. (This can avoid mobs suddenly disappearing from view)
 active_object_send_range_blocks (Active object send range) int 3
 
 #    How large area of blocks are subject to the active block stuff, stated in mapblocks (16 nodes).
 #    In active blocks objects are loaded and ABMs run.
+#    This is also the minimum range in which active objects (mobs) are maintained.
+#    This should be configured together with active_object_range.
 active_block_range (Active block range) int 3
 
 #    From how far blocks are sent to clients, stated in mapblocks (16 nodes).
