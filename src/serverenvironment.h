@@ -154,8 +154,9 @@ private:
 class ActiveBlockList
 {
 public:
-	void update(std::vector<v3s16> &active_positions,
-		s16 radius,
+	void update(std::vector<PlayerSAO*> &active_players,
+		s16 active_block_range,
+		s16 active_object_range,
 		std::set<v3s16> &blocks_removed,
 		std::set<v3s16> &blocks_added);
 
@@ -168,6 +169,7 @@ public:
 	}
 
 	std::set<v3s16> m_list;
+	std::set<v3s16> m_abm_list;
 	std::set<v3s16> m_forceloaded_list;
 
 private:
