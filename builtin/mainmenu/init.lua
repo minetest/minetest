@@ -24,6 +24,10 @@ mt_color_dark_green = "#25C191"
 
 local menupath = core.get_mainmenu_path()
 local basepath = core.get_builtin_path()
+local menustyle = core.settings:get("main_menu_style")
+if menustyle == "auto" then
+	menustyle = PLATFORM == "Android" and "simple" or "full"
+end
 defaulttexturedir = core.get_texturepath_share() .. DIR_DELIM .. "base" ..
 					DIR_DELIM .. "pack" .. DIR_DELIM
 
@@ -40,7 +44,7 @@ dofile(menupath .. DIR_DELIM .. "textures.lua")
 
 dofile(menupath .. DIR_DELIM .. "dlg_config_world.lua")
 dofile(menupath .. DIR_DELIM .. "dlg_settings_advanced.lua")
-if PLATFORM ~= "Android" then
+if menustyle ~= "simple" then
 	dofile(menupath .. DIR_DELIM .. "dlg_create_world.lua")
 	dofile(menupath .. DIR_DELIM .. "dlg_delete_mod.lua")
 	dofile(menupath .. DIR_DELIM .. "dlg_delete_world.lua")
@@ -52,7 +56,7 @@ local tabs = {}
 tabs.settings = dofile(menupath .. DIR_DELIM .. "tab_settings.lua")
 tabs.mods = dofile(menupath .. DIR_DELIM .. "tab_mods.lua")
 tabs.credits = dofile(menupath .. DIR_DELIM .. "tab_credits.lua")
-if PLATFORM == "Android" then
+if menustyle == "simple" then
 	tabs.simple_main = dofile(menupath .. DIR_DELIM .. "tab_simple_main.lua")
 else
 	tabs.local_game = dofile(menupath .. DIR_DELIM .. "tab_local.lua")
@@ -73,7 +77,7 @@ local function init_globals()
 	-- Init gamedata
 	gamedata.worldindex = 0
 
-	if PLATFORM == "Android" then
+	if menustyle == "simple" then
 		local world_list = core.get_worlds()
 		local world_index
 
@@ -128,7 +132,7 @@ local function init_globals()
 	-- Create main tabview
 	local tv_main = tabview_create("maintab", {x = 12, y = 5.4}, {x = 0, y = 0})
 
-	if PLATFORM == "Android" then
+	if menustyle == "simple" then
 		tv_main:add(tabs.simple_main)
 		tv_main:add(tabs.settings)
 	else
@@ -145,7 +149,7 @@ local function init_globals()
 	tv_main:set_global_event_handler(main_event_handler)
 	tv_main:set_fixed_size(false)
 
-	if PLATFORM ~= "Android" then
+	if menustyle ~= "simple" then
 		tv_main:set_tab(core.settings:get("maintab_LAST"))
 	end
 	ui.set_default("maintab")
