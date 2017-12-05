@@ -164,6 +164,13 @@ core.builtin_auth_handler = {
 		assert(auth_table[name]).last_login = os.time()
 		save_auth_file()
 	end,
+	iterate = function()
+		local names = {}
+		for k in pairs(auth_table) do
+			names[k] = true
+		end
+		return pairs(names)
+	end,
 }
 
 core.register_on_prejoinplayer(function(name, ip)

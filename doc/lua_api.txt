@@ -5241,5 +5241,7 @@ Definition tables
     --  ^ Returns boolean indicating success
         record_login = func(name),
     --  ^ Called when player joins, used for keeping track of last_login
+        iterate = func(),
+    --  ^ Returns an iterator (use with `for` loops) for all player names currently in the auth database
     }
 
