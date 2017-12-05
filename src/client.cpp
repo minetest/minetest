@@ -1836,7 +1836,7 @@ ParticleManager* Client::getParticleManager()
 	return &m_particle_manager;
 }
 
-scene::IAnimatedMesh* Client::getMesh(const std::string &filename)
+scene::IAnimatedMesh* Client::getMesh(const std::string &filename, bool cache)
 {
 	StringMap::const_iterator it = m_mesh_data.find(filename);
 	if (it == m_mesh_data.end()) {
@@ -1855,10 +1855,9 @@ scene::IAnimatedMesh* Client::getMesh(const std::string &filename)
 
 	scene::IAnimatedMesh *mesh = RenderingEngine::get_scene_manager()->getMesh(rfile);
 	rfile->drop();
-	// NOTE: By playing with Irrlicht refcounts, maybe we could cache a bunch
-	// of uniquely named instances and re-use them
 	mesh->grab();
-	RenderingEngine::get_mesh_cache()->removeMesh(mesh);
+	if (!cache)
+		RenderingEngine::get_mesh_cache()->removeMesh(mesh);
 	return mesh;
 }
 

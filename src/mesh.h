@@ -58,6 +58,11 @@ void setMeshBufferColor(scene::IMeshBuffer *buf, const video::SColor &color);
 */
 void setMeshColor(scene::IMesh *mesh, const video::SColor &color);
 
+/*
+	Set a constant color for an animated mesh
+*/
+void setAnimatedMeshColor(scene::IAnimatedMeshSceneNode *node, const video::SColor &color);
+
 /*!
  * Overwrites the color of a mesh buffer.
  * The color is darkened based on the normal vector of the vertices.
