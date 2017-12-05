@@ -119,7 +119,8 @@ void Client::loadMods()
 	scanModIntoMemory(BUILTIN_MOD_NAME, getBuiltinLuaPath());
 
 	// If modding is not enabled, don't load mods, just builtin
-	if (!m_modding_enabled) {
+	if (!m_modding_enabled ||
+			checkCSMFlavourLimit(CSMFlavourLimit::CSM_FL_MOD_LOADING)) {
 		return;
 	}
 	ClientModConfiguration modconf(getClientModsLuaPath());

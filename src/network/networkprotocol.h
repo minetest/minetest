@@ -925,6 +925,7 @@ enum CSMFlavourLimit : u64 {
 	CSM_FL_CHAT_MESSAGES = 0x00000002, // Disable chat message sending from CSM
 	CSM_FL_READ_ITEMDEFS = 0x00000004, // Disable itemdef lookups
 	CSM_FL_READ_NODEDEFS = 0x00000008, // Disable nodedef lookups
+	CSM_FL_MOD_LOADING = 0x80000000, // Disable mod loading
 	CSM_FL_ALL = 0xFFFFFFFF,
 };
 
