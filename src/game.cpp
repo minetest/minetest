@@ -2049,7 +2049,7 @@ bool Game::initGui()
 
 	// Make sure the size of the recent messages buffer is right
 	chat_backend->applySettings();
-    
+
 	// Chat backend and console
 	gui_chat_console = new GUIChatConsole(guienv, guienv->getRootGUIElement(),
 			-1, chat_backend, client, &g_menumgr);
@@ -2146,8 +2146,7 @@ bool Game::connectToServer(const std::string &playername,
 
 		fps_control.last_time = RenderingEngine::get_timer_time();
 
-		client->loadMods();
-		client->initMods();
+		client->loadBuiltin();
 
 		while (RenderingEngine::run()) {
 
