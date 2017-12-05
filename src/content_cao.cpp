@@ -575,6 +575,10 @@ void GenericCAO::addToScene(ITextureSource *tsrc)
 					m_prop.visual_size.Y,
 					m_prop.visual_size.X));
 			u8 li = m_last_light;
+
+			// set vertex colors to ensure alpha is set
+			setMeshColor(m_animated_meshnode->getMesh(), video::SColor(255,li,li,li));
+
 			setAnimatedMeshColor(m_animated_meshnode, video::SColor(255,li,li,li));
 
 			bool backface_culling = m_prop.backface_culling;
