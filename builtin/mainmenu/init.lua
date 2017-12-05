@@ -30,7 +30,7 @@ if menustyle == "default" then
 	if PLATFORM == "Android" then
 		menustyle = "simple"
 	else
-		menustyle = full
+		menustyle = "full"
 	end
 end
 defaulttexturedir = core.get_texturepath_share() .. DIR_DELIM .. "base" ..
