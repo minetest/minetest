@@ -3124,8 +3124,11 @@ These functions return the leftover itemstack.
 * `minetest.get_server_status()`: returns server status string
 * `minetest.get_server_uptime()`: returns the server uptime in seconds
 * `minetest.remove_player(name)`: remove player from database (if he is not connected).
-    * Does not remove player authentication data, minetest.player_exists will continue to return true.
+    * As auth data is not removed, minetest.player_exists will continue to return true.
+      Call the below method as well if you want to remove auth data too.
     * Returns a code (0: successful, 1: no such player, 2: player is connected)
+* `minetest.remove_player_auth(name)`: remove player authentication data
+    * Returns boolean indicating success (false if player nonexistant)
 
 ### Bans
 * `minetest.get_ban_list()`: returns the ban list (same as `minetest.get_ban_description("")`)
@@ -5225,6 +5228,8 @@ Definition tables
         create_auth = func(name, password),
     --  ^ Create new auth data for player `name`
     --  ^ Note that `password` is not plain-text but an arbitrary representation decided by the engine
+        delete_auth = func(name),
+    --  ^ Delete auth data of player `name`, returns boolean indicating success (false if player nonexistant)
         set_password = func(name, password),
     --  ^ Set password of player `name` to `password`
            Auth data should be created if not present
@@ -5236,5 +5241,7 @@ Definition tables
     --  ^ Returns boolean indicating success
         record_login = func(name),
     --  ^ Called when player joins, used for keeping track of last_login
+        iterate = func(),
+    --  ^ Returns an iterator (use with `for` loops) for all player names currently in the auth database
     }
 

@@ -106,6 +106,16 @@ core.builtin_auth_handler = {
 		}
 		save_auth_file()
 	end,
+	delete_auth = function(name)
+		assert(type(name) == "string")
+		if not auth_table[name] then
+			return false
+		end
+		core.log('info', "Built-in authentication handler deleting player '"..name.."'")
+		auth_table[name] = nil
+		save_auth_file()
+		return true
+	end,
 	set_password = function(name, password)
 		assert(type(name) == "string")
 		assert(type(password) == "string")
@@ -153,6 +163,13 @@ core.builtin_auth_handler = {
 		assert(type(name) == "string")
 		assert(auth_table[name]).last_login = os.time()
 		save_auth_file()
+	end,
+	iterate = function()
+		local names = {}
+		for k in pairs(auth_table) do
+			names[k] = true
+		end
+		return pairs(names)
 	end,
 }
 
@@ -204,6 +221,7 @@ end
 
 core.set_player_password = auth_pass("set_password")
 core.set_player_privs    = auth_pass("set_privileges")
+core.remove_player_auth  = auth_pass("delete_auth")
 core.auth_reload         = auth_pass("reload")
 
 local record_login = auth_pass("record_login")
