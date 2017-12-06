@@ -133,6 +133,10 @@ function core.register_item(name, itemdef)
 				" limiting to maximum: " ..name)
 		end
 		setmetatable(itemdef, {__index = core.nodedef_default})
+		--if 'solid' is not explicitly set, default to the value of 'walkable'
+		if itemdef.solid == nil then
+			itemdef.solid = itemdef.walkable
+		end
 		core.registered_nodes[itemdef.name] = itemdef
 	elseif itemdef.type == "craft" then
 		setmetatable(itemdef, {__index = core.craftitemdef_default})

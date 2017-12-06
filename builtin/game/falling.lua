@@ -177,7 +177,7 @@ function builtin_shared.check_attached_node(p, n)
 	local p2 = vector.add(p, d)
 	local nn = core.get_node(p2).name
 	local def2 = core.registered_nodes[nn]
-	if def2 and not def2.walkable then
+	if def2 and not def2.solid then
 		return false
 	end
 	return true
@@ -203,7 +203,7 @@ function core.check_single_for_falling(p)
 				core.get_node_level(p_bottom) <
 				core.get_node_max_level(p_bottom))) and
 
-				(not d_bottom.walkable or d_bottom.buildable_to) then
+				(not d_bottom.solid or d_bottom.buildable_to) then
 			n.level = core.get_node_level(p)
 			local meta = core.get_meta(p)
 			local metatable = {}
