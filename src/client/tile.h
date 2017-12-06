@@ -28,6 +28,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <memory>
 #include "util/numeric.h"
 
+#if __ANDROID__
+#include <IVideoDriver.h>
+#endif
+
 class IGameDef;
 struct TileSpec;
 struct TileDef;
@@ -153,7 +157,7 @@ public:
 IWritableTextureSource *createTextureSource();
 
 #ifdef __ANDROID__
-video::IImage * Align2Npot2(video::IImage * image, video::IVideoDriver* driver);
+video::IImage * Align2Npot2(video::IImage * image, irr::video::IVideoDriver* driver);
 #endif
 
 enum MaterialType{

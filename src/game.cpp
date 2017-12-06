@@ -2092,10 +2092,11 @@ void Game::toggleFreeMoveAlt()
 void Game::toggleFast()
 {
 	bool fast_move = !g_settings->getBool("fast_move");
+	bool has_fast_privs = client->checkPrivilege("fast");
 	g_settings->set("fast_move", bool_to_cstr(fast_move));
 
 	if (fast_move) {
-		if (client->checkPrivilege("fast")) {
+		if (has_fast_privs) {
 			m_game_ui->showTranslatedStatusText("Fast mode enabled");
 		} else {
 			m_game_ui->showTranslatedStatusText("Fast mode enabled (note: no 'fast' privilege)");

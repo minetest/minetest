@@ -80,7 +80,7 @@ LOCAL_CFLAGS := -D_IRR_ANDROID_PLATFORM_      \
 ifndef NDEBUG
 LOCAL_CFLAGS += -g -D_DEBUG -O0 -fno-omit-frame-pointer
 else
-LOCAL_CFLAGS += -O3
+LOCAL_CFLAGS += $(TARGET_CFLAGS_ADDON)
 endif
 
 ifdef GPROF
@@ -91,7 +91,7 @@ endif
 # LOCAL_CFLAGS += -fsanitize=address
 # LOCAL_LDFLAGS += -fsanitize=address
 
-ifeq ($(TARGET_ARCH_ABI),x86)
+ifeq ($(TARGET_ABI),x86)
 LOCAL_CFLAGS += -fno-stack-protector
 endif
 
@@ -134,6 +134,7 @@ LOCAL_SRC_FILES := \
 		jni/src/craftdef.cpp                      \
 		jni/src/database/database-dummy.cpp       \
 		jni/src/database/database-files.cpp       \
+		jni/src/database/database-leveldb.cpp     \
 		jni/src/database/database-sqlite3.cpp     \
 		jni/src/database/database.cpp             \
 		jni/src/debug.cpp                         \
@@ -149,6 +150,7 @@ LOCAL_SRC_FILES := \
 		jni/src/genericobject.cpp                 \
 		jni/src/gettext.cpp                       \
 		jni/src/gui/guiChatConsole.cpp            \
+		jni/src/gui/guiConfirmRegistration.cpp    \
 		jni/src/gui/guiEditBoxWithScrollbar.cpp   \
 		jni/src/gui/guiEngine.cpp                 \
 		jni/src/gui/guiPathSelectMenu.cpp         \
@@ -159,6 +161,7 @@ LOCAL_SRC_FILES := \
 		jni/src/guiscalingfilter.cpp              \
 		jni/src/gui/guiVolumeChange.cpp           \
 		jni/src/gui/profilergraph.cpp             \
+		jni/src/gui/touchscreengui.cpp            \
 		jni/src/httpfetch.cpp                     \
 		jni/src/hud.cpp                           \
 		jni/src/imagefilters.cpp                  \
@@ -196,6 +199,7 @@ LOCAL_SRC_FILES := \
 		jni/src/mapgen/mg_schematic.cpp           \
 		jni/src/minimap.cpp                       \
 		jni/src/mods.cpp                          \
+		jni/src/modchannels.cpp                   \
 		jni/src/nameidmapping.cpp                 \
 		jni/src/nodedef.cpp                       \
 		jni/src/nodemetadata.cpp                  \
@@ -222,12 +226,12 @@ LOCAL_SRC_FILES := \
 		jni/src/serverobject.cpp                  \
 		jni/src/shader.cpp                        \
 		jni/src/sky.cpp                           \
-		jni/src/socket.cpp                        \
 		jni/src/sound.cpp                         \
 		jni/src/sound_openal.cpp                  \
 		jni/src/staticobject.cpp                  \
 		jni/src/subgame.cpp                       \
 		jni/src/tileanimation.cpp                 \
+		jni/src/translation.cpp                   \
 		jni/src/tool.cpp                          \
 		jni/src/mapgen/treegen.cpp                \
 		jni/src/version.cpp                       \
@@ -250,6 +254,7 @@ LOCAL_SRC_FILES := \
 		jni/src/unittest/test_compression.cpp     \
 		jni/src/unittest/test_connection.cpp      \
 		jni/src/unittest/test_filepath.cpp        \
+		jni/src/unittest/test_gameui.cpp          \
 		jni/src/unittest/test_inventory.cpp       \
 		jni/src/unittest/test_map_settings_manager.cpp \
 		jni/src/unittest/test_mapnode.cpp         \
@@ -266,28 +271,39 @@ LOCAL_SRC_FILES := \
 		jni/src/unittest/test_utilities.cpp       \
 		jni/src/unittest/test_voxelalgorithms.cpp \
 		jni/src/unittest/test_voxelmanipulator.cpp \
-		jni/src/touchscreengui.cpp                \
-		jni/src/database-leveldb.cpp              \
 		jni/src/settings.cpp                      \
 		jni/src/wieldmesh.cpp                     \
 		jni/src/client/clientlauncher.cpp         \
+		jni/src/client/gameui.cpp                 \
 		jni/src/client/hud.cpp                    \
 		jni/src/client/inputhandler.cpp           \
 		jni/src/client/renderingengine.cpp        \
 		jni/src/client/tile.cpp                   \
 		jni/src/client/joystick_controller.cpp    \
-		jni/src/irrlicht_changes/static_text.cpp
+		jni/src/client/render/factory.cpp         \
+		jni/src/client/render/pageflip.cpp        \
+		jni/src/client/render/sidebyside.cpp      \
+		jni/src/client/render/plain.cpp           \
+		jni/src/client/render/anaglyph.cpp        \
+		jni/src/client/render/interlaced.cpp      \
+		jni/src/client/render/core.cpp            \
+		jni/src/client/render/stereo.cpp          \
+		jni/src/irrlicht_changes/static_text.cpp  \
+		jni/src/irrlicht_changes/CGUITTFont.cpp
 
 # intentionally kept out (we already build openssl itself): jni/src/util/sha256.c
 
 # Network
 LOCAL_SRC_FILES += \
+		jni/src/network/address.cpp               \
 		jni/src/network/connection.cpp            \
 		jni/src/network/networkpacket.cpp         \
 		jni/src/network/clientopcodes.cpp         \
 		jni/src/network/clientpackethandler.cpp   \
+		jni/src/network/connectionthreads.cpp     \
 		jni/src/network/serveropcodes.cpp         \
 		jni/src/network/serverpackethandler.cpp   \
+		jni/src/network/socket.cpp                \
 
 # lua api
 LOCAL_SRC_FILES += \
@@ -303,6 +319,7 @@ LOCAL_SRC_FILES += \
 		jni/src/script/cpp_api/s_inventory.cpp    \
 		jni/src/script/cpp_api/s_item.cpp         \
 		jni/src/script/cpp_api/s_mainmenu.cpp     \
+		jni/src/script/cpp_api/s_modchannels.cpp  \
 		jni/src/script/cpp_api/s_node.cpp         \
 		jni/src/script/cpp_api/s_nodemeta.cpp     \
 		jni/src/script/cpp_api/s_player.cpp       \
@@ -322,6 +339,7 @@ LOCAL_SRC_FILES += \
 		jni/src/script/lua_api/l_mapgen.cpp       \
 		jni/src/script/lua_api/l_metadata.cpp     \
 		jni/src/script/lua_api/l_minimap.cpp      \
+		jni/src/script/lua_api/l_modchannels.cpp  \
 		jni/src/script/lua_api/l_nodemeta.cpp     \
 		jni/src/script/lua_api/l_nodetimer.cpp    \
 		jni/src/script/lua_api/l_noise.cpp        \
@@ -341,7 +359,7 @@ LOCAL_SRC_FILES += \
 		jni/src/script/scripting_mainmenu.cpp
 
 #freetype2 support
-LOCAL_SRC_FILES += jni/src/cguittfont/xCGUITTFont.cpp
+#LOCAL_SRC_FILES += jni/src/cguittfont/xCGUITTFont.cpp
 
 # Lua
 LOCAL_SRC_FILES += \
@@ -382,7 +400,6 @@ LOCAL_SRC_FILES += deps/sqlite/sqlite3.c
 # Threading
 LOCAL_SRC_FILES += \
 		jni/src/threading/event.cpp \
-		jni/src/threading/mutex.cpp \
 		jni/src/threading/semaphore.cpp \
 		jni/src/threading/thread.cpp
 
