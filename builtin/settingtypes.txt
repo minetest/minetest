@@ -1085,6 +1085,9 @@ active_block_mgmt_interval (Active Block Management interval) float 2.0
 #    Length of time between ABM execution cycles
 abm_interval (Active Block Modifier interval) float 1.0
 
+#    Length of time between active object step cycles
+active_object_interval (Active Object interval) float 0.1
+
 #    Length of time between NodeTimer execution cycles
 nodetimer_interval (NodeTimer interval) float 0.2
 
