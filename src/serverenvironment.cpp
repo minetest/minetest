@@ -1227,13 +1227,15 @@ void ServerEnvironment::step(float dtime)
 		}
 	}
 
+	// placeholder for the "real" time passed
+	float elapsed_time;
+
 	/*
 		Mess around in active blocks
 	*/
-	if (m_active_blocks_nodemetadata_interval.step(dtime, m_cache_nodetimer_interval)) {
+	if (m_active_blocks_nodemetadata_interval.step(dtime, m_cache_nodetimer_interval,
+		&elapsed_time)) {
 		ScopeProfiler sp(g_profiler, "SEnv: mess in act. blocks avg per interval", SPT_AVG);
-
-		float elapsed_time = m_cache_nodetimer_interval;
 
 		for (const v3s16 &p: m_active_blocks.m_list) {
 			MapBlock *block = m_map->getBlockNoCreateNoEx(p);
@@ -1269,9 +1271,8 @@ void ServerEnvironment::step(float dtime)
 	}
 
 	if (m_active_block_modifier_interval.step(dtime,
-		m_cache_abm_interval * m_active_block_interval_overload_skip))
+		m_cache_abm_interval * m_active_block_interval_overload_skip, &elapsed_time))
 		do { // breakable
-			float elapsed_time = m_cache_abm_interval * m_active_object_interval_overload_skip;
 			ScopeProfiler sp(g_profiler, "SEnv: modify in blocks avg per interval", SPT_AVG);
 			TimeTaker timer("modify in active blocks per interval");
 
@@ -1292,7 +1293,7 @@ void ServerEnvironment::step(float dtime)
 
 			const u32 time_ms = timer.stop(true);
 			// allow up to 10% of the budget interval
-			const u32 max_time_ms = m_cache_abm_interval * 1000.0f / 10.0f;
+			const u32 max_time_ms = m_cache_abm_interval * 1000.0f * 0.1f;
 			if (time_ms > max_time_ms) {
 				warningstream << "active block modifiers took "
 					<< time_ms << "ms (longer than "
@@ -1304,7 +1305,7 @@ void ServerEnvironment::step(float dtime)
 		}while(0);
 
 	/*
-	  Step script environment (run global on_step())
+		Step script environment (run global on_step())
 	*/
 	m_script->environment_Step(dtime);
 
@@ -1312,9 +1313,8 @@ void ServerEnvironment::step(float dtime)
 		Step active objects
 	*/
 	if (m_active_object_interval.step(dtime,
-		m_cache_ao_interval * m_active_object_interval_overload_skip)) {
+		m_cache_ao_interval * m_active_object_interval_overload_skip, &elapsed_time)) {
 
-		float elapsed_time = m_cache_ao_interval * m_active_object_interval_overload_skip;
 		ScopeProfiler sp(g_profiler, "SEnv: step act. objs avg", SPT_AVG);
 		TimeTaker timer("Step active objects");
 
@@ -1345,8 +1345,9 @@ void ServerEnvironment::step(float dtime)
 
 		// calculate a simple moving average
 		m_avg_ao_time = m_avg_ao_time * 0.9f + timer.stop(true) * 0.1f;
-		// allow up to 10% of the budget interval
-		const float max_time_ms = m_cache_ao_interval * 1000.0f / 10.0f;
+
+		// allow up to 20% of the budget interval
+		const float max_time_ms = m_cache_ao_interval * 1000.0f * 0.2f;
 		if (m_avg_ao_time > max_time_ms) {
 			warningstream << "active objects took "
 				<< m_avg_ao_time << "ms (longer than "
