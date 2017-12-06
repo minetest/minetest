@@ -794,7 +794,7 @@ video::ITexture* TextureSource::generateTextureFromMesh(
 		g_settings->getBool("inventory_image_hack")
 		) {
 		// Get a scene manager
-		scene::ISceneManager *smgr_main = m_device->getSceneManager();
+		scene::ISceneManager *smgr_main = RenderingEngine::get_raw_device()->getSceneManager();
 		sanity_check(smgr_main);
 		scene::ISceneManager *smgr = smgr_main->createNewSceneManager();
 		sanity_check(smgr);

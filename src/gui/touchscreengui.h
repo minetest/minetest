@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <IEventReceiver.h>
 #include <IGUIButton.h>
 #include <IGUIEnvironment.h>
+#include <IrrlichtDevice.h>
 
 #include <map>
 #include <vector>

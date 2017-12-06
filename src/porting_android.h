@@ -76,4 +76,9 @@ int getInputDialogState();
  */
 std::string getInputDialogValue();
 
+#ifndef SERVER
+float getDisplayDensity();
+v2u32 getDisplaySize();
+#endif
+
 }
