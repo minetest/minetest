@@ -1234,7 +1234,7 @@ void ServerEnvironment::step(float dtime)
 		Mess around in active blocks
 	*/
 	if (m_active_blocks_nodemetadata_interval.step(dtime, m_cache_nodetimer_interval,
-		&elapsed_time)) {
+			&elapsed_time)) {
 		ScopeProfiler sp(g_profiler, "SEnv: mess in act. blocks avg per interval", SPT_AVG);
 
 		for (const v3s16 &p: m_active_blocks.m_list) {
@@ -1271,7 +1271,7 @@ void ServerEnvironment::step(float dtime)
 	}
 
 	if (m_active_block_modifier_interval.step(dtime,
-		m_cache_abm_interval * m_active_block_interval_overload_skip, &elapsed_time))
+			m_cache_abm_interval * m_active_block_interval_overload_skip, &elapsed_time))
 		do { // breakable
 			ScopeProfiler sp(g_profiler, "SEnv: modify in blocks avg per interval", SPT_AVG);
 			TimeTaker timer("modify in active blocks per interval");
@@ -1313,7 +1313,7 @@ void ServerEnvironment::step(float dtime)
 		Step active objects
 	*/
 	if (m_active_object_interval.step(dtime,
-		m_cache_ao_interval * m_active_object_interval_overload_skip, &elapsed_time)) {
+			m_cache_ao_interval * m_active_object_interval_overload_skip, &elapsed_time)) {
 
 		ScopeProfiler sp(g_profiler, "SEnv: step act. objs avg", SPT_AVG);
 		TimeTaker timer("Step active objects");
