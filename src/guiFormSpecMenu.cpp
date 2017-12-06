@@ -3681,18 +3681,24 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 			a->from_i = m_selected_item->i;
 			m_invmgr->inventoryAction(a);
 		} else if (craft_amount > 0) {
-			m_selected_content_guess = ItemStack(); // Clear
-
-			// Send IACTION_CRAFT
-
 			assert(s.isValid());
-			assert(inv_s);
+			
+			// if there are no items selected or the selected item
+			// belongs to craftresult list, proceed with crafting
+			if (m_selected_item == NULL ||
+					!m_selected_item->isValid() || m_selected_item->listname == "craftresult") {
+				
+				m_selected_content_guess = ItemStack(); // Clear
+				
+				assert(inv_s);
 
-			infostream << "Handing IACTION_CRAFT to manager" << std::endl;
-			ICraftAction *a = new ICraftAction();
-			a->count = craft_amount;
-			a->craft_inv = s.inventoryloc;
-			m_invmgr->inventoryAction(a);
+				// Send IACTION_CRAFT
+				infostream << "Handing IACTION_CRAFT to manager" << std::endl;
+				ICraftAction *a = new ICraftAction();
+				a->count = craft_amount;
+				a->craft_inv = s.inventoryloc;
+				m_invmgr->inventoryAction(a);
+			}
 		}
 
 		// If m_selected_amount has been decreased to zero, deselect
