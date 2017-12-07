@@ -535,6 +535,7 @@ private:
 	std::queue<ClientEvent *> m_client_event_queue;
 	bool m_itemdef_received = false;
 	bool m_nodedef_received = false;
+	bool m_mods_loaded = false;
 	ClientMediaDownloader *m_media_downloader;
 
 	// time_of_day speed approximation for old protocol

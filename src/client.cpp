@@ -123,6 +123,11 @@ void Client::loadBuiltin()
 
 void Client::loadMods()
 {
+	// Don't permit to load mods twice
+	if (m_mods_loaded) {
+		return;
+	}
+
 	// If modding is not enabled or flavour disable it, don't load mods, just builtin
 	if (!m_modding_enabled) {
 		warningstream << "Client side mods are disabled by configuration." << std::endl;
@@ -160,6 +165,8 @@ void Client::loadMods()
 	// Load and run "mod" scripts
 	for (const ModSpec &mod : m_mods)
 		m_script->loadModFromMemory(mod.name);
+
+	m_mods_loaded = true;
 }
 
 void Client::scanModSubfolder(const std::string &mod_name, const std::string &mod_path,
