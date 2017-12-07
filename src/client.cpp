@@ -136,6 +136,10 @@ void Client::loadMods()
 
 	if (checkCSMFlavourLimit(CSMFlavourLimit::CSM_FL_LOAD_CLIENT_MODS)) {
 		warningstream << "Client side mods are disabled by server." << std::endl;
+		// If mods loading is disabled and builtin integrity is wrong, disconnect user.
+		if (!checkBuiltinIntegrity()) {
+			// @TODO disconnect user
+		}
 		return;
 	}
 
@@ -167,6 +171,12 @@ void Client::loadMods()
 		m_script->loadModFromMemory(mod.name);
 
 	m_mods_loaded = true;
+}
+
+bool Client::checkBuiltinIntegrity()
+{
+	// @TODO
+	return true;
 }
 
 void Client::scanModSubfolder(const std::string &mod_name, const std::string &mod_path,
