@@ -266,9 +266,9 @@ static void set_allowed_options(OptionList *allowed_options)
 	allowed_options->insert(std::make_pair("world", ValueSpec(VALUETYPE_STRING,
 			_("Set world path (implies local game) ('list' lists all)"))));
 	allowed_options->insert(std::make_pair("worldpath", ValueSpec(VALUETYPE_STRING,
-			_("Set world path (implies local game) ('list' lists all)"))));
+			_("Set world path (implies local game) ('list' lists all paths, no names)"))));
 	allowed_options->insert(std::make_pair("worldname", ValueSpec(VALUETYPE_STRING,
-			_("Set world by name (implies local game) ('list' lists all)"))));
+			_("Set world by name (implies local game) ('list' lists all names, no paths)"))));
 	allowed_options->insert(std::make_pair("quiet", ValueSpec(VALUETYPE_FLAG,
 			_("Print to console errors only"))));
 	allowed_options->insert(std::make_pair("info", ValueSpec(VALUETYPE_FLAG,
@@ -364,12 +364,14 @@ static void print_worldspecs(const std::vector<WorldSpec> &worldspecs,
 		std::string name = worldspec.name;
 		std::string path = worldspec.path;
 		if (print_name && print_path) {
+			os << "\t" << name << "\t\t" << path << std::endl;
+
 			if (name.find(' ') != std::string::npos)
 				name = std::string("'").append(name).append("'");
 			path = std::string("'").append(path).append("'");
 
 			name = padStringRight(name, 14);
-			os << "  " << name << " " << path << std::endl;
+			//os << "  " << name << " " << path << std::endl;
 		} else if (print_name) {
 			os << "  " << name << std::endl;
 		} else if (print_path) {
