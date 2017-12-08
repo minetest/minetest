@@ -255,6 +255,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("joystick_frustum_sensitivity", "170");
 
 	// Main menu
+	settings->setDefault("main_menu_style", "auto");
 	settings->setDefault("main_menu_path", "");
 	settings->setDefault("main_menu_mod_mgr", "1");
 	settings->setDefault("main_menu_game_mgr", "0");
