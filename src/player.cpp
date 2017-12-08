@@ -363,6 +363,8 @@ void Player::applyControlLogEntry(const ControlLogEntry &cle, Environment *env)
 			incH * physics_override_speed * slip_factor);
 	accelerateVertical(speedV * physics_override_speed,
 			incV * physics_override_speed);
+	//debugVec("Speed after CLE", m_speed);
+
 }
 
 // Horizontal acceleration (X and Z), Y direction is ignored
@@ -445,6 +447,7 @@ void Player::move(f32 dtime, Environment *env, f32 pos_max_d,
 	const NodeDefManager *nodemgr = getNodeDefManager();
 
 	v3f position = getPosition();
+	//debugVec("Starting move with", position);
 
 	// Copy parent position if player is attached
 	if (isAttached()) {
@@ -557,9 +560,13 @@ void Player::move(f32 dtime, Environment *env, f32 pos_max_d,
 
 	// TODO: check if it is ok to use env->getGameDef, or if we
 	//       really need to pass m_client/m_server somehow
+	//debugVec("Before collision", position);
+	//debugVec("Before collision speed", m_speed);
 	collisionMoveResult result = collisionMoveSimple(env, env->getGameDef(),
 		pos_max_d, m_collisionbox, player_stepheight, dtime,
 		&position, &m_speed, accel_f);
+	//debugVec("After collision", position);
+	//debugVec("After collision speed", m_speed);
 
 	bool could_sneak = control.sneak && !free_move && !in_liquid &&
 		!is_climbing && physics_override_sneak;
@@ -614,6 +621,7 @@ void Player::move(f32 dtime, Environment *env, f32 pos_max_d,
 		If sneaking, keep on top of last walked node and don't fall off
 	*/
 	if (could_sneak && m_sneak_node_exists) {
+		//debugStr("Sneaking", "enabled");
 		const v3f sn_f = intToFloat(m_sneak_node, BS);
 		const v3f bmin = sn_f + m_sneak_node_bb_top.MinEdge;
 		const v3f bmax = sn_f + m_sneak_node_bb_top.MaxEdge;
@@ -671,6 +679,7 @@ void Player::move(f32 dtime, Environment *env, f32 pos_max_d,
 	/*
 		Set new position but keep sneak node set
 	*/
+	//debugVec("Setting position", position);
 	setPosition(position);
 	m_sneak_node_exists = new_sneak_node_exists;
 
@@ -842,3 +851,10 @@ static aabb3f getNodeBoundingBox(const std::vector<aabb3f> &nodeboxes)
 	return b_max;
 }
 
+void Player::debugVec(const std::string &title, const v3f &v, const std::string &prefix) const {
+	dstream << prefix << title << ": <" << v.X << " " << v.Y << " " << v.Z << ">" << std::endl;
+}
+void Player::debugStr(const std::string &str, bool newline, const std::string &prefix) const {
+	dstream << prefix << str;
+	if (newline) dstream << std::endl;
+}

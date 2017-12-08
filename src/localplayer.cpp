@@ -158,3 +158,10 @@ void LocalPlayer::calculateCameraInCeiling(Map *map, const NodeDefManager *nodem
 		}
 	}
 }
+
+void LocalPlayer::debugVec( const std::string &title, const v3f &v, const std::string &unused) const {
+	Player::debugVec(title, v, "LOCAL: ");
+}
+void LocalPlayer::debugStr(const std::string &str, bool newline, const std::string &unused) const {
+	Player::debugStr(str, newline, "LOCAL: ");
+}
