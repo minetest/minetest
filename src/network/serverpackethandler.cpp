@@ -500,6 +500,13 @@ void Server::process_PlayerPos(RemotePlayer *player, PlayerSAO *playersao,
 
 	v3f position((f32)ps.X / 100.0f, (f32)ps.Y / 100.0f, (f32)ps.Z / 100.0f);
 	v3f speed((f32)ss.X / 100.0f, (f32)ss.Y / 100.0f, (f32)ss.Z / 100.0f);
+	//player->debugVec("Client position", position);
+
+	v3f delta = position - player->getPosition();
+	//player->debugVec("delta position", delta);
+	if (delta.getLength() > 1000.0) {
+		player->setPosition(position);
+	}
 
 	pitch = modulo360f(pitch);
 	yaw = wrapDegrees_0_360(yaw);
