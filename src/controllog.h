@@ -120,17 +120,17 @@ public:
 	s8 serJoySidew() const;
 
 private:
-	u8 dtime;
-	u16 overtime;
+	u8 dtime = 0;
+	u16 overtime = 0;
 
-	u8 settings;
+	u8 settings = 0;
 	// free_move;
 	// fast_move;
 	// continuous_forward;
 	// always_fly_fast;
 	// aux1_descends;
 	
-	u16 keys;
+	u16 keys = 0;
 	// up;
 	// down;
 	// left;
@@ -140,12 +140,12 @@ private:
 	// aux1;
 	// mouse and future extensions
 
-	u16 yaw_pitch;
+	u16 yaw_pitch = 0;
 	// 7 bits signed:   pitch;
 	// 9 bits unsigned: yaw;
 
-	s8 joy_forw;
-	s8 joy_sidew;
+	s8 joy_forw = 0;
+	s8 joy_sidew = 0;
 };
 
 class ControlLog

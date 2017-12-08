@@ -187,6 +187,8 @@ void ControlLogEntry::deserialize(std::istream &input, u8 flags, const ControlLo
 	if (flags & 0x01) { // joystick
 		joy_forw = readS8(input);
 		joy_sidew = readS8(input);
+	} else {
+		joy_forw = joy_sidew = 0;
 	}
 	return;
 }
