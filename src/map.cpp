@@ -144,7 +144,7 @@ MapBlock *Map::getBlockNoCreate(v3s16 p3d)
 	return block;
 }
 
-bool Map::isNodeUnderground(v3s16 p)
+bool Map::isNodeUnderground(v3s16 p) noexcept
 {
 	v3s16 blockpos = getNodeBlockPos(p);
 	MapBlock *block = getBlockNoCreateNoEx(blockpos);

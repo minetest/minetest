@@ -181,7 +181,7 @@ public:
 	inline INodeDefManager *getNodeDefManager() { return m_nodedef; }
 
 	// Returns false if not found
-	bool isNodeUnderground(v3s16 p);
+	bool isNodeUnderground(v3s16 p) noexcept;
 
 	bool isValidPosition(v3s16 p) noexcept;
 
