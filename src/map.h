@@ -155,11 +155,11 @@ public:
 	void dispatchEvent(MapEditEvent *event);
 
 	// On failure returns NULL
-	MapSector * getSectorNoGenerateNoExNoLock(v2s16 p2d);
+	MapSector * getSectorNoGenerateNoExNoLock(v2s16 p2d) noexcept;
 	// Same as the above (there exists no lock anymore)
-	MapSector * getSectorNoGenerateNoEx(v2s16 p2d);
+	MapSector * getSectorNoGenerateNoEx(v2s16 p2d) noexcept;
 	// On failure throws InvalidPositionException
-	MapSector * getSectorNoGenerate(v2s16 p2d);
+	MapSector * getSectorNoGenerate(v2s16 p2d) noexcept;
 	// Gets an existing sector or creates an empty one
 	//MapSector * getSectorCreate(v2s16 p2d);
 
@@ -172,7 +172,7 @@ public:
 	// Returns InvalidPositionException if not found
 	MapBlock * getBlockNoCreate(v3s16 p);
 	// Returns NULL if not found
-	MapBlock * getBlockNoCreateNoEx(v3s16 p);
+	MapBlock * getBlockNoCreateNoEx(v3s16 p) noexcept;
 
 	/* Server overrides */
 	virtual MapBlock * emergeBlock(v3s16 p, bool create_blank=true)
@@ -183,7 +183,7 @@ public:
 	// Returns InvalidPositionException if not found
 	bool isNodeUnderground(v3s16 p);
 
-	bool isValidPosition(v3s16 p);
+	bool isValidPosition(v3s16 p) noexcept;
 
 	// throws InvalidPositionException if not found
 	void setNode(v3s16 p, MapNode & n);
@@ -191,7 +191,7 @@ public:
 	// Returns a CONTENT_IGNORE node if not found
 	// If is_valid_position is not NULL then this will be set to true if the
 	// position is valid, otherwise false
-	MapNode getNodeNoEx(v3s16 p, bool *is_valid_position = NULL);
+	MapNode getNodeNoEx(v3s16 p, bool *is_valid_position = NULL) noexcept;
 
 	/*
 		These handle lighting but not faces.

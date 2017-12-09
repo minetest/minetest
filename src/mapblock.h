@@ -81,7 +81,7 @@ public:
 		return NODECONTAINER_ID_MAPBLOCK;
 	}*/
 
-	Map * getParent()
+	Map * getParent() noexcept
 	{
 		return m_parent;
 	}
@@ -96,7 +96,7 @@ public:
 		raiseModified(MOD_STATE_WRITE_NEEDED, MOD_REASON_REALLOCATE);
 	}
 
-	MapNode* getData()
+	MapNode* getData() noexcept
 	{
 		return data;
 	}
@@ -104,7 +104,7 @@ public:
 	////
 	//// Modification tracking methods
 	////
-	void raiseModified(u32 mod, u32 reason=MOD_REASON_UNKNOWN)
+	void raiseModified(u32 mod, u32 reason = MOD_REASON_UNKNOWN) noexcept
 	{
 		if (mod > m_modified) {
 			m_modified = mod;
@@ -116,19 +116,19 @@ public:
 		}
 	}
 
-	inline u32 getModified()
+	inline u32 getModified() noexcept
 	{
 		return m_modified;
 	}
 
-	inline u32 getModifiedReason()
+	inline u32 getModifiedReason() noexcept
 	{
 		return m_modified_reason;
 	}
 
 	std::string getModifiedReasonString();
 
-	inline void resetModified()
+	inline void resetModified() noexcept
 	{
 		m_modified = MOD_STATE_CLEAN;
 		m_modified_reason = 0;
@@ -138,7 +138,7 @@ public:
 	//// Flags
 	////
 
-	inline bool isDummy()
+	inline bool isDummy() noexcept
 	{
 		return !data;
 	}
@@ -150,18 +150,18 @@ public:
 	}
 
 	// is_underground getter/setter
-	inline bool getIsUnderground()
+	inline bool getIsUnderground() noexcept
 	{
 		return is_underground;
 	}
 
-	inline void setIsUnderground(bool a_is_underground)
+	inline void setIsUnderground(bool a_is_underground) noexcept
 	{
 		is_underground = a_is_underground;
 		raiseModified(MOD_STATE_WRITE_NEEDED, MOD_REASON_SET_IS_UNDERGROUND);
 	}
 
-	inline void setLightingComplete(u16 newflags)
+	inline void setLightingComplete(u16 newflags) noexcept
 	{
 		if (newflags != m_lighting_complete) {
 			m_lighting_complete = newflags;
@@ -169,13 +169,13 @@ public:
 		}
 	}
 
-	inline u16 getLightingComplete()
+	inline u16 getLightingComplete() noexcept
 	{
 		return m_lighting_complete;
 	}
 
 	inline void setLightingComplete(LightBank bank, u8 direction,
-		bool is_complete)
+		bool is_complete) noexcept
 	{
 		assert(direction >= 0 && direction <= 5);
 		if (bank == LIGHTBANK_NIGHT) {
@@ -190,7 +190,7 @@ public:
 		setLightingComplete(newflags);
 	}
 
-	inline bool isLightingComplete(LightBank bank, u8 direction)
+	inline bool isLightingComplete(LightBank bank, u8 direction) noexcept
 	{
 		assert(direction >= 0 && direction <= 5);
 		if (bank == LIGHTBANK_NIGHT) {
@@ -199,12 +199,12 @@ public:
 		return (m_lighting_complete & (1 << direction)) != 0;
 	}
 
-	inline bool isGenerated()
+	inline bool isGenerated() noexcept
 	{
 		return m_generated;
 	}
 
-	inline void setGenerated(bool b)
+	inline void setGenerated(bool b) noexcept
 	{
 		if (b != m_generated) {
 			raiseModified(MOD_STATE_WRITE_NEEDED, MOD_REASON_SET_GENERATED);
@@ -216,17 +216,17 @@ public:
 	//// Position stuff
 	////
 
-	inline v3s16 getPos()
+	inline v3s16 getPos() noexcept
 	{
 		return m_pos;
 	}
 
-	inline v3s16 getPosRelative()
+	inline v3s16 getPosRelative() noexcept
 	{
 		return m_pos_relative;
 	}
 
-	inline core::aabbox3d<s16> getBox()
+	inline core::aabbox3d<s16> getBox() noexcept
 	{
 		return core::aabbox3d<s16>(getPosRelative(),
 				getPosRelative()
@@ -238,7 +238,7 @@ public:
 	//// Regular MapNode get-setters
 	////
 
-	inline bool isValidPosition(s16 x, s16 y, s16 z)
+	inline bool isValidPosition(s16 x, s16 y, s16 z) noexcept
 	{
 		return data
 			&& x >= 0 && x < MAP_BLOCKSIZE
@@ -246,12 +246,12 @@ public:
 			&& z >= 0 && z < MAP_BLOCKSIZE;
 	}
 
-	inline bool isValidPosition(v3s16 p)
+	inline bool isValidPosition(v3s16 p) noexcept
 	{
 		return isValidPosition(p.X, p.Y, p.Z);
 	}
 
-	inline MapNode getNode(s16 x, s16 y, s16 z, bool *valid_position)
+	inline MapNode getNode(s16 x, s16 y, s16 z, bool *valid_position) noexcept
 	{
 		*valid_position = isValidPosition(x, y, z);
 
@@ -261,12 +261,12 @@ public:
 		return data[z * zstride + y * ystride + x];
 	}
 
-	inline MapNode getNode(v3s16 p, bool *valid_position)
+	inline MapNode getNode(v3s16 p, bool *valid_position) noexcept
 	{
 		return getNode(p.X, p.Y, p.Z, valid_position);
 	}
 
-	inline MapNode getNodeNoEx(v3s16 p)
+	inline MapNode getNodeNoEx(v3s16 p) noexcept
 	{
 		bool is_valid;
 		return getNode(p.X, p.Y, p.Z, &is_valid);
@@ -290,7 +290,7 @@ public:
 	//// Non-checking variants of the above
 	////
 
-	inline MapNode getNodeNoCheck(s16 x, s16 y, s16 z, bool *valid_position)
+	inline MapNode getNodeNoCheck(s16 x, s16 y, s16 z, bool *valid_position) noexcept
 	{
 		*valid_position = data != nullptr;
 		if (!*valid_position)
@@ -299,7 +299,7 @@ public:
 		return data[z * zstride + y * ystride + x];
 	}
 
-	inline MapNode getNodeNoCheck(v3s16 p, bool *valid_position)
+	inline MapNode getNodeNoCheck(v3s16 p, bool *valid_position) noexcept
 	{
 		return getNodeNoCheck(p.X, p.Y, p.Z, valid_position);
 	}
@@ -310,12 +310,12 @@ public:
 	//// Caller must ensure that this is not a dummy block (by calling isDummy())
 	////
 
-	inline const MapNode &getNodeUnsafe(s16 x, s16 y, s16 z)
+	inline const MapNode &getNodeUnsafe(s16 x, s16 y, s16 z) noexcept
 	{
 		return data[z * zstride + y * ystride + x];
 	}
 
-	inline const MapNode &getNodeUnsafe(v3s16 &p)
+	inline const MapNode &getNodeUnsafe(v3s16 &p) noexcept
 	{
 		return getNodeUnsafe(p.X, p.Y, p.Z);
 	}
@@ -336,8 +336,8 @@ public:
 
 	// These functions consult the parent container if the position
 	// is not valid on this MapBlock.
-	bool isValidPositionParent(v3s16 p);
-	MapNode getNodeParent(v3s16 p, bool *is_valid_position = NULL);
+	bool isValidPositionParent(v3s16 p) noexcept;
+	MapNode getNodeParent(v3s16 p, bool *is_valid_position = NULL) noexcept;
 	void setNodeParent(v3s16 p, MapNode & n);
 
 	inline void drawbox(s16 x0, s16 y0, s16 z0, s16 w, s16 h, s16 d, MapNode node)
@@ -394,23 +394,23 @@ public:
 
 	// NOTE: BLOCK_TIMESTAMP_UNDEFINED=0xffffffff means there is no timestamp.
 
-	inline void setTimestamp(u32 time)
+	inline void setTimestamp(u32 time) noexcept
 	{
 		m_timestamp = time;
 		raiseModified(MOD_STATE_WRITE_AT_UNLOAD, MOD_REASON_SET_TIMESTAMP);
 	}
 
-	inline void setTimestampNoChangedFlag(u32 time)
+	inline void setTimestampNoChangedFlag(u32 time) noexcept
 	{
 		m_timestamp = time;
 	}
 
-	inline u32 getTimestamp()
+	inline u32 getTimestamp() noexcept
 	{
 		return m_timestamp;
 	}
 
-	inline u32 getDiskTimestamp()
+	inline u32 getDiskTimestamp() noexcept
 	{
 		return m_disk_timestamp;
 	}
@@ -419,17 +419,17 @@ public:
 	//// Usage timer (see m_usage_timer)
 	////
 
-	inline void resetUsageTimer()
+	inline void resetUsageTimer() noexcept
 	{
 		m_usage_timer = 0;
 	}
 
-	inline void incrementUsageTimer(float dtime)
+	inline void incrementUsageTimer(float dtime) noexcept
 	{
 		m_usage_timer += dtime;
 	}
 
-	inline float getUsageTimer()
+	inline float getUsageTimer() noexcept
 	{
 		return m_usage_timer;
 	}
@@ -438,17 +438,17 @@ public:
 	//// Reference counting (see m_refcount)
 	////
 
-	inline void refGrab()
+	inline void refGrab() noexcept
 	{
 		m_refcount++;
 	}
 
-	inline void refDrop()
+	inline void refDrop() noexcept
 	{
 		m_refcount--;
 	}
 
-	inline int refGet()
+	inline int refGet() noexcept
 	{
 		return m_refcount;
 	}

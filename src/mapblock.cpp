@@ -87,7 +87,7 @@ MapBlock::~MapBlock()
 	delete[] data;
 }
 
-bool MapBlock::isValidPositionParent(v3s16 p)
+bool MapBlock::isValidPositionParent(v3s16 p) noexcept
 {
 	if (isValidPosition(p)) {
 		return true;
@@ -96,7 +96,7 @@ bool MapBlock::isValidPositionParent(v3s16 p)
 	return m_parent->isValidPosition(getPosRelative() + p);
 }
 
-MapNode MapBlock::getNodeParent(v3s16 p, bool *is_valid_position)
+MapNode MapBlock::getNodeParent(v3s16 p, bool *is_valid_position) noexcept
 {
 	if (!isValidPosition(p))
 		return m_parent->getNodeNoEx(getPosRelative() + p, is_valid_position);

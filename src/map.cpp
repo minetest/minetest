@@ -96,7 +96,7 @@ void Map::dispatchEvent(MapEditEvent *event)
 	}
 }
 
-MapSector * Map::getSectorNoGenerateNoExNoLock(v2s16 p)
+MapSector * Map::getSectorNoGenerateNoExNoLock(v2s16 p) noexcept
 {
 	if(m_sector_cache != NULL && p == m_sector_cache_p){
 		MapSector * sector = m_sector_cache;
@@ -117,7 +117,7 @@ MapSector * Map::getSectorNoGenerateNoExNoLock(v2s16 p)
 	return sector;
 }
 
-MapSector * Map::getSectorNoGenerateNoEx(v2s16 p)
+MapSector * Map::getSectorNoGenerateNoEx(v2s16 p) noexcept
 {
 	return getSectorNoGenerateNoExNoLock(p);
 }
@@ -131,7 +131,7 @@ MapSector * Map::getSectorNoGenerate(v2s16 p)
 	return sector;
 }
 
-MapBlock * Map::getBlockNoCreateNoEx(v3s16 p3d)
+MapBlock * Map::getBlockNoCreateNoEx(v3s16 p3d) noexcept
 {
 	v2s16 p2d(p3d.X, p3d.Z);
 	MapSector * sector = getSectorNoGenerateNoEx(p2d);
@@ -162,7 +162,7 @@ bool Map::isNodeUnderground(v3s16 p)
 	}
 }
 
-bool Map::isValidPosition(v3s16 p)
+bool Map::isValidPosition(v3s16 p) noexcept
 {
 	v3s16 blockpos = getNodeBlockPos(p);
 	MapBlock *block = getBlockNoCreateNoEx(blockpos);
@@ -170,7 +170,7 @@ bool Map::isValidPosition(v3s16 p)
 }
 
 // Returns a CONTENT_IGNORE node if not found
-MapNode Map::getNodeNoEx(v3s16 p, bool *is_valid_position)
+MapNode Map::getNodeNoEx(v3s16 p, bool *is_valid_position) noexcept
 {
 	v3s16 blockpos = getNodeBlockPos(p);
 	MapBlock *block = getBlockNoCreateNoEx(blockpos);
