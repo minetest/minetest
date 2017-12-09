@@ -266,7 +266,15 @@ public:
 		return getNode(p.X, p.Y, p.Z, valid_position);
 	}
 
-	inline MapNode getNodeNoEx(v3s16 p) noexcept
+	inline MapNode getNode(s16 x, s16 y, s16 z) const
+	{
+		bool is_valid;
+		if (!isValidPosition(x, y, z))
+			throw InvalidPositionException();
+		return getNode(x, y, z, &is_valid);
+	}
+
+	inline MapNode getNodeNoEx(v3s16 p) const noexcept
 	{
 		bool is_valid;
 		return getNode(p.X, p.Y, p.Z, &is_valid);
@@ -386,7 +394,7 @@ public:
 			-3 = random fail
 			0...MAP_BLOCKSIZE-1 = ground level
 	*/
-	s16 getGroundLevel(v2s16 p2d);
+	s16 getGroundLevel(v2s16 p2d) const;
 
 	////
 	//// Timestamp (see m_timestamp)
