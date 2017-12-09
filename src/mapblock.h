@@ -340,7 +340,7 @@ public:
 	MapNode getNodeParent(v3s16 p, bool *is_valid_position = NULL) const noexcept;
 	void setNodeParent(v3s16 p, MapNode & n);
 
-	inline void drawbox(s16 x0, s16 y0, s16 z0, s16 w, s16 h, s16 d, MapNode node) const
+	inline void drawbox(s16 x0, s16 y0, s16 z0, s16 w, s16 h, s16 d, MapNode node)
 	{
 		for (u16 z = 0; z < d; z++)
 		for (u16 y = 0; y < h; y++)
