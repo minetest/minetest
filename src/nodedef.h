@@ -436,26 +436,26 @@ public:
 	virtual ~INodeDefManager() = default;
 
 	// Get node definition
-	virtual const ContentFeatures &get(content_t c) const=0;
-	virtual const ContentFeatures &get(const MapNode &n) const=0;
-	virtual bool getId(const std::string &name, content_t &result) const=0;
-	virtual content_t getId(const std::string &name) const=0;
+	virtual const ContentFeatures &get(content_t c) const = 0;
+	virtual const ContentFeatures &get(const MapNode &n) const = 0;
+	virtual bool getId(const std::string &name, content_t &result) const = 0;
+	virtual content_t getId(const std::string &name) const = 0;
 	// Allows "group:name" in addition to regular node names
 	// returns false if node name not found, true otherwise
 	virtual bool getIds(const std::string &name, std::vector<content_t> &result)
-			const=0;
-	virtual const ContentFeatures &get(const std::string &name) const=0;
+			const = 0;
+	virtual const ContentFeatures &get(const std::string &name) const = 0;
 
-	virtual void serialize(std::ostream &os, u16 protocol_version) const=0;
+	virtual void serialize(std::ostream &os, u16 protocol_version) const = 0;
 
-	virtual void pendNodeResolve(NodeResolver *nr)=0;
-	virtual bool cancelNodeResolveCallback(NodeResolver *nr)=0;
-	virtual bool nodeboxConnects(const MapNode from, const MapNode to, u8 connect_face)=0;
+	virtual void pendNodeResolve(NodeResolver *nr) = 0;
+	virtual bool cancelNodeResolveCallback(NodeResolver *nr) = 0;
+	virtual bool nodeboxConnects(const MapNode from, const MapNode to, u8 connect_face) = 0;
 	/*!
 	 * Returns the smallest box in node coordinates that
 	 * contains all nodes' selection boxes.
 	 */
-	virtual core::aabbox3d<s16> getSelectionBoxIntUnion() const=0;
+	virtual core::aabbox3d<s16> getSelectionBoxIntUnion() const = 0;
 };
 
 class IWritableNodeDefManager : public INodeDefManager {
@@ -463,37 +463,37 @@ public:
 	// Register node definition by name (allocate an id)
 	// If returns CONTENT_IGNORE, could not allocate id
 	virtual content_t set(const std::string &name,
-			const ContentFeatures &def)=0;
+			const ContentFeatures &def) = 0;
 	// If returns CONTENT_IGNORE, could not allocate id
-	virtual content_t allocateDummy(const std::string &name)=0;
+	virtual content_t allocateDummy(const std::string &name) = 0;
 	// Remove a node
-	virtual void removeNode(const std::string &name)=0;
+	virtual void removeNode(const std::string &name) = 0;
 
 	/*
 		Update item alias mapping.
 		Call after updating item definitions.
 	*/
-	virtual void updateAliases(IItemDefManager *idef)=0;
+	virtual void updateAliases(IItemDefManager *idef) = 0;
 
 	/*
 		Override textures from servers with ones specified in texturepack/override.txt
 	*/
-	virtual void applyTextureOverrides(const std::string &override_filepath)=0;
+	virtual void applyTextureOverrides(const std::string &override_filepath) = 0;
 
 	/*
 		Update tile textures to latest return values of TextueSource.
 	*/
 	virtual void updateTextures(IGameDef *gamedef,
 		void (*progress_cbk)(void *progress_args, u32 progress, u32 max_progress),
-		void *progress_cbk_args)=0;
+		void *progress_cbk_args) = 0;
 
-	virtual void deSerialize(std::istream &is)=0;
+	virtual void deSerialize(std::istream &is) = 0;
 
-	virtual void setNodeRegistrationStatus(bool completed)=0;
+	virtual void setNodeRegistrationStatus(bool completed) = 0;
 
-	virtual void runNodeResolveCallbacks()=0;
-	virtual void resetNodeResolveState()=0;
-	virtual void mapNodeboxConnections()=0;
+	virtual void runNodeResolveCallbacks() = 0;
+	virtual void resetNodeResolveState() = 0;
+	virtual void mapNodeboxConnections() = 0;
 };
 
 IWritableNodeDefManager *createNodeDefManager();
