@@ -911,36 +911,36 @@ void ContentFeatures::updateTextures(ITextureSource *tsrc, IShaderSource *shdsrc
 class CNodeDefManager: public IWritableNodeDefManager {
 public:
 	CNodeDefManager();
-	virtual ~CNodeDefManager();
+	~CNodeDefManager() override;
 	void clear();
 
-	inline virtual const ContentFeatures& get(content_t c) const;
-	inline virtual const ContentFeatures& get(const MapNode &n) const;
-	virtual bool getId(const std::string &name, content_t &result) const;
-	virtual content_t getId(const std::string &name) const;
-	virtual bool getIds(const std::string &name, std::vector<content_t> &result) const;
-	virtual const ContentFeatures& get(const std::string &name) const;
+	inline const ContentFeatures &get(content_t c) const override;
+	inline const ContentFeatures &get(const MapNode &n) const override;
+	bool getId(const std::string &name, content_t &result) const override;
+	content_t getId(const std::string &name) const override;
+	bool getIds(const std::string &name, std::vector<content_t> &result) const override;
+	const ContentFeatures &get(const std::string &name) const override;
 	content_t allocateId();
-	virtual content_t set(const std::string &name, const ContentFeatures &def);
-	virtual content_t allocateDummy(const std::string &name);
-	virtual void removeNode(const std::string &name);
-	virtual void updateAliases(IItemDefManager *idef);
-	virtual void applyTextureOverrides(const std::string &override_filepath);
-	virtual void updateTextures(IGameDef *gamedef,
+	content_t set(const std::string &name, const ContentFeatures &def) override;
+	content_t allocateDummy(const std::string &name) override;
+	void removeNode(const std::string &name) override;
+	void updateAliases(IItemDefManager *idef) override;
+	void applyTextureOverrides(const std::string &override_filepath) override;
+	void updateTextures(IGameDef *gamedef,
 		void (*progress_cbk)(void *progress_args, u32 progress, u32 max_progress),
-		void *progress_cbk_args);
+		void *progress_cbk_args) override;
 	void serialize(std::ostream &os, u16 protocol_version) const;
 	void deSerialize(std::istream &is);
 
-	inline virtual void setNodeRegistrationStatus(bool completed);
+	inline void setNodeRegistrationStatus(bool completed) override;
 
-	virtual void pendNodeResolve(NodeResolver *nr);
-	virtual bool cancelNodeResolveCallback(NodeResolver *nr);
-	virtual void runNodeResolveCallbacks();
-	virtual void resetNodeResolveState();
-	virtual void mapNodeboxConnections();
-	virtual bool nodeboxConnects(MapNode from, MapNode to, u8 connect_face);
-	virtual core::aabbox3d<s16> getSelectionBoxIntUnion() const
+	void pendNodeResolve(NodeResolver *nr) override;
+	bool cancelNodeResolveCallback(NodeResolver *nr) override;
+	void runNodeResolveCallbacks() override;
+	void resetNodeResolveState() override;
+	void mapNodeboxConnections() override;
+	bool nodeboxConnects(MapNode from, MapNode to, u8 connect_face) override;
+	core::aabbox3d<s16> getSelectionBoxIntUnion() const override
 	{
 		return m_selection_box_int_union;
 	}
@@ -1077,14 +1077,14 @@ void CNodeDefManager::clear()
 }
 
 
-inline const ContentFeatures& CNodeDefManager::get(content_t c) const
+inline const ContentFeatures &CNodeDefManager::get(content_t c) const
 {
 	return c < m_content_features.size()
 			? m_content_features[c] : m_content_features[CONTENT_UNKNOWN];
 }
 
 
-inline const ContentFeatures& CNodeDefManager::get(const MapNode &n) const
+inline const ContentFeatures &CNodeDefManager::get(const MapNode &n) const
 {
 	return get(n.getContent());
 }
@@ -1134,7 +1134,7 @@ bool CNodeDefManager::getIds(const std::string &name,
 }
 
 
-const ContentFeatures& CNodeDefManager::get(const std::string &name) const
+const ContentFeatures &CNodeDefManager::get(const std::string &name) const
 {
 	content_t id = CONTENT_UNKNOWN;
 	getId(name, id);
