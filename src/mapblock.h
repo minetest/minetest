@@ -81,7 +81,7 @@ public:
 		return NODECONTAINER_ID_MAPBLOCK;
 	}*/
 
-	Map * getParent() noexcept
+	Map *getParent() const noexcept
 	{
 		return m_parent;
 	}
@@ -96,7 +96,7 @@ public:
 		raiseModified(MOD_STATE_WRITE_NEEDED, MOD_REASON_REALLOCATE);
 	}
 
-	MapNode* getData() noexcept
+	MapNode *getData() noexcept
 	{
 		return data;
 	}
@@ -116,17 +116,17 @@ public:
 		}
 	}
 
-	inline u32 getModified() noexcept
+	inline u32 getModified() const noexcept
 	{
 		return m_modified;
 	}
 
-	inline u32 getModifiedReason() noexcept
+	inline u32 getModifiedReason() const noexcept
 	{
 		return m_modified_reason;
 	}
 
-	std::string getModifiedReasonString();
+	std::string getModifiedReasonString() const;
 
 	inline void resetModified() noexcept
 	{
@@ -138,7 +138,7 @@ public:
 	//// Flags
 	////
 
-	inline bool isDummy() noexcept
+	inline bool isDummy() const noexcept
 	{
 		return !data;
 	}
@@ -150,7 +150,7 @@ public:
 	}
 
 	// is_underground getter/setter
-	inline bool getIsUnderground() noexcept
+	inline bool getIsUnderground() const noexcept
 	{
 		return is_underground;
 	}
@@ -169,7 +169,7 @@ public:
 		}
 	}
 
-	inline u16 getLightingComplete() noexcept
+	inline u16 getLightingComplete() const noexcept
 	{
 		return m_lighting_complete;
 	}
@@ -190,7 +190,7 @@ public:
 		setLightingComplete(newflags);
 	}
 
-	inline bool isLightingComplete(LightBank bank, u8 direction) noexcept
+	inline bool isLightingComplete(LightBank bank, u8 direction) const noexcept
 	{
 		assert(direction >= 0 && direction <= 5);
 		if (bank == LIGHTBANK_NIGHT) {
@@ -199,7 +199,7 @@ public:
 		return (m_lighting_complete & (1 << direction)) != 0;
 	}
 
-	inline bool isGenerated() noexcept
+	inline bool isGenerated() const noexcept
 	{
 		return m_generated;
 	}
@@ -216,17 +216,17 @@ public:
 	//// Position stuff
 	////
 
-	inline v3s16 getPos() noexcept
+	inline v3s16 getPos() const noexcept
 	{
 		return m_pos;
 	}
 
-	inline v3s16 getPosRelative() noexcept
+	inline v3s16 getPosRelative() const noexcept
 	{
 		return m_pos_relative;
 	}
 
-	inline core::aabbox3d<s16> getBox() noexcept
+	inline core::aabbox3d<s16> getBox() const noexcept
 	{
 		return core::aabbox3d<s16>(getPosRelative(),
 				getPosRelative()
@@ -238,7 +238,7 @@ public:
 	//// Regular MapNode get-setters
 	////
 
-	inline bool isValidPosition(s16 x, s16 y, s16 z) noexcept
+	inline bool isValidPosition(s16 x, s16 y, s16 z) const noexcept
 	{
 		return data
 			&& x >= 0 && x < MAP_BLOCKSIZE
@@ -246,12 +246,12 @@ public:
 			&& z >= 0 && z < MAP_BLOCKSIZE;
 	}
 
-	inline bool isValidPosition(v3s16 p) noexcept
+	inline bool isValidPosition(v3s16 p) const noexcept
 	{
 		return isValidPosition(p.X, p.Y, p.Z);
 	}
 
-	inline MapNode getNode(s16 x, s16 y, s16 z, bool *valid_position) noexcept
+	inline MapNode getNode(s16 x, s16 y, s16 z, bool *valid_position) const noexcept
 	{
 		*valid_position = isValidPosition(x, y, z);
 
@@ -261,7 +261,7 @@ public:
 		return data[z * zstride + y * ystride + x];
 	}
 
-	inline MapNode getNode(v3s16 p, bool *valid_position) noexcept
+	inline MapNode getNode(v3s16 p, bool *valid_position) const noexcept
 	{
 		return getNode(p.X, p.Y, p.Z, valid_position);
 	}
@@ -272,7 +272,7 @@ public:
 		return getNode(p.X, p.Y, p.Z, &is_valid);
 	}
 
-	inline void setNode(s16 x, s16 y, s16 z, MapNode & n)
+	inline void setNode(s16 x, s16 y, s16 z, MapNode n)
 	{
 		if (!isValidPosition(x, y, z))
 			throw InvalidPositionException();
@@ -281,7 +281,7 @@ public:
 		raiseModified(MOD_STATE_WRITE_NEEDED, MOD_REASON_SET_NODE);
 	}
 
-	inline void setNode(v3s16 p, MapNode & n)
+	inline void setNode(v3s16 p, MapNode n)
 	{
 		setNode(p.X, p.Y, p.Z, n);
 	}
@@ -290,7 +290,7 @@ public:
 	//// Non-checking variants of the above
 	////
 
-	inline MapNode getNodeNoCheck(s16 x, s16 y, s16 z, bool *valid_position) noexcept
+	inline MapNode getNodeNoCheck(s16 x, s16 y, s16 z, bool *valid_position) const noexcept
 	{
 		*valid_position = data != nullptr;
 		if (!*valid_position)
@@ -299,7 +299,7 @@ public:
 		return data[z * zstride + y * ystride + x];
 	}
 
-	inline MapNode getNodeNoCheck(v3s16 p, bool *valid_position) noexcept
+	inline MapNode getNodeNoCheck(v3s16 p, bool *valid_position) const noexcept
 	{
 		return getNodeNoCheck(p.X, p.Y, p.Z, valid_position);
 	}
@@ -310,17 +310,17 @@ public:
 	//// Caller must ensure that this is not a dummy block (by calling isDummy())
 	////
 
-	inline const MapNode &getNodeUnsafe(s16 x, s16 y, s16 z) noexcept
+	inline MapNode getNodeUnsafe(s16 x, s16 y, s16 z) const noexcept
 	{
 		return data[z * zstride + y * ystride + x];
 	}
 
-	inline const MapNode &getNodeUnsafe(v3s16 &p) noexcept
+	inline MapNode getNodeUnsafe(v3s16 &p) const noexcept
 	{
 		return getNodeUnsafe(p.X, p.Y, p.Z);
 	}
 
-	inline void setNodeNoCheck(s16 x, s16 y, s16 z, MapNode & n)
+	inline void setNodeNoCheck(s16 x, s16 y, s16 z, MapNode n)
 	{
 		if (!data)
 			throw InvalidPositionException();
@@ -329,18 +329,18 @@ public:
 		raiseModified(MOD_STATE_WRITE_NEEDED, MOD_REASON_SET_NODE_NO_CHECK);
 	}
 
-	inline void setNodeNoCheck(v3s16 p, MapNode & n)
+	inline void setNodeNoCheck(v3s16 p, MapNode n)
 	{
 		setNodeNoCheck(p.X, p.Y, p.Z, n);
 	}
 
 	// These functions consult the parent container if the position
 	// is not valid on this MapBlock.
-	bool isValidPositionParent(v3s16 p) noexcept;
-	MapNode getNodeParent(v3s16 p, bool *is_valid_position = NULL) noexcept;
+	bool isValidPositionParent(v3s16 p) const noexcept;
+	MapNode getNodeParent(v3s16 p, bool *is_valid_position = NULL) const noexcept;
 	void setNodeParent(v3s16 p, MapNode & n);
 
-	inline void drawbox(s16 x0, s16 y0, s16 z0, s16 w, s16 h, s16 d, MapNode node)
+	inline void drawbox(s16 x0, s16 y0, s16 z0, s16 w, s16 h, s16 d, MapNode node) const
 	{
 		for (u16 z = 0; z < d; z++)
 		for (u16 y = 0; y < h; y++)
@@ -405,12 +405,12 @@ public:
 		m_timestamp = time;
 	}
 
-	inline u32 getTimestamp() noexcept
+	inline u32 getTimestamp() const noexcept
 	{
 		return m_timestamp;
 	}
 
-	inline u32 getDiskTimestamp() noexcept
+	inline u32 getDiskTimestamp() const noexcept
 	{
 		return m_disk_timestamp;
 	}
@@ -429,7 +429,7 @@ public:
 		m_usage_timer += dtime;
 	}
 
-	inline float getUsageTimer() noexcept
+	inline float getUsageTimer() const noexcept
 	{
 		return m_usage_timer;
 	}
@@ -448,7 +448,7 @@ public:
 		m_refcount--;
 	}
 
-	inline int refGet() noexcept
+	inline int refGet() const noexcept
 	{
 		return m_refcount;
 	}

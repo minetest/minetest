@@ -87,7 +87,7 @@ MapBlock::~MapBlock()
 	delete[] data;
 }
 
-bool MapBlock::isValidPositionParent(v3s16 p) noexcept
+bool MapBlock::isValidPositionParent(v3s16 p) const noexcept
 {
 	if (isValidPosition(p)) {
 		return true;
@@ -96,7 +96,7 @@ bool MapBlock::isValidPositionParent(v3s16 p) noexcept
 	return m_parent->isValidPosition(getPosRelative() + p);
 }
 
-MapNode MapBlock::getNodeParent(v3s16 p, bool *is_valid_position) noexcept
+MapNode MapBlock::getNodeParent(v3s16 p, bool *is_valid_position) const noexcept
 {
 	if (!isValidPosition(p))
 		return m_parent->getNodeNoEx(getPosRelative() + p, is_valid_position);
@@ -111,7 +111,7 @@ MapNode MapBlock::getNodeParent(v3s16 p, bool *is_valid_position) noexcept
 	return data[p.Z * zstride + p.Y * ystride + p.X];
 }
 
-std::string MapBlock::getModifiedReasonString()
+std::string MapBlock::getModifiedReasonString() const
 {
 	std::string reason;
 
