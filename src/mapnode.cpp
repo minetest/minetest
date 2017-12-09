@@ -119,14 +119,14 @@ u8 MapNode::getLight(enum LightBank bank, INodeDefManager *nodemgr) const
 	return MYMAX(f.light_source, light);
 }
 
-u8 MapNode::getLightRaw(enum LightBank bank, const ContentFeatures &f) const
+u8 MapNode::getLightRaw(enum LightBank bank, const ContentFeatures &f) const noexcept
 {
 	if(f.param_type == CPT_LIGHT)
 		return bank == LIGHTBANK_DAY ? param1 & 0x0f : (param1 >> 4) & 0x0f;
 	return 0;
 }
 
-u8 MapNode::getLightNoChecks(enum LightBank bank, const ContentFeatures *f) const
+u8 MapNode::getLightNoChecks(enum LightBank bank, const ContentFeatures *f) const noexcept
 {
 	return MYMAX(f->light_source,
 	             bank == LIGHTBANK_DAY ? param1 & 0x0f : (param1 >> 4) & 0x0f);
@@ -470,7 +470,7 @@ static inline void getNeighborConnectingFace(
 		*neighbors |= bitmask;
 }
 
-u8 MapNode::getNeighbors(v3s16 p, Map *map)
+u8 MapNode::getNeighbors(v3s16 p, Map *map) const
 {
 	INodeDefManager *nodedef=map->getNodeDefManager();
 	u8 neighbors = 0;
@@ -506,13 +506,13 @@ u8 MapNode::getNeighbors(v3s16 p, Map *map)
 	return neighbors;
 }
 
-void MapNode::getNodeBoxes(INodeDefManager *nodemgr, std::vector<aabb3f> *boxes, u8 neighbors)
+void MapNode::getNodeBoxes(INodeDefManager *nodemgr, std::vector<aabb3f> *boxes, u8 neighbors) const
 {
 	const ContentFeatures &f = nodemgr->get(*this);
 	transformNodeBox(*this, f.node_box, nodemgr, boxes, neighbors);
 }
 
-void MapNode::getCollisionBoxes(INodeDefManager *nodemgr, std::vector<aabb3f> *boxes, u8 neighbors)
+void MapNode::getCollisionBoxes(INodeDefManager *nodemgr, std::vector<aabb3f> *boxes, u8 neighbors) const
 {
 	const ContentFeatures &f = nodemgr->get(*this);
 	if (f.collision_box.fixed.empty())
@@ -521,7 +521,7 @@ void MapNode::getCollisionBoxes(INodeDefManager *nodemgr, std::vector<aabb3f> *b
 		transformNodeBox(*this, f.collision_box, nodemgr, boxes, neighbors);
 }
 
-void MapNode::getSelectionBoxes(INodeDefManager *nodemgr, std::vector<aabb3f> *boxes, u8 neighbors)
+void MapNode::getSelectionBoxes(INodeDefManager *nodemgr, std::vector<aabb3f> *boxes, u8 neighbors) const
 {
 	const ContentFeatures &f = nodemgr->get(*this);
 	transformNodeBox(*this, f.selection_box, nodemgr, boxes, neighbors);
@@ -611,7 +611,8 @@ u32 MapNode::serializedLength(u8 version)
 
 	return 4;
 }
-void MapNode::serialize(u8 *dest, u8 version)
+
+void MapNode::serialize(u8 *dest, u8 version) const
 {
 	if(!ser_ver_supported(version))
 		throw VersionMismatchException("ERROR: MapNode format not supported");
@@ -626,6 +627,7 @@ void MapNode::serialize(u8 *dest, u8 version)
 	writeU8(dest+2, param1);
 	writeU8(dest+3, param2);
 }
+
 void MapNode::deSerialize(u8 *source, u8 version)
 {
 	if(!ser_ver_supported(version))
@@ -651,6 +653,7 @@ void MapNode::deSerialize(u8 *source, u8 version)
 		}
 	}
 }
+
 void MapNode::serializeBulk(std::ostream &os, int version,
 		const MapNode *nodes, u32 nodecount,
 		u8 content_width, u8 params_width, bool compressed)
