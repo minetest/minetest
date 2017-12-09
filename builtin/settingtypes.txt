@@ -1122,6 +1122,7 @@ server_side_occlusion_culling (Server side occlusion culling) bool true
 #    CHAT_MESSAGES: 2 (disable send_chat_message call client-side)
 #    READ_ITEMDEFS: 4 (disable get_item_def call client-side)
 #    READ_NODEDEFS: 8 (disable get_node_def call client-side)
+#    LOAD_CLIENT_MODS: 16 (disable client mods loading)
 #    type: int
 csm_flavour_limits (Client side modding flavour limits) int 3
 
