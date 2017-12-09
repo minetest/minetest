@@ -413,17 +413,17 @@ s16 MapBlock::getGroundLevel(v2s16 p2d) const noexcept
 	if (isDummy())
 		return -3;
 	try {
-		s16 y = MAP_BLOCKSIZE-1;
-		for(; y >= 0; y--) {
+		s16 y = MAP_BLOCKSIZE - 1;
+		for (; y >= 0; y--) {
 			MapNode n = getNode(p2d.X, y, p2d.Y);
 			if (m_gamedef->ndef()->get(n).walkable) {
-				if(y == MAP_BLOCKSIZE-1)
+				if (y == MAP_BLOCKSIZE - 1)
 					return -2;
 				return y;
 			}
 		}
 		return -1;
-	} catch(InvalidPositionException &e) {
+	} catch (InvalidPositionException &e) {
 		return -3;
 	}
 }
