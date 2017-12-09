@@ -460,21 +460,6 @@ public:
 
 class IWritableNodeDefManager : public INodeDefManager {
 public:
-	IWritableNodeDefManager() = default;
-	virtual ~IWritableNodeDefManager() = default;
-
-	// Get node definition
-	virtual const ContentFeatures &get(content_t c) const=0;
-	virtual const ContentFeatures &get(const MapNode &n) const=0;
-	virtual bool getId(const std::string &name, content_t &result) const=0;
-	// If not found, returns CONTENT_IGNORE
-	virtual content_t getId(const std::string &name) const=0;
-	// Allows "group:name" in addition to regular node names
-	virtual bool getIds(const std::string &name, std::vector<content_t> &result)
-		const=0;
-	// If not found, returns the features of CONTENT_UNKNOWN
-	virtual const ContentFeatures &get(const std::string &name) const=0;
-
 	// Register node definition by name (allocate an id)
 	// If returns CONTENT_IGNORE, could not allocate id
 	virtual content_t set(const std::string &name,
@@ -502,17 +487,13 @@ public:
 		void (*progress_cbk)(void *progress_args, u32 progress, u32 max_progress),
 		void *progress_cbk_args)=0;
 
-	virtual void serialize(std::ostream &os, u16 protocol_version) const=0;
 	virtual void deSerialize(std::istream &is)=0;
 
 	virtual void setNodeRegistrationStatus(bool completed)=0;
 
-	virtual void pendNodeResolve(NodeResolver *nr)=0;
-	virtual bool cancelNodeResolveCallback(NodeResolver *nr)=0;
 	virtual void runNodeResolveCallbacks()=0;
 	virtual void resetNodeResolveState()=0;
 	virtual void mapNodeboxConnections()=0;
-	virtual core::aabbox3d<s16> getSelectionBoxIntUnion() const=0;
 };
 
 IWritableNodeDefManager *createNodeDefManager();
