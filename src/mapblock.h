@@ -394,7 +394,7 @@ public:
 			-3 = random fail
 			0...MAP_BLOCKSIZE-1 = ground level
 	*/
-	s16 getGroundLevel(v2s16 p2d) const;
+	s16 getGroundLevel(v2s16 p2d) const noexcept;
 
 	////
 	//// Timestamp (see m_timestamp)

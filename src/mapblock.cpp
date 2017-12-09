@@ -408,7 +408,7 @@ void MapBlock::expireDayNightDiff()
 	m_day_night_differs_expired = true;
 }
 
-s16 MapBlock::getGroundLevel(v2s16 p2d) const
+s16 MapBlock::getGroundLevel(v2s16 p2d) const noexcept
 {
 	if (isDummy())
 		return -3;
