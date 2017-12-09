@@ -436,15 +436,17 @@ public:
 	virtual ~INodeDefManager() = default;
 
 	// Get node definition
-	virtual const ContentFeatures &get(content_t c) const = 0;
-	virtual const ContentFeatures &get(const MapNode &n) const = 0;
-	virtual bool getId(const std::string &name, content_t &result) const = 0;
-	virtual content_t getId(const std::string &name) const = 0;
+	// Return definition for CONTENT_UNKNOWN if not found
+	virtual const ContentFeatures &get(content_t c) const noexcept = 0;
+	virtual const ContentFeatures &get(const MapNode &n) const noexcept = 0;
+	virtual bool getId(const std::string &name, content_t &result) const noexcept = 0;
+	// Returns CONTENT_IGNORE if node not found
+	virtual content_t getId(const std::string &name) const noexcept = 0;
 	// Allows "group:name" in addition to regular node names
 	// returns false if node name not found, true otherwise
 	virtual bool getIds(const std::string &name, std::vector<content_t> &result)
 			const = 0;
-	virtual const ContentFeatures &get(const std::string &name) const = 0;
+	virtual const ContentFeatures &get(const std::string &name) const noexcept = 0;
 
 	virtual void serialize(std::ostream &os, u16 protocol_version) const = 0;
 

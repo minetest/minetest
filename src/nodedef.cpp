@@ -914,12 +914,12 @@ public:
 	~CNodeDefManager() override;
 	void clear();
 
-	inline const ContentFeatures &get(content_t c) const override;
-	inline const ContentFeatures &get(const MapNode &n) const override;
-	bool getId(const std::string &name, content_t &result) const override;
-	content_t getId(const std::string &name) const override;
+	inline const ContentFeatures &get(content_t c) const noexcept override;
+	inline const ContentFeatures &get(const MapNode &n) const noexcept override;
+	bool getId(const std::string &name, content_t &result) const noexcept override;
+	content_t getId(const std::string &name) const noexcept override;
 	bool getIds(const std::string &name, std::vector<content_t> &result) const override;
-	const ContentFeatures &get(const std::string &name) const override;
+	const ContentFeatures &get(const std::string &name) const noexcept override;
 	content_t allocateId();
 	content_t set(const std::string &name, const ContentFeatures &def) override;
 	content_t allocateDummy(const std::string &name) override;
@@ -1076,21 +1076,18 @@ void CNodeDefManager::clear()
 	}
 }
 
-
-inline const ContentFeatures &CNodeDefManager::get(content_t c) const
+inline const ContentFeatures &CNodeDefManager::get(content_t c) const noexcept
 {
 	return c < m_content_features.size()
 			? m_content_features[c] : m_content_features[CONTENT_UNKNOWN];
 }
 
-
-inline const ContentFeatures &CNodeDefManager::get(const MapNode &n) const
+inline const ContentFeatures &CNodeDefManager::get(const MapNode &n) const noexcept
 {
 	return get(n.getContent());
 }
 
-
-bool CNodeDefManager::getId(const std::string &name, content_t &result) const
+bool CNodeDefManager::getId(const std::string &name, content_t &result) const noexcept
 {
 	std::unordered_map<std::string, content_t>::const_iterator
 		i = m_name_id_mapping_with_aliases.find(name);
@@ -1100,14 +1097,12 @@ bool CNodeDefManager::getId(const std::string &name, content_t &result) const
 	return true;
 }
 
-
-content_t CNodeDefManager::getId(const std::string &name) const
+content_t CNodeDefManager::getId(const std::string &name) const noexcept
 {
 	content_t id = CONTENT_IGNORE;
 	getId(name, id);
 	return id;
 }
-
 
 bool CNodeDefManager::getIds(const std::string &name,
 		std::vector<content_t> &result) const
@@ -1133,8 +1128,7 @@ bool CNodeDefManager::getIds(const std::string &name,
 	return true;
 }
 
-
-const ContentFeatures &CNodeDefManager::get(const std::string &name) const
+const ContentFeatures &CNodeDefManager::get(const std::string &name) const noexcept
 {
 	content_t id = CONTENT_UNKNOWN;
 	getId(name, id);
