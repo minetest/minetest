@@ -96,7 +96,7 @@ void Map::dispatchEvent(MapEditEvent *event)
 	}
 }
 
-MapSector * Map::getSectorNoGenerateNoExNoLock(v2s16 p) noexcept
+MapSector *Map::getSectorNoGenerateNoExNoLock(v2s16 p) noexcept
 {
 	if(m_sector_cache != NULL && p == m_sector_cache_p){
 		MapSector * sector = m_sector_cache;
@@ -117,12 +117,12 @@ MapSector * Map::getSectorNoGenerateNoExNoLock(v2s16 p) noexcept
 	return sector;
 }
 
-MapSector * Map::getSectorNoGenerateNoEx(v2s16 p) noexcept
+MapSector *Map::getSectorNoGenerateNoEx(v2s16 p) noexcept
 {
 	return getSectorNoGenerateNoExNoLock(p);
 }
 
-MapSector * Map::getSectorNoGenerate(v2s16 p)
+MapSector *Map::getSectorNoGenerate(v2s16 p)
 {
 	MapSector *sector = getSectorNoGenerateNoEx(p);
 	if(sector == NULL)
@@ -131,7 +131,7 @@ MapSector * Map::getSectorNoGenerate(v2s16 p)
 	return sector;
 }
 
-MapBlock * Map::getBlockNoCreateNoEx(v3s16 p3d) noexcept
+MapBlock *Map::getBlockNoCreateNoEx(v3s16 p3d) noexcept
 {
 	v2s16 p2d(p3d.X, p3d.Z);
 	MapSector * sector = getSectorNoGenerateNoEx(p2d);
@@ -141,7 +141,7 @@ MapBlock * Map::getBlockNoCreateNoEx(v3s16 p3d) noexcept
 	return block;
 }
 
-MapBlock * Map::getBlockNoCreate(v3s16 p3d)
+MapBlock *Map::getBlockNoCreate(v3s16 p3d)
 {
 	MapBlock *block = getBlockNoCreateNoEx(p3d);
 	if(block == NULL)
