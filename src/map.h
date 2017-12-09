@@ -155,11 +155,11 @@ public:
 	void dispatchEvent(MapEditEvent *event);
 
 	// On failure returns NULL
-	MapSector * getSectorNoGenerateNoExNoLock(v2s16 p2d) noexcept;
+	MapSector *getSectorNoGenerateNoExNoLock(v2s16 p2d) noexcept;
 	// Same as the above (there exists no lock anymore)
-	MapSector * getSectorNoGenerateNoEx(v2s16 p2d) noexcept;
+	MapSector *getSectorNoGenerateNoEx(v2s16 p2d) noexcept;
 	// On failure throws InvalidPositionException
-	MapSector * getSectorNoGenerate(v2s16 p2d) noexcept;
+	MapSector *getSectorNoGenerate(v2s16 p2d);
 	// Gets an existing sector or creates an empty one
 	//MapSector * getSectorCreate(v2s16 p2d);
 
@@ -167,18 +167,18 @@ public:
 		This is overloaded by ClientMap and ServerMap to allow
 		their differing fetch methods.
 	*/
-	virtual MapSector * emergeSector(v2s16 p){ return NULL; }
+	virtual MapSector *emergeSector(v2s16 p) { return NULL; }
 
 	// Returns InvalidPositionException if not found
-	MapBlock * getBlockNoCreate(v3s16 p);
+	MapBlock *getBlockNoCreate(v3s16 p);
 	// Returns NULL if not found
-	MapBlock * getBlockNoCreateNoEx(v3s16 p) noexcept;
+	MapBlock *getBlockNoCreateNoEx(v3s16 p) noexcept;
 
 	/* Server overrides */
-	virtual MapBlock * emergeBlock(v3s16 p, bool create_blank=true)
+	virtual MapBlock *emergeBlock(v3s16 p, bool create_blank = true)
 	{ return getBlockNoCreateNoEx(p); }
 
-	inline INodeDefManager * getNodeDefManager() { return m_nodedef; }
+	inline INodeDefManager *getNodeDefManager() { return m_nodedef; }
 
 	// Returns InvalidPositionException if not found
 	bool isNodeUnderground(v3s16 p);
