@@ -91,20 +91,16 @@ void Map::removeEventReceiver(MapEventReceiver *event_receiver)
 
 void Map::dispatchEvent(MapEditEvent *event)
 {
-	for (MapEventReceiver *event_receiver : m_event_receivers) {
+	for (MapEventReceiver *event_receiver : m_event_receivers)
 		event_receiver->onMapEditEvent(event);
-	}
 }
 
 MapSector *Map::getSectorNoGenerateNoExNoLock(v2s16 p) noexcept
 {
-	if(m_sector_cache != NULL && p == m_sector_cache_p){
-		MapSector * sector = m_sector_cache;
-		return sector;
-	}
+	if (m_sector_cache && p == m_sector_cache_p)
+		return m_sector_cache;
 
 	std::map<v2s16, MapSector*>::iterator n = m_sectors.find(p);
-
 	if (n == m_sectors.end())
 		return NULL;
 
@@ -125,17 +121,16 @@ MapSector *Map::getSectorNoGenerateNoEx(v2s16 p) noexcept
 MapSector *Map::getSectorNoGenerate(v2s16 p)
 {
 	MapSector *sector = getSectorNoGenerateNoEx(p);
-	if(sector == NULL)
+	if (!sector)
 		throw InvalidPositionException();
-
 	return sector;
 }
 
 MapBlock *Map::getBlockNoCreateNoEx(v3s16 p3d) noexcept
 {
 	v2s16 p2d(p3d.X, p3d.Z);
-	MapSector * sector = getSectorNoGenerateNoEx(p2d);
-	if(sector == NULL)
+	MapSector *sector = getSectorNoGenerateNoEx(p2d);
+	if (!sector)
 		return NULL;
 	MapBlock *block = sector->getBlockNoCreateNoEx(p3d.Y);
 	return block;
@@ -144,7 +139,7 @@ MapBlock *Map::getBlockNoCreateNoEx(v3s16 p3d) noexcept
 MapBlock *Map::getBlockNoCreate(v3s16 p3d)
 {
 	MapBlock *block = getBlockNoCreateNoEx(p3d);
-	if(block == NULL)
+	if (!block)
 		throw InvalidPositionException();
 	return block;
 }
@@ -152,14 +147,10 @@ MapBlock *Map::getBlockNoCreate(v3s16 p3d)
 bool Map::isNodeUnderground(v3s16 p)
 {
 	v3s16 blockpos = getNodeBlockPos(p);
-	try{
-		MapBlock * block = getBlockNoCreate(blockpos);
-		return block->getIsUnderground();
-	}
-	catch(InvalidPositionException &e)
-	{
+	MapBlock *block = getBlockNoCreateNoEx(blockpos);
+	if (!block)
 		return false;
-	}
+	return block->getIsUnderground();
 }
 
 bool Map::isValidPosition(v3s16 p) noexcept
@@ -170,21 +161,21 @@ bool Map::isValidPosition(v3s16 p) noexcept
 }
 
 // Returns a CONTENT_IGNORE node if not found
-MapNode Map::getNodeNoEx(v3s16 p, bool *is_valid_position) noexcept
+MapNode Map::getNodeNoEx(v3s16 p, bool *p_is_valid_position) noexcept
 {
 	v3s16 blockpos = getNodeBlockPos(p);
 	MapBlock *block = getBlockNoCreateNoEx(blockpos);
-	if (block == NULL) {
-		if (is_valid_position != NULL)
-			*is_valid_position = false;
+	if (!block) {
+		if (p_is_valid_position)
+			*p_is_valid_position = false;
 		return {CONTENT_IGNORE};
 	}
 
-	v3s16 relpos = p - blockpos*MAP_BLOCKSIZE;
+	v3s16 relpos = p - blockpos * MAP_BLOCKSIZE;
 	bool is_valid_p;
 	MapNode node = block->getNodeNoCheck(relpos, &is_valid_p);
-	if (is_valid_position != NULL)
-		*is_valid_position = is_valid_p;
+	if (p_is_valid_position)
+		*p_is_valid_position = is_valid_p;
 	return node;
 }
 
@@ -208,11 +199,11 @@ MapNode Map::getNode(v3s16 p)
 #endif
 
 // throws InvalidPositionException if not found
-void Map::setNode(v3s16 p, MapNode & n)
+void Map::setNode(v3s16 p, MapNode &n)
 {
 	v3s16 blockpos = getNodeBlockPos(p);
 	MapBlock *block = getBlockNoCreate(blockpos);
-	v3s16 relpos = p - blockpos*MAP_BLOCKSIZE;
+	v3s16 relpos = p - blockpos * MAP_BLOCKSIZE;
 	// Never allow placing CONTENT_IGNORE, it fucks up stuff
 	if(n.getContent() == CONTENT_IGNORE){
 		bool temp_bool;
