@@ -2382,7 +2382,7 @@ Strings that need to be translated can contain several escapes, preceded by `@`.
   when translation. Due to how translations are implemented, the original translation string **must** have
   its arguments in increasing order, without gaps or repetitions, starting from 1.
 * `@=` acts as a literal `=`. It is not required in strings given to `minetest.translate`, but is in translation
-  files to avoid begin confused with the `=` separating the original from the translation.
+  files to avoid being confused with the `=` separating the original from the translation.
 * `@\n` (where the `\n` is a literal newline) acts as a literal newline. As with `@=`, this escape is not required
   in strings given to `minetest.translate`, but is in translation files.
 * `@n` acts as a literal newline as well.
