@@ -279,21 +279,40 @@ void LBMManager::applyLBMs(ServerEnvironment *env, MapBlock *block, u32 stamp)
 
 void fillRadiusBlock(v3s16 p0, s16 r, std::set<v3s16> &list)
 {
+	const s16 r2 = r * r;
 	v3s16 p;
-	for(p.X=p0.X-r; p.X<=p0.X+r; p.X++)
-		for(p.Y=p0.Y-r; p.Y<=p0.Y+r; p.Y++)
-			for(p.Z=p0.Z-r; p.Z<=p0.Z+r; p.Z++)
-			{
-				// limit to a sphere
-				if (p.getDistanceFrom(p0) <= r) {
-					// Set in list
-					list.insert(p);
-				}
-			}
+	for (p.X = p0.X - r; p.X <= p0.X + r; p.X++)
+	for (p.Y = p0.Y - r; p.Y <= p0.Y + r; p.Y++)
+	for (p.Z = p0.Z - r; p.Z <= p0.Z + r; p.Z++) {
+		// limit to a sphere
+		if (p.getDistanceFromSQ(p0) <= r2) {
+			// Set in list
+			list.insert(p);
+		}
+	}
 }
 
-void ActiveBlockList::update(std::vector<v3s16> &active_positions,
-	s16 radius,
+void fillViewConeBlock(v3s16 p0,
+	const s16 r,
+	const v3f camera_pos,
+	const v3f camera_dir,
+	const float camera_fov,
+	std::set<v3s16> &list)
+{
+	v3s16 p;
+	const s16 r_nodes = r * BS * MAP_BLOCKSIZE;
+	for (p.X = p0.X - r; p.X <= p0.X+r; p.X++)
+	for (p.Y = p0.Y - r; p.Y <= p0.Y+r; p.Y++)
+	for (p.Z = p0.Z - r; p.Z <= p0.Z+r; p.Z++) {
+		if (isBlockInSight(p, camera_pos, camera_dir, camera_fov, r_nodes)) {
+			list.insert(p);
+		}
+	}
+}
+
+void ActiveBlockList::update(std::vector<PlayerSAO*> &active_players,
+	s16 active_block_range,
+	s16 active_object_range,
 	std::set<v3s16> &blocks_removed,
 	std::set<v3s16> &blocks_added)
 {
@@ -301,8 +320,25 @@ void ActiveBlockList::update(std::vector<v3s16> &active_positions,
 		Create the new list
 	*/
 	std::set<v3s16> newlist = m_forceloaded_list;
-	for (const v3s16 &active_position : active_positions) {
-		fillRadiusBlock(active_position, radius, newlist);
+	m_abm_list = m_forceloaded_list;
+	for (const PlayerSAO *playersao : active_players) {
+		v3s16 pos = getNodeBlockPos(floatToInt(playersao->getBasePosition(), BS));
+		fillRadiusBlock(pos, active_block_range, m_abm_list);
+		fillRadiusBlock(pos, active_block_range, newlist);
+
+		s16 player_ao_range = std::min(active_object_range, playersao->getWantedRange());
+		// only do this if this would add blocks
+		if (player_ao_range > active_block_range) {
+			v3f camera_dir = v3f(0,0,1);
+			camera_dir.rotateYZBy(playersao->getPitch());
+			camera_dir.rotateXZBy(playersao->getYaw());
+			fillViewConeBlock(pos,
+				player_ao_range,
+				playersao->getEyePosition(),
+				camera_dir,
+				playersao->getFov(),
+				newlist);
+		}
 	}
 
 	/*
@@ -328,10 +364,7 @@ void ActiveBlockList::update(std::vector<v3s16> &active_positions,
 	/*
 		Update m_list
 	*/
-	m_list.clear();
-	for (v3s16 p : newlist) {
-		m_list.insert(p);
-	}
+	m_list = newlist;
 }
 
 /*
@@ -873,10 +906,6 @@ void ServerEnvironment::activateBlock(MapBlock *block, u32 additional_dtime)
 					elapsed_timer.position));
 		}
 	}
-
-	/* Handle ActiveBlockModifiers */
-	ABMHandler abmhandler(m_abms, dtime_s, this, false);
-	abmhandler.apply(block);
 }
 
 void ServerEnvironment::addActiveBlockModifier(ActiveBlockModifier *abm)
@@ -1024,7 +1053,7 @@ void ServerEnvironment::clearObjects(ClearObjectsMode mode)
 		loadable_blocks = loaded_blocks;
 	}
 
-	infostream << "ServerEnvironment::clearObjects(): "
+	actionstream << "ServerEnvironment::clearObjects(): "
 		<< "Now clearing objects in " << loadable_blocks.size()
 		<< " blocks" << std::endl;
 
@@ -1070,7 +1099,7 @@ void ServerEnvironment::clearObjects(ClearObjectsMode mode)
 			num_blocks_checked % report_interval == 0) {
 			float percent = 100.0 * (float)num_blocks_checked /
 				loadable_blocks.size();
-			infostream << "ServerEnvironment::clearObjects(): "
+			actionstream << "ServerEnvironment::clearObjects(): "
 				<< "Cleared " << num_objs_cleared << " objects"
 				<< " in " << num_blocks_cleared << " blocks ("
 				<< percent << "%)" << std::endl;
@@ -1090,7 +1119,7 @@ void ServerEnvironment::clearObjects(ClearObjectsMode mode)
 
 	m_last_clear_objects_time = m_game_time;
 
-	infostream << "ServerEnvironment::clearObjects(): "
+	actionstream << "ServerEnvironment::clearObjects(): "
 		<< "Finished: Cleared " << num_objs_cleared << " objects"
 		<< " in " << num_blocks_cleared << " blocks" << std::endl;
 }
@@ -1140,7 +1169,7 @@ void ServerEnvironment::step(float dtime)
 		/*
 			Get player block positions
 		*/
-		std::vector<v3s16> players_blockpos;
+		std::vector<PlayerSAO*> players;
 		for (RemotePlayer *player: m_players) {
 			// Ignore disconnected players
 			if (player->getPeerId() == PEER_ID_INEXISTENT)
@@ -1149,18 +1178,21 @@ void ServerEnvironment::step(float dtime)
 			PlayerSAO *playersao = player->getPlayerSAO();
 			assert(playersao);
 
-			players_blockpos.push_back(
-				getNodeBlockPos(floatToInt(playersao->getBasePosition(), BS)));
+			players.push_back(playersao);
 		}
 
 		/*
 			Update list of active blocks, collecting changes
 		*/
+		// use active_object_send_range_blocks since that is max distance
+		// for active objects sent the client anyway
+		static thread_local const s16 active_object_range =
+				g_settings->getS16("active_object_send_range_blocks");
 		static thread_local const s16 active_block_range =
 				g_settings->getS16("active_block_range");
 		std::set<v3s16> blocks_removed;
 		std::set<v3s16> blocks_added;
-		m_active_blocks.update(players_blockpos, active_block_range,
+		m_active_blocks.update(players, active_block_range, active_object_range,
 			blocks_removed, blocks_added);
 
 		/*
@@ -1187,6 +1219,7 @@ void ServerEnvironment::step(float dtime)
 			MapBlock *block = m_map->getBlockOrEmerge(p);
 			if (!block) {
 				m_active_blocks.m_list.erase(p);
+				m_active_blocks.m_abm_list.erase(p);
 				continue;
 			}
 
@@ -1194,13 +1227,15 @@ void ServerEnvironment::step(float dtime)
 		}
 	}
 
+	// placeholder for the "real" time passed
+	float elapsed_time;
+
 	/*
 		Mess around in active blocks
 	*/
-	if (m_active_blocks_nodemetadata_interval.step(dtime, m_cache_nodetimer_interval)) {
+	if (m_active_blocks_nodemetadata_interval.step(dtime, m_cache_nodetimer_interval,
+			&elapsed_time)) {
 		ScopeProfiler sp(g_profiler, "SEnv: mess in act. blocks avg per interval", SPT_AVG);
-
-		float dtime = m_cache_nodetimer_interval;
 
 		for (const v3s16 &p: m_active_blocks.m_list) {
 			MapBlock *block = m_map->getBlockNoCreateNoEx(p);
@@ -1219,7 +1254,7 @@ void ServerEnvironment::step(float dtime)
 					MOD_REASON_BLOCK_EXPIRED);
 
 			// Run node timers
-			std::vector<NodeTimer> elapsed_timers = block->m_node_timers.step(dtime);
+			std::vector<NodeTimer> elapsed_timers = block->m_node_timers.step(elapsed_time);
 			if (!elapsed_timers.empty()) {
 				MapNode n;
 				v3s16 p2;
@@ -1235,20 +1270,16 @@ void ServerEnvironment::step(float dtime)
 		}
 	}
 
-	if (m_active_block_modifier_interval.step(dtime, m_cache_abm_interval))
+	if (m_active_block_modifier_interval.step(dtime,
+			m_cache_abm_interval * m_active_block_interval_overload_skip, &elapsed_time))
 		do { // breakable
-			if (m_active_block_interval_overload_skip > 0) {
-				ScopeProfiler sp(g_profiler, "SEnv: ABM overload skips");
-				m_active_block_interval_overload_skip--;
-				break;
-			}
 			ScopeProfiler sp(g_profiler, "SEnv: modify in blocks avg per interval", SPT_AVG);
 			TimeTaker timer("modify in active blocks per interval");
 
 			// Initialize handling of ActiveBlockModifiers
-			ABMHandler abmhandler(m_abms, m_cache_abm_interval, this, true);
+			ABMHandler abmhandler(m_abms, elapsed_time, this, true);
 
-			for (const v3s16 &p : m_active_blocks.m_list) {
+			for (const v3s16 &p : m_active_blocks.m_abm_list) {
 				MapBlock *block = m_map->getBlockNoCreateNoEx(p);
 				if (!block)
 					continue;
@@ -1260,13 +1291,16 @@ void ServerEnvironment::step(float dtime)
 				abmhandler.apply(block);
 			}
 
-			u32 time_ms = timer.stop(true);
-			u32 max_time_ms = 200;
+			const u32 time_ms = timer.stop(true);
+			// allow up to 10% of the budget interval
+			const u32 max_time_ms = m_cache_abm_interval * 1000.0f * 0.1f;
 			if (time_ms > max_time_ms) {
-				warningstream<<"active block modifiers took "
-					<<time_ms<<"ms (longer than "
-					<<max_time_ms<<"ms)"<<std::endl;
-				m_active_block_interval_overload_skip = (time_ms / max_time_ms) + 1;
+				warningstream << "active block modifiers took "
+					<< time_ms << "ms (longer than "
+					<< max_time_ms << "ms)" << std::endl;
+				m_active_block_interval_overload_skip = ((float)time_ms / max_time_ms);
+			} else {
+				m_active_block_interval_overload_skip = 1.0f;
 			}
 		}while(0);
 
@@ -1278,15 +1312,17 @@ void ServerEnvironment::step(float dtime)
 	/*
 		Step active objects
 	*/
-	{
+	if (m_active_object_interval.step(dtime,
+			m_cache_ao_interval * m_active_object_interval_overload_skip, &elapsed_time)) {
+
 		ScopeProfiler sp(g_profiler, "SEnv: step act. objs avg", SPT_AVG);
-		//TimeTaker timer("Step active objects");
+		TimeTaker timer("Step active objects");
 
 		g_profiler->avg("SEnv: num of objects", m_active_objects.size());
 
 		// This helps the objects to send data at the same time
 		bool send_recommended = false;
-		m_send_recommended_timer += dtime;
+		m_send_recommended_timer += elapsed_time;
 		if(m_send_recommended_timer > getSendRecommendedInterval())
 		{
 			m_send_recommended_timer -= getSendRecommendedInterval();
@@ -1299,12 +1335,27 @@ void ServerEnvironment::step(float dtime)
 				continue;
 
 			// Step object
-			obj->step(dtime, send_recommended);
+			obj->step(elapsed_time, send_recommended);
 			// Read messages from object
 			while (!obj->m_messages_out.empty()) {
 				m_active_object_messages.push(obj->m_messages_out.front());
 				obj->m_messages_out.pop();
 			}
+		}
+
+		// calculate a simple moving average
+		m_avg_ao_time = m_avg_ao_time * 0.9f + timer.stop(true) * 0.1f;
+
+		// allow up to 20% of the budget interval
+		const float max_time_ms = m_cache_ao_interval * 1000.0f * 0.2f;
+		if (m_avg_ao_time > max_time_ms) {
+			warningstream << "active objects took "
+				<< m_avg_ao_time << "ms (longer than "
+				<< max_time_ms << "ms)" << std::endl;
+			// skip a few steps
+			m_active_object_interval_overload_skip = m_avg_ao_time / max_time_ms;
+		} else {
+			m_active_object_interval_overload_skip = 1.0f;
 		}
 	}
 

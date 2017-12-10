@@ -22,6 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "irrlichttypes_extrabloated.h"
 #include "client/tile.h"
 #include "voxel.h"
+#include <array>
 #include <map>
 
 class Client;
@@ -187,7 +188,7 @@ struct PreMeshBuffer
 
 struct MeshCollector
 {
-	std::vector<PreMeshBuffer> prebuffers[MAX_TILE_LAYERS];
+	std::array<std::vector<PreMeshBuffer>, MAX_TILE_LAYERS> prebuffers;
 	bool m_use_tangent_vertices;
 
 	MeshCollector(bool use_tangent_vertices):

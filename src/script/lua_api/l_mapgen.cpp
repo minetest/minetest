@@ -1116,7 +1116,7 @@ int ModApiMapgen::l_register_ore(lua_State *L)
 		ore->flags |= OREFLAG_USE_NOISE;
 	} else if (ore->NEEDS_NOISE) {
 		errorstream << "register_ore: specified ore type requires valid "
-			"noise parameters" << std::endl;
+			"'noise_params' parameter" << std::endl;
 		delete ore;
 		return 0;
 	}
@@ -1161,10 +1161,12 @@ int ModApiMapgen::l_register_ore(lua_State *L)
 			OreStratum *orestratum = (OreStratum *)ore;
 
 			lua_getfield(L, index, "np_stratum_thickness");
-			// If thickness noise missing unset 'use noise' flag
-			if (!read_noiseparams(L, -1, &orestratum->np_stratum_thickness))
-				ore->flags &= ~OREFLAG_USE_NOISE;
+			if (read_noiseparams(L, -1, &orestratum->np_stratum_thickness))
+				ore->flags |= OREFLAG_USE_NOISE2;
 			lua_pop(L, 1);
+
+			orestratum->stratum_thickness = getintfield_default(L, index,
+				"stratum_thickness", 8);
 
 			break;
 		}

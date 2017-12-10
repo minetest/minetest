@@ -16,8 +16,8 @@ android {
 	defaultConfig {
 		versionCode 17
 		versionName "${System.env.VERSION_STR}.${versionCode}"
-		minSdkVersion 9
-		targetSdkVersion 9
+		minSdkVersion 14
+		targetSdkVersion 14
 		applicationId "net.minetest.minetest"
 		manifestPlaceholders = [ package: "net.minetest.minetest", project: project.name ]
 	}

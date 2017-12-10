@@ -345,39 +345,18 @@ if INIT == "game" then
 		end
 		local undef = core.registered_nodes[unode.name]
 		if undef and undef.on_rightclick then
-			undef.on_rightclick(pointed_thing.under, unode, placer,
+			return undef.on_rightclick(pointed_thing.under, unode, placer,
 					itemstack, pointed_thing)
-			return
 		end
 		local fdir = placer and core.dir_to_facedir(placer:get_look_dir()) or 0
-		local wield_name = itemstack:get_name()
 
 		local above = pointed_thing.above
 		local under = pointed_thing.under
 		local iswall = (above.y == under.y)
 		local isceiling = not iswall and (above.y < under.y)
-		local anode = core.get_node_or_nil(above)
-		if not anode then
-			return
-		end
-		local pos = pointed_thing.above
-		local node = anode
 
 		if undef and undef.buildable_to then
-			pos = pointed_thing.under
-			node = unode
 			iswall = false
-		end
-
-		local name = placer and placer:get_player_name() or ""
-		if core.is_protected(pos, name) then
-			core.record_protection_violation(pos, name)
-			return
-		end
-
-		local ndef = core.registered_nodes[node.name]
-		if not ndef or not ndef.buildable_to then
-			return
 		end
 
 		if orient_flags.force_floor then
@@ -393,31 +372,26 @@ if INIT == "game" then
 			iswall = not iswall
 		end
 
+		local param2 = fdir
 		if iswall then
-			core.set_node(pos, {name = wield_name,
-					param2 = dirs1[fdir + 1]})
+			param2 = dirs1[fdir + 1]
 		elseif isceiling then
 			if orient_flags.force_facedir then
-				core.set_node(pos, {name = wield_name,
-						param2 = 20})
+				cparam2 = 20
 			else
-				core.set_node(pos, {name = wield_name,
-						param2 = dirs2[fdir + 1]})
+				param2 = dirs2[fdir + 1]
 			end
 		else -- place right side up
 			if orient_flags.force_facedir then
-				core.set_node(pos, {name = wield_name,
-						param2 = 0})
-			else
-				core.set_node(pos, {name = wield_name,
-						param2 = fdir})
+				param2 = 0
 			end
 		end
 
-		if not infinitestacks then
-			itemstack:take_item()
-			return itemstack
-		end
+		local old_itemstack = ItemStack(itemstack)
+		local new_itemstack, removed = core.item_place_node(
+			itemstack, placer, pointed_thing, param2
+		)
+		return infinitestacks and old_itemstack or new_itemstack
 	end
 
 
@@ -696,6 +670,7 @@ end
 -- Returns the exact coordinate of a pointed surface
 --------------------------------------------------------------------------------
 function core.pointed_thing_to_face_pos(placer, pointed_thing)
+	local eye_height = placer:get_properties().eye_height
 	local eye_offset_first = placer:get_eye_offset()
 	local node_pos = pointed_thing.under
 	local camera_pos = placer:get_pos()
@@ -715,7 +690,7 @@ function core.pointed_thing_to_face_pos(placer, pointed_thing)
 	end
 
 	local fine_pos = {[nc] = node_pos[nc] + offset}
-	camera_pos.y = camera_pos.y + 1.625 + eye_offset_first.y / 10
+	camera_pos.y = camera_pos.y + eye_height + eye_offset_first.y / 10
 	local f = (node_pos[nc] + offset - camera_pos[nc]) / look_dir[nc]
 
 	for i = 1, #oc do

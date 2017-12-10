@@ -129,11 +129,12 @@ std::string getTexturePath(const std::string &filename)
 	/*
 		Check from texture_path
 	*/
-	const std::string &texture_path = g_settings->get("texture_path");
-	if (!texture_path.empty()) {
-		std::string testpath = texture_path + DIR_DELIM + filename;
+	for (const auto &path : getTextureDirs()) {
+		std::string testpath = path + DIR_DELIM + filename;
 		// Check all filename extensions. Returns "" if not found.
 		fullpath = getImagePath(testpath);
+		if (!fullpath.empty())
+			break;
 	}
 
 	/*
@@ -2387,4 +2388,11 @@ video::ITexture *TextureSource::getShaderFlagsTexture(bool normalmap_present)
 	flags_image->drop();
 	return getTexture(tname);
 
+}
+
+const std::vector<std::string> &getTextureDirs()
+{
+	static thread_local std::vector<std::string> dirs =
+		fs::GetRecursiveDirs(g_settings->get("texture_path"));
+	return dirs;
 }

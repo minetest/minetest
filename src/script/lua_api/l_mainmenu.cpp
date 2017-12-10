@@ -532,7 +532,7 @@ int ModApiMainMenu::l_delete_world(lua_State *L)
 
 		std::vector<std::string> paths;
 		paths.push_back(spec.path);
-		fs::GetRecursiveSubPaths(spec.path, paths);
+		fs::GetRecursiveSubPaths(spec.path, paths, true);
 
 		// Delete files
 		if (!fs::DeletePaths(paths)) {

@@ -1,21 +1,21 @@
-Minetest Lua Modding API Reference 0.5.0
-=========================================
+Minetest Lua Modding API Reference
+==================================
 * More information at <http://www.minetest.net/>
 * Developer Wiki: <http://dev.minetest.net/>
 
 Introduction
 ------------
-Content and functionality can be added to Minetest 0.4 by using Lua
-scripting in run-time loaded mods.
+Content and functionality can be added to Minetest using Lua scripting
+in run-time loaded mods.
 
 A mod is a self-contained bunch of scripts, textures and other related
-things that is loaded by and interfaces with Minetest.
+things, which is loaded by and interfaces with Minetest.
 
 Mods are contained and ran solely on the server side. Definitions and media
 files are automatically transferred to the client.
 
 If you see a deficiency in the API, feel free to attempt to add the
-functionality in the engine and API.
+functionality in the engine and API, and to document it here.
 
 Programming in Lua
 ------------------
@@ -153,15 +153,15 @@ List of mods that have to be loaded before loading this mod.
 A single line contains a single modname.
 
 Optional dependencies can be defined by appending a question mark
-to a single modname. Their meaning is that if the specified mod
-is missing, that does not prevent this mod from being loaded.
+to a single modname. This means that if the specified mod
+is missing, it does not prevent this mod from being loaded.
 
 ### `screenshot.png`
 A screenshot shown in the mod manager within the main menu. It should
 have an aspect ratio of 3:2 and a minimum size of 300×200 pixels.
 
 ### `description.txt`
-A File containing description to be shown within mainmenu.
+A file containing a description to be shown in the Mods tab of the mainmenu.
 
 ### `settingtypes.txt`
 A file in the same format as the one in builtin. It will be parsed by the
@@ -214,12 +214,12 @@ when registering it.
 
 The `:` prefix can also be used for maintaining backwards compatibility.
 
-### Aliases
+Aliases
+-------
 Aliases can be added by using `minetest.register_alias(name, convert_to)` or
 `minetest.register_alias_force(name, convert_to)`.
 
-This will make Minetest to convert things called name to things called
-`convert_to`.
+This converts anything called `name` to `convert_to`.
 
 The only difference between `minetest.register_alias` and
 `minetest.register_alias_force` is that if an item called `name` exists,
@@ -228,12 +228,81 @@ The only difference between `minetest.register_alias` and
 
 This can be used for maintaining backwards compatibility.
 
-This can be also used for setting quick access names for things, e.g. if
+This can also set quick access names for things, e.g. if
 you have an item called `epiclylongmodname:stuff`, you could do
 
     minetest.register_alias("stuff", "epiclylongmodname:stuff")
 
 and be able to use `/giveme stuff`.
+
+Mapgen aliases
+--------------
+In a game, a certain number of these must be set to tell core mapgens which
+of the game's nodes are to be used by the core mapgens. For example:
+
+    minetest.register_alias("mapgen_stone", "default:stone")
+
+### Aliases needed for all mapgens except Mapgen v6
+
+Base terrain:
+
+"mapgen_stone"
+"mapgen_water_source"
+"mapgen_river_water_source"
+
+Caves:
+
+"mapgen_lava_source"
+
+Dungeons:
+
+Only needed for registered biomes where 'node_stone' is stone:
+"mapgen_cobble"
+"mapgen_stair_cobble"
+"mapgen_mossycobble"
+Only needed for registered biomes where 'node_stone' is desert stone:
+"mapgen_desert_stone"
+"mapgen_stair_desert_stone"
+Only needed for registered biomes where 'node_stone' is sandstone:
+"mapgen_sandstone"
+"mapgen_sandstonebrick"
+"mapgen_stair_sandstone_block"
+
+### Aliases needed for Mapgen v6
+
+Terrain and biomes:
+
+"mapgen_stone"
+"mapgen_water_source"
+"mapgen_lava_source"
+"mapgen_dirt"
+"mapgen_dirt_with_grass"
+"mapgen_sand"
+"mapgen_gravel"
+"mapgen_desert_stone"
+"mapgen_desert_sand"
+"mapgen_dirt_with_snow"
+"mapgen_snowblock"
+"mapgen_snow"
+"mapgen_ice"
+
+Flora:
+
+"mapgen_tree"
+"mapgen_leaves"
+"mapgen_apple"
+"mapgen_jungletree"
+"mapgen_jungleleaves"
+"mapgen_junglegrass"
+"mapgen_pine_tree"
+"mapgen_pine_needles"
+
+Dungeons:
+
+"mapgen_cobble"
+"mapgen_stair_cobble"
+"mapgen_mossycobble"
+"mapgen_stair_desert_stone"
 
 Textures
 --------
@@ -260,7 +329,7 @@ Example:
 
     default_dirt.png^default_grass_side.png
 
-`default_grass_side.png` is overlayed over `default_dirt.png`.
+`default_grass_side.png` is overlaid over `default_dirt.png`.
 The texture with the lower resolution will be automatically upscaled to
 the higher resolution texture.
 
@@ -340,7 +409,7 @@ Only the channels that are mentioned in the mode string will be inverted.
 
 Example:
 
-	default_apple.png^[invert:rgb
+    default_apple.png^[invert:rgb
 
 #### `[brighten`
 Brightens the texture.
@@ -1081,7 +1150,7 @@ If `column_height_max` is not specified, this parameter defaults to `clust_size`
 for reverse compatibility.  New code should prefer `column_height_max`.
 
 The `column_midpoint_factor` parameter controls the position of the column at which
-ore eminates from.  If 1, columns grow upward.  If 0, columns grow downward.  If 0.5,
+ore emanates from.  If 1, columns grow upward.  If 0, columns grow downward.  If 0.5,
 columns grow equally starting from each direction.  `column_midpoint_factor` is a
 decimal number ranging in value from 0 to 1.  If this parameter is not specified,
 the default is 0.5.
@@ -1105,7 +1174,7 @@ Creates a deformed sphere of ore according to 3d perlin noise described by
 
 ### `vein`
 Creates veins of ore varying in density by according to the intersection of two
-instances of 3d perlin noise with diffferent seeds, both described by
+instances of 3d perlin noise with different seeds, both described by
 `noise_params`.
 
 `random_factor` varies the influence random chance has on placement of an ore
@@ -1118,16 +1187,16 @@ by this ore type.
 This ore type is difficult to control since it is sensitive to small changes.
 The following is a decent set of parameters to work from:
 
-	noise_params = {
-	    offset  = 0,
-	    scale   = 3,
-	    spread  = {x=200, y=200, z=200},
-	    seed    = 5390,
-	    octaves = 4,
-	    persist = 0.5,
-	    flags = "eased",
-	},
-	noise_threshold = 1.6
+    noise_params = {
+        offset  = 0,
+        scale   = 3,
+        spread  = {x=200, y=200, z=200},
+        seed    = 5390,
+        octaves = 4,
+        persist = 0.5,
+        flags = "eased",
+    },
+    noise_threshold = 1.6
 
 **WARNING**: Use this ore type *very* sparingly since it is ~200x more
 computationally expensive than any other ore.
@@ -1136,19 +1205,24 @@ computationally expensive than any other ore.
 Creates a single undulating ore stratum that is continuous across mapchunk
 borders and horizontally spans the world.
 
-The 2D perlin noise described by `noise_params` varies the Y co-ordinate of the
+The 2D perlin noise described by `noise_params` defines the Y co-ordinate of the
 stratum midpoint. The 2D perlin noise described by `np_stratum_thickness`
-varies the stratum's vertical thickness (in units of nodes). Due to being
+defines the stratum's vertical thickness (in units of nodes). Due to being
 continuous across mapchunk borders the stratum's vertical thickness is
 unlimited.
+
+If the noise parameter `noise_params` is omitted the ore will occur from y_min
+to y_max in a simple horizontal stratum.
+
+A parameter `stratum_thickness` can be provided instead of the noise parameter
+`np_stratum_thickness`, to create a constant thickness.
+
+Leaving out one or both noise parameters makes the ore generation less intensive,
+useful when adding multiple strata.
 
 `y_min` and `y_max` define the limits of the ore generation and for performance
 reasons should be set as close together as possible but without clipping the
 stratum's Y variation.
-
-If either of the 2 noise parameters are omitted the ore will occur from y_min
-to y_max in a simple horizontal stratum. As this does not compute noise
-performance improves, and is ideal for placing many layers.
 
 Each node in the stratum has a 1-in-`clust_scarcity` chance of being ore, so a
 solid-ore stratum would require a `clust_scarcity` of 1.
@@ -1201,7 +1275,7 @@ in the form of a table.  This table specifies the following fields:
 
 * The `size` field is a 3D vector containing the dimensions of the provided schematic. (required)
 * The `yslice_prob` field is a table of {ypos, prob} which sets the `ypos`th vertical slice
-  of the schematic to have a `prob / 256 * 100` chance of occuring. (default: 255)
+  of the schematic to have a `prob / 256 * 100` chance of occurring. (default: 255)
 * The `data` field is a flat table of MapNode tables making up the schematic,
   in the order of `[z [y [x]]]`. (required)
   Each MapNode table contains:
@@ -1687,7 +1761,7 @@ the entity itself.
 * `direction` is a unit vector, pointing from the source of the punch to
    the punched object.
 * `damage` damage that will be done to entity
-Return value of this function will determin if damage is done by this function
+Return value of this function will determine if damage is done by this function
 (retval true) or shall be done by engine (retval false)
 
 To punch an entity/object in Lua, call:
@@ -2391,7 +2465,7 @@ Strings that need to be translated can contain several escapes, preceded by `@`.
     * `hash`: Full git version (only set if available), eg, "1.2.3-dev-01234567-dirty"
   Use this for informational purposes only. The information in the returned
   table does not represent the capabilities of the engine, nor is it
-  reliable or verifyable. Compatible forks will have a different name and
+  reliable or verifiable. Compatible forks will have a different name and
   version entirely. To check for the presence of engine features, test
   whether the functions exported by the wanted features exist. For example:
   `if minetest.check_for_falling then ... end`.
@@ -2417,6 +2491,8 @@ Call these functions only at load time!
 * `minetest.register_craftitem(name, item definition)`
 * `minetest.unregister_item(name)`
 * `minetest.register_alias(name, convert_to)`
+    * Also use this to set the 'mapgen aliases' needed in a game for the core
+    * mapgens. See 'Mapgen aliases' section above.
 * `minetest.register_alias_force(name, convert_to)`
 * `minetest.register_craft(recipe)`
     * Check recipe table syntax for different types below.
@@ -2567,8 +2643,9 @@ Call these functions only at load time!
     * Note that the above two callbacks will be called twice if a player is responsible -
       once with the player name, and then with a nil player name.
     * Return true in the above callbacks to stop register_on_priv_grant or revoke being called.
-* `minetest.register_authentication_handler(handler)`
-    * See `minetest.builtin_auth_handler` in `builtin.lua` for reference
+* `minetest.register_authentication_handler(authentication handler definition)`
+    * Registers an auth handler that overrides the builtin one
+    * This function can be called by a single mod once only.
 
 ### Setting-related
 * `minetest.settings`: Settings object containing all of the settings from the
@@ -2577,40 +2654,47 @@ Call these functions only at load time!
   parses it as a position (in the format `(1,2,3)`). Returns a position or nil.
 
 ### Authentication
-* `minetest.notify_authentication_modified(name)`
-    * Should be called by the authentication handler if privileges changes.
-    * `name`: string, if ommited, everybody is reported
-* `minetest.check_password_entry(name, entry, password)`
-    * Returns true if the "db entry" for a player with name matches given
-    * password, false otherwise.
-    * The "db entry" is the usually player-individual value that is derived
-    * from the player's chosen password and stored on the server in order to allow
-    * authentication whenever the player desires to log in.
-    * Only use this function for making it possible to log in via the password from
-    * via protocols like IRC, other uses for inside the game are frowned upon.
-* `minetest.get_password_hash(name, raw_password)`
-    * Convert a name-password pair to a password hash that Minetest can use.
-    * The returned value alone is not a good basis for password checks based
-    * on comparing the password hash in the database with the password hash
-    * from the function, with an externally provided password, as the hash
-    * in the db might use the new SRP verifier format.
-    * For this purpose, use `minetest.check_password_entry` instead.
 * `minetest.string_to_privs(str)`: returns `{priv1=true,...}`
 * `minetest.privs_to_string(privs)`: returns `"priv1,priv2,..."`
     * Convert between two privilege representations
-* `minetest.set_player_password(name, password_hash)`
-* `minetest.set_player_privs(name, {priv1=true,...})`
 * `minetest.get_player_privs(name) -> {priv1=true,...}`
-* `minetest.auth_reload()`
 * `minetest.check_player_privs(player_or_name, ...)`: returns `bool, missing_privs`
     * A quickhand for checking privileges.
-	* `player_or_name`: Either a Player object or the name of a player.
-	* `...` is either a list of strings, e.g. `"priva", "privb"` or
-	  a table, e.g. `{ priva = true, privb = true }`.
-* `minetest.get_player_ip(name)`: returns an IP address string
+    * `player_or_name`: Either a Player object or the name of a player.
+    * `...` is either a list of strings, e.g. `"priva", "privb"` or
+      a table, e.g. `{ priva = true, privb = true }`.
+
+* `minetest.check_password_entry(name, entry, password)`
+    * Returns true if the "password entry" for a player with name matches given
+      password, false otherwise.
+    * The "password entry" is the password representation generated by the engine
+      as returned as part of a `get_auth()` call on the auth handler.
+    * Only use this function for making it possible to log in via password from
+      external protocols such as IRC, other uses are frowned upon.
+* `minetest.get_password_hash(name, raw_password)`
+    * Convert a name-password pair to a password hash that Minetest can use.
+    * The returned value alone is not a good basis for password checks based
+      on comparing the password hash in the database with the password hash
+      from the function, with an externally provided password, as the hash
+      in the db might use the new SRP verifier format.
+    * For this purpose, use `minetest.check_password_entry` instead.
+* `minetest.get_player_ip(name)`: returns an IP address string for the player `name`
+    * The player needs to be online for this to be successful.
+
+* `minetest.get_auth_handler()`: Return the currently active auth handler
+    * See the `Authentication handler definition`
+    * Use this to e.g. get the authentication data for a player:
+      `local auth_data = minetest.get_auth_handler().get_auth(playername)`
+* `minetest.notify_authentication_modified(name)`
+    * Must be called by the authentication handler for privilege changes.
+    * `name`: string; if omitted, all auth data should be considered modified
+* `minetest.set_player_password(name, password_hash)`: Set password hash of player `name`
+* `minetest.set_player_privs(name, {priv1=true,...})`: Set privileges of player `name`
+* `minetest.auth_reload()`
+    * See `reload()` in authentication handler definition
 
 `minetest.set_player_password`, `minetest_set_player_privs`, `minetest_get_player_privs`
-and `minetest.auth_reload` call the authetification handler.
+and `minetest.auth_reload` call the authentication handler.
 
 ### Chat
 * `minetest.chat_send_all(text)`
@@ -3040,8 +3124,11 @@ These functions return the leftover itemstack.
 * `minetest.get_server_status()`: returns server status string
 * `minetest.get_server_uptime()`: returns the server uptime in seconds
 * `minetest.remove_player(name)`: remove player from database (if he is not connected).
-    * Does not remove player authentication data, minetest.player_exists will continue to return true.
+    * As auth data is not removed, minetest.player_exists will continue to return true.
+      Call the below method as well if you want to remove auth data too.
     * Returns a code (0: successful, 1: no such player, 2: player is connected)
+* `minetest.remove_player_auth(name)`: remove player authentication data
+    * Returns boolean indicating success (false if player nonexistant)
 
 ### Bans
 * `minetest.get_ban_list()`: returns the ban list (same as `minetest.get_ban_description("")`)
@@ -3106,7 +3193,7 @@ These functions return the leftover itemstack.
     * Returns nil if the schematic could not be loaded.
 
 * `minetest.place_schematic_on_vmanip(vmanip, pos, schematic, rotation, replacement, force_placement)`:
-    * This function is analagous to minetest.place_schematic, but places a schematic onto the
+    * This function is analogous to minetest.place_schematic, but places a schematic onto the
       specified VoxelManip object `vmanip` instead of the whole map.
     * Returns false if any part of the schematic was cut-off due to the VoxelManip not
       containing the full area required, and true if the whole schematic was able to fit.
@@ -3225,7 +3312,7 @@ These functions return the leftover itemstack.
     * Decodes a string encoded in base64.
 * `minetest.is_protected(pos, name)`: returns boolean
     * Returns true, if player `name` shouldn't be abled to dig at `pos` or do other
-      actions, defineable by mods, due to some mod-defined ownership-like concept.
+      actions, definable by mods, due to some mod-defined ownership-like concept.
       Returns false or nil, if the player is allowed to do such actions.
     * `name` will be "" for non-players or unknown players.
     * This function should be overridden by protection mods and should be used to
@@ -3517,7 +3604,7 @@ This is basically a reference to a C++ `ServerActiveObject`
         * See Object Properties for more information
 * `set_attribute(attribute, value)`:
     * Sets an extra attribute with value on player.
-    * `value` must be a string.
+    * `value` must be a string, or a number which will be converted to a string.
     * If `value` is `nil`, remove attribute from player.
 * `get_attribute(attribute)`:
     * Returns value (a string) for extra attribute.
@@ -3582,22 +3669,21 @@ This is basically a reference to a C++ `ServerActiveObject`
       `"plain"` custom skyboxes (default: `true`)
 * `get_sky()`: returns bgcolor, type, table of textures, clouds
 * `set_clouds(parameters)`: set cloud parameters
-	* `parameters` is a table with the following optional fields:
-		* `density`: from `0` (no clouds) to `1` (full clouds) (default `0.4`)
-		* `color`: basic cloud color with alpha channel, ColorSpec (default `#fff0f0e5`)
-		* `ambient`: cloud color lower bound, use for a "glow at night" effect.
-		  ColorSpec (alpha ignored, default `#000000`)
-		* `height`: cloud height, i.e. y of cloud base (default per conf, usually `120`)
-		* `thickness`: cloud thickness in nodes (default `16`)
-		* `speed`: 2D cloud speed + direction in nodes per second (default `{x=0, z=-2}`)
+    * `parameters` is a table with the following optional fields:
+        * `density`: from `0` (no clouds) to `1` (full clouds) (default `0.4`)
+        * `color`: basic cloud color with alpha channel, ColorSpec (default `#fff0f0e5`)
+        * `ambient`: cloud color lower bound, use for a "glow at night" effect.
+          ColorSpec (alpha ignored, default `#000000`)
+        * `height`: cloud height, i.e. y of cloud base (default per conf, usually `120`)
+        * `thickness`: cloud thickness in nodes (default `16`)
+        * `speed`: 2D cloud speed + direction in nodes per second (default `{x=0, z=-2}`)
 * `get_clouds()`: returns a table with the current cloud parameters as in `set_clouds`
 * `override_day_night_ratio(ratio or nil)`
     * `0`...`1`: Overrides day-night ratio, controlling sunlight to a specific amount
     * `nil`: Disables override, defaulting to sunlight based on day-night cycle
 * `get_day_night_ratio()`: returns the ratio or nil if it isn't overridden
-* `set_local_animation(stand/idle, walk, dig, walk+dig, frame_speed=frame_speed)`
-
-	set animation for player model in third person view
+* `set_local_animation(stand/idle, walk, dig, walk+dig, frame_speed=frame_speed)`:
+  set animation for player model in third person view
 
         set_local_animation({x=0, y=79}, -- < stand/idle animation key frames
             {x=168, y=187}, -- < walk animation key frames
@@ -3778,7 +3864,7 @@ A fast, bulk perlin noise generator.
 It can be created via `PerlinNoiseMap(noiseparams, size)` or
 `minetest.get_perlin_map(noiseparams, size)`.
 
-Format of `size` is `{x=dimx, y=dimy, z=dimz}`.  The `z` conponent is ommitted
+Format of `size` is `{x=dimx, y=dimy, z=dimz}`.  The `z` component is omitted
 for 2D noise, and it must be must be larger than 1 for 3D noise (otherwise
 `nil` is returned).
 
@@ -4145,7 +4231,7 @@ Registered entities
           * `tool_capabilities`: capability table of used tool (can be `nil`)
           * `dir`: unit vector of direction of punch. Always defined. Points from
             the puncher to the punched.
-	`on_death(self, killer)`
+    * `on_death(self, killer)`
         * Called when the object dies.
           * `killer`: an `ObjectRef` (can be `nil`)
     * `on_rightclick(self, clicker)`
@@ -4236,8 +4322,13 @@ Definition tables
     --  ^ For players: Defaults to `minetest.PLAYER_MAX_HP_DEFAULT`
         breath_max = 0,
     --  ^ For players only. Defaults to `minetest.PLAYER_MAX_BREATH_DEFAULT`
-        can_zoom = true,
-    --  ^ For players only. Enables the zoom feature. Defaults to true
+        zoom_fov = 0.0,
+    --  ^ For players only. Zoom FOV in degrees.
+    --    Note that zoom loads and/or generates world beyond the server's maximum
+    --    send and generate distances, so acts like a telescope.
+    --    Smaller zoomFOV values increase the distance loaded and/or generated.
+    --    Defaults to 15 in creative mode, 0 in survival mode.
+    --    zoom_fov = 0 disables zooming for the player.
         eye_height = 1.625,
     --  ^ For players only. Camera height above feet position in nodes. Defaults to 1.625
         physical = true,
@@ -4450,9 +4541,9 @@ Definition tables
     tileable_horizontal=bool, align_style="node"/"world"/"user", scale=int}`
     * backface culling enabled by default for most nodes
     * tileable flags are info for shaders, how they should treat texture
-	  when displacement mapping is used
-	  Directions are from the point of view of the tile texture,
-	  not the node it's on
+      when displacement mapping is used
+      Directions are from the point of view of the tile texture,
+      not the node it's on
     * align style determines whether the texture will be rotated with the node
           or kept aligned with its surroundings. "user" means that client
           setting will be used, similar to `glasslike_framed_optional`.
@@ -4470,25 +4561,25 @@ Definition tables
 
 ### Tile animation definition
 
-	{
-		type = "vertical_frames",
-		aspect_w = 16,
-		-- ^ specify width of a frame in pixels
-		aspect_h = 16,
-		-- ^ specify height of a frame in pixels
-		length = 3.0,
-		-- ^ specify full loop length
-	}
+    {
+        type = "vertical_frames",
+        aspect_w = 16,
+        -- ^ specify width of a frame in pixels
+        aspect_h = 16,
+        -- ^ specify height of a frame in pixels
+        length = 3.0,
+        -- ^ specify full loop length
+    }
 
-	{
-		type = "sheet_2d",
-		frames_w = 5,
-		-- ^ specify width in number of frames
-		frames_h = 3,
-		-- ^ specify height in number of frames
-		frame_length = 0.5,
-		-- ^ specify length of a single frame
-	}
+    {
+        type = "sheet_2d",
+        frames_w = 5,
+        -- ^ specify width in number of frames
+        frames_h = 3,
+        -- ^ specify height in number of frames
+        frame_length = 0.5,
+        -- ^ specify length of a single frame
+    }
 
 ### Node definition (`register_node`)
 
@@ -4630,7 +4721,7 @@ Definition tables
         ^ Called after constructing node when node was placed using
           minetest.item_place_node / minetest.place_node
         ^ If return true no item is taken from itemstack
-	^ `placer` may be any valid ObjectRef or nil
+        ^ `placer` may be any valid ObjectRef or nil
         ^ default: nil ]]
         after_dig_node = func(pos, oldnode, oldmetadata, digger), --[[
         ^ oldmetadata is in table format
@@ -4748,27 +4839,29 @@ Definition tables
 
 ### Ore definition (`register_ore`)
 
+    See 'Ore types' section above for essential information.
+
     {
-        ore_type = "scatter", -- See "Ore types"
+        ore_type = "scatter",
         ore = "default:stone_with_coal",
         ore_param2 = 3,
     --  ^ Facedir rotation. Default is 0 (unchanged rotation)
         wherein = "default:stone",
     --  ^ a list of nodenames is supported too
-        clust_scarcity = 8*8*8,
+        clust_scarcity = 8 * 8 * 8,
     --  ^ Ore has a 1 out of clust_scarcity chance of spawning in a node
-    --  ^ This value should be *MUCH* higher than your intuition might tell you!
+    --  ^ If the desired average distance between ores is 'd', set this to d * d * d.
         clust_num_ores = 8,
     --  ^ Number of ores in a cluster
         clust_size = 3,
     --  ^ Size of the bounding box of the cluster
-    --  ^ In this example, there is a 3x3x3 cluster where 8 out of the 27 nodes
+    --  ^ In this example, there is a 3 * 3 * 3 cluster where 8 out of the 27 nodes
     --  ^ are coal ore.
         y_min = -31000,
         y_max = 64,
     --  ^ Lower and upper limits for ore.
         flags = "",
-    --  ^ Attributes for this ore generation
+    --  ^ Attributes for this ore generation, see 'Ore attributes' section above.
         noise_threshold = 0.5,
     --  ^ If noise is above this threshold, ore is placed. Not needed for a
     --  ^ uniform distribution.
@@ -4782,17 +4875,51 @@ Definition tables
         },
     --  ^ NoiseParams structure describing one of the perlin noises used for ore
     --  ^ distribution.
+    --  ^ Needed by "sheet", "puff", "blob" and "vein" ores.
     --  ^ Omit from "scatter" ore for a uniform ore distribution.
     --  ^ Omit from "stratum ore for a simple horizontal strata from y_min to y_max.
-        random_factor = 1.0,
-    --  ^ Multiplier of the randomness contribution to the noise value at any
-    --  ^ given point to decide if ore should be placed.  Set to 0 for solid veins.
-    --  ^ This parameter is only valid for ore_type == "vein".
         biomes = {"desert", "rainforest"}
     --  ^ List of biomes in which this decoration occurs.
     --  ^ Occurs in all biomes if this is omitted, and ignored if the Mapgen being
     --  ^ used does not support biomes.
     --  ^ Can be a list of (or a single) biome names, IDs, or definitions.
+        column_height_min = 1,
+        column_height_max = 16,
+        column_midpoint_factor = 0.5,
+    --  ^ See 'Ore types' section above.
+    --  ^ The above 3 parameters are only valid for "sheet" ore.
+        np_puff_top = {
+            offset = 4,
+            scale = 2,
+            spread = {x = 100, y = 100, z = 100},
+            seed = 47,
+            octaves = 3,
+            persist = 0.7
+        },
+        np_puff_bottom = {
+            offset = 4,
+            scale = 2,
+            spread = {x = 100, y = 100, z = 100},
+            seed = 11,
+            octaves = 3,
+            persist = 0.7
+        },
+    --  ^ See 'Ore types' section above.
+    --  ^ The above 2 parameters are only valid for "puff" ore.
+        random_factor = 1.0,
+    --  ^ See 'Ore types' section above.
+    --  ^ Only valid for "vein" ore.
+        np_stratum_thickness = {
+            offset = 8,
+            scale = 4,
+            spread = {x = 100, y = 100, z = 100},
+            seed = 17,
+            octaves = 3,
+            persist = 0.7
+        },
+        stratum_thickness = 8,
+    --  ^ See 'Ore types' section above.
+    --  ^ The above 2 parameters are only valid for "stratum" ore.
     }
 
 ### Biome definition (`register_biome`)
@@ -4833,7 +4960,7 @@ Definition tables
     --  ^ diagram to result in roughly equal size biomes.
     --  ^ Heat and humidity have average values of 50, vary mostly between
     --  ^ 0 and 100 but also often exceed these values.
-    --  ^ Heat is not in degrees celcius, both values are abstract.
+    --  ^ Heat is not in degrees Celsius, both values are abstract.
     }
 
 ### Decoration definition (`register_decoration`)
@@ -5091,10 +5218,37 @@ Definition tables
         completed = true,
      -- ^ If true, the request has finished (either succeeded, failed or timed out)
         succeeded = true,
-     -- ^ If true, the request was succesful
+     -- ^ If true, the request was successful
         timeout = false,
      -- ^ If true, the request timed out
         code = 200,
      -- ^ HTTP status code
         data = "response"
     }
+
+### Authentication handler definition
+
+    {
+        get_auth = func(name),
+    --  ^ Get authentication data for existing player `name` (`nil` if player doesn't exist)
+    --  ^ returns following structure `{password=<string>, privileges=<table>, last_login=<number or nil>}`
+        create_auth = func(name, password),
+    --  ^ Create new auth data for player `name`
+    --  ^ Note that `password` is not plain-text but an arbitrary representation decided by the engine
+        delete_auth = func(name),
+    --  ^ Delete auth data of player `name`, returns boolean indicating success (false if player nonexistant)
+        set_password = func(name, password),
+    --  ^ Set password of player `name` to `password`
+           Auth data should be created if not present
+        set_privileges = func(name, privileges),
+    --  ^ Set privileges of player `name`
+    --  ^ `privileges` is in table form, auth data should be created if not present
+        reload = func(),
+    --  ^ Reload authentication data from the storage location
+    --  ^ Returns boolean indicating success
+        record_login = func(name),
+    --  ^ Called when player joins, used for keeping track of last_login
+        iterate = func(),
+    --  ^ Returns an iterator (use with `for` loops) for all player names currently in the auth database
+    }
+

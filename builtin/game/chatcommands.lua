@@ -896,10 +896,10 @@ core.register_chatcommand("clearobjects", {
 	privs = {server=true},
 	func = function(name, param)
 		local options = {}
-		if param == "" or param == "full" then
-			options.mode = "full"
-		elseif param == "quick" then
+		if param == "" or param == "quick" then
 			options.mode = "quick"
+		elseif param == "full" then
+			options.mode = "full"
 		else
 			return false, "Invalid usage, see /help clearobjects."
 		end

@@ -29,6 +29,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "threading/mutex_auto_lock.h"
 #include "client/clientevent.h"
 #include "client/renderingengine.h"
+#include "client/tile.h"
 #include "util/auth.h"
 #include "util/directiontables.h"
 #include "util/pointedthing.h"
@@ -1643,9 +1644,8 @@ void Client::afterContentReceived()
 	text = wgettext("Initializing nodes...");
 	RenderingEngine::draw_load_screen(text, guienv, m_tsrc, 0, 72);
 	m_nodedef->updateAliases(m_itemdef);
-	std::string texture_path = g_settings->get("texture_path");
-	if (!texture_path.empty() && fs::IsDir(texture_path))
-		m_nodedef->applyTextureOverrides(texture_path + DIR_DELIM + "override.txt");
+	for (const auto &path : getTextureDirs())
+		m_nodedef->applyTextureOverrides(path + DIR_DELIM + "override.txt");
 	m_nodedef->setNodeRegistrationStatus(true);
 	m_nodedef->runNodeResolveCallbacks();
 	delete[] text;
@@ -1836,7 +1836,7 @@ ParticleManager* Client::getParticleManager()
 	return &m_particle_manager;
 }
 
-scene::IAnimatedMesh* Client::getMesh(const std::string &filename)
+scene::IAnimatedMesh* Client::getMesh(const std::string &filename, bool cache)
 {
 	StringMap::const_iterator it = m_mesh_data.find(filename);
 	if (it == m_mesh_data.end()) {
@@ -1855,10 +1855,9 @@ scene::IAnimatedMesh* Client::getMesh(const std::string &filename)
 
 	scene::IAnimatedMesh *mesh = RenderingEngine::get_scene_manager()->getMesh(rfile);
 	rfile->drop();
-	// NOTE: By playing with Irrlicht refcounts, maybe we could cache a bunch
-	// of uniquely named instances and re-use them
 	mesh->grab();
-	RenderingEngine::get_mesh_cache()->removeMesh(mesh);
+	if (!cache)
+		RenderingEngine::get_mesh_cache()->removeMesh(mesh);
 	return mesh;
 }
 

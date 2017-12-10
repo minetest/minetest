@@ -253,9 +253,8 @@ Server::Server(
 	m_nodedef->updateAliases(m_itemdef);
 
 	// Apply texture overrides from texturepack/override.txt
-	std::string texture_path = g_settings->get("texture_path");
-	if (!texture_path.empty() && fs::IsDir(texture_path))
-		m_nodedef->applyTextureOverrides(texture_path + DIR_DELIM + "override.txt");
+	for (const auto &path : fs::GetRecursiveDirs(g_settings->get("texture_path")))
+		m_nodedef->applyTextureOverrides(path + DIR_DELIM + "override.txt");
 
 	m_nodedef->setNodeRegistrationStatus(true);
 
@@ -307,7 +306,7 @@ Server::Server(
 
 Server::~Server()
 {
-	infostream<<"Server destructing"<<std::endl;
+	infostream << "Server destructing" << std::endl;
 
 	// Send shutdown message
 	SendChatMessage(PEER_ID_INEXISTENT, ChatMessage(CHATMESSAGE_TYPE_ANNOUNCE,
@@ -315,10 +314,7 @@ Server::~Server()
 
 	{
 		MutexAutoLock envlock(m_env_mutex);
-
-		// Execute script shutdown hooks
-		m_script->on_shutdown();
-
+		
 		infostream << "Server: Saving players" << std::endl;
 		m_env->saveLoadedPlayers();
 
@@ -334,6 +330,20 @@ Server::~Server()
 		}
 		m_env->kickAllPlayers(SERVER_ACCESSDENIED_SHUTDOWN,
 			kick_msg, reconnect);
+	}
+
+	// Do this before stopping the server in case mapgen callbacks need to access
+	// server-controlled resources (like ModStorages). Also do them before
+	// shutdown callbacks since they may modify state that is finalized in a
+	// callback.
+	m_emerge->stopThreads();
+
+	{
+		MutexAutoLock envlock(m_env_mutex);
+
+		// Execute script shutdown hooks
+		infostream << "Executing shutdown hooks" << std::endl;
+		m_script->on_shutdown();
 
 		infostream << "Server: Saving environment metadata" << std::endl;
 		m_env->saveMeta();
@@ -342,10 +352,6 @@ Server::~Server()
 	// Stop threads
 	stop();
 	delete m_thread;
-
-	// stop all emerge threads before deleting players that may have
-	// requested blocks to be emerged
-	m_emerge->stopThreads();
 
 	// Delete things in the reverse order of creation
 	delete m_emerge;
@@ -358,7 +364,7 @@ Server::~Server()
 	delete m_craftdef;
 
 	// Deinitialize scripting
-	infostream<<"Server: Deinitializing scripting"<<std::endl;
+	infostream << "Server: Deinitializing scripting" << std::endl;
 	delete m_script;
 
 	// Delete detached inventories
@@ -2253,8 +2259,8 @@ void Server::fillMediaCache()
 		paths.push_back(mod.path + DIR_DELIM + "models");
 		paths.push_back(mod.path + DIR_DELIM + "locale");
 	}
-	paths.push_back(porting::path_user + DIR_DELIM + "textures" + DIR_DELIM + "server");
-
+	fs::GetRecursiveDirs(paths, porting::path_user + DIR_DELIM +
+			"textures" + DIR_DELIM + "server");
 	// Collect media file information from paths into cache
 	for (const std::string &mediapath : paths) {
 		std::vector<fs::DirListNode> dirlist = fs::GetDirListing(mediapath);

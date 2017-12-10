@@ -26,6 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "log.h"
 #include "util/numeric.h"
 #include <algorithm>
+#include <vector>
 
 
 FlagDesc flagdesc_deco[] = {
@@ -186,18 +187,16 @@ size_t Decoration::placeDeco(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax)
 
 				// Get all floors and ceilings in node column
 				u16 size = (nmax.Y - nmin.Y + 1) / 2;
-				s16 floors[size];
-				s16 ceilings[size];
-				u16 num_floors = 0;
-				u16 num_ceilings = 0;
+				std::vector<s16> floors;
+				std::vector<s16> ceilings;
+				floors.reserve(size);
+				ceilings.reserve(size);
 
-				mg->getSurfaces(v2s16(x, z), nmin.Y, nmax.Y,
-					floors, ceilings, &num_floors, &num_ceilings);
+				mg->getSurfaces(v2s16(x, z), nmin.Y, nmax.Y, floors, ceilings);
 
-				if ((flags & DECO_ALL_FLOORS) && num_floors > 0) {
+				if (flags & DECO_ALL_FLOORS) {
 					// Floor decorations
-					for (u16 fi = 0; fi < num_floors; fi++) {
-						s16 y = floors[fi];
+					for (const s16 y : floors) {
 						if (y < y_min || y > y_max)
 							continue;
 
@@ -208,10 +207,9 @@ size_t Decoration::placeDeco(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax)
 					}
 				}
 
-				if ((flags & DECO_ALL_CEILINGS) && num_ceilings > 0) {
+				if (flags & DECO_ALL_CEILINGS) {
 					// Ceiling decorations
-					for (u16 ci = 0; ci < num_ceilings; ci++) {
-						s16 y = ceilings[ci];
+					for (const s16 y : ceilings) {
 						if (y < y_min || y > y_max)
 							continue;
 

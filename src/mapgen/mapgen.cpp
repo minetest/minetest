@@ -301,10 +301,8 @@ void Mapgen::updateHeightmap(v3s16 nmin, v3s16 nmax)
 
 
 void Mapgen::getSurfaces(v2s16 p2d, s16 ymin, s16 ymax,
-	s16 *floors, s16 *ceilings, u16 *num_floors, u16 *num_ceilings)
+	std::vector<s16> &floors, std::vector<s16> &ceilings)
 {
-	u16 floor_i = 0;
-	u16 ceiling_i = 0;
 	const v3s16 &em = vm->m_area.getExtent();
 
 	bool is_walkable = false;
@@ -318,19 +316,14 @@ void Mapgen::getSurfaces(v2s16 p2d, s16 ymin, s16 ymax,
 		is_walkable = ndef->get(mn).walkable;
 
 		if (is_walkable && !walkable_above) {
-			floors[floor_i] = y;
-			floor_i++;
+			floors.push_back(y);
 		} else if (!is_walkable && walkable_above) {
-			ceilings[ceiling_i] = y + 1;
-			ceiling_i++;
+			ceilings.push_back(y + 1);
 		}
 
 		vm->m_area.add_y(em, vi, -1);
 		walkable_above = is_walkable;
 	}
-
-	*num_floors = floor_i;
-	*num_ceilings = ceiling_i;
 }
 
 
@@ -831,7 +824,16 @@ void MapgenBasic::dustTopNodes()
 		}
 
 		content_t c = vm->m_data[vi].getContent();
-		if (!ndef->get(c).buildable_to && c != CONTENT_IGNORE && c != biome->c_dust) {
+		NodeDrawType dtype = ndef->get(c).drawtype;
+		// Only place on walkable cubic non-liquid nodes
+		// Dust check needed due to vertical overgeneration
+		if ((dtype == NDT_NORMAL ||
+				dtype == NDT_ALLFACES_OPTIONAL ||
+				dtype == NDT_GLASSLIKE_FRAMED_OPTIONAL ||
+				dtype == NDT_GLASSLIKE ||
+				dtype == NDT_GLASSLIKE_FRAMED ||
+				dtype == NDT_ALLFACES) &&
+				ndef->get(c).walkable && c != biome->c_dust) {
 			vm->m_area.add_y(em, vi, 1);
 			vm->m_data[vi] = MapNode(biome->c_dust);
 		}

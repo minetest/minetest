@@ -563,7 +563,7 @@ void GenericCAO::addToScene(ITextureSource *tsrc)
 	}
 	else if(m_prop.visual == "mesh") {
 		infostream<<"GenericCAO::addToScene(): mesh"<<std::endl;
-		scene::IAnimatedMesh *mesh = m_client->getMesh(m_prop.mesh);
+		scene::IAnimatedMesh *mesh = m_client->getMesh(m_prop.mesh, true);
 		if(mesh)
 		{
 			m_animated_meshnode = RenderingEngine::get_scene_manager()->
@@ -575,13 +575,17 @@ void GenericCAO::addToScene(ITextureSource *tsrc)
 					m_prop.visual_size.Y,
 					m_prop.visual_size.X));
 			u8 li = m_last_light;
+
+			// set vertex colors to ensure alpha is set
 			setMeshColor(m_animated_meshnode->getMesh(), video::SColor(255,li,li,li));
+
+			setAnimatedMeshColor(m_animated_meshnode, video::SColor(255,li,li,li));
 
 			bool backface_culling = m_prop.backface_culling;
 			if (m_is_player)
 				backface_culling = false;
 
-			m_animated_meshnode->setMaterialFlag(video::EMF_LIGHTING, false);
+			m_animated_meshnode->setMaterialFlag(video::EMF_LIGHTING, true);
 			m_animated_meshnode->setMaterialFlag(video::EMF_BILINEAR_FILTER, false);
 			m_animated_meshnode->setMaterialType(video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF);
 			m_animated_meshnode->setMaterialFlag(video::EMF_FOG_ENABLE, true);
@@ -669,7 +673,7 @@ void GenericCAO::updateLightNoCheck(u8 light_at_pos)
 		if (m_meshnode) {
 			setMeshColor(m_meshnode->getMesh(), color);
 		} else if (m_animated_meshnode) {
-			setMeshColor(m_animated_meshnode->getMesh(), color);
+			setAnimatedMeshColor(m_animated_meshnode, color);
 		} else if (m_wield_meshnode) {
 			m_wield_meshnode->setColor(color);
 		} else if (m_spritenode) {
@@ -904,19 +908,19 @@ void GenericCAO::step(float dtime, ClientEnvironment *env)
 	}
 
 	if (!getParent() && m_prop.automatic_face_movement_dir &&
-			(fabs(m_velocity.Z) > 0.001 || fabs(m_velocity.X) > 0.001))
-	{
-		float optimal_yaw = atan2(m_velocity.Z,m_velocity.X) * 180 / M_PI
+			(fabs(m_velocity.Z) > 0.001 || fabs(m_velocity.X) > 0.001)) {
+
+		float target_yaw = atan2(m_velocity.Z, m_velocity.X) * 180 / M_PI
 				+ m_prop.automatic_face_movement_dir_offset;
 		float max_rotation_delta =
 				dtime * m_prop.automatic_face_movement_max_rotation_per_sec;
+		float delta = wrapDegrees_0_360(target_yaw - m_yaw);
 
-		if ((m_prop.automatic_face_movement_max_rotation_per_sec > 0) &&
-			(fabs(m_yaw - optimal_yaw) > max_rotation_delta)) {
-
-			m_yaw = optimal_yaw < m_yaw ? m_yaw - max_rotation_delta : m_yaw + max_rotation_delta;
+		if (delta > max_rotation_delta && 360 - delta > max_rotation_delta) {
+			m_yaw += (delta < 180) ? max_rotation_delta : -max_rotation_delta;
+			m_yaw = wrapDegrees_0_360(m_yaw);
 		} else {
-			m_yaw = optimal_yaw;
+			m_yaw = target_yaw;
 		}
 		updateNodePos();
 	}
@@ -1025,7 +1029,7 @@ void GenericCAO::updateTextures(std::string mod)
 				// Set material flags and texture
 				video::SMaterial& material = m_animated_meshnode->getMaterial(i);
 				material.TextureLayer[0].Texture = texture;
-				material.setFlag(video::EMF_LIGHTING, false);
+				material.setFlag(video::EMF_LIGHTING, true);
 				material.setFlag(video::EMF_BILINEAR_FILTER, false);
 
 				// don't filter low-res textures, makes them look blurry
@@ -1259,8 +1263,8 @@ void GenericCAO::processMessage(const std::string &data)
 			collision_box.MinEdge *= BS;
 			collision_box.MaxEdge *= BS;
 			player->setCollisionbox(collision_box);
-			player->setCanZoom(m_prop.can_zoom);
 			player->setEyeHeight(m_prop.eye_height);
+			player->setZoomFOV(m_prop.zoom_fov);
 		}
 
 		if ((m_is_player && !m_is_local_player) && m_prop.nametag.empty())

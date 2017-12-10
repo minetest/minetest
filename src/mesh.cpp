@@ -24,6 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <iostream>
 #include <IAnimatedMesh.h>
 #include <SAnimatedMesh.h>
+#include <IAnimatedMeshSceneNode.h>
 
 // In Irrlicht 1.8 the signature of ITexture::lock was changed from
 // (bool, u32) to (E_TEXTURE_LOCK_MODE, u32).
@@ -182,6 +183,13 @@ void setMeshBufferColor(scene::IMeshBuffer *buf, const video::SColor &color)
 	u8 *vertices = (u8 *) buf->getVertices();
 	for (u32 i = 0; i < vertex_count; i++)
 		((video::S3DVertex *) (vertices + i * stride))->Color = color;
+}
+
+void setAnimatedMeshColor(scene::IAnimatedMeshSceneNode *node, const video::SColor &color)
+{
+	for (u32 i = 0; i < node->getMaterialCount(); ++i) {
+		node->getMaterial(i).EmissiveColor = color;
+	}
 }
 
 void setMeshColor(scene::IMesh *mesh, const video::SColor &color)
