@@ -194,7 +194,7 @@ public:
 	s16 findLiquidSurface(v2s16 p2d, s16 ymin, s16 ymax);
 	void updateHeightmap(v3s16 nmin, v3s16 nmax);
 	void getSurfaces(v2s16 p2d, s16 ymin, s16 ymax,
-		s16 *floors, s16 *ceilings, u16 *num_floors, u16 *num_ceilings);
+		std::vector<s16> &floors, std::vector<s16> &ceilings);
 
 	void updateLiquid(UniqueQueue<v3s16> *trans_liquid, v3s16 nmin, v3s16 nmax);
 
