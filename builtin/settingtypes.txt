@@ -459,6 +459,9 @@ connected_glass (Connect glass) bool false
 #    Disable for speed or for different looks.
 smooth_lighting (Smooth lighting) bool true
 
+#    Reduces CPU load significantly, but leads to minor visual glitches.
+simplified_smooth_lighting (Simplified smooth lighting) bool true
+
 #    Clouds are a client side effect.
 enable_clouds (Clouds) bool true
 
