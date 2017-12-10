@@ -60,7 +60,7 @@ void PlayerDatabaseFiles::savePlayer(RemotePlayer *player)
 	std::string savedir = m_savedir + DIR_DELIM;
 	std::string path = savedir + player->getName();
 	bool path_found = false;
-	RemotePlayer testplayer("", NULL);
+	RemotePlayer testplayer("", nullptr);
 
 	for (u32 i = 0; i < PLAYER_FILE_ALTERNATE_TRIES && !path_found; i++) {
 		if (!fs::PathExists(path)) {
@@ -75,7 +75,7 @@ void PlayerDatabaseFiles::savePlayer(RemotePlayer *player)
 			return;
 		}
 
-		testplayer.deSerialize(is, path, NULL);
+		testplayer.deSerialize(is, path, nullptr);
 		is.close();
 		if (strcmp(testplayer.getName(), player->getName()) == 0) {
 			path_found = true;
@@ -105,14 +105,14 @@ bool PlayerDatabaseFiles::removePlayer(const std::string &name)
 	std::string players_path = m_savedir + DIR_DELIM;
 	std::string path = players_path + name;
 
-	RemotePlayer temp_player("", NULL);
+	RemotePlayer temp_player("", nullptr);
 	for (u32 i = 0; i < PLAYER_FILE_ALTERNATE_TRIES; i++) {
 		// Open file and deserialize
 		std::ifstream is(path.c_str(), std::ios_base::binary);
 		if (!is.good())
 			continue;
 
-		temp_player.deSerialize(is, path, NULL);
+		temp_player.deSerialize(is, path, nullptr);
 		is.close();
 
 		if (temp_player.getName() == name) {
@@ -167,9 +167,9 @@ void PlayerDatabaseFiles::listPlayers(std::vector<std::string> &res)
 		if (!is.good())
 			continue;
 
-		RemotePlayer player(filename.c_str(), NULL);
+		RemotePlayer player(filename.c_str(), nullptr);
 		// Null env & dummy peer_id
-		PlayerSAO playerSAO(NULL, &player, 15789, false);
+		PlayerSAO playerSAO(nullptr, &player, 15789, false);
 
 		player.deSerialize(is, "", &playerSAO);
 		is.close();

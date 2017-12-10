@@ -44,13 +44,13 @@ Sky::Sky(s32 id, ITextureSource *tsrc):
 	//m_materials[2].MaterialType = video::EMT_TRANSPARENT_ADD_COLOR;
 
 	m_sun_texture = tsrc->isKnownSourceImage("sun.png") ?
-		tsrc->getTextureForMesh("sun.png") : NULL;
+		tsrc->getTextureForMesh("sun.png") : nullptr;
 	m_moon_texture = tsrc->isKnownSourceImage("moon.png") ?
-		tsrc->getTextureForMesh("moon.png") : NULL;
+		tsrc->getTextureForMesh("moon.png") : nullptr;
 	m_sun_tonemap = tsrc->isKnownSourceImage("sun_tonemap.png") ?
-		tsrc->getTexture("sun_tonemap.png") : NULL;
+		tsrc->getTexture("sun_tonemap.png") : nullptr;
 	m_moon_tonemap = tsrc->isKnownSourceImage("moon_tonemap.png") ?
-		tsrc->getTexture("moon_tonemap.png") : NULL;
+		tsrc->getTexture("moon_tonemap.png") : nullptr;
 
 	if (m_sun_texture) {
 		m_materials[3] = mat;

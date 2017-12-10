@@ -148,7 +148,7 @@ bool GUIVolumeChange::OnEvent(const SEvent& event)
 	} else if (event.EventType == EET_GUI_EVENT) {
 		if (event.GUIEvent.EventType == gui::EGET_CHECKBOX_CHANGED) {
 			gui::IGUIElement *e = getElementFromId(ID_soundMuteButton);
-			if (e != NULL && e->getType() == gui::EGUIET_CHECK_BOX) {
+			if (e != nullptr && e->getType() == gui::EGUIET_CHECK_BOX) {
 				g_settings->setBool("mute_sound", ((gui::IGUICheckBox*)e)->isChecked());
 			}
 

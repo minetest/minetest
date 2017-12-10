@@ -122,7 +122,7 @@ scene::IAnimatedMesh* createCubeMesh(v3f scale)
 
 void scaleMesh(scene::IMesh *mesh, v3f scale)
 {
-	if (mesh == NULL)
+	if (mesh == nullptr)
 		return;
 
 	aabb3f bbox;
@@ -150,7 +150,7 @@ void scaleMesh(scene::IMesh *mesh, v3f scale)
 
 void translateMesh(scene::IMesh *mesh, v3f vec)
 {
-	if (mesh == NULL)
+	if (mesh == nullptr)
 		return;
 
 	aabb3f bbox;
@@ -194,7 +194,7 @@ void setAnimatedMeshColor(scene::IAnimatedMeshSceneNode *node, const video::SCol
 
 void setMeshColor(scene::IMesh *mesh, const video::SColor &color)
 {
-	if (mesh == NULL)
+	if (mesh == nullptr)
 		return;
 
 	u32 mc = mesh->getMeshBufferCount();
@@ -222,7 +222,7 @@ void setMeshColorByNormalXYZ(scene::IMesh *mesh,
 		const video::SColor &colorY,
 		const video::SColor &colorZ)
 {
-	if (mesh == NULL)
+	if (mesh == nullptr)
 		return;
 
 	u16 mc = mesh->getMeshBufferCount();
@@ -429,7 +429,7 @@ scene::IMeshBuffer* cloneMeshBuffer(scene::IMeshBuffer *mesh_buffer)
 	}
 	// This should not happen.
 	sanity_check(false);
-	return NULL;
+	return nullptr;
 }
 
 scene::SMesh* cloneMesh(scene::IMesh *src_mesh)

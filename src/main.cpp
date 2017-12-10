@@ -786,7 +786,7 @@ static bool run_dedicated_server(const GameParams &game_params, const Settings &
 	Address bind_addr(0, 0, 0, 0, game_params.socket_port);
 
 	if (g_settings->getBool("ipv6_server")) {
-		bind_addr.setAddress((IPv6AddressBytes*) NULL);
+		bind_addr.setAddress((IPv6AddressBytes*) nullptr);
 	}
 	try {
 		bind_addr.Resolve(bind_str.c_str());
@@ -936,12 +936,12 @@ static bool migrate_map_database(const GameParams &game_params, const Settings &
 		} else {
 			errorstream << "Failed to load block " << PP(*it) << ", skipping it." << std::endl;
 		}
-		if (++count % 0xFF == 0 && time(NULL) - last_update_time >= 1) {
+		if (++count % 0xFF == 0 && time(nullptr) - last_update_time >= 1) {
 			std::cerr << " Migrated " << count << " blocks, "
 				<< (100.0 * count / blocks.size()) << "% completed.\r";
 			new_db->endSave();
 			new_db->beginSave();
-			last_update_time = time(NULL);
+			last_update_time = time(nullptr);
 		}
 	}
 	std::cerr << std::endl;

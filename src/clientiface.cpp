@@ -344,7 +344,7 @@ void RemoteClient::GetNextBlocks (
 			/*
 				Add inexistent block to emerge queue.
 			*/
-			if (block == NULL || surely_not_found_on_disk || block_is_invalid) {
+			if (block == nullptr || surely_not_found_on_disk || block_is_invalid) {
 				if (emerge->enqueueBlockEmerge(peer_id, p, generate)) {
 					if (nearest_emerged_d == -1)
 						nearest_emerged_d = d;
@@ -615,7 +615,7 @@ u64 RemoteClient::uptime() const
 ClientInterface::ClientInterface(const std::shared_ptr<con::Connection> & con)
 :
 	m_con(con),
-	m_env(NULL),
+	m_env(nullptr),
 	m_print_info_timer(0.0f)
 {
 
@@ -680,7 +680,7 @@ void ClientInterface::UpdatePlayerList()
 		for (session_t i : clients) {
 			RemotePlayer *player = m_env->getPlayer(i);
 
-			if (player == NULL)
+			if (player == nullptr)
 				continue;
 
 			infostream << "* " << player->getName() << "\t";
@@ -749,12 +749,12 @@ RemoteClient* ClientInterface::getClientNoEx(session_t peer_id, ClientState stat
 	// The client may not exist; clients are immediately removed if their
 	// access is denied, and this event occurs later then.
 	if (n == m_clients.end())
-		return NULL;
+		return nullptr;
 
 	if (n->second->getState() >= state_min)
 		return n->second;
 
-	return NULL;
+	return nullptr;
 }
 
 RemoteClient* ClientInterface::lockedGetClientNoEx(session_t peer_id, ClientState state_min)
@@ -763,12 +763,12 @@ RemoteClient* ClientInterface::lockedGetClientNoEx(session_t peer_id, ClientStat
 	// The client may not exist; clients are immediately removed if their
 	// access is denied, and this event occurs later then.
 	if (n == m_clients.end())
-		return NULL;
+		return nullptr;
 
 	if (n->second->getState() >= state_min)
 		return n->second;
 
-	return NULL;
+	return nullptr;
 }
 
 ClientState ClientInterface::getClientState(session_t peer_id)

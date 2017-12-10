@@ -104,7 +104,7 @@ private:
 };
 
 // Prototype (registers item for deserialization)
-TestSAO proto_TestSAO(NULL, v3f(0,0,0));
+TestSAO proto_TestSAO(nullptr, v3f(0,0,0));
 
 /*
 	UnitSAO
@@ -232,7 +232,7 @@ void UnitSAO::notifyObjectPropertiesModified()
 */
 
 // Prototype (registers item for deserialization)
-LuaEntitySAO proto_LuaEntitySAO(NULL, v3f(0,0,0), "_prototype", "");
+LuaEntitySAO proto_LuaEntitySAO(nullptr, v3f(0,0,0), "_prototype", "");
 
 LuaEntitySAO::LuaEntitySAO(ServerEnvironment *env, v3f pos,
 		const std::string &name, const std::string &state):
@@ -241,7 +241,7 @@ LuaEntitySAO::LuaEntitySAO(ServerEnvironment *env, v3f pos,
 	m_init_state(state)
 {
 	// Only register type if no environment supplied
-	if(env == NULL){
+	if(env == nullptr){
 		ServerActiveObject::registerType(getType(), create);
 		return;
 	}
@@ -561,7 +561,7 @@ int LuaEntitySAO::punch(v3f dir,
 	if (isAttached())
 		return 0;
 
-	ItemStack *punchitem = NULL;
+	ItemStack *punchitem = nullptr;
 	ItemStack punchitem_static;
 	if (puncher) {
 		punchitem_static = puncher->getWieldedItem();
@@ -1372,7 +1372,7 @@ void PlayerSAO::unlinkPlayerSessionAndSave()
 	assert(m_player->getPlayerSAO() == this);
 	m_player->setPeerId(PEER_ID_INEXISTENT);
 	m_env->savePlayer(m_player);
-	m_player->setPlayerSAO(NULL);
+	m_player->setPlayerSAO(nullptr);
 	m_env->removePlayer(m_player);
 }
 

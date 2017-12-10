@@ -217,7 +217,7 @@ public:
 
 		END_DEBUG_EXCEPTION_HANDLER
 
-		return NULL;
+		return nullptr;
 	}
 
 protected:

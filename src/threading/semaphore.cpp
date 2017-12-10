@@ -56,7 +56,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 Semaphore::Semaphore(int val)
 {
 #ifdef _WIN32
-	semaphore = CreateSemaphore(NULL, val, MAX_SEMAPHORE_COUNT, NULL);
+	semaphore = CreateSemaphore(nullptr, val, MAX_SEMAPHORE_COUNT, nullptr);
 #else
 	int ret = sem_init(&semaphore, 0, val);
 	assert(!ret);
@@ -86,7 +86,7 @@ void Semaphore::post(unsigned int num)
 {
 	assert(num > 0);
 #ifdef _WIN32
-	ReleaseSemaphore(semaphore, num, NULL);
+	ReleaseSemaphore(semaphore, num, nullptr);
 #else
 	for (unsigned i = 0; i < num; i++) {
 		int ret = sem_post(&semaphore);
@@ -143,7 +143,7 @@ bool Semaphore::wait(unsigned int time_ms)
 	struct timespec wait_time;
 	struct timeval now;
 
-	if (gettimeofday(&now, NULL) == -1) {
+	if (gettimeofday(&now, nullptr) == -1) {
 		std::cerr << "Semaphore::wait(ms): Unable to get time with gettimeofday!" << std::endl;
 		abort();
 	}

@@ -141,7 +141,7 @@ void TestSettings::testAllSettings()
 
 	// Test settings groups
 	Settings *group = s.getGroup("asdf");
-	UASSERT(group != NULL);
+	UASSERT(group != nullptr);
 	UASSERT(s.getGroupNoEx("zoop", group) == false);
 	UASSERT(group->getS16("a") == 5);
 	UASSERT(fabs(group->getFloat("bb") - 2.5) < 0.001);

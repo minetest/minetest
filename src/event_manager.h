@@ -70,7 +70,7 @@ public:
 	}
 	void dereg(const char *type, event_receive_func f, void *data)
 	{
-		if(type != NULL){
+		if(type != nullptr){
 			std::map<std::string, Dest>::iterator i = m_dest.find(type);
 			if(i != m_dest.end()){
 				std::list<FuncSpec> &funcs = i->second.funcs;

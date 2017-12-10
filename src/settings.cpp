@@ -239,7 +239,7 @@ bool Settings::updateConfigObject(std::istream &is, std::ostream &os,
 			it = m_settings.find(name);
 			if (it != m_settings.end() && it->second.is_group) {
 				os << line << "\n";
-				sanity_check(it->second.group != NULL);
+				sanity_check(it->second.group != nullptr);
 				was_modified |= it->second.group->updateConfigObject(is, os,
 					"}", tab_depth + 1);
 			} else {
@@ -536,7 +536,7 @@ bool Settings::getNoiseParamsFromValue(const std::string &name,
 bool Settings::getNoiseParamsFromGroup(const std::string &name,
 	NoiseParams &np) const
 {
-	Settings *group = NULL;
+	Settings *group = nullptr;
 
 	if (!getGroupNoEx(name, group))
 		return false;
@@ -751,7 +751,7 @@ bool Settings::getFlagStrNoEx(const std::string &name, u32 &val,
 bool Settings::setEntry(const std::string &name, const void *data,
 	bool set_group, bool set_default)
 {
-	Settings *old_group = NULL;
+	Settings *old_group = nullptr;
 
 	if (!checkNameValid(name))
 		return false;
@@ -765,7 +765,7 @@ bool Settings::setEntry(const std::string &name, const void *data,
 		old_group = entry.group;
 
 		entry.value    = set_group ? "" : *(const std::string *)data;
-		entry.group    = set_group ? *(Settings **)data : NULL;
+		entry.group    = set_group ? *(Settings **)data : nullptr;
 		entry.is_group = set_group;
 	}
 

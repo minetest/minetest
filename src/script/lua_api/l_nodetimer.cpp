@@ -42,7 +42,7 @@ int NodeTimerRef::l_set(lua_State *L)
 	MAP_LOCK_REQUIRED;
 	NodeTimerRef *o = checkobject(L, 1);
 	ServerEnvironment *env = o->m_env;
-	if(env == NULL) return 0;
+	if(env == nullptr) return 0;
 	f32 t = luaL_checknumber(L,2);
 	f32 e = luaL_checknumber(L,3);
 	env->getMap().setNodeTimer(NodeTimer(t, e, o->m_p));
@@ -54,7 +54,7 @@ int NodeTimerRef::l_start(lua_State *L)
 	MAP_LOCK_REQUIRED;
 	NodeTimerRef *o = checkobject(L, 1);
 	ServerEnvironment *env = o->m_env;
-	if(env == NULL) return 0;
+	if(env == nullptr) return 0;
 	f32 t = luaL_checknumber(L,2);
 	env->getMap().setNodeTimer(NodeTimer(t, 0, o->m_p));
 	return 0;
@@ -65,7 +65,7 @@ int NodeTimerRef::l_stop(lua_State *L)
 	MAP_LOCK_REQUIRED;
 	NodeTimerRef *o = checkobject(L, 1);
 	ServerEnvironment *env = o->m_env;
-	if(env == NULL) return 0;
+	if(env == nullptr) return 0;
 	env->getMap().removeNodeTimer(o->m_p);
 	return 0;
 }
@@ -75,7 +75,7 @@ int NodeTimerRef::l_is_started(lua_State *L)
 	MAP_LOCK_REQUIRED;
 	NodeTimerRef *o = checkobject(L, 1);
 	ServerEnvironment *env = o->m_env;
-	if(env == NULL) return 0;
+	if(env == nullptr) return 0;
 
 	NodeTimer t = env->getMap().getNodeTimer(o->m_p);
 	lua_pushboolean(L,(t.timeout != 0));
@@ -87,7 +87,7 @@ int NodeTimerRef::l_get_timeout(lua_State *L)
 	MAP_LOCK_REQUIRED;
 	NodeTimerRef *o = checkobject(L, 1);
 	ServerEnvironment *env = o->m_env;
-	if(env == NULL) return 0;
+	if(env == nullptr) return 0;
 
 	NodeTimer t = env->getMap().getNodeTimer(o->m_p);
 	lua_pushnumber(L,t.timeout);
@@ -99,7 +99,7 @@ int NodeTimerRef::l_get_elapsed(lua_State *L)
 	MAP_LOCK_REQUIRED;
 	NodeTimerRef *o = checkobject(L, 1);
 	ServerEnvironment *env = o->m_env;
-	if(env == NULL) return 0;
+	if(env == nullptr) return 0;
 
 	NodeTimer t = env->getMap().getNodeTimer(o->m_p);
 	lua_pushnumber(L,t.elapsed);
@@ -126,7 +126,7 @@ void NodeTimerRef::create(lua_State *L, v3s16 p, ServerEnvironment *env)
 void NodeTimerRef::set_null(lua_State *L)
 {
 	NodeTimerRef *o = checkobject(L, -1);
-	o->m_env = NULL;
+	o->m_env = nullptr;
 }
 
 void NodeTimerRef::Register(lua_State *L)

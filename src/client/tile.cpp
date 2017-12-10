@@ -52,7 +52,7 @@ MutexedMap<std::string, std::string> g_texturename_to_path_cache;
 */
 static bool replace_ext(std::string &path, const char *ext)
 {
-	if (ext == NULL)
+	if (ext == nullptr)
 		return false;
 	// Find place of last dot, fail if \ or / found.
 	s32 last_dot_i = -1;
@@ -87,7 +87,7 @@ std::string getImagePath(std::string path)
 	const char *extensions[] = {
 		"png", "jpg", "bmp", "tga",
 		"pcx", "ppm", "psd", "wal", "rgb",
-		NULL
+		nullptr
 	};
 	// If there is no extension, add one
 	if (removeStringEnd(path, extensions).empty())
@@ -101,7 +101,7 @@ std::string getImagePath(std::string path)
 		if (fs::PathExists(path))
 			return path;
 	}
-	while((++ext) != NULL);
+	while((++ext) != nullptr);
 
 	return "";
 }
@@ -172,7 +172,7 @@ struct TextureInfo
 
 	TextureInfo(
 			const std::string &name_,
-			video::ITexture *texture_=NULL
+			video::ITexture *texture_=nullptr
 		):
 		name(name_),
 		texture(texture_)
@@ -230,7 +230,7 @@ public:
 		n = m_images.find(name);
 		if (n != m_images.end())
 			return n->second;
-		return NULL;
+		return nullptr;
 	}
 	// Primarily fetches from cache, secondarily tries to read from filesystem
 	video::IImage *getOrLoad(const std::string &name)
@@ -246,7 +246,7 @@ public:
 		if (path.empty()) {
 			infostream<<"SourceImageCache::getOrLoad(): No path found for \""
 					<<name<<"\""<<std::endl;
-			return NULL;
+			return nullptr;
 		}
 		infostream<<"SourceImageCache::getOrLoad(): Loading path \""<<path
 				<<"\""<<std::endl;
@@ -326,7 +326,7 @@ public:
 	*/
 	video::ITexture* getTexture(u32 id);
 
-	video::ITexture* getTexture(const std::string &name, u32 *id = NULL);
+	video::ITexture* getTexture(const std::string &name, u32 *id = nullptr);
 
 	/*
 		Get a texture specifically intended for mesh
@@ -596,9 +596,9 @@ u32 TextureSource::generateTexture(const std::string &name)
 
 	video::IImage *img = generateImage(name);
 
-	video::ITexture *tex = NULL;
+	video::ITexture *tex = nullptr;
 
-	if (img != NULL) {
+	if (img != nullptr) {
 #ifdef __ANDROID__
 		img = Align2Npot2(img, driver);
 #endif
@@ -642,7 +642,7 @@ video::ITexture* TextureSource::getTexture(u32 id)
 	MutexAutoLock lock(m_textureinfo_cache_mutex);
 
 	if (id >= m_textureinfo_cache.size())
-		return NULL;
+		return nullptr;
 
 	return m_textureinfo_cache[id].texture;
 }
@@ -667,7 +667,7 @@ Palette* TextureSource::getPalette(const std::string &name)
 	sanity_check(std::this_thread::get_id() == m_main_thread);
 
 	if (name.empty())
-		return NULL;
+		return nullptr;
 
 	auto it = m_palettes.find(name);
 	if (it == m_palettes.end()) {
@@ -676,7 +676,7 @@ Palette* TextureSource::getPalette(const std::string &name)
 		if (!img) {
 			warningstream << "TextureSource::getPalette(): palette \"" << name
 				<< "\" could not be loaded." << std::endl;
-			return NULL;
+			return nullptr;
 		}
 		Palette new_palette;
 		u32 w = img->getDimension().Width;
@@ -684,7 +684,7 @@ Palette* TextureSource::getPalette(const std::string &name)
 		// Real area of the image
 		u32 area = h * w;
 		if (area == 0)
-			return NULL;
+			return nullptr;
 		if (area > 256) {
 			warningstream << "TextureSource::getPalette(): the specified"
 				<< " palette image \"" << name << "\" is larger than 256"
@@ -713,7 +713,7 @@ Palette* TextureSource::getPalette(const std::string &name)
 	}
 	if (it != m_palettes.end())
 		return &((*it).second);
-	return NULL;
+	return nullptr;
 }
 
 void TextureSource::processQueue()
@@ -760,7 +760,7 @@ void TextureSource::rebuildImagesAndTextures()
 		img = Align2Npot2(img, driver);
 #endif
 		// Create texture from resulting image
-		video::ITexture *t = NULL;
+		video::ITexture *t = nullptr;
 		if (img) {
 			t = driver->addTexture(ti.name.c_str(), img);
 			guiScalingCache(io::path(ti.name.c_str()), driver, img);
@@ -802,7 +802,7 @@ video::ITexture* TextureSource::generateTextureFromMesh(
 		const float scaling = 0.2;
 
 		scene::IMeshSceneNode* meshnode =
-				smgr->addMeshSceneNode(params.mesh, NULL,
+				smgr->addMeshSceneNode(params.mesh, nullptr,
 						-1, v3f(0,0,0), v3f(0,0,0),
 						v3f(1.0 * scaling,1.0 * scaling,1.0 * scaling), true);
 		meshnode->setMaterialFlag(video::EMF_LIGHTING, true);
@@ -838,7 +838,7 @@ video::ITexture* TextureSource::generateTextureFromMesh(
 		if (!pixels)
 		{
 			rawImage->drop();
-			return NULL;
+			return nullptr;
 		}
 
 		core::rect<s32> source(
@@ -889,9 +889,9 @@ video::ITexture* TextureSource::generateTextureFromMesh(
 		video::ITexture *rtt = driver->addTexture(params.rtt_texture_name.c_str(), inventory_image);
 		inventory_image->drop();
 
-		if (rtt == NULL) {
+		if (rtt == nullptr) {
 			errorstream << "TextureSource::generateTextureFromMesh(): failed to recreate texture from image: " << params.rtt_texture_name << std::endl;
-			return NULL;
+			return nullptr;
 		}
 
 		driver->makeColorKeyTexture(rtt, v2s32(0,0));
@@ -911,18 +911,18 @@ video::ITexture* TextureSource::generateTextureFromMesh(
 				<<"EVDF_RENDER_TO_TARGET not supported."<<std::endl;
 			warned = true;
 		}
-		return NULL;
+		return nullptr;
 	}
 
 	// Create render target texture
 	video::ITexture *rtt = driver->addRenderTargetTexture(
 			params.dim, params.rtt_texture_name.c_str(),
 			video::ECF_A8R8G8B8);
-	if (rtt == NULL)
+	if (rtt == nullptr)
 	{
 		errorstream<<"TextureSource::generateTextureFromMesh(): "
 			<<"addRenderTargetTexture returned NULL."<<std::endl;
-		return NULL;
+		return nullptr;
 	}
 
 	// Set render target
@@ -930,7 +930,7 @@ video::ITexture* TextureSource::generateTextureFromMesh(
 		driver->removeTexture(rtt);
 		errorstream<<"TextureSource::generateTextureFromMesh(): "
 			<<"failed to set render target"<<std::endl;
-		return NULL;
+		return nullptr;
 	}
 
 	// Get a scene manager
@@ -940,7 +940,7 @@ video::ITexture* TextureSource::generateTextureFromMesh(
 	assert(smgr);
 
 	scene::IMeshSceneNode* meshnode =
-			smgr->addMeshSceneNode(params.mesh, NULL,
+			smgr->addMeshSceneNode(params.mesh, nullptr,
 					-1, v3f(0,0,0), v3f(0,0,0), v3f(1,1,1), true);
 	meshnode->setMaterialFlag(video::EMF_LIGHTING, true);
 	meshnode->setMaterialFlag(video::EMF_ANTI_ALIASING, true);
@@ -1003,7 +1003,7 @@ video::IImage* TextureSource::generateImage(const std::string &name)
 				errorstream << "generateImage(): unbalanced parentheses"
 						<< "(extranous '(') while generating texture \""
 						<< name << "\"" << std::endl;
-				return NULL;
+				return nullptr;
 			}
 			paren_bal--;
 			break;
@@ -1018,11 +1018,11 @@ video::IImage* TextureSource::generateImage(const std::string &name)
 		errorstream << "generateImage(): unbalanced parentheses"
 				<< "(missing matching '(') while generating texture \""
 				<< name << "\"" << std::endl;
-		return NULL;
+		return nullptr;
 	}
 
 
-	video::IImage *baseimg = NULL;
+	video::IImage *baseimg = nullptr;
 
 	/*
 		If separator was found, make the base image
@@ -1052,7 +1052,7 @@ video::IImage* TextureSource::generateImage(const std::string &name)
 			errorstream << "generateImage(): "
 				"Failed to generate \"" << name2 << "\""
 				<< std::endl;
-			return NULL;
+			return nullptr;
 		}
 		core::dimension2d<u32> dim = tmp->getDimension();
 		if (baseimg) {
@@ -1069,7 +1069,7 @@ video::IImage* TextureSource::generateImage(const std::string &name)
 	}
 
 	// If no resulting image, print a warning
-	if (baseimg == NULL) {
+	if (baseimg == nullptr) {
 		errorstream << "generateImage(): baseimg is NULL (attempted to"
 				" create texture \"" << name << "\")" << std::endl;
 	}
@@ -1095,7 +1095,7 @@ inline u16 get_GL_major_version()
 video::IImage * Align2Npot2(video::IImage * image,
 		video::IVideoDriver* driver)
 {
-	if (image == NULL) {
+	if (image == nullptr) {
 		return image;
 	}
 
@@ -1129,7 +1129,7 @@ video::IImage * Align2Npot2(video::IImage * image,
 			driver->createImage(video::ECF_A8R8G8B8,
 					core::dimension2d<u32>(width, height));
 
-	if (targetimage != NULL) {
+	if (targetimage != nullptr) {
 		image->copyToScaling(targetimage);
 	}
 	image->drop();
@@ -1168,7 +1168,7 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 #ifdef __ANDROID__
 		image = Align2Npot2(image, driver);
 #endif
-		if (image == NULL) {
+		if (image == nullptr) {
 			if (!part_of_name.empty()) {
 
 				// Do not create normalmap dummies
@@ -1187,7 +1187,7 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 			//core::dimension2d<u32> dim(2,2);
 			core::dimension2d<u32> dim(1,1);
 			image = driver->createImage(video::ECF_A8R8G8B8, dim);
-			sanity_check(image != NULL);
+			sanity_check(image != nullptr);
 			/*image->setPixel(0,0, video::SColor(255,255,0,0));
 			image->setPixel(1,0, video::SColor(255,0,255,0));
 			image->setPixel(0,1, video::SColor(255,0,0,255));
@@ -1203,7 +1203,7 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 		}
 
 		// If base image is NULL, load as base.
-		if (baseimg == NULL)
+		if (baseimg == nullptr)
 		{
 			//infostream<<"Setting "<<part_of_name<<" as base"<<std::endl;
 			/*
@@ -1273,7 +1273,7 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 		*/
 		if (str_starts_with(part_of_name, "[crack"))
 		{
-			if (baseimg == NULL) {
+			if (baseimg == nullptr) {
 				errorstream<<"generateImagePart(): baseimg == NULL "
 						<<"for part_of_name=\""<<part_of_name
 						<<"\", cancelling."<<std::endl;
@@ -1327,7 +1327,7 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 			u32 w0 = stoi(sf.next("x"));
 			u32 h0 = stoi(sf.next(":"));
 			core::dimension2d<u32> dim(w0,h0);
-			if (baseimg == NULL) {
+			if (baseimg == nullptr) {
 				baseimg = driver->createImage(video::ECF_A8R8G8B8, dim);
 				baseimg->fill(video::SColor(0,0,0,0));
 			}
@@ -1365,7 +1365,7 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 		*/
 		else if (str_starts_with(part_of_name, "[brighten"))
 		{
-			if (baseimg == NULL) {
+			if (baseimg == nullptr) {
 				errorstream<<"generateImagePart(): baseimg==NULL "
 						<<"for part_of_name=\""<<part_of_name
 						<<"\", cancelling."<<std::endl;
@@ -1383,7 +1383,7 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 		*/
 		else if (str_starts_with(part_of_name, "[noalpha"))
 		{
-			if (baseimg == NULL){
+			if (baseimg == nullptr){
 				errorstream<<"generateImagePart(): baseimg==NULL "
 						<<"for part_of_name=\""<<part_of_name
 						<<"\", cancelling."<<std::endl;
@@ -1407,7 +1407,7 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 		*/
 		else if (str_starts_with(part_of_name, "[makealpha:"))
 		{
-			if (baseimg == NULL) {
+			if (baseimg == nullptr) {
 				errorstream<<"generateImagePart(): baseimg == NULL "
 						<<"for part_of_name=\""<<part_of_name
 						<<"\", cancelling."<<std::endl;
@@ -1462,7 +1462,7 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 		*/
 		else if (str_starts_with(part_of_name, "[transform"))
 		{
-			if (baseimg == NULL) {
+			if (baseimg == nullptr) {
 				errorstream<<"generateImagePart(): baseimg == NULL "
 						<<"for part_of_name=\""<<part_of_name
 						<<"\", cancelling."<<std::endl;
@@ -1474,7 +1474,7 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 					transform, baseimg->getDimension());
 			video::IImage *image = driver->createImage(
 					baseimg->getColorFormat(), dim);
-			sanity_check(image != NULL);
+			sanity_check(image != nullptr);
 			imageTransform(transform, baseimg, image);
 			baseimg->drop();
 			baseimg = image;
@@ -1489,7 +1489,7 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 		*/
 		else if (str_starts_with(part_of_name, "[inventorycube"))
 		{
-			if (baseimg != NULL){
+			if (baseimg != nullptr){
 				errorstream<<"generateImagePart(): baseimg != NULL "
 						<<"for part_of_name=\""<<part_of_name
 						<<"\", cancelling."<<std::endl;
@@ -1508,7 +1508,7 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 			video::IImage *img_left = generateImage(imagename_left);
 			video::IImage *img_right = generateImage(imagename_right);
 
-			if (img_top == NULL || img_left == NULL || img_right == NULL) {
+			if (img_top == nullptr || img_left == nullptr || img_right == nullptr) {
 				errorstream << "generateImagePart(): Failed to create textures"
 						<< " for inventorycube \"" << part_of_name << "\""
 						<< std::endl;
@@ -1581,7 +1581,7 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 			driver->removeTexture(texture_left);
 			driver->removeTexture(texture_right);
 
-			if (rtt == NULL) {
+			if (rtt == nullptr) {
 				baseimg = generateImage(imagename_top);
 				return true;
 			}
@@ -1611,7 +1611,7 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 			u32 percent = stoi(sf.next(":"));
 			std::string filename = unescape_string(sf.next_esc(":", escape), escape);
 
-			if (baseimg == NULL)
+			if (baseimg == nullptr)
 				baseimg = driver->createImage(video::ECF_A8R8G8B8, v2u32(16,16));
 			video::IImage *img = generateImage(filename);
 			if (img)
@@ -1646,7 +1646,7 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 			u32 frame_count = stoi(sf.next(":"));
 			u32 frame_index = stoi(sf.next(":"));
 
-			if (baseimg == NULL){
+			if (baseimg == nullptr){
 				errorstream<<"generateImagePart(): baseimg != NULL "
 						<<"for part_of_name=\""<<part_of_name
 						<<"\", cancelling."<<std::endl;
@@ -1674,7 +1674,7 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 			baseimg->copyToWithAlpha(img, pos_dst,
 					core::rect<s32>(pos_src, dim),
 					video::SColor(255,255,255,255),
-					NULL);
+					nullptr);
 			// Replace baseimg
 			baseimg->drop();
 			baseimg = img;
@@ -1685,7 +1685,7 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 		*/
 		else if (str_starts_with(part_of_name, "[mask:"))
 		{
-			if (baseimg == NULL) {
+			if (baseimg == nullptr) {
 				errorstream << "generateImage(): baseimg == NULL "
 						<< "for part_of_name=\"" << part_of_name
 						<< "\", cancelling." << std::endl;
@@ -1715,7 +1715,7 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 			sf.next(":");
 			std::string color_str = sf.next(":");
 
-			if (baseimg == NULL) {
+			if (baseimg == nullptr) {
 				errorstream << "generateImagePart(): baseimg != NULL "
 						<< "for part_of_name=\"" << part_of_name
 						<< "\", cancelling." << std::endl;
@@ -1741,7 +1741,7 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 			std::string color_str = sf.next(":");
 			std::string ratio_str = sf.next(":");
 
-			if (baseimg == NULL) {
+			if (baseimg == nullptr) {
 				errorstream << "generateImagePart(): baseimg != NULL "
 						<< "for part_of_name=\"" << part_of_name
 						<< "\", cancelling." << std::endl;
@@ -1816,7 +1816,7 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 		*/
 		else if (str_starts_with(part_of_name, "[resize"))
 		{
-			if (baseimg == NULL) {
+			if (baseimg == nullptr) {
 				errorstream << "generateImagePart(): baseimg == NULL "
 						<< "for part_of_name=\""<< part_of_name
 						<< "\", cancelling." << std::endl;
@@ -1843,7 +1843,7 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 			255 means totally opaque.
 		*/
 		else if (str_starts_with(part_of_name, "[opacity:")) {
-			if (baseimg == NULL) {
+			if (baseimg == nullptr) {
 				errorstream << "generateImagePart(): baseimg == NULL "
 						<< "for part_of_name=\"" << part_of_name
 						<< "\", cancelling." << std::endl;
@@ -1873,7 +1873,7 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 			will be inverted.
 		*/
 		else if (str_starts_with(part_of_name, "[invert:")) {
-			if (baseimg == NULL) {
+			if (baseimg == nullptr) {
 				errorstream << "generateImagePart(): baseimg == NULL "
 						<< "for part_of_name=\"" << part_of_name
 						<< "\", cancelling." << std::endl;
@@ -1911,7 +1911,7 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 			tilesheet with dimensions W,H (in tiles).
 		*/
 		else if (part_of_name.substr(0,7) == "[sheet:") {
-			if (baseimg == NULL) {
+			if (baseimg == nullptr) {
 				errorstream << "generateImagePart(): baseimg != NULL "
 						<< "for part_of_name=\"" << part_of_name
 						<< "\", cancelling." << std::endl;
@@ -1941,7 +1941,7 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 			v2u32 vdim(tile_dim);
 			core::rect<s32> rect(v2s32(x0 * vdim.X, y0 * vdim.Y), tile_dim);
 			baseimg->copyToWithAlpha(img, v2s32(0), rect,
-					video::SColor(255,255,255,255), NULL);
+					video::SColor(255,255,255,255), nullptr);
 
 			// Replace baseimg
 			baseimg->drop();
@@ -2191,7 +2191,7 @@ static void draw_crack(video::IImage *crack, video::IImage *dst,
 
 void brighten(video::IImage *image)
 {
-	if (image == NULL)
+	if (image == nullptr)
 		return;
 
 	core::dimension2d<u32> dim = image->getDimension();
@@ -2267,7 +2267,7 @@ core::dimension2d<u32> imageTransformDimension(u32 transform, core::dimension2d<
 
 void imageTransform(u32 transform, video::IImage *src, video::IImage *dst)
 {
-	if (src == NULL || dst == NULL)
+	if (src == nullptr || dst == nullptr)
 		return;
 
 	core::dimension2d<u32> dstdim = dst->getDimension();
@@ -2328,7 +2328,7 @@ video::ITexture* TextureSource::getNormalTexture(const std::string &name)
 		}
 		return getTexture(fname_base);
 	}
-	return NULL;
+	return nullptr;
 }
 
 video::SColor TextureSource::getTextureAverageColor(const std::string &name)
@@ -2381,7 +2381,7 @@ video::ITexture *TextureSource::getShaderFlagsTexture(bool normalmap_present)
 	video::IVideoDriver *driver = RenderingEngine::get_video_driver();
 	video::IImage *flags_image = driver->createImage(
 		video::ECF_A8R8G8B8, core::dimension2d<u32>(1, 1));
-	sanity_check(flags_image != NULL);
+	sanity_check(flags_image != nullptr);
 	video::SColor c(255, normalmap_present ? 255 : 0, 0, 0);
 	flags_image->setPixel(0, 0, c);
 	insertSourceImage(tname, flags_image);

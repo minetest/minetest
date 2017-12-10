@@ -362,7 +362,7 @@ inline static int mpz_num_bytes(const mpz_t op)
 
 inline static void mpz_to_bin(const mpz_t op, unsigned char *to)
 {
-	mpz_export(to, NULL, 1, 1, 1, 0, op);
+	mpz_export(to, nullptr, 1, 1, 1, 0, op);
 }
 
 inline static void mpz_from_bin(const unsigned char *s, size_t len, mpz_t ret)
@@ -533,7 +533,7 @@ static SRP_Result fill_buff()
 
 #ifdef WIN32
 
-	if (!CryptAcquireContext(&wctx, NULL, NULL, PROV_RSA_FULL, CRYPT_VERIFYCONTEXT))
+	if (!CryptAcquireContext(&wctx, nullptr, nullptr, PROV_RSA_FULL, CRYPT_VERIFYCONTEXT))
 		return SRP_ERR;
 	if (!CryptGenRandom(wctx, sizeof(g_rand_buff), (BYTE *)g_rand_buff)) return SRP_ERR;
 	if (!CryptReleaseContext(wctx, 0)) return SRP_ERR;
@@ -605,7 +605,7 @@ SRP_Result srp_create_salted_verification_key( SRP_HashAlgorithm alg,
 	if (init_random() != SRP_OK) /* Only happens once */
 		goto error_and_exit;
 
-	if (*bytes_s == NULL) {
+	if (*bytes_s == nullptr) {
 		size_t size_to_fill = 16;
 		*len_s = size_to_fill;
 		if (RAND_BUFF_MAX - g_rand_idx < size_to_fill)
@@ -812,7 +812,7 @@ void srp_verifier_verify_session(
 		ver->authenticated = 1;
 		*bytes_HAMK = ver->H_AMK;
 	} else
-		*bytes_HAMK = NULL;
+		*bytes_HAMK = nullptr;
 }
 
 /*******************************************************************************/
@@ -1013,7 +1013,7 @@ void  srp_user_process_challenge(struct SRPUser *usr,
 		*bytes_M = usr->M;
 		if (len_M) *len_M = hash_length(usr->hash_alg);
 	} else {
-		*bytes_M = NULL;
+		*bytes_M = nullptr;
 		if (len_M) *len_M = 0;
 	}
 

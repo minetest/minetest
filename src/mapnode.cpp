@@ -81,7 +81,7 @@ void MapNode::setLight(enum LightBank bank, u8 a_light, const ContentFeatures &f
 		param1 |= (a_light & 0x0f)<<4;
 	}
 	else
-		assert("Invalid light bank" == NULL);
+		assert("Invalid light bank" == nullptr);
 }
 
 void MapNode::setLight(enum LightBank bank, u8 a_light, INodeDefManager *nodemgr)

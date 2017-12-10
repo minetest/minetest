@@ -155,11 +155,11 @@ public:
 		float step_x, float step_y, float step_z,
 		s32 seed);
 
-	float *perlinMap2D(float x, float y, float *persistence_map=NULL);
-	float *perlinMap3D(float x, float y, float z, float *persistence_map=NULL);
+	float *perlinMap2D(float x, float y, float *persistence_map=nullptr);
+	float *perlinMap3D(float x, float y, float z, float *persistence_map=nullptr);
 
 	inline float *perlinMap2D_PO(float x, float xoff, float y, float yoff,
-		float *persistence_map=NULL)
+		float *persistence_map=nullptr)
 	{
 		return perlinMap2D(
 			x + xoff * np.spread.X,
@@ -168,7 +168,7 @@ public:
 	}
 
 	inline float *perlinMap3D_PO(float x, float xoff, float y, float yoff,
-		float z, float zoff, float *persistence_map=NULL)
+		float z, float zoff, float *persistence_map=nullptr)
 	{
 		return perlinMap3D(
 			x + xoff * np.spread.X,

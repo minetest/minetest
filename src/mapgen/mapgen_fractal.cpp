@@ -40,7 +40,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 
 FlagDesc flagdesc_mapgen_fractal[] = {
-	{NULL,    0}
+	{nullptr,    0}
 };
 
 ///////////////////////////////////////////////////////////////////////////////////////

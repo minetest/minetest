@@ -133,8 +133,8 @@ public:
 
 	// Returns tool wear
 	virtual int punch(v3f dir,
-			const ToolCapabilities *toolcap=NULL,
-			ServerActiveObject *puncher=NULL,
+			const ToolCapabilities *toolcap=nullptr,
+			ServerActiveObject *puncher=nullptr,
 			float time_from_last_punch=1000000)
 	{ return 0; }
 	virtual void rightClick(ServerActiveObject *clicker)
@@ -171,15 +171,15 @@ public:
 	virtual const std::unordered_set<int> &getAttachmentChildIds()
 	{ static const std::unordered_set<int> rv; return rv; }
 	virtual ObjectProperties* accessObjectProperties()
-	{ return NULL; }
+	{ return nullptr; }
 	virtual void notifyObjectPropertiesModified()
 	{}
 
 	// Inventory and wielded item
 	virtual Inventory* getInventory()
-	{ return NULL; }
+	{ return nullptr; }
 	virtual const Inventory* getInventory() const
-	{ return NULL; }
+	{ return nullptr; }
 	virtual InventoryLocation getInventoryLocation() const
 	{ return InventoryLocation(); }
 	virtual void setInventoryModified()

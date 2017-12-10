@@ -142,7 +142,7 @@ public:
 	MyEventReceiver()
 	{
 #ifdef HAVE_TOUCHSCREENGUI
-		m_touchscreengui = NULL;
+		m_touchscreengui = nullptr;
 #endif
 	}
 

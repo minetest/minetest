@@ -145,11 +145,11 @@ private:
 };
 
 // Prototype
-TestCAO proto_TestCAO(NULL, NULL);
+TestCAO proto_TestCAO(nullptr, nullptr);
 
 TestCAO::TestCAO(Client *client, ClientEnvironment *env):
 	ClientActiveObject(0, client, env),
-	m_node(NULL),
+	m_node(nullptr),
 	m_position(v3f(0,10*BS,0))
 {
 	ClientActiveObject::registerType(getType(), create);
@@ -162,7 +162,7 @@ ClientActiveObject* TestCAO::create(Client *client, ClientEnvironment *env)
 
 void TestCAO::addToScene(ITextureSource *tsrc)
 {
-	if(m_node != NULL)
+	if(m_node != nullptr)
 		return;
 
 	//video::IVideoDriver* driver = smgr->getVideoDriver();
@@ -189,7 +189,7 @@ void TestCAO::addToScene(ITextureSource *tsrc)
 	// Add to mesh
 	mesh->addMeshBuffer(buf);
 	buf->drop();
-	m_node = RenderingEngine::get_scene_manager()->addMeshSceneNode(mesh, NULL);
+	m_node = RenderingEngine::get_scene_manager()->addMeshSceneNode(mesh, nullptr);
 	mesh->drop();
 	updateNodePos();
 }
@@ -200,7 +200,7 @@ void TestCAO::removeFromScene(bool permanent)
 		return;
 
 	m_node->remove();
-	m_node = NULL;
+	m_node = nullptr;
 }
 
 void TestCAO::updateLight(u8 light_at_pos)
@@ -258,7 +258,7 @@ void TestCAO::processMessage(const std::string &data)
 GenericCAO::GenericCAO(Client *client, ClientEnvironment *env):
 		ClientActiveObject(0, client, env)
 {
-	if (client == NULL) {
+	if (client == nullptr) {
 		ClientActiveObject::registerType(getType(), create);
 	} else {
 		m_client = client;
@@ -341,7 +341,7 @@ GenericCAO::~GenericCAO()
 bool GenericCAO::getSelectionBox(aabb3f *toset) const
 {
 	if (!m_prop.is_visible || !m_is_visible || m_is_local_player
-			|| !m_prop.pointable || getParent() != NULL) {
+			|| !m_prop.pointable || getParent() != nullptr) {
 		return false;
 	}
 	*toset = m_selection_box;
@@ -350,7 +350,7 @@ bool GenericCAO::getSelectionBox(aabb3f *toset) const
 
 v3f GenericCAO::getPosition()
 {
-	if (getParent() != NULL) {
+	if (getParent() != nullptr) {
 		scene::ISceneNode *node = getSceneNode();
 		if (node)
 			return node->getAbsolutePosition();
@@ -377,7 +377,7 @@ scene::ISceneNode* GenericCAO::getSceneNode()
 	if (m_spritenode) {
 		return m_spritenode;
 	}
-	return NULL;
+	return nullptr;
 }
 
 scene::IAnimatedMeshSceneNode* GenericCAO::getAnimatedMeshSceneNode()
@@ -402,7 +402,7 @@ void GenericCAO::setAttachments()
 
 ClientActiveObject* GenericCAO::getParent() const
 {
-	ClientActiveObject *obj = NULL;
+	ClientActiveObject *obj = nullptr;
 
 	u16 attached_id = m_env->attachement_parent_ids[getId()];
 
@@ -416,7 +416,7 @@ ClientActiveObject* GenericCAO::getParent() const
 void GenericCAO::removeFromScene(bool permanent)
 {
 	// Should be true when removing the object permanently and false when refreshing (eg: updating visuals)
-	if((m_env != NULL) && (permanent))
+	if((m_env != nullptr) && (permanent))
 	{
 		for (u16 ci : m_children) {
 			if (m_env->attachement_parent_ids[ci] == getId()) {
@@ -428,7 +428,7 @@ void GenericCAO::removeFromScene(bool permanent)
 
 		LocalPlayer* player = m_env->getLocalPlayer();
 		if (this == player->parent) {
-			player->parent = NULL;
+			player->parent = nullptr;
 			player->isAttached = false;
 		}
 	}
@@ -436,24 +436,24 @@ void GenericCAO::removeFromScene(bool permanent)
 	if (m_meshnode) {
 		m_meshnode->remove();
 		m_meshnode->drop();
-		m_meshnode = NULL;
+		m_meshnode = nullptr;
 	} else if (m_animated_meshnode)	{
 		m_animated_meshnode->remove();
 		m_animated_meshnode->drop();
-		m_animated_meshnode = NULL;
+		m_animated_meshnode = nullptr;
 	} else if (m_wield_meshnode) {
 		m_wield_meshnode->remove();
 		m_wield_meshnode->drop();
-		m_wield_meshnode = NULL;
+		m_wield_meshnode = nullptr;
 	} else if (m_spritenode) {
 		m_spritenode->remove();
 		m_spritenode->drop();
-		m_spritenode = NULL;
+		m_spritenode = nullptr;
 	}
 
 	if (m_nametag) {
 		m_client->getCamera()->removeNametag(m_nametag);
-		m_nametag = NULL;
+		m_nametag = nullptr;
 	}
 }
 
@@ -461,7 +461,7 @@ void GenericCAO::addToScene(ITextureSource *tsrc)
 {
 	m_smgr = RenderingEngine::get_scene_manager();
 
-	if (getSceneNode() != NULL) {
+	if (getSceneNode() != nullptr) {
 		return;
 	}
 
@@ -474,7 +474,7 @@ void GenericCAO::addToScene(ITextureSource *tsrc)
 	if (m_prop.visual == "sprite") {
 		infostream<<"GenericCAO::addToScene(): single_sprite"<<std::endl;
 		m_spritenode = RenderingEngine::get_scene_manager()->addBillboardSceneNode(
-				NULL, v2f(1, 1), v3f(0,0,0), -1);
+				nullptr, v2f(1, 1), v3f(0,0,0), -1);
 		m_spritenode->grab();
 		m_spritenode->setMaterialTexture(0,
 				tsrc->getTextureForMesh("unknown_node.png"));
@@ -536,7 +536,7 @@ void GenericCAO::addToScene(ITextureSource *tsrc)
 			mesh->addMeshBuffer(buf);
 			buf->drop();
 		}
-		m_meshnode = RenderingEngine::get_scene_manager()->addMeshSceneNode(mesh, NULL);
+		m_meshnode = RenderingEngine::get_scene_manager()->addMeshSceneNode(mesh, nullptr);
 		m_meshnode->grab();
 		mesh->drop();
 		// Set it to use the materials of the meshbuffers directly.
@@ -546,7 +546,7 @@ void GenericCAO::addToScene(ITextureSource *tsrc)
 	else if(m_prop.visual == "cube") {
 		infostream<<"GenericCAO::addToScene(): cube"<<std::endl;
 		scene::IMesh *mesh = createCubeMesh(v3f(BS,BS,BS));
-		m_meshnode = RenderingEngine::get_scene_manager()->addMeshSceneNode(mesh, NULL);
+		m_meshnode = RenderingEngine::get_scene_manager()->addMeshSceneNode(mesh, nullptr);
 		m_meshnode->grab();
 		mesh->drop();
 
@@ -567,7 +567,7 @@ void GenericCAO::addToScene(ITextureSource *tsrc)
 		if(mesh)
 		{
 			m_animated_meshnode = RenderingEngine::get_scene_manager()->
-				addAnimatedMeshSceneNode(mesh, NULL);
+				addAnimatedMeshSceneNode(mesh, nullptr);
 			m_animated_meshnode->grab();
 			mesh->drop(); // The scene node took hold of it
 			m_animated_meshnode->animateJoints(); // Needed for some animations
@@ -646,7 +646,7 @@ void GenericCAO::addToScene(ITextureSource *tsrc)
 void GenericCAO::updateLight(u8 light_at_pos)
 {
 	// Don't update light of attached one
-	if (getParent() != NULL) {
+	if (getParent() != nullptr) {
 		return;
 	}
 
@@ -692,7 +692,7 @@ v3s16 GenericCAO::getLightPosition()
 
 void GenericCAO::updateNodePos()
 {
-	if (getParent() != NULL)
+	if (getParent() != nullptr)
 		return;
 
 	scene::ISceneNode *node = getSceneNode();
@@ -817,7 +817,7 @@ void GenericCAO::step(float dtime, ClientEnvironment *env)
 	if (node)
 		node->setVisible(m_is_visible);
 
-	if(getParent() != NULL) // Attachments should be glued to their parent by Irrlicht
+	if(getParent() != nullptr) // Attachments should be glued to their parent by Irrlicht
 	{
 		// Set these for later
 		m_position = getPosition();
@@ -1292,7 +1292,7 @@ void GenericCAO::processMessage(const std::string &data)
 		if(m_prop.physical)
 			m_position += v3f(0,0.002,0);
 
-		if(getParent() != NULL) // Just in case
+		if(getParent() != nullptr) // Just in case
 			return;
 
 		if(do_interpolate)
@@ -1408,7 +1408,7 @@ void GenericCAO::processMessage(const std::string &data)
 
 		// localplayer itself can't be attached to localplayer
 		if (!m_is_local_player) {
-			m_attached_to_local = getParent() != NULL && getParent()->isLocalPlayer();
+			m_attached_to_local = getParent() != nullptr && getParent()->isLocalPlayer();
 			// Objects attached to the local player should be hidden by default
 			m_is_visible = !m_attached_to_local;
 		}
@@ -1455,7 +1455,7 @@ void GenericCAO::processMessage(const std::string &data)
 		// Deprecated, for backwards compatibility only.
 		readU8(is); // version
 		m_prop.nametag_color = readARGB8(is);
-		if (m_nametag != NULL) {
+		if (m_nametag != nullptr) {
 			m_nametag->nametag_color = m_prop.nametag_color;
 			v3f pos;
 			pos.Y = m_prop.collisionbox.MaxEdge.Y + 0.3f;
@@ -1533,4 +1533,4 @@ std::string GenericCAO::debugInfoText()
 }
 
 // Prototype
-GenericCAO proto_GenericCAO(NULL, NULL);
+GenericCAO proto_GenericCAO(nullptr, nullptr);

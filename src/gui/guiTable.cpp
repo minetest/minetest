@@ -50,7 +50,7 @@ GUITable::GUITable(gui::IGUIEnvironment *env,
 	gui::IGUIElement(gui::EGUIET_ELEMENT, env, parent, id, rectangle),
 	m_tsrc(tsrc)
 {
-	assert(tsrc != NULL);
+	assert(tsrc != nullptr);
 
 	gui::IGUISkin* skin = Environment->getSkin();
 
@@ -380,7 +380,7 @@ void GUITable::setTable(const TableOptions &options,
 					row->content_index = image_iter->second;
 
 				// Get texture object (might be NULL)
-				video::ITexture *image = NULL;
+				video::ITexture *image = nullptr;
 				if (row->content_index >= 0)
 					image = m_images[row->content_index];
 
@@ -863,7 +863,7 @@ bool GUITable::OnEvent(const SEvent &event)
 		// Find hovered row and cell
 		bool really_hovering = false;
 		s32 row_i = getRowAt(p.Y, really_hovering);
-		const Cell *cell = NULL;
+		const Cell *cell = nullptr;
 		if (really_hovering) {
 			s32 cell_j = getCellAt(p.X, row_i);
 			if (cell_j >= 0)
@@ -979,12 +979,12 @@ const GUITable::Row* GUITable::getRow(s32 i) const
 	if (i >= 0 && i < (s32) m_visible_rows.size())
 		return &m_rows[m_visible_rows[i]];
 
-	return NULL;
+	return nullptr;
 }
 
 bool GUITable::doesRowStartWith(const Row *row, const core::stringw &str) const
 {
-	if (row == NULL)
+	if (row == nullptr)
 		return false;
 
 	for (s32 j = 0; j < row->cellcount; ++j) {
@@ -1024,7 +1024,7 @@ s32 GUITable::getRowAt(s32 y, bool &really_hovering) const
 s32 GUITable::getCellAt(s32 x, s32 row_i) const
 {
 	const Row *row = getRow(row_i);
-	if (row == NULL)
+	if (row == nullptr)
 		return -1;
 
 	// Use binary search to find cell in row
@@ -1185,7 +1185,7 @@ void GUITable::toggleVisibleTree(s32 row_i, int dir, bool move_selection)
 {
 	// Check if the chosen tree is currently open
 	const Row *row = getRow(row_i);
-	if (row == NULL)
+	if (row == nullptr)
 		return;
 
 	bool was_open = false;
@@ -1221,7 +1221,7 @@ void GUITable::toggleVisibleTree(s32 row_i, int dir, bool move_selection)
 		}
 		else if (!was_open && !do_open) {
 			// Move selection to parent
-			assert(getRow(sel) != NULL);
+			assert(getRow(sel) != nullptr);
 			while (sel > 0 && getRow(sel - 1)->indent >= row->indent)
 				sel--;
 			sel--;

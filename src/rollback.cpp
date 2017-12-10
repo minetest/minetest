@@ -153,7 +153,7 @@ int RollbackManager::getActorId(const std::string &name)
 		}
 	}
 
-	SQLOK(sqlite3_bind_text(stmt_knownActor_insert, 1, name.c_str(), name.size(), NULL));
+	SQLOK(sqlite3_bind_text(stmt_knownActor_insert, 1, name.c_str(), name.size(), nullptr));
 	SQLRES(sqlite3_step(stmt_knownActor_insert), SQLITE_DONE);
 	SQLOK(sqlite3_reset(stmt_knownActor_insert));
 
@@ -173,7 +173,7 @@ int RollbackManager::getNodeId(const std::string &name)
 		}
 	}
 
-	SQLOK(sqlite3_bind_text(stmt_knownNode_insert, 1, name.c_str(), name.size(), NULL));
+	SQLOK(sqlite3_bind_text(stmt_knownNode_insert, 1, name.c_str(), name.size(), nullptr));
 	SQLRES(sqlite3_step(stmt_knownNode_insert), SQLITE_DONE);
 	SQLOK(sqlite3_reset(stmt_knownNode_insert));
 
@@ -250,7 +250,7 @@ bool RollbackManager::createTables()
 		"	FOREIGN KEY (`newNode`)   REFERENCES `node`(`id`)\n"
 		");\n"
 		"CREATE INDEX IF NOT EXISTS `actionIndex` ON `action`(`x`,`y`,`z`,`timestamp`,`actor`);\n",
-		NULL, NULL, NULL));
+		nullptr, nullptr, nullptr));
 	verbosestream << "SQL Rollback: SQLite3 database structure was created" << std::endl;
 
 	return true;
@@ -263,7 +263,7 @@ bool RollbackManager::initDatabase()
 
 	bool needs_create = !fs::PathExists(database_path);
 	SQLOK(sqlite3_open_v2(database_path.c_str(), &db,
-			SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, NULL));
+			SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, nullptr));
 
 	if (needs_create) {
 		createTables();
@@ -285,7 +285,7 @@ bool RollbackManager::initDatabase()
 		"	?, ?, ?, ?,\n"
 		"	?"
 		");",
-		-1, &stmt_insert, NULL));
+		-1, &stmt_insert, nullptr));
 
 	SQLOK(sqlite3_prepare_v2(db,
 		"REPLACE INTO `action` (\n"
@@ -303,7 +303,7 @@ bool RollbackManager::initDatabase()
 		"	?, ?, ?, ?,\n"
 		"	?, ?\n"
 		");",
-		-1, &stmt_replace, NULL));
+		-1, &stmt_replace, nullptr));
 
 	SQLOK(sqlite3_prepare_v2(db,
 		"SELECT\n"
@@ -316,7 +316,7 @@ bool RollbackManager::initDatabase()
 		" FROM `action`\n"
 		" WHERE `timestamp` >= ?\n"
 		" ORDER BY `timestamp` DESC, `id` DESC",
-		-1, &stmt_select, NULL));
+		-1, &stmt_select, nullptr));
 
 	SQLOK(sqlite3_prepare_v2(db,
 		"SELECT\n"
@@ -336,7 +336,7 @@ bool RollbackManager::initDatabase()
 		"	AND `z` BETWEEN ? AND ?\n"
 		"ORDER BY `timestamp` DESC, `id` DESC\n"
 		"LIMIT 0,?",
-		-1, &stmt_select_range, NULL));
+		-1, &stmt_select_range, nullptr));
 
 	SQLOK(sqlite3_prepare_v2(db,
 		"SELECT\n"
@@ -350,19 +350,19 @@ bool RollbackManager::initDatabase()
 		"WHERE `timestamp` >= ?\n"
 		"	AND `actor` = ?\n"
 		"ORDER BY `timestamp` DESC, `id` DESC\n",
-		-1, &stmt_select_withActor, NULL));
+		-1, &stmt_select_withActor, nullptr));
 
 	SQLOK(sqlite3_prepare_v2(db, "SELECT `id`, `name` FROM `actor`",
-			-1, &stmt_knownActor_select, NULL));
+			-1, &stmt_knownActor_select, nullptr));
 
 	SQLOK(sqlite3_prepare_v2(db, "INSERT INTO `actor` (`name`) VALUES (?)",
-			-1, &stmt_knownActor_insert, NULL));
+			-1, &stmt_knownActor_insert, nullptr));
 
 	SQLOK(sqlite3_prepare_v2(db, "SELECT `id`, `name` FROM `node`",
-			-1, &stmt_knownNode_select, NULL));
+			-1, &stmt_knownNode_select, nullptr));
 
 	SQLOK(sqlite3_prepare_v2(db, "INSERT INTO `node` (`name`) VALUES (?)",
-			-1, &stmt_knownNode_insert, NULL));
+			-1, &stmt_knownNode_insert, nullptr));
 
 	verbosestream << "SQL prepared statements setup correctly" << std::endl;
 
@@ -400,7 +400,7 @@ bool RollbackManager::registerRow(const ActionRow & row)
 		const std::string & loc = row.location;
 		nodeMeta = (loc.substr(0, 9) == "nodemeta:");
 
-		SQLOK(sqlite3_bind_text(stmt_do, 4, row.list.c_str(), row.list.size(), NULL));
+		SQLOK(sqlite3_bind_text(stmt_do, 4, row.list.c_str(), row.list.size(), nullptr));
 		SQLOK(sqlite3_bind_int (stmt_do, 5, row.index));
 		SQLOK(sqlite3_bind_int (stmt_do, 6, row.add));
 		SQLOK(sqlite3_bind_int (stmt_do, 7, row.stack.id));
@@ -436,11 +436,11 @@ bool RollbackManager::registerRow(const ActionRow & row)
 		SQLOK(sqlite3_bind_int (stmt_do, 13, row.oldNode));
 		SQLOK(sqlite3_bind_int (stmt_do, 14, row.oldParam1));
 		SQLOK(sqlite3_bind_int (stmt_do, 15, row.oldParam2));
-		SQLOK(sqlite3_bind_text(stmt_do, 16, row.oldMeta.c_str(), row.oldMeta.size(), NULL));
+		SQLOK(sqlite3_bind_text(stmt_do, 16, row.oldMeta.c_str(), row.oldMeta.size(), nullptr));
 		SQLOK(sqlite3_bind_int (stmt_do, 17, row.newNode));
 		SQLOK(sqlite3_bind_int (stmt_do, 18, row.newParam1));
 		SQLOK(sqlite3_bind_int (stmt_do, 19, row.newParam2));
-		SQLOK(sqlite3_bind_text(stmt_do, 20, row.newMeta.c_str(), row.newMeta.size(), NULL));
+		SQLOK(sqlite3_bind_text(stmt_do, 20, row.newMeta.c_str(), row.newMeta.size(), nullptr));
 		SQLOK(sqlite3_bind_int (stmt_do, 21, row.guessed ? 1 : 0));
 	} else {
 		if (!nodeMeta) {
@@ -689,8 +689,8 @@ void RollbackManager::migrate(const std::string & file_path)
 
 	sqlite3_stmt *stmt_begin;
 	sqlite3_stmt *stmt_commit;
-	SQLOK(sqlite3_prepare_v2(db, "BEGIN", -1, &stmt_begin, NULL));
-	SQLOK(sqlite3_prepare_v2(db, "COMMIT", -1, &stmt_commit, NULL));
+	SQLOK(sqlite3_prepare_v2(db, "BEGIN", -1, &stmt_begin, nullptr));
+	SQLOK(sqlite3_prepare_v2(db, "COMMIT", -1, &stmt_commit, nullptr));
 
 	std::string bit;
 	int i = 0;
@@ -911,7 +911,7 @@ std::string RollbackManager::getSuspect(v3s16 p, float nearness_shortcut,
 
 void RollbackManager::flush()
 {
-	sqlite3_exec(db, "BEGIN", NULL, NULL, NULL);
+	sqlite3_exec(db, "BEGIN", nullptr, nullptr, nullptr);
 
 	std::list<RollbackAction>::const_iterator iter;
 
@@ -925,7 +925,7 @@ void RollbackManager::flush()
 		registerRow(actionRowFromRollbackAction(*iter));
 	}
 
-	sqlite3_exec(db, "COMMIT", NULL, NULL, NULL);
+	sqlite3_exec(db, "COMMIT", nullptr, nullptr, nullptr);
 	action_todisk_buffer.clear();
 }
 

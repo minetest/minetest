@@ -47,7 +47,7 @@ InventoryList* InvRef::getlist(lua_State *L, InvRef *ref,
 	NO_MAP_LOCK_REQUIRED;
 	Inventory *inv = getinv(L, ref);
 	if(!inv)
-		return NULL;
+		return nullptr;
 	return inv->getList(listname);
 }
 
@@ -125,7 +125,7 @@ int InvRef::l_set_size(lua_State *L)
 	}
 
 	Inventory *inv = getinv(L, ref);
-	if(inv == NULL){
+	if(inv == nullptr){
 		lua_pushboolean(L, false);
 		return 1;
 	}
@@ -159,7 +159,7 @@ int InvRef::l_set_width(lua_State *L)
 	const char *listname = luaL_checkstring(L, 2);
 	int newwidth = luaL_checknumber(L, 3);
 	Inventory *inv = getinv(L, ref);
-	if(inv == NULL){
+	if(inv == nullptr){
 		return 0;
 	}
 	InventoryList *list = inv->getList(listname);
@@ -181,7 +181,7 @@ int InvRef::l_get_stack(lua_State *L)
 	int i = luaL_checknumber(L, 3) - 1;
 	InventoryList *list = getlist(L, ref, listname);
 	ItemStack item;
-	if(list != NULL && i >= 0 && i < (int) list->getSize())
+	if(list != nullptr && i >= 0 && i < (int) list->getSize())
 		item = list->getItem(i);
 	LuaItemStack::create(L, item);
 	return 1;
@@ -196,7 +196,7 @@ int InvRef::l_set_stack(lua_State *L)
 	int i = luaL_checknumber(L, 3) - 1;
 	ItemStack newitem = read_item(L, 4, getServer(L)->idef());
 	InventoryList *list = getlist(L, ref, listname);
-	if(list != NULL && i >= 0 && i < (int) list->getSize()){
+	if(list != nullptr && i >= 0 && i < (int) list->getSize()){
 		list->changeItem(i, newitem);
 		reportInventoryChange(L, ref);
 		lua_pushboolean(L, true);
@@ -228,7 +228,7 @@ int InvRef::l_set_list(lua_State *L)
 	InvRef *ref = checkobject(L, 1);
 	const char *listname = luaL_checkstring(L, 2);
 	Inventory *inv = getinv(L, ref);
-	if(inv == NULL){
+	if(inv == nullptr){
 		return 0;
 	}
 	InventoryList *list = inv->getList(listname);
@@ -495,7 +495,7 @@ int ModApiInventory::l_get_inventory(lua_State *L)
 		v3s16 pos = check_v3s16(L, -1);
 		loc.setNodeMeta(pos);
 
-		if (getServer(L)->getInventory(loc) != NULL)
+		if (getServer(L)->getInventory(loc) != nullptr)
 			InvRef::create(L, loc);
 		else
 			lua_pushnil(L);
@@ -511,7 +511,7 @@ int ModApiInventory::l_get_inventory(lua_State *L)
 		loc.setDetached(name);
 	}
 
-	if (getServer(L)->getInventory(loc) != NULL)
+	if (getServer(L)->getInventory(loc) != nullptr)
 		InvRef::create(L, loc);
 	else
 		lua_pushnil(L);
@@ -526,7 +526,7 @@ int ModApiInventory::l_create_detached_inventory_raw(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 	const char *name = luaL_checkstring(L, 1);
 	const char *player = lua_isstring(L, 2) ? lua_tostring(L, 2) : "";
-	if (getServer(L)->createDetachedInventory(name, player) != NULL) {
+	if (getServer(L)->createDetachedInventory(name, player) != nullptr) {
 		InventoryLocation loc;
 		loc.setDetached(name);
 		InvRef::create(L, loc);

@@ -56,7 +56,7 @@ FlagDesc flagdesc_mapgen[] = {
 	{"dungeons",    MG_DUNGEONS},
 	{"light",       MG_LIGHT},
 	{"decorations", MG_DECORATIONS},
-	{NULL,       0}
+	{nullptr,       0}
 };
 
 FlagDesc flagdesc_gennotify[] = {
@@ -67,7 +67,7 @@ FlagDesc flagdesc_gennotify[] = {
 	{"large_cave_begin", 1 << GENNOTIFY_LARGECAVE_BEGIN},
 	{"large_cave_end",   1 << GENNOTIFY_LARGECAVE_END},
 	{"decoration",       1 << GENNOTIFY_DECORATION},
-	{NULL,               0}
+	{nullptr,               0}
 };
 
 struct MapgenDesc {
@@ -168,7 +168,7 @@ Mapgen *Mapgen::createMapgen(MapgenType mgtype, int mgid,
 	case MAPGEN_VALLEYS:
 		return new MapgenValleys(mgid, (MapgenValleysParams *)params, emerge);
 	default:
-		return NULL;
+		return nullptr;
 	}
 }
 
@@ -193,7 +193,7 @@ MapgenParams *Mapgen::createMapgenParams(MapgenType mgtype)
 	case MAPGEN_VALLEYS:
 		return new MapgenValleysParams;
 	default:
-		return NULL;
+		return nullptr;
 	}
 }
 
@@ -656,7 +656,7 @@ void MapgenBasic::generateBiomes(MgStoneType *mgstone_type,
 
 	for (s16 z = node_min.Z; z <= node_max.Z; z++)
 	for (s16 x = node_min.X; x <= node_max.X; x++, index++) {
-		Biome *biome = NULL;
+		Biome *biome = nullptr;
 		u16 depth_top = 0;
 		u16 base_filler = 0;
 		u16 depth_water_top = 0;

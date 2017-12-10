@@ -475,7 +475,7 @@ public:
 	/* Set environment. Do not call this function if environment is already set */
 	void setEnv(ServerEnvironment *env)
 	{
-		assert(m_env == NULL); // pre-condition
+		assert(m_env == nullptr); // pre-condition
 		m_env = env;
 	}
 

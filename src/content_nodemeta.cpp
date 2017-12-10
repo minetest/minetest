@@ -172,7 +172,7 @@ void content_nodemeta_deserialize_legacy(std::istream &is,
 		p16 -= p.Y * MAP_BLOCKSIZE;
 		p.X += p16;
 
-		if(meta->get(p) != NULL)
+		if(meta->get(p) != nullptr)
 		{
 			warningstream<<FUNCTION_NAME<<": "
 					<<"already set data at position"

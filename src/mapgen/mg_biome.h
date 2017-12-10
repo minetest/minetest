@@ -208,7 +208,7 @@ public:
 			return new BiomeGenOriginal(this,
 				(BiomeParamsOriginal *)params, chunksize);
 		default:
-			return NULL;
+			return nullptr;
 		}
 	}
 
@@ -218,7 +218,7 @@ public:
 		case BIOMEGEN_ORIGINAL:
 			return new BiomeParamsOriginal;
 		default:
-			return NULL;
+			return nullptr;
 		}
 	}
 

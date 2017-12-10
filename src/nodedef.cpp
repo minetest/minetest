@@ -341,7 +341,7 @@ void ContentFeatures::reset()
 	mesh = "";
 #ifndef SERVER
 	for (auto &i : mesh_ptr)
-		i = NULL;
+		i = nullptr;
 	minimap_color = video::SColor(0, 0, 0, 0);
 #endif
 	visual_scale = 1.0;
@@ -387,7 +387,7 @@ void ContentFeatures::reset()
 	connect_sides = 0;
 	color = video::SColor(0xFFFFFFFF);
 	palette_name = "";
-	palette = NULL;
+	palette = nullptr;
 	node_dig_prediction = "air";
 }
 
@@ -646,7 +646,7 @@ static void fillTileAttribs(ITextureSource *tsrc, TileLayer *layer,
 	if (layer->material_flags & MATERIAL_FLAG_ANIMATION) {
 		int frame_length_ms;
 		tiledef.animation.determineParams(layer->texture->getOriginalSize(),
-				&frame_count, &frame_length_ms, NULL);
+				&frame_count, &frame_length_ms, nullptr);
 		layer->animation_frame_count = frame_count;
 		layer->animation_frame_length_ms = frame_length_ms;
 	}

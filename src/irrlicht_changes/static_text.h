@@ -177,11 +177,11 @@ inline irr::gui::IGUIStaticText *addStaticText(
 		const core::rect< s32 > &rectangle,
 		bool border = false,
 		bool wordWrap = true,
-		irr::gui::IGUIElement *parent = NULL,
+		irr::gui::IGUIElement *parent = nullptr,
 		s32 id = -1,
 		bool fillBackground = false)
 {
-	if (parent == NULL) {
+	if (parent == nullptr) {
 		// parent is NULL, so we must find one, or we need not to drop
 		// result, but then there will be a memory leak.
 		//
@@ -231,7 +231,7 @@ inline irr::gui::IGUIStaticText *addStaticText(
 		const core::rect< s32 > &rectangle,
 		bool border = false,
 		bool wordWrap = true,
-		irr::gui::IGUIElement *parent = NULL,
+		irr::gui::IGUIElement *parent = nullptr,
 		s32 id = -1,
 		bool fillBackground = false)
 {
@@ -251,7 +251,7 @@ inline irr::gui::IGUIStaticText *addStaticText(
 		const core::rect< s32 > &rectangle,
 		bool border = false,
 		bool wordWrap = true,
-		irr::gui::IGUIElement *parent = NULL,
+		irr::gui::IGUIElement *parent = nullptr,
 		s32 id = -1,
 		bool fillBackground = false) {
 	return addStaticText(guienv, EnrichedString(text), rectangle, border, wordWrap, parent, id, fillBackground);

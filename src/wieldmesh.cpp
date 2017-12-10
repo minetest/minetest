@@ -189,7 +189,7 @@ private:
 	scene::IMesh *m_cube;
 };
 
-ExtrusionMeshCache *g_extrusion_mesh_cache = NULL;
+ExtrusionMeshCache *g_extrusion_mesh_cache = nullptr;
 
 
 WieldMeshSceneNode::WieldMeshSceneNode(scene::ISceneManager *mgr, s32 id, bool lighting):
@@ -250,7 +250,7 @@ void WieldMeshSceneNode::setExtruded(const std::string &imagename,
 		return;
 	}
 	video::ITexture *overlay_texture =
-		overlay_name.empty() ? NULL : tsrc->getTexture(overlay_name);
+		overlay_name.empty() ? nullptr : tsrc->getTexture(overlay_name);
 
 	core::dimension2d<u32> dim = texture->getSize();
 	// Detect animation texture and pull off top frame instead of using entire thing
@@ -592,10 +592,10 @@ scene::SMesh *getExtrudedMesh(ITextureSource *tsrc,
 	// check textures
 	video::ITexture *texture = tsrc->getTextureForMesh(imagename);
 	if (!texture) {
-		return NULL;
+		return nullptr;
 	}
 	video::ITexture *overlay_texture =
-		(overlay_name.empty()) ? NULL : tsrc->getTexture(overlay_name);
+		(overlay_name.empty()) ? nullptr : tsrc->getTexture(overlay_name);
 
 	// get mesh
 	core::dimension2d<u32> dim = texture->getSize();

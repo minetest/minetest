@@ -29,8 +29,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 // Menu clouds are created later
 class Clouds;
-Clouds *g_menuclouds = NULL;
-irr::scene::ISceneManager *g_menucloudsmgr = NULL;
+Clouds *g_menuclouds = nullptr;
+irr::scene::ISceneManager *g_menucloudsmgr = nullptr;
 
 // Constant for now
 static constexpr const float cloud_size = BS * 64.0f;

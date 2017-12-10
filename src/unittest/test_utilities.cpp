@@ -152,7 +152,7 @@ void TestUtilities::testIsYes()
 
 void TestUtilities::testRemoveStringEnd()
 {
-	const char *ends[] = {"abc", "c", "bc", "", NULL};
+	const char *ends[] = {"abc", "c", "bc", "", nullptr};
 	UASSERT(removeStringEnd("abc", ends) == "");
 	UASSERT(removeStringEnd("bc", ends) == "b");
 	UASSERT(removeStringEnd("12c", ends) == "12");

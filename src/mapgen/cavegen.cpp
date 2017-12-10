@@ -565,7 +565,7 @@ void CavesRandomWalk::carveRoute(v3f vec, float f, bool randomize_xz)
 
 inline bool CavesRandomWalk::isPosAboveSurface(v3s16 p)
 {
-	if (heightmap != NULL &&
+	if (heightmap != nullptr &&
 			p.Z >= node_min.Z && p.Z <= node_max.Z &&
 			p.X >= node_min.X && p.X <= node_max.X) {
 		u32 index = (p.Z - node_min.Z) * ystride + (p.X - node_min.X);
@@ -683,7 +683,7 @@ void CavesV6::makeCave(MMVManip *vm, v3s16 nmin, v3s16 nmax,
 	orp.X = (float)(ps->next() % ar.X) + 0.5f;
 
 	// Add generation notify begin event
-	if (gennotify != NULL) {
+	if (gennotify != nullptr) {
 		v3s16 abs_pos(of.X + orp.X, of.Y + orp.Y, of.Z + orp.Z);
 		GenNotifyType notifytype = large_cave ?
 			GENNOTIFY_LARGECAVE_BEGIN : GENNOTIFY_CAVE_BEGIN;
@@ -695,7 +695,7 @@ void CavesV6::makeCave(MMVManip *vm, v3s16 nmin, v3s16 nmax,
 		makeTunnel(j % dswitchint == 0);
 
 	// Add generation notify end event
-	if (gennotify != NULL) {
+	if (gennotify != nullptr) {
 		v3s16 abs_pos(of.X + orp.X, of.Y + orp.Y, of.Z + orp.Z);
 		GenNotifyType notifytype = large_cave ?
 			GENNOTIFY_LARGECAVE_END : GENNOTIFY_CAVE_END;
@@ -870,7 +870,7 @@ void CavesV6::carveRoute(v3f vec, float f, bool randomize_xz,
 
 inline s16 CavesV6::getSurfaceFromHeightmap(v3s16 p)
 {
-	if (heightmap != NULL &&
+	if (heightmap != nullptr &&
 			p.Z >= node_min.Z && p.Z <= node_max.Z &&
 			p.X >= node_min.X && p.X <= node_max.X) {
 		u32 index = (p.Z - node_min.Z) * ystride + (p.X - node_min.X);

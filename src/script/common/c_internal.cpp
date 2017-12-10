@@ -127,7 +127,7 @@ void script_run_callbacks_f(lua_State *L, int nargs,
 
 	int result = lua_pcall(L, nargs + 2, 1, error_handler);
 	if (result != 0)
-		script_error(L, result, NULL, fxn);
+		script_error(L, result, nullptr, fxn);
 
 	lua_remove(L, error_handler);
 }
@@ -161,7 +161,7 @@ void log_deprecated(lua_State *L, const std::string &message)
 
 		if (L) {
 			if (do_error)
-				script_error(L, LUA_ERRRUN, NULL, NULL);
+				script_error(L, LUA_ERRRUN, nullptr, nullptr);
 			else
 				infostream << script_get_backtrace(L) << std::endl;
 		}

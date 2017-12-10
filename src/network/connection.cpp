@@ -1204,7 +1204,7 @@ PeerHelper Connection::getPeerNoEx(session_t peer_id)
 	std::map<session_t, Peer *>::iterator node = m_peers.find(peer_id);
 
 	if (node == m_peers.end()) {
-		return PeerHelper(NULL);
+		return PeerHelper(nullptr);
 	}
 
 	// Error checking

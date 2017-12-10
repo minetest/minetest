@@ -31,7 +31,7 @@ FlagDesc flagdesc_ore[] = {
 	{"absheight",                 OREFLAG_ABSHEIGHT}, // Non-functional
 	{"puff_cliffs",               OREFLAG_PUFF_CLIFFS},
 	{"puff_additive_composition", OREFLAG_PUFF_ADDITIVE},
-	{NULL,                        0}
+	{nullptr,                        0}
 };
 
 

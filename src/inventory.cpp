@@ -763,7 +763,7 @@ u32 InventoryList::moveItem(u32 i, InventoryList *dest, u32 dest_i,
 		// Swap the items
 		if (nothing_added && swap_if_needed) {
 			// Tell that we swapped
-			if (did_swap != NULL) {
+			if (did_swap != nullptr) {
 				*did_swap = true;
 			}
 			// Take item from source list
@@ -913,7 +913,7 @@ InventoryList * Inventory::addList(const std::string &name, u32 size)
 
 
 	//don't create list with invalid name
-	if (name.find(' ') != std::string::npos) return NULL;
+	if (name.find(' ') != std::string::npos) return nullptr;
 
 	InventoryList *list = new InventoryList(name, size, m_itemdef);
 	m_lists.push_back(list);
@@ -924,7 +924,7 @@ InventoryList * Inventory::getList(const std::string &name)
 {
 	s32 i = getListIndex(name);
 	if(i == -1)
-		return NULL;
+		return nullptr;
 	return m_lists[i];
 }
 
@@ -952,7 +952,7 @@ const InventoryList * Inventory::getList(const std::string &name) const
 {
 	s32 i = getListIndex(name);
 	if(i == -1)
-		return NULL;
+		return nullptr;
 	return m_lists[i];
 }
 

@@ -33,7 +33,7 @@ enum TimePrecision
 
 inline std::string getTimestamp()
 {
-	time_t t = time(NULL);
+	time_t t = time(nullptr);
 	// This is not really thread-safe but it won't break anything
 	// except its own output, so just go with it.
 	struct tm *tm = localtime(&t);

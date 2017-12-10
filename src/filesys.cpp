@@ -90,7 +90,7 @@ std::vector<DirListNode> GetDirListing(const std::string &pathstring)
 
 bool CreateDir(const std::string &path)
 {
-	bool r = CreateDirectory(path.c_str(), NULL);
+	bool r = CreateDirectory(path.c_str(), nullptr);
 	if(r == true)
 		return true;
 	if(GetLastError() == ERROR_ALREADY_EXISTS)
@@ -184,7 +184,7 @@ bool DeleteSingleFileOrEmptyDirectory(const std::string &path)
 
 std::string TempPath()
 {
-	DWORD bufsize = GetTempPath(0, NULL);
+	DWORD bufsize = GetTempPath(0, nullptr);
 	if(bufsize == 0){
 		errorstream<<"GetTempPath failed, error = "<<GetLastError()<<std::endl;
 		return "";
@@ -212,12 +212,12 @@ std::vector<DirListNode> GetDirListing(const std::string &pathstring)
 
 	DIR *dp;
 	struct dirent *dirp;
-	if((dp = opendir(pathstring.c_str())) == NULL) {
+	if((dp = opendir(pathstring.c_str())) == nullptr) {
 		//infostream<<"Error("<<errno<<") opening "<<pathstring<<std::endl;
 		return listing;
 	}
 
-	while ((dirp = readdir(dp)) != NULL) {
+	while ((dirp = readdir(dp)) != nullptr) {
 		// NOTE:
 		// Be very sure to not include '..' in the results, it will
 		// result in an epic failure when deleting stuff.
@@ -320,7 +320,7 @@ bool RecursiveDelete(const std::string &path)
 		argv[0] = argv_data[0];
 		argv[1] = argv_data[1];
 		argv[2] = argv_data[2];
-		argv[3] = NULL;
+		argv[3] = nullptr;
 
 		verbosestream<<"Executing '"<<argv[0]<<"' '"<<argv[1]<<"' '"
 				<<argv[2]<<"'"<<std::endl;
@@ -466,14 +466,14 @@ bool CreateAllDirs(const std::string &path)
 bool CopyFileContents(const std::string &source, const std::string &target)
 {
 	FILE *sourcefile = fopen(source.c_str(), "rb");
-	if(sourcefile == NULL){
+	if(sourcefile == nullptr){
 		errorstream<<source<<": can't open for reading: "
 			<<strerror(errno)<<std::endl;
 		return false;
 	}
 
 	FILE *targetfile = fopen(target.c_str(), "wb");
-	if(targetfile == NULL){
+	if(targetfile == nullptr){
 		errorstream<<target<<": can't open for writing: "
 			<<strerror(errno)<<std::endl;
 		fclose(sourcefile);
@@ -684,9 +684,9 @@ std::string RemoveRelativePathComponents(std::string path)
 std::string AbsolutePath(const std::string &path)
 {
 #ifdef _WIN32
-	char *abs_path = _fullpath(NULL, path.c_str(), MAX_PATH);
+	char *abs_path = _fullpath(nullptr, path.c_str(), MAX_PATH);
 #else
-	char *abs_path = realpath(path.c_str(), NULL);
+	char *abs_path = realpath(path.c_str(), nullptr);
 #endif
 	if (!abs_path) return "";
 	std::string abs_path_str(abs_path);

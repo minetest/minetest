@@ -324,7 +324,7 @@ u8 NetworkPacket::getU8(u32 offset)
 u8* NetworkPacket::getU8Ptr(u32 from_offset)
 {
 	if (m_datasize == 0) {
-		return NULL;
+		return nullptr;
 	}
 
 	checkReadOffset(from_offset, 1);
@@ -536,7 +536,7 @@ SharedBuffer<u8> NetworkPacket::oldForgePacket()
 
 	u8* datas = getU8Ptr(0);
 
-	if (datas != NULL)
+	if (datas != nullptr)
 		memcpy(&sb[2], datas, m_datasize);
 	return sb;
 }

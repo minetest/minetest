@@ -408,9 +408,9 @@ private:
 	*/
 	// Envlock and conlock should be locked when calling these
 	void sendRemoveNode(v3s16 p, u16 ignore_id=0,
-			std::vector<u16> *far_players=NULL, float far_d_nodes=100);
+			std::vector<u16> *far_players=nullptr, float far_d_nodes=100);
 	void sendAddNode(v3s16 p, MapNode n, u16 ignore_id=0,
-			std::vector<u16> *far_players=NULL, float far_d_nodes=100,
+			std::vector<u16> *far_players=nullptr, float far_d_nodes=100,
 			bool remove_metadata=true);
 	void setBlockNotSent(v3s16 p);
 
@@ -472,7 +472,7 @@ private:
 	std::wstring handleChat(const std::string &name, const std::wstring &wname,
 		std::wstring wmessage_input,
 		bool check_shout_priv = false,
-		RemotePlayer *player = NULL);
+		RemotePlayer *player = nullptr);
 	void handleAdminChat(const ChatEventChat *evt);
 
 	// When called, connection mutex should be locked

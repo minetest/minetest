@@ -206,7 +206,7 @@ public:
 
 	void processMessage(const std::string &data);
 
-	bool directReportPunch(v3f dir, const ItemStack *punchitem=NULL,
+	bool directReportPunch(v3f dir, const ItemStack *punchitem=nullptr,
 			float time_from_last_punch=1000000);
 
 	std::string debugInfoText();

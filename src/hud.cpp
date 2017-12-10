@@ -131,7 +131,7 @@ void Hud::drawItem(const ItemStack &item, const core::rect<s32>& rect,
 				core::dimension2di imgsize(texture->getOriginalSize());
 			draw2DImageFilterScaled(driver, texture, imgrect2,
 					core::rect<s32>(core::position2d<s32>(0,0), imgsize),
-					NULL, hbar_colors, true);
+					nullptr, hbar_colors, true);
 		} else {
 			video::SColor c_outside(255,255,0,0);
 			//video::SColor c_outside(255,0,0,0);
@@ -145,22 +145,22 @@ void Hud::drawItem(const ItemStack &item, const core::rect<s32>& rect,
 				core::rect<s32>(
 				v2s32(x1 - m_padding, y1 - m_padding),
 				v2s32(x2 + m_padding, y1)
-				), NULL);
+				), nullptr);
 			driver->draw2DRectangle(c_outside,
 				core::rect<s32>(
 				v2s32(x1 - m_padding, y2),
 				v2s32(x2 + m_padding, y2 + m_padding)
-				), NULL);
+				), nullptr);
 			driver->draw2DRectangle(c_outside,
 				core::rect<s32>(
 				v2s32(x1 - m_padding, y1),
 					v2s32(x1, y2)
-				), NULL);
+				), nullptr);
 			driver->draw2DRectangle(c_outside,
 				core::rect<s32>(
 					v2s32(x2, y1),
 				v2s32(x2 + m_padding, y2)
-				), NULL);
+				), nullptr);
 			/*// Light inside borders
 			driver->draw2DRectangle(c_inside,
 				core::rect<s32>(
@@ -188,8 +188,8 @@ void Hud::drawItem(const ItemStack &item, const core::rect<s32>& rect,
 
 	video::SColor bgcolor2(128, 0, 0, 0);
 	if (!use_hotbar_image)
-		driver->draw2DRectangle(bgcolor2, rect, NULL);
-	drawItemStack(driver, g_fontengine->getFont(), item, rect, NULL,
+		driver->draw2DRectangle(bgcolor2, rect, nullptr);
+	drawItemStack(driver, g_fontengine->getFont(), item, rect, nullptr,
 		client, selected ? IT_ROT_SELECTED : IT_ROT_NONE);
 }
 
@@ -244,7 +244,7 @@ void Hud::drawItems(v2s32 upperleftpos, v2s32 screen_offset, s32 itemcount,
 		core::dimension2di imgsize(texture->getOriginalSize());
 		draw2DImageFilterScaled(driver, texture, rect2,
 			core::rect<s32>(core::position2d<s32>(0,0), imgsize),
-			NULL, hbar_colors, true);
+			nullptr, hbar_colors, true);
 	}
 
 	// Draw items
@@ -310,7 +310,7 @@ void Hud::drawLuaElements(const v3s16 &camera_offset)
 				rect += pos + offset + v2s32(e->offset.X, e->offset.Y);
 				draw2DImageFilterScaled(driver, texture, rect,
 					core::rect<s32>(core::position2d<s32>(0,0), imgsize),
-					NULL, colors, true);
+					nullptr, colors, true);
 				break; }
 			case HUD_ELEM_TEXT: {
 				video::SColor color(255, (e->number >> 16) & 0xFF,
@@ -429,13 +429,13 @@ void Hud::drawStatbar(v2s32 pos, u16 corner, u16 drawdir, std::string texture,
 		core::rect<s32> dstrect(0,0, dstd.Width, dstd.Height);
 
 		dstrect += p;
-		draw2DImageFilterScaled(driver, stat_texture, dstrect, srcrect, NULL, colors, true);
+		draw2DImageFilterScaled(driver, stat_texture, dstrect, srcrect, nullptr, colors, true);
 		p += steppos;
 	}
 
 	if (count % 2 == 1) {
 		dsthalfrect += p;
-		draw2DImageFilterScaled(driver, stat_texture, dsthalfrect, srchalfrect, NULL, colors, true);
+		draw2DImageFilterScaled(driver, stat_texture, dsthalfrect, srchalfrect, nullptr, colors, true);
 	}
 }
 
@@ -445,7 +445,7 @@ void Hud::drawHotbar(u16 playeritem) {
 	v2s32 centerlowerpos(m_displaycenter.X, m_screensize.Y);
 
 	InventoryList *mainlist = inventory->getList("main");
-	if (mainlist == NULL) {
+	if (mainlist == nullptr) {
 		//silently ignore this we may not be initialized completely
 		return;
 	}
@@ -573,7 +573,7 @@ void Hud::updateSelectionMesh(const v3s16 &camera_offset)
 
 	if (m_selection_mesh) {
 		m_selection_mesh->drop();
-		m_selection_mesh = NULL;
+		m_selection_mesh = nullptr;
 	}
 
 	if (m_selection_boxes.empty()) {
@@ -642,7 +642,7 @@ void drawItemStack(video::IVideoDriver *driver,
 
 	if (item.empty()) {
 		if (rotation_kind < IT_ROT_NONE) {
-			rotation_time_infos[rotation_kind].mesh = NULL;
+			rotation_time_infos[rotation_kind].mesh = nullptr;
 		}
 		return;
 	}
@@ -752,7 +752,7 @@ void drawItemStack(video::IVideoDriver *driver,
 		driver->draw2DRectangle(color, progressrect2, clip);
 	}
 
-	if(font != NULL && item.count >= 2)
+	if(font != nullptr && item.count >= 2)
 	{
 		// Get the item count as a string
 		std::string text = itos(item.count);

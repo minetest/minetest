@@ -41,7 +41,7 @@ struct EnumString es_TileAnimationType[] =
 	{TAT_NONE, "none"},
 	{TAT_VERTICAL_FRAMES, "vertical_frames"},
 	{TAT_SHEET_2D, "sheet_2d"},
-	{0, NULL},
+	{0, nullptr},
 };
 
 /******************************************************************************/
@@ -93,7 +93,7 @@ void read_item_definition(lua_State* L, int index,
 	// If name is "" (hand), ensure there are ToolCapabilities
 	// because it will be looked up there whenever any other item has
 	// no ToolCapabilities
-	if (def.name.empty() && def.tool_capabilities == NULL){
+	if (def.name.empty() && def.tool_capabilities == nullptr){
 		def.tool_capabilities = new ToolCapabilities();
 	}
 
@@ -1254,7 +1254,7 @@ void push_tool_capabilities(lua_State *L,
 void push_inventory_list(lua_State *L, Inventory *inv, const char *name)
 {
 	InventoryList *invlist = inv->getList(name);
-	if(invlist == NULL){
+	if(invlist == nullptr){
 		lua_pushnil(L);
 		return;
 	}

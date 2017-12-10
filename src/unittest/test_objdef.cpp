@@ -63,7 +63,7 @@ void TestObjDef::testHandles()
 
 void TestObjDef::testAddGetSetClear()
 {
-	ObjDefManager testmgr(NULL, OBJDEF_GENERIC);
+	ObjDefManager testmgr(nullptr, OBJDEF_GENERIC);
 	ObjDefHandle hObj0, hObj1, hObj2, hObj3;
 	ObjDef *obj0, *obj1, *obj2, *obj3;
 

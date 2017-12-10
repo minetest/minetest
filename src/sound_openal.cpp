@@ -146,7 +146,7 @@ SoundBuffer *load_opened_ogg_file(OggVorbis_File *oggFile,
 			infostream << "Audio: Error decoding "
 				<< filename_for_logging << std::endl;
 			delete snd;
-			return NULL;
+			return nullptr;
 		}
 
 		// Append to end of buffer
@@ -184,7 +184,7 @@ SoundBuffer *load_ogg_from_file(const std::string &path)
 	if (ov_fopen(path.c_str(), &oggFile) != 0) {
 		infostream << "Audio: Error opening " << path
 			<< " for decoding" << std::endl;
-		return NULL;
+		return nullptr;
 	}
 
 	return load_opened_ogg_file(&oggFile, path);
@@ -237,7 +237,7 @@ long BufferSourceell_func(void *datasource)
 static ov_callbacks g_buffer_ov_callbacks = {
 	&buffer_sound_read_func,
 	&buffer_sound_seek_func,
-	NULL,
+	nullptr,
 	&BufferSourceell_func
 };
 
@@ -250,10 +250,10 @@ SoundBuffer *load_ogg_from_buffer(const std::string &buf, const std::string &id_
 	s.cur_offset = 0;
 	s.len = buf.size();
 
-	if (ov_open_callbacks(&s, &oggFile, NULL, 0, g_buffer_ov_callbacks) != 0) {
+	if (ov_open_callbacks(&s, &oggFile, nullptr, 0, g_buffer_ov_callbacks) != 0) {
 		infostream << "Audio: Error opening " << id_for_log
 			<< " for decoding" << std::endl;
-		return NULL;
+		return nullptr;
 	}
 
 	return load_opened_ogg_file(&oggFile, id_for_log);
@@ -293,8 +293,8 @@ public:
 	bool m_is_initialized;
 	OpenALSoundManager(OnDemandSoundFetcher *fetcher):
 		m_fetcher(fetcher),
-		m_device(NULL),
-		m_context(NULL),
+		m_device(nullptr),
+		m_context(nullptr),
 		m_next_id(1),
 		m_fade_delay(0),
 		m_is_initialized(false)
@@ -303,21 +303,21 @@ public:
 
 		infostream<<"Audio: Initializing..."<<std::endl;
 
-		m_device = alcOpenDevice(NULL);
+		m_device = alcOpenDevice(nullptr);
 		if(!m_device){
 			infostream<<"Audio: No audio device available, audio system "
 				<<"not initialized"<<std::endl;
 			return;
 		}
 
-		m_context = alcCreateContext(m_device, NULL);
+		m_context = alcCreateContext(m_device, nullptr);
 		if(!m_context){
 			error = alcGetError(m_device);
 			infostream<<"Audio: Unable to initialize audio context, "
 					<<"aborting audio initialization ("<<alcErrorString(error)
 					<<")"<<std::endl;
 			alcCloseDevice(m_device);
-			m_device = NULL;
+			m_device = nullptr;
 			return;
 		}
 
@@ -327,9 +327,9 @@ public:
 			infostream<<"Audio: Error setting audio context, aborting audio "
 					<<"initialization ("<<alcErrorString(error)<<")"<<std::endl;
 			alcDestroyContext(m_context);
-			m_context = NULL;
+			m_context = nullptr;
 			alcCloseDevice(m_device);
-			m_device = NULL;
+			m_device = nullptr;
 			return;
 		}
 
@@ -347,11 +347,11 @@ public:
 		infostream<<"Audio: Deinitializing..."<<std::endl;
 		// KABOOM!
 		// TODO: Clear SoundBuffers
-		alcMakeContextCurrent(NULL);
+		alcMakeContextCurrent(nullptr);
 		alcDestroyContext(m_context);
-		m_context = NULL;
+		m_context = nullptr;
 		alcCloseDevice(m_device);
-		m_device = NULL;
+		m_device = nullptr;
 
 		for (auto &buffer : m_buffers) {
 			for (SoundBuffer *sb : buffer.second) {
@@ -386,7 +386,7 @@ public:
 		std::unordered_map<std::string, std::vector<SoundBuffer*>>::iterator i =
 				m_buffers.find(name);
 		if(i == m_buffers.end())
-			return NULL;
+			return nullptr;
 		std::vector<SoundBuffer*> &bufs = i->second;
 		int j = myrand() % bufs.size();
 		return bufs[j];
@@ -486,7 +486,7 @@ public:
 		if(buf)
 			return buf;
 		if(!m_fetcher)
-			return NULL;
+			return nullptr;
 		std::set<std::string> paths;
 		std::set<std::string> datas;
 		m_fetcher->fetchSounds(name, paths, datas);
@@ -689,6 +689,6 @@ ISoundManager *createOpenALSoundManager(OnDemandSoundFetcher *fetcher)
 	if(m->m_is_initialized)
 		return m;
 	delete m;
-	return NULL;
+	return nullptr;
 };
 

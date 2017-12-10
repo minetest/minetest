@@ -48,7 +48,7 @@ FlagDesc flagdesc_mapgen_v6[] = {
 	{"snowbiomes", MGV6_SNOWBIOMES},
 	{"flat",       MGV6_FLAT},
 	{"trees",      MGV6_TREES},
-	{NULL,         0}
+	{nullptr,         0}
 };
 
 
@@ -785,7 +785,7 @@ void MapgenV6::flowMud(s16 &mudflow_minpos, s16 &mudflow_maxpos)
 			while (y >= node_min.Y) {
 
 			for (;; y--) {
-				MapNode *n = NULL;
+				MapNode *n = nullptr;
 				// Find mud
 				for (; y >= node_min.Y; y--) {
 					n = &vm->m_data[i];
@@ -832,7 +832,7 @@ void MapgenV6::flowMud(s16 &mudflow_minpos, s16 &mudflow_maxpos)
 				// dropping if upper keeps it in place.
 				u32 i3 = i;
 				vm->m_area.add_y(em, i3, 1);
-				MapNode *n3 = NULL;
+				MapNode *n3 = nullptr;
 
 				if (vm->m_area.contains(i3)) {
 					n3 = &vm->m_data[i3];

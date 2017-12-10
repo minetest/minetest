@@ -157,7 +157,7 @@ int ModApiParticles::l_add_particlespawner(lua_State *L)
 	     collisiondetection = vertical = collision_removal = false;
 	struct TileAnimationParams animation;
 	animation.type = TAT_NONE;
-	ServerActiveObject *attached = NULL;
+	ServerActiveObject *attached = nullptr;
 	std::string texture;
 	std::string playername;
 	u8 glow = 0;

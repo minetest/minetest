@@ -35,7 +35,7 @@ GUIEditBoxWithScrollBar::GUIEditBoxWithScrollBar(const wchar_t* text, bool borde
 	m_word_wrap(false), m_multiline(false), m_autoscroll(true), m_passwordbox(false),
 	m_passwordchar(L'*'), m_halign(EGUIA_UPPERLEFT), m_valign(EGUIA_CENTER),
 	m_current_text_rect(0, 0, 1, 1), m_frame_rect(rectangle),
-	m_scrollbar_width(0), m_vscrollbar(NULL), m_writable(writable),
+	m_scrollbar_width(0), m_vscrollbar(nullptr), m_writable(writable),
 	m_bg_color_used(false)
 {
 #ifdef _DEBUG

@@ -73,7 +73,7 @@ video::ITexture *MenuTextureSource::getTexture(const std::string &name, u32 *id)
 	if(id)
 		*id = 0;
 	if(name.empty())
-		return NULL;
+		return nullptr;
 	m_to_delete.insert(name);
 
 #ifdef __ANDROID__
@@ -126,7 +126,7 @@ GUIEngine::GUIEngine(JoystickController *joystick,
 {
 	//initialize texture pointers
 	for (image_definition &texture : m_textures) {
-		texture.texture = NULL;
+		texture.texture = nullptr;
 	}
 	// is deleted by guiformspec!
 	m_buttonhandler = new TextDestGuiEngine(this);
@@ -161,7 +161,7 @@ GUIEngine::GUIEngine(JoystickController *joystick,
 			m_parent,
 			-1,
 			m_menumanager,
-			NULL /* &client */,
+			nullptr /* &client */,
 			m_texture_source,
 			m_formspecgui,
 			m_buttonhandler,
@@ -193,7 +193,7 @@ GUIEngine::GUIEngine(JoystickController *joystick,
 
 	m_menu->quitMenu();
 	m_menu->drop();
-	m_menu = NULL;
+	m_menu = nullptr;
 }
 
 /******************************************************************************/
@@ -289,7 +289,7 @@ GUIEngine::~GUIEngine()
 {
 	if (m_sound_manager != &dummySoundManager){
 		delete m_sound_manager;
-		m_sound_manager = NULL;
+		m_sound_manager = nullptr;
 	}
 
 	infostream<<"GUIEngine: Deinitializing scripting"<<std::endl;
@@ -374,7 +374,7 @@ void GUIEngine::drawBackground(video::IVideoDriver *driver)
 	if(!texture){
 		video::SColor color(255,80,58,37);
 		core::rect<s32> rect(0, 0, screensize.X, screensize.Y);
-		driver->draw2DRectangle(color, rect, NULL);
+		driver->draw2DRectangle(color, rect, nullptr);
 		return;
 	}
 
@@ -392,7 +392,7 @@ void GUIEngine::drawBackground(video::IVideoDriver *driver)
 				draw2DImageFilterScaled(driver, texture,
 					core::rect<s32>(x, y, x+tilesize.X, y+tilesize.Y),
 					core::rect<s32>(0, 0, sourcesize.X, sourcesize.Y),
-					NULL, NULL, true);
+					nullptr, nullptr, true);
 			}
 		}
 		return;
@@ -402,7 +402,7 @@ void GUIEngine::drawBackground(video::IVideoDriver *driver)
 	draw2DImageFilterScaled(driver, texture,
 		core::rect<s32>(0, 0, screensize.X, screensize.Y),
 		core::rect<s32>(0, 0, sourcesize.X, sourcesize.Y),
-		NULL, NULL, true);
+		nullptr, nullptr, true);
 }
 
 /******************************************************************************/
@@ -421,7 +421,7 @@ void GUIEngine::drawOverlay(video::IVideoDriver *driver)
 	draw2DImageFilterScaled(driver, texture,
 		core::rect<s32>(0, 0, screensize.X, screensize.Y),
 		core::rect<s32>(0, 0, sourcesize.X, sourcesize.Y),
-		NULL, NULL, true);
+		nullptr, nullptr, true);
 }
 
 /******************************************************************************/
@@ -454,7 +454,7 @@ void GUIEngine::drawHeader(video::IVideoDriver *driver)
 	draw2DImageFilterScaled(driver, texture, splashrect,
 		core::rect<s32>(core::position2d<s32>(0,0),
 		core::dimension2di(texture->getOriginalSize())),
-		NULL, NULL, true);
+		nullptr, nullptr, true);
 	}
 }
 
@@ -486,7 +486,7 @@ void GUIEngine::drawFooter(video::IVideoDriver *driver)
 		draw2DImageFilterScaled(driver, texture, rect,
 			core::rect<s32>(core::position2d<s32>(0,0),
 			core::dimension2di(texture->getOriginalSize())),
-			NULL, NULL, true);
+			nullptr, nullptr, true);
 	}
 }
 
@@ -498,7 +498,7 @@ bool GUIEngine::setTexture(texture_layer layer, std::string texturepath,
 
 	if (m_textures[layer].texture) {
 		driver->removeTexture(m_textures[layer].texture);
-		m_textures[layer].texture = NULL;
+		m_textures[layer].texture = nullptr;
 	}
 
 	if (texturepath.empty() || !fs::PathExists(texturepath)) {

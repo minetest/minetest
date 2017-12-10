@@ -91,7 +91,7 @@ Client::Client(
 	m_con(new con::Connection(PROTOCOL_ID, 512, CONNECTION_TIMEOUT, ipv6, this)),
 	m_address_name(address_name),
 	m_server_ser_ver(SER_FMT_VER_INVALID),
-	m_last_chat_message_sent(time(NULL)),
+	m_last_chat_message_sent(time(nullptr)),
 	m_password(password),
 	m_chosen_auth_mech(AUTH_MECHANISM_NONE),
 	m_media_downloader(new ClientMediaDownloader()),
@@ -216,7 +216,7 @@ const std::vector<ModSpec>& Client::getMods() const
 
 const ModSpec* Client::getModSpec(const std::string &modname) const
 {
-	return NULL;
+	return nullptr;
 }
 
 void Client::Stop()
@@ -323,7 +323,7 @@ void Client::step(float dtime)
 			counter = 2.0;
 
 			LocalPlayer *myplayer = m_env.getLocalPlayer();
-			FATAL_ERROR_IF(myplayer == NULL, "Local player not found in environment.");
+			FATAL_ERROR_IF(myplayer == nullptr, "Local player not found in environment.");
 
 			sendInit(myplayer->getName());
 		}
@@ -454,7 +454,7 @@ void Client::step(float dtime)
 		{
 			num_processed_meshes++;
 
-			MinimapMapblock *minimap_mapblock = NULL;
+			MinimapMapblock *minimap_mapblock = nullptr;
 			bool do_mapper_update = true;
 
 			MeshUpdateResult r = m_mesh_update_thread.m_queue_out.pop_frontNoEx();
@@ -466,7 +466,7 @@ void Client::step(float dtime)
 
 				if (r.mesh) {
 					minimap_mapblock = r.mesh->moveMinimapMapblock();
-					if (minimap_mapblock == NULL)
+					if (minimap_mapblock == nullptr)
 						do_mapper_update = false;
 
 					bool is_empty = true;
@@ -508,7 +508,7 @@ void Client::step(float dtime)
 		m_media_downloader->step(this);
 		if (m_media_downloader->isDone()) {
 			delete m_media_downloader;
-			m_media_downloader = NULL;
+			m_media_downloader = nullptr;
 		}
 	}
 
@@ -607,7 +607,7 @@ bool Client::loadMedia(const std::string &data, const std::string &filename)
 	const char *image_ext[] = {
 		".png", ".jpg", ".bmp", ".tga",
 		".pcx", ".ppm", ".psd", ".wal", ".rgb",
-		NULL
+		nullptr
 	};
 	name = removeStringEnd(filename, image_ext);
 	if (!name.empty()) {
@@ -641,7 +641,7 @@ bool Client::loadMedia(const std::string &data, const std::string &filename)
 	const char *sound_ext[] = {
 		".0.ogg", ".1.ogg", ".2.ogg", ".3.ogg", ".4.ogg",
 		".5.ogg", ".6.ogg", ".7.ogg", ".8.ogg", ".9.ogg",
-		".ogg", NULL
+		".ogg", nullptr
 	};
 	name = removeStringEnd(filename, sound_ext);
 	if (!name.empty()) {
@@ -653,7 +653,7 @@ bool Client::loadMedia(const std::string &data, const std::string &filename)
 
 	const char *model_ext[] = {
 		".x", ".b3d", ".md2", ".obj",
-		NULL
+		nullptr
 	};
 
 	name = removeStringEnd(filename, model_ext);
@@ -668,7 +668,7 @@ bool Client::loadMedia(const std::string &data, const std::string &filename)
 	}
 
 	const char *translate_ext[] = {
-		".tr", NULL
+		".tr", nullptr
 	};
 	name = removeStringEnd(filename, translate_ext);
 	if (!name.empty()) {
@@ -891,7 +891,7 @@ void Client::interact(u8 action, const PointedThing& pointed)
 	}
 
 	LocalPlayer *myplayer = m_env.getLocalPlayer();
-	if (myplayer == NULL)
+	if (myplayer == nullptr)
 		return;
 
 	/*
@@ -936,7 +936,7 @@ void Client::deleteAuthData()
 		case AUTH_MECHANISM_SRP:
 		case AUTH_MECHANISM_LEGACY_PASSWORD:
 			srp_user_delete((SRPUser *) m_auth_data);
-			m_auth_data = NULL;
+			m_auth_data = nullptr;
 			break;
 		case AUTH_MECHANISM_NONE:
 			break;
@@ -1004,11 +1004,11 @@ void Client::startAuth(AuthMechanism chosen_auth_mechanism)
 			m_auth_data = srp_user_new(SRP_SHA256, SRP_NG_2048,
 				getPlayerName().c_str(), playername_u.c_str(),
 				(const unsigned char *) m_password.c_str(),
-				m_password.length(), NULL, NULL);
+				m_password.length(), nullptr, nullptr);
 			char *bytes_A = 0;
 			size_t len_A = 0;
 			SRP_Result res = srp_user_start_authentication(
-				(struct SRPUser *) m_auth_data, NULL, NULL, 0,
+				(struct SRPUser *) m_auth_data, nullptr, nullptr, 0,
 				(unsigned char **) &bytes_A, &len_A);
 			FATAL_ERROR_IF(res != SRP_OK, "Creating local SRP user failed.");
 
@@ -1116,7 +1116,7 @@ void Client::sendInventoryAction(InventoryAction *a)
 
 bool Client::canSendChatMessage() const
 {
-	u32 now = time(NULL);
+	u32 now = time(nullptr);
 	float time_passed = now - m_last_chat_message_sent;
 
 	float virt_chat_message_allowance = m_chat_message_allowance + time_passed *
@@ -1132,9 +1132,9 @@ void Client::sendChatMessage(const std::wstring &message)
 {
 	const s16 max_queue_size = g_settings->getS16("max_out_chat_queue_size");
 	if (canSendChatMessage()) {
-		u32 now = time(NULL);
+		u32 now = time(nullptr);
 		float time_passed = now - m_last_chat_message_sent;
-		m_last_chat_message_sent = time(NULL);
+		m_last_chat_message_sent = time(nullptr);
 
 		m_chat_message_allowance += time_passed * (CLIENT_CHAT_MESSAGE_LIMIT_PER_10S / 8.0f);
 		if (m_chat_message_allowance > CLIENT_CHAT_MESSAGE_LIMIT_PER_10S)
@@ -1164,7 +1164,7 @@ void Client::sendChangePassword(const std::string &oldpassword,
         const std::string &newpassword)
 {
 	LocalPlayer *player = m_env.getLocalPlayer();
-	if (player == NULL)
+	if (player == nullptr)
 		return;
 
 	// get into sudo mode and then send new password to server
@@ -1349,7 +1349,7 @@ Inventory* Client::getInventory(const InventoryLocation &loc)
 		// Check if we are working with local player inventory
 		LocalPlayer *player = m_env.getLocalPlayer();
 		if (!player || strcmp(player->getName(), loc.name.c_str()) != 0)
-			return NULL;
+			return nullptr;
 		return &player->inventory;
 	}
 	break;
@@ -1357,14 +1357,14 @@ Inventory* Client::getInventory(const InventoryLocation &loc)
 	{
 		NodeMetadata *meta = m_env.getMap().getNodeMetadata(loc.p);
 		if(!meta)
-			return NULL;
+			return nullptr;
 		return meta->getInventory();
 	}
 	break;
 	case InventoryLocation::DETACHED:
 	{
 		if (m_detached_inventories.count(loc.name) == 0)
-			return NULL;
+			return nullptr;
 		return m_detached_inventories[loc.name];
 	}
 	break;
@@ -1372,7 +1372,7 @@ Inventory* Client::getInventory(const InventoryLocation &loc)
 		FATAL_ERROR("Invalid inventory location type.");
 		break;
 	}
-	return NULL;
+	return nullptr;
 }
 
 void Client::inventoryAction(InventoryAction *a)
@@ -1496,7 +1496,7 @@ void Client::addUpdateMeshTask(v3s16 p, bool ack_to_server, bool urgent)
 	// neighbor is automatically added, it may not. In that case we don't want
 	// to tell the mesh update thread about it.
 	MapBlock *b = m_env.getMap().getBlockNoCreateNoEx(p);
-	if (b == NULL)
+	if (b == nullptr)
 		return;
 
 	m_mesh_update_thread.updateBlock(&m_env.getMap(), p, ack_to_server, urgent);
@@ -1709,7 +1709,7 @@ void Client::makeScreenshot()
 	if (!raw_image)
 		return;
 
-	time_t t = time(NULL);
+	time_t t = time(nullptr);
 	struct tm *tm = localtime(&t);
 
 	char timetstamp_c[64];
@@ -1813,7 +1813,7 @@ INodeDefManager* Client::getNodeDefManager()
 }
 ICraftDefManager* Client::getCraftDefManager()
 {
-	return NULL;
+	return nullptr;
 	//return m_craftdef;
 }
 ITextureSource* Client::getTextureSource()
@@ -1853,7 +1853,7 @@ scene::IAnimatedMesh* Client::getMesh(const std::string &filename, bool cache)
 	if (it == m_mesh_data.end()) {
 		errorstream << "Client::getMesh(): Mesh not found: \"" << filename
 			<< "\"" << std::endl;
-		return NULL;
+		return nullptr;
 	}
 	const std::string &data    = it->second;
 
@@ -1878,7 +1878,7 @@ const std::string* Client::getModFile(const std::string &filename)
 	if (it == m_mod_files.end()) {
 		errorstream << "Client::getModFile(): File not found: \"" << filename
 			<< "\"" << std::endl;
-		return NULL;
+		return nullptr;
 	}
 	return &it->second;
 }

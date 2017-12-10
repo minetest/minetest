@@ -167,7 +167,7 @@ void ScriptApiBase::loadModFromMemory(const std::string &mod_name)
 
 	const std::string *init_filename = getClient()->getModFile(mod_name + ":init.lua");
 	const std::string display_filename = mod_name + ":init.lua";
-	if(init_filename == NULL)
+	if(init_filename == nullptr)
 		throw ModError("Mod:\"" + mod_name + "\" lacks init.lua");
 
 	verbosestream << "Loading and running script " << display_filename << std::endl;
@@ -339,7 +339,7 @@ void ScriptApiBase::removeObjectReference(ServerActiveObject *cobj)
 void ScriptApiBase::objectrefGetOrCreate(lua_State *L,
 		ServerActiveObject *cobj)
 {
-	if (cobj == NULL || cobj->getId() == 0) {
+	if (cobj == nullptr || cobj->getId() == 0) {
 		ObjectRef::create(L, cobj);
 	} else {
 		push_objectRef(L, cobj->getId());

@@ -327,7 +327,7 @@ bool UDPSocket::WaitData(int timeout_ms)
 	tv.tv_usec = timeout_ms * 1000;
 
 	// select()
-	result = select(m_handle + 1, &readset, NULL, NULL, &tv);
+	result = select(m_handle + 1, &readset, nullptr, nullptr, &tv);
 
 	if (result == 0)
 		return false;

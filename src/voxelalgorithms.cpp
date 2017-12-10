@@ -186,7 +186,7 @@ struct ChangingLight {
 	//! Position of the node's block.
 	mapblock_v3 block_position;
 	//! Pointer to the node's block.
-	MapBlock *block = NULL;
+	MapBlock *block = nullptr;
 	/*!
 	 * Direction from the node that caused this node's changing
 	 * to this node.
@@ -416,7 +416,7 @@ void unspread_light(Map *map, INodeDefManager *nodemgr, LightBank bank,
 			MapBlock *neighbor_block;
 			if (step_rel_block_pos(i, neighbor_rel_pos, neighbor_block_pos)) {
 				neighbor_block = map->getBlockNoCreateNoEx(neighbor_block_pos);
-				if (neighbor_block == NULL) {
+				if (neighbor_block == nullptr) {
 					current.block->setLightingComplete(bank, i, false);
 					continue;
 				}
@@ -506,7 +506,7 @@ void spread_light(Map *map, INodeDefManager *nodemgr, LightBank bank,
 			MapBlock *neighbor_block;
 			if (step_rel_block_pos(i, neighbor_rel_pos, neighbor_block_pos)) {
 				neighbor_block = map->getBlockNoCreateNoEx(neighbor_block_pos);
-				if (neighbor_block == NULL) {
+				if (neighbor_block == nullptr) {
 					current.block->setLightingComplete(bank, i, false);
 					continue;
 				}
@@ -566,10 +566,10 @@ bool is_sunlight_above(Map *map, v3s16 pos, INodeDefManager *ndef)
 		source_rel_pos);
 	// If the node above has sunlight, this node also can get it.
 	MapBlock *source_block = map->getBlockNoCreateNoEx(source_block_pos);
-	if (source_block == NULL) {
+	if (source_block == nullptr) {
 		// But if there is no node above, then use heuristics
 		MapBlock *node_block = map->getBlockNoCreateNoEx(getNodeBlockPos(pos));
-		if (node_block == NULL) {
+		if (node_block == nullptr) {
 			sunlight = false;
 		} else {
 			sunlight = !node_block->getIsUnderground();
@@ -633,7 +633,7 @@ void update_lighting_nodes(Map *map,
 			mapblock_v3 block_pos;
 			getNodeBlockPosWithOffset(p, block_pos, rel_pos);
 			MapBlock *block = map->getBlockNoCreateNoEx(block_pos);
-			if (block == NULL || block->isDummy()) {
+			if (block == nullptr || block->isDummy()) {
 				continue;
 			}
 			// Get the new node
@@ -834,7 +834,7 @@ void update_block_border_lighting(Map *map, MapBlock *block,
 			// Get neighbor block
 			v3s16 otherpos = block->getPos() + neighbor_dirs[d];
 			MapBlock *other = map->getBlockNoCreateNoEx(otherpos);
-			if (other == NULL) {
+			if (other == nullptr) {
 				continue;
 			}
 			// Only update if lighting was not completed.
@@ -967,12 +967,12 @@ void is_sunlight_above_block(ServerMap *map, mapblock_v3 pos,
 	// sunlight may be even slower.
 	MapBlock *source_block = map->emergeBlock(source_block_pos, false);
 	// Trust only generated blocks.
-	if (source_block == NULL || source_block->isDummy()
+	if (source_block == nullptr || source_block->isDummy()
 			|| !source_block->isGenerated()) {
 		// But if there is no block above, then use heuristics
 		bool sunlight = true;
 		MapBlock *node_block = map->getBlockNoCreateNoEx(pos);
-		if (node_block == NULL)
+		if (node_block == nullptr)
 			// This should not happen.
 			sunlight = false;
 		else
@@ -1010,7 +1010,7 @@ bool propagate_block_sunlight(Map *map, INodeDefManager *ndef,
 	bool modified = false;
 	// Get the block.
 	MapBlock *block = map->getBlockNoCreateNoEx(data->target_block);
-	if (block == NULL || block->isDummy()) {
+	if (block == nullptr || block->isDummy()) {
 		// The work is done if the block does not contain data.
 		data->data.clear();
 		return false;

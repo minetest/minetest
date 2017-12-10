@@ -97,7 +97,7 @@ ItemDefinition::~ItemDefinition()
 void ItemDefinition::resetInitial()
 {
 	// Initialize pointers to NULL so reset() does not delete undefined pointers
-	tool_capabilities = NULL;
+	tool_capabilities = nullptr;
 	reset();
 }
 
@@ -117,7 +117,7 @@ void ItemDefinition::reset()
 	usable = false;
 	liquids_pointable = false;
 	delete tool_capabilities;
-	tool_capabilities = NULL;
+	tool_capabilities = nullptr;
 	groups.clear();
 	sound_place = SimpleSoundSpec();
 	sound_place_failed = SimpleSoundSpec();
@@ -239,8 +239,8 @@ class CItemDefManager: public IWritableItemDefManager
 		Palette *palette;
 
 		ClientCached():
-			inventory_texture(NULL),
-			palette(NULL)
+			inventory_texture(nullptr),
+			palette(nullptr)
 		{}
 	};
 #endif
@@ -320,7 +320,7 @@ public:
 		sanity_check(std::this_thread::get_id() == m_main_thread);
 
 		// Skip if already in cache
-		ClientCached *cc = NULL;
+		ClientCached *cc = nullptr;
 		m_clientcached.get(name, &cc);
 		if(cc)
 			return cc;
@@ -332,7 +332,7 @@ public:
 		cc = new ClientCached();
 
 		// Create an inventory texture
-		cc->inventory_texture = NULL;
+		cc->inventory_texture = nullptr;
 		if (!def.inventory_image.empty())
 			cc->inventory_texture = tsrc->getTexture(def.inventory_image);
 
@@ -351,7 +351,7 @@ public:
 	ClientCached* getClientCached(const std::string &name,
 			Client *client) const
 	{
-		ClientCached *cc = NULL;
+		ClientCached *cc = nullptr;
 		m_clientcached.get(name, &cc);
 		if (cc)
 			return cc;
@@ -387,7 +387,7 @@ public:
 	{
 		ClientCached *cc = getClientCached(name, client);
 		if(!cc)
-			return NULL;
+			return nullptr;
 		return cc->inventory_texture;
 	}
 	// Get item wield mesh
@@ -396,7 +396,7 @@ public:
 	{
 		ClientCached *cc = getClientCached(name, client);
 		if(!cc)
-			return NULL;
+			return nullptr;
 		return &(cc->wield_mesh);
 	}
 
@@ -406,7 +406,7 @@ public:
 	{
 		ClientCached *cc = getClientCached(name, client);
 		if(!cc)
-			return NULL;
+			return nullptr;
 		return cc->palette;
 	}
 

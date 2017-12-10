@@ -55,7 +55,7 @@ void SchematicManager::clear()
 		try {
 			DecoSchematic *dschem = dynamic_cast<DecoSchematic *>(deco);
 			if (dschem)
-				dschem->schematic = NULL;
+				dschem->schematic = nullptr;
 		} catch (const std::bad_cast &) {
 		}
 	}
@@ -93,7 +93,7 @@ void Schematic::resolveNodeNames()
 
 void Schematic::blitToVManip(MMVManip *vm, v3s16 p, Rotation rot, bool force_place)
 {
-	sanity_check(m_ndef != NULL);
+	sanity_check(m_ndef != nullptr);
 
 	int xstride = 1;
 	int ystride = size.X;
@@ -175,9 +175,9 @@ void Schematic::blitToVManip(MMVManip *vm, v3s16 p, Rotation rot, bool force_pla
 bool Schematic::placeOnVManip(MMVManip *vm, v3s16 p, u32 flags,
 	Rotation rot, bool force_place)
 {
-	assert(vm != NULL);
-	assert(schemdata != NULL);
-	sanity_check(m_ndef != NULL);
+	assert(vm != nullptr);
+	assert(schemdata != nullptr);
+	sanity_check(m_ndef != nullptr);
 
 	//// Determine effective rotation and effective schematic dimensions
 	if (rot == ROTATE_RAND)
@@ -206,9 +206,9 @@ void Schematic::placeOnMap(ServerMap *map, v3s16 p, u32 flags,
 	std::map<v3s16, MapBlock *> modified_blocks;
 	std::map<v3s16, MapBlock *>::iterator it;
 
-	assert(map != NULL);
-	assert(schemdata != NULL);
-	sanity_check(m_ndef != NULL);
+	assert(map != nullptr);
+	assert(schemdata != nullptr);
+	sanity_check(m_ndef != nullptr);
 
 	//// Determine effective rotation and effective schematic dimensions
 	if (rot == ROTATE_RAND)
@@ -467,7 +467,7 @@ bool Schematic::saveSchematicToFile(const std::string &filename,
 	std::vector<std::string> ndef_nodenames;
 	std::vector<std::string> *names;
 
-	if (m_resolve_done && ndef == NULL)
+	if (m_resolve_done && ndef == nullptr)
 		ndef = m_ndef;
 
 	if (ndef) {

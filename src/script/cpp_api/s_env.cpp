@@ -64,7 +64,7 @@ void ScriptApiEnv::player_event(ServerActiveObject *player, const std::string &t
 {
 	SCRIPTAPI_PRECHECKHEADER
 
-	if (player == NULL)
+	if (player == nullptr)
 		return;
 
 	// Get minetest.registered_playerevents

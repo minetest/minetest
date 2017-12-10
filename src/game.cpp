@@ -748,7 +748,7 @@ class GameGlobalShaderConstantSetterFactory : public IShaderConstantSetterFactor
 public:
 	GameGlobalShaderConstantSetterFactory(bool *force_fog_off,
 			f32 *fog_range, Client *client) :
-		m_sky(NULL),
+		m_sky(nullptr),
 		m_force_fog_off(force_fog_off),
 		m_fog_range(fog_range),
 		m_client(client)
@@ -1026,7 +1026,7 @@ struct KeyCache {
 
 	KeyCache()
 	{
-		handler = NULL;
+		handler = nullptr;
 		populate();
 		populate_nonchanging();
 	}
@@ -1261,7 +1261,7 @@ protected:
 
 	void dropSelectedItem(bool single_item = false);
 	void openInventory();
-	void openConsole(float scale, const wchar_t *line=NULL);
+	void openConsole(float scale, const wchar_t *line=nullptr);
 	void toggleFreeMove();
 	void toggleFreeMoveAlt();
 	void toggleFast();
@@ -1496,27 +1496,27 @@ private:
 };
 
 Game::Game() :
-	client(NULL),
-	server(NULL),
-	texture_src(NULL),
-	shader_src(NULL),
-	itemdef_manager(NULL),
-	nodedef_manager(NULL),
-	sound(NULL),
-	soundmaker(NULL),
-	chat_backend(NULL),
-	current_formspec(NULL),
+	client(nullptr),
+	server(nullptr),
+	texture_src(nullptr),
+	shader_src(nullptr),
+	itemdef_manager(nullptr),
+	nodedef_manager(nullptr),
+	sound(nullptr),
+	soundmaker(nullptr),
+	chat_backend(nullptr),
+	current_formspec(nullptr),
 	cur_formname(""),
-	eventmgr(NULL),
-	quicktune(NULL),
-	gui_chat_console(NULL),
-	draw_control(NULL),
-	camera(NULL),
-	clouds(NULL),
-	sky(NULL),
-	local_inventory(NULL),
-	hud(NULL),
-	mapper(NULL)
+	eventmgr(nullptr),
+	quicktune(nullptr),
+	gui_chat_console(nullptr),
+	draw_control(nullptr),
+	camera(nullptr),
+	clouds(nullptr),
+	sky(nullptr),
+	local_inventory(nullptr),
+	hud(nullptr),
+	mapper(nullptr)
 {
 	g_settings->registerChangedCallback("doubletap_jump",
 		&settingChangedCallback, this);
@@ -1781,7 +1781,7 @@ void Game::shutdown()
 
 	if (current_formspec) {
 		current_formspec->drop();
-		current_formspec = NULL;
+		current_formspec = nullptr;
 	}
 
 	chat_backend->addMessage(L"", L"# Disconnected.");
@@ -1790,8 +1790,8 @@ void Game::shutdown()
 	if (client) {
 		client->Stop();
 		while (!client->isShutdown()) {
-			assert(texture_src != NULL);
-			assert(shader_src != NULL);
+			assert(texture_src != nullptr);
+			assert(shader_src != nullptr);
 			texture_src->processQueue();
 			shader_src->processQueue();
 			sleep_ms(100);
@@ -1876,7 +1876,7 @@ bool Game::createSingleplayerServer(const std::string &map_dir,
 	Address bind_addr(0, 0, 0, 0, port);
 
 	if (g_settings->getBool("ipv6_server")) {
-		bind_addr.setAddress((IPv6AddressBytes *) NULL);
+		bind_addr.setAddress((IPv6AddressBytes *) nullptr);
 	}
 
 	try {
@@ -1963,7 +1963,7 @@ bool Game::createClient(const std::string &playername,
 	 */
 	sky = new Sky(-1, texture_src);
 	scsf->setSky(sky);
-	skybox = NULL;	// This is used/set later on in the main run loop
+	skybox = nullptr;	// This is used/set later on in the main run loop
 
 	local_inventory = new Inventory(itemdef_manager);
 
@@ -2162,7 +2162,7 @@ bool Game::connectToServer(const std::string &playername,
 			// Update client and server
 			client->step(dtime);
 
-			if (server != NULL)
+			if (server != nullptr)
 				server->step(dtime);
 
 			// End condition
@@ -2222,7 +2222,7 @@ bool Game::getServerContent(bool *aborted)
 		// Update client and server
 		client->step(dtime);
 
-		if (server != NULL)
+		if (server != nullptr)
 			server->step(dtime);
 
 		// End condition
@@ -2493,7 +2493,7 @@ void Game::processUserInput(f32 dtime)
 	input->step(dtime);
 
 #ifdef __ANDROID__
-	if (current_formspec != NULL)
+	if (current_formspec != nullptr)
 		current_formspec->getAndroidUIInput();
 	else
 		handleAndroidChatInput();
@@ -3166,7 +3166,7 @@ inline void Game::step(f32 *dtime)
 	if (can_be_and_is_paused) {	// This is for a singleplayer server
 		*dtime = 0;             // No time passes
 	} else {
-		if (server != NULL) {
+		if (server != nullptr) {
 			//TimeTaker timer("server->step(dtime)");
 			server->step(*dtime);
 		}
@@ -3287,7 +3287,7 @@ void Game::handleClientEvent_HudAdd(ClientEvent *event, CameraOrientation *cam)
 
 	HudElement *e = player->getHud(id);
 
-	if (e != NULL) {
+	if (e != nullptr) {
 		delete event->hudadd.pos;
 		delete event->hudadd.name;
 		delete event->hudadd.scale;
@@ -3341,7 +3341,7 @@ void Game::handleClientEvent_HudChange(ClientEvent *event, CameraOrientation *ca
 	u32 id = event->hudchange.id;
 	HudElement *e = player->getHud(id);
 
-	if (e == NULL) {
+	if (e == nullptr) {
 		delete event->hudchange.v3fdata;
 		delete event->hudchange.v2fdata;
 		delete event->hudchange.sdata;
@@ -3409,7 +3409,7 @@ void Game::handleClientEvent_SetSky(ClientEvent *event, CameraOrientation *cam)
 
 	if (skybox) {
 		skybox->remove();
-		skybox = NULL;
+		skybox = nullptr;
 	}
 
 	// Handle according to type
@@ -3767,7 +3767,7 @@ PointedThing Game::updatePointedThing(
 	ClientMap &map = env.getClientMap();
 	INodeDefManager *nodedef = map.getNodeDefManager();
 
-	runData.selected_object = NULL;
+	runData.selected_object = nullptr;
 
 	RaycastState s(shootline, look_for_object, liquids_pointable);
 	PointedThing result;
@@ -4337,7 +4337,7 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 	if (current_formspec) {
 		if (current_formspec->getReferenceCount() == 1) {
 			current_formspec->drop();
-			current_formspec = NULL;
+			current_formspec = nullptr;
 		} else if (isMenuActive()) {
 			guiroot->bringToFront(current_formspec);
 		}
@@ -4379,7 +4379,7 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 		video::SColor color(runData.damage_flash, 180, 0, 0);
 		driver->draw2DRectangle(color,
 					core::rect<s32>(0, 0, screensize.X, screensize.Y),
-					NULL);
+					nullptr);
 
 		runData.damage_flash -= 100.0 * dtime;
 	}

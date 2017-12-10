@@ -191,7 +191,7 @@ public:
 	virtual void OnSetConstants(video::IMaterialRendererServices *services, s32 userData)
 	{
 		video::IVideoDriver *driver = services->getVideoDriver();
-		sanity_check(driver != NULL);
+		sanity_check(driver != nullptr);
 
 		bool is_highlevel = userData;
 

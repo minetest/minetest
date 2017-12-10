@@ -71,7 +71,7 @@ video::ITexture *guiScalingResizeCached(video::IVideoDriver *driver,
 		video::ITexture *src, const core::rect<s32> &srcrect,
 		const core::rect<s32> &destrect)
 {
-	if (src == NULL)
+	if (src == nullptr)
 		return src;
 	if (!g_settings->getBool("gui_scaling_filter"))
 		return src;
@@ -96,7 +96,7 @@ video::ITexture *guiScalingResizeCached(video::IVideoDriver *driver,
 	// Try to find the texture converted to an image in the cache.
 	// If the image was not found, try to extract it from the texture.
 	video::IImage* srcimg = g_imgCache[origname];
-	if (srcimg == NULL) {
+	if (srcimg == nullptr) {
 		if (!g_settings->getBool("gui_scaling_filter_txr2img"))
 			return src;
 		srcimg = driver->createImageFromData(src->getColorFormat(),
@@ -126,7 +126,7 @@ video::ITexture *guiScalingResizeCached(video::IVideoDriver *driver,
 #endif
 
 	// Convert the scaled image back into a texture.
-	scaled = driver->addTexture(scalename, destimg, NULL);
+	scaled = driver->addTexture(scalename, destimg, nullptr);
 	destimg->drop();
 	g_txrCache[scalename] = scaled;
 
@@ -139,7 +139,7 @@ video::ITexture *guiScalingResizeCached(video::IVideoDriver *driver,
 video::ITexture *guiScalingImageButton(video::IVideoDriver *driver,
 		video::ITexture *src, s32 width, s32 height)
 {
-	if (src == NULL)
+	if (src == nullptr)
 		return src;
 	return guiScalingResizeCached(driver, src,
 		core::rect<s32>(0, 0, src->getSize().Width, src->getSize().Height),
@@ -156,7 +156,7 @@ void draw2DImageFilterScaled(video::IVideoDriver *driver, video::ITexture *txr,
 {
 	// Attempt to pre-scale image in software in high quality.
 	video::ITexture *scaled = guiScalingResizeCached(driver, txr, srcrect, destrect);
-	if (scaled == NULL)
+	if (scaled == nullptr)
 		return;
 
 	// Correct source rect based on scaled image.

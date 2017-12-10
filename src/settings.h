@@ -61,7 +61,7 @@ enum SettingsParseEvent {
 };
 
 struct ValueSpec {
-	ValueSpec(ValueType a_type, const char *a_help=NULL)
+	ValueSpec(ValueType a_type, const char *a_help=nullptr)
 	{
 		type = a_type;
 		help = a_help;
@@ -120,7 +120,7 @@ public:
 
 	static bool checkNameValid(const std::string &name);
 	static bool checkValueValid(const std::string &value);
-	static std::string getMultiline(std::istream &is, size_t *num_lines=NULL);
+	static std::string getMultiline(std::istream &is, size_t *num_lines=nullptr);
 	static void printEntry(std::ostream &os, const std::string &name,
 		const SettingsEntry &entry, u32 tab_depth=0);
 
@@ -216,9 +216,9 @@ public:
 	void update(const Settings &other);
 
 	void registerChangedCallback(const std::string &name,
-		SettingsChangedCallback cbf, void *userdata = NULL);
+		SettingsChangedCallback cbf, void *userdata = nullptr);
 	void deregisterChangedCallback(const std::string &name,
-		SettingsChangedCallback cbf, void *userdata = NULL);
+		SettingsChangedCallback cbf, void *userdata = nullptr);
 
 private:
 	void updateNoLock(const Settings &other);

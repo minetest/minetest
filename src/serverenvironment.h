@@ -336,7 +336,7 @@ public:
 	 * \param p output, position of the first non-air node
 	 * the line intersects
 	 */
-	bool line_of_sight(v3f pos1, v3f pos2, v3s16 *p = NULL);
+	bool line_of_sight(v3f pos1, v3f pos2, v3s16 *p = nullptr);
 
 	u32 getGameTime() const { return m_game_time; }
 

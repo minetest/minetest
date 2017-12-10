@@ -114,7 +114,7 @@ std::string TestMapSettingsManager::makeMetaFile(bool make_corrupt)
 		"mgv5_np_height = 20, 10, (250, 250, 250), 84174,  4, 0.5,  1.0\n";
 
 	FILE *f = fopen(metafile.c_str(), "wb");
-	UASSERT(f != NULL);
+	UASSERT(f != nullptr);
 
 	fputs(metafile_contents, f);
 	if (!make_corrupt)

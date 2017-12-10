@@ -114,7 +114,7 @@ scene::SMesh* cloneMesh(scene::IMesh *src_mesh);
 	expand - factor by which cuboids will be resized
 */
 scene::IMesh* convertNodeboxesToMesh(const std::vector<aabb3f> &boxes,
-		const f32 *uv_coords = NULL, float expand = 0);
+		const f32 *uv_coords = nullptr, float expand = 0);
 
 /*
 	Update bounding box for a mesh.

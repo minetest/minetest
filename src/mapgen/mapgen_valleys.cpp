@@ -55,7 +55,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 static FlagDesc flagdesc_mapgen_valleys[] = {
 	{"altitude_chill", MGVALLEYS_ALT_CHILL},
 	{"humid_rivers",   MGVALLEYS_HUMID_RIVERS},
-	{NULL,             0}
+	{nullptr,             0}
 };
 
 ///////////////////////////////////////////////////////////////////////////////

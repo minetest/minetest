@@ -102,7 +102,7 @@ void TestThreading::testStartStopWait()
 
 		// Now that the thread is stopped, we should be able to get the
 		// return value, and it should be the object itself.
-		thread_retval = NULL;
+		thread_retval = nullptr;
 		UASSERT(thread->getReturnValue(&thread_retval) == true);
 		UASSERT(thread_retval == thread);
 	}
@@ -150,7 +150,7 @@ private:
 		trigger.wait();
 		for (u32 i = 0; i < 0x10000; ++i)
 			++val;
-		return NULL;
+		return nullptr;
 	}
 
 	std::atomic<u32> &val;

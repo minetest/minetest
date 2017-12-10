@@ -88,7 +88,7 @@ int ModApiMainMenu::getBoolData(lua_State *L, std::string name,bool& valid)
 int ModApiMainMenu::l_update_formspec(lua_State *L)
 {
 	GUIEngine* engine = getGuiEngine(L);
-	sanity_check(engine != NULL);
+	sanity_check(engine != nullptr);
 
 	if (engine->m_startgame)
 		return 0;
@@ -107,7 +107,7 @@ int ModApiMainMenu::l_update_formspec(lua_State *L)
 int ModApiMainMenu::l_start(lua_State *L)
 {
 	GUIEngine* engine = getGuiEngine(L);
-	sanity_check(engine != NULL);
+	sanity_check(engine != nullptr);
 
 	//update c++ gamedata from lua table
 
@@ -136,7 +136,7 @@ int ModApiMainMenu::l_start(lua_State *L)
 int ModApiMainMenu::l_close(lua_State *L)
 {
 	GUIEngine* engine = getGuiEngine(L);
-	sanity_check(engine != NULL);
+	sanity_check(engine != nullptr);
 
 	engine->m_kill = true;
 	return 0;
@@ -146,7 +146,7 @@ int ModApiMainMenu::l_close(lua_State *L)
 int ModApiMainMenu::l_set_background(lua_State *L)
 {
 	GUIEngine* engine = getGuiEngine(L);
-	sanity_check(engine != NULL);
+	sanity_check(engine != nullptr);
 
 	std::string backgroundlevel(luaL_checkstring(L, 1));
 	std::string texturename(luaL_checkstring(L, 2));
@@ -191,7 +191,7 @@ int ModApiMainMenu::l_set_background(lua_State *L)
 int ModApiMainMenu::l_set_clouds(lua_State *L)
 {
 	GUIEngine* engine = getGuiEngine(L);
-	sanity_check(engine != NULL);
+	sanity_check(engine != nullptr);
 
 	bool value = lua_toboolean(L,1);
 
@@ -211,7 +211,7 @@ int ModApiMainMenu::l_get_textlist_index(lua_State *L)
 int ModApiMainMenu::l_get_table_index(lua_State *L)
 {
 	GUIEngine* engine = getGuiEngine(L);
-	sanity_check(engine != NULL);
+	sanity_check(engine != nullptr);
 
 	std::string tablename(luaL_checkstring(L, 1));
 	GUITable *table = engine->m_menu->getTable(tablename);
@@ -481,7 +481,7 @@ int ModApiMainMenu::l_delete_favorite(lua_State *L)
 int ModApiMainMenu::l_show_keys_menu(lua_State *L)
 {
 	GUIEngine* engine = getGuiEngine(L);
-	sanity_check(engine != NULL);
+	sanity_check(engine != nullptr);
 
 	GUIKeyChangeMenu *kmenu = new GUIKeyChangeMenu(RenderingEngine::get_gui_env(),
 								engine->m_parent,
@@ -552,7 +552,7 @@ int ModApiMainMenu::l_delete_world(lua_State *L)
 int ModApiMainMenu::l_set_topleft_text(lua_State *L)
 {
 	GUIEngine* engine = getGuiEngine(L);
-	sanity_check(engine != NULL);
+	sanity_check(engine != nullptr);
 
 	std::string text;
 
@@ -729,7 +729,7 @@ int ModApiMainMenu::l_extract_zip(lua_State *L)
 
 				FILE *targetfile = fopen(fullpath.c_str(),"wb");
 
-				if (targetfile == NULL) {
+				if (targetfile == nullptr) {
 					fs->removeFileArchive(fs->getFileArchiveCount()-1);
 					lua_pushboolean(L,false);
 					return 1;
@@ -771,7 +771,7 @@ int ModApiMainMenu::l_extract_zip(lua_State *L)
 int ModApiMainMenu::l_get_mainmenu_path(lua_State *L)
 {
 	GUIEngine* engine = getGuiEngine(L);
-	sanity_check(engine != NULL);
+	sanity_check(engine != nullptr);
 
 	lua_pushstring(L,engine->getScriptDir().c_str());
 	return 1;
@@ -803,7 +803,7 @@ bool ModApiMainMenu::isMinetestPath(std::string path)
 int ModApiMainMenu::l_show_path_select_dialog(lua_State *L)
 {
 	GUIEngine* engine = getGuiEngine(L);
-	sanity_check(engine != NULL);
+	sanity_check(engine != nullptr);
 
 	const char *formname= luaL_checkstring(L, 1);
 	const char *title	= luaL_checkstring(L, 2);
@@ -948,8 +948,8 @@ int ModApiMainMenu::l_do_async_callback(lua_State *L)
 
 	const char* serialized_param_raw = luaL_checklstring(L, 2, &param_length);
 
-	sanity_check(serialized_func_raw != NULL);
-	sanity_check(serialized_param_raw != NULL);
+	sanity_check(serialized_func_raw != nullptr);
+	sanity_check(serialized_param_raw != nullptr);
 
 	std::string serialized_func = std::string(serialized_func_raw, func_length);
 	std::string serialized_param = std::string(serialized_param_raw, param_length);

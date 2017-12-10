@@ -133,7 +133,7 @@ class GUIFormSpecMenu : public GUIModalMenu
 	struct ImageDrawSpec
 	{
 		ImageDrawSpec():
-			parent_button(NULL),
+			parent_button(nullptr),
 			clip(false)
 		{
 		}
@@ -157,7 +157,7 @@ class GUIFormSpecMenu : public GUIModalMenu
 				const v2s32 &a_pos, const v2s32 &a_geom):
 			name(a_name),
 			item_name(a_item_name),
-			parent_button(NULL),
+			parent_button(nullptr),
 			pos(a_pos),
 			geom(a_geom),
 			scale(true),
@@ -168,7 +168,7 @@ class GUIFormSpecMenu : public GUIModalMenu
 		ImageDrawSpec(const std::string &a_name,
 				const v2s32 &a_pos, const v2s32 &a_geom, bool clip=false):
 			name(a_name),
-			parent_button(NULL),
+			parent_button(nullptr),
 			pos(a_pos),
 			geom(a_geom),
 			scale(true),
@@ -179,7 +179,7 @@ class GUIFormSpecMenu : public GUIModalMenu
 		ImageDrawSpec(const std::string &a_name,
 				const v2s32 &a_pos):
 			name(a_name),
-			parent_button(NULL),
+			parent_button(nullptr),
 			pos(a_pos),
 			scale(false),
 			clip(false)
@@ -253,7 +253,7 @@ class GUIFormSpecMenu : public GUIModalMenu
 	struct StaticTextSpec
 	{
 		StaticTextSpec():
-			parent_button(NULL)
+			parent_button(nullptr)
 		{
 		}
 
@@ -261,7 +261,7 @@ class GUIFormSpecMenu : public GUIModalMenu
 				const core::rect<s32> &a_rect):
 			text(a_text),
 			rect(a_rect),
-			parent_button(NULL)
+			parent_button(nullptr)
 		{
 		}
 

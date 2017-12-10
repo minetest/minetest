@@ -37,7 +37,7 @@ Json::Value fetchJsonValue(const std::string &url,
 	fetch_request.url = url;
 	fetch_request.caller = HTTPFETCH_SYNC;
 
-	if (extra_headers != NULL)
+	if (extra_headers != nullptr)
 		fetch_request.extra_headers = *extra_headers;
 
 	httpfetch_sync(fetch_request, fetch_result);

@@ -48,7 +48,7 @@ void QuicktuneValue::relativeAdd(float amount)
 
 static std::map<std::string, QuicktuneValue> g_values;
 static std::vector<std::string> g_names;
-std::mutex *g_mutex = NULL;
+std::mutex *g_mutex = nullptr;
 
 static void makeMutex()
 {

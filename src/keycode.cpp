@@ -144,7 +144,7 @@ static const struct table_key table[] = {
 	DEFINEKEY1(KEY_ADD, N_("Numpad +"))
 	DEFINEKEY1(KEY_SEPARATOR, N_("Numpad ."))
 	DEFINEKEY1(KEY_SUBTRACT, N_("Numpad -"))
-	DEFINEKEY1(KEY_DECIMAL, NULL)
+	DEFINEKEY1(KEY_DECIMAL, nullptr)
 	DEFINEKEY1(KEY_DIVIDE, N_("Numpad /"))
 	DEFINEKEY4(1)
 	DEFINEKEY4(2)

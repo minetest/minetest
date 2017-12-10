@@ -126,7 +126,7 @@ void *TerminalChatConsole::run()
 
 	END_DEBUG_EXCEPTION_HANDLER
 
-	return NULL;
+	return nullptr;
 }
 
 void TerminalChatConsole::typeChatMessage(const std::wstring &msg)

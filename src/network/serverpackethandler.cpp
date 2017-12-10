@@ -216,7 +216,7 @@ void Server::handleCommand_Init(NetworkPacket* pkt)
 		Compose auth methods for answer
 	*/
 	std::string encpwd; // encrypted Password field for the user
-	bool has_auth = m_script->getAuth(playername, &encpwd, NULL);
+	bool has_auth = m_script->getAuth(playername, &encpwd, nullptr);
 	u32 auth_mechs = 0;
 
 	client->chosen_mech = AUTH_MECHANISM_NONE;
@@ -361,7 +361,7 @@ void Server::handleCommand_ClientReady(NetworkPacket* pkt)
 
 	PlayerSAO* playersao = StageTwoClientInit(peer_id);
 
-	if (playersao == NULL) {
+	if (playersao == nullptr) {
 		actionstream
 			<< "TOSERVER_CLIENT_READY stage 2 client init failed for peer_id: "
 			<< peer_id << std::endl;
@@ -501,7 +501,7 @@ void Server::process_PlayerPos(RemotePlayer *player, PlayerSAO *playersao,
 void Server::handleCommand_PlayerPos(NetworkPacket* pkt)
 {
 	RemotePlayer *player = m_env->getPlayer(pkt->getPeerId());
-	if (player == NULL) {
+	if (player == nullptr) {
 		errorstream << "Server::ProcessData(): Canceling: "
 				"No player for peer_id=" << pkt->getPeerId()
 				<< " disconnecting peer!" << std::endl;
@@ -510,7 +510,7 @@ void Server::handleCommand_PlayerPos(NetworkPacket* pkt)
 	}
 
 	PlayerSAO *playersao = player->getPlayerSAO();
-	if (playersao == NULL) {
+	if (playersao == nullptr) {
 		errorstream << "Server::ProcessData(): Canceling: "
 				"No player object for peer_id=" << pkt->getPeerId()
 				<< " disconnecting peer!" << std::endl;
@@ -562,7 +562,7 @@ void Server::handleCommand_InventoryAction(NetworkPacket* pkt)
 {
 	RemotePlayer *player = m_env->getPlayer(pkt->getPeerId());
 
-	if (player == NULL) {
+	if (player == nullptr) {
 		errorstream << "Server::ProcessData(): Canceling: "
 				"No player for peer_id=" << pkt->getPeerId()
 				<< " disconnecting peer!" << std::endl;
@@ -571,7 +571,7 @@ void Server::handleCommand_InventoryAction(NetworkPacket* pkt)
 	}
 
 	PlayerSAO *playersao = player->getPlayerSAO();
-	if (playersao == NULL) {
+	if (playersao == nullptr) {
 		errorstream << "Server::ProcessData(): Canceling: "
 				"No player object for peer_id=" << pkt->getPeerId()
 				<< " disconnecting peer!" << std::endl;
@@ -755,7 +755,7 @@ void Server::handleCommand_ChatMessage(NetworkPacket* pkt)
 	}
 
 	RemotePlayer *player = m_env->getPlayer(pkt->getPeerId());
-	if (player == NULL) {
+	if (player == nullptr) {
 		errorstream << "Server::ProcessData(): Canceling: "
 				"No player for peer_id=" << pkt->getPeerId()
 				<< " disconnecting peer!" << std::endl;
@@ -783,7 +783,7 @@ void Server::handleCommand_Damage(NetworkPacket* pkt)
 
 	RemotePlayer *player = m_env->getPlayer(pkt->getPeerId());
 
-	if (player == NULL) {
+	if (player == nullptr) {
 		errorstream << "Server::ProcessData(): Canceling: "
 				"No player for peer_id=" << pkt->getPeerId()
 				<< " disconnecting peer!" << std::endl;
@@ -792,7 +792,7 @@ void Server::handleCommand_Damage(NetworkPacket* pkt)
 	}
 
 	PlayerSAO *playersao = player->getPlayerSAO();
-	if (playersao == NULL) {
+	if (playersao == nullptr) {
 		errorstream << "Server::ProcessData(): Canceling: "
 				"No player object for peer_id=" << pkt->getPeerId()
 				<< " disconnecting peer!" << std::endl;
@@ -849,7 +849,7 @@ void Server::handleCommand_Password(NetworkPacket* pkt)
 	}
 
 	RemotePlayer *player = m_env->getPlayer(pkt->getPeerId());
-	if (player == NULL) {
+	if (player == nullptr) {
 		errorstream << "Server::ProcessData(): Canceling: "
 				"No player for peer_id=" << pkt->getPeerId()
 				<< " disconnecting peer!" << std::endl;
@@ -872,7 +872,7 @@ void Server::handleCommand_Password(NetworkPacket* pkt)
 	std::string playername = player->getName();
 
 	std::string checkpwd;
-	m_script->getAuth(playername, &checkpwd, NULL);
+	m_script->getAuth(playername, &checkpwd, nullptr);
 
 	if (oldpwd != checkpwd) {
 		infostream << "Server: invalid old password" << std::endl;
@@ -902,7 +902,7 @@ void Server::handleCommand_PlayerItem(NetworkPacket* pkt)
 
 	RemotePlayer *player = m_env->getPlayer(pkt->getPeerId());
 
-	if (player == NULL) {
+	if (player == nullptr) {
 		errorstream << "Server::ProcessData(): Canceling: "
 				"No player for peer_id=" << pkt->getPeerId()
 				<< " disconnecting peer!" << std::endl;
@@ -911,7 +911,7 @@ void Server::handleCommand_PlayerItem(NetworkPacket* pkt)
 	}
 
 	PlayerSAO *playersao = player->getPlayerSAO();
-	if (playersao == NULL) {
+	if (playersao == nullptr) {
 		errorstream << "Server::ProcessData(): Canceling: "
 				"No player object for peer_id=" << pkt->getPeerId()
 				<< " disconnecting peer!" << std::endl;
@@ -929,7 +929,7 @@ void Server::handleCommand_PlayerItem(NetworkPacket* pkt)
 void Server::handleCommand_Respawn(NetworkPacket* pkt)
 {
 	RemotePlayer *player = m_env->getPlayer(pkt->getPeerId());
-	if (player == NULL) {
+	if (player == nullptr) {
 		errorstream << "Server::ProcessData(): Canceling: "
 				"No player for peer_id=" << pkt->getPeerId()
 				<< " disconnecting peer!" << std::endl;
@@ -1013,7 +1013,7 @@ void Server::handleCommand_Interact(NetworkPacket* pkt)
 
 	RemotePlayer *player = m_env->getPlayer(pkt->getPeerId());
 
-	if (player == NULL) {
+	if (player == nullptr) {
 		errorstream << "Server::ProcessData(): Canceling: "
 				"No player for peer_id=" << pkt->getPeerId()
 				<< " disconnecting peer!" << std::endl;
@@ -1022,7 +1022,7 @@ void Server::handleCommand_Interact(NetworkPacket* pkt)
 	}
 
 	PlayerSAO *playersao = player->getPlayerSAO();
-	if (playersao == NULL) {
+	if (playersao == nullptr) {
 		errorstream << "Server::ProcessData(): Canceling: "
 				"No player object for peer_id=" << pkt->getPeerId()
 				<< " disconnecting peer!" << std::endl;
@@ -1056,10 +1056,10 @@ void Server::handleCommand_Interact(NetworkPacket* pkt)
 	v3s16 p_above = pointed.node_abovesurface;
 
 	// Get pointed to object (NULL if not POINTEDTYPE_OBJECT)
-	ServerActiveObject *pointed_object = NULL;
+	ServerActiveObject *pointed_object = nullptr;
 	if (pointed.type == POINTEDTHING_OBJECT) {
 		pointed_object = m_env->getActiveObject(pointed.object_id);
-		if (pointed_object == NULL) {
+		if (pointed_object == nullptr) {
 			verbosestream << "TOSERVER_INTERACT: "
 				"pointed object is NULL" << std::endl;
 			return;
@@ -1433,7 +1433,7 @@ void Server::handleCommand_NodeMetaFields(NetworkPacket* pkt)
 
 	RemotePlayer *player = m_env->getPlayer(pkt->getPeerId());
 
-	if (player == NULL) {
+	if (player == nullptr) {
 		errorstream << "Server::ProcessData(): Canceling: "
 				"No player for peer_id=" << pkt->getPeerId()
 				<< " disconnecting peer!" << std::endl;
@@ -1442,7 +1442,7 @@ void Server::handleCommand_NodeMetaFields(NetworkPacket* pkt)
 	}
 
 	PlayerSAO *playersao = player->getPlayerSAO();
-	if (playersao == NULL) {
+	if (playersao == nullptr) {
 		errorstream << "Server::ProcessData(): Canceling: "
 				"No player object for peer_id=" << pkt->getPeerId()
 				<< " disconnecting peer!"  << std::endl;
@@ -1484,7 +1484,7 @@ void Server::handleCommand_InventoryFields(NetworkPacket* pkt)
 
 	RemotePlayer *player = m_env->getPlayer(pkt->getPeerId());
 
-	if (player == NULL) {
+	if (player == nullptr) {
 		errorstream << "Server::ProcessData(): Canceling: "
 				"No player for peer_id=" << pkt->getPeerId()
 				<< " disconnecting peer!" << std::endl;
@@ -1493,7 +1493,7 @@ void Server::handleCommand_InventoryFields(NetworkPacket* pkt)
 	}
 
 	PlayerSAO *playersao = player->getPlayerSAO();
-	if (playersao == NULL) {
+	if (playersao == nullptr) {
 		errorstream << "Server::ProcessData(): Canceling: "
 				"No player object for peer_id=" << pkt->getPeerId()
 				<< " disconnecting peer!" << std::endl;
@@ -1655,8 +1655,8 @@ void Server::handleCommand_SrpBytesA(NetworkPacket* pkt)
 		(const unsigned char *) salt.c_str(), salt.size(),
 		(const unsigned char *) verifier.c_str(), verifier.size(),
 		(const unsigned char *) bytes_A.c_str(), bytes_A.size(),
-		NULL, 0,
-		(unsigned char **) &bytes_B, &len_B, NULL, NULL);
+		nullptr, 0,
+		(unsigned char **) &bytes_B, &len_B, nullptr, nullptr);
 
 	if (!bytes_B) {
 		actionstream << "Server: User " << client->getName()
@@ -1748,7 +1748,7 @@ void Server::handleCommand_SrpBytesM(NetworkPacket* pkt)
 		m_script->createAuth(playername, client->enc_pwd);
 
 		std::string checkpwd; // not used, but needed for passing something
-		if (!m_script->getAuth(playername, &checkpwd, NULL)) {
+		if (!m_script->getAuth(playername, &checkpwd, nullptr)) {
 			actionstream << "Server: " << playername << " cannot be authenticated"
 				<< " (auth handler does not work?)" << std::endl;
 			DenyAccess(pkt->getPeerId(), SERVER_ACCESSDENIED_SERVER_FAIL);

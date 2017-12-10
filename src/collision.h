@@ -58,7 +58,7 @@ collisionMoveResult collisionMoveSimple(Environment *env,IGameDef *gamedef,
 		f32 pos_max_d, const aabb3f &box_0,
 		f32 stepheight, f32 dtime,
 		v3f *pos_f, v3f *speed_f,
-		v3f accel_f, ActiveObject *self=NULL,
+		v3f accel_f, ActiveObject *self=nullptr,
 		bool collideWithObjects=true);
 
 // Helper function:

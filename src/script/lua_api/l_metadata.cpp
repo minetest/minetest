@@ -27,7 +27,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 // LUALIB_API
 void *luaL_checkudata_is_metadataref(lua_State *L, int ud) {
 	void *p = lua_touserdata(L, ud);
-	if (p != NULL &&  // value is a userdata?
+	if (p != nullptr &&  // value is a userdata?
 			lua_getmetatable(L, ud)) {  // does it have a metatable?
 		lua_getfield(L, -1, "metadata_class");
 		if (lua_type(L, -1) == LUA_TSTRING) { // does it have a metadata_class field?
@@ -35,7 +35,7 @@ void *luaL_checkudata_is_metadataref(lua_State *L, int ud) {
 		}
 	}
 	luaL_typerror(L, ud, "MetaDataRef");
-	return NULL;
+	return nullptr;
 }
 
 MetaDataRef* MetaDataRef::checkobject(lua_State *L, int narg)
@@ -59,7 +59,7 @@ int MetaDataRef::l_get_string(lua_State *L)
 	std::string name = luaL_checkstring(L, 2);
 
 	Metadata *meta = ref->getmeta(false);
-	if (meta == NULL) {
+	if (meta == nullptr) {
 		lua_pushlstring(L, "", 0);
 		return 1;
 	}
@@ -81,7 +81,7 @@ int MetaDataRef::l_set_string(lua_State *L)
 	std::string str(s, len);
 
 	Metadata *meta = ref->getmeta(!str.empty());
-	if (meta == NULL || str == meta->getString(name))
+	if (meta == nullptr || str == meta->getString(name))
 		return 0;
 
 	meta->setString(name, str);
@@ -98,7 +98,7 @@ int MetaDataRef::l_get_int(lua_State *L)
 	std::string name = lua_tostring(L, 2);
 
 	Metadata *meta = ref->getmeta(false);
-	if (meta == NULL) {
+	if (meta == nullptr) {
 		lua_pushnumber(L, 0);
 		return 1;
 	}
@@ -119,7 +119,7 @@ int MetaDataRef::l_set_int(lua_State *L)
 	std::string str = itos(a);
 
 	Metadata *meta = ref->getmeta(true);
-	if (meta == NULL || str == meta->getString(name))
+	if (meta == nullptr || str == meta->getString(name))
 		return 0;
 
 	meta->setString(name, str);
@@ -136,7 +136,7 @@ int MetaDataRef::l_get_float(lua_State *L)
 	std::string name = lua_tostring(L, 2);
 
 	Metadata *meta = ref->getmeta(false);
-	if (meta == NULL) {
+	if (meta == nullptr) {
 		lua_pushnumber(L, 0);
 		return 1;
 	}
@@ -157,7 +157,7 @@ int MetaDataRef::l_set_float(lua_State *L)
 	std::string str = ftos(a);
 
 	Metadata *meta = ref->getmeta(true);
-	if (meta == NULL || str == meta->getString(name))
+	if (meta == nullptr || str == meta->getString(name))
 		return 0;
 
 	meta->setString(name, str);
@@ -173,7 +173,7 @@ int MetaDataRef::l_to_table(lua_State *L)
 	MetaDataRef *ref = checkobject(L, 1);
 
 	Metadata *meta = ref->getmeta(true);
-	if (meta == NULL) {
+	if (meta == nullptr) {
 		lua_pushnil(L);
 		return 1;
 	}
@@ -202,7 +202,7 @@ int MetaDataRef::l_from_table(lua_State *L)
 
 	// Create new metadata
 	Metadata *meta = ref->getmeta(true);
-	if (meta == NULL) {
+	if (meta == nullptr) {
 		lua_pushboolean(L, false);
 		return 1;
 	}
@@ -257,7 +257,7 @@ int MetaDataRef::l_equals(lua_State *L)
 	Metadata *data1 = ref1->getmeta(false);
 	MetaDataRef *ref2 = checkobject(L, 2);
 	Metadata *data2 = ref2->getmeta(false);
-	if (data1 == NULL || data2 == NULL)
+	if (data1 == nullptr || data2 == nullptr)
 		lua_pushboolean(L, data1 == data2);
 	else
 		lua_pushboolean(L, *data1 == *data2);

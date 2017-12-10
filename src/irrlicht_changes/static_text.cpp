@@ -116,7 +116,7 @@ void StaticText::draw()
 				irr::gui::CGUITTFont *tmp = static_cast<irr::gui::CGUITTFont*>(font);
 				tmp->draw(cText, frameRect,
 					OverrideColorEnabled ? OverrideColor : skin->getColor(isEnabled() ? EGDC_BUTTON_TEXT : EGDC_GRAY_TEXT),
-					HAlign == EGUIA_CENTER, VAlign == EGUIA_CENTER, (RestrainTextInside ? &AbsoluteClippingRect : NULL));
+					HAlign == EGUIA_CENTER, VAlign == EGUIA_CENTER, (RestrainTextInside ? &AbsoluteClippingRect : nullptr));
 			}
 			else
 			{
@@ -155,7 +155,7 @@ void StaticText::draw()
 					irr::gui::CGUITTFont *tmp = static_cast<irr::gui::CGUITTFont*>(font);
 					tmp->draw(str, r,
 						previous_color, // FIXME
-						HAlign == EGUIA_CENTER, false, (RestrainTextInside ? &AbsoluteClippingRect : NULL));
+						HAlign == EGUIA_CENTER, false, (RestrainTextInside ? &AbsoluteClippingRect : nullptr));
 
 					r.LowerRightCorner.Y += height;
 					r.UpperLeftCorner.Y += height;

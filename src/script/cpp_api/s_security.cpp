@@ -535,7 +535,7 @@ bool ScriptApiSecurity::checkPath(lua_State *L, const char *path,
 
 		// Allow paths in mod path
 		// Don't bother if write access isn't important, since it will be handled later
-		if (write_required || write_allowed != NULL) {
+		if (write_required || write_allowed != nullptr) {
 			const ModSpec *mod = gamedef->getModSpec(mod_name);
 			if (mod) {
 				str = fs::AbsolutePath(mod->path);
@@ -666,10 +666,10 @@ int ScriptApiSecurity::sl_g_loadfile(lua_State *L)
 		return 1;
 	}
 #endif
-	const char *path = NULL;
+	const char *path = nullptr;
 	if (lua_isstring(L, 1)) {
 		path = lua_tostring(L, 1);
-		CHECK_SECURE_PATH_INTERNAL(L, path, false, NULL);
+		CHECK_SECURE_PATH_INTERNAL(L, path, false, nullptr);
 	}
 
 	if (!safeLoadFile(L, path)) {
@@ -727,11 +727,11 @@ int ScriptApiSecurity::sl_io_open(lua_State *L)
 	if (with_mode) {
 		luaL_checktype(L, 2, LUA_TSTRING);
 		const char *mode = lua_tostring(L, 2);
-		write_requested = strchr(mode, 'w') != NULL ||
-			strchr(mode, '+') != NULL ||
-			strchr(mode, 'a') != NULL;
+		write_requested = strchr(mode, 'w') != nullptr ||
+			strchr(mode, '+') != nullptr ||
+			strchr(mode, 'a') != nullptr;
 	}
-	CHECK_SECURE_PATH_INTERNAL(L, path, write_requested, NULL);
+	CHECK_SECURE_PATH_INTERNAL(L, path, write_requested, nullptr);
 
 	push_original(L, "io", "open");
 	lua_pushvalue(L, 1);
@@ -748,7 +748,7 @@ int ScriptApiSecurity::sl_io_input(lua_State *L)
 {
 	if (lua_isstring(L, 1)) {
 		const char *path = lua_tostring(L, 1);
-		CHECK_SECURE_PATH_INTERNAL(L, path, false, NULL);
+		CHECK_SECURE_PATH_INTERNAL(L, path, false, nullptr);
 	}
 
 	push_original(L, "io", "input");
@@ -762,7 +762,7 @@ int ScriptApiSecurity::sl_io_output(lua_State *L)
 {
 	if (lua_isstring(L, 1)) {
 		const char *path = lua_tostring(L, 1);
-		CHECK_SECURE_PATH_INTERNAL(L, path, true, NULL);
+		CHECK_SECURE_PATH_INTERNAL(L, path, true, nullptr);
 	}
 
 	push_original(L, "io", "output");
@@ -776,7 +776,7 @@ int ScriptApiSecurity::sl_io_lines(lua_State *L)
 {
 	if (lua_isstring(L, 1)) {
 		const char *path = lua_tostring(L, 1);
-		CHECK_SECURE_PATH_INTERNAL(L, path, false, NULL);
+		CHECK_SECURE_PATH_INTERNAL(L, path, false, nullptr);
 	}
 
 	int top_precall = lua_gettop(L);
@@ -793,11 +793,11 @@ int ScriptApiSecurity::sl_os_rename(lua_State *L)
 {
 	luaL_checktype(L, 1, LUA_TSTRING);
 	const char *path1 = lua_tostring(L, 1);
-	CHECK_SECURE_PATH_INTERNAL(L, path1, true, NULL);
+	CHECK_SECURE_PATH_INTERNAL(L, path1, true, nullptr);
 
 	luaL_checktype(L, 2, LUA_TSTRING);
 	const char *path2 = lua_tostring(L, 2);
-	CHECK_SECURE_PATH_INTERNAL(L, path2, true, NULL);
+	CHECK_SECURE_PATH_INTERNAL(L, path2, true, nullptr);
 
 	push_original(L, "os", "rename");
 	lua_pushvalue(L, 1);
@@ -811,7 +811,7 @@ int ScriptApiSecurity::sl_os_remove(lua_State *L)
 {
 	luaL_checktype(L, 1, LUA_TSTRING);
 	const char *path = lua_tostring(L, 1);
-	CHECK_SECURE_PATH_INTERNAL(L, path, true, NULL);
+	CHECK_SECURE_PATH_INTERNAL(L, path, true, nullptr);
 
 	push_original(L, "os", "remove");
 	lua_pushvalue(L, 1);

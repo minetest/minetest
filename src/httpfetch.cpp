@@ -184,7 +184,7 @@ public:
 		CURL *curl;
 		if (handles.empty()) {
 			curl = curl_easy_init();
-			if (curl == NULL) {
+			if (curl == nullptr) {
 				errorstream<<"curl_easy_init returned NULL"<<std::endl;
 			}
 		}
@@ -228,16 +228,16 @@ private:
 HTTPFetchOngoing::HTTPFetchOngoing(const HTTPFetchRequest &request_,
 		CurlHandlePool *pool_):
 	pool(pool_),
-	curl(NULL),
-	multi(NULL),
+	curl(nullptr),
+	multi(nullptr),
 	request(request_),
 	result(request_),
 	oss(std::ios::binary),
-	http_header(NULL),
-	post(NULL)
+	http_header(nullptr),
+	post(nullptr)
 {
 	curl = pool->alloc();
-	if (curl == NULL) {
+	if (curl == nullptr) {
 		return;
 	}
 
@@ -283,7 +283,7 @@ HTTPFetchOngoing::HTTPFetchOngoing(const HTTPFetchRequest &request_,
 	if (request.caller == HTTPFETCH_DISCARD) {
 		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION,
 				httpfetch_discardfunction);
-		curl_easy_setopt(curl, CURLOPT_WRITEDATA, NULL);
+		curl_easy_setopt(curl, CURLOPT_WRITEDATA, nullptr);
 	} else {
 		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION,
 				httpfetch_writefunction);
@@ -294,7 +294,7 @@ HTTPFetchOngoing::HTTPFetchOngoing(const HTTPFetchRequest &request_,
 	if (request.post_fields.empty() && request.post_data.empty()) {
 		curl_easy_setopt(curl, CURLOPT_HTTPGET, 1);
 	} else if (request.multipart) {
-		curl_httppost *last = NULL;
+		curl_httppost *last = nullptr;
 		for (StringMap::iterator it = request.post_fields.begin();
 				it != request.post_fields.end(); ++it) {
 			curl_formadd(&post, &last,
@@ -401,14 +401,14 @@ HTTPFetchOngoing::~HTTPFetchOngoing()
 	// Set safe options for the reusable cURL handle
 	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION,
 			httpfetch_discardfunction);
-	curl_easy_setopt(curl, CURLOPT_WRITEDATA, NULL);
-	curl_easy_setopt(curl, CURLOPT_POSTFIELDS, NULL);
+	curl_easy_setopt(curl, CURLOPT_WRITEDATA, nullptr);
+	curl_easy_setopt(curl, CURLOPT_POSTFIELDS, nullptr);
 	if (http_header) {
-		curl_easy_setopt(curl, CURLOPT_HTTPHEADER, NULL);
+		curl_easy_setopt(curl, CURLOPT_HTTPHEADER, nullptr);
 		curl_slist_free_all(http_header);
 	}
 	if (post) {
-		curl_easy_setopt(curl, CURLOPT_HTTPPOST, NULL);
+		curl_easy_setopt(curl, CURLOPT_HTTPPOST, nullptr);
 		curl_formfree(post);
 	}
 
@@ -455,7 +455,7 @@ public:
 		Request req;
 		req.type = RT_FETCH;
 		req.fetch_request = fetch_request;
-		req.event = NULL;
+		req.event = nullptr;
 		m_requests.push_back(req);
 	}
 
@@ -472,7 +472,7 @@ public:
 	{
 		Request req;
 		req.type = RT_WAKEUP;
-		req.event = NULL;
+		req.event = nullptr;
 		m_requests.push_back(req);
 	}
 
@@ -518,7 +518,7 @@ protected:
 			// Wakeup: Nothing to do, thread is awake at this point
 		}
 
-		if (req.event != NULL)
+		if (req.event != nullptr)
 			req.event->signal();
 	}
 
@@ -646,9 +646,9 @@ protected:
 		CurlHandlePool pool;
 
 		m_multi = curl_multi_init();
-		if (m_multi == NULL) {
+		if (m_multi == nullptr) {
 			errorstream<<"curl_multi_init returned NULL\n";
-			return NULL;
+			return nullptr;
 		}
 
 		FATAL_ERROR_IF(!m_all_ongoing.empty(), "Expected empty");
@@ -682,7 +682,7 @@ protected:
 				CURLMsg *msg;
 				int msgs_in_queue;
 				msg = curl_multi_info_read(m_multi, &msgs_in_queue);
-				while (msg != NULL) {
+				while (msg != nullptr) {
 					processCurlMessage(msg);
 					msg = curl_multi_info_read(m_multi, &msgs_in_queue);
 				}
@@ -720,11 +720,11 @@ protected:
 				<<std::endl;
 		}
 
-		return NULL;
+		return nullptr;
 	}
 };
 
-CurlFetchThread *g_httpfetch_thread = NULL;
+CurlFetchThread *g_httpfetch_thread = nullptr;
 
 void httpfetch_init(int parallel_limit)
 {
@@ -768,7 +768,7 @@ static void httpfetch_request_clear(unsigned long caller)
 		g_httpfetch_thread->requestClear(caller, &event);
 		event.wait();
 	} else {
-		g_httpfetch_thread->requestClear(caller, NULL);
+		g_httpfetch_thread->requestClear(caller, nullptr);
 	}
 }
 
@@ -780,7 +780,7 @@ void httpfetch_sync(const HTTPFetchRequest &fetch_request,
 	CurlHandlePool pool;
 	HTTPFetchOngoing ongoing(fetch_request, &pool);
 	// Do the fetch (curl_easy_perform)
-	CURLcode res = ongoing.start(NULL);
+	CURLcode res = ongoing.start(nullptr);
 	// Update fetch result
 	fetch_result = *ongoing.complete(res);
 }

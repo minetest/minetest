@@ -139,7 +139,7 @@ void RemotePlayer::deSerialize(std::istream &is, const std::string &playername,
 
 	inventory.deSerialize(is);
 
-	if (inventory.getList("craftpreview") == NULL) {
+	if (inventory.getList("craftpreview") == nullptr) {
 		// Convert players without craftpreview
 		inventory.addList("craftpreview", 1);
 
@@ -183,7 +183,7 @@ void RemotePlayer::serialize(std::ostream &os)
 const RemotePlayerChatResult RemotePlayer::canSendChatMessage()
 {
 	// Rate limit messages
-	u32 now = time(NULL);
+	u32 now = time(nullptr);
 	float time_passed = now - m_last_chat_message_sent;
 	m_last_chat_message_sent = now;
 

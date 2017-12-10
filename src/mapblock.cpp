@@ -981,7 +981,7 @@ void MapBlock::deSerialize_pre22(std::istream &is, u8 version, bool disk)
 */
 std::string analyze_block(MapBlock *block)
 {
-	if(block == NULL)
+	if(block == nullptr)
 		return "NULL";
 
 	std::ostringstream desc;

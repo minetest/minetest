@@ -368,7 +368,7 @@ void ClientMediaDownloader::remoteMediaReceived(
 s32 ClientMediaDownloader::selectRemoteServer(FileStatus *filestatus)
 {
 	// Pre-conditions
-	assert(filestatus != NULL);
+	assert(filestatus != nullptr);
 	assert(!filestatus->received);
 	assert(filestatus->current_remote < 0);
 
@@ -500,7 +500,7 @@ void ClientMediaDownloader::conventionalTransferDone(
 		return;
 	}
 	FileStatus *filestatus = file_iter->second;
-	assert(filestatus != NULL);
+	assert(filestatus != nullptr);
 
 	// Check that file hasn't already been received
 	if (filestatus->received) {

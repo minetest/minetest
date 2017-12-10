@@ -1060,7 +1060,7 @@ static void updateAllFastFaceRows(MeshMakeData *data,
 */
 
 MapBlockMesh::MapBlockMesh(MeshMakeData *data, v3s16 camera_offset):
-	m_minimap_mapblock(NULL),
+	m_minimap_mapblock(nullptr),
 	m_tsrc(data->m_client->getTextureSource()),
 	m_shdrsrc(data->m_client->getShaderSource()),
 	m_animation_force_timer(0), // force initial animation
@@ -1306,7 +1306,7 @@ MapBlockMesh::~MapBlockMesh()
 				RenderingEngine::get_video_driver()->removeHardwareBuffer(buf);
 			}
 		m->drop();
-		m = NULL;
+		m = nullptr;
 	}
 	delete m_minimap_mapblock;
 }
@@ -1442,7 +1442,7 @@ void MeshCollector::append(const TileLayer &layer,
 	}
 	std::vector<PreMeshBuffer> *buffers = &prebuffers[layernum];
 
-	PreMeshBuffer *p = NULL;
+	PreMeshBuffer *p = nullptr;
 	for (PreMeshBuffer &pp : *buffers) {
 		if (pp.layer == layer && pp.indices.size() + numIndices <= 65535) {
 			p = &pp;
@@ -1450,7 +1450,7 @@ void MeshCollector::append(const TileLayer &layer,
 		}
 	}
 
-	if (p == NULL) {
+	if (p == nullptr) {
 		PreMeshBuffer pp;
 		pp.layer = layer;
 		buffers->push_back(pp);
@@ -1517,7 +1517,7 @@ void MeshCollector::append(const TileLayer &layer,
 	}
 	std::vector<PreMeshBuffer> *buffers = &prebuffers[layernum];
 
-	PreMeshBuffer *p = NULL;
+	PreMeshBuffer *p = nullptr;
 	for (PreMeshBuffer &pp : *buffers) {
 		if (pp.layer == layer && pp.indices.size() + numIndices <= 65535) {
 			p = &pp;
@@ -1525,7 +1525,7 @@ void MeshCollector::append(const TileLayer &layer,
 		}
 	}
 
-	if (p == NULL) {
+	if (p == nullptr) {
 		PreMeshBuffer pp;
 		pp.layer = layer;
 		buffers->push_back(pp);

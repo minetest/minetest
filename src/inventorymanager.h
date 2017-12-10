@@ -109,7 +109,7 @@ public:
 	virtual ~InventoryManager() = default;
 
 	// Get an inventory (server and client)
-	virtual Inventory* getInventory(const InventoryLocation &loc){return NULL;}
+	virtual Inventory* getInventory(const InventoryLocation &loc){return nullptr;}
     // Set modified (will be saved and sent over network; only on server)
 	virtual void setInventoryModified(const InventoryLocation &loc, bool playerSend = true){}
     // Send inventory action to server (only on client)

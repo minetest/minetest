@@ -37,7 +37,7 @@ FlagDesc flagdesc_deco[] = {
 	{"liquid_surface",  DECO_LIQUID_SURFACE},
 	{"all_floors",      DECO_ALL_FLOORS},
 	{"all_ceilings",    DECO_ALL_CEILINGS},
-	{NULL,              0}
+	{nullptr,              0}
 };
 
 
@@ -335,7 +335,7 @@ size_t DecoSchematic::generate(MMVManip *vm, PcgRandom *pr, v3s16 p, bool ceilin
 {
 	// Schematic could have been unloaded but not the decoration
 	// In this case generate() does nothing (but doesn't *fail*)
-	if (schematic == NULL)
+	if (schematic == nullptr)
 		return 0;
 
 	if (!canPlaceDecoration(vm, p))

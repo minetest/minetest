@@ -218,7 +218,7 @@ inline void os_get_clock(struct timespec *ts)
 	clock_gettime(CLOCK_MONOTONIC, ts);
 #else
 	struct timeval tv;
-	gettimeofday(&tv, NULL);
+	gettimeofday(&tv, nullptr);
 	TIMEVAL_TO_TIMESPEC(&tv, ts);
 #endif
 }

@@ -43,7 +43,7 @@ public:
 
 	void setParent(Connection *parent)
 	{
-		assert(parent != NULL); // Pre-condition
+		assert(parent != nullptr); // Pre-condition
 		m_connection = parent;
 	}
 

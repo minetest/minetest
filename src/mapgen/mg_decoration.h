@@ -128,7 +128,7 @@ public:
 		//case DECO_LSYSTEM:
 		//	return new DecoLSystem;
 		default:
-			return NULL;
+			return nullptr;
 		}
 	}
 

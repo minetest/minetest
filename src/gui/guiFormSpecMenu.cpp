@@ -140,7 +140,7 @@ void GUIFormSpecMenu::removeChildren()
 	if(m_tooltip_element) {
 		m_tooltip_element->remove();
 		m_tooltip_element->drop();
-		m_tooltip_element = NULL;
+		m_tooltip_element = nullptr;
 	}
 
 }
@@ -231,7 +231,7 @@ std::vector<std::string>* GUIFormSpecMenu::getDropDownValues(const std::string &
 		if (name == dropdown.first.fname)
 			return &dropdown.second;
 	}
-	return NULL;
+	return nullptr;
 }
 
 void GUIFormSpecMenu::parseSize(parserData* data, const std::string &element)
@@ -2357,16 +2357,16 @@ void GUIFormSpecMenu::drawList(const ListDrawSpec &s, int phase,
 			s32 border = 1;
 			driver->draw2DRectangle(m_slotbordercolor,
 				core::rect<s32>(v2s32(x1 - border, y1 - border),
-								v2s32(x2 + border, y1)), NULL);
+								v2s32(x2 + border, y1)), nullptr);
 			driver->draw2DRectangle(m_slotbordercolor,
 				core::rect<s32>(v2s32(x1 - border, y2),
-								v2s32(x2 + border, y2 + border)), NULL);
+								v2s32(x2 + border, y2 + border)), nullptr);
 			driver->draw2DRectangle(m_slotbordercolor,
 				core::rect<s32>(v2s32(x1 - border, y1),
-								v2s32(x1, y2)), NULL);
+								v2s32(x1, y2)), nullptr);
 			driver->draw2DRectangle(m_slotbordercolor,
 				core::rect<s32>(v2s32(x2, y1),
-								v2s32(x2 + border, y2)), NULL);
+								v2s32(x2 + border, y2)), nullptr);
 		}
 
 		if(phase == 1)
@@ -2415,7 +2415,7 @@ void GUIFormSpecMenu::drawSelectedItem()
 	if (!m_selected_item) {
 		drawItemStack(driver, m_font, ItemStack(),
 			core::rect<s32>(v2s32(0, 0), v2s32(0, 0)),
-			NULL, m_client, IT_ROT_DRAGGED);
+			nullptr, m_client, IT_ROT_DRAGGED);
 		return;
 	}
 
@@ -2429,7 +2429,7 @@ void GUIFormSpecMenu::drawSelectedItem()
 	core::rect<s32> imgrect(0,0,imgsize.X,imgsize.Y);
 	core::rect<s32> rect = imgrect + (m_pointer - imgrect.getCenter());
 	rect.constrainTo(driver->getViewPort());
-	drawItemStack(driver, m_font, stack, rect, NULL, m_client, IT_ROT_DRAGGED);
+	drawItemStack(driver, m_font, stack, rect, nullptr, m_client, IT_ROT_DRAGGED);
 }
 
 void GUIFormSpecMenu::drawMenu()
@@ -2443,7 +2443,7 @@ void GUIFormSpecMenu::drawMenu()
 	}
 
 	gui::IGUISkin* skin = Environment->getSkin();
-	sanity_check(skin != NULL);
+	sanity_check(skin != nullptr);
 	gui::IGUIFont *old_font = skin->getFont();
 	skin->setFont(m_font);
 
@@ -2486,7 +2486,7 @@ void GUIFormSpecMenu::drawMenu()
 			draw2DImageFilterScaled(driver, texture, rect,
 				core::rect<s32>(core::position2d<s32>(0,0),
 						core::dimension2di(texture->getOriginalSize())),
-				NULL/*&AbsoluteClippingRect*/, colors, true);
+				nullptr/*&AbsoluteClippingRect*/, colors, true);
 		} else {
 			errorstream << "GUIFormSpecMenu::drawMenu() Draw backgrounds unable to load texture:" << std::endl;
 			errorstream << "\t" << spec.name << std::endl;
@@ -2535,7 +2535,7 @@ void GUIFormSpecMenu::drawMenu()
 			const video::SColor colors[] = {color,color,color,color};
 			draw2DImageFilterScaled(driver, texture, rect,
 				core::rect<s32>(core::position2d<s32>(0,0),img_origsize),
-				NULL/*&AbsoluteClippingRect*/, colors, true);
+				nullptr/*&AbsoluteClippingRect*/, colors, true);
 		}
 		else {
 			errorstream << "GUIFormSpecMenu::drawMenu() Draw images unable to load texture:" << std::endl;
@@ -2585,7 +2585,7 @@ void GUIFormSpecMenu::drawMenu()
 	if (!item_hovered) {
 		drawItemStack(driver, m_font, ItemStack(),
 			core::rect<s32>(v2s32(0, 0), v2s32(0, 0)),
-			NULL, m_client, IT_ROT_HOVERED);
+			nullptr, m_client, IT_ROT_HOVERED);
 	}
 
 /* TODO find way to show tooltips on touchscreen */
@@ -2620,7 +2620,7 @@ void GUIFormSpecMenu::drawMenu()
 	gui::IGUIElement *hovered =
 			Environment->getRootGUIElement()->getElementFromPoint(m_pointer);
 
-	if (hovered != NULL) {
+	if (hovered != nullptr) {
 		s32 id = hovered->getID();
 
 		u64 delta = 0;
@@ -2814,7 +2814,7 @@ ItemStack GUIFormSpecMenu::verifySelectedItem()
 
 		// selection was not valid
 		delete m_selected_item;
-		m_selected_item = NULL;
+		m_selected_item = nullptr;
 		m_selected_amount = 0;
 		m_selected_dragging = false;
 	}
@@ -2877,7 +2877,7 @@ void GUIFormSpecMenu::acceptInput(FormspecQuitMode quitmode=quit_mode_no)
 					// no dynamic cast possible due to some distributions shipped
 					// without rtti support in irrlicht
 					IGUIElement * element = getElementFromId(s.fid);
-					gui::IGUIComboBox *e = NULL;
+					gui::IGUIComboBox *e = nullptr;
 					if ((element) && (element->getType() == gui::EGUIET_COMBO_BOX)) {
 						e = static_cast<gui::IGUIComboBox*>(element);
 					}
@@ -2894,7 +2894,7 @@ void GUIFormSpecMenu::acceptInput(FormspecQuitMode quitmode=quit_mode_no)
 					// no dynamic cast possible due to some distributions shipped
 					// without rttzi support in irrlicht
 					IGUIElement * element = getElementFromId(s.fid);
-					gui::IGUITabControl *e = NULL;
+					gui::IGUITabControl *e = nullptr;
 					if ((element) && (element->getType() == gui::EGUIET_TAB_CONTROL)) {
 						e = static_cast<gui::IGUITabControl *>(element);
 					}
@@ -2909,7 +2909,7 @@ void GUIFormSpecMenu::acceptInput(FormspecQuitMode quitmode=quit_mode_no)
 					// no dynamic cast possible due to some distributions shipped
 					// without rtti support in irrlicht
 					IGUIElement * element = getElementFromId(s.fid);
-					gui::IGUICheckBox *e = NULL;
+					gui::IGUICheckBox *e = nullptr;
 					if ((element) && (element->getType() == gui::EGUIET_CHECK_BOX)) {
 						e = static_cast<gui::IGUICheckBox*>(element);
 					}
@@ -2925,7 +2925,7 @@ void GUIFormSpecMenu::acceptInput(FormspecQuitMode quitmode=quit_mode_no)
 					// no dynamic cast possible due to some distributions shipped
 					// without rtti support in irrlicht
 					IGUIElement * element = getElementFromId(s.fid);
-					gui::IGUIScrollBar *e = NULL;
+					gui::IGUIScrollBar *e = nullptr;
 					if ((element) && (element->getType() == gui::EGUIET_SCROLL_BAR)) {
 						e = static_cast<gui::IGUIScrollBar*>(element);
 					}
@@ -2942,7 +2942,7 @@ void GUIFormSpecMenu::acceptInput(FormspecQuitMode quitmode=quit_mode_no)
 				else
 				{
 					IGUIElement* e = getElementFromId(s.fid);
-					if(e != NULL) {
+					if(e != nullptr) {
 						fields[name] = wide_to_utf8(e->getText());
 					}
 				}
@@ -2955,7 +2955,7 @@ void GUIFormSpecMenu::acceptInput(FormspecQuitMode quitmode=quit_mode_no)
 
 static bool isChild(gui::IGUIElement * tocheck, gui::IGUIElement * parent)
 {
-	while(tocheck != NULL) {
+	while(tocheck != nullptr) {
 		if (tocheck == parent) {
 			return true;
 		}
@@ -2982,7 +2982,7 @@ bool GUIFormSpecMenu::preprocessEvent(const SEvent& event)
 		if (hovered && isMyChild(hovered) &&
 				hovered->getType() == gui::EGUIET_TAB_CONTROL) {
 			gui::IGUISkin* skin = Environment->getSkin();
-			sanity_check(skin != NULL);
+			sanity_check(skin != nullptr);
 			gui::IGUIFont *old_font = skin->getFont();
 			skin->setFont(m_font);
 			bool retval = hovered->OnEvent(event);
@@ -3283,12 +3283,12 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 		KeyPress kp(event.KeyInput);
 		if (event.KeyInput.PressedDown && (
 				(kp == EscapeKey) || (kp == CancelKey) ||
-				((m_client != NULL) && (kp == getKeySetting("keymap_inventory"))))) {
+				((m_client != nullptr) && (kp == getKeySetting("keymap_inventory"))))) {
 			tryClose();
 			return true;
 		}
 
-		if (m_client != NULL && event.KeyInput.PressedDown &&
+		if (m_client != nullptr && event.KeyInput.PressedDown &&
 				(kp == getKeySetting("keymap_screenshot"))) {
 			m_client->makeScreenshot();
 		}
@@ -3339,14 +3339,14 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 		updateSelectedItem();
 		ItemSpec s = getItemAtPos(m_pointer);
 
-		Inventory *inv_selected = NULL;
-		Inventory *inv_s = NULL;
-		InventoryList *list_s = NULL;
+		Inventory *inv_selected = nullptr;
+		Inventory *inv_s = nullptr;
+		InventoryList *list_s = nullptr;
 
 		if (m_selected_item) {
 			inv_selected = m_invmgr->getInventory(m_selected_item->inventoryloc);
 			sanity_check(inv_selected);
-			sanity_check(inv_selected->getList(m_selected_item->listname) != NULL);
+			sanity_check(inv_selected->getList(m_selected_item->listname) != nullptr);
 		}
 
 		u32 s_count = 0;
@@ -3364,7 +3364,7 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 			}
 
 			list_s = inv_s->getList(s.listname);
-			if (list_s == NULL) {
+			if (list_s == nullptr) {
 				verbosestream << "InventoryMenu: The selected inventory list \""
 						<< s.listname << "\" does not exist" << std::endl;
 				s.i = -1;  // make it invalid again
@@ -3382,7 +3382,7 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 			s_count = list_s->getItem(s.i).count;
 		} while(0);
 
-		bool identical = (m_selected_item != NULL) && s.isValid() &&
+		bool identical = (m_selected_item != nullptr) && s.isValid() &&
 			(inv_selected == inv_s) &&
 			(m_selected_item->listname == s.listname) &&
 			(m_selected_item->i == s.i);
@@ -3432,7 +3432,7 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 			if (s.isValid() && s.listname == "craftpreview") {
 				// Craft preview has been clicked: craft
 				craft_amount = (button == 2 ? 10 : 1);
-			} else if (m_selected_item == NULL) {
+			} else if (m_selected_item == nullptr) {
 				if (s_count != 0) {
 					// Non-empty stack has been clicked: select or shift-move it
 					m_selected_item = new ItemSpec(s);
@@ -3495,12 +3495,12 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 			//infostream<<"Mouse button "<<button<<" released at p=("
 			//	<<p.X<<","<<p.Y<<")"<<std::endl;
 
-			if (m_selected_item != NULL && m_selected_dragging && s.isValid()) {
+			if (m_selected_item != nullptr && m_selected_dragging && s.isValid()) {
 				if (!identical) {
 					// Dragged to different slot: move all selected
 					move_amount = m_selected_amount;
 				}
-			} else if (m_selected_item != NULL && m_selected_dragging &&
+			} else if (m_selected_item != nullptr && m_selected_dragging &&
 					!(getAbsoluteClippingRect().isPointInside(m_pointer))) {
 				// Dragged outside of window: drop all selected
 				drop_amount = m_selected_amount;
@@ -3516,7 +3516,7 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 			// Mouse has been moved and rmb is down and mouse pointer just
 			// entered a new inventory field (checked in the entry-if, this
 			// is the only action here that is generated by mouse movement)
-			if (m_selected_item != NULL && s.isValid()) {
+			if (m_selected_item != nullptr && s.isValid()) {
 				// Move 1 item
 				// TODO: middle mouse to move 10 items might be handy
 				if (m_auto_place) {
@@ -3672,7 +3672,7 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 			
 			// if there are no items selected or the selected item
 			// belongs to craftresult list, proceed with crafting
-			if (m_selected_item == NULL ||
+			if (m_selected_item == nullptr ||
 					!m_selected_item->isValid() || m_selected_item->listname == "craftresult") {
 				
 				m_selected_content_guess = ItemStack(); // Clear
@@ -3691,7 +3691,7 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 		// If m_selected_amount has been decreased to zero, deselect
 		if (m_selected_amount == 0) {
 			delete m_selected_item;
-			m_selected_item = NULL;
+			m_selected_item = nullptr;
 			m_selected_amount = 0;
 			m_selected_dragging = false;
 			m_selected_content_guess = ItemStack();

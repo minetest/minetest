@@ -42,8 +42,8 @@ struct ItemStack
 	// Serialization
 	void serialize(std::ostream &os) const;
 	// Deserialization.  Pass itemdef unless you don't want aliases resolved.
-	void deSerialize(std::istream &is, IItemDefManager *itemdef = NULL);
-	void deSerialize(const std::string &s, IItemDefManager *itemdef = NULL);
+	void deSerialize(std::istream &is, IItemDefManager *itemdef = nullptr);
+	void deSerialize(const std::string &s, IItemDefManager *itemdef = nullptr);
 
 	// Returns the string used for inventory
 	std::string getItemString() const;
@@ -114,11 +114,11 @@ struct ItemStack
 		const ToolCapabilities *item_cap =
 			itemdef->get(name).tool_capabilities;
 
-		if (item_cap == NULL)
+		if (item_cap == nullptr)
 			// Fall back to the hand's tool capabilities
 			item_cap = itemdef->get("").tool_capabilities;
 
-		assert(item_cap != NULL);
+		assert(item_cap != nullptr);
 		return metadata.getToolCapabilities(*item_cap); // Check for override
 	}
 
@@ -218,7 +218,7 @@ public:
 	// If restitem is non-NULL, it receives the part of newitem that
 	// would be left over after adding.
 	bool itemFits(const u32 i, const ItemStack &newitem,
-			ItemStack *restitem = NULL) const;
+			ItemStack *restitem = nullptr) const;
 
 	// Checks whether there is room for a given item
 	bool roomForItem(const ItemStack &item) const;
@@ -244,7 +244,7 @@ public:
 	// count is the maximum number of items to move (0 for everything)
 	// returns number of moved items
 	u32 moveItem(u32 i, InventoryList *dest, u32 dest_i,
-		u32 count = 0, bool swap_if_needed = true, bool *did_swap = NULL);
+		u32 count = 0, bool swap_if_needed = true, bool *did_swap = nullptr);
 
 	// like moveItem, but without a fixed destination index
 	// also with optional rollback recording
@@ -288,7 +288,7 @@ public:
 	{
 		m_dirty = true;
 		InventoryList *list = getList(listname);
-		if(list == NULL)
+		if(list == nullptr)
 			return newitem;
 		return list->addItem(newitem);
 	}

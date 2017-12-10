@@ -81,7 +81,7 @@ Logger g_logger;
 
 StreamLogOutput stdout_output(std::cout);
 StreamLogOutput stderr_output(std::cerr);
-std::ostream null_stream(NULL);
+std::ostream null_stream(nullptr);
 
 RawLogBuffer raw_buf;
 

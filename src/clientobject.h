@@ -48,8 +48,8 @@ public:
 	virtual bool collideWithObjects() const { return false; }
 	virtual v3f getPosition(){ return v3f(0,0,0); }
 	virtual float getYaw() const { return 0; }
-	virtual scene::ISceneNode *getSceneNode() { return NULL; }
-	virtual scene::IAnimatedMeshSceneNode *getAnimatedMeshSceneNode() { return NULL; }
+	virtual scene::ISceneNode *getSceneNode() { return nullptr; }
+	virtual scene::IAnimatedMeshSceneNode *getAnimatedMeshSceneNode() { return nullptr; }
 	virtual bool isLocalPlayer() const {return false;}
 	virtual void setAttachments() {}
 	virtual bool doShowSelectionBox(){return true;}
@@ -74,7 +74,7 @@ public:
 			ClientEnvironment *env);
 
 	// If returns true, punch will not be sent to the server
-	virtual bool directReportPunch(v3f dir, const ItemStack *punchitem=NULL,
+	virtual bool directReportPunch(v3f dir, const ItemStack *punchitem=nullptr,
 			float time_from_last_punch=1000000)
 	{ return false; }
 

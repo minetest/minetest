@@ -161,7 +161,7 @@ std::set<std::string> getAvailableGameIds()
 			if(!getGameConfig(gamespath + DIR_DELIM + dln.name, conf))
 				continue;
 			// Add it to result
-			const char *ends[] = {"_game", NULL};
+			const char *ends[] = {"_game", nullptr};
 			std::string shorter = removeStringEnd(dln.name, ends);
 			if (!shorter.empty())
 				gameids.insert(shorter);

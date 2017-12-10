@@ -94,7 +94,7 @@ public:
 		if(m_ignorevariable->getVolume() == 0)
 			*m_ignorevariable = a;
 		else
-			m_ignorevariable = NULL;
+			m_ignorevariable = nullptr;
 	}
 
 	~MapEditEventAreaIgnorer()
@@ -198,14 +198,14 @@ bool EmergeManager::initMapgens(MapgenParams *params)
 Mapgen *EmergeManager::getCurrentMapgen()
 {
 	if (!m_threads_active)
-		return NULL;
+		return nullptr;
 
 	for (u32 i = 0; i != m_threads.size(); i++) {
 		if (m_threads[i]->isCurrentThread())
 			return m_threads[i]->m_mapgen;
 	}
 
-	return NULL;
+	return nullptr;
 }
 
 
@@ -258,7 +258,7 @@ bool EmergeManager::enqueueBlockEmerge(
 	if (ignore_queue_limits)
 		flags |= BLOCK_EMERGE_FORCE_QUEUE;
 
-	return enqueueBlockEmergeEx(blockpos, peer_id, flags, NULL, NULL);
+	return enqueueBlockEmergeEx(blockpos, peer_id, flags, nullptr, nullptr);
 }
 
 
@@ -269,7 +269,7 @@ bool EmergeManager::enqueueBlockEmergeEx(
 	EmergeCompletionCallback callback,
 	void *callback_param)
 {
-	EmergeThread *thread = NULL;
+	EmergeThread *thread = nullptr;
 	bool entry_already_exists = false;
 
 	{
@@ -449,9 +449,9 @@ EmergeThread::EmergeThread(Server *server, int ethreadid) :
 	enable_mapgen_debug_info(false),
 	id(ethreadid),
 	m_server(server),
-	m_map(NULL),
-	m_emerge(NULL),
-	m_mapgen(NULL)
+	m_map(nullptr),
+	m_emerge(nullptr),
+	m_mapgen(nullptr)
 {
 	m_name = "Emerge-" + itos(ethreadid);
 }
@@ -562,7 +562,7 @@ MapBlock *EmergeThread::finishGen(v3s16 pos, BlockMakeData *bmdata,
 	if (!block) {
 		errorstream << "EmergeThread::finishGen: Couldn't grab block we "
 			"just generated: " << PP(pos) << std::endl;
-		return NULL;
+		return nullptr;
 	}
 
 	v3s16 minp = bmdata->blockpos_min * MAP_BLOCKSIZE;
@@ -671,5 +671,5 @@ void *EmergeThread::run()
 	}
 
 	END_DEBUG_EXCEPTION_HANDLER
-	return NULL;
+	return nullptr;
 }

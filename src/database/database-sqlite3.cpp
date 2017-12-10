@@ -55,7 +55,7 @@ SQLite format specification:
 #define SQLOK(s, m) SQLRES(s, SQLITE_OK, m)
 
 #define PREPARE_STATEMENT(name, query) \
-	SQLOK(sqlite3_prepare_v2(m_database, query, -1, &m_stmt_##name, NULL),\
+	SQLOK(sqlite3_prepare_v2(m_database, query, -1, &m_stmt_##name, nullptr),\
 		"Failed to prepare query '" query "'")
 
 #define SQLOK_ERRSTREAM(s, m)                           \
@@ -153,7 +153,7 @@ void Database_SQLite3::openDatabase()
 	bool needs_create = !fs::PathExists(dbp);
 
 	SQLOK(sqlite3_open_v2(dbp.c_str(), &m_database,
-			SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, NULL),
+			SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, nullptr),
 		std::string("Failed to open SQLite3 database file ") + dbp);
 
 	SQLOK(sqlite3_busy_handler(m_database, Database_SQLite3::busyHandler,
@@ -165,9 +165,9 @@ void Database_SQLite3::openDatabase()
 
 	std::string query_str = std::string("PRAGMA synchronous = ")
 			 + itos(g_settings->getU16("sqlite_synchronous"));
-	SQLOK(sqlite3_exec(m_database, query_str.c_str(), NULL, NULL, NULL),
+	SQLOK(sqlite3_exec(m_database, query_str.c_str(), nullptr, nullptr, nullptr),
 		"Failed to modify sqlite3 synchronous mode");
-	SQLOK(sqlite3_exec(m_database, "PRAGMA foreign_keys = ON", NULL, NULL, NULL),
+	SQLOK(sqlite3_exec(m_database, "PRAGMA foreign_keys = ON", nullptr, nullptr, nullptr),
 		"Failed to enable sqlite3 foreign key support");
 }
 
@@ -221,7 +221,7 @@ void MapDatabaseSQLite3::createDatabase()
 			"	`pos` INT PRIMARY KEY,\n"
 			"	`data` BLOB\n"
 			");\n",
-		NULL, NULL, NULL),
+		nullptr, nullptr, nullptr),
 		"Failed to create database table");
 }
 
@@ -279,7 +279,7 @@ bool MapDatabaseSQLite3::saveBlock(const v3s16 &pos, const std::string &data)
 #endif
 
 	bindPos(m_stmt_write, pos);
-	SQLOK(sqlite3_bind_blob(m_stmt_write, 2, data.data(), data.size(), NULL),
+	SQLOK(sqlite3_bind_blob(m_stmt_write, 2, data.data(), data.size(), nullptr),
 		"Internal error: failed to bind query at " __FILE__ ":" TOSTRING(__LINE__));
 
 	SQLRES(sqlite3_step(m_stmt_write), SQLITE_DONE, "Failed to save block")
@@ -365,7 +365,7 @@ void PlayerDatabaseSQLite3::createDatabase()
 			"`creation_date` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,"
 			"`modification_date` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,"
 			"PRIMARY KEY (`name`));",
-		NULL, NULL, NULL),
+		nullptr, nullptr, nullptr),
 		"Failed to create player table");
 
 	SQLOK(sqlite3_exec(m_database,
@@ -375,7 +375,7 @@ void PlayerDatabaseSQLite3::createDatabase()
 			"    `value` TEXT,"
 			"    PRIMARY KEY(`player`, `metadata`),"
 			"    FOREIGN KEY (`player`) REFERENCES player (`name`) ON DELETE CASCADE );",
-		NULL, NULL, NULL),
+		nullptr, nullptr, nullptr),
 		"Failed to create player metadata table");
 
 	SQLOK(sqlite3_exec(m_database,
@@ -387,7 +387,7 @@ void PlayerDatabaseSQLite3::createDatabase()
 			"	`inv_size` INT NOT NULL,"
 			"	PRIMARY KEY(player, inv_id),"
 			"   FOREIGN KEY (`player`) REFERENCES player (`name`) ON DELETE CASCADE );",
-		NULL, NULL, NULL),
+		nullptr, nullptr, nullptr),
 		"Failed to create player inventory table");
 
 	SQLOK(sqlite3_exec(m_database,
@@ -398,7 +398,7 @@ void PlayerDatabaseSQLite3::createDatabase()
 			"	`item` TEXT NOT NULL DEFAULT '',"
 			"	PRIMARY KEY(player, inv_id, slot_id),"
 			"   FOREIGN KEY (`player`) REFERENCES player (`name`) ON DELETE CASCADE );",
-		NULL, NULL, NULL),
+		nullptr, nullptr, nullptr),
 		"Failed to create player inventory items table");
 }
 

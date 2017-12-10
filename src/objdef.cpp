@@ -25,7 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 ObjDefManager::ObjDefManager(IGameDef *gamedef, ObjDefType type)
 {
 	m_objtype = type;
-	m_ndef = gamedef ? gamedef->getNodeDefManager() : NULL;
+	m_ndef = gamedef ? gamedef->getNodeDefManager() : nullptr;
 }
 
 
@@ -55,7 +55,7 @@ ObjDefHandle ObjDefManager::add(ObjDef *obj)
 ObjDef *ObjDefManager::get(ObjDefHandle handle) const
 {
 	u32 index = validateHandle(handle);
-	return (index != OBJDEF_INVALID_INDEX) ? getRaw(index) : NULL;
+	return (index != OBJDEF_INVALID_INDEX) ? getRaw(index) : nullptr;
 }
 
 
@@ -63,7 +63,7 @@ ObjDef *ObjDefManager::set(ObjDefHandle handle, ObjDef *obj)
 {
 	u32 index = validateHandle(handle);
 	if (index == OBJDEF_INVALID_INDEX)
-		return NULL;
+		return nullptr;
 
 	ObjDef *oldobj = setRaw(index, obj);
 
@@ -123,7 +123,7 @@ ObjDef *ObjDefManager::getByName(const std::string &name) const
 			return obj;
 	}
 
-	return NULL;
+	return nullptr;
 }
 
 

@@ -82,7 +82,7 @@ void ClientEnvironment::setLocalPlayer(LocalPlayer *player)
 	/*
 		It is a failure if already is a local player
 	*/
-	FATAL_ERROR_IF(m_local_player != NULL,
+	FATAL_ERROR_IF(m_local_player != nullptr,
 		"Local player already allocated");
 
 	m_local_player = player;
@@ -316,14 +316,14 @@ GenericCAO* ClientEnvironment::getGenericCAO(u16 id)
 	if (obj && obj->getType() == ACTIVEOBJECT_TYPE_GENERIC)
 		return (GenericCAO*) obj;
 
-	return NULL;
+	return nullptr;
 }
 
 ClientActiveObject* ClientEnvironment::getActiveObject(u16 id)
 {
 	auto n = m_active_objects.find(id);
 	if (n == m_active_objects.end())
-		return NULL;
+		return nullptr;
 	return n->second;
 }
 
@@ -396,7 +396,7 @@ void ClientEnvironment::addActiveObject(u16 id, u8 type,
 {
 	ClientActiveObject* obj =
 		ClientActiveObject::create((ActiveObjectType) type, m_client, this);
-	if(obj == NULL)
+	if(obj == nullptr)
 	{
 		infostream<<"ClientEnvironment::addActiveObject(): "
 			<<"id="<<id<<" type="<<type<<": Couldn't create object"
@@ -428,7 +428,7 @@ void ClientEnvironment::removeActiveObject(u16 id)
 	verbosestream<<"ClientEnvironment::removeActiveObject(): "
 		<<"id="<<id<<std::endl;
 	ClientActiveObject* obj = getActiveObject(id);
-	if (obj == NULL) {
+	if (obj == nullptr) {
 		infostream<<"ClientEnvironment::removeActiveObject(): "
 			<<"id="<<id<<" not found"<<std::endl;
 		return;
@@ -441,7 +441,7 @@ void ClientEnvironment::removeActiveObject(u16 id)
 void ClientEnvironment::processActiveObjectMessage(u16 id, const std::string &data)
 {
 	ClientActiveObject *obj = getActiveObject(id);
-	if (obj == NULL) {
+	if (obj == nullptr) {
 		infostream << "ClientEnvironment::processActiveObjectMessage():"
 			<< " got message for id=" << id << ", which doesn't exist."
 			<< std::endl;

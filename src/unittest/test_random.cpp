@@ -68,7 +68,7 @@ void TestRandom::testPseudoRandom()
 
 void TestRandom::testPseudoRandomRange()
 {
-	PseudoRandom pr((int)time(NULL));
+	PseudoRandom pr((int)time(nullptr));
 
 	EXCEPTION_CHECK(PrngException, pr.range(2000, 6000));
 	EXCEPTION_CHECK(PrngException, pr.range(5, 1));
@@ -97,7 +97,7 @@ void TestRandom::testPcgRandom()
 
 void TestRandom::testPcgRandomRange()
 {
-	PcgRandom pr((int)time(NULL));
+	PcgRandom pr((int)time(nullptr));
 
 	EXCEPTION_CHECK(PrngException, pr.range(5, 1));
 
@@ -143,7 +143,7 @@ void TestRandom::testPcgRandomNormalDist()
 	s32 bins[max - min + 1];
 	memset(bins, 0, sizeof(bins));
 
-	PcgRandom r(486179 + (int)time(NULL));
+	PcgRandom r(486179 + (int)time(nullptr));
 
 	for (u32 i = 0; i != num_samples; i++) {
 		s32 randval = r.randNormalDist(min, max, num_trials);

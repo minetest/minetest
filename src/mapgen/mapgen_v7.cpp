@@ -44,7 +44,7 @@ FlagDesc flagdesc_mapgen_v7[] = {
 	{"ridges",      MGV7_RIDGES},
 	{"floatlands",  MGV7_FLOATLANDS},
 	{"caverns",     MGV7_CAVERNS},
-	{NULL,          0}
+	{nullptr,          0}
 };
 
 

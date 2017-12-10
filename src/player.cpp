@@ -102,17 +102,17 @@ HudElement* Player::getHud(u32 id)
 	if (id < hud.size())
 		return hud[id];
 
-	return NULL;
+	return nullptr;
 }
 
 HudElement* Player::removeHud(u32 id)
 {
 	MutexAutoLock lock(m_mutex);
 
-	HudElement* retval = NULL;
+	HudElement* retval = nullptr;
 	if (id < hud.size()) {
 		retval = hud[id];
-		hud[id] = NULL;
+		hud[id] = nullptr;
 	}
 	return retval;
 }

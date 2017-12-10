@@ -47,7 +47,7 @@ struct EnumString ModApiEnvMod::es_ClearObjectsMode[] =
 {
 	{CLEAR_OBJECTS_MODE_FULL,  "full"},
 	{CLEAR_OBJECTS_MODE_QUICK, "quick"},
-	{0, NULL},
+	{0, nullptr},
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -239,8 +239,8 @@ const luaL_Reg LuaRaycast::methods[] =
 void LuaEmergeAreaCallback(v3s16 blockpos, EmergeAction action, void *param)
 {
 	ScriptCallbackState *state = (ScriptCallbackState *)param;
-	assert(state != NULL);
-	assert(state->script != NULL);
+	assert(state != nullptr);
+	assert(state->script != nullptr);
 	assert(state->refcount > 0);
 
 	// state must be protected by envlock
@@ -420,7 +420,7 @@ int ModApiEnvMod::l_dig_node(lua_State *L)
 	}
 	// Dig it out with a NULL digger (appears in Lua as a
 	// non-functional ObjectRef)
-	bool success = scriptIfaceNode->node_on_dig(pos, n, NULL);
+	bool success = scriptIfaceNode->node_on_dig(pos, n, nullptr);
 	lua_pushboolean(L, success);
 	return 1;
 }
@@ -443,7 +443,7 @@ int ModApiEnvMod::l_punch_node(lua_State *L)
 	}
 	// Punch it with a NULL puncher (appears in Lua as a non-functional
 	// ObjectRef)
-	bool success = scriptIfaceNode->node_on_punch(pos, n, NULL, PointedThing());
+	bool success = scriptIfaceNode->node_on_punch(pos, n, nullptr, PointedThing());
 	lua_pushboolean(L, success);
 	return 1;
 }
@@ -612,12 +612,12 @@ int ModApiEnvMod::l_get_player_by_name(lua_State *L)
 	// Do it
 	const char *name = luaL_checkstring(L, 1);
 	RemotePlayer *player = dynamic_cast<RemotePlayer *>(env->getPlayer(name));
-	if (player == NULL){
+	if (player == nullptr){
 		lua_pushnil(L);
 		return 1;
 	}
 	PlayerSAO *sao = player->getPlayerSAO();
-	if(sao == NULL){
+	if(sao == nullptr){
 		lua_pushnil(L);
 		return 1;
 	}
@@ -1027,8 +1027,8 @@ int ModApiEnvMod::l_emerge_area(lua_State *L)
 {
 	GET_ENV_PTR;
 
-	EmergeCompletionCallback callback = NULL;
-	ScriptCallbackState *state = NULL;
+	EmergeCompletionCallback callback = nullptr;
+	ScriptCallbackState *state = nullptr;
 
 	EmergeManager *emerge = getServer(L)->getEmergeManager();
 

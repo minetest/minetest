@@ -137,7 +137,7 @@ void Address::Resolve(const char *name)
 	}
 
 	// Do getaddrinfo()
-	int e = getaddrinfo(name, NULL, &hints, &resolved);
+	int e = getaddrinfo(name, nullptr, &hints, &resolved);
 	if (e != 0)
 		throw ResolveError(gai_strerror(e));
 
@@ -189,7 +189,7 @@ std::string Address::serializeString() const
 			    (m_addr_family == AF_INET)
 					    ? (void *)&(m_address.ipv4.sin_addr)
 					    : (void *)&(m_address.ipv6.sin6_addr),
-			    str, INET6_ADDRSTRLEN) == NULL) {
+			    str, INET6_ADDRSTRLEN) == nullptr) {
 		return std::string("");
 	}
 	return std::string(str);

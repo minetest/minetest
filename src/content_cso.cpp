@@ -34,7 +34,7 @@ public:
 	{
 		infostream<<"SmokePuffCSO: constructing"<<std::endl;
 		m_spritenode = smgr->addBillboardSceneNode(
-				NULL, v2f(1,1), pos, -1);
+				nullptr, v2f(1,1), pos, -1);
 		m_spritenode->setMaterialTexture(0,
 				env->getGameDef()->tsrc()->getTextureForMesh("smoke_puff.png"));
 		m_spritenode->setMaterialFlag(video::EMF_LIGHTING, false);

@@ -79,7 +79,7 @@ void TileAnimationParams::getTextureModifer(std::ostream &os, v2u32 texture_size
 		return;
 	if (type == TAT_VERTICAL_FRAMES) {
 		int frame_count;
-		determineParams(texture_size, &frame_count, NULL, NULL);
+		determineParams(texture_size, &frame_count, nullptr, nullptr);
 		os << "^[verticalframe:" << frame_count << ":" << frame;
 	} else if (type == TAT_SHEET_2D) {
 		int q, r;
@@ -100,7 +100,7 @@ v2f TileAnimationParams::getTextureCoords(v2u32 texture_size, int frame) const
 		ret = v2u32(0, frame_height * frame);
 	} else if (type == TAT_SHEET_2D) {
 		v2u32 frame_size;
-		determineParams(texture_size, NULL, NULL, &frame_size);
+		determineParams(texture_size, nullptr, nullptr, &frame_size);
 		int q, r;
 		q = frame / sheet_2d.frames_w;
 		r = frame % sheet_2d.frames_w;

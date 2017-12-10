@@ -66,7 +66,7 @@ protected:
 
 	inline PGresult *execPrepared(const char *stmtName, const int paramsNumber,
 		const void **params,
-		const int *paramsLengths = NULL, const int *paramsFormats = NULL,
+		const int *paramsLengths = nullptr, const int *paramsFormats = nullptr,
 		bool clear = true, bool nobinary = true)
 	{
 		return checkResults(PQexecPrepared(m_conn, stmtName, paramsNumber,
@@ -78,7 +78,7 @@ protected:
 		const char **params, bool clear = true, bool nobinary = true)
 	{
 		return execPrepared(stmtName, paramsNumber,
-			(const void **)params, NULL, NULL, clear, nobinary);
+			(const void **)params, nullptr, nullptr, clear, nobinary);
 	}
 
 	void createTableIfNotExists(const std::string &table_name, const std::string &definition);
@@ -90,7 +90,7 @@ protected:
 	virtual void initStatements() = 0;
 	inline void prepareStatement(const std::string &name, const std::string &sql)
 	{
-		checkResults(PQprepare(m_conn, name.c_str(), sql.c_str(), 0, NULL));
+		checkResults(PQprepare(m_conn, name.c_str(), sql.c_str(), 0, nullptr));
 	}
 
 	const int getPGVersion() const { return m_pgversion; }

@@ -128,7 +128,7 @@ void *ConnectionSendThread::run()
 	}
 
 	PROFILE(g_profiler->remove(ThreadIdentifier.str()));
-	return NULL;
+	return nullptr;
 }
 
 void ConnectionSendThread::Trigger()
@@ -534,7 +534,7 @@ void ConnectionSendThread::connect(Address address)
 	Address bind_addr;
 
 	if (address.isIPv6())
-		bind_addr.setAddress((IPv6AddressBytes *) NULL);
+		bind_addr.setAddress((IPv6AddressBytes *) nullptr);
 	else
 		bind_addr.setAddress(0, 0, 0, 0);
 
@@ -886,7 +886,7 @@ void *ConnectionReceiveThread::run()
 	}
 
 	PROFILE(g_profiler->remove(ThreadIdentifier.str()));
-	return NULL;
+	return nullptr;
 }
 
 // Receive packets from the network and buffers and create ConnectionEvents
@@ -1145,7 +1145,7 @@ SharedBuffer<u8> ConnectionReceiveThread::handlePacketType_Control(Channel *chan
 	u8 controltype = readU8(&(packetdata[1]));
 
 	if (controltype == CONTROLTYPE_ACK) {
-		assert(channel != NULL);
+		assert(channel != nullptr);
 
 		if (packetdata.getSize() < 4) {
 			throw InvalidIncomingDataException(
@@ -1294,7 +1294,7 @@ SharedBuffer<u8> ConnectionReceiveThread::handlePacketType_Split(Channel *channe
 SharedBuffer<u8> ConnectionReceiveThread::handlePacketType_Reliable(Channel *channel,
 	SharedBuffer<u8> packetdata, Peer *peer, u8 channelnum, bool reliable)
 {
-	assert(channel != NULL);
+	assert(channel != nullptr);
 
 	// Recursive reliable packets not allowed
 	if (reliable)

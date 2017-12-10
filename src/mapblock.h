@@ -337,7 +337,7 @@ public:
 	// These functions consult the parent container if the position
 	// is not valid on this MapBlock.
 	bool isValidPositionParent(v3s16 p);
-	MapNode getNodeParent(v3s16 p, bool *is_valid_position = NULL);
+	MapNode getNodeParent(v3s16 p, bool *is_valid_position = nullptr);
 	void setNodeParent(v3s16 p, MapNode & n);
 
 	inline void drawbox(s16 x0, s16 y0, s16 z0, s16 w, s16 h, s16 d, MapNode node)
@@ -350,7 +350,7 @@ public:
 
 	// See comments in mapblock.cpp
 	bool propagateSunlight(std::set<v3s16> &light_sources,
-		bool remove_light=false, bool *black_air_left=NULL);
+		bool remove_light=false, bool *black_air_left=nullptr);
 
 	// Copies data to VoxelManipulator to getPosRelative()
 	void copyTo(VoxelManipulator &dst);

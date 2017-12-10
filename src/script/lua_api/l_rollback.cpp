@@ -46,7 +46,7 @@ int ModApiRollback::l_rollback_get_node_actions(lua_State *L)
 	int limit = luaL_checknumber(L, 4);
 	Server *server = getServer(L);
 	IRollbackManager *rollback = server->getRollbackManager();
-	if (rollback == NULL) {
+	if (rollback == nullptr) {
 		return 0;
 	}
 
@@ -89,7 +89,7 @@ int ModApiRollback::l_rollback_revert_actions_by(lua_State *L)
 	IRollbackManager *rollback = server->getRollbackManager();
 
 	// If rollback is disabled, tell it's not a success.
-	if (rollback == NULL) {
+	if (rollback == nullptr) {
 		lua_pushboolean(L, false);
 		lua_newtable(L);
 		return 2;

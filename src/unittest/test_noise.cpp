@@ -69,7 +69,7 @@ void TestNoise::testNoise2dBulk()
 {
 	NoiseParams np_normal(20, 40, v3f(50, 50, 50), 9,  5, 0.6, 2.0);
 	Noise noise_normal_2d(&np_normal, 1337, 10, 10);
-	float *noisevals = noise_normal_2d.perlinMap2D(0, 0, NULL);
+	float *noisevals = noise_normal_2d.perlinMap2D(0, 0, nullptr);
 
 	for (u32 i = 0; i != 10 * 10; i++) {
 		float actual   = noisevals[i];
@@ -96,7 +96,7 @@ void TestNoise::testNoise3dBulk()
 {
 	NoiseParams np_normal(20, 40, v3f(50, 50, 50), 9, 5, 0.6, 2.0);
 	Noise noise_normal_3d(&np_normal, 1337, 10, 10, 10);
-	float *noisevals = noise_normal_3d.perlinMap3D(0, 0, 0, NULL);
+	float *noisevals = noise_normal_3d.perlinMap3D(0, 0, 0, nullptr);
 
 	for (u32 i = 0; i != 10 * 10 * 10; i++) {
 		float actual   = noisevals[i];
@@ -112,7 +112,7 @@ void TestNoise::testNoiseInvalidParams()
 	try {
 		NoiseParams np_highmem(4, 70, v3f(1, 1, 1), 5, 60, 0.7, 10.0);
 		Noise noise_highmem_3d(&np_highmem, 1337, 200, 200, 200);
-		noise_highmem_3d.perlinMap3D(0, 0, 0, NULL);
+		noise_highmem_3d.perlinMap3D(0, 0, 0, nullptr);
 	} catch (InvalidNoiseParamsException &) {
 		exception_thrown = true;
 	}

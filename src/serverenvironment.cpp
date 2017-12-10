@@ -109,7 +109,7 @@ LBMContentMapping::lookup(content_t c) const
 {
 	lbm_map::const_iterator it = map.find(c);
 	if (it == map.end())
-		return NULL;
+		return nullptr;
 	// This first dereferences the iterator, returning
 	// a std::vector<LoadingBlockModifierDef *>
 	// reference, then we convert it to a pointer.
@@ -444,7 +444,7 @@ RemotePlayer *ServerEnvironment::getPlayer(const session_t peer_id)
 		if (player->getPeerId() == peer_id)
 			return player;
 	}
-	return NULL;
+	return nullptr;
 }
 
 RemotePlayer *ServerEnvironment::getPlayer(const char* name)
@@ -453,7 +453,7 @@ RemotePlayer *ServerEnvironment::getPlayer(const char* name)
 		if (strcmp(player->getName(), name) == 0)
 			return player;
 	}
-	return NULL;
+	return nullptr;
 }
 
 void ServerEnvironment::addPlayer(RemotePlayer *player)
@@ -465,9 +465,9 @@ void ServerEnvironment::addPlayer(RemotePlayer *player)
 	*/
 	// If peer id is non-zero, it has to be unique.
 	if (player->getPeerId() != PEER_ID_INEXISTENT)
-		FATAL_ERROR_IF(getPlayer(player->getPeerId()) != NULL, "Peer id not unique");
+		FATAL_ERROR_IF(getPlayer(player->getPeerId()) != nullptr, "Peer id not unique");
 	// Name has to be unique.
-	FATAL_ERROR_IF(getPlayer(player->getName()) != NULL, "Player name not unique");
+	FATAL_ERROR_IF(getPlayer(player->getName()) != nullptr, "Player name not unique");
 	// Add.
 	m_players.push_back(player);
 }
@@ -733,7 +733,7 @@ public:
 				ndef->getIds(content_s, ids);
 				for (content_t c : ids) {
 					if (c >= m_aabms.size())
-						m_aabms.resize(c + 256, NULL);
+						m_aabms.resize(c + 256, nullptr);
 					if (!m_aabms[c])
 						m_aabms[c] = new std::vector<ActiveABM>;
 					m_aabms[c]->push_back(aabm);
@@ -762,7 +762,7 @@ public:
 				{
 					MapBlock *block2 = map->getBlockNoCreateNoEx(
 						block->getPos() + v3s16(x,y,z));
-					if(block2==NULL){
+					if(block2==nullptr){
 						wider_unknown_count++;
 						continue;
 					}
@@ -1051,7 +1051,7 @@ void ServerEnvironment::clearObjects(ClearObjectsMode mode)
 	// Grab a reference on each loaded block to avoid unloading it
 	for (v3s16 p : loaded_blocks) {
 		MapBlock *block = m_map->getBlockNoCreateNoEx(p);
-		assert(block != NULL);
+		assert(block != nullptr);
 		block->refGrab();
 	}
 
@@ -1413,7 +1413,7 @@ void ServerEnvironment::deleteParticleSpawner(u32 id, bool remove_from_object)
 	if (it != m_particle_spawner_attachments.end()) {
 		u16 obj_id = it->second;
 		ServerActiveObject *sao = getActiveObject(obj_id);
-		if (sao != NULL && remove_from_object) {
+		if (sao != nullptr && remove_from_object) {
 			sao->detachParticleSpawner(id);
 		}
 		m_particle_spawner_attachments.erase(id);
@@ -1423,7 +1423,7 @@ void ServerEnvironment::deleteParticleSpawner(u32 id, bool remove_from_object)
 ServerActiveObject* ServerEnvironment::getActiveObject(u16 id)
 {
 	ServerActiveObjectMap::const_iterator n = m_active_objects.find(id);
-	return (n != m_active_objects.end() ? n->second : NULL);
+	return (n != m_active_objects.end() ? n->second : nullptr);
 }
 
 bool isFreeServerActiveObjectId(u16 id, ServerActiveObjectMap &objects)
@@ -1484,7 +1484,7 @@ void ServerEnvironment::getAddedActiveObjects(PlayerSAO *playersao, s16 radius,
 
 		// Get object
 		ServerActiveObject *object = ao_it.second;
-		if (object == NULL)
+		if (object == nullptr)
 			continue;
 
 		if (object->isGone())
@@ -1534,7 +1534,7 @@ void ServerEnvironment::getRemovedActiveObjects(PlayerSAO *playersao, s16 radius
 	for (u16 id : current_objects) {
 		ServerActiveObject *object = getActiveObject(id);
 
-		if (object == NULL) {
+		if (object == nullptr) {
 			infostream << "ServerEnvironment::getRemovedActiveObjects():"
 				<< " object in current_objects is NULL" << std::endl;
 			removed_objects.push(id);
@@ -1828,7 +1828,7 @@ static void print_hexdump(std::ostream &o, const std::string &data)
 */
 void ServerEnvironment::activateObjects(MapBlock *block, u32 dtime_s)
 {
-	if(block == NULL)
+	if(block == nullptr)
 		return;
 
 	// Ignore if no stored objects (to not set changed flag)
@@ -1859,7 +1859,7 @@ void ServerEnvironment::activateObjects(MapBlock *block, u32 dtime_s)
 		ServerActiveObject *obj = ServerActiveObject::create
 			((ActiveObjectType) s_obj.type, this, 0, s_obj.pos, s_obj.data);
 		// If couldn't create object, store static data back.
-		if(obj == NULL) {
+		if(obj == nullptr) {
 			errorstream<<"ServerEnvironment::activateObjects(): "
 				<<"failed to create active object from static object "
 				<<"in block "<<PP(s_obj.pos/BS)
@@ -2181,8 +2181,8 @@ bool ServerEnvironment::migratePlayersDatabase(const GameParams &game_params,
 		for (std::vector<std::string>::const_iterator it = player_list.begin();
 			it != player_list.end(); ++it) {
 			actionstream << "Migrating player " << it->c_str() << std::endl;
-			RemotePlayer player(it->c_str(), NULL);
-			PlayerSAO playerSAO(NULL, &player, 15000, false);
+			RemotePlayer player(it->c_str(), nullptr);
+			PlayerSAO playerSAO(nullptr, &player, 15000, false);
 
 			srcdb->loadPlayer(&player, &playerSAO);
 

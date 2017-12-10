@@ -366,7 +366,7 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 #endif
 		{
 			ServerEnvironment *s_env = dynamic_cast<ServerEnvironment*>(env);
-			if (s_env != NULL) {
+			if (s_env != nullptr) {
 				f32 distance = speed_f->getLength();
 				std::vector<u16> s_objects;
 				s_env->getObjectsInsideRadius(s_objects, *pos_f, distance * 1.5f);

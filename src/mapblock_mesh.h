@@ -117,7 +117,7 @@ public:
 	MinimapMapblock *moveMinimapMapblock()
 	{
 		MinimapMapblock *p = m_minimap_mapblock;
-		m_minimap_mapblock = NULL;
+		m_minimap_mapblock = nullptr;
 		return p;
 	}
 

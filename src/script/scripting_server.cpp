@@ -120,5 +120,5 @@ void ServerScripting::InitializeModApi(lua_State *L, int top)
 
 void log_deprecated(const std::string &message)
 {
-	log_deprecated(NULL, message);
+	log_deprecated(nullptr, message);
 }

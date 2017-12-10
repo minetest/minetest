@@ -30,5 +30,5 @@ struct EnumString es_ItemType[] =
 		{ITEM_NODE, "node"},
 		{ITEM_CRAFT, "craft"},
 		{ITEM_TOOL, "tool"},
-		{0, NULL},
+		{0, nullptr},
 	};

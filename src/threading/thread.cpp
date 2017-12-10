@@ -284,7 +284,7 @@ bool Thread::bindToProcessor(unsigned int proc_number)
 
 #elif defined(__sun) || defined(sun)
 
-	return processor_bind(P_LWPID, P_MYID, proc_number, NULL) == 0
+	return processor_bind(P_LWPID, P_MYID, proc_number, nullptr) == 0
 
 #elif defined(_AIX)
 

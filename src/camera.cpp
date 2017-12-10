@@ -589,7 +589,7 @@ void Camera::drawWieldedTool(irr::core::matrix4* translation)
 	cam->setFOV(72.0*M_PI/180.0);
 	cam->setNearValue(10);
 	cam->setFarValue(1000);
-	if (translation != NULL)
+	if (translation != nullptr)
 	{
 		irr::core::matrix4 startMatrix = cam->getAbsoluteTransformation();
 		irr::core::vector3df focusPoint = (cam->getTarget()

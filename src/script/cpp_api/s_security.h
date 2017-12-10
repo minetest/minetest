@@ -29,7 +29,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	}
 #define CHECK_SECURE_PATH(L, path, write_required) \
 	if (ScriptApiSecurity::isSecure(L)) { \
-		CHECK_SECURE_PATH_INTERNAL(L, path, write_required, NULL); \
+		CHECK_SECURE_PATH_INTERNAL(L, path, write_required, nullptr); \
 	}
 #define CHECK_SECURE_PATH_POSSIBLE_WRITE(L, path, ptr) \
 	if (ScriptApiSecurity::isSecure(L)) { \
@@ -51,10 +51,10 @@ public:
 	// Checks if the Lua state has been secured
 	static bool isSecure(lua_State *L);
 	// Loads a file as Lua code safely (doesn't allow bytecode).
-	static bool safeLoadFile(lua_State *L, const char *path, const char *display_name = NULL);
+	static bool safeLoadFile(lua_State *L, const char *path, const char *display_name = nullptr);
 	// Checks if mods are allowed to read (and optionally write) to the path
 	static bool checkPath(lua_State *L, const char *path, bool write_required,
-			bool *write_allowed=NULL);
+			bool *write_allowed=nullptr);
 
 private:
 	// Syntax: "sl_" <Library name or 'g' (global)> '_' <Function name>

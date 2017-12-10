@@ -156,7 +156,7 @@ QueuedMeshUpdate *MeshUpdateQueue::pop()
 		fillDataFromMapBlockCache(q);
 		return q;
 	}
-	return NULL;
+	return nullptr;
 }
 
 CachedMapBlockData* MeshUpdateQueue::cacheBlock(Map *map, v3s16 p, UpdateMode mode,
@@ -174,14 +174,14 @@ CachedMapBlockData* MeshUpdateQueue::cacheBlock(Map *map, v3s16 p, UpdateMode mo
 		}
 		MapBlock *b = map->getBlockNoCreateNoEx(p);
 		if (b) {
-			if (cached_block->data == NULL)
+			if (cached_block->data == nullptr)
 				cached_block->data =
 						new MapNode[MAP_BLOCKSIZE * MAP_BLOCKSIZE * MAP_BLOCKSIZE];
 			memcpy(cached_block->data, b->getData(),
 					MAP_BLOCKSIZE * MAP_BLOCKSIZE * MAP_BLOCKSIZE * sizeof(MapNode));
 		} else {
 			delete[] cached_block->data;
-			cached_block->data = NULL;
+			cached_block->data = nullptr;
 		}
 		return cached_block;
 	}
@@ -205,7 +205,7 @@ CachedMapBlockData* MeshUpdateQueue::getCachedBlock(const v3s16 &p)
 	if (it != m_cache.end()) {
 		return it->second;
 	}
-	return NULL;
+	return nullptr;
 }
 
 void MeshUpdateQueue::fillDataFromMapBlockCache(QueuedMeshUpdate *q)

@@ -462,7 +462,7 @@ void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d,
 
 void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d)
 {
-	move(dtime, env, pos_max_d, NULL);
+	move(dtime, env, pos_max_d, nullptr);
 }
 
 void LocalPlayer::applyControl(float dtime, Environment *env)

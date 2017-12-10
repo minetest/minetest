@@ -153,7 +153,7 @@ void Particle::step(float dtime)
 		int frame_length_i, frame_count;
 		m_animation.determineParams(
 				m_material.getTexture(0)->getSize(),
-				&frame_count, &frame_length_i, NULL);
+				&frame_count, &frame_length_i, nullptr);
 		float frame_length = frame_length_i / 1000.0;
 		while (m_animation_time > frame_length) {
 			m_animation_frame++;
@@ -200,7 +200,7 @@ void Particle::updateVertices()
 		v2f texcoord, framesize_f;
 		v2u32 framesize;
 		texcoord = m_animation.getTextureCoords(texsize, m_animation_frame);
-		m_animation.determineParams(texsize, NULL, NULL, &framesize);
+		m_animation.determineParams(texsize, nullptr, nullptr, &framesize);
 		framesize_f = v2f(framesize.X / (float) texsize.X, framesize.Y / (float) texsize.Y);
 
 		tx0 = m_texpos.X + texcoord.X;

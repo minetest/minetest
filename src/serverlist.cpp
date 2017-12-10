@@ -75,7 +75,7 @@ std::vector<ServerListSpec> getOnline()
 	geturl << g_settings->get("serverlist_url") <<
 		"/list?proto_version_min=" << proto_version_min <<
 		"&proto_version_max=" << CLIENT_PROTOCOL_VERSION_MAX;
-	Json::Value root = fetchJsonValue(geturl.str(), NULL);
+	Json::Value root = fetchJsonValue(geturl.str(), nullptr);
 
 	std::vector<ServerListSpec> server_list;
 

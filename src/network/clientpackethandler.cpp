@@ -118,7 +118,7 @@ void Client::handleCommand_AuthAccept(NetworkPacket* pkt)
 
 	// Set player position
 	LocalPlayer *player = m_env.getLocalPlayer();
-	assert(player != NULL);
+	assert(player != nullptr);
 	player->setPosition(playerpos);
 
 	infostream << "Client: received map seed: " << m_map_seed << std::endl;
@@ -294,7 +294,7 @@ void Client::handleCommand_Inventory(NetworkPacket* pkt)
 	std::istringstream is(datastring, std::ios_base::binary);
 
 	LocalPlayer *player = m_env.getLocalPlayer();
-	assert(player != NULL);
+	assert(player != nullptr);
 
 	player->inventory.deSerialize(is);
 
@@ -485,7 +485,7 @@ void Client::handleCommand_ActiveObjectMessages(NetworkPacket* pkt)
 void Client::handleCommand_Movement(NetworkPacket* pkt)
 {
 	LocalPlayer *player = m_env.getLocalPlayer();
-	assert(player != NULL);
+	assert(player != nullptr);
 
 	float mad, maa, maf, msw, mscr, msf, mscl, msj, lf, lfs, ls, g;
 
@@ -510,7 +510,7 @@ void Client::handleCommand_HP(NetworkPacket* pkt)
 {
 
 	LocalPlayer *player = m_env.getLocalPlayer();
-	assert(player != NULL);
+	assert(player != nullptr);
 
 	u16 oldhp   = player->hp;
 
@@ -535,7 +535,7 @@ void Client::handleCommand_HP(NetworkPacket* pkt)
 void Client::handleCommand_Breath(NetworkPacket* pkt)
 {
 	LocalPlayer *player = m_env.getLocalPlayer();
-	assert(player != NULL);
+	assert(player != nullptr);
 
 	u16 breath;
 
@@ -547,7 +547,7 @@ void Client::handleCommand_Breath(NetworkPacket* pkt)
 void Client::handleCommand_MovePlayer(NetworkPacket* pkt)
 {
 	LocalPlayer *player = m_env.getLocalPlayer();
-	assert(player != NULL);
+	assert(player != nullptr);
 
 	v3f pos;
 	f32 pitch, yaw;
@@ -601,7 +601,7 @@ void Client::handleCommand_AnnounceMedia(NetworkPacket* pkt)
 	infostream << "Client: Received media announcement: packet size: "
 			<< pkt->getSize() << std::endl;
 
-	if (m_media_downloader == NULL ||
+	if (m_media_downloader == nullptr ||
 			m_media_downloader->isStarted()) {
 		const char *problem = m_media_downloader ?
 			"we already saw another announcement" :
@@ -853,7 +853,7 @@ void Client::handleCommand_Privileges(NetworkPacket* pkt)
 void Client::handleCommand_InventoryFormSpec(NetworkPacket* pkt)
 {
 	LocalPlayer *player = m_env.getLocalPlayer();
-	assert(player != NULL);
+	assert(player != nullptr);
 
 	// Store formspec in LocalPlayer
 	player->inventory_formspec = pkt->readLongString();
@@ -869,7 +869,7 @@ void Client::handleCommand_DetachedInventory(NetworkPacket* pkt)
 	infostream << "Client: Detached inventory update: \"" << name
 			<< "\"" << std::endl;
 
-	Inventory *inv = NULL;
+	Inventory *inv = nullptr;
 	if (m_detached_inventories.count(name) > 0)
 		inv = m_detached_inventories[name];
 	else {
@@ -1121,7 +1121,7 @@ void Client::handleCommand_HudSetFlags(NetworkPacket* pkt)
 	*pkt >> flags >> mask;
 
 	LocalPlayer *player = m_env.getLocalPlayer();
-	assert(player != NULL);
+	assert(player != nullptr);
 
 	bool was_minimap_visible = player->hud_flags & HUD_FLAG_MINIMAP_VISIBLE;
 	bool was_minimap_radar_visible = player->hud_flags & HUD_FLAG_MINIMAP_RADAR_VISIBLE;
@@ -1150,7 +1150,7 @@ void Client::handleCommand_HudSetParam(NetworkPacket* pkt)
 	*pkt >> param >> value;
 
 	LocalPlayer *player = m_env.getLocalPlayer();
-	assert(player != NULL);
+	assert(player != nullptr);
 
 	if (param == HUD_PARAM_HOTBAR_ITEMCOUNT && value.size() == 4) {
 		s32 hotbar_itemcount = readS32((u8*) value.c_str());
@@ -1251,7 +1251,7 @@ void Client::handleCommand_OverrideDayNightRatio(NetworkPacket* pkt)
 void Client::handleCommand_LocalPlayerAnimations(NetworkPacket* pkt)
 {
 	LocalPlayer *player = m_env.getLocalPlayer();
-	assert(player != NULL);
+	assert(player != nullptr);
 
 	*pkt >> player->local_animations[0];
 	*pkt >> player->local_animations[1];
@@ -1263,7 +1263,7 @@ void Client::handleCommand_LocalPlayerAnimations(NetworkPacket* pkt)
 void Client::handleCommand_EyeOffset(NetworkPacket* pkt)
 {
 	LocalPlayer *player = m_env.getLocalPlayer();
-	assert(player != NULL);
+	assert(player != nullptr);
 
 	*pkt >> player->eye_offset_first >> player->eye_offset_third;
 }

@@ -48,7 +48,7 @@ struct EnumString ScriptApiNode::es_DrawType[] =
 		{NDT_GLASSLIKE_FRAMED_OPTIONAL, "glasslike_framed_optional"},
 		{NDT_MESH, "mesh"},
 		{NDT_PLANTLIKE_ROOTED, "plantlike_rooted"},
-		{0, NULL},
+		{0, nullptr},
 	};
 
 struct EnumString ScriptApiNode::es_ContentParamType2[] =
@@ -65,7 +65,7 @@ struct EnumString ScriptApiNode::es_ContentParamType2[] =
 		{CPT2_COLORED_FACEDIR, "colorfacedir"},
 		{CPT2_COLORED_WALLMOUNTED, "colorwallmounted"},
 		{CPT2_GLASSLIKE_LIQUID_LEVEL, "glasslikeliquidlevel"},
-		{0, NULL},
+		{0, nullptr},
 	};
 
 struct EnumString ScriptApiNode::es_LiquidType[] =
@@ -73,14 +73,14 @@ struct EnumString ScriptApiNode::es_LiquidType[] =
 		{LIQUID_NONE, "none"},
 		{LIQUID_FLOWING, "flowing"},
 		{LIQUID_SOURCE, "source"},
-		{0, NULL},
+		{0, nullptr},
 	};
 
 struct EnumString ScriptApiNode::es_ContentParamType[] =
 	{
 		{CPT_NONE, "none"},
 		{CPT_LIGHT, "light"},
-		{0, NULL},
+		{0, nullptr},
 	};
 
 struct EnumString ScriptApiNode::es_NodeBoxType[] =
@@ -90,7 +90,7 @@ struct EnumString ScriptApiNode::es_NodeBoxType[] =
 		{NODEBOX_WALLMOUNTED, "wallmounted"},
 		{NODEBOX_LEVELED, "leveled"},
 		{NODEBOX_CONNECTED, "connected"},
-		{0, NULL},
+		{0, nullptr},
 	};
 
 bool ScriptApiNode::node_on_punch(v3s16 p, MapNode node,

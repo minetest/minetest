@@ -37,7 +37,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #define GET_ENV_PTR_NO_MAP_LOCK                              \
 	ServerEnvironment *env = (ServerEnvironment *)getEnv(L); \
-	if (env == NULL)                                         \
+	if (env == nullptr)                                         \
 		return 0
 
 #define GET_ENV_PTR         \

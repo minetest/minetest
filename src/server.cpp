@@ -1003,7 +1003,7 @@ void Server::Receive()
 PlayerSAO* Server::StageTwoClientInit(session_t peer_id)
 {
 	std::string playername;
-	PlayerSAO *playersao = NULL;
+	PlayerSAO *playersao = nullptr;
 	m_clients.lock();
 	try {
 		RemoteClient* client = m_clients.lockedGetClientNoEx(peer_id, CS_InitDone);
@@ -1032,7 +1032,7 @@ PlayerSAO* Server::StageTwoClientInit(session_t peer_id)
 					<< std::endl;
 			DenyAccess_Legacy(peer_id, L"Could not allocate player.");
 		}
-		return NULL;
+		return nullptr;
 	}
 
 	/*
@@ -1201,10 +1201,10 @@ Inventory* Server::getInventory(const InventoryLocation &loc)
 	{
 		RemotePlayer *player = m_env->getPlayer(loc.name.c_str());
 		if(!player)
-			return NULL;
+			return nullptr;
 		PlayerSAO *playersao = player->getPlayerSAO();
 		if(!playersao)
-			return NULL;
+			return nullptr;
 		return playersao->getInventory();
 	}
 		break;
@@ -1212,14 +1212,14 @@ Inventory* Server::getInventory(const InventoryLocation &loc)
 	{
 		NodeMetadata *meta = m_env->getMap().getNodeMetadata(loc.p);
 		if(!meta)
-			return NULL;
+			return nullptr;
 		return meta->getInventory();
 	}
 		break;
 	case InventoryLocation::DETACHED:
 	{
 		if(m_detached_inventories.count(loc.name) == 0)
-			return NULL;
+			return nullptr;
 		return m_detached_inventories[loc.name];
 	}
 		break;
@@ -1227,7 +1227,7 @@ Inventory* Server::getInventory(const InventoryLocation &loc)
 		sanity_check(false); // abort
 		break;
 	}
-	return NULL;
+	return nullptr;
 }
 void Server::setInventoryModified(const InventoryLocation &loc, bool playerSend)
 {
@@ -1882,7 +1882,7 @@ void Server::SendPlayerPrivileges(session_t peer_id)
 		return;
 
 	std::set<std::string> privs;
-	m_script->getAuth(player->getName(), NULL, &privs);
+	m_script->getAuth(player->getName(), nullptr, &privs);
 
 	NetworkPacket pkt(TOCLIENT_PRIVILEGES, 0, peer_id);
 	pkt << (u16) privs.size();
@@ -2282,7 +2282,7 @@ void Server::fillMediaCache()
 				".x", ".b3d", ".md2", ".obj",
 				// Custom translation file format
 				".tr",
-				NULL
+				nullptr
 			};
 			if (removeStringEnd(filename, supported_ext).empty()){
 				infostream << "Server: ignoring unsupported file extension: \""
@@ -2737,7 +2737,7 @@ void Server::handleChatInterfaceEvent(ChatEvent *evt)
 	if (evt->type == CET_NICK_ADD) {
 		// The terminal informed us of its nick choice
 		m_admin_nick = ((ChatEventNick *)evt)->nick;
-		if (!m_script->getAuth(m_admin_nick, NULL, NULL)) {
+		if (!m_script->getAuth(m_admin_nick, nullptr, nullptr)) {
 			errorstream << "You haven't set up an account." << std::endl
 				<< "Please log in using the client as '"
 				<< m_admin_nick << "' with a secure password." << std::endl
@@ -2876,7 +2876,7 @@ PlayerSAO *Server::getPlayerSAO(session_t peer_id)
 {
 	RemotePlayer *player = m_env->getPlayer(peer_id);
 	if (!player)
-		return NULL;
+		return nullptr;
 	return player->getPlayerSAO();
 }
 
@@ -2921,7 +2921,7 @@ std::wstring Server::getStatusString()
 std::set<std::string> Server::getPlayerEffectivePrivs(const std::string &name)
 {
 	std::set<std::string> privs;
-	m_script->getAuth(name, NULL, &privs);
+	m_script->getAuth(name, nullptr, &privs);
 	return privs;
 }
 
@@ -3380,7 +3380,7 @@ const ModSpec *Server::getModSpec(const std::string &modname) const
 		if (mod.name == modname)
 			return &mod;
 	}
-	return NULL;
+	return nullptr;
 }
 
 void Server::getModNames(std::vector<std::string> &modlist)
@@ -3499,7 +3499,7 @@ PlayerSAO* Server::emergePlayer(const char *name, session_t peer_id, u16 proto_v
 	// If player is already connected, cancel
 	if (player && player->getPeerId() != PEER_ID_INEXISTENT) {
 		infostream<<"emergePlayer(): Player already connected"<<std::endl;
-		return NULL;
+		return nullptr;
 	}
 
 	/*
@@ -3508,7 +3508,7 @@ PlayerSAO* Server::emergePlayer(const char *name, session_t peer_id, u16 proto_v
 	if (m_env->getPlayer(peer_id)) {
 		infostream<<"emergePlayer(): Player with wrong name but same"
 				" peer_id already exists"<<std::endl;
-		return NULL;
+		return nullptr;
 	}
 
 	if (!player) {

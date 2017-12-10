@@ -58,7 +58,7 @@ static inline void gen_srp_v(const std::string &name,
 	SRP_Result res = srp_create_salted_verification_key(SRP_SHA256, SRP_NG_2048,
 		n_name.c_str(), (const unsigned char *)password.c_str(),
 		password.size(), (unsigned char **)salt, salt_len,
-		(unsigned char **)bytes_v, len_v, NULL, NULL);
+		(unsigned char **)bytes_v, len_v, nullptr, nullptr);
 	FATAL_ERROR_IF(res != SRP_OK, "Couldn't create salted SRP verifier");
 }
 

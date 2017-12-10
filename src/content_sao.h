@@ -109,8 +109,8 @@ public:
 	{ return m_prop.static_save; }
 	void getStaticData(std::string *result) const;
 	int punch(v3f dir,
-			const ToolCapabilities *toolcap=NULL,
-			ServerActiveObject *puncher=NULL,
+			const ToolCapabilities *toolcap=nullptr,
+			ServerActiveObject *puncher=nullptr,
 			float time_from_last_punch=1000000);
 	void rightClick(ServerActiveObject *clicker);
 	void setPos(const v3f &pos);

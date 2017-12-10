@@ -64,7 +64,7 @@ intlGUIEditBox::intlGUIEditBox(const wchar_t* text, bool border,
 		const core::rect<s32>& rectangle, bool writable, bool has_vscrollbar)
 	: IGUIEditBox(environment, parent, id, rectangle),
 	Border(border), FrameRect(rectangle),
-	m_scrollbar_width(0), m_vscrollbar(NULL), m_writable(writable)
+	m_scrollbar_width(0), m_vscrollbar(nullptr), m_writable(writable)
 {
 	#ifdef _DEBUG
 	setDebugName("intlintlGUIEditBox");
@@ -1110,7 +1110,7 @@ s32 intlGUIEditBox::getCursorPos(s32 x, s32 y)
 
 	const u32 lineCount = (WordWrap || MultiLine) ? BrokenText.size() : 1;
 
-	core::stringw *txtLine = NULL;
+	core::stringw *txtLine = nullptr;
 	s32 startPos = 0;
 	u32 curr_line_idx = 0;
 	x += 3;

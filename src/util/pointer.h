@@ -30,7 +30,7 @@ public:
 	Buffer()
 	{
 		m_size = 0;
-		data = NULL;
+		data = nullptr;
 	}
 	Buffer(unsigned int size)
 	{
@@ -38,7 +38,7 @@ public:
 		if(size != 0)
 			data = new T[size];
 		else
-			data = NULL;
+			data = nullptr;
 	}
 	Buffer(const Buffer &buffer)
 	{
@@ -49,7 +49,7 @@ public:
 			memcpy(data, buffer.data, buffer.m_size);
 		}
 		else
-			data = NULL;
+			data = nullptr;
 	}
 	Buffer(const T *t, unsigned int size)
 	{
@@ -60,7 +60,7 @@ public:
 			memcpy(data, t, size);
 		}
 		else
-			data = NULL;
+			data = nullptr;
 	}
 	~Buffer()
 	{
@@ -78,7 +78,7 @@ public:
 			memcpy(data, buffer.data, buffer.m_size);
 		}
 		else
-			data = NULL;
+			data = nullptr;
 		return *this;
 	}
 	T & operator[](unsigned int i) const
@@ -116,7 +116,7 @@ public:
 	SharedBuffer()
 	{
 		m_size = 0;
-		data = NULL;
+		data = nullptr;
 		refcount = new unsigned int;
 		(*refcount) = 1;
 	}
@@ -126,7 +126,7 @@ public:
 		if(m_size != 0)
 			data = new T[m_size];
 		else
-			data = NULL;
+			data = nullptr;
 		refcount = new unsigned int;
 		memset(data,0,sizeof(T)*m_size);
 		(*refcount) = 1;
@@ -161,7 +161,7 @@ public:
 			memcpy(data, t, m_size);
 		}
 		else
-			data = NULL;
+			data = nullptr;
 		refcount = new unsigned int;
 		(*refcount) = 1;
 	}
@@ -176,7 +176,7 @@ public:
 				memcpy(data, *buffer, buffer.getSize());
 		}
 		else
-			data = NULL;
+			data = nullptr;
 		refcount = new unsigned int;
 		(*refcount) = 1;
 	}

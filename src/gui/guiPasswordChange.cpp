@@ -186,13 +186,13 @@ void GUIPasswordChange::acceptInput()
 {
 	gui::IGUIElement *e;
 	e = getElementFromId(ID_oldPassword);
-	if (e != NULL)
+	if (e != nullptr)
 		m_oldpass = e->getText();
 	e = getElementFromId(ID_newPassword1);
-	if (e != NULL)
+	if (e != nullptr)
 		m_newpass = e->getText();
 	e = getElementFromId(ID_newPassword2);
-	if (e != NULL)
+	if (e != nullptr)
 		m_newpass_confirm = e->getText();
 }
 
@@ -200,7 +200,7 @@ bool GUIPasswordChange::processInput()
 {
 	if (m_newpass != m_newpass_confirm) {
 		gui::IGUIElement *e = getElementFromId(ID_message);
-		if (e != NULL)
+		if (e != nullptr)
 			e->setVisible(true);
 		return false;
 	}

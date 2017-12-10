@@ -246,14 +246,14 @@ bool AutoHideButtonBar::isButton(const SEvent &event)
 {
 	IGUIElement* rootguielement = m_guienv->getRootGUIElement();
 
-	if (rootguielement == NULL) {
+	if (rootguielement == nullptr) {
 		return false;
 	}
 
 	gui::IGUIElement *element = rootguielement->getElementFromPoint(
 			core::position2d<s32>(event.TouchInput.X, event.TouchInput.Y));
 
-	if (element == NULL) {
+	if (element == nullptr) {
 		return false;
 	}
 
@@ -545,7 +545,7 @@ touch_gui_button_id TouchScreenGUI::getButtonID(s32 x, s32 y)
 {
 	IGUIElement* rootguielement = m_guienv->getRootGUIElement();
 
-	if (rootguielement != NULL) {
+	if (rootguielement != nullptr) {
 		gui::IGUIElement *element =
 				rootguielement->getElementFromPoint(core::position2d<s32>(x,y));
 
@@ -946,7 +946,7 @@ TouchScreenGUI::~TouchScreenGUI()
 		button_info* btn = &m_buttons[i];
 		if (btn->guibutton != 0) {
 			btn->guibutton->drop();
-			btn->guibutton = NULL;
+			btn->guibutton = nullptr;
 		}
 	}
 }

@@ -106,7 +106,7 @@ public:
 	 * @param name path to the texture
 	 * @param id receives the texture ID, always 0 in this implementation
 	 */
-	video::ITexture *getTexture(const std::string &name, u32 *id = NULL);
+	video::ITexture *getTexture(const std::string &name, u32 *id = nullptr);
 
 private:
 	/** driver to get textures from */

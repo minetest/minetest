@@ -42,7 +42,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 FlagDesc flagdesc_mapgen_flat[] = {
 	{"lakes", MGFLAT_LAKES},
 	{"hills", MGFLAT_HILLS},
-	{NULL,    0}
+	{nullptr,    0}
 };
 
 ///////////////////////////////////////////////////////////////////////////////////////

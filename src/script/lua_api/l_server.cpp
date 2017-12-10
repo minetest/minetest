@@ -32,7 +32,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 int ModApiServer::l_request_shutdown(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	const char *msg = lua_tolstring(L, 1, NULL);
+	const char *msg = lua_tolstring(L, 1, nullptr);
 	bool reconnect = lua_toboolean(L, 2);
 	float seconds_before_shutdown = lua_tonumber(L, 3);
 	getServer(L)->requestShutdown(msg ? msg : "", reconnect, seconds_before_shutdown);
@@ -117,7 +117,7 @@ int ModApiServer::l_get_player_ip(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 	const char * name = luaL_checkstring(L, 1);
 	RemotePlayer *player = dynamic_cast<ServerEnvironment *>(getEnv(L))->getPlayer(name);
-	if(player == NULL)
+	if(player == nullptr)
 	{
 		lua_pushnil(L); // no such player
 		return 1;
@@ -142,7 +142,7 @@ int ModApiServer::l_get_player_information(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 	const char * name = luaL_checkstring(L, 1);
 	RemotePlayer *player = dynamic_cast<ServerEnvironment *>(getEnv(L))->getPlayer(name);
-	if (player == NULL) {
+	if (player == nullptr) {
 		lua_pushnil(L); // no such player
 		return 1;
 	}
@@ -286,7 +286,7 @@ int ModApiServer::l_ban_player(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 	const char * name = luaL_checkstring(L, 1);
 	RemotePlayer *player = dynamic_cast<ServerEnvironment *>(getEnv(L))->getPlayer(name);
-	if (player == NULL) {
+	if (player == nullptr) {
 		lua_pushboolean(L, false); // no such player
 		return 1;
 	}
@@ -321,7 +321,7 @@ int ModApiServer::l_kick_player(lua_State *L)
 	}
 
 	RemotePlayer *player = dynamic_cast<ServerEnvironment *>(getEnv(L))->getPlayer(name);
-	if (player == NULL) {
+	if (player == nullptr) {
 		lua_pushboolean(L, false); // No such player
 		return 1;
 	}
@@ -486,7 +486,7 @@ int ModApiServer::l_get_last_run_mod(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 	lua_rawgeti(L, LUA_REGISTRYINDEX, CUSTOM_RIDX_CURRENT_MOD_NAME);
 	const char *current_mod = lua_tostring(L, -1);
-	if (current_mod == NULL || current_mod[0] == '\0') {
+	if (current_mod == nullptr || current_mod[0] == '\0') {
 		lua_pop(L, 1);
 		lua_pushstring(L, getScriptApiBase(L)->getOrigin().c_str());
 	}

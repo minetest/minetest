@@ -204,7 +204,7 @@ NodeMetadata *NodeMetadataList::get(v3s16 p)
 {
 	std::map<v3s16, NodeMetadata *>::const_iterator n = m_data.find(p);
 	if (n == m_data.end())
-		return NULL;
+		return nullptr;
 	return n->second;
 }
 

@@ -191,8 +191,8 @@ Minimap::Minimap(Client *client)
 	data->mode              = MINIMAP_MODE_OFF;
 	data->is_radar          = false;
 	data->map_invalidated   = true;
-	data->texture           = NULL;
-	data->heightmap_texture = NULL;
+	data->texture           = nullptr;
+	data->heightmap_texture = nullptr;
 	data->minimap_shape_round = g_settings->getBool("minimap_shape_round");
 
 	// Get round minimap textures

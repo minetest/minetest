@@ -201,7 +201,7 @@ Biome *BiomeGenOriginal::getBiomeAtIndex(size_t index, s16 y) const
 
 Biome *BiomeGenOriginal::calcBiomeFromNoise(float heat, float humidity, s16 y) const
 {
-	Biome *b, *biome_closest = NULL;
+	Biome *b, *biome_closest = nullptr;
 	float dist_min = FLT_MAX;
 
 	for (size_t i = 1; i < m_bmgr->getNumObjects(); i++) {

@@ -158,7 +158,7 @@ bool RenderingEngine::print_video_modes()
 
 	video::IVideoModeList *videomode_list = nulldevice->getVideoModeList();
 
-	if (videomode_list != NULL) {
+	if (videomode_list != nullptr) {
 		s32 videomode_count = videomode_list->getVideoModeCount();
 		core::dimension2d<u32> videomode_res;
 		s32 videomode_depth;
@@ -179,14 +179,14 @@ bool RenderingEngine::print_video_modes()
 	nulldevice->drop();
 	delete receiver;
 
-	return videomode_list != NULL;
+	return videomode_list != nullptr;
 }
 
 void RenderingEngine::setXorgClassHint(
 		const video::SExposedVideoData &video_data, const std::string &name)
 {
 #ifdef XORG_USED
-	if (video_data.OpenGLLinux.X11Display == NULL)
+	if (video_data.OpenGLLinux.X11Display == nullptr)
 		return;
 
 	XClassHint *classhint = XAllocClassHint();
@@ -233,7 +233,7 @@ bool RenderingEngine::setWindowIcon()
 	}
 
 	// Load the ICON from resource file
-	const HICON hicon = LoadIcon(GetModuleHandle(NULL),
+	const HICON hicon = LoadIcon(GetModuleHandle(nullptr),
 			MAKEINTRESOURCE(130) // The ID of the ICON defined in
 					     // winresource.rc
 	);
@@ -254,7 +254,7 @@ bool RenderingEngine::setXorgWindowIconFromPath(const std::string &icon_file)
 {
 #ifdef XORG_USED
 
-	video::IImageLoader *image_loader = NULL;
+	video::IImageLoader *image_loader = nullptr;
 	u32 cnt = driver->getImageLoaderCount();
 	for (u32 i = 0; i < cnt; i++) {
 		if (driver->getImageLoader(i)->isALoadableFileExtension(
@@ -316,7 +316,7 @@ bool RenderingEngine::setXorgWindowIconFromPath(const std::string &icon_file)
 
 	Display *x11_dpl = (Display *)video_data.OpenGLLinux.X11Display;
 
-	if (x11_dpl == NULL) {
+	if (x11_dpl == nullptr) {
 		warningstream << "Could not find x11 display for setting its icon."
 			      << std::endl;
 		delete[] icon_buffer;
@@ -498,10 +498,10 @@ static float calcDisplayDensity()
 {
 	const char *current_display = getenv("DISPLAY");
 
-	if (current_display != NULL) {
+	if (current_display != nullptr) {
 		Display *x11display = XOpenDisplay(current_display);
 
-		if (x11display != NULL) {
+		if (x11display != nullptr) {
 			/* try x direct */
 			float dpi_height = floor(
 					DisplayHeight(x11display, 0) /

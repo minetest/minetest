@@ -166,7 +166,7 @@ bool detectMSVCBuildDir(const std::string &path)
 		"bin\\RelWithDebInfo",
 		"bin\\Debug",
 		"bin\\Build",
-		NULL
+		nullptr
 	};
 	return (!removeStringEnd(path, ends).empty());
 }
@@ -183,7 +183,7 @@ std::string get_sysinfo()
 	GetSystemDirectoryA(filePath, MAX_PATH);
 	PathAppendA(filePath, "kernel32.dll");
 
-	DWORD dwVersionSize = GetFileVersionInfoSizeA(filePath, NULL);
+	DWORD dwVersionSize = GetFileVersionInfoSizeA(filePath, nullptr);
 	LPBYTE lpVersionInfo = new BYTE[dwVersionSize];
 
 	GetFileVersionInfoA(filePath, 0, dwVersionSize, lpVersionInfo);
@@ -251,7 +251,7 @@ bool getExecPathFromProcfs(char *buf, size_t buflen)
 
 bool getCurrentExecPath(char *buf, size_t len)
 {
-	DWORD written = GetModuleFileNameA(NULL, buf, len);
+	DWORD written = GetModuleFileNameA(nullptr, buf, len);
 	if (written == 0 || written == len)
 		return false;
 
@@ -301,7 +301,7 @@ bool getCurrentExecPath(char *buf, size_t len)
 	mib[2] = KERN_PROC_PATHNAME;
 	mib[3] = -1;
 
-	if (sysctl(mib, 4, buf, &len, NULL, 0) == -1)
+	if (sysctl(mib, 4, buf, &len, nullptr, 0) == -1)
 		return false;
 
 	return true;
@@ -314,7 +314,7 @@ bool getCurrentExecPath(char *buf, size_t len)
 bool getCurrentExecPath(char *buf, size_t len)
 {
 	const char *exec = getexecname();
-	if (exec == NULL)
+	if (exec == nullptr)
 		return false;
 
 	if (strlcpy(buf, exec, len) >= len)
@@ -604,7 +604,7 @@ bool secure_rand_fill_buf(void *buf, size_t len)
 {
 	HCRYPTPROV wctx;
 
-	if (!CryptAcquireContext(&wctx, NULL, NULL, PROV_RSA_FULL, CRYPT_VERIFYCONTEXT))
+	if (!CryptAcquireContext(&wctx, nullptr, nullptr, PROV_RSA_FULL, CRYPT_VERIFYCONTEXT))
 		return false;
 
 	CryptGenRandom(wctx, len, (BYTE *)buf);

@@ -31,7 +31,7 @@ struct EnumString ModApiCraft::es_CraftMethod[] =
 	{CRAFT_METHOD_NORMAL, "normal"},
 	{CRAFT_METHOD_COOKING, "cooking"},
 	{CRAFT_METHOD_FUEL, "fuel"},
-	{0, NULL},
+	{0, nullptr},
 };
 
 // helper for register_craft

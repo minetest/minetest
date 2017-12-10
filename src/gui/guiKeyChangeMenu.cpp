@@ -239,12 +239,12 @@ bool GUIKeyChangeMenu::acceptInput()
 
 	{
 		gui::IGUIElement *e = getElementFromId(GUI_ID_CB_AUX1_DESCENDS);
-		if(e != NULL && e->getType() == gui::EGUIET_CHECK_BOX)
+		if(e != nullptr && e->getType() == gui::EGUIET_CHECK_BOX)
 			g_settings->setBool("aux1_descends", ((gui::IGUICheckBox*)e)->isChecked());
 	}
 	{
 		gui::IGUIElement *e = getElementFromId(GUI_ID_CB_DOUBLETAP_JUMP);
-		if(e != NULL && e->getType() == gui::EGUIET_CHECK_BOX)
+		if(e != nullptr && e->getType() == gui::EGUIET_CHECK_BOX)
 			g_settings->setBool("doubletap_jump", ((gui::IGUICheckBox*)e)->isChecked());
 	}
 
@@ -291,7 +291,7 @@ bool GUIKeyChangeMenu::OnEvent(const SEvent& event)
 		if(this->key_used_text)
 		{
 			this->key_used_text->remove();
-			this->key_used_text = NULL;
+			this->key_used_text = nullptr;
 		}
 		// Display Key already in use message
 		if (std::find(this->key_used.begin(), this->key_used.end(), kp) != this->key_used.end())
@@ -307,14 +307,14 @@ bool GUIKeyChangeMenu::OnEvent(const SEvent& event)
 
 		// But go on
 		{
-			key_setting *k = NULL;
+			key_setting *k = nullptr;
 			for (key_setting *ks : key_settings) {
 				if (ks->id == activeKey) {
 					k = ks;
 					break;
 				}
 			}
-			FATAL_ERROR_IF(k == NULL, "Key setting not found");
+			FATAL_ERROR_IF(k == nullptr, "Key setting not found");
 			k->key = kp;
 			const wchar_t *text = wgettext(k->key.name());
 			k->button->setText(text);
@@ -360,7 +360,7 @@ bool GUIKeyChangeMenu::OnEvent(const SEvent& event)
 					quitMenu();
 					return true;
 				default:
-					key_setting *k = NULL;
+					key_setting *k = nullptr;
 
 					for (key_setting *ks : key_settings) {
 						if (ks->id == event.GUIEvent.Caller->getID()) {
@@ -368,7 +368,7 @@ bool GUIKeyChangeMenu::OnEvent(const SEvent& event)
 							break;
 						}
 					}
-					FATAL_ERROR_IF(k == NULL, "Key setting not found");
+					FATAL_ERROR_IF(k == nullptr, "Key setting not found");
 
 					resetMenu();
 					shift_down = false;

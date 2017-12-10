@@ -61,7 +61,7 @@ extern "C" {
 #define PCALL_RESL(L, RES) {                            \
 	int result_ = (RES);                                \
 	if (result_ != 0) {                                 \
-		script_error((L), result_, NULL, __FUNCTION__); \
+		script_error((L), result_, nullptr, __FUNCTION__); \
 	}                                                   \
 }
 

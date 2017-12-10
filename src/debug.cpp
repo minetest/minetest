@@ -142,14 +142,14 @@ long WINAPI Win32ExceptionHandler(struct _EXCEPTION_POINTERS *pExceptInfo)
 	version_str += g_version_hash;
 
 	HANDLE hFile = CreateFileA(dumpfile.c_str(), GENERIC_WRITE,
-		FILE_SHARE_WRITE, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+		FILE_SHARE_WRITE, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
 	if (hFile == INVALID_HANDLE_VALUE)
 		goto minidump_failed;
 
 	if (SetEndOfFile(hFile) == FALSE)
 		goto minidump_failed;
 
-	mdei.ClientPointers	   = NULL;
+	mdei.ClientPointers	   = nullptr;
 	mdei.ExceptionPointers = pExceptInfo;
 	mdei.ThreadId		   = GetCurrentThreadId();
 
@@ -161,7 +161,7 @@ long WINAPI Win32ExceptionHandler(struct _EXCEPTION_POINTERS *pExceptInfo)
 	mdusi.UserStreamCount = 1;
 
 	if (MiniDumpWriteDump(GetCurrentProcess(), GetCurrentProcessId(), hFile,
-			MiniDumpNormal, &mdei, &mdusi, NULL) == FALSE)
+			MiniDumpNormal, &mdei, &mdusi, nullptr) == FALSE)
 		goto minidump_failed;
 
 	minidump_created = true;

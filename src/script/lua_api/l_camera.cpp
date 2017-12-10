@@ -154,7 +154,7 @@ Camera *LuaCamera::getobject(lua_State *L, int narg)
 	assert(ref);
 	Camera *camera = getobject(ref);
 	if (!camera)
-		return NULL;
+		return nullptr;
 	return camera;
 }
 

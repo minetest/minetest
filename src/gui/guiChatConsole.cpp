@@ -280,7 +280,7 @@ void GUIChatConsole::animate(u32 msec)
 void GUIChatConsole::drawBackground()
 {
 	video::IVideoDriver* driver = Environment->getVideoDriver();
-	if (m_background != NULL)
+	if (m_background != nullptr)
 	{
 		core::rect<s32> sourcerect(0, -m_height, m_screensize.X, 0);
 		driver->draw2DImage(
@@ -302,7 +302,7 @@ void GUIChatConsole::drawBackground()
 
 void GUIChatConsole::drawText()
 {
-	if (m_font == NULL)
+	if (m_font == nullptr)
 		return;
 
 	ChatBuffer& buf = m_chat_backend->getConsoleBuffer();

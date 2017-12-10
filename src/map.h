@@ -167,7 +167,7 @@ public:
 		This is overloaded by ClientMap and ServerMap to allow
 		their differing fetch methods.
 	*/
-	virtual MapSector * emergeSector(v2s16 p){ return NULL; }
+	virtual MapSector * emergeSector(v2s16 p){ return nullptr; }
 
 	// Returns InvalidPositionException if not found
 	MapBlock * getBlockNoCreate(v3s16 p);
@@ -191,7 +191,7 @@ public:
 	// Returns a CONTENT_IGNORE node if not found
 	// If is_valid_position is not NULL then this will be set to true if the
 	// position is valid, otherwise false
-	MapNode getNodeNoEx(v3s16 p, bool *is_valid_position = NULL);
+	MapNode getNodeNoEx(v3s16 p, bool *is_valid_position = nullptr);
 
 	/*
 		These handle lighting but not faces.
@@ -226,13 +226,13 @@ public:
 		Saves modified blocks before unloading on MAPTYPE_SERVER.
 	*/
 	void timerUpdate(float dtime, float unload_timeout, u32 max_loaded_blocks,
-			std::vector<v3s16> *unloaded_blocks=NULL);
+			std::vector<v3s16> *unloaded_blocks=nullptr);
 
 	/*
 		Unloads all blocks with a zero refCount().
 		Saves modified blocks before unloading on MAPTYPE_SERVER.
 	*/
-	void unloadUnreferencedBlocks(std::vector<v3s16> *unloaded_blocks=NULL);
+	void unloadUnreferencedBlocks(std::vector<v3s16> *unloaded_blocks=nullptr);
 
 	// Deletes sectors and their blocks from memory
 	// Takes cache into account

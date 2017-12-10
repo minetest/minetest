@@ -152,7 +152,7 @@ public:
 
 	// ndef is a mandatory parameter.
 	// If gennotify is NULL, generation events are not logged.
-	CavesRandomWalk(INodeDefManager *ndef, GenerateNotifier *gennotify = NULL,
+	CavesRandomWalk(INodeDefManager *ndef, GenerateNotifier *gennotify = nullptr,
 			s32 seed = 0, int water_level = 1,
 			content_t water_source = CONTENT_IGNORE,
 			content_t lava_source = CONTENT_IGNORE, int lava_depth = -256);
@@ -223,7 +223,7 @@ public:
 
 	// ndef is a mandatory parameter.
 	// If gennotify is NULL, generation events are not logged.
-	CavesV6(INodeDefManager *ndef, GenerateNotifier *gennotify = NULL,
+	CavesV6(INodeDefManager *ndef, GenerateNotifier *gennotify = nullptr,
 			int water_level = 1, content_t water_source = CONTENT_IGNORE,
 			content_t lava_source = CONTENT_IGNORE);
 
@@ -232,7 +232,7 @@ public:
 	// be water_level.
 	void makeCave(MMVManip *vm, v3s16 nmin, v3s16 nmax, PseudoRandom *ps,
 			PseudoRandom *ps2, bool is_large_cave, int max_stone_height,
-			s16 *heightmap = NULL);
+			s16 *heightmap = nullptr);
 
 private:
 	void makeTunnel(bool dirswitch);

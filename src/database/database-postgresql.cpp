@@ -296,7 +296,7 @@ void MapDatabasePostgreSQL::listAllLoadableBlocks(std::vector<v3s16> &dst)
 	verifyDatabase();
 
 	PGresult *results = execPrepared("list_all_loadable_blocks", 0,
-		NULL, NULL, NULL, false, false);
+		nullptr, nullptr, nullptr, false, false);
 
 	int numrows = PQntuples(results);
 
@@ -619,7 +619,7 @@ void PlayerDatabasePostgreSQL::listPlayers(std::vector<std::string> &res)
 {
 	verifyDatabase();
 
-	PGresult *results = execPrepared("load_player_list", 0, NULL, false);
+	PGresult *results = execPrepared("load_player_list", 0, nullptr, false);
 
 	int numrows = PQntuples(results);
 	for (int row = 0; row < numrows; row++)

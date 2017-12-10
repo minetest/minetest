@@ -81,7 +81,7 @@ BOOL CALLBACK UpdateLocaleCallback(LPTSTR pStr)
 const char* MSVC_LocaleLookup(const char* raw_shortname) {
 
 	/* NULL is used to read locale only so we need to return it too */
-	if (raw_shortname == NULL) return NULL;
+	if (raw_shortname == nullptr) return nullptr;
 
 	std::string shortname(raw_shortname);
 	if (shortname == "C") return "C";
@@ -153,7 +153,7 @@ void init_gettext(const char *path, const std::string &configured_language,
 				parameters += argv[i];
 			}
 
-			const char *ptr_parameters = NULL;
+			const char *ptr_parameters = nullptr;
 
 			if (!parameters.empty())
 				ptr_parameters = parameters.c_str();
@@ -167,8 +167,8 @@ void init_gettext(const char *path, const std::string &configured_language,
 			PROCESS_INFORMATION process_info = {0};
 
 			bool success = CreateProcess(app_name.c_str(), (char *)ptr_parameters,
-				NULL, NULL, false, DETACHED_PROCESS | CREATE_UNICODE_ENVIRONMENT,
-				NULL, NULL, &startup_info, &process_info);
+				nullptr, nullptr, false, DETACHED_PROCESS | CREATE_UNICODE_ENVIRONMENT,
+				nullptr, nullptr, &startup_info, &process_info);
 
 			if (success) {
 				exit(0);
@@ -176,9 +176,9 @@ void init_gettext(const char *path, const std::string &configured_language,
 			} else {
 				char buffer[1024];
 
-				FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM, NULL, GetLastError(),
+				FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM, nullptr, GetLastError(),
 					MAKELANGID(LANG_NEUTRAL,SUBLANG_DEFAULT), buffer,
-					sizeof(buffer) - 1, NULL);
+					sizeof(buffer) - 1, nullptr);
 
 				errorstream << "*******************************************************" << std::endl;
 				errorstream << "CMD: " << app_name << std::endl;
@@ -223,8 +223,8 @@ void init_gettext(const char *path, const std::string &configured_language,
 
 #if defined(_WIN32)
 	// Set character encoding for Win32
-	char *tdomain = textdomain( (char *) NULL );
-	if( tdomain == NULL )
+	char *tdomain = textdomain( (char *) nullptr );
+	if( tdomain == nullptr )
 	{
 		errorstream << "Warning: domainname parameter is the null pointer" <<
 				", default domain is not set" << std::endl;

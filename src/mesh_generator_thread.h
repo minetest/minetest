@@ -93,7 +93,7 @@ private:
 	int m_meshgen_block_cache_size;
 
 	CachedMapBlockData *cacheBlock(Map *map, v3s16 p, UpdateMode mode,
-			size_t *cache_hit_counter = NULL);
+			size_t *cache_hit_counter = nullptr);
 	CachedMapBlockData *getCachedBlock(const v3s16 &p);
 	void fillDataFromMapBlockCache(QueuedMeshUpdate *q);
 	void cleanupCache();

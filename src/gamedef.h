@@ -63,7 +63,7 @@ public:
 
 	// Only usable on the server, and NOT thread-safe. It is usable from the
 	// environment thread.
-	virtual IRollbackManager* getRollbackManager() { return NULL; }
+	virtual IRollbackManager* getRollbackManager() { return nullptr; }
 
 	// Shorthands
 	IItemDefManager  *idef()     { return getItemDefManager(); }

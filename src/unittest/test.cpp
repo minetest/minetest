@@ -55,7 +55,7 @@ public:
 	IRollbackManager *getRollbackManager() { return m_rollbackmgr; }
 	EmergeManager *getEmergeManager() { return m_emergemgr; }
 
-	scene::IAnimatedMesh *getMesh(const std::string &filename) { return NULL; }
+	scene::IAnimatedMesh *getMesh(const std::string &filename) { return nullptr; }
 	bool checkLocalPrivilege(const std::string &priv) { return false; }
 	u16 allocateUnknownNodeId(const std::string &name) { return 0; }
 
@@ -66,7 +66,7 @@ public:
 		static std::vector<ModSpec> testmodspec;
 		return testmodspec;
 	}
-	virtual const ModSpec* getModSpec(const std::string &modname) const { return NULL; }
+	virtual const ModSpec* getModSpec(const std::string &modname) const { return nullptr; }
 	virtual std::string getModStoragePath() const { return "."; }
 	virtual bool registerModStorage(ModMetadata *meta) { return true; }
 	virtual void unregisterModStorage(const std::string &name) {}

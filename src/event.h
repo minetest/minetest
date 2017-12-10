@@ -30,7 +30,7 @@ public:
 	{
 		if(type == getType())
 			return this;
-		return NULL;
+		return nullptr;
 	}
 };
 

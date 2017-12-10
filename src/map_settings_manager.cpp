@@ -31,7 +31,7 @@ MapSettingsManager::MapSettingsManager(Settings *user_settings,
 	m_map_settings(new Settings()),
 	m_user_settings(user_settings)
 {
-	assert(m_user_settings != NULL);
+	assert(m_user_settings != nullptr);
 }
 
 
@@ -148,8 +148,8 @@ MapgenParams *MapSettingsManager::makeMapgenParams()
 	if (mapgen_params)
 		return mapgen_params;
 
-	assert(m_user_settings != NULL);
-	assert(m_map_settings != NULL);
+	assert(m_user_settings != nullptr);
+	assert(m_map_settings != nullptr);
 
 	// At this point, we have (in order of precedence):
 	// 1). m_mapgen_settings->m_settings containing map_meta.txt settings or
@@ -174,8 +174,8 @@ MapgenParams *MapSettingsManager::makeMapgenParams()
 
 	// Create our MapgenParams
 	MapgenParams *params = Mapgen::createMapgenParams(mgtype);
-	if (params == NULL)
-		return NULL;
+	if (params == nullptr)
+		return nullptr;
 
 	params->mgtype = mgtype;
 

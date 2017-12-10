@@ -57,7 +57,7 @@ FlagDesc flagdesc_noiseparams[] = {
 	{"absvalue",    NOISE_FLAG_ABSVALUE},
 	{"pointbuffer", NOISE_FLAG_POINTBUFFER},
 	{"simplex",     NOISE_FLAG_SIMPLEX},
-	{NULL,          0}
+	{nullptr,          0}
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -457,7 +457,7 @@ void Noise::allocBuffers()
 	if (sz < 1)
 		sz = 1;
 
-	this->noise_buf = NULL;
+	this->noise_buf = nullptr;
 	resizeNoiseBuf(sz > 1);
 
 	delete[] gradient_buf;
@@ -466,7 +466,7 @@ void Noise::allocBuffers()
 
 	try {
 		size_t bufsize = sx * sy * sz;
-		this->persist_buf  = NULL;
+		this->persist_buf  = nullptr;
 		this->gradient_buf = new float[bufsize];
 		this->result       = new float[bufsize];
 	} catch (std::bad_alloc &e) {

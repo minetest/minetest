@@ -158,7 +158,7 @@ std::string wide_to_utf8(const std::wstring &input)
 	char *outbuf = new char[outbuf_size];
 	memset(outbuf, 0, outbuf_size);
 	WideCharToMultiByte(CP_UTF8, 0, input.c_str(), input.size(),
-		outbuf, outbuf_size, NULL, NULL);
+		outbuf, outbuf_size, nullptr, nullptr);
 	std::string out(outbuf);
 	delete[] outbuf;
 	return out;
@@ -180,7 +180,7 @@ wchar_t *utf8_to_wide_c(const char *str)
 // The returned string is allocated using new
 wchar_t *narrow_to_wide_c(const char *str)
 {
-	wchar_t *nstr = NULL;
+	wchar_t *nstr = nullptr;
 #if defined(_WIN32)
 	int nResult = MultiByteToWideChar(CP_UTF8, 0, (LPCSTR) str, -1, 0, 0);
 	if (nResult == 0) {
@@ -358,10 +358,10 @@ u32 readFlagString(std::string str, const FlagDesc *flagdesc, u32 *flagmask)
 	u32 mask = 0;
 	char *s = &str[0];
 	char *flagstr;
-	char *strpos = NULL;
+	char *strpos = nullptr;
 
 	while ((flagstr = strtok_r(s, ",", &strpos))) {
-		s = NULL;
+		s = nullptr;
 
 		while (*flagstr == ' ' || *flagstr == '\t')
 			flagstr++;
@@ -433,7 +433,7 @@ char *mystrtok_r(char *s, const char *sep, char **lasts)
 		s++;
 
 	if (!*s)
-		return NULL;
+		return nullptr;
 
 	t = s;
 	while (*t) {

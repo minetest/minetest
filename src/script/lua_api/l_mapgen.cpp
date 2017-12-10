@@ -44,7 +44,7 @@ struct EnumString ModApiMapgen::es_BiomeTerrainType[] =
 	{BIOMETYPE_NETHER, "nether"},
 	{BIOMETYPE_AETHER, "aether"},
 	{BIOMETYPE_FLAT,   "flat"},
-	{0, NULL},
+	{0, nullptr},
 };
 
 struct EnumString ModApiMapgen::es_DecorationType[] =
@@ -52,7 +52,7 @@ struct EnumString ModApiMapgen::es_DecorationType[] =
 	{DECO_SIMPLE,    "simple"},
 	{DECO_SCHEMATIC, "schematic"},
 	{DECO_LSYSTEM,   "lsystem"},
-	{0, NULL},
+	{0, nullptr},
 };
 
 struct EnumString ModApiMapgen::es_MapgenObject[] =
@@ -63,7 +63,7 @@ struct EnumString ModApiMapgen::es_MapgenObject[] =
 	{MGOBJ_HEATMAP,   "heatmap"},
 	{MGOBJ_HUMIDMAP,  "humiditymap"},
 	{MGOBJ_GENNOTIFY, "gennotify"},
-	{0, NULL},
+	{0, nullptr},
 };
 
 struct EnumString ModApiMapgen::es_OreType[] =
@@ -74,7 +74,7 @@ struct EnumString ModApiMapgen::es_OreType[] =
 	{ORE_BLOB,    "blob"},
 	{ORE_VEIN,    "vein"},
 	{ORE_STRATUM, "stratum"},
-	{0, NULL},
+	{0, nullptr},
 };
 
 struct EnumString ModApiMapgen::es_Rotation[] =
@@ -84,7 +84,7 @@ struct EnumString ModApiMapgen::es_Rotation[] =
 	{ROTATE_180,  "180"},
 	{ROTATE_270,  "270"},
 	{ROTATE_RAND, "random"},
-	{0, NULL},
+	{0, nullptr},
 };
 
 struct EnumString ModApiMapgen::es_SchematicFormatType[] =
@@ -92,7 +92,7 @@ struct EnumString ModApiMapgen::es_SchematicFormatType[] =
 	{SCHEM_FMT_HANDLE, "handle"},
 	{SCHEM_FMT_MTS,    "mts"},
 	{SCHEM_FMT_LUA,    "lua"},
-	{0, NULL},
+	{0, nullptr},
 };
 
 ObjDef *get_objdef(lua_State *L, int index, ObjDefManager *objmgr);
@@ -131,7 +131,7 @@ ObjDef *get_objdef(lua_State *L, int index, ObjDefManager *objmgr)
 	if (lua_isstring(L, index))
 		return objmgr->getByName(lua_tostring(L, index));
 
-	return NULL;
+	return nullptr;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -149,11 +149,11 @@ Schematic *get_or_load_schematic(lua_State *L, int index,
 	schem = load_schematic(L, index, schemmgr->getNodeDef(),
 		replace_names);
 	if (!schem)
-		return NULL;
+		return nullptr;
 
 	if (schemmgr->add(schem) == OBJDEF_INVALID_HANDLE) {
 		delete schem;
-		return NULL;
+		return nullptr;
 	}
 
 	return schem;
@@ -166,17 +166,17 @@ Schematic *load_schematic(lua_State *L, int index, INodeDefManager *ndef,
 	if (index < 0)
 		index = lua_gettop(L) + 1 + index;
 
-	Schematic *schem = NULL;
+	Schematic *schem = nullptr;
 
 	if (lua_istable(L, index)) {
 		schem = load_schematic_from_def(L, index, ndef,
 			replace_names);
 		if (!schem) {
 			delete schem;
-			return NULL;
+			return nullptr;
 		}
 	} else if (lua_isnumber(L, index)) {
-		return NULL;
+		return nullptr;
 	} else if (lua_isstring(L, index)) {
 		schem = SchematicManager::create(SCHEMATIC_NORMAL);
 
@@ -187,7 +187,7 @@ Schematic *load_schematic(lua_State *L, int index, INodeDefManager *ndef,
 		if (!schem->loadSchematicFromFile(filepath, ndef,
 				replace_names)) {
 			delete schem;
-			return NULL;
+			return nullptr;
 		}
 	}
 
@@ -202,7 +202,7 @@ Schematic *load_schematic_from_def(lua_State *L, int index,
 
 	if (!read_schematic_def(L, index, schem, &schem->m_nodenames)) {
 		delete schem;
-		return NULL;
+		return nullptr;
 	}
 
 	size_t num_nodes = schem->m_nodenames.size();
@@ -363,11 +363,11 @@ Biome *get_or_load_biome(lua_State *L, int index, BiomeManager *biomemgr)
 
 	biome = read_biome_def(L, index, biomemgr->getNodeDef());
 	if (!biome)
-		return NULL;
+		return nullptr;
 
 	if (biomemgr->add(biome) == OBJDEF_INVALID_HANDLE) {
 		delete biome;
-		return NULL;
+		return nullptr;
 	}
 
 	return biome;
@@ -377,7 +377,7 @@ Biome *get_or_load_biome(lua_State *L, int index, BiomeManager *biomemgr)
 Biome *read_biome_def(lua_State *L, int index, INodeDefManager *ndef)
 {
 	if (!lua_istable(L, index))
-		return NULL;
+		return nullptr;
 
 	BiomeType biometype = (BiomeType)getenumfield(L, index, "type",
 		ModApiMapgen::es_BiomeTerrainType, BIOMETYPE_NORMAL);
@@ -925,7 +925,7 @@ int ModApiMapgen::l_register_decoration(lua_State *L)
 	deco->m_nnlistsizes.push_back(nread);
 
 	//// Get decoration flags
-	getflagsfield(L, index, "flags", flagdesc_deco, &deco->flags, NULL);
+	getflagsfield(L, index, "flags", flagdesc_deco, &deco->flags, nullptr);
 
 	//// Get NoiseParams to define how decoration is placed
 	lua_getfield(L, index, "noise_params");
@@ -1036,7 +1036,7 @@ bool read_deco_schematic(lua_State *L, SchematicManager *schemmgr, DecoSchematic
 	lua_pop(L, 1);
 
 	deco->schematic = schem;
-	return schem != NULL;
+	return schem != nullptr;
 }
 
 
@@ -1065,7 +1065,7 @@ int ModApiMapgen::l_register_ore(lua_State *L)
 	ore->clust_scarcity = getintfield_default(L, index, "clust_scarcity", 1);
 	ore->clust_num_ores = getintfield_default(L, index, "clust_num_ores", 1);
 	ore->clust_size     = getintfield_default(L, index, "clust_size", 0);
-	ore->noise          = NULL;
+	ore->noise          = nullptr;
 	ore->flags          = 0;
 
 	//// Get noise_threshold
@@ -1102,7 +1102,7 @@ int ModApiMapgen::l_register_ore(lua_State *L)
 	}
 
 	//// Get flags
-	getflagsfield(L, index, "flags", flagdesc_ore, &ore->flags, NULL);
+	getflagsfield(L, index, "flags", flagdesc_ore, &ore->flags, nullptr);
 
 	//// Get biomes associated with this decoration (if any)
 	lua_getfield(L, index, "biomes");
@@ -1479,7 +1479,7 @@ int ModApiMapgen::l_serialize_schematic(lua_State *L)
 	bool was_loaded = false;
 	Schematic *schem = (Schematic *)get_objdef(L, 1, schemmgr);
 	if (!schem) {
-		schem = load_schematic(L, 1, NULL, NULL);
+		schem = load_schematic(L, 1, nullptr, nullptr);
 		was_loaded = true;
 	}
 	if (!schem) {

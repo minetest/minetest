@@ -48,7 +48,7 @@ void android_main(android_app *app)
 
 	try {
 		app_dummy();
-		char *argv[] = {strdup(PROJECT_NAME), NULL};
+		char *argv[] = {strdup(PROJECT_NAME), nullptr};
 		main(ARRLEN(argv) - 1, argv);
 		free(argv[0]);
 	} catch (std::exception &e) {
@@ -120,12 +120,12 @@ void copyAssets()
 
 void initAndroid()
 {
-	porting::jnienv = NULL;
+	porting::jnienv = nullptr;
 	JavaVM *jvm = app_global->activity->vm;
 	JavaVMAttachArgs lJavaVMAttachArgs;
 	lJavaVMAttachArgs.version = JNI_VERSION_1_6;
 	lJavaVMAttachArgs.name = PROJECT_NAME_C "NativeThread";
-	lJavaVMAttachArgs.group = NULL;
+	lJavaVMAttachArgs.group = nullptr;
 #ifdef NDEBUG
 	// This is a ugly hack as arm v7a non debuggable builds crash without this
 	// printf ... if someone finds out why please fix it!
@@ -168,7 +168,7 @@ static std::string javaStringToUTF8(jstring js)
 {
 	std::string str;
 	// Get string as a UTF-8 c-string
-	const char *c_str = jnienv->GetStringUTFChars(js, NULL);
+	const char *c_str = jnienv->GetStringUTFChars(js, nullptr);
 	// Save it
 	str = c_str;
 	// And free the c-string
@@ -215,7 +215,7 @@ void initializePathsAndroid()
 
 	path_cache   = getAndroidPath(nativeActivity, app_global->activity->clazz,
 			cls_File, mt_getAbsPath, "getCacheDir");
-	path_storage = getAndroidPath(cls_Env, NULL, cls_File, mt_getAbsPath,
+	path_storage = getAndroidPath(cls_Env, nullptr, cls_File, mt_getAbsPath,
 			"getExternalStorageDirectory");
 	path_user    = path_storage + DIR_DELIM + PROJECT_NAME_C;
 	path_share   = path_storage + DIR_DELIM + PROJECT_NAME_C;

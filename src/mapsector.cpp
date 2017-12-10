@@ -74,7 +74,7 @@ MapBlock * MapSector::getBlockNoCreateNoEx(s16 y)
 
 MapBlock * MapSector::createBlankBlockNoInsert(s16 y)
 {
-	assert(getBlockBuffered(y) == NULL);	// Pre-condition
+	assert(getBlockBuffered(y) == nullptr);	// Pre-condition
 
 	v3s16 blockpos_map(m_pos.X, y, m_pos.Y);
 

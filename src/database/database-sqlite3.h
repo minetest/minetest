@@ -46,12 +46,12 @@ protected:
 	// Convertors
 	inline void str_to_sqlite(sqlite3_stmt *s, int iCol, const std::string &str) const
 	{
-		sqlite3_vrfy(sqlite3_bind_text(s, iCol, str.c_str(), str.size(), NULL));
+		sqlite3_vrfy(sqlite3_bind_text(s, iCol, str.c_str(), str.size(), nullptr));
 	}
 
 	inline void str_to_sqlite(sqlite3_stmt *s, int iCol, const char *str) const
 	{
-		sqlite3_vrfy(sqlite3_bind_text(s, iCol, str, strlen(str), NULL));
+		sqlite3_vrfy(sqlite3_bind_text(s, iCol, str, strlen(str), nullptr));
 	}
 
 	inline void int_to_sqlite(sqlite3_stmt *s, int iCol, int val) const
