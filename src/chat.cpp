@@ -403,8 +403,18 @@ void ChatPrompt::input(const std::wstring &str)
 
 void ChatPrompt::addToHistory(std::wstring line)
 {
-	if (!line.empty())
+	if (!line.empty() &&
+			(m_history.size() == 0 || m_history.back() != line)) {
+		// Remove all occurences
+		for (auto it = m_history.begin(); it != m_history.end();) {
+			if (*it == line)
+				it = m_history.erase(it);
+			else
+				it++;
+		}
+		// Push unique line
 		m_history.push_back(line);
+	}
 	if (m_history.size() > m_history_limit)
 		m_history.erase(m_history.begin());
 	m_history_index = m_history.size();
