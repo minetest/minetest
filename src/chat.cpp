@@ -18,11 +18,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "chat.h"
-#include "debug.h"
-#include "config.h"
-#include "util/strfnd.h"
+
+#include <algorithm>
 #include <cctype>
 #include <sstream>
+
+#include "config.h"
+#include "debug.h"
+#include "util/strfnd.h"
 #include "util/string.h"
 #include "util/numeric.h"
 
@@ -405,13 +408,9 @@ void ChatPrompt::addToHistory(std::wstring line)
 {
 	if (!line.empty() &&
 			(m_history.size() == 0 || m_history.back() != line)) {
-		// Remove all occurences
-		for (auto it = m_history.begin(); it != m_history.end();) {
-			if (*it == line)
-				it = m_history.erase(it);
-			else
-				it++;
-		}
+		// Remove all duplicates
+		m_history.erase(std::remove(m_history.begin(), m_history.end(),
+			line), m_history.end());
 		// Push unique line
 		m_history.push_back(line);
 	}
