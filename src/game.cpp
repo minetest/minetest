@@ -4425,7 +4425,7 @@ void Game::updateGui(const RunStats &stats, f32 dtime, const CameraOrientation &
 			<< std::setprecision(0)
 			<< ", drawtime: " << drawtime_avg << "ms"
 			<< std::setprecision(1)
-			<< ", drawtime jitter: "
+			<< ", dtime jitter: "
 			<< (stats.dtime_jitter.max_fraction * 100.0) << "%"
 			<< std::setprecision(1)
 			<< ", view range: "
