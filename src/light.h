@@ -54,11 +54,12 @@ inline u8 diminish_light(u8 light, u8 distance)
 
 inline u8 undiminish_light(u8 light)
 {
+	assert(light <= LIGHT_SUN);
 	// We don't know if light should undiminish from this particular 0.
 	// Thus, keep it at 0.
 	if (light == 0)
 		return 0;
-	if (light == LIGHT_MAX)
+	if (light >= LIGHT_MAX)
 		return light;
 
 	return light + 1;
@@ -84,7 +85,9 @@ extern const u8 *light_decode_table;
 // 0 <= return value <= 255
 inline u8 decode_light(u8 light)
 {
-	assert(light <= LIGHT_SUN);
+	// assert(light <= LIGHT_SUN);
+	if (light > LIGHT_SUN)
+		light = LIGHT_SUN;
 	return light_decode_table[light];
 }
 
