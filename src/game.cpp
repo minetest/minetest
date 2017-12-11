@@ -2873,7 +2873,7 @@ void Game::toggleMinimap(bool shift_pressed)
 			if (hud_flags & HUD_FLAG_MINIMAP_VISIBLE)
 				showStatusTextSimple("Minimap hidden");
 			else
-				showStatusTextSimple("Minimap disabled by server");
+				showStatusTextSimple("Minimap currently disabled by game or mod");
 	}
 
 	runData.statustext_time = 0;
