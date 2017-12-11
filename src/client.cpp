@@ -113,18 +113,38 @@ Client::Client(
 	m_script->setEnv(&m_env);
 }
 
-void Client::loadMods()
+void Client::loadBuiltin()
 {
 	// Load builtin
 	scanModIntoMemory(BUILTIN_MOD_NAME, getBuiltinLuaPath());
 
-	// If modding is not enabled, don't load mods, just builtin
-	if (!m_modding_enabled) {
+	m_script->loadModFromMemory(BUILTIN_MOD_NAME);
+}
+
+void Client::loadMods()
+{
+	// Don't permit to load mods twice
+	if (m_mods_loaded) {
 		return;
 	}
+
+	// If modding is not enabled or flavour disable it, don't load mods, just builtin
+	if (!m_modding_enabled) {
+		warningstream << "Client side mods are disabled by configuration." << std::endl;
+		return;
+	}
+
+	if (checkCSMFlavourLimit(CSMFlavourLimit::CSM_FL_LOAD_CLIENT_MODS)) {
+		warningstream << "Client side mods are disabled by server." << std::endl;
+		// If mods loading is disabled and builtin integrity is wrong, disconnect user.
+		if (!checkBuiltinIntegrity()) {
+			// @TODO disconnect user
+		}
+		return;
+	}
+
 	ClientModConfiguration modconf(getClientModsLuaPath());
 	m_mods = modconf.getMods();
-	std::vector<ModSpec> unsatisfied_mods = modconf.getUnsatisfiedMods();
 	// complain about mods with unsatisfied dependencies
 	if (!modconf.isConsistent()) {
 		modconf.printUnsatisfiedModsError();
@@ -145,6 +165,18 @@ void Client::loadMods()
 		}
 		scanModIntoMemory(mod.name, mod.path);
 	}
+
+	// Load and run "mod" scripts
+	for (const ModSpec &mod : m_mods)
+		m_script->loadModFromMemory(mod.name);
+
+	m_mods_loaded = true;
+}
+
+bool Client::checkBuiltinIntegrity()
+{
+	// @TODO
+	return true;
 }
 
 void Client::scanModSubfolder(const std::string &mod_name, const std::string &mod_path,
@@ -162,20 +194,6 @@ void Client::scanModSubfolder(const std::string &mod_name, const std::string &mo
 		std::replace( mod_subpath.begin(), mod_subpath.end(), DIR_DELIM_CHAR, '/');
 		m_mod_files[mod_name + ":" + mod_subpath + filename] = full_path  + filename;
 	}
-}
-
-void Client::initMods()
-{
-	m_script->loadModFromMemory(BUILTIN_MOD_NAME);
-
-	// If modding is not enabled, don't load mods, just builtin
-	if (!m_modding_enabled) {
-		return;
-	}
-
-	// Load and run "mod" scripts
-	for (const ModSpec &mod : m_mods)
-		m_script->loadModFromMemory(mod.name);
 }
 
 const std::string &Client::getBuiltinLuaPath()

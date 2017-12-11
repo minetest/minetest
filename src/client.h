@@ -140,16 +140,13 @@ public:
 	DISABLE_CLASS_COPY(Client);
 
 	// Load local mods into memory
-	void loadMods();
+	void loadBuiltin();
 	void scanModSubfolder(const std::string &mod_name, const std::string &mod_path,
 				std::string mod_subpath);
 	inline void scanModIntoMemory(const std::string &mod_name, const std::string &mod_path)
 	{
 		scanModSubfolder(mod_name, mod_path, "");
 	}
-
-	// Initizle the mods
-	void initMods();
 
 	/*
 	 request all threads managed by client to be stopped
@@ -433,6 +430,8 @@ public:
 	ModChannel *getModChannel(const std::string &channel);
 
 private:
+	void loadMods();
+	bool checkBuiltinIntegrity();
 
 	// Virtual methods from con::PeerHandler
 	void peerAdded(con::Peer *peer);
@@ -536,6 +535,7 @@ private:
 	std::queue<ClientEvent *> m_client_event_queue;
 	bool m_itemdef_received = false;
 	bool m_nodedef_received = false;
+	bool m_mods_loaded = false;
 	ClientMediaDownloader *m_media_downloader;
 
 	// time_of_day speed approximation for old protocol

@@ -921,10 +921,11 @@ enum PlayerListModifer: u8
 
 enum CSMFlavourLimit : u64 {
 	CSM_FL_NONE = 0x00000000,
-	CSM_FL_LOOKUP_NODES = 0x00000001, // Limit node lookups
+	CSM_FL_LOAD_CLIENT_MODS = 0x00000001, // Disable mods provided by clients
 	CSM_FL_CHAT_MESSAGES = 0x00000002, // Disable chat message sending from CSM
 	CSM_FL_READ_ITEMDEFS = 0x00000004, // Disable itemdef lookups
 	CSM_FL_READ_NODEDEFS = 0x00000008, // Disable nodedef lookups
+	CSM_FL_LOOKUP_NODES = 0x00000010, // Limit node lookups
 	CSM_FL_ALL = 0xFFFFFFFF,
 };
 

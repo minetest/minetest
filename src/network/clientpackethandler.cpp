@@ -1326,6 +1326,10 @@ void Client::handleCommand_SrpBytesSandB(NetworkPacket* pkt)
 void Client::handleCommand_CSMFlavourLimits(NetworkPacket *pkt)
 {
 	*pkt >> m_csm_flavour_limits >> m_csm_noderange_limit;
+
+	// Now we have flavours, load mods if it's enabled
+	// Note: this should be moved after mods receptions from server instead
+	loadMods();
 }
 
 /*
