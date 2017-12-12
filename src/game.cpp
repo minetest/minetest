@@ -1280,6 +1280,7 @@ protected:
 	void increaseViewRange();
 	void decreaseViewRange();
 	void toggleFullViewRange();
+	void checkZoomEnabled();
 
 	void updateCameraDirection(CameraOrientation *cam, float dtime);
 	void updateCameraOrientation(CameraOrientation *cam, float dtime);
@@ -2579,6 +2580,8 @@ void Game::processKeyInput()
 		decreaseViewRange();
 	} else if (wasKeyDown(KeyType::RANGESELECT)) {
 		toggleFullViewRange();
+	} else if (wasKeyDown(KeyType::ZOOM)) {
+		checkZoomEnabled();
 	} else if (wasKeyDown(KeyType::QUICKTUNE_NEXT)) {
 		quicktune->next();
 	} else if (wasKeyDown(KeyType::QUICKTUNE_PREV)) {
@@ -3015,6 +3018,14 @@ void Game::toggleFullViewRange()
 		showStatusTextSimple("Enabled unlimited viewing range");
 	else
 		showStatusTextSimple("Disabled unlimited viewing range");
+}
+
+
+void Game::checkZoomEnabled()
+{
+	LocalPlayer *player = client->getEnv().getLocalPlayer();
+	if (player->getZoomFOV() < 0.001f)
+		showStatusTextSimple("Zoom currently disabled by game or mod");
 }
 
 
