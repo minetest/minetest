@@ -519,7 +519,8 @@ function core.handle_node_drops(pos, drops, digger)
 		end
 	else
 		give_item = function(item)
-			return item
+			-- itemstring to ItemStack for left:is_empty()
+			return ItemStack(item)
 		end
 	end
 
