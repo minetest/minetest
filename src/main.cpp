@@ -365,13 +365,6 @@ static void print_worldspecs(const std::vector<WorldSpec> &worldspecs,
 		std::string path = worldspec.path;
 		if (print_name && print_path) {
 			os << "\t" << name << "\t\t" << path << std::endl;
-
-			if (name.find(' ') != std::string::npos)
-				name = std::string("'").append(name).append("'");
-			path = std::string("'").append(path).append("'");
-
-			name = padStringRight(name, 14);
-			//os << "  " << name << " " << path << std::endl;
 		} else if (print_name) {
 			os << "  " << name << std::endl;
 		} else if (print_path) {
