@@ -202,6 +202,28 @@ void UnitSAO::getAttachment(int *parent_id, std::string *bone, v3f *position,
 	*rotation = m_attachment_rotation;
 }
 
+void UnitSAO::clearAttachments(bool detach_childs)
+{
+	ServerActiveObject *parent = nullptr;
+	if (m_attachment_parent_id) {
+		parent = m_env->getActiveObject(m_attachment_parent_id);
+		setAttachment(0, "", m_attachment_position, m_attachment_rotation);
+	} else {
+		setAttachment(0, "", v3f(0, 0, 0), v3f(0, 0, 0));
+	}
+	// Do it
+	if (parent != nullptr)
+		parent->removeAttachmentChild(m_id);
+
+	if (detach_childs) {
+		for (int child_id : m_attachment_child_ids) {
+			// Child can be NULL if it was deleted earlier
+			if (ServerActiveObject *child = m_env->getActiveObject(child_id))
+				child->setAttachment(0, "", v3f(0, 0, 0), v3f(0, 0, 0));
+		}
+	}
+}
+
 void UnitSAO::addAttachmentChild(int child_id)
 {
 	m_attachment_child_ids.insert(child_id);
@@ -544,10 +566,6 @@ int LuaEntitySAO::punch(v3f dir,
 		return 0;
 	}
 
-	// It's best that attachments cannot be punched
-	if (isAttached())
-		return 0;
-
 	ItemStack *punchitem = NULL;
 	ItemStack punchitem_static;
 	if (puncher) {
@@ -585,6 +603,7 @@ int LuaEntitySAO::punch(v3f dir,
 	}
 
 	if (getHP() == 0) {
+		clearAttachments(true);
 		m_pending_removal = true;
 		m_env->getScriptIface()->luaentity_on_death(m_id, puncher);
 	}
@@ -1180,10 +1199,6 @@ int PlayerSAO::punch(v3f dir,
 	ServerActiveObject *puncher,
 	float time_from_last_punch)
 {
-	// It's best that attachments cannot be punched
-	if (isAttached())
-		return 0;
-
 	if (!toolcap)
 		return 0;
 
