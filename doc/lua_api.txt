@@ -53,13 +53,23 @@ Games are looked up from:
 
 where `gameid` is unique to each game.
 
-The game directory contains the file `game.conf`, which contains these fields:
+The game directory contains the file `game.conf`, which contains:
 
     name = <Human-readable full name of the game>
 
 e.g.
 
     name = Minetest
+
+Optionally, game.conf can also contain:
+
+    disallowed_mapgens = <comma-separated mapgens>
+
+e.g.
+
+    disallowed_mapgens = v5,v6,flat
+
+These mapgens are removed from the list of mapgens for the game.
 
 The game directory can contain the file minetest.conf, which will be used
 to set default settings when running the particular game.
