@@ -20,6 +20,29 @@ local function create_world_formspec(dialogdata)
 
 	local current_seed = core.settings:get("fixed_map_seed") or ""
 	local current_mg   = core.settings:get("mg_name")
+	local gameid = core.settings:get("menu_last_game")
+
+	local game, gameidx = nil , 0
+	if gameid ~= nil then
+		game, gameidx = gamemgr.find_by_gameid(gameid)
+		
+		if gameidx == nil then
+			gameidx = 0
+		end
+	end
+
+	local gamepath = minetest.get_game(gameidx).path
+	local gameconfig = Settings(gamepath.."/game.conf")
+
+	local disallowed_mapgens = gameconfig:get("disallowed_mapgens")
+
+	if disallowed_mapgens then
+		for i = #mapgens, 1, -1 do
+			if string.find(disallowed_mapgens, mapgens[i]) then
+				table.remove(mapgens, i)
+			end
+		end
+	end
 
 	local mglist = ""
 	local selindex = 1
@@ -32,17 +55,6 @@ local function create_world_formspec(dialogdata)
 		mglist = mglist .. v .. ","
 	end
 	mglist = mglist:sub(1, -2)
-	
-	local gameid = core.settings:get("menu_last_game")
-	
-	local game, gameidx = nil , 0
-	if gameid ~= nil then
-		game, gameidx = gamemgr.find_by_gameid(gameid)
-		
-		if gameidx == nil then
-			gameidx = 0
-		end
-	end
 
 	current_seed = core.formspec_escape(current_seed)
 	local retval =
@@ -122,6 +134,8 @@ local function create_world_buttonhandler(this, fields)
 	end
 
 	if fields["games"] then
+		local gameindex = core.get_textlist_index("games")
+		core.settings:set("menu_last_game", gamemgr.games[gameindex].id)
 		return true
 	end
 	
