@@ -15,6 +15,8 @@
 --with this program; if not, write to the Free Software Foundation, Inc.,
 --51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
+local worldname = ""
+
 local function create_world_formspec(dialogdata)
 	local mapgens = core.get_mapgen_names()
 
@@ -60,7 +62,7 @@ local function create_world_formspec(dialogdata)
 	local retval =
 		"size[11.5,6.5,true]" ..
 		"label[2,0;" .. fgettext("World name") .. "]"..
-		"field[4.5,0.4;6,0.5;te_world_name;;]" ..
+		"field[4.5,0.4;6,0.5;te_world_name;;" .. minetest.formspec_escape(worldname) .. "]" ..
 
 		"label[2,1;" .. fgettext("Seed") .. "]"..
 		"field[4.5,1.4;6,0.5;te_seed;;".. current_seed .. "]" ..
@@ -133,6 +135,8 @@ local function create_world_buttonhandler(this, fields)
 		return true
 	end
 
+	worldname = fields.te_world_name
+
 	if fields["games"] then
 		local gameindex = core.get_textlist_index("games")
 		core.settings:set("menu_last_game", gamemgr.games[gameindex].id)
@@ -149,6 +153,7 @@ end
 
 
 function create_create_world_dlg(update_worldlistfilter)
+	worldname = ""
 	local retval = dialog_create("sp_create_world",
 					create_world_formspec,
 					create_world_buttonhandler,
