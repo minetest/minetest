@@ -616,7 +616,7 @@ fall_bobbing_amount (Fall bobbing factor) float 0.0
 3d_mode (3D mode) enum none none,anaglyph,interlaced,topbottom,sidebyside,pageflip
 
 #    In-game chat console height, between 0.1 (10%) and 1.0 (100%).
-console_height (Console height) float 1.0 0.1 1.0
+console_height (Console height) float 0.6 0.1 1.0
 
 #    In-game chat console background color (R,G,B).
 console_color (Console color) string (0,0,0)
