@@ -33,7 +33,7 @@ local function create_world_formspec(dialogdata)
 		end
 	end
 
-	local gamepath = minetest.get_game(gameidx).path
+	local gamepath = core.get_game(gameidx).path
 	local gameconfig = Settings(gamepath.."/game.conf")
 
 	local disallowed_mapgens = (gameconfig:get("disallowed_mapgens") or ""):split()
