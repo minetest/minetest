@@ -320,11 +320,7 @@ scene::SMesh *createSpecialNodeMesh(Client *client, content_t id, std::vector<It
 			for (video::S3DVertex &v : p.vertices)
 				v.Color.setAlpha(255);
 			scene::SMeshBuffer *buf = new scene::SMeshBuffer();
-			// always set all textures
-			// with no shaders only texture 0 is ever actually used
 			buf->Material.setTexture(0, p.layer.texture);
-			buf->Material.setTexture(1, p.layer.normal_texture);
-			buf->Material.setTexture(2, p.layer.flags_texture);
 			p.layer.applyMaterialOptions(buf->Material);
 			mesh->addMeshBuffer(buf);
 			buf->append(&p.vertices[0], p.vertices.size(),
