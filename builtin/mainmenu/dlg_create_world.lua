@@ -36,11 +36,14 @@ local function create_world_formspec(dialogdata)
 	local gamepath = minetest.get_game(gameidx).path
 	local gameconfig = Settings(gamepath.."/game.conf")
 
-	local disallowed_mapgens = gameconfig:get("disallowed_mapgens")
+	local disallowed_mapgens = (gameconfig:get("disallowed_mapgens") or ""):split()
+	for key, value in pairs(disallowed_mapgens) do
+		disallowed_mapgens[key] = value:trim()
+	end
 
 	if disallowed_mapgens then
 		for i = #mapgens, 1, -1 do
-			if string.find(disallowed_mapgens, mapgens[i]) then
+			if table.indexof(disallowed_mapgens, mapgens[i]) > 0 then
 				table.remove(mapgens, i)
 			end
 		end
@@ -142,7 +145,7 @@ local function create_world_buttonhandler(this, fields)
 		core.settings:set("menu_last_game", gamemgr.games[gameindex].id)
 		return true
 	end
-	
+
 	if fields["world_create_cancel"] then
 		this:delete()
 		return true
