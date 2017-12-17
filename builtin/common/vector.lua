@@ -124,21 +124,22 @@ function vector.sort(a, b)
 end
 
 -- returns a new normalized 2d vector with random values
-function vector.random_2d()
-	local vect
-	repeat
-		vect = {x=math.random()*2-1, y=0, z=math.random()*2-1}
-	until vector.length(vect) <= 1
-	return vector.normalize(vect)
+function vector.random2d()
+	local phi = math.random() * 2 * math.pi
+	return {
+		x = math.cos(phi),
+		y = math.sin(phi),
+	}
 end
 
 -- returns a new normalized 3d vector with random values
-function vector.random_3d()
-	local vect
-	repeat
-		vect = {x=math.random()*2-1, y=math.random()*2-1, z=math.random()*2-1}
-	until vector.length(vect) <= 1
-	return vector.normalize(vect)
+function vector.random3d()
+	local phi = math.random() * 2 * math.pi
+	local y = math.random() * 2 - 1
+	local r = math.sqrt(1 - y * y)
+	local x = r * math.cos(phi)
+	local z = r * math.sin(phi)
+	return {x = x, y = y, z = z}
 end
 
 -- returns a vector with a specific length
