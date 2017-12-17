@@ -4131,7 +4131,9 @@ It can be created via `Settings(filename)`.
 
 #### Methods
 * `get(key)`: returns a value
-* `get_bool(key)`: returns a boolean
+* `get_bool(key, [default])`: returns a boolean
+    * `default` is the value returned if `key` is not found.
+    * Returns `nil` if `key` is not found and `default` not specified.
 * `get_np_group(key)`: returns a NoiseParams table
 * `set(key, value)`
     * Setting names can't contain whitespace or any of `="{}#`.
