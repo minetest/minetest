@@ -75,6 +75,7 @@ struct MapEditEvent
 	v3s16 p;
 	MapNode n = CONTENT_AIR;
 	std::set<v3s16> modified_blocks;
+	bool is_private_change = false;
 
 	MapEditEvent() = default;
 
@@ -85,6 +86,7 @@ struct MapEditEvent
 		event->p = p;
 		event->n = n;
 		event->modified_blocks = modified_blocks;
+		event->is_private_change = is_private_change;
 		return event;
 	}
 

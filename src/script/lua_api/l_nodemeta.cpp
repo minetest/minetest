@@ -58,13 +58,16 @@ void NodeMetaRef::clearMeta()
 	m_env->getMap().removeNodeMetadata(m_p);
 }
 
-void NodeMetaRef::reportMetadataChange()
+void NodeMetaRef::reportMetadataChange(const std::string *name)
 {
 	// NOTE: This same code is in rollback_interface.cpp
 	// Inform other things that the metadata has changed
+	NodeMetadata *meta = dynamic_cast<NodeMetadata*>(m_meta);
+
 	MapEditEvent event;
 	event.type = MEET_BLOCK_NODE_METADATA_CHANGED;
 	event.p = m_p;
+	event.is_private_change = name && meta && meta->isPrivate(*name);
 	m_env->getMap().dispatchEvent(&event);
 }
 

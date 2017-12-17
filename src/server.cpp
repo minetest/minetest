@@ -888,9 +888,11 @@ void Server::AsyncRunStep(bool initial_step)
 			case MEET_BLOCK_NODE_METADATA_CHANGED: {
 				verbosestream << "Server: MEET_BLOCK_NODE_METADATA_CHANGED" << std::endl;
 				prof.add("MEET_BLOCK_NODE_METADATA_CHANGED", 1);
-				// Don't send the change yet. Collect them to eliminate dupes.
-				node_meta_updates.remove(event->p);
-				node_meta_updates.push_back(event->p);
+				if (!event->is_private_change) {
+					// Don't send the change yet. Collect them to eliminate dupes.
+					node_meta_updates.remove(event->p);
+					node_meta_updates.push_back(event->p);
+				}
 
 				if (MapBlock *block = m_env->getMap().getBlockNoCreateNoEx(
 						getNodeBlockPos(event->p))) {
