@@ -253,12 +253,12 @@ void Client::handleCommand_NodemetaChanged(NetworkPacket *pkt)
 	std::stringstream sstr;
 	decompressZlib(is, sstr);
 
-	NodeMetadataList *meta_updates_list = new NodeMetadataList();
-	meta_updates_list->deSerialize(sstr, m_itemdef, true);
+	NodeMetadataList meta_updates_list(false);
+	meta_updates_list.deSerialize(sstr, m_itemdef, true);
 
 	Map &map = m_env.getMap();
-	for (NodeMetadataMap::const_iterator i = meta_updates_list->begin();
-			i != meta_updates_list->end(); ++i) {
+	for (NodeMetadataMap::const_iterator i = meta_updates_list.begin();
+			i != meta_updates_list.end(); ++i) {
 		v3s16 pos = i->first;
 
 		if (map.isValidPosition(pos) &&
@@ -268,9 +268,6 @@ void Client::handleCommand_NodemetaChanged(NetworkPacket *pkt)
 		// Meta couldn't be set, unused metadata
 		delete i->second;
 	}
-
-	meta_updates_list->clear(false);
-	delete meta_updates_list;
 }
 
 void Client::handleCommand_BlockData(NetworkPacket* pkt)

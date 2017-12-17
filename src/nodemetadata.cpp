@@ -131,8 +131,7 @@ void NodeMetadataList::serialize(std::ostream &os, u8 blockver, bool disk,
 
 	for (NodeMetadataMap::const_iterator
 			i = m_data.begin();
-			i != m_data.end(); ++i)
-	{
+			i != m_data.end(); ++i) {
 		v3s16 p = i->first;
 		NodeMetadata *data = i->second;
 		if (data->empty())
@@ -227,7 +226,8 @@ void NodeMetadataList::remove(v3s16 p)
 {
 	NodeMetadata *olddata = get(p);
 	if (olddata) {
-		delete olddata;
+		if (m_is_metadata_owner)
+			delete olddata;
 		m_data.erase(p);
 	}
 }
@@ -238,13 +238,12 @@ void NodeMetadataList::set(v3s16 p, NodeMetadata *d)
 	m_data.insert(std::make_pair(p, d));
 }
 
-void NodeMetadataList::clear(bool delete_nodemetadata)
+void NodeMetadataList::clear()
 {
-	if (delete_nodemetadata) {
+	if (m_is_metadata_owner) {
 		NodeMetadataMap::const_iterator it;
-		for (it = m_data.begin(); it != m_data.end(); ++it) {
+		for (it = m_data.begin(); it != m_data.end(); ++it)
 			delete it->second;
-		}
 	}
 	m_data.clear();
 }

@@ -71,10 +71,14 @@ private:
 */
 
 typedef std::map<v3s16, NodeMetadata *> NodeMetadataMap;
-	
+
 class NodeMetadataList
 {
 public:
+	NodeMetadataList(bool is_metadata_owner = true) :
+		m_is_metadata_owner(is_metadata_owner)
+	{}
+
 	~NodeMetadataList();
 
 	void serialize(std::ostream &os, u8 blockver, bool disk = true,
@@ -91,7 +95,9 @@ public:
 	// Deletes old data and sets a new one
 	void set(v3s16 p, NodeMetadata *d);
 	// Deletes all
-	void clear(bool delete_nodemetadata = true);
+	void clear();
+
+	size_t size() const { return m_data.size(); }
 
 	NodeMetadataMap::const_iterator begin()
 	{
@@ -106,5 +112,6 @@ public:
 private:
 	int countNonEmpty() const;
 
+	bool m_is_metadata_owner;
 	NodeMetadataMap m_data;
 };

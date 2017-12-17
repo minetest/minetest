@@ -2175,63 +2175,61 @@ void Server::sendAddNode(v3s16 p, MapNode n, std::unordered_set<u16> *far_player
 void Server::sendMetadataChanged(const std::list<v3s16> &meta_updates, float far_d_nodes)
 {
 	float maxd = far_d_nodes * BS;
-	NodeMetadataList *meta_updates_list = new NodeMetadataList();
-	std::vector<u16> clients = m_clients.getClientIDs();
+	NodeMetadataList meta_updates_list(false);
+	std::vector<session_t> clients = m_clients.getClientIDs();
 
 	m_clients.lock();
 
-	for (std::vector<u16>::iterator i = clients.begin();
-			i != clients.end(); ++i) {
-		RemoteClient *client = m_clients.lockedGetClientNoEx(*i);
-		if (client == NULL)
+	for (session_t i : clients) {
+		RemoteClient *client = m_clients.lockedGetClientNoEx(i);
+		if (!client)
 			continue;
 
-		if (client->net_proto_version >= 37) {
-			ServerActiveObject *player = m_env->getActiveObject(*i);
-
-			for (std::list<v3s16>::const_iterator i2 = meta_updates.begin();
-					i2 != meta_updates.end(); ++i2) {
-				v3s16 pos = *i2;
-				NodeMetadata *meta = m_env->getMap().getNodeMetadata(pos);
-
-				if (!meta)
-					continue;
-
-				if (player) {
-					// If player is far away, only set modified blocks not sent
-					v3f player_pos = player->getBasePosition();
-					if (player_pos.getDistanceFrom(intToFloat(pos, BS)) > maxd) {
-						client->SetBlockNotSent(getNodeBlockPos(pos));
-						continue;
-					}
-				}
-
-				// Add the change to send list
-				meta_updates_list->set(pos, meta);
-			}
-			// Send the meta changes
-			std::ostringstream os(std::ios::binary);
-			meta_updates_list->serialize(os, true);
-			std::ostringstream oss(std::ios::binary);
-			compressZlib(os.str(), oss);
-
-			NetworkPacket pkt(TOCLIENT_NODEMETA_CHANGED, 0);
-			pkt.putLongString(oss.str());
-			m_clients.send(*i, 0, &pkt, true);
-
-			meta_updates_list->clear(false);
-		} else {
+		if (client->net_proto_version < 37) {
 			// Older clients expect whole blocks, set them not sent
-			for (std::list<v3s16>::const_iterator i2 = meta_updates.begin();
-					i2 != meta_updates.end(); ++i2) {
-				v3s16 pos = *i2;
+			for (const v3s16 &pos : meta_updates)
 				client->SetBlockNotSent(getNodeBlockPos(pos));
-			}
+
+			continue;
 		}
+
+		ServerActiveObject *player = m_env->getActiveObject(i);
+
+		for (const v3s16 &pos : meta_updates) {
+			NodeMetadata *meta = m_env->getMap().getNodeMetadata(pos);
+
+			if (!meta)
+				continue;
+
+			if (player) {
+				// If player is far away, only set modified blocks not sent
+				v3f player_pos = player->getBasePosition();
+				if (player_pos.getDistanceFrom(intToFloat(pos, BS)) > maxd) {
+					client->SetBlockNotSent(getNodeBlockPos(pos));
+					continue;
+				}
+			}
+
+			// Add the change to send list
+			meta_updates_list.set(pos, meta);
+		}
+		if (meta_updates_list.size() == 0)
+			continue;
+
+		// Send the meta changes
+		std::ostringstream os(std::ios::binary);
+		meta_updates_list.serialize(os, client->net_proto_version, false, true);
+		std::ostringstream oss(std::ios::binary);
+		compressZlib(os.str(), oss);
+
+		NetworkPacket pkt(TOCLIENT_NODEMETA_CHANGED, 0);
+		pkt.putLongString(oss.str());
+		m_clients.send(i, 0, &pkt, true);
+
+		meta_updates_list.clear();
 	}
 
 	m_clients.unlock();
-	delete meta_updates_list;
 }
 
 void Server::SendBlockNoLock(session_t peer_id, MapBlock *block, u8 ver,
