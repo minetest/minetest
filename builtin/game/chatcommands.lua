@@ -175,26 +175,26 @@ core.register_chatcommand("revoke", {
 	description = "Remove privilege from player",
 	privs = {},
 	func = function(name, param)
+		-- Check that the caller can do this
 		if not core.check_player_privs(name, {privs=true}) and
 				not core.check_player_privs(name, {basic_privs=true}) then
 			return false, "Your privileges are insufficient."
 		end
+
+		-- Parse parameter string
 		local revoke_name, revoke_priv_str = string.match(param, "([^ ]+) (.+)")
 		if not revoke_name or not revoke_priv_str then
 			return false, "Invalid parameters (see /help revoke)"
-		elseif not core.get_auth_handler().get_auth(revoke_name) then
+		end
+
+		-- Check that target player exists
+		if not core.get_auth_handler().get_auth(revoke_name) then
 			return false, "Player " .. revoke_name .. " does not exist."
 		end
+
+		-- Get privs to revoke
 		local revoke_privs = core.string_to_privs(revoke_priv_str)
 		local privs = core.get_player_privs(revoke_name)
-		local basic_privs =
-			core.string_to_privs(core.settings:get("basic_privs") or "interact,shout")
-		for priv, _ in pairs(revoke_privs) do
-			if not basic_privs[priv] and
-					not core.check_player_privs(name, {privs=true}) then
-				return false, "Your privileges are insufficient."
-			end
-		end
 		if revoke_priv_str == "all" then
 			revoke_privs = privs
 			privs = {}
@@ -204,22 +204,55 @@ core.register_chatcommand("revoke", {
 			end
 		end
 
+		-- Permission check for basic_privs
+		if not core.check_player_privs(name, { privs = true }) then
+			local basic_privs =
+				core.string_to_privs(core.settings:get("basic_privs") or "interact,shout")
+			for priv, _ in pairs(revoke_privs) do
+				if not basic_privs[priv] then
+					return false, "Your privileges are insufficient (basic_privs only allows you to revoke: " .. basic_privs .. ")"
+				end
+			end
+		end
+
+		-- Revoke privileges and run callbacks
 		for priv, _ in pairs(revoke_privs) do
 			core.run_priv_callbacks(revoke_name, priv, name, "revoke")
 		end
-
 		core.set_player_privs(revoke_name, privs)
-		core.log("action", name..' revoked ('
-				..core.privs_to_string(revoke_privs, ', ')
-				..') privileges from '..revoke_name)
+
+
+		core.log("action", name..' revoked (' ..
+				core.privs_to_string(revoke_privs, ', ') ..
+				') privileges from ' .. revoke_name)
+
+
 		if revoke_name ~= name then
 			core.chat_send_player(revoke_name, name
 					.. " revoked privileges from you: "
 					.. core.privs_to_string(revoke_privs, ' '))
 		end
-		return true, "Privileges of " .. revoke_name .. ": "
-			.. core.privs_to_string(
-				core.get_player_privs(revoke_name), ' ')
+
+		local msg = "Privileges of " .. revoke_name .. ": " ..
+				core.privs_to_string(core.get_player_privs(revoke_name), ' ')
+
+		if minetest.is_singleplayer() then
+			local count = 0
+			for priv, _ in pairs(revoke_privs) do
+				local def = minetest.registered_privileges[priv]
+				if def and def.give_to_singleplayer then
+					count = count + 1
+				end
+			end
+
+			if count > 0 then
+				msg = "Warning: Unable to revoke " .. count .. " privileges from singleplayer, as they are required.\n" .. msg
+			end
+		elseif revoke_name == minetest.settings:get("name") then
+			msg = "Warning: Privileges cannot be revoked from admins.\n" .. msg
+		end
+
+		return true, msg
 	end,
 })
 
