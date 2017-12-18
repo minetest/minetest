@@ -119,6 +119,209 @@ static scene::IMesh *createExtrusionMesh(int resolution_x, int resolution_y)
 	return mesh;
 }
 
+class Extruder
+{
+	enum class FaceDir
+	{
+		Up,
+		Down,
+		Left,
+		Right,
+	};
+
+	static constexpr int threshold = 128;
+	static constexpr float thickness = 0.05f;
+	video::ITexture *texture;
+	const video::SColor *data;
+	u32 w, h;
+	float dw, dh;
+	std::vector<video::S3DVertex> vertices;
+	std::vector<u16> indices;
+
+	video::SColor pixel(u32 i, u32 j);
+	bool is_opaque(u32 i, u32 j);
+	void create_face(u32 i, u32 j, FaceDir dir);
+	void create_side(bool far);
+
+public:
+	Extruder(video::ITexture *_texture);
+	~Extruder();
+	void extrude();
+	scene::IMesh *createMesh();
+};
+
+Extruder::Extruder(video::ITexture *_texture) :
+	texture(_texture)
+{
+	if (texture->getColorFormat() != video::ECF_A8R8G8B8)
+		return;
+	const void *rawdata = texture->lock(video::ETLM_READ_ONLY);
+	if (!rawdata)
+		return;
+	data = reinterpret_cast<const video::SColor *>(rawdata);
+	auto size = texture->getSize();
+	w = size.Width;
+	h = size.Height;
+	dw = 1.0f / w;
+	dh = 1.0f / h;
+	vertices.reserve(w * h);
+	indices.reserve(w * h);
+}
+
+Extruder::~Extruder()
+{
+	if (data)
+		texture->unlock();
+}
+
+inline video::SColor Extruder::pixel(u32 i, u32 j)
+{
+	return data[w * j + i];
+}
+
+inline bool Extruder::is_opaque(u32 i, u32 j)
+{
+	return pixel(i, j).getAlpha() >= threshold;
+}
+
+void Extruder::create_face(u32 i, u32 j, FaceDir dir)
+{
+	static const v3f normals[4] = {
+		{0.0f, 1.0f, 0.0f},
+		{0.0f, -1.0f, 0.0f},
+		{-1.0f, 0.0f, 0.0f},
+		{1.0f, 0.0f, 0.0f},
+	};
+	static const v2f tc[4] = {
+		{0.5f, 0.5f},
+		{0.5f, -0.5f},
+		{0.5f, 0.5f},
+		{-0.5f, 0.5f},
+	};
+	static const v3f vert[4][4] = {{ // Up (+Y)
+		{0.0f, 0.0f, -0.5f},
+		{0.0f, 0.0f, 0.5f},
+		{1.0f, 0.0f, -0.5f},
+		{1.0f, 0.0f, 0.5f},
+	},{ // Down (-Y)
+		{0.0f, 0.0f, -0.5f},
+		{1.0f, 0.0f, -0.5f},
+		{0.0f, 0.0f, 0.5f},
+		{1.0f, 0.0f, 0.5f},
+	},{ // Left (-X)
+		{0.0f, 0.0f, -0.5f},
+		{0.0f, -1.0f, -0.5f},
+		{0.0f, 0.0f, 0.5f},
+		{0.0f, -1.0f, 0.5f},
+	},{ // Right (+X)
+		{0.0f, 0.0f, -0.5f},
+		{0.0f, 0.0f, 0.5f},
+		{0.0f, -1.0f, -0.5f},
+		{0.0f, -1.0f, 0.5f},
+	}};
+	static constexpr u16 ind[6] = {0, 1, 2, 3, 2, 1};
+	float x = dw * i - 0.5f;
+	float y = 0.5f - dh * j;
+	u16 base = vertices.size();
+	int m = static_cast<int>(dir);
+	const v2f &t = tc[m];
+	float tu = dw * (i + t.X);
+	float tv = dh * (j + t.Y);
+	const v3f &n = normals[m];
+	for (int k = 0; k < 4; k++) {
+		const v3f &v = vert[m][k];
+		vertices.emplace_back(
+			x + dw * v.X, y + dh * v.Y, thickness * v.Z,
+			n.X, n.Y, n.Z,
+			video::SColor(0xFFFFFFFF),
+			tu, tv);
+	}
+	for (int k = 0; k < 6; k++)
+		indices.push_back(base + ind[k]);
+}
+
+void Extruder::create_side(bool far)
+{
+	static const v3f normals[2] = {
+		{0.0f, 0.0f, -1.0f},
+		{0.0f, 0.0f, 1.0f},
+	};
+	static const v2f vert[4] = {
+		{0.0f, 1.0f},
+		{0.0f, 0.0f},
+		{1.0f, 1.0f},
+		{1.0f, 0.0f},
+	};
+	static constexpr u16 ind[2][6] = {
+		{0, 1, 2, 3, 2, 1},
+		{0, 2, 1, 3, 1, 2},
+	};
+	u16 base = vertices.size();
+	float z = 0.5f * thickness * (far ? 1 : -1);
+	const v3f &n = normals[far ? 1 : 0];
+	for (int k = 0; k < 4; k++) {
+		const v2f &v = vert[k];
+		vertices.emplace_back(
+			v.X - 0.5f, 0.5f - v.Y, z,
+			n.X, n.Y, n.Z,
+			video::SColor(0xFFFFFFFF),
+			v.X, v.Y);
+	}
+	for (int k = 0; k < 6; k++)
+		indices.push_back(base + ind[far ? 1 : 0][k]);
+}
+
+void Extruder::extrude()
+{
+	for (u32 j = 0; j < h; j++) {
+		bool prev_opaque = false;
+		for (u32 i = 0; i < w; i++) {
+			bool opaque = is_opaque(i, j);
+			if (opaque && !prev_opaque)
+				create_face(i, j, FaceDir::Left);
+			if (prev_opaque && !opaque)
+				create_face(i, j, FaceDir::Right);
+			prev_opaque = opaque;
+		}
+		if (prev_opaque)
+			create_face(w, j, FaceDir::Right);
+	}
+	for (u32 i = 0; i < w; i++) {
+		bool prev_opaque = false;
+		for (u32 j = 0; j < h; j++) {
+			bool opaque = is_opaque(i, j);
+			if (opaque && !prev_opaque)
+				create_face(i, j, FaceDir::Up);
+			if (prev_opaque && !opaque)
+				create_face(i, j, FaceDir::Down);
+			prev_opaque = opaque;
+		}
+		if (prev_opaque)
+			create_face(i, h, FaceDir::Down);
+	}
+	create_side(false);
+	create_side(true);
+}
+
+scene::IMesh *Extruder::createMesh()
+{
+	scene::IMeshBuffer *buf = new scene::SMeshBuffer();
+	buf->getMaterial().MaterialType = video::EMT_SOLID;
+	buf->getMaterial().setTexture(0, texture);
+	buf->append(vertices.data(), vertices.size(), indices.data(), indices.size());
+	scene::SMesh *mesh = new scene::SMesh();
+	mesh->addMeshBuffer(buf);
+	buf->drop();
+	return mesh;
+}
+
+static scene::IMesh *createExtrusionMesh(video::ITexture *texture)
+{
+	Extruder extruder(texture);
+	extruder.extrude();
+	return extruder.createMesh();
+}
+
 /*
 	Caches extrusion meshes so that only one of them per resolution
 	is needed. Also caches one cube (for convenience).
@@ -249,6 +452,8 @@ void WieldMeshSceneNode::setExtruded(const std::string &imagename,
 		changeToMesh(nullptr);
 		return;
 	}
+	scene::IMesh *mesh = createExtrusionMesh(texture);
+/*
 	video::ITexture *overlay_texture =
 		overlay_name.empty() ? NULL : tsrc->getTexture(overlay_name);
 
@@ -260,17 +465,16 @@ void WieldMeshSceneNode::setExtruded(const std::string &imagename,
 	}
 	scene::IMesh *original = g_extrusion_mesh_cache->create(dim);
 	scene::SMesh *mesh = cloneMesh(original);
-	original->drop();
+	original->drop();*/
 	//set texture
-	mesh->getMeshBuffer(0)->getMaterial().setTexture(0,
-		tsrc->getTexture(imagename));
-	if (overlay_texture) {
+// 	mesh->getMeshBuffer(0)->getMaterial().setTexture(0, texture);
+/*	if (overlay_texture) {
 		scene::IMeshBuffer *copy = cloneMeshBuffer(mesh->getMeshBuffer(0));
 		copy->getMaterial().setTexture(0, overlay_texture);
 		mesh->addMeshBuffer(copy);
 		copy->drop();
 	}
-	changeToMesh(mesh);
+*/	changeToMesh(mesh);
 	mesh->drop();
 
 	m_meshnode->setScale(wield_scale * WIELD_SCALE_FACTOR_EXTRUDED);
@@ -278,26 +482,26 @@ void WieldMeshSceneNode::setExtruded(const std::string &imagename,
 	// Customize materials
 	for (u32 layer = 0; layer < m_meshnode->getMaterialCount(); layer++) {
 		video::SMaterial &material = m_meshnode->getMaterial(layer);
-		material.TextureLayer[0].TextureWrapU = video::ETC_CLAMP_TO_EDGE;
-		material.TextureLayer[0].TextureWrapV = video::ETC_CLAMP_TO_EDGE;
-		material.MaterialType = m_material_type;
+// 		material.TextureLayer[0].TextureWrapU = video::ETC_CLAMP_TO_EDGE;
+// 		material.TextureLayer[0].TextureWrapV = video::ETC_CLAMP_TO_EDGE;
+// 		material.MaterialType = m_material_type;
 		material.setFlag(video::EMF_BACK_FACE_CULLING, true);
 		// Enable bi/trilinear filtering only for high resolution textures
-		if (dim.Width > 32) {
-			material.setFlag(video::EMF_BILINEAR_FILTER, m_bilinear_filter);
-			material.setFlag(video::EMF_TRILINEAR_FILTER, m_trilinear_filter);
-		} else {
+//		if (dim.Width > 32) {
+//			material.setFlag(video::EMF_BILINEAR_FILTER, m_bilinear_filter);
+//			material.setFlag(video::EMF_TRILINEAR_FILTER, m_trilinear_filter);
+//		} else {
 			material.setFlag(video::EMF_BILINEAR_FILTER, false);
 			material.setFlag(video::EMF_TRILINEAR_FILTER, false);
-		}
+//		}
 		material.setFlag(video::EMF_ANISOTROPIC_FILTER, m_anisotropic_filter);
 		// mipmaps cause "thin black line" artifacts
 #if (IRRLICHT_VERSION_MAJOR >= 1 && IRRLICHT_VERSION_MINOR >= 8) || IRRLICHT_VERSION_MAJOR >= 2
 		material.setFlag(video::EMF_USE_MIP_MAPS, false);
 #endif
-		if (m_enable_shaders) {
-			material.setTexture(2, tsrc->getShaderFlagsTexture(false));
-		}
+// 		if (m_enable_shaders) {
+// 			material.setTexture(2, tsrc->getShaderFlagsTexture(false));
+// 		}
 	}
 }
 
