@@ -94,9 +94,9 @@ void ClientEnvironment::step(float dtime)
 	/* Step time of day */
 	stepTimeOfDay(dtime);
 
-	// Get some settings
-	bool fly_allowed = m_client->checkLocalPrivilege("fly");
-	bool free_move = fly_allowed && g_settings->getBool("free_move");
+	// Don't allow overly huge dtime
+	if(dtime > 0.5)
+		dtime = 0.5;
 
 	// Get local player
 	LocalPlayer *lplayer = getLocalPlayer();
@@ -104,111 +104,7 @@ void ClientEnvironment::step(float dtime)
 	// collision info queue
 	std::vector<CollisionInfo> player_collisions;
 
-	/*
-		Get the speed the player is going
-	*/
-	bool is_climbing = lplayer->is_climbing;
-
-	f32 player_speed = lplayer->getSpeed().getLength();
-
-	/*
-		Maximum position increment
-	*/
-	//f32 position_max_increment = 0.05*BS;
-	f32 position_max_increment = 0.1*BS;
-
-	// Maximum time increment (for collision detection etc)
-	// time = distance / speed
-	f32 dtime_max_increment = 1;
-	if(player_speed > 0.001)
-		dtime_max_increment = position_max_increment / player_speed;
-
-	// Maximum time increment is 10ms or lower
-	if(dtime_max_increment > 0.01)
-		dtime_max_increment = 0.01;
-
-	// Don't allow overly huge dtime
-	if(dtime > 0.5)
-		dtime = 0.5;
-
-	f32 dtime_downcount = dtime;
-
-	/*
-		Stuff that has a maximum time increment
-	*/
-
-	u32 loopcount = 0;
-	do
-	{
-		loopcount++;
-
-		f32 dtime_part;
-		if(dtime_downcount > dtime_max_increment)
-		{
-			dtime_part = dtime_max_increment;
-			dtime_downcount -= dtime_part;
-		}
-		else
-		{
-			dtime_part = dtime_downcount;
-			/*
-				Setting this to 0 (no -=dtime_part) disables an infinite loop
-				when dtime_part is so small that dtime_downcount -= dtime_part
-				does nothing
-			*/
-			dtime_downcount = 0;
-		}
-
-		/*
-			Handle local player
-		*/
-		// SERVER SIDE MOVEMENT: this is the main player motion loop on the client
-		// abstract this so that it can apply on the server as well.
-
-		{
-			// Apply physics
-			if(!free_move && !is_climbing)
-			{
-				// Gravity
-				v3f speed = lplayer->getSpeed();
-				if(!lplayer->in_liquid)
-					speed.Y -= lplayer->movement_gravity * lplayer->physics_override_gravity * dtime_part * 2;
-
-				// Liquid floating / sinking
-				if(lplayer->in_liquid && !lplayer->swimming_vertical)
-					speed.Y -= lplayer->movement_liquid_sink * dtime_part * 2;
-
-				// Liquid resistance
-				if(lplayer->in_liquid_stable || lplayer->in_liquid)
-				{
-					// How much the node's viscosity blocks movement, ranges between 0 and 1
-					// Should match the scale at which viscosity increase affects other liquid attributes
-					const f32 viscosity_factor = 0.3;
-
-					v3f d_wanted = -speed / lplayer->movement_liquid_fluidity;
-					f32 dl = d_wanted.getLength();
-					if(dl > lplayer->movement_liquid_fluidity_smooth)
-						dl = lplayer->movement_liquid_fluidity_smooth;
-					dl *= (lplayer->liquid_viscosity * viscosity_factor) + (1 - viscosity_factor);
-
-					v3f d = d_wanted.normalize() * dl;
-					speed += d;
-				}
-
-				lplayer->setSpeed(speed);
-			}
-
-			/*
-				Move the lplayer.
-				This also does collision detection.
-			*/
-			lplayer->move(dtime_part, this, position_max_increment,
-				&player_collisions);
-		}
-	}
-	while(dtime_downcount > 0.001);
-
-	//std::cout<<"Looped "<<loopcount<<" times."<<std::endl;
+	lplayer->step(dtime, this, player_collisions);
 
 	bool player_immortal = lplayer->getCAO() && lplayer->getCAO()->isImmortal();
 

@@ -851,6 +851,111 @@ static aabb3f getNodeBoundingBox(const std::vector<aabb3f> &nodeboxes)
 	return b_max;
 }
 
+void Player::step(float dtime, Environment *env, std::vector<CollisionInfo> &player_collisions)
+{
+	// Get some settings
+	bool fly_allowed = checkPrivilege("fly");
+	bool free_move = fly_allowed && g_settings->getBool("free_move");
+
+	f32 player_speed = getSpeed().getLength();
+
+	/*
+		Maximum position increment
+	*/
+	//f32 position_max_increment = 0.05*BS;
+	f32 position_max_increment = 0.1*BS;
+
+	// Maximum time increment (for collision detection etc)
+	// time = distance / speed
+	f32 dtime_max_increment = 1;
+	if(player_speed > 0.001)
+		dtime_max_increment = position_max_increment / player_speed;
+
+	// Maximum time increment is 10ms or lower
+	if(dtime_max_increment > 0.01)
+		dtime_max_increment = 0.01;
+
+	f32 dtime_downcount = dtime;
+
+	/*
+		Stuff that has a maximum time increment
+	*/
+
+	u32 loopcount = 0;
+	do
+	{
+		loopcount++;
+
+		f32 dtime_part;
+		if(dtime_downcount > dtime_max_increment)
+		{
+			dtime_part = dtime_max_increment;
+			dtime_downcount -= dtime_part;
+		}
+		else
+		{
+			dtime_part = dtime_downcount;
+			/*
+				Setting this to 0 (no -=dtime_part) disables an infinite loop
+				when dtime_part is so small that dtime_downcount -= dtime_part
+				does nothing
+			*/
+			dtime_downcount = 0;
+		}
+
+		/*
+			Handle local player
+		*/
+		// SERVER SIDE MOVEMENT: this is the main player motion loop on the client
+		// abstract this so that it can apply on the server as well.
+
+		{
+			// Apply physics
+			if(!free_move && !is_climbing)
+			{
+				// Gravity
+				v3f speed = getSpeed();
+				if(!in_liquid)
+					speed.Y -= movement_gravity * physics_override_gravity * dtime_part * 2;
+
+				// Liquid floating / sinking
+				if(in_liquid && !swimming_vertical)
+					speed.Y -= movement_liquid_sink * dtime_part * 2;
+
+				// Liquid resistance
+				if(in_liquid_stable || in_liquid)
+				{
+					// How much the node's viscosity blocks movement, ranges between 0 and 1
+					// Should match the scale at which viscosity increase affects other liquid attributes
+					const f32 viscosity_factor = 0.3;
+
+					v3f d_wanted = -speed / movement_liquid_fluidity;
+					f32 dl = d_wanted.getLength();
+					if(dl > movement_liquid_fluidity_smooth)
+						dl = movement_liquid_fluidity_smooth;
+					dl *= (liquid_viscosity * viscosity_factor) + (1 - viscosity_factor);
+
+					v3f d = d_wanted.normalize() * dl;
+					speed += d;
+				}
+
+				setSpeed(speed);
+			}
+
+			/*
+				Move the player.
+				This also does collision detection.
+			*/
+			move(dtime_part, env, position_max_increment,
+				&player_collisions);
+		}
+	}
+	while(dtime_downcount > 0.001);
+
+	//std::cout<<"Looped "<<loopcount<<" times."<<std::endl;
+
+}
+
 void Player::debugVec(const std::string &title, const v3f &v, const std::string &prefix) const {
 	dstream << prefix << title << ": <" << v.X << " " << v.Y << " " << v.Z << ">" << std::endl;
 }
