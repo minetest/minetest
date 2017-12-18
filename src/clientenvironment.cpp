@@ -104,7 +104,7 @@ void ClientEnvironment::step(float dtime)
 	// collision info queue
 	std::vector<CollisionInfo> player_collisions;
 
-	lplayer->step(dtime, this, player_collisions);
+	lplayer->step(dtime, this, &player_collisions);
 
 	bool player_immortal = lplayer->getCAO() && lplayer->getCAO()->isImmortal();
 

@@ -851,7 +851,7 @@ static aabb3f getNodeBoundingBox(const std::vector<aabb3f> &nodeboxes)
 	return b_max;
 }
 
-void Player::step(float dtime, Environment *env, std::vector<CollisionInfo> &player_collisions)
+void Player::step(float dtime, Environment *env, std::vector<CollisionInfo> *player_collisions)
 {
 	// Get some settings
 	bool fly_allowed = checkPrivilege("fly");
@@ -947,7 +947,7 @@ void Player::step(float dtime, Environment *env, std::vector<CollisionInfo> &pla
 				This also does collision detection.
 			*/
 			move(dtime_part, env, position_max_increment,
-				&player_collisions);
+				player_collisions);
 		}
 	}
 	while(dtime_downcount > 0.001);

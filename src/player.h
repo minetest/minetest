@@ -208,7 +208,7 @@ public:
 
 	void setCollisionbox(const aabb3f &box) { m_collisionbox = box; }
 
-	void step(float dtime, Environment *env, std::vector<CollisionInfo> &player_collisions);
+	void step(float dtime, Environment *env, std::vector<CollisionInfo> *player_collisions = NULL);
 
 	virtual void debugVec(const std::string &title, const v3f &v, const std::string &prefix = "") const;
 	virtual void debugStr(const std::string &str, bool newline = true, const std::string &prefix = "") const;

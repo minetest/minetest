@@ -488,7 +488,8 @@ void Server::process_PlayerPos(RemotePlayer *player, PlayerSAO *playersao,
 			// - apply controls
 			player->applyControlLogEntry(cle, &getEnv());
 			// - simulate physics
-			player->move(cle.getDtime(), &getEnv(), 100 * BS);
+			//player->move(cle.getDtime(), &getEnv(), 100 * BS);
+			player->step(cle.getDtime(), &getEnv(), NULL);
 		}
 		// see how far we can acknowledge
 		u32 ackTime = log.getFinishTime();
