@@ -2251,6 +2251,7 @@ Spatial Vectors
 * `vector.new(a[, b, c])`: returns a vector:
     * A copy of `a` if `a` is a vector.
     * `{x = a, y = b, z = c}`, if all `a, b, c` are defined
+    * `{x = a, y = a, z = a}`, if `a` is a number, `b, c` are not defined
 * `vector.direction(p1, p2)`: returns a vector
 * `vector.distance(p1, p2)`: returns a number
 * `vector.length(v)`: returns a number
@@ -2259,7 +2260,9 @@ Spatial Vectors
 * `vector.round(v)`: returns a vector, each dimension rounded to nearest int
 * `vector.apply(v, func)`: returns a vector
 * `vector.equals(v1, v2)`: returns a boolean
+* `vector.is_zero(v)`: equivalent to `vector.equals(v, {x = 0, y = 0, z = 0})`
 * `vector.sort(v1, v2)`: returns minp, maxp vectors of the cuboid defined by v1 and v2
+* `vector.sum({v1, v2, ...})`: returns a vector
 
 For the following functions `x` can be either a vector or a number:
 
