@@ -858,3 +858,7 @@ void Player::debugStr(const std::string &str, bool newline, const std::string &p
 	dstream << prefix << str;
 	if (newline) dstream << std::endl;
 }
+void Player::debugFloat(const std::string &title, const float value, bool newline, const std::string &prefix) const {
+	dstream << prefix << title << ": " << value;
+	if (newline) dstream << std::endl;
+}

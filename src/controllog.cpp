@@ -128,6 +128,7 @@ float ControlLogEntry::getJoySidew() const
 bool ControlLogEntry::matches(const ControlLogEntry &other) const
 {
 	return (
+		false &&
 		settings == other.settings &&
 		keys == other.keys &&
 		yaw_pitch == other.yaw_pitch &&

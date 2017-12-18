@@ -165,3 +165,6 @@ void LocalPlayer::debugVec( const std::string &title, const v3f &v, const std::s
 void LocalPlayer::debugStr(const std::string &str, bool newline, const std::string &unused) const {
 	Player::debugStr(str, newline, "LOCAL: ");
 }
+void LocalPlayer::debugFloat(const std::string &title, const float value, bool newline, const std::string &unused) const {
+	Player::debugFloat(title, value, newline, "LOCAL: ");
+}
