@@ -329,7 +329,8 @@ public:
 	void step(f32 dtime);
 
 	//check if there's a line of sight between two positions
-	bool line_of_sight(v3f pos1, v3f pos2, float stepsize=1.0, v3s16 *p=NULL);
+	bool line_of_sight(v3f pos1, v3f pos2, float stepsize=1.0,
+		bool ignore_buildable_to=false, v3s16 *p=NULL);
 
 	u32 getGameTime() const { return m_game_time; }
 
