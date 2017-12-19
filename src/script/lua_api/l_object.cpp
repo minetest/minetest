@@ -101,7 +101,8 @@ int ObjectRef::l_remove(lua_State *L)
 	if (co->getType() == ACTIVEOBJECT_TYPE_PLAYER)
 		return 0;
 
-	co->clearAttachments(true);
+	co->clearChildAttachments();
+	co->clearParentAttachment();
 
 	verbosestream << "ObjectRef::l_remove(): id=" << co->getId() << std::endl;
 	co->m_pending_removal = true;
@@ -714,7 +715,7 @@ int ObjectRef::l_set_detach(lua_State *L)
 	if (co == NULL)
 		return 0;
 
-	co->clearAttachments(false);
+	co->clearParentAttachment();
 	return 0;
 }
 

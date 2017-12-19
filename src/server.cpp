@@ -2507,7 +2507,7 @@ void Server::DiePlayer(session_t peer_id, const PlayerHPChangeReason &reason)
 			<< " dies" << std::endl;
 
 	playersao->setHP(0, reason);
-	playersao->clearAttachments(false);
+	playersao->clearParentAttachment();
 
 	// Trigger scripted stuff
 	m_script->on_dieplayer(playersao, reason);

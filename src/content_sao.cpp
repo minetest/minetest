@@ -186,11 +186,17 @@ void UnitSAO::setAttachment(int parent_id, const std::string &bone, v3f position
 	// This breaks some things so we also give the server the most accurate representation
 	// even if players only see the client changes.
 
+	int old_parent = m_attachment_parent_id;
 	m_attachment_parent_id = parent_id;
 	m_attachment_bone = bone;
 	m_attachment_position = position;
 	m_attachment_rotation = rotation;
 	m_attachment_sent = false;
+
+	if (parent_id != old_parent) {
+		onDetach(old_parent);
+		onAttach(parent_id);
+	}
 }
 
 void UnitSAO::getAttachment(int *parent_id, std::string *bone, v3f *position,
@@ -202,7 +208,17 @@ void UnitSAO::getAttachment(int *parent_id, std::string *bone, v3f *position,
 	*rotation = m_attachment_rotation;
 }
 
-void UnitSAO::clearAttachments(bool detach_childs)
+void UnitSAO::clearChildAttachments()
+{
+	for (int child_id : m_attachment_child_ids) {
+		// Child can be NULL if it was deleted earlier
+		if (ServerActiveObject *child = m_env->getActiveObject(child_id))
+			child->setAttachment(0, "", v3f(0, 0, 0), v3f(0, 0, 0));
+	}
+	m_attachment_child_ids.clear();
+}
+
+void UnitSAO::clearParentAttachment()
 {
 	ServerActiveObject *parent = nullptr;
 	if (m_attachment_parent_id) {
@@ -212,16 +228,8 @@ void UnitSAO::clearAttachments(bool detach_childs)
 		setAttachment(0, "", v3f(0, 0, 0), v3f(0, 0, 0));
 	}
 	// Do it
-	if (parent != nullptr)
+	if (parent)
 		parent->removeAttachmentChild(m_id);
-
-	if (detach_childs) {
-		for (int child_id : m_attachment_child_ids) {
-			// Child can be NULL if it was deleted earlier
-			if (ServerActiveObject *child = m_env->getActiveObject(child_id))
-				child->setAttachment(0, "", v3f(0, 0, 0), v3f(0, 0, 0));
-		}
-	}
 }
 
 void UnitSAO::addAttachmentChild(int child_id)
@@ -603,8 +611,9 @@ int LuaEntitySAO::punch(v3f dir,
 	}
 
 	if (getHP() == 0) {
-		clearAttachments(true);
 		m_pending_removal = true;
+		clearParentAttachment();
+		clearChildAttachments();
 		m_env->getScriptIface()->luaentity_on_death(m_id, puncher);
 	}
 
@@ -786,6 +795,29 @@ bool LuaEntitySAO::getSelectionBox(aabb3f *toset) const
 bool LuaEntitySAO::collideWithObjects() const
 {
 	return m_prop.collideWithObjects;
+}
+
+void LuaEntitySAO::onAttach(int parent_id)
+{
+	if (!m_registered || !parent_id)
+		return;
+
+	ServerActiveObject *parent = m_env->getActiveObject(parent_id);
+	if (!parent || parent->isGone())
+		return;
+
+	// Call parent's on_attach field
+	m_env->getScriptIface()->luaentity_on_attach_child(parent_id, this);
+}
+
+void LuaEntitySAO::onDetach(int parent_id)
+{
+	if (!m_registered || !parent_id)
+		return;
+
+	ServerActiveObject *parent = m_env->getActiveObject(parent_id);
+	m_env->getScriptIface()->luaentity_on_detach(m_id, parent);
+	m_env->getScriptIface()->luaentity_on_detach_child(parent_id, this);
 }
 
 /*
@@ -1480,4 +1512,24 @@ bool PlayerSAO::getSelectionBox(aabb3f *toset) const
 	toset->MaxEdge = m_prop.selectionbox.MaxEdge * BS;
 
 	return true;
+}
+void PlayerSAO::onAttach(int parent_id)
+{
+	if (!parent_id)
+		return;
+
+	ServerActiveObject *parent = m_env->getActiveObject(parent_id);
+	if (!parent || parent->isGone())
+		return;
+
+	// Call parent's on_attach field
+	m_env->getScriptIface()->luaentity_on_attach_child(parent_id, this);
+}
+
+void PlayerSAO::onDetach(int parent_id)
+{
+	if (!parent_id)
+		return;
+
+	m_env->getScriptIface()->luaentity_on_detach_child(parent_id, this);
 }

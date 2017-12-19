@@ -52,7 +52,8 @@ public:
 	void getBonePosition(const std::string &bone, v3f *position, v3f *rotation);
 	void setAttachment(int parent_id, const std::string &bone, v3f position, v3f rotation);
 	void getAttachment(int *parent_id, std::string *bone, v3f *position, v3f *rotation);
-	void clearAttachments(bool detach_childs);
+	void clearChildAttachments();
+	void clearParentAttachment();
 	void addAttachmentChild(int child_id);
 	void removeAttachmentChild(int child_id);
 	const std::unordered_set<int> &getAttachmentChildIds();
@@ -73,7 +74,7 @@ protected:
 	float m_animation_blend = 0.0f;
 	bool m_animation_loop = true;
 	bool m_animation_sent = false;
-        bool m_animation_speed_sent = false;
+	bool m_animation_speed_sent = false;
 
 	// Stores position and rotation for each bone name
 	std::unordered_map<std::string, core::vector2d<v3f>> m_bone_position;
@@ -135,6 +136,9 @@ public:
 	bool getSelectionBox(aabb3f *toset) const;
 	bool collideWithObjects() const;
 private:
+	void onAttach(int parent_id);
+	void onDetach(int parent_id);
+
 	std::string getPropertyPacket();
 	void sendPosition(bool do_interpolate, bool is_movement_end);
 
@@ -373,6 +377,9 @@ public:
 	v3f getEyeOffset() const;
 
 private:
+	void onAttach(int parent_id);
+	void onDetach(int parent_id);
+
 	std::string getPropertyPacket();
 	void unlinkPlayerSessionAndSave();
 
