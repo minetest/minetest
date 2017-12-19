@@ -3654,7 +3654,7 @@ void Game::processPlayerInteraction(f32 dtime, bool show_hud, bool show_debug)
 
 	/*
 		Stop digging when
-		- releasing left mouse button
+		- releasing dig button
 		- pointing away from node
 	*/
 	if (runData.digging) {

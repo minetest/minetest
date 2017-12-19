@@ -106,7 +106,7 @@ doubletap_jump (Double tap jump for fly) bool false
 always_fly_fast (Always fly and fast) bool true
 
 #    The time in seconds it takes between repeated block placements when holding the place block button.
-repeat_place_time (Rightclick repetition interval) float 0.25
+repeat_place_time (Place repetition interval) float 0.25
 
 #    Prevent digging and placing from repeating when holding the mouse buttons.
 #    Enable this when you dig or place too often by accident.
