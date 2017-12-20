@@ -488,8 +488,8 @@ void Server::process_PlayerPos(RemotePlayer *player, PlayerSAO *playersao,
 	player->control.jump = (keyPressed & 16);
 	player->control.aux1 = (keyPressed & 32);
 	player->control.sneak = (keyPressed & 64);
-	player->control.LMB = (keyPressed & 128);
-	player->control.RMB = (keyPressed & 256);
+	player->control.dig = (keyPressed & 128);
+	player->control.place = (keyPressed & 256);
 
 	if (playersao->checkMovementCheat()) {
 		// Call callbacks

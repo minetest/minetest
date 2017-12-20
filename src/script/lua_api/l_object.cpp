@@ -1313,10 +1313,10 @@ int ObjectRef::l_get_player_control(lua_State *L)
 	lua_setfield(L, -2, "aux1");
 	lua_pushboolean(L, control.sneak);
 	lua_setfield(L, -2, "sneak");
-	lua_pushboolean(L, control.LMB);
-	lua_setfield(L, -2, "LMB");
-	lua_pushboolean(L, control.RMB);
-	lua_setfield(L, -2, "RMB");
+	lua_pushboolean(L, control.dig);
+	lua_setfield(L, -2, "dig");
+	lua_pushboolean(L, control.place);
+	lua_setfield(L, -2, "place");
 	return 1;
 }
 
