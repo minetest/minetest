@@ -306,7 +306,6 @@ void Extruder::extrude()
 scene::IMesh *Extruder::createMesh()
 {
 	scene::IMeshBuffer *buf = new scene::SMeshBuffer();
-	buf->getMaterial().MaterialType = video::EMT_SOLID;
 	buf->getMaterial().setTexture(0, texture);
 	buf->append(vertices.data(), vertices.size(), indices.data(), indices.size());
 	scene::SMesh *mesh = new scene::SMesh();
@@ -482,9 +481,9 @@ void WieldMeshSceneNode::setExtruded(const std::string &imagename,
 	// Customize materials
 	for (u32 layer = 0; layer < m_meshnode->getMaterialCount(); layer++) {
 		video::SMaterial &material = m_meshnode->getMaterial(layer);
-// 		material.TextureLayer[0].TextureWrapU = video::ETC_CLAMP_TO_EDGE;
-// 		material.TextureLayer[0].TextureWrapV = video::ETC_CLAMP_TO_EDGE;
-// 		material.MaterialType = m_material_type;
+		material.TextureLayer[0].TextureWrapU = video::ETC_CLAMP_TO_EDGE;
+		material.TextureLayer[0].TextureWrapV = video::ETC_CLAMP_TO_EDGE;
+		material.MaterialType = m_material_type;
 		material.setFlag(video::EMF_BACK_FACE_CULLING, true);
 		// Enable bi/trilinear filtering only for high resolution textures
 //		if (dim.Width > 32) {
@@ -499,9 +498,9 @@ void WieldMeshSceneNode::setExtruded(const std::string &imagename,
 #if (IRRLICHT_VERSION_MAJOR >= 1 && IRRLICHT_VERSION_MINOR >= 8) || IRRLICHT_VERSION_MAJOR >= 2
 		material.setFlag(video::EMF_USE_MIP_MAPS, false);
 #endif
-// 		if (m_enable_shaders) {
-// 			material.setTexture(2, tsrc->getShaderFlagsTexture(false));
-// 		}
+		if (m_enable_shaders) {
+			material.setTexture(2, tsrc->getShaderFlagsTexture(false));
+		}
 	}
 }
 
