@@ -624,9 +624,7 @@ void LuaEntitySAO::rightClick(ServerActiveObject *clicker)
 {
 	if (!m_registered)
 		return;
-	// It's best that attachments cannot be clicked
-	if (isAttached())
-		return;
+
 	m_env->getScriptIface()->luaentity_Rightclick(m_id, clicker);
 }
 
