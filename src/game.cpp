@@ -3677,9 +3677,11 @@ void Game::processPlayerInteraction(f32 dtime, bool show_hud, bool show_debug)
 		runData.repeat_place_timer = 0;
 
 	if (playeritem_def.usable && isKeyDown(KeyType::DIG)) {
-		if (isKeyDown(KeyType::DIG) && (!client->moddingEnabled()
-				|| !client->getScript()->on_item_use(playeritem, pointed)))
+		if (wasKeyDown(KeyType::DIG) && (!client->moddingEnabled()
+				|| !client->getScript()->on_item_use(playeritem, pointed))) {
+
 			client->interact(4, pointed);
+		}
 	} else if (pointed.type == POINTEDTHING_NODE) {
 		ToolCapabilities playeritem_toolcap =
 				playeritem.getToolCapabilities(itemdef_manager);

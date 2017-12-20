@@ -41,8 +41,15 @@ bool MyEventReceiver::OnEvent(const SEvent &event)
 		const KeyPress &keyCode = event.KeyInput;
 		if (keysListenedFor[keyCode]) {
 			if (event.KeyInput.PressedDown) {
+				// If the key is being held down then the OS may
+				// send a continuous stream of keydown events.
+				// In this case, we don't want to let this
+				// stream reach the application as it will cause
+				// certain actions to repeat constantly.
+				if (!IsKeyDown(keyCode)) {
+					keyWasDown.set(keyCode);
+				}
 				keyIsDown.set(keyCode);
-				keyWasDown.set(keyCode);
 			} else {
 				keyIsDown.unset(keyCode);
 			}
