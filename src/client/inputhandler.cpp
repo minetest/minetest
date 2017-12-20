@@ -67,19 +67,10 @@ bool MyEventReceiver::OnEvent(const SEvent &event)
 	}
 	// handle mouse events
 	if (event.EventType == irr::EET_MOUSE_INPUT_EVENT) {
-		if (isMenuActive()) {
-			left_active = false;
-			middle_active = false;
-			right_active = false;
-		} else {
-			left_active = event.MouseInput.isLeftPressed();
-			middle_active = event.MouseInput.isMiddlePressed();
-			right_active = event.MouseInput.isRightPressed();
-
+		if (!isMenuActive()) {
 			if (event.MouseInput.Event == EMIE_LMOUSE_PRESSED_DOWN) {
 				keyIsDown.set("KEY_LBUTTON");
 				keyWasDown.set("KEY_LBUTTON");
-				leftclicked = true;
 			}
 			if (event.MouseInput.Event == EMIE_MMOUSE_PRESSED_DOWN) {
 				keyIsDown.set("KEY_MBUTTON");
@@ -88,18 +79,15 @@ bool MyEventReceiver::OnEvent(const SEvent &event)
 			if (event.MouseInput.Event == EMIE_RMOUSE_PRESSED_DOWN) {
 				keyIsDown.set("KEY_RBUTTON");
 				keyWasDown.set("KEY_RBUTTON");
-				rightclicked = true;
 			}
 			if (event.MouseInput.Event == EMIE_LMOUSE_LEFT_UP) {
 				keyIsDown.unset("KEY_LBUTTON");
-				leftreleased = true;
 			}
 			if (event.MouseInput.Event == EMIE_MMOUSE_LEFT_UP) {
 				keyIsDown.unset("KEY_MBUTTON");
 			}
 			if (event.MouseInput.Event == EMIE_RMOUSE_LEFT_UP) {
 				keyIsDown.unset("KEY_RBUTTON");
-				rightreleased = true;
 			}
 			if (event.MouseInput.Event == EMIE_MOUSE_WHEEL) {
 				mouse_wheel += event.MouseInput.Wheel;

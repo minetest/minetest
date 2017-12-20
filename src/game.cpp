@@ -1331,32 +1331,6 @@ protected:
 	static void settingChangedCallback(const std::string &setting_name, void *data);
 	void readSettings();
 
-	inline bool getLeftClicked()
-	{
-		return input->getLeftClicked() ||
-			input->joystick.getWasKeyDown(KeyType::MOUSE_L);
-	}
-	inline bool getRightClicked()
-	{
-		return input->getRightClicked() ||
-			input->joystick.getWasKeyDown(KeyType::MOUSE_R);
-	}
-	inline bool isLeftPressed()
-	{
-		return input->getLeftState() ||
-			input->joystick.isKeyDown(KeyType::MOUSE_L);
-	}
-	inline bool isRightPressed()
-	{
-		return input->getRightState() ||
-			input->joystick.isKeyDown(KeyType::MOUSE_R);
-	}
-	inline bool getLeftReleased()
-	{
-		return input->getLeftReleased() ||
-			input->joystick.wasKeyReleased(KeyType::MOUSE_L);
-	}
-
 	inline bool isKeyDown(GameKeyType k)
 	{
 		return input->isKeyDown(keycache.key[k]) || input->joystick.isKeyDown(k);
@@ -3733,14 +3707,8 @@ void Game::processPlayerInteraction(f32 dtime, bool show_hud, bool show_debug)
 	if (runData.punch || isKeyDown(KeyType::DIG))
 		camera->setDigging(0); // dig animation
 
-	input->resetLeftClicked();
-	input->resetRightClicked();
-
 	input->joystick.clearWasKeyDown(KeyType::MOUSE_L);
 	input->joystick.clearWasKeyDown(KeyType::MOUSE_R);
-
-	input->resetLeftReleased();
-	input->resetRightReleased();
 
 	input->joystick.clearWasKeyReleased(KeyType::MOUSE_L);
 	input->joystick.clearWasKeyReleased(KeyType::MOUSE_R);

@@ -127,15 +127,6 @@ public:
 		keyIsDown.clear();
 		keyWasDown.clear();
 
-		leftclicked = false;
-		rightclicked = false;
-		leftreleased = false;
-		rightreleased = false;
-
-		left_active = false;
-		middle_active = false;
-		right_active = false;
-
 		mouse_wheel = 0;
 	}
 
@@ -145,15 +136,6 @@ public:
 		m_touchscreengui = NULL;
 #endif
 	}
-
-	bool leftclicked = false;
-	bool rightclicked = false;
-	bool leftreleased = false;
-	bool rightreleased = false;
-
-	bool left_active = false;
-	bool middle_active = false;
-	bool right_active = false;
 
 	s32 mouse_wheel = 0;
 
@@ -191,19 +173,6 @@ public:
 
 	virtual v2s32 getMousePos() = 0;
 	virtual void setMousePos(s32 x, s32 y) = 0;
-
-	virtual bool getLeftState() = 0;
-	virtual bool getRightState() = 0;
-
-	virtual bool getLeftClicked() = 0;
-	virtual bool getRightClicked() = 0;
-	virtual void resetLeftClicked() = 0;
-	virtual void resetRightClicked() = 0;
-
-	virtual bool getLeftReleased() = 0;
-	virtual bool getRightReleased() = 0;
-	virtual void resetLeftReleased() = 0;
-	virtual void resetRightReleased() = 0;
 
 	virtual s32 getMouseWheel() = 0;
 
@@ -259,19 +228,6 @@ public:
 		}
 	}
 
-	virtual bool getLeftState() { return m_receiver->left_active; }
-	virtual bool getRightState() { return m_receiver->right_active; }
-
-	virtual bool getLeftClicked() { return m_receiver->leftclicked; }
-	virtual bool getRightClicked() { return m_receiver->rightclicked; }
-	virtual void resetLeftClicked() { m_receiver->leftclicked = false; }
-	virtual void resetRightClicked() { m_receiver->rightclicked = false; }
-
-	virtual bool getLeftReleased() { return m_receiver->leftreleased; }
-	virtual bool getRightReleased() { return m_receiver->rightreleased; }
-	virtual void resetLeftReleased() { m_receiver->leftreleased = false; }
-	virtual void resetRightReleased() { m_receiver->rightreleased = false; }
-
 	virtual s32 getMouseWheel() { return m_receiver->getMouseWheel(); }
 
 	void clear()
@@ -294,19 +250,6 @@ public:
 	virtual bool wasKeyDown(const KeyPress &keyCode) { return false; }
 	virtual v2s32 getMousePos() { return mousepos; }
 	virtual void setMousePos(s32 x, s32 y) { mousepos = v2s32(x, y); }
-
-	virtual bool getLeftState() { return leftdown; }
-	virtual bool getRightState() { return rightdown; }
-
-	virtual bool getLeftClicked() { return leftclicked; }
-	virtual bool getRightClicked() { return rightclicked; }
-	virtual void resetLeftClicked() { leftclicked = false; }
-	virtual void resetRightClicked() { rightclicked = false; }
-
-	virtual bool getLeftReleased() { return leftreleased; }
-	virtual bool getRightReleased() { return rightreleased; }
-	virtual void resetLeftReleased() { leftreleased = false; }
-	virtual void resetRightReleased() { rightreleased = false; }
 
 	virtual s32 getMouseWheel() { return 0; }
 
@@ -357,11 +300,7 @@ public:
 			counter1 -= dtime;
 			if (counter1 < 0.0) {
 				counter1 = 0.1 * Rand(1, 30);
-				leftdown = !leftdown;
-				if (leftdown)
-					leftclicked = true;
-				if (!leftdown)
-					leftreleased = true;
+				keydown.toggle(getKeySetting("keymap_dig"));
 			}
 		}
 		{
@@ -369,11 +308,7 @@ public:
 			counter1 -= dtime;
 			if (counter1 < 0.0) {
 				counter1 = 0.1 * Rand(1, 15);
-				rightdown = !rightdown;
-				if (rightdown)
-					rightclicked = true;
-				if (!rightdown)
-					rightreleased = true;
+				keydown.toggle(getKeySetting("keymap_place"));
 			}
 		}
 		mousepos += mousespeed;
@@ -385,10 +320,4 @@ private:
 	KeyList keydown;
 	v2s32 mousepos;
 	v2s32 mousespeed;
-	bool leftdown = false;
-	bool rightdown = false;
-	bool leftclicked = false;
-	bool rightclicked = false;
-	bool leftreleased = false;
-	bool rightreleased = false;
 };
