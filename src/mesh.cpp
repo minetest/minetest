@@ -410,8 +410,8 @@ scene::IMeshBuffer* cloneMeshBuffer(scene::IMeshBuffer *mesh_buffer)
 		video::S3DVertex2TCoords *v =
 			(video::S3DVertex2TCoords *) mesh_buffer->getVertices();
 		u16 *indices = mesh_buffer->getIndices();
-		scene::SMeshBufferTangents *cloned_buffer =
-			new scene::SMeshBufferTangents();
+		scene::SMeshBufferLightMap *cloned_buffer =
+			new scene::SMeshBufferLightMap();
 		cloned_buffer->append(v, mesh_buffer->getVertexCount(), indices,
 			mesh_buffer->getIndexCount());
 		return cloned_buffer;
