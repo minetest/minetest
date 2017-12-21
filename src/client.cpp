@@ -56,6 +56,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "chatmessage.h"
 #include "translation.h"
 
+extern void purgeExtrusionMeshCache();
+
 extern gui::IGUIEnvironment* guienv;
 
 /*
@@ -267,6 +269,8 @@ Client::~Client()
 		if (mesh)
 			RenderingEngine::get_mesh_cache()->removeMesh(mesh);
 	}
+
+	purgeExtrusionMeshCache();
 
 	delete m_minimap;
 }
