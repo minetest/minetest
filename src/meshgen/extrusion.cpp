@@ -21,7 +21,7 @@ static void setupMaterial(video::SMaterial &m, video::ITexture *texture)
 	l.TextureWrapV = video::ETC_CLAMP_TO_EDGE;
 }
 
-irr_ptr<scene::SMesh> createExtrusionMesh(video::ITexture *texture,
+scene::SMesh *createExtrusionMesh(video::ITexture *texture,
 		video::ITexture *overlay_texture)
 {
 	ExtrudedMesh &extruded = cache[texture];
@@ -30,19 +30,21 @@ irr_ptr<scene::SMesh> createExtrusionMesh(video::ITexture *texture,
 		extruder.extrude();
 		extruded = extruder.takeMesh();
 	}
-	irr_ptr<scene::SMesh> mesh(new scene::SMesh(), Grab::already_owned);
-	irr_ptr<scene::SMeshBuffer> buf(new scene::SMeshBuffer(), Grab::already_owned);
+	scene::SMesh *mesh = new scene::SMesh();
+	scene::SMeshBuffer *buf = new scene::SMeshBuffer();
 	buf->append(extruded.vertices.data(), extruded.vertices.size(),
 			extruded.indices.data(), extruded.indices.size());
 	setupMaterial(buf->getMaterial(), texture);
-	mesh->addMeshBuffer(buf.get());
+	mesh->addMeshBuffer(buf);
+	buf->drop();
 	if (!overlay_texture)
 		return mesh;
-	buf.reset(new scene::SMeshBuffer(), Grab::already_owned);
+	buf = new scene::SMeshBuffer();
 	buf->append(extruded.overlay_vertices.data(), extruded.overlay_vertices.size(),
 			extruded.overlay_indices.data(), extruded.overlay_indices.size());
 	setupMaterial(buf->getMaterial(), overlay_texture);
-	mesh->addMeshBuffer(buf.get());
+	mesh->addMeshBuffer(buf);
+	buf->drop();
 	return mesh;
 }
 
