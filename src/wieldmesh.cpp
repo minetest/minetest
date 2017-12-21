@@ -79,15 +79,11 @@ WieldMeshSceneNode::~WieldMeshSceneNode()
 void WieldMeshSceneNode::setCube(const ContentFeatures &f,
 			v3f wield_scale)
 {
-/*
-	scene::IMesh *cubemesh = g_extrusion_mesh_cache->createCube();
-	scene::SMesh *copy = cloneMesh(cubemesh);
-	cubemesh->drop();
-	postProcessNodeMesh(copy, f, false, true, &m_material_type, &m_colors, true);
-	changeToMesh(copy);
-	copy->drop();
+	scene::SMesh *mesh = createCubeMesh(v3f(1.0, 1.0, 1.0));
+	postProcessNodeMesh(mesh, f, false, true, &m_material_type, &m_colors, true);
+	changeToMesh(mesh);
+	mesh->drop();
 	m_meshnode->setScale(wield_scale * WIELD_SCALE_FACTOR);
-*/
 }
 
 void WieldMeshSceneNode::setExtruded(const std::string &imagename,
@@ -354,16 +350,10 @@ void getItemMesh(Client *client, const ItemStack &item, ItemMesh *result)
 				case NDT_ALLFACES:
 				case NDT_LIQUID:
 				case NDT_FLOWINGLIQUID: {
-					mesh = new scene::SMesh();
-/*
-					scene::IMesh *cube = g_extrusion_mesh_cache->createCube();
-					mesh = cloneMesh(cube);
-					cube->drop();
-					scaleMesh(mesh, v3f(1.2, 1.2, 1.2));
+					mesh = createCubeMesh(v3f(1.2, 1.2, 1.2));
 					// add overlays
 					postProcessNodeMesh(mesh, f, false, false, nullptr,
 						&result->buffer_colors);
-*/
 					break;
 				}
 				default: {
