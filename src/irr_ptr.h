@@ -25,14 +25,14 @@ public:
 		std::is_convertible <B *, ReferenceCounted *>::value>::type>
 	irr_ptr(const irr_ptr<B> &b) noexcept
 	{
-		reset(b.value);
+		reset(b.get());
 	}
 
 	template <typename B, class = typename std::enable_if <
 		std::is_convertible <B *, ReferenceCounted *>::value>::type>
-	irr_ptr(irr_ptr<B> &&b) noexcept : value(b.value)
+	irr_ptr(irr_ptr<B> &&b) noexcept
 	{
-		b.value = nullptr;
+		reset(b.release(), Grab::already_owned);
 	}
 
 	irr_ptr(ReferenceCounted *object, Grab grab) noexcept
@@ -49,7 +49,7 @@ public:
 		std::is_convertible <B *, ReferenceCounted *>::value>::type>
 	irr_ptr &operator= (const irr_ptr<B> &b) noexcept
 	{
-		reset(b.value);
+		reset(b.get());
 		return *this;
 	}
 
@@ -57,9 +57,7 @@ public:
 		std::is_convertible <B *, ReferenceCounted *>::value>::type>
 	irr_ptr &operator= (irr_ptr<B> &&b) noexcept
 	{
-		reset();
-		value = b.value;
-		b.value = nullptr;
+		reset(b.release(), Grab::already_owned);
 		return *this;
 	}
 
@@ -71,6 +69,13 @@ public:
 	ReferenceCounted *get() const noexcept
 	{
 		return value;
+	}
+
+	ReferenceCounted *release() noexcept
+	{
+		ReferenceCounted *object = value;
+		value = nullptr;
+		return object;
 	}
 
 	void reset() noexcept
