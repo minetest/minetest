@@ -32,7 +32,7 @@ class Extruder
 	};
 
 	static constexpr int threshold = 128;
-	static constexpr float thickness = 0.05f;
+	static constexpr float thickness = 0.1f;
 	video::ITexture *texture;
 	const video::SColor *data;
 	u32 w, h;
