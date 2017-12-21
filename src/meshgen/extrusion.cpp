@@ -1,6 +1,5 @@
 #include "extrusion.h"
 #include <map>
-#include <SMesh.h>
 #include <SMeshBuffer.h>
 #include "extruder.h"
 
@@ -22,7 +21,7 @@ static void setupMaterial(video::SMaterial &m, video::ITexture *texture)
 	l.TextureWrapV = video::ETC_CLAMP_TO_EDGE;
 }
 
-irr_ptr<scene::IMesh> createExtrusionMesh(video::ITexture *texture,
+irr_ptr<scene::SMesh> createExtrusionMesh(video::ITexture *texture,
 		video::ITexture *overlay_texture)
 {
 	ExtrudedMesh &extruded = cache[texture];
