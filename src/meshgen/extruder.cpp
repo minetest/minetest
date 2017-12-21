@@ -103,8 +103,8 @@ void Extruder::create_side(int id)
 		{1.0f, 0.0f},
 	};
 	static constexpr u16 ind[2][6] = {
-		{0, 1, 2, 3, 2, 1},
 		{0, 2, 1, 3, 1, 2},
+		{0, 1, 2, 3, 2, 1},
 	};
 	static constexpr float zz[2] = {0.5f, -0.5f};
 	u16 base = mesh.vertices.size();
