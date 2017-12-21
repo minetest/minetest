@@ -1419,13 +1419,10 @@ void intlGUIEditBox::calculateScrollPos()
 	}
 
 	// vertical scroll position
-	if (FrameRect.LowerRightCorner.Y < CurrentTextRect.LowerRightCorner.Y + VScrollPos)
-		VScrollPos = CurrentTextRect.LowerRightCorner.Y - FrameRect.LowerRightCorner.Y + VScrollPos;
-
-	else if (FrameRect.UpperLeftCorner.Y > CurrentTextRect.UpperLeftCorner.Y + VScrollPos)
-		VScrollPos = CurrentTextRect.UpperLeftCorner.Y - FrameRect.UpperLeftCorner.Y + VScrollPos;
-	else
-		VScrollPos = 0;
+	if (FrameRect.LowerRightCorner.Y < CurrentTextRect.LowerRightCorner.Y)
+		VScrollPos += CurrentTextRect.LowerRightCorner.Y - FrameRect.LowerRightCorner.Y; // scrolling downwards
+	else if (FrameRect.UpperLeftCorner.Y > CurrentTextRect.UpperLeftCorner.Y)
+		VScrollPos += CurrentTextRect.UpperLeftCorner.Y - FrameRect.UpperLeftCorner.Y; // scrolling upwards
 
 	// todo: adjust scrollbar
 }
