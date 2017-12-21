@@ -402,3 +402,7 @@ src/voxelalgorithms.h
 src/voxel.cpp
 src/voxel.h
 src/wieldmesh.cpp
+src/meshgen/extruder.cpp
+src/meshgen/extruder.h
+src/meshgen/extrusion.cpp
+src/meshgen/extrusion.h
