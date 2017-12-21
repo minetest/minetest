@@ -14,8 +14,8 @@ Extruder::Extruder(video::ITexture *_texture) :
 	h = size.Height;
 	dw = 1.0f / w;
 	dh = 1.0f / h;
-	vertices.reserve(w * h);
-	indices.reserve(w * h);
+	mesh.vertices.reserve(w * h);
+	mesh.indices.reserve(w * h);
 }
 
 Extruder::~Extruder()
@@ -72,7 +72,7 @@ void Extruder::create_face(u32 i, u32 j, FaceDir dir)
 	static constexpr u16 ind[6] = {0, 1, 2, 3, 2, 1};
 	float x = dw * i - 0.5f;
 	float y = 0.5f - dh * j;
-	u16 base = vertices.size();
+	u16 base = mesh.vertices.size();
 	int m = static_cast<int>(dir);
 	const v2f &t = tc[m];
 	float tu = dw * (i + t.X);
@@ -80,14 +80,14 @@ void Extruder::create_face(u32 i, u32 j, FaceDir dir)
 	const v3f &n = normals[m];
 	for (int k = 0; k < 4; k++) {
 		const v3f &v = vert[m][k];
-		vertices.emplace_back(
+		mesh.vertices.emplace_back(
 			x + dw * v.X, y + dh * v.Y, thickness * v.Z,
 			n.X, n.Y, n.Z,
 			video::SColor(0xFFFFFFFF),
 			tu, tv);
 	}
 	for (int k = 0; k < 6; k++)
-		indices.push_back(base + ind[k]);
+		mesh.indices.push_back(base + ind[k]);
 }
 
 void Extruder::create_side(int id)
@@ -107,19 +107,24 @@ void Extruder::create_side(int id)
 		{0, 2, 1, 3, 1, 2},
 	};
 	static constexpr float zz[2] = {0.5f, -0.5f};
-	u16 base = vertices.size();
+	u16 base = mesh.vertices.size();
+	u16 base2 = mesh.overlay_vertices.size();
 	float z = thickness * zz[id];
 	const v3f &n = normals[id];
 	for (int k = 0; k < 4; k++) {
 		const v2f &v = vert[k];
-		vertices.emplace_back(
+		video::S3DVertex vert(
 			v.X - 0.5f, 0.5f - v.Y, z,
 			n.X, n.Y, n.Z,
 			video::SColor(0xFFFFFFFF),
 			v.X, v.Y);
+		mesh.vertices.push_back(vert);
+		mesh.overlay_vertices.push_back(vert);
 	}
-	for (int k = 0; k < 6; k++)
-		indices.push_back(base + ind[id][k]);
+	for (int k = 0; k < 6; k++) {
+		mesh.indices.push_back(base + ind[id][k]);
+		mesh.overlay_indices.push_back(base2 + ind[id][k]);
+	}
 }
 
 void Extruder::extrude()
@@ -154,10 +159,7 @@ void Extruder::extrude()
 	create_side(1);
 }
 
-scene::IMeshBuffer *Extruder::createMesh()
+ExtrudedMesh Extruder::takeMesh() noexcept
 {
-	scene::IMeshBuffer *buf = new scene::SMeshBuffer();
-	buf->getMaterial().setTexture(0, texture);
-	buf->append(vertices.data(), vertices.size(), indices.data(), indices.size());
-	return buf;
+	return std::move(mesh);
 }

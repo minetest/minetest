@@ -2,8 +2,25 @@
 #include <vector>
 #include "irrlichttypes_bloated.h"
 #include <ITexture.h>
-#include <SMeshBuffer.h>
+#include <S3DVertex.h>
 
+struct ExtrudedMesh
+{
+	std::vector<video::S3DVertex> vertices;
+	std::vector<u16> indices;
+	std::vector<video::S3DVertex> overlay_vertices;
+	std::vector<u16> overlay_indices;
+
+	explicit operator bool() const noexcept
+	{
+		return !vertices.empty();
+	}
+};
+
+/*
+ * Handles conversion of textures to extruded meshes.
+ * Each instance may only be used once.
+ */
 class Extruder
 {
 	enum class FaceDir
@@ -20,8 +37,7 @@ class Extruder
 	const video::SColor *data;
 	u32 w, h;
 	float dw, dh;
-	std::vector<video::S3DVertex> vertices;
-	std::vector<u16> indices;
+	ExtrudedMesh mesh;
 
 	video::SColor pixel(u32 i, u32 j);
 	bool is_opaque(u32 i, u32 j);
@@ -29,8 +45,12 @@ class Extruder
 	void create_side(int id);
 
 public:
-	Extruder(video::ITexture *_texture);
+	explicit Extruder(video::ITexture *_texture);
+	Extruder(const Extruder &) = delete;
+	Extruder(Extruder &&) = delete;
 	~Extruder();
+	Extruder &operator= (const Extruder &) = delete;
+	Extruder &operator= (Extruder &&) = delete;
 	void extrude();
-	scene::SMeshBuffer *createMesh();
+	ExtrudedMesh takeMesh() noexcept;
 };
