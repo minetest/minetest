@@ -996,7 +996,7 @@
 
 #    Open the pause menu when the window's focus is lost. Does not pause if a formspec is open.
 #    type: bool
-# pause_on_lost_focus = true
+# pause_on_lost_focus = false
 
 ## Advanced
 

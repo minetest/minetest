@@ -536,6 +536,9 @@ fps_max (Maximum FPS) int 60
 #    Maximum FPS when game is paused.
 pause_fps_max (FPS in pause menu) int 20
 
+#    Open the pause menu when the window's focus is lost. Does not pause if a formspec is open.
+pause_on_lost_focus (Pause on lost window focus) bool false
+
 #    View distance in nodes.
 viewing_range (Viewing range) int 100 20 4000
 
@@ -839,9 +842,6 @@ serverlist_file (Serverlist file) string favoriteservers.txt
 
 #    Maximum size of the out chat queue. 0 to disable queueing and -1 to make the queue size unlimited
 max_out_chat_queue_size (Maximum size of the out chat queue) int 20
-
-#    Open the pause menu when the window's focus is lost. Does not pause if a formspec is open.
-pause_on_lost_focus (Pause on lost window focus) bool true
 
 [*Advanced]
 

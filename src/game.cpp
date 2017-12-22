@@ -1487,7 +1487,7 @@ private:
 	bool m_first_loop_after_window_activation = false;
 	bool m_camera_offset_changed = false;
 
-	bool m_does_lost_focus_pause_game;
+	bool m_does_lost_focus_pause_game = false;
 
 #ifdef __ANDROID__
 	bool m_cache_hold_aux1;
