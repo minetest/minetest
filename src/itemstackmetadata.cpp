@@ -24,12 +24,14 @@ bool ItemStackMetadata::setString(const std::string &name, const std::string &va
 void ItemStackMetadata::serialize(std::ostream &os) const
 {
 	Json::Value root(Json::objectValue);
-	for (const auto &stringvar : m_stringvars) {
-		if (!stringvar.first.empty() || !stringvar.second.empty())
-			root[stringvar.first] = stringvar.second;
+	for (const auto &entry : m_stringvars) {
+		if (!entry.first.empty() || !entry.second.empty())
+			root[entry.first] = entry.second;
 	}
 
-	os << (char) SERIALIZATION_VERSION_IDENTIFIER + Json::FastWriter().write(root);
+	Json::StreamWriterBuilder writerBuilder;
+	os << SERIALIZATION_VERSION_IDENTIFIER
+	   << Json::writeString(writerBuilder, root);
 }
 
 #define DESERIALIZE_START '\x01'
@@ -47,17 +49,16 @@ void ItemStackMetadata::deSerialize(std::istream &is)
 	if (!is.good())
 		return;
 
-	// Decode Json metadata (ItemMeta 3, 2017-07-02)
+	// Decode Json metadata (ItemMeta 3, 2017-12-22)
 	if (is.peek() == SERIALIZATION_VERSION_IDENTIFIER) {
 		is.ignore(1);
-		std::string in(std::istreambuf_iterator<char>(is), {});
 
-		Json::Reader reader;
 		Json::Value attr_root;
-		if (reader.parse(in, attr_root) && attr_root.type() == Json::objectValue) {
+		is >> attr_root;
+		if (attr_root.type() == Json::objectValue) {
 			const Json::Value::Members attr_list = attr_root.getMemberNames();
-			for (auto it : attr_list) {
-				m_stringvars[it] = attr_root[it].asString();
+			for (const auto& entry : attr_list) {
+				m_stringvars[entry] = attr_root[entry].asString();
 			}
 		} else {
 			errorstream << "ItemStackMetadata::deSerialize():"
