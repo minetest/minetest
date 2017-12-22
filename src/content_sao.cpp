@@ -247,6 +247,38 @@ const std::unordered_set<int> &UnitSAO::getAttachmentChildIds()
 	return m_attachment_child_ids;
 }
 
+void UnitSAO::onAttach(int parent_id)
+{
+	if (!parent_id)
+		return;
+
+	ServerActiveObject *parent = m_env->getActiveObject(parent_id);
+
+	if (!parent || parent->isGone())
+		return; // Do not try to notify soon gone parent
+
+	if (parent->getType() == ACTIVEOBJECT_TYPE_LUAENTITY) {
+		// Call parent's on_attach field
+		m_env->getScriptIface()->luaentity_on_attach_child(parent_id, this);
+	}
+}
+
+void UnitSAO::onDetach(int parent_id)
+{
+	if (!parent_id)
+		return;
+
+	ServerActiveObject *parent = m_env->getActiveObject(parent_id);
+	if (getType() == ACTIVEOBJECT_TYPE_LUAENTITY)
+		m_env->getScriptIface()->luaentity_on_detach(m_id, parent);
+
+	if (!parent || parent->isGone())
+		return; // Do not try to notify soon gone parent
+
+	if (parent->getType() == ACTIVEOBJECT_TYPE_LUAENTITY)
+		m_env->getScriptIface()->luaentity_on_detach_child(parent_id, this);
+}
+
 ObjectProperties* UnitSAO::accessObjectProperties()
 {
 	return &m_prop;
@@ -610,7 +642,7 @@ int LuaEntitySAO::punch(v3f dir,
 		}
 	}
 
-	if (getHP() == 0) {
+	if (getHP() == 0 && !isGone()) {
 		m_pending_removal = true;
 		clearParentAttachment();
 		clearChildAttachments();
@@ -793,29 +825,6 @@ bool LuaEntitySAO::getSelectionBox(aabb3f *toset) const
 bool LuaEntitySAO::collideWithObjects() const
 {
 	return m_prop.collideWithObjects;
-}
-
-void LuaEntitySAO::onAttach(int parent_id)
-{
-	if (!m_registered || !parent_id)
-		return;
-
-	ServerActiveObject *parent = m_env->getActiveObject(parent_id);
-	if (!parent || parent->isGone())
-		return;
-
-	// Call parent's on_attach field
-	m_env->getScriptIface()->luaentity_on_attach_child(parent_id, this);
-}
-
-void LuaEntitySAO::onDetach(int parent_id)
-{
-	if (!m_registered || !parent_id)
-		return;
-
-	ServerActiveObject *parent = m_env->getActiveObject(parent_id);
-	m_env->getScriptIface()->luaentity_on_detach(m_id, parent);
-	m_env->getScriptIface()->luaentity_on_detach_child(parent_id, this);
 }
 
 /*
@@ -1510,24 +1519,4 @@ bool PlayerSAO::getSelectionBox(aabb3f *toset) const
 	toset->MaxEdge = m_prop.selectionbox.MaxEdge * BS;
 
 	return true;
-}
-void PlayerSAO::onAttach(int parent_id)
-{
-	if (!parent_id)
-		return;
-
-	ServerActiveObject *parent = m_env->getActiveObject(parent_id);
-	if (!parent || parent->isGone())
-		return;
-
-	// Call parent's on_attach field
-	m_env->getScriptIface()->luaentity_on_attach_child(parent_id, this);
-}
-
-void PlayerSAO::onDetach(int parent_id)
-{
-	if (!parent_id)
-		return;
-
-	m_env->getScriptIface()->luaentity_on_detach_child(parent_id, this);
 }

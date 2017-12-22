@@ -86,6 +86,9 @@ protected:
 	v3f m_attachment_position;
 	v3f m_attachment_rotation;
 	bool m_attachment_sent = false;
+private:
+	void onAttach(int parent_id);
+	void onDetach(int parent_id);
 };
 
 /*
@@ -136,9 +139,6 @@ public:
 	bool getSelectionBox(aabb3f *toset) const;
 	bool collideWithObjects() const;
 private:
-	void onAttach(int parent_id);
-	void onDetach(int parent_id);
-
 	std::string getPropertyPacket();
 	void sendPosition(bool do_interpolate, bool is_movement_end);
 
@@ -377,9 +377,6 @@ public:
 	v3f getEyeOffset() const;
 
 private:
-	void onAttach(int parent_id);
-	void onDetach(int parent_id);
-
 	std::string getPropertyPacket();
 	void unlinkPlayerSessionAndSave();
 
