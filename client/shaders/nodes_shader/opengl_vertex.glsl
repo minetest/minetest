@@ -38,12 +38,27 @@ float smoothTriangleWave(float x)
 	return smoothCurve(triangleWave(x)) * 2.0 - 1.0;
 }
 
+#if MATERIAL_TYPE == TILE_MATERIAL_LIQUID_TRANSPARENT || MATERIAL_TYPE == TILE_MATERIAL_LIQUID_OPAQUE
+#define ANIMATE 1
+#else
+#define ANIMATE 0
+#endif
+
+#if ANIMATE
+varying float frame_height;
+varying float frame;
+varying float dframe;
+#endif
 
 void main(void)
 {
 	gl_TexCoord[0] = gl_MultiTexCoord0;
-#if MATERIAL_TYPE == TILE_MATERIAL_LIQUID_TRANSPARENT || MATERIAL_TYPE == TILE_MATERIAL_LIQUID_OPAQUE
-	gl_TexCoord[1] = gl_MultiTexCoord1;
+#if ANIMATE
+	frame_height = gl_MultiTexCoord1.x;
+	float frame_rate = gl_MultiTexCoord1.y;
+	float timer = 100.0 * animationTimer * frame_rate;
+	frame = floor(timer);
+	dframe = timer - frame;
 #endif
 	//TODO: make offset depending on view angle and parallax uv displacement
 	//thats for textures that doesnt align vertically, like dirt with grass

@@ -126,6 +126,12 @@ float find_intersectionRGB(vec2 dp, vec2 ds)
 #define ANIMATE 0
 #endif
 
+#if ANIMATE
+varying float frame_height;
+varying float frame;
+varying float dframe;
+#endif
+
 void main(void)
 {
 	vec3 color;
@@ -134,11 +140,6 @@ void main(void)
 	bool use_normalmap = false;
 	get_texture_flags();
 #if ANIMATE
-	float frame_height = gl_TexCoord[1].x;
-	float frame_rate = gl_TexCoord[1].y;
-	float timer = 100.0 * animationTimer * frame_rate;
-	float frame = floor(timer);
-	float dframe = timer - frame;
 	vec2 uv_next;
 	uv_next.x = uv.x;
 	uv_next.y = (uv.y + frame + 1) * frame_height;
