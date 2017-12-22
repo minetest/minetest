@@ -1149,6 +1149,7 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data, v3s16 camera_offset):
 		for(u32 i = 0; i < collector.prebuffers[layer].size(); i++)
 		{
 			PreMeshBuffer &p = collector.prebuffers[layer][i];
+			std::vector<video::S3DVertex2TCoords> v2t;
 
 			// Generate animation data
 			// - Cracks
@@ -1171,22 +1172,32 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data, v3s16 camera_offset):
 			}
 			// - Texture animation
 			if (p.layer.material_flags & MATERIAL_FLAG_ANIMATION) {
-				// Add to MapBlockMesh in order to animate these tiles
-				m_animation_tiles[std::pair<u8, u32>(layer, i)] = p.layer;
-				m_animation_frames[std::pair<u8, u32>(layer, i)] = 0;
-				if (g_settings->getBool(
-						"desynchronize_mapblock_texture_animation")) {
-					// Get starting position from noise
-					m_animation_frame_offsets[std::pair<u8, u32>(layer, i)] =
-							100000 * (2.0 + noise3d(
-							data->m_blockpos.X, data->m_blockpos.Y,
-							data->m_blockpos.Z, 0));
+				if (m_enable_shaders) {
+					v2f fn(1.0f / p.layer.animation_frame_count, 1000.0f / p.layer.animation_frame_length_ms);
+					u32 vertex_count = p.vertices.size();
+					v2t.resize(vertex_count);
+					for (int k = 0; k < vertex_count; k++) {
+						v2t[k] = p.vertices[k];
+						v2t[k].TCoords2 = fn;
+					}
 				} else {
-					// Play all synchronized
-					m_animation_frame_offsets[std::pair<u8, u32>(layer, i)] = 0;
+					// Add to MapBlockMesh in order to animate these tiles
+					m_animation_tiles[std::pair<u8, u32>(layer, i)] = p.layer;
+					m_animation_frames[std::pair<u8, u32>(layer, i)] = 0;
+					if (g_settings->getBool(
+							"desynchronize_mapblock_texture_animation")) {
+						// Get starting position from noise
+						m_animation_frame_offsets[std::pair<u8, u32>(layer, i)] =
+								100000 * (2.0 + noise3d(
+								data->m_blockpos.X, data->m_blockpos.Y,
+								data->m_blockpos.Z, 0));
+					} else {
+						// Play all synchronized
+						m_animation_frame_offsets[std::pair<u8, u32>(layer, i)] = 0;
+					}
+					// Replace tile texture with the first animation frame
+					p.layer.texture = (*p.layer.frames)[0].texture;
 				}
-				// Replace tile texture with the first animation frame
-				p.layer.texture = (*p.layer.frames)[0].texture;
 			}
 
 			if (!m_enable_shaders) {
@@ -1237,7 +1248,18 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data, v3s16 camera_offset):
 			scene::SMesh *mesh = (scene::SMesh *)m_mesh[layer];
 
 			// Create meshbuffer, add to mesh
-			if (m_use_tangent_vertices) {
+			if (!v2t.empty()) {
+				scene::SMeshBufferLightMap *buf =
+						new scene::SMeshBufferLightMap();
+				// Set material
+				buf->Material = material;
+				// Add to mesh
+				mesh->addMeshBuffer(buf);
+				// Mesh grabbed it
+				buf->drop();
+				buf->append(&v2t[0], v2t.size(),
+					&p.indices[0], p.indices.size());
+			} else if (m_use_tangent_vertices) {
 				scene::SMeshBufferTangents *buf =
 						new scene::SMeshBufferTangents();
 				// Set material
@@ -1429,7 +1451,43 @@ void MeshCollector::append(const TileSpec &tile,
 			layernum, tile.world_aligned);
 	}
 }
+/*
+void MeshCollector::append(const TileLayer &layer,
+		const video::S3DVertex2TCoords *vertices, u32 numVertices,
+		const u16 *indices, u32 numIndices)
+{
+	if (numIndices > 65535) {
+		dstream << "FIXME: MeshCollector::append() called with numIndices="
+				<< numIndices << " (limit 65535)" << std::endl;
+		return;
+	}
 
+	PreMeshBuffer2 *p = NULL;
+	for (PreMeshBuffer2 &pp : prebuffers2) {
+		if (pp.layer == layer && pp.indices.size() + numIndices <= 65535) {
+			p = &pp;
+			break;
+		}
+	}
+
+	if (p == NULL) {
+		PreMeshBuffer2 pp;
+		pp.layer = layer;
+		prebuffers2->push_back(pp);
+		p = &prebuffers2[prebuffers2.size() - 1];
+	}
+
+	u32 vertex_count = p->vertices.size();
+	p->vertices.resize(vertex_count + numVertices);
+	for (u32 i = 0; i < numVertices; i++)
+		p->vertices[vertex_count + i] = vertices[i];
+
+	for (u32 i = 0; i < numIndices; i++) {
+		u32 j = indices[i] + vertex_count;
+		p->indices.push_back(j);
+	}
+}
+*/
 void MeshCollector::append(const TileLayer &layer,
 		const video::S3DVertex *vertices, u32 numVertices,
 		const u16 *indices, u32 numIndices, u8 layernum,

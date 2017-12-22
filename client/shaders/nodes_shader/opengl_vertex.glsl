@@ -42,6 +42,9 @@ float smoothTriangleWave(float x)
 void main(void)
 {
 	gl_TexCoord[0] = gl_MultiTexCoord0;
+#if MATERIAL_TYPE == TILE_MATERIAL_LIQUID_TRANSPARENT || MATERIAL_TYPE == TILE_MATERIAL_LIQUID_OPAQUE
+	gl_TexCoord[1] = gl_MultiTexCoord1;
+#endif
 	//TODO: make offset depending on view angle and parallax uv displacement
 	//thats for textures that doesnt align vertically, like dirt with grass
 	//gl_TexCoord[0].y += 0.008;

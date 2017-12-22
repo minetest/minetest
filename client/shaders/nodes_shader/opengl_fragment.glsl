@@ -5,6 +5,7 @@ uniform sampler2D textureFlags;
 uniform vec4 skyBgColor;
 uniform float fogDistance;
 uniform vec3 eyePosition;
+uniform float animationTimer;
 
 varying vec3 vPosition;
 varying vec3 worldPosition;
@@ -119,6 +120,12 @@ float find_intersectionRGB(vec2 dp, vec2 ds)
 	return depth;
 }
 
+#if MATERIAL_TYPE == TILE_MATERIAL_LIQUID_TRANSPARENT || MATERIAL_TYPE == TILE_MATERIAL_LIQUID_OPAQUE
+#define ANIMATE 1
+#else
+#define ANIMATE 0
+#endif
+
 void main(void)
 {
 	vec3 color;
@@ -126,6 +133,17 @@ void main(void)
 	vec2 uv = gl_TexCoord[0].st;
 	bool use_normalmap = false;
 	get_texture_flags();
+#if ANIMATE
+	float frame_height = gl_TexCoord[1].x;
+	float frame_rate = gl_TexCoord[1].y;
+	float timer = 100.0 * animationTimer * frame_rate;
+	float frame = floor(timer);
+	float dframe = timer - frame;
+	vec2 uv_next;
+	uv_next.x = uv.x;
+	uv_next.y = (uv.y + frame + 1) * frame_height;
+	uv.y = (uv.y + frame) * frame_height;
+#endif
 
 #ifdef ENABLE_PARALLAX_OCCLUSION
 	vec2 eyeRay = vec2 (tsEyeVec.x, -tsEyeVec.y);
@@ -180,6 +198,10 @@ void main(void)
 	}
 #endif
 	vec4 base = texture2D(baseTexture, uv).rgba;
+#if ANIMATE
+	vec4 next = texture2D(baseTexture, uv_next).rgba;
+	base = dframe * next + (1 - dframe) * base;
+#endif
 
 #ifdef ENABLE_BUMPMAPPING
 	if (use_normalmap) {
