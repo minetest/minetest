@@ -40,9 +40,9 @@ class Extruder
 	ExtrudedMesh mesh;
 
 	video::SColor pixel(u32 i, u32 j);
-	bool is_opaque(u32 i, u32 j);
-	void create_face(u32 i, u32 j, FaceDir dir);
-	void create_side(int id);
+	bool isOpaque(u32 i, u32 j);
+	void createEdgeFace(u32 i, u32 j, FaceDir dir);
+	void createFrontBackSurface(int id);
 
 public:
 	explicit Extruder(video::ITexture *_texture);

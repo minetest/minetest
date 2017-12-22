@@ -29,12 +29,12 @@ inline video::SColor Extruder::pixel(u32 i, u32 j)
 	return data[w * j + i];
 }
 
-inline bool Extruder::is_opaque(u32 i, u32 j)
+inline bool Extruder::isOpaque(u32 i, u32 j)
 {
 	return pixel(i, j).getAlpha() >= threshold;
 }
 
-void Extruder::create_face(u32 i, u32 j, FaceDir dir)
+void Extruder::createEdgeFace(u32 i, u32 j, FaceDir dir)
 {
 	static const v3f normals[4] = {
 		{0.0f, 1.0f, 0.0f},
@@ -90,7 +90,7 @@ void Extruder::create_face(u32 i, u32 j, FaceDir dir)
 		mesh.indices.push_back(base + ind[k]);
 }
 
-void Extruder::create_side(int id)
+void Extruder::createFrontBackSurface(int id)
 {
 	static const v3f normals[2] = {
 		{0.0f, 0.0f, -1.0f},
@@ -132,31 +132,31 @@ void Extruder::extrude()
 	for (u32 j = 0; j < h; j++) {
 		bool prev_opaque = false;
 		for (u32 i = 0; i < w; i++) {
-			bool opaque = is_opaque(i, j);
+			bool opaque = isOpaque(i, j);
 			if (opaque && !prev_opaque)
-				create_face(i, j, FaceDir::Left);
+				createEdgeFace(i, j, FaceDir::Left);
 			if (prev_opaque && !opaque)
-				create_face(i, j, FaceDir::Right);
+				createEdgeFace(i, j, FaceDir::Right);
 			prev_opaque = opaque;
 		}
 		if (prev_opaque)
-			create_face(w, j, FaceDir::Right);
+			createEdgeFace(w, j, FaceDir::Right);
 	}
 	for (u32 i = 0; i < w; i++) {
 		bool prev_opaque = false;
 		for (u32 j = 0; j < h; j++) {
-			bool opaque = is_opaque(i, j);
+			bool opaque = isOpaque(i, j);
 			if (opaque && !prev_opaque)
-				create_face(i, j, FaceDir::Up);
+				createEdgeFace(i, j, FaceDir::Up);
 			if (prev_opaque && !opaque)
-				create_face(i, j, FaceDir::Down);
+				createEdgeFace(i, j, FaceDir::Down);
 			prev_opaque = opaque;
 		}
 		if (prev_opaque)
-			create_face(i, h, FaceDir::Down);
+			createEdgeFace(i, h, FaceDir::Down);
 	}
-	create_side(0);
-	create_side(1);
+	createFrontBackSurface(0);
+	createFrontBackSurface(1);
 }
 
 ExtrudedMesh Extruder::takeMesh() noexcept
