@@ -223,12 +223,18 @@ void TestInventory::testSerializeDeserializeItemMetadata() {
 	metadata.setString("one", "two");
 	metadata.setString("foo", "{\"\"sn4##434#sas#34eds#}");
 	metadata.setString("bar", "\x01\x02\x03\x02\x03\x01");
+	metadata.setString("boo", "{\"\"snsdfb sdf  sdfsdf {} sdjkffb sdf9347sdf \n sdfjjbsdf \t\r\n skdfjjkgbsdfjlgb \n");
 	metadata.setString("\x01", "asasasas");
+
 
 	std::ostringstream os;
 	metadata.serialize(os);
 
-	std::istringstream is(os.str());
+	std::string serialisedString = os.str();
+
+	UASSERT(serialisedString.find('\n') == std::string::npos);
+
+	std::istringstream is(serialisedString);
 	ItemStackMetadata metadata2;
 	metadata2.deSerialize(is);
 

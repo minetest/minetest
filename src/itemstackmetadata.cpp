@@ -30,6 +30,7 @@ void ItemStackMetadata::serialize(std::ostream &os) const
 	}
 
 	Json::StreamWriterBuilder writerBuilder;
+	writerBuilder.settings_["indentation"] = "";
 	os << SERIALIZATION_VERSION_IDENTIFIER
 	   << Json::writeString(writerBuilder, root);
 }
