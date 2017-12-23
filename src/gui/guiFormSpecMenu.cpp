@@ -2673,11 +2673,14 @@ void GUIFormSpecMenu::showTooltip(const std::wstring &text,
 
 	// Tooltip size and offset
 	s32 tooltip_width = m_tooltip_element->getTextWidth() + m_btn_height;
-#if (IRRLICHT_VERSION_MAJOR <= 1 && IRRLICHT_VERSION_MINOR <= 8 && IRRLICHT_VERSION_REVISION < 2) || USE_FREETYPE == 1
+	/* Irrlicht version 1.8.2 added counting newlines in the
+	 * calculation for getTextHeight()
+	 */
+#if (IRRLICHT_VERSION_MAJOR >= 1 && IRRLICHT_VERSION_MINOR >= 8 && IRRLICHT_VERSION_REVISION >= 2)
+	s32 tooltip_height = m_tooltip_element->getTextHeight() + 5;
+#else
 	std::vector<std::wstring> text_rows = str_split(ntext, L'\n');
 	s32 tooltip_height = m_tooltip_element->getTextHeight() * text_rows.size() + 5;
-#else
-	s32 tooltip_height = m_tooltip_element->getTextHeight() + 5;
 #endif
 	v2u32 screenSize = Environment->getVideoDriver()->getScreenSize();
 	int tooltip_offset_x = m_btn_height;
