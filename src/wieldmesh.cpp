@@ -90,7 +90,11 @@ void WieldMeshSceneNode::setExtruded(const std::string &imagename,
 	const std::string &overlay_name, v3f wield_scale, ITextureSource *tsrc,
 	u8 num_frames)
 {
-	video::ITexture *texture = tsrc->getTexture(imagename);
+	video::ITexture *texture;
+	if (num_frames > 1)
+		texture = tsrc->getTexture(imagename + "[verticalframe:" + std::to_string(num_frames) + ":0");
+	else
+		texture = tsrc->getTexture(imagename);
 	if (!texture) {
 		changeToMesh();
 		return;
@@ -98,9 +102,6 @@ void WieldMeshSceneNode::setExtruded(const std::string &imagename,
 	video::ITexture *overlay_texture = nullptr;
 	if (!overlay_name.empty())
 		overlay_texture = tsrc->getTexture(overlay_name);
-	if (num_frames > 1) {
-		// TODO fix this
-	}
 	scene::IMesh *mesh = createExtrusionMesh(texture, overlay_texture);
 	changeToMesh(mesh);
 	mesh->drop();
