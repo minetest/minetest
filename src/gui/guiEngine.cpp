@@ -222,6 +222,12 @@ bool GUIEngine::loadMainMenuScript()
 /******************************************************************************/
 void GUIEngine::run()
 {
+	u32 time;
+	u32 last_time;
+	f32 dtime;
+
+	irr::IrrlichtDevice *device = RenderingEngine::get_raw_device();
+
 	// Always create clouds because they may or may not be
 	// needed based on the game selected
 	video::IVideoDriver *driver = RenderingEngine::get_video_driver();
@@ -232,6 +238,8 @@ void GUIEngine::run()
 
 	irr::core::dimension2d<u32> previous_screen_size(g_settings->getU16("screen_w"),
 		g_settings->getU16("screen_h"));
+
+	last_time = device->getTimer()->getTime();
 
 	while (RenderingEngine::run() && (!m_startgame) && (!m_kill)) {
 
@@ -277,6 +285,22 @@ void GUIEngine::run()
 			sleep_ms(25);
 
 		m_script->step();
+
+		/* dtime and other time related update.
+		 * This code essentially duplicates the logic in
+		 * Game.cpp Game::connectToServer.
+		 * (RenderingEngine::run() loop calls client->step
+		 *  which in turn calls m_sound->step(dtime))
+		 */
+		device->getTimer()->tick();
+		time = device->getTimer()->getTime();
+		if (time > last_time)
+			dtime = (time - last_time) / 1000.0;
+		else
+			dtime = 0;
+		last_time = time;
+
+		m_sound_manager->step(dtime);
 
 #ifdef __ANDROID__
 		m_menu->getAndroidUIInput();
