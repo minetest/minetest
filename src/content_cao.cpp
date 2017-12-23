@@ -99,13 +99,9 @@ void SmoothTranslator<T>::translate(f32 dtime)
 void SmoothTranslatorWrapped::translate(f32 dtime)
 {
 	anim_time_counter = anim_time_counter + dtime;
-	f32 val_diff = val_target - val_old;
+	f32 val_diff = std::abs(val_target - val_old);
 	if (val_diff > 180.f)
 		val_diff = 360.f - val_diff;
-	else if (val_diff < -180.f)
-		val_diff = 360.f + val_diff;
-	else
-		val_diff = std::abs(val_diff);
 
 	f32 moveratio = 1.0;
 	if (anim_time > 0.001)
