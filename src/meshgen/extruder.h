@@ -1,4 +1,5 @@
 #pragma once
+#include <array>
 #include <vector>
 #include "irrlichttypes_bloated.h"
 #include <ITexture.h>
@@ -23,7 +24,7 @@ struct ExtrudedMesh
  */
 class Extruder
 {
-	enum class FaceDir
+	enum FaceDir
 	{
 		Up,
 		Down,
@@ -38,11 +39,13 @@ class Extruder
 	u32 w, h;
 	float dw, dh;
 	ExtrudedMesh mesh;
+	std::array<std::vector<char>, 4> faces;
 
 	video::SColor pixel(u32 i, u32 j);
 	bool isOpaque(u32 i, u32 j);
-	void createEdgeFace(u32 i, u32 j, FaceDir dir);
-	void createFrontBackSurface(int id);
+	void createEdgeFace(u32 k, FaceDir dir);
+	void addLongFace(u32 i, u32 j, FaceDir dir);
+	void addSquareFace(int id);
 
 public:
 	explicit Extruder(video::ITexture *_texture);
