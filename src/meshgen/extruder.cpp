@@ -15,8 +15,8 @@ Extruder::Extruder(video::ITexture *_texture) :
 	h = size.Height;
 	dw = 1.0f / w;
 	dh = 1.0f / h;
-	mesh.vertices.reserve(8 * (w + h + 2));
-	mesh.indices.reserve(6 * (w + h + 2));
+	mesh.vertices.reserve(8 * (w + h + 4));
+	mesh.indices.reserve(6 * (w + h + 4));
 	faces[Left].resize(w + 1);
 	faces[Right].resize(w + 1);
 	faces[Up].resize(h + 1);
@@ -101,7 +101,7 @@ void Extruder::addLongFace(u32 i, u32 j, FaceDir dir)
 		mesh.indices.push_back(base + ind[k]);
 }
 
-void Extruder::addSquareFace(int id)
+void Extruder::addLargeFace(int id)
 {
 	static const v3f normals[2] = {
 		{0.0f, 0.0f, -1.0f},
@@ -166,6 +166,8 @@ void Extruder::extrude()
 		if (prev_opaque)
 			createEdgeFace(h, Down);
 	}
+	addLargeFace(0);
+	addLargeFace(1);
 	for (u32 i = 0; i <= w; i++) {
 		if (faces[Left][i])
 			addLongFace(i, 0, Left);
@@ -178,8 +180,6 @@ void Extruder::extrude()
 		if (faces[Down][j])
 			addLongFace(0, j, Down);
 	}
-	addSquareFace(0);
-	addSquareFace(1);
 }
 
 ExtrudedMesh Extruder::takeMesh() noexcept

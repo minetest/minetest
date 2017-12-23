@@ -45,7 +45,7 @@ class Extruder
 	bool isOpaque(u32 i, u32 j);
 	void createEdgeFace(u32 k, FaceDir dir);
 	void addLongFace(u32 i, u32 j, FaceDir dir);
-	void addSquareFace(int id);
+	void addLargeFace(int id);
 
 public:
 	explicit Extruder(video::ITexture *_texture);
