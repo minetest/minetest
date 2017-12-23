@@ -58,7 +58,6 @@ void SmoothTranslator::init(v3f vect)
 	vect_old = vect;
 	vect_show = vect;
 	vect_aim = vect;
-	anim_counter = 0;
 	anim_time = 0;
 	anim_time_counter = 0;
 	aim_is_end = true;
@@ -69,34 +68,28 @@ void SmoothTranslator::update(v3f vect_new, bool is_end_position, float update_i
 	aim_is_end = is_end_position;
 	vect_old = vect_show;
 	vect_aim = vect_new;
-	if(update_interval > 0)
-	{
+	if (update_interval > 0) {
 		anim_time = update_interval;
 	} else {
-		if(anim_time < 0.001 || anim_time > 1.0)
+		if (anim_time < 0.001 || anim_time > 1.0)
 			anim_time = anim_time_counter;
 		else
 			anim_time = anim_time * 0.9 + anim_time_counter * 0.1;
 	}
 	anim_time_counter = 0;
-	anim_counter = 0;
 }
 
 void SmoothTranslator::translate(f32 dtime)
 {
 	anim_time_counter = anim_time_counter + dtime;
-	anim_counter = anim_counter + dtime;
 	v3f vect_move = vect_aim - vect_old;
 	f32 moveratio = 1.0;
-	if(anim_time > 0.001)
+	if (anim_time > 0.001)
 		moveratio = anim_time_counter / anim_time;
+	f32 move_end = aim_is_end ? 1.0 : 1.5;
+
 	// Move a bit less than should, to avoid oscillation
-	moveratio = moveratio * 0.8;
-	float move_end = 1.5;
-	if(aim_is_end)
-		move_end = 1.0;
-	if(moveratio > move_end)
-		moveratio = move_end;
+	moveratio = std::min(moveratio * 0.8f, move_end);
 	vect_show = vect_old + vect_move * moveratio;
 }
 
@@ -931,14 +924,9 @@ void GenericCAO::step(float dtime, ClientEnvironment *env)
 				+ m_prop.automatic_face_movement_dir_offset;
 		float max_rotation_delta =
 				dtime * m_prop.automatic_face_movement_max_rotation_per_sec;
-		float delta = wrapDegrees_0_360(target_yaw - m_yaw);
 
-		if (delta > max_rotation_delta && 360 - delta > max_rotation_delta) {
-			m_yaw += (delta < 180) ? max_rotation_delta : -max_rotation_delta;
-			m_yaw = wrapDegrees_0_360(m_yaw);
-		} else {
-			m_yaw = target_yaw;
-		}
+		m_yaw = wrapDegrees_0_360(m_yaw);
+		wrappedApproachShortest(m_yaw, target_yaw, max_rotation_delta, 360.f);
 		updateNodePos();
 	}
 }

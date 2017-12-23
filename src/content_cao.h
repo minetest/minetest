@@ -39,10 +39,10 @@ struct SmoothTranslator
 	v3f vect_old;
 	v3f vect_show;
 	v3f vect_aim;
-	f32 anim_counter = 0;
 	f32 anim_time = 0;
 	f32 anim_time_counter = 0;
 	bool aim_is_end = true;
+	bool is_wrapped_degree = false;
 
 	SmoothTranslator() = default;
 
@@ -77,6 +77,7 @@ private:
 	float m_yaw = 0.0f;
 	s16 m_hp = 1;
 	SmoothTranslator pos_translator;
+	SmoothTranslator yaw_translator;
 	// Spritesheet/animation stuff
 	v2f m_tx_size = v2f(1,1);
 	v2s16 m_tx_basepos;
