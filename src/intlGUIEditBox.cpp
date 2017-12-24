@@ -1418,6 +1418,9 @@ void intlGUIEditBox::calculateScrollPos()
 		// todo: adjust scrollbar
 	}
 
+	if (!WordWrap && !MultiLine)
+		return;
+
 	// vertical scroll position
 	if (FrameRect.LowerRightCorner.Y < CurrentTextRect.LowerRightCorner.Y)
 		VScrollPos += CurrentTextRect.LowerRightCorner.Y - FrameRect.LowerRightCorner.Y; // scrolling downwards
