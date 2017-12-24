@@ -42,6 +42,7 @@ struct MapgenV7Params : public MapgenParams {
 	s16 lava_depth = -256;
 	float float_mount_density = 0.6f;
 	float float_mount_height = 128.0f;
+	float float_mount_exponent = 0.75f;
 	s16 floatland_level = 1280;
 	s16 shadow_limit = 1024;
 	s16 cavern_limit = -256;
@@ -95,6 +96,7 @@ private:
 	s16 large_cave_depth;
 	float float_mount_density;
 	float float_mount_height;
+	float float_mount_exponent;
 	s16 floatland_level;
 	s16 shadow_limit;
 

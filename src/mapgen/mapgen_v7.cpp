@@ -54,17 +54,18 @@ FlagDesc flagdesc_mapgen_v7[] = {
 MapgenV7::MapgenV7(int mapgenid, MapgenV7Params *params, EmergeManager *emerge)
 	: MapgenBasic(mapgenid, params, emerge)
 {
-	spflags             = params->spflags;
-	mount_zero_level    = params->mount_zero_level;
-	cave_width          = params->cave_width;
-	large_cave_depth    = params->large_cave_depth;
-	lava_depth          = params->lava_depth;
-	float_mount_density = params->float_mount_density;
-	floatland_level     = params->floatland_level;
-	shadow_limit        = params->shadow_limit;
-	cavern_limit        = params->cavern_limit;
-	cavern_taper        = params->cavern_taper;
-	cavern_threshold    = params->cavern_threshold;
+	spflags              = params->spflags;
+	mount_zero_level     = params->mount_zero_level;
+	cave_width           = params->cave_width;
+	large_cave_depth     = params->large_cave_depth;
+	lava_depth           = params->lava_depth;
+	float_mount_density  = params->float_mount_density;
+	float_mount_exponent = params->float_mount_exponent;
+	floatland_level      = params->floatland_level;
+	shadow_limit         = params->shadow_limit;
+	cavern_limit         = params->cavern_limit;
+	cavern_taper         = params->cavern_taper;
+	cavern_threshold     = params->cavern_threshold;
 
 	// This is to avoid a divide-by-zero.
 	// Parameter will be saved to map_meta.txt in limited form.
@@ -148,18 +149,19 @@ MapgenV7Params::MapgenV7Params():
 
 void MapgenV7Params::readParams(const Settings *settings)
 {
-	settings->getFlagStrNoEx("mgv7_spflags",           spflags, flagdesc_mapgen_v7);
-	settings->getS16NoEx("mgv7_mount_zero_level",      mount_zero_level);
-	settings->getFloatNoEx("mgv7_cave_width",          cave_width);
-	settings->getS16NoEx("mgv7_large_cave_depth",      large_cave_depth);
-	settings->getS16NoEx("mgv7_lava_depth",            lava_depth);
-	settings->getFloatNoEx("mgv7_float_mount_density", float_mount_density);
-	settings->getFloatNoEx("mgv7_float_mount_height",  float_mount_height);
-	settings->getS16NoEx("mgv7_floatland_level",       floatland_level);
-	settings->getS16NoEx("mgv7_shadow_limit",          shadow_limit);
-	settings->getS16NoEx("mgv7_cavern_limit",          cavern_limit);
-	settings->getS16NoEx("mgv7_cavern_taper",          cavern_taper);
-	settings->getFloatNoEx("mgv7_cavern_threshold",    cavern_threshold);
+	settings->getFlagStrNoEx("mgv7_spflags",            spflags, flagdesc_mapgen_v7);
+	settings->getS16NoEx("mgv7_mount_zero_level",       mount_zero_level);
+	settings->getFloatNoEx("mgv7_cave_width",           cave_width);
+	settings->getS16NoEx("mgv7_large_cave_depth",       large_cave_depth);
+	settings->getS16NoEx("mgv7_lava_depth",             lava_depth);
+	settings->getFloatNoEx("mgv7_float_mount_density",  float_mount_density);
+	settings->getFloatNoEx("mgv7_float_mount_height",   float_mount_height);
+	settings->getFloatNoEx("mgv7_float_mount_exponent", float_mount_exponent);
+	settings->getS16NoEx("mgv7_floatland_level",        floatland_level);
+	settings->getS16NoEx("mgv7_shadow_limit",           shadow_limit);
+	settings->getS16NoEx("mgv7_cavern_limit",           cavern_limit);
+	settings->getS16NoEx("mgv7_cavern_taper",           cavern_taper);
+	settings->getFloatNoEx("mgv7_cavern_threshold",     cavern_threshold);
 
 	settings->getNoiseParams("mgv7_np_terrain_base",      np_terrain_base);
 	settings->getNoiseParams("mgv7_np_terrain_alt",       np_terrain_alt);
@@ -180,18 +182,19 @@ void MapgenV7Params::readParams(const Settings *settings)
 
 void MapgenV7Params::writeParams(Settings *settings) const
 {
-	settings->setFlagStr("mgv7_spflags",           spflags, flagdesc_mapgen_v7, U32_MAX);
-	settings->setS16("mgv7_mount_zero_level",      mount_zero_level);
-	settings->setFloat("mgv7_cave_width",          cave_width);
-	settings->setS16("mgv7_large_cave_depth",      large_cave_depth);
-	settings->setS16("mgv7_lava_depth",            lava_depth);
-	settings->setFloat("mgv7_float_mount_density", float_mount_density);
-	settings->setFloat("mgv7_float_mount_height",  float_mount_height);
-	settings->setS16("mgv7_floatland_level",       floatland_level);
-	settings->setS16("mgv7_shadow_limit",          shadow_limit);
-	settings->setS16("mgv7_cavern_limit",          cavern_limit);
-	settings->setS16("mgv7_cavern_taper",          cavern_taper);
-	settings->setFloat("mgv7_cavern_threshold",    cavern_threshold);
+	settings->setFlagStr("mgv7_spflags",            spflags, flagdesc_mapgen_v7, U32_MAX);
+	settings->setS16("mgv7_mount_zero_level",       mount_zero_level);
+	settings->setFloat("mgv7_cave_width",           cave_width);
+	settings->setS16("mgv7_large_cave_depth",       large_cave_depth);
+	settings->setS16("mgv7_lava_depth",             lava_depth);
+	settings->setFloat("mgv7_float_mount_density",  float_mount_density);
+	settings->setFloat("mgv7_float_mount_height",   float_mount_height);
+	settings->setFloat("mgv7_float_mount_exponent", float_mount_exponent);
+	settings->setS16("mgv7_floatland_level",        floatland_level);
+	settings->setS16("mgv7_shadow_limit",           shadow_limit);
+	settings->setS16("mgv7_cavern_limit",           cavern_limit);
+	settings->setS16("mgv7_cavern_taper",           cavern_taper);
+	settings->setFloat("mgv7_cavern_threshold",     cavern_threshold);
 
 	settings->setNoiseParams("mgv7_np_terrain_base",      np_terrain_base);
 	settings->setNoiseParams("mgv7_np_terrain_alt",       np_terrain_alt);
@@ -416,8 +419,10 @@ bool MapgenV7::getFloatlandMountainFromMap(int idx_xyz, int idx_xz, s16 y)
 {
 	// Make rim 2 nodes thick to match floatland base terrain
 	float density_gradient = (y >= floatland_level) ?
-		-pow((float)(y - floatland_level) / float_mount_height, 0.75f) :
-		-pow((float)(floatland_level - 1 - y) / float_mount_height, 0.75f);
+		-pow((float)(y - floatland_level) / float_mount_height,
+		float_mount_exponent) :
+		-pow((float)(floatland_level - 1 - y) / float_mount_height,
+		float_mount_exponent);
 
 	float floatn = noise_mountain->result[idx_xyz] + float_mount_density;
 
