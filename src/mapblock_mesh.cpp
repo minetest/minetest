@@ -206,48 +206,68 @@ static u16 getSmoothLightCombined(const v3s16 &p,
 	u16 light_day = 0;
 	u16 light_night = 0;
 
-	auto add_node = [&] (int i) -> const ContentFeatures& {
+	auto consider_node = [&] (int i, bool adding) -> bool {
 		MapNode n = data->m_vmanip.getNodeNoExNoEmerge(p + dirs[i]);
+		// If it's CONTENT_IGNORE we can't do any light calculations
+		if (n.getContent() == CONTENT_IGNORE)
+			return true;
 		const ContentFeatures &f = ndef->get(n);
-		if (f.light_source > light_source_max)
-			light_source_max = f.light_source;
-		// Check f.solidness because fast-style leaves look better this way
-		if (f.param_type == CPT_LIGHT && f.solidness != 2) {
-			light_day += decode_light(n.getLightNoChecks(LIGHTBANK_DAY, &f));
-			light_night += decode_light(n.getLightNoChecks(LIGHTBANK_NIGHT, &f));
-			light_count++;
-		} else {
-			ambient_occlusion++;
+		if (adding) {
+			if (f.light_source > light_source_max)
+				light_source_max = f.light_source;
+			// Check f.solidness because fast-style leaves look better this way
+			if (f.param_type == CPT_LIGHT && f.solidness != 2) {
+				light_day += decode_light(n.getLightNoChecks(LIGHTBANK_DAY, &f));
+				light_night += decode_light(n.getLightNoChecks(LIGHTBANK_NIGHT, &f));
+				light_count++;
+			} else {
+				ambient_occlusion++;
+			}
 		}
-		return f;
+		return f.light_propagates;
 	};
 
 	if (node_solid) {
-		ambient_occlusion = 3;
-		bool corner_obstructed = true;
-		for (int i = 0; i < 2; ++i) {
-			if (add_node(i).light_propagates)
-				corner_obstructed = false;
+		consider_node(2, true);
+		if (consider_node(3, true)) {
+			bool opaque0 = !consider_node(0, true);
+			bool opaque1 = !consider_node(1, true);
+			bool obstructed4 = opaque0 && opaque1;
+			bool opaque4 = !consider_node(4, !obstructed4);
+			if (obstructed4)
+				ambient_occlusion++;
+			bool opaque5 = !consider_node(5, false);
+			bool opaque6 = !consider_node(6, false);
+			bool opaque7 = !consider_node(7, false);
+
+			if (opaque0 && (opaque7 || opaque1 || (opaque4 && opaque6)))
+				ambient_occlusion++;
+			else
+				consider_node(5, true);
+			if (opaque1 && (opaque7 || opaque0 || (opaque4 && opaque5)))
+				ambient_occlusion++;
+			else
+				consider_node(6, true);
+			if ((opaque0 || (opaque4 && opaque5)) && (opaque1 || (opaque4 && opaque6)))
+				ambient_occlusion++;
+			else
+				consider_node(7, true);
+		} else {
+			ambient_occlusion += 6;
 		}
-		add_node(2);
-		add_node(3);
-		if (corner_obstructed)
-			ambient_occlusion++;
-		else
-			add_node(4);
 	} else {
 		std::array<bool, 4> obstructed = {{ 1, 1, 1, 1 }};
-		add_node(0);
-		bool opaque1 = !add_node(1).light_propagates;
-		bool opaque2 = !add_node(2).light_propagates;
-		bool opaque3 = !add_node(3).light_propagates;
+		consider_node(0, true);
+		bool opaque1 = !consider_node(1, true);
+		bool opaque2 = !consider_node(2, true);
+		bool opaque3 = !consider_node(3, true);
 		obstructed[0] = opaque1 && opaque2;
 		obstructed[1] = opaque1 && opaque3;
 		obstructed[2] = opaque2 && opaque3;
 		for (int k = 0; k < 4; ++k) {
 			if (obstructed[k])
 				ambient_occlusion++;
-			else if (add_node(k + 4).light_propagates)
+			else if (consider_node(k + 4, true))
 				obstructed[3] = false;
 		}
 	}
