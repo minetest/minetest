@@ -227,14 +227,25 @@ static u16 getSmoothLightCombined(const v3s16 &p,
 	bool opaque1 = !add_node(1).light_propagates;
 	bool opaque2 = !add_node(2).light_propagates;
 	bool opaque3 = !add_node(3).light_propagates;
+	bool wrap7 = false;
 	obstructed[0] = opaque1 && opaque2;
 	obstructed[1] = opaque1 && opaque3;
 	obstructed[2] = opaque2 && opaque3;
-	for (int k = 0; k < 4; ++k) {
+	for (int k = 0; k < 3; ++k) {
 		if (obstructed[k])
 			ambient_occlusion++;
 		else if (add_node(k + 4).light_propagates)
 			obstructed[3] = false;
+	}
+	if (obstructed[3])
+		ambient_occlusion++;
+	else
+		wrap7 = add_node(7).light_propagates;
+	for (int k = 0; k < 3; ++k) { // wrap light around nodes
+		if (wrap7 && obstructed[k]) { // re-consider node that appears to be reachable
+			ambient_occlusion--;
+			add_node(k + 4);
+		}
 	}
 
 	if (light_count == 0) {
