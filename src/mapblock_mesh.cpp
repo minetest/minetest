@@ -228,25 +228,33 @@ static u16 getSmoothLightCombined(const v3s16 &p,
 	};
 
 	if (node_solid) {
-		bool corner_obstructed = true;
-		for (int i = 0; i < 2; ++i) {
-			if (consider_node(i, true))
-				corner_obstructed = false;
-		}
 		consider_node(2, true);
-		int opaque3 = !consider_node(3, true);
-		int opaque5 = !consider_node(5, false);
-		int opaque6 = !consider_node(6, false);
-		if (opaque3 && opaque5)
-			ambient_occlusion++;
-		if (opaque3 && opaque6)
-			ambient_occlusion++;
-		if (opaque5 && opaque6)
-			ambient_occlusion++;
-		if (!corner_obstructed)
-			consider_node(4, true);
-		else if(consider_node(7, false))
-			ambient_occlusion++;
+		if (consider_node(3, true)) {
+			bool opaque0 = !consider_node(0, true);
+			bool opaque1 = !consider_node(1, true);
+			bool obstructed4 = opaque0 && opaque1;
+			bool opaque4 = !consider_node(4, !obstructed4);
+			if (obstructed4)
+				ambient_occlusion++;
+			bool opaque5 = !consider_node(5, false);
+			bool opaque6 = !consider_node(6, false);
+			bool opaque7 = !consider_node(7, false);
+
+			if (opaque0 && (opaque7 || opaque1 || (opaque4 && opaque6)))
+				ambient_occlusion++;
+			else
+				consider_node(5, true);
+			if (opaque1 && (opaque7 || opaque0 || (opaque4 && opaque5)))
+				ambient_occlusion++;
+			else
+				consider_node(6, true);
+			if ((opaque0 || (opaque4 && opaque5)) && (opaque1 || (opaque4 && opaque6)))
+				ambient_occlusion++;
+			else
+				consider_node(7, true);
+		} else {
+			ambient_occlusion += 6;
+		}
 	} else {
 		std::array<bool, 4> obstructed = {{ 1, 1, 1, 1 }};
 		consider_node(0, true);
