@@ -34,11 +34,11 @@ public:
 struct SimpleSoundSpec
 {
 	SimpleSoundSpec(const std::string &name = "", float gain = 1.0f,
-			float fade = 0.0f, float pitch = 1.0f,
-			float offset_start = 0.0f, float offset_end = -1.0f) :
+			float fade = 0.0f, float pitch = 1.0f, float offset_start = 0.0f,
+			float offset_end = -1.0f) :
 			name(name),
-			gain(gain), fade(fade), pitch(pitch),
-			offset_start(offset_start), offset_end(offset_end)
+			gain(gain), fade(fade), pitch(pitch), offset_start(offset_start),
+			offset_end(offset_end)
 	{
 	}
 
@@ -49,10 +49,10 @@ struct SimpleSoundSpec
 	float fade = 0.0f;
 	float pitch = 1.0f;
 	float offset_start = 0.0f;
-	float offset_end   = -1.0f;
+	float offset_end = -1.0f;
 
-	static unsigned long convertOffsetToSampleOffset(
-			unsigned long channels, unsigned long bits_per_sample, unsigned long frequency,
+	static unsigned long convertOffsetToSampleOffset(unsigned long channels,
+			unsigned long bits_per_sample, unsigned long frequency,
 			unsigned long buffer_size_bytes, double offset);
 };
 
@@ -75,11 +75,11 @@ public:
 	// playSound functions return -1 on failure, otherwise a handle to the
 	// sound. If name=="", call should be ignored without error.
 	virtual int playSound(const std::string &name, bool loop, float volume,
-			float fade = 0.0f, float pitch = 1.0f,
-			float offset_start = 0.0f, float offset_end = -1.0f) = 0;
-	virtual int playSoundAt(const std::string &name, bool loop, float volume,
-			v3f pos, float pitch = 1.0f,
-			float offset_start = 0.0f, float offset_end = -1.0f) = 0;
+			float fade = 0.0f, float pitch = 1.0f, float offset_start = 0.0f,
+			float offset_end = -1.0f) = 0;
+	virtual int playSoundAt(const std::string &name, bool loop, float volume, v3f pos,
+			float pitch = 1.0f, float offset_start = 0.0f,
+			float offset_end = -1.0f) = 0;
 	virtual void stopSound(int sound) = 0;
 	virtual bool soundExists(int sound) = 0;
 	virtual void updateSoundPosition(int sound, v3f pos) = 0;
@@ -112,15 +112,13 @@ public:
 	}
 	void updateListener(v3f pos, v3f vel, v3f at, v3f up) {}
 	void setListenerGain(float gain) {}
-	int playSound(const std::string &name, bool loop, float volume,
-			float fade, float pitch,
-			float offset_start, float offset_end)
+	int playSound(const std::string &name, bool loop, float volume, float fade,
+			float pitch, float offset_start, float offset_end)
 	{
 		return 0;
 	}
-	int playSoundAt(const std::string &name, bool loop, float volume,
-			v3f pos, float pitch,
-			float offset_start, float offset_end)
+	int playSoundAt(const std::string &name, bool loop, float volume, v3f pos,
+			float pitch, float offset_start, float offset_end)
 	{
 		return 0;
 	}
