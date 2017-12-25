@@ -206,7 +206,11 @@ static u16 getSmoothLightCombined(const v3s16 &p,
 	u16 light_day = 0;
 	u16 light_night = 0;
 
-	auto add_node = [&] (int i) -> const ContentFeatures& {
+	auto add_node = [&] (int i, bool obstructed = false) -> bool {
+		if (obstructed) {
+			ambient_occlusion++;
+			return false;
+		}
 		MapNode n = data->m_vmanip.getNodeNoExNoEmerge(p + dirs[i]);
 		const ContentFeatures &f = ndef->get(n);
 		if (f.light_source > light_source_max)
@@ -219,33 +223,24 @@ static u16 getSmoothLightCombined(const v3s16 &p,
 		} else {
 			ambient_occlusion++;
 		}
-		return f;
+		return f.light_propagates;
 	};
 
 	std::array<bool, 4> obstructed = {{ 1, 1, 1, 1 }};
 	add_node(0);
-	bool opaque1 = !add_node(1).light_propagates;
-	bool opaque2 = !add_node(2).light_propagates;
-	bool opaque3 = !add_node(3).light_propagates;
-	bool wrap7 = false;
+	bool opaque1 = !add_node(1);
+	bool opaque2 = !add_node(2);
+	bool opaque3 = !add_node(3);
 	obstructed[0] = opaque1 && opaque2;
 	obstructed[1] = opaque1 && opaque3;
 	obstructed[2] = opaque2 && opaque3;
-	for (int k = 0; k < 3; ++k) {
-		if (obstructed[k])
-			ambient_occlusion++;
-		else if (add_node(k + 4).light_propagates)
+	for (int k = 0; k < 3; ++k)
+		if (add_node(k + 4, obstructed[k]))
 			obstructed[3] = false;
-	}
-	if (obstructed[3])
-		ambient_occlusion++;
-	else
-		wrap7 = add_node(7).light_propagates;
-	for (int k = 0; k < 3; ++k) { // wrap light around nodes
-		if (wrap7 && obstructed[k]) { // re-consider node that appears to be reachable
-			ambient_occlusion--;
-			add_node(k + 4);
-		}
+	if (add_node(7, obstructed[3])) { // wrap light around nodes
+		ambient_occlusion -= 3;
+		for (int k = 0; k < 3; ++k)
+			add_node(k + 4, !obstructed[k]);
 	}
 
 	if (light_count == 0) {
