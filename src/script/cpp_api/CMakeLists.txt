@@ -1,20 +1,35 @@
 set(common_SCRIPT_CPP_API_SRCS
-	${CMAKE_CURRENT_SOURCE_DIR}/s_async.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/s_base.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/s_entity.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/s_env.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/s_inventory.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/s_item.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/s_modchannels.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/s_node.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/s_nodemeta.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/s_player.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/s_security.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/s_server.cpp
+	script/cpp_api/s_async.cpp
+	script/cpp_api/s_async.h
+	script/cpp_api/s_base.cpp
+	script/cpp_api/s_base.h
+	script/cpp_api/s_entity.cpp
+	script/cpp_api/s_entity.h
+	script/cpp_api/s_env.cpp
+	script/cpp_api/s_env.h
+	script/cpp_api/s_inventory.cpp
+	script/cpp_api/s_inventory.h
+	script/cpp_api/s_internal.h
+	script/cpp_api/s_item.cpp
+	script/cpp_api/s_item.h
+	script/cpp_api/s_modchannels.cpp
+	script/cpp_api/s_modchannels.h
+	script/cpp_api/s_node.cpp
+	script/cpp_api/s_node.h
+	script/cpp_api/s_nodemeta.cpp
+	script/cpp_api/s_nodemeta.h
+	script/cpp_api/s_player.cpp
+	script/cpp_api/s_player.h
+	script/cpp_api/s_security.cpp
+	script/cpp_api/s_security.h
+	script/cpp_api/s_server.cpp
+	script/cpp_api/s_server.h
 	PARENT_SCOPE)
 
 set(client_SCRIPT_CPP_API_SRCS
-	${CMAKE_CURRENT_SOURCE_DIR}/s_client.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/s_mainmenu.cpp
+	script/cpp_api/s_client.cpp
+	script/cpp_api/s_client.h
+	script/cpp_api/s_mainmenu.cpp
+	script/cpp_api/s_mainmenu.h
 	PARENT_SCOPE)
 

@@ -1,11 +1,14 @@
 if (BUILD_CLIENT)
 	set(client_irrlicht_changes_SRCS
-		${CMAKE_CURRENT_SOURCE_DIR}/static_text.cpp
+		irrlicht_changes/irrUString.h
+		irrlicht_changes/static_text.cpp
+		irrlicht_changes/static_text.h
 	)
 
 	if (ENABLE_FREETYPE)
 		set(client_irrlicht_changes_SRCS ${client_irrlicht_changes_SRCS}
-			${CMAKE_CURRENT_SOURCE_DIR}/CGUITTFont.cpp
+			irrlicht_changes/CGUITTFont.cpp
+			irrlicht_changes/CGUITTFont.h
 		)
 	endif()
 

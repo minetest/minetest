@@ -1,6 +1,10 @@
 set(JTHREAD_SRCS
-	${CMAKE_CURRENT_SOURCE_DIR}/event.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/thread.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/semaphore.cpp
+	threading/event.cpp
+	threading/event.h
+	threading/mutex_auto_lock.h
+	threading/thread.cpp
+	threading/thread.h
+	threading/semaphore.cpp
+	threading/semaphore.h
 	PARENT_SCOPE)
 

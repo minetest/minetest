@@ -1,10 +1,17 @@
 set(database_SRCS
-	${CMAKE_CURRENT_SOURCE_DIR}/database.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/database-dummy.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/database-files.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/database-leveldb.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/database-postgresql.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/database-redis.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/database-sqlite3.cpp
+	database/database.cpp
+	database/database.h
+	database/database-dummy.cpp
+	database/database-dummy.h
+	database/database-files.cpp
+	database/database-files.h
+	database/database-leveldb.cpp
+	database/database-leveldb.h
+	database/database-postgresql.cpp
+	database/database-postgresql.h
+	database/database-redis.cpp
+	database/database-redis.h
+	database/database-sqlite3.cpp
+	database/database-sqlite3.h
 	PARENT_SCOPE
 )

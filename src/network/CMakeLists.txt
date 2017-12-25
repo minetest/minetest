@@ -1,18 +1,28 @@
 set(common_network_SRCS
-	${CMAKE_CURRENT_SOURCE_DIR}/address.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/connection.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/connectionthreads.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/networkpacket.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/serverpackethandler.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/serveropcodes.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/socket.cpp
+	network/address.cpp
+	network/address.h
+	network/connection.cpp
+	network/connection.h
+	network/connectionthreads.cpp
+	network/connectionthreads.h
+	network/networkexceptions.h
+	network/networkpacket.cpp
+	network/networkpacket.h
+	network/networkprotocol.h
+	network/peerhandler.h
+	network/serverpackethandler.cpp
+	network/serveropcodes.cpp
+	network/serveropcodes.h
+	network/socket.cpp
+	network/socket.h
 	PARENT_SCOPE
 )
 
 if (BUILD_CLIENT)
 	set(client_network_SRCS
-		${CMAKE_CURRENT_SOURCE_DIR}/clientopcodes.cpp
-		${CMAKE_CURRENT_SOURCE_DIR}/clientpackethandler.cpp
+		network/clientopcodes.cpp
+		network/clientopcodes.h
+		network/clientpackethandler.cpp
 		PARENT_SCOPE
 	)
 endif()
