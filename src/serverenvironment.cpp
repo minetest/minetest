@@ -481,15 +481,8 @@ bool ServerEnvironment::removePlayerFromDatabase(const std::string &name)
 	return m_player_database->removePlayer(name);
 }
 
-bool ServerEnvironment::line_of_sight(v3f pos1, v3f pos2, float stepsize, v3s16 *p)
+bool ServerEnvironment::line_of_sight(v3f pos1, v3f pos2, v3s16 *p)
 {
-	float distance = pos1.getDistanceFrom(pos2);
-	// For compatibility, reduce the length of the line
-	// by stepsize, keeping the end's position
-	if (distance < stepsize) {
-		return true;
-	}
-	pos1 += (pos2 - pos1) * (stepsize / distance);
 	// Iterate trough nodes on the line
 	voxalgo::VoxelLineIterator iterator(pos1 / BS, (pos2 - pos1) / BS);
 	do {
