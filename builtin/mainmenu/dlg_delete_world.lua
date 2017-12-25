@@ -18,22 +18,11 @@
 
 local function delete_world_formspec(dialogdata)
 	local retval =
-		"size[9,4,true]" ..
+		"size[10,2.5,true]" ..
 		"label[0.5,0.5;" ..
-		fgettext("Delete World \"$1\"?", dialogdata.delete_name) .. "]"
-	if dialogdata.error_message then
-		retval = retval ..
-			"label[0.5,1.0;" ..
-			core.formspec_escape(dialogdata.error_message) .. "]"
-	else
-		retval = retval ..
-			"label[0.5,1.0;" ..
-			fgettext("To confirm, please retype the world's name which will be deleted.") .. "]"
-	end
-	retval = retval ..
-		"field[0.75,2.25;8,1;world_name;;;]" ..
-		"button[0.5,3.5;2.5,0.5;world_delete_confirm;" .. fgettext("Delete") .. "]" ..
-		"button[6.0,3.5;2.5,0.5;world_delete_cancel;" .. fgettext("Cancel") .. "]"
+		fgettext("Delete World \"$1\"?", dialogdata.delete_name) .. "]" ..
+		"button[0.5,1.5;2.5,0.5;world_delete_confirm;" .. minetest.colorize("#FFFF00", fgettext("Delete")) .. "]" ..
+		"button[7.0,1.5;2.5,0.5;world_delete_cancel;" .. fgettext("Cancel") .. "]"
 	return retval
 end
 
@@ -41,15 +30,9 @@ local function delete_world_buttonhandler(this, fields)
 	if fields["world_delete_confirm"] then
 		if this.data.delete_index > 0 and
 			this.data.delete_index <= #menudata.worldlist:get_raw_list() then
-			if this.data.delete_name == fields["world_name"] then
-				core.delete_world(this.data.delete_index)
-				menudata.worldlist:refresh()
-				this:delete()
-			elseif fields["world_name"] == "" then
-				this.data.error_message = nil
-			else
-				this.data.error_message = fgettext_ne("Wrong world name.")
-			end
+			core.delete_world(this.data.delete_index)
+			menudata.worldlist:refresh()
+			this:delete()
 		end
 		return true
 	end
