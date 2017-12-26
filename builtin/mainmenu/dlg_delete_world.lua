@@ -30,7 +30,7 @@ end
 local function delete_world_buttonhandler(this, fields)
 	if fields["world_delete_confirm"] then
 		if this.data.delete_index > 0 and
-			this.data.delete_index <= #menudata.worldlist:get_raw_list() then
+				this.data.delete_index <= #menudata.worldlist:get_raw_list() then
 			core.delete_world(this.data.delete_index)
 			menudata.worldlist:refresh()
 			this:delete()
