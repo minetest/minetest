@@ -3140,6 +3140,12 @@ These functions return the leftover itemstack.
 * `minetest.after(time, func, ...)`
     * Call the function `func` after `time` seconds, may be fractional
     * Optional: Variable number of arguments that are passed to `func`
+* `minetest.enqueue(name, time, func, ...)`
+    * Call the function `func` after `time` seconds, may be fractional
+    * Jobs are referred to be `name`, and can be modified by calling this function again with the same name
+    * Optional: Variable number of arguments that are passed to `func`
+* `minetest.dequeue(name)`
+    * Remove the queue job `name` previously added with `minetest.enqueue` to prevent it from running
 
 ### Server
 * `minetest.request_shutdown([message],[reconnect],[delay])`: request for server shutdown. Will display `message` to clients,
