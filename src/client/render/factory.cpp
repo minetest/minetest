@@ -27,19 +27,19 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "sidebyside.h"
 
 RenderingCore *createRenderingCore(const std::string &stereo_mode, IrrlichtDevice *device,
-		Client *client, Hud *hud)
+		Client *client, Hud *hud, Sky *sky)
 {
 	if (stereo_mode == "none")
-		return new RenderingCorePlain(device, client, hud);
+		return new RenderingCorePlain(device, client, hud, sky);
 	if (stereo_mode == "anaglyph")
-		return new RenderingCoreAnaglyph(device, client, hud);
+		return new RenderingCoreAnaglyph(device, client, hud, sky);
 	if (stereo_mode == "interlaced")
-		return new RenderingCoreInterlaced(device, client, hud);
+		return new RenderingCoreInterlaced(device, client, hud, sky);
 	if (stereo_mode == "pageflip")
-		return new RenderingCorePageflip(device, client, hud);
+		return new RenderingCorePageflip(device, client, hud, sky);
 	if (stereo_mode == "sidebyside")
-		return new RenderingCoreSideBySide(device, client, hud);
+		return new RenderingCoreSideBySide(device, client, hud, sky);
 	if (stereo_mode == "topbottom")
-		return new RenderingCoreSideBySide(device, client, hud, true);
+		return new RenderingCoreSideBySide(device, client, hud, sky, true);
 	throw std::invalid_argument("Invalid rendering mode: " + stereo_mode);
 }

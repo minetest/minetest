@@ -35,6 +35,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "render/factory.h"
 #include "inputhandler.h"
 #include "gettext.h"
+#include "sky.h"
 
 #if !defined(_WIN32) && !defined(__APPLE__) && !defined(__ANDROID__) && \
 		!defined(SERVER) && !defined(__HAIKU__)
@@ -121,6 +122,11 @@ v2u32 RenderingEngine::getWindowSize() const
 	if (core)
 		return core->getVirtualSize();
 	return m_device->getVideoDriver()->getScreenSize();
+}
+
+const core::matrix4 &RenderingEngine::getShadowMatrix() const
+{
+	return core->getShadowMatrix();
 }
 
 void RenderingEngine::setResizable(bool resize)
@@ -441,10 +447,10 @@ std::vector<irr::video::E_DRIVER_TYPE> RenderingEngine::getSupportedVideoDrivers
 	return drivers;
 }
 
-void RenderingEngine::_initialize(Client *client, Hud *hud)
+void RenderingEngine::_initialize(Client *client, Hud *hud, Sky *sky)
 {
 	const std::string &draw_mode = g_settings->get("3d_mode");
-	core.reset(createRenderingCore(draw_mode, m_device, client, hud));
+	core.reset(createRenderingCore(draw_mode, m_device, client, hud, sky));
 	core->initialize();
 }
 
@@ -454,9 +460,10 @@ void RenderingEngine::_finalize()
 }
 
 void RenderingEngine::_draw_scene(video::SColor skycolor, bool show_hud,
-		bool show_minimap, bool draw_wield_tool, bool draw_crosshair)
+		bool show_minimap, bool draw_wield_tool, bool draw_crosshair,
+		Sky &sky, Clouds &clouds)
 {
-	core->draw(skycolor, show_hud, show_minimap, draw_wield_tool, draw_crosshair);
+	core->draw(skycolor, show_hud, show_minimap, draw_wield_tool, draw_crosshair, sky, clouds);
 }
 
 const char *RenderingEngine::getVideoDriverName(irr::video::E_DRIVER_TYPE type)

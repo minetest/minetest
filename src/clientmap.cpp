@@ -30,6 +30,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/basic_macros.h"
 #include <algorithm>
 #include "client/renderingengine.h"
+#include "sky.h"
 
 ClientMap::ClientMap(
 		Client *client,
@@ -113,7 +114,7 @@ void ClientMap::getBlocksInViewRange(v3s16 cam_pos_nodes,
 			p_nodes_max.Z / MAP_BLOCKSIZE + 1);
 }
 
-void ClientMap::updateDrawList()
+void ClientMap::updateDrawList(video::IVideoDriver *driver, const class Sky &sky)
 {
 	ScopeProfiler sp(g_profiler, "CM::updateDrawList()", SPT_AVG);
 	g_profiler->add("CM::updateDrawList() count", 1);
@@ -246,6 +247,107 @@ void ClientMap::updateDrawList()
 			m_last_drawn_sectors.insert(sp);
 	}
 
+	/*
+		Shadowmap generation
+		The occlusion code seems to be tied to camera position
+		Hacked it to use sun position instead but it doesn't feel like it's correct...
+	*/
+	for (auto &i : m_shadowDrawlist) {
+		MapBlock *block = i.second;
+		block->refDrop();
+	}
+	m_shadowDrawlist.clear();
+
+#if 1
+	// This is not actually how it's done in the node shaders...
+	v3f camera_position_shadow = sky.getSunPosition();
+#else
+	// This is the code in the shader
+	// vec3 sunPosition = vec3(0.0, eyePosition.y * BS + 900.0, 0.0);
+	float eye_position_array[3];
+	v3f eyePosition = m_client->getEnv().getLocalPlayer()->getEyePosition();
+	v3f camera_position_shadow = v3f(0.0f, (eyePosition.Y + 9.0f) /* *BS */, 0.0);
+#endif
+	v3f camera_direction_shadow = v3f(0.0f, 0.0f, 0.0f) - camera_position_shadow;
+	f32 camera_fov_shadow = 90.0f;
+
+	cam_pos_nodes = floatToInt(camera_position_shadow, BS);
+	getBlocksInViewRange(cam_pos_nodes, &p_blocks_min, &p_blocks_max);
+
+	for (const auto &sector_it : m_sectors) {
+		MapSector *sector = sector_it.second;
+		v2s16 sp = sector->getPos();
+
+		if (!m_control.range_all) {
+			if (sp.X < p_blocks_min.X || sp.X > p_blocks_max.X ||
+				sp.Y < p_blocks_min.Z || sp.Y > p_blocks_max.Z)
+				continue;
+		}
+
+		MapBlockVect sectorblocks;
+		sector->getBlocks(sectorblocks);
+
+		// Loop through blocks in sector
+
+		u32 sector_blocks_drawn = 0;
+
+		for (auto block : sectorblocks) {
+			/*
+				Compare block position to camera position, skip
+				if not seen on display
+			*/
+
+			if (block->mesh)
+				block->mesh->updateCameraOffset(m_camera_offset);
+
+			float range = 100000 * BS;
+			if (!m_control.range_all)
+				range = m_control.wanted_range * BS;
+
+			float d = 0.0;
+			if (!isBlockInSight(block->getPos(), camera_position_shadow,
+				camera_direction_shadow, camera_fov_shadow, range, &d))
+				continue;
+
+			blocks_in_range++;
+
+			// Ignore if mesh doesn't exist
+			if (!block->mesh) {
+				blocks_in_range_without_mesh++;
+				continue;
+			}
+
+			// Occlusion culling
+			if (occlusion_culling_enabled && isBlockOccluded(block, cam_pos_nodes)) {
+				blocks_occlusion_culled++;
+				continue;
+			}
+
+			// This block is in range. Reset usage timer.
+			block->resetUsageTimer();
+
+			// Limit block count in case of a sudden increase
+			blocks_would_have_drawn++;
+			if (blocks_drawn >= m_control.wanted_max_blocks &&
+				!m_control.range_all &&
+				d > m_control.wanted_range * BS)
+				continue;
+
+			// Add to set
+			block->refGrab();
+			m_shadowDrawlist[block->getPos()] = block;
+
+			sector_blocks_drawn++;
+			blocks_drawn++;
+			if (d / BS > farthest_drawn)
+				farthest_drawn = d / BS;
+
+		} // foreach sectorblocks
+
+		//if (sector_blocks_drawn != 0)
+		//	m_last_drawn_sectors.insert(sp);
+	}
+
 	g_profiler->avg("CM: blocks in range", blocks_in_range);
 	g_profiler->avg("CM: blocks occlusion culled", blocks_occlusion_culled);
 	if (blocks_in_range != 0)
@@ -299,6 +401,185 @@ struct MeshBufListList
 		list.push_back(l);
 	}
 };
+
+void ClientMap::renderMapToShadowMap(video::IVideoDriver *driver, s32 pass, const Sky &sky)
+{
+	bool is_transparent_pass = pass == scene::ESNRP_TRANSPARENT;
+	std::string prefix;
+
+	if (pass == scene::ESNRP_SOLID)
+		prefix = "CM: solid: ";
+	else
+		prefix = "CM: transparent: ";
+
+	/*
+		This is called two times per frame, reset on the non-transparent one
+	*/
+
+	//if (pass == scene::ESNRP_SOLID)
+		m_last_drawn_sectors.clear();
+
+	/*
+		Get time for measuring timeout.
+		Measuring time is very useful for long delays when the
+		machine is swapping a lot.
+	*/
+
+	//std::time_t time1 = time(0);
+
+	/*
+		Get animation parameters
+	*/
+
+	float animation_time = m_client->getAnimationTime();
+	int crack = m_client->getCrackLevel();
+	u32 daynight_ratio = m_client->getEnv().getDayNightRatio();
+
+	/*
+	v3f camera_position = m_camera_position;
+	v3f camera_direction = v3f(0.0f, 0.0f, 0.0f) - camera_position;
+	f32 camera_fov = 90.0f;
+	*/
+
+	// Get all blocks and draw all visible ones
+
+	u32 vertex_count = 0;
+	u32 meshbuffer_count = 0;
+
+	// Draw the selected MapBlocks
+	
+	{
+		//ScopeProfiler sp(g_profiler, prefix + "drawing blocks", SPT_AVG);
+
+		MeshBufListList drawbufs;
+
+		for (auto &i : m_shadowDrawlist) {
+			MapBlock *block = i.second;
+
+			// If the mesh of the block happened to get deleted, ignore it
+			if (!block->mesh)
+				continue;
+
+			float d = 0.0;
+			/*
+			if (!isBlockInSight(block->getPos(), camera_position_shadow,
+				camera_direction_shadow, camera_fov_shadow, 10000 * BS, &d))
+				continue;
+			*/
+
+			// Mesh animation
+			if (pass == scene::ESNRP_SOLID) {
+				// MutexAutoLock lock(block->mesh_mutex);
+				MapBlockMesh *mapBlockMesh = block->mesh;
+				assert(mapBlockMesh);
+				// Pretty random but this should work somewhat nicely
+				bool faraway = d >= BS * 50;
+				//bool faraway = d >= m_control.wanted_range * BS;
+				if (mapBlockMesh->isAnimationForced() || !faraway) {
+					bool animated = mapBlockMesh->animate(faraway, animation_time,
+						crack, daynight_ratio);
+				}
+				else {
+					// mapBlockMesh->decreaseAnimationForceTimer();
+				}
+			}
+
+			// Get the meshbuffers of the block
+			{
+				// MutexAutoLock lock(block->mesh_mutex);
+
+				MapBlockMesh *mapBlockMesh = block->mesh;
+				assert(mapBlockMesh);
+
+				for (int layer = 0; layer < MAX_TILE_LAYERS; layer++) {
+					scene::IMesh *mesh = mapBlockMesh->getMesh(layer);
+					assert(mesh);
+
+					u32 c = mesh->getMeshBufferCount();
+					for (u32 i = 0; i < c; i++) {
+						scene::IMeshBuffer *buf = mesh->getMeshBuffer(i);
+
+						video::SMaterial& material = buf->getMaterial();
+						video::IMaterialRenderer *rnd =
+							driver->getMaterialRenderer(material.MaterialType);
+						bool transparent = (rnd && rnd->isTransparent());
+						if (transparent == is_transparent_pass) {
+							if (buf->getVertexCount() == 0)
+								errorstream << "Block [" << analyze_block(block)
+									    << "] contains an empty mesh buffer" << std::endl;
+							/*
+							material.setFlag(video::EMF_TRILINEAR_FILTER,
+								false);
+							material.setFlag(video::EMF_BILINEAR_FILTER,
+								false);
+							material.setFlag(video::EMF_ANISOTROPIC_FILTER,
+								false);
+							material.setFlag(video::EMF_WIREFRAME,
+								false);
+							*/
+
+							drawbufs.add(buf, layer);
+						}
+					}
+				}
+			}
+		}
+
+		// Render all layers in order
+		for (auto &lists : drawbufs.lists) {
+			int timecheck_counter = 0;
+			for (MeshBufList &list : lists) {
+				/*
+				timecheck_counter++;
+				if (timecheck_counter > 50) {
+					timecheck_counter = 0;
+					std::time_t time2 = time(0);
+					if (time2 > time1 + 4) {
+						infostream << "ClientMap::renderMap(): "
+							"Rendering takes ages, returning."
+							<< std::endl;
+						return;
+					}
+				}
+				*/
+
+				// driver->setMaterial(list.m);
+
+				for (scene::IMeshBuffer *buf : list.bufs) {
+					driver->drawMeshBuffer(buf);
+					vertex_count += buf->getVertexCount();
+					meshbuffer_count++;
+				}
+				
+				// reset shadow map binding because we are rendering into it
+				// list.m.setTexture(3, NULL);
+
+				/*
+				video::SMaterial material;// = PostProcess::materialPP;//buf->getMaterial();
+				material.ZBuffer = irr::video::ECFN_LESSEQUAL;
+				material.ZWriteEnable = true;
+				material.TextureLayer[0].BilinearFilter = true;
+				material.TextureLayer[0].TextureWrapU = irr::video::ETC_CLAMP_TO_EDGE;
+				material.TextureLayer[0].TextureWrapV = irr::video::ETC_CLAMP_TO_EDGE;
+				//material.MaterialType = (irr::video::E_MATERIAL_TYPE)PostProcess::shadowShader;
+				*/
+//				driver->setMaterial(list.m);
+
+				for (std::vector<scene::IMeshBuffer *>::iterator j = list.bufs.begin();
+					j != list.bufs.end(); ++j) {
+					scene::IMeshBuffer *buf = *j;
+					driver->drawMeshBuffer(buf);
+					vertex_count += buf->getVertexCount();
+					meshbuffer_count++;
+				}
+
+			}
+		}
+
+		m_last_drawn_sectors.clear();
+	}
+}
+
 
 void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 {
@@ -452,6 +733,8 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 					return;
 				}
 			}
+
+			list.m.setTexture(3, depthTexture);
 
 			driver->setMaterial(list.m);
 

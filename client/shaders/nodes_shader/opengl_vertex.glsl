@@ -1,5 +1,7 @@
 uniform mat4 mWorldViewProj;
 uniform mat4 mWorld;
+// For now reconstruct this matrix using available data.
+uniform mat4 mShadowMatrix; // Required for shadow mapping.
 
 // Color of the light emitted by the sun.
 uniform vec3 dayLight;
@@ -8,6 +10,7 @@ uniform float animationTimer;
 
 varying vec3 vPosition;
 varying vec3 worldPosition;
+varying vec4 vLightSpacePosition; // Required for shadow mapping.
 
 varying vec3 eyeVec;
 varying vec3 lightVec;
@@ -91,7 +94,6 @@ float disp_z;
 	gl_Position = mWorldViewProj * gl_Vertex;
 #endif
 
-
 	vPosition = gl_Position.xyz;
 	worldPosition = (mWorld * gl_Vertex).xyz;
 
@@ -107,6 +109,33 @@ float disp_z;
 	normal = normalize(gl_NormalMatrix * gl_Normal);
 	tangent = normalize(gl_NormalMatrix * gl_MultiTexCoord1.xyz);
 	binormal = normalize(gl_NormalMatrix * gl_MultiTexCoord2.xyz);
+
+// Shadow Mapping calculation
+#if 0
+	vec3 sunPosition2 = vec3(-330.0, 52.0, 150.0);
+	const mat4 biasMatrix = mat4(0.5, 0.0, 0.0, 0.0,
+				     0.0, 0.5, 0.0, 0.0,
+				     0.0, 0.0, 0.5, 0.0,
+				     0.5, 0.5, 0.5, 1.0);
+
+	const float shadowMapDimension = 1024.0;
+	const float shadowMapScale = 2.f / shadowMapDimension;
+	const float shadowDistanceScale = 1.0 / 10000.0;
+
+	mat4 lightProjMatrix = mat4(vec4(shadowMapScale, 0.0, 0.0, 0.0),
+				    vec4(0.0, shadowMapScale, 0.0, 0.0),
+				    vec4(0.0, 0.0, shadowDistanceScale, -shadowDistanceScale),
+				    vec4(0.0, 0.0, 0.0, 1.0));
+
+	vec3 zAxis = normalize(-sunPosition2);
+	vec3 xAxis = cross(vec3(0.0, 1.0, 0.0), zAxis);
+	vec3 yAxis = normalize(cross(zAxis, xAxis));
+	mat4 lightViewMatrix = transpose(mat4(vec4(xAxis, 0.0), vec4(yAxis, 0.0), vec4(zAxis,0.0), vec4(0.0)));
+	lightViewMatrix[3] = vec4(-dot(xAxis, sunPosition2), -dot(yAxis, sunPosition2), -dot(zAxis, sunPosition2), 1.0);
+	mat4 mShadowMatrix = biasMatrix * lightProjMatrix * lightViewMatrix;
+#endif
+	// Transform to light-space post-projection space
+	vLightSpacePosition = mShadowMatrix * vec4(worldPosition, 1.0);
 
 	vec3 v;
 

@@ -1,6 +1,7 @@
 uniform sampler2D baseTexture;
 uniform sampler2D normalTexture;
 uniform sampler2D textureFlags;
+uniform sampler2D shadowTexture;
 
 uniform vec4 skyBgColor;
 uniform float fogDistance;
@@ -8,6 +9,7 @@ uniform vec3 eyePosition;
 
 varying vec3 vPosition;
 varying vec3 worldPosition;
+varying vec4 vLightSpacePosition; // Required for shadow mapping.
 varying float area_enable_parallax;
 
 varying vec3 eyeVec;
@@ -119,6 +121,30 @@ float find_intersectionRGB(vec2 dp, vec2 ds)
 	return depth;
 }
 
+
+float StandardShadowMap(vec3 ProjCoords, float cosTheta)
+{
+	// Note: in Minetest we only have hard edges
+	// A simple bias should be enough
+	float bias = 0.001; // * tan(acos(cosTheta));
+	//bias = clamp(bias, 0, 0.01);
+	float z = ProjCoords.z - bias;
+	float d = texture2D(shadowTexture, ProjCoords.xy).r < z ? 0.5 : 1.0;
+	return d;
+}
+
+float CalcShadowFactor(vec4 LightSpacePos, float cosTheta)
+{
+	float d = 1.0;
+	//if (LightSpacePos.w > 0) {
+		vec3 ProjCoords = LightSpacePos.xyz / LightSpacePos.w;
+		d = StandardShadowMap(ProjCoords, cosTheta);
+	//}
+
+	return d;
+}
+
+
 void main(void)
 {
 	vec3 color;
@@ -197,6 +223,14 @@ void main(void)
 
 	vec4 col = vec4(color.rgb * gl_Color.rgb, 1.0); 
 	
+	//vec3 L = normalize(lightVec);
+	//vec3 N = bump.xyz;
+	float clampedNdotL = 0.0; // max(dot(N,L), 0.0)
+	float visibility = CalcShadowFactor(vLightSpacePosition, clampedNdotL);
+	//gl_FragColor = vec4(vec3(visibility), 1.0);
+	//return;
+	col.rgb *= visibility;
+
 #ifdef ENABLE_TONE_MAPPING
 	col = applyToneMapping(col);
 #endif
