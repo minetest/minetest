@@ -552,11 +552,11 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 
 			Use 0.15*BS so that it is easier to get on a node.
 		*/
-		if (cbox.MaxEdge.X - d > box.MinEdge.X && cbox.MinEdge.X + d < box.MaxEdge.X &&
-				cbox.MaxEdge.Z - d > box.MinEdge.Z &&
-				cbox.MinEdge.Z + d < box.MaxEdge.Z) {
+		if (cbox.MaxEdge.X > box.MinEdge.X && cbox.MinEdge.X < box.MaxEdge.X &&
+				cbox.MaxEdge.Z > box.MinEdge.Z &&
+				cbox.MinEdge.Z < box.MaxEdge.Z) {
 			if (box_info.is_step_up) {
-				pos_f->Y += cbox.MaxEdge.Y - box.MinEdge.Y;
+				pos_f->Y += (cbox.MaxEdge.Y - box.MinEdge.Y);
 				box = box_0;
 				box.MinEdge += *pos_f;
 				box.MaxEdge += *pos_f;
