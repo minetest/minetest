@@ -185,11 +185,16 @@ void Particle::updateLight()
 	else
 		light = blend_light(m_env->getDayNightRatio(), LIGHT_SUN, 0);
 
-	u8 m_light = decode_light(light + m_glow);
-	m_color.set(255,
-		m_light * m_base_color.getRed() / 255,
-		m_light * m_base_color.getGreen() / 255,
-		m_light * m_base_color.getBlue() / 255);
+	bool fullbright = true;
+	if (fullbright) {
+		m_color = video::SColor(m_base_color.color);
+	} else {
+		u8 m_light = decode_light(light + m_glow);
+		m_color.set(255,
+			m_light * m_base_color.getRed() / 255,
+			m_light * m_base_color.getGreen() / 255,
+			m_light * m_base_color.getBlue() / 255);
+	}
 }
 
 void Particle::updateVertices()

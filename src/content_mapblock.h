@@ -83,6 +83,7 @@ public:
 	float scale;
 
 // lighting
+	void setFullLight();
 	void getSmoothLightFrame();
 	LightInfo blendLight(const v3f &vertex_pos);
 	video::SColor blendLightColor(const v3f &vertex_pos);

@@ -280,6 +280,18 @@ void MapblockMeshGenerator::drawCuboid(const aabb3f &box,
 	}
 }
 
+/*! \brief Set artifical light to 255, used for fullbright mode (leaves etc.) */
+void MapblockMeshGenerator::setFullLight()
+{
+	// FIXME: Setting frame.lightsB works for enabled smooth lighting
+	// and light works for disabled smooth lighting, so setting both makes it
+	// work with and without smooth lighting
+	for (int k = 0; k < 8; ++k) {
+		frame.lightsB[k] = 255;
+	}
+	light = LightPair(0xff00);
+}
+
 // Gets the base lighting values for a node
 void MapblockMeshGenerator::getSmoothLightFrame()
 {
@@ -1000,7 +1012,10 @@ void MapblockMeshGenerator::drawPlantlikeRootedNode()
 	useTile(0, MATERIAL_FLAG_CRACK_OVERLAY, 0, true);
 	origin += v3f(0.0, BS, 0.0);
 	p.Y++;
-	if (data->m_smooth_lighting) {
+	bool fullbright = true;
+	if (fullbright) {
+		setFullLight();
+	} else if (data->m_smooth_lighting) {
 		getSmoothLightFrame();
 	} else {
 		MapNode ntop = data->m_vmanip.getNodeNoEx(blockpos_nodes + p);
@@ -1371,7 +1386,10 @@ void MapblockMeshGenerator::drawNode()
 			break;
 	}
 	origin = intToFloat(p, BS);
-	if (data->m_smooth_lighting)
+	bool fullbright = true;
+	if (fullbright)
+		setFullLight();
+	else if (data->m_smooth_lighting)
 		getSmoothLightFrame();
 	else
 		light = LightPair(getInteriorLight(n, 1, nodedef));

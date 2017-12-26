@@ -850,7 +850,13 @@ static void getTileInfo(
 			layer.material_flags |= MATERIAL_FLAG_BACKFACE_CULLING;
 	}
 
-	if (!data->m_smooth_lighting) {
+	bool fullbright = true;
+
+	// fullbright mode (solid nodes)
+	if (fullbright) {
+		// full artificial light, no sunlight
+		lights[0] = lights[1] = lights[2] = lights[3] = 0xff00;
+	} else if (!data->m_smooth_lighting) {
 		lights[0] = lights[1] = lights[2] = lights[3] =
 				getFaceLight(n0, n1, face_dir, ndef);
 	} else {

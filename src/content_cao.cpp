@@ -684,7 +684,8 @@ void GenericCAO::updateLightNoCheck(u8 light_at_pos)
 	if (m_glow < 0)
 		return;
 
-	u8 li = decode_light(light_at_pos + m_glow);
+	bool fullbright = true;
+	u8 li = fullbright ? 255 : decode_light(light_at_pos + m_glow);
 	if (li != m_last_light)	{
 		m_last_light = li;
 		video::SColor color(255,li,li,li);
