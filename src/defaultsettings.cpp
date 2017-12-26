@@ -77,6 +77,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("keymap_cmd", "/");
 	settings->setDefault("keymap_cmd_local", ".");
 	settings->setDefault("keymap_minimap", "KEY_F9");
+	settings->setDefault("keymap_fullbright", "KEY_KEY_L");
 	settings->setDefault("keymap_console", "KEY_F10");
 	settings->setDefault("keymap_rangeselect", "KEY_KEY_R");
 	settings->setDefault("keymap_freemove", "KEY_KEY_K");
@@ -210,6 +211,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("arm_inertia", "true");
 
 	settings->setDefault("enable_minimap", "true");
+	settings->setDefault("fullbright_mode", "false");
 	settings->setDefault("minimap_shape_round", "true");
 	settings->setDefault("minimap_double_scan_height", "true");
 

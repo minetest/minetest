@@ -54,6 +54,7 @@ Some can be changes in the key config dialog in the settings tab.
 | K                             | Enable/disable fly mode (needs fly privilege)                  |
 | J                             | Enable/disable fast mode (needs fast privilege)                |
 | H                             | Enable/disable noclip mode (needs noclip privilege)            |
+| L                             | Toggle fullbright mode (requires the fullbright privilege)     |
 | E                             | Move fast in fast mode                                         |
 | F1                            |  Hide/show HUD                                                 |
 | F2                            |  Hide/show chat                                                |

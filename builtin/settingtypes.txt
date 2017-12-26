@@ -241,6 +241,11 @@ keymap_cinematic (Cinematic mode key) key
 #    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
 keymap_minimap (Minimap key) key KEY_F9
 
+#    Key for toggling fullbright mode.
+#    It's set to the key l by default because l is the first letter of light.
+#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+keymap_fullbright (Fullbright mode key) key KEY_KEY_L
+
 #    Key for taking screenshots.
 #    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
 keymap_screenshot (Screenshot) key KEY_F12
@@ -698,6 +703,11 @@ meshgen_block_cache_size (Mapblock mesh generator's MapBlock cache size MB) int 
 
 #    Enables minimap.
 enable_minimap (Minimap) bool true
+
+#    Enables fullbright mode.
+#    This allows you to see in the dark if you have the required fullbright
+#    privilege.
+enable_fullbright_mode (Fullbright mode) bool false
 
 #    Shape of the minimap. Enabled = round, disabled = square.
 minimap_shape_round (Round minimap) bool true

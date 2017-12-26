@@ -85,6 +85,10 @@ core.register_privilege("noclip", {
 	description = "Can fly through solid nodes using noclip mode",
 	give_to_singleplayer = false,
 })
+core.register_privilege("fullbright", {
+	description = "Can see in the dark",
+	give_to_singleplayer = false,
+})
 core.register_privilege("rollback", {
 	description = "Can use the rollback functionality",
 	give_to_singleplayer = false,

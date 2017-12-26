@@ -701,6 +701,7 @@ protected:
 	void toggleAutoforward();
 
 	void toggleMinimap(bool shift_pressed);
+	void toggleFullbright();
 	void toggleFog();
 	void toggleDebug();
 	void toggleUpdateCamera();
@@ -1918,6 +1919,8 @@ void Game::processKeyInput()
 		m_game_ui->toggleHud();
 	} else if (wasKeyDown(KeyType::MINIMAP)) {
 		toggleMinimap(isKeyDown(KeyType::SNEAK));
+	} else if (wasKeyDown(KeyType::FULLBRIGHT)) {
+		toggleFullbright();
 	} else if (wasKeyDown(KeyType::TOGGLE_CHAT)) {
 		m_game_ui->toggleChat();
 	} else if (wasKeyDown(KeyType::TOGGLE_FOG)) {
@@ -2206,6 +2209,24 @@ void Game::toggleMinimap(bool shift_pressed)
 	}
 
 	mapper->setMinimapMode(mode);
+}
+
+void Game::toggleFullbright()
+{
+	bool fullbright = !g_settings->getBool("fullbright_mode");
+	g_settings->set("fullbright_mode", bool_to_cstr(fullbright));
+
+	runData.statustext_time = 0;
+	if (fullbright) {
+		if (client->checkPrivilege("fullbright")) {
+			showStatusTextSimple("Fullbright mode enabled");
+		} else {
+			showStatusTextSimple("Fullbright mode enabled "
+				"(note: no 'fullbright' privilege)");
+		}
+	} else {
+		showStatusTextSimple("Fullbright mode disabled");
+	}
 }
 
 void Game::toggleFog()

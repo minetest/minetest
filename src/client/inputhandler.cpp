@@ -46,6 +46,7 @@ void KeyCache::populate()
 	key[KeyType::CMD_LOCAL] = getKeySetting("keymap_cmd_local");
 	key[KeyType::CONSOLE] = getKeySetting("keymap_console");
 	key[KeyType::MINIMAP] = getKeySetting("keymap_minimap");
+	key[KeyType::FULLBRIGHT] = getKeySetting("keymap_fullbright");
 	key[KeyType::FREEMOVE] = getKeySetting("keymap_freemove");
 	key[KeyType::FASTMOVE] = getKeySetting("keymap_fastmove");
 	key[KeyType::NOCLIP] = getKeySetting("keymap_noclip");
