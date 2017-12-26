@@ -41,6 +41,45 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <algorithm>
 #include <cmath>
 
+
+// Should be ordered exactly like enum NodeDrawType in nodedef.h
+struct EnumString INodeDefManager::DrawTypes[] =
+	{
+		{NDT_NORMAL, "normal"},
+		{NDT_AIRLIKE, "airlike"},
+		{NDT_LIQUID, "liquid"},
+		{NDT_FLOWINGLIQUID, "flowingliquid"},
+		{NDT_GLASSLIKE, "glasslike"},
+		{NDT_GLASSLIKE_FRAMED, "glasslike_framed"},
+		{NDT_GLASSLIKE_FRAMED_OPTIONAL, "glasslike_framed_optional"},
+		{NDT_ALLFACES, "allfaces"},
+		{NDT_ALLFACES_OPTIONAL, "allfaces_optional"},
+		{NDT_TORCHLIKE, "torchlike"},
+		{NDT_SIGNLIKE, "signlike"},
+		{NDT_PLANTLIKE, "plantlike"},
+		{NDT_FIRELIKE, "firelike"},
+		{NDT_FENCELIKE, "fencelike"},
+		{NDT_RAILLIKE, "raillike"},
+		{NDT_NODEBOX, "nodebox"},
+		{NDT_MESH, "mesh"},
+		{NDT_PLANTLIKE_ROOTED, "plantlike_rooted"},
+		{0, NULL},
+	};
+
+bool INodeDefManager::stringToEnum(const EnumString *spec, int &result,
+	const std::string &drawtype) const
+{
+	while (spec->str) {
+		if (drawtype == std::string(spec->str)) {
+			result = spec->num;
+			return true;
+		}
+		spec++;
+	}
+	return false;
+}
+
+
 /*
 	NodeBox
 */
@@ -970,6 +1009,10 @@ private:
 	// Note: Not serialized.
 	std::unordered_map<std::string, std::vector<content_t>> m_group_to_items;
 
+	// A mapping from drawtypes to a list of content_ts that belong to it.
+	// Note: Not serialized
+	std::unordered_map<int, std::vector<content_t>> m_drawtype_to_items;
+
 	// Next possibly free id
 	content_t m_next_id;
 
@@ -1113,24 +1156,39 @@ bool CNodeDefManager::getIds(const std::string &name,
 		std::vector<content_t> &result) const
 {
 	//TimeTaker t("getIds", NULL, PRECISION_MICRO);
-	if (name.substr(0,6) != "group:") {
+	if (name.substr(0,6) == "group:") {
+		std::string group = name.substr(6);
+
+		std::unordered_map<std::string, std::vector<content_t>>::const_iterator
+			i = m_group_to_items.find(group);
+		if (i == m_group_to_items.end())
+			return true;
+
+		const std::vector<content_t> &items = i->second;
+		result.insert(result.end(), items.begin(), items.end());
+		//printf("getIds: %dus\n", t.stop());
+		return true;
+	} else if (name.substr(0,9) == "drawtype:") {
+		int drawtype = 0;
+		std::string drawtype_name = name.substr(9);
+
+		INodeDefManager::stringToEnum(DrawTypes, drawtype, drawtype_name);
+
+		std::unordered_map<int, std::vector<content_t>>::const_iterator
+			i = m_drawtype_to_items.find(drawtype);
+		if (i == m_drawtype_to_items.end())
+			return true;
+
+		const std::vector<content_t> &ids = i->second;
+		result.insert(result.end(), ids.begin(), ids.end());
+		return true;
+	} else {
 		content_t id = CONTENT_IGNORE;
 		bool exists = getId(name, id);
 		if (exists)
 			result.push_back(id);
 		return exists;
 	}
-	std::string group = name.substr(6);
-
-	std::unordered_map<std::string, std::vector<content_t>>::const_iterator
-		i = m_group_to_items.find(group);
-	if (i == m_group_to_items.end())
-		return true;
-
-	const std::vector<content_t> &items = i->second;
-	result.insert(result.end(), items.begin(), items.end());
-	//printf("getIds: %dus\n", t.stop());
-	return true;
 }
 
 
@@ -1319,6 +1377,16 @@ content_t CNodeDefManager::set(const std::string &name, const ContentFeatures &d
 		const std::string &group_name = group.first;
 		m_group_to_items[group_name].push_back(id);
 	}
+	int drawtype = def.drawtype;
+
+	std::unordered_map<int, std::vector<content_t>>::iterator
+		i = m_drawtype_to_items.find(drawtype);
+	if (i == m_drawtype_to_items.end()) {
+		m_drawtype_to_items[drawtype].push_back(id);
+	} else {
+		i->second.push_back(id);
+	}
+
 	return id;
 }
 
@@ -1355,6 +1423,18 @@ void CNodeDefManager::removeNode(const std::string &name)
 			m_group_to_items.erase(iter_groups++);
 		else
 			++iter_groups;
+	}
+
+	for (std::unordered_map<int, std::vector<content_t>>::iterator iter_drawtypes =
+			m_drawtype_to_items.begin(); iter_drawtypes != m_drawtype_to_items.end();) {
+		std::vector<content_t> &ids = iter_drawtypes->second;
+		ids.erase(std::remove(ids.begin(), ids.end(), id), ids.end());
+
+		// Check if drawtype is empty
+		if (ids.empty())
+			m_drawtype_to_items.erase(iter_drawtypes++);
+		else
+			++iter_drawtypes;
 	}
 }
 

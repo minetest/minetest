@@ -2785,15 +2785,15 @@ and `minetest.auth_reload` call the authentication handler.
     * accounting for time changes.
 * `minetest.find_node_near(pos, radius, nodenames, [search_center])`: returns pos or `nil`
     * `radius`: using a maximum metric
-    * `nodenames`: e.g. `{"ignore", "group:tree"}` or `"default:dirt"`
+    * `nodenames`: e.g. `{"ignore", "group:tree", "drawtype:normal"}` or `"default:dirt"`
     * `search_center` is an optional boolean (default: `false`)
       If true `pos` is also checked for the nodes
 * `minetest.find_nodes_in_area(pos1, pos2, nodenames)`: returns a list of positions
-    * `nodenames`: e.g. `{"ignore", "group:tree"}` or `"default:dirt"`
+    * `nodenames`: e.g. `{"ignore", "group:tree", "drawtype:normal"}` or `"default:dirt"`
     * First return value: Table with all node positions
     * Second return value: Table with the count of each node with the node name as index
 * `minetest.find_nodes_in_area_under_air(pos1, pos2, nodenames)`: returns a list of positions
-    * `nodenames`: e.g. `{"ignore", "group:tree"}` or `"default:dirt"`
+    * `nodenames`: e.g. `{"ignore", "group:tree", "drawtype:normal"}` or `"default:dirt"`
     * Return value: Table with all node positions with a node air above
 * `minetest.get_perlin(noiseparams)`
 * `minetest.get_perlin(seeddiff, octaves, persistence, scale)`
@@ -4425,7 +4425,7 @@ Definition tables
         label = "Lava cooling",
     --  ^ Descriptive label for profiling purposes (optional).
     --    Definitions with identical labels will be listed as one.
-    --  In the following two fields, also group:groupname will work.
+    --  In the following two fields, also group:groupname and drawtype:drawtype_name will work.
         nodenames = {"default:lava_source"},
         neighbors = {"default:water_source", "default:water_flowing"}, -- Any of these --[[
         ^ If left out or empty, any neighbor will do ]]
@@ -4448,7 +4448,7 @@ Definition tables
         nodenames = {"default:lava_source"},
     --  ^ List of node names to trigger the LBM on.
     --    Also non-registered nodes will work.
-    --    Groups (as of group:groupname) will work as well.
+    --    Groups (as of group:groupname) and drawtypes (drawtype:drawtype_name) will work as well.
         run_at_every_load = false,
     --  ^ Whether to run the LBM's action every time a block gets loaded,
     --    and not just for blocks that were saved last time before LBMs were
@@ -4683,7 +4683,7 @@ Definition tables
         connects_to = nodenames, --[[
         * Used for nodebox nodes with the type == "connected"
         * Specifies to what neighboring nodes connections will be drawn
-        * e.g. `{"group:fence", "default:wood"}` or `"default:stone"` ]]
+        * e.g. `{"group:fence", "default:wood", "drawtype:normal"}` or `"default:stone"` ]]
         connect_sides = { "top", "bottom", "front", "left", "back", "right" }, --[[
         ^ Tells connected nodebox nodes to connect only to these sides of this node. ]]
         mesh = "model",

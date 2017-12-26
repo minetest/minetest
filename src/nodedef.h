@@ -33,6 +33,7 @@ class Client;
 #include "sound.h" // SimpleSoundSpec
 #include "constants.h" // BS
 #include "tileanimation.h"
+#include "script/common/c_types.h"
 
 class INodeDefManager;
 class IItemDefManager;
@@ -440,7 +441,7 @@ public:
 	virtual const ContentFeatures &get(const MapNode &n) const=0;
 	virtual bool getId(const std::string &name, content_t &result) const=0;
 	virtual content_t getId(const std::string &name) const=0;
-	// Allows "group:name" in addition to regular node names
+	// Allows "group:name" and "drawtype:name" in addition to regular node names
 	// returns false if node name not found, true otherwise
 	virtual bool getIds(const std::string &name, std::vector<content_t> &result)
 			const=0;
@@ -456,6 +457,8 @@ public:
 	 * contains all nodes' selection boxes.
 	 */
 	virtual core::aabbox3d<s16> getSelectionBoxIntUnion() const=0;
+	static struct EnumString DrawTypes[];
+	bool stringToEnum(const EnumString *spec, int &result, const std::string &drawtype) const;
 };
 
 class IWritableNodeDefManager : public INodeDefManager {

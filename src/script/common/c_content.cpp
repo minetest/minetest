@@ -491,7 +491,7 @@ ContentFeatures read_content_features(lua_State *L, int index)
 	/* Visual definition */
 
 	f.drawtype = (NodeDrawType)getenumfield(L, index, "drawtype",
-			ScriptApiNode::es_DrawType,NDT_NORMAL);
+			INodeDefManager::DrawTypes, NDT_NORMAL);
 	getfloatfield(L, index, "visual_scale", f.visual_scale);
 
 	/* Meshnode model filename */
@@ -772,7 +772,7 @@ void push_content_features(lua_State *L, const ContentFeatures &c)
 {
 	std::string paramtype(ScriptApiNode::es_ContentParamType[(int)c.param_type].str);
 	std::string paramtype2(ScriptApiNode::es_ContentParamType2[(int)c.param_type_2].str);
-	std::string drawtype(ScriptApiNode::es_DrawType[(int)c.drawtype].str);
+	std::string drawtype(INodeDefManager::DrawTypes[(int)c.drawtype].str);
 	std::string liquid_type(ScriptApiNode::es_LiquidType[(int)c.liquid_type].str);
 
 	/* Missing "tiles" because I don't see a usecase (at least not yet). */
