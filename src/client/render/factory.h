@@ -22,4 +22,4 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "core.h"
 
 RenderingCore *createRenderingCore(const std::string &stereo_mode, IrrlichtDevice *device,
-		Client *client, Hud *hud);
+		Client *client, Hud *hud, Sky *sky);

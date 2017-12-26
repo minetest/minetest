@@ -34,5 +34,5 @@ protected:
 	void renderBothImages();
 
 public:
-	RenderingCoreStereo(IrrlichtDevice *_device, Client *_client, Hud *_hud);
+	RenderingCoreStereo(IrrlichtDevice *_device, Client *_client, Hud *_hud, Sky *_sky);
 };

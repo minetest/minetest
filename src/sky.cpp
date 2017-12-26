@@ -690,4 +690,32 @@ void Sky::update(float time_of_day, float time_brightness,
 		m_cloudcolor_f = m_mix_scolorf(m_cloudcolor_f,
 			video::SColorf(pointcolor), m_horizon_blend() * 0.25);
 	}
+
+	if (sunlight_seen) {
+		// Repeated calculation...
+		float nightlength = 0.415;
+		float wn = nightlength / 2;
+		float wicked_time_of_day = 0;
+		if (m_time_of_day > wn && m_time_of_day < 1.0 - wn)
+			wicked_time_of_day = (m_time_of_day - wn) / (1.0 - wn * 2) * 0.5 + 0.25;
+		else if (m_time_of_day < 0.5)
+			wicked_time_of_day = m_time_of_day / wn * 0.25;
+		else
+			wicked_time_of_day = 1.0 - ((1.0 - m_time_of_day) / wn * 0.25);
+		/*std::cerr<<"time_of_day="<<m_time_of_day<<" -> "
+		<<"wicked_time_of_day="<<wicked_time_of_day<<std::endl;*/
+
+		if (wicked_time_of_day > 0.15 && wicked_time_of_day < 0.85) 
+		{
+			m_sunPosition = v3f(0, 0, -1);
+			// Switch from -Z (south) to +X (east)
+			m_sunPosition.rotateXZBy(90);
+			m_sunPosition.rotateXYBy(wicked_time_of_day * 360 - 90);
+
+			core::matrix4 translate(AbsoluteTransformation);
+			translate.setTranslation(SceneManager->getActiveCamera()->getAbsolutePosition());
+			translate.transformVect(m_sunPosition);
+			//m_sunPosition = v3f(0.0f, SceneManager->getActiveCamera()->getAbsolutePosition().Y, 0.0f);
+		}
+	}
 }

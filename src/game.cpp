@@ -621,6 +621,7 @@ class GameGlobalShaderConstantSetter : public IShaderConstantSetter
 	CachedPixelShaderSetting<SamplerLayer_t> m_base_texture;
 	CachedPixelShaderSetting<SamplerLayer_t> m_normal_texture;
 	CachedPixelShaderSetting<SamplerLayer_t> m_texture_flags;
+	CachedPixelShaderSetting<SamplerLayer_t> m_shadow_texture;
 	Client *m_client;
 
 public:
@@ -653,6 +654,7 @@ public:
 		m_base_texture("baseTexture"),
 		m_normal_texture("normalTexture"),
 		m_texture_flags("textureFlags"),
+		m_shadow_texture("shadowTexture"),
 		m_client(client)
 	{
 		g_settings->registerChangedCallback("enable_fog", settingsCallback, this);
@@ -730,10 +732,12 @@ public:
 
 		SamplerLayer_t base_tex = 0,
 				normal_tex = 1,
-				flags_tex = 2;
+				flags_tex = 2,
+				shadow_tex = 3;
 		m_base_texture.set(&base_tex, services);
 		m_normal_texture.set(&normal_tex, services);
 		m_texture_flags.set(&flags_tex, services);
+		m_shadow_texture.set(&shadow_tex, services);
 	}
 };
 
@@ -1656,7 +1660,7 @@ bool Game::startup(bool *kill,
 	if (!createClient(playername, password, address, port))
 		return false;
 
-	RenderingEngine::initialize(client, hud);
+	RenderingEngine::initialize(client, hud, sky);
 
 	return true;
 }
@@ -4317,7 +4321,7 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 			|| runData.update_draw_list_last_cam_dir.getDistanceFrom(camera_direction) > 0.2
 			|| m_camera_offset_changed) {
 		runData.update_draw_list_timer = 0;
-		client->getEnv().getClientMap().updateDrawList();
+		client->getEnv().getClientMap().updateDrawList(driver, *sky);
 		runData.update_draw_list_last_cam_dir = camera_direction;
 	}
 
@@ -4358,7 +4362,7 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 	}
 #endif
 	RenderingEngine::draw_scene(skycolor, flags.show_hud, flags.show_minimap,
-			draw_wield_tool, draw_crosshair);
+			draw_wield_tool, draw_crosshair, *sky, *clouds);
 
 	/*
 		Profiler graph

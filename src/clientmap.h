@@ -88,6 +88,8 @@ public:
 
 	virtual void OnRegisterSceneNode();
 
+	video::ITexture *depthTexture;
+
 	virtual void render()
 	{
 		video::IVideoDriver* driver = SceneManager->getVideoDriver();
@@ -102,8 +104,9 @@ public:
 
 	void getBlocksInViewRange(v3s16 cam_pos_nodes,
 		v3s16 *p_blocks_min, v3s16 *p_blocks_max);
-	void updateDrawList();
+	void updateDrawList(video::IVideoDriver *driver, const class Sky &sky);
 	void renderMap(video::IVideoDriver* driver, s32 pass);
+	void renderMapToShadowMap(video::IVideoDriver *driver, s32 pass, const class Sky &sky);
 
 	int getBackgroundBrightness(float max_d, u32 daylight_factor,
 			int oldvalue, bool *sunlight_seen_result);
@@ -129,6 +132,7 @@ private:
 	v3s16 m_camera_offset;
 
 	std::map<v3s16, MapBlock*> m_drawlist;
+	std::map<v3s16, MapBlock*> m_shadowDrawlist;
 
 	std::set<v2s16> m_last_drawn_sectors;
 
