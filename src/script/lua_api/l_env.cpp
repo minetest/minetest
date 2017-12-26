@@ -26,6 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "common/c_converter.h"
 #include "common/c_content.h"
 #include <algorithm>
+#include "npc_sao.h"
 #include "scripting_server.h"
 #include "environment.h"
 #include "mapblock.h"
@@ -567,7 +568,30 @@ int ModApiEnvMod::l_add_entity(lua_State *L)
 	ServerActiveObject *obj = new LuaEntitySAO(env, pos, name, staticdata);
 	int objectid = env->addActiveObject(obj);
 	// If failed to add, return nothing (reads as nil)
-	if(objectid == 0)
+	if (objectid == 0)
+		return 0;
+	// Return ObjectRef
+	getScriptApiBase(L)->objectrefGetOrCreate(L, obj);
+	return 1;
+}
+
+// add_entity(pos, entityname, [staticdata]) -> ObjectRef or nil
+// pos = {x=num, y=num, z=num}
+int ModApiEnvMod::l_add_npc(lua_State *L)
+{
+	GET_ENV_PTR;
+
+	// pos
+	v3f pos = checkFloatPos(L, 1);
+	// content
+	const char *name = luaL_checkstring(L, 2);
+	// staticdata
+	const char *staticdata = luaL_optstring(L, 3, "");
+	// Do it
+	ServerActiveObject *obj = new NpcSAO(env, pos, name, staticdata);
+	int objectid = env->addActiveObject(obj);
+	// If failed to add, return nothing (reads as nil)
+	if (objectid == 0)
 		return 0;
 	// Return ObjectRef
 	getScriptApiBase(L)->objectrefGetOrCreate(L, obj);
@@ -584,7 +608,7 @@ int ModApiEnvMod::l_add_item(lua_State *L)
 	//v3f pos = checkFloatPos(L, 1);
 	// item
 	ItemStack item = read_item(L, 2,getServer(L)->idef());
-	if(item.empty() || !item.isKnown(getServer(L)->idef()))
+	if (item.empty() || !item.isKnown(getServer(L)->idef()))
 		return 0;
 
 	int error_handler = PUSH_ERROR_HANDLER(L);
@@ -593,7 +617,7 @@ int ModApiEnvMod::l_add_item(lua_State *L)
 	lua_getglobal(L, "core");
 	lua_getfield(L, -1, "spawn_item");
 	lua_remove(L, -2); // Remove core
-	if(lua_isnil(L, -1))
+	if (lua_isnil(L, -1))
 		return 0;
 	lua_pushvalue(L, 1);
 	lua_pushstring(L, item.getItemString().c_str());
@@ -1247,6 +1271,7 @@ void ModApiEnvMod::Initialize(lua_State *L, int top)
 	API_FCT(set_node_level);
 	API_FCT(add_node_level);
 	API_FCT(add_entity);
+	API_FCT(add_npc);
 	API_FCT(find_nodes_with_meta);
 	API_FCT(get_meta);
 	API_FCT(get_node_timer);

@@ -6,6 +6,9 @@ dofile(minetest.get_modpath("experimental").."/modchannels.lua")
 
 -- For testing random stuff
 
+local modpath = minetest.get_modpath("experimental")
+dofile(modpath .. "/npc.lua")
+
 experimental = {}
 
 function experimental.print_to_everything(msg)
@@ -292,7 +295,7 @@ end)
 -- A test entity for testing animated and yaw-modulated sprites
 --
 
-minetest.register_entity("experimental:testentity", {
+minetest.register_npc("experimental:testentity", {
 	-- Static definition
 	physical = true, -- Collides with things
 	-- weight = 5,

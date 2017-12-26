@@ -75,7 +75,7 @@ struct EnumString es_HudBuiltinElement[] =
 */
 
 
-ObjectRef* ObjectRef::checkobject(lua_State *L, int narg)
+ObjectRef *ObjectRef::checkobject(lua_State *L, int narg)
 {
 	luaL_checktype(L, narg, LUA_TUSERDATA);
 	void *ud = luaL_checkudata(L, narg, className);
@@ -83,30 +83,40 @@ ObjectRef* ObjectRef::checkobject(lua_State *L, int narg)
 	return *(ObjectRef**)ud;  // unbox pointer
 }
 
-ServerActiveObject* ObjectRef::getobject(ObjectRef *ref)
+ServerActiveObject *ObjectRef::getobject(ObjectRef *ref)
 {
 	ServerActiveObject *co = ref->m_object;
 	return co;
 }
 
-LuaEntitySAO* ObjectRef::getluaobject(ObjectRef *ref)
+LuaEntitySAO *ObjectRef::getluaobject(ObjectRef *ref)
 {
 	ServerActiveObject *obj = getobject(ref);
 	if (obj == NULL)
 		return NULL;
 	if (obj->getType() != ACTIVEOBJECT_TYPE_LUAENTITY)
 		return NULL;
-	return (LuaEntitySAO*)obj;
+	return (LuaEntitySAO *) obj;
 }
 
-PlayerSAO* ObjectRef::getplayersao(ObjectRef *ref)
+NpcSAO *ObjectRef::getnpcobject(ObjectRef *ref)
+{
+	ServerActiveObject *obj = getobject(ref);
+	if (obj == NULL)
+		return NULL;
+	if (obj->getType() != ACTIVEOBJECT_TYPE_NPC)
+		return NULL;
+	return (NpcSAO *) obj;
+}
+
+PlayerSAO *ObjectRef::getplayersao(ObjectRef *ref)
 {
 	ServerActiveObject *obj = getobject(ref);
 	if (obj == NULL)
 		return NULL;
 	if (obj->getType() != ACTIVEOBJECT_TYPE_PLAYER)
 		return NULL;
-	return (PlayerSAO*)obj;
+	return (PlayerSAO *) obj;
 }
 
 RemotePlayer *ObjectRef::getplayer(ObjectRef *ref)

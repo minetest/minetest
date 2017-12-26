@@ -171,6 +171,8 @@ void               push_noiseparams          (lua_State *L, NoiseParams *np);
 
 void               luaentity_get             (lua_State *L,u16 id);
 
+void               luanpc_get                (lua_State *L,u16 id);
+
 bool               push_json_value           (lua_State *L,
                                               const Json::Value &value,
                                               int nullindex);

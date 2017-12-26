@@ -26,6 +26,7 @@ class ServerActiveObject;
 class LuaEntitySAO;
 class PlayerSAO;
 class RemotePlayer;
+class NpcSAO;
 
 /*
 	ObjectRef
@@ -55,9 +56,11 @@ private:
 	static const luaL_Reg methods[];
 
 
-	static LuaEntitySAO* getluaobject(ObjectRef *ref);
+	static LuaEntitySAO *getluaobject(ObjectRef *ref);
 
-	static PlayerSAO* getplayersao(ObjectRef *ref);
+	static NpcSAO *getnpcobject(ObjectRef *ref);
+
+	static PlayerSAO *getplayersao(ObjectRef *ref);
 
 	static RemotePlayer *getplayer(ObjectRef *ref);
 

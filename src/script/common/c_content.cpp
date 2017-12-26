@@ -1558,6 +1558,19 @@ void luaentity_get(lua_State *L, u16 id)
 }
 
 /******************************************************************************/
+void luanpc_get(lua_State *L, u16 id)
+{
+	// Get luaentities[i]
+	lua_getglobal(L, "core");
+	lua_getfield(L, -1, "luanpc");
+	luaL_checktype(L, -1, LUA_TTABLE);
+	lua_pushnumber(L, id);
+	lua_gettable(L, -2);
+	lua_remove(L, -2); // Remove luanpc
+	lua_remove(L, -2); // Remove core
+}
+
+/******************************************************************************/
 bool read_noiseparams(lua_State *L, int index, NoiseParams *np)
 {
 	if (index < 0)

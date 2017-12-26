@@ -95,7 +95,7 @@ class LuaEntitySAO : public UnitSAO
 public:
 	LuaEntitySAO(ServerEnvironment *env, v3f pos,
 	             const std::string &name, const std::string &state);
-	~LuaEntitySAO();
+	virtual ~LuaEntitySAO();
 	ActiveObjectType getType() const
 	{ return ACTIVEOBJECT_TYPE_LUAENTITY; }
 	ActiveObjectType getSendType() const
@@ -133,7 +133,7 @@ public:
 	bool getCollisionBox(aabb3f *toset) const;
 	bool getSelectionBox(aabb3f *toset) const;
 	bool collideWithObjects() const;
-private:
+protected:
 	std::string getPropertyPacket();
 	void sendPosition(bool do_interpolate, bool is_movement_end);
 
