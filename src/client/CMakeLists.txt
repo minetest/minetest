@@ -1,16 +1,31 @@
 set(client_SRCS
-	${CMAKE_CURRENT_SOURCE_DIR}/render/anaglyph.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/render/core.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/render/factory.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/render/interlaced.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/render/pageflip.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/render/plain.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/render/sidebyside.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/render/stereo.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/renderingengine.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/clientlauncher.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/inputhandler.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/tile.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/joystick_controller.cpp
+	client/render/anaglyph.cpp
+	client/render/anaglyph.h
+	client/render/core.cpp
+	client/render/core.h
+	client/render/factory.cpp
+	client/render/factory.h
+	client/render/interlaced.cpp
+	client/render/interlaced.h
+	client/render/pageflip.cpp
+	client/render/pageflip.h
+	client/render/plain.cpp
+	client/render/plain.h
+	client/render/sidebyside.cpp
+	client/render/sidebyside.h
+	client/render/stereo.cpp
+	client/render/stereo.h
+	client/clientevent.h
+	client/clientlauncher.cpp
+	client/clientlauncher.h
+	client/inputhandler.cpp
+	client/inputhandler.h
+	client/joystick_controller.cpp
+	client/joystick_controller.h
+	client/keys.h
+	client/renderingengine.cpp
+	client/renderingengine.h
+	client/tile.cpp
+	client/tile.h
 	PARENT_SCOPE
 )
