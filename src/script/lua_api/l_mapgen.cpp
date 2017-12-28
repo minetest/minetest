@@ -392,6 +392,7 @@ Biome *read_biome_def(lua_State *L, int index, INodeDefManager *ndef)
 	b->y_max           = getintfield_default(L,    index, "y_max",           31000);
 	b->heat_point      = getfloatfield_default(L,  index, "heat_point",      0.f);
 	b->humidity_point  = getfloatfield_default(L,  index, "humidity_point",  0.f);
+	b->vertical_blend  = getintfield_default(L,    index, "vertical_blend",  0);
 	b->flags           = 0; //reserved
 
 	std::vector<std::string> &nn = b->m_nodenames;
