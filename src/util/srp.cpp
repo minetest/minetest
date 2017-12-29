@@ -418,7 +418,7 @@ static SRP_Result H_nn(
 }
 
 static SRP_Result H_ns(mpz_t result, SRP_HashAlgorithm alg, const unsigned char *n,
-	size_t len_n, const unsigned char *bytes, size_t len_bytes)
+	size_t len_n, const unsigned char *bytes, unsigned int len_bytes)
 {
 	unsigned char buff[SHA512_DIGEST_LENGTH];
 	size_t nbytes = len_n + len_bytes;
