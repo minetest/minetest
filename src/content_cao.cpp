@@ -581,18 +581,14 @@ void GenericCAO::addToScene(ITextureSource *tsrc)
 
 			// set vertex colors to ensure alpha is set
 			setMeshColor(m_animated_meshnode->getMesh(), video::SColor(255,li,li,li));
-
 			setAnimatedMeshColor(m_animated_meshnode, video::SColor(255,li,li,li));
-
-			bool backface_culling = m_prop.backface_culling;
-			if (m_is_player)
-				backface_culling = false;
 
 			m_animated_meshnode->setMaterialFlag(video::EMF_LIGHTING, true);
 			m_animated_meshnode->setMaterialFlag(video::EMF_BILINEAR_FILTER, false);
 			m_animated_meshnode->setMaterialType(material_type);
 			m_animated_meshnode->setMaterialFlag(video::EMF_FOG_ENABLE, true);
-			m_animated_meshnode->setMaterialFlag(video::EMF_BACK_FACE_CULLING, backface_culling);
+			m_animated_meshnode->setMaterialFlag(video::EMF_BACK_FACE_CULLING,
+				m_prop.backface_culling);
 		}
 		else
 			errorstream<<"GenericCAO::addToScene(): Could not load mesh "<<m_prop.mesh<<std::endl;
@@ -1039,6 +1035,7 @@ void GenericCAO::updateTextures(std::string mod)
 				material.TextureLayer[0].Texture = texture;
 				material.setFlag(video::EMF_LIGHTING, true);
 				material.setFlag(video::EMF_BILINEAR_FILTER, false);
+				material.setFlag(video::EMF_BACK_FACE_CULLING, m_prop.backface_culling);
 
 				// don't filter low-res textures, makes them look blurry
 				// player models have a res of 64
