@@ -116,6 +116,8 @@ function core.register_item(name, itemdef)
 	end
 	itemdef.name = name
 
+	local is_overriding = core.registered_items[name]
+
 	-- Apply defaults and add to registered_* table
 	if itemdef.type == "node" then
 		-- Use the nodebox as selection box if it's not set manually
@@ -177,7 +179,13 @@ function core.register_item(name, itemdef)
 	--core.log("Registering item: " .. itemdef.name)
 	core.registered_items[itemdef.name] = itemdef
 	core.registered_aliases[itemdef.name] = nil
-	register_item_raw(itemdef)
+
+	-- Used to allow builtin to register ignore to registered_items
+	if name ~= "ignore" then
+		register_item_raw(itemdef)
+	elseif is_overriding then
+		core.log("warning", "Attempted redefinition of \"ignore\"")
+	end
 end
 
 function core.unregister_item(name)
