@@ -90,7 +90,7 @@ void TestBan::testCreate()
 void TestBan::testAdd()
 {
 	std::string bm_test1_entry = "192.168.0.246";
-	std::string bm_test1_result = "test_flag";
+	std::string bm_test1_result = "test_username";
 
 	BanManager bm("testbm.txt");
 	bm.add(bm_test1_entry, bm_test1_result);
@@ -101,10 +101,10 @@ void TestBan::testAdd()
 void TestBan::testRemove()
 {
 	std::string bm_test1_entry = "192.168.0.249";
-	std::string bm_test1_result = "test_flag";
+	std::string bm_test1_result = "test_username";
 
 	std::string bm_test2_entry = "192.168.0.250";
-	std::string bm_test2_result = "test_flag7";
+	std::string bm_test2_result = "test_username7";
 
 	BanManager bm("testbm.txt");
 
@@ -123,7 +123,7 @@ void TestBan::testRemove()
 void TestBan::testModificationFlag()
 {
 	BanManager bm("testbm.txt");
-	bm.add("192.168.0.247", "test_flag");
+	bm.add("192.168.0.247", "test_username");
 	UASSERT(bm.isModified());
 
 	bm.remove("192.168.0.247");
@@ -133,14 +133,14 @@ void TestBan::testModificationFlag()
 	bm.save();
 
 	// Test modification flag is entry was not present
-	bm.remove("test_flag");
+	bm.remove("test_username");
 	UASSERT(!bm.isModified());
 }
 
 void TestBan::testGetBanName()
 {
 	std::string bm_test1_entry = "192.168.0.247";
-	std::string bm_test1_result = "test_flag";
+	std::string bm_test1_result = "test_username";
 
 	BanManager bm("testbm.txt");
 	bm.add(bm_test1_entry, bm_test1_result);
@@ -155,9 +155,9 @@ void TestBan::testGetBanName()
 void TestBan::testGetBanDescription()
 {
 	std::string bm_test1_entry = "192.168.0.247";
-	std::string bm_test1_entry2 = "test_flag";
+	std::string bm_test1_entry2 = "test_username";
 
-	std::string bm_test1_result = "192.168.0.247|test_flag";
+	std::string bm_test1_result = "192.168.0.247|test_username";
 
 	BanManager bm("testbm.txt");
 	bm.add(bm_test1_entry, bm_test1_entry2);
