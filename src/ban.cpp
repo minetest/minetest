@@ -1,6 +1,7 @@
 /*
 Minetest
 Copyright (C) 2013 celeron55, Perttu Ahola <celeron55@gmail.com>
+Copyright (C) 2018 nerzhul, Loic BLOT <loic.blot@unix-experience.fr>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -125,11 +126,11 @@ void BanManager::remove(const std::string &ip_or_name)
 	for (StringMap::iterator it = m_ips.begin(); it != m_ips.end();) {
 		if ((it->first == ip_or_name) || (it->second == ip_or_name)) {
 			m_ips.erase(it++);
+			m_modified = true;
 		} else {
 			++it;
 		}
 	}
-	m_modified = true;
 }
 
 
