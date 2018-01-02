@@ -502,11 +502,27 @@ void Server::process_PlayerPos(RemotePlayer *player, PlayerSAO *playersao,
 	v3f position((f32)ps.X / 100.0f, (f32)ps.Y / 100.0f, (f32)ps.Z / 100.0f);
 	v3f speed((f32)ss.X / 100.0f, (f32)ss.Y / 100.0f, (f32)ss.Z / 100.0f);
 	//player->debugVec("Client position", position);
+	//player->debugVec("Server position", player->getPosition());
 
 	v3f delta = position - player->getPosition();
 	//player->debugVec("delta position", delta);
-	if (delta.getLength() > 1000.0) {
+	float delta_length = delta.getLength();
+	if (delta_length > 1000.0) {
+		// dev: no init yet
 		player->setPosition(position);
+	}
+	if (delta_length < 0.1 * BS) {
+		// we can believe this, adjust
+		player->setPosition(position);
+	} else if (delta_length > 1.0 * BS) {
+		// possible cheat
+		// Call callbacks
+		m_script->on_cheat(playersao, "moved_too_fast");
+		SendMovePlayer(pkt->getPeerId());
+		dstream << "Possible cheat detected" << std::endl;
+	} else {
+		// discrepancy, but not not severe. Maybe a glitch?
+		dstream << "Position discrepancy of " << delta_length << std::endl;
 	}
 
 	pitch = modulo360f(pitch);
