@@ -47,11 +47,14 @@ void TestGameUI::testInit()
 	gui.initFlags();
 	UASSERT(gui.getFlags().show_chat)
 	UASSERT(gui.getFlags().show_hud)
+
+	// @TODO verify if we can create non UI nulldevice to test this function
+	gui.init();
 }
 
 void TestGameUI::testFlagSetters()
 {
-	GameUI gui;
+	GameUI gui{};
 	gui.showMinimap(true);
 	UASSERT(gui.getFlags().show_minimap);
 
