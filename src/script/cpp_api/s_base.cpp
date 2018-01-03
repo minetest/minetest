@@ -137,7 +137,7 @@ int ScriptApiBase::luaPanic(lua_State *L)
 
 void ScriptApiBase::clientOpenLibs(lua_State *L)
 {
-	const std::vector<std::pair<std::string, lua_CFunction>> m_libs = {
+	const static std::vector<std::pair<std::string, lua_CFunction>> m_libs = {
 		{ "", luaopen_base },
 		{ LUA_LOADLIBNAME, luaopen_package },
 		{ LUA_TABLIBNAME,  luaopen_table   },
