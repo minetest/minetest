@@ -26,6 +26,16 @@ class InputHandler;
 class ChatBackend;  /* to avoid having to include chat.h */
 struct SubgameSpec;
 
+struct Jitter {
+	f32 max, min, avg, counter, max_sample, min_sample, max_fraction;
+};
+
+struct RunStats {
+	u32 drawtime;
+
+	Jitter dtime_jitter, busy_time_jitter;
+};
+
 void the_game(bool *kill,
 		bool random_input,
 		InputHandler *input,

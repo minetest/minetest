@@ -1174,16 +1174,6 @@ struct GameRunData {
 	float time_of_day_smooth;
 };
 
-struct Jitter {
-	f32 max, min, avg, counter, max_sample, min_sample, max_fraction;
-};
-
-struct RunStats {
-	u32 drawtime;
-
-	Jitter dtime_jitter, busy_time_jitter;
-};
-
 class Game;
 
 struct ClientEventHandler
@@ -1452,7 +1442,6 @@ private:
 
 	/* GUI stuff
 	 */
-	gui::IGUIStaticText *guitext;          // First line of debug text
 	gui::IGUIStaticText *guitext2;         // Second line of debug text
 	gui::IGUIStaticText *guitext_info;     // At the middle of the screen
 	gui::IGUIStaticText *guitext_status;
@@ -1998,34 +1987,30 @@ bool Game::createClient(const std::string &playername,
 
 bool Game::initGui()
 {
-	// First line of debug text
-	guitext = addStaticText(guienv,
-			utf8_to_wide(PROJECT_NAME_C).c_str(),
-			core::rect<s32>(0, 0, 0, 0),
-			false, false, guiroot);
+	m_game_ui->init();
 
 	// Second line of debug text
-	guitext2 = addStaticText(guienv,
+	guitext2 = gui::StaticText::add(guienv,
 			L"",
 			core::rect<s32>(0, 0, 0, 0),
 			false, false, guiroot);
 
 	// At the middle of the screen
 	// Object infos are shown in this
-	guitext_info = addStaticText(guienv,
+	guitext_info = gui::StaticText::add(guienv,
 			L"",
 			core::rect<s32>(0, 0, 400, g_fontengine->getTextHeight() * 5 + 5) + v2s32(100, 200),
 			false, true, guiroot);
 
 	// Status text (displays info when showing and hiding GUI stuff, etc.)
-	guitext_status = addStaticText(guienv,
+	guitext_status = gui::StaticText::add(guienv,
 			L"<Status>",
 			core::rect<s32>(0, 0, 0, 0),
 			false, false, guiroot);
 	guitext_status->setVisible(false);
 
 	// Chat text
-	guitext_chat = addStaticText(
+	guitext_chat = gui::StaticText::add(
 			guienv,
 			L"",
 			core::rect<s32>(0, 0, 0, 0),
@@ -2048,7 +2033,7 @@ bool Game::initGui()
 	}
 
 	// Profiler text (size is updated when text is updated)
-	guitext_profiler = addStaticText(guienv,
+	guitext_profiler = gui::StaticText::add(guienv,
 			L"<Profiler>",
 			core::rect<s32>(0, 0, 0, 0),
 			false, false, guiroot);
@@ -4410,38 +4395,7 @@ void Game::updateGui(const RunStats &stats, f32 dtime, const CameraOrientation &
 	LocalPlayer *player = client->getEnv().getLocalPlayer();
 	v3f player_position = player->getPosition();
 
-	if (m_game_ui->m_flags.show_debug) {
-		static float drawtime_avg = 0;
-		drawtime_avg = drawtime_avg * 0.95 + stats.drawtime * 0.05;
-		u16 fps = 1.0 / stats.dtime_jitter.avg;
-
-		std::ostringstream os(std::ios_base::binary);
-		os << std::fixed
-			<< PROJECT_NAME_C " " << g_version_hash
-			<< ", FPS: " << fps
-			<< std::setprecision(0)
-			<< ", drawtime: " << drawtime_avg << "ms"
-			<< std::setprecision(1)
-			<< ", dtime jitter: "
-			<< (stats.dtime_jitter.max_fraction * 100.0) << "%"
-			<< std::setprecision(1)
-			<< ", view range: "
-			<< (draw_control->range_all ? "All" : itos(draw_control->wanted_range))
-			<< std::setprecision(3)
-			<< ", RTT: " << client->getRTT() << "s";
-		setStaticText(guitext, utf8_to_wide(os.str()).c_str());
-		guitext->setVisible(true);
-	} else {
-		guitext->setVisible(false);
-	}
-
-	if (guitext->isVisible()) {
-		core::rect<s32> rect(
-				5,              5,
-				screensize.X,   5 + g_fontengine->getTextHeight()
-		);
-		guitext->setRelativePosition(rect);
-	}
+	m_game_ui->update(stats, client, draw_control);
 
 	if (m_game_ui->m_flags.show_debug) {
 		std::ostringstream os(std::ios_base::binary);

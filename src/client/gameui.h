@@ -20,9 +20,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #pragma once
 
-#include "IGUIEnvironment.h"
+#include <IGUIEnvironment.h>
+#include "game.h"
 
 using namespace irr;
+class Client;
+struct MapDrawControl;
 
 class GameUI
 {
@@ -30,6 +33,9 @@ class GameUI
 	friend class Game;
 
 public:
+	GameUI() = default;
+	~GameUI() = default;
+
 	// Flags that can, or may, change during main game loop
 	struct Flags
 	{
@@ -42,16 +48,19 @@ public:
 		bool disable_camera_update;
 	};
 
+	void init();
+	void update(const RunStats &stats, Client *client, const MapDrawControl *draw_control);
+
 	void initFlags();
 	const Flags &getFlags() const { return m_flags; }
 
-	void showMinimap(const bool show);
+	void showMinimap(bool show);
 
 private:
 	Flags m_flags;
 
+	gui::IGUIStaticText *m_guitext;          // First line of debug text
 	// @TODO future move
-	//	gui::IGUIStaticText *m_guitext;          // First line of debug text
 	//	gui::IGUIStaticText *m_guitext2;         // Second line of debug text
 	//	gui::IGUIStaticText *m_guitext_info;     // At the middle of the screen
 	//	gui::IGUIStaticText *m_guitext_status;
