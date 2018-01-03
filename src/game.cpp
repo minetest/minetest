@@ -25,6 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "camera.h"
 #include "client.h"
 #include "client/clientevent.h"
+#include "client/gameui.h"
 #include "client/inputhandler.h"
 #include "client/tile.h"     // For TextureSource
 #include "client/keys.h"
@@ -965,7 +966,8 @@ static void updateChat(Client &client, f32 dtime, bool show_debug,
 	while (!chat_log_error_buf.empty()) {
 		std::wstring error_message = utf8_to_wide(chat_log_error_buf.get());
 		if (!g_settings->getBool("disable_escape_sequences")) {
-			error_message = L"\x1b(c@red)" + error_message + L"\x1b(c@white)";
+			error_message = L"\x1b(c@red)";
+			error_message.append(error_message).append(L"\x1b(c@white)");
 		}
 		chat_backend.addMessage(L"", error_message);
 	}
@@ -1392,41 +1394,41 @@ private:
 
 	InputHandler *input;
 
-	Client *client;
-	Server *server;
+	Client *client = nullptr;
+	Server *server = nullptr;
 
-	IWritableTextureSource *texture_src;
-	IWritableShaderSource *shader_src;
+	IWritableTextureSource *texture_src = nullptr;
+	IWritableShaderSource *shader_src = nullptr;
 
 	// When created, these will be filled with data received from the server
-	IWritableItemDefManager *itemdef_manager;
-	IWritableNodeDefManager *nodedef_manager;
+	IWritableItemDefManager *itemdef_manager = nullptr;
+	IWritableNodeDefManager *nodedef_manager = nullptr;
 
 	GameOnDemandSoundFetcher soundfetcher; // useful when testing
-	ISoundManager *sound;
+	ISoundManager *sound = nullptr;
 	bool sound_is_dummy = false;
-	SoundMaker *soundmaker;
+	SoundMaker *soundmaker = nullptr;
 
-	ChatBackend *chat_backend;
+	ChatBackend *chat_backend = nullptr;
 
-	GUIFormSpecMenu *current_formspec;
+	GUIFormSpecMenu *current_formspec = nullptr;
 	//default: "". If other than "", empty show_formspec packets will only close the formspec when the formname matches
 	std::string cur_formname;
 
-	EventManager *eventmgr;
-	QuicktuneShortcutter *quicktune;
+	EventManager *eventmgr = nullptr;
+	QuicktuneShortcutter *quicktune = nullptr;
 
-	GUIChatConsole *gui_chat_console; // Free using ->Drop()
-	MapDrawControl *draw_control;
-	Camera *camera;
-	Clouds *clouds;	                  // Free using ->Drop()
-	Sky *sky;                         // Free using ->Drop()
-	Inventory *local_inventory;
-	Hud *hud;
-	Minimap *mapper;
+	std::unique_ptr<GameUI> m_game_ui;
+	GUIChatConsole *gui_chat_console = nullptr; // Free using ->Drop()
+	MapDrawControl *draw_control = nullptr;
+	Camera *camera = nullptr;
+	Clouds *clouds = nullptr;	                  // Free using ->Drop()
+	Sky *sky = nullptr;                         // Free using ->Drop()
+	Inventory *local_inventory = nullptr;
+	Hud *hud = nullptr;
+	Minimap *mapper = nullptr;
 
 	GameRunData runData;
-	GameUIFlags flags;
 
 	/* 'cache'
 	   This class does take ownership/responsibily for cleaning up etc of any of
@@ -1496,27 +1498,7 @@ private:
 };
 
 Game::Game() :
-	client(NULL),
-	server(NULL),
-	texture_src(NULL),
-	shader_src(NULL),
-	itemdef_manager(NULL),
-	nodedef_manager(NULL),
-	sound(NULL),
-	soundmaker(NULL),
-	chat_backend(NULL),
-	current_formspec(NULL),
-	cur_formname(""),
-	eventmgr(NULL),
-	quicktune(NULL),
-	gui_chat_console(NULL),
-	draw_control(NULL),
-	camera(NULL),
-	clouds(NULL),
-	sky(NULL),
-	local_inventory(NULL),
-	hud(NULL),
-	mapper(NULL)
+	m_game_ui(new GameUI())
 {
 	g_settings->registerChangedCallback("doubletap_jump",
 		&settingChangedCallback, this);
@@ -1643,10 +1625,8 @@ bool Game::startup(bool *kill,
 	runData.profiler_max_page = 3;
 	runData.update_wielded_item_trigger = true;
 
-	memset(&flags, 0, sizeof(flags));
-	flags.show_chat = true;
-	flags.show_hud = true;
-	flags.show_debug = g_settings->getBool("show_debug");
+	m_game_ui->initFlags();
+
 	m_invert_mouse = g_settings->getBool("invert_mouse");
 	m_first_loop_after_window_activation = true;
 
@@ -1737,12 +1717,13 @@ void Game::run()
 		processClientEvents(&cam_view_target);
 		updateCamera(draw_times.busy_time, dtime);
 		updateSound(dtime);
-		processPlayerInteraction(dtime, flags.show_hud, flags.show_debug);
+		processPlayerInteraction(dtime, m_game_ui->m_flags.show_hud,
+			m_game_ui->m_flags.show_debug);
 		updateFrame(&graph, &stats, dtime, cam_view);
 		updateProfilerGraphs(&graph);
 
 		// Update if minimap has been disabled by the server
-		flags.show_minimap &= client->shouldShowMinimap();
+		m_game_ui->m_flags.show_minimap &= client->shouldShowMinimap();
 
 		if (m_does_lost_focus_pause_game && !device->isWindowFocused() && !isMenuActive()) {
 			showPauseMenu();
@@ -1935,7 +1916,7 @@ bool Game::createClient(const std::string &playername,
 	}
 
 	GameGlobalShaderConstantSetterFactory *scsf = new GameGlobalShaderConstantSetterFactory(
-			&flags.force_fog_off, &runData.fog_range, client);
+			&m_game_ui->m_flags.force_fog_off, &runData.fog_range, client);
 	shader_src->addShaderConstantSetterFactory(scsf);
 
 	// Update cached textures, meshes and materials
@@ -2128,7 +2109,7 @@ bool Game::connectToServer(const std::string &playername,
 	client = new Client(playername.c_str(), password, *address,
 			*draw_control, texture_src, shader_src,
 			itemdef_manager, nodedef_manager, sound, eventmgr,
-			connect_address.isIPv6(), &flags);
+			connect_address.isIPv6(), m_game_ui.get());
 
 	if (!client)
 		return false;
@@ -2816,9 +2797,9 @@ void Game::toggleAutoforward()
 
 void Game::toggleChat()
 {
-	flags.show_chat = !flags.show_chat;
+	m_game_ui->m_flags.show_chat = !m_game_ui->m_flags.show_chat;
 	runData.statustext_time = 0;
-	if (flags.show_chat)
+	if (m_game_ui->m_flags.show_chat)
 		showStatusTextSimple("Chat shown");
 	else
 		showStatusTextSimple("Chat hidden");
@@ -2827,9 +2808,9 @@ void Game::toggleChat()
 
 void Game::toggleHud()
 {
-	flags.show_hud = !flags.show_hud;
+	m_game_ui->m_flags.show_hud = !m_game_ui->m_flags.show_hud;
 	runData.statustext_time = 0;
-	if (flags.show_hud)
+	if (m_game_ui->m_flags.show_hud)
 		showStatusTextSimple("HUD shown");
 	else
 		showStatusTextSimple("HUD hidden");
@@ -2837,7 +2818,7 @@ void Game::toggleHud()
 
 void Game::toggleMinimap(bool shift_pressed)
 {
-	if (!mapper || !flags.show_hud || !g_settings->getBool("enable_minimap"))
+	if (!mapper || !m_game_ui->m_flags.show_hud || !g_settings->getBool("enable_minimap"))
 		return;
 
 	if (shift_pressed) {
@@ -2856,7 +2837,7 @@ void Game::toggleMinimap(bool shift_pressed)
 			mode = MINIMAP_MODE_OFF;
 	}
 
-	flags.show_minimap = true;
+	m_game_ui->m_flags.show_minimap = true;
 	switch (mode) {
 		case MINIMAP_MODE_SURFACEx1:
 			showStatusTextSimple("Minimap in surface mode, Zoom x1");
@@ -2878,7 +2859,7 @@ void Game::toggleMinimap(bool shift_pressed)
 			break;
 		default:
 			mode = MINIMAP_MODE_OFF;
-			flags.show_minimap = false;
+			m_game_ui->m_flags.show_minimap = false;
 			if (hud_flags & HUD_FLAG_MINIMAP_VISIBLE)
 				showStatusTextSimple("Minimap hidden");
 			else
@@ -2891,9 +2872,9 @@ void Game::toggleMinimap(bool shift_pressed)
 
 void Game::toggleFog()
 {
-	flags.force_fog_off = !flags.force_fog_off;
+	m_game_ui->m_flags.force_fog_off = !m_game_ui->m_flags.force_fog_off;
 	runData.statustext_time = 0;
-        if (flags.force_fog_off)
+        if (m_game_ui->m_flags.force_fog_off)
                 showStatusTextSimple("Fog disabled");
         else
                 showStatusTextSimple("Fog enabled");
@@ -2906,21 +2887,21 @@ void Game::toggleDebug()
 	// 1x toggle: Debug text with chat
 	// 2x toggle: Debug text with profiler graph
 	// 3x toggle: Debug text and wireframe
-	if (!flags.show_debug) {
-		flags.show_debug = true;
-		flags.show_profiler_graph = false;
+	if (!m_game_ui->m_flags.show_debug) {
+		m_game_ui->m_flags.show_debug = true;
+		m_game_ui->m_flags.show_profiler_graph = false;
 		draw_control->show_wireframe = false;
 		showStatusTextSimple("Debug info shown");
-	} else if (!flags.show_profiler_graph && !draw_control->show_wireframe) {
-		flags.show_profiler_graph = true;
+	} else if (!m_game_ui->m_flags.show_profiler_graph && !draw_control->show_wireframe) {
+		m_game_ui->m_flags.show_profiler_graph = true;
 		showStatusTextSimple("Profiler graph shown");
 	} else if (!draw_control->show_wireframe && client->checkPrivilege("debug")) {
-		flags.show_profiler_graph = false;
+		m_game_ui->m_flags.show_profiler_graph = false;
 		draw_control->show_wireframe = true;
 		showStatusTextSimple("Wireframe shown");
 	} else {
-		flags.show_debug = false;
-		flags.show_profiler_graph = false;
+		m_game_ui->m_flags.show_debug = false;
+		m_game_ui->m_flags.show_profiler_graph = false;
 		draw_control->show_wireframe = false;
 		if (client->checkPrivilege("debug")) {
 			showStatusTextSimple("Debug info, profiler graph, and wireframe hidden");
@@ -2934,9 +2915,9 @@ void Game::toggleDebug()
 
 void Game::toggleUpdateCamera()
 {
-	flags.disable_camera_update = !flags.disable_camera_update;
+	m_game_ui->m_flags.disable_camera_update = !m_game_ui->m_flags.disable_camera_update;
 	runData.statustext_time = 0;
-	if (flags.disable_camera_update)
+	if (m_game_ui->m_flags.disable_camera_update)
 		showStatusTextSimple("Camera update disabled");
 	else
 		showStatusTextSimple("Camera update enabled");
@@ -3529,7 +3510,7 @@ void Game::updateCamera(u32 busy_time, f32 dtime)
 
 	m_camera_offset_changed = (camera_offset != old_camera_offset);
 
-	if (!flags.disable_camera_update) {
+	if (!m_game_ui->m_flags.disable_camera_update) {
 		client->getEnv().getClientMap().updateCamera(camera_position,
 				camera_direction, camera_fov, camera_offset);
 
@@ -4224,7 +4205,7 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 			clouds->update(camera_node_position,
 					sky->getCloudColor());
 			if (clouds->isCameraInsideCloud() && m_cache_enable_fog &&
-					!flags.force_fog_off) {
+					!m_game_ui->m_flags.force_fog_off) {
 				// if inside clouds, and fog enabled, use that as sky
 				// color(s)
 				video::SColor clouds_dark = clouds->getColor()
@@ -4249,7 +4230,7 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 		Fog
 	*/
 
-	if (m_cache_enable_fog && !flags.force_fog_off) {
+	if (m_cache_enable_fog && !m_game_ui->m_flags.force_fog_off) {
 		driver->setFog(
 				sky->getBgColor(),
 				video::EFT_FOG_LINEAR,
@@ -4277,8 +4258,8 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 
 	v2u32 screensize = driver->getScreenSize();
 
-	updateChat(*client, dtime, flags.show_debug, screensize,
-			flags.show_chat, runData.profiler_current_page,
+	updateChat(*client, dtime, m_game_ui->m_flags.show_debug, screensize,
+		m_game_ui->m_flags.show_chat, runData.profiler_current_page,
 			*chat_backend, guitext_chat);
 
 	/*
@@ -4351,7 +4332,7 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 	TimeTaker tt_draw("mainloop: draw");
 	driver->beginScene(true, true, skycolor);
 
-	bool draw_wield_tool = (flags.show_hud &&
+	bool draw_wield_tool = (m_game_ui->m_flags.show_hud &&
 			(player->hud_flags & HUD_FLAG_WIELDITEM_VISIBLE) &&
 			(camera->getCameraMode() == CAMERA_MODE_FIRST));
 	bool draw_crosshair = (
@@ -4363,13 +4344,13 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 	} catch (SettingNotFoundException) {
 	}
 #endif
-	RenderingEngine::draw_scene(skycolor, flags.show_hud, flags.show_minimap,
-			draw_wield_tool, draw_crosshair);
+	RenderingEngine::draw_scene(skycolor, m_game_ui->m_flags.show_hud,
+			m_game_ui->m_flags.show_minimap, draw_wield_tool, draw_crosshair);
 
 	/*
 		Profiler graph
 	*/
-	if (flags.show_profiler_graph)
+	if (m_game_ui->m_flags.show_profiler_graph)
 		graph->draw(10, screensize.Y - 10, driver, g_fontengine->getFont());
 
 	/*
@@ -4397,7 +4378,7 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 	/*
 		Update minimap pos and rotation
 	*/
-	if (mapper && flags.show_minimap && flags.show_hud) {
+	if (mapper && m_game_ui->m_flags.show_minimap && m_game_ui->m_flags.show_hud) {
 		mapper->setPos(floatToInt(player->getPosition(), BS));
 		mapper->setAngle(player->getYaw());
 	}
@@ -4429,7 +4410,7 @@ void Game::updateGui(const RunStats &stats, f32 dtime, const CameraOrientation &
 	LocalPlayer *player = client->getEnv().getLocalPlayer();
 	v3f player_position = player->getPosition();
 
-	if (flags.show_debug) {
+	if (m_game_ui->m_flags.show_debug) {
 		static float drawtime_avg = 0;
 		drawtime_avg = drawtime_avg * 0.95 + stats.drawtime * 0.05;
 		u16 fps = 1.0 / stats.dtime_jitter.avg;
@@ -4462,7 +4443,7 @@ void Game::updateGui(const RunStats &stats, f32 dtime, const CameraOrientation &
 		guitext->setRelativePosition(rect);
 	}
 
-	if (flags.show_debug) {
+	if (m_game_ui->m_flags.show_debug) {
 		std::ostringstream os(std::ios_base::binary);
 		os << std::setprecision(1) << std::fixed
 			<< "pos: (" << (player_position.X / BS)
@@ -4498,7 +4479,7 @@ void Game::updateGui(const RunStats &stats, f32 dtime, const CameraOrientation &
 	}
 
 	setStaticText(guitext_info, translate_string(infotext).c_str());
-	guitext_info->setVisible(flags.show_hud && g_menumgr.menuCount() == 0);
+	guitext_info->setVisible(m_game_ui->m_flags.show_hud && g_menumgr.menuCount() == 0);
 
 	float statustext_time_max = 1.5;
 

@@ -112,7 +112,7 @@ private:
 };
 
 class ClientScripting;
-struct GameUIFlags;
+class GameUI;
 
 class Client : public con::PeerHandler, public InventoryManager, public IGameDef
 {
@@ -133,7 +133,7 @@ public:
 			ISoundManager *sound,
 			MtEventManager *event,
 			bool ipv6,
-			GameUIFlags *game_ui_flags
+			GameUI *game_ui
 	);
 
 	~Client();
@@ -400,12 +400,7 @@ public:
 
 	void pushToEventQueue(ClientEvent *event);
 
-	void showGameChat(bool show = true);
-	void showGameHud(bool show = true);
 	void showMinimap(bool show = true);
-	void showProfiler(bool show = true);
-	void showGameFog(bool show = true);
-	void showGameDebug(bool show = true);
 
 	const Address getServerAddress();
 
@@ -570,6 +565,8 @@ private:
 	// own state
 	LocalClientState m_state;
 
+	GameUI *m_game_ui;
+
 	// Used for saving server map to disk client-side
 	MapDatabase *m_localdb = nullptr;
 	IntervalLimiter m_localdb_save_interval;
@@ -580,7 +577,6 @@ private:
 	std::unordered_map<std::string, ModMetadata *> m_mod_storages;
 	float m_mod_storage_save_timer = 10.0f;
 	std::vector<ModSpec> m_mods;
-	GameUIFlags *m_game_ui_flags;
 
 	bool m_shutdown = false;
 

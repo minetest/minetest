@@ -28,6 +28,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "network/networkpacket.h"
 #include "threading/mutex_auto_lock.h"
 #include "client/clientevent.h"
+#include "client/gameui.h"
 #include "client/renderingengine.h"
 #include "client/tile.h"
 #include "util/auth.h"
@@ -74,7 +75,7 @@ Client::Client(
 		ISoundManager *sound,
 		MtEventManager *event,
 		bool ipv6,
-		GameUIFlags *game_ui_flags
+		GameUI *game_ui
 ):
 	m_tsrc(tsrc),
 	m_shsrc(shsrc),
@@ -96,7 +97,7 @@ Client::Client(
 	m_chosen_auth_mech(AUTH_MECHANISM_NONE),
 	m_media_downloader(new ClientMediaDownloader()),
 	m_state(LC_Created),
-	m_game_ui_flags(game_ui_flags),
+	m_game_ui(game_ui),
 	m_modchannel_mgr(new ModChannelMgr())
 {
 	// Add local player
@@ -1771,34 +1772,9 @@ void Client::pushToEventQueue(ClientEvent *event)
 	m_client_event_queue.push(event);
 }
 
-void Client::showGameChat(const bool show)
-{
-	m_game_ui_flags->show_chat = show;
-}
-
-void Client::showGameHud(const bool show)
-{
-	m_game_ui_flags->show_hud = show;
-}
-
 void Client::showMinimap(const bool show)
 {
-	m_game_ui_flags->show_minimap = show;
-}
-
-void Client::showProfiler(const bool show)
-{
-	m_game_ui_flags->show_profiler_graph = show;
-}
-
-void Client::showGameFog(const bool show)
-{
-	m_game_ui_flags->force_fog_off = !show;
-}
-
-void Client::showGameDebug(const bool show)
-{
-	m_game_ui_flags->show_debug = show;
+	m_game_ui->showMinimap(show);
 }
 
 // IGameDef interface
