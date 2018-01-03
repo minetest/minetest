@@ -134,7 +134,6 @@ bool ScriptApiPlayer::can_bypass_userlimit(const std::string &name, const std::s
 	lua_pushstring(L, name.c_str());
 	lua_pushstring(L, ip.c_str());
 	runCallbacks(2, RUN_CALLBACKS_MODE_OR);
-	FATAL_ERROR_IF(!lua_isboolean(L, -1), "on_user_limitcheck must return a boolean");
 	return lua_toboolean(L, -1);
 }
 
