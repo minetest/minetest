@@ -21,22 +21,46 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "gameui.h"
 #include <irrlicht_changes/static_text.h>
 #include "gui/mainmenumanager.h"
+#include "util/pointedthing.h"
 #include "client.h"
-#include "fontengine.h"
 #include "clientmap.h"
-#include "version.h"
+#include "fontengine.h"
+#include "nodedef.h"
 #include "renderingengine.h"
+#include "version.h"
+
+inline static const char *yawToDirectionString(int yaw)
+{
+	static const char *direction[4] = {"N +Z", "W -X", "S -Z", "E +X"};
+
+	yaw = wrapDegrees_0_360(yaw);
+	yaw = (yaw + 45) % 360 / 90;
+
+	return direction[yaw];
+}
 
 void GameUI::init()
 {
 	// First line of debug text
 	m_guitext = gui::StaticText::add(guienv, utf8_to_wide(PROJECT_NAME_C).c_str(),
 		core::rect<s32>(0, 0, 0, 0), false, false, guiroot);
+
+	// Second line of debug text
+	m_guitext2 = gui::StaticText::add(guienv, L"", core::rect<s32>(0, 0, 0, 0), false,
+		false, guiroot);
+
+	// At the middle of the screen
+	// Object infos are shown in this
+	m_guitext_info = gui::StaticText::add(guienv, L"",
+		core::rect<s32>(0, 0, 400, g_fontengine->getTextHeight() * 5 + 5)
+			+ v2s32(100, 200), false, true, guiroot);
 }
 
-void GameUI::update(const RunStats &stats, Client *client,
-	const MapDrawControl *draw_control)
+void GameUI::update(const RunStats &stats, Client *client, MapDrawControl *draw_control,
+	const CameraOrientation &cam, const PointedThing &pointed_old)
 {
+	v2u32 screensize = RenderingEngine::get_instance()->getWindowSize();
+
 	if (m_flags.show_debug) {
 		static float drawtime_avg = 0;
 		drawtime_avg = drawtime_avg * 0.95 + stats.drawtime * 0.05;
@@ -57,16 +81,50 @@ void GameUI::update(const RunStats &stats, Client *client,
 			<< std::setprecision(3)
 			<< ", RTT: " << client->getRTT() << "s";
 		setStaticText(m_guitext, utf8_to_wide(os.str()).c_str());
-		m_guitext->setVisible(true);
-	} else {
-		m_guitext->setVisible(false);
-	}
 
-	if (m_guitext->isVisible()) {
-		v2u32 screensize = RenderingEngine::get_instance()->getWindowSize();
 		m_guitext->setRelativePosition(core::rect<s32>(5, 5, screensize.X,
 			5 + g_fontengine->getTextHeight()));
 	}
+
+	// Finally set the guitext visible depending on the flag
+	m_guitext->setVisible(m_flags.show_debug);
+
+	if (m_flags.show_debug) {
+		LocalPlayer *player = client->getEnv().getLocalPlayer();
+		v3f player_position = player->getPosition();
+
+		std::ostringstream os(std::ios_base::binary);
+		os << std::setprecision(1) << std::fixed
+			<< "pos: (" << (player_position.X / BS)
+			<< ", " << (player_position.Y / BS)
+			<< ", " << (player_position.Z / BS)
+			<< "), yaw: " << (wrapDegrees_0_360(cam.camera_yaw)) << "° "
+			<< yawToDirectionString(cam.camera_yaw)
+			<< ", seed: " << ((u64)client->getMapSeed());
+
+		if (pointed_old.type == POINTEDTHING_NODE) {
+			ClientMap &map = client->getEnv().getClientMap();
+			const INodeDefManager *nodedef = client->getNodeDefManager();
+			MapNode n = map.getNodeNoEx(pointed_old.node_undersurface);
+
+			if (n.getContent() != CONTENT_IGNORE && nodedef->get(n).name != "unknown") {
+				os << ", pointed: " << nodedef->get(n).name
+					<< ", param2: " << (u64) n.getParam2();
+			}
+		}
+
+		setStaticText(m_guitext2, utf8_to_wide(os.str()).c_str());
+
+		m_guitext2->setRelativePosition(core::rect<s32>(5,
+			5 + g_fontengine->getTextHeight(), screensize.X,
+			5 + g_fontengine->getTextHeight() * 2
+		));
+	}
+
+	m_guitext2->setVisible(m_flags.show_debug);
+
+	setStaticText(m_guitext_info, translate_string(m_infotext).c_str());
+	m_guitext_info->setVisible(m_flags.show_hud && g_menumgr.menuCount() == 0);
 }
 
 void GameUI::initFlags()

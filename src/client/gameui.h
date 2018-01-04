@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #pragma once
 
 #include <IGUIEnvironment.h>
+#include <util/pointedthing.h>
 #include "game.h"
 
 using namespace irr;
@@ -49,20 +50,25 @@ public:
 	};
 
 	void init();
-	void update(const RunStats &stats, Client *client, const MapDrawControl *draw_control);
+	void update(const RunStats &stats, Client *client, MapDrawControl *draw_control,
+		const CameraOrientation &cam, const PointedThing &pointed_old);
 
 	void initFlags();
 	const Flags &getFlags() const { return m_flags; }
 
 	void showMinimap(bool show);
 
+	void setInfoText(const std::wstring &str) { m_infotext = str; }
+	void clearInfoText() { m_infotext.clear(); }
+
 private:
 	Flags m_flags;
 
 	gui::IGUIStaticText *m_guitext;          // First line of debug text
+	gui::IGUIStaticText *m_guitext2;         // Second line of debug text
+	gui::IGUIStaticText *m_guitext_info;     // At the middle of the screen
+	std::wstring m_infotext;
 	// @TODO future move
-	//	gui::IGUIStaticText *m_guitext2;         // Second line of debug text
-	//	gui::IGUIStaticText *m_guitext_info;     // At the middle of the screen
 	//	gui::IGUIStaticText *m_guitext_status;
 	//	gui::IGUIStaticText *m_guitext_chat;	 // Chat text
 	//	gui::IGUIStaticText *m_guitext_profiler; // Profiler text
