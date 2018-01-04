@@ -49,7 +49,7 @@ void TestGameUI::testInit()
 	UASSERT(gui.getFlags().show_hud)
 
 	// @TODO verify if we can create non UI nulldevice to test this function
-	gui.init();
+	// gui.init();
 }
 
 void TestGameUI::testFlagSetters()

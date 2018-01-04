@@ -36,6 +36,11 @@ struct RunStats {
 	Jitter dtime_jitter, busy_time_jitter;
 };
 
+struct CameraOrientation {
+	f32 camera_yaw;    // "right/left"
+	f32 camera_pitch;  // "up/down"
+};
+
 void the_game(bool *kill,
 		bool random_input,
 		InputHandler *input,

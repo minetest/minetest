@@ -1134,10 +1134,6 @@ struct FpsControl {
  * many functions that do require objects of thse types do not modify them
  * (so they can be passed as a const qualified parameter)
  */
-struct CameraOrientation {
-	f32 camera_yaw;    // "right/left"
-	f32 camera_pitch;  // "up/down"
-};
 
 struct GameRunData {
 	u16 dig_index;
@@ -1170,7 +1166,6 @@ struct GameRunData {
 	u32 profiler_current_page;
 	u32 profiler_max_page;     // Number of pages
 
-	float time_of_day;
 	float time_of_day_smooth;
 };
 
@@ -1442,13 +1437,10 @@ private:
 
 	/* GUI stuff
 	 */
-	gui::IGUIStaticText *guitext2;         // Second line of debug text
-	gui::IGUIStaticText *guitext_info;     // At the middle of the screen
 	gui::IGUIStaticText *guitext_status;
 	gui::IGUIStaticText *guitext_chat;	   // Chat text
 	gui::IGUIStaticText *guitext_profiler; // Profiler text
 
-	std::wstring infotext;
 	std::wstring m_statustext;
 
 	KeyCache keycache;
@@ -1690,7 +1682,7 @@ void Game::run()
 
 		processQueues();
 
-		infotext = L"";
+		m_game_ui->clearInfoText();
 		hud->resizeHotbar();
 
 		updateProfilers(stats, draw_times, dtime);
@@ -1988,19 +1980,6 @@ bool Game::createClient(const std::string &playername,
 bool Game::initGui()
 {
 	m_game_ui->init();
-
-	// Second line of debug text
-	guitext2 = gui::StaticText::add(guienv,
-			L"",
-			core::rect<s32>(0, 0, 0, 0),
-			false, false, guiroot);
-
-	// At the middle of the screen
-	// Object infos are shown in this
-	guitext_info = gui::StaticText::add(guienv,
-			L"",
-			core::rect<s32>(0, 0, 400, g_fontengine->getTextHeight() * 5 + 5) + v2s32(100, 200),
-			false, true, guiroot);
 
 	// Status text (displays info when showing and hiding GUI stuff, etc.)
 	guitext_status = gui::StaticText::add(guienv,
@@ -3840,13 +3819,14 @@ void Game::handlePointingAtNode(const PointedThing &pointed,
 	NodeMetadata *meta = map.getNodeMetadata(nodepos);
 
 	if (meta) {
-		infotext = unescape_translate(utf8_to_wide(meta->getString("infotext")));
+		m_game_ui->setInfoText(unescape_translate(utf8_to_wide(
+			meta->getString("infotext"))));
 	} else {
 		MapNode n = map.getNodeNoEx(nodepos);
 
 		if (nodedef_manager->get(n).tiledef[0].name == "unknown_node.png") {
-			infotext = L"Unknown node: ";
-			infotext += utf8_to_wide(nodedef_manager->get(n).name);
+			m_game_ui->setInfoText(L"Unknown node: " +
+				utf8_to_wide(nodedef_manager->get(n).name));
 		}
 	}
 
@@ -3917,7 +3897,7 @@ void Game::handlePointingAtNode(const PointedThing &pointed,
 void Game::handlePointingAtObject(const PointedThing &pointed, const ItemStack &playeritem,
 		const v3f &player_position, bool show_debug)
 {
-	infotext = unescape_translate(
+	std::wstring infotext = unescape_translate(
 		utf8_to_wide(runData.selected_object->infoText()));
 
 	if (show_debug) {
@@ -3926,6 +3906,8 @@ void Game::handlePointingAtObject(const PointedThing &pointed, const ItemStack &
 		}
 		infotext += utf8_to_wide(runData.selected_object->debugInfoText());
 	}
+
+	m_game_ui->setInfoText(infotext);
 
 	if (isLeftPressed()) {
 		bool do_punch = false;
@@ -4167,7 +4149,6 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 		time_of_day_smooth = time_of_day_smooth * (1.0 - todsm)
 				+ time_of_day * todsm;
 
-	runData.time_of_day = time_of_day;
 	runData.time_of_day_smooth = time_of_day_smooth;
 
 	sky->update(time_of_day_smooth, time_brightness, direct_brightness,
@@ -4378,62 +4359,11 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 }
 
 
-inline static const char *yawToDirectionString(int yaw)
-{
-	static const char *direction[4] = {"N +Z", "W -X", "S -Z", "E +X"};
-
-	yaw = wrapDegrees_0_360(yaw);
-	yaw = (yaw + 45) % 360 / 90;
-
-	return direction[yaw];
-}
-
-
 void Game::updateGui(const RunStats &stats, f32 dtime, const CameraOrientation &cam)
 {
 	v2u32 screensize = RenderingEngine::get_instance()->getWindowSize();
-	LocalPlayer *player = client->getEnv().getLocalPlayer();
-	v3f player_position = player->getPosition();
 
-	m_game_ui->update(stats, client, draw_control);
-
-	if (m_game_ui->m_flags.show_debug) {
-		std::ostringstream os(std::ios_base::binary);
-		os << std::setprecision(1) << std::fixed
-			<< "pos: (" << (player_position.X / BS)
-			<< ", " << (player_position.Y / BS)
-			<< ", " << (player_position.Z / BS)
-			<< "), yaw: " << (wrapDegrees_0_360(cam.camera_yaw)) << "° "
-			<< yawToDirectionString(cam.camera_yaw)
-			<< ", seed: " << ((u64)client->getMapSeed());
-
-		if (runData.pointed_old.type == POINTEDTHING_NODE) {
-			ClientMap &map = client->getEnv().getClientMap();
-			const INodeDefManager *nodedef = client->getNodeDefManager();
-			MapNode n = map.getNodeNoEx(runData.pointed_old.node_undersurface);
-
-			if (n.getContent() != CONTENT_IGNORE && nodedef->get(n).name != "unknown") {
-				os << ", pointed: " << nodedef->get(n).name
-					<< ", param2: " << (u64) n.getParam2();
-			}
-		}
-
-		setStaticText(guitext2, utf8_to_wide(os.str()).c_str());
-		guitext2->setVisible(true);
-	} else {
-		guitext2->setVisible(false);
-	}
-
-	if (guitext2->isVisible()) {
-		core::rect<s32> rect(
-				5,             5 + g_fontengine->getTextHeight(),
-				screensize.X,  5 + g_fontengine->getTextHeight() * 2
-		);
-		guitext2->setRelativePosition(rect);
-	}
-
-	setStaticText(guitext_info, translate_string(infotext).c_str());
-	guitext_info->setVisible(m_game_ui->m_flags.show_hud && g_menumgr.menuCount() == 0);
+	m_game_ui->update(stats, client, draw_control, cam, runData.pointed_old);
 
 	float statustext_time_max = 1.5;
 
