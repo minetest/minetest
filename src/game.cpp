@@ -237,44 +237,6 @@ public:
 };
 
 /* Profiler display */
-
-void update_profiler_gui(gui::IGUIStaticText *guitext_profiler, FontEngine *fe,
-		u32 show_profiler, u32 show_profiler_max, s32 screen_height)
-{
-	if (show_profiler == 0) {
-		guitext_profiler->setVisible(false);
-	} else {
-
-		std::ostringstream os(std::ios_base::binary);
-		g_profiler->printPage(os, show_profiler, show_profiler_max);
-		std::wstring text = translate_string(utf8_to_wide(os.str()));
-		setStaticText(guitext_profiler, text.c_str());
-		guitext_profiler->setVisible(true);
-
-		s32 w = fe->getTextWidth(text);
-
-		if (w < 400)
-			w = 400;
-
-		unsigned text_height = fe->getTextHeight();
-
-		core::position2di upper_left, lower_right;
-
-		upper_left.X  = 6;
-		upper_left.Y  = (text_height + 5) * 2;
-		lower_right.X = 12 + w;
-		lower_right.Y = upper_left.Y + (text_height + 1) * MAX_PROFILER_TEXT_ROWS;
-
-		if (lower_right.Y > screen_height * 2 / 3)
-			lower_right.Y = screen_height * 2 / 3;
-
-		core::rect<s32> rect(upper_left, lower_right);
-
-		guitext_profiler->setRelativePosition(rect);
-		guitext_profiler->setVisible(true);
-	}
-}
-
 class ProfilerGraph
 {
 private:
@@ -954,65 +916,6 @@ static inline void create_formspec_menu(GUIFormSpecMenu **cur_formspec,
 #define SIZE_TAG "size[11,5.5,true]" // Fixed size on desktop
 #endif
 
-/******************************************************************************/
-static void updateChat(Client &client, f32 dtime, bool show_debug,
-		const v2u32 &screensize, bool show_chat, u32 show_profiler,
-		ChatBackend &chat_backend, gui::IGUIStaticText *guitext_chat)
-{
-	// Add chat log output for errors to be shown in chat
-	static LogOutputBuffer chat_log_error_buf(g_logger, LL_ERROR);
-
-	// Get new messages from error log buffer
-	while (!chat_log_error_buf.empty()) {
-		std::wstring error_message = utf8_to_wide(chat_log_error_buf.get());
-		if (!g_settings->getBool("disable_escape_sequences")) {
-			error_message = L"\x1b(c@red)";
-			error_message.append(error_message).append(L"\x1b(c@white)");
-		}
-		chat_backend.addMessage(L"", error_message);
-	}
-
-	// Get new messages from client
-	std::wstring message;
-	while (client.getChatMessage(message)) {
-		chat_backend.addUnparsedMessage(message);
-	}
-
-	// Remove old messages
-	chat_backend.step(dtime);
-
-	// Display all messages in a static text element
-	unsigned int recent_chat_count = chat_backend.getRecentBuffer().getLineCount();
-	EnrichedString recent_chat     = chat_backend.getRecentChat();
-	unsigned int line_height       = g_fontengine->getLineHeight();
-
-	setStaticText(guitext_chat, recent_chat);
-
-	// Update gui element size and position
-	s32 chat_y = 5;
-
-	if (show_debug)
-		chat_y += 2 * line_height;
-
-	// first pass to calculate height of text to be set
-	const v2u32 &window_size = RenderingEngine::get_instance()->getWindowSize();
-	s32 width = std::min(g_fontengine->getTextWidth(recent_chat.c_str()) + 10,
-			window_size.X - 20);
-	core::rect<s32> rect(10, chat_y, width, chat_y + window_size.Y);
-	guitext_chat->setRelativePosition(rect);
-
-	//now use real height of text and adjust rect according to this size
-	rect = core::rect<s32>(10, chat_y, width,
-			       chat_y + guitext_chat->getTextHeight());
-
-
-	guitext_chat->setRelativePosition(rect);
-	// Don't show chat if disabled or empty or profiler is enabled
-	guitext_chat->setVisible(
-		show_chat && recent_chat_count != 0 && !show_profiler);
-}
-
-
 /****************************************************************************
  Fast key cache for main game loop
  ****************************************************************************/
@@ -1373,6 +1276,8 @@ private:
 		CameraOrientation *cam);
 	void handleClientEvent_CloudParams(ClientEvent *event, CameraOrientation *cam);
 
+	void updateChat(f32 dtime, const v2u32 &screensize);
+	void updateProfilerGUI();
 	static const ClientEventHandler clientEventHandler[CLIENTEVENT_MAX];
 
 	InputHandler *input;
@@ -1435,7 +1340,6 @@ private:
 
 	/* GUI stuff
 	 */
-	gui::IGUIStaticText *guitext_chat;	   // Chat text
 	gui::IGUIStaticText *guitext_profiler; // Profiler text
 
 	KeyCache keycache;
@@ -1976,14 +1880,6 @@ bool Game::initGui()
 {
 	m_game_ui->init();
 
-	// Chat text
-	guitext_chat = gui::StaticText::add(
-			guienv,
-			L"",
-			core::rect<s32>(0, 0, 0, 0),
-			//false, false); // Disable word wrap as of now
-			false, true, guiroot);
-
 	// Remove stale "recent" chat messages from previous connections
 	chat_backend->clearRecentChat();
 
@@ -2320,9 +2216,7 @@ void Game::updateProfilers(const RunStats &stats, const FpsControl &draw_times, 
 			g_profiler->print(infostream);
 		}
 
-		update_profiler_gui(guitext_profiler, g_fontengine,
-				runData.profiler_current_page, runData.profiler_max_page,
-				driver->getScreenSize().Height);
+		updateProfilerGUI();
 
 		g_profiler->clear();
 	}
@@ -2865,8 +2759,7 @@ void Game::toggleProfiler()
 		(runData.profiler_current_page + 1) % (runData.profiler_max_page + 1);
 
 	// FIXME: This updates the profiler with incomplete values
-	update_profiler_gui(guitext_profiler, g_fontengine, runData.profiler_current_page,
-		runData.profiler_max_page, driver->getScreenSize().Height);
+	updateProfilerGUI();
 
 	if (runData.profiler_current_page != 0) {
 		wchar_t buf[255];
@@ -3383,6 +3276,71 @@ void Game::processClientEvents(CameraOrientation *cam)
 		(this->*evHandler.handler)(event.get(), cam);
 	}
 }
+
+void Game::updateChat(f32 dtime, const v2u32 &screensize)
+{
+	// Add chat log output for errors to be shown in chat
+	static LogOutputBuffer chat_log_error_buf(g_logger, LL_ERROR);
+
+	// Get new messages from error log buffer
+	while (!chat_log_error_buf.empty()) {
+		std::wstring error_message = utf8_to_wide(chat_log_error_buf.get());
+		if (!g_settings->getBool("disable_escape_sequences")) {
+			error_message = L"\x1b(c@red)";
+			error_message.append(error_message).append(L"\x1b(c@white)");
+		}
+		chat_backend->addMessage(L"", error_message);
+	}
+
+	// Get new messages from client
+	std::wstring message;
+	while (client->getChatMessage(message)) {
+		chat_backend->addUnparsedMessage(message);
+	}
+
+	// Remove old messages
+	chat_backend->step(dtime);
+
+	// Display all messages in a static text element
+	m_game_ui->setChatText(chat_backend->getRecentChat(),
+		chat_backend->getRecentBuffer().getLineCount(), runData.profiler_current_page);
+}
+
+void Game::updateProfilerGUI()
+{
+	if (runData.profiler_current_page != 0) {
+		std::ostringstream os(std::ios_base::binary);
+		g_profiler->printPage(os, runData.profiler_current_page,
+			runData.profiler_max_page);
+
+		std::wstring text = translate_string(utf8_to_wide(os.str()));
+		setStaticText(guitext_profiler, text.c_str());
+
+		s32 w = g_fontengine->getTextWidth(text);
+
+		if (w < 400)
+			w = 400;
+
+		unsigned text_height = g_fontengine->getTextHeight();
+
+		core::position2di upper_left, lower_right;
+
+		upper_left.X  = 6;
+		upper_left.Y  = (text_height + 5) * 2;
+		lower_right.X = 12 + w;
+		lower_right.Y = upper_left.Y + (text_height + 1) * MAX_PROFILER_TEXT_ROWS;
+
+		s32 screen_height = driver->getScreenSize().Height;
+
+		if (lower_right.Y > screen_height * 2 / 3)
+			lower_right.Y = screen_height * 2 / 3;
+
+		guitext_profiler->setRelativePosition(core::rect<s32>(upper_left, lower_right));
+	}
+
+	guitext_profiler->setVisible(runData.profiler_current_page != 0);
+}
+
 
 void Game::updateCamera(u32 busy_time, f32 dtime)
 {
@@ -4191,9 +4149,7 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 
 	v2u32 screensize = driver->getScreenSize();
 
-	updateChat(*client, dtime, m_game_ui->m_flags.show_debug, screensize,
-		m_game_ui->m_flags.show_chat, runData.profiler_current_page,
-			*chat_backend, guitext_chat);
+	updateChat(dtime, screensize);
 
 	/*
 		Inventory

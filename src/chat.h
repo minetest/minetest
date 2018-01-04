@@ -265,7 +265,7 @@ public:
 	// Get the recent messages buffer
 	ChatBuffer& getRecentBuffer();
 	// Concatenate all recent messages
-	EnrichedString getRecentChat();
+	EnrichedString getRecentChat() const;
 	// Get the console prompt
 	ChatPrompt& getPrompt();
 
@@ -285,7 +285,7 @@ public:
 
 	// Resize recent buffer based on settings
 	void applySettings();
-    
+
 private:
 	ChatBuffer m_console_buffer;
 	ChatBuffer m_recent_buffer;

@@ -708,11 +708,10 @@ ChatBuffer& ChatBackend::getRecentBuffer()
 	return m_recent_buffer;
 }
 
-EnrichedString ChatBackend::getRecentChat()
+EnrichedString ChatBackend::getRecentChat() const
 {
 	EnrichedString result;
-	for (u32 i = 0; i < m_recent_buffer.getLineCount(); ++i)
-	{
+	for (u32 i = 0; i < m_recent_buffer.getLineCount(); ++i) {
 		const ChatLine& line = m_recent_buffer.getLine(i);
 		if (i != 0)
 			result += L"\n";
