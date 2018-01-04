@@ -1157,7 +1157,6 @@ struct GameRunData {
 	float jump_timer;
 	float damage_flash;
 	float update_draw_list_timer;
-	float statustext_time;
 
 	f32 fog_range;
 
@@ -1303,7 +1302,6 @@ protected:
 			const ToolCapabilities &playeritem_toolcap, f32 dtime);
 	void updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 			const CameraOrientation &cam);
-	void updateGui(const RunStats &stats, f32 dtime, const CameraOrientation &cam);
 	void updateProfilerGraphs(ProfilerGraph *graph);
 
 	// Misc
@@ -1437,11 +1435,8 @@ private:
 
 	/* GUI stuff
 	 */
-	gui::IGUIStaticText *guitext_status;
 	gui::IGUIStaticText *guitext_chat;	   // Chat text
 	gui::IGUIStaticText *guitext_profiler; // Profiler text
-
-	std::wstring m_statustext;
 
 	KeyCache keycache;
 
@@ -1981,13 +1976,6 @@ bool Game::initGui()
 {
 	m_game_ui->init();
 
-	// Status text (displays info when showing and hiding GUI stuff, etc.)
-	guitext_status = gui::StaticText::add(guienv,
-			L"<Status>",
-			core::rect<s32>(0, 0, 0, 0),
-			false, false, guiroot);
-	guitext_status->setVisible(false);
-
 	// Chat text
 	guitext_chat = gui::StaticText::add(
 			guienv,
@@ -2488,7 +2476,6 @@ void Game::processKeyInput()
 			showStatusTextSimple("Sound muted");
 		else
 			showStatusTextSimple("Sound unmuted");
-		runData.statustext_time = 0;
 	} else if (wasKeyDown(KeyType::INC_VOLUME)) {
 		float new_volume = rangelim(g_settings->getFloat("sound_volume") + 0.1f, 0.0f, 1.0f);
 		wchar_t buf[100];
@@ -2496,8 +2483,7 @@ void Game::processKeyInput()
 		const wchar_t *str = wgettext("Volume changed to %d%%");
 		swprintf(buf, sizeof(buf) / sizeof(wchar_t), str, myround(new_volume * 100));
 		delete[] str;
-		m_statustext = buf;
-		runData.statustext_time = 0;
+		m_game_ui->showStatusText(buf);
 	} else if (wasKeyDown(KeyType::DEC_VOLUME)) {
 		float new_volume = rangelim(g_settings->getFloat("sound_volume") - 0.1f, 0.0f, 1.0f);
 		wchar_t buf[100];
@@ -2505,8 +2491,7 @@ void Game::processKeyInput()
 		const wchar_t *str = wgettext("Volume changed to %d%%");
 		swprintf(buf, sizeof(buf) / sizeof(wchar_t), str, myround(new_volume * 100));
 		delete[] str;
-		m_statustext = buf;
-		runData.statustext_time = 0;
+		m_game_ui->showStatusText(buf);
 	} else if (wasKeyDown(KeyType::CINEMATIC)) {
 		toggleCinematic();
 	} else if (wasKeyDown(KeyType::SCREENSHOT)) {
@@ -2549,8 +2534,7 @@ void Game::processKeyInput()
 	}
 
 	if (quicktune->hasMessage()) {
-		m_statustext = utf8_to_wide(quicktune->getMessage());
-		runData.statustext_time = 0.0f;
+		m_game_ui->showStatusText(utf8_to_wide(quicktune->getMessage()));
 	}
 }
 
@@ -2671,8 +2655,6 @@ void Game::toggleFreeMove()
 	bool free_move = !g_settings->getBool("free_move");
 	g_settings->set("free_move", bool_to_cstr(free_move));
 
-	runData.statustext_time = 0;
-
 	if (free_move) {
 		if (client->checkPrivilege("fly")) {
 			showStatusTextSimple("Fly mode enabled");
@@ -2699,8 +2681,6 @@ void Game::toggleFast()
 	bool fast_move = !g_settings->getBool("fast_move");
 	g_settings->set("fast_move", bool_to_cstr(fast_move));
 
-	runData.statustext_time = 0;
-
 	if (fast_move) {
 		if (client->checkPrivilege("fast")) {
 			showStatusTextSimple("Fast mode enabled");
@@ -2722,7 +2702,6 @@ void Game::toggleNoClip()
 	bool noclip = !g_settings->getBool("noclip");
 	g_settings->set("noclip", bool_to_cstr(noclip));
 
-	runData.statustext_time = 0;
 	if (noclip) {
 		if (client->checkPrivilege("noclip")) {
 			showStatusTextSimple("Noclip mode enabled");
@@ -2739,7 +2718,6 @@ void Game::toggleCinematic()
 	bool cinematic = !g_settings->getBool("cinematic");
 	g_settings->set("cinematic", bool_to_cstr(cinematic));
 
-	runData.statustext_time = 0;
 	if (cinematic)
 		showStatusTextSimple("Cinematic mode enabled");
 	else
@@ -2752,7 +2730,6 @@ void Game::toggleAutoforward()
 	bool autorun_enabled = !g_settings->getBool("continuous_forward");
 	g_settings->set("continuous_forward", bool_to_cstr(autorun_enabled));
 
-	runData.statustext_time = 0;
 	if (autorun_enabled)
 		showStatusTextSimple("Automatic forwards enabled");
 	else
@@ -2762,7 +2739,6 @@ void Game::toggleAutoforward()
 void Game::toggleChat()
 {
 	m_game_ui->m_flags.show_chat = !m_game_ui->m_flags.show_chat;
-	runData.statustext_time = 0;
 	if (m_game_ui->m_flags.show_chat)
 		showStatusTextSimple("Chat shown");
 	else
@@ -2773,7 +2749,6 @@ void Game::toggleChat()
 void Game::toggleHud()
 {
 	m_game_ui->m_flags.show_hud = !m_game_ui->m_flags.show_hud;
-	runData.statustext_time = 0;
 	if (m_game_ui->m_flags.show_hud)
 		showStatusTextSimple("HUD shown");
 	else
@@ -2830,18 +2805,16 @@ void Game::toggleMinimap(bool shift_pressed)
 				showStatusTextSimple("Minimap currently disabled by game or mod");
 	}
 
-	runData.statustext_time = 0;
 	mapper->setMinimapMode(mode);
 }
 
 void Game::toggleFog()
 {
 	m_game_ui->m_flags.force_fog_off = !m_game_ui->m_flags.force_fog_off;
-	runData.statustext_time = 0;
-        if (m_game_ui->m_flags.force_fog_off)
-                showStatusTextSimple("Fog disabled");
-        else
-                showStatusTextSimple("Fog enabled");
+	if (m_game_ui->m_flags.force_fog_off)
+			showStatusTextSimple("Fog disabled");
+	else
+			showStatusTextSimple("Fog enabled");
 }
 
 
@@ -2873,14 +2846,12 @@ void Game::toggleDebug()
 			showStatusTextSimple("Debug info and profiler graph hidden");
 		}
 	}
-	runData.statustext_time = 0;
 }
 
 
 void Game::toggleUpdateCamera()
 {
 	m_game_ui->m_flags.disable_camera_update = !m_game_ui->m_flags.disable_camera_update;
-	runData.statustext_time = 0;
 	if (m_game_ui->m_flags.disable_camera_update)
 		showStatusTextSimple("Camera update disabled");
 	else
@@ -2904,11 +2875,10 @@ void Game::toggleProfiler()
 				runData.profiler_current_page,
 				runData.profiler_max_page);
 		delete[] str;
-		m_statustext = buf;
+		m_game_ui->showStatusText(buf);
 	} else {
 		showStatusTextSimple("Profiler hidden");
 	}
-	runData.statustext_time = 0;
 }
 
 
@@ -2924,16 +2894,15 @@ void Game::increaseViewRange()
 		str = wgettext("Viewing range is at maximum: %d");
 		swprintf(buf, sizeof(buf) / sizeof(wchar_t), str, range_new);
 		delete[] str;
-		m_statustext = buf;
+		m_game_ui->showStatusText(buf);
 
 	} else {
 		str = wgettext("Viewing range changed to %d");
 		swprintf(buf, sizeof(buf) / sizeof(wchar_t), str, range_new);
 		delete[] str;
-		m_statustext = buf;
+		m_game_ui->showStatusText(buf);
 	}
 	g_settings->set("viewing_range", itos(range_new));
-	runData.statustext_time = 0;
 }
 
 
@@ -2949,22 +2918,20 @@ void Game::decreaseViewRange()
 		str = wgettext("Viewing range is at minimum: %d");
 		swprintf(buf, sizeof(buf) / sizeof(wchar_t), str, range_new);
 		delete[] str;
-		m_statustext = buf;
+		m_game_ui->showStatusText(buf);
 	} else {
 		str = wgettext("Viewing range changed to %d");
 		swprintf(buf, sizeof(buf) / sizeof(wchar_t), str, range_new);
 		delete[] str;
-		m_statustext = buf;
+		m_game_ui->showStatusText(buf);
 	}
 	g_settings->set("viewing_range", itos(range_new));
-	runData.statustext_time = 0;
 }
 
 
 void Game::toggleFullViewRange()
 {
 	draw_control->range_all = !draw_control->range_all;
-	runData.statustext_time = 0;
 	if (draw_control->range_all)
 		showStatusTextSimple("Enabled unlimited viewing range");
 	else
@@ -4274,7 +4241,7 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 		runData.update_draw_list_last_cam_dir = camera_direction;
 	}
 
-	updateGui(*stats, dtime, cam);
+	m_game_ui->update(*stats, client, draw_control, cam, runData.pointed_old, dtime);
 
 	/*
 	   make sure menu is on top
@@ -4358,55 +4325,6 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 	g_profiler->graphAdd("mainloop_draw", stats->drawtime / 1000.0f);
 }
 
-
-void Game::updateGui(const RunStats &stats, f32 dtime, const CameraOrientation &cam)
-{
-	v2u32 screensize = RenderingEngine::get_instance()->getWindowSize();
-
-	m_game_ui->update(stats, client, draw_control, cam, runData.pointed_old);
-
-	float statustext_time_max = 1.5;
-
-	if (!m_statustext.empty()) {
-		runData.statustext_time += dtime;
-
-		if (runData.statustext_time >= statustext_time_max) {
-			m_statustext = L"";
-			runData.statustext_time = 0;
-		}
-	}
-
-	setStaticText(guitext_status, translate_string(m_statustext).c_str());
-	guitext_status->setVisible(!m_statustext.empty());
-
-	if (!m_statustext.empty()) {
-		s32 status_width  = guitext_status->getTextWidth();
-		s32 status_height = guitext_status->getTextHeight();
-		s32 status_y = screensize.Y - 150;
-		s32 status_x = (screensize.X - status_width) / 2;
-		core::rect<s32> rect(
-				status_x , status_y - status_height,
-				status_x + status_width, status_y
-		);
-		guitext_status->setRelativePosition(rect);
-
-		// Fade out
-		video::SColor initial_color(255, 0, 0, 0);
-
-		if (guienv->getSkin())
-			initial_color = guienv->getSkin()->getColor(gui::EGDC_BUTTON_TEXT);
-
-		video::SColor final_color = initial_color;
-		final_color.setAlpha(0);
-		video::SColor fade_color = initial_color.getInterpolated_quadratic(
-				initial_color, final_color,
-				pow(runData.statustext_time / statustext_time_max, 2.0f));
-		guitext_status->setOverrideColor(fade_color);
-		guitext_status->enableOverrideColor(true);
-	}
-}
-
-
 /* Log times and stuff for visualization */
 inline void Game::updateProfilerGraphs(ProfilerGraph *graph)
 {
@@ -4474,7 +4392,7 @@ void Game::showOverlayMessage(const char *msg, float dtime, int percent, bool dr
 void Game::showStatusTextSimple(const char *msg)
 {
 	const wchar_t *wmsg = wgettext(msg);
-	m_statustext = wmsg;
+	m_game_ui->showStatusText(wmsg);
 	delete[] wmsg;
 }
 
