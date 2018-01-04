@@ -573,6 +573,10 @@ PlayerSAO *ServerEnvironment::loadPlayer(RemotePlayer *player, bool *new_player,
 			playersao->setBasePosition(m_server->findSpawnPos());
 		}
 	}
+	// Initialize remote player position from deserialized SAO position
+	// This is the server's "copy" of the client's player position,
+	// for movement verification
+	player->setPosition(playersao->getBasePosition());
 
 	// Add player to environment
 	addPlayer(player);
