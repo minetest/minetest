@@ -51,6 +51,8 @@ public:
 	void update(float m_time_of_day, float time_brightness, float direct_brightness,
 			bool sunlight_seen, CameraMode cam_mode, float yaw, float pitch);
 
+	const v3f &getSunPosition() const { return m_sunPosition; }
+
 	float getBrightness() { return m_brightness; }
 
 	const video::SColor &getBgColor() const
@@ -145,4 +147,5 @@ private:
 	video::ITexture *m_moon_texture;
 	video::ITexture *m_sun_tonemap;
 	video::ITexture *m_moon_tonemap;
+	v3f m_sunPosition;
 };

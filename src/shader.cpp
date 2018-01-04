@@ -209,11 +209,13 @@ class MainShaderConstantSetter : public IShaderConstantSetter
 {
 	CachedVertexShaderSetting<float, 16> m_world_view_proj;
 	CachedVertexShaderSetting<float, 16> m_world;
+	CachedVertexShaderSetting<float, 16> m_shadow_matrix;
 
 public:
 	MainShaderConstantSetter() :
 		m_world_view_proj("mWorldViewProj"),
-		m_world("mWorld")
+		m_world("mWorld"),
+		m_shadow_matrix("mShadowMatrix")
 	{}
 	~MainShaderConstantSetter() = default;
 
@@ -239,6 +241,13 @@ public:
 			m_world.set(*reinterpret_cast<float(*)[16]>(world.pointer()), services);
 		else
 			services->setVertexShaderConstant(world.pointer(), 4, 4);
+
+
+		core::matrix4 ShadowMatrix = RenderingEngine::get_instance()->getShadowMatrix();
+		if (is_highlevel)
+			m_shadow_matrix.set(*reinterpret_cast<float(*)[16]>(ShadowMatrix.pointer()), services);
+		else
+			services->setVertexShaderConstant(ShadowMatrix.pointer(), 4, 4);
 
 	}
 };

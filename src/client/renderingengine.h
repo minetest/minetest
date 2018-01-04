@@ -32,6 +32,8 @@ class Client;
 class LocalPlayer;
 class Hud;
 class Minimap;
+class Sky;
+class Clouds;
 
 class RenderingCore;
 
@@ -43,6 +45,8 @@ public:
 
 	v2u32 getWindowSize() const;
 	void setResizable(bool resize);
+
+	const core::matrix4 &getShadowMatrix() const;
 
 	video::IVideoDriver *getVideoDriver() { return driver; }
 
@@ -111,15 +115,16 @@ public:
 	}
 
 	inline static void draw_scene(video::SColor skycolor, bool show_hud,
-			bool show_minimap, bool draw_wield_tool, bool draw_crosshair)
+			bool show_minimap, bool draw_wield_tool, bool draw_crosshair,
+			Sky &sky, Clouds &clouds)
 	{
 		s_singleton->_draw_scene(skycolor, show_hud, show_minimap,
-				draw_wield_tool, draw_crosshair);
+				draw_wield_tool, draw_crosshair, sky, clouds);
 	}
 
-	inline static void initialize(Client *client, Hud *hud)
+	inline static void initialize(Client *client, Hud *hud, Sky *sky)
 	{
-		s_singleton->_initialize(client, hud);
+		s_singleton->_initialize(client, hud, sky);
 	}
 
 	inline static void finalize() { s_singleton->_finalize(); }
@@ -139,9 +144,10 @@ private:
 			bool clouds = true);
 
 	void _draw_scene(video::SColor skycolor, bool show_hud, bool show_minimap,
-			bool draw_wield_tool, bool draw_crosshair);
+			bool draw_wield_tool, bool draw_crosshair,
+			Sky &sky, Clouds &clouds);
 
-	void _initialize(Client *client, Hud *hud);
+	void _initialize(Client *client, Hud *hud, Sky *sky);
 
 	void _finalize();
 
