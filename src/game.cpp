@@ -1212,7 +1212,6 @@ protected:
 
 	void showOverlayMessage(const char *msg, float dtime, int percent,
 			bool draw_clouds = true);
-	void showStatusTextSimple(const char *msg);
 
 	static void settingChangedCallback(const std::string &setting_name, void *data);
 	void readSettings();
@@ -1277,7 +1276,6 @@ private:
 	void handleClientEvent_CloudParams(ClientEvent *event, CameraOrientation *cam);
 
 	void updateChat(f32 dtime, const v2u32 &screensize);
-	void updateProfilerGUI();
 	static const ClientEventHandler clientEventHandler[CLIENTEVENT_MAX];
 
 	InputHandler *input;
@@ -1337,10 +1335,6 @@ private:
 	/* Pre-calculated values
 	 */
 	int crack_animation_length;
-
-	/* GUI stuff
-	 */
-	gui::IGUIStaticText *guitext_profiler; // Profiler text
 
 	KeyCache keycache;
 
@@ -1895,15 +1889,6 @@ bool Game::initGui()
 		return false;
 	}
 
-	// Profiler text (size is updated when text is updated)
-	guitext_profiler = gui::StaticText::add(guienv,
-			L"<Profiler>",
-			core::rect<s32>(0, 0, 0, 0),
-			false, false, guiroot);
-	guitext_profiler->setBackgroundColor(video::SColor(120, 0, 0, 0));
-	guitext_profiler->setVisible(false);
-	guitext_profiler->setWordWrap(true);
-
 #ifdef HAVE_TOUCHSCREENGUI
 
 	if (g_touchscreengui)
@@ -2216,7 +2201,8 @@ void Game::updateProfilers(const RunStats &stats, const FpsControl &draw_times, 
 			g_profiler->print(infostream);
 		}
 
-		updateProfilerGUI();
+		m_game_ui->updateProfiler(runData.profiler_current_page,
+			runData.profiler_max_page);
 
 		g_profiler->clear();
 	}
@@ -2367,9 +2353,9 @@ void Game::processKeyInput()
 		bool new_mute_sound = !g_settings->getBool("mute_sound");
 		g_settings->setBool("mute_sound", new_mute_sound);
 		if (new_mute_sound)
-			showStatusTextSimple("Sound muted");
+			m_game_ui->showTranslatedStatusText("Sound muted");
 		else
-			showStatusTextSimple("Sound unmuted");
+			m_game_ui->showTranslatedStatusText("Sound unmuted");
 	} else if (wasKeyDown(KeyType::INC_VOLUME)) {
 		float new_volume = rangelim(g_settings->getFloat("sound_volume") + 0.1f, 0.0f, 1.0f);
 		wchar_t buf[100];
@@ -2551,15 +2537,14 @@ void Game::toggleFreeMove()
 
 	if (free_move) {
 		if (client->checkPrivilege("fly")) {
-			showStatusTextSimple("Fly mode enabled");
+			m_game_ui->showTranslatedStatusText("Fly mode enabled");
 		} else {
-			showStatusTextSimple("Fly mode enabled (note: no 'fly' privilege)");
+			m_game_ui->showTranslatedStatusText("Fly mode enabled (note: no 'fly' privilege)");
 		}
 	} else {
-		showStatusTextSimple("Fly mode disabled");
+		m_game_ui->showTranslatedStatusText("Fly mode disabled");
 	}
 }
-
 
 void Game::toggleFreeMoveAlt()
 {
@@ -2577,12 +2562,12 @@ void Game::toggleFast()
 
 	if (fast_move) {
 		if (client->checkPrivilege("fast")) {
-			showStatusTextSimple("Fast mode enabled");
+			m_game_ui->showTranslatedStatusText("Fast mode enabled");
 		} else {
-			showStatusTextSimple("Fast mode enabled (note: no 'fast' privilege)");
+			m_game_ui->showTranslatedStatusText("Fast mode enabled (note: no 'fast' privilege)");
 		}
 	} else {
-		showStatusTextSimple("Fast mode disabled");
+		m_game_ui->showTranslatedStatusText("Fast mode disabled");
 	}
 
 #ifdef __ANDROID__
@@ -2598,12 +2583,12 @@ void Game::toggleNoClip()
 
 	if (noclip) {
 		if (client->checkPrivilege("noclip")) {
-			showStatusTextSimple("Noclip mode enabled");
+			m_game_ui->showTranslatedStatusText("Noclip mode enabled");
 		} else {
-			showStatusTextSimple("Noclip mode enabled (note: no 'noclip' privilege)");
+			m_game_ui->showTranslatedStatusText("Noclip mode enabled (note: no 'noclip' privilege)");
 		}
 	} else {
-		showStatusTextSimple("Noclip mode disabled");
+		m_game_ui->showTranslatedStatusText("Noclip mode disabled");
 	}
 }
 
@@ -2613,9 +2598,9 @@ void Game::toggleCinematic()
 	g_settings->set("cinematic", bool_to_cstr(cinematic));
 
 	if (cinematic)
-		showStatusTextSimple("Cinematic mode enabled");
+		m_game_ui->showTranslatedStatusText("Cinematic mode enabled");
 	else
-		showStatusTextSimple("Cinematic mode disabled");
+		m_game_ui->showTranslatedStatusText("Cinematic mode disabled");
 }
 
 // Autoforward by toggling continuous forward.
@@ -2625,18 +2610,18 @@ void Game::toggleAutoforward()
 	g_settings->set("continuous_forward", bool_to_cstr(autorun_enabled));
 
 	if (autorun_enabled)
-		showStatusTextSimple("Automatic forwards enabled");
+		m_game_ui->showTranslatedStatusText("Automatic forwards enabled");
 	else
-		showStatusTextSimple("Automatic forwards disabled");
+		m_game_ui->showTranslatedStatusText("Automatic forwards disabled");
 }
 
 void Game::toggleChat()
 {
 	m_game_ui->m_flags.show_chat = !m_game_ui->m_flags.show_chat;
 	if (m_game_ui->m_flags.show_chat)
-		showStatusTextSimple("Chat shown");
+		m_game_ui->showTranslatedStatusText("Chat shown");
 	else
-		showStatusTextSimple("Chat hidden");
+		m_game_ui->showTranslatedStatusText("Chat hidden");
 }
 
 
@@ -2644,9 +2629,9 @@ void Game::toggleHud()
 {
 	m_game_ui->m_flags.show_hud = !m_game_ui->m_flags.show_hud;
 	if (m_game_ui->m_flags.show_hud)
-		showStatusTextSimple("HUD shown");
+		m_game_ui->showTranslatedStatusText("HUD shown");
 	else
-		showStatusTextSimple("HUD hidden");
+		m_game_ui->showTranslatedStatusText("HUD hidden");
 }
 
 void Game::toggleMinimap(bool shift_pressed)
@@ -2673,30 +2658,30 @@ void Game::toggleMinimap(bool shift_pressed)
 	m_game_ui->m_flags.show_minimap = true;
 	switch (mode) {
 		case MINIMAP_MODE_SURFACEx1:
-			showStatusTextSimple("Minimap in surface mode, Zoom x1");
+			m_game_ui->showTranslatedStatusText("Minimap in surface mode, Zoom x1");
 			break;
 		case MINIMAP_MODE_SURFACEx2:
-			showStatusTextSimple("Minimap in surface mode, Zoom x2");
+			m_game_ui->showTranslatedStatusText("Minimap in surface mode, Zoom x2");
 			break;
 		case MINIMAP_MODE_SURFACEx4:
-			showStatusTextSimple("Minimap in surface mode, Zoom x4");
+			m_game_ui->showTranslatedStatusText("Minimap in surface mode, Zoom x4");
 			break;
 		case MINIMAP_MODE_RADARx1:
-			showStatusTextSimple("Minimap in radar mode, Zoom x1");
+			m_game_ui->showTranslatedStatusText("Minimap in radar mode, Zoom x1");
 			break;
 		case MINIMAP_MODE_RADARx2:
-			showStatusTextSimple("Minimap in radar mode, Zoom x2");
+			m_game_ui->showTranslatedStatusText("Minimap in radar mode, Zoom x2");
 			break;
 		case MINIMAP_MODE_RADARx4:
-			showStatusTextSimple("Minimap in radar mode, Zoom x4");
+			m_game_ui->showTranslatedStatusText("Minimap in radar mode, Zoom x4");
 			break;
 		default:
 			mode = MINIMAP_MODE_OFF;
 			m_game_ui->m_flags.show_minimap = false;
 			if (hud_flags & HUD_FLAG_MINIMAP_VISIBLE)
-				showStatusTextSimple("Minimap hidden");
+				m_game_ui->showTranslatedStatusText("Minimap hidden");
 			else
-				showStatusTextSimple("Minimap currently disabled by game or mod");
+				m_game_ui->showTranslatedStatusText("Minimap currently disabled by game or mod");
 	}
 
 	mapper->setMinimapMode(mode);
@@ -2706,9 +2691,9 @@ void Game::toggleFog()
 {
 	m_game_ui->m_flags.force_fog_off = !m_game_ui->m_flags.force_fog_off;
 	if (m_game_ui->m_flags.force_fog_off)
-			showStatusTextSimple("Fog disabled");
+			m_game_ui->showTranslatedStatusText("Fog disabled");
 	else
-			showStatusTextSimple("Fog enabled");
+			m_game_ui->showTranslatedStatusText("Fog enabled");
 }
 
 
@@ -2722,22 +2707,22 @@ void Game::toggleDebug()
 		m_game_ui->m_flags.show_debug = true;
 		m_game_ui->m_flags.show_profiler_graph = false;
 		draw_control->show_wireframe = false;
-		showStatusTextSimple("Debug info shown");
+		m_game_ui->showTranslatedStatusText("Debug info shown");
 	} else if (!m_game_ui->m_flags.show_profiler_graph && !draw_control->show_wireframe) {
 		m_game_ui->m_flags.show_profiler_graph = true;
-		showStatusTextSimple("Profiler graph shown");
+		m_game_ui->showTranslatedStatusText("Profiler graph shown");
 	} else if (!draw_control->show_wireframe && client->checkPrivilege("debug")) {
 		m_game_ui->m_flags.show_profiler_graph = false;
 		draw_control->show_wireframe = true;
-		showStatusTextSimple("Wireframe shown");
+		m_game_ui->showTranslatedStatusText("Wireframe shown");
 	} else {
 		m_game_ui->m_flags.show_debug = false;
 		m_game_ui->m_flags.show_profiler_graph = false;
 		draw_control->show_wireframe = false;
 		if (client->checkPrivilege("debug")) {
-			showStatusTextSimple("Debug info, profiler graph, and wireframe hidden");
+			m_game_ui->showTranslatedStatusText("Debug info, profiler graph, and wireframe hidden");
 		} else {
-			showStatusTextSimple("Debug info and profiler graph hidden");
+			m_game_ui->showTranslatedStatusText("Debug info and profiler graph hidden");
 		}
 	}
 }
@@ -2747,9 +2732,9 @@ void Game::toggleUpdateCamera()
 {
 	m_game_ui->m_flags.disable_camera_update = !m_game_ui->m_flags.disable_camera_update;
 	if (m_game_ui->m_flags.disable_camera_update)
-		showStatusTextSimple("Camera update disabled");
+		m_game_ui->showTranslatedStatusText("Camera update disabled");
 	else
-		showStatusTextSimple("Camera update enabled");
+		m_game_ui->showTranslatedStatusText("Camera update enabled");
 }
 
 
@@ -2759,19 +2744,7 @@ void Game::toggleProfiler()
 		(runData.profiler_current_page + 1) % (runData.profiler_max_page + 1);
 
 	// FIXME: This updates the profiler with incomplete values
-	updateProfilerGUI();
-
-	if (runData.profiler_current_page != 0) {
-		wchar_t buf[255];
-		const wchar_t* str = wgettext("Profiler shown (page %d of %d)");
-		swprintf(buf, sizeof(buf) / sizeof(wchar_t), str,
-				runData.profiler_current_page,
-				runData.profiler_max_page);
-		delete[] str;
-		m_game_ui->showStatusText(buf);
-	} else {
-		showStatusTextSimple("Profiler hidden");
-	}
+	m_game_ui->updateProfiler(runData.profiler_current_page, runData.profiler_max_page);
 }
 
 
@@ -2826,9 +2799,9 @@ void Game::toggleFullViewRange()
 {
 	draw_control->range_all = !draw_control->range_all;
 	if (draw_control->range_all)
-		showStatusTextSimple("Enabled unlimited viewing range");
+		m_game_ui->showTranslatedStatusText("Enabled unlimited viewing range");
 	else
-		showStatusTextSimple("Disabled unlimited viewing range");
+		m_game_ui->showTranslatedStatusText("Disabled unlimited viewing range");
 }
 
 
@@ -2836,7 +2809,7 @@ void Game::checkZoomEnabled()
 {
 	LocalPlayer *player = client->getEnv().getLocalPlayer();
 	if (player->getZoomFOV() < 0.001f)
-		showStatusTextSimple("Zoom currently disabled by game or mod");
+		m_game_ui->showTranslatedStatusText("Zoom currently disabled by game or mod");
 }
 
 
@@ -3305,42 +3278,6 @@ void Game::updateChat(f32 dtime, const v2u32 &screensize)
 	m_game_ui->setChatText(chat_backend->getRecentChat(),
 		chat_backend->getRecentBuffer().getLineCount(), runData.profiler_current_page);
 }
-
-void Game::updateProfilerGUI()
-{
-	if (runData.profiler_current_page != 0) {
-		std::ostringstream os(std::ios_base::binary);
-		g_profiler->printPage(os, runData.profiler_current_page,
-			runData.profiler_max_page);
-
-		std::wstring text = translate_string(utf8_to_wide(os.str()));
-		setStaticText(guitext_profiler, text.c_str());
-
-		s32 w = g_fontengine->getTextWidth(text);
-
-		if (w < 400)
-			w = 400;
-
-		unsigned text_height = g_fontengine->getTextHeight();
-
-		core::position2di upper_left, lower_right;
-
-		upper_left.X  = 6;
-		upper_left.Y  = (text_height + 5) * 2;
-		lower_right.X = 12 + w;
-		lower_right.Y = upper_left.Y + (text_height + 1) * MAX_PROFILER_TEXT_ROWS;
-
-		s32 screen_height = driver->getScreenSize().Height;
-
-		if (lower_right.Y > screen_height * 2 / 3)
-			lower_right.Y = screen_height * 2 / 3;
-
-		guitext_profiler->setRelativePosition(core::rect<s32>(upper_left, lower_right));
-	}
-
-	guitext_profiler->setVisible(runData.profiler_current_page != 0);
-}
-
 
 void Game::updateCamera(u32 busy_time, f32 dtime)
 {
@@ -4342,13 +4279,6 @@ void Game::showOverlayMessage(const char *msg, float dtime, int percent, bool dr
 	const wchar_t *wmsg = wgettext(msg);
 	RenderingEngine::draw_load_screen(wmsg, guienv, texture_src, dtime, percent,
 		draw_clouds);
-	delete[] wmsg;
-}
-
-void Game::showStatusTextSimple(const char *msg)
-{
-	const wchar_t *wmsg = wgettext(msg);
-	m_game_ui->showStatusText(wmsg);
 	delete[] wmsg;
 }
 
