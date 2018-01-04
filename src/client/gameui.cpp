@@ -20,12 +20,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "gameui.h"
 #include <irrlicht_changes/static_text.h>
+#include <gettext.h>
 #include "gui/mainmenumanager.h"
 #include "util/pointedthing.h"
 #include "client.h"
 #include "clientmap.h"
 #include "fontengine.h"
 #include "nodedef.h"
+#include "profiler.h"
 #include "renderingengine.h"
 #include "version.h"
 
@@ -64,6 +66,13 @@ void GameUI::init()
 	m_guitext_chat = gui::StaticText::add(guienv, L"", core::rect<s32>(0, 0, 0, 0),
 		//false, false); // Disable word wrap as of now
 		false, true, guiroot);
+
+	// Profiler text (size is updated when text is updated)
+	m_guitext_profiler = gui::StaticText::add(guienv, L"<Profiler>",
+		core::rect<s32>(0, 0, 0, 0), false, false, guiroot);
+	m_guitext_profiler->setBackgroundColor(video::SColor(120, 0, 0, 0));
+	m_guitext_profiler->setVisible(false);
+	m_guitext_profiler->setWordWrap(true);
 }
 
 void GameUI::update(const RunStats &stats, Client *client, MapDrawControl *draw_control,
@@ -188,6 +197,13 @@ void GameUI::showMinimap(bool show)
 	m_flags.show_minimap = show;
 }
 
+void GameUI::showTranslatedStatusText(const char *str)
+{
+	const wchar_t *wmsg = wgettext(str);
+	showStatusText(wmsg);
+	delete[] wmsg;
+}
+
 void GameUI::setChatText(const EnrichedString &chat_text, u32 recent_chat_count,
 	u32 profiler_current_page)
 {
@@ -213,4 +229,50 @@ void GameUI::setChatText(const EnrichedString &chat_text, u32 recent_chat_count,
 	// Don't show chat if disabled or empty or profiler is enabled
 	m_guitext_chat->setVisible(m_flags.show_chat &&
 		recent_chat_count != 0 && profiler_current_page == 0);
+}
+
+void GameUI::updateProfiler(u32 profiler_current_page, u32 profiler_max_page)
+{
+	if (profiler_current_page != 0) {
+		std::ostringstream os(std::ios_base::binary);
+		g_profiler->printPage(os, profiler_current_page,
+			profiler_max_page);
+
+		std::wstring text = translate_string(utf8_to_wide(os.str()));
+		setStaticText(m_guitext_profiler, text.c_str());
+
+		s32 w = g_fontengine->getTextWidth(text);
+
+		if (w < 400)
+			w = 400;
+
+		unsigned text_height = g_fontengine->getTextHeight();
+
+		core::position2di upper_left, lower_right;
+
+		upper_left.X  = 6;
+		upper_left.Y  = (text_height + 5) * 2;
+		lower_right.X = 12 + w;
+		lower_right.Y = upper_left.Y + (text_height + 1) * MAX_PROFILER_TEXT_ROWS;
+
+		s32 screen_height = RenderingEngine::get_video_driver()->getScreenSize().Height;
+
+		if (lower_right.Y > screen_height * 2 / 3)
+			lower_right.Y = screen_height * 2 / 3;
+
+		m_guitext_profiler->setRelativePosition(core::rect<s32>(upper_left, lower_right));
+	}
+
+	m_guitext_profiler->setVisible(profiler_current_page != 0);
+
+	if (profiler_current_page != 0) {
+		wchar_t buf[255];
+		const wchar_t* str = wgettext("Profiler shown (page %d of %d)");
+		swprintf(buf, sizeof(buf) / sizeof(wchar_t), str,
+			profiler_current_page, profiler_max_page);
+		delete[] str;
+		showStatusText(buf);
+	} else {
+		showTranslatedStatusText("Profiler hidden");
+	}
 }

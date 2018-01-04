@@ -71,15 +71,18 @@ public:
 		m_statustext = str;
 		m_statustext_time = 0.0f;
 	}
+	void showTranslatedStatusText(const char *str);
 	inline void clearStatusText() { m_statustext.clear(); }
 
 	void setChatText(const EnrichedString &chat_text, u32 recent_chat_count,
 			u32 profiler_current_page);
 
+	void updateProfiler(u32 profiler_current_page, u32 profiler_max_page);
+
 private:
 	Flags m_flags;
 
-	gui::IGUIStaticText *m_guitext = nullptr;  // First line of debug text
+	gui::IGUIStaticText *m_guitext = nullptr; // First line of debug text
 	gui::IGUIStaticText *m_guitext2 = nullptr; // Second line of debug text
 
 	gui::IGUIStaticText *m_guitext_info = nullptr; // At the middle of the screen
@@ -90,7 +93,5 @@ private:
 	float m_statustext_time = 0.0f;
 
 	gui::IGUIStaticText *m_guitext_chat; // Chat text
-
-	// @TODO future move
-	//	gui::IGUIStaticText *m_guitext_profiler; // Profiler text
+	gui::IGUIStaticText *m_guitext_profiler; // Profiler text
 };
