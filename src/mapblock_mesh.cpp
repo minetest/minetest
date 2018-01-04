@@ -206,7 +206,7 @@ static u16 getSmoothLightCombined(const v3s16 &p,
 	u16 light_day = 0;
 	u16 light_night = 0;
 
-	auto add_node = [&] (int i, bool obstructed = false) -> bool {
+	auto add_node = [&] (u8 i, bool obstructed = false) -> bool {
 		if (obstructed) {
 			ambient_occlusion++;
 			return false;
@@ -236,12 +236,12 @@ static u16 getSmoothLightCombined(const v3s16 &p,
 	obstructed[0] = opaque1 && opaque2;
 	obstructed[1] = opaque1 && opaque3;
 	obstructed[2] = opaque2 && opaque3;
-	for (int k = 0; k < 3; ++k)
+	for (u8 k = 0; k < 3; ++k)
 		if (add_node(k + 4, obstructed[k]))
 			obstructed[3] = false;
 	if (add_node(7, obstructed[3])) { // wrap light around nodes
 		ambient_occlusion -= 3;
-		for (int k = 0; k < 3; ++k)
+		for (u8 k = 0; k < 3; ++k)
 			add_node(k + 4, !obstructed[k]);
 	}
 
