@@ -50,6 +50,7 @@ BiomeManager::BiomeManager(Server *server) :
 	b->y_max           = MAX_MAP_GENERATION_LIMIT;
 	b->heat_point      = 0.0;
 	b->humidity_point  = 0.0;
+	b->vertical_blend  = 0;
 
 	b->m_nodenames.emplace_back("mapgen_stone");
 	b->m_nodenames.emplace_back("mapgen_stone");
@@ -201,25 +202,41 @@ Biome *BiomeGenOriginal::getBiomeAtIndex(size_t index, s16 y) const
 
 Biome *BiomeGenOriginal::calcBiomeFromNoise(float heat, float humidity, s16 y) const
 {
-	Biome *b, *biome_closest = NULL;
+	Biome *biome_closest = nullptr;
+	Biome *biome_closest_blend = nullptr;
 	float dist_min = FLT_MAX;
+	float dist_min_blend = FLT_MAX;
 
 	for (size_t i = 1; i < m_bmgr->getNumObjects(); i++) {
-		b = (Biome *)m_bmgr->getRaw(i);
-		if (!b || y > b->y_max || y < b->y_min)
+		Biome *b = (Biome *)m_bmgr->getRaw(i);
+		if (!b || y > b->y_max + b->vertical_blend || y < b->y_min)
 			continue;
 
-		float d_heat     = heat     - b->heat_point;
+		float d_heat = heat - b->heat_point;
 		float d_humidity = humidity - b->humidity_point;
-		float dist = (d_heat * d_heat) +
-					 (d_humidity * d_humidity);
-		if (dist < dist_min) {
-			dist_min = dist;
-			biome_closest = b;
+		float dist = (d_heat * d_heat) + (d_humidity * d_humidity);
+
+		if (y <= b->y_max) { // Within y limits of biome b
+			if (dist < dist_min) {
+				dist_min = dist;
+				biome_closest = b;
+			}
+		} else if (dist < dist_min_blend) { // Blend area above biome b
+			dist_min_blend = dist;
+			biome_closest_blend = b;
 		}
 	}
 
-	return biome_closest ? biome_closest : (Biome *)m_bmgr->getRaw(BIOME_NONE);
+	// Carefully tune pseudorandom seed variation to avoid single node dither
+	// and create larger scale blending patterns.
+	mysrand(y + (heat - humidity) * 2);
+
+	if (biome_closest_blend &&
+			myrand_range(0, biome_closest_blend->vertical_blend) >=
+			y - biome_closest_blend->y_max)
+		return biome_closest_blend;
+
+	return (biome_closest) ? biome_closest : (Biome *)m_bmgr->getRaw(BIOME_NONE);	
 }
 
 

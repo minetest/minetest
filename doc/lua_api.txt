@@ -4989,18 +4989,18 @@ Definition tables
         y_min = 1,
         y_max = 31000,
     --  ^ Lower and upper limits for biome.
+        vertical_blend = 8,
+    --  ^ Vertical distance in nodes above 'y_max' over which the biome will
+    --  ^ blend with the biome above.
+    --  ^ Set to 0 for no vertical blend. Defaults to 0.
         heat_point = 0,
         humidity_point = 50,
-    --  ^ Characteristic average temperature and humidity for the biome.
-    --  ^ These values create 'biome points' on a voronoi diagram that has heat
-    --  ^ and humidity as axes. The resulting voronoi cells determine which
-    --  ^ heat/humidity points belong to which biome, and therefore determine
-    --  ^ the area and location of each biome in the world.
-    --  ^ The biome points need to be carefully and evenly spaced on the voronoi
-    --  ^ diagram to result in roughly equal size biomes.
+    --  ^ Characteristic temperature and humidity for the biome.
+    --  ^ These values create 'biome points' on a voronoi diagram with heat and
+    --  ^ humidity as axes. The resulting voronoi cells determine the
+    --  ^ distribution of the biomes.
     --  ^ Heat and humidity have average values of 50, vary mostly between
-    --  ^ 0 and 100 but also often exceed these values.
-    --  ^ Heat is not in degrees Celsius, both values are abstract.
+    --  ^ 0 and 100 but can exceed these values.
     }
 
 ### Decoration definition (`register_decoration`)
