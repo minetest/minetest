@@ -1415,12 +1415,15 @@ mgv7_large_cave_depth (Large cave depth) int -33
 #    Y of upper limit of lava in large caves.
 mgv7_lava_depth (Lava depth) int -256
 
-#    Controls the density of floatland mountain terrain.
-#    Is an offset added to the 'np_mountain' noise value.
+#    Controls the density of mountain-type floatlands.
+#    Is a noise offset added to the 'mgv7_np_mountain' noise value.
 mgv7_float_mount_density (Floatland mountain density) float 0.6
 
-#    Typical maximum height, above and below midpoint, of floatland mountain terrain.
+#    Typical maximum height, above and below midpoint, of floatland mountains.
 mgv7_float_mount_height (Floatland mountain height) float 128.0
+
+#    Alters how mountain-type floatlands taper above and below midpoint.
+mgv7_float_mount_exponent (Floatland mountain exponent) float 0.75
 
 #    Y-level of floatland midpoint and lake surface.
 mgv7_floatland_level (Floatland level) int 1280
