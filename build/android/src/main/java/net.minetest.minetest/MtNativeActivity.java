@@ -10,6 +10,7 @@ public class MtNativeActivity extends NativeActivity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 		m_MessagReturnCode = -1;
 		m_MessageReturnValue = "";
 
