@@ -204,8 +204,7 @@ void GameUI::showTranslatedStatusText(const char *str)
 	delete[] wmsg;
 }
 
-void GameUI::setChatText(const EnrichedString &chat_text, u32 recent_chat_count,
-	u32 profiler_current_page)
+void GameUI::setChatText(const EnrichedString &chat_text, u32 recent_chat_count)
 {
 	setStaticText(m_guitext_chat, chat_text);
 
@@ -228,15 +227,14 @@ void GameUI::setChatText(const EnrichedString &chat_text, u32 recent_chat_count,
 
 	// Don't show chat if disabled or empty or profiler is enabled
 	m_guitext_chat->setVisible(m_flags.show_chat &&
-		recent_chat_count != 0 && profiler_current_page == 0);
+		recent_chat_count != 0 && m_profiler_current_page == 0);
 }
 
-void GameUI::updateProfiler(u32 profiler_current_page, u32 profiler_max_page)
+void GameUI::updateProfiler()
 {
-	if (profiler_current_page != 0) {
+	if (m_profiler_current_page != 0) {
 		std::ostringstream os(std::ios_base::binary);
-		g_profiler->printPage(os, profiler_current_page,
-			profiler_max_page);
+		g_profiler->printPage(os, m_profiler_current_page, m_profiler_max_page);
 
 		std::wstring text = translate_string(utf8_to_wide(os.str()));
 		setStaticText(m_guitext_profiler, text.c_str());
@@ -263,13 +261,39 @@ void GameUI::updateProfiler(u32 profiler_current_page, u32 profiler_max_page)
 		m_guitext_profiler->setRelativePosition(core::rect<s32>(upper_left, lower_right));
 	}
 
-	m_guitext_profiler->setVisible(profiler_current_page != 0);
+	m_guitext_profiler->setVisible(m_profiler_current_page != 0);
+}
 
-	if (profiler_current_page != 0) {
+void GameUI::toggleChat()
+{
+	m_flags.show_chat = !m_flags.show_chat;
+	if (m_flags.show_chat)
+		showTranslatedStatusText("Chat shown");
+	else
+		showTranslatedStatusText("Chat hidden");
+}
+
+void GameUI::toggleHud()
+{
+	m_flags.show_hud = !m_flags.show_hud;
+	if (m_flags.show_hud)
+		showTranslatedStatusText("HUD shown");
+	else
+		showTranslatedStatusText("HUD hidden");
+}
+
+void GameUI::toggleProfiler()
+{
+	m_profiler_current_page = (m_profiler_current_page + 1) % (m_profiler_max_page + 1);
+
+	// FIXME: This updates the profiler with incomplete values
+	updateProfiler();
+
+	if (m_profiler_current_page != 0) {
 		wchar_t buf[255];
 		const wchar_t* str = wgettext("Profiler shown (page %d of %d)");
 		swprintf(buf, sizeof(buf) / sizeof(wchar_t), str,
-			profiler_current_page, profiler_max_page);
+			m_profiler_current_page, m_profiler_max_page);
 		delete[] str;
 		showStatusText(buf);
 	} else {

@@ -21,6 +21,7 @@ src/clientobject.cpp
 src/clientobject.h
 src/client/clientlauncher.cpp
 src/client/clientlauncher.h
+src/client/gameui.cpp
 src/client/joystick_controller.cpp
 src/client/joystick_controller.h
 src/client/renderingengine.cpp

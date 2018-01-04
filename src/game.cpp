@@ -1065,9 +1065,6 @@ struct GameRunData {
 
 	v3f update_draw_list_last_cam_dir;
 
-	u32 profiler_current_page;
-	u32 profiler_max_page;     // Number of pages
-
 	float time_of_day_smooth;
 };
 
@@ -1158,13 +1155,10 @@ protected:
 	void toggleCinematic();
 	void toggleAutoforward();
 
-	void toggleChat();
-	void toggleHud();
 	void toggleMinimap(bool shift_pressed);
 	void toggleFog();
 	void toggleDebug();
 	void toggleUpdateCamera();
-	void toggleProfiler();
 
 	void increaseViewRange();
 	void decreaseViewRange();
@@ -1256,6 +1250,11 @@ protected:
 #endif
 
 private:
+	struct Flags {
+		bool force_fog_off = false;
+		bool disable_camera_update = false;
+	};
+
 	void showPauseMenu();
 
 	// ClientEvent handlers
@@ -1315,6 +1314,7 @@ private:
 	Minimap *mapper = nullptr;
 
 	GameRunData runData;
+	Flags m_flags;
 
 	/* 'cache'
 	   This class does take ownership/responsibily for cleaning up etc of any of
@@ -1496,7 +1496,6 @@ bool Game::startup(bool *kill,
 
 	memset(&runData, 0, sizeof(runData));
 	runData.time_from_last_punch = 10.0;
-	runData.profiler_max_page = 3;
 	runData.update_wielded_item_trigger = true;
 
 	m_game_ui->initFlags();
@@ -1790,7 +1789,7 @@ bool Game::createClient(const std::string &playername,
 	}
 
 	GameGlobalShaderConstantSetterFactory *scsf = new GameGlobalShaderConstantSetterFactory(
-			&m_game_ui->m_flags.force_fog_off, &runData.fog_range, client);
+			&m_flags.force_fog_off, &runData.fog_range, client);
 	shader_src->addShaderConstantSetterFactory(scsf);
 
 	// Update cached textures, meshes and materials
@@ -2201,9 +2200,7 @@ void Game::updateProfilers(const RunStats &stats, const FpsControl &draw_times, 
 			g_profiler->print(infostream);
 		}
 
-		m_game_ui->updateProfiler(runData.profiler_current_page,
-			runData.profiler_max_page);
-
+		m_game_ui->updateProfiler();
 		g_profiler->clear();
 	}
 
@@ -2377,11 +2374,11 @@ void Game::processKeyInput()
 	} else if (wasKeyDown(KeyType::SCREENSHOT)) {
 		client->makeScreenshot();
 	} else if (wasKeyDown(KeyType::TOGGLE_HUD)) {
-		toggleHud();
+		m_game_ui->toggleHud();
 	} else if (wasKeyDown(KeyType::MINIMAP)) {
 		toggleMinimap(isKeyDown(KeyType::SNEAK));
 	} else if (wasKeyDown(KeyType::TOGGLE_CHAT)) {
-		toggleChat();
+		m_game_ui->toggleChat();
 	} else if (wasKeyDown(KeyType::TOGGLE_FORCE_FOG_OFF)) {
 		toggleFog();
 	} else if (wasKeyDown(KeyType::TOGGLE_UPDATE_CAMERA)) {
@@ -2389,7 +2386,7 @@ void Game::processKeyInput()
 	} else if (wasKeyDown(KeyType::TOGGLE_DEBUG)) {
 		toggleDebug();
 	} else if (wasKeyDown(KeyType::TOGGLE_PROFILER)) {
-		toggleProfiler();
+		m_game_ui->toggleProfiler();
 	} else if (wasKeyDown(KeyType::INCREASE_VIEWING_RANGE)) {
 		increaseViewRange();
 	} else if (wasKeyDown(KeyType::DECREASE_VIEWING_RANGE)) {
@@ -2615,25 +2612,6 @@ void Game::toggleAutoforward()
 		m_game_ui->showTranslatedStatusText("Automatic forwards disabled");
 }
 
-void Game::toggleChat()
-{
-	m_game_ui->m_flags.show_chat = !m_game_ui->m_flags.show_chat;
-	if (m_game_ui->m_flags.show_chat)
-		m_game_ui->showTranslatedStatusText("Chat shown");
-	else
-		m_game_ui->showTranslatedStatusText("Chat hidden");
-}
-
-
-void Game::toggleHud()
-{
-	m_game_ui->m_flags.show_hud = !m_game_ui->m_flags.show_hud;
-	if (m_game_ui->m_flags.show_hud)
-		m_game_ui->showTranslatedStatusText("HUD shown");
-	else
-		m_game_ui->showTranslatedStatusText("HUD hidden");
-}
-
 void Game::toggleMinimap(bool shift_pressed)
 {
 	if (!mapper || !m_game_ui->m_flags.show_hud || !g_settings->getBool("enable_minimap"))
@@ -2689,8 +2667,8 @@ void Game::toggleMinimap(bool shift_pressed)
 
 void Game::toggleFog()
 {
-	m_game_ui->m_flags.force_fog_off = !m_game_ui->m_flags.force_fog_off;
-	if (m_game_ui->m_flags.force_fog_off)
+	m_flags.force_fog_off = !m_flags.force_fog_off;
+	if (m_flags.force_fog_off)
 			m_game_ui->showTranslatedStatusText("Fog disabled");
 	else
 			m_game_ui->showTranslatedStatusText("Fog enabled");
@@ -2730,21 +2708,11 @@ void Game::toggleDebug()
 
 void Game::toggleUpdateCamera()
 {
-	m_game_ui->m_flags.disable_camera_update = !m_game_ui->m_flags.disable_camera_update;
-	if (m_game_ui->m_flags.disable_camera_update)
+	m_flags.disable_camera_update = !m_flags.disable_camera_update;
+	if (m_flags.disable_camera_update)
 		m_game_ui->showTranslatedStatusText("Camera update disabled");
 	else
 		m_game_ui->showTranslatedStatusText("Camera update enabled");
-}
-
-
-void Game::toggleProfiler()
-{
-	runData.profiler_current_page =
-		(runData.profiler_current_page + 1) % (runData.profiler_max_page + 1);
-
-	// FIXME: This updates the profiler with incomplete values
-	m_game_ui->updateProfiler(runData.profiler_current_page, runData.profiler_max_page);
 }
 
 
@@ -2944,12 +2912,10 @@ inline void Game::step(f32 *dtime)
 	if (can_be_and_is_paused) {	// This is for a singleplayer server
 		*dtime = 0;             // No time passes
 	} else {
-		if (server != NULL) {
-			//TimeTaker timer("server->step(dtime)");
+		if (server) {
 			server->step(*dtime);
 		}
 
-		//TimeTaker timer("client.step(dtime)");
 		client->step(*dtime);
 	}
 }
@@ -3276,7 +3242,7 @@ void Game::updateChat(f32 dtime, const v2u32 &screensize)
 
 	// Display all messages in a static text element
 	m_game_ui->setChatText(chat_backend->getRecentChat(),
-		chat_backend->getRecentBuffer().getLineCount(), runData.profiler_current_page);
+		chat_backend->getRecentBuffer().getLineCount());
 }
 
 void Game::updateCamera(u32 busy_time, f32 dtime)
@@ -3336,7 +3302,7 @@ void Game::updateCamera(u32 busy_time, f32 dtime)
 
 	m_camera_offset_changed = (camera_offset != old_camera_offset);
 
-	if (!m_game_ui->m_flags.disable_camera_update) {
+	if (!m_flags.disable_camera_update) {
 		client->getEnv().getClientMap().updateCamera(camera_position,
 				camera_direction, camera_fov, camera_offset);
 
@@ -4033,7 +3999,7 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 			clouds->update(camera_node_position,
 					sky->getCloudColor());
 			if (clouds->isCameraInsideCloud() && m_cache_enable_fog &&
-					!m_game_ui->m_flags.force_fog_off) {
+					!m_flags.force_fog_off) {
 				// if inside clouds, and fog enabled, use that as sky
 				// color(s)
 				video::SColor clouds_dark = clouds->getColor()
@@ -4058,7 +4024,7 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 		Fog
 	*/
 
-	if (m_cache_enable_fog && !m_game_ui->m_flags.force_fog_off) {
+	if (m_cache_enable_fog && !m_flags.force_fog_off) {
 		driver->setFog(
 				sky->getBgColor(),
 				video::EFT_FOG_LINEAR,

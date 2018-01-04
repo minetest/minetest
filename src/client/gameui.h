@@ -29,6 +29,14 @@ using namespace irr;
 class Client;
 struct MapDrawControl;
 
+/*
+ * This object intend to contain the core UI elements
+ * It includes:
+ *   - status texts
+ *   - debug texts
+ *   - chat texts
+ *   - hud flags
+ */
 class GameUI
 {
 	// Temporary between coding time to move things here
@@ -44,13 +52,11 @@ public:
 	// Flags that can, or may, change during main game loop
 	struct Flags
 	{
-		bool show_chat;
-		bool show_hud;
-		bool show_minimap;
-		bool force_fog_off;
-		bool show_debug;
-		bool show_profiler_graph;
-		bool disable_camera_update;
+		bool show_chat = true;
+		bool show_hud = true;
+		bool show_minimap = true;
+		bool show_debug = true;
+		bool show_profiler_graph = true;
 	};
 
 	void init();
@@ -74,15 +80,18 @@ public:
 	void showTranslatedStatusText(const char *str);
 	inline void clearStatusText() { m_statustext.clear(); }
 
-	void setChatText(const EnrichedString &chat_text, u32 recent_chat_count,
-			u32 profiler_current_page);
+	void setChatText(const EnrichedString &chat_text, u32 recent_chat_count);
 
-	void updateProfiler(u32 profiler_current_page, u32 profiler_max_page);
+	void updateProfiler();
+
+	void toggleChat();
+	void toggleHud();
+	void toggleProfiler();
 
 private:
 	Flags m_flags;
 
-	gui::IGUIStaticText *m_guitext = nullptr; // First line of debug text
+	gui::IGUIStaticText *m_guitext = nullptr;  // First line of debug text
 	gui::IGUIStaticText *m_guitext2 = nullptr; // Second line of debug text
 
 	gui::IGUIStaticText *m_guitext_info = nullptr; // At the middle of the screen
@@ -93,5 +102,8 @@ private:
 	float m_statustext_time = 0.0f;
 
 	gui::IGUIStaticText *m_guitext_chat; // Chat text
+
 	gui::IGUIStaticText *m_guitext_profiler; // Profiler text
+	u8 m_profiler_current_page = 0;
+	const u8 m_profiler_max_page = 3;
 };
