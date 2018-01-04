@@ -75,7 +75,7 @@ class ServerActiveObject;
 
 class ScriptApiBase {
 public:
-	ScriptApiBase(ScriptingType  type);
+	ScriptApiBase(ScriptingType type);
 	// fake constructor to allow script API classes (e.g ScriptApiEnv) to virtually inherit from this one.
 	ScriptApiBase()
 	{
