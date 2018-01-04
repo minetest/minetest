@@ -23,15 +23,19 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <string>
 #include <thread>
 #include <mutex>
+#include <unordered_map>
 #include "util/basic_macros.h"
 
 extern "C" {
 #include <lua.h>
+#include <lualib.h>
 }
 
 #include "irrlichttypes.h"
 #include "common/c_types.h"
 #include "common/c_internal.h"
+#include "debug.h"
+#include "cmake_config.h"
 
 #define SCRIPTAPI_LOCK_DEBUG
 #define SCRIPTAPI_DEBUG
@@ -54,9 +58,10 @@ extern "C" {
 	setOriginFromTableRaw(index, __FUNCTION__)
 
 enum class ScriptingType: u8 {
+	Async,
 	Client,
-	Server,
-	MainMenu
+	MainMenu,
+	Server
 };
 
 class Server;
@@ -70,7 +75,12 @@ class ServerActiveObject;
 
 class ScriptApiBase {
 public:
-	ScriptApiBase();
+	ScriptApiBase(ScriptingType type);
+	// fake constructor to allow script API classes (e.g ScriptApiEnv) to virtually inherit from this one.
+	ScriptApiBase()
+	{
+		FATAL_ERROR("ScriptApiBase created without ScriptingType!");
+	}
 	virtual ~ScriptApiBase();
 	DISABLE_CLASS_COPY(ScriptApiBase);
 
@@ -91,7 +101,6 @@ public:
 
 	IGameDef *getGameDef() { return m_gamedef; }
 	Server* getServer();
-	void setType(ScriptingType type) { m_type = type; }
 	ScriptingType getType() { return m_type; }
 #ifndef SERVER
 	Client* getClient();
@@ -100,6 +109,8 @@ public:
 	std::string getOrigin() { return m_last_run_mod; }
 	void setOriginDirect(const char *origin);
 	void setOriginFromTableRaw(int index, const char *fxn);
+
+	void clientOpenLibs(lua_State *L);
 
 protected:
 	friend class LuaABM;
