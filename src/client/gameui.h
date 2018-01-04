@@ -21,7 +21,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #pragma once
 
 #include <IGUIEnvironment.h>
-#include <util/pointedthing.h>
+#include "util/enriched_string.h"
+#include "util/pointedthing.h"
 #include "game.h"
 
 using namespace irr;
@@ -54,7 +55,8 @@ public:
 
 	void init();
 	void update(const RunStats &stats, Client *client, MapDrawControl *draw_control,
-		const CameraOrientation &cam, const PointedThing &pointed_old, float dtime);
+			const CameraOrientation &cam, const PointedThing &pointed_old,
+			float dtime);
 
 	void initFlags();
 	const Flags &getFlags() const { return m_flags; }
@@ -71,20 +73,24 @@ public:
 	}
 	inline void clearStatusText() { m_statustext.clear(); }
 
+	void setChatText(const EnrichedString &chat_text, u32 recent_chat_count,
+			u32 profiler_current_page);
+
 private:
 	Flags m_flags;
 
-	gui::IGUIStaticText *m_guitext = nullptr;          // First line of debug text
-	gui::IGUIStaticText *m_guitext2 = nullptr;         // Second line of debug text
+	gui::IGUIStaticText *m_guitext = nullptr;  // First line of debug text
+	gui::IGUIStaticText *m_guitext2 = nullptr; // Second line of debug text
 
-	gui::IGUIStaticText *m_guitext_info = nullptr;     // At the middle of the screen
+	gui::IGUIStaticText *m_guitext_info = nullptr; // At the middle of the screen
 	std::wstring m_infotext;
 
 	gui::IGUIStaticText *m_guitext_status = nullptr;
 	std::wstring m_statustext;
 	float m_statustext_time = 0.0f;
 
+	gui::IGUIStaticText *m_guitext_chat; // Chat text
+
 	// @TODO future move
-	//	gui::IGUIStaticText *m_guitext_chat;	 // Chat text
 	//	gui::IGUIStaticText *m_guitext_profiler; // Profiler text
 };

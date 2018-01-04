@@ -58,8 +58,12 @@ void GameUI::init()
 	// Status text (displays info when showing and hiding GUI stuff, etc.)
 	m_guitext_status = gui::StaticText::add(guienv, L"<Status>",
 		core::rect<s32>(0, 0, 0, 0), false, false, guiroot);
-
 	m_guitext_status->setVisible(false);
+
+	// Chat text
+	m_guitext_chat = gui::StaticText::add(guienv, L"", core::rect<s32>(0, 0, 0, 0),
+		//false, false); // Disable word wrap as of now
+		false, true, guiroot);
 }
 
 void GameUI::update(const RunStats &stats, Client *client, MapDrawControl *draw_control,
@@ -182,4 +186,31 @@ void GameUI::initFlags()
 void GameUI::showMinimap(bool show)
 {
 	m_flags.show_minimap = show;
+}
+
+void GameUI::setChatText(const EnrichedString &chat_text, u32 recent_chat_count,
+	u32 profiler_current_page)
+{
+	setStaticText(m_guitext_chat, chat_text);
+
+	// Update gui element size and position
+	s32 chat_y = 5;
+
+	if (m_flags.show_debug)
+		chat_y += 2 * g_fontengine->getLineHeight();
+
+	// first pass to calculate height of text to be set
+	const v2u32 &window_size = RenderingEngine::get_instance()->getWindowSize();
+	s32 width = std::min(g_fontengine->getTextWidth(chat_text.c_str()) + 10,
+		window_size.X - 20);
+	m_guitext_chat->setRelativePosition(core::rect<s32>(10, chat_y, width,
+		chat_y + window_size.Y));
+
+	// now use real height of text and adjust rect according to this size
+	m_guitext_chat->setRelativePosition(core::rect<s32>(10, chat_y, width,
+		chat_y + m_guitext_chat->getTextHeight()));
+
+	// Don't show chat if disabled or empty or profiler is enabled
+	m_guitext_chat->setVisible(m_flags.show_chat &&
+		recent_chat_count != 0 && profiler_current_page == 0);
 }
