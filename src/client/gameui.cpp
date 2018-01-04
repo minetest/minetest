@@ -54,10 +54,16 @@ void GameUI::init()
 	m_guitext_info = gui::StaticText::add(guienv, L"",
 		core::rect<s32>(0, 0, 400, g_fontengine->getTextHeight() * 5 + 5)
 			+ v2s32(100, 200), false, true, guiroot);
+
+	// Status text (displays info when showing and hiding GUI stuff, etc.)
+	m_guitext_status = gui::StaticText::add(guienv, L"<Status>",
+		core::rect<s32>(0, 0, 0, 0), false, false, guiroot);
+
+	m_guitext_status->setVisible(false);
 }
 
 void GameUI::update(const RunStats &stats, Client *client, MapDrawControl *draw_control,
-	const CameraOrientation &cam, const PointedThing &pointed_old)
+	const CameraOrientation &cam, const PointedThing &pointed_old, float dtime)
 {
 	v2u32 screensize = RenderingEngine::get_instance()->getWindowSize();
 
@@ -125,6 +131,44 @@ void GameUI::update(const RunStats &stats, Client *client, MapDrawControl *draw_
 
 	setStaticText(m_guitext_info, translate_string(m_infotext).c_str());
 	m_guitext_info->setVisible(m_flags.show_hud && g_menumgr.menuCount() == 0);
+
+	static const float statustext_time_max = 1.5f;
+
+	if (!m_statustext.empty()) {
+		m_statustext_time += dtime;
+
+		if (m_statustext_time >= statustext_time_max) {
+			clearStatusText();
+			m_statustext_time = 0.0f;
+		}
+	}
+
+	setStaticText(m_guitext_status, translate_string(m_statustext).c_str());
+	m_guitext_status->setVisible(!m_statustext.empty());
+
+	if (!m_statustext.empty()) {
+		s32 status_width  = m_guitext_status->getTextWidth();
+		s32 status_height = m_guitext_status->getTextHeight();
+		s32 status_y = screensize.Y - 150;
+		s32 status_x = (screensize.X - status_width) / 2;
+
+		m_guitext_status->setRelativePosition(core::rect<s32>(status_x ,
+			status_y - status_height, status_x + status_width, status_y));
+
+		// Fade out
+		video::SColor initial_color(255, 0, 0, 0);
+
+		if (guienv->getSkin())
+			initial_color = guienv->getSkin()->getColor(gui::EGDC_BUTTON_TEXT);
+
+		video::SColor final_color = initial_color;
+		final_color.setAlpha(0);
+		video::SColor fade_color = initial_color.getInterpolated_quadratic(
+			initial_color, final_color,
+			pow(m_statustext_time / statustext_time_max, 2.0f));
+		m_guitext_status->setOverrideColor(fade_color);
+		m_guitext_status->enableOverrideColor(true);
+	}
 }
 
 void GameUI::initFlags()
