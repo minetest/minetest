@@ -504,6 +504,7 @@ void Server::process_PlayerPos(RemotePlayer *player, PlayerSAO *playersao,
 	//player->debugVec("Client position", position);
 	//player->debugVec("Server position", player->getPosition());
 
+	// TODO: also check speed for discrepancy!
 	v3f delta = position - player->getPosition();
 	//player->debugVec("delta position", delta);
 	float delta_length = delta.getLength();

@@ -1833,6 +1833,7 @@ void Server::SendPlayerBreath(PlayerSAO *sao)
 
 void Server::SendMovePlayer(session_t peer_id)
 {
+	// SERVER SIDE MOVEMENT: here is a good place to remember the last "teleport"
 	RemotePlayer *player = m_env->getPlayer(peer_id);
 	assert(player);
 	PlayerSAO *sao = player->getPlayerSAO();
