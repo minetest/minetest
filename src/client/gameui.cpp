@@ -41,6 +41,14 @@ inline static const char *yawToDirectionString(int yaw)
 	return direction[yaw];
 }
 
+GameUI::GameUI()
+{
+	if (guienv && guienv->getSkin())
+		m_statustext_initial_color = guienv->getSkin()->getColor(gui::EGDC_BUTTON_TEXT);
+	else
+		m_statustext_initial_color = video::SColor(255, 0, 0, 0);
+
+}
 void GameUI::init()
 {
 	// First line of debug text
@@ -169,16 +177,10 @@ void GameUI::update(const RunStats &stats, Client *client, MapDrawControl *draw_
 			status_y - status_height, status_x + status_width, status_y));
 
 		// Fade out
-		video::SColor initial_color(255, 0, 0, 0);
-
-		if (guienv->getSkin())
-			initial_color = guienv->getSkin()->getColor(gui::EGDC_BUTTON_TEXT);
-
-		video::SColor final_color = initial_color;
+		video::SColor final_color = m_statustext_initial_color;
 		final_color.setAlpha(0);
-		video::SColor fade_color = initial_color.getInterpolated_quadratic(
-			initial_color, final_color,
-			pow(m_statustext_time / statustext_time_max, 2.0f));
+		video::SColor fade_color = m_statustext_initial_color.getInterpolated_quadratic(
+			m_statustext_initial_color, final_color, m_statustext_time / statustext_time_max);
 		m_guitext_status->setOverrideColor(fade_color);
 		m_guitext_status->enableOverrideColor(true);
 	}
@@ -244,7 +246,7 @@ void GameUI::updateProfiler()
 		if (w < 400)
 			w = 400;
 
-		unsigned text_height = g_fontengine->getTextHeight();
+		u32 text_height = g_fontengine->getTextHeight();
 
 		core::position2di upper_left, lower_right;
 

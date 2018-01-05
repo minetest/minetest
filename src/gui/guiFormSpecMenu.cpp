@@ -2026,7 +2026,7 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 		assert(!m_tooltip_element);
 		// Note: parent != this so that the tooltip isn't clipped by the menu rectangle
 		m_tooltip_element = gui::StaticText::add(Environment, L"",
-			core::rect<s32>(0,0,110,18));
+			core::rect<s32>(0, 0, 110, 18));
 		m_tooltip_element->enableOverrideColor(true);
 		m_tooltip_element->setBackgroundColor(m_default_tooltip_bgcolor);
 		m_tooltip_element->setDrawBackground(true);
