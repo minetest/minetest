@@ -1,4 +1,3 @@
-
 Vector = {}
 Vector.__index = Vector
 vector = Vector
@@ -53,15 +52,29 @@ function Vector:normalize()
 end
 
 function Vector:floor()
-	return Vector:new(math.floor(self.x), math.floor(self.y), math.floor(self.z))
+	local obj = {
+		x = math.floor(self.x),
+		y = math.floor(self.y),
+		z = math.floor(self.z)
+	}
+	setmetatable(obj, Vector)
+	return obj
 end
 
 function Vector:round()
-	return Vector:new(math.floor(self.x + 0.5), math.floor(self.y + 0.5), math.floor(self.z + 0.5))
+	local obj = {
+		x = math.floor(self.x + 0.5),
+		y = math.floor(self.y + 0.5),
+		z = math.floor(self.z + 0.5)
+	}
+	setmetatable(obj, Vector)
+	return obj
 end
 
 function Vector:apply(func)
-	return Vector:new(func(self.x), func(self.y), func(self.z))
+	local obj = { x = func(self.x), y = func(self.y), z = func(self.z) }
+	setmetatable(obj, Vector)
+	return obj
 end
 
 function Vector:distance(other)
@@ -80,72 +93,95 @@ function Vector:direction(other)
 end
 
 function Vector:add(other)
+	local obj
 	if type(other) == "table" then
-		return Vector:new({
+		obj = {
 			x = self.x + other.x,
 			y = self.y + other.y,
 			z = self.z + other.z
-		})
+		}
 	else
-		return Vector:new({
+		obj = {
 			x = self.x + other,
 			y = self.y + other,
 			z = self.z + other
-		})
+		}
 	end
+	setmetatable(obj, Vector)
+	return obj
 end
 
 function Vector:subtract(other)
+	local obj
 	if type(other) == "table" then
-		return Vector:new({
+		obj = {
 			x = self.x - other.x,
 			y = self.y - other.y,
 			z = self.z - other.z
-		})
+		}
 	else
-		return Vector:new({
+		obj = {
 			x = self.x - other,
 			y = self.y - other,
 			z = self.z - other
-		})
+		}
 	end
+	setmetatable(obj, Vector)
+	return obj
 end
 
 function Vector:multiply(other)
+	local obj
 	if type(other) == "table" then
-		return Vector:new({
+		obj = {
 			x = self.x * other.x,
 			y = self.y * other.y,
 			z = self.z * other.z
-		})
+		}
 	else
-		return Vector:new({
+		obj = {
 			x = self.x * other,
 			y = self.y * other,
 			z = self.z * other
-		})
+		}
 	end
+	setmetatable(obj, Vector)
+	return obj
 end
 
 function Vector:divide(other)
+	local obj
 	if type(other) == "table" then
-		return Vector:new({
+		obj = {
 			x = self.x / other.x,
 			y = self.y / other.y,
 			z = self.z / other.z
-		})
+		}
 	else
-		return Vector:new({
+		obj = {
 			x = self.x / other,
 			y = self.y / other,
 			z = self.z / other
-		})
+		}
 	end
+	setmetatable(obj, Vector)
+	return obj
 end
 
 function Vector.sort(a, b)
-	return Vector:new({x = math.min(a.x, b.x), y = math.min(a.y, b.y), z = math.min(a.z, b.z)}),
-		Vector:new({x = math.max(a.x, b.x), y = math.max(a.y, b.y), z = math.max(a.z, b.z)})
+	local min, max = {
+		x = math.min(a.x, b.x),
+		y = math.min(a.y, b.y),
+		z = math.min(a.z, b.z)
+	}, {
+		x = math.max(a.x, b.x),
+		y = math.max(a.y, b.y),
+		z = math.max(a.z, b.z)
+	}
+
+	setmetatable(min, Vector)
+	setmetatable(max, Vector)
+	return min, max
 end
 
 
@@ -178,4 +214,3 @@ local vec = Vector:new(1, 2, 3)
 assertE(vec, { x = 1, y = 2, z = 3 })
 assertE(vec:add({ x = 1, y = 2, z = 3 }), { x = 2, y = 4, z = 6 })
 assertE(vec, { x = 1, y = 2, z = 3 })
-
