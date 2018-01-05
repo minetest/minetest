@@ -46,7 +46,7 @@ class GameUI
 	friend class TestGameUI;
 
 public:
-	GameUI() = default;
+	GameUI();
 	~GameUI() = default;
 
 	// Flags that can, or may, change during main game loop
@@ -100,10 +100,11 @@ private:
 	gui::IGUIStaticText *m_guitext_status = nullptr;
 	std::wstring m_statustext;
 	float m_statustext_time = 0.0f;
+	video::SColor m_statustext_initial_color;
 
-	gui::IGUIStaticText *m_guitext_chat; // Chat text
+	gui::IGUIStaticText *m_guitext_chat = nullptr; // Chat text
 
-	gui::IGUIStaticText *m_guitext_profiler; // Profiler text
+	gui::IGUIStaticText *m_guitext_profiler = nullptr; // Profiler text
 	u8 m_profiler_current_page = 0;
 	const u8 m_profiler_max_page = 3;
 };

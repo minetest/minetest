@@ -92,7 +92,8 @@ namespace gui
 			s32 id = -1,
 			bool fillBackground = false)
 		{
-			return add(guienv, EnrichedString(text), rectangle, border, wordWrap, parent, id, fillBackground);
+			return add(guienv, EnrichedString(text), rectangle, border, wordWrap, parent,
+				id, fillBackground);
 		}
 
 		//! draws the element and its children

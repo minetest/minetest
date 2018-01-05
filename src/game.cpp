@@ -1277,7 +1277,7 @@ private:
 	void updateChat(f32 dtime, const v2u32 &screensize);
 	static const ClientEventHandler clientEventHandler[CLIENTEVENT_MAX];
 
-	InputHandler *input;
+	InputHandler *input = nullptr;
 
 	Client *client = nullptr;
 	Server *server = nullptr;
@@ -2669,9 +2669,9 @@ void Game::toggleFog()
 {
 	m_flags.force_fog_off = !m_flags.force_fog_off;
 	if (m_flags.force_fog_off)
-			m_game_ui->showTranslatedStatusText("Fog disabled");
+		m_game_ui->showTranslatedStatusText("Fog disabled");
 	else
-			m_game_ui->showTranslatedStatusText("Fog enabled");
+		m_game_ui->showTranslatedStatusText("Fog enabled");
 }
 
 
@@ -2912,9 +2912,8 @@ inline void Game::step(f32 *dtime)
 	if (can_be_and_is_paused) {	// This is for a singleplayer server
 		*dtime = 0;             // No time passes
 	} else {
-		if (server) {
+		if (server)
 			server->step(*dtime);
-		}
 
 		client->step(*dtime);
 	}
