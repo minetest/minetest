@@ -588,6 +588,7 @@ void GUITable::setSelected(s32 index)
 GUITable::DynamicData GUITable::getDynamicData() const
 {
 	DynamicData dyndata;
+	dyndata.is_mouse_captured = m_is_mouse_captured;
 	dyndata.selected = getSelected();
 	dyndata.scrollpos = m_scrollbar->getPos();
 	dyndata.keynav_time = m_keynav_time;
@@ -601,6 +602,8 @@ void GUITable::setDynamicData(const DynamicData &dyndata)
 {
 	if (m_has_tree_column)
 		setOpenedTrees(dyndata.opened_trees);
+
+	m_is_mouse_captured = dyndata.is_mouse_captured;
 
 	m_keynav_time = dyndata.keynav_time;
 	m_keynav_buffer = dyndata.keynav_buffer;
@@ -881,9 +884,20 @@ bool GUITable::OnEvent(const SEvent &event)
 				m_scrollbar->isPointInside(p))
 			return true;
 
+		// Drop the capture when player releases the left mouse button
+		if (!event.MouseInput.isLeftPressed())
+			m_is_mouse_captured = false;
+
+		bool is_inside = isPointInside(p);
 		if (event.MouseInput.isLeftPressed() &&
-				(isPointInside(p) ||
-				 event.MouseInput.Event == EMIE_MOUSE_MOVED)) {
+				(is_inside || event.MouseInput.Event == EMIE_MOUSE_MOVED)) {
+			// Capture the mouse if the mouse pointer is over the table
+			if (is_inside)
+				m_is_mouse_captured = true;
+
+			if (!m_is_mouse_captured)
+				return true;
+
 			s32 sel_column = 0;
 			bool sel_doubleclick = (event.MouseInput.Event
 					== EMIE_LMOUSE_DOUBLE_CLICK);
