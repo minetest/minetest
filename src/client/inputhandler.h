@@ -259,18 +259,53 @@ public:
 		}
 	}
 
-	virtual bool getLeftState() { return m_receiver->left_active; }
-	virtual bool getRightState() { return m_receiver->right_active; }
+	virtual bool getLeftState()
+	{
+		return m_receiver->left_active || joystick.isKeyDown(KeyType::MOUSE_L);
+	}
+	virtual bool getRightState()
+	{
+		return m_receiver->right_active || joystick.isKeyDown(KeyType::MOUSE_R);
+	}
 
-	virtual bool getLeftClicked() { return m_receiver->leftclicked; }
-	virtual bool getRightClicked() { return m_receiver->rightclicked; }
-	virtual void resetLeftClicked() { m_receiver->leftclicked = false; }
-	virtual void resetRightClicked() { m_receiver->rightclicked = false; }
+	virtual bool getLeftClicked()
+	{
+		return m_receiver->leftclicked || joystick.getWasKeyDown(KeyType::MOUSE_L);
+	}
+	virtual bool getRightClicked()
+	{
+		return m_receiver->rightclicked || joystick.getWasKeyDown(KeyType::MOUSE_R);
+	}
 
-	virtual bool getLeftReleased() { return m_receiver->leftreleased; }
-	virtual bool getRightReleased() { return m_receiver->rightreleased; }
-	virtual void resetLeftReleased() { m_receiver->leftreleased = false; }
-	virtual void resetRightReleased() { m_receiver->rightreleased = false; }
+	virtual void resetLeftClicked()
+	{
+		m_receiver->leftclicked = false;
+		joystick.clearWasKeyDown(KeyType::MOUSE_L);
+	}
+	virtual void resetRightClicked() {
+		m_receiver->rightclicked = false;
+		joystick.clearWasKeyDown(KeyType::MOUSE_R);
+	}
+
+	virtual bool getLeftReleased()
+	{
+		return m_receiver->leftreleased || joystick.wasKeyReleased(KeyType::MOUSE_L);
+	}
+	virtual bool getRightReleased()
+	{
+		return m_receiver->rightreleased || joystick.wasKeyReleased(KeyType::MOUSE_R);
+	}
+
+	virtual void resetLeftReleased()
+	{
+		m_receiver->leftreleased = false;
+		joystick.clearWasKeyReleased(KeyType::MOUSE_L);
+	}
+	virtual void resetRightReleased()
+	{
+		m_receiver->rightreleased = false;
+		joystick.clearWasKeyReleased(KeyType::MOUSE_R);
+	}
 
 	virtual s32 getMouseWheel() { return m_receiver->getMouseWheel(); }
 
