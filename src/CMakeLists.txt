@@ -374,7 +374,6 @@ add_subdirectory(threading)
 add_subdirectory(database)
 add_subdirectory(gui)
 add_subdirectory(mapgen)
-add_subdirectory(meshgen)
 add_subdirectory(network)
 add_subdirectory(script)
 add_subdirectory(unittest)
@@ -487,7 +486,6 @@ set(client_SRCS
 	${client_SRCS}
 	${common_SRCS}
 	${gui_SRCS}
-	${meshgen_SRCS}
 	${sound_SRCS}
 	${client_network_SRCS}
 	${client_irrlicht_changes_SRCS}

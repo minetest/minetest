@@ -27,12 +27,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mesh.h"
 #include "content_mapblock.h"
 #include "mapblock_mesh.h"
+#include "client/meshgen/extrusion.h"
 #include "client/tile.h"
 #include "log.h"
 #include "util/numeric.h"
 #include <map>
 #include <IMeshManipulator.h>
-#include "meshgen/extrusion.h"
 
 #define WIELD_SCALE_FACTOR 30.0
 #define WIELD_SCALE_FACTOR_EXTRUDED 40.0

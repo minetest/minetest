@@ -1,4 +1,6 @@
 set(client_SRCS
+	${CMAKE_CURRENT_SOURCE_DIR}/meshgen/extruder.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/meshgen/extrusion.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/render/anaglyph.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/render/core.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/render/factory.cpp
