@@ -1211,32 +1211,6 @@ protected:
 	static void settingChangedCallback(const std::string &setting_name, void *data);
 	void readSettings();
 
-	inline bool getLeftClicked()
-	{
-		return input->getLeftClicked() ||
-			input->joystick.getWasKeyDown(KeyType::MOUSE_L);
-	}
-	inline bool getRightClicked()
-	{
-		return input->getRightClicked() ||
-			input->joystick.getWasKeyDown(KeyType::MOUSE_R);
-	}
-	inline bool isLeftPressed()
-	{
-		return input->getLeftState() ||
-			input->joystick.isKeyDown(KeyType::MOUSE_L);
-	}
-	inline bool isRightPressed()
-	{
-		return input->getRightState() ||
-			input->joystick.isKeyDown(KeyType::MOUSE_R);
-	}
-	inline bool getLeftReleased()
-	{
-		return input->getLeftReleased() ||
-			input->joystick.wasKeyReleased(KeyType::MOUSE_L);
-	}
-
 	inline bool isKeyDown(GameKeyType k)
 	{
 		return input->isKeyDown(keycache.key[k]) || input->joystick.isKeyDown(k);
@@ -2882,8 +2856,8 @@ void Game::updatePlayerControl(const CameraOrientation &cam)
 		isKeyDown(KeyType::SPECIAL1),
 		isKeyDown(KeyType::SNEAK),
 		isKeyDown(KeyType::ZOOM),
-		isLeftPressed(),
-		isRightPressed(),
+		input->getLeftState(),
+		input->getRightState(),
 		cam.camera_pitch,
 		cam.camera_yaw,
 		input->joystick.getAxisWithoutDead(JA_SIDEWARD_MOVE),
@@ -2898,8 +2872,8 @@ void Game::updatePlayerControl(const CameraOrientation &cam)
 			( (u32)(isKeyDown(KeyType::JUMP)                          & 0x1) << 4) |
 			( (u32)(isKeyDown(KeyType::SPECIAL1)                      & 0x1) << 5) |
 			( (u32)(isKeyDown(KeyType::SNEAK)                         & 0x1) << 6) |
-			( (u32)(isLeftPressed()                                   & 0x1) << 7) |
-			( (u32)(isRightPressed()                                  & 0x1) << 8
+			( (u32)(input->getLeftState()                             & 0x1) << 7) |
+			( (u32)(input->getRightState()                            & 0x1) << 8
 		);
 
 #ifdef ANDROID
@@ -3441,7 +3415,7 @@ void Game::processPlayerInteraction(f32 dtime, bool show_hud, bool show_debug)
 		hud->updateSelectionMesh(camera_offset);
 	}
 
-	if (runData.digging_blocked && !isLeftPressed()) {
+	if (runData.digging_blocked && !input->getLeftState()) {
 		// allow digging again if button is not pressed
 		runData.digging_blocked = false;
 	}
@@ -3452,7 +3426,7 @@ void Game::processPlayerInteraction(f32 dtime, bool show_hud, bool show_debug)
 		- pointing away from node
 	*/
 	if (runData.digging) {
-		if (getLeftReleased()) {
+		if (input->getLeftReleased()) {
 			infostream << "Left button released"
 			           << " (stopped digging)" << std::endl;
 			runData.digging = false;
@@ -3476,13 +3450,13 @@ void Game::processPlayerInteraction(f32 dtime, bool show_hud, bool show_debug)
 			client->setCrack(-1, v3s16(0, 0, 0));
 			runData.dig_time = 0.0;
 		}
-	} else if (runData.dig_instantly && getLeftReleased()) {
+	} else if (runData.dig_instantly && input->getLeftReleased()) {
 		// Remove e.g. torches faster when clicking instead of holding LMB
 		runData.nodig_delay_timer = 0;
 		runData.dig_instantly = false;
 	}
 
-	if (!runData.digging && runData.ldown_for_dig && !isLeftPressed()) {
+	if (!runData.digging && runData.ldown_for_dig && !input->getLeftState()) {
 		runData.ldown_for_dig = false;
 	}
 
@@ -3491,13 +3465,13 @@ void Game::processPlayerInteraction(f32 dtime, bool show_hud, bool show_debug)
 	soundmaker->m_player_leftpunch_sound.name = "";
 
 	// Prepare for repeating, unless we're not supposed to
-	if (isRightPressed() && !g_settings->getBool("safe_dig_and_place"))
+	if (input->getRightState() && !g_settings->getBool("safe_dig_and_place"))
 		runData.repeat_rightclick_timer += dtime;
 	else
 		runData.repeat_rightclick_timer = 0;
 
-	if (playeritem_def.usable && isLeftPressed()) {
-		if (getLeftClicked() && (!client->moddingEnabled()
+	if (playeritem_def.usable && input->getLeftState()) {
+		if (input->getLeftClicked() && (!client->moddingEnabled()
 				|| !client->getScript()->on_item_use(playeritem, pointed)))
 			client->interact(4, pointed);
 	} else if (pointed.type == POINTEDTHING_NODE) {
@@ -3515,29 +3489,23 @@ void Game::processPlayerInteraction(f32 dtime, bool show_hud, bool show_debug)
 			playeritem_toolcap, dtime);
 	} else if (pointed.type == POINTEDTHING_OBJECT) {
 		handlePointingAtObject(pointed, playeritem, player_position, show_debug);
-	} else if (isLeftPressed()) {
+	} else if (input->getLeftState()) {
 		// When button is held down in air, show continuous animation
 		runData.left_punch = true;
-	} else if (getRightClicked()) {
+	} else if (input->getRightClicked()) {
 		handlePointingAtNothing(playeritem);
 	}
 
 	runData.pointed_old = pointed;
 
-	if (runData.left_punch || getLeftClicked())
+	if (runData.left_punch || input->getLeftClicked())
 		camera->setDigging(0); // left click animation
 
 	input->resetLeftClicked();
 	input->resetRightClicked();
 
-	input->joystick.clearWasKeyDown(KeyType::MOUSE_L);
-	input->joystick.clearWasKeyDown(KeyType::MOUSE_R);
-
 	input->resetLeftReleased();
 	input->resetRightReleased();
-
-	input->joystick.clearWasKeyReleased(KeyType::MOUSE_L);
-	input->joystick.clearWasKeyReleased(KeyType::MOUSE_R);
 }
 
 
@@ -3654,7 +3622,7 @@ void Game::handlePointingAtNode(const PointedThing &pointed,
 
 	ClientMap &map = client->getEnv().getClientMap();
 
-	if (runData.nodig_delay_timer <= 0.0 && isLeftPressed()
+	if (runData.nodig_delay_timer <= 0.0 && input->getLeftState()
 			&& !runData.digging_blocked
 			&& client->checkPrivilege("interact")) {
 		handleDigging(pointed, nodepos, playeritem_toolcap, dtime);
@@ -3675,7 +3643,7 @@ void Game::handlePointingAtNode(const PointedThing &pointed,
 		}
 	}
 
-	if ((getRightClicked() ||
+	if ((input->getRightClicked() ||
 			runData.repeat_rightclick_timer >= m_repeat_right_click_time) &&
 			client->checkPrivilege("interact")) {
 		runData.repeat_rightclick_timer = 0;
@@ -3754,7 +3722,7 @@ void Game::handlePointingAtObject(const PointedThing &pointed, const ItemStack &
 
 	m_game_ui->setInfoText(infotext);
 
-	if (isLeftPressed()) {
+	if (input->getLeftState()) {
 		bool do_punch = false;
 		bool do_punch_damage = false;
 
@@ -3764,7 +3732,7 @@ void Game::handlePointingAtObject(const PointedThing &pointed, const ItemStack &
 			runData.object_hit_delay_timer = object_hit_delay;
 		}
 
-		if (getLeftClicked())
+		if (input->getLeftClicked())
 			do_punch = true;
 
 		if (do_punch) {
@@ -3791,7 +3759,7 @@ void Game::handlePointingAtObject(const PointedThing &pointed, const ItemStack &
 			if (!disable_send)
 				client->interact(0, pointed);
 		}
-	} else if (getRightClicked()) {
+	} else if (input->getRightClicked()) {
 		infostream << "Right-clicked object" << std::endl;
 		client->interact(3, pointed);  // place
 	}
