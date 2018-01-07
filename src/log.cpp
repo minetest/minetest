@@ -350,7 +350,7 @@ void StringBuffer::push_back(char c)
 		int index = buffer_index;
 		buffer[index++] = c;
 		if (index >= BUFFER_LENGTH) {
-			flush(std::string(buffer, buffer_index));
+			flush(std::string(buffer, index));
 			buffer_index = 0;
 		} else {
 			buffer_index = index;
