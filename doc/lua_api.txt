@@ -3229,6 +3229,10 @@ These functions return the leftover itemstack.
     * `force_placement` is a boolean indicating whether nodes other than `air` and
       `ignore` are replaced by the schematic
     * Returns nil if the schematic could not be loaded.
+    * **Warning**: Once you have loaded a schematic from a file, it will be cached. Future calls
+      will always use the cached version and the replacement list defined for it,
+      regardless of whether the file or the replacement list parameter have changed.
+      The only way to load the file anew is to restart the server.
 
 * `minetest.place_schematic_on_vmanip(vmanip, pos, schematic, rotation, replacement, force_placement)`:
     * This function is analogous to minetest.place_schematic, but places a schematic onto the
