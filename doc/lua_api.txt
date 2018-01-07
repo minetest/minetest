@@ -3893,8 +3893,8 @@ Alternatively with `minetest.get_perlin(seeddiff, octaves, persistence, scale)`
 or `minetest.get_perlin(noiseparams)`.
 
 #### Methods
-* `get2d(pos)`: returns 2D noise value at `pos={x=,y=}`
-* `get3d(pos)`: returns 3D noise value at `pos={x=,y=,z=}`
+* `get_2d(pos)`: returns 2D noise value at `pos={x=,y=}`
+* `get_3d(pos)`: returns 3D noise value at `pos={x=,y=,z=}`
 
 ### `PerlinNoiseMap`
 A fast, bulk perlin noise generator.
@@ -3911,25 +3911,25 @@ nil, this table will be used to store the result instead of creating a new table
 
 
 #### Methods
-* `get2dMap(pos)`: returns a `<size.x>` times `<size.y>` 2D array of 2D noise
+* `get_2d_map(pos)`: returns a `<size.x>` times `<size.y>` 2D array of 2D noise
   with values starting at `pos={x=,y=}`
-* `get3dMap(pos)`: returns a `<size.x>` times `<size.y>` times `<size.z>` 3D array
+* `get_3d_map(pos)`: returns a `<size.x>` times `<size.y>` times `<size.z>` 3D array
   of 3D noise with values starting at `pos={x=,y=,z=}`
-* `get2dMap_flat(pos, buffer)`: returns a flat `<size.x * size.y>` element array of 2D noise
+* `get_2d_map_flat(pos, buffer)`: returns a flat `<size.x * size.y>` element array of 2D noise
   with values starting at `pos={x=,y=}`
-* `get3dMap_flat(pos, buffer)`: Same as `get2dMap_flat`, but 3D noise
-* `calc2dMap(pos)`: Calculates the 2d noise map starting at `pos`.  The result is stored internally.
-* `calc3dMap(pos)`: Calculates the 3d noise map starting at `pos`.  The result is stored internally.
-* `getMapSlice(slice_offset, slice_size, buffer)`: In the form of an array, returns a slice of the
+* `get_3d_map_flat(pos, buffer)`: Same as `get2dMap_flat`, but 3D noise
+* `calc_2d_map(pos)`: Calculates the 2d noise map starting at `pos`.  The result is stored internally.
+* `calc_3d_map(pos)`: Calculates the 3d noise map starting at `pos`.  The result is stored internally.
+* `get_map_slice(slice_offset, slice_size, buffer)`: In the form of an array, returns a slice of the
   most recently computed noise results.  The result slice begins at coordinates `slice_offset` and
   takes a chunk of `slice_size`.
   E.g. to grab a 2-slice high horizontal 2d plane of noise starting at buffer offset y = 20:
-  `noisevals = noise:getMapSlice({y=20}, {y=2})`
+  `noisevals = noise:get_map_slice({y=20}, {y=2})`
   It is important to note that `slice_offset` offset coordinates begin at 1, and are relative to
   the starting position of the most recently calculated noise.
   To grab a single vertical column of noise starting at map coordinates x = 1023, y=1000, z = 1000:
-  `noise:calc3dMap({x=1000, y=1000, z=1000})`
-  `noisevals = noise:getMapSlice({x=24, z=1}, {x=1, z=1})`
+  `noise:calc_3d_map({x=1000, y=1000, z=1000})`
+  `noisevals = noise:get_map_slice({x=24, z=1}, {x=1, z=1})`
 
 ### `VoxelManip`
 
