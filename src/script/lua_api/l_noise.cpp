@@ -311,7 +311,7 @@ int LuaPerlinNoiseMap::l_get_map_slice(lua_State *L)
 	Noise *n = o->noise;
 
 	if (use_buffer)
-		lua_pushvalue(L, 3);
+		lua_pushvalue(L, 4);
 	else
 		lua_newtable(L);
 
