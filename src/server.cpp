@@ -1852,6 +1852,8 @@ void Server::SendMovePlayer(session_t peer_id)
 	}
 
 	Send(&pkt);
+
+	player->setTeleportedPosition(sao->getBasePosition());
 }
 
 void Server::SendLocalPlayerAnimations(session_t peer_id, v2s32 animation_frames[4],

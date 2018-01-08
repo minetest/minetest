@@ -555,6 +555,9 @@ void Client::handleCommand_MovePlayer(NetworkPacket* pkt)
 	event->player_force_move.pitch = pitch;
 	event->player_force_move.yaw = yaw;
 	m_client_event_queue.push(event);
+
+	// SERVER SIDE MOVEMENT:
+	player->getControlLog().setTeleportPos(pos);
 }
 
 void Client::handleCommand_DeathScreen(NetworkPacket* pkt)

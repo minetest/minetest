@@ -470,6 +470,11 @@ void Server::process_PlayerPos(RemotePlayer *player, PlayerSAO *playersao,
 	fov = (f32)f32fov / 80.0f;
 	*pkt >> wanted_range;
 
+	v3f position((f32)ps.X / 100.0f, (f32)ps.Y / 100.0f, (f32)ps.Z / 100.0f);
+	v3f speed((f32)ss.X / 100.0f, (f32)ss.Y / 100.0f, (f32)ss.Z / 100.0f);
+
+	bool position_ok = true;
+
 	if (pkt->getRemainingBytes() >= 1) {
 		// SERVER SIDE MOVEMENT: here we would unpack the control log
 		// from the client and replay it.
@@ -479,6 +484,23 @@ void Server::process_PlayerPos(RemotePlayer *player, PlayerSAO *playersao,
 		// deserializing does not validate it. The entries could be
 		// a bunch of lies
 		log.deserialize(logstream);
+		// if we're expecting a teleport:
+		// - the log needs to match what we're expecting
+		// - or forget everything - and then what?
+		//   need to resend teleport after a while?
+		if (player->waitingForTeleport()) {
+			if (log.includesTeleport()) {
+				if (player->matchingTeleport(log.getTeleportPos())) {
+					// great, continue
+				} else {
+					// can't use this log then, abort
+				}
+			} else {
+				// come back when you have a position for me
+				// TODO: if this happens too long - re-teleport?
+			}
+		}
+
 		// prune the log of already acknowledged controls
 		log.acknowledge(player->getLastAckedControlLogTime());
 		// check that the remainder does not exceed 2 seconds dtime,
@@ -493,44 +515,52 @@ void Server::process_PlayerPos(RemotePlayer *player, PlayerSAO *playersao,
 		}
 		// see how far we can acknowledge
 		u32 ackTime = log.getFinishTime();
-		// send acknowledge
+		// send acknowledge - include teleport?
 		SendAckControlLog(pkt->getPeerId(), ackTime);
 		player->setLastAckedControlLogTime(ackTime);
 		//   OR send reset
-	}
 
-	v3f position((f32)ps.X / 100.0f, (f32)ps.Y / 100.0f, (f32)ps.Z / 100.0f);
-	v3f speed((f32)ss.X / 100.0f, (f32)ss.Y / 100.0f, (f32)ss.Z / 100.0f);
-	//player->debugVec("Client position", position);
-	//player->debugVec("Server position", player->getPosition());
+		//player->debugVec("Client position", position);
+		//player->debugVec("Server position", player->getPosition());
 
-	// TODO: also check speed for discrepancy!
-	v3f delta = position - player->getPosition();
-	//player->debugVec("delta position", delta);
-	float delta_length = delta.getLength();
-	if (delta_length > 1000.0) {
-		// dev: no init yet
-		player->setPosition(position);
-	}
-	if (delta_length < 0.1 * BS) {
-		// we can believe this, adjust
-		player->setPosition(position);
-	} else if (delta_length > 1.0 * BS) {
-		// possible cheat
-		// Call callbacks
-		m_script->on_cheat(playersao, "moved_too_fast");
-		SendMovePlayer(pkt->getPeerId());
-		dstream << "Possible cheat detected" << std::endl;
-	} else {
-		// discrepancy, but not not severe. Maybe a glitch?
-		dstream << "Position discrepancy of " << delta_length << std::endl;
+		// TODO: gate depending on whether we replayed a log 
+		// TODO: also check speed for discrepancy!
+		v3f delta = position - player->getPosition();
+		//player->debugVec("delta position", delta);
+		float delta_length = delta.getLength();
+		if (delta_length > 1000.0) {
+			// dev: no init yet
+			player->setPosition(position);
+		}
+		if (delta_length < 0.1 * BS) {
+			// we can believe this, adjust
+			player->setPosition(position);
+			player->setSpeed(speed);
+		} else if (delta_length > 1.0 * BS) {
+			// possible cheat
+			// Call callbacks
+			dstream << "Possible cheat detected" << std::endl;
+			position_ok = false;
+		} else {
+			// discrepancy, but not not severe. Maybe a glitch?
+			dstream << "Position discrepancy of " << delta_length << std::endl;
+			// TODO: if both positions are in the same walkable block,
+			//       *gradually* move both closer together.
+		}
+
 	}
 
 	pitch = modulo360f(pitch);
 	yaw = wrapDegrees_0_360(yaw);
 
-	playersao->setBasePosition(position);
-	player->setSpeed(speed);
+	if (position_ok) {
+		playersao->setBasePosition(position);
+		// TODO: speed, too?
+		player->setSpeed(speed);
+	} else {
+		playersao->setBasePosition(player->getPosition());
+		// keep speed from control log above
+	}
 	playersao->setPitch(pitch);
 	playersao->setYaw(yaw);
 	playersao->setFov(fov);
@@ -546,7 +576,7 @@ void Server::process_PlayerPos(RemotePlayer *player, PlayerSAO *playersao,
 	player->control.LMB = (keyPressed & 128);
 	player->control.RMB = (keyPressed & 256);
 
-	if (playersao->checkMovementCheat()) {
+	if (playersao->checkMovementCheat() || !position_ok) {
 		// Call callbacks
 		m_script->on_cheat(playersao, "moved_too_fast");
 		SendMovePlayer(pkt->getPeerId());

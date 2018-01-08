@@ -227,9 +227,16 @@ void ControlLog::serialize(std::ostream &output, u32 bytes_max) const
 	u8 motion_model = 1;
 	u8 motion_model_version = 1;
 
-	bool leftovers = false;
 	writeU8(output, motion_model);
 	writeU8(output, motion_model_version);
+
+	// if we've been teleported, mention it at the start
+	if (includes_teleport) {
+		writeU8(output, 252); // marker
+		writeV3F1000(output, teleport_pos);
+	}
+
+	bool leftovers = false;
 	ControlLogEntry *prev_cle = NULL;
 	int count = 0;
 	for( ControlLogEntry cle : entries ) {
@@ -262,6 +269,9 @@ void ControlLog::deserialize(std::istream &input)
 	motion_model = motion_model - motion_model;
 	motion_model_version = motion_model_version - motion_model_version;
 
+	// check for teleportation during unravelling
+	includes_teleport = false;
+
 	//bool leftovers = false;
 	//long int prev_tellg = input.tellg();
 	ControlLogEntry *prev_cle = NULL;
@@ -270,6 +280,12 @@ void ControlLog::deserialize(std::istream &input)
 		int code = input.peek();
 		if (code < 0) {
 			break; // eof
+		} else if (code == 252) {
+			// teleport
+			u8 marker = readU8(input);
+			marker = marker - marker;
+			teleport_pos = readV3F1000(input);
+			includes_teleport = true;
 		} else if (code == 253) {
 			// leftovers
 			u8 marker = readU8(input);
@@ -305,6 +321,10 @@ u32 ControlLog::getSpannedTime() const
 
 void ControlLog::acknowledge(u32 finishtime) {
 	dstream << "acknowledge " << finishtime << std::endl;
+	if (includes_teleport && finishtime >= starttime) {
+		// if teleport was acknowledged, we can forget it again
+		includes_teleport = false;
+	}
 	while (starttime < finishtime && !entries.empty()) {
 		ControlLogEntry cle = entries.front(); entries.pop_front();
 		u32 dtime = cle.getDtimeU32();
@@ -320,4 +340,15 @@ void ControlLog::acknowledge(u32 finishtime) {
 		}
 	}
 	dstream << "new start time " << starttime << std::endl;
+}
+
+void ControlLog::setTeleportPos(v3f &pos)
+{
+	// we just got teleported
+	// - clear control log (it's useless after this)
+	starttime = getFinishTime();
+	entries.clear();
+	// - add the teleport to the control log
+	teleport_pos = pos;
+	includes_teleport = true;
 }

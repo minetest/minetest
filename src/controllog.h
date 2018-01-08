@@ -163,11 +163,21 @@ public:
 	{
 		return entries;
 	}
+	bool includesTeleport() const
+	{
+		return includes_teleport;
+	}
+	const v3f getTeleportPos() const {
+		return teleport_pos;
+	}
+	void setTeleportPos(v3f &pos);
 private:
 	u8 version = 1; // agreed-upon version
 	u32 starttime = 0;
 	u8 last_acked_settings = 0;
 	std::deque<ControlLogEntry> entries;
+	bool includes_teleport = false;
+	v3f teleport_pos;
 };
 
 #endif

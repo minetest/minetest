@@ -251,6 +251,26 @@ float RemotePlayer::_getStepHeight() const
 		(touching_ground ? (0.6f * BS) : (0.2f * BS));
 }
 
+void RemotePlayer::setTeleportedPosition(const v3f &pos) {
+	// remember the last teleport position
+	m_teleport_pos = pos;
+	m_waiting_for_teleport = true;
+}
+
+bool RemotePlayer::waitingForTeleport() const {
+	return m_waiting_for_teleport;
+}
+bool RemotePlayer::matchingTeleport(const v3f &pos) {
+	float distance = m_teleport_pos.getDistanceFrom(pos);
+	if (distance < 0.5 * BS) {
+		// next time, don't check anymore
+		m_waiting_for_teleport = false;
+		return true;
+	} else {
+		return false;
+	}
+}
+
 //const IGameDef* RemotePlayer::getGameDef() const
 //{
 //	return m_server;
