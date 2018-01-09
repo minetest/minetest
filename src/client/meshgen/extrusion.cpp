@@ -12,7 +12,8 @@ static void setupMaterial(video::SMaterial &m, video::ITexture *texture)
 	m.setFlag(video::EMF_BILINEAR_FILTER, false);
 	m.setFlag(video::EMF_TRILINEAR_FILTER, false);
 	m.setFlag(video::EMF_BACK_FACE_CULLING, true);
-#if (IRRLICHT_VERSION_MAJOR >= 1 && IRRLICHT_VERSION_MINOR >= 8) || IRRLICHT_VERSION_MAJOR >= 2
+#if (IRRLICHT_VERSION_MAJOR >= 1 && IRRLICHT_VERSION_MINOR >= 8) ||                      \
+		IRRLICHT_VERSION_MAJOR >= 2
 	m.setFlag(video::EMF_USE_MIP_MAPS, false);
 #endif
 	auto &l = m.TextureLayer[0];
@@ -21,8 +22,8 @@ static void setupMaterial(video::SMaterial &m, video::ITexture *texture)
 	l.TextureWrapV = video::ETC_CLAMP_TO_EDGE;
 }
 
-scene::SMesh *createExtrusionMesh(video::ITexture *texture,
-		video::ITexture *overlay_texture)
+scene::SMesh *createExtrusionMesh(
+		video::ITexture *texture, video::ITexture *overlay_texture)
 {
 	ExtrudedMesh &extruded = cache[texture];
 	if (!extruded) {

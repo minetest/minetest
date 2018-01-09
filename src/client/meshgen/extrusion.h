@@ -7,7 +7,7 @@
  * Buffer 0 uses @p texture
  * Buffer 1 uses @p overlay_texture, unless it is NULL, in which case it is not present
  */
-scene::SMesh *createExtrusionMesh(video::ITexture *texture,
-		video::ITexture *overlay_texture = nullptr);
+scene::SMesh *createExtrusionMesh(
+		video::ITexture *texture, video::ITexture *overlay_texture = nullptr);
 
 void purgeExtrusionMeshCache();

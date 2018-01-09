@@ -1,8 +1,7 @@
 #include "extruder.h"
 #include <cstring>
 
-Extruder::Extruder(video::ITexture *_texture) :
-	texture(_texture)
+Extruder::Extruder(video::ITexture *_texture) : texture(_texture)
 {
 	if (texture->getColorFormat() != video::ECF_A8R8G8B8)
 		return;
@@ -48,6 +47,7 @@ void Extruder::createEdgeFace(u32 k, FaceDir dir)
 
 void Extruder::addLongFace(u32 i, u32 j, FaceDir dir)
 {
+	// clang-format off
 	static const v3f normals[4] = {
 		{0.0f, 1.0f, 0.0f},
 		{0.0f, -1.0f, 0.0f},
@@ -81,6 +81,7 @@ void Extruder::addLongFace(u32 i, u32 j, FaceDir dir)
 		{0.0f, -1.0f, -0.5f},
 		{0.0f, -1.0f, 0.5f},
 	}};
+	// clang-format on
 	static constexpr u16 ind[6] = {0, 1, 2, 3, 2, 1};
 	float x = dw * i - 0.5f;
 	float y = 0.5f - dh * j;
@@ -91,11 +92,13 @@ void Extruder::addLongFace(u32 i, u32 j, FaceDir dir)
 	const v3f &n = normals[dir];
 	for (int k = 0; k < 4; k++) {
 		const v3f &v = vert[dir][k];
+		// clang-format off
 		mesh.vertices.emplace_back(
 			x + v.X, y + v.Y, thickness * v.Z,
 			n.X, n.Y, n.Z,
 			video::SColor(0xFFFFFFFF),
 			tu + v.X, tv - v.Y);
+		// clang-format on
 	}
 	for (int k = 0; k < 6; k++)
 		mesh.indices.push_back(base + ind[k]);
@@ -103,6 +106,7 @@ void Extruder::addLongFace(u32 i, u32 j, FaceDir dir)
 
 void Extruder::addLargeFace(int id)
 {
+	// clang-format off
 	static const v3f normals[2] = {
 		{0.0f, 0.0f, -1.0f},
 		{0.0f, 0.0f, 1.0f},
@@ -117,6 +121,7 @@ void Extruder::addLargeFace(int id)
 		{0, 2, 1, 3, 1, 2},
 		{0, 1, 2, 3, 2, 1},
 	};
+	// clang-format on
 	static constexpr float zz[2] = {0.5f, -0.5f};
 	u16 base = mesh.vertices.size();
 	u16 base2 = mesh.overlay_vertices.size();
@@ -124,11 +129,13 @@ void Extruder::addLargeFace(int id)
 	const v3f &n = normals[id];
 	for (int k = 0; k < 4; k++) {
 		const v2f &v = vert[k];
+		// clang-format off
 		video::S3DVertex vert(
 			v.X - 0.5f, 0.5f - v.Y, z,
 			n.X, n.Y, n.Z,
 			video::SColor(0xFFFFFFFF),
 			v.X, v.Y);
+		// clang-format on
 		mesh.vertices.push_back(vert);
 		mesh.overlay_vertices.push_back(vert);
 	}

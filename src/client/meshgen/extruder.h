@@ -12,10 +12,7 @@ struct ExtrudedMesh
 	std::vector<video::S3DVertex> overlay_vertices;
 	std::vector<u16> overlay_indices;
 
-	explicit operator bool() const noexcept
-	{
-		return !vertices.empty();
-	}
+	explicit operator bool() const noexcept { return !vertices.empty(); }
 };
 
 /*
@@ -52,8 +49,8 @@ public:
 	Extruder(const Extruder &) = delete;
 	Extruder(Extruder &&) = delete;
 	~Extruder();
-	Extruder &operator= (const Extruder &) = delete;
-	Extruder &operator= (Extruder &&) = delete;
+	Extruder &operator=(const Extruder &) = delete;
+	Extruder &operator=(Extruder &&) = delete;
 	void extrude();
 	ExtrudedMesh takeMesh() noexcept;
 };
