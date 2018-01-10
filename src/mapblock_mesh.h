@@ -173,46 +173,6 @@ private:
 	v3s16 m_camera_offset;
 };
 
-
-
-/*
-	This is used because CMeshBuffer::append() is very slow
-*/
-struct PreMeshBuffer
-{
-	TileLayer layer;
-	std::vector<u16> indices;
-	std::vector<video::S3DVertex> vertices;
-};
-
-struct MeshCollector
-{
-	std::array<std::vector<PreMeshBuffer>, MAX_TILE_LAYERS> prebuffers;
-
-	void append(
-			const TileSpec &material,
-			const video::S3DVertex *vertices, u32 numVertices,
-			const u16 *indices, u32 numIndices);
-	void append(
-			const TileSpec &material,
-			const video::S3DVertex *vertices, u32 numVertices,
-			const u16 *indices, u32 numIndices,
-			v3f pos, video::SColor c, u8 light_source);
-
-private:
-	void append(
-			const TileLayer &material,
-			const video::S3DVertex *vertices, u32 numVertices,
-			const u16 *indices, u32 numIndices,
-			u8 layernum, bool use_scale = false);
-	void append(
-			const TileLayer &material,
-			const video::S3DVertex *vertices, u32 numVertices,
-			const u16 *indices, u32 numIndices,
-			v3f pos, video::SColor c, u8 light_source,
-			u8 layernum, bool use_scale = false);
-};
-
 /*!
  * Encodes light of a node.
  * The result is not the final color, but a
