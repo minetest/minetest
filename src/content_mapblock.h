@@ -136,6 +136,7 @@ public:
 		float offset_h, float offset_v = 0.0);
 
 // drawtypes
+	void drawSolidNode();
 	void drawLiquidNode();
 	void drawGlasslikeNode();
 	void drawGlasslikeFramedNode();
