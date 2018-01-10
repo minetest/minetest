@@ -494,7 +494,7 @@ static void getNodeTextureCoords(v3f base, const v3f &scale, v3s16 dir, float *u
 
 struct FastFace
 {
-	TileLayer layer;
+	TileSpec tile;
 	video::S3DVertex vertices[4]; // Precalculated vertices
 	/*!
 	 * The face is divided into two triangles. If this is true,
@@ -502,8 +502,6 @@ struct FastFace
 	 * are connected.
 	 */
 	bool vertex_0_2_connected;
-	u8 layernum;
-	bool world_aligned;
 };
 
 static void makeFastFace(const TileSpec &tile, u16 li0, u16 li1, u16 li2, u16 li3,
@@ -674,35 +672,25 @@ static void makeFastFace(const TileSpec &tile, u16 li0, u16 li1, u16 li2, u16 li
 		core::vector2d<f32>(x0, y0),
 		core::vector2d<f32>(x0 + w * abs_scale, y0) };
 
-	for (int layernum = 0; layernum < MAX_TILE_LAYERS; layernum++) {
-		const TileLayer *layer = &tile.layers[layernum];
-		if (layer->texture_id == 0)
-			continue;
+	// equivalent to dest.push_back(FastFace()) but faster
+	dest.emplace_back();
+	FastFace& face = *dest.rbegin();
 
-		// equivalent to dest.push_back(FastFace()) but faster
-		dest.emplace_back();
-		FastFace& face = *dest.rbegin();
+	for (u8 i = 0; i < 4; i++) {
+		video::SColor c = encode_light(li[i], tile.emissive_light);
+		if (!tile.emissive_light)
+			applyFacesShading(c, normal);
 
-		for (u8 i = 0; i < 4; i++) {
-			video::SColor c = encode_light(li[i], tile.emissive_light);
-			if (!tile.emissive_light)
-				applyFacesShading(c, normal);
-
-			face.vertices[i] = video::S3DVertex(vertex_pos[i], normal, c, f[i]);
-		}
-
-		/*
-		 Revert triangles for nicer looking gradient if the
-		 brightness of vertices 1 and 3 differ less than
-		 the brightness of vertices 0 and 2.
-		 */
-		face.vertex_0_2_connected = vertex_0_2_connected;
-
-		face.layer = *layer;
-		face.layernum = layernum;
-
-		face.world_aligned = tile.world_aligned;
+		face.vertices[i] = video::S3DVertex(vertex_pos[i], normal, c, f[i]);
 	}
+
+	/*
+		Revert triangles for nicer looking gradient if the
+		brightness of vertices 1 and 3 differ less than
+		the brightness of vertices 0 and 2.
+		*/
+	face.vertex_0_2_connected = vertex_0_2_connected;
+	face.tile = tile;
 }
 
 /*
@@ -1129,15 +1117,9 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data, v3s16 camera_offset):
 		for (const FastFace &f : fastfaces_new) {
 			static const u16 indices[] = {0, 1, 2, 2, 3, 0};
 			static const u16 indices_alternate[] = {0, 1, 3, 2, 3, 1};
-
-			if (!f.layer.texture)
-				continue;
-
 			const u16 *indices_p =
 				f.vertex_0_2_connected ? indices : indices_alternate;
-
-			collector.append(f.layer, f.vertices, 4, indices_p, 6,
-				f.layernum, f.world_aligned);
+			collector.append(f.tile, f.vertices, 4, indices_p, 6);
 		}
 	}
 
