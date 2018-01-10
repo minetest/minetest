@@ -1055,6 +1055,20 @@ static void updateAllFastFaceRows(MeshMakeData *data,
 				dest);
 }
 
+static void applyTileColor(PreMeshBuffer &pmb)
+{
+	video::SColor tc = pmb.layer.color;
+	if (tc == video::SColor(0xFFFFFFFF))
+		return;
+	for (video::S3DVertex &vertex : pmb.vertices) {
+		video::SColor *c = &vertex.Color;
+		c->set(c->getAlpha(),
+			c->getRed() * tc.getRed() / 255,
+			c->getGreen() * tc.getGreen() / 255,
+			c->getBlue() * tc.getBlue() / 255);
+	}
+}
+
 /*
 	MapBlockMesh
 */
@@ -1104,7 +1118,7 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data, v3s16 camera_offset):
 		Convert FastFaces to MeshCollector
 	*/
 
-	MeshCollector collector(m_use_tangent_vertices);
+	MeshCollector collector;
 
 	{
 		// avg 0ms (100ms spikes when loading textures the first time)
@@ -1139,8 +1153,6 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data, v3s16 camera_offset):
 		generator.generate();
 	}
 
-	collector.applyTileColors();
-
 	/*
 		Convert MeshCollector to SMesh
 	*/
@@ -1149,6 +1161,8 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data, v3s16 camera_offset):
 		for(u32 i = 0; i < collector.prebuffers[layer].size(); i++)
 		{
 			PreMeshBuffer &p = collector.prebuffers[layer][i];
+
+			applyTileColor(p);
 
 			// Generate animation data
 			// - Cracks
@@ -1532,24 +1546,6 @@ void MeshCollector::append(const TileLayer &layer,
 	for (u32 i = 0; i < numIndices; i++) {
 		u32 j = indices[i] + vertex_count;
 		p->indices.push_back(j);
-	}
-}
-
-void MeshCollector::applyTileColors()
-{
-	for (auto &prebuffer : prebuffers) {
-		for (PreMeshBuffer &pmb : prebuffer) {
-			video::SColor tc = pmb.layer.color;
-			if (tc == video::SColor(0xFFFFFFFF))
-				continue;
-			for (video::S3DVertex &vertex : pmb.vertices) {
-				video::SColor *c = &vertex.Color;
-				c->set(c->getAlpha(),
-					c->getRed() * tc.getRed() / 255,
-					c->getGreen() * tc.getGreen() / 255,
-					c->getBlue() * tc.getBlue() / 255);
-			}
-		}
 	}
 }
 
