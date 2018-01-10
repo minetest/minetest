@@ -18,14 +18,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #pragma once
-
+#include <type_traits>
 #include "basic_macros.h"
 #include "irrlichttypes.h"
 #include "irr_v2d.h"
 #include "irr_v3d.h"
 #include "irr_aabb3d.h"
 
-#define rangelim(d, min, max) ((d) < (min) ? (min) : ((d) > (max) ? (max) : (d)))
 #define myfloor(x) ((x) < 0.0 ? (int)(x) - 1 : (int)(x))
 // The naive swap performs better than the xor version
 #define SWAP(t, x, y) do { \
@@ -34,6 +33,18 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	y = temp; \
 } while (0)
 
+template <typename T>
+T rangelim(
+	T value,
+	typename std::enable_if<std::is_arithmetic<T>::value, T>::type min,
+	typename std::enable_if<std::is_arithmetic<T>::value, T>::type max)
+{
+	if (value < min)
+		return min;
+	if (value > max)
+		return max;
+	return value;
+}
 
 inline s16 getContainerPos(s16 p, s16 d)
 {
