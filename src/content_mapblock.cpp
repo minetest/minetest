@@ -151,7 +151,8 @@ void MapblockMeshGenerator::drawQuad(v3f *coords, const v3s16 &normal,
 //              the faces in the list is up-down-right-left-back-front
 //              (compatible with ContentFeatures).
 void MapblockMeshGenerator::drawCuboid(const aabb3f &box,
-	TileSpec *tiles, int tilecount, const LightPair *lights, const f32 *txc)
+		TileSpec *tiles, int tilecount, const LightPair *lights,
+		const f32 *txc, const bool *faces)
 {
 	assert(tilecount >= 1 && tilecount <= 6); // pre-condition
 
@@ -272,6 +273,8 @@ void MapblockMeshGenerator::drawCuboid(const aabb3f &box,
 
 	// Add to mesh collector
 	for (int k = 0; k < 6; ++k) {
+		if (!faces[k])
+			continue;
 		int tileindex = MYMIN(k, tilecount - 1);
 		collector->append(tiles[tileindex], vertices + 4 * k, 4, quad_indices, 6);
 	}
@@ -345,8 +348,11 @@ void MapblockMeshGenerator::generateCuboidTextureCoords(const aabb3f &box, f32 *
 }
 
 void MapblockMeshGenerator::drawAutoLightedCuboid(aabb3f box, const f32 *txc,
-	TileSpec *tiles, int tile_count)
+	TileSpec *tiles, int tile_count, const bool *faces)
 {
+	static const bool all_faces[6] = {1, 1, 1, 1, 1, 1};
+	if (!faces)
+		faces = all_faces;
 	f32 texture_coord_buf[24];
 	f32 dx1 = box.MinEdge.X;
 	f32 dy1 = box.MinEdge.Y;
@@ -373,14 +379,15 @@ void MapblockMeshGenerator::drawAutoLightedCuboid(aabb3f box, const f32 *txc,
 			d.Z = (j & 1) ? dz2 : dz1;
 			lights[j] = blendLight(d);
 		}
-		drawCuboid(box, tiles, tile_count, lights, txc);
+		drawCuboid(box, tiles, tile_count, lights, txc, faces);
 	} else {
-		drawCuboid(box, tiles, tile_count, nullptr, txc);
+		drawCuboid(box, tiles, tile_count, nullptr, txc, faces);
 	}
 }
 
 void MapblockMeshGenerator::drawSolidNode()
 {
+	bool faces[6] = {0, 0, 0, 0, 0, 0};
 	static const v3s16 tile_dirs[6] = {
 		v3s16(0, 1, 0),
 		v3s16(0, -1, 0),
@@ -390,9 +397,26 @@ void MapblockMeshGenerator::drawSolidNode()
 		v3s16(0, 0, -1)
 	};
 	TileSpec tiles[6];
-	for (int face = 0; face < 6; face++)
+	for (int face = 0; face < 6; face++) {
+		v3s16 p2 = blockpos_nodes + p + tile_dirs[face];
+		content_t n2 = data->m_vmanip.getNodeNoEx(p2).getContent();
+		if (n2 == CONTENT_IGNORE)
+			continue;
+		if (n2 != CONTENT_AIR) {
+			const ContentFeatures &f2 = nodedef->get(n2);
+			if (f2.solidness == f->solidness)
+				continue;
+			if (f->drawtype == NDT_LIQUID) {
+				if (n2 == nodedef->getId(f->liquid_alternative_flowing))
+					continue;
+				if (n2 == nodedef->getId(f->liquid_alternative_source))
+					continue;
+			}
+		}
+		faces[face] = true;
 		getTile(tile_dirs[face], &tiles[face]);
-	drawAutoLightedCuboid(aabb3f(v3f(-0.5 * BS), v3f(+0.5 * BS)), nullptr, tiles, 6);
+	}
+	drawAutoLightedCuboid(aabb3f(v3f(-0.5 * BS), v3f(+0.5 * BS)), nullptr, tiles, 6, faces);
 }
 
 void MapblockMeshGenerator::prepareLiquidNodeDrawing()

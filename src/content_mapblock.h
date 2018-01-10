@@ -85,10 +85,11 @@ public:
 
 // cuboid drawing!
 	void drawCuboid(const aabb3f &box, TileSpec *tiles, int tilecount,
-		const LightPair *lights , const f32 *txc);
+			const LightPair *lights , const f32 *txc, const bool *faces);
 	void generateCuboidTextureCoords(aabb3f const &box, f32 *coords);
-	void drawAutoLightedCuboid(aabb3f box, const f32 *txc = NULL,
-		TileSpec *tiles = NULL, int tile_count = 0);
+	void drawAutoLightedCuboid(aabb3f box, const f32 *txc = nullptr,
+			TileSpec *tiles = nullptr, int tile_count = 0,
+			const bool *faces = nullptr);
 
 // liquid-specific
 	bool top_is_same_liquid;
