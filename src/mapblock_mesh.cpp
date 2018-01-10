@@ -1194,16 +1194,10 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data, v3s16 camera_offset):
 				// Dummy sunlight to handle non-sunlit areas
 				video::SColorf sunlight;
 				get_sunlight_color(&sunlight, 0);
-				u32 vertex_count = m_use_tangent_vertices ?
-						p.tangent_vertices.size() : p.vertices.size();
+				u32 vertex_count = p.vertices.size();
 				for (u32 j = 0; j < vertex_count; j++) {
-					video::SColor *vc;
-					if (m_use_tangent_vertices) {
-						vc = &p.tangent_vertices[j].Color;
-					} else {
-						vc = &p.vertices[j].Color;
-					}
-					video::SColor copy(*vc);
+					video::SColor *vc = &p.vertices[j].Color;
+					video::SColor copy = *vc;
 					if (vc->getAlpha() == 0) // No sunlight - no need to animate
 						final_color_blend(vc, copy, sunlight); // Finalize color
 					else // Record color to animate
@@ -1240,24 +1234,23 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data, v3s16 camera_offset):
 			if (m_use_tangent_vertices) {
 				scene::SMeshBufferTangents *buf =
 						new scene::SMeshBufferTangents();
-				// Set material
 				buf->Material = material;
-				// Add to mesh
+				buf->Vertices.reallocate(p.vertices.size());
+				buf->Indices.reallocate(p.indices.size());
+				for (const video::S3DVertex &v: p.vertices)
+					buf->Vertices.push_back(video::S3DVertexTangents(v.Pos, v.Color, v.TCoords));
+				for (u16 i: p.indices)
+					buf->Indices.push_back(i);
+				buf->recalculateBoundingBox();
 				mesh->addMeshBuffer(buf);
-				// Mesh grabbed it
 				buf->drop();
-				buf->append(&p.tangent_vertices[0], p.tangent_vertices.size(),
-					&p.indices[0], p.indices.size());
 			} else {
 				scene::SMeshBuffer *buf = new scene::SMeshBuffer();
-				// Set material
 				buf->Material = material;
-				// Add to mesh
-				mesh->addMeshBuffer(buf);
-				// Mesh grabbed it
-				buf->drop();
 				buf->append(&p.vertices[0], p.vertices.size(),
 					&p.indices[0], p.indices.size());
+				mesh->addMeshBuffer(buf);
+				buf->drop();
 			}
 		}
 
@@ -1461,23 +1454,11 @@ void MeshCollector::append(const TileLayer &layer,
 	if (use_scale)
 		scale = 1.0 / layer.scale;
 
-	u32 vertex_count;
-	if (m_use_tangent_vertices) {
-		vertex_count = p->tangent_vertices.size();
-		for (u32 i = 0; i < numVertices; i++) {
-
-			video::S3DVertexTangents vert(vertices[i].Pos, vertices[i].Normal,
-					vertices[i].Color, scale * vertices[i].TCoords);
-			p->tangent_vertices.push_back(vert);
-		}
-	} else {
-		vertex_count = p->vertices.size();
-		for (u32 i = 0; i < numVertices; i++) {
-			video::S3DVertex vert(vertices[i].Pos, vertices[i].Normal,
-					vertices[i].Color, scale * vertices[i].TCoords);
-
-			p->vertices.push_back(vert);
-		}
+	u32 vertex_count = p->vertices.size();
+	for (u32 i = 0; i < numVertices; i++) {
+		video::S3DVertex vert(vertices[i].Pos, vertices[i].Normal,
+				vertices[i].Color, scale * vertices[i].TCoords);
+		p->vertices.push_back(vert);
 	}
 
 	for (u32 i = 0; i < numIndices; i++) {
@@ -1537,29 +1518,15 @@ void MeshCollector::append(const TileLayer &layer,
 		scale = 1.0 / layer.scale;
 
 	video::SColor original_c = c;
-	u32 vertex_count;
-	if (m_use_tangent_vertices) {
-		vertex_count = p->tangent_vertices.size();
-		for (u32 i = 0; i < numVertices; i++) {
-			if (!light_source) {
-				c = original_c;
-				applyFacesShading(c, vertices[i].Normal);
-			}
-			video::S3DVertexTangents vert(vertices[i].Pos + pos,
-					vertices[i].Normal, c, scale * vertices[i].TCoords);
-			p->tangent_vertices.push_back(vert);
+	u32 vertex_count = p->vertices.size();
+	for (u32 i = 0; i < numVertices; i++) {
+		if (!light_source) {
+			c = original_c;
+			applyFacesShading(c, vertices[i].Normal);
 		}
-	} else {
-		vertex_count = p->vertices.size();
-		for (u32 i = 0; i < numVertices; i++) {
-			if (!light_source) {
-				c = original_c;
-				applyFacesShading(c, vertices[i].Normal);
-			}
-			video::S3DVertex vert(vertices[i].Pos + pos, vertices[i].Normal, c,
-				scale * vertices[i].TCoords);
-			p->vertices.push_back(vert);
-		}
+		video::S3DVertex vert(vertices[i].Pos + pos, vertices[i].Normal, c,
+			scale * vertices[i].TCoords);
+		p->vertices.push_back(vert);
 	}
 
 	for (u32 i = 0; i < numIndices; i++) {
@@ -1570,34 +1537,20 @@ void MeshCollector::append(const TileLayer &layer,
 
 void MeshCollector::applyTileColors()
 {
-	if (m_use_tangent_vertices)
-		for (auto &prebuffer : prebuffers) {
-			for (PreMeshBuffer &pmb : prebuffer) {
-				video::SColor tc = pmb.layer.color;
-				if (tc == video::SColor(0xFFFFFFFF))
-					continue;
-				for (video::S3DVertexTangents &tangent_vertex : pmb.tangent_vertices) {
-					video::SColor *c = &tangent_vertex.Color;
-					c->set(c->getAlpha(), c->getRed() * tc.getRed() / 255,
-						c->getGreen() * tc.getGreen() / 255,
-						c->getBlue() * tc.getBlue() / 255);
-				}
+	for (auto &prebuffer : prebuffers) {
+		for (PreMeshBuffer &pmb : prebuffer) {
+			video::SColor tc = pmb.layer.color;
+			if (tc == video::SColor(0xFFFFFFFF))
+				continue;
+			for (video::S3DVertex &vertex : pmb.vertices) {
+				video::SColor *c = &vertex.Color;
+				c->set(c->getAlpha(),
+					c->getRed() * tc.getRed() / 255,
+					c->getGreen() * tc.getGreen() / 255,
+					c->getBlue() * tc.getBlue() / 255);
 			}
 		}
-	else
-		for (auto &prebuffer : prebuffers) {
-			for (PreMeshBuffer &pmb : prebuffer) {
-				video::SColor tc = pmb.layer.color;
-				if (tc == video::SColor(0xFFFFFFFF))
-					continue;
-				for (video::S3DVertex &vertex : pmb.vertices) {
-					video::SColor *c = &vertex.Color;
-					c->set(c->getAlpha(), c->getRed() * tc.getRed() / 255,
-						c->getGreen() * tc.getGreen() / 255,
-						c->getBlue() * tc.getBlue() / 255);
-				}
-			}
-		}
+	}
 }
 
 video::SColor encode_light(u16 light, u8 emissive_light)

@@ -183,7 +183,6 @@ struct PreMeshBuffer
 	TileLayer layer;
 	std::vector<u16> indices;
 	std::vector<video::S3DVertex> vertices;
-	std::vector<video::S3DVertexTangents> tangent_vertices;
 };
 
 struct MeshCollector
