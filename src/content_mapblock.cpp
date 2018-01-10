@@ -417,11 +417,14 @@ void MapblockMeshGenerator::drawSolidNode()
 		}
 		faces[face] = true;
 		getTile(tile_dirs[face], &tiles[face]);
-		for (auto &layer : tiles[face].layers)
+		for (auto &layer : tiles[face].layers) {
 			if (backface_culling)
 				layer.material_flags |= MATERIAL_FLAG_BACKFACE_CULLING;
 			else
 				layer.material_flags &= ~MATERIAL_FLAG_BACKFACE_CULLING;
+			layer.material_flags |= MATERIAL_FLAG_TILEABLE_HORIZONTAL;
+			layer.material_flags |= MATERIAL_FLAG_TILEABLE_VERTICAL;
+		}
 	}
 	drawAutoLightedCuboid(aabb3f(v3f(-0.5 * BS), v3f(0.5 * BS)), nullptr, tiles, 6, faces);
 }
