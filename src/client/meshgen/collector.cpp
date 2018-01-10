@@ -2,29 +2,25 @@
 #include "log.h"
 #include "mesh.h"
 
-void MeshCollector::append(
-		const TileSpec &tile,
-		const video::S3DVertex *vertices, u32 numVertices,
-		const u16 *indices, u32 numIndices)
+void MeshCollector::append(const TileSpec &tile, const video::S3DVertex *vertices,
+		u32 numVertices, const u16 *indices, u32 numIndices)
 {
 	for (int layernum = 0; layernum < MAX_TILE_LAYERS; layernum++) {
 		const TileLayer *layer = &tile.layers[layernum];
 		if (layer->texture_id == 0)
 			continue;
-		append(*layer, vertices, numVertices, indices, numIndices,
-			layernum, tile.world_aligned);
+		append(*layer, vertices, numVertices, indices, numIndices, layernum,
+				tile.world_aligned);
 	}
 }
 
-void MeshCollector::append(
-		const TileLayer &layer,
-		const video::S3DVertex *vertices, u32 numVertices,
-		const u16 *indices, u32 numIndices,
-		u8 layernum, bool use_scale)
+void MeshCollector::append(const TileLayer &layer, const video::S3DVertex *vertices,
+		u32 numVertices, const u16 *indices, u32 numIndices, u8 layernum,
+		bool use_scale)
 {
 	if (numIndices > 65535) {
 		dstream << "FIXME: MeshCollector::append() called with numIndices="
-				<< numIndices << " (limit 65535)" << std::endl;
+			<< numIndices << " (limit 65535)" << std::endl;
 		return;
 	}
 	std::vector<PreMeshBuffer> *buffers = &prebuffers[layernum];
@@ -61,31 +57,26 @@ void MeshCollector::append(
 	}
 }
 
-void MeshCollector::append(
-		const TileSpec &tile,
-		const video::S3DVertex *vertices, u32 numVertices,
-		const u16 *indices, u32 numIndices,
-		v3f pos, video::SColor c, u8 light_source)
+void MeshCollector::append(const TileSpec &tile, const video::S3DVertex *vertices,
+		u32 numVertices, const u16 *indices, u32 numIndices, v3f pos,
+		video::SColor c, u8 light_source)
 {
 	for (int layernum = 0; layernum < MAX_TILE_LAYERS; layernum++) {
 		const TileLayer *layer = &tile.layers[layernum];
 		if (layer->texture_id == 0)
 			continue;
-		append(*layer, vertices, numVertices, indices, numIndices, pos,
-				c, light_source, layernum, tile.world_aligned);
+		append(*layer, vertices, numVertices, indices, numIndices, pos, c,
+				light_source, layernum, tile.world_aligned);
 	}
 }
 
-void MeshCollector::append(
-		const TileLayer &layer,
-		const video::S3DVertex *vertices, u32 numVertices,
-		const u16 *indices, u32 numIndices,
-		v3f pos, video::SColor c, u8 light_source,
-		u8 layernum, bool use_scale)
+void MeshCollector::append(const TileLayer &layer, const video::S3DVertex *vertices,
+		u32 numVertices, const u16 *indices, u32 numIndices, v3f pos,
+		video::SColor c, u8 light_source, u8 layernum, bool use_scale)
 {
 	if (numIndices > 65535) {
 		dstream << "FIXME: MeshCollector::append() called with numIndices="
-				<< numIndices << " (limit 65535)" << std::endl;
+			<< numIndices << " (limit 65535)" << std::endl;
 		return;
 	}
 	std::vector<PreMeshBuffer> *buffers = &prebuffers[layernum];
@@ -117,7 +108,7 @@ void MeshCollector::append(
 			applyFacesShading(c, vertices[i].Normal);
 		}
 		video::S3DVertex vert(vertices[i].Pos + pos, vertices[i].Normal, c,
-			scale * vertices[i].TCoords);
+				scale * vertices[i].TCoords);
 		p->vertices.push_back(vert);
 	}
 
@@ -126,4 +117,3 @@ void MeshCollector::append(
 		p->indices.push_back(j);
 	}
 }
-
