@@ -400,23 +400,30 @@ void MapblockMeshGenerator::drawSolidNode()
 	for (int face = 0; face < 6; face++) {
 		v3s16 p2 = blockpos_nodes + p + tile_dirs[face];
 		content_t n2 = data->m_vmanip.getNodeNoEx(p2).getContent();
+		bool backface_culling = f->drawtype == NDT_NORMAL;
 		if (n2 == CONTENT_IGNORE)
 			continue;
 		if (n2 != CONTENT_AIR) {
 			const ContentFeatures &f2 = nodedef->get(n2);
-			if (f2.solidness == f->solidness)
+			if (f2.solidness == 2)
 				continue;
 			if (f->drawtype == NDT_LIQUID) {
 				if (n2 == nodedef->getId(f->liquid_alternative_flowing))
 					continue;
 				if (n2 == nodedef->getId(f->liquid_alternative_source))
 					continue;
+				backface_culling = f2.solidness >= 1;
 			}
 		}
 		faces[face] = true;
 		getTile(tile_dirs[face], &tiles[face]);
+		for (auto &layer : tiles[face].layers)
+			if (backface_culling)
+				layer.material_flags |= MATERIAL_FLAG_BACKFACE_CULLING;
+			else
+				layer.material_flags &= ~MATERIAL_FLAG_BACKFACE_CULLING;
 	}
-	drawAutoLightedCuboid(aabb3f(v3f(-0.5 * BS), v3f(+0.5 * BS)), nullptr, tiles, 6, faces);
+	drawAutoLightedCuboid(aabb3f(v3f(-0.5 * BS), v3f(0.5 * BS)), nullptr, tiles, 6, faces);
 }
 
 void MapblockMeshGenerator::prepareLiquidNodeDrawing()
