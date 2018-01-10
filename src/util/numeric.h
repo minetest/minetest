@@ -18,7 +18,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #pragma once
-#include <type_traits>
 #include "basic_macros.h"
 #include "irrlichttypes.h"
 #include "irr_v2d.h"
@@ -33,11 +32,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	y = temp; \
 } while (0)
 
+// NOTE: decltype forces it to use type of first argument
 template <typename T>
-T rangelim(
-	T value,
-	typename std::enable_if<std::is_arithmetic<T>::value, T>::type min,
-	typename std::enable_if<std::is_arithmetic<T>::value, T>::type max)
+T rangelim(T value, decltype(value) min, decltype(value) max)
 {
 	if (value < min)
 		return min;
