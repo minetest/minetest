@@ -18,6 +18,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #pragma once
+#include <limits>
 #include "basic_macros.h"
 #include "irrlichttypes.h"
 #include "irr_v2d.h"
@@ -41,6 +42,13 @@ T rangelim(T value, decltype(value) min, decltype(value) max)
 	if (value > max)
 		return max;
 	return value;
+}
+
+// limits value to range of type T
+template <typename T>
+T rangelim(long value)
+{
+	return rangelim(value, std::numeric_limits<T>::min(), std::numeric_limits<T>::max());
 }
 
 inline s16 getContainerPos(s16 p, s16 d)

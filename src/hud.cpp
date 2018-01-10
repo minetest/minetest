@@ -61,17 +61,18 @@ Hud::Hud(gui::IGUIEnvironment *guienv, Client *client, LocalPlayer *player,
 	tsrc = client->getTextureSource();
 
 	v3f crosshair_color = g_settings->getV3F("crosshair_color");
-	u32 cross_r = rangelim(myround(crosshair_color.X), 0, 255);
-	u32 cross_g = rangelim(myround(crosshair_color.Y), 0, 255);
-	u32 cross_b = rangelim(myround(crosshair_color.Z), 0, 255);
-	u32 cross_a = rangelim(g_settings->getS32("crosshair_alpha"), 0, 255);
-	crosshair_argb = video::SColor(cross_a, cross_r, cross_g, cross_b);
+	crosshair_argb = video::SColor(
+			rangelim<u8>(g_settings->getS32("crosshair_alpha")),
+			rangelim<u8>(myround(crosshair_color.X)),
+			rangelim<u8>(myround(crosshair_color.Y)),
+			rangelim<u8>(myround(crosshair_color.Z)));
 
 	v3f selectionbox_color = g_settings->getV3F("selectionbox_color");
-	u32 sbox_r = rangelim(myround(selectionbox_color.X), 0, 255);
-	u32 sbox_g = rangelim(myround(selectionbox_color.Y), 0, 255);
-	u32 sbox_b = rangelim(myround(selectionbox_color.Z), 0, 255);
-	selectionbox_argb = video::SColor(255, sbox_r, sbox_g, sbox_b);
+	selectionbox_argb = video::SColor(
+			255,
+			rangelim<u8>(myround(selectionbox_color.X)),
+			rangelim<u8>(myround(selectionbox_color.Y)),
+			rangelim<u8>(myround(selectionbox_color.Z)));
 
 	use_crosshair_image = tsrc->isKnownSourceImage("crosshair.png");
 

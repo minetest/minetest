@@ -52,7 +52,7 @@ void set_light_table(float gamma)
 		float brightness = a * x * x * x + b * x * x + c * x;
 		float boost = d * std::exp(-((x - e) * (x - e)) / (2.0f * f * f));
 		brightness = powf(brightness + boost, 1.0f / gamma);
-		light_LUT[i] = rangelim((u32)(255.0f * brightness), 0, 255);
+		light_LUT[i] = rangelim<u8>(255.0f * brightness);
 		if (i > 1 && light_LUT[i] <= light_LUT[i - 1])
 			light_LUT[i] = light_LUT[i - 1] + 1;
 	}
