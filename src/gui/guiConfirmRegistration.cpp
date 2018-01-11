@@ -88,14 +88,12 @@ void GUIConfirmRegistration::regenerateGui(v2u32 screensize)
 		core::rect<s32> rect(0, 0, 540, 90);
 		rect += topleft_client + v2s32(30, ypos);
 		static const std::string info_text_template = strgettext(
-				"You are about to join the server (%1$s) with name "
-				"and password, but no player account is registered "
-				"on the name \"%2$s\" yet. If you proceed, a new "
-				"password-protected player account with this name "
-				"will be created on this server.\nIf you want to "
-				"create an account and join this server, please "
-				"enter the previously entered password once again "
-				"to confirm account creation:");
+				"You are about to join this server (%1$s) with the "
+				"name \"%2$s\" the first time. If you proceed, a "
+				"new account using your credentials will be created "
+				"on this server.\n"
+				"Please enter your password once again to confirm "
+				"account creation or cancel to abort.");
 		char info_text_buf[600];
 		snprintf(info_text_buf, sizeof(info_text_buf), info_text_template.c_str(),
 				address.c_str(), m_playername.c_str());

@@ -98,7 +98,7 @@ void Client::handleCommand_Hello(NetworkPacket* pkt)
 	if (chosen_auth_mechanism != AUTH_MECHANISM_NONE) {
 		if (chosen_auth_mechanism == AUTH_MECHANISM_FIRST_SRP
 				&& !m_simple_singleplayer_mode) {
-			promptConfirmRegister(chosen_auth_mechanism);
+			promptConfirmRegistration(chosen_auth_mechanism);
 		} else {
 			startAuth(chosen_auth_mechanism);
 		}

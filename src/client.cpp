@@ -978,7 +978,7 @@ void Client::sendInit(const std::string &playerName)
 	Send(&pkt);
 }
 
-void Client::promptConfirmRegister(AuthMechanism chosen_auth_mechanism)
+void Client::promptConfirmRegistration(AuthMechanism chosen_auth_mechanism)
 {
 	m_chosen_auth_mech = chosen_auth_mechanism;
 	m_is_registration_confirmation_state = true;
