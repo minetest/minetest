@@ -397,10 +397,13 @@ void MapblockMeshGenerator::drawSolidNode()
 		v3s16(0, 0, -1)
 	};
 	TileSpec tiles[6];
+	content_t n1 = n.getContent();
 	for (int face = 0; face < 6; face++) {
 		v3s16 p2 = blockpos_nodes + p + tile_dirs[face];
 		content_t n2 = data->m_vmanip.getNodeNoEx(p2).getContent();
 		bool backface_culling = f->drawtype == NDT_NORMAL;
+		if (n2 == n1)
+			continue;
 		if (n2 == CONTENT_IGNORE)
 			continue;
 		if (n2 != CONTENT_AIR) {
