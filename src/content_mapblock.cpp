@@ -433,6 +433,11 @@ void MapblockMeshGenerator::drawSolidNode()
 	}
 	if (!draw)
 		return;
+	origin = intToFloat(p, BS);
+	if (data->m_smooth_lighting)
+		getSmoothLightFrame();
+	else
+		light = LightPair(getInteriorLight(n, 1, nodedef));
 	drawAutoLightedCuboid(aabb3f(v3f(-0.5 * BS), v3f(0.5 * BS)), nullptr, tiles, 6, faces);
 }
 
@@ -1372,16 +1377,22 @@ void MapblockMeshGenerator::errorUnknownDrawtype()
 
 void MapblockMeshGenerator::drawNode()
 {
-	if (f->drawtype == NDT_AIRLIKE)
-		return;
+	switch (f->drawtype) {
+		case NDT_AIRLIKE:
+			return;
+		case NDT_NORMAL:
+		case NDT_LIQUID:
+			drawSolidNode();
+			return;
+		default:
+			break;
+	}
 	origin = intToFloat(p, BS);
 	if (data->m_smooth_lighting)
 		getSmoothLightFrame();
 	else
 		light = LightPair(getInteriorLight(n, 1, nodedef));
 	switch (f->drawtype) {
-		case NDT_NORMAL:            drawSolidNode(); break;
-		case NDT_LIQUID:            drawSolidNode(); break;
 		case NDT_FLOWINGLIQUID:     drawLiquidNode(); break;
 		case NDT_GLASSLIKE:         drawGlasslikeNode(); break;
 		case NDT_GLASSLIKE_FRAMED:  drawGlasslikeFramedNode(); break;
