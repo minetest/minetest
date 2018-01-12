@@ -198,8 +198,7 @@ bool GUIConfirmRegistration::OnEvent(const SEvent &event)
 	if (event.EventType != EET_GUI_EVENT)
 		return Parent ? Parent->OnEvent(event) : false;
 
-	if (event.GUIEvent.EventType == gui::EGET_ELEMENT_FOCUS_LOST &&
-			isVisible()) {
+	if (event.GUIEvent.EventType == gui::EGET_ELEMENT_FOCUS_LOST && isVisible()) {
 		if (!canTakeFocus(event.GUIEvent.Element)) {
 			dstream << "GUIConfirmRegistration: Not allowing focus "
 				   "change."
