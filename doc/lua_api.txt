@@ -4438,19 +4438,30 @@ Definition tables
 
     {
         label = "Lava cooling",
-    --  ^ Descriptive label for profiling purposes (optional).
-    --    Definitions with identical labels will be listed as one.
-    --  In the following two fields, also group:groupname will work.
+        ^ Descriptive label for profiling purposes (optional).
+          Definitions with identical labels will be listed as one.
         nodenames = {"default:lava_source"},
-        neighbors = {"default:water_source", "default:water_flowing"}, -- Any of these --[[
-        ^ If left out or empty, any neighbor will do ]]
-        interval = 1.0, -- Operation interval in seconds
-        chance = 1, -- Chance of trigger per-node per-interval is 1.0 / this
-        catch_up = true, -- If true, catch-up behaviour is enabled --[[
-        ^ The chance value is temporarily reduced when returning to
-          an area to simulate time lost by the area being unattended.
-        ^ Note chance value can often be reduced to 1 ]]
-        action = func(pos, node, active_object_count, active_object_count_wider),
+        ^ Apply `action` function to these nodes.
+        ^ `group:groupname` can also be used here.
+        neighbors = {"default:water_source", "default:water_flowing"},
+        ^ Only apply `action` to nodes that have one of, or any
+          combination of, these neighbors.
+        ^ If left out or empty, any neighbor will do.
+        ^ `group:groupname` can also be used here.
+        interval = 1.0,
+        ^ Operation interval in seconds.
+        chance = 1,
+        ^ Chance of triggering `action` per-node per-interval is 1.0 / this value.
+        catch_up = true,
+        ^ If true, catch-up behaviour is enabled: The `chance` value is temporarily
+          reduced when returning to an area to simulate time lost by the area being
+          unattended. Note that the `chance` value can often be reduced to 1.
+        action = function(pos, node, active_object_count, active_object_count_wider),
+        ^ Function triggered for each qualifying node.
+        ^ `active_object_count` is number of active objects in the node's mapblock.
+        ^ `active_object_count_wider` is number of active objects in the node's
+          mapblock plus all 26 neighboring mapblocks. If any neighboring mapblocks
+          are unloaded an estmate is calculated for them based on loaded mapblocks.
     }
 
 ### LBM (LoadingBlockModifier) definition (`register_lbm`)
