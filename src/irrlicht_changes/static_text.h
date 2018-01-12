@@ -239,7 +239,15 @@ inline void setStaticText(irr::gui::IGUIStaticText *static_text, const EnrichedS
 
 #else // USE_FREETYPE
 
-inline irr::gui::IGUIStaticText *addStaticText(
+namespace irr
+{
+namespace gui
+{
+
+class StaticText
+{
+public:
+	static irr::gui::IGUIStaticText *add(
 		irr::gui::IGUIEnvironment *guienv,
 		const EnrichedString &text,
 		const core::rect< s32 > &rectangle,
@@ -248,9 +256,14 @@ inline irr::gui::IGUIStaticText *addStaticText(
 		irr::gui::IGUIElement *parent = NULL,
 		s32 id = -1,
 		bool fillBackground = false)
-{
-	return guienv->addStaticText(text.c_str(), rectangle, border, wordWrap, parent, id, fillBackground);
-}
+	{
+		return guienv->addStaticText(text.c_str(), rectangle, border, wordWrap, parent, id, fillBackground);
+	}
+};
+
+} // end namespace gui
+
+} // end namespace irr
 
 inline void setStaticText(irr::gui::IGUIStaticText *static_text, const EnrichedString &text)
 {
