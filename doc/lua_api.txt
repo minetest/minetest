@@ -4380,18 +4380,37 @@ Definition tables
         weight = 5,
         collisionbox = {-0.5, 0.0, -0.5, 0.5, 1.0, 0.5},
         selectionbox = {-0.5, 0.0, -0.5, 0.5, 1.0, 0.5},
-    --  ^ Default, uses collision box dimensions when not set
+    --  ^ Default, uses collision box dimensions when not set.
+    --  ^ For both boxes: {xmin, ymin, zmin, xmax, ymax, zmax} in nodes from
+    --    object position.
         pointable = true, -- overrides selection box when false
         visual = "cube" / "sprite" / "upright_sprite" / "mesh" / "wielditem",
+    --  ^ "cube" is a node-sized cube.
+    --  ^ "sprite" is a flat texture always facing the player.
+    --  ^ "upright_sprite" is a vertical flat texture.
+    --  ^ "mesh" uses the defined mesh model.
         visual_size = {x = 1, y = 1},
+    --  ^ `x` multiplies horizontal (X and Z) visual size.
+    --  ^ `y` multiplies vertical (Y) visual size.
         mesh = "model",
         textures = {}, -- number of required textures depends on visual
+    --  ^ "cube" uses 6 textures in the way a node does.
+    --  ^ "sprite" uses 1 texture.
+    --  ^ "upright_sprite" uses 2 textures: {front, back}.
         colors = {}, -- number of required colors depends on visual
         spritediv = {x = 1, y = 1},
+    --  ^ Used with spritesheet textures for animation and/or frame selection according
+    --    to position relative to player.
+    --  ^ Defines the number of columns and rows in the spritesheet: {columns, rows}.
         initial_sprite_basepos = {x = 0, y = 0},
+    --  ^ Used with spritesheet textures.
+    --  ^ Defines the {column, row} position of the initially used frame in the
+    --    spritesheet.
         is_visible = true,
         makes_footstep_sound = false,
-        automatic_rotate = false,
+        automatic_rotate = 0,
+    --  ^ Set constant rotation in radians per second, positive or negative.
+    --  ^ Set to 0 to disable constant rotation.
         stepheight = 0,
         automatic_face_movement_dir = 0.0,
     --  ^ Automatically set yaw to movement direction, offset in degrees,
