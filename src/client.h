@@ -345,6 +345,9 @@ public:
 	{ return m_proto_ver; }
 
 	bool connectedToServer();
+	void confirmRegistration();
+	bool m_is_registration_confirmation_state = false;
+	bool m_simple_singleplayer_mode;
 
 	float mediaReceiveProgress();
 
@@ -448,6 +451,7 @@ private:
 	static AuthMechanism choseAuthMech(const u32 mechs);
 
 	void sendInit(const std::string &playerName);
+	void promptConfirmRegistration(AuthMechanism chosen_auth_mechanism);
 	void startAuth(AuthMechanism chosen_auth_mechanism);
 	void sendDeletedBlocks(std::vector<v3s16> &blocks);
 	void sendGotBlocks(v3s16 block);

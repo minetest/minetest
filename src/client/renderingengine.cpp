@@ -410,6 +410,26 @@ void RenderingEngine::_draw_load_screen(const std::wstring &text,
 	guitext->remove();
 }
 
+/*
+	Draws the menu scene including (optional) cloud background.
+*/
+void RenderingEngine::_draw_menu_scene(gui::IGUIEnvironment *guienv,
+		float dtime, bool clouds)
+{
+	bool cloud_menu_background = clouds && g_settings->getBool("menu_clouds");
+	if (cloud_menu_background) {
+		g_menuclouds->step(dtime * 3);
+		g_menuclouds->render();
+		get_video_driver()->beginScene(
+				true, true, video::SColor(255, 140, 186, 250));
+		g_menucloudsmgr->drawAll();
+	} else
+		get_video_driver()->beginScene(true, true, video::SColor(255, 0, 0, 0));
+
+	guienv->drawAll();
+	get_video_driver()->endScene();
+}
+
 std::vector<core::vector3d<u32>> RenderingEngine::getSupportedVideoModes()
 {
 	IrrlichtDevice *nulldevice = createDevice(video::EDT_NULL);
