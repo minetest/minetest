@@ -2880,8 +2880,11 @@ and `minetest.auth_reload` call the authentication handler.
         * `function EmergeAreaCallback(blockpos, action, calls_remaining, param)`
             * `blockpos` is the *block* coordinates of the block that had been emerged
             * `action` could be one of the following constant values:
-                * `minetest.EMERGE_CANCELLED`, `minetest.EMERGE_ERRORED`, `minetest.EMERGE_FROM_MEMORY`,
-                * `minetest.EMERGE_FROM_DISK`, `minetest.EMERGE_GENERATED`
+                * `minetest.EMERGE_CANCELLED`
+                * `minetest.EMERGE_ERRORED`
+                * `minetest.EMERGE_FROM_MEMORY`
+                * `minetest.EMERGE_FROM_DISK`
+                * `minetest.EMERGE_GENERATED`
             * `calls_remaining` is the number of callbacks to be expected after this one
             * `param` is the user-defined parameter passed to emerge_area (or nil if the
               parameter was absent)
