@@ -92,8 +92,9 @@ void GUIConfirmRegistration::regenerateGui(v2u32 screensize)
 				"name \"%2$s\" for the first time. If you proceed, a "
 				"new account using your credentials will be created "
 				"on this server.\n"
-				"Please retype your password to confirm account "
-				"creation or cancel to abort.");
+				"Please retype your password and click Register and "
+				"Join to confirm account creation or click Cancel to "
+				"abort.");
 		char info_text_buf[1024];
 		snprintf(info_text_buf, sizeof(info_text_buf), info_text_template.c_str(),
 				address.c_str(), m_playername.c_str());
