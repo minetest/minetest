@@ -3379,7 +3379,7 @@ These functions return the leftover itemstack.
       field is false or omitted (else, the itemstack is not changed). `orient_flags`
       is an optional table containing extra tweaks to the placement code:
         * `invert_wall`:   if `true`, place wall-orientation on the ground and ground-
-    orientation on the wall.
+          orientation on the wall.
         * `force_wall` :   if `true`, always place the node in wall orientation.
         * `force_ceiling`: if `true`, always place on the ceiling.
         * `force_floor`:   if `true`, always place the node on the floor.
@@ -4192,10 +4192,10 @@ the object.
 
 It can be created via `Raycast(pos1, pos2, objects, liquids)` or
 `minetest.raycast(pos1, pos2, objects, liquids)` where:
-    * `pos1`: start of the ray
-    * `pos2`: end of the ray
-    * `objects` : if false, only nodes will be returned. Default is true.
-    * `liquids' : if false, liquid nodes won't be returned. Default is false.
+* `pos1`: start of the ray
+* `pos2`: end of the ray
+* `objects` : if false, only nodes will be returned. Default is true.
+* `liquids' : if false, liquid nodes won't be returned. Default is false.
 
 #### Methods
 * `next()`: returns a `pointed_thing`
