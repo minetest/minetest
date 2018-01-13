@@ -57,6 +57,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #if USE_FREETYPE && IRRLICHT_VERSION_MAJOR == 1 && IRRLICHT_VERSION_MINOR < 9
 #include "intlGUIEditBox.h"
+#include "mainmenumanager.h"
+
 #endif
 
 #define MY_CHECKPOS(a,b)													\
@@ -127,6 +129,28 @@ GUIFormSpecMenu::~GUIFormSpecMenu()
 	delete m_selected_item;
 	delete m_form_src;
 	delete m_text_dst;
+}
+
+void GUIFormSpecMenu::create(GUIFormSpecMenu **cur_formspec, Client *client,
+	JoystickController *joystick, IFormSource *fs_src, TextDest *txt_dest)
+{
+	if (*cur_formspec == 0) {
+		*cur_formspec = new GUIFormSpecMenu(joystick, guiroot, -1, &g_menumgr,
+			client, client->getTextureSource(), fs_src, txt_dest);
+		(*cur_formspec)->doPause = false;
+
+		/*
+			Caution: do not call (*cur_formspec)->drop() here --
+			the reference might outlive the menu, so we will
+			periodically check if *cur_formspec is the only
+			remaining reference (i.e. the menu was removed)
+			and delete it in that case.
+		*/
+
+	} else {
+		(*cur_formspec)->setFormSource(fs_src);
+		(*cur_formspec)->setTextDest(txt_dest);
+	}
 }
 
 void GUIFormSpecMenu::removeChildren()
