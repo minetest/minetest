@@ -3335,9 +3335,9 @@ These functions return the leftover itemstack.
     * Compress a string of data.
     * `method` is a string identifying the compression method to be used.
     * Supported compression methods:
-    *     Deflate (zlib): `"deflate"`
+        * Deflate (zlib): `"deflate"`
     * `...` indicates method-specific arguments.  Currently defined arguments are:
-    *     Deflate: `level` - Compression level, `0`-`9` or `nil`.
+        * Deflate: `level` - Compression level, `0`-`9` or `nil`.
 * `minetest.decompress(compressed_data, method, ...)`: returns data
     * Decompress a string of data (using ZLib).
     * See documentation on `minetest.compress()` for supported compression methods.
@@ -3560,13 +3560,13 @@ This is basically a reference to a C++ `ServerActiveObject`
 * `set_armor_groups({group1=rating, group2=rating, ...})`
 * `get_armor_groups()`: returns a table with the armor group ratings
 * `set_animation(frame_range, frame_speed, frame_blend, frame_loop)`
-  * `frame_range`: table {x=num, y=num}, default: `{x=1, y=1}`
-  * `frame_speed`: number, default: `15.0`
-  * `frame_blend`: number, default: `0.0`
-  * `frame_loop`: boolean, default: `true`
+    * `frame_range`: table {x=num, y=num}, default: `{x=1, y=1}`
+    * `frame_speed`: number, default: `15.0`
+    * `frame_blend`: number, default: `0.0`
+    * `frame_loop`: boolean, default: `true`
 * `get_animation()`: returns `range`, `frame_speed`, `frame_blend` and `frame_loop`
 * `set_animation_frame_speed(frame_speed)`
-  * `frame_speed`: number, default: `15.0`
+    * `frame_speed`: number, default: `15.0`
 * `set_attach(parent, bone, position, rotation)`
     * `bone`: string
     * `position`: `{x=num, y=num, z=num}` (relative)
