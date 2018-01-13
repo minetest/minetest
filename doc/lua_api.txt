@@ -2877,7 +2877,7 @@ and `minetest.auth_reload` call the authentication handler.
     * fetched from memory, loaded from disk, or if inexistent, generates them.
     * If `callback` is a valid Lua function, this will be called for each block emerged.
     * The function signature of callback is:
-        *   `function EmergeAreaCallback(blockpos, action, calls_remaining, param)`
+        * `function EmergeAreaCallback(blockpos, action, calls_remaining, param)`
             * `blockpos` is the *block* coordinates of the block that had been emerged
             * `action` could be one of the following constant values:
                 * `minetest.EMERGE_CANCELLED`, `minetest.EMERGE_ERRORED`, `minetest.EMERGE_FROM_MEMORY`,
