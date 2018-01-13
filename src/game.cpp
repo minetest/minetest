@@ -47,6 +47,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "gui/guiPasswordChange.h"
 #include "gui/guiVolumeChange.h"
 #include "gui/mainmenumanager.h"
+#include "gui/profilergraph.h"
 #include "mapblock.h"
 #include "minimap.h"
 #include "nodedef.h"         // Needed for determining pointing to nodes
@@ -59,8 +60,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "settings.h"
 #include "shader.h"
 #include "sky.h"
-#include "subgame.h"
-#include "tool.h"
 #include "translation.h"
 #include "util/basic_macros.h"
 #include "util/directiontables.h"
@@ -187,7 +186,6 @@ struct LocalFormspecHandler : public TextDest
 
 /* Form update callback */
 
-static const std::string empty_string = "";
 class NodeMetadataFormSource: public IFormSource
 {
 public:
@@ -198,6 +196,7 @@ public:
 	}
 	const std::string &getForm() const
 	{
+		static const std::string empty_string = "";
 		NodeMetadata *meta = m_map->getNodeMetadata(m_p);
 
 		if (!meta)
@@ -235,181 +234,6 @@ public:
 	}
 
 	Client *m_client;
-};
-
-/* Profiler display */
-class ProfilerGraph
-{
-private:
-	struct Piece {
-		Profiler::GraphValues values;
-	};
-	struct Meta {
-		float min;
-		float max;
-		video::SColor color;
-		Meta(float initial = 0,
-			video::SColor color = video::SColor(255, 255, 255, 255)):
-			min(initial),
-			max(initial),
-			color(color)
-		{}
-	};
-	std::deque<Piece> m_log;
-public:
-	u32 m_log_max_size = 200;
-
-	ProfilerGraph() = default;
-
-	void put(const Profiler::GraphValues &values)
-	{
-		Piece piece;
-		piece.values = values;
-		m_log.push_back(piece);
-
-		while (m_log.size() > m_log_max_size)
-			m_log.erase(m_log.begin());
-	}
-
-	void draw(s32 x_left, s32 y_bottom, video::IVideoDriver *driver,
-		  gui::IGUIFont *font) const
-	{
-		// Do *not* use UNORDERED_MAP here as the order needs
-		// to be the same for each call to prevent flickering
-		std::map<std::string, Meta> m_meta;
-
-		for (const Piece &piece : m_log) {
-			for (const auto &i : piece.values) {
-				const std::string &id = i.first;
-				const float &value = i.second;
-				std::map<std::string, Meta>::iterator j = m_meta.find(id);
-
-				if (j == m_meta.end()) {
-					m_meta[id] = Meta(value);
-					continue;
-				}
-
-				if (value < j->second.min)
-					j->second.min = value;
-
-				if (value > j->second.max)
-					j->second.max = value;
-			}
-		}
-
-		// Assign colors
-		static const video::SColor usable_colors[] = {
-			video::SColor(255, 255, 100, 100),
-			video::SColor(255, 90, 225, 90),
-			video::SColor(255, 100, 100, 255),
-			video::SColor(255, 255, 150, 50),
-			video::SColor(255, 220, 220, 100)
-		};
-		static const u32 usable_colors_count =
-			sizeof(usable_colors) / sizeof(*usable_colors);
-		u32 next_color_i = 0;
-
-		for (auto &i : m_meta) {
-			Meta &meta = i.second;
-			video::SColor color(255, 200, 200, 200);
-
-			if (next_color_i < usable_colors_count)
-				color = usable_colors[next_color_i++];
-
-			meta.color = color;
-		}
-
-		s32 graphh = 50;
-		s32 textx = x_left + m_log_max_size + 15;
-		s32 textx2 = textx + 200 - 15;
-		s32 meta_i = 0;
-
-		for (std::map<std::string, Meta>::const_iterator i = m_meta.begin();
-				i != m_meta.end(); ++i) {
-			const std::string &id = i->first;
-			const Meta &meta = i->second;
-			s32 x = x_left;
-			s32 y = y_bottom - meta_i * 50;
-			float show_min = meta.min;
-			float show_max = meta.max;
-
-			if (show_min >= -0.0001 && show_max >= -0.0001) {
-				if (show_min <= show_max * 0.5)
-					show_min = 0;
-			}
-
-			s32 texth = 15;
-			char buf[10];
-			snprintf(buf, 10, "%.3g", show_max);
-			font->draw(utf8_to_wide(buf).c_str(),
-					core::rect<s32>(textx, y - graphh,
-						   textx2, y - graphh + texth),
-					meta.color);
-			snprintf(buf, 10, "%.3g", show_min);
-			font->draw(utf8_to_wide(buf).c_str(),
-					core::rect<s32>(textx, y - texth,
-						   textx2, y),
-					meta.color);
-			font->draw(utf8_to_wide(id).c_str(),
-					core::rect<s32>(textx, y - graphh / 2 - texth / 2,
-						   textx2, y - graphh / 2 + texth / 2),
-					meta.color);
-			s32 graph1y = y;
-			s32 graph1h = graphh;
-			bool relativegraph = (show_min != 0 && show_min != show_max);
-			float lastscaledvalue = 0.0;
-			bool lastscaledvalue_exists = false;
-
-			for (const Piece &piece : m_log) {
-				float value = 0;
-				bool value_exists = false;
-				Profiler::GraphValues::const_iterator k =
-					piece.values.find(id);
-
-				if (k != piece.values.end()) {
-					value = k->second;
-					value_exists = true;
-				}
-
-				if (!value_exists) {
-					x++;
-					lastscaledvalue_exists = false;
-					continue;
-				}
-
-				float scaledvalue = 1.0;
-
-				if (show_max != show_min)
-					scaledvalue = (value - show_min) / (show_max - show_min);
-
-				if (scaledvalue == 1.0 && value == 0) {
-					x++;
-					lastscaledvalue_exists = false;
-					continue;
-				}
-
-				if (relativegraph) {
-					if (lastscaledvalue_exists) {
-						s32 ivalue1 = lastscaledvalue * graph1h;
-						s32 ivalue2 = scaledvalue * graph1h;
-						driver->draw2DLine(v2s32(x - 1, graph1y - ivalue1),
-								   v2s32(x, graph1y - ivalue2), meta.color);
-					}
-
-					lastscaledvalue = scaledvalue;
-					lastscaledvalue_exists = true;
-				} else {
-					s32 ivalue = scaledvalue * graph1h;
-					driver->draw2DLine(v2s32(x, graph1y),
-							   v2s32(x, graph1y - ivalue), meta.color);
-				}
-
-				x++;
-			}
-
-			meta_i++;
-		}
-	}
 };
 
 class NodeDugEvent: public MtEvent
@@ -735,181 +559,6 @@ public:
 		return scs;
 	}
 };
-
-
-bool nodePlacementPrediction(Client &client, const ItemDefinition &playeritem_def,
-	const ItemStack &playeritem, v3s16 nodepos, v3s16 neighbourpos)
-{
-	std::string prediction = playeritem_def.node_placement_prediction;
-	INodeDefManager *nodedef = client.ndef();
-	ClientMap &map = client.getEnv().getClientMap();
-	MapNode node;
-	bool is_valid_position;
-
-	node = map.getNodeNoEx(nodepos, &is_valid_position);
-	if (!is_valid_position)
-		return false;
-
-	if (!prediction.empty() && !nodedef->get(node).rightclickable) {
-		verbosestream << "Node placement prediction for "
-			      << playeritem_def.name << " is "
-			      << prediction << std::endl;
-		v3s16 p = neighbourpos;
-
-		// Place inside node itself if buildable_to
-		MapNode n_under = map.getNodeNoEx(nodepos, &is_valid_position);
-		if (is_valid_position)
-		{
-			if (nodedef->get(n_under).buildable_to)
-				p = nodepos;
-			else {
-				node = map.getNodeNoEx(p, &is_valid_position);
-				if (is_valid_position &&!nodedef->get(node).buildable_to)
-					return false;
-			}
-		}
-
-		// Find id of predicted node
-		content_t id;
-		bool found = nodedef->getId(prediction, id);
-
-		if (!found) {
-			errorstream << "Node placement prediction failed for "
-				    << playeritem_def.name << " (places "
-				    << prediction
-				    << ") - Name not known" << std::endl;
-			return false;
-		}
-
-		const ContentFeatures &predicted_f = nodedef->get(id);
-
-		// Predict param2 for facedir and wallmounted nodes
-		u8 param2 = 0;
-
-		if (predicted_f.param_type_2 == CPT2_WALLMOUNTED ||
-				predicted_f.param_type_2 == CPT2_COLORED_WALLMOUNTED) {
-			v3s16 dir = nodepos - neighbourpos;
-
-			if (abs(dir.Y) > MYMAX(abs(dir.X), abs(dir.Z))) {
-				param2 = dir.Y < 0 ? 1 : 0;
-			} else if (abs(dir.X) > abs(dir.Z)) {
-				param2 = dir.X < 0 ? 3 : 2;
-			} else {
-				param2 = dir.Z < 0 ? 5 : 4;
-			}
-		}
-
-		if (predicted_f.param_type_2 == CPT2_FACEDIR ||
-				predicted_f.param_type_2 == CPT2_COLORED_FACEDIR) {
-			v3s16 dir = nodepos - floatToInt(client.getEnv().getLocalPlayer()->getPosition(), BS);
-
-			if (abs(dir.X) > abs(dir.Z)) {
-				param2 = dir.X < 0 ? 3 : 1;
-			} else {
-				param2 = dir.Z < 0 ? 2 : 0;
-			}
-		}
-
-		assert(param2 <= 5);
-
-		//Check attachment if node is in group attached_node
-		if (((ItemGroupList) predicted_f.groups)["attached_node"] != 0) {
-			static v3s16 wallmounted_dirs[8] = {
-				v3s16(0, 1, 0),
-				v3s16(0, -1, 0),
-				v3s16(1, 0, 0),
-				v3s16(-1, 0, 0),
-				v3s16(0, 0, 1),
-				v3s16(0, 0, -1),
-			};
-			v3s16 pp;
-
-			if (predicted_f.param_type_2 == CPT2_WALLMOUNTED ||
-					predicted_f.param_type_2 == CPT2_COLORED_WALLMOUNTED)
-				pp = p + wallmounted_dirs[param2];
-			else
-				pp = p + v3s16(0, -1, 0);
-
-			if (!nodedef->get(map.getNodeNoEx(pp)).walkable)
-				return false;
-		}
-
-		// Apply color
-		if ((predicted_f.param_type_2 == CPT2_COLOR
-				|| predicted_f.param_type_2 == CPT2_COLORED_FACEDIR
-				|| predicted_f.param_type_2 == CPT2_COLORED_WALLMOUNTED)) {
-			const std::string &indexstr = playeritem.metadata.getString(
-				"palette_index", 0);
-			if (!indexstr.empty()) {
-				s32 index = mystoi(indexstr);
-				if (predicted_f.param_type_2 == CPT2_COLOR) {
-					param2 = index;
-				} else if (predicted_f.param_type_2
-						== CPT2_COLORED_WALLMOUNTED) {
-					// param2 = pure palette index + other
-					param2 = (index & 0xf8) | (param2 & 0x07);
-				} else if (predicted_f.param_type_2
-						== CPT2_COLORED_FACEDIR) {
-					// param2 = pure palette index + other
-					param2 = (index & 0xe0) | (param2 & 0x1f);
-				}
-			}
-		}
-
-		// Add node to client map
-		MapNode n(id, 0, param2);
-
-		try {
-			LocalPlayer *player = client.getEnv().getLocalPlayer();
-
-			// Dont place node when player would be inside new node
-			// NOTE: This is to be eventually implemented by a mod as client-side Lua
-			if (!nodedef->get(n).walkable ||
-					g_settings->getBool("enable_build_where_you_stand") ||
-					(client.checkPrivilege("noclip") && g_settings->getBool("noclip")) ||
-					(nodedef->get(n).walkable &&
-					 neighbourpos != player->getStandingNodePos() + v3s16(0, 1, 0) &&
-					 neighbourpos != player->getStandingNodePos() + v3s16(0, 2, 0))) {
-
-				// This triggers the required mesh update too
-				client.addNode(p, n);
-				return true;
-			}
-		} catch (InvalidPositionException &e) {
-			errorstream << "Node placement prediction failed for "
-				    << playeritem_def.name << " (places "
-				    << prediction
-				    << ") - Position not loaded" << std::endl;
-		}
-	}
-
-	return false;
-}
-
-static inline void create_formspec_menu(GUIFormSpecMenu **cur_formspec,
-		Client *client, JoystickController *joystick,
-		IFormSource *fs_src, TextDest *txt_dest)
-{
-
-	if (*cur_formspec == 0) {
-		*cur_formspec = new GUIFormSpecMenu(joystick, guiroot, -1, &g_menumgr,
-			client, client->getTextureSource(), fs_src, txt_dest);
-		(*cur_formspec)->doPause = false;
-
-		/*
-			Caution: do not call (*cur_formspec)->drop() here --
-			the reference might outlive the menu, so we will
-			periodically check if *cur_formspec is the only
-			remaining reference (i.e. the menu was removed)
-			and delete it in that case.
-		*/
-
-	} else {
-		(*cur_formspec)->setFormSource(fs_src);
-		(*cur_formspec)->setTextDest(txt_dest);
-	}
-
-}
 
 #ifdef __ANDROID__
 #define SIZE_TAG "size[11,5.5]"
@@ -1250,6 +899,9 @@ private:
 	void handleClientEvent_CloudParams(ClientEvent *event, CameraOrientation *cam);
 
 	void updateChat(f32 dtime, const v2u32 &screensize);
+
+	bool nodePlacementPrediction(const ItemDefinition &playeritem_def,
+		const ItemStack &playeritem, const v3s16 &nodepos, const v3s16 &neighbourpos);
 	static const ClientEventHandler clientEventHandler[CLIENTEVENT_MAX];
 
 	InputHandler *input = nullptr;
@@ -2483,7 +2135,8 @@ void Game::openInventory()
 	if (!client->moddingEnabled()
 			|| !client->getScript()->on_inventory_open(fs_src->m_client->getInventory(inventoryloc))) {
 		TextDest *txt_dst = new TextDestPlayerInventory(client);
-		create_formspec_menu(&current_formspec, client, &input->joystick, fs_src, txt_dst);
+		GUIFormSpecMenu::create(&current_formspec, client, &input->joystick, fs_src,
+			txt_dst);
 		cur_formname = "";
 		current_formspec->setFormSpec(fs_src->getForm(), inventoryloc);
 	}
@@ -2987,7 +2640,7 @@ void Game::handleClientEvent_ShowFormSpec(ClientEvent *event, CameraOrientation 
 		TextDestPlayerInventory *txt_dst =
 			new TextDestPlayerInventory(client, *(event->show_formspec.formname));
 
-		create_formspec_menu(&current_formspec, client, &input->joystick,
+		GUIFormSpecMenu::create(&current_formspec, client, &input->joystick,
 			fs_src, txt_dst);
 		cur_formname = *(event->show_formspec.formname);
 	}
@@ -3001,7 +2654,7 @@ void Game::handleClientEvent_ShowLocalFormSpec(ClientEvent *event, CameraOrienta
 	FormspecFormSource *fs_src = new FormspecFormSource(*event->show_formspec.formspec);
 	LocalFormspecHandler *txt_dst =
 		new LocalFormspecHandler(*event->show_formspec.formname, client);
-	create_formspec_menu(&current_formspec, client, &input->joystick, fs_src, txt_dst);
+	GUIFormSpecMenu::create(&current_formspec, client, &input->joystick, fs_src, txt_dst);
 
 	delete event->show_formspec.formspec;
 	delete event->show_formspec.formname;
@@ -3665,9 +3318,9 @@ void Game::handlePointingAtNode(const PointedThing &pointed,
 				&client->getEnv().getClientMap(), nodepos);
 			TextDest *txt_dst = new TextDestNodeMetadata(nodepos, client);
 
-			create_formspec_menu(&current_formspec, client,
-				&input->joystick, fs_src, txt_dst);
-			cur_formname = "";
+			GUIFormSpecMenu::create(&current_formspec, client, &input->joystick, fs_src,
+				txt_dst);
+			cur_formname.clear();
 
 			current_formspec->setFormSpec(meta->getString("formspec"), inventoryloc);
 		} else {
@@ -3677,9 +3330,8 @@ void Game::handlePointingAtNode(const PointedThing &pointed,
 
 			// If the wielded item has node placement prediction,
 			// make that happen
-			bool placed = nodePlacementPrediction(*client,
-					playeritem_def, playeritem,
-					nodepos, neighbourpos);
+			bool placed = nodePlacementPrediction(playeritem_def, playeritem, nodepos,
+				neighbourpos);
 
 			if (placed) {
 				// Report to server
@@ -3706,6 +3358,154 @@ void Game::handlePointingAtNode(const PointedThing &pointed,
 	}
 }
 
+bool Game::nodePlacementPrediction(const ItemDefinition &playeritem_def,
+	const ItemStack &playeritem, const v3s16 &nodepos, const v3s16 &neighbourpos)
+{
+	std::string prediction = playeritem_def.node_placement_prediction;
+	INodeDefManager *nodedef = client->ndef();
+	ClientMap &map = client->getEnv().getClientMap();
+	MapNode node;
+	bool is_valid_position;
+
+	node = map.getNodeNoEx(nodepos, &is_valid_position);
+	if (!is_valid_position)
+		return false;
+
+	if (!prediction.empty() && !nodedef->get(node).rightclickable) {
+		verbosestream << "Node placement prediction for "
+			<< playeritem_def.name << " is "
+			<< prediction << std::endl;
+		v3s16 p = neighbourpos;
+
+		// Place inside node itself if buildable_to
+		MapNode n_under = map.getNodeNoEx(nodepos, &is_valid_position);
+		if (is_valid_position)
+		{
+			if (nodedef->get(n_under).buildable_to)
+				p = nodepos;
+			else {
+				node = map.getNodeNoEx(p, &is_valid_position);
+				if (is_valid_position &&!nodedef->get(node).buildable_to)
+					return false;
+			}
+		}
+
+		// Find id of predicted node
+		content_t id;
+		bool found = nodedef->getId(prediction, id);
+
+		if (!found) {
+			errorstream << "Node placement prediction failed for "
+				<< playeritem_def.name << " (places "
+				<< prediction
+				<< ") - Name not known" << std::endl;
+			return false;
+		}
+
+		const ContentFeatures &predicted_f = nodedef->get(id);
+
+		// Predict param2 for facedir and wallmounted nodes
+		u8 param2 = 0;
+
+		if (predicted_f.param_type_2 == CPT2_WALLMOUNTED ||
+			predicted_f.param_type_2 == CPT2_COLORED_WALLMOUNTED) {
+			v3s16 dir = nodepos - neighbourpos;
+
+			if (abs(dir.Y) > MYMAX(abs(dir.X), abs(dir.Z))) {
+				param2 = dir.Y < 0 ? 1 : 0;
+			} else if (abs(dir.X) > abs(dir.Z)) {
+				param2 = dir.X < 0 ? 3 : 2;
+			} else {
+				param2 = dir.Z < 0 ? 5 : 4;
+			}
+		}
+
+		if (predicted_f.param_type_2 == CPT2_FACEDIR ||
+			predicted_f.param_type_2 == CPT2_COLORED_FACEDIR) {
+			v3s16 dir = nodepos - floatToInt(client->getEnv().getLocalPlayer()->getPosition(), BS);
+
+			if (abs(dir.X) > abs(dir.Z)) {
+				param2 = dir.X < 0 ? 3 : 1;
+			} else {
+				param2 = dir.Z < 0 ? 2 : 0;
+			}
+		}
+
+		assert(param2 <= 5);
+
+		//Check attachment if node is in group attached_node
+		if (((ItemGroupList) predicted_f.groups)["attached_node"] != 0) {
+			static v3s16 wallmounted_dirs[8] = {
+				v3s16(0, 1, 0),
+				v3s16(0, -1, 0),
+				v3s16(1, 0, 0),
+				v3s16(-1, 0, 0),
+				v3s16(0, 0, 1),
+				v3s16(0, 0, -1),
+			};
+			v3s16 pp;
+
+			if (predicted_f.param_type_2 == CPT2_WALLMOUNTED ||
+				predicted_f.param_type_2 == CPT2_COLORED_WALLMOUNTED)
+				pp = p + wallmounted_dirs[param2];
+			else
+				pp = p + v3s16(0, -1, 0);
+
+			if (!nodedef->get(map.getNodeNoEx(pp)).walkable)
+				return false;
+		}
+
+		// Apply color
+		if ((predicted_f.param_type_2 == CPT2_COLOR
+			|| predicted_f.param_type_2 == CPT2_COLORED_FACEDIR
+			|| predicted_f.param_type_2 == CPT2_COLORED_WALLMOUNTED)) {
+			const std::string &indexstr = playeritem.metadata.getString(
+				"palette_index", 0);
+			if (!indexstr.empty()) {
+				s32 index = mystoi(indexstr);
+				if (predicted_f.param_type_2 == CPT2_COLOR) {
+					param2 = index;
+				} else if (predicted_f.param_type_2
+					== CPT2_COLORED_WALLMOUNTED) {
+					// param2 = pure palette index + other
+					param2 = (index & 0xf8) | (param2 & 0x07);
+				} else if (predicted_f.param_type_2
+					== CPT2_COLORED_FACEDIR) {
+					// param2 = pure palette index + other
+					param2 = (index & 0xe0) | (param2 & 0x1f);
+				}
+			}
+		}
+
+		// Add node to client map
+		MapNode n(id, 0, param2);
+
+		try {
+			LocalPlayer *player = client->getEnv().getLocalPlayer();
+
+			// Dont place node when player would be inside new node
+			// NOTE: This is to be eventually implemented by a mod as client-side Lua
+			if (!nodedef->get(n).walkable ||
+				g_settings->getBool("enable_build_where_you_stand") ||
+				(client->checkPrivilege("noclip") && g_settings->getBool("noclip")) ||
+				(nodedef->get(n).walkable &&
+					neighbourpos != player->getStandingNodePos() + v3s16(0, 1, 0) &&
+					neighbourpos != player->getStandingNodePos() + v3s16(0, 2, 0))) {
+
+				// This triggers the required mesh update too
+				client->addNode(p, n);
+				return true;
+			}
+		} catch (InvalidPositionException &e) {
+			errorstream << "Node placement prediction failed for "
+				<< playeritem_def.name << " (places "
+				<< prediction
+				<< ") - Position not loaded" << std::endl;
+		}
+	}
+
+	return false;
+}
 
 void Game::handlePointingAtObject(const PointedThing &pointed, const ItemStack &playeritem,
 		const v3f &player_position, bool show_debug)
@@ -4415,7 +4215,7 @@ void Game::showPauseMenu()
 	FormspecFormSource *fs_src = new FormspecFormSource(os.str());
 	LocalFormspecHandler *txt_dst = new LocalFormspecHandler("MT_PAUSE_MENU");
 
-	create_formspec_menu(&current_formspec, client, &input->joystick, fs_src, txt_dst);
+	GUIFormSpecMenu::create(&current_formspec, client, &input->joystick, fs_src, txt_dst);
 	current_formspec->setFocus("btn_continue");
 	current_formspec->doPause = true;
 }
