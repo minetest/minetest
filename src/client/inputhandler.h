@@ -29,6 +29,37 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "gui/touchscreengui.h"
 #endif
 
+class InputHandler;
+
+/****************************************************************************
+ Fast key cache for main game loop
+ ****************************************************************************/
+
+/* This is faster than using getKeySetting with the tradeoff that functions
+ * using it must make sure that it's initialised before using it and there is
+ * no error handling (for example bounds checking). This is really intended for
+ * use only in the main running loop of the client (the_game()) where the faster
+ * (up to 10x faster) key lookup is an asset. Other parts of the codebase
+ * (e.g. formspecs) should continue using getKeySetting().
+ */
+struct KeyCache {
+
+	KeyCache()
+	{
+		handler = NULL;
+		populate();
+		populate_nonchanging();
+	}
+
+	void populate();
+
+	// Keys that are not settings dependent
+	void populate_nonchanging();
+
+	KeyPress key[KeyType::INTERNAL_ENUM_COUNT];
+	InputHandler *handler;
+};
+
 class KeyList : private std::list<KeyPress>
 {
 	typedef std::list<KeyPress> super;
