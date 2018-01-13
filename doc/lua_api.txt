@@ -595,10 +595,10 @@ appropriate `drawtype`:
   palette). These nodes can have 32 different colors, and the palette
   should contain 32 pixels.
   Examples:
-  * `param2 = 17` is 2 * 8 + 1, so the rotation is 1 and the third (= 2 + 1)
-    pixel will be picked from the palette.
-  * `param2 = 35` is 4 * 8 + 3, so the rotation is 3 and the fifth (= 4 + 1)
-    pixel will be picked from the palette.
+    * `param2 = 17` is 2 * 8 + 1, so the rotation is 1 and the third (= 2 + 1)
+      pixel will be picked from the palette.
+    * `param2 = 35` is 4 * 8 + 3, so the rotation is 3 and the fifth (= 4 + 1)
+      pixel will be picked from the palette.
 * `drawtype = "colorfacedir"` for nodes which use the first
   three bits of `param2` for palette indexing. The remaining
   five bits are describing rotation, as in `facedir` draw type.
@@ -606,10 +606,10 @@ appropriate `drawtype`:
   palette). These nodes can have 8 different colors, and the
   palette should contain 8 pixels.
   Examples:
-  * `param2 = 17` is 0 * 32 + 17, so the rotation is 17 and the
-    first (= 0 + 1) pixel will be picked from the palette.
-  * `param2 = 35` is 1 * 32 + 3, so the rotation is 3 and the
-    second (= 1 + 1) pixel will be picked from the palette.
+    * `param2 = 17` is 0 * 32 + 17, so the rotation is 17 and the
+      first (= 0 + 1) pixel will be picked from the palette.
+    * `param2 = 35` is 1 * 32 + 3, so the rotation is 3 and the
+      second (= 1 + 1) pixel will be picked from the palette.
 
 To colorize a node on the map, set its `param2` value (according
 to the node's draw type).
@@ -1300,11 +1300,11 @@ in the form of a table.  This table specifies the following fields:
 * The `data` field is a flat table of MapNode tables making up the schematic,
   in the order of `[z [y [x]]]`. (required)
   Each MapNode table contains:
-  * `name`: the name of the map node to place (required)
-  * `prob` (alias `param1`): the probability of this node being placed (default: 255)
-  * `param2`: the raw param2 value of the node being placed onto the map (default: 0)
-  * `force_place`: boolean representing if the node should forcibly overwrite any
-     previous contents (default: false)
+    * `name`: the name of the map node to place (required)
+    * `prob` (alias `param1`): the probability of this node being placed (default: 255)
+    * `param2`: the raw param2 value of the node being placed onto the map (default: 0)
+    * `force_place`: boolean representing if the node should forcibly overwrite any
+    previous contents (default: false)
 
 About probability values:
 
@@ -1849,7 +1849,7 @@ Some of the values in the key-value store are handled specially:
 * `description`: Set the item stack's description. Defaults to `idef.description`
 * `color`: A `ColorString`, which sets the stack's color.
 * `palette_index`: If the item has a palette, this is used to get the
-                  current color from the palette.
+  current color from the palette.
 
 Example stuff:
 
@@ -2061,8 +2061,8 @@ examples.
 #### `item_image_button[<X>,<Y>;<W>,<H>;<item name>;<name>;<label>]`
 * `x`, `y`, `w`, `h`, `name` and `label` work as per button
 * `item name` is the registered name of an item/node,
-   tooltip will be made out of its description
-   to override it use tooltip element
+  tooltip will be made out of its description
+  to override it use tooltip element
 * Position and size units are inventory slots
 
 #### `button_exit[<X>,<Y>;<W>,<H>;<name>;<label>]`
@@ -2077,7 +2077,7 @@ examples.
 * `w` and `h` are the size of the itemlist
 * `name` fieldname sent to server on doubleclick value is current selected element
 * `listelements` can be prepended by #color in hexadecimal format RRGGBB (only),
-     * if you want a listelement to start with "#" write "##".
+    * if you want a listelement to start with "#" write "##".
 
 #### `textlist[<X>,<Y>;<W>,<H>;<name>;<listelem 1>,<listelem 2>,...,<listelem n>;<selected idx>;<transparent>]`
 * Scrollable itemlist showing arbitrary text elements
@@ -2085,7 +2085,7 @@ examples.
 * `w` and `h` are the size of the item list
 * `name` fieldname sent to server on doubleclick value is current selected element
 * `listelements` can be prepended by #RRGGBB (only) in hexadecimal format
-     * if you want a listelement to start with "#" write "##"
+    * if you want a listelement to start with "#" write "##"
 * Index to be selected within textlist
 * `true`/`false`: draw transparent background
 * See also `minetest.explode_textlist_event` (main menu: `engine.explode_textlist_event`)
@@ -2108,8 +2108,8 @@ examples.
 #### `dropdown[<X>,<Y>;<W>;<name>;<item 1>,<item 2>, ...,<item n>;<selected idx>]`
 * Show a dropdown field
 * **Important note**: There are two different operation modes:
-     1. handle directly on change (only changed dropdown is submitted)
-     2. read the value on pressing a button (all dropdown values are available)
+    1. handle directly on change (only changed dropdown is submitted)
+    2. read the value on pressing a button (all dropdown values are available)
 * `x` and `y` position of dropdown
 * Width of dropdown
 * Fieldname data is transferred to Lua
@@ -2126,8 +2126,8 @@ examples.
 #### `scrollbar[<X>,<Y>;<W>,<H>;<orientation>;<name>;<value>]`
 * Show a scrollbar
 * There are two ways to use it:
-     1. handle the changed event (only changed scrollbar is available)
-     2. read the value on pressing a button (all scrollbars are available)
+    1. handle the changed event (only changed scrollbar is available)
+    2. read the value on pressing a button (all scrollbars are available)
 * `x` and `y`: position of trackbar
 * `w` and `h`: width and height
 * `orientation`:  `vertical`/`horizontal`
@@ -2148,25 +2148,25 @@ examples.
 #### `tableoptions[<opt 1>;<opt 2>;...]`
 * Sets options for `table[]`
 * `color=#RRGGBB`
-     * default text color (`ColorString`), defaults to `#FFFFFF`
+    * default text color (`ColorString`), defaults to `#FFFFFF`
 * `background=#RRGGBB`
-     * table background color (`ColorString`), defaults to `#000000`
+    * table background color (`ColorString`), defaults to `#000000`
 * `border=<true/false>`
-     * should the table be drawn with a border? (default: `true`)
+    * should the table be drawn with a border? (default: `true`)
 * `highlight=#RRGGBB`
-     * highlight background color (`ColorString`), defaults to `#466432`
+    * highlight background color (`ColorString`), defaults to `#466432`
 * `highlight_text=#RRGGBB`
-     * highlight text color (`ColorString`), defaults to `#FFFFFF`
+    * highlight text color (`ColorString`), defaults to `#FFFFFF`
 * `opendepth=<value>`
-     * all subtrees up to `depth < value` are open (default value = `0`)
-     * only useful when there is a column of type "tree"
+    * all subtrees up to `depth < value` are open (default value = `0`)
+    * only useful when there is a column of type "tree"
 
 #### `tablecolumns[<type 1>,<opt 1a>,<opt 1b>,...;<type 2>,<opt 2a>,<opt 2b>;...]`
 * Sets columns for `table[]`
 * Types: `text`, `image`, `color`, `indent`, `tree`
     * `text`:   show cell contents as text
     * `image`:  cell contents are an image index, use column options to define images
-    * `color`:   cell contents are a ColorString and define color of following cell
+    * `color`:  cell contents are a ColorString and define color of following cell
     * `indent`: cell contents are a number and define indentation of following cell
     * `tree`:   same as indent, but user can open and close subtrees (treeview-like)
 * Column options:
@@ -2244,8 +2244,8 @@ The following functions provide escape sequences:
 * `minetest.colorize(color, message)`:
     * Equivalent to:
       `minetest.get_color_escape_sequence(color) ..
-       message ..
-       minetest.get_color_escape_sequence("#ffffff")`
+      message ..
+      minetest.get_color_escape_sequence("#ffffff")`
 * `minetest.get_background_escape_sequence(color)`
     * `color` is a ColorString
     * The escape sequence sets the background of the whole text element to
@@ -2300,7 +2300,7 @@ For the following functions `x` can be either a vector or a number:
 Helper functions
 ----------------
 * `dump2(obj, name, dumped)`: returns a string which makes `obj` human readable,
-        handles reference loops
+  handles reference loops
     * `obj`: arbitrary variable
     * `name`: string, default: `"_"`
     * `dumped`: table, default: `{}`
@@ -2490,9 +2490,9 @@ Strings that need to be translated can contain several escapes, preceded by `@`.
       if they don't exist.
 * `minetest.get_dir_list(path, [is_dir])`: returns list of entry names
     * is_dir is one of:
-      * nil: return all entries,
-      * true: return only subdirectory names, or
-      * false: return only file names.
+        * nil: return all entries,
+        * true: return only subdirectory names, or
+        * false: return only file names.
 * `minetest.safe_file_write(path, content)`: returns boolean indicating success
     * Replaces contents of file at path with new contents in a safe (atomic) way.
       Use this instead of below code when writing e.g. database files:
@@ -2574,24 +2574,24 @@ Call these functions only at load time!
     * **Not recommended**; Use `on_destruct` or `after_dig_node` in node definition
       whenever possible
 * `minetest.register_on_punchnode(func(pos, node, puncher, pointed_thing))`
-     * Called when a node is punched
+    * Called when a node is punched
 * `minetest.register_on_generated(func(minp, maxp, blockseed))`
-     * Called after generating a piece of world. Modifying nodes inside the area
-       is a bit faster than usually.
+    * Called after generating a piece of world. Modifying nodes inside the area
+      is a bit faster than usually.
 * `minetest.register_on_newplayer(func(ObjectRef))`
-     * Called after a new player has been created
+    * Called after a new player has been created
 * `minetest.register_on_dieplayer(func(ObjectRef))`
-     * Called when a player dies
+    * Called when a player dies
 * `minetest.register_on_punchplayer(func(player, hitter, time_from_last_punch, tool_capabilities, dir, damage))`
-     * Called when a player is punched
-     * `player` - ObjectRef - Player that was punched
-     * `hitter` - ObjectRef - Player that hit
-     * `time_from_last_punch`: Meant for disallowing spamming of clicks (can be nil)
-     * `tool_capabilities`: capability table of used tool (can be nil)
-     * `dir`: unit vector of direction of punch. Always defined. Points from
-       the puncher to the punched.
-     * `damage` - number that represents the damage calculated by the engine
-     * should return `true` to prevent the default damage mechanism
+    * Called when a player is punched
+    * `player` - ObjectRef - Player that was punched
+    * `hitter` - ObjectRef - Player that hit
+    * `time_from_last_punch`: Meant for disallowing spamming of clicks (can be nil)
+    * `tool_capabilities`: capability table of used tool (can be nil)
+    * `dir`: unit vector of direction of punch. Always defined. Points from
+      the puncher to the punched.
+    * `damage` - number that represents the damage calculated by the engine
+    * should return `true` to prevent the default damage mechanism
 * `minetest.register_on_player_hpchange(func(player, hp_change), modifier)`
     * Called when the player gets damaged or healed
     * `player`: ObjectRef of the player
@@ -2601,12 +2601,12 @@ Call these functions only at load time!
       modifiers can return true as a second argument to stop the execution of further functions.
       Non-modifiers receive the final hp change calculated by the modifiers.
 * `minetest.register_on_respawnplayer(func(ObjectRef))`
-     * Called when player is to be respawned
-     * Called _before_ repositioning of player occurs
-     * return true in func to disable regular player placement
+    * Called when player is to be respawned
+    * Called _before_ repositioning of player occurs
+    * return true in func to disable regular player placement
 * `minetest.register_on_prejoinplayer(func(name, ip))`
-     * Called before a player joins the game
-     * If it returns a string, the player is disconnected with that string as reason
+    * Called before a player joins the game
+    * If it returns a string, the player is disconnected with that string as reason
 * `minetest.register_on_joinplayer(func(ObjectRef))`
     * Called when a player joins the game
 * `minetest.register_on_leaveplayer(func(ObjectRef, timed_out))`
@@ -2640,10 +2640,10 @@ Call these functions only at load time!
 * `minetest.register_on_protection_violation(func(pos, name))`
     * Called by `builtin` and mods when a player violates protection at a position
       (eg, digs a node or punches a protected entity).
-      * The registered functions can be called using `minetest.record_protection_violation`
-      * The provided function should check that the position is protected by the mod
-        calling this function before it prints a message, if it does, to allow for
-        multiple protection mods.
+    * The registered functions can be called using `minetest.record_protection_violation`
+    * The provided function should check that the position is protected by the mod
+      calling this function before it prints a message, if it does, to allow for
+      multiple protection mods.
 * `minetest.register_on_item_eat(func(hp_change, replace_with_item, itemstack, user, pointed_thing))`
     * Called when an item is eaten, by `minetest.item_eat`
     * Return `true` or `itemstack` to cancel the default item eat response (i.e.: hp increase)
@@ -2676,9 +2676,9 @@ Call these functions only at load time!
       the default of `give_to_singleplayer` is true
     * To allow players with `basic_privs` to grant, see `basic_privs` minetest.conf setting.
     * `on_grant(name, granter_name)`: Called when given to player `name` by `granter_name`.
-         `granter_name` will be nil if the priv was granted by a mod.
+      `granter_name` will be nil if the priv was granted by a mod.
     * `on_revoke(name, revoker_name)`: Called when taken from player `name` by `revoker_name`.
-         `revoker_name` will be nil if the priv was revoked by a mod
+      `revoker_name` will be nil if the priv was revoked by a mod
     * Note that the above two callbacks will be called twice if a player is responsible -
       once with the player name, and then with a nil player name.
     * Return true in the above callbacks to stop register_on_priv_grant or revoke being called.
@@ -2815,8 +2815,8 @@ and `minetest.auth_reload` call the authentication handler.
 * `minetest.set_gen_notify(flags, {deco_ids})`
     * Set the types of on-generate notifications that should be collected
     * `flags` is a flag field with the available flags: `dungeon`, `temple`, `cave_begin`,
-   `cave_end`, `large_cave_begin`, `large_cave_end`, `decoration`
-   * The second parameter is a list of IDS of decorations which notification is requested for
+      `cave_end`, `large_cave_begin`, `large_cave_end`, `decoration`
+    * The second parameter is a list of IDS of decorations which notification is requested for
 * `get_gen_notify()`: returns a flagstring and a table with the `deco_id`s
 * `minetest.get_mapgen_object(objectname)`
     * Return requested mapgen object if available (see "Mapgen objects")
@@ -2825,7 +2825,7 @@ and `minetest.auth_reload` call the authentication handler.
       given biome_name string.
 * `minetest.get_mapgen_params()` Returns mapgen parameters, a table containing
   `mgname`, `seed`, `chunksize`, `water_level`, and `flags`.
-  * Deprecated: use `minetest.get_mapgen_setting(name)` instead
+    * Deprecated: use `minetest.get_mapgen_setting(name)` instead
 * `minetest.set_mapgen_params(MapgenParams)`
     * Deprecated: use `minetest.set_mapgen_setting(name, value, override)` instead
     * Set map generation parameters
@@ -2848,11 +2848,11 @@ and `minetest.auth_reload` call the authentication handler.
     * Same as above, but returns the value as a NoiseParams table if the setting `name` exists
       and is a valid NoiseParams
 * `minetest.set_mapgen_setting(name, value, [override_meta])`
-   * Sets a mapgen param to `value`, and will take effect if the corresponding mapgen setting
-     is not already present in map_meta.txt.
-   * `override_meta` is an optional boolean (default: `false`). If this is set to true,
-     the setting will become the active setting regardless of the map metafile contents.
-   * Note: to set the seed, use `"seed"`, not `"fixed_map_seed"`
+    * Sets a mapgen param to `value`, and will take effect if the corresponding mapgen setting
+      is not already present in map_meta.txt.
+    * `override_meta` is an optional boolean (default: `false`). If this is set to true,
+      the setting will become the active setting regardless of the map metafile contents.
+    * Note: to set the seed, use `"seed"`, not `"fixed_map_seed"`
 * `minetest.set_mapgen_setting_noiseparams(name, value, [override_meta])`
    * Same as above, except value is a NoiseParams table.
 * `minetest.set_noiseparams(name, noiseparams, set_default)`
@@ -2874,17 +2874,20 @@ and `minetest.auth_reload` call the authentication handler.
           clear objects in unloaded mapblocks only when the mapblocks are next activated.
 * `minetest.emerge_area(pos1, pos2, [callback], [param])`
     * Queue all blocks in the area from `pos1` to `pos2`, inclusive, to be asynchronously
-    * fetched from memory, loaded from disk, or if inexistent, generates them.
+      fetched from memory, loaded from disk, or if inexistent, generates them.
     * If `callback` is a valid Lua function, this will be called for each block emerged.
     * The function signature of callback is:
-    *   `function EmergeAreaCallback(blockpos, action, calls_remaining, param)`
-    * - `blockpos` is the *block* coordinates of the block that had been emerged
-    * - `action` could be one of the following constant values:
-    *   `minetest.EMERGE_CANCELLED`, `minetest.EMERGE_ERRORED`, `minetest.EMERGE_FROM_MEMORY`,
-    *   `minetest.EMERGE_FROM_DISK`, `minetest.EMERGE_GENERATED`
-    * - `calls_remaining` is the number of callbacks to be expected after this one
-    * - `param` is the user-defined parameter passed to emerge_area (or nil if the
-    *   parameter was absent)
+        * `function EmergeAreaCallback(blockpos, action, calls_remaining, param)`
+            * `blockpos` is the *block* coordinates of the block that had been emerged
+            * `action` could be one of the following constant values:
+                * `minetest.EMERGE_CANCELLED`
+                * `minetest.EMERGE_ERRORED`
+                * `minetest.EMERGE_FROM_MEMORY`
+                * `minetest.EMERGE_FROM_DISK`
+                * `minetest.EMERGE_GENERATED`
+            * `calls_remaining` is the number of callbacks to be expected after this one
+            * `param` is the user-defined parameter passed to emerge_area (or nil if the
+              parameter was absent)
 * `minetest.delete_area(pos1, pos2)`
     * delete all mapblocks in the area from pos1 to pos2, inclusive
 * `minetest.line_of_sight(pos1, pos2)`: returns `boolean, pos`
@@ -2971,7 +2974,7 @@ You can find mod channels communication scheme in `docs/mod_channels.png`.
       Note that this parameter is mostly just a workaround and will be removed in future releases.
     * Creates a detached inventory. If it already exists, it is cleared.
 * `minetest.do_item_eat(hp_change, replace_with_item, itemstack, user, pointed_thing)`:
-   returns left over ItemStack
+  returns left over ItemStack
     * See `minetest.item_eat` and `minetest.register_on_item_eat`
 
 ### Formspec
@@ -2983,7 +2986,7 @@ You can find mod channels communication scheme in `docs/mod_channels.png`.
 * `minetest.close_formspec(playername, formname)`
     * `playername`: name of player to close formspec
     * `formname`: has to exactly match the one given in `show_formspec`, or the formspec will
-       not close.
+      not close.
     * calling `show_formspec(playername, formname, "")` is equal to this expression
     * to close a formspec regardless of the formname, call
       `minetest.close_formspec(playername, "")`. **USE THIS ONLY WHEN ABSOLUTELY NECESSARY!**
@@ -3054,7 +3057,7 @@ You can find mod channels communication scheme in `docs/mod_channels.png`.
     * `input.width` = for example `3`
     * `input.items` = for example
       `{ stack1, stack2, stack3, stack4, stack 5, stack 6, stack 7, stack 8, stack 9 }`
-      * `input.items` = `nil` if no recipe found
+        * `input.items` = `nil` if no recipe found
 * `minetest.get_all_craft_recipes(query item)`: returns a table or `nil`
     * returns indexed table with all registered recipes for query item (node)
       or `nil` if no recipe was found
@@ -3153,11 +3156,11 @@ These functions return the leftover itemstack.
     * Optional: Variable number of arguments that are passed to `func`
 
 ### Server
-* `minetest.request_shutdown([message],[reconnect],[delay])`: request for server shutdown. Will display `message` to clients,
-    `reconnect` == true displays a reconnect button,
-    `delay` adds an optional delay (in seconds) before shutdown
-        negative delay cancels the current active shutdown
-        zero delay triggers an immediate shutdown.
+* `minetest.request_shutdown([message],[reconnect],[delay])`: request for server shutdown. Will display `message` to clients.
+    * `reconnect` == true displays a reconnect button
+    * `delay` adds an optional delay (in seconds) before shutdown.
+      Negative delay cancels the current active shutdown.
+      Zero delay triggers an immediate shutdown.
 * `minetest.cancel_shutdown_requests()`: cancel current delayed shutdown
 * `minetest.get_server_status()`: returns server status string
 * `minetest.get_server_uptime()`: returns the server uptime in seconds
@@ -3193,8 +3196,7 @@ These functions return the leftover itemstack.
 
 * `minetest.delete_particlespawner(id, player)`
     * Delete `ParticleSpawner` with `id` (return value from `minetest.add_particlespawner`)
-    * If playername is specified, only deletes on the player's client,
-    * otherwise on all clients
+    * If playername is specified, only deletes on the player's client, otherwise on all clients
 
 ### Schematics
 * `minetest.create_schematic(p1, p2, probability_list, filename, slice_prob_list)`
@@ -3336,9 +3338,9 @@ These functions return the leftover itemstack.
     * Compress a string of data.
     * `method` is a string identifying the compression method to be used.
     * Supported compression methods:
-    *     Deflate (zlib): `"deflate"`
+        * Deflate (zlib): `"deflate"`
     * `...` indicates method-specific arguments.  Currently defined arguments are:
-    *     Deflate: `level` - Compression level, `0`-`9` or `nil`.
+        * Deflate: `level` - Compression level, `0`-`9` or `nil`.
 * `minetest.decompress(compressed_data, method, ...)`: returns data
     * Decompress a string of data (using ZLib).
     * See documentation on `minetest.compress()` for supported compression methods.
@@ -3371,8 +3373,8 @@ These functions return the leftover itemstack.
                     return old_is_protected(pos, name)
             end
 * `minetest.record_protection_violation(pos, name)`
-     * This function calls functions registered with
-       `minetest.register_on_protection_violation`.
+    * This function calls functions registered with
+      `minetest.register_on_protection_violation`.
 * `minetest.rotate_and_place(itemstack, placer, pointed_thing, infinitestacks, orient_flags)`
     * Attempt to predict the desired orientation of the facedir-capable node
       defined by `itemstack`, and place it accordingly (on-wall, on the floor, or
@@ -3380,7 +3382,7 @@ These functions return the leftover itemstack.
       field is false or omitted (else, the itemstack is not changed). `orient_flags`
       is an optional table containing extra tweaks to the placement code:
         * `invert_wall`:   if `true`, place wall-orientation on the ground and ground-
-    orientation on the wall.
+          orientation on the wall.
         * `force_wall` :   if `true`, always place the node in wall orientation.
         * `force_ceiling`: if `true`, always place on the ceiling.
         * `force_floor`:   if `true`, always place the node on the floor.
@@ -3390,8 +3392,8 @@ These functions return the leftover itemstack.
           precedence over the first.
 * `minetest.rotate_node(itemstack, placer, pointed_thing)`
     * calls `rotate_and_place()` with infinitestacks set according to the state of
-       the creative mode setting, and checks for "sneak" to set the `invert_wall`
-       parameter.
+      the creative mode setting, and checks for "sneak" to set the `invert_wall`
+      parameter.
 
 * `minetest.forceload_block(pos[, transient])`
     * forceloads the position `pos`.
@@ -3418,8 +3420,8 @@ These functions return the leftover itemstack.
 ### Global objects
 * `minetest.env`: `EnvRef` of the server environment and world.
     * Any function in the minetest namespace can be called using the syntax
-     `minetest.env:somefunction(somearguments)`
-     instead of `minetest.somefunction(somearguments)`
+      `minetest.env:somefunction(somearguments)`
+      instead of `minetest.somefunction(somearguments)`
     * Deprecated, but support is not to be dropped soon
 
 ### Global tables
@@ -3561,13 +3563,13 @@ This is basically a reference to a C++ `ServerActiveObject`
 * `set_armor_groups({group1=rating, group2=rating, ...})`
 * `get_armor_groups()`: returns a table with the armor group ratings
 * `set_animation(frame_range, frame_speed, frame_blend, frame_loop)`
-  * `frame_range`: table {x=num, y=num}, default: `{x=1, y=1}`
-  * `frame_speed`: number, default: `15.0`
-  * `frame_blend`: number, default: `0.0`
-  * `frame_loop`: boolean, default: `true`
+    * `frame_range`: table {x=num, y=num}, default: `{x=1, y=1}`
+    * `frame_speed`: number, default: `15.0`
+    * `frame_blend`: number, default: `0.0`
+    * `frame_loop`: boolean, default: `true`
 * `get_animation()`: returns `range`, `frame_speed`, `frame_blend` and `frame_loop`
 * `set_animation_frame_speed(frame_speed)`
-  * `frame_speed`: number, default: `15.0`
+    * `frame_speed`: number, default: `15.0`
 * `set_attach(parent, bone, position, rotation)`
     * `bone`: string
     * `position`: `{x=num, y=num, z=num}` (relative)
@@ -3625,22 +3627,22 @@ This is basically a reference to a C++ `ServerActiveObject`
   table {x, y, z} representing the player's instantaneous velocity in nodes/s
 * `get_look_dir()`: get camera direction as a unit vector
 * `get_look_vertical()`: pitch in radians
-     * Angle ranges between -pi/2 and pi/2, which are straight up and down respectively.
+    * Angle ranges between -pi/2 and pi/2, which are straight up and down respectively.
 * `get_look_horizontal()`: yaw in radians
-     * Angle is counter-clockwise from the +z direction.
+    * Angle is counter-clockwise from the +z direction.
 * `set_look_vertical(radians)`: sets look pitch
-     * radians - Angle from looking forward, where positive is downwards.
+    * radians - Angle from looking forward, where positive is downwards.
 * `set_look_horizontal(radians)`: sets look yaw
-     * radians - Angle from the +z direction, where positive is counter-clockwise.
+    * radians - Angle from the +z direction, where positive is counter-clockwise.
 * `get_look_pitch()`: pitch in radians - Deprecated as broken. Use `get_look_vertical`.
-     * Angle ranges between -pi/2 and pi/2, which are straight down and up respectively.
+    * Angle ranges between -pi/2 and pi/2, which are straight down and up respectively.
 * `get_look_yaw()`: yaw in radians - Deprecated as broken. Use `get_look_horizontal`.
-     * Angle is counter-clockwise from the +x direction.
+    * Angle is counter-clockwise from the +x direction.
 * `set_look_pitch(radians)`: sets look pitch - Deprecated. Use `set_look_vertical`.
 * `set_look_yaw(radians)`: sets look yaw - Deprecated. Use `set_look_horizontal`.
 * `get_breath()`: returns players breath
 * `set_breath(value)`: sets players breath
-     * values:
+    * values:
         * `0`: player is drowning
         * max: bubbles bar is not shown
         * See Object Properties for more information
@@ -3838,14 +3840,14 @@ an itemstring, a table or `nil`.
 * `is_known()`: returns `true` if the item name refers to a defined item type.
 * `get_definition()`: returns the item definition table.
 * `get_tool_capabilities()`: returns the digging properties of the item,
-        or those of the hand if none are defined for this item type
+  or those of the hand if none are defined for this item type
 * `add_wear(amount)`
     * Increases wear by `amount` if the item is a tool
     * `amount`: number, integer
 * `add_item(item)`: returns leftover `ItemStack`
     * Put some item or stack onto this stack
 * `item_fits(item)`: returns `true` if item or stack can be fully added to
-        this one.
+  this one.
 * `take_item(n)`: returns taken `ItemStack`
     * Take (and remove) up to `n` items from this stack
     * `n`: number, default: `1`
@@ -3876,8 +3878,8 @@ It can be created via `PcgRandom(seed)` or `PcgRandom(seed, sequence)`.
 * `next(min, max)`: return next integer random number [`min`...`max`]
 * `rand_normal_dist(min, max, num_trials=6)`: return normally distributed random number [`min`...`max`]
     * This is only a rough approximation of a normal distribution with:
-    *   `mean = (max - min) / 2`, and
-    *   `variance = (((max - min + 1) ^ 2) - 1) / (12 * num_trials)`
+    * `mean = (max - min) / 2`, and
+    * `variance = (((max - min + 1) ^ 2) - 1) / (12 * num_trials)`
     * Increasing `num_trials` improves accuracy of the approximation
 
 ### `SecureRandom`
@@ -4193,10 +4195,10 @@ the object.
 
 It can be created via `Raycast(pos1, pos2, objects, liquids)` or
 `minetest.raycast(pos1, pos2, objects, liquids)` where:
-    * `pos1`: start of the ray
-    * `pos2`: end of the ray
-    * `objects` : if false, only nodes will be returned. Default is true.
-    * `liquids' : if false, liquid nodes won't be returned. Default is false.
+* `pos1`: start of the ray
+* `pos2`: end of the ray
+* `objects` : if false, only nodes will be returned. Default is true.
+* `liquids' : if false, liquid nodes won't be returned. Default is false.
 
 #### Methods
 * `next()`: returns a `pointed_thing`
@@ -4270,14 +4272,14 @@ Registered entities
         * Called when somebody punches the object.
         * Note that you probably want to handle most punches using the
           automatic armor group system.
-          * `puncher`: an `ObjectRef` (can be `nil`)
-          * `time_from_last_punch`: Meant for disallowing spamming of clicks (can be `nil`)
-          * `tool_capabilities`: capability table of used tool (can be `nil`)
-          * `dir`: unit vector of direction of punch. Always defined. Points from
-            the puncher to the punched.
+        * `puncher`: an `ObjectRef` (can be `nil`)
+        * `time_from_last_punch`: Meant for disallowing spamming of clicks (can be `nil`)
+        * `tool_capabilities`: capability table of used tool (can be `nil`)
+        * `dir`: unit vector of direction of punch. Always defined. Points from
+          the puncher to the punched.
     * `on_death(self, killer)`
         * Called when the object dies.
-          * `killer`: an `ObjectRef` (can be `nil`)
+        * `killer`: an `ObjectRef` (can be `nil`)
     * `on_rightclick(self, clicker)`
     * `get_staticdata(self)`
         * Should return a string that will be passed to `on_activate` when
@@ -4583,7 +4585,7 @@ Definition tables
         ^  default: nil
         ^ Function must return either nil if no item shall be removed from
           inventory, or an itemstack to replace the original itemstack.
-            e.g. itemstack:take_item(); return itemstack
+          e.g. itemstack:take_item(); return itemstack
         ^ Otherwise, the function is free to do what it wants.
         ^ The user may be any ObjectRef or nil.
         ^ The default functions handle regular use cases.
@@ -4619,14 +4621,14 @@ Definition tables
       Directions are from the point of view of the tile texture,
       not the node it's on
     * align style determines whether the texture will be rotated with the node
-          or kept aligned with its surroundings. "user" means that client
-          setting will be used, similar to `glasslike_framed_optional`.
-          Note: supported by solid nodes and nodeboxes only.
+      or kept aligned with its surroundings. "user" means that client
+      setting will be used, similar to `glasslike_framed_optional`.
+      Note: supported by solid nodes and nodeboxes only.
     * scale is used to make texture span several (exactly `scale`) nodes,
-          instead of just one, in each direction. Works for world-aligned
-          textures only.
-          Note that as the effect is applied on per-mapblock basis, `16` should
-          be equally divisible by `scale` or you may get wrong results.
+      instead of just one, in each direction. Works for world-aligned
+      textures only.
+      Note that as the effect is applied on per-mapblock basis, `16` should
+      be equally divisible by `scale` or you may get wrong results.
 * `{name="image.png", color=ColorSpec}`
     * the texture's color will be multiplied with this color.
     * the tile's color overrides the owning node's color in all cases.
