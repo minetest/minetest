@@ -757,11 +757,11 @@ protected:
 
 	inline bool isKeyDown(GameKeyType k)
 	{
-		return input->isKeyDown(keycache.key[k]) || input->joystick.isKeyDown(k);
+		return input->isKeyDown(k);
 	}
 	inline bool wasKeyDown(GameKeyType k)
 	{
-		return input->wasKeyDown(keycache.key[k]) || input->joystick.wasKeyDown(k);
+		return input->wasKeyDown(k);
 	}
 
 #ifdef __ANDROID__
@@ -858,8 +858,6 @@ private:
 	/* Pre-calculated values
 	 */
 	int crack_animation_length;
-
-	KeyCache keycache;
 
 	IntervalLimiter profiler_interval;
 
@@ -1008,8 +1006,7 @@ bool Game::startup(bool *kill,
 	this->chat_backend        = chat_backend;
 	this->simple_singleplayer_mode = simple_singleplayer_mode;
 
-	keycache.handler = input;
-	keycache.populate();
+	input->keycache.populate();
 
 	driver = device->getVideoDriver();
 	smgr = RenderingEngine::get_scene_manager();
@@ -1521,7 +1518,7 @@ bool Game::connectToServer(const std::string &playername,
 				break;
 			}
 
-			if (wasKeyDown(KeyType::ESC) || input->wasKeyDown(CancelKey)) {
+			if (input->cancelPressed()) {
 				*connection_aborted = true;
 				infostream << "Connect aborted [Escape]" << std::endl;
 				break;
@@ -1593,7 +1590,7 @@ bool Game::getServerContent(bool *aborted)
 			return false;
 		}
 
-		if (wasKeyDown(KeyType::ESC) || input->wasKeyDown(CancelKey)) {
+		if (input->cancelPressed()) {
 			*aborted = true;
 			infostream << "Connect aborted [Escape]" << std::endl;
 			return false;
@@ -1706,7 +1703,7 @@ inline bool Game::handleCallbacks()
 	}
 
 	if (g_gamecallback->keyconfig_changed) {
-		keycache.populate(); // update the cache with new settings
+		input->keycache.populate(); // update the cache with new settings
 		g_gamecallback->keyconfig_changed = false;
 	}
 
@@ -1865,7 +1862,7 @@ void Game::processKeyInput()
 		toggleAutoforward();
 	} else if (wasKeyDown(KeyType::INVENTORY)) {
 		openInventory();
-	} else if (wasKeyDown(KeyType::ESC) || input->wasKeyDown(CancelKey)) {
+	} else if (input->cancelPressed()) {
 		if (!gui_chat_console->isOpenInhibited()) {
 			showPauseMenu();
 		}
@@ -2030,7 +2027,7 @@ void Game::openInventory()
 	if (!client->moddingEnabled()
 			|| !client->getScript()->on_inventory_open(fs_src->m_client->getInventory(inventoryloc))) {
 		TextDest *txt_dst = new TextDestPlayerInventory(client);
-		GUIFormSpecMenu::create(&current_formspec, client, &input->joystick, fs_src,
+		GUIFormSpecMenu::create(current_formspec, client, &input->joystick, fs_src,
 			txt_dst);
 		cur_formname = "";
 		current_formspec->setFormSpec(fs_src->getForm(), inventoryloc);
@@ -2396,10 +2393,10 @@ void Game::updatePlayerControl(const CameraOrientation &cam)
 	// distinguish between the two in order to know when to use joysticks.
 
 	PlayerControl control(
-		input->isKeyDown(keycache.key[KeyType::FORWARD]),
-		input->isKeyDown(keycache.key[KeyType::BACKWARD]),
-		input->isKeyDown(keycache.key[KeyType::LEFT]),
-		input->isKeyDown(keycache.key[KeyType::RIGHT]),
+		input->isKeyDown(KeyType::FORWARD),
+		input->isKeyDown(KeyType::BACKWARD),
+		input->isKeyDown(KeyType::LEFT),
+		input->isKeyDown(KeyType::RIGHT),
 		isKeyDown(KeyType::JUMP),
 		isKeyDown(KeyType::SPECIAL1),
 		isKeyDown(KeyType::SNEAK),
@@ -2535,7 +2532,7 @@ void Game::handleClientEvent_ShowFormSpec(ClientEvent *event, CameraOrientation 
 		TextDestPlayerInventory *txt_dst =
 			new TextDestPlayerInventory(client, *(event->show_formspec.formname));
 
-		GUIFormSpecMenu::create(&current_formspec, client, &input->joystick,
+		GUIFormSpecMenu::create(current_formspec, client, &input->joystick,
 			fs_src, txt_dst);
 		cur_formname = *(event->show_formspec.formname);
 	}
@@ -2549,7 +2546,7 @@ void Game::handleClientEvent_ShowLocalFormSpec(ClientEvent *event, CameraOrienta
 	FormspecFormSource *fs_src = new FormspecFormSource(*event->show_formspec.formspec);
 	LocalFormspecHandler *txt_dst =
 		new LocalFormspecHandler(*event->show_formspec.formname, client);
-	GUIFormSpecMenu::create(&current_formspec, client, &input->joystick, fs_src, txt_dst);
+	GUIFormSpecMenu::create(current_formspec, client, &input->joystick, fs_src, txt_dst);
 
 	delete event->show_formspec.formspec;
 	delete event->show_formspec.formname;
@@ -3213,7 +3210,7 @@ void Game::handlePointingAtNode(const PointedThing &pointed,
 				&client->getEnv().getClientMap(), nodepos);
 			TextDest *txt_dst = new TextDestNodeMetadata(nodepos, client);
 
-			GUIFormSpecMenu::create(&current_formspec, client, &input->joystick, fs_src,
+			GUIFormSpecMenu::create(current_formspec, client, &input->joystick, fs_src,
 				txt_dst);
 			cur_formname.clear();
 
@@ -4110,7 +4107,7 @@ void Game::showPauseMenu()
 	FormspecFormSource *fs_src = new FormspecFormSource(os.str());
 	LocalFormspecHandler *txt_dst = new LocalFormspecHandler("MT_PAUSE_MENU");
 
-	GUIFormSpecMenu::create(&current_formspec, client, &input->joystick, fs_src, txt_dst);
+	GUIFormSpecMenu::create(current_formspec, client, &input->joystick, fs_src, txt_dst);
 	current_formspec->setFocus("btn_continue");
 	current_formspec->doPause = true;
 }

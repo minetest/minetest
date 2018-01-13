@@ -158,6 +158,7 @@ LOCAL_SRC_FILES := \
 		jni/src/gui/guiTable.cpp                  \
 		jni/src/guiscalingfilter.cpp              \
 		jni/src/gui/guiVolumeChange.cpp           \
+		jni/src/gui/profilergraph.cpp             \
 		jni/src/httpfetch.cpp                     \
 		jni/src/hud.cpp                           \
 		jni/src/imagefilters.cpp                  \
