@@ -595,10 +595,10 @@ appropriate `drawtype`:
   palette). These nodes can have 32 different colors, and the palette
   should contain 32 pixels.
   Examples:
-  * `param2 = 17` is 2 * 8 + 1, so the rotation is 1 and the third (= 2 + 1)
-    pixel will be picked from the palette.
-  * `param2 = 35` is 4 * 8 + 3, so the rotation is 3 and the fifth (= 4 + 1)
-    pixel will be picked from the palette.
+    * `param2 = 17` is 2 * 8 + 1, so the rotation is 1 and the third (= 2 + 1)
+      pixel will be picked from the palette.
+    * `param2 = 35` is 4 * 8 + 3, so the rotation is 3 and the fifth (= 4 + 1)
+      pixel will be picked from the palette.
 * `drawtype = "colorfacedir"` for nodes which use the first
   three bits of `param2` for palette indexing. The remaining
   five bits are describing rotation, as in `facedir` draw type.
@@ -606,10 +606,10 @@ appropriate `drawtype`:
   palette). These nodes can have 8 different colors, and the
   palette should contain 8 pixels.
   Examples:
-  * `param2 = 17` is 0 * 32 + 17, so the rotation is 17 and the
-    first (= 0 + 1) pixel will be picked from the palette.
-  * `param2 = 35` is 1 * 32 + 3, so the rotation is 3 and the
-    second (= 1 + 1) pixel will be picked from the palette.
+    * `param2 = 17` is 0 * 32 + 17, so the rotation is 17 and the
+      first (= 0 + 1) pixel will be picked from the palette.
+    * `param2 = 35` is 1 * 32 + 3, so the rotation is 3 and the
+      second (= 1 + 1) pixel will be picked from the palette.
 
 To colorize a node on the map, set its `param2` value (according
 to the node's draw type).
