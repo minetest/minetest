@@ -1300,10 +1300,10 @@ in the form of a table.  This table specifies the following fields:
 * The `data` field is a flat table of MapNode tables making up the schematic,
   in the order of `[z [y [x]]]`. (required)
   Each MapNode table contains:
-  * `name`: the name of the map node to place (required)
-  * `prob` (alias `param1`): the probability of this node being placed (default: 255)
-  * `param2`: the raw param2 value of the node being placed onto the map (default: 0)
-  * `force_place`: boolean representing if the node should forcibly overwrite any
+    * `name`: the name of the map node to place (required)
+    * `prob` (alias `param1`): the probability of this node being placed (default: 255)
+    * `param2`: the raw param2 value of the node being placed onto the map (default: 0)
+    * `force_place`: boolean representing if the node should forcibly overwrite any
     previous contents (default: false)
 
 About probability values:
