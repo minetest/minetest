@@ -83,7 +83,7 @@ void GUIConfirmRegistration::regenerateGui(v2u32 screensize)
 	s32 ypos = 30;
 	{
 		std::string address = m_address;
-		if (address == "")
+		if (address.empty())
 			address = "localhost";
 		core::rect<s32> rect(0, 0, 540, 90);
 		rect += topleft_client + v2s32(30, ypos);
@@ -92,9 +92,9 @@ void GUIConfirmRegistration::regenerateGui(v2u32 screensize)
 				"name \"%2$s\" the first time. If you proceed, a "
 				"new account using your credentials will be created "
 				"on this server.\n"
-				"Please enter your password once again to confirm "
+				"Please type your password once again to confirm "
 				"account creation or cancel to abort.");
-		char info_text_buf[600];
+		char info_text_buf[1024];
 		snprintf(info_text_buf, sizeof(info_text_buf), info_text_template.c_str(),
 				address.c_str(), m_playername.c_str());
 		Environment->addStaticText(narrow_to_wide_c(info_text_buf), rect, false,
@@ -206,8 +206,7 @@ bool GUIConfirmRegistration::OnEvent(const SEvent &event)
 			// Returning true disables focus change
 			return true;
 		}
-	}
-	if (event.GUIEvent.EventType == gui::EGET_BUTTON_CLICKED) {
+	} else if (event.GUIEvent.EventType == gui::EGET_BUTTON_CLICKED) {
 		switch (event.GUIEvent.Caller->getID()) {
 		case ID_confirm:
 			acceptInput();
@@ -218,8 +217,7 @@ bool GUIConfirmRegistration::OnEvent(const SEvent &event)
 			closeMenu(false);
 			return true;
 		}
-	}
-	if (event.GUIEvent.EventType == gui::EGET_EDITBOX_ENTER) {
+	} else if (event.GUIEvent.EventType == gui::EGET_EDITBOX_ENTER) {
 		switch (event.GUIEvent.Caller->getID()) {
 		case ID_confirmPassword:
 			acceptInput();
