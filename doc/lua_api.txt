@@ -2874,7 +2874,7 @@ and `minetest.auth_reload` call the authentication handler.
           clear objects in unloaded mapblocks only when the mapblocks are next activated.
 * `minetest.emerge_area(pos1, pos2, [callback], [param])`
     * Queue all blocks in the area from `pos1` to `pos2`, inclusive, to be asynchronously
-    * fetched from memory, loaded from disk, or if inexistent, generates them.
+      fetched from memory, loaded from disk, or if inexistent, generates them.
     * If `callback` is a valid Lua function, this will be called for each block emerged.
     * The function signature of callback is:
         * `function EmergeAreaCallback(blockpos, action, calls_remaining, param)`
