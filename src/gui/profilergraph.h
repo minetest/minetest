@@ -30,22 +30,25 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 class ProfilerGraph
 {
 private:
-	struct Piece {
+	struct Piece
+	{
 		Piece(Profiler::GraphValues v) : values(std::move(v)) {}
 		Profiler::GraphValues values;
 	};
-	struct Meta {
+	struct Meta
+	{
 		float min;
 		float max;
 		video::SColor color;
 		Meta(float initial = 0,
-			video::SColor color = video::SColor(255, 255, 255, 255)):
-			min(initial),
-			max(initial),
-			color(color)
-		{}
+				video::SColor color = video::SColor(255, 255, 255, 255)) :
+				min(initial),
+				max(initial), color(color)
+		{
+		}
 	};
 	std::deque<Piece> m_log;
+
 public:
 	u32 m_log_max_size = 200;
 
@@ -54,5 +57,5 @@ public:
 	void put(const Profiler::GraphValues &values);
 
 	void draw(s32 x_left, s32 y_bottom, video::IVideoDriver *driver,
-		gui::IGUIFont *font) const;
+			gui::IGUIFont *font) const;
 };

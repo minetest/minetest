@@ -44,6 +44,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "gettime.h"
 #include "gettext.h"
 #include "scripting_server.h"
+#include "mainmenumanager.h"
 #include "porting.h"
 #include "settings.h"
 #include "client.h"
@@ -131,13 +132,13 @@ GUIFormSpecMenu::~GUIFormSpecMenu()
 	delete m_text_dst;
 }
 
-void GUIFormSpecMenu::create(GUIFormSpecMenu **cur_formspec, Client *client,
+void GUIFormSpecMenu::create(GUIFormSpecMenu *&cur_formspec, Client *client,
 	JoystickController *joystick, IFormSource *fs_src, TextDest *txt_dest)
 {
-	if (*cur_formspec == 0) {
-		*cur_formspec = new GUIFormSpecMenu(joystick, guiroot, -1, &g_menumgr,
+	if (cur_formspec == nullptr) {
+		cur_formspec = new GUIFormSpecMenu(joystick, guiroot, -1, &g_menumgr,
 			client, client->getTextureSource(), fs_src, txt_dest);
-		(*cur_formspec)->doPause = false;
+		cur_formspec->doPause = false;
 
 		/*
 			Caution: do not call (*cur_formspec)->drop() here --
@@ -148,8 +149,8 @@ void GUIFormSpecMenu::create(GUIFormSpecMenu **cur_formspec, Client *client,
 		*/
 
 	} else {
-		(*cur_formspec)->setFormSource(fs_src);
-		(*cur_formspec)->setTextDest(txt_dest);
+		cur_formspec->setFormSource(fs_src);
+		cur_formspec->setTextDest(txt_dest);
 	}
 }
 

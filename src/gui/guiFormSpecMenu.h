@@ -291,7 +291,7 @@ public:
 
 	~GUIFormSpecMenu();
 
-	static void create(GUIFormSpecMenu **cur_formspec, Client *client,
+	static void create(GUIFormSpecMenu *&cur_formspec, Client *client,
 		JoystickController *joystick, IFormSource *fs_src, TextDest *txt_dest);
 
 	void setFormSpec(const std::string &formspec_string,
