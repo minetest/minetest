@@ -80,16 +80,13 @@ void MeshCollector::append(const TileLayer &layer, const video::S3DVertex *verti
 }
 
 PreMeshBuffer &MeshCollector::findBuffer(const TileLayer& layer, u8 layernum,
-		u32 numIndices)
+		u32 numVertices)
 {
-	if (numIndices > 65535) {
-		errorstream << "FIXME: MeshCollector::append() called with numIndices="
-			<< numIndices << " (limit 65535)" << std::endl;
-		throw std::invalid_argument("MeshCollector does not support more than 65535 indices");
-	}
+	if (numVertices > U16_MAX)
+		throw std::invalid_argument("MeshCollector does not support more than 65536 vertices");
 	std::vector<PreMeshBuffer> &buffers = prebuffers[layernum];
 	for (PreMeshBuffer &p : buffers)
-		if (p.layer == layer && p.indices.size() + numIndices <= 65535)
+		if (p.layer == layer && p.indices.size() + numIndices <= U16_MAX)
 			return p;
 	PreMeshBuffer pp;
 	pp.layer = layer;

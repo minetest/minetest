@@ -40,5 +40,5 @@ private:
 	// clang-format on
 
 	PreMeshBuffer &findBuffer(const TileLayer &layer, u8 layernum,
-			u32 numIndices);
+			u32 numVertices);
 };
