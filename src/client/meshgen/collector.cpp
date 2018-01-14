@@ -21,9 +21,9 @@ void MeshCollector::append(const TileLayer &layer, const video::S3DVertex *verti
 {
 	PreMeshBuffer &p = findBuffer(layer, layernum, numIndices);
 
-	f32 scale = 1.0;
+	f32 scale = 1.0f;
 	if (use_scale)
-		scale = 1.0 / layer.scale;
+		scale = 1.0f / layer.scale;
 
 	u32 vertex_count = p.vertices.size();
 	for (u32 i = 0; i < numVertices; i++) {
@@ -57,9 +57,9 @@ void MeshCollector::append(const TileLayer &layer, const video::S3DVertex *verti
 {
 	PreMeshBuffer &p = findBuffer(layer, layernum, numIndices);
 
-	f32 scale = 1.0;
+	f32 scale = 1.0f;
 	if (use_scale)
-		scale = 1.0 / layer.scale;
+		scale = 1.0f / layer.scale;
 
 	video::SColor original_c = c;
 	u32 vertex_count = p.vertices.size();
