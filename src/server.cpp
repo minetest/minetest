@@ -253,7 +253,10 @@ Server::Server(
 	m_nodedef->updateAliases(m_itemdef);
 
 	// Apply texture overrides from texturepack/override.txt
-	for (const auto &path : fs::GetRecursiveDirs(g_settings->get("texture_path")))
+	std::vector<std::string> paths;
+	fs::GetRecursiveDirs(paths, g_settings->get("texture_path"));
+	fs::GetRecursiveDirs(paths, m_gamespec.path + DIR_DELIM + "textures");
+	for (const std::string &path : paths)
 		m_nodedef->applyTextureOverrides(path + DIR_DELIM + "override.txt");
 
 	m_nodedef->setNodeRegistrationStatus(true);
@@ -2259,8 +2262,9 @@ void Server::fillMediaCache()
 		paths.push_back(mod.path + DIR_DELIM + "models");
 		paths.push_back(mod.path + DIR_DELIM + "locale");
 	}
-	fs::GetRecursiveDirs(paths, porting::path_user + DIR_DELIM +
-			"textures" + DIR_DELIM + "server");
+	fs::GetRecursiveDirs(paths, m_gamespec.path + DIR_DELIM + "textures");
+	fs::GetRecursiveDirs(paths, porting::path_user + DIR_DELIM + "textures" + DIR_DELIM + "server");
+
 	// Collect media file information from paths into cache
 	for (const std::string &mediapath : paths) {
 		std::vector<fs::DirListNode> dirlist = fs::GetDirListing(mediapath);
