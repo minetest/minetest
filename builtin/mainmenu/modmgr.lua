@@ -379,7 +379,7 @@ function modmgr.installmod(modfilename,basename)
 			local targetpath = core.get_modpath() .. DIR_DELIM .. targetfolder
 			core.copy_dir(basefolder.path,targetpath)
 		else
-			gamedata.errormessage = fgettext("Install mod: Unable to find real modname for: $1", modfilename)
+			gamedata.errormessage = fgettext("Install mod: Unable to find real mod-name for: $1", modfilename)
 		end
 	end
 
