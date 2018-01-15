@@ -254,7 +254,8 @@ bool ClientLauncher::run(GameStartData &start_data, const Settings &cmd_args)
 			}
 
 			m_rendering_engine->get_video_driver()->setTextureCreationFlag(
-					video::ETCF_CREATE_MIP_MAPS, g_settings->getBool("mip_map"));
+				video::ETCF_CREATE_MIP_MAPS,
+				g_settings->get("mip_map") != "off");
 
 #ifdef HAVE_TOUCHSCREENGUI
 			receiver->m_touchscreengui = new TouchScreenGUI(m_rendering_engine->get_raw_device(), receiver);
