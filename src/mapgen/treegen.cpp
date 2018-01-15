@@ -1,7 +1,9 @@
 /*
 Minetest
-Copyright (C) 2010-2013 celeron55, Perttu Ahola <celeron55@gmail.com>,
-			  2012-2013 RealBadAngel, Maciej Kasatkin <mk@realbadangel.pl>
+Copyright (C) 2010-2018 celeron55, Perttu Ahola <celeron55@gmail.com>,
+Copyright (C) 2012-2018 RealBadAngel, Maciej Kasatkin
+Copyright (C) 2015-2018 paramat
+
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
 the Free Software Foundation; either version 2.1 of the License, or

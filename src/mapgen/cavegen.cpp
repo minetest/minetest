@@ -1,6 +1,8 @@
 /*
 Minetest
-Copyright (C) 2010-2013 celeron55, Perttu Ahola <celeron55@gmail.com>
+Copyright (C) 2010-2018 celeron55, Perttu Ahola <celeron55@gmail.com>
+Copyright (C) 2010-2018 kwolekr, Ryan Kwolek <kwolekr@minetest.net>
+Copyright (C) 2015-2018 paramat
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by

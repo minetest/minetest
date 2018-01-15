@@ -1,10 +1,10 @@
 /*
-Minetest Valleys C
-Copyright (C) 2016-2017 Duane Robertson <duane@duanerobertson.com>
-Copyright (C) 2016-2017 paramat
+Minetest
+Copyright (C) 2016-2018 Duane Robertson <duane@duanerobertson.com>
+Copyright (C) 2016-2018 paramat
 
 Based on Valleys Mapgen by Gael de Sailly
- (https://forum.minetest.net/viewtopic.php?f=9&t=11430)
+(https://forum.minetest.net/viewtopic.php?f=9&t=11430)
 and mapgen_v7 by kwolekr and paramat.
 
 Licensing changed by permission of Gael de Sailly.
