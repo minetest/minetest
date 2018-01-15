@@ -1897,14 +1897,23 @@ examples.
 * deprecated: `invsize[<W>,<H>;]`
 
 #### `position[<X>,<Y>]`
-* Define the position of the formspec
-* A value between 0.0 and 1.0 represents a position inside the screen
-* The default value is the center of the screen (0.5, 0.5)
+* Must be used after `size` element.
+* Defines the position on the game window of the formspec's `anchor` point.
+* For X and Y, 0.0 and 1.0 represent opposite edges of the game window, for example:
+    * [0.0, 0.0] sets the position to the top left corner of the game window.
+    * [1.0, 1.0] sets the position to the bottom right of the game window.
+* Defaults to the center of the game window [0.5, 0.5].
 
 #### `anchor[<X>,<Y>]`
-* Define the anchor of the formspec
-* A value between 0.0 and 1.0 represents an anchor inside the formspec
-* The default value is the center of the formspec (0.5, 0.5)
+* Must be used after both `size` and `position` (if present) elements.
+* Defines the location of the anchor point within the formspec.
+* For X and Y, 0.0 and 1.0 represent opposite edges of the formspec, for example:
+    * [0.0, 1.0] sets the anchor to the bottom left corner of the formspec.
+    * [1.0, 0.0] sets the anchor to the top right of the formspec.
+* Defaults to the center of the formspec [0.5, 0.5].
+
+* `position` and `anchor` elements need suitable values to avoid a formspec
+  extending off the game window due to particular game window sizes.
 
 #### `container[<X>,<Y>]`
 * Start of a container block, moves all physical elements in the container by (X, Y)
@@ -5277,6 +5286,10 @@ Note that in params, use of symbols is as follows:
     --  ^ Uses texture (string)
         playername = "singleplayer"
     --  ^ Playername is optional, if specified spawns particle only on the player's client
+        animation = {Tile Animation definition},
+    --  ^ optional, specifies how to animate the particle texture
+        glow = 0
+    --  ^ optional, specify particle self-luminescence in darkness
     }
 
 ### `HTTPRequest` definition (`HTTPApiTable.fetch_async`, `HTTPApiTable.fetch_async`)
