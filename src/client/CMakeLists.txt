@@ -55,6 +55,7 @@ set(client_SRCS
 	${CMAKE_CURRENT_SOURCE_DIR}/hud.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/imagefilters.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/inputhandler.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/mipmap_generation.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/joystick_controller.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/keycode.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/localplayer.cpp

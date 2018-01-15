@@ -59,7 +59,7 @@ struct ImageSource {
 	static video::SColor getImageAverageColor(const video::IImage &image);
 
 	ImageSource() :
-		m_setting_mipmap{g_settings->getBool("mip_map")},
+		m_setting_mip_map_enabled{g_settings->get("mip_map") != "off"},
 		m_setting_trilinear_filter{g_settings->getBool("trilinear_filter")},
 		m_setting_bilinear_filter{g_settings->getBool("bilinear_filter")},
 		m_setting_anisotropic_filter{g_settings->getBool("anisotropic_filter")}
@@ -74,7 +74,7 @@ private:
 			std::set<std::string> &source_image_names);
 
 	// Cached settings needed for making textures from meshes
-	bool m_setting_mipmap;
+	bool m_setting_mip_map_enabled;
 	bool m_setting_trilinear_filter;
 	bool m_setting_bilinear_filter;
 	bool m_setting_anisotropic_filter;
