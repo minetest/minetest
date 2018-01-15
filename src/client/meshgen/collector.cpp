@@ -62,19 +62,20 @@ void MeshCollector::append(const TileLayer &layer, const video::S3DVertex *verti
 		video::SColor color = c;
 		if (!light_source)
 			applyFacesShading(color, vertices[i].Normal);
-		p.vertices.emplace_back(vertices[i].Pos + pos, vertices[i].Normal,
-				color, scale * vertices[i].TCoords);
+		p.vertices.emplace_back(vertices[i].Pos + pos, vertices[i].Normal, color,
+				scale * vertices[i].TCoords);
 	}
 
 	for (u32 i = 0; i < numIndices; i++)
 		p.indices.push_back(indices[i] + vertex_count);
 }
 
-PreMeshBuffer &MeshCollector::findBuffer(const TileLayer& layer, u8 layernum,
-		u32 numVertices)
+PreMeshBuffer &MeshCollector::findBuffer(
+		const TileLayer &layer, u8 layernum, u32 numVertices)
 {
 	if (numVertices > U16_MAX)
-		throw std::invalid_argument("MeshCollector does not support more than 65536 vertices");
+		throw std::invalid_argument(
+				"Mesh can't contain more than 65536 vertices");
 	std::vector<PreMeshBuffer> &buffers = prebuffers[layernum];
 	for (PreMeshBuffer &p : buffers)
 		if (p.layer == layer && p.vertices.size() + numVertices <= U16_MAX)

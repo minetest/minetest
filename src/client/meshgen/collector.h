@@ -42,6 +42,5 @@ private:
 			u8 layernum, bool use_scale = false);
 	// clang-format on
 
-	PreMeshBuffer &findBuffer(const TileLayer &layer, u8 layernum,
-			u32 numVertices);
+	PreMeshBuffer &findBuffer(const TileLayer &layer, u8 layernum, u32 numVertices);
 };
