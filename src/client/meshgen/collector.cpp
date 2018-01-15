@@ -26,16 +26,12 @@ void MeshCollector::append(const TileLayer &layer, const video::S3DVertex *verti
 		scale = 1.0f / layer.scale;
 
 	u32 vertex_count = p.vertices.size();
-	for (u32 i = 0; i < numVertices; i++) {
-		video::S3DVertex vert(vertices[i].Pos, vertices[i].Normal,
+	for (u32 i = 0; i < numVertices; i++)
+		p.vertices.emplace_back(vertices[i].Pos, vertices[i].Normal,
 				vertices[i].Color, scale * vertices[i].TCoords);
-		p.vertices.push_back(vert);
-	}
 
-	for (u32 i = 0; i < numIndices; i++) {
-		u32 j = indices[i] + vertex_count;
-		p.indices.push_back(j);
-	}
+	for (u32 i = 0; i < numIndices; i++)
+		p.indices.push_back(indices[i] + vertex_count);
 }
 
 void MeshCollector::append(const TileSpec &tile, const video::S3DVertex *vertices,
@@ -61,22 +57,17 @@ void MeshCollector::append(const TileLayer &layer, const video::S3DVertex *verti
 	if (use_scale)
 		scale = 1.0f / layer.scale;
 
-	video::SColor original_c = c;
 	u32 vertex_count = p.vertices.size();
 	for (u32 i = 0; i < numVertices; i++) {
-		if (!light_source) {
-			c = original_c;
-			applyFacesShading(c, vertices[i].Normal);
-		}
-		video::S3DVertex vert(vertices[i].Pos + pos, vertices[i].Normal, c,
-				scale * vertices[i].TCoords);
-		p.vertices.push_back(vert);
+		video::SColor color = c;
+		if (!light_source)
+			applyFacesShading(color, vertices[i].Normal);
+		p.vertices.emplace_back(vertices[i].Pos + pos, vertices[i].Normal,
+				color, scale * vertices[i].TCoords);
 	}
 
-	for (u32 i = 0; i < numIndices; i++) {
-		u32 j = indices[i] + vertex_count;
-		p.indices.push_back(j);
-	}
+	for (u32 i = 0; i < numIndices; i++)
+		p.indices.push_back(indices[i] + vertex_count);
 }
 
 PreMeshBuffer &MeshCollector::findBuffer(const TileLayer& layer, u8 layernum,
@@ -86,10 +77,8 @@ PreMeshBuffer &MeshCollector::findBuffer(const TileLayer& layer, u8 layernum,
 		throw std::invalid_argument("MeshCollector does not support more than 65536 vertices");
 	std::vector<PreMeshBuffer> &buffers = prebuffers[layernum];
 	for (PreMeshBuffer &p : buffers)
-		if (p.layer == layer && p.indices.size() + numIndices <= U16_MAX)
+		if (p.layer == layer && p.vertices.size() + numVertices <= U16_MAX)
 			return p;
-	PreMeshBuffer pp;
-	pp.layer = layer;
-	buffers.push_back(pp);
+	buffers.emplace_back(layer);
 	return buffers.back();
 }

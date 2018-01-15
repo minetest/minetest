@@ -10,6 +10,9 @@ struct PreMeshBuffer
 	TileLayer layer;
 	std::vector<u16> indices;
 	std::vector<video::S3DVertex> vertices;
+
+	PreMeshBuffer() = default;
+	explicit PreMeshBuffer(const TileLayer &layer) : layer(layer) {}
 };
 
 struct MeshCollector
