@@ -335,7 +335,7 @@ function modmgr.installmod(modfilename,basename)
 	local modpath = modmgr.extract(modfile)
 
 	if modpath == nil then
-		gamedata.errormessage = fgettext("Install mod: file: \"$1\"", modfile.name) ..
+		gamedata.errormessage = fgettext("Install mod: File: \"$1\"", modfile.name) ..
 			fgettext("\nInstall mod: Unsupported filetype \"$1\" or broken archive", modfile.type)
 		return
 	end
