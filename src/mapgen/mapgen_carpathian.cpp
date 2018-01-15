@@ -1,8 +1,8 @@
 /*
 Minetest
-Copyright (C) 2010-2016 paramat, Matt Gregory
-Copyright (C) 2010-2016 kwolekr, Ryan Kwolek <kwolekr@minetest.net>
-Copyright (C) 2017 vlapsley, Vaughan Lapsley <vlapsley@gmail.com>
+Copyright (C) 2017-2018 vlapsley, Vaughan Lapsley <vlapsley@gmail.com>
+Copyright (C) 2010-2018 paramat
+Copyright (C) 2010-2018 kwolekr, Ryan Kwolek <kwolekr@minetest.net>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by

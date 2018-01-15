@@ -1,7 +1,7 @@
 /*
 Minetest
-Copyright (C) 2015-2017 paramat
-Copyright (C) 2015-2016 kwolekr, Ryan Kwolek <kwolekr@minetest.net>
+Copyright (C) 2015-2018 paramat
+Copyright (C) 2015-2018 kwolekr, Ryan Kwolek <kwolekr@minetest.net>
 
 Fractal formulas from http://www.bugman123.com/Hypercomplex/index.html
 by Paul Nylander, and from http://www.fractalforums.com, thank you.
