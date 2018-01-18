@@ -198,85 +198,12 @@ struct FrameSpec
 //! Defines a layer of a tile.
 struct TileLayer
 {
-	TileLayer() = default;
-
-	/*!
-	 * Two layers are equal if they can be merged.
-	 */
-	bool operator==(const TileLayer &other) const
-	{
-		return
-			texture_id == other.texture_id &&
-			material_type == other.material_type &&
-			material_flags == other.material_flags &&
-			color == other.color &&
-			scale == other.scale;
-	}
-
-	/*!
-	 * Two tiles are not equal if they must have different vertices.
-	 */
-	bool operator!=(const TileLayer &other) const
-	{
-		return !(*this == other);
-	}
-
-	// Sets everything else except the texture in the material
-	void applyMaterialOptions(video::SMaterial &material) const
-	{
-		switch (material_type) {
-		case TILE_MATERIAL_OPAQUE:
-		case TILE_MATERIAL_LIQUID_OPAQUE:
-			material.MaterialType = video::EMT_SOLID;
-			break;
-		case TILE_MATERIAL_BASIC:
-		case TILE_MATERIAL_WAVING_LEAVES:
-		case TILE_MATERIAL_WAVING_PLANTS:
-			material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
-			break;
-		case TILE_MATERIAL_ALPHA:
-		case TILE_MATERIAL_LIQUID_TRANSPARENT:
-			material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
-			break;
-		default:
-			break;
-		}
-		material.BackfaceCulling = (material_flags & MATERIAL_FLAG_BACKFACE_CULLING) != 0;
-		if (!(material_flags & MATERIAL_FLAG_TILEABLE_HORIZONTAL)) {
-			material.TextureLayer[0].TextureWrapU = video::ETC_CLAMP_TO_EDGE;
-		}
-		if (!(material_flags & MATERIAL_FLAG_TILEABLE_VERTICAL)) {
-			material.TextureLayer[0].TextureWrapV = video::ETC_CLAMP_TO_EDGE;
-		}
-	}
-
-	void applyMaterialOptionsWithShaders(video::SMaterial &material) const
-	{
-		material.BackfaceCulling = (material_flags & MATERIAL_FLAG_BACKFACE_CULLING) != 0;
-		if (!(material_flags & MATERIAL_FLAG_TILEABLE_HORIZONTAL)) {
-			material.TextureLayer[0].TextureWrapU = video::ETC_CLAMP_TO_EDGE;
-			material.TextureLayer[1].TextureWrapU = video::ETC_CLAMP_TO_EDGE;
-		}
-		if (!(material_flags & MATERIAL_FLAG_TILEABLE_VERTICAL)) {
-			material.TextureLayer[0].TextureWrapV = video::ETC_CLAMP_TO_EDGE;
-			material.TextureLayer[1].TextureWrapV = video::ETC_CLAMP_TO_EDGE;
-		}
-	}
-
-	bool isTileable() const
-	{
-		return (material_flags & MATERIAL_FLAG_TILEABLE_HORIZONTAL)
-			&& (material_flags & MATERIAL_FLAG_TILEABLE_VERTICAL);
-	}
-
-	// Ordered for size, please do not reorder
-
+	std::vector<FrameSpec> frames;
 	video::ITexture *texture = nullptr;
 	video::ITexture *normal_texture = nullptr;
 	video::ITexture *flags_texture = nullptr;
 
 	u32 shader_id = 0;
-
 	u32 texture_id = 0;
 
 	u16 animation_frame_length_ms = 0;
@@ -292,8 +219,6 @@ struct TileLayer
 	//! If true, the tile has its own color.
 	bool has_color = false;
 
-	std::vector<FrameSpec> frames;
-
 	/*!
 	 * The color of the tile, or if the tile does not own
 	 * a color then the color of the node owning this tile.
@@ -308,31 +233,10 @@ struct TileLayer
  */
 struct TileSpec
 {
-	TileSpec() = default;
-
-	/*!
-	 * Returns true if this tile can be merged with the other tile.
-	 */
-	bool isTileable(const TileSpec &other) const {
-		for (int layer = 0; layer < MAX_TILE_LAYERS; layer++) {
-			if (layers[layer] != other.layers[layer])
-				return false;
-			if (!layers[layer].isTileable())
-				return false;
-		}
-		return rotation == 0
-			&& rotation == other.rotation
-			&& emissive_light == other.emissive_light;
-	}
-
-	//! If true, the tile rotation is ignored.
-	bool world_aligned = false;
-	//! Tile rotation.
-	u8 rotation = 0;
-	//! This much light does the tile emit.
-	u8 emissive_light = 0;
 	//! The first is base texture, the second is overlay.
 	TileLayer layers[MAX_TILE_LAYERS];
+	//! If true, the tile rotation is ignored.
+	bool world_aligned = false;
 };
 
 const std::vector<std::string> &getTextureDirs();

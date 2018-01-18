@@ -1213,12 +1213,12 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data, v3s16 camera_offset):
 			if (m_enable_shaders) {
 				material.MaterialType = m_shdrsrc->getShaderInfo(
 						p.layer->shader_id).material;
-				p.layer->applyMaterialOptionsWithShaders(material);
+				p.layer.applyMaterialOptionsWithShaders(material);
 				if (p.layer->normal_texture)
 					material.setTexture(1, p.layer->normal_texture);
 				material.setTexture(2, p.layer->flags_texture);
 			} else {
-				p.layer->applyMaterialOptions(material);
+				p.layer.applyMaterialOptions(material);
 			}
 
 			scene::SMesh *mesh = (scene::SMesh *)m_mesh[layer];

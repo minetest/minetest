@@ -16,6 +16,46 @@ struct LayerRef
 		return tile->layers[layer];
 	}
 
+	// Sets everything else except the texture in the material
+	void applyMaterialOptions(video::SMaterial &material) const
+	{
+		switch (get().material_type) {
+		case TILE_MATERIAL_OPAQUE:
+		case TILE_MATERIAL_LIQUID_OPAQUE:
+			material.MaterialType = video::EMT_SOLID;
+			break;
+		case TILE_MATERIAL_BASIC:
+		case TILE_MATERIAL_WAVING_LEAVES:
+		case TILE_MATERIAL_WAVING_PLANTS:
+			material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
+			break;
+		case TILE_MATERIAL_ALPHA:
+		case TILE_MATERIAL_LIQUID_TRANSPARENT:
+			material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
+			break;
+		default:
+			break;
+		}
+		material.BackfaceCulling = (material_flags & MATERIAL_FLAG_BACKFACE_CULLING) != 0;
+		if (!(material_flags & MATERIAL_FLAG_TILEABLE_HORIZONTAL))
+			material.TextureLayer[0].TextureWrapU = video::ETC_CLAMP_TO_EDGE;
+		if (!(material_flags & MATERIAL_FLAG_TILEABLE_VERTICAL))
+			material.TextureLayer[0].TextureWrapV = video::ETC_CLAMP_TO_EDGE;
+	}
+
+	void applyMaterialOptionsWithShaders(video::SMaterial &material) const
+	{
+		material.BackfaceCulling = (material_flags & MATERIAL_FLAG_BACKFACE_CULLING) != 0;
+		if (!(material_flags & MATERIAL_FLAG_TILEABLE_HORIZONTAL)) {
+			material.TextureLayer[0].TextureWrapU = video::ETC_CLAMP_TO_EDGE;
+			material.TextureLayer[1].TextureWrapU = video::ETC_CLAMP_TO_EDGE;
+		}
+		if (!(material_flags & MATERIAL_FLAG_TILEABLE_VERTICAL)) {
+			material.TextureLayer[0].TextureWrapV = video::ETC_CLAMP_TO_EDGE;
+			material.TextureLayer[1].TextureWrapV = video::ETC_CLAMP_TO_EDGE;
+		}
+	}
+
 	bool isTileable() const
 	{
 		return (material_flags & MATERIAL_FLAG_TILEABLE_HORIZONTAL)

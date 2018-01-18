@@ -322,7 +322,7 @@ scene::SMesh *createSpecialNodeMesh(Client *client, content_t id, std::vector<It
 				v.Color.setAlpha(255);
 			scene::SMeshBuffer *buf = new scene::SMeshBuffer();
 			buf->Material.setTexture(0, texture);
-			p.layer->applyMaterialOptions(buf->Material);
+			p.layer.applyMaterialOptions(buf->Material);
 			mesh->addMeshBuffer(buf);
 			buf->append(&p.vertices[0], p.vertices.size(),
 					&p.indices[0], p.indices.size());
@@ -640,11 +640,11 @@ void postProcessNodeMesh(scene::SMesh *mesh, const ContentFeatures &f,
 		colors->push_back(ItemPartColor());
 
 	for (u32 i = 0; i < mc; ++i) {
-		const TileSpec *tile = &(f.tiles[i]);
+		TileRef tile = &f.tiles[i];
 		scene::IMeshBuffer *buf = mesh->getMeshBuffer(i);
 		for (int layernum = 0; layernum < MAX_TILE_LAYERS; layernum++) {
-			const TileLayer *layer = &tile->layers[layernum];
-			if (layer->texture_id == 0)
+			LayerRef layer = tile.getLayer(layernum);
+			if (!layer)
 				continue;
 			if (layernum != 0) {
 				scene::IMeshBuffer *copy = cloneMeshBuffer(buf);
@@ -653,13 +653,13 @@ void postProcessNodeMesh(scene::SMesh *mesh, const ContentFeatures &f,
 				copy->drop();
 				buf = copy;
 				colors->push_back(
-					ItemPartColor(layer->has_color, layer->color));
+					ItemPartColor(layer->has_color, layer.color));
 			} else {
-				(*colors)[i] = ItemPartColor(layer->has_color, layer->color);
+				(*colors)[i] = ItemPartColor(layer->has_color, layer.color);
 			}
 			video::SMaterial &material = buf->getMaterial();
 			if (set_material)
-				layer->applyMaterialOptions(material);
+				layer.applyMaterialOptions(material);
 			if (mattype) {
 				material.MaterialType = *mattype;
 			}
