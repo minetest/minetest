@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "irrlichttypes_extrabloated.h"
 #include "client/tile.h"
+#include "client/tileref.h"
 #include "voxel.h"
 #include <array>
 #include <map>
@@ -223,5 +224,6 @@ void final_color_blend(video::SColor *result,
 // Adds MATERIAL_FLAG_CRACK if the node is cracked
 // TileSpec should be passed as reference due to the underlying TileFrame and its vector
 // TileFrame vector copy cost very much to client
-void getNodeTileN(MapNode mn, v3s16 p, u8 tileindex, MeshMakeData *data, TileSpec &tile);
-void getNodeTile(MapNode mn, v3s16 p, v3s16 dir, MeshMakeData *data, TileSpec &tile);
+TileRef getNodeTile(MapNode node, const ContentFeatures &f, u8 tileindex);
+TileRef getNodeTile(MapNode node, v3s16 p, u8 tileindex, MeshMakeData *data);
+TileRef getNodeTile(MapNode node, v3s16 p, v3s16 dir, MeshMakeData *data);

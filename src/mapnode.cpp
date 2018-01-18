@@ -58,11 +58,14 @@ MapNode::MapNode(INodeDefManager *ndef, const std::string &name,
 
 void MapNode::getColor(const ContentFeatures &f, video::SColor *color) const
 {
-	if (f.palette) {
-		*color = (*f.palette)[param2];
-		return;
-	}
-	*color = f.color;
+	*color = getColor(f);
+}
+
+video::SColor MapNode::getColor(const ContentFeatures &f) const
+{
+	if (f.palette)
+		return (*f.palette)[param2];
+	return f.color;
 }
 
 void MapNode::setLight(enum LightBank bank, u8 a_light, const ContentFeatures &f)

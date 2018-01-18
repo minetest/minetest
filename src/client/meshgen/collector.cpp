@@ -3,27 +3,23 @@
 #include "log.h"
 #include "mesh.h"
 
-void MeshCollector::append(const TileSpec &tile, const video::S3DVertex *vertices,
+void MeshCollector::append(const TileRef &tile, const video::S3DVertex *vertices,
 		u32 numVertices, const u16 *indices, u32 numIndices)
 {
-	for (int layernum = 0; layernum < MAX_TILE_LAYERS; layernum++) {
-		const TileLayer *layer = &tile.layers[layernum];
-		if (layer->texture_id == 0)
-			continue;
-		append(*layer, vertices, numVertices, indices, numIndices, layernum,
-				tile.world_aligned);
-	}
+	for (int layernum = 0; layernum < MAX_TILE_LAYERS; layernum++)
+		append(tile[layernum], vertices, numVertices, indices, numIndices);
 }
 
-void MeshCollector::append(const TileLayer &layer, const video::S3DVertex *vertices,
-		u32 numVertices, const u16 *indices, u32 numIndices, u8 layernum,
-		bool use_scale)
+void MeshCollector::append(const LayerRef &layer, const video::S3DVertex *vertices,
+		u32 numVertices, const u16 *indices, u32 numIndices)
 {
-	PreMeshBuffer &p = findBuffer(layer, layernum, numVertices);
+	if (!layer)
+		return;
+	PreMeshBuffer &p = findBuffer(layer, numVertices);
 
 	f32 scale = 1.0f;
-	if (use_scale)
-		scale = 1.0f / layer.scale;
+	if (layer.tile->world_aligned)
+		scale = 1.0f / layer->scale;
 
 	u32 vertex_count = p.vertices.size();
 	for (u32 i = 0; i < numVertices; i++)
@@ -34,28 +30,25 @@ void MeshCollector::append(const TileLayer &layer, const video::S3DVertex *verti
 		p.indices.push_back(indices[i] + vertex_count);
 }
 
-void MeshCollector::append(const TileSpec &tile, const video::S3DVertex *vertices,
+void MeshCollector::append(const TileRef &tile, const video::S3DVertex *vertices,
 		u32 numVertices, const u16 *indices, u32 numIndices, v3f pos,
 		video::SColor c, u8 light_source)
 {
-	for (int layernum = 0; layernum < MAX_TILE_LAYERS; layernum++) {
-		const TileLayer *layer = &tile.layers[layernum];
-		if (layer->texture_id == 0)
-			continue;
-		append(*layer, vertices, numVertices, indices, numIndices, pos, c,
-				light_source, layernum, tile.world_aligned);
-	}
+	for (int layernum = 0; layernum < MAX_TILE_LAYERS; layernum++)
+		append(tile[layernum], vertices, numVertices, indices, numIndices, pos, c, light_source);
 }
 
-void MeshCollector::append(const TileLayer &layer, const video::S3DVertex *vertices,
+void MeshCollector::append(const LayerRef &layer, const video::S3DVertex *vertices,
 		u32 numVertices, const u16 *indices, u32 numIndices, v3f pos,
-		video::SColor c, u8 light_source, u8 layernum, bool use_scale)
+		video::SColor c, u8 light_source)
 {
-	PreMeshBuffer &p = findBuffer(layer, layernum, numVertices);
+	if (!layer)
+		return;
+	PreMeshBuffer &p = findBuffer(layer, numVertices);
 
 	f32 scale = 1.0f;
-	if (use_scale)
-		scale = 1.0f / layer.scale;
+	if (layer.tile->world_aligned)
+		scale = 1.0f / layer->scale;
 
 	u32 vertex_count = p.vertices.size();
 	for (u32 i = 0; i < numVertices; i++) {
@@ -70,15 +63,14 @@ void MeshCollector::append(const TileLayer &layer, const video::S3DVertex *verti
 		p.indices.push_back(indices[i] + vertex_count);
 }
 
-PreMeshBuffer &MeshCollector::findBuffer(
-		const TileLayer &layer, u8 layernum, u32 numVertices)
+PreMeshBuffer &MeshCollector::findBuffer(const LayerRef &layer, u32 numVertices)
 {
 	if (numVertices > U16_MAX)
 		throw std::invalid_argument(
 				"Mesh can't contain more than 65536 vertices");
-	std::vector<PreMeshBuffer> &buffers = prebuffers[layernum];
+	std::vector<PreMeshBuffer> &buffers = prebuffers[layer.layer];
 	for (PreMeshBuffer &p : buffers)
-		if (p.layer == layer && p.vertices.size() + numVertices <= U16_MAX)
+		if (p.vertices.size() + numVertices <= U16_MAX && p.layer == layer)
 			return p;
 	buffers.emplace_back(layer);
 	return buffers.back();

@@ -313,22 +313,22 @@ scene::SMesh *createSpecialNodeMesh(Client *client, content_t id, std::vector<It
 	scene::SMesh *mesh = new scene::SMesh();
 	for (auto &prebuffers : collector.prebuffers)
 		for (PreMeshBuffer &p : prebuffers) {
+			video::ITexture *texture = p.layer->texture;
 			if (p.layer.material_flags & MATERIAL_FLAG_ANIMATION) {
-				const FrameSpec &frame = (*p.layer.frames)[0];
-				p.layer.texture = frame.texture;
-				p.layer.normal_texture = frame.normal_texture;
+				const FrameSpec &frame = p.layer->frames[0];
+				texture = frame.texture;
 			}
 			for (video::S3DVertex &v : p.vertices)
 				v.Color.setAlpha(255);
 			scene::SMeshBuffer *buf = new scene::SMeshBuffer();
-			buf->Material.setTexture(0, p.layer.texture);
-			p.layer.applyMaterialOptions(buf->Material);
+			buf->Material.setTexture(0, texture);
+			p.layer->applyMaterialOptions(buf->Material);
 			mesh->addMeshBuffer(buf);
 			buf->append(&p.vertices[0], p.vertices.size(),
 					&p.indices[0], p.indices.size());
 			buf->drop();
 			colors->push_back(
-				ItemPartColor(p.layer.has_color, p.layer.color));
+				ItemPartColor(p.layer->has_color, p.layer.color));
 		}
 	return mesh;
 }
@@ -664,7 +664,7 @@ void postProcessNodeMesh(scene::SMesh *mesh, const ContentFeatures &f,
 				material.MaterialType = *mattype;
 			}
 			if (layer->animation_frame_count > 1) {
-				const FrameSpec &animation_frame = (*layer->frames)[0];
+				const FrameSpec &animation_frame = layer->frames[0];
 				material.setTexture(0, animation_frame.texture);
 			} else {
 				material.setTexture(0, layer->texture);
@@ -672,7 +672,7 @@ void postProcessNodeMesh(scene::SMesh *mesh, const ContentFeatures &f,
 			if (use_shaders) {
 				if (layer->normal_texture) {
 					if (layer->animation_frame_count > 1) {
-						const FrameSpec &animation_frame = (*layer->frames)[0];
+						const FrameSpec &animation_frame = layer->frames[0];
 						material.setTexture(1, animation_frame.normal_texture);
 					} else
 						material.setTexture(1, layer->normal_texture);

@@ -494,7 +494,7 @@ static void getNodeTextureCoords(v3f base, const v3f &scale, v3s16 dir, float *u
 
 struct FastFace
 {
-	TileSpec tile;
+	TileRef tile;
 	video::S3DVertex vertices[4]; // Precalculated vertices
 	/*!
 	 * The face is divided into two triangles. If this is true,
@@ -504,7 +504,7 @@ struct FastFace
 	bool vertex_0_2_connected;
 };
 
-static void makeFastFace(const TileSpec &tile, u16 li0, u16 li1, u16 li2, u16 li3,
+static void makeFastFace(const TileRef &tile, u16 li0, u16 li1, u16 li2, u16 li3,
 	v3f tp, v3f p, v3s16 dir, v3f scale, std::vector<FastFace> &dest)
 {
 	// Position is at the center of the cube.
@@ -518,7 +518,7 @@ static void makeFastFace(const TileSpec &tile, u16 li0, u16 li1, u16 li2, u16 li
 	v3f vertex_pos[4];
 	v3s16 vertex_dirs[4];
 	getNodeVertexDirs(dir, vertex_dirs);
-	if (tile.world_aligned)
+	if (tile->world_aligned)
 		getNodeTextureCoords(tp, scale, dir, &x0, &y0);
 
 	v3s16 t;
@@ -744,30 +744,29 @@ static u8 face_contents(content_t m1, content_t m2, bool *equivalent,
 	return 2;
 }
 
+TileRef getNodeTile(MapNode node, const ContentFeatures &f, u8 tileindex)
+{
+	return TileRef(&f.tiles[tileindex], node.getColor(f));
+}
+
 /*
 	Gets nth node tile (0 <= n <= 5).
 */
-void getNodeTileN(MapNode mn, v3s16 p, u8 tileindex, MeshMakeData *data, TileSpec &tile)
+TileRef getNodeTile(MapNode node, v3s16 p, u8 tileindex, MeshMakeData *data)
 {
 	INodeDefManager *ndef = data->m_client->ndef();
-	const ContentFeatures &f = ndef->get(mn);
-	tile = f.tiles[tileindex];
+	const ContentFeatures &f = ndef->get(node);
+	TileRef tile(&f.tiles[tileindex], node.getColor(f));
 	bool has_crack = p == data->m_crack_pos_relative;
-	for (TileLayer &layer : tile.layers) {
-		if (layer.texture_id == 0)
-			continue;
-		if (!layer.has_color)
-			mn.getColor(f, &(layer.color));
-		// Apply temporary crack
-		if (has_crack)
-			layer.material_flags |= MATERIAL_FLAG_CRACK;
-	}
+	if (has_crack)
+		tile.setMaterialFlags(MATERIAL_FLAG_CRACK);
+	return tile;
 }
 
 /*
 	Gets node tile given a face direction.
 */
-void getNodeTile(MapNode mn, v3s16 p, v3s16 dir, MeshMakeData *data, TileSpec &tile)
+TileRef getNodeTile(MapNode node, v3s16 p, v3s16 dir, MeshMakeData *data)
 {
 	INodeDefManager *ndef = data->m_client->ndef();
 
@@ -787,7 +786,7 @@ void getNodeTile(MapNode mn, v3s16 p, v3s16 dir, MeshMakeData *data, TileSpec &t
 	u8 dir_i = ((dir.X + 2 * dir.Y + 3 * dir.Z) & 7) * 2;
 
 	// Get rotation for things like chests
-	u8 facedir = mn.getFaceDir(ndef);
+	u8 facedir = node.getFaceDir(ndef);
 
 	static const u16 dir_to_tile[24 * 16] =
 	{
@@ -824,8 +823,9 @@ void getNodeTile(MapNode mn, v3s16 p, v3s16 dir, MeshMakeData *data, TileSpec &t
 
 	};
 	u16 tile_index = facedir * 16 + dir_i;
-	getNodeTileN(mn, p, dir_to_tile[tile_index], data, tile);
-	tile.rotation = tile.world_aligned ? 0 : dir_to_tile[tile_index + 1];
+	TileRef tile = getNodeTile(node, p, dir_to_tile[tile_index], data);
+	tile.rotation = tile->world_aligned ? 0 : dir_to_tile[tile_index + 1];
+	return tile;
 }
 
 static void getTileInfo(
@@ -838,7 +838,7 @@ static void getTileInfo(
 		v3s16 &p_corrected,
 		v3s16 &face_dir_corrected,
 		u16 *lights,
-		TileSpec &tile
+		TileRef &tile
 	)
 {
 	VoxelManipulator &vmanip = data->m_vmanip;
@@ -883,15 +883,13 @@ static void getTileInfo(
 		face_dir_corrected = -face_dir;
 	}
 
-	getNodeTile(n, p_corrected, face_dir_corrected, data, tile);
+	tile = getNodeTile(n, p_corrected, face_dir_corrected, data);
 	const ContentFeatures &f = ndef->get(n);
 	tile.emissive_light = f.light_source;
 
 	// eg. water and glass
-	if (equivalent) {
-		for (TileLayer &layer : tile.layers)
-			layer.material_flags |= MATERIAL_FLAG_BACKFACE_CULLING;
-	}
+	if (equivalent)
+		tile.setMaterialFlags(MATERIAL_FLAG_BACKFACE_CULLING);
 
 	if (!data->m_smooth_lighting) {
 		lights[0] = lights[1] = lights[2] = lights[3] =
@@ -927,13 +925,13 @@ static void updateFastFaceRow(
 	v3s16 p_corrected;
 	v3s16 face_dir_corrected;
 	u16 lights[4] = {0, 0, 0, 0};
-	TileSpec tile;
+	TileRef tile;
 	getTileInfo(data, p, face_dir,
 			makes_face, p_corrected, face_dir_corrected,
 			lights, tile);
 
 	// Unroll this variable which has a significant build cost
-	TileSpec next_tile;
+	TileRef next_tile;
 	for (u16 j = 0; j < MAP_BLOCKSIZE; j++) {
 		// If tiling can be done, this is set to false in the next step
 		bool next_is_different = true;
@@ -1144,7 +1142,7 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data, v3s16 camera_offset):
 		for(u32 i = 0; i < collector.prebuffers[layer].size(); i++)
 		{
 			PreMeshBuffer &p = collector.prebuffers[layer][i];
-
+			video::ITexture *texture = p.layer->texture;
 			applyTileColor(p);
 
 			// Generate animation data
@@ -1152,24 +1150,22 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data, v3s16 camera_offset):
 			if (p.layer.material_flags & MATERIAL_FLAG_CRACK) {
 				// Find the texture name plus ^[crack:N:
 				std::ostringstream os(std::ios::binary);
-				os << m_tsrc->getTextureName(p.layer.texture_id) << "^[crack";
+				os << m_tsrc->getTextureName(p.layer->texture_id) << "^[crack";
 				if (p.layer.material_flags & MATERIAL_FLAG_CRACK_OVERLAY)
 					os << "o";  // use ^[cracko
-				u8 tiles = p.layer.scale;
+				u8 tiles = p.layer->scale;
 				if (tiles > 1)
 					os << ":" << (u32)tiles;
-				os << ":" << (u32)p.layer.animation_frame_count << ":";
+				os << ":" << (u32)p.layer->animation_frame_count << ":";
 				m_crack_materials.insert(std::make_pair(
 						std::pair<u8, u32>(layer, i), os.str()));
 				// Replace tile texture with the cracked one
-				p.layer.texture = m_tsrc->getTextureForMesh(
-						os.str() + "0",
-						&p.layer.texture_id);
+				texture = m_tsrc->getTextureForMesh(os.str() + "0");
 			}
 			// - Texture animation
 			if (p.layer.material_flags & MATERIAL_FLAG_ANIMATION) {
 				// Add to MapBlockMesh in order to animate these tiles
-				m_animation_tiles[std::pair<u8, u32>(layer, i)] = p.layer;
+				m_animation_tiles[std::pair<u8, u32>(layer, i)] = TileLayer(p.layer);
 				m_animation_frames[std::pair<u8, u32>(layer, i)] = 0;
 				if (g_settings->getBool(
 						"desynchronize_mapblock_texture_animation")) {
@@ -1183,7 +1179,7 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data, v3s16 camera_offset):
 					m_animation_frame_offsets[std::pair<u8, u32>(layer, i)] = 0;
 				}
 				// Replace tile texture with the first animation frame
-				p.layer.texture = (*p.layer.frames)[0].texture;
+				texture = p.layer->frames[0].texture;
 			}
 
 			if (!m_enable_shaders) {
@@ -1212,17 +1208,17 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data, v3s16 camera_offset):
 			material.setFlag(video::EMF_BACK_FACE_CULLING, true);
 			material.setFlag(video::EMF_BILINEAR_FILTER, false);
 			material.setFlag(video::EMF_FOG_ENABLE, true);
-			material.setTexture(0, p.layer.texture);
+			material.setTexture(0, texture);
 
 			if (m_enable_shaders) {
 				material.MaterialType = m_shdrsrc->getShaderInfo(
-						p.layer.shader_id).material;
-				p.layer.applyMaterialOptionsWithShaders(material);
-				if (p.layer.normal_texture)
-					material.setTexture(1, p.layer.normal_texture);
-				material.setTexture(2, p.layer.flags_texture);
+						p.layer->shader_id).material;
+				p.layer->applyMaterialOptionsWithShaders(material);
+				if (p.layer->normal_texture)
+					material.setTexture(1, p.layer->normal_texture);
+				material.setTexture(2, p.layer->flags_texture);
 			} else {
-				p.layer.applyMaterialOptions(material);
+				p.layer->applyMaterialOptions(material);
 			}
 
 			scene::SMesh *mesh = (scene::SMesh *)m_mesh[layer];
@@ -1357,7 +1353,7 @@ bool MapBlockMesh::animate(bool faraway, float time, int crack,
 		scene::IMeshBuffer *buf = m_mesh[animation_tile.first.first]->
 			getMeshBuffer(animation_tile.first.second);
 
-		const FrameSpec &animation_frame = (*tile.frames)[frame];
+		const FrameSpec &animation_frame = tile.frames[frame];
 		buf->getMaterial().setTexture(0, animation_frame.texture);
 		if (m_enable_shaders) {
 			if (animation_frame.normal_texture)

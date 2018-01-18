@@ -292,7 +292,7 @@ struct TileLayer
 	//! If true, the tile has its own color.
 	bool has_color = false;
 
-	std::shared_ptr<std::vector<FrameSpec>> frames = nullptr;
+	std::vector<FrameSpec> frames;
 
 	/*!
 	 * The color of the tile, or if the tile does not own
@@ -308,10 +308,7 @@ struct TileLayer
  */
 struct TileSpec
 {
-	TileSpec() {
-		for (auto &layer : layers)
-			layer = TileLayer();
-	}
+	TileSpec() = default;
 
 	/*!
 	 * Returns true if this tile can be merged with the other tile.
