@@ -44,7 +44,12 @@ struct LayerRef
 
 	bool operator==(const LayerRef &b) const
 	{
-		return get() == b.get();
+		return
+			material_flags == b.material_flags &&
+			color == b.color &&
+			get().texture_id == b->texture_id &&
+			get().material_type == b->material_type &&
+			get().scale == b->scale;
 	}
 };
 
