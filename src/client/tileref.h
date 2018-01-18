@@ -11,17 +11,15 @@ struct LayerRef
 	u8 emissive_light = 0;
 	u8 layer = 0;
 
-	LayerRef() = default;
-
-	LayerRef(const TileSpec *tile, int layer = 0) :
-		tile(tile),
-		layer(layer)
-	{
-	}
-
 	const TileLayer &get() const
 	{
 		return tile->layers[layer];
+	}
+
+	bool isTileable() const
+	{
+		return (material_flags & MATERIAL_FLAG_TILEABLE_HORIZONTAL)
+			&& (material_flags & MATERIAL_FLAG_TILEABLE_VERTICAL);
 	}
 
 	explicit operator bool() const
@@ -50,6 +48,11 @@ struct LayerRef
 			get().texture_id == b->texture_id &&
 			get().material_type == b->material_type &&
 			get().scale == b->scale;
+	}
+
+	bool operator!=(const LayerRef &b) const
+	{
+		return !operator==(b);
 	}
 };
 
@@ -107,7 +110,18 @@ struct TileRef
 
 	bool isTileable(const TileRef &b) const
 	{
-		return false; // FIXME: stub
+		if (rotation || b.rotation)
+			return false;
+		if (emissive_light != b.emissive_light)
+			return false;
+		for (int layer = 0; layer < MAX_TILE_LAYERS; layer++) {
+			LayerRef x = getLayer(layer);
+			if (!x.isTileable())
+				return false;
+			if (x != b.getLayer(layer))
+				return false;
+		}
+		return true;
 	}
 
 	const TileSpec *operator->() const
