@@ -763,8 +763,6 @@ Call these functions only at load time!
 * `minetest.disconnect()`
     * Disconnect from the server and exit to main menu.
     * Returns `false` if the client is already disconnecting otherwise returns `true`.
-* `minetest.take_screenshot()`
-    * Take a screenshot.
 * `minetest.get_server_info()`
     * Returns [server info](#server-info).
 * `minetest.send_respawn()`
