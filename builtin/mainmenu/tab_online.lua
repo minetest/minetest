@@ -55,7 +55,7 @@ local function get_formspec(tabview, name, tabdata)
 		"box[7.73,2.25;4.25,2.6;#999999]"..
 		
 		--Total players
-		"label[7.88,5.2;" .. fgettext(menudata.totalplayers .. " players.") .. "]" ..
+		"label[7.74,5.1;" .. fgettext(menudata.totalplayers .. " players.") .. "]" ..
 		-- Connect
 		"button[9.88,4.9;2.3,1;btn_mp_connect;" .. fgettext("Connect") .. "]"
 
