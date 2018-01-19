@@ -16,6 +16,8 @@
 --51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 --------------------------------------------------------------------------------
+totalplayers = 0
+
 local function get_formspec(tabview, name, tabdata)
 	-- Update the cached supported proto info,
 	-- it may have changed after a change by the settings menu.
@@ -30,7 +32,7 @@ local function get_formspec(tabview, name, tabdata)
 	if not tabdata.search_for then
 		tabdata.search_for = ""
 	end
-
+	
 	local retval =
 		-- Search
 		"field[0.15,0.075;6.05,1;te_search;;"..core.formspec_escape(tabdata.search_for).."]"..
@@ -51,7 +53,9 @@ local function get_formspec(tabview, name, tabdata)
 
 		-- Description Background
 		"box[7.73,2.25;4.25,2.6;#999999]"..
-
+		
+		--Total players
+		"label[7.88,5.2;" .. fgettext(menudata.totalplayers .. " players.") .. "]" ..
 		-- Connect
 		"button[9.88,4.9;2.3,1;btn_mp_connect;" .. fgettext("Connect") .. "]"
 
@@ -85,7 +89,6 @@ local function get_formspec(tabview, name, tabdata)
 		for i = 1, #menudata.search_result do
 			local favs = core.get_favorites("local")
 			local server = menudata.search_result[i]
-
 			for fav_id = 1, #favs do
 				if server.address == favs[fav_id].address and
 						server.port == favs[fav_id].port then
@@ -96,7 +99,7 @@ local function get_formspec(tabview, name, tabdata)
 			if i ~= 1 then
 				retval = retval .. ","
 			end
-
+			
 			retval = retval .. render_serverlist_row(server, server.is_favorite)
 		end
 	elseif #menudata.favorites > 0 then
@@ -125,7 +128,7 @@ local function get_formspec(tabview, name, tabdata)
 	else
 		retval = retval .. ";0]"
 	end
-
+	
 	return retval
 end
 

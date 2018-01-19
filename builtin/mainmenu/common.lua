@@ -18,7 +18,7 @@
 -- Global menu data
 --------------------------------------------------------------------------------
 menudata = {}
-
+menudata.totalplayers = 0
 --------------------------------------------------------------------------------
 -- Local cached values
 --------------------------------------------------------------------------------
@@ -68,6 +68,7 @@ function order_favorite_list(list)
 	--orders the favorite list after support
 	for i = 1, #list do
 		local fav = list[i]
+		menudata.totalplayers = fav.clients + menudata.totalplayers
 		if is_server_protocol_compat(fav.proto_min, fav.proto_max) then
 			res[#res + 1] = fav
 		end
@@ -116,7 +117,7 @@ function render_serverlist_row(spec, is_favorite)
 	else
 		details = details .. "0,"
 	end
-
+	
 	if spec.clients and spec.clients_max then
 		local clients_color = ''
 		local clients_percent = 100 * spec.clients / spec.clients_max
