@@ -64,6 +64,7 @@ end
 
 --------------------------------------------------------------------------------
 function order_favorite_list(list)
+	menudata.totalplayers = 0
 	local res = {}
 	--orders the favorite list after support
 	for i = 1, #list do
@@ -230,7 +231,7 @@ function asyncOnlineFavourites()
 	else
 		return
 	end
-
+	
 	core.handle_async(
 		function(param)
 			return core.get_favorites("online")
