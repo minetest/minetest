@@ -15,7 +15,7 @@ If you are on a devel version, please add git commit hash
 ```
 
 ##### OS / Hardware
-<!-- General information about your system -->
+<!-- General information about your your hardware and operating system -->
 Operating system:
 CPU:
 
@@ -27,4 +27,4 @@ OpenGL version:
 <!-- Describe your problem here -->
 
 ##### Steps to reproduce
-<!-- For bug reports or build issues, explain us how did the problem happen -->
+<!-- For bug reports or build issues, explain how the problem happened -->
