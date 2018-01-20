@@ -39,6 +39,7 @@ extern "C" {
 #include "itemgroup.h"
 #include "itemdef.h"
 #include "c_types.h"
+#include "hud.h"
 
 namespace Json { class Value; }
 
@@ -180,5 +181,11 @@ void               read_json_value           (lua_State *L, Json::Value &root,
 void               push_pointed_thing        (lua_State *L, const PointedThing &pointed, bool csm = false);
 
 void               push_objectRef            (lua_State *L, const u16 id);
+
+void               read_hud_element          (lua_State *L, HudElement *elem);
+
+void               push_hud_element          (lua_State *L, HudElement *elem);
+
+HudElementStat     read_hud_change           (lua_State *L, HudElement *elem, void **value);
 
 extern struct EnumString es_TileAnimationType[];

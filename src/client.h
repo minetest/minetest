@@ -30,7 +30,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "gamedef.h"
 #include "inventorymanager.h"
 #include "localplayer.h"
-#include "hud.h"
+#include "client/hud.h"
 #include "particles.h"
 #include "mapnode.h"
 #include "tileanimation.h"
@@ -553,6 +553,10 @@ private:
 	std::unordered_map<int, s32> m_sounds_client_to_server;
 	// And relations to objects
 	std::unordered_map<int, u16> m_sounds_to_objects;
+
+	// HUD
+	// Mapping from server hud ids to internal hud ids
+	std::unordered_map<u32, u32> m_hud_server_to_client;
 
 	// Privileges
 	std::unordered_set<std::string> m_privileges;

@@ -39,7 +39,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client/renderingengine.h"
 #include "log.h"
 #include "client/tile.h" // ITextureSource
-#include "hud.h" // drawItemStack
+#include "client/hud.h" // drawItemStack
 #include "filesys.h"
 #include "gettime.h"
 #include "gettext.h"

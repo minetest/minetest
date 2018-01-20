@@ -1025,6 +1025,17 @@ Methods:
     * returns last look vertical angle
 * `get_key_pressed()`:
     * returns last key typed by the player
+* `hud_add(definition)`
+    * add a HUD element described by HUD def, returns ID number on success and `nil` on failure.
+    * See [`HUD definition`](#hud-definition-hud_add-hud_get)
+* `hud_get(id)`
+    * returns the [`definition`](#hud-definition-hud_add-hud_get) of the HUD with that ID number or `nil`, if non-existent.
+* `hud_remove(id)`
+    * remove the HUD element of the specified id, returns `true` on success
+* `hud_change(id, stat, value)`
+    * change a value of a previously added HUD element
+    * element `stat` values: `position`, `name`, `scale`, `text`, `number`, `item`, `dir`
+    * Returns `true` on success, otherwise returns `nil`
 
 ### Settings
 An interface to read config files in the format of `minetest.conf`.
@@ -1163,6 +1174,30 @@ Can be obtained via `minetest.get_meta(pos)`.
 }
 ```
 
+### HUD Definition (`hud_add`, `hud_get`)
+```lua
+    {
+        hud_elem_type = "image", -- see HUD element types, default "text"
+    --  ^ type of HUD element, can be either of "image", "text", "statbar", or "inventory"
+        position = {x=0.5, y=0.5},
+    --  ^ Left corner position of element, default `{x=0,y=0}`.
+        name = "<name>",    -- default ""
+        scale = {x=2, y=2}, -- default {x=0,y=0}
+        text = "<text>",    -- default ""
+        number = 2,         -- default 0
+        item = 3,           -- default 0
+    --  ^ Selected item in inventory.  0 for no item selected.
+        direction = 0,      -- default 0
+    --  ^ Direction: 0: left-right, 1: right-left, 2: top-bottom, 3: bottom-top
+        alignment = {x=0, y=0},   -- default {x=0, y=0}
+    --  ^ See "HUD Element Types"
+        offset = {x=0, y=0},      -- default {x=0, y=0}
+    --  ^ See "HUD Element Types"
+        size = { x=100, y=100 },  -- default {x=0, y=0}
+    --  ^ Size of element in pixels
+    }
+```
+
 Escape sequences
 ----------------
 Most text can contain escape sequences, that can for example color the text.
@@ -1206,3 +1241,80 @@ value must (always) be two hexadecimal digits.
 `Color`
 -------------
 `{a = alpha, r = red, g = green, b = blue}` defines an ARGB8 color.
+
+HUD element types
+-----------------
+The position field is used for all element types.
+
+To account for differing resolutions, the position coordinates are the percentage
+of the screen, ranging in value from `0` to `1`.
+
+The name field is not yet used, but should contain a description of what the
+HUD element represents. The direction field is the direction in which something
+is drawn.
+
+`0` draws from left to right, `1` draws from right to left, `2` draws from
+top to bottom, and `3` draws from bottom to top.
+
+The `alignment` field specifies how the item will be aligned. It ranges from `-1` to `1`,
+with `0` being the center, `-1` is moved to the left/up, and `1` is to the right/down.
+Fractional values can be used.
+
+The `offset` field specifies a pixel offset from the position. Contrary to position,
+the offset is not scaled to screen size. This allows for some precisely-positioned
+items in the HUD.
+
+**Note**: `offset` _will_ adapt to screen DPI as well as user defined scaling factor!
+
+Below are the specific uses for fields in each type; fields not listed for that type are ignored.
+
+**Note**: Future revisions to the HUD API may be incompatible; the HUD API is still
+in the experimental stages.
+
+### `image`
+Displays an image on the HUD.
+
+* `scale`: The scale of the image, with 1 being the original texture size.
+  Only the X coordinate scale is used (positive values).
+  Negative values represent that percentage of the screen it
+  should take; e.g. `x=-100` means 100% (width).
+* `text`: The name of the texture that is displayed.
+* `alignment`: The alignment of the image.
+* `offset`: offset in pixels from position.
+
+### `text`
+Displays text on the HUD.
+
+* `scale`: Defines the bounding rectangle of the text.
+  A value such as `{x=100, y=100}` should work.
+* `text`: The text to be displayed in the HUD element.
+* `number`: An integer containing the RGB value of the color used to draw the text.
+  Specify `0xFFFFFF` for white text, `0xFF0000` for red, and so on.
+* `alignment`: The alignment of the text.
+* `offset`: offset in pixels from position.
+
+### `statbar`
+Displays a horizontal bar made up of half-images.
+
+* `text`: The name of the texture that is used.
+* `number`: The number of half-textures that are displayed.
+  If odd, will end with a vertically center-split texture.
+* `direction`
+* `offset`: offset in pixels from position.
+* `size`: If used, will force full-image size to this value (override texture pack image size)
+
+### `inventory`
+* `text`: The name of the inventory list to be displayed.
+* `number`: Number of items in the inventory to be displayed.
+* `item`: Position of item that is selected.
+* `direction`
+* `offset`: offset in pixels from position.
+
+### `waypoint`
+Displays distance to selected world position.
+
+* `name`: The name of the waypoint.
+* `text`: Distance suffix. Can be blank.
+* `number:` An integer containing the RGB value of the color used to draw the text.
+* `world_pos`: World position of the waypoint.
+

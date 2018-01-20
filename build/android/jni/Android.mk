@@ -270,6 +270,7 @@ LOCAL_SRC_FILES := \
 		jni/src/settings.cpp                      \
 		jni/src/wieldmesh.cpp                     \
 		jni/src/client/clientlauncher.cpp         \
+		jni/src/client/hud.cpp                    \
 		jni/src/client/inputhandler.cpp           \
 		jni/src/client/renderingengine.cpp        \
 		jni/src/client/tile.cpp                   \
