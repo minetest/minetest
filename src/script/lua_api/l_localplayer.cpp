@@ -329,7 +329,7 @@ int LuaLocalPlayer::l_hud_get(lua_State *L)
 {
 	LocalPlayer *player = getobject(L, 1);
 
-	u32 id = lua_tonumber(L, -1);
+	u32 id = luaL_checkinteger(L, -1);
 
 	HudElement *e = player->getHud(id);
 	if (!e) {
