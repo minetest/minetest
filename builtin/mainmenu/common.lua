@@ -118,7 +118,7 @@ function render_serverlist_row(spec, is_favorite)
 	else
 		details = details .. "0,"
 	end
-	
+
 	if spec.clients and spec.clients_max then
 		local clients_color = ''
 		local clients_percent = 100 * spec.clients / spec.clients_max
