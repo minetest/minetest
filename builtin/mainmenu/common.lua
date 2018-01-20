@@ -231,7 +231,7 @@ function asyncOnlineFavourites()
 	else
 		return
 	end
-	
+
 	core.handle_async(
 		function(param)
 			return core.get_favorites("online")
