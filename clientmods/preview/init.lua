@@ -15,6 +15,16 @@ core.register_on_connect(function()
 	print("Server ip: " .. server_info.ip)
 	print("Server address: " .. server_info.address)
 	print("Server port: " .. server_info.port)
+	mod_channel = core.mod_channel_join("experimental_preview")
+
+	core.after(4, function()
+		if mod_channel:is_writeable() then
+			mod_channel:send_all("preview talk to experimental")
+		end
+	end)
+end)
+
+core.after(1, function()
 	id = core.localplayer:hud_add({
 			hud_elem_type = "text",
 			name = "example",
@@ -25,13 +35,6 @@ core.register_on_connect(function()
 			scale = {x=200, y=60},
 			alignment = {x=1, y=-1},
 	})
-	mod_channel = core.mod_channel_join("experimental_preview")
-
-	core.after(4, function()
-		if mod_channel:is_writeable() then
-			mod_channel:send_all("preview talk to experimental")
-		end
-	end)
 end)
 
 core.register_on_modchannel_message(function(channel, sender, message)
