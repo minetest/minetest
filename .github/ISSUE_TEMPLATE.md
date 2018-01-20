@@ -15,7 +15,13 @@ If you are on a devel version, please add git commit hash
 ```
 
 ##### OS / Hardware
-<!--- Give us informations about your system, operating system -->
+<!-- General information about your system -->
+Operating system:
+CPU:
+
+<!-- For client issues -->
+GPU model:
+OpenGL version:
 
 ##### Summary
 <!--- Describe your problem here -->
