@@ -1,13 +1,13 @@
 ##### Issue type
-<!--- Pick one below and delete others -->
+<!-- Pick one below and delete others -->
  - Bug report
  - Feature request
  - Documentation issue
  - Build issue
  
 ##### Minetest version
-<!--- 
-Paste minetest version between quotes below
+<!--
+Paste Minetest version between quotes below
 If you are on a devel version, please add git commit hash
 -->
 ```
@@ -24,7 +24,7 @@ GPU model:
 OpenGL version:
 
 ##### Summary
-<!--- Describe your problem here -->
+<!-- Describe your problem here -->
 
 ##### Steps to reproduce
-<!--- For bug reports or build issues, explain us how did the problem happen -->
+<!-- For bug reports or build issues, explain us how did the problem happen -->
