@@ -9,17 +9,18 @@
 <!--
 Paste Minetest version between quotes below
 If you are on a devel version, please add git commit hash
+You can use `minetest --version` to find it.
 -->
 ```
 
 ```
 
 ##### OS / Hardware
-<!-- General information about your your hardware and operating system -->
+<!-- General information about your hardware and operating system -->
 Operating system:
 CPU:
 
-<!-- For client issues -->
+<!-- For graphical issues only -->
 GPU model:
 OpenGL version:
 
