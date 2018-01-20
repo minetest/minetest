@@ -33,10 +33,11 @@ class InventoryList;
 class LocalPlayer;
 struct ItemStack;
 
-class Hud {
+class Hud
+{
 public:
 	video::IVideoDriver *driver;
-	scene::ISceneManager* smgr;
+	scene::ISceneManager *smgr;
 	gui::IGUIEnvironment *guienv;
 	Client *client;
 	LocalPlayer *player;
@@ -52,7 +53,7 @@ public:
 	bool use_hotbar_selected_image = false;
 
 	Hud(gui::IGUIEnvironment *guienv, Client *client, LocalPlayer *player,
-		Inventory *inventory);
+			Inventory *inventory);
 	~Hud();
 
 	void drawHotbar(u16 playeritem);
@@ -61,38 +62,40 @@ public:
 	void drawSelectionMesh();
 	void updateSelectionMesh(const v3s16 &camera_offset);
 
-	std::vector<aabb3f> *getSelectionBoxes()
-	{ return &m_selection_boxes; }
+	std::vector<aabb3f> *getSelectionBoxes() { return &m_selection_boxes; }
 
 	void setSelectionPos(const v3f &pos, const v3s16 &camera_offset);
 
-	v3f getSelectionPos() const
-	{ return m_selection_pos; }
+	v3f getSelectionPos() const { return m_selection_pos; }
 
 	void setSelectionMeshColor(const video::SColor &color)
-	{ m_selection_mesh_color = color; }
+	{
+		m_selection_mesh_color = color;
+	}
 
 	void setSelectedFaceNormal(const v3f &face_normal)
-	{ m_selected_face_normal = face_normal; }
+	{
+		m_selected_face_normal = face_normal;
+	}
 
 	void drawLuaElements(const v3s16 &camera_offset);
 
 private:
 	void drawStatbar(v2s32 pos, u16 corner, u16 drawdir, std::string texture,
-			s32 count, v2s32 offset, v2s32 size=v2s32());
+			s32 count, v2s32 offset, v2s32 size = v2s32());
 
 	void drawItems(v2s32 upperleftpos, v2s32 screen_offset, s32 itemcount,
-		s32 inv_offset, InventoryList *mainlist, u16 selectitem, u16 direction);
+			s32 inv_offset, InventoryList *mainlist, u16 selectitem,
+			u16 direction);
 
-	void drawItem(const ItemStack &item, const core::rect<s32>& rect,
-		bool selected);
+	void drawItem(const ItemStack &item, const core::rect<s32> &rect, bool selected);
 
 	float m_hud_scaling; // cached minetest setting
 	v3s16 m_camera_offset;
 	v2u32 m_screensize;
 	v2s32 m_displaycenter;
 	s32 m_hotbar_imagesize; // Takes hud_scaling into account, updated by resizeHotbar()
-	s32 m_padding;  // Takes hud_scaling into account, updated by resizeHotbar()
+	s32 m_padding; // Takes hud_scaling into account, updated by resizeHotbar()
 	video::SColor hbar_colors[4];
 
 	std::vector<aabb3f> m_selection_boxes;
@@ -106,13 +109,16 @@ private:
 
 	video::SMaterial m_selection_material;
 
-	enum {
+	enum
+	{
 		HIGHLIGHT_BOX,
 		HIGHLIGHT_HALO,
-		HIGHLIGHT_NONE } m_mode;
+		HIGHLIGHT_NONE
+	} m_mode;
 };
 
-enum ItemRotationKind {
+enum ItemRotationKind
+{
 	IT_ROT_SELECTED,
 	IT_ROT_HOVERED,
 	IT_ROT_DRAGGED,

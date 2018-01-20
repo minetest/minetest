@@ -302,6 +302,7 @@ int LuaLocalPlayer::l_hud_remove(lua_State *L)
 		lua_pushboolean(L, false);
 	else
 		lua_pushboolean(L, true);
+	delete element;
 	return 1;
 }
 
@@ -331,8 +332,10 @@ int LuaLocalPlayer::l_hud_get(lua_State *L)
 	u32 id = lua_tonumber(L, -1);
 
 	HudElement *e = player->getHud(id);
-	if (!e)
-		return 0;
+	if (!e) {
+		lua_pushnil(L);
+		return 1;
+	}
 
 	push_hud_element(L, e);
 	return 1;

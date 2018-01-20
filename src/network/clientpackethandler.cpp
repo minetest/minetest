@@ -1057,7 +1057,7 @@ void Client::handleCommand_HudAdd(NetworkPacket* pkt)
 
 	ClientEvent *event = new ClientEvent();
 	event->type             = CE_HUDADD;
-	event->hudadd.id        = id;
+	event->hudadd.id        = client_id;
 	event->hudadd.type      = type;
 	event->hudadd.pos       = new v2f(pos);
 	event->hudadd.name      = new std::string(name);
@@ -1082,6 +1082,7 @@ void Client::handleCommand_HudRemove(NetworkPacket* pkt)
 	std::unordered_map<u32, u32>::const_iterator i = m_hud_server_to_client.find(server_id);
 	if (i != m_hud_server_to_client.end()) {
 		int client_id = i->second;
+		m_hud_server_to_client.erase(i);
 
 		ClientEvent *event = new ClientEvent();
 		event->type     = CE_HUDRM;
@@ -1116,16 +1117,16 @@ void Client::handleCommand_HudChange(NetworkPacket* pkt)
 
 	std::unordered_map<u32, u32>::const_iterator i = m_hud_server_to_client.find(server_id);
 	if (i != m_hud_server_to_client.end()) {
-	ClientEvent *event = new ClientEvent();
-	event->type              = CE_HUDCHANGE;
-	event->hudchange.id      = id;
-	event->hudchange.stat    = (HudElementStat)stat;
-	event->hudchange.v2fdata = new v2f(v2fdata);
-	event->hudchange.v3fdata = new v3f(v3fdata);
-	event->hudchange.sdata   = new std::string(sdata);
-	event->hudchange.data    = intdata;
-	event->hudchange.v2s32data = new v2s32(v2s32data);
-	m_client_event_queue.push(event);
+		ClientEvent *event = new ClientEvent();
+		event->type              = CE_HUDCHANGE;
+		event->hudchange.id      = i->second;
+		event->hudchange.stat    = (HudElementStat)stat;
+		event->hudchange.v2fdata = new v2f(v2fdata);
+		event->hudchange.v3fdata = new v3f(v3fdata);
+		event->hudchange.sdata   = new std::string(sdata);
+		event->hudchange.data    = intdata;
+		event->hudchange.v2s32data = new v2s32(v2s32data);
+		m_client_event_queue.push(event);
 	}
 }
 

@@ -506,8 +506,6 @@ set(client_SRCS
 	game.cpp
 	guiscalingfilter.cpp
 	hud.cpp
-	guiTable.cpp
-	guiVolumeChange.cpp
 	imagefilters.cpp
 	keycode.cpp
 	localplayer.cpp

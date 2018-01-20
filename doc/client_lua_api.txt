@@ -1026,15 +1026,16 @@ Methods:
 * `get_key_pressed()`:
     * returns last key typed by the player
 * `hud_add(definition)`
-    * add a HUD element described by HUD def, returns ID number on success
+    * add a HUD element described by HUD def, returns ID number on success and `nil` on failure.
     * See [`HUD definition`](#hud-definition-hud_add-hud_get)
 * `hud_get(id)`
-    * returns the [`definition`](#hud-definition-hud_add-hud_get) of the HUD with that ID number
+    * returns the [`definition`](#hud-definition-hud_add-hud_get) of the HUD with that ID number or `nil`, if non-existent.
 * `hud_remove(id)`
     * remove the HUD element of the specified id, returns `true` on success
 * `hud_change(id, stat, value)`
     * change a value of a previously added HUD element
     * element `stat` values: `position`, `name`, `scale`, `text`, `number`, `item`, `dir`
+    * Returns `true` on success, otherwise returns `nil`
 
 ### Settings
 An interface to read config files in the format of `minetest.conf`.
@@ -1176,23 +1177,23 @@ Can be obtained via `minetest.get_meta(pos)`.
 ### HUD Definition (`hud_add`, `hud_get`)
 ```lua
     {
-        hud_elem_type = "image", -- see HUD element types
+        hud_elem_type = "image", -- see HUD element types, default "text"
     --  ^ type of HUD element, can be either of "image", "text", "statbar", or "inventory"
         position = {x=0.5, y=0.5},
-    --  ^ Left corner position of element
-        name = "<name>",
-        scale = {x=2, y=2},
-        text = "<text>",
-        number = 2,
-        item = 3,
+    --  ^ Left corner position of element, default `{x=0,y=0}`.
+        name = "<name>",    -- default ""
+        scale = {x=2, y=2}, -- default {x=0,y=0}
+        text = "<text>",    -- default ""
+        number = 2,         -- default 0
+        item = 3,           -- default 0
     --  ^ Selected item in inventory.  0 for no item selected.
-        direction = 0,
+        direction = 0,      -- default 0
     --  ^ Direction: 0: left-right, 1: right-left, 2: top-bottom, 3: bottom-top
-        alignment = {x=0, y=0},
+        alignment = {x=0, y=0},   -- default {x=0, y=0}
     --  ^ See "HUD Element Types"
-        offset = {x=0, y=0},
+        offset = {x=0, y=0},      -- default {x=0, y=0}
     --  ^ See "HUD Element Types"
-        size = { x=100, y=100 },
+        size = { x=100, y=100 },  -- default {x=0, y=0}
     --  ^ Size of element in pixels
     }
 ```
