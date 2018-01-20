@@ -956,7 +956,7 @@ void Client::handleCommand_AddParticleSpawner(NetworkPacket* pkt)
 	float minsize;
 	float maxsize;
 	bool collisiondetection;
-	u32 id;
+	u32 server_id;
 
 	*pkt >> amount >> spawntime >> minpos >> maxpos >> minvel >> maxvel
 		>> minacc >> maxacc >> minexptime >> maxexptime >> minsize
@@ -964,7 +964,7 @@ void Client::handleCommand_AddParticleSpawner(NetworkPacket* pkt)
 
 	std::string texture = pkt->readLongString();
 
-	*pkt >> id;
+	*pkt >> server_id;
 
 	bool vertical = false;
 	bool collision_removal = false;
@@ -983,6 +983,9 @@ void Client::handleCommand_AddParticleSpawner(NetworkPacket* pkt)
 		animation.deSerialize(is, m_proto_ver);
 		glow = readU8(is);
 	} catch (...) {}
+
+	u32 client_id = m_particle_manager.getSpawnerId();
+	m_particles_server_to_client[server_id] = client_id;
 
 	ClientEvent *event = new ClientEvent();
 	event->type                                   = CE_ADD_PARTICLESPAWNER;
@@ -1003,7 +1006,7 @@ void Client::handleCommand_AddParticleSpawner(NetworkPacket* pkt)
 	event->add_particlespawner.attached_id        = attached_id;
 	event->add_particlespawner.vertical           = vertical;
 	event->add_particlespawner.texture            = new std::string(texture);
-	event->add_particlespawner.id                 = id;
+	event->add_particlespawner.id                 = client_id;
 	event->add_particlespawner.animation          = animation;
 	event->add_particlespawner.glow               = glow;
 
@@ -1013,12 +1016,19 @@ void Client::handleCommand_AddParticleSpawner(NetworkPacket* pkt)
 
 void Client::handleCommand_DeleteParticleSpawner(NetworkPacket* pkt)
 {
-	u32 id;
-	*pkt >> id;
+	u32 server_id;
+	*pkt >> server_id;
+
+	u32 client_id;
+	auto i = m_particles_server_to_client.find(server_id);
+	if (i != m_particles_server_to_client.end())
+		client_id = i->second;
+	else
+		return;
 
 	ClientEvent *event = new ClientEvent();
 	event->type = CE_DELETE_PARTICLESPAWNER;
-	event->delete_particlespawner.id = id;
+	event->delete_particlespawner.id = client_id;
 
 	m_client_event_queue.push(event);
 }
