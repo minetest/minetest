@@ -422,6 +422,11 @@ public:
 		return m_csm_noderange_limit;
 	}
 
+	inline std::unordered_map<u32, u32> &getHUDTranslationMap()
+	{
+		return m_hud_server_to_client;
+	}
+
 	bool joinModChannel(const std::string &channel);
 	bool leaveModChannel(const std::string &channel);
 	bool sendModChannelMessage(const std::string &channel, const std::string &message);

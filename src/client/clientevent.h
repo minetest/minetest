@@ -116,7 +116,7 @@ struct ClientEvent
 		} delete_particlespawner;
 		struct
 		{
-			u32 id;
+			u32 server_id;
 			u8 type;
 			v2f *pos;
 			std::string *name;

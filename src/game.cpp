@@ -2562,12 +2562,12 @@ void Game::handleClientEvent_HandleParticleEvent(ClientEvent *event,
 void Game::handleClientEvent_HudAdd(ClientEvent *event, CameraOrientation *cam)
 {
 	LocalPlayer *player = client->getEnv().getLocalPlayer();
+	auto hud_server_to_client = client->getHUDTranslationMap();
 
-	u32 id = event->hudadd.id;
-
-	HudElement *e = player->getHud(id);
-
-	if (e != NULL) {
+	u32 server_id = event->hudadd.server_id;
+	// ignore if we already have a HUD with that ID
+	auto i = hud_server_to_client.find(server_id);
+	if (i != hud_server_to_client.end()) {
 		delete event->hudadd.pos;
 		delete event->hudadd.name;
 		delete event->hudadd.scale;
@@ -2579,7 +2579,7 @@ void Game::handleClientEvent_HudAdd(ClientEvent *event, CameraOrientation *cam)
 		return;
 	}
 
-	e = new HudElement;
+	HudElement *e = new HudElement;
 	e->type   = (HudElementType)event->hudadd.type;
 	e->pos    = *event->hudadd.pos;
 	e->name   = *event->hudadd.name;
@@ -2592,10 +2592,7 @@ void Game::handleClientEvent_HudAdd(ClientEvent *event, CameraOrientation *cam)
 	e->offset = *event->hudadd.offset;
 	e->world_pos = *event->hudadd.world_pos;
 	e->size = *event->hudadd.size;
-
-	u32 new_id = player->addHud(e);
-	//if this isn't true our huds aren't consistent
-	sanity_check(new_id == id);
+	hud_server_to_client[server_id] = player->addHud(e);
 
 	delete event->hudadd.pos;
 	delete event->hudadd.name;
