@@ -18,7 +18,7 @@
 -- Global menu data
 --------------------------------------------------------------------------------
 menudata = {}
-
+menudata.totalplayers = 0
 --------------------------------------------------------------------------------
 -- Local cached values
 --------------------------------------------------------------------------------
@@ -64,10 +64,12 @@ end
 
 --------------------------------------------------------------------------------
 function order_favorite_list(list)
+	menudata.totalplayers = 0
 	local res = {}
 	--orders the favorite list after support
 	for i = 1, #list do
 		local fav = list[i]
+		menudata.totalplayers = fav.clients + menudata.totalplayers
 		if is_server_protocol_compat(fav.proto_min, fav.proto_max) then
 			res[#res + 1] = fav
 		end

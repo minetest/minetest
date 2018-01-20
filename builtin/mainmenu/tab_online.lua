@@ -16,6 +16,8 @@
 --51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 --------------------------------------------------------------------------------
+totalplayers = 0
+
 local function get_formspec(tabview, name, tabdata)
 	-- Update the cached supported proto info,
 	-- it may have changed after a change by the settings menu.
@@ -50,8 +52,10 @@ local function get_formspec(tabview, name, tabdata)
 		"pwdfield[10.73,1.85;1.77,0.5;te_pwd;]" ..
 
 		-- Description Background
-		"box[7.73,2.25;4.25,2.6;#999999]"..
-
+		"box[7.73,2.25;4.25,2.1;#999999]"..
+		
+		--Total players
+		"label[7.74,4.45;" .. fgettext(menudata.totalplayers .. " Total Players Online") .. "]" ..
 		-- Connect
 		"button[9.88,4.9;2.3,1;btn_mp_connect;" .. fgettext("Connect") .. "]"
 
@@ -61,7 +65,7 @@ local function get_formspec(tabview, name, tabdata)
 				fgettext("Del. Favorite") .. "]"
 		end
 		if fav_selected.description then
-			retval = retval .. "textarea[8.1,2.3;4.23,2.9;;;" ..
+			retval = retval .. "textarea[8.1,2.3;4.25,2.4;;;" ..
 				core.formspec_escape((gamedata.serverdescription or ""), true) .. "]"
 		end
 	end
@@ -85,7 +89,6 @@ local function get_formspec(tabview, name, tabdata)
 		for i = 1, #menudata.search_result do
 			local favs = core.get_favorites("local")
 			local server = menudata.search_result[i]
-
 			for fav_id = 1, #favs do
 				if server.address == favs[fav_id].address and
 						server.port == favs[fav_id].port then
