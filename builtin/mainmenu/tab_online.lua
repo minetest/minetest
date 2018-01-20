@@ -32,7 +32,7 @@ local function get_formspec(tabview, name, tabdata)
 	if not tabdata.search_for then
 		tabdata.search_for = ""
 	end
-	
+
 	local retval =
 		-- Search
 		"field[0.15,0.075;6.05,1;te_search;;"..core.formspec_escape(tabdata.search_for).."]"..
@@ -52,10 +52,10 @@ local function get_formspec(tabview, name, tabdata)
 		"pwdfield[10.73,1.85;1.77,0.5;te_pwd;]" ..
 
 		-- Description Background
-		"box[7.73,2.25;4.25,2.6;#999999]"..
+		"box[7.73,2.25;4.25,2.1;#999999]"..
 		
 		--Total players
-		"label[7.74,5.1;" .. fgettext(menudata.totalplayers .. " players.") .. "]" ..
+		"label[7.74,4.45;" .. fgettext(menudata.totalplayers .. " Total Players Online") .. "]" ..
 		-- Connect
 		"button[9.88,4.9;2.3,1;btn_mp_connect;" .. fgettext("Connect") .. "]"
 
@@ -65,7 +65,7 @@ local function get_formspec(tabview, name, tabdata)
 				fgettext("Del. Favorite") .. "]"
 		end
 		if fav_selected.description then
-			retval = retval .. "textarea[8.1,2.3;4.23,2.9;;;" ..
+			retval = retval .. "textarea[8.1,2.3;4.25,2.4;;;" ..
 				core.formspec_escape((gamedata.serverdescription or ""), true) .. "]"
 		end
 	end
@@ -99,7 +99,7 @@ local function get_formspec(tabview, name, tabdata)
 			if i ~= 1 then
 				retval = retval .. ","
 			end
-			
+
 			retval = retval .. render_serverlist_row(server, server.is_favorite)
 		end
 	elseif #menudata.favorites > 0 then
@@ -128,7 +128,7 @@ local function get_formspec(tabview, name, tabdata)
 	else
 		retval = retval .. ";0]"
 	end
-	
+
 	return retval
 end
 
