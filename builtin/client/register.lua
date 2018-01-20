@@ -60,7 +60,6 @@ end
 
 core.registered_globalsteps, core.register_globalstep = make_registration()
 core.registered_on_shutdown, core.register_on_shutdown = make_registration()
-core.registered_on_connect, core.register_on_connect = make_registration()
 core.registered_on_receiving_chat_message, core.register_on_receiving_chat_message = make_registration()
 core.registered_on_sending_chat_message, core.register_on_sending_chat_message = make_registration()
 core.registered_on_death, core.register_on_death = make_registration()

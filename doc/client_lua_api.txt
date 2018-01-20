@@ -651,8 +651,6 @@ Call these functions only at load time!
     * **Warning**: If the client terminates abnormally (i.e. crashes), the registered
       callbacks **will likely not be run**. Data should be saved at
       semi-frequent intervals as well as on server shutdown.
-* `minetest.register_on_connect(func())`
-    * Called at the end of client connection (when player is loaded onto map)
 * `minetest.register_on_receiving_chat_message(func(message))`
     * Called always when a client receive a message
     * Return `true` to mark the message as handled, which means that it will not be shown to chat
@@ -784,8 +782,6 @@ Call these functions only at load time!
     * Client joins channel `channel_name`, and creates it, if necessary. You
       should listen from incoming messages with `minetest.register_on_modchannel_message`
       call to receive incoming messages. Warning, this function is asynchronous.
-    * You should use a minetest.register_on_connect(function() ... end) to perform
-      a successful channel join on client startup.
 
 ### Particles
 * `minetest.add_particle(particle definition)`
@@ -935,18 +931,7 @@ Please do not try to access the reference until the camera is initialized, other
     * Returns aspect ratio of screen
 
 ### LocalPlayer
-An interface to retrieve information about the player. The player is
-not accessible until the client is fully done loading and therefore
-not at module init time.
-
-To get the localplayer handle correctly, use `on_connect()` as follows:
-
-```lua
-local localplayer
-minetest.register_on_connect(function()
-        localplayer = minetest.localplayer
-end)
-```
+An interface to retrieve information about the player.
 
 Methods:
 
