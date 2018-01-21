@@ -35,7 +35,7 @@ extern "C" {
 #include "common/c_types.h"
 #include "common/c_internal.h"
 #include "debug.h"
-#include "cmake_config.h"
+#include "config.h"
 
 #define SCRIPTAPI_LOCK_DEBUG
 #define SCRIPTAPI_DEBUG
