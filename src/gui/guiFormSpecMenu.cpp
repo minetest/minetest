@@ -3690,6 +3690,7 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 
 		// If m_selected_amount has been decreased to zero, deselect
 		if (m_selected_amount == 0) {
+			m_selected_swap.clear();
 			delete m_selected_item;
 			m_selected_item = NULL;
 			m_selected_amount = 0;
