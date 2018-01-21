@@ -55,12 +55,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "irrlicht_changes/static_text.h"
 #include "guiscalingfilter.h"
 #include "guiEditBoxWithScrollbar.h"
-
-#if USE_FREETYPE && IRRLICHT_VERSION_MAJOR == 1 && IRRLICHT_VERSION_MINOR < 9
 #include "intlGUIEditBox.h"
-#include "mainmenumanager.h"
-
-#endif
 
 #define MY_CHECKPOS(a,b)													\
 	if (v_pos.size() != 2) {												\
@@ -1027,15 +1022,14 @@ void GUIFormSpecMenu::createTextField(parserData *data, FieldSpec &spec,
 		spec.flabel.swap(spec.fdefault);
 
 	gui::IGUIEditBox *e = nullptr;
-#if USE_FREETYPE && IRRLICHT_VERSION_MAJOR == 1 && IRRLICHT_VERSION_MINOR < 9
-	if (g_settings->getBool("freetype")) {
-		e = (gui::IGUIEditBox *) new gui::intlGUIEditBox(spec.fdefault.c_str(),
-			true, Environment, this, spec.fid, rect, is_editable, true);
+	static constexpr bool use_intl_edit_box = USE_FREETYPE &&
+		IRRLICHT_VERSION_MAJOR == 1 && IRRLICHT_VERSION_MINOR < 9;
+
+	if (use_intl_edit_box && g_settings->getBool("freetype")) {
+		e = new gui::intlGUIEditBox(spec.fdefault.c_str(),
+			true, Environment, this, spec.fid, rect, is_editable, is_multiline);
 		e->drop();
 	} else {
-#else
-	{
-#endif
 		if (is_multiline)
 			e = new GUIEditBoxWithScrollBar(spec.fdefault.c_str(), true,
 				Environment, this, spec.fid, rect, is_editable, true);
@@ -1044,7 +1038,7 @@ void GUIFormSpecMenu::createTextField(parserData *data, FieldSpec &spec,
 				this, spec.fid);
 	}
 
-	if (e != nullptr) {
+	if (e) {
 		if (is_editable && spec.fname == data->focused_fieldname) 
 			Environment->setFocus(e);
 
