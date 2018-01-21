@@ -249,9 +249,8 @@ void ScriptApiSecurity::initializeSecurityClient()
 	static const char *os_whitelist[] = {
 		"clock",
 		"date",
-		"difftime",	
-		"time",
-		"setlocale",
+		"difftime",
+		"time"
 	};
 	static const char *debug_whitelist[] = {
 		"getinfo",

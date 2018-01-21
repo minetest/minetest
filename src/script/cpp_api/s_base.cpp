@@ -119,6 +119,9 @@ ScriptApiBase::ScriptApiBase() :
 
 	m_environment = NULL;
 	m_guiengine = NULL;
+
+	// Make sure Lua uses the right locale
+	setlocale(LC_NUMERIC, "C");
 }
 
 ScriptApiBase::~ScriptApiBase()

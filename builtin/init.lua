@@ -21,7 +21,6 @@ if core.print then
 	core.print = nil -- don't pollute our namespace
 end
 math.randomseed(os.time())
-os.setlocale("C", "numeric")
 minetest = core
 
 -- Load other files
@@ -47,7 +46,6 @@ elseif INIT == "mainmenu" then
 elseif INIT == "async" then
 	dofile(asyncpath .. "init.lua")
 elseif INIT == "client" then
-	os.setlocale = nil
 	dofile(clientpath .. "init.lua")
 else
 	error(("Unrecognized builtin initialization type %s!"):format(tostring(INIT)))
