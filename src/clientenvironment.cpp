@@ -32,7 +32,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "settings.h"
 #include "content_cao.h"
 #include <algorithm>
-#include <iostream>
 
 /*
 	ClientEnvironment
