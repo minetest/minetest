@@ -7,21 +7,19 @@ dofile("preview:example.lua")
 core.register_on_shutdown(function()
 	print("[PREVIEW] shutdown client")
 end)
-local id = 0
-core.register_on_connect(function()
-	print("[PREVIEW] Player connection completed")
-	local server_info = core.get_server_info()
-	print("Server version: " .. server_info.protocol_version)
-	print("Server ip: " .. server_info.ip)
-	print("Server address: " .. server_info.address)
-	print("Server port: " .. server_info.port)
-	mod_channel = core.mod_channel_join("experimental_preview")
+local id = nil
 
-	core.after(4, function()
-		if mod_channel:is_writeable() then
-			mod_channel:send_all("preview talk to experimental")
-		end
-	end)
+local server_info = core.get_server_info()
+print("Server version: " .. server_info.protocol_version)
+print("Server ip: " .. server_info.ip)
+print("Server address: " .. server_info.address)
+print("Server port: " .. server_info.port)
+mod_channel = core.mod_channel_join("experimental_preview")
+
+core.after(4, function()
+	if mod_channel:is_writeable() then
+		mod_channel:send_all("preview talk to experimental")
+	end
 end)
 
 core.after(1, function()

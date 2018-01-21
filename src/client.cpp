@@ -1698,7 +1698,6 @@ void Client::afterContentReceived()
 
 	if (g_settings->getBool("enable_client_modding")) {
 		m_script->on_client_ready(m_env.getLocalPlayer());
-		m_script->on_connect();
 	}
 
 	text = wgettext("Done!");
