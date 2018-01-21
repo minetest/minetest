@@ -24,11 +24,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 /*             not being a script/modapi file!!!!!!!!                         */
 /******************************************************************************/
 /******************************************************************************/
-#ifndef C_CONVERTER_H_
-#define C_CONVERTER_H_
+#pragma once
 
 #include <vector>
-#include "util/cpp11_container.h"
+#include <unordered_map>
 
 #include "irrlichttypes_bloated.h"
 #include "common/c_types.h"
@@ -56,11 +55,13 @@ bool               getintfield(lua_State *L, int table,
 bool               getintfield(lua_State *L, int table,
                              const char *fieldname, u8 &result);
 bool               getintfield(lua_State *L, int table,
+                             const char *fieldname, s8 &result);
+bool               getintfield(lua_State *L, int table,
                              const char *fieldname, u16 &result);
 bool               getintfield(lua_State *L, int table,
                              const char *fieldname, u32 &result);
 void               read_groups(lua_State *L, int index,
-                             UNORDERED_MAP<std::string, int> &result);
+                             std::unordered_map<std::string, int> &result);
 bool               getboolfield(lua_State *L, int table,
                              const char *fieldname, bool &result);
 bool               getfloatfield(lua_State *L, int table,
@@ -77,8 +78,6 @@ void               setfloatfield(lua_State *L, int table,
                              const char *fieldname, float value);
 void               setboolfield(lua_State *L, int table,
                              const char *fieldname, bool value);
-void               setstringfield(lua_State *L, int table,
-                             const char *fieldname, const char *value);
 
 v3f                 checkFloatPos       (lua_State *L, int index);
 v2f                 check_v2f           (lua_State *L, int index);
@@ -100,6 +99,9 @@ std::vector<aabb3f> read_aabb3f_vector  (lua_State *L, int index, f32 scale);
 size_t              read_stringlist     (lua_State *L, int index,
                                          std::vector<std::string> *result);
 
+void                push_float_string   (lua_State *L, float value);
+void                push_v3_float_string(lua_State *L, v3f p);
+void                push_v2_float_string(lua_State *L, v2f p);
 void                push_v2s16          (lua_State *L, v2s16 p);
 void                push_v2s32          (lua_State *L, v2s32 p);
 void                push_v3s16          (lua_State *L, v3s16 p);
@@ -117,5 +119,3 @@ size_t write_array_slice_float(lua_State *L, int table_index, float *data,
 	v3u16 data_size, v3u16 slice_offset, v3u16 slice_size);
 size_t write_array_slice_u16(lua_State *L, int table_index, u16 *data,
 	v3u16 data_size, v3u16 slice_offset, v3u16 slice_size);
-
-#endif /* C_CONVERTER_H_ */

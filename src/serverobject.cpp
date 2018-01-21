@@ -21,20 +21,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <fstream>
 #include "inventory.h"
 #include "constants.h" // BS
+#include "log.h"
 
 ServerActiveObject::ServerActiveObject(ServerEnvironment *env, v3f pos):
 	ActiveObject(0),
-	m_known_by_count(0),
-	m_removed(false),
-	m_pending_deactivation(false),
-	m_static_exists(false),
-	m_static_block(1337,1337,1337),
 	m_env(env),
 	m_base_position(pos)
-{
-}
-
-ServerActiveObject::~ServerActiveObject()
 {
 }
 
@@ -82,7 +74,7 @@ ItemStack ServerActiveObject::getWieldedItem() const
 	if(inv)
 	{
 		const InventoryList *list = inv->getList(getWieldList());
-		if(list && (getWieldIndex() < (s32)list->getSize())) 
+		if(list && (getWieldIndex() < (s32)list->getSize()))
 			return list->getItem(getWieldIndex());
 	}
 	return ItemStack();

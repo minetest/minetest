@@ -133,7 +133,7 @@ local function instrument_register(func, func_name)
 		return func(instrument {
 			func = callback,
 			func_name = register_name
-		}), ...
+		}, ...)
 	end
 end
 

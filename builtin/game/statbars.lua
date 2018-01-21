@@ -6,7 +6,7 @@ local health_bar_definition =
 	hud_elem_type = "statbar",
 	position = { x=0.5, y=1 },
 	text = "heart.png",
-	number = 20,
+	number = core.PLAYER_MAX_HP_DEFAULT,
 	direction = 0,
 	size = { x=24, y=24 },
 	offset = { x=(-10*24)-25, y=-(48+24+16)},
@@ -17,13 +17,22 @@ local breath_bar_definition =
 	hud_elem_type = "statbar",
 	position = { x=0.5, y=1 },
 	text = "bubble.png",
-	number = 20,
+	number = core.PLAYER_MAX_BREATH_DEFAULT,
 	direction = 0,
 	size = { x=24, y=24 },
 	offset = {x=25,y=-(48+24+16)},
 }
 
 local hud_ids = {}
+
+local function scaleToDefault(player, field)
+	-- Scale "hp" or "breath" to the default dimensions
+	local current = player["get_" .. field](player)
+	local nominal = core["PLAYER_MAX_".. field:upper() .. "_DEFAULT"]
+	local max_display = math.max(nominal,
+ 		math.max(player:get_properties()[field .. "_max"], current))
+ 	return current / max_display * nominal 
+end
 
 local function initialize_builtin_statbars(player)
 
@@ -37,39 +46,36 @@ local function initialize_builtin_statbars(player)
 		return
 	end
 
-	if (hud_ids[name] == nil) then
+	if not hud_ids[name] then
 		hud_ids[name] = {}
 		-- flags are not transmitted to client on connect, we need to make sure
 		-- our current flags are transmitted by sending them actively
 		player:hud_set_flags(player:hud_get_flags())
 	end
+	local hud = hud_ids[name]
 
 	if player:hud_get_flags().healthbar and enable_damage then
- 		if hud_ids[name].id_healthbar == nil then
-			health_bar_definition.number = player:get_hp()
-			hud_ids[name].id_healthbar  = player:hud_add(health_bar_definition)
+ 		if hud.id_healthbar == nil then
+ 			local hud_def = table.copy(health_bar_definition)
+			hud_def.number = scaleToDefault(player, "hp")
+			hud.id_healthbar = player:hud_add(hud_def)
 		end
-	else
-		if hud_ids[name].id_healthbar ~= nil then
-			player:hud_remove(hud_ids[name].id_healthbar)
-			hud_ids[name].id_healthbar = nil
-		end
+	elseif hud.id_healthbar ~= nil then
+		player:hud_remove(hud.id_healthbar)
+		hud.id_healthbar = nil
 	end
 
-	if (player:get_breath() < 11) then
-		if player:hud_get_flags().breathbar and enable_damage then
-			if hud_ids[name].id_breathbar == nil then
-				hud_ids[name].id_breathbar = player:hud_add(breath_bar_definition)
-			end
-		else
-			if hud_ids[name].id_breathbar ~= nil then
-				player:hud_remove(hud_ids[name].id_breathbar)
-				hud_ids[name].id_breathbar = nil
-			end
+	local breath_max = player:get_properties().breath_max
+	if player:hud_get_flags().breathbar and enable_damage and
+			player:get_breath() < breath_max then
+		if hud.id_breathbar == nil then
+ 			local hud_def = table.copy(breath_bar_definition)
+ 			hud_def.number = 2 * scaleToDefault(player, "breath")
+			hud.id_breathbar = player:hud_add(hud_def)
 		end
-	elseif hud_ids[name].id_breathbar ~= nil then
-		player:hud_remove(hud_ids[name].id_breathbar)
-		hud_ids[name].id_breathbar = nil
+	elseif hud.id_breathbar ~= nil then
+		player:hud_remove(hud.id_breathbar)
+		hud.id_breathbar = nil
 	end
 end
 
@@ -101,7 +107,8 @@ local function player_event_handler(player,eventname)
 		initialize_builtin_statbars(player)
 
 		if hud_ids[name].id_healthbar ~= nil then
-			player:hud_change(hud_ids[name].id_healthbar,"number",player:get_hp())
+			player:hud_change(hud_ids[name].id_healthbar,
+				"number", scaleToDefault(player, "hp"))
 			return true
 		end
 	end
@@ -110,7 +117,8 @@ local function player_event_handler(player,eventname)
 		initialize_builtin_statbars(player)
 
 		if hud_ids[name].id_breathbar ~= nil then
-			player:hud_change(hud_ids[name].id_breathbar,"number",player:get_breath()*2)
+			player:hud_change(hud_ids[name].id_breathbar,
+				"number", 2 * scaleToDefault(player, "breath"))
 			return true
 		end
 	end

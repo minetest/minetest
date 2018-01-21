@@ -17,15 +17,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef UTIL_NUMERIC_HEADER
-#define UTIL_NUMERIC_HEADER
+#pragma once
 
 #include "basic_macros.h"
-#include "../irrlichttypes.h"
-#include "../irr_v2d.h"
-#include "../irr_v3d.h"
-#include "../irr_aabb3d.h"
-#include "../threading/mutex.h"
+#include "irrlichttypes.h"
+#include "irr_v2d.h"
+#include "irr_v3d.h"
+#include "irr_aabb3d.h"
 
 #define rangelim(d, min, max) ((d) < (min) ? (min) : ((d) > (max) ? (max) : (d)))
 #define myfloor(x) ((x) < 0.0 ? (int)(x) - 1 : (int)(x))
@@ -234,6 +232,8 @@ u64 murmur_hash_64_ua(const void *key, int len, unsigned int seed);
 bool isBlockInSight(v3s16 blockpos_b, v3f camera_pos, v3f camera_dir,
 		f32 camera_fov, f32 range, f32 *distance_ptr=NULL);
 
+s16 adjustDist(s16 dist, float zoom_fov);
+
 /*
 	Returns nearest 32-bit integer for given floating point number.
 	<cmath> and <math.h> in VC++ don't provide round().
@@ -247,6 +247,17 @@ inline s32 myround(f32 f)
 	Returns integer position of node in given floating point position
 */
 inline v3s16 floatToInt(v3f p, f32 d)
+{
+	return v3s16(
+		(p.X + (p.X > 0 ? d / 2 : -d / 2)) / d,
+		(p.Y + (p.Y > 0 ? d / 2 : -d / 2)) / d,
+		(p.Z + (p.Z > 0 ? d / 2 : -d / 2)) / d);
+}
+
+/*
+	Returns integer position of node in given double precision position
+ */
+inline v3s16 doubleToInt(v3d p, double d)
 {
 	return v3s16(
 		(p.X + (p.X > 0 ? d / 2 : -d / 2)) / d,
@@ -270,12 +281,12 @@ inline v3f intToFloat(v3s16 p, f32 d)
 inline aabb3f getNodeBox(v3s16 p, float d)
 {
 	return aabb3f(
-		(float)p.X * d - 0.5 * d,
-		(float)p.Y * d - 0.5 * d,
-		(float)p.Z * d - 0.5 * d,
-		(float)p.X * d + 0.5 * d,
-		(float)p.Y * d + 0.5 * d,
-		(float)p.Z * d + 0.5 * d
+		(float)p.X * d - 0.5f * d,
+		(float)p.Y * d - 0.5f * d,
+		(float)p.Z * d - 0.5f * d,
+		(float)p.X * d + 0.5f * d,
+		(float)p.Y * d + 0.5f * d,
+		(float)p.Z * d + 0.5f * d
 	);
 }
 
@@ -283,7 +294,8 @@ inline aabb3f getNodeBox(v3s16 p, float d)
 class IntervalLimiter
 {
 public:
-	IntervalLimiter() : m_accumulator(0) {}
+	IntervalLimiter() = default;
+
 	/*
 		dtime: time from last call to this method
 		wanted_interval: interval wanted
@@ -301,7 +313,7 @@ public:
 	}
 
 private:
-	float m_accumulator;
+	float m_accumulator = 0.0f;
 };
 
 
@@ -364,5 +376,3 @@ inline u32 npot2(u32 orig) {
 	orig |= orig >> 16;
 	return orig + 1;
 }
-
-#endif

@@ -17,8 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef S_ENTITY_H_
-#define S_ENTITY_H_
+#pragma once
 
 #include "cpp_api/s_base.h"
 #include "irr_v3d.h"
@@ -41,10 +40,7 @@ public:
 	bool luaentity_Punch(u16 id,
 			ServerActiveObject *puncher, float time_from_last_punch,
 			const ToolCapabilities *toolcap, v3f dir, s16 damage);
+	bool luaentity_on_death(u16 id, ServerActiveObject *killer);
 	void luaentity_Rightclick(u16 id,
 			ServerActiveObject *clicker);
 };
-
-
-
-#endif /* S_ENTITY_H_ */

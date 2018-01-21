@@ -4,8 +4,7 @@
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
-#ifndef __C_GUI_STATIC_TEXT_H_INCLUDED__
-#define __C_GUI_STATIC_TEXT_H_INCLUDED__
+#pragma once
 
 #include "IrrCompileConfig.h"
 #ifdef _IRR_COMPILE_WITH_GUI_
@@ -42,6 +41,60 @@ namespace gui
 
 		//! destructor
 		virtual ~StaticText();
+
+		static irr::gui::IGUIStaticText *add(
+			irr::gui::IGUIEnvironment *guienv,
+			const EnrichedString &text,
+			const core::rect< s32 > &rectangle,
+			bool border = false,
+			bool wordWrap = true,
+			irr::gui::IGUIElement *parent = NULL,
+			s32 id = -1,
+			bool fillBackground = false)
+		{
+			if (parent == NULL) {
+				// parent is NULL, so we must find one, or we need not to drop
+				// result, but then there will be a memory leak.
+				//
+				// What Irrlicht does is to use guienv as a parent, but the problem
+				// is that guienv is here only an IGUIEnvironment, while it is a
+				// CGUIEnvironment in Irrlicht, which inherits from both IGUIElement
+				// and IGUIEnvironment.
+				//
+				// A solution would be to dynamic_cast guienv to a
+				// IGUIElement*, but Irrlicht is shipped without rtti support
+				// in some distributions, causing the dymanic_cast to segfault.
+				//
+				// Thus, to find the parent, we create a dummy StaticText and ask
+				// for its parent, and then remove it.
+				irr::gui::IGUIStaticText *dummy_text =
+					guienv->addStaticText(L"", rectangle, border, wordWrap,
+						parent, id, fillBackground);
+				parent = dummy_text->getParent();
+				dummy_text->remove();
+			}
+			irr::gui::IGUIStaticText *result = new irr::gui::StaticText(
+				text, border, guienv, parent,
+				id, rectangle, fillBackground);
+
+			result->setWordWrap(wordWrap);
+			result->drop();
+			return result;
+		}
+
+		static irr::gui::IGUIStaticText *add(
+			irr::gui::IGUIEnvironment *guienv,
+			const wchar_t *text,
+			const core::rect< s32 > &rectangle,
+			bool border = false,
+			bool wordWrap = true,
+			irr::gui::IGUIElement *parent = NULL,
+			s32 id = -1,
+			bool fillBackground = false)
+		{
+			return add(guienv, EnrichedString(text), rectangle, border, wordWrap, parent,
+				id, fillBackground);
+		}
 
 		//! draws the element and its children
 		virtual void draw();
@@ -172,46 +225,6 @@ namespace gui
 
 } // end namespace irr
 
-inline irr::gui::IGUIStaticText *addStaticText(
-		irr::gui::IGUIEnvironment *guienv,
-		const EnrichedString &text,
-		const core::rect< s32 > &rectangle,
-		bool border = false,
-		bool wordWrap = true,
-		irr::gui::IGUIElement *parent = NULL,
-		s32 id = -1,
-		bool fillBackground = false)
-{
-	if (parent == NULL) {
-		// parent is NULL, so we must find one, or we need not to drop
-		// result, but then there will be a memory leak.
-		//
-		// What Irrlicht does is to use guienv as a parent, but the problem
-		// is that guienv is here only an IGUIEnvironment, while it is a
-		// CGUIEnvironment in Irrlicht, which inherits from both IGUIElement
-		// and IGUIEnvironment.
-		//
-		// A solution would be to dynamic_cast guienv to a
-		// IGUIElement*, but Irrlicht is shipped without rtti support
-		// in some distributions, causing the dymanic_cast to segfault.
-		//
-		// Thus, to find the parent, we create a dummy StaticText and ask
-		// for its parent, and then remove it.
-		irr::gui::IGUIStaticText *dummy_text =
-			guienv->addStaticText(L"", rectangle, border, wordWrap,
-			parent, id, fillBackground);
-		parent = dummy_text->getParent();
-		dummy_text->remove();
-	}
-	irr::gui::IGUIStaticText *result = new irr::gui::StaticText(
-		text, border, guienv, parent,
-		id, rectangle, fillBackground);
-
-	result->setWordWrap(wordWrap);
-	result->drop();
-	return result;
-}
-
 inline void setStaticText(irr::gui::IGUIStaticText *static_text, const EnrichedString &text)
 {
 	// dynamic_cast not possible due to some distributions shipped
@@ -226,7 +239,15 @@ inline void setStaticText(irr::gui::IGUIStaticText *static_text, const EnrichedS
 
 #else // USE_FREETYPE
 
-inline irr::gui::IGUIStaticText *addStaticText(
+namespace irr
+{
+namespace gui
+{
+
+class StaticText
+{
+public:
+	static irr::gui::IGUIStaticText *add(
 		irr::gui::IGUIEnvironment *guienv,
 		const EnrichedString &text,
 		const core::rect< s32 > &rectangle,
@@ -235,9 +256,14 @@ inline irr::gui::IGUIStaticText *addStaticText(
 		irr::gui::IGUIElement *parent = NULL,
 		s32 id = -1,
 		bool fillBackground = false)
-{
-	return guienv->addStaticText(text.c_str(), rectangle, border, wordWrap, parent, id, fillBackground);
-}
+	{
+		return guienv->addStaticText(text.c_str(), rectangle, border, wordWrap, parent, id, fillBackground);
+	}
+};
+
+} // end namespace gui
+
+} // end namespace irr
 
 inline void setStaticText(irr::gui::IGUIStaticText *static_text, const EnrichedString &text)
 {
@@ -246,23 +272,9 @@ inline void setStaticText(irr::gui::IGUIStaticText *static_text, const EnrichedS
 
 #endif
 
-inline irr::gui::IGUIStaticText *addStaticText(
-		irr::gui::IGUIEnvironment *guienv,
-		const wchar_t *text,
-		const core::rect< s32 > &rectangle,
-		bool border = false,
-		bool wordWrap = true,
-		irr::gui::IGUIElement *parent = NULL,
-		s32 id = -1,
-		bool fillBackground = false) {
-	return addStaticText(guienv, EnrichedString(text), rectangle, border, wordWrap, parent, id, fillBackground);
-}
-
 inline void setStaticText(irr::gui::IGUIStaticText *static_text, const wchar_t *text)
 {
 	setStaticText(static_text, EnrichedString(text));
 }
 
 #endif // _IRR_COMPILE_WITH_GUI_
-
-#endif // C_GUI_STATIC_TEXT_H_INCLUDED

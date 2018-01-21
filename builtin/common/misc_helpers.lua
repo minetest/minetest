@@ -308,59 +308,25 @@ function core.formspec_escape(text)
 end
 
 
-function core.wrap_text(text, charlimit)
-	local retval = {}
-
-	local current_idx = 1
-
-	local start,stop = string_find(text, " ", current_idx)
-	local nl_start,nl_stop = string_find(text, "\n", current_idx)
-	local gotnewline = false
-	if nl_start ~= nil and (start == nil or nl_start < start) then
-		start = nl_start
-		stop = nl_stop
-		gotnewline = true
-	end
-	local last_line = ""
-	while start ~= nil do
-		if string.len(last_line) + (stop-start) > charlimit then
-			retval[#retval + 1] = last_line
-			last_line = ""
-		end
-
-		if last_line ~= "" then
-			last_line = last_line .. " "
-		end
-
-		last_line = last_line .. string_sub(text, current_idx, stop - 1)
-
-		if gotnewline then
-			retval[#retval + 1] = last_line
-			last_line = ""
-			gotnewline = false
-		end
-		current_idx = stop+1
-
-		start,stop = string_find(text, " ", current_idx)
-		nl_start,nl_stop = string_find(text, "\n", current_idx)
-
-		if nl_start ~= nil and (start == nil or nl_start < start) then
-			start = nl_start
-			stop = nl_stop
-			gotnewline = true
-		end
+function core.wrap_text(text, max_length, as_table)
+	local result = {}
+	local line = {}
+	if #text <= max_length then
+		return as_table and {text} or text
 	end
 
-	--add last part of text
-	if string.len(last_line) + (string.len(text) - current_idx) > charlimit then
-			retval[#retval + 1] = last_line
-			retval[#retval + 1] = string_sub(text, current_idx)
-	else
-		last_line = last_line .. " " .. string_sub(text, current_idx)
-		retval[#retval + 1] = last_line
+	for word in text:gmatch('%S+') do
+		local cur_length = #table.concat(line, ' ')
+		if cur_length > 0 and cur_length + #word + 1 >= max_length then
+			-- word wouldn't fit on current line, move to next line
+			table.insert(result, table.concat(line, ' '))
+			line = {}
+		end
+		table.insert(line, word)
 	end
 
-	return retval
+	table.insert(result, table.concat(line, ' '))
+	return as_table and result or table.concat(result, '\n')
 end
 
 --------------------------------------------------------------------------------
@@ -379,39 +345,18 @@ if INIT == "game" then
 		end
 		local undef = core.registered_nodes[unode.name]
 		if undef and undef.on_rightclick then
-			undef.on_rightclick(pointed_thing.under, unode, placer,
+			return undef.on_rightclick(pointed_thing.under, unode, placer,
 					itemstack, pointed_thing)
-			return
 		end
-		local fdir = core.dir_to_facedir(placer:get_look_dir())
-		local wield_name = itemstack:get_name()
+		local fdir = placer and core.dir_to_facedir(placer:get_look_dir()) or 0
 
 		local above = pointed_thing.above
 		local under = pointed_thing.under
 		local iswall = (above.y == under.y)
 		local isceiling = not iswall and (above.y < under.y)
-		local anode = core.get_node_or_nil(above)
-		if not anode then
-			return
-		end
-		local pos = pointed_thing.above
-		local node = anode
 
 		if undef and undef.buildable_to then
-			pos = pointed_thing.under
-			node = unode
 			iswall = false
-		end
-
-		if core.is_protected(pos, placer:get_player_name()) then
-			core.record_protection_violation(pos,
-					placer:get_player_name())
-			return
-		end
-
-		local ndef = core.registered_nodes[node.name]
-		if not ndef or not ndef.buildable_to then
-			return
 		end
 
 		if orient_flags.force_floor then
@@ -427,31 +372,26 @@ if INIT == "game" then
 			iswall = not iswall
 		end
 
+		local param2 = fdir
 		if iswall then
-			core.set_node(pos, {name = wield_name,
-					param2 = dirs1[fdir + 1]})
+			param2 = dirs1[fdir + 1]
 		elseif isceiling then
 			if orient_flags.force_facedir then
-				core.set_node(pos, {name = wield_name,
-						param2 = 20})
+				cparam2 = 20
 			else
-				core.set_node(pos, {name = wield_name,
-						param2 = dirs2[fdir + 1]})
+				param2 = dirs2[fdir + 1]
 			end
 		else -- place right side up
 			if orient_flags.force_facedir then
-				core.set_node(pos, {name = wield_name,
-						param2 = 0})
-			else
-				core.set_node(pos, {name = wield_name,
-						param2 = fdir})
+				param2 = 0
 			end
 		end
 
-		if not infinitestacks then
-			itemstack:take_item()
-			return itemstack
-		end
+		local old_itemstack = ItemStack(itemstack)
+		local new_itemstack, removed = core.item_place_node(
+			itemstack, placer, pointed_thing, param2
+		)
+		return infinitestacks and old_itemstack or new_itemstack
 	end
 
 
@@ -459,12 +399,18 @@ if INIT == "game" then
 --Wrapper for rotate_and_place() to check for sneak and assume Creative mode
 --implies infinite stacks when performing a 6d rotation.
 --------------------------------------------------------------------------------
-
+	local creative_mode_cache = core.settings:get_bool("creative_mode")
+	local function is_creative(name)
+		return creative_mode_cache or
+				core.check_player_privs(name, {creative = true})
+	end
 
 	core.rotate_node = function(itemstack, placer, pointed_thing)
+		local name = placer and placer:get_player_name() or ""
+		local invert_wall = placer and placer:get_player_control().sneak or false
 		core.rotate_and_place(itemstack, placer, pointed_thing,
-				core.settings:get_bool("creative_mode"),
-				{invert_wall = placer:get_player_control().sneak})
+				is_creative(name),
+				{invert_wall = invert_wall})
 		return itemstack
 	end
 end
@@ -509,6 +455,12 @@ function core.explode_scrollbar_event(evt)
 	retval.index = nil
 
 	return retval
+end
+
+--------------------------------------------------------------------------------
+function core.rgba(r, g, b, a)
+	return a and string.format("#%02X%02X%02X%02X", r, g, b, a) or
+			string.format("#%02X%02X%02X", r, g, b)
 end
 
 --------------------------------------------------------------------------------
@@ -599,7 +551,7 @@ end
 --------------------------------------------------------------------------------
 if INIT == "mainmenu" then
 	function core.get_game(index)
-		local games = game.get_games()
+		local games = core.get_games()
 
 		if index > 0 and index <= #games then
 			return games[index]
@@ -642,43 +594,25 @@ end
 
 local ESCAPE_CHAR = string.char(0x1b)
 
--- Client-side mods don't have access to settings
-if core.settings and core.settings:get_bool("disable_escape_sequences") then
-
-	function core.get_color_escape_sequence(color)
-		return ""
-	end
-
-	function core.get_background_escape_sequence(color)
-		return ""
-	end
-
-	function core.colorize(color, message)
-		return message
-	end
-
-else
-
-	function core.get_color_escape_sequence(color)
-		return ESCAPE_CHAR .. "(c@" .. color .. ")"
-	end
-
-	function core.get_background_escape_sequence(color)
-		return ESCAPE_CHAR .. "(b@" .. color .. ")"
-	end
-
-	function core.colorize(color, message)
-		local lines = tostring(message):split("\n", true)
-		local color_code = core.get_color_escape_sequence(color)
-
-		for i, line in ipairs(lines) do
-			lines[i] = color_code .. line
-		end
-
-		return table.concat(lines, "\n") .. core.get_color_escape_sequence("#ffffff")
-	end
-
+function core.get_color_escape_sequence(color)
+	return ESCAPE_CHAR .. "(c@" .. color .. ")"
 end
+
+function core.get_background_escape_sequence(color)
+	return ESCAPE_CHAR .. "(b@" .. color .. ")"
+end
+
+function core.colorize(color, message)
+	local lines = tostring(message):split("\n", true)
+	local color_code = core.get_color_escape_sequence(color)
+
+	for i, line in ipairs(lines) do
+		lines[i] = color_code .. line
+	end
+
+	return table.concat(lines, "\n") .. core.get_color_escape_sequence("#ffffff")
+end
+
 
 function core.strip_foreground_colors(str)
 	return (str:gsub(ESCAPE_CHAR .. "%(c@[^)]+%)", ""))
@@ -692,10 +626,51 @@ function core.strip_colors(str)
 	return (str:gsub(ESCAPE_CHAR .. "%([bc]@[^)]+%)", ""))
 end
 
+function core.translate(textdomain, str, ...)
+	local start_seq
+	if textdomain == "" then
+		start_seq = ESCAPE_CHAR .. "T"
+	else
+		start_seq = ESCAPE_CHAR .. "(T@" .. textdomain .. ")"
+	end
+	local arg = {n=select('#', ...), ...}
+	local end_seq = ESCAPE_CHAR .. "E"
+	local arg_index = 1
+	local translated = str:gsub("@(.)", function(matched)
+		local c = string.byte(matched)
+		if string.byte("1") <= c and c <= string.byte("9") then
+			local a = c - string.byte("0")
+			if a ~= arg_index then
+				error("Escape sequences in string given to core.translate " ..
+					"are not in the correct order: got @" .. matched ..
+					"but expected @" .. tostring(arg_index))
+			end
+			if a > arg.n then
+				error("Not enough arguments provided to core.translate")
+			end
+			arg_index = arg_index + 1
+			return ESCAPE_CHAR .. "F" .. arg[a] .. ESCAPE_CHAR .. "E"
+		elseif matched == "n" then
+			return "\n"
+		else
+			return matched
+		end
+	end)
+	if arg_index < arg.n + 1 then
+		error("Too many arguments provided to core.translate")
+	end
+	return start_seq .. translated .. end_seq
+end
+
+function core.get_translator(textdomain)
+	return function(str, ...) return core.translate(textdomain or "", str, ...) end
+end
+
 --------------------------------------------------------------------------------
 -- Returns the exact coordinate of a pointed surface
 --------------------------------------------------------------------------------
 function core.pointed_thing_to_face_pos(placer, pointed_thing)
+	local eye_height = placer:get_properties().eye_height
 	local eye_offset_first = placer:get_eye_offset()
 	local node_pos = pointed_thing.under
 	local camera_pos = placer:get_pos()
@@ -715,7 +690,7 @@ function core.pointed_thing_to_face_pos(placer, pointed_thing)
 	end
 
 	local fine_pos = {[nc] = node_pos[nc] + offset}
-	camera_pos.y = camera_pos.y + 1.625 + eye_offset_first.y / 10
+	camera_pos.y = camera_pos.y + eye_height + eye_offset_first.y / 10
 	local f = (node_pos[nc] + offset - camera_pos[nc]) / look_dir[nc]
 
 	for i = 1, #oc do
@@ -723,3 +698,28 @@ function core.pointed_thing_to_face_pos(placer, pointed_thing)
 	end
 	return fine_pos
 end
+
+function core.string_to_privs(str, delim)
+	assert(type(str) == "string")
+	delim = delim or ','
+	local privs = {}
+	for _, priv in pairs(string.split(str, delim)) do
+		privs[priv:trim()] = true
+	end
+	return privs
+end
+
+function core.privs_to_string(privs, delim)
+	assert(type(privs) == "table")
+	delim = delim or ','
+	local list = {}
+	for priv, bool in pairs(privs) do
+		if bool then
+			list[#list + 1] = priv
+		end
+	end
+	return table.concat(list, delim)
+end
+
+assert(core.string_to_privs("a,b").b == true)
+assert(core.privs_to_string({a=true,b=true}) == "a,b")

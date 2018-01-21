@@ -20,9 +20,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "filesys.h"
 #include "util/string.h"
 #include <iostream>
-#include <stdio.h>
-#include <string.h>
-#include <errno.h>
+#include <cstdio>
+#include <cstring>
+#include <cerrno>
 #include <fstream>
 #include "log.h"
 #include "config.h"
@@ -246,7 +246,7 @@ std::vector<DirListNode> GetDirListing(const std::string &pathstring)
 			If so, try stat().
 		*/
 		if(isdir == -1) {
-			struct stat statbuf;
+			struct stat statbuf{};
 			if (stat((pathstring + "/" + node.name).c_str(), &statbuf))
 				continue;
 			isdir = ((statbuf.st_mode & S_IFDIR) == S_IFDIR);
@@ -262,22 +262,20 @@ std::vector<DirListNode> GetDirListing(const std::string &pathstring)
 bool CreateDir(const std::string &path)
 {
 	int r = mkdir(path.c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
-	if(r == 0)
-	{
+	if (r == 0) {
 		return true;
 	}
-	else
-	{
-		// If already exists, return true
-		if(errno == EEXIST)
-			return true;
-		return false;
-	}
+
+	// If already exists, return true
+	if (errno == EEXIST)
+		return true;
+	return false;
+
 }
 
 bool PathExists(const std::string &path)
 {
-	struct stat st;
+	struct stat st{};
 	return (stat(path.c_str(),&st) == 0);
 }
 
@@ -288,7 +286,7 @@ bool IsPathAbsolute(const std::string &path)
 
 bool IsDir(const std::string &path)
 {
-	struct stat statbuf;
+	struct stat statbuf{};
 	if(stat(path.c_str(), &statbuf))
 		return false; // Actually error; but certainly not a directory
 	return ((statbuf.st_mode & S_IFDIR) == S_IFDIR);
@@ -347,19 +345,19 @@ bool RecursiveDelete(const std::string &path)
 
 bool DeleteSingleFileOrEmptyDirectory(const std::string &path)
 {
-	if(IsDir(path)){
+	if (IsDir(path)) {
 		bool did = (rmdir(path.c_str()) == 0);
-		if(!did)
-			errorstream<<"rmdir errno: "<<errno<<": "<<strerror(errno)
-					<<std::endl;
-		return did;
-	} else {
-		bool did = (unlink(path.c_str()) == 0);
-		if(!did)
-			errorstream<<"unlink errno: "<<errno<<": "<<strerror(errno)
-					<<std::endl;
+		if (!did)
+			errorstream << "rmdir errno: " << errno << ": " << strerror(errno)
+					<< std::endl;
 		return did;
 	}
+
+	bool did = (unlink(path.c_str()) == 0);
+	if (!did)
+		errorstream << "unlink errno: " << errno << ": " << strerror(errno)
+				<< std::endl;
+	return did;
 }
 
 std::string TempPath()
@@ -382,16 +380,36 @@ std::string TempPath()
 
 #endif
 
-void GetRecursiveSubPaths(const std::string &path, std::vector<std::string> &dst)
+void GetRecursiveDirs(std::vector<std::string> &dirs, const std::string &dir)
+{
+	static const std::set<char> chars_to_ignore = { '_', '.' };
+	if (dir.empty() || !IsDir(dir))
+		return;
+	dirs.push_back(dir);
+	fs::GetRecursiveSubPaths(dir, dirs, false, chars_to_ignore);
+}
+
+std::vector<std::string> GetRecursiveDirs(const std::string &dir)
+{
+	std::vector<std::string> result;
+	GetRecursiveDirs(result, dir);
+	return result;
+}
+
+void GetRecursiveSubPaths(const std::string &path,
+		  std::vector<std::string> &dst,
+		  bool list_files,
+		  const std::set<char> &ignore)
 {
 	std::vector<DirListNode> content = GetDirListing(path);
-	for(unsigned int  i=0; i<content.size(); i++){
-		const DirListNode &n = content[i];
+	for (const auto &n : content) {
 		std::string fullpath = path + DIR_DELIM + n.name;
-		dst.push_back(fullpath);
-		if (n.dir) {
-			GetRecursiveSubPaths(fullpath, dst);
-		}
+		if (ignore.count(n.name[0]))
+			continue;
+		if (list_files || n.dir)
+			dst.push_back(fullpath);
+		if (n.dir)
+			GetRecursiveSubPaths(fullpath, dst, list_files, ignore);
 	}
 }
 
@@ -414,15 +432,13 @@ bool RecursiveDeleteContent(const std::string &path)
 {
 	infostream<<"Removing content of \""<<path<<"\""<<std::endl;
 	std::vector<DirListNode> list = GetDirListing(path);
-	for(unsigned int i=0; i<list.size(); i++)
-	{
-		if(trim(list[i].name) == "." || trim(list[i].name) == "..")
+	for (const DirListNode &dln : list) {
+		if(trim(dln.name) == "." || trim(dln.name) == "..")
 			continue;
-		std::string childpath = path + DIR_DELIM + list[i].name;
+		std::string childpath = path + DIR_DELIM + dln.name;
 		bool r = RecursiveDelete(childpath);
-		if(r == false)
-		{
-			errorstream<<"Removing \""<<childpath<<"\" failed"<<std::endl;
+		if(!r) {
+			errorstream << "Removing \"" << childpath << "\" failed" << std::endl;
 			return false;
 		}
 	}
@@ -510,10 +526,10 @@ bool CopyDir(const std::string &source, const std::string &target)
 		bool retval = true;
 		std::vector<DirListNode> content = fs::GetDirListing(source);
 
-		for(unsigned int i=0; i < content.size(); i++){
-			std::string sourcechild = source + DIR_DELIM + content[i].name;
-			std::string targetchild = target + DIR_DELIM + content[i].name;
-			if(content[i].dir){
+		for (const auto &dln : content) {
+			std::string sourcechild = source + DIR_DELIM + dln.name;
+			std::string targetchild = target + DIR_DELIM + dln.name;
+			if(dln.dir){
 				if(!fs::CopyDir(sourcechild, targetchild)){
 					retval = false;
 				}
@@ -526,9 +542,8 @@ bool CopyDir(const std::string &source, const std::string &target)
 		}
 		return retval;
 	}
-	else {
-		return false;
-	}
+
+	return false;
 }
 
 bool PathStartsWith(const std::string &path, const std::string &prefix)

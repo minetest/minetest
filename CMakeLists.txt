@@ -9,11 +9,15 @@ endif()
 project(minetest)
 set(PROJECT_NAME_CAPITALIZED "Minetest")
 
+# Works only for cmake 3.1 and greater
+set(CMAKE_CXX_STANDARD 11)
+set(GCC_MINIMUM_VERSION "4.8")
+set(CLANG_MINIMUM_VERSION "3.4")
 
 # Also remember to set PROTOCOL_VERSION in network/networkprotocol.h when releasing
 set(VERSION_MAJOR 0)
-set(VERSION_MINOR 4)
-set(VERSION_PATCH 15)
+set(VERSION_MINOR 5)
+set(VERSION_PATCH 0)
 set(VERSION_EXTRA "" CACHE STRING "Stuff to append to version string")
 
 # Change to false for releases
@@ -155,21 +159,26 @@ endif()
 
 
 install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/builtin" DESTINATION "${SHAREDIR}")
-install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/client" DESTINATION "${SHAREDIR}")
-install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/clientmods" DESTINATION "${SHAREDIR}")
-install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/games" DESTINATION "${SHAREDIR}" PATTERN ".git*" EXCLUDE)
-
-if(BUILD_CLIENT)
-	install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/textures/base/pack" DESTINATION "${SHAREDIR}/textures/base")
-endif()
 if(RUN_IN_PLACE)
 	install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/mods/mods_here.txt" DESTINATION "${SHAREDIR}/mods")
 	install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/textures/texture_packs_here.txt" DESTINATION "${SHAREDIR}/textures")
 endif()
 
+install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/games" DESTINATION "${SHAREDIR}" PATTERN ".git*" EXCLUDE)
+
+if(BUILD_CLIENT)
+	install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/client/shaders" DESTINATION "${SHAREDIR}/client")
+	install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/textures/base/pack" DESTINATION "${SHAREDIR}/textures/base")
+	if(RUN_IN_PLACE)
+		install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/clientmods" DESTINATION "${SHAREDIR}")
+		install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/client/serverlist" DESTINATION "${SHAREDIR}/client")
+	endif()
+endif()
+
 install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/fonts" DESTINATION "${SHAREDIR}")
 
-install(FILES "README.txt" DESTINATION "${DOCDIR}")
+install(FILES "README.md" DESTINATION "${DOCDIR}")
+install(FILES "LICENSE.txt" DESTINATION "${DOCDIR}")
 install(FILES "doc/lua_api.txt" DESTINATION "${DOCDIR}")
 install(FILES "doc/menu_lua_api.txt" DESTINATION "${DOCDIR}")
 install(FILES "doc/texture_packs.txt" DESTINATION "${DOCDIR}")
@@ -195,6 +204,23 @@ endif()
 find_package(GMP REQUIRED)
 find_package(Json REQUIRED)
 find_package(Lua REQUIRED)
+
+# JsonCPP doesn't compile well on GCC 4.8
+if(NOT ENABLE_SYSTEM_JSONCPP)
+	set(GCC_MINIMUM_VERSION "4.9")
+endif()
+
+if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+	if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS "${GCC_MINIMUM_VERSION}")
+		message(FATAL_ERROR "Insufficient gcc version, found ${CMAKE_CXX_COMPILER_VERSION}. "
+			"Version ${GCC_MINIMUM_VERSION} or higher is required.")
+	endif()
+elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+	if (CMAKE_CXX_COMPILER_VERSION VERSION_LESS "${CLANG_MINIMUM_VERSION}")
+		message(FATAL_ERROR "Insufficient clang version, found ${CMAKE_CXX_COMPILER_VERSION}. "
+			"Version ${CLANG_MINIMUM_VERSION} or higher is required.")
+	endif()
+endif()
 
 # Subdirectories
 # Be sure to add all relevant definitions above this

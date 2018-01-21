@@ -26,6 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "serialization.h" // For ser_ver_supported
 #include "util/serialize.h"
 #include "log.h"
+#include "util/directiontables.h"
 #include "util/numeric.h"
 #include <string>
 #include <sstream>
@@ -152,12 +153,15 @@ bool MapNode::getLightBanks(u8 &lightday, u8 &lightnight, INodeDefManager *nodem
 	return f.param_type == CPT_LIGHT || f.light_source != 0;
 }
 
-u8 MapNode::getFaceDir(INodeDefManager *nodemgr) const
+u8 MapNode::getFaceDir(INodeDefManager *nodemgr, bool allow_wallmounted) const
 {
 	const ContentFeatures &f = nodemgr->get(*this);
 	if (f.param_type_2 == CPT2_FACEDIR ||
 			f.param_type_2 == CPT2_COLORED_FACEDIR)
 		return (getParam2() & 0x1F) % 24;
+	if (allow_wallmounted && (f.param_type_2 == CPT2_WALLMOUNTED ||
+			f.param_type_2 == CPT2_COLORED_WALLMOUNTED))
+		return wallmounted_to_facedir[getParam2() & 0x07];
 	return 0;
 }
 
@@ -246,21 +250,14 @@ void transformNodeBox(const MapNode &n, const NodeBox &nodebox,
 
 	if (nodebox.type == NODEBOX_FIXED || nodebox.type == NODEBOX_LEVELED) {
 		const std::vector<aabb3f> &fixed = nodebox.fixed;
-		int facedir = n.getFaceDir(nodemgr);
+		int facedir = n.getFaceDir(nodemgr, true);
 		u8 axisdir = facedir>>2;
 		facedir&=0x03;
-		for(std::vector<aabb3f>::const_iterator
-				i = fixed.begin();
-				i != fixed.end(); ++i)
-		{
-			aabb3f box = *i;
+		for (aabb3f box : fixed) {
+			if (nodebox.type == NODEBOX_LEVELED)
+				box.MaxEdge.Y = (-0.5f + n.getLevel(nodemgr) / 64.0f) * BS;
 
-			if (nodebox.type == NODEBOX_LEVELED) {
-				box.MaxEdge.Y = -BS/2 + BS*((float)1/LEVELED_MAX) * n.getLevel(nodemgr);
-			}
-
-			switch (axisdir)
-			{
+			switch (axisdir) {
 			case 0:
 				if(facedir == 1)
 				{
@@ -403,16 +400,15 @@ void transformNodeBox(const MapNode &n, const NodeBox &nodebox,
 				nodebox.wall_side.MaxEdge
 			};
 
-			for(s32 i=0; i<2; i++)
-			{
+			for (v3f &vertex : vertices) {
 				if(dir == v3s16(-1,0,0))
-					vertices[i].rotateXZBy(0);
+					vertex.rotateXZBy(0);
 				if(dir == v3s16(1,0,0))
-					vertices[i].rotateXZBy(180);
+					vertex.rotateXZBy(180);
 				if(dir == v3s16(0,0,-1))
-					vertices[i].rotateXZBy(90);
+					vertex.rotateXZBy(90);
 				if(dir == v3s16(0,0,1))
-					vertices[i].rotateXZBy(-90);
+					vertex.rotateXZBy(-90);
 			}
 
 			aabb3f box = aabb3f(vertices[0]);
@@ -426,48 +422,103 @@ void transformNodeBox(const MapNode &n, const NodeBox &nodebox,
 		boxes_size += nodebox.fixed.size();
 		if (neighbors & 1)
 			boxes_size += nodebox.connect_top.size();
+		else
+			boxes_size += nodebox.disconnected_top.size();
+
 		if (neighbors & 2)
 			boxes_size += nodebox.connect_bottom.size();
+		else
+			boxes_size += nodebox.disconnected_bottom.size();
+
 		if (neighbors & 4)
 			boxes_size += nodebox.connect_front.size();
+		else
+			boxes_size += nodebox.disconnected_front.size();
+
 		if (neighbors & 8)
 			boxes_size += nodebox.connect_left.size();
+		else
+			boxes_size += nodebox.disconnected_left.size();
+
 		if (neighbors & 16)
 			boxes_size += nodebox.connect_back.size();
+		else
+			boxes_size += nodebox.disconnected_back.size();
+
 		if (neighbors & 32)
 			boxes_size += nodebox.connect_right.size();
+		else
+			boxes_size += nodebox.disconnected_right.size();
+
+		if (neighbors == 0)
+			boxes_size += nodebox.disconnected.size();
+
+		if (neighbors < 4)
+			boxes_size += nodebox.disconnected_sides.size();
+
 		boxes.reserve(boxes_size);
 
-#define BOXESPUSHBACK(c) do { \
+#define BOXESPUSHBACK(c) \
 		for (std::vector<aabb3f>::const_iterator \
 				it = (c).begin(); \
 				it != (c).end(); ++it) \
-			(boxes).push_back(*it); \
-		} while (0)
+			(boxes).push_back(*it);
 
 		BOXESPUSHBACK(nodebox.fixed);
 
-		if (neighbors & 1)
+		if (neighbors & 1) {
 			BOXESPUSHBACK(nodebox.connect_top);
-		if (neighbors & 2)
+		} else {
+			BOXESPUSHBACK(nodebox.disconnected_top);
+		}
+
+		if (neighbors & 2) {
 			BOXESPUSHBACK(nodebox.connect_bottom);
-		if (neighbors & 4)
+		} else {
+			BOXESPUSHBACK(nodebox.disconnected_bottom);
+		}
+
+		if (neighbors & 4) {
 			BOXESPUSHBACK(nodebox.connect_front);
-		if (neighbors & 8)
+		} else {
+			BOXESPUSHBACK(nodebox.disconnected_front);
+		}
+
+		if (neighbors & 8) {
 			BOXESPUSHBACK(nodebox.connect_left);
-		if (neighbors & 16)
+		} else {
+			BOXESPUSHBACK(nodebox.disconnected_left);
+		}
+
+		if (neighbors & 16) {
 			BOXESPUSHBACK(nodebox.connect_back);
-		if (neighbors & 32)
+		} else {
+			BOXESPUSHBACK(nodebox.disconnected_back);
+		}
+
+		if (neighbors & 32) {
 			BOXESPUSHBACK(nodebox.connect_right);
+		} else {
+			BOXESPUSHBACK(nodebox.disconnected_right);
+		}
+
+		if (neighbors == 0) {
+			BOXESPUSHBACK(nodebox.disconnected);
+		}
+
+		if (neighbors < 4) {
+			BOXESPUSHBACK(nodebox.disconnected_sides);
+		}
+
 	}
 	else // NODEBOX_REGULAR
 	{
-		boxes.push_back(aabb3f(-BS/2,-BS/2,-BS/2,BS/2,BS/2,BS/2));
+		boxes.emplace_back(-BS/2,-BS/2,-BS/2,BS/2,BS/2,BS/2);
 	}
 }
 
 static inline void getNeighborConnectingFace(
-	v3s16 p, INodeDefManager *nodedef,
+	const v3s16 &p, INodeDefManager *nodedef,
 	Map *map, MapNode n, u8 bitmask, u8 *neighbors)
 {
 	MapNode n2 = map->getNodeNoEx(p);
@@ -605,14 +656,16 @@ u32 MapNode::serializedLength(u8 version)
 	if(!ser_ver_supported(version))
 		throw VersionMismatchException("ERROR: MapNode format not supported");
 
-	if(version == 0)
+	if (version == 0)
 		return 1;
-	else if(version <= 9)
+
+	if (version <= 9)
 		return 2;
-	else if(version <= 23)
+
+	if (version <= 23)
 		return 3;
-	else
-		return 4;
+
+	return 4;
 }
 void MapNode::serialize(u8 *dest, u8 version)
 {
@@ -658,7 +711,7 @@ void MapNode::serializeBulk(std::ostream &os, int version,
 		const MapNode *nodes, u32 nodecount,
 		u8 content_width, u8 params_width, bool compressed)
 {
-	if(!ser_ver_supported(version))
+	if (!ser_ver_supported(version))
 		throw VersionMismatchException("ERROR: MapNode format not supported");
 
 	sanity_check(content_width == 2);
@@ -666,38 +719,33 @@ void MapNode::serializeBulk(std::ostream &os, int version,
 
 	// Can't do this anymore; we have 16-bit dynamically allocated node IDs
 	// in memory; conversion just won't work in this direction.
-	if(version < 24)
+	if (version < 24)
 		throw SerializationError("MapNode::serializeBulk: serialization to "
 				"version < 24 not possible");
 
-	SharedBuffer<u8> databuf(nodecount * (content_width + params_width));
+	size_t databuf_size = nodecount * (content_width + params_width);
+	u8 *databuf = new u8[databuf_size];
+
+	u32 start1 = content_width * nodecount;
+	u32 start2 = (content_width + 1) * nodecount;
 
 	// Serialize content
-	for(u32 i=0; i<nodecount; i++)
-		writeU16(&databuf[i*2], nodes[i].param0);
-
-	// Serialize param1
-	u32 start1 = content_width * nodecount;
-	for(u32 i=0; i<nodecount; i++)
+	for (u32 i = 0; i < nodecount; i++) {
+		writeU16(&databuf[i * 2], nodes[i].param0);
 		writeU8(&databuf[start1 + i], nodes[i].param1);
-
-	// Serialize param2
-	u32 start2 = (content_width + 1) * nodecount;
-	for(u32 i=0; i<nodecount; i++)
 		writeU8(&databuf[start2 + i], nodes[i].param2);
+	}
 
 	/*
 		Compress data to output stream
 	*/
 
-	if(compressed)
-	{
-		compressZlib(databuf, os);
-	}
+	if (compressed)
+		compressZlib(databuf, databuf_size, os);
 	else
-	{
-		os.write((const char*) &databuf[0], databuf.getSize());
-	}
+		os.write((const char*) &databuf[0], databuf_size);
+
+	delete [] databuf;
 }
 
 // Deserialize bulk node data
@@ -774,7 +822,7 @@ void MapNode::deSerializeBulk(std::istream &is, int version,
 /*
 	Legacy serialization
 */
-void MapNode::deSerialize_pre22(u8 *source, u8 version)
+void MapNode::deSerialize_pre22(const u8 *source, u8 version)
 {
 	if(version <= 1)
 	{

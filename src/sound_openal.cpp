@@ -36,14 +36,15 @@ with this program; ifnot, write to the Free Software Foundation, Inc.,
 	#include <AL/alc.h>
 	#include <AL/alext.h>
 #endif
+#include <cmath>
 #include <vorbis/vorbisfile.h>
-#include <assert.h>
+#include <cassert>
 #include "log.h"
 #include "util/numeric.h" // myrand()
 #include "porting.h"
 #include <vector>
 #include <fstream>
-#include "util/cpp11_container.h"
+#include <unordered_map>
 
 #define BUFFER_SIZE 30000
 
@@ -271,11 +272,12 @@ private:
 	ALCdevice *m_device;
 	ALCcontext *m_context;
 	int m_next_id;
-	UNORDERED_MAP<std::string, std::vector<SoundBuffer*> > m_buffers;
-	UNORDERED_MAP<int, PlayingSound*> m_sounds_playing;
+	std::unordered_map<std::string, std::vector<SoundBuffer*>> m_buffers;
+	std::unordered_map<int, PlayingSound*> m_sounds_playing;
 	v3f m_listener_pos;
 	struct FadeState {
-		FadeState() {}
+		FadeState() = default;
+
 		FadeState(float step, float current_gain, float target_gain):
 			step(step),
 			current_gain(current_gain),
@@ -285,7 +287,7 @@ private:
 		float target_gain;
 	};
 
-	UNORDERED_MAP<int, FadeState> m_sounds_fading;
+	std::unordered_map<int, FadeState> m_sounds_fading;
 	float m_fade_delay;
 public:
 	bool m_is_initialized;
@@ -331,7 +333,7 @@ public:
 			return;
 		}
 
-		alDistanceModel(AL_INVERSE_DISTANCE);
+		alDistanceModel(AL_INVERSE_DISTANCE_CLAMPED);
 
 		infostream<<"Audio: Initialized: OpenAL "<<alGetString(AL_VERSION)
 				<<", using "<<alcGetString(m_device, ALC_DEVICE_SPECIFIER)
@@ -351,13 +353,11 @@ public:
 		alcCloseDevice(m_device);
 		m_device = NULL;
 
-		for (UNORDERED_MAP<std::string, std::vector<SoundBuffer*> >::iterator i = m_buffers.begin();
-				i != m_buffers.end(); ++i) {
-			for (std::vector<SoundBuffer*>::iterator iter = (*i).second.begin();
-					iter != (*i).second.end(); ++iter) {
-				delete *iter;
+		for (auto &buffer : m_buffers) {
+			for (SoundBuffer *sb : buffer.second) {
+				delete sb;
 			}
-			(*i).second.clear();
+			buffer.second.clear();
 		}
 		m_buffers.clear();
 		infostream<<"Audio: Deinitialized."<<std::endl;
@@ -370,7 +370,7 @@ public:
 
 	void addBuffer(const std::string &name, SoundBuffer *buf)
 	{
-		UNORDERED_MAP<std::string, std::vector<SoundBuffer*> >::iterator i =
+		std::unordered_map<std::string, std::vector<SoundBuffer*>>::iterator i =
 				m_buffers.find(name);
 		if(i != m_buffers.end()){
 			i->second.push_back(buf);
@@ -379,12 +379,11 @@ public:
 		std::vector<SoundBuffer*> bufs;
 		bufs.push_back(buf);
 		m_buffers[name] = bufs;
-		return;
 	}
 
 	SoundBuffer* getBuffer(const std::string &name)
 	{
-		UNORDERED_MAP<std::string, std::vector<SoundBuffer*> >::iterator i =
+		std::unordered_map<std::string, std::vector<SoundBuffer*>>::iterator i =
 				m_buffers.find(name);
 		if(i == m_buffers.end())
 			return NULL;
@@ -394,7 +393,7 @@ public:
 	}
 
 	PlayingSound* createPlayingSound(SoundBuffer *buf, bool loop,
-			float volume)
+			float volume, float pitch)
 	{
 		infostream<<"OpenALSoundManager: Creating playing sound"<<std::endl;
 		assert(buf);
@@ -407,15 +406,16 @@ public:
 		alSource3f(sound->source_id, AL_POSITION, 0, 0, 0);
 		alSource3f(sound->source_id, AL_VELOCITY, 0, 0, 0);
 		alSourcei(sound->source_id, AL_LOOPING, loop ? AL_TRUE : AL_FALSE);
-		volume = MYMAX(0.0, volume);
+		volume = std::fmax(0.0f, volume);
 		alSourcef(sound->source_id, AL_GAIN, volume);
+		alSourcef(sound->source_id, AL_PITCH, pitch);
 		alSourcePlay(sound->source_id);
 		warn_if_error(alGetError(), "createPlayingSound");
 		return sound;
 	}
 
 	PlayingSound* createPlayingSoundAt(SoundBuffer *buf, bool loop,
-			float volume, v3f pos)
+			float volume, v3f pos, float pitch)
 	{
 		infostream<<"OpenALSoundManager: Creating positional playing sound"
 				<<std::endl;
@@ -428,19 +428,25 @@ public:
 		alSourcei(sound->source_id, AL_SOURCE_RELATIVE, false);
 		alSource3f(sound->source_id, AL_POSITION, pos.X, pos.Y, pos.Z);
 		alSource3f(sound->source_id, AL_VELOCITY, 0, 0, 0);
-		alSourcef(sound->source_id, AL_REFERENCE_DISTANCE, 30.0);
+		// Use alDistanceModel(AL_INVERSE_DISTANCE_CLAMPED) and set reference
+		// distance to clamp gain at <1 node distance, to avoid excessive
+		// volume when closer
+		alSourcef(sound->source_id, AL_REFERENCE_DISTANCE, 10.0f);
 		alSourcei(sound->source_id, AL_LOOPING, loop ? AL_TRUE : AL_FALSE);
-		volume = MYMAX(0.0, volume);
+		// Multiply by 3 to compensate for reducing AL_REFERENCE_DISTANCE from
+		// the previous value of 30 to the new value of 10
+		volume = std::fmax(0.0f, volume * 3.0f);
 		alSourcef(sound->source_id, AL_GAIN, volume);
+		alSourcef(sound->source_id, AL_PITCH, pitch);
 		alSourcePlay(sound->source_id);
 		warn_if_error(alGetError(), "createPlayingSoundAt");
 		return sound;
 	}
 
-	int playSoundRaw(SoundBuffer *buf, bool loop, float volume)
+	int playSoundRaw(SoundBuffer *buf, bool loop, float volume, float pitch)
 	{
 		assert(buf);
-		PlayingSound *sound = createPlayingSound(buf, loop, volume);
+		PlayingSound *sound = createPlayingSound(buf, loop, volume, pitch);
 		if(!sound)
 			return -1;
 		int id = m_next_id++;
@@ -448,10 +454,11 @@ public:
 		return id;
 	}
 
-	int playSoundRawAt(SoundBuffer *buf, bool loop, float volume, v3f pos)
+	int playSoundRawAt(SoundBuffer *buf, bool loop, float volume, const v3f &pos,
+			float pitch)
 	{
 		assert(buf);
-		PlayingSound *sound = createPlayingSoundAt(buf, loop, volume, pos);
+		PlayingSound *sound = createPlayingSoundAt(buf, loop, volume, pos, pitch);
 		if(!sound)
 			return -1;
 		int id = m_next_id++;
@@ -461,7 +468,7 @@ public:
 
 	void deleteSound(int id)
 	{
-		UNORDERED_MAP<int, PlayingSound*>::iterator i = m_sounds_playing.find(id);
+		std::unordered_map<int, PlayingSound*>::iterator i = m_sounds_playing.find(id);
 		if(i == m_sounds_playing.end())
 			return;
 		PlayingSound *sound = i->second;
@@ -483,13 +490,11 @@ public:
 		std::set<std::string> paths;
 		std::set<std::string> datas;
 		m_fetcher->fetchSounds(name, paths, datas);
-		for(std::set<std::string>::iterator i = paths.begin();
-				i != paths.end(); ++i){
-			loadSoundFile(name, *i);
+		for (const std::string &path : paths) {
+			loadSoundFile(name, path);
 		}
-		for(std::set<std::string>::iterator i = datas.begin();
-				i != datas.end(); ++i){
-			loadSoundData(name, *i);
+		for (const std::string &data : datas) {
+			loadSoundData(name, data);
 		}
 		return getBuffer(name);
 	}
@@ -501,10 +506,9 @@ public:
 				<<m_sounds_playing.size()<<" playing sounds, "
 				<<m_buffers.size()<<" sound names loaded"<<std::endl;
 		std::set<int> del_list;
-		for(UNORDERED_MAP<int, PlayingSound*>::iterator i = m_sounds_playing.begin();
-				i != m_sounds_playing.end(); ++i) {
-			int id = i->first;
-			PlayingSound *sound = i->second;
+		for (auto &sp : m_sounds_playing) {
+			int id = sp.first;
+			PlayingSound *sound = sp.second;
 			// If not playing, remove it
 			{
 				ALint state;
@@ -517,10 +521,8 @@ public:
 		if(!del_list.empty())
 			verbosestream<<"OpenALSoundManager::maintain(): deleting "
 					<<del_list.size()<<" playing sounds"<<std::endl;
-		for(std::set<int>::iterator i = del_list.begin();
-				i != del_list.end(); ++i)
-		{
-			deleteSound(*i);
+		for (int i : del_list) {
+			deleteSound(i);
 		}
 	}
 
@@ -561,10 +563,10 @@ public:
 		alListenerf(AL_GAIN, gain);
 	}
 
-	int playSound(const std::string &name, bool loop, float volume, float fade)
+	int playSound(const std::string &name, bool loop, float volume, float fade, float pitch)
 	{
 		maintain();
-		if(name == "")
+		if (name.empty())
 			return 0;
 		SoundBuffer *buf = getFetchBuffer(name);
 		if(!buf){
@@ -574,18 +576,18 @@ public:
 		}
 		int handle = -1;
 		if (fade > 0) {
-			handle = playSoundRaw(buf, loop, 0);
+			handle = playSoundRaw(buf, loop, 0.0f, pitch);
 			fadeSound(handle, fade, volume);
 		} else {
-			handle = playSoundRaw(buf, loop, volume);
+			handle = playSoundRaw(buf, loop, volume, pitch);
 		}
 		return handle;
 	}
 
-	int playSoundAt(const std::string &name, bool loop, float volume, v3f pos)
+	int playSoundAt(const std::string &name, bool loop, float volume, v3f pos, float pitch)
 	{
 		maintain();
-		if(name == "")
+		if (name.empty())
 			return 0;
 		SoundBuffer *buf = getFetchBuffer(name);
 		if(!buf){
@@ -593,7 +595,7 @@ public:
 					<<std::endl;
 			return -1;
 		}
-		return playSoundRawAt(buf, loop, volume, pos);
+		return playSoundRawAt(buf, loop, volume, pos, pitch);
 	}
 
 	void stopSound(int sound)
@@ -615,7 +617,7 @@ public:
 			return;
 
 		float chkGain = 0;
-		for (UNORDERED_MAP<int, FadeState>::iterator i = m_sounds_fading.begin();
+		for (std::unordered_map<int, FadeState>::iterator i = m_sounds_fading.begin();
 				i != m_sounds_fading.end();) {
 			if (i->second.step < 0.f)
 				chkGain = -(i->second.current_gain);
@@ -646,7 +648,7 @@ public:
 
 	void updateSoundPosition(int id, v3f pos)
 	{
-		UNORDERED_MAP<int, PlayingSound*>::iterator i = m_sounds_playing.find(id);
+		std::unordered_map<int, PlayingSound*>::iterator i = m_sounds_playing.find(id);
 		if (i == m_sounds_playing.end())
 			return;
 		PlayingSound *sound = i->second;
@@ -659,7 +661,7 @@ public:
 
 	bool updateSoundGain(int id, float gain)
 	{
-		UNORDERED_MAP<int, PlayingSound*>::iterator i = m_sounds_playing.find(id);
+		std::unordered_map<int, PlayingSound*>::iterator i = m_sounds_playing.find(id);
 		if (i == m_sounds_playing.end())
 			return false;
 
@@ -670,7 +672,7 @@ public:
 
 	float getSoundGain(int id)
 	{
-		UNORDERED_MAP<int, PlayingSound*>::iterator i = m_sounds_playing.find(id);
+		std::unordered_map<int, PlayingSound*>::iterator i = m_sounds_playing.find(id);
 		if (i == m_sounds_playing.end())
 			return 0;
 

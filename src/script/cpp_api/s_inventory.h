@@ -17,8 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef S_INVENTORY_H_
-#define S_INVENTORY_H_
+#pragma once
 
 #include "cpp_api/s_base.h"
 
@@ -65,7 +64,3 @@ private:
 	bool getDetachedInventoryCallback(
 			const std::string &name, const char *callbackname);
 };
-
-
-
-#endif /* S_INVENTORY_H_ */

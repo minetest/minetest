@@ -18,7 +18,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "quicktune.h"
-#include "threading/mutex.h"
 #include "threading/mutex_auto_lock.h"
 #include "util/string.h"
 
@@ -49,12 +48,12 @@ void QuicktuneValue::relativeAdd(float amount)
 
 static std::map<std::string, QuicktuneValue> g_values;
 static std::vector<std::string> g_names;
-Mutex *g_mutex = NULL;
+std::mutex *g_mutex = NULL;
 
 static void makeMutex()
 {
 	if(!g_mutex){
-		g_mutex = new Mutex();
+		g_mutex = new std::mutex();
 	}
 }
 

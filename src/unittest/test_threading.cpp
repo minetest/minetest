@@ -19,7 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "test.h"
 
-#include "threading/atomic.h"
+#include <atomic>
 #include "threading/semaphore.h"
 #include "threading/thread.h"
 
@@ -137,7 +137,7 @@ void TestThreading::testThreadKill()
 
 class AtomicTestThread : public Thread {
 public:
-	AtomicTestThread(Atomic<u32> &v, Semaphore &trigger) :
+	AtomicTestThread(std::atomic<u32> &v, Semaphore &trigger) :
 		Thread("AtomicTest"),
 		val(v),
 		trigger(trigger)
@@ -153,29 +153,29 @@ private:
 		return NULL;
 	}
 
-	Atomic<u32> &val;
+	std::atomic<u32> &val;
 	Semaphore &trigger;
 };
 
 
 void TestThreading::testAtomicSemaphoreThread()
 {
-	Atomic<u32> val;
+	std::atomic<u32> val;
 	val = 0;
 	Semaphore trigger;
 	static const u8 num_threads = 4;
 
 	AtomicTestThread *threads[num_threads];
-	for (u8 i = 0; i < num_threads; ++i) {
-		threads[i] = new AtomicTestThread(val, trigger);
-		UASSERT(threads[i]->start());
+	for (auto &thread : threads) {
+		thread = new AtomicTestThread(val, trigger);
+		UASSERT(thread->start());
 	}
 
 	trigger.post(num_threads);
 
-	for (u8 i = 0; i < num_threads; ++i) {
-		threads[i]->wait();
-		delete threads[i];
+	for (AtomicTestThread *thread : threads) {
+		thread->wait();
+		delete thread;
 	}
 
 	UASSERT(val == num_threads * 0x10000);

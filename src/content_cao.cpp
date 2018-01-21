@@ -22,7 +22,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <IBillboardSceneNode.h>
 #include <IMeshManipulator.h>
 #include <IAnimatedMeshSceneNode.h>
-#include <IBoneSceneNode.h>
 #include "content_cao.h"
 #include "util/numeric.h" // For IntervalLimiter
 #include "util/serialize.h"
@@ -42,24 +41,15 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "localplayer.h"
 #include "map.h"
 #include "camera.h" // CameraModes
+#include "client.h"
 #include "wieldmesh.h"
-#include "log.h"
 #include <algorithm>
+#include "client/renderingengine.h"
 
 class Settings;
 struct ToolCapabilities;
 
-UNORDERED_MAP<u16, ClientActiveObject::Factory> ClientActiveObject::m_types;
-
-SmoothTranslator::SmoothTranslator():
-	vect_old(0,0,0),
-	vect_show(0,0,0),
-	vect_aim(0,0,0),
-	anim_counter(0),
-	anim_time(0),
-	anim_time_counter(0),
-	aim_is_end(true)
-{}
+std::unordered_map<u16, ClientActiveObject::Factory> ClientActiveObject::m_types;
 
 void SmoothTranslator::init(v3f vect)
 {
@@ -70,11 +60,6 @@ void SmoothTranslator::init(v3f vect)
 	anim_time = 0;
 	anim_time_counter = 0;
 	aim_is_end = true;
-}
-
-void SmoothTranslator::sharpen()
-{
-	init(vect_show);
 }
 
 void SmoothTranslator::update(v3f vect_new, bool is_end_position, float update_interval)
@@ -113,11 +98,6 @@ void SmoothTranslator::translate(f32 dtime)
 	vect_show = vect_old + vect_move * moveratio;
 }
 
-bool SmoothTranslator::is_moving()
-{
-	return ((anim_time_counter / anim_time) < 1.4);
-}
-
 /*
 	Other stuff
 */
@@ -139,7 +119,7 @@ class TestCAO : public ClientActiveObject
 {
 public:
 	TestCAO(Client *client, ClientEnvironment *env);
-	virtual ~TestCAO();
+	virtual ~TestCAO() = default;
 
 	ActiveObjectType getType() const
 	{
@@ -148,8 +128,7 @@ public:
 
 	static ClientActiveObject* create(Client *client, ClientEnvironment *env);
 
-	void addToScene(scene::ISceneManager *smgr, ITextureSource *tsrc,
-			IrrlichtDevice *irr);
+	void addToScene(ITextureSource *tsrc);
 	void removeFromScene(bool permanent);
 	void updateLight(u8 light_at_pos);
 	v3s16 getLightPosition();
@@ -176,17 +155,12 @@ TestCAO::TestCAO(Client *client, ClientEnvironment *env):
 	ClientActiveObject::registerType(getType(), create);
 }
 
-TestCAO::~TestCAO()
-{
-}
-
 ClientActiveObject* TestCAO::create(Client *client, ClientEnvironment *env)
 {
 	return new TestCAO(client, env);
 }
 
-void TestCAO::addToScene(scene::ISceneManager *smgr, ITextureSource *tsrc,
-			IrrlichtDevice *irr)
+void TestCAO::addToScene(ITextureSource *tsrc)
 {
 	if(m_node != NULL)
 		return;
@@ -215,14 +189,14 @@ void TestCAO::addToScene(scene::ISceneManager *smgr, ITextureSource *tsrc,
 	// Add to mesh
 	mesh->addMeshBuffer(buf);
 	buf->drop();
-	m_node = smgr->addMeshSceneNode(mesh, NULL);
+	m_node = RenderingEngine::get_scene_manager()->addMeshSceneNode(mesh, NULL);
 	mesh->drop();
 	updateNodePos();
 }
 
 void TestCAO::removeFromScene(bool permanent)
 {
-	if(m_node == NULL)
+	if (!m_node)
 		return;
 
 	m_node->remove();
@@ -240,7 +214,7 @@ v3s16 TestCAO::getLightPosition()
 
 void TestCAO::updateNodePos()
 {
-	if(m_node == NULL)
+	if (!m_node)
 		return;
 
 	m_node->setPosition(m_position);
@@ -276,311 +250,13 @@ void TestCAO::processMessage(const std::string &data)
 }
 
 /*
-	ItemCAO
-*/
-
-class ItemCAO : public ClientActiveObject
-{
-public:
-	ItemCAO(Client *client, ClientEnvironment *env);
-	virtual ~ItemCAO();
-
-	ActiveObjectType getType() const
-	{
-		return ACTIVEOBJECT_TYPE_ITEM;
-	}
-
-	static ClientActiveObject* create(Client *client, ClientEnvironment *env);
-
-	void addToScene(scene::ISceneManager *smgr, ITextureSource *tsrc,
-			IrrlichtDevice *irr);
-	void removeFromScene(bool permanent);
-	void updateLight(u8 light_at_pos);
-	v3s16 getLightPosition();
-	void updateNodePos();
-	void updateInfoText();
-	void updateTexture();
-
-	void step(float dtime, ClientEnvironment *env);
-
-	void processMessage(const std::string &data);
-
-	void initialize(const std::string &data);
-
-	aabb3f *getSelectionBox()
-		{return &m_selection_box;}
-	v3f getPosition()
-		{return m_position;}
-	inline float getYaw() const
-		{return 0;}
-	std::string infoText()
-		{return m_infotext;}
-
-	bool getCollisionBox(aabb3f *toset) const { return false; }
-private:
-	aabb3f m_selection_box;
-	scene::IMeshSceneNode *m_node;
-	v3f m_position;
-	std::string m_itemstring;
-	std::string m_infotext;
-};
-
-#include "inventory.h"
-
-// Prototype
-ItemCAO proto_ItemCAO(NULL, NULL);
-
-ItemCAO::ItemCAO(Client *client, ClientEnvironment *env):
-	ClientActiveObject(0, client, env),
-	m_selection_box(-BS/3.,0.0,-BS/3., BS/3.,BS*2./3.,BS/3.),
-	m_node(NULL),
-	m_position(v3f(0,10*BS,0))
-{
-	if(!client && !env)
-	{
-		ClientActiveObject::registerType(getType(), create);
-	}
-}
-
-ItemCAO::~ItemCAO()
-{
-}
-
-ClientActiveObject* ItemCAO::create(Client *client, ClientEnvironment *env)
-{
-	return new ItemCAO(client, env);
-}
-
-void ItemCAO::addToScene(scene::ISceneManager *smgr, ITextureSource *tsrc,
-			IrrlichtDevice *irr)
-{
-	if(m_node != NULL)
-		return;
-
-	//video::IVideoDriver* driver = smgr->getVideoDriver();
-
-	scene::SMesh *mesh = new scene::SMesh();
-	scene::IMeshBuffer *buf = new scene::SMeshBuffer();
-	video::SColor c(255,255,255,255);
-	video::S3DVertex vertices[4] =
-	{
-		/*video::S3DVertex(-BS/2,-BS/4,0, 0,0,0, c, 0,1),
-		video::S3DVertex(BS/2,-BS/4,0, 0,0,0, c, 1,1),
-		video::S3DVertex(BS/2,BS/4,0, 0,0,0, c, 1,0),
-		video::S3DVertex(-BS/2,BS/4,0, 0,0,0, c, 0,0),*/
-		video::S3DVertex(BS/3.,0,0, 0,0,0, c, 0,1),
-		video::S3DVertex(-BS/3.,0,0, 0,0,0, c, 1,1),
-		video::S3DVertex(-BS/3.,0+BS*2./3.,0, 0,0,0, c, 1,0),
-		video::S3DVertex(BS/3.,0+BS*2./3.,0, 0,0,0, c, 0,0),
-	};
-	u16 indices[] = {0,1,2,2,3,0};
-	buf->append(vertices, 4, indices, 6);
-	// Set material
-	buf->getMaterial().setFlag(video::EMF_LIGHTING, false);
-	buf->getMaterial().setFlag(video::EMF_BACK_FACE_CULLING, false);
-	// Initialize with a generated placeholder texture
-	buf->getMaterial().setTexture(0, tsrc->getTexture(""));
-	buf->getMaterial().setFlag(video::EMF_BILINEAR_FILTER, false);
-	buf->getMaterial().setFlag(video::EMF_FOG_ENABLE, true);
-	buf->getMaterial().MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
-	// Add to mesh
-	mesh->addMeshBuffer(buf);
-	buf->drop();
-	m_node = smgr->addMeshSceneNode(mesh, NULL);
-	mesh->drop();
-	updateNodePos();
-
-	/*
-		Update image of node
-	*/
-
-	updateTexture();
-}
-
-void ItemCAO::removeFromScene(bool permanent)
-{
-	if(m_node == NULL)
-		return;
-
-	m_node->remove();
-	m_node = NULL;
-}
-
-void ItemCAO::updateLight(u8 light_at_pos)
-{
-	if(m_node == NULL)
-		return;
-
-	u8 li = decode_light(light_at_pos);
-	video::SColor color(255,li,li,li);
-	setMeshColor(m_node->getMesh(), color);
-}
-
-v3s16 ItemCAO::getLightPosition()
-{
-	return floatToInt(m_position + v3f(0,0.5*BS,0), BS);
-}
-
-void ItemCAO::updateNodePos()
-{
-	if(m_node == NULL)
-		return;
-
-	m_node->setPosition(m_position);
-}
-
-void ItemCAO::updateInfoText()
-{
-	try{
-		IItemDefManager *idef = m_client->idef();
-		ItemStack item;
-		item.deSerialize(m_itemstring, idef);
-		if(item.isKnown(idef))
-			m_infotext = item.getDefinition(idef).description;
-		else
-			m_infotext = "Unknown item: '" + m_itemstring + "'";
-		if(item.count >= 2)
-			m_infotext += " (" + itos(item.count) + ")";
-	}
-	catch(SerializationError &e)
-	{
-		m_infotext = "Unknown item: '" + m_itemstring + "'";
-	}
-}
-
-void ItemCAO::updateTexture()
-{
-	if(m_node == NULL)
-		return;
-
-	// Create an inventory item to see what is its image
-	std::istringstream is(m_itemstring, std::ios_base::binary);
-	video::ITexture *texture = NULL;
-	try{
-		IItemDefManager *idef = m_client->idef();
-		ItemStack item;
-		item.deSerialize(is, idef);
-		texture = idef->getInventoryTexture(item.getDefinition(idef).name, m_client);
-	}
-	catch(SerializationError &e)
-	{
-		warningstream<<FUNCTION_NAME
-				<<": error deSerializing itemstring \""
-				<<m_itemstring<<std::endl;
-	}
-
-	// Set meshbuffer texture
-	m_node->getMaterial(0).setTexture(0, texture);
-}
-
-
-void ItemCAO::step(float dtime, ClientEnvironment *env)
-{
-	if(m_node)
-	{
-		/*v3f rot = m_node->getRotation();
-		rot.Y += dtime * 120;
-		m_node->setRotation(rot);*/
-		LocalPlayer *player = env->getLocalPlayer();
-		assert(player);
-		v3f rot = m_node->getRotation();
-		rot.Y = 180.0 - (player->getYaw());
-		m_node->setRotation(rot);
-	}
-}
-
-void ItemCAO::processMessage(const std::string &data)
-{
-	//infostream<<"ItemCAO: Got message"<<std::endl;
-	std::istringstream is(data, std::ios::binary);
-	// command
-	u8 cmd = readU8(is);
-	if(cmd == 0)
-	{
-		// pos
-		m_position = readV3F1000(is);
-		updateNodePos();
-	}
-	if(cmd == 1)
-	{
-		// itemstring
-		m_itemstring = deSerializeString(is);
-		updateInfoText();
-		updateTexture();
-	}
-}
-
-void ItemCAO::initialize(const std::string &data)
-{
-	infostream<<"ItemCAO: Got init data"<<std::endl;
-
-	{
-		std::istringstream is(data, std::ios::binary);
-		// version
-		u8 version = readU8(is);
-		// check version
-		if(version != 0)
-			return;
-		// pos
-		m_position = readV3F1000(is);
-		// itemstring
-		m_itemstring = deSerializeString(is);
-	}
-
-	updateNodePos();
-	updateInfoText();
-}
-
-/*
 	GenericCAO
 */
 
 #include "genericobject.h"
 
 GenericCAO::GenericCAO(Client *client, ClientEnvironment *env):
-		ClientActiveObject(0, client, env),
-		//
-		m_is_player(false),
-		m_is_local_player(false),
-		//
-		m_smgr(NULL),
-		m_irr(NULL),
-		m_client(NULL),
-		m_selection_box(-BS/3.,-BS/3.,-BS/3., BS/3.,BS/3.,BS/3.),
-		m_meshnode(NULL),
-		m_animated_meshnode(NULL),
-		m_wield_meshnode(NULL),
-		m_spritenode(NULL),
-		m_nametag(NULL),
-		m_position(v3f(0,10*BS,0)),
-		m_velocity(v3f(0,0,0)),
-		m_acceleration(v3f(0,0,0)),
-		m_yaw(0),
-		m_hp(1),
-		m_tx_size(1,1),
-		m_tx_basepos(0,0),
-		m_initial_tx_basepos_set(false),
-		m_tx_select_horiz_by_yawpitch(false),
-		m_animation_range(v2s32(0,0)),
-		m_animation_speed(15),
-		m_animation_blend(0),
-		m_animation_loop(true),
-		m_bone_position(UNORDERED_MAP<std::string, core::vector2d<v3f> >()),
-		m_attachment_bone(""),
-		m_attachment_position(v3f(0,0,0)),
-		m_attachment_rotation(v3f(0,0,0)),
-		m_attached_to_local(false),
-		m_anim_frame(0),
-		m_anim_num_frames(1),
-		m_anim_framelength(0.2),
-		m_anim_timer(0),
-		m_reset_textures_timer(-1),
-		m_previous_texture_modifier(""),
-		m_current_texture_modifier(""),
-		m_visuals_expired(false),
-		m_step_distance_counter(0),
-		m_last_light(255),
-		m_is_visible(false)
+		ClientActiveObject(0, client, env)
 {
 	if (client == NULL) {
 		ClientActiveObject::registerType(getType(), create);
@@ -624,7 +300,6 @@ void GenericCAO::initialize(const std::string &data)
 			m_is_visible = false;
 			player->setCAO(this);
 		}
-		m_env->addPlayerName(m_name.c_str());
 	}
 }
 
@@ -638,14 +313,7 @@ void GenericCAO::processInitData(const std::string &data)
 	if (version == 1) { // In PROTOCOL_VERSION 14
 		m_name = deSerializeString(is);
 		m_is_player = readU8(is);
-		m_id = readS16(is);
-		m_position = readV3F1000(is);
-		m_yaw = readF1000(is);
-		m_hp = readS16(is);
-		num_messages = readU8(is);
-	} else if (version == 0) { // In PROTOCOL_VERSION 13
-		m_name = deSerializeString(is);
-		m_is_player = readU8(is);
+		m_id = readU16(is);
 		m_position = readV3F1000(is);
 		m_yaw = readF1000(is);
 		m_hp = readS16(is);
@@ -667,17 +335,17 @@ void GenericCAO::processInitData(const std::string &data)
 
 GenericCAO::~GenericCAO()
 {
-	if (m_is_player) {
-		m_env->removePlayerName(m_name.c_str());
-	}
 	removeFromScene(true);
 }
 
-aabb3f *GenericCAO::getSelectionBox()
+bool GenericCAO::getSelectionBox(aabb3f *toset) const
 {
-	if(!m_prop.is_visible || !m_is_visible || m_is_local_player || getParent() != NULL)
-		return NULL;
-	return &m_selection_box;
+	if (!m_prop.is_visible || !m_is_visible || m_is_local_player
+			|| !m_prop.pointable || getParent() != NULL) {
+		return false;
+	}
+	*toset = m_selection_box;
+	return true;
 }
 
 v3f GenericCAO::getPosition()
@@ -686,8 +354,8 @@ v3f GenericCAO::getPosition()
 		scene::ISceneNode *node = getSceneNode();
 		if (node)
 			return node->getAbsolutePosition();
-		else
-			return m_position;
+
+		return m_position;
 	}
 	return pos_translator.vect_show;
 }
@@ -696,11 +364,17 @@ scene::ISceneNode* GenericCAO::getSceneNode()
 {
 	if (m_meshnode) {
 		return m_meshnode;
-	} else if (m_animated_meshnode) {
+	}
+
+	if (m_animated_meshnode) {
 		return m_animated_meshnode;
-	} else if (m_wield_meshnode) {
+	}
+
+	if (m_wield_meshnode) {
 		return m_wield_meshnode;
-	} else if (m_spritenode) {
+	}
+
+	if (m_spritenode) {
 		return m_spritenode;
 	}
 	return NULL;
@@ -713,8 +387,8 @@ scene::IAnimatedMeshSceneNode* GenericCAO::getAnimatedMeshSceneNode()
 
 void GenericCAO::setChildrenVisible(bool toset)
 {
-	for (std::vector<u16>::size_type i = 0; i < m_children.size(); i++) {
-		GenericCAO *obj = m_env->getGenericCAO(m_children[i]);
+	for (u16 cao_id : m_children) {
+		GenericCAO *obj = m_env->getGenericCAO(cao_id);
 		if (obj) {
 			obj->setVisible(toset);
 		}
@@ -726,7 +400,7 @@ void GenericCAO::setAttachments()
 	updateAttachments();
 }
 
-ClientActiveObject* GenericCAO::getParent()
+ClientActiveObject* GenericCAO::getParent() const
 {
 	ClientActiveObject *obj = NULL;
 
@@ -744,8 +418,7 @@ void GenericCAO::removeFromScene(bool permanent)
 	// Should be true when removing the object permanently and false when refreshing (eg: updating visuals)
 	if((m_env != NULL) && (permanent))
 	{
-		for (std::vector<u16>::size_type i = 0; i < m_children.size(); i++) {
-			u16 ci = m_children[i];
+		for (u16 ci : m_children) {
 			if (m_env->attachement_parent_ids[ci] == getId()) {
 				m_env->attachement_parent_ids[ci] = 0;
 			}
@@ -784,11 +457,9 @@ void GenericCAO::removeFromScene(bool permanent)
 	}
 }
 
-void GenericCAO::addToScene(scene::ISceneManager *smgr,
-		ITextureSource *tsrc, IrrlichtDevice *irr)
+void GenericCAO::addToScene(ITextureSource *tsrc)
 {
-	m_smgr = smgr;
-	m_irr = irr;
+	m_smgr = RenderingEngine::get_scene_manager();
 
 	if (getSceneNode() != NULL) {
 		return;
@@ -802,7 +473,7 @@ void GenericCAO::addToScene(scene::ISceneManager *smgr,
 
 	if (m_prop.visual == "sprite") {
 		infostream<<"GenericCAO::addToScene(): single_sprite"<<std::endl;
-		m_spritenode = smgr->addBillboardSceneNode(
+		m_spritenode = RenderingEngine::get_scene_manager()->addBillboardSceneNode(
 				NULL, v2f(1, 1), v3f(0,0,0), -1);
 		m_spritenode->grab();
 		m_spritenode->setMaterialTexture(0,
@@ -865,7 +536,7 @@ void GenericCAO::addToScene(scene::ISceneManager *smgr,
 			mesh->addMeshBuffer(buf);
 			buf->drop();
 		}
-		m_meshnode = smgr->addMeshSceneNode(mesh, NULL);
+		m_meshnode = RenderingEngine::get_scene_manager()->addMeshSceneNode(mesh, NULL);
 		m_meshnode->grab();
 		mesh->drop();
 		// Set it to use the materials of the meshbuffers directly.
@@ -875,7 +546,7 @@ void GenericCAO::addToScene(scene::ISceneManager *smgr,
 	else if(m_prop.visual == "cube") {
 		infostream<<"GenericCAO::addToScene(): cube"<<std::endl;
 		scene::IMesh *mesh = createCubeMesh(v3f(BS,BS,BS));
-		m_meshnode = smgr->addMeshSceneNode(mesh, NULL);
+		m_meshnode = RenderingEngine::get_scene_manager()->addMeshSceneNode(mesh, NULL);
 		m_meshnode->grab();
 		mesh->drop();
 
@@ -892,10 +563,11 @@ void GenericCAO::addToScene(scene::ISceneManager *smgr,
 	}
 	else if(m_prop.visual == "mesh") {
 		infostream<<"GenericCAO::addToScene(): mesh"<<std::endl;
-		scene::IAnimatedMesh *mesh = m_client->getMesh(m_prop.mesh);
+		scene::IAnimatedMesh *mesh = m_client->getMesh(m_prop.mesh, true);
 		if(mesh)
 		{
-			m_animated_meshnode = smgr->addAnimatedMeshSceneNode(mesh, NULL);
+			m_animated_meshnode = RenderingEngine::get_scene_manager()->
+				addAnimatedMeshSceneNode(mesh, NULL);
 			m_animated_meshnode->grab();
 			mesh->drop(); // The scene node took hold of it
 			m_animated_meshnode->animateJoints(); // Needed for some animations
@@ -903,13 +575,17 @@ void GenericCAO::addToScene(scene::ISceneManager *smgr,
 					m_prop.visual_size.Y,
 					m_prop.visual_size.X));
 			u8 li = m_last_light;
+
+			// set vertex colors to ensure alpha is set
 			setMeshColor(m_animated_meshnode->getMesh(), video::SColor(255,li,li,li));
+
+			setAnimatedMeshColor(m_animated_meshnode, video::SColor(255,li,li,li));
 
 			bool backface_culling = m_prop.backface_culling;
 			if (m_is_player)
 				backface_culling = false;
 
-			m_animated_meshnode->setMaterialFlag(video::EMF_LIGHTING, false);
+			m_animated_meshnode->setMaterialFlag(video::EMF_LIGHTING, true);
 			m_animated_meshnode->setMaterialFlag(video::EMF_BILINEAR_FILTER, false);
 			m_animated_meshnode->setMaterialType(video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF);
 			m_animated_meshnode->setMaterialFlag(video::EMF_FOG_ENABLE, true);
@@ -917,14 +593,13 @@ void GenericCAO::addToScene(scene::ISceneManager *smgr,
 		}
 		else
 			errorstream<<"GenericCAO::addToScene(): Could not load mesh "<<m_prop.mesh<<std::endl;
-	}
-	else if(m_prop.visual == "wielditem") {
+	} else if (m_prop.visual == "wielditem") {
 		ItemStack item;
 		infostream << "GenericCAO::addToScene(): wielditem" << std::endl;
-		if (m_prop.wield_item == "") {
+		if (m_prop.wield_item.empty()) {
 			// Old format, only textures are specified.
 			infostream << "textures: " << m_prop.textures.size() << std::endl;
-			if (m_prop.textures.size() >= 1) {
+			if (!m_prop.textures.empty()) {
 				infostream << "textures[0]: " << m_prop.textures[0]
 					<< std::endl;
 				IItemDefManager *idef = m_client->idef();
@@ -934,8 +609,8 @@ void GenericCAO::addToScene(scene::ISceneManager *smgr,
 			infostream << "serialized form: " << m_prop.wield_item << std::endl;
 			item.deSerialize(m_prop.wield_item, m_client->idef());
 		}
-		m_wield_meshnode = new WieldMeshSceneNode(smgr->getRootSceneNode(),
-			smgr, -1);
+		m_wield_meshnode = new WieldMeshSceneNode(
+			RenderingEngine::get_scene_manager(), -1);
 		m_wield_meshnode->setItem(item, m_client);
 
 		m_wield_meshnode->setScale(
@@ -953,10 +628,13 @@ void GenericCAO::addToScene(scene::ISceneManager *smgr,
 		updateTextures(m_current_texture_modifier);
 
 	scene::ISceneNode *node = getSceneNode();
-	if (node && m_prop.nametag != "" && !m_is_local_player) {
+	if (node && !m_prop.nametag.empty() && !m_is_local_player) {
 		// Add nametag
+		v3f pos;
+		pos.Y = m_prop.collisionbox.MaxEdge.Y + 0.3f;
 		m_nametag = m_client->getCamera()->addNametag(node,
-			m_prop.nametag, m_prop.nametag_color);
+			m_prop.nametag, m_prop.nametag_color,
+			pos);
 	}
 
 	updateNodePos();
@@ -975,8 +653,8 @@ void GenericCAO::updateLight(u8 light_at_pos)
 	updateLightNoCheck(light_at_pos);
 
 	// Update light of all children
-	for (std::vector<u16>::size_type i = 0; i < m_children.size(); i++) {
-		ClientActiveObject *obj = m_env->getActiveObject(m_children[i]);
+	for (u16 i : m_children) {
+		ClientActiveObject *obj = m_env->getActiveObject(i);
 		if (obj) {
 			obj->updateLightNoCheck(light_at_pos);
 		}
@@ -985,14 +663,17 @@ void GenericCAO::updateLight(u8 light_at_pos)
 
 void GenericCAO::updateLightNoCheck(u8 light_at_pos)
 {
-	u8 li = decode_light(light_at_pos);
+	if (m_glow < 0)
+		return;
+
+	u8 li = decode_light(light_at_pos + m_glow);
 	if (li != m_last_light)	{
 		m_last_light = li;
 		video::SColor color(255,li,li,li);
 		if (m_meshnode) {
 			setMeshColor(m_meshnode->getMesh(), color);
 		} else if (m_animated_meshnode) {
-			setMeshColor(m_animated_meshnode->getMesh(), color);
+			setAnimatedMeshColor(m_animated_meshnode, color);
 		} else if (m_wield_meshnode) {
 			m_wield_meshnode->setColor(color);
 		} else if (m_spritenode) {
@@ -1003,6 +684,9 @@ void GenericCAO::updateLightNoCheck(u8 light_at_pos)
 
 v3s16 GenericCAO::getLightPosition()
 {
+	if (m_is_player)
+		return floatToInt(m_position + v3f(0, 0.5 * BS, 0), BS);
+
 	return floatToInt(m_position, BS);
 }
 
@@ -1032,7 +716,7 @@ void GenericCAO::step(float dtime, ClientEnvironment *env)
 		if (m_is_visible) {
 			int old_anim = player->last_animation;
 			float old_anim_speed = player->last_animation_speed;
-			m_position = player->getPosition() + v3f(0,BS,0);
+			m_position = player->getPosition();
 			m_velocity = v3f(0,0,0);
 			m_acceleration = v3f(0,0,0);
 			pos_translator.vect_show = m_position;
@@ -1097,14 +781,12 @@ void GenericCAO::step(float dtime, ClientEnvironment *env)
 		}
 	}
 
-	if(m_visuals_expired && m_smgr && m_irr){
+	if (m_visuals_expired && m_smgr) {
 		m_visuals_expired = false;
 
 		// Attachments, part 1: All attached objects must be unparented first,
 		// or Irrlicht causes a segmentation fault
-		for(std::vector<u16>::iterator ci = m_children.begin();
-				ci != m_children.end();)
-		{
+		for (auto ci = m_children.begin(); ci != m_children.end();) {
 			if (m_env->attachement_parent_ids[*ci] != getId()) {
 				ci = m_children.erase(ci);
 				continue;
@@ -1119,12 +801,12 @@ void GenericCAO::step(float dtime, ClientEnvironment *env)
 		}
 
 		removeFromScene(false);
-		addToScene(m_smgr, m_client->tsrc(), m_irr);
+		addToScene(m_client->tsrc());
 
 		// Attachments, part 2: Now that the parent has been refreshed, put its attachments back
-		for (std::vector<u16>::size_type i = 0; i < m_children.size(); i++) {
+		for (u16 cao_id : m_children) {
 			// Get the object of the child
-			ClientActiveObject *obj = m_env->getActiveObject(m_children[i]);
+			ClientActiveObject *obj = m_env->getActiveObject(cao_id);
 			if (obj)
 				obj->setAttachments();
 		}
@@ -1184,16 +866,17 @@ void GenericCAO::step(float dtime, ClientEnvironment *env)
 
 		float moved = lastpos.getDistanceFrom(pos_translator.vect_show);
 		m_step_distance_counter += moved;
-		if(m_step_distance_counter > 1.5*BS)
-		{
-			m_step_distance_counter = 0;
-			if(!m_is_local_player && m_prop.makes_footstep_sound)
-			{
+		if (m_step_distance_counter > 1.5f * BS) {
+			m_step_distance_counter = 0.0f;
+			if (!m_is_local_player && m_prop.makes_footstep_sound) {
 				INodeDefManager *ndef = m_client->ndef();
-				v3s16 p = floatToInt(getPosition() + v3f(0,
-						(m_prop.collisionbox.MinEdge.Y-0.5)*BS, 0), BS);
+				v3s16 p = floatToInt(getPosition() +
+					v3f(0.0f, (m_prop.collisionbox.MinEdge.Y - 0.5f) * BS, 0.0f), BS);
 				MapNode n = m_env->getMap().getNodeNoEx(p);
 				SimpleSoundSpec spec = ndef->get(n).sound_footstep;
+				// Reduce footstep gain, as non-local-player footsteps are
+				// somehow louder.
+				spec.gain *= 0.6f;
 				m_client->sound()->playSoundAt(spec, false, getPosition());
 			}
 		}
@@ -1218,26 +901,26 @@ void GenericCAO::step(float dtime, ClientEnvironment *env)
 			updateTextures(m_previous_texture_modifier);
 		}
 	}
-	if(getParent() == NULL && fabs(m_prop.automatic_rotate) > 0.001)
+	if(!getParent() && fabs(m_prop.automatic_rotate) > 0.001)
 	{
 		m_yaw += dtime * m_prop.automatic_rotate * 180 / M_PI;
 		updateNodePos();
 	}
 
-	if (getParent() == NULL && m_prop.automatic_face_movement_dir &&
-			(fabs(m_velocity.Z) > 0.001 || fabs(m_velocity.X) > 0.001))
-	{
-		float optimal_yaw = atan2(m_velocity.Z,m_velocity.X) * 180 / M_PI
+	if (!getParent() && m_prop.automatic_face_movement_dir &&
+			(fabs(m_velocity.Z) > 0.001 || fabs(m_velocity.X) > 0.001)) {
+
+		float target_yaw = atan2(m_velocity.Z, m_velocity.X) * 180 / M_PI
 				+ m_prop.automatic_face_movement_dir_offset;
 		float max_rotation_delta =
 				dtime * m_prop.automatic_face_movement_max_rotation_per_sec;
+		float delta = wrapDegrees_0_360(target_yaw - m_yaw);
 
-		if ((m_prop.automatic_face_movement_max_rotation_per_sec > 0) &&
-			(fabs(m_yaw - optimal_yaw) > max_rotation_delta)) {
-
-			m_yaw = optimal_yaw < m_yaw ? m_yaw - max_rotation_delta : m_yaw + max_rotation_delta;
+		if (delta > max_rotation_delta && 360 - delta > max_rotation_delta) {
+			m_yaw += (delta < 180) ? max_rotation_delta : -max_rotation_delta;
+			m_yaw = wrapDegrees_0_360(m_yaw);
 		} else {
-			m_yaw = optimal_yaw;
+			m_yaw = target_yaw;
 		}
 		updateNodePos();
 	}
@@ -1303,13 +986,12 @@ void GenericCAO::updateTextures(std::string mod)
 
 	m_previous_texture_modifier = m_current_texture_modifier;
 	m_current_texture_modifier = mod;
+	m_glow = m_prop.glow;
 
-	if(m_spritenode)
-	{
-		if(m_prop.visual == "sprite")
-		{
+	if (m_spritenode) {
+		if (m_prop.visual == "sprite") {
 			std::string texturestring = "unknown_node.png";
-			if(m_prop.textures.size() >= 1)
+			if (!m_prop.textures.empty())
 				texturestring = m_prop.textures[0];
 			texturestring += mod;
 			m_spritenode->setMaterialTexture(0,
@@ -1318,8 +1000,7 @@ void GenericCAO::updateTextures(std::string mod)
 			// This allows setting per-material colors. However, until a real lighting
 			// system is added, the code below will have no effect. Once MineTest
 			// has directional lighting, it should work automatically.
-			if(m_prop.colors.size() >= 1)
-			{
+			if (!m_prop.colors.empty()) {
 				m_spritenode->getMaterial(0).AmbientColor = m_prop.colors[0];
 				m_spritenode->getMaterial(0).DiffuseColor = m_prop.colors[0];
 				m_spritenode->getMaterial(0).SpecularColor = m_prop.colors[0];
@@ -1330,20 +1011,17 @@ void GenericCAO::updateTextures(std::string mod)
 			m_spritenode->getMaterial(0).setFlag(video::EMF_ANISOTROPIC_FILTER, use_anisotropic_filter);
 		}
 	}
-	if(m_animated_meshnode)
-	{
-		if(m_prop.visual == "mesh")
-		{
+
+	if (m_animated_meshnode) {
+		if (m_prop.visual == "mesh") {
 			for (u32 i = 0; i < m_prop.textures.size() &&
-					i < m_animated_meshnode->getMaterialCount(); ++i)
-			{
+					i < m_animated_meshnode->getMaterialCount(); ++i) {
 				std::string texturestring = m_prop.textures[i];
-				if(texturestring == "")
+				if (texturestring.empty())
 					continue; // Empty texture string means don't modify that material
 				texturestring += mod;
 				video::ITexture* texture = tsrc->getTextureForMesh(texturestring);
-				if(!texture)
-				{
+				if (!texture) {
 					errorstream<<"GenericCAO::updateTextures(): Could not load texture "<<texturestring<<std::endl;
 					continue;
 				}
@@ -1351,8 +1029,15 @@ void GenericCAO::updateTextures(std::string mod)
 				// Set material flags and texture
 				video::SMaterial& material = m_animated_meshnode->getMaterial(i);
 				material.TextureLayer[0].Texture = texture;
-				material.setFlag(video::EMF_LIGHTING, false);
+				material.setFlag(video::EMF_LIGHTING, true);
 				material.setFlag(video::EMF_BILINEAR_FILTER, false);
+
+				// don't filter low-res textures, makes them look blurry
+				// player models have a res of 64
+				const core::dimension2d<u32> &size = texture->getOriginalSize();
+				const u32 res = std::min(size.Height, size.Width);
+				use_trilinear_filter &= res > 64;
+				use_bilinear_filter &= res > 64;
 
 				m_animated_meshnode->getMaterial(i)
 						.setFlag(video::EMF_TRILINEAR_FILTER, use_trilinear_filter);
@@ -1407,13 +1092,11 @@ void GenericCAO::updateTextures(std::string mod)
 				m_meshnode->getMaterial(i).setFlag(video::EMF_BILINEAR_FILTER, use_bilinear_filter);
 				m_meshnode->getMaterial(i).setFlag(video::EMF_ANISOTROPIC_FILTER, use_anisotropic_filter);
 			}
-		}
-		else if(m_prop.visual == "upright_sprite")
-		{
+		} else if (m_prop.visual == "upright_sprite") {
 			scene::IMesh *mesh = m_meshnode->getMesh();
 			{
 				std::string tname = "unknown_object.png";
-				if(m_prop.textures.size() >= 1)
+				if (!m_prop.textures.empty())
 					tname = m_prop.textures[0];
 				tname += mod;
 				scene::IMeshBuffer *buf = mesh->getMeshBuffer(0);
@@ -1423,8 +1106,7 @@ void GenericCAO::updateTextures(std::string mod)
 				// This allows setting per-material colors. However, until a real lighting
 				// system is added, the code below will have no effect. Once MineTest
 				// has directional lighting, it should work automatically.
-				if(m_prop.colors.size() >= 1)
-				{
+				if(!m_prop.colors.empty()) {
 					buf->getMaterial().AmbientColor = m_prop.colors[0];
 					buf->getMaterial().DiffuseColor = m_prop.colors[0];
 					buf->getMaterial().SpecularColor = m_prop.colors[0];
@@ -1436,9 +1118,9 @@ void GenericCAO::updateTextures(std::string mod)
 			}
 			{
 				std::string tname = "unknown_object.png";
-				if(m_prop.textures.size() >= 2)
+				if (m_prop.textures.size() >= 2)
 					tname = m_prop.textures[1];
-				else if(m_prop.textures.size() >= 1)
+				else if (!m_prop.textures.empty())
 					tname = m_prop.textures[0];
 				tname += mod;
 				scene::IMeshBuffer *buf = mesh->getMeshBuffer(1);
@@ -1448,17 +1130,16 @@ void GenericCAO::updateTextures(std::string mod)
 				// This allows setting per-material colors. However, until a real lighting
 				// system is added, the code below will have no effect. Once MineTest
 				// has directional lighting, it should work automatically.
-				if(m_prop.colors.size() >= 2)
-				{
+				if (m_prop.colors.size() >= 2) {
 					buf->getMaterial().AmbientColor = m_prop.colors[1];
 					buf->getMaterial().DiffuseColor = m_prop.colors[1];
 					buf->getMaterial().SpecularColor = m_prop.colors[1];
-				}
-				else if(m_prop.colors.size() >= 1)
-				{
+					setMeshColor(mesh, m_prop.colors[1]);
+				} else if (!m_prop.colors.empty()) {
 					buf->getMaterial().AmbientColor = m_prop.colors[0];
 					buf->getMaterial().DiffuseColor = m_prop.colors[0];
 					buf->getMaterial().SpecularColor = m_prop.colors[0];
+					setMeshColor(mesh, m_prop.colors[0]);
 				}
 
 				buf->getMaterial().setFlag(video::EMF_TRILINEAR_FILTER, use_trilinear_filter);
@@ -1471,7 +1152,7 @@ void GenericCAO::updateTextures(std::string mod)
 
 void GenericCAO::updateAnimation()
 {
-	if(m_animated_meshnode == NULL)
+	if (!m_animated_meshnode)
 		return;
 
 	if (m_animated_meshnode->getStartFrame() != m_animation_range.X ||
@@ -1487,13 +1168,21 @@ void GenericCAO::updateAnimation()
 #endif
 }
 
+void GenericCAO::updateAnimationSpeed()
+{
+	if (!m_animated_meshnode)
+		return;
+        
+	m_animated_meshnode->setAnimationSpeed(m_animation_speed);
+}
+
 void GenericCAO::updateBonePosition()
 {
-	if(m_bone_position.empty() || m_animated_meshnode == NULL)
+	if (m_bone_position.empty() || !m_animated_meshnode)
 		return;
 
 	m_animated_meshnode->setJointMode(irr::scene::EJUOR_CONTROL); // To write positions to the mesh on render
-	for(UNORDERED_MAP<std::string, core::vector2d<v3f> >::const_iterator
+	for(std::unordered_map<std::string, core::vector2d<v3f>>::const_iterator
 			ii = m_bone_position.begin(); ii != m_bone_position.end(); ++ii) {
 		std::string bone_name = (*ii).first;
 		v3f bone_pos = (*ii).second.X;
@@ -1510,7 +1199,7 @@ void GenericCAO::updateBonePosition()
 void GenericCAO::updateAttachments()
 {
 
-	if (getParent() == NULL) { // Detach or don't attach
+	if (!getParent()) { // Detach or don't attach
 		scene::ISceneNode *node = getSceneNode();
 		if (node) {
 			v3f old_position = node->getAbsolutePosition();
@@ -1532,7 +1221,7 @@ void GenericCAO::updateAttachments()
 		scene::ISceneNode *parent_node = getParent()->getSceneNode();
 		scene::IAnimatedMeshSceneNode *parent_animated_mesh_node =
 				getParent()->getAnimatedMeshSceneNode();
-		if (parent_animated_mesh_node && m_attachment_bone != "") {
+		if (parent_animated_mesh_node && !m_attachment_bone.empty()) {
 			parent_node = parent_animated_mesh_node->getJointNode(m_attachment_bone.c_str());
 		}
 
@@ -1558,7 +1247,7 @@ void GenericCAO::processMessage(const std::string &data)
 	if (cmd == GENERIC_CMD_SET_PROPERTIES) {
 		m_prop = gob_read_set_properties(is);
 
-		m_selection_box = m_prop.collisionbox;
+		m_selection_box = m_prop.selectionbox;
 		m_selection_box.MinEdge *= BS;
 		m_selection_box.MaxEdge *= BS;
 
@@ -1572,9 +1261,15 @@ void GenericCAO::processMessage(const std::string &data)
 		if (m_is_local_player) {
 			LocalPlayer *player = m_env->getLocalPlayer();
 			player->makes_footstep_sound = m_prop.makes_footstep_sound;
+			aabb3f collision_box = m_prop.collisionbox;
+			collision_box.MinEdge *= BS;
+			collision_box.MaxEdge *= BS;
+			player->setCollisionbox(collision_box);
+			player->setEyeHeight(m_prop.eye_height);
+			player->setZoomFOV(m_prop.zoom_fov);
 		}
 
-		if ((m_is_player && !m_is_local_player) && m_prop.nametag == "")
+		if ((m_is_player && !m_is_local_player) && m_prop.nametag.empty())
 			m_prop.nametag = m_name;
 
 		expireVisuals();
@@ -1683,6 +1378,9 @@ void GenericCAO::processMessage(const std::string &data)
 					updateAnimation();
 			}
 		}
+	} else if (cmd == GENERIC_CMD_SET_ANIMATION_SPEED) {
+		m_animation_speed = readF1000(is);
+		updateAnimationSpeed();
 	} else if (cmd == GENERIC_CMD_SET_BONE_POSITION) {
 		std::string bone = deSerializeString(is);
 		v3f position = readV3F1000(is);
@@ -1759,6 +1457,9 @@ void GenericCAO::processMessage(const std::string &data)
 		m_prop.nametag_color = readARGB8(is);
 		if (m_nametag != NULL) {
 			m_nametag->nametag_color = m_prop.nametag_color;
+			v3f pos;
+			pos.Y = m_prop.collisionbox.MaxEdge.Y + 0.3f;
+			m_nametag->nametag_pos = pos;
 		}
 	} else if (cmd == GENERIC_CMD_SPAWN_INFANT) {
 		u16 child_id = readU16(is);

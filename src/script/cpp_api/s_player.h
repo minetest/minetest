@@ -17,8 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef S_PLAYER_H_
-#define S_PLAYER_H_
+#pragma once
 
 #include "cpp_api/s_base.h"
 #include "irr_v3d.h"
@@ -29,13 +28,14 @@ struct ToolCapabilities;
 class ScriptApiPlayer : virtual public ScriptApiBase
 {
 public:
-	virtual ~ScriptApiPlayer();
+	virtual ~ScriptApiPlayer() = default;
 
 	void on_newplayer(ServerActiveObject *player);
 	void on_dieplayer(ServerActiveObject *player);
 	bool on_respawnplayer(ServerActiveObject *player);
 	bool on_prejoinplayer(const std::string &name, const std::string &ip,
 			std::string *reason);
+	bool can_bypass_userlimit(const std::string &name, const std::string &ip);
 	void on_joinplayer(ServerActiveObject *player);
 	void on_leaveplayer(ServerActiveObject *player, bool timeout);
 	void on_cheat(ServerActiveObject *player, const std::string &cheat_type);
@@ -46,5 +46,3 @@ public:
 	void on_playerReceiveFields(ServerActiveObject *player,
 			const std::string &formname, const StringMap &fields);
 };
-
-#endif /* S_PLAYER_H_ */

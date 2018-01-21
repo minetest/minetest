@@ -1270,7 +1270,9 @@ minetest.register_node("default:chest_locked", {
 	sounds = default.node_sound_wood_defaults(),
 	after_place_node = function(pos, placer)
 		local meta = minetest.get_meta(pos)
-		meta:set_string("owner", placer:get_player_name() or "")
+		local pname =
+			placer and placer:get_player_name() or ""
+		meta:set_string("owner", pname)
 		meta:set_string("infotext", "Locked Chest (owned by "..
 				meta:get_string("owner")..")")
 	end,

@@ -17,32 +17,33 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef GAME_HEADER
-#define GAME_HEADER
+#pragma once
 
-#include "irrlichttypes_extrabloated.h"
+#include "irrlichttypes.h"
 #include <string>
 
 class InputHandler;
 class ChatBackend;  /* to avoid having to include chat.h */
 struct SubgameSpec;
 
-// Flags that can, or may, change during main game loop
-struct GameUIFlags
-{
-	bool show_chat;
-	bool show_hud;
-	bool show_minimap;
-	bool force_fog_off;
-	bool show_debug;
-	bool show_profiler_graph;
-	bool disable_camera_update;
+struct Jitter {
+	f32 max, min, avg, counter, max_sample, min_sample, max_fraction;
+};
+
+struct RunStats {
+	u32 drawtime;
+
+	Jitter dtime_jitter, busy_time_jitter;
+};
+
+struct CameraOrientation {
+	f32 camera_yaw;    // "right/left"
+	f32 camera_pitch;  // "up/down"
 };
 
 void the_game(bool *kill,
 		bool random_input,
 		InputHandler *input,
-		IrrlichtDevice *device,
 		const std::string &map_dir,
 		const std::string &playername,
 		const std::string &password,
@@ -53,5 +54,3 @@ void the_game(bool *kill,
 		bool *reconnect_requested,
 		const SubgameSpec &gamespec, // Used for local game
 		bool simple_singleplayer_mode);
-
-#endif

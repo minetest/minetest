@@ -218,8 +218,7 @@ bool ScriptApiDetached::getDetachedInventoryCallback(
 	lua_getfield(L, -1, name.c_str());
 	lua_remove(L, -2);
 	// Should be a table
-	if(lua_type(L, -1) != LUA_TTABLE)
-	{
+	if (lua_type(L, -1) != LUA_TTABLE) {
 		errorstream<<"Detached inventory \""<<name<<"\" not defined"<<std::endl;
 		lua_pop(L, 1);
 		return false;
@@ -230,20 +229,17 @@ bool ScriptApiDetached::getDetachedInventoryCallback(
 	lua_getfield(L, -1, callbackname);
 	lua_remove(L, -2);
 	// Should be a function or nil
-	if(lua_type(L, -1) == LUA_TFUNCTION)
-	{
+	if (lua_type(L, -1) == LUA_TFUNCTION) {
 		return true;
 	}
-	else if(lua_isnil(L, -1))
-	{
+
+	if (lua_isnil(L, -1)) {
 		lua_pop(L, 1);
 		return false;
 	}
-	else
-	{
-		errorstream<<"Detached inventory \""<<name<<"\" callback \""
-			<<callbackname<<"\" is not a function"<<std::endl;
-		lua_pop(L, 1);
-		return false;
-	}
+
+	errorstream << "Detached inventory \"" << name << "\" callback \""
+		<< callbackname << "\" is not a function" << std::endl;
+	lua_pop(L, 1);
+	return false;
 }

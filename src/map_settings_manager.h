@@ -17,8 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef MAP_SETTINGS_MANAGER_HEADER
-#define MAP_SETTINGS_MANAGER_HEADER
+#pragma once
 
 #include <string>
 
@@ -45,12 +44,12 @@ struct MapgenParams;
 */
 class MapSettingsManager {
 public:
-	// Finalized map generation parameters
-	MapgenParams *mapgen_params;
-
 	MapSettingsManager(Settings *user_settings,
 		const std::string &map_meta_path);
 	~MapSettingsManager();
+
+	// Finalized map generation parameters
+	MapgenParams *mapgen_params = nullptr;
 
 	bool getMapSetting(const std::string &name, std::string *value_out);
 
@@ -75,5 +74,3 @@ private:
 	Settings *m_map_settings;
 	Settings *m_user_settings;
 };
-
-#endif

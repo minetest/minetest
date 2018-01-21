@@ -17,8 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef L_UTIL_H_
-#define L_UTIL_H_
+#pragma once
 
 #include "lua_api/l_base.h"
 
@@ -81,6 +80,9 @@ private:
 	// get_dir_list(path, is_dir)
 	static int l_get_dir_list(lua_State *L);
 
+	// safe_file_write(path, content)
+	static int l_safe_file_write(lua_State *L);
+
 	// request_insecure_environment()
 	static int l_request_insecure_environment(lua_State *L);
 
@@ -93,6 +95,9 @@ private:
 	// get_version()
 	static int l_get_version(lua_State *L);
 
+	// sha1(string, raw)
+	static int l_sha1(lua_State *L);
+
 public:
 	static void Initialize(lua_State *L, int top);
 	static void InitializeAsync(lua_State *L, int top);
@@ -100,5 +105,3 @@ public:
 
 	static void InitializeAsync(AsyncEngine &engine);
 };
-
-#endif /* L_UTIL_H_ */

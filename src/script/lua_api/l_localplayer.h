@@ -17,8 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef MINETEST_L_LOCALPLAYER_H
-#define MINETEST_L_LOCALPLAYER_H
+#pragma once
 
 #include "l_base.h"
 
@@ -67,11 +66,22 @@ private:
 
 	static int l_get_movement(lua_State *L);
 
-	LocalPlayer *m_localplayer;
+	// hud_add(self, id, form)
+	static int l_hud_add(lua_State *L);
+
+	// hud_rm(self, id)
+	static int l_hud_remove(lua_State *L);
+
+	// hud_change(self, id, stat, data)
+	static int l_hud_change(lua_State *L);
+	// hud_get(self, id)
+	static int l_hud_get(lua_State *L);
+
+	LocalPlayer *m_localplayer = nullptr;
 
 public:
 	LuaLocalPlayer(LocalPlayer *m);
-	~LuaLocalPlayer() {}
+	~LuaLocalPlayer() = default;
 
 	static void create(lua_State *L, LocalPlayer *m);
 
@@ -81,5 +91,3 @@ public:
 
 	static void Register(lua_State *L);
 };
-
-#endif // MINETEST_L_LOCALPLAYER_H

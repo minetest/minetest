@@ -93,7 +93,7 @@ core.register_entity(":__builtin:falling_node", {
 				core.remove_node(np)
 				if nd and nd.buildable_to == false then
 					-- Add dropped items
-					local drops = core.get_node_drops(n2.name, "")
+					local drops = core.get_node_drops(n2, "")
 					for _, dropped_item in pairs(drops) do
 						core.add_item(np, dropped_item)
 					end
@@ -104,11 +104,15 @@ core.register_entity(":__builtin:falling_node", {
 				end
 			end
 			-- Create node and remove entity
-			if core.registered_nodes[self.node.name] then
+			local def = core.registered_nodes[self.node.name]
+			if def then
 				core.add_node(np, self.node)
 				if self.meta then
 					local meta = core.get_meta(np)
 					meta:from_table(self.meta)
+				end
+				if def.sounds and def.sounds.place and def.sounds.place.name then
+					core.sound_play(def.sounds.place, {pos = np})
 				end
 			end
 			self.object:remove()
@@ -145,9 +149,23 @@ function core.spawn_falling_node(pos)
 end
 
 local function drop_attached_node(p)
-	local nn = core.get_node(p).name
+	local n = core.get_node(p)
+	local drops = core.get_node_drops(n, "")
+	local def = core.registered_items[n.name]
+	if def and def.preserve_metadata then
+		local oldmeta = core.get_meta(p):to_table().fields
+		-- Copy pos and node because the callback can modify them.
+		local pos_copy = {x=p.x, y=p.y, z=p.z}
+		local node_copy = {name=n.name, param1=n.param1, param2=n.param2}
+		local drop_stacks = {}
+		for k, v in pairs(drops) do
+			drop_stacks[k] = ItemStack(v)
+		end
+		drops = drop_stacks
+		def.preserve_metadata(pos_copy, node_copy, oldmeta, drops)
+	end
 	core.remove_node(p)
-	for _, item in pairs(core.get_node_drops(nn, "")) do
+	for _, item in pairs(drops) do
 		local pos = {
 			x = p.x + math.random()/2 - 0.25,
 			y = p.y + math.random()/2 - 0.25,
@@ -308,19 +326,3 @@ local function on_punchnode(p, node)
 	core.check_for_falling(p)
 end
 core.register_on_punchnode(on_punchnode)
-
---
--- Globally exported functions
---
-
--- TODO remove this function after the 0.4.15 release
-function nodeupdate(p)
-	core.log("deprecated", "nodeupdate: deprecated, please use core.check_for_falling instead")
-	core.check_for_falling(p)
-end
-
--- TODO remove this function after the 0.4.15 release
-function nodeupdate_single(p)
-	core.log("deprecated", "nodeupdate_single: deprecated, please use core.check_single_for_falling instead")
-	core.check_single_for_falling(p)
-end

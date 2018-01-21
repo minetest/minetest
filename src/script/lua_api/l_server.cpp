@@ -24,7 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "cpp_api/s_base.h"
 #include "server.h"
 #include "environment.h"
-#include "player.h"
+#include "remoteplayer.h"
 #include "log.h"
 #include <algorithm>
 
@@ -103,10 +103,9 @@ int ModApiServer::l_get_player_privs(lua_State *L)
 	lua_newtable(L);
 	int table = lua_gettop(L);
 	std::set<std::string> privs_s = server->getPlayerEffectivePrivs(name);
-	for(std::set<std::string>::const_iterator
-			i = privs_s.begin(); i != privs_s.end(); ++i){
+	for (const std::string &privs_ : privs_s) {
 		lua_pushboolean(L, true);
-		lua_setfield(L, table, i->c_str());
+		lua_setfield(L, table, privs_.c_str());
 	}
 	lua_pushvalue(L, table);
 	return 1;
@@ -125,13 +124,11 @@ int ModApiServer::l_get_player_ip(lua_State *L)
 	}
 	try
 	{
-		Address addr = getServer(L)->getPeerAddress(player->peer_id);
+		Address addr = getServer(L)->getPeerAddress(player->getPeerId());
 		std::string ip_str = addr.serializeString();
 		lua_pushstring(L, ip_str.c_str());
 		return 1;
-	}
-	catch(con::PeerNotFoundException) // unlikely
-	{
+	} catch (const con::PeerNotFoundException &) {
 		dstream << FUNCTION_NAME << ": peer was not found" << std::endl;
 		lua_pushnil(L); // error
 		return 1;
@@ -153,10 +150,8 @@ int ModApiServer::l_get_player_information(lua_State *L)
 	Address addr;
 	try
 	{
-		addr = getServer(L)->getPeerAddress(player->peer_id);
-	}
-	catch(con::PeerNotFoundException) // unlikely
-	{
+		addr = getServer(L)->getPeerAddress(player->getPeerId());
+	} catch(const con::PeerNotFoundException &) {
 		dstream << FUNCTION_NAME << ": peer was not found" << std::endl;
 		lua_pushnil(L); // error
 		return 1;
@@ -176,16 +171,18 @@ int ModApiServer::l_get_player_information(lua_State *L)
 		return 1;                                                              \
 	}
 
-	ERET(getServer(L)->getClientConInfo(player->peer_id,con::MIN_RTT,&min_rtt))
-	ERET(getServer(L)->getClientConInfo(player->peer_id,con::MAX_RTT,&max_rtt))
-	ERET(getServer(L)->getClientConInfo(player->peer_id,con::AVG_RTT,&avg_rtt))
-	ERET(getServer(L)->getClientConInfo(player->peer_id,con::MIN_JITTER,&min_jitter))
-	ERET(getServer(L)->getClientConInfo(player->peer_id,con::MAX_JITTER,&max_jitter))
-	ERET(getServer(L)->getClientConInfo(player->peer_id,con::AVG_JITTER,&avg_jitter))
+	ERET(getServer(L)->getClientConInfo(player->getPeerId(), con::MIN_RTT, &min_rtt))
+	ERET(getServer(L)->getClientConInfo(player->getPeerId(), con::MAX_RTT, &max_rtt))
+	ERET(getServer(L)->getClientConInfo(player->getPeerId(), con::AVG_RTT, &avg_rtt))
+	ERET(getServer(L)->getClientConInfo(player->getPeerId(), con::MIN_JITTER,
+		&min_jitter))
+	ERET(getServer(L)->getClientConInfo(player->getPeerId(), con::MAX_JITTER,
+		&max_jitter))
+	ERET(getServer(L)->getClientConInfo(player->getPeerId(), con::AVG_JITTER,
+		&avg_jitter))
 
-	ERET(getServer(L)->getClientInfo(player->peer_id,
-										&state, &uptime, &ser_vers, &prot_vers,
-										&major, &minor, &patch, &vers_string))
+	ERET(getServer(L)->getClientInfo(player->getPeerId(), &state, &uptime, &ser_vers,
+		&prot_vers, &major, &minor, &patch, &vers_string))
 
 	lua_newtable(L);
 	int table = lua_gettop(L);
@@ -235,7 +232,7 @@ int ModApiServer::l_get_player_information(lua_State *L)
 	lua_pushstring(L,"protocol_version");
 	lua_pushnumber(L, prot_vers);
 	lua_settable(L, table);
-	
+
 #ifndef NDEBUG
 	lua_pushstring(L,"serialization_version");
 	lua_pushnumber(L, ser_vers);
@@ -296,12 +293,10 @@ int ModApiServer::l_ban_player(lua_State *L)
 	try
 	{
 		Address addr = getServer(L)->getPeerAddress(
-			dynamic_cast<ServerEnvironment *>(getEnv(L))->getPlayer(name)->peer_id);
+			dynamic_cast<ServerEnvironment *>(getEnv(L))->getPlayer(name)->getPeerId());
 		std::string ip_str = addr.serializeString();
 		getServer(L)->setIpBanned(ip_str, name);
-	}
-	catch(con::PeerNotFoundException) // unlikely
-	{
+	} catch(const con::PeerNotFoundException &) {
 		dstream << FUNCTION_NAME << ": peer was not found" << std::endl;
 		lua_pushboolean(L, false); // error
 		return 1;
@@ -330,7 +325,7 @@ int ModApiServer::l_kick_player(lua_State *L)
 		lua_pushboolean(L, false); // No such player
 		return 1;
 	}
-	getServer(L)->DenyAccess_Legacy(player->peer_id, utf8_to_wide(message));
+	getServer(L)->DenyAccess_Legacy(player->getPeerId(), utf8_to_wide(message));
 	lua_pushboolean(L, true);
 	return 1;
 }
@@ -478,7 +473,7 @@ int ModApiServer::l_is_singleplayer(lua_State *L)
 int ModApiServer::l_notify_authentication_modified(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	std::string name = "";
+	std::string name;
 	if(lua_isstring(L, 1))
 		name = lua_tostring(L, 1);
 	getServer(L)->reportPrivsModified(name);

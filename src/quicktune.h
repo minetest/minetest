@@ -23,7 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	Eg. if you have this constant somewhere that you just can't get right
 	by changing it and recompiling all over again:
 		v3f wield_position = v3f(55, -35, 65);
-	
+
 	Make it look like this:
 		v3f wield_position = v3f(55, -35, 65);
 		QUICKTUNE_AUTONAME(QVT_FLOAT, wield_position.X, 0, 100);
@@ -35,19 +35,18 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		keymap_quicktune_next
 		keymap_quicktune_dec
 		keymap_quicktune_inc
-	
+
 	Once you have modified the values at runtime and then quit, the game
 	will print out all the modified values at the end:
 		Modified quicktune values:
 		wield_position.X = 60
 		wield_position.Y = -30
 		wield_position.Z = 65
-	
+
 	The QUICKTUNE macros shouldn't generally be left in committed code.
 */
 
-#ifndef QUICKTUNE_HEADER
-#define QUICKTUNE_HEADER
+#pragma once
 
 #include <string>
 #include <map>
@@ -59,7 +58,7 @@ enum QuicktuneValueType{
 };
 struct QuicktuneValue
 {
-	QuicktuneValueType type;
+	QuicktuneValueType type = QVT_NONE;
 	union{
 		struct{
 			float current;
@@ -67,12 +66,10 @@ struct QuicktuneValue
 			float max;
 		} value_QVT_FLOAT;
 	};
-	bool modified;
+	bool modified = false;
 
-	QuicktuneValue():
-		type(QVT_NONE),
-		modified(false)
-	{}
+	QuicktuneValue() = default;
+
 	std::string getString();
 	void relativeAdd(float amount);
 };
@@ -99,6 +96,3 @@ void updateQuicktuneValue(const std::string &name, QuicktuneValue &val);
 
 #define QUICKTUNE_AUTONAME(type_, var, min_, max_)\
 	QUICKTUNE(type_, var, min_, max_, #var)
-
-#endif
-

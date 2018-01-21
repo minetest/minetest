@@ -17,8 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef QVT_SHORTCUTTER_HEADER
-#define QVT_SHORTCUTTER_HEADER
+#pragma once
 
 #include "quicktune.h"
 
@@ -29,16 +28,16 @@ private:
 	u32 m_selected_i;
 	std::string m_message;
 public:
-	bool hasMessage()
+	bool hasMessage() const
 	{
-		return m_message != "";
+		return !m_message.empty();
 	}
 
 	std::string getMessage()
 	{
 		std::string s = m_message;
 		m_message = "";
-		if(s != "")
+		if (!s.empty())
 			return std::string("[quicktune] ") + s;
 		return "";
 	}
@@ -83,6 +82,3 @@ public:
 		setQuicktuneValue(getSelectedName(), val);
 	}
 };
-
-#endif
-

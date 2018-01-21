@@ -17,8 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef GAMEDEF_HEADER
-#define GAMEDEF_HEADER
+#pragma once
 
 #include <string>
 #include <vector>
@@ -34,6 +33,7 @@ class MtEventManager;
 class IRollbackManager;
 class EmergeManager;
 class Camera;
+class ModChannel;
 class ModMetadata;
 
 namespace irr { namespace scene {
@@ -79,7 +79,10 @@ public:
 	virtual std::string getModStoragePath() const = 0;
 	virtual bool registerModStorage(ModMetadata *storage) = 0;
 	virtual void unregisterModStorage(const std::string &name) = 0;
+
+	virtual bool joinModChannel(const std::string &channel) = 0;
+	virtual bool leaveModChannel(const std::string &channel) = 0;
+	virtual bool sendModChannelMessage(const std::string &channel,
+		const std::string &message) = 0;
+	virtual ModChannel *getModChannel(const std::string &channel) = 0;
 };
-
-#endif
-

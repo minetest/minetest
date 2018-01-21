@@ -18,68 +18,44 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "light.h"
-#include <math.h>
+#include <cmath>
 #include "util/numeric.h"
+#include "settings.h"
 
 #ifndef SERVER
 
-// Length of LIGHT_MAX+1 means LIGHT_MAX is the last value.
-// LIGHT_SUN is read as LIGHT_MAX from here.
+static u8 light_LUT[LIGHT_SUN + 1];
 
-u8 light_LUT[LIGHT_MAX+1];
-
-// the const ref to light_LUT is what is actually used in the code.
+// The const ref to light_LUT is what is actually used in the code
 const u8 *light_decode_table = light_LUT;
 
-/** Initialize or update the light value tables using the specified \p gamma.
- *  If \p gamma == 1.0 then the light table is linear.  Typically values for
- *  gamma range between 1.8 and 2.2.
- *
- *  @note The value for gamma will be restricted to the range 1.1 <= gamma <= 3.0.
- *
- *  @note This function is not, currently, a simple linear to gamma encoding
- *        because adjustments are made so that a gamma of 1.8 gives the same
- *        results as those hardcoded for use by the server.
- */
+// Initialize or update the light value tables using the specified gamma
 void set_light_table(float gamma)
 {
-	static const float brightness_step = 255.0f / (LIGHT_MAX + 1);
+// Lighting curve derivatives
+	const float alpha = g_settings->getFloat("lighting_alpha");
+	const float beta  = g_settings->getFloat("lighting_beta");
+// Lighting curve coefficients
+	const float a = alpha + beta - 2.0f;
+	const float b = 3.0f - 2.0f * alpha - beta;
+	const float c = alpha;
+// Mid boost
+	const float d = g_settings->getFloat("lighting_boost");
+	const float e = g_settings->getFloat("lighting_boost_center");
+	const float f = g_settings->getFloat("lighting_boost_spread");
+// Gamma correction
+	gamma = rangelim(gamma, 0.5f, 3.0f);
 
-	// this table is pure arbitrary values, made so that
-	// at gamma 2.2 the game looks not too dark at light=1,
-	// and mostly linear for the rest of the scale.
-	// we could try to inverse the gamma power function, but this
-	// is simpler and quicker.
-	static const int adjustments[LIGHT_MAX + 1] = {
-		-67,
-		-91,
-		-125,
-		-115,
-		-104,
-		-85,
-		-70,
-		-63,
-		-56,
-		-49,
-		-42,
-		-35,
-		-28,
-		-22,
-		0
-	};
-
-	gamma = rangelim(gamma, 1.0, 3.0);
-
-	float brightness = brightness_step;
-
-	for (size_t i = 0; i < LIGHT_MAX; i++) {
-		light_LUT[i] = (u8)(255 * powf(brightness / 255.0f, 1.0 / gamma));
-		light_LUT[i] = rangelim(light_LUT[i] + adjustments[i], 0, 255);
-		if (i > 1 && light_LUT[i] < light_LUT[i - 1])
+	for (size_t i = 0; i < LIGHT_SUN; i++) {
+		float x = i;
+		x /= LIGHT_SUN;
+		float brightness = a * x * x * x + b * x * x + c * x;
+		float boost = d * std::exp(-((x - e) * (x - e)) / (2.0f * f * f));
+		brightness = powf(brightness + boost, 1.0f / gamma);
+		light_LUT[i] = rangelim((u32)(255.0f * brightness), 0, 255);
+		if (i > 1 && light_LUT[i] <= light_LUT[i - 1])
 			light_LUT[i] = light_LUT[i - 1] + 1;
-		brightness += brightness_step;
 	}
-	light_LUT[LIGHT_MAX] = 255;
+	light_LUT[LIGHT_SUN] = 255;
 }
 #endif
-

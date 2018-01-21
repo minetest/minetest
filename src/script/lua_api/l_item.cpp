@@ -67,7 +67,7 @@ int LuaItemStack::l_set_name(lua_State *L)
 
 	bool status = true;
 	item.name = luaL_checkstring(L, 2);
-	if (item.name == "" || item.empty()) {
+	if (item.name.empty() || item.empty()) {
 		item.clear();
 		status = false;
 	}
@@ -231,12 +231,11 @@ int LuaItemStack::l_to_table(lua_State *L)
 
 		lua_newtable(L);
 		const StringMap &fields = item.metadata.getStrings();
-		for (StringMap::const_iterator it = fields.begin();
-				it != fields.end(); ++it) {
-			const std::string &name = it->first;
+		for (const auto &field : fields) {
+			const std::string &name = field.first;
 			if (name.empty())
 				continue;
-			const std::string &value = it->second;
+			const std::string &value = field.second;
 			lua_pushlstring(L, name.c_str(), name.size());
 			lua_pushlstring(L, value.c_str(), value.size());
 			lua_settable(L, -3);
@@ -388,10 +387,6 @@ int LuaItemStack::l_peek_item(lua_State *L)
 
 LuaItemStack::LuaItemStack(const ItemStack &item):
 	m_stack(item)
-{
-}
-
-LuaItemStack::~LuaItemStack()
 {
 }
 

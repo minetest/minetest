@@ -2,6 +2,8 @@
 -- Experimental things
 --
 
+dofile(minetest.get_modpath("experimental").."/modchannels.lua")
+
 -- For testing random stuff
 
 experimental = {}
@@ -135,7 +137,7 @@ minetest.register_on_punchnode(function(p, node)
 	if node.name == "experimental:tnt" then
 		minetest.remove_node(p)
 		minetest.add_entity(p, "experimental:tnt")
-		nodeupdate(p)
+		minetest.check_for_falling(p)
 	end
 end)
 
@@ -317,6 +319,9 @@ minetest.register_entity("experimental:testentity", {
 		self.object:remove()
 		hitter:add_to_inventory('craft testobject1 1')
 	end,
+	on_death = function(self, killer)
+		print("testentity.on_death")
+	end
 })
 
 --
@@ -398,11 +403,11 @@ minetest.register_abm({
         if ncpos ~= nil then
             return
         end
-       
+
         if pos.x % 16 ~= 8 or pos.z % 16 ~= 8 then
             return
         end
-       
+
         pos.y = pos.y + 1
         n = minetest.get_node(pos)
         print(dump(n))
@@ -431,7 +436,7 @@ minetest.register_abm({
                 return
             end
             nctime = clock
-           
+
             s0 = ncstuff[ncq]
             ncq = s0[1]
             s1 = ncstuff[ncq]
@@ -477,15 +482,15 @@ minetest.register_node("experimental:tester_node_1", {
 			experimental.print_to_everything("incorrect metadata found")
 		end
 	end,
-       
+
 	on_destruct = function(pos)
 		experimental.print_to_everything("experimental:tester_node_1:on_destruct("..minetest.pos_to_string(pos)..")")
 	end,
- 
+
 	after_destruct = function(pos)
 		experimental.print_to_everything("experimental:tester_node_1:after_destruct("..minetest.pos_to_string(pos)..")")
 	end,
- 
+
 	after_dig_node = function(pos, oldnode, oldmetadata, digger)
 		experimental.print_to_everything("experimental:tester_node_1:after_dig_node("..minetest.pos_to_string(pos)..")")
 	end,
@@ -494,6 +499,57 @@ minetest.register_node("experimental:tester_node_1", {
 		experimental.print_to_everything("on_timer(): elapsed="..dump(elapsed))
 		return true
 	end,
+})
+
+minetest.register_node("experimental:tiled", {
+        description = "Tiled stone",
+        tiles = {{
+                name = "experimental_tiled.png",
+                align_style = "world",
+                scale = 8,
+        }},
+        groups = {cracky=2},
+})
+
+stairs.register_stair_and_slab("tiled_n", "experimental:tiled",
+		{cracky=2},
+		{{name="experimental_tiled.png", align_style="node", scale=8}},
+		"Tiled stair (node-aligned)",
+		"Tiled slab (node-aligned)")
+
+stairs.register_stair_and_slab("tiled", "experimantal:tiled",
+		{cracky=2},
+		{{name="experimental_tiled.png", align_style="world", scale=8}},
+		"Tiled stair",
+		"Tiled slab")
+
+minetest.register_craft({
+	output = 'experimental:tiled 4',
+	recipe = {
+		{'default:cobble', '', 'default:cobble'},
+		{'', '', ''},
+		{'default:cobble', '', 'default:cobble'},
+	}
+})
+
+minetest.register_craft({
+	output = 'stairs:stair_tiled',
+	recipe = {{'stairs:stair_tiled_n'}}
+})
+
+minetest.register_craft({
+	output = 'stairs:stair_tiled_n',
+	recipe = {{'stairs:stair_tiled'}}
+})
+
+minetest.register_craft({
+	output = 'stairs:slab_tiled',
+	recipe = {{'stairs:slab_tiled_n'}}
+})
+
+minetest.register_craft({
+	output = 'stairs:slab_tiled_n',
+	recipe = {{'stairs:slab_tiled'}}
 })
 
 minetest.register_craftitem("experimental:tester_tool_1", {

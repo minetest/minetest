@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-05-21 17:40+0200\n"
+"POT-Creation-Date: 2017-08-24 18:42+0200\n"
 "PO-Revision-Date: 2016-12-28 12:00+0000\n"
 "Last-Translator: ignaloidas <ignaskiela@super.lt>\n"
 "Language-Team: Lithuanian <https://hosted.weblate.org/projects/minetest/"
@@ -40,7 +40,7 @@ msgstr "Įvyko klaida:"
 msgid "Main menu"
 msgstr "Pagrindinis meniu"
 
-#: builtin/fstk/ui.lua builtin/mainmenu/store.lua
+#: builtin/fstk/ui.lua
 msgid "Ok"
 msgstr "Gerai"
 
@@ -52,7 +52,7 @@ msgstr "Prisijungti iš naujo"
 msgid "The server has requested a reconnect:"
 msgstr "Serveris paprašė prisijungti iš naujo:"
 
-#: builtin/mainmenu/common.lua src/game.cpp
+#: builtin/mainmenu/common.lua
 msgid "Loading..."
 msgstr "Įkeliama..."
 
@@ -166,8 +166,9 @@ msgid "Mapgen"
 msgstr "Žemėlapių generavimas"
 
 #: builtin/mainmenu/dlg_create_world.lua
-msgid "No worldname given or no game selected"
-msgstr "Nepateiktas joks pasaulio pavadinimas, arba nepasirinktas žaidimas"
+#, fuzzy
+msgid "No game selected"
+msgstr "Intervalo pasirinkimas"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Seed"
@@ -227,6 +228,14 @@ msgid "< Back to Settings page"
 msgstr "< Atgal į Nustatymus"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "<offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>),"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "<seed>, <octaves>, <persistence>, <lacunarity>"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Browse"
 msgstr "Naršyti"
 
@@ -249,9 +258,7 @@ msgid "Format is 3 numbers separated by commas and inside brackets."
 msgstr ""
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
-msgid ""
-"Format: <offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>), <seed>, "
-"<octaves>, <persistence>"
+msgid "Format:"
 msgstr ""
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
@@ -261,10 +268,6 @@ msgstr "Žaidimai"
 #: builtin/mainmenu/dlg_settings_advanced.lua builtin/mainmenu/tab_mods.lua
 msgid "Mods"
 msgstr "Papildiniai"
-
-#: builtin/mainmenu/dlg_settings_advanced.lua
-msgid "Optionally the lacunarity can be appended with a leading comma."
-msgstr ""
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Please enter a comma seperated list of flags."
@@ -286,14 +289,19 @@ msgstr "Tinkamos reikšmės yra: "
 msgid "Restore Default"
 msgstr ""
 
-#: builtin/mainmenu/dlg_settings_advanced.lua builtin/mainmenu/store.lua
-#: builtin/mainmenu/tab_online.lua
+#: builtin/mainmenu/dlg_settings_advanced.lua builtin/mainmenu/tab_online.lua
 msgid "Search"
 msgstr "Ieškoti"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
-msgid "Select path"
-msgstr ""
+#, fuzzy
+msgid "Select directory"
+msgstr "Pasirinkite papildinio failą:"
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+#, fuzzy
+msgid "Select file"
+msgstr "Pasirinkite papildinio failą:"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Show technical names"
@@ -336,42 +344,6 @@ msgstr ""
 #: builtin/mainmenu/modmgr.lua
 msgid "Subgame Mods"
 msgstr ""
-
-#: builtin/mainmenu/store.lua
-msgid "Close store"
-msgstr "Užverti parduotuvę"
-
-#: builtin/mainmenu/store.lua
-msgid "Downloading $1, please wait..."
-msgstr "Atsiunčiama $1, prašome palaukti..."
-
-#: builtin/mainmenu/store.lua
-msgid "Install"
-msgstr "Įdiegti"
-
-#: builtin/mainmenu/store.lua
-msgid "Page $1 of $2"
-msgstr "Puslapis $1 iš $2"
-
-#: builtin/mainmenu/store.lua
-msgid "Rating"
-msgstr "Įvertinimas"
-
-#: builtin/mainmenu/store.lua
-msgid "Shortname:"
-msgstr "Trumpas pavadinimas:"
-
-#: builtin/mainmenu/store.lua
-msgid "Successfully installed:"
-msgstr "Sėkmingai įdiegta:"
-
-#: builtin/mainmenu/store.lua
-msgid "Unsorted"
-msgstr "Nerikiuota"
-
-#: builtin/mainmenu/store.lua
-msgid "re-Install"
-msgstr "Įdiegti iš naujo"
 
 #: builtin/mainmenu/tab_credits.lua
 msgid "Active Contributors"
@@ -722,6 +694,10 @@ msgid "Start Singleplayer"
 msgstr "Atstatyti vieno žaidėjo pasaulį"
 
 #: builtin/mainmenu/tab_texturepacks.lua
+msgid "Default textures will be used."
+msgstr ""
+
+#: builtin/mainmenu/tab_texturepacks.lua
 msgid "No information available"
 msgstr "Nėra pasiekiamos informacijos"
 
@@ -849,10 +825,6 @@ msgid "Change Password"
 msgstr "Keisti slaptažodį"
 
 #: src/game.cpp
-msgid "Connecting to server..."
-msgstr "Jungiamasi prie serverio..."
-
-#: src/game.cpp
 msgid "Continue"
 msgstr "Tęsti"
 
@@ -885,14 +857,6 @@ msgstr ""
 "- Pelės dešinys: padėti/naudoti\n"
 "- Pelės ratukas: pasirinkti elementą\n"
 "- T: kalbėtis\n"
-
-#: src/game.cpp
-msgid "Creating client..."
-msgstr "Kuriamas klientas..."
-
-#: src/game.cpp
-msgid "Creating server..."
-msgstr "Kuriamas serveris...."
 
 #: src/game.cpp
 msgid ""
@@ -977,14 +941,6 @@ msgid "Remote server"
 msgstr ""
 
 #: src/game.cpp
-msgid "Resolving address..."
-msgstr "Ieškoma adreso..."
-
-#: src/game.cpp
-msgid "Shutting down..."
-msgstr "Išjungiama..."
-
-#: src/game.cpp
 msgid "Singleplayer"
 msgstr "Žaisti vienam"
 
@@ -1018,12 +974,23 @@ msgid "Proceed"
 msgstr "Vykdyti"
 
 #: src/guiKeyChangeMenu.cpp
-msgid "\"Use\" = climb down"
+#, fuzzy
+msgid "\"Special\" = climb down"
 msgstr "„Naudoti“ = kopti žemyn"
+
+#: src/guiKeyChangeMenu.cpp
+#, fuzzy
+msgid "Autoforward"
+msgstr "Pirmyn"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Backward"
 msgstr "Atgal"
+
+#: src/guiKeyChangeMenu.cpp
+#, fuzzy
+msgid "Change camera"
+msgstr "Nustatyti klavišus"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Chat"
@@ -1036,6 +1003,10 @@ msgstr "Komanda"
 #: src/guiKeyChangeMenu.cpp
 msgid "Console"
 msgstr "Pultas"
+
+#: src/guiKeyChangeMenu.cpp
+msgid "Dec. range"
+msgstr ""
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Dec. volume"
@@ -1052,6 +1023,10 @@ msgstr "Mesti"
 #: src/guiKeyChangeMenu.cpp
 msgid "Forward"
 msgstr "Pirmyn"
+
+#: src/guiKeyChangeMenu.cpp
+msgid "Inc. range"
+msgstr ""
 
 #: src/guiKeyChangeMenu.cpp
 #, fuzzy
@@ -1108,13 +1083,31 @@ msgstr "Intervalo pasirinkimas"
 msgid "Right"
 msgstr "Dešinėn"
 
+#: src/guiKeyChangeMenu.cpp src/settings_translation_file.cpp
+msgid "Screenshot"
+msgstr ""
+
 #: src/guiKeyChangeMenu.cpp
 msgid "Sneak"
 msgstr "Sėlinti"
 
 #: src/guiKeyChangeMenu.cpp
+msgid "Special"
+msgstr ""
+
+#: src/guiKeyChangeMenu.cpp
 msgid "Toggle Cinematic"
 msgstr "Įjungti kinematografinį"
+
+#: src/guiKeyChangeMenu.cpp
+#, fuzzy
+msgid "Toggle HUD"
+msgstr "Įjungti skrydį"
+
+#: src/guiKeyChangeMenu.cpp
+#, fuzzy
+msgid "Toggle chat log"
+msgstr "Įjungti greitą"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Toggle fast"
@@ -1125,12 +1118,18 @@ msgid "Toggle fly"
 msgstr "Įjungti skrydį"
 
 #: src/guiKeyChangeMenu.cpp
-msgid "Toggle noclip"
+#, fuzzy
+msgid "Toggle fog"
+msgstr "Įjungti skrydį"
+
+#: src/guiKeyChangeMenu.cpp
+#, fuzzy
+msgid "Toggle minimap"
 msgstr "Įjungti noclip"
 
 #: src/guiKeyChangeMenu.cpp
-msgid "Use"
-msgstr "Naudoti"
+msgid "Toggle noclip"
+msgstr "Įjungti noclip"
 
 #: src/guiKeyChangeMenu.cpp src/keycode.cpp
 msgid "Zoom"
@@ -1422,6 +1421,10 @@ msgstr "X mygtukas 1"
 msgid "X Button 2"
 msgstr "X mygtukas 2"
 
+#: src/network/clientpackethandler.cpp
+msgid "LANG_CODE"
+msgstr "lt"
+
 #: src/settings_translation_file.cpp
 msgid ""
 "(X,Y,Z) offset of fractal from world centre in units of 'scale'.\n"
@@ -1605,11 +1608,16 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Automatic forwards key"
+msgstr "Pirmyn"
+
+#: src/settings_translation_file.cpp
 msgid "Automaticaly report to the serverlist."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Autorun key"
+msgid "Autosave Screen Size"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -1879,7 +1887,7 @@ msgid "Continuous forward"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Continuous forward movement (only used for testing)."
+msgid "Continuous forward movement, toggled by autoforward key."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -1961,6 +1969,10 @@ msgstr ""
 #, fuzzy
 msgid "Damage"
 msgstr "Leisti sužeidimus"
+
+#: src/settings_translation_file.cpp
+msgid "Darkness sharpness"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Debug info toggle key"
@@ -2088,10 +2100,6 @@ msgid "Depth below which you'll find massive caves."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Descending speed"
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid ""
 "Description of server, to be displayed when players join and in the "
 "serverlist."
@@ -2118,18 +2126,6 @@ msgstr "Įjungti visus"
 
 #: src/settings_translation_file.cpp
 msgid "Disable anticheat"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Disable escape sequences"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Disable escape sequences, e.g. chat coloring.\n"
-"Use this if you want to run a server with pre-0.4.14 clients and you want to "
-"disable\n"
-"the escape sequences generated by mods."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -2216,10 +2212,6 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Enable view bobbing"
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid ""
 "Enable view bobbing and amount of view bobbing.\n"
 "For example: 0 for no view bobbing; 1.0 for normal; 2.0 for double."
@@ -2268,10 +2260,6 @@ msgstr ""
 msgid ""
 "Enables parallax occlusion mapping.\n"
 "Requires shaders to be enabled."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Enables view bobbing when walking."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3093,7 +3081,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Key for toggling autorun.\n"
+"Key for toggling autoforward.\n"
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
@@ -3266,6 +3254,10 @@ msgid ""
 "-    action\n"
 "-    info\n"
 "-    verbose"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Lightness sharpness"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3611,6 +3603,16 @@ msgid "Maximum simultaneous block sends total"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "Maximum size of the out chat queue"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Maximum size of the out chat queue. 0 to disable queueing and -1 to make the "
+"queue size unlimited"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Maximum time in ms a file download (e.g. a mod download) may take."
 msgstr ""
 
@@ -3661,18 +3663,6 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Modifies the size of the hudbar elements."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Modstore details URL"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Modstore download URL"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Modstore mods list URL"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3938,6 +3928,12 @@ msgid "Remote port"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Remove color codes from incoming chat messages\n"
+"Use this to stop players from being able to use color in their messages"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Replaces the default main menu with a custom one."
 msgstr ""
 
@@ -3995,6 +3991,10 @@ msgid "Save the map received by the client on disk."
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "Save window size automatically when modified."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Saving map received from server"
 msgstr ""
 
@@ -4017,10 +4017,6 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Screen width"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Screenshot"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -4257,6 +4253,10 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Strict protocol checking"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Strip color codes"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -4805,105 +4805,153 @@ msgstr ""
 msgid "cURL timeout"
 msgstr ""
 
-#~ msgid "Hide mp content"
-#~ msgstr "Slėpti papild. pakų turinį"
+#, fuzzy
+#~ msgid "Preload inventory textures"
+#~ msgstr "Įkeliama..."
 
-#~ msgid "Capital"
-#~ msgstr "Sostinė"
+#~ msgid "Add mod:"
+#~ msgstr "Pridėti papildinį:"
 
-#~ msgid "Comma"
-#~ msgstr "Kablelis"
+#~ msgid "MODS"
+#~ msgstr "PAPILDINIAI"
 
-#~ msgid "Final"
-#~ msgstr "Galutinis"
+#~ msgid "SINGLE PLAYER"
+#~ msgstr "VIENAS ŽAIDĖJAS"
 
-#~ msgid "Junja"
-#~ msgstr "Junja"
+#~ msgid "SETTINGS"
+#~ msgstr "NUSTATYMAI"
 
-#~ msgid "Kana"
-#~ msgstr "Kana"
+#~ msgid "Password"
+#~ msgstr "Slaptažodis"
 
-#~ msgid "Kanji"
-#~ msgstr "Kanji"
+#~ msgid "Name"
+#~ msgstr "Vardas"
 
-#~ msgid "Minus"
-#~ msgstr "Minus"
+#~ msgid "START SERVER"
+#~ msgstr "PALEISTI SERVERĮ"
 
-#~ msgid "Period"
-#~ msgstr "Periodas"
+#~ msgid "CLIENT"
+#~ msgstr "ŽAISTI TINKLE"
 
-#~ msgid "Plus"
-#~ msgstr "Plius"
+#~ msgid "<<-- Add mod"
+#~ msgstr "<<-- Pridėti papildinį"
+
+#~ msgid "Remove selected mod"
+#~ msgstr "Pašalinti pasirinktą papildinį"
 
 #, fuzzy
-#~ msgid "Mapgen flat cave width"
-#~ msgstr "Žemėlapių generavimas"
+#~ msgid "EDIT GAME"
+#~ msgstr "KEISTI ŽAIDIMĄ"
+
+#~ msgid "new game"
+#~ msgstr "naujas žaidimas"
+
+#~ msgid "Mods:"
+#~ msgstr "Papildiniai:"
+
+#~ msgid "GAMES"
+#~ msgstr "ŽAIDIMAI"
+
+#, fuzzy
+#~ msgid "If enabled, "
+#~ msgstr "įjungtas"
+
+#, fuzzy
+#~ msgid "If disabled "
+#~ msgstr "Išjungti papildinį"
+
+#~ msgid "Public Serverlist"
+#~ msgstr "Viešų serverių sąrašas"
+
+#~ msgid "No of course not!"
+#~ msgstr "Ne, tikrai ne!"
+
+#, fuzzy
+#~ msgid "Useful for mod developers."
+#~ msgstr "Pagrindiniai kūrėjai"
 
 #, fuzzy
 #~ msgid "Mapgen fractal cave width"
 #~ msgstr "Žemėlapių generavimas"
 
 #, fuzzy
-#~ msgid "Useful for mod developers."
-#~ msgstr "Pagrindiniai kūrėjai"
+#~ msgid "Mapgen flat cave width"
+#~ msgstr "Žemėlapių generavimas"
 
-#~ msgid "No of course not!"
-#~ msgstr "Ne, tikrai ne!"
+#~ msgid "Plus"
+#~ msgstr "Plius"
 
-#~ msgid "Public Serverlist"
-#~ msgstr "Viešų serverių sąrašas"
+#~ msgid "Period"
+#~ msgstr "Periodas"
 
-#, fuzzy
-#~ msgid "If disabled "
-#~ msgstr "Išjungti papildinį"
+#~ msgid "Minus"
+#~ msgstr "Minus"
 
-#, fuzzy
-#~ msgid "If enabled, "
-#~ msgstr "įjungtas"
+#~ msgid "Kanji"
+#~ msgstr "Kanji"
 
-#~ msgid "GAMES"
-#~ msgstr "ŽAIDIMAI"
+#~ msgid "Kana"
+#~ msgstr "Kana"
 
-#~ msgid "Mods:"
-#~ msgstr "Papildiniai:"
+#~ msgid "Junja"
+#~ msgstr "Junja"
 
-#~ msgid "new game"
-#~ msgstr "naujas žaidimas"
+#~ msgid "Final"
+#~ msgstr "Galutinis"
 
-#, fuzzy
-#~ msgid "EDIT GAME"
-#~ msgstr "KEISTI ŽAIDIMĄ"
+#~ msgid "Comma"
+#~ msgstr "Kablelis"
 
-#~ msgid "Remove selected mod"
-#~ msgstr "Pašalinti pasirinktą papildinį"
+#~ msgid "Capital"
+#~ msgstr "Sostinė"
 
-#~ msgid "<<-- Add mod"
-#~ msgstr "<<-- Pridėti papildinį"
+#~ msgid "Hide mp content"
+#~ msgstr "Slėpti papild. pakų turinį"
 
-#~ msgid "CLIENT"
-#~ msgstr "ŽAISTI TINKLE"
+#~ msgid "Use"
+#~ msgstr "Naudoti"
 
-#~ msgid "START SERVER"
-#~ msgstr "PALEISTI SERVERĮ"
+#~ msgid "Shutting down..."
+#~ msgstr "Išjungiama..."
 
-#~ msgid "Name"
-#~ msgstr "Vardas"
+#~ msgid "Resolving address..."
+#~ msgstr "Ieškoma adreso..."
 
-#~ msgid "Password"
-#~ msgstr "Slaptažodis"
+#~ msgid "Creating server..."
+#~ msgstr "Kuriamas serveris...."
 
-#~ msgid "SETTINGS"
-#~ msgstr "NUSTATYMAI"
+#~ msgid "Creating client..."
+#~ msgstr "Kuriamas klientas..."
 
-#~ msgid "SINGLE PLAYER"
-#~ msgstr "VIENAS ŽAIDĖJAS"
+#~ msgid "Connecting to server..."
+#~ msgstr "Jungiamasi prie serverio..."
 
-#~ msgid "MODS"
-#~ msgstr "PAPILDINIAI"
+#~ msgid "re-Install"
+#~ msgstr "Įdiegti iš naujo"
 
-#~ msgid "Add mod:"
-#~ msgstr "Pridėti papildinį:"
+#~ msgid "Unsorted"
+#~ msgstr "Nerikiuota"
 
-#, fuzzy
-#~ msgid "Preload inventory textures"
-#~ msgstr "Įkeliama..."
+#~ msgid "Successfully installed:"
+#~ msgstr "Sėkmingai įdiegta:"
+
+#~ msgid "Shortname:"
+#~ msgstr "Trumpas pavadinimas:"
+
+#~ msgid "Rating"
+#~ msgstr "Įvertinimas"
+
+#~ msgid "Page $1 of $2"
+#~ msgstr "Puslapis $1 iš $2"
+
+#~ msgid "Install"
+#~ msgstr "Įdiegti"
+
+#~ msgid "Downloading $1, please wait..."
+#~ msgstr "Atsiunčiama $1, prašome palaukti..."
+
+#~ msgid "Close store"
+#~ msgstr "Užverti parduotuvę"
+
+#~ msgid "No worldname given or no game selected"
+#~ msgstr "Nepateiktas joks pasaulio pavadinimas, arba nepasirinktas žaidimas"

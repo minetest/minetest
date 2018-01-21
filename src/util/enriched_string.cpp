@@ -30,26 +30,25 @@ EnrichedString::EnrichedString()
 EnrichedString::EnrichedString(const std::wstring &string,
 		const std::vector<SColor> &colors):
 	m_string(string),
-	m_colors(colors),
-	m_has_background(false)
+	m_colors(colors)
 {}
 
 EnrichedString::EnrichedString(const std::wstring &s, const SColor &color)
 {
 	clear();
-	addAtEnd(s, color);
+	addAtEnd(translate_string(s), color);
 }
 
 EnrichedString::EnrichedString(const wchar_t *str, const SColor &color)
 {
 	clear();
-	addAtEnd(std::wstring(str), color);
+	addAtEnd(translate_string(std::wstring(str)), color);
 }
 
 void EnrichedString::operator=(const wchar_t *str)
 {
 	clear();
-	addAtEnd(std::wstring(str), SColor(255, 255, 255, 255));
+	addAtEnd(translate_string(std::wstring(str)), SColor(255, 255, 255, 255));
 }
 
 void EnrichedString::addAtEnd(const std::wstring &s, const SColor &initial_color)
@@ -98,7 +97,6 @@ void EnrichedString::addAtEnd(const std::wstring &s, const SColor &initial_color
 			parseColorString(wide_to_utf8(parts[1]), m_background, true);
 			m_has_background = true;
 		}
-		continue;
 	}
 }
 
@@ -112,7 +110,7 @@ void EnrichedString::addCharNoColor(wchar_t c)
 {
 	m_string += c;
 	if (m_colors.empty()) {
-		m_colors.push_back(SColor(255, 255, 255, 255));
+		m_colors.emplace_back(255, 255, 255, 255);
 	} else {
 		m_colors.push_back(m_colors[m_colors.size() - 1]);
 	}
@@ -139,15 +137,16 @@ EnrichedString EnrichedString::substr(size_t pos, size_t len) const
 	}
 	if (len == std::string::npos || pos + len > m_string.length()) {
 		return EnrichedString(
-		           m_string.substr(pos, std::string::npos),
-		           std::vector<SColor>(m_colors.begin() + pos, m_colors.end())
-		       );
-	} else {
-		return EnrichedString(
-		           m_string.substr(pos, len),
-		           std::vector<SColor>(m_colors.begin() + pos, m_colors.begin() + pos + len)
-		       );
+			m_string.substr(pos, std::string::npos),
+			std::vector<SColor>(m_colors.begin() + pos, m_colors.end())
+		);
 	}
+
+	return EnrichedString(
+		m_string.substr(pos, len),
+		std::vector<SColor>(m_colors.begin() + pos, m_colors.begin() + pos + len)
+	);
+
 }
 
 const wchar_t *EnrichedString::c_str() const

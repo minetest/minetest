@@ -109,10 +109,9 @@ std::string gob_cmd_update_armor_groups(const ItemGroupList &armor_groups)
 	std::ostringstream os(std::ios::binary);
 	writeU8(os, GENERIC_CMD_UPDATE_ARMOR_GROUPS);
 	writeU16(os, armor_groups.size());
-	for(ItemGroupList::const_iterator i = armor_groups.begin();
-			i != armor_groups.end(); ++i){
-		os<<serializeString(i->first);
-		writeS16(os, i->second);
+	for (const auto &armor_group : armor_groups) {
+		os<<serializeString(armor_group.first);
+		writeS16(os, armor_group.second);
 	}
 	return os.str();
 }
@@ -145,6 +144,16 @@ std::string gob_cmd_update_animation(v2f frames, float frame_speed, float frame_
 	writeF1000(os, frame_blend);
 	// these are sent inverted so we get true when the server sends nothing
 	writeU8(os, !frame_loop);
+	return os.str();
+}
+
+std::string gob_cmd_update_animation_speed(float frame_speed)
+{
+	std::ostringstream os(std::ios::binary);
+	// command
+	writeU8(os, GENERIC_CMD_SET_ANIMATION_SPEED);
+	// parameters
+	writeF1000(os, frame_speed);
 	return os.str();
 }
 

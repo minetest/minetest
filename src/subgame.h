@@ -17,16 +17,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef SUBGAME_HEADER
-#define SUBGAME_HEADER
+#pragma once
 
 #include <string>
 #include <set>
 #include <vector>
 
 class Settings;
-
-#define WORLDNAME_BLACKLISTED_CHARS "/\\"
 
 struct SubgameSpec
 {
@@ -37,15 +34,15 @@ struct SubgameSpec
 	std::string name;
 	std::string menuicon_path;
 
-	SubgameSpec(const std::string &id_="",
-			const std::string &path_="",	
-			const std::string &gamemods_path_="",
-			const std::set<std::string> &addon_mods_paths_=std::set<std::string>(),
-			const std::string &name_="",
-			const std::string &menuicon_path_=""):
+	SubgameSpec(const std::string &id_ = "",
+			const std::string &path_ = "",
+			const std::string &gamemods_path_ = "",
+			const std::set<std::string> &addon_mods_paths_ = std::set<std::string>(),
+			const std::string &name_ = "",
+			const std::string &menuicon_path_ = ""):
 		id(id_),
 		path(path_),
-		gamemods_path(gamemods_path_),		
+		gamemods_path(gamemods_path_),
 		addon_mods_paths(addon_mods_paths_),
 		name(name_),
 		menuicon_path(menuicon_path_)
@@ -53,7 +50,7 @@ struct SubgameSpec
 
 	bool isValid() const
 	{
-		return (id != "" && path != "");
+		return (!id.empty() && !path.empty());
 	}
 };
 
@@ -92,7 +89,7 @@ struct WorldSpec
 
 	bool isValid() const
 	{
-		return (name != "" && path != "" && gameid != "");
+		return (!name.empty() && !path.empty() && !gameid.empty());
 	}
 };
 
@@ -101,6 +98,3 @@ std::vector<WorldSpec> getAvailableWorlds();
 // loads the subgame's config and creates world directory
 // and world.mt if they don't exist
 bool loadGameConfAndInitWorld(const std::string &path, const SubgameSpec &gamespec);
-
-#endif
-

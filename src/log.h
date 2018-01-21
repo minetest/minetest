@@ -17,14 +17,18 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef LOG_HEADER
-#define LOG_HEADER
+#pragma once
 
 #include <map>
 #include <queue>
 #include <string>
 #include <fstream>
-#include "threads.h"
+#include <thread>
+#include <mutex>
+#if !defined(_WIN32)  // POSIX
+	#include <unistd.h>
+#endif
+#include "settings.h"
 #include "irrlichttypes.h"
 
 class ILogOutput;
@@ -78,8 +82,8 @@ private:
 	// written to when one thread has access currently).
 	// Works on all known architectures (x86, ARM, MIPS).
 	volatile bool m_silenced_levels[LL_MAX];
-	std::map<threadid_t, std::string> m_thread_names;
-	mutable Mutex m_mutex;
+	std::map<std::thread::id, std::string> m_thread_names;
+	mutable std::mutex m_mutex;
 	bool m_trace_enabled;
 };
 
@@ -106,15 +110,51 @@ public:
 	StreamLogOutput(std::ostream &stream) :
 		m_stream(stream)
 	{
+#if !defined(_WIN32)
+		is_tty = isatty(fileno(stdout));
+#else
+		is_tty = false;
+#endif
 	}
 
 	void logRaw(LogLevel lev, const std::string &line)
 	{
+		static const std::string use_logcolor = g_settings->get("log_color");
+
+		bool colored = use_logcolor == "detect" ? is_tty : use_logcolor == "yes";
+		if (colored)
+			switch (lev) {
+			case LL_ERROR:
+				// error is red
+				m_stream << "\033[91m";
+				break;
+			case LL_WARNING:
+				// warning is yellow
+				m_stream << "\033[93m";
+				break;
+			case LL_INFO:
+				// info is a bit dark
+				m_stream << "\033[37m";
+				break;
+			case LL_VERBOSE:
+				// verbose is darker than info
+				m_stream << "\033[2m";
+				break;
+			default:
+				// action is white
+				colored = false;
+			}
+
 		m_stream << line << std::endl;
+
+		if (colored)
+			// reset to white color
+			m_stream << "\033[0m";
 	}
 
 private:
 	std::ostream &m_stream;
+	bool is_tty;
 };
 
 class FileLogOutput : public ICombinedLogOutput {
@@ -205,12 +245,7 @@ extern std::ostream dstream;
 #define dout_con (*dout_con_ptr)
 #define derr_con (*derr_con_ptr)
 #define dout_server (*dout_server_ptr)
-#define derr_server (*derr_server_ptr)
 
 #ifndef SERVER
 	#define dout_client (*dout_client_ptr)
-	#define derr_client (*derr_client_ptr)
-#endif
-
-
 #endif

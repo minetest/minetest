@@ -24,57 +24,27 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "clientmap.h"     // MapDrawControl
 #include "player.h"
 #include <cmath>
+#include "client/renderingengine.h"
 #include "settings.h"
 #include "wieldmesh.h"
 #include "noise.h"         // easeCurve
 #include "sound.h"
 #include "event.h"
-#include "profiler.h"
+#include "nodedef.h"
 #include "util/numeric.h"
 #include "constants.h"
 #include "fontengine.h"
 #include "script/scripting_client.h"
 
 #define CAMERA_OFFSET_STEP 200
+#define WIELDMESH_OFFSET_X 55.0f
+#define WIELDMESH_OFFSET_Y -35.0f
 
-#include "nodedef.h"
-
-Camera::Camera(scene::ISceneManager* smgr, MapDrawControl& draw_control,
-		Client *client):
-	m_playernode(NULL),
-	m_headnode(NULL),
-	m_cameranode(NULL),
-
-	m_wieldmgr(NULL),
-	m_wieldnode(NULL),
-
+Camera::Camera(MapDrawControl &draw_control, Client *client):
 	m_draw_control(draw_control),
-	m_client(client),
-
-	m_camera_position(0,0,0),
-	m_camera_direction(0,0,0),
-	m_camera_offset(0,0,0),
-
-	m_aspect(1.0),
-	m_fov_x(1.0),
-	m_fov_y(1.0),
-
-	m_view_bobbing_anim(0),
-	m_view_bobbing_state(0),
-	m_view_bobbing_speed(0),
-	m_view_bobbing_fall(0),
-
-	m_digging_anim(0),
-	m_digging_button(-1),
-
-	m_wield_change_timer(0.125),
-	m_wield_item_next(),
-
-	m_camera_mode(CAMERA_MODE_FIRST)
+	m_client(client)
 {
-	//dstream<<FUNCTION_NAME<<std::endl;
-
-	m_driver = smgr->getVideoDriver();
+	scene::ISceneManager *smgr = RenderingEngine::get_scene_manager();
 	// note: making the camera node a child of the player node
 	// would lead to unexpected behaviour, so we don't do that.
 	m_playernode = smgr->addEmptySceneNode(smgr->getRootSceneNode());
@@ -86,7 +56,7 @@ Camera::Camera(scene::ISceneManager* smgr, MapDrawControl& draw_control,
 	// all other 3D scene nodes and before the GUI.
 	m_wieldmgr = smgr->createNewSceneManager();
 	m_wieldmgr->addCameraSceneNode();
-	m_wieldnode = new WieldMeshSceneNode(m_wieldmgr->getRootSceneNode(), m_wieldmgr, -1, false);
+	m_wieldnode = new WieldMeshSceneNode(m_wieldmgr, -1, false);
 	m_wieldnode->setItem(ItemStack(), m_client);
 	m_wieldnode->drop(); // m_wieldmgr grabbed it
 
@@ -102,7 +72,7 @@ Camera::Camera(scene::ISceneManager* smgr, MapDrawControl& draw_control,
 	m_cache_fall_bobbing_amount = g_settings->getFloat("fall_bobbing_amount");
 	m_cache_view_bobbing_amount = g_settings->getFloat("view_bobbing_amount");
 	m_cache_fov                 = g_settings->getFloat("fov");
-	m_cache_zoom_fov            = g_settings->getFloat("zoom_fov");
+	m_arm_inertia               = g_settings->getBool("arm_inertia");
 	m_nametags.clear();
 }
 
@@ -126,7 +96,7 @@ bool Camera::successfullyCreated(std::string &error_message)
 	} else {
 		error_message.clear();
 	}
-	
+
 	if (g_settings->getBool("enable_client_modding")) {
 		m_client->getScript()->on_camera_ready(this);
 	}
@@ -221,8 +191,98 @@ void Camera::step(f32 dtime)
 	}
 }
 
-void Camera::update(LocalPlayer* player, f32 frametime, f32 busytime,
-		f32 tool_reload_ratio, ClientEnvironment &c_env)
+static inline v2f dir(const v2f &pos_dist)
+{
+	f32 x = pos_dist.X - WIELDMESH_OFFSET_X;
+	f32 y = pos_dist.Y - WIELDMESH_OFFSET_Y;
+
+	f32 x_abs = std::fabs(x);
+	f32 y_abs = std::fabs(y);
+
+	if (x_abs >= y_abs) {
+		y *= (1.0f / x_abs);
+		x /= x_abs;
+	}
+
+	if (y_abs >= x_abs) {
+		x *= (1.0f / y_abs);
+		y /= y_abs;
+	}
+
+	return v2f(std::fabs(x), std::fabs(y));
+}
+
+void Camera::addArmInertia(f32 player_yaw)
+{
+	m_cam_vel.X = std::fabs(rangelim(m_last_cam_pos.X - player_yaw,
+		-100.0f, 100.0f) / 0.016f) * 0.01f;
+	m_cam_vel.Y = std::fabs((m_last_cam_pos.Y - m_camera_direction.Y) / 0.016f);
+	f32 gap_X = std::fabs(WIELDMESH_OFFSET_X - m_wieldmesh_offset.X);
+	f32 gap_Y = std::fabs(WIELDMESH_OFFSET_Y - m_wieldmesh_offset.Y);
+
+	if (m_cam_vel.X > 1.0f || m_cam_vel.Y > 1.0f) {
+		/*
+		    The arm moves relative to the camera speed,
+		    with an acceleration factor.
+		*/
+
+		if (m_cam_vel.X > 1.0f) {
+			if (m_cam_vel.X > m_cam_vel_old.X)
+				m_cam_vel_old.X = m_cam_vel.X;
+
+			f32 acc_X = 0.12f * (m_cam_vel.X - (gap_X * 0.1f));
+			m_wieldmesh_offset.X += m_last_cam_pos.X < player_yaw ? acc_X : -acc_X;
+
+			if (m_last_cam_pos.X != player_yaw)
+				m_last_cam_pos.X = player_yaw;
+
+			m_wieldmesh_offset.X = rangelim(m_wieldmesh_offset.X,
+				WIELDMESH_OFFSET_X - 7.0f, WIELDMESH_OFFSET_X + 7.0f);
+		}
+
+		if (m_cam_vel.Y > 1.0f) {
+			if (m_cam_vel.Y > m_cam_vel_old.Y)
+				m_cam_vel_old.Y = m_cam_vel.Y;
+
+			f32 acc_Y = 0.12f * (m_cam_vel.Y - (gap_Y * 0.1f));
+			m_wieldmesh_offset.Y +=
+				m_last_cam_pos.Y > m_camera_direction.Y ? acc_Y : -acc_Y;
+
+			if (m_last_cam_pos.Y != m_camera_direction.Y)
+				m_last_cam_pos.Y = m_camera_direction.Y;
+
+			m_wieldmesh_offset.Y = rangelim(m_wieldmesh_offset.Y,
+				WIELDMESH_OFFSET_Y - 10.0f, WIELDMESH_OFFSET_Y + 5.0f);
+		}
+
+		m_arm_dir = dir(m_wieldmesh_offset);
+	} else {
+		/*
+		    Now the arm gets back to its default position when the camera stops,
+		    following a vector, with a smooth deceleration factor.
+		*/
+
+		f32 dec_X = 0.12f * (m_cam_vel_old.X * (1.0f +
+			(1.0f - m_arm_dir.X))) * (gap_X / 20.0f);
+
+		f32 dec_Y = 0.06f * (m_cam_vel_old.Y * (1.0f +
+			(1.0f - m_arm_dir.Y))) * (gap_Y / 15.0f);
+
+		if (gap_X < 0.1f)
+			m_cam_vel_old.X = 0.0f;
+
+		m_wieldmesh_offset.X -=
+			m_wieldmesh_offset.X > WIELDMESH_OFFSET_X ? dec_X : -dec_X;
+
+		if (gap_Y < 0.1f)
+			m_cam_vel_old.Y = 0.0f;
+
+		m_wieldmesh_offset.Y -=
+			m_wieldmesh_offset.Y > WIELDMESH_OFFSET_Y ? dec_Y : -dec_Y;
+	}
+}
+
+void Camera::update(LocalPlayer* player, f32 frametime, f32 busytime, f32 tool_reload_ratio)
 {
 	// Get player position
 	// Smooth the movement when walking up stairs
@@ -346,19 +406,19 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 busytime,
 
 		// Calculate new position
 		bool abort = false;
-		for (int i = BS; i <= BS*2.75; i++)
-		{
-			my_cp.X = m_camera_position.X + m_camera_direction.X*-i;
-			my_cp.Z = m_camera_position.Z + m_camera_direction.Z*-i;
+		for (int i = BS; i <= BS * 2.75; i++) {
+			my_cp.X = m_camera_position.X + m_camera_direction.X * -i;
+			my_cp.Z = m_camera_position.Z + m_camera_direction.Z * -i;
 			if (i > 12)
-				my_cp.Y = m_camera_position.Y + (m_camera_direction.Y*-i);
+				my_cp.Y = m_camera_position.Y + (m_camera_direction.Y * -i);
 
 			// Prevent camera positioned inside nodes
 			INodeDefManager *nodemgr = m_client->ndef();
-			MapNode n = c_env.getClientMap().getNodeNoEx(floatToInt(my_cp, BS));
+			MapNode n = m_client->getEnv().getClientMap()
+				.getNodeNoEx(floatToInt(my_cp, BS));
+
 			const ContentFeatures& features = nodemgr->get(n);
-			if(features.walkable)
-			{
+			if (features.walkable) {
 				my_cp.X += m_camera_direction.X*-1*-BS/2;
 				my_cp.Z += m_camera_direction.Z*-1*-BS/2;
 				my_cp.Y += m_camera_direction.Y*-1*-BS/2;
@@ -392,15 +452,17 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 busytime,
 
 	// Get FOV
 	f32 fov_degrees;
-	if (player->getPlayerControl().zoom && m_client->checkLocalPrivilege("zoom")) {
-		fov_degrees = m_cache_zoom_fov;
+	// Disable zoom with zoom FOV = 0
+	if (player->getPlayerControl().zoom && player->getZoomFOV() > 0.001f) {
+		fov_degrees = player->getZoomFOV();
 	} else {
 		fov_degrees = m_cache_fov;
 	}
-	fov_degrees = rangelim(fov_degrees, 7.0, 160.0);
+	fov_degrees = rangelim(fov_degrees, 1.0f, 160.0f);
 
 	// FOV and aspect ratio
-	m_aspect = (f32) porting::getWindowSize().X / (f32) porting::getWindowSize().Y;
+	const v2u32 &window_size = RenderingEngine::get_instance()->getWindowSize();
+	m_aspect = (f32) window_size.X / (f32) window_size.Y;
 	m_fov_y = fov_degrees * M_PI / 180.0;
 	// Increase vertical FOV on lower aspect ratios (<16:10)
 	m_fov_y *= MYMAX(1.0, MYMIN(1.4, sqrt(16./10. / m_aspect)));
@@ -408,12 +470,12 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 busytime,
 	m_cameranode->setAspectRatio(m_aspect);
 	m_cameranode->setFOV(m_fov_y);
 
-	float wieldmesh_offset_Y = -35 + player->getPitch() * 0.05;
-	wieldmesh_offset_Y = rangelim(wieldmesh_offset_Y, -52, -32);
+	if (m_arm_inertia)
+		addArmInertia(player->getYaw());
 
 	// Position the wielded item
 	//v3f wield_position = v3f(45, -35, 65);
-	v3f wield_position = v3f(55, wieldmesh_offset_Y, 65);
+	v3f wield_position = v3f(m_wieldmesh_offset.X, m_wieldmesh_offset.Y, 65);
 	//v3f wield_rotation = v3f(-100, 120, -100);
 	v3f wield_rotation = v3f(-100, 120, -100);
 	wield_position.Y += fabs(m_wield_change_timer)*320 - 40;
@@ -463,7 +525,7 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 busytime,
 	// If the player is walking, swimming, or climbing,
 	// view bobbing is enabled and free_move is off,
 	// start (or continue) the view bobbing animation.
-	v3f speed = player->getSpeed();
+	const v3f &speed = player->getSpeed();
 	const bool movement_XZ = hypot(speed.X, speed.Z) > BS;
 	const bool movement_Y = fabs(speed.Y) > BS;
 
@@ -487,7 +549,10 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 busytime,
 void Camera::updateViewingRange()
 {
 	f32 viewing_range = g_settings->getFloat("viewing_range");
-	m_draw_control.wanted_range = viewing_range;
+	f32 near_plane = g_settings->getFloat("near_plane");
+
+	m_draw_control.wanted_range = std::fmin(adjustDist(viewing_range, getFovMax()), 4000);
+	m_cameranode->setNearValue(rangelim(near_plane, 0.0f, 0.5f) * BS);
 	if (m_draw_control.range_all) {
 		m_cameranode->setFarValue(100000.0);
 		return;
@@ -554,33 +619,36 @@ void Camera::drawNametags()
 			// shadow can remain.
 			continue;
 		}
-		v3f pos = nametag->parent_node->getAbsolutePosition() + v3f(0.0, 1.1 * BS, 0.0);
+		v3f pos = nametag->parent_node->getAbsolutePosition() + nametag->nametag_pos * BS;
 		f32 transformed_pos[4] = { pos.X, pos.Y, pos.Z, 1.0f };
 		trans.multiplyWith1x4Matrix(transformed_pos);
 		if (transformed_pos[3] > 0) {
-			std::string nametag_colorless = unescape_enriched(nametag->nametag_text);
+			std::wstring nametag_colorless =
+				unescape_translate(utf8_to_wide(nametag->nametag_text));
 			core::dimension2d<u32> textsize =
 				g_fontengine->getFont()->getDimension(
-				utf8_to_wide(nametag_colorless).c_str());
+				nametag_colorless.c_str());
 			f32 zDiv = transformed_pos[3] == 0.0f ? 1.0f :
 				core::reciprocal(transformed_pos[3]);
-			v2u32 screensize = m_driver->getScreenSize();
+			v2u32 screensize = RenderingEngine::get_video_driver()->getScreenSize();
 			v2s32 screen_pos;
 			screen_pos.X = screensize.X *
 				(0.5 * transformed_pos[0] * zDiv + 0.5) - textsize.Width / 2;
 			screen_pos.Y = screensize.Y *
 				(0.5 - transformed_pos[1] * zDiv * 0.5) - textsize.Height / 2;
 			core::rect<s32> size(0, 0, textsize.Width, textsize.Height);
-			g_fontengine->getFont()->draw(utf8_to_wide(nametag->nametag_text).c_str(),
-					size + screen_pos, nametag->nametag_color);
+			g_fontengine->getFont()->draw(
+				translate_string(utf8_to_wide(nametag->nametag_text)).c_str(),
+				size + screen_pos, nametag->nametag_color);
 		}
 	}
 }
 
 Nametag *Camera::addNametag(scene::ISceneNode *parent_node,
-		std::string nametag_text, video::SColor nametag_color)
+		const std::string &nametag_text, video::SColor nametag_color,
+		const v3f &pos)
 {
-	Nametag *nametag = new Nametag(parent_node, nametag_text, nametag_color);
+	Nametag *nametag = new Nametag(parent_node, nametag_text, nametag_color, pos);
 	m_nametags.push_back(nametag);
 	return nametag;
 }

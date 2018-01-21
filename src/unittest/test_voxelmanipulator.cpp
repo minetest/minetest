@@ -61,8 +61,8 @@ void TestVoxelManipulator::testVoxelArea()
 
 	// Correct results
 	std::vector<VoxelArea> results;
-	results.push_back(VoxelArea(v3s16(-2,-2,-3), v3s16(3,2,-3)));
-	results.push_back(VoxelArea(v3s16(3,-2,-2), v3s16(3,2,2)));
+	results.emplace_back(v3s16(-2,-2,-3), v3s16(3,2,-3));
+	results.emplace_back(v3s16(3,-2,-2), v3s16(3,2,2));
 
 	UASSERT(aa.size() == results.size());
 

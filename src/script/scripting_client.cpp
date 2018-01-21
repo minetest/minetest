@@ -23,7 +23,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "cpp_api/s_internal.h"
 #include "lua_api/l_client.h"
 #include "lua_api/l_env.h"
+#include "lua_api/l_item.h"
 #include "lua_api/l_minimap.h"
+#include "lua_api/l_modchannels.h"
+#include "lua_api/l_particles_local.h"
 #include "lua_api/l_storage.h"
 #include "lua_api/l_sound.h"
 #include "lua_api/l_util.h"
@@ -33,7 +36,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "lua_api/l_camera.h"
 
 ClientScripting::ClientScripting(Client *client):
-	ScriptApiBase()
+	ScriptApiBase(ScriptingType::Client)
 {
 	setGameDef(client);
 
@@ -69,11 +72,14 @@ void ClientScripting::InitializeModApi(lua_State *L, int top)
 	NodeMetaRef::RegisterClient(L);
 	LuaLocalPlayer::Register(L);
 	LuaCamera::Register(L);
+	ModChannelRef::Register(L);
 
 	ModApiUtil::InitializeClient(L, top);
 	ModApiClient::Initialize(L, top);
 	ModApiStorage::Initialize(L, top);
 	ModApiEnvMod::InitializeClient(L, top);
+	ModApiChannels::Initialize(L, top);
+	ModApiParticlesLocal::Initialize(L, top);
 }
 
 void ClientScripting::on_client_ready(LocalPlayer *localplayer)

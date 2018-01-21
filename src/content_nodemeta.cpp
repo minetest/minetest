@@ -189,12 +189,3 @@ void content_nodemeta_deserialize_legacy(std::istream &is,
 			timers->set(NodeTimer(1., 0., p));
 	}
 }
-
-void content_nodemeta_serialize_legacy(std::ostream &os, NodeMetadataList *meta)
-{
-	// Sorry, I was too lazy to implement this. --kahrl
-	writeU16(os, 1); // version
-	writeU16(os, 0); // count
-}
-
-// END

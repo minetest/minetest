@@ -21,8 +21,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "map.h"
 #include "gettime.h"
 #include "nodedef.h"
+#include "util/directiontables.h"
 #include "util/timetaker.h"
-#include <string.h>  // memcpy, memset
+#include <cstring>  // memcpy, memset
 
 /*
 	Debug stuff
@@ -31,13 +32,6 @@ u64 addarea_time = 0;
 u64 emerge_time = 0;
 u64 emerge_load_time = 0;
 u64 clearflag_time = 0;
-
-
-VoxelManipulator::VoxelManipulator():
-	m_data(NULL),
-	m_flags(NULL)
-{
-}
 
 VoxelManipulator::~VoxelManipulator()
 {
@@ -49,15 +43,15 @@ void VoxelManipulator::clear()
 	// Reset area to volume=0
 	m_area = VoxelArea();
 	delete[] m_data;
-	m_data = NULL;
+	m_data = nullptr;
 	delete[] m_flags;
-	m_flags = NULL;
+	m_flags = nullptr;
 }
 
 void VoxelManipulator::print(std::ostream &o, INodeDefManager *ndef,
 		VoxelPrintMode mode)
 {
-	v3s16 em = m_area.getExtent();
+	const v3s16 &em = m_area.getExtent();
 	v3s16 of = m_area.MinEdge;
 	o<<"size: "<<em.X<<"x"<<em.Y<<"x"<<em.Z
 	 <<" offset: ("<<of.X<<","<<of.Y<<","<<of.Z<<")"<<std::endl;
@@ -112,7 +106,7 @@ void VoxelManipulator::print(std::ostream &o, INodeDefManager *ndef,
 					{
 						if(ndef->get(m).light_source != 0)
 							c = 'S';
-						else if(ndef->get(m).light_propagates == false)
+						else if(!ndef->get(m).light_propagates)
 							c = 'X';
 						else
 						{
@@ -210,7 +204,7 @@ void VoxelManipulator::addArea(const VoxelArea &area)
 }
 
 void VoxelManipulator::copyFrom(MapNode *src, const VoxelArea& src_area,
-		v3s16 from_pos, v3s16 to_pos, v3s16 size)
+		v3s16 from_pos, v3s16 to_pos, const v3s16 &size)
 {
 	/* The reason for this optimised code is that we're a member function
 	 * and the data type/layout of m_data is know to us: it's stored as
@@ -258,7 +252,7 @@ void VoxelManipulator::copyFrom(MapNode *src, const VoxelArea& src_area,
 }
 
 void VoxelManipulator::copyTo(MapNode *dst, const VoxelArea& dst_area,
-		v3s16 dst_pos, v3s16 from_pos, v3s16 size)
+		v3s16 dst_pos, v3s16 from_pos, const v3s16 &size)
 {
 	for(s16 z=0; z<size.Z; z++)
 	for(s16 y=0; y<size.Y; y++)
@@ -324,23 +318,13 @@ void VoxelManipulator::clearFlag(u8 flags)
 void VoxelManipulator::unspreadLight(enum LightBank bank, v3s16 p, u8 oldlight,
 		std::set<v3s16> & light_sources, INodeDefManager *nodemgr)
 {
-	v3s16 dirs[6] = {
-		v3s16(0,0,1), // back
-		v3s16(0,1,0), // top
-		v3s16(1,0,0), // right
-		v3s16(0,0,-1), // front
-		v3s16(0,-1,0), // bottom
-		v3s16(-1,0,0), // left
-	};
-
 	VoxelArea voxel_area(p - v3s16(1,1,1), p + v3s16(1,1,1));
 	addArea(voxel_area);
 
 	// Loop through 6 neighbors
-	for(u16 i=0; i<6; i++)
-	{
+	for (const v3s16 &dir : g_6dirs) {
 		// Get the position of the neighbor node
-		v3s16 n2pos = p + dirs[i];
+		v3s16 n2pos = p + dir;
 
 		u32 n2i = m_area.index(n2pos);
 
@@ -386,49 +370,9 @@ void VoxelManipulator::unspreadLight(enum LightBank bank, v3s16 p, u8 oldlight,
 	}
 }
 
-/*
-	Goes recursively through the neighbours of the node.
-
-	Alters only transparent nodes.
-
-	If the lighting of the neighbour is lower than the lighting of
-	the node was (before changing it to 0 at the step before), the
-	lighting of the neighbour is set to 0 and then the same stuff
-	repeats for the neighbour.
-
-	The ending nodes of the routine are stored in light_sources.
-	This is useful when a light is removed. In such case, this
-	routine can be called for the light node and then again for
-	light_sources to re-light the area without the removed light.
-
-	values of from_nodes are lighting values.
-*/
-void VoxelManipulator::unspreadLight(enum LightBank bank,
-		std::map<v3s16, u8> & from_nodes,
-		std::set<v3s16> & light_sources, INodeDefManager *nodemgr)
-{
-	if(from_nodes.empty())
-		return;
-
-	for(std::map<v3s16, u8>::iterator j = from_nodes.begin();
-		j != from_nodes.end(); ++j)
-	{
-		unspreadLight(bank, j->first, j->second, light_sources, nodemgr);
-	}
-}
-
 void VoxelManipulator::spreadLight(enum LightBank bank, v3s16 p,
 		INodeDefManager *nodemgr)
 {
-	const v3s16 dirs[6] = {
-		v3s16(0,0,1), // back
-		v3s16(0,1,0), // top
-		v3s16(1,0,0), // right
-		v3s16(0,0,-1), // front
-		v3s16(0,-1,0), // bottom
-		v3s16(-1,0,0), // left
-	};
-
 	VoxelArea voxel_area(p - v3s16(1,1,1), p + v3s16(1,1,1));
 	addArea(voxel_area);
 
@@ -443,10 +387,9 @@ void VoxelManipulator::spreadLight(enum LightBank bank, v3s16 p,
 	u8 newlight = diminish_light(oldlight);
 
 	// Loop through 6 neighbors
-	for(u16 i=0; i<6; i++)
-	{
+	for (const auto &dir : g_6dirs) {
 		// Get the position of the neighbor node
-		v3s16 n2pos = p + dirs[i];
+		v3s16 n2pos = p + dir;
 
 		u32 n2i = m_area.index(n2pos);
 
@@ -490,25 +433,12 @@ const MapNode VoxelManipulator::ContentIgnoreNode = MapNode(CONTENT_IGNORE);
 void VoxelManipulator::spreadLight(enum LightBank bank,
 		std::set<v3s16> & from_nodes, INodeDefManager *nodemgr)
 {
-	const v3s16 dirs[6] = {
-		v3s16(0,0,1), // back
-		v3s16(0,1,0), // top
-		v3s16(1,0,0), // right
-		v3s16(0,0,-1), // front
-		v3s16(0,-1,0), // bottom
-		v3s16(-1,0,0), // left
-	};
-
 	if(from_nodes.empty())
 		return;
 
 	std::set<v3s16> lighted_nodes;
 
-	for(std::set<v3s16>::iterator j = from_nodes.begin();
-		j != from_nodes.end(); ++j)
-	{
-		v3s16 pos = *j;
-
+	for (const v3s16 &pos : from_nodes) {
 		VoxelArea voxel_area(pos - v3s16(1,1,1), pos + v3s16(1,1,1));
 		addArea(voxel_area);
 
@@ -523,10 +453,9 @@ void VoxelManipulator::spreadLight(enum LightBank bank,
 		u8 newlight = diminish_light(oldlight);
 
 		// Loop through 6 neighbors
-		for(u16 i=0; i<6; i++)
-		{
+		for (const v3s16 &dir : g_6dirs) {
 			// Get the position of the neighbor node
-			v3s16 n2pos = pos + dirs[i];
+			v3s16 n2pos = pos + dir;
 
 			try
 			{

@@ -17,13 +17,15 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef PLAYER_HEADER
-#define PLAYER_HEADER
+#pragma once
 
 #include "irrlichttypes_bloated.h"
 #include "inventory.h"
-#include "threading/mutex.h"
+#include "constants.h"
+#include "network/networkprotocol.h"
+#include "util/basic_macros.h"
 #include <list>
+#include <mutex>
 
 #define PLAYERNAME_SIZE 20
 
@@ -32,22 +34,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 struct PlayerControl
 {
-	PlayerControl()
-	{
-		up = false;
-		down = false;
-		left = false;
-		right = false;
-		jump = false;
-		aux1 = false;
-		sneak = false;
-		LMB = false;
-		RMB = false;
-		pitch = 0;
-		yaw = 0;
-		sidew_move_joystick_axis = .0f;
-		forw_move_joystick_axis = .0f;
-	}
+	PlayerControl() = default;
 
 	PlayerControl(
 		bool a_up,
@@ -81,20 +68,20 @@ struct PlayerControl
 		sidew_move_joystick_axis = a_sidew_move_joystick_axis;
 		forw_move_joystick_axis = a_forw_move_joystick_axis;
 	}
-	bool up;
-	bool down;
-	bool left;
-	bool right;
-	bool jump;
-	bool aux1;
-	bool sneak;
-	bool zoom;
-	bool LMB;
-	bool RMB;
-	float pitch;
-	float yaw;
-	float sidew_move_joystick_axis;
-	float forw_move_joystick_axis;
+	bool up = false;
+	bool down = false;
+	bool left = false;
+	bool right = false;
+	bool jump = false;
+	bool aux1 = false;
+	bool sneak = false;
+	bool zoom = false;
+	bool LMB = false;
+	bool RMB = false;
+	float pitch = 0.0f;
+	float yaw = 0.0f;
+	float sidew_move_joystick_axis = 0.0f;
+	float forw_move_joystick_axis = 0.0f;
 };
 
 class Map;
@@ -102,9 +89,6 @@ struct CollisionInfo;
 struct HudElement;
 class Environment;
 
-// IMPORTANT:
-// Do *not* perform an assignment or copy operation on a Player or
-// RemotePlayer object!  This will copy the lock held for HUD synchronization
 class Player
 {
 public:
@@ -112,18 +96,20 @@ public:
 	Player(const char *name, IItemDefManager *idef);
 	virtual ~Player() = 0;
 
+	DISABLE_CLASS_COPY(Player);
+
 	virtual void move(f32 dtime, Environment *env, f32 pos_max_d)
 	{}
 	virtual void move(f32 dtime, Environment *env, f32 pos_max_d,
 			std::vector<CollisionInfo> *collision_info)
 	{}
 
-	v3f getSpeed()
+	const v3f &getSpeed() const
 	{
 		return m_speed;
 	}
 
-	void setSpeed(v3f speed)
+	void setSpeed(const v3f &speed)
 	{
 		m_speed = speed;
 	}
@@ -161,14 +147,12 @@ public:
 	v2s32 local_animations[4];
 	float local_animation_speed;
 
-	u16 peer_id;
-
 	std::string inventory_formspec;
 
 	PlayerControl control;
 	const PlayerControl& getPlayerControl() { return control; }
 
-	u32 keyPressed;
+	u32 keyPressed = 0;
 
 	HudElement* getHud(u32 id);
 	u32         addHud(HudElement* hud);
@@ -186,8 +170,5 @@ private:
 	// Protect some critical areas
 	// hud for example can be modified by EmergeThread
 	// and ServerThread
-	Mutex m_mutex;
+	std::mutex m_mutex;
 };
-
-#endif
-

@@ -17,9 +17,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef L_SETTINGS_H_
-#define L_SETTINGS_H_
+#pragma once
 
+#include "common/c_content.h"
 #include "lua_api/l_base.h"
 
 class Settings;
@@ -39,11 +39,17 @@ private:
 	// get_bool(self, key) -> boolean
 	static int l_get_bool(lua_State *L);
 
+	// get_np_group(self, key) -> noiseparam
+	static int l_get_np_group(lua_State *L);
+
 	// set(self, key, value)
 	static int l_set(lua_State *L);
 
 	// set_bool(self, key, value)
 	static int l_set_bool(lua_State *L);
+
+	// set_np_group(self, key, value)
+	static int l_set_np_group(lua_State *L);
 
 	// remove(self, key) -> success
 	static int l_remove(lua_State *L);
@@ -57,10 +63,10 @@ private:
 	// to_table(self) -> {[key1]=value1,...}
 	static int l_to_table(lua_State *L);
 
-	Settings *m_settings;
+	Settings *m_settings = nullptr;
 	std::string m_filename;
-	bool m_is_own_settings;
-	bool m_write_allowed;
+	bool m_is_own_settings = false;
+	bool m_write_allowed = true;
 
 public:
 	LuaSettings(Settings *settings, const std::string &filename);
@@ -77,5 +83,3 @@ public:
 
 	static void Register(lua_State *L);
 };
-
-#endif

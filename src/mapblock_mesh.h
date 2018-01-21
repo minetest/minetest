@@ -17,13 +17,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef MAPBLOCK_MESH_HEADER
-#define MAPBLOCK_MESH_HEADER
+#pragma once
 
 #include "irrlichttypes_extrabloated.h"
 #include "client/tile.h"
 #include "voxel.h"
-#include "util/cpp11_container.h"
+#include <array>
 #include <map>
 
 class Client;
@@ -40,10 +39,9 @@ struct MinimapMapblock;
 struct MeshMakeData
 {
 	VoxelManipulator m_vmanip;
-	v3s16 m_blockpos;
-	v3s16 m_crack_pos_relative;
-	bool m_smooth_lighting;
-	bool m_show_hud;
+	v3s16 m_blockpos = v3s16(-1337,-1337,-1337);
+	v3s16 m_crack_pos_relative = v3s16(-1337,-1337,-1337);
+	bool m_smooth_lighting = false;
 
 	Client *m_client;
 	bool m_use_shaders;
@@ -139,8 +137,6 @@ public:
 private:
 	scene::IMesh *m_mesh[MAX_TILE_LAYERS];
 	MinimapMapblock *m_minimap_mapblock;
-	Client *m_client;
-	video::IVideoDriver *m_driver;
 	ITextureSource *m_tsrc;
 	IShaderSource *m_shdrsrc;
 
@@ -192,7 +188,7 @@ struct PreMeshBuffer
 
 struct MeshCollector
 {
-	std::vector<PreMeshBuffer> prebuffers[MAX_TILE_LAYERS];
+	std::array<std::vector<PreMeshBuffer>, MAX_TILE_LAYERS> prebuffers;
 	bool m_use_tangent_vertices;
 
 	MeshCollector(bool use_tangent_vertices):
@@ -205,7 +201,8 @@ struct MeshCollector
 				const u16 *indices, u32 numIndices);
 	void append(const TileLayer &material,
 			const video::S3DVertex *vertices, u32 numVertices,
-			const u16 *indices, u32 numIndices, u8 layernum);
+			const u16 *indices, u32 numIndices, u8 layernum,
+			bool use_scale = false);
 	void append(const TileSpec &material,
 				const video::S3DVertex *vertices, u32 numVertices,
 				const u16 *indices, u32 numIndices, v3f pos,
@@ -213,7 +210,8 @@ struct MeshCollector
 	void append(const TileLayer &material,
 			const video::S3DVertex *vertices, u32 numVertices,
 			const u16 *indices, u32 numIndices, v3f pos,
-			video::SColor c, u8 light_source, u8 layernum);
+			video::SColor c, u8 light_source, u8 layernum,
+			bool use_scale = false);
 	/*!
 	 * Colorizes all vertices in the collector.
 	 */
@@ -237,7 +235,8 @@ video::SColor encode_light(u16 light, u8 emissive_light);
 // Compute light at node
 u16 getInteriorLight(MapNode n, s32 increment, INodeDefManager *ndef);
 u16 getFaceLight(MapNode n, MapNode n2, v3s16 face_dir, INodeDefManager *ndef);
-u16 getSmoothLight(v3s16 p, v3s16 corner, MeshMakeData *data);
+u16 getSmoothLightSolid(const v3s16 &p, const v3s16 &face_dir, const v3s16 &corner, MeshMakeData *data);
+u16 getSmoothLightTransparent(const v3s16 &p, const v3s16 &corner, MeshMakeData *data);
 
 /*!
  * Returns the sunlight's color from the current
@@ -271,6 +270,3 @@ void final_color_blend(video::SColor *result,
 // TileFrame vector copy cost very much to client
 void getNodeTileN(MapNode mn, v3s16 p, u8 tileindex, MeshMakeData *data, TileSpec &tile);
 void getNodeTile(MapNode mn, v3s16 p, v3s16 dir, MeshMakeData *data, TileSpec &tile);
-
-#endif
-

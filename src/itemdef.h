@@ -18,8 +18,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef ITEMDEF_HEADER
-#define ITEMDEF_HEADER
+#pragma once
 
 #include "irrlichttypes_extrabloated.h"
 #include <string>
@@ -61,7 +60,9 @@ struct ItemDefinition
 		Visual properties
 	*/
 	std::string inventory_image; // Optional for nodes, mandatory for tools/craftitems
+	std::string inventory_overlay; // Overlay of inventory_image.
 	std::string wield_image; // If empty, inventory_image or mesh (only nodes) is used
+	std::string wield_overlay; // Overlay of wield_image.
 	std::string palette_image; // If specified, the item will be colorized based on this
 	video::SColor color; // The fallback color of the node.
 	v3f wield_scale;
@@ -101,8 +102,9 @@ private:
 class IItemDefManager
 {
 public:
-	IItemDefManager(){}
-	virtual ~IItemDefManager(){}
+	IItemDefManager() = default;
+
+	virtual ~IItemDefManager() = default;
 
 	// Get item definition
 	virtual const ItemDefinition& get(const std::string &name) const=0;
@@ -134,8 +136,9 @@ public:
 class IWritableItemDefManager : public IItemDefManager
 {
 public:
-	IWritableItemDefManager(){}
-	virtual ~IWritableItemDefManager(){}
+	IWritableItemDefManager() = default;
+
+	virtual ~IWritableItemDefManager() = default;
 
 	// Get item definition
 	virtual const ItemDefinition& get(const std::string &name) const=0;
@@ -174,5 +177,3 @@ public:
 };
 
 IWritableItemDefManager* createItemDefManager();
-
-#endif

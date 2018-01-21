@@ -17,8 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef MODS_HEADER
-#define MODS_HEADER
+#pragma once
 
 #include "irrlichttypes.h"
 #include <list>
@@ -27,7 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <string>
 #include <map>
 #include <json/json.h>
-#include "util/cpp11_container.h"
+#include <unordered_set>
 #include "config.h"
 #include "metadata.h"
 
@@ -38,23 +37,17 @@ struct ModSpec
 	std::string name;
 	std::string path;
 	//if normal mod:
-	UNORDERED_SET<std::string> depends;
-	UNORDERED_SET<std::string> optdepends;
-	UNORDERED_SET<std::string> unsatisfied_depends;
+	std::unordered_set<std::string> depends;
+	std::unordered_set<std::string> optdepends;
+	std::unordered_set<std::string> unsatisfied_depends;
 
-	bool part_of_modpack;
-	bool is_modpack;
+	bool part_of_modpack = false;
+	bool is_modpack = false;
 	// if modpack:
 	std::map<std::string,ModSpec> modpack_content;
 	ModSpec(const std::string &name_="", const std::string &path_=""):
 		name(name_),
-		path(path_),
-		depends(),
-		optdepends(),
-		unsatisfied_depends(),
-		part_of_modpack(false),
-		is_modpack(false),
-		modpack_content()
+		path(path_)
 	{}
 };
 
@@ -99,7 +92,7 @@ protected:
 	// adds all mods in the set.
 	void addMods(const std::vector<ModSpec> &new_mods);
 
-	void addModsFormConfig(const std::string &settings_path, const std::set<std::string> &mods);
+	void addModsFromConfig(const std::string &settings_path, const std::set<std::string> &mods);
 
 	void checkConflictsAndDeps();
 private:
@@ -125,10 +118,10 @@ private:
 	// 1. game mod in modpack; 2. game mod;
 	// 3. world mod in modpack; 4. world mod;
 	// 5. addon mod in modpack; 6. addon mod.
-	UNORDERED_SET<std::string> m_name_conflicts;
+	std::unordered_set<std::string> m_name_conflicts;
 
 	// Deleted default constructor
-	ModConfiguration() {}
+	ModConfiguration() = default;
 
 };
 
@@ -147,15 +140,6 @@ public:
 };
 #endif
 
-#if USE_CURL
-Json::Value getModstoreUrl(const std::string &url);
-#else
-inline Json::Value getModstoreUrl(const std::string &url)
-{
-	return Json::Value();
-}
-#endif
-
 struct ModLicenseInfo {
 	int id;
 	std::string shortinfo;
@@ -167,62 +151,11 @@ struct ModAuthorInfo {
 	std::string username;
 };
 
-struct ModStoreMod {
-	int id;
-	std::string title;
-	std::string basename;
-	ModAuthorInfo author;
-	float rating;
-	bool valid;
-};
-
-struct ModStoreCategoryInfo {
-	int id;
-	std::string name;
-};
-
-struct ModStoreVersionEntry {
-	int id;
-	std::string date;
-	std::string file;
-	bool approved;
-	//ugly version number
-	int mtversion;
-};
-
-struct ModStoreTitlePic {
-	int id;
-	std::string file;
-	std::string description;
-	int mod;
-};
-
-struct ModStoreModDetails {
-	/* version_set?? */
-	std::vector<ModStoreCategoryInfo> categories;
-	ModAuthorInfo author;
-	ModLicenseInfo license;
-	ModStoreTitlePic titlepic;
-	int id;
-	std::string title;
-	std::string basename;
-	std::string description;
-	std::string repository;
-	float rating;
-	std::vector<std::string> depends;
-	std::vector<std::string> softdeps;
-
-	std::string download_url;
-	std::string screenshot_url;
-	std::vector<ModStoreVersionEntry> versions;
-	bool valid;
-};
-
 class ModMetadata: public Metadata
 {
 public:
 	ModMetadata(const std::string &mod_name);
-	~ModMetadata() {}
+	~ModMetadata() = default;
 
 	virtual void clear();
 
@@ -235,7 +168,5 @@ public:
 	virtual bool setString(const std::string &name, const std::string &var);
 private:
 	std::string m_mod_name;
-	bool m_modified;
+	bool m_modified = false;
 };
-
-#endif

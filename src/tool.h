@@ -17,29 +17,25 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef TOOL_HEADER
-#define TOOL_HEADER
+#pragma once
 
 #include "irrlichttypes.h"
 #include <string>
 #include <iostream>
-#include "util/cpp11_container.h"
 #include "itemgroup.h"
+#include <json/json.h>
 
 struct ToolGroupCap
 {
-	UNORDERED_MAP<int, float> times;
-	int maxlevel;
-	int uses;
+	std::unordered_map<int, float> times;
+	int maxlevel = 1;
+	int uses = 20;
 
-	ToolGroupCap():
-		maxlevel(1),
-		uses(20)
-	{}
+	ToolGroupCap() = default;
 
 	bool getTime(int rating, float *time) const
 	{
-		UNORDERED_MAP<int, float>::const_iterator i = times.find(rating);
+		std::unordered_map<int, float>::const_iterator i = times.find(rating);
 		if (i == times.end()) {
 			*time = 0;
 			return false;
@@ -47,11 +43,14 @@ struct ToolGroupCap
 		*time = i->second;
 		return true;
 	}
+
+	void toJson(Json::Value &object) const;
+	void fromJson(const Json::Value &json);
 };
 
 
-typedef UNORDERED_MAP<std::string, struct ToolGroupCap> ToolGCMap;
-typedef UNORDERED_MAP<std::string, s16> DamageGroup;
+typedef std::unordered_map<std::string, struct ToolGroupCap> ToolGCMap;
+typedef std::unordered_map<std::string, s16> DamageGroup;
 
 struct ToolCapabilities
 {
@@ -74,6 +73,8 @@ struct ToolCapabilities
 
 	void serialize(std::ostream &os, u16 version) const;
 	void deSerialize(std::istream &is);
+	void serializeJson(std::ostream &os) const;
+	void deserializeJson(std::istream &is);
 };
 
 struct DigParams
@@ -93,9 +94,6 @@ struct DigParams
 		main_group(a_main_group)
 	{}
 };
-
-DigParams getDigParams(const ItemGroupList &groups,
-		const ToolCapabilities *tp, float time_from_last_punch);
 
 DigParams getDigParams(const ItemGroupList &groups,
 		const ToolCapabilities *tp);
@@ -119,15 +117,11 @@ HitParams getHitParams(const ItemGroupList &armor_groups,
 
 struct PunchDamageResult
 {
-	bool did_punch;
-	int damage;
-	int wear;
+	bool did_punch = false;
+	int damage = 0;
+	int wear = 0;
 
-	PunchDamageResult():
-		did_punch(false),
-		damage(0),
-		wear(0)
-	{}
+	PunchDamageResult() = default;
 };
 
 struct ItemStack;
@@ -138,6 +132,3 @@ PunchDamageResult getPunchDamage(
 		const ItemStack *punchitem,
 		float time_from_last_punch
 );
-
-#endif
-

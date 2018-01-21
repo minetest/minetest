@@ -24,37 +24,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 std::string script_get_backtrace(lua_State *L)
 {
-	std::string s;
-	lua_getglobal(L, "debug");
-	if(lua_istable(L, -1)){
-		lua_getfield(L, -1, "traceback");
-		if(lua_isfunction(L, -1)) {
-			lua_call(L, 0, 1);
-			if(lua_isstring(L, -1)){
-				s = lua_tostring(L, -1);
-			}
-		}
-		lua_pop(L, 1);
-	}
-	lua_pop(L, 1);
-	return s;
-}
-
-int script_error_handler(lua_State *L) {
-	lua_getglobal(L, "debug");
-	if (!lua_istable(L, -1)) {
-		lua_pop(L, 1);
-		return 1;
-	}
-	lua_getfield(L, -1, "traceback");
-	if (!lua_isfunction(L, -1)) {
-		lua_pop(L, 2);
-		return 1;
-	}
-	lua_pushvalue(L, 1);
-	lua_pushinteger(L, 2);
-	lua_call(L, 2, 1);
-	return 1;
+	lua_rawgeti(L, LUA_REGISTRYINDEX, CUSTOM_RIDX_BACKTRACE);
+	lua_call(L, 0, 1);
+	return luaL_checkstring(L, -1);
 }
 
 int script_exception_wrapper(lua_State *L, lua_CFunction f)
@@ -178,9 +150,15 @@ void log_deprecated(lua_State *L, const std::string &message)
 	}
 
 	if (do_log) {
-		warningstream << message << std::endl;
-		// L can be NULL if we get called by log_deprecated(const std::string &msg)
-		// from scripting_game.cpp.
+		warningstream << message;
+		if (L) { // L can be NULL if we get called from scripting_game.cpp
+			lua_Debug ar;
+			FATAL_ERROR_IF(!lua_getstack(L, 2, &ar), "lua_getstack() failed");
+			FATAL_ERROR_IF(!lua_getinfo(L, "Sl", &ar), "lua_getinfo() failed");
+			warningstream << " (at " << ar.short_src << ":" << ar.currentline << ")";
+		}
+		warningstream << std::endl;
+
 		if (L) {
 			if (do_error)
 				script_error(L, LUA_ERRRUN, NULL, NULL);

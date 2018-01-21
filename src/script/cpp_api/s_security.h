@@ -17,8 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef S_SECURITY_H
-#define S_SECURITY_H
+#pragma once
 
 #include "cpp_api/s_base.h"
 
@@ -41,14 +40,18 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 class ScriptApiSecurity : virtual public ScriptApiBase
 {
 public:
-	int backupGlobals(lua_State *L);
+	int getThread(lua_State *L);
+	// creates an empty Lua environment
+	void createEmptyEnv(lua_State *L);
+	// sets the enviroment to the table thats on top of the stack
+	void setLuaEnv(lua_State *L, int thread);
 	// Sets up security on the ScriptApi's Lua state
 	void initializeSecurity();
 	void initializeSecurityClient();
 	// Checks if the Lua state has been secured
 	static bool isSecure(lua_State *L);
 	// Loads a file as Lua code safely (doesn't allow bytecode).
-	static bool safeLoadFile(lua_State *L, const char *path);
+	static bool safeLoadFile(lua_State *L, const char *path, const char *display_name = NULL);
 	// Checks if mods are allowed to read (and optionally write) to the path
 	static bool checkPath(lua_State *L, const char *path, bool write_required,
 			bool *write_allowed=NULL);
@@ -71,6 +74,3 @@ private:
 	static int sl_os_rename(lua_State *L);
 	static int sl_os_remove(lua_State *L);
 };
-
-#endif
-

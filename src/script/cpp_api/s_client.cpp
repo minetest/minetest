@@ -53,7 +53,7 @@ bool ScriptApiClient::on_sending_message(const std::string &message)
 
 	// Get core.registered_on_chat_messages
 	lua_getglobal(L, "core");
-	lua_getfield(L, -1, "registered_on_sending_chat_messages");
+	lua_getfield(L, -1, "registered_on_sending_chat_message");
 	// Call callbacks
 	lua_pushstring(L, message.c_str());
 	runCallbacks(1, RUN_CALLBACKS_MODE_OR_SC);
@@ -67,7 +67,7 @@ bool ScriptApiClient::on_receiving_message(const std::string &message)
 
 	// Get core.registered_on_chat_messages
 	lua_getglobal(L, "core");
-	lua_getfield(L, -1, "registered_on_receiving_chat_messages");
+	lua_getfield(L, -1, "registered_on_receiving_chat_message");
 	// Call callbacks
 	lua_pushstring(L, message.c_str());
 	runCallbacks(1, RUN_CALLBACKS_MODE_OR_SC);
@@ -221,6 +221,27 @@ bool ScriptApiClient::on_item_use(const ItemStack &item, const PointedThing &poi
 
 	// Call functions
 	runCallbacks(2, RUN_CALLBACKS_MODE_OR);
+	return lua_toboolean(L, -1);
+}
+
+bool ScriptApiClient::on_inventory_open(Inventory *inventory)
+{
+	SCRIPTAPI_PRECHECKHEADER
+
+	lua_getglobal(L, "core");
+	lua_getfield(L, -1, "registered_on_inventory_open");
+
+	std::vector<const InventoryList*> lists = inventory->getLists();
+	std::vector<const InventoryList*>::iterator iter = lists.begin();
+	lua_createtable(L, 0, lists.size());
+	for (; iter != lists.end(); iter++) {
+		const char* name = (*iter)->getName().c_str();
+		lua_pushstring(L, name);
+		push_inventory_list(L, inventory, name);
+		lua_rawset(L, -3);
+	}
+
+	runCallbacks(1, RUN_CALLBACKS_MODE_OR);
 	return lua_toboolean(L, -1);
 }
 

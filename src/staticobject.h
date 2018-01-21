@@ -17,8 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef STATICOBJECT_HEADER
-#define STATICOBJECT_HEADER
+#pragma once
 
 #include "irrlichttypes_bloated.h"
 #include <string>
@@ -29,16 +28,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 struct StaticObject
 {
-	u8 type;
+	u8 type = 0;
 	v3f pos;
 	std::string data;
 
-	StaticObject():
-		type(0),
-		pos(0,0,0)
-	{
-	}
-	StaticObject(u8 type_, v3f pos_, const std::string &data_):
+	StaticObject() = default;
+	StaticObject(u8 type_, const v3f &pos_, const std::string &data_):
 		type(type_),
 		pos(pos_),
 		data(data_)
@@ -56,7 +51,7 @@ public:
 		Inserts an object to the container.
 		Id must be unique (active) or 0 (stored).
 	*/
-	void insert(u16 id, StaticObject obj)
+	void insert(u16 id, const StaticObject &obj)
 	{
 		if(id == 0)
 		{
@@ -88,7 +83,7 @@ public:
 
 	void serialize(std::ostream &os);
 	void deSerialize(std::istream &is);
-	
+
 	/*
 		NOTE: When an object is transformed to active, it is removed
 		from m_stored and inserted to m_active.
@@ -99,6 +94,3 @@ public:
 
 private:
 };
-
-#endif
-

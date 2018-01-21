@@ -19,6 +19,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "l_client.h"
+#include "chatmessage.h"
+#include "client.h"
+#include "client/clientevent.h"
 #include "clientenvironment.h"
 #include "common/c_content.h"
 #include "common/c_converter.h"
@@ -27,12 +30,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "l_internal.h"
 #include "lua_api/l_item.h"
 #include "lua_api/l_nodemeta.h"
-#include "mainmenumanager.h"
+#include "gui/mainmenumanager.h"
 #include "map.h"
 #include "util/string.h"
 #include "nodedef.h"
-
-extern MainGameCallback *g_gamecallback;
 
 int ModApiClient::l_get_current_modname(lua_State *L)
 {
@@ -80,7 +81,7 @@ int ModApiClient::l_display_chat_message(lua_State *L)
 		return 0;
 
 	std::string message = luaL_checkstring(L, 1);
-	getClient(L)->pushToChatQueue(utf8_to_wide(message));
+	getClient(L)->pushToChatQueue(new ChatMessage(utf8_to_wide(message)));
 	lua_pushboolean(L, true);
 	return 1;
 }
@@ -90,6 +91,11 @@ int ModApiClient::l_send_chat_message(lua_State *L)
 {
 	if (!lua_isstring(L, 1))
 		return 0;
+
+	// If server disabled this API, discard
+	if (getClient(L)->checkCSMFlavourLimit(CSMFlavourLimit::CSM_FL_CHAT_MESSAGES))
+		return 0;
+
 	std::string message = luaL_checkstring(L, 1);
 	getClient(L)->sendChatMessage(utf8_to_wide(message));
 	return 0;
@@ -124,10 +130,10 @@ int ModApiClient::l_show_formspec(lua_State *L)
 	if (!lua_isstring(L, 1) || !lua_isstring(L, 2))
 		return 0;
 
-	ClientEvent event;
-	event.type = CE_SHOW_LOCAL_FORMSPEC;
-	event.show_formspec.formname = new std::string(luaL_checkstring(L, 1));
-	event.show_formspec.formspec = new std::string(luaL_checkstring(L, 2));
+	ClientEvent *event = new ClientEvent();
+	event->type = CE_SHOW_LOCAL_FORMSPEC;
+	event->show_formspec.formname = new std::string(luaL_checkstring(L, 1));
+	event->show_formspec.formspec = new std::string(luaL_checkstring(L, 2));
 	getClient(L)->pushToEventQueue(event);
 	lua_pushboolean(L, true);
 	return 1;
@@ -165,24 +171,11 @@ int ModApiClient::l_gettext(lua_State *L)
 
 // get_node(pos)
 // pos = {x=num, y=num, z=num}
-int ModApiClient::l_get_node(lua_State *L)
-{
-	// pos
-	v3s16 pos = read_v3s16(L, 1);
-	// Do it
-	bool pos_ok;
-	MapNode n = getClient(L)->getNode(pos, &pos_ok);
-	// Return node
-	pushnode(L, n, getClient(L)->ndef());
-	return 1;
-}
-
-// get_node_or_nil(pos)
-// pos = {x=num, y=num, z=num}
 int ModApiClient::l_get_node_or_nil(lua_State *L)
 {
 	// pos
 	v3s16 pos = read_v3s16(L, 1);
+
 	// Do it
 	bool pos_ok;
 	MapNode n = getClient(L)->getNode(pos, &pos_ok);
@@ -192,6 +185,13 @@ int ModApiClient::l_get_node_or_nil(lua_State *L)
 	} else {
 		lua_pushnil(L);
 	}
+	return 1;
+}
+
+int ModApiClient::l_get_language(lua_State *L)
+{
+	char *locale = setlocale(LC_ALL, "");
+	lua_pushstring(L, locale);
 	return 1;
 }
 
@@ -227,12 +227,14 @@ int ModApiClient::l_sound_play(lua_State *L)
 
 	SimpleSoundSpec spec;
 	read_soundspec(L, 1, spec);
-	float gain = 1.0;
+	float gain = 1.0f;
+	float pitch = 1.0f;
 	bool looped = false;
 	s32 handle;
 
 	if (lua_istable(L, 2)) {
 		getfloatfield(L, 2, "gain", gain);
+		getfloatfield(L, 2, "pitch", pitch);
 		getboolfield(L, 2, "loop", looped);
 
 		lua_getfield(L, 2, "pos");
@@ -240,13 +242,13 @@ int ModApiClient::l_sound_play(lua_State *L)
 			v3f pos = read_v3f(L, -1) * BS;
 			lua_pop(L, 1);
 			handle = sound->playSoundAt(
-					spec.name, looped, gain * spec.gain, pos);
+					spec.name, looped, gain * spec.gain, pos, pitch);
 			lua_pushinteger(L, handle);
 			return 1;
 		}
 	}
 
-	handle = sound->playSound(spec.name, looped, gain * spec.gain);
+	handle = sound->playSound(spec.name, looped, gain * spec.gain, 0.0f, pitch);
 	lua_pushinteger(L, handle);
 
 	return 1;
@@ -287,6 +289,9 @@ int ModApiClient::l_get_item_def(lua_State *L)
 	IItemDefManager *idef = gdef->idef();
 	assert(idef);
 
+	if (getClient(L)->checkCSMFlavourLimit(CSMFlavourLimit::CSM_FL_READ_ITEMDEFS))
+		return 0;
+
 	if (!lua_isstring(L, 1))
 		return 0;
 
@@ -312,6 +317,9 @@ int ModApiClient::l_get_node_def(lua_State *L)
 	if (!lua_isstring(L, 1))
 		return 0;
 
+	if (getClient(L)->checkCSMFlavourLimit(CSMFlavourLimit::CSM_FL_READ_NODEDEFS))
+		return 0;
+
 	const std::string &name = lua_tostring(L, 1);
 	const ContentFeatures &cf = ndef->get(ndef->getId(name));
 	if (cf.name != name) // Unknown node. | name = <whatever>, cf.name = ignore
@@ -325,8 +333,26 @@ int ModApiClient::l_get_node_def(lua_State *L)
 int ModApiClient::l_take_screenshot(lua_State *L)
 {
 	Client *client = getClient(L);
-	client->makeScreenshot(client->getDevice());
+	client->makeScreenshot();
 	return 0;
+}
+
+int ModApiClient::l_get_privilege_list(lua_State *L)
+{
+	const Client *client = getClient(L);
+	lua_newtable(L);
+	for (const std::string &priv : client->getPrivilegeList()) {
+		lua_pushboolean(L, true);
+		lua_setfield(L, -2, priv.c_str());
+	}
+	return 1;
+}
+
+// get_builtin_path()
+int ModApiClient::l_get_builtin_path(lua_State *L)
+{
+	lua_pushstring(L, BUILTIN_MOD_NAME ":");
+	return 1;
 }
 
 void ModApiClient::Initialize(lua_State *L, int top)
@@ -342,7 +368,6 @@ void ModApiClient::Initialize(lua_State *L, int top)
 	API_FCT(show_formspec);
 	API_FCT(send_respawn);
 	API_FCT(gettext);
-	API_FCT(get_node);
 	API_FCT(get_node_or_nil);
 	API_FCT(get_wielded_item);
 	API_FCT(disconnect);
@@ -353,4 +378,7 @@ void ModApiClient::Initialize(lua_State *L, int top)
 	API_FCT(get_item_def);
 	API_FCT(get_node_def);
 	API_FCT(take_screenshot);
+	API_FCT(get_privilege_list);
+	API_FCT(get_builtin_path);
+	API_FCT(get_language);
 }

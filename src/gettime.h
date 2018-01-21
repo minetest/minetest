@@ -17,11 +17,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef GETTIME_HEADER
-#define GETTIME_HEADER
+#pragma once
 
 #include "irrlichttypes.h"
-#include <time.h>
+#include <ctime>
 #include <string>
 
 enum TimePrecision
@@ -42,5 +41,3 @@ inline std::string getTimestamp()
 	strftime(cs, 20, "%Y-%m-%d %H:%M:%S", tm);
 	return cs;
 }
-
-#endif

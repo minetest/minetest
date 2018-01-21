@@ -40,7 +40,7 @@ extern "C" {
 #endif
 }
 
-#include <stdio.h>
+#include <cstdio>
 #include <cstdarg>
 #include "script/common/c_content.h"
 #include <sstream>
@@ -71,9 +71,8 @@ public:
 	ScriptApiBase
 */
 
-ScriptApiBase::ScriptApiBase() :
-	m_luastackmutex(),
-	m_gamedef(NULL)
+ScriptApiBase::ScriptApiBase(ScriptingType type):
+		m_type(type)
 {
 #ifdef SCRIPTAPI_LOCK_DEBUG
 	m_lock_recursion_count = 0;
@@ -84,15 +83,20 @@ ScriptApiBase::ScriptApiBase() :
 
 	lua_atpanic(m_luastack, &luaPanic);
 
-	luaL_openlibs(m_luastack);
+	if (m_type == ScriptingType::Client)
+		clientOpenLibs(m_luastack);
+	else
+		luaL_openlibs(m_luastack);
 
 	// Make the ScriptApiBase* accessible to ModApiBase
 	lua_pushlightuserdata(m_luastack, this);
 	lua_rawseti(m_luastack, LUA_REGISTRYINDEX, CUSTOM_RIDX_SCRIPTAPI);
 
 	// Add and save an error handler
-	lua_pushcfunction(m_luastack, script_error_handler);
-	lua_rawseti(m_luastack, LUA_REGISTRYINDEX, CUSTOM_RIDX_ERROR_HANDLER);
+	lua_getglobal(m_luastack, "debug");
+	lua_getfield(m_luastack, -1, "traceback");
+	lua_rawseti(m_luastack, LUA_REGISTRYINDEX, CUSTOM_RIDX_BACKTRACE);
+	lua_pop(m_luastack, 1); // pop debug
 
 	// If we are using LuaJIT add a C++ wrapper function to catch
 	// exceptions thrown in Lua -> C++ calls
@@ -106,19 +110,14 @@ ScriptApiBase::ScriptApiBase() :
 	lua_newtable(m_luastack);
 	lua_setglobal(m_luastack, "core");
 
-	lua_pushstring(m_luastack, DIR_DELIM);
+	if (m_type == ScriptingType::Client)
+		lua_pushstring(m_luastack, "/");
+	else
+		lua_pushstring(m_luastack, DIR_DELIM);
 	lua_setglobal(m_luastack, "DIR_DELIM");
 
 	lua_pushstring(m_luastack, porting::getPlatformName());
 	lua_setglobal(m_luastack, "PLATFORM");
-
-	// m_secure gets set to true inside
-	// ScriptApiSecurity::initializeSecurity(), if neccessary.
-	// Default to false otherwise
-	m_secure = false;
-
-	m_environment = NULL;
-	m_guiengine = NULL;
 }
 
 ScriptApiBase::~ScriptApiBase()
@@ -134,6 +133,28 @@ int ScriptApiBase::luaPanic(lua_State *L)
 	FATAL_ERROR(oss.str().c_str());
 	// NOTREACHED
 	return 0;
+}
+
+void ScriptApiBase::clientOpenLibs(lua_State *L)
+{
+	static const std::vector<std::pair<std::string, lua_CFunction>> m_libs = {
+		{ "", luaopen_base },
+		{ LUA_LOADLIBNAME, luaopen_package },
+		{ LUA_TABLIBNAME,  luaopen_table   },
+		{ LUA_OSLIBNAME,   luaopen_os      },
+		{ LUA_STRLIBNAME,  luaopen_string  },
+		{ LUA_MATHLIBNAME, luaopen_math    },
+		{ LUA_DBLIBNAME,   luaopen_debug   },
+#if USE_LUAJIT
+		{ LUA_JITLIBNAME,  luaopen_jit     },
+#endif
+	};
+	
+	for (const std::pair<std::string, lua_CFunction> &lib : m_libs) {
+	    lua_pushcfunction(L, lib.second);
+	    lua_pushstring(L, lib.first.c_str());
+	    lua_call(L, 1, 0);
+	}
 }
 
 void ScriptApiBase::loadMod(const std::string &script_path,
@@ -167,6 +188,35 @@ void ScriptApiBase::loadScript(const std::string &script_path)
 	}
 	lua_pop(L, 1); // Pop error handler
 }
+
+#ifndef SERVER
+void ScriptApiBase::loadModFromMemory(const std::string &mod_name)
+{
+	ModNameStorer mod_name_storer(getStack(), mod_name);
+
+	const std::string *init_filename = getClient()->getModFile(mod_name + ":init.lua");
+	const std::string display_filename = mod_name + ":init.lua";
+	if(init_filename == NULL)
+		throw ModError("Mod:\"" + mod_name + "\" lacks init.lua");
+
+	verbosestream << "Loading and running script " << display_filename << std::endl;
+
+	lua_State *L = getStack();
+
+	int error_handler = PUSH_ERROR_HANDLER(L);
+
+	bool ok = ScriptApiSecurity::safeLoadFile(L, init_filename->c_str(), display_filename.c_str());
+	if (ok)
+		ok = !lua_pcall(L, 0, 0, error_handler);
+	if (!ok) {
+		std::string error_msg = luaL_checkstring(L, -1);
+		lua_pop(L, 2); // Pop error message and error handler
+		throw ModError("Failed to load and run mod \"" +
+				mod_name + "\":\n" + error_msg);
+	}
+	lua_pop(L, 1); // Pop error handler
+}
+#endif
 
 // Push the list of callbacks (a lua table).
 // Then push nargs arguments.
@@ -322,6 +372,10 @@ void ScriptApiBase::objectrefGetOrCreate(lua_State *L,
 		ObjectRef::create(L, cobj);
 	} else {
 		push_objectRef(L, cobj->getId());
+		if (cobj->isGone())
+			warningstream << "ScriptApiBase::objectrefGetOrCreate(): "
+					<< "Pushing ObjectRef to removed/deactivated object"
+					<< ", this is probably a bug." << std::endl;
 	}
 }
 

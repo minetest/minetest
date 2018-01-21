@@ -1,6 +1,8 @@
 set (UNITTEST_SRCS
 	${CMAKE_CURRENT_SOURCE_DIR}/test.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/test_activeobject.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/test_areastore.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/test_ban.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/test_collision.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/test_compression.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/test_connection.cpp
@@ -8,6 +10,7 @@ set (UNITTEST_SRCS
 	${CMAKE_CURRENT_SOURCE_DIR}/test_inventory.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/test_map_settings_manager.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/test_mapnode.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/test_modchannels.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/test_nodedef.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/test_noderesolver.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/test_noise.cpp
@@ -26,5 +29,6 @@ set (UNITTEST_SRCS
 	PARENT_SCOPE)
 
 set (UNITTEST_CLIENT_SRCS
+	${CMAKE_CURRENT_SOURCE_DIR}/test_gameui.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/test_keycode.cpp
 	PARENT_SCOPE)

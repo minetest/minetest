@@ -27,6 +27,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/pointedthing.h"
 
 
+// Should be ordered exactly like enum NodeDrawType in nodedef.h
 struct EnumString ScriptApiNode::es_DrawType[] =
 	{
 		{NDT_NORMAL, "normal"},
@@ -34,18 +35,19 @@ struct EnumString ScriptApiNode::es_DrawType[] =
 		{NDT_LIQUID, "liquid"},
 		{NDT_FLOWINGLIQUID, "flowingliquid"},
 		{NDT_GLASSLIKE, "glasslike"},
-		{NDT_GLASSLIKE_FRAMED, "glasslike_framed"},
-		{NDT_GLASSLIKE_FRAMED_OPTIONAL, "glasslike_framed_optional"},
 		{NDT_ALLFACES, "allfaces"},
 		{NDT_ALLFACES_OPTIONAL, "allfaces_optional"},
 		{NDT_TORCHLIKE, "torchlike"},
 		{NDT_SIGNLIKE, "signlike"},
 		{NDT_PLANTLIKE, "plantlike"},
-		{NDT_FIRELIKE, "firelike"},
 		{NDT_FENCELIKE, "fencelike"},
 		{NDT_RAILLIKE, "raillike"},
 		{NDT_NODEBOX, "nodebox"},
+		{NDT_GLASSLIKE_FRAMED, "glasslike_framed"},
+		{NDT_FIRELIKE, "firelike"},
+		{NDT_GLASSLIKE_FRAMED_OPTIONAL, "glasslike_framed_optional"},
 		{NDT_MESH, "mesh"},
+		{NDT_PLANTLIKE_ROOTED, "plantlike_rooted"},
 		{0, NULL},
 	};
 
@@ -91,12 +93,6 @@ struct EnumString ScriptApiNode::es_NodeBoxType[] =
 		{0, NULL},
 	};
 
-ScriptApiNode::ScriptApiNode() {
-}
-
-ScriptApiNode::~ScriptApiNode() {
-}
-
 bool ScriptApiNode::node_on_punch(v3s16 p, MapNode node,
 		ServerActiveObject *puncher, PointedThing pointed)
 {
@@ -107,7 +103,7 @@ bool ScriptApiNode::node_on_punch(v3s16 p, MapNode node,
 	INodeDefManager *ndef = getServer()->ndef();
 
 	// Push callback function on stack
-	if (!getItemCallback(ndef->get(node).name.c_str(), "on_punch"))
+	if (!getItemCallback(ndef->get(node).name.c_str(), "on_punch", &p))
 		return false;
 
 	// Call function
@@ -130,7 +126,7 @@ bool ScriptApiNode::node_on_dig(v3s16 p, MapNode node,
 	INodeDefManager *ndef = getServer()->ndef();
 
 	// Push callback function on stack
-	if (!getItemCallback(ndef->get(node).name.c_str(), "on_dig"))
+	if (!getItemCallback(ndef->get(node).name.c_str(), "on_dig", &p))
 		return false;
 
 	// Call function
@@ -151,7 +147,7 @@ void ScriptApiNode::node_on_construct(v3s16 p, MapNode node)
 	INodeDefManager *ndef = getServer()->ndef();
 
 	// Push callback function on stack
-	if (!getItemCallback(ndef->get(node).name.c_str(), "on_construct"))
+	if (!getItemCallback(ndef->get(node).name.c_str(), "on_construct", &p))
 		return;
 
 	// Call function
@@ -169,7 +165,7 @@ void ScriptApiNode::node_on_destruct(v3s16 p, MapNode node)
 	INodeDefManager *ndef = getServer()->ndef();
 
 	// Push callback function on stack
-	if (!getItemCallback(ndef->get(node).name.c_str(), "on_destruct"))
+	if (!getItemCallback(ndef->get(node).name.c_str(), "on_destruct", &p))
 		return;
 
 	// Call function
@@ -187,7 +183,7 @@ bool ScriptApiNode::node_on_flood(v3s16 p, MapNode node, MapNode newnode)
 	INodeDefManager *ndef = getServer()->ndef();
 
 	// Push callback function on stack
-	if (!getItemCallback(ndef->get(node).name.c_str(), "on_flood"))
+	if (!getItemCallback(ndef->get(node).name.c_str(), "on_flood", &p))
 		return false;
 
 	// Call function
@@ -196,7 +192,7 @@ bool ScriptApiNode::node_on_flood(v3s16 p, MapNode node, MapNode newnode)
 	pushnode(L, newnode, ndef);
 	PCALL_RES(lua_pcall(L, 3, 1, error_handler));
 	lua_remove(L, error_handler);
-	return (bool) lua_isboolean(L, -1) && (bool) lua_toboolean(L, -1) == true;
+	return (bool) lua_isboolean(L, -1) && (bool) lua_toboolean(L, -1);
 }
 
 void ScriptApiNode::node_after_destruct(v3s16 p, MapNode node)
@@ -208,7 +204,7 @@ void ScriptApiNode::node_after_destruct(v3s16 p, MapNode node)
 	INodeDefManager *ndef = getServer()->ndef();
 
 	// Push callback function on stack
-	if (!getItemCallback(ndef->get(node).name.c_str(), "after_destruct"))
+	if (!getItemCallback(ndef->get(node).name.c_str(), "after_destruct", &p))
 		return;
 
 	// Call function
@@ -227,7 +223,7 @@ bool ScriptApiNode::node_on_timer(v3s16 p, MapNode node, f32 dtime)
 	INodeDefManager *ndef = getServer()->ndef();
 
 	// Push callback function on stack
-	if (!getItemCallback(ndef->get(node).name.c_str(), "on_timer"))
+	if (!getItemCallback(ndef->get(node).name.c_str(), "on_timer", &p))
 		return false;
 
 	// Call function
@@ -235,7 +231,7 @@ bool ScriptApiNode::node_on_timer(v3s16 p, MapNode node, f32 dtime)
 	lua_pushnumber(L,dtime);
 	PCALL_RES(lua_pcall(L, 2, 1, error_handler));
 	lua_remove(L, error_handler);
-	return (bool) lua_isboolean(L, -1) && (bool) lua_toboolean(L, -1) == true;
+	return (bool) lua_isboolean(L, -1) && (bool) lua_toboolean(L, -1);
 }
 
 void ScriptApiNode::node_on_receive_fields(v3s16 p,
@@ -255,7 +251,7 @@ void ScriptApiNode::node_on_receive_fields(v3s16 p,
 		return;
 
 	// Push callback function on stack
-	if (!getItemCallback(ndef->get(node).name.c_str(), "on_receive_fields"))
+	if (!getItemCallback(ndef->get(node).name.c_str(), "on_receive_fields", &p))
 		return;
 
 	// Call function
@@ -272,29 +268,5 @@ void ScriptApiNode::node_on_receive_fields(v3s16 p,
 	}
 	objectrefGetOrCreate(L, sender);        // player
 	PCALL_RES(lua_pcall(L, 4, 0, error_handler));
-	lua_pop(L, 1);  // Pop error handler
-}
-
-void ScriptApiNode::node_falling_update(v3s16 p)
-{
-	SCRIPTAPI_PRECHECKHEADER
-
-	int error_handler = PUSH_ERROR_HANDLER(L);
-
-	lua_getglobal(L, "nodeupdate");
-	push_v3s16(L, p);
-	PCALL_RES(lua_pcall(L, 1, 0, error_handler));
-	lua_pop(L, 1);  // Pop error handler
-}
-
-void ScriptApiNode::node_falling_update_single(v3s16 p)
-{
-	SCRIPTAPI_PRECHECKHEADER
-
-	int error_handler = PUSH_ERROR_HANDLER(L);
-
-	lua_getglobal(L, "nodeupdate_single");
-	push_v3s16(L, p);
-	PCALL_RES(lua_pcall(L, 1, 0, error_handler));
 	lua_pop(L, 1);  // Pop error handler
 }

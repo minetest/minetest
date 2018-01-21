@@ -223,14 +223,14 @@ void Logger::setLevelSilenced(LogLevel lev, bool silenced)
 
 void Logger::registerThread(const std::string &name)
 {
-	threadid_t id = thr_get_current_thread_id();
+	std::thread::id id = std::this_thread::get_id();
 	MutexAutoLock lock(m_mutex);
 	m_thread_names[id] = name;
 }
 
 void Logger::deregisterThread()
 {
-	threadid_t id = thr_get_current_thread_id();
+	std::thread::id id = std::this_thread::get_id();
 	MutexAutoLock lock(m_mutex);
 	m_thread_names.erase(id);
 }
@@ -253,9 +253,9 @@ const std::string Logger::getLevelLabel(LogLevel lev)
 
 const std::string Logger::getThreadName()
 {
-	std::map<threadid_t, std::string>::const_iterator it;
+	std::map<std::thread::id, std::string>::const_iterator it;
 
-	threadid_t id = thr_get_current_thread_id();
+	std::thread::id id = std::this_thread::get_id();
 	it = m_thread_names.find(id);
 	if (it != m_thread_names.end())
 		return it->second;
@@ -347,13 +347,10 @@ void StringBuffer::push_back(char c)
 			flush(std::string(buffer, buffer_index));
 		buffer_index = 0;
 	} else {
-		int index = buffer_index;
-		buffer[index++] = c;
-		if (index >= BUFFER_LENGTH) {
+		buffer[buffer_index++] = c;
+		if (buffer_index >= BUFFER_LENGTH) {
 			flush(std::string(buffer, buffer_index));
 			buffer_index = 0;
-		} else {
-			buffer_index = index;
 		}
 	}
 }

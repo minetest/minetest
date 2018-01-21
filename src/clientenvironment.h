@@ -17,13 +17,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef CLIENT_ENVIRONMENT_HEADER
-#define CLIENT_ENVIRONMENT_HEADER
+#pragma once
 
-#include <IrrlichtDevice.h>
-#include <ISceneManager.h>
 #include "environment.h"
+#include <ISceneManager.h>
 #include "clientobject.h"
+#include "util/numeric.h"
 
 class ClientSimpleObject;
 class ClientMap;
@@ -31,7 +30,6 @@ class ClientScripting;
 class ClientActiveObject;
 class GenericCAO;
 class LocalPlayer;
-struct PointedThing;
 
 /*
 	The client-side environment.
@@ -64,12 +62,11 @@ struct ClientEnvEvent
 	};
 };
 
+typedef std::unordered_map<u16, ClientActiveObject*> ClientActiveObjectMap;
 class ClientEnvironment : public Environment
 {
 public:
-	ClientEnvironment(ClientMap *map, scene::ISceneManager *smgr,
-		ITextureSource *texturesource, Client *client,
-		IrrlichtDevice *device);
+	ClientEnvironment(ClientMap *map, ITextureSource *texturesource, Client *client);
 	~ClientEnvironment();
 
 	Map & getMap();
@@ -127,61 +124,30 @@ public:
 		std::vector<DistanceSortedActiveObject> &dest);
 
 	bool hasClientEnvEvents() const { return !m_client_event_queue.empty(); }
+
 	// Get event from queue. If queue is empty, it triggers an assertion failure.
 	ClientEnvEvent getClientEnvEvent();
 
-	/*!
-	 * Gets closest object pointed by the shootline.
-	 * Returns NULL if not found.
-	 *
-	 * \param[in]  shootline_on_map    the shootline for
-	 * the test in world coordinates
-	 * \param[out] intersection_point  the first point where
-	 * the shootline meets the object. Valid only if
-	 * not NULL is returned.
-	 * \param[out] intersection_normal the normal vector of
-	 * the intersection, pointing outwards. Zero vector if
-	 * the shootline starts in an active object.
-	 * Valid only if not NULL is returned.
-	 */
-	ClientActiveObject * getSelectedActiveObject(
+	virtual void getSelectedActiveObjects(
 		const core::line3d<f32> &shootline_on_map,
-		v3f *intersection_point,
-		v3s16 *intersection_normal
+		std::vector<PointedThing> &objects
 	);
-
-	/*!
-	 * Performs a raycast on the world.
-	 * Returns the first thing the shootline meets.
-	 *
-	 * @param[in]  shootline         the shootline, starting from
-	 * the camera position. This also gives the maximal distance
-	 * of the search.
-	 * @param[in]  liquids_pointable if false, liquids are ignored
-	 * @param[in]  look_for_object   if false, objects are ignored
-	 */
-	PointedThing getPointedThing(
-		core::line3d<f32> shootline,
-		bool liquids_pointable,
-		bool look_for_object);
 
 	u16 attachement_parent_ids[USHRT_MAX + 1];
 
 	const std::list<std::string> &getPlayerNames() { return m_player_names; }
 	void addPlayerName(const std::string &name) { m_player_names.push_back(name); }
 	void removePlayerName(const std::string &name) { m_player_names.remove(name); }
-	void updateCameraOffset(v3s16 camera_offset)
+	void updateCameraOffset(const v3s16 &camera_offset)
 	{ m_camera_offset = camera_offset; }
 	v3s16 getCameraOffset() const { return m_camera_offset; }
 private:
 	ClientMap *m_map;
-	LocalPlayer *m_local_player;
-	scene::ISceneManager *m_smgr;
+	LocalPlayer *m_local_player = nullptr;
 	ITextureSource *m_texturesource;
 	Client *m_client;
-	ClientScripting *m_script;
-	IrrlichtDevice *m_irr;
-	UNORDERED_MAP<u16, ClientActiveObject*> m_active_objects;
+	ClientScripting *m_script = nullptr;
+	ClientActiveObjectMap m_active_objects;
 	std::vector<ClientSimpleObject*> m_simple_objects;
 	std::queue<ClientEnvEvent> m_client_event_queue;
 	IntervalLimiter m_active_object_light_update_interval;
@@ -191,5 +157,3 @@ private:
 	std::list<std::string> m_player_names;
 	v3s16 m_camera_offset;
 };
-
-#endif

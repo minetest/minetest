@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-05-21 17:39+0200\n"
+"POT-Creation-Date: 2017-08-24 18:42+0200\n"
 "PO-Revision-Date: 2017-05-10 03:36+0000\n"
 "Last-Translator: Unknown <abjinah@gmail.com>\n"
 "Language-Team: Dhivehi <https://hosted.weblate.org/projects/minetest/"
@@ -39,7 +39,7 @@ msgstr "massala eh dhimaa vejje"
 msgid "Main menu"
 msgstr "maigandu menu"
 
-#: builtin/fstk/ui.lua builtin/mainmenu/store.lua
+#: builtin/fstk/ui.lua
 msgid "Ok"
 msgstr "emme rangalhu"
 
@@ -51,7 +51,7 @@ msgstr "aa gulhumeh"
 msgid "The server has requested a reconnect:"
 msgstr "server in aa gulhumakah edhijje"
 
-#: builtin/mainmenu/common.lua src/game.cpp
+#: builtin/mainmenu/common.lua
 msgid "Loading..."
 msgstr "loadvanee"
 
@@ -165,7 +165,7 @@ msgid "Mapgen"
 msgstr "Mapufaddhaa"
 
 #: builtin/mainmenu/dlg_create_world.lua
-msgid "No worldname given or no game selected"
+msgid "No game selected"
 msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
@@ -228,6 +228,14 @@ msgid "< Back to Settings page"
 msgstr ""
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "<offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>),"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "<seed>, <octaves>, <persistence>, <lacunarity>"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Browse"
 msgstr ""
 
@@ -248,9 +256,7 @@ msgid "Format is 3 numbers separated by commas and inside brackets."
 msgstr ""
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
-msgid ""
-"Format: <offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>), <seed>, "
-"<octaves>, <persistence>"
+msgid "Format:"
 msgstr ""
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
@@ -259,10 +265,6 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_settings_advanced.lua builtin/mainmenu/tab_mods.lua
 msgid "Mods"
-msgstr ""
-
-#: builtin/mainmenu/dlg_settings_advanced.lua
-msgid "Optionally the lacunarity can be appended with a leading comma."
 msgstr ""
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
@@ -285,13 +287,16 @@ msgstr ""
 msgid "Restore Default"
 msgstr ""
 
-#: builtin/mainmenu/dlg_settings_advanced.lua builtin/mainmenu/store.lua
-#: builtin/mainmenu/tab_online.lua
+#: builtin/mainmenu/dlg_settings_advanced.lua builtin/mainmenu/tab_online.lua
 msgid "Search"
 msgstr ""
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
-msgid "Select path"
+msgid "Select directory"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "Select file"
 msgstr ""
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
@@ -330,42 +335,6 @@ msgstr ""
 
 #: builtin/mainmenu/modmgr.lua
 msgid "Subgame Mods"
-msgstr ""
-
-#: builtin/mainmenu/store.lua
-msgid "Close store"
-msgstr ""
-
-#: builtin/mainmenu/store.lua
-msgid "Downloading $1, please wait..."
-msgstr ""
-
-#: builtin/mainmenu/store.lua
-msgid "Install"
-msgstr ""
-
-#: builtin/mainmenu/store.lua
-msgid "Page $1 of $2"
-msgstr ""
-
-#: builtin/mainmenu/store.lua
-msgid "Rating"
-msgstr ""
-
-#: builtin/mainmenu/store.lua
-msgid "Shortname:"
-msgstr ""
-
-#: builtin/mainmenu/store.lua
-msgid "Successfully installed:"
-msgstr ""
-
-#: builtin/mainmenu/store.lua
-msgid "Unsorted"
-msgstr ""
-
-#: builtin/mainmenu/store.lua
-msgid "re-Install"
 msgstr ""
 
 #: builtin/mainmenu/tab_credits.lua
@@ -699,6 +668,10 @@ msgid "Start Singleplayer"
 msgstr ""
 
 #: builtin/mainmenu/tab_texturepacks.lua
+msgid "Default textures will be used."
+msgstr ""
+
+#: builtin/mainmenu/tab_texturepacks.lua
 msgid "No information available"
 msgstr ""
 
@@ -817,10 +790,6 @@ msgid "Change Password"
 msgstr ""
 
 #: src/game.cpp
-msgid "Connecting to server..."
-msgstr ""
-
-#: src/game.cpp
 msgid "Continue"
 msgstr ""
 
@@ -841,14 +810,6 @@ msgid ""
 "- Mouse right: place/use\n"
 "- Mouse wheel: select item\n"
 "- %s: chat\n"
-msgstr ""
-
-#: src/game.cpp
-msgid "Creating client..."
-msgstr ""
-
-#: src/game.cpp
-msgid "Creating server..."
 msgstr ""
 
 #: src/game.cpp
@@ -920,14 +881,6 @@ msgid "Remote server"
 msgstr ""
 
 #: src/game.cpp
-msgid "Resolving address..."
-msgstr ""
-
-#: src/game.cpp
-msgid "Shutting down..."
-msgstr ""
-
-#: src/game.cpp
 msgid "Singleplayer"
 msgstr ""
 
@@ -961,11 +914,19 @@ msgid "Proceed"
 msgstr ""
 
 #: src/guiKeyChangeMenu.cpp
-msgid "\"Use\" = climb down"
+msgid "\"Special\" = climb down"
+msgstr ""
+
+#: src/guiKeyChangeMenu.cpp
+msgid "Autoforward"
 msgstr ""
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Backward"
+msgstr ""
+
+#: src/guiKeyChangeMenu.cpp
+msgid "Change camera"
 msgstr ""
 
 #: src/guiKeyChangeMenu.cpp
@@ -978,6 +939,10 @@ msgstr ""
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Console"
+msgstr ""
+
+#: src/guiKeyChangeMenu.cpp
+msgid "Dec. range"
 msgstr ""
 
 #: src/guiKeyChangeMenu.cpp
@@ -994,6 +959,10 @@ msgstr ""
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Forward"
+msgstr ""
+
+#: src/guiKeyChangeMenu.cpp
+msgid "Inc. range"
 msgstr ""
 
 #: src/guiKeyChangeMenu.cpp
@@ -1048,12 +1017,28 @@ msgstr ""
 msgid "Right"
 msgstr ""
 
+#: src/guiKeyChangeMenu.cpp src/settings_translation_file.cpp
+msgid "Screenshot"
+msgstr ""
+
 #: src/guiKeyChangeMenu.cpp
 msgid "Sneak"
 msgstr ""
 
 #: src/guiKeyChangeMenu.cpp
+msgid "Special"
+msgstr ""
+
+#: src/guiKeyChangeMenu.cpp
 msgid "Toggle Cinematic"
+msgstr ""
+
+#: src/guiKeyChangeMenu.cpp
+msgid "Toggle HUD"
+msgstr ""
+
+#: src/guiKeyChangeMenu.cpp
+msgid "Toggle chat log"
 msgstr ""
 
 #: src/guiKeyChangeMenu.cpp
@@ -1065,11 +1050,15 @@ msgid "Toggle fly"
 msgstr ""
 
 #: src/guiKeyChangeMenu.cpp
-msgid "Toggle noclip"
+msgid "Toggle fog"
 msgstr ""
 
 #: src/guiKeyChangeMenu.cpp
-msgid "Use"
+msgid "Toggle minimap"
+msgstr ""
+
+#: src/guiKeyChangeMenu.cpp
+msgid "Toggle noclip"
 msgstr ""
 
 #: src/guiKeyChangeMenu.cpp src/keycode.cpp
@@ -1356,6 +1345,10 @@ msgstr ""
 msgid "X Button 2"
 msgstr ""
 
+#: src/network/clientpackethandler.cpp
+msgid "LANG_CODE"
+msgstr "dv"
+
 #: src/settings_translation_file.cpp
 msgid ""
 "(X,Y,Z) offset of fractal from world centre in units of 'scale'.\n"
@@ -1538,11 +1531,15 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "Automatic forwards key"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Automaticaly report to the serverlist."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Autorun key"
+msgid "Autosave Screen Size"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -1797,7 +1794,7 @@ msgid "Continuous forward"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Continuous forward movement (only used for testing)."
+msgid "Continuous forward movement, toggled by autoforward key."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -1876,6 +1873,10 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Damage"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Darkness sharpness"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -2002,10 +2003,6 @@ msgid "Depth below which you'll find massive caves."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Descending speed"
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid ""
 "Description of server, to be displayed when players join and in the "
 "serverlist."
@@ -2031,18 +2028,6 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Disable anticheat"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Disable escape sequences"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Disable escape sequences, e.g. chat coloring.\n"
-"Use this if you want to run a server with pre-0.4.14 clients and you want to "
-"disable\n"
-"the escape sequences generated by mods."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -2127,10 +2112,6 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Enable view bobbing"
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid ""
 "Enable view bobbing and amount of view bobbing.\n"
 "For example: 0 for no view bobbing; 1.0 for normal; 2.0 for double."
@@ -2177,10 +2158,6 @@ msgstr ""
 msgid ""
 "Enables parallax occlusion mapping.\n"
 "Requires shaders to be enabled."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Enables view bobbing when walking."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -2994,7 +2971,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Key for toggling autorun.\n"
+"Key for toggling autoforward.\n"
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
@@ -3165,6 +3142,10 @@ msgid ""
 "-    action\n"
 "-    info\n"
 "-    verbose"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Lightness sharpness"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3506,6 +3487,16 @@ msgid "Maximum simultaneous block sends total"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "Maximum size of the out chat queue"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Maximum size of the out chat queue. 0 to disable queueing and -1 to make the "
+"queue size unlimited"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Maximum time in ms a file download (e.g. a mod download) may take."
 msgstr ""
 
@@ -3555,18 +3546,6 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Modifies the size of the hudbar elements."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Modstore details URL"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Modstore download URL"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Modstore mods list URL"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3831,6 +3810,12 @@ msgid "Remote port"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Remove color codes from incoming chat messages\n"
+"Use this to stop players from being able to use color in their messages"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Replaces the default main menu with a custom one."
 msgstr ""
 
@@ -3887,6 +3872,10 @@ msgid "Save the map received by the client on disk."
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "Save window size automatically when modified."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Saving map received from server"
 msgstr ""
 
@@ -3909,10 +3898,6 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Screen width"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Screenshot"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -4138,6 +4123,10 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Strict protocol checking"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Strip color codes"
 msgstr ""
 
 #: src/settings_translation_file.cpp

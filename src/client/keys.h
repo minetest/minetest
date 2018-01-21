@@ -17,8 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef KEYS_HEADER
-#define KEYS_HEADER
+#pragma once
 
 #include <list>
 
@@ -35,7 +34,7 @@ public:
 		JUMP,
 		SPECIAL1,
 		SNEAK,
-		AUTORUN,
+		AUTOFORWARD,
 
 		ESC,
 
@@ -74,7 +73,30 @@ public:
 		QUICKTUNE_INC,
 		QUICKTUNE_DEC,
 
-		DEBUG_STACKS,
+		// hotbar
+		SLOT_1,
+		SLOT_2,
+		SLOT_3,
+		SLOT_4,
+		SLOT_5,
+		SLOT_6,
+		SLOT_7,
+		SLOT_8,
+		SLOT_9,
+		SLOT_10,
+		SLOT_11,
+		SLOT_12,
+		SLOT_13,
+		SLOT_14,
+		SLOT_15,
+		SLOT_16,
+		SLOT_17,
+		SLOT_18,
+		SLOT_19,
+		SLOT_20,
+		SLOT_21,
+		SLOT_22,
+		SLOT_23,
 
 		// joystick specific keys
 		MOUSE_L,
@@ -89,5 +111,3 @@ public:
 };
 
 typedef KeyType::T GameKeyType;
-
-#endif

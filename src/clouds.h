@@ -17,8 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef CLOUDS_HEADER
-#define CLOUDS_HEADER
+#pragma once
 
 #include "irrlichttypes_extrabloated.h"
 #include <iostream>
@@ -36,12 +35,9 @@ extern irr::scene::ISceneManager *g_menucloudsmgr;
 class Clouds : public scene::ISceneNode
 {
 public:
-	Clouds(
-			scene::ISceneNode* parent,
-			scene::ISceneManager* mgr,
+	Clouds(scene::ISceneManager* mgr,
 			s32 id,
-			u32 seed,
-			s16 cloudheight=0
+			u32 seed
 	);
 
 	~Clouds();
@@ -53,7 +49,7 @@ public:
 	virtual void OnRegisterSceneNode();
 
 	virtual void render();
-	
+
 	virtual const aabb3f &getBoundingBox() const
 	{
 		return m_box;
@@ -68,16 +64,16 @@ public:
 	{
 		return m_material;
 	}
-	
+
 	/*
 		Other stuff
 	*/
 
 	void step(float dtime);
 
-	void update(v2f camera_p, video::SColorf color);
-	
-	void updateCameraOffset(v3s16 camera_offset)
+	void update(const v3f &camera_p, const video::SColorf &color);
+
+	void updateCameraOffset(const v3s16 &camera_offset)
 	{
 		m_camera_offset = camera_offset;
 		updateBox();
@@ -118,6 +114,10 @@ public:
 		updateBox();
 	}
 
+	bool isCameraInsideCloud() const { return m_camera_inside_cloud; }
+
+	const video::SColor getColor() const { return m_color.toSColor(); }
+
 private:
 	void updateBox()
 	{
@@ -127,21 +127,18 @@ private:
 				BS * 1000000.0f, height_bs + thickness_bs - BS * m_camera_offset.Y, BS * 1000000.0f);
 	}
 
+	bool gridFilled(int x, int y) const;
+
 	video::SMaterial m_material;
 	aabb3f m_box;
-	s16 m_passed_cloud_y;
 	u16 m_cloud_radius_i;
 	bool m_enable_3d;
 	u32 m_seed;
-	v2f m_camera_pos;
+	v3f m_camera_pos;
 	v2f m_origin;
-	v2f m_speed;
 	v3s16 m_camera_offset;
-	video::SColorf m_color;
+	video::SColorf m_color = video::SColorf(1.0f, 1.0f, 1.0f, 1.0f);
 	CloudParams m_params;
+	bool m_camera_inside_cloud = false;
 
 };
-
-
-
-#endif

@@ -17,8 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef DEFAULTSETTINGS_HEADER
-#define DEFAULTSETTINGS_HEADER
+#pragma once
 
 class Settings;
 
@@ -34,5 +33,3 @@ void set_default_settings(Settings *settings);
  * @param from source settings pointer
  */
 void override_default_settings(Settings *settings, Settings *from);
-
-#endif

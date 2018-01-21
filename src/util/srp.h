@@ -53,8 +53,7 @@
  *    hash & prime number pairings.
  */
 
-#ifndef SRP_H
-#define SRP_H
+#pragma once
 
 struct SRPVerifier;
 struct SRPUser;
@@ -190,5 +189,3 @@ void srp_user_process_challenge(struct SRPUser *usr,
 
 /* bytes_HAMK must be exactly srp_user_get_session_key_length() bytes in size */
 void srp_user_verify_session(struct SRPUser *usr, const unsigned char *bytes_HAMK);
-
-#endif /* Include Guard */

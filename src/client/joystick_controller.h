@@ -17,8 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef JOYSTICK_HEADER
-#define JOYSTICK_HEADER
+#pragma once
 
 #include "irrlichttypes_extrabloated.h"
 #include "keys.h"
@@ -52,7 +51,8 @@ struct JoystickCombination {
 
 struct JoystickButtonCmb : public JoystickCombination {
 
-	JoystickButtonCmb() {}
+	JoystickButtonCmb() = default;
+
 	JoystickButtonCmb(GameKeyType key, u32 filter_mask, u32 compare_mask) :
 		filter_mask(filter_mask),
 		compare_mask(compare_mask)
@@ -68,7 +68,8 @@ struct JoystickButtonCmb : public JoystickCombination {
 
 struct JoystickAxisCmb : public JoystickCombination {
 
-	JoystickAxisCmb() {}
+	JoystickAxisCmb() = default;
+
 	JoystickAxisCmb(GameKeyType key, u16 axis_to_compare, int direction, s16 thresh) :
 		axis_to_compare(axis_to_compare),
 		direction(direction),
@@ -155,7 +156,7 @@ private:
 
 	s16 m_axes_vals[JA_COUNT];
 
-	u8 m_joystick_id;
+	u8 m_joystick_id = 0;
 
 	std::bitset<KeyType::INTERNAL_ENUM_COUNT> m_pressed_keys;
 
@@ -166,5 +167,3 @@ private:
 	std::bitset<KeyType::INTERNAL_ENUM_COUNT> m_past_pressed_keys;
 	std::bitset<KeyType::INTERNAL_ENUM_COUNT> m_past_released_keys;
 };
-
-#endif

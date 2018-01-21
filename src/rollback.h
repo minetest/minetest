@@ -17,8 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef ROLLBACK_HEADER
-#define ROLLBACK_HEADER
+#pragma once
 
 #include <string>
 #include "irr_v3d.h"
@@ -80,10 +79,10 @@ private:
 		time_t suspect_t, v3s16 action_p, time_t action_t);
 
 
-	IGameDef * gamedef;
+	IGameDef *gamedef = nullptr;
 
 	std::string current_actor;
-	bool current_actor_is_guess;
+	bool current_actor_is_guess = false;
 
 	std::list<RollbackAction> action_todisk_buffer;
 	std::list<RollbackAction> action_latest_buffer;
@@ -103,5 +102,3 @@ private:
 	std::vector<Entity> knownActors;
 	std::vector<Entity> knownNodes;
 };
-
-#endif

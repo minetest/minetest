@@ -18,8 +18,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef __L_STORAGE_H__
-#define __L_STORAGE_H__
+#pragma once
 
 #include "l_metadata.h"
 #include "lua_api/l_base.h"
@@ -38,7 +37,7 @@ public:
 class StorageRef : public MetaDataRef
 {
 private:
-	ModMetadata *m_object;
+	ModMetadata *m_object = nullptr;
 
 	static const char className[];
 	static const luaL_Reg methods[];
@@ -51,7 +50,7 @@ private:
 
 public:
 	StorageRef(ModMetadata *object);
-	~StorageRef() {}
+	~StorageRef() = default;
 
 	static void Register(lua_State *L);
 	static void create(lua_State *L, ModMetadata *object);
@@ -59,5 +58,3 @@ public:
 	static StorageRef *checkobject(lua_State *L, int narg);
 	static ModMetadata *getobject(StorageRef *ref);
 };
-
-#endif /* __L_STORAGE_H__ */

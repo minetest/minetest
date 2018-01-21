@@ -3,10 +3,10 @@
 #include "l_internal.h"
 #include "content_cao.h"
 #include "camera.h"
+#include "client.h"
 
-LuaCamera::LuaCamera(Camera *m)
+LuaCamera::LuaCamera(Camera *m) : m_camera(m)
 {
-	m_camera = m;
 }
 
 void LuaCamera::create(lua_State *L, Camera *m)

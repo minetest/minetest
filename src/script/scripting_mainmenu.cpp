@@ -25,6 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "lua_api/l_sound.h"
 #include "lua_api/l_util.h"
 #include "lua_api/l_settings.h"
+#include "log.h"
 
 extern "C" {
 #include "lualib.h"
@@ -33,7 +34,8 @@ extern "C" {
 #define MAINMENU_NUM_ASYNC_THREADS 4
 
 
-MainMenuScripting::MainMenuScripting(GUIEngine* guiengine)
+MainMenuScripting::MainMenuScripting(GUIEngine* guiengine):
+		ScriptApiBase(ScriptingType::MainMenu)
 {
 	setGuiEngine(guiengine);
 

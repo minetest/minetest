@@ -50,8 +50,8 @@ void TestNodeDef::testContentFeaturesSerialization()
 	ContentFeatures f;
 
 	f.name = "default:stone";
-	for (int i = 0; i < 6; i++)
-		f.tiledef[i].name = "default_stone.png";
+	for (TileDef &tiledef : f.tiledef)
+		tiledef.name = "default_stone.png";
 	f.is_ground_content = true;
 
 	std::ostringstream os(std::ios::binary);

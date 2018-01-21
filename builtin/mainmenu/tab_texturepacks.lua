@@ -51,7 +51,7 @@ end
 --------------------------------------------------------------------------------
 local function get_formspec(tabview, name, tabdata)
 
-	local retval = "label[4,-0.25;" .. fgettext("Select texture pack:") .. "]" ..
+	local retval = "label[4,-0.25;" .. fgettext("Select Texture Pack:") .. "]" ..
 			"textlist[4,0.25;7.5,5.0;TPs;"
 
 	local current_texture_path = core.settings:get("texture_path")
@@ -63,7 +63,10 @@ local function get_formspec(tabview, name, tabdata)
 	if current_texture_path == "" then
 		retval = retval ..
 			render_texture_pack_list(list) ..
-			";" .. index .. "]"
+			";" .. index .. "]" ..
+			"textarea[0.6,2.85;3.7,1.5;;" ..
+			fgettext("Default textures will be used.") ..
+			";]"
 		return retval
 	end
 
@@ -125,7 +128,7 @@ end
 --------------------------------------------------------------------------------
 return {
 	name = "texturepacks",
-	caption = fgettext("Texturepacks"),
+	caption = fgettext("Texture Packs"),
 	cbf_formspec = get_formspec,
 	cbf_button_handler = main_button_handler,
 	on_change = nil

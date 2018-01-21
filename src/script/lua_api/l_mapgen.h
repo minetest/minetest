@@ -17,8 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef L_MAPGEN_H_
-#define L_MAPGEN_H_
+#pragma once
 
 #include "lua_api/l_base.h"
 
@@ -26,8 +25,20 @@ class ModApiMapgen : public ModApiBase
 {
 private:
 	// get_biome_id(biomename)
-	// returns the biome id used in biomemap
+	// returns the biome id as used in biomemap and returned by 'get_biome_data()'
 	static int l_get_biome_id(lua_State *L);
+
+	// get_heat(pos)
+	// returns the heat at the position
+	static int l_get_heat(lua_State *L);
+
+	// get_humidity(pos)
+	// returns the humidity at the position
+	static int l_get_humidity(lua_State *L);
+
+	// get_biome_data(pos)
+	// returns a table containing the biome id, heat and humidity at the position
+	static int l_get_biome_data(lua_State *L);
 
 	// get_mapgen_object(objectname)
 	// returns the requested object used during map generation
@@ -119,5 +130,3 @@ public:
 	static struct EnumString es_SchematicFormatType[];
 	static struct EnumString es_NodeResolveMethod[];
 };
-
-#endif /* L_MAPGEN_H_ */

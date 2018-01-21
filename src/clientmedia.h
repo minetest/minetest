@@ -17,8 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef CLIENTMEDIA_HEADER
-#define CLIENTMEDIA_HEADER
+#pragma once
 
 #include "irrlichttypes.h"
 #include "filecache.h"
@@ -26,7 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <map>
 #include <set>
 #include <vector>
-#include "util/cpp11_container.h"
+#include <unordered_map>
 
 class Client;
 struct HTTPFetchResult;
@@ -42,10 +41,10 @@ public:
 
 	float getProgress() const {
 		if (m_uncached_count >= 1)
-			return 1.0 * m_uncached_received_count /
+			return 1.0f * m_uncached_received_count /
 				m_uncached_count;
-		else
-			return 0.0;
+
+		return 0.0f;
 	}
 
 	bool isStarted() const {
@@ -123,29 +122,27 @@ private:
 
 	// Has an attempt been made to load media files from the file cache?
 	// Have hash sets been requested from remote servers?
-	bool m_initial_step_done;
+	bool m_initial_step_done = false;
 
 	// Total number of media files to load
-	s32 m_uncached_count;
+	s32 m_uncached_count = 0;
 
 	// Number of media files that have been received
-	s32 m_uncached_received_count;
+	s32 m_uncached_received_count = 0;
 
 	// Status of remote transfers
 	unsigned long m_httpfetch_caller;
-	unsigned long m_httpfetch_next_id;
-	long m_httpfetch_timeout;
-	s32 m_httpfetch_active;
-	s32 m_httpfetch_active_limit;
-	s32 m_outstanding_hash_sets;
-	UNORDERED_MAP<unsigned long, std::string> m_remote_file_transfers;
+	unsigned long m_httpfetch_next_id = 0;
+	long m_httpfetch_timeout = 0;
+	s32 m_httpfetch_active = 0;
+	s32 m_httpfetch_active_limit = 0;
+	s32 m_outstanding_hash_sets = 0;
+	std::unordered_map<unsigned long, std::string> m_remote_file_transfers;
 
 	// All files up to this name have either been received from a
 	// remote server or failed on all remote servers, so those files
 	// don't need to be looked at again
 	// (use m_files.upper_bound(m_name_bound) to get an iterator)
-	std::string m_name_bound;
+	std::string m_name_bound = "";
 
 };
-
-#endif // !CLIENTMEDIA_HEADER

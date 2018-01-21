@@ -31,13 +31,15 @@
 	#include <windows.h>
 	#include <wincrypt.h>
 #else
-	#include <time.h>
+	#include <ctime>
+
 #endif
 // clang-format on
 
-#include <stdlib.h>
-#include <string.h>
-#include <stdio.h>
+#include <cstdlib>
+#include <cstring>
+#include <cstdio>
+#include <cstdint>
 
 #include <config.h>
 
@@ -417,7 +419,7 @@ static SRP_Result H_nn(
 }
 
 static SRP_Result H_ns(mpz_t result, SRP_HashAlgorithm alg, const unsigned char *n,
-	size_t len_n, const unsigned char *bytes, size_t len_bytes)
+	size_t len_n, const unsigned char *bytes, uint32_t len_bytes)
 {
 	unsigned char buff[SHA512_DIGEST_LENGTH];
 	size_t nbytes = len_n + len_bytes;
@@ -696,7 +698,7 @@ struct SRPVerifier *srp_verifier_new(SRP_HashAlgorithm alg,
 		goto cleanup_and_exit;
 	}
 
-	memcpy((char *)ver->username, username, ulen);
+	memcpy(ver->username, username, ulen);
 
 	ver->authenticated = 0;
 
@@ -861,7 +863,7 @@ err_exit:
 		mpz_clear(usr->a);
 		mpz_clear(usr->A);
 		mpz_clear(usr->S);
-		if (usr->ng) delete_ng(usr->ng);
+		delete_ng(usr->ng);
 		srp_free(usr->username);
 		srp_free(usr->username_verifier);
 		if (usr->password) {
