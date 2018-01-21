@@ -213,7 +213,7 @@ void ClientEnvironment::step(float dtime)
 	}
 
 	for (const CollisionInfo &info : player_collisions) {
-		v3f speed_diff = info.new_speed - info.old_speed;
+		v3f speed_diff = info.new_speed - info.old_speed;;
 		// Handle only fall damage
 		// (because otherwise walking against something in fast_move kills you)
 		if (speed_diff.Y < 0 || info.old_speed.Y >= 0)
