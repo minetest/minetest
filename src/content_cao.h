@@ -125,7 +125,10 @@ public:
 	{
 		return ACTIVEOBJECT_TYPE_GENERIC;
 	}
-
+	inline ItemGroupList getGroups()
+	{
+		return m_armor_groups;
+	}
 	void initialize(const std::string &data);
 
 	void processInitData(const std::string &data);
