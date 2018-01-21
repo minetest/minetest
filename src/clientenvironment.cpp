@@ -32,6 +32,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "settings.h"
 #include "content_cao.h"
 #include <algorithm>
+#include <iostream>
 
 /*
 	ClientEnvironment
@@ -214,7 +215,10 @@ void ClientEnvironment::step(float dtime)
 	while(dtime_downcount > 0.001);
 
 	//std::cout<<"Looped "<<loopcount<<" times."<<std::endl;
-
+	int player_immortal = 0;
+	if(lplayer->getCAO()){
+		player_immortal = itemgroup_get(lplayer->getCAO()->getGroups(), "immortal");
+	}
 	for(std::vector<CollisionInfo>::iterator i = player_collisions.begin();
 		i != player_collisions.end(); ++i) {
 		CollisionInfo &info = *i;
@@ -238,7 +242,7 @@ void ClientEnvironment::step(float dtime)
 			pre_factor = 1.0 + (float)addp/100.0;
 		}
 		float speed = pre_factor * speed_diff.getLength();
-		if (speed > tolerance && itemgroup_get(lplayer->getCAO()->getGroups(), "immortal") == 0) {
+		if (speed > tolerance && !player_immortal) {
 			f32 damage_f = (speed - tolerance) / BS * post_factor;
 			u8 damage = (u8)MYMIN(damage_f + 0.5, 255);
 			if (damage != 0) {

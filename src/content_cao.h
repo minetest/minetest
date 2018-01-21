@@ -125,7 +125,7 @@ public:
 	{
 		return ACTIVEOBJECT_TYPE_GENERIC;
 	}
-	inline ItemGroupList getGroups()
+	inline const ItemGroupList &getGroups()
 	{
 		return m_armor_groups;
 	}
