@@ -145,7 +145,9 @@ public:
 	{
 		return m_yaw;
 	}
-
+	
+	const int isImmortal();
+	
 	scene::ISceneNode *getSceneNode();
 
 	scene::IAnimatedMeshSceneNode *getAnimatedMeshSceneNode();
