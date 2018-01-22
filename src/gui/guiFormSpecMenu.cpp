@@ -1013,13 +1013,13 @@ void GUIFormSpecMenu::createTextField(parserData *data, FieldSpec &spec,
 		return;
 	}
 
-	if (is_editable)
+	if (is_editable) {
 		spec.send = true;
-
-	// Multiline textareas: swap default and label for backwards compat
-	if (!is_editable && is_multiline &&
-			spec.fdefault.empty() && !spec.flabel.empty())
+	} else if (is_multiline &&
+			spec.fdefault.empty() && !spec.flabel.empty()) {
+		// Multiline textareas: swap default and label for backwards compat
 		spec.flabel.swap(spec.fdefault);
+	}
 
 	gui::IGUIEditBox *e = nullptr;
 	static constexpr bool use_intl_edit_box = USE_FREETYPE &&
