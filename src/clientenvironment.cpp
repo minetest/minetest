@@ -207,10 +207,10 @@ void ClientEnvironment::step(float dtime)
 	while(dtime_downcount > 0.001);
 
 	//std::cout<<"Looped "<<loopcount<<" times."<<std::endl;
-	
+
 	GenericCAO *playercao = lplayer->getCAO();
 	bool player_immortal = playercao ? playercao->isImmortal() : false;
-		
+
 	for (const CollisionInfo &info : player_collisions) {
 		v3f speed_diff = info.new_speed - info.old_speed;;
 		// Handle only fall damage
