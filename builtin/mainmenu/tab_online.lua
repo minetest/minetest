@@ -33,9 +33,9 @@ local function get_formspec(tabview, name, tabdata)
 
 	local retval =
 		-- Search
-		"field[0.15,0.075;4.05,1;te_search;;"..core.formspec_escape(tabdata.search_for).."]"..
-		"button[3.846,-0.25;2,1;btn_mp_search;" .. fgettext("Search") .. "]" ..
-		"button[5.8,-0.25;2,1;btn_mp_refresh;" .. fgettext("Refresh") .. "]" ..
+		"field[0.15,0.075;5.05,1;te_search;;"..core.formspec_escape(tabdata.search_for).."]"..
+		"button[4.845,-0.25;1.5,1;btn_mp_search;" .. fgettext("Search") .. "]" ..
+		"button[6.3,-0.25;1.5,1;btn_mp_refresh;" .. fgettext("Refresh") .. "]" ..
 
 		-- Address / Port
 		"label[7.75,-0.25;" .. fgettext("Address / Port") .. "]" ..
