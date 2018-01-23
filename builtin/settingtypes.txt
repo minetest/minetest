@@ -1199,7 +1199,8 @@ name (Player name) string
 
 #    Set the language. Leave empty to use the system language.
 #    A restart is required after changing this.
-language (Language) enum   ,be,ca,cs,da,de,en,eo,es,et,fr,he,hu,id,it,ja,jbo,ko,ky,lt,nb,nl,pl,pt,pt_BR,ro,ru,sr_Cyrl,tr,uk,zh_CN,zh_TW
+language (Language) enum   ,be,ca,cs,da,de,dv,en,eo,es,et,fr,he,hu,id,it,ja,jbo,ko,ky,lt,ms,nb,nl,pl,pt,pt_BR,ro,ru,sl,sr_Cyrl,sv,sw,tr,uk,zh_CN,zh_TW
+
 
 #    Level of logging to be written to debug.txt:
 #    -    <nothing> (no logging)
