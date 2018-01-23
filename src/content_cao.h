@@ -146,7 +146,7 @@ public:
 		return m_yaw;
 	}
 
-	bool isImmortal();
+	const bool isImmortal();
 
 	scene::ISceneNode *getSceneNode();
 
