@@ -360,7 +360,7 @@ v3f GenericCAO::getPosition()
 	return pos_translator.vect_show;
 }
 
-bool GenericCAO::isImmortal()
+const bool GenericCAO::isImmortal()
 {
 	return itemgroup_get(getGroups(), "immortal");
 }
