@@ -3413,6 +3413,16 @@ These functions return the leftover itemstack.
 * `minetest.record_protection_violation(pos, name)`
     * This function calls functions registered with
       `minetest.register_on_protection_violation`.
+* `minetest.intersects_protection(minp, maxp, player_name, interval)
+    * Returns a boolean, returns true if the volume defined by `minp` and `maxp`
+      intersects a protected area not owned by `player_name`.
+    * Applies `is_protected()` to a 3D lattice of points in the defined volume.
+      The points are spaced evenly throughout the volume and have a spacing
+      similar to, but no larger than, `interval`.
+    * All corners and edges of the defined volume are checked.
+    * `interval` defaults to 4.
+    * `interval` should be carefully chosen and maximised to avoid an excessive
+      number of points being checked.
 * `minetest.rotate_and_place(itemstack, placer, pointed_thing, infinitestacks, orient_flags)`
     * Attempt to predict the desired orientation of the facedir-capable node
       defined by `itemstack`, and place it accordingly (on-wall, on the floor, or
