@@ -2,18 +2,11 @@
 
 
 core.register_on_sending_chat_message(function(message)
-	if message:sub(1,2) == ".." then
+	if message:sub(1,2) == ".." and message:sub(1,1) == "." then
 		return false
 	end
 
-	local first_char = message:sub(1,1)
-	if first_char == "/" or first_char == "." then
-		core.display_chat_message(core.gettext("issued command: ") .. message)
-	end
-
-	if first_char ~= "." then
-		return false
-	end
+	core.display_chat_message(core.gettext("issued command: ") .. message)
 
 	local cmd, param = string.match(message, "^%.([^ ]+) *(.*)")
  	param = param or ""
