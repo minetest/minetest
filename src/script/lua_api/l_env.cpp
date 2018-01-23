@@ -286,21 +286,27 @@ int ModApiEnvMod::l_bulk_set_node(lua_State *L)
 	}
 
 	s32 len = lua_objlen(L, 1);
+	if (len == 0) {
+		lua_pushboolean(L, true);
+		return 1;
+	}
 	std::vector<v3s16> pos_list(len);
 
 	for (s32 i = 1; i <= len; i++) {
 		lua_rawgeti(L, 1, i);
-		pos_list.push_back(read_v3s16(L, -1));
+		pos_list[i - 1] = read_v3s16(L, -1);
 		lua_pop(L, 1);
 	}
 
 	MapNode n = readnode(L, 2, ndef);
+
 	// Do it
 	bool succeeded = true;
 	for (const v3s16 &p : pos_list) {
 		if (!env->setNode(p, n))
 			succeeded = false;
 	}
+
 	lua_pushboolean(L, succeeded);
 	return 1;
 }
