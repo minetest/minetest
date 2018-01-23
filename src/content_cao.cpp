@@ -360,6 +360,11 @@ v3f GenericCAO::getPosition()
 	return pos_translator.vect_show;
 }
 
+const bool GenericCAO::isImmortal()
+{
+	return itemgroup_get(getGroups(), "immortal");
+}
+
 scene::ISceneNode* GenericCAO::getSceneNode()
 {
 	if (m_meshnode) {

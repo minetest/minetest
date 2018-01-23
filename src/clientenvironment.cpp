@@ -32,6 +32,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "raycast.h"
 #include "voxelalgorithms.h"
 #include "settings.h"
+#include "content_cao.h"
 #include <algorithm>
 #include "client/renderingengine.h"
 
@@ -207,6 +208,8 @@ void ClientEnvironment::step(float dtime)
 
 	//std::cout<<"Looped "<<loopcount<<" times."<<std::endl;
 
+	bool player_immortal = lplayer->getCAO() && lplayer->getCAO()->isImmortal();
+
 	for (const CollisionInfo &info : player_collisions) {
 		v3f speed_diff = info.new_speed - info.old_speed;;
 		// Handle only fall damage
@@ -227,7 +230,7 @@ void ClientEnvironment::step(float dtime)
 			pre_factor = 1.0 + (float)addp/100.0;
 		}
 		float speed = pre_factor * speed_diff.getLength();
-		if (speed > tolerance) {
+		if (speed > tolerance && !player_immortal) {
 			f32 damage_f = (speed - tolerance) / BS * post_factor;
 			u8 damage = (u8)MYMIN(damage_f + 0.5, 255);
 			if (damage != 0) {
