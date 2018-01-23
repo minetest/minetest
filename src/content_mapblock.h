@@ -19,6 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #pragma once
 
+#include "client/tileref.h"
 #include "nodedef.h"
 #include <IMeshManipulator.h>
 
@@ -64,7 +65,7 @@ public:
 	LightPair light;
 	LightFrame frame;
 	video::SColor color;
-	TileSpec tile;
+	TileRef tile;
 	float scale;
 
 // lighting
@@ -75,25 +76,24 @@ public:
 
 	void useTile(int index = 0, u8 set_flags = MATERIAL_FLAG_CRACK_OVERLAY,
 		u8 reset_flags = 0, bool special = false);
-	void getTile(int index, TileSpec *tile);
-	void getTile(v3s16 direction, TileSpec *tile);
-	void getSpecialTile(int index, TileSpec *tile, bool apply_crack = false);
+	TileRef getTile(v3s16 direction);
+	TileRef getSpecialTile(int index);
 
 // face drawing
 	void drawQuad(v3f *vertices, const v3s16 &normal = v3s16(0, 0, 0),
 		float vertical_tiling = 1.0);
 
 // cuboid drawing!
-	void drawCuboid(const aabb3f &box, TileSpec *tiles, int tilecount,
+	void drawCuboid(const aabb3f &box, TileRef *tiles, int tilecount,
 		const LightPair *lights , const f32 *txc);
 	void generateCuboidTextureCoords(aabb3f const &box, f32 *coords);
 	void drawAutoLightedCuboid(aabb3f box, const f32 *txc = NULL,
-		TileSpec *tiles = NULL, int tile_count = 0);
+		TileRef *tiles = NULL, int tile_count = 0);
 
 // liquid-specific
 	bool top_is_same_liquid;
-	TileSpec tile_liquid;
-	TileSpec tile_liquid_top;
+	TileRef tile_liquid;
+	TileRef tile_liquid_top;
 	content_t c_flowing;
 	content_t c_source;
 	video::SColor color_liquid_top;

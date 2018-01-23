@@ -190,6 +190,7 @@ struct MapNode
 	 * \param color output, contains the node's color.
 	 */
 	void getColor(const ContentFeatures &f, video::SColor *color) const;
+	video::SColor getColor(const ContentFeatures &f) const;
 
 	void setLight(enum LightBank bank, u8 a_light, const ContentFeatures &f);
 

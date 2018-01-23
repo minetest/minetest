@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "irrlichttypes_extrabloated.h"
 #include "client/tile.h"
+#include "client/tileref.h"
 #include "voxel.h"
 #include <array>
 #include <map>
@@ -173,51 +174,6 @@ private:
 	v3s16 m_camera_offset;
 };
 
-
-
-/*
-	This is used because CMeshBuffer::append() is very slow
-*/
-struct PreMeshBuffer
-{
-	TileLayer layer;
-	std::vector<u16> indices;
-	std::vector<video::S3DVertex> vertices;
-	std::vector<video::S3DVertexTangents> tangent_vertices;
-};
-
-struct MeshCollector
-{
-	std::array<std::vector<PreMeshBuffer>, MAX_TILE_LAYERS> prebuffers;
-	bool m_use_tangent_vertices;
-
-	MeshCollector(bool use_tangent_vertices):
-		m_use_tangent_vertices(use_tangent_vertices)
-	{
-	}
-
-	void append(const TileSpec &material,
-				const video::S3DVertex *vertices, u32 numVertices,
-				const u16 *indices, u32 numIndices);
-	void append(const TileLayer &material,
-			const video::S3DVertex *vertices, u32 numVertices,
-			const u16 *indices, u32 numIndices, u8 layernum,
-			bool use_scale = false);
-	void append(const TileSpec &material,
-				const video::S3DVertex *vertices, u32 numVertices,
-				const u16 *indices, u32 numIndices, v3f pos,
-				video::SColor c, u8 light_source);
-	void append(const TileLayer &material,
-			const video::S3DVertex *vertices, u32 numVertices,
-			const u16 *indices, u32 numIndices, v3f pos,
-			video::SColor c, u8 light_source, u8 layernum,
-			bool use_scale = false);
-	/*!
-	 * Colorizes all vertices in the collector.
-	 */
-	void applyTileColors();
-};
-
 /*!
  * Encodes light of a node.
  * The result is not the final color, but a
@@ -268,5 +224,6 @@ void final_color_blend(video::SColor *result,
 // Adds MATERIAL_FLAG_CRACK if the node is cracked
 // TileSpec should be passed as reference due to the underlying TileFrame and its vector
 // TileFrame vector copy cost very much to client
-void getNodeTileN(MapNode mn, v3s16 p, u8 tileindex, MeshMakeData *data, TileSpec &tile);
-void getNodeTile(MapNode mn, v3s16 p, v3s16 dir, MeshMakeData *data, TileSpec &tile);
+TileRef getNodeTile(MapNode node, const ContentFeatures &f, u8 tileindex);
+TileRef getNodeTile(MapNode node, v3s16 p, u8 tileindex, MeshMakeData *data);
+TileRef getNodeTile(MapNode node, v3s16 p, v3s16 dir, MeshMakeData *data);
