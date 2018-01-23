@@ -682,6 +682,30 @@ minetest.register_chatcommand("test1", {
 	end,
 })
 
+minetest.register_chatcommand("test_bulk_set_node", {
+	params = "",
+	description = "Test 2: bulk set a node",
+	func = function(name, param)
+		local player = minetest.get_player_by_name(name)
+		if not player then
+			return
+		end
+		local pos_list = {}
+		local ppos = player:get_pos()
+		local i = 1
+		for x=2,10 do
+			for y=2,10 do
+				for z=2,10 do
+					pos_list[i] = {x=ppos.x + x,y = ppos.y + y,z = ppos.z}
+					i = i + 1
+				end
+			end
+		end
+		minetest.bulk_set_node(pos_list, {name = "default:stone"})
+		minetest.chat_send_player(name, "Done.");
+	end,
+})
+
 minetest.register_on_player_receive_fields(function(player, formname, fields)
 	experimental.print_to_everything("Inventory fields 1: player="..player:get_player_name()..", fields="..dump(fields))
 end)
