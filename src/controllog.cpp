@@ -175,6 +175,8 @@ void ControlLogEntry::deserialize(std::istream &input, u8 flags, const ControlLo
 	if (i_dtime == 255) {
 		settings = readU8(input);
 		i_dtime = readU8(input); // start of next entry
+	} else if (prev) {
+		settings = prev->settings;
 	}
 	if (i_dtime >= 200) {
 		dtime = i_dtime;
@@ -294,7 +296,7 @@ void ControlLog::deserialize(std::istream &input)
 			ControlLogEntry cle;
 			cle.deserialize(input, flags, prev_cle);
 			add(cle);
-			prev_cle = &cle;
+			prev_cle = &(entries.back());
 			count++;
 		}
 	}
