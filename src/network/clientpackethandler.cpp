@@ -358,30 +358,6 @@ void Client::handleCommand_TimeOfDay(NetworkPacket* pkt)
 			<< " dr=" << dr << std::endl;
 }
 
-void Client::handleCommand_ChatMessageOld(NetworkPacket *pkt)
-{
-	/*
-		u16 command
-		u16 length
-		wstring message
-	*/
-	u16 len, read_wchar;
-
-	*pkt >> len;
-
-	std::wstring message;
-	for (u32 i = 0; i < len; i++) {
-		*pkt >> read_wchar;
-		message += (wchar_t)read_wchar;
-	}
-
-	// If chat message not consummed by client lua API
-	// @TODO send this to CSM using ChatMessage object
-	if (!moddingEnabled() || !m_script->on_receiving_message(wide_to_utf8(message))) {
-		pushToChatQueue(new ChatMessage(message));
-	}
-}
-
 void Client::handleCommand_ChatMessage(NetworkPacket *pkt)
 {
 	/*
