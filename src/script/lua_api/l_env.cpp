@@ -286,7 +286,7 @@ int ModApiEnvMod::l_bulk_set_node(lua_State *L)
 	}
 
 	s32 len = lua_objlen(L, 1);
-	std::vector<v3s16> pos_list;
+	std::vector<v3s16> pos_list(len);
 
 	for (s32 i = 1; i <= len; i++) {
 		lua_rawgeti(L, 1, i);
@@ -298,8 +298,7 @@ int ModApiEnvMod::l_bulk_set_node(lua_State *L)
 	// Do it
 	bool succeeded = true;
 	for (const v3s16 &p : pos_list) {
-		bool s = env->setNode(p, n);
-		if (!s)
+		if (!env->setNode(p, n))
 			succeeded = false;
 	}
 	lua_pushboolean(L, succeeded);
