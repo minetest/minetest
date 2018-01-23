@@ -696,7 +696,7 @@ minetest.register_chatcommand("test_bulk_set_node", {
 		for x=2,10 do
 			for y=2,10 do
 				for z=2,10 do
-					pos_list[i] = {x=ppos.x + x,y = ppos.y + y,z = ppos.z}
+					pos_list[i] = {x=ppos.x + x,y = ppos.y + y,z = ppos.z + z}
 					i = i + 1
 				end
 			end
