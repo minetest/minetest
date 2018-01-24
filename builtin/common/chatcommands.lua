@@ -2,6 +2,9 @@
 
 core.registered_chatcommands = {}
 
+local mt_color_command = "#00ffff"
+local mt_color_priv = "#ffff00"
+
 function core.register_chatcommand(cmd, def)
 	def = def or {}
 	def.params = def.params or ""
@@ -50,9 +53,9 @@ local function do_help_cmd(name, param)
 	local function format_help_line(cmd, def, is_privilege)
 		local msg
 		if is_privilege then
-			msg = core.colorize("#ffff00", cmd)
+			msg = core.colorize(mt_color_priv, cmd)
 		else
-			msg = core.colorize("#00ffff", cmd_marker .. cmd)
+			msg = core.colorize(mt_color_command, cmd_marker .. cmd)
 		end
 		if def.params and def.params ~= "" then
 			msg = msg .. " " .. def.params
@@ -70,7 +73,7 @@ local function do_help_cmd(name, param)
 			end
 		end
 		table.sort(cmds)
-		return true, gettext("Available commands: ") .. table.concat(cmds, " ") .. "\n"
+		return true, gettext("Available commands: ") .. core.colorize(mt_color_command, table.concat(cmds, " ")) .. "\n"
 				.. gettext_replace("Use '$1help <cmd>' to get more information,"
 				.. " or '$1help all' to list everything.", cmd_marker)
 	elseif param == "all" then
