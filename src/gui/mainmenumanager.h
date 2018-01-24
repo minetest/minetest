@@ -140,7 +140,7 @@ public:
 
 	virtual void changeVolume()
 	{
-		changevolume_requested = true;
+		changeoptions_requested = true;
 	}
 
 	virtual void keyConfig()
@@ -156,7 +156,7 @@ public:
 
 	bool disconnect_requested = false;
 	bool changepassword_requested = false;
-	bool changevolume_requested = false;
+	bool changeoptions_requested = false;
 	bool keyconfig_requested = false;
 	bool shutdown_requested = false;
 

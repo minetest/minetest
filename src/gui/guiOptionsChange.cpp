@@ -17,7 +17,7 @@ ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
 
-#include "guiVolumeChange.h"
+#include "guiOptionsChange.h"
 #include "debug.h"
 #include "serialization.h"
 #include <string>
@@ -35,7 +35,7 @@ const int ID_soundExitButton = 264;
 const int ID_soundSlider = 265;
 const int ID_soundMuteButton = 266;
 
-GUIVolumeChange::GUIVolumeChange(gui::IGUIEnvironment* env,
+GUIOptionsChange::GUIOptionsChange(gui::IGUIEnvironment* env,
 		gui::IGUIElement* parent, s32 id,
 		IMenuManager *menumgr
 ):
@@ -43,12 +43,12 @@ GUIVolumeChange::GUIVolumeChange(gui::IGUIEnvironment* env,
 {
 }
 
-GUIVolumeChange::~GUIVolumeChange()
+GUIOptionsChange::~GUIOptionsChange()
 {
 	removeChildren();
 }
 
-void GUIVolumeChange::removeChildren()
+void GUIOptionsChange::removeChildren()
 {
 	if (gui::IGUIElement *e = getElementFromId(ID_soundText))
 		e->remove();
@@ -60,7 +60,7 @@ void GUIVolumeChange::removeChildren()
 		e->remove();
 }
 
-void GUIVolumeChange::regenerateGui(v2u32 screensize)
+void GUIOptionsChange::regenerateGui(v2u32 screensize)
 {
 	/*
 		Remove stuff
@@ -122,7 +122,7 @@ void GUIVolumeChange::regenerateGui(v2u32 screensize)
 	}
 }
 
-void GUIVolumeChange::drawMenu()
+void GUIOptionsChange::drawMenu()
 {
 	gui::IGUISkin* skin = Environment->getSkin();
 	if (!skin)
@@ -133,7 +133,7 @@ void GUIVolumeChange::drawMenu()
 	gui::IGUIElement::draw();
 }
 
-bool GUIVolumeChange::OnEvent(const SEvent& event)
+bool GUIOptionsChange::OnEvent(const SEvent& event)
 {
 	if (event.EventType == EET_KEY_INPUT_EVENT) {
 		if (event.KeyInput.Key == KEY_ESCAPE && event.KeyInput.PressedDown) {

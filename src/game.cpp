@@ -45,7 +45,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "gui/guiFormSpecMenu.h"
 #include "gui/guiKeyChangeMenu.h"
 #include "gui/guiPasswordChange.h"
-#include "gui/guiVolumeChange.h"
+#include "gui/guiOptionsChange.h"
 #include "gui/mainmenumanager.h"
 #include "gui/profilergraph.h"
 #include "mapblock.h"
@@ -139,7 +139,7 @@ struct LocalFormspecHandler : public TextDest
 	void gotText(const StringMap &fields)
 	{
 		if (m_formname == "MT_PAUSE_MENU") {
-			if (fields.find("btn_sound") != fields.end()) {
+			if (fields.find("btn_options") != fields.end()) {
 				g_gamecallback->changeVolume();
 				return;
 			}
@@ -1690,10 +1690,10 @@ inline bool Game::handleCallbacks()
 		g_gamecallback->changepassword_requested = false;
 	}
 
-	if (g_gamecallback->changevolume_requested) {
-		(new GUIVolumeChange(guienv, guiroot, -1,
+	if (g_gamecallback->changeoptions_requested) {
+		(new GUIOptionsChange(guienv, guiroot, -1,
 				     &g_menumgr))->drop();
-		g_gamecallback->changevolume_requested = false;
+		g_gamecallback->changeoptions_requested = false;
 	}
 
 	if (g_gamecallback->keyconfig_requested) {
@@ -4053,8 +4053,8 @@ void Game::showPauseMenu()
 	}
 
 #ifndef __ANDROID__
-	os		<< "button_exit[4," << (ypos++) << ";3,0.5;btn_sound;"
-		<< strgettext("Sound Volume") << "]";
+	os		<< "button_exit[4," << (ypos++) << ";3,0.5;btn_options;"
+		<< strgettext("Options") << "]";
 	os		<< "button_exit[4," << (ypos++) << ";3,0.5;btn_key_config;"
 		<< strgettext("Change Keys")  << "]";
 #endif
