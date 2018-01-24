@@ -2,9 +2,6 @@
 
 core.registered_chatcommands = {}
 
-local mt_color_command = "#00ffff"
-local mt_color_priv = "#ffff00"
-
 function core.register_chatcommand(cmd, def)
 	def = def or {}
 	def.params = def.params or ""
@@ -74,6 +71,7 @@ local function do_help_cmd(name, param)
 		end
 		table.sort(cmds)
 		return true, gettext("Available commands: ") .. core.colorize(mt_color_command, table.concat(cmds, " ")) .. "\n"
+				-- TODO: Colorize the command names
 				.. gettext_replace("Use '$1help <cmd>' to get more information,"
 				.. " or '$1help all' to list everything.", cmd_marker)
 	elseif param == "all" then
