@@ -47,8 +47,13 @@ if INIT == "client" then
 end
 
 local function do_help_cmd(name, param)
-	local function format_help_line(cmd, def)
-		local msg = core.colorize("#00ffff", cmd_marker .. cmd)
+	local function format_help_line(cmd, def, is_privilege)
+		local msg
+		if is_privilege then
+			msg = core.colorize("#ffff00", cmd)
+		else
+			msg = core.colorize("#00ffff", cmd_marker .. cmd)
+		end
 		if def.params and def.params ~= "" then
 			msg = msg .. " " .. def.params
 		end
@@ -80,7 +85,7 @@ local function do_help_cmd(name, param)
 	elseif INIT == "game" and param == "privs" then
 		local privs = {}
 		for priv, def in pairs(core.registered_privileges) do
-			privs[#privs + 1] = priv .. ": " .. def.description
+			privs[#privs + 1] = format_help_line(priv, def, true)
 		end
 		table.sort(privs)
 		return true, "Available privileges:\n"..table.concat(privs, "\n")
