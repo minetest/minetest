@@ -613,6 +613,13 @@ function core.colorize(color, message)
 	return table.concat(lines, "\n") .. core.get_color_escape_sequence("#ffffff")
 end
 
+function core.colorize_chatcommand(cmd, param)
+	if param ~= nil and param ~= "" then
+		return core.colorize(mt_color_command, cmd) .. " " .. core.colorize(mt_color_param, param)
+	else
+		return core.colorize(mt_color_command, cmd)
+	end
+end
 
 function core.strip_foreground_colors(str)
 	return (str:gsub(ESCAPE_CHAR .. "%(c@[^)]+%)", ""))

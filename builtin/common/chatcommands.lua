@@ -51,11 +51,10 @@ local function do_help_cmd(name, param)
 		local msg
 		if is_privilege then
 			msg = core.colorize(mt_color_priv, cmd)
+		elseif def.params and def.params ~= "" then
+			msg = core.colorize_chatcommand(cmd, def.params)
 		else
-			msg = core.colorize(mt_color_command, cmd_marker .. cmd)
-		end
-		if def.params and def.params ~= "" then
-			msg = msg .. " " .. def.params
+			msg = core.colorize_chatcommand(cmd)
 		end
 		if def.description and def.description ~= "" then
 			msg = msg .. ": " .. def.description

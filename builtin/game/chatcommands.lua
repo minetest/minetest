@@ -81,7 +81,7 @@ end
 --
 core.register_chatcommand("me", {
 	params = "<action>",
-	description = "Display chat action (e.g., '"..core.colorize(mt_color_command, "/me orders a pizza").."' displays"
+	description = "Display chat action (e.g., '"..core.colorize_chatcommand("/me", "orders a pizza").."' displays"
 			.. " '<player name> orders a pizza')",
 	privs = {shout=true},
 	func = function(name, param)
@@ -161,7 +161,7 @@ core.register_chatcommand("grant", {
 	func = function(name, param)
 		local grantname, grantprivstr = string.match(param, "([^ ]+) (.+)")
 		if not grantname or not grantprivstr then
-			return false, "Invalid parameters (see "..core.colorize(mt_color_command, "/help grant")..")"
+			return false, "Invalid parameters (see "..core.colorize_chatcommand("/help", "grant")..")"
 		end
 		return handle_grant_command(name, grantname, grantprivstr)
 	end,
@@ -172,7 +172,7 @@ core.register_chatcommand("grantme", {
 	description = "Grant privileges to yourself",
 	func = function(name, param)
 		if param == "" then
-			return false, "Invalid parameters (see "..core.colorize(mt_color_command, "/help grantme") .. ")"
+			return false, "Invalid parameters (see "..core.colorize_chatcommand("/help", "grantme") .. ")"
 		end
 		return handle_grant_command(name, name, param)
 	end,
@@ -190,7 +190,7 @@ core.register_chatcommand("revoke", {
 		local revoke_name, revoke_priv_str = string.match(param, "([^ ]+) (.+)")
 		if not revoke_name or not revoke_priv_str then
 			return false, "Invalid parameters (see "
-				.. core.colorize(mt_color_command, "/help revoke")..")"
+				.. core.colorize_chatcommand("/help", "revoke")..")"
 		elseif not core.get_auth_handler().get_auth(revoke_name) then
 			return false, "Player " .. revoke_name .. " does not exist."
 		end
@@ -427,7 +427,7 @@ core.register_chatcommand("teleport", {
 
 		return false, 'Invalid parameters ("' .. param
 				.. "') or player not found (see "
-				.. core.colorize(mt_color_command, "/help teleport")
+				.. core.colorize_chatcommand("/help", "teleport")
 				.. ")"
 	end,
 })
@@ -446,7 +446,7 @@ core.register_chatcommand("set", {
 		if setname and setvalue then
 			if not core.settings:get(setname) then
 				return false, "Failed. Use '"..
-					core.colorize(mt_color_command, "/set -n <name> <value>")..
+					core.colorize_chatcommand("/set", "-n <name> <value>")..
 					"' to create a new setting."
 			end
 			core.settings:set(setname, setvalue)
@@ -460,7 +460,7 @@ core.register_chatcommand("set", {
 			end
 			return true, setname .. " = " .. setvalue
 		end
-		return false, "Invalid parameters (see "..core.colorize(mt_color_command, "/help set")..")."
+		return false, "Invalid parameters (see "..core.colorize_chatcommand("/help", "set")..")."
 	end,
 })
 
@@ -754,9 +754,9 @@ core.register_chatcommand("rollback", {
 			player_name, seconds = string.match(param, "([^ ]+) *(%d*)")
 			if not player_name then
 				return false, "Invalid parameters. See "
-						.. core.colorize(mt_color_command, "/help rollback")
+						.. core.colorize_chatcommand("/help", "rollback")
 						.. " and "
-						.. core.colorize(mt_color_command, "/help rollback_check")
+						.. core.colorize_chatcommand("/help", "rollback_check")
 						.. "."
 			end
 			target_name = "player:"..player_name
@@ -917,7 +917,7 @@ core.register_chatcommand("clearobjects", {
 		elseif param == "full" then
 			options.mode = "full"
 		else
-			return false, "Invalid usage, see /help clearobjects."
+			return false, "Invalid usage, see "..core.colorize_chatcommand("/help", "clearobjects").."."
 		end
 
 		core.log("action", name .. " clears all objects ("
@@ -938,7 +938,7 @@ core.register_chatcommand("msg", {
 	func = function(name, param)
 		local sendto, message = param:match("^(%S+)%s(.+)$")
 		if not sendto then
-			return false, "Invalid usage, see /help msg."
+			return false, "Invalid usage, see "..core.colorize_chatcommand("/help", "msg").."."
 		end
 		if not core.get_player_by_name(sendto) then
 			return false, "The player " .. sendto

@@ -34,7 +34,7 @@ core.register_privilege("basic_privs", "Can modify '"..core.colorize(mt_color_pr
 core.register_privilege("privs", "Can modify privileges")
 
 core.register_privilege("teleport", {
-	description = "Can use "..core.colorize(mt_color_command, "/teleport").." command",
+	description = "Can use "..core.colorize_chatcommand("/teleport").." command",
 	give_to_singleplayer = false,
 })
 core.register_privilege("bring", {
@@ -42,7 +42,7 @@ core.register_privilege("bring", {
 	give_to_singleplayer = false,
 })
 core.register_privilege("settime", {
-	description = "Can use "..core.colorize(mt_color_command, "/time"),
+	description = "Can use "..core.colorize_chatcommand("/time"),
 	give_to_singleplayer = false,
 })
 core.register_privilege("server", {
@@ -65,11 +65,11 @@ core.register_privilege("kick", {
 	give_to_admin = true,
 })
 core.register_privilege("give", {
-	description = "Can use "..core.colorize(mt_color_command, "/give").." and "..core.colorize(mt_color_command, "/giveme"),
+	description = "Can use "..core.colorize_chatcommand("/give").." and "..core.colorize_chatcommand("/giveme"),
 	give_to_singleplayer = false,
 })
 core.register_privilege("password", {
-	description = "Can use "..core.colorize(mt_color_command, "/setpassword").." and "..core.colorize(mt_color_command, "/clearpassword"),
+	description = "Can use "..core.colorize_chatcommand("/setpassword").." and "..core.colorize_chatcommand("/clearpassword"),
 	give_to_singleplayer = false,
 	give_to_admin = true,
 })
