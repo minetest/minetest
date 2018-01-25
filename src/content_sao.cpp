@@ -1401,26 +1401,29 @@ bool PlayerSAO::checkMovementCheat()
 		too, and much more lightweight.
 	*/
 
-	float player_max_speed = 0;
+	float player_max_walk = 0; // horizontal movement
+	float player_max_jump = 0; // vertical upwards movement
 
-	if (m_privs.count("fast") != 0) {
-		// Fast speed
-		player_max_speed = m_player->movement_speed_fast * m_physics_override_speed;
-	} else {
-		// Normal speed
-		player_max_speed = m_player->movement_speed_walk * m_physics_override_speed;
-	}
-	// Tolerance. The lag pool does this a bit.
-	//player_max_speed *= 2.5;
+	if (m_privs.count("fast") != 0)
+		player_max_walk = m_player->movement_speed_fast; // Fast speed
+	else
+		player_max_walk = m_player->movement_speed_walk; // Normal speed
+	player_max_walk *= m_physics_override_speed;
+	player_max_jump = m_player->movement_speed_jump * m_physics_override_jump;
+	// FIXME: Bouncy nodes cause practically unbound increase in Y speed,
+	//        until this can be verified correctly, tolerate higher jumping speeds
+	player_max_jump *= 2.0;
 
 	v3f diff = (m_base_position - m_last_good_position);
 	float d_vert = diff.Y;
 	diff.Y = 0;
 	float d_horiz = diff.getLength();
-	float required_time = d_horiz / player_max_speed;
+	float required_time = d_horiz / player_max_walk;
 
-	if (d_vert > 0 && d_vert / player_max_speed > required_time)
-		required_time = d_vert / player_max_speed; // Moving upwards
+	// FIXME: Checking downwards movement is not easily possible currently,
+	//        the server could calculate speed differences to examine the gravity
+	if (d_vert > 0)
+		required_time = MYMAX(required_time, d_vert / player_max_jump);
 
 	if (m_move_pool.grab(required_time)) {
 		m_last_good_position = m_base_position;
