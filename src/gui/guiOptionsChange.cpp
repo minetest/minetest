@@ -35,7 +35,8 @@ const int ID_soundSlider = 264;
 const int ID_soundMuteButton = 265;
 const int ID_fovText = 266;
 const int ID_fovSlider = 267;
-const int ID_ExitButton = 268;
+const int ID_buildButton = 268;
+const int ID_ExitButton = 269;
 
 GUIOptionsChange::GUIOptionsChange(gui::IGUIEnvironment* env,
 		gui::IGUIElement* parent, s32 id,
@@ -66,6 +67,9 @@ void GUIOptionsChange::removeChildren()
 
 	if (gui::IGUIElement *e = getElementFromId(ID_fovSlider))
 		e->remove();
+
+	if (gui::IGUIElement *e = getElementFromId(ID_buildButton))
+		e->remove();
 }
 
 void GUIOptionsChange::regenerateGui(v2u32 screensize)
@@ -95,7 +99,7 @@ void GUIOptionsChange::regenerateGui(v2u32 screensize)
 	*/
 	{
 		core::rect<s32> rect(0, 0, 160, 20);
-		rect = rect + v2s32(size.X / 2 - 80, size.Y / 2 - 170);
+		rect = rect + v2s32(size.X / 2 - 150, size.Y / 2 - 170);
 
 		const wchar_t *text = wgettext("Sound Volume: ");
 		core::stringw volume_text = text;
@@ -107,15 +111,15 @@ void GUIOptionsChange::regenerateGui(v2u32 screensize)
 	}
 	{
 		core::rect<s32> rect(0, 0, 160, 20);
-		rect = rect + v2s32(size.X / 2 - 80, size.Y / 2 - 135);
-		const wchar_t *text = wgettext("Muted");
+		rect = rect + v2s32(size.X / 2 + 80, size.Y / 2 - 170);
+		const wchar_t *text = wgettext("Mute");
 		Environment->addCheckBox(g_settings->getBool("mute_sound"), rect, this,
 				ID_soundMuteButton, text);
 		delete[] text;
 	}
 	{
 		core::rect<s32> rect(0, 0, 300, 20);
-		rect = rect + v2s32(size.X / 2 - 150, size.Y / 2-100);
+		rect = rect + v2s32(size.X / 2 - 150, size.Y / 2-140);
 		gui::IGUIScrollBar *e = Environment->addScrollBar(true,
 			rect, this, ID_soundSlider);
 		e->setMax(100);
@@ -126,7 +130,7 @@ void GUIOptionsChange::regenerateGui(v2u32 screensize)
 	 */
 	{
 		core::rect<s32> rect(0, 0, 160, 20);
-		rect = rect + v2s32(size.X / 2 - 80, size.Y / 2-65);
+		rect = rect + v2s32(size.X / 2 - 150, size.Y / 2-110);
 
 		const wchar_t *text = wgettext("Field of View: ");
 		core::stringw fov_text = text;
@@ -138,13 +142,25 @@ void GUIOptionsChange::regenerateGui(v2u32 screensize)
 	}
 	{
 		core::rect<s32> rect(0, 0, 300, 20);
-		rect = rect + v2s32(size.X / 2 - 150, size.Y / 2-30);
+		rect = rect + v2s32(size.X / 2 - 150, size.Y / 2-80);
 		gui::IGUIScrollBar *e = Environment->addScrollBar(true,
 			rect, this, ID_fovSlider);
-		e->setMax(120);
-		e->setMin(45);
+		e->setMax(160);
+		e->setMin(51);
 		e->setPos(FOV);
 	}
+	/*
+	 * Build inside Player
+	 */
+	{
+		core::rect<s32> rect(0, 0, 160, 20);
+		rect = rect + v2s32(size.X / 2 - 150, size.Y / 2 - 50);
+		const wchar_t *text = wgettext("Build Inside Player");
+		Environment->addCheckBox(g_settings->getBool("enable_build_where_you_stand"), rect, this,
+				ID_buildButton, text);
+		delete[] text;
+	}
+	
 	/*
 		Exit Button
 	 */
@@ -187,13 +203,18 @@ bool GUIOptionsChange::OnEvent(const SEvent& event)
 		if (event.GUIEvent.EventType == gui::EGET_CHECKBOX_CHANGED) {
 			gui::IGUIElement *e = getElementFromId(ID_soundMuteButton);
 			if (e != NULL && e->getType() == gui::EGUIET_CHECK_BOX) {
-				g_settings->setBool("mute_sound", ((gui::IGUICheckBox*)e)->isChecked());
+				if (event.GUIEvent.Caller->getID() == ID_soundMuteButton){
+					e = getElementFromId(ID_soundMuteButton);
+					g_settings->setBool("mute_sound", ((gui::IGUICheckBox*)e)->isChecked());
+				}else if(event.GUIEvent.Caller->getID() == ID_buildButton){
+					e = getElementFromId(ID_buildButton);
+					g_settings->setBool("enable_build_where_you_stand", ((gui::IGUICheckBox*)e)->isChecked());
+				}
 			}
 
 			Environment->setFocus(this);
 			return true;
 		}
-
 		if (event.GUIEvent.EventType == gui::EGET_BUTTON_CLICKED) {
 			if (event.GUIEvent.Caller->getID() == ID_ExitButton) {
 				quitMenu();
