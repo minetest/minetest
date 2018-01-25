@@ -149,7 +149,7 @@ end
 
 core.register_chatcommand("grant", {
 	params = "<name> (<privilege> | all)",
-	description = "Give privilege to player",
+	description = "Give privileges to player",
 	func = function(name, param)
 		local grantname, grantprivstr = string.match(param, "([^ ]+) (.+)")
 		if not grantname or not grantprivstr then
@@ -161,7 +161,7 @@ core.register_chatcommand("grant", {
 
 core.register_chatcommand("grantme", {
 	params = "<privilege> | all",
-	description = "Grant privilege to yourself",
+	description = "Grant privileges to yourself",
 	func = function(name, param)
 		if param == "" then
 			return false, "Invalid parameters (see /help grantme)"
@@ -172,7 +172,7 @@ core.register_chatcommand("grantme", {
 
 core.register_chatcommand("revoke", {
 	params = "<name> (<privilege> | all)",
-	description = "Remove privilege from player",
+	description = "Remove privileges from player",
 	privs = {},
 	func = function(name, param)
 		if not core.check_player_privs(name, {privs=true}) and
@@ -290,7 +290,7 @@ core.register_chatcommand("auth_reload", {
 
 core.register_chatcommand("remove_player", {
 	params = "<name>",
-	description = "Remove all player data from a player",
+	description = "Remove a player's data",
 	privs = {server=true},
 	func = function(name, param)
 		local toname = param
@@ -315,7 +315,7 @@ core.register_chatcommand("remove_player", {
 
 core.register_chatcommand("teleport", {
 	params = "<X>,<Y>,<Z> | <to_name> | (<name> <X>,<Y>,<Z>) | (<name> <to_name>)",
-	description = "Teleport yourself or player to a position or player",
+	description = "Teleport to position or player",
 	privs = {teleport=true},
 	func = function(name, param)
 		-- Returns (pos, true) if found, otherwise (pos, false)
@@ -865,7 +865,7 @@ core.register_chatcommand("ban", {
 
 core.register_chatcommand("unban", {
 	params = "<name> | <IP_address>",
-	description = "Remove ban from a player",
+	description = "Remove player ban",
 	privs = {ban=true},
 	func = function(name, param)
 		if not core.unban_player_or_ip(param) then
