@@ -492,7 +492,11 @@ end
 core.register_chatcommand("emergeblocks", {
 	params = "(here [<radius>]) | (<pos1> <pos2>)",
 	description = "Load (or, if nonexistent, generate) map blocks "
-		.. "contained in area pos1 to pos2 (<pos1> and <pos2> must be in parentheses)",
+		.. "contained in area from "
+		.. core.colorize(mt_color_param, "<pos1>").." to "
+		.. core.colorize(mt_color_param, "<pos2>").." "
+		.. "(" .. core.colorize(mt_color_param, "<pos1>").. " and "
+		.. core.colorize(mt_color_param, "<pos2>").." must be in parentheses)",
 	privs = {server=true},
 	func = function(name, param)
 		local p1, p2 = parse_range_str(name, param)
@@ -517,8 +521,11 @@ core.register_chatcommand("emergeblocks", {
 
 core.register_chatcommand("deleteblocks", {
 	params = "(here [<radius>]) | (<pos1> <pos2>)",
-	description = "Delete map blocks contained in area pos1 to pos2 "
-		.. "(<pos1> and <pos2> must be in parentheses)",
+	description = "Delete map blocks contained in area from "
+		.. core.colorize(mt_color_param, "<pos1>").." to "
+		.. core.colorize(mt_color_param, "<pos2>").." "
+		.. "(" .. core.colorize(mt_color_param, "<pos1>").. " and "
+		.. core.colorize(mt_color_param, "<pos2>").." must be in parentheses)",
 	privs = {server=true},
 	func = function(name, param)
 		local p1, p2 = parse_range_str(name, param)
@@ -537,8 +544,11 @@ core.register_chatcommand("deleteblocks", {
 
 core.register_chatcommand("fixlight", {
 	params = "(here [<radius>]) | (<pos1> <pos2>)",
-	description = "Resets lighting in the area between pos1 and pos2 "
-		.. "(<pos1> and <pos2> must be in parentheses)",
+	description = "Resets lighting in the area from "
+		.. core.colorize(mt_color_param, "<pos1>").." to "
+		.. core.colorize(mt_color_param, "<pos2>").." "
+		.. "(" .. core.colorize(mt_color_param, "<pos1>").. " and "
+		.. core.colorize(mt_color_param, "<pos2>").." must be in parentheses)",
 	privs = {server = true},
 	func = function(name, param)
 		local p1, p2 = parse_range_str(name, param)
@@ -690,8 +700,11 @@ end)
 core.register_chatcommand("rollback_check", {
 	params = "[<range>] [<seconds>] [<limit>]",
 	description = "Check who last touched a node or a node near it"
-			.. " within the time specified by <seconds>. Default: range = 0,"
-			.. " seconds = 86400 = 24h, limit = 5",
+			.. " within the time specified by "..core.colorize(mt_color_param, "<seconds>") .. ". "
+			.. "Defaults: "
+			.. core.colorize(mt_color_param, "<range>") .. " = 0, "
+			.. core.colorize(mt_color_param, "<seconds>") .. " = 86400, "
+			.. core.colorize(mt_color_param, "<limit>") .. " = 5",
 	privs = {rollback=true},
 	func = function(name, param)
 		if not core.settings:get_bool("enable_rollback_recording") then
@@ -742,7 +755,7 @@ core.register_chatcommand("rollback_check", {
 
 core.register_chatcommand("rollback", {
 	params = "(<name> [<seconds>]) | (:<actor> [<seconds>])",
-	description = "Revert actions of a player. Default for <seconds> is 60",
+	description = "Revert actions of a player. Default for "..core.colorize(mt_color_param, "<seconds>").." is 60",
 	privs = {rollback=true},
 	func = function(name, param)
 		if not core.settings:get_bool("enable_rollback_recording") then
@@ -837,7 +850,7 @@ core.register_chatcommand("days", {
 
 core.register_chatcommand("shutdown", {
 	params = "[<delay_in_seconds> | -1] [reconnect] [<message>]",
-	description = "Shutdown server (-1 cancels a delayed shutdown)",
+	description = "Shutdown server ("..core.colorize(mt_color_param, "-1") .." cancels a delayed shutdown)",
 	privs = {server=true},
 	func = function(name, param)
 		local delay, reconnect, message = param:match("([^ ][-]?[0-9]+)([^ ]+)(.*)")
