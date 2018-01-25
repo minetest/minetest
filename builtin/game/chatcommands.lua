@@ -42,9 +42,14 @@ core.register_on_chat_message(function(name, message)
 			core.chat_send_player(name, message)
 		end
 	else
+		local privs = {}
+		for i=1, #missing_privs do
+			privs[missing_privs[i]] = true
+		end
+		local priv_string = format_privs(privs)
 		core.chat_send_player(name, "You don't have permission"
 				.. " to run this command (missing privileges: "
-				.. format_privs(missing_privs) .. ")")
+				.. priv_string .. ")")
 	end
 	return true  -- Handled chat message
 end)
