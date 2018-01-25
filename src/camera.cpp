@@ -457,6 +457,8 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 busytime, f32 tool_r
 		fov_degrees = player->getZoomFOV();
 	} else {
 		fov_degrees = m_cache_fov;
+		//if the callback(see line 63) gets added then this won't need to be here.
+		m_cache_fov = g_settings->getFloat("fov");
 	}
 	fov_degrees = rangelim(fov_degrees, 1.0f, 160.0f);
 

@@ -31,9 +31,11 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #include "gettext.h"
 
 const int ID_soundText = 263;
-const int ID_soundExitButton = 264;
-const int ID_soundSlider = 265;
-const int ID_soundMuteButton = 266;
+const int ID_soundSlider = 264;
+const int ID_soundMuteButton = 265;
+const int ID_fovText = 266;
+const int ID_fovSlider = 267;
+const int ID_ExitButton = 268;
 
 GUIOptionsChange::GUIOptionsChange(gui::IGUIEnvironment* env,
 		gui::IGUIElement* parent, s32 id,
@@ -53,10 +55,16 @@ void GUIOptionsChange::removeChildren()
 	if (gui::IGUIElement *e = getElementFromId(ID_soundText))
 		e->remove();
 
-	if (gui::IGUIElement *e = getElementFromId(ID_soundExitButton))
+	if (gui::IGUIElement *e = getElementFromId(ID_ExitButton))
 		e->remove();
 
 	if (gui::IGUIElement *e = getElementFromId(ID_soundSlider))
+		e->remove();
+
+	if (gui::IGUIElement *e = getElementFromId(ID_fovText))
+		e->remove();
+
+	if (gui::IGUIElement *e = getElementFromId(ID_fovSlider))
 		e->remove();
 }
 
@@ -72,21 +80,22 @@ void GUIOptionsChange::regenerateGui(v2u32 screensize)
 	*/
 	DesiredRect = core::rect<s32>(
 		screensize.X/2 - 380/2,
-		screensize.Y/2 - 200/2,
+		screensize.Y/2 - 400/2,
 		screensize.X/2 + 380/2,
-		screensize.Y/2 + 200/2
+		screensize.Y/2 + 400/2
 	);
 	recalculateAbsolutePosition(false);
 
 	v2s32 size = DesiredRect.getSize();
 	int volume = (int)(g_settings->getFloat("sound_volume") * 100);
+	int FOV = (int)(g_settings->getFloat("fov"));
 
 	/*
-		Add stuff
+		Add sound stuff
 	*/
 	{
 		core::rect<s32> rect(0, 0, 160, 20);
-		rect = rect + v2s32(size.X / 2 - 80, size.Y / 2 - 70);
+		rect = rect + v2s32(size.X / 2 - 80, size.Y / 2 - 170);
 
 		const wchar_t *text = wgettext("Sound Volume: ");
 		core::stringw volume_text = text;
@@ -97,29 +106,58 @@ void GUIOptionsChange::regenerateGui(v2u32 screensize)
 				true, this, ID_soundText);
 	}
 	{
-		core::rect<s32> rect(0, 0, 80, 30);
-		rect = rect + v2s32(size.X/2-80/2, size.Y/2+55);
-		const wchar_t *text = wgettext("Exit");
-		Environment->addButton(rect, this, ID_soundExitButton,
-			text);
-		delete[] text;
-	}
-	{
-		core::rect<s32> rect(0, 0, 300, 20);
-		rect = rect + v2s32(size.X / 2 - 150, size.Y / 2);
-		gui::IGUIScrollBar *e = Environment->addScrollBar(true,
-			rect, this, ID_soundSlider);
-		e->setMax(100);
-		e->setPos(volume);
-	}
-	{
 		core::rect<s32> rect(0, 0, 160, 20);
-		rect = rect + v2s32(size.X / 2 - 80, size.Y / 2 - 35);
+		rect = rect + v2s32(size.X / 2 - 80, size.Y / 2 - 135);
 		const wchar_t *text = wgettext("Muted");
 		Environment->addCheckBox(g_settings->getBool("mute_sound"), rect, this,
 				ID_soundMuteButton, text);
 		delete[] text;
 	}
+	{
+		core::rect<s32> rect(0, 0, 300, 20);
+		rect = rect + v2s32(size.X / 2 - 150, size.Y / 2-100);
+		gui::IGUIScrollBar *e = Environment->addScrollBar(true,
+			rect, this, ID_soundSlider);
+		e->setMax(100);
+		e->setPos(volume);
+	}
+	/* 
+	    Add FOV stuff
+	 */
+	{
+		core::rect<s32> rect(0, 0, 160, 20);
+		rect = rect + v2s32(size.X / 2 - 80, size.Y / 2-65);
+
+		const wchar_t *text = wgettext("Field of View: ");
+		core::stringw fov_text = text;
+		delete [] text;
+
+		fov_text += core::stringw(FOV);
+		Environment->addStaticText(fov_text.c_str(), rect, false,
+				true, this, ID_fovText);
+	}
+	{
+		core::rect<s32> rect(0, 0, 300, 20);
+		rect = rect + v2s32(size.X / 2 - 150, size.Y / 2-30);
+		gui::IGUIScrollBar *e = Environment->addScrollBar(true,
+			rect, this, ID_fovSlider);
+		e->setMax(120);
+		e->setMin(45);
+		e->setPos(FOV);
+	}
+	/*
+		Exit Button
+	 */
+	{
+		core::rect<s32> rect(0, 0, 80, 30);
+		rect = rect + v2s32(size.X/2-80/2, size.Y/2+145);
+		const wchar_t *text = wgettext("Exit");
+		Environment->addButton(rect, this, ID_ExitButton,
+			text);
+		delete[] text;
+	}
+	
+	
 }
 
 void GUIOptionsChange::drawMenu()
@@ -157,7 +195,7 @@ bool GUIOptionsChange::OnEvent(const SEvent& event)
 		}
 
 		if (event.GUIEvent.EventType == gui::EGET_BUTTON_CLICKED) {
-			if (event.GUIEvent.Caller->getID() == ID_soundExitButton) {
+			if (event.GUIEvent.Caller->getID() == ID_ExitButton) {
 				quitMenu();
 				return true;
 			}
@@ -185,6 +223,18 @@ bool GUIOptionsChange::OnEvent(const SEvent& event)
 
 				volume_text += core::stringw(pos) + core::stringw("%");
 				e->setText(volume_text.c_str());
+				return true;
+			}else if (event.GUIEvent.Caller->getID() == ID_fovSlider) {
+				s32 pos = ((gui::IGUIScrollBar*)event.GUIEvent.Caller)->getPos();
+				g_settings->setFloat("fov", (float) pos);
+
+				gui::IGUIElement *e = getElementFromId(ID_fovText);
+				const wchar_t *text = wgettext("Field of View: ");
+				core::stringw fov_text = text;
+				delete [] text;
+
+				fov_text += core::stringw(pos);
+				e->setText(fov_text.c_str());
 				return true;
 			}
 		}
