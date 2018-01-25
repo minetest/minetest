@@ -5,10 +5,6 @@
 -- before loading and running any mods.
 --
 
-mt_color_command = "#00ffff"
-mt_color_param = "#ff60ff"
-mt_color_priv = "#ffff00"
-
 -- Initialize some very basic things
 function core.debug(...) core.log(table.concat({...}, "\t")) end
 if core.print then

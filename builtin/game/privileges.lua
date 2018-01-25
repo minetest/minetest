@@ -30,7 +30,7 @@ end
 
 core.register_privilege("interact", "Can interact with things and modify the world")
 core.register_privilege("shout", "Can speak in chat")
-core.register_privilege("basic_privs", "Can modify '"..core.colorize(mt_color_priv, "shout").."' and '"..core.colorize(mt_color_priv, "interact").."' privileges")
+core.register_privilege("basic_privs", "Can modify '"..core.colorize(core.COLOR_PRIV, "shout").."' and '"..core.colorize(core.COLOR_PRIV, "interact").."' privileges")
 core.register_privilege("privs", "Can modify privileges")
 
 core.register_privilege("teleport", {

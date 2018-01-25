@@ -5,6 +5,7 @@
 local string_sub, string_find = string.sub, string.find
 
 --------------------------------------------------------------------------------
+
 function basic_dump(o)
 	local tp = type(o)
 	if tp == "number" then
@@ -615,9 +616,9 @@ end
 
 function core.colorize_chatcommand(cmd, param)
 	if param ~= nil and param ~= "" then
-		return core.colorize(mt_color_command, cmd) .. " " .. core.colorize(mt_color_param, param)
+		return core.colorize(core.COLOR_COMMAND, cmd) .. " " .. core.colorize(core.COLOR_PARAM, param)
 	else
-		return core.colorize(mt_color_command, cmd)
+		return core.colorize(core.COLOR_COMMAND, cmd)
 	end
 end
 

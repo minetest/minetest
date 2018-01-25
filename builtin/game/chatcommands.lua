@@ -2,7 +2,7 @@
 
 -- Pretty-print list of privileges
 local function format_privs(privs)
-	return core.colorize(mt_color_priv, core.privs_to_string(privs, ' '))
+	return core.colorize(core.COLOR_PRIV, core.privs_to_string(privs, ' '))
 end
 
 -- Pretty-print privileges of give player
@@ -390,7 +390,7 @@ core.register_chatcommand("teleport", {
 
 		if not core.check_player_privs(name, {bring=true}) then
 			return false, "You don't have permission to teleport other players (missing "
-				.. core.colorize(mt_color_priv, "bring") .. " privilege)"
+				.. core.colorize(core.COLOR_PRIV, "bring") .. " privilege)"
 		end
 
 		local teleportee = nil
@@ -498,10 +498,10 @@ core.register_chatcommand("emergeblocks", {
 	params = "(here [<radius>]) | (<pos1> <pos2>)",
 	description = "Load (or, if nonexistent, generate) map blocks "
 		.. "contained in area from "
-		.. core.colorize(mt_color_param, "<pos1>").." to "
-		.. core.colorize(mt_color_param, "<pos2>").." "
-		.. "(" .. core.colorize(mt_color_param, "<pos1>").. " and "
-		.. core.colorize(mt_color_param, "<pos2>").." must be in parentheses)",
+		.. core.colorize(core.COLOR_PARAM, "<pos1>").." to "
+		.. core.colorize(core.COLOR_PARAM, "<pos2>").." "
+		.. "(" .. core.colorize(core.COLOR_PARAM, "<pos1>").. " and "
+		.. core.colorize(core.COLOR_PARAM, "<pos2>").." must be in parentheses)",
 	privs = {server=true},
 	func = function(name, param)
 		local p1, p2 = parse_range_str(name, param)
@@ -527,10 +527,10 @@ core.register_chatcommand("emergeblocks", {
 core.register_chatcommand("deleteblocks", {
 	params = "(here [<radius>]) | (<pos1> <pos2>)",
 	description = "Delete map blocks contained in area from "
-		.. core.colorize(mt_color_param, "<pos1>").." to "
-		.. core.colorize(mt_color_param, "<pos2>").." "
-		.. "(" .. core.colorize(mt_color_param, "<pos1>").. " and "
-		.. core.colorize(mt_color_param, "<pos2>").." must be in parentheses)",
+		.. core.colorize(core.COLOR_PARAM, "<pos1>").." to "
+		.. core.colorize(core.COLOR_PARAM, "<pos2>").." "
+		.. "(" .. core.colorize(core.COLOR_PARAM, "<pos1>").. " and "
+		.. core.colorize(core.COLOR_PARAM, "<pos2>").." must be in parentheses)",
 	privs = {server=true},
 	func = function(name, param)
 		local p1, p2 = parse_range_str(name, param)
@@ -550,10 +550,10 @@ core.register_chatcommand("deleteblocks", {
 core.register_chatcommand("fixlight", {
 	params = "(here [<radius>]) | (<pos1> <pos2>)",
 	description = "Resets lighting in the area from "
-		.. core.colorize(mt_color_param, "<pos1>").." to "
-		.. core.colorize(mt_color_param, "<pos2>").." "
-		.. "(" .. core.colorize(mt_color_param, "<pos1>").. " and "
-		.. core.colorize(mt_color_param, "<pos2>").." must be in parentheses)",
+		.. core.colorize(core.COLOR_PARAM, "<pos1>").." to "
+		.. core.colorize(core.COLOR_PARAM, "<pos2>").." "
+		.. "(" .. core.colorize(core.COLOR_PARAM, "<pos1>").. " and "
+		.. core.colorize(core.COLOR_PARAM, "<pos2>").." must be in parentheses)",
 	privs = {server = true},
 	func = function(name, param)
 		local p1, p2 = parse_range_str(name, param)
@@ -705,11 +705,11 @@ end)
 core.register_chatcommand("rollback_check", {
 	params = "[<range>] [<seconds>] [<limit>]",
 	description = "Check who last touched a node or a node near it"
-			.. " within the time specified by "..core.colorize(mt_color_param, "<seconds>") .. ". "
+			.. " within the time specified by "..core.colorize(core.COLOR_PARAM, "<seconds>") .. ". "
 			.. "Defaults: "
-			.. core.colorize(mt_color_param, "<range>") .. " = 0, "
-			.. core.colorize(mt_color_param, "<seconds>") .. " = 86400, "
-			.. core.colorize(mt_color_param, "<limit>") .. " = 5",
+			.. core.colorize(core.COLOR_PARAM, "<range>") .. " = 0, "
+			.. core.colorize(core.COLOR_PARAM, "<seconds>") .. " = 86400, "
+			.. core.colorize(core.COLOR_PARAM, "<limit>") .. " = 5",
 	privs = {rollback=true},
 	func = function(name, param)
 		if not core.settings:get_bool("enable_rollback_recording") then
@@ -760,7 +760,7 @@ core.register_chatcommand("rollback_check", {
 
 core.register_chatcommand("rollback", {
 	params = "(<name> [<seconds>]) | (:<actor> [<seconds>])",
-	description = "Revert actions of a player. Default for "..core.colorize(mt_color_param, "<seconds>").." is 60",
+	description = "Revert actions of a player. Default for "..core.colorize(core.COLOR_PARAM, "<seconds>").." is 60",
 	privs = {rollback=true},
 	func = function(name, param)
 		if not core.settings:get_bool("enable_rollback_recording") then
@@ -820,7 +820,7 @@ core.register_chatcommand("time", {
 		local player_privs = core.get_player_privs(name)
 		if not player_privs.settime then
 			return false, "You don't have permission to set the time " ..
-				"(missing privilege: "..core.colorize(mt_color_priv, "settime")..")."
+				"(missing privilege: "..core.colorize(core.COLOR_PRIV, "settime")..")."
 		end
 		local hour, minute = param:match("^(%d+):(%d+)$")
 		if not hour then
@@ -855,7 +855,7 @@ core.register_chatcommand("days", {
 
 core.register_chatcommand("shutdown", {
 	params = "[<delay_in_seconds> | -1] [reconnect] [<message>]",
-	description = "Shutdown server ("..core.colorize(mt_color_param, "-1") .." cancels a delayed shutdown)",
+	description = "Shutdown server ("..core.colorize(core.COLOR_PARAM, "-1") .." cancels a delayed shutdown)",
 	privs = {server=true},
 	func = function(name, param)
 		local delay, reconnect, message = param:match("([^ ][-]?[0-9]+)([^ ]+)(.*)")
@@ -995,7 +995,7 @@ core.register_chatcommand("clearinv", {
 		if param and param ~= "" and param ~= name then
 			if not core.check_player_privs(name, {server=true}) then
 				return false, "You don't have permission to clear inventories of other players "
-						.. "(missing privilege: "..core.colorize(mt_color_priv, "server")..")."
+						.. "(missing privilege: "..core.colorize(core.COLOR_PRIV, "server")..")."
 			end
 			player = core.get_player_by_name(param)
 			core.chat_send_player(param, name.." cleared your inventory.")

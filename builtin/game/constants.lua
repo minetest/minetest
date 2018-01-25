@@ -29,3 +29,8 @@ core.PLAYER_MAX_BREATH_DEFAULT = 11
 -- light.h
 -- Maximum value for node 'light_source' parameter
 core.LIGHT_MAX = 14
+
+-- Colors (builtin only)
+core.COLOR_COMMAND = "#00ffff"
+core.COLOR_PARAM = "#ff60ff"
+core.COLOR_PRIV = "#ffff00"

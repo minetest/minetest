@@ -50,7 +50,7 @@ local function do_help_cmd(name, param)
 	local function format_help_line(cmd, def, is_privilege)
 		local msg
 		if is_privilege then
-			msg = core.colorize(mt_color_priv, cmd)
+			msg = core.colorize(core.COLOR_PRIV, cmd)
 		else
 			cmd = cmd_marker .. cmd
 			if def.params and def.params ~= "" then
@@ -72,7 +72,7 @@ local function do_help_cmd(name, param)
 			end
 		end
 		table.sort(cmds)
-		return true, gettext("Available commands: ") .. core.colorize(mt_color_command, table.concat(cmds, " ")) .. "\n"
+		return true, gettext("Available commands: ") .. core.colorize(core.COLOR_COMMAND, table.concat(cmds, " ")) .. "\n"
 				-- TODO: Colorize the command names
 				.. gettext_replace("Use '$1help <cmd>' to get more information,"
 				.. " or '$1help all' to list everything.", cmd_marker)
