@@ -2225,6 +2225,12 @@ To specify the value of the alpha channel, append `#AA` to the end of the color 
 (e.g. `colorname#08`). For named colors the hexadecimal string representing the alpha
 value must (always) be two hexadecimal digits.
 
+Built-in ColorStrings for text:
+
+* `minetest.COLOR_COMMAND`: Command name
+* `minetest.COLOR_PARAM`: Command parameter
+* `minetest.COLOR_PRIV`: Privilege name
+
 `ColorSpec`
 -----------
 A ColorSpec specifies a 32-bit color.  It can be written in either:
@@ -2249,6 +2255,9 @@ The following functions provide escape sequences:
       `minetest.get_color_escape_sequence(color) ..
       message ..
       minetest.get_color_escape_sequence("#ffffff")`
+* `minetest.colorize_chatcommand(cmd, param)`
+    * Given a chat command name and an optional parameter, returns an
+      automatically colorized string
 * `minetest.get_background_escape_sequence(color)`
     * `color` is a ColorString
     * The escape sequence sets the background of the whole text element to
@@ -2551,7 +2560,7 @@ Call these functions only at load time!
 * `minetest.override_item(name, redefinition)`
     * Overrides fields of an item registered with register_node/tool/craftitem.
     * Note: Item must already be defined, (opt)depend on the mod defining it.
-    * Example: `minetest.override_item("default:mese", {light_source=LIGHT_MAX})`
+    * Example: `minetest.override_item("default:mese", {light_source=minetest.LIGHT_MAX})`
 * `minetest.clear_registered_ores()`
 * `minetest.clear_registered_biomes()`
 * `minetest.clear_registered_decorations()`
