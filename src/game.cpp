@@ -2562,7 +2562,7 @@ void Game::handleClientEvent_HandleParticleEvent(ClientEvent *event,
 void Game::handleClientEvent_HudAdd(ClientEvent *event, CameraOrientation *cam)
 {
 	LocalPlayer *player = client->getEnv().getLocalPlayer();
-	auto hud_server_to_client = client->getHUDTranslationMap();
+	auto &hud_server_to_client = client->getHUDTranslationMap();
 
 	u32 server_id = event->hudadd.server_id;
 	// ignore if we already have a HUD with that ID
