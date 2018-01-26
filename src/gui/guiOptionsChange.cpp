@@ -36,7 +36,8 @@ const int ID_soundMuteButton = 265;
 const int ID_fovText = 266;
 const int ID_fovSlider = 267;
 const int ID_buildButton = 268;
-const int ID_ExitButton = 269;
+const int ID_fogButton = 269;
+const int ID_ExitButton = 270;
 
 GUIOptionsChange::GUIOptionsChange(gui::IGUIEnvironment* env,
 		gui::IGUIElement* parent, s32 id,
@@ -103,7 +104,7 @@ void GUIOptionsChange::regenerateGui(v2u32 screensize)
 
 		const wchar_t *text = wgettext("Sound Volume: ");
 		core::stringw volume_text = text;
-		delete [] text;
+		delete[] text;
 
 		volume_text += core::stringw(volume) + core::stringw("%");
 		Environment->addStaticText(volume_text.c_str(), rect, false,
@@ -134,7 +135,7 @@ void GUIOptionsChange::regenerateGui(v2u32 screensize)
 
 		const wchar_t *text = wgettext("Field of View: ");
 		core::stringw fov_text = text;
-		delete [] text;
+		delete[] text;
 
 		fov_text += core::stringw(FOV);
 		Environment->addStaticText(fov_text.c_str(), rect, false,
@@ -160,7 +161,17 @@ void GUIOptionsChange::regenerateGui(v2u32 screensize)
 				ID_buildButton, text);
 		delete[] text;
 	}
-	
+	/*
+	 * Fog stuff
+	 */
+	{
+		core::rect<s32> rect(0, 0, 160, 20);
+		rect = rect + v2s32(size.X / 2 - 150, size.Y / 2 - 20);
+		const wchar_t *text = wgettext("Enabled Fog");
+		Environment->addCheckBox(g_settings->getBool("enable_fog"), rect, this,
+				ID_fogButton, text);
+		delete[] text;
+	}
 	/*
 		Exit Button
 	 */
@@ -209,12 +220,16 @@ bool GUIOptionsChange::OnEvent(const SEvent& event)
 				}else if(event.GUIEvent.Caller->getID() == ID_buildButton){
 					e = getElementFromId(ID_buildButton);
 					g_settings->setBool("enable_build_where_you_stand", ((gui::IGUICheckBox*)e)->isChecked());
+				}else if(event.GUIEvent.Caller->getID() == ID_fogButton){
+					e = getElementFromId(ID_fogButton);
+					g_settings->setBool("enable_fog", ((gui::IGUICheckBox*)e)->isChecked());
 				}
 			}
 
 			Environment->setFocus(this);
 			return true;
 		}
+
 		if (event.GUIEvent.EventType == gui::EGET_BUTTON_CLICKED) {
 			if (event.GUIEvent.Caller->getID() == ID_ExitButton) {
 				quitMenu();
@@ -232,6 +247,7 @@ bool GUIOptionsChange::OnEvent(const SEvent& event)
 				return true;
 			}
 		}
+
 		if (event.GUIEvent.EventType == gui::EGET_SCROLL_BAR_CHANGED) {
 			if (event.GUIEvent.Caller->getID() == ID_soundSlider) {
 				s32 pos = ((gui::IGUIScrollBar*)event.GUIEvent.Caller)->getPos();
@@ -240,7 +256,7 @@ bool GUIOptionsChange::OnEvent(const SEvent& event)
 				gui::IGUIElement *e = getElementFromId(ID_soundText);
 				const wchar_t *text = wgettext("Sound Volume: ");
 				core::stringw volume_text = text;
-				delete [] text;
+				delete[] text;
 
 				volume_text += core::stringw(pos) + core::stringw("%");
 				e->setText(volume_text.c_str());
@@ -252,14 +268,13 @@ bool GUIOptionsChange::OnEvent(const SEvent& event)
 				gui::IGUIElement *e = getElementFromId(ID_fovText);
 				const wchar_t *text = wgettext("Field of View: ");
 				core::stringw fov_text = text;
-				delete [] text;
+				delete[] text;
 
 				fov_text += core::stringw(pos);
 				e->setText(fov_text.c_str());
 				return true;
 			}
 		}
-
 	}
 
 	return Parent ? Parent->OnEvent(event) : false;
