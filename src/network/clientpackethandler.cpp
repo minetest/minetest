@@ -1062,12 +1062,10 @@ void Client::handleCommand_HudAdd(NetworkPacket* pkt)
 	try {
 		*pkt >> size;
 	} catch(SerializationError &e) {};
-	u32 client_id = getEnv().getLocalPlayer()->getFreeHudID();
-	m_hud_server_to_client[server_id] = client_id;
 
 	ClientEvent *event = new ClientEvent();
 	event->type             = CE_HUDADD;
-	event->hudadd.id        = client_id;
+	event->hudadd.server_id = server_id;
 	event->hudadd.type      = type;
 	event->hudadd.pos       = new v2f(pos);
 	event->hudadd.name      = new std::string(name);
@@ -1089,7 +1087,7 @@ void Client::handleCommand_HudRemove(NetworkPacket* pkt)
 
 	*pkt >> server_id;
 
-	std::unordered_map<u32, u32>::const_iterator i = m_hud_server_to_client.find(server_id);
+	auto i = m_hud_server_to_client.find(server_id);
 	if (i != m_hud_server_to_client.end()) {
 		int client_id = i->second;
 		m_hud_server_to_client.erase(i);
