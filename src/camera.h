@@ -58,6 +58,9 @@ enum CameraMode {CAMERA_MODE_FIRST, CAMERA_MODE_THIRD, CAMERA_MODE_THIRD_FRONT};
 class Camera
 {
 public:
+	void onSettingsChange(const std::string &name);
+	static void settingsCallback(const std::string &name, void *userdata);
+	
 	Camera(MapDrawControl &draw_control, Client *client);
 	~Camera();
 
@@ -165,6 +168,8 @@ public:
 	void drawNametags();
 
 	inline void addArmInertia(f32 player_yaw);
+	
+	//f32 m_cache_fov;
 
 private:
 	// Nodes
