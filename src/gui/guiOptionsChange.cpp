@@ -36,7 +36,6 @@ const int ID_soundMuteButton = 265;
 const int ID_fovText = 266;
 const int ID_fovSlider = 267;
 const int ID_buildButton = 268;
-const int ID_fogButton = 269;
 const int ID_ExitButton = 270;
 
 GUIOptionsChange::GUIOptionsChange(gui::IGUIEnvironment* env,
@@ -73,6 +72,50 @@ void GUIOptionsChange::removeChildren()
 		e->remove();
 }
 
+void GUIOptionsChange::addCheckBox(const std::string name,const std::string setting, int ID, int xoff, int yoff){
+	core::rect<s32> rect(0, 0, 160, 20);
+	rect = rect + v2s32(m_size.X / 2 + xoff, m_size.Y / 2 + yoff);
+	const wchar_t *text = wgettext(name.c_str());
+	Environment->addCheckBox(g_settings->getBool(setting), rect, this,
+			ID, text);
+	delete[] text;
+}
+
+void GUIOptionsChange::addSlider(int ID, int xoff, int yoff, int max, int min, int init){
+	core::rect<s32> rect(0, 0, 300, 20);
+	rect = rect + v2s32(m_size.X / 2 + xoff, m_size.Y / 2 + yoff);
+	gui::IGUIScrollBar *e = Environment->addScrollBar(true,
+		rect, this, ID);
+	e->setMax(max);
+	e->setMin(min);
+	e->setPos(init);
+}
+
+void GUIOptionsChange::addDynText(const std::string name, int value, const std::string ending, int ID, int xoff, int yoff){
+	core::rect<s32> rect(0, 0, 160, 20);
+	rect = rect + v2s32(m_size.X / 2 + xoff, m_size.Y / 2 + yoff);
+
+	const wchar_t *text = wgettext(name.c_str());
+	core::stringw temp_text = text;
+	delete[] text;
+
+	temp_text += core::stringw(value)+core::stringw(wgettext(ending.c_str()));
+	Environment->addStaticText(temp_text.c_str(), rect, false,
+			true, this, ID);
+}
+
+void GUIOptionsChange::addText(const std::string name, int ID, int xoff, int yoff){
+	core::rect<s32> rect(0, 0, 160, 20);
+	rect = rect + v2s32(m_size.X / 2 + xoff, m_size.Y / 2 + yoff);
+
+	const wchar_t *text = wgettext(name.c_str());
+	core::stringw temp_text = text;
+	delete[] text;
+	
+	Environment->addStaticText(temp_text.c_str(), rect, false,
+			true, this, ID);
+}
+
 void GUIOptionsChange::regenerateGui(v2u32 screensize)
 {
 	/*
@@ -91,90 +134,21 @@ void GUIOptionsChange::regenerateGui(v2u32 screensize)
 	);
 	recalculateAbsolutePosition(false);
 
-	v2s32 size = DesiredRect.getSize();
+	m_size = DesiredRect.getSize();
+	v2s32 size = m_size;
 	int volume = (int)(g_settings->getFloat("sound_volume") * 100);
 	int FOV = (int)(g_settings->getFloat("fov"));
 
-	/*
-		Add sound stuff
-	*/
-	{
-		core::rect<s32> rect(0, 0, 160, 20);
-		rect = rect + v2s32(size.X / 2 - 150, size.Y / 2 - 170);
-
-		const wchar_t *text = wgettext("Sound Volume: ");
-		core::stringw volume_text = text;
-		delete[] text;
-
-		volume_text += core::stringw(volume) + core::stringw("%");
-		Environment->addStaticText(volume_text.c_str(), rect, false,
-				true, this, ID_soundText);
-	}
-	{
-		core::rect<s32> rect(0, 0, 160, 20);
-		rect = rect + v2s32(size.X / 2 + 80, size.Y / 2 - 170);
-		const wchar_t *text = wgettext("Mute");
-		Environment->addCheckBox(g_settings->getBool("mute_sound"), rect, this,
-				ID_soundMuteButton, text);
-		delete[] text;
-	}
-	{
-		core::rect<s32> rect(0, 0, 300, 20);
-		rect = rect + v2s32(size.X / 2 - 150, size.Y / 2-140);
-		gui::IGUIScrollBar *e = Environment->addScrollBar(true,
-			rect, this, ID_soundSlider);
-		e->setMax(100);
-		e->setPos(volume);
-	}
-	/* 
-	    Add FOV stuff
-	 */
-	{
-		core::rect<s32> rect(0, 0, 160, 20);
-		rect = rect + v2s32(size.X / 2 - 150, size.Y / 2-110);
-
-		const wchar_t *text = wgettext("Field of View: ");
-		core::stringw fov_text = text;
-		delete[] text;
-
-		fov_text += core::stringw(FOV);
-		Environment->addStaticText(fov_text.c_str(), rect, false,
-				true, this, ID_fovText);
-	}
-	{
-		core::rect<s32> rect(0, 0, 300, 20);
-		rect = rect + v2s32(size.X / 2 - 150, size.Y / 2-80);
-		gui::IGUIScrollBar *e = Environment->addScrollBar(true,
-			rect, this, ID_fovSlider);
-		e->setMax(160);
-		e->setMin(51);
-		e->setPos(FOV);
-	}
-	/*
-	 * Build inside Player
-	 */
-	{
-		core::rect<s32> rect(0, 0, 160, 20);
-		rect = rect + v2s32(size.X / 2 - 150, size.Y / 2 - 50);
-		const wchar_t *text = wgettext("Build Inside Player");
-		Environment->addCheckBox(g_settings->getBool("enable_build_where_you_stand"), rect, this,
-				ID_buildButton, text);
-		delete[] text;
-	}
-	/*
-	 * Fog stuff
-	 */
-	{
-		core::rect<s32> rect(0, 0, 160, 20);
-		rect = rect + v2s32(size.X / 2 - 150, size.Y / 2 - 20);
-		const wchar_t *text = wgettext("Enabled Fog");
-		Environment->addCheckBox(g_settings->getBool("enable_fog"), rect, this,
-				ID_fogButton, text);
-		delete[] text;
-	}
-	/*
-		Exit Button
-	 */
+	//sound stuff
+	addDynText("Sound Volume: ",volume,"%",ID_soundText,-150,-170);
+	addCheckBox("Mute","mute_sound",ID_soundMuteButton,80,-170);
+	addSlider(ID_soundSlider,-150,-140,100,0,volume);
+	//fov stuff
+	addDynText("Field Of View: ",FOV,"",ID_fovText,-150,-110);
+	addSlider(ID_fovSlider,-150,-80, 160, 51, FOV);
+	//misc settings
+	addCheckBox("Build Inside Player","enable_build_where_you_stand",ID_buildButton,-150,-50);
+	//exit button
 	{
 		core::rect<s32> rect(0, 0, 80, 30);
 		rect = rect + v2s32(size.X/2-80/2, size.Y/2+145);
@@ -213,6 +187,7 @@ bool GUIOptionsChange::OnEvent(const SEvent& event)
 	} else if (event.EventType == EET_GUI_EVENT) {
 		if (event.GUIEvent.EventType == gui::EGET_CHECKBOX_CHANGED) {
 			gui::IGUIElement *e = getElementFromId(ID_soundMuteButton);
+			// check boxes
 			if (e != NULL && e->getType() == gui::EGUIET_CHECK_BOX) {
 				if (event.GUIEvent.Caller->getID() == ID_soundMuteButton){
 					e = getElementFromId(ID_soundMuteButton);
@@ -220,9 +195,6 @@ bool GUIOptionsChange::OnEvent(const SEvent& event)
 				}else if(event.GUIEvent.Caller->getID() == ID_buildButton){
 					e = getElementFromId(ID_buildButton);
 					g_settings->setBool("enable_build_where_you_stand", ((gui::IGUICheckBox*)e)->isChecked());
-				}else if(event.GUIEvent.Caller->getID() == ID_fogButton){
-					e = getElementFromId(ID_fogButton);
-					g_settings->setBool("enable_fog", ((gui::IGUICheckBox*)e)->isChecked());
 				}
 			}
 
@@ -249,6 +221,7 @@ bool GUIOptionsChange::OnEvent(const SEvent& event)
 		}
 
 		if (event.GUIEvent.EventType == gui::EGET_SCROLL_BAR_CHANGED) {
+			//sliders
 			if (event.GUIEvent.Caller->getID() == ID_soundSlider) {
 				s32 pos = ((gui::IGUIScrollBar*)event.GUIEvent.Caller)->getPos();
 				g_settings->setFloat("sound_volume", (float) pos / 100);

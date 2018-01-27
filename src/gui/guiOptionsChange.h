@@ -30,11 +30,20 @@ public:
 			gui::IGUIElement* parent, s32 id,
 			IMenuManager *menumgr);
 	~GUIOptionsChange();
-
+	
 	void removeChildren();
 	/*
 		Remove and re-add (or reposition) stuff
 	*/
+	void addCheckBox(const std::string name,const std::string setting, int ID, int xoff, int yoff);
+	
+	void addSlider(int ID, int xoff, int yoff, int max, int min, int init);
+	
+	//dynamic text
+	void addDynText(const std::string name, int value, const std::string ending, int ID, int xoff, int yoff);
+	
+	void addText(const std::string name, int ID, int xoff, int yoff);
+	
 	void regenerateGui(v2u32 screensize);
 
 	void drawMenu();
@@ -42,4 +51,6 @@ public:
 	bool OnEvent(const SEvent& event);
 
 	bool pausesGame() { return true; }
+private:
+	v2s32 m_size;
 };
