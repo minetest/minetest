@@ -71,7 +71,7 @@ end
 --
 core.register_chatcommand("me", {
 	params = "<action>",
-	description = "Display chat action (e.g., '/me orders a pizza' displays"
+	description = "Show chat action (e.g., '/me orders a pizza' displays"
 			.. " '<player name> orders a pizza')",
 	privs = {shout=true},
 	func = function(name, param)
@@ -813,7 +813,7 @@ core.register_chatcommand("time", {
 })
 
 core.register_chatcommand("days", {
-	description = "Display day count since world creation",
+	description = "Show day count since world creation",
 	func = function(name, param)
 		return true, "Current day is " .. core.get_day_count()
 	end

@@ -82,7 +82,7 @@ core.register_privilege("fast", {
 	give_to_singleplayer = false,
 })
 core.register_privilege("noclip", {
-	description = "Can fly through solid blocks using the noclip mode",
+	description = "Can fly through solid nodes using noclip mode",
 	give_to_singleplayer = false,
 })
 core.register_privilege("rollback", {
