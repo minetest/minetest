@@ -178,6 +178,8 @@ private:
 	std::deque<ControlLogEntry> entries;
 	bool includes_teleport = false;
 	v3f teleport_pos;
+	void _serialize(std::ostream &to, u32 bytes=800) const; // up to bytes in length
+	void _deserialize(std::istream &from);
 };
 
 #endif

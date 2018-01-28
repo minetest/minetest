@@ -18,6 +18,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "util/serialize.h"
+#include "serialization.h"
 #include "controllog.h"
 #include "log.h"
 #include <sstream>
@@ -218,6 +219,13 @@ void ControlLog::add(ControlLogEntry &cle)
 
 void ControlLog::serialize(std::ostream &output, u32 bytes_max) const
 {
+	std::stringstream compressed;
+	_serialize(compressed, bytes_max);
+	compressZlib(compressed.str(), output);
+}
+
+void ControlLog::_serialize(std::ostream &output, u32 bytes_max) const
+{
 	// loop to find flags (with/without joystick)
 	u8 flags = 0;
 
@@ -258,6 +266,13 @@ void ControlLog::serialize(std::ostream &output, u32 bytes_max) const
 }
 
 void ControlLog::deserialize(std::istream &input)
+{
+	std::stringstream decompressed;
+	decompressZlib(input, decompressed);
+	return _deserialize(decompressed);
+}
+
+void ControlLog::_deserialize(std::istream &input)
 {
 	u8 flags;
 
