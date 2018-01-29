@@ -71,7 +71,7 @@ end
 --
 core.register_chatcommand("me", {
 	params = "<action>",
-	description = "Display chat action (e.g., '/me orders a pizza' displays"
+	description = "Show chat action (e.g., '/me orders a pizza' displays"
 			.. " '<player name> orders a pizza')",
 	privs = {shout=true},
 	func = function(name, param)
@@ -93,7 +93,7 @@ core.register_chatcommand("admin", {
 
 core.register_chatcommand("privs", {
 	params = "[<name>]",
-	description = "Print privileges of player",
+	description = "Show privileges of yourself or another player",
 	func = function(caller, param)
 		param = param:trim()
 		local name = (param ~= "" and param or caller)
@@ -149,7 +149,7 @@ end
 
 core.register_chatcommand("grant", {
 	params = "<name> (<privilege> | all)",
-	description = "Give privilege to player",
+	description = "Give privileges to player",
 	func = function(name, param)
 		local grantname, grantprivstr = string.match(param, "([^ ]+) (.+)")
 		if not grantname or not grantprivstr then
@@ -172,7 +172,7 @@ core.register_chatcommand("grantme", {
 
 core.register_chatcommand("revoke", {
 	params = "<name> (<privilege> | all)",
-	description = "Remove privilege from player",
+	description = "Remove privileges from player",
 	privs = {},
 	func = function(name, param)
 		if not core.check_player_privs(name, {privs=true}) and
@@ -263,7 +263,7 @@ core.register_chatcommand("setpassword", {
 
 core.register_chatcommand("clearpassword", {
 	params = "<name>",
-	description = "Set empty password",
+	description = "Set empty password for a player",
 	privs = {password=true},
 	func = function(name, param)
 		local toname = param
@@ -290,7 +290,7 @@ core.register_chatcommand("auth_reload", {
 
 core.register_chatcommand("remove_player", {
 	params = "<name>",
-	description = "Remove player data",
+	description = "Remove a player's data",
 	privs = {server=true},
 	func = function(name, param)
 		local toname = param
@@ -315,7 +315,7 @@ core.register_chatcommand("remove_player", {
 
 core.register_chatcommand("teleport", {
 	params = "<X>,<Y>,<Z> | <to_name> | (<name> <X>,<Y>,<Z>) | (<name> <to_name>)",
-	description = "Teleport to player or position",
+	description = "Teleport to position or player",
 	privs = {teleport=true},
 	func = function(name, param)
 		-- Returns (pos, true) if found, otherwise (pos, false)
@@ -588,7 +588,7 @@ local function handle_give_command(cmd, giver, receiver, stackstring)
 end
 
 core.register_chatcommand("give", {
-	params = "<name> <ItemString>",
+	params = "<name> <ItemString> [<count> [<wear>]]",
 	description = "Give item to player",
 	privs = {give=true},
 	func = function(name, param)
@@ -601,7 +601,7 @@ core.register_chatcommand("give", {
 })
 
 core.register_chatcommand("giveme", {
-	params = "<ItemString>",
+	params = "<ItemString> [<count> [<wear>]]",
 	description = "Give item to yourself",
 	privs = {give=true},
 	func = function(name, param)
@@ -766,15 +766,15 @@ core.register_chatcommand("rollback", {
 })
 
 core.register_chatcommand("status", {
-	description = "Print server status",
+	description = "Show server status",
 	func = function(name, param)
 		return true, core.get_server_status()
 	end,
 })
 
 core.register_chatcommand("time", {
-	params = "<0..23>:<0..59> | <0..24000>",
-	description = "Set time of day",
+	params = "[<0..23>:<0..59> | <0..24000>]",
+	description = "Show or set time of day",
 	privs = {},
 	func = function(name, param)
 		if param == "" then
@@ -813,7 +813,7 @@ core.register_chatcommand("time", {
 })
 
 core.register_chatcommand("days", {
-	description = "Display day count",
+	description = "Show day count since world creation",
 	func = function(name, param)
 		return true, "Current day is " .. core.get_day_count()
 	end
@@ -839,12 +839,17 @@ core.register_chatcommand("shutdown", {
 })
 
 core.register_chatcommand("ban", {
-	params = "<name>",
-	description = "Ban IP of player",
+	params = "[<name> | <IP_address>]",
+	description = "Ban player or show ban list",
 	privs = {ban=true},
 	func = function(name, param)
 		if param == "" then
-			return true, "Ban list: " .. core.get_ban_list()
+			local ban_list = core.get_ban_list()
+			if ban_list == "" then
+				return true, "The ban list is empty."
+			else
+				return true, "Ban list: " .. ban_list
+			end
 		end
 		if not core.get_player_by_name(param) then
 			return false, "No such player."
@@ -860,7 +865,7 @@ core.register_chatcommand("ban", {
 
 core.register_chatcommand("unban", {
 	params = "<name> | <IP_address>",
-	description = "Remove IP ban",
+	description = "Remove player ban",
 	privs = {ban=true},
 	func = function(name, param)
 		if not core.unban_player_or_ip(param) then
@@ -938,7 +943,7 @@ core.register_chatcommand("msg", {
 
 core.register_chatcommand("last-login", {
 	params = "[<name>]",
-	description = "Get the last login time of a player",
+	description = "Get the last login time of a player or yourself",
 	func = function(name, param)
 		if param == "" then
 			param = name
