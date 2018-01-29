@@ -1915,7 +1915,7 @@ void Game::processKeyInput()
 		toggleMinimap(isKeyDown(KeyType::SNEAK));
 	} else if (wasKeyDown(KeyType::TOGGLE_CHAT)) {
 		m_game_ui->toggleChat();
-	} else if (wasKeyDown(KeyType::TOGGLE_FORCE_FOG_OFF)) {
+	} else if (wasKeyDown(KeyType::TOGGLE_FOG)) {
 		toggleFog();
 	} else if (wasKeyDown(KeyType::TOGGLE_UPDATE_CAMERA)) {
 		toggleUpdateCamera();
@@ -2204,8 +2204,9 @@ void Game::toggleMinimap(bool shift_pressed)
 
 void Game::toggleFog()
 {
-	m_flags.force_fog_off = !m_flags.force_fog_off;
-	if (m_flags.force_fog_off)
+	bool fog_enabled = g_settings->getBool("enable_fog");
+	g_settings->setBool("enable_fog", !fog_enabled);
+	if (fog_enabled)
 		m_game_ui->showTranslatedStatusText("Fog disabled");
 	else
 		m_game_ui->showTranslatedStatusText("Fog enabled");
@@ -3672,8 +3673,7 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 			camera_node_position.Z   = camera_node_position.Z + camera_offset.Z * BS;
 			clouds->update(camera_node_position,
 					sky->getCloudColor());
-			if (clouds->isCameraInsideCloud() && m_cache_enable_fog &&
-					!m_flags.force_fog_off) {
+			if (clouds->isCameraInsideCloud() && m_cache_enable_fog) {
 				// if inside clouds, and fog enabled, use that as sky
 				// color(s)
 				video::SColor clouds_dark = clouds->getColor()
@@ -3698,7 +3698,7 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 		Fog
 	*/
 
-	if (m_cache_enable_fog && !m_flags.force_fog_off) {
+	if (m_cache_enable_fog) {
 		driver->setFog(
 				sky->getBgColor(),
 				video::EFT_FOG_LINEAR,

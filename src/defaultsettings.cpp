@@ -90,7 +90,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("keymap_cinematic", "");
 	settings->setDefault("keymap_toggle_hud", "KEY_F1");
 	settings->setDefault("keymap_toggle_chat", "KEY_F2");
-	settings->setDefault("keymap_toggle_force_fog_off", "KEY_F3");
+	settings->setDefault("keymap_toggle_fog", "KEY_F3");
 #if DEBUG
 	settings->setDefault("keymap_toggle_update_camera", "KEY_F4");
 #else
