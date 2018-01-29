@@ -11,25 +11,25 @@ minetest.clear_registered_biomes()
 minetest.clear_registered_decorations()
 
 minetest.register_biome({
-        name = "land:grassland",
-        node_top = "land:grass",
-        depth_top = 1,
-        node_filler = "land:dirt",
-        depth_filler = 2,
-        y_min = 5,
-        y_max = 31000,
-        heat_point = 50,
-        humidity_point = 50,
+	name = "land:grassland",
+	node_top = "land:grass",
+	depth_top = 1,
+	node_filler = "land:dirt",
+	depth_filler = 2,
+	y_min = 5,
+	y_max = 31000,
+	heat_point = 50,
+	humidity_point = 50,
 })
 
 minetest.register_biome({
-        name = "land:ocean",
-        node_top = "land:sand",
-        depth_top = 1,
-        node_filler = "land:gravel",
-        depth_filler = 2,
-        y_min = -31000,
-        y_max = 4,
-        heat_point = 50,
-        humidity_point = 50,
+	name = "land:ocean",
+	node_top = "land:sand",
+	depth_top = 1,
+	node_filler = "land:gravel",
+	depth_filler = 2,
+	y_min = -31000,
+	y_max = 4,
+	heat_point = 50,
+	humidity_point = 50,
 })
