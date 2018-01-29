@@ -2,7 +2,7 @@
 // detail/impl/socket_ops.ipp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2016 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2017 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -3237,6 +3237,37 @@ asio::error_code getaddrinfo(const char* host,
   return ec = translate_addrinfo_error(error);
 #else
   int error = ::getaddrinfo(host, service, &hints, result);
+#if defined(__MACH__) && defined(__APPLE__)
+  using namespace std; // For isdigit and atoi.
+  if (error == 0 && service && isdigit(static_cast<unsigned char>(service[0])))
+  {
+    u_short_type port = host_to_network_short(atoi(service));
+    for (addrinfo_type* ai = *result; ai; ai = ai->ai_next)
+    {
+      switch (ai->ai_family)
+      {
+      case ASIO_OS_DEF(AF_INET):
+        {
+          sockaddr_in4_type* sinptr =
+            reinterpret_cast<sockaddr_in4_type*>(ai->ai_addr);
+          if (sinptr->sin_port == 0)
+            sinptr->sin_port = port;
+          break;
+        }
+      case ASIO_OS_DEF(AF_INET6):
+        {
+          sockaddr_in6_type* sin6ptr =
+            reinterpret_cast<sockaddr_in6_type*>(ai->ai_addr);
+          if (sin6ptr->sin6_port == 0)
+            sin6ptr->sin6_port = port;
+          break;
+        }
+      default:
+        break;
+      }
+    }
+  }
+#endif
   return ec = translate_addrinfo_error(error);
 #endif
 }

@@ -2,7 +2,7 @@
 // detail/socket_types.hpp
 // ~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2016 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2017 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -30,13 +30,13 @@
 #   define ASIO_WSPIAPI_H_DEFINED
 #  endif // !defined(_WSPIAPI_H_)
 # endif // defined(__BORLANDC__)
+# include <winsock2.h>
+# include <ws2tcpip.h>
 # if defined(WINAPI_FAMILY)
 #  if ((WINAPI_FAMILY & WINAPI_PARTITION_DESKTOP) != 0)
 #   include <windows.h>
 #  endif // ((WINAPI_FAMILY & WINAPI_PARTITION_DESKTOP) != 0)
 # endif // defined(WINAPI_FAMILY)
-# include <winsock2.h>
-# include <ws2tcpip.h>
 # if !defined(ASIO_WINDOWS_APP)
 #  include <mswsock.h>
 # endif // !defined(ASIO_WINDOWS_APP)

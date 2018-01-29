@@ -2,7 +2,7 @@
 // basic_io_object.hpp
 // ~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2016 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2017 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -112,6 +112,11 @@ protected:
    * @note Available only for services that support movability,
    */
   basic_io_object& operator=(basic_io_object&& other);
+
+  /// Perform a converting move-construction of a basic_io_object.
+  template <typename IoObjectService1>
+  basic_io_object(IoObjectService1& other_service,
+      typename IoObjectService1::implementation_type& other_implementation);
 #endif // defined(GENERATING_DOCUMENTATION)
 
   /// Protected destructor to prevent deletion through this type.
@@ -189,6 +194,16 @@ protected:
     : service_(&other.get_service())
   {
     service_->move_construct(implementation, other.implementation);
+  }
+
+  template <typename IoObjectService1>
+  basic_io_object(IoObjectService1& other_service,
+      typename IoObjectService1::implementation_type& other_implementation)
+    : service_(&asio::use_service<IoObjectService>(
+          other_service.get_io_service()))
+  {
+    service_->converting_move_construct(implementation,
+        other_service, other_implementation);
   }
 
   ~basic_io_object()

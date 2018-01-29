@@ -1,6 +1,6 @@
 # ASIO
 
-This is a lightweight ASIO 1.10.8 bundle
+This is a lightweight ASIO 1.10.9 bundle
 
 Stripped parts:
 

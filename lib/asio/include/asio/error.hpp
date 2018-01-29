@@ -2,7 +2,7 @@
 // error.hpp
 // ~~~~~~~~~
 //
-// Copyright (c) 2003-2016 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2017 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -253,13 +253,17 @@ inline const asio::error_category& get_addrinfo_category()
 extern ASIO_DECL
 const asio::error_category& get_misc_category();
 
-static const asio::error_category& system_category
+static const asio::error_category&
+  system_category ASIO_UNUSED_VARIABLE
   = asio::error::get_system_category();
-static const asio::error_category& netdb_category
+static const asio::error_category&
+  netdb_category ASIO_UNUSED_VARIABLE
   = asio::error::get_netdb_category();
-static const asio::error_category& addrinfo_category
+static const asio::error_category&
+  addrinfo_category ASIO_UNUSED_VARIABLE
   = asio::error::get_addrinfo_category();
-static const asio::error_category& misc_category
+static const asio::error_category&
+  misc_category ASIO_UNUSED_VARIABLE
   = asio::error::get_misc_category();
 
 } // namespace error
