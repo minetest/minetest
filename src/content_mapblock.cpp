@@ -385,9 +385,16 @@ void MapblockMeshGenerator::prepareLiquidNodeDrawing()
 	getSpecialTile(1, &tile_liquid);
 
 	MapNode ntop = data->m_vmanip.getNodeNoEx(blockpos_nodes + v3s16(p.X, p.Y + 1, p.Z));
+	MapNode nbottom = data->m_vmanip.getNodeNoEx(blockpos_nodes + v3s16(p.X, p.Y - 1, p.Z));
 	c_flowing = nodedef->getId(f->liquid_alternative_flowing);
 	c_source = nodedef->getId(f->liquid_alternative_source);
 	top_is_same_liquid = (ntop.getContent() == c_flowing) || (ntop.getContent() == c_source);
+	draw_liquid_bottom = (nbottom.getContent() != c_flowing) && (nbottom.getContent() != c_source);
+	if (draw_liquid_bottom) {
+		const ContentFeatures &f2 = nodedef->get(nbottom.getContent());
+		if (f2.solidness > 1)
+			draw_liquid_bottom = false;
+	}
 
 	if (data->m_smooth_lighting)
 		return; // don't need to pre-compute anything in this case
@@ -595,6 +602,24 @@ void MapblockMeshGenerator::drawLiquidTop()
 	collector->append(tile_liquid_top, vertices, 4, quad_indices, 6);
 }
 
+void MapblockMeshGenerator::drawLiquidBottom()
+{
+	video::S3DVertex vertices[4] = {
+		video::S3DVertex(-BS / 2, -BS / 2, -BS / 2, 0, 0, 0, color_liquid_top, 0, 0),
+		video::S3DVertex( BS / 2, -BS / 2, -BS / 2, 0, 0, 0, color_liquid_top, 1, 0),
+		video::S3DVertex( BS / 2, -BS / 2,  BS / 2, 0, 0, 0, color_liquid_top, 1, 1),
+		video::S3DVertex(-BS / 2, -BS / 2,  BS / 2, 0, 0, 0, color_liquid_top, 0, 1),
+	};
+
+	for (int i = 0; i < 4; i++) {
+		if (data->m_smooth_lighting)
+			vertices[i].Color = blendLightColor(vertices[i].Pos);
+		vertices[i].Pos += origin;
+	}
+
+	collector->append(tile_liquid_top, vertices, 4, quad_indices, 6);
+}
+
 void MapblockMeshGenerator::drawLiquidNode()
 {
 	prepareLiquidNodeDrawing();
@@ -603,6 +628,8 @@ void MapblockMeshGenerator::drawLiquidNode()
 	drawLiquidSides();
 	if (!top_is_same_liquid)
 		drawLiquidTop();
+	if (draw_liquid_bottom)
+		drawLiquidBottom();
 }
 
 void MapblockMeshGenerator::drawGlasslikeNode()

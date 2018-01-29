@@ -92,6 +92,7 @@ public:
 
 // liquid-specific
 	bool top_is_same_liquid;
+	bool draw_liquid_bottom;
 	TileSpec tile_liquid;
 	TileSpec tile_liquid_top;
 	content_t c_flowing;
@@ -112,6 +113,7 @@ public:
 	f32 getCornerLevel(int i, int k);
 	void drawLiquidSides();
 	void drawLiquidTop();
+	void drawLiquidBottom();
 
 // raillike-specific
 	// name of the group that enables connecting to raillike nodes of different kind
