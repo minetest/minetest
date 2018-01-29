@@ -18,6 +18,7 @@ minetest.register_node("nodes:solid", {
 minetest.register_node("nodes:glasslike", {
 	description = "Glass",
 	drawtype = "glasslike",
+	paramtype = "light",
 	paramtype2 = "facedir",
 	tiles = cube_tiles,
 	groups = {cracky=3},
@@ -26,6 +27,7 @@ minetest.register_node("nodes:glasslike", {
 minetest.register_node("nodes:glasslike_framed", {
 	description = "Framed Glass",
 	drawtype = "glasslike_framed",
+	paramtype = "light",
 	paramtype2 = "facedir",
 	tiles = cube_tiles,
 	groups = {cracky=3},
@@ -34,14 +36,13 @@ minetest.register_node("nodes:glasslike_framed", {
 minetest.register_node("nodes:allfaces", {
 	description = "Allfaces",
 	drawtype = "allfaces",
+	paramtype = "light",
 	paramtype2 = "facedir",
 	tiles = cube_tiles,
 	groups = {cracky=3},
 })
 
 --[[
-- `allfaces`
-- `allfaces_optional`
 - `torchlike`
 - `signlike`
 - `plantlike`
