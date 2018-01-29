@@ -21,7 +21,7 @@ minetest.register_node("nodes:glasslike", {
 	paramtype = "light",
 	paramtype2 = "facedir",
 	tiles = cube_tiles,
-	groups = {cracky=3},
+	groups = {cracky=3, oddly_breakable_by_hand=1},
 })
 
 minetest.register_node("nodes:glasslike_framed", {
@@ -30,7 +30,7 @@ minetest.register_node("nodes:glasslike_framed", {
 	paramtype = "light",
 	paramtype2 = "facedir",
 	tiles = cube_tiles,
-	groups = {cracky=3},
+	groups = {cracky=3, oddly_breakable_by_hand=1},
 })
 
 minetest.register_node("nodes:allfaces", {
@@ -39,7 +39,7 @@ minetest.register_node("nodes:allfaces", {
 	paramtype = "light",
 	paramtype2 = "facedir",
 	tiles = cube_tiles,
-	groups = {cracky=3},
+	groups = {cracky=3, snappy=3},
 })
 
 minetest.register_node("nodes:torch", {
@@ -53,7 +53,7 @@ minetest.register_node("nodes:torch", {
 		{name="torch_ceil.png"},
 		{name="torch_wall.png"},
 	},
-	groups = {dig_immediate=3},
+	groups = {attached_node=1, dig_immediate=3},
 	inventory_image = "torch_floor.png",
 	wield_image = "torch_floor.png",
 })
@@ -68,7 +68,7 @@ minetest.register_node("nodes:torch_off", {
 		{name="torch_ceil_off.png"},
 		{name="torch_wall_off.png"},
 	},
-	groups = {dig_immediate=3},
+	groups = {attached_node=1, dig_immediate=3},
 	inventory_image = "torch_floor_off.png",
 	wield_image = "torch_floor_off.png",
 })
