@@ -534,10 +534,10 @@ class GameGlobalShaderConstantSetterFactory : public IShaderConstantSetterFactor
 	Client *m_client;
 	std::vector<GameGlobalShaderConstantSetter *> created_nosky;
 public:
-	GameGlobalShaderConstantSetterFactory(bool *force_fog_off,
+	GameGlobalShaderConstantSetterFactory(
 			f32 *fog_range, Client *client) :
 		m_sky(NULL),
-		m_force_fog_off(force_fog_off),
+		m_force_fog_off(false),
 		m_fog_range(fog_range),
 		m_client(client)
 	{}
@@ -1309,7 +1309,7 @@ bool Game::createClient(const std::string &playername,
 	}
 
 	GameGlobalShaderConstantSetterFactory *scsf = new GameGlobalShaderConstantSetterFactory(
-			false, &runData.fog_range, client);
+			&runData.fog_range, client);
 	shader_src->addShaderConstantSetterFactory(scsf);
 
 	// Update cached textures, meshes and materials
