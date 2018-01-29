@@ -1,6 +1,6 @@
 minetest.register_on_joinplayer(function(player)
 	local name = player:get_player_name()
-	minetest.after(2.0, minetest.chat_send_player, name, "This is the [minimal] \"Minimal Development Test\" game. Use [minetest_game] for the real thing.")
+	minetest.after(2.0, minetest.chat_send_player, name, "This is the [devtest] \"Core Development Test\" game. Use [minetest_game] for the real thing.")
 end)
 
 -- The hand
