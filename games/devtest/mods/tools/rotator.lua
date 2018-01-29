@@ -20,7 +20,7 @@ local function rotate(itemstack, user, pointed_thing, dir)
 	minetest.swap_node(pos, node)
 end
 
-minetest.register_craftitem("rotator:rotator", {
+minetest.register_craftitem("tools:rotator", {
 	description = "Node rotator",
 	inventory_image = "rotator.png",
 	on_use = function(itemstack, user, pointed_thing)
