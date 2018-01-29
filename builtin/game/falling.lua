@@ -33,6 +33,7 @@ core.register_entity(":__builtin:falling_node", {
 		local ds = {
 			node = self.node,
 			meta = self.meta,
+			started = self.started,
 		}
 		return core.serialize(ds)
 	end,
@@ -43,14 +44,24 @@ core.register_entity(":__builtin:falling_node", {
 		local ds = core.deserialize(staticdata)
 		if ds and ds.node then
 			self:set_node(ds.node, ds.meta)
+			self.started = ds.started
 		elseif ds then
 			self:set_node(ds)
+			self.started = ds.started
 		elseif staticdata ~= "" then
 			self:set_node({name = staticdata})
+			self.started = true
 		end
 	end,
 
 	on_step = function(self, dtime)
+		local function node_drops(pos, node_name)
+			local drops = core.get_node_drops(node_name, "")
+			for _, dropped_item in pairs(drops) do
+				core.add_item(pos, dropped_item)
+			end
+		end
+
 		-- Set gravity
 		local acceleration = self.object:getacceleration()
 		if not vector.equals(acceleration, {x = 0, y = -10, z = 0}) then
@@ -93,10 +104,7 @@ core.register_entity(":__builtin:falling_node", {
 				core.remove_node(np)
 				if nd and nd.buildable_to == false then
 					-- Add dropped items
-					local drops = core.get_node_drops(n2, "")
-					for _, dropped_item in pairs(drops) do
-						core.add_item(np, dropped_item)
-					end
+					node_drops(np, n2)
 				end
 				-- Run script hook
 				for _, callback in pairs(core.registered_on_dignodes) do
@@ -121,8 +129,21 @@ core.register_entity(":__builtin:falling_node", {
 		end
 		local vel = self.object:getvelocity()
 		if vector.equals(vel, {x = 0, y = 0, z = 0}) then
-			local npos = self.object:getpos()
-			self.object:setpos(vector.round(npos))
+			local npos = self.object:get_pos()
+			if not self.started then
+				-- On first time: Set initial position
+				self.object:setpos(vector.round(npos))
+				self.started = true
+			else
+				--[[ On second time:
+				The falling node has stopped, it probably collided with an
+				overhigh collisionbox.
+				There is no way to reasonably place the node,
+				so the falling node turns into item drops. ]]
+				node_drops(npos, self.node.name)
+				self.object:remove()
+				return
+			end
 		end
 	end
 })
