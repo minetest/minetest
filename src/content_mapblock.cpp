@@ -392,7 +392,7 @@ void MapblockMeshGenerator::prepareLiquidNodeDrawing()
 	draw_bottom = (nbottom.getContent() != c_flowing) && (nbottom.getContent() != c_source);
 	if (draw_bottom && (nbottom.getContent() != CONTENT_AIR)) {
 		const ContentFeatures &f2 = nodedef->get(nbottom.getContent());
-		if ((f2.solidness > 1) || (f2.visual_solidness > 1))
+		if (f2.solidness > 1)
 			draw_bottom = false;
 	}
 
