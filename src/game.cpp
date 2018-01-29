@@ -1309,7 +1309,7 @@ bool Game::createClient(const std::string &playername,
 	}
 
 	GameGlobalShaderConstantSetterFactory *scsf = new GameGlobalShaderConstantSetterFactory(
-			false, &runData.fog_range, client);
+			&m_flags.force_fog_off, &runData.fog_range, client);
 	shader_src->addShaderConstantSetterFactory(scsf);
 
 	// Update cached textures, meshes and materials
