@@ -36,7 +36,8 @@ const int ID_soundMuteButton = 265;
 const int ID_fovText = 266;
 const int ID_fovSlider = 267;
 const int ID_buildButton = 268;
-const int ID_ExitButton = 270;
+const int ID_forwardButton = 269;
+const int ID_ExitButton = 271;
 
 GUIOptionsChange::GUIOptionsChange(gui::IGUIEnvironment* env,
 		gui::IGUIElement* parent, s32 id,
@@ -70,8 +71,12 @@ void GUIOptionsChange::removeChildren()
 
 	if (gui::IGUIElement *e = getElementFromId(ID_buildButton))
 		e->remove();
+
+	if (gui::IGUIElement *e = getElementFromId(ID_forwardButton))
+		e->remove();
 }
 
+//for streamlining the GUI process and cleaning up code
 void GUIOptionsChange::addCheckBox(const std::string name,const std::string setting, int ID, int xoff, int yoff){
 	core::rect<s32> rect(0, 0, 160, 20);
 	rect = rect + v2s32(m_size.X / 2 + xoff, m_size.Y / 2 + yoff);
@@ -116,6 +121,19 @@ void GUIOptionsChange::addText(const std::string name, int ID, int xoff, int yof
 			true, this, ID);
 }
 
+void GUIOptionsChange::updateDynText(const SEvent& event, const std::string setting, int scale, int ID, const std::string beginning, const std::string ending){
+	s32 pos = ((gui::IGUIScrollBar*)event.GUIEvent.Caller)->getPos();
+	g_settings->setFloat(setting, (float) pos / scale);
+
+	gui::IGUIElement *e = getElementFromId(ID);
+	const wchar_t *text = wgettext(beginning.c_str());
+	core::stringw temp_text = text;
+	delete[] text;
+
+	temp_text += core::stringw(pos) + core::stringw(ending.c_str());
+	e->setText(temp_text.c_str());
+}
+
 void GUIOptionsChange::regenerateGui(v2u32 screensize)
 {
 	/*
@@ -148,6 +166,7 @@ void GUIOptionsChange::regenerateGui(v2u32 screensize)
 	addSlider(ID_fovSlider,-150,-80, 160, 51, FOV);
 	//misc settings
 	addCheckBox("Build Inside Player","enable_build_where_you_stand",ID_buildButton,-150,-50);
+	addCheckBox("Auto-Forward","continuous_forward",ID_forwardButton,-150,-20);
 	//exit button
 	{
 		core::rect<s32> rect(0, 0, 80, 30);
@@ -195,6 +214,9 @@ bool GUIOptionsChange::OnEvent(const SEvent& event)
 				}else if(event.GUIEvent.Caller->getID() == ID_buildButton){
 					e = getElementFromId(ID_buildButton);
 					g_settings->setBool("enable_build_where_you_stand", ((gui::IGUICheckBox*)e)->isChecked());
+				}else if(event.GUIEvent.Caller->getID() == ID_forwardButton){
+					e = getElementFromId(ID_forwardButton);
+					g_settings->setBool("continuous_forward", ((gui::IGUICheckBox*)e)->isChecked());
 				}
 			}
 
@@ -223,28 +245,10 @@ bool GUIOptionsChange::OnEvent(const SEvent& event)
 		if (event.GUIEvent.EventType == gui::EGET_SCROLL_BAR_CHANGED) {
 			//sliders
 			if (event.GUIEvent.Caller->getID() == ID_soundSlider) {
-				s32 pos = ((gui::IGUIScrollBar*)event.GUIEvent.Caller)->getPos();
-				g_settings->setFloat("sound_volume", (float) pos / 100);
-
-				gui::IGUIElement *e = getElementFromId(ID_soundText);
-				const wchar_t *text = wgettext("Sound Volume: ");
-				core::stringw volume_text = text;
-				delete[] text;
-
-				volume_text += core::stringw(pos) + core::stringw("%");
-				e->setText(volume_text.c_str());
+				updateDynText(event, "sound_volume", 100, ID_soundText, "Sound Volume: ", "%");
 				return true;
 			}else if (event.GUIEvent.Caller->getID() == ID_fovSlider) {
-				s32 pos = ((gui::IGUIScrollBar*)event.GUIEvent.Caller)->getPos();
-				g_settings->setFloat("fov", (float) pos);
-
-				gui::IGUIElement *e = getElementFromId(ID_fovText);
-				const wchar_t *text = wgettext("Field of View: ");
-				core::stringw fov_text = text;
-				delete[] text;
-
-				fov_text += core::stringw(pos);
-				e->setText(fov_text.c_str());
+				updateDynText(event, "fov", 1, ID_fovText, "Field Of View: ", "");
 				return true;
 			}
 		}

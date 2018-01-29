@@ -44,6 +44,8 @@ public:
 	
 	void addText(const std::string name, int ID, int xoff, int yoff);
 	
+	void updateDynText(const SEvent& event, const std::string setting, int scale, int ID, const std::string beginning, const std::string ending);
+	
 	void regenerateGui(v2u32 screensize);
 
 	void drawMenu();
