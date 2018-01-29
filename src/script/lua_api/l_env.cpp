@@ -273,6 +273,39 @@ int ModApiEnvMod::l_set_node(lua_State *L)
 	return 1;
 }
 
+// bulk_set_node([pos1, pos2, ...], node)
+// pos = {x=num, y=num, z=num}
+int ModApiEnvMod::l_bulk_set_node(lua_State *L)
+{
+	GET_ENV_PTR;
+
+	INodeDefManager *ndef = env->getGameDef()->ndef();
+	// parameters
+	if (!lua_istable(L, 1)) {
+		return 0;
+	}
+
+	s32 len = lua_objlen(L, 1);
+	if (len == 0) {
+		lua_pushboolean(L, true);
+		return 1;
+	}
+
+	MapNode n = readnode(L, 2, ndef);
+
+	// Do it
+	bool succeeded = true;
+	for (s32 i = 1; i <= len; i++) {
+		lua_rawgeti(L, 1, i);
+		if (!env->setNode(read_v3s16(L, -1), n))
+			succeeded = false;
+		lua_pop(L, 1);
+	}
+
+	lua_pushboolean(L, succeeded);
+	return 1;
+}
+
 int ModApiEnvMod::l_add_node(lua_State *L)
 {
 	return l_set_node(L);
@@ -1232,6 +1265,7 @@ int ModApiEnvMod::l_forceload_free_block(lua_State *L)
 void ModApiEnvMod::Initialize(lua_State *L, int top)
 {
 	API_FCT(set_node);
+	API_FCT(bulk_set_node);
 	API_FCT(add_node);
 	API_FCT(swap_node);
 	API_FCT(add_item);

@@ -917,8 +917,10 @@ bool ServerEnvironment::setNode(v3s16 p, const MapNode &n)
 	INodeDefManager *ndef = m_server->ndef();
 	MapNode n_old = m_map->getNodeNoEx(p);
 
+	const ContentFeatures &cf_old = ndef->get(n_old);
+
 	// Call destructor
-	if (ndef->get(n_old).has_on_destruct)
+	if (cf_old.has_on_destruct)
 		m_script->node_on_destruct(p, n_old);
 
 	// Replace node
@@ -929,11 +931,15 @@ bool ServerEnvironment::setNode(v3s16 p, const MapNode &n)
 	m_map->updateVManip(p);
 
 	// Call post-destructor
-	if (ndef->get(n_old).has_after_destruct)
+	if (cf_old.has_after_destruct)
 		m_script->node_after_destruct(p, n_old);
 
+	// Retrieve node content features
+	// if new node is same as old, reuse old definition to prevent a lookup
+	const ContentFeatures &cf_new = n_old == n ? cf_old : ndef->get(n);
+
 	// Call constructor
-	if (ndef->get(n).has_on_construct)
+	if (cf_new.has_on_construct)
 		m_script->node_on_construct(p, n);
 
 	return true;
