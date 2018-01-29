@@ -1,10 +1,10 @@
 local cube_tiles = {
-	{name="white_transparent.png^[colorize:#FF0000^arrow.png"},
-	{name="white_transparent.png^[colorize:#FFFF00^arrow.png"},
-	{name="white_transparent.png^[colorize:#00FF00^arrow.png"},
-	{name="white_transparent.png^[colorize:#00FFFF^arrow.png"},
-	{name="white_transparent.png^[colorize:#0000FF^arrow.png"},
-	{name="white_transparent.png^[colorize:#FF00FF^arrow.png"},
+	{name="white_transparent.png^[colorize:#FF0000^arrow2.png"},
+	{name="white_transparent.png^[colorize:#FFFF00^arrow2.png"},
+	{name="white_transparent.png^[colorize:#00FF00^arrow2.png"},
+	{name="white_transparent.png^[colorize:#00FFFF^arrow2.png"},
+	{name="white_transparent.png^[colorize:#0000FF^arrow2.png"},
+	{name="white_transparent.png^[colorize:#FF00FF^arrow2.png"},
 }
 
 minetest.register_node("nodes:solid", {
@@ -26,6 +26,14 @@ minetest.register_node("nodes:glasslike", {
 minetest.register_node("nodes:glasslike_framed", {
 	description = "Framed Glass",
 	drawtype = "glasslike_framed",
+	paramtype2 = "facedir",
+	tiles = cube_tiles,
+	groups = {cracky=3},
+})
+
+minetest.register_node("nodes:allfaces", {
+	description = "Allfaces",
+	drawtype = "allfaces",
 	paramtype2 = "facedir",
 	tiles = cube_tiles,
 	groups = {cracky=3},
