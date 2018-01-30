@@ -8,6 +8,9 @@ distribution.
 Attribution-ShareAlike 3.0 Unported (CC BY-SA 3.0)
 http://creativecommons.org/licenses/by-sa/3.0/
 
+textures/base/pack/refresh.png is under the Apache 2 license
+https://www.apache.org/licenses/LICENSE-2.0.html
+
 Authors of media files
 -----------------------
 Everything not listed in here:
