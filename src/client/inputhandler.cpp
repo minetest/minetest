@@ -59,9 +59,6 @@ void KeyCache::populate()
 	key[KeyType::TOGGLE_HUD] = getKeySetting("keymap_toggle_hud");
 	key[KeyType::TOGGLE_CHAT] = getKeySetting("keymap_toggle_chat");
 	key[KeyType::TOGGLE_FOG] = getKeySetting("keymap_toggle_fog");
-	if(key[KeyType::TOGGLE_FOG] == "KEY_F3" && g_settings->exists("keymap_toggle_force_fog_off")){
-		key[KeyType::TOGGLE_FOG] = getKeySetting("keymap_toggle_force_fog_off");
-	}
 	key[KeyType::TOGGLE_UPDATE_CAMERA] = getKeySetting("keymap_toggle_update_camera");
 	key[KeyType::TOGGLE_DEBUG] = getKeySetting("keymap_toggle_debug");
 	key[KeyType::TOGGLE_PROFILER] = getKeySetting("keymap_toggle_profiler");
