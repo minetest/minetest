@@ -30,6 +30,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 class Client;
 #endif
 #include "itemgroup.h"
+#include "settings_builtin.h"
 #include "sound.h" // SimpleSoundSpec
 #include "constants.h" // BS
 #include "tileanimation.h"
@@ -127,30 +128,11 @@ struct NodeBox
 struct MapNode;
 class NodeMetadata;
 
-enum LeavesStyle {
-	LEAVES_FANCY,
-	LEAVES_SIMPLE,
-	LEAVES_OPAQUE,
-};
-
-enum AutoScale : u8 {
-	AUTOSCALE_DISABLE,
-	AUTOSCALE_ENABLE,
-	AUTOSCALE_FORCE,
-};
-
-enum WorldAlignMode : u8 {
-	WORLDALIGN_DISABLE,
-	WORLDALIGN_ENABLE,
-	WORLDALIGN_FORCE,
-	WORLDALIGN_FORCE_NODEBOX,
-};
-
 class TextureSettings {
 public:
 	LeavesStyle leaves_style;
-	WorldAlignMode world_aligned_mode;
-	AutoScale autoscale_mode;
+	WorldAlignedMode world_aligned_mode;
+	AutoscaleMode autoscale_mode;
 	int node_texture_size;
 	bool opaque_water;
 	bool connected_glass;

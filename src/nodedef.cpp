@@ -286,18 +286,18 @@ static void deSerializeSimpleSoundSpec(SimpleSoundSpec &ss,
 
 void TextureSettings::readSettings()
 {
-	connected_glass                = g_settings->getBool("connected_glass");
-	opaque_water                   = g_settings->getBool("opaque_water");
-	bool enable_shaders            = g_settings->getBool("enable_shaders");
-	bool enable_bumpmapping        = g_settings->getBool("enable_bumpmapping");
-	bool enable_parallax_occlusion = g_settings->getBool("enable_parallax_occlusion");
-	bool smooth_lighting           = g_settings->getBool("smooth_lighting");
-	enable_mesh_cache              = g_settings->getBool("enable_mesh_cache");
-	enable_minimap                 = g_settings->getBool("enable_minimap");
-	node_texture_size              = g_settings->getU16("texture_min_size");
-	std::string leaves_style_str   = g_settings->get("leaves_style");
-	std::string world_aligned_mode_str = g_settings->get("world_aligned_mode");
-	std::string autoscale_mode_str = g_settings->get("autoscale_mode");
+	connected_glass                = builtin_settings.connected_glass;
+	opaque_water                   = builtin_settings.opaque_water;
+	bool enable_shaders            = builtin_settings.enable_shaders;
+	bool enable_bumpmapping        = builtin_settings.enable_bumpmapping;
+	bool enable_parallax_occlusion = builtin_settings.enable_parallax_occlusion;
+	bool smooth_lighting           = builtin_settings.smooth_lighting;
+	enable_mesh_cache              = builtin_settings.enable_mesh_cache;
+	enable_minimap                 = builtin_settings.enable_minimap;
+	node_texture_size              = builtin_settings.texture_min_size;
+	leaves_style                   = builtin_settings.leaves_style;
+	world_aligned_mode             = builtin_settings.world_aligned_mode;
+	autoscale_mode                 = builtin_settings.autoscale_mode;
 
 	// Mesh cache is not supported in combination with smooth lighting
 	if (smooth_lighting)
@@ -305,29 +305,6 @@ void TextureSettings::readSettings()
 
 	use_normal_texture = enable_shaders &&
 		(enable_bumpmapping || enable_parallax_occlusion);
-	if (leaves_style_str == "fancy") {
-		leaves_style = LEAVES_FANCY;
-	} else if (leaves_style_str == "simple") {
-		leaves_style = LEAVES_SIMPLE;
-	} else {
-		leaves_style = LEAVES_OPAQUE;
-	}
-
-	if (world_aligned_mode_str == "enable")
-		world_aligned_mode = WORLDALIGN_ENABLE;
-	else if (world_aligned_mode_str == "force_solid")
-		world_aligned_mode = WORLDALIGN_FORCE;
-	else if (world_aligned_mode_str == "force_nodebox")
-		world_aligned_mode = WORLDALIGN_FORCE_NODEBOX;
-	else
-		world_aligned_mode = WORLDALIGN_DISABLE;
-
-	if (autoscale_mode_str == "enable")
-		autoscale_mode = AUTOSCALE_ENABLE;
-	else if (autoscale_mode_str == "force")
-		autoscale_mode = AUTOSCALE_FORCE;
-	else
-		autoscale_mode = AUTOSCALE_DISABLE;
 }
 
 /*
@@ -629,8 +606,8 @@ static void fillTileAttribs(ITextureSource *tsrc, TileLayer *layer,
 	layer->material_type = material_type;
 
 	bool has_scale = tiledef.scale > 0;
-	if (((tsettings.autoscale_mode == AUTOSCALE_ENABLE) && !has_scale) ||
-			(tsettings.autoscale_mode == AUTOSCALE_FORCE)) {
+	if (((tsettings.autoscale_mode == AutoscaleMode::Enable) && !has_scale) ||
+			(tsettings.autoscale_mode == AutoscaleMode::Force)) {
 		auto texture_size = layer->texture->getOriginalSize();
 		float base_size = tsettings.node_texture_size;
 		float size = std::fmin(texture_size.Width, texture_size.Height);
@@ -706,18 +683,18 @@ static void fillTileAttribs(ITextureSource *tsrc, TileLayer *layer,
 #endif
 
 #ifndef SERVER
-bool isWorldAligned(AlignStyle style, WorldAlignMode mode, NodeDrawType drawtype)
+bool isWorldAligned(AlignStyle style, WorldAlignedMode mode, NodeDrawType drawtype)
 {
 	if (style == ALIGN_STYLE_WORLD)
 		return true;
-	if (mode == WORLDALIGN_DISABLE)
+	if (mode == WorldAlignedMode::Disable)
 		return false;
 	if (style == ALIGN_STYLE_USER_DEFINED)
 		return true;
 	if (drawtype == NDT_NORMAL)
-		return mode >= WORLDALIGN_FORCE;
+		return mode >= WorldAlignedMode::ForceSolid;
 	if (drawtype == NDT_NODEBOX)
-		return mode >= WORLDALIGN_FORCE_NODEBOX;
+		return mode >= WorldAlignedMode::ForceNodebox;
 	return false;
 }
 
@@ -791,11 +768,13 @@ void ContentFeatures::updateTextures(ITextureSource *tsrc, IShaderSource *shdsrc
 		visual_solidness = 1;
 		break;
 	case NDT_ALLFACES_OPTIONAL:
-		if (tsettings.leaves_style == LEAVES_FANCY) {
+		switch(tsettings.leaves_style) {
+		case LeavesStyle::Fancy:
 			drawtype = NDT_ALLFACES;
 			solidness = 0;
 			visual_solidness = 1;
-		} else if (tsettings.leaves_style == LEAVES_SIMPLE) {
+			break;
+		case LeavesStyle::Simple:
 			for (u32 j = 0; j < 6; j++) {
 				if (!tdef_spec[j].name.empty())
 					tdef[j].name = tdef_spec[j].name;
@@ -803,11 +782,13 @@ void ContentFeatures::updateTextures(ITextureSource *tsrc, IShaderSource *shdsrc
 			drawtype = NDT_GLASSLIKE;
 			solidness = 0;
 			visual_solidness = 1;
-		} else {
+			break;
+		case LeavesStyle::Opaque:
 			drawtype = NDT_NORMAL;
 			solidness = 2;
 			for (TileDef &td : tdef)
 				td.name += std::string("^[noalpha");
+			break;
 		}
 		if (waving >= 1)
 			material_type = TILE_MATERIAL_WAVING_LEAVES;
