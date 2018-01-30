@@ -54,6 +54,10 @@ core.register_privilege("protection_bypass", {
 	description = "Can bypass node protection in the world",
 	give_to_singleplayer = false,
 })
+core.register_privilege("player", {
+	description = "Can change player attributes",
+	give_to_singleplayer = false,
+})
 core.register_privilege("ban", {
 	description = "Can ban and unban players",
 	give_to_singleplayer = false,

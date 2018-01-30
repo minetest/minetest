@@ -964,9 +964,9 @@ core.register_chatcommand("clearinv", {
 	func = function(name, param)
 		local player
 		if param and param ~= "" and param ~= name then
-			if not core.check_player_privs(name, {server=true}) then
+			if not core.check_player_privs(name, {player=true}) then
 				return false, "You don't have permission"
-						.. " to run this command (missing privilege: server)"
+						.. " to clear another player's inventory (missing privilege: player)"
 			end
 			player = core.get_player_by_name(param)
 			core.chat_send_player(param, name.." cleared your inventory.")
@@ -982,6 +982,43 @@ core.register_chatcommand("clearinv", {
 			return true, "Cleared "..player:get_player_name().."'s inventory."
 		else
 			return false, "Player must be online to clear inventory!"
+		end
+	end,
+})
+
+local function handle_kill_command(murderer, victim)
+	if minetest.settings:get_bool("damage_enabled") == false then
+		return false, "Players can't be killed right now, damage has been disabled."
+	end
+	local victimref = minetest.get_player_by_name(victim)
+	if victimref == nil then
+		return false, string.format("Player %s does not exist.", victim)
+	elseif victimref:get_hp() <= 0 then
+		if murderer == victim then
+			return false, "You are already dead"
+		else
+			return false, string.format("%s is already dead", victim)
+		end
+	end
+	if not murderer == victim then
+		minetest.log("action", string.format("%s killed %s", murderer, victim))
+	end
+	-- Kill victim
+	victimref:set_hp(0)
+	return true
+end
+
+minetest.register_chatcommand("kill", {
+	params = "[<name>]",
+	description = "Kill player or yourself",
+	privs = {player=true},
+	func = function(name, param)
+		if(param == "") then
+			-- Selfkill
+			return handle_kill_command(name, name)
+		else
+			-- Kill other player
+			return handle_kill_command(name, param)
 		end
 	end,
 })
