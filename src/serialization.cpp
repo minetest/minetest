@@ -101,7 +101,7 @@ void compressZlib(const std::string &data, std::ostream &os, int level)
 	compressZlib((u8*)data.c_str(), data.size(), os, level);
 }
 
-void decompressZlib(std::istream &is, std::ostream &os)
+void decompressZlib(std::istream &is, std::ostream &os, size_t limit)
 {
 	z_stream z;
 	const s32 bufsize = 16384;
@@ -110,6 +110,7 @@ void decompressZlib(std::istream &is, std::ostream &os)
 	int status = 0;
 	int ret;
 	int bytes_read = 0;
+	int bytes_written = 0;
 	int input_buffer_len = 0;
 
 	z.zalloc = Z_NULL;
@@ -126,8 +127,20 @@ void decompressZlib(std::istream &is, std::ostream &os)
 
 	for(;;)
 	{
+		int output_size = bufsize;
 		z.next_out = (Bytef*)output_buffer;
-		z.avail_out = bufsize;
+		z.avail_out = output_size;
+
+		if (limit) {
+			int limit_remaining = limit - bytes_written;
+			if (limit_remaining <= 0) {
+				// we're aborting ahead of time - throw an error?
+				break;
+			}
+			if (limit_remaining < output_size) {
+				z.avail_out = output_size = limit_remaining;
+			}
+		}
 
 		if(z.avail_in == 0)
 		{
@@ -155,10 +168,11 @@ void decompressZlib(std::istream &is, std::ostream &os)
 			zerr(status);
 			throw SerializationError("decompressZlib: inflate failed");
 		}
-		int count = bufsize - z.avail_out;
+		int count = output_size - z.avail_out;
 		//dstream<<"count="<<count<<std::endl;
 		if(count)
 			os.write(output_buffer, count);
+		bytes_written += count;
 		if(status == Z_STREAM_END)
 		{
 			//dstream<<"Z_STREAM_END"<<std::endl;
