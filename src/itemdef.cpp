@@ -31,7 +31,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client.h"
 #endif
 #include "log.h"
-#include "settings.h"
 #include "util/serialize.h"
 #include "util/container.h"
 #include "util/thread.h"

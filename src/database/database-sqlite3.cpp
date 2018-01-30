@@ -30,7 +30,7 @@ SQLite format specification:
 #include "log.h"
 #include "filesys.h"
 #include "exceptions.h"
-#include "settings.h"
+#include "settings_builtin.h"
 #include "porting.h"
 #include "util/string.h"
 #include "content_sao.h"
@@ -164,7 +164,7 @@ void Database_SQLite3::openDatabase()
 	}
 
 	std::string query_str = std::string("PRAGMA synchronous = ")
-			 + itos(g_settings->getU16("sqlite_synchronous"));
+			 + itos(builtin_settings.sqlite_synchronous);
 	SQLOK(sqlite3_exec(m_database, query_str.c_str(), NULL, NULL, NULL),
 		"Failed to modify sqlite3 synchronous mode");
 	SQLOK(sqlite3_exec(m_database, "PRAGMA foreign_keys = ON", NULL, NULL, NULL),

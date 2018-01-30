@@ -106,7 +106,7 @@ Client::Client(
 	if (g_settings->getBool("enable_minimap")) {
 		m_minimap = new Minimap(this);
 	}
-	m_cache_save_interval = g_settings->getU16("server_map_save_interval");
+	m_cache_save_interval = builtin_settings.server_map_save_interval;
 
 	m_modding_enabled = g_settings->getBool("enable_client_modding");
 	m_script = new ClientScripting(this);
@@ -350,7 +350,7 @@ void Client::step(float dtime)
 		std::vector<v3s16> deleted_blocks;
 		m_env.getMap().timerUpdate(map_timer_and_unload_dtime,
 			g_settings->getFloat("client_unload_unused_data_timeout"),
-			g_settings->getS32("client_mapblock_limit"),
+			builtin_settings.client_mapblock_limit,
 			&deleted_blocks);
 
 		/*
@@ -1147,7 +1147,7 @@ bool Client::canSendChatMessage() const
 
 void Client::sendChatMessage(const std::wstring &message)
 {
-	const s16 max_queue_size = g_settings->getS16("max_out_chat_queue_size");
+	const s16 max_queue_size = builtin_settings.max_out_chat_queue_size;
 	if (canSendChatMessage()) {
 		u32 now = time(NULL);
 		float time_passed = now - m_last_chat_message_sent;
@@ -1738,7 +1738,7 @@ void Client::makeScreenshot()
 	std::string filename_ext = "." + g_settings->get("screenshot_format");
 	std::string filename;
 
-	u32 quality = (u32)g_settings->getS32("screenshot_quality");
+	u32 quality = (u32)builtin_settings.screenshot_quality;
 	quality = MYMIN(MYMAX(quality, 0), 100) / 100.0 * 255;
 
 	// Try to find a unique filename

@@ -21,7 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "connectionthreads.h"
 #include "log.h"
 #include "profiler.h"
-#include "settings.h"
+#include "settings_builtin.h"
 #include "network/networkpacket.h"
 #include "util/serialize.h"
 
@@ -71,7 +71,7 @@ ConnectionSendThread::ConnectionSendThread(unsigned int max_packet_size,
 	Thread("ConnectionSend"),
 	m_max_packet_size(max_packet_size),
 	m_timeout(timeout),
-	m_max_data_packets_per_iteration(g_settings->getU16("max_packets_per_iteration"))
+	m_max_data_packets_per_iteration(builtin_settings.max_packets_per_iteration)
 {
 }
 

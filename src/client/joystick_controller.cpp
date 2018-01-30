@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "irrlichttypes_extrabloated.h"
 #include "keys.h"
 #include "settings.h"
+#include "settings_builtin.h"
 #include "gettime.h"
 #include "porting.h"
 #include "util/string.h"
@@ -165,7 +166,7 @@ JoystickController::JoystickController() :
 
 void JoystickController::onJoystickConnect(const std::vector<irr::SJoystickInfo> &joystick_infos)
 {
-	s32         id     = g_settings->getS32("joystick_id");
+	s32         id     = builtin_settings.joystick_id;
 	std::string layout = g_settings->get("joystick_type");
 
 	if (id < 0 || (u16)id >= joystick_infos.size()) {

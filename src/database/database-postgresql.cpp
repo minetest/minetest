@@ -35,7 +35,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "debug.h"
 #include "exceptions.h"
-#include "settings.h"
 #include "content_sao.h"
 #include "remoteplayer.h"
 

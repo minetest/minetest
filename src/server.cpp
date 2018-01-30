@@ -2216,8 +2216,8 @@ void Server::SendBlocks(float dtime)
 
 	// Maximal total count calculation
 	// The per-client block sends is halved with the maximal online users
-	u32 max_blocks_to_send = (m_env->getPlayerCount() + g_settings->getU32("max_users")) *
-		g_settings->getU32("max_simultaneous_block_sends_per_client") / 4 + 1;
+	u32 max_blocks_to_send = (m_env->getPlayerCount() + builtin_settings.max_users) *
+		builtin_settings.max_simultaneous_block_sends_per_client / 4 + 1;
 
 	for (const PrioritySortedBlockTransfer &block_to_send : queue) {
 		if (total_sending >= max_blocks_to_send)

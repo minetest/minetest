@@ -30,7 +30,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/serialize.h"
 #include "util/numeric.h"
 #include "util/string.h"
-#include "settings.h"
+#include "settings_builtin.h"
 #include "profiler.h"
 
 namespace con
@@ -928,7 +928,7 @@ void UDPPeer::setNonLegacyPeer()
 	m_legacy_peer = false;
 	for(unsigned int i=0; i< CHANNEL_COUNT; i++)
 	{
-		channels->setWindowSize(g_settings->getU16("max_packets_per_iteration"));
+		channels->setWindowSize(builtin_settings.max_packets_per_iteration);
 	}
 }
 

@@ -24,6 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "version.h"
 #include "settings.h"
+#include "settings_builtin.h"
 #include "serverlist.h"
 #include "filesys.h"
 #include "porting.h"
@@ -224,7 +225,7 @@ void sendAnnounce(AnnounceAction action,
 		server["uptime"]       = (int) uptime;
 		server["game_time"]    = game_time;
 		server["clients"]      = (int) clients_names.size();
-		server["clients_max"]  = g_settings->getU16("max_users");
+		server["clients_max"]  = (int) builtin_settings.max_users;
 		server["clients_list"] = Json::Value(Json::arrayValue);
 		for (const std::string &clients_name : clients_names) {
 			server["clients_list"].append(clients_name);
@@ -238,7 +239,7 @@ void sendAnnounce(AnnounceAction action,
 		server["rollback"]          = g_settings->getBool("enable_rollback_recording");
 		server["mapgen"]            = mg_name;
 		server["privs"]             = g_settings->get("default_privs");
-		server["can_see_far_names"] = g_settings->getS16("player_transfer_distance") <= 0;
+		server["can_see_far_names"] = builtin_settings.player_transfer_distance <= 0;
 		server["mods"]              = Json::Value(Json::arrayValue);
 		for (const ModSpec &mod : mods) {
 			server["mods"].append(mod.name);

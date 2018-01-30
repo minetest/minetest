@@ -24,6 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "debug.h"
 #include "profiler.h"
 #include "settings.h"
+#include "settings_builtin.h"
 #include <cmath>
 
 
@@ -368,7 +369,7 @@ void Clouds::update(const v3f &camera_p, const video::SColorf &color_diffuse)
 
 void Clouds::readSettings()
 {
-	m_cloud_radius_i = g_settings->getU16("cloud_radius");
+	m_cloud_radius_i = builtin_settings.cloud_radius;
 	m_enable_3d = g_settings->getBool("enable_3d_clouds");
 }
 

@@ -30,7 +30,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/numeric.h"
 #include "constants.h"
 #include "debug.h"
-#include "settings.h"
 #include "log.h"
 
 #ifdef _WIN32

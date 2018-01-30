@@ -35,6 +35,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "render/factory.h"
 #include "inputhandler.h"
 #include "gettext.h"
+#include "settings.h"
+#include "settings_builtin.h"
 
 #if !defined(_WIN32) && !defined(__APPLE__) && !defined(__ANDROID__) && \
 		!defined(SERVER) && !defined(__HAIKU__)
@@ -53,13 +55,13 @@ RenderingEngine::RenderingEngine(IEventReceiver *receiver)
 
 	// Resolution selection
 	bool fullscreen = g_settings->getBool("fullscreen");
-	u16 screen_w = g_settings->getU16("screen_w");
-	u16 screen_h = g_settings->getU16("screen_h");
+	u16 screen_w = builtin_settings.screen_w;
+	u16 screen_h = builtin_settings.screen_h;
 
 	// bpp, fsaa, vsync
 	bool vsync = g_settings->getBool("vsync");
-	u16 bits = g_settings->getU16("fullscreen_bpp");
-	u16 fsaa = g_settings->getU16("fsaa");
+	u16 bits = builtin_settings.fullscreen_bpp;
+	u16 fsaa = builtin_settings.fsaa;
 
 	// stereo buffer required for pageflip stereo
 	bool stereo_buffer = g_settings->get("3d_mode") == "pageflip";
@@ -133,7 +135,7 @@ bool RenderingEngine::print_video_modes()
 	IrrlichtDevice *nulldevice;
 
 	bool vsync = g_settings->getBool("vsync");
-	u16 fsaa = g_settings->getU16("fsaa");
+	u16 fsaa = builtin_settings.fsaa;
 	MyEventReceiver *receiver = new MyEventReceiver();
 
 	SIrrlichtCreationParameters params = SIrrlichtCreationParameters();

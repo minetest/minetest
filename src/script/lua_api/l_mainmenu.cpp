@@ -32,7 +32,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "convert_json.h"
 #include "serverlist.h"
 #include "mapgen/mapgen.h"
-#include "settings.h"
 
 #include <IFileArchive.h>
 #include <IFileSystem.h>

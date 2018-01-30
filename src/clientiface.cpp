@@ -23,6 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "network/serveropcodes.h"
 #include "remoteplayer.h"
 #include "settings.h"
+#include "settings_builtin.h"
 #include "mapblock.h"
 #include "serverenvironment.h"
 #include "map.h"
@@ -53,12 +54,12 @@ std::string ClientInterface::state2Name(ClientState state)
 }
 
 RemoteClient::RemoteClient() :
-	m_max_simul_sends(g_settings->getU16("max_simultaneous_block_sends_per_client")),
+	m_max_simul_sends(builtin_settings.max_simultaneous_block_sends_per_client),
 	m_min_time_from_building(
 		g_settings->getFloat("full_block_send_enable_min_time_from_building")),
-	m_max_send_distance(g_settings->getS16("max_block_send_distance")),
-	m_block_optimize_distance(g_settings->getS16("block_send_optimize_distance")),
-	m_max_gen_distance(g_settings->getS16("max_block_generate_distance")),
+	m_max_send_distance(builtin_settings.max_block_send_distance),
+	m_block_optimize_distance(builtin_settings.block_send_optimize_distance),
+	m_max_gen_distance(builtin_settings.max_block_generate_distance),
 	m_occ_cull(g_settings->getBool("server_side_occlusion_culling"))
 {
 }
@@ -655,7 +656,7 @@ std::vector<session_t> ClientInterface::getClientIDs(ClientState min_state)
  */
 bool ClientInterface::isUserLimitReached()
 {
-	return getClientIDs(CS_HelloSent).size() >= g_settings->getU16("max_users");
+	return getClientIDs(CS_HelloSent).size() >= builtin_settings.max_users;
 }
 
 void ClientInterface::step(float dtime)

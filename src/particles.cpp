@@ -29,7 +29,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mapnode.h"
 #include "nodedef.h"
 #include "client.h"
-#include "settings.h"
 #include "settings_builtin.h"
 
 /*

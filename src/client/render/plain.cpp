@@ -19,7 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "plain.h"
-#include "settings.h"
+#include "settings_builtin.h"
 
 inline u32 scaledown(u32 coef, u32 size)
 {
@@ -30,7 +30,7 @@ RenderingCorePlain::RenderingCorePlain(
 	IrrlichtDevice *_device, Client *_client, Hud *_hud)
 	: RenderingCore(_device, _client, _hud)
 {
-	scale = g_settings->getU16("undersampling");
+	scale = builtin_settings.undersampling;
 }
 
 void RenderingCorePlain::initTextures()

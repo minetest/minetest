@@ -26,6 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "porting.h"  // strlcpy
 #include "server.h"
 #include "settings.h"
+#include "settings_builtin.h"
 #include "convert_json.h"
 
 /*

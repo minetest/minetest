@@ -25,6 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/thread.h"
 #include "filesys.h"
 #include "settings.h"
+#include "settings_builtin.h"
 #include "mesh.h"
 #include "gamedef.h"
 #include "util/strfnd.h"
@@ -1779,7 +1780,7 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 			 * textures that don't have the resources to offer high-res alternatives.
 			 */
 			const bool filter = m_setting_trilinear_filter || m_setting_bilinear_filter;
-			const s32 scaleto = filter ? g_settings->getS32("texture_min_size") : 1;
+			const s32 scaleto = filter ? builtin_settings.texture_min_size : 1;
 			if (scaleto > 1) {
 				const core::dimension2d<u32> dim = baseimg->getDimension();
 

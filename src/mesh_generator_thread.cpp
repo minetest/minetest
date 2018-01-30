@@ -19,6 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "mesh_generator_thread.h"
 #include "settings.h"
+#include "settings_builtin.h"
 #include "profiler.h"
 #include "client.h"
 #include "mapblock.h"
@@ -56,7 +57,7 @@ MeshUpdateQueue::MeshUpdateQueue(Client *client):
 		g_settings->getBool("enable_bumpmapping") ||
 		g_settings->getBool("enable_parallax_occlusion"));
 	m_cache_smooth_lighting = g_settings->getBool("smooth_lighting");
-	m_meshgen_block_cache_size = g_settings->getS32("meshgen_block_cache_size");
+	m_meshgen_block_cache_size = builtin_settings.meshgen_block_cache_size;
 }
 
 MeshUpdateQueue::~MeshUpdateQueue()
@@ -274,7 +275,7 @@ MeshUpdateThread::MeshUpdateThread(Client *client):
 	UpdateThread("Mesh"),
 	m_queue_in(client)
 {
-	m_generation_interval = g_settings->getU16("mesh_generation_interval");
+	m_generation_interval = builtin_settings.mesh_generation_interval;
 	m_generation_interval = rangelim(m_generation_interval, 0, 50);
 }
 

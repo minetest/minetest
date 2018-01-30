@@ -23,7 +23,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "serverenvironment.h"
 #include "scripting_server.h"
 #include "serverobject.h"
-#include "settings.h"
 #include "craftdef.h"
 #include "rollback_interface.h"
 #include "util/strfnd.h"

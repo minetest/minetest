@@ -25,6 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "config.h"
 #include "debug.h"
+#include "settings_builtin.h"
 #include "util/strfnd.h"
 #include "util/string.h"
 #include "util/numeric.h"
@@ -748,7 +749,7 @@ void ChatBackend::clearRecentChat()
 
 void ChatBackend::applySettings()
 {
-	u32 recent_lines = g_settings->getU32("recent_chat_messages");
+	u32 recent_lines = builtin_settings.recent_chat_messages;
 	recent_lines = rangelim(recent_lines, 2, 20);
 	m_recent_buffer.resize(recent_lines);
 }

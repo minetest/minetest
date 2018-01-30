@@ -27,6 +27,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "serialization.h"
 #include "nodemetadata.h"
 #include "settings.h"
+#include "settings_builtin.h"
 #include "log.h"
 #include "profiler.h"
 #include "nodedef.h"
@@ -556,7 +557,7 @@ void Map::transformLiquids(std::map<v3s16, MapBlock*> &modified_blocks,
 
 	std::vector<std::pair<v3s16, MapNode> > changed_nodes;
 
-	u32 liquid_loop_max = g_settings->getS32("liquid_loop_max");
+	u32 liquid_loop_max = builtin_settings.liquid_loop_max;
 	u32 loop_max = liquid_loop_max;
 
 #if 0
@@ -875,7 +876,7 @@ void Map::transformLiquids(std::map<v3s16, MapBlock*> &modified_blocks,
 	/* ----------------------------------------------------------------------
 	 * Manage the queue so that it does not grow indefinately
 	 */
-	u16 time_until_purge = g_settings->getU16("liquid_queue_purge_time");
+	u16 time_until_purge = builtin_settings.liquid_queue_purge_time;
 
 	if (time_until_purge == 0)
 		return; // Feature disabled

@@ -35,6 +35,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/thread.h"
 #include "version.h"
 #include "settings.h"
+#include "settings_builtin.h"
 #include "noise.h"
 
 std::mutex g_httpfetch_mutex;
@@ -42,7 +43,7 @@ std::map<unsigned long, std::queue<HTTPFetchResult> > g_httpfetch_results;
 PcgRandom g_callerid_randomness;
 
 HTTPFetchRequest::HTTPFetchRequest() :
-	timeout(g_settings->getS32("curl_timeout")),
+	timeout(builtin_settings.curl_timeout),
 	connect_timeout(timeout),
 	useragent(std::string(PROJECT_NAME_C "/") + g_version_hash + " (" + porting::get_sysinfo() + ")")
 {

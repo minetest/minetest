@@ -24,6 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "gettime.h"
 #include "keycode.h"
 #include "settings.h"
+#include "settings_builtin.h"
 #include "porting.h"
 #include "client/tile.h"
 #include "fontengine.h"
@@ -57,7 +58,7 @@ GUIChatConsole::GUIChatConsole(
 	m_animate_time_old(porting::getTimeMs())
 {
 	// load background settings
-	s32 console_alpha = g_settings->getS32("console_alpha");
+	s32 console_alpha = builtin_settings.console_alpha;
 	m_background_color.setAlpha(clamp_u8(console_alpha));
 
 	// load the background texture depending on settings

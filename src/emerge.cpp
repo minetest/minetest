@@ -44,6 +44,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "server.h"
 #include "serverobject.h"
 #include "settings.h"
+#include "settings_builtin.h"
 #include "voxel.h"
 
 class EmergeThread : public Thread {
@@ -136,7 +137,7 @@ EmergeManager::EmergeManager(Server *server)
 	if (nthreads < 1)
 		nthreads = 1;
 
-	m_qlimit_total = g_settings->getU16("emergequeue_limit_total");
+	m_qlimit_total = builtin_settings.emergequeue_limit_total;
 	if (!g_settings->getU16NoEx("emergequeue_limit_diskonly", m_qlimit_diskonly))
 		m_qlimit_diskonly = nthreads * 5 + 1;
 	if (!g_settings->getU16NoEx("emergequeue_limit_generate", m_qlimit_generate))

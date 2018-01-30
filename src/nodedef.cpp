@@ -29,7 +29,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <IMeshManipulator.h>
 #endif
 #include "log.h"
-#include "settings.h"
 #include "nameidmapping.h"
 #include "util/numeric.h"
 #include "util/serialize.h"

@@ -29,6 +29,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "porting.h"
 #include "filesys.h"
 #include "settings.h"
+#include "settings_builtin.h"
 #include "guiMainMenu.h"
 #include "sound.h"
 #include "sound_openal.h"
@@ -229,8 +230,8 @@ void GUIEngine::run()
 
 	unsigned int text_height = g_fontengine->getTextHeight();
 
-	irr::core::dimension2d<u32> previous_screen_size(g_settings->getU16("screen_w"),
-		g_settings->getU16("screen_h"));
+	irr::core::dimension2d<u32> previous_screen_size(builtin_settings.screen_w,
+		builtin_settings.screen_h);
 
 	while (RenderingEngine::run() && (!m_startgame) && (!m_kill)) {
 
@@ -529,7 +530,7 @@ bool GUIEngine::downloadFile(const std::string &url, const std::string &target)
 	HTTPFetchResult fetch_result;
 	fetch_request.url = url;
 	fetch_request.caller = HTTPFETCH_SYNC;
-	fetch_request.timeout = g_settings->getS32("curl_file_download_timeout");
+	fetch_request.timeout = builtin_settings.curl_file_download_timeout;
 	httpfetch_sync(fetch_request, fetch_result);
 
 	if (!fetch_result.succeeded) {

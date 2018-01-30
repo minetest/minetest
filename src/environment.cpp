@@ -38,7 +38,7 @@ Environment::Environment(IGameDef *gamedef):
 	m_cache_abm_interval = g_settings->getFloat("abm_interval");
 	m_cache_nodetimer_interval = g_settings->getFloat("nodetimer_interval");
 
-	m_time_of_day = g_settings->getU32("world_start_time");
+	m_time_of_day = builtin_settings.world_start_time;
 	m_time_of_day_f = (float)m_time_of_day / 24000.0f;
 }
 

@@ -208,7 +208,7 @@ void Server::handleCommand_Init(NetworkPacket* pkt)
 			!m_script->can_bypass_userlimit(playername, addr_s)) {
 		actionstream << "Server: " << playername << " tried to join from "
 				<< addr_s << ", but there" << " are already max_users="
-				<< g_settings->getU16("max_users") << " players." << std::endl;
+				<< builtin_settings.max_users << " players." << std::endl;
 		DenyAccess(pkt->getPeerId(), SERVER_ACCESSDENIED_TOO_MANY_USERS);
 		return;
 	}

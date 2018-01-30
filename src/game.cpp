@@ -1060,8 +1060,8 @@ void Game::run()
 			&& client->checkPrivilege("fast");
 #endif
 
-	irr::core::dimension2d<u32> previous_screen_size(g_settings->getU16("screen_w"),
-		g_settings->getU16("screen_h"));
+	irr::core::dimension2d<u32> previous_screen_size(builtin_settings.screen_w,
+		builtin_settings.screen_h);
 
 	while (RenderingEngine::run()
 			&& !(*kill || g_gamecallback->shutdown_requested
@@ -2256,7 +2256,7 @@ void Game::toggleUpdateCamera()
 
 void Game::increaseViewRange()
 {
-	s16 range = g_settings->getS16("viewing_range");
+	s16 range = builtin_settings.viewing_range;
 	s16 range_new = range + 10;
 
 	wchar_t buf[255];
@@ -2280,7 +2280,7 @@ void Game::increaseViewRange()
 
 void Game::decreaseViewRange()
 {
-	s16 range = g_settings->getS16("viewing_range");
+	s16 range = builtin_settings.viewing_range;
 	s16 range_new = range - 10;
 
 	wchar_t buf[255];

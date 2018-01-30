@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "client/hud.h"
 #include "settings.h"
+#include "settings_builtin.h"
 #include "util/numeric.h"
 #include "log.h"
 #include "client.h"
@@ -64,7 +65,7 @@ Hud::Hud(gui::IGUIEnvironment *guienv, Client *client, LocalPlayer *player,
 	u32 cross_r = rangelim(myround(crosshair_color.X), 0, 255);
 	u32 cross_g = rangelim(myround(crosshair_color.Y), 0, 255);
 	u32 cross_b = rangelim(myround(crosshair_color.Z), 0, 255);
-	u32 cross_a = rangelim(g_settings->getS32("crosshair_alpha"), 0, 255);
+	u32 cross_a = rangelim(builtin_settings.crosshair_alpha, 0, 255);
 	crosshair_argb = video::SColor(cross_a, cross_r, cross_g, cross_b);
 
 	v3f selectionbox_color = g_settings->getV3F("selectionbox_color");
@@ -101,7 +102,7 @@ Hud::Hud(gui::IGUIEnvironment *guienv, Client *client, LocalPlayer *player,
 
 	if (m_mode == HIGHLIGHT_BOX) {
 		m_selection_material.Thickness =
-			rangelim(g_settings->getS16("selectionbox_width"), 1, 5);
+			rangelim(builtin_settings.selectionbox_width, 1, 5);
 	} else if (m_mode == HIGHLIGHT_HALO) {
 		m_selection_material.setTexture(0, tsrc->getTextureForMesh("halo.png"));
 		m_selection_material.setFlag(video::EMF_BACK_FACE_CULLING, true);

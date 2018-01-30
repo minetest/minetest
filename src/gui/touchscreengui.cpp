@@ -22,6 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "log.h"
 #include "keycode.h"
 #include "settings.h"
+#include "settings_builtin.h"
 #include "gettime.h"
 #include "util/numeric.h"
 #include "porting.h"
@@ -803,7 +804,7 @@ void TouchScreenGUI::translateEvent(const SEvent &event)
 						(m_pointerpos[event.TouchInput.ID].Y - event.TouchInput.Y) *
 						(m_pointerpos[event.TouchInput.ID].Y - event.TouchInput.Y));
 
-				if ((distance > g_settings->getU16("touchscreen_threshold")) ||
+				if ((distance > builtin_settings.touchscreen_threshold) ||
 						(m_move_has_really_moved)) {
 					m_move_has_really_moved = true;
 					s32 X = event.TouchInput.X;
@@ -909,7 +910,7 @@ bool TouchScreenGUI::doubleTapDetection()
 			(m_key_events[0].y - m_key_events[1].y) * (m_key_events[0].y - m_key_events[1].y));
 
 
-	if (distance > (20 + g_settings->getU16("touchscreen_threshold")))
+	if (distance > (20 + builtin_settings.touchscreen_threshold))
 		return false;
 
 	SEvent* translated = new SEvent();

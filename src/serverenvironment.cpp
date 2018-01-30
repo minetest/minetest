@@ -1068,7 +1068,7 @@ void ServerEnvironment::clearObjects(ClearObjectsMode mode)
 	// Remove objects in all loadable blocks
 	u32 unload_interval = U32_MAX;
 	if (mode == CLEAR_OBJECTS_MODE_FULL) {
-		unload_interval = g_settings->getS32("max_clearobjects_extra_loaded_blocks");
+		unload_interval = builtin_settings.max_clearobjects_extra_loaded_blocks;
 		unload_interval = MYMAX(unload_interval, 1);
 	}
 	u32 report_interval = loadable_blocks.size() / 10;
@@ -1828,7 +1828,7 @@ void ServerEnvironment::activateObjects(MapBlock *block, u32 dtime_s)
 		<<"activating objects of block "<<PP(block->getPos())
 		<<" ("<<block->m_static_objects.m_stored.size()
 		<<" objects)"<<std::endl;
-	bool large_amount = (block->m_static_objects.m_stored.size() > g_settings->getU16("max_objects_per_block"));
+	bool large_amount = (block->m_static_objects.m_stored.size() > builtin_settings.max_objects_per_block);
 	if (large_amount) {
 		errorstream<<"suspiciously large amount of objects detected: "
 			<<block->m_static_objects.m_stored.size()<<" in "
@@ -2084,7 +2084,7 @@ bool ServerEnvironment::saveStaticToBlock(
 				<< " when saving static data of object to it. id=" << store_id << std::endl;
 		return false;
 	}
-	if (block->m_static_objects.m_stored.size() >= g_settings->getU16("max_objects_per_block")) {
+	if (block->m_static_objects.m_stored.size() >= builtin_settings.max_objects_per_block) {
 		warningstream << "ServerEnv: Trying to store id = " << store_id
 				<< " statically but block " << PP(blockpos)
 				<< " already contains "

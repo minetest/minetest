@@ -24,7 +24,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "hud.h"
 #include "constants.h"
 #include "gamedef.h"
-#include "settings.h"
 #include "log.h"
 #include "porting.h"  // strlcpy
 

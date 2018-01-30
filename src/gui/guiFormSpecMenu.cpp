@@ -47,6 +47,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mainmenumanager.h"
 #include "porting.h"
 #include "settings.h"
+#include "settings_builtin.h"
 #include "client.h"
 #include "fontengine.h"
 #include "util/hex.h"
@@ -115,7 +116,7 @@ GUIFormSpecMenu::GUIFormSpecMenu(JoystickController *joystick,
 	m_doubleclickdetect[0].pos = v2s32(0, 0);
 	m_doubleclickdetect[1].pos = v2s32(0, 0);
 
-	m_tooltip_show_delay = (u32)g_settings->getS32("tooltip_show_delay");
+	m_tooltip_show_delay = (u32)builtin_settings.tooltip_show_delay;
 	m_tooltip_append_itemname = g_settings->getBool("tooltip_append_itemname");
 }
 
@@ -2019,7 +2020,7 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 	{
 		v3f formspec_bgcolor = g_settings->getV3F("formspec_default_bg_color");
 		m_bgcolor = video::SColor(
-			(u8) clamp_u8(g_settings->getS32("formspec_default_bg_opacity")),
+			(u8) clamp_u8(builtin_settings.formspec_default_bg_opacity),
 			clamp_u8(myround(formspec_bgcolor.X)),
 			clamp_u8(myround(formspec_bgcolor.Y)),
 			clamp_u8(myround(formspec_bgcolor.Z))
@@ -2029,7 +2030,7 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 	{
 		v3f formspec_bgcolor = g_settings->getV3F("formspec_fullscreen_bg_color");
 		m_fullscreen_bgcolor = video::SColor(
-			(u8) clamp_u8(g_settings->getS32("formspec_fullscreen_bg_opacity")),
+			(u8) clamp_u8(builtin_settings.formspec_fullscreen_bg_opacity),
 			clamp_u8(myround(formspec_bgcolor.X)),
 			clamp_u8(myround(formspec_bgcolor.Y)),
 			clamp_u8(myround(formspec_bgcolor.Z))

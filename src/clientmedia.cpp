@@ -25,6 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "log.h"
 #include "porting.h"
 #include "settings.h"
+#include "settings_builtin.h"
 #include "util/hex.h"
 #include "util/serialize.h"
 #include "util/sha1.h"
@@ -208,7 +209,7 @@ void ClientMediaDownloader::initialStep(Client *client)
 
 		// This is the first time we use httpfetch, so alloc a caller ID
 		m_httpfetch_caller = httpfetch_caller_alloc();
-		m_httpfetch_timeout = g_settings->getS32("curl_timeout");
+		m_httpfetch_timeout = builtin_settings.curl_timeout;
 
 		// Set the active fetch limit to curl_parallel_limit or 84,
 		// whichever is greater. This gives us some leeway so that
@@ -223,7 +224,7 @@ void ClientMediaDownloader::initialStep(Client *client)
 		// but at no inter-thread communication cost. This however
 		// doesn't help with the aforementioned inefficiencies.
 		// The signifance of 84 is that it is 2*6*9 in base 13.
-		m_httpfetch_active_limit = g_settings->getS32("curl_parallel_limit");
+		m_httpfetch_active_limit = builtin_settings.curl_parallel_limit;
 		m_httpfetch_active_limit = MYMAX(m_httpfetch_active_limit, 84);
 
 		// Write a list of hashes that we need. This will be POSTed

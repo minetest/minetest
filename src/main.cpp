@@ -27,6 +27,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "version.h"
 #include "game.h"
 #include "defaultsettings.h"
+#include "settings_builtin.h"
 #include "gettext.h"
 #include "log.h"
 #include "quicktune.h"
@@ -438,7 +439,7 @@ static bool init_common(const Settings &cmd_args, int argc, char *argv[])
 	mysrand(time(0));
 
 	// Initialize HTTP fetcher
-	httpfetch_init(g_settings->getS32("curl_parallel_limit"));
+	httpfetch_init(builtin_settings.curl_parallel_limit);
 
 	init_gettext(porting::path_locale.c_str(),
 		g_settings->get("language"), argc, argv);
@@ -559,7 +560,7 @@ static void game_configure_port(GameParams *game_params, const Settings &cmd_arg
 	if (cmd_args.exists("port"))
 		game_params->socket_port = cmd_args.getU16("port");
 	else
-		game_params->socket_port = g_settings->getU16("port");
+		game_params->socket_port = builtin_settings.port;
 
 	if (game_params->socket_port == 0)
 		game_params->socket_port = DEFAULT_SERVER_PORT;
