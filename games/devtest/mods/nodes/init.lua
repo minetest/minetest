@@ -72,8 +72,10 @@ minetest.register_node("nodes:torch", {
 	overlay_tiles = torch_overlays,
 	color = "#FFFF99",
 	groups = {attached_node=1, dig_immediate=3},
-	inventory_image = "torch_floor.png^torch_floor_flame.png",
-	wield_image = "torch_floor.png^torch_floor_flame.png",
+	inventory_image = "torch_floor_flame.png",
+	inventory_overlay = "torch_floor.png",
+	wield_image = "torch_floor_flame.png",
+	wield_overlay = "torch_floor_flame.png",
 })
 
 minetest.register_node("nodes:torch_off", {
@@ -85,8 +87,10 @@ minetest.register_node("nodes:torch_off", {
 	overlay_tiles = torch_overlays,
 	color = "#000000",
 	groups = {attached_node=1, dig_immediate=3},
-	inventory_image = "torch_floor.png^(torch_floor_flame.png^[colorize:#000000)",
-	wield_image = "torch_floor.png^(torch_floor_flame.png^[colorize:#000000)",
+	inventory_image = "torch_floor_flame.png",
+	inventory_overlay = "torch_floor.png",
+	wield_image = "torch_floor_flame.png",
+	wield_overlay = "torch_floor_flame.png",
 })
 
 minetest.register_node("nodes:signlike", {
@@ -97,9 +101,12 @@ minetest.register_node("nodes:signlike", {
 	tiles = {{name="sign.png", color="#FFDD99"}},
 	overlay_tiles = {{name="sign_frame.png"}},
 	palette = "vgaplus.png",
+	color = "#000000", -- default item color
 	groups = {attached_node=1, dig_immediate=3},
-	inventory_image = "sign.png^(sign_frame.png^[colorize:#000000)",
-	wield_image = "sign.png^(sign_frame.png^[colorize:#000000)",
+	inventory_image = "sign_frame.png",
+	inventory_overlay = "sign.png",
+	wield_image = "sign_frame.png",
+	wield_overlay = "sign.png",
 })
 
 minetest.register_node("nodes:signlike_fancy", {
@@ -110,9 +117,12 @@ minetest.register_node("nodes:signlike_fancy", {
 	tiles = {{name="sign_base.png"}},
 	overlay_tiles = {{name="sign_area.png", color="#FFDD99"}},
 	palette = "vgaplus.png",
+	color = "#000000", -- default item color
 	groups = {attached_node=1, dig_immediate=3},
-	inventory_image = "sign_base^[colorize:#000000^sign_area.png",
-	wield_image = "sign_base^[colorize:#000000^sign_area.png",
+	inventory_image = "sign_base.png",
+	inventory_overlay = "sign_area.png",
+	wield_image = "sign_base.png",
+	wield_overlay = "sign_area.png",
 })
 
 --[[
