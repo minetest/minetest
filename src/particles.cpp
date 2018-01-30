@@ -30,6 +30,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "nodedef.h"
 #include "client.h"
 #include "settings.h"
+#include "settings_builtin.h"
 
 /*
 	Utility
@@ -337,8 +338,7 @@ void ParticleSpawner::step(float dtime, ClientEnvironment* env)
 {
 	m_time += dtime;
 
-	static thread_local const float radius =
-			g_settings->getS16("max_block_send_distance") * MAP_BLOCKSIZE;
+	const float radius = builtin_settings.max_block_generate_distance * MAP_BLOCKSIZE;
 
 	bool unloaded = false;
 	bool is_attached = false;

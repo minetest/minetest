@@ -20,6 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "serverenvironment.h"
 #include "content_sao.h"
 #include "settings.h"
+#include "settings_builtin.h"
 #include "log.h"
 #include "mapblock.h"
 #include "nodedef.h"
@@ -1132,8 +1133,7 @@ void ServerEnvironment::step(float dtime)
 	// Update this one
 	// NOTE: This is kind of funny on a singleplayer game, but doesn't
 	// really matter that much.
-	static thread_local const float server_step =
-			g_settings->getFloat("dedicated_server_step");
+	const float server_step =builtin_settings.dedicated_server_step;
 	m_recommended_send_interval = server_step;
 
 	/*
@@ -1186,10 +1186,8 @@ void ServerEnvironment::step(float dtime)
 		*/
 		// use active_object_send_range_blocks since that is max distance
 		// for active objects sent the client anyway
-		static thread_local const s16 active_object_range =
-				g_settings->getS16("active_object_send_range_blocks");
-		static thread_local const s16 active_block_range =
-				g_settings->getS16("active_block_range");
+		const s16 active_object_range = builtin_settings.active_object_send_range_blocks;
+		const s16 active_block_range = builtin_settings.active_block_range;
 		std::set<v3s16> blocks_removed;
 		std::set<v3s16> blocks_added;
 		m_active_blocks.update(players, active_block_range, active_object_range,

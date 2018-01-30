@@ -29,6 +29,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "rollback_interface.h"
 #include "scripting_server.h"
 #include "settings.h"
+#include "settings_builtin.h"
 #include "tool.h"
 #include "version.h"
 #include "network/connection.h"
@@ -1104,8 +1105,7 @@ void Server::handleCommand_Interact(NetworkPacket* pkt)
 		Check that target is reasonably close
 		(only when digging or placing things)
 	*/
-	static thread_local const bool enable_anticheat =
-			!g_settings->getBool("disable_anticheat");
+	const bool enable_anticheat = !builtin_settings.disable_anticheat;
 
 	if ((action == 0 || action == 2 || action == 3 || action == 4) &&
 			enable_anticheat && !isSingleplayer()) {

@@ -29,6 +29,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/directiontables.h"
 #include "client/renderingengine.h"
 #include <array>
+#include "settings_builtin.h"
 
 /*
 	MeshMakeData
@@ -266,11 +267,10 @@ static u16 getSmoothLightCombined(const v3s16 &p,
 	}
 
 	if (ambient_occlusion > 4) {
-		static thread_local const float ao_gamma = rangelim(
-			g_settings->getFloat("ambient_occlusion_gamma"), 0.25, 4.0);
+		const float ao_gamma = rangelim(0.0 + builtin_settings.ambient_occlusion_gamma, 0.25, 4.0);
 
 		// Table of gamma space multiply factors.
-		static thread_local const float light_amount[3] = {
+		const float light_amount[3] = {
 			powf(0.75, 1.0 / ao_gamma),
 			powf(0.5,  1.0 / ao_gamma),
 			powf(0.25, 1.0 / ao_gamma)

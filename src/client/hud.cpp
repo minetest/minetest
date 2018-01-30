@@ -637,8 +637,7 @@ void drawItemStack(video::IVideoDriver *driver,
 		ItemRotationKind rotation_kind)
 {
 	static MeshTimeInfo rotation_time_infos[IT_ROT_NONE];
-	static thread_local bool enable_animations =
-		g_settings->getBool("inventory_items_animations");
+	const bool enable_animations = builtin_settings.inventory_items_animations;
 
 	if (item.empty()) {
 		if (rotation_kind < IT_ROT_NONE) {

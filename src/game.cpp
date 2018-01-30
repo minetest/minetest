@@ -58,6 +58,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "raycast.h"
 #include "server.h"
 #include "settings.h"
+#include "settings_builtin.h"
 #include "shader.h"
 #include "sky.h"
 #include "translation.h"
@@ -3060,8 +3061,7 @@ PointedThing Game::updatePointedThing(
 	std::vector<aabb3f> *selectionboxes = hud->getSelectionBoxes();
 	selectionboxes->clear();
 	hud->setSelectedFaceNormal(v3f(0.0, 0.0, 0.0));
-	static thread_local const bool show_entity_selectionbox = g_settings->getBool(
-		"show_entity_selectionbox");
+	const bool show_entity_selectionbox = builtin_settings.show_entity_selectionbox;
 
 	ClientEnvironment &env = client->getEnv();
 	ClientMap &map = env.getClientMap();

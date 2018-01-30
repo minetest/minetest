@@ -37,6 +37,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "serverobject.h"
 #include "genericobject.h"
 #include "settings.h"
+#include "settings_builtin.h"
 #include "profiler.h"
 #include "log.h"
 #include "scripting_server.h"
@@ -601,15 +602,11 @@ void Server::AsyncRunStep(bool initial_step)
 		ScopeProfiler sp(g_profiler, "Server: checking added and deleted objs");
 
 		// Radius inside which objects are active
-		static thread_local const s16 radius =
-			g_settings->getS16("active_object_send_range_blocks") * MAP_BLOCKSIZE;
+		const s16 radius = builtin_settings.active_object_send_range_blocks * MAP_BLOCKSIZE;
 
 		// Radius inside which players are active
-		static thread_local const bool is_transfer_limited =
-			g_settings->exists("unlimited_player_transfer_distance") &&
-			!g_settings->getBool("unlimited_player_transfer_distance");
-		static thread_local const s16 player_transfer_dist =
-			g_settings->getS16("player_transfer_distance") * MAP_BLOCKSIZE;
+		const bool is_transfer_limited = !builtin_settings.unlimited_player_transfer_distance;
+		const s16 player_transfer_dist = builtin_settings.player_transfer_distance * MAP_BLOCKSIZE;
 		s16 player_radius = player_transfer_dist;
 		if (player_radius == 0 && is_transfer_limited)
 			player_radius = radius;
@@ -922,8 +919,7 @@ void Server::AsyncRunStep(bool initial_step)
 	{
 		float &counter = m_savemap_timer;
 		counter += dtime;
-		static thread_local const float save_interval =
-			g_settings->getFloat("server_map_save_interval");
+		const float save_interval = builtin_settings.server_map_save_interval;
 		if (counter >= save_interval) {
 			counter = 0.0;
 			MutexAutoLock lock(m_env_mutex);
@@ -1588,8 +1584,7 @@ void Server::SendSpawnParticle(session_t peer_id, u16 protocol_version,
 				bool vertical, const std::string &texture,
 				const struct TileAnimationParams &animation, u8 glow)
 {
-	static thread_local const float radius =
-			g_settings->getS16("max_block_send_distance") * MAP_BLOCKSIZE * BS;
+	const float radius = builtin_settings.max_block_send_distance * MAP_BLOCKSIZE * BS;
 
 	if (peer_id == PEER_ID_INEXISTENT) {
 		std::vector<session_t> clients = m_clients.getClientIDs();
@@ -3564,10 +3559,8 @@ void dedicated_server_loop(Server &server, bool &kill)
 
 	IntervalLimiter m_profiler_interval;
 
-	static thread_local const float steplen =
-			g_settings->getFloat("dedicated_server_step");
-	static thread_local const float profiler_print_interval =
-			g_settings->getFloat("profiler_print_interval");
+	const float steplen = builtin_settings.dedicated_server_step;
+	const float profiler_print_interval = builtin_settings.profiler_print_interval;
 
 	for(;;) {
 		// This is kind of a hack but can be done like this
