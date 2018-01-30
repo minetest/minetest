@@ -89,8 +89,20 @@ minetest.register_node("nodes:torch_off", {
 	wield_image = "torch_floor.png^(torch_floor_flame.png^[colorize:#000000)",
 })
 
+minetest.register_node("nodes:signlike", {
+	description = "Signlike",
+	drawtype = "signlike",
+	paramtype = "light",
+	paramtype2 = "colorwallmounted",
+	tiles = {{name="sign.png", color="#FFDD99"}},
+	overlay_tiles = {{name="sign_frame.png"}},
+	palette = "vgaplus.png",
+	groups = {attached_node=1, dig_immediate=3},
+	inventory_image = "sign.png^(sign_frame.png^[colorize:#000000)",
+	wield_image = "sign.png^(sign_frame.png^[colorize:#000000)",
+})
+
 --[[
-- `signlike`
 - `plantlike`
 - `firelike`
 - `fencelike`
