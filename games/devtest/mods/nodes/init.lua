@@ -62,6 +62,13 @@ local torch_overlays = {
 	{name="torch_wall_flame.png"},
 }
 
+local torch_box = {
+	type = "wallmounted",
+	wall_top = {-0.2, -0.4, -0.2, 0.2, 0.5, 0.2},
+	wall_bottom = {-0.2, -0.5, -0.2, 0.2, 0.4, 0.2},
+	wall_side = {-0.5, -0.4, -0.2, -0.1, 0.4, 0.2},
+}
+
 minetest.register_node("nodes:torch", {
 	description = "Torch",
 	drawtype = "torchlike",
@@ -71,11 +78,13 @@ minetest.register_node("nodes:torch", {
 	tiles = torch_tiles,
 	overlay_tiles = torch_overlays,
 	color = "#FFFF99",
-	groups = {attached_node=1, dig_immediate=3},
 	inventory_image = "torch_floor_flame.png",
 	inventory_overlay = "torch_floor.png",
 	wield_image = "torch_floor_flame.png",
 	wield_overlay = "torch_floor_flame.png",
+	selection_box = torch_box,
+	walkable = false,
+	groups = {attached_node=1, dig_immediate=3},
 })
 
 minetest.register_node("nodes:torch_off", {
@@ -86,12 +95,19 @@ minetest.register_node("nodes:torch_off", {
 	tiles = torch_tiles,
 	overlay_tiles = torch_overlays,
 	color = "#000000",
-	groups = {attached_node=1, dig_immediate=3},
 	inventory_image = "torch_floor_flame.png",
 	inventory_overlay = "torch_floor.png",
 	wield_image = "torch_floor_flame.png",
 	wield_overlay = "torch_floor_flame.png",
+	selection_box = torch_box,
+	walkable = false,
+	groups = {attached_node=1, dig_immediate=3},
 })
+
+local sign_box = {
+	type = "fixed",
+	fixed = {{-0.5, -0.5, -0.4, 0.5, -0.4, 0.4}},
+}
 
 minetest.register_node("nodes:signlike", {
 	description = "Signlike",
@@ -102,11 +118,13 @@ minetest.register_node("nodes:signlike", {
 	overlay_tiles = {{name="sign_frame.png"}},
 	palette = "vgaplus.png",
 	color = "#000000", -- default item color
-	groups = {attached_node=1, dig_immediate=3},
 	inventory_image = "sign_frame.png",
 	inventory_overlay = "sign.png",
 	wield_image = "sign_frame.png",
 	wield_overlay = "sign.png",
+	selection_box = sign_box,
+	collision_box = sign_box,
+	groups = {attached_node=1, dig_immediate=3},
 })
 
 minetest.register_node("nodes:signlike_fancy", {
@@ -118,11 +136,13 @@ minetest.register_node("nodes:signlike_fancy", {
 	overlay_tiles = {{name="sign_area.png", color="#FFDD99"}},
 	palette = "vgaplus.png",
 	color = "#000000", -- default item color
-	groups = {attached_node=1, dig_immediate=3},
 	inventory_image = "sign_base.png",
 	inventory_overlay = "sign_area.png",
 	wield_image = "sign_base.png",
 	wield_overlay = "sign_area.png",
+	selection_box = sign_box,
+	collision_box = sign_box,
+	groups = {attached_node=1, dig_immediate=3},
 })
 
 --[[
