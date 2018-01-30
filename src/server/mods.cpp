@@ -43,8 +43,7 @@ ServerModManager::ServerModManager(const std::string &worldpath) :
 	addModsInPath(worldpath + DIR_DELIM + "worldmods");
 
 	// Load normal mods
-	std::string worldmt = worldpath + DIR_DELIM + "world.mt";
-	addModsFromConfig(worldmt, gamespec.addon_mods_paths);
+	addModsFromConfig(g_settings, gamespec.addon_mods_paths);
 }
 
 // clang-format off

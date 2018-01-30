@@ -79,7 +79,7 @@ void GUIVolumeChange::regenerateGui(v2u32 screensize)
 	recalculateAbsolutePosition(false);
 
 	v2s32 size = DesiredRect.getSize();
-	int volume = (int)(g_settings->getFloat("sound_volume") * 100);
+	int volume = (int)(g_main_settings->getFloat("sound_volume") * 100);
 
 	/*
 		Add stuff
@@ -116,7 +116,7 @@ void GUIVolumeChange::regenerateGui(v2u32 screensize)
 		core::rect<s32> rect(0, 0, 160, 20);
 		rect = rect + v2s32(size.X / 2 - 80, size.Y / 2 - 35);
 		const wchar_t *text = wgettext("Muted");
-		Environment->addCheckBox(g_settings->getBool("mute_sound"), rect, this,
+		Environment->addCheckBox(g_main_settings->getBool("mute_sound"), rect, this,
 				ID_soundMuteButton, text);
 		delete[] text;
 	}
@@ -149,7 +149,7 @@ bool GUIVolumeChange::OnEvent(const SEvent& event)
 		if (event.GUIEvent.EventType == gui::EGET_CHECKBOX_CHANGED) {
 			gui::IGUIElement *e = getElementFromId(ID_soundMuteButton);
 			if (e != NULL && e->getType() == gui::EGUIET_CHECK_BOX) {
-				g_settings->setBool("mute_sound", ((gui::IGUICheckBox*)e)->isChecked());
+				g_main_settings->setBool("mute_sound", ((gui::IGUICheckBox*)e)->isChecked());
 			}
 
 			Environment->setFocus(this);
@@ -176,7 +176,7 @@ bool GUIVolumeChange::OnEvent(const SEvent& event)
 		if (event.GUIEvent.EventType == gui::EGET_SCROLL_BAR_CHANGED) {
 			if (event.GUIEvent.Caller->getID() == ID_soundSlider) {
 				s32 pos = ((gui::IGUIScrollBar*)event.GUIEvent.Caller)->getPos();
-				g_settings->setFloat("sound_volume", (float) pos / 100);
+				g_main_settings->setFloat("sound_volume", (float) pos / 100);
 
 				gui::IGUIElement *e = getElementFromId(ID_soundText);
 				const wchar_t *text = wgettext("Sound Volume: ");

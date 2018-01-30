@@ -32,7 +32,7 @@ class Settings;
 class Database_Redis : public MapDatabase
 {
 public:
-	Database_Redis(Settings &conf);
+	Database_Redis();
 	~Database_Redis();
 
 	void beginSave();

@@ -173,7 +173,7 @@ void GUIKeyChangeMenu::regenerateGui(v2u32 screensize)
 			core::rect<s32> rect(0, 0, option_w, 30);
 			rect += topleft + v2s32(option_x, option_y);
 			const wchar_t *text = wgettext("\"Special\" = climb down");
-			Environment->addCheckBox(g_settings->getBool("aux1_descends"), rect, this,
+			Environment->addCheckBox(g_main_settings->getBool("aux1_descends"), rect, this,
 					GUI_ID_CB_AUX1_DESCENDS, text);
 			delete[] text;
 		}
@@ -188,7 +188,7 @@ void GUIKeyChangeMenu::regenerateGui(v2u32 screensize)
 			core::rect<s32> rect(0, 0, option_w, 30);
 			rect += topleft + v2s32(option_x, option_y);
 			const wchar_t *text = wgettext("Double tap \"jump\" to toggle fly");
-			Environment->addCheckBox(g_settings->getBool("doubletap_jump"), rect, this,
+			Environment->addCheckBox(g_main_settings->getBool("doubletap_jump"), rect, this,
 					GUI_ID_CB_DOUBLETAP_JUMP, text);
 			delete[] text;
 		}
@@ -234,18 +234,18 @@ void GUIKeyChangeMenu::drawMenu()
 bool GUIKeyChangeMenu::acceptInput()
 {
 	for (key_setting *k : key_settings) {
-		g_settings->set(k->setting_name, k->key.sym());
+		g_main_settings->set(k->setting_name, k->key.sym());
 	}
 
 	{
 		gui::IGUIElement *e = getElementFromId(GUI_ID_CB_AUX1_DESCENDS);
 		if(e != NULL && e->getType() == gui::EGUIET_CHECK_BOX)
-			g_settings->setBool("aux1_descends", ((gui::IGUICheckBox*)e)->isChecked());
+			g_main_settings->setBool("aux1_descends", ((gui::IGUICheckBox*)e)->isChecked());
 	}
 	{
 		gui::IGUIElement *e = getElementFromId(GUI_ID_CB_DOUBLETAP_JUMP);
 		if(e != NULL && e->getType() == gui::EGUIET_CHECK_BOX)
-			g_settings->setBool("doubletap_jump", ((gui::IGUICheckBox*)e)->isChecked());
+			g_main_settings->setBool("doubletap_jump", ((gui::IGUICheckBox*)e)->isChecked());
 	}
 
 	clearKeyCache();

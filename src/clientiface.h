@@ -422,8 +422,10 @@ public:
 
 	friend class Server;
 
-	ClientInterface(const std::shared_ptr<con::Connection> &con);
+	ClientInterface();
 	~ClientInterface();
+
+	void SetConnection(const std::shared_ptr<con::Connection> &con) { m_con = con; }
 
 	/* run sync step */
 	void step(float dtime);

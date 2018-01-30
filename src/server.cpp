@@ -208,23 +208,35 @@ Server::Server(
 	):
 	m_bind_addr(bind_addr),
 	m_path_world(path_world),
+	m_conf(new Settings()),
 	m_gamespec(gamespec),
 	m_simple_singleplayer_mode(simple_singleplayer_mode),
 	m_dedicated(dedicated),
 	m_async_fatal_error(""),
-	m_con(std::make_shared<con::Connection>(PROTOCOL_ID,
-			512,
-			CONNECTION_TIMEOUT,
-			m_bind_addr.isIPv6(),
-			this)),
 	m_itemdef(createItemDefManager()),
 	m_nodedef(createNodeDefManager()),
 	m_craftdef(createCraftDefManager()),
 	m_uptime(0),
-	m_clients(m_con),
 	m_admin_chat(iface),
 	m_modchannel_mgr(new ModChannelMgr())
 {
+	// set global settings to server settings;
+	g_settings = m_conf;
+
+	// Initialize settings
+	set_default_settings(m_conf);
+	override_default_settings(m_conf, g_main_settings);
+	m_settings_path = path_world + DIR_DELIM + "world.mt";
+	if (!m_conf->readConfigFile(m_settings_path.c_str()))
+		errorstream << "Failed to load config file" << std::endl;
+
+	m_con = std::make_shared<con::Connection>(PROTOCOL_ID,
+			512,
+			CONNECTION_TIMEOUT,
+			m_bind_addr.isIPv6(),
+			this);
+	m_clients.SetConnection(m_con);
+
 	m_lag = g_settings->getFloat("dedicated_server_step");
 
 	if (m_path_world.empty())
@@ -237,6 +249,9 @@ Server::Server(
 Server::~Server()
 {
 	infostream << "Server destructing" << std::endl;
+
+	infostream << "Server: Saving settings to file" << std::endl;
+	m_conf->updateConfigFile(m_settings_path.c_str());
 
 	// Send shutdown message
 	SendChatMessage(PEER_ID_INEXISTENT, ChatMessage(CHATMESSAGE_TYPE_ANNOUNCE,
@@ -294,6 +309,10 @@ Server::~Server()
 	delete m_itemdef;
 	delete m_nodedef;
 	delete m_craftdef;
+
+	// reset global settings
+	g_settings = g_main_settings;
+	delete m_conf;
 
 	// Deinitialize scripting
 	infostream << "Server: Deinitializing scripting" << std::endl;

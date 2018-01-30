@@ -261,16 +261,13 @@ void ModConfiguration::addMods(const std::vector<ModSpec> &new_mods)
 	}
 }
 
-void ModConfiguration::addModsFromConfig(
-		const std::string &settings_path, const std::set<std::string> &mods)
+void ModConfiguration::addModsFromConfig(Settings *conf, const std::set<std::string> &mods)
 {
-	Settings conf;
 	std::set<std::string> load_mod_names;
 
-	conf.readConfigFile(settings_path.c_str());
-	std::vector<std::string> names = conf.getNames();
+	std::vector<std::string> names = conf->getNames();
 	for (const std::string &name : names) {
-		if (name.compare(0, 9, "load_mod_") == 0 && conf.getBool(name))
+		if (name.compare(0, 9, "load_mod_") == 0 && conf->getBool(name))
 			load_mod_names.insert(name.substr(9));
 	}
 
@@ -283,10 +280,9 @@ void ModConfiguration::addModsFromConfig(
 			if (load_mod_names.count(mod.name) != 0)
 				addon_mods.push_back(mod);
 			else
-				conf.setBool("load_mod_" + mod.name, false);
+				conf->setBool("load_mod_" + mod.name, false);
 		}
 	}
-	conf.updateConfigFile(settings_path.c_str());
 
 	addMods(addon_mods);
 	checkConflictsAndDeps();
@@ -380,13 +376,19 @@ void ModConfiguration::resolveDependencies()
 ClientModConfiguration::ClientModConfiguration(const std::string &path) :
 		ModConfiguration(path)
 {
+	Settings conf;
 	std::set<std::string> paths;
+
 	std::string path_user = porting::path_user + DIR_DELIM + "clientmods";
 	paths.insert(path);
 	paths.insert(path_user);
 
 	std::string settings_path = path_user + DIR_DELIM + "mods.conf";
-	addModsFromConfig(settings_path, paths);
+	conf.readConfigFile(settings_path.c_str());
+
+	addModsFromConfig(&conf, paths);
+
+	conf.updateConfigFile(settings_path.c_str());
 }
 #endif
 

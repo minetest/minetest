@@ -32,6 +32,7 @@ struct NoiseParams;
 // Global objects
 extern Settings *g_settings;
 extern std::string g_settings_path;
+extern Settings * const g_main_settings;
 
 // Type for a settings changed callback function
 typedef void (*SettingsChangedCallback)(const std::string &name, void *data);
@@ -155,6 +156,7 @@ public:
 	// return all keys used
 	std::vector<std::string> getNames() const;
 	bool exists(const std::string &name) const;
+	bool existsNoDefault(const std::string &name) const;
 
 
 	/***************************************

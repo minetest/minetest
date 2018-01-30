@@ -362,7 +362,7 @@ private:
 	void loadDefaultMeta();
 
 	static PlayerDatabase *openPlayerDatabase(const std::string &name,
-			const std::string &savedir, const Settings &conf);
+			const std::string &savedir);
 	/*
 		Internal ActiveObject interface
 		-------------------------------------------

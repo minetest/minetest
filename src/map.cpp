@@ -1150,18 +1150,12 @@ ServerMap::ServerMap(const std::string &savedir, IGameDef *gamedef,
 	*/
 
 	// Determine which database backend to use
-	std::string conf_path = savedir + DIR_DELIM + "world.mt";
-	Settings conf;
-	bool succeeded = conf.readConfigFile(conf_path.c_str());
-	if (!succeeded || !conf.exists("backend")) {
+	if (!g_settings->existsNoDefault("backend")) {
 		// fall back to sqlite3
-		conf.set("backend", "sqlite3");
+		g_settings->set("backend", "sqlite3");
 	}
-	std::string backend = conf.get("backend");
-	dbase = createDatabase(backend, savedir, conf);
-
-	if (!conf.updateConfigFile(conf_path.c_str()))
-		errorstream << "ServerMap::ServerMap(): Failed to update world.mt!" << std::endl;
+	std::string backend = g_settings->get("backend");
+	dbase = createDatabase(backend, savedir);
 
 	m_savedir = savedir;
 	m_map_saving_enabled = false;
@@ -1888,8 +1882,7 @@ void ServerMap::listAllLoadedBlocks(std::vector<v3s16> &dst)
 
 MapDatabase *ServerMap::createDatabase(
 	const std::string &name,
-	const std::string &savedir,
-	Settings &conf)
+	const std::string &savedir)
 {
 	if (name == "sqlite3")
 		return new MapDatabaseSQLite3(savedir);
@@ -1901,12 +1894,12 @@ MapDatabase *ServerMap::createDatabase(
 	#endif
 	#if USE_REDIS
 	if (name == "redis")
-		return new Database_Redis(conf);
+		return new Database_Redis();
 	#endif
 	#if USE_POSTGRESQL
 	if (name == "postgresql") {
 		std::string connect_string;
-		conf.getNoEx("pgsql_connection", connect_string);
+		g_settings->getNoEx("pgsql_connection", connect_string);
 		return new MapDatabasePostgreSQL(connect_string);
 	}
 	#endif

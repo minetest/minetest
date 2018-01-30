@@ -104,12 +104,12 @@ Client::Client(
 	// Add local player
 	m_env.setLocalPlayer(new LocalPlayer(this, playername));
 
-	if (g_settings->getBool("enable_minimap")) {
+	if (g_main_settings->getBool("enable_minimap")) {
 		m_minimap = new Minimap(this);
 	}
-	m_cache_save_interval = g_settings->getU16("server_map_save_interval");
+	m_cache_save_interval = g_main_settings->getU16("server_map_save_interval");
 
-	m_modding_enabled = g_settings->getBool("enable_client_modding");
+	m_modding_enabled = g_main_settings->getBool("enable_client_modding");
 	m_script = new ClientScripting(this);
 	m_env.setScript(m_script);
 	m_script->setEnv(&m_env);
@@ -352,8 +352,8 @@ void Client::step(float dtime)
 		ScopeProfiler sp(g_profiler, "Client: map timer and unload");
 		std::vector<v3s16> deleted_blocks;
 		m_env.getMap().timerUpdate(map_timer_and_unload_dtime,
-			g_settings->getFloat("client_unload_unused_data_timeout"),
-			g_settings->getS32("client_mapblock_limit"),
+			g_main_settings->getFloat("client_unload_unused_data_timeout"),
+			g_main_settings->getS32("client_mapblock_limit"),
 			&deleted_blocks);
 
 		/*
@@ -585,7 +585,7 @@ void Client::step(float dtime)
 	m_mod_storage_save_timer -= dtime;
 	if (m_mod_storage_save_timer <= 0.0f) {
 		verbosestream << "Saving registered mod storages." << std::endl;
-		m_mod_storage_save_timer = g_settings->getFloat("server_map_save_interval");
+		m_mod_storage_save_timer = g_main_settings->getFloat("server_map_save_interval");
 		for (std::unordered_map<std::string, ModMetadata *>::const_iterator
 				it = m_mod_storages.begin(); it != m_mod_storages.end(); ++it) {
 			if (it->second->isModified()) {
@@ -741,7 +741,7 @@ void Client::initLocalMapSaving(const Address &address,
 		const std::string &hostname,
 		bool is_local_server)
 {
-	if (!g_settings->getBool("enable_local_map_saving") || is_local_server) {
+	if (!g_main_settings->getBool("enable_local_map_saving") || is_local_server) {
 		return;
 	}
 
@@ -1147,7 +1147,7 @@ bool Client::canSendChatMessage() const
 
 void Client::sendChatMessage(const std::wstring &message)
 {
-	const s16 max_queue_size = g_settings->getS16("max_out_chat_queue_size");
+	const s16 max_queue_size = g_main_settings->getS16("max_out_chat_queue_size");
 	if (canSendChatMessage()) {
 		u32 now = time(NULL);
 		float time_passed = now - m_last_chat_message_sent;
@@ -1696,7 +1696,7 @@ void Client::afterContentReceived()
 	m_state = LC_Ready;
 	sendReady();
 
-	if (g_settings->getBool("enable_client_modding")) {
+	if (g_main_settings->getBool("enable_client_modding")) {
 		m_script->on_client_ready(m_env.getLocalPlayer());
 	}
 
@@ -1731,14 +1731,14 @@ void Client::makeScreenshot()
 	char timetstamp_c[64];
 	strftime(timetstamp_c, sizeof(timetstamp_c), "%Y%m%d_%H%M%S", tm);
 
-	std::string filename_base = g_settings->get("screenshot_path")
+	std::string filename_base = g_main_settings->get("screenshot_path")
 			+ DIR_DELIM
 			+ std::string("screenshot_")
 			+ std::string(timetstamp_c);
-	std::string filename_ext = "." + g_settings->get("screenshot_format");
+	std::string filename_ext = "." + g_main_settings->get("screenshot_format");
 	std::string filename;
 
-	u32 quality = (u32)g_settings->getS32("screenshot_quality");
+	u32 quality = (u32)g_main_settings->getS32("screenshot_quality");
 	quality = MYMIN(MYMAX(quality, 0), 100) / 100.0 * 255;
 
 	// Try to find a unique filename

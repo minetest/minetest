@@ -393,26 +393,18 @@ ServerEnvironment::ServerEnvironment(ServerMap *map,
 	m_path_world(path_world)
 {
 	// Determine which database backend to use
-	std::string conf_path = path_world + DIR_DELIM + "world.mt";
-	Settings conf;
-	bool succeeded = conf.readConfigFile(conf_path.c_str());
-	if (!succeeded || !conf.exists("player_backend")) {
+	if (!g_settings->existsNoDefault("player_backend")) {
 		// fall back to files
-		conf.set("player_backend", "files");
+		g_settings->set("player_backend", "files");
 		warningstream << "/!\\ You are using old player file backend. "
 				<< "This backend is deprecated and will be removed in next release /!\\"
 				<< std::endl << "Switching to SQLite3 or PostgreSQL is advised, "
 				<< "please read http://wiki.minetest.net/Database_backends." << std::endl;
-
-		if (!conf.updateConfigFile(conf_path.c_str())) {
-			errorstream << "ServerEnvironment::ServerEnvironment(): "
-				<< "Failed to update world.mt!" << std::endl;
-		}
 	}
 
 	std::string name;
-	conf.getNoEx("player_backend", name);
-	m_player_database = openPlayerDatabase(name, path_world, conf);
+	g_settings->getNoEx("player_backend", name);
+	m_player_database = openPlayerDatabase(name, path_world);
 }
 
 ServerEnvironment::~ServerEnvironment()
@@ -2092,7 +2084,7 @@ bool ServerEnvironment::saveStaticToBlock(
 }
 
 PlayerDatabase *ServerEnvironment::openPlayerDatabase(const std::string &name,
-		const std::string &savedir, const Settings &conf)
+		const std::string &savedir)
 {
 
 	if (name == "sqlite3")
@@ -2103,7 +2095,7 @@ PlayerDatabase *ServerEnvironment::openPlayerDatabase(const std::string &name,
 #if USE_POSTGRESQL
 	if (name == "postgresql") {
 		std::string connect_string;
-		conf.getNoEx("pgsql_player_connection", connect_string);
+		g_settings->getNoEx("pgsql_player_connection", connect_string);
 		return new PlayerDatabasePostgreSQL(connect_string);
 	}
 #endif
@@ -2149,9 +2141,9 @@ bool ServerEnvironment::migratePlayersDatabase(const GameParams &game_params,
 
 	try {
 		PlayerDatabase *srcdb = ServerEnvironment::openPlayerDatabase(backend,
-			game_params.world_path, world_mt);
+			game_params.world_path);
 		PlayerDatabase *dstdb = ServerEnvironment::openPlayerDatabase(migrate_to,
-			game_params.world_path, world_mt);
+			game_params.world_path);
 
 		std::vector<std::string> player_list;
 		srcdb->listPlayers(player_list);

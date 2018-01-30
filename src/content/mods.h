@@ -30,6 +30,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/basic_macros.h"
 #include "config.h"
 #include "metadata.h"
+#include "settings.h"
 
 #define MODNAME_ALLOWED_CHARS "abcdefghijklmnopqrstuvwxyz0123456789_"
 
@@ -97,8 +98,7 @@ protected:
 	// adds all mods in the set.
 	void addMods(const std::vector<ModSpec> &new_mods);
 
-	void addModsFromConfig(const std::string &settings_path,
-			const std::set<std::string> &mods);
+	void addModsFromConfig(Settings *conf, const std::set<std::string> &mods);
 
 	void checkConflictsAndDeps();
 

@@ -290,6 +290,8 @@ void set_default_settings(Settings *settings)
 	// Server
 	settings->setDefault("disable_escape_sequences", "false");
 	settings->setDefault("strip_color_codes", "false");
+	settings->setDefault("backend", "sqlite3");
+	settings->setDefault("player_backend", "sqlite3");
 
 	// Network
 	settings->setDefault("enable_ipv6", "true");

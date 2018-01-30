@@ -32,18 +32,18 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <cassert>
 
 
-Database_Redis::Database_Redis(Settings &conf)
+Database_Redis::Database_Redis()
 {
 	std::string tmp;
 	try {
-		tmp = conf.get("redis_address");
-		hash = conf.get("redis_hash");
+		tmp = g_settings->get("redis_address");
+		hash = g_settings->get("redis_hash");
 	} catch (SettingNotFoundException &) {
 		throw SettingNotFoundException("Set redis_address and "
 			"redis_hash in world.mt to use the redis backend");
 	}
 	const char *addr = tmp.c_str();
-	int port = conf.exists("redis_port") ? conf.getU16("redis_port") : 6379;
+	int port = g_settings->exists("redis_port") ? g_settings->getU16("redis_port") : 6379;
 	// if redis_address contains '/' assume unix socket, else hostname/ip
 	ctx = tmp.find('/') != std::string::npos ? redisConnectUnix(addr) : redisConnect(addr, port);
 	if (!ctx) {
@@ -53,8 +53,8 @@ Database_Redis::Database_Redis(Settings &conf)
 		redisFree(ctx);
 		throw DatabaseException(err);
 	}
-	if (conf.exists("redis_password")) {
-		tmp = conf.get("redis_password");
+	if (g_settings->exists("redis_password")) {
+		tmp = g_settings->get("redis_password");
 		redisReply *reply = static_cast<redisReply *>(redisCommand(ctx, "AUTH %s", tmp.c_str()));
 		if (!reply)
 			throw DatabaseException("Redis authentication failed");

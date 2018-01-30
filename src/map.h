@@ -400,7 +400,7 @@ public:
 	/*
 		Database functions
 	*/
-	static MapDatabase *createDatabase(const std::string &name, const std::string &savedir, Settings &conf);
+	static MapDatabase *createDatabase(const std::string &name, const std::string &savedir);
 
 	// Returns true if the database file does not exist
 	bool loadFromFolders();

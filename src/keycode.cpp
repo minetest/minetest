@@ -368,7 +368,7 @@ KeyPress getKeySetting(const char *settingname)
 	if (n != g_key_setting_cache.end())
 		return n->second;
 
-	KeyPress k(g_settings->get(settingname).c_str());
+	KeyPress k(g_main_settings->get(settingname).c_str());
 	g_key_setting_cache[settingname] = k;
 	return k;
 }

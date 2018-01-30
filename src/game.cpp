@@ -415,7 +415,7 @@ public:
 	void onSettingsChange(const std::string &name)
 	{
 		if (name == "enable_fog")
-			m_fog_enabled = g_settings->getBool("enable_fog");
+			m_fog_enabled = g_main_settings->getBool("enable_fog");
 	}
 
 	static void settingsCallback(const std::string &name, void *userdata)
@@ -443,13 +443,13 @@ public:
 		m_texture_flags("textureFlags"),
 		m_client(client)
 	{
-		g_settings->registerChangedCallback("enable_fog", settingsCallback, this);
-		m_fog_enabled = g_settings->getBool("enable_fog");
+		g_main_settings->registerChangedCallback("enable_fog", settingsCallback, this);
+		m_fog_enabled = g_main_settings->getBool("enable_fog");
 	}
 
 	~GameGlobalShaderConstantSetter()
 	{
-		g_settings->deregisterChangedCallback("enable_fog", settingsCallback, this);
+		g_main_settings->deregisterChangedCallback("enable_fog", settingsCallback, this);
 	}
 
 	virtual void onSetConstants(video::IMaterialRendererServices *services,
@@ -895,31 +895,31 @@ private:
 Game::Game() :
 	m_game_ui(new GameUI())
 {
-	g_settings->registerChangedCallback("doubletap_jump",
+	g_main_settings->registerChangedCallback("doubletap_jump",
 		&settingChangedCallback, this);
-	g_settings->registerChangedCallback("enable_clouds",
+	g_main_settings->registerChangedCallback("enable_clouds",
 		&settingChangedCallback, this);
-	g_settings->registerChangedCallback("doubletap_joysticks",
+	g_main_settings->registerChangedCallback("doubletap_joysticks",
 		&settingChangedCallback, this);
-	g_settings->registerChangedCallback("enable_particles",
+	g_main_settings->registerChangedCallback("enable_particles",
 		&settingChangedCallback, this);
-	g_settings->registerChangedCallback("enable_fog",
+	g_main_settings->registerChangedCallback("enable_fog",
 		&settingChangedCallback, this);
-	g_settings->registerChangedCallback("mouse_sensitivity",
+	g_main_settings->registerChangedCallback("mouse_sensitivity",
 		&settingChangedCallback, this);
-	g_settings->registerChangedCallback("joystick_frustum_sensitivity",
+	g_main_settings->registerChangedCallback("joystick_frustum_sensitivity",
 		&settingChangedCallback, this);
-	g_settings->registerChangedCallback("repeat_rightclick_time",
+	g_main_settings->registerChangedCallback("repeat_rightclick_time",
 		&settingChangedCallback, this);
 	g_settings->registerChangedCallback("noclip",
 		&settingChangedCallback, this);
 	g_settings->registerChangedCallback("free_move",
 		&settingChangedCallback, this);
-	g_settings->registerChangedCallback("cinematic",
+	g_main_settings->registerChangedCallback("cinematic",
 		&settingChangedCallback, this);
-	g_settings->registerChangedCallback("cinematic_camera_smoothing",
+	g_main_settings->registerChangedCallback("cinematic_camera_smoothing",
 		&settingChangedCallback, this);
-	g_settings->registerChangedCallback("camera_smoothing",
+	g_main_settings->registerChangedCallback("camera_smoothing",
 		&settingChangedCallback, this);
 
 	readSettings();
@@ -958,27 +958,27 @@ Game::~Game()
 
 	extendedResourceCleanup();
 
-	g_settings->deregisterChangedCallback("doubletap_jump",
+	g_main_settings->deregisterChangedCallback("doubletap_jump",
 		&settingChangedCallback, this);
-	g_settings->deregisterChangedCallback("enable_clouds",
+	g_main_settings->deregisterChangedCallback("enable_clouds",
 		&settingChangedCallback, this);
-	g_settings->deregisterChangedCallback("enable_particles",
+	g_main_settings->deregisterChangedCallback("enable_particles",
 		&settingChangedCallback, this);
-	g_settings->deregisterChangedCallback("enable_fog",
+	g_main_settings->deregisterChangedCallback("enable_fog",
 		&settingChangedCallback, this);
-	g_settings->deregisterChangedCallback("mouse_sensitivity",
+	g_main_settings->deregisterChangedCallback("mouse_sensitivity",
 		&settingChangedCallback, this);
-	g_settings->deregisterChangedCallback("repeat_rightclick_time",
+	g_main_settings->deregisterChangedCallback("repeat_rightclick_time",
 		&settingChangedCallback, this);
 	g_settings->deregisterChangedCallback("noclip",
 		&settingChangedCallback, this);
 	g_settings->deregisterChangedCallback("free_move",
 		&settingChangedCallback, this);
-	g_settings->deregisterChangedCallback("cinematic",
+	g_main_settings->deregisterChangedCallback("cinematic",
 		&settingChangedCallback, this);
-	g_settings->deregisterChangedCallback("cinematic_camera_smoothing",
+	g_main_settings->deregisterChangedCallback("cinematic_camera_smoothing",
 		&settingChangedCallback, this);
-	g_settings->deregisterChangedCallback("camera_smoothing",
+	g_main_settings->deregisterChangedCallback("camera_smoothing",
 		&settingChangedCallback, this);
 }
 
@@ -1021,7 +1021,7 @@ bool Game::startup(bool *kill,
 
 	m_game_ui->initFlags();
 
-	m_invert_mouse = g_settings->getBool("invert_mouse");
+	m_invert_mouse = g_main_settings->getBool("invert_mouse");
 	m_first_loop_after_window_activation = true;
 
 	g_translations->clear();
@@ -1053,15 +1053,15 @@ void Game::run()
 
 	draw_times.last_time = RenderingEngine::get_timer_time();
 
-	set_light_table(g_settings->getFloat("display_gamma"));
+	set_light_table(g_main_settings->getFloat("display_gamma"));
 
 #ifdef __ANDROID__
 	m_cache_hold_aux1 = g_settings->getBool("fast_move")
 			&& client->checkPrivilege("fast");
 #endif
 
-	irr::core::dimension2d<u32> previous_screen_size(g_settings->getU16("screen_w"),
-		g_settings->getU16("screen_h"));
+	irr::core::dimension2d<u32> previous_screen_size(g_main_settings->getU16("screen_w"),
+		g_main_settings->getU16("screen_h"));
 
 	while (RenderingEngine::run()
 			&& !(*kill || g_gamecallback->shutdown_requested
@@ -1074,9 +1074,9 @@ void Game::run()
 		// First condition is cheaper
 		if (previous_screen_size != current_screen_size &&
 				current_screen_size != irr::core::dimension2d<u32>(0,0) &&
-				g_settings->getBool("autosave_screensize")) {
-			g_settings->setU16("screen_w", current_screen_size.Width);
-			g_settings->setU16("screen_h", current_screen_size.Height);
+				g_main_settings->getBool("autosave_screensize")) {
+			g_main_settings->setU16("screen_w", current_screen_size.Width);
+			g_main_settings->setU16("screen_h", current_screen_size.Height);
 			previous_screen_size = current_screen_size;
 		}
 
@@ -1130,7 +1130,7 @@ void Game::shutdown()
 {
 	RenderingEngine::finalize();
 #if IRRLICHT_VERSION_MAJOR == 1 && IRRLICHT_VERSION_MINOR <= 8
-	if (g_settings->get("3d_mode") == "pageflip") {
+	if (g_main_settings->get("3d_mode") == "pageflip") {
 		driver->setRenderTarget(irr::video::ERT_STEREO_BOTH_BUFFERS);
 	}
 #endif
@@ -1218,7 +1218,7 @@ bool Game::init(
 bool Game::initSound()
 {
 #if USE_SOUND
-	if (g_settings->getBool("enable_sound")) {
+	if (g_main_settings->getBool("enable_sound")) {
 		infostream << "Attempting to use OpenAL audio" << std::endl;
 		sound = createOpenALSoundManager(g_sound_manager_singleton.get(), &soundfetcher);
 		if (!sound)
@@ -1247,10 +1247,10 @@ bool Game::createSingleplayerServer(const std::string &map_dir,
 {
 	showOverlayMessage("Creating server...", 0, 5);
 
-	std::string bind_str = g_settings->get("bind_address");
+	std::string bind_str = g_main_settings->get("bind_address");
 	Address bind_addr(0, 0, 0, 0, port);
 
-	if (g_settings->getBool("ipv6_server")) {
+	if (g_main_settings->getBool("ipv6_server")) {
 		bind_addr.setAddress((IPv6AddressBytes *) NULL);
 	}
 
@@ -1262,7 +1262,7 @@ bool Game::createSingleplayerServer(const std::string &map_dir,
 			   << " -- Listening on all addresses." << std::endl;
 	}
 
-	if (bind_addr.isIPv6() && !g_settings->getBool("enable_ipv6")) {
+	if (bind_addr.isIPv6() && !g_main_settings->getBool("enable_ipv6")) {
 		*error_message = "Unable to listen on " +
 				bind_addr.serializeString() +
 				" because IPv6 is disabled";
@@ -1452,7 +1452,7 @@ bool Game::connectToServer(const std::string &playername,
 		return false;
 	}
 
-	if (connect_address.isIPv6() && !g_settings->getBool("enable_ipv6")) {
+	if (connect_address.isIPv6() && !g_main_settings->getBool("enable_ipv6")) {
 		*error_message = "Unable to connect to " +
 				connect_address.serializeString() +
 				" because IPv6 is disabled";
@@ -1621,7 +1621,7 @@ bool Game::getServerContent(bool *aborted)
 			message.precision(2);
 
 			if ((USE_CURL == 0) ||
-					(!g_settings->getBool("enable_remote_media_server"))) {
+					(!g_main_settings->getBool("enable_remote_media_server"))) {
 				float cur = client->getCurRate();
 				std::string cur_unit = gettext("KiB/s");
 
@@ -1724,7 +1724,7 @@ void Game::processQueues()
 void Game::updateProfilers(const RunStats &stats, const FpsControl &draw_times, f32 dtime)
 {
 	float profiler_print_interval =
-			g_settings->getFloat("profiler_print_interval");
+			g_main_settings->getFloat("profiler_print_interval");
 	bool print_to_log = true;
 
 	if (profiler_print_interval == 0) {
@@ -1878,7 +1878,7 @@ void Game::processKeyInput()
 	} else if (wasKeyDown(KeyType::CMD_LOCAL)) {
 		openConsole(0.2, L".");
 	} else if (wasKeyDown(KeyType::CONSOLE)) {
-		openConsole(core::clamp(g_settings->getFloat("console_height"), 0.1f, 1.0f));
+		openConsole(core::clamp(g_main_settings->getFloat("console_height"), 0.1f, 1.0f));
 	} else if (wasKeyDown(KeyType::FREEMOVE)) {
 		toggleFreeMove();
 	} else if (wasKeyDown(KeyType::JUMP)) {
@@ -1888,24 +1888,24 @@ void Game::processKeyInput()
 	} else if (wasKeyDown(KeyType::NOCLIP)) {
 		toggleNoClip();
 	} else if (wasKeyDown(KeyType::MUTE)) {
-		bool new_mute_sound = !g_settings->getBool("mute_sound");
-		g_settings->setBool("mute_sound", new_mute_sound);
+		bool new_mute_sound = !g_main_settings->getBool("mute_sound");
+		g_main_settings->setBool("mute_sound", new_mute_sound);
 		if (new_mute_sound)
 			m_game_ui->showTranslatedStatusText("Sound muted");
 		else
 			m_game_ui->showTranslatedStatusText("Sound unmuted");
 	} else if (wasKeyDown(KeyType::INC_VOLUME)) {
-		float new_volume = rangelim(g_settings->getFloat("sound_volume") + 0.1f, 0.0f, 1.0f);
+		float new_volume = rangelim(g_main_settings->getFloat("sound_volume") + 0.1f, 0.0f, 1.0f);
 		wchar_t buf[100];
-		g_settings->setFloat("sound_volume", new_volume);
+		g_main_settings->setFloat("sound_volume", new_volume);
 		const wchar_t *str = wgettext("Volume changed to %d%%");
 		swprintf(buf, sizeof(buf) / sizeof(wchar_t), str, myround(new_volume * 100));
 		delete[] str;
 		m_game_ui->showStatusText(buf);
 	} else if (wasKeyDown(KeyType::DEC_VOLUME)) {
-		float new_volume = rangelim(g_settings->getFloat("sound_volume") - 0.1f, 0.0f, 1.0f);
+		float new_volume = rangelim(g_main_settings->getFloat("sound_volume") - 0.1f, 0.0f, 1.0f);
 		wchar_t buf[100];
-		g_settings->setFloat("sound_volume", new_volume);
+		g_main_settings->setFloat("sound_volume", new_volume);
 		const wchar_t *str = wgettext("Volume changed to %d%%");
 		swprintf(buf, sizeof(buf) / sizeof(wchar_t), str, myround(new_volume * 100));
 		delete[] str;
@@ -2134,8 +2134,8 @@ void Game::toggleNoClip()
 
 void Game::toggleCinematic()
 {
-	bool cinematic = !g_settings->getBool("cinematic");
-	g_settings->set("cinematic", bool_to_cstr(cinematic));
+	bool cinematic = !g_main_settings->getBool("cinematic");
+	g_main_settings->set("cinematic", bool_to_cstr(cinematic));
 
 	if (cinematic)
 		m_game_ui->showTranslatedStatusText("Cinematic mode enabled");
@@ -2262,7 +2262,7 @@ void Game::toggleUpdateCamera()
 
 void Game::increaseViewRange()
 {
-	s16 range = g_settings->getS16("viewing_range");
+	s16 range = g_main_settings->getS16("viewing_range");
 	s16 range_new = range + 10;
 
 	wchar_t buf[255];
@@ -2280,13 +2280,13 @@ void Game::increaseViewRange()
 		delete[] str;
 		m_game_ui->showStatusText(buf);
 	}
-	g_settings->set("viewing_range", itos(range_new));
+	g_main_settings->set("viewing_range", itos(range_new));
 }
 
 
 void Game::decreaseViewRange()
 {
-	s16 range = g_settings->getS16("viewing_range");
+	s16 range = g_main_settings->getS16("viewing_range");
 	s16 range_new = range - 10;
 
 	wchar_t buf[255];
@@ -2303,7 +2303,7 @@ void Game::decreaseViewRange()
 		delete[] str;
 		m_game_ui->showStatusText(buf);
 	}
-	g_settings->set("viewing_range", itos(range_new));
+	g_main_settings->set("viewing_range", itos(range_new));
 }
 
 
@@ -2768,10 +2768,7 @@ void Game::updateChat(f32 dtime, const v2u32 &screensize)
 	// Get new messages from error log buffer
 	while (!chat_log_error_buf.empty()) {
 		std::wstring error_message = utf8_to_wide(chat_log_error_buf.get());
-		if (!g_settings->getBool("disable_escape_sequences")) {
-			error_message.insert(0, L"\x1b(c@red)");
-			error_message.append(L"\x1b(c@white)");
-		}
+		error_message = L"\x1b(c@red)" + error_message + L"\x1b(c@white)";
 		chat_backend->addMessage(L"", error_message);
 	}
 
@@ -2870,17 +2867,17 @@ void Game::updateSound(f32 dtime)
 			      camera->getDirection(),
 			      camera->getCameraNode()->getUpVector());
 
-	bool mute_sound = g_settings->getBool("mute_sound");
+	bool mute_sound = g_main_settings->getBool("mute_sound");
 	if (mute_sound) {
 		sound->setListenerGain(0.0f);
 	} else {
 		// Check if volume is in the proper range, else fix it.
-		float old_volume = g_settings->getFloat("sound_volume");
+		float old_volume = g_main_settings->getFloat("sound_volume");
 		float new_volume = rangelim(old_volume, 0.0f, 1.0f);
 		sound->setListenerGain(new_volume);
 
 		if (old_volume != new_volume) {
-			g_settings->setFloat("sound_volume", new_volume);
+			g_main_settings->setFloat("sound_volume", new_volume);
 		}
 	}
 
@@ -2947,7 +2944,7 @@ void Game::processPlayerInteraction(f32 dtime, bool show_hud, bool show_debug)
 
 #ifdef HAVE_TOUCHSCREENGUI
 
-	if ((g_settings->getBool("touchtarget")) && (g_touchscreengui)) {
+	if ((g_main_settings->getBool("touchtarget")) && (g_touchscreengui)) {
 		shootline = g_touchscreengui->getShootline();
 		// Scale shootline to the acual distance the player can reach
 		shootline.end = shootline.start
@@ -3018,7 +3015,7 @@ void Game::processPlayerInteraction(f32 dtime, bool show_hud, bool show_debug)
 	soundmaker->m_player_leftpunch_sound.name = "";
 
 	// Prepare for repeating, unless we're not supposed to
-	if (input->getRightState() && !g_settings->getBool("safe_dig_and_place"))
+	if (input->getRightState() && !g_main_settings->getBool("safe_dig_and_place"))
 		runData.repeat_rightclick_timer += dtime;
 	else
 		runData.repeat_rightclick_timer = 0;
@@ -3071,7 +3068,7 @@ PointedThing Game::updatePointedThing(
 	std::vector<aabb3f> *selectionboxes = hud->getSelectionBoxes();
 	selectionboxes->clear();
 	hud->setSelectedFaceNormal(v3f(0.0, 0.0, 0.0));
-	static thread_local const bool show_entity_selectionbox = g_settings->getBool(
+	static thread_local const bool show_entity_selectionbox = g_main_settings->getBool(
 		"show_entity_selectionbox");
 
 	ClientEnvironment &env = client->getEnv();
@@ -3815,7 +3812,7 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 			(camera->getCameraMode() != CAMERA_MODE_THIRD_FRONT));
 #ifdef HAVE_TOUCHSCREENGUI
 	try {
-		draw_crosshair = !g_settings->getBool("touchtarget");
+		draw_crosshair = !g_main_settings->getBool("touchtarget");
 	} catch (SettingNotFoundException) {
 	}
 #endif
@@ -3896,8 +3893,8 @@ inline void Game::limitFps(FpsControl *fps_timings, f32 *dtime)
 		fps_timings->busy_time = 0;
 
 	u32 frametime_min = 1000 / (g_menumgr.pausesGame()
-			? g_settings->getFloat("pause_fps_max")
-			: g_settings->getFloat("fps_max"));
+			? g_main_settings->getFloat("pause_fps_max")
+			: g_main_settings->getFloat("fps_max"));
 
 	if (fps_timings->busy_time < frametime_min) {
 		fps_timings->sleep_time = frametime_min - fps_timings->busy_time;
@@ -3938,31 +3935,31 @@ void Game::settingChangedCallback(const std::string &setting_name, void *data)
 
 void Game::readSettings()
 {
-	m_cache_doubletap_jump               = g_settings->getBool("doubletap_jump");
-	m_cache_enable_clouds                = g_settings->getBool("enable_clouds");
-	m_cache_enable_joysticks             = g_settings->getBool("enable_joysticks");
-	m_cache_enable_particles             = g_settings->getBool("enable_particles");
-	m_cache_enable_fog                   = g_settings->getBool("enable_fog");
-	m_cache_mouse_sensitivity            = g_settings->getFloat("mouse_sensitivity");
-	m_cache_joystick_frustum_sensitivity = g_settings->getFloat("joystick_frustum_sensitivity");
-	m_repeat_right_click_time            = g_settings->getFloat("repeat_rightclick_time");
+	m_cache_doubletap_jump               = g_main_settings->getBool("doubletap_jump");
+	m_cache_enable_clouds                = g_main_settings->getBool("enable_clouds");
+	m_cache_enable_joysticks             = g_main_settings->getBool("enable_joysticks");
+	m_cache_enable_particles             = g_main_settings->getBool("enable_particles");
+	m_cache_enable_fog                   = g_main_settings->getBool("enable_fog");
+	m_cache_mouse_sensitivity            = g_main_settings->getFloat("mouse_sensitivity");
+	m_cache_joystick_frustum_sensitivity = g_main_settings->getFloat("joystick_frustum_sensitivity");
+	m_repeat_right_click_time            = g_main_settings->getFloat("repeat_rightclick_time");
 
 	m_cache_enable_noclip                = g_settings->getBool("noclip");
 	m_cache_enable_free_move             = g_settings->getBool("free_move");
 
-	m_cache_fog_start                    = g_settings->getFloat("fog_start");
+	m_cache_fog_start                    = g_main_settings->getFloat("fog_start");
 
 	m_cache_cam_smoothing = 0;
-	if (g_settings->getBool("cinematic"))
-		m_cache_cam_smoothing = 1 - g_settings->getFloat("cinematic_camera_smoothing");
+	if (g_main_settings->getBool("cinematic"))
+		m_cache_cam_smoothing = 1 - g_main_settings->getFloat("cinematic_camera_smoothing");
 	else
-		m_cache_cam_smoothing = 1 - g_settings->getFloat("camera_smoothing");
+		m_cache_cam_smoothing = 1 - g_main_settings->getFloat("camera_smoothing");
 
 	m_cache_fog_start = rangelim(m_cache_fog_start, 0.0f, 0.99f);
 	m_cache_cam_smoothing = rangelim(m_cache_cam_smoothing, 0.01f, 1.0f);
 	m_cache_mouse_sensitivity = rangelim(m_cache_mouse_sensitivity, 0.001, 100.0);
 
-	m_does_lost_focus_pause_game = g_settings->getBool("pause_on_lost_focus");
+	m_does_lost_focus_pause_game = g_main_settings->getBool("pause_on_lost_focus");
 }
 
 /****************************************************************************/

@@ -812,11 +812,18 @@ static bool run_dedicated_server(const GameParams &game_params, const Settings &
 	verbosestream << _("Using gameid") << " ["
 	              << game_params.game_spec.id << "]" << std::endl;
 
+	Settings server_settings;
+
+	set_default_settings(&server_settings);
+	override_default_settings(&server_settings, g_main_settings);
+	std::string conf_path = game_params.world_path + DIR_DELIM + "world.mt";
+	server_settings.readConfigFile(conf_path.c_str());
+
 	// Bind address
-	std::string bind_str = g_settings->get("bind_address");
+	std::string bind_str = server_settings.get("bind_address");
 	Address bind_addr(0, 0, 0, 0, game_params.socket_port);
 
-	if (g_settings->getBool("ipv6_server")) {
+	if (server_settings.getBool("ipv6_server")) {
 		bind_addr.setAddress((IPv6AddressBytes*) NULL);
 	}
 	try {
@@ -826,7 +833,7 @@ static bool run_dedicated_server(const GameParams &game_params, const Settings &
 		           << "\" failed: " << e.what()
 		           << " -- Listening on all addresses." << std::endl;
 	}
-	if (bind_addr.isIPv6() && !g_settings->getBool("enable_ipv6")) {
+	if (bind_addr.isIPv6() && !server_settings.getBool("enable_ipv6")) {
 		errorstream << "Unable to listen on "
 		            << bind_addr.serializeString()
 		            << L" because IPv6 is disabled" << std::endl;
@@ -843,7 +850,7 @@ static bool run_dedicated_server(const GameParams &game_params, const Settings &
 	if (cmd_args.exists("terminal")) {
 #if USE_CURSES
 		bool name_ok = true;
-		std::string admin_nick = g_settings->get("name");
+		std::string admin_nick = server_settings.get("name");
 
 		name_ok = name_ok && !admin_nick.empty();
 		name_ok = name_ok && string_allowed(admin_nick, PLAYERNAME_ALLOWED_CHARS);
@@ -926,13 +933,16 @@ static bool run_dedicated_server(const GameParams &game_params, const Settings &
 
 static bool migrate_map_database(const GameParams &game_params, const Settings &cmd_args)
 {
-	std::string migrate_to = cmd_args.get("migrate");
 	Settings world_mt;
+	set_default_settings(&world_mt);
+	override_default_settings(&world_mt, g_main_settings);
 	std::string world_mt_path = game_params.world_path + DIR_DELIM + "world.mt";
+
 	if (!world_mt.readConfigFile(world_mt_path.c_str())) {
 		errorstream << "Cannot read world.mt!" << std::endl;
 		return false;
 	}
+	g_settings = &world_mt;
 
 	if (!world_mt.exists("backend")) {
 		errorstream << "Please specify your current backend in world.mt:"
@@ -942,6 +952,7 @@ static bool migrate_map_database(const GameParams &game_params, const Settings &
 		return false;
 	}
 
+	std::string migrate_to = cmd_args.get("migrate");
 	std::string backend = world_mt.get("backend");
 	if (backend == migrate_to) {
 		errorstream << "Cannot migrate: new backend is same"
@@ -949,8 +960,8 @@ static bool migrate_map_database(const GameParams &game_params, const Settings &
 		return false;
 	}
 
-	MapDatabase *old_db = ServerMap::createDatabase(backend, game_params.world_path, world_mt),
-		*new_db = ServerMap::createDatabase(migrate_to, game_params.world_path, world_mt);
+	MapDatabase *old_db = ServerMap::createDatabase(backend, game_params.world_path),
+		*new_db = ServerMap::createDatabase(migrate_to, game_params.world_path);
 
 	u32 count = 0;
 	time_t last_update_time = 0;

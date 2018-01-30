@@ -342,6 +342,8 @@ public:
 	bool sendModChannelMessage(const std::string &channel, const std::string &message);
 	ModChannel *getModChannel(const std::string &channel);
 
+	const std::string &getSettingsPath() const { return m_settings_path; }
+
 	// Bind address
 	Address m_bind_addr;
 
@@ -508,6 +510,9 @@ private:
 
 	// World directory
 	std::string m_path_world;
+	// config file
+	std::string m_settings_path;
+	Settings *m_conf;
 	// Subgame specification
 	SubgameSpec m_gamespec;
 	// If true, do not allow multiple players and hide some multiplayer

@@ -478,12 +478,21 @@ bool ScriptApiSecurity::checkPath(lua_State *L, const char *path,
 
 	std::string str;  // Transient
 
+	lua_rawgeti(L, LUA_REGISTRYINDEX, CUSTOM_RIDX_SCRIPTAPI);
+	ScriptApiBase *script = (ScriptApiBase *) lua_touserdata(L, -1);
+	lua_pop(L, 1);
+
 	std::string abs_path = fs::AbsolutePath(path);
 
 	if (!abs_path.empty()) {
-		// Don't allow accessing the settings file
-		str = fs::AbsolutePath(g_settings_path);
-		if (str == abs_path) return false;
+		// Don't allow accessing the setting files
+		std::unordered_set<std::string> blocked_paths =
+			{ g_settings_path, script->getServer()->getSettingsPath() };
+
+		for (const std::string &path : blocked_paths) {
+			str = fs::AbsolutePath(path);
+			if (str == abs_path) return false;
+		}
 	}
 
 	// If we couldn't find the absolute path (path doesn't exist) then
@@ -514,9 +523,6 @@ bool ScriptApiSecurity::checkPath(lua_State *L, const char *path,
 		abs_path += DIR_DELIM + removed;
 
 	// Get server from registry
-	lua_rawgeti(L, LUA_REGISTRYINDEX, CUSTOM_RIDX_SCRIPTAPI);
-	ScriptApiBase *script = (ScriptApiBase *) lua_touserdata(L, -1);
-	lua_pop(L, 1);
 	const IGameDef *gamedef = script->getGameDef();
 	if (!gamedef)
 		return false;

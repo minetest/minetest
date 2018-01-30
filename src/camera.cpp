@@ -546,8 +546,8 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 busytime, f32 tool_r
 
 void Camera::updateViewingRange()
 {
-	f32 viewing_range = g_settings->getFloat("viewing_range");
-	f32 near_plane = g_settings->getFloat("near_plane");
+	f32 viewing_range = g_main_settings->getFloat("viewing_range");
+	f32 near_plane = g_main_settings->getFloat("near_plane");
 
 	m_draw_control.wanted_range = std::fmin(adjustDist(viewing_range, getFovMax()), 4000);
 	m_cameranode->setNearValue(rangelim(near_plane, 0.0f, 0.5f) * BS);

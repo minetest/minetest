@@ -480,10 +480,13 @@ local search_string = ""
 local settings = full_settings
 local selected_setting = 1
 
-local function get_current_value(setting)
-	local value = core.settings:get(setting.name)
+local function get_current_value(conf, setting)
+	local value = conf:get(setting.name)
 	if value == nil then
-		value = setting.default
+		value = core.settings:get(setting.name)
+		if value == nil then
+			value = setting.default
+		end
 	end
 	return value
 end
@@ -530,7 +533,8 @@ end
 
 local checkboxes = {} -- handle checkboxes events
 
-local function create_change_setting_formspec(dialogdata)
+local function create_change_setting_formspec(dialogdata, name, this)
+	local conf = this.parent.data.settings
 	local setting = settings[selected_setting]
 	local height = 5.2
 	if setting.type == "noise_params_2d" or setting.type == "noise_params_3d" then
@@ -573,7 +577,7 @@ local function create_change_setting_formspec(dialogdata)
 
 	if setting.type == "bool" then
 		local selected_index
-		if core.is_yes(get_current_value(setting)) then
+		if core.is_yes(get_current_value(conf, setting)) then
 			selected_index = 2
 		else
 			selected_index = 1
@@ -589,7 +593,7 @@ local function create_change_setting_formspec(dialogdata)
 			-- translating value is not possible, since it's the value
 			--  that we set the setting to
 			formspec = formspec ..  core.formspec_escape(value) .. ","
-			if get_current_value(setting) == value then
+			if get_current_value(conf, setting) == value then
 				selected_index = index
 			end
 		end
@@ -601,7 +605,7 @@ local function create_change_setting_formspec(dialogdata)
 	elseif setting.type == "path" or setting.type == "filepath" then
 		local current_value = dialogdata.selected_path
 		if not current_value then
-			current_value = get_current_value(setting)
+			current_value = get_current_value(conf, setting)
 		end
 		formspec = formspec .. "field[0.5,4;7.5,1;te_setting_value;;"
 				.. core.formspec_escape(current_value) .. "]"
@@ -693,7 +697,7 @@ local function create_change_setting_formspec(dialogdata)
 	else
 		-- TODO: fancy input for float, int
 		local width = 10
-		local text = get_current_value(setting)
+		local text = get_current_value(conf, setting)
 		if dialogdata.error_message then
 			formspec = formspec .. "tablecolumns[color;text]" ..
 			"tableoptions[background=#00000000;highlight=#00000000;border=false]" ..
@@ -712,15 +716,16 @@ end
 
 local function handle_change_setting_buttons(this, fields)
 	local setting = settings[selected_setting]
+	local conf = this.parent.data.settings
 	if fields["btn_done"] or fields["key_enter"] then
 		if setting.type == "bool" then
 			local new_value = fields["dd_setting_value"]
 			-- Note: new_value is the actual (translated) value shown in the dropdown
-			core.settings:set_bool(setting.name, new_value == fgettext("Enabled"))
+			conf:set_bool(setting.name, new_value == fgettext("Enabled"))
 
 		elseif setting.type == "enum" then
 			local new_value = fields["dd_setting_value"]
-			core.settings:set(setting.name, new_value)
+			conf:set(setting.name, new_value)
 
 		elseif setting.type == "int" then
 			local new_value = tonumber(fields["te_setting_value"])
@@ -742,7 +747,7 @@ local function handle_change_setting_buttons(this, fields)
 				core.update_formspec(this:get_formspec())
 				return true
 			end
-			core.settings:set(setting.name, new_value)
+			conf:set(setting.name, new_value)
 
 		elseif setting.type == "float" then
 			local new_value = tonumber(fields["te_setting_value"])
@@ -764,7 +769,7 @@ local function handle_change_setting_buttons(this, fields)
 				core.update_formspec(this:get_formspec())
 				return true
 			end
-			core.settings:set(setting.name, new_value)
+			conf:set(setting.name, new_value)
 
 		elseif setting.type == "flags" then
 			local values = {}
@@ -777,7 +782,7 @@ local function handle_change_setting_buttons(this, fields)
 			checkboxes = {}
 
 			local new_value = table.concat(values, ", ")
-			core.settings:set(setting.name, new_value)
+			conf:set(setting.name, new_value)
 
 		elseif setting.type == "noise_params_2d" or setting.type == "noise_params_3d" then
 			local np_flags = {}
@@ -803,20 +808,20 @@ local function handle_change_setting_buttons(this, fields)
 				lacunarity = fields["te_lacun"],
 				flags = table.concat(np_flags, ", ")
 			}
-			core.settings:set_np_group(setting.name, new_value)
+			conf:set_np_group(setting.name, new_value)
 
 		elseif setting.type == "v3f" then
 			local new_value = "("
 					.. fields["te_x"] .. ", "
 					.. fields["te_y"] .. ", "
 					.. fields["te_z"] .. ")"
-			core.settings:set(setting.name, new_value)
+			conf:set(setting.name, new_value)
 
 		else
 			local new_value = fields["te_setting_value"]
-			core.settings:set(setting.name, new_value)
+			conf:set(setting.name, new_value)
 		end
-		core.settings:write()
+		conf:write()
 		this:delete()
 		return true
 	end
@@ -854,7 +859,28 @@ local function handle_change_setting_buttons(this, fields)
 	return false
 end
 
-local function create_settings_formspec(tabview, name, tabdata)
+local function filter_world_settings()
+	local current_level = 0
+	local settings = {}
+	local ignore_top_level_category = false
+	local world_settings_categories = {"Server / Singleplayer", "Client and Server", "Mapgen", "Games", "Mods"}
+	for _, entry in ipairs(full_settings) do
+		if entry.type == "category" and entry.level == 0 then
+			ignore_top_level_category = true
+			for _, allowed_catergory in ipairs(world_settings_categories) do
+				if entry.name == allowed_catergory then
+					ignore_top_level_category = false
+				end
+			end
+		end
+		if not ignore_top_level_category then
+			settings[#settings + 1] = entry
+		end
+	end
+	return settings
+end
+
+local function create_settings_formspec(tabdata)
 	local formspec = "size[12,6.5;true]" ..
 			"tablecolumns[color;tree;text,width=32;text]" ..
 			"tableoptions[background=#00000000;border=false]" ..
@@ -877,14 +903,14 @@ local function create_settings_formspec(tabview, name, tabdata)
 			formspec = formspec .. "#FFFF00," .. current_level .. "," .. fgettext(name) .. ",,"
 
 		elseif entry.type == "bool" then
-			local value = get_current_value(entry)
+			local value = get_current_value(tabdata.settings, entry)
 			if core.is_yes(value) then
 				value = fgettext("Enabled")
 			else
 				value = fgettext("Disabled")
 			end
 			formspec = formspec .. "," .. (current_level + 1) .. "," .. core.formspec_escape(name) .. ","
-					.. value .. ","
+				.. value .. ","
 
 		elseif entry.type == "key" then
 			-- ignore key settings, since we have a special dialog for them
@@ -895,7 +921,7 @@ local function create_settings_formspec(tabview, name, tabdata)
 
 		else
 			formspec = formspec .. "," .. (current_level + 1) .. "," .. core.formspec_escape(name) .. ","
-					.. core.formspec_escape(get_current_value(entry)) .. ","
+				.. core.formspec_escape(get_current_value(tabdata.settings, entry)) .. ","
 		end
 	end
 
@@ -913,6 +939,7 @@ local function create_settings_formspec(tabview, name, tabdata)
 end
 
 local function handle_settings_buttons(this, fields, tabname, tabdata)
+	local conf = this.data.settings
 	local list_enter = false
 	if fields["list_settings"] then
 		selected_setting = core.get_table_index("list_settings")
@@ -920,9 +947,9 @@ local function handle_settings_buttons(this, fields, tabname, tabdata)
 			-- Directly toggle booleans
 			local setting = settings[selected_setting]
 			if setting and setting.type == "bool" then
-				local current_value = get_current_value(setting)
-				core.settings:set_bool(setting.name, not core.is_yes(current_value))
-				core.settings:write()
+				local current_value = get_current_value(conf, setting)
+				conf:set_bool(setting.name, not core.is_yes(current_value))
+				conf:write()
 				return true
 			else
 				list_enter = true
@@ -956,7 +983,11 @@ local function handle_settings_buttons(this, fields, tabname, tabdata)
 		else
 			-- Search for setting
 			search_string = fields.search_string
-			settings, selected_setting = filter_settings(full_settings, search_string)
+			local server_settings = full_settings
+			if this.name == "settings_world" then
+				server_settings = filter_world_settings()
+			end
+			settings, selected_setting = filter_settings(server_settings, search_string)
 			core.update_formspec(this:get_formspec())
 		end
 		return true
@@ -979,11 +1010,11 @@ local function handle_settings_buttons(this, fields, tabname, tabdata)
 		if setting and setting.type ~= "category" then
 			if setting.type == "noise_params_2d"
 					or setting.type == "noise_params_3d" then
-				core.settings:set_np_group(setting.name, setting.default_table)
+			conf:set(setting.name, setting.default)
 			else
-				core.settings:set(setting.name, setting.default)
+				conf:set(setting.name, setting.default)
 			end
-			core.settings:write()
+			conf:write()
 			core.update_formspec(this:get_formspec())
 		end
 		return true
@@ -1005,12 +1036,24 @@ local function handle_settings_buttons(this, fields, tabname, tabdata)
 end
 
 function create_adv_settings_dlg()
+	settings, selected_setting = filter_settings(full_settings, search_string)
 	local dlg = dialog_create("settings_advanced",
-				create_settings_formspec,
-				handle_settings_buttons,
-				nil)
+		create_settings_formspec,
+		handle_settings_buttons,
+		nil)
+	dlg.data.settings = core.settings
+	return dlg
+end
 
-				return dlg
+function create_world_settings_dlg()
+	local dlg = dialog_create("settings_world",
+		create_settings_formspec,
+		handle_settings_buttons,
+		nil)
+
+	local server_settings = filter_world_settings()
+	settings, selected_setting = filter_settings(server_settings, search_string)
+	return dlg
 end
 
 -- Uncomment to generate minetest.conf.example and settings_translation_file.cpp

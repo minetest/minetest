@@ -35,6 +35,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 static Settings main_settings;
 Settings *g_settings = &main_settings;
+Settings * const g_main_settings = &main_settings;
 std::string g_settings_path;
 
 Settings::~Settings()
@@ -563,6 +564,13 @@ bool Settings::exists(const std::string &name) const
 
 	return (m_settings.find(name) != m_settings.end() ||
 		m_defaults.find(name) != m_defaults.end());
+}
+
+bool Settings::existsNoDefault(const std::string &name) const
+{
+	MutexAutoLock lock(m_mutex);
+
+	return m_settings.find(name) != m_settings.end();
 }
 
 

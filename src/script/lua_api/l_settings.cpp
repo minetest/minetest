@@ -26,7 +26,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 
 #define SET_SECURITY_CHECK(L, name) \
-	if (o->m_settings == g_settings && ScriptApiSecurity::isSecure(L) && \
+	if ((o->m_settings == g_settings || o->m_settings == g_main_settings) && \
+			ScriptApiSecurity::isSecure(L) && \
 			name.compare(0, 7, "secure.") == 0) { \
 		throw LuaError("Attempt to set secure setting."); \
 	}
