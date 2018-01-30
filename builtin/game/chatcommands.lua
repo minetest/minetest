@@ -82,7 +82,7 @@ core.register_chatcommand("me", {
 core.register_chatcommand("admin", {
 	description = "Show the name of the server owner",
 	func = function(name)
-		local admin = minetest.settings:get("name")
+		local admin = core.settings:get("name")
 		if admin then
 			return true, "The administrator of this server is "..admin.."."
 		else
@@ -104,7 +104,7 @@ core.register_chatcommand("privs", {
 })
 
 local function handle_grant_command(caller, grantname, grantprivstr)
-	local caller_privs = minetest.get_player_privs(caller)
+	local caller_privs = core.get_player_privs(caller)
 	if not (caller_privs.privs or caller_privs.basic_privs) then
 		return false, "Your privileges are insufficient."
 	end
@@ -629,7 +629,7 @@ core.register_chatcommand("spawnentity", {
 			core.log("error", "Unable to spawn entity, player is nil")
 			return false, "Unable to spawn entity, player is nil"
 		end
-		if not minetest.registered_entities[entityname] then
+		if not core.registered_entities[entityname] then
 			return false, "Cannot spawn an unknown entity"
 		end
 		if p == "" then
@@ -987,10 +987,10 @@ core.register_chatcommand("clearinv", {
 })
 
 local function handle_kill_command(murderer, victim)
-	if minetest.settings:get_bool("damage_enabled") == false then
+	if core.settings:get_bool("enable_damage") == false then
 		return false, "Players can't be killed right now, damage has been disabled."
 	end
-	local victimref = minetest.get_player_by_name(victim)
+	local victimref = core.get_player_by_name(victim)
 	if victimref == nil then
 		return false, string.format("Player %s does not exist.", victim)
 	elseif victimref:get_hp() <= 0 then
@@ -1001,14 +1001,14 @@ local function handle_kill_command(murderer, victim)
 		end
 	end
 	if not murderer == victim then
-		minetest.log("action", string.format("%s killed %s", murderer, victim))
+		core.log("action", string.format("%s killed %s", murderer, victim))
 	end
 	-- Kill victim
 	victimref:set_hp(0)
 	return true
 end
 
-minetest.register_chatcommand("kill", {
+core.register_chatcommand("kill", {
 	params = "[<name>]",
 	description = "Kill player or yourself",
 	privs = {player=true},
