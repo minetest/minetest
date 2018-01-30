@@ -102,6 +102,19 @@ minetest.register_node("nodes:signlike", {
 	wield_image = "sign.png^(sign_frame.png^[colorize:#000000)",
 })
 
+minetest.register_node("nodes:signlike_fancy", {
+	description = "Fancy Signlike",
+	drawtype = "signlike",
+	paramtype = "light",
+	paramtype2 = "colorwallmounted",
+	tiles = {{name="sign_base.png"}},
+	overlay_tiles = {{name="sign_area.png", color="#FFDD99"}},
+	palette = "vgaplus.png",
+	groups = {attached_node=1, dig_immediate=3},
+	inventory_image = "sign_base^[colorize:#000000^sign_area.png",
+	wield_image = "sign_base^[colorize:#000000^sign_area.png",
+})
+
 --[[
 - `plantlike`
 - `firelike`
