@@ -1,10 +1,14 @@
 local cube_tiles = {
-	{name="white_transparent.png^[colorize:#FF0000^arrow2.png"},
-	{name="white_transparent.png^[colorize:#FFFF00^arrow2.png"},
-	{name="white_transparent.png^[colorize:#00FF00^arrow2.png"},
-	{name="white_transparent.png^[colorize:#00FFFF^arrow2.png"},
-	{name="white_transparent.png^[colorize:#0000FF^arrow2.png"},
-	{name="white_transparent.png^[colorize:#FF00FF^arrow2.png"},
+	{name="white_transparent.png^arrow2.png", color="#FF0000"},
+	{name="white_transparent.png^arrow2.png", color="#FFFF00"},
+	{name="white_transparent.png^arrow2.png", color="#00FF00"},
+	{name="white_transparent.png^arrow2.png", color="#00FFFF"},
+	{name="white_transparent.png^arrow2.png", color="#0000FF"},
+	{name="white_transparent.png^arrow2.png", color="#FF00FF"},
+}
+
+local cube_overlays = {
+	{name="arrow.png", color="#FFFFFF"},
 }
 
 minetest.register_node("nodes:solid", {
@@ -12,6 +16,7 @@ minetest.register_node("nodes:solid", {
 	drawtype = "normal",
 	paramtype2 = "facedir",
 	tiles = cube_tiles,
+	overlay_tiles = cube_overlays,
 	groups = {cracky=3},
 })
 
@@ -21,6 +26,7 @@ minetest.register_node("nodes:glasslike", {
 	paramtype = "light",
 	paramtype2 = "facedir",
 	tiles = cube_tiles,
+	overlay_tiles = cube_overlays,
 	groups = {cracky=3, oddly_breakable_by_hand=1},
 })
 
@@ -30,6 +36,7 @@ minetest.register_node("nodes:glasslike_framed", {
 	paramtype = "light",
 	paramtype2 = "facedir",
 	tiles = cube_tiles,
+	overlay_tiles = cube_overlays,
 	groups = {cracky=3, oddly_breakable_by_hand=1},
 })
 
@@ -39,6 +46,7 @@ minetest.register_node("nodes:allfaces", {
 	paramtype = "light",
 	paramtype2 = "facedir",
 	tiles = cube_tiles,
+	overlay_tiles = cube_overlays,
 	groups = {cracky=3, snappy=3},
 })
 
