@@ -50,20 +50,30 @@ minetest.register_node("nodes:allfaces", {
 	groups = {cracky=3, snappy=3},
 })
 
+local torch_tiles = {
+	{name="torch_floor.png", color="#FFFFFF"},
+	{name="torch_ceil.png", color="#FFFFFF"},
+	{name="torch_wall.png", color="#FFFFFF"},
+}
+
+local torch_overlays = {
+	{name="torch_floor_flame.png"},
+	{name="torch_ceil_flame.png"},
+	{name="torch_wall_flame.png"},
+}
+
 minetest.register_node("nodes:torch", {
 	description = "Torch",
 	drawtype = "torchlike",
 	paramtype = "light",
 	paramtype2 = "wallmounted",
 	light_source = 10,
-	tiles = {
-		{name="torch_floor.png"},
-		{name="torch_ceil.png"},
-		{name="torch_wall.png"},
-	},
+	tiles = torch_tiles,
+	overlay_tiles = torch_overlays,
+	color = "#FFFF99",
 	groups = {attached_node=1, dig_immediate=3},
-	inventory_image = "torch_floor.png",
-	wield_image = "torch_floor.png",
+	inventory_image = "torch_floor.png^torch_floor_flame.png",
+	wield_image = "torch_floor.png^torch_floor_flame.png",
 })
 
 minetest.register_node("nodes:torch_off", {
@@ -71,14 +81,12 @@ minetest.register_node("nodes:torch_off", {
 	drawtype = "torchlike",
 	paramtype = "light",
 	paramtype2 = "wallmounted",
-	tiles = {
-		{name="torch_floor_off.png"},
-		{name="torch_ceil_off.png"},
-		{name="torch_wall_off.png"},
-	},
+	tiles = torch_tiles,
+	overlay_tiles = torch_overlays,
+	color = "#000000",
 	groups = {attached_node=1, dig_immediate=3},
-	inventory_image = "torch_floor_off.png",
-	wield_image = "torch_floor_off.png",
+	inventory_image = "torch_floor.png^(torch_floor_flame.png^[colorize:#000000)",
+	wield_image = "torch_floor.png^(torch_floor_flame.png^[colorize:#000000)",
 })
 
 --[[
