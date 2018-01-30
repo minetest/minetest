@@ -616,7 +616,7 @@ core.register_chatcommand("giveme", {
 core.register_chatcommand("spawnentity", {
 	params = "<EntityName> [<X>,<Y>,<Z>]",
 	description = "Spawn entity at given (or your) position",
-	privs = {give=true, interact=true},
+	privs = {world=true},
 	func = function(name, param)
 		local entityname, p = string.match(param, "^([^ ]+) *(.*)$")
 		if not entityname then

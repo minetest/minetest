@@ -93,6 +93,10 @@ core.register_privilege("rollback", {
 	description = "Can use the rollback functionality",
 	give_to_singleplayer = false,
 })
+core.register_privilege("world", {
+	description = "Can make advanced changes to the world",
+	give_to_singleplayer = false,
+})
 core.register_privilege("debug", {
 	description = "Allows enabling various debug options that may affect gameplay",
 	give_to_singleplayer = false,
