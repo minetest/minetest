@@ -389,11 +389,11 @@ void MapblockMeshGenerator::prepareLiquidNodeDrawing()
 	c_flowing = nodedef->getId(f->liquid_alternative_flowing);
 	c_source = nodedef->getId(f->liquid_alternative_source);
 	top_is_same_liquid = (ntop.getContent() == c_flowing) || (ntop.getContent() == c_source);
-	draw_bottom = (nbottom.getContent() != c_flowing) && (nbottom.getContent() != c_source);
-	if (draw_bottom && (nbottom.getContent() != CONTENT_AIR)) {
+	draw_liquid_bottom = (nbottom.getContent() != c_flowing) && (nbottom.getContent() != c_source);
+	if (draw_liquid_bottom) {
 		const ContentFeatures &f2 = nodedef->get(nbottom.getContent());
 		if (f2.solidness > 1)
-			draw_bottom = false;
+			draw_liquid_bottom = false;
 	}
 
 	if (data->m_smooth_lighting)
@@ -605,9 +605,9 @@ void MapblockMeshGenerator::drawLiquidTop()
 void MapblockMeshGenerator::drawLiquidBottom()
 {
 	video::S3DVertex vertices[4] = {
-		video::S3DVertex(-BS / 2,  -BS / 2, -BS / 2, 0, 0, 0, color_liquid_top, 0, 0),
-		video::S3DVertex( BS / 2,  -BS / 2, -BS / 2, 0, 0, 0, color_liquid_top, 1, 0),
-		video::S3DVertex( BS / 2,  -BS / 2,  BS / 2, 0, 0, 0, color_liquid_top, 1, 1),
+		video::S3DVertex(-BS / 2, -BS / 2, -BS / 2, 0, 0, 0, color_liquid_top, 0, 0),
+		video::S3DVertex( BS / 2, -BS / 2, -BS / 2, 0, 0, 0, color_liquid_top, 1, 0),
+		video::S3DVertex( BS / 2, -BS / 2,  BS / 2, 0, 0, 0, color_liquid_top, 1, 1),
 		video::S3DVertex(-BS / 2, -BS / 2,  BS / 2, 0, 0, 0, color_liquid_top, 0, 1),
 	};
 
@@ -628,7 +628,7 @@ void MapblockMeshGenerator::drawLiquidNode()
 	drawLiquidSides();
 	if (!top_is_same_liquid)
 		drawLiquidTop();
-	if (draw_bottom)
+	if (draw_liquid_bottom)
 		drawLiquidBottom();
 }
 
