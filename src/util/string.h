@@ -383,6 +383,29 @@ inline float mystof(const std::string &str)
 	return atof(str.c_str());
 }
 
+/**
+ * Converts the string \p str to a float. The converted value
+ * is constrained so that min <= value <= max.
+ *
+ * @see atof(3) for limitations
+ *
+ * @param str
+ * @param min Range minimum
+ * @param max Range maximum
+ * @return The value converted to a float and constrained
+ *	within the range defined by min and max (inclusive)
+ */
+inline float mystof(const std::string &str, float min, float max)
+{
+	float f = atof(str.c_str());
+
+	if (f < min)
+		f = min;
+	if (f > max)
+		f = max;
+
+	return f;
+}
 //#endif
 
 #define stoi mystoi

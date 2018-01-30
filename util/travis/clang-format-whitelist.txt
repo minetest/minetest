@@ -323,6 +323,9 @@ src/serverobject.cpp
 src/serverobject.h
 src/settings.cpp
 src/settings.h
+src/settings_builtin.cpp
+src/settings_builtin.h
+src/settings_static.h
 src/settings_translation_file.cpp
 src/shader.cpp
 src/shader.h
