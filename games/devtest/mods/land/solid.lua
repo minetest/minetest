@@ -24,7 +24,6 @@ minetest.register_node("land:sand", {
 
 minetest.register_node("land:grass", {
 	description = "Dirt with grass",
-	use_texture_alpha = true,
 	tiles = {
 		{name="grass.png", align_style="world"},
 		{name="dirt.png", align_style="world"},
