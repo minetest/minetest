@@ -1915,7 +1915,7 @@ void Game::processKeyInput()
 		toggleMinimap(isKeyDown(KeyType::SNEAK));
 	} else if (wasKeyDown(KeyType::TOGGLE_CHAT)) {
 		m_game_ui->toggleChat();
-	} else if (wasKeyDown(KeyType::TOGGLE_FOG_ENABLED)) {
+	} else if (wasKeyDown(KeyType::TOGGLE_FOG)) {
 		toggleFog();
 	} else if (wasKeyDown(KeyType::TOGGLE_UPDATE_CAMERA)) {
 		toggleUpdateCamera();
@@ -2205,7 +2205,7 @@ void Game::toggleMinimap(bool shift_pressed)
 void Game::toggleFog()
 {
 	bool fog_enabled = g_settings->getBool("enable_fog");
-	g_settings->setBool("enable_fog",!fog_enabled);
+	g_settings->setBool("enable_fog", !fog_enabled);
 	if (fog_enabled)
 		m_game_ui->showTranslatedStatusText("Fog disabled");
 	else
