@@ -988,11 +988,11 @@ core.register_chatcommand("clearinv", {
 
 local function handle_kill_command(murderer, victim)
 	if core.settings:get_bool("enable_damage") == false then
-		return false, "Players can't be killed right now, damage has been disabled."
+		return false, "Players can't be killed, damage has been disabled."
 	end
 	local victimref = core.get_player_by_name(victim)
 	if victimref == nil then
-		return false, string.format("Player %s does not exist.", victim)
+		return false, string.format("Player %s is not online.", victim)
 	elseif victimref:get_hp() <= 0 then
 		if murderer == victim then
 			return false, "You are already dead"
@@ -1013,12 +1013,6 @@ core.register_chatcommand("kill", {
 	description = "Kill player or yourself",
 	privs = {server=true},
 	func = function(name, param)
-		if(param == "") then
-			-- Selfkill
-			return handle_kill_command(name, name)
-		else
-			-- Kill other player
-			return handle_kill_command(name, param)
-		end
+		return handle_kill_command(name, param == "" and name or param)
 	end,
 })
