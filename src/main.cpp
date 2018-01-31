@@ -160,21 +160,15 @@ int main(int argc, char *argv[])
 		return 0;
 	}
 
-	// List worlds if requested
-	if (cmd_args.exists("world") && cmd_args.get("world") == "list") {
-		list_worlds(true, true);
-		return 0;
-	}
-
-	// List worldpaths if requested
-	if (cmd_args.exists("worldpath") && cmd_args.get("worldpath") == "list") {
-		list_worlds(false, true);
-		return 0;
-	}
-
-	// List worldnames if requested
-	if (cmd_args.exists("worldname") && cmd_args.get("worldname") == "list") {
-		list_worlds(true, false);
+	// List worlds, world names, and world paths if requested
+	if (cmd_args.exists("worldlist")) {
+		if (cmd_args.get("worldlist") == "name") {
+			list_worlds(true, false);
+		} else if (cmd_args.get("worldlist") == "path") {
+			list_worlds(false, true);
+		} else {
+			list_worlds(true, true);
+		}
 		return 0;
 	}
 
@@ -264,11 +258,11 @@ static void set_allowed_options(OptionList *allowed_options)
 	allowed_options->insert(std::make_pair("map-dir", ValueSpec(VALUETYPE_STRING,
 			_("Same as --world (deprecated)"))));
 	allowed_options->insert(std::make_pair("world", ValueSpec(VALUETYPE_STRING,
-			_("Set world path (implies local game) ('list' lists all)"))));
-	allowed_options->insert(std::make_pair("worldpath", ValueSpec(VALUETYPE_STRING,
-			_("Set world path (implies local game) ('list' lists all paths, no names)"))));
+			_("Set world path (implies local game)"))));
 	allowed_options->insert(std::make_pair("worldname", ValueSpec(VALUETYPE_STRING,
-			_("Set world by name (implies local game) ('list' lists all names, no paths)"))));
+			_("Set world by name (implies local game)"))));
+	allowed_options->insert(std::make_pair("worldlist", ValueSpec(VALUETYPE_STRING,
+			_("Get list of worlds (implies local game) ('path' lists paths, 'name' lists names, 'both' lists both)"))));
 	allowed_options->insert(std::make_pair("quiet", ValueSpec(VALUETYPE_FLAG,
 			_("Print to console errors only"))));
 	allowed_options->insert(std::make_pair("info", ValueSpec(VALUETYPE_FLAG,
@@ -629,8 +623,6 @@ static bool get_world_from_cmdline(GameParams *game_params, const Settings &cmd_
 
 	if (cmd_args.exists("world"))
 		commanded_world = cmd_args.get("world");
-	else if (cmd_args.exists("worldpath"))
-		commanded_world = cmd_args.get("worldpath");
 	else if (cmd_args.exists("map-dir"))
 		commanded_world = cmd_args.get("map-dir");
 	else if (cmd_args.exists("nonopt0")) // First nameless argument
