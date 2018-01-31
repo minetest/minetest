@@ -41,13 +41,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define WIELDMESH_OFFSET_Y -35.0f
 
 void Camera::onSettingsChange(const std::string &name){
-	if (name == "fov"){
+	if (name == "fov")
 		m_cache_fov = g_settings->getFloat("fov");
-	}else if(name == "view_bobbing_amount"){
-		m_cache_view_bobbing_amount = g_settings->getFloat("view_bobbing_amount");
-	}else if(name == "fall_bobbing_amount"){
-		m_cache_fall_bobbing_amount = g_settings->getFloat("fall_bobbing_amount");
-	}
 }
 
 void Camera::settingsCallback(const std::string &name, void *userdata){
@@ -85,8 +80,6 @@ Camera::Camera(MapDrawControl &draw_control, Client *client):
 	m_arm_inertia               = g_settings->getBool("arm_inertia");
 	// settings callbacks
 	g_settings->registerChangedCallback("fov", settingsCallback, this);
-	g_settings->registerChangedCallback("view_bobbing_amount", settingsCallback, this);
-	g_settings->registerChangedCallback("fall_bobbing_amount", settingsCallback, this);
 	
 	m_nametags.clear();
 }
@@ -95,8 +88,6 @@ Camera::~Camera()
 {
 	m_wieldmgr->drop();
 	g_settings->deregisterChangedCallback("fov", settingsCallback, this);
-	g_settings->deregisterChangedCallback("view_bobbing_amount", settingsCallback, this);
-	g_settings->deregisterChangedCallback("fall_bobbing_amount", settingsCallback, this);
 }
 
 bool Camera::successfullyCreated(std::string &error_message)

@@ -168,8 +168,6 @@ public:
 	void drawNametags();
 
 	inline void addArmInertia(f32 player_yaw);
-	
-	//f32 m_cache_fov;
 
 private:
 	// Nodes

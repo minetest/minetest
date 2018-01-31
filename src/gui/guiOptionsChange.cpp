@@ -77,26 +77,27 @@ void GUIOptionsChange::removeChildren()
 }
 
 //for streamlining the GUI process and cleaning up code
-void GUIOptionsChange::addCheckBox(const std::string name,const std::string setting, int ID, int xoff, int yoff){
+void GUIOptionsChange::addCheckBox(const std::string& name, const std::string& setting, int ID, int xoff, int yoff)
+{
 	core::rect<s32> rect(0, 0, 160, 20);
 	rect = rect + v2s32(m_size.X / 2 + xoff, m_size.Y / 2 + yoff);
 	const wchar_t *text = wgettext(name.c_str());
-	Environment->addCheckBox(g_settings->getBool(setting), rect, this,
-			ID, text);
+	Environment->addCheckBox(g_settings->getBool(setting), rect, this, ID, text);
 	delete[] text;
 }
 
-void GUIOptionsChange::addSlider(int ID, int xoff, int yoff, int max, int min, int init){
+void GUIOptionsChange::addSlider(int ID, int max, int min, int init, int xoff, int yoff)
+{
 	core::rect<s32> rect(0, 0, 300, 20);
 	rect = rect + v2s32(m_size.X / 2 + xoff, m_size.Y / 2 + yoff);
-	gui::IGUIScrollBar *e = Environment->addScrollBar(true,
-		rect, this, ID);
+	gui::IGUIScrollBar *e = Environment->addScrollBar(true, rect, this, ID);
 	e->setMax(max);
 	e->setMin(min);
 	e->setPos(init);
 }
 
-void GUIOptionsChange::addDynText(const std::string name, int value, const std::string ending, int ID, int xoff, int yoff){
+void GUIOptionsChange::addDynText(const std::string& name, int value, const std::string& ending, int ID, int xoff, int yoff)
+{
 	core::rect<s32> rect(0, 0, 160, 20);
 	rect = rect + v2s32(m_size.X / 2 + xoff, m_size.Y / 2 + yoff);
 
@@ -104,12 +105,13 @@ void GUIOptionsChange::addDynText(const std::string name, int value, const std::
 	core::stringw temp_text = text;
 	delete[] text;
 
-	temp_text += core::stringw(value)+core::stringw(wgettext(ending.c_str()));
+	temp_text += core::stringw(value) + core::stringw(wgettext(ending.c_str()));
 	Environment->addStaticText(temp_text.c_str(), rect, false,
 			true, this, ID);
 }
 
-void GUIOptionsChange::addText(const std::string name, int ID, int xoff, int yoff){
+void GUIOptionsChange::addText(const std::string& name, int ID, int xoff, int yoff)
+{
 	core::rect<s32> rect(0, 0, 160, 20);
 	rect = rect + v2s32(m_size.X / 2 + xoff, m_size.Y / 2 + yoff);
 
@@ -121,7 +123,8 @@ void GUIOptionsChange::addText(const std::string name, int ID, int xoff, int yof
 			true, this, ID);
 }
 
-void GUIOptionsChange::updateDynText(const SEvent& event, const std::string setting, int scale, int ID, const std::string beginning, const std::string ending){
+void GUIOptionsChange::updateDynText(const SEvent& event, const std::string& setting, int scale, int ID, const std::string& beginning, const std::string& ending)
+{
 	s32 pos = ((gui::IGUIScrollBar*)event.GUIEvent.Caller)->getPos();
 	g_settings->setFloat(setting, (float) pos / scale);
 
@@ -144,36 +147,39 @@ void GUIOptionsChange::regenerateGui(v2u32 screensize)
 	/*
 		Calculate new sizes and positions
 	*/
+	float height = 230;
+	float width = 380;
+	int spacing = 30;
+	int column_pos = (int)(-width/2+spacing);
+	int row = (int)(-height/2+spacing);
 	DesiredRect = core::rect<s32>(
-		screensize.X/2 - 380/2,
-		screensize.Y/2 - 400/2,
-		screensize.X/2 + 380/2,
-		screensize.Y/2 + 400/2
+		screensize.X/2 - width/2,
+		screensize.Y/2 - height/2,
+		screensize.X/2 + width/2,
+		screensize.Y/2 + height/2
 	);
 	recalculateAbsolutePosition(false);
-
 	m_size = DesiredRect.getSize();
-	v2s32 size = m_size;
 	int volume = (int)(g_settings->getFloat("sound_volume") * 100);
 	int FOV = (int)(g_settings->getFloat("fov"));
+	
 
 	//sound stuff
-	addDynText("Sound Volume: ",volume,"%",ID_soundText,-150,-170);
-	addCheckBox("Mute","mute_sound",ID_soundMuteButton,80,-170);
-	addSlider(ID_soundSlider,-150,-140,100,0,volume);
+	addDynText("Sound Volume: ", volume, "%", ID_soundText, column_pos, row);
+	addCheckBox("Mute", "mute_sound", ID_soundMuteButton, column_pos+230, row);
+	row+=spacing;
+	addSlider(ID_soundSlider, 100, 0, volume, column_pos, row);
 	//fov stuff
-	addDynText("Field Of View: ",FOV,"",ID_fovText,-150,-110);
-	addSlider(ID_fovSlider,-150,-80, 160, 51, FOV);
-	//misc settings
-	addCheckBox("Build Inside Player","enable_build_where_you_stand",ID_buildButton,-150,-50);
-	addCheckBox("Auto-Forward","continuous_forward",ID_forwardButton,-150,-20);
+	row+=spacing;
+	addDynText("Field Of View: ", FOV, "", ID_fovText, column_pos, row);
+	row+=spacing;
+	addSlider(ID_fovSlider, 160, 51, FOV, column_pos, row);
 	//exit button
 	{
 		core::rect<s32> rect(0, 0, 80, 30);
-		rect = rect + v2s32(size.X/2-80/2, size.Y/2+145);
+		rect = rect + v2s32(m_size.X/2 - 40, m_size.Y/2 + height/2 - 30 - spacing);
 		const wchar_t *text = wgettext("Exit");
-		Environment->addButton(rect, this, ID_ExitButton,
-			text);
+		Environment->addButton(rect, this, ID_ExitButton, text);
 		delete[] text;
 	}
 	
@@ -211,12 +217,6 @@ bool GUIOptionsChange::OnEvent(const SEvent& event)
 				if (event.GUIEvent.Caller->getID() == ID_soundMuteButton){
 					e = getElementFromId(ID_soundMuteButton);
 					g_settings->setBool("mute_sound", ((gui::IGUICheckBox*)e)->isChecked());
-				}else if(event.GUIEvent.Caller->getID() == ID_buildButton){
-					e = getElementFromId(ID_buildButton);
-					g_settings->setBool("enable_build_where_you_stand", ((gui::IGUICheckBox*)e)->isChecked());
-				}else if(event.GUIEvent.Caller->getID() == ID_forwardButton){
-					e = getElementFromId(ID_forwardButton);
-					g_settings->setBool("continuous_forward", ((gui::IGUICheckBox*)e)->isChecked());
 				}
 			}
 

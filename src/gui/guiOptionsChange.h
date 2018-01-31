@@ -35,16 +35,16 @@ public:
 	/*
 		Remove and re-add (or reposition) stuff
 	*/
-	void addCheckBox(const std::string name,const std::string setting, int ID, int xoff, int yoff);
+	void addCheckBox(const std::string& name, const std::string& setting, int ID, int xoff, int yoff);
 	
-	void addSlider(int ID, int xoff, int yoff, int max, int min, int init);
+	void addSlider(int ID, int max, int min, int init, int xoff, int yoff);
 	
 	//dynamic text
-	void addDynText(const std::string name, int value, const std::string ending, int ID, int xoff, int yoff);
+	void addDynText(const std::string& name, int value, const std::string& ending, int ID, int xoff, int yoff);
 	
-	void addText(const std::string name, int ID, int xoff, int yoff);
+	void addText(const std::string& name, int ID, int xoff, int yoff);
 	
-	void updateDynText(const SEvent& event, const std::string setting, int scale, int ID, const std::string beginning, const std::string ending);
+	void updateDynText(const SEvent& event, const std::string& setting, int scale, int ID, const std::string& beginning, const std::string& ending);
 	
 	void regenerateGui(v2u32 screensize);
 

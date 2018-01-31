@@ -140,7 +140,7 @@ struct LocalFormspecHandler : public TextDest
 	{
 		if (m_formname == "MT_PAUSE_MENU") {
 			if (fields.find("btn_options") != fields.end()) {
-				g_gamecallback->changeVolume();
+				g_gamecallback->changeOptions();
 				return;
 			}
 

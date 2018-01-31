@@ -33,7 +33,7 @@ public:
 	virtual void keyConfig() = 0;
 	virtual void disconnect() = 0;
 	virtual void changePassword() = 0;
-	virtual void changeVolume() = 0;
+	virtual void changeOptions() = 0;
 
 	virtual void signalKeyConfigChange() = 0;
 };
@@ -138,7 +138,7 @@ public:
 		changepassword_requested = true;
 	}
 
-	virtual void changeVolume()
+	virtual void changeOptions()
 	{
 		changeoptions_requested = true;
 	}
