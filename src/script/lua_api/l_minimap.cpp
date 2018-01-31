@@ -24,6 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client.h"
 #include "minimap.h"
 #include "settings.h"
+#include "settings_builtin.h"
 
 LuaMinimap::LuaMinimap(Minimap *m) : m_minimap(m)
 {
@@ -131,7 +132,7 @@ int LuaMinimap::l_get_shape(lua_State *L)
 int LuaMinimap::l_show(lua_State *L)
 {
 	// If minimap is disabled by config, don't show it.
-	if (!g_settings->getBool("enable_minimap"))
+	if (!builtin_settings.enable_minimap)
 		return 1;
 
 	Client *client = getClient(L);

@@ -32,6 +32,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "raycast.h"
 #include "voxelalgorithms.h"
 #include "settings.h"
+#include "settings_builtin.h"
 #include "content_cao.h"
 #include <algorithm>
 #include "client/renderingengine.h"
@@ -96,7 +97,7 @@ void ClientEnvironment::step(float dtime)
 
 	// Get some settings
 	bool fly_allowed = m_client->checkLocalPrivilege("fly");
-	bool free_move = fly_allowed && g_settings->getBool("free_move");
+	bool free_move = fly_allowed && builtin_settings.free_move;
 
 	// Get local player
 	LocalPlayer *lplayer = getLocalPlayer();

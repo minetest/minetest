@@ -1028,9 +1028,9 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data, v3s16 camera_offset):
 		m = new scene::SMesh();
 	m_enable_shaders = data->m_use_shaders;
 	m_use_tangent_vertices = data->m_use_tangent_vertices;
-	m_enable_vbo = g_settings->getBool("enable_vbo");
+	m_enable_vbo = builtin_settings.enable_vbo;
 
-	if (g_settings->getBool("enable_minimap")) {
+	if (builtin_settings.enable_minimap) {
 		m_minimap_mapblock = new MinimapMapblock;
 		m_minimap_mapblock->getMinimapNodes(
 			&data->m_vmanip, data->m_blockpos * MAP_BLOCKSIZE);
@@ -1131,8 +1131,7 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data, v3s16 camera_offset):
 				// Add to MapBlockMesh in order to animate these tiles
 				m_animation_tiles[std::pair<u8, u32>(layer, i)] = p.layer;
 				m_animation_frames[std::pair<u8, u32>(layer, i)] = 0;
-				if (g_settings->getBool(
-						"desynchronize_mapblock_texture_animation")) {
+				if (builtin_settings.desynchronize_mapblock_texture_animation) {
 					// Get starting position from noise
 					m_animation_frame_offsets[std::pair<u8, u32>(layer, i)] =
 							100000 * (2.0 + noise3d(

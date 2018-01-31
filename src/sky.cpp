@@ -10,6 +10,7 @@
 #include <cmath>
 #include "client/renderingengine.h"
 #include "settings.h"
+#include "settings_builtin.h"
 #include "camera.h"  // CameraModes
 
 
@@ -77,7 +78,7 @@ Sky::Sky(s32 id, ITextureSource *tsrc):
 		star.normalize();
 	}
 
-	m_directional_colored_fog = g_settings->getBool("directional_colored_fog");
+	m_directional_colored_fog = builtin_settings.directional_colored_fog;
 }
 
 

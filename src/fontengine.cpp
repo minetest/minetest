@@ -22,6 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "config.h"
 #include "porting.h"
 #include "filesys.h"
+#include "settings_builtin.h"
 
 #if USE_FREETYPE
 #include "gettext.h"
@@ -57,7 +58,7 @@ FontEngine::FontEngine(Settings* main_settings, gui::IGUIEnvironment* env) :
 	m_currentMode = FM_Simple;
 
 #if USE_FREETYPE
-	if (g_settings->getBool("freetype")) {
+	if (builtin_settings.freetype) {
 		m_default_size[FM_Standard] = m_settings->getU16("font_size");
 		m_default_size[FM_Fallback] = m_settings->getU16("fallback_font_size");
 		m_default_size[FM_Mono]     = m_settings->getU16("mono_font_size");
@@ -211,7 +212,7 @@ unsigned int FontEngine::getDefaultFontSize()
 void FontEngine::readSettings()
 {
 #if USE_FREETYPE
-	if (g_settings->getBool("freetype")) {
+	if (builtin_settings.freetype) {
 		m_default_size[FM_Standard] = m_settings->getU16("font_size");
 		m_default_size[FM_Fallback] = m_settings->getU16("fallback_font_size");
 		m_default_size[FM_Mono]     = m_settings->getU16("mono_font_size");

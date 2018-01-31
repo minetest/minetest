@@ -99,7 +99,7 @@ void ClientMediaDownloader::addRemoteServer(const std::string &baseurl)
 
 	#ifdef USE_CURL
 
-	if (g_settings->getBool("enable_remote_media_server")) {
+	if (builtin_settings.enable_remote_media_server) {
 		infostream << "Client: Adding remote server \""
 			<< baseurl << "\" for media download" << std::endl;
 

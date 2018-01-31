@@ -112,7 +112,7 @@ static void load_button_texture(button_info* btn, const char* path,
 			button_rect.getHeight());
 	if (texture) {
 		btn->guibutton->setUseAlphaChannel(true);
-		if (g_settings->getBool("gui_scaling_filter")) {
+		if (builtin_settings.gui_scaling_filter) {
 			rect<s32> txr_rect = rect<s32>(0, 0, button_rect.getWidth(), button_rect.getHeight());
 			btn->guibutton->setImage(texture, txr_rect);
 			btn->guibutton->setPressedImage(texture, txr_rect);

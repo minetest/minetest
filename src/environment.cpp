@@ -35,7 +35,7 @@ Environment::Environment(IGameDef *gamedef):
 	m_day_count(0),
 	m_gamedef(gamedef)
 {
-	m_cache_enable_shaders = g_settings->getBool("enable_shaders");
+	m_cache_enable_shaders = builtin_settings.enable_shaders;
 	m_cache_active_block_mgmt_interval = builtin_settings.active_block_mgmt_interval;
 	m_cache_abm_interval = builtin_settings.abm_interval;
 	m_cache_nodetimer_interval = builtin_settings.nodetimer_interval;

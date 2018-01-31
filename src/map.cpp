@@ -1472,7 +1472,7 @@ MapBlock * ServerMap::generateBlock(
 		std::map<v3s16, MapBlock*> &modified_blocks
 )
 {
-	bool enable_mapgen_debug_info = g_settings->getBool("enable_mapgen_debug_info");
+	bool enable_mapgen_debug_info = builtin_settings.enable_mapgen_debug_info;
 
 	TimeTaker timer("generateBlock");
 
@@ -2096,7 +2096,7 @@ void ServerMap::loadBlock(std::string *blob, v3s16 p3d, MapSector *sector, bool 
 		// TODO: Block should be marked as invalid in memory so that it is
 		// not touched but the game can run
 
-		if(g_settings->getBool("ignore_world_load_errors")){
+		if(builtin_settings.ignore_world_load_errors){
 			errorstream<<"Ignoring block load error. Duck and cover! "
 					<<"(ignore_world_load_errors)"<<std::endl;
 		} else {

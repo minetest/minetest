@@ -29,6 +29,7 @@
 #include <IGUIStaticText.h>
 #include <IGUIFont.h>
 #include "settings.h"
+#include "settings_builtin.h"
 #include <algorithm>
 
 #include "mainmenumanager.h"  // for g_gamecallback
@@ -173,7 +174,7 @@ void GUIKeyChangeMenu::regenerateGui(v2u32 screensize)
 			core::rect<s32> rect(0, 0, option_w, 30);
 			rect += topleft + v2s32(option_x, option_y);
 			const wchar_t *text = wgettext("\"Special\" = climb down");
-			Environment->addCheckBox(g_settings->getBool("aux1_descends"), rect, this,
+			Environment->addCheckBox(builtin_settings.aux1_descends, rect, this,
 					GUI_ID_CB_AUX1_DESCENDS, text);
 			delete[] text;
 		}
@@ -188,7 +189,7 @@ void GUIKeyChangeMenu::regenerateGui(v2u32 screensize)
 			core::rect<s32> rect(0, 0, option_w, 30);
 			rect += topleft + v2s32(option_x, option_y);
 			const wchar_t *text = wgettext("Double tap \"jump\" to toggle fly");
-			Environment->addCheckBox(g_settings->getBool("doubletap_jump"), rect, this,
+			Environment->addCheckBox(builtin_settings.doubletap_jump, rect, this,
 					GUI_ID_CB_DOUBLETAP_JUMP, text);
 			delete[] text;
 		}

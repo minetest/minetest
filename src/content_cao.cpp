@@ -30,6 +30,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "environment.h"
 #include "collision.h"
 #include "settings.h"
+#include "settings_builtin.h"
 #include "serialization.h" // For decompressZlib
 #include "clientobject.h"
 #include "mesh.h"
@@ -739,11 +740,11 @@ void GenericCAO::step(float dtime, ClientEnvironment *env)
 			bool allow_update = false;
 
 			// increase speed if using fast or flying fast
-			if((g_settings->getBool("fast_move") &&
+			if((builtin_settings.fast_move &&
 					m_client->checkLocalPrivilege("fast")) &&
 					(controls.aux1 ||
 					(!player->touching_ground &&
-					g_settings->getBool("free_move") &&
+					builtin_settings.free_move &&
 					m_client->checkLocalPrivilege("fly"))))
 					new_speed *= 1.5;
 			// slowdown speed if sneeking
@@ -985,9 +986,9 @@ void GenericCAO::updateTextures(std::string mod)
 {
 	ITextureSource *tsrc = m_client->tsrc();
 
-	bool use_trilinear_filter = g_settings->getBool("trilinear_filter");
-	bool use_bilinear_filter = g_settings->getBool("bilinear_filter");
-	bool use_anisotropic_filter = g_settings->getBool("anisotropic_filter");
+	bool use_trilinear_filter = builtin_settings.trilinear_filter;
+	bool use_bilinear_filter = builtin_settings.bilinear_filter;
+	bool use_anisotropic_filter = builtin_settings.anisotropic_filter;
 
 	m_previous_texture_modifier = m_current_texture_modifier;
 	m_current_texture_modifier = mod;

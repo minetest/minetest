@@ -54,12 +54,12 @@ RenderingEngine::RenderingEngine(IEventReceiver *receiver)
 	sanity_check(!s_singleton);
 
 	// Resolution selection
-	bool fullscreen = g_settings->getBool("fullscreen");
+	bool fullscreen = builtin_settings.fullscreen;
 	u16 screen_w = builtin_settings.screen_w;
 	u16 screen_h = builtin_settings.screen_h;
 
 	// bpp, fsaa, vsync
-	bool vsync = g_settings->getBool("vsync");
+	bool vsync = builtin_settings.vsync;
 	u16 bits = builtin_settings.fullscreen_bpp;
 	u16 fsaa = builtin_settings.fsaa;
 
@@ -95,7 +95,7 @@ RenderingEngine::RenderingEngine(IEventReceiver *receiver)
 	params.Stereobuffer = stereo_buffer;
 	params.Vsync = vsync;
 	params.EventReceiver = receiver;
-	params.HighPrecisionFPU = g_settings->getBool("high_precision_fpu");
+	params.HighPrecisionFPU = builtin_settings.high_precision_fpu;
 	params.ZBufferBits = 24;
 #ifdef __ANDROID__
 	// clang-format off
@@ -134,7 +134,7 @@ bool RenderingEngine::print_video_modes()
 {
 	IrrlichtDevice *nulldevice;
 
-	bool vsync = g_settings->getBool("vsync");
+	bool vsync = builtin_settings.vsync;
 	u16 fsaa = builtin_settings.fsaa;
 	MyEventReceiver *receiver = new MyEventReceiver();
 
@@ -147,7 +147,7 @@ bool RenderingEngine::print_video_modes()
 	params.Stencilbuffer = false;
 	params.Vsync = vsync;
 	params.EventReceiver = receiver;
-	params.HighPrecisionFPU = g_settings->getBool("high_precision_fpu");
+	params.HighPrecisionFPU = builtin_settings.high_precision_fpu;
 
 	nulldevice = createDeviceEx(params);
 
@@ -357,7 +357,7 @@ void RenderingEngine::_draw_load_screen(const std::wstring &text,
 			guienv->addStaticText(text.c_str(), textrect, false, false);
 	guitext->setTextAlignment(gui::EGUIA_CENTER, gui::EGUIA_UPPERLEFT);
 
-	bool cloud_menu_background = clouds && g_settings->getBool("menu_clouds");
+	bool cloud_menu_background = clouds && builtin_settings.menu_clouds;
 	if (cloud_menu_background) {
 		g_menuclouds->step(dtime * 3);
 		g_menuclouds->render();
@@ -418,7 +418,7 @@ void RenderingEngine::_draw_load_screen(const std::wstring &text,
 void RenderingEngine::_draw_menu_scene(gui::IGUIEnvironment *guienv,
 		float dtime, bool clouds)
 {
-	bool cloud_menu_background = clouds && g_settings->getBool("menu_clouds");
+	bool cloud_menu_background = clouds && builtin_settings.menu_clouds;
 	if (cloud_menu_background) {
 		g_menuclouds->step(dtime * 3);
 		g_menuclouds->render();

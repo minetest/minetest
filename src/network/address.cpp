@@ -32,6 +32,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "constants.h"
 #include "debug.h"
 #include "settings.h"
+#include "settings_builtin.h"
 #include "log.h"
 
 #ifdef _WIN32
@@ -129,7 +130,7 @@ void Address::Resolve(const char *name)
 	hints.ai_socktype = 0;
 	hints.ai_protocol = 0;
 	hints.ai_flags = 0;
-	if (g_settings->getBool("enable_ipv6")) {
+	if (builtin_settings.enable_ipv6) {
 		// AF_UNSPEC allows both IPv6 and IPv4 addresses to be returned
 		hints.ai_family = AF_UNSPEC;
 	} else {

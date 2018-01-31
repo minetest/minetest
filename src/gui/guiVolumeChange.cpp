@@ -117,7 +117,7 @@ void GUIVolumeChange::regenerateGui(v2u32 screensize)
 		core::rect<s32> rect(0, 0, 160, 20);
 		rect = rect + v2s32(size.X / 2 - 80, size.Y / 2 - 35);
 		const wchar_t *text = wgettext("Muted");
-		Environment->addCheckBox(g_settings->getBool("mute_sound"), rect, this,
+		Environment->addCheckBox(builtin_settings.mute_sound, rect, this,
 				ID_soundMuteButton, text);
 		delete[] text;
 	}

@@ -117,7 +117,7 @@ GUIFormSpecMenu::GUIFormSpecMenu(JoystickController *joystick,
 	m_doubleclickdetect[1].pos = v2s32(0, 0);
 
 	m_tooltip_show_delay = (u32)builtin_settings.tooltip_show_delay;
-	m_tooltip_append_itemname = g_settings->getBool("tooltip_append_itemname");
+	m_tooltip_append_itemname = builtin_settings.tooltip_append_itemname;
 }
 
 GUIFormSpecMenu::~GUIFormSpecMenu()
@@ -1049,7 +1049,7 @@ void GUIFormSpecMenu::parseSimpleField(parserData* data,
 		spec.send = true;
 		gui::IGUIElement *e;
 #if USE_FREETYPE && IRRLICHT_VERSION_MAJOR == 1 && IRRLICHT_VERSION_MINOR < 9
-		if (g_settings->getBool("freetype")) {
+		if (builtin_settings.freetype) {
 			e = (gui::IGUIElement *) new gui::intlGUIEditBox(spec.fdefault.c_str(),
 				true, Environment, this, spec.fid, rect);
 			e->drop();
@@ -1153,7 +1153,7 @@ void GUIFormSpecMenu::parseTextArea(parserData* data, std::vector<std::string>& 
 		wlabel.c_str() : spec.fdefault.c_str();
 
 #if USE_FREETYPE && IRRLICHT_VERSION_MAJOR == 1 && IRRLICHT_VERSION_MINOR < 9
-	if (g_settings->getBool("freetype")) {
+	if (builtin_settings.freetype) {
 		e = (gui::IGUIEditBox *) new gui::intlGUIEditBox(text,
 			true, Environment, this, spec.fid, rect, is_editable, true);
 		e->drop();

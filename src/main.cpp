@@ -170,7 +170,7 @@ int main(int argc, char *argv[])
 	if (!init_common(cmd_args, argc, argv))
 		return 1;
 
-	if (g_settings->getBool("enable_console"))
+	if (builtin_settings.enable_console)
 		porting::attachOrCreateConsole();
 
 #ifndef __ANDROID__
@@ -786,7 +786,7 @@ static bool run_dedicated_server(const GameParams &game_params, const Settings &
 	std::string bind_str = g_settings->get("bind_address");
 	Address bind_addr(0, 0, 0, 0, game_params.socket_port);
 
-	if (g_settings->getBool("ipv6_server")) {
+	if (builtin_settings.ipv6_server) {
 		bind_addr.setAddress((IPv6AddressBytes*) NULL);
 	}
 	try {
@@ -796,7 +796,7 @@ static bool run_dedicated_server(const GameParams &game_params, const Settings &
 		           << "\" failed: " << e.what()
 		           << " -- Listening on all addresses." << std::endl;
 	}
-	if (bind_addr.isIPv6() && !g_settings->getBool("enable_ipv6")) {
+	if (bind_addr.isIPv6() && !builtin_settings.enable_ipv6) {
 		errorstream << "Unable to listen on "
 		            << bind_addr.serializeString()
 		            << L" because IPv6 is disabled" << std::endl;

@@ -416,7 +416,7 @@ public:
 	void onSettingsChange(const std::string &name)
 	{
 		if (name == "enable_fog")
-			m_fog_enabled = g_settings->getBool("enable_fog");
+			m_fog_enabled = builtin_settings.enable_fog;
 	}
 
 	static void settingsCallback(const std::string &name, void *userdata)
@@ -445,7 +445,7 @@ public:
 		m_client(client)
 	{
 		g_settings->registerChangedCallback("enable_fog", settingsCallback, this);
-		m_fog_enabled = g_settings->getBool("enable_fog");
+		m_fog_enabled = builtin_settings.enable_fog;
 	}
 
 	~GameGlobalShaderConstantSetter()
@@ -1021,7 +1021,7 @@ bool Game::startup(bool *kill,
 
 	m_game_ui->initFlags();
 
-	m_invert_mouse = g_settings->getBool("invert_mouse");
+	m_invert_mouse = builtin_settings.invert_mouse;
 	m_first_loop_after_window_activation = true;
 
 	g_translations->clear();
@@ -1056,7 +1056,7 @@ void Game::run()
 	set_light_table(builtin_settings.display_gamma);
 
 #ifdef __ANDROID__
-	m_cache_hold_aux1 = g_settings->getBool("fast_move")
+	m_cache_hold_aux1 = builtin_settings.fast_move
 			&& client->checkPrivilege("fast");
 #endif
 
@@ -1074,7 +1074,7 @@ void Game::run()
 		// First condition is cheaper
 		if (previous_screen_size != current_screen_size &&
 				current_screen_size != irr::core::dimension2d<u32>(0,0) &&
-				g_settings->getBool("autosave_screensize")) {
+				builtin_settings.autosave_screensize) {
 			g_settings->setU16("screen_w", current_screen_size.Width);
 			g_settings->setU16("screen_h", current_screen_size.Height);
 			previous_screen_size = current_screen_size;
@@ -1218,7 +1218,7 @@ bool Game::init(
 bool Game::initSound()
 {
 #if USE_SOUND
-	if (g_settings->getBool("enable_sound")) {
+	if (builtin_settings.enable_sound) {
 		infostream << "Attempting to use OpenAL audio" << std::endl;
 		sound = createOpenALSoundManager(&soundfetcher);
 		if (!sound)
@@ -1250,7 +1250,7 @@ bool Game::createSingleplayerServer(const std::string &map_dir,
 	std::string bind_str = g_settings->get("bind_address");
 	Address bind_addr(0, 0, 0, 0, port);
 
-	if (g_settings->getBool("ipv6_server")) {
+	if (builtin_settings.ipv6_server) {
 		bind_addr.setAddress((IPv6AddressBytes *) NULL);
 	}
 
@@ -1262,7 +1262,7 @@ bool Game::createSingleplayerServer(const std::string &map_dir,
 			   << " -- Listening on all addresses." << std::endl;
 	}
 
-	if (bind_addr.isIPv6() && !g_settings->getBool("enable_ipv6")) {
+	if (bind_addr.isIPv6() && !builtin_settings.enable_ipv6) {
 		*error_message = "Unable to listen on " +
 				bind_addr.serializeString() +
 				" because IPv6 is disabled";
@@ -1451,7 +1451,7 @@ bool Game::connectToServer(const std::string &playername,
 		return false;
 	}
 
-	if (connect_address.isIPv6() && !g_settings->getBool("enable_ipv6")) {
+	if (connect_address.isIPv6() && !builtin_settings.enable_ipv6) {
 		*error_message = "Unable to connect to " +
 				connect_address.serializeString() +
 				" because IPv6 is disabled";
@@ -1620,7 +1620,7 @@ bool Game::getServerContent(bool *aborted)
 			message.precision(2);
 
 			if ((USE_CURL == 0) ||
-					(!g_settings->getBool("enable_remote_media_server"))) {
+					(!builtin_settings.enable_remote_media_server)) {
 				float cur = client->getCurRate();
 				std::string cur_unit = gettext("KiB/s");
 
@@ -1884,7 +1884,7 @@ void Game::processKeyInput()
 	} else if (wasKeyDown(KeyType::NOCLIP)) {
 		toggleNoClip();
 	} else if (wasKeyDown(KeyType::MUTE)) {
-		bool new_mute_sound = !g_settings->getBool("mute_sound");
+		bool new_mute_sound = !builtin_settings.mute_sound;
 		g_settings->setBool("mute_sound", new_mute_sound);
 		if (new_mute_sound)
 			m_game_ui->showTranslatedStatusText("Sound muted");
@@ -2067,7 +2067,7 @@ void Game::handleAndroidChatInput()
 
 void Game::toggleFreeMove()
 {
-	bool free_move = !g_settings->getBool("free_move");
+	bool free_move = !builtin_settings.free_move;
 	g_settings->set("free_move", bool_to_cstr(free_move));
 
 	if (free_move) {
@@ -2092,7 +2092,7 @@ void Game::toggleFreeMoveAlt()
 
 void Game::toggleFast()
 {
-	bool fast_move = !g_settings->getBool("fast_move");
+	bool fast_move = !builtin_settings.fast_move;
 	g_settings->set("fast_move", bool_to_cstr(fast_move));
 
 	if (fast_move) {
@@ -2113,7 +2113,7 @@ void Game::toggleFast()
 
 void Game::toggleNoClip()
 {
-	bool noclip = !g_settings->getBool("noclip");
+	bool noclip = !builtin_settings.noclip;
 	g_settings->set("noclip", bool_to_cstr(noclip));
 
 	if (noclip) {
@@ -2129,7 +2129,7 @@ void Game::toggleNoClip()
 
 void Game::toggleCinematic()
 {
-	bool cinematic = !g_settings->getBool("cinematic");
+	bool cinematic = !builtin_settings.cinematic;
 	g_settings->set("cinematic", bool_to_cstr(cinematic));
 
 	if (cinematic)
@@ -2141,7 +2141,7 @@ void Game::toggleCinematic()
 // Autoforward by toggling continuous forward.
 void Game::toggleAutoforward()
 {
-	bool autorun_enabled = !g_settings->getBool("continuous_forward");
+	bool autorun_enabled = !builtin_settings.continuous_forward;
 	g_settings->set("continuous_forward", bool_to_cstr(autorun_enabled));
 
 	if (autorun_enabled)
@@ -2152,7 +2152,7 @@ void Game::toggleAutoforward()
 
 void Game::toggleMinimap(bool shift_pressed)
 {
-	if (!mapper || !m_game_ui->m_flags.show_hud || !g_settings->getBool("enable_minimap"))
+	if (!mapper || !m_game_ui->m_flags.show_hud || !builtin_settings.enable_minimap)
 		return;
 
 	if (shift_pressed) {
@@ -2860,7 +2860,7 @@ void Game::updateSound(f32 dtime)
 			      camera->getDirection(),
 			      camera->getCameraNode()->getUpVector());
 
-	bool mute_sound = g_settings->getBool("mute_sound");
+	bool mute_sound = builtin_settings.mute_sound;
 	if (mute_sound) {
 		sound->setListenerGain(0.0f);
 	} else {
@@ -2937,7 +2937,7 @@ void Game::processPlayerInteraction(f32 dtime, bool show_hud, bool show_debug)
 
 #ifdef HAVE_TOUCHSCREENGUI
 
-	if ((g_settings->getBool("touchtarget")) && (g_touchscreengui)) {
+	if ((builtin_settings.touchtarget) && (g_touchscreengui)) {
 		shootline = g_touchscreengui->getShootline();
 		// Scale shootline to the acual distance the player can reach
 		shootline.end = shootline.start
@@ -3008,7 +3008,7 @@ void Game::processPlayerInteraction(f32 dtime, bool show_hud, bool show_debug)
 	soundmaker->m_player_leftpunch_sound.name = "";
 
 	// Prepare for repeating, unless we're not supposed to
-	if (input->getRightState() && !g_settings->getBool("safe_dig_and_place"))
+	if (input->getRightState() && !builtin_settings.safe_dig_and_place)
 		runData.repeat_rightclick_timer += dtime;
 	else
 		runData.repeat_rightclick_timer = 0;
@@ -3375,8 +3375,8 @@ bool Game::nodePlacementPrediction(const ItemDefinition &playeritem_def,
 			// Dont place node when player would be inside new node
 			// NOTE: This is to be eventually implemented by a mod as client-side Lua
 			if (!nodedef->get(n).walkable ||
-				g_settings->getBool("enable_build_where_you_stand") ||
-				(client->checkPrivilege("noclip") && g_settings->getBool("noclip")) ||
+				builtin_settings.enable_build_where_you_stand ||
+				(client->checkPrivilege("noclip") && builtin_settings.noclip) ||
 				(nodedef->get(n).walkable &&
 					neighbourpos != player->getStandingNodePos() + v3s16(0, 1, 0) &&
 					neighbourpos != player->getStandingNodePos() + v3s16(0, 2, 0))) {
@@ -3539,7 +3539,7 @@ void Game::handleDigging(const PointedThing &pointed, const v3s16 &nodepos,
 		runData.dig_time = 0;
 		runData.digging = false;
 		// we successfully dug, now block it from repeating if we want to be safe
-		if (g_settings->getBool("safe_dig_and_place"))
+		if (builtin_settings.safe_dig_and_place)
 			runData.digging_blocked = true;
 
 		runData.nodig_delay_timer =
@@ -3806,7 +3806,7 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 			(camera->getCameraMode() != CAMERA_MODE_THIRD_FRONT));
 #ifdef HAVE_TOUCHSCREENGUI
 	try {
-		draw_crosshair = !g_settings->getBool("touchtarget");
+		draw_crosshair = !builtin_settings.touchtarget;
 	} catch (SettingNotFoundException) {
 	}
 #endif
@@ -3929,22 +3929,22 @@ void Game::settingChangedCallback(const std::string &setting_name, void *data)
 
 void Game::readSettings()
 {
-	m_cache_doubletap_jump               = g_settings->getBool("doubletap_jump");
-	m_cache_enable_clouds                = g_settings->getBool("enable_clouds");
-	m_cache_enable_joysticks             = g_settings->getBool("enable_joysticks");
-	m_cache_enable_particles             = g_settings->getBool("enable_particles");
-	m_cache_enable_fog                   = g_settings->getBool("enable_fog");
+	m_cache_doubletap_jump               = builtin_settings.doubletap_jump;
+	m_cache_enable_clouds                = builtin_settings.enable_clouds;
+	m_cache_enable_joysticks             = builtin_settings.enable_joysticks;
+	m_cache_enable_particles             = builtin_settings.enable_particles;
+	m_cache_enable_fog                   = builtin_settings.enable_fog;
 	m_cache_mouse_sensitivity            = builtin_settings.mouse_sensitivity;
 	m_cache_joystick_frustum_sensitivity = builtin_settings.joystick_frustum_sensitivity;
 	m_repeat_right_click_time            = builtin_settings.repeat_rightclick_time;
 
-	m_cache_enable_noclip                = g_settings->getBool("noclip");
-	m_cache_enable_free_move             = g_settings->getBool("free_move");
+	m_cache_enable_noclip                = builtin_settings.noclip;
+	m_cache_enable_free_move             = builtin_settings.free_move;
 
 	m_cache_fog_start                    = builtin_settings.fog_start;
 
 	m_cache_cam_smoothing = 0;
-	if (g_settings->getBool("cinematic"))
+	if (builtin_settings.cinematic)
 		m_cache_cam_smoothing = 1 - builtin_settings.cinematic_camera_smoothing;
 	else
 		m_cache_cam_smoothing = 1 - builtin_settings.camera_smoothing;
@@ -3953,7 +3953,7 @@ void Game::readSettings()
 	m_cache_cam_smoothing = rangelim(m_cache_cam_smoothing, 0.01f, 1.0f);
 	m_cache_mouse_sensitivity = rangelim(m_cache_mouse_sensitivity, 0.001, 100.0);
 
-	m_does_lost_focus_pause_game = g_settings->getBool("pause_on_lost_focus");
+	m_does_lost_focus_pause_game = builtin_settings.pause_on_lost_focus;
 }
 
 /****************************************************************************/
@@ -4080,13 +4080,13 @@ void Game::showPauseMenu()
 	if (simple_singleplayer_mode || address.empty()) {
 		static const std::string on = strgettext("On");
 		static const std::string off = strgettext("Off");
-		const std::string &damage = g_settings->getBool("enable_damage") ? on : off;
-		const std::string &creative = g_settings->getBool("creative_mode") ? on : off;
-		const std::string &announced = g_settings->getBool("server_announce") ? on : off;
+		const std::string &damage = builtin_settings.enable_damage ? on : off;
+		const std::string &creative = builtin_settings.creative_mode ? on : off;
+		const std::string &announced = builtin_settings.server_announce ? on : off;
 		os << strgettext("- Damage: ") << damage << "\n"
 				<< strgettext("- Creative Mode: ") << creative << "\n";
 		if (!simple_singleplayer_mode) {
-			const std::string &pvp = g_settings->getBool("enable_pvp") ? on : off;
+			const std::string &pvp = builtin_settings.enable_pvp ? on : off;
 			os << strgettext("- PvP: ") << pvp << "\n"
 					<< strgettext("- Public: ") << announced << "\n";
 			std::string server_name = g_settings->get("server_name");

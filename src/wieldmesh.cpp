@@ -19,6 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "wieldmesh.h"
 #include "settings.h"
+#include "settings_builtin.h"
 #include "shader.h"
 #include "inventory.h"
 #include "client.h"
@@ -197,10 +198,10 @@ WieldMeshSceneNode::WieldMeshSceneNode(scene::ISceneManager *mgr, s32 id, bool l
 	m_material_type(video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF),
 	m_lighting(lighting)
 {
-	m_enable_shaders = g_settings->getBool("enable_shaders");
-	m_anisotropic_filter = g_settings->getBool("anisotropic_filter");
-	m_bilinear_filter = g_settings->getBool("bilinear_filter");
-	m_trilinear_filter = g_settings->getBool("trilinear_filter");
+	m_enable_shaders = builtin_settings.enable_shaders;
+	m_anisotropic_filter = builtin_settings.anisotropic_filter;
+	m_bilinear_filter = builtin_settings.bilinear_filter;
+	m_trilinear_filter = builtin_settings.trilinear_filter;
 
 	// If this is the first wield mesh scene node, create a cache
 	// for extrusion meshes (and a cube mesh), otherwise reuse it

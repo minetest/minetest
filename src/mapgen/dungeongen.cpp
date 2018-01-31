@@ -27,6 +27,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "map.h"
 #include "nodedef.h"
 #include "settings.h"
+#include "settings_builtin.h"
 
 //#define DGEN_USE_TORCHES
 
@@ -97,7 +98,7 @@ void DungeonGen::generate(MMVManip *vm, u32 bseed, v3s16 nmin, v3s16 nmax)
 	if (nval_density < 1.0f)
 		return;
 
-	static const bool preserve_ignore = !g_settings->getBool("projecting_dungeons");
+	static const bool preserve_ignore = !builtin_settings.projecting_dungeons;
 
 	this->vm = vm;
 	this->blockseed = bseed;

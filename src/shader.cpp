@@ -541,7 +541,7 @@ ShaderInfo generate_shader(const std::string &name, u8 material_type, u8 drawtyp
 		break;
 	}
 
-	bool enable_shaders = g_settings->getBool("enable_shaders");
+	bool enable_shaders = builtin_settings.enable_shaders;
 	if (!enable_shaders)
 		return shaderinfo;
 
@@ -650,7 +650,7 @@ ShaderInfo generate_shader(const std::string &name, u8 material_type, u8 drawtyp
 	shaders_header += itos(drawtype);
 	shaders_header += "\n";
 
-	if (g_settings->getBool("generate_normalmaps")) {
+	if (builtin_settings.generate_normalmaps) {
 		shaders_header += "#define GENERATE_NORMALMAPS 1\n";
 	} else {
 		shaders_header += "#define GENERATE_NORMALMAPS 0\n";
@@ -678,10 +678,10 @@ ShaderInfo generate_shader(const std::string &name, u8 material_type, u8 drawtyp
 	shaders_header += ftos(sample_step);
 	shaders_header += "\n";
 
-	if (g_settings->getBool("enable_bumpmapping"))
+	if (builtin_settings.enable_bumpmapping)
 		shaders_header += "#define ENABLE_BUMPMAPPING\n";
 
-	if (g_settings->getBool("enable_parallax_occlusion")){
+	if (builtin_settings.enable_parallax_occlusion){
 		int mode = builtin_settings.parallax_occlusion_mode;
 		float scale = builtin_settings.parallax_occlusion_scale;
 		float bias = builtin_settings.parallax_occlusion_bias;
@@ -702,12 +702,12 @@ ShaderInfo generate_shader(const std::string &name, u8 material_type, u8 drawtyp
 	}
 
 	shaders_header += "#define USE_NORMALMAPS ";
-	if (g_settings->getBool("enable_bumpmapping") || g_settings->getBool("enable_parallax_occlusion"))
+	if (builtin_settings.enable_bumpmapping || builtin_settings.enable_parallax_occlusion)
 		shaders_header += "1\n";
 	else
 		shaders_header += "0\n";
 
-	if (g_settings->getBool("enable_waving_water")){
+	if (builtin_settings.enable_waving_water){
 		shaders_header += "#define ENABLE_WAVING_WATER 1\n";
 		shaders_header += "#define WATER_WAVE_HEIGHT ";
 		shaders_header += ftos(builtin_settings.water_wave_height);
@@ -723,18 +723,18 @@ ShaderInfo generate_shader(const std::string &name, u8 material_type, u8 drawtyp
 	}
 
 	shaders_header += "#define ENABLE_WAVING_LEAVES ";
-	if (g_settings->getBool("enable_waving_leaves"))
+	if (builtin_settings.enable_waving_leaves)
 		shaders_header += "1\n";
 	else
 		shaders_header += "0\n";
 
 	shaders_header += "#define ENABLE_WAVING_PLANTS ";
-	if (g_settings->getBool("enable_waving_plants"))
+	if (builtin_settings.enable_waving_plants)
 		shaders_header += "1\n";
 	else
 		shaders_header += "0\n";
 
-	if (g_settings->getBool("tone_mapping"))
+	if (builtin_settings.tone_mapping)
 		shaders_header += "#define ENABLE_TONE_MAPPING\n";
 
 	shaders_header += "#define FOG_START ";

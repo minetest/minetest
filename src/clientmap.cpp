@@ -26,6 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mapblock.h"
 #include "profiler.h"
 #include "settings.h"
+#include "settings_builtin.h"
 #include "camera.h"               // CameraModes
 #include "util/basic_macros.h"
 #include <algorithm>
@@ -54,9 +55,9 @@ ClientMap::ClientMap(
 	 *       (as opposed to the this local caching). This can be addressed in
 	 *       a later release.
 	 */
-	m_cache_trilinear_filter  = g_settings->getBool("trilinear_filter");
-	m_cache_bilinear_filter   = g_settings->getBool("bilinear_filter");
-	m_cache_anistropic_filter = g_settings->getBool("anisotropic_filter");
+	m_cache_trilinear_filter  = builtin_settings.trilinear_filter;
+	m_cache_bilinear_filter   = builtin_settings.bilinear_filter;
+	m_cache_anistropic_filter = builtin_settings.anisotropic_filter;
 
 }
 
@@ -159,7 +160,7 @@ void ClientMap::updateDrawList()
 	// No occlusion culling when free_move is on and camera is
 	// inside ground
 	bool occlusion_culling_enabled = true;
-	if (g_settings->getBool("free_move")) {
+	if (builtin_settings.free_move) {
 		MapNode n = getNodeNoEx(cam_pos_nodes);
 		if (n.getContent() == CONTENT_IGNORE ||
 				m_nodedef->get(n).solidness == 2)
@@ -647,7 +648,7 @@ void ClientMap::renderPostFx(CameraMode cam_mode)
 	// - Do not if player is in third person mode
 	const ContentFeatures& features = m_nodedef->get(n);
 	video::SColor post_effect_color = features.post_effect_color;
-	if(features.solidness == 2 && !(g_settings->getBool("noclip") &&
+	if(features.solidness == 2 && !(builtin_settings.noclip &&
 			m_client->checkLocalPrivilege("noclip")) &&
 			cam_mode == CAMERA_MODE_FIRST)
 	{

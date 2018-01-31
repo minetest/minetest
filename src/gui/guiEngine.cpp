@@ -242,7 +242,7 @@ void GUIEngine::run()
 		// First condition is cheaper
 		if (previous_screen_size != current_screen_size &&
 				current_screen_size != irr::core::dimension2d<u32>(0,0) &&
-				g_settings->getBool("autosave_screensize")) {
+				builtin_settings.autosave_screensize) {
 			g_settings->setU16("screen_w", current_screen_size.Width);
 			g_settings->setU16("screen_h", current_screen_size.Height);
 			previous_screen_size = current_screen_size;

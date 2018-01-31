@@ -52,11 +52,11 @@ QueuedMeshUpdate::~QueuedMeshUpdate()
 MeshUpdateQueue::MeshUpdateQueue(Client *client):
 	m_client(client)
 {
-	m_cache_enable_shaders = g_settings->getBool("enable_shaders");
+	m_cache_enable_shaders = builtin_settings.enable_shaders;
 	m_cache_use_tangent_vertices = m_cache_enable_shaders && (
-		g_settings->getBool("enable_bumpmapping") ||
-		g_settings->getBool("enable_parallax_occlusion"));
-	m_cache_smooth_lighting = g_settings->getBool("smooth_lighting");
+		builtin_settings.enable_bumpmapping ||
+		builtin_settings.enable_parallax_occlusion);
+	m_cache_smooth_lighting = builtin_settings.smooth_lighting;
 	m_meshgen_block_cache_size = builtin_settings.meshgen_block_cache_size;
 }
 

@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "server.h"
 #include "log.h"
 #include "settings.h"
+#include "settings_builtin.h"
 #include "cpp_api/s_internal.h"
 #include "lua_api/l_areastore.h"
 #include "lua_api/l_base.h"
@@ -58,7 +59,7 @@ ServerScripting::ServerScripting(Server* server):
 
 	SCRIPTAPI_PRECHECKHEADER
 
-	if (g_settings->getBool("secure.enable_security")) {
+	if (builtin_settings.secure_enable_security) {
 		initializeSecurity();
 	}
 

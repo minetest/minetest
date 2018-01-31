@@ -23,6 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "terminal_chat_console.h"
 #include "porting.h"
 #include "settings.h"
+#include "settings_builtin.h"
 #include "util/numeric.h"
 #include "util/string.h"
 #include "chat_interface.h"

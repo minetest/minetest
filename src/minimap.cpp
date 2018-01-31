@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client.h"
 #include "clientmap.h"
 #include "settings.h"
+#include "settings_builtin.h"
 #include "shader.h"
 #include "mapblock.h"
 #include "client/renderingengine.h"
@@ -182,9 +183,9 @@ Minimap::Minimap(Client *client)
 	m_angle = 0.f;
 
 	// Initialize static settings
-	m_enable_shaders = g_settings->getBool("enable_shaders");
+	m_enable_shaders = builtin_settings.enable_shaders;
 	m_surface_mode_scan_height =
-		g_settings->getBool("minimap_double_scan_height") ? 256 : 128;
+		builtin_settings.minimap_double_scan_height ? 256 : 128;
 
 	// Initialize minimap data
 	data = new MinimapData;
@@ -193,7 +194,7 @@ Minimap::Minimap(Client *client)
 	data->map_invalidated   = true;
 	data->texture           = NULL;
 	data->heightmap_texture = NULL;
-	data->minimap_shape_round = g_settings->getBool("minimap_shape_round");
+	data->minimap_shape_round = builtin_settings.minimap_shape_round;
 
 	// Get round minimap textures
 	data->minimap_mask_round = driver->createImage(

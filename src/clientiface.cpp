@@ -60,7 +60,7 @@ RemoteClient::RemoteClient() :
 	m_max_send_distance(builtin_settings.max_block_send_distance),
 	m_block_optimize_distance(builtin_settings.block_send_optimize_distance),
 	m_max_gen_distance(builtin_settings.max_block_generate_distance),
-	m_occ_cull(g_settings->getBool("server_side_occlusion_culling"))
+	m_occ_cull(builtin_settings.server_side_occlusion_culling)
 {
 }
 

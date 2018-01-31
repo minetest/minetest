@@ -91,7 +91,7 @@ Hud::Hud(gui::IGUIEnvironment *guienv, Client *client, LocalPlayer *player,
 
 	m_selection_material.Lighting = false;
 
-	if (g_settings->getBool("enable_shaders")) {
+	if (builtin_settings.enable_shaders) {
 		IShaderSource *shdrsrc = client->getShaderSource();
 		u16 shader_id = shdrsrc->getShader(
 			m_mode == HIGHLIGHT_HALO ? "selection_shader" : "default_shader", 1, 1);

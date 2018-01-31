@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "log.h"
 #include "settings.h"
+#include "settings_builtin.h"
 #include "network/socket.h"
 
 class TestSocket : public TestBase {
@@ -47,7 +48,7 @@ void TestSocket::runTests(IGameDef *gamedef)
 {
 	TEST(testIPv4Socket);
 
-	if (g_settings->getBool("enable_ipv6"))
+	if (builtin_settings.enable_ipv6)
 		TEST(testIPv6Socket);
 }
 

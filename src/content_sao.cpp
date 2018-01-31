@@ -29,6 +29,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "scripting_server.h"
 #include "genericobject.h"
 #include "settings.h"
+#include "settings_builtin.h"
 #include <algorithm>
 
 std::map<u16, ServerActiveObject::Factory> ServerActiveObject::m_types;
@@ -819,7 +820,7 @@ PlayerSAO::PlayerSAO(ServerEnvironment *env_, RemotePlayer *player_, session_t p
 	m_hp = m_prop.hp_max;
 	m_breath = m_prop.breath_max;
 	// Disable zoom in survival mode using a value of 0
-	m_prop.zoom_fov = g_settings->getBool("creative_mode") ? 15.0f : 0.0f;
+	m_prop.zoom_fov = builtin_settings.creative_mode ? 15.0f : 0.0f;
 }
 
 PlayerSAO::~PlayerSAO()
@@ -1196,7 +1197,7 @@ int PlayerSAO::punch(v3f dir,
 		return 0;
 
 	// No effect if PvP disabled
-	if (!g_settings->getBool("enable_pvp")) {
+	if (!builtin_settings.enable_pvp) {
 		if (puncher->getType() == ACTIVEOBJECT_TYPE_PLAYER) {
 			std::string str = gob_cmd_punched(0, getHP());
 			// create message and add to list
@@ -1265,7 +1266,7 @@ void PlayerSAO::setHP(s16 hp)
 	else if (hp > m_prop.hp_max)
 		hp = m_prop.hp_max;
 
-	if (hp < oldhp && !g_settings->getBool("enable_damage")) {
+	if (hp < oldhp && !builtin_settings.enable_damage) {
 		return;
 	}
 
@@ -1385,7 +1386,7 @@ std::string PlayerSAO::getPropertyPacket()
 bool PlayerSAO::checkMovementCheat()
 {
 	if (isAttached() || m_is_singleplayer ||
-			g_settings->getBool("disable_anticheat")) {
+			builtin_settings.disable_anticheat) {
 		m_last_good_position = m_base_position;
 		return false;
 	}

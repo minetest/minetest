@@ -73,7 +73,7 @@ Camera::Camera(MapDrawControl &draw_control, Client *client):
 	m_cache_fall_bobbing_amount = builtin_settings.fall_bobbing_amount;
 	m_cache_view_bobbing_amount = builtin_settings.view_bobbing_amount;
 	m_cache_fov                 = builtin_settings.fov;
-	m_arm_inertia               = g_settings->getBool("arm_inertia");
+	m_arm_inertia               = builtin_settings.arm_inertia;
 	m_nametags.clear();
 }
 
@@ -98,7 +98,7 @@ bool Camera::successfullyCreated(std::string &error_message)
 		error_message.clear();
 	}
 
-	if (g_settings->getBool("enable_client_modding")) {
+	if (builtin_settings.enable_client_modding) {
 		m_client->getScript()->on_camera_ready(this);
 	}
 	return error_message.empty();
@@ -534,7 +534,7 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 busytime, f32 tool_r
 	const bool swimming = (movement_XZ || player->swimming_vertical) && player->in_liquid;
 	const bool climbing = movement_Y && player->is_climbing;
 	if ((walking || swimming || climbing) &&
-			(!g_settings->getBool("free_move") || !m_client->checkLocalPrivilege("fly"))) {
+			(!builtin_settings.free_move || !m_client->checkLocalPrivilege("fly"))) {
 		// Start animation
 		m_view_bobbing_state = 1;
 		m_view_bobbing_speed = MYMIN(speed.getLength(), 70);

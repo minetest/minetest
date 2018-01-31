@@ -211,17 +211,17 @@ void sendAnnounce(AnnounceAction action,
 		server["address"] = g_settings->get("server_address");
 	}
 	if (action != AA_DELETE) {
-		bool strict_checking = g_settings->getBool("strict_protocol_version_checking");
+		bool strict_checking = builtin_settings.strict_protocol_version_checking;
 		server["name"]         = g_settings->get("server_name");
 		server["description"]  = g_settings->get("server_description");
 		server["version"]      = g_version_string;
 		server["proto_min"]    = strict_checking ? LATEST_PROTOCOL_VERSION : SERVER_PROTOCOL_VERSION_MIN;
 		server["proto_max"]    = strict_checking ? LATEST_PROTOCOL_VERSION : SERVER_PROTOCOL_VERSION_MAX;
 		server["url"]          = g_settings->get("server_url");
-		server["creative"]     = g_settings->getBool("creative_mode");
-		server["damage"]       = g_settings->getBool("enable_damage");
-		server["password"]     = g_settings->getBool("disallow_empty_password");
-		server["pvp"]          = g_settings->getBool("enable_pvp");
+		server["creative"]     = (bool) builtin_settings.creative_mode;
+		server["damage"]       = (bool) builtin_settings.enable_damage;
+		server["password"]     = (bool) builtin_settings.disallow_empty_password;
+		server["pvp"]          = (bool) builtin_settings.enable_pvp;
 		server["uptime"]       = (int) uptime;
 		server["game_time"]    = game_time;
 		server["clients"]      = (int) clients_names.size();
@@ -236,7 +236,7 @@ void sendAnnounce(AnnounceAction action,
 
 	if (action == AA_START) {
 		server["dedicated"]         = dedicated;
-		server["rollback"]          = g_settings->getBool("enable_rollback_recording");
+		server["rollback"]          = (bool) builtin_settings.enable_rollback_recording;
 		server["mapgen"]            = mg_name;
 		server["privs"]             = g_settings->get("default_privs");
 		server["can_see_far_names"] = builtin_settings.player_transfer_distance <= 0;

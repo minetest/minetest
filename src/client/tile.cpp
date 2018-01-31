@@ -439,9 +439,9 @@ TextureSource::TextureSource()
 	// Cache some settings
 	// Note: Since this is only done once, the game must be restarted
 	// for these settings to take effect
-	m_setting_trilinear_filter = g_settings->getBool("trilinear_filter");
-	m_setting_bilinear_filter = g_settings->getBool("bilinear_filter");
-	m_setting_anisotropic_filter = g_settings->getBool("anisotropic_filter");
+	m_setting_trilinear_filter = builtin_settings.trilinear_filter;
+	m_setting_bilinear_filter = builtin_settings.bilinear_filter;
+	m_setting_anisotropic_filter = builtin_settings.anisotropic_filter;
 }
 
 TextureSource::~TextureSource()
@@ -792,7 +792,7 @@ video::ITexture* TextureSource::generateTextureFromMesh(
 		(renderer.find("Mali") != std::string::npos) ||
 		(renderer.find("Immersion") != std::string::npos) ||
 		(renderer.find("Tegra") != std::string::npos) ||
-		g_settings->getBool("inventory_image_hack")
+		builtin_settings.inventory_image_hack
 		) {
 		// Get a scene manager
 		scene::ISceneManager *smgr_main = m_device->getSceneManager();
@@ -1770,7 +1770,7 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 		else if (str_starts_with(part_of_name, "[applyfiltersformesh"))
 		{
 			// Apply the "clean transparent" filter, if configured.
-			if (g_settings->getBool("texture_clean_transparent"))
+			if (builtin_settings.texture_clean_transparent)
 				imageCleanTransparent(baseimg, 127);
 
 			/* Upscale textures to user's requested minimum size.  This is a trick to make

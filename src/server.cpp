@@ -282,7 +282,7 @@ Server::Server(
 	// Initialize mapgens
 	m_emerge->initMapgens(servermap->getMapgenParams());
 
-	m_enable_rollback_recording = g_settings->getBool("enable_rollback_recording");
+	m_enable_rollback_recording = builtin_settings.enable_rollback_recording;
 	if (m_enable_rollback_recording) {
 		// Create rollback manager
 		m_rollback = new RollbackManager(m_path_world, this);
@@ -434,7 +434,7 @@ void Server::step(float dtime)
 		if (!m_simple_singleplayer_mode) {
 			m_env->kickAllPlayers(SERVER_ACCESSDENIED_CRASH,
 				g_settings->get("kick_msg_crash"),
-				g_settings->getBool("ask_reconnect_on_crash"));
+				builtin_settings.ask_reconnect_on_crash);
 		}
 		throw ServerError("AsyncErr: " + async_err);
 	}
@@ -572,7 +572,7 @@ void Server::AsyncRunStep(bool initial_step)
 	{
 		float &counter = m_masterserver_timer;
 		if (!isSingleplayer() && (!counter || counter >= 300.0) &&
-				g_settings->getBool("server_announce")) {
+				builtin_settings.server_announce) {
 			ServerList::sendAnnounce(counter ? ServerList::AA_UPDATE :
 						ServerList::AA_START,
 					m_bind_addr.getPort(),
@@ -1058,7 +1058,7 @@ PlayerSAO* Server::StageTwoClientInit(session_t peer_id)
 	SendPlayerBreath(playersao);
 
 	// Note things in chat if not in simple singleplayer mode
-	if (!m_simple_singleplayer_mode && g_settings->getBool("show_statusline_on_connect")) {
+	if (!m_simple_singleplayer_mode && builtin_settings.show_statusline_on_connect) {
 		// Send information about server to player in chat
 		SendChatMessage(peer_id, ChatMessage(CHATMESSAGE_TYPE_SYSTEM, getStatusString()));
 	}
@@ -1417,7 +1417,7 @@ void Server::SendMovement(session_t peer_id)
 
 void Server::SendPlayerHPOrDie(PlayerSAO *playersao)
 {
-	if (!g_settings->getBool("enable_damage"))
+	if (!builtin_settings.enable_damage)
 		return;
 
 	session_t peer_id   = playersao->getPeerID();
@@ -2757,7 +2757,7 @@ std::wstring Server::handleChat(const std::string &name, const std::wstring &wna
 	RollbackScopeActor rollback_scope(m_rollback,
 		std::string("player:") + name);
 
-	if (g_settings->getBool("strip_color_codes"))
+	if (builtin_settings.strip_color_codes)
 		wmessage = unescape_enriched(wmessage);
 
 	if (player) {
@@ -3589,7 +3589,7 @@ void dedicated_server_loop(Server &server, bool &kill)
 
 	infostream << "Dedicated server quitting" << std::endl;
 #if USE_CURL
-	if (g_settings->getBool("server_announce"))
+	if (builtin_settings.server_announce)
 		ServerList::sendAnnounce(ServerList::AA_DELETE,
 			server.m_bind_addr.getPort());
 #endif

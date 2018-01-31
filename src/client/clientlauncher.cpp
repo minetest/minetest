@@ -34,6 +34,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "version.h"
 #include "renderingengine.h"
 #include "network/networkexceptions.h"
+#include "settings.h"
+#include "settings_builtin.h"
 
 /* mainmenumanager.h
  */
@@ -212,7 +214,7 @@ bool ClientLauncher::run(GameParams &game_params, const Settings &cmd_args)
 			}
 
 			RenderingEngine::get_video_driver()->setTextureCreationFlag(
-					video::ETCF_CREATE_MIP_MAPS, g_settings->getBool("mip_map"));
+					video::ETCF_CREATE_MIP_MAPS, builtin_settings.mip_map);
 
 #ifdef HAVE_TOUCHSCREENGUI
 			receiver->m_touchscreengui = new TouchScreenGUI(device, receiver);
@@ -297,9 +299,9 @@ void ClientLauncher::init_args(GameParams &game_params, const Settings &cmd_args
 
 	list_video_modes = cmd_args.getFlag("videomodes");
 
-	use_freetype = g_settings->getBool("freetype");
+	use_freetype = builtin_settings.freetype;
 
-	random_input = g_settings->getBool("random_input")
+	random_input = builtin_settings.random_input
 			|| cmd_args.getFlag("random-input");
 }
 
@@ -317,7 +319,7 @@ void ClientLauncher::init_input()
 	else
 		input = new RealInputHandler(receiver);
 
-	if (g_settings->getBool("enable_joysticks")) {
+	if (builtin_settings.enable_joysticks) {
 		irr::core::array<irr::SJoystickInfo> infos;
 		std::vector<irr::SJoystickInfo> joystick_infos;
 

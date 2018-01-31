@@ -30,6 +30,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "profiler.h"
 #include "renderingengine.h"
 #include "version.h"
+#include "settings_builtin.h"
 
 inline static const char *yawToDirectionString(int yaw)
 {
@@ -191,7 +192,7 @@ void GameUI::initFlags()
 	memset(&m_flags, 0, sizeof(GameUI::Flags));
 	m_flags.show_chat = true;
 	m_flags.show_hud = true;
-	m_flags.show_debug = g_settings->getBool("show_debug");
+	m_flags.show_debug = builtin_settings.show_debug;
 }
 
 void GameUI::showMinimap(bool show)

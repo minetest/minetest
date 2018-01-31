@@ -143,7 +143,7 @@ void Server::handleCommand_Init(NetworkPacket* pkt)
 
 	client->net_proto_version = net_proto_version;
 
-	if ((g_settings->getBool("strict_protocol_version_checking") &&
+	if ((builtin_settings.strict_protocol_version_checking &&
 			net_proto_version != LATEST_PROTOCOL_VERSION) ||
 			net_proto_version < SERVER_PROTOCOL_VERSION_MIN ||
 			net_proto_version > SERVER_PROTOCOL_VERSION_MAX) {
@@ -801,7 +801,7 @@ void Server::handleCommand_Damage(NetworkPacket* pkt)
 		return;
 	}
 
-	if (g_settings->getBool("enable_damage")) {
+	if (builtin_settings.enable_damage) {
 		if (playersao->isDead()) {
 			verbosestream << "Server::ProcessData(): Info: "
 				"Ignoring damage as player " << player->getName()
@@ -1533,7 +1533,7 @@ void Server::handleCommand_FirstSrp(NetworkPacket* pkt)
 		}
 
 		if (!isSingleplayer() &&
-				g_settings->getBool("disallow_empty_password") &&
+				builtin_settings.disallow_empty_password &&
 				is_empty == 1) {
 			actionstream << "Server: " << playername
 					<< " supplied empty password from " << addr_s << std::endl;
@@ -1773,7 +1773,7 @@ void Server::handleCommand_ModChannelJoin(NetworkPacket *pkt)
 		pkt->getPeerId());
 
 	// Send signal to client to notify join succeed or not
-	if (g_settings->getBool("enable_mod_channels") &&
+	if (builtin_settings.enable_mod_channels &&
 			m_modchannel_mgr->joinChannel(channel_name, pkt->getPeerId())) {
 		resp_pkt << (u8) MODCHANNEL_SIGNAL_JOIN_OK;
 		infostream << "Peer " << pkt->getPeerId() << " joined channel " << channel_name
@@ -1797,7 +1797,7 @@ void Server::handleCommand_ModChannelLeave(NetworkPacket *pkt)
 		pkt->getPeerId());
 
 	// Send signal to client to notify join succeed or not
-	if (g_settings->getBool("enable_mod_channels") &&
+	if (builtin_settings.enable_mod_channels &&
 			m_modchannel_mgr->leaveChannel(channel_name, pkt->getPeerId())) {
 		resp_pkt << (u8)MODCHANNEL_SIGNAL_LEAVE_OK;
 		infostream << "Peer " << pkt->getPeerId() << " left channel " << channel_name
@@ -1820,7 +1820,7 @@ void Server::handleCommand_ModChannelMsg(NetworkPacket *pkt)
 			<< " on channel " << channel_name << " message: " << channel_msg << std::endl;
 
 	// If mod channels are not enabled, discard message
-	if (!g_settings->getBool("enable_mod_channels")) {
+	if (!builtin_settings.enable_mod_channels) {
 		return;
 	}
 

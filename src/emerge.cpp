@@ -127,7 +127,7 @@ EmergeManager::EmergeManager(Server *server)
 	// This is because the *only* thread ever starting or stopping
 	// EmergeThreads should be the ServerThread.
 
-	enable_mapgen_debug_info = g_settings->getBool("enable_mapgen_debug_info");
+	enable_mapgen_debug_info = builtin_settings.enable_mapgen_debug_info;
 
 	// If unspecified, leave a proc for the main thread and one for
 	// some other misc thread

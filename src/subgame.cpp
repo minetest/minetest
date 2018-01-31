@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "porting.h"
 #include "filesys.h"
 #include "settings.h"
+#include "settings_builtin.h"
 #include "log.h"
 #include "util/strfnd.h"
 #include "defaultsettings.h"  // for override_default_settings
@@ -288,8 +289,8 @@ bool loadGameConfAndInitWorld(const std::string &path, const SubgameSpec &gamesp
 		conf.set("gameid", gamespec.id);
 		conf.set("backend", "sqlite3");
 		conf.set("player_backend", "sqlite3");
-		conf.setBool("creative_mode", g_settings->getBool("creative_mode"));
-		conf.setBool("enable_damage", g_settings->getBool("enable_damage"));
+		conf.setBool("creative_mode", builtin_settings.creative_mode);
+		conf.setBool("enable_damage", builtin_settings.enable_damage);
 
 		if (!conf.updateConfigFile(worldmt_path.c_str()))
 			return false;

@@ -19,6 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "guiscalingfilter.h"
 #include "imagefilters.h"
 #include "settings.h"
+#include "settings_builtin.h"
 #include "util/numeric.h"
 #include <cstdio>
 #include "client/renderingengine.h"
@@ -40,7 +41,7 @@ std::map<io::path, video::ITexture *> g_txrCache;
  */
 void guiScalingCache(io::path key, video::IVideoDriver *driver, video::IImage *value)
 {
-	if (!g_settings->getBool("gui_scaling_filter"))
+	if (!builtin_settings.gui_scaling_filter)
 		return;
 	video::IImage *copied = driver->createImage(value->getColorFormat(),
 			value->getDimension());
@@ -73,7 +74,7 @@ video::ITexture *guiScalingResizeCached(video::IVideoDriver *driver,
 {
 	if (src == NULL)
 		return src;
-	if (!g_settings->getBool("gui_scaling_filter"))
+	if (!builtin_settings.gui_scaling_filter)
 		return src;
 
 	// Calculate scaled texture name.
@@ -97,7 +98,7 @@ video::ITexture *guiScalingResizeCached(video::IVideoDriver *driver,
 	// If the image was not found, try to extract it from the texture.
 	video::IImage* srcimg = g_imgCache[origname];
 	if (srcimg == NULL) {
-		if (!g_settings->getBool("gui_scaling_filter_txr2img"))
+		if (!builtin_settings.gui_scaling_filter_txr2img)
 			return src;
 		srcimg = driver->createImageFromData(src->getColorFormat(),
 			src->getSize(), src->lock(), false);

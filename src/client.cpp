@@ -105,12 +105,12 @@ Client::Client(
 	// Add local player
 	m_env.setLocalPlayer(new LocalPlayer(this, playername));
 
-	if (g_settings->getBool("enable_minimap")) {
+	if (builtin_settings.enable_minimap) {
 		m_minimap = new Minimap(this);
 	}
 	m_cache_save_interval = builtin_settings.server_map_save_interval;
 
-	m_modding_enabled = g_settings->getBool("enable_client_modding");
+	m_modding_enabled = builtin_settings.enable_client_modding;
 	m_script = new ClientScripting(this);
 	m_env.setScript(m_script);
 	m_script->setEnv(&m_env);
@@ -743,7 +743,7 @@ void Client::initLocalMapSaving(const Address &address,
 		const std::string &hostname,
 		bool is_local_server)
 {
-	if (!g_settings->getBool("enable_local_map_saving") || is_local_server) {
+	if (!builtin_settings.enable_local_map_saving || is_local_server) {
 		return;
 	}
 
@@ -1698,7 +1698,7 @@ void Client::afterContentReceived()
 	m_state = LC_Ready;
 	sendReady();
 
-	if (g_settings->getBool("enable_client_modding")) {
+	if (builtin_settings.enable_client_modding) {
 		m_script->on_client_ready(m_env.getLocalPlayer());
 	}
 
