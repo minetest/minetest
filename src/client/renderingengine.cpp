@@ -543,7 +543,7 @@ static float calcDisplayDensity()
 	}
 
 	/* return manually specified dpi */
-	return g_settings->getFloat("screen_dpi") / 96.0;
+	return builtin_settings.screen_dpi / 96.0;
 }
 
 float RenderingEngine::getDisplayDensity()
@@ -555,7 +555,7 @@ float RenderingEngine::getDisplayDensity()
 #else  // XORG_USED
 float RenderingEngine::getDisplayDensity()
 {
-	return g_settings->getFloat("screen_dpi") / 96.0;
+	return builtin_settings.screen_dpi / 96.0;
 }
 #endif // XORG_USED
 

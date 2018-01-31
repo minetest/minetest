@@ -567,7 +567,7 @@ void Map::transformLiquids(std::map<v3s16, MapBlock*> &modified_blocks,
 	 */
 	if (m_transforming_liquid.size() > loop_max * 2) {
 		// "Burst" mode
-		float server_step = g_settings->getFloat("dedicated_server_step");
+		float server_step = builtin_settings.dedicated_server_step;
 		if (m_transforming_liquid_loop_count_multiplier - 1.0 < server_step)
 			m_transforming_liquid_loop_count_multiplier *= 1.0 + server_step / 10;
 	} else {

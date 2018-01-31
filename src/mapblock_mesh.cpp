@@ -267,7 +267,7 @@ static u16 getSmoothLightCombined(const v3s16 &p,
 	}
 
 	if (ambient_occlusion > 4) {
-		const float ao_gamma = rangelim(0.0 + builtin_settings.ambient_occlusion_gamma, 0.25, 4.0);
+		const float ao_gamma = rangelim(builtin_settings.ambient_occlusion_gamma.load(), 0.25, 4.0);
 
 		// Table of gamma space multiply factors.
 		const float light_amount[3] = {

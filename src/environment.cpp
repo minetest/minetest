@@ -24,6 +24,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "serverobject.h"
 #include "scripting_server.h"
 #include "server.h"
+#include "settings.h"
+#include "settings_builtin.h"
 #include "daynightratio.h"
 #include "emerge.h"
 
@@ -34,9 +36,9 @@ Environment::Environment(IGameDef *gamedef):
 	m_gamedef(gamedef)
 {
 	m_cache_enable_shaders = g_settings->getBool("enable_shaders");
-	m_cache_active_block_mgmt_interval = g_settings->getFloat("active_block_mgmt_interval");
-	m_cache_abm_interval = g_settings->getFloat("abm_interval");
-	m_cache_nodetimer_interval = g_settings->getFloat("nodetimer_interval");
+	m_cache_active_block_mgmt_interval = builtin_settings.active_block_mgmt_interval;
+	m_cache_abm_interval = builtin_settings.abm_interval;
+	m_cache_nodetimer_interval = builtin_settings.nodetimer_interval;
 
 	m_time_of_day = builtin_settings.world_start_time;
 	m_time_of_day_f = (float)m_time_of_day / 24000.0f;

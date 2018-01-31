@@ -156,7 +156,7 @@ JoystickLayout create_xbox_layout()
 }
 
 JoystickController::JoystickController() :
-		doubling_dtime(g_settings->getFloat("repeat_joystick_button_time"))
+		doubling_dtime(builtin_settings.repeat_joystick_button_time)
 {
 	for (float &i : m_past_pressed_time) {
 		i = 0;

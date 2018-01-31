@@ -27,6 +27,7 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #include <IGUIStaticText.h>
 #include <IGUIFont.h>
 #include "settings.h"
+#include "settings_builtin.h"
 
 #include "gettext.h"
 
@@ -79,7 +80,7 @@ void GUIVolumeChange::regenerateGui(v2u32 screensize)
 	recalculateAbsolutePosition(false);
 
 	v2s32 size = DesiredRect.getSize();
-	int volume = (int)(g_settings->getFloat("sound_volume") * 100);
+	int volume = (int)(builtin_settings.sound_volume * 100);
 
 	/*
 		Add stuff

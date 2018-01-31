@@ -437,7 +437,7 @@ void TouchScreenGUI::initButton(touch_gui_button_id id, rect<s32> button_rect,
 }
 
 static int getMaxControlPadSize(float density) {
-	return 200 * density * g_settings->getFloat("hud_scaling");
+	return 200 * density * builtin_settings.hud_scaling;
 }
 
 int TouchScreenGUI::getGuiButtonSize()
@@ -815,7 +815,7 @@ void TouchScreenGUI::translateEvent(const SEvent &event)
 					s32 dy = Y - m_pointerpos[event.TouchInput.ID].Y;
 
 					/* adapt to similar behaviour as pc screen */
-					double d         = g_settings->getFloat("mouse_sensitivity") *4;
+					double d         = builtin_settings.mouse_sensitivity *4;
 					double old_yaw   = m_camera_yaw_change;
 					double old_pitch = m_camera_pitch;
 

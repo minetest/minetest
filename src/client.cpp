@@ -44,6 +44,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "modchannels.h"
 #include "mods.h"
 #include "profiler.h"
+#include "settings.h"
+#include "settings_builtin.h"
 #include "shader.h"
 #include "gettext.h"
 #include "clientmap.h"
@@ -349,7 +351,7 @@ void Client::step(float dtime)
 		ScopeProfiler sp(g_profiler, "Client: map timer and unload");
 		std::vector<v3s16> deleted_blocks;
 		m_env.getMap().timerUpdate(map_timer_and_unload_dtime,
-			g_settings->getFloat("client_unload_unused_data_timeout"),
+			builtin_settings.client_unload_unused_data_timeout,
 			builtin_settings.client_mapblock_limit,
 			&deleted_blocks);
 
@@ -585,7 +587,7 @@ void Client::step(float dtime)
 	m_mod_storage_save_timer -= dtime;
 	if (m_mod_storage_save_timer <= 0.0f) {
 		verbosestream << "Saving registered mod storages." << std::endl;
-		m_mod_storage_save_timer = g_settings->getFloat("server_map_save_interval");
+		m_mod_storage_save_timer = builtin_settings.server_map_save_interval;
 		for (std::unordered_map<std::string, ModMetadata *>::const_iterator
 				it = m_mod_storages.begin(); it != m_mod_storages.end(); ++it) {
 			if (it->second->isModified()) {

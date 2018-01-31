@@ -318,7 +318,7 @@ void Server::handleCommand_Init2(NetworkPacket* pkt)
 
 	// Send time of day
 	u16 time = m_env->getTimeOfDay();
-	float time_speed = g_settings->getFloat("time_speed");
+	float time_speed = builtin_settings.time_speed;
 	SendTimeOfDay(pkt->getPeerId(), time, time_speed);
 
 	SendCSMFlavourLimits(pkt->getPeerId());

@@ -20,7 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "light.h"
 #include <cmath>
 #include "util/numeric.h"
-#include "settings.h"
+#include "settings_builtin.h"
 
 #ifndef SERVER
 
@@ -33,16 +33,16 @@ const u8 *light_decode_table = light_LUT;
 void set_light_table(float gamma)
 {
 // Lighting curve derivatives
-	const float alpha = g_settings->getFloat("lighting_alpha");
-	const float beta  = g_settings->getFloat("lighting_beta");
+	const float alpha = builtin_settings.lighting_alpha;
+	const float beta  = builtin_settings.lighting_beta;
 // Lighting curve coefficients
 	const float a = alpha + beta - 2.0f;
 	const float b = 3.0f - 2.0f * alpha - beta;
 	const float c = alpha;
 // Mid boost
-	const float d = g_settings->getFloat("lighting_boost");
-	const float e = g_settings->getFloat("lighting_boost_center");
-	const float f = g_settings->getFloat("lighting_boost_spread");
+	const float d = builtin_settings.lighting_boost;
+	const float e = builtin_settings.lighting_boost_center;
+	const float f = builtin_settings.lighting_boost_spread;
 // Gamma correction
 	gamma = rangelim(gamma, 0.5f, 3.0f);
 

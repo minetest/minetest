@@ -56,7 +56,7 @@ std::string ClientInterface::state2Name(ClientState state)
 RemoteClient::RemoteClient() :
 	m_max_simul_sends(builtin_settings.max_simultaneous_block_sends_per_client),
 	m_min_time_from_building(
-		g_settings->getFloat("full_block_send_enable_min_time_from_building")),
+		builtin_settings.full_block_send_enable_min_time_from_building),
 	m_max_send_distance(builtin_settings.max_block_send_distance),
 	m_block_optimize_distance(builtin_settings.block_send_optimize_distance),
 	m_max_gen_distance(builtin_settings.max_block_generate_distance),

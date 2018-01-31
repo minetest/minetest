@@ -50,7 +50,7 @@ Hud::Hud(gui::IGUIEnvironment *guienv, Client *client, LocalPlayer *player,
 	this->player      = player;
 	this->inventory   = inventory;
 
-	m_hud_scaling      = g_settings->getFloat("hud_scaling");
+	m_hud_scaling      = builtin_settings.hud_scaling;
 	m_hotbar_imagesize = floor(HOTBAR_IMAGE_SIZE *
 		RenderingEngine::getDisplayDensity() + 0.5f);
 	m_hotbar_imagesize *= m_hud_scaling;
@@ -457,7 +457,7 @@ void Hud::drawHotbar(u16 playeritem) {
 
 	const v2u32 &window_size = RenderingEngine::get_instance()->getWindowSize();
 	if ( (float) width / (float) window_size.X <=
-			g_settings->getFloat("hud_hotbar_max_width")) {
+			builtin_settings.hud_hotbar_max_width) {
 		if (player->hud_flags & HUD_FLAG_HOTBAR_VISIBLE) {
 			drawItems(pos, v2s32(0, 0), hotbar_itemcount, 0, mainlist, playeritem + 1, 0);
 		}

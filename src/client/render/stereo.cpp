@@ -21,13 +21,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "stereo.h"
 #include "camera.h"
 #include "constants.h"
-#include "settings.h"
+#include "settings_builtin.h"
 
 RenderingCoreStereo::RenderingCoreStereo(
 	IrrlichtDevice *_device, Client *_client, Hud *_hud)
 	: RenderingCore(_device, _client, _hud)
 {
-	eye_offset = BS * g_settings->getFloat("3d_paralax_strength");
+	eye_offset = BS * builtin_settings._3d_paralax_strength;
 }
 
 void RenderingCoreStereo::beforeDraw()

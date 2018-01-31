@@ -27,6 +27,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/container.h"
 #include "util/thread.h"
 #include "settings.h"
+#include "settings_builtin.h"
 #include <ICameraSceneNode.h>
 #include <IGPUProgrammingServices.h>
 #include <IMaterialRenderer.h>
@@ -655,10 +656,10 @@ ShaderInfo generate_shader(const std::string &name, u8 material_type, u8 drawtyp
 		shaders_header += "#define GENERATE_NORMALMAPS 0\n";
 	}
 	shaders_header += "#define NORMALMAPS_STRENGTH ";
-	shaders_header += ftos(g_settings->getFloat("normalmaps_strength"));
+	shaders_header += ftos(builtin_settings.normalmaps_strength);
 	shaders_header += "\n";
 	float sample_step;
-	int smooth = (int)g_settings->getFloat("normalmaps_smooth");
+	int smooth = (int)builtin_settings.normalmaps_smooth;
 	switch (smooth){
 	case 0:
 		sample_step = 0.0078125; // 1.0 / 128.0
@@ -681,10 +682,10 @@ ShaderInfo generate_shader(const std::string &name, u8 material_type, u8 drawtyp
 		shaders_header += "#define ENABLE_BUMPMAPPING\n";
 
 	if (g_settings->getBool("enable_parallax_occlusion")){
-		int mode = g_settings->getFloat("parallax_occlusion_mode");
-		float scale = g_settings->getFloat("parallax_occlusion_scale");
-		float bias = g_settings->getFloat("parallax_occlusion_bias");
-		int iterations = g_settings->getFloat("parallax_occlusion_iterations");
+		int mode = builtin_settings.parallax_occlusion_mode;
+		float scale = builtin_settings.parallax_occlusion_scale;
+		float bias = builtin_settings.parallax_occlusion_bias;
+		int iterations = builtin_settings.parallax_occlusion_iterations;
 		shaders_header += "#define ENABLE_PARALLAX_OCCLUSION\n";
 		shaders_header += "#define PARALLAX_OCCLUSION_MODE ";
 		shaders_header += itos(mode);
@@ -709,13 +710,13 @@ ShaderInfo generate_shader(const std::string &name, u8 material_type, u8 drawtyp
 	if (g_settings->getBool("enable_waving_water")){
 		shaders_header += "#define ENABLE_WAVING_WATER 1\n";
 		shaders_header += "#define WATER_WAVE_HEIGHT ";
-		shaders_header += ftos(g_settings->getFloat("water_wave_height"));
+		shaders_header += ftos(builtin_settings.water_wave_height);
 		shaders_header += "\n";
 		shaders_header += "#define WATER_WAVE_LENGTH ";
-		shaders_header += ftos(g_settings->getFloat("water_wave_length"));
+		shaders_header += ftos(builtin_settings.water_wave_length);
 		shaders_header += "\n";
 		shaders_header += "#define WATER_WAVE_SPEED ";
-		shaders_header += ftos(g_settings->getFloat("water_wave_speed"));
+		shaders_header += ftos(builtin_settings.water_wave_speed);
 		shaders_header += "\n";
 	} else{
 		shaders_header += "#define ENABLE_WAVING_WATER 0\n";
@@ -737,7 +738,7 @@ ShaderInfo generate_shader(const std::string &name, u8 material_type, u8 drawtyp
 		shaders_header += "#define ENABLE_TONE_MAPPING\n";
 
 	shaders_header += "#define FOG_START ";
-	shaders_header += ftos(rangelim(g_settings->getFloat("fog_start"), 0.0f, 0.99f));
+	shaders_header += ftos(rangelim(builtin_settings.fog_start, 0.0f, 0.99f));
 	shaders_header += "\n";
 
 	// Call addHighLevelShaderMaterial() or addShaderMaterial()

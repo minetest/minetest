@@ -174,7 +174,7 @@ Server::Server(
 	m_admin_chat(iface),
 	m_modchannel_mgr(new ModChannelMgr())
 {
-	m_lag = g_settings->getFloat("dedicated_server_step");
+	m_lag = builtin_settings.dedicated_server_step;
 
 	if (path_world.empty())
 		throw ServerError("Supplied empty world path");
@@ -302,7 +302,7 @@ Server::Server(
 		m_env->loadDefaultMeta();
 	}
 
-	m_liquid_transform_every = g_settings->getFloat("liquid_update");
+	m_liquid_transform_every = builtin_settings.liquid_update;
 	m_max_chatmessage_length = g_settings->getU16("chat_message_max_size");
 	m_csm_flavour_limits = g_settings->getU64("csm_flavour_limits");
 	m_csm_noderange_limit = g_settings->getU32("csm_flavour_noderange_limit");
@@ -480,7 +480,7 @@ void Server::AsyncRunStep(bool initial_step)
 	/*
 		Update time of day and overall game time
 	*/
-	m_env->setTimeOfDaySpeed(g_settings->getFloat("time_speed"));
+	m_env->setTimeOfDaySpeed(builtin_settings.time_speed);
 
 	/*
 		Send to clients at constant intervals
@@ -488,9 +488,9 @@ void Server::AsyncRunStep(bool initial_step)
 
 	m_time_of_day_send_timer -= dtime;
 	if(m_time_of_day_send_timer < 0.0) {
-		m_time_of_day_send_timer = g_settings->getFloat("time_send_interval");
+		m_time_of_day_send_timer = builtin_settings.time_send_interval;
 		u16 time = m_env->getTimeOfDay();
-		float time_speed = g_settings->getFloat("time_speed");
+		float time_speed = builtin_settings.time_speed;
 		SendTimeOfDay(PEER_ID_INEXISTENT, time, time_speed);
 	}
 
@@ -519,7 +519,7 @@ void Server::AsyncRunStep(bool initial_step)
 		// Run Map's timers and unload unused data
 		ScopeProfiler sp(g_profiler, "Server: map timer and unload");
 		m_env->getMap().timerUpdate(map_timer_and_unload_dtime,
-			g_settings->getFloat("server_unload_unused_data_timeout"),
+			builtin_settings.server_unload_unused_data_timeout,
 			U32_MAX);
 	}
 
@@ -716,7 +716,7 @@ void Server::AsyncRunStep(bool initial_step)
 		m_mod_storage_save_timer -= dtime;
 		if (m_mod_storage_save_timer <= 0.0f) {
 			infostream << "Saving registered mod storages." << std::endl;
-			m_mod_storage_save_timer = g_settings->getFloat("server_map_save_interval");
+			m_mod_storage_save_timer = builtin_settings.server_map_save_interval;
 			for (std::unordered_map<std::string, ModMetadata *>::const_iterator
 				it = m_mod_storages.begin(); it != m_mod_storages.end(); ++it) {
 				if (it->second->isModified()) {
@@ -1399,18 +1399,18 @@ void Server::SendMovement(session_t peer_id)
 
 	NetworkPacket pkt(TOCLIENT_MOVEMENT, 12 * sizeof(float), peer_id);
 
-	pkt << g_settings->getFloat("movement_acceleration_default");
-	pkt << g_settings->getFloat("movement_acceleration_air");
-	pkt << g_settings->getFloat("movement_acceleration_fast");
-	pkt << g_settings->getFloat("movement_speed_walk");
-	pkt << g_settings->getFloat("movement_speed_crouch");
-	pkt << g_settings->getFloat("movement_speed_fast");
-	pkt << g_settings->getFloat("movement_speed_climb");
-	pkt << g_settings->getFloat("movement_speed_jump");
-	pkt << g_settings->getFloat("movement_liquid_fluidity");
-	pkt << g_settings->getFloat("movement_liquid_fluidity_smooth");
-	pkt << g_settings->getFloat("movement_liquid_sink");
-	pkt << g_settings->getFloat("movement_gravity");
+	pkt << builtin_settings.movement_acceleration_default;
+	pkt << builtin_settings.movement_acceleration_air;
+	pkt << builtin_settings.movement_acceleration_fast;
+	pkt << builtin_settings.movement_speed_walk;
+	pkt << builtin_settings.movement_speed_crouch;
+	pkt << builtin_settings.movement_speed_fast;
+	pkt << builtin_settings.movement_speed_climb;
+	pkt << builtin_settings.movement_speed_jump;
+	pkt << builtin_settings.movement_liquid_fluidity;
+	pkt << builtin_settings.movement_liquid_fluidity_smooth;
+	pkt << builtin_settings.movement_liquid_sink;
+	pkt << builtin_settings.movement_gravity;
 
 	Send(&pkt);
 }
@@ -2621,7 +2621,7 @@ void Server::acceptAuth(session_t peer_id, bool forSudoMode)
 		client->allowed_sudo_mechs = sudo_auth_mechs;
 
 		resp_pkt << v3f(0,0,0) << (u64) m_env->getServerMap().getSeed()
-				<< g_settings->getFloat("dedicated_server_step")
+				<< builtin_settings.dedicated_server_step
 				<< sudo_auth_mechs;
 
 		Send(&resp_pkt);

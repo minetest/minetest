@@ -34,7 +34,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/string.h"
 #include "util/numeric.h"
 #include "util/string.h" // for parseColorString()
-#include "settings.h" // for settings
+#include "settings_builtin.h"
 #include "porting.h" // for dpi
 #include "guiscalingfilter.h"
 
@@ -82,7 +82,7 @@ GUITable::GUITable(gui::IGUIEnvironment *env,
 	core::rect<s32> relative_rect = m_scrollbar->getRelativePosition();
 	s32 width = (relative_rect.getWidth()/(2.0/3.0)) *
 			RenderingEngine::getDisplayDensity() *
-			g_settings->getFloat("gui_scaling");
+			builtin_settings.gui_scaling;
 	m_scrollbar->setRelativePosition(core::rect<s32>(
 			relative_rect.LowerRightCorner.X-width,relative_rect.UpperLeftCorner.Y,
 			relative_rect.LowerRightCorner.X,relative_rect.LowerRightCorner.Y

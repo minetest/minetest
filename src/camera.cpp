@@ -26,6 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <cmath>
 #include "client/renderingengine.h"
 #include "settings.h"
+#include "settings_builtin.h"
 #include "wieldmesh.h"
 #include "noise.h"         // easeCurve
 #include "sound.h"
@@ -69,9 +70,9 @@ Camera::Camera(MapDrawControl &draw_control, Client *client):
 	 *       (as opposed to the this local caching). This can be addressed in
 	 *       a later release.
 	 */
-	m_cache_fall_bobbing_amount = g_settings->getFloat("fall_bobbing_amount");
-	m_cache_view_bobbing_amount = g_settings->getFloat("view_bobbing_amount");
-	m_cache_fov                 = g_settings->getFloat("fov");
+	m_cache_fall_bobbing_amount = builtin_settings.fall_bobbing_amount;
+	m_cache_view_bobbing_amount = builtin_settings.view_bobbing_amount;
+	m_cache_fov                 = builtin_settings.fov;
 	m_arm_inertia               = g_settings->getBool("arm_inertia");
 	m_nametags.clear();
 }
@@ -548,8 +549,8 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 busytime, f32 tool_r
 
 void Camera::updateViewingRange()
 {
-	f32 viewing_range = g_settings->getFloat("viewing_range");
-	f32 near_plane = g_settings->getFloat("near_plane");
+	f32 viewing_range = builtin_settings.viewing_range;
+	f32 near_plane = builtin_settings.near_plane;
 
 	m_draw_control.wanted_range = std::fmin(adjustDist(viewing_range, getFovMax()), 4000);
 	m_cameranode->setNearValue(rangelim(near_plane, 0.0f, 0.5f) * BS);

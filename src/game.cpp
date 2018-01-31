@@ -1053,7 +1053,7 @@ void Game::run()
 
 	draw_times.last_time = RenderingEngine::get_timer_time();
 
-	set_light_table(g_settings->getFloat("display_gamma"));
+	set_light_table(builtin_settings.display_gamma);
 
 #ifdef __ANDROID__
 	m_cache_hold_aux1 = g_settings->getBool("fast_move")
@@ -1723,7 +1723,7 @@ void Game::processQueues()
 void Game::updateProfilers(const RunStats &stats, const FpsControl &draw_times, f32 dtime)
 {
 	float profiler_print_interval =
-			g_settings->getFloat("profiler_print_interval");
+			builtin_settings.profiler_print_interval;
 	bool print_to_log = true;
 
 	if (profiler_print_interval == 0) {
@@ -1874,7 +1874,7 @@ void Game::processKeyInput()
 	} else if (wasKeyDown(KeyType::CMD_LOCAL)) {
 		openConsole(0.2, L".");
 	} else if (wasKeyDown(KeyType::CONSOLE)) {
-		openConsole(core::clamp(g_settings->getFloat("console_height"), 0.1f, 1.0f));
+		openConsole(core::clamp(builtin_settings.console_height.load(), 0.1f, 1.0f));
 	} else if (wasKeyDown(KeyType::FREEMOVE)) {
 		toggleFreeMove();
 	} else if (wasKeyDown(KeyType::JUMP)) {
@@ -1891,7 +1891,7 @@ void Game::processKeyInput()
 		else
 			m_game_ui->showTranslatedStatusText("Sound unmuted");
 	} else if (wasKeyDown(KeyType::INC_VOLUME)) {
-		float new_volume = rangelim(g_settings->getFloat("sound_volume") + 0.1f, 0.0f, 1.0f);
+		float new_volume = rangelim(builtin_settings.sound_volume + 0.1f, 0.0f, 1.0f);
 		wchar_t buf[100];
 		g_settings->setFloat("sound_volume", new_volume);
 		const wchar_t *str = wgettext("Volume changed to %d%%");
@@ -1899,7 +1899,7 @@ void Game::processKeyInput()
 		delete[] str;
 		m_game_ui->showStatusText(buf);
 	} else if (wasKeyDown(KeyType::DEC_VOLUME)) {
-		float new_volume = rangelim(g_settings->getFloat("sound_volume") - 0.1f, 0.0f, 1.0f);
+		float new_volume = rangelim(builtin_settings.sound_volume - 0.1f, 0.0f, 1.0f);
 		wchar_t buf[100];
 		g_settings->setFloat("sound_volume", new_volume);
 		const wchar_t *str = wgettext("Volume changed to %d%%");
@@ -2865,7 +2865,7 @@ void Game::updateSound(f32 dtime)
 		sound->setListenerGain(0.0f);
 	} else {
 		// Check if volume is in the proper range, else fix it.
-		float old_volume = g_settings->getFloat("sound_volume");
+		float old_volume = builtin_settings.sound_volume;
 		float new_volume = rangelim(old_volume, 0.0f, 1.0f);
 		sound->setListenerGain(new_volume);
 
@@ -3887,8 +3887,8 @@ inline void Game::limitFps(FpsControl *fps_timings, f32 *dtime)
 		fps_timings->busy_time = 0;
 
 	u32 frametime_min = 1000 / (g_menumgr.pausesGame()
-			? g_settings->getFloat("pause_fps_max")
-			: g_settings->getFloat("fps_max"));
+			? builtin_settings.pause_fps_max
+			: builtin_settings.fps_max);
 
 	if (fps_timings->busy_time < frametime_min) {
 		fps_timings->sleep_time = frametime_min - fps_timings->busy_time;
@@ -3934,20 +3934,20 @@ void Game::readSettings()
 	m_cache_enable_joysticks             = g_settings->getBool("enable_joysticks");
 	m_cache_enable_particles             = g_settings->getBool("enable_particles");
 	m_cache_enable_fog                   = g_settings->getBool("enable_fog");
-	m_cache_mouse_sensitivity            = g_settings->getFloat("mouse_sensitivity");
-	m_cache_joystick_frustum_sensitivity = g_settings->getFloat("joystick_frustum_sensitivity");
-	m_repeat_right_click_time            = g_settings->getFloat("repeat_rightclick_time");
+	m_cache_mouse_sensitivity            = builtin_settings.mouse_sensitivity;
+	m_cache_joystick_frustum_sensitivity = builtin_settings.joystick_frustum_sensitivity;
+	m_repeat_right_click_time            = builtin_settings.repeat_rightclick_time;
 
 	m_cache_enable_noclip                = g_settings->getBool("noclip");
 	m_cache_enable_free_move             = g_settings->getBool("free_move");
 
-	m_cache_fog_start                    = g_settings->getFloat("fog_start");
+	m_cache_fog_start                    = builtin_settings.fog_start;
 
 	m_cache_cam_smoothing = 0;
 	if (g_settings->getBool("cinematic"))
-		m_cache_cam_smoothing = 1 - g_settings->getFloat("cinematic_camera_smoothing");
+		m_cache_cam_smoothing = 1 - builtin_settings.cinematic_camera_smoothing;
 	else
-		m_cache_cam_smoothing = 1 - g_settings->getFloat("camera_smoothing");
+		m_cache_cam_smoothing = 1 - builtin_settings.camera_smoothing;
 
 	m_cache_fog_start = rangelim(m_cache_fog_start, 0.0f, 0.99f);
 	m_cache_cam_smoothing = rangelim(m_cache_cam_smoothing, 0.01f, 1.0f);
