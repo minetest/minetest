@@ -616,7 +616,7 @@ core.register_chatcommand("giveme", {
 core.register_chatcommand("spawnentity", {
 	params = "<EntityName> [<X>,<Y>,<Z>]",
 	description = "Spawn entity at given (or your) position",
-	privs = {world=true},
+	privs = {give=true, interact=true},
 	func = function(name, param)
 		local entityname, p = string.match(param, "^([^ ]+) *(.*)$")
 		if not entityname then
@@ -964,9 +964,9 @@ core.register_chatcommand("clearinv", {
 	func = function(name, param)
 		local player
 		if param and param ~= "" and param ~= name then
-			if not core.check_player_privs(name, {player=true}) then
+			if not core.check_player_privs(name, {server=true}) then
 				return false, "You don't have permission"
-						.. " to clear another player's inventory (missing privilege: player)"
+						.. " to clear another player's inventory (missing privilege: server)"
 			end
 			player = core.get_player_by_name(param)
 			core.chat_send_player(param, name.." cleared your inventory.")
@@ -1011,7 +1011,7 @@ end
 core.register_chatcommand("kill", {
 	params = "[<name>]",
 	description = "Kill player or yourself",
-	privs = {player=true},
+	privs = {server=true},
 	func = function(name, param)
 		if(param == "") then
 			-- Selfkill
