@@ -30,8 +30,6 @@ public:
 			gui::IGUIElement* parent, s32 id,
 			IMenuManager *menumgr);
 	~GUIOptionsChange();
-	
-	void removeChildren();
 	/*
 		Remove and re-add (or reposition) stuff
 	*/

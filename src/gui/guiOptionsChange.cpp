@@ -49,31 +49,7 @@ GUIOptionsChange::GUIOptionsChange(gui::IGUIEnvironment* env,
 
 GUIOptionsChange::~GUIOptionsChange()
 {
-	removeChildren();
-}
-
-void GUIOptionsChange::removeChildren()
-{
-	if (gui::IGUIElement *e = getElementFromId(ID_soundText))
-		e->remove();
-
-	if (gui::IGUIElement *e = getElementFromId(ID_ExitButton))
-		e->remove();
-
-	if (gui::IGUIElement *e = getElementFromId(ID_soundSlider))
-		e->remove();
-
-	if (gui::IGUIElement *e = getElementFromId(ID_fovText))
-		e->remove();
-
-	if (gui::IGUIElement *e = getElementFromId(ID_fovSlider))
-		e->remove();
-
-	if (gui::IGUIElement *e = getElementFromId(ID_buildButton))
-		e->remove();
-
-	if (gui::IGUIElement *e = getElementFromId(ID_forwardButton))
-		e->remove();
+	GUIModalMenu::removeChildren();
 }
 
 //for streamlining the GUI process and cleaning up code
