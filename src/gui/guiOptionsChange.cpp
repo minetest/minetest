@@ -49,7 +49,7 @@ GUIOptionsChange::GUIOptionsChange(gui::IGUIEnvironment* env,
 
 GUIOptionsChange::~GUIOptionsChange()
 {
-	GUIModalMenu::removeChildren();
+	removeChildren();
 }
 
 //for streamlining the GUI process and cleaning up code
