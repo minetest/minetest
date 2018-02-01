@@ -262,7 +262,8 @@ static void set_allowed_options(OptionList *allowed_options)
 	allowed_options->insert(std::make_pair("worldname", ValueSpec(VALUETYPE_STRING,
 			_("Set world by name (implies local game)"))));
 	allowed_options->insert(std::make_pair("worldlist", ValueSpec(VALUETYPE_STRING,
-			_("Get list of worlds (implies local game) ('path' lists paths, 'name' lists names, 'both' lists both)"))));
+			_("Get list of worlds (implies local game) ('path' lists paths, "
+					  "'name' lists names, 'both' lists both)"))));
 	allowed_options->insert(std::make_pair("quiet", ValueSpec(VALUETYPE_FLAG,
 			_("Print to console errors only"))));
 	allowed_options->insert(std::make_pair("info", ValueSpec(VALUETYPE_FLAG,
@@ -360,9 +361,9 @@ static void print_worldspecs(const std::vector<WorldSpec> &worldspecs,
 		if (print_name && print_path) {
 			os << "\t" << name << "\t\t" << path << std::endl;
 		} else if (print_name) {
-			os << "  " << name << std::endl;
+			os << "\t" << name << std::endl;
 		} else if (print_path) {
-			os << "  " << path << std::endl;
+			os << "\t" << path << std::endl;
 		}
 	}
 }
