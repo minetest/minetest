@@ -19,6 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "plain.h"
+#include "camera.h"
 #include "client.h"
 #include "client/tile.h"
 #include "shader.h"
@@ -47,6 +48,8 @@ void RenderingCorePlain::initTextures()
 			size, "render_lowres", video::ECF_A8R8G8B8);
 	postimg = driver->addRenderTargetTexture(
 			size, "render_postimg", video::ECF_A8R8G8B8);
+	zbuffer = driver->addRenderTargetTexture(
+			size, "render_zbuffer", video::ECF_R16F);
 }
 
 void RenderingCorePlain::clearTextures()
@@ -55,27 +58,37 @@ void RenderingCorePlain::clearTextures()
 		return;
 	driver->removeTexture(lowres);
 	driver->removeTexture(postimg);
+	driver->removeTexture(zbuffer);
 }
 
 void RenderingCorePlain::beforeDraw()
 {
 	if (!scale)
 		return;
-	driver->setRenderTarget(lowres, true, true, skycolor);
+	core::array<video::IRenderTarget> rts;
+	rts.push_back(lowres);
+	rts.push_back(zbuffer);
+	driver->setRenderTarget(rts, true, true, skycolor);
 }
 
 void RenderingCorePlain::postProcess()
 {
 	if(!scale || !postprocess)
+		errorstream << "returning..." << std::endl;
 		return;
+	if(!shaders)
+		upscale();
+		errorstream << "upscaling..." << std::endl;
+		return;
+	errorstream << "drawing..." << std::endl;
 	driver->setRenderTarget(postimg, true, true, skycolor);
-	static video::S3DVertex vertices[4] = {
+	static const video::S3DVertex vertices[4] = {
 		video::S3DVertex(1.0, -1.0, 0.0, 0.0, 0.0, -1.0, video::SColor(255, 0, 255, 255), 1.0, 0.0),
 		video::S3DVertex(-1.0, -1.0, 0.0, 0.0, 0.0, -1.0, video::SColor(255, 255, 0, 255), 0.0, 0.0),
 		video::S3DVertex(-1.0, 1.0, 0.0, 0.0, 0.0, -1.0, video::SColor(255, 255, 255, 0), 0.0, 1.0),
 		video::S3DVertex(1.0, 1.0, 0.0, 0.0, 0.0, -1.0, video::SColor(255, 255, 255, 255), 1.0, 1.0),
 	};
-	static u16 indices[6] = { 0, 1, 2, 2, 3, 0 };
+	static const u16 indices[6] = { 0, 1, 2, 2, 3, 0 };
 	IShaderSource *s = client->getShaderSource();
 	video::SMaterial mat;
 	mat.UseMipMaps = false;
@@ -88,12 +101,16 @@ void RenderingCorePlain::postProcess()
 	if (postprocess) {
 		u32 shader = s->getShader("postprocessing", TILE_MATERIAL_BASIC, 0);
 		mat.MaterialType = s->getShaderInfo(shader).material;
-		mat.TextureLayer[0].BilinearFilter = false;
+		mat.TextureLayer[0].BilinearFilter = true;
 		mat.TextureLayer[0].Texture = lowres;
+		mat.TextureLayer[2].BilinearFilter = true;
+		mat.TextureLayer[2].Texture = zbuffer;
 		if (scale)
 			driver->setRenderTarget(postimg, false, false);
 		driver->setMaterial(mat);
 		driver->drawVertexPrimitiveList(&vertices, 4, &indices, 2);
+		if (draw_wield_tool)
+			camera->drawWieldedTool();
 		if (scale)
 			driver->setRenderTarget(0, false, false);
 	}
@@ -116,7 +133,7 @@ void RenderingCorePlain::upscale()
 	driver->setRenderTarget(0, true, true);
 	v2u32 size{scaledown(scale, screensize.X), scaledown(scale, screensize.Y)};
 	v2u32 dest_size{scale * size.X, scale * size.Y};
-	driver->draw2DImage(postimg, core::rect<s32>(0, 0, dest_size.X, dest_size.Y),
+	driver->draw2DImage(lowres, core::rect<s32>(0, 0, dest_size.X, dest_size.Y),
 			core::rect<s32>(0, 0, size.X, size.Y));
 }
 
@@ -125,6 +142,5 @@ void RenderingCorePlain::drawAll()
 	draw3D();
 	postProcess();
 	drawPostFx();
-	//upscale();
 	drawHUD();
 }

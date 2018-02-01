@@ -501,6 +501,7 @@
 # undersampling = 0
 
 #    Whether to use filter with undersampling.
+#    Requires shaders to be enabled.
 #    type: bool
 # undersampling_filter = false
 
@@ -516,6 +517,7 @@
 # shader_path =
 
 #    This option allows to use certain full-screen effects.
+#    Requires shaders to be enabled.
 #    type: bool
 # postprocessing = true
 

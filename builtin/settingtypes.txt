@@ -450,6 +450,7 @@ fsaa (FSAA) enum 0 0,1,2,4,8,16
 undersampling (Undersampling) enum 0 0,2,3,4
 
 #    Whether to use filter with undersampling.
+#    Requires shaders to be enabled.
 undersampling_filter (Smoother undersampling) bool false
 
 [**Shaders]
@@ -462,6 +463,7 @@ enable_shaders (Shaders) bool true
 shader_path (Shader path) path
 
 #    This option allows to use certain full-screen effects.
+#    Requires shaders to be enabled.
 postprocessing (Postprocessing) bool true
 
 [***Tone Mapping]

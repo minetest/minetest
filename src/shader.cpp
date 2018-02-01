@@ -209,11 +209,15 @@ class MainShaderConstantSetter : public IShaderConstantSetter
 {
 	CachedVertexShaderSetting<float, 16> m_world_view_proj;
 	CachedVertexShaderSetting<float, 16> m_world;
+	CachedPixelShaderSetting<s32, 2> m_render_target_size;
+	CachedPixelShaderSetting<f32, 2> m_pixel_size;
 
 public:
 	MainShaderConstantSetter() :
 		m_world_view_proj("mWorldViewProj"),
-		m_world("mWorld")
+		m_world("mWorld"),
+		m_render_target_size("renderTargetSize"),
+		m_pixel_size("pixelSize")
 	{}
 	~MainShaderConstantSetter() = default;
 
@@ -239,7 +243,18 @@ public:
 			m_world.set(*reinterpret_cast<float(*)[16]>(world.pointer()), services);
 		else
 			services->setVertexShaderConstant(world.pointer(), 4, 4);
-
+		
+		if (is_highlevel) {
+			core::dimension2d<u32> size = driver->getCurrentRenderTargetSize();
+			s32 s[2];
+			f32 p[2];
+			s[0] = size.Width;
+			s[1] = size.Height;
+			p[0] = 1.0 / s[0];
+			p[1] = 1.0 / s[1];
+			m_render_target_size.set(s, services);
+			m_pixel_size.set(p, services);
+		}
 	}
 };
 
@@ -722,19 +737,16 @@ ShaderInfo generate_shader(const std::string &name, u8 material_type, u8 drawtyp
 	}
 
 	shaders_header += "#define ENABLE_WAVING_LEAVES ";
-	if (g_settings->getBool("enable_waving_leaves"))
-		shaders_header += "1\n";
-	else
-		shaders_header += "0\n";
+	shaders_header += g_settings->getBool("enable_waving_leaves") ? "1\n" : "0\n";
 
 	shaders_header += "#define ENABLE_WAVING_PLANTS ";
-	if (g_settings->getBool("enable_waving_plants"))
-		shaders_header += "1\n";
-	else
-		shaders_header += "0\n";
+	shaders_header += g_settings->getBool("enable_waving_plants") ? "1\n" : "0\n";
 
-	if (g_settings->getBool("tone_mapping"))
-		shaders_header += "#define ENABLE_TONE_MAPPING\n";
+	shaders_header += "#define POSTPROCESSING_ENABLED ";
+	shaders_header += g_settings->getBool("postprocessing") ? "1\n" : "0\n";
+
+	shaders_header += "#define ENABLE_TONE_MAPPING ";
+	shaders_header += g_settings->getBool("tone_mapping") ? "1\n" : "0\n";
 
 	shaders_header += "#define FOG_START ";
 	shaders_header += ftos(rangelim(g_settings->getFloat("fog_start"), 0.0f, 0.99f));

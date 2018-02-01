@@ -27,6 +27,7 @@ protected:
 	int scale = 0;
 	video::ITexture *lowres = nullptr;
 	video::ITexture *postimg = nullptr;
+	video::ITexture *zbuffer = nullptr;
 
 	void initTextures() override;
 	void clearTextures() override;
