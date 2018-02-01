@@ -45,7 +45,7 @@ class ChatEvent;
 struct ChatEventChat;
 struct ChatInterface;
 class IWritableItemDefManager;
-class IWritableNodeDefManager;
+class NodeDefManager;
 class IWritableCraftDefManager;
 class BanManager;
 class EventManager;
@@ -264,7 +264,7 @@ public:
 	virtual EmergeManager *getEmergeManager() { return m_emerge; }
 
 	IWritableItemDefManager* getWritableItemDefManager();
-	IWritableNodeDefManager* getWritableNodeDefManager();
+	NodeDefManager* getWritableNodeDefManager();
 	IWritableCraftDefManager* getWritableCraftDefManager();
 
 	virtual const std::vector<ModSpec> &getMods() const { return m_mods; }
@@ -544,7 +544,7 @@ private:
 	IWritableItemDefManager *m_itemdef;
 
 	// Node definition manager
-	IWritableNodeDefManager *m_nodedef;
+	NodeDefManager *m_nodedef;
 
 	// Craft definition manager
 	IWritableCraftDefManager *m_craftdef;

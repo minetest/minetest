@@ -501,7 +501,7 @@ int ModApiItemMod::l_register_item_raw(lua_State *L)
 	// Get the writable item and node definition managers from the server
 	IWritableItemDefManager *idef =
 			getServer(L)->getWritableItemDefManager();
-	IWritableNodeDefManager *ndef =
+	NodeDefManager *ndef =
 			getServer(L)->getWritableNodeDefManager();
 
 	// Check if name is defined
@@ -561,7 +561,7 @@ int ModApiItemMod::l_unregister_item_raw(lua_State *L)
 
 	// Unregister the node
 	if (idef->get(name).type == ITEM_NODE) {
-		IWritableNodeDefManager *ndef =
+		NodeDefManager *ndef =
 			getServer(L)->getWritableNodeDefManager();
 		ndef->removeNode(name);
 	}

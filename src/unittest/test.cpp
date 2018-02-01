@@ -113,7 +113,7 @@ TestGameDef::~TestGameDef()
 void TestGameDef::defineSomeNodes()
 {
 	IWritableItemDefManager *idef = (IWritableItemDefManager *)m_itemdef;
-	IWritableNodeDefManager *ndef = (IWritableNodeDefManager *)m_nodedef;
+	NodeDefManager *ndef = (NodeDefManager *)m_nodedef;
 
 	ItemDefinition itemdef;
 	ContentFeatures f;

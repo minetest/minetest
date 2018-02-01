@@ -48,7 +48,7 @@ class MapBlockMesh;
 class IWritableTextureSource;
 class IWritableShaderSource;
 class IWritableItemDefManager;
-class IWritableNodeDefManager;
+class NodeDefManager;
 //class IWritableCraftDefManager;
 class ClientMediaDownloader;
 struct MapDrawControl;
@@ -129,7 +129,7 @@ public:
 			IWritableTextureSource *tsrc,
 			IWritableShaderSource *shsrc,
 			IWritableItemDefManager *itemdef,
-			IWritableNodeDefManager *nodedef,
+			NodeDefManager *nodedef,
 			ISoundManager *sound,
 			MtEventManager *event,
 			bool ipv6,
@@ -477,7 +477,7 @@ private:
 	IWritableTextureSource *m_tsrc;
 	IWritableShaderSource *m_shsrc;
 	IWritableItemDefManager *m_itemdef;
-	IWritableNodeDefManager *m_nodedef;
+	NodeDefManager *m_nodedef;
 	ISoundManager *m_sound;
 	MtEventManager *m_event;
 

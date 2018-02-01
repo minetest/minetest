@@ -466,10 +466,10 @@ public:
 	virtual core::aabbox3d<s16> getSelectionBoxIntUnion() const=0;
 };
 
-class IWritableNodeDefManager : public INodeDefManager {
+class NodeDefManager : public INodeDefManager {
 public:
-	IWritableNodeDefManager() = default;
-	virtual ~IWritableNodeDefManager() = default;
+	NodeDefManager() = default;
+	virtual ~NodeDefManager() = default;
 
 	// Get node definition
 	virtual const ContentFeatures &get(content_t c) const=0;
@@ -523,7 +523,7 @@ public:
 	virtual core::aabbox3d<s16> getSelectionBoxIntUnion() const=0;
 };
 
-IWritableNodeDefManager *createNodeDefManager();
+NodeDefManager *createNodeDefManager();
 
 class NodeResolver {
 public:

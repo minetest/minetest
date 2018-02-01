@@ -3366,7 +3366,7 @@ IWritableItemDefManager *Server::getWritableItemDefManager()
 	return m_itemdef;
 }
 
-IWritableNodeDefManager *Server::getWritableNodeDefManager()
+NodeDefManager *Server::getWritableNodeDefManager()
 {
 	return m_nodedef;
 }

@@ -934,7 +934,7 @@ void ContentFeatures::updateTextures(ITextureSource *tsrc, IShaderSource *shdsrc
 	CNodeDefManager
 */
 
-class CNodeDefManager: public IWritableNodeDefManager {
+class CNodeDefManager: public NodeDefManager {
 public:
 	CNodeDefManager();
 	virtual ~CNodeDefManager();
@@ -1574,7 +1574,7 @@ void CNodeDefManager::addNameIdMapping(content_t i, std::string name)
 }
 
 
-IWritableNodeDefManager *createNodeDefManager()
+NodeDefManager *createNodeDefManager()
 {
 	return new CNodeDefManager();
 }

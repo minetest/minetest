@@ -809,7 +809,7 @@ private:
 
 	// When created, these will be filled with data received from the server
 	IWritableItemDefManager *itemdef_manager = nullptr;
-	IWritableNodeDefManager *nodedef_manager = nullptr;
+	NodeDefManager *nodedef_manager = nullptr;
 
 	GameOnDemandSoundFetcher soundfetcher; // useful when testing
 	ISoundManager *sound = nullptr;

@@ -71,7 +71,7 @@ Client::Client(
 		IWritableTextureSource *tsrc,
 		IWritableShaderSource *shsrc,
 		IWritableItemDefManager *itemdef,
-		IWritableNodeDefManager *nodedef,
+		NodeDefManager *nodedef,
 		ISoundManager *sound,
 		MtEventManager *event,
 		bool ipv6,
