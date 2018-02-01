@@ -22,6 +22,14 @@ const float BS = 10.0;
 const float fogStart = FOG_START;
 const float fogShadingParameter = 1 / ( 1 - fogStart);
 
+float linearizeDepth(float depth)
+{
+	float NEAR = 1.0;
+	float FAR = 20000.0;
+	depth = depth * 2.0 - 1.0;
+	return  (-NEAR * FAR) / (depth * (FAR - NEAR) - FAR) / 2450.0;
+}
+
 #ifdef ENABLE_TONE_MAPPING
 
 /* Hable's UC2 Tone mapping parameters
@@ -215,5 +223,6 @@ void main(void)
 	col = mix(skyBgColor, col, clarity);
 	col = vec4(col.rgb, base.a);
 
-	gl_FragColor = col;
+	gl_FragData[0] = col;
+	gl_FragData[1].r = linearizeDepth(gl_FragCoord.z);
 }

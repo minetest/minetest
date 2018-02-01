@@ -204,11 +204,15 @@ fake_function() {
 	gettext("Experimental option, might cause visible spaces between blocks\nwhen set to higher number than 0.");
 	gettext("Undersampling");
 	gettext("Undersampling is similar to using lower screen resolution, but it applies\nto the game world only, keeping the GUI intact.\nIt should give significant performance boost at the cost of less detailed image.");
+	gettext("Smoother undersampling");
+	gettext("Whether to use filter with undersampling.\nRequires shaders to be enabled.");
 	gettext("Shaders");
 	gettext("Shaders");
 	gettext("Shaders allow advanced visual effects and may increase performance on some video cards.\nThis only works with the OpenGL video backend.");
 	gettext("Shader path");
 	gettext("Path to shader directory. If no path is defined, default location will be used.");
+	gettext("Postprocessing");
+	gettext("This option allows to use certain full-screen effects.\nRequires shaders to be enabled.");
 	gettext("Tone Mapping");
 	gettext("Filmic tone mapping");
 	gettext("Enables filmic tone mapping");

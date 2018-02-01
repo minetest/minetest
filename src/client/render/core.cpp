@@ -31,6 +31,9 @@ RenderingCore::RenderingCore(IrrlichtDevice *_device, Client *_client, Hud *_hud
 	mapper(client->getMinimap()), hud(_hud)
 {
 	screensize = driver->getScreenSize();
+	shaders = g_settings->getBool("enable_shaders");
+	postprocess = g_settings->getBool("post_process_enabled");
+	undersampling = g_settings->getBool("undersampling_filter");
 	virtual_size = screensize;
 }
 
@@ -77,7 +80,7 @@ void RenderingCore::draw3D()
 	if (!show_hud)
 		return;
 	hud->drawSelectionMesh();
-	if (draw_wield_tool)
+	if (draw_wield_tool && !postprocess)
 		camera->drawWieldedTool();
 }
 
