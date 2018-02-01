@@ -960,12 +960,13 @@ public:
 
 	inline virtual void setNodeRegistrationStatus(bool completed);
 
-	virtual void pendNodeResolve(NodeResolver *nr);
-	virtual bool cancelNodeResolveCallback(NodeResolver *nr);
+	virtual void pendNodeResolve(NodeResolver *nr) const;
+	virtual bool cancelNodeResolveCallback(NodeResolver *nr) const;
 	virtual void runNodeResolveCallbacks();
 	virtual void resetNodeResolveState();
 	virtual void mapNodeboxConnections();
-	virtual bool nodeboxConnects(MapNode from, MapNode to, u8 connect_face);
+	virtual bool nodeboxConnects(MapNode from, MapNode to,
+		u8 connect_face) const;
 	virtual core::aabbox3d<s16> getSelectionBoxIntUnion() const
 	{
 		return m_selection_box_int_union;
@@ -1000,7 +1001,8 @@ private:
 	content_t m_next_id;
 
 	// NodeResolvers to callback once node registration has ended
-	std::vector<NodeResolver *> m_pending_resolve_callbacks;
+	// Even constant NodeDefManagers can register listeners.
+	mutable std::vector<NodeResolver *> m_pending_resolve_callbacks;
 
 	// True when all nodes have been registered
 	bool m_node_registration_complete;
@@ -1585,7 +1587,7 @@ inline void CNodeDefManager::setNodeRegistrationStatus(bool completed)
 }
 
 
-void CNodeDefManager::pendNodeResolve(NodeResolver *nr)
+void CNodeDefManager::pendNodeResolve(NodeResolver *nr) const
 {
 	nr->m_ndef = this;
 	if (m_node_registration_complete)
@@ -1595,7 +1597,7 @@ void CNodeDefManager::pendNodeResolve(NodeResolver *nr)
 }
 
 
-bool CNodeDefManager::cancelNodeResolveCallback(NodeResolver *nr)
+bool CNodeDefManager::cancelNodeResolveCallback(NodeResolver *nr) const
 {
 	size_t len = m_pending_resolve_callbacks.size();
 	for (size_t i = 0; i != len; i++) {
@@ -1641,7 +1643,8 @@ void CNodeDefManager::mapNodeboxConnections()
 	}
 }
 
-bool CNodeDefManager::nodeboxConnects(MapNode from, MapNode to, u8 connect_face)
+bool CNodeDefManager::nodeboxConnects(MapNode from, MapNode to,
+	u8 connect_face) const
 {
 	const ContentFeatures &f1 = get(from);
 

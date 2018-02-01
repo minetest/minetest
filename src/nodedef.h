@@ -456,9 +456,10 @@ public:
 
 	virtual void serialize(std::ostream &os, u16 protocol_version) const=0;
 
-	virtual void pendNodeResolve(NodeResolver *nr)=0;
-	virtual bool cancelNodeResolveCallback(NodeResolver *nr)=0;
-	virtual bool nodeboxConnects(const MapNode from, const MapNode to, u8 connect_face)=0;
+	virtual void pendNodeResolve(NodeResolver *nr) const=0;
+	virtual bool cancelNodeResolveCallback(NodeResolver *nr) const=0;
+	virtual bool nodeboxConnects(const MapNode from, const MapNode to,
+		u8 connect_face) const=0;
 	/*!
 	 * Returns the smallest box in node coordinates that
 	 * contains all nodes' selection boxes.
@@ -515,8 +516,8 @@ public:
 
 	virtual void setNodeRegistrationStatus(bool completed)=0;
 
-	virtual void pendNodeResolve(NodeResolver *nr)=0;
-	virtual bool cancelNodeResolveCallback(NodeResolver *nr)=0;
+	virtual void pendNodeResolve(NodeResolver *nr) const=0;
+	virtual bool cancelNodeResolveCallback(NodeResolver *nr) const=0;
 	virtual void runNodeResolveCallbacks()=0;
 	virtual void resetNodeResolveState()=0;
 	virtual void mapNodeboxConnections()=0;
