@@ -500,6 +500,10 @@
 #    type: enum values: 0, 2, 3, 4
 # undersampling = 0
 
+#    Whether to use filter with undersampling.
+#    type: bool
+# undersampling_filter = false
+
 ### Shaders
 
 #    Shaders allow advanced visual effects and may increase performance on some video cards.
@@ -510,6 +514,10 @@
 #    Path to shader directory. If no path is defined, default location will be used.
 #    type: path
 # shader_path =
+
+#    This option allows to use certain full-screen effects.
+#    type: bool
+# postprocessing = true
 
 #### Tone Mapping
 

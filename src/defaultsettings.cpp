@@ -140,6 +140,8 @@ void set_default_settings(Settings *settings)
 #endif
 	settings->setDefault("fsaa", "0");
 	settings->setDefault("undersampling", "0");
+	settings->setDefault("post_process_enabled", "true");
+	settings->setDefault("undersampling_filter", "false");
 	settings->setDefault("world_aligned_mode", "enable");
 	settings->setDefault("autoscale_mode", "disable");
 	settings->setDefault("enable_fog", "true");
@@ -236,7 +238,6 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("water_wave_speed", "5.0");
 	settings->setDefault("enable_waving_leaves", "false");
 	settings->setDefault("enable_waving_plants", "false");
-
 
 	// Input
 	settings->setDefault("invert_mouse", "false");

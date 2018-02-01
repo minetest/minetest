@@ -449,6 +449,9 @@ fsaa (FSAA) enum 0 0,1,2,4,8,16
 #    It should give significant performance boost at the cost of less detailed image.
 undersampling (Undersampling) enum 0 0,2,3,4
 
+#    Whether to use filter with undersampling.
+undersampling_filter (Smoother undersampling) bool false
+
 [**Shaders]
 
 #    Shaders allow advanced visual effects and may increase performance on some video cards.
@@ -457,6 +460,9 @@ enable_shaders (Shaders) bool true
 
 #    Path to shader directory. If no path is defined, default location will be used.
 shader_path (Shader path) path
+
+#    This option allows to use certain full-screen effects.
+postprocessing (Postprocessing) bool true
 
 [***Tone Mapping]
 

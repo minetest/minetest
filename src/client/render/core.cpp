@@ -31,6 +31,8 @@ RenderingCore::RenderingCore(IrrlichtDevice *_device, Client *_client, Hud *_hud
 	mapper(client->getMinimap()), hud(_hud)
 {
 	screensize = driver->getScreenSize();
+	postprocess = g_settings->getBool("post_process_enabled");
+	undersampling = g_settings->getBool("undersampling_filter");
 	virtual_size = screensize;
 }
 

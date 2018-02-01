@@ -36,6 +36,8 @@ protected:
 	bool show_minimap;
 	bool draw_wield_tool;
 	bool draw_crosshair;
+	bool postprocess;
+	bool undersampling;
 
 	IrrlichtDevice *device;
 	video::IVideoDriver *driver;
@@ -52,6 +54,7 @@ protected:
 	virtual void clearTextures() {}
 
 	virtual void beforeDraw() {}
+	virtual void postProcess() {}
 	virtual void drawAll() = 0;
 
 	void draw3D();
