@@ -179,7 +179,6 @@ minetest.register_node("nodes:plantlike_leveled", {
 })
 
 --[[
-- `plantlike`
 - `firelike`
 - `fencelike`
 - `raillike`
