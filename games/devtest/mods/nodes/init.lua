@@ -145,6 +145,39 @@ minetest.register_node("nodes:signlike_fancy", {
 	groups = {attached_node=1, dig_immediate=3},
 })
 
+minetest.register_node("nodes:plantlike", {
+	description = "Plantlike",
+	drawtype = "plantlike",
+	paramtype = "light",
+	paramtype2 = "meshoptions",
+	tiles = {{name="plant.png"}},
+	walkable = false,
+	groups = {snappy=3},
+})
+
+minetest.register_node("nodes:plantlike_rotary", {
+	description = "Rotary Plantlike",
+	drawtype = "plantlike",
+	paramtype = "light",
+	paramtype2 = "degrotate",
+	tiles = {{name="flower.png"}},
+	walkable = false,
+	groups = {snappy=3},
+	place_param2 = 15,
+})
+
+minetest.register_node("nodes:plantlike_leveled", {
+	description = "Leveled Plantlike",
+	drawtype = "plantlike",
+	paramtype = "light",
+	paramtype2 = "leveled",
+	tiles = {{name="vplant.png"}},
+	collision_box = {type="leveled", fixed={-0.4, -0.5, -0.4, 0.4, -0.5, 0.4}},
+	selection_box = {type="leveled", fixed={-0.4, -0.5, -0.4, 0.4, -0.5, 0.4}},
+	groups = {snappy=2},
+	place_param2 = 21,
+})
+
 --[[
 - `plantlike`
 - `firelike`
