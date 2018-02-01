@@ -263,7 +263,7 @@ int ModApiEnvMod::l_set_node(lua_State *L)
 {
 	GET_ENV_PTR;
 
-	INodeDefManager *ndef = env->getGameDef()->ndef();
+	const NodeDefManager *ndef = env->getGameDef()->ndef();
 	// parameters
 	v3s16 pos = read_v3s16(L, 1);
 	MapNode n = readnode(L, 2, ndef);
@@ -279,7 +279,7 @@ int ModApiEnvMod::l_bulk_set_node(lua_State *L)
 {
 	GET_ENV_PTR;
 
-	INodeDefManager *ndef = env->getGameDef()->ndef();
+	const NodeDefManager *ndef = env->getGameDef()->ndef();
 	// parameters
 	if (!lua_istable(L, 1)) {
 		return 0;
@@ -331,7 +331,7 @@ int ModApiEnvMod::l_swap_node(lua_State *L)
 {
 	GET_ENV_PTR;
 
-	INodeDefManager *ndef = env->getGameDef()->ndef();
+	const NodeDefManager *ndef = env->getGameDef()->ndef();
 	// parameters
 	v3s16 pos = read_v3s16(L, 1);
 	MapNode n = readnode(L, 2, ndef);
@@ -394,7 +394,7 @@ int ModApiEnvMod::l_get_node_light(lua_State *L)
 	bool is_position_ok;
 	MapNode n = env->getMap().getNodeNoEx(pos, &is_position_ok);
 	if (is_position_ok) {
-		INodeDefManager *ndef = env->getGameDef()->ndef();
+		const NodeDefManager *ndef = env->getGameDef()->ndef();
 		lua_pushinteger(L, n.getLightBlend(dnr, ndef));
 	} else {
 		lua_pushnil(L);
@@ -410,7 +410,7 @@ int ModApiEnvMod::l_place_node(lua_State *L)
 
 	ScriptApiItem *scriptIfaceItem = getScriptApi<ScriptApiItem>(L);
 	Server *server = getServer(L);
-	INodeDefManager *ndef = server->ndef();
+	const NodeDefManager *ndef = server->ndef();
 	IItemDefManager *idef = server->idef();
 
 	v3s16 pos = read_v3s16(L, 1);
@@ -748,7 +748,7 @@ int ModApiEnvMod::l_find_node_near(lua_State *L)
 		return 0;
 	}
 
-	INodeDefManager *ndef = getGameDef(L)->ndef();
+	const NodeDefManager *ndef = getGameDef(L)->ndef();
 	v3s16 pos = read_v3s16(L, 1);
 	int radius = luaL_checkinteger(L, 2);
 	std::vector<content_t> filter;
@@ -795,7 +795,7 @@ int ModApiEnvMod::l_find_nodes_in_area(lua_State *L)
 {
 	GET_ENV_PTR;
 
-	INodeDefManager *ndef = getServer(L)->ndef();
+	const NodeDefManager *ndef = getServer(L)->ndef();
 	v3s16 minp = read_v3s16(L, 1);
 	v3s16 maxp = read_v3s16(L, 2);
 	sortBoxVerticies(minp, maxp);
@@ -867,7 +867,7 @@ int ModApiEnvMod::l_find_nodes_in_area_under_air(lua_State *L)
 
 	GET_ENV_PTR;
 
-	INodeDefManager *ndef = getServer(L)->ndef();
+	const NodeDefManager *ndef = getServer(L)->ndef();
 	v3s16 minp = read_v3s16(L, 1);
 	v3s16 maxp = read_v3s16(L, 2);
 	sortBoxVerticies(minp, maxp);
@@ -1182,7 +1182,7 @@ int ModApiEnvMod::l_spawn_tree(lua_State *L)
 
 	treegen::TreeDef tree_def;
 	std::string trunk,leaves,fruit;
-	INodeDefManager *ndef = env->getGameDef()->ndef();
+	const NodeDefManager *ndef = env->getGameDef()->ndef();
 
 	if(lua_istable(L, 2))
 	{

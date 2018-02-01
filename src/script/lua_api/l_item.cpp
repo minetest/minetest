@@ -593,7 +593,7 @@ int ModApiItemMod::l_get_content_id(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 	std::string name = luaL_checkstring(L, 1);
 
-	INodeDefManager *ndef = getGameDef(L)->getNodeDefManager();
+	const NodeDefManager *ndef = getGameDef(L)->getNodeDefManager();
 	content_t c = ndef->getId(name);
 
 	lua_pushinteger(L, c);
@@ -606,7 +606,7 @@ int ModApiItemMod::l_get_name_from_content_id(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 	content_t c = luaL_checkint(L, 1);
 
-	INodeDefManager *ndef = getGameDef(L)->getNodeDefManager();
+	const NodeDefManager *ndef = getGameDef(L)->getNodeDefManager();
 	const char *name = ndef->get(c).name.c_str();
 
 	lua_pushstring(L, name);

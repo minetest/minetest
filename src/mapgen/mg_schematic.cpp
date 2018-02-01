@@ -427,7 +427,7 @@ bool Schematic::serializeToLua(std::ostream *os,
 
 
 bool Schematic::loadSchematicFromFile(const std::string &filename,
-	INodeDefManager *ndef, StringMap *replace_names)
+	const NodeDefManager *ndef, StringMap *replace_names)
 {
 	std::ifstream is(filename.c_str(), std::ios_base::binary);
 	if (!is.good()) {
@@ -461,7 +461,7 @@ bool Schematic::loadSchematicFromFile(const std::string &filename,
 
 
 bool Schematic::saveSchematicToFile(const std::string &filename,
-	INodeDefManager *ndef)
+	const NodeDefManager *ndef)
 {
 	MapNode *orig_schemdata = schemdata;
 	std::vector<std::string> ndef_nodenames;
@@ -554,7 +554,7 @@ void Schematic::applyProbabilities(v3s16 p0,
 
 
 void generate_nodelist_and_update_ids(MapNode *nodes, size_t nodecount,
-	std::vector<std::string> *usednodes, INodeDefManager *ndef)
+	std::vector<std::string> *usednodes, const NodeDefManager *ndef)
 {
 	std::unordered_map<content_t, content_t> nodeidmap;
 	content_t numids = 0;

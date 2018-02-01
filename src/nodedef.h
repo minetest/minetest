@@ -34,7 +34,6 @@ class Client;
 #include "constants.h" // BS
 #include "tileanimation.h"
 
-class INodeDefManager;
 class IItemDefManager;
 class ITextureSource;
 class IShaderSource;
@@ -543,6 +542,6 @@ public:
 	u32 m_nnlistsizes_idx = 0;
 	std::vector<std::string> m_nodenames;
 	std::vector<size_t> m_nnlistsizes;
-	INodeDefManager *m_ndef = nullptr;
+	const NodeDefManager *m_ndef = nullptr;
 	bool m_resolve_done = false;
 };

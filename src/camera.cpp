@@ -413,7 +413,7 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 busytime, f32 tool_r
 				my_cp.Y = m_camera_position.Y + (m_camera_direction.Y * -i);
 
 			// Prevent camera positioned inside nodes
-			INodeDefManager *nodemgr = m_client->ndef();
+			const NodeDefManager *nodemgr = m_client->ndef();
 			MapNode n = m_client->getEnv().getClientMap()
 				.getNodeNoEx(floatToInt(my_cp, BS));
 

@@ -24,7 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "irrlichttypes.h"
 
 class IItemDefManager;
-class INodeDefManager;
+class NodeDefManager;
 class ICraftDefManager;
 class ITextureSource;
 class ISoundManager;
@@ -53,7 +53,7 @@ public:
 	// These are thread-safe IF they are not edited while running threads.
 	// Thus, first they are set up and then they are only read.
 	virtual IItemDefManager* getItemDefManager()=0;
-	virtual INodeDefManager* getNodeDefManager()=0;
+	virtual const NodeDefManager* getNodeDefManager()=0;
 	virtual ICraftDefManager* getCraftDefManager()=0;
 
 	// Used for keeping track of names/ids of unknown nodes
@@ -67,7 +67,7 @@ public:
 
 	// Shorthands
 	IItemDefManager  *idef()     { return getItemDefManager(); }
-	INodeDefManager  *ndef()     { return getNodeDefManager(); }
+	const NodeDefManager  *ndef() { return getNodeDefManager(); }
 	ICraftDefManager *cdef()     { return getCraftDefManager(); }
 
 	MtEventManager   *event()    { return getEventManager(); }

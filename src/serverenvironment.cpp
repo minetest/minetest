@@ -80,7 +80,7 @@ void LBMContentMapping::addLBM(LoadingBlockModifierDef *lbm_def, IGameDef *gamed
 {
 	// Add the lbm_def to the LBMContentMapping.
 	// Unknown names get added to the global NameIdMapping.
-	INodeDefManager *nodedef = gamedef->ndef();
+	const NodeDefManager *nodedef = gamedef->ndef();
 
 	lbm_list.push_back(lbm_def);
 
@@ -691,7 +691,7 @@ public:
 	{
 		if(dtime_s < 0.001)
 			return;
-		INodeDefManager *ndef = env->getGameDef()->ndef();
+		const NodeDefManager *ndef = env->getGameDef()->ndef();
 		for (ABMWithState &abmws : abms) {
 			ActiveBlockModifier *abm = abmws.abm;
 			float trigger_interval = abm->getTriggerInterval();
@@ -914,7 +914,7 @@ void ServerEnvironment::addLoadingBlockModifierDef(LoadingBlockModifierDef *lbm)
 
 bool ServerEnvironment::setNode(v3s16 p, const MapNode &n)
 {
-	INodeDefManager *ndef = m_server->ndef();
+	const NodeDefManager *ndef = m_server->ndef();
 	MapNode n_old = m_map->getNodeNoEx(p);
 
 	const ContentFeatures &cf_old = ndef->get(n_old);
@@ -947,7 +947,7 @@ bool ServerEnvironment::setNode(v3s16 p, const MapNode &n)
 
 bool ServerEnvironment::removeNode(v3s16 p)
 {
-	INodeDefManager *ndef = m_server->ndef();
+	const NodeDefManager *ndef = m_server->ndef();
 	MapNode n_old = m_map->getNodeNoEx(p);
 
 	// Call destructor

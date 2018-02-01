@@ -25,7 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "noise.h"
 
 class MMVManip;
-class INodeDefManager;
+class NodeDefManager;
 class ServerEnvironment;
 
 
@@ -61,20 +61,20 @@ namespace treegen {
 
 	// Add default tree
 	void make_tree(MMVManip &vmanip, v3s16 p0,
-		bool is_apple_tree, INodeDefManager *ndef, s32 seed);
+		bool is_apple_tree, const NodeDefManager *ndef, s32 seed);
 	// Add jungle tree
 	void make_jungletree(MMVManip &vmanip, v3s16 p0,
-		INodeDefManager *ndef, s32 seed);
+		const NodeDefManager *ndef, s32 seed);
 	// Add pine tree
 	void make_pine_tree(MMVManip &vmanip, v3s16 p0,
-		INodeDefManager *ndef, s32 seed);
+		const NodeDefManager *ndef, s32 seed);
 
 	// Add L-Systems tree (used by engine)
-	treegen::error make_ltree(MMVManip &vmanip, v3s16 p0, INodeDefManager *ndef,
-		TreeDef tree_definition);
+	treegen::error make_ltree(MMVManip &vmanip, v3s16 p0,
+		const NodeDefManager *ndef, TreeDef tree_definition);
 	// Spawn L-systems tree from LUA
-	treegen::error spawn_ltree (ServerEnvironment *env, v3s16 p0, INodeDefManager *ndef,
-		const TreeDef &tree_definition);
+	treegen::error spawn_ltree (ServerEnvironment *env, v3s16 p0,
+		const NodeDefManager *ndef, const TreeDef &tree_definition);
 
 	// L-System tree gen helper functions
 	void tree_node_placement(MMVManip &vmanip, v3f p0,

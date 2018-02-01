@@ -33,8 +33,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 namespace treegen
 {
 
-void make_tree(MMVManip &vmanip, v3s16 p0,
-		bool is_apple_tree, INodeDefManager *ndef, s32 seed)
+void make_tree(MMVManip &vmanip, v3s16 p0, bool is_apple_tree,
+	const NodeDefManager *ndef, s32 seed)
 {
 	/*
 		NOTE: Tree-placing code is currently duplicated in the engine
@@ -115,7 +115,7 @@ void make_tree(MMVManip &vmanip, v3s16 p0,
 
 // L-System tree LUA spawner
 treegen::error spawn_ltree(ServerEnvironment *env, v3s16 p0,
-		INodeDefManager *ndef, const TreeDef &tree_definition)
+	const NodeDefManager *ndef, const TreeDef &tree_definition)
 {
 	ServerMap *map = &env->getServerMap();
 	std::map<v3s16, MapBlock*> modified_blocks;
@@ -142,7 +142,7 @@ treegen::error spawn_ltree(ServerEnvironment *env, v3s16 p0,
 
 //L-System tree generator
 treegen::error make_ltree(MMVManip &vmanip, v3s16 p0,
-		INodeDefManager *ndef, TreeDef tree_definition)
+	const NodeDefManager *ndef, TreeDef tree_definition)
 {
 	MapNode dirtnode(ndef->getId("mapgen_dirt"));
 	s32 seed;
@@ -648,7 +648,8 @@ v3f transposeMatrix(irr::core::matrix4 M, v3f v)
 }
 
 
-void make_jungletree(MMVManip &vmanip, v3s16 p0, INodeDefManager *ndef, s32 seed)
+void make_jungletree(MMVManip &vmanip, v3s16 p0, const NodeDefManager *ndef,
+	s32 seed)
 {
 	/*
 		NOTE: Tree-placing code is currently duplicated in the engine
@@ -747,7 +748,8 @@ void make_jungletree(MMVManip &vmanip, v3s16 p0, INodeDefManager *ndef, s32 seed
 }
 
 
-void make_pine_tree(MMVManip &vmanip, v3s16 p0, INodeDefManager *ndef, s32 seed)
+void make_pine_tree(MMVManip &vmanip, v3s16 p0, const NodeDefManager *ndef,
+	s32 seed)
 {
 	/*
 		NOTE: Tree-placing code is currently duplicated in the engine

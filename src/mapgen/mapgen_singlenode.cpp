@@ -35,7 +35,7 @@ MapgenSinglenode::MapgenSinglenode(int mapgenid,
 {
 	flags = params->flags;
 
-	INodeDefManager *ndef = emerge->ndef;
+	const NodeDefManager *ndef = emerge->ndef;
 
 	c_node = ndef->getId("mapgen_singlenode");
 	if (c_node == CONTENT_IGNORE)

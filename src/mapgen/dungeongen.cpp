@@ -37,7 +37,7 @@ NoiseParams nparams_dungeon_alt_wall(-0.4, 1.0, v3f(40.0, 40.0, 40.0), 32474, 6,
 ///////////////////////////////////////////////////////////////////////////////
 
 
-DungeonGen::DungeonGen(INodeDefManager *ndef,
+DungeonGen::DungeonGen(const NodeDefManager *ndef,
 	GenerateNotifier *gennotify, DungeonParams *dparams)
 {
 	assert(ndef);

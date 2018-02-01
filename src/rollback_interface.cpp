@@ -36,7 +36,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 RollbackNode::RollbackNode(Map *map, v3s16 p, IGameDef *gamedef)
 {
-	INodeDefManager *ndef = gamedef->ndef();
+	const NodeDefManager *ndef = gamedef->ndef();
 	MapNode n = map->getNodeNoEx(p);
 	name = ndef->get(n).name;
 	param1 = n.param1;
@@ -90,7 +90,7 @@ bool RollbackAction::isImportant(IGameDef *gamedef) const
 	// If metadata differs, action is always important
 	if(n_old.meta != n_new.meta)
 		return true;
-	INodeDefManager *ndef = gamedef->ndef();
+	const NodeDefManager *ndef = gamedef->ndef();
 	// Both are of the same name, so a single definition is needed
 	const ContentFeatures &def = ndef->get(n_old.name);
 	// If the type is flowing liquid, action is not important
@@ -128,7 +128,7 @@ bool RollbackAction::applyRevert(Map *map, InventoryManager *imgr, IGameDef *gam
 		case TYPE_NOTHING:
 			return true;
 		case TYPE_SET_NODE: {
-			INodeDefManager *ndef = gamedef->ndef();
+			const NodeDefManager *ndef = gamedef->ndef();
 			// Make sure position is loaded from disk
 			map->emergeBlock(getContainerPos(p, MAP_BLOCKSIZE), false);
 			// Check current node

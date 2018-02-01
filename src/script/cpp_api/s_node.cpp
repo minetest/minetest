@@ -100,7 +100,7 @@ bool ScriptApiNode::node_on_punch(v3s16 p, MapNode node,
 
 	int error_handler = PUSH_ERROR_HANDLER(L);
 
-	INodeDefManager *ndef = getServer()->ndef();
+	const NodeDefManager *ndef = getServer()->ndef();
 
 	// Push callback function on stack
 	if (!getItemCallback(ndef->get(node).name.c_str(), "on_punch", &p))
@@ -123,7 +123,7 @@ bool ScriptApiNode::node_on_dig(v3s16 p, MapNode node,
 
 	int error_handler = PUSH_ERROR_HANDLER(L);
 
-	INodeDefManager *ndef = getServer()->ndef();
+	const NodeDefManager *ndef = getServer()->ndef();
 
 	// Push callback function on stack
 	if (!getItemCallback(ndef->get(node).name.c_str(), "on_dig", &p))
@@ -144,7 +144,7 @@ void ScriptApiNode::node_on_construct(v3s16 p, MapNode node)
 
 	int error_handler = PUSH_ERROR_HANDLER(L);
 
-	INodeDefManager *ndef = getServer()->ndef();
+	const NodeDefManager *ndef = getServer()->ndef();
 
 	// Push callback function on stack
 	if (!getItemCallback(ndef->get(node).name.c_str(), "on_construct", &p))
@@ -162,7 +162,7 @@ void ScriptApiNode::node_on_destruct(v3s16 p, MapNode node)
 
 	int error_handler = PUSH_ERROR_HANDLER(L);
 
-	INodeDefManager *ndef = getServer()->ndef();
+	const NodeDefManager *ndef = getServer()->ndef();
 
 	// Push callback function on stack
 	if (!getItemCallback(ndef->get(node).name.c_str(), "on_destruct", &p))
@@ -180,7 +180,7 @@ bool ScriptApiNode::node_on_flood(v3s16 p, MapNode node, MapNode newnode)
 
 	int error_handler = PUSH_ERROR_HANDLER(L);
 
-	INodeDefManager *ndef = getServer()->ndef();
+	const NodeDefManager *ndef = getServer()->ndef();
 
 	// Push callback function on stack
 	if (!getItemCallback(ndef->get(node).name.c_str(), "on_flood", &p))
@@ -201,7 +201,7 @@ void ScriptApiNode::node_after_destruct(v3s16 p, MapNode node)
 
 	int error_handler = PUSH_ERROR_HANDLER(L);
 
-	INodeDefManager *ndef = getServer()->ndef();
+	const NodeDefManager *ndef = getServer()->ndef();
 
 	// Push callback function on stack
 	if (!getItemCallback(ndef->get(node).name.c_str(), "after_destruct", &p))
@@ -220,7 +220,7 @@ bool ScriptApiNode::node_on_timer(v3s16 p, MapNode node, f32 dtime)
 
 	int error_handler = PUSH_ERROR_HANDLER(L);
 
-	INodeDefManager *ndef = getServer()->ndef();
+	const NodeDefManager *ndef = getServer()->ndef();
 
 	// Push callback function on stack
 	if (!getItemCallback(ndef->get(node).name.c_str(), "on_timer", &p))
@@ -243,7 +243,7 @@ void ScriptApiNode::node_on_receive_fields(v3s16 p,
 
 	int error_handler = PUSH_ERROR_HANDLER(L);
 
-	INodeDefManager *ndef = getServer()->ndef();
+	const NodeDefManager *ndef = getServer()->ndef();
 
 	// If node doesn't exist, we don't know what callback to call
 	MapNode node = getEnv()->getMap().getNodeNoEx(p);

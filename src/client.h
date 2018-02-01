@@ -365,7 +365,7 @@ public:
 
 	// IGameDef interface
 	virtual IItemDefManager* getItemDefManager();
-	virtual INodeDefManager* getNodeDefManager();
+	virtual const NodeDefManager* getNodeDefManager();
 	virtual ICraftDefManager* getCraftDefManager();
 	ITextureSource* getTextureSource();
 	virtual IShaderSource* getShaderSource();

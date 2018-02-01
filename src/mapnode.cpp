@@ -46,7 +46,7 @@ static const u8 rot_to_wallmounted[] = {
 
 // Create directly from a nodename
 // If name is unknown, sets CONTENT_IGNORE
-MapNode::MapNode(INodeDefManager *ndef, const std::string &name,
+MapNode::MapNode(const NodeDefManager *ndef, const std::string &name,
 		u8 a_param1, u8 a_param2)
 {
 	content_t id = CONTENT_IGNORE;
@@ -84,12 +84,13 @@ void MapNode::setLight(enum LightBank bank, u8 a_light, const ContentFeatures &f
 		assert("Invalid light bank" == NULL);
 }
 
-void MapNode::setLight(enum LightBank bank, u8 a_light, INodeDefManager *nodemgr)
+void MapNode::setLight(enum LightBank bank, u8 a_light,
+	const NodeDefManager *nodemgr)
 {
 	setLight(bank, a_light, nodemgr->get(*this));
 }
 
-bool MapNode::isLightDayNightEq(INodeDefManager *nodemgr) const
+bool MapNode::isLightDayNightEq(const NodeDefManager *nodemgr) const
 {
 	const ContentFeatures &f = nodemgr->get(*this);
 	bool isEqual;
@@ -105,7 +106,7 @@ bool MapNode::isLightDayNightEq(INodeDefManager *nodemgr) const
 	return isEqual;
 }
 
-u8 MapNode::getLight(enum LightBank bank, INodeDefManager *nodemgr) const
+u8 MapNode::getLight(enum LightBank bank, const NodeDefManager *nodemgr) const
 {
 	// Select the brightest of [light source, propagated light]
 	const ContentFeatures &f = nodemgr->get(*this);
@@ -132,7 +133,8 @@ u8 MapNode::getLightNoChecks(enum LightBank bank, const ContentFeatures *f) cons
 	             bank == LIGHTBANK_DAY ? param1 & 0x0f : (param1 >> 4) & 0x0f);
 }
 
-bool MapNode::getLightBanks(u8 &lightday, u8 &lightnight, INodeDefManager *nodemgr) const
+bool MapNode::getLightBanks(u8 &lightday, u8 &lightnight,
+	const NodeDefManager *nodemgr) const
 {
 	// Select the brightest of [light source, propagated light]
 	const ContentFeatures &f = nodemgr->get(*this);
@@ -153,7 +155,8 @@ bool MapNode::getLightBanks(u8 &lightday, u8 &lightnight, INodeDefManager *nodem
 	return f.param_type == CPT_LIGHT || f.light_source != 0;
 }
 
-u8 MapNode::getFaceDir(INodeDefManager *nodemgr, bool allow_wallmounted) const
+u8 MapNode::getFaceDir(const NodeDefManager *nodemgr,
+	bool allow_wallmounted) const
 {
 	const ContentFeatures &f = nodemgr->get(*this);
 	if (f.param_type_2 == CPT2_FACEDIR ||
@@ -165,7 +168,7 @@ u8 MapNode::getFaceDir(INodeDefManager *nodemgr, bool allow_wallmounted) const
 	return 0;
 }
 
-u8 MapNode::getWallMounted(INodeDefManager *nodemgr) const
+u8 MapNode::getWallMounted(const NodeDefManager *nodemgr) const
 {
 	const ContentFeatures &f = nodemgr->get(*this);
 	if (f.param_type_2 == CPT2_WALLMOUNTED ||
@@ -174,7 +177,7 @@ u8 MapNode::getWallMounted(INodeDefManager *nodemgr) const
 	return 0;
 }
 
-v3s16 MapNode::getWallMountedDir(INodeDefManager *nodemgr) const
+v3s16 MapNode::getWallMountedDir(const NodeDefManager *nodemgr) const
 {
 	switch(getWallMounted(nodemgr))
 	{
@@ -187,7 +190,7 @@ v3s16 MapNode::getWallMountedDir(INodeDefManager *nodemgr) const
 	}
 }
 
-void MapNode::rotateAlongYAxis(INodeDefManager *nodemgr, Rotation rot)
+void MapNode::rotateAlongYAxis(const NodeDefManager *nodemgr, Rotation rot)
 {
 	ContentParamType2 cpt2 = nodemgr->get(*this).param_type_2;
 
@@ -244,7 +247,8 @@ void MapNode::rotateAlongYAxis(INodeDefManager *nodemgr, Rotation rot)
 }
 
 void transformNodeBox(const MapNode &n, const NodeBox &nodebox,
-		INodeDefManager *nodemgr, std::vector<aabb3f> *p_boxes, u8 neighbors = 0)
+	const NodeDefManager *nodemgr, std::vector<aabb3f> *p_boxes,
+	u8 neighbors = 0)
 {
 	std::vector<aabb3f> &boxes = *p_boxes;
 
@@ -518,7 +522,7 @@ void transformNodeBox(const MapNode &n, const NodeBox &nodebox,
 }
 
 static inline void getNeighborConnectingFace(
-	const v3s16 &p, INodeDefManager *nodedef,
+	const v3s16 &p, const NodeDefManager *nodedef,
 	Map *map, MapNode n, u8 bitmask, u8 *neighbors)
 {
 	MapNode n2 = map->getNodeNoEx(p);
@@ -528,7 +532,7 @@ static inline void getNeighborConnectingFace(
 
 u8 MapNode::getNeighbors(v3s16 p, Map *map)
 {
-	INodeDefManager *nodedef=map->getNodeDefManager();
+	const NodeDefManager *nodedef = map->getNodeDefManager();
 	u8 neighbors = 0;
 	const ContentFeatures &f = nodedef->get(*this);
 	// locate possible neighboring nodes to connect to
@@ -562,13 +566,15 @@ u8 MapNode::getNeighbors(v3s16 p, Map *map)
 	return neighbors;
 }
 
-void MapNode::getNodeBoxes(INodeDefManager *nodemgr, std::vector<aabb3f> *boxes, u8 neighbors)
+void MapNode::getNodeBoxes(const NodeDefManager *nodemgr,
+	std::vector<aabb3f> *boxes, u8 neighbors)
 {
 	const ContentFeatures &f = nodemgr->get(*this);
 	transformNodeBox(*this, f.node_box, nodemgr, boxes, neighbors);
 }
 
-void MapNode::getCollisionBoxes(INodeDefManager *nodemgr, std::vector<aabb3f> *boxes, u8 neighbors)
+void MapNode::getCollisionBoxes(const NodeDefManager *nodemgr,
+	std::vector<aabb3f> *boxes, u8 neighbors)
 {
 	const ContentFeatures &f = nodemgr->get(*this);
 	if (f.collision_box.fixed.empty())
@@ -577,13 +583,14 @@ void MapNode::getCollisionBoxes(INodeDefManager *nodemgr, std::vector<aabb3f> *b
 		transformNodeBox(*this, f.collision_box, nodemgr, boxes, neighbors);
 }
 
-void MapNode::getSelectionBoxes(INodeDefManager *nodemgr, std::vector<aabb3f> *boxes, u8 neighbors)
+void MapNode::getSelectionBoxes(const NodeDefManager *nodemgr,
+	std::vector<aabb3f> *boxes, u8 neighbors)
 {
 	const ContentFeatures &f = nodemgr->get(*this);
 	transformNodeBox(*this, f.selection_box, nodemgr, boxes, neighbors);
 }
 
-u8 MapNode::getMaxLevel(INodeDefManager *nodemgr) const
+u8 MapNode::getMaxLevel(const NodeDefManager *nodemgr) const
 {
 	const ContentFeatures &f = nodemgr->get(*this);
 	// todo: after update in all games leave only if (f.param_type_2 ==
@@ -594,7 +601,7 @@ u8 MapNode::getMaxLevel(INodeDefManager *nodemgr) const
 	return 0;
 }
 
-u8 MapNode::getLevel(INodeDefManager *nodemgr) const
+u8 MapNode::getLevel(const NodeDefManager *nodemgr) const
 {
 	const ContentFeatures &f = nodemgr->get(*this);
 	// todo: after update in all games leave only if (f.param_type_2 ==
@@ -615,7 +622,7 @@ u8 MapNode::getLevel(INodeDefManager *nodemgr) const
 	return 0;
 }
 
-u8 MapNode::setLevel(INodeDefManager *nodemgr, s8 level)
+u8 MapNode::setLevel(const NodeDefManager *nodemgr, s8 level)
 {
 	u8 rest = 0;
 	if (level < 1) {
@@ -643,7 +650,7 @@ u8 MapNode::setLevel(INodeDefManager *nodemgr, s8 level)
 	return rest;
 }
 
-u8 MapNode::addLevel(INodeDefManager *nodemgr, s8 add)
+u8 MapNode::addLevel(const NodeDefManager *nodemgr, s8 add)
 {
 	s8 level = getLevel(nodemgr);
 	if (add == 0) level = 1;

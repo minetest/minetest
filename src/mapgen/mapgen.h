@@ -41,7 +41,7 @@ typedef u8 biome_t;  // copy from mg_biome.h to avoid an unnecessary include
 
 class Settings;
 class MMVManip;
-class INodeDefManager;
+class NodeDefManager;
 
 extern FlagDesc flagdesc_mapgen[];
 extern FlagDesc flagdesc_gennotify[];
@@ -170,7 +170,7 @@ public:
 	int id = -1;
 
 	MMVManip *vm = nullptr;
-	INodeDefManager *ndef = nullptr;
+	const NodeDefManager *ndef = nullptr;
 
 	u32 blockseed;
 	s16 *heightmap = nullptr;

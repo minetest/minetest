@@ -256,7 +256,7 @@ public:
 	// IGameDef interface
 	// Under envlock
 	virtual IItemDefManager* getItemDefManager();
-	virtual INodeDefManager* getNodeDefManager();
+	virtual const NodeDefManager* getNodeDefManager();
 	virtual ICraftDefManager* getCraftDefManager();
 	virtual u16 allocateUnknownNodeId(const std::string &name);
 	virtual MtEventManager* getEventManager();
@@ -366,7 +366,8 @@ private:
 	void SendDeathscreen(session_t peer_id, bool set_camera_point_target,
 		v3f camera_point_target);
 	void SendItemDef(session_t peer_id, IItemDefManager *itemdef, u16 protocol_version);
-	void SendNodeDef(session_t peer_id, INodeDefManager *nodedef, u16 protocol_version);
+	void SendNodeDef(session_t peer_id, const NodeDefManager *nodedef,
+		u16 protocol_version);
 
 	/* mark blocks not sent for all clients */
 	void SetBlocksNotSent(std::map<v3s16, MapBlock *>& block);

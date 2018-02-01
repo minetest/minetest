@@ -1798,7 +1798,7 @@ IItemDefManager* Client::getItemDefManager()
 {
 	return m_itemdef;
 }
-INodeDefManager* Client::getNodeDefManager()
+const NodeDefManager* Client::getNodeDefManager()
 {
 	return m_nodedef;
 }

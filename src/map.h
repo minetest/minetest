@@ -178,7 +178,7 @@ public:
 	virtual MapBlock * emergeBlock(v3s16 p, bool create_blank=true)
 	{ return getBlockNoCreateNoEx(p); }
 
-	inline INodeDefManager * getNodeDefManager() { return m_nodedef; }
+	inline const NodeDefManager * getNodeDefManager() { return m_nodedef; }
 
 	// Returns InvalidPositionException if not found
 	bool isNodeUnderground(v3s16 p);
@@ -311,7 +311,7 @@ protected:
 	UniqueQueue<v3s16> m_transforming_liquid;
 
 	// This stores the properties of the nodes on the map.
-	INodeDefManager *m_nodedef;
+	const NodeDefManager *m_nodedef;
 
 	bool isOccluded(v3s16 p0, v3s16 p1, float step, float stepfac,
 			float start_off, float end_off, u32 needed_count);
