@@ -73,13 +73,15 @@ void RenderingCorePlain::beforeDraw()
 
 void RenderingCorePlain::postProcess()
 {
-	if(!scale || !postprocess)
+	if(!scale || !postprocess){
 		errorstream << "returning..." << std::endl;
 		return;
-	if(!shaders)
+	}
+	if(!shaders){
 		upscale();
 		errorstream << "upscaling..." << std::endl;
 		return;
+	}
 	errorstream << "drawing..." << std::endl;
 	driver->setRenderTarget(postimg, true, true, skycolor);
 	static const video::S3DVertex vertices[4] = {
