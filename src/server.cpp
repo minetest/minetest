@@ -1800,13 +1800,22 @@ void Server::SendOverrideDayNightRatio(session_t peer_id, bool do_override,
 
 void Server::SendTimeOfDay(session_t peer_id, u16 time, f32 time_speed)
 {
-	NetworkPacket pkt(TOCLIENT_TIME_OF_DAY, 0, peer_id);
-	pkt << time << time_speed;
 
 	if (peer_id == PEER_ID_INEXISTENT) {
-		m_clients.sendToAll(&pkt);
+		for (auto &client_name : m_clients.getPlayerNames()) {
+			RemotePlayer *player = m_env->getPlayer(client_name.c_str());
+			peer_id = player->getPeerId();
+			NetworkPacket pkt(TOCLIENT_TIME_OF_DAY, 0, peer_id);
+			u16 time_offset;
+			player->getTimeOffset(&time_offset);
+			u16 ntime = (time+time_offset);
+			pkt << ntime << time_speed;
+			Send(&pkt);
+		}
 	}
 	else {
+		NetworkPacket pkt(TOCLIENT_TIME_OF_DAY, 0, peer_id);
+		pkt << time << time_speed;
 		Send(&pkt);
 	}
 }
