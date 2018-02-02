@@ -24,6 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <iostream>
 #include <map>
 #include "mapnode.h"
+#include "nameidmapping.h"
 #ifndef SERVER
 #include "client/tile.h"
 #include <IMeshManipulator.h>
@@ -439,66 +440,117 @@ struct ContentFeatures
 
 class NodeDefManager {
 public:
-	NodeDefManager() = default;
-	virtual ~NodeDefManager() = default;
+	NodeDefManager();
+	~NodeDefManager();
 
 	// Get node definition
-	virtual const ContentFeatures &get(content_t c) const=0;
-	virtual const ContentFeatures &get(const MapNode &n) const=0;
-	virtual bool getId(const std::string &name, content_t &result) const=0;
+	inline const ContentFeatures& get(content_t c) const {
+		return
+			c < m_content_features.size() ?
+				m_content_features[c] : m_content_features[CONTENT_UNKNOWN];
+	}
+
+	inline const ContentFeatures& get(const MapNode &n) const {
+		return get(n.getContent());
+	}
+
+	bool getId(const std::string &name, content_t &result) const;
 	// If not found, returns CONTENT_IGNORE
-	virtual content_t getId(const std::string &name) const=0;
+	content_t getId(const std::string &name) const;
 	// Allows "group:name" in addition to regular node names
 	// returns false if node name not found, true otherwise
-	virtual bool getIds(const std::string &name, std::vector<content_t> &result)
-		const=0;
+	bool getIds(const std::string &name, std::vector<content_t> &result) const;
 	// If not found, returns the features of CONTENT_UNKNOWN
-	virtual const ContentFeatures &get(const std::string &name) const=0;
-
+	const ContentFeatures& get(const std::string &name) const;
 	// Register node definition by name (allocate an id)
 	// If returns CONTENT_IGNORE, could not allocate id
-	virtual content_t set(const std::string &name,
-			const ContentFeatures &def)=0;
+	content_t set(const std::string &name, const ContentFeatures &def);
 	// If returns CONTENT_IGNORE, could not allocate id
-	virtual content_t allocateDummy(const std::string &name)=0;
+	content_t allocateDummy(const std::string &name);
 	// Remove a node
-	virtual void removeNode(const std::string &name)=0;
-
+	void removeNode(const std::string &name);
 	/*
 		Update item alias mapping.
 		Call after updating item definitions.
 	*/
-	virtual void updateAliases(IItemDefManager *idef)=0;
-
+	void updateAliases(IItemDefManager *idef);
 	/*
 		Override textures from servers with ones specified in texturepack/override.txt
 	*/
-	virtual void applyTextureOverrides(const std::string &override_filepath)=0;
-
+	void applyTextureOverrides(const std::string &override_filepath);
 	/*
 		Update tile textures to latest return values of TextueSource.
 	*/
-	virtual void updateTextures(IGameDef *gamedef,
+	void updateTextures(IGameDef *gamedef,
 		void (*progress_cbk)(void *progress_args, u32 progress, u32 max_progress),
-		void *progress_cbk_args)=0;
+		void *progress_cbk_args);
+	void serialize(std::ostream &os, u16 protocol_version) const;
+	void deSerialize(std::istream &is);
 
-	virtual void serialize(std::ostream &os, u16 protocol_version) const=0;
-	virtual void deSerialize(std::istream &is)=0;
+	inline void setNodeRegistrationStatus(bool completed) {
+		m_node_registration_complete = completed;
+	}
 
-	virtual void setNodeRegistrationStatus(bool completed)=0;
-
-	virtual void pendNodeResolve(NodeResolver *nr) const=0;
-	virtual bool cancelNodeResolveCallback(NodeResolver *nr) const=0;
-	virtual void runNodeResolveCallbacks()=0;
-	virtual void resetNodeResolveState()=0;
-	virtual void mapNodeboxConnections()=0;
-	virtual bool nodeboxConnects(const MapNode from, const MapNode to,
-		u8 connect_face) const=0;
+	void pendNodeResolve(NodeResolver *nr) const;
+	bool cancelNodeResolveCallback(NodeResolver *nr) const;
+	void runNodeResolveCallbacks();
+	void resetNodeResolveState();
+	void mapNodeboxConnections();
+	bool nodeboxConnects(MapNode from, MapNode to,
+		u8 connect_face) const;
 	/*!
 	 * Returns the smallest box in node coordinates that
 	 * contains all nodes' selection boxes.
 	 */
-	virtual core::aabbox3d<s16> getSelectionBoxIntUnion() const=0;
+	inline core::aabbox3d<s16> getSelectionBoxIntUnion() const
+	{
+		return m_selection_box_int_union;
+	}
+
+private:
+	void clear();
+	content_t allocateId();
+	void addNameIdMapping(content_t i, std::string name);
+	/*!
+	 * Recalculates m_selection_box_int_union based on
+	 * m_selection_box_union.
+	 */
+	void fixSelectionBoxIntUnion();
+
+	// Features indexed by id
+	std::vector<ContentFeatures> m_content_features;
+
+	// A mapping for fast converting back and forth between names and ids
+	NameIdMapping m_name_id_mapping;
+
+	// Like m_name_id_mapping, but only from names to ids, and includes
+	// item aliases too. Updated by updateAliases()
+	// Note: Not serialized.
+
+	std::unordered_map<std::string, content_t> m_name_id_mapping_with_aliases;
+
+	// A mapping from groups to a vector of content_ts that belong to it.
+	// Necessary for a direct lookup in getIds().
+	// Note: Not serialized.
+	std::unordered_map<std::string, std::vector<content_t>> m_group_to_items;
+
+	// Next possibly free id
+	content_t m_next_id;
+
+	// NodeResolvers to callback once node registration has ended
+	// Even constant NodeDefManagers can register listeners.
+	mutable std::vector<NodeResolver *> m_pending_resolve_callbacks;
+
+	// True when all nodes have been registered
+	bool m_node_registration_complete;
+
+	//! The union of all nodes' selection boxes.
+	aabb3f m_selection_box_union;
+	/*!
+	 * The smallest box in node coordinates that
+	 * contains all nodes' selection boxes.
+	 */
+	core::aabbox3d<s16> m_selection_box_int_union;
 };
 
 NodeDefManager *createNodeDefManager();
