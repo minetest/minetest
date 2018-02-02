@@ -105,6 +105,8 @@ public:
 	virtual void move(f32 dtime, Environment *env, f32 pos_max_d);
 	virtual void move(f32 dtime, Environment *env, f32 pos_max_d,
 			std::vector<CollisionInfo> *collision_info);
+	virtual void old_move(f32 dtime, Environment *env, f32 pos_max_d,
+			std::vector<CollisionInfo> *collision_info);
 
 	const v3f &getSpeed() const
 	{
@@ -236,6 +238,17 @@ protected:
 	// see detectSneakLadder() in the .cpp for more info (always false if disabled)
 	bool m_sneak_ladder_detected = false;
 	bool updateSneakNode(Map *map, const v3f &position, const v3f &sneak_max);
+
+	// ***** Variables for temporary option of the old move code *****
+	// Stores the max player uplift by m_sneak_node
+	f32 m_sneak_node_bb_ymax = 0.0f;
+	// Whether recalculation of m_sneak_node and its top bbox is needed
+	bool m_need_to_get_new_sneak_node = true;
+	// Node below player, used to determine whether it has been removed,
+	// and its old type
+	v3s16 m_old_node_below = v3s16(32767, 32767, 32767);
+	std::string m_old_node_below_type = "air";
+	// ***** End of variables for temporary option *****
 
 	aabb3f m_collisionbox = aabb3f(-BS * 0.30f, 0.0f, -BS * 0.30f, BS * 0.30f,
 			BS * 1.75f, BS * 0.30f);
