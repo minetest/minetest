@@ -74,9 +74,9 @@ public:
 		m_time_offset = offset;
 	}
 
-	void getTimeOffset(u16 *offset)
+	u16 getTimeOffset()
 	{
-		*offset = m_time_offset;
+		return m_time_offset;
 	}
 
 	void setHotbarImage(const std::string &name) { hud_hotbar_image = name; }
