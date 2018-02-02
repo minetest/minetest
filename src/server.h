@@ -337,6 +337,7 @@ public:
 	void SendPlayerBreath(PlayerSAO *sao);
 	void SendInventory(PlayerSAO* playerSAO);
 	void SendMovePlayer(session_t peer_id);
+	void SendTimeOfDay(session_t peer_id, u16 time, f32 time_speed);
 
 	virtual bool registerModStorage(ModMetadata *storage);
 	virtual void unregisterModStorage(const std::string &name);
@@ -373,7 +374,6 @@ private:
 
 
 	void SendChatMessage(session_t peer_id, const ChatMessage &message);
-	void SendTimeOfDay(session_t peer_id, u16 time, f32 time_speed);
 	void SendPlayerHP(session_t peer_id);
 
 	void SendLocalPlayerAnimations(session_t peer_id, v2s32 animation_frames[4],
