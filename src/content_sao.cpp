@@ -1414,6 +1414,12 @@ bool PlayerSAO::checkMovementCheat()
 	//        until this can be verified correctly, tolerate higher jumping speeds
 	player_max_jump *= 2.0;
 
+	// Don't divide by zero!
+	if (player_max_walk < 0.0001f)
+		player_max_walk = 0.0001f;
+	if (player_max_jump < 0.0001f)
+		player_max_jump = 0.0001f;
+
 	v3f diff = (m_base_position - m_last_good_position);
 	float d_vert = diff.Y;
 	diff.Y = 0;
@@ -1422,8 +1428,11 @@ bool PlayerSAO::checkMovementCheat()
 
 	// FIXME: Checking downwards movement is not easily possible currently,
 	//        the server could calculate speed differences to examine the gravity
-	if (d_vert > 0)
-		required_time = MYMAX(required_time, d_vert / player_max_jump);
+	if (d_vert > 0) {
+		// In certain cases (water, ladders) walking speed is applied vertically
+		float s = MYMAX(player_max_jump, player_max_walk);
+		required_time = MYMAX(required_time, d_vert / s);
+	}
 
 	if (m_move_pool.grab(required_time)) {
 		m_last_good_position = m_base_position;
