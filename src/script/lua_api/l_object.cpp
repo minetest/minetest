@@ -1720,6 +1720,45 @@ int ObjectRef::l_get_day_night_ratio(lua_State *L)
 	return 1;
 }
 
+// set_time_offset(self, offset)
+int ObjectRef::l_set_time_offset(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	ObjectRef *ref = checkobject(L, 1);
+	RemotePlayer *player = getplayer(ref);
+	if (player == NULL)
+		return 0;
+
+	int offset_i = luaL_checknumber(L, 2);
+	u16 offset = offset_i;
+	//Negative values
+	if (offset_i<0){
+		offset = 24000+offset_i;
+	}
+
+	player->setTimeOffset(offset);
+	getServer(L)->setTimeOfDay(getEnv(L)->getTimeOfDay());
+
+	lua_pushboolean(L, true);
+	return 1;
+}
+
+// get_time_offset(self)
+int ObjectRef::l_get_time_offset(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	ObjectRef *ref = checkobject(L, 1);
+	RemotePlayer *player = getplayer(ref);
+	if (player == NULL)
+		return 0;
+
+	u16 offset;
+	player->getTimeOffset(&offset);
+	lua_pushnumber(L, offset);
+
+	return 1;
+}
+
 ObjectRef::ObjectRef(ServerActiveObject *object):
 	m_object(object)
 {
@@ -1854,6 +1893,8 @@ const luaL_Reg ObjectRef::methods[] = {
 	luamethod(ObjectRef, get_clouds),
 	luamethod(ObjectRef, override_day_night_ratio),
 	luamethod(ObjectRef, get_day_night_ratio),
+	luamethod(ObjectRef, set_time_offset),
+	luamethod(ObjectRef, get_time_offset),
 	luamethod(ObjectRef, set_local_animation),
 	luamethod(ObjectRef, get_local_animation),
 	luamethod(ObjectRef, set_eye_offset),

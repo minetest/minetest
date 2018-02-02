@@ -316,6 +316,12 @@ private:
 	// get_day_night_ratio(self)
 	static int l_get_day_night_ratio(lua_State *L);
 
+	// set_time_offset(self, offset)
+	static int l_set_time_offset(lua_State *L);
+
+	// get_time_offset(self)
+	static int l_get_time_offset(lua_State *L);
+
 	// set_local_animation(self, {stand/idle}, {walk}, {dig}, {walk+dig}, frame_speed)
 	static int l_set_local_animation(lua_State *L);
 
