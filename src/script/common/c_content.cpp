@@ -1865,6 +1865,12 @@ void push_hud_element(lua_State *L, HudElement *elem)
 	lua_pushnumber(L, elem->dir);
 	lua_setfield(L, -2, "direction");
 
+	push_v2f(L, elem->offset);
+	lua_setfield(L, -2, "offset");
+
+	push_v2f(L, elem->align);
+	lua_setfield(L, -2, "alignment");
+
 	// Deprecated, only for compatibility's sake
 	lua_pushnumber(L, elem->dir);
 	lua_setfield(L, -2, "dir");
