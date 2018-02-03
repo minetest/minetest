@@ -111,9 +111,12 @@ public:
 	virtual bool isAttached() const;
 	virtual void setAttached(bool attached) { is_attached = attached; }
 
-	virtual void debugVec(const std::string &title, const v3f &v, const std::string &unused = "") const;
-	virtual void debugStr(const std::string &str, bool newline = true, const std::string &prefix = "") const;
-	virtual void debugFloat(const std::string &title, const float val, bool newline = true, const std::string &prefix = "") const;
+	virtual void debugVec(const std::string &title, const v3f &v,
+			const std::string &unused = "") const;
+	virtual void debugStr(const std::string &str, bool newline = true,
+			const std::string &prefix = "") const;
+	virtual void debugFloat(const std::string &title, const float val,
+			bool newline = true, const std::string &prefix = "") const;
 protected:
 	virtual bool checkPrivilege(const std::string &priv) const;
 	virtual void triggerJumpEvent();
@@ -125,7 +128,6 @@ protected:
 	virtual void calculateCameraInCeiling(Map *map, const NodeDefManager *nodemgr);
 
 private:
-
 	u16 m_breath = PLAYER_MAX_BREATH_DEFAULT;
 	bool camera_barely_in_ceiling = false;
 	aabb3f m_collisionbox = aabb3f(-BS * 0.30f, 0.0f, -BS * 0.30f, BS * 0.30f,

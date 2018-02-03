@@ -142,14 +142,8 @@ public:
 	void setPeerId(session_t peer_id) { m_peer_id = peer_id; }
 	virtual bool isAttached() const;
 
-	u32 getLastAckedControlLogTime() const
-	{
-		return m_last_acked_control_log_time;
-	}
-	void setLastAckedControlLogTime(u32 t)
-	{
-		m_last_acked_control_log_time = t;
-	}
+	u32 getLastAckedControlLogTime() const { return m_last_acked_control_log_time; }
+	void setLastAckedControlLogTime(u32 t) { m_last_acked_control_log_time = t; }
 
 	void setTeleportedPosition(const v3f &pos);
 	bool waitingForTeleport() const;
@@ -163,7 +157,8 @@ protected:
 	virtual float _getStepHeight() const;
 	//virtual IGameDef* getGameDef() const;
 	virtual void reportRegainGround() { /* noop in remote */ };
-	virtual void calculateCameraInCeiling(Map *map, const NodeDefManager *nodemgr) { /* noop in remote */ };
+	virtual void calculateCameraInCeiling(Map *map, const NodeDefManager *nodemgr) {
+		/* noop in remote */ };
 
 private:
 	/*

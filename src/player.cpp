@@ -471,7 +471,7 @@ void Player::move(f32 dtime, Environment *env, f32 pos_max_d,
 		return;
 	}
 
-	// Need an INodeDefManager for all following things
+	// Need an NodeDefManager for all following things
 	if (!nodemgr) {
 		return;
 	}
@@ -732,7 +732,7 @@ void Player::old_move(f32 dtime, Environment *env, f32 pos_max_d,
 		std::vector<CollisionInfo> *collision_info)
 {
 	Map *map = &env->getMap();
-	INodeDefManager *nodemgr = getNodeDefManager();
+	const NodeDefManager *nodemgr = getNodeDefManager();
 
 	v3f position = getPosition();
 
@@ -755,7 +755,7 @@ void Player::old_move(f32 dtime, Environment *env, f32 pos_max_d,
 		return;
 	}
 
-	// Need an INodeDefManager for all following things
+	// Need an NodeDefManager for all following things
 	if (!nodemgr) {
 		return;
 	}

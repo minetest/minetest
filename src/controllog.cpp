@@ -59,29 +59,29 @@ u32 ControlLogEntry::getDtimeU32() const
 	return dtime + overtime;
 }
 
-#define CLE_ACCESSOR(attribute, name, flag) \
-void ControlLogEntry::set ## name (bool on)\
-{\
-	attribute = on ? attribute | flag : attribute & ~flag;\
-}\
-bool ControlLogEntry::get ## name () const\
-{\
-	return (attribute & flag) ? true : false;\
-}
+#define CLE_ACCESSOR(attribute, name, flag)                                              \
+	void ControlLogEntry::set##name(bool on)                                         \
+	{                                                                                \
+		attribute = on ? attribute | flag : attribute & ~flag;                   \
+	}                                                                                \
+	bool ControlLogEntry::get##name() const                                          \
+	{                                                                                \
+		return (attribute & flag) ? true : false;                                \
+	}
 
-CLE_ACCESSOR(settings, FreeMove,          0x01)
-CLE_ACCESSOR(settings, FastMove,          0x02)
+CLE_ACCESSOR(settings, FreeMove, 0x01)
+CLE_ACCESSOR(settings, FastMove, 0x02)
 CLE_ACCESSOR(settings, ContinuousForward, 0x04)
-CLE_ACCESSOR(settings, AlwaysFlyFast,     0x08)
-CLE_ACCESSOR(settings, Aux1Descends,      0x10)
+CLE_ACCESSOR(settings, AlwaysFlyFast, 0x08)
+CLE_ACCESSOR(settings, Aux1Descends, 0x10)
 
-CLE_ACCESSOR(keys, Up,    0x01)
-CLE_ACCESSOR(keys, Down,  0x02)
-CLE_ACCESSOR(keys, Left,  0x04)
+CLE_ACCESSOR(keys, Up, 0x01)
+CLE_ACCESSOR(keys, Down, 0x02)
+CLE_ACCESSOR(keys, Left, 0x04)
 CLE_ACCESSOR(keys, Right, 0x08)
-CLE_ACCESSOR(keys, Jump,  0x10)
+CLE_ACCESSOR(keys, Jump, 0x10)
 CLE_ACCESSOR(keys, Sneak, 0x20)
-CLE_ACCESSOR(keys, Aux1,  0x40)
+CLE_ACCESSOR(keys, Aux1, 0x40)
 
 #undef CLE_ACCESSOR
 
@@ -101,7 +101,7 @@ void ControlLogEntry::setYaw(float a_yaw)
 {
 	// 0 - 511 (9 bits)
 	u16 yaw = (u16)((a_yaw / 360.0f) * 512) & 0x1ff;
-	yaw_pitch = (yaw_pitch & 0x7f) | ( yaw << 7);
+	yaw_pitch = (yaw_pitch & 0x7f) | (yaw << 7);
 }
 float ControlLogEntry::getYaw() const
 {
@@ -128,14 +128,9 @@ float ControlLogEntry::getJoySidew() const
 
 bool ControlLogEntry::matches(const ControlLogEntry &other) const
 {
-	return (
-		false &&
-		settings == other.settings &&
-		keys == other.keys &&
-		yaw_pitch == other.yaw_pitch &&
-		joy_forw == other.joy_forw &&
-		joy_sidew == other.joy_sidew
-	);
+	return (false && settings == other.settings && keys == other.keys &&
+			yaw_pitch == other.yaw_pitch && joy_forw == other.joy_forw &&
+			joy_sidew == other.joy_sidew);
 }
 void ControlLogEntry::merge(const ControlLogEntry &other)
 {
@@ -150,7 +145,8 @@ void ControlLogEntry::merge(const ControlLogEntry &other)
 	// the rest is supposedly identical
 }
 
-void ControlLogEntry::serialize(std::ostream &output, u8 flags, const ControlLogEntry *prev) const
+void ControlLogEntry::serialize(
+		std::ostream &output, u8 flags, const ControlLogEntry *prev) const
 {
 	if (!prev || (settings != prev->settings)) {
 		writeU8(output, 255);
@@ -169,7 +165,8 @@ void ControlLogEntry::serialize(std::ostream &output, u8 flags, const ControlLog
 	return;
 }
 
-void ControlLogEntry::deserialize(std::istream &input, u8 flags, const ControlLogEntry *prev)
+void ControlLogEntry::deserialize(
+		std::istream &input, u8 flags, const ControlLogEntry *prev)
 {
 	u8 i_dtime;
 	i_dtime = readU8(input);
@@ -196,8 +193,6 @@ void ControlLogEntry::deserialize(std::istream &input, u8 flags, const ControlLo
 	}
 	return;
 }
-
-
 
 ControlLog::ControlLog()
 {
@@ -249,7 +244,7 @@ void ControlLog::_serialize(std::ostream &output, u32 bytes_max) const
 	bool leftovers = false;
 	ControlLogEntry *prev_cle = NULL;
 	int count = 0;
-	for( ControlLogEntry cle : entries ) {
+	for(ControlLogEntry cle : entries) {
 		if (output.tellp() >= bytes_max) {
 			leftovers = true;
 			break;
@@ -277,7 +272,7 @@ void ControlLog::_deserialize(std::istream &input)
 	u8 flags;
 
 	version = readU8(input);
-	flags   = readU8(input);
+	flags = readU8(input);
 
 	starttime = readU32(input);
 	u8 motion_model, motion_model_version;
@@ -289,8 +284,8 @@ void ControlLog::_deserialize(std::istream &input)
 	// check for teleportation during unravelling
 	includes_teleport = false;
 
-	//bool leftovers = false;
-	//long int prev_tellg = input.tellg();
+	// bool leftovers = false;
+	// long int prev_tellg = input.tellg();
 	ControlLogEntry *prev_cle = NULL;
 	int count = 0;
 	while (!input.eof()) {
@@ -330,20 +325,22 @@ u32 ControlLog::getFinishTime() const
 u32 ControlLog::getSpannedTime() const
 {
 	u32 spannedtime = 0;
-	for( ControlLogEntry cle : entries ) {
+	for(ControlLogEntry cle : entries) {
 		spannedtime += cle.getDtimeU32();
 	}
 	return spannedtime;
 }
 
-void ControlLog::acknowledge(u32 finishtime) {
+void ControlLog::acknowledge(u32 finishtime)
+{
 	dstream << "acknowledge " << finishtime << std::endl;
 	if (includes_teleport && finishtime >= starttime) {
 		// if teleport was acknowledged, we can forget it again
 		includes_teleport = false;
 	}
 	while (starttime < finishtime && !entries.empty()) {
-		ControlLogEntry cle = entries.front(); entries.pop_front();
+		ControlLogEntry cle = entries.front();
+		entries.pop_front();
 		u32 dtime = cle.getDtimeU32();
 		if (finishtime - starttime < dtime) {
 			// only consume part of this, put the rest back

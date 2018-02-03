@@ -129,7 +129,7 @@ private:
 	// continuous_forward;
 	// always_fly_fast;
 	// aux1_descends;
-	
+
 	u16 keys = 0;
 	// up;
 	// down;
@@ -152,25 +152,18 @@ class ControlLog
 {
 public:
 	ControlLog();
-	void add(ControlLogEntry &cle); // position, too?
-	void serialize(std::ostream &to, u32 bytes=800) const; // up to bytes in length
+	void add(ControlLogEntry &cle);            // position, too?
+	void serialize(std::ostream &to, u32 bytes = 800) const; // up to bytes in length
 	void deserialize(std::istream &from);
 	u32 getStartTime() const;
 	u32 getFinishTime() const;
 	u32 getSpannedTime() const;
 	void acknowledge(u32 time); // removes entries
-	const std::deque<ControlLogEntry> &getEntries() const
-	{
-		return entries;
-	}
-	bool includesTeleport() const
-	{
-		return includes_teleport;
-	}
-	const v3f getTeleportPos() const {
-		return teleport_pos;
-	}
+	const std::deque<ControlLogEntry> &getEntries() const { return entries; }
+	bool includesTeleport() const { return includes_teleport; }
+	const v3f getTeleportPos() const { return teleport_pos; }
 	void setTeleportPos(v3f &pos);
+
 private:
 	u8 version = 1; // agreed-upon version
 	u32 starttime = 0;
@@ -178,7 +171,7 @@ private:
 	std::deque<ControlLogEntry> entries;
 	bool includes_teleport = false;
 	v3f teleport_pos;
-	void _serialize(std::ostream &to, u32 bytes=800) const; // up to bytes in length
+	void _serialize(std::ostream &to, u32 bytes = 800) const; // up to bytes in length
 	void _deserialize(std::istream &from);
 };
 
