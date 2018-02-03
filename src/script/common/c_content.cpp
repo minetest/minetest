@@ -1871,6 +1871,9 @@ void push_hud_element(lua_State *L, HudElement *elem)
 	push_v2f(L, elem->align);
 	lua_setfield(L, -2, "alignment");
 
+	push_v2s32(L, elem->size);
+	lua_setfield(L, -2, "size");
+
 	// Deprecated, only for compatibility's sake
 	lua_pushnumber(L, elem->dir);
 	lua_setfield(L, -2, "dir");
