@@ -220,11 +220,8 @@ void Map::setNode(v3s16 p, MapNode & n)
 			<< " while trying to replace \""
 			<< m_nodedef->get(block->getNodeNoCheck(relpos, &temp_bool)).name
 			<< "\" at " << PP(p) << " (block " << PP(blockpos) << ") "
-			<< "with an unrecognized node: (" << " Param0=" << n.getContent()
-			<< ", param1= " << unsigned(n.getParam1())
-			<< ", param2= " << unsigned(n.getParam2())
-			<< ") This is likely because you're missing or disabled "
-			<< "a required mod" << std::endl;
+			<< "with an unrecognized node. This is likely due to "
+			<< "a missing, disabled, unstable, or otherwise malfunctioning mod."<< std::endl;
 		return;
 	}
 	block->setNodeNoCheck(relpos, n);
