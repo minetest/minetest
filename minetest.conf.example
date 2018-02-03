@@ -1133,6 +1133,10 @@
 #    type: bool
 # creative_mode = false
 
+#    Enable falling nodes to damage player/entity below
+#    type: bool
+# node_fall_hurt = true
+
 #    A chosen map seed for a new map, leave empty for random.
 #    Will be overridden when creating a new world in the main menu.
 #    type: string
