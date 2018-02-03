@@ -216,10 +216,15 @@ void Map::setNode(v3s16 p, MapNode & n)
 	// Never allow placing CONTENT_IGNORE, it fucks up stuff
 	if(n.getContent() == CONTENT_IGNORE){
 		bool temp_bool;
-		errorstream<<"Map::setNode(): Not allowing to place CONTENT_IGNORE"
-				<<" while trying to replace \""
-				<<m_nodedef->get(block->getNodeNoCheck(relpos, &temp_bool)).name
-				<<"\" at "<<PP(p)<<" (block "<<PP(blockpos)<<")"<<std::endl;
+		errorstream << "Map::setNode(): Not allowing to place CONTENT_IGNORE"
+			<< " while trying to replace \""
+			<< m_nodedef->get(block->getNodeNoCheck(relpos, &temp_bool)).name
+			<< "\" at " << PP(p) << " (block " << PP(blockpos) << ") "
+			<< "with an unrecognized node: (" << " Param0=" << n.getContent()
+			<< ", param1= " << unsigned(n.getParam1())
+			<< ", param2= " << unsigned(n.getParam2())
+			<< ") This is likely because you're missing or disabled "
+			<< "a required mod" << std::endl;
 		return;
 	}
 	block->setNodeNoCheck(relpos, n);
