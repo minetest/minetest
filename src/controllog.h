@@ -152,7 +152,7 @@ class ControlLog
 {
 public:
 	ControlLog();
-	void add(ControlLogEntry &cle);            // position, too?
+	void add(ControlLogEntry &cle);				 // position, too?
 	void serialize(std::ostream &to, u32 bytes = 800) const; // up to bytes in length
 	void deserialize(std::istream &from);
 	u32 getStartTime() const;

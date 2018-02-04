@@ -32,9 +32,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	LocalPlayer
 */
 
-LocalPlayer::LocalPlayer(Client *client, const char *name):
-	Player(name, client->idef()),
-	m_client(client)
+LocalPlayer::LocalPlayer(Client *client, const char *name) :
+		Player(name, client->idef()), m_client(client)
 {
 }
 
@@ -72,7 +71,7 @@ void LocalPlayer::applyControl(float dtime, Environment *env)
 
 v3s16 LocalPlayer::getStandingNodePos()
 {
-	if(m_sneak_node_exists)
+	if (m_sneak_node_exists)
 		return m_sneak_node;
 	return m_standing_node;
 }
@@ -94,13 +93,13 @@ v3s16 LocalPlayer::getFootstepNodePos()
 
 v3s16 LocalPlayer::getLightPosition() const
 {
-	return floatToInt(m_position + v3f(0,BS+BS/2,0), BS);
+	return floatToInt(m_position + v3f(0, BS + BS / 2, 0), BS);
 }
 
 v3f LocalPlayer::getEyeOffset() const
 {
-	float eye_height = camera_barely_in_ceiling ?
-		m_eye_height - 0.125f : m_eye_height;
+	float eye_height =
+			camera_barely_in_ceiling ? m_eye_height - 0.125f : m_eye_height;
 	return v3f(0, BS * eye_height, 0);
 }
 
@@ -134,8 +133,9 @@ float LocalPlayer::_getStepHeight() const
 {
 	// Player object property step height is multiplied by BS in
 	// /src/script/common/c_content.cpp and /src/content_sao.cpp
-	return (m_cao == nullptr) ? 0.0f :
-		(touching_ground ? m_cao->getStepHeight() : (0.2f * BS));
+	return (m_cao == nullptr)
+			       ? 0.0f
+			       : (touching_ground ? m_cao->getStepHeight() : (0.2f * BS));
 }
 
 void LocalPlayer::reportRegainGround()
@@ -152,19 +152,25 @@ void LocalPlayer::calculateCameraInCeiling(Map *map, const NodeDefManager *nodem
 	camera_barely_in_ceiling = false;
 	v3s16 camera_np = floatToInt(getEyePosition(), BS);
 	MapNode n = map->getNodeNoEx(camera_np);
-	if(n.getContent() != CONTENT_IGNORE){
-		if(nodemgr->get(n).walkable && nodemgr->get(n).solidness == 2){
+	if (n.getContent() != CONTENT_IGNORE) {
+		if (nodemgr->get(n).walkable && nodemgr->get(n).solidness == 2) {
 			camera_barely_in_ceiling = true;
 		}
 	}
 }
 
-void LocalPlayer::debugVec( const std::string &title, const v3f &v, const std::string &unused) const {
+void LocalPlayer::debugVec(
+		const std::string &title, const v3f &v, const std::string &unused) const
+{
 	Player::debugVec(title, v, "LOCAL: ");
 }
-void LocalPlayer::debugStr(const std::string &str, bool newline, const std::string &unused) const {
+void LocalPlayer::debugStr(
+		const std::string &str, bool newline, const std::string &unused) const
+{
 	Player::debugStr(str, newline, "LOCAL: ");
 }
-void LocalPlayer::debugFloat(const std::string &title, const float value, bool newline, const std::string &unused) const {
+void LocalPlayer::debugFloat(const std::string &title, const float value, bool newline,
+		const std::string &unused) const
+{
 	Player::debugFloat(title, value, newline, "LOCAL: ");
 }

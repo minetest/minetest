@@ -244,7 +244,7 @@ void ControlLog::_serialize(std::ostream &output, u32 bytes_max) const
 	bool leftovers = false;
 	ControlLogEntry *prev_cle = NULL;
 	int count = 0;
-	for(ControlLogEntry cle : entries) {
+	for (ControlLogEntry cle : entries) {
 		if (output.tellp() >= bytes_max) {
 			leftovers = true;
 			break;
@@ -325,7 +325,7 @@ u32 ControlLog::getFinishTime() const
 u32 ControlLog::getSpannedTime() const
 {
 	u32 spannedtime = 0;
-	for(ControlLogEntry cle : entries) {
+	for (ControlLogEntry cle : entries) {
 		spannedtime += cle.getDtimeU32();
 	}
 	return spannedtime;
