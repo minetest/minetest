@@ -85,6 +85,15 @@ function core.get_connected_players()
 end
 
 
+function core.is_player(player)
+	-- a table being a player is also supported because it quacks sufficiently
+	-- like a player if it has the is_player function
+	local t = type(player)
+	return (t == "userdata" or t == "table") and
+		type(player.is_player) == "function" and player:is_player()
+end
+
+
 function minetest.player_exists(name)
 	return minetest.get_auth_handler().get_auth(name) ~= nil
 end
