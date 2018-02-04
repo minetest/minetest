@@ -1788,7 +1788,7 @@ void push_pointed_thing(lua_State *L, const PointedThing &pointed, bool csm,
 		lua_setfield(L, -2, "intersection_point");
 		push_v3s16(L, pointed.intersection_normal);
 		lua_setfield(L, -2, "intersection_normal");
-		lua_pushinteger(L, pointed.box_id);
+		lua_pushinteger(L, pointed.box_id + 1); // change to Lua array index
 		lua_setfield(L, -2, "box_id");
 	}
 }
