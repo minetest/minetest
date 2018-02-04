@@ -471,15 +471,6 @@ public:
 
 	void clearFlag(u8 flag);
 
-	// TODO: Move to voxelalgorithms.h
-
-	void unspreadLight(enum LightBank bank, v3s16 p, u8 oldlight,
-			std::set<v3s16> & light_sources, INodeDefManager *nodemgr);
-
-	void spreadLight(enum LightBank bank, v3s16 p, INodeDefManager *nodemgr);
-	void spreadLight(enum LightBank bank,
-			std::set<v3s16> & from_nodes, INodeDefManager *nodemgr);
-
 	/*
 		Member variables
 	*/
