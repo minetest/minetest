@@ -986,7 +986,7 @@ core.register_chatcommand("clearinv", {
 	end,
 })
 
-local function handle_kill_command(murderer, victim)
+local function handle_kill_command(killer, victim)
 	if core.settings:get_bool("enable_damage") == false then
 		return false, "Players can't be killed, damage has been disabled."
 	end
@@ -994,18 +994,18 @@ local function handle_kill_command(murderer, victim)
 	if victimref == nil then
 		return false, string.format("Player %s is not online.", victim)
 	elseif victimref:get_hp() <= 0 then
-		if murderer == victim then
-			return false, "You are already dead"
+		if killer == victim then
+			return false, "You are already dead."
 		else
-			return false, string.format("%s is already dead", victim)
+			return false, string.format("%s is already dead.", victim)
 		end
 	end
-	if not murderer == victim then
-		core.log("action", string.format("%s killed %s", murderer, victim))
+	if not killer == victim then
+		core.log("action", string.format("%s killed %s", killer, victim))
 	end
 	-- Kill victim
 	victimref:set_hp(0)
-	return true
+	return true, string.format("%s has been killed.", victim)
 end
 
 core.register_chatcommand("kill", {
