@@ -120,7 +120,12 @@ end
 -- The dumped and level arguments are internal-only.
 
 function dump(o, indent, nested, level)
-	if type(o) ~= "table" then
+	local t = type(o)
+	if not level and t == "userdata" then
+		-- when userdata (e.g. player) is passed directly, print its metatable:
+		return "userdata metatable: " .. dump(getmetatable(o))
+	end
+	if t ~= "table" then
 		return basic_dump(o)
 	end
 	-- Contains table -> true/nil of currently nested tables
