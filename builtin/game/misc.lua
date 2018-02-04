@@ -5,12 +5,11 @@
 --
 
 function core.check_player_privs(name, ...)
-	local arg_type = type(name)
-	if (arg_type == "userdata" or arg_type == "table") and
-			name.get_player_name then -- If it quacks like a Player...
+	if core.is_player(name) then
 		name = name:get_player_name()
-	elseif arg_type ~= "string" then
-		error("Invalid core.check_player_privs argument type: " .. arg_type, 2)
+	elseif type(name) ~= "string" then
+		error("core.check_player_privs expects a player or playername as " ..
+			"argument.", 2)
 	end
 
 	local requested_privs = {...}
