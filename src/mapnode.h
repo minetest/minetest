@@ -145,11 +145,6 @@ struct MapNode
 		  param2(a_param2)
 	{ }
 
-	// Create directly from a nodename
-	// If name is unknown, sets CONTENT_IGNORE
-	MapNode(const NodeDefManager *ndef, const std::string &name,
-			u8 a_param1=0, u8 a_param2=0);
-
 	bool operator==(const MapNode &other) const noexcept
 	{
 		return (param0 == other.param0
