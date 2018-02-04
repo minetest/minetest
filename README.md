@@ -53,6 +53,10 @@ Some can be changes in the key config dialog in the settings tab.
 | T                             | Chat                                                           |
 | /                             | Command                                                        |
 | Esc                           | Pause menu/abort/exit (pauses only singleplayer game)          |
+| C                             | Cycle through camera modes                                     |
+| Tab                           | Cycle through minimap modes                                    |
+| Shift + Tab                   | Change minimap orientation                                     |
+| F8                            | Toggle cinematic mode                                          |
 | R                             | Enable/disable full range view                                 |
 | +                             | Increase view range                                            |
 | -                             | Decrease view range                                            |
@@ -66,10 +70,6 @@ Some can be changes in the key config dialog in the settings tab.
 | F4                            |  Disable/enable camera update (Mapblocks are not updated anymore when disabled, disabled in release builds)  |
 | F5                            |  Cycle through debug info screens                              |
 | F6                            |  Cycle through profiler info screens                           |
-| F7                            |  Cycle through camera modes                                    |
-| F8                            |  Toggle cinematic mode                                         |
-| F9                            |  Cycle through minimap modes                                   |
-| Shift + F9                    | Change minimap orientation                                     |
 | F10                           | Show/hide console                                              |
 | F12                           | Take screenshot                                                |
 
