@@ -64,7 +64,8 @@ struct PointedThing
 	s16 object_id = -1;
 	/*!
 	 * Only valid if type isn't POINTEDTHING_NONE.
-	 * First intersection point of the ray and the nodebox.
+	 * First intersection point of the ray and the nodebox in irrlicht
+	 * coordinates.
 	 */
 	v3f intersection_point;
 	/*!
@@ -81,7 +82,7 @@ struct PointedThing
 	u16 box_id = 0;
 	/*!
 	 * Square of the distance between the pointing
-	 * ray's start point and the intersection point.
+	 * ray's start point and the intersection point in irrlicht coordinates.
 	 */
 	f32 distanceSq = 0;
 

@@ -1784,7 +1784,7 @@ void push_pointed_thing(lua_State *L, const PointedThing &pointed, bool csm,
 		lua_setfield(L, -2, "type");
 	}
 	if (hitpoint && (pointed.type != POINTEDTHING_NOTHING)) {
-		push_v3f(L, pointed.intersection_point);
+		push_v3f(L, pointed.intersection_point / BS); // convert to node coords
 		lua_setfield(L, -2, "intersection_point");
 		push_v3s16(L, pointed.intersection_normal);
 		lua_setfield(L, -2, "intersection_normal");
