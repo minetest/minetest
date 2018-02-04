@@ -1802,6 +1802,7 @@ void Server::SendTimeOfDay(session_t peer_id, u16 time, f32 time_speed)
 {
 
 	if (peer_id == PEER_ID_INEXISTENT) {
+		
 		for (auto &client_name : m_clients.getPlayerNames()) {
 			RemotePlayer *player = m_env->getPlayer(client_name.c_str());
 			peer_id = player->getPeerId();
