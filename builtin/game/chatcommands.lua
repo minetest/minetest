@@ -82,7 +82,7 @@ core.register_chatcommand("me", {
 core.register_chatcommand("admin", {
 	description = "Show the name of the server owner",
 	func = function(name)
-		local admin = minetest.settings:get("name")
+		local admin = core.settings:get("name")
 		if admin then
 			return true, "The administrator of this server is "..admin.."."
 		else
@@ -104,7 +104,7 @@ core.register_chatcommand("privs", {
 })
 
 local function handle_grant_command(caller, grantname, grantprivstr)
-	local caller_privs = minetest.get_player_privs(caller)
+	local caller_privs = core.get_player_privs(caller)
 	if not (caller_privs.privs or caller_privs.basic_privs) then
 		return false, "Your privileges are insufficient."
 	end
@@ -629,7 +629,7 @@ core.register_chatcommand("spawnentity", {
 			core.log("error", "Unable to spawn entity, player is nil")
 			return false, "Unable to spawn entity, player is nil"
 		end
-		if not minetest.registered_entities[entityname] then
+		if not core.registered_entities[entityname] then
 			return false, "Cannot spawn an unknown entity"
 		end
 		if p == "" then
@@ -966,7 +966,7 @@ core.register_chatcommand("clearinv", {
 		if param and param ~= "" and param ~= name then
 			if not core.check_player_privs(name, {server=true}) then
 				return false, "You don't have permission"
-						.. " to run this command (missing privilege: server)"
+						.. " to clear another player's inventory (missing privilege: server)"
 			end
 			player = core.get_player_by_name(param)
 			core.chat_send_player(param, name.." cleared your inventory.")
@@ -983,5 +983,36 @@ core.register_chatcommand("clearinv", {
 		else
 			return false, "Player must be online to clear inventory!"
 		end
+	end,
+})
+
+local function handle_kill_command(killer, victim)
+	if core.settings:get_bool("enable_damage") == false then
+		return false, "Players can't be killed, damage has been disabled."
+	end
+	local victimref = core.get_player_by_name(victim)
+	if victimref == nil then
+		return false, string.format("Player %s is not online.", victim)
+	elseif victimref:get_hp() <= 0 then
+		if killer == victim then
+			return false, "You are already dead."
+		else
+			return false, string.format("%s is already dead.", victim)
+		end
+	end
+	if not killer == victim then
+		core.log("action", string.format("%s killed %s", killer, victim))
+	end
+	-- Kill victim
+	victimref:set_hp(0)
+	return true, string.format("%s has been killed.", victim)
+end
+
+core.register_chatcommand("kill", {
+	params = "[<name>]",
+	description = "Kill player or yourself",
+	privs = {server=true},
+	func = function(name, param)
+		return handle_kill_command(name, param == "" and name or param)
 	end,
 })
