@@ -4448,6 +4448,16 @@ Definition tables
     --  ^ "sprite" is a flat texture always facing the player.
     --  ^ "upright_sprite" is a vertical flat texture.
     --  ^ "mesh" uses the defined mesh model.
+    --  ^ "wielditem" is used for dropped items (see builtin/game/item_entity.lua).
+    --    For this use 'textures = {itemname}'.
+    --    If the item has a 'wield_image' the object will be an extrusion of that,
+    --    otherwise:
+    --    If 'itemname' is a cubic node or nodebox the object will appear identical
+    --    to 'itemname'.
+    --    If 'itemname' is a plantlike node the object will be an extrusion of its
+    --    texture.
+    --    Otherwise for non-node items, the object will be an extrusion of
+    --    'inventory_image'.
         visual_size = {x = 1, y = 1},
     --  ^ `x` multiplies horizontal (X and Z) visual size.
     --  ^ `y` multiplies vertical (Y) visual size.
@@ -4456,6 +4466,7 @@ Definition tables
     --  ^ "cube" uses 6 textures in the way a node does.
     --  ^ "sprite" uses 1 texture.
     --  ^ "upright_sprite" uses 2 textures: {front, back}.
+    --  ^ "wielditem" expects 'textures = {itemname}' (see 'visual' above).
         colors = {}, -- number of required colors depends on visual
         spritediv = {x = 1, y = 1},
     --  ^ Used with spritesheet textures for animation and/or frame selection according
