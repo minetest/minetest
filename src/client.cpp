@@ -890,6 +890,9 @@ void writePlayerPos(LocalPlayer *myplayer, ClientMap *clientMap, NetworkPacket *
 		std::stringstream logbytes;
 		myplayer->getControlLog().serialize(logbytes, 640);
 		pkt->putLongString(logbytes.str());
+	} else {
+		// starts with length marker
+		pkt->putLongString("");
 	}
 }
 

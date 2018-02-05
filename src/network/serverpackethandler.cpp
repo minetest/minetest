@@ -475,7 +475,11 @@ void Server::process_PlayerPos(RemotePlayer *player, PlayerSAO *playersao,
 
 	bool position_ok = true;
 
+	std::string control_log_bytes = "";
 	if (pkt->getRemainingBytes() >= 1) {
+		control_log_bytes = pkt->readLongString();
+	}
+	if (control_log_bytes.length() > 0) {
 		// SERVER SIDE MOVEMENT: here we would unpack the control log
 		// from the client and replay it.
 		if (player->shouldSendControlLog()) {
