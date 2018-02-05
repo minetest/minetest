@@ -2753,9 +2753,9 @@ and `minetest.auth_reload` call the authentication handler.
     * Set node on all positions set in the first argument.
     * e.g. `minetest.bulk_set_node({{x=0, y=1, z=1}, {x=1, y=2, z=2}}, {name="default:stone"})`
     * For node specification or position syntax see `minetest.set_node` call
-    * Faster than set_node due to single call, but still considerably slower than 
+    * Faster than set_node due to single call, but still considerably slower than
       Voxel Manipulators (LVM) for large numbers of nodes.
-      Unlike LVMs, this will call node callbacks. It also allows setting nodes in spread out 
+      Unlike LVMs, this will call node callbacks. It also allows setting nodes in spread out
       positions which would cause LVMs to waste memory.
       For setting a cube, this is 1.3x faster than set_node whereas LVM is 20x faster.
 * `minetest.swap_node(pos, node)`
@@ -3329,6 +3329,7 @@ These functions return the leftover itemstack.
 
 ### Misc.
 * `minetest.get_connected_players()`: returns list of `ObjectRefs`
+* `minetest.is_player(o)`: boolean, whether `o` is a player
 * `minetest.player_exists(name)`: boolean, whether player exists (regardless of online status)
 * `minetest.hud_replace_builtin(name, hud_definition)`
     * Replaces definition of a builtin hud element
