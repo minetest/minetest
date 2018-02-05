@@ -1804,7 +1804,7 @@ void Server::SendTimeOfDay(session_t peer_id, u16 time, f32 time_speed)
 	if (peer_id == PEER_ID_INEXISTENT) {
 		std::vector<session_t> clients = m_clients.getClientIDs();
 		for (const session_t peer_id : clients) {
-			const RemotePlayer *player = m_env->getPlayer(peer_id);
+			RemotePlayer *player = m_env->getPlayer(peer_id);
 			if (!player) {
 				return;
 			}
