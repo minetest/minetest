@@ -1733,11 +1733,12 @@ int ObjectRef::l_set_time_offset(lua_State *L)
 	u16 offset = offset_i;
 	//Negative values
 	if (offset_i<0) {
-		offset = 24000+offset_i;
+		offset = 24000 + offset_i;
 	}
 
 	player->setTimeOffset(offset);
-	getServer(L)->SendTimeOfDay(player->getPeerId(), getEnv(L)->getTimeOfDay(), g_settings->getFloat("time_speed"));
+	getServer(L)->SendTimeOfDay(player->getPeerId(), 
+		getEnv(L)->getTimeOfDay(), g_settings->getFloat("time_speed"));
 
 	lua_pushboolean(L, true);
 	return 1;
