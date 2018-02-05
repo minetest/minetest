@@ -3013,6 +3013,7 @@ These functions return the leftover itemstack.
 
 ### Misc.
 * `minetest.get_connected_players()`: returns list of `ObjectRefs`
+* `minetest.is_player(o)`: boolean, whether `o` is a player
 * `minetest.player_exists(name)`: boolean, whether player exists (regardless of online status)
 * `minetest.hud_replace_builtin(name, hud_definition)`
     * Replaces definition of a builtin hud element
