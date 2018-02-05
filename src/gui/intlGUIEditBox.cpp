@@ -364,7 +364,7 @@ bool intlGUIEditBox::processKey(const SEvent& event)
 				sc = Text.subString(realmbgn, realmend - realmbgn).c_str();
 				Operator->copyToClipboard(sc.c_str());
 
-				if (IsEnabled)
+				if (IsEnabled && m_writable)
 				{
 					// delete
 					core::stringw s;
@@ -380,7 +380,7 @@ bool intlGUIEditBox::processKey(const SEvent& event)
 			}
 			break;
 		case KEY_KEY_V:
-			if ( !IsEnabled )
+			if ( !IsEnabled || !m_writable)
 				break;
 
 			// paste from the clipboard
@@ -636,7 +636,7 @@ bool intlGUIEditBox::processKey(const SEvent& event)
 		break;
 
 	case KEY_BACK:
-		if ( !this->IsEnabled )
+		if ( !this->IsEnabled || !m_writable )
 			break;
 
 		if (!Text.empty()) {
@@ -675,7 +675,7 @@ bool intlGUIEditBox::processKey(const SEvent& event)
 		}
 		break;
 	case KEY_DELETE:
-		if ( !this->IsEnabled )
+		if ( !this->IsEnabled || !m_writable )
 			break;
 
 		if (!Text.empty()) {
@@ -1351,7 +1351,7 @@ s32 intlGUIEditBox::getLineFromPos(s32 pos)
 
 void intlGUIEditBox::inputChar(wchar_t c)
 {
-	if (!IsEnabled)
+	if (!IsEnabled || !m_writable)
 		return;
 
 	if (c != 0)
