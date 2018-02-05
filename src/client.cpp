@@ -886,9 +886,11 @@ void writePlayerPos(LocalPlayer *myplayer, ClientMap *clientMap, NetworkPacket *
 	*pkt << position << speed << pitch << yaw << keyPressed;
 	*pkt << fov << wanted_range;
 
-	std::stringstream logbytes;
-	myplayer->getControlLog().serialize(logbytes, 640);
-	pkt->putLongString(logbytes.str());
+	if (myplayer->shouldSendControlLog()) {
+		std::stringstream logbytes;
+		myplayer->getControlLog().serialize(logbytes, 640);
+		pkt->putLongString(logbytes.str());
+	}
 }
 
 void Client::interact(u8 action, const PointedThing& pointed)
@@ -1232,7 +1234,10 @@ void Client::sendPlayerPos()
 	u8 camera_fov    = map.getCameraFov();
 	u8 wanted_range  = map.getControl().wanted_range;
 
-	u32 control_log_time = myplayer->getControlLog().getSpannedTime();
+	u32 control_log_time = 0;
+	if (myplayer->shouldSendControlLog()) {
+		control_log_time = myplayer->getControlLog().getSpannedTime();
+	}
 
 	// Save bandwidth by only updating position when something changed
 	// or there's more than one second of control log
@@ -1259,7 +1264,7 @@ void Client::sendPlayerPos()
 	// SERVER SIDE MOVEMENT: here we serialize the player's actions since
 	// the last such packet into an action log and send that
 
-	NetworkPacket pkt(TOSERVER_PLAYERPOS, 12 + 12 + 4 + 4 + 4 + 1 + 1 + 4 + 2 );
+	NetworkPacket pkt(TOSERVER_PLAYERPOS, 12 + 12 + 4 + 4 + 4 + 1 + 1 );
 
 	writePlayerPos(myplayer, &map, &pkt);
 

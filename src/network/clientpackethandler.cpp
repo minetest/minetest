@@ -1431,9 +1431,12 @@ void Client::handleCommand_ModChannelSignal(NetworkPacket *pkt)
 void Client::handleCommand_AckControlLog(NetworkPacket *pkt)
 {
 	u32 finish_time;
+	bool should_send;
 	*pkt >> finish_time;
+	*pkt >> should_send;
 	LocalPlayer *player = m_env.getLocalPlayer();
 	assert(player != NULL);
 
 	player->getControlLog().acknowledge(finish_time);
+	player->shouldSendControlLog(should_send);
 }

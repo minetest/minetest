@@ -478,76 +478,95 @@ void Server::process_PlayerPos(RemotePlayer *player, PlayerSAO *playersao,
 	if (pkt->getRemainingBytes() >= 1) {
 		// SERVER SIDE MOVEMENT: here we would unpack the control log
 		// from the client and replay it.
-		ControlLog log;
-		std::string logbytes = pkt->readLongString();
-		std::stringstream logstream(logbytes);
-		// deserializing does not validate it. The entries could be
-		// a bunch of lies
-		log.deserialize(logstream);
-		// if we're expecting a teleport:
-		// - the log needs to match what we're expecting
-		// - or forget everything - and then what?
-		//   need to resend teleport after a while?
-		if (player->waitingForTeleport()) {
-			if (log.includesTeleport()) {
-				if (player->matchingTeleport(log.getTeleportPos())) {
-					// great, continue
+		if (player->shouldSendControlLog()) {
+			ControlLog log;
+			std::string logbytes = pkt->readLongString();
+			std::stringstream logstream(logbytes);
+			// deserializing does not validate it. The entries could be
+			// a bunch of lies
+			log.deserialize(logstream);
+			// if we're expecting a teleport:
+			// - the log needs to match what we're expecting
+			// - or forget everything - and then what?
+			//   need to resend teleport after a while?
+			if (player->waitingForTeleport()) {
+				if (log.includesTeleport()) {
+					if (player->matchingTeleport(log.getTeleportPos())) {
+						// great, continue
+					} else {
+						// can't use this log then, abort
+					}
 				} else {
-					// can't use this log then, abort
+					// come back when you have a position for me
+					// TODO: if this happens too long - re-teleport?
 				}
-			} else {
-				// come back when you have a position for me
-				// TODO: if this happens too long - re-teleport?
 			}
-		}
 
-		// prune the log of already acknowledged controls
-		log.acknowledge(player->getLastAckedControlLogTime());
-		// check that the remainder does not exceed 2 seconds dtime,
-		//   else reject
-		// replay the log step by step:
-		for( const ControlLogEntry cle : log.getEntries() ) {
-			// - apply controls
-			player->applyControlLogEntry(cle, &getEnv());
-			// - simulate physics
-			//player->move(cle.getDtime(), &getEnv(), 100 * BS);
-			player->step(cle.getDtime(), &getEnv(), NULL);
-		}
-		// see how far we can acknowledge
-		u32 ackTime = log.getFinishTime();
-		// send acknowledge - include teleport?
-		SendAckControlLog(pkt->getPeerId(), ackTime);
-		player->setLastAckedControlLogTime(ackTime);
-		//   OR send reset
+			// prune the log of already acknowledged controls
+			log.acknowledge(player->getLastAckedControlLogTime());
+			// check that the remainder does not exceed 2 seconds dtime,
+			//   else reject
+			// TODO: the server should be able to skip this, for performance reasons
+			// replay the log step by step:
+			for( const ControlLogEntry cle : log.getEntries() ) {
+				// - apply controls
+				player->applyControlLogEntry(cle, &getEnv());
+				// - simulate physics
+				//player->move(cle.getDtime(), &getEnv(), 100 * BS);
+				player->step(cle.getDtime(), &getEnv(), NULL);
+			}
+			// see how far we can acknowledge
+			u32 ackTime = log.getFinishTime();
+			// send acknowledge - include teleport?
+			SendAckControlLog(pkt->getPeerId(), ackTime, player->shouldSendControlLog());
+			player->setLastAckedControlLogTime(ackTime);
+			//   OR send reset
 
-		//player->debugVec("Client position", position);
-		//player->debugVec("Server position", player->getPosition());
+			//player->debugVec("Client position", position);
+			//player->debugVec("Server position", player->getPosition());
 
-		// TODO: gate depending on whether we replayed a log 
-		// TODO: also check speed for discrepancy!
-		v3f delta = position - player->getPosition();
-		//player->debugVec("delta position", delta);
-		float delta_length = delta.getLength();
-		if (delta_length > 1000.0) {
-			// dev: no init yet
-			player->setPosition(position);
-		}
-		if (delta_length < 0.1 * BS) {
-			// we can believe this, adjust
-			player->setPosition(position);
-			player->setSpeed(speed);
-		} else if (delta_length > 1.0 * BS) {
-			// possible cheat
-			// Call callbacks
-			dstream << "Possible cheat detected" << std::endl;
-			position_ok = false;
+			if (player->shouldCheckControlLog()) {
+				// TODO: gate depending on whether we replayed a log
+				// TODO: also check speed for discrepancy!
+				v3f delta = position - player->getPosition();
+				//player->debugVec("delta position", delta);
+				float delta_length = delta.getLength();
+				if (delta_length > 1000.0) {
+					// dev: no init yet
+					player->setPosition(position);
+				}
+				if (delta_length < 0.1 * BS) {
+					// we can believe this, adjust
+					player->setPosition(position);
+					player->setSpeed(speed);
+				} else if (delta_length > 1.0 * BS) {
+					// possible cheat
+					// Call callbacks
+					dstream << "Possible cheat detected" << std::endl;
+					position_ok = false;
+				} else {
+					// discrepancy, but not not severe. Maybe a glitch?
+					dstream << "Position discrepancy of " << delta_length << std::endl;
+					// TODO: if both positions are in the same walkable block,
+					//       *gradually* move both closer together.
+				}
+			}
 		} else {
-			// discrepancy, but not not severe. Maybe a glitch?
-			dstream << "Position discrepancy of " << delta_length << std::endl;
-			// TODO: if both positions are in the same walkable block,
-			//       *gradually* move both closer together.
+			// got a log, but we don't want it at the moment
+			// TODO: read the log off the packet, if and when
+			//       someone else has something after it
+			SendAckControlLog(pkt->getPeerId(), 0, player->shouldSendControlLog());
 		}
-
+	} else {
+		if (player->shouldSendControlLog()) {
+			// hey, where's my control log?
+			// what do we do now?
+			// tell client to start sending
+			SendAckControlLog(pkt->getPeerId(), 0, player->shouldSendControlLog());
+			// trigger teleport and other corrections
+			position_ok = false;
+		}
+		// else no log, no need - no complaints!
 	}
 
 	pitch = modulo360f(pitch);

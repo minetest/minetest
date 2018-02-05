@@ -149,6 +149,9 @@ public:
 	bool waitingForTeleport() const;
 	bool matchingTeleport(const v3f &pos);
 
+	bool shouldCheckControlLog() const { return m_should_check_control_log; }
+	void shouldCheckControlLog(bool should) { m_should_check_control_log = should; }
+
 protected:
 	virtual bool checkPrivilege(const std::string &priv) const;
 	virtual void triggerJumpEvent() { /* noop in remote */ };
@@ -198,4 +201,6 @@ private:
 	u32 m_last_acked_control_log_time = 0;
 	bool m_waiting_for_teleport = false;
 	v3f m_teleport_pos;
+
+	bool m_should_check_control_log = false;
 };

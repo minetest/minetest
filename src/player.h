@@ -215,6 +215,10 @@ public:
 	virtual void debugVec(const std::string &title, const v3f &v, const std::string &prefix = "") const;
 	virtual void debugStr(const std::string &str, bool newline = true, const std::string &prefix = "") const;
 	virtual void debugFloat(const std::string &title, const float val, bool newline = true, const std::string &prefix = "") const;
+
+	bool shouldSendControlLog() const { return m_should_send_control_log; }
+	void shouldSendControlLog(bool should) { m_should_send_control_log = should; }
+
 protected:
 	char m_name[PLAYERNAME_SIZE];
 	v3f m_speed;
@@ -259,6 +263,8 @@ protected:
 	//virtual IGameDef* getGameDef() const = 0;
 	virtual void reportRegainGround() = 0;
 	virtual void calculateCameraInCeiling(Map *map, const NodeDefManager *nodemgr) = 0;
+	bool m_should_send_control_log = false;
+
 private:
 	// Protect some critical areas
 	// hud for example can be modified by EmergeThread
