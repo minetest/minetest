@@ -1802,10 +1802,12 @@ void Server::SendTimeOfDay(session_t peer_id, u16 time, f32 time_speed)
 {
 
 	if (peer_id == PEER_ID_INEXISTENT) {
-		
-		for (auto &client_name : m_clients.getPlayerNames()) {
-			RemotePlayer *player = m_env->getPlayer(client_name.c_str());
-			peer_id = player->getPeerId();
+		std::vector<session_t> clients = m_clients.getClientIDs();
+		for (const session_t peer_id : clients) {
+			const RemotePlayer *player = m_env->getPlayer(peer_id);
+			if (!player) {
+				return;
+			}
 			NetworkPacket pkt(TOCLIENT_TIME_OF_DAY, 0, peer_id);
 			u16 time_offset = player->getTimeOffset();
 			u16 ntime = (time+time_offset);
@@ -1816,7 +1818,7 @@ void Server::SendTimeOfDay(session_t peer_id, u16 time, f32 time_speed)
 	else {
 		RemotePlayer *player = m_env->getPlayer(peer_id);
 		// When the player is joining, player is NULL
-		if (!player){
+		if (!player) {
 			return;
 		}
 		NetworkPacket pkt(TOCLIENT_TIME_OF_DAY, 0, peer_id);
