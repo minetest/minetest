@@ -1732,7 +1732,7 @@ int ObjectRef::l_set_time_offset(lua_State *L)
 	int offset_i = luaL_checknumber(L, 2);
 	u16 offset = offset_i;
 	//Negative values
-	if (offset_i<0){
+	if (offset_i<0) {
 		offset = 24000+offset_i;
 	}
 
