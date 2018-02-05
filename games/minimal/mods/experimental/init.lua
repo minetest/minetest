@@ -682,6 +682,74 @@ minetest.register_chatcommand("test1", {
 	end,
 })
 
+minetest.register_chatcommand("test_bulk_set_node", {
+	params = "",
+	description = "Test 2: bulk set a node",
+	func = function(name, param)
+		local player = minetest.get_player_by_name(name)
+		if not player then
+			return
+		end
+		local pos_list = {}
+		local ppos = player:get_pos()
+		local i = 1
+		for x=2,10 do
+			for y=2,10 do
+				for z=2,10 do
+					pos_list[i] = {x=ppos.x + x,y = ppos.y + y,z = ppos.z + z}
+					i = i + 1
+				end
+			end
+		end
+		minetest.bulk_set_node(pos_list, {name = "default:stone"})
+		minetest.chat_send_player(name, "Done.");
+	end,
+})
+
+minetest.register_chatcommand("bench_bulk_set_node", {
+	params = "",
+	description = "Test 3: bulk set a node (bench)",
+	func = function(name, param)
+		local player = minetest.get_player_by_name(name)
+		if not player then
+			return
+		end
+		local pos_list = {}
+		local ppos = player:get_pos()
+		local i = 1
+		for x=2,100 do
+			for y=2,100 do
+				for z=2,100 do
+					pos_list[i] = {x=ppos.x + x,y = ppos.y + y,z = ppos.z + z}
+					i = i + 1
+				end
+			end
+		end
+
+		minetest.chat_send_player(name, "Benching bulk set node. Warming up...");
+
+		-- warm up with default:stone to prevent having different callbacks
+		-- due to different node topology
+		minetest.bulk_set_node(pos_list, {name = "default:stone"})
+
+		minetest.chat_send_player(name, "Warming up finished, now benching...");
+
+		local start_time = os.clock()
+		for i=1,#pos_list do
+			minetest.set_node(pos_list[i], {name = "default:stone"})
+		end
+		local middle_time = os.clock()
+		minetest.bulk_set_node(pos_list, {name = "default:stone"})
+		local end_time = os.clock()
+		minetest.chat_send_player(name,
+			string.format("Bench results: set_node loop[%.2fms], bulk_set_node[%.2fms]",
+				(middle_time - start_time) * 1000,
+				(end_time - middle_time) * 1000
+			)
+		);
+	end,
+})
+
 minetest.register_on_player_receive_fields(function(player, formname, fields)
 	experimental.print_to_everything("Inventory fields 1: player="..player:get_player_name()..", fields="..dump(fields))
 end)

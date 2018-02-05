@@ -344,7 +344,7 @@ end
 --------------------------------------------------------------------------------
 return {
 	name = "online",
-	caption = fgettext("Play Online"),
+	caption = fgettext("Join Game"),
 	cbf_formspec = get_formspec,
 	cbf_button_handler = main_button_handler,
 	on_change = on_change

@@ -34,7 +34,7 @@ core.register_privilege("basic_privs", "Can modify '"..core.colorize(core.COLOR_
 core.register_privilege("privs", "Can modify privileges")
 
 core.register_privilege("teleport", {
-	description = "Can use "..core.colorize_chatcommand("/teleport").." command",
+	description = "Can teleport self",
 	give_to_singleplayer = false,
 })
 core.register_privilege("bring", {
@@ -42,7 +42,7 @@ core.register_privilege("bring", {
 	give_to_singleplayer = false,
 })
 core.register_privilege("settime", {
-	description = "Can use "..core.colorize_chatcommand("/time"),
+	description = "Can set the time of day using "..core.colorize_chatcommand("/time"),
 	give_to_singleplayer = false,
 })
 core.register_privilege("server", {
@@ -74,15 +74,15 @@ core.register_privilege("password", {
 	give_to_admin = true,
 })
 core.register_privilege("fly", {
-	description = "Can fly using the free_move mode",
+	description = "Can use fly mode",
 	give_to_singleplayer = false,
 })
 core.register_privilege("fast", {
-	description = "Can walk fast using the fast_move mode",
+	description = "Can use fast mode",
 	give_to_singleplayer = false,
 })
 core.register_privilege("noclip", {
-	description = "Can fly through walls",
+	description = "Can fly through solid nodes using noclip mode",
 	give_to_singleplayer = false,
 })
 core.register_privilege("rollback", {
