@@ -31,14 +31,19 @@ end
 
 local cmd_marker = "/"
 
+-- Dummy gettext function
 local function gettext(...)
 	return ...
 end
 
-local function gettext_replace(text, replace)
-	return text:gsub("$1", replace)
+-- Dummy gettext function which only supports up to 2 parameters
+local function gettext_replace(text, replace1, replace2)
+	local str = text:gsub("$1", replace1)
+	if replace2 then
+		str = str:gsub("$2", replace2)
+	end
+	return str
 end
-
 
 if INIT == "client" then
 	cmd_marker = "."
@@ -72,10 +77,13 @@ local function do_help_cmd(name, param)
 			end
 		end
 		table.sort(cmds)
+		-- Intentionally not translated because the cmd names are static
+		local help_cmd = core.colorize_chatcommand(string.format("%shelp", cmd_marker), "<cmd>")
+		local help_all = core.colorize_chatcommand(string.format("%shelp", cmd_marker), "all")
+		-- List available commands
 		return true, gettext("Available commands: ") .. core.colorize(core.COLOR_COMMAND, table.concat(cmds, " ")) .. "\n"
-				-- TODO: Colorize the command names
-				.. gettext_replace("Use '$1help <cmd>' to get more information,"
-				.. " or '$1help all' to list everything.", cmd_marker)
+				.. gettext_replace("Use '$1' to get more information,"
+				.. " or '$2' to list everything.", help_cmd, help_all)
 	elseif param == "all" then
 		local cmds = {}
 		for cmd, def in pairs(core.registered_chatcommands) do

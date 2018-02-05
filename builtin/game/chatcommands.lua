@@ -1001,7 +1001,7 @@ core.register_chatcommand("clearinv", {
 			if not core.check_player_privs(name, {server=true}) then
 				return false, "You don't have permission"
 						.. " to clear to clear another player's inventory"
-						.. "(missing privilege: "..core.colorize(core.COLOR_PRIV, "server")..")."
+						.. " (missing privilege: "..core.colorize(core.COLOR_PRIV, "server")..")."
 			end
 			player = core.get_player_by_name(param)
 			core.chat_send_player(param, name.." cleared your inventory.")
