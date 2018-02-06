@@ -32,5 +32,5 @@ core.LIGHT_MAX = 14
 
 -- Colors (builtin only)
 core.COLOR_COMMAND = "#00ffff"
-core.COLOR_PARAM = "#ff60ff"
+core.COLOR_PARAM = "#00ffaa"
 core.COLOR_PRIV = "#ffff00"
