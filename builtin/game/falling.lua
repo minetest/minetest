@@ -60,8 +60,13 @@ core.register_entity(":__builtin:falling_node", {
 		local pos = self.object:getpos()
 		-- Position of bottom center point
 		local bcp = {x = pos.x, y = pos.y - 0.7, z = pos.z}
-		-- Avoid bugs caused by an unloaded node below
+		-- 'bcn' is nil for unloaded nodes
 		local bcn = core.get_node_or_nil(bcp)
+		-- Delete on contact with ignore at world edges
+		if bcn and bcn.name == "ignore" then
+			self.object:remove()
+			return
+		end
 		local bcd = bcn and core.registered_nodes[bcn.name]
 		if bcn and
 				(not bcd or bcd.walkable or
