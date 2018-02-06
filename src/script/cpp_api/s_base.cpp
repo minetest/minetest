@@ -118,6 +118,9 @@ ScriptApiBase::ScriptApiBase(ScriptingType type):
 
 	lua_pushstring(m_luastack, porting::getPlatformName());
 	lua_setglobal(m_luastack, "PLATFORM");
+
+	// Make sure Lua uses the right locale
+	setlocale(LC_NUMERIC, "C");
 }
 
 ScriptApiBase::~ScriptApiBase()
