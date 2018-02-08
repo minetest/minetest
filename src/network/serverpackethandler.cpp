@@ -476,7 +476,7 @@ void Server::process_PlayerPos(RemotePlayer *player, PlayerSAO *playersao,
 	bool position_ok = true;
 
 	std::string control_log_bytes = "";
-	if (pkt->getRemainingBytes() >= 1) {
+	if (pkt->getRemainingBytes() >= 4) {
 		control_log_bytes = pkt->readLongString();
 	}
 	if (control_log_bytes.length() > 0) {
@@ -484,8 +484,7 @@ void Server::process_PlayerPos(RemotePlayer *player, PlayerSAO *playersao,
 		// from the client and replay it.
 		if (player->shouldSendControlLog()) {
 			ControlLog log;
-			std::string logbytes = pkt->readLongString();
-			std::stringstream logstream(logbytes);
+			std::stringstream logstream(control_log_bytes);
 			// deserializing does not validate it. The entries could be
 			// a bunch of lies
 			log.deserialize(logstream);
