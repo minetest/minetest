@@ -492,16 +492,19 @@ void Server::process_PlayerPos(RemotePlayer *player, PlayerSAO *playersao,
 			// - the log needs to match what we're expecting
 			// - or forget everything - and then what?
 			//   need to resend teleport after a while?
+			bool teleport_ok = true;
 			if (player->waitingForTeleport()) {
 				if (log.includesTeleport()) {
 					if (player->matchingTeleport(log.getTeleportPos())) {
 						// great, continue
 					} else {
 						// can't use this log then, abort
+						teleport_ok = false;
 					}
 				} else {
 					// come back when you have a position for me
 					// TODO: if this happens too long - re-teleport?
+					teleport_ok = false;
 				}
 			}
 
@@ -510,13 +513,15 @@ void Server::process_PlayerPos(RemotePlayer *player, PlayerSAO *playersao,
 			// check that the remainder does not exceed 2 seconds dtime,
 			//   else reject
 			// TODO: the server should be able to skip this, for performance reasons
-			// replay the log step by step:
-			for( const ControlLogEntry cle : log.getEntries() ) {
-				// - apply controls
-				player->applyControlLogEntry(cle, &getEnv());
-				// - simulate physics
-				//player->move(cle.getDtime(), &getEnv(), 100 * BS);
-				player->step(cle.getDtime(), &getEnv(), NULL);
+			if (teleport_ok) {
+				// replay the log step by step:
+				for( const ControlLogEntry cle : log.getEntries() ) {
+					// - apply controls
+					player->applyControlLogEntry(cle, &getEnv());
+					// - simulate physics
+					//player->move(cle.getDtime(), &getEnv(), 100 * BS);
+					player->step(cle.getDtime(), &getEnv(), NULL);
+				}
 			}
 			// see how far we can acknowledge
 			u32 ackTime = log.getFinishTime();
@@ -578,7 +583,7 @@ void Server::process_PlayerPos(RemotePlayer *player, PlayerSAO *playersao,
 	if (position_ok) {
 		playersao->setBasePosition(position);
 		// TODO: speed, too?
-		player->setSpeed(speed);
+		//player->setSpeed(speed);
 	} else {
 		playersao->setBasePosition(player->getPosition());
 		// keep speed from control log above
