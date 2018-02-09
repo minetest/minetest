@@ -590,6 +590,8 @@ private:
 	*/
 	std::queue<con::PeerChange> m_peer_change_queue;
 
+	std::unordered_map<session_t, std::string> m_formspec_state_data;
+
 	/*
 		Random stuff
 	*/
