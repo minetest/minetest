@@ -137,6 +137,9 @@ int main(int argc, char *argv[])
 
 	setup_log_params(cmd_args);
 
+	// Optionally disables the ascii art logo
+	no_asciiart = cmd_args.getFlag("no-asciiart");
+
 	porting::signal_handler_init();
 
 #ifdef __ANDROID__
@@ -265,6 +268,8 @@ static void set_allowed_options(OptionList *allowed_options)
 			_("Print enormous amounts of information to log and console"))));
 	allowed_options->insert(std::make_pair("logfile", ValueSpec(VALUETYPE_STRING,
 			_("Set logfile path ('' = no logging)"))));
+	allowed_options->insert(std::make_pair("no-asciiart", ValueSpec(VALUETYPE_FLAG,
+			_("Disables ascii art logo"))));
 	allowed_options->insert(std::make_pair("gameid", ValueSpec(VALUETYPE_STRING,
 			_("Set gameid (\"--gameid list\" prints available ones)"))));
 	allowed_options->insert(std::make_pair("migrate", ValueSpec(VALUETYPE_STRING,

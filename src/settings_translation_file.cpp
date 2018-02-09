@@ -598,6 +598,8 @@ fake_function() {
 	gettext("Set the language. Leave empty to use the system language.\nA restart is required after changing this.");
 	gettext("Debug log level");
 	gettext("Level of logging to be written to debug.txt:\n-    <nothing> (no logging)\n-    none (messages with no level)\n-    error\n-    warning\n-    action\n-    info\n-    verbose");
+	gettext("Disables ascii logo");
+	gettext("Disables the ascii art logo from logs.");
 	gettext("IPv6");
 	gettext("IPv6 support.");
 	gettext("Advanced");

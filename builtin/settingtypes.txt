@@ -1219,6 +1219,9 @@ debug_log_level (Debug log level) enum action ,none,error,warning,action,info,ve
 #    "no" disables it
 log_color (Colored logs) enum detect yes,detect,no
 
+#    Disables the ascii art logo from logs.
+no_ascii_art (Disables ascii logo) bool false
+
 #    IPv6 support.
 enable_ipv6 (IPv6) bool true
 
