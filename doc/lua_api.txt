@@ -3969,6 +3969,10 @@ This is basically a reference to a C++ `ServerActiveObject`
     * in first person view
     * in third person view (max. values `{x=-10/10,y=-10,15,z=-5/5}`)
 * `get_eye_offset()`: returns `offset_first` and `offset_third`
+* `set_control_log_send(value)`: should this player send us control logs?
+	* `value`: bool, default false
+* `set_control_log_check(value)`: should we check this player's control logs?
+	* `value`: bool, default false
 
 ### `InvRef`
 An `InvRef` is a reference to an inventory.

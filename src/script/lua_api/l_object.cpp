@@ -1705,6 +1705,35 @@ int ObjectRef::l_get_day_night_ratio(lua_State *L)
 	return 1;
 }
 
+int ObjectRef::l_set_control_log_send(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	ObjectRef *ref = checkobject(L, 1);
+	RemotePlayer *player = getplayer(ref);
+	if (player == NULL)
+		return 0;
+
+	bool should_send = lua_toboolean(L, 2);
+	player->shouldSendControlLog(should_send);
+
+	return 1;
+}
+
+int ObjectRef::l_set_control_log_check(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	ObjectRef *ref = checkobject(L, 1);
+	RemotePlayer *player = getplayer(ref);
+	if (player == NULL)
+		return 0;
+
+	bool should_check = lua_toboolean(L, 2);
+	player->shouldCheckControlLog(should_check);
+
+	return 1;
+}
+
+
 ObjectRef::ObjectRef(ServerActiveObject *object):
 	m_object(object)
 {
@@ -1843,5 +1872,7 @@ const luaL_Reg ObjectRef::methods[] = {
 	luamethod(ObjectRef, get_local_animation),
 	luamethod(ObjectRef, set_eye_offset),
 	luamethod(ObjectRef, get_eye_offset),
+	luamethod(ObjectRef, set_control_log_send),
+	luamethod(ObjectRef, set_control_log_check),
 	{0,0}
 };

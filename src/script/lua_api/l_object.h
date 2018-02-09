@@ -334,4 +334,9 @@ private:
 	// get_nametag_attributes(self)
 	static int l_get_nametag_attributes(lua_State *L);
 
+	// set_control_log_send(self, value)
+	static int l_set_control_log_send(lua_State *L);
+
+	// set_control_log_check(self, value)
+	static int l_set_control_log_check(lua_State *L);
 };
