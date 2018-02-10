@@ -636,7 +636,7 @@ void GenericCAO::addToScene(ITextureSource *tsrc)
 	if (node && !m_prop.nametag.empty() && !m_is_local_player) {
 		// Add nametag
 		v3f pos;
-		pos.Y = m_prop.collisionbox.MaxEdge.Y + 0.3f;
+		pos.Y = m_prop.selectionbox.MaxEdge.Y + 0.3f;
 		m_nametag = m_client->getCamera()->addNametag(node,
 			m_prop.nametag, m_prop.nametag_color,
 			pos);
