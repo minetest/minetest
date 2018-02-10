@@ -174,19 +174,18 @@ core.register_entity(":__builtin:item", {
 		local p = self.object:getpos()
 		p.y = p.y - 0.5
 		local node = core.get_node_or_nil(p)
-		local in_unloaded = (node == nil)
-		if in_unloaded then
-			-- Don't infinetly fall into unloaded map
-			self.object:setvelocity({x = 0, y = 0, z = 0})
-			self.object:setacceleration({x = 0, y = 0, z = 0})
-			self.physical_state = false
-			self.object:set_properties({physical = false})
+		-- Delete in 'ignore' nodes
+		if node and node.name == "ignore" then
+			self.itemstring = ""
+			self.object:remove()
 			return
 		end
-		local nn = node.name
-		-- If node is not registered or node is walkably solid and resting on nodebox
+
+		-- If node is nil (unloaded area), or node is not registered, or node is
+		-- walkably solid and item is resting on nodebox
 		local v = self.object:getvelocity()
-		if not core.registered_nodes[nn] or core.registered_nodes[nn].walkable and v.y == 0 then
+		if not node or not core.registered_nodes[node.name] or
+				core.registered_nodes[node.name].walkable and v.y == 0 then
 			if self.physical_state then
 				local own_stack = ItemStack(self.object:get_luaentity().itemstring)
 				-- Merge with close entities of the same item
