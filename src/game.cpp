@@ -255,7 +255,7 @@ public:
 class SoundMaker
 {
 	ISoundManager *m_sound;
-	INodeDefManager *m_ndef;
+	const NodeDefManager *m_ndef;
 public:
 	bool makes_footstep_sound;
 	float m_player_step_timer;
@@ -264,7 +264,7 @@ public:
 	SimpleSoundSpec m_player_leftpunch_sound;
 	SimpleSoundSpec m_player_rightpunch_sound;
 
-	SoundMaker(ISoundManager *sound, INodeDefManager *ndef):
+	SoundMaker(ISoundManager *sound, const NodeDefManager *ndef):
 		m_sound(sound),
 		m_ndef(ndef),
 		makes_footstep_sound(true),
@@ -809,7 +809,7 @@ private:
 
 	// When created, these will be filled with data received from the server
 	IWritableItemDefManager *itemdef_manager = nullptr;
-	IWritableNodeDefManager *nodedef_manager = nullptr;
+	NodeDefManager *nodedef_manager = nullptr;
 
 	GameOnDemandSoundFetcher soundfetcher; // useful when testing
 	ISoundManager *sound = nullptr;
@@ -3066,7 +3066,7 @@ PointedThing Game::updatePointedThing(
 
 	ClientEnvironment &env = client->getEnv();
 	ClientMap &map = env.getClientMap();
-	INodeDefManager *nodedef = map.getNodeDefManager();
+	const NodeDefManager *nodedef = map.getNodeDefManager();
 
 	runData.selected_object = NULL;
 
@@ -3252,7 +3252,7 @@ bool Game::nodePlacementPrediction(const ItemDefinition &playeritem_def,
 	const ItemStack &playeritem, const v3s16 &nodepos, const v3s16 &neighbourpos)
 {
 	std::string prediction = playeritem_def.node_placement_prediction;
-	INodeDefManager *nodedef = client->ndef();
+	const NodeDefManager *nodedef = client->ndef();
 	ClientMap &map = client->getEnv().getClientMap();
 	MapNode node;
 	bool is_valid_position;

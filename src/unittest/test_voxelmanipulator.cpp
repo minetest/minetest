@@ -33,7 +33,7 @@ public:
 	void runTests(IGameDef *gamedef);
 
 	void testVoxelArea();
-	void testVoxelManipulator(INodeDefManager *nodedef);
+	void testVoxelManipulator(const NodeDefManager *nodedef);
 };
 
 static TestVoxelManipulator g_test_instance;
@@ -80,7 +80,7 @@ void TestVoxelManipulator::testVoxelArea()
 }
 
 
-void TestVoxelManipulator::testVoxelManipulator(INodeDefManager *nodedef)
+void TestVoxelManipulator::testVoxelManipulator(const NodeDefManager *nodedef)
 {
 	VoxelManipulator v;
 

@@ -31,7 +31,7 @@ public:
 
 	void runTests(IGameDef *gamedef);
 
-	void testNodeProperties(INodeDefManager *nodedef);
+	void testNodeProperties(const NodeDefManager *nodedef);
 };
 
 static TestMapNode g_test_instance;
@@ -43,7 +43,7 @@ void TestMapNode::runTests(IGameDef *gamedef)
 
 ////////////////////////////////////////////////////////////////////////////////
 
-void TestMapNode::testNodeProperties(INodeDefManager *nodedef)
+void TestMapNode::testNodeProperties(const NodeDefManager *nodedef)
 {
 	MapNode n(CONTENT_AIR);
 

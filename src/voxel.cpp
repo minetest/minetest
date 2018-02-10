@@ -48,8 +48,8 @@ void VoxelManipulator::clear()
 	m_flags = nullptr;
 }
 
-void VoxelManipulator::print(std::ostream &o, INodeDefManager *ndef,
-		VoxelPrintMode mode)
+void VoxelManipulator::print(std::ostream &o, const NodeDefManager *ndef,
+	VoxelPrintMode mode)
 {
 	const v3s16 &em = m_area.getExtent();
 	v3s16 of = m_area.MinEdge;

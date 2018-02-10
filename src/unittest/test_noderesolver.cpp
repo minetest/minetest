@@ -34,18 +34,18 @@ public:
 
 	void runTests(IGameDef *gamedef);
 
-	void testNodeResolving(IWritableNodeDefManager *ndef);
-	void testPendingResolveCancellation(IWritableNodeDefManager *ndef);
-	void testDirectResolveMethod(IWritableNodeDefManager *ndef);
-	void testNoneResolveMethod(IWritableNodeDefManager *ndef);
+	void testNodeResolving(NodeDefManager *ndef);
+	void testPendingResolveCancellation(NodeDefManager *ndef);
+	void testDirectResolveMethod(NodeDefManager *ndef);
+	void testNoneResolveMethod(NodeDefManager *ndef);
 };
 
 static TestNodeResolver g_test_instance;
 
 void TestNodeResolver::runTests(IGameDef *gamedef)
 {
-	IWritableNodeDefManager *ndef =
-		(IWritableNodeDefManager *)gamedef->getNodeDefManager();
+	NodeDefManager *ndef =
+		(NodeDefManager *)gamedef->getNodeDefManager();
 
 	ndef->resetNodeResolveState();
 	TEST(testNodeResolving, ndef);
@@ -104,7 +104,7 @@ void Foobaz::resolveNodeNames()
 }
 
 
-void TestNodeResolver::testNodeResolving(IWritableNodeDefManager *ndef)
+void TestNodeResolver::testNodeResolving(NodeDefManager *ndef)
 {
 	Foobar foobar;
 	size_t i;
@@ -182,7 +182,7 @@ void TestNodeResolver::testNodeResolving(IWritableNodeDefManager *ndef)
 }
 
 
-void TestNodeResolver::testPendingResolveCancellation(IWritableNodeDefManager *ndef)
+void TestNodeResolver::testPendingResolveCancellation(NodeDefManager *ndef)
 {
 	Foobaz foobaz1;
 	foobaz1.test_content1 = 1234;

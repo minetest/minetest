@@ -152,7 +152,7 @@ public:
 private:
 	ITextureSource *m_tsrc;
 	IShaderSource *m_shdrsrc;
-	INodeDefManager *m_ndef;
+	const NodeDefManager *m_ndef;
 	MinimapUpdateThread *m_minimap_update_thread;
 	scene::SMeshBuffer *m_meshbuffer;
 	bool m_enable_shaders;

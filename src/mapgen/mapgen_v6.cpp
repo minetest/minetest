@@ -85,7 +85,7 @@ MapgenV6::MapgenV6(int mapgenid, MapgenV6Params *params, EmergeManager *emerge)
 			csize.X + 2 * MAP_BLOCKSIZE, csize.Y + 2 * MAP_BLOCKSIZE);
 
 	//// Resolve nodes to be used
-	INodeDefManager *ndef = emerge->ndef;
+	const NodeDefManager *ndef = emerge->ndef;
 
 	c_stone           = ndef->getId("mapgen_stone");
 	c_dirt            = ndef->getId("mapgen_dirt");

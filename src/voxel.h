@@ -29,7 +29,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <list>
 #include "util/basic_macros.h"
 
-class INodeDefManager;
+class NodeDefManager;
 
 // For VC++
 #undef min
@@ -449,7 +449,7 @@ public:
 
 	virtual void clear();
 
-	void print(std::ostream &o, INodeDefManager *nodemgr,
+	void print(std::ostream &o, const NodeDefManager *nodemgr,
 			VoxelPrintMode mode=VOXELPRINT_MATERIAL);
 
 	void addArea(const VoxelArea &area);

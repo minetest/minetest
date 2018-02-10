@@ -1075,7 +1075,7 @@ NodeBox read_nodebox(lua_State *L, int index)
 }
 
 /******************************************************************************/
-MapNode readnode(lua_State *L, int index, INodeDefManager *ndef)
+MapNode readnode(lua_State *L, int index, const NodeDefManager *ndef)
 {
 	lua_getfield(L, index, "name");
 	if (!lua_isstring(L, -1))
@@ -1099,7 +1099,7 @@ MapNode readnode(lua_State *L, int index, INodeDefManager *ndef)
 }
 
 /******************************************************************************/
-void pushnode(lua_State *L, const MapNode &n, INodeDefManager *ndef)
+void pushnode(lua_State *L, const MapNode &n, const NodeDefManager *ndef)
 {
 	lua_newtable(L);
 	lua_pushstring(L, ndef->get(n).name.c_str());

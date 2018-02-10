@@ -44,7 +44,7 @@ extern "C" {
 namespace Json { class Value; }
 
 struct MapNode;
-class INodeDefManager;
+class NodeDefManager;
 struct PointedThing;
 struct ItemStack;
 struct ItemDefinition;
@@ -120,9 +120,9 @@ void               read_inventory_list       (lua_State *L, int tableindex,
                                               Server *srv, int forcesize=-1);
 
 MapNode            readnode                  (lua_State *L, int index,
-                                              INodeDefManager *ndef);
+                                              const NodeDefManager *ndef);
 void               pushnode                  (lua_State *L, const MapNode &n,
-                                              INodeDefManager *ndef);
+                                              const NodeDefManager *ndef);
 
 
 void               read_groups               (lua_State *L, int index,

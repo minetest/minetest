@@ -874,7 +874,7 @@ void GenericCAO::step(float dtime, ClientEnvironment *env)
 		if (m_step_distance_counter > 1.5f * BS) {
 			m_step_distance_counter = 0.0f;
 			if (!m_is_local_player && m_prop.makes_footstep_sound) {
-				INodeDefManager *ndef = m_client->ndef();
+				const NodeDefManager *ndef = m_client->ndef();
 				v3s16 p = floatToInt(getPosition() +
 					v3f(0.0f, (m_prop.collisionbox.MinEdge.Y - 0.5f) * BS, 0.0f), BS);
 				MapNode n = m_env->getMap().getNodeNoEx(p);

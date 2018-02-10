@@ -30,7 +30,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		VMANIP_FLAG_DUNGEON_INSIDE|VMANIP_FLAG_DUNGEON_PRESERVE)
 
 class MMVManip;
-class INodeDefManager;
+class NodeDefManager;
 
 v3s16 rand_ortho_dir(PseudoRandom &random, bool diagonal_dirs);
 v3s16 turn_xz(v3s16 olddir, int t);
@@ -69,7 +69,7 @@ struct DungeonParams {
 class DungeonGen {
 public:
 	MMVManip *vm;
-	INodeDefManager *ndef;
+	const NodeDefManager *ndef;
 	GenerateNotifier *gennotify;
 
 	u32 blockseed;
@@ -83,7 +83,7 @@ public:
 	v3s16 m_pos;
 	v3s16 m_dir;
 
-	DungeonGen(INodeDefManager *ndef,
+	DungeonGen(const NodeDefManager *ndef,
 		GenerateNotifier *gennotify, DungeonParams *dparams);
 
 	void generate(MMVManip *vm, u32 bseed,

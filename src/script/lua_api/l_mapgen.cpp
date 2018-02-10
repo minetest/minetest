@@ -99,16 +99,16 @@ ObjDef *get_objdef(lua_State *L, int index, ObjDefManager *objmgr);
 
 Biome *get_or_load_biome(lua_State *L, int index,
 	BiomeManager *biomemgr);
-Biome *read_biome_def(lua_State *L, int index, INodeDefManager *ndef);
+Biome *read_biome_def(lua_State *L, int index, const NodeDefManager *ndef);
 size_t get_biome_list(lua_State *L, int index,
 	BiomeManager *biomemgr, std::unordered_set<u8> *biome_id_list);
 
 Schematic *get_or_load_schematic(lua_State *L, int index,
 	SchematicManager *schemmgr, StringMap *replace_names);
-Schematic *load_schematic(lua_State *L, int index, INodeDefManager *ndef,
+Schematic *load_schematic(lua_State *L, int index, const NodeDefManager *ndef,
 	StringMap *replace_names);
 Schematic *load_schematic_from_def(lua_State *L, int index,
-	INodeDefManager *ndef, StringMap *replace_names);
+	const NodeDefManager *ndef, StringMap *replace_names);
 bool read_schematic_def(lua_State *L, int index,
 	Schematic *schem, std::vector<std::string> *names);
 
@@ -160,7 +160,7 @@ Schematic *get_or_load_schematic(lua_State *L, int index,
 }
 
 
-Schematic *load_schematic(lua_State *L, int index, INodeDefManager *ndef,
+Schematic *load_schematic(lua_State *L, int index, const NodeDefManager *ndef,
 	StringMap *replace_names)
 {
 	if (index < 0)
@@ -196,7 +196,7 @@ Schematic *load_schematic(lua_State *L, int index, INodeDefManager *ndef,
 
 
 Schematic *load_schematic_from_def(lua_State *L, int index,
-	INodeDefManager *ndef, StringMap *replace_names)
+	const NodeDefManager *ndef, StringMap *replace_names)
 {
 	Schematic *schem = SchematicManager::create(SCHEMATIC_NORMAL);
 
@@ -374,7 +374,7 @@ Biome *get_or_load_biome(lua_State *L, int index, BiomeManager *biomemgr)
 }
 
 
-Biome *read_biome_def(lua_State *L, int index, INodeDefManager *ndef)
+Biome *read_biome_def(lua_State *L, int index, const NodeDefManager *ndef)
 {
 	if (!lua_istable(L, index))
 		return NULL;
@@ -1014,7 +1014,7 @@ int ModApiMapgen::l_register_biome(lua_State *L)
 	int index = 1;
 	luaL_checktype(L, index, LUA_TTABLE);
 
-	INodeDefManager *ndef = getServer(L)->getNodeDefManager();
+	const NodeDefManager *ndef = getServer(L)->getNodeDefManager();
 	BiomeManager *bmgr    = getServer(L)->getEmergeManager()->biomemgr;
 
 	Biome *biome = read_biome_def(L, index, ndef);
@@ -1040,7 +1040,7 @@ int ModApiMapgen::l_register_decoration(lua_State *L)
 	int index = 1;
 	luaL_checktype(L, index, LUA_TTABLE);
 
-	INodeDefManager *ndef      = getServer(L)->getNodeDefManager();
+	const NodeDefManager *ndef      = getServer(L)->getNodeDefManager();
 	DecorationManager *decomgr = getServer(L)->getEmergeManager()->decomgr;
 	BiomeManager *biomemgr     = getServer(L)->getEmergeManager()->biomemgr;
 	SchematicManager *schemmgr = getServer(L)->getEmergeManager()->schemmgr;
@@ -1197,7 +1197,7 @@ int ModApiMapgen::l_register_ore(lua_State *L)
 	int index = 1;
 	luaL_checktype(L, index, LUA_TTABLE);
 
-	INodeDefManager *ndef = getServer(L)->getNodeDefManager();
+	const NodeDefManager *ndef = getServer(L)->getNodeDefManager();
 	BiomeManager *bmgr    = getServer(L)->getEmergeManager()->biomemgr;
 	OreManager *oremgr    = getServer(L)->getEmergeManager()->oremgr;
 
@@ -1469,7 +1469,7 @@ int ModApiMapgen::l_create_schematic(lua_State *L)
 {
 	MAP_LOCK_REQUIRED;
 
-	INodeDefManager *ndef = getServer(L)->getNodeDefManager();
+	const NodeDefManager *ndef = getServer(L)->getNodeDefManager();
 
 	const char *filename = luaL_checkstring(L, 4);
 	CHECK_SECURE_PATH(L, filename, true);

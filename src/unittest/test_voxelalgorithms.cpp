@@ -30,21 +30,21 @@ public:
 
 	void runTests(IGameDef *gamedef);
 
-	void testVoxelLineIterator(INodeDefManager *ndef);
+	void testVoxelLineIterator(const NodeDefManager *ndef);
 };
 
 static TestVoxelAlgorithms g_test_instance;
 
 void TestVoxelAlgorithms::runTests(IGameDef *gamedef)
 {
-	INodeDefManager *ndef = gamedef->getNodeDefManager();
+	const NodeDefManager *ndef = gamedef->getNodeDefManager();
 
 	TEST(testVoxelLineIterator, ndef);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
-void TestVoxelAlgorithms::testVoxelLineIterator(INodeDefManager *ndef)
+void TestVoxelAlgorithms::testVoxelLineIterator(const NodeDefManager *ndef)
 {
 	// Test some lines
 	// Do not test lines that start or end on the border of

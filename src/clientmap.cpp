@@ -480,9 +480,9 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 }
 
 static bool getVisibleBrightness(Map *map, const v3f &p0, v3f dir, float step,
-		float step_multiplier, float start_distance, float end_distance,
-		INodeDefManager *ndef, u32 daylight_factor, float sunlight_min_d,
-		int *result, bool *sunlight_seen)
+	float step_multiplier, float start_distance, float end_distance,
+	const NodeDefManager *ndef, u32 daylight_factor, float sunlight_min_d,
+	int *result, bool *sunlight_seen)
 {
 	int brightness_sum = 0;
 	int brightness_count = 0;

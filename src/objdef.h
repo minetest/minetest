@@ -23,7 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "porting.h"
 
 class IGameDef;
-class INodeDefManager;
+class NodeDefManager;
 
 #define OBJDEF_INVALID_INDEX ((u32)(-1))
 #define OBJDEF_INVALID_HANDLE 0
@@ -80,7 +80,7 @@ public:
 
 	size_t getNumObjects() const { return m_objects.size(); }
 	ObjDefType getType() const { return m_objtype; }
-	INodeDefManager *getNodeDef() const { return m_ndef; }
+	const NodeDefManager *getNodeDef() const { return m_ndef; }
 
 	u32 validateHandle(ObjDefHandle handle) const;
 	static ObjDefHandle createHandle(u32 index, ObjDefType type, u32 uid);
@@ -88,7 +88,7 @@ public:
 		ObjDefType *type, u32 *uid);
 
 protected:
-	INodeDefManager *m_ndef;
+	const NodeDefManager *m_ndef;
 	std::vector<ObjDef *> m_objects;
 	ObjDefType m_objtype;
 };

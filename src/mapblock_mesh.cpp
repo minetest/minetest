@@ -127,7 +127,7 @@ void MeshMakeData::setSmoothLighting(bool smooth_lighting)
 	Single light bank.
 */
 static u8 getInteriorLight(enum LightBank bank, MapNode n, s32 increment,
-		INodeDefManager *ndef)
+	const NodeDefManager *ndef)
 {
 	u8 light = n.getLight(bank, ndef);
 
@@ -149,7 +149,7 @@ static u8 getInteriorLight(enum LightBank bank, MapNode n, s32 increment,
 	Calculate non-smooth lighting at interior of node.
 	Both light banks.
 */
-u16 getInteriorLight(MapNode n, s32 increment, INodeDefManager *ndef)
+u16 getInteriorLight(MapNode n, s32 increment, const NodeDefManager *ndef)
 {
 	u16 day = getInteriorLight(LIGHTBANK_DAY, n, increment, ndef);
 	u16 night = getInteriorLight(LIGHTBANK_NIGHT, n, increment, ndef);
@@ -161,7 +161,7 @@ u16 getInteriorLight(MapNode n, s32 increment, INodeDefManager *ndef)
 	Single light bank.
 */
 static u8 getFaceLight(enum LightBank bank, MapNode n, MapNode n2,
-		v3s16 face_dir, INodeDefManager *ndef)
+	v3s16 face_dir, const NodeDefManager *ndef)
 {
 	u8 light;
 	u8 l1 = n.getLight(bank, ndef);
@@ -184,7 +184,8 @@ static u8 getFaceLight(enum LightBank bank, MapNode n, MapNode n2,
 	Calculate non-smooth lighting at face of node.
 	Both light banks.
 */
-u16 getFaceLight(MapNode n, MapNode n2, v3s16 face_dir, INodeDefManager *ndef)
+u16 getFaceLight(MapNode n, MapNode n2, v3s16 face_dir,
+	const NodeDefManager *ndef)
 {
 	u16 day = getFaceLight(LIGHTBANK_DAY, n, n2, face_dir, ndef);
 	u16 night = getFaceLight(LIGHTBANK_NIGHT, n, n2, face_dir, ndef);
@@ -198,7 +199,7 @@ u16 getFaceLight(MapNode n, MapNode n2, v3s16 face_dir, INodeDefManager *ndef)
 static u16 getSmoothLightCombined(const v3s16 &p,
 	const std::array<v3s16,8> &dirs, MeshMakeData *data)
 {
-	INodeDefManager *ndef = data->m_client->ndef();
+	const NodeDefManager *ndef = data->m_client->ndef();
 
 	u16 ambient_occlusion = 0;
 	u16 light_count = 0;
@@ -672,7 +673,7 @@ static void makeFastFace(const TileSpec &tile, u16 li0, u16 li1, u16 li2, u16 li
 	TODO: Add 3: Both faces drawn with backface culling, remove equivalent
 */
 static u8 face_contents(content_t m1, content_t m2, bool *equivalent,
-		INodeDefManager *ndef)
+	const NodeDefManager *ndef)
 {
 	*equivalent = false;
 
@@ -717,7 +718,7 @@ static u8 face_contents(content_t m1, content_t m2, bool *equivalent,
 */
 void getNodeTileN(MapNode mn, v3s16 p, u8 tileindex, MeshMakeData *data, TileSpec &tile)
 {
-	INodeDefManager *ndef = data->m_client->ndef();
+	const NodeDefManager *ndef = data->m_client->ndef();
 	const ContentFeatures &f = ndef->get(mn);
 	tile = f.tiles[tileindex];
 	bool has_crack = p == data->m_crack_pos_relative;
@@ -737,7 +738,7 @@ void getNodeTileN(MapNode mn, v3s16 p, u8 tileindex, MeshMakeData *data, TileSpe
 */
 void getNodeTile(MapNode mn, v3s16 p, v3s16 dir, MeshMakeData *data, TileSpec &tile)
 {
-	INodeDefManager *ndef = data->m_client->ndef();
+	const NodeDefManager *ndef = data->m_client->ndef();
 
 	// Direction must be (1,0,0), (-1,0,0), (0,1,0), (0,-1,0),
 	// (0,0,1), (0,0,-1) or (0,0,0)
@@ -810,7 +811,7 @@ static void getTileInfo(
 	)
 {
 	VoxelManipulator &vmanip = data->m_vmanip;
-	INodeDefManager *ndef = data->m_client->ndef();
+	const NodeDefManager *ndef = data->m_client->ndef();
 	v3s16 blockpos_nodes = data->m_blockpos * MAP_BLOCKSIZE;
 
 	const MapNode &n0 = vmanip.getNodeRefUnsafe(blockpos_nodes + p);
