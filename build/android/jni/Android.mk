@@ -274,6 +274,8 @@ LOCAL_SRC_FILES := \
 		jni/src/client/renderingengine.cpp        \
 		jni/src/client/tile.cpp                   \
 		jni/src/client/joystick_controller.cpp    \
+		jni/src/client/meshgen/extruder.cpp       \
+		jni/src/client/meshgen/extrusion.cpp      \
 		jni/src/irrlicht_changes/static_text.cpp
 
 # intentionally kept out (we already build openssl itself): jni/src/util/sha256.c
