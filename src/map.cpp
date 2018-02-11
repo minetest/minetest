@@ -512,22 +512,22 @@ void Map::PrintInfo(std::ostream &out)
 
 #define WATER_DROP_BOOST 4
 
-enum NeighborType {
+enum NeighborType : u8 {
 	NEIGHBOR_UPPER,
 	NEIGHBOR_SAME_LEVEL,
 	NEIGHBOR_LOWER
 };
+
 struct NodeNeighbor {
 	MapNode n;
 	NeighborType t;
 	v3s16 p;
-	bool l; //can liquid
 
 	NodeNeighbor()
-		: n(CONTENT_AIR)
+		: n(CONTENT_AIR), t(NEIGHBOR_SAME_LEVEL)
 	{ }
 
-	NodeNeighbor(const MapNode &node, NeighborType n_type, v3s16 pos)
+	NodeNeighbor(const MapNode &node, NeighborType n_type, const v3s16 &pos)
 		: n(node),
 		  t(n_type),
 		  p(pos)
@@ -536,10 +536,6 @@ struct NodeNeighbor {
 
 void Map::transforming_liquid_add(v3s16 p) {
         m_transforming_liquid.push_back(p);
-}
-
-s32 Map::transforming_liquid_size() {
-        return m_transforming_liquid.size();
 }
 
 void Map::transformLiquids(std::map<v3s16, MapBlock*> &modified_blocks,
@@ -644,6 +640,8 @@ void Map::transformLiquids(std::map<v3s16, MapBlock*> &modified_blocks,
 					break;
 				case 4:
 					nt = NEIGHBOR_LOWER;
+					break;
+				default:
 					break;
 			}
 			v3s16 npos = p0 + dirs[i];
