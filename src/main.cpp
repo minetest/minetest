@@ -257,6 +257,17 @@ static void set_allowed_options(OptionList *allowed_options)
 			_("Set world by name (implies local game)"))));
 	allowed_options->insert(std::make_pair("quiet", ValueSpec(VALUETYPE_FLAG,
 			_("Print to console errors only"))));
+	allowed_options->insert(std::make_pair("color", ValueSpec(VALUETYPE_STRING,
+			_("ANSI colored logs: red error log, yellow warning and grey info "
+				"and verbose logs\n"
+				// same argument names as for ls, dmesg and other well known
+				// commands for consistency reasons
+				"Set this parameter to \"always\" to enable colourization even "
+				"when not printing to a tty,\n"
+				"\"never\" to disable colourization or\n"
+				"\"auto\" (default) to enable colourization only when printing "
+				"to a tty.\n"
+				"Note that \"auto\" does not work on Windows."))));
 	allowed_options->insert(std::make_pair("info", ValueSpec(VALUETYPE_FLAG,
 			_("Print more information to console"))));
 	allowed_options->insert(std::make_pair("verbose",  ValueSpec(VALUETYPE_FLAG,
@@ -380,6 +391,13 @@ static void setup_log_params(const Settings &cmd_args)
 	if (cmd_args.getFlag("quiet")) {
 		g_logger.removeOutput(&stderr_output);
 		g_logger.addOutputMaxLevel(&stderr_output, LL_ERROR);
+	}
+
+	// Coloured log messages (see log.h)
+	if (cmd_args.exists("color")) {
+		std::string mode = cmd_args.get("color");
+		Logger::color_mode = (mode == "auto") ? LOG_COLOR_AUTO :
+			(mode == "always") ? LOG_COLOR_ALWAYS : LOG_COLOR_NEVER;
 	}
 
 	// If trace is enabled, enable logging of certain things
