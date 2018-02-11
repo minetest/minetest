@@ -1,13 +1,14 @@
 #include "extruder.h"
 #include <cstring>
+#include <stdexcept>
 
 Extruder::Extruder(video::ITexture *_texture) : texture(_texture)
 {
 	if (texture->getColorFormat() != video::ECF_A8R8G8B8)
-		return;
+		throw std::runtime_error("Can't make extruded mesh: texture has wrong format");
 	const void *rawdata = texture->lock(video::ETLM_READ_ONLY);
 	if (!rawdata)
-		return;
+		throw std::runtime_error("Can't make extruded mesh: can't lock the texture");
 	data = reinterpret_cast<const video::SColor *>(rawdata);
 	auto size = texture->getSize();
 	w = size.Width;
@@ -26,8 +27,7 @@ Extruder::Extruder(video::ITexture *_texture) : texture(_texture)
 
 Extruder::~Extruder()
 {
-	if (data)
-		texture->unlock();
+	texture->unlock();
 }
 
 inline video::SColor Extruder::pixel(u32 i, u32 j)
