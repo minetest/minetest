@@ -258,16 +258,8 @@ static void set_allowed_options(OptionList *allowed_options)
 	allowed_options->insert(std::make_pair("quiet", ValueSpec(VALUETYPE_FLAG,
 			_("Print to console errors only"))));
 	allowed_options->insert(std::make_pair("color", ValueSpec(VALUETYPE_STRING,
-			_("ANSI colored logs: red error log, yellow warning and grey info "
-				"and verbose logs\n"
-				// same argument names as for ls, dmesg and other well known
-				// commands for consistency reasons
-				"Set this parameter to \"always\" to enable colourization even "
-				"when not printing to a tty,\n"
-				"\"never\" to disable colourization or\n"
-				"\"auto\" (default) to enable colourization only when printing "
-				"to a tty.\n"
-				"Note that \"auto\" does not work on Windows."))));
+			_("Coloured logs ('always', 'never' or 'auto'), 'auto' doesn't "
+				"work on Windows."))));
 	allowed_options->insert(std::make_pair("info", ValueSpec(VALUETYPE_FLAG,
 			_("Print more information to console"))));
 	allowed_options->insert(std::make_pair("verbose",  ValueSpec(VALUETYPE_FLAG,
