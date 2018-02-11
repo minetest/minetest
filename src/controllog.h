@@ -140,12 +140,11 @@ private:
 	// aux1;
 	// mouse and future extensions
 
-	u16 yaw_pitch = 0;
-	// 7 bits signed:   pitch;
-	// 9 bits unsigned: yaw;
+	u16 yaw = 0;
+	s16 pitch = 0;
 
-	s8 joy_forw = 0;
-	s8 joy_sidew = 0;
+	s16 joy_forw = 0;
+	s16 joy_sidew = 0;
 };
 
 class ControlLog

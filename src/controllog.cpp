@@ -87,50 +87,44 @@ CLE_ACCESSOR(keys, Aux1, 0x40)
 
 void ControlLogEntry::setPitch(float a_pitch)
 {
-	// -63 - 63 -> 0-126 (7 bits)
-	u8 pitch = (u8)((a_pitch / 90.0f) * 63 + 63);
-	yaw_pitch = (yaw_pitch & 0xff80) | pitch;
+	pitch = (s16)(a_pitch / 90.0f * 32767.0f);
 }
 float ControlLogEntry::getPitch() const
 {
-	u8 pitch = (u8)(yaw_pitch & 0x7f);
-	return (((int)pitch - 63) / 63.0f) * 90.0f;
+	return pitch / 32767.0f * 90.0f;
 }
 
 void ControlLogEntry::setYaw(float a_yaw)
 {
-	// 0 - 511 (9 bits)
-	u16 yaw = (u16)((a_yaw / 360.0f) * 512) & 0x1ff;
-	yaw_pitch = (yaw_pitch & 0x7f) | (yaw << 7);
+	yaw = a_yaw / 360.0f * 65535.0f;
 }
 float ControlLogEntry::getYaw() const
 {
-	u16 yaw = (u16)((yaw_pitch >> 7) & 0x1ff);
-	return (yaw / 512.f) * 360.0f;
+	return yaw / 65535.0f * 360.0f;
 }
 
 void ControlLogEntry::setJoyForw(float a_joy_forw)
 {
-	joy_forw = (s8)(a_joy_forw * 127);
+	joy_forw = (s16)(a_joy_forw * 32767.0f);
 }
 float ControlLogEntry::getJoyForw() const
 {
-	return joy_forw / 127.0f;
+	return joy_forw / 32767.0f;
 }
 void ControlLogEntry::setJoySidew(float a_joy_sidew)
 {
-	joy_sidew = (s8)(a_joy_sidew * 127);
+	joy_sidew = (s16)(a_joy_sidew * 32767.0f);
 }
 float ControlLogEntry::getJoySidew() const
 {
-	return joy_sidew / 127.0f;
+	return joy_sidew / 32767.0f;
 }
 
 bool ControlLogEntry::matches(const ControlLogEntry &other) const
 {
 	return (false && settings == other.settings && keys == other.keys &&
-			yaw_pitch == other.yaw_pitch && joy_forw == other.joy_forw &&
-			joy_sidew == other.joy_sidew);
+			yaw == other.yaw && pitch == other.pitch &&
+			joy_forw == other.joy_forw && joy_sidew == other.joy_sidew);
 }
 void ControlLogEntry::merge(const ControlLogEntry &other)
 {
@@ -157,10 +151,11 @@ void ControlLogEntry::serialize(
 		writeU16(output, overtime);
 	}
 	writeU16(output, keys);
-	writeU16(output, yaw_pitch);
+	writeU16(output, yaw);
+	writeS16(output, pitch);
 	if (flags & 0x01) { // joystick
-		writeS8(output, joy_forw);
-		writeS8(output, joy_sidew);
+		writeS16(output, joy_forw);
+		writeS16(output, joy_sidew);
 	}
 	return;
 }
@@ -184,10 +179,11 @@ void ControlLogEntry::deserialize(
 		overtime = 0;
 	}
 	keys = readU16(input);
-	yaw_pitch = readU16(input);
+	yaw = readU16(input);
+	pitch = readS16(input);
 	if (flags & 0x01) { // joystick
-		joy_forw = readS8(input);
-		joy_sidew = readS8(input);
+		joy_forw = readS16(input);
+		joy_sidew = readS16(input);
 	} else {
 		joy_forw = joy_sidew = 0;
 	}
