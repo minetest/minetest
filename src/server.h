@@ -41,7 +41,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <map>
 #include <vector>
 
-bool disable_asciiart(bool,bool);
+bool disable_asciiart(bool value, bool flag);
 
 class ChatEvent;
 struct ChatEventChat;
