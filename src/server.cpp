@@ -1940,7 +1940,8 @@ void Server::SendAckControlLog(u16 peer_id, u32 finish_time, bool should_send)
 {
 	NetworkPacket pkt(TOCLIENT_ACK_CONTROL_LOG, 5, peer_id);
 	pkt << finish_time;
-	pkt << should_send;
+	// send as required control log version
+	pkt << (u8)(should_send ? 1 : 0);
 	Send(&pkt);
 }
 
