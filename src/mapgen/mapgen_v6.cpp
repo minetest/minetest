@@ -557,8 +557,6 @@ void MapgenV6::makeChunk(BlockMakeData *data)
 		DungeonParams dp;
 
 		dp.seed             = seed;
-		dp.c_water          = c_water_source;
-		dp.c_river_water    = c_water_source;
 
 		dp.only_in_ground   = true;
 		dp.corridor_len_min = 1;
