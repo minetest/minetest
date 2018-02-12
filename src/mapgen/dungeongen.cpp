@@ -55,14 +55,9 @@ DungeonGen::DungeonGen(const NodeDefManager *ndef,
 		// Default dungeon parameters
 		dp.seed = 0;
 
-		dp.c_water       = ndef->getId("mapgen_water_source");
-		dp.c_river_water = ndef->getId("mapgen_river_water_source");
-		dp.c_wall        = ndef->getId("mapgen_cobble");
-		dp.c_alt_wall    = ndef->getId("mapgen_mossycobble");
-		dp.c_stair       = ndef->getId("mapgen_stair_cobble");
-
-		if (dp.c_river_water == CONTENT_IGNORE)
-			dp.c_river_water = ndef->getId("mapgen_water_source");
+		dp.c_wall     = ndef->getId("mapgen_cobble");
+		dp.c_alt_wall = ndef->getId("mapgen_mossycobble");
+		dp.c_stair    = ndef->getId("mapgen_stair_cobble");
 
 		dp.diagonal_dirs       = false;
 		dp.only_in_ground      = true;
@@ -107,17 +102,17 @@ void DungeonGen::generate(MMVManip *vm, u32 bseed, v3s16 nmin, v3s16 nmax)
 	vm->clearFlag(VMANIP_FLAG_DUNGEON_INSIDE | VMANIP_FLAG_DUNGEON_PRESERVE);
 
 	if (dp.only_in_ground) {
-		// Set all air and water to be untouchable to make dungeons open to
-		// caves and open air. Optionally set ignore to be untouchable to
-		// prevent protruding dungeons.
+		// Set all air and liquid drawtypes to be untouchable to make dungeons
+		// open to air and liquids. Optionally set ignore to be untouchable to
+		// prevent projecting dungeons.
 		for (s16 z = nmin.Z; z <= nmax.Z; z++) {
 			for (s16 y = nmin.Y; y <= nmax.Y; y++) {
 				u32 i = vm->m_area.index(nmin.X, y, z);
 				for (s16 x = nmin.X; x <= nmax.X; x++) {
 					content_t c = vm->m_data[i].getContent();
-					if (c == CONTENT_AIR || c == dp.c_water ||
-							(preserve_ignore && c == CONTENT_IGNORE) ||
-							c == dp.c_river_water)
+					NodeDrawType dtype = ndef->get(c).drawtype;
+					if (dtype == NDT_AIRLIKE || dtype == NDT_LIQUID ||
+							(preserve_ignore && c == CONTENT_IGNORE))
 						vm->m_flags[i] |= VMANIP_FLAG_DUNGEON_PRESERVE;
 					i++;
 				}

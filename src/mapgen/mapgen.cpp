@@ -886,8 +886,6 @@ void MapgenBasic::generateDungeons(s16 max_stone_y,
 	DungeonParams dp;
 
 	dp.seed             = seed;
-	dp.c_water          = c_water_source;
-	dp.c_river_water    = c_river_water_source;
 
 	dp.only_in_ground   = true;
 	dp.corridor_len_min = 1;
