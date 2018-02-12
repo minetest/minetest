@@ -138,7 +138,7 @@ int main(int argc, char *argv[])
 	setup_log_params(cmd_args);
 
 	// Optionally disables the ascii art logo
-	no_asciiart = cmd_args.getFlag("no-asciiart");
+	disable_asciiart(cmd_args.getFlag("no-asciiart"), true);
 
 	porting::signal_handler_init();
 

@@ -66,7 +66,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "chat_interface.h"
 #include "remoteplayer.h"
 
-bool no_asciiart;
+bool disable_asciiart(bool value = false, bool flag = false)
+{
+	static bool no_asciiart;
+	if (flag)
+		no_asciiart = value;
+	return no_asciiart;
+}
 
 class ClientNotFoundException : public BaseException
 {
@@ -394,7 +400,7 @@ void Server::start()
 	m_thread->start();
 
 	// ASCII art for the win!
-	if (!(no_asciiart || g_settings->getFlag("no_ascii_art"))) {
+	if (!(disable_asciiart() || g_settings->getFlag("no_ascii_art"))) {
 		actionstream
 			<< "        .__               __                   __   " << std::endl
 			<< "  _____ |__| ____   _____/  |_  ____   _______/  |_ " << std::endl
