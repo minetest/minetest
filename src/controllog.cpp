@@ -217,8 +217,14 @@ void ControlLog::serialize(std::ostream &output, u32 bytes_max) const
 
 void ControlLog::_serialize(std::ostream &output, u32 bytes_max) const
 {
-	// loop to find flags (with/without joystick)
 	u8 flags = 0;
+	// loop to find flags
+	for (ControlLogEntry cle : entries) {
+		if (cle.getJoyForw() || cle.getJoySidew()) {
+			// non-empty joystick info, transmit it
+			flags |= 0x01;
+		}
+	}
 
 	writeU8(output, version);
 	writeU8(output, flags);
