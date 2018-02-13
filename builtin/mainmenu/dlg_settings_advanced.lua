@@ -928,8 +928,16 @@ local function create_settings_formspec(tabdata)
 	if #settings > 0 then
 		formspec = formspec:sub(1, -2) -- remove trailing comma
 	end
+	
+	local exit_buttom_text
+	if tabdata.is_world then
+		exit_buttom_text = fgettext("< Back to Start Game")
+	else
+		exit_buttom_text = fgettext("< Back to Settings page")
+	end
+	
 	formspec = formspec .. ";" .. selected_setting .. "]" ..
-			"button[0,6;4,1;btn_back;".. fgettext("< Back to Settings page") .. "]" ..
+			"button[0,6;4,1;btn_back;".. exit_buttom_text .. "]" ..
 			"button[10,6;2,1;btn_edit;" .. fgettext("Edit") .. "]" ..
 			"button[7,6;3,1;btn_restore;" .. fgettext("Restore Default") .. "]" ..
 			"checkbox[0,5.3;cb_tech_settings;" .. fgettext("Show technical names") .. ";"
@@ -1042,6 +1050,7 @@ function create_adv_settings_dlg()
 		handle_settings_buttons,
 		nil)
 	dlg.data.settings = core.settings
+	dlg.data.is_world = false
 	return dlg
 end
 
@@ -1053,6 +1062,7 @@ function create_world_settings_dlg()
 
 	local server_settings = filter_world_settings()
 	settings, selected_setting = filter_settings(server_settings, search_string)
+	dlg.data.is_world = true
 	return dlg
 end
 

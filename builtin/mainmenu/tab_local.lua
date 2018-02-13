@@ -277,6 +277,10 @@ local function main_button_handler(this, fields, name, tabdata)
 	
 	if fields["world_settings"] ~= nil then
 		local selected = core.get_textlist_index("sp_worlds")
+		if not selected then
+			return true
+		end
+
 		local adv_settings_dlg = create_world_settings_dlg()
 		adv_settings_dlg.data.settings = get_world_config(selected)
 		adv_settings_dlg:set_parent(this)
