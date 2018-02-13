@@ -2615,6 +2615,10 @@ Call these functions only at load time!
 * `minetest.register_on_leaveplayer(func(ObjectRef, timed_out))`
     * Called when a player leaves the game
     * `timed_out`: True for timeout, false for other reasons.
+* `minetest.register_on_auth_fail(func(name, ip))`
+    * Called when a client attempts to log into an account but supplies the wrong password.
+    * `ip`: The IP address of the client.
+    * `name`: The account the client attempted to log into.
 * `minetest.register_on_cheat(func(ObjectRef, cheat))`
     * Called when a player cheats
     * `cheat`: `{type=<cheat_type>}`, where `<cheat_type>` is one of:

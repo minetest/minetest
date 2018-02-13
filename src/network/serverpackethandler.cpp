@@ -1735,10 +1735,12 @@ void Server::handleCommand_SrpBytesM(NetworkPacket* pkt)
 			return;
 		}
 
+		std::string ip = getPeerAddress(pkt->getPeerId()).serializeString();
 		actionstream << "Server: User " << client->getName()
-			<< " at " << getPeerAddress(pkt->getPeerId()).serializeString()
+			<< " at " << ip
 			<< " supplied wrong password (auth mechanism: SRP)."
 			<< std::endl;
+		m_script->on_auth_failure(client->getName(), ip);
 		DenyAccess(pkt->getPeerId(), SERVER_ACCESSDENIED_WRONG_PASSWORD);
 		return;
 	}
