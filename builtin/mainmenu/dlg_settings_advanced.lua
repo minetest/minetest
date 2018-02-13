@@ -863,7 +863,7 @@ local function filter_world_settings()
 	local current_level = 0
 	local settings = {}
 	local ignore_top_level_category = false
-	local world_settings_categories = {"Server / Singleplayer", "Client and Server", "Mapgen", "Games", "Mods"}
+	local world_settings_categories = {"Server / Singleplayer", "Client and Server", "Games", "Mods"}
 	for _, entry in ipairs(full_settings) do
 		if entry.type == "category" and entry.level == 0 then
 			ignore_top_level_category = true
