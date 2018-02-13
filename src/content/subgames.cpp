@@ -325,6 +325,9 @@ bool loadGameConfAndInitWorld(const std::string &path, const SubgameSpec &gamesp
 
 		if (!conf.updateConfigFile(worldmt_path.c_str()))
 			return false;
+	} else {
+		// read settings for use by map_meta.txt
+		conf.readConfigFile(worldmt_path.c_str());
 	}
 
 	// Create map_meta.txt if does not already exist
@@ -347,3 +350,5 @@ bool loadGameConfAndInitWorld(const std::string &path, const SubgameSpec &gamesp
 	}
 	return true;
 }
+
+#undef SETUP_SETTING
