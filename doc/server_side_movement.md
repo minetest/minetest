@@ -1,12 +1,9 @@
 # Server side movement validation
 
-(This document is expected to be removed before the server side movement
-validation is merged.)
-
 ## Start
 
 The entire system starts when the server sends the first player position and
-requests an "control log". The control log protocol / format is versioned; the
+requests a "control log". The control log protocol / format is versioned; the
 server sends the highest version number of control logs that it supports, or 0
 if no control log is required. From this point on, the client sends the control
 log in the highest version that it supports itself and that is less or
@@ -77,7 +74,8 @@ Each regular control log line begins with the dtime, in milliseconds, that the
 motion was calculated with the controls from this line. Lines with identical
 controls may be combined into a line with these controls and the combined
 dtime. Lines may also be split into two or more lines with identical controls
-and dtimes that sum to the original one.
+and dtimes that sum to the original one. (This has proven problamatic in
+practice, so that log entries are neither split nor merged at this point).
 
 The dtime is serialized as an unsigned 8bit number, but some values at the top
 are reserved for non-regular lines, say above 200. In cases where an control
@@ -111,3 +109,13 @@ unpredictable. Specifically, it should not be based on the length of the
 control log, as much sense as that would make performance-wise, since this
 could allow malicious clients to cheat using an invalid final position with
 a long, phony control log.
+
+## Transmission
+
+The control log is transmitted as part of the regular player motion packet.
+The control log is compressed with zlib before sending, so that the merge
+feature is not as necessary to reduce network traffic as originally
+planned. The control log is sent as a "long string", which starts with
+its own size. If no control log is to be sent, an empty long string
+is sent, also starting with its own size.
+
