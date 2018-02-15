@@ -25,8 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
  * @returns a mesh with 1 or 2 buffers.
  * Buffer 0 uses @p texture
  * Buffer 1 uses @p overlay_texture, unless it is NULL, in which case it is not present
+ * @note Non-thread-safe!
  */
 scene::SMesh *createExtrusionMesh(
 		video::ITexture *texture, video::ITexture *overlay_texture = nullptr);
-
-void purgeExtrusionMeshCache();
