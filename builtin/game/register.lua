@@ -584,6 +584,7 @@ core.registered_on_priv_grant, core.register_on_priv_grant = make_registration()
 core.registered_on_priv_revoke, core.register_on_priv_revoke = make_registration()
 core.registered_can_bypass_userlimit, core.register_can_bypass_userlimit = make_registration()
 core.registered_on_modchannel_message, core.register_on_modchannel_message = make_registration()
+core.registered_on_auth_fail, core.register_on_auth_fail = make_registration()
 
 --
 -- Compatibility for on_mapgen_init()

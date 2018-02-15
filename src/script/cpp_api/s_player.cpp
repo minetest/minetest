@@ -206,3 +206,14 @@ void ScriptApiPlayer::on_playerReceiveFields(ServerActiveObject *player,
 	runCallbacks(3, RUN_CALLBACKS_MODE_OR_SC);
 }
 
+void ScriptApiPlayer::on_auth_failure(const std::string &name, const std::string &ip)
+{
+	SCRIPTAPI_PRECHECKHEADER
+
+	// Get core.registered_on_auth_failure
+	lua_getglobal(L, "core");
+	lua_getfield(L, -1, "registered_on_auth_fail");
+	lua_pushstring(L, name.c_str());
+	lua_pushstring(L, ip.c_str());
+	runCallbacks(2, RUN_CALLBACKS_MODE_FIRST);
+}
