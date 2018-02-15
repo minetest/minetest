@@ -53,10 +53,10 @@ class Extruder
 		Right,
 	};
 
-	/** Minimal pixel alpha for it to be considered opaque */
+	/** Minimal pixel alpha for it to be considered opaque. */
 	static constexpr int threshold = 128;
 
-	/** Extruded mesh thickness */
+	/** Extruded mesh thickness. Mesh width is 1.0. */
 	static constexpr float thickness = 0.1f;
 
 	video::ITexture *texture;
