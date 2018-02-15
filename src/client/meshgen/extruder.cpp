@@ -24,7 +24,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 Extruder::Extruder(video::ITexture *_texture) : texture(_texture)
 {
 	if (texture->getColorFormat() != video::ECF_A8R8G8B8)
-		throw std::runtime_error("Can't make extruded mesh: texture has wrong format");
+		throw std::runtime_error(
+				"Can't make extruded mesh: texture has wrong format");
 	auto size = texture->getSize();
 	w = size.Width;
 	h = size.Height;
@@ -40,7 +41,8 @@ Extruder::Extruder(video::ITexture *_texture) : texture(_texture)
 		std::memset(f.data(), 0, f.size());
 	const void *rawdata = texture->lock(video::ETLM_READ_ONLY);
 	if (!rawdata)
-		throw std::runtime_error("Can't make extruded mesh: can't lock the texture");
+		throw std::runtime_error(
+				"Can't make extruded mesh: can't lock the texture");
 	data = reinterpret_cast<const video::SColor *>(rawdata);
 }
 

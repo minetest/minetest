@@ -70,7 +70,8 @@ class Extruder
 	 * Array is indexed by #FaceDir. Vector is indexed by row (for horizontal faces)
 	 * or column (for vertical ones) number, starting from the upper-left corner.
 	 * Each entry is a *boolean* flag.
-	 * @note @c char is used as @c vector<bool> is optimized for space and not for speed.
+	 * @note @c char is used as @c vector<bool> is optimized for space
+	 * and not for speed.
 	 */
 	std::array<std::vector<char>, 4> faces;
 
