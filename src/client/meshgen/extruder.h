@@ -106,6 +106,11 @@ public:
 	 * @note This function treats each pixel as either transparent or opaque,
 	 * according to the #threshold.
 	 *
+	 * This function creates the mesh, consisting of two "large" quads facing front
+	 * and back, and many "long" narrow faces facing all of #FaceDir. Opaque pixels
+	 * of long faces form the mesh edge. As a long face spans the whole image
+	 * in one direction, it has only one coordinate.
+	 *
 	 * Algorithm:
 	 *
 	 * 1. Scan the texture top-to-bottom. For each row, scan it, left-to-right.
