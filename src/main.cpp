@@ -257,9 +257,15 @@ static void set_allowed_options(OptionList *allowed_options)
 			_("Set world by name (implies local game)"))));
 	allowed_options->insert(std::make_pair("quiet", ValueSpec(VALUETYPE_FLAG,
 			_("Print to console errors only"))));
+#if !defined(_WIN32)
 	allowed_options->insert(std::make_pair("color", ValueSpec(VALUETYPE_STRING,
-			_("Coloured logs ('always', 'never' or 'auto'), 'auto' doesn't "
-				"work on Windows."))));
+			_("Coloured logs ('always', 'never' or 'auto'), defaults to 'auto'"
+			))));
+#else
+	allowed_options->insert(std::make_pair("color", ValueSpec(VALUETYPE_STRING,
+			_("Coloured logs ('always' or 'never'), defaults to 'never'"
+			))));
+#endif
 	allowed_options->insert(std::make_pair("info", ValueSpec(VALUETYPE_FLAG,
 			_("Print more information to console"))));
 	allowed_options->insert(std::make_pair("verbose",  ValueSpec(VALUETYPE_FLAG,
@@ -388,8 +394,12 @@ static void setup_log_params(const Settings &cmd_args)
 	// Coloured log messages (see log.h)
 	if (cmd_args.exists("color")) {
 		std::string mode = cmd_args.get("color");
-		Logger::color_mode = (mode == "auto") ? LOG_COLOR_AUTO :
-			(mode == "always") ? LOG_COLOR_ALWAYS : LOG_COLOR_NEVER;
+		if (mode == "auto")
+			Logger::color_mode = LOG_COLOR_AUTO;
+		else if (mode == "always")
+			Logger::color_mode = LOG_COLOR_ALWAYS;
+		else
+			Logger::color_mode = LOG_COLOR_NEVER;
 	}
 
 	// If trace is enabled, enable logging of certain things
