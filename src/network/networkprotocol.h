@@ -639,7 +639,8 @@ enum ToClientCommand
 
 	TOCLIENT_ACK_CONTROL_LOG = 0x59,
 	/*
-	 	u32 timestamp
+		u32 timestamp
+		u8 should send control log
 	*/
 
 	TOCLIENT_SRP_BYTES_S_B = 0x60,
