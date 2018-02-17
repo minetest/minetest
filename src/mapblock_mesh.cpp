@@ -122,6 +122,34 @@ void MeshMakeData::setSmoothLighting(bool smooth_lighting)
 	Light and vertex color functions
 */
 
+inline u8 diminish_light(u8 light)
+{
+	assert(light <= LIGHT_SUN);
+	if (light == 0)
+		return 0;
+	return light - 1;
+}
+
+inline u8 diminish_light(u8 light, u8 distance)
+{
+	assert(light <= LIGHT_SUN);
+	if (distance >= light)
+		return 0;
+	return light - distance;
+}
+
+inline u8 undiminish_light(u8 light)
+{
+	assert(light <= LIGHT_SUN);
+	// We don't know if light should undiminish from this particular 0.
+	// Thus, keep it at 0.
+	if (light == 0)
+		return 0;
+	if (light >= LIGHT_SUN)
+		return light;
+	return light + 1;
+}
+
 /*
 	Calculate non-smooth lighting at interior of node.
 	Single light bank.
