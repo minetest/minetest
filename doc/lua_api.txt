@@ -2326,7 +2326,7 @@ Helper functions
     * `sep_is_pattern`: boolean, it specifies whether separator is a plain
       string or a pattern (regex), default: `false`
     * e.g. `"a,b":split","` returns `{"a","b"}`
-* `string:trim()`: returns the string whithout whitespace pre- and suffixes
+* `string:trim()`: returns the string without whitespace pre- and suffixes
     * e.g. `"\n \t\tfoo bar\t ":trim()` returns `"foo bar"`
 * `minetest.wrap_text(str, limit, as_table)`: returns a string or table
     * Adds newlines to the string to keep it within the specified character
@@ -3407,7 +3407,7 @@ These functions return the leftover itemstack.
 * `minetest.decode_base64(string)`: returns string
     * Decodes a string encoded in base64.
 * `minetest.is_protected(pos, name)`: returns boolean
-    * Returns true, if player `name` shouldn't be abled to dig at `pos` or do other
+    * Returns true, if player `name` shouldn't be able to dig at `pos` or do other
       actions, definable by mods, due to some mod-defined ownership-like concept.
       Returns false or nil, if the player is allowed to do such actions.
     * `name` will be "" for non-players or unknown players.
