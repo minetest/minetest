@@ -37,16 +37,15 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 inline u8 diminish_light(u8 light)
 {
+	assert(light <= LIGHT_SUN);
 	if (light == 0)
 		return 0;
-	if (light >= LIGHT_MAX)
-		return LIGHT_MAX - 1;
-
 	return light - 1;
 }
 
 inline u8 diminish_light(u8 light, u8 distance)
 {
+	assert(light <= LIGHT_SUN);
 	if (distance >= light)
 		return 0;
 	return light - distance;
@@ -59,9 +58,8 @@ inline u8 undiminish_light(u8 light)
 	// Thus, keep it at 0.
 	if (light == 0)
 		return 0;
-	if (light >= LIGHT_MAX)
+	if (light >= LIGHT_SUN)
 		return light;
-
 	return light + 1;
 }
 
