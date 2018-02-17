@@ -66,6 +66,8 @@ MapgenV7::MapgenV7(int mapgenid, MapgenV7Params *params, EmergeManager *emerge)
 	cavern_limit         = params->cavern_limit;
 	cavern_taper         = params->cavern_taper;
 	cavern_threshold     = params->cavern_threshold;
+	dungeon_ymin         = params->dungeon_ymin;
+	dungeon_ymax         = params->dungeon_ymax;
 
 	// This is to avoid a divide-by-zero.
 	// Parameter will be saved to map_meta.txt in limited form.
@@ -162,6 +164,8 @@ void MapgenV7Params::readParams(const Settings *settings)
 	settings->getS16NoEx("mgv7_cavern_limit",           cavern_limit);
 	settings->getS16NoEx("mgv7_cavern_taper",           cavern_taper);
 	settings->getFloatNoEx("mgv7_cavern_threshold",     cavern_threshold);
+	settings->getS16NoEx("mgv7_dungeon_ymin",           dungeon_ymin);
+	settings->getS16NoEx("mgv7_dungeon_ymax",           dungeon_ymax);
 
 	settings->getNoiseParams("mgv7_np_terrain_base",      np_terrain_base);
 	settings->getNoiseParams("mgv7_np_terrain_alt",       np_terrain_alt);
@@ -195,6 +199,8 @@ void MapgenV7Params::writeParams(Settings *settings) const
 	settings->setS16("mgv7_cavern_limit",           cavern_limit);
 	settings->setS16("mgv7_cavern_taper",           cavern_taper);
 	settings->setFloat("mgv7_cavern_threshold",     cavern_threshold);
+	settings->setS16("mgv7_dungeon_ymin",           dungeon_ymin);
+	settings->setS16("mgv7_dungeon_ymax",           dungeon_ymax);
 
 	settings->setNoiseParams("mgv7_np_terrain_base",      np_terrain_base);
 	settings->setNoiseParams("mgv7_np_terrain_alt",       np_terrain_alt);
@@ -327,7 +333,8 @@ void MapgenV7::makeChunk(BlockMakeData *data)
 	}
 
 	// Generate dungeons
-	if (flags & MG_DUNGEONS)
+	if ((flags & MG_DUNGEONS) && full_node_min.Y >= dungeon_ymin &&
+			full_node_max.Y <= dungeon_ymax)
 		generateDungeons(stone_surface_max_y, mgstone_type, biome_stone);
 
 	// Generate the registered decorations

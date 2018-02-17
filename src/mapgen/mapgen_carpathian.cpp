@@ -61,7 +61,10 @@ MapgenCarpathian::MapgenCarpathian(
 	cavern_limit     = params->cavern_limit;
 	cavern_taper     = params->cavern_taper;
 	cavern_threshold = params->cavern_threshold;
-	grad_wl          = 1 - water_level;
+	dungeon_ymin     = params->dungeon_ymin;
+	dungeon_ymax     = params->dungeon_ymax;
+
+	grad_wl = 1 - water_level;
 
 	//// 2D Terrain noise
 	noise_base          = new Noise(&params->np_base,          seed, csize.X, csize.Z);
@@ -136,6 +139,8 @@ void MapgenCarpathianParams::readParams(const Settings *settings)
 	settings->getS16NoEx("mgcarpathian_cavern_limit",       cavern_limit);
 	settings->getS16NoEx("mgcarpathian_cavern_taper",       cavern_taper);
 	settings->getFloatNoEx("mgcarpathian_cavern_threshold", cavern_threshold);
+	settings->getS16NoEx("mgcarpathian_dungeon_ymin",       dungeon_ymin);
+	settings->getS16NoEx("mgcarpathian_dungeon_ymax",       dungeon_ymax);
 
 	settings->getNoiseParams("mgcarpathian_np_base",          np_base);
 	settings->getNoiseParams("mgcarpathian_np_filler_depth",  np_filler_depth);
@@ -165,6 +170,8 @@ void MapgenCarpathianParams::writeParams(Settings *settings) const
 	settings->setS16("mgcarpathian_cavern_limit",       cavern_limit);
 	settings->setS16("mgcarpathian_cavern_taper",       cavern_taper);
 	settings->setFloat("mgcarpathian_cavern_threshold", cavern_threshold);
+	settings->setS16("mgcarpathian_dungeon_ymin",       dungeon_ymin);
+	settings->setS16("mgcarpathian_dungeon_ymax",       dungeon_ymax);
 
 	settings->setNoiseParams("mgcarpathian_np_base",          np_base);
 	settings->setNoiseParams("mgcarpathian_np_filler_depth",  np_filler_depth);
@@ -264,7 +271,8 @@ void MapgenCarpathian::makeChunk(BlockMakeData *data)
 	}
 
 	// Generate dungeons
-	if (flags & MG_DUNGEONS)
+	if ((flags & MG_DUNGEONS) && full_node_min.Y >= dungeon_ymin &&
+			full_node_max.Y <= dungeon_ymax)
 		generateDungeons(stone_surface_max_y, mgstone_type, biome_stone);
 
 	// Generate the registered decorations

@@ -59,6 +59,9 @@ struct MapgenV6Params : public MapgenParams {
 		MGV6_BIOMEBLEND | MGV6_MUDFLOW;
 	float freq_desert = 0.45f;
 	float freq_beach = 0.15f;
+	s16 dungeon_ymin = -31000;
+	s16 dungeon_ymax = 31000;
+
 	NoiseParams np_terrain_base;
 	NoiseParams np_terrain_higher;
 	NoiseParams np_steepness;
@@ -104,8 +107,11 @@ public:
 	NoiseParams *np_humidity;
 	NoiseParams *np_trees;
 	NoiseParams *np_apple_trees;
+
 	float freq_desert;
 	float freq_beach;
+	s16 dungeon_ymin;
+	s16 dungeon_ymax;
 
 	content_t c_stone;
 	content_t c_dirt;

@@ -53,6 +53,8 @@ MapgenFractal::MapgenFractal(int mapgenid, MapgenFractalParams *params, EmergeMa
 	cave_width       = params->cave_width;
 	large_cave_depth = params->large_cave_depth;
 	lava_depth       = params->lava_depth;
+	dungeon_ymin     = params->dungeon_ymin;
+	dungeon_ymax     = params->dungeon_ymax;
 	fractal          = params->fractal;
 	iterations       = params->iterations;
 	scale            = params->scale;
@@ -97,6 +99,8 @@ void MapgenFractalParams::readParams(const Settings *settings)
 	settings->getFloatNoEx("mgfractal_cave_width",     cave_width);
 	settings->getS16NoEx("mgfractal_large_cave_depth", large_cave_depth);
 	settings->getS16NoEx("mgfractal_lava_depth",       lava_depth);
+	settings->getS16NoEx("mgfractal_dungeon_ymin",     dungeon_ymin);
+	settings->getS16NoEx("mgfractal_dungeon_ymax",     dungeon_ymax);
 	settings->getU16NoEx("mgfractal_fractal",          fractal);
 	settings->getU16NoEx("mgfractal_iterations",       iterations);
 	settings->getV3FNoEx("mgfractal_scale",            scale);
@@ -120,6 +124,8 @@ void MapgenFractalParams::writeParams(Settings *settings) const
 	settings->setFloat("mgfractal_cave_width",     cave_width);
 	settings->setS16("mgfractal_large_cave_depth", large_cave_depth);
 	settings->setS16("mgfractal_lava_depth",       lava_depth);
+	settings->setS16("mgfractal_dungeon_ymin",     dungeon_ymin);
+	settings->setS16("mgfractal_dungeon_ymax",     dungeon_ymax);
 	settings->setU16("mgfractal_fractal",          fractal);
 	settings->setU16("mgfractal_iterations",       iterations);
 	settings->setV3F("mgfractal_scale",            scale);
@@ -208,7 +214,8 @@ void MapgenFractal::makeChunk(BlockMakeData *data)
 	if (flags & MG_CAVES)
 		generateCaves(stone_surface_max_y, large_cave_depth);
 
-	if (flags & MG_DUNGEONS)
+	if ((flags & MG_DUNGEONS) && full_node_min.Y >= dungeon_ymin &&
+			full_node_max.Y <= dungeon_ymax)
 		generateDungeons(stone_surface_max_y, mgstone_type, biome_stone);
 
 	// Generate the registered decorations
