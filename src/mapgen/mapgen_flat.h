@@ -41,6 +41,9 @@ struct MapgenFlatParams : public MapgenParams
 	float lake_steepness = 48.0f;
 	float hill_threshold = 0.45f;
 	float hill_steepness = 64.0f;
+	s16 dungeon_ymin = -31000;
+	s16 dungeon_ymax = 31000;
+
 	NoiseParams np_terrain;
 	NoiseParams np_filler_depth;
 	NoiseParams np_cave1;
@@ -72,5 +75,8 @@ private:
 	float lake_steepness;
 	float hill_threshold;
 	float hill_steepness;
+	s16 dungeon_ymin;
+	s16 dungeon_ymax;
+
 	Noise *noise_terrain;
 };

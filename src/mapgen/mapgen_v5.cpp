@@ -55,6 +55,8 @@ MapgenV5::MapgenV5(int mapgenid, MapgenV5Params *params, EmergeManager *emerge)
 	cavern_limit     = params->cavern_limit;
 	cavern_taper     = params->cavern_taper;
 	cavern_threshold = params->cavern_threshold;
+	dungeon_ymin     = params->dungeon_ymin;
+	dungeon_ymax     = params->dungeon_ymax;
 
 	// Terrain noise
 	noise_filler_depth = new Noise(&params->np_filler_depth, seed, csize.X, csize.Z);
@@ -101,6 +103,8 @@ void MapgenV5Params::readParams(const Settings *settings)
 	settings->getS16NoEx("mgv5_cavern_limit",       cavern_limit);
 	settings->getS16NoEx("mgv5_cavern_taper",       cavern_taper);
 	settings->getFloatNoEx("mgv5_cavern_threshold", cavern_threshold);
+	settings->getS16NoEx("mgv5_dungeon_ymin",       dungeon_ymin);
+	settings->getS16NoEx("mgv5_dungeon_ymax",       dungeon_ymax);
 
 	settings->getNoiseParams("mgv5_np_filler_depth", np_filler_depth);
 	settings->getNoiseParams("mgv5_np_factor",       np_factor);
@@ -121,6 +125,8 @@ void MapgenV5Params::writeParams(Settings *settings) const
 	settings->setS16("mgv5_cavern_limit",       cavern_limit);
 	settings->setS16("mgv5_cavern_taper",       cavern_taper);
 	settings->setFloat("mgv5_cavern_threshold", cavern_threshold);
+	settings->setS16("mgv5_dungeon_ymin",       dungeon_ymin);
+	settings->setS16("mgv5_dungeon_ymax",       dungeon_ymax);
 
 	settings->setNoiseParams("mgv5_np_filler_depth", np_filler_depth);
 	settings->setNoiseParams("mgv5_np_factor",       np_factor);
@@ -223,7 +229,8 @@ void MapgenV5::makeChunk(BlockMakeData *data)
 	}
 
 	// Generate dungeons and desert temples
-	if (flags & MG_DUNGEONS)
+	if ((flags & MG_DUNGEONS) && full_node_min.Y >= dungeon_ymin &&
+			full_node_max.Y <= dungeon_ymax)
 		generateDungeons(stone_surface_max_y, mgstone_type, biome_stone);
 
 	// Generate the registered decorations

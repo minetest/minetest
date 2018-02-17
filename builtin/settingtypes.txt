@@ -1323,6 +1323,12 @@ mgv5_cavern_taper (Cavern taper) int 256
 #    Defines full size of caverns, smaller values create larger caverns.
 mgv5_cavern_threshold (Cavern threshold) float 0.7
 
+#    Lower Y limit of dungeons.
+mgv5_dungeon_ymin (Dungeon minimum Y) int -31000
+
+#    Upper Y limit of dungeons.
+mgv5_dungeon_ymax (Dungeon maximum Y) int 31000
+
 [**Noises]
 
 #    Variation of biome filler depth.
@@ -1363,6 +1369,12 @@ mgv6_freq_desert (Desert noise threshold) float 0.45
 
 #    Sandy beaches occur when np_beach exceeds this value.
 mgv6_freq_beach (Beach noise threshold) float 0.15
+
+#    Lower Y limit of dungeons.
+mgv6_dungeon_ymin (Dungeon minimum Y) int -31000
+
+#    Upper Y limit of dungeons.
+mgv6_dungeon_ymax (Dungeon maximum Y) int 31000
 
 [**Noises]
 
@@ -1444,6 +1456,12 @@ mgv7_cavern_taper (Cavern taper) int 256
 #    Defines full size of caverns, smaller values create larger caverns.
 mgv7_cavern_threshold (Cavern threshold) float 0.7
 
+#    Lower Y limit of dungeons.
+mgv7_dungeon_ymin (Dungeon minimum Y) int -31000
+
+#    Upper Y limit of dungeons.
+mgv7_dungeon_ymax (Dungeon maximum Y) int 31000
+
 [**Noises]
 
 #    Y-level of higher (cliff-top) terrain.
@@ -1515,6 +1533,12 @@ mgcarpathian_cavern_taper (Cavern taper) int 256
 
 #    Defines full size of caverns, smaller values create larger caverns.
 mgcarpathian_cavern_threshold (Cavern threshold) float 0.7
+
+#    Lower Y limit of dungeons.
+mgcarpathian_dungeon_ymin (Dungeon minimum Y) int -31000
+
+#    Upper Y limit of dungeons.
+mgcarpathian_dungeon_ymax (Dungeon maximum Y) int 31000
 
 [**Noises]
 
@@ -1602,6 +1626,12 @@ mgflat_hill_threshold (Hill threshold) float 0.45
 #    Controls steepness/height of hills.
 mgflat_hill_steepness (Hill steepness) float 64.0
 
+#    Lower Y limit of dungeons.
+mgflat_dungeon_ymin (Dungeon minimum Y) int -31000
+
+#    Upper Y limit of dungeons.
+mgflat_dungeon_ymax (Dungeon maximum Y) int 31000
+
 [**Noises]
 
 #    Defines location and terrain of optional hills and lakes.
@@ -1626,6 +1656,12 @@ mgfractal_large_cave_depth (Large cave depth) int -33
 
 #    Y of upper limit of lava in large caves.
 mgfractal_lava_depth (Lava depth) int -256
+
+#    Lower Y limit of dungeons.
+mgfractal_dungeon_ymin (Dungeon minimum Y) int -31000
+
+#    Upper Y limit of dungeons.
+mgfractal_dungeon_ymax (Dungeon maximum Y) int 31000
 
 #    Choice of 18 fractals from 9 formulas.
 #    1 = 4D "Roundy" mandelbrot set.
@@ -1733,6 +1769,12 @@ mgvalleys_water_features (Water features) int 0
 
 #    Controls width of tunnels, a smaller value creates wider tunnels.
 mgvalleys_cave_width (Cave width) float 0.09
+
+#    Lower Y limit of dungeons.
+mgvalleys_dungeon_ymin (Dungeon minimum Y) int -31000
+
+#    Upper Y limit of dungeons.
+mgvalleys_dungeon_ymax (Dungeon maximum Y) int 31000
 
 [**Noises]
 

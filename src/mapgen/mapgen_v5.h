@@ -38,6 +38,8 @@ struct MapgenV5Params : public MapgenParams
 	s16 cavern_limit = -256;
 	s16 cavern_taper = 256;
 	float cavern_threshold = 0.7f;
+	s16 dungeon_ymin = -31000;
+	s16 dungeon_ymax = 31000;
 
 	NoiseParams np_filler_depth;
 	NoiseParams np_factor;
@@ -68,6 +70,9 @@ public:
 
 private:
 	s16 large_cave_depth;
+	s16 dungeon_ymin;
+	s16 dungeon_ymax;
+
 	Noise *noise_factor;
 	Noise *noise_height;
 	Noise *noise_ground;

@@ -54,6 +54,9 @@ struct MapgenValleysParams : public MapgenParams {
 	u16 river_size = 5; // How wide to make rivers.
 	u16 water_features = 0; // How often water will occur in caves.
 	float cave_width = 0.09f;
+	s16 dungeon_ymin = -31000;
+	s16 dungeon_ymax = 63; // No higher than surface mapchunks
+
 	NoiseParams np_cave1;
 	NoiseParams np_cave2;
 	NoiseParams np_filler_depth;
@@ -99,19 +102,22 @@ public:
 private:
 	BiomeGenOriginal *m_bgen;
 
+	float altitude_chill;
+	s16 massive_cave_depth;
+	s16 dungeon_ymin;
+	s16 dungeon_ymax;
+
 	bool humid_rivers;
 	bool use_altitude_chill;
 	float humidity_adjust;
 	s16 cave_water_max_height;
 	s16 lava_max_height;
-
-	float altitude_chill;
 	s16 lava_features_lim;
-	s16 massive_cave_depth;
 	float river_depth_bed;
 	float river_size_factor;
 	float *tcave_cache;
 	s16 water_features_lim;
+
 	Noise *noise_inter_valley_fill;
 	Noise *noise_inter_valley_slope;
 	Noise *noise_rivers;

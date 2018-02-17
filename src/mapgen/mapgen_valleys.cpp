@@ -78,6 +78,8 @@ MapgenValleys::MapgenValleys(int mapgenid, MapgenValleysParams *params, EmergeMa
 	river_size_factor  = params->river_size / 100.f;
 	water_features_lim = rangelim(params->water_features, 0, 10);
 	cave_width         = params->cave_width;
+	dungeon_ymin       = params->dungeon_ymin;
+	dungeon_ymax       = params->dungeon_ymax;
 
 	//// 2D Terrain noise
 	noise_filler_depth       = new Noise(&params->np_filler_depth,       seed, csize.X, csize.Z);
@@ -150,6 +152,8 @@ void MapgenValleysParams::readParams(const Settings *settings)
 	settings->getU16NoEx("mgvalleys_river_size",         river_size);
 	settings->getU16NoEx("mgvalleys_water_features",     water_features);
 	settings->getFloatNoEx("mgvalleys_cave_width",       cave_width);
+	settings->getS16NoEx("mgvalleys_dungeon_ymin",       dungeon_ymin);
+	settings->getS16NoEx("mgvalleys_dungeon_ymax",       dungeon_ymax);
 
 	settings->getNoiseParams("mgvalleys_np_cave1",              np_cave1);
 	settings->getNoiseParams("mgvalleys_np_cave2",              np_cave2);
@@ -175,6 +179,8 @@ void MapgenValleysParams::writeParams(Settings *settings) const
 	settings->setU16("mgvalleys_river_size",         river_size);
 	settings->setU16("mgvalleys_water_features",     water_features);
 	settings->setFloat("mgvalleys_cave_width",       cave_width);
+	settings->setS16("mgvalleys_dungeon_ymin",       dungeon_ymin);
+	settings->setS16("mgvalleys_dungeon_ymax",       dungeon_ymax);
 
 	settings->setNoiseParams("mgvalleys_np_cave1",              np_cave1);
 	settings->setNoiseParams("mgvalleys_np_cave2",              np_cave2);
@@ -244,7 +250,8 @@ void MapgenValleys::makeChunk(BlockMakeData *data)
 		generateCaves(stone_surface_max_y, large_cave_depth);
 
 	// Dungeon creation
-	if ((flags & MG_DUNGEONS) && node_max.Y < 50)
+	if ((flags & MG_DUNGEONS) && full_node_min.Y >= dungeon_ymin &&
+			full_node_max.Y <= dungeon_ymax)
 		generateDungeons(stone_surface_max_y, mgstone_type, biome_stone);
 
 	// Generate the registered decorations
