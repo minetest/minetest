@@ -1133,6 +1133,9 @@ csm_flavour_limits (Client side modding flavour limits) int 18
 #   this many nodes from the player.
 csm_flavour_noderange_limit (Client side noderange flavour limit) int 8
 
+#    Server side folder where client-side mods are stored before being sent to client.
+csm_transmit_store_path (Client-Side mods transmit store directory) string /usr/share/minetest/csm_transmit_store_path
+
 [*Security]
 
 #    Prevent mods from doing insecure things like running shell commands.
@@ -1235,9 +1238,9 @@ curl_file_download_timeout (cURL file download timeout) int 300000
 high_precision_fpu (High-precision FPU) bool true
 
 #    Changes the main menu UI:
-#    -   Full:  Multple singleplayer worlds, game choice, texture pack chooser, etc.
-#    -   Simple: One singleplayer world, no game or texture pack choosers. May be necessary for smaller screens.
-#    -   Auto: Simple on Android, full on everything else. 
+#    -   Full:  Multple singleplayer worlds, subgame choice, texture pack chooser, etc.
+#    -   Simple: One singleplayer world, no subgame or texture pack choosers. May be necessary for smaller screens.
+#    -   Auto: Simple on Android, full on everything else.
 main_menu_style (Main menu style) enum auto auto,full,simple
 
 #    Replaces the default main menu with a custom one.

@@ -359,6 +359,8 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("secure.trusted_mods", "");
 	settings->setDefault("secure.http_mods", "");
 
+	settings->setDefault("csm_transmit_store_path", porting::path_share + DIR_DELIM + "csm_transmit_store");
+
 	// Physics
 	settings->setDefault("movement_acceleration_default", "3");
 	settings->setDefault("movement_acceleration_air", "2");
