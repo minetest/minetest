@@ -1571,8 +1571,10 @@ void Server::SendShowFormspecMessage(session_t peer_id, const std::string &forms
 	NetworkPacket pkt(TOCLIENT_SHOW_FORMSPEC, 0 , peer_id);
 	if (formspec.empty()){
 		//the client should close the formspec
+		m_formspec_state_data.erase(peer_id);
 		pkt.putLongString("");
 	} else {
+		m_formspec_state_data[peer_id] = formname;
 		pkt.putLongString(FORMSPEC_VERSION_STRING + formspec);
 	}
 	pkt << formname;
@@ -2659,6 +2661,9 @@ void Server::DeleteClient(session_t peer_id, ClientDeletionReason reason)
 			else
 				++i;
 		}
+
+		// clear formspec info so the next client can't abuse the current state
+		m_formspec_state_data.erase(peer_id);
 
 		RemotePlayer *player = m_env->getPlayer(peer_id);
 
