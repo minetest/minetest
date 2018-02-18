@@ -158,7 +158,7 @@ bool NodeMetaRef::handleFromTable(lua_State *L, int table, Metadata *_meta)
 		lua_pushnil(L);
 		while (lua_next(L, inventorytable) != 0) {
 			// key at index -2 and value at index -1
-			std::string name = lua_tostring(L, -2);
+			std::string name = luaL_checkstring(L, -2);
 			read_inventory_list(L, -1, inv, name.c_str(), getServer(L));
 			lua_pop(L, 1); // Remove value, keep key for next iteration
 		}

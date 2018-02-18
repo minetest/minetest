@@ -95,7 +95,7 @@ int MetaDataRef::l_get_int(lua_State *L)
 	MAP_LOCK_REQUIRED;
 
 	MetaDataRef *ref = checkobject(L, 1);
-	std::string name = lua_tostring(L, 2);
+	std::string name = luaL_checkstring(L, 2);
 
 	Metadata *meta = ref->getmeta(false);
 	if (meta == NULL) {
@@ -114,8 +114,8 @@ int MetaDataRef::l_set_int(lua_State *L)
 	MAP_LOCK_REQUIRED;
 
 	MetaDataRef *ref = checkobject(L, 1);
-	std::string name = lua_tostring(L, 2);
-	int a = lua_tointeger(L, 3);
+	std::string name = luaL_checkstring(L, 2);
+	int a = luaL_checkint(L, 3);
 	std::string str = itos(a);
 
 	Metadata *meta = ref->getmeta(true);
@@ -133,7 +133,7 @@ int MetaDataRef::l_get_float(lua_State *L)
 	MAP_LOCK_REQUIRED;
 
 	MetaDataRef *ref = checkobject(L, 1);
-	std::string name = lua_tostring(L, 2);
+	std::string name = luaL_checkstring(L, 2);
 
 	Metadata *meta = ref->getmeta(false);
 	if (meta == NULL) {
@@ -152,8 +152,8 @@ int MetaDataRef::l_set_float(lua_State *L)
 	MAP_LOCK_REQUIRED;
 
 	MetaDataRef *ref = checkobject(L, 1);
-	std::string name = lua_tostring(L, 2);
-	float a = lua_tonumber(L, 3);
+	std::string name = luaL_checkstring(L, 2);
+	float a = luaL_checknumber(L, 3);
 	std::string str = ftos(a);
 
 	Metadata *meta = ref->getmeta(true);
