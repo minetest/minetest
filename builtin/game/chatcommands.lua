@@ -814,7 +814,7 @@ core.register_chatcommand("shutdown", {
 		message = message or ""
 
 		if delay ~= "" then
-			delay = tonumber(param) or 0
+			delay = tonumber(delay) or 0
 		else
 			delay = 0
 			core.log("action", name .. " shuts down server")
