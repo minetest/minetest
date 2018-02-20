@@ -19,6 +19,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #pragma once
 
+#include <memory>
+
 #include "sound.h"
 
-ISoundManager *createOpenALSoundManager(OnDemandSoundFetcher *fetcher);
+class SoundManagerGlobal;
+extern std::shared_ptr<SoundManagerGlobal> g_sound_manager_global;
+
+std::shared_ptr<SoundManagerGlobal> createSoundManagerGlobal();
+ISoundManager *createOpenALSoundManager(SoundManagerGlobal *smg, OnDemandSoundFetcher *fetcher);
