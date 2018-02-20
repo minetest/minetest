@@ -133,7 +133,7 @@ Biome *BiomeManager::getBiomeFromNoiseOriginal(float heat, float humidity, s16 y
 		}
 	}
 
-	mysrand(y + (heat - humidity) * 2);
+	mysrand(y + (heat + humidity) / 2);
 	if (biome_closest_blend &&
 			myrand_range(0, biome_closest_blend->vertical_blend) >=
 			y - biome_closest_blend->y_max)
@@ -196,7 +196,7 @@ BiomeGenOriginal::~BiomeGenOriginal()
 	delete noise_humidity_blend;
 }
 
-
+// Only usable in a mapgen thread
 Biome *BiomeGenOriginal::calcBiomeAtPoint(v3s16 pos) const
 {
 	float heat =
@@ -286,8 +286,9 @@ Biome *BiomeGenOriginal::calcBiomeFromNoise(float heat, float humidity, s16 y) c
 	}
 
 	// Carefully tune pseudorandom seed variation to avoid single node dither
-	// and create larger scale blending patterns.
-	mysrand(y + (heat - humidity) * 2);
+	// and create larger scale blending patterns similar to horizontal biome
+	// blend.
+	mysrand(y + (heat + humidity) / 2);
 
 	if (biome_closest_blend &&
 			myrand_range(0, biome_closest_blend->vertical_blend) >=
