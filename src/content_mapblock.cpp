@@ -330,7 +330,8 @@ video::SColor MapblockMeshGenerator::blendLightColor(const v3f &vertex_pos)
 video::SColor MapblockMeshGenerator::blendLightColor(const v3f &vertex_pos,
 	const v3f &vertex_normal)
 {
-	video::SColor color = blendLightColor(vertex_pos);
+	LightInfo light = blendLight(vertex_pos);
+	video::SColor color = encode_light(light.getPair(MYMAX(0.0f, vertex_normal.Y)), f->light_source);
 	if (!f->light_source)
 		applyFacesShading(color, vertex_normal);
 	return color;
