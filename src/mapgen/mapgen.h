@@ -133,9 +133,6 @@ struct MapgenParams {
 
 	BiomeParams *bparams = nullptr;
 
-	s16 mapgen_edge_min = -MAX_MAP_GENERATION_LIMIT;
-	s16 mapgen_edge_max = MAX_MAP_GENERATION_LIMIT;
-
 	virtual void readParams(const Settings *settings);
 	virtual void writeParams(Settings *settings) const;
 
@@ -143,10 +140,14 @@ struct MapgenParams {
 	s32 getSpawnRangeMax();
 
 private:
-	void calcMapgenEdges();
+	void calcMapgenEdges(s16 mg_limit, s16 csize_n, s16 ccmin, s16 ccmax,
+	s16 ccfmin, s16 ccfmax, s16 *mapgen_edge_min, s16 *mapgen_edge_max);
+	void calcMgEdgesAndSpawnLimit();
 
 	float m_sao_limit_min = -MAX_MAP_GENERATION_LIMIT * BS;
 	float m_sao_limit_max = MAX_MAP_GENERATION_LIMIT * BS;
+	// Initial value set to maximum spawn search range of Server::findSpawnPos()
+	s32 m_spawn_range_max = 4000;
 	bool m_mapgen_edges_calculated = false;
 };
 
