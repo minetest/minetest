@@ -68,6 +68,7 @@ MapblockMeshGenerator::MapblockMeshGenerator(MeshMakeData *input, MeshCollector 
 
 	enable_mesh_cache = g_settings->getBool("enable_mesh_cache") &&
 		!data->m_smooth_lighting; // Mesh cache is not supported with smooth lighting
+	sunlight_boost_strength = decode_light(LIGHT_SUN) - decode_light(LIGHT_SUN - 1);
 
 	blockpos_nodes = data->m_blockpos * MAP_BLOCKSIZE;
 }
@@ -151,7 +152,7 @@ void MapblockMeshGenerator::drawQuad(v3f *coords, const v3s16 &normal,
 //              the faces in the list is up-down-right-left-back-front
 //              (compatible with ContentFeatures).
 void MapblockMeshGenerator::drawCuboid(const aabb3f &box,
-	TileSpec *tiles, int tilecount, const LightPair *lights, const f32 *txc)
+	TileSpec *tiles, int tilecount, const LightInfo *lights, const f32 *txc)
 {
 	assert(tilecount >= 1 && tilecount <= 6); // pre-condition
 
@@ -263,10 +264,12 @@ void MapblockMeshGenerator::drawCuboid(const aabb3f &box,
 
 	if (data->m_smooth_lighting) {
 		for (int j = 0; j < 24; ++j) {
-			vertices[j].Color = encode_light(lights[light_indices[j]],
+			video::S3DVertex &vertex = vertices[j];
+			vertex.Color = encode_light(
+				lights[light_indices[j]].getPair(MYMAX(0.0f, vertex.Normal.Y)),
 				f->light_source);
 			if (!f->light_source)
-				applyFacesShading(vertices[j].Color, vertices[j].Normal);
+				applyFacesShading(vertex.Color, vertex.Normal);
 		}
 	}
 
@@ -280,30 +283,39 @@ void MapblockMeshGenerator::drawCuboid(const aabb3f &box,
 // Gets the base lighting values for a node
 void MapblockMeshGenerator::getSmoothLightFrame()
 {
+	for (int k = 0; k < 8; ++k)
+		frame.sunlight[k] = false;
 	for (int k = 0; k < 8; ++k) {
 		LightPair light(getSmoothLightTransparent(blockpos_nodes + p, light_dirs[k], data));
 		frame.lightsA[k] = light.lightA;
 		frame.lightsB[k] = light.lightB;
+		if (light.lightA == 0xFF) {
+			frame.sunlight[k] = true;
+			frame.sunlight[k ^ 2] = true;
+		}
 	}
 }
 
 // Calculates vertex light level
 //  vertex_pos - vertex position in the node (coordinates are clamped to [0.0, 1.0] or so)
-LightPair MapblockMeshGenerator::blendLight(const v3f &vertex_pos)
+LightInfo MapblockMeshGenerator::blendLight(const v3f &vertex_pos)
 {
 	f32 x = core::clamp(vertex_pos.X / BS + 0.5, 0.0 - SMOOTH_LIGHTING_OVERSIZE, 1.0 + SMOOTH_LIGHTING_OVERSIZE);
 	f32 y = core::clamp(vertex_pos.Y / BS + 0.5, 0.0 - SMOOTH_LIGHTING_OVERSIZE, 1.0 + SMOOTH_LIGHTING_OVERSIZE);
 	f32 z = core::clamp(vertex_pos.Z / BS + 0.5, 0.0 - SMOOTH_LIGHTING_OVERSIZE, 1.0 + SMOOTH_LIGHTING_OVERSIZE);
 	f32 lightA = 0.0;
 	f32 lightB = 0.0;
+	f32 sunlight = 0.0;
 	for (int k = 0; k < 8; ++k) {
 		f32 dx = (k & 4) ? x : 1 - x;
 		f32 dy = (k & 2) ? y : 1 - y;
 		f32 dz = (k & 1) ? z : 1 - z;
 		lightA += dx * dy * dz * frame.lightsA[k];
 		lightB += dx * dy * dz * frame.lightsB[k];
+		if (frame.sunlight[k])
+			sunlight += dx * dy * dz;
 	}
-	return LightPair(lightA, lightB);
+	return LightInfo{lightA, lightB, sunlight_boost_strength * sunlight};
 }
 
 // Calculates vertex color to be used in mapblock mesh
@@ -311,8 +323,8 @@ LightPair MapblockMeshGenerator::blendLight(const v3f &vertex_pos)
 //  tile_color - node's tile color
 video::SColor MapblockMeshGenerator::blendLightColor(const v3f &vertex_pos)
 {
-	LightPair light = blendLight(vertex_pos);
-	return encode_light(light, f->light_source);
+	LightInfo light = blendLight(vertex_pos);
+	return encode_light(light.getPair(), f->light_source);
 }
 
 video::SColor MapblockMeshGenerator::blendLightColor(const v3f &vertex_pos,
@@ -365,7 +377,7 @@ void MapblockMeshGenerator::drawAutoLightedCuboid(aabb3f box, const f32 *txc,
 		tile_count = 1;
 	}
 	if (data->m_smooth_lighting) {
-		LightPair lights[8];
+		LightInfo lights[8];
 		for (int j = 0; j < 8; ++j) {
 			v3f d;
 			d.X = (j & 4) ? dx2 : dx1;

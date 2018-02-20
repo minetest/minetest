@@ -206,6 +206,7 @@ static u16 getSmoothLightCombined(const v3s16 &p,
 	u8 light_source_max = 0;
 	u16 light_day = 0;
 	u16 light_night = 0;
+	bool sunlight = false;
 
 	auto add_node = [&] (u8 i, bool obstructed = false) -> bool {
 		if (obstructed) {
@@ -220,8 +221,12 @@ static u16 getSmoothLightCombined(const v3s16 &p,
 			light_source_max = f.light_source;
 		// Check f.solidness because fast-style leaves look better this way
 		if (f.param_type == CPT_LIGHT && f.solidness != 2) {
-			light_day += decode_light(n.getLightNoChecks(LIGHTBANK_DAY, &f));
-			light_night += decode_light(n.getLightNoChecks(LIGHTBANK_NIGHT, &f));
+			u8 light_level_day = n.getLightNoChecks(LIGHTBANK_DAY, &f);
+			u8 light_level_night = n.getLightNoChecks(LIGHTBANK_NIGHT, &f);
+			if (light_level_day == LIGHT_SUN)
+				sunlight = true;
+			light_day += decode_light(light_level_day);
+			light_night += decode_light(light_level_night);
 			light_count++;
 		} else {
 			ambient_occlusion++;
@@ -252,6 +257,9 @@ static u16 getSmoothLightCombined(const v3s16 &p,
 		light_day /= light_count;
 		light_night /= light_count;
 	}
+
+	if (sunlight)
+		light_day = 0xFF;
 
 	// Boost brightness around light sources
 	bool skip_ambient_occlusion_day = false;

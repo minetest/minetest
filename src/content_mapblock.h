@@ -38,9 +38,21 @@ struct LightPair {
 	operator u16() const { return lightA | lightB << 8; }
 };
 
+struct LightInfo {
+	float light_day;
+	float light_night;
+	float sunlight_boost;
+
+	LightPair getPair(float sunlight = 0.0) const
+	{
+		return LightPair(light_day + sunlight * sunlight_boost, light_night);
+	}
+};
+
 struct LightFrame {
 	f32 lightsA[8];
 	f32 lightsB[8];
+	bool sunlight[8];
 };
 
 class MapblockMeshGenerator
@@ -68,8 +80,10 @@ public:
 	float scale;
 
 // lighting
+	float sunlight_boost_strength;
+
 	void getSmoothLightFrame();
-	LightPair blendLight(const v3f &vertex_pos);
+	LightInfo blendLight(const v3f &vertex_pos);
 	video::SColor blendLightColor(const v3f &vertex_pos);
 	video::SColor blendLightColor(const v3f &vertex_pos, const v3f &vertex_normal);
 
@@ -85,7 +99,7 @@ public:
 
 // cuboid drawing!
 	void drawCuboid(const aabb3f &box, TileSpec *tiles, int tilecount,
-		const LightPair *lights , const f32 *txc);
+		const LightInfo *lights , const f32 *txc);
 	void generateCuboidTextureCoords(aabb3f const &box, f32 *coords);
 	void drawAutoLightedCuboid(aabb3f box, const f32 *txc = NULL,
 		TileSpec *tiles = NULL, int tile_count = 0);
