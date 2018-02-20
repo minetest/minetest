@@ -310,12 +310,12 @@ LightInfo MapblockMeshGenerator::blendLight(const v3f &vertex_pos)
 		f32 dx = (k & 4) ? x : 1 - x;
 		f32 dy = (k & 2) ? y : 1 - y;
 		f32 dz = (k & 1) ? z : 1 - z;
+		f32 lightC = frame.sunlight[k] ? 0xFF : frame.lightsA[k];
 		lightA += dx * dy * dz * frame.lightsA[k];
 		lightB += dx * dy * dz * frame.lightsB[k];
-		if (frame.sunlight[k])
-			sunlight += dx * dy * dz;
+		sunlight += dx * dy * dz * lightC;
 	}
-	return LightInfo{lightA, lightB, sunlight_boost_strength * sunlight};
+	return LightInfo{lightA, lightB, sunlight};
 }
 
 // Calculates vertex color to be used in mapblock mesh
