@@ -406,20 +406,6 @@ void LuaEntitySAO::step(float dtime, bool send_recommended)
 		m_env->getScriptIface()->luaentity_Step(m_id, dtime);
 	}
 
-	// Remove LuaEntity beyond terrain edges
-	{
-		ServerMap *map = dynamic_cast<ServerMap *>(&m_env->getMap());
-		assert(map);
-		if (!m_pending_deactivation &&
-				map->saoPositionOverLimit(m_base_position)) {
-			infostream << "Remove SAO " << m_id << "(" << m_init_name
-				<< "), outside of limits" << std::endl;
-			m_pending_deactivation = true;
-			m_pending_removal = true;
-			return;
-		}
-	}
-
 	if(send_recommended == false)
 		return;
 
