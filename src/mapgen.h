@@ -145,8 +145,6 @@ struct MapgenParams {
 
 		mapgen_edge_min(-MAX_MAP_GENERATION_LIMIT),
 		mapgen_edge_max(MAX_MAP_GENERATION_LIMIT),
-		m_sao_limit_min(-MAX_MAP_GENERATION_LIMIT * BS),
-		m_sao_limit_max(MAX_MAP_GENERATION_LIMIT * BS),
 		m_mapgen_edges_calculated(false)
 	{
 	}
@@ -156,14 +154,11 @@ struct MapgenParams {
 	virtual void readParams(const Settings *settings);
 	virtual void writeParams(Settings *settings) const;
 
-	bool saoPosOverLimit(const v3f &p);
 	s32 getSpawnRangeMax();
 
 private:
 	void calcMapgenEdges();
 
-	float m_sao_limit_min;
-	float m_sao_limit_max;
 	bool m_mapgen_edges_calculated;
 };
 
