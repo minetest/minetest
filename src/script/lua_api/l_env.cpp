@@ -655,14 +655,10 @@ int ModApiEnvMod::l_find_nodes_in_area(lua_State *L)
 	sortBoxVerticies(minp, maxp);
 
 	v3s16 cube = maxp - minp + 1;
-
-	/* Limit for too large areas, assume default values
-	 * and give tolerances of 1 node on each side
-	 * (chunksize * MAP_BLOCKSIZE + 2)^3 = 551368
-	*/
-	if ((u64)cube.X * (u64)cube.Y * (u64)cube.Z > 551368) {
+	// Volume limit equal to 8 default mapchunks, (80 * 2) ^ 3 = 4,096,000
+	if ((u64)cube.X * (u64)cube.Y * (u64)cube.Z > 4096000) {
 		luaL_error(L, "find_nodes_in_area(): area volume"
-				" exceeds allowed value of 551368");
+				" exceeds allowed value of 4096000");
 		return 0;
 	}
 
@@ -723,14 +719,10 @@ int ModApiEnvMod::l_find_nodes_in_area_under_air(lua_State *L)
 	sortBoxVerticies(minp, maxp);
 
 	v3s16 cube = maxp - minp + 1;
-
-	/* Limit for too large areas, assume default values
-	 * and give tolerances of 1 node on each side
-	 * (chunksize * MAP_BLOCKSIZE + 2)^3 = 551368
-	*/
-	if ((u64)cube.X * (u64)cube.Y * (u64)cube.Z > 551368) {
+	// Volume limit equal to 8 default mapchunks, (80 * 2) ^ 3 = 4,096,000
+	if ((u64)cube.X * (u64)cube.Y * (u64)cube.Z > 4096000) {
 		luaL_error(L, "find_nodes_in_area_under_air(): area volume"
-				" exceeds allowed value of 551368");
+				" exceeds allowed value of 4096000");
 		return 0;
 	}
 
