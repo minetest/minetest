@@ -1774,7 +1774,7 @@ mgvalleys_cave_width (Cave width) float 0.09
 mgvalleys_dungeon_ymin (Dungeon minimum Y) int -31000
 
 #    Upper Y limit of dungeons.
-mgvalleys_dungeon_ymax (Dungeon maximum Y) int 31000
+mgvalleys_dungeon_ymax (Dungeon maximum Y) int 63
 
 [**Noises]
 
