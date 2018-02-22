@@ -67,8 +67,8 @@ void GUIConfirmRegistration::regenerateGui(v2u32 screensize)
 	/*
 		Calculate new sizes and positions
 	*/
-	core::rect<s32> rect(screensize.X / 2 - 600 / 2, screensize.Y / 2 - 300 / 2,
-			screensize.X / 2 + 600 / 2, screensize.Y / 2 + 300 / 2);
+	core::rect<s32> rect(screensize.X / 2 - 600 / 2, screensize.Y / 2 - 360 / 2,
+			screensize.X / 2 + 600 / 2, screensize.Y / 2 + 360 / 2);
 
 	DesiredRect = rect;
 	recalculateAbsolutePosition(false);
@@ -86,7 +86,7 @@ void GUIConfirmRegistration::regenerateGui(v2u32 screensize)
 		std::string address = m_address;
 		if (address.empty())
 			address = "localhost";
-		core::rect<s32> rect(0, 0, 540, 120);
+		core::rect<s32> rect(0, 0, 540, 180);
 		rect += topleft_client + v2s32(30, ypos);
 		static const std::string info_text_template = strgettext(
 				"You are about to join the server at %1$s with the "
@@ -106,10 +106,10 @@ void GUIConfirmRegistration::regenerateGui(v2u32 screensize)
 		e->drop();
 		e->setMultiLine(true);
 		e->setWordWrap(true);
-		e->setTextAlignment(gui::EGUIA_UPPERLEFT, gui::EGUIA_UPPERLEFT);
+		e->setTextAlignment(gui::EGUIA_UPPERLEFT, gui::EGUIA_CENTER);
 	}
 
-	ypos += 150;
+	ypos += 210;
 	{
 		core::rect<s32> rect(0, 0, 540, 30);
 		rect += topleft_client + v2s32(30, ypos);
