@@ -70,6 +70,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #if USE_SOUND
 	#include "sound_openal.h"
+	#include "sound_espeakng.h"
 #endif
 
 
@@ -2769,6 +2770,8 @@ void Game::updateChat(f32 dtime, const v2u32 &screensize)
 	std::wstring message;
 	while (client->getChatMessage(message)) {
 		chat_backend->addUnparsedMessage(message);
+		if (g_espeak)
+			g_espeak->requestEnqueueText(wide_to_utf8(message));
 	}
 
 	// Remove old messages
