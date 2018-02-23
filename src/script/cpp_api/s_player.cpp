@@ -179,6 +179,27 @@ void ScriptApiPlayer::on_cheat(ServerActiveObject *player,
 	runCallbacks(2, RUN_CALLBACKS_MODE_FIRST);
 }
 
+void ScriptApiPlayer::on_moveplayer(ServerActiveObject* player, 
+		const v3f newpos)
+{
+	SCRIPTAPI_PRECHECKHEADER
+
+	// Get core.registered_on_moveplayer
+	lua_getglobal(L, "core");
+	lua_getfield(L, -1, "registered_on_moveplayer");
+	// Call callbacks
+	objectrefGetOrCreate(L, player);
+	lua_newtable(L);
+	lua_pushnumber(L, newpos.X);
+	lua_setfield(L, -2, "x");
+	lua_pushnumber(L, newpos.Y);
+	lua_setfield(L, -2, "y");
+	lua_pushnumber(L, newpos.Z);
+	lua_setfield(L, -2, "z");
+
+	runCallbacks(2, RUN_CALLBACKS_MODE_FIRST);
+}
+
 void ScriptApiPlayer::on_playerReceiveFields(ServerActiveObject *player,
 		const std::string &formname,
 		const StringMap &fields)

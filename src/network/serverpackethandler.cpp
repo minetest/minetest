@@ -491,6 +491,8 @@ void Server::process_PlayerPos(RemotePlayer *player, PlayerSAO *playersao,
 	player->control.LMB = (keyPressed & 128);
 	player->control.RMB = (keyPressed & 256);
 
+	m_script->on_moveplayer(playersao, position);
+
 	if (playersao->checkMovementCheat()) {
 		// Call callbacks
 		m_script->on_cheat(playersao, "moved_too_fast");
