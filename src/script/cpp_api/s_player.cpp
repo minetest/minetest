@@ -180,7 +180,7 @@ void ScriptApiPlayer::on_cheat(ServerActiveObject *player,
 }
 
 void ScriptApiPlayer::on_moveplayer(ServerActiveObject* player, 
-		const v3f newpos)
+		const v3f newpos, const v3f oldpos)
 {
 	SCRIPTAPI_PRECHECKHEADER
 
@@ -189,6 +189,7 @@ void ScriptApiPlayer::on_moveplayer(ServerActiveObject* player,
 	lua_getfield(L, -1, "registered_on_moveplayer");
 	// Call callbacks
 	objectrefGetOrCreate(L, player);
+	
 	lua_newtable(L);
 	lua_pushnumber(L, newpos.X);
 	lua_setfield(L, -2, "x");
@@ -196,8 +197,16 @@ void ScriptApiPlayer::on_moveplayer(ServerActiveObject* player,
 	lua_setfield(L, -2, "y");
 	lua_pushnumber(L, newpos.Z);
 	lua_setfield(L, -2, "z");
-
-	runCallbacks(2, RUN_CALLBACKS_MODE_FIRST);
+	
+	lua_newtable(L);
+	lua_pushnumber(L, oldpos.X);
+	lua_setfield(L, -2, "x");
+	lua_pushnumber(L, oldpos.Y);
+	lua_setfield(L, -2, "y");
+	lua_pushnumber(L, oldpos.Z);
+	lua_setfield(L, -2, "z");
+	
+	runCallbacks(3, RUN_CALLBACKS_MODE_FIRST);
 }
 
 void ScriptApiPlayer::on_playerReceiveFields(ServerActiveObject *player,

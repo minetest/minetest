@@ -470,6 +470,10 @@ void Server::process_PlayerPos(RemotePlayer *player, PlayerSAO *playersao,
 
 	v3f position((f32)ps.X / 100.0f, (f32)ps.Y / 100.0f, (f32)ps.Z / 100.0f);
 	v3f speed((f32)ss.X / 100.0f, (f32)ss.Y / 100.0f, (f32)ss.Z / 100.0f);
+	const v3f old_position = playersao->getBasePosition();
+	if(position != old_position){
+		m_script->on_moveplayer(playersao, position, old_position);
+	}
 
 	pitch = modulo360f(pitch);
 	yaw = wrapDegrees_0_360(yaw);
@@ -490,8 +494,6 @@ void Server::process_PlayerPos(RemotePlayer *player, PlayerSAO *playersao,
 	player->control.sneak = (keyPressed & 64);
 	player->control.LMB = (keyPressed & 128);
 	player->control.RMB = (keyPressed & 256);
-
-	m_script->on_moveplayer(playersao, position);
 
 	if (playersao->checkMovementCheat()) {
 		// Call callbacks

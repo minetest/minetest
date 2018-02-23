@@ -227,6 +227,7 @@ public:
 	void setPitch(const float pitch);
 	// Data should not be sent at player initialization
 	void setPitchAndSend(const float pitch);
+	v3f getBasePosition() const { return ServerActiveObject::getBasePosition(); }
 	f32 getPitch() const { return m_pitch; }
 	f32 getRadPitch() const { return m_pitch * core::DEGTORAD; }
 	// Deprecated
