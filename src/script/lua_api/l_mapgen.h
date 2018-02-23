@@ -70,10 +70,10 @@ private:
 	// get_noiseparam_defaults(name)
 	static int l_get_noiseparams(lua_State *L);
 
-	// set_gen_notify(flagstring)
+	// set_gen_notify(flags, {deco_id_table})
 	static int l_set_gen_notify(lua_State *L);
 
-	// set_gen_notify(flagstring)
+	// get_gen_notify()
 	static int l_get_gen_notify(lua_State *L);
 
 	// register_biome({lots of stuff})
@@ -109,11 +109,12 @@ private:
 	// create_schematic(p1, p2, probability_list, filename)
 	static int l_create_schematic(lua_State *L);
 
-	// place_schematic(p, schematic, rotation, replacements, force_placement)
+	// place_schematic(p, schematic, rotation,
+	//     replacements, force_placement, flagstring)
 	static int l_place_schematic(lua_State *L);
 
-	// place_schematic_on_vmanip(vm, p, schematic,
-	//     rotation, replacements, force_placement)
+	// place_schematic_on_vmanip(vm, p, schematic, rotation,
+	//     replacements, force_placement, flagstring)
 	static int l_place_schematic_on_vmanip(lua_State *L);
 
 	// serialize_schematic(schematic, format, options={...})

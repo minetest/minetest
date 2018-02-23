@@ -1529,7 +1529,8 @@ int ModApiMapgen::l_create_schematic(lua_State *L)
 }
 
 
-// place_schematic(p, schematic, rotation, replacement)
+// place_schematic(p, schematic, rotation,
+//     replacements, force_placement, flagstring)
 int ModApiMapgen::l_place_schematic(lua_State *L)
 {
 	MAP_LOCK_REQUIRED;
@@ -1565,12 +1566,19 @@ int ModApiMapgen::l_place_schematic(lua_State *L)
 		return 0;
 	}
 
-	schem->placeOnMap(map, p, 0, (Rotation)rot, force_placement);
+	//// Read flags
+	u32 flags = 0;
+	read_flags(L, 6, flagdesc_deco, &flags, NULL);
+
+	schem->placeOnMap(map, p, flags, (Rotation)rot, force_placement);
 
 	lua_pushboolean(L, true);
 	return 1;
 }
 
+
+// place_schematic_on_vmanip(vm, p, schematic, rotation,
+//     replacements, force_placement, flagstring)
 int ModApiMapgen::l_place_schematic_on_vmanip(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
@@ -1606,12 +1614,17 @@ int ModApiMapgen::l_place_schematic_on_vmanip(lua_State *L)
 		return 0;
 	}
 
+	//// Read flags
+	u32 flags = 0;
+	read_flags(L, 7, flagdesc_deco, &flags, NULL);
+
 	bool schematic_did_fit = schem->placeOnVManip(
-		vm, p, 0, (Rotation)rot, force_placement);
+		vm, p, flags, (Rotation)rot, force_placement);
 
 	lua_pushboolean(L, schematic_did_fit);
 	return 1;
 }
+
 
 // serialize_schematic(schematic, format, options={...})
 int ModApiMapgen::l_serialize_schematic(lua_State *L)
