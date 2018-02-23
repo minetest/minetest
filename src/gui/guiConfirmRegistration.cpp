@@ -20,6 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "guiConfirmRegistration.h"
 #include "client.h"
+#include "intlGUIEditBox.h"
 #include <IGUICheckBox.h>
 #include <IGUIEditBox.h>
 #include <IGUIButton.h>
@@ -66,8 +67,8 @@ void GUIConfirmRegistration::regenerateGui(v2u32 screensize)
 	/*
 		Calculate new sizes and positions
 	*/
-	core::rect<s32> rect(screensize.X / 2 - 600 / 2, screensize.Y / 2 - 300 / 2,
-			screensize.X / 2 + 600 / 2, screensize.Y / 2 + 300 / 2);
+	core::rect<s32> rect(screensize.X / 2 - 600 / 2, screensize.Y / 2 - 360 / 2,
+			screensize.X / 2 + 600 / 2, screensize.Y / 2 + 360 / 2);
 
 	DesiredRect = rect;
 	recalculateAbsolutePosition(false);
@@ -85,7 +86,7 @@ void GUIConfirmRegistration::regenerateGui(v2u32 screensize)
 		std::string address = m_address;
 		if (address.empty())
 			address = "localhost";
-		core::rect<s32> rect(0, 0, 540, 90);
+		core::rect<s32> rect(0, 0, 540, 180);
 		rect += topleft_client + v2s32(30, ypos);
 		static const std::string info_text_template = strgettext(
 				"You are about to join the server at %1$s with the "
@@ -98,11 +99,17 @@ void GUIConfirmRegistration::regenerateGui(v2u32 screensize)
 		char info_text_buf[1024];
 		snprintf(info_text_buf, sizeof(info_text_buf), info_text_template.c_str(),
 				address.c_str(), m_playername.c_str());
-		Environment->addStaticText(narrow_to_wide_c(info_text_buf), rect, false,
-				true, this, -1);
+
+		gui::intlGUIEditBox *e = new gui::intlGUIEditBox(
+				utf8_to_wide_c(info_text_buf), true, Environment, this,
+				ID_message, rect, false, true);
+		e->drop();
+		e->setMultiLine(true);
+		e->setWordWrap(true);
+		e->setTextAlignment(gui::EGUIA_UPPERLEFT, gui::EGUIA_CENTER);
 	}
 
-	ypos += 120;
+	ypos += 210;
 	{
 		core::rect<s32> rect(0, 0, 540, 30);
 		rect += topleft_client + v2s32(30, ypos);
@@ -111,7 +118,7 @@ void GUIConfirmRegistration::regenerateGui(v2u32 screensize)
 		e->setPasswordBox(true);
 	}
 
-	ypos += 90;
+	ypos += 60;
 	{
 		core::rect<s32> rect(0, 0, 230, 35);
 		rect = rect + v2s32(size.X / 2 - 220, ypos);
