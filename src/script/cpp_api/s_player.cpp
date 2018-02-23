@@ -180,7 +180,7 @@ void ScriptApiPlayer::on_cheat(ServerActiveObject *player,
 }
 
 void ScriptApiPlayer::on_moveplayer(ServerActiveObject* player, 
-		const v3f newpos, const v3f oldpos)
+		const v3s16 newpos, const v3s16 oldpos)
 {
 	SCRIPTAPI_PRECHECKHEADER
 
