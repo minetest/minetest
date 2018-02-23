@@ -18,6 +18,7 @@
 #cmakedefine01 USE_GETTEXT
 #cmakedefine01 USE_CURL
 #cmakedefine01 USE_SOUND
+#cmakedefine01 USE_ESPEAKNG
 #cmakedefine01 USE_FREETYPE
 #cmakedefine01 USE_CURSES
 #cmakedefine01 USE_LEVELDB

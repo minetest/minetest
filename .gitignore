@@ -49,6 +49,7 @@ gtags.files
 /clientmods/*
 !/clientmods/preview/
 /client/mod_storage/
+/client/espeak-ng-data/
 
 ## Configuration/log files
 minetest.conf
