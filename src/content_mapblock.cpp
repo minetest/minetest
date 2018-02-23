@@ -68,7 +68,6 @@ MapblockMeshGenerator::MapblockMeshGenerator(MeshMakeData *input, MeshCollector 
 
 	enable_mesh_cache = g_settings->getBool("enable_mesh_cache") &&
 		!data->m_smooth_lighting; // Mesh cache is not supported with smooth lighting
-	sunlight_boost_strength = decode_light(LIGHT_SUN) - decode_light(LIGHT_SUN - 1);
 
 	blockpos_nodes = data->m_blockpos * MAP_BLOCKSIZE;
 }

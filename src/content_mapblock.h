@@ -80,8 +80,6 @@ public:
 	float scale;
 
 // lighting
-	float sunlight_boost_strength;
-
 	void getSmoothLightFrame();
 	LightInfo blendLight(const v3f &vertex_pos);
 	video::SColor blendLightColor(const v3f &vertex_pos);
