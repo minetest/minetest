@@ -36,6 +36,7 @@ void set_default_settings(Settings *settings)
 	// Client
 	settings->setDefault("address", "");
 	settings->setDefault("enable_sound", "true");
+	settings->setDefault("enable_espeakng", "true");
 	settings->setDefault("sound_volume", "0.8");
 	settings->setDefault("mute_sound", "false");
 	settings->setDefault("enable_mesh_cache", "false");

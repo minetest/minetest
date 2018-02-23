@@ -37,6 +37,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #if USE_SOUND
 	#include "sound_openal.h"
+	#include "sound_espeakng.h"
 #endif
 
 /* mainmenumanager.h
@@ -56,6 +57,8 @@ MainGameCallback *g_gamecallback = nullptr;
 
 ClientLauncher::~ClientLauncher()
 {
+	g_espeak.reset();
+
 	delete receiver;
 
 	delete input;
@@ -78,6 +81,8 @@ bool ClientLauncher::run(GameParams &game_params, const Settings &cmd_args)
 #if USE_SOUND
 	if (g_settings->getBool("enable_sound"))
 		g_sound_manager_global = createSoundManagerGlobal();
+	if (g_settings->getBool("enable_espeakng"))
+		g_espeak = createESpeakGlobal();
 #endif
 
 	if (!init_engine()) {
