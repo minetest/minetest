@@ -24,6 +24,9 @@
 	#include <AL/alext.h>
 #endif
 
+typedef ::std::unique_ptr<ALuint, void(*)(ALuint *p)> unique_ptr_alsource;
+typedef ::std::unique_ptr<ALuint, void(*)(ALuint *p)> unique_ptr_albuffer;
+
 class MtESpeakData
 {
 public:
@@ -63,6 +66,8 @@ private:
 	void threadFunc();
 	void threadFunc2();
 
+	void maintain();
+
 public:
 	std::exception_ptr m_thread_exc;
 private:
@@ -72,8 +77,7 @@ private:
 	std::deque<MtESpeakRequest> m_request_queue;
 
 	std::string m_data_path;
-	ALuint m_source;
-	ALuint m_buffer;
+	unique_ptr_alsource m_source;
 	size_t m_sample_rate;
 };
 

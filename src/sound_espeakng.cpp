@@ -25,6 +25,50 @@ static void throw_if_error()
 		throw std::runtime_error("espeak OpenAL error");
 }
 
+static void delete_alsource(ALuint *p)
+{
+	if (p)
+		alDeleteSources(1, p);
+}
+
+static void delete_albuffer(ALuint *p)
+{
+	if (p)
+		alDeleteBuffers(1, p);
+}
+
+static ALuint create_alsource()
+{
+	ALuint source;
+	alGenSources(1, &source);
+	throw_if_error();
+	/* minetest will screw with alDistanceModel, alListener(AL_POSITION..) etc
+	   which are per-context settings - we negate their influence on volume by forcing gain */
+	alSourcef(source, AL_MIN_GAIN, 1.0f);
+	alSourcef(source, AL_MAX_GAIN, 1.0f);
+	throw_if_error();
+	return source;
+}
+
+static ALuint create_albuffer()
+{
+	ALuint buffer;
+	alGenBuffers(1, &buffer);
+	throw_if_error();
+	return buffer;
+}
+
+static void ensure_playing_alsource(ALuint source)
+{
+	int state = -1;
+	alGetSourcei(source, AL_SOURCE_STATE, &state);
+	throw_if_error();
+	if (state == AL_PLAYING)
+		return;
+	alSourcePlay(source);
+	throw_if_error();
+}
+
 static int mt_espeak_callback(short *wav, int numsamples, espeak_EVENT *events)
 {
 	MtESpeakData *data = (MtESpeakData *) events->user_data;
@@ -43,26 +87,12 @@ MtESpeak::MtESpeak() :
 	m_request_queue_cv(),
 	m_request_queue(),
 	m_data_path(),
-	m_source(-1),
-	m_buffer(-1),
+	m_source(NULL, delete_alsource),
 	m_sample_rate(0)
 {
-	ALuint source = -1;
-	ALuint buffer = -1;
-
 	assert(alcGetCurrentContext() != NULL);
 
-	alGenSources(1, &source);
-	alGenBuffers(1, &buffer);
-
-	throw_if_error();
-
-	/* minetest will screw with alDistanceModel, alListener(AL_POSITION..) etc
-	   which are meant for the 3D sounds within the game - we negate influence by forcing gain */
-	alSourcef(source, AL_MIN_GAIN, 1.0f);
-	alSourcef(source, AL_MAX_GAIN, 1.0f);
-
-	throw_if_error();
+	unique_ptr_alsource source(new ALuint(create_alsource()), delete_alsource);
 
 	std::string data_subpath = std::string("client") + DIR_DELIM + "espeak-ng-data";
 	std::string data_subpath_checkfile = data_subpath + DIR_DELIM + "en_dict";
@@ -78,8 +108,7 @@ MtESpeak::MtESpeak() :
 	espeak_SetSynthCallback(mt_espeak_callback);
 
 	m_data_path = data_path;
-	m_source = source;
-	m_buffer = buffer;
+	m_source = std::move(source);
 	m_sample_rate = rate;
 }
 
@@ -153,6 +182,8 @@ void MtESpeak::threadFunc2()
 		MtESpeakRequest req = std::move(m_request_queue.front());
 		m_request_queue.pop_front();
 
+		maintain();
+
 		switch (req.m_type)
 		{
 		case MT_ESPEAK_REQUEST_TYPE_EXIT:
@@ -172,33 +203,37 @@ void MtESpeak::threadFunc2()
 			if (espeak_Synth(text.c_str(), text.size(), 0, POS_CHARACTER, 0, 0, NULL, &data) != EE_OK)
 				throw std::runtime_error("espeak synth");
 
-			alSourceStop(m_source);
-			throw_if_error();
-			alSourcei(m_source, AL_BUFFER, AL_NONE);
+			unique_ptr_albuffer buffer(new ALuint(create_albuffer()), delete_albuffer);
+
+			alBufferData(*buffer, AL_FORMAT_MONO16, data.m_buf.data(), data.m_buf.size(), m_sample_rate);
 			throw_if_error();
 
-			alBufferData(m_buffer, AL_FORMAT_MONO16, data.m_buf.data(), data.m_buf.size(), m_sample_rate);
+			alSourceQueueBuffers(*m_source, 1, buffer.get());
 			throw_if_error();
 
-			alSourcei(m_source, AL_BUFFER, m_buffer);
-			throw_if_error();
+			buffer.release();
 
-			alSourcePlay(m_source);
-			throw_if_error();
-
-			while (true) {
-				int state = -1;
-				alGetSourcei(m_source, AL_SOURCE_STATE, &state);
-				throw_if_error();
-				if (state != AL_PLAYING)
-					break;
-			}
+			ensure_playing_alsource(*m_source);
 		}
 		break;
 
 		default:
 			assert(0);
 		}
+	}
+}
+
+void MtESpeak::maintain()
+{
+	ALint processed;
+	alGetSourcei(*m_source, AL_BUFFERS_PROCESSED, &processed);
+	throw_if_error();
+	for (size_t i = 0; i < processed; i++) {
+		ALuint albuf;
+		alSourceUnqueueBuffers(*m_source, 1, &albuf);
+		throw_if_error();
+		alDeleteBuffers(1, &albuf);
+		throw_if_error();
 	}
 }
 
