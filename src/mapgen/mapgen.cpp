@@ -693,7 +693,7 @@ void MapgenBasic::generateBiomes(MgStoneType *mgstone_type,
 
 			if (is_stone_surface || is_water_surface) {
 				// (Re)calculate biome
-				biome = biomegen->getBiomeAtIndex(index, y);
+				biome = biomegen->getBiomeAtIndex(index, v3s16(x, y, z));
 
 				if (biomemap[index] == BIOME_NONE && is_stone_surface)
 					biomemap[index] = biome->index;
@@ -704,7 +704,7 @@ void MapgenBasic::generateBiomes(MgStoneType *mgstone_type,
 					noise_filler_depth->result[index], 0.0f);
 				depth_water_top = biome->depth_water_top;
 				depth_riverbed = biome->depth_riverbed;
-				biome_y_min = biome->y_min;
+				biome_y_min = biome->min_pos.Y;
 
 				// Detect stone type for dungeons during every biome calculation.
 				// If none detected the last selected biome stone is chosen.

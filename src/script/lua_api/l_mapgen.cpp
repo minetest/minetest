@@ -388,12 +388,15 @@ Biome *read_biome_def(lua_State *L, int index, const NodeDefManager *ndef)
 	b->depth_filler    = getintfield_default(L,    index, "depth_filler",    -31000);
 	b->depth_water_top = getintfield_default(L,    index, "depth_water_top", 0);
 	b->depth_riverbed  = getintfield_default(L,    index, "depth_riverbed",  0);
-	b->y_min           = getintfield_default(L,    index, "y_min",           -31000);
-	b->y_max           = getintfield_default(L,    index, "y_max",           31000);
 	b->heat_point      = getfloatfield_default(L,  index, "heat_point",      0.f);
 	b->humidity_point  = getfloatfield_default(L,  index, "humidity_point",  0.f);
 	b->vertical_blend  = getintfield_default(L,    index, "vertical_blend",  0);
-	b->flags           = 0; //reserved
+	b->flags           = 0; // reserved
+
+	b->min_pos = getv3s16field_default(L, index, "min_pos", v3s16(-31000, -31000, -31000));
+	getintfield(L, index, "y_min", b->min_pos.Y);
+	b->max_pos = getv3s16field_default(L, index, "max_pos", v3s16(31000, 31000, 31000));
+	getintfield(L, index, "y_max", b->max_pos.Y);
 
 	std::vector<std::string> &nn = b->m_nodenames;
 	nn.push_back(getstringfield_default(L, index, "node_top",         ""));
@@ -617,7 +620,7 @@ int ModApiMapgen::l_get_biome_data(lua_State *L)
 	if (!humidity)
 		return 0;
 
-	Biome *biome = (Biome *)bmgr->getBiomeFromNoiseOriginal(heat, humidity, pos.Y);
+	Biome *biome = (Biome *)bmgr->getBiomeFromNoiseOriginal(heat, humidity, pos);
 	if (!biome || biome->index == OBJDEF_INVALID_INDEX)
 		return 0;
 
@@ -1041,7 +1044,7 @@ int ModApiMapgen::l_register_biome(lua_State *L)
 	luaL_checktype(L, index, LUA_TTABLE);
 
 	const NodeDefManager *ndef = getServer(L)->getNodeDefManager();
-	BiomeManager *bmgr    = getServer(L)->getEmergeManager()->biomemgr;
+	BiomeManager *bmgr = getServer(L)->getEmergeManager()->biomemgr;
 
 	Biome *biome = read_biome_def(L, index, ndef);
 	if (!biome)
