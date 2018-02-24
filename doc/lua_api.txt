@@ -3784,8 +3784,8 @@ This is basically a reference to a C++ `ServerActiveObject`
     * `nil`: Disables override, defaulting to sunlight based on day-night cycle
 * `get_day_night_ratio()`: returns the ratio or nil if it isn't overridden
 * `set_time_offset(offset)`
-	* Adds offset to the time of the player 
-	e.g. TimeOfDay is 12:00 and the offset of the player is 1000 then the time of the player is 13:00
+    * Adds offset to the time of the player 
+    e.g. TimeOfDay is 12:00 and the offset of the player is 1000 then the time of the player is 13:00
 * `get_time_offset()` returns the players time of day offset
 * `set_local_animation(stand/idle, walk, dig, walk+dig, frame_speed=frame_speed)`:
   set animation for player model in third person view
