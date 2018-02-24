@@ -189,23 +189,10 @@ void ScriptApiPlayer::on_moveplayer(ServerActiveObject* player,
 	lua_getfield(L, -1, "registered_on_moveplayer");
 	// Call callbacks
 	objectrefGetOrCreate(L, player);
-	
-	lua_newtable(L);
-	lua_pushnumber(L, newpos.X);
-	lua_setfield(L, -2, "x");
-	lua_pushnumber(L, newpos.Y);
-	lua_setfield(L, -2, "y");
-	lua_pushnumber(L, newpos.Z);
-	lua_setfield(L, -2, "z");
-	
-	lua_newtable(L);
-	lua_pushnumber(L, oldpos.X);
-	lua_setfield(L, -2, "x");
-	lua_pushnumber(L, oldpos.Y);
-	lua_setfield(L, -2, "y");
-	lua_pushnumber(L, oldpos.Z);
-	lua_setfield(L, -2, "z");
-	
+
+	push_v3s16(L, newpos);
+	push_v3s16(L, oldpos);
+
 	runCallbacks(3, RUN_CALLBACKS_MODE_FIRST);
 }
 

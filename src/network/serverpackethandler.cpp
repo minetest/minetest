@@ -471,8 +471,8 @@ void Server::process_PlayerPos(RemotePlayer *player, PlayerSAO *playersao,
 	v3f position((f32)ps.X / 100.0f, (f32)ps.Y / 100.0f, (f32)ps.Z / 100.0f);
 	v3f speed((f32)ss.X / 100.0f, (f32)ss.Y / 100.0f, (f32)ss.Z / 100.0f);
 
-	const v3s16 old_nodepos = floatToInt(playersao->getBasePosition(), BS);
-	const v3s16 new_nodepos = floatToInt(position, BS);
+	const v3s16 old_nodepos = floatToInt(playersao->getBasePosition(), BS) - v3s16(0.0f, 1.0f, 0.0f);
+	const v3s16 new_nodepos = floatToInt(position, BS) - v3s16(0.0f, 1.0f, 0.0f);
 
 	if (new_nodepos != old_nodepos)
 		m_script->on_moveplayer(playersao, new_nodepos, old_nodepos);
