@@ -3429,10 +3429,10 @@ These functions return the leftover itemstack.
 * `minetest.record_protection_violation(pos, name)`
     * This function calls functions registered with
       `minetest.register_on_protection_violation`.
-* `minetest.is_area_protected(minp, maxp, player_name, interval)
+* `minetest.is_area_protected(pos1, pos2, player_name, interval)
     * Returns the position of the first node that `player_name` may not modify in
-      the specified cuboid between `minp` and `maxp`.
-    * Returns `nil` if no protections were found.
+      the specified cuboid between `pos1` and `pos2`.
+    * Returns `false` if no protections were found.
     * Applies `is_protected()` to a 3D lattice of points in the defined volume.
       The points are spaced evenly throughout the volume and have a spacing
       similar to, but no larger than, `interval`.

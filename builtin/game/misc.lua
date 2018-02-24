@@ -173,11 +173,6 @@ function core.record_protection_violation(pos, name)
 end
 
 
--- Backwards compatibility (remove after 0.5.0 release)
-function core.intersects_protection(...)
-	return core.is_area_protected(...) ~= nil
-end
-
 -- Checks if specified volume intersects a protected volume
 
 function core.is_area_protected(minp, maxp, player_name, interval)
@@ -199,10 +194,11 @@ function core.is_area_protected(minp, maxp, player_name, interval)
 			maxp[c] = minp[c]
 			minp[c] = tmp
 		end
+
 		if maxp[c] > minp[c] then
 			d[c] = (maxp[c] - minp[c]) /
 				math.ceil((maxp[c] - minp[c]) / interval) - 1e-4
-		elseif maxp[c] == minp[c] then
+		else
 			d[c] = 1 -- Any value larger than 0 to avoid division by zero
 		end
 	end
@@ -220,6 +216,7 @@ function core.is_area_protected(minp, maxp, player_name, interval)
 			end
 		end
 	end
+	return false
 end
 
 
