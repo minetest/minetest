@@ -283,7 +283,7 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 		bool is_position_valid;
 		MapNode n = map->getNodeNoEx(p, &is_position_valid);
 
-		if (is_position_valid) {
+		if (is_position_valid && n.getContent() != CONTENT_IGNORE) {
 			// Object collides into walkable nodes
 
 			any_position_valid = true;
@@ -333,7 +333,8 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 					false, n_bouncy_value, p, box));
 			}
 		} else {
-			// Collide with unloaded nodes
+			// Collide with unloaded nodes (position invalid) and loaded
+			// CONTENT_IGNORE nodes (position valid)
 			aabb3f box = getNodeBox(p, BS);
 			cinfo.push_back(NearbyCollisionInfo(true, false, 0, p, box));
 		}
@@ -341,6 +342,8 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 
 	// Do not move if world has not loaded yet, since custom node boxes
 	// are not available for collision detection.
+	// This also intentionally occurs in the case of the object being positioned
+	// solely on loaded CONTENT_IGNORE nodes, no matter where they come from.
 	if (!any_position_valid) {
 		*speed_f = v3f(0, 0, 0);
 		return result;
