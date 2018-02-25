@@ -127,7 +127,7 @@ if(USE_SOUND)
 endif()
 
 if(USE_ESPEAKNG)
-	set(sound_SRCS ${sound_SRCS} sound_espeakng.cpp)
+	set(sound_SRCS ${sound_SRCS} sound_tts_manager.cpp sound_espeakng.cpp)
 	set(SOUND_INCLUDE_DIRS ${SOUND_INCLUDE_DIRS} ${ESPEAKNG_INCLUDE_DIR})
 	set(SOUND_LIBRARIES ${SOUND_LIBRARIES} ${ESPEAKNG_LIBRARY})
 endif()

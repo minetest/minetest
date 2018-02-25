@@ -24,29 +24,10 @@
 	#include <AL/alext.h>
 #endif
 
+#include <sound_tts_manager.h>
+
 typedef ::std::unique_ptr<ALuint, void(*)(ALuint *p)> unique_ptr_alsource;
 typedef ::std::unique_ptr<ALuint, void(*)(ALuint *p)> unique_ptr_albuffer;
-
-class MtESpeakData
-{
-public:
-	std::string m_buf;
-};
-
-enum MtESpeakRequestType
-{
-	MT_ESPEAK_REQUEST_TYPE_EXIT = 0,
-	MT_ESPEAK_REQUEST_TYPE_TEXT,
-};
-
-class MtESpeakRequest
-{
-public:
-	MtESpeakRequestType m_type;
-
-	int m_exit;
-	std::string m_text;
-};
 
 class MtESpeak
 {
@@ -57,10 +38,6 @@ public:
 	void start();
 	void join();
 
-	void requestEnqueueExit();
-	void requestEnqueueText(const std::string &text);
-
-private:
 	void requestEnqueue(MtESpeakRequest req);
 
 	void threadFunc();
@@ -80,9 +57,5 @@ private:
 	unique_ptr_alsource m_source;
 	size_t m_sample_rate;
 };
-
-std::shared_ptr<MtESpeak> createESpeakGlobal();
-
-extern std::shared_ptr<MtESpeak> g_espeak;
 
 #endif /* _SOUND_ESPEAKNG_H_ */

@@ -11,13 +11,17 @@
 
 #include <espeak-ng/espeak_ng.h>
 
-#include <config.h>
 #include <filesys.h>
 #include <porting.h>
 #include <sound.h>
 #include <sound_espeakng.h>
+#include <sound_tts_manager.h>
 
-std::shared_ptr<MtESpeak> g_espeak;
+class MtESpeakData
+{
+public:
+	std::string m_buf;
+};
 
 static void throw_if_error()
 {
@@ -114,7 +118,9 @@ MtESpeak::MtESpeak() :
 
 MtESpeak::~MtESpeak()
 {
-	requestEnqueueExit();
+	MtESpeakRequest req;
+	req.m_type = MT_ESPEAK_REQUEST_TYPE_EXIT;
+	requestEnqueue(std::move(req));
 
 	if (m_thread.joinable())
 		join();
@@ -137,21 +143,6 @@ void MtESpeak::join()
 			throw e;
 		}
 	}
-}
-
-void MtESpeak::requestEnqueueExit()
-{
-	MtESpeakRequest req;
-	req.m_type = MT_ESPEAK_REQUEST_TYPE_EXIT;
-	requestEnqueue(std::move(req));
-}
-
-void MtESpeak::requestEnqueueText(const std::string &text)
-{
-	MtESpeakRequest req;
-	req.m_type = MT_ESPEAK_REQUEST_TYPE_TEXT;
-	req.m_text = text;
-	requestEnqueue(std::move(req));
 }
 
 void MtESpeak::requestEnqueue(MtESpeakRequest req)
@@ -235,15 +226,4 @@ void MtESpeak::maintain()
 		alDeleteBuffers(1, &albuf);
 		throw_if_error();
 	}
-}
-
-std::shared_ptr<MtESpeak> createESpeakGlobal()
-{
-#ifdef USE_ESPEAKNG
-	std::shared_ptr<MtESpeak> espeak(new MtESpeak());
-	espeak->start();
-#else
-	std::shared_ptr<MtESpeak> espeak;
-#endif
-	return espeak;
 }

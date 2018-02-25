@@ -60,6 +60,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "settings.h"
 #include "shader.h"
 #include "sky.h"
+#include "sound_tts_manager.h"
 #include "translation.h"
 #include "util/basic_macros.h"
 #include "util/directiontables.h"
@@ -70,7 +71,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #if USE_SOUND
 	#include "sound_openal.h"
-	#include "sound_espeakng.h"
 #endif
 
 
@@ -2770,8 +2770,7 @@ void Game::updateChat(f32 dtime, const v2u32 &screensize)
 	std::wstring message;
 	while (client->getChatMessage(message)) {
 		chat_backend->addUnparsedMessage(message);
-		if (g_espeak)
-			g_espeak->requestEnqueueText(wide_to_utf8(message));
+		g_tts->requestEnqueueText(wide_to_utf8(message));
 	}
 
 	// Remove old messages
