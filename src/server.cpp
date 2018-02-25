@@ -220,15 +220,15 @@ Server::Server(
 	m_admin_chat(iface),
 	m_modchannel_mgr(new ModChannelMgr())
 {
-	// set global settings to server settings;
-	g_settings = m_conf;
-
 	// Initialize settings
 	set_default_settings(m_conf);
 	override_default_settings(m_conf, g_main_settings);
 	m_settings_path = path_world + DIR_DELIM + "world.mt";
 	if (!m_conf->readConfigFile(m_settings_path.c_str()))
 		errorstream << "Failed to load config file" << std::endl;
+
+	// set global settings to server settings;
+	g_settings = m_conf;
 
 	m_con = std::make_shared<con::Connection>(PROTOCOL_ID,
 			512,
