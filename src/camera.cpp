@@ -386,8 +386,9 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 busytime,
 	// *100.0 helps in large map coordinates
 	m_cameranode->setTarget(my_cp-intToFloat(m_camera_offset, BS) + 100 * m_camera_direction);
 
-	// update the camera position in front-view mode to render blocks behind player
-	if (m_camera_mode == CAMERA_MODE_THIRD_FRONT)
+	// update the camera position in third-person mode to render blocks behind player
+	// and correctly apply liquid post FX.
+	if (m_camera_mode != CAMERA_MODE_FIRST)
 		m_camera_position = my_cp;
 
 	// Get FOV
