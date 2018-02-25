@@ -7,7 +7,6 @@
 #include <memory>
 #include <mutex>
 #include <string>
-#include <thread>
 
 /* FIXME: inclusion macro duplicated from sound_openal.cpp - unify these */
 #if defined(_WIN32)
@@ -25,30 +24,25 @@
 #endif
 
 #include <sound_tts_manager.h>
+#include <threading/thread.h>
 
 typedef ::std::unique_ptr<ALuint, void(*)(ALuint *p)> unique_ptr_alsource;
 typedef ::std::unique_ptr<ALuint, void(*)(ALuint *p)> unique_ptr_albuffer;
 
-class MtESpeak
+class MtESpeak : public Thread
 {
 public:
 	MtESpeak();
 	~MtESpeak();
 
-	void start();
-	void join();
-
 	void requestEnqueue(MtESpeakRequest req);
 
+	void * run() override;
 	void threadFunc();
-	void threadFunc2();
 
 	void maintain();
 
-public:
-	std::exception_ptr m_thread_exc;
 private:
-	std::thread m_thread;
 	std::mutex                  m_mutex;
 	std::condition_variable     m_request_queue_cv;
 	std::deque<MtESpeakRequest> m_request_queue;

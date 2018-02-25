@@ -12,6 +12,7 @@
 #include <espeak-ng/espeak_ng.h>
 
 #include <filesys.h>
+#include <log.h>
 #include <porting.h>
 #include <sound.h>
 #include <sound_espeakng.h>
@@ -86,7 +87,6 @@ static int mt_espeak_callback(short *wav, int numsamples, espeak_EVENT *events)
 }
 
 MtESpeak::MtESpeak() :
-	m_thread(),
 	m_mutex(),
 	m_request_queue_cv(),
 	m_request_queue(),
@@ -122,27 +122,7 @@ MtESpeak::~MtESpeak()
 	req.m_type = MT_ESPEAK_REQUEST_TYPE_EXIT;
 	requestEnqueue(std::move(req));
 
-	if (m_thread.joinable())
-		join();
-}
-
-void MtESpeak::start()
-{
-	m_thread = std::thread(&MtESpeak::threadFunc, this);
-}
-
-void MtESpeak::join()
-{
-	m_thread.join();
-
-	if (m_thread_exc) {
-		try {
-			std::rethrow_exception(m_thread_exc);
-		}
-		catch (const std::exception &e) {
-			throw e;
-		}
-	}
+	Thread::wait();
 }
 
 void MtESpeak::requestEnqueue(MtESpeakRequest req)
@@ -154,17 +134,19 @@ void MtESpeak::requestEnqueue(MtESpeakRequest req)
 	m_request_queue_cv.notify_one();
 }
 
-void MtESpeak::threadFunc()
+void * MtESpeak::run()
 {
 	try {
-		threadFunc2();
+		threadFunc();
 	}
 	catch (const std::exception &e) {
-		m_thread_exc = std::current_exception();
+		infostream << "MtESpeak run error [" << e.what() << "]" << std::endl;
 	}
+
+	return NULL;
 }
 
-void MtESpeak::threadFunc2()
+void MtESpeak::threadFunc()
 {
 	while (true) {
 		std::unique_lock<std::mutex> lock(m_mutex);
