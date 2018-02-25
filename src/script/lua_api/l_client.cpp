@@ -32,6 +32,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "lua_api/l_nodemeta.h"
 #include "gui/mainmenumanager.h"
 #include "map.h"
+#include "sound_tts_manager.h"
 #include "util/string.h"
 #include "nodedef.h"
 
@@ -348,6 +349,13 @@ int ModApiClient::l_get_builtin_path(lua_State *L)
 	return 1;
 }
 
+int ModApiClient::l_text_to_speech(lua_State *L)
+{
+	std::string text = luaL_checkstring(L, 1);
+	g_tts->requestEnqueueText(text);
+	return 0;
+}
+
 void ModApiClient::Initialize(lua_State *L, int top)
 {
 	API_FCT(get_current_modname);
@@ -373,4 +381,5 @@ void ModApiClient::Initialize(lua_State *L, int top)
 	API_FCT(get_privilege_list);
 	API_FCT(get_builtin_path);
 	API_FCT(get_language);
+	API_FCT(text_to_speech);
 }

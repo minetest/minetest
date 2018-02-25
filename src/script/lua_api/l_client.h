@@ -93,6 +93,9 @@ private:
 	// get_builtin_path()
 	static int l_get_builtin_path(lua_State *L);
 
+	// text_to_speech
+	static int l_text_to_speech(lua_State *L);
+
 public:
 	static void Initialize(lua_State *L, int top);
 };
