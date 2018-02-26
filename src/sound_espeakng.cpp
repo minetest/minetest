@@ -118,14 +118,14 @@ MtESpeak::MtESpeak() :
 
 MtESpeak::~MtESpeak()
 {
-	MtESpeakRequest req;
-	req.m_type = MT_ESPEAK_REQUEST_TYPE_EXIT;
+	MtTtsRequest req;
+	req.m_type = MT_TTS_REQUEST_TYPE_EXIT;
 	requestEnqueue(std::move(req));
 
 	Thread::wait();
 }
 
-void MtESpeak::requestEnqueue(MtESpeakRequest req)
+void MtESpeak::requestEnqueue(MtTtsRequest req)
 {
 	{
 		std::unique_lock<std::mutex> lock(m_mutex);
@@ -152,20 +152,20 @@ void MtESpeak::threadFunc()
 		std::unique_lock<std::mutex> lock(m_mutex);
 		m_request_queue_cv.wait(lock, [&]() { return ! m_request_queue.empty(); });
 
-		MtESpeakRequest req = std::move(m_request_queue.front());
+		MtTtsRequest req = std::move(m_request_queue.front());
 		m_request_queue.pop_front();
 
 		maintain();
 
 		switch (req.m_type)
 		{
-		case MT_ESPEAK_REQUEST_TYPE_EXIT:
+		case MT_TTS_REQUEST_TYPE_EXIT:
 		{
 			return;
 		}
 		break;
 
-		case MT_ESPEAK_REQUEST_TYPE_TEXT:
+		case MT_TTS_REQUEST_TYPE_TEXT:
 		{
 			std::string text = req.m_text;
 

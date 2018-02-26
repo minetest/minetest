@@ -6,16 +6,16 @@
 
 class MtESpeak;
 
-enum MtESpeakRequestType
+enum MtTtsRequestType
 {
-	MT_ESPEAK_REQUEST_TYPE_EXIT = 0,
-	MT_ESPEAK_REQUEST_TYPE_TEXT,
+	MT_TTS_REQUEST_TYPE_EXIT = 0,
+	MT_TTS_REQUEST_TYPE_TEXT,
 };
 
-class MtESpeakRequest
+class MtTtsRequest
 {
 public:
-	MtESpeakRequestType m_type;
+	MtTtsRequestType m_type;
 
 	int m_exit;
 	std::string m_text;

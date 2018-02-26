@@ -35,7 +35,7 @@ public:
 	MtESpeak();
 	~MtESpeak();
 
-	void requestEnqueue(MtESpeakRequest req);
+	void requestEnqueue(MtTtsRequest req);
 
 	void * run() override;
 	void threadFunc();
@@ -45,7 +45,7 @@ public:
 private:
 	std::mutex                  m_mutex;
 	std::condition_variable     m_request_queue_cv;
-	std::deque<MtESpeakRequest> m_request_queue;
+	std::deque<MtTtsRequest> m_request_queue;
 
 	std::string m_data_path;
 	unique_ptr_alsource m_source;

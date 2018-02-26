@@ -18,16 +18,16 @@ MtTtsManager::MtTtsManager() :
 
 void MtTtsManager::requestEnqueueExit()
 {
-	MtESpeakRequest req;
-	req.m_type = MT_ESPEAK_REQUEST_TYPE_EXIT;
+	MtTtsRequest req;
+	req.m_type = MT_TTS_REQUEST_TYPE_EXIT;
 	if (m_espeak)
 		m_espeak->requestEnqueue(std::move(req));
 }
 
 void MtTtsManager::requestEnqueueText(const std::string &text)
 {
-	MtESpeakRequest req;
-	req.m_type = MT_ESPEAK_REQUEST_TYPE_TEXT;
+	MtTtsRequest req;
+	req.m_type = MT_TTS_REQUEST_TYPE_TEXT;
 	req.m_text = text;
 	if (m_espeak)
 		m_espeak->requestEnqueue(std::move(req));
