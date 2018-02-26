@@ -1119,7 +1119,8 @@ void MapgenV6::generateCaves(int max_stone_y)
 	}
 
 	for (u32 i = 0; i < caves_count + bruises_count; i++) {
-		CavesV6 cave(ndef, &gennotify, water_level, c_water_source, c_lava_source);
+		CavesV6 cave(ndef, &gennotify, water_level,
+			c_water_source, c_lava_source, c_ice);
 
 		bool large_cave = (i >= caves_count);
 		cave.makeCave(vm, node_min, node_max, &ps, &ps2,
