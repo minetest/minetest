@@ -586,7 +586,7 @@ inline bool CavesRandomWalk::isPosAboveSurface(v3s16 p)
 ////
 
 CavesV6::CavesV6(const NodeDefManager *ndef, GenerateNotifier *gennotify,
-	int water_level, content_t water_source, content_t lava_source)
+	int water_level, content_t water_source, content_t lava_source, content_t ice)
 {
 	assert(ndef);
 
@@ -605,6 +605,12 @@ CavesV6::CavesV6(const NodeDefManager *ndef, GenerateNotifier *gennotify,
 		c_lava_source = ndef->getId("mapgen_lava_source");
 	if (c_lava_source == CONTENT_IGNORE)
 		c_lava_source = CONTENT_AIR;
+
+	c_ice = ice;
+	if (c_ice == CONTENT_IGNORE)
+		c_ice = ndef->getId("mapgen_ice");
+	if (c_ice == CONTENT_IGNORE)
+		c_ice = c_water_source;
 }
 
 
@@ -843,7 +849,8 @@ void CavesV6::carveRoute(v3f vec, float f, bool randomize_xz,
 
 				u32 i = vm->m_area.index(p);
 				content_t c = vm->m_data[i].getContent();
-				if (!ndef->get(c).is_ground_content)
+				// Don't excavate sea ice to avoid ugly holes
+				if (!ndef->get(c).is_ground_content or c == c_ice)
 					continue;
 
 				if (large_cave) {

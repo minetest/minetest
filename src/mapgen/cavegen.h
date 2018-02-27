@@ -200,6 +200,7 @@ public:
 	int water_level;
 
 	// intermediate state variables
+	content_t c_ice;
 	u16 ystride;
 
 	s16 min_tunnel_diameter;
@@ -226,7 +227,8 @@ public:
 	// If gennotify is NULL, generation events are not logged.
 	CavesV6(const NodeDefManager *ndef, GenerateNotifier *gennotify = NULL,
 			int water_level = 1, content_t water_source = CONTENT_IGNORE,
-			content_t lava_source = CONTENT_IGNORE);
+			content_t lava_source = CONTENT_IGNORE,
+			content_t ice = CONTENT_IGNORE);
 
 	// vm, ps, and ps2 are mandatory parameters.
 	// If heightmap is NULL, the surface level at all points is assumed to
