@@ -117,6 +117,7 @@ public:
 			const std::string &prefix = "") const;
 	virtual void debugFloat(const std::string &title, const float val,
 			bool newline = true, const std::string &prefix = "") const;
+
 protected:
 	virtual bool checkPrivilege(const std::string &priv) const;
 	virtual void triggerJumpEvent();
