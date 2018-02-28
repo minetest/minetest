@@ -40,6 +40,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mg_decoration.h"
 #include "mapgen_valleys.h"
 #include "cavegen.h"
+#include <cmath>
 
 
 //#undef NDEBUG
@@ -373,7 +374,7 @@ float MapgenValleys::terrainLevelFromNoise(TerrainNoise *tn)
 	//   (here x = "river" and a = valley_profile).
 	//  "valley" represents the height of the terrain, from the rivers.
 	{
-		float t = river / tn->valley_profile;
+		float t = std::fmax(river / tn->valley_profile, 0.0f);
 		*tn->valley = valley_d * (1.f - exp(- MYSQUARE(t)));
 	}
 
