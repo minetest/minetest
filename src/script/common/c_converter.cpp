@@ -550,7 +550,7 @@ bool getboolfield_default(lua_State *L, int table,
 v3s16 getv3s16field_default(lua_State *L, int table,
 		const char *fieldname, v3s16 default_)
 {
-	getv3field(L, table, fieldname, default_);
+	getv3intfield(L, table, fieldname, default_);
 	return default_;
 }
 

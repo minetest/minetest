@@ -60,7 +60,7 @@ bool getintfield(lua_State *L, int table,
 }
 
 template<class T>
-bool getv3field(lua_State *L, int index,
+bool getv3intfield(lua_State *L, int index,
 		const char *fieldname, T &result)
 {
 	lua_getfield(L, index, fieldname);
