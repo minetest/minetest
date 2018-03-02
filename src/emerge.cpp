@@ -570,6 +570,12 @@ MapBlock *EmergeThread::finishGen(v3s16 pos, BlockMakeData *bmdata,
 		m_server->setAsyncFatalError("Lua: finishGen" + std::string(e.what()));
 	}
 
+	/*
+		Clear generate notifier events
+	*/
+	Mapgen *mg = m_emerge->getCurrentMapgen();
+	mg->gennotify.clearEvents();
+
 	EMERGE_DBG_OUT("ended up with: " << analyze_block(block));
 
 	/*

@@ -101,8 +101,8 @@ public:
 	void setNotifyOnDecoIds(std::set<u32> *notify_on_deco_ids);
 
 	bool addEvent(GenNotifyType type, v3s16 pos, u32 id=0);
-	void getEvents(std::map<std::string, std::vector<v3s16> > &event_map,
-		bool peek_events=false);
+	void getEvents(std::map<std::string, std::vector<v3s16> > &event_map);
+	void clearEvents();
 
 private:
 	u32 m_notify_on;
