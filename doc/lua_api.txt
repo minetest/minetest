@@ -2842,8 +2842,11 @@ and `minetest.auth_reload` call the authentication handler.
         * decoration
     * The second parameter is a list of IDS of decorations which notification
       is requested for.
-* `get_gen_notify()`
+* `minetest.get_gen_notify()`
     * Returns a flagstring and a table with the `deco_id`s.
+* `minetest.get_decoration_id(decoration_name)
+    * Returns the decoration ID number for the provided decoration name string,
+      or `nil` on failure.
 * `minetest.get_mapgen_object(objectname)`
     * Return requested mapgen object if available (see "Mapgen objects")
 * `minetest.get_heat(pos)`

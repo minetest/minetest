@@ -1006,6 +1006,32 @@ int ModApiMapgen::l_get_gen_notify(lua_State *L)
 }
 
 
+// get_decoration_id(decoration_name)
+// returns the decoration ID as used in gennotify
+int ModApiMapgen::l_get_decoration_id(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+
+	const char *deco_str = luaL_checkstring(L, 1);
+	if (!deco_str)
+		return 0;
+
+	DecorationManager *dmgr = getServer(L)->getEmergeManager()->decomgr;
+
+	if (!dmgr)
+		return 0;
+
+	Decoration *deco = (Decoration *)dmgr->getByName(deco_str);
+
+	if (!deco)
+		return 0;
+
+	lua_pushinteger(L, deco->index);
+
+	return 1;
+}
+
+
 // register_biome({lots of stuff})
 int ModApiMapgen::l_register_biome(lua_State *L)
 {
@@ -1696,6 +1722,7 @@ void ModApiMapgen::Initialize(lua_State *L, int top)
 	API_FCT(get_noiseparams);
 	API_FCT(set_gen_notify);
 	API_FCT(get_gen_notify);
+	API_FCT(get_decoration_id);
 
 	API_FCT(register_biome);
 	API_FCT(register_decoration);
