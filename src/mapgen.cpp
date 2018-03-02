@@ -982,8 +982,7 @@ bool GenerateNotifier::addEvent(GenNotifyType type, v3s16 pos, u32 id)
 
 
 void GenerateNotifier::getEvents(
-	std::map<std::string, std::vector<v3s16> > &event_map,
-	bool peek_events)
+	std::map<std::string, std::vector<v3s16> > &event_map)
 {
 	std::list<GenNotifyEvent>::iterator it;
 
@@ -995,9 +994,12 @@ void GenerateNotifier::getEvents(
 
 		event_map[name].push_back(gn.pos);
 	}
+}
 
-	if (!peek_events)
-		m_notify_events.clear();
+
+void GenerateNotifier::clearEvents()
+{
+	m_notify_events.clear();
 }
 
 
