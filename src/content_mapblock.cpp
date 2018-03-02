@@ -286,9 +286,11 @@ void MapblockMeshGenerator::getSmoothLightFrame()
 		frame.sunlight[k] = false;
 	for (int k = 0; k < 8; ++k) {
 		LightPair light(getSmoothLightTransparent(blockpos_nodes + p, light_dirs[k], data));
-		frame.lightsA[k] = light.lightA;
-		frame.lightsB[k] = light.lightB;
-		if (light.lightA == 0xFF) {
+		frame.lightsDay[k] = light.lightDay;
+		frame.lightsNight[k] = light.lightNight;
+		// If there is direct sunlight and no ambient occlusion at some corner,
+		// mark the vertical edge (top and bottom corners) containing it.
+		if (light.lightDay == 255) {
 			frame.sunlight[k] = true;
 			frame.sunlight[k ^ 2] = true;
 		}
@@ -299,22 +301,26 @@ void MapblockMeshGenerator::getSmoothLightFrame()
 //  vertex_pos - vertex position in the node (coordinates are clamped to [0.0, 1.0] or so)
 LightInfo MapblockMeshGenerator::blendLight(const v3f &vertex_pos)
 {
+	// Light levels at (logical) node corners are known. Here,
+	// trilinear interpolation is used to calculate light level
+	// at a given point in the node.
 	f32 x = core::clamp(vertex_pos.X / BS + 0.5, 0.0 - SMOOTH_LIGHTING_OVERSIZE, 1.0 + SMOOTH_LIGHTING_OVERSIZE);
 	f32 y = core::clamp(vertex_pos.Y / BS + 0.5, 0.0 - SMOOTH_LIGHTING_OVERSIZE, 1.0 + SMOOTH_LIGHTING_OVERSIZE);
 	f32 z = core::clamp(vertex_pos.Z / BS + 0.5, 0.0 - SMOOTH_LIGHTING_OVERSIZE, 1.0 + SMOOTH_LIGHTING_OVERSIZE);
-	f32 lightA = 0.0;
-	f32 lightB = 0.0;
-	f32 sunlight = 0.0;
+	f32 lightDay = 0.0; // daylight
+	f32 lightNight = 0.0;
+	f32 lightBoosted = 0.0; // daylight + direct sunlight, if any
 	for (int k = 0; k < 8; ++k) {
 		f32 dx = (k & 4) ? x : 1 - x;
 		f32 dy = (k & 2) ? y : 1 - y;
 		f32 dz = (k & 1) ? z : 1 - z;
-		f32 lightC = frame.sunlight[k] ? 0xFF : frame.lightsA[k];
-		lightA += dx * dy * dz * frame.lightsA[k];
-		lightB += dx * dy * dz * frame.lightsB[k];
-		sunlight += dx * dy * dz * lightC;
+		// Use direct sunlight (255), if any; use daylight otherwise.
+		f32 light_boosted = frame.sunlight[k] ? 255 : frame.lightsDay[k];
+		lightDay += dx * dy * dz * frame.lightsDay[k];
+		lightNight += dx * dy * dz * frame.lightsNight[k];
+		lightBoosted += dx * dy * dz * light_boosted;
 	}
-	return LightInfo{lightA, lightB, sunlight};
+	return LightInfo{lightDay, lightNight, lightBoosted};
 }
 
 // Calculates vertex color to be used in mapblock mesh
@@ -415,7 +421,7 @@ void MapblockMeshGenerator::prepareLiquidNodeDrawing()
 		// If this liquid emits light and doesn't contain light, draw
 		// it at what it emits, for an increased effect
 		u8 e = decode_light(f->light_source);
-		light = LightPair(std::max(e, light.lightA), std::max(e, light.lightB));
+		light = LightPair(std::max(e, light.lightDay), std::max(e, light.lightNight));
 	} else if (nodedef->get(ntop).param_type == CPT_LIGHT) {
 		// Otherwise, use the light of the node on top if possible
 		light = LightPair(getInteriorLight(ntop, 0, nodedef));
