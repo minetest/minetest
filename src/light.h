@@ -35,36 +35,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 // This brightness is reserved for sunlight
 #define LIGHT_SUN 15
 
-inline u8 diminish_light(u8 light)
-{
-	if (light == 0)
-		return 0;
-	if (light >= LIGHT_MAX)
-		return LIGHT_MAX - 1;
-
-	return light - 1;
-}
-
-inline u8 diminish_light(u8 light, u8 distance)
-{
-	if (distance >= light)
-		return 0;
-	return light - distance;
-}
-
-inline u8 undiminish_light(u8 light)
-{
-	assert(light <= LIGHT_SUN);
-	// We don't know if light should undiminish from this particular 0.
-	// Thus, keep it at 0.
-	if (light == 0)
-		return 0;
-	if (light >= LIGHT_MAX)
-		return light;
-
-	return light + 1;
-}
-
 #ifndef SERVER
 
 /**
