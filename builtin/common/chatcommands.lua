@@ -58,11 +58,7 @@ local function do_help_cmd(name, param)
 			msg = core.colorize(core.COLOR_PRIV, cmd)
 		else
 			cmd = cmd_marker .. cmd
-			if def.params and def.params ~= "" then
-				msg = core.colorize_chatcommand(cmd, def.params)
-			else
-				msg = core.colorize_chatcommand(cmd)
-			end
+			msg = core.colorize_chatcommand(cmd, def.params)
 		end
 		if def.description and def.description ~= "" then
 			msg = msg .. ": " .. def.description
@@ -78,10 +74,14 @@ local function do_help_cmd(name, param)
 		end
 		table.sort(cmds)
 		-- Intentionally not translated because the cmd names are static
-		local help_cmd = core.colorize_chatcommand(string.format("%shelp", cmd_marker), "<cmd>")
-		local help_all = core.colorize_chatcommand(string.format("%shelp", cmd_marker), "all")
+		local help_cmd = core.colorize_chatcommand(
+				string.format("%shelp", cmd_marker), "<cmd>")
+		local help_all = core.colorize_chatcommand(
+				string.format("%shelp", cmd_marker), "all")
 		-- List available commands
-		return true, gettext("Available commands: ") .. core.colorize(core.COLOR_COMMAND, table.concat(cmds, " ")) .. "\n"
+		return true, gettext("Available commands: ")
+				.. core.colorize(core.COLOR_COMMAND, table.concat(cmds, " "))
+				.. "\n"
 				.. gettext_replace("Use '$1' to get more information,"
 				.. " or '$2' to list everything.", help_cmd, help_all)
 	elseif param == "all" then

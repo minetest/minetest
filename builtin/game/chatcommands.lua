@@ -86,7 +86,9 @@ end
 --
 core.register_chatcommand("me", {
 	params = "<action>",
-	description = "Show chat action (e.g., '"..core.colorize_chatcommand("/me", "orders a pizza").."' displays"
+	description = "Show chat action (e.g., '"
+			.. core.colorize_chatcommand("/me", "orders a pizza")
+			.. "' displays"
 			.. " '<player name> orders a pizza')",
 	privs = {shout=true},
 	func = function(name, param)
@@ -166,7 +168,9 @@ core.register_chatcommand("grant", {
 	func = function(name, param)
 		local grantname, grantprivstr = string.match(param, "([^ ]+) (.+)")
 		if not grantname or not grantprivstr then
-			return false, "Invalid parameters (see "..core.colorize_chatcommand("/help", "grant")..")"
+			return false, "Invalid parameters (see "
+					.. core.colorize_chatcommand("/help", "grant")
+					.. ")"
 		end
 		return handle_grant_command(name, grantname, grantprivstr)
 	end,
@@ -177,7 +181,9 @@ core.register_chatcommand("grantme", {
 	description = "Grant privileges to yourself",
 	func = function(name, param)
 		if param == "" then
-			return false, "Invalid parameters (see "..core.colorize_chatcommand("/help", "grantme") .. ")"
+			return false, "Invalid parameters (see "
+					.. core.colorize_chatcommand("/help", "grantme")
+					.. ")"
 		end
 		return handle_grant_command(name, name, param)
 	end,
@@ -760,7 +766,9 @@ core.register_chatcommand("rollback_check", {
 
 core.register_chatcommand("rollback", {
 	params = "(<name> [<seconds>]) | (:<actor> [<seconds>])",
-	description = "Revert actions of a player. Default for "..core.colorize(core.COLOR_PARAM, "<seconds>").." is 60",
+	description = "Revert actions of a player. Default for "
+			.. core.colorize(core.COLOR_PARAM, "<seconds>")
+			.. " is 60",
 	privs = {rollback=true},
 	func = function(name, param)
 		if not core.settings:get_bool("enable_rollback_recording") then
