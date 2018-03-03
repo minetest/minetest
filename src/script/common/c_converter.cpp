@@ -467,71 +467,6 @@ bool getstringfield(lua_State *L, int table,
 	return got;
 }
 
-bool getintfield(lua_State *L, int table,
-		const char *fieldname, int &result)
-{
-	lua_getfield(L, table, fieldname);
-	bool got = false;
-	if(lua_isnumber(L, -1)){
-		result = lua_tointeger(L, -1);
-		got = true;
-	}
-	lua_pop(L, 1);
-	return got;
-}
-
-bool getintfield(lua_State *L, int table,
-		const char *fieldname, u8 &result)
-{
-	lua_getfield(L, table, fieldname);
-	bool got = false;
-	if(lua_isnumber(L, -1)){
-		result = lua_tointeger(L, -1);
-		got = true;
-	}
-	lua_pop(L, 1);
-	return got;
-}
-
-bool getintfield(lua_State *L, int table,
-		const char *fieldname, s8 &result)
-{
-	lua_getfield(L, table, fieldname);
-	bool got = false;
-	if (lua_isnumber(L, -1)) {
-		result = lua_tointeger(L, -1);
-		got = true;
-	}
-	lua_pop(L, 1);
-	return got;
-}
-
-bool getintfield(lua_State *L, int table,
-		const char *fieldname, u16 &result)
-{
-	lua_getfield(L, table, fieldname);
-	bool got = false;
-	if(lua_isnumber(L, -1)){
-		result = lua_tointeger(L, -1);
-		got = true;
-	}
-	lua_pop(L, 1);
-	return got;
-}
-
-bool getintfield(lua_State *L, int table,
-		const char *fieldname, u32 &result)
-{
-	lua_getfield(L, table, fieldname);
-	bool got = false;
-	if(lua_isnumber(L, -1)){
-		result = lua_tointeger(L, -1);
-		got = true;
-	}
-	lua_pop(L, 1);
-	return got;
-}
-
 bool getfloatfield(lua_State *L, int table,
 		const char *fieldname, float &result)
 {
@@ -610,6 +545,13 @@ bool getboolfield_default(lua_State *L, int table,
 	bool result = default_;
 	getboolfield(L, table, fieldname, result);
 	return result;
+}
+
+v3s16 getv3s16field_default(lua_State *L, int table,
+		const char *fieldname, v3s16 default_)
+{
+	getv3intfield(L, table, fieldname, default_);
+	return default_;
 }
 
 void setstringfield(lua_State *L, int table,

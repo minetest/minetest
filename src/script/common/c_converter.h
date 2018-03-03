@@ -42,31 +42,51 @@ bool               getboolfield_default(lua_State *L, int table,
                              const char *fieldname, bool default_);
 float              getfloatfield_default(lua_State *L, int table,
                              const char *fieldname, float default_);
-int                getintfield_default           (lua_State *L, int table,
+int                getintfield_default(lua_State *L, int table,
                              const char *fieldname, int default_);
 
+template<typename T>
+bool getintfield(lua_State *L, int table,
+		const char *fieldname, T &result)
+{
+	lua_getfield(L, table, fieldname);
+	bool got = false;
+	if (lua_isnumber(L, -1)){
+		result = lua_tointeger(L, -1);
+		got = true;
+	}
+	lua_pop(L, 1);
+	return got;
+}
+
+template<class T>
+bool getv3intfield(lua_State *L, int index,
+		const char *fieldname, T &result)
+{
+	lua_getfield(L, index, fieldname);
+	bool got = false;
+	if (lua_istable(L, -1)) {
+		got = getintfield(L, index, "x", result.X) ||
+			getintfield(L, index, "y", result.Y) ||
+			getintfield(L, index, "z", result.Z);
+	}
+	lua_pop(L, 1);
+	return got;
+}
+
+v3s16              getv3s16field_default(lua_State *L, int table,
+                             const char *fieldname, v3s16 default_);
 bool               getstringfield(lua_State *L, int table,
                              const char *fieldname, std::string &result);
 size_t             getstringlistfield(lua_State *L, int table,
                              const char *fieldname,
                              std::vector<std::string> *result);
-bool               getintfield(lua_State *L, int table,
-                             const char *fieldname, int &result);
-bool               getintfield(lua_State *L, int table,
-                             const char *fieldname, u8 &result);
-bool               getintfield(lua_State *L, int table,
-                             const char *fieldname, s8 &result);
-bool               getintfield(lua_State *L, int table,
-                             const char *fieldname, u16 &result);
-bool               getintfield(lua_State *L, int table,
-                             const char *fieldname, u32 &result);
 void               read_groups(lua_State *L, int index,
                              std::unordered_map<std::string, int> &result);
 bool               getboolfield(lua_State *L, int table,
                              const char *fieldname, bool &result);
 bool               getfloatfield(lua_State *L, int table,
                              const char *fieldname, float &result);
-
 std::string        checkstringfield(lua_State *L, int table,
                              const char *fieldname);
 
