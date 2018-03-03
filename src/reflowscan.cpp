@@ -24,7 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/timetaker.h"
 
 
-ReflowScan::ReflowScan(Map *map, INodeDefManager *ndef) :
+ReflowScan::ReflowScan(Map *map, const NodeDefManager *ndef) :
 	m_map(map),
 	m_ndef(ndef)
 {

@@ -36,17 +36,6 @@ void ScriptApiClient::on_shutdown()
 	runCallbacks(0, RUN_CALLBACKS_MODE_FIRST);
 }
 
-void ScriptApiClient::on_connect()
-{
-	SCRIPTAPI_PRECHECKHEADER
-
-	// get registered connect hooks
-	lua_getglobal(L, "core");
-	lua_getfield(L, -1, "registered_on_connect");
-	// Call callback
-	runCallbacks(0, RUN_CALLBACKS_MODE_FIRST);
-}
-
 bool ScriptApiClient::on_sending_message(const std::string &message)
 {
 	SCRIPTAPI_PRECHECKHEADER
@@ -155,7 +144,7 @@ bool ScriptApiClient::on_dignode(v3s16 p, MapNode node)
 {
 	SCRIPTAPI_PRECHECKHEADER
 
-	INodeDefManager *ndef = getClient()->ndef();
+	const NodeDefManager *ndef = getClient()->ndef();
 
 	// Get core.registered_on_dignode
 	lua_getglobal(L, "core");
@@ -174,7 +163,7 @@ bool ScriptApiClient::on_punchnode(v3s16 p, MapNode node)
 {
 	SCRIPTAPI_PRECHECKHEADER
 
-	INodeDefManager *ndef = getClient()->ndef();
+	const NodeDefManager *ndef = getClient()->ndef();
 
 	// Get core.registered_on_punchgnode
 	lua_getglobal(L, "core");

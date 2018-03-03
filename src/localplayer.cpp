@@ -70,7 +70,7 @@ bool LocalPlayer::updateSneakNode(Map *map, const v3f &position,
 		v3s16(-1, 0, -1)
 	};
 
-	INodeDefManager *nodemgr = m_client->ndef();
+	const NodeDefManager *nodemgr = m_client->ndef();
 	MapNode node;
 	bool is_valid_position;
 	bool new_sneak_node_exists = m_sneak_node_exists;
@@ -181,7 +181,7 @@ void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d,
 	}
 
 	Map *map = &env->getMap();
-	INodeDefManager *nodemgr = m_client->ndef();
+	const NodeDefManager *nodemgr = m_client->ndef();
 
 	v3f position = getPosition();
 
@@ -762,7 +762,7 @@ void LocalPlayer::old_move(f32 dtime, Environment *env, f32 pos_max_d,
 		std::vector<CollisionInfo> *collision_info)
 {
 	Map *map = &env->getMap();
-	INodeDefManager *nodemgr = m_client->ndef();
+	const NodeDefManager *nodemgr = m_client->ndef();
 
 	v3f position = getPosition();
 
@@ -1063,7 +1063,7 @@ float LocalPlayer::getSlipFactor(Environment *env, const v3f &speedH)
 
 	float slip_factor = 1.0f;
 	// Slip on slippery nodes
-	const INodeDefManager *nodemgr = env->getGameDef()->ndef();
+	const NodeDefManager *nodemgr = env->getGameDef()->ndef();
 	Map *map = &env->getMap();
 	const ContentFeatures &f = nodemgr->get(map->getNodeNoEx(
 			floatToInt(getPosition() - v3f(0, 0.05f * BS, 0), BS)));

@@ -311,7 +311,7 @@ int ModApiClient::l_get_node_def(lua_State *L)
 	IGameDef *gdef = getGameDef(L);
 	assert(gdef);
 
-	INodeDefManager *ndef = gdef->ndef();
+	const NodeDefManager *ndef = gdef->ndef();
 	assert(ndef);
 
 	if (!lua_isstring(L, 1))
@@ -328,13 +328,6 @@ int ModApiClient::l_get_node_def(lua_State *L)
 	push_content_features(L, cf);
 
 	return 1;
-}
-
-int ModApiClient::l_take_screenshot(lua_State *L)
-{
-	Client *client = getClient(L);
-	client->makeScreenshot();
-	return 0;
 }
 
 int ModApiClient::l_get_privilege_list(lua_State *L)
@@ -377,7 +370,6 @@ void ModApiClient::Initialize(lua_State *L, int top)
 	API_FCT(get_server_info);
 	API_FCT(get_item_def);
 	API_FCT(get_node_def);
-	API_FCT(take_screenshot);
 	API_FCT(get_privilege_list);
 	API_FCT(get_builtin_path);
 	API_FCT(get_language);

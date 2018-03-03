@@ -235,7 +235,7 @@ local function formspec(tabview, name, tabdata)
 					.. dump(core.settings:get_bool("enable_bumpmapping")) .. "]" ..
 			"checkbox[8.25,1;cb_tonemapping;" .. fgettext("Tone Mapping") .. ";"
 					.. dump(core.settings:get_bool("tone_mapping")) .. "]" ..
-			"checkbox[8.25,1.5;cb_generate_normalmaps;" .. fgettext("Normal Mapping") .. ";"
+			"checkbox[8.25,1.5;cb_generate_normalmaps;" .. fgettext("Generate Normal Maps") .. ";"
 					.. dump(core.settings:get_bool("generate_normalmaps")) .. "]" ..
 			"checkbox[8.25,2;cb_parallax;" .. fgettext("Parallax Occlusion") .. ";"
 					.. dump(core.settings:get_bool("enable_parallax_occlusion")) .. "]" ..
@@ -252,7 +252,7 @@ local function formspec(tabview, name, tabdata)
 			"label[8.38,1.2;" .. core.colorize("#888888",
 					fgettext("Tone Mapping")) .. "]" ..
 			"label[8.38,1.7;" .. core.colorize("#888888",
-					fgettext("Normal Mapping")) .. "]" ..
+					fgettext("Generate Normal Maps")) .. "]" ..
 			"label[8.38,2.2;" .. core.colorize("#888888",
 					fgettext("Parallax Occlusion")) .. "]" ..
 			"label[8.38,2.7;" .. core.colorize("#888888",

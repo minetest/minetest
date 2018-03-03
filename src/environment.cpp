@@ -36,7 +36,6 @@ Environment::Environment(IGameDef *gamedef):
 	m_cache_enable_shaders = g_settings->getBool("enable_shaders");
 	m_cache_active_block_mgmt_interval = g_settings->getFloat("active_block_mgmt_interval");
 	m_cache_abm_interval = g_settings->getFloat("abm_interval");
-	m_cache_ao_interval = g_settings->getFloat("active_object_interval");
 	m_cache_nodetimer_interval = g_settings->getFloat("nodetimer_interval");
 
 	m_time_of_day = g_settings->getU32("world_start_time");
@@ -88,7 +87,7 @@ float Environment::getTimeOfDayF()
 	Check if a node is pointable
 */
 inline static bool isPointableNode(const MapNode &n,
-			    INodeDefManager *nodedef , bool liquids_pointable)
+	const NodeDefManager *nodedef , bool liquids_pointable)
 {
 	const ContentFeatures &features = nodedef->get(n);
 	return features.pointable ||
@@ -97,7 +96,7 @@ inline static bool isPointableNode(const MapNode &n,
 
 void Environment::continueRaycast(RaycastState *state, PointedThing *result)
 {
-	INodeDefManager *nodedef = getMap().getNodeDefManager();
+	const NodeDefManager *nodedef = getMap().getNodeDefManager();
 	if (state->m_initialization_needed) {
 		// Add objects
 		if (state->m_objects_pointable) {

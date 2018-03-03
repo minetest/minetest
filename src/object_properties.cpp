@@ -145,6 +145,7 @@ void ObjectProperties::deSerialize(std::istream &is)
 	makes_footstep_sound = readU8(is);
 	automatic_rotate = readF1000(is);
 	mesh = deSerializeString(is);
+	colors.clear();
 	u32 color_count = readU16(is);
 	for (u32 i = 0; i < color_count; i++){
 		colors.push_back(readARGB8(is));

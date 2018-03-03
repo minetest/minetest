@@ -536,6 +536,9 @@ fps_max (Maximum FPS) int 60
 #    Maximum FPS when game is paused.
 pause_fps_max (FPS in pause menu) int 20
 
+#    Open the pause menu when the window's focus is lost. Does not pause if a formspec is open.
+pause_on_lost_focus (Pause on lost window focus) bool false
+
 #    View distance in nodes.
 viewing_range (Viewing range) int 100 20 4000
 
@@ -590,7 +593,7 @@ lighting_boost_spread (Light curve mid boost spread) float 0.2 0.0 1.0
 texture_path (Texture path) path
 
 #    The rendering back-end for Irrlicht.
-video_driver (Video driver) enum opengl null,software,burningsvideo,direct3d8,direct3d9,opengl
+video_driver (Video driver) enum opengl null,software,burningsvideo,direct3d8,direct3d9,opengl,ogles1,ogles2
 
 #    Radius of cloud area stated in number of 64 node cloud squares.
 #    Values larger than 26 will start to produce sharp cutoffs at cloud area corners.
@@ -616,7 +619,7 @@ fall_bobbing_amount (Fall bobbing factor) float 0.0
 3d_mode (3D mode) enum none none,anaglyph,interlaced,topbottom,sidebyside,pageflip
 
 #    In-game chat console height, between 0.1 (10%) and 1.0 (100%).
-console_height (Console height) float 1.0 0.1 1.0
+console_height (Console height) float 0.6 0.1 1.0
 
 #    In-game chat console background color (R,G,B).
 console_color (Console color) string (0,0,0)
@@ -1011,7 +1014,7 @@ active_object_send_range_blocks (Active object send range) int 3
 active_block_range (Active block range) int 3
 
 #    From how far blocks are sent to clients, stated in mapblocks (16 nodes).
-max_block_send_distance (Max block send distance) int 10
+max_block_send_distance (Max block send distance) int 9
 
 #    Maximum number of forceloaded mapblocks.
 max_forceloaded_blocks (Maximum forceloaded blocks) int 16
@@ -1085,9 +1088,6 @@ active_block_mgmt_interval (Active Block Management interval) float 2.0
 #    Length of time between ABM execution cycles
 abm_interval (Active Block Modifier interval) float 1.0
 
-#    Length of time between active object step cycles
-active_object_interval (Active Object interval) float 0.1
-
 #    Length of time between NodeTimer execution cycles
 nodetimer_interval (NodeTimer interval) float 0.2
 
@@ -1121,12 +1121,13 @@ server_side_occlusion_culling (Server side occlusion culling) bool true
 
 #    Restricts the access of certain client-side functions on servers
 #    Combine these byteflags below to restrict more client-side features:
-#    LOOKUP_NODES_LIMIT: 1 (limits get_node call client-side to csm_flavour_noderange_limit)
+#    LOAD_CLIENT_MODS: 1 (disable client mods loading)
 #    CHAT_MESSAGES: 2 (disable send_chat_message call client-side)
 #    READ_ITEMDEFS: 4 (disable get_item_def call client-side)
 #    READ_NODEDEFS: 8 (disable get_node_def call client-side)
+#    LOOKUP_NODES_LIMIT: 16 (limits get_node call client-side to csm_flavour_noderange_limit)
 #    type: int
-csm_flavour_limits (Client side modding flavour limits) int 3
+csm_flavour_limits (Client side modding flavour limits) int 18
 
 #   If the CSM flavour for node range is enabled, get_node is limited to
 #   this many nodes from the player.
@@ -1198,7 +1199,8 @@ name (Player name) string
 
 #    Set the language. Leave empty to use the system language.
 #    A restart is required after changing this.
-language (Language) enum   ,be,ca,cs,da,de,en,eo,es,et,fr,he,hu,id,it,ja,jbo,ko,ky,lt,nb,nl,pl,pt,pt_BR,ro,ru,sr_Cyrl,tr,uk,zh_CN,zh_TW
+language (Language) enum   ,be,ca,cs,da,de,dv,en,eo,es,et,fr,he,hu,id,it,ja,jbo,ko,ky,lt,ms,nb,nl,pl,pt,pt_BR,ro,ru,sl,sr_Cyrl,sv,sw,tr,uk,zh_CN,zh_TW
+
 
 #    Level of logging to be written to debug.txt:
 #    -    <nothing> (no logging)
@@ -1238,6 +1240,12 @@ curl_file_download_timeout (cURL file download timeout) int 300000
 
 #    Makes DirectX work with LuaJIT. Disable if it causes troubles.
 high_precision_fpu (High-precision FPU) bool true
+
+#    Changes the main menu UI:
+#    -   Full:  Multple singleplayer worlds, subgame choice, texture pack chooser, etc.
+#    -   Simple: One singleplayer world, no subgame or texture pack choosers. May be necessary for smaller screens.
+#    -   Auto: Simple on Android, full on everything else. 
+main_menu_style (Main menu style) enum auto auto,full,simple
 
 #    Replaces the default main menu with a custom one.
 main_menu_script (Main menu script) string
@@ -1315,6 +1323,12 @@ mgv5_cavern_taper (Cavern taper) int 256
 #    Defines full size of caverns, smaller values create larger caverns.
 mgv5_cavern_threshold (Cavern threshold) float 0.7
 
+#    Lower Y limit of dungeons.
+mgv5_dungeon_ymin (Dungeon minimum Y) int -31000
+
+#    Upper Y limit of dungeons.
+mgv5_dungeon_ymax (Dungeon maximum Y) int 31000
+
 [**Noises]
 
 #    Variation of biome filler depth.
@@ -1355,6 +1369,12 @@ mgv6_freq_desert (Desert noise threshold) float 0.45
 
 #    Sandy beaches occur when np_beach exceeds this value.
 mgv6_freq_beach (Beach noise threshold) float 0.15
+
+#    Lower Y limit of dungeons.
+mgv6_dungeon_ymin (Dungeon minimum Y) int -31000
+
+#    Upper Y limit of dungeons.
+mgv6_dungeon_ymax (Dungeon maximum Y) int 31000
 
 [**Noises]
 
@@ -1411,12 +1431,15 @@ mgv7_large_cave_depth (Large cave depth) int -33
 #    Y of upper limit of lava in large caves.
 mgv7_lava_depth (Lava depth) int -256
 
-#    Controls the density of floatland mountain terrain.
-#    Is an offset added to the 'np_mountain' noise value.
+#    Controls the density of mountain-type floatlands.
+#    Is a noise offset added to the 'mgv7_np_mountain' noise value.
 mgv7_float_mount_density (Floatland mountain density) float 0.6
 
-#    Typical maximum height, above and below midpoint, of floatland mountain terrain.
+#    Typical maximum height, above and below midpoint, of floatland mountains.
 mgv7_float_mount_height (Floatland mountain height) float 128.0
+
+#    Alters how mountain-type floatlands taper above and below midpoint.
+mgv7_float_mount_exponent (Floatland mountain exponent) float 0.75
 
 #    Y-level of floatland midpoint and lake surface.
 mgv7_floatland_level (Floatland level) int 1280
@@ -1432,6 +1455,12 @@ mgv7_cavern_taper (Cavern taper) int 256
 
 #    Defines full size of caverns, smaller values create larger caverns.
 mgv7_cavern_threshold (Cavern threshold) float 0.7
+
+#    Lower Y limit of dungeons.
+mgv7_dungeon_ymin (Dungeon minimum Y) int -31000
+
+#    Upper Y limit of dungeons.
+mgv7_dungeon_ymax (Dungeon maximum Y) int 31000
 
 [**Noises]
 
@@ -1504,6 +1533,12 @@ mgcarpathian_cavern_taper (Cavern taper) int 256
 
 #    Defines full size of caverns, smaller values create larger caverns.
 mgcarpathian_cavern_threshold (Cavern threshold) float 0.7
+
+#    Lower Y limit of dungeons.
+mgcarpathian_dungeon_ymin (Dungeon minimum Y) int -31000
+
+#    Upper Y limit of dungeons.
+mgcarpathian_dungeon_ymax (Dungeon maximum Y) int 31000
 
 [**Noises]
 
@@ -1591,6 +1626,12 @@ mgflat_hill_threshold (Hill threshold) float 0.45
 #    Controls steepness/height of hills.
 mgflat_hill_steepness (Hill steepness) float 64.0
 
+#    Lower Y limit of dungeons.
+mgflat_dungeon_ymin (Dungeon minimum Y) int -31000
+
+#    Upper Y limit of dungeons.
+mgflat_dungeon_ymax (Dungeon maximum Y) int 31000
+
 [**Noises]
 
 #    Defines location and terrain of optional hills and lakes.
@@ -1615,6 +1656,12 @@ mgfractal_large_cave_depth (Large cave depth) int -33
 
 #    Y of upper limit of lava in large caves.
 mgfractal_lava_depth (Lava depth) int -256
+
+#    Lower Y limit of dungeons.
+mgfractal_dungeon_ymin (Dungeon minimum Y) int -31000
+
+#    Upper Y limit of dungeons.
+mgfractal_dungeon_ymax (Dungeon maximum Y) int 31000
 
 #    Choice of 18 fractals from 9 formulas.
 #    1 = 4D "Roundy" mandelbrot set.
@@ -1722,6 +1769,12 @@ mgvalleys_water_features (Water features) int 0
 
 #    Controls width of tunnels, a smaller value creates wider tunnels.
 mgvalleys_cave_width (Cave width) float 0.09
+
+#    Lower Y limit of dungeons.
+mgvalleys_dungeon_ymin (Dungeon minimum Y) int -31000
+
+#    Upper Y limit of dungeons.
+mgvalleys_dungeon_ymax (Dungeon maximum Y) int 63
 
 [**Noises]
 

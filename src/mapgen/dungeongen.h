@@ -1,6 +1,7 @@
 /*
 Minetest
-Copyright (C) 2010-2013 celeron55, Perttu Ahola <celeron55@gmail.com>
+Copyright (C) 2010-2018 celeron55, Perttu Ahola <celeron55@gmail.com>
+Copyright (C) 2015-2018 paramat
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -29,7 +30,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		VMANIP_FLAG_DUNGEON_INSIDE|VMANIP_FLAG_DUNGEON_PRESERVE)
 
 class MMVManip;
-class INodeDefManager;
+class NodeDefManager;
 
 v3s16 rand_ortho_dir(PseudoRandom &random, bool diagonal_dirs);
 v3s16 turn_xz(v3s16 olddir, int t);
@@ -40,8 +41,6 @@ int dir_to_facedir(v3s16 d);
 struct DungeonParams {
 	s32 seed;
 
-	content_t c_water;
-	content_t c_river_water;
 	content_t c_wall;
 	content_t c_alt_wall;
 	content_t c_stair;
@@ -68,7 +67,7 @@ struct DungeonParams {
 class DungeonGen {
 public:
 	MMVManip *vm;
-	INodeDefManager *ndef;
+	const NodeDefManager *ndef;
 	GenerateNotifier *gennotify;
 
 	u32 blockseed;
@@ -82,7 +81,7 @@ public:
 	v3s16 m_pos;
 	v3s16 m_dir;
 
-	DungeonGen(INodeDefManager *ndef,
+	DungeonGen(const NodeDefManager *ndef,
 		GenerateNotifier *gennotify, DungeonParams *dparams);
 
 	void generate(MMVManip *vm, u32 bseed,

@@ -1,7 +1,7 @@
 /*
 Minetest
-Copyright (C) 2014-2017 paramat
-Copyright (C) 2014-2016 kwolekr, Ryan Kwolek <kwolekr@minetest.net>
+Copyright (C) 2014-2018 paramat
+Copyright (C) 2014-2018 kwolekr, Ryan Kwolek <kwolekr@minetest.net>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -38,6 +38,8 @@ struct MapgenV5Params : public MapgenParams
 	s16 cavern_limit = -256;
 	s16 cavern_taper = 256;
 	float cavern_threshold = 0.7f;
+	s16 dungeon_ymin = -31000;
+	s16 dungeon_ymax = 31000;
 
 	NoiseParams np_filler_depth;
 	NoiseParams np_factor;
@@ -68,6 +70,9 @@ public:
 
 private:
 	s16 large_cave_depth;
+	s16 dungeon_ymin;
+	s16 dungeon_ymax;
+
 	Noise *noise_factor;
 	Noise *noise_height;
 	Noise *noise_ground;

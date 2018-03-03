@@ -38,8 +38,8 @@ private:
 	// garbage collector
 	static int gc_object(lua_State *L);
 
-	static int l_get2d(lua_State *L);
-	static int l_get3d(lua_State *L);
+	static int l_get_2d(lua_State *L);
+	static int l_get_3d(lua_State *L);
 
 public:
 	LuaPerlinNoise(NoiseParams *params);
@@ -70,14 +70,14 @@ class LuaPerlinNoiseMap : public ModApiBase
 	// garbage collector
 	static int gc_object(lua_State *L);
 
-	static int l_get2dMap(lua_State *L);
-	static int l_get2dMap_flat(lua_State *L);
-	static int l_get3dMap(lua_State *L);
-	static int l_get3dMap_flat(lua_State *L);
+	static int l_get_2d_map(lua_State *L);
+	static int l_get_2d_map_flat(lua_State *L);
+	static int l_get_3d_map(lua_State *L);
+	static int l_get_3d_map_flat(lua_State *L);
 
-	static int l_calc2dMap(lua_State *L);
-	static int l_calc3dMap(lua_State *L);
-	static int l_getMapSlice(lua_State *L);
+	static int l_calc_2d_map(lua_State *L);
+	static int l_calc_3d_map(lua_State *L);
+	static int l_get_map_slice(lua_State *L);
 
 public:
 	LuaPerlinNoiseMap(NoiseParams *np, s32 seed, v3s16 size);

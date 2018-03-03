@@ -36,7 +36,7 @@ int ScriptApiNodemeta::nodemeta_inventory_AllowMove(v3s16 p,
 
 	int error_handler = PUSH_ERROR_HANDLER(L);
 
-	INodeDefManager *ndef = getServer()->ndef();
+	const NodeDefManager *ndef = getServer()->ndef();
 
 	// If node doesn't exist, we don't know what callback to call
 	MapNode node = getEnv()->getMap().getNodeNoEx(p);
@@ -74,7 +74,7 @@ int ScriptApiNodemeta::nodemeta_inventory_AllowPut(v3s16 p,
 
 	int error_handler = PUSH_ERROR_HANDLER(L);
 
-	INodeDefManager *ndef = getServer()->ndef();
+	const NodeDefManager *ndef = getServer()->ndef();
 
 	// If node doesn't exist, we don't know what callback to call
 	MapNode node = getEnv()->getMap().getNodeNoEx(p);
@@ -110,7 +110,7 @@ int ScriptApiNodemeta::nodemeta_inventory_AllowTake(v3s16 p,
 
 	int error_handler = PUSH_ERROR_HANDLER(L);
 
-	INodeDefManager *ndef = getServer()->ndef();
+	const NodeDefManager *ndef = getServer()->ndef();
 
 	// If node doesn't exist, we don't know what callback to call
 	MapNode node = getEnv()->getMap().getNodeNoEx(p);
@@ -147,7 +147,7 @@ void ScriptApiNodemeta::nodemeta_inventory_OnMove(v3s16 p,
 
 	int error_handler = PUSH_ERROR_HANDLER(L);
 
-	INodeDefManager *ndef = getServer()->ndef();
+	const NodeDefManager *ndef = getServer()->ndef();
 
 	// If node doesn't exist, we don't know what callback to call
 	MapNode node = getEnv()->getMap().getNodeNoEx(p);
@@ -180,7 +180,7 @@ void ScriptApiNodemeta::nodemeta_inventory_OnPut(v3s16 p,
 
 	int error_handler = PUSH_ERROR_HANDLER(L);
 
-	INodeDefManager *ndef = getServer()->ndef();
+	const NodeDefManager *ndef = getServer()->ndef();
 
 	// If node doesn't exist, we don't know what callback to call
 	MapNode node = getEnv()->getMap().getNodeNoEx(p);
@@ -211,7 +211,7 @@ void ScriptApiNodemeta::nodemeta_inventory_OnTake(v3s16 p,
 
 	int error_handler = PUSH_ERROR_HANDLER(L);
 
-	INodeDefManager *ndef = getServer()->ndef();
+	const NodeDefManager *ndef = getServer()->ndef();
 
 	// If node doesn't exist, we don't know what callback to call
 	MapNode node = getEnv()->getMap().getNodeNoEx(p);

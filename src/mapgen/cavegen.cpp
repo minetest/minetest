@@ -1,6 +1,8 @@
 /*
 Minetest
-Copyright (C) 2010-2013 celeron55, Perttu Ahola <celeron55@gmail.com>
+Copyright (C) 2010-2018 celeron55, Perttu Ahola <celeron55@gmail.com>
+Copyright (C) 2010-2018 kwolekr, Ryan Kwolek <kwolekr@minetest.net>
+Copyright (C) 2015-2018 paramat
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -34,7 +36,7 @@ static NoiseParams nparams_caveliquids(0, 1, v3f(150.0, 150.0, 150.0), 776, 3, 0
 ////
 
 CavesNoiseIntersection::CavesNoiseIntersection(
-	INodeDefManager *nodedef, BiomeManager *biomemgr, v3s16 chunksize,
+	const NodeDefManager *nodedef, BiomeManager *biomemgr, v3s16 chunksize,
 	NoiseParams *np_cave1, NoiseParams *np_cave2, s32 seed, float cave_width)
 {
 	assert(nodedef);
@@ -172,7 +174,7 @@ void CavesNoiseIntersection::generateCaves(MMVManip *vm,
 ////
 
 CavernsNoise::CavernsNoise(
-	INodeDefManager *nodedef, v3s16 chunksize, NoiseParams *np_cavern,
+	const NodeDefManager *nodedef, v3s16 chunksize, NoiseParams *np_cavern,
 	s32 seed, float cavern_limit, float cavern_taper, float cavern_threshold)
 {
 	assert(nodedef);
@@ -270,7 +272,7 @@ bool CavernsNoise::generateCaverns(MMVManip *vm, v3s16 nmin, v3s16 nmax)
 ////
 
 CavesRandomWalk::CavesRandomWalk(
-	INodeDefManager *ndef,
+	const NodeDefManager *ndef,
 	GenerateNotifier *gennotify,
 	s32 seed,
 	int water_level,
@@ -583,7 +585,7 @@ inline bool CavesRandomWalk::isPosAboveSurface(v3s16 p)
 //// CavesV6
 ////
 
-CavesV6::CavesV6(INodeDefManager *ndef, GenerateNotifier *gennotify,
+CavesV6::CavesV6(const NodeDefManager *ndef, GenerateNotifier *gennotify,
 	int water_level, content_t water_source, content_t lava_source)
 {
 	assert(ndef);

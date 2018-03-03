@@ -24,7 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <string>
 #include <vector>
 
-class INodeDefManager;
+class NodeDefManager;
 class Map;
 
 /*
@@ -147,7 +147,7 @@ struct MapNode
 
 	// Create directly from a nodename
 	// If name is unknown, sets CONTENT_IGNORE
-	MapNode(INodeDefManager *ndef, const std::string &name,
+	MapNode(const NodeDefManager *ndef, const std::string &name,
 			u8 a_param1=0, u8 a_param2=0);
 
 	bool operator==(const MapNode &other)
@@ -193,16 +193,17 @@ struct MapNode
 
 	void setLight(enum LightBank bank, u8 a_light, const ContentFeatures &f);
 
-	void setLight(enum LightBank bank, u8 a_light, INodeDefManager *nodemgr);
+	void setLight(enum LightBank bank, u8 a_light,
+		const NodeDefManager *nodemgr);
 
 	/**
 	 * Check if the light value for night differs from the light value for day.
 	 *
 	 * @return If the light values are equal, returns true; otherwise false
 	 */
-	bool isLightDayNightEq(INodeDefManager *nodemgr) const;
+	bool isLightDayNightEq(const NodeDefManager *nodemgr) const;
 
-	u8 getLight(enum LightBank bank, INodeDefManager *nodemgr) const;
+	u8 getLight(enum LightBank bank, const NodeDefManager *nodemgr) const;
 
 	/*!
 	 * Returns the node's light level from param1.
@@ -212,15 +213,15 @@ struct MapNode
 	u8 getLightRaw(enum LightBank bank, const ContentFeatures &f) const;
 
 	/**
-	 * This function differs from getLight(enum LightBank bank, INodeDefManager *nodemgr)
+	 * This function differs from getLight(enum LightBank bank, NodeDefManager *nodemgr)
 	 * in that the ContentFeatures of the node in question are not retrieved by
 	 * the function itself.  Thus, if you have already called nodemgr->get() to
 	 * get the ContentFeatures you pass it to this function instead of the
-	 * function getting ContentFeatures itself.  Since INodeDefManager::get()
+	 * function getting ContentFeatures itself.  Since NodeDefManager::get()
 	 * is relatively expensive this can lead to significant performance
 	 * improvements in some situations.  Call this function if (and only if)
 	 * you have already retrieved the ContentFeatures by calling
-	 * INodeDefManager::get() for the node you're working with and the
+	 * NodeDefManager::get() for the node you're working with and the
 	 * pre-conditions listed are true.
 	 *
 	 * @pre f != NULL
@@ -228,11 +229,12 @@ struct MapNode
 	 */
 	u8 getLightNoChecks(LightBank bank, const ContentFeatures *f) const;
 
-	bool getLightBanks(u8 &lightday, u8 &lightnight, INodeDefManager *nodemgr) const;
+	bool getLightBanks(u8 &lightday, u8 &lightnight,
+		const NodeDefManager *nodemgr) const;
 
 	// 0 <= daylight_factor <= 1000
 	// 0 <= return value <= LIGHT_SUN
-	u8 getLightBlend(u32 daylight_factor, INodeDefManager *nodemgr) const
+	u8 getLightBlend(u32 daylight_factor, const NodeDefManager *nodemgr) const
 	{
 		u8 lightday = 0;
 		u8 lightnight = 0;
@@ -240,11 +242,12 @@ struct MapNode
 		return blend_light(daylight_factor, lightday, lightnight);
 	}
 
-	u8 getFaceDir(INodeDefManager *nodemgr, bool allow_wallmounted = false) const;
-	u8 getWallMounted(INodeDefManager *nodemgr) const;
-	v3s16 getWallMountedDir(INodeDefManager *nodemgr) const;
+	u8 getFaceDir(const NodeDefManager *nodemgr,
+		bool allow_wallmounted = false) const;
+	u8 getWallMounted(const NodeDefManager *nodemgr) const;
+	v3s16 getWallMountedDir(const NodeDefManager *nodemgr) const;
 
-	void rotateAlongYAxis(INodeDefManager *nodemgr, Rotation rot);
+	void rotateAlongYAxis(const NodeDefManager *nodemgr, Rotation rot);
 
 	/*!
 	 * Checks which neighbors does this node connect to.
@@ -256,25 +259,28 @@ struct MapNode
 	/*
 		Gets list of node boxes (used for rendering (NDT_NODEBOX))
 	*/
-	void getNodeBoxes(INodeDefManager *nodemgr, std::vector<aabb3f> *boxes, u8 neighbors = 0);
+	void getNodeBoxes(const NodeDefManager *nodemgr, std::vector<aabb3f> *boxes,
+		u8 neighbors = 0);
 
 	/*
 		Gets list of selection boxes
 	*/
-	void getSelectionBoxes(INodeDefManager *nodemg, std::vector<aabb3f> *boxes, u8 neighbors = 0);
+	void getSelectionBoxes(const NodeDefManager *nodemg,
+		std::vector<aabb3f> *boxes, u8 neighbors = 0);
 
 	/*
 		Gets list of collision boxes
 	*/
-	void getCollisionBoxes(INodeDefManager *nodemgr, std::vector<aabb3f> *boxes, u8 neighbors = 0);
+	void getCollisionBoxes(const NodeDefManager *nodemgr,
+		std::vector<aabb3f> *boxes, u8 neighbors = 0);
 
 	/*
 		Liquid helpers
 	*/
-	u8 getMaxLevel(INodeDefManager *nodemgr) const;
-	u8 getLevel(INodeDefManager *nodemgr) const;
-	u8 setLevel(INodeDefManager *nodemgr, s8 level = 1);
-	u8 addLevel(INodeDefManager *nodemgr, s8 add = 1);
+	u8 getMaxLevel(const NodeDefManager *nodemgr) const;
+	u8 getLevel(const NodeDefManager *nodemgr) const;
+	u8 setLevel(const NodeDefManager *nodemgr, s8 level = 1);
+	u8 addLevel(const NodeDefManager *nodemgr, s8 add = 1);
 
 	/*
 		Serialization functions

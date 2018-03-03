@@ -39,11 +39,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client/renderingengine.h"
 #include "log.h"
 #include "client/tile.h" // ITextureSource
-#include "hud.h" // drawItemStack
+#include "client/hud.h" // drawItemStack
 #include "filesys.h"
 #include "gettime.h"
 #include "gettext.h"
 #include "scripting_server.h"
+#include "mainmenumanager.h"
 #include "porting.h"
 #include "settings.h"
 #include "client.h"
@@ -57,6 +58,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #if USE_FREETYPE && IRRLICHT_VERSION_MAJOR == 1 && IRRLICHT_VERSION_MINOR < 9
 #include "intlGUIEditBox.h"
+#include "mainmenumanager.h"
+
 #endif
 
 #define MY_CHECKPOS(a,b)													\
@@ -127,6 +130,28 @@ GUIFormSpecMenu::~GUIFormSpecMenu()
 	delete m_selected_item;
 	delete m_form_src;
 	delete m_text_dst;
+}
+
+void GUIFormSpecMenu::create(GUIFormSpecMenu *&cur_formspec, Client *client,
+	JoystickController *joystick, IFormSource *fs_src, TextDest *txt_dest)
+{
+	if (cur_formspec == nullptr) {
+		cur_formspec = new GUIFormSpecMenu(joystick, guiroot, -1, &g_menumgr,
+			client, client->getTextureSource(), fs_src, txt_dest);
+		cur_formspec->doPause = false;
+
+		/*
+			Caution: do not call (*cur_formspec)->drop() here --
+			the reference might outlive the menu, so we will
+			periodically check if *cur_formspec is the only
+			remaining reference (i.e. the menu was removed)
+			and delete it in that case.
+		*/
+
+	} else {
+		cur_formspec->setFormSource(fs_src);
+		cur_formspec->setTextDest(txt_dest);
+	}
 }
 
 void GUIFormSpecMenu::removeChildren()
@@ -950,12 +975,12 @@ void GUIFormSpecMenu::parsePwdField(parserData* data, const std::string &element
 			Environment->setFocus(e);
 		}
 
-		if (label.length() >= 1)
-		{
+		if (label.length() >= 1) {
 			int font_height = g_fontengine->getTextHeight();
 			rect.UpperLeftCorner.Y -= font_height;
 			rect.LowerRightCorner.Y = rect.UpperLeftCorner.Y + font_height;
-			addStaticText(Environment, spec.flabel.c_str(), rect, false, true, this, 0);
+			gui::StaticText::add(Environment, spec.flabel.c_str(), rect, false, true,
+				this, 0);
 		}
 
 		e->setPasswordBox(true,L'*');
@@ -1017,7 +1042,8 @@ void GUIFormSpecMenu::parseSimpleField(parserData* data,
 
 	if (name.empty()) {
 		// spec field id to 0, this stops submit searching for a value that isn't there
-		addStaticText(Environment, spec.flabel.c_str(), rect, false, true, this, spec.fid);
+		gui::StaticText::add(Environment, spec.flabel.c_str(), rect, false, true, this,
+			spec.fid);
 	} else {
 		spec.send = true;
 		gui::IGUIElement *e;
@@ -1050,7 +1076,8 @@ void GUIFormSpecMenu::parseSimpleField(parserData* data,
 			int font_height = g_fontengine->getTextHeight();
 			rect.UpperLeftCorner.Y -= font_height;
 			rect.LowerRightCorner.Y = rect.UpperLeftCorner.Y + font_height;
-			addStaticText(Environment, spec.flabel.c_str(), rect, false, true, this, 0);
+			gui::StaticText::add(Environment, spec.flabel.c_str(), rect, false, true,
+				this, 0);
 		}
 	}
 
@@ -1162,7 +1189,8 @@ void GUIFormSpecMenu::parseTextArea(parserData* data, std::vector<std::string>& 
 		int font_height = g_fontengine->getTextHeight();
 		rect.UpperLeftCorner.Y -= font_height;
 		rect.LowerRightCorner.Y = rect.UpperLeftCorner.Y + font_height;
-		addStaticText(Environment, spec.flabel.c_str(), rect, false, true, this, 0);
+		gui::StaticText::add(Environment, spec.flabel.c_str(), rect, false, true,
+			this, 0);
 	}
 
 	if (parts.size() >= 6) {
@@ -1237,11 +1265,9 @@ void GUIFormSpecMenu::parseLabel(parserData* data, const std::string &element)
 				L"",
 				258+m_fields.size()
 			);
-			gui::IGUIStaticText *e =
-				addStaticText(Environment, spec.flabel.c_str(),
-					rect, false, false, this, spec.fid);
-			e->setTextAlignment(gui::EGUIA_UPPERLEFT,
-						gui::EGUIA_CENTER);
+			gui::IGUIStaticText *e = gui::StaticText::add(Environment,
+				spec.flabel.c_str(), rect, false, false, this, spec.fid);
+			e->setTextAlignment(gui::EGUIA_UPPERLEFT, gui::EGUIA_CENTER);
 			m_fields.push_back(spec);
 		}
 
@@ -1291,8 +1317,8 @@ void GUIFormSpecMenu::parseVertLabel(parserData* data, const std::string &elemen
 			L"",
 			258+m_fields.size()
 		);
-		gui::IGUIStaticText *t =
-				addStaticText(Environment, spec.flabel.c_str(), rect, false, false, this, spec.fid);
+		gui::IGUIStaticText *t = gui::StaticText::add(Environment, spec.flabel.c_str(),
+			rect, false, false, this, spec.fid);
 		t->setTextAlignment(gui::EGUIA_CENTER, gui::EGUIA_CENTER);
 		m_fields.push_back(spec);
 		return;
@@ -2024,7 +2050,8 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 	{
 		assert(!m_tooltip_element);
 		// Note: parent != this so that the tooltip isn't clipped by the menu rectangle
-		m_tooltip_element = addStaticText(Environment, L"",core::rect<s32>(0,0,110,18));
+		m_tooltip_element = gui::StaticText::add(Environment, L"",
+			core::rect<s32>(0, 0, 110, 18));
 		m_tooltip_element->enableOverrideColor(true);
 		m_tooltip_element->setBackgroundColor(m_default_tooltip_bgcolor);
 		m_tooltip_element->setDrawBackground(true);
@@ -3669,14 +3696,14 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 			m_invmgr->inventoryAction(a);
 		} else if (craft_amount > 0) {
 			assert(s.isValid());
-			
+
 			// if there are no items selected or the selected item
 			// belongs to craftresult list, proceed with crafting
 			if (m_selected_item == NULL ||
 					!m_selected_item->isValid() || m_selected_item->listname == "craftresult") {
-				
+
 				m_selected_content_guess = ItemStack(); // Clear
-				
+
 				assert(inv_s);
 
 				// Send IACTION_CRAFT

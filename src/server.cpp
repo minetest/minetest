@@ -253,7 +253,10 @@ Server::Server(
 	m_nodedef->updateAliases(m_itemdef);
 
 	// Apply texture overrides from texturepack/override.txt
-	for (const auto &path : fs::GetRecursiveDirs(g_settings->get("texture_path")))
+	std::vector<std::string> paths;
+	fs::GetRecursiveDirs(paths, g_settings->get("texture_path"));
+	fs::GetRecursiveDirs(paths, m_gamespec.path + DIR_DELIM + "textures");
+	for (const std::string &path : paths)
 		m_nodedef->applyTextureOverrides(path + DIR_DELIM + "override.txt");
 
 	m_nodedef->setNodeRegistrationStatus(true);
@@ -1498,7 +1501,7 @@ void Server::SendItemDef(session_t peer_id,
 }
 
 void Server::SendNodeDef(session_t peer_id,
-		INodeDefManager *nodedef, u16 protocol_version)
+	const NodeDefManager *nodedef, u16 protocol_version)
 {
 	NetworkPacket pkt(TOCLIENT_NODEDEF, 0, peer_id);
 
@@ -1568,8 +1571,10 @@ void Server::SendShowFormspecMessage(session_t peer_id, const std::string &forms
 	NetworkPacket pkt(TOCLIENT_SHOW_FORMSPEC, 0 , peer_id);
 	if (formspec.empty()){
 		//the client should close the formspec
+		m_formspec_state_data.erase(peer_id);
 		pkt.putLongString("");
 	} else {
+		m_formspec_state_data[peer_id] = formname;
 		pkt.putLongString(FORMSPEC_VERSION_STRING + formspec);
 	}
 	pkt << formname;
@@ -2259,8 +2264,9 @@ void Server::fillMediaCache()
 		paths.push_back(mod.path + DIR_DELIM + "models");
 		paths.push_back(mod.path + DIR_DELIM + "locale");
 	}
-	fs::GetRecursiveDirs(paths, porting::path_user + DIR_DELIM +
-			"textures" + DIR_DELIM + "server");
+	fs::GetRecursiveDirs(paths, m_gamespec.path + DIR_DELIM + "textures");
+	fs::GetRecursiveDirs(paths, porting::path_user + DIR_DELIM + "textures" + DIR_DELIM + "server");
+
 	// Collect media file information from paths into cache
 	for (const std::string &mediapath : paths) {
 		std::vector<fs::DirListNode> dirlist = fs::GetDirListing(mediapath);
@@ -2655,6 +2661,9 @@ void Server::DeleteClient(session_t peer_id, ClientDeletionReason reason)
 			else
 				++i;
 		}
+
+		// clear formspec info so the next client can't abuse the current state
+		m_formspec_state_data.erase(peer_id);
 
 		RemotePlayer *player = m_env->getPlayer(peer_id);
 
@@ -3337,7 +3346,7 @@ IItemDefManager *Server::getItemDefManager()
 	return m_itemdef;
 }
 
-INodeDefManager *Server::getNodeDefManager()
+const NodeDefManager *Server::getNodeDefManager()
 {
 	return m_nodedef;
 }
@@ -3362,7 +3371,7 @@ IWritableItemDefManager *Server::getWritableItemDefManager()
 	return m_itemdef;
 }
 
-IWritableNodeDefManager *Server::getWritableNodeDefManager()
+NodeDefManager *Server::getWritableNodeDefManager()
 {
 	return m_nodedef;
 }

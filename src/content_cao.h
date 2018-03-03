@@ -124,7 +124,10 @@ public:
 	{
 		return ACTIVEOBJECT_TYPE_GENERIC;
 	}
-
+	inline const ItemGroupList &getGroups() const
+	{
+		return m_armor_groups;
+	}
 	void initialize(const std::string &data);
 
 	void processInitData(const std::string &data);
@@ -142,6 +145,8 @@ public:
 	{
 		return m_yaw;
 	}
+
+	const bool isImmortal();
 
 	scene::ISceneNode *getSceneNode();
 

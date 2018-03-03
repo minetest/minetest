@@ -100,7 +100,11 @@ int LuaSettings::l_get_bool(lua_State* L)
 		bool value = o->m_settings->getBool(key);
 		lua_pushboolean(L, value);
 	} else {
-		lua_pushnil(L);
+		// Push default value
+		if (lua_isboolean(L, 3))
+			lua_pushboolean(L, lua_toboolean(L, 3));
+		else
+			lua_pushnil(L);
 	}
 
 	return 1;

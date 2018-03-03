@@ -1,6 +1,7 @@
 /*
 Minetest
-Copyright (C) 2010-2013 kwolekr, Ryan Kwolek <kwolekr@minetest.net>
+Copyright (C) 2010-2018 kwolekr, Ryan Kwolek <kwolekr@minetest.net>
+Copyright (C) 2015-2018 paramat
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -38,15 +39,15 @@ class GenerateNotifier;
 class CavesNoiseIntersection
 {
 public:
-	CavesNoiseIntersection(INodeDefManager *nodedef, BiomeManager *biomemgr,
-			v3s16 chunksize, NoiseParams *np_cave1, NoiseParams *np_cave2,
-			s32 seed, float cave_width);
+	CavesNoiseIntersection(const NodeDefManager *nodedef,
+		BiomeManager *biomemgr, v3s16 chunksize, NoiseParams *np_cave1,
+		NoiseParams *np_cave2, s32 seed, float cave_width);
 	~CavesNoiseIntersection();
 
 	void generateCaves(MMVManip *vm, v3s16 nmin, v3s16 nmax, u8 *biomemap);
 
 private:
-	INodeDefManager *m_ndef;
+	const NodeDefManager *m_ndef;
 	BiomeManager *m_bmgr;
 
 	// configurable parameters
@@ -67,15 +68,15 @@ private:
 class CavernsNoise
 {
 public:
-	CavernsNoise(INodeDefManager *nodedef, v3s16 chunksize, NoiseParams *np_cavern,
-			s32 seed, float cavern_limit, float cavern_taper,
-			float cavern_threshold);
+	CavernsNoise(const NodeDefManager *nodedef, v3s16 chunksize,
+		NoiseParams *np_cavern, s32 seed, float cavern_limit,
+		float cavern_taper, float cavern_threshold);
 	~CavernsNoise();
 
 	bool generateCaverns(MMVManip *vm, v3s16 nmin, v3s16 nmax);
 
 private:
-	INodeDefManager *m_ndef;
+	const NodeDefManager *m_ndef;
 
 	// configurable parameters
 	v3s16 m_csize;
@@ -110,7 +111,7 @@ class CavesRandomWalk
 {
 public:
 	MMVManip *vm;
-	INodeDefManager *ndef;
+	const NodeDefManager *ndef;
 	GenerateNotifier *gennotify;
 	s16 *heightmap;
 
@@ -152,10 +153,10 @@ public:
 
 	// ndef is a mandatory parameter.
 	// If gennotify is NULL, generation events are not logged.
-	CavesRandomWalk(INodeDefManager *ndef, GenerateNotifier *gennotify = NULL,
-			s32 seed = 0, int water_level = 1,
-			content_t water_source = CONTENT_IGNORE,
-			content_t lava_source = CONTENT_IGNORE, int lava_depth = -256);
+	CavesRandomWalk(const NodeDefManager *ndef, GenerateNotifier *gennotify =
+		NULL, s32 seed = 0, int water_level = 1, content_t water_source =
+		CONTENT_IGNORE, content_t lava_source = CONTENT_IGNORE,
+		int lava_depth = -256);
 
 	// vm and ps are mandatory parameters.
 	// If heightmap is NULL, the surface level at all points is assumed to
@@ -187,7 +188,7 @@ class CavesV6
 {
 public:
 	MMVManip *vm;
-	INodeDefManager *ndef;
+	const NodeDefManager *ndef;
 	GenerateNotifier *gennotify;
 	PseudoRandom *ps;
 	PseudoRandom *ps2;
@@ -223,7 +224,7 @@ public:
 
 	// ndef is a mandatory parameter.
 	// If gennotify is NULL, generation events are not logged.
-	CavesV6(INodeDefManager *ndef, GenerateNotifier *gennotify = NULL,
+	CavesV6(const NodeDefManager *ndef, GenerateNotifier *gennotify = NULL,
 			int water_level = 1, content_t water_source = CONTENT_IGNORE,
 			content_t lava_source = CONTENT_IGNORE);
 

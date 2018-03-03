@@ -34,10 +34,10 @@ extern "C" {
 #define MAINMENU_NUM_ASYNC_THREADS 4
 
 
-MainMenuScripting::MainMenuScripting(GUIEngine* guiengine)
+MainMenuScripting::MainMenuScripting(GUIEngine* guiengine):
+		ScriptApiBase(ScriptingType::MainMenu)
 {
 	setGuiEngine(guiengine);
-	setType(ScriptingType::MainMenu);
 
 	SCRIPTAPI_PRECHECKHEADER
 

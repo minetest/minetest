@@ -36,7 +36,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 }
 
 class EmergeThread;
-class INodeDefManager;
+class NodeDefManager;
 class Settings;
 
 class BiomeManager;
@@ -53,7 +53,7 @@ struct BlockMakeData {
 	v3s16 blockpos_max;
 	v3s16 blockpos_requested;
 	UniqueQueue<v3s16> transforming_liquid;
-	INodeDefManager *nodedef = nullptr;
+	const NodeDefManager *nodedef = nullptr;
 
 	BlockMakeData() = default;
 
@@ -88,7 +88,7 @@ struct BlockEmergeData {
 
 class EmergeManager {
 public:
-	INodeDefManager *ndef;
+	const NodeDefManager *ndef;
 	bool enable_mapgen_debug_info;
 
 	// Generation Notify

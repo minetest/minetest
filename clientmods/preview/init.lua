@@ -7,22 +7,32 @@ dofile("preview:example.lua")
 core.register_on_shutdown(function()
 	print("[PREVIEW] shutdown client")
 end)
+local id = nil
 
-core.register_on_connect(function()
-	print("[PREVIEW] Player connection completed")
-	local server_info = core.get_server_info()
-	print("Server version: " .. server_info.protocol_version)
-	print("Server ip: " .. server_info.ip)
-	print("Server address: " .. server_info.address)
-	print("Server port: " .. server_info.port)
+local server_info = core.get_server_info()
+print("Server version: " .. server_info.protocol_version)
+print("Server ip: " .. server_info.ip)
+print("Server address: " .. server_info.address)
+print("Server port: " .. server_info.port)
+mod_channel = core.mod_channel_join("experimental_preview")
 
-	mod_channel = core.mod_channel_join("experimental_preview")
+core.after(4, function()
+	if mod_channel:is_writeable() then
+		mod_channel:send_all("preview talk to experimental")
+	end
+end)
 
-	core.after(4, function()
-		if mod_channel:is_writeable() then
-			mod_channel:send_all("preview talk to experimental")
-		end
-	end)
+core.after(1, function()
+	id = core.localplayer:hud_add({
+			hud_elem_type = "text",
+			name = "example",
+			number = 0xff0000,
+			position = {x=0, y=1},
+			offset = {x=8, y=-8},
+			text = "You are using the preview mod",
+			scale = {x=200, y=60},
+			alignment = {x=1, y=-1},
+	})
 end)
 
 core.register_on_modchannel_message(function(channel, sender, message)
@@ -182,5 +192,11 @@ end)
 core.register_chatcommand("privs", {
 	func = function(param)
 		return true, core.privs_to_string(minetest.get_privilege_list())
+	end,
+})
+
+core.register_chatcommand("text", {
+	func = function(param)
+		return core.localplayer:hud_change(id, "text", param)
 	end,
 })

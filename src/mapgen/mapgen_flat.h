@@ -1,7 +1,7 @@
 /*
 Minetest
-Copyright (C) 2015-2017 paramat
-Copyright (C) 2015-2016 kwolekr, Ryan Kwolek <kwolekr@minetest.net>
+Copyright (C) 2015-2018 paramat
+Copyright (C) 2015-2018 kwolekr, Ryan Kwolek <kwolekr@minetest.net>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -41,6 +41,9 @@ struct MapgenFlatParams : public MapgenParams
 	float lake_steepness = 48.0f;
 	float hill_threshold = 0.45f;
 	float hill_steepness = 64.0f;
+	s16 dungeon_ymin = -31000;
+	s16 dungeon_ymax = 31000;
+
 	NoiseParams np_terrain;
 	NoiseParams np_filler_depth;
 	NoiseParams np_cave1;
@@ -72,5 +75,8 @@ private:
 	float lake_steepness;
 	float hill_threshold;
 	float hill_steepness;
+	s16 dungeon_ymin;
+	s16 dungeon_ymax;
+
 	Noise *noise_terrain;
 };

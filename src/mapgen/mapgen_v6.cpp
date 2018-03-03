@@ -1,8 +1,8 @@
 /*
 Minetest
-Copyright (C) 2010-2015 celeron55, Perttu Ahola <celeron55@gmail.com>
-Copyright (C) 2013-2016 kwolekr, Ryan Kwolek <kwolekr@minetest.net>
-Copyright (C) 2014-2017 paramat
+Copyright (C) 2010-2018 celeron55, Perttu Ahola <celeron55@gmail.com>
+Copyright (C) 2013-2018 kwolekr, Ryan Kwolek <kwolekr@minetest.net>
+Copyright (C) 2014-2018 paramat
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -63,9 +63,11 @@ MapgenV6::MapgenV6(int mapgenid, MapgenV6Params *params, EmergeManager *emerge)
 
 	heightmap = new s16[csize.X * csize.Z];
 
-	spflags     = params->spflags;
-	freq_desert = params->freq_desert;
-	freq_beach  = params->freq_beach;
+	spflags      = params->spflags;
+	freq_desert  = params->freq_desert;
+	freq_beach   = params->freq_beach;
+	dungeon_ymin = params->dungeon_ymin;
+	dungeon_ymax = params->dungeon_ymax;
 
 	np_cave        = &params->np_cave;
 	np_humidity    = &params->np_humidity;
@@ -85,7 +87,7 @@ MapgenV6::MapgenV6(int mapgenid, MapgenV6Params *params, EmergeManager *emerge)
 			csize.X + 2 * MAP_BLOCKSIZE, csize.Y + 2 * MAP_BLOCKSIZE);
 
 	//// Resolve nodes to be used
-	INodeDefManager *ndef = emerge->ndef;
+	const NodeDefManager *ndef = emerge->ndef;
 
 	c_stone           = ndef->getId("mapgen_stone");
 	c_dirt            = ndef->getId("mapgen_dirt");
@@ -166,6 +168,8 @@ void MapgenV6Params::readParams(const Settings *settings)
 	settings->getFlagStrNoEx("mgv6_spflags", spflags, flagdesc_mapgen_v6);
 	settings->getFloatNoEx("mgv6_freq_desert", freq_desert);
 	settings->getFloatNoEx("mgv6_freq_beach",  freq_beach);
+	settings->getS16NoEx("mgv6_dungeon_ymin",  dungeon_ymin);
+	settings->getS16NoEx("mgv6_dungeon_ymax",  dungeon_ymax);
 
 	settings->getNoiseParams("mgv6_np_terrain_base",   np_terrain_base);
 	settings->getNoiseParams("mgv6_np_terrain_higher", np_terrain_higher);
@@ -186,6 +190,8 @@ void MapgenV6Params::writeParams(Settings *settings) const
 	settings->setFlagStr("mgv6_spflags", spflags, flagdesc_mapgen_v6, U32_MAX);
 	settings->setFloat("mgv6_freq_desert", freq_desert);
 	settings->setFloat("mgv6_freq_beach",  freq_beach);
+	settings->setS16("mgv6_dungeon_ymin",  dungeon_ymin);
+	settings->setS16("mgv6_dungeon_ymax",  dungeon_ymax);
 
 	settings->setNoiseParams("mgv6_np_terrain_base",   np_terrain_base);
 	settings->setNoiseParams("mgv6_np_terrain_higher", np_terrain_higher);
@@ -553,12 +559,11 @@ void MapgenV6::makeChunk(BlockMakeData *data)
 	updateHeightmap(node_min, node_max);
 
 	// Add dungeons
-	if ((flags & MG_DUNGEONS) && (stone_surface_max_y >= node_min.Y)) {
+	if ((flags & MG_DUNGEONS) && stone_surface_max_y >= node_min.Y &&
+			full_node_min.Y >= dungeon_ymin && full_node_max.Y <= dungeon_ymax) {
 		DungeonParams dp;
 
 		dp.seed             = seed;
-		dp.c_water          = c_water_source;
-		dp.c_river_water    = c_water_source;
 
 		dp.only_in_ground   = true;
 		dp.corridor_len_min = 1;

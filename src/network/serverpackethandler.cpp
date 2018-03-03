@@ -1470,10 +1470,10 @@ void Server::handleCommand_NodeMetaFields(NetworkPacket* pkt)
 
 void Server::handleCommand_InventoryFields(NetworkPacket* pkt)
 {
-	std::string formname;
+	std::string client_formspec_name;
 	u16 num;
 
-	*pkt >> formname >> num;
+	*pkt >> client_formspec_name >> num;
 
 	StringMap fields;
 	for (u16 k = 0; k < num; k++) {
@@ -1501,7 +1501,32 @@ void Server::handleCommand_InventoryFields(NetworkPacket* pkt)
 		return;
 	}
 
-	m_script->on_playerReceiveFields(playersao, formname, fields);
+	if (client_formspec_name.empty()) { // pass through inventory submits
+		m_script->on_playerReceiveFields(playersao, client_formspec_name, fields);
+		return;
+	}
+
+	// verify that we displayed the formspec to the user
+	const auto peer_state_iterator = m_formspec_state_data.find(pkt->getPeerId());
+	if (peer_state_iterator != m_formspec_state_data.end()) {
+		const std::string &server_formspec_name = peer_state_iterator->second;
+		if (client_formspec_name == server_formspec_name) {
+			m_script->on_playerReceiveFields(playersao, client_formspec_name, fields);
+			if (fields["quit"] == "true")
+				m_formspec_state_data.erase(peer_state_iterator);
+			return;
+		}
+		actionstream << "'" << player->getName()
+			<< "' submitted formspec ('" << client_formspec_name
+			<< "') but the name of the formspec doesn't match the"
+			" expected name ('" << server_formspec_name << "')";
+
+	} else {
+		actionstream << "'" << player->getName()
+			<< "' submitted formspec ('" << client_formspec_name
+			<< "') but server hasn't sent formspec to client";
+	}
+	actionstream << ", possible exploitation attempt" << std::endl;
 }
 
 void Server::handleCommand_FirstSrp(NetworkPacket* pkt)
@@ -1735,10 +1760,12 @@ void Server::handleCommand_SrpBytesM(NetworkPacket* pkt)
 			return;
 		}
 
+		std::string ip = getPeerAddress(pkt->getPeerId()).serializeString();
 		actionstream << "Server: User " << client->getName()
-			<< " at " << getPeerAddress(pkt->getPeerId()).serializeString()
+			<< " at " << ip
 			<< " supplied wrong password (auth mechanism: SRP)."
 			<< std::endl;
+		m_script->on_auth_failure(client->getName(), ip);
 		DenyAccess(pkt->getPeerId(), SERVER_ACCESSDENIED_WRONG_PASSWORD);
 		return;
 	}

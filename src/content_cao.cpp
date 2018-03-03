@@ -360,6 +360,11 @@ v3f GenericCAO::getPosition()
 	return pos_translator.vect_show;
 }
 
+const bool GenericCAO::isImmortal()
+{
+	return itemgroup_get(getGroups(), "immortal");
+}
+
 scene::ISceneNode* GenericCAO::getSceneNode()
 {
 	if (m_meshnode) {
@@ -631,7 +636,7 @@ void GenericCAO::addToScene(ITextureSource *tsrc)
 	if (node && !m_prop.nametag.empty() && !m_is_local_player) {
 		// Add nametag
 		v3f pos;
-		pos.Y = m_prop.collisionbox.MaxEdge.Y + 0.3f;
+		pos.Y = m_prop.selectionbox.MaxEdge.Y + 0.3f;
 		m_nametag = m_client->getCamera()->addNametag(node,
 			m_prop.nametag, m_prop.nametag_color,
 			pos);
@@ -869,7 +874,7 @@ void GenericCAO::step(float dtime, ClientEnvironment *env)
 		if (m_step_distance_counter > 1.5f * BS) {
 			m_step_distance_counter = 0.0f;
 			if (!m_is_local_player && m_prop.makes_footstep_sound) {
-				INodeDefManager *ndef = m_client->ndef();
+				const NodeDefManager *ndef = m_client->ndef();
 				v3s16 p = floatToInt(getPosition() +
 					v3f(0.0f, (m_prop.collisionbox.MinEdge.Y - 0.5f) * BS, 0.0f), BS);
 				MapNode n = m_env->getMap().getNodeNoEx(p);
@@ -1134,10 +1139,12 @@ void GenericCAO::updateTextures(std::string mod)
 					buf->getMaterial().AmbientColor = m_prop.colors[1];
 					buf->getMaterial().DiffuseColor = m_prop.colors[1];
 					buf->getMaterial().SpecularColor = m_prop.colors[1];
+					setMeshColor(mesh, m_prop.colors[1]);
 				} else if (!m_prop.colors.empty()) {
 					buf->getMaterial().AmbientColor = m_prop.colors[0];
 					buf->getMaterial().DiffuseColor = m_prop.colors[0];
 					buf->getMaterial().SpecularColor = m_prop.colors[0];
+					setMeshColor(mesh, m_prop.colors[0]);
 				}
 
 				buf->getMaterial().setFlag(video::EMF_TRILINEAR_FILTER, use_trilinear_filter);

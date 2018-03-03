@@ -127,7 +127,7 @@ void MeshMakeData::setSmoothLighting(bool smooth_lighting)
 	Single light bank.
 */
 static u8 getInteriorLight(enum LightBank bank, MapNode n, s32 increment,
-		INodeDefManager *ndef)
+	const NodeDefManager *ndef)
 {
 	u8 light = n.getLight(bank, ndef);
 
@@ -149,7 +149,7 @@ static u8 getInteriorLight(enum LightBank bank, MapNode n, s32 increment,
 	Calculate non-smooth lighting at interior of node.
 	Both light banks.
 */
-u16 getInteriorLight(MapNode n, s32 increment, INodeDefManager *ndef)
+u16 getInteriorLight(MapNode n, s32 increment, const NodeDefManager *ndef)
 {
 	u16 day = getInteriorLight(LIGHTBANK_DAY, n, increment, ndef);
 	u16 night = getInteriorLight(LIGHTBANK_NIGHT, n, increment, ndef);
@@ -161,7 +161,7 @@ u16 getInteriorLight(MapNode n, s32 increment, INodeDefManager *ndef)
 	Single light bank.
 */
 static u8 getFaceLight(enum LightBank bank, MapNode n, MapNode n2,
-		v3s16 face_dir, INodeDefManager *ndef)
+	v3s16 face_dir, const NodeDefManager *ndef)
 {
 	u8 light;
 	u8 l1 = n.getLight(bank, ndef);
@@ -184,7 +184,8 @@ static u8 getFaceLight(enum LightBank bank, MapNode n, MapNode n2,
 	Calculate non-smooth lighting at face of node.
 	Both light banks.
 */
-u16 getFaceLight(MapNode n, MapNode n2, v3s16 face_dir, INodeDefManager *ndef)
+u16 getFaceLight(MapNode n, MapNode n2, v3s16 face_dir,
+	const NodeDefManager *ndef)
 {
 	u16 day = getFaceLight(LIGHTBANK_DAY, n, n2, face_dir, ndef);
 	u16 night = getFaceLight(LIGHTBANK_NIGHT, n, n2, face_dir, ndef);
@@ -196,9 +197,9 @@ u16 getFaceLight(MapNode n, MapNode n2, v3s16 face_dir, INodeDefManager *ndef)
 	Both light banks
 */
 static u16 getSmoothLightCombined(const v3s16 &p,
-	const std::array<v3s16,8> &dirs, MeshMakeData *data, bool node_solid)
+	const std::array<v3s16,8> &dirs, MeshMakeData *data)
 {
-	INodeDefManager *ndef = data->m_client->ndef();
+	const NodeDefManager *ndef = data->m_client->ndef();
 
 	u16 ambient_occlusion = 0;
 	u16 light_count = 0;
@@ -206,8 +207,14 @@ static u16 getSmoothLightCombined(const v3s16 &p,
 	u16 light_day = 0;
 	u16 light_night = 0;
 
-	auto add_node = [&] (int i) -> const ContentFeatures& {
+	auto add_node = [&] (u8 i, bool obstructed = false) -> bool {
+		if (obstructed) {
+			ambient_occlusion++;
+			return false;
+		}
 		MapNode n = data->m_vmanip.getNodeNoExNoEmerge(p + dirs[i]);
+		if (n.getContent() == CONTENT_IGNORE)
+			return true;
 		const ContentFeatures &f = ndef->get(n);
 		if (f.light_source > light_source_max)
 			light_source_max = f.light_source;
@@ -219,37 +226,24 @@ static u16 getSmoothLightCombined(const v3s16 &p,
 		} else {
 			ambient_occlusion++;
 		}
-		return f;
+		return f.light_propagates;
 	};
 
-	if (node_solid) {
-		ambient_occlusion = 3;
-		bool corner_obstructed = true;
-		for (int i = 0; i < 2; ++i) {
-			if (add_node(i).light_propagates)
-				corner_obstructed = false;
-		}
-		add_node(2);
-		add_node(3);
-		if (corner_obstructed)
-			ambient_occlusion++;
-		else
-			add_node(4);
-	} else {
-		std::array<bool, 4> obstructed = {{ 1, 1, 1, 1 }};
-		add_node(0);
-		bool opaque1 = !add_node(1).light_propagates;
-		bool opaque2 = !add_node(2).light_propagates;
-		bool opaque3 = !add_node(3).light_propagates;
-		obstructed[0] = opaque1 && opaque2;
-		obstructed[1] = opaque1 && opaque3;
-		obstructed[2] = opaque2 && opaque3;
-		for (int k = 0; k < 4; ++k) {
-			if (obstructed[k])
-				ambient_occlusion++;
-			else if (add_node(k + 4).light_propagates)
-				obstructed[3] = false;
-		}
+	std::array<bool, 4> obstructed = {{ 1, 1, 1, 1 }};
+	add_node(0);
+	bool opaque1 = !add_node(1);
+	bool opaque2 = !add_node(2);
+	bool opaque3 = !add_node(3);
+	obstructed[0] = opaque1 && opaque2;
+	obstructed[1] = opaque1 && opaque3;
+	obstructed[2] = opaque2 && opaque3;
+	for (u8 k = 0; k < 3; ++k)
+		if (add_node(k + 4, obstructed[k]))
+			obstructed[3] = false;
+	if (add_node(7, obstructed[3])) { // wrap light around nodes
+		ambient_occlusion -= 3;
+		for (u8 k = 0; k < 3; ++k)
+			add_node(k + 4, !obstructed[k]);
 	}
 
 	if (light_count == 0) {
@@ -277,7 +271,7 @@ static u16 getSmoothLightCombined(const v3s16 &p,
 			g_settings->getFloat("ambient_occlusion_gamma"), 0.25, 4.0);
 
 		// Table of gamma space multiply factors.
-		static const float light_amount[3] = {
+		static thread_local const float light_amount[3] = {
 			powf(0.75, 1.0 / ao_gamma),
 			powf(0.5,  1.0 / ao_gamma),
 			powf(0.25, 1.0 / ao_gamma)
@@ -304,43 +298,7 @@ static u16 getSmoothLightCombined(const v3s16 &p,
 */
 u16 getSmoothLightSolid(const v3s16 &p, const v3s16 &face_dir, const v3s16 &corner, MeshMakeData *data)
 {
-	v3s16 neighbor_offset1, neighbor_offset2;
-
-	/*
-	 * face_dir, neighbor_offset1 and neighbor_offset2 define an
-	 * orthonormal basis which is used to define the offsets of the 8
-	 * surrounding nodes and to differentiate the "distance" (by going only
-	 * along directly neighboring nodes) relative to the node at p.
-	 * Apart from the node at p, only the 4 nodes which contain face_dir
-	 * can contribute light.
-	 */
-	if (face_dir.X != 0) {
-		neighbor_offset1 = v3s16(0, corner.Y, 0);
-		neighbor_offset2 = v3s16(0, 0, corner.Z);
-	} else if (face_dir.Y != 0) {
-		neighbor_offset1 = v3s16(0, 0, corner.Z);
-		neighbor_offset2 = v3s16(corner.X, 0, 0);
-	} else if (face_dir.Z != 0) {
-		neighbor_offset1 = v3s16(corner.X,0,0);
-		neighbor_offset2 = v3s16(0,corner.Y,0);
-	}
-
-	const std::array<v3s16,8> dirs = {{
-		// Always shine light
-		neighbor_offset1 + face_dir,
-		neighbor_offset2 + face_dir,
-		v3s16(0,0,0),
-		face_dir,
-
-		// Can be obstructed
-		neighbor_offset1 + neighbor_offset2 + face_dir,
-
-		// Do not shine light, only for ambient occlusion
-		neighbor_offset1,
-		neighbor_offset2,
-		neighbor_offset1 + neighbor_offset2
-	}};
-	return getSmoothLightCombined(p, dirs, data, true);
+	return getSmoothLightTransparent(p + face_dir, corner - 2 * face_dir, data);
 }
 
 /*
@@ -363,7 +321,7 @@ u16 getSmoothLightTransparent(const v3s16 &p, const v3s16 &corner, MeshMakeData 
 		v3s16(0,corner.Y,corner.Z),
 		v3s16(corner.X,corner.Y,corner.Z)
 	}};
-	return getSmoothLightCombined(p, dirs, data, false);
+	return getSmoothLightCombined(p, dirs, data);
 }
 
 void get_sunlight_color(video::SColorf *sunlight, u32 daynight_ratio){
@@ -715,7 +673,7 @@ static void makeFastFace(const TileSpec &tile, u16 li0, u16 li1, u16 li2, u16 li
 	TODO: Add 3: Both faces drawn with backface culling, remove equivalent
 */
 static u8 face_contents(content_t m1, content_t m2, bool *equivalent,
-		INodeDefManager *ndef)
+	const NodeDefManager *ndef)
 {
 	*equivalent = false;
 
@@ -760,7 +718,7 @@ static u8 face_contents(content_t m1, content_t m2, bool *equivalent,
 */
 void getNodeTileN(MapNode mn, v3s16 p, u8 tileindex, MeshMakeData *data, TileSpec &tile)
 {
-	INodeDefManager *ndef = data->m_client->ndef();
+	const NodeDefManager *ndef = data->m_client->ndef();
 	const ContentFeatures &f = ndef->get(mn);
 	tile = f.tiles[tileindex];
 	bool has_crack = p == data->m_crack_pos_relative;
@@ -780,7 +738,7 @@ void getNodeTileN(MapNode mn, v3s16 p, u8 tileindex, MeshMakeData *data, TileSpe
 */
 void getNodeTile(MapNode mn, v3s16 p, v3s16 dir, MeshMakeData *data, TileSpec &tile)
 {
-	INodeDefManager *ndef = data->m_client->ndef();
+	const NodeDefManager *ndef = data->m_client->ndef();
 
 	// Direction must be (1,0,0), (-1,0,0), (0,1,0), (0,-1,0),
 	// (0,0,1), (0,0,-1) or (0,0,0)
@@ -853,7 +811,7 @@ static void getTileInfo(
 	)
 {
 	VoxelManipulator &vmanip = data->m_vmanip;
-	INodeDefManager *ndef = data->m_client->ndef();
+	const NodeDefManager *ndef = data->m_client->ndef();
 	v3s16 blockpos_nodes = data->m_blockpos * MAP_BLOCKSIZE;
 
 	const MapNode &n0 = vmanip.getNodeRefUnsafe(blockpos_nodes + p);

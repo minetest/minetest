@@ -22,6 +22,10 @@ if [[ ${PLATFORM} == "Unix" ]]; then
 		CMAKE_FLAGS+=' -DCUSTOM_GETTEXT_PATH=/usr/local/opt/gettext'
 	fi
 
+	if [[ -n "${FREETYPE}" ]] && [[ "${FREETYPE}" == "0" ]]; then
+		CMAKE_FLAGS+=' -DENABLE_FREETYPE=0'
+	fi
+
 	cmake -DCMAKE_BUILD_TYPE=Debug \
 		-DRUN_IN_PLACE=TRUE \
 		-DENABLE_GETTEXT=TRUE \

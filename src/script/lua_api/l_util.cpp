@@ -158,18 +158,14 @@ int ModApiUtil::l_write_json(lua_State *L)
 	return 1;
 }
 
-// get_dig_params(groups, tool_capabilities[, time_from_last_punch])
+// get_dig_params(groups, tool_capabilities)
 int ModApiUtil::l_get_dig_params(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ItemGroupList groups;
 	read_groups(L, 1, groups);
 	ToolCapabilities tp = read_tool_capabilities(L, 2);
-	if(lua_isnoneornil(L, 3))
-		push_dig_params(L, getDigParams(groups, &tp));
-	else
-		push_dig_params(L, getDigParams(groups, &tp,
-					luaL_checknumber(L, 3)));
+	push_dig_params(L, getDigParams(groups, &tp));
 	return 1;
 }
 

@@ -348,10 +348,6 @@ public:
 			setNode(x0 + x, y0 + y, z0 + z, node);
 	}
 
-	// See comments in mapblock.cpp
-	bool propagateSunlight(std::set<v3s16> &light_sources,
-		bool remove_light=false, bool *black_air_left=NULL);
-
 	// Copies data to VoxelManipulator to getPosRelative()
 	void copyTo(VoxelManipulator &dst);
 

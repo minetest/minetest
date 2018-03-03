@@ -28,6 +28,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "network/networkpacket.h"
 #include "threading/mutex_auto_lock.h"
 #include "client/clientevent.h"
+#include "client/gameui.h"
 #include "client/renderingengine.h"
 #include "client/tile.h"
 #include "util/auth.h"
@@ -70,11 +71,11 @@ Client::Client(
 		IWritableTextureSource *tsrc,
 		IWritableShaderSource *shsrc,
 		IWritableItemDefManager *itemdef,
-		IWritableNodeDefManager *nodedef,
+		NodeDefManager *nodedef,
 		ISoundManager *sound,
 		MtEventManager *event,
 		bool ipv6,
-		GameUIFlags *game_ui_flags
+		GameUI *game_ui
 ):
 	m_tsrc(tsrc),
 	m_shsrc(shsrc),
@@ -96,7 +97,7 @@ Client::Client(
 	m_chosen_auth_mech(AUTH_MECHANISM_NONE),
 	m_media_downloader(new ClientMediaDownloader()),
 	m_state(LC_Created),
-	m_game_ui_flags(game_ui_flags),
+	m_game_ui(game_ui),
 	m_modchannel_mgr(new ModChannelMgr())
 {
 	// Add local player
@@ -113,18 +114,38 @@ Client::Client(
 	m_script->setEnv(&m_env);
 }
 
-void Client::loadMods()
+void Client::loadBuiltin()
 {
 	// Load builtin
 	scanModIntoMemory(BUILTIN_MOD_NAME, getBuiltinLuaPath());
 
-	// If modding is not enabled, don't load mods, just builtin
-	if (!m_modding_enabled) {
+	m_script->loadModFromMemory(BUILTIN_MOD_NAME);
+}
+
+void Client::loadMods()
+{
+	// Don't permit to load mods twice
+	if (m_mods_loaded) {
 		return;
 	}
+
+	// If modding is not enabled or flavour disable it, don't load mods, just builtin
+	if (!m_modding_enabled) {
+		warningstream << "Client side mods are disabled by configuration." << std::endl;
+		return;
+	}
+
+	if (checkCSMFlavourLimit(CSMFlavourLimit::CSM_FL_LOAD_CLIENT_MODS)) {
+		warningstream << "Client side mods are disabled by server." << std::endl;
+		// If mods loading is disabled and builtin integrity is wrong, disconnect user.
+		if (!checkBuiltinIntegrity()) {
+			// @TODO disconnect user
+		}
+		return;
+	}
+
 	ClientModConfiguration modconf(getClientModsLuaPath());
 	m_mods = modconf.getMods();
-	std::vector<ModSpec> unsatisfied_mods = modconf.getUnsatisfiedMods();
 	// complain about mods with unsatisfied dependencies
 	if (!modconf.isConsistent()) {
 		modconf.printUnsatisfiedModsError();
@@ -145,6 +166,18 @@ void Client::loadMods()
 		}
 		scanModIntoMemory(mod.name, mod.path);
 	}
+
+	// Load and run "mod" scripts
+	for (const ModSpec &mod : m_mods)
+		m_script->loadModFromMemory(mod.name);
+
+	m_mods_loaded = true;
+}
+
+bool Client::checkBuiltinIntegrity()
+{
+	// @TODO
+	return true;
 }
 
 void Client::scanModSubfolder(const std::string &mod_name, const std::string &mod_path,
@@ -162,20 +195,6 @@ void Client::scanModSubfolder(const std::string &mod_name, const std::string &mo
 		std::replace( mod_subpath.begin(), mod_subpath.end(), DIR_DELIM_CHAR, '/');
 		m_mod_files[mod_name + ":" + mod_subpath + filename] = full_path  + filename;
 	}
-}
-
-void Client::initMods()
-{
-	m_script->loadModFromMemory(BUILTIN_MOD_NAME);
-
-	// If modding is not enabled, don't load mods, just builtin
-	if (!m_modding_enabled) {
-		return;
-	}
-
-	// Load and run "mod" scripts
-	for (const ModSpec &mod : m_mods)
-		m_script->loadModFromMemory(mod.name);
 }
 
 const std::string &Client::getBuiltinLuaPath()
@@ -264,13 +283,8 @@ void Client::connect(Address address, bool is_local_server)
 void Client::step(float dtime)
 {
 	// Limit a bit
-	if(dtime > 2.0)
+	if (dtime > 2.0)
 		dtime = 2.0;
-
-	if(m_ignore_damage_timer > dtime)
-		m_ignore_damage_timer -= dtime;
-	else
-		m_ignore_damage_timer = 0.0;
 
 	m_animation_time += dtime;
 	if(m_animation_time > 60.0)
@@ -304,6 +318,10 @@ void Client::step(float dtime)
 		initial_step = false;
 	}
 	else if(m_state == LC_Created) {
+		if (m_is_registration_confirmation_state) {
+			// Waiting confirmation
+			return;
+		}
 		float &counter = m_connection_reinit_timer;
 		counter -= dtime;
 		if(counter <= 0.0) {
@@ -394,18 +412,16 @@ void Client::step(float dtime)
 		ClientEnvEvent envEvent = m_env.getClientEnvEvent();
 
 		if (envEvent.type == CEE_PLAYER_DAMAGE) {
-			if (m_ignore_damage_timer <= 0) {
-				u8 damage = envEvent.player_damage.amount;
+			u8 damage = envEvent.player_damage.amount;
 
-				if (envEvent.player_damage.send_to_server)
-					sendDamage(damage);
+			if (envEvent.player_damage.send_to_server)
+				sendDamage(damage);
 
-				// Add to ClientEvent queue
-				ClientEvent *event = new ClientEvent();
-				event->type = CE_PLAYER_DAMAGE;
-				event->player_damage.amount = damage;
-				m_client_event_queue.push(event);
-			}
+			// Add to ClientEvent queue
+			ClientEvent *event = new ClientEvent();
+			event->type = CE_PLAYER_DAMAGE;
+			event->player_damage.amount = damage;
+			m_client_event_queue.push(event);
 		}
 	}
 
@@ -960,6 +976,18 @@ void Client::sendInit(const std::string &playerName)
 	pkt << playerName;
 
 	Send(&pkt);
+}
+
+void Client::promptConfirmRegistration(AuthMechanism chosen_auth_mechanism)
+{
+	m_chosen_auth_mech = chosen_auth_mechanism;
+	m_is_registration_confirmation_state = true;
+}
+
+void Client::confirmRegistration()
+{
+	m_is_registration_confirmation_state = false;
+	startAuth(m_chosen_auth_mech);
 }
 
 void Client::startAuth(AuthMechanism chosen_auth_mechanism)
@@ -1670,7 +1698,6 @@ void Client::afterContentReceived()
 
 	if (g_settings->getBool("enable_client_modding")) {
 		m_script->on_client_ready(m_env.getLocalPlayer());
-		m_script->on_connect();
 	}
 
 	text = wgettext("Done!");
@@ -1760,34 +1787,9 @@ void Client::pushToEventQueue(ClientEvent *event)
 	m_client_event_queue.push(event);
 }
 
-void Client::showGameChat(const bool show)
-{
-	m_game_ui_flags->show_chat = show;
-}
-
-void Client::showGameHud(const bool show)
-{
-	m_game_ui_flags->show_hud = show;
-}
-
 void Client::showMinimap(const bool show)
 {
-	m_game_ui_flags->show_minimap = show;
-}
-
-void Client::showProfiler(const bool show)
-{
-	m_game_ui_flags->show_profiler_graph = show;
-}
-
-void Client::showGameFog(const bool show)
-{
-	m_game_ui_flags->force_fog_off = !show;
-}
-
-void Client::showGameDebug(const bool show)
-{
-	m_game_ui_flags->show_debug = show;
+	m_game_ui->showMinimap(show);
 }
 
 // IGameDef interface
@@ -1796,7 +1798,7 @@ IItemDefManager* Client::getItemDefManager()
 {
 	return m_itemdef;
 }
-INodeDefManager* Client::getNodeDefManager()
+const NodeDefManager* Client::getNodeDefManager()
 {
 	return m_nodedef;
 }

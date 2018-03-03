@@ -58,6 +58,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("enable_remote_media_server", "true");
 	settings->setDefault("enable_client_modding", "false");
 	settings->setDefault("max_out_chat_queue_size", "20");
+	settings->setDefault("pause_on_lost_focus", "false");
 
 	// Keymap
 	settings->setDefault("remote_port", "30000");
@@ -89,7 +90,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("keymap_cinematic", "");
 	settings->setDefault("keymap_toggle_hud", "KEY_F1");
 	settings->setDefault("keymap_toggle_chat", "KEY_F2");
-	settings->setDefault("keymap_toggle_force_fog_off", "KEY_F3");
+	settings->setDefault("keymap_toggle_fog", "KEY_F3");
 #if DEBUG
 	settings->setDefault("keymap_toggle_update_camera", "KEY_F4");
 #else
@@ -180,7 +181,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("cloud_radius", "12");
 	settings->setDefault("menu_clouds", "true");
 	settings->setDefault("opaque_water", "false");
-	settings->setDefault("console_height", "1.0");
+	settings->setDefault("console_height", "0.6");
 	settings->setDefault("console_color", "(0,0,0)");
 	settings->setDefault("console_alpha", "200");
 	settings->setDefault("formspec_fullscreen_bg_color", "(0,0,0)");
@@ -254,6 +255,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("joystick_frustum_sensitivity", "170");
 
 	// Main menu
+	settings->setDefault("main_menu_style", "auto");
 	settings->setDefault("main_menu_path", "");
 	settings->setDefault("main_menu_mod_mgr", "1");
 	settings->setDefault("main_menu_game_mgr", "0");
@@ -329,7 +331,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("max_block_send_distance", "9");
 	settings->setDefault("block_send_optimize_distance", "4");
 	settings->setDefault("server_side_occlusion_culling", "true");
-	settings->setDefault("csm_flavour_limits", "3");
+	settings->setDefault("csm_flavour_limits", "18");
 	settings->setDefault("csm_flavour_noderange_limit", "8");
 	settings->setDefault("max_clearobjects_extra_loaded_blocks", "4096");
 	settings->setDefault("time_speed", "72");
@@ -345,7 +347,6 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("dedicated_server_step", "0.09");
 	settings->setDefault("active_block_mgmt_interval", "2.0");
 	settings->setDefault("abm_interval", "1.0");
-	settings->setDefault("active_object_interval", "0.1");
 	settings->setDefault("nodetimer_interval", "0.2");
 	settings->setDefault("ignore_world_load_errors", "false");
 	settings->setDefault("remote_media", "");

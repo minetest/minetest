@@ -1,6 +1,7 @@
 /*
 Minetest
 Copyright (C) 2010-2013 kwolekr, Ryan Kwolek <kwolekr@minetest.net>
+Copyright (C) 2017 red-001 <red-001@outlook.ie>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -17,10 +18,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#pragma once
+#ifndef HUD_HEADER
+#define HUD_HEADER
 
 #include "irrlichttypes_extrabloated.h"
 #include <string>
+#include "common/c_types.h"
 
 #define HUD_DIR_LEFT_RIGHT 0
 #define HUD_DIR_RIGHT_LEFT 1
@@ -89,111 +92,8 @@ struct HudElement {
 	v2s32 size;
 };
 
-#ifndef SERVER
-
-#include <vector>
-#include <IGUIFont.h>
-#include "irr_aabb3d.h"
-
-class Client;
-class ITextureSource;
-class Inventory;
-class InventoryList;
-class LocalPlayer;
-struct ItemStack;
-
-class Hud {
-public:
-	video::IVideoDriver *driver;
-	scene::ISceneManager* smgr;
-	gui::IGUIEnvironment *guienv;
-	Client *client;
-	LocalPlayer *player;
-	Inventory *inventory;
-	ITextureSource *tsrc;
-
-	video::SColor crosshair_argb;
-	video::SColor selectionbox_argb;
-	bool use_crosshair_image = false;
-	std::string hotbar_image = "";
-	bool use_hotbar_image = false;
-	std::string hotbar_selected_image = "";
-	bool use_hotbar_selected_image = false;
-
-	Hud(gui::IGUIEnvironment *guienv, Client *client, LocalPlayer *player,
-		Inventory *inventory);
-	~Hud();
-
-	void drawHotbar(u16 playeritem);
-	void resizeHotbar();
-	void drawCrosshair();
-	void drawSelectionMesh();
-	void updateSelectionMesh(const v3s16 &camera_offset);
-
-	std::vector<aabb3f> *getSelectionBoxes()
-	{ return &m_selection_boxes; }
-
-	void setSelectionPos(const v3f &pos, const v3s16 &camera_offset);
-
-	v3f getSelectionPos() const
-	{ return m_selection_pos; }
-
-	void setSelectionMeshColor(const video::SColor &color)
-	{ m_selection_mesh_color = color; }
-
-	void setSelectedFaceNormal(const v3f &face_normal)
-	{ m_selected_face_normal = face_normal; }
-
-	void drawLuaElements(const v3s16 &camera_offset);
-
-private:
-	void drawStatbar(v2s32 pos, u16 corner, u16 drawdir, std::string texture,
-			s32 count, v2s32 offset, v2s32 size=v2s32());
-
-	void drawItems(v2s32 upperleftpos, v2s32 screen_offset, s32 itemcount,
-		s32 inv_offset, InventoryList *mainlist, u16 selectitem, u16 direction);
-
-	void drawItem(const ItemStack &item, const core::rect<s32>& rect,
-		bool selected);
-
-	float m_hud_scaling; // cached minetest setting
-	v3s16 m_camera_offset;
-	v2u32 m_screensize;
-	v2s32 m_displaycenter;
-	s32 m_hotbar_imagesize; // Takes hud_scaling into account, updated by resizeHotbar()
-	s32 m_padding;  // Takes hud_scaling into account, updated by resizeHotbar()
-	video::SColor hbar_colors[4];
-
-	std::vector<aabb3f> m_selection_boxes;
-	std::vector<aabb3f> m_halo_boxes;
-	v3f m_selection_pos;
-	v3f m_selection_pos_with_offset;
-
-	scene::IMesh *m_selection_mesh = nullptr;
-	video::SColor m_selection_mesh_color;
-	v3f m_selected_face_normal;
-
-	video::SMaterial m_selection_material;
-
-	enum {
-		HIGHLIGHT_BOX,
-		HIGHLIGHT_HALO,
-		HIGHLIGHT_NONE } m_mode;
-};
-
-enum ItemRotationKind {
-	IT_ROT_SELECTED,
-	IT_ROT_HOVERED,
-	IT_ROT_DRAGGED,
-	IT_ROT_NONE, // Must be last, also serves as number
-};
-
-void drawItemStack(video::IVideoDriver *driver,
-		gui::IGUIFont *font,
-		const ItemStack &item,
-		const core::rect<s32> &rect,
-		const core::rect<s32> *clip,
-		Client *client,
-		ItemRotationKind rotation_kind);
+extern const EnumString es_HudElementType[];
+extern const EnumString es_HudElementStat[];
+extern const EnumString es_HudBuiltinElement[];
 
 #endif

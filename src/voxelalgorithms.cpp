@@ -25,136 +25,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 namespace voxalgo
 {
 
-void setLight(VoxelManipulator &v, VoxelArea a, u8 light,
-		INodeDefManager *ndef)
-{
-	for(s32 x=a.MinEdge.X; x<=a.MaxEdge.X; x++)
-	for(s32 z=a.MinEdge.Z; z<=a.MaxEdge.Z; z++)
-	for(s32 y=a.MinEdge.Y; y<=a.MaxEdge.Y; y++)
-	{
-		v3s16 p(x,y,z);
-		MapNode &n = v.getNodeRefUnsafe(p);
-		n.setLight(LIGHTBANK_DAY, light, ndef);
-		n.setLight(LIGHTBANK_NIGHT, light, ndef);
-	}
-}
-
-void clearLightAndCollectSources(VoxelManipulator &v, VoxelArea a,
-		enum LightBank bank, INodeDefManager *ndef,
-		std::set<v3s16> & light_sources,
-		std::map<v3s16, u8> & unlight_from)
-{
-	// The full area we shall touch
-	VoxelArea required_a = a;
-	required_a.pad(v3s16(0,0,0));
-	// Make sure we have access to it
-	v.addArea(a);
-
-	for(s32 x=a.MinEdge.X; x<=a.MaxEdge.X; x++)
-	for(s32 z=a.MinEdge.Z; z<=a.MaxEdge.Z; z++)
-	for(s32 y=a.MinEdge.Y; y<=a.MaxEdge.Y; y++)
-	{
-		v3s16 p(x,y,z);
-		MapNode &n = v.getNodeRefUnsafe(p);
-		u8 oldlight = n.getLight(bank, ndef);
-		n.setLight(bank, 0, ndef);
-
-		// If node sources light, add to list
-		u8 source = ndef->get(n).light_source;
-		if(source != 0)
-			light_sources.insert(p);
-
-		// Collect borders for unlighting
-		if((x==a.MinEdge.X || x == a.MaxEdge.X
-		|| y==a.MinEdge.Y || y == a.MaxEdge.Y
-		|| z==a.MinEdge.Z || z == a.MaxEdge.Z)
-		&& oldlight != 0)
-		{
-			unlight_from[p] = oldlight;
-		}
-	}
-}
-
-SunlightPropagateResult propagateSunlight(VoxelManipulator &v, VoxelArea a,
-		bool inexistent_top_provides_sunlight,
-		std::set<v3s16> & light_sources,
-		INodeDefManager *ndef)
-{
-	// Return values
-	bool bottom_sunlight_valid = true;
-
-	// The full area we shall touch extends one extra at top and bottom
-	VoxelArea required_a = a;
-	required_a.pad(v3s16(0,1,0));
-	// Make sure we have access to it
-	v.addArea(a);
-
-	s16 max_y = a.MaxEdge.Y;
-	s16 min_y = a.MinEdge.Y;
-
-	for(s32 x=a.MinEdge.X; x<=a.MaxEdge.X; x++)
-	for(s32 z=a.MinEdge.Z; z<=a.MaxEdge.Z; z++)
-	{
-		v3s16 p_overtop(x, max_y+1, z);
-		bool overtop_has_sunlight = false;
-		// If overtop node does not exist, trust heuristics
-		if(!v.exists(p_overtop))
-			overtop_has_sunlight = inexistent_top_provides_sunlight;
-		else if(v.getNodeRefUnsafe(p_overtop).getContent() == CONTENT_IGNORE)
-			overtop_has_sunlight = inexistent_top_provides_sunlight;
-		// Otherwise refer to it's light value
-		else
-			overtop_has_sunlight = (v.getNodeRefUnsafe(p_overtop).getLight(
-					LIGHTBANK_DAY, ndef) == LIGHT_SUN);
-
-		// Copy overtop's sunlight all over the place
-		u8 incoming_light = overtop_has_sunlight ? LIGHT_SUN : 0;
-		for(s32 y=max_y; y>=min_y; y--)
-		{
-			v3s16 p(x,y,z);
-			MapNode &n = v.getNodeRefUnsafe(p);
-			if(incoming_light == 0){
-				// Do nothing
-			} else if(incoming_light == LIGHT_SUN &&
-					ndef->get(n).sunlight_propagates){
-				// Do nothing
-			} else if(!ndef->get(n).sunlight_propagates){
-				incoming_light = 0;
-			} else {
-				incoming_light = diminish_light(incoming_light);
-			}
-			u8 old_light = n.getLight(LIGHTBANK_DAY, ndef);
-
-			if(incoming_light > old_light)
-				n.setLight(LIGHTBANK_DAY, incoming_light, ndef);
-
-			if(diminish_light(incoming_light) != 0)
-				light_sources.insert(p);
-		}
-
-		// Check validity of sunlight at top of block below if it
-		// hasn't already been proven invalid
-		if(bottom_sunlight_valid)
-		{
-			bool sunlight_should_continue_down = (incoming_light == LIGHT_SUN);
-			v3s16 p_overbottom(x, min_y-1, z);
-			if(!v.exists(p_overbottom) ||
-					v.getNodeRefUnsafe(p_overbottom
-							).getContent() == CONTENT_IGNORE){
-				// Is not known, cannot compare
-			} else {
-				bool overbottom_has_sunlight = (v.getNodeRefUnsafe(p_overbottom
-						).getLight(LIGHTBANK_DAY, ndef) == LIGHT_SUN);
-				if(sunlight_should_continue_down != overbottom_has_sunlight){
-					bottom_sunlight_valid = false;
-				}
-			}
-		}
-	}
-
-	return {bottom_sunlight_valid};
-}
-
 /*!
  * A direction.
  * 0=X+
@@ -376,7 +246,7 @@ bool step_rel_block_pos(direction dir, relative_v3 &rel_pos,
  * \param light_sources nodes that should be re-lighted
  * \param modified_blocks output, all modified map blocks are added to this
  */
-void unspread_light(Map *map, INodeDefManager *nodemgr, LightBank bank,
+void unspread_light(Map *map, const NodeDefManager *nodemgr, LightBank bank,
 	UnlightQueue &from_nodes, ReLightQueue &light_sources,
 	std::map<v3s16, MapBlock*> &modified_blocks)
 {
@@ -480,7 +350,7 @@ void unspread_light(Map *map, INodeDefManager *nodemgr, LightBank bank,
  * \param light_sources starting nodes
  * \param modified_blocks output, all modified map blocks are added to this
  */
-void spread_light(Map *map, INodeDefManager *nodemgr, LightBank bank,
+void spread_light(Map *map, const NodeDefManager *nodemgr, LightBank bank,
 	LightQueue &light_sources,
 	std::map<v3s16, MapBlock*> &modified_blocks)
 {
@@ -557,7 +427,7 @@ struct SunlightPropagationData{
  *
  * \param pos position of the node.
  */
-bool is_sunlight_above(Map *map, v3s16 pos, INodeDefManager *ndef)
+bool is_sunlight_above(Map *map, v3s16 pos, const NodeDefManager *ndef)
 {
 	bool sunlight = true;
 	mapblock_v3 source_block_pos;
@@ -600,7 +470,7 @@ void update_lighting_nodes(Map *map,
 	std::vector<std::pair<v3s16, MapNode> > &oldnodes,
 	std::map<v3s16, MapBlock*> &modified_blocks)
 {
-	INodeDefManager *ndef = map->getNodeDefManager();
+	const NodeDefManager *ndef = map->getNodeDefManager();
 	// For node getter functions
 	bool is_valid_position;
 
@@ -794,8 +664,8 @@ const VoxelArea block_borders[] = {
  * its light source and its brightest neighbor minus one.
  * .
  */
-bool is_light_locally_correct(Map *map, INodeDefManager *ndef, LightBank bank,
-	v3s16 pos)
+bool is_light_locally_correct(Map *map, const NodeDefManager *ndef,
+	LightBank bank, v3s16 pos)
 {
 	bool is_valid_position;
 	MapNode n = map->getNodeNoEx(pos, &is_valid_position);
@@ -821,7 +691,7 @@ bool is_light_locally_correct(Map *map, INodeDefManager *ndef, LightBank bank,
 void update_block_border_lighting(Map *map, MapBlock *block,
 	std::map<v3s16, MapBlock*> &modified_blocks)
 {
-	INodeDefManager *ndef = map->getNodeDefManager();
+	const NodeDefManager *ndef = map->getNodeDefManager();
 	bool is_valid_position;
 	for (LightBank bank : banks) {
 		// Since invalid light is not common, do not allocate
@@ -907,7 +777,7 @@ void update_block_border_lighting(Map *map, MapBlock *block,
  * After the procedure returns, this contains outgoing light at
  * the bottom of the voxel manipulator.
  */
-void fill_with_sunlight(MMVManip *vm, INodeDefManager *ndef, v2s16 offset,
+void fill_with_sunlight(MMVManip *vm, const NodeDefManager *ndef, v2s16 offset,
 	bool light[MAP_BLOCKSIZE][MAP_BLOCKSIZE])
 {
 	// Distance in array between two nodes on top of each other.
@@ -959,7 +829,7 @@ void fill_with_sunlight(MMVManip *vm, INodeDefManager *ndef, v2s16 offset,
  * node coordinates.
  */
 void is_sunlight_above_block(ServerMap *map, mapblock_v3 pos,
-	INodeDefManager *ndef, bool light[MAP_BLOCKSIZE][MAP_BLOCKSIZE])
+	const NodeDefManager *ndef, bool light[MAP_BLOCKSIZE][MAP_BLOCKSIZE])
 {
 	mapblock_v3 source_block_pos = pos + v3s16(0, 1, 0);
 	// Get or load source block.
@@ -1004,7 +874,7 @@ void is_sunlight_above_block(ServerMap *map, mapblock_v3 pos,
  *
  * \returns true if the block was modified, false otherwise.
  */
-bool propagate_block_sunlight(Map *map, INodeDefManager *ndef,
+bool propagate_block_sunlight(Map *map, const NodeDefManager *ndef,
 	SunlightPropagationData *data, UnlightQueue *unlight, ReLightQueue *relight)
 {
 	bool modified = false;
@@ -1110,7 +980,7 @@ void finish_bulk_light_update(Map *map, mapblock_v3 minblock,
 	mapblock_v3 maxblock, UnlightQueue unlight[2], ReLightQueue relight[2],
 	std::map<v3s16, MapBlock*> *modified_blocks)
 {
-	INodeDefManager *ndef = map->getNodeDefManager();
+	const NodeDefManager *ndef = map->getNodeDefManager();
 	// dummy boolean
 	bool is_valid;
 
@@ -1178,7 +1048,7 @@ void finish_bulk_light_update(Map *map, mapblock_v3 minblock,
 void blit_back_with_light(ServerMap *map, MMVManip *vm,
 	std::map<v3s16, MapBlock*> *modified_blocks)
 {
-	INodeDefManager *ndef = map->getNodeDefManager();
+	const NodeDefManager *ndef = map->getNodeDefManager();
 	mapblock_v3 minblock = getNodeBlockPos(vm->m_area.MinEdge);
 	mapblock_v3 maxblock = getNodeBlockPos(vm->m_area.MaxEdge);
 	// First queue is for day light, second is for night light.
@@ -1282,7 +1152,7 @@ void blit_back_with_light(ServerMap *map, MMVManip *vm,
  * After the procedure returns, this contains outgoing light at
  * the bottom of the map block.
  */
-void fill_with_sunlight(MapBlock *block, INodeDefManager *ndef,
+void fill_with_sunlight(MapBlock *block, const NodeDefManager *ndef,
 	bool light[MAP_BLOCKSIZE][MAP_BLOCKSIZE])
 {
 	if (block->isDummy())
@@ -1320,7 +1190,7 @@ void repair_block_light(ServerMap *map, MapBlock *block,
 {
 	if (!block || block->isDummy())
 		return;
-	INodeDefManager *ndef = map->getNodeDefManager();
+	const NodeDefManager *ndef = map->getNodeDefManager();
 	// First queue is for day light, second is for night light.
 	UnlightQueue unlight[] = { UnlightQueue(256), UnlightQueue(256) };
 	ReLightQueue relight[] = { ReLightQueue(256), ReLightQueue(256) };

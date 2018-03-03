@@ -232,6 +232,7 @@ struct TileLayer
 		case TILE_MATERIAL_BASIC:
 		case TILE_MATERIAL_WAVING_LEAVES:
 		case TILE_MATERIAL_WAVING_PLANTS:
+			material.MaterialTypeParam = 0.5;
 			material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
 			break;
 		case TILE_MATERIAL_ALPHA:

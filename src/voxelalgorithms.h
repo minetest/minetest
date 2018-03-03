@@ -31,30 +31,6 @@ class MMVManip;
 namespace voxalgo
 {
 
-// TODO: Move unspreadLight and spreadLight from VoxelManipulator to here
-
-void setLight(VoxelManipulator &v, VoxelArea a, u8 light,
-		INodeDefManager *ndef);
-
-void clearLightAndCollectSources(VoxelManipulator &v, VoxelArea a,
-		enum LightBank bank, INodeDefManager *ndef,
-		std::set<v3s16> & light_sources,
-		std::map<v3s16, u8> & unlight_from);
-
-struct SunlightPropagateResult
-{
-	bool bottom_sunlight_valid;
-
-	SunlightPropagateResult(bool bottom_sunlight_valid_):
-		bottom_sunlight_valid(bottom_sunlight_valid_)
-	{}
-};
-
-SunlightPropagateResult propagateSunlight(VoxelManipulator &v, VoxelArea a,
-		bool inexistent_top_provides_sunlight,
-		std::set<v3s16> & light_sources,
-		INodeDefManager *ndef);
-
 /*!
  * Updates the lighting on the map.
  * The result will be correct only if

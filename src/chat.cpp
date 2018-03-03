@@ -18,11 +18,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "chat.h"
-#include "debug.h"
-#include "config.h"
-#include "util/strfnd.h"
+
+#include <algorithm>
 #include <cctype>
 #include <sstream>
+
+#include "config.h"
+#include "debug.h"
+#include "util/strfnd.h"
 #include "util/string.h"
 #include "util/numeric.h"
 
@@ -403,8 +406,14 @@ void ChatPrompt::input(const std::wstring &str)
 
 void ChatPrompt::addToHistory(std::wstring line)
 {
-	if (!line.empty())
+	if (!line.empty() &&
+			(m_history.size() == 0 || m_history.back() != line)) {
+		// Remove all duplicates
+		m_history.erase(std::remove(m_history.begin(), m_history.end(),
+			line), m_history.end());
+		// Push unique line
 		m_history.push_back(line);
+	}
 	if (m_history.size() > m_history_limit)
 		m_history.erase(m_history.begin());
 	m_history_index = m_history.size();
@@ -699,11 +708,10 @@ ChatBuffer& ChatBackend::getRecentBuffer()
 	return m_recent_buffer;
 }
 
-EnrichedString ChatBackend::getRecentChat()
+EnrichedString ChatBackend::getRecentChat() const
 {
 	EnrichedString result;
-	for (u32 i = 0; i < m_recent_buffer.getLineCount(); ++i)
-	{
+	for (u32 i = 0; i < m_recent_buffer.getLineCount(); ++i) {
 		const ChatLine& line = m_recent_buffer.getLine(i);
 		if (i != 0)
 			result += L"\n";

@@ -1,7 +1,7 @@
 /*
 Minetest
-Copyright (C) 2014-2016 kwolekr, Ryan Kwolek <kwolekr@minetest.net>
-Copyright (C) 2014-2017 paramat
+Copyright (C) 2014-2018 kwolekr, Ryan Kwolek <kwolekr@minetest.net>
+Copyright (C) 2014-2018 paramat
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -67,6 +67,7 @@ public:
 	s16 y_max;
 	float heat_point;
 	float humidity_point;
+	s16 vertical_blend;
 
 	virtual void resolveNodeNames();
 };
@@ -223,6 +224,13 @@ public:
 	}
 
 	virtual void clear();
+
+	// For BiomeGen type 'BiomeGenOriginal'
+	float getHeatAtPosOriginal(v3s16 pos, NoiseParams &np_heat,
+		NoiseParams &np_heat_blend, u64 seed);
+	float getHumidityAtPosOriginal(v3s16 pos, NoiseParams &np_humidity,
+		NoiseParams &np_humidity_blend, u64 seed);
+	Biome *getBiomeFromNoiseOriginal(float heat, float humidity, s16 y);
 
 private:
 	Server *m_server;

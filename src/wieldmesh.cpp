@@ -320,11 +320,7 @@ scene::SMesh *createSpecialNodeMesh(Client *client, content_t id, std::vector<It
 			for (video::S3DVertex &v : p.vertices)
 				v.Color.setAlpha(255);
 			scene::SMeshBuffer *buf = new scene::SMeshBuffer();
-			// always set all textures
-			// with no shaders only texture 0 is ever actually used
 			buf->Material.setTexture(0, p.layer.texture);
-			buf->Material.setTexture(1, p.layer.normal_texture);
-			buf->Material.setTexture(2, p.layer.flags_texture);
 			p.layer.applyMaterialOptions(buf->Material);
 			mesh->addMeshBuffer(buf);
 			buf->append(&p.vertices[0], p.vertices.size(),
@@ -341,7 +337,7 @@ void WieldMeshSceneNode::setItem(const ItemStack &item, Client *client)
 	ITextureSource *tsrc = client->getTextureSource();
 	IItemDefManager *idef = client->getItemDefManager();
 	IShaderSource *shdrsrc = client->getShaderSource();
-	INodeDefManager *ndef = client->getNodeDefManager();
+	const NodeDefManager *ndef = client->getNodeDefManager();
 	const ItemDefinition &def = item.getDefinition(idef);
 	const ContentFeatures &f = ndef->get(def.name);
 	content_t id = ndef->getId(def.name);
@@ -499,7 +495,7 @@ void getItemMesh(Client *client, const ItemStack &item, ItemMesh *result)
 {
 	ITextureSource *tsrc = client->getTextureSource();
 	IItemDefManager *idef = client->getItemDefManager();
-	INodeDefManager *ndef = client->getNodeDefManager();
+	const NodeDefManager *ndef = client->getNodeDefManager();
 	const ItemDefinition &def = item.getDefinition(idef);
 	const ContentFeatures &f = ndef->get(def.name);
 	content_t id = ndef->getId(def.name);

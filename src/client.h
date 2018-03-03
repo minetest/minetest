@@ -30,7 +30,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "gamedef.h"
 #include "inventorymanager.h"
 #include "localplayer.h"
-#include "hud.h"
+#include "client/hud.h"
 #include "particles.h"
 #include "mapnode.h"
 #include "tileanimation.h"
@@ -48,7 +48,7 @@ class MapBlockMesh;
 class IWritableTextureSource;
 class IWritableShaderSource;
 class IWritableItemDefManager;
-class IWritableNodeDefManager;
+class NodeDefManager;
 //class IWritableCraftDefManager;
 class ClientMediaDownloader;
 struct MapDrawControl;
@@ -112,7 +112,7 @@ private:
 };
 
 class ClientScripting;
-struct GameUIFlags;
+class GameUI;
 
 class Client : public con::PeerHandler, public InventoryManager, public IGameDef
 {
@@ -129,27 +129,24 @@ public:
 			IWritableTextureSource *tsrc,
 			IWritableShaderSource *shsrc,
 			IWritableItemDefManager *itemdef,
-			IWritableNodeDefManager *nodedef,
+			NodeDefManager *nodedef,
 			ISoundManager *sound,
 			MtEventManager *event,
 			bool ipv6,
-			GameUIFlags *game_ui_flags
+			GameUI *game_ui
 	);
 
 	~Client();
 	DISABLE_CLASS_COPY(Client);
 
 	// Load local mods into memory
-	void loadMods();
+	void loadBuiltin();
 	void scanModSubfolder(const std::string &mod_name, const std::string &mod_path,
 				std::string mod_subpath);
 	inline void scanModIntoMemory(const std::string &mod_name, const std::string &mod_path)
 	{
 		scanModSubfolder(mod_name, mod_path, "");
 	}
-
-	// Initizle the mods
-	void initMods();
 
 	/*
 	 request all threads managed by client to be stopped
@@ -191,7 +188,6 @@ public:
 	void handleCommand_BlockData(NetworkPacket* pkt);
 	void handleCommand_Inventory(NetworkPacket* pkt);
 	void handleCommand_TimeOfDay(NetworkPacket* pkt);
-	void handleCommand_ChatMessageOld(NetworkPacket *pkt);
 	void handleCommand_ChatMessage(NetworkPacket *pkt);
 	void handleCommand_ActiveObjectRemoveAdd(NetworkPacket* pkt);
 	void handleCommand_ActiveObjectMessages(NetworkPacket* pkt);
@@ -348,6 +344,9 @@ public:
 	{ return m_proto_ver; }
 
 	bool connectedToServer();
+	void confirmRegistration();
+	bool m_is_registration_confirmation_state = false;
+	bool m_simple_singleplayer_mode;
 
 	float mediaReceiveProgress();
 
@@ -365,7 +364,7 @@ public:
 
 	// IGameDef interface
 	virtual IItemDefManager* getItemDefManager();
-	virtual INodeDefManager* getNodeDefManager();
+	virtual const NodeDefManager* getNodeDefManager();
 	virtual ICraftDefManager* getCraftDefManager();
 	ITextureSource* getTextureSource();
 	virtual IShaderSource* getShaderSource();
@@ -403,12 +402,7 @@ public:
 
 	void pushToEventQueue(ClientEvent *event);
 
-	void showGameChat(bool show = true);
-	void showGameHud(bool show = true);
 	void showMinimap(bool show = true);
-	void showProfiler(bool show = true);
-	void showGameFog(bool show = true);
-	void showGameDebug(bool show = true);
 
 	const Address getServerAddress();
 
@@ -427,12 +421,19 @@ public:
 		return m_csm_noderange_limit;
 	}
 
+	inline std::unordered_map<u32, u32> &getHUDTranslationMap()
+	{
+		return m_hud_server_to_client;
+	}
+
 	bool joinModChannel(const std::string &channel);
 	bool leaveModChannel(const std::string &channel);
 	bool sendModChannelMessage(const std::string &channel, const std::string &message);
 	ModChannel *getModChannel(const std::string &channel);
 
 private:
+	void loadMods();
+	bool checkBuiltinIntegrity();
 
 	// Virtual methods from con::PeerHandler
 	void peerAdded(con::Peer *peer);
@@ -454,6 +455,7 @@ private:
 	static AuthMechanism choseAuthMech(const u32 mechs);
 
 	void sendInit(const std::string &playerName);
+	void promptConfirmRegistration(AuthMechanism chosen_auth_mechanism);
 	void startAuth(AuthMechanism chosen_auth_mechanism);
 	void sendDeletedBlocks(std::vector<v3s16> &blocks);
 	void sendGotBlocks(v3s16 block);
@@ -469,13 +471,12 @@ private:
 	float m_connection_reinit_timer = 0.1f;
 	float m_avg_rtt_timer = 0.0f;
 	float m_playerpos_send_timer = 0.0f;
-	float m_ignore_damage_timer = 0.0f; // Used after server moves player
 	IntervalLimiter m_map_timer_and_unload_interval;
 
 	IWritableTextureSource *m_tsrc;
 	IWritableShaderSource *m_shsrc;
 	IWritableItemDefManager *m_itemdef;
-	IWritableNodeDefManager *m_nodedef;
+	NodeDefManager *m_nodedef;
 	ISoundManager *m_sound;
 	MtEventManager *m_event;
 
@@ -537,6 +538,7 @@ private:
 	std::queue<ClientEvent *> m_client_event_queue;
 	bool m_itemdef_received = false;
 	bool m_nodedef_received = false;
+	bool m_mods_loaded = false;
 	ClientMediaDownloader *m_media_downloader;
 
 	// time_of_day speed approximation for old protocol
@@ -556,6 +558,12 @@ private:
 	// And relations to objects
 	std::unordered_map<int, u16> m_sounds_to_objects;
 
+	// CSM/client IDs to SSM/server IDs Mapping
+	// Map server particle spawner IDs to client IDs
+	std::unordered_map<u32, u32> m_particles_server_to_client;
+	// Map server hud ids to client hud ids
+	std::unordered_map<u32, u32> m_hud_server_to_client;
+
 	// Privileges
 	std::unordered_set<std::string> m_privileges;
 
@@ -571,6 +579,8 @@ private:
 	// own state
 	LocalClientState m_state;
 
+	GameUI *m_game_ui;
+
 	// Used for saving server map to disk client-side
 	MapDatabase *m_localdb = nullptr;
 	IntervalLimiter m_localdb_save_interval;
@@ -581,7 +591,6 @@ private:
 	std::unordered_map<std::string, ModMetadata *> m_mod_storages;
 	float m_mod_storage_save_timer = 10.0f;
 	std::vector<ModSpec> m_mods;
-	GameUIFlags *m_game_ui_flags;
 
 	bool m_shutdown = false;
 

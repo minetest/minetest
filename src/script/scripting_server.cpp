@@ -48,10 +48,10 @@ extern "C" {
 #include "lualib.h"
 }
 
-ServerScripting::ServerScripting(Server* server)
+ServerScripting::ServerScripting(Server* server):
+		ScriptApiBase(ScriptingType::Server)
 {
 	setGameDef(server);
-	setType(ScriptingType::Server);
 
 	// setEnv(env) is called by ScriptApiEnv::initializeEnvironment()
 	// once the environment has been created

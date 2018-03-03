@@ -158,6 +158,7 @@ LOCAL_SRC_FILES := \
 		jni/src/gui/guiTable.cpp                  \
 		jni/src/guiscalingfilter.cpp              \
 		jni/src/gui/guiVolumeChange.cpp           \
+		jni/src/gui/profilergraph.cpp             \
 		jni/src/httpfetch.cpp                     \
 		jni/src/hud.cpp                           \
 		jni/src/imagefilters.cpp                  \
@@ -270,6 +271,7 @@ LOCAL_SRC_FILES := \
 		jni/src/settings.cpp                      \
 		jni/src/wieldmesh.cpp                     \
 		jni/src/client/clientlauncher.cpp         \
+		jni/src/client/hud.cpp                    \
 		jni/src/client/inputhandler.cpp           \
 		jni/src/client/renderingengine.cpp        \
 		jni/src/client/tile.cpp                   \
@@ -325,6 +327,7 @@ LOCAL_SRC_FILES += \
 		jni/src/script/lua_api/l_noise.cpp        \
 		jni/src/script/lua_api/l_object.cpp       \
 		jni/src/script/lua_api/l_particles.cpp    \
+		jni/src/script/lua_api/l_particles_local.cpp\
 		jni/src/script/lua_api/l_rollback.cpp     \
 		jni/src/script/lua_api/l_server.cpp       \
 		jni/src/script/lua_api/l_settings.cpp     \

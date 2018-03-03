@@ -29,6 +29,38 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "gui/touchscreengui.h"
 #endif
 
+class InputHandler;
+
+/****************************************************************************
+ Fast key cache for main game loop
+ ****************************************************************************/
+
+/* This is faster than using getKeySetting with the tradeoff that functions
+ * using it must make sure that it's initialised before using it and there is
+ * no error handling (for example bounds checking). This is really intended for
+ * use only in the main running loop of the client (the_game()) where the faster
+ * (up to 10x faster) key lookup is an asset. Other parts of the codebase
+ * (e.g. formspecs) should continue using getKeySetting().
+ */
+struct KeyCache
+{
+
+	KeyCache()
+	{
+		handler = NULL;
+		populate();
+		populate_nonchanging();
+	}
+
+	void populate();
+
+	// Keys that are not settings dependent
+	void populate_nonchanging();
+
+	KeyPress key[KeyType::INTERNAL_ENUM_COUNT];
+	InputHandler *handler;
+};
+
 class KeyList : private std::list<KeyPress>
 {
 	typedef std::list<KeyPress> super;
@@ -179,12 +211,17 @@ private:
 class InputHandler
 {
 public:
-	InputHandler() = default;
+	InputHandler()
+	{
+		keycache.handler = this;
+		keycache.populate();
+	}
 
 	virtual ~InputHandler() = default;
 
-	virtual bool isKeyDown(const KeyPress &keyCode) = 0;
-	virtual bool wasKeyDown(const KeyPress &keyCode) = 0;
+	virtual bool isKeyDown(GameKeyType k) = 0;
+	virtual bool wasKeyDown(GameKeyType k) = 0;
+	virtual bool cancelPressed() = 0;
 
 	virtual void listenForKey(const KeyPress &keyCode) {}
 	virtual void dontListenForKeys() {}
@@ -212,6 +249,7 @@ public:
 	virtual void clear() {}
 
 	JoystickController joystick;
+	KeyCache keycache;
 };
 /*
 	Separated input handler
@@ -224,13 +262,17 @@ public:
 	{
 		m_receiver->joystick = &joystick;
 	}
-	virtual bool isKeyDown(const KeyPress &keyCode)
+	virtual bool isKeyDown(GameKeyType k)
 	{
-		return m_receiver->IsKeyDown(keyCode);
+		return m_receiver->IsKeyDown(keycache.key[k]) || joystick.isKeyDown(k);
 	}
-	virtual bool wasKeyDown(const KeyPress &keyCode)
+	virtual bool wasKeyDown(GameKeyType k)
 	{
-		return m_receiver->WasKeyDown(keyCode);
+		return m_receiver->WasKeyDown(keycache.key[k]) || joystick.wasKeyDown(k);
+	}
+	virtual bool cancelPressed()
+	{
+		return wasKeyDown(KeyType::ESC) || m_receiver->WasKeyDown(CancelKey);
 	}
 	virtual void listenForKey(const KeyPress &keyCode)
 	{
@@ -259,18 +301,58 @@ public:
 		}
 	}
 
-	virtual bool getLeftState() { return m_receiver->left_active; }
-	virtual bool getRightState() { return m_receiver->right_active; }
+	virtual bool getLeftState()
+	{
+		return m_receiver->left_active || joystick.isKeyDown(KeyType::MOUSE_L);
+	}
+	virtual bool getRightState()
+	{
+		return m_receiver->right_active || joystick.isKeyDown(KeyType::MOUSE_R);
+	}
 
-	virtual bool getLeftClicked() { return m_receiver->leftclicked; }
-	virtual bool getRightClicked() { return m_receiver->rightclicked; }
-	virtual void resetLeftClicked() { m_receiver->leftclicked = false; }
-	virtual void resetRightClicked() { m_receiver->rightclicked = false; }
+	virtual bool getLeftClicked()
+	{
+		return m_receiver->leftclicked ||
+		       joystick.getWasKeyDown(KeyType::MOUSE_L);
+	}
+	virtual bool getRightClicked()
+	{
+		return m_receiver->rightclicked ||
+		       joystick.getWasKeyDown(KeyType::MOUSE_R);
+	}
 
-	virtual bool getLeftReleased() { return m_receiver->leftreleased; }
-	virtual bool getRightReleased() { return m_receiver->rightreleased; }
-	virtual void resetLeftReleased() { m_receiver->leftreleased = false; }
-	virtual void resetRightReleased() { m_receiver->rightreleased = false; }
+	virtual void resetLeftClicked()
+	{
+		m_receiver->leftclicked = false;
+		joystick.clearWasKeyDown(KeyType::MOUSE_L);
+	}
+	virtual void resetRightClicked()
+	{
+		m_receiver->rightclicked = false;
+		joystick.clearWasKeyDown(KeyType::MOUSE_R);
+	}
+
+	virtual bool getLeftReleased()
+	{
+		return m_receiver->leftreleased ||
+		       joystick.wasKeyReleased(KeyType::MOUSE_L);
+	}
+	virtual bool getRightReleased()
+	{
+		return m_receiver->rightreleased ||
+		       joystick.wasKeyReleased(KeyType::MOUSE_R);
+	}
+
+	virtual void resetLeftReleased()
+	{
+		m_receiver->leftreleased = false;
+		joystick.clearWasKeyReleased(KeyType::MOUSE_L);
+	}
+	virtual void resetRightReleased()
+	{
+		m_receiver->rightreleased = false;
+		joystick.clearWasKeyReleased(KeyType::MOUSE_R);
+	}
 
 	virtual s32 getMouseWheel() { return m_receiver->getMouseWheel(); }
 
@@ -290,8 +372,9 @@ class RandomInputHandler : public InputHandler
 public:
 	RandomInputHandler() = default;
 
-	virtual bool isKeyDown(const KeyPress &keyCode) { return keydown[keyCode]; }
-	virtual bool wasKeyDown(const KeyPress &keyCode) { return false; }
+	virtual bool isKeyDown(GameKeyType k) { return keydown[keycache.key[k]]; }
+	virtual bool wasKeyDown(GameKeyType k) { return false; }
+	virtual bool cancelPressed() { return false; }
 	virtual v2s32 getMousePos() { return mousepos; }
 	virtual void setMousePos(s32 x, s32 y) { mousepos = v2s32(x, y); }
 
@@ -310,74 +393,7 @@ public:
 
 	virtual s32 getMouseWheel() { return 0; }
 
-	virtual void step(float dtime)
-	{
-		{
-			static float counter1 = 0;
-			counter1 -= dtime;
-			if (counter1 < 0.0) {
-				counter1 = 0.1 * Rand(1, 40);
-				keydown.toggle(getKeySetting("keymap_jump"));
-			}
-		}
-		{
-			static float counter1 = 0;
-			counter1 -= dtime;
-			if (counter1 < 0.0) {
-				counter1 = 0.1 * Rand(1, 40);
-				keydown.toggle(getKeySetting("keymap_special1"));
-			}
-		}
-		{
-			static float counter1 = 0;
-			counter1 -= dtime;
-			if (counter1 < 0.0) {
-				counter1 = 0.1 * Rand(1, 40);
-				keydown.toggle(getKeySetting("keymap_forward"));
-			}
-		}
-		{
-			static float counter1 = 0;
-			counter1 -= dtime;
-			if (counter1 < 0.0) {
-				counter1 = 0.1 * Rand(1, 40);
-				keydown.toggle(getKeySetting("keymap_left"));
-			}
-		}
-		{
-			static float counter1 = 0;
-			counter1 -= dtime;
-			if (counter1 < 0.0) {
-				counter1 = 0.1 * Rand(1, 20);
-				mousespeed = v2s32(Rand(-20, 20), Rand(-15, 20));
-			}
-		}
-		{
-			static float counter1 = 0;
-			counter1 -= dtime;
-			if (counter1 < 0.0) {
-				counter1 = 0.1 * Rand(1, 30);
-				leftdown = !leftdown;
-				if (leftdown)
-					leftclicked = true;
-				if (!leftdown)
-					leftreleased = true;
-			}
-		}
-		{
-			static float counter1 = 0;
-			counter1 -= dtime;
-			if (counter1 < 0.0) {
-				counter1 = 0.1 * Rand(1, 15);
-				rightdown = !rightdown;
-				if (rightdown)
-					rightclicked = true;
-				if (!rightdown)
-					rightreleased = true;
-			}
-		}
-		mousepos += mousespeed;
-	}
+	virtual void step(float dtime);
 
 	s32 Rand(s32 min, s32 max);
 

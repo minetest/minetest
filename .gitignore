@@ -86,6 +86,8 @@ locale/
 *.gch
 cmake-build-debug/
 cmake-build-release/
+cmake_config.h
+cmake_config_githash.h
 
 ## Android build files
 build/android/src/main/assets
