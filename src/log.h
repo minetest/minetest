@@ -121,7 +121,7 @@ public:
 		colored = (Logger::color_mode == LOG_COLOR_ALWAYS) ||
 			(Logger::color_mode == LOG_COLOR_AUTO && isatty(fileno(stdout)));
 #else
-		colored = Logger::color_mode == COLOR_ALWAYS;
+		colored = Logger::color_mode == LOG_COLOR_ALWAYS;
 #endif
 	}
 
