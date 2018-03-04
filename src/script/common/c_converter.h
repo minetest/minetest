@@ -66,9 +66,9 @@ bool getv3intfield(lua_State *L, int index,
 	lua_getfield(L, index, fieldname);
 	bool got = false;
 	if (lua_istable(L, -1)) {
-		got = getintfield(L, index, "x", result.X) ||
-			getintfield(L, index, "y", result.Y) ||
-			getintfield(L, index, "z", result.Z);
+		got |= getintfield(L, -1, "x", result.X);
+		got |= getintfield(L, -1, "y", result.Y);
+		got |= getintfield(L, -1, "z", result.Z);
 	}
 	lua_pop(L, 1);
 	return got;
