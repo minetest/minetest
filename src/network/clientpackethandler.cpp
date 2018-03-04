@@ -734,6 +734,8 @@ void Client::handleCommand_PlaySound(NetworkPacket* pkt)
 		[25 + len] bool loop
 		[26 + len] f32 fade
 		[30 + len] f32 pitch
+		[34 + len] f32 offset_start
+		[38 + len] f32 offset_end
 	*/
 
 	s32 server_id;
@@ -746,12 +748,16 @@ void Client::handleCommand_PlaySound(NetworkPacket* pkt)
 	bool loop;
 	float fade = 0.0f;
 	float pitch = 1.0f;
+	float offset_start = 0.0f;
+	float offset_end = -1.0f;
 
 	*pkt >> server_id >> name >> gain >> type >> pos >> object_id >> loop;
 
 	try {
 		*pkt >> fade;
 		*pkt >> pitch;
+		*pkt >> offset_start;
+		*pkt >> offset_end;
 	} catch (PacketError &e) {};
 
 	// Start playing

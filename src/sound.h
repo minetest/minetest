@@ -34,9 +34,11 @@ public:
 struct SimpleSoundSpec
 {
 	SimpleSoundSpec(const std::string &name = "", float gain = 1.0f,
-			float fade = 0.0f, float pitch = 1.0f) :
+			float fade = 0.0f, float pitch = 1.0f,
+			float offset_start = 0.0f, float offset_end = -1.0f) :
 			name(name),
-			gain(gain), fade(fade), pitch(pitch)
+			gain(gain), fade(fade), pitch(pitch),
+			offset_start(offset_start), offset_end(offset_end)
 	{
 	}
 
@@ -46,6 +48,8 @@ struct SimpleSoundSpec
 	float gain = 1.0f;
 	float fade = 0.0f;
 	float pitch = 1.0f;
+	float offset_start;
+	float offset_end;
 };
 
 class ISoundManager
