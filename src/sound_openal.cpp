@@ -504,7 +504,9 @@ public:
 		warn_if_error(alGetError(), "createPlayingSoundAt");
 	}
 
-	int playSoundRaw(SoundBuffer *buf, bool loop, float volume, float pitch)
+	int playSoundRaw(SoundBuffer *buf, bool loop, float volume,
+			float pitch,
+			float offset_start, float offset_end)
 	{
 		PlayingSound *sound = new PlayingSound(unique_ptr_albuffer(new ALuint(buf->buffer_id), no_delete_albuffer));
 		createPlayingSound(sound, loop, volume, pitch);
@@ -513,8 +515,9 @@ public:
 		return id;
 	}
 
-	int playSoundRawAt(SoundBuffer *buf, bool loop, float volume, const v3f &pos,
-			float pitch)
+	int playSoundRawAt(SoundBuffer *buf, bool loop, float volume,
+			const v3f &pos, float pitch,
+			float offset_start, float offset_end)
 	{
 		PlayingSound *sound = new PlayingSound(unique_ptr_albuffer(new ALuint(buf->buffer_id), no_delete_albuffer));
 		createPlayingSoundAt(sound, loop, volume, pos, pitch);
@@ -618,7 +621,9 @@ public:
 		alListenerf(AL_GAIN, gain);
 	}
 
-	int playSound(const std::string &name, bool loop, float volume, float fade, float pitch)
+	int playSound(const std::string &name, bool loop, float volume,
+			float fade, float pitch,
+			float offset_start, float offset_end)
 	{
 		maintain();
 		if (name.empty())
@@ -631,15 +636,17 @@ public:
 		}
 		int handle = -1;
 		if (fade > 0) {
-			handle = playSoundRaw(buf, loop, 0.0f, pitch);
+			handle = playSoundRaw(buf, loop, 0.0f, pitch, offset_start, offset_end);
 			fadeSound(handle, fade, volume);
 		} else {
-			handle = playSoundRaw(buf, loop, volume, pitch);
+			handle = playSoundRaw(buf, loop, volume, pitch, offset_start, offset_end);
 		}
 		return handle;
 	}
 
-	int playSoundAt(const std::string &name, bool loop, float volume, v3f pos, float pitch)
+	int playSoundAt(const std::string &name, bool loop, float volume,
+			v3f pos, float pitch,
+			float offset_start, float offset_end)
 	{
 		maintain();
 		if (name.empty())
@@ -650,7 +657,7 @@ public:
 					<<std::endl;
 			return -1;
 		}
-		return playSoundRawAt(buf, loop, volume, pos, pitch);
+		return playSoundRawAt(buf, loop, volume, pos, pitch, offset_start, offset_end);
 	}
 
 	void stopSound(int sound)
