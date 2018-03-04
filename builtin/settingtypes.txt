@@ -1212,13 +1212,6 @@ language (Language) enum   ,be,ca,cs,da,de,dv,en,eo,es,et,fr,he,hu,id,it,ja,jbo,
 #    -    verbose
 debug_log_level (Debug log level) enum action ,none,error,warning,action,info,verbose
 
-#    ANSI colored logs: red error log, yellow warning and grey info and verbose logs
-#    Note that it doesn't work on Windows
-#    "yes" always enables it,
-#    "detect" enables it when printing to terminal and
-#    "no" disables it
-log_color (Colored logs) enum detect yes,detect,no
-
 #    IPv6 support.
 enable_ipv6 (IPv6) bool true
 
