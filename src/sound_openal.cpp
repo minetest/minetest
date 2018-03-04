@@ -111,6 +111,33 @@ struct SoundBuffer
 	std::vector<char> buffer;
 };
 
+int sound_buffer_bytes_per_sample_frame(SoundBuffer *SoundBuffer)
+{
+	/* number_of_channels (MONO=1, STEREO=2) times bits_per_channel (8=1, 16=2) */
+	switch (SoundBuffer->format) {
+	case AL_FORMAT_MONO8:
+		return 1 * 1;
+	case AL_FORMAT_MONO16:
+		return 1 * 2;
+	case AL_FORMAT_STEREO8:
+		return 2 * 1;
+	case AL_FORMAT_STEREO16:
+		return 2 * 2;
+	}
+	return 0;
+}
+
+int convert_time_offset_to_sample_offset(
+		int bytes_per_sample_frame, int frequency,
+		int buffer_size_bytes, double time_offset)
+{
+	const int num_buffer_sample_frames = buffer_size_bytes / bytes_per_sample_frame;
+	const int last_sample_frame = num_buffer_sample_frames - 1;
+	if (time_offset == -1.0)
+		return last_sample_frame;
+	return rangelim(time_offset * frequency, 0, last_sample_frame);
+}
+
 SoundBuffer *load_opened_ogg_file(OggVorbis_File *oggFile,
 		const std::string &filename_for_logging)
 {
