@@ -86,7 +86,8 @@ inline u32 clamp_u8(s32 value)
 GUIFormSpecMenu::GUIFormSpecMenu(JoystickController *joystick,
 		gui::IGUIElement *parent, s32 id, IMenuManager *menumgr,
 		Client *client, ISimpleTextureSource *tsrc, IFormSource *fsrc, TextDest *tdst,
-		bool remap_dbl_click) :
+		std::string formspecPrepend,
+		bool remap_dbl_click):
 	GUIModalMenu(RenderingEngine::get_gui_env(), parent, id, menumgr),
 	m_invmgr(client),
 	m_tsrc(tsrc),
@@ -94,6 +95,7 @@ GUIFormSpecMenu::GUIFormSpecMenu(JoystickController *joystick,
 	m_form_src(fsrc),
 	m_text_dst(tdst),
 	m_joystick(joystick),
+	m_formspec_prepend(formspecPrepend),
 	m_remap_dbl_click(remap_dbl_click)
 #ifdef __ANDROID__
 	, m_JavaDialogFieldName("")
@@ -128,11 +130,11 @@ GUIFormSpecMenu::~GUIFormSpecMenu()
 }
 
 void GUIFormSpecMenu::create(GUIFormSpecMenu *&cur_formspec, Client *client,
-	JoystickController *joystick, IFormSource *fs_src, TextDest *txt_dest)
+	JoystickController *joystick, IFormSource *fs_src, TextDest *txt_dest, std::string formspecPrepend)
 {
 	if (cur_formspec == nullptr) {
 		cur_formspec = new GUIFormSpecMenu(joystick, guiroot, -1, &g_menumgr,
-			client, client->getTextureSource(), fs_src, txt_dest);
+			client, client->getTextureSource(), fs_src, txt_dest, formspecPrepend);
 		cur_formspec->doPause = false;
 
 		/*
@@ -144,6 +146,7 @@ void GUIFormSpecMenu::create(GUIFormSpecMenu *&cur_formspec, Client *client,
 		*/
 
 	} else {
+		cur_formspec->setFormspecPrepend(formspecPrepend);
 		cur_formspec->setFormSource(fs_src);
 		cur_formspec->setTextDest(txt_dest);
 	}
@@ -2179,6 +2182,12 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 	skin->setFont(m_font);
 
 	pos_offset = v2s32();
+
+	std::vector<std::string> prependElements = split(m_formspec_prepend, ']');
+	for (const auto &element : prependElements) {
+		parseElement(&mydata, element);
+	}
+
 	for (; i< elements.size(); i++) {
 		parseElement(&mydata, elements[i]);
 	}

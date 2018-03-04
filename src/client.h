@@ -225,6 +225,7 @@ public:
 	void handleCommand_ModChannelMsg(NetworkPacket *pkt);
 	void handleCommand_ModChannelSignal(NetworkPacket *pkt);
 	void handleCommand_SrpBytesSandB(NetworkPacket* pkt);
+	void handleCommand_FormspecPrepend(NetworkPacket* pkt);
 	void handleCommand_CSMFlavourLimits(NetworkPacket *pkt);
 
 	void ProcessData(NetworkPacket *pkt);
@@ -431,7 +432,6 @@ public:
 	bool leaveModChannel(const std::string &channel);
 	bool sendModChannelMessage(const std::string &channel, const std::string &message);
 	ModChannel *getModChannel(const std::string &channel);
-
 private:
 	void loadMods();
 	bool checkBuiltinIntegrity();

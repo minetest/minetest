@@ -4046,6 +4046,11 @@ This is basically a reference to a C++ `ServerActiveObject`
     * Redefine player's inventory form
     * Should usually be called in `on_joinplayer`
 * `get_inventory_formspec()`: returns a formspec string
+* `set_formspec_prepend(formspec)`: the formspec string will be added to every
+    formspec shown to the user. This should be used to set style elements such
+    as background[] and bgcolor[], any other elements may result in weird behaviour.
+    Only affects formspecs shown after this is called.
+* `get_formspec_prepend(formspec)`: returns a formspec string.
 * `get_player_control()`: returns table with player pressed keys
     * The table consists of fields with boolean value representing the pressed
       keys, the fields are jump, right, left, LMB, RMB, sneak, aux1, down, up.

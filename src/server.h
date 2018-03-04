@@ -216,6 +216,7 @@ public:
 	bool checkPriv(const std::string &name, const std::string &priv);
 	void reportPrivsModified(const std::string &name=""); // ""=all
 	void reportInventoryFormspecModified(const std::string &name);
+	void reportFormspecPrependModified(const std::string &name);
 
 	void setIpBanned(const std::string &ip, const std::string &name);
 	void unsetIpBanned(const std::string &ip_or_name);
@@ -376,6 +377,7 @@ private:
 	void SendEyeOffset(session_t peer_id, v3f first, v3f third);
 	void SendPlayerPrivileges(session_t peer_id);
 	void SendPlayerInventoryFormspec(session_t peer_id);
+	void SendPlayerFormspecPrepend(session_t peer_id);
 	void SendShowFormspecMessage(session_t peer_id, const std::string &formspec,
 		const std::string &formname);
 	void SendHUDAdd(session_t peer_id, u32 id, HudElement *form);
