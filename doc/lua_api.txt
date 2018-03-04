@@ -4317,9 +4317,12 @@ generated chunk by the current mapgen.
 
 ### `gennotify`
 Returns a table mapping requested generation notification types to arrays of
-positions at which the corresponding generated structures are located at within
+positions at which the corresponding generated structures are located within
 the current chunk. To set the capture of positions of interest to be recorded
 on generate, use `minetest.set_gen_notify()`.
+For decorations, the returned positions are the ground surface 'place_on' nodes,
+not the decorations themselves. A 'simple' type decoration is often 1 node above
+the returned position and possibly displaced by 'place_offset_y'.
 
 Possible fields of the table returned are:
 
