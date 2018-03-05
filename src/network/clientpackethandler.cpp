@@ -764,17 +764,17 @@ void Client::handleCommand_PlaySound(NetworkPacket* pkt)
 	int client_id = -1;
 	switch(type) {
 		case 0: // local
-			client_id = m_sound->playSound(name, loop, gain, fade, pitch);
+			client_id = m_sound->playSound(name, loop, gain, fade, pitch, offset_start, offset_end);
 			break;
 		case 1: // positional
-			client_id = m_sound->playSoundAt(name, loop, gain, pos, pitch);
+			client_id = m_sound->playSoundAt(name, loop, gain, pos, pitch, offset_start, offset_end);
 			break;
 		case 2:
 		{ // object
 			ClientActiveObject *cao = m_env.getActiveObject(object_id);
 			if (cao)
 				pos = cao->getPosition();
-			client_id = m_sound->playSoundAt(name, loop, gain, pos, pitch);
+			client_id = m_sound->playSoundAt(name, loop, gain, pos, pitch, offset_start, offset_end);
 			// TODO: Set up sound to move with object
 			break;
 		}
