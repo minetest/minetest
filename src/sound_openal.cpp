@@ -45,6 +45,11 @@ with this program; ifnot, write to the Free Software Foundation, Inc.,
 #include <vector>
 #include <fstream>
 #include <unordered_map>
+#include <memory>
+#include <utility>
+
+typedef ::std::unique_ptr<ALuint, void(*)(ALuint *p)> unique_ptr_albuffer;
+typedef ::std::unique_ptr<ALuint, void(*)(ALuint *p)> unique_ptr_alsource;
 
 #define BUFFER_SIZE 30000
 
@@ -101,6 +106,40 @@ void f3_set(ALfloat *f3, v3f v)
 	f3[0] = v.X;
 	f3[1] = v.Y;
 	f3[2] = v.Z;
+}
+
+static void no_delete_albuffer(ALuint *p)
+{
+	if (p)
+		delete p;
+}
+
+static void delete_albuffer(ALuint *p)
+{
+	if (p) {
+		alDeleteBuffers(1, p);
+		warn_if_error(alGetError(), "delete_albuffer");
+		delete p;
+	}
+}
+
+static void delete_alsource(ALuint *p)
+{
+	if (p) {
+		alSourceStop(*p);
+		alSourcei(*p, AL_BUFFER, AL_NONE);
+		alDeleteSources(1, p);
+		warn_if_error(alGetError(), "delete_alsource");
+		delete p;
+	}
+}
+
+static unique_ptr_alsource create_alsource()
+{
+	ALuint source;
+	alGenSources(1, &source);
+	warn_if_error(alGetError(), "create_alsource");
+	return unique_ptr_alsource(new ALuint(source), delete_alsource);
 }
 
 struct SoundBuffer
@@ -288,8 +327,13 @@ SoundBuffer *load_ogg_from_buffer(const std::string &buf, const std::string &id_
 
 struct PlayingSound
 {
-	ALuint source_id;
-	bool loop;
+	PlayingSound(unique_ptr_albuffer &buffer_id) :
+			buffer_id(std::move(buffer_id)),
+			source_id(create_alsource())
+	{}
+
+	unique_ptr_albuffer buffer_id;
+	unique_ptr_alsource source_id;
 };
 
 class OpenALSoundManager: public ISoundManager
@@ -419,63 +463,51 @@ public:
 		return bufs[j];
 	}
 
-	PlayingSound* createPlayingSound(SoundBuffer *buf, bool loop,
+	void createPlayingSound(PlayingSound *sound, bool loop,
 			float volume, float pitch)
 	{
 		infostream<<"OpenALSoundManager: Creating playing sound"<<std::endl;
-		assert(buf);
-		PlayingSound *sound = new PlayingSound;
-		assert(sound);
 		warn_if_error(alGetError(), "before createPlayingSound");
-		alGenSources(1, &sound->source_id);
-		alSourcei(sound->source_id, AL_BUFFER, buf->buffer_id);
-		alSourcei(sound->source_id, AL_SOURCE_RELATIVE, true);
-		alSource3f(sound->source_id, AL_POSITION, 0, 0, 0);
-		alSource3f(sound->source_id, AL_VELOCITY, 0, 0, 0);
-		alSourcei(sound->source_id, AL_LOOPING, loop ? AL_TRUE : AL_FALSE);
+		alSourcei(*sound->source_id, AL_BUFFER, *sound->buffer_id);
+		alSourcei(*sound->source_id, AL_SOURCE_RELATIVE, true);
+		alSource3f(*sound->source_id, AL_POSITION, 0, 0, 0);
+		alSource3f(*sound->source_id, AL_VELOCITY, 0, 0, 0);
+		alSourcei(*sound->source_id, AL_LOOPING, loop ? AL_TRUE : AL_FALSE);
 		volume = std::fmax(0.0f, volume);
-		alSourcef(sound->source_id, AL_GAIN, volume);
-		alSourcef(sound->source_id, AL_PITCH, pitch);
-		alSourcePlay(sound->source_id);
+		alSourcef(*sound->source_id, AL_GAIN, volume);
+		alSourcef(*sound->source_id, AL_PITCH, pitch);
+		alSourcePlay(*sound->source_id);
 		warn_if_error(alGetError(), "createPlayingSound");
-		return sound;
 	}
 
-	PlayingSound* createPlayingSoundAt(SoundBuffer *buf, bool loop,
+	void createPlayingSoundAt(PlayingSound *sound, bool loop,
 			float volume, v3f pos, float pitch)
 	{
 		infostream<<"OpenALSoundManager: Creating positional playing sound"
 				<<std::endl;
-		assert(buf);
-		PlayingSound *sound = new PlayingSound;
-		assert(sound);
 		warn_if_error(alGetError(), "before createPlayingSoundAt");
-		alGenSources(1, &sound->source_id);
-		alSourcei(sound->source_id, AL_BUFFER, buf->buffer_id);
-		alSourcei(sound->source_id, AL_SOURCE_RELATIVE, false);
-		alSource3f(sound->source_id, AL_POSITION, pos.X, pos.Y, pos.Z);
-		alSource3f(sound->source_id, AL_VELOCITY, 0, 0, 0);
+		alSourcei(*sound->source_id, AL_BUFFER, *sound->buffer_id);
+		alSourcei(*sound->source_id, AL_SOURCE_RELATIVE, false);
+		alSource3f(*sound->source_id, AL_POSITION, pos.X, pos.Y, pos.Z);
+		alSource3f(*sound->source_id, AL_VELOCITY, 0, 0, 0);
 		// Use alDistanceModel(AL_INVERSE_DISTANCE_CLAMPED) and set reference
 		// distance to clamp gain at <1 node distance, to avoid excessive
 		// volume when closer
-		alSourcef(sound->source_id, AL_REFERENCE_DISTANCE, 10.0f);
-		alSourcei(sound->source_id, AL_LOOPING, loop ? AL_TRUE : AL_FALSE);
+		alSourcef(*sound->source_id, AL_REFERENCE_DISTANCE, 10.0f);
+		alSourcei(*sound->source_id, AL_LOOPING, loop ? AL_TRUE : AL_FALSE);
 		// Multiply by 3 to compensate for reducing AL_REFERENCE_DISTANCE from
 		// the previous value of 30 to the new value of 10
 		volume = std::fmax(0.0f, volume * 3.0f);
-		alSourcef(sound->source_id, AL_GAIN, volume);
-		alSourcef(sound->source_id, AL_PITCH, pitch);
-		alSourcePlay(sound->source_id);
+		alSourcef(*sound->source_id, AL_GAIN, volume);
+		alSourcef(*sound->source_id, AL_PITCH, pitch);
+		alSourcePlay(*sound->source_id);
 		warn_if_error(alGetError(), "createPlayingSoundAt");
-		return sound;
 	}
 
 	int playSoundRaw(SoundBuffer *buf, bool loop, float volume, float pitch)
 	{
-		assert(buf);
-		PlayingSound *sound = createPlayingSound(buf, loop, volume, pitch);
-		if(!sound)
-			return -1;
+		PlayingSound *sound = new PlayingSound(unique_ptr_albuffer(new ALuint(buf->buffer_id), no_delete_albuffer));
+		createPlayingSound(sound, loop, volume, pitch);
 		int id = m_next_id++;
 		m_sounds_playing[id] = sound;
 		return id;
@@ -484,10 +516,8 @@ public:
 	int playSoundRawAt(SoundBuffer *buf, bool loop, float volume, const v3f &pos,
 			float pitch)
 	{
-		assert(buf);
-		PlayingSound *sound = createPlayingSoundAt(buf, loop, volume, pos, pitch);
-		if(!sound)
-			return -1;
+		PlayingSound *sound = new PlayingSound(unique_ptr_albuffer(new ALuint(buf->buffer_id), no_delete_albuffer));
+		createPlayingSoundAt(sound, loop, volume, pos, pitch);
 		int id = m_next_id++;
 		m_sounds_playing[id] = sound;
 		return id;
@@ -499,8 +529,6 @@ public:
 		if(i == m_sounds_playing.end())
 			return;
 		PlayingSound *sound = i->second;
-
-		alDeleteSources(1, &sound->source_id);
 
 		delete sound;
 		m_sounds_playing.erase(id);
@@ -539,7 +567,7 @@ public:
 			// If not playing, remove it
 			{
 				ALint state;
-				alGetSourcei(sound->source_id, AL_SOURCE_STATE, &state);
+				alGetSourcei(*sound->source_id, AL_SOURCE_STATE, &state);
 				if(state != AL_PLAYING){
 					del_list.insert(id);
 				}
@@ -680,10 +708,10 @@ public:
 			return;
 		PlayingSound *sound = i->second;
 
-		alSourcei(sound->source_id, AL_SOURCE_RELATIVE, false);
-		alSource3f(sound->source_id, AL_POSITION, pos.X, pos.Y, pos.Z);
-		alSource3f(sound->source_id, AL_VELOCITY, 0, 0, 0);
-		alSourcef(sound->source_id, AL_REFERENCE_DISTANCE, 30.0);
+		alSourcei(*sound->source_id, AL_SOURCE_RELATIVE, false);
+		alSource3f(*sound->source_id, AL_POSITION, pos.X, pos.Y, pos.Z);
+		alSource3f(*sound->source_id, AL_VELOCITY, 0, 0, 0);
+		alSourcef(*sound->source_id, AL_REFERENCE_DISTANCE, 30.0);
 	}
 
 	bool updateSoundGain(int id, float gain)
@@ -693,7 +721,7 @@ public:
 			return false;
 
 		PlayingSound *sound = i->second;
-		alSourcef(sound->source_id, AL_GAIN, gain);
+		alSourcef(*sound->source_id, AL_GAIN, gain);
 		return true;
 	}
 
@@ -705,7 +733,7 @@ public:
 
 		PlayingSound *sound = i->second;
 		ALfloat gain;
-		alGetSourcef(sound->source_id, AL_GAIN, &gain);
+		alGetSourcef(*sound->source_id, AL_GAIN, &gain);
 		return gain;
 	}
 };
