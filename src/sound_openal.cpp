@@ -177,6 +177,23 @@ int convert_time_offset_to_sample_offset(
 	return rangelim(time_offset * frequency, 0, last_sample_frame);
 }
 
+static unique_ptr_albuffer sound_buffer_get_buffer_or_copy_if_offset(SoundBuffer *SoundBuffer, float offset_start, float offset_end)
+{
+	int bytes_per_sample_frame = sound_buffer_bytes_per_sample_frame(SoundBuffer);
+	int byte_offset_start = bytes_per_sample_frame * convert_time_offset_to_sample_offset(bytes_per_sample_frame, SoundBuffer->freq, SoundBuffer->buffer.size(), offset_start);
+	int byte_offset_end   = bytes_per_sample_frame * convert_time_offset_to_sample_offset(bytes_per_sample_frame, SoundBuffer->freq, SoundBuffer->buffer.size(), offset_end);
+	if (offset_start == 0.0f && offset_end == -1.0f) {
+		return unique_ptr_albuffer(new ALuint(SoundBuffer->buffer_id), no_delete_albuffer);
+	} else {
+		ALuint newbuf;
+		alGenBuffers(1, &newbuf);
+		warn_if_error(alGetError(), "creating buffer");
+		alBufferData(newbuf, SoundBuffer->format, &SoundBuffer->buffer[byte_offset_start], byte_offset_end - byte_offset_start, SoundBuffer->freq);
+		warn_if_error(alGetError(), "filling buffer");
+		return unique_ptr_albuffer(new ALuint(newbuf), delete_albuffer);
+	}
+}
+
 SoundBuffer *load_opened_ogg_file(OggVorbis_File *oggFile,
 		const std::string &filename_for_logging)
 {
@@ -508,7 +525,7 @@ public:
 			float pitch,
 			float offset_start, float offset_end)
 	{
-		PlayingSound *sound = new PlayingSound(unique_ptr_albuffer(new ALuint(buf->buffer_id), no_delete_albuffer));
+		PlayingSound *sound = new PlayingSound(sound_buffer_get_buffer_or_copy_if_offset(buf, offset_start, offset_end));
 		createPlayingSound(sound, loop, volume, pitch);
 		int id = m_next_id++;
 		m_sounds_playing[id] = sound;
@@ -519,7 +536,7 @@ public:
 			const v3f &pos, float pitch,
 			float offset_start, float offset_end)
 	{
-		PlayingSound *sound = new PlayingSound(unique_ptr_albuffer(new ALuint(buf->buffer_id), no_delete_albuffer));
+		PlayingSound *sound = new PlayingSound(sound_buffer_get_buffer_or_copy_if_offset(buf, offset_start, offset_end));
 		createPlayingSoundAt(sound, loop, volume, pos, pitch);
 		int id = m_next_id++;
 		m_sounds_playing[id] = sound;
