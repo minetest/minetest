@@ -47,30 +47,29 @@ Paths
 Games
 -----
 Games are looked up from:
-  * `$path_share/games/gameid/`
-  * `$path_user/games/gameid/`
+
+* `$path_share/games/gameid/`
+* `$path_user/games/gameid/`
+
 Where `gameid` is unique to each game.
 
 The game directory can contain the following files:
-  * `game.conf`
-    Which contains:
-      * name = <Human-readable full name of the game>
-        e.g.
-        name = Minetest
-      * Optionally, game.conf can also contain:
-        disallowed_mapgens = <comma-separated mapgens>
-        e.g.
-        disallowed_mapgens = v5,v6,flat
-        These mapgens are removed from the list of mapgens for the game.
-  * minetest.conf
-    Used to set default settings when running this game.
-  * settingtypes.txt
-    In the same format as the one in builtin.
-    This settingtypes.txt will be parsed by the menu and the settings will be
-    displayed in the "Games" category in the advanced settings tab.
-  * If the subgame contains a folder called `textures` the server will load it
-    as a texturepack, overriding mod textures.
-    Any server texturepack will override mod textures and the game texturepack.
+
+* `game.conf`, which contains:
+    * `name = <Human-readable full name of the game>` e.g. `name = Minetest`
+    * Optionally, game.conf can also contain
+      `disallowed_mapgens = <comma-separated mapgens>`
+      e.g. `disallowed_mapgens = v5,v6,flat`
+      These mapgens are removed from the list of mapgens for the game.
+* `minetest.conf`:
+  Used to set default settings when running this game.
+* `settingtypes.txt`:
+  In the same format as the one in builtin.
+  This settingtypes.txt will be parsed by the menu and the settings will be
+  displayed in the "Games" category in the advanced settings tab.
+* If the subgame contains a folder called `textures` the server will load it
+  as a texturepack, overriding mod textures.
+  Any server texturepack will override mod textures and the game texturepack.
 
 ### Menu images
 
@@ -555,6 +554,7 @@ stretched to contain exactly 256 pixels (after arranging the pixels
 to one line). The indexing starts from 0.
 
 Examples:
+
 * 16x16 palette, index = 0: the top left corner
 * 16x16 palette, index = 4: the fifth pixel in the first row
 * 16x16 palette, index = 16: the pixel below the top left corner
@@ -579,6 +579,7 @@ When registering a node, set the item definition's `palette` field to
 a texture. You can also use texture modifiers.
 The node's color depends on its `param2`, so you also must set an
 appropriate `drawtype`:
+
 * `drawtype = "color"` for nodes which use their full `param2` for
   palette indexing. These nodes can have 256 different colors.
   The palette should contain 256 pixels.
@@ -621,6 +622,7 @@ when a player digs or places a colored node.
 You can disable this feature by setting the `drop` field of the node
 to itself (without metadata).
 To transfer the color to a special drop, you need a drop table.
+
 Example:
 
     minetest.register_node("mod:stone", {
@@ -2419,6 +2421,7 @@ The file should be a text file, with the following format:
 
 ### Escapes
 Strings that need to be translated can contain several escapes, preceded by `@`.
+
 * `@@` acts as a literal `@`.
 * `@n`, where `n` is a digit between 1 and 9, is an argument for the translated string that will be inlined
   when translation. Due to how translations are implemented, the original translation string **must** have
