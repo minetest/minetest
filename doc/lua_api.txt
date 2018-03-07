@@ -3035,6 +3035,15 @@ and `minetest.auth_reload` call the authentication handler.
       unattached `group:attached_node` node to fall.
     * spread these updates to neighbours and can cause a cascade
       of nodes to fall.
+* `minetest.get_spawn_level(x, z)`
+    * Returns a player spawn y co-ordinate for the provided (x, z) co-ordinates,
+      or `nil` for an unsuitable spawn point.
+    * For most mapgens a 'suitable spawn point' is one with y between
+      `water_level` and `water_level + 16`, and in mgv7 well away from rivers,
+      so `nil` will be returned for many (x, z) co-ordinates.
+    * The spawn level returned is for a player spawn in unmodified terrain.
+    * The spawn level is intentionally above terrain level to cope with full-node
+      biome 'dust' nodes.
 
 ### Mod channels
 You can find mod channels communication scheme in `docs/mod_channels.png`.

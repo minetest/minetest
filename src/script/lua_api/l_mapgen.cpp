@@ -757,6 +757,27 @@ int ModApiMapgen::l_get_mapgen_object(lua_State *L)
 }
 
 
+// get_spawn_level(x = num, z = num)
+int ModApiMapgen::l_get_spawn_level(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+
+	s16 x = luaL_checkinteger(L, 1);
+	s16 z = luaL_checkinteger(L, 2);
+
+	EmergeManager *emerge = getServer(L)->getEmergeManager();
+	int spawn_level = emerge->getSpawnLevelAtPoint(v2s16(x, z));
+	// Unsuitable spawn point
+	if (spawn_level == MAX_MAP_GENERATION_LIMIT)
+		return 0;
+
+	// 'findSpawnPos()' in server.cpp adds at least 1
+	lua_pushinteger(L, spawn_level + 1);
+
+	return 1;
+}
+
+
 int ModApiMapgen::l_get_mapgen_params(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
@@ -1714,6 +1735,7 @@ void ModApiMapgen::Initialize(lua_State *L, int top)
 	API_FCT(get_humidity);
 	API_FCT(get_biome_data);
 	API_FCT(get_mapgen_object);
+	API_FCT(get_spawn_level);
 
 	API_FCT(get_mapgen_params);
 	API_FCT(set_mapgen_params);
