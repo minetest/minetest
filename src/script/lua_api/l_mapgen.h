@@ -44,6 +44,9 @@ private:
 	// returns the requested object used during map generation
 	static int l_get_mapgen_object(lua_State *L);
 
+	// get_spawn_level(x = num, z = num)
+	static int l_get_spawn_level(lua_State *L);
+
 	// get_mapgen_params()
 	// returns the currently active map generation parameter set
 	static int l_get_mapgen_params(lua_State *L);
