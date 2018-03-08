@@ -431,6 +431,9 @@ public:
 	/* get list of active client id's */
 	std::vector<session_t> getClientIDs(ClientState min_state=CS_Active);
 
+	/* mark block as not sent to active client sessions */
+	void markBlockposAsNotSent(const v3s16 &pos);
+
 	/* verify is server user limit was reached */
 	bool isUserLimitReached();
 
