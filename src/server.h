@@ -291,7 +291,6 @@ public:
 	bool hudSetFlags(RemotePlayer *player, u32 flags, u32 mask);
 	bool hudSetHotbarItemcount(RemotePlayer *player, s32 hotbar_itemcount);
 	void hudSetHotbarImage(RemotePlayer *player, std::string name);
-	std::string hudGetHotbarImage(RemotePlayer *player);
 	void hudSetHotbarSelectedImage(RemotePlayer *player, std::string name);
 	const std::string &hudGetHotbarSelectedImage(RemotePlayer *player) const;
 
