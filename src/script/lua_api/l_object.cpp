@@ -493,11 +493,9 @@ int ObjectRef::l_set_local_animation(lua_State *L)
 	if (!lua_isnil(L, 6))
 		frame_speed = lua_tonumber(L, 6);
 
-	if (!getServer(L)->setLocalPlayerAnimations(player, frames, frame_speed))
-		return 0;
-
+	getServer(L)->setLocalPlayerAnimations(player, frames, frame_speed);
 	lua_pushboolean(L, true);
-	return 0;
+	return 1;
 }
 
 // get_local_animation(self)
@@ -544,11 +542,9 @@ int ObjectRef::l_set_eye_offset(lua_State *L)
 	/* TODO: if possible: improve the camera colision detetion to allow Y <= -1.5) */
 	offset_third.Y = rangelim(offset_third.Y,-10,15); //1.5*BS
 
-	if (!getServer(L)->setPlayerEyeOffset(player, offset_first, offset_third))
-		return 0;
-
+	getServer(L)->setPlayerEyeOffset(player, offset_first, offset_third);
 	lua_pushboolean(L, true);
-	return 0;
+	return 1;
 }
 
 // get_eye_offset(self)
@@ -1559,9 +1555,7 @@ int ObjectRef::l_set_sky(lua_State *L)
 	if (lua_isboolean(L, 5))
 		clouds = lua_toboolean(L, 5);
 
-	if (!getServer(L)->setSky(player, bgcolor, type, params, clouds))
-		return 0;
-
+	getServer(L)->setSky(player, bgcolor, type, params, clouds);
 	lua_pushboolean(L, true);
 	return 1;
 }
@@ -1631,14 +1625,7 @@ int ObjectRef::l_set_clouds(lua_State *L)
 	}
 	lua_pop(L, 1);
 
-	if (!getServer(L)->setClouds(player, cloud_params.density,
-			cloud_params.color_bright, cloud_params.color_ambient,
-			cloud_params.height, cloud_params.thickness,
-			cloud_params.speed))
-		return 0;
-
-	player->setCloudParams(cloud_params);
-
+	getServer(L)->setClouds(player, cloud_params);
 	lua_pushboolean(L, true);
 	return 1;
 }

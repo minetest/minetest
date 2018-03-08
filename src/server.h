@@ -59,6 +59,7 @@ class EmergeManager;
 class ServerScripting;
 class ServerEnvironment;
 struct SimpleSoundSpec;
+struct CloudParams;
 class ServerThread;
 
 enum ClientDeletionReason {
@@ -295,19 +296,14 @@ public:
 
 	Address getPeerAddress(session_t peer_id);
 
-	bool setLocalPlayerAnimations(RemotePlayer *player, v2s32 animation_frames[4],
+	void setLocalPlayerAnimations(RemotePlayer *player, v2s32 animation_frames[4],
 			f32 frame_speed);
-	bool setPlayerEyeOffset(RemotePlayer *player, v3f first, v3f third);
+	void setPlayerEyeOffset(RemotePlayer *player, const v3f &first, const v3f &third);
 
-	bool setSky(RemotePlayer *player, const video::SColor &bgcolor,
+	void setSky(RemotePlayer *player, const video::SColor &bgcolor,
 			const std::string &type, const std::vector<std::string> &params,
 			bool &clouds);
-	bool setClouds(RemotePlayer *player, float density,
-			const video::SColor &color_bright,
-			const video::SColor &color_ambient,
-			float height,
-			float thickness,
-			const v2f &speed);
+	void setClouds(RemotePlayer *player, const CloudParams &params);
 
 	bool overrideDayNightRatio(RemotePlayer *player, bool do_override, float brightness);
 
@@ -389,12 +385,7 @@ private:
 	void SendSetSky(session_t peer_id, const video::SColor &bgcolor,
 			const std::string &type, const std::vector<std::string> &params,
 			bool &clouds);
-	void SendCloudParams(session_t peer_id, float density,
-			const video::SColor &color_bright,
-			const video::SColor &color_ambient,
-			float height,
-			float thickness,
-			const v2f &speed);
+	void SendCloudParams(session_t peer_id, const CloudParams &params);
 	void SendOverrideDayNightRatio(session_t peer_id, bool do_override, float ratio);
 	void broadcastModChannelMessage(const std::string &channel,
 			const std::string &message, session_t from_peer);
