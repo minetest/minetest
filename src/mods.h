@@ -49,10 +49,10 @@ struct ModSpec
 		name(name_),
 		path(path_)
 	{}
-	ModSpec(const std::string &name_, const std::string &path_, bool p_o_m):
+	ModSpec(const std::string &name_, const std::string &path_, bool part_of_modpack_):
 		name(name_),
 		path(path_),
-		part_of_modpack(p_o_m)
+		part_of_modpack(part_of_modpack_)
 	{}
 };
 
