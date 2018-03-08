@@ -1775,17 +1775,11 @@ void Server::SendSetSky(session_t peer_id, const video::SColor &bgcolor,
 	Send(&pkt);
 }
 
-void Server::SendCloudParams(session_t peer_id, float density,
-		const video::SColor &color_bright,
-		const video::SColor &color_ambient,
-		float height,
-		float thickness,
-		const v2f &speed)
+void Server::SendCloudParams(session_t peer_id, const CloudParams &params)
 {
 	NetworkPacket pkt(TOCLIENT_CLOUD_PARAMS, 0, peer_id);
-	pkt << density << color_bright << color_ambient
-			<< height << thickness << speed;
-
+	pkt << params.density << params.color_bright << params.color_ambient
+			<< params.height << params.thickness << params.speed;
 	Send(&pkt);
 }
 
@@ -3113,54 +3107,36 @@ Address Server::getPeerAddress(session_t peer_id)
 	return m_con->GetPeerAddress(peer_id);
 }
 
-bool Server::setLocalPlayerAnimations(RemotePlayer *player,
+void Server::setLocalPlayerAnimations(RemotePlayer *player,
 		v2s32 animation_frames[4], f32 frame_speed)
 {
-	if (!player)
-		return false;
-
+	sanity_check(player);
 	player->setLocalAnimations(animation_frames, frame_speed);
 	SendLocalPlayerAnimations(player->getPeerId(), animation_frames, frame_speed);
-	return true;
 }
 
-bool Server::setPlayerEyeOffset(RemotePlayer *player, v3f first, v3f third)
+void Server::setPlayerEyeOffset(RemotePlayer *player, const v3f &first, const v3f &third)
 {
-	if (!player)
-		return false;
-
+	sanity_check(player);
 	player->eye_offset_first = first;
 	player->eye_offset_third = third;
 	SendEyeOffset(player->getPeerId(), first, third);
-	return true;
 }
 
-bool Server::setSky(RemotePlayer *player, const video::SColor &bgcolor,
+void Server::setSky(RemotePlayer *player, const video::SColor &bgcolor,
 	const std::string &type, const std::vector<std::string> &params,
 	bool &clouds)
 {
-	if (!player)
-		return false;
-
+	sanity_check(player);
 	player->setSky(bgcolor, type, params, clouds);
 	SendSetSky(player->getPeerId(), bgcolor, type, params, clouds);
-	return true;
 }
 
-bool Server::setClouds(RemotePlayer *player, float density,
-	const video::SColor &color_bright,
-	const video::SColor &color_ambient,
-	float height,
-	float thickness,
-	const v2f &speed)
+void Server::setClouds(RemotePlayer *player, const CloudParams &params)
 {
-	if (!player)
-		return false;
-
-	SendCloudParams(player->getPeerId(), density,
-			color_bright, color_ambient, height,
-			thickness, speed);
-	return true;
+	sanity_check(player);
+	player->setCloudParams(params);
+	SendCloudParams(player->getPeerId(), params);
 }
 
 bool Server::overrideDayNightRatio(RemotePlayer *player, bool do_override,
