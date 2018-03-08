@@ -1519,7 +1519,7 @@ int ObjectRef::l_hud_get_hotbar_selected_image(lua_State *L)
 	if (player == NULL)
 		return 0;
 
-	const std::string &name = getServer(L)->hudGetHotbarSelectedImage(player);
+	const std::string &name = player->getHotbarSelectedImage();
 	lua_pushlstring(L, name.c_str(), name.size());
 	return 1;
 }

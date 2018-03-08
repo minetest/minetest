@@ -3108,11 +3108,6 @@ void Server::hudSetHotbarSelectedImage(RemotePlayer *player, std::string name)
 	SendHUDSetParam(player->getPeerId(), HUD_PARAM_HOTBAR_SELECTED_IMAGE, name);
 }
 
-const std::string& Server::hudGetHotbarSelectedImage(RemotePlayer *player) const
-{
-	return player->getHotbarSelectedImage();
-}
-
 Address Server::getPeerAddress(session_t peer_id)
 {
 	return m_con->GetPeerAddress(peer_id);
