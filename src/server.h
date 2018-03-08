@@ -619,12 +619,6 @@ private:
 		This is behind m_env_mutex
 	*/
 	VoxelArea m_ignore_map_edit_events_area;
-	/*
-		If set to !=0, the incoming MapEditEvents are modified to have
-		this peed id as the disabled recipient
-		This is behind m_env_mutex
-	*/
-	session_t m_ignore_map_edit_events_peer_id = 0;
 
 	// media files known to server
 	std::unordered_map<std::string, MediaInfo> m_media;
