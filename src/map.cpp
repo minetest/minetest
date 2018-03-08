@@ -2238,7 +2238,7 @@ void MMVManip::initialEmerge(v3s16 blockpos_min, v3s16 blockpos_max,
 		bool block_data_inexistent = false;
 		try
 		{
-			TimeTaker timer1("emerge load", &emerge_load_time);
+			TimeTaker timer2("emerge load", &emerge_load_time);
 
 			block = m_map->getBlockNoCreate(p);
 			if(block->isDummy())
