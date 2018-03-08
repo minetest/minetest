@@ -1924,8 +1924,7 @@ void GUIFormSpecMenu::parseElement(parserData* data, const std::string &element)
 			<< std::endl;
 }
 
-void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
-{
+void GUIFormSpecMenu::regenerateGui(v2u32 screensize) {
 	/* useless to regenerate without a screensize */
 	if ((screensize.X <= 0) || (screensize.Y <= 0)) {
 		return;
@@ -1934,7 +1933,7 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 	parserData mydata;
 
 	//preserve tables
-	for (auto &m_table : m_tables) {
+	for (auto& m_table : m_tables) {
 		std::string tablename = m_table.first.fname;
 		GUITable *table = m_table.second;
 		mydata.table_dyndata[tablename] = table->getDynamicData();
@@ -1949,7 +1948,7 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 	if (focused_element && focused_element->getParent() == this) {
 		s32 focused_id = focused_element->getID();
 		if (focused_id > 257) {
-			for (const GUIFormSpecMenu::FieldSpec &field : m_fields) {
+			for (const GUIFormSpecMenu::FieldSpec& field : m_fields) {
 				if (field.fid == focused_id) {
 					mydata.focused_fieldname = field.fname;
 					break;
@@ -1961,11 +1960,11 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 	// Remove children
 	removeChildren();
 
-	for (auto &table_it : m_tables) {
+	for (auto& table_it : m_tables) {
 		table_it.second->drop();
 	}
 
-	mydata.size= v2s32(100,100);
+	mydata.size = v2s32(100, 100);
 	mydata.screensize = screensize;
 	mydata.offset = v2f32(0.5f, 0.5f);
 	mydata.anchor = v2f32(0.5f, 0.5f);
@@ -1994,31 +1993,33 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 	{
 		v3f formspec_bgcolor = g_settings->getV3F("formspec_default_bg_color");
 		m_bgcolor = video::SColor(
-			(u8) clamp_u8(g_settings->getS32("formspec_default_bg_opacity")),
-			clamp_u8(myround(formspec_bgcolor.X)),
-			clamp_u8(myround(formspec_bgcolor.Y)),
-			clamp_u8(myround(formspec_bgcolor.Z))
+				(u8) clamp_u8(
+						g_settings->getS32("formspec_default_bg_opacity")),
+				clamp_u8(myround(formspec_bgcolor.X)),
+				clamp_u8(myround(formspec_bgcolor.Y)),
+				clamp_u8(myround(formspec_bgcolor.Z))
 		);
 	}
 
 	{
-		v3f formspec_bgcolor = g_settings->getV3F("formspec_fullscreen_bg_color");
+		v3f formspec_bgcolor = g_settings->getV3F(
+				"formspec_fullscreen_bg_color");
 		m_fullscreen_bgcolor = video::SColor(
-			(u8) clamp_u8(g_settings->getS32("formspec_fullscreen_bg_opacity")),
-			clamp_u8(myround(formspec_bgcolor.X)),
-			clamp_u8(myround(formspec_bgcolor.Y)),
-			clamp_u8(myround(formspec_bgcolor.Z))
+				(u8) clamp_u8(
+						g_settings->getS32("formspec_fullscreen_bg_opacity")),
+				clamp_u8(myround(formspec_bgcolor.X)),
+				clamp_u8(myround(formspec_bgcolor.Y)),
+				clamp_u8(myround(formspec_bgcolor.Z))
 		);
 	}
 
+	m_slotbg_n = video::SColor(255, 128, 128, 128);
+	m_slotbg_h = video::SColor(255, 192, 192, 192);
 
-	m_slotbg_n = video::SColor(255,128,128,128);
-	m_slotbg_h = video::SColor(255,192,192,192);
+	m_default_tooltip_bgcolor = video::SColor(255, 110, 130, 60);
+	m_default_tooltip_color = video::SColor(255, 255, 255, 255);
 
-	m_default_tooltip_bgcolor = video::SColor(255,110,130,60);
-	m_default_tooltip_color = video::SColor(255,255,255,255);
-
-	m_slotbordercolor = video::SColor(200,0,0,0);
+	m_slotbordercolor = video::SColor(200, 0, 0, 0);
 	m_slotborder = false;
 
 	// Add tooltip
@@ -2026,50 +2027,63 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 		assert(!m_tooltip_element);
 		// Note: parent != this so that the tooltip isn't clipped by the menu rectangle
 		m_tooltip_element = gui::StaticText::add(Environment, L"",
-			core::rect<s32>(0, 0, 110, 18));
+				core::rect<s32>(0, 0, 110, 18));
 		m_tooltip_element->enableOverrideColor(true);
 		m_tooltip_element->setBackgroundColor(m_default_tooltip_bgcolor);
 		m_tooltip_element->setDrawBackground(true);
 		m_tooltip_element->setDrawBorder(true);
 		m_tooltip_element->setOverrideColor(m_default_tooltip_color);
-		m_tooltip_element->setTextAlignment(gui::EGUIA_CENTER, gui::EGUIA_CENTER);
+		m_tooltip_element->setTextAlignment(gui::EGUIA_CENTER,
+				gui::EGUIA_CENTER);
 		m_tooltip_element->setWordWrap(false);
 		//we're not parent so no autograb for this one!
 		m_tooltip_element->grab();
 	}
 
-	std::vector<std::string> elements = split(m_formspec_string,']');
+	std::vector<std::string> elements = split(m_formspec_string, ']');
 	unsigned int i = 0;
 
 	/* try to read version from first element only */
 	if (!elements.empty()) {
-		if ( parseVersionDirect(elements[0]) ) {
+		if (parseVersionDirect(elements[0])) {
 			i++;
 		}
 	}
 
 	/* we need size first in order to calculate image scale */
 	mydata.explicit_size = false;
-	for (; i< elements.size(); i++) {
+	for (; i < elements.size(); i++) {
 		if (!parseSizeDirect(&mydata, elements[i])) {
 			break;
 		}
 	}
 
 	/* "position" element is always after "size" element if it used */
-	for (; i< elements.size(); i++) {
+	for (; i < elements.size(); i++) {
 		if (!parsePositionDirect(&mydata, elements[i])) {
 			break;
 		}
 	}
 
 	/* "anchor" element is always after "position" (or  "size" element) if it used */
-	for (; i< elements.size(); i++) {
+	for (; i < elements.size(); i++) {
 		if (!parseAnchorDirect(&mydata, elements[i])) {
 			break;
 		}
 	}
 
+	/* "no_prepend" element is always after "position" (or  "size" element) if it used */
+	bool enable_prepends = true;
+	for (; i < elements.size(); i++) {
+		if (elements[i].empty())
+			break;
+
+		std::vector<std::string> parts = split(elements[i], '[');
+		if (parts[0] == "no_prepend")
+			enable_prepends = false;
+		else
+			break;
+	}
 
 	if (mydata.explicit_size) {
 		// compute scaling for specified form size
@@ -2087,11 +2101,11 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 			else
 				delta.X = 0;
 
-			offset = v2s32(delta.X,delta.Y);
+			offset = v2s32(delta.X, delta.Y);
 
 			mydata.screensize = m_lockscreensize;
 		} else {
-			offset = v2s32(0,0);
+			offset = v2s32(0, 0);
 		}
 
 		double gui_scaling = g_settings->getFloat("gui_scaling");
@@ -2123,15 +2137,15 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 			// multiplied by gui_scaling, even if this means
 			// the form doesn't fit the screen.
 			double prefer_imgsize = mydata.screensize.Y / 15 *
-							gui_scaling;
+					gui_scaling;
 			double fitx_imgsize = mydata.screensize.X /
-				((5.0/4.0) * (0.5 + mydata.invsize.X));
+					((5.0 / 4.0) * (0.5 + mydata.invsize.X));
 			double fity_imgsize = mydata.screensize.Y /
-				((15.0/13.0) * (0.85 * mydata.invsize.Y));
+					((15.0 / 13.0) * (0.85 * mydata.invsize.Y));
 			double screen_dpi = RenderingEngine::getDisplayDensity() * 96;
 			double min_imgsize = 0.3 * screen_dpi * gui_scaling;
 			use_imgsize = MYMAX(min_imgsize, MYMIN(prefer_imgsize,
-				MYMIN(fitx_imgsize, fity_imgsize)));
+					MYMIN(fitx_imgsize, fity_imgsize)));
 		}
 
 		// Everything else is scaled in proportion to the
@@ -2143,21 +2157,31 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 		// is 2/5 vertical inventory slot spacing, and button
 		// half-height is 7/8 of font height.
 		imgsize = v2s32(use_imgsize, use_imgsize);
-		spacing = v2s32(use_imgsize*5.0/4, use_imgsize*15.0/13);
-		padding = v2s32(use_imgsize*3.0/8, use_imgsize*3.0/8);
-		m_btn_height = use_imgsize*15.0/13 * 0.35;
+		spacing = v2s32(use_imgsize * 5.0 / 4, use_imgsize * 15.0 / 13);
+		padding = v2s32(use_imgsize * 3.0 / 8, use_imgsize * 3.0 / 8);
+		m_btn_height = use_imgsize * 15.0 / 13 * 0.35;
 
 		m_font = g_fontengine->getFont();
 
 		mydata.size = v2s32(
-			padding.X*2+spacing.X*(mydata.invsize.X-1.0)+imgsize.X,
-			padding.Y*2+spacing.Y*(mydata.invsize.Y-1.0)+imgsize.Y + m_btn_height*2.0/3.0
+				padding.X * 2 + spacing.X * (mydata.invsize.X - 1.0) +
+						imgsize.X,
+				padding.Y * 2 + spacing.Y * (mydata.invsize.Y - 1.0) +
+						imgsize.Y + m_btn_height * 2.0 / 3.0
 		);
 		DesiredRect = mydata.rect = core::rect<s32>(
-				(s32)((f32)mydata.screensize.X * mydata.offset.X) - (s32)(mydata.anchor.X * (f32)mydata.size.X) + offset.X,
-				(s32)((f32)mydata.screensize.Y * mydata.offset.Y) - (s32)(mydata.anchor.Y * (f32)mydata.size.Y) + offset.Y,
-				(s32)((f32)mydata.screensize.X * mydata.offset.X) + (s32)((1.0 - mydata.anchor.X) * (f32)mydata.size.X) + offset.X,
-				(s32)((f32)mydata.screensize.Y * mydata.offset.Y) + (s32)((1.0 - mydata.anchor.Y) * (f32)mydata.size.Y) + offset.Y
+				(s32) ((f32) mydata.screensize.X * mydata.offset.X) -
+						(s32) (mydata.anchor.X * (f32) mydata.size.X) +
+						offset.X,
+				(s32) ((f32) mydata.screensize.Y * mydata.offset.Y) -
+						(s32) (mydata.anchor.Y * (f32) mydata.size.Y) +
+						offset.Y,
+				(s32) ((f32) mydata.screensize.X * mydata.offset.X) +
+						(s32) ((1.0 - mydata.anchor.X) * (f32) mydata.size.X) +
+						offset.X,
+				(s32) ((f32) mydata.screensize.Y * mydata.offset.Y) +
+						(s32) ((1.0 - mydata.anchor.Y) * (f32) mydata.size.Y) +
+						offset.Y
 		);
 	} else {
 		// Non-size[] form must consist only of text fields and
@@ -2166,26 +2190,32 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 		m_font = g_fontengine->getFont();
 		m_btn_height = font_line_height(m_font) * 0.875;
 		DesiredRect = core::rect<s32>(
-			(s32)((f32)mydata.screensize.X * mydata.offset.X) - (s32)(mydata.anchor.X * 580.0),
-			(s32)((f32)mydata.screensize.Y * mydata.offset.Y) - (s32)(mydata.anchor.Y * 300.0),
-			(s32)((f32)mydata.screensize.X * mydata.offset.X) + (s32)((1.0 - mydata.anchor.X) * 580.0),
-			(s32)((f32)mydata.screensize.Y * mydata.offset.Y) + (s32)((1.0 - mydata.anchor.Y) * 300.0)
+				(s32) ((f32) mydata.screensize.X * mydata.offset.X) -
+						(s32) (mydata.anchor.X * 580.0),
+				(s32) ((f32) mydata.screensize.Y * mydata.offset.Y) -
+						(s32) (mydata.anchor.Y * 300.0),
+				(s32) ((f32) mydata.screensize.X * mydata.offset.X) +
+						(s32) ((1.0 - mydata.anchor.X) * 580.0),
+				(s32) ((f32) mydata.screensize.Y * mydata.offset.Y) +
+						(s32) ((1.0 - mydata.anchor.Y) * 300.0)
 		);
 	}
 	recalculateAbsolutePosition(false);
 	mydata.basepos = getBasePos();
 	m_tooltip_element->setOverrideFont(m_font);
 
-	gui::IGUISkin* skin = Environment->getSkin();
+	gui::IGUISkin *skin = Environment->getSkin();
 	sanity_check(skin);
 	gui::IGUIFont *old_font = skin->getFont();
 	skin->setFont(m_font);
 
 	pos_offset = v2s32();
 
-	std::vector<std::string> prependElements = split(m_formspec_prepend, ']');
-	for (const auto &element : prependElements) {
-		parseElement(&mydata, element);
+	if (enable_prepends) {
+		std::vector<std::string> prependElements = split(m_formspec_prepend, ']');
+		for (const auto& element : prependElements) {
+			parseElement(&mydata, element);
+		}
 	}
 
 	for (; i< elements.size(); i++) {
