@@ -558,8 +558,7 @@ void Server::AsyncRunStep(bool initial_step)
 		/*
 			Set the modified blocks unsent for all the clients
 		*/
-		if(!modified_blocks.empty())
-		{
+		if (!modified_blocks.empty()) {
 			SetBlocksNotSent(modified_blocks);
 		}
 	}
@@ -857,13 +856,13 @@ void Server::AsyncRunStep(bool initial_step)
 			case MEET_BLOCK_NODE_METADATA_CHANGED:
 				infostream << "Server: MEET_BLOCK_NODE_METADATA_CHANGED" << std::endl;
 						prof.add("MEET_BLOCK_NODE_METADATA_CHANGED", 1);
-						setBlockNotSent(event->p);
+						m_clients.markBlockposAsNotSent(event->p);
 				break;
 			case MEET_OTHER:
 				infostream << "Server: MEET_OTHER" << std::endl;
 				prof.add("MEET_OTHER", 1);
 				for (const v3s16 &modified_block : event->modified_blocks) {
-					setBlockNotSent(modified_block);
+					m_clients.markBlockposAsNotSent(modified_block);
 				}
 				break;
 			default:
@@ -1262,7 +1261,7 @@ void Server::setInventoryModified(const InventoryLocation &loc, bool playerSend)
 		if (block)
 			block->raiseModified(MOD_STATE_WRITE_NEEDED);
 
-		setBlockNotSent(blockpos);
+		m_clients.markBlockposAsNotSent(blockpos);
 	}
 		break;
 	case InventoryLocation::DETACHED:
@@ -2147,22 +2146,9 @@ void Server::sendAddNode(v3s16 p, MapNode n, u16 ignore_id,
 	}
 }
 
-void Server::setBlockNotSent(v3s16 p)
-{
-	std::vector<session_t> clients = m_clients.getClientIDs();
-	m_clients.lock();
-	for (const session_t i : clients) {
-		RemoteClient *client = m_clients.lockedGetClientNoEx(i);
-		client->SetBlockNotSent(p);
-	}
-	m_clients.unlock();
-}
-
 void Server::SendBlockNoLock(session_t peer_id, MapBlock *block, u8 ver,
 		u16 net_proto_version)
 {
-	v3s16 p = block->getPos();
-
 	/*
 		Create a packet with the block in the right format
 	*/
@@ -2174,7 +2160,7 @@ void Server::SendBlockNoLock(session_t peer_id, MapBlock *block, u8 ver,
 
 	NetworkPacket pkt(TOCLIENT_BLOCKDATA, 2 + 2 + 2 + 2 + s.size(), peer_id);
 
-	pkt << p;
+	pkt << block->getPos();
 	pkt.putRawString(s.c_str(), s.size());
 	Send(&pkt);
 }

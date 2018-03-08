@@ -648,6 +648,15 @@ std::vector<session_t> ClientInterface::getClientIDs(ClientState min_state)
 	return reply;
 }
 
+void ClientInterface::markBlockposAsNotSent(const v3s16 &pos)
+{
+	MutexAutoLock clientslock(m_clients_mutex);
+	for (const auto &client : m_clients) {
+		if (client.second->getState() >= CS_Active)
+			client.second->SetBlockNotSent(pos);
+	}
+}
+
 /**
  * Verify if user limit was reached.
  * User limit count all clients from HelloSent state (MT protocol user) to Active state
