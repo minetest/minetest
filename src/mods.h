@@ -45,16 +45,22 @@ struct ModSpec
 	bool is_modpack = false;
 	// if modpack:
 	std::map<std::string,ModSpec> modpack_content;
-	ModSpec(const std::string &name_="", const std::string &path_=""):
+	ModSpec(const std::string &name_ = "", const std::string &path_ = ""):
 		name(name_),
 		path(path_)
+	{}
+	ModSpec(const std::string &name_, const std::string &path_, bool p_o_m):
+		name(name_),
+		path(path_),
+		part_of_modpack(p_o_m)
 	{}
 };
 
 // Retrieves depends, optdepends, is_modpack and modpack_content
 void parseModContents(ModSpec &mod);
 
-std::map<std::string,ModSpec> getModsInPath(std::string path, bool part_of_modpack = false);
+std::map<std::string,ModSpec> getModsInPath(const std::string &path,
+	bool part_of_modpack = false);
 
 // replaces modpack Modspecs with their content
 std::vector<ModSpec> flattenMods(std::map<std::string,ModSpec> mods);

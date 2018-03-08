@@ -85,24 +85,31 @@ void parseModContents(ModSpec &spec)
 	}
 }
 
-std::map<std::string, ModSpec> getModsInPath(std::string path, bool part_of_modpack)
+std::map<std::string, ModSpec> getModsInPath(const std::string &path,
+	bool part_of_modpack)
 {
 	// NOTE: this function works in mutual recursion with parseModContents
 
 	std::map<std::string, ModSpec> result;
 	std::vector<fs::DirListNode> dirlist = fs::GetDirListing(path);
+	std::string modpath;
+
 	for (const fs::DirListNode &dln : dirlist) {
-		if(!dln.dir)
+		if (!dln.dir)
 			continue;
+
 		const std::string &modname = dln.name;
 		// Ignore all directories beginning with a ".", especially
 		// VCS directories like ".git" or ".svn"
 		if (modname[0] == '.')
 			continue;
-		std::string modpath = path + DIR_DELIM + modname;
 
-		ModSpec spec(modname, modpath);
-		spec.part_of_modpack = part_of_modpack;
+		modpath.clear();
+		modpath.append(path)
+			.append(DIR_DELIM)
+			.append(modname);
+
+		ModSpec spec(modname, modpath, part_of_modpack);
 		parseModContents(spec);
 		result.insert(std::make_pair(modname, spec));
 	}
