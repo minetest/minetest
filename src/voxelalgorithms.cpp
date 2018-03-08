@@ -995,21 +995,22 @@ void finish_bulk_light_update(Map *map, mapblock_v3 minblock,
 	// --- STEP 2: Get all newly inserted light sources
 
 	// For each block:
-	for (s16 b_x = minblock.X; b_x <= maxblock.X; b_x++)
-	for (s16 b_y = minblock.Y; b_y <= maxblock.Y; b_y++)
-	for (s16 b_z = minblock.Z; b_z <= maxblock.Z; b_z++) {
-		const v3s16 blockpos(b_x, b_y, b_z);
+	v3s16 blockpos;
+	v3s16 relpos;
+	for (blockpos.X = minblock.X; blockpos.X <= maxblock.X; blockpos.X++)
+	for (blockpos.Y = minblock.Y; blockpos.Y <= maxblock.Y; blockpos.Y++)
+	for (blockpos.Z = minblock.Z; blockpos.Z <= maxblock.Z; blockpos.Z++) {
 		MapBlock *block = map->getBlockNoCreateNoEx(blockpos);
 		if (!block || block->isDummy())
 			// Skip not existing blocks
 			continue;
 		// For each node in the block:
-		for (s32 x = 0; x < MAP_BLOCKSIZE; x++)
-		for (s32 z = 0; z < MAP_BLOCKSIZE; z++)
-		for (s32 y = 0; y < MAP_BLOCKSIZE; y++) {
-			v3s16 relpos(x, y, z);
-			MapNode node = block->getNodeNoCheck(x, y, z, &is_valid);
+		for (relpos.X = 0; relpos.X < MAP_BLOCKSIZE; relpos.X++)
+		for (relpos.Z = 0; relpos.Z < MAP_BLOCKSIZE; relpos.Z++)
+		for (relpos.Y = 0; relpos.Y < MAP_BLOCKSIZE; relpos.Y++) {
+			MapNode node = block->getNodeNoCheck(relpos.X, relpos.Y, relpos.Y, &is_valid);
 			const ContentFeatures &f = ndef->get(node);
+
 			// For each light bank
 			for (size_t b = 0; b < 2; b++) {
 				LightBank bank = banks[b];
@@ -1088,14 +1089,15 @@ void blit_back_with_light(ServerMap *map, MMVManip *vm,
 	}
 
 	// --- STEP 2: Get nodes from borders to unlight
+	v3s16 blockpos;
+	v3s16 relpos;
 
 	// In case there are unloaded holes in the voxel manipulator
 	// unlight each block.
 	// For each block:
-	for (s16 b_x = minblock.X; b_x <= maxblock.X; b_x++)
-	for (s16 b_y = minblock.Y; b_y <= maxblock.Y; b_y++)
-	for (s16 b_z = minblock.Z; b_z <= maxblock.Z; b_z++) {
-		v3s16 blockpos(b_x, b_y, b_z);
+	for (blockpos.X = minblock.X; blockpos.X <= maxblock.X; blockpos.X++)
+	for (blockpos.Y = minblock.Y; blockpos.Y <= maxblock.Y; blockpos.Y++)
+	for (blockpos.Z = minblock.Z; blockpos.Z <= maxblock.Z; blockpos.Z++) {
 		MapBlock *block = map->getBlockNoCreateNoEx(blockpos);
 		if (!block || block->isDummy())
 			// Skip not existing blocks.
@@ -1104,15 +1106,17 @@ void blit_back_with_light(ServerMap *map, MMVManip *vm,
 		// For each border of the block:
 		for (const VoxelArea &a : block_pad) {
 			// For each node of the border:
-			for (s32 x = a.MinEdge.X; x <= a.MaxEdge.X; x++)
-			for (s32 z = a.MinEdge.Z; z <= a.MaxEdge.Z; z++)
-			for (s32 y = a.MinEdge.Y; y <= a.MaxEdge.Y; y++) {
-				v3s16 relpos(x, y, z);
+			for (relpos.X = a.MinEdge.X; relpos.X <= a.MaxEdge.X; relpos.X++)
+			for (relpos.Z = a.MinEdge.Z; relpos.Z <= a.MaxEdge.Z; relpos.Z++)
+			for (relpos.Y = a.MinEdge.Y; relpos.Y <= a.MaxEdge.Y; relpos.Y++) {
+
 				// Get old and new node
-				MapNode oldnode = block->getNodeNoCheck(x, y, z, &is_valid);
+				MapNode oldnode = block->getNodeNoCheck(relpos.X, relpos.Y, relpos.Z, &is_valid);
 				const ContentFeatures &oldf = ndef->get(oldnode);
 				MapNode newnode = vm->getNodeNoExNoEmerge(relpos + offset);
-				const ContentFeatures &newf = ndef->get(newnode);
+				const ContentFeatures &newf = oldnode == newnode ? oldf :
+					ndef->get(newnode);
+
 				// For each light bank
 				for (size_t b = 0; b < 2; b++) {
 					LightBank bank = banks[b];
@@ -1229,13 +1233,14 @@ void repair_block_light(ServerMap *map, MapBlock *block,
 
 	// For each border of the block:
 	for (const VoxelArea &a : block_pad) {
+		v3s16 relpos;
 		// For each node of the border:
-		for (s32 x = a.MinEdge.X; x <= a.MaxEdge.X; x++)
-		for (s32 z = a.MinEdge.Z; z <= a.MaxEdge.Z; z++)
-		for (s32 y = a.MinEdge.Y; y <= a.MaxEdge.Y; y++) {
-			v3s16 relpos(x, y, z);
+		for (relpos.X = a.MinEdge.X; relpos.X <= a.MaxEdge.X; relpos.X++)
+		for (relpos.Z = a.MinEdge.Z; relpos.Z <= a.MaxEdge.Z; relpos.Z++)
+		for (relpos.Y = a.MinEdge.Y; relpos.Y <= a.MaxEdge.Y; relpos.Y++) {
+
 			// Get node
-			MapNode node = block->getNodeNoCheck(x, y, z, &is_valid);
+			MapNode node = block->getNodeNoCheck(relpos.X, relpos.Y, relpos.Z, &is_valid);
 			const ContentFeatures &f = ndef->get(node);
 			// For each light bank
 			for (size_t b = 0; b < 2; b++) {
