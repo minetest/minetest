@@ -317,7 +317,7 @@ Server::~Server()
 
 	{
 		MutexAutoLock envlock(m_env_mutex);
-		
+
 		infostream << "Server: Saving players" << std::endl;
 		m_env->saveLoadedPlayers();
 
@@ -3088,11 +3088,6 @@ bool Server::hudSetHotbarItemcount(RemotePlayer *player, s32 hotbar_itemcount)
 	writeS32(os, hotbar_itemcount);
 	SendHUDSetParam(player->getPeerId(), HUD_PARAM_HOTBAR_ITEMCOUNT, os.str());
 	return true;
-}
-
-s32 Server::hudGetHotbarItemcount(RemotePlayer *player) const
-{
-	return player->getHotbarItemcount();
 }
 
 void Server::hudSetHotbarImage(RemotePlayer *player, std::string name)

@@ -1462,9 +1462,7 @@ int ObjectRef::l_hud_get_hotbar_itemcount(lua_State *L)
 	if (player == NULL)
 		return 0;
 
-	s32 hotbar_itemcount = getServer(L)->hudGetHotbarItemcount(player);
-
-	lua_pushnumber(L, hotbar_itemcount);
+	lua_pushnumber(L, player->getHotbarItemcount());
 	return 1;
 }
 
