@@ -292,7 +292,6 @@ public:
 	bool hudSetHotbarItemcount(RemotePlayer *player, s32 hotbar_itemcount);
 	void hudSetHotbarImage(RemotePlayer *player, std::string name);
 	void hudSetHotbarSelectedImage(RemotePlayer *player, std::string name);
-	const std::string &hudGetHotbarSelectedImage(RemotePlayer *player) const;
 
 	Address getPeerAddress(session_t peer_id);
 
