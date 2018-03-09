@@ -539,7 +539,7 @@ int MapgenV7::generateTerrain()
 					vm->m_data[vi] = n_air;
 				}
 			}
-			vm->m_area.add_y(em, vi, 1);
+			VoxelArea::add_y(em, vi, 1);
 			index3d += ystride;
 		}
 	}

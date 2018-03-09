@@ -238,7 +238,7 @@ s16 Mapgen::findGroundLevelFull(v2s16 p2d)
 		if (ndef->get(n).walkable)
 			break;
 
-		vm->m_area.add_y(em, i, -1);
+		VoxelArea::add_y(em, i, -1);
 	}
 	return (y >= y_nodes_min) ? y : y_nodes_min - 1;
 }
@@ -256,7 +256,7 @@ s16 Mapgen::findGroundLevel(v2s16 p2d, s16 ymin, s16 ymax)
 		if (ndef->get(n).walkable)
 			break;
 
-		vm->m_area.add_y(em, i, -1);
+		VoxelArea::add_y(em, i, -1);
 	}
 	return (y >= ymin) ? y : -MAX_MAP_GENERATION_LIMIT;
 }
@@ -277,7 +277,7 @@ s16 Mapgen::findLiquidSurface(v2s16 p2d, s16 ymin, s16 ymax)
 		if (ndef->get(n).isLiquid())
 			break;
 
-		vm->m_area.add_y(em, i, -1);
+		VoxelArea::add_y(em, i, -1);
 	}
 	return (y >= ymin) ? y : -MAX_MAP_GENERATION_LIMIT;
 }
@@ -309,7 +309,7 @@ void Mapgen::getSurfaces(v2s16 p2d, s16 ymin, s16 ymax,
 	u32 vi = vm->m_area.index(p2d.X, ymax, p2d.Y);
 	MapNode mn_max = vm->m_data[vi];
 	bool walkable_above = ndef->get(mn_max).walkable;
-	vm->m_area.add_y(em, vi, -1);
+	VoxelArea::add_y(em, vi, -1);
 
 	for (s16 y = ymax - 1; y >= ymin; y--) {
 		MapNode mn = vm->m_data[vi];
@@ -321,7 +321,7 @@ void Mapgen::getSurfaces(v2s16 p2d, s16 ymin, s16 ymax,
 			ceilings.push_back(y + 1);
 		}
 
-		vm->m_area.add_y(em, vi, -1);
+		VoxelArea::add_y(em, vi, -1);
 		walkable_above = is_walkable;
 	}
 }
@@ -330,28 +330,28 @@ void Mapgen::getSurfaces(v2s16 p2d, s16 ymin, s16 ymax,
 inline bool Mapgen::isLiquidHorizontallyFlowable(u32 vi, v3s16 em)
 {
 	u32 vi_neg_x = vi;
-	vm->m_area.add_x(em, vi_neg_x, -1);
+	VoxelArea::add_x(em, vi_neg_x, -1);
 	if (vm->m_data[vi_neg_x].getContent() != CONTENT_IGNORE) {
 		const ContentFeatures &c_nx = ndef->get(vm->m_data[vi_neg_x]);
 		if (c_nx.floodable && !c_nx.isLiquid())
 			return true;
 	}
 	u32 vi_pos_x = vi;
-	vm->m_area.add_x(em, vi_pos_x, +1);
+	VoxelArea::add_x(em, vi_pos_x, +1);
 	if (vm->m_data[vi_pos_x].getContent() != CONTENT_IGNORE) {
 		const ContentFeatures &c_px = ndef->get(vm->m_data[vi_pos_x]);
 		if (c_px.floodable && !c_px.isLiquid())
 			return true;
 	}
 	u32 vi_neg_z = vi;
-	vm->m_area.add_z(em, vi_neg_z, -1);
+	VoxelArea::add_z(em, vi_neg_z, -1);
 	if (vm->m_data[vi_neg_z].getContent() != CONTENT_IGNORE) {
 		const ContentFeatures &c_nz = ndef->get(vm->m_data[vi_neg_z]);
 		if (c_nz.floodable && !c_nz.isLiquid())
 			return true;
 	}
 	u32 vi_pos_z = vi;
-	vm->m_area.add_z(em, vi_pos_z, +1);
+	VoxelArea::add_z(em, vi_pos_z, +1);
 	if (vm->m_data[vi_pos_z].getContent() != CONTENT_IGNORE) {
 		const ContentFeatures &c_pz = ndef->get(vm->m_data[vi_pos_z]);
 		if (c_pz.floodable && !c_pz.isLiquid())
@@ -395,7 +395,7 @@ void Mapgen::updateLiquid(UniqueQueue<v3s16> *trans_liquid, v3s16 nmin, v3s16 nm
 			} else {
 				// This is the topmost node below a liquid column
 				u32 vi_above = vi;
-				vm->m_area.add_y(em, vi_above, 1);
+				VoxelArea::add_y(em, vi_above, 1);
 				if (!waspushed && (ndef->get(vm->m_data[vi]).floodable ||
 						(!waschecked && isLiquidHorizontallyFlowable(vi_above, em)))) {
 					// Push back the lowest node in the column which is one
@@ -406,7 +406,7 @@ void Mapgen::updateLiquid(UniqueQueue<v3s16> *trans_liquid, v3s16 nmin, v3s16 nm
 
 			wasliquid = isliquid;
 			wasignored = isignored;
-			vm->m_area.add_y(em, vi, -1);
+			VoxelArea::add_y(em, vi, -1);
 		}
 	}
 }
@@ -502,14 +502,14 @@ void Mapgen::propagateSunlight(v3s16 nmin, v3s16 nmax, bool propagate_shadow)
 					propagate_shadow) {
 				continue;
 			}
-			vm->m_area.add_y(em, i, -1);
+			VoxelArea::add_y(em, i, -1);
 
 			for (int y = a.MaxEdge.Y; y >= a.MinEdge.Y; y--) {
 				MapNode &n = vm->m_data[i];
 				if (!ndef->get(n).sunlight_propagates)
 					break;
 				n.param1 = LIGHT_SUN;
-				vm->m_area.add_y(em, i, -1);
+				VoxelArea::add_y(em, i, -1);
 			}
 		}
 	}
@@ -773,7 +773,7 @@ void MapgenBasic::generateBiomes(MgStoneType *mgstone_type,
 				water_above = false;
 			}
 
-			vm->m_area.add_y(em, vi, -1);
+			VoxelArea::add_y(em, vi, -1);
 		}
 	}
 
@@ -820,7 +820,7 @@ void MapgenBasic::dustTopNodes()
 			if (vm->m_data[vi].getContent() != CONTENT_AIR)
 				break;
 
-			vm->m_area.add_y(em, vi, -1);
+			VoxelArea::add_y(em, vi, -1);
 		}
 
 		content_t c = vm->m_data[vi].getContent();
@@ -834,7 +834,7 @@ void MapgenBasic::dustTopNodes()
 				dtype == NDT_GLASSLIKE_FRAMED ||
 				dtype == NDT_ALLFACES) &&
 				ndef->get(c).walkable && c != biome->c_dust) {
-			vm->m_area.add_y(em, vi, 1);
+			VoxelArea::add_y(em, vi, 1);
 			vm->m_data[vi] = MapNode(biome->c_dust);
 		}
 	}

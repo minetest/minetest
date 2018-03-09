@@ -100,7 +100,7 @@ void CavesNoiseIntersection::generateCaves(MMVManip *vm,
 		// This 'roof' is removed when the mapchunk above is generated.
 		for (s16 y = nmax.Y; y >= nmin.Y - 1; y--,
 				index3d -= m_ystride,
-				vm->m_area.add_y(em, vi, -1)) {
+				VoxelArea::add_y(em, vi, -1)) {
 			content_t c = vm->m_data[vi].getContent();
 
 			if (c == CONTENT_AIR || c == biome->c_water_top ||
@@ -245,7 +245,7 @@ bool CavernsNoise::generateCaverns(MMVManip *vm, v3s16 nmin, v3s16 nmax)
 		// This 'roof' is excavated when the mapchunk above is generated.
 		for (s16 y = nmax.Y; y >= nmin.Y - 1; y--,
 				index3d -= m_ystride,
-				vm->m_area.add_y(em, vi, -1),
+				VoxelArea::add_y(em, vi, -1),
 				cavern_amp_index++) {
 			content_t c = vm->m_data[vi].getContent();
 			float n_absamp_cavern = fabs(noise_cavern->result[index3d]) *
