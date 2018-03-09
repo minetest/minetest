@@ -27,6 +27,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <map>
 #include <json/json.h>
 #include <unordered_set>
+#include "util/basic_macros.h"
 #include "config.h"
 #include "metadata.h"
 
@@ -146,20 +147,10 @@ public:
 };
 #endif
 
-struct ModLicenseInfo {
-	int id;
-	std::string shortinfo;
-	std::string url;
-};
-
-struct ModAuthorInfo {
-	int id;
-	std::string username;
-};
-
 class ModMetadata: public Metadata
 {
 public:
+	ModMetadata() = delete;
 	ModMetadata(const std::string &mod_name);
 	~ModMetadata() = default;
 
