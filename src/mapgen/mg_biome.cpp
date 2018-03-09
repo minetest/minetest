@@ -40,7 +40,7 @@ BiomeManager::BiomeManager(Server *server) :
 	// Create default biome to be used in case none exist
 	Biome *b = new Biome;
 
-	b->name            = "Default";
+	b->name            = "default";
 	b->flags           = 0;
 	b->depth_top       = 0;
 	b->depth_filler    = -MAX_MAP_GENERATION_LIMIT;
