@@ -257,6 +257,19 @@ public:
 	*/
 	u16 addActiveObject(ServerActiveObject *object);
 
+	/**
+	 * Verify if id is a free active object id
+	 * @param id
+	 * @return true if slot is free
+	 */
+	bool isFreeServerActiveObjectId(u16 id) const;
+
+	/**
+	 * Retrieve the next free activeobject ID
+	 * @return free activeobject ID or zero if not free ID found
+	 */
+	u16 getFreeServerActiveObjectId();
+
 	/*
 		Add an active object as a static object to the corresponding
 		MapBlock.
