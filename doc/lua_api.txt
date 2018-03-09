@@ -2283,10 +2283,11 @@ appearing when you don't expect them to. See `no_prepend[]`
 * `draw_border` (optional): draw border
 
 #### `box[<X>,<Y>;<W>,<H>;<color>]`
-* Simple colored semitransparent box
+* Simple colored box
 * `x` and `y` position the box relative to the top left of the menu
 * `w` and `h` are the size of box
-* `color` is color specified as a `ColorString`
+* `color` is color specified as a `ColorString`.
+  If the alpha component is left blank, the box will be semitransparent.
 
 #### `dropdown[<X>,<Y>;<W>;<name>;<item 1>,<item 2>, ...,<item n>;<selected idx>]`
 * Show a dropdown field

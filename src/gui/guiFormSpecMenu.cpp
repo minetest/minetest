@@ -1560,7 +1560,7 @@ void GUIFormSpecMenu::parseBox(parserData* data, const std::string &element)
 
 		video::SColor tmp_color;
 
-		if (parseColorString(parts[2], tmp_color, false)) {
+		if (parseColorString(parts[2], tmp_color, false, 0x8C)) {
 			BoxDrawSpec spec(pos, geom, tmp_color);
 
 			m_boxes.push_back(spec);
@@ -2514,8 +2514,6 @@ void GUIFormSpecMenu::drawMenu()
 	*/
 	for (const GUIFormSpecMenu::BoxDrawSpec &spec : m_boxes) {
 		irr::video::SColor todraw = spec.color;
-
-		todraw.setAlpha(140);
 
 		core::rect<s32> rect(spec.pos.X,spec.pos.Y,
 							spec.pos.X + spec.geom.X,spec.pos.Y + spec.geom.Y);

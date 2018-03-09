@@ -43,7 +43,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	#define BSD_ICONV_USED
 #endif
 
-static bool parseHexColorString(const std::string &value, video::SColor &color);
+static bool parseHexColorString(const std::string &value, video::SColor &color,
+		unsigned char default_alpha = 0xff);
 static bool parseNamedColorString(const std::string &value, video::SColor &color);
 
 #ifndef _WIN32
@@ -464,12 +465,13 @@ u64 read_seed(const char *str)
 	return num;
 }
 
-bool parseColorString(const std::string &value, video::SColor &color, bool quiet)
+bool parseColorString(const std::string &value, video::SColor &color, bool quiet,
+		unsigned char default_alpha)
 {
 	bool success;
 
 	if (value[0] == '#')
-		success = parseHexColorString(value, color);
+		success = parseHexColorString(value, color, default_alpha);
 	else
 		success = parseNamedColorString(value, color);
 
@@ -479,9 +481,10 @@ bool parseColorString(const std::string &value, video::SColor &color, bool quiet
 	return success;
 }
 
-static bool parseHexColorString(const std::string &value, video::SColor &color)
+static bool parseHexColorString(const std::string &value, video::SColor &color,
+		unsigned char default_alpha)
 {
-	unsigned char components[] = { 0x00, 0x00, 0x00, 0xff }; // R,G,B,A
+	unsigned char components[] = { 0x00, 0x00, 0x00, default_alpha }; // R,G,B,A
 
 	if (value[0] != '#')
 		return false;
