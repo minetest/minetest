@@ -55,12 +55,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "irrlicht_changes/static_text.h"
 #include "guiscalingfilter.h"
 #include "guiEditBoxWithScrollbar.h"
-
-#if USE_FREETYPE && IRRLICHT_VERSION_MAJOR == 1 && IRRLICHT_VERSION_MINOR < 9
 #include "intlGUIEditBox.h"
-#include "mainmenumanager.h"
-
-#endif
 
 #define MY_CHECKPOS(a,b)													\
 	if (v_pos.size() != 2) {												\
@@ -1007,6 +1002,71 @@ void GUIFormSpecMenu::parsePwdField(parserData* data, const std::string &element
 	errorstream<< "Invalid pwdfield element(" << parts.size() << "): '" << element << "'"  << std::endl;
 }
 
+void GUIFormSpecMenu::createTextField(parserData *data, FieldSpec &spec,
+	core::rect<s32> &rect, bool is_multiline)
+{
+	bool is_editable = !spec.fname.empty();
+	if (!is_editable && !is_multiline) {
+		// spec field id to 0, this stops submit searching for a value that isn't there
+		gui::StaticText::add(Environment, spec.flabel.c_str(), rect, false, true,
+			this, spec.fid);
+		return;
+	}
+
+	if (is_editable) {
+		spec.send = true;
+	} else if (is_multiline &&
+			spec.fdefault.empty() && !spec.flabel.empty()) {
+		// Multiline textareas: swap default and label for backwards compat
+		spec.flabel.swap(spec.fdefault);
+	}
+
+	gui::IGUIEditBox *e = nullptr;
+	static constexpr bool use_intl_edit_box = USE_FREETYPE &&
+		IRRLICHT_VERSION_MAJOR == 1 && IRRLICHT_VERSION_MINOR < 9;
+
+	if (use_intl_edit_box && g_settings->getBool("freetype")) {
+		e = new gui::intlGUIEditBox(spec.fdefault.c_str(),
+			true, Environment, this, spec.fid, rect, is_editable, is_multiline);
+		e->drop();
+	} else {
+		if (is_multiline)
+			e = new GUIEditBoxWithScrollBar(spec.fdefault.c_str(), true,
+				Environment, this, spec.fid, rect, is_editable, true);
+		else if (is_editable)
+			e = Environment->addEditBox(spec.fdefault.c_str(), rect, true,
+				this, spec.fid);
+	}
+
+	if (e) {
+		if (is_editable && spec.fname == data->focused_fieldname) 
+			Environment->setFocus(e);
+
+		if (is_multiline) {
+			e->setMultiLine(true);
+			e->setWordWrap(true);
+			e->setTextAlignment(gui::EGUIA_UPPERLEFT, gui::EGUIA_UPPERLEFT);
+		} else {
+			irr::SEvent evt;
+			evt.EventType            = EET_KEY_INPUT_EVENT;
+			evt.KeyInput.Key         = KEY_END;
+			evt.KeyInput.Char        = 0;
+			evt.KeyInput.Control     = 0;
+			evt.KeyInput.Shift       = 0;
+			evt.KeyInput.PressedDown = true;
+			e->OnEvent(evt);
+		}
+	}
+
+	if (!spec.flabel.empty()) {
+		int font_height = g_fontengine->getTextHeight();
+		rect.UpperLeftCorner.Y -= font_height;
+		rect.LowerRightCorner.Y = rect.UpperLeftCorner.Y + font_height;
+		gui::StaticText::add(Environment, spec.flabel.c_str(), rect, false, true,
+			this, 0);
+	}
+}
+
 void GUIFormSpecMenu::parseSimpleField(parserData* data,
 		std::vector<std::string> &parts)
 {
@@ -1040,46 +1100,7 @@ void GUIFormSpecMenu::parseSimpleField(parserData* data,
 		258+m_fields.size()
 	);
 
-	if (name.empty()) {
-		// spec field id to 0, this stops submit searching for a value that isn't there
-		gui::StaticText::add(Environment, spec.flabel.c_str(), rect, false, true, this,
-			spec.fid);
-	} else {
-		spec.send = true;
-		gui::IGUIElement *e;
-#if USE_FREETYPE && IRRLICHT_VERSION_MAJOR == 1 && IRRLICHT_VERSION_MINOR < 9
-		if (g_settings->getBool("freetype")) {
-			e = (gui::IGUIElement *) new gui::intlGUIEditBox(spec.fdefault.c_str(),
-				true, Environment, this, spec.fid, rect);
-			e->drop();
-		} else {
-#else
-		{
-#endif
-			e = Environment->addEditBox(spec.fdefault.c_str(), rect, true, this, spec.fid);
-		}
-		if (spec.fname == data->focused_fieldname) {
-			Environment->setFocus(e);
-		}
-
-		irr::SEvent evt;
-		evt.EventType            = EET_KEY_INPUT_EVENT;
-		evt.KeyInput.Key         = KEY_END;
-		evt.KeyInput.Char        = 0;
-		evt.KeyInput.Control     = 0;
-		evt.KeyInput.Shift       = 0;
-		evt.KeyInput.PressedDown = true;
-		e->OnEvent(evt);
-
-		if (label.length() >= 1)
-		{
-			int font_height = g_fontengine->getTextHeight();
-			rect.UpperLeftCorner.Y -= font_height;
-			rect.LowerRightCorner.Y = rect.UpperLeftCorner.Y + font_height;
-			gui::StaticText::add(Environment, spec.flabel.c_str(), rect, false, true,
-				this, 0);
-		}
-	}
+	createTextField(data, spec, rect, false);
 
 	if (parts.size() >= 4) {
 		// TODO: remove after 2016-11-03
@@ -1142,56 +1163,7 @@ void GUIFormSpecMenu::parseTextArea(parserData* data, std::vector<std::string>& 
 		258+m_fields.size()
 	);
 
-	bool is_editable = !name.empty();
-
-	if (is_editable)
-		spec.send = true;
-
-	gui::IGUIEditBox *e = nullptr;
-	const wchar_t *text = spec.fdefault.empty() ?
-		wlabel.c_str() : spec.fdefault.c_str();
-
-#if USE_FREETYPE && IRRLICHT_VERSION_MAJOR == 1 && IRRLICHT_VERSION_MINOR < 9
-	if (g_settings->getBool("freetype")) {
-		e = (gui::IGUIEditBox *) new gui::intlGUIEditBox(text,
-			true, Environment, this, spec.fid, rect, is_editable, true);
-		e->drop();
-	} else {
-#else
-	{
-#endif
-		e = new GUIEditBoxWithScrollBar(text, true,
-			Environment, this, spec.fid, rect, is_editable, true);
-	}
-
-	if (is_editable && spec.fname == data->focused_fieldname)
-		Environment->setFocus(e);
-
-	if (e) {
-		if (type == "textarea")
-		{
-			e->setMultiLine(true);
-			e->setWordWrap(true);
-			e->setTextAlignment(gui::EGUIA_UPPERLEFT, gui::EGUIA_UPPERLEFT);
-		} else {
-			irr::SEvent evt;
-			evt.EventType            = EET_KEY_INPUT_EVENT;
-			evt.KeyInput.Key         = KEY_END;
-			evt.KeyInput.Char        = 0;
-			evt.KeyInput.Control     = 0;
-			evt.KeyInput.Shift       = 0;
-			evt.KeyInput.PressedDown = true;
-			e->OnEvent(evt);
-		}
-	}
-
-	if (is_editable && !label.empty()) {
-		int font_height = g_fontengine->getTextHeight();
-		rect.UpperLeftCorner.Y -= font_height;
-		rect.LowerRightCorner.Y = rect.UpperLeftCorner.Y + font_height;
-		gui::StaticText::add(Environment, spec.flabel.c_str(), rect, false, true,
-			this, 0);
-	}
+	createTextField(data, spec, rect, type == "textarea");
 
 	if (parts.size() >= 6) {
 		// TODO: remove after 2016-11-03
