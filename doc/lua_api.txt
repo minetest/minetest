@@ -368,7 +368,8 @@ Parameters:
 * `<p>` = current animation frame
 
 Draw a step of the crack animation on the texture.
-`crack` draws it normally, while `cracko` lays it over, keeping transparent pixels intact.
+`crack` draws it normally, while `cracko` lays it over, keeping transparent
+pixels intact.
 
 Example:
 
@@ -457,7 +458,8 @@ Example:
     default_stone.png^[transformFXR90
 
 #### `[inventorycube{<top>{<left>{<right>`
-Escaping does not apply here and `^` is replaced by `&` in texture names instead.
+Escaping does not apply here and `^` is replaced by `&` in texture names
+instead.
 
 Create an inventory cube texture using the side textures.
 
@@ -510,8 +512,8 @@ texture pixel.
 Multiplies texture colors with the given color.
 `<color>` is specified as a `ColorString`.
 Result is more like what you'd expect if you put a color on top of another
-color. Meaning white surfaces get a lot of your new color while black parts don't
-change very much.
+color. Meaning white surfaces get a lot of your new color while black parts
+don't change very much.
 
 Hardware coloring
 -----------------
@@ -808,16 +810,19 @@ the global `minetest.registered_*` tables.
 
 * `minetest.register_decoration(decoration definition)`
     * returns an integer uniquely identifying the registered decoration
-    * added to `minetest.registered_decorations` with the key of `decoration.name`
+    * added to `minetest.registered_decorations` with the key of
+      `decoration.name`.
     * if `decoration.name` is nil, the key is the returned ID
 
 * `minetest.register_schematic(schematic definition)`
     * returns an integer uniquely identifying the registered schematic
     * added to `minetest.registered_schematic` with the key of `schematic.name`
     * if `schematic.name` is nil, the key is the returned ID
-    * if the schematic is loaded from a file, schematic.name is set to the filename
-    * if the function is called when loading the mod, and schematic.name is a relative
-      path, then the current mod path will be prepended to the schematic filename
+    * if the schematic is loaded from a file, schematic.name is set to the
+      filename.
+    * if the function is called when loading the mod, and schematic.name is a
+      relative path, then the current mod path will be prepended to the
+      schematic filename.
 
 * `minetest.clear_registered_biomes()`
     * clears all biomes currently registered
@@ -909,20 +914,22 @@ node definition:
     ^ Only valid for "nodebox" with 'type = "leveled"', and "plantlike_rooted".
       Leveled nodebox:
         The level of the top face of the nodebox is stored in param2.
-        The other faces are defined by 'fixed = {}' like 'type = "fixed"' nodeboxes.
+        The other faces are defined by 'fixed = {}' like 'type = "fixed"'
+        nodeboxes.
         The nodebox height is (param2 / 64) nodes.
         The maximum accepted value of param2 is 127.
       Rooted plantlike:
         The height of the 'plantlike' section is stored in param2.
         The height is (param2 / 16) nodes.
     paramtype2 == "degrotate"
-    ^ The rotation of this node is stored in param2. Plants are rotated this way.
+    ^ Only valid for "plantlike". The rotation of the node is stored in param2.
       Values range 0 - 179. The value stored in param2 is multiplied by two to
-      get the actual rotation of the node.
+      get the actual rotation in degrees of the node.
     paramtype2 == "meshoptions"
-    ^ Only valid for "plantlike". The value of param2 becomes a bitfield which can
-      be used to change how the client draws plantlike nodes. Bits 0, 1 and 2 form
-      a mesh selector. Currently the following meshes are choosable:
+    ^ Only valid for "plantlike". The value of param2 becomes a bitfield which
+      can be used to change how the client draws plantlike nodes.
+      Bits 0, 1 and 2 form a mesh selector.
+      Currently the following meshes are choosable:
         0 = a "x" shaped plant (ordinary plant)
         1 = a "+" shaped plant (just rotated 45 degrees)
         2 = a "*" shaped plant with 3 faces instead of 2
@@ -949,7 +956,8 @@ node definition:
       is picked from the palette.
       The palette should have 32 pixels.
     paramtype2 == "glasslikeliquidlevel"
-    ^ Only valid for "glasslike_framed" or "glasslike_framed_optional" drawtypes.
+    ^ Only valid for "glasslike_framed" or "glasslike_framed_optional"
+      drawtypes.
       param2 values 0-63 define 64 levels of internal liquid, 0 being empty and
       63 being full.
       Liquid texture is defined using `special_tiles = {"modname_tilename.png"},`
@@ -981,7 +989,8 @@ Look for examples in `games/minimal` or `games/minetest_game`.
 * `mesh` -- Use models for nodes, see below
 * `plantlike_rooted` -- See below
 
-`*_optional` drawtypes need less rendering time if deactivated (always client side).
+`*_optional` drawtypes need less rendering time if deactivated
+(always client side).
 
 Node boxes
 ----------
@@ -1002,9 +1011,9 @@ A nodebox is defined as any of:
         fixed = box OR {box1, box2, ...}
     }
     {
-        -- A variable height box (or boxes) with the top face position defined by
-        -- the node parameter 'leveled = ', or if 'paramtype2 == "leveled"' by
-        -- param2.
+        -- A variable height box (or boxes) with the top face position defined
+        -- by the node parameter 'leveled = ', or if 'paramtype2 == "leveled"'
+        -- by param2.
         -- Other faces are defined by 'fixed = {}' as with 'type = "fixed"'.
         type = "leveled",
         fixed = box OR {box1, box2, ...}
@@ -1038,7 +1047,8 @@ A nodebox is defined as any of:
         disconnected_back = box OR {box1, box2, ...}
         disconnected_right = box OR {box1, box2, ...}
         disconnected = box OR {box1, box2, ...} -- when there is *no* neighbour
-        disconnected_sides = box OR {box1, box2, ...} -- when there are *no* neighbours to the sides
+        disconnected_sides = box OR {box1, box2, ...} -- when there are *no*
+                                                        neighbours to the sides
     }
 
 A `box` is defined as:
@@ -1080,14 +1090,16 @@ Offset that the noise is translated by (i.e. added) after calculation.
 Factor that the noise is scaled by (i.e. multiplied) after calculation.
 
 ### `spread`
-Vector containing values by which each coordinate is divided by before calculation.
+Vector containing values by which each coordinate is divided by before
+calculation.
 Higher spread values result in larger noise features.
 
 A value of `{x=250, y=250, z=250}` is common.
 
 ### `seed`
-Random seed for the noise. Add the world seed to a seed offset for world-unique noise.
-In the case of `minetest.get_perlin()`, this value has the world seed automatically added.
+Random seed for the noise. Add the world seed to a seed offset for world-unique
+noise. In the case of `minetest.get_perlin()`, this value has the world seed
+automatically added.
 
 ### `octaves`
 Number of times the noise gradient is accumulated into the noise.
@@ -1097,10 +1109,11 @@ Increase this number to increase the amount of detail in the resulting noise.
 A value of `6` is common.
 
 ### `persistence`
-Factor by which the effect of the noise gradient function changes with each successive octave.
+Factor by which the effect of the noise gradient function changes with each
+successive octave.
 
-Values less than `1` make the details of successive octaves' noise diminish, while values
-greater than `1` make successive octaves stronger.
+Values less than `1` make the details of successive octaves' noise diminish,
+while values greater than `1` make successive octaves stronger.
 
 A value of `0.6` is common.
 
@@ -1115,13 +1128,15 @@ Leave this field unset for no special handling.
 Currently supported are `defaults`, `eased` and `absvalue`.
 
 #### `defaults`
-Specify this if you would like to keep auto-selection of eased/not-eased while specifying
-some other flags.
+Specify this if you would like to keep auto-selection of eased/not-eased while
+specifying some other flags.
 
 #### `eased`
-Maps noise gradient values onto a quintic S-curve before performing interpolation.
-This results in smooth, rolling noise. Disable this (`noeased`) for sharp-looking noise.
-If no flags are specified (or defaults is), 2D noise is eased and 3D noise is not eased.
+Maps noise gradient values onto a quintic S-curve before performing
+interpolation. This results in smooth, rolling noise.
+Disable this (`noeased`) for sharp-looking noise.
+If no flags are specified (or defaults is), 2D noise is eased and 3D noise is
+not eased.
 
 #### `absvalue`
 Accumulates the absolute value of each noise gradient result.
@@ -1151,9 +1166,9 @@ All default ores are of the uniformly-distributed scatter type.
 ### `scatter`
 Randomly chooses a location and generates a cluster of ore.
 
-If `noise_params` is specified, the ore will be placed if the 3D perlin noise at
-that point is greater than the `noise_threshold`, giving the ability to create
-a non-equal distribution of ore.
+If `noise_params` is specified, the ore will be placed if the 3D perlin noise
+at that point is greater than the `noise_threshold`, giving the ability to
+create a non-equal distribution of ore.
 
 ### `sheet`
 Creates a sheet of ore in a blob shape according to the 2D perlin noise
@@ -1164,29 +1179,31 @@ This sheet consists of vertical columns of uniform randomly distributed height,
 varying between the inclusive range `column_height_min` and `column_height_max`.
 If `column_height_min` is not specified, this parameter defaults to 1.
 If `column_height_max` is not specified, this parameter defaults to `clust_size`
-for reverse compatibility.  New code should prefer `column_height_max`.
+for reverse compatibility. New code should prefer `column_height_max`.
 
-The `column_midpoint_factor` parameter controls the position of the column at which
-ore emanates from.  If 1, columns grow upward.  If 0, columns grow downward.  If 0.5,
-columns grow equally starting from each direction.  `column_midpoint_factor` is a
-decimal number ranging in value from 0 to 1.  If this parameter is not specified,
-the default is 0.5.
+The `column_midpoint_factor` parameter controls the position of the column at
+which ore emanates from.
+If 1, columns grow upward. If 0, columns grow downward. If 0.5, columns grow
+equally starting from each direction.
+`column_midpoint_factor` is a decimal number ranging in value from 0 to 1. If
+this parameter is not specified, the default is 0.5.
 
-The ore parameters `clust_scarcity` and `clust_num_ores` are ignored for this ore type.
+The ore parameters `clust_scarcity` and `clust_num_ores` are ignored for this
+ore type.
 
 ### `puff`
 Creates a sheet of ore in a cloud-like puff shape.
 
 As with the `sheet` ore type, the size and shape of puffs are described by
-`noise_params` and `noise_threshold` and are placed at random vertical positions
-within the currently generated chunk.
+`noise_params` and `noise_threshold` and are placed at random vertical
+positions within the currently generated chunk.
 
-The vertical top and bottom displacement of each puff are determined by the noise
-parameters `np_puff_top` and `np_puff_bottom`, respectively.
+The vertical top and bottom displacement of each puff are determined by the
+noise parameters `np_puff_top` and `np_puff_bottom`, respectively.
 
 ### `blob`
 Creates a deformed sphere of ore according to 3d perlin noise described by
-`noise_params`.  The maximum size of the blob is `clust_size`, and
+`noise_params`. The maximum size of the blob is `clust_size`, and
 `clust_scarcity` has the same meaning as with the `scatter` type.
 
 ### `vein`
@@ -1195,8 +1212,8 @@ instances of 3d perlin noise with different seeds, both described by
 `noise_params`.
 
 `random_factor` varies the influence random chance has on placement of an ore
-inside the vein, which is `1` by default. Note that modifying this parameter may
-require adjusting `noise_threshold`.
+inside the vein, which is `1` by default. Note that modifying this parameter
+may require adjusting `noise_threshold`.
 
 The parameters `clust_scarcity`, `clust_num_ores`, and `clust_size` are ignored
 by this ore type.
@@ -1222,8 +1239,8 @@ computationally expensive than any other ore.
 Creates a single undulating ore stratum that is continuous across mapchunk
 borders and horizontally spans the world.
 
-The 2D perlin noise described by `noise_params` defines the Y co-ordinate of the
-stratum midpoint. The 2D perlin noise described by `np_stratum_thickness`
+The 2D perlin noise described by `noise_params` defines the Y co-ordinate of
+the stratum midpoint. The 2D perlin noise described by `np_stratum_thickness`
 defines the stratum's vertical thickness (in units of nodes). Due to being
 continuous across mapchunk borders the stratum's vertical thickness is
 unlimited.
@@ -1234,8 +1251,8 @@ to y_max in a simple horizontal stratum.
 A parameter `stratum_thickness` can be provided instead of the noise parameter
 `np_stratum_thickness`, to create a constant thickness.
 
-Leaving out one or both noise parameters makes the ore generation less intensive,
-useful when adding multiple strata.
+Leaving out one or both noise parameters makes the ore generation less
+intensive, useful when adding multiple strata.
 
 `y_min` and `y_max` define the limits of the ore generation and for performance
 reasons should be set as close together as possible but without clipping the
@@ -1255,15 +1272,16 @@ Currently supported flags:
 `puff_cliffs`, `puff_additive_composition`.
 
 ### `puff_cliffs`
-If set, puff ore generation will not taper down large differences in displacement
-when approaching the edge of a puff.  This flag has no effect for ore types other
-than `puff`.
+If set, puff ore generation will not taper down large differences in
+displacement when approaching the edge of a puff. This flag has no effect for
+ore types other than `puff`.
 
 ### `puff_additive_composition`
-By default, when noise described by `np_puff_top` or `np_puff_bottom` results in a
-negative displacement, the sub-column at that point is not generated.  With this
-attribute set, puff ore generation will instead generate the absolute difference in
-noise displacement values.  This flag has no effect for ore types other than `puff`.
+By default, when noise described by `np_puff_top` or `np_puff_bottom` results
+in a negative displacement, the sub-column at that point is not generated. With
+this attribute set, puff ore generation will instead generate the absolute
+difference in noise displacement values. This flag has no effect for ore types
+other than `puff`.
 
 Decoration types
 ----------------
@@ -1290,22 +1308,28 @@ A schematic specifier identifies a schematic by either a filename to a
 Minetest Schematic file (`.mts`) or through raw data supplied through Lua,
 in the form of a table.  This table specifies the following fields:
 
-* The `size` field is a 3D vector containing the dimensions of the provided schematic. (required)
-* The `yslice_prob` field is a table of {ypos, prob} which sets the `ypos`th vertical slice
-  of the schematic to have a `prob / 256 * 100` chance of occurring. (default: 255)
+* The `size` field is a 3D vector containing the dimensions of the provided
+  schematic. (required)
+* The `yslice_prob` field is a table of {ypos, prob} which sets the `ypos`th
+  vertical slice of the schematic to have a `prob / 256 * 100` chance of
+  occurring. (default: 255)
 * The `data` field is a flat table of MapNode tables making up the schematic,
   in the order of `[z [y [x]]]`. (required)
   Each MapNode table contains:
     * `name`: the name of the map node to place (required)
-    * `prob` (alias `param1`): the probability of this node being placed (default: 255)
-    * `param2`: the raw param2 value of the node being placed onto the map (default: 0)
-    * `force_place`: boolean representing if the node should forcibly overwrite any
-    previous contents (default: false)
+    * `prob` (alias `param1`): the probability of this node being placed
+      (default: 255)
+    * `param2`: the raw param2 value of the node being placed onto the map
+      (default: 0)
+    * `force_place`: boolean representing if the node should forcibly overwrite
+      any previous contents (default: false)
 
 About probability values:
 
-* A probability value of `0` or `1` means that node will never appear (0% chance).
-* A probability value of `254` or `255` means the node will always appear (100% chance).
+* A probability value of `0` or `1` means that node will never appear
+  (0% chance).
+* A probability value of `254` or `255` means the node will always appear
+  (100% chance).
 * If the probability value `p` is greater than `1`, then there is a
   `(p / 256 * 100)` percent chance that node will appear when the schematic is
   placed on the map.
@@ -1321,7 +1345,8 @@ Currently supported flags: `place_center_x`, `place_center_y`, `place_center_z`,
 * `place_center_x`: Placement of this decoration is centered along the X axis.
 * `place_center_y`: Placement of this decoration is centered along the Y axis.
 * `place_center_z`: Placement of this decoration is centered along the Z axis.
-* `force_placement`: Schematic nodes other than "ignore" will replace existing nodes.
+* `force_placement`: Schematic nodes other than "ignore" will replace existing
+  nodes.
 
 
 HUD element types
