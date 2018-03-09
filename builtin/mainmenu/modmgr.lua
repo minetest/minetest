@@ -335,8 +335,8 @@ function modmgr.installmod(modfilename,basename)
 	local modpath = modmgr.extract(modfile)
 
 	if modpath == nil then
-		gamedata.errormessage = fgettext("Install Mod: file: \"$1\"", modfile.name) ..
-			fgettext("\nInstall Mod: unsupported filetype \"$1\" or broken archive", modfile.type)
+		gamedata.errormessage = fgettext("Install mod: File: \"$1\"", modfile.name) ..
+			fgettext("\nInstall mod: Unsupported filetype \"$1\" or broken archive", modfile.type)
 		return
 	end
 
@@ -359,7 +359,7 @@ function modmgr.installmod(modfilename,basename)
 				gamedata.errormessage = fgettext("Failed to install $1 to $2", basename, targetpath)
 			end
 		else
-			gamedata.errormessage = fgettext("Install Mod: unable to find suitable foldername for modpack $1", modfilename)
+			gamedata.errormessage = fgettext("Install mod: Unable to find suitable folder name for modpack $1", modfilename)
 		end
 	end
 
@@ -379,7 +379,7 @@ function modmgr.installmod(modfilename,basename)
 			local targetpath = core.get_modpath() .. DIR_DELIM .. targetfolder
 			core.copy_dir(basefolder.path,targetpath)
 		else
-			gamedata.errormessage = fgettext("Install Mod: unable to find real modname for: $1", modfilename)
+			gamedata.errormessage = fgettext("Install mod: Unable to find real mod-name for: $1", modfilename)
 		end
 	end
 
