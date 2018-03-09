@@ -476,16 +476,33 @@ int ModApiMapgen::l_get_biome_id(lua_State *L)
 		return 0;
 
 	BiomeManager *bmgr = getServer(L)->getEmergeManager()->biomemgr;
-
 	if (!bmgr)
 		return 0;
 
 	Biome *biome = (Biome *)bmgr->getByName(biome_str);
-
 	if (!biome || biome->index == OBJDEF_INVALID_INDEX)
 		return 0;
 
 	lua_pushinteger(L, biome->index);
+
+	return 1;
+}
+
+
+// get_biome_name(biome_id)
+// returns the biome name string
+int ModApiMapgen::l_get_biome_name(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+
+	int biome_id = luaL_checkinteger(L, 1);
+
+	BiomeManager *bmgr = getServer(L)->getEmergeManager()->biomemgr;
+	if (!bmgr)
+		return 0;
+
+	Biome *b = (Biome *)bmgr->getRaw(biome_id);
+	lua_pushstring(L, b->name.c_str());
 
 	return 1;
 }
@@ -1731,6 +1748,7 @@ int ModApiMapgen::l_serialize_schematic(lua_State *L)
 void ModApiMapgen::Initialize(lua_State *L, int top)
 {
 	API_FCT(get_biome_id);
+	API_FCT(get_biome_name);
 	API_FCT(get_heat);
 	API_FCT(get_humidity);
 	API_FCT(get_biome_data);

@@ -28,6 +28,10 @@ private:
 	// returns the biome id as used in biomemap and returned by 'get_biome_data()'
 	static int l_get_biome_id(lua_State *L);
 
+	// get_biome_name(biome_id)
+	// returns the biome name string
+	static int l_get_biome_name(lua_State *L);
+
 	// get_heat(pos)
 	// returns the heat at the position
 	static int l_get_heat(lua_State *L);

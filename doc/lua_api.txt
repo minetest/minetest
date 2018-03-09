@@ -2959,6 +2959,10 @@ handler.
 * `minetest.get_biome_id(biome_name)`
     * Returns the biome id, as used in the biomemap Mapgen object and returned
       by `minetest.get_biome_data(pos)`, for a given biome_name string.
+* `minetest.get_biome_name(biome_id)`
+    * Returns the biome name string for the provided biome id, or `nil` on
+      failure.
+    * If no biomes have been registered, such as in mgv6, returns `default`.
 * `minetest.get_mapgen_params()`
     * Deprecated: use `minetest.get_mapgen_setting(name)` instead.
     * Returns a table containing:
