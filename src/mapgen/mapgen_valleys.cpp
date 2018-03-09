@@ -540,7 +540,7 @@ int MapgenValleys::generateTerrain()
 				}
 			}
 
-			vm->m_area.add_y(em, index_data, 1);
+			VoxelArea::add_y(em, index_data, 1);
 			index_3d += ystride;
 		}
 
@@ -668,7 +668,7 @@ void MapgenValleys::generateCaves(s16 max_stone_y, s16 large_cave_depth)
 		// This 'roof' is removed when the mapchunk above is generated.
 		for (s16 y = node_max.Y; y >= node_min.Y - 1; y--,
 				index_3d -= ystride,
-				vm->m_area.add_y(em, index_data, -1)) {
+				VoxelArea::add_y(em, index_data, -1)) {
 
 			float terrain = noise_terrain_height->result[index_2d];
 
@@ -705,7 +705,7 @@ void MapgenValleys::generateCaves(s16 max_stone_y, s16 large_cave_depth)
 					// at the tunnel floor
 					s16 sr = ps.range(0, 39);
 					u32 j = index_data;
-					vm->m_area.add_y(em, j, 1);
+					VoxelArea::add_y(em, j, 1);
 
 					if (sr > terrain - y) {
 						// Put biome nodes in tunnels near the surface

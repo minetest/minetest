@@ -1111,7 +1111,7 @@ void blit_back_with_light(ServerMap *map, MMVManip *vm,
 			for (relpos.Y = a.MinEdge.Y; relpos.Y <= a.MaxEdge.Y; relpos.Y++) {
 
 				// Get old and new node
-				MapNode oldnode = block->getNodeNoCheck(relpos.X, relpos.Y, relpos.Z, &is_valid);
+				MapNode oldnode = block->getNodeNoCheck(relpos, &is_valid);
 				const ContentFeatures &oldf = ndef->get(oldnode);
 				MapNode newnode = vm->getNodeNoExNoEmerge(relpos + offset);
 				const ContentFeatures &newf = oldnode == newnode ? oldf :
@@ -1240,7 +1240,7 @@ void repair_block_light(ServerMap *map, MapBlock *block,
 		for (relpos.Y = a.MinEdge.Y; relpos.Y <= a.MaxEdge.Y; relpos.Y++) {
 
 			// Get node
-			MapNode node = block->getNodeNoCheck(relpos.X, relpos.Y, relpos.Z, &is_valid);
+			MapNode node = block->getNodeNoCheck(relpos, &is_valid);
 			const ContentFeatures &f = ndef->get(node);
 			// For each light bank
 			for (size_t b = 0; b < 2; b++) {

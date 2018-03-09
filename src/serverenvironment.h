@@ -265,8 +265,8 @@ public:
 	bool isFreeServerActiveObjectId(u16 id) const;
 
 	/**
-	 * Retrieve the next free activeobject ID
-	 * @return free activeobject ID or zero if not free ID found
+	 * Retrieve the first free ActiveObject ID
+	 * @return free activeobject ID or 0 if none was found
 	 */
 	u16 getFreeServerActiveObjectId();
 
