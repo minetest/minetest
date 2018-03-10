@@ -2390,9 +2390,7 @@ video::ITexture *TextureSource::getShaderFlagsTexture(bool normalmap_present)
 
 }
 
-const std::vector<std::string> &getTextureDirs()
+std::vector<std::string> getTextureDirs()
 {
-	static thread_local std::vector<std::string> dirs =
-		fs::GetRecursiveDirs(g_settings->get("texture_path"));
-	return dirs;
+	return fs::GetRecursiveDirs(g_settings->get("texture_path"));
 }

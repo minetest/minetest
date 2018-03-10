@@ -339,4 +339,4 @@ struct TileSpec
 	TileLayer layers[MAX_TILE_LAYERS];
 };
 
-const std::vector<std::string> &getTextureDirs();
+std::vector<std::string> getTextureDirs();
