@@ -27,6 +27,22 @@ public:
 
 	void runTests(IGameDef *gamedef);
 
+	void test_index_xyz_all_pos();
+	void test_index_xyz_x_neg();
+	void test_index_xyz_y_neg();
+	void test_index_xyz_z_neg();
+	void test_index_xyz_xy_neg();
+	void test_index_xyz_xz_neg();
+	void test_index_xyz_yz_neg();
+	void test_index_xyz_all_neg();
+	void test_index_v3s16_all_pos();
+	void test_index_v3s16_x_neg();
+	void test_index_v3s16_y_neg();
+	void test_index_v3s16_z_neg();
+	void test_index_v3s16_xy_neg();
+	void test_index_v3s16_xz_neg();
+	void test_index_v3s16_yz_neg();
+	void test_index_v3s16_all_neg();
 	void test_add_x();
 	void test_add_y();
 	void test_add_z();
@@ -37,10 +53,170 @@ static TestVoxelArea g_test_instance;
 
 void TestVoxelArea::runTests(IGameDef *gamedef)
 {
+	TEST(test_index_xyz_all_pos);
+	TEST(test_index_xyz_x_neg);
+	TEST(test_index_xyz_y_neg);
+	TEST(test_index_xyz_z_neg);
+	TEST(test_index_xyz_xy_neg);
+	TEST(test_index_xyz_xz_neg);
+	TEST(test_index_xyz_yz_neg);
+	TEST(test_index_xyz_all_neg);
+	TEST(test_index_v3s16_all_pos);
+	TEST(test_index_v3s16_x_neg);
+	TEST(test_index_v3s16_y_neg);
+	TEST(test_index_v3s16_z_neg);
+	TEST(test_index_v3s16_xy_neg);
+	TEST(test_index_v3s16_xz_neg);
+	TEST(test_index_v3s16_yz_neg);
+	TEST(test_index_v3s16_all_neg);
 	TEST(test_add_x);
 	TEST(test_add_y);
 	TEST(test_add_z);
 	TEST(test_add_p);
+}
+
+void TestVoxelArea::test_index_xyz_all_pos()
+{
+	VoxelArea v1;
+	UASSERTEQ(s32, v1.index(156, 25, 236), 155);
+
+	VoxelArea v2(v3s16(756, 8854, -875), v3s16(-147, -9547, 669));
+	UASSERTEQ(s32, v2.index(156, 25, 236), 1267138774);
+}
+
+void TestVoxelArea::test_index_xyz_x_neg()
+{
+	VoxelArea v1;
+	UASSERTEQ(s32, v1.index(-147, 25, 366), -148);
+
+	VoxelArea v2(v3s16(756, 8854, -875), v3s16(-147, -9547, 669));
+	UASSERTEQ(s32, v2.index(-147, 25, 366), -870244825);
+}
+
+void TestVoxelArea::test_index_xyz_y_neg()
+{
+	VoxelArea v1;
+	UASSERTEQ(s32, v1.index(247, -269, 100), 246);
+
+	VoxelArea v2(v3s16(756, 8854, -875), v3s16(-147, -9547, 669));
+	UASSERTEQ(s32, v2.index(247, -269, 100), -989760747);
+}
+
+void TestVoxelArea::test_index_xyz_z_neg()
+{
+	VoxelArea v1;
+	UASSERTEQ(s32, v1.index(244, 336, -887), 243);
+
+	VoxelArea v2(v3s16(756, 8854, -875), v3s16(-147, -9547, 669));
+	UASSERTEQ(s32, v2.index(244, 336, -887), -191478876);
+}
+
+void TestVoxelArea::test_index_xyz_xy_neg()
+{
+	VoxelArea v1;
+	UASSERTEQ(s32, v1.index(-365, -47, 6978), -366);
+
+	VoxelArea v2(v3s16(756, 8854, -875), v3s16(-147, -9547, 669));
+	UASSERTEQ(s32, v2.index(-365, -47, 6978), 1493679101);
+}
+
+void TestVoxelArea::test_index_xyz_yz_neg()
+{
+	VoxelArea v1;
+	UASSERTEQ(s32, v1.index(66, -58, -789), 65);
+
+	VoxelArea v2(v3s16(756, 8854, -875), v3s16(-147, -9547, 669));
+	UASSERTEQ(s32, v2.index(66, -58, -789), 1435362734);
+}
+
+void TestVoxelArea::test_index_xyz_xz_neg()
+{
+	VoxelArea v1;
+	UASSERTEQ(s32, v1.index(-36, 589, -992), -37);
+
+	VoxelArea v2(v3s16(756, 8854, -875), v3s16(-147, -9547, 669));
+	UASSERTEQ(s32, v2.index(-36, 589, -992), -1934371362);
+}
+
+void TestVoxelArea::test_index_xyz_all_neg()
+{
+	VoxelArea v1;
+	UASSERTEQ(s32, v1.index(-88, -99, -1474), -89);
+
+	VoxelArea v2(v3s16(756, 8854, -875), v3s16(-147, -9547, 669));
+	UASSERTEQ(s32, v2.index(-88, -99, -1474), -1343473846);
+}
+
+void TestVoxelArea::test_index_v3s16_all_pos()
+{
+	VoxelArea v1;
+	UASSERTEQ(s32, v1.index(v3s16(156, 25, 236)), 155);
+
+	VoxelArea v2(v3s16(756, 8854, -875), v3s16(-147, -9547, 669));
+	UASSERTEQ(s32, v2.index(v3s16(156, 25, 236)), 1267138774);
+}
+
+void TestVoxelArea::test_index_v3s16_x_neg()
+{
+	VoxelArea v1;
+	UASSERTEQ(s32, v1.index(v3s16(-147, 25, 366)), -148);
+
+	VoxelArea v2(v3s16(756, 8854, -875), v3s16(-147, -9547, 669));
+	UASSERTEQ(s32, v2.index(v3s16(-147, 25, 366)), -870244825);
+}
+
+void TestVoxelArea::test_index_v3s16_y_neg()
+{
+	VoxelArea v1;
+	UASSERTEQ(s32, v1.index(v3s16(247, -269, 100)), 246);
+
+	VoxelArea v2(v3s16(756, 8854, -875), v3s16(-147, -9547, 669));
+	UASSERTEQ(s32, v2.index(v3s16(247, -269, 100)), -989760747);
+}
+
+void TestVoxelArea::test_index_v3s16_z_neg()
+{
+	VoxelArea v1;
+	UASSERTEQ(s32, v1.index(v3s16(244, 336, -887)), 243);
+
+	VoxelArea v2(v3s16(756, 8854, -875), v3s16(-147, -9547, 669));
+	UASSERTEQ(s32, v2.index(v3s16(244, 336, -887)), -191478876);
+}
+
+void TestVoxelArea::test_index_v3s16_xy_neg()
+{
+	VoxelArea v1;
+	UASSERTEQ(s32, v1.index(v3s16(-365, -47, 6978)), -366);
+
+	VoxelArea v2(v3s16(756, 8854, -875), v3s16(-147, -9547, 669));
+	UASSERTEQ(s32, v2.index(v3s16(-365, -47, 6978)), 1493679101);
+}
+
+void TestVoxelArea::test_index_v3s16_yz_neg()
+{
+	VoxelArea v1;
+	UASSERTEQ(s32, v1.index(v3s16(66, -58, -789)), 65);
+
+	VoxelArea v2(v3s16(756, 8854, -875), v3s16(-147, -9547, 669));
+	UASSERTEQ(s32, v2.index(v3s16(66, -58, -789)), 1435362734);
+}
+
+void TestVoxelArea::test_index_v3s16_xz_neg()
+{
+	VoxelArea v1;
+	UASSERTEQ(s32, v1.index(v3s16(-36, 589, -992)), -37);
+
+	VoxelArea v2(v3s16(756, 8854, -875), v3s16(-147, -9547, 669));
+	UASSERTEQ(s32, v2.index(v3s16(-36, 589, -992)), -1934371362);
+}
+
+void TestVoxelArea::test_index_v3s16_all_neg()
+{
+	VoxelArea v1;
+	UASSERTEQ(s32, v1.index(v3s16(-88, -99, -1474)), -89);
+
+	VoxelArea v2(v3s16(756, 8854, -875), v3s16(-147, -9547, 669));
+	UASSERTEQ(s32, v2.index(v3s16(-88, -99, -1474)), -1343473846);
 }
 
 void TestVoxelArea::test_add_x()
