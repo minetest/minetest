@@ -1008,7 +1008,7 @@ void finish_bulk_light_update(Map *map, mapblock_v3 minblock,
 		for (relpos.X = 0; relpos.X < MAP_BLOCKSIZE; relpos.X++)
 		for (relpos.Z = 0; relpos.Z < MAP_BLOCKSIZE; relpos.Z++)
 		for (relpos.Y = 0; relpos.Y < MAP_BLOCKSIZE; relpos.Y++) {
-			MapNode node = block->getNodeNoCheck(relpos.X, relpos.Y, relpos.Y, &is_valid);
+			MapNode node = block->getNodeNoCheck(relpos.X, relpos.Y, relpos.Z, &is_valid);
 			const ContentFeatures &f = ndef->get(node);
 
 			// For each light bank
