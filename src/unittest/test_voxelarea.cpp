@@ -20,13 +20,23 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "test.h"
 #include "voxel.h"
 
-class TestVoxelArea : public TestBase {
+class TestVoxelArea : public TestBase
+{
 public:
 	TestVoxelArea() { TestManager::registerTestModule(this); }
 	const char *getName() { return "TestVoxelArea"; }
 
 	void runTests(IGameDef *gamedef);
 
+	void test_addarea();
+	void test_pad();
+	void test_volume();
+	void test_contains_voxelarea();
+	void test_contains_point();
+	void test_contains_i();
+	void test_equal();
+	void test_plus();
+	void test_minor();
 	void test_index_xyz_all_pos();
 	void test_index_xyz_x_neg();
 	void test_index_xyz_y_neg();
@@ -53,6 +63,15 @@ static TestVoxelArea g_test_instance;
 
 void TestVoxelArea::runTests(IGameDef *gamedef)
 {
+	TEST(test_addarea);
+	TEST(test_pad);
+	TEST(test_volume);
+	TEST(test_contains_voxelarea);
+	TEST(test_contains_point);
+	TEST(test_contains_i);
+	TEST(test_equal);
+	TEST(test_plus);
+	TEST(test_minor);
 	TEST(test_index_xyz_all_pos);
 	TEST(test_index_xyz_x_neg);
 	TEST(test_index_xyz_y_neg);
@@ -73,6 +92,100 @@ void TestVoxelArea::runTests(IGameDef *gamedef)
 	TEST(test_add_y);
 	TEST(test_add_z);
 	TEST(test_add_p);
+}
+
+void TestVoxelArea::test_addarea()
+{
+	VoxelArea v1(v3s16(-1447, 8854, -875), v3s16(-147, -9547, 669));
+	VoxelArea v2(v3s16(-887, 4445, -5478), v3s16(447, -8779, 4778));
+
+	v1.addArea(v2);
+	UASSERT(v1.MinEdge == v3s16(-1447, 4445, -5478));
+	UASSERT(v1.MaxEdge == v3s16(447, -8779, 4778));
+}
+
+void TestVoxelArea::test_pad()
+{
+	VoxelArea v1(v3s16(-1447, 8854, -875), v3s16(-147, -9547, 669));
+	v1.pad(v3s16(100, 200, 300));
+
+	UASSERT(v1.MinEdge == v3s16(-1547, 8654, -1175));
+	UASSERT(v1.MaxEdge == v3s16(-47, -9347, 969));
+}
+
+void TestVoxelArea::test_volume()
+{
+	VoxelArea v1(v3s16(-1337, 447, -789), v3s16(-147, -9547, 669));
+	UASSERTEQ(s32, v1.getVolume(), -184657133);
+}
+
+void TestVoxelArea::test_contains_voxelarea()
+{
+	VoxelArea v1(v3s16(-1337, -9547, -789), v3s16(-147, 750, 669));
+	UASSERTEQ(bool, v1.contains(VoxelArea(v3s16(-200, 10, 10), v3s16(-150, 10, 10))),
+			true);
+	UASSERTEQ(bool, v1.contains(VoxelArea(v3s16(-2550, 10, 10), v3s16(10, 10, 10))),
+			false);
+	UASSERTEQ(bool, v1.contains(VoxelArea(v3s16(-10, 10, 10), v3s16(3500, 10, 10))),
+			false);
+}
+
+void TestVoxelArea::test_contains_point()
+{
+	VoxelArea v1(v3s16(-1337, -9547, -789), v3s16(-147, 750, 669));
+	UASSERTEQ(bool, v1.contains(v3s16(-200, 10, 10)), true);
+	UASSERTEQ(bool, v1.contains(v3s16(-10000, 10, 10)), false);
+	UASSERTEQ(bool, v1.contains(v3s16(-100, 10000, 10)), false);
+	UASSERTEQ(bool, v1.contains(v3s16(-100, 100, 10000)), false);
+	UASSERTEQ(bool, v1.contains(v3s16(-100, 100, -10000)), false);
+	UASSERTEQ(bool, v1.contains(v3s16(10000, 100, 10)), false);
+}
+
+void TestVoxelArea::test_contains_i()
+{
+	VoxelArea v1(v3s16(-1337, -9547, -789), v3s16(-147, 750, 669));
+	UASSERTEQ(bool, v1.contains(10), true);
+	UASSERTEQ(bool, v1.contains(v1.getVolume()), false);
+	UASSERTEQ(bool, v1.contains(v1.getVolume() - 1), true);
+	UASSERTEQ(bool, v1.contains(v1.getVolume() + 1), false);
+	UASSERTEQ(bool, v1.contains(-1), false)
+
+	VoxelArea v2(v3s16(10, 10, 10), v3s16(30, 30, 30));
+	UASSERTEQ(bool, v2.contains(10), true);
+	UASSERTEQ(bool, v2.contains(0), true);
+	UASSERTEQ(bool, v2.contains(-1), false);
+}
+
+void TestVoxelArea::test_equal()
+{
+	VoxelArea v1(v3s16(-1337, -9547, -789), v3s16(-147, 750, 669));
+	UASSERTEQ(bool, v1 == VoxelArea(v3s16(-1337, -9547, -789), v3s16(-147, 750, 669)),
+			true);
+	UASSERTEQ(bool, v1 == VoxelArea(v3s16(0, 0, 0), v3s16(-147, 750, 669)), false);
+	UASSERTEQ(bool, v1 == VoxelArea(v3s16(0, 0, 0), v3s16(-147, 750, 669)), false);
+	UASSERTEQ(bool, v1 == VoxelArea(v3s16(0, 0, 0), v3s16(0, 0, 0)), false);
+}
+
+void TestVoxelArea::test_plus()
+{
+	VoxelArea v1(v3s16(-10, -10, -10), v3s16(100, 100, 100));
+	UASSERT(v1 + v3s16(10, 0, 0) ==
+			VoxelArea(v3s16(0, -10, -10), v3s16(110, 100, 100)));
+	UASSERT(v1 + v3s16(10, -10, 0) ==
+			VoxelArea(v3s16(0, -20, -10), v3s16(110, 90, 100)));
+	UASSERT(v1 + v3s16(0, 0, 35) ==
+			VoxelArea(v3s16(-10, -10, 25), v3s16(100, 100, 135)));
+}
+
+void TestVoxelArea::test_minor()
+{
+	VoxelArea v1(v3s16(-10, -10, -10), v3s16(100, 100, 100));
+	UASSERT(v1 - v3s16(10, 0, 0) ==
+			VoxelArea(v3s16(-20, -10, -10), v3s16(90, 100, 100)));
+	UASSERT(v1 - v3s16(10, -10, 0) ==
+			VoxelArea(v3s16(-20, 0, -10), v3s16(90, 110, 100)));
+	UASSERT(v1 - v3s16(0, 0, 35) ==
+			VoxelArea(v3s16(-10, -10, -45), v3s16(100, 100, 65)));
 }
 
 void TestVoxelArea::test_index_xyz_all_pos()
