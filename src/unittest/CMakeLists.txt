@@ -24,6 +24,7 @@ set (UNITTEST_SRCS
 	${CMAKE_CURRENT_SOURCE_DIR}/test_socket.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/test_threading.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/test_utilities.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/test_voxelarea.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/test_voxelalgorithms.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/test_voxelmanipulator.cpp
 	PARENT_SCOPE)
