@@ -1353,8 +1353,8 @@ HUD element types
 -----------------
 The position field is used for all element types.
 
-To account for differing resolutions, the position coordinates are the percentage
-of the screen, ranging in value from `0` to `1`.
+To account for differing resolutions, the position coordinates are the
+percentage of the screen, ranging in value from `0` to `1`.
 
 The name field is not yet used, but should contain a description of what the
 HUD element represents. The direction field is the direction in which something
@@ -1363,20 +1363,22 @@ is drawn.
 `0` draws from left to right, `1` draws from right to left, `2` draws from
 top to bottom, and `3` draws from bottom to top.
 
-The `alignment` field specifies how the item will be aligned. It ranges from `-1` to `1`,
-with `0` being the center, `-1` is moved to the left/up, and `1` is to the right/down.
-Fractional values can be used.
+The `alignment` field specifies how the item will be aligned. It ranges from
+`-1` to `1`, with `0` being the center. `-1` is moved to the left/up, and `1`
+is to the right/down. Fractional values can be used.
 
-The `offset` field specifies a pixel offset from the position. Contrary to position,
-the offset is not scaled to screen size. This allows for some precisely-positioned
-items in the HUD.
+The `offset` field specifies a pixel offset from the position. Contrary to
+position, the offset is not scaled to screen size. This allows for some
+precisely positioned items in the HUD.
 
-**Note**: `offset` _will_ adapt to screen DPI as well as user defined scaling factor!
+**Note**: `offset` _will_ adapt to screen DPI as well as user defined scaling
+factor!
 
-Below are the specific uses for fields in each type; fields not listed for that type are ignored.
+Below are the specific uses for fields in each type; fields not listed for that
+type are ignored.
 
-**Note**: Future revisions to the HUD API may be incompatible; the HUD API is still
-in the experimental stages.
+**Note**: Future revisions to the HUD API may be incompatible; the HUD API is
+still in the experimental stages.
 
 ### `image`
 Displays an image on the HUD.
@@ -1395,8 +1397,8 @@ Displays text on the HUD.
 * `scale`: Defines the bounding rectangle of the text.
   A value such as `{x=100, y=100}` should work.
 * `text`: The text to be displayed in the HUD element.
-* `number`: An integer containing the RGB value of the color used to draw the text.
-  Specify `0xFFFFFF` for white text, `0xFF0000` for red, and so on.
+* `number`: An integer containing the RGB value of the color used to draw the
+  text. Specify `0xFFFFFF` for white text, `0xFF0000` for red, and so on.
 * `alignment`: The alignment of the text.
 * `offset`: offset in pixels from position.
 
@@ -1408,7 +1410,8 @@ Displays a horizontal bar made up of half-images.
   If odd, will end with a vertically center-split texture.
 * `direction`
 * `offset`: offset in pixels from position.
-* `size`: If used, will force full-image size to this value (override texture pack image size)
+* `size`: If used, will force full-image size to this value (override texture
+  pack image size)
 
 ### `inventory`
 * `text`: The name of the inventory list to be displayed.
@@ -1422,7 +1425,8 @@ Displays distance to selected world position.
 
 * `name`: The name of the waypoint.
 * `text`: Distance suffix. Can be blank.
-* `number:` An integer containing the RGB value of the color used to draw the text.
+* `number:` An integer containing the RGB value of the color used to draw the
+  text.
 * `world_pos`: World position of the waypoint.
 
 Representations of simple things
@@ -1441,8 +1445,8 @@ For helper functions see "Vector helpers".
 
 Flag Specifier Format
 ---------------------
-Flags using the standardized flag specifier format can be specified in either of
-two ways, by string or table.
+Flags using the standardized flag specifier format can be specified in either
+of two ways, by string or table.
 
 The string format is a comma-delimited set of flag names; whitespace and
 unrecognized flag fields are ignored. Specifying a flag in the string sets the
@@ -1791,7 +1795,7 @@ a non-tool item, so that it can do something else than take damage.
 
 On the Lua side, every punch calls:
 
-    entity:on_punch(puncher, time_from_last_punch, tool_capabilities, direction, damage)
+  entity:on_punch(puncher, time_from_last_punch, tool_capabilities, direction, damage)
 
 This should never be called directly, because damage is usually not handled by
 the entity itself.
@@ -1808,12 +1812,12 @@ Return value of this function will determine if damage is done by this function
 
 To punch an entity/object in Lua, call:
 
-    object:punch(puncher, time_from_last_punch, tool_capabilities, direction)
+  object:punch(puncher, time_from_last_punch, tool_capabilities, direction)
 
 * Return value is tool wear.
 * Parameters are equal to the above callback.
-* If `direction` equals `nil` and `puncher` does not equal `nil`,
-  `direction` will be automatically filled in based on the location of `puncher`.
+* If `direction` equals `nil` and `puncher` does not equal `nil`, `direction`
+  will be automatically filled in based on the location of `puncher`.
 
 Node Metadata
 -------------
@@ -1867,7 +1871,8 @@ Item metadata only contains a key-value store.
 
 Some of the values in the key-value store are handled specially:
 
-* `description`: Set the item stack's description. Defaults to `idef.description`
+* `description`: Set the item stack's description. Defaults to
+  `idef.description`.
 * `color`: A `ColorString`, which sets the stack's color.
 * `palette_index`: If the item has a palette, this is used to get the
   current color from the palette.
@@ -1920,7 +1925,8 @@ examples.
 #### `position[<X>,<Y>]`
 * Must be used after `size` element.
 * Defines the position on the game window of the formspec's `anchor` point.
-* For X and Y, 0.0 and 1.0 represent opposite edges of the game window, for example:
+* For X and Y, 0.0 and 1.0 represent opposite edges of the game window,
+  for example:
     * [0.0, 0.0] sets the position to the top left corner of the game window.
     * [1.0, 1.0] sets the position to the bottom right of the game window.
 * Defaults to the center of the game window [0.5, 0.5].
@@ -1928,7 +1934,8 @@ examples.
 #### `anchor[<X>,<Y>]`
 * Must be used after both `size` and `position` (if present) elements.
 * Defines the location of the anchor point within the formspec.
-* For X and Y, 0.0 and 1.0 represent opposite edges of the formspec, for example:
+* For X and Y, 0.0 and 1.0 represent opposite edges of the formspec,
+  for example:
     * [0.0, 1.0] sets the anchor to the bottom left corner of the formspec.
     * [1.0, 0.0] sets the anchor to the top right of the formspec.
 * Defaults to the center of the formspec [0.5, 0.5].
@@ -1937,13 +1944,15 @@ examples.
   extending off the game window due to particular game window sizes.
 
 #### `container[<X>,<Y>]`
-* Start of a container block, moves all physical elements in the container by (X, Y)
+* Start of a container block, moves all physical elements in the container by
+  (X, Y).
 * Must have matching `container_end`
 * Containers can be nested, in which case the offsets are added
   (child containers are relative to parent containers)
 
 #### `container_end[]`
-* End of a container, following elements are no longer relative to this container
+* End of a container, following elements are no longer relative to this
+  container.
 
 #### `list[<inventory location>;<list name>;<X>,<Y>;<W>,<H>;]`
 * Show an inventory list
@@ -1993,7 +2002,8 @@ examples.
 
 #### `bgcolor[<color>;<fullscreen>]`
 * Sets background color of formspec as `ColorString`
-* If `true`, the background color is drawn fullscreen (does not effect the size of the formspec)
+* If `true`, the background color is drawn fullscreen (does not effect the size
+  of the formspec).
 
 #### `background[<X>,<Y>;<W>,<H>;<texture name>]`
 * Use a background. Inventory rectangles are not drawn then.
@@ -2011,8 +2021,8 @@ examples.
 
 #### `pwdfield[<X>,<Y>;<W>,<H>;<name>;<label>]`
 * Textual password style field; will be sent to server when a button is clicked
-* When enter is pressed in field, fields.key_enter_field will be sent with the name
-  of this field.
+* When enter is pressed in field, fields.key_enter_field will be sent with the
+  name of this field.
 * `x` and `y` position the field relative to the top left of the menu
 * `w` and `h` are the size of the field
 * Fields are a set height, but will be vertically centred on `h`
@@ -2023,8 +2033,8 @@ examples.
 
 #### `field[<X>,<Y>;<W>,<H>;<name>;<label>;<default>]`
 * Textual field; will be sent to server when a button is clicked
-* When enter is pressed in field, `fields.key_enter_field` will be sent with the name
-  of this field.
+* When enter is pressed in field, `fields.key_enter_field` will be sent with
+  the name of this field.
 * `x` and `y` position the field relative to the top left of the menu
 * `w` and `h` are the size of the field
 * Fields are a set height, but will be vertically centred on `h`
@@ -2039,8 +2049,8 @@ examples.
 
 #### `field[<name>;<label>;<default>]`
 * As above, but without position/size units
-* When enter is pressed in field, `fields.key_enter_field` will be sent with the name
-  of this field.
+* When enter is pressed in field, `fields.key_enter_field` will be sent with
+  the name of this field.
 * Special field for creating simple forms, such as sign text input
 * Must be used without a `size[]` element
 * A "Proceed" button will be added automatically
@@ -2048,13 +2058,14 @@ examples.
 
 #### `field_close_on_enter[<name>;<close_on_enter>]`
 * <name> is the name of the field
-* if <close_on_enter> is false, pressing enter in the field will submit the form but not close it
+* if <close_on_enter> is false, pressing enter in the field will submit the
+  form but not close it.
 * defaults to true when not specified (ie: no tag for a field)
 
 #### `textarea[<X>,<Y>;<W>,<H>;<name>;<label>;<default>]`
 * Same as fields above, but with multi-line input
 * if the text overflows a vertical scrollbar is added
-* if the name is empty the textarea is readonly. The label is not displayed then
+* if the name is empty the textarea is readonly, the label is not displayed.
 
 #### `label[<X>,<Y>;<label>]`
 * `x` and `y` work as per field
@@ -2084,7 +2095,8 @@ examples.
 * `x`, `y`, `w`, `h`, and `name` work as per button
 * `texture name` is the filename of an image
 * Position and size units are inventory slots
-* `noclip=true` means the image button doesn't need to be within specified formsize
+* `noclip=true` means the image button doesn't need to be within specified
+  formsize.
 * `drawborder`: draw button border or not
 * `pressed texture name` is the filename of an image on pressed state
 
@@ -2105,20 +2117,24 @@ examples.
 * Scrollable item list showing arbitrary text elements
 * `x` and `y` position the itemlist relative to the top left of the menu
 * `w` and `h` are the size of the itemlist
-* `name` fieldname sent to server on doubleclick value is current selected element
-* `listelements` can be prepended by #color in hexadecimal format RRGGBB (only),
+* `name` fieldname sent to server on doubleclick value is current selected
+  element.
+* `listelements` can be prepended by #color in hexadecimal format RRGGBB
+  (only).
     * if you want a listelement to start with "#" write "##".
 
 #### `textlist[<X>,<Y>;<W>,<H>;<name>;<listelem 1>,<listelem 2>,...,<listelem n>;<selected idx>;<transparent>]`
 * Scrollable itemlist showing arbitrary text elements
 * `x` and `y` position the item list relative to the top left of the menu
 * `w` and `h` are the size of the item list
-* `name` fieldname sent to server on doubleclick value is current selected element
+* `name` fieldname sent to server on doubleclick value is current selected
+  element.
 * `listelements` can be prepended by #RRGGBB (only) in hexadecimal format
     * if you want a listelement to start with "#" write "##"
 * Index to be selected within textlist
 * `true`/`false`: draw transparent background
-* See also `minetest.explode_textlist_event` (main menu: `engine.explode_textlist_event`)
+* See also `minetest.explode_textlist_event`
+  (main menu: `engine.explode_textlist_event`).
 
 #### `tabheader[<X>,<Y>;<name>;<caption 1>,<caption 2>,...,<caption n>;<current_tab>;<transparent>;<draw_border>]`
 * Show a tab**header** at specific position (ignores formsize)
@@ -2163,7 +2179,8 @@ examples.
 * `orientation`:  `vertical`/`horizontal`
 * Fieldname data is transferred to Lua
 * Value this trackbar is set to (`0`-`1000`)
-* See also `minetest.explode_scrollbar_event` (main menu: `engine.explode_scrollbar_event`)
+* See also `minetest.explode_scrollbar_event`
+  (main menu: `engine.explode_scrollbar_event`).
 
 #### `table[<X>,<Y>;<W>,<H>;<name>;<cell 1>,<cell 2>,...,<cell n>;<selected idx>]`
 * Show scrollable table using options defined by the previous `tableoptions[]`
@@ -2173,7 +2190,8 @@ examples.
 * `name`: fieldname sent to server on row select or doubleclick
 * `cell 1`...`cell n`: cell contents given in row-major order
 * `selected idx`: index of row to be selected within table (first row = `1`)
-* See also `minetest.explode_table_event` (main menu: `engine.explode_table_event`)
+* See also `minetest.explode_table_event`
+  (main menu: `engine.explode_table_event`).
 
 #### `tableoptions[<opt 1>;<opt 2>;...]`
 * Sets options for `table[]`
@@ -2195,10 +2213,14 @@ examples.
 * Sets columns for `table[]`
 * Types: `text`, `image`, `color`, `indent`, `tree`
     * `text`:   show cell contents as text
-    * `image`:  cell contents are an image index, use column options to define images
-    * `color`:  cell contents are a ColorString and define color of following cell
-    * `indent`: cell contents are a number and define indentation of following cell
-    * `tree`:   same as indent, but user can open and close subtrees (treeview-like)
+    * `image`:  cell contents are an image index, use column options to define
+                images.
+    * `color`:  cell contents are a ColorString and define color of following
+                cell.
+    * `indent`: cell contents are a number and define indentation of following
+                cell.
+    * `tree`:   same as indent, but user can open and close subtrees
+                (treeview-like).
 * Column options:
     * `align=<value>`
         * for `text` and `image`: content alignment within cells.
@@ -2216,10 +2238,11 @@ examples.
         * and so on; defined indices need not be contiguous empty or
           non-numeric cells are treated as `0`.
     * `color` column options:
-        * `span=<value>`: number of following columns to affect (default: infinite)
+        * `span=<value>`: number of following columns to affect
+          (default: infinite).
 
-**Note**: do _not_ use a element name starting with `key_`; those names are reserved to
-pass key press events to formspec!
+**Note**: do _not_ use a element name starting with `key_`; those names are
+reserved to pass key press events to formspec!
 
 Inventory locations
 -------------------
@@ -2248,9 +2271,9 @@ Player Inventory lists
 
 Named colors are also supported and are equivalent to
 [CSS Color Module Level 4](http://dev.w3.org/csswg/css-color/#named-colors).
-To specify the value of the alpha channel, append `#AA` to the end of the color name
-(e.g. `colorname#08`). For named colors the hexadecimal string representing the alpha
-value must (always) be two hexadecimal digits.
+To specify the value of the alpha channel, append `#AA` to the end of the color
+name (e.g. `colorname#08`). For named colors the hexadecimal string
+representing the alpha value must (always) be two hexadecimal digits.
 
 `ColorSpec`
 -----------
@@ -2289,7 +2312,8 @@ The following functions provide escape sequences:
 
 Spatial Vectors
 ---------------
-For the following functions, `v`, `v1`, `v2` are vectors, `p1`, `p2` are positions:
+For the following functions, `v`, `v1`, `v2` are vectors,
+`p1`, `p2` are positions:
 
 * `vector.new(a[, b, c])`:
     * Returns a vector.
@@ -2310,7 +2334,8 @@ For the following functions, `v`, `v1`, `v2` are vectors, `p1`, `p2` are positio
 * `vector.round(v)`:
     * Returns a vector, each dimension rounded to nearest integer.
 * `vector.apply(v, func)`:
-    * Returns a vector where the function `func` has been applied to each component.
+    * Returns a vector where the function `func` has been applied to each
+      component.
 * `vector.equals(v1, v2)`:
     * Returns a boolean, `true` if the vectors are identical.
 * `vector.sort(v1, v2)`:
@@ -2329,12 +2354,12 @@ For the following functions `x` can be either a vector or a number:
 
 Helper functions
 ----------------
-* `dump2(obj, name, dumped)`: returns a string which makes `obj` human readable,
-  handles reference loops
+* `dump2(obj, name, dumped)`: returns a string which makes `obj`
+  human-readable, handles reference loops.
     * `obj`: arbitrary variable
     * `name`: string, default: `"_"`
     * `dumped`: table, default: `{}`
-* `dump(obj, dumped)`: returns a string which makes `obj` human readable
+* `dump(obj, dumped)`: returns a string which makes `obj` human-readable
     * `obj`: arbitrary variable
     * `dumped`: table, default: `{}`
 * `math.hypot(x, y)`
@@ -2374,49 +2399,60 @@ Helper functions
 * `minetest.string_to_area("(X1, Y1, Z1) (X2, Y2, Z2)")`: returns two positions
     * Converts a string representing an area box into two positions
 * `minetest.formspec_escape(string)`: returns a string
-    * escapes the characters "[", "]", "\", "," and ";", which can not be used in formspecs
+    * escapes the characters "[", "]", "\", "," and ";", which can not be used
+      in formspecs.
 * `minetest.is_yes(arg)`
     * returns true if passed 'y', 'yes', 'true' or a number that isn't zero.
 * `minetest.get_us_time()`
     * returns time with microsecond precision. May not return wall time.
 * `table.copy(table)`: returns a table
     * returns a deep copy of `table`
-* `minetest.pointed_thing_to_face_pos(placer, pointed_thing)`: returns a position
+* `minetest.pointed_thing_to_face_pos(placer, pointed_thing)`: returns a
+  position.
     * returns the exact position on the surface of a pointed node
 
 Translations
 ------------
 
-Texts can be translated client-side with the help of `minetest.translate` and translation files.
+Texts can be translated client-side with the help of `minetest.translate` and
+translation files.
 
 ### Translating a string
-Two functions are provided to translate strings: `minetest.translate` and `minetest.get_translator`.
+Two functions are provided to translate strings: `minetest.translate` and
+`minetest.get_translator`.
 
-* `minetest.get_translator(textdomain)` is a simple wrapper around `minetest.translate`, and
-  `minetest.get_translator(textdomain)(str, ...)` is equivalent to `minetest.translate(textdomain, str, ...)`.
-  It is intended to be used in the following way, so that it avoids verbose repetitions of `minetest.translate`:
+* `minetest.get_translator(textdomain)` is a simple wrapper around
+  `minetest.translate`, and `minetest.get_translator(textdomain)(str, ...)` is
+  equivalent to `minetest.translate(textdomain, str, ...)`.
+  It is intended to be used in the following way, so that it avoids verbose
+  repetitions of `minetest.translate`:
 
     local S = minetest.get_translator(textdomain)
     S(str, ...)
 
   As an extra commodity, if `textdomain` is nil, it is assumed to be "" instead.
 
-* `minetest.translate(textdomain, str, ...)` translates the string `str` with the given `textdomain`
-  for disambiguation. The textdomain must match the textdomain specified in the translation file in order
-  to get the string translated. This can be used so that a string is translated differently in different contexts.
-  It is advised to use the name of the mod as textdomain whenever possible, to avoid clashes with other mods.
-  This function must be given a number of arguments equal to the number of arguments the translated string expects.
-  Arguments are literal strings -- they will not be translated, so if you want them to be, they need to come as
-  outputs of `minetest.translate` as well.
+* `minetest.translate(textdomain, str, ...)` translates the string `str` with
+  the given `textdomain` for disambiguation. The textdomain must match the
+  textdomain specified in the translation file in order to get the string
+  translated. This can be used so that a string is translated differently in
+  different contexts.
+  It is advised to use the name of the mod as textdomain whenever possible, to
+  avoid clashes with other mods.
+  This function must be given a number of arguments equal to the number of
+  arguments the translated string expects.
+  Arguments are literal strings -- they will not be translated, so if you want
+  them to be, they need to come as outputs of `minetest.translate` as well.
 
-  For instance, suppose we want to translate "@1 Wool" with "@1" being replaced by the translation of "Red".
-  We can do the following:
+  For instance, suppose we want to translate "@1 Wool" with "@1" being replaced
+  by the translation of "Red". We can do the following:
 
     local S = minetest.get_translator()
     S("@1 Wool", S("Red"))
 
-  This will be displayed as "Red Wool" on old clients and on clients that do not have localization enabled.
-  However, if we have for instance a translation file named `wool.fr.tr` containing the following:
+  This will be displayed as "Red Wool" on old clients and on clients that do
+  not have localization enabled. However, if we have for instance a translation
+  file named `wool.fr.tr` containing the following:
 
     @1 Wool=Laine @1
     Red=Rouge
@@ -2425,36 +2461,43 @@ Two functions are provided to translate strings: `minetest.translate` and `minet
 
 ### Operations on translated strings
 
-The output of `minetest.translate` is a string, with escape sequences adding additional information to that string
-so that it can be translated on the different clients. In particular, you can't expect operations like string.length
-to work on them like you would expect them to, or string.gsub to work in the expected manner. However, string
-concatenation will still work as expected (note that you should only use this for things like formspecs; do not
-translate sentences by breaking them into parts; arguments should be used instead), and operations such as
-`minetest.colorize` which are only concatenation under the hood as well.
+The output of `minetest.translate` is a string, with escape sequences adding
+additional information to that string so that it can be translated on the
+different clients. In particular, you can't expect operations like string.length
+to work on them like you would expect them to, or string.gsub to work in the
+expected manner. However, string concatenation will still work as expected
+(note that you should only use this for things like formspecs; do not translate
+sentences by breaking them into parts; arguments should be used instead), and
+operations such as `minetest.colorize` which are also concatenation.
 
 ### Translation file format
-A translation file has the suffix `.[lang].tr`, where `[lang]` is the language it corresponds to.
+A translation file has the suffix `.[lang].tr`, where `[lang]` is the language
+it corresponds to.
 The file should be a text file, with the following format:
 
-* Lines beginning with `# textdomain:` (the space is significant) can be used to specify the text
-  domain of all following translations in the file.
+* Lines beginning with `# textdomain:` (the space is significant) can be used
+  to specify the text domain of all following translations in the file.
 * All other empty lines or lines beginning with `#` are ignored.
-* Other lines should be in the format `original=translated`. Both `original` and `translated` can
-  contain escape sequences beginning with `@` to insert arguments, literal `@`, `=` or newline
-  (See ### Escapes below). There must be no extraneous whitespace around the `=` or at the beginning
-  or the end of the line.
+* Other lines should be in the format `original=translated`. Both `original`
+  and `translated` can contain escape sequences beginning with `@` to insert
+  arguments, literal `@`, `=` or newline (See ### Escapes below).
+  There must be no extraneous whitespace around the `=` or at the beginning or
+  the end of the line.
 
 ### Escapes
 Strings that need to be translated can contain several escapes, preceded by `@`.
 
 * `@@` acts as a literal `@`.
-* `@n`, where `n` is a digit between 1 and 9, is an argument for the translated string that will be inlined
-  when translation. Due to how translations are implemented, the original translation string **must** have
-  its arguments in increasing order, without gaps or repetitions, starting from 1.
-* `@=` acts as a literal `=`. It is not required in strings given to `minetest.translate`, but is in translation
-  files to avoid being confused with the `=` separating the original from the translation.
-* `@\n` (where the `\n` is a literal newline) acts as a literal newline. As with `@=`, this escape is not required
-  in strings given to `minetest.translate`, but is in translation files.
+* `@n`, where `n` is a digit between 1 and 9, is an argument for the translated
+  string that will be inlined when translation. Due to how translations are
+  implemented, the original translation string **must** have its arguments in
+  increasing order, without gaps or repetitions, starting from 1.
+* `@=` acts as a literal `=`. It is not required in strings given to
+  `minetest.translate`, but is in translation files to avoid being confused
+  with the `=` separating the original from the translation.
+* `@\n` (where the `\n` is a literal newline) acts as a literal newline.
+  As with `@=`, this escape is not required in strings given to
+  `minetest.translate`, but is in translation files.
 * `@n` acts as a literal newline as well.
 
 `minetest` namespace reference
@@ -2462,8 +2505,10 @@ Strings that need to be translated can contain several escapes, preceded by `@`.
 
 ### Utilities
 
-* `minetest.get_current_modname()`: returns the currently loading mod's name, when we are loading a mod
-* `minetest.get_modpath(modname)`: returns e.g. `"/home/user/.minetest/usermods/modname"`
+* `minetest.get_current_modname()`: returns the currently loading mod's name,
+  when loading a mod.
+* `minetest.get_modpath(modname)`: returns e.g.
+  `"/home/user/.minetest/usermods/modname"`.
     * Useful for loading additional `.lua` modules or static data from mod
 * `minetest.get_modnames()`: returns a list of installed mods
     * Return a list of installed mods, sorted alphabetically
@@ -2494,7 +2539,8 @@ Strings that need to be translated can contain several escapes, preceded by `@`.
     * `arg`: string or table in format `{foo=true, bar=true}`
     * `missing_features`: `{foo=true, bar=true}`
 * `minetest.get_player_information(player_name)`:
-    * Returns a table containing information about a player. Example return value:
+    * Returns a table containing information about a player.
+      Example return value:
 
             {
                 address = "127.0.0.1",     -- IP address of client
@@ -2525,14 +2571,15 @@ Strings that need to be translated can contain several escapes, preceded by `@`.
         * true: return only subdirectory names, or
         * false: return only file names.
 * `minetest.safe_file_write(path, content)`: returns boolean indicating success
-    * Replaces contents of file at path with new contents in a safe (atomic) way.
-      Use this instead of below code when writing e.g. database files:
+    * Replaces contents of file at path with new contents in a safe (atomic)
+      way. Use this instead of below code when writing e.g. database files:
       `local f = io.open(path, "wb"); f:write(content); f:close()`
 * `minetest.get_version()`: returns a table containing components of the
    engine version.  Components:
     * `project`: Name of the project, eg, "Minetest"
     * `string`: Simple version, eg, "1.2.3-dev"
-    * `hash`: Full git version (only set if available), eg, "1.2.3-dev-01234567-dirty"
+    * `hash`: Full git version (only set if available),
+      eg, "1.2.3-dev-01234567-dirty".
   Use this for informational purposes only. The information in the returned
   table does not represent the capabilities of the engine, nor is it
   reliable or verifiable. Compatible forks will have a different name and
@@ -2568,11 +2615,14 @@ Call these functions only at load time!
     * Check recipe table syntax for different types below.
 * `minetest.clear_craft(recipe)`
     * Will erase existing craft based either on output item or on input recipe.
-    * Specify either output or input only. If you specify both, input will be ignored. For input use the same recipe table
-      syntax as for `minetest.register_craft(recipe)`. For output specify only the item, without a quantity.
+    * Specify either output or input only. If you specify both, input will be
+      ignored. For input use the same recipe table syntax as for
+      `minetest.register_craft(recipe)`. For output specify only the item,
+      without a quantity.
     * If no erase candidate could be found, Lua exception will be thrown.
-    * **Warning**! The type field ("shaped","cooking" or any other) will be ignored if the recipe
-      contains output. Erasing is then done independently from the crafting method.
+    * **Warning**! The type field ("shaped","cooking" or any other) will be
+      ignored if the recipe contains output. Erasing is then done independently
+      from the crafting method.
 * `minetest.register_ore(ore definition)`
 * `minetest.register_biome(biome definition)`
 * `minetest.register_decoration(decoration definition)`
@@ -2591,19 +2641,19 @@ Call these functions only at load time!
     * Called every server step, usually interval of 0.1s
 * `minetest.register_on_shutdown(func())`
     * Called before server shutdown
-    * **Warning**: If the server terminates abnormally (i.e. crashes), the registered
-      callbacks **will likely not be run**. Data should be saved at
+    * **Warning**: If the server terminates abnormally (i.e. crashes), the
+      registered callbacks **will likely not be run**. Data should be saved at
       semi-frequent intervals as well as on server shutdown.
 * `minetest.register_on_placenode(func(pos, newnode, placer, oldnode, itemstack, pointed_thing))`
     * Called when a node has been placed
     * If return `true` no item is taken from `itemstack`
     * `placer` may be any valid ObjectRef or nil.
-    * **Not recommended**; use `on_construct` or `after_place_node` in node definition
-      whenever possible
+    * **Not recommended**; use `on_construct` or `after_place_node` in node
+      definition whenever possible.
 * `minetest.register_on_dignode(func(pos, oldnode, digger))`
     * Called when a node has been dug.
-    * **Not recommended**; Use `on_destruct` or `after_dig_node` in node definition
-      whenever possible
+    * **Not recommended**; Use `on_destruct` or `after_dig_node` in node
+      definition whenever possible.
 * `minetest.register_on_punchnode(func(pos, node, puncher, pointed_thing))`
     * Called when a node is punched
 * `minetest.register_on_generated(func(minp, maxp, blockseed))`
@@ -2617,7 +2667,8 @@ Call these functions only at load time!
     * Called when a player is punched
     * `player` - ObjectRef - Player that was punched
     * `hitter` - ObjectRef - Player that hit
-    * `time_from_last_punch`: Meant for disallowing spamming of clicks (can be nil)
+    * `time_from_last_punch`: Meant for disallowing spamming of clicks
+      (can be nil).
     * `tool_capabilities`: capability table of used tool (can be nil)
     * `dir`: unit vector of direction of punch. Always defined. Points from
       the puncher to the punched.
@@ -2628,23 +2679,26 @@ Call these functions only at load time!
     * `player`: ObjectRef of the player
     * `hp_change`: the amount of change. Negative when it is damage.
     * `modifier`: when true, the function should return the actual `hp_change`.
-      Note: modifiers only get a temporary hp_change that can be modified by later modifiers.
-      modifiers can return true as a second argument to stop the execution of further functions.
-      Non-modifiers receive the final hp change calculated by the modifiers.
+      Note: modifiers only get a temporary hp_change that can be modified by
+      later modifiers. modifiers can return true as a second argument to stop
+      the execution of further functions. Non-modifiers receive the final hp
+      change calculated by the modifiers.
 * `minetest.register_on_respawnplayer(func(ObjectRef))`
     * Called when player is to be respawned
     * Called _before_ repositioning of player occurs
     * return true in func to disable regular player placement
 * `minetest.register_on_prejoinplayer(func(name, ip))`
     * Called before a player joins the game
-    * If it returns a string, the player is disconnected with that string as reason
+    * If it returns a string, the player is disconnected with that string as
+      reason.
 * `minetest.register_on_joinplayer(func(ObjectRef))`
     * Called when a player joins the game
 * `minetest.register_on_leaveplayer(func(ObjectRef, timed_out))`
     * Called when a player leaves the game
     * `timed_out`: True for timeout, false for other reasons.
 * `minetest.register_on_auth_fail(func(name, ip))`
-    * Called when a client attempts to log into an account but supplies the wrong password.
+    * Called when a client attempts to log into an account but supplies the
+      wrong password.
     * `ip`: The IP address of the client.
     * `name`: The account the client attempted to log into.
 * `minetest.register_on_cheat(func(ObjectRef, cheat))`
@@ -2658,7 +2712,8 @@ Call these functions only at load time!
         * `dug_too_fast`
 * `minetest.register_on_chat_message(func(name, message))`
     * Called always when a player says something
-    * Return `true` to mark the message as handled, which means that it will not be sent to other players
+    * Return `true` to mark the message as handled, which means that it will
+      not be sent to other players.
 * `minetest.register_on_player_receive_fields(func(player, formname, fields))`
     * Called when a button is pressed in player's inventory form
     * Newest functions are called first
@@ -2666,30 +2721,34 @@ Call these functions only at load time!
 * `minetest.register_on_craft(func(itemstack, player, old_craft_grid, craft_inv))`
     * Called when `player` crafts something
     * `itemstack` is the output
-    * `old_craft_grid` contains the recipe (Note: the one in the inventory is cleared)
+    * `old_craft_grid` contains the recipe (Note: the one in the inventory is
+      cleared).
     * `craft_inv` is the inventory with the crafting grid
-    * Return either an `ItemStack`, to replace the output, or `nil`, to not modify it
+    * Return either an `ItemStack`, to replace the output, or `nil`, to not
+      modify it.
 * `minetest.register_craft_predict(func(itemstack, player, old_craft_grid, craft_inv))`
-    * The same as before, except that it is called before the player crafts, to make
-   craft prediction, and it should not change anything.
+    * The same as before, except that it is called before the player crafts, to
+      make craft prediction, and it should not change anything.
 * `minetest.register_on_protection_violation(func(pos, name))`
-    * Called by `builtin` and mods when a player violates protection at a position
-      (eg, digs a node or punches a protected entity).
-    * The registered functions can be called using `minetest.record_protection_violation`
-    * The provided function should check that the position is protected by the mod
-      calling this function before it prints a message, if it does, to allow for
-      multiple protection mods.
+    * Called by `builtin` and mods when a player violates protection at a
+      position (eg, digs a node or punches a protected entity).
+    * The registered functions can be called using
+      `minetest.record_protection_violation`.
+    * The provided function should check that the position is protected by the
+      mod calling this function before it prints a message, if it does, to
+      allow for multiple protection mods.
 * `minetest.register_on_item_eat(func(hp_change, replace_with_item, itemstack, user, pointed_thing))`
     * Called when an item is eaten, by `minetest.item_eat`
-    * Return `true` or `itemstack` to cancel the default item eat response (i.e.: hp increase)
+    * Return `true` or `itemstack` to cancel the default item eat response
+      (i.e.: hp increase).
 * `minetest.register_on_priv_grant(function(name, granter, priv))`
     * Called when `granter` grants the priv `priv` to `name`.
-    * Note that the callback will be called twice if it's done by a player, once with granter being the player name,
-      and again with granter being nil.
+    * Note that the callback will be called twice if it's done by a player,
+      once with granter being the player name, and again with granter being nil.
 * `minetest.register_on_priv_revoke(function(name, revoker, priv))`
     * Called when `revoker` revokes the priv `priv` from `name`.
-    * Note that the callback will be called twice if it's done by a player, once with revoker being the player name,
-      and again with revoker being nil.
+    * Note that the callback will be called twice if it's done by a player,
+      once with revoker being the player name, and again with revoker being nil.
 * `minetest.register_can_bypass_userlimit(function(name, ip))`
     * Called when `name` user connects with `ip`.
     * Return `true` to by pass the player limit
@@ -2707,16 +2766,21 @@ Call these functions only at load time!
     * Unregisters a chatcommands registered with `register_chatcommand`.
 * `minetest.register_privilege(name, definition)`
     * `definition`: `"description text"`
-    * `definition`: `{ description = "description text", give_to_singleplayer = boolean}`
-      the default of `give_to_singleplayer` is true
-    * To allow players with `basic_privs` to grant, see `basic_privs` minetest.conf setting.
-    * `on_grant(name, granter_name)`: Called when given to player `name` by `granter_name`.
+    * `definition`:
+      `{description = "description text", give_to_singleplayer = boolean}`
+      the default of `give_to_singleplayer` is true.
+    * To allow players with `basic_privs` to grant, see `basic_privs`
+      minetest.conf setting.
+    * `on_grant(name, granter_name)`: Called when given to player `name` by
+      `granter_name`.
       `granter_name` will be nil if the priv was granted by a mod.
-    * `on_revoke(name, revoker_name)`: Called when taken from player `name` by `revoker_name`.
+    * `on_revoke(name, revoker_name)`: Called when taken from player `name` by
+      `revoker_name`.
       `revoker_name` will be nil if the priv was revoked by a mod
-    * Note that the above two callbacks will be called twice if a player is responsible -
-      once with the player name, and then with a nil player name.
-    * Return true in the above callbacks to stop register_on_priv_grant or revoke being called.
+    * Note that the above two callbacks will be called twice if a player is
+      responsible, once with the player name, and then with a nil player name.
+    * Return true in the above callbacks to stop register_on_priv_grant or
+      revoke being called.
 * `minetest.register_authentication_handler(authentication handler definition)`
     * Registers an auth handler that overrides the builtin one
     * This function can be called by a single mod once only.
@@ -2732,7 +2796,8 @@ Call these functions only at load time!
 * `minetest.privs_to_string(privs)`: returns `"priv1,priv2,..."`
     * Convert between two privilege representations
 * `minetest.get_player_privs(name) -> {priv1=true,...}`
-* `minetest.check_player_privs(player_or_name, ...)`: returns `bool, missing_privs`
+* `minetest.check_player_privs(player_or_name, ...)`:
+  returns `bool, missing_privs`
     * A quickhand for checking privileges.
     * `player_or_name`: Either a Player object or the name of a player.
     * `...` is either a list of strings, e.g. `"priva", "privb"` or
@@ -2741,8 +2806,8 @@ Call these functions only at load time!
 * `minetest.check_password_entry(name, entry, password)`
     * Returns true if the "password entry" for a player with name matches given
       password, false otherwise.
-    * The "password entry" is the password representation generated by the engine
-      as returned as part of a `get_auth()` call on the auth handler.
+    * The "password entry" is the password representation generated by the
+      engine as returned as part of a `get_auth()` call on the auth handler.
     * Only use this function for making it possible to log in via password from
       external protocols such as IRC, other uses are frowned upon.
 * `minetest.get_password_hash(name, raw_password)`
@@ -2752,7 +2817,8 @@ Call these functions only at load time!
       from the function, with an externally provided password, as the hash
       in the db might use the new SRP verifier format.
     * For this purpose, use `minetest.check_password_entry` instead.
-* `minetest.get_player_ip(name)`: returns an IP address string for the player `name`
+* `minetest.get_player_ip(name)`: returns an IP address string for the player
+  `name`.
     * The player needs to be online for this to be successful.
 
 * `minetest.get_auth_handler()`: Return the currently active auth handler
@@ -2762,13 +2828,16 @@ Call these functions only at load time!
 * `minetest.notify_authentication_modified(name)`
     * Must be called by the authentication handler for privilege changes.
     * `name`: string; if omitted, all auth data should be considered modified
-* `minetest.set_player_password(name, password_hash)`: Set password hash of player `name`
-* `minetest.set_player_privs(name, {priv1=true,...})`: Set privileges of player `name`
+* `minetest.set_player_password(name, password_hash)`: Set password hash of
+  player `name`.
+* `minetest.set_player_privs(name, {priv1=true,...})`: Set privileges of player
+  `name`.
 * `minetest.auth_reload()`
     * See `reload()` in authentication handler definition
 
-`minetest.set_player_password`, `minetest_set_player_privs`, `minetest_get_player_privs`
-and `minetest.auth_reload` call the authentication handler.
+`minetest.set_player_password`, `minetest_set_player_privs`,
+`minetest_get_player_privs` and `minetest.auth_reload` call the authentication
+handler.
 
 ### Chat
 * `minetest.chat_send_all(text)`
