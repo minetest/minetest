@@ -37,6 +37,11 @@ include_directories(
 	${PROJECT_SOURCE_DIR}/script
 	${PROJECT_BINARY_DIR})
 
+# Library deps
+add_subdirectory(${PROJECT_SOURCE_DIR}/../lib/jsoncpp ${PROJECT_BINARY_DIR}/lib/jsoncpp)
+add_subdirectory(${PROJECT_SOURCE_DIR}/../lib/lua ${PROJECT_BINARY_DIR}/lib/lua)
+
+# Our sources
 add_subdirectory(${PROJECT_SOURCE_DIR}/client ${PROJECT_BINARY_DIR}/client)
 add_subdirectory(${PROJECT_SOURCE_DIR}/database ${PROJECT_BINARY_DIR}/database)
 add_subdirectory(${PROJECT_SOURCE_DIR}/gui ${PROJECT_BINARY_DIR}/gui)
@@ -165,5 +170,6 @@ configure_file(
 )
 
 add_library(minetest SHARED ${client_SRCS})
+add_dependencies(minetest jsoncpp lua)
 
-target_link_libraries(minetest)
+target_link_libraries(minetest jsoncpp lua)
