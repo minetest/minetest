@@ -2854,19 +2854,20 @@ handler.
     * Set node on all positions set in the first argument.
     * e.g. `minetest.bulk_set_node({{x=0, y=1, z=1}, {x=1, y=2, z=2}}, {name="default:stone"})`
     * For node specification or position syntax see `minetest.set_node` call
-    * Faster than set_node due to single call, but still considerably slower than
-      Voxel Manipulators (LVM) for large numbers of nodes.
-      Unlike LVMs, this will call node callbacks. It also allows setting nodes in spread out
-      positions which would cause LVMs to waste memory.
-      For setting a cube, this is 1.3x faster than set_node whereas LVM is 20x faster.
+    * Faster than set_node due to single call, but still considerably slower
+      than Lua Voxel Manipulators (LVM) for large numbers of nodes.
+      Unlike LVMs, this will call node callbacks. It also allows setting nodes
+      in spread out positions which would cause LVMs to waste memory.
+      For setting a cube, this is 1.3x faster than set_node whereas LVM is 20
+      times faster.
 * `minetest.swap_node(pos, node)`
     * Set node at position, but don't remove metadata
 * `minetest.remove_node(pos)`
     * By default it does the same as `minetest.set_node(pos, {name="air"})`
 * `minetest.get_node(pos)`
     * Returns the node at the given position as table in the format
-      `{name="node_name", param1=0, param2=0}`, returns `{name="ignore", param1=0, param2=0}`
-      for unloaded areas.
+      `{name="node_name", param1=0, param2=0}`,
+      returns `{name="ignore", param1=0, param2=0}` for unloaded areas.
 * `minetest.get_node_or_nil(pos)`
     * Same as `get_node` but returns `nil` for unloaded areas.
 * `minetest.get_node_light(pos, timeofday)`
@@ -2888,36 +2889,45 @@ handler.
     * Returns `true` if successful, `false` on failure
 
 * `minetest.find_nodes_with_meta(pos1, pos2)`
-    * Get a table of positions of nodes that have metadata within a region {pos1, pos2}
+    * Get a table of positions of nodes that have metadata within a region
+      {pos1, pos2}.
 * `minetest.get_meta(pos)`
     * Get a `NodeMetaRef` at that position
 * `minetest.get_node_timer(pos)`
     * Get `NodeTimerRef`
 
-* `minetest.add_entity(pos, name, [staticdata])`: Spawn Lua-defined entity at position
+* `minetest.add_entity(pos, name, [staticdata])`: Spawn Lua-defined entity at
+  position.
     * Returns `ObjectRef`, or `nil` if failed
 * `minetest.add_item(pos, item)`: Spawn item
     * Returns `ObjectRef`, or `nil` if failed
 * `minetest.get_player_by_name(name)`: Get an `ObjectRef` to a player
-* `minetest.get_objects_inside_radius(pos, radius)`: returns a list of ObjectRefs
+* `minetest.get_objects_inside_radius(pos, radius)`: returns a list of
+  ObjectRefs.
     * `radius`: using an euclidean metric
 * `minetest.set_timeofday(val)`
     * `val` is between `0` and `1`; `0` for midnight, `0.5` for midday
 * `minetest.get_timeofday()`
-* `minetest.get_gametime()`: returns the time, in seconds, since the world was created
-* `minetest.get_day_count()`: returns number days elapsed since world was created,
-    * accounting for time changes.
-* `minetest.find_node_near(pos, radius, nodenames, [search_center])`: returns pos or `nil`
+* `minetest.get_gametime()`: returns the time, in seconds, since the world was
+  created.
+* `minetest.get_day_count()`: returns number days elapsed since world was
+  created.
+    * accounts for time changes.
+* `minetest.find_node_near(pos, radius, nodenames, [search_center])`: returns
+  pos or `nil`.
     * `radius`: using a maximum metric
     * `nodenames`: e.g. `{"ignore", "group:tree"}` or `"default:dirt"`
     * `search_center` is an optional boolean (default: `false`)
       If true `pos` is also checked for the nodes
-* `minetest.find_nodes_in_area(pos1, pos2, nodenames)`: returns a list of positions
+* `minetest.find_nodes_in_area(pos1, pos2, nodenames)`: returns a list of
+  positions.
     * `nodenames`: e.g. `{"ignore", "group:tree"}` or `"default:dirt"`
     * First return value: Table with all node positions
-    * Second return value: Table with the count of each node with the node name as index
+    * Second return value: Table with the count of each node with the node name
+      as index.
     * Area volume is limited to 4,096,000 nodes
-* `minetest.find_nodes_in_area_under_air(pos1, pos2, nodenames)`: returns a list of positions
+* `minetest.find_nodes_in_area_under_air(pos1, pos2, nodenames)`: returns a
+  list of positions.
     * `nodenames`: e.g. `{"ignore", "group:tree"}` or `"default:dirt"`
     * Return value: Table with all node positions with a node air above
     * Area volume is limited to 4,096,000 nodes
@@ -2991,7 +3001,8 @@ handler.
 * `minetest.get_mapgen_setting(name)`
     * Gets the *active* mapgen setting (or nil if none exists) in string
       format with the following order of precedence:
-        1) Settings loaded from map_meta.txt or overrides set during mod execution
+        1) Settings loaded from map_meta.txt or overrides set during mod
+           execution.
         2) Settings set by mods without a metafile override
         3) Settings explicitly set in the user config file, minetest.conf
         4) Settings set as the user config default
@@ -3026,25 +3037,31 @@ handler.
 * `minetest.clear_objects([options])`
     * Clear all objects in the environment
     * Takes an optional table as an argument with the field `mode`.
-        * mode = `"full"`: Load and go through every mapblock, clearing objects (default).
-        * mode = `"quick"`: Clear objects immediately in loaded mapblocks;
-          clear objects in unloaded mapblocks only when the mapblocks are next activated.
+        * mode = `"full"` : Load and go through every mapblock, clearing
+                            objects (default).
+        * mode = `"quick"`: Clear objects immediately in loaded mapblocks,
+                            clear objects in unloaded mapblocks only when the
+                            mapblocks are next activated.
 * `minetest.emerge_area(pos1, pos2, [callback], [param])`
-    * Queue all blocks in the area from `pos1` to `pos2`, inclusive, to be asynchronously
-      fetched from memory, loaded from disk, or if inexistent, generates them.
-    * If `callback` is a valid Lua function, this will be called for each block emerged.
+    * Queue all blocks in the area from `pos1` to `pos2`, inclusive, to be
+      asynchronously fetched from memory, loaded from disk, or if inexistent,
+      generates them.
+    * If `callback` is a valid Lua function, this will be called for each block
+      emerged.
     * The function signature of callback is:
         * `function EmergeAreaCallback(blockpos, action, calls_remaining, param)`
-            * `blockpos` is the *block* coordinates of the block that had been emerged
+            * `blockpos` is the *block* coordinates of the block that had been
+              emerged.
             * `action` could be one of the following constant values:
                 * `minetest.EMERGE_CANCELLED`
                 * `minetest.EMERGE_ERRORED`
                 * `minetest.EMERGE_FROM_MEMORY`
                 * `minetest.EMERGE_FROM_DISK`
                 * `minetest.EMERGE_GENERATED`
-            * `calls_remaining` is the number of callbacks to be expected after this one
-            * `param` is the user-defined parameter passed to emerge_area (or nil if the
-              parameter was absent)
+            * `calls_remaining` is the number of callbacks to be expected after
+              this one.
+            * `param` is the user-defined parameter passed to emerge_area (or
+              nil if the parameter was absent).
 * `minetest.delete_area(pos1, pos2)`
     * delete all mapblocks in the area from pos1 to pos2, inclusive
 * `minetest.line_of_sight(pos1, pos2)`: returns `boolean, pos`
@@ -3061,10 +3078,12 @@ handler.
     * `liquids' : if false, liquid nodes won't be returned. Default is `false`.
 * `minetest.find_path(pos1,pos2,searchdistance,max_jump,max_drop,algorithm)`
     * returns table containing path
-    * returns a table of 3D points representing a path from `pos1` to `pos2` or `nil`
+    * returns a table of 3D points representing a path from `pos1` to `pos2` or
+      `nil`.
     * `pos1`: start position
     * `pos2`: end position
-    * `searchdistance`: number of blocks to search in each direction using a maximum metric
+    * `searchdistance`: number of blocks to search in each direction using a
+      maximum metric.
     * `max_jump`: maximum height difference to consider walkable
     * `max_drop`: maximum height difference to consider droppable
     * `algorithm`: One of `"A*_noprefetch"` (default), `"A*"`, `"Dijkstra"`
@@ -3109,22 +3128,23 @@ handler.
     * spread these updates to neighbours and can cause a cascade
       of nodes to fall.
 * `minetest.get_spawn_level(x, z)`
-    * Returns a player spawn y co-ordinate for the provided (x, z) co-ordinates,
-      or `nil` for an unsuitable spawn point.
+    * Returns a player spawn y co-ordinate for the provided (x, z)
+      co-ordinates, or `nil` for an unsuitable spawn point.
     * For most mapgens a 'suitable spawn point' is one with y between
       `water_level` and `water_level + 16`, and in mgv7 well away from rivers,
       so `nil` will be returned for many (x, z) co-ordinates.
     * The spawn level returned is for a player spawn in unmodified terrain.
-    * The spawn level is intentionally above terrain level to cope with full-node
-      biome 'dust' nodes.
+    * The spawn level is intentionally above terrain level to cope with
+      full-node biome 'dust' nodes.
 
 ### Mod channels
 You can find mod channels communication scheme in `docs/mod_channels.png`.
 
 * `minetest.mod_channel_join(channel_name)`
     * Server joins channel `channel_name`, and creates it if necessary. You
-      should listen from incoming messages with `minetest.register_on_modchannel_message`
-      call to receive incoming messages
+      should listen from incoming messages with
+      `minetest.register_on_modchannel_message` call to receive incoming
+      messages.
 
 ### Inventory
 `minetest.get_inventory(location)`: returns an `InvRef`
@@ -3133,14 +3153,17 @@ You can find mod channels communication scheme in `docs/mod_channels.png`.
     * `{type="player", name="celeron55"}`
     * `{type="node", pos={x=, y=, z=}}`
     * `{type="detached", name="creative"}`
-* `minetest.create_detached_inventory(name, callbacks, [player_name])`: returns an `InvRef`
+* `minetest.create_detached_inventory(name, callbacks, [player_name])`: returns
+  an `InvRef`.
     * callbacks: See "Detached inventory callbacks"
-    * `player_name`: Make detached inventory available to one player exclusively,
-      by default they will be sent to every player (even if not used).
-      Note that this parameter is mostly just a workaround and will be removed in future releases.
+    * `player_name`: Make detached inventory available to one player
+      exclusively, by default they will be sent to every player (even if not
+      used).
+      Note that this parameter is mostly just a workaround and will be removed
+      in future releases.
     * Creates a detached inventory. If it already exists, it is cleared.
 * `minetest.do_item_eat(hp_change, replace_with_item, itemstack, user, pointed_thing)`:
-  returns left over ItemStack
+  returns left over ItemStack.
     * See `minetest.item_eat` and `minetest.register_on_item_eat`
 
 ### Formspec
@@ -3151,13 +3174,16 @@ You can find mod channels communication scheme in `docs/mod_channels.png`.
     * `formspec`: formspec to display
 * `minetest.close_formspec(playername, formname)`
     * `playername`: name of player to close formspec
-    * `formname`: has to exactly match the one given in `show_formspec`, or the formspec will
-      not close.
-    * calling `show_formspec(playername, formname, "")` is equal to this expression
+    * `formname`: has to exactly match the one given in `show_formspec`, or the
+      formspec will not close.
+    * calling `show_formspec(playername, formname, "")` is equal to this
+      expression.
     * to close a formspec regardless of the formname, call
-      `minetest.close_formspec(playername, "")`. **USE THIS ONLY WHEN ABSOLUTELY NECESSARY!**
+      `minetest.close_formspec(playername, "")`.
+      **USE THIS ONLY WHEN ABSOLUTELY NECESSARY!**
 * `minetest.formspec_escape(string)`: returns a string
-    * escapes the characters "[", "]", "\", "," and ";", which can not be used in formspecs
+    * escapes the characters "[", "]", "\", "," and ";", which can not be used
+      in formspecs.
 * `minetest.explode_table_event(string)`: returns a table
     * returns e.g. `{type="CHG", row=1, column=2}`
     * `type` is one of:
@@ -3183,26 +3209,31 @@ You can find mod channels communication scheme in `docs/mod_channels.png`.
 * `minetest.get_pointed_thing_position(pointed_thing, above)`
     * Get position of a `pointed_thing` (that you can get from somewhere)
 * `minetest.dir_to_facedir(dir, is6d)`
-    * Convert a vector to a facedir value, used in `param2` for `paramtype2="facedir"`;
-    * passing something non-`nil`/`false` for the optional second parameter causes it to
-      take the y component into account
+    * Convert a vector to a facedir value, used in `param2` for
+      `paramtype2="facedir"`.
+    * passing something non-`nil`/`false` for the optional second parameter
+      causes it to take the y component into account.
 * `minetest.facedir_to_dir(facedir)`
-    * Convert a facedir back into a vector aimed directly out the "back" of a node
+    * Convert a facedir back into a vector aimed directly out the "back" of a
+      node.
 * `minetest.dir_to_wallmounted(dir)`
-    * Convert a vector to a wallmounted value, used for `paramtype2="wallmounted"`
+    * Convert a vector to a wallmounted value, used for
+      `paramtype2="wallmounted"`.
 * `minetest.wallmounted_to_dir(wallmounted)`
-    * Convert a wallmounted value back into a vector aimed directly out the "back" of a node
+    * Convert a wallmounted value back into a vector aimed directly out the
+      "back" of a node.
 * `minetest.dir_to_yaw(dir)`
     * Convert a vector into a yaw (angle)
 * `minetest.yaw_to_dir(yaw)`
     * Convert yaw (angle) to a vector
 * `minetest.is_colored_paramtype(ptype)`
-    * Returns a boolean. Returns `true` if the given `paramtype2` contains color
-      information (`color`, `colorwallmounted` or `colorfacedir`).
+    * Returns a boolean. Returns `true` if the given `paramtype2` contains
+      color information (`color`, `colorwallmounted` or `colorfacedir`).
 * `minetest.strip_param2_color(param2, paramtype2)`
     * Removes everything but the color information from the
       given `param2` value.
-    * Returns `nil` if the given `paramtype2` does not contain color information
+    * Returns `nil` if the given `paramtype2` does not contain color
+      information.
 * `minetest.get_node_drops(nodename, toolname)`
     * Returns list of item names.
     * **Note**: This will be removed or modified in a future version.
@@ -3210,7 +3241,7 @@ You can find mod channels communication scheme in `docs/mod_channels.png`.
     * `input.method` = `"normal"` or `"cooking"` or `"fuel"`
     * `input.width` = for example `3`
     * `input.items` = for example
-      `{ stack1, stack2, stack3, stack4, stack 5, stack 6, stack 7, stack 8, stack 9 }`
+      `{stack1, stack2, stack3, stack4, stack 5, stack 6, stack 7, stack 8, stack 9}`
     * `output.item` = `ItemStack`, if unsuccessful: empty `ItemStack`
     * `output.time` = a number, if unsuccessful: `0`
     * `output.replacements` = list of `ItemStack`s that couldn't be placed in
@@ -3222,34 +3253,35 @@ You can find mod channels communication scheme in `docs/mod_channels.png`.
     * `input.method` = `"normal"` or `"cooking"` or `"fuel"`
     * `input.width` = for example `3`
     * `input.items` = for example
-      `{ stack1, stack2, stack3, stack4, stack 5, stack 6, stack 7, stack 8, stack 9 }`
+      `{stack1, stack2, stack3, stack4, stack 5, stack 6, stack 7, stack 8, stack 9}`
         * `input.items` = `nil` if no recipe found
 * `minetest.get_all_craft_recipes(query item)`: returns a table or `nil`
     * returns indexed table with all registered recipes for query item (node)
-      or `nil` if no recipe was found
+      or `nil` if no recipe was found.
     * recipe entry table:
 
-            {
-                method = 'normal' or 'cooking' or 'fuel'
-                width = 0-3, 0 means shapeless recipe
-                items = indexed [1-9] table with recipe items
-                output = string with item name and quantity
-            }
+          {
+              method = 'normal' or 'cooking' or 'fuel'
+              width = 0-3, 0 means shapeless recipe
+              items = indexed [1-9] table with recipe items
+              output = string with item name and quantity
+          }
     * Example query for `"default:gold_ingot"` will return table:
 
-            {
-                [1]={method = "cooking", width = 3, output = "default:gold_ingot",
-                items = {1 = "default:gold_lump"}},
-                [2]={method = "normal", width = 1, output = "default:gold_ingot 9",
-                items = {1 = "default:goldblock"}}
-            }
+          {
+              [1]={method = "cooking", width = 3, output = "default:gold_ingot",
+              items = {1 = "default:gold_lump"}},
+              [2]={method = "normal", width = 1, output = "default:gold_ingot 9",
+              items = {1 = "default:goldblock"}}
+          }
 * `minetest.handle_node_drops(pos, drops, digger)`
     * `drops`: list of itemstrings
-    * Handles drops from nodes after digging: Default action is to put them into
-      digger's inventory
+    * Handles drops from nodes after digging: Default action is to put them
+      into digger's inventory.
     * Can be overridden to get different functionality (e.g. dropping items on
       ground)
-* `minetest.itemstring_with_palette(item, palette_index)`: returns an item string
+* `minetest.itemstring_with_palette(item, palette_index)`: returns an item
+  string.
     * Creates an item string which contains palette index information
       for hardware colorization. You can use the returned string
       as an output in a craft recipe.
@@ -3270,7 +3302,8 @@ You can find mod channels communication scheme in `docs/mod_channels.png`.
   returns `{{actor, pos, time, oldnode, newnode}, ...}`
     * Find who has done something to a node, or near a node
     * `actor`: `"player:<name>"`, also `"liquid"`.
-* `minetest.rollback_revert_actions_by(actor, seconds)`: returns `boolean, log_messages`
+* `minetest.rollback_revert_actions_by(actor, seconds)`: returns
+  `boolean, log_messages`.
     * Revert latest actions of someone
     * `actor`: `"player:<name>"`, also `"liquid"`.
 
@@ -3313,7 +3346,8 @@ These functions return the leftover itemstack.
 * `minetest.sound_fade(handle, step, gain)`
     * `handle` is a handle returned by `minetest.sound_play`
     * `step` determines how fast a sound will fade.
-      Negative step will lower the sound volume, positive step will increase the sound volume
+      Negative step will lower the sound volume, positive step will increase
+      the sound volume.
     * `gain` the target gain for the fade.
 
 ### Timing
@@ -3322,7 +3356,8 @@ These functions return the leftover itemstack.
     * Optional: Variable number of arguments that are passed to `func`
 
 ### Server
-* `minetest.request_shutdown([message],[reconnect],[delay])`: request for server shutdown. Will display `message` to clients.
+* `minetest.request_shutdown([message],[reconnect],[delay])`: request for
+  server shutdown. Will display `message` to clients.
     * `reconnect` == true displays a reconnect button
     * `delay` adds an optional delay (in seconds) before shutdown.
       Negative delay cancels the current active shutdown.
@@ -3330,27 +3365,32 @@ These functions return the leftover itemstack.
 * `minetest.cancel_shutdown_requests()`: cancel current delayed shutdown
 * `minetest.get_server_status()`: returns server status string
 * `minetest.get_server_uptime()`: returns the server uptime in seconds
-* `minetest.remove_player(name)`: remove player from database (if he is not connected).
-    * As auth data is not removed, minetest.player_exists will continue to return true.
-      Call the below method as well if you want to remove auth data too.
+* `minetest.remove_player(name)`: remove player from database (if they are not
+  connected).
+    * As auth data is not removed, minetest.player_exists will continue to
+      return true. Call the below method as well if you want to remove auth
+      data too.
     * Returns a code (0: successful, 1: no such player, 2: player is connected)
 * `minetest.remove_player_auth(name)`: remove player authentication data
     * Returns boolean indicating success (false if player nonexistant)
 
 ### Bans
-* `minetest.get_ban_list()`: returns the ban list (same as `minetest.get_ban_description("")`)
+* `minetest.get_ban_list()`: returns the ban list
+  (same as `minetest.get_ban_description("")`).
 * `minetest.get_ban_description(ip_or_name)`: returns ban description (string)
 * `minetest.ban_player(name)`: ban a player
 * `minetest.unban_player_or_ip(name)`: unban player or IP address
-* `minetest.kick_player(name, [reason])`: disconnect a player with a optional reason
+* `minetest.kick_player(name, [reason])`: disconnect a player with a optional
+  reason.
 
 ### Particles
 * `minetest.add_particle(particle definition)`
-    * Deprecated: `minetest.add_particle(pos, velocity, acceleration, expirationtime,
-      size, collisiondetection, texture, playername)`
+    * Deprecated: `minetest.add_particle(pos, velocity, acceleration,
+      expirationtime, size, collisiondetection, texture, playername)`
 
 * `minetest.add_particlespawner(particlespawner definition)`
-    * Add a `ParticleSpawner`, an object that spawns an amount of particles over `time` seconds
+    * Add a `ParticleSpawner`, an object that spawns an amount of particles
+      over `time` seconds.
     * Returns an `id`, and -1 if adding didn't succeed
     * `Deprecated: minetest.add_particlespawner(amount, time,
       minpos, maxpos,
@@ -3361,8 +3401,10 @@ These functions return the leftover itemstack.
       collisiondetection, texture, playername)`
 
 * `minetest.delete_particlespawner(id, player)`
-    * Delete `ParticleSpawner` with `id` (return value from `minetest.add_particlespawner`)
-    * If playername is specified, only deletes on the player's client, otherwise on all clients
+    * Delete `ParticleSpawner` with `id` (return value from
+      `minetest.add_particlespawner`).
+    * If playername is specified, only deletes on the player's client,
+      otherwise on all clients.
 
 ### Schematics
 * `minetest.create_schematic(p1, p2, probability_list, filename, slice_prob_list)`
