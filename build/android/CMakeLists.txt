@@ -19,6 +19,8 @@ endif()
 include_directories(
 	${CMAKE_CURRENT_SOURCE_DIR}/deps/irrlicht/include
 	${CMAKE_CURRENT_SOURCE_DIR}/deps/gmp
+	${CMAKE_CURRENT_SOURCE_DIR}/../../lib/jsoncpp
+	${CMAKE_CURRENT_SOURCE_DIR}/../../lib/lua/src
 	${PROJECT_SOURCE_DIR}
 	${PROJECT_SOURCE_DIR}/script
 	${CMAKE_CURRENT_SOURCE_DIR}/cmakebuild)
