@@ -15,7 +15,6 @@ set(USE_SOUND 1)
 set(_IRR_ANDROID_PLATFORM_1)
 set(HAVE_TOUCHSCREENGUI 1)
 
-message(WARN "Ndk ${ANDROID_NDK}")
 if (${ANDROID_ABI} STREQUAL "x86_64")
 	include_directories(${ANDROID_SYSROOT}/usr/include/x86_64-linux-android)
 elseif (${ANDROID_ABI} STREQUAL "x86")
