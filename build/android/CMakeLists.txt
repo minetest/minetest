@@ -6,6 +6,8 @@ set(PROJECT_NAME_CAPITALIZED "Minetest")
 set(CMAKE_CXX_STANDARD 11)
 set(PROJECT_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../../src/)
 set(PROJECT_BINARY_DIR ${CMAKE_CURRENT_SOURCE_DIR}/cmakebuild/)
+set(OPENSSL_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/deps/openssl/include)
+set(OPENSSL_LIBRARIES ${PROJECT_BINARY_DIR}/lib/ssl)
 
 # Build options
 set(BUILD_CLIENT 1)
@@ -40,6 +42,9 @@ include_directories(
 # Library deps
 add_subdirectory(${PROJECT_SOURCE_DIR}/../lib/jsoncpp ${PROJECT_BINARY_DIR}/lib/jsoncpp)
 add_subdirectory(${PROJECT_SOURCE_DIR}/../lib/lua ${PROJECT_BINARY_DIR}/lib/lua)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/deps/openssl ${PROJECT_BINARY_DIR}/lib/openssl)
+#add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/deps/curl ${PROJECT_BINARY_DIR}/lib/curl)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/deps/sqlite ${PROJECT_BINARY_DIR}/lib/sqlite)
 
 # Our sources
 add_subdirectory(${PROJECT_SOURCE_DIR}/client ${PROJECT_BINARY_DIR}/client)
@@ -170,6 +175,6 @@ configure_file(
 )
 
 add_library(minetest SHARED ${client_SRCS})
-add_dependencies(minetest jsoncpp lua)
+add_dependencies(minetest crypto ssl jsoncpp lua sqlite3)
 
-target_link_libraries(minetest jsoncpp lua)
+target_link_libraries(minetest crypto ssl jsoncpp lua sqlite3)
