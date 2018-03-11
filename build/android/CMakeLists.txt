@@ -1,11 +1,14 @@
 cmake_minimum_required(VERSION 3.1)
 
+project(minetest)
+set(PROJECT_NAME_CAPITALIZED "Minetest")
+
 set(CMAKE_CXX_STANDARD 11)
-set(CMAKE_CXX_FLAGS )
 set(PROJECT_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../../src/)
 set(PROJECT_BINARY_DIR ${CMAKE_CURRENT_SOURCE_DIR}/cmakebuild/)
 set(BUILD_CLIENT 1)
 
+message(WARN "Ndk ${ANDROID_NDK}")
 if (${ANDROID_ABI} STREQUAL "x86_64")
 	include_directories(${ANDROID_SYSROOT}/usr/include/x86_64-linux-android)
 elseif (${ANDROID_ABI} STREQUAL "x86")
@@ -17,13 +20,15 @@ elseif (${ANDROID_ABI} STREQUAL "armeabi-v7a")
 endif()
 
 include_directories(
+	${ANDROID_NDK}/sources/android/native_app_glue
 	${CMAKE_CURRENT_SOURCE_DIR}/deps/irrlicht/include
 	${CMAKE_CURRENT_SOURCE_DIR}/deps/gmp
+	${CMAKE_CURRENT_SOURCE_DIR}/deps/libiconv/include
 	${CMAKE_CURRENT_SOURCE_DIR}/../../lib/jsoncpp
 	${CMAKE_CURRENT_SOURCE_DIR}/../../lib/lua/src
 	${PROJECT_SOURCE_DIR}
 	${PROJECT_SOURCE_DIR}/script
-	${CMAKE_CURRENT_SOURCE_DIR}/cmakebuild)
+	${PROJECT_BINARY_DIR})
 
 add_subdirectory(${PROJECT_SOURCE_DIR}/client ${PROJECT_BINARY_DIR}/client)
 add_subdirectory(${PROJECT_SOURCE_DIR}/database ${PROJECT_BINARY_DIR}/database)
