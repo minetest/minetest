@@ -32,13 +32,12 @@
 #include <util/numeric.h>
 #include "intlGUIEditBox.h"
 
-#if defined(_IRR_COMPILE_WITH_GUI_) && IRRLICHT_VERSION_MAJOR == 1 && IRRLICHT_VERSION_MINOR < 9
+#if defined(_IRR_COMPILE_WITH_GUI_) && IRRLICHT_VERSION_MAJOR == 1 && IRRLICHT_VERSION_MINOR < 9 || defined(__ANDROID__)
 
 #include "IGUISkin.h"
 #include "IGUIEnvironment.h"
 #include "IGUIFont.h"
 #include "IVideoDriver.h"
-//#include "rect.h"
 //#include "irrlicht/os.cpp"
 #include "porting.h"
 //#include "Keycodes.h"

@@ -7,7 +7,7 @@
 #include "IrrCompileConfig.h"
 //#ifdef _IRR_COMPILE_WITH_GUI_
 
-#include "IGUIEditBox.h"
+#include <IGUIEditBox.h>
 #include "irrArray.h"
 #include "IOSOperator.h"
 #include "IGUIScrollBar.h"
