@@ -1039,7 +1039,7 @@ void GUIFormSpecMenu::createTextField(parserData *data, FieldSpec &spec,
 	}
 
 	if (e) {
-		if (is_editable && spec.fname == data->focused_fieldname) 
+		if (is_editable && spec.fname == data->focused_fieldname)
 			Environment->setFocus(e);
 
 		if (is_multiline) {

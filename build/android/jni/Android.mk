@@ -160,12 +160,12 @@ LOCAL_SRC_FILES := \
 		jni/src/gui/guiTable.cpp                  \
 		jni/src/guiscalingfilter.cpp              \
 		jni/src/gui/guiVolumeChange.cpp           \
+		jni/src/gui/intlGUIEditBox.cpp            \
 		jni/src/gui/profilergraph.cpp             \
 		jni/src/gui/touchscreengui.cpp            \
 		jni/src/httpfetch.cpp                     \
 		jni/src/hud.cpp                           \
 		jni/src/imagefilters.cpp                  \
-		jni/src/gui/intlGUIEditBox.cpp            \
 		jni/src/inventory.cpp                     \
 		jni/src/inventorymanager.cpp              \
 		jni/src/itemdef.cpp                       \
