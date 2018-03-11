@@ -787,21 +787,21 @@ apk: local.properties assets $(ICONV_LIB) $(IRRLICHT_LIB) $(CURL_LIB) $(GMP_LIB)
 	export GPROF=${GPROF};                                                     \
 	${ANDROID_NDK}/ndk-build || exit 1;                                        \
 	if [ ! -e ${APP_ROOT}/jniLibs ]; then                                      \
-		ln -s ${ANDR_ROOT}/libs ${APP_ROOT}/jniLibs || exit 1;                 \
+		ln -s ${ANDR_ROOT}/libs ${APP_ROOT}/jniLibs || exit 1;             \
 	fi;                                                                        \
 	export VERSION_STR="${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}" && \
 	export BUILD_TYPE_C=$$(echo "$${BUILD_TYPE}" | sed 's/./\U&/') &&          \
 	./gradlew assemble$$BUILD_TYPE_C &&                                           \
-	echo "APK stored at: build/outputs/apk/Minetest-$$BUILD_TYPE.apk" &&       \
+	echo "APK stored at: build/outputs/apk/$$BUILD_TYPE/Minetest-$$BUILD_TYPE.apk" && \
 	echo "You can install it with \`make install_$$BUILD_TYPE\`"
 
 # These Intentionally doesn't depend on their respective build steps,
 # because it takes a while to verify that everything's up-to-date.
 install_debug:
-	${ANDROID_SDK}/platform-tools/adb install -r build/outputs/apk/Minetest-debug.apk
+	${ANDROID_SDK}/platform-tools/adb install -r build/outputs/apk/debug/Minetest-debug.apk
 
 install_release:
-	${ANDROID_SDK}/platform-tools/adb install -r build/outputs/apk/Minetest-release.apk
+	${ANDROID_SDK}/platform-tools/adb install -r build/outputs/apk/release/Minetest-release.apk
 
 prep_srcdir :
 	@if [ ! -e ${ANDR_ROOT}/jni/src ]; then                                    \
