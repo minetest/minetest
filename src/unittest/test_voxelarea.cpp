@@ -128,6 +128,14 @@ void TestVoxelArea::test_contains_voxelarea()
 			false);
 	UASSERTEQ(bool, v1.contains(VoxelArea(v3s16(-10, 10, 10), v3s16(3500, 10, 10))),
 			false);
+	UASSERTEQ(bool,
+			v1.contains(VoxelArea(
+					v3s16(-800, -400, 669), v3s16(-500, 200, 669))),
+			true);
+	UASSERTEQ(bool,
+			v1.contains(VoxelArea(
+					v3s16(-800, -400, 670), v3s16(-500, 200, 670))),
+			false);
 }
 
 void TestVoxelArea::test_contains_point()
