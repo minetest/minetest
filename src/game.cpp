@@ -32,6 +32,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client/joystick_controller.h"
 #include "clientmap.h"
 #include "clouds.h"
+#include "cmake_config.h"
 #include "config.h"
 #include "content_cao.h"
 #include "client/event_manager.h"

@@ -18,6 +18,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "clientmedia.h"
+#include "cmake_config.h"
 #include "httpfetch.h"
 #include "client.h"
 #include "filecache.h"

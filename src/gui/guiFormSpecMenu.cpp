@@ -24,6 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <sstream>
 #include <limits>
 #include "guiFormSpecMenu.h"
+#include "cmake_config.h"
 #include "guiTable.h"
 #include "constants.h"
 #include "gamedef.h"
