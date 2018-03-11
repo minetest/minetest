@@ -1,7 +1,7 @@
 APP_PLATFORM := ${APP_PLATFORM}
 APP_ABI := ${TARGET_ABI}
-APP_STL := gnustl_static
-NDK_TOOLCHAIN_VERSION := 4.9
+APP_STL := c++_shared
+NDK_TOOLCHAIN_VERSION := ${COMPILER_VERSION}
 APP_DEPRECATED_HEADERS := true
 
 APP_CLAFGS += -mfloat-abi=softfp -mfpu=vfpv3 -O3
