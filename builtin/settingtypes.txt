@@ -118,6 +118,10 @@ random_input (Random input) bool false
 #    Continuous forward movement, toggled by autoforward key.
 continuous_forward (Continuous forward) bool false
 
+#    (Android) Fixes the position of virtual joystick.
+#    If disabled, virtual joystick will center to first-touch's position.
+fixed_virtual_joystick (Fixed virtual joystick) bool false
+
 #    Enable joysticks
 enable_joysticks (Enable joysticks) bool false
 

@@ -408,6 +408,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("touchtarget", "true");
 	settings->setDefault("TMPFolder","/sdcard/" PROJECT_NAME_C "/tmp/");
 	settings->setDefault("touchscreen_threshold","20");
+	settings->setDefault("fixed_virtual_joystick", "false");
 	settings->setDefault("smooth_lighting", "false");
 	settings->setDefault("max_simultaneous_block_sends_per_client", "3");
 	settings->setDefault("emergequeue_limit_diskonly", "8");
