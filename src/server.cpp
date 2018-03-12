@@ -58,6 +58,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/serialize.h"
 #include "util/thread.h"
 #include "defaultsettings.h"
+#include "server/mods.h"
 #include "util/base64.h"
 #include "util/sha1.h"
 #include "util/hex.h"
@@ -203,12 +204,12 @@ Server::Server(
 	std::string ban_path = m_path_world + DIR_DELIM "ipban.txt";
 	m_banmanager = new BanManager(ban_path);
 
-	ServerModConfiguration modconf(m_path_world);
-	m_mods = modconf.getMods();
-	std::vector<ModSpec> unsatisfied_mods = modconf.getUnsatisfiedMods();
+	m_modmgr = std::unique_ptr<ServerModManager>(new ServerModManager(
+		m_path_world));
+	std::vector<ModSpec> unsatisfied_mods = m_modmgr->getUnsatisfiedMods();
 	// complain about mods with unsatisfied dependencies
-	if (!modconf.isConsistent()) {
-		modconf.printUnsatisfiedModsError();
+	if (!m_modmgr->isConsistent()) {
+		m_modmgr->printUnsatisfiedModsError();
 	}
 
 	//lock environment
@@ -224,27 +225,9 @@ Server::Server(
 
 	m_script->loadMod(getBuiltinLuaPath() + DIR_DELIM "init.lua", BUILTIN_MOD_NAME);
 
-	// Print mods
-	infostream << "Server: Loading mods: ";
-	for (std::vector<ModSpec>::const_iterator i = m_mods.begin();
-			i != m_mods.end(); ++i) {
-		infostream << (*i).name << " ";
-	}
-	infostream << std::endl;
-	// Load and run "mod" scripts
-	for (std::vector<ModSpec>::const_iterator it = m_mods.begin();
-			it != m_mods.end(); ++it) {
-		const ModSpec &mod = *it;
-		if (!string_allowed(mod.name, MODNAME_ALLOWED_CHARS)) {
-			throw ModError("Error loading mod \"" + mod.name +
-				"\": Mod name does not follow naming conventions: "
-				"Only characters [a-z0-9_] are allowed.");
-		}
-		std::string script_path = mod.path + DIR_DELIM + "init.lua";
-		infostream << "  [" << padStringRight(mod.name, 12) << "] [\""
-				<< script_path << "\"]" << std::endl;
-		m_script->loadMod(script_path, mod.name);
-	}
+	m_mods = m_modmgr->getMods();
+
+	m_modmgr->loadMods(m_script);
 
 	// Read Textures and calculate sha1 sums
 	fillMediaCache();
@@ -580,7 +563,7 @@ void Server::AsyncRunStep(bool initial_step)
 					m_lag,
 					m_gamespec.id,
 					Mapgen::getMapgenName(m_emerge->mgparams->mgtype),
-					m_mods,
+					m_modmgr->getMods(),
 					m_dedicated);
 			counter = 0.01;
 		}
@@ -2237,13 +2220,7 @@ void Server::fillMediaCache()
 
 	// Collect all media file paths
 	std::vector<std::string> paths;
-	for (const ModSpec &mod : m_mods) {
-		paths.push_back(mod.path + DIR_DELIM + "textures");
-		paths.push_back(mod.path + DIR_DELIM + "sounds");
-		paths.push_back(mod.path + DIR_DELIM + "media");
-		paths.push_back(mod.path + DIR_DELIM + "models");
-		paths.push_back(mod.path + DIR_DELIM + "locale");
-	}
+	m_modmgr->getModsMediaPaths(paths);
 	fs::GetRecursiveDirs(paths, m_gamespec.path + DIR_DELIM + "textures");
 	fs::GetRecursiveDirs(paths, porting::path_user + DIR_DELIM + "textures" + DIR_DELIM + "server");
 
@@ -3326,22 +3303,19 @@ IWritableCraftDefManager *Server::getWritableCraftDefManager()
 	return m_craftdef;
 }
 
+const std::vector<ModSpec> & Server::getMods() const
+{
+	return m_modmgr->getMods();
+}
+
 const ModSpec *Server::getModSpec(const std::string &modname) const
 {
-	std::vector<ModSpec>::const_iterator it;
-	for (it = m_mods.begin(); it != m_mods.end(); ++it) {
-		const ModSpec &mod = *it;
-		if (mod.name == modname)
-			return &mod;
-	}
-	return NULL;
+	return m_modmgr->getModSpec(modname);
 }
 
 void Server::getModNames(std::vector<std::string> &modlist)
 {
-	std::vector<ModSpec>::iterator it;
-	for (it = m_mods.begin(); it != m_mods.end(); ++it)
-		modlist.push_back(it->name);
+	m_modmgr->getModNames(modlist);
 }
 
 std::string Server::getBuiltinLuaPath()

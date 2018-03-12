@@ -61,6 +61,7 @@ class ServerEnvironment;
 struct SimpleSoundSpec;
 struct CloudParams;
 class ServerThread;
+class ServerModManager;
 
 enum ClientDeletionReason {
 	CDR_LEAVE,
@@ -268,7 +269,7 @@ public:
 	NodeDefManager* getWritableNodeDefManager();
 	IWritableCraftDefManager* getWritableCraftDefManager();
 
-	virtual const std::vector<ModSpec> &getMods() const { return m_mods; }
+	virtual const std::vector<ModSpec> &getMods() const;
 	virtual const ModSpec* getModSpec(const std::string &modname) const;
 	void getModNames(std::vector<std::string> &modlist);
 	std::string getBuiltinLuaPath();
@@ -541,6 +542,7 @@ private:
 	EventManager *m_event;
 
 	// Mods
+	std::unique_ptr<ServerModManager> m_modmgr;
 	std::vector<ModSpec> m_mods;
 
 	/*

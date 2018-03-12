@@ -322,20 +322,6 @@ void ModConfiguration::resolveDependencies()
 	m_unsatisfied_mods.assign(unsatisfied.begin(), unsatisfied.end());
 }
 
-ServerModConfiguration::ServerModConfiguration(const std::string &worldpath):
-	ModConfiguration(worldpath)
-{
-	SubgameSpec gamespec = findWorldSubgame(worldpath);
-
-	// Add all game mods and all world mods
-	addModsInPath(gamespec.gamemods_path);
-	addModsInPath(worldpath + DIR_DELIM + "worldmods");
-
-	// Load normal mods
-	std::string worldmt = worldpath + DIR_DELIM + "world.mt";
-	addModsFromConfig(worldmt, gamespec.addon_mods_paths);
-}
-
 #ifndef SERVER
 ClientModConfiguration::ClientModConfiguration(const std::string &path):
 	ModConfiguration(path)

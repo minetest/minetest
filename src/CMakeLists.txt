@@ -379,10 +379,12 @@ add_subdirectory(script)
 add_subdirectory(unittest)
 add_subdirectory(util)
 add_subdirectory(irrlicht_changes)
+add_subdirectory(server)
 
 set(common_SRCS
 	${database_SRCS}
 	${mapgen_SRCS}
+	${server_SRCS}
 	ban.cpp
 	chat.cpp
 	clientiface.cpp
