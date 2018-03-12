@@ -41,3 +41,9 @@ public:
 	void getModNames(std::vector<std::string> &modlist) const;
 	void getModsMediaPaths(std::vector<std::string> &paths) const;
 };
+
+class CSMServerManager
+{
+private:
+	std::map<std::string, ModSpec> m_modspecs;
+};
