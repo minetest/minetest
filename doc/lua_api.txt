@@ -67,8 +67,8 @@ The game directory can contain the following files:
   In the same format as the one in builtin.
   This settingtypes.txt will be parsed by the menu and the settings will be
   displayed in the "Games" category in the advanced settings tab.
-* If the subgame contains a folder called `textures` the server will load it
-  as a texturepack, overriding mod textures.
+* If the game contains a folder called `textures` the server will load it as a
+  texturepack, overriding mod textures.
   Any server texturepack will override mod textures and the game texturepack.
 
 ### Menu images
