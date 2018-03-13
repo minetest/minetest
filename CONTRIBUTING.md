@@ -48,7 +48,7 @@ If you experience an issue, we would like to know the details - especially when 
      - Error logs (check the bottom of the `debug.txt` file)
      - Screenshots
      - Ways you have tried to solve the issue, and whether they worked or not
-     - Your Minetest version and the content (subgames, mods or texture packs) you have installed
+     - Your Minetest version and the content (games, mods or texture packs) you have installed
      - Your platform (e.g. Windows 10 or Ubuntu 15.04 x64)
 
 After reporting you should aim to answer questions or clarifications as this helps pinpoint the cause of the issue (if you don't do this your issue may be closed after 1 month).
