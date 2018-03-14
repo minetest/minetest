@@ -41,15 +41,12 @@ void ServerModManager::loadMods(ServerScripting *script)
 {
 	// Print mods
 	infostream << "Server: Loading mods: ";
-	for (std::vector<ModSpec>::const_iterator i = m_sorted_mods.begin();
-		i != m_sorted_mods.end(); ++i) {
-		infostream << (*i).name << " ";
+	for (const ModSpec &mod : m_sorted_mods) {
+		infostream << mod.name << " ";
 	}
 	infostream << std::endl;
 	// Load and run "mod" scripts
-	for (std::vector<ModSpec>::const_iterator it = m_sorted_mods.begin();
-		it != m_sorted_mods.end(); ++it) {
-		const ModSpec &mod = *it;
+	for (const ModSpec &mod : m_sorted_mods) {
 		if (!string_allowed(mod.name, MODNAME_ALLOWED_CHARS)) {
 			throw ModError("Error loading mod \"" + mod.name +
 				"\": Mod name does not follow naming conventions: "
