@@ -1,6 +1,6 @@
 /*
 Minetest
-Copyright (C) 2013 celeron55, Perttu Ahola <celeron55@gmail.com>
+Copyright (C) 2018 nerzhul, Loic Blot <loic.blot@unix-experience.fr>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -23,8 +23,18 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "scripting_server.h"
 #include "subgame.h"
 
-ServerModManager::ServerModManager(const std::string &worldpath):
-	ModConfiguration(worldpath)
+/**
+ * Manage server mods
+ *
+ * All new calls to this class must be tested in test_servermodmanager.cpp
+ */
+
+/**
+ * Creates a ServerModManager which targets worldpath
+ * @param worldpath
+ */
+ServerModManager::ServerModManager(const std::string &worldpath) :
+		ModConfiguration(worldpath)
 {
 	SubgameSpec gamespec = findWorldSubgame(worldpath);
 
@@ -37,6 +47,7 @@ ServerModManager::ServerModManager(const std::string &worldpath):
 	addModsFromConfig(worldmt, gamespec.addon_mods_paths);
 }
 
+// This function cannot be currenctly easily tested but it should be ASAP
 void ServerModManager::loadMods(ServerScripting *script)
 {
 	// Print mods
@@ -49,12 +60,13 @@ void ServerModManager::loadMods(ServerScripting *script)
 	for (const ModSpec &mod : m_sorted_mods) {
 		if (!string_allowed(mod.name, MODNAME_ALLOWED_CHARS)) {
 			throw ModError("Error loading mod \"" + mod.name +
-				"\": Mod name does not follow naming conventions: "
+					"\": Mod name does not follow naming "
+					"conventions: "
 					"Only characters [a-z0-9_] are allowed.");
 		}
 		std::string script_path = mod.path + DIR_DELIM + "init.lua";
 		infostream << "  [" << padStringRight(mod.name, 12) << "] [\""
-			<< script_path << "\"]" << std::endl;
+			   << script_path << "\"]" << std::endl;
 		script->loadMod(script_path, mod.name);
 	}
 }
