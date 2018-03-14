@@ -111,6 +111,36 @@ struct SoundBuffer
 	std::vector<char> buffer;
 };
 
+int sound_buffer_channels(SoundBuffer *SoundBuffer)
+{
+	switch(SoundBuffer->format) {
+	case AL_FORMAT_MONO8:
+		return 1;
+	case AL_FORMAT_MONO16:
+		return 1;
+	case AL_FORMAT_STEREO8:
+		return 2;
+	case AL_FORMAT_STEREO16:
+		return 2;
+	}
+	return 0;
+}
+
+int sound_buffer_bits_per_sample(SoundBuffer *SoundBuffer)
+{
+	switch (SoundBuffer->format) {
+	case AL_FORMAT_MONO8:
+		return 8;
+	case AL_FORMAT_MONO16:
+		return 16;
+	case AL_FORMAT_STEREO8:
+		return 8;
+	case AL_FORMAT_STEREO16:
+		return 16;
+	}
+	return 0;
+}
+
 SoundBuffer *load_opened_ogg_file(OggVorbis_File *oggFile,
 		const std::string &filename_for_logging)
 {
@@ -286,8 +316,18 @@ private:
 		float current_gain;
 		float target_gain;
 	};
+	struct EndState {
+		EndState() = default;
+
+		EndState(unsigned long sample_offset_end):
+			sampleOffsetEnd(sample_offset_end)
+		{}
+
+		unsigned long sampleOffsetEnd;
+	};
 
 	std::unordered_map<int, FadeState> m_sounds_fading;
+	std::unordered_map<int, EndState> m_sounds_endinging;
 	float m_fade_delay;
 public:
 	bool m_is_initialized;
@@ -366,6 +406,7 @@ public:
 	void step(float dtime)
 	{
 		doFades(dtime);
+		doEndings(dtime);
 	}
 
 	void addBuffer(const std::string &name, SoundBuffer *buf)
@@ -393,7 +434,7 @@ public:
 	}
 
 	PlayingSound* createPlayingSound(SoundBuffer *buf, bool loop,
-			float volume, float pitch)
+			float volume, float pitch, unsigned long sample_offset)
 	{
 		infostream<<"OpenALSoundManager: Creating playing sound"<<std::endl;
 		assert(buf);
@@ -409,13 +450,14 @@ public:
 		volume = std::fmax(0.0f, volume);
 		alSourcef(sound->source_id, AL_GAIN, volume);
 		alSourcef(sound->source_id, AL_PITCH, pitch);
+		alSourcei(sound->source_id, AL_SAMPLE_OFFSET, sample_offset);
 		alSourcePlay(sound->source_id);
 		warn_if_error(alGetError(), "createPlayingSound");
 		return sound;
 	}
 
 	PlayingSound* createPlayingSoundAt(SoundBuffer *buf, bool loop,
-			float volume, v3f pos, float pitch)
+			float volume, v3f pos, float pitch, unsigned long sample_offset)
 	{
 		infostream<<"OpenALSoundManager: Creating positional playing sound"
 				<<std::endl;
@@ -438,31 +480,53 @@ public:
 		volume = std::fmax(0.0f, volume * 3.0f);
 		alSourcef(sound->source_id, AL_GAIN, volume);
 		alSourcef(sound->source_id, AL_PITCH, pitch);
+		alSourcei(sound->source_id, AL_SAMPLE_OFFSET, sample_offset);
 		alSourcePlay(sound->source_id);
 		warn_if_error(alGetError(), "createPlayingSoundAt");
 		return sound;
 	}
 
-	int playSoundRaw(SoundBuffer *buf, bool loop, float volume, float pitch)
+	int playSoundRaw(SoundBuffer *buf, bool loop, float volume, float pitch,
+			float offset_start, float offset_end)
 	{
 		assert(buf);
-		PlayingSound *sound = createPlayingSound(buf, loop, volume, pitch);
+		const unsigned long sample_offset_start = SimpleSoundSpec::convertOffsetToSampleOffset(
+			sound_buffer_channels(buf), sound_buffer_bits_per_sample(buf), buf->freq, buf->buffer.size(), offset_start);
+		const unsigned long sample_offset_end = SimpleSoundSpec::convertOffsetToSampleOffset(
+			sound_buffer_channels(buf), sound_buffer_bits_per_sample(buf), buf->freq, buf->buffer.size(), offset_end);
+
+		PlayingSound *sound = createPlayingSound(
+				buf, loop, volume, pitch,
+				sample_offset_start);
 		if(!sound)
 			return -1;
 		int id = m_next_id++;
 		m_sounds_playing[id] = sound;
+		if (offset_end != -1.0)
+			endingingSound(id, sample_offset_end);
 		return id;
 	}
 
-	int playSoundRawAt(SoundBuffer *buf, bool loop, float volume, const v3f &pos,
-			float pitch)
+	int playSoundRawAt(SoundBuffer *buf, bool loop, float volume,
+		const v3f &pos, float pitch,
+		float offset_start, float offset_end)
 	{
 		assert(buf);
-		PlayingSound *sound = createPlayingSoundAt(buf, loop, volume, pos, pitch);
+
+		const unsigned long sample_offset_start = SimpleSoundSpec::convertOffsetToSampleOffset(
+			sound_buffer_channels(buf), sound_buffer_bits_per_sample(buf), buf->freq, buf->buffer.size(), offset_start);
+		const unsigned long sample_offset_end = SimpleSoundSpec::convertOffsetToSampleOffset(
+			sound_buffer_channels(buf), sound_buffer_bits_per_sample(buf), buf->freq, buf->buffer.size(), offset_end);
+
+		PlayingSound *sound = createPlayingSoundAt(
+				buf, loop, volume, pos, pitch,
+				sample_offset_start);
 		if(!sound)
 			return -1;
 		int id = m_next_id++;
 		m_sounds_playing[id] = sound;
+		if (offset_end != -1.0)
+			endingingSound(id, sample_offset_end);
 		return id;
 	}
 
@@ -563,7 +627,9 @@ public:
 		alListenerf(AL_GAIN, gain);
 	}
 
-	int playSound(const std::string &name, bool loop, float volume, float fade, float pitch)
+	int playSound(const std::string &name, bool loop, float volume,
+			float fade, float pitch,
+			float offset_start, float offset_end)
 	{
 		maintain();
 		if (name.empty())
@@ -576,15 +642,17 @@ public:
 		}
 		int handle = -1;
 		if (fade > 0) {
-			handle = playSoundRaw(buf, loop, 0.0f, pitch);
+			handle = playSoundRaw(buf, loop, 0.0f, pitch, offset_start, offset_end);
 			fadeSound(handle, fade, volume);
 		} else {
-			handle = playSoundRaw(buf, loop, volume, pitch);
+			handle = playSoundRaw(buf, loop, volume, pitch, offset_start, offset_end);
 		}
 		return handle;
 	}
 
-	int playSoundAt(const std::string &name, bool loop, float volume, v3f pos, float pitch)
+	int playSoundAt(const std::string &name, bool loop, float volume,
+			v3f pos, float pitch,
+			float offset_start, float offset_end)
 	{
 		maintain();
 		if (name.empty())
@@ -595,7 +663,7 @@ public:
 					<<std::endl;
 			return -1;
 		}
-		return playSoundRawAt(buf, loop, volume, pos, pitch);
+		return playSoundRawAt(buf, loop, volume, pos, pitch, offset_start, offset_end);
 	}
 
 	void stopSound(int sound)
@@ -607,6 +675,11 @@ public:
 	void fadeSound(int soundid, float step, float gain)
 	{
 		m_sounds_fading[soundid] = FadeState(step, getSoundGain(soundid), gain);
+	}
+
+	void endingingSound(int soundid, unsigned long sample_offset_end)
+	{
+		m_sounds_endinging[soundid] = EndState(sample_offset_end);
 	}
 
 	void doFades(float dtime)
@@ -638,6 +711,37 @@ public:
 			}
 		}
 		m_fade_delay = 0;
+	}
+
+	void doEndings(float dtime)
+	{
+		// stopSound may modify m_sounds_playing and invalidate the iterator
+		//   therefore be careful to re-obtain a valid one calling m_sounds_playing.find()
+		std::unordered_map<int, PlayingSound*>::iterator it2;
+
+		for (std::unordered_map<int, EndState>::iterator it = m_sounds_endinging.begin();
+			it != m_sounds_endinging.end();
+			/*iterator advances either by result of erase(it) or by it++*/)
+		{
+			if ((it2 = m_sounds_playing.find(it->first)) != m_sounds_playing.end())
+			{
+				PlayingSound *sound = it2->second;
+				ALint sample_offset = 0;
+
+				// playing the sound eventually causes sample_offset to raise above sampleOffsetEnd
+				alGetSourcei(sound->source_id, AL_SAMPLE_OFFSET, &sample_offset);
+
+				// stopSound causes removal from m_sounds_playing
+				if (sample_offset >= it->second.sampleOffsetEnd)
+					stopSound(it->first);
+			}
+
+			// absence from m_sounds_playing eventually cleans up the m_sounds_endingding entry
+			if ((it2 = m_sounds_playing.find(it->first)) == m_sounds_playing.end())
+				it = m_sounds_endinging.erase(it);
+			else
+				it++;
+		}
 	}
 
 	bool soundExists(int sound)

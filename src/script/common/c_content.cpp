@@ -1013,6 +1013,8 @@ void read_soundspec(lua_State *L, int index, SimpleSoundSpec &spec)
 		getfloatfield(L, index, "gain", spec.gain);
 		getfloatfield(L, index, "fade", spec.fade);
 		getfloatfield(L, index, "pitch", spec.pitch);
+		getfloatfield(L, index, "offset_start", spec.offset_start);
+		getfloatfield(L, index, "offset_end", spec.offset_end);
 	} else if(lua_isstring(L, index)){
 		spec.name = lua_tostring(L, index);
 	}
@@ -1029,6 +1031,10 @@ void push_soundspec(lua_State *L, const SimpleSoundSpec &spec)
 	lua_setfield(L, -2, "fade");
 	lua_pushnumber(L, spec.pitch);
 	lua_setfield(L, -2, "pitch");
+	lua_pushnumber(L, spec.offset_start);
+	lua_setfield(L, -2, "offset_start");
+	lua_pushnumber(L, spec.offset_end);
+	lua_setfield(L, -2, "offset_end");
 }
 
 /******************************************************************************/

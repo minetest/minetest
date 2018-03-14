@@ -730,6 +730,8 @@ Examples of sound parameter tables:
     -- Play locationless on all clients
     {
         gain = 1.0, -- default
+        offset_start = 0.0,  -- default
+        offset_end   = -1.0, -- default
         fade = 0.0, -- default, change to a value > 0 to fade the sound in
         pitch = 1.0, -- default
     }
@@ -737,6 +739,8 @@ Examples of sound parameter tables:
     {
         to_player = name,
         gain = 1.0, -- default
+        offset_start = 0.0,  -- default
+        offset_end   = -1.0, -- default
         fade = 0.0, -- default, change to a value > 0 to fade the sound in
         pitch = 1.0, -- default
     }
@@ -750,6 +754,8 @@ Examples of sound parameter tables:
     {
         pos = {x = 1, y = 2, z = 3},
         gain = 1.0, -- default
+        offset_start = 0.0,  -- default
+        offset_end   = -1.0, -- default
         max_hear_distance = 32, -- default, uses an euclidean metric
     }
     -- Play connected to an object, looped
@@ -763,6 +769,11 @@ Examples of sound parameter tables:
 Looped sounds must either be connected to an object or played locationless to
 one player using `to_player = name,`
 
+`offset_start` is the offset in the named sound to start playback, expressed in seconds.
+`offset_end` is the offset in the named sound to end playback, expressed in seconds.
+Together these offsets are able to specify a range [offset_start, offset_end].
+Specify `offset_end = -1.0` (or no `offset_end` at all) to play until the very end.
+
 ### `SimpleSoundSpec`
 * e.g. `""`
 * e.g. `"default_place_node"`
@@ -770,6 +781,7 @@ one player using `to_player = name,`
 * e.g. `{name = "default_place_node"}`
 * e.g. `{name = "default_place_node", gain = 1.0}`
 * e.g. `{name = "default_place_node", gain = 1.0, pitch = 1.0}`
+* e.g. `{name = "default_place_node", gain = 1.0, pitch = 1.0, offset_start = 1.0, offset_end = 3.5}`
 
 Registered definitions of stuff
 -------------------------------

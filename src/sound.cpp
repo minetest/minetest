@@ -18,8 +18,21 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "sound.h"
+#include "util/numeric.h"
 
 // Global DummySoundManager singleton
 DummySoundManager dummySoundManager;
 
-
+unsigned long SimpleSoundSpec::convertOffsetToSampleOffset(
+		unsigned long channels, unsigned long bits_per_sample, unsigned long frequency,
+		unsigned long buffer_size_bytes, double offset)
+{
+	const unsigned long BytesPerSampleFrame = channels * (bits_per_sample / 8);
+	const unsigned long NumBufferSampleFrames = buffer_size_bytes / BytesPerSampleFrame;
+	unsigned long SampleFrameOfOffset = offset * frequency;
+	// remember sample frames range [0, NumBufferSampleFrames)
+	//   therefore last is NumBufferSampleFrames - 1
+	if (offset == -1.0) // special value for 'offset at the very end'
+		SampleFrameOfOffset = NumBufferSampleFrames - 1;
+	return rangelim(SampleFrameOfOffset, 0, NumBufferSampleFrames - 1);
+}
