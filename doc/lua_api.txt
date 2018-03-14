@@ -3448,86 +3448,103 @@ These functions return the leftover itemstack.
 
 ### Schematics
 * `minetest.create_schematic(p1, p2, probability_list, filename, slice_prob_list)`
-    * Create a schematic from the volume of map specified by the box formed by p1 and p2.
-    * Apply the specified probability and per-node force-place to the specified nodes
-      according to the `probability_list`.
-        * `probability_list` is an array of tables containing two fields, `pos` and `prob`.
+    * Create a schematic from the volume of map specified by the box formed by
+      p1 and p2.
+    * Apply the specified probability and per-node force-place to the specified
+      nodes according to the `probability_list`.
+        * `probability_list` is an array of tables containing two fields, `pos`
+          and `prob`.
             * `pos` is the 3D vector specifying the absolute coordinates of the
               node being modified,
-            * `prob` is an integer value from `0` to `255` that encodes probability and
-              per-node force-place. Probability has levels 0-127, then 128 is added to
-              encode per-node force-place.
-              For probability stated as 0-255, divide by 2 and round down to get values
-              0-127, then add 128 to apply per-node force-place.
+            * `prob` is an integer value from `0` to `255` that encodes
+              probability and per-node force-place. Probability has levels
+              0-127, then 128 may be added to encode per-node force-place.
+              For probability stated as 0-255, divide by 2 and round down to
+              get values 0-127, then add 128 to apply per-node force-place.
             * If there are two or more entries with the same pos value, the
               last entry is used.
-            * If `pos` is not inside the box formed by `p1` and `p2`, it is ignored.
+            * If `pos` is not inside the box formed by `p1` and `p2`, it is
+              ignored.
             * If `probability_list` equals `nil`, no probabilities are applied.
-    * Apply the specified probability to the specified horizontal slices according to the
-      `slice_prob_list`.
-        * `slice_prob_list` is an array of tables containing two fields, `ypos` and `prob`.
-            * `ypos` indicates the y position of the slice with a probability applied,
-              the lowest slice being `ypos = 0`.
-            * If slice probability list equals `nil`, no slice probabilities are applied.
+    * Apply the specified probability to the specified horizontal slices
+      according to the `slice_prob_list`.
+        * `slice_prob_list` is an array of tables containing two fields, `ypos`
+          and `prob`.
+            * `ypos` indicates the y position of the slice with a probability
+              applied, the lowest slice being `ypos = 0`.
+            * If slice probability list equals `nil`, no slice probabilities
+              are applied.
     * Saves schematic in the Minetest Schematic format to filename.
 
 * `minetest.place_schematic(pos, schematic, rotation, replacements, force_placement, flags)`
-    * Place the schematic specified by schematic (see: Schematic specifier) at `pos`.
+    * Place the schematic specified by schematic (see: Schematic specifier) at
+      `pos`.
     * `rotation` can equal `"0"`, `"90"`, `"180"`, `"270"`, or `"random"`.
     * If the `rotation` parameter is omitted, the schematic is not rotated.
     * `replacements` = `{["old_name"] = "convert_to", ...}`
-    * `force_placement` is a boolean indicating whether nodes other than `air` and
-      `ignore` are replaced by the schematic
+    * `force_placement` is a boolean indicating whether nodes other than `air`
+      and `ignore` are replaced by the schematic.
     * Returns nil if the schematic could not be loaded.
-    * **Warning**: Once you have loaded a schematic from a file, it will be cached. Future calls
-      will always use the cached version and the replacement list defined for it,
-      regardless of whether the file or the replacement list parameter have changed.
-      The only way to load the file anew is to restart the server.
+    * **Warning**: Once you have loaded a schematic from a file, it will be
+      cached. Future calls will always use the cached version and the
+      replacement list defined for it, regardless of whether the file or the
+      replacement list parameter have changed. The only way to load the file
+      anew is to restart the server.
     * `flags` is a flag field with the available flags:
         * place_center_x
         * place_center_y
         * place_center_z
 
 * `minetest.place_schematic_on_vmanip(vmanip, pos, schematic, rotation, replacement, force_placement, flags)`:
-    * This function is analogous to minetest.place_schematic, but places a schematic onto the
-      specified VoxelManip object `vmanip` instead of the whole map.
-    * Returns false if any part of the schematic was cut-off due to the VoxelManip not
-      containing the full area required, and true if the whole schematic was able to fit.
+    * This function is analogous to minetest.place_schematic, but places a
+      schematic onto the specified VoxelManip object `vmanip` instead of the
+      map.
+    * Returns false if any part of the schematic was cut-off due to the
+      VoxelManip not containing the full area required, and true if the whole
+      schematic was able to fit.
     * Returns nil if the schematic could not be loaded.
-    * After execution, any external copies of the VoxelManip contents are invalidated.
+    * After execution, any external copies of the VoxelManip contents are
+      invalidated.
     * `flags` is a flag field with the available flags:
         * place_center_x
         * place_center_y
         * place_center_z
 
 * `minetest.serialize_schematic(schematic, format, options)`
-    * Return the serialized schematic specified by schematic (see: Schematic specifier)
+    * Return the serialized schematic specified by schematic
+      (see: Schematic specifier)
     * in the `format` of either "mts" or "lua".
-    * "mts" - a string containing the binary MTS data used in the MTS file format
-    * "lua" - a string containing Lua code representing the schematic in table format
+    * "mts" - a string containing the binary MTS data used in the MTS file
+      format.
+    * "lua" - a string containing Lua code representing the schematic in table
+      format.
     * `options` is a table containing the following optional parameters:
-    * If `lua_use_comments` is true and `format` is "lua", the Lua code generated will have (X, Z)
-    * position comments for every X row generated in the schematic data for easier reading.
-    * If `lua_num_indent_spaces` is a nonzero number and `format` is "lua", the Lua code generated
-    * will use that number of spaces as indentation instead of a tab character.
+        * If `lua_use_comments` is true and `format` is "lua", the Lua code
+          generated will have (X, Z) position comments for every X row
+          generated in the schematic data for easier reading.
+        * If `lua_num_indent_spaces` is a nonzero number and `format` is "lua",
+          the Lua code generated will use that number of spaces as indentation
+          instead of a tab character.
 
 ### HTTP Requests:
 * `minetest.request_http_api()`:
-    * returns `HTTPApiTable` containing http functions if the calling mod has been granted
-      access by being listed in the `secure.http_mods` or `secure.trusted_mods` setting,
-      otherwise returns `nil`.
-    * The returned table contains the functions `fetch`, `fetch_async` and `fetch_async_get`
-      described below.
-    * Only works at init time and must be called from the mod's main scope (not from a function).
+    * returns `HTTPApiTable` containing http functions if the calling mod has
+      been granted access by being listed in the `secure.http_mods` or
+      `secure.trusted_mods` setting, otherwise returns `nil`.
+    * The returned table contains the functions `fetch`, `fetch_async` and
+      `fetch_async_get` described below.
+    * Only works at init time and must be called from the mod's main scope
+      (not from a function).
     * Function only exists if minetest server was built with cURL support.
     * **DO NOT ALLOW ANY OTHER MODS TO ACCESS THE RETURNED TABLE, STORE IT IN
       A LOCAL VARIABLE!**
 * `HTTPApiTable.fetch(HTTPRequest req, callback)`
     * Performs given request asynchronously and calls callback upon completion
     * callback: `function(HTTPRequestResult res)`
-    * Use this HTTP function if you are unsure, the others are for advanced use.
+    * Use this HTTP function if you are unsure, the others are for advanced use
 * `HTTPApiTable.fetch_async(HTTPRequest req)`: returns handle
-    * Performs given request asynchronously and returns handle for `HTTPApiTable.fetch_async_get`
+    * Performs given request asynchronously and returns handle for
+      `HTTPApiTable.fetch_async_get`
 * `HTTPApiTable.fetch_async_get(handle)`: returns HTTPRequestResult
     * Return response data for given asynchronous HTTP request
 
@@ -3539,7 +3556,8 @@ These functions return the leftover itemstack.
 ### Misc.
 * `minetest.get_connected_players()`: returns list of `ObjectRefs`
 * `minetest.is_player(o)`: boolean, whether `o` is a player
-* `minetest.player_exists(name)`: boolean, whether player exists (regardless of online status)
+* `minetest.player_exists(name)`: boolean, whether player exists
+  (regardless of online status)
 * `minetest.hud_replace_builtin(name, hud_definition)`
     * Replaces definition of a builtin hud element
     * `name`: `"breath"` or `"health"`
@@ -3559,8 +3577,8 @@ These functions return the leftover itemstack.
     * Deprecated: An alias for the former.
 * `minetest.raillike_group(name)`: returns a rating
     * Returns rating of the connect_to_raillike group corresponding to name
-    * If name is not yet the name of a connect_to_raillike group, a new group id
-    * is created, with that name
+    * If name is not yet the name of a connect_to_raillike group, a new group
+      id is created, with that name.
 * `minetest.get_content_id(name)`: returns an integer
     * Gets the internal content ID of `name`
 * `minetest.get_name_from_content_id(content_id)`: returns a string
@@ -3571,15 +3589,20 @@ These functions return the leftover itemstack.
     * On success returns a table, a string, a number, a boolean or `nullvalue`
     * On failure outputs an error message and returns `nil`
     * Example: `parse_json("[10, {\"a\":false}]")`, returns `{10, {a = false}}`
-* `minetest.write_json(data[, styled])`: returns a string or `nil` and an error message
+* `minetest.write_json(data[, styled])`: returns a string or `nil` and an error
+  message.
     * Convert a Lua table into a JSON string
-    * styled: Outputs in a human-readable format if this is set, defaults to false
+    * styled: Outputs in a human-readable format if this is set, defaults to
+      false.
     * Unserializable things like functions and userdata will cause an error.
     * **Warning**: JSON is more strict than the Lua table format.
-        1. You can only use strings and positive integers of at least one as keys.
+        1. You can only use strings and positive integers of at least one as
+           keys.
         2. You can not mix string and integer keys.
-           This is due to the fact that JSON has two distinct array and object values.
-    * Example: `write_json({10, {a = false}})`, returns `"[10, {\"a\": false}]"`
+           This is due to the fact that JSON has two distinct array and object
+           values.
+    * Example: `write_json({10, {a = false}})`,
+      returns `"[10, {\"a\": false}]"`
 * `minetest.serialize(table)`: returns a string
     * Convert a table containing tables, strings, numbers, booleans and `nil`s
       into string form readable by `minetest.deserialize`
@@ -3588,21 +3611,24 @@ These functions return the leftover itemstack.
     * Convert a string returned by `minetest.deserialize` into a table
     * `string` is loaded in an empty sandbox environment.
     * Will load functions, but they cannot access the global environment.
-    * Example: `deserialize('return { ["foo"] = "bar" }')`, returns `{foo='bar'}`
-    * Example: `deserialize('print("foo")')`, returns `nil` (function call fails)
-        * `error:[string "print("foo")"]:1: attempt to call global 'print' (a nil value)`
+    * Example: `deserialize('return { ["foo"] = "bar" }')`,
+      returns `{foo='bar'}`
+    * Example: `deserialize('print("foo")')`, returns `nil`
+      (function call fails), returns
+      `error:[string "print("foo")"]:1: attempt to call global 'print' (a nil value)`
 * `minetest.compress(data, method, ...)`: returns `compressed_data`
     * Compress a string of data.
     * `method` is a string identifying the compression method to be used.
     * Supported compression methods:
         * Deflate (zlib): `"deflate"`
-    * `...` indicates method-specific arguments.  Currently defined arguments are:
+    * `...` indicates method-specific arguments. Currently defined arguments
+      are:
         * Deflate: `level` - Compression level, `0`-`9` or `nil`.
 * `minetest.decompress(compressed_data, method, ...)`: returns data
     * Decompress a string of data (using ZLib).
-    * See documentation on `minetest.compress()` for supported compression methods.
-    * currently supported.
-    * `...` indicates method-specific arguments. Currently, no methods use this.
+    * See documentation on `minetest.compress()` for supported compression
+      methods.
+    * `...` indicates method-specific arguments. Currently, no methods use this
 * `minetest.rgba(red, green, blue[, alpha])`: returns a string
     * Each argument is a 8 Bit unsigned integer
     * Returns the ColorString from rgb or rgba values
@@ -3612,14 +3638,15 @@ These functions return the leftover itemstack.
 * `minetest.decode_base64(string)`: returns string
     * Decodes a string encoded in base64.
 * `minetest.is_protected(pos, name)`: returns boolean
-    * Returns true, if player `name` shouldn't be able to dig at `pos` or do other
-      actions, definable by mods, due to some mod-defined ownership-like concept.
-      Returns false or nil, if the player is allowed to do such actions.
+    * Returns true, if player `name` shouldn't be able to dig at `pos` or do
+      other actions, definable by mods, due to some mod-defined ownership-like
+      concept.
+    * Returns false or nil, if the player is allowed to do such actions.
     * `name` will be "" for non-players or unknown players.
-    * This function should be overridden by protection mods and should be used to
-      check if a player can interact at a position.
-    * This function should call the old version of itself if the position is not
-      protected by the mod.
+    * This function should be overridden by protection mods and should be used
+      to check if a player can interact at a position.
+    * This function should call the old version of itself if the position is
+      not protected by the mod.
     * Example:
 
             local old_is_protected = minetest.is_protected
@@ -3633,8 +3660,8 @@ These functions return the leftover itemstack.
     * This function calls functions registered with
       `minetest.register_on_protection_violation`.
 * `minetest.is_area_protected(pos1, pos2, player_name, interval)
-    * Returns the position of the first node that `player_name` may not modify in
-      the specified cuboid between `pos1` and `pos2`.
+    * Returns the position of the first node that `player_name` may not modify
+      in the specified cuboid between `pos1` and `pos2`.
     * Returns `false` if no protections were found.
     * Applies `is_protected()` to a 3D lattice of points in the defined volume.
       The points are spaced evenly throughout the volume and have a spacing
@@ -3643,27 +3670,29 @@ These functions return the leftover itemstack.
     * `interval` defaults to 4.
     * `interval` should be carefully chosen and maximised to avoid an excessive
       number of points being checked.
-    * Like `minetest.is_protected`, this function may be extended or overwritten by
-      mods to provide a faster implementation to check the cuboid for intersections.
+    * Like `minetest.is_protected`, this function may be extended or
+      overwritten by mods to provide a faster implementation to check the
+      cuboid for intersections.
 * `minetest.rotate_and_place(itemstack, placer, pointed_thing, infinitestacks, orient_flags)`
     * Attempt to predict the desired orientation of the facedir-capable node
-      defined by `itemstack`, and place it accordingly (on-wall, on the floor, or
-      hanging from the ceiling). Stacks are handled normally if the `infinitestacks`
-      field is false or omitted (else, the itemstack is not changed). `orient_flags`
-      is an optional table containing extra tweaks to the placement code:
-        * `invert_wall`:   if `true`, place wall-orientation on the ground and ground-
-          orientation on the wall.
+      defined by `itemstack`, and place it accordingly (on-wall, on the floor,
+      or hanging from the ceiling). Stacks are handled normally if the
+      `infinitestacks` field is false or omitted (else, the itemstack is not
+      changed). `orient_flags` is an optional table containing extra tweaks to
+      the placement code:
+        * `invert_wall`:   if `true`, place wall-orientation on the ground and
+          ground-orientation on the wall.
         * `force_wall` :   if `true`, always place the node in wall orientation.
         * `force_ceiling`: if `true`, always place on the ceiling.
         * `force_floor`:   if `true`, always place the node on the floor.
-        * `force_facedir`: if `true`, forcefully reset the facedir to north when placing on
-          the floor or ceiling
-        * The first four options are mutually-exclusive; the last in the list takes
-          precedence over the first.
+        * `force_facedir`: if `true`, forcefully reset the facedir to north
+          when placing on the floor or ceiling.
+        * The first four options are mutually-exclusive; the last in the list
+          takes precedence over the first.
 * `minetest.rotate_node(itemstack, placer, pointed_thing)`
-    * calls `rotate_and_place()` with infinitestacks set according to the state of
-      the creative mode setting, and checks for "sneak" to set the `invert_wall`
-      parameter.
+    * calls `rotate_and_place()` with infinitestacks set according to the state
+      of the creative mode setting, and checks for "sneak" to set the
+      `invert_wall` parameter.
 
 * `minetest.forceload_block(pos[, transient])`
     * forceloads the position `pos`.
@@ -3679,10 +3708,12 @@ These functions return the leftover itemstack.
 
 * `minetest.request_insecure_environment()`: returns an environment containing
   insecure functions if the calling mod has been listed as trusted in the
-  `secure.trusted_mods` setting or security is disabled, otherwise returns `nil`.
-    * Only works at init time and must be called from the mod's main scope (not from a function).
-    * **DO NOT ALLOW ANY OTHER MODS TO ACCESS THE RETURNED ENVIRONMENT, STORE IT IN
-      A LOCAL VARIABLE!**
+  `secure.trusted_mods` setting or security is disabled, otherwise returns
+  `nil`.
+    * Only works at init time and must be called from the mod's main scope (not
+      from a function).
+    * **DO NOT ALLOW ANY OTHER MODS TO ACCESS THE RETURNED ENVIRONMENT, STORE
+      IT IN A LOCAL VARIABLE!**
 
 * `minetest.global_exists(name)`
     * Checks if a global variable has been set, without triggering a warning.
@@ -3728,10 +3759,12 @@ An interface to use mod channels on client and server
 #### Methods
 * `leave()`: leave the mod channel.
     * Server leaves channel `channel_name`.
-    * No more incoming or outgoing messages can be sent to this channel from server mods.
-    * This invalidate all future object usage
-    * Ensure your set mod_channel to nil after that to free Lua resources
-* `is_writeable()`: returns true if channel is writeable and mod can send over it.
+    * No more incoming or outgoing messages can be sent to this channel from
+      server mods.
+    * This invalidate all future object usage.
+    * Ensure your set mod_channel to nil after that to free Lua resources.
+* `is_writeable()`: returns true if channel is writeable and mod can send over
+  it.
 * `send_all(message)`: Send `message` though the mod channel.
     * If mod channel is not writeable or invalid, message will be dropped.
     * Message size is limited to 65535 characters by protocol.
@@ -3765,8 +3798,9 @@ Can be obtained via `minetest.get_meta(pos)`.
 * `get_inventory()`: returns `InvRef`
 * `mark_as_private(name or {name1, name2, ...})`: Mark specific vars as private
   This will prevent them from being sent to the client. Note that the "private"
-  status will only be remembered if an associated key-value pair exists, meaning
-  it's best to call this when initializing all other meta (e.g. `on_construct`).
+  status will only be remembered if an associated key-value pair exists,
+  meaning it's best to call this when initializing all other meta (e.g.
+  `on_construct`).
 
 ### `ItemStackMetaRef`
 ItemStack metadata: reference extra data and functionality stored in a stack.
@@ -3775,8 +3809,9 @@ Can be obtained via `item:get_meta()`.
 #### Methods
 * All methods in MetaDataRef
 * `set_tool_capabilities([tool_capabilities])`
-    * overrides the item's tool capabilities
-    * a nil value will clear the override data and restore the original behavior
+    * Overrides the item's tool capabilities
+    * A nil value will clear the override data and restore the original
+      behavior.
 
 ### `StorageRef`
 Mod metadata: per mod metadata, saved automatically.
@@ -3794,7 +3829,8 @@ Can be gotten via `minetest.get_node_timer(pos)`.
     * set a timer's state
     * `timeout` is in seconds, and supports fractional values (0.1 etc)
     * `elapsed` is in seconds, and supports fractional values (0.1 etc)
-    * will trigger the node's `on_timer` function after `(timeout - elapsed)` seconds
+    * will trigger the node's `on_timer` function after `(timeout - elapsed)`
+      seconds.
 * `start(timeout)`
     * start a timer
     * equivalent to `set(timeout,0)`
@@ -3803,7 +3839,8 @@ Can be gotten via `minetest.get_node_timer(pos)`.
 * `get_timeout()`: returns current timeout in seconds
     * if `timeout` equals `0`, timer is inactive
 * `get_elapsed()`: returns current elapsed time in seconds
-    * the node's `on_timer` function will be called after `(timeout - elapsed)` seconds
+    * the node's `on_timer` function will be called after `(timeout - elapsed)`
+      seconds.
 * `is_started()`: returns boolean state of timer
     * returns `true` if timer is started, otherwise `false`
 
@@ -3826,10 +3863,12 @@ This is basically a reference to a C++ `ServerActiveObject`
 * `get_hp()`: returns number of hitpoints (2 * number of hearts)
 * `set_hp(hp)`: set number of hitpoints (2 * number of hearts)
 * `get_inventory()`: returns an `InvRef`
-* `get_wield_list()`: returns the name of the inventory list the wielded item is in
+* `get_wield_list()`: returns the name of the inventory list the wielded item
+   is in.
 * `get_wield_index()`: returns the index of the wielded item
 * `get_wielded_item()`: returns an `ItemStack`
-* `set_wielded_item(item)`: replaces the wielded item, returns `true` if successful
+* `set_wielded_item(item)`: replaces the wielded item, returns `true` if
+  successful.
 * `set_armor_groups({group1=rating, group2=rating, ...})`
 * `get_armor_groups()`: returns a table with the armor group ratings
 * `set_animation(frame_range, frame_speed, frame_blend, frame_loop)`
@@ -3837,14 +3876,16 @@ This is basically a reference to a C++ `ServerActiveObject`
     * `frame_speed`: number, default: `15.0`
     * `frame_blend`: number, default: `0.0`
     * `frame_loop`: boolean, default: `true`
-* `get_animation()`: returns `range`, `frame_speed`, `frame_blend` and `frame_loop`
+* `get_animation()`: returns `range`, `frame_speed`, `frame_blend` and
+  `frame_loop`.
 * `set_animation_frame_speed(frame_speed)`
     * `frame_speed`: number, default: `15.0`
 * `set_attach(parent, bone, position, rotation)`
     * `bone`: string
     * `position`: `{x=num, y=num, z=num}` (relative)
     * `rotation`: `{x=num, y=num, z=num}` = Rotation on each axis, in degrees
-* `get_attach()`: returns parent, bone, position, rotation or nil if it isn't attached
+* `get_attach()`: returns parent, bone, position, rotation or nil if it isn't
+  attached.
 * `set_detach()`
 * `set_bone_position(bone, position, rotation)`
     * `bone`: string
@@ -3897,19 +3938,26 @@ This is basically a reference to a C++ `ServerActiveObject`
   table {x, y, z} representing the player's instantaneous velocity in nodes/s
 * `get_look_dir()`: get camera direction as a unit vector
 * `get_look_vertical()`: pitch in radians
-    * Angle ranges between -pi/2 and pi/2, which are straight up and down respectively.
+    * Angle ranges between -pi/2 and pi/2, which are straight up and down
+      respectively.
 * `get_look_horizontal()`: yaw in radians
     * Angle is counter-clockwise from the +z direction.
 * `set_look_vertical(radians)`: sets look pitch
     * radians - Angle from looking forward, where positive is downwards.
 * `set_look_horizontal(radians)`: sets look yaw
-    * radians - Angle from the +z direction, where positive is counter-clockwise.
-* `get_look_pitch()`: pitch in radians - Deprecated as broken. Use `get_look_vertical`.
-    * Angle ranges between -pi/2 and pi/2, which are straight down and up respectively.
-* `get_look_yaw()`: yaw in radians - Deprecated as broken. Use `get_look_horizontal`.
+    * radians - Angle from the +z direction, where positive is
+      counter-clockwise.
+* `get_look_pitch()`: pitch in radians - Deprecated as broken. Use
+  `get_look_vertical`.
+    * Angle ranges between -pi/2 and pi/2, which are straight down and up
+      respectively.
+* `get_look_yaw()`: yaw in radians - Deprecated as broken. Use
+  `get_look_horizontal`.
     * Angle is counter-clockwise from the +x direction.
-* `set_look_pitch(radians)`: sets look pitch - Deprecated. Use `set_look_vertical`.
-* `set_look_yaw(radians)`: sets look yaw - Deprecated. Use `set_look_horizontal`.
+* `set_look_pitch(radians)`: sets look pitch - Deprecated. Use
+  `set_look_vertical`.
+* `set_look_yaw(radians)`: sets look yaw - Deprecated. Use
+  `set_look_horizontal`.
 * `get_breath()`: returns players breath
 * `set_breath(value)`: sets players breath
     * values:
@@ -3918,7 +3966,8 @@ This is basically a reference to a C++ `ServerActiveObject`
         * See Object Properties for more information
 * `set_attribute(attribute, value)`:
     * Sets an extra attribute with value on player.
-    * `value` must be a string, or a number which will be converted to a string.
+    * `value` must be a string, or a number which will be converted to a
+      string.
     * If `value` is `nil`, remove attribute from player.
 * `get_attribute(attribute)`:
     * Returns value (a string) for extra attribute.
@@ -3929,10 +3978,11 @@ This is basically a reference to a C++ `ServerActiveObject`
 * `get_inventory_formspec()`: returns a formspec string
 * `get_player_control()`: returns table with player pressed keys
     * The table consists of fields with boolean value representing the pressed
-      keys, the fields are jump, right, left, LMB, RMB, sneak, aux1, down and up
+      keys, the fields are jump, right, left, LMB, RMB, sneak, aux1, down, up.
     * example: `{jump=false, right=true, left=false, LMB=false, RMB=false,
       sneak=true, aux1=false, down=false, up=false}`
-* `get_player_control_bits()`: returns integer with bit packed player pressed keys
+* `get_player_control_bits()`: returns integer with bit packed player pressed
+  keys.
     * bit nr/meaning: 0/up, 1/down, 2/left, 3/right, 4/jump, 5/aux1, 6/sneak,
       7/LMB, 8/RMB
 * `set_physics_override(override_table)`
@@ -3950,16 +4000,19 @@ This is basically a reference to a C++ `ServerActiveObject`
 * `hud_add(hud definition)`: add a HUD element described by HUD def, returns ID
    number on success
 * `hud_remove(id)`: remove the HUD element of the specified id
-* `hud_change(id, stat, value)`: change a value of a previously added HUD element
-    * element `stat` values: `position`, `name`, `scale`, `text`, `number`, `item`, `dir`
+* `hud_change(id, stat, value)`: change a value of a previously added HUD
+  element.
+    * element `stat` values:
+      `position`, `name`, `scale`, `text`, `number`, `item`, `dir`
 * `hud_get(id)`: gets the HUD element definition structure of the specified ID
 * `hud_set_flags(flags)`: sets specified HUD flags to `true`/`false`
-    * `flags`: (is visible) `hotbar`, `healthbar`, `crosshair`, `wielditem`, `breathbar`,
-      `minimap`, `minimap_radar`
-    * pass a table containing a `true`/`false` value of each flag to be set or unset
+    * `flags`: (is visible) `hotbar`, `healthbar`, `crosshair`, `wielditem`,
+      `breathbar`, `minimap`, `minimap_radar`
+    * pass a table containing a `true`/`false` value of each flag to be set or
+      unset.
     * if a flag equals `nil`, the flag is not modified
-    * note that setting `minimap` modifies the client's permission to view the minimap -
-    * the client may locally elect to not view the minimap
+    * note that setting `minimap` modifies the client's permission to view the
+      minimap - the client may locally elect to not view the minimap.
     * minimap `radar` is only usable when `minimap` is true
 * `hud_get_flags()`: returns a table containing status of hud flags
     * returns `{hotbar=true, healthbar=true, crosshair=true, wielditem=true,
@@ -3985,15 +4038,20 @@ This is basically a reference to a C++ `ServerActiveObject`
 * `set_clouds(parameters)`: set cloud parameters
     * `parameters` is a table with the following optional fields:
         * `density`: from `0` (no clouds) to `1` (full clouds) (default `0.4`)
-        * `color`: basic cloud color with alpha channel, ColorSpec (default `#fff0f0e5`)
+        * `color`: basic cloud color with alpha channel, ColorSpec
+          (default `#fff0f0e5`).
         * `ambient`: cloud color lower bound, use for a "glow at night" effect.
           ColorSpec (alpha ignored, default `#000000`)
-        * `height`: cloud height, i.e. y of cloud base (default per conf, usually `120`)
+        * `height`: cloud height, i.e. y of cloud base (default per conf,
+          usually `120`)
         * `thickness`: cloud thickness in nodes (default `16`)
-        * `speed`: 2D cloud speed + direction in nodes per second (default `{x=0, z=-2}`)
-* `get_clouds()`: returns a table with the current cloud parameters as in `set_clouds`
+        * `speed`: 2D cloud speed + direction in nodes per second
+          (default `{x=0, z=-2}`).
+* `get_clouds()`: returns a table with the current cloud parameters as in
+  `set_clouds`.
 * `override_day_night_ratio(ratio or nil)`
-    * `0`...`1`: Overrides day-night ratio, controlling sunlight to a specific amount
+    * `0`...`1`: Overrides day-night ratio, controlling sunlight to a specific
+      amount.
     * `nil`: Disables override, defaulting to sunlight based on day-night cycle
 * `get_day_night_ratio()`: returns the ratio or nil if it isn't overridden
 * `set_local_animation(stand/idle, walk, dig, walk+dig, frame_speed=frame_speed)`:
@@ -4004,8 +4062,10 @@ This is basically a reference to a C++ `ServerActiveObject`
             {x=189, y=198}, -- <  dig animation key frames
             {x=200, y=219}, -- <  walk+dig animation key frames
             frame_speed=30): -- <  animation frame speed
-* `get_local_animation()`: returns stand, walk, dig, dig+walk tables and `frame_speed`
-* `set_eye_offset({x=0,y=0,z=0},{x=0,y=0,z=0})`: defines offset value for camera per player
+* `get_local_animation()`: returns stand, walk, dig, dig+walk tables and
+  `frame_speed`.
+* `set_eye_offset({x=0,y=0,z=0},{x=0,y=0,z=0})`: defines offset value for
+  camera per player.
     * in first person view
     * in third person view (max. values `{x=-10/10,y=-10,15,z=-5/5}`)
 * `get_eye_offset()`: returns `offset_first` and `offset_third`
@@ -4026,60 +4086,81 @@ An `InvRef` is a reference to an inventory.
 * `set_list(listname, list)`: set full list (size will not change)
 * `get_lists()`: returns list of inventory lists
 * `set_lists(lists)`: sets inventory lists (size will not change)
-* `add_item(listname, stack)`: add item somewhere in list, returns leftover `ItemStack`
+* `add_item(listname, stack)`: add item somewhere in list, returns leftover
+  `ItemStack`.
 * `room_for_item(listname, stack):` returns `true` if the stack of items
   can be fully added to the list
 * `contains_item(listname, stack, [match_meta])`: returns `true` if
   the stack of items can be fully taken from the list.
-  If `match_meta` is false, only the items' names are compared (default: `false`).
-* `remove_item(listname, stack)`: take as many items as specified from the list,
-  returns the items that were actually removed (as an `ItemStack`) -- note that
-  any item metadata is ignored, so attempting to remove a specific unique
-  item this way will likely remove the wrong one -- to do that use `set_stack`
-  with an empty `ItemStack`
-* `get_location()`: returns a location compatible to `minetest.get_inventory(location)`
+  If `match_meta` is false, only the items' names are compared
+  (default: `false`).
+* `remove_item(listname, stack)`: take as many items as specified from the
+  list, returns the items that were actually removed (as an `ItemStack`)
+  -- note that any item metadata is ignored, so attempting to remove a specific
+  unique item this way will likely remove the wrong one -- to do that use
+  `set_stack` with an empty `ItemStack`.
+* `get_location()`: returns a location compatible to
+  `minetest.get_inventory(location)`.
     * returns `{type="undefined"}` in case location is not known
 
 ### `AreaStore`
-A fast access data structure to store areas, and find areas near a given position or area.
+A fast access data structure to store areas, and find areas near a given
+position or area.
 Every area has a `data` string attribute to store additional information.
-You can create an empty `AreaStore` by calling `AreaStore()`, or `AreaStore(type_name)`.
-If you chose the parameter-less constructor, a fast implementation will be automatically
-chosen for you.
+You can create an empty `AreaStore` by calling `AreaStore()`, or
+`AreaStore(type_name)`.
+If you chose the parameter-less constructor, a fast implementation will be
+automatically chosen for you.
 
 #### Methods
-* `get_area(id, include_borders, include_data)`: returns the area with the id `id`.
-  (optional) Boolean values `include_borders` and `include_data` control what's copied.
+* `get_area(id, include_borders, include_data)`: returns the area with the id
+  `id`.
+  (optional) Boolean values `include_borders` and `include_data` control what's
+  copied.
   Returns nil if specified area id does not exist.
-* `get_areas_for_pos(pos, include_borders, include_data)`: returns all areas that contain
-  the position `pos`. (optional) Boolean values `include_borders` and `include_data` control
-  what's copied.
+* `get_areas_for_pos(pos, include_borders, include_data)`: returns all areas
+  that contain the position `pos`.
+  (optional) Boolean values `include_borders` and `include_data` control what's
+  copied.
 * `get_areas_in_area(edge1, edge2, accept_overlap, include_borders, include_data)`:
-  returns all areas that contain all nodes inside the area specified by `edge1` and `edge2` (inclusive).
-  If `accept_overlap` is true, also areas are returned that have nodes in common with the specified area.
-  (optional) Boolean values `include_borders` and `include_data` control what's copied.
-* `insert_area(edge1, edge2, data, [id])`: inserts an area into the store. Returns the new area's ID,
-  or nil if the insertion failed. The (inclusive) positions `edge1` and `edge2` describe the area.
-  `data` is a string stored with the area.  If passed, `id` will be used as the internal area ID,
-  it must be a unique number between 0 and 2^32-2. If you use the `id` parameter you must always use it,
-  or insertions are likely to fail due to conflicts.
-* `reserve(count)`: reserves resources for at most `count` many contained areas.
+  returns all areas that contain all nodes inside the area specified by `edge1`
+  and `edge2` (inclusive).
+  If `accept_overlap` is true, also areas are returned that have nodes in
+  common with the specified area.
+  (optional) Boolean values `include_borders` and `include_data` control what's
+  copied.
+* `insert_area(edge1, edge2, data, [id])`: inserts an area into the store.
+  Returns the new area's ID, or nil if the insertion failed.
+  The (inclusive) positions `edge1` and `edge2` describe the area.
+  `data` is a string stored with the area.  If passed, `id` will be used as the
+  internal area ID, it must be a unique number between 0 and 2^32-2. If you use
+  the `id` parameter you must always use it, or insertions are likely to fail
+  due to conflicts.
+* `reserve(count)`: reserves resources for at most `count` many contained
+  areas.
   Only needed for efficiency, and only some implementations profit.
-* `remove_area(id)`: removes the area with the given id from the store, returns success.
+* `remove_area(id)`: removes the area with the given id from the store, returns
+  success.
 * `set_cache_params(params)`: sets params for the included prefiltering cache.
-  Calling invalidates the cache, so that its elements have to be newly generated.
+  Calling invalidates the cache, so that its elements have to be newly
+  generated.
     * `params`:
       {
-        enabled = boolean, -- whether to enable, default true
-        block_radius = number, -- the radius (in nodes) of the areas the cache generates
-                                  prefiltered lists for, minimum 16, default 64
-        limit = number, -- the cache's size, minimum 20, default 1000
+        enabled = boolean,     -- whether to enable, default true
+        block_radius = number, -- the radius (in nodes) of the areas the cache
+                                  generates prefiltered lists for, minimum 16,
+                                  default 64.
+        limit = number,        -- the cache's size, minimum 20, default 1000
       }
-* `to_string()`: Experimental. Returns area store serialized as a (binary) string.
-* `to_file(filename)`: Experimental. Like `to_string()`, but writes the data to a file.
-* `from_string(str)`: Experimental. Deserializes string and loads it into the AreaStore.
+* `to_string()`: Experimental. Returns area store serialized as a (binary)
+  string.
+* `to_file(filename)`: Experimental. Like `to_string()`, but writes the data to
+  a file.
+* `from_string(str)`: Experimental. Deserializes string and loads it into the
+  AreaStore.
   Returns success and, optionally, an error message.
-* `from_file(filename)`: Experimental. Like `from_string()`, but reads the data from a file.
+* `from_file(filename)`: Experimental. Like `from_string()`, but reads the data
+  from a file.
 
 ### `ItemStack`
 An `ItemStack` is a stack of items.
@@ -4090,7 +4171,8 @@ an itemstring, a table or `nil`.
 #### Methods
 * `is_empty()`: returns `true` if stack is empty.
 * `get_name()`: returns item name (e.g. `"default:stone"`).
-* `set_name(item_name)`: returns a boolean indicating whether the item was cleared
+* `set_name(item_name)`: returns a boolean indicating whether the item was
+  cleared.
 * `get_count()`: Returns number of items on the stack.
 * `set_count(count)`: returns a boolean indicating whether the item was cleared
     * `count`: number, unsigned 16 bit integer
@@ -4098,14 +4180,16 @@ an itemstring, a table or `nil`.
 * `set_wear(wear)`: returns boolean indicating whether item was cleared
     * `wear`: number, unsigned 16 bit integer
 * `get_meta()`: returns ItemStackMetaRef. See section for more details
-* `get_metadata()`: (DEPRECATED) Returns metadata (a string attached to an item stack).
+* `get_metadata()`: (DEPRECATED) Returns metadata (a string attached to an item
+  stack).
 * `set_metadata(metadata)`: (DEPRECATED) Returns true.
 * `clear()`: removes all items from the stack, making it empty.
 * `replace(item)`: replace the contents of this stack.
     * `item` can also be an itemstring or table.
 * `to_string()`: returns the stack in itemstring form.
 * `to_table()`: returns the stack in Lua table form.
-* `get_stack_max()`: returns the maximum size of the stack (depends on the item).
+* `get_stack_max()`: returns the maximum size of the stack (depends on the
+  item).
 * `get_free_space()`: returns `get_stack_max() - get_count()`.
 * `is_known()`: returns `true` if the item name refers to a defined item type.
 * `get_definition()`: returns the item definition table.
@@ -4139,14 +4223,16 @@ It can be created via `PseudoRandom(seed)`.
 
 ### `PcgRandom`
 A 32-bit pseudorandom number generator.
-Uses PCG32, an algorithm of the permuted congruential generator family, offering very strong randomness.
+Uses PCG32, an algorithm of the permuted congruential generator family,
+offering very strong randomness.
 
 It can be created via `PcgRandom(seed)` or `PcgRandom(seed, sequence)`.
 
 #### Methods
 * `next()`: return next integer random number [`-2147483648`...`2147483647`]
 * `next(min, max)`: return next integer random number [`min`...`max`]
-* `rand_normal_dist(min, max, num_trials=6)`: return normally distributed random number [`min`...`max`]
+* `rand_normal_dist(min, max, num_trials=6)`: return normally distributed
+  random number [`min`...`max`].
     * This is only a rough approximation of a normal distribution with:
     * `mean = (max - min) / 2`, and
     * `variance = (((max - min + 1) ^ 2) - 1) / (12 * num_trials)`
@@ -4155,11 +4241,12 @@ It can be created via `PcgRandom(seed)` or `PcgRandom(seed, sequence)`.
 ### `SecureRandom`
 Interface for the operating system's crypto-secure PRNG.
 
-It can be created via `SecureRandom()`.  The constructor returns nil if a secure random device cannot be
-be found on the system.
+It can be created via `SecureRandom()`.  The constructor returns nil if a
+secure random device cannot be found on the system.
 
 #### Methods
-* `next_bytes([count])`: return next `count` (default 1, capped at 2048) many random bytes, as a string.
+* `next_bytes([count])`: return next `count` (default 1, capped at 2048) many
+  random bytes, as a string.
 
 ### `PerlinNoise`
 A perlin noise generator.
@@ -4178,32 +4265,37 @@ A fast, bulk perlin noise generator.
 It can be created via `PerlinNoiseMap(noiseparams, size)` or
 `minetest.get_perlin_map(noiseparams, size)`.
 
-Format of `size` is `{x=dimx, y=dimy, z=dimz}`.  The `z` component is omitted
+Format of `size` is `{x=dimx, y=dimy, z=dimz}`. The `z` component is omitted
 for 2D noise, and it must be must be larger than 1 for 3D noise (otherwise
 `nil` is returned).
 
-For each of the functions with an optional `buffer` parameter:  If `buffer` is not
-nil, this table will be used to store the result instead of creating a new table.
-
+For each of the functions with an optional `buffer` parameter: If `buffer` is
+not nil, this table will be used to store the result instead of creating a new
+table.
 
 #### Methods
 * `get_2d_map(pos)`: returns a `<size.x>` times `<size.y>` 2D array of 2D noise
   with values starting at `pos={x=,y=}`
-* `get_3d_map(pos)`: returns a `<size.x>` times `<size.y>` times `<size.z>` 3D array
-  of 3D noise with values starting at `pos={x=,y=,z=}`
-* `get_2d_map_flat(pos, buffer)`: returns a flat `<size.x * size.y>` element array of 2D noise
-  with values starting at `pos={x=,y=}`
+* `get_3d_map(pos)`: returns a `<size.x>` times `<size.y>` times `<size.z>`
+  3D array of 3D noise with values starting at `pos={x=,y=,z=}`.
+* `get_2d_map_flat(pos, buffer)`: returns a flat `<size.x * size.y>` element
+  array of 2D noise with values starting at `pos={x=,y=}`
 * `get_3d_map_flat(pos, buffer)`: Same as `get2dMap_flat`, but 3D noise
-* `calc_2d_map(pos)`: Calculates the 2d noise map starting at `pos`.  The result is stored internally.
-* `calc_3d_map(pos)`: Calculates the 3d noise map starting at `pos`.  The result is stored internally.
-* `get_map_slice(slice_offset, slice_size, buffer)`: In the form of an array, returns a slice of the
-  most recently computed noise results.  The result slice begins at coordinates `slice_offset` and
-  takes a chunk of `slice_size`.
-  E.g. to grab a 2-slice high horizontal 2d plane of noise starting at buffer offset y = 20:
+* `calc_2d_map(pos)`: Calculates the 2d noise map starting at `pos`. The result
+  is stored internally.
+* `calc_3d_map(pos)`: Calculates the 3d noise map starting at `pos`. The result
+  is stored internally.
+* `get_map_slice(slice_offset, slice_size, buffer)`: In the form of an array,
+  returns a slice of the most recently computed noise results. The result slice
+  begins at coordinates `slice_offset` and takes a chunk of `slice_size`.
+  E.g. to grab a 2-slice high horizontal 2d plane of noise starting at buffer
+  offset y = 20:
   `noisevals = noise:get_map_slice({y=20}, {y=2})`
-  It is important to note that `slice_offset` offset coordinates begin at 1, and are relative to
-  the starting position of the most recently calculated noise.
-  To grab a single vertical column of noise starting at map coordinates x = 1023, y=1000, z = 1000:
+  It is important to note that `slice_offset` offset coordinates begin at 1,
+  and are relative to the starting position of the most recently calculated
+  noise.
+  To grab a single vertical column of noise starting at map coordinates
+  x = 1023, y=1000, z = 1000:
   `noise:calc_3d_map({x=1000, y=1000, z=1000})`
   `noisevals = noise:get_map_slice({x=24, z=1}, {x=1, z=1})`
 
