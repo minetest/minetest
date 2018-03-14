@@ -46,7 +46,7 @@ static TestServerModManager g_test_instance;
 
 void TestServerModManager::runTests(IGameDef *gamedef)
 {
-#if defined(_MSC_VER)
+#ifdef WIN32
 	_putenv(("MINETEST_SUBGAME_PATH=" + TEST_SUBGAME_PATH).c_str());
 #else
 	setenv("MINETEST_SUBGAME_PATH", TEST_SUBGAME_PATH, 1);
