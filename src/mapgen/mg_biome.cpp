@@ -139,7 +139,7 @@ Biome *BiomeManager::getBiomeFromNoiseOriginal(float heat, float humidity, v3s16
 	}
 
 	mysrand(pos.Y + (heat + humidity) / 2);
-	if (biome_closest_blend &&
+	if (biome_closest_blend && dist_min_blend <= dist_min &&
 			myrand_range(0, biome_closest_blend->vertical_blend) >=
 			pos.Y - biome_closest_blend->max_pos.Y)
 		return biome_closest_blend;
@@ -300,7 +300,7 @@ Biome *BiomeGenOriginal::calcBiomeFromNoise(float heat, float humidity, v3s16 po
 	// blend.
 	mysrand(pos.Y + (heat + humidity) / 2);
 
-	if (biome_closest_blend &&
+	if (biome_closest_blend && dist_min_blend <= dist_min &&
 			myrand_range(0, biome_closest_blend->vertical_blend) >=
 			pos.Y - biome_closest_blend->max_pos.Y)
 		return biome_closest_blend;
