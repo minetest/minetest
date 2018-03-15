@@ -47,7 +47,9 @@ static TestServerModManager g_test_instance;
 void TestServerModManager::runTests(IGameDef *gamedef)
 {
 #ifdef WIN32
-	_putenv(("MINETEST_SUBGAME_PATH=" + TEST_SUBGAME_PATH).c_str());
+	std::string subgame_path("MINETEST_SUBGAME_PATH=");
+	subgame_path.append(TEST_SUBGAME_PATH);
+	_putenv(subgame_path.c_str());
 #else
 	setenv("MINETEST_SUBGAME_PATH", TEST_SUBGAME_PATH, 1);
 #endif

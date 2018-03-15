@@ -113,7 +113,7 @@ void GUIConfirmRegistration::regenerateGui(v2u32 screensize)
 		core::rect<s32> rect2(0, 0, 540, 30);
 		rect2 += topleft_client + v2s32(30, ypos);
 		gui::IGUIEditBox *e = Environment->addEditBox(m_pass_confirm.c_str(),
-			rect2, true, this, ID_confirmPassword);
+				rect2, true, this, ID_confirmPassword);
 		e->setPasswordBox(true);
 	}
 
