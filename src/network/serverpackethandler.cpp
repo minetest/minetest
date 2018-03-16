@@ -1093,7 +1093,7 @@ void Server::handleCommand_Interact(NetworkPacket* pkt)
 			client->SetBlockNotSent(blockpos);
 		}
 		// Placement -> above
-		if (action == 3) {
+		else if (action == 3) {
 			v3s16 blockpos = getNodeBlockPos(floatToInt(pointed_pos_above, BS));
 			client->SetBlockNotSent(blockpos);
 		}
