@@ -71,11 +71,15 @@ void TestServerModManager::runTests(IGameDef *gamedef)
 #ifdef WIN32
 	{
 		std::string subgame_path("MINETEST_SUBGAME_PATH=");
-		subgame_path.append(saved_env_mt_subgame_path);
+		if (saved_env_mt_subgame_path)
+			subgame_path.append(saved_env_mt_subgame_path);
 		_putenv(subgame_path.c_str());
 	}
 #else
-	setenv("MINETEST_SUBGAME_PATH", saved_env_mt_subgame_path, 1);
+	if (saved_env_mt_subgame_path)
+		setenv("MINETEST_SUBGAME_PATH", saved_env_mt_subgame_path, 1);
+	else
+		unsetenv("MINETEST_SUBGAME_PATH");
 #endif
 }
 
