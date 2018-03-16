@@ -66,8 +66,13 @@ void ServerModManager::loadMods(ServerScripting *script)
 		}
 		std::string script_path = mod.path + DIR_DELIM + "init.lua";
 		infostream << "  [" << padStringRight(mod.name, 12) << "] [\""
-			   << script_path << "\"]" << std::endl;
+			<< script_path << "\"]" << std::endl;
+		auto t = std::chrono::steady_clock::now();
 		script->loadMod(script_path, mod.name);
+		infostream << "Mod \"" << mod.name << "\" loaded after "
+			<< std::chrono::duration_cast<std::chrono::microseconds>(
+				std::chrono::steady_clock::now() - t).count() * 0.000001f
+			<< " seconds" << std::endl;
 	}
 }
 
