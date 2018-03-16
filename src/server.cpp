@@ -262,8 +262,7 @@ Server::Server(
 	// Initialize mapgens
 	m_emerge->initMapgens(servermap->getMapgenParams());
 
-	m_enable_rollback_recording = g_settings->getBool("enable_rollback_recording");
-	if (m_enable_rollback_recording) {
+	if (g_settings->getBool("enable_rollback_recording")) {
 		// Create rollback manager
 		m_rollback = new RollbackManager(m_path_world, this);
 	}

@@ -520,7 +520,6 @@ private:
 
 	// Rollback manager (behind m_env_mutex)
 	IRollbackManager *m_rollback = nullptr;
-	bool m_enable_rollback_recording = false; // Updated once in a while
 
 	// Emerge manager
 	EmergeManager *m_emerge = nullptr;
