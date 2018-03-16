@@ -78,7 +78,7 @@ public:
 		return m_unsatisfied_mods.empty();
 	}
 
-	std::vector<ModSpec> getMods()
+	const std::vector<ModSpec> &getMods() const
 	{
 		return m_sorted_mods;
 	}
@@ -102,6 +102,13 @@ protected:
 	void addModsFromConfig(const std::string &settings_path, const std::set<std::string> &mods);
 
 	void checkConflictsAndDeps();
+protected:
+	// list of mods sorted such that they can be loaded in the
+	// given order with all dependencies being fullfilled. I.e.,
+	// every mod in this list has only dependencies on mods which
+	// appear earlier in the vector.
+	std::vector<ModSpec> m_sorted_mods;
+
 private:
 	// move mods from m_unsatisfied_mods to m_sorted_mods
 	// in an order that satisfies dependencies
@@ -111,12 +118,6 @@ private:
 	// this is where all mods are stored. Afterwards this contains
 	// only the ones with really unsatisfied dependencies.
 	std::vector<ModSpec> m_unsatisfied_mods;
-
-	// list of mods sorted such that they can be loaded in the
-	// given order with all dependencies being fullfilled. I.e.,
-	// every mod in this list has only dependencies on mods which
-	// appear earlier in the vector.
-	std::vector<ModSpec> m_sorted_mods;
 
 	// set of mod names for which an unresolved name conflict
 	// exists. A name conflict happens when two or more mods
@@ -129,13 +130,6 @@ private:
 
 	// Deleted default constructor
 	ModConfiguration() = default;
-
-};
-
-class ServerModConfiguration: public ModConfiguration
-{
-public:
-	ServerModConfiguration(const std::string &worldpath);
 
 };
 
