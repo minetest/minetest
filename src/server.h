@@ -543,7 +543,6 @@ private:
 
 	// Mods
 	std::unique_ptr<ServerModManager> m_modmgr;
-	std::vector<ModSpec> m_mods;
 
 	/*
 		Threads

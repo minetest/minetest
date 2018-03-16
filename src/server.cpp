@@ -225,8 +225,6 @@ Server::Server(
 
 	m_script->loadMod(getBuiltinLuaPath() + DIR_DELIM "init.lua", BUILTIN_MOD_NAME);
 
-	m_mods = m_modmgr->getMods();
-
 	m_modmgr->loadMods(m_script);
 
 	// Read Textures and calculate sha1 sums
