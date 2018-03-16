@@ -232,9 +232,6 @@ public:
 	*/
 	void saveMeta();
 	void loadMeta();
-	// to be called instead of loadMeta if
-	// env_meta.txt doesn't exist (e.g. new world)
-	void loadDefaultMeta();
 
 	u32 addParticleSpawner(float exptime);
 	u32 addParticleSpawner(float exptime, u16 attached_id);
@@ -370,6 +367,11 @@ public:
 	static bool migratePlayersDatabase(const GameParams &game_params,
 			const Settings &cmd_args);
 private:
+
+	/**
+	 * called if env_meta.txt doesn't exist (e.g. new world)
+	 */
+	void loadDefaultMeta();
 
 	static PlayerDatabase *openPlayerDatabase(const std::string &name,
 			const std::string &savedir, const Settings &conf);

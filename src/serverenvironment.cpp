@@ -614,6 +614,16 @@ void ServerEnvironment::saveMeta()
 
 void ServerEnvironment::loadMeta()
 {
+	// If file doesn't exist, load default environment metadata
+	if (!fs::PathExists(m_path_world + DIR_DELIM "env_meta.txt")) {
+		infostream << "ServerEnvironment: Loading default environment metadata"
+			<< std::endl;
+		loadDefaultMeta();
+		return;
+	}
+
+	infostream << "ServerEnvironment: Loading environment metadata" << std::endl;
+
 	std::string path = m_path_world + DIR_DELIM "env_meta.txt";
 
 	// Open file and deserialize
@@ -664,6 +674,9 @@ void ServerEnvironment::loadMeta()
 		args.getU64("day_count") : 0;
 }
 
+/**
+ * called if env_meta.txt doesn't exist (e.g. new world)
+ */
 void ServerEnvironment::loadDefaultMeta()
 {
 	m_lbm_mgr.loadIntroductionTimes("", m_server, m_game_time);

@@ -274,13 +274,7 @@ Server::Server(
 	// Register us to receive map edit events
 	servermap->addEventReceiver(this);
 
-	// If file exists, load environment metadata
-	if (fs::PathExists(m_path_world + DIR_DELIM "env_meta.txt")) {
-		infostream << "Server: Loading environment metadata" << std::endl;
-		m_env->loadMeta();
-	} else {
-		m_env->loadDefaultMeta();
-	}
+	m_env->loadMeta();
 
 	m_liquid_transform_every = g_settings->getFloat("liquid_update");
 	m_max_chatmessage_length = g_settings->getU16("chat_message_max_size");
