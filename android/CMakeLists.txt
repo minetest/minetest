@@ -31,7 +31,6 @@ endif()
 include_directories(
 	${ANDROID_NDK}/sources/android/native_app_glue
 	${CMAKE_CURRENT_SOURCE_DIR}/deps/irrlicht/include
-	${CMAKE_CURRENT_SOURCE_DIR}/deps/gmp
 	${CMAKE_CURRENT_SOURCE_DIR}/deps/libiconv/include
 	${CMAKE_CURRENT_SOURCE_DIR}/deps/openal/include
 	${CMAKE_CURRENT_SOURCE_DIR}/deps/sqlite
@@ -59,7 +58,7 @@ add_subdirectory(${PROJECT_SOURCE_DIR}/irrlicht_changes ${PROJECT_BINARY_DIR}/ir
 add_subdirectory(${PROJECT_SOURCE_DIR}/mapgen ${PROJECT_BINARY_DIR}/mapgen)
 add_subdirectory(${PROJECT_SOURCE_DIR}/network ${PROJECT_BINARY_DIR}/network)
 add_subdirectory(${PROJECT_SOURCE_DIR}/script ${PROJECT_BINARY_DIR}/script)
-add_subdirectory(${PROJECT_SOURCE_DIR}/threading ${PROJECT_BINARY_DIR}/server)
+add_subdirectory(${PROJECT_SOURCE_DIR}/server ${PROJECT_BINARY_DIR}/server)
 add_subdirectory(${PROJECT_SOURCE_DIR}/threading ${PROJECT_BINARY_DIR}/threading)
 add_subdirectory(${PROJECT_SOURCE_DIR}/util ${PROJECT_BINARY_DIR}/util)
 
@@ -184,4 +183,4 @@ configure_file(
 add_library(minetest SHARED ${client_SRCS})
 add_dependencies(minetest crypto ssl jsoncpp gmp OpenAL lua sqlite3)
 
-target_link_libraries(minetest crypto ssl gmp openal jsoncpp lua sqlite3)
+target_link_libraries(minetest crypto ssl gmp OpenAL jsoncpp lua sqlite3)
