@@ -10,7 +10,7 @@ API = 14
 APP_PLATFORM = android-$(API)
 
 ANDR_ROOT = $(shell pwd)
-PROJ_ROOT = $(shell realpath $(ANDR_ROOT)/../..)
+PROJ_ROOT = $(shell realpath $(ANDR_ROOT)/..)
 APP_ROOT = $(ANDR_ROOT)/src/main
 
 GAMES_TO_COPY = minetest_game
@@ -779,18 +779,10 @@ apk: local.properties assets $(ICONV_LIB) $(IRRLICHT_LIB) $(CURL_LIB) $(GMP_LIB)
 	+ @export TARGET_LIBDIR=${TARGET_LIBDIR};                                  \
 	export HAVE_LEVELDB=${HAVE_LEVELDB};                                       \
 	export APP_PLATFORM=${APP_PLATFORM};                                       \
-	export TARGET_ABI=${TARGET_ABI};                                           \
-	export TARGET_CFLAGS_ADDON="${TARGET_CFLAGS_ADDON}";                       \
-	export TARGET_CXXFLAGS_ADDON="${TARGET_CXXFLAGS_ADDON}";                   \
 	export COMPILER_VERSION=${COMPILER_VERSION};                               \
 	export GPROF=${GPROF};                                                     \
-	${ANDROID_NDK}/ndk-build || exit 1;                                        \
-	if [ ! -e ${APP_ROOT}/jniLibs ]; then                                      \
-		ln -s ${ANDR_ROOT}/libs ${APP_ROOT}/jniLibs || exit 1;             \
-	fi;                                                                        \
 	export VERSION_STR="${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}" && \
-	export BUILD_TYPE_C=$$(echo "$${BUILD_TYPE}" | sed 's/./\U&/') &&          \
-	./gradlew assemble$$BUILD_TYPE_C &&                                           \
+	./gradlew build &&                                                         \
 	echo "APK stored at: build/outputs/apk/$$BUILD_TYPE/Minetest-$$BUILD_TYPE.apk" && \
 	echo "You can install it with \`make install_$$BUILD_TYPE\`"
 
