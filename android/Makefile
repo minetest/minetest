@@ -294,6 +294,11 @@ openssl_download :
 		cd ${ANDR_ROOT}/deps ;                                                 \
 		wget ${OPENSSL_URL} || exit 1;                                         \
 		tar -xzf ${OPENSSL_BASEDIR}.tar.gz;                                    \
+                ln -s ${OPENSSL_DIR} openssl;                                          \
+		cp ../openssl-CMakeLists.txt openssl/CMakeLists.txt                    \
+		cp ../openssl-crypto-CMakeLists.txt openssl/crypto/CMakeLists.txt      \
+		cp ../openssl-buildinf.h.cmake openssl/crypto/buildinf.h.cmake         \
+		cp ../openssl-ssl-CMakeLists.txt openssl/ssl/CMakeLists.txt            \
 		cd ${OPENSSL_BASEDIR};                                                 \
 		patch -p1 < ${ANDR_ROOT}/patches/openssl_arch.patch;                   \
 		sed -i 's/-mandroid //g' Configure;                                    \
@@ -313,7 +318,6 @@ $(OPENSSL_LIB): $(OPENSSL_TIMESTAMP) $(GMP_LIB)
 	if [ $$REFRESH -ne 0 ] ; then                                              \
 	echo "changed timestamp for openssl detected building...";                 \
 	cd ${OPENSSL_DIR};                                                         \
-	ln -s ${OPENSSL_DIR} ../openssl;                                           \
 	export TOOLCHAIN=/tmp/ndk-${TARGET_HOST}-openssl;                          \
 	${ANDROID_NDK}/build/tools/make-standalone-toolchain.sh                    \
 		--toolchain=${TARGET_TOOLCHAIN}${COMPILER_VERSION}                     \

@@ -4,7 +4,7 @@ project(minetest)
 set(PROJECT_NAME_CAPITALIZED "Minetest")
 
 set(CMAKE_CXX_STANDARD 11)
-set(PROJECT_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../../src/)
+set(PROJECT_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../src/)
 set(PROJECT_BINARY_DIR ${CMAKE_CURRENT_SOURCE_DIR}/cmakebuild/)
 set(OPENSSL_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/deps/openssl/include)
 set(OPENSSL_LIBRARIES ${PROJECT_BINARY_DIR}/lib/ssl)
@@ -33,11 +33,12 @@ include_directories(
 	${CMAKE_CURRENT_SOURCE_DIR}/deps/gmp
 	${CMAKE_CURRENT_SOURCE_DIR}/deps/libiconv/include
 	${CMAKE_CURRENT_SOURCE_DIR}/deps/sqlite
-	${CMAKE_CURRENT_SOURCE_DIR}/../../lib/jsoncpp
-	${CMAKE_CURRENT_SOURCE_DIR}/../../lib/lua/src
+	${CMAKE_CURRENT_SOURCE_DIR}/../lib/jsoncpp
+	${CMAKE_CURRENT_SOURCE_DIR}/../lib/lua/src
 	${PROJECT_SOURCE_DIR}
 	${PROJECT_SOURCE_DIR}/script
-	${PROJECT_BINARY_DIR})
+	${PROJECT_BINARY_DIR}
+	${PROJECT_BINARY_DIR}/lib)
 
 # Library deps
 add_subdirectory(${PROJECT_SOURCE_DIR}/../lib/jsoncpp ${PROJECT_BINARY_DIR}/lib/jsoncpp)
