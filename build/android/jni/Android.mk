@@ -220,6 +220,7 @@ LOCAL_SRC_FILES := \
 		jni/src/rollback.cpp                      \
 		jni/src/rollback_interface.cpp            \
 		jni/src/serialization.cpp                 \
+		jni/src/server/mods.cpp                   \
 		jni/src/server.cpp                        \
 		jni/src/serverenvironment.cpp             \
 		jni/src/serverlist.cpp                    \
