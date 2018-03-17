@@ -45,6 +45,7 @@ include_directories(
 add_subdirectory(${PROJECT_SOURCE_DIR}/../lib/jsoncpp ${PROJECT_BINARY_DIR}/lib/jsoncpp)
 add_subdirectory(${PROJECT_SOURCE_DIR}/../lib/gmp ${PROJECT_BINARY_DIR}/lib/gmp)
 add_subdirectory(${PROJECT_SOURCE_DIR}/../lib/lua ${PROJECT_BINARY_DIR}/lib/lua)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/deps/libiconv ${PROJECT_BINARY_DIR}/lib/libiconv)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/deps/openal-soft ${PROJECT_BINARY_DIR}/lib/openal)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/deps/openssl ${PROJECT_BINARY_DIR}/lib/openssl)
 #add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/deps/curl ${PROJECT_BINARY_DIR}/lib/curl)
@@ -181,6 +182,6 @@ configure_file(
 )
 
 add_library(minetest SHARED ${client_SRCS})
-add_dependencies(minetest crypto ssl jsoncpp gmp OpenAL lua sqlite3)
+add_dependencies(minetest crypto ssl jsoncpp gmp iconv OpenAL lua sqlite3)
 
 target_link_libraries(minetest crypto ssl gmp OpenAL jsoncpp lua sqlite3)

@@ -126,10 +126,9 @@ FREETYPE_URL_GIT = https://github.com/cdave1/freetype2-android
 
 ICONV_VERSION = 1.14
 ICONV_DIR = $(ANDR_ROOT)/deps/libiconv/
-ICONV_LIB = $(ICONV_DIR)/lib/.libs/libiconv.so
 ICONV_TIMESTAMP = $(ICONV_DIR)timestamp
 ICONV_TIMESTAMP_INT = $(ANDR_ROOT)/deps/iconv_timestamp
-ICONV_URL_HTTP = https://ftp.gnu.org/pub/gnu/libiconv/libiconv-$(ICONV_VERSION).tar.gz
+ICONV_URL_GIT = https://github.com/LuaDist/libiconv
 
 SQLITE3_FOLDER = sqlite-amalgamation-3220000
 SQLITE3_URL = https://www.sqlite.org/2018/$(SQLITE3_FOLDER).zip
@@ -427,10 +426,7 @@ iconv_download :
 		echo "iconv sources missing, downloading...";                      \
 		mkdir -p ${ANDR_ROOT}/deps;                                        \
 		cd ${ANDR_ROOT}/deps;                                              \
-		wget ${ICONV_URL_HTTP} || exit 1;                                  \
-		tar -xzf libiconv-${ICONV_VERSION}.tar.gz || exit 1;               \
-		rm libiconv-${ICONV_VERSION}.tar.gz;                               \
-		ln -s libiconv-${ICONV_VERSION} libiconv;                          \
+		git clone ${ICONV_URL_GIT} -b ${ICONV_VERSION} || exit 1;          \
 		cd ${ICONV_DIR};                                                   \
 		patch -p1 < ${ANDR_ROOT}/patches/libiconv_android.patch;           \
 		patch -p1 < ${ANDR_ROOT}/patches/libiconv_stdio.patch;             \
