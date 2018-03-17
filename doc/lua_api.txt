@@ -4794,51 +4794,58 @@ Definition tables
     --  ^ For players only. Defaults to `minetest.PLAYER_MAX_BREATH_DEFAULT`
         zoom_fov = 0.0,
     --  ^ For players only. Zoom FOV in degrees.
-    --    Note that zoom loads and/or generates world beyond the server's maximum
-    --    send and generate distances, so acts like a telescope.
+    --    Note that zoom loads and/or generates world beyond the server's
+    --    maximum send and generate distances, so acts like a telescope.
     --    Smaller zoomFOV values increase the distance loaded and/or generated.
     --    Defaults to 15 in creative mode, 0 in survival mode.
     --    zoom_fov = 0 disables zooming for the player.
         eye_height = 1.625,
-    --  ^ For players only. Camera height above feet position in nodes. Defaults to 1.625
+    --  ^ For players only. Camera height above feet position in nodes.
+    --    Defaults to 1.625.
         physical = true,
-        collide_with_objects = true, -- collide with other objects if physical = true
+        collide_with_objects = true,
+    --  ^ Collide with other objects if physical = true.
         weight = 5,
         collisionbox = {-0.5, 0.0, -0.5, 0.5, 1.0, 0.5},
         selectionbox = {-0.5, 0.0, -0.5, 0.5, 1.0, 0.5},
     --  ^ Default, uses collision box dimensions when not set.
     --  ^ For both boxes: {xmin, ymin, zmin, xmax, ymax, zmax} in nodes from
     --    object position.
-        pointable = true, -- overrides selection box when false
+        pointable = true,
+    --  ^ Overrides selection box when false.
         visual = "cube" / "sprite" / "upright_sprite" / "mesh" / "wielditem",
     --  ^ "cube" is a node-sized cube.
     --  ^ "sprite" is a flat texture always facing the player.
     --  ^ "upright_sprite" is a vertical flat texture.
     --  ^ "mesh" uses the defined mesh model.
-    --  ^ "wielditem" is used for dropped items (see builtin/game/item_entity.lua).
+    --  ^ "wielditem" is used for dropped items
+    --    (see builtin/game/item_entity.lua).
     --    For this use 'textures = {itemname}'.
-    --    If the item has a 'wield_image' the object will be an extrusion of that,
-    --    otherwise:
-    --    If 'itemname' is a cubic node or nodebox the object will appear identical
-    --    to 'itemname'.
-    --    If 'itemname' is a plantlike node the object will be an extrusion of its
-    --    texture.
+    --    If the item has a 'wield_image' the object will be an extrusion of
+    --    that, otherwise:
+    --    If 'itemname' is a cubic node or nodebox the object will appear
+    --    identical to 'itemname'.
+    --    If 'itemname' is a plantlike node the object will be an extrusion of
+    --    its texture.
     --    Otherwise for non-node items, the object will be an extrusion of
     --    'inventory_image'.
         visual_size = {x = 1, y = 1},
     --  ^ `x` multiplies horizontal (X and Z) visual size.
     --  ^ `y` multiplies vertical (Y) visual size.
         mesh = "model",
-        textures = {}, -- number of required textures depends on visual
+        textures = {},
+    --  ^ Number of required textures depends on visual.
     --  ^ "cube" uses 6 textures in the way a node does.
     --  ^ "sprite" uses 1 texture.
     --  ^ "upright_sprite" uses 2 textures: {front, back}.
     --  ^ "wielditem" expects 'textures = {itemname}' (see 'visual' above).
-        colors = {}, -- number of required colors depends on visual
+        colors = {},
+    --  ^ Number of required colors depends on visual.
         spritediv = {x = 1, y = 1},
-    --  ^ Used with spritesheet textures for animation and/or frame selection according
-    --    to position relative to player.
-    --  ^ Defines the number of columns and rows in the spritesheet: {columns, rows}.
+    --  ^ Used with spritesheet textures for animation and/or frame selection
+    --    according to position relative to player.
+    --  ^ Defines the number of columns and rows in the spritesheet:
+    --    {columns, rows}.
         initial_sprite_basepos = {x = 0, y = 0},
     --  ^ Used with spritesheet textures.
     --  ^ Defines the {column, row} position of the initially used frame in the
@@ -4855,17 +4862,22 @@ Definition tables
         automatic_face_movement_max_rotation_per_sec = -1,
     --  ^ Limit automatic rotation to this value in degrees per second,
     --    value < 0 no limit.
-        backface_culling = true, -- false to disable backface_culling for model
+        backface_culling = true,
+    --  ^ Set to false to disable backface_culling for model.
         glow = 0,
     --  ^ Add this much extra lighting when calculating texture color.
     --    Value < 0 disables light's effect on texture color.
-    --    For faking self-lighting, UI style entities, or programmatic coloring in mods.
-        nametag = "", -- by default empty, for players their name is shown if empty
-        nametag_color = <color>, -- sets color of nametag as ColorSpec
-        infotext = "", -- by default empty, text to be shown when pointed at object
+    --    For faking self-lighting, UI style entities, or programmatic coloring
+    --    in mods.
+        nametag = "",
+    --  ^ By default empty, for players their name is shown if empty.
+        nametag_color = <color>,
+    --  ^ Sets color of nametag as ColorSpec.
+        infotext = "",
+    --  ^ By default empty, text to be shown when pointed at object.
         static_save = true,
-    --  ^ If false, never save this object statically. It will simply be deleted when the
-    --    block gets unloaded.
+    --  ^ If false, never save this object statically. It will simply be
+    --    deleted when the block gets unloaded.
     --    The get_staticdata() callback is never called then.
     --    Defaults to 'true'
     }
@@ -4885,9 +4897,9 @@ Definition tables
     --  ^ Called sometimes; the string returned is passed to on_activate when
     --    the entity is re-activated from static state
 
-        -- Also you can define arbitrary member variables here (see item definition for
-        -- more info)
         _custom_field = whatever,
+    --  ^ You can define arbitrary member variables here (see item definition
+    --    for more info) by using a '_' prefix.
     }
 
 ### ABM (ActiveBlockModifier) definition (`register_abm`)
@@ -4907,17 +4919,21 @@ Definition tables
         interval = 1.0,
         ^ Operation interval in seconds.
         chance = 1,
-        ^ Chance of triggering `action` per-node per-interval is 1.0 / this value.
+        ^ Chance of triggering `action` per-node per-interval is 1.0 / this
+          value.
         catch_up = true,
-        ^ If true, catch-up behaviour is enabled: The `chance` value is temporarily
-          reduced when returning to an area to simulate time lost by the area being
-          unattended. Note that the `chance` value can often be reduced to 1.
+        ^ If true, catch-up behaviour is enabled: The `chance` value is
+          temporarily reduced when returning to an area to simulate time lost
+          by the area being unattended. Note that the `chance` value can often
+          be reduced to 1.
         action = function(pos, node, active_object_count, active_object_count_wider),
         ^ Function triggered for each qualifying node.
-        ^ `active_object_count` is number of active objects in the node's mapblock.
+        ^ `active_object_count` is number of active objects in the node's
+          mapblock.
         ^ `active_object_count_wider` is number of active objects in the node's
-          mapblock plus all 26 neighboring mapblocks. If any neighboring mapblocks
-          are unloaded an estmate is calculated for them based on loaded mapblocks.
+          mapblock plus all 26 neighboring mapblocks. If any neighboring
+          mapblocks are unloaded an estmate is calculated for them based on
+          loaded mapblocks.
     }
 
 ### LBM (LoadingBlockModifier) definition (`register_lbm`)
@@ -4949,7 +4965,8 @@ Definition tables
                             {bendy = 2, snappy = 1},
                             {hard = 1, metal = 1, spikes = 1}
         inventory_image = "default_tool_steelaxe.png",
-        inventory_overlay = "overlay.png", -- an overlay which does not get colorized
+        inventory_overlay = "overlay.png",
+        ^ An overlay which does not get colorized.
         wield_image = "",
         wield_overlay = "",
         palette = "",
@@ -4962,9 +4979,7 @@ Definition tables
         ^ "colorfacedir" and "colorwallmounted" nodes.
         ]]
         color = "0xFFFFFFFF",
-        --[[
         ^ The color of the item. The palette overrides this.
-        ]]
         wield_scale = {x = 1, y = 1, z = 1},
         stack_max = 99,
         range = 4.0,
@@ -4974,7 +4989,8 @@ Definition tables
             max_drop_level = 0,
             groupcaps = {
                 -- For example:
-                choppy = {times = {[1] = 2.50, [2] = 1.40, [3] = 1.00}, uses = 20, maxlevel = 2},
+                choppy = {times = {[1] = 2.50, [2] = 1.40, [3] = 1.00},
+                         uses = 20, maxlevel = 2},
             },
             damage_groups = {groupname = damage},
         },
@@ -5105,7 +5121,8 @@ Definition tables
         ^ node, for the other drawtypes the image will be centered on the node.
         ^ Note that positioning for "torchlike" may still change. ]]
         tiles = {tile definition 1, def2, def3, def4, def5, def6}, --[[
-        ^ Textures of node; +Y, -Y, +X, -X, +Z, -Z (old field name: tile_images)
+        ^ Textures of node; +Y, -Y, +X, -X, +Z, -Z
+        ^ Old field name was 'tile_images'.
         ^ List can be shortened to needed length ]]
         overlay_tiles = {tile definition 1, def2, def3, def4, def5, def6}, --[[
         ^ Same as `tiles`, but these textures are drawn on top of the
@@ -5114,27 +5131,34 @@ Definition tables
         ^ overlay is not drawn. Since such tiles are drawn twice, it
         ^ is not recommended to use overlays on very common nodes. ]]
         special_tiles = {tile definition 1, Tile definition 2}, --[[
-        ^ Special textures of node; used rarely (old field name: special_materials)
+        ^ Special textures of node; used rarely
+        ^ Old field name was 'special_materials'.
         ^ List can be shortened to needed length ]]
         color = ColorSpec, --[[
         ^ The node's original color will be multiplied with this color.
         ^ If the node has a palette, then this setting only has an effect
         ^ in the inventory and on the wield item. ]]
-        use_texture_alpha = false, -- Use texture's alpha channel
+        use_texture_alpha = false,
+        ^ Use texture's alpha channel.
         palette = "palette.png", --[[
         ^ The node's `param2` is used to select a pixel from the image
         ^ (pixels are arranged from left to right and from top to bottom).
         ^ The node's color will be multiplied with the selected pixel's
         ^ color. Tiles can override this behavior.
         ^ Only when `paramtype2` supports palettes. ]]
-        post_effect_color = "green#0F", -- If player is inside node, see "ColorSpec"
-        paramtype = "none", -- See "Nodes" --[[
-        ^ paramtype = "light" allows light to propagate from or through the node with light value
-        ^ falling by 1 per node. This line is essential for a light source node to spread its light. ]]
+        post_effect_color = "green#0F",
+        ^ Screen tint if player is inside node, see "ColorSpec".
+        paramtype = "none", --[[
+        ^ See "Nodes".
+        ^ paramtype = "light" allows light to propagate from or through the
+        ^ node with light value falling by 1 per node. This line is essential
+        ^ for a light source node to spread its light. ]]
         paramtype2 = "none", -- See "Nodes"
         place_param2 = nil, -- Force value for param2 when player places node
-        is_ground_content = true, -- If false, the cave generator will not carve through this
-        sunlight_propagates = false, -- If true, sunlight will go infinitely through this
+        is_ground_content = true,
+        ^ If false, the cave generator will not carve through this node.
+        sunlight_propagates = false,
+        ^ If true, sunlight will go infinitely through this.
         walkable = true, -- If true, objects collide with node
         pointable = true, -- If true, can be pointed at
         diggable = true, -- If false, can never be dug
@@ -5142,43 +5166,55 @@ Definition tables
         buildable_to = false, -- If true, placed nodes can replace this node
         floodable = false, --[[
         ^ If true, liquids flow into and replace this node.
-        ^ Warning: making a liquid node 'floodable' does not work and may cause problems. ]]
+        ^ Warning: making a liquid node 'floodable' will cause problems. ]]
         liquidtype = "none", -- "none"/"source"/"flowing"
         liquid_alternative_flowing = "", -- Flowing version of source liquid
         liquid_alternative_source = "", -- Source version of flowing liquid
         liquid_viscosity = 0, -- Higher viscosity = slower flow (max. 7)
         liquid_renewable = true, --[[
-        ^ If true, a new liquid source can be created by placing two or more sources nearby ]]
+        ^ If true, a new liquid source can be created by placing two or more
+          sources nearby. ]]
         leveled = 16, --[[
         ^ Only valid for "nodebox" drawtype with 'type = "leveled"'.
         ^ Allows defining the nodebox height without using param2.
         ^ The nodebox height is 'leveled' / 64 nodes.
         ^ The maximum value of 'leveled' is 127. ]]
         liquid_range = 8, -- number of flowing nodes around source (max. 8)
-        drowning = 0, -- Player will take this amount of damage if no bubbles are left
+        drowning = 0,
+        ^ Player will take this amount of damage if no bubbles are left.
         light_source = 0, --[[
         ^ Amount of light emitted by node.
-        ^ To set the maximum (currently 14), use the value 'minetest.LIGHT_MAX'.
-        ^ A value outside the range 0 to minetest.LIGHT_MAX causes undefined behavior.]]
-        damage_per_second = 0, -- If player is inside node, this damage is caused
+        ^ To set the maximum (currently 14), use the value
+        ^ 'minetest.LIGHT_MAX'.
+        ^ A value outside the range 0 to minetest.LIGHT_MAX causes undefined
+        ^ behavior.]]
+        damage_per_second = 0,
+        ^ If player is inside node, this damage is caused.
         node_box = {type="regular"}, -- See "Node boxes"
         connects_to = nodenames, --[[
-        * Used for nodebox nodes with the type == "connected"
-        * Specifies to what neighboring nodes connections will be drawn
-        * e.g. `{"group:fence", "default:wood"}` or `"default:stone"` ]]
-        connect_sides = { "top", "bottom", "front", "left", "back", "right" }, --[[
-        ^ Tells connected nodebox nodes to connect only to these sides of this node. ]]
+        ^ Used for nodebox nodes with the type == "connected"
+        ^ Specifies to what neighboring nodes connections will be drawn
+        ^ e.g. `{"group:fence", "default:wood"}` or `"default:stone"` ]]
+        connect_sides = { "top", "bottom", "front", "left", "back", "right" },
+		-- [[
+        ^ Tells connected nodebox nodes to connect only to these sides of this
+        ^ node. ]]
         mesh = "model",
-        selection_box = {type="regular"}, -- See "Node boxes" --[[
-        ^ If drawtype "nodebox" is used and selection_box is nil, then node_box is used. ]]
-        legacy_facedir_simple = false, -- Support maps made in and before January 2012
-        legacy_wallmounted = false, -- Support maps made in and before January 2012
-        waving = 0, --[[ valid for mesh, nodebox, plantlike, allfaces_optional nodes
+        selection_box = {type="regular"}, --[[
+        ^ See "Node boxes".
+        ^ If drawtype "nodebox" is used and selection_box is nil, then node_box
+        ^ is used. ]]
+        legacy_facedir_simple = false,
+        ^ Support maps made in and before January 2012.
+        legacy_wallmounted = false,
+        ^ Support maps made in and before January 2012.
+        waving = 0, --[[
+        ^ Valid for mesh, nodebox, plantlike, allfaces_optional nodes.
         ^ 1 - wave node like plants (top of node moves, bottom is fixed)
-        ^ 2 - wave node like leaves (whole node moves side-to-side synchronously)
-        ^ caveats: not all models will properly wave
-        ^ plantlike drawtype nodes can only wave like plants
-        ^ allfaces_optional drawtype nodes can only wave like leaves --]]
+        ^ 2 - wave node like leaves (whole node moves side-to-side)
+        ^ caveats: not all models will properly wave.
+        ^ plantlike drawtype nodes can only wave like plants.
+        ^ allfaces_optional drawtype nodes can only wave like leaves. --]]
         sounds = {
             footstep = <SimpleSoundSpec>,
             dig = <SimpleSoundSpec>, -- "__group" = group-based sound (default)
@@ -5186,15 +5222,17 @@ Definition tables
             place = <SimpleSoundSpec>,
             place_failed = <SimpleSoundSpec>,
         },
-        drop = "",  -- Name of dropped node when dug. Default is the node itself.
-        -- Alternatively:
+        drop = "",
+        ^ Name of dropped node when dug. Default is the node itself.
+        ^ Alternatively:
         drop = {
             max_items = 1,  -- Maximum number of items to drop.
-            items = { -- Choose max_items randomly from this list.
+            items = {  -- Choose max_items randomly from this list.
                 {
                     items = {"foo:bar", "baz:frob"},  -- Items to drop.
                     rarity = 1,  -- Probability of dropping is 1 / rarity.
-                    inherit_color = true, -- To inherit palette color from the node
+                    inherit_color = true, -- To inherit palette color from the
+                                             node.
                 },
             },
         },
@@ -5204,14 +5242,17 @@ Definition tables
         ^ Can set up metadata and stuff like that
         ^ Not called for bulk node placement (i.e. schematics and VoxelManip)
         ^ default: nil ]]
+
         on_destruct = func(pos), --[[
         ^ Node destructor; called before removing node
         ^ Not called for bulk node placement (i.e. schematics and VoxelManip)
         ^ default: nil ]]
+
         after_destruct = func(pos, oldnode), --[[
         ^ Node destructor; called after removing node
         ^ Not called for bulk node placement (i.e. schematics and VoxelManip)
         ^ default: nil ]]
+
         on_flood = func(pos, oldnode, newnode), --[[
         ^ Called when a liquid (newnode) is about to flood oldnode, if
         ^ it has `floodable = true` in the nodedef. Not called for bulk
@@ -5219,26 +5260,31 @@ Definition tables
         ^ return true the node is not flooded, but on_flood callback will
         ^ most likely be called over and over again every liquid update
         ^ interval. Default: nil.
-        ^ Warning: making a liquid node 'floodable' does not work and may cause problems. ]]
+        ^ Warning: making a liquid node 'floodable' will cause problems. ]]
 
-	preserve_metadata = func(pos, oldnode, oldmeta, drops) --[[
-	^ Called when oldnode is about be converted to an item, but before the
-	  node is deleted from the world or the drops are added.  This is generally
-	  the result of either the node being dug or an attached node becoming detached.
-	^ drops is a table of ItemStacks, so any metadata to be preserved can be
-	  added directly to one or more of the dropped items.  See "ItemStackMetaRef".
-	^ default: nil ]]
+        preserve_metadata = func(pos, oldnode, oldmeta, drops) --[[
+        ^ Called when oldnode is about be converted to an item, but before the
+        ^ node is deleted from the world or the drops are added. This is
+        ^ generally the result of either the node being dug or an attached node
+        ^ becoming detached.
+        ^ drops is a table of ItemStacks, so any metadata to be preserved can
+        ^ be added directly to one or more of the dropped items. See
+        ^ "ItemStackMetaRef".
+        ^ default: nil ]]
+
         after_place_node = func(pos, placer, itemstack, pointed_thing) --[[
         ^ Called after constructing node when node was placed using
-          minetest.item_place_node / minetest.place_node
+        ^ minetest.item_place_node / minetest.place_node
         ^ If return true no item is taken from itemstack
         ^ `placer` may be any valid ObjectRef or nil
         ^ default: nil ]]
+
         after_dig_node = func(pos, oldnode, oldmetadata, digger), --[[
         ^ oldmetadata is in table format
         ^ Called after destructing node when node was dug using
-          minetest.node_dig / minetest.dig_node
+        ^ minetest.node_dig / minetest.dig_node
         ^ default: nil ]]
+
         can_dig = function(pos, [player]) --[[
         ^ returns true if node can be dug, or false if not
         ^ default: nil ]]
@@ -5246,13 +5292,15 @@ Definition tables
         on_punch = func(pos, node, puncher, pointed_thing), --[[
         ^ default: minetest.node_punch
         ^ By default: Calls minetest.register_on_punchnode callbacks ]]
-        on_rightclick = func(pos, node, clicker, itemstack, pointed_thing), --[[
+
+        on_rightclick = func(pos, node, clicker, itemstack, pointed_thing),
+        --[[
         ^ default: nil
         ^ itemstack will hold clicker's wielded item
         ^ Shall return the leftover itemstack
         ^ Note: pointed_thing can be nil, if a mod calls this function
-          This function does not get triggered by clients <=0.4.16 if the
-          "formspec" node metadata field is set ]]
+        ^ This function does not get triggered by clients <=0.4.16 if the
+        ^ "formspec" node metadata field is set ]]
 
         on_dig = func(pos, node, digger), --[[
         ^ default: minetest.node_dig
@@ -5262,33 +5310,37 @@ Definition tables
         ^ default: nil
         ^ called by NodeTimers, see minetest.get_node_timer and NodeTimerRef
         ^ elapsed is the total time passed since the timer was started
-        ^ return true to run the timer for another cycle with the same timeout value ]]
+        ^ return true to run the timer for another cycle with the same timeout
+        ^ value. ]]
 
         on_receive_fields = func(pos, formname, fields, sender), --[[
         ^ fields = {name1 = value1, name2 = value2, ...}
         ^ Called when an UI form (e.g. sign text input) returns data
         ^ default: nil ]]
 
-        allow_metadata_inventory_move = func(pos, from_list, from_index,
-                to_list, to_index, count, player), --[[
+        allow_metadata_inventory_move = func(pos, from_list, from_index, to_list, to_index, count, player),
+        --[[
         ^ Called when a player wants to move items inside the inventory
         ^ Return value: number of items allowed to move ]]
 
-        allow_metadata_inventory_put = func(pos, listname, index, stack, player), --[[
+        allow_metadata_inventory_put = func(pos, listname, index, stack, player),
+        --[[
         ^ Called when a player wants to put something into the inventory
         ^ Return value: number of items allowed to put
         ^ Return value: -1: Allow and don't modify item count in inventory ]]
 
-        allow_metadata_inventory_take = func(pos, listname, index, stack, player), --[[
+        allow_metadata_inventory_take = func(pos, listname, index, stack, player),
+        --[[
         ^ Called when a player wants to take something out of the inventory
         ^ Return value: number of items allowed to take
         ^ Return value: -1: Allow and don't modify item count in inventory ]]
 
-        on_metadata_inventory_move = func(pos, from_list, from_index,
-                to_list, to_index, count, player),
+        on_metadata_inventory_move = func(pos, from_list, from_index, to_list, to_index, count, player),
         on_metadata_inventory_put = func(pos, listname, index, stack, player),
-        on_metadata_inventory_take = func(pos, listname, index, stack, player), --[[
-        ^ Called after the actual action has happened, according to what was allowed.
+        on_metadata_inventory_take = func(pos, listname, index, stack, player),
+        --[[
+        ^ Called after the actual action has happened, according to what was
+        ^ allowed.
         ^ No return value ]]
 
         on_blast = func(pos, intensity), --[[
@@ -5361,18 +5413,20 @@ Definition tables
     --  ^ a list of nodenames is supported too
         clust_scarcity = 8 * 8 * 8,
     --  ^ Ore has a 1 out of clust_scarcity chance of spawning in a node
-    --  ^ If the desired average distance between ores is 'd', set this to d * d * d.
+    --  ^ If the desired average distance between ores is 'd', set this to
+    --  ^ d * d * d.
         clust_num_ores = 8,
     --  ^ Number of ores in a cluster
         clust_size = 3,
     --  ^ Size of the bounding box of the cluster
-    --  ^ In this example, there is a 3 * 3 * 3 cluster where 8 out of the 27 nodes
-    --  ^ are coal ore.
+    --  ^ In this example, there is a 3 * 3 * 3 cluster where 8 out of the 27
+    --  ^ nodes are coal ore.
         y_min = -31000,
         y_max = 64,
     --  ^ Lower and upper limits for ore.
         flags = "",
-    --  ^ Attributes for this ore generation, see 'Ore attributes' section above.
+    --  ^ Attributes for this ore generation, see 'Ore attributes' section
+    --  ^ above.
         noise_threshold = 0.5,
     --  ^ If noise is above this threshold, ore is placed. Not needed for a
     --  ^ uniform distribution.
@@ -5384,15 +5438,16 @@ Definition tables
             octaves = 3,
             persist = 0.7
         },
-    --  ^ NoiseParams structure describing one of the perlin noises used for ore
-    --  ^ distribution.
+    --  ^ NoiseParams structure describing one of the perlin noises used for
+    --  ^ ore distribution.
     --  ^ Needed by "sheet", "puff", "blob" and "vein" ores.
     --  ^ Omit from "scatter" ore for a uniform ore distribution.
-    --  ^ Omit from "stratum ore for a simple horizontal strata from y_min to y_max.
+    --  ^ Omit from "stratum ore for a simple horizontal strata from y_min to
+    --  ^ y_max.
         biomes = {"desert", "rainforest"}
     --  ^ List of biomes in which this decoration occurs.
-    --  ^ Occurs in all biomes if this is omitted, and ignored if the Mapgen being
-    --  ^ used does not support biomes.
+    --  ^ Occurs in all biomes if this is omitted, and ignored if the Mapgen
+    --  ^ being used does not support biomes.
     --  ^ Can be a list of (or a single) biome names, IDs, or definitions.
         column_height_min = 1,
         column_height_max = 16,
@@ -5451,9 +5506,11 @@ Definition tables
         depth_water_top = 10,
     --  ^ Node forming a surface layer in seawater with the defined thickness.
         node_water = "",
-    --  ^ Node that replaces all seawater nodes not in the defined surface layer.
+    --  ^ Node that replaces all seawater nodes not in the defined surface
+    --  ^ layer.
         node_river_water = "default:ice",
-    --  ^ Node that replaces river water in mapgens that use default:river_water.
+    --  ^ Node that replaces river water in mapgens that use
+    --  ^ default:river_water.
         node_riverbed = "default:gravel",
         depth_riverbed = 2,
     --  ^ Node placed under river water and thickness of this layer.
@@ -5488,17 +5545,31 @@ Definition tables
         place_on = "default:dirt_with_grass",
     --  ^ Node (or list of nodes) that the decoration can be placed on
         sidelen = 8,
-    --  ^ Size of divisions made in the chunk being generated.
-    --  ^ If the chunk size is not evenly divisible by sidelen, sidelen is made equal to the chunk size.
+    --  ^ Size of the square divisions of the mapchunk being generated.
+    --  ^ Determines the resolution of noise variation if used.
+    --  ^ If the chunk size is not evenly divisible by sidelen, sidelen is made
+    --  ^ equal to the chunk size.
         fill_ratio = 0.02,
-    --  ^ Ratio of the area to be uniformly filled by the decoration.
+    --  ^ The value determines 'decorations per surface node'.
     --  ^ Used only if noise_params is not specified.
-        noise_params = {offset=0, scale=.45, spread={x=100, y=100, z=100}, seed=354, octaves=3, persist=0.7},
-    --  ^ NoiseParams structure describing the perlin noise used for decoration distribution.
-    --  ^ The result of this is multiplied by the 2d area of the division being decorated.
+        noise_params = {
+            offset = 0,
+            scale = 0.45,
+            spread = {x = 100, y = 100, z = 100},
+            seed = 354,
+            octaves = 3,
+            persist = 0.7,
+            lacunarity = 2.0,
+            flags = "absvalue"
+        },
+    --  ^ NoiseParams structure describing the perlin noise used for decoration
+    --  ^ distribution.
+    --  ^ A noise value is calculated for each square division and determines
+    --  ^ 'decorations per surface node' within each division.
         biomes = {"Oceanside", "Hills", "Plains"},
-    --  ^ List of biomes in which this decoration occurs.  Occurs in all biomes if this is omitted,
-    --  ^ and ignored if the Mapgen being used does not support biomes.
+    --  ^ List of biomes in which this decoration occurs. Occurs in all biomes
+    --  ^ if this is omitted, and ignored if the Mapgen being used does not
+    --  ^ support biomes.
     --  ^ Can be a list of (or a single) biome names, IDs, or definitions.
         y_min = -31000
         y_max = 31000
@@ -5506,10 +5577,12 @@ Definition tables
     --  ^ These parameters refer to the Y co-ordinate of the 'place_on' node.
         spawn_by = "default:water",
     --  ^ Node (or list of nodes) that the decoration only spawns next to.
-    --  ^ Checks two horizontal planes of neighbouring nodes (including diagonal neighbours),
-    --  ^ one plane level with the 'place_on' node and a plane one node above that.
+    --  ^ Checks two horizontal planes of 8 neighbouring nodes (including
+    --  ^ diagonal neighbours), one plane level with the 'place_on' node and a
+    --  ^ plane one node above that.
         num_spawn_by = 1,
-    --  ^ Number of spawn_by nodes that must be surrounding the decoration position to occur.
+    --  ^ Number of spawn_by nodes that must be surrounding the decoration
+    --  ^ position to occur.
     --  ^ If absent or -1, decorations occur next to any nodes.
         flags = "liquid_surface, force_placement, all_floors, all_ceilings",
     --  ^ Flags for all decoration types.
@@ -5531,16 +5604,19 @@ Definition tables
         ----- Simple-type parameters
         decoration = "default:grass",
     --  ^ The node name used as the decoration.
-    --  ^ If instead a list of strings, a randomly selected node from the list is placed as the decoration.
+    --  ^ If instead a list of strings, a randomly selected node from the list
+    --  ^ is placed as the decoration.
         height = 1,
     --  ^ Decoration height in nodes.
-    --  ^ If height_max is not 0, this is the lower limit of a randomly selected height.
+    --  ^ If height_max is not 0, this is the lower limit of a randomly
+    --  ^ selected height.
         height_max = 0,
     --  ^ Upper limit of the randomly selected height.
     --  ^ If absent, the parameter 'height' is used as a constant.
         param2 = 0,
     --  ^ Param2 value of decoration nodes.
-    --  ^ If param2_max is not 0, this is the lower limit of a randomly selected param2.
+    --  ^ If param2_max is not 0, this is the lower limit of a randomly
+    --  ^ selected param2.
         param2_max = 0,
     --  ^ Upper limit of the randomly selected param2.
     --  ^ If absent, the parameter 'param2' is used as a constant.
@@ -5554,23 +5630,22 @@ Definition tables
 
         ----- Schematic-type parameters
         schematic = "foobar.mts",
-    --  ^ If schematic is a string, it is the filepath relative to the current working directory of the
-    --  ^ specified Minetest schematic file.
+    --  ^ If schematic is a string, it is the filepath relative to the current
+    --  ^ working directory of the specified Minetest schematic file.
     --  ^  - OR -, could be the ID of a previously registered schematic
-    --  ^  - OR -, could instead be a table containing two mandatory fields, size and data,
-    --  ^ and an optional table yslice_prob:
+    --  ^  - OR -, could instead be a table containing two mandatory fields,
+    --  ^ size and data, and an optional table yslice_prob:
         schematic = {
-            size = {x=4, y=6, z=4},
+            size = {x = 4, y = 6, z = 4},
             data = {
-                {name="default:cobble", param1=255, param2=0},
-                {name="default:dirt_with_grass", param1=255, param2=0},
-                {name="ignore", param1=255, param2=0},
-                {name="air", param1=255, param2=0},
+                {name = "default:cobble", param1 = 255, param2 = 0},
+                {name = "default:dirt_with_grass", param1 = 255, param2 = 0},
+                {name = "air", param1 = 255, param2 = 0},
                  ...
             },
             yslice_prob = {
-                {ypos=2, prob=128},
-                {ypos=5, prob=64},
+                {ypos = 2, prob = 128},
+                {ypos = 5, prob = 64},
                  ...
             },
         },
@@ -5578,7 +5653,7 @@ Definition tables
         replacements = {["oldname"] = "convert_to", ...},
         flags = "place_center_x, place_center_y, place_center_z",
     --  ^ Flags for schematic decorations.  See 'Schematic attributes'.
-        rotation = "90" -- rotate schematic 90 degrees on placement
+        rotation = "90",
     --  ^ Rotation can be "0", "90", "180", "270", or "random".
         place_offset_y = 0,
     --  ^ If the flag 'place_center_y' is set this parameter is ignored.
@@ -5597,19 +5672,21 @@ Definition tables
         description = "Remove privilege from player", -- Full description
         privs = {privs=true}, -- Require the "privs" privilege to run
         func = function(name, param), -- Called when command is run.
-                                      -- Returns boolean success and text output.
+                                      -- Returns boolean success and text
+                                      -- output.
     }
 
 Note that in params, use of symbols is as follows:
 
-* `<>` signifies a placeholder to be replaced when the command is used. For example,
-  when a player name is needed: `<name>`
-* `[]` signifies param is optional and not required when the command is used. For
-  example, if you require param1 but param2 is optional: `<param1> [<param2>]`
+* `<>` signifies a placeholder to be replaced when the command is used. For
+  example, when a player name is needed: `<name>`
+* `[]` signifies param is optional and not required when the command is used.
+  For example, if you require param1 but param2 is optional:
+  `<param1> [<param2>]`
 * `|` signifies exclusive or. The command requires one param from the options
   provided. For example: `<param1> | <param2>`
-* `()` signifies grouping. For example, when param1 and param2 are both required,
-  or only param3 is required: `(<param1> <param2>) | <param3>`
+* `()` signifies grouping. For example, when param1 and param2 are both
+  required, or only param3 is required: `(<param1> <param2>) | <param3>`
 
 ### Detached inventory callbacks
 
@@ -5631,7 +5708,8 @@ Note that in params, use of symbols is as follows:
         on_move = func(inv, from_list, from_index, to_list, to_index, count, player),
         on_put = func(inv, listname, index, stack, player),
         on_take = func(inv, listname, index, stack, player),
-    --  ^ Called after the actual action has happened, according to what was allowed.
+    --  ^ Called after the actual action has happened, according to what was
+    --  ^ allowed.
     --  ^ No return value
     }
 
@@ -5639,11 +5717,12 @@ Note that in params, use of symbols is as follows:
 
     {
         hud_elem_type = "image", -- see HUD element types
-    --  ^ type of HUD element, can be either of "image", "text", "statbar", or "inventory"
+    --  ^ type of HUD element, can be either of "image", "text", "statbar",
+          "inventory".
         position = {x=0.5, y=0.5},
     --  ^ Left corner position of element
         name = "<name>",
-        scale = {x=2, y=2},
+        scale = {x = 2, y = 2},
         text = "<text>",
         number = 2,
         item = 3,
@@ -5691,7 +5770,8 @@ Note that in params, use of symbols is as follows:
     {
         amount = 1,
         time = 1,
-    --  ^ If time is 0 has infinite lifespan and spawns the amount on a per-second base
+    --  ^ If time is 0 has infinite lifespan and spawns the amount on a
+    --  ^ per-second basis.
         minpos = {x=0, y=0, z=0},
         maxpos = {x=0, y=0, z=0},
         minvel = {x=0, y=0, z=0},
@@ -5703,22 +5783,24 @@ Note that in params, use of symbols is as follows:
         minsize = 1,
         maxsize = 1,
     --  ^ The particle's properties are random values in between the bounds:
-    --  ^ minpos/maxpos, minvel/maxvel (velocity), minacc/maxacc (acceleration),
-    --  ^ minsize/maxsize, minexptime/maxexptime (expirationtime)
+    --  ^ minpos/maxpos, minvel/maxvel (velocity),
+    --  ^ minacc/maxacc (acceleration), minsize/maxsize,
+    --  ^ minexptime/maxexptime (expirationtime).
         collisiondetection = false,
     --  ^ collisiondetection: if true uses collision detection
         collision_removal = false,
     --  ^ collision_removal: if true then particle is removed when it collides,
     --  ^ requires collisiondetection = true to have any effect
         attached = ObjectRef,
-    --  ^ attached: if defined, particle positions, velocities and accelerations
-    --  ^ are relative to this object's position and yaw.
+    --  ^ attached: if defined, particle positions, velocities and
+    --  ^ accelerations are relative to this object's position and yaw.
         vertical = false,
     --  ^ vertical: if true faces player using y axis only
         texture = "image.png",
     --  ^ Uses texture (string)
         playername = "singleplayer"
-    --  ^ Playername is optional, if specified spawns particle only on the player's client
+    --  ^ Playername is optional, if specified spawns particle only on the
+    --  ^ player's client.
         animation = {Tile Animation definition},
     --  ^ optional, specifies how to animate the particle texture
         glow = 0
@@ -5730,32 +5812,36 @@ Note that in params, use of symbols is as follows:
     {
         url = "http://example.org",
         timeout = 10,
-     -- ^ Timeout for connection in seconds. Default is 3 seconds.
-        post_data = "Raw POST request data string" OR { field1 = "data1", field2 = "data2" },
-     -- ^ Optional, if specified a POST request with post_data is performed.
-     -- ^ Accepts both a string and a table. If a table is specified, encodes table
-     -- ^ as x-www-form-urlencoded key-value pairs.
-     -- ^ If post_data ist not specified, a GET request is performed instead.
+    --  ^ Timeout for connection in seconds. Default is 3 seconds.
+        post_data = "Raw POST request data string" OR {field1 = "data1", field2 = "data2"},
+    --  ^ Optional, if specified a POST request with post_data is performed.
+    --  ^ Accepts both a string and a table. If a table is specified, encodes
+    --  ^ table as x-www-form-urlencoded key-value pairs.
+    --  ^ If post_data ist not specified, a GET request is performed instead.
         user_agent = "ExampleUserAgent",
-     -- ^ Optional, if specified replaces the default minetest user agent with given string
+    --  ^ Optional, if specified replaces the default minetest user agent with
+    --  ^ given string.
         extra_headers = { "Accept-Language: en-us", "Accept-Charset: utf-8" },
-     -- ^ Optional, if specified adds additional headers to the HTTP request. You must make sure
-     -- ^ that the header strings follow HTTP specification ("Key: Value").
+    --  ^ Optional, if specified adds additional headers to the HTTP request.
+    --  ^ You must make sure that the header strings follow HTTP specification
+    --  ^ ("Key: Value").
         multipart = boolean
-     -- ^ Optional, if true performs a multipart HTTP request. Default is false.
+    --  ^ Optional, if true performs a multipart HTTP request.
+    --  ^ Default is false.
     }
 
 ### `HTTPRequestResult` definition (`HTTPApiTable.fetch` callback, `HTTPApiTable.fetch_async_get`)
 
     {
         completed = true,
-     -- ^ If true, the request has finished (either succeeded, failed or timed out)
+    --  ^ If true, the request has finished (either succeeded, failed or timed
+          out).
         succeeded = true,
-     -- ^ If true, the request was successful
+    --  ^ If true, the request was successful
         timeout = false,
-     -- ^ If true, the request timed out
+    --  ^ If true, the request timed out
         code = 200,
-     -- ^ HTTP status code
+    --  ^ HTTP status code
         data = "response"
     }
 
@@ -5763,25 +5849,30 @@ Note that in params, use of symbols is as follows:
 
     {
         get_auth = func(name),
-    --  ^ Get authentication data for existing player `name` (`nil` if player doesn't exist)
-    --  ^ returns following structure `{password=<string>, privileges=<table>, last_login=<number or nil>}`
+    --  ^ Get authentication data for existing player `name` (`nil` if player
+          doesn't exist).
+    --  ^ returns following structure:
+    --  ^ `{password=<string>, privileges=<table>, last_login=<number or nil>}`
         create_auth = func(name, password),
     --  ^ Create new auth data for player `name`
-    --  ^ Note that `password` is not plain-text but an arbitrary representation decided by the engine
+    --  ^ Note that `password` is not plain-text but an arbitrary
+    --  ^ representation decided by the engine
         delete_auth = func(name),
-    --  ^ Delete auth data of player `name`, returns boolean indicating success (false if player nonexistant)
+    --  ^ Delete auth data of player `name`, returns boolean indicating success
+    --  ^ (false if player nonexistant).
         set_password = func(name, password),
     --  ^ Set password of player `name` to `password`
            Auth data should be created if not present
         set_privileges = func(name, privileges),
     --  ^ Set privileges of player `name`
-    --  ^ `privileges` is in table form, auth data should be created if not present
+    --  ^ `privileges` is in table form, auth data should be created if not
+    --  ^ present.
         reload = func(),
     --  ^ Reload authentication data from the storage location
     --  ^ Returns boolean indicating success
         record_login = func(name),
     --  ^ Called when player joins, used for keeping track of last_login
         iterate = func(),
-    --  ^ Returns an iterator (use with `for` loops) for all player names currently in the auth database
+    --  ^ Returns an iterator (use with `for` loops) for all player names
+    --  ^ currently in the auth database.
     }
-
