@@ -35,6 +35,7 @@ set ( LIBSRC s2_meth.c s2_srvr.c s2_clnt.c s2_lib.c s2_enc.c s2_pkt.c s3_meth.c 
 	ssl_err.c kssl.c t1_reneg.c tls_srp.c s3_cbc.c d1_srtp.c )
 
 add_library( ssl ${LIBSRC} )
+add_dependencies( ssl crypto )
 target_link_libraries( ssl crypto )
 
 install( FILES ssl.h ssl2.h ssl3.h ssl23.h tls1.h dtls1.h kssl.h

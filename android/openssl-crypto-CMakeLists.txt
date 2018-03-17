@@ -120,7 +120,7 @@ add_submodule( camellia camellia.c cmll_misc.c cmll_ecb.c cmll_cbc.c cmll_ofb.c
 add_submodule( cast c_skey.c c_ecb.c c_enc.c c_cfb64.c c_ofb64.c EXHEADERS cast.h )
 add_submodule( cmac cm_ameth.c cm_pmeth.c cmac.c EXHEADERS cmac.h )
 add_submodule( cms cms_lib.c cms_asn1.c cms_att.c cms_io.c cms_smime.c cms_err.c
-	cms_sd.c cms_dd.c cms_cd.c cms_env.c cms_enc.c cms_ess.c cms_kari.c cms_pwri.c 
+	cms_sd.c cms_dd.c cms_cd.c cms_env.c cms_enc.c cms_ess.c cms_kari.c cms_pwri.c
 	EXHEADERS cms.h )
 add_submodule( comp comp_lib.c comp_err.c c_rle.c c_zlib.c EXHEADERS comp.h )
 add_submodule ( conf conf_err.c conf_lib.c conf_api.c conf_def.c conf_mod.c conf_mall.c
@@ -218,11 +218,11 @@ add_submodule( x509v3 v3_bcons.c v3_bitst.c v3_conf.c v3_extku.c v3_ia5.c v3_lib
 add_submodule( . EXHEADERS crypto.h opensslv.h opensslconf.h ebcdic.h symhacks.h
 	ossl_typ.h )
 
-	add_definitions(-DOPENSSL_THREADS)
-	if( WIN32 AND MINGW AND NOT CYGWIN )
-		add_definitions(-DDSO_WIN32 -DWIN32_LEAN_AND_MEAN)
-	endif( WIN32 AND MINGW AND NOT CYGWIN )
-	add_library( crypto SHARED ${LIBSRC} ${OBJECTS_SRC} )
-	set( crypto_headers ${EXHEADERS} )
-	list( REMOVE_ITEM crypto_headers ./opensslconf.h )
-	file( COPY ${crypto_headers} DESTINATION openssl )
+add_definitions(-DOPENSSL_THREADS)
+if( WIN32 AND MINGW AND NOT CYGWIN )
+	add_definitions(-DDSO_WIN32 -DWIN32_LEAN_AND_MEAN)
+endif( WIN32 AND MINGW AND NOT CYGWIN )
+add_library( crypto ${LIBSRC} ${OBJECTS_SRC} )
+set( crypto_headers ${EXHEADERS} )
+list( REMOVE_ITEM crypto_headers ./opensslconf.h )
+file( COPY ${crypto_headers} DESTINATION openssl )

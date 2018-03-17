@@ -42,13 +42,10 @@ if( MINGW )
 	set( CMAKE_SHARED_LINKER_FLAGS "-Wl,--export-all" )
 endif()
 
+configure_file(e_os2.h ${CMAKE_CURRENT_BINARY_DIR})
+
 add_subdirectory( crypto )
 add_subdirectory( ssl )
 
-install( FILES e_os2.h DESTINATION include/openssl )
-
 install( FILES tools/c_hash tools/c_info tools/c_issuer tools/c_name tools/c_rehash
 	DESTINATION share/openssl )
-
-install( FILES e_os2.h DESTINATION include/openssl )
-

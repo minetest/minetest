@@ -3,6 +3,7 @@ cmake_minimum_required(VERSION 3.1)
 project(minetest)
 set(PROJECT_NAME_CAPITALIZED "Minetest")
 
+set(CMAKE_C STANDARD 11)
 set(CMAKE_CXX_STANDARD 11)
 set(PROJECT_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../src/)
 set(PROJECT_BINARY_DIR ${CMAKE_CURRENT_SOURCE_DIR}/cmakebuild/)
@@ -32,6 +33,7 @@ include_directories(
 	${CMAKE_CURRENT_SOURCE_DIR}/deps/irrlicht/include
 	${CMAKE_CURRENT_SOURCE_DIR}/deps/gmp
 	${CMAKE_CURRENT_SOURCE_DIR}/deps/libiconv/include
+	${CMAKE_CURRENT_SOURCE_DIR}/deps/openal/include
 	${CMAKE_CURRENT_SOURCE_DIR}/deps/sqlite
 	${CMAKE_CURRENT_SOURCE_DIR}/../lib/jsoncpp
 	${CMAKE_CURRENT_SOURCE_DIR}/../lib/lua/src
@@ -42,7 +44,9 @@ include_directories(
 
 # Library deps
 add_subdirectory(${PROJECT_SOURCE_DIR}/../lib/jsoncpp ${PROJECT_BINARY_DIR}/lib/jsoncpp)
+add_subdirectory(${PROJECT_SOURCE_DIR}/../lib/gmp ${PROJECT_BINARY_DIR}/lib/gmp)
 add_subdirectory(${PROJECT_SOURCE_DIR}/../lib/lua ${PROJECT_BINARY_DIR}/lib/lua)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/deps/openal-soft ${PROJECT_BINARY_DIR}/lib/openal)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/deps/openssl ${PROJECT_BINARY_DIR}/lib/openssl)
 #add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/deps/curl ${PROJECT_BINARY_DIR}/lib/curl)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/deps/sqlite ${PROJECT_BINARY_DIR}/lib/sqlite)
@@ -178,6 +182,6 @@ configure_file(
 )
 
 add_library(minetest SHARED ${client_SRCS})
-add_dependencies(minetest crypto ssl jsoncpp lua sqlite3)
+add_dependencies(minetest crypto ssl jsoncpp gmp OpenAL lua sqlite3)
 
-target_link_libraries(minetest crypto ssl jsoncpp lua sqlite3)
+target_link_libraries(minetest crypto ssl gmp openal jsoncpp lua sqlite3)

@@ -75,11 +75,12 @@ LEVELDB_TIMESTAMP_INT = $(ANDR_ROOT)/deps/leveldb_timestamp
 LEVELDB_URL_GIT = https://github.com/google/leveldb
 LEVELDB_COMMIT = 2d0320a458d0e6a20fff46d5f80b18bfdcce7018
 
+OPENAL_VERSION = 1.18.2
 OPENAL_DIR = $(ANDR_ROOT)/deps/openal-soft/
 OPENAL_LIB = $(OPENAL_DIR)libs/$(TARGET_ABI)/libopenal.so
 OPENAL_TIMESTAMP = $(OPENAL_DIR)/timestamp
 OPENAL_TIMESTAMP_INT = $(ANDR_ROOT)/deps/openal_timestamp
-OPENAL_URL_GIT = https://github.com/apportable/openal-soft
+OPENAL_URL_GIT = https://github.com/kcat/openal-soft
 
 OGG_DIR = $(ANDR_ROOT)/deps/libvorbis-libogg-android/
 OGG_LIB = $(OGG_DIR)libs/$(TARGET_ABI)/libogg.so
@@ -200,11 +201,13 @@ $(OPENAL_TIMESTAMP) : openal_download
 	fi
 
 openal_download :
-	@if [ ! -d ${OPENAL_DIR} ] ; then                                          \
+	@if [ ! -d ${OPENAL_DIR} ] ; then                                              \
 		echo "openal sources missing, downloading...";                         \
 		mkdir -p ${ANDR_ROOT}/deps;                                            \
 		cd ${ANDR_ROOT}/deps ;                                                 \
-		git clone ${OPENAL_URL_GIT} || exit 1;                                 \
+		git clone ${OPENAL_URL_GIT} -b openal-soft-${OPENAL_VERSION} || exit 1;\
+		patch -p0 < ${ANDR_ROOT}/patches/openal_align.patch || exit 1; \
+		patch -p0 < ${ANDR_ROOT}/patches/openal_math_defs.h.patch || exit 1; \
 	fi
 
 openal : $(OPENAL_LIB)
@@ -294,49 +297,17 @@ openssl_download :
 		cd ${ANDR_ROOT}/deps ;                                                 \
 		wget ${OPENSSL_URL} || exit 1;                                         \
 		tar -xzf ${OPENSSL_BASEDIR}.tar.gz;                                    \
-                ln -s ${OPENSSL_DIR} openssl;                                          \
-		cp ../openssl-CMakeLists.txt openssl/CMakeLists.txt                    \
-		cp ../openssl-crypto-CMakeLists.txt openssl/crypto/CMakeLists.txt      \
-		cp ../openssl-buildinf.h.cmake openssl/crypto/buildinf.h.cmake         \
-		cp ../openssl-ssl-CMakeLists.txt openssl/ssl/CMakeLists.txt            \
+		ln -s ${OPENSSL_DIR} openssl;                                          \
+		cp ../openssl-CMakeLists.txt openssl/CMakeLists.txt;                   \
+		cp ../openssl-crypto-CMakeLists.txt openssl/crypto/CMakeLists.txt;     \
+		cp ../openssl-buildinf.h.cmake openssl/crypto/buildinf.h.cmake;        \
+		cp ../openssl-ssl-CMakeLists.txt openssl/ssl/CMakeLists.txt;           \
 		cd ${OPENSSL_BASEDIR};                                                 \
 		patch -p1 < ${ANDR_ROOT}/patches/openssl_arch.patch;                   \
 		sed -i 's/-mandroid //g' Configure;                                    \
 	fi
 
-openssl : $(OPENSSL_LIB)
-
-$(OPENSSL_LIB): $(OPENSSL_TIMESTAMP) $(GMP_LIB)
-	@REFRESH=0;                                                                \
-	if [ ! -e ${OPENSSL_TIMESTAMP_INT} ] ; then                                \
-		echo "${OPENSSL_TIMESTAMP_INT} doesn't exist";                         \
-		REFRESH=1;                                                             \
-	fi;                                                                        \
-	if [ ${OPENSSL_TIMESTAMP} -nt ${OPENSSL_TIMESTAMP_INT} ] ; then            \
-		REFRESH=1;                                                             \
-	fi;                                                                        \
-	if [ $$REFRESH -ne 0 ] ; then                                              \
-	echo "changed timestamp for openssl detected building...";                 \
-	cd ${OPENSSL_DIR};                                                         \
-	export TOOLCHAIN=/tmp/ndk-${TARGET_HOST}-openssl;                          \
-	${ANDROID_NDK}/build/tools/make-standalone-toolchain.sh                    \
-		--toolchain=${TARGET_TOOLCHAIN}${COMPILER_VERSION}                     \
-		--platform=${APP_PLATFORM}                                             \
-		--stl=libc++                                                           \
-		--install-dir=$${TOOLCHAIN};                                           \
-	export PATH="$${TOOLCHAIN}/bin:$${PATH}";                                  \
-	export CFLAGS="$${CFLAGS} ${TARGET_CFLAGS_ADDON}";                         \
-	export LDFLAGS="$${LDFLAGS} ${TARGET_LDFLAGS_ADDON}";                      \
-	CC=${CROSS_CC} ./Configure enable-gmp no-asm -DL_ENDIAN -I${GMP_DIR}       \
-		-L${GMP_DIR}/usr/lib android-${TARGET_ARCH} -D__ANDROID_API__=$(API);  \
-	CC=${CROSS_CC} ANDROID_DEV=/tmp/ndk-${TARGET_HOST} make depend;            \
-	CC=${CROSS_CC} ANDROID_DEV=/tmp/ndk-${TARGET_HOST} make build_libs;        \
-	touch ${OPENSSL_TIMESTAMP};                                                \
-	touch ${OPENSSL_TIMESTAMP_INT};                                            \
-	$(RM) -rf $${TOOLCHAIN};                                                   \
-	else                                                                       \
-		echo "nothing to be done for openssl";                        \
-	fi
+openssl : openssl_download
 
 clean_openssl :
 	$(RM) -rf ${OPENSSL_DIR};                                                  \
