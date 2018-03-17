@@ -54,12 +54,14 @@ add_subdirectory(${PROJECT_SOURCE_DIR}/irrlicht_changes ${PROJECT_BINARY_DIR}/ir
 add_subdirectory(${PROJECT_SOURCE_DIR}/mapgen ${PROJECT_BINARY_DIR}/mapgen)
 add_subdirectory(${PROJECT_SOURCE_DIR}/network ${PROJECT_BINARY_DIR}/network)
 add_subdirectory(${PROJECT_SOURCE_DIR}/script ${PROJECT_BINARY_DIR}/script)
+add_subdirectory(${PROJECT_SOURCE_DIR}/threading ${PROJECT_BINARY_DIR}/server)
 add_subdirectory(${PROJECT_SOURCE_DIR}/threading ${PROJECT_BINARY_DIR}/threading)
 add_subdirectory(${PROJECT_SOURCE_DIR}/util ${PROJECT_BINARY_DIR}/util)
 
 set(common_SRCS
 	${database_SRCS}
 	${mapgen_SRCS}
+	${server_SRCS}
 	${PROJECT_SOURCE_DIR}/ban.cpp
 	${PROJECT_SOURCE_DIR}/chat.cpp
 	${PROJECT_SOURCE_DIR}/clientiface.cpp
