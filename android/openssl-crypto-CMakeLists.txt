@@ -130,7 +130,7 @@ add_submodule( des cbc_cksm.c cbc_enc.c cfb64enc.c cfb_enc.c ecb3_enc.c ecb_enc.
 	rpc_enc.c set_key.c des_enc.c fcrypt_b.c xcbc_enc.c str2key.c cfb64ede.c ofb64ede.c
 	ede_cbcm_enc.c des_old.c des_old2.c read2pwd.c EXHEADERS des.h des_old.h )
 add_submodule( dh dh_asn1.c dh_gen.c dh_key.c dh_lib.c dh_check.c dh_err.c dh_depr.c
-	dh_ameth.c dh_pmeth.c dh_kdf.c dh_prn.c EXHEADERS dh.h )
+	dh_ameth.c dh_pmeth.c dh_kdf.c dh_prn.c dh_rfc5114.c EXHEADERS dh.h )
 add_submodule( dsa dsa_gen.c dsa_key.c dsa_lib.c dsa_asn1.c dsa_vrf.c dsa_sign.c
 	dsa_err.c dsa_ossl.c dsa_depr.c dsa_ameth.c dsa_pmeth.c dsa_prn.c EXHEADERS dsa.h )
 add_submodule( dso dso_dl.c dso_dlfcn.c dso_err.c dso_lib.c dso_null.c dso_openssl.c
@@ -138,7 +138,7 @@ add_submodule( dso dso_dl.c dso_dlfcn.c dso_err.c dso_lib.c dso_null.c dso_opens
 add_submodule( ec ec_lib.c ecp_smpl.c ecp_mont.c ecp_nist.c ec_cvt.c ec_mult.c ec_err.c
 	ec_curve.c ec_check.c ec_print.c ec_asn1.c ec_key.c ec2_smpl.c ec2_mult.c ec_ameth.c
 	ec_oct.c ec_pmeth.c eck_prn.c ecp_oct.c ec2_oct.c EXHEADERS ec.h )
-add_submodule( ecdh ech_lib.c ech_ossl.c ech_key.c ech_err.c EXHEADERS ecdh.h )
+add_submodule( ecdh ech_lib.c ech_ossl.c ech_key.c ech_err.c ech_kdf.c EXHEADERS ecdh.h )
 add_submodule( ecdsa ecs_lib.c ecs_asn1.c ecs_ossl.c ecs_sign.c ecs_vrf.c ecs_err.c
 	EXHEADERS ecdsa.h )
 add_submodule( engine eng_err.c eng_lib.c eng_list.c eng_init.c eng_ctrl.c eng_table.c
