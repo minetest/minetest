@@ -65,10 +65,10 @@ doc/doxygen_*
 ## Build files
 CMakeFiles
 Makefile
-!build/android/Makefile
-build/android/path.cfg
-build/android/*.apk
-build/android/.externalNativeBuild
+!android/Makefile
+android/path.cfg
+android/*.apk
+android/.externalNativeBuild
 cmake_install.cmake
 CMakeCache.txt
 CPackConfig.cmake
@@ -96,14 +96,14 @@ cmake_config_githash.h
 CMakeDoxy*
 
 ## Android build files
-build/android/src/main/assets
-build/android/build
-build/android/deps
-build/android/libs
-build/android/jni/lib
-build/android/jni/src
-build/android/src/main/jniLibs
-build/android/obj
-build/android/local.properties
-build/android/.gradle
+android/src/main/assets
+android/build
+android/deps
+android/libs
+android/jni/lib
+android/jni/src
+android/src/main/jniLibs
+android/obj
+android/local.properties
+android/.gradle
 timestamp
