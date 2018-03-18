@@ -588,7 +588,7 @@ appropriate `paramtype2`:
 * `paramtype2 = "colorwallmounted"` for nodes which use the first
   five bits (most significant) of `param2` for palette indexing.
   The remaining three bits are describing rotation, as in `wallmounted`
-  drawtype. Division by 8 yields the palette index (without stretching the
+  paramtype2. Division by 8 yields the palette index (without stretching the
   palette). These nodes can have 32 different colors, and the palette
   should contain 32 pixels.
   Examples:
@@ -598,7 +598,7 @@ appropriate `paramtype2`:
       pixel will be picked from the palette.
 * `paramtype2 = "colorfacedir"` for nodes which use the first
   three bits of `param2` for palette indexing. The remaining
-  five bits are describing rotation, as in `facedir` drawtype.
+  five bits are describing rotation, as in `facedir` paramtype2.
   Division by 32 yields the palette index (without stretching the
   palette). These nodes can have 8 different colors, and the
   palette should contain 8 pixels.
@@ -609,7 +609,7 @@ appropriate `paramtype2`:
       second (= 1 + 1) pixel will be picked from the palette.
 
 To colorize a node on the map, set its `param2` value (according
-to the node's draw type).
+to the node's paramtype2).
 
 ### Conversion between nodes in the inventory and the on the map
 Static coloring is the same for both cases, there is no need
