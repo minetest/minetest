@@ -78,6 +78,7 @@ src/android_version.h
 src/android_version_githash.h
 src/cmake_config.h
 src/cmake_config_githash.h
+src/unittest/test_world/world.mt
 src/lua/build/
 locale/
 .directory
