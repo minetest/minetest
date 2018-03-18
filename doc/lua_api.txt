@@ -2660,7 +2660,7 @@ Strings that need to be translated can contain several escapes, preceded by `@`.
            chat_send_player_param3 = true,
            get_all_craft_recipes_works = true,
            use_texture_alpha = true,
-        -- ^ The transparency channel of textures can be used optionally
+        -- ^ The transparency channel of textures can optionally be used on nodes
            no_legacy_abms = true,
         -- ^ Tree and grass ABMs are no longer done from C++
            texture_names_parens = true,
@@ -2671,6 +2671,9 @@ Strings that need to be translated can contain several escapes, preceded by `@`.
         -- ^ add_entity supports passing initial staticdata to on_activate
            no_chat_message_prediction = true,
         -- ^ Chat messages are no longer predicted
+           object_use_texture_alpha = true
+        -- ^ The transparency channel of textures can optionally be used on
+        --   objects (ie: players and lua entities)
         }
 * `minetest.has_feature(arg)`: returns `boolean, missing_features`
     * `arg`: string or table in format `{foo=true, bar=true}`
@@ -4957,6 +4960,10 @@ Definition tables
     --  ^ "wielditem" expects 'textures = {itemname}' (see 'visual' above).
         colors = {},
     --  ^ Number of required colors depends on visual.
+        use_texture_alpha = false,
+    --  ^ Use texture's alpha channel, excludes "upright_sprite" and "wielditem"
+	--  ^ Note: currently causes visual issues when viewed through other
+	--  ^ semi-transparent materials such as water.
         spritediv = {x = 1, y = 1},
     --  ^ Used with spritesheet textures for animation and/or frame selection
     --    according to position relative to player.
