@@ -396,14 +396,21 @@ private:
 
 	// Generate image based on a string like "stone.png" or "[crack:1:0".
 	// if baseimg is NULL, it is created. Otherwise stuff is made on it.
-	bool generateImagePart(std::string part_of_name, video::IImage *& baseimg);
+	bool generateImagePart(std::string part_of_name, video::IImage *& baseimg,
+		bool normalmap_found);
 
+	enum NormalMapPresence {
+		NORMAL_ABSENT,
+		NORMAL_PRESENT,
+		NORMAL_UNKNOWN,
+	};
 	/*! Generates an image from a full string like
 	 * "stone.png^mineral_coal.png^[crack:1:0".
 	 * Shall be called from the main thread.
 	 * The returned Image should be dropped.
 	 */
-	video::IImage* generateImage(const std::string &name);
+	video::IImage *generateImage(const std::string &name,
+		NormalMapPresence normalmap_info = NORMAL_UNKNOWN);
 
 	// Thread-safe cache of what source images are known (true = known)
 	MutexedMap<std::string, bool> m_source_image_existence;
@@ -689,7 +696,7 @@ Palette* TextureSource::getPalette(const std::string &name)
 	auto it = m_palettes.find(name);
 	if (it == m_palettes.end()) {
 		// Create palette
-		video::IImage *img = generateImage(name);
+		video::IImage *img = generateImage(name, NORMAL_ABSENT);
 		if (!img) {
 			warningstream << "TextureSource::getPalette(): palette \"" << name
 				<< "\" could not be loaded." << std::endl;
@@ -912,8 +919,18 @@ static video::IImage *createInventoryCubeImage(
 	return result;
 }
 
-video::IImage* TextureSource::generateImage(const std::string &name)
+video::IImage *TextureSource::generateImage(const std::string &name,
+		NormalMapPresence normalmap_info)
 {
+	// generateImage is called recursively, so searching for _normal.png is done
+	// once and as early as possible, i.e. before splitting name
+	if (normalmap_info == NORMAL_UNKNOWN) {
+		normalmap_info = (name.find("_normal.png") != std::string::npos)
+			? NORMAL_PRESENT
+			: NORMAL_ABSENT;
+	}
+
+
 	// Get the base image
 
 	const char separator = '^';
@@ -965,7 +982,8 @@ video::IImage* TextureSource::generateImage(const std::string &name)
 		using a recursive call.
 	*/
 	if (last_separator_pos != -1) {
-		baseimg = generateImage(name.substr(0, last_separator_pos));
+		baseimg = generateImage(name.substr(0, last_separator_pos),
+			normalmap_info);
 	}
 
 	/*
@@ -983,11 +1001,13 @@ video::IImage* TextureSource::generateImage(const std::string &name)
 			&& last_part_of_name[last_part_of_name.size() - 1] == paren_close) {
 		std::string name2 = last_part_of_name.substr(1,
 				last_part_of_name.size() - 2);
-		video::IImage *tmp = generateImage(name2);
+		video::IImage *tmp = generateImage(name2, normalmap_info);
 		if (!tmp) {
-			errorstream << "generateImage(): "
-				"Failed to generate \"" << name2 << "\""
-				<< std::endl;
+			// Parentheses are unlikely used on a simple single texture, thus
+			// for normalmaps a warning should already have occurred
+			if (normalmap_info == NORMAL_ABSENT)
+				errorstream << "generateImage(): Failed to generate \""
+					<< name2 << "\"" << std::endl;
 			return NULL;
 		}
 		core::dimension2d<u32> dim = tmp->getDimension();
@@ -997,15 +1017,16 @@ video::IImage* TextureSource::generateImage(const std::string &name)
 		} else {
 			baseimg = tmp;
 		}
-	} else if (!generateImagePart(last_part_of_name, baseimg)) {
+	} else if (!generateImagePart(last_part_of_name, baseimg,
+			normalmap_info)) {
 		// Generate image according to part of name
 		errorstream << "generateImage(): "
 				"Failed to generate \"" << last_part_of_name << "\""
 				<< std::endl;
 	}
 
-	// If no resulting image, print a warning
-	if (baseimg == NULL) {
+	// If no resulting image, print a warning (except for missing normalmaps)
+	if (normalmap_info == NORMAL_ABSENT && baseimg == NULL) {
 		errorstream << "generateImage(): baseimg is NULL (attempted to"
 				" create texture \"" << name << "\")" << std::endl;
 	}
@@ -1095,7 +1116,7 @@ static std::string unescape_string(const std::string &str, const char esc = '\\'
 }
 
 bool TextureSource::generateImagePart(std::string part_of_name,
-		video::IImage *& baseimg)
+		video::IImage *& baseimg, bool normalmap_found)
 {
 	const char escape = '\\'; // same as in generateImage()
 	video::IVideoDriver *driver = RenderingEngine::get_video_driver();
@@ -1111,7 +1132,9 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 			if (!part_of_name.empty()) {
 
 				// Do not create normalmap dummies
-				if (part_of_name.find("_normal.png") != std::string::npos) {
+				// this message is only emitted if a normalmap texture should be
+				// combined with another one or modified
+				if (normalmap_found) {
 					warningstream << "generateImage(): Could not load normal map \""
 						<< part_of_name << "\"" << std::endl;
 					return true;
@@ -1200,6 +1223,10 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 	{
 		// A special texture modification
 
+		// If a texture modifier is applied to a missing normalmap, do nothing
+		if (normalmap_found && baseimg == NULL)
+			return true;
+
 		/*infostream<<"generateImage(): generating special "
 				<<"modification \""<<part_of_name<<"\""
 				<<std::endl;*/
@@ -1210,8 +1237,10 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 			Adds a cracking texture
 			N = animation frame count, P = crack progression
 		*/
-		if (str_starts_with(part_of_name, "[crack"))
-		{
+		if (str_starts_with(part_of_name, "[crack")) {
+			// crack is never applied on a normalmap
+			assert(!normalmap_found);
+
 			if (baseimg == NULL) {
 				errorstream<<"generateImagePart(): baseimg == NULL "
 						<<"for part_of_name=\""<<part_of_name
@@ -1259,8 +1288,7 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 			[combine:WxH:X,Y=filename:X,Y=filename2
 			Creates a bigger texture from any amount of smaller ones
 		*/
-		else if (str_starts_with(part_of_name, "[combine"))
-		{
+		else if (str_starts_with(part_of_name, "[combine")) {
 			Strfnd sf(part_of_name);
 			sf.next(":");
 			u32 w0 = stoi(sf.next("x"));
@@ -1277,7 +1305,8 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 				infostream<<"Adding \""<<filename
 						<<"\" to combined ("<<x<<","<<y<<")"
 						<<std::endl;
-				video::IImage *img = generateImage(filename);
+				video::IImage *img = generateImage(filename,
+					normalmap_found ? NORMAL_PRESENT : NORMAL_ABSENT);
 				if (img) {
 					core::dimension2d<u32> dim = img->getDimension();
 					core::position2d<s32> pos_base(x, y);
@@ -1300,8 +1329,8 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 		/*
 			[brighten
 		*/
-		else if (str_starts_with(part_of_name, "[brighten"))
-		{
+		else if (str_starts_with(part_of_name, "[brighten")
+				&& !normalmap_found) {
 			if (baseimg == NULL) {
 				errorstream<<"generateImagePart(): baseimg==NULL "
 						<<"for part_of_name=\""<<part_of_name
@@ -1318,8 +1347,8 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 			that the transparent parts don't look completely black
 			when simple alpha channel is used for rendering.
 		*/
-		else if (str_starts_with(part_of_name, "[noalpha"))
-		{
+		else if (str_starts_with(part_of_name, "[noalpha")
+				&& !normalmap_found) {
 			if (baseimg == NULL){
 				errorstream<<"generateImagePart(): baseimg==NULL "
 						<<"for part_of_name=\""<<part_of_name
@@ -1342,8 +1371,8 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 			[makealpha:R,G,B
 			Convert one color to transparent.
 		*/
-		else if (str_starts_with(part_of_name, "[makealpha:"))
-		{
+		else if (str_starts_with(part_of_name, "[makealpha:")
+				&& !normalmap_found) {
 			if (baseimg == NULL) {
 				errorstream<<"generateImagePart(): baseimg == NULL "
 						<<"for part_of_name=\""<<part_of_name
@@ -1397,8 +1426,7 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 			The resulting transform will be equivalent to one of the
 			eight existing ones, though (see: dihedral group).
 		*/
-		else if (str_starts_with(part_of_name, "[transform"))
-		{
+		else if (str_starts_with(part_of_name, "[transform")) {
 			if (baseimg == NULL) {
 				errorstream<<"generateImagePart(): baseimg == NULL "
 						<<"for part_of_name=\""<<part_of_name
@@ -1424,8 +1452,8 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 			Example (a grass block (not actually used in game):
 			"[inventorycube{grass.png{mud.png&grass_side.png{mud.png&grass_side.png"
 		*/
-		else if (str_starts_with(part_of_name, "[inventorycube"))
-		{
+		else if (str_starts_with(part_of_name, "[inventorycube")
+				&& !normalmap_found) {
 			if (baseimg != NULL){
 				errorstream<<"generateImagePart(): baseimg != NULL "
 						<<"for part_of_name=\""<<part_of_name
@@ -1449,7 +1477,7 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 				errorstream << "generateImagePart(): Failed to create textures"
 						<< " for inventorycube \"" << part_of_name << "\""
 						<< std::endl;
-				baseimg = generateImage(imagename_top);
+				baseimg = generateImage(imagename_top, NORMAL_ABSENT);
 				return true;
 			}
 
@@ -1466,8 +1494,7 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 			[lowpart:percent:filename
 			Adds the lower part of a texture
 		*/
-		else if (str_starts_with(part_of_name, "[lowpart:"))
-		{
+		else if (str_starts_with(part_of_name, "[lowpart:")) {
 			Strfnd sf(part_of_name);
 			sf.next(":");
 			u32 percent = stoi(sf.next(":"));
@@ -1475,7 +1502,8 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 
 			if (baseimg == NULL)
 				baseimg = driver->createImage(video::ECF_A8R8G8B8, v2u32(16,16));
-			video::IImage *img = generateImage(filename);
+			video::IImage *img = generateImage(filename,
+				normalmap_found ? NORMAL_PRESENT : NORMAL_ABSENT);
 			if (img)
 			{
 				core::dimension2d<u32> dim = img->getDimension();
@@ -1501,8 +1529,7 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 			Crops a frame of a vertical animation.
 			N = frame count, I = frame index
 		*/
-		else if (str_starts_with(part_of_name, "[verticalframe:"))
-		{
+		else if (str_starts_with(part_of_name, "[verticalframe:")) {
 			Strfnd sf(part_of_name);
 			sf.next(":");
 			u32 frame_count = stoi(sf.next(":"));
@@ -1545,8 +1572,7 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 			[mask:filename
 			Applies a mask to an image
 		*/
-		else if (str_starts_with(part_of_name, "[mask:"))
-		{
+		else if (str_starts_with(part_of_name, "[mask:") && !normalmap_found) {
 			if (baseimg == NULL) {
 				errorstream << "generateImage(): baseimg == NULL "
 						<< "for part_of_name=\"" << part_of_name
@@ -1557,7 +1583,7 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 			sf.next(":");
 			std::string filename = unescape_string(sf.next_esc(":", escape), escape);
 
-			video::IImage *img = generateImage(filename);
+			video::IImage *img = generateImage(filename, NORMAL_ABSENT);
 			if (img) {
 				apply_mask(img, baseimg, v2s32(0, 0), v2s32(0, 0),
 						img->getDimension());
@@ -1572,7 +1598,8 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 			multiplys a given color to any pixel of an image
 			color = color as ColorString
 		*/
-		else if (str_starts_with(part_of_name, "[multiply:")) {
+		else if (str_starts_with(part_of_name, "[multiply:")
+				&& !normalmap_found) {
 			Strfnd sf(part_of_name);
 			sf.next(":");
 			std::string color_str = sf.next(":");
@@ -1596,8 +1623,8 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 			Overlays image with given color
 			color = color as ColorString
 		*/
-		else if (str_starts_with(part_of_name, "[colorize:"))
-		{
+		else if (str_starts_with(part_of_name, "[colorize:")
+				&& !normalmap_found) {
 			Strfnd sf(part_of_name);
 			sf.next(":");
 			std::string color_str = sf.next(":");
@@ -1628,13 +1655,13 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 			[applyfiltersformesh
 			Internal modifier
 		*/
-		else if (str_starts_with(part_of_name, "[applyfiltersformesh"))
-		{
+		else if (str_starts_with(part_of_name, "[applyfiltersformesh")) {
 			/* IMPORTANT: When changing this, getTextureForMesh() needs to be
 			 * updated too. */
 
 			// Apply the "clean transparent" filter, if configured.
-			if (g_settings->getBool("texture_clean_transparent"))
+			if (!normalmap_found
+					&& g_settings->getBool("texture_clean_transparent"))
 				imageCleanTransparent(baseimg, 127);
 
 			/* Upscale textures to user's requested minimum size.  This is a trick to make
@@ -1642,6 +1669,8 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 			 * low-res textures BECOME high-res ones.  This is helpful for worlds that
 			 * mix high- and low-res textures, or for mods with least-common-denominator
 			 * textures that don't have the resources to offer high-res alternatives.
+			 * Normalmaps are upscaled, too. This avoids linear interpolation
+			 * of the normal vectors.
 			 */
 			const bool filter = m_setting_trilinear_filter || m_setting_bilinear_filter;
 			const s32 scaleto = filter ? g_settings->getS32("texture_min_size") : 1;
@@ -1679,14 +1708,16 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 			[resize:WxH
 			Resizes the base image to the given dimensions
 		*/
-		else if (str_starts_with(part_of_name, "[resize"))
-		{
+		else if (str_starts_with(part_of_name, "[resize")) {
 			if (baseimg == NULL) {
 				errorstream << "generateImagePart(): baseimg == NULL "
 						<< "for part_of_name=\""<< part_of_name
 						<< "\", cancelling." << std::endl;
 				return false;
 			}
+
+			// Note that currently normalmaps are also resized without
+			// interpolation
 
 			Strfnd sf(part_of_name);
 			sf.next(":");
@@ -1707,7 +1738,8 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 			0 means totally transparent.
 			255 means totally opaque.
 		*/
-		else if (str_starts_with(part_of_name, "[opacity:")) {
+		else if (str_starts_with(part_of_name, "[opacity:")
+				&& !normalmap_found) {
 			if (baseimg == NULL) {
 				errorstream << "generateImagePart(): baseimg == NULL "
 						<< "for part_of_name=\"" << part_of_name
@@ -1737,7 +1769,8 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 			Only the channels that are mentioned in the mode string
 			will be inverted.
 		*/
-		else if (str_starts_with(part_of_name, "[invert:")) {
+		else if (str_starts_with(part_of_name, "[invert:")
+				&& !normalmap_found) {
 			if (baseimg == NULL) {
 				errorstream << "generateImagePart(): baseimg == NULL "
 						<< "for part_of_name=\"" << part_of_name
@@ -1812,8 +1845,7 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 			baseimg->drop();
 			baseimg = img;
 		}
-		else
-		{
+		else if (!normalmap_found) {
 			errorstream << "generateImagePart(): Invalid "
 					" modification: \"" << part_of_name << "\"" << std::endl;
 		}
@@ -2209,7 +2241,7 @@ video::ITexture* TextureSource::getNormalTexture(const std::string &name)
 			fname_base.replace(i, 4, normal_ext);
 			i += normal_ext_size;
 		}
-		return getTexture(fname_base);
+		return getTexture(fname_base + "^[applyfiltersformesh");
 	}
 	return NULL;
 }
