@@ -63,8 +63,8 @@ public:
 	s16 depth_water_top;
 	s16 depth_riverbed;
 
-	s16 y_min;
-	s16 y_max;
+	v3s16 min_pos;
+	v3s16 max_pos;
 	float heat_point;
 	float humidity_point;
 	s16 vertical_blend;
@@ -108,14 +108,14 @@ public:
 	// Gets all biomes in current chunk using each corresponding element of
 	// heightmap as the y position, then stores the results by biome index in
 	// biomemap (also returned)
-	virtual biome_t *getBiomes(s16 *heightmap) = 0;
+	virtual biome_t *getBiomes(s16 *heightmap, v3s16 pmin) = 0;
 
 	// Gets a single biome at the specified position, which must be contained
 	// in the region formed by m_pmin and (m_pmin + m_csize - 1).
 	virtual Biome *getBiomeAtPoint(v3s16 pos) const = 0;
 
 	// Same as above, but uses a raw numeric index correlating to the (x,z) position.
-	virtual Biome *getBiomeAtIndex(size_t index, s16 y) const = 0;
+	virtual Biome *getBiomeAtIndex(size_t index, v3s16 pos) const = 0;
 
 	// Result of calcBiomes bulk computation.
 	biome_t *biomemap = nullptr;
@@ -164,11 +164,11 @@ public:
 	Biome *calcBiomeAtPoint(v3s16 pos) const;
 	void calcBiomeNoise(v3s16 pmin);
 
-	biome_t *getBiomes(s16 *heightmap);
+	biome_t *getBiomes(s16 *heightmap, v3s16 pmin);
 	Biome *getBiomeAtPoint(v3s16 pos) const;
-	Biome *getBiomeAtIndex(size_t index, s16 y) const;
+	Biome *getBiomeAtIndex(size_t index, v3s16 pos) const;
 
-	Biome *calcBiomeFromNoise(float heat, float humidity, s16 y) const;
+	Biome *calcBiomeFromNoise(float heat, float humidity, v3s16 pos) const;
 
 	float *heatmap;
 	float *humidmap;
@@ -230,7 +230,7 @@ public:
 		NoiseParams &np_heat_blend, u64 seed);
 	float getHumidityAtPosOriginal(v3s16 pos, NoiseParams &np_humidity,
 		NoiseParams &np_humidity_blend, u64 seed);
-	Biome *getBiomeFromNoiseOriginal(float heat, float humidity, s16 y);
+	Biome *getBiomeFromNoiseOriginal(float heat, float humidity, v3s16 pos);
 
 private:
 	Server *m_server;

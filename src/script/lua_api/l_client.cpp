@@ -311,7 +311,7 @@ int ModApiClient::l_get_node_def(lua_State *L)
 	IGameDef *gdef = getGameDef(L);
 	assert(gdef);
 
-	INodeDefManager *ndef = gdef->ndef();
+	const NodeDefManager *ndef = gdef->ndef();
 	assert(ndef);
 
 	if (!lua_isstring(L, 1))

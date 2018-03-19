@@ -30,9 +30,9 @@ public:
 
 	void runTests(IGameDef *gamedef);
 
-	void testMtsSerializeDeserialize(INodeDefManager *ndef);
-	void testLuaTableSerialize(INodeDefManager *ndef);
-	void testFileSerializeDeserialize(INodeDefManager *ndef);
+	void testMtsSerializeDeserialize(const NodeDefManager *ndef);
+	void testLuaTableSerialize(const NodeDefManager *ndef);
+	void testFileSerializeDeserialize(const NodeDefManager *ndef);
 
 	static const content_t test_schem1_data[7 * 6 * 4];
 	static const content_t test_schem2_data[3 * 3 * 3];
@@ -44,8 +44,8 @@ static TestSchematic g_test_instance;
 
 void TestSchematic::runTests(IGameDef *gamedef)
 {
-	IWritableNodeDefManager *ndef =
-		(IWritableNodeDefManager *)gamedef->getNodeDefManager();
+	NodeDefManager *ndef =
+		(NodeDefManager *)gamedef->getNodeDefManager();
 
 	ndef->setNodeRegistrationStatus(true);
 
@@ -58,7 +58,7 @@ void TestSchematic::runTests(IGameDef *gamedef)
 
 ////////////////////////////////////////////////////////////////////////////////
 
-void TestSchematic::testMtsSerializeDeserialize(INodeDefManager *ndef)
+void TestSchematic::testMtsSerializeDeserialize(const NodeDefManager *ndef)
 {
 	static const v3s16 size(7, 6, 4);
 	static const u32 volume = size.X * size.Y * size.Z;
@@ -104,7 +104,7 @@ void TestSchematic::testMtsSerializeDeserialize(INodeDefManager *ndef)
 }
 
 
-void TestSchematic::testLuaTableSerialize(INodeDefManager *ndef)
+void TestSchematic::testLuaTableSerialize(const NodeDefManager *ndef)
 {
 	static const v3s16 size(3, 3, 3);
 	static const u32 volume = size.X * size.Y * size.Z;
@@ -132,7 +132,7 @@ void TestSchematic::testLuaTableSerialize(INodeDefManager *ndef)
 }
 
 
-void TestSchematic::testFileSerializeDeserialize(INodeDefManager *ndef)
+void TestSchematic::testFileSerializeDeserialize(const NodeDefManager *ndef)
 {
 	static const v3s16 size(3, 3, 3);
 	static const u32 volume = size.X * size.Y * size.Z;

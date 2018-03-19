@@ -232,9 +232,6 @@ public:
 	*/
 	void saveMeta();
 	void loadMeta();
-	// to be called instead of loadMeta if
-	// env_meta.txt doesn't exist (e.g. new world)
-	void loadDefaultMeta();
 
 	u32 addParticleSpawner(float exptime);
 	u32 addParticleSpawner(float exptime, u16 attached_id);
@@ -256,6 +253,19 @@ public:
 		Returns 0 if not added and thus deleted.
 	*/
 	u16 addActiveObject(ServerActiveObject *object);
+
+	/**
+	 * Verify if id is a free active object id
+	 * @param id
+	 * @return true if slot is free
+	 */
+	bool isFreeServerActiveObjectId(u16 id) const;
+
+	/**
+	 * Retrieve the first free ActiveObject ID
+	 * @return free activeobject ID or 0 if none was found
+	 */
+	u16 getFreeServerActiveObjectId();
 
 	/*
 		Add an active object as a static object to the corresponding
@@ -357,6 +367,11 @@ public:
 	static bool migratePlayersDatabase(const GameParams &game_params,
 			const Settings &cmd_args);
 private:
+
+	/**
+	 * called if env_meta.txt doesn't exist (e.g. new world)
+	 */
+	void loadDefaultMeta();
 
 	static PlayerDatabase *openPlayerDatabase(const std::string &name,
 			const std::string &savedir, const Settings &conf);

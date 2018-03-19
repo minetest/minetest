@@ -87,7 +87,7 @@ float Environment::getTimeOfDayF()
 	Check if a node is pointable
 */
 inline static bool isPointableNode(const MapNode &n,
-			    INodeDefManager *nodedef , bool liquids_pointable)
+	const NodeDefManager *nodedef , bool liquids_pointable)
 {
 	const ContentFeatures &features = nodedef->get(n);
 	return features.pointable ||
@@ -96,7 +96,7 @@ inline static bool isPointableNode(const MapNode &n,
 
 void Environment::continueRaycast(RaycastState *state, PointedThing *result)
 {
-	INodeDefManager *nodedef = getMap().getNodeDefManager();
+	const NodeDefManager *nodedef = getMap().getNodeDefManager();
 	if (state->m_initialization_needed) {
 		// Add objects
 		if (state->m_objects_pointable) {

@@ -337,7 +337,7 @@ void WieldMeshSceneNode::setItem(const ItemStack &item, Client *client)
 	ITextureSource *tsrc = client->getTextureSource();
 	IItemDefManager *idef = client->getItemDefManager();
 	IShaderSource *shdrsrc = client->getShaderSource();
-	INodeDefManager *ndef = client->getNodeDefManager();
+	const NodeDefManager *ndef = client->getNodeDefManager();
 	const ItemDefinition &def = item.getDefinition(idef);
 	const ContentFeatures &f = ndef->get(def.name);
 	content_t id = ndef->getId(def.name);
@@ -495,7 +495,7 @@ void getItemMesh(Client *client, const ItemStack &item, ItemMesh *result)
 {
 	ITextureSource *tsrc = client->getTextureSource();
 	IItemDefManager *idef = client->getItemDefManager();
-	INodeDefManager *ndef = client->getNodeDefManager();
+	const NodeDefManager *ndef = client->getNodeDefManager();
 	const ItemDefinition &def = item.getDefinition(idef);
 	const ContentFeatures &f = ndef->get(def.name);
 	content_t id = ndef->getId(def.name);

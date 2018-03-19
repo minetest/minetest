@@ -19,7 +19,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "staticobject.h"
 #include "util/serialize.h"
-#include "log.h"
+#include "content_sao.h"
+
+StaticObject::StaticObject(const ServerActiveObject *s_obj, const v3f &pos_):
+	type(s_obj->getType()),
+	pos(pos_)
+{
+	s_obj->getStaticData(&data);
+}
 
 void StaticObject::serialize(std::ostream &os)
 {

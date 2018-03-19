@@ -251,6 +251,8 @@ const std::string Logger::getLevelLabel(LogLevel lev)
 	return names[lev];
 }
 
+LogColor Logger::color_mode = LOG_COLOR_AUTO;
+
 const std::string Logger::getThreadName()
 {
 	std::map<std::thread::id, std::string>::const_iterator it;

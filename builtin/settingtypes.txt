@@ -1212,13 +1212,6 @@ language (Language) enum   ,be,ca,cs,da,de,dv,en,eo,es,et,fr,he,hu,id,it,ja,jbo,
 #    -    verbose
 debug_log_level (Debug log level) enum action ,none,error,warning,action,info,verbose
 
-#    ANSI colored logs: red error log, yellow warning and grey info and verbose logs
-#    Note that it doesn't work on Windows
-#    "yes" always enables it,
-#    "detect" enables it when printing to terminal and
-#    "no" disables it
-log_color (Colored logs) enum detect yes,detect,no
-
 #    Disables the ascii art logo from logs.
 no_ascii_art (Disables ascii logo) bool false
 
@@ -1245,8 +1238,8 @@ curl_file_download_timeout (cURL file download timeout) int 300000
 high_precision_fpu (High-precision FPU) bool true
 
 #    Changes the main menu UI:
-#    -   Full:  Multple singleplayer worlds, subgame choice, texture pack chooser, etc.
-#    -   Simple: One singleplayer world, no subgame or texture pack choosers. May be necessary for smaller screens.
+#    -   Full:  Multple singleplayer worlds, game choice, texture pack chooser, etc.
+#    -   Simple: One singleplayer world, no game or texture pack choosers. May be necessary for smaller screens.
 #    -   Auto: Simple on Android, full on everything else. 
 main_menu_style (Main menu style) enum auto auto,full,simple
 
@@ -1326,6 +1319,12 @@ mgv5_cavern_taper (Cavern taper) int 256
 #    Defines full size of caverns, smaller values create larger caverns.
 mgv5_cavern_threshold (Cavern threshold) float 0.7
 
+#    Lower Y limit of dungeons.
+mgv5_dungeon_ymin (Dungeon minimum Y) int -31000
+
+#    Upper Y limit of dungeons.
+mgv5_dungeon_ymax (Dungeon maximum Y) int 31000
+
 [**Noises]
 
 #    Variation of biome filler depth.
@@ -1366,6 +1365,12 @@ mgv6_freq_desert (Desert noise threshold) float 0.45
 
 #    Sandy beaches occur when np_beach exceeds this value.
 mgv6_freq_beach (Beach noise threshold) float 0.15
+
+#    Lower Y limit of dungeons.
+mgv6_dungeon_ymin (Dungeon minimum Y) int -31000
+
+#    Upper Y limit of dungeons.
+mgv6_dungeon_ymax (Dungeon maximum Y) int 31000
 
 [**Noises]
 
@@ -1447,6 +1452,12 @@ mgv7_cavern_taper (Cavern taper) int 256
 #    Defines full size of caverns, smaller values create larger caverns.
 mgv7_cavern_threshold (Cavern threshold) float 0.7
 
+#    Lower Y limit of dungeons.
+mgv7_dungeon_ymin (Dungeon minimum Y) int -31000
+
+#    Upper Y limit of dungeons.
+mgv7_dungeon_ymax (Dungeon maximum Y) int 31000
+
 [**Noises]
 
 #    Y-level of higher (cliff-top) terrain.
@@ -1518,6 +1529,12 @@ mgcarpathian_cavern_taper (Cavern taper) int 256
 
 #    Defines full size of caverns, smaller values create larger caverns.
 mgcarpathian_cavern_threshold (Cavern threshold) float 0.7
+
+#    Lower Y limit of dungeons.
+mgcarpathian_dungeon_ymin (Dungeon minimum Y) int -31000
+
+#    Upper Y limit of dungeons.
+mgcarpathian_dungeon_ymax (Dungeon maximum Y) int 31000
 
 [**Noises]
 
@@ -1605,6 +1622,12 @@ mgflat_hill_threshold (Hill threshold) float 0.45
 #    Controls steepness/height of hills.
 mgflat_hill_steepness (Hill steepness) float 64.0
 
+#    Lower Y limit of dungeons.
+mgflat_dungeon_ymin (Dungeon minimum Y) int -31000
+
+#    Upper Y limit of dungeons.
+mgflat_dungeon_ymax (Dungeon maximum Y) int 31000
+
 [**Noises]
 
 #    Defines location and terrain of optional hills and lakes.
@@ -1629,6 +1652,12 @@ mgfractal_large_cave_depth (Large cave depth) int -33
 
 #    Y of upper limit of lava in large caves.
 mgfractal_lava_depth (Lava depth) int -256
+
+#    Lower Y limit of dungeons.
+mgfractal_dungeon_ymin (Dungeon minimum Y) int -31000
+
+#    Upper Y limit of dungeons.
+mgfractal_dungeon_ymax (Dungeon maximum Y) int 31000
 
 #    Choice of 18 fractals from 9 formulas.
 #    1 = 4D "Roundy" mandelbrot set.
@@ -1736,6 +1765,12 @@ mgvalleys_water_features (Water features) int 0
 
 #    Controls width of tunnels, a smaller value creates wider tunnels.
 mgvalleys_cave_width (Cave width) float 0.09
+
+#    Lower Y limit of dungeons.
+mgvalleys_dungeon_ymin (Dungeon minimum Y) int -31000
+
+#    Upper Y limit of dungeons.
+mgvalleys_dungeon_ymax (Dungeon maximum Y) int 63
 
 [**Noises]
 

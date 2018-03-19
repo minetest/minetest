@@ -27,6 +27,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <map>
 #include <json/json.h>
 #include <unordered_set>
+#include "util/basic_macros.h"
 #include "config.h"
 #include "metadata.h"
 
@@ -45,16 +46,22 @@ struct ModSpec
 	bool is_modpack = false;
 	// if modpack:
 	std::map<std::string,ModSpec> modpack_content;
-	ModSpec(const std::string &name_="", const std::string &path_=""):
+	ModSpec(const std::string &name_ = "", const std::string &path_ = ""):
 		name(name_),
 		path(path_)
+	{}
+	ModSpec(const std::string &name_, const std::string &path_, bool part_of_modpack_):
+		name(name_),
+		path(path_),
+		part_of_modpack(part_of_modpack_)
 	{}
 };
 
 // Retrieves depends, optdepends, is_modpack and modpack_content
 void parseModContents(ModSpec &mod);
 
-std::map<std::string,ModSpec> getModsInPath(std::string path, bool part_of_modpack = false);
+std::map<std::string,ModSpec> getModsInPath(const std::string &path,
+	bool part_of_modpack = false);
 
 // replaces modpack Modspecs with their content
 std::vector<ModSpec> flattenMods(std::map<std::string,ModSpec> mods);
@@ -71,7 +78,7 @@ public:
 		return m_unsatisfied_mods.empty();
 	}
 
-	std::vector<ModSpec> getMods()
+	const std::vector<ModSpec> &getMods() const
 	{
 		return m_sorted_mods;
 	}
@@ -95,6 +102,13 @@ protected:
 	void addModsFromConfig(const std::string &settings_path, const std::set<std::string> &mods);
 
 	void checkConflictsAndDeps();
+protected:
+	// list of mods sorted such that they can be loaded in the
+	// given order with all dependencies being fullfilled. I.e.,
+	// every mod in this list has only dependencies on mods which
+	// appear earlier in the vector.
+	std::vector<ModSpec> m_sorted_mods;
+
 private:
 	// move mods from m_unsatisfied_mods to m_sorted_mods
 	// in an order that satisfies dependencies
@@ -104,12 +118,6 @@ private:
 	// this is where all mods are stored. Afterwards this contains
 	// only the ones with really unsatisfied dependencies.
 	std::vector<ModSpec> m_unsatisfied_mods;
-
-	// list of mods sorted such that they can be loaded in the
-	// given order with all dependencies being fullfilled. I.e.,
-	// every mod in this list has only dependencies on mods which
-	// appear earlier in the vector.
-	std::vector<ModSpec> m_sorted_mods;
 
 	// set of mod names for which an unresolved name conflict
 	// exists. A name conflict happens when two or more mods
@@ -125,13 +133,6 @@ private:
 
 };
 
-class ServerModConfiguration: public ModConfiguration
-{
-public:
-	ServerModConfiguration(const std::string &worldpath);
-
-};
-
 #ifndef SERVER
 class ClientModConfiguration: public ModConfiguration
 {
@@ -140,20 +141,10 @@ public:
 };
 #endif
 
-struct ModLicenseInfo {
-	int id;
-	std::string shortinfo;
-	std::string url;
-};
-
-struct ModAuthorInfo {
-	int id;
-	std::string username;
-};
-
 class ModMetadata: public Metadata
 {
 public:
+	ModMetadata() = delete;
 	ModMetadata(const std::string &mod_name);
 	~ModMetadata() = default;
 

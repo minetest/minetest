@@ -28,7 +28,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #if !defined(_WIN32)  // POSIX
 	#include <unistd.h>
 #endif
-#include "settings.h"
 #include "irrlichttypes.h"
 
 class ILogOutput;
@@ -41,6 +40,12 @@ enum LogLevel {
 	LL_INFO,
 	LL_VERBOSE,
 	LL_MAX,
+};
+
+enum LogColor {
+	LOG_COLOR_NEVER,
+	LOG_COLOR_ALWAYS,
+	LOG_COLOR_AUTO,
 };
 
 typedef u8 LogLevelMask;
@@ -67,6 +72,8 @@ public:
 
 	static LogLevel stringToLevel(const std::string &name);
 	static const std::string getLevelLabel(LogLevel lev);
+
+	static LogColor color_mode;
 
 private:
 	void logToOutputsRaw(LogLevel, const std::string &line);
@@ -111,18 +118,17 @@ public:
 		m_stream(stream)
 	{
 #if !defined(_WIN32)
-		is_tty = isatty(fileno(stdout));
+		colored = (Logger::color_mode == LOG_COLOR_ALWAYS) ||
+			(Logger::color_mode == LOG_COLOR_AUTO && isatty(fileno(stdout)));
 #else
-		is_tty = false;
+		colored = Logger::color_mode == LOG_COLOR_ALWAYS;
 #endif
 	}
 
 	void logRaw(LogLevel lev, const std::string &line)
 	{
-		static const std::string use_logcolor = g_settings->get("log_color");
-
-		bool colored = use_logcolor == "detect" ? is_tty : use_logcolor == "yes";
-		if (colored)
+		bool colored_message = colored;
+		if (colored_message)
 			switch (lev) {
 			case LL_ERROR:
 				// error is red
@@ -142,19 +148,19 @@ public:
 				break;
 			default:
 				// action is white
-				colored = false;
+				colored_message = false;
 			}
 
 		m_stream << line << std::endl;
 
-		if (colored)
+		if (colored_message)
 			// reset to white color
 			m_stream << "\033[0m";
 	}
 
 private:
 	std::ostream &m_stream;
-	bool is_tty;
+	bool colored;
 };
 
 class FileLogOutput : public ICombinedLogOutput {

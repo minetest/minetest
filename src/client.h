@@ -48,7 +48,7 @@ class MapBlockMesh;
 class IWritableTextureSource;
 class IWritableShaderSource;
 class IWritableItemDefManager;
-class IWritableNodeDefManager;
+class NodeDefManager;
 //class IWritableCraftDefManager;
 class ClientMediaDownloader;
 struct MapDrawControl;
@@ -129,7 +129,7 @@ public:
 			IWritableTextureSource *tsrc,
 			IWritableShaderSource *shsrc,
 			IWritableItemDefManager *itemdef,
-			IWritableNodeDefManager *nodedef,
+			NodeDefManager *nodedef,
 			ISoundManager *sound,
 			MtEventManager *event,
 			bool ipv6,
@@ -188,7 +188,6 @@ public:
 	void handleCommand_BlockData(NetworkPacket* pkt);
 	void handleCommand_Inventory(NetworkPacket* pkt);
 	void handleCommand_TimeOfDay(NetworkPacket* pkt);
-	void handleCommand_ChatMessageOld(NetworkPacket *pkt);
 	void handleCommand_ChatMessage(NetworkPacket *pkt);
 	void handleCommand_ActiveObjectRemoveAdd(NetworkPacket* pkt);
 	void handleCommand_ActiveObjectMessages(NetworkPacket* pkt);
@@ -365,7 +364,7 @@ public:
 
 	// IGameDef interface
 	virtual IItemDefManager* getItemDefManager();
-	virtual INodeDefManager* getNodeDefManager();
+	virtual const NodeDefManager* getNodeDefManager();
 	virtual ICraftDefManager* getCraftDefManager();
 	ITextureSource* getTextureSource();
 	virtual IShaderSource* getShaderSource();
@@ -477,7 +476,7 @@ private:
 	IWritableTextureSource *m_tsrc;
 	IWritableShaderSource *m_shsrc;
 	IWritableItemDefManager *m_itemdef;
-	IWritableNodeDefManager *m_nodedef;
+	NodeDefManager *m_nodedef;
 	ISoundManager *m_sound;
 	MtEventManager *m_event;
 

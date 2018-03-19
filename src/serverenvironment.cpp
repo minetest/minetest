@@ -80,7 +80,7 @@ void LBMContentMapping::addLBM(LoadingBlockModifierDef *lbm_def, IGameDef *gamed
 {
 	// Add the lbm_def to the LBMContentMapping.
 	// Unknown names get added to the global NameIdMapping.
-	INodeDefManager *nodedef = gamedef->ndef();
+	const NodeDefManager *nodedef = gamedef->ndef();
 
 	lbm_list.push_back(lbm_def);
 
@@ -567,8 +567,7 @@ PlayerSAO *ServerEnvironment::loadPlayer(RemotePlayer *player, bool *new_player,
 		// If the player exists, ensure that they respawn inside legal bounds
 		// This fixes an assert crash when the player can't be added
 		// to the environment
-		ServerMap &map = getServerMap();
-		if (map.getMapgenParams()->saoPosOverLimit(playersao->getBasePosition())) {
+		if (objectpos_over_limit(playersao->getBasePosition())) {
 			actionstream << "Respawn position for player \""
 				<< player->getName() << "\" outside limits, resetting" << std::endl;
 			playersao->setBasePosition(m_server->findSpawnPos());
@@ -615,6 +614,16 @@ void ServerEnvironment::saveMeta()
 
 void ServerEnvironment::loadMeta()
 {
+	// If file doesn't exist, load default environment metadata
+	if (!fs::PathExists(m_path_world + DIR_DELIM "env_meta.txt")) {
+		infostream << "ServerEnvironment: Loading default environment metadata"
+			<< std::endl;
+		loadDefaultMeta();
+		return;
+	}
+
+	infostream << "ServerEnvironment: Loading environment metadata" << std::endl;
+
 	std::string path = m_path_world + DIR_DELIM "env_meta.txt";
 
 	// Open file and deserialize
@@ -665,6 +674,9 @@ void ServerEnvironment::loadMeta()
 		args.getU64("day_count") : 0;
 }
 
+/**
+ * called if env_meta.txt doesn't exist (e.g. new world)
+ */
 void ServerEnvironment::loadDefaultMeta()
 {
 	m_lbm_mgr.loadIntroductionTimes("", m_server, m_game_time);
@@ -691,7 +703,7 @@ public:
 	{
 		if(dtime_s < 0.001)
 			return;
-		INodeDefManager *ndef = env->getGameDef()->ndef();
+		const NodeDefManager *ndef = env->getGameDef()->ndef();
 		for (ABMWithState &abmws : abms) {
 			ActiveBlockModifier *abm = abmws.abm;
 			float trigger_interval = abm->getTriggerInterval();
@@ -914,7 +926,7 @@ void ServerEnvironment::addLoadingBlockModifierDef(LoadingBlockModifierDef *lbm)
 
 bool ServerEnvironment::setNode(v3s16 p, const MapNode &n)
 {
-	INodeDefManager *ndef = m_server->ndef();
+	const NodeDefManager *ndef = m_server->ndef();
 	MapNode n_old = m_map->getNodeNoEx(p);
 
 	const ContentFeatures &cf_old = ndef->get(n_old);
@@ -947,7 +959,7 @@ bool ServerEnvironment::setNode(v3s16 p, const MapNode &n)
 
 bool ServerEnvironment::removeNode(v3s16 p)
 {
-	INodeDefManager *ndef = m_server->ndef();
+	const NodeDefManager *ndef = m_server->ndef();
 	MapNode n_old = m_map->getNodeNoEx(p);
 
 	// Call destructor
@@ -1417,26 +1429,34 @@ ServerActiveObject* ServerEnvironment::getActiveObject(u16 id)
 	return (n != m_active_objects.end() ? n->second : NULL);
 }
 
-bool isFreeServerActiveObjectId(u16 id, ServerActiveObjectMap &objects)
+/**
+ * Verify if id is a free active object id
+ * @param id
+ * @return true if slot is free
+ */
+bool ServerEnvironment::isFreeServerActiveObjectId(u16 id) const
 {
 	if (id == 0)
 		return false;
 
-	return objects.find(id) == objects.end();
+	return m_active_objects.find(id) == m_active_objects.end();
 }
 
-u16 getFreeServerActiveObjectId(ServerActiveObjectMap &objects)
+/**
+ * Retrieve the first free ActiveObject ID
+ * @return free activeobject ID or 0 if none was found
+ */
+u16 ServerEnvironment::getFreeServerActiveObjectId()
 {
-	//try to reuse id's as late as possible
+	// try to reuse id's as late as possible
 	static u16 last_used_id = 0;
 	u16 startid = last_used_id;
-	for(;;)
-	{
-		last_used_id ++;
-		if(isFreeServerActiveObjectId(last_used_id, objects))
+	for (;;) {
+		last_used_id++;
+		if (isFreeServerActiveObjectId(last_used_id))
 			return last_used_id;
 
-		if(last_used_id == startid)
+		if (last_used_id == startid)
 			return 0;
 	}
 }
@@ -1624,7 +1644,7 @@ u16 ServerEnvironment::addActiveObjectRaw(ServerActiveObject *object,
 {
 	assert(object); // Pre-condition
 	if(object->getId() == 0){
-		u16 new_id = getFreeServerActiveObjectId(m_active_objects);
+		u16 new_id = getFreeServerActiveObjectId();
 		if(new_id == 0)
 		{
 			errorstream<<"ServerEnvironment::addActiveObjectRaw(): "
@@ -1640,7 +1660,7 @@ u16 ServerEnvironment::addActiveObjectRaw(ServerActiveObject *object,
 			<<"supplied with id "<<object->getId()<<std::endl;
 	}
 
-	if(!isFreeServerActiveObjectId(object->getId(), m_active_objects)) {
+	if(!isFreeServerActiveObjectId(object->getId())) {
 		errorstream<<"ServerEnvironment::addActiveObjectRaw(): "
 			<<"id is not free ("<<object->getId()<<")"<<std::endl;
 		if(object->environmentDeletes())
@@ -1678,9 +1698,7 @@ u16 ServerEnvironment::addActiveObjectRaw(ServerActiveObject *object,
 	{
 		// Add static object to active static list of the block
 		v3f objectpos = object->getBasePosition();
-		std::string staticdata;
-		object->getStaticData(&staticdata);
-		StaticObject s_obj(object->getType(), objectpos, staticdata);
+		StaticObject s_obj(object, objectpos);
 		// Add to the block where the object is located in
 		v3s16 blockpos = getNodeBlockPos(floatToInt(objectpos, BS));
 		MapBlock *block = m_map->emergeBlock(blockpos);
@@ -1930,9 +1948,7 @@ void ServerEnvironment::deactivateFarObjects(bool _force_delete)
 			// Delete from block where object was located
 			deleteStaticFromBlock(obj, id, MOD_REASON_STATIC_DATA_REMOVED, false);
 
-			std::string staticdata_new;
-			obj->getStaticData(&staticdata_new);
-			StaticObject s_obj(obj->getType(), objectpos, staticdata_new);
+			StaticObject s_obj(obj, objectpos);
 			// Save to block where object is located
 			saveStaticToBlock(blockpos_o, id, obj, s_obj, MOD_REASON_STATIC_DATA_ADDED);
 
@@ -1953,12 +1969,9 @@ void ServerEnvironment::deactivateFarObjects(bool _force_delete)
 		/*
 			Update the static data
 		*/
-		if(obj->isStaticAllowed())
-		{
+		if (obj->isStaticAllowed()) {
 			// Create new static object
-			std::string staticdata_new;
-			obj->getStaticData(&staticdata_new);
-			StaticObject s_obj(obj->getType(), objectpos, staticdata_new);
+			StaticObject s_obj(obj, objectpos);
 
 			bool stays_in_same_block = false;
 			bool data_changed = true;
@@ -1978,7 +1991,7 @@ void ServerEnvironment::deactivateFarObjects(bool _force_delete)
 
 						float save_movem = obj->getMinimumSavedMovement();
 
-						if (static_old.data == staticdata_new &&
+						if (static_old.data == s_obj.data &&
 							(static_old.pos - objectpos).getLength() < save_movem)
 							data_changed = false;
 					} else {

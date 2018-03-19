@@ -36,7 +36,7 @@ static NoiseParams nparams_caveliquids(0, 1, v3f(150.0, 150.0, 150.0), 776, 3, 0
 ////
 
 CavesNoiseIntersection::CavesNoiseIntersection(
-	INodeDefManager *nodedef, BiomeManager *biomemgr, v3s16 chunksize,
+	const NodeDefManager *nodedef, BiomeManager *biomemgr, v3s16 chunksize,
 	NoiseParams *np_cave1, NoiseParams *np_cave2, s32 seed, float cave_width)
 {
 	assert(nodedef);
@@ -100,7 +100,7 @@ void CavesNoiseIntersection::generateCaves(MMVManip *vm,
 		// This 'roof' is removed when the mapchunk above is generated.
 		for (s16 y = nmax.Y; y >= nmin.Y - 1; y--,
 				index3d -= m_ystride,
-				vm->m_area.add_y(em, vi, -1)) {
+				VoxelArea::add_y(em, vi, -1)) {
 			content_t c = vm->m_data[vi].getContent();
 
 			if (c == CONTENT_AIR || c == biome->c_water_top ||
@@ -174,7 +174,7 @@ void CavesNoiseIntersection::generateCaves(MMVManip *vm,
 ////
 
 CavernsNoise::CavernsNoise(
-	INodeDefManager *nodedef, v3s16 chunksize, NoiseParams *np_cavern,
+	const NodeDefManager *nodedef, v3s16 chunksize, NoiseParams *np_cavern,
 	s32 seed, float cavern_limit, float cavern_taper, float cavern_threshold)
 {
 	assert(nodedef);
@@ -245,7 +245,7 @@ bool CavernsNoise::generateCaverns(MMVManip *vm, v3s16 nmin, v3s16 nmax)
 		// This 'roof' is excavated when the mapchunk above is generated.
 		for (s16 y = nmax.Y; y >= nmin.Y - 1; y--,
 				index3d -= m_ystride,
-				vm->m_area.add_y(em, vi, -1),
+				VoxelArea::add_y(em, vi, -1),
 				cavern_amp_index++) {
 			content_t c = vm->m_data[vi].getContent();
 			float n_absamp_cavern = fabs(noise_cavern->result[index3d]) *
@@ -272,7 +272,7 @@ bool CavernsNoise::generateCaverns(MMVManip *vm, v3s16 nmin, v3s16 nmax)
 ////
 
 CavesRandomWalk::CavesRandomWalk(
-	INodeDefManager *ndef,
+	const NodeDefManager *ndef,
 	GenerateNotifier *gennotify,
 	s32 seed,
 	int water_level,
@@ -585,7 +585,7 @@ inline bool CavesRandomWalk::isPosAboveSurface(v3s16 p)
 //// CavesV6
 ////
 
-CavesV6::CavesV6(INodeDefManager *ndef, GenerateNotifier *gennotify,
+CavesV6::CavesV6(const NodeDefManager *ndef, GenerateNotifier *gennotify,
 	int water_level, content_t water_source, content_t lava_source)
 {
 	assert(ndef);

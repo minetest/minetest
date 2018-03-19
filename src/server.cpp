@@ -58,6 +58,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/serialize.h"
 #include "util/thread.h"
 #include "defaultsettings.h"
+#include "server/mods.h"
 #include "util/base64.h"
 #include "util/sha1.h"
 #include "util/hex.h"
@@ -210,12 +211,12 @@ Server::Server(
 	std::string ban_path = m_path_world + DIR_DELIM "ipban.txt";
 	m_banmanager = new BanManager(ban_path);
 
-	ServerModConfiguration modconf(m_path_world);
-	m_mods = modconf.getMods();
-	std::vector<ModSpec> unsatisfied_mods = modconf.getUnsatisfiedMods();
+	m_modmgr = std::unique_ptr<ServerModManager>(new ServerModManager(
+		m_path_world));
+	std::vector<ModSpec> unsatisfied_mods = m_modmgr->getUnsatisfiedMods();
 	// complain about mods with unsatisfied dependencies
-	if (!modconf.isConsistent()) {
-		modconf.printUnsatisfiedModsError();
+	if (!m_modmgr->isConsistent()) {
+		m_modmgr->printUnsatisfiedModsError();
 	}
 
 	//lock environment
@@ -231,27 +232,7 @@ Server::Server(
 
 	m_script->loadMod(getBuiltinLuaPath() + DIR_DELIM "init.lua", BUILTIN_MOD_NAME);
 
-	// Print mods
-	infostream << "Server: Loading mods: ";
-	for (std::vector<ModSpec>::const_iterator i = m_mods.begin();
-			i != m_mods.end(); ++i) {
-		infostream << (*i).name << " ";
-	}
-	infostream << std::endl;
-	// Load and run "mod" scripts
-	for (std::vector<ModSpec>::const_iterator it = m_mods.begin();
-			it != m_mods.end(); ++it) {
-		const ModSpec &mod = *it;
-		if (!string_allowed(mod.name, MODNAME_ALLOWED_CHARS)) {
-			throw ModError("Error loading mod \"" + mod.name +
-				"\": Mod name does not follow naming conventions: "
-				"Only characters [a-z0-9_] are allowed.");
-		}
-		std::string script_path = mod.path + DIR_DELIM + "init.lua";
-		infostream << "  [" << padStringRight(mod.name, 12) << "] [\""
-				<< script_path << "\"]" << std::endl;
-		m_script->loadMod(script_path, mod.name);
-	}
+	m_modmgr->loadMods(m_script);
 
 	// Read Textures and calculate sha1 sums
 	fillMediaCache();
@@ -288,8 +269,7 @@ Server::Server(
 	// Initialize mapgens
 	m_emerge->initMapgens(servermap->getMapgenParams());
 
-	m_enable_rollback_recording = g_settings->getBool("enable_rollback_recording");
-	if (m_enable_rollback_recording) {
+	if (g_settings->getBool("enable_rollback_recording")) {
 		// Create rollback manager
 		m_rollback = new RollbackManager(m_path_world, this);
 	}
@@ -300,13 +280,7 @@ Server::Server(
 	// Register us to receive map edit events
 	servermap->addEventReceiver(this);
 
-	// If file exists, load environment metadata
-	if (fs::PathExists(m_path_world + DIR_DELIM "env_meta.txt")) {
-		infostream << "Server: Loading environment metadata" << std::endl;
-		m_env->loadMeta();
-	} else {
-		m_env->loadDefaultMeta();
-	}
+	m_env->loadMeta();
 
 	m_liquid_transform_every = g_settings->getFloat("liquid_update");
 	m_max_chatmessage_length = g_settings->getU16("chat_message_max_size");
@@ -324,7 +298,7 @@ Server::~Server()
 
 	{
 		MutexAutoLock envlock(m_env_mutex);
-		
+
 		infostream << "Server: Saving players" << std::endl;
 		m_env->saveLoadedPlayers();
 
@@ -567,8 +541,7 @@ void Server::AsyncRunStep(bool initial_step)
 		/*
 			Set the modified blocks unsent for all the clients
 		*/
-		if(!modified_blocks.empty())
-		{
+		if (!modified_blocks.empty()) {
 			SetBlocksNotSent(modified_blocks);
 		}
 	}
@@ -590,7 +563,7 @@ void Server::AsyncRunStep(bool initial_step)
 					m_lag,
 					m_gamespec.id,
 					Mapgen::getMapgenName(m_emerge->mgparams->mgtype),
-					m_mods,
+					m_modmgr->getMods(),
 					m_dedicated);
 			counter = 0.01;
 		}
@@ -866,13 +839,13 @@ void Server::AsyncRunStep(bool initial_step)
 			case MEET_BLOCK_NODE_METADATA_CHANGED:
 				infostream << "Server: MEET_BLOCK_NODE_METADATA_CHANGED" << std::endl;
 						prof.add("MEET_BLOCK_NODE_METADATA_CHANGED", 1);
-						setBlockNotSent(event->p);
+						m_clients.markBlockposAsNotSent(event->p);
 				break;
 			case MEET_OTHER:
 				infostream << "Server: MEET_OTHER" << std::endl;
 				prof.add("MEET_OTHER", 1);
 				for (const v3s16 &modified_block : event->modified_blocks) {
-					setBlockNotSent(modified_block);
+					m_clients.markBlockposAsNotSent(modified_block);
 				}
 				break;
 			default:
@@ -1271,7 +1244,7 @@ void Server::setInventoryModified(const InventoryLocation &loc, bool playerSend)
 		if (block)
 			block->raiseModified(MOD_STATE_WRITE_NEEDED);
 
-		setBlockNotSent(blockpos);
+		m_clients.markBlockposAsNotSent(blockpos);
 	}
 		break;
 	case InventoryLocation::DETACHED:
@@ -1510,7 +1483,7 @@ void Server::SendItemDef(session_t peer_id,
 }
 
 void Server::SendNodeDef(session_t peer_id,
-		INodeDefManager *nodedef, u16 protocol_version)
+	const NodeDefManager *nodedef, u16 protocol_version)
 {
 	NetworkPacket pkt(TOCLIENT_NODEDEF, 0, peer_id);
 
@@ -1580,8 +1553,10 @@ void Server::SendShowFormspecMessage(session_t peer_id, const std::string &forms
 	NetworkPacket pkt(TOCLIENT_SHOW_FORMSPEC, 0 , peer_id);
 	if (formspec.empty()){
 		//the client should close the formspec
+		m_formspec_state_data.erase(peer_id);
 		pkt.putLongString("");
 	} else {
+		m_formspec_state_data[peer_id] = formname;
 		pkt.putLongString(FORMSPEC_VERSION_STRING + formspec);
 	}
 	pkt << formname;
@@ -1782,17 +1757,11 @@ void Server::SendSetSky(session_t peer_id, const video::SColor &bgcolor,
 	Send(&pkt);
 }
 
-void Server::SendCloudParams(session_t peer_id, float density,
-		const video::SColor &color_bright,
-		const video::SColor &color_ambient,
-		float height,
-		float thickness,
-		const v2f &speed)
+void Server::SendCloudParams(session_t peer_id, const CloudParams &params)
 {
 	NetworkPacket pkt(TOCLIENT_CLOUD_PARAMS, 0, peer_id);
-	pkt << density << color_bright << color_ambient
-			<< height << thickness << speed;
-
+	pkt << params.density << params.color_bright << params.color_ambient
+			<< params.height << params.thickness << params.speed;
 	Send(&pkt);
 }
 
@@ -2160,22 +2129,9 @@ void Server::sendAddNode(v3s16 p, MapNode n, u16 ignore_id,
 	}
 }
 
-void Server::setBlockNotSent(v3s16 p)
-{
-	std::vector<session_t> clients = m_clients.getClientIDs();
-	m_clients.lock();
-	for (const session_t i : clients) {
-		RemoteClient *client = m_clients.lockedGetClientNoEx(i);
-		client->SetBlockNotSent(p);
-	}
-	m_clients.unlock();
-}
-
 void Server::SendBlockNoLock(session_t peer_id, MapBlock *block, u8 ver,
 		u16 net_proto_version)
 {
-	v3s16 p = block->getPos();
-
 	/*
 		Create a packet with the block in the right format
 	*/
@@ -2187,7 +2143,7 @@ void Server::SendBlockNoLock(session_t peer_id, MapBlock *block, u8 ver,
 
 	NetworkPacket pkt(TOCLIENT_BLOCKDATA, 2 + 2 + 2 + 2 + s.size(), peer_id);
 
-	pkt << p;
+	pkt << block->getPos();
 	pkt.putRawString(s.c_str(), s.size());
 	Send(&pkt);
 }
@@ -2264,13 +2220,7 @@ void Server::fillMediaCache()
 
 	// Collect all media file paths
 	std::vector<std::string> paths;
-	for (const ModSpec &mod : m_mods) {
-		paths.push_back(mod.path + DIR_DELIM + "textures");
-		paths.push_back(mod.path + DIR_DELIM + "sounds");
-		paths.push_back(mod.path + DIR_DELIM + "media");
-		paths.push_back(mod.path + DIR_DELIM + "models");
-		paths.push_back(mod.path + DIR_DELIM + "locale");
-	}
+	m_modmgr->getModsMediaPaths(paths);
 	fs::GetRecursiveDirs(paths, m_gamespec.path + DIR_DELIM + "textures");
 	fs::GetRecursiveDirs(paths, porting::path_user + DIR_DELIM + "textures" + DIR_DELIM + "server");
 
@@ -2668,6 +2618,9 @@ void Server::DeleteClient(session_t peer_id, ClientDeletionReason reason)
 			else
 				++i;
 		}
+
+		// clear formspec info so the next client can't abuse the current state
+		m_formspec_state_data.erase(peer_id);
 
 		RemotePlayer *player = m_env->getPlayer(peer_id);
 
@@ -3094,11 +3047,6 @@ bool Server::hudSetHotbarItemcount(RemotePlayer *player, s32 hotbar_itemcount)
 	return true;
 }
 
-s32 Server::hudGetHotbarItemcount(RemotePlayer *player) const
-{
-	return player->getHotbarItemcount();
-}
-
 void Server::hudSetHotbarImage(RemotePlayer *player, std::string name)
 {
 	if (!player)
@@ -3106,13 +3054,6 @@ void Server::hudSetHotbarImage(RemotePlayer *player, std::string name)
 
 	player->setHotbarImage(name);
 	SendHUDSetParam(player->getPeerId(), HUD_PARAM_HOTBAR_IMAGE, name);
-}
-
-std::string Server::hudGetHotbarImage(RemotePlayer *player)
-{
-	if (!player)
-		return "";
-	return player->getHotbarImage();
 }
 
 void Server::hudSetHotbarSelectedImage(RemotePlayer *player, std::string name)
@@ -3124,64 +3065,41 @@ void Server::hudSetHotbarSelectedImage(RemotePlayer *player, std::string name)
 	SendHUDSetParam(player->getPeerId(), HUD_PARAM_HOTBAR_SELECTED_IMAGE, name);
 }
 
-const std::string& Server::hudGetHotbarSelectedImage(RemotePlayer *player) const
-{
-	return player->getHotbarSelectedImage();
-}
-
 Address Server::getPeerAddress(session_t peer_id)
 {
 	return m_con->GetPeerAddress(peer_id);
 }
 
-bool Server::setLocalPlayerAnimations(RemotePlayer *player,
+void Server::setLocalPlayerAnimations(RemotePlayer *player,
 		v2s32 animation_frames[4], f32 frame_speed)
 {
-	if (!player)
-		return false;
-
+	sanity_check(player);
 	player->setLocalAnimations(animation_frames, frame_speed);
 	SendLocalPlayerAnimations(player->getPeerId(), animation_frames, frame_speed);
-	return true;
 }
 
-bool Server::setPlayerEyeOffset(RemotePlayer *player, v3f first, v3f third)
+void Server::setPlayerEyeOffset(RemotePlayer *player, const v3f &first, const v3f &third)
 {
-	if (!player)
-		return false;
-
+	sanity_check(player);
 	player->eye_offset_first = first;
 	player->eye_offset_third = third;
 	SendEyeOffset(player->getPeerId(), first, third);
-	return true;
 }
 
-bool Server::setSky(RemotePlayer *player, const video::SColor &bgcolor,
+void Server::setSky(RemotePlayer *player, const video::SColor &bgcolor,
 	const std::string &type, const std::vector<std::string> &params,
 	bool &clouds)
 {
-	if (!player)
-		return false;
-
+	sanity_check(player);
 	player->setSky(bgcolor, type, params, clouds);
 	SendSetSky(player->getPeerId(), bgcolor, type, params, clouds);
-	return true;
 }
 
-bool Server::setClouds(RemotePlayer *player, float density,
-	const video::SColor &color_bright,
-	const video::SColor &color_ambient,
-	float height,
-	float thickness,
-	const v2f &speed)
+void Server::setClouds(RemotePlayer *player, const CloudParams &params)
 {
-	if (!player)
-		return false;
-
-	SendCloudParams(player->getPeerId(), density,
-			color_bright, color_ambient, height,
-			thickness, speed);
-	return true;
+	sanity_check(player);
+	player->setCloudParams(params);
+	SendCloudParams(player->getPeerId(), params);
 }
 
 bool Server::overrideDayNightRatio(RemotePlayer *player, bool do_override,
@@ -3350,7 +3268,7 @@ IItemDefManager *Server::getItemDefManager()
 	return m_itemdef;
 }
 
-INodeDefManager *Server::getNodeDefManager()
+const NodeDefManager *Server::getNodeDefManager()
 {
 	return m_nodedef;
 }
@@ -3375,7 +3293,7 @@ IWritableItemDefManager *Server::getWritableItemDefManager()
 	return m_itemdef;
 }
 
-IWritableNodeDefManager *Server::getWritableNodeDefManager()
+NodeDefManager *Server::getWritableNodeDefManager()
 {
 	return m_nodedef;
 }
@@ -3385,22 +3303,19 @@ IWritableCraftDefManager *Server::getWritableCraftDefManager()
 	return m_craftdef;
 }
 
+const std::vector<ModSpec> & Server::getMods() const
+{
+	return m_modmgr->getMods();
+}
+
 const ModSpec *Server::getModSpec(const std::string &modname) const
 {
-	std::vector<ModSpec>::const_iterator it;
-	for (it = m_mods.begin(); it != m_mods.end(); ++it) {
-		const ModSpec &mod = *it;
-		if (mod.name == modname)
-			return &mod;
-	}
-	return NULL;
+	return m_modmgr->getModSpec(modname);
 }
 
 void Server::getModNames(std::vector<std::string> &modlist)
 {
-	std::vector<ModSpec>::iterator it;
-	for (it = m_mods.begin(); it != m_mods.end(); ++it)
-		modlist.push_back(it->name);
+	m_modmgr->getModNames(modlist);
 }
 
 std::string Server::getBuiltinLuaPath()

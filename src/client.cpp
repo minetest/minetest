@@ -71,7 +71,7 @@ Client::Client(
 		IWritableTextureSource *tsrc,
 		IWritableShaderSource *shsrc,
 		IWritableItemDefManager *itemdef,
-		IWritableNodeDefManager *nodedef,
+		NodeDefManager *nodedef,
 		ISoundManager *sound,
 		MtEventManager *event,
 		bool ipv6,
@@ -1798,7 +1798,7 @@ IItemDefManager* Client::getItemDefManager()
 {
 	return m_itemdef;
 }
-INodeDefManager* Client::getNodeDefManager()
+const NodeDefManager* Client::getNodeDefManager()
 {
 	return m_nodedef;
 }

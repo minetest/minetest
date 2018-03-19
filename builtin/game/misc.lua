@@ -175,7 +175,7 @@ end
 
 -- Checks if specified volume intersects a protected volume
 
-function core.intersects_protection(minp, maxp, player_name, interval)
+function core.is_area_protected(minp, maxp, player_name, interval)
 	-- 'interval' is the largest allowed interval for the 3D lattice of checks.
 
 	-- Compute the optimal float step 'd' for each axis so that all corners and
@@ -188,14 +188,18 @@ function core.intersects_protection(minp, maxp, player_name, interval)
 	local d = {}
 
 	for _, c in pairs({"x", "y", "z"}) do
+		if minp[c] > maxp[c] then
+			-- Repair positions: 'minp' > 'maxp'
+			local tmp = maxp[c]
+			maxp[c] = minp[c]
+			minp[c] = tmp
+		end
+
 		if maxp[c] > minp[c] then
 			d[c] = (maxp[c] - minp[c]) /
 				math.ceil((maxp[c] - minp[c]) / interval) - 1e-4
-		elseif maxp[c] == minp[c] then
+		else
 			d[c] = 1 -- Any value larger than 0 to avoid division by zero
-		else -- maxp[c] < minp[c], print error and treat as protection intersected
-			minetest.log("error", "maxp < minp in 'minetest.intersects_protection()'")
-			return true
 		end
 	end
 
@@ -205,13 +209,13 @@ function core.intersects_protection(minp, maxp, player_name, interval)
 			local y = math.floor(yf + 0.5)
 			for xf = minp.x, maxp.x, d.x do
 				local x = math.floor(xf + 0.5)
-				if core.is_protected({x = x, y = y, z = z}, player_name) then
-					return true
+				local pos = {x = x, y = y, z = z}
+				if core.is_protected(pos, player_name) then
+					return pos
 				end
 			end
 		end
 	end
-
 	return false
 end
 

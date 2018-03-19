@@ -45,7 +45,7 @@ public:
 	~TestGameDef();
 
 	IItemDefManager *getItemDefManager() { return m_itemdef; }
-	INodeDefManager *getNodeDefManager() { return m_nodedef; }
+	const NodeDefManager *getNodeDefManager() { return m_nodedef; }
 	ICraftDefManager *getCraftDefManager() { return m_craftdef; }
 	ITextureSource *getTextureSource() { return m_texturesrc; }
 	IShaderSource *getShaderSource() { return m_shadersrc; }
@@ -80,7 +80,7 @@ public:
 
 private:
 	IItemDefManager *m_itemdef = nullptr;
-	INodeDefManager *m_nodedef = nullptr;
+	const NodeDefManager *m_nodedef = nullptr;
 	ICraftDefManager *m_craftdef = nullptr;
 	ITextureSource *m_texturesrc = nullptr;
 	IShaderSource *m_shadersrc = nullptr;
@@ -113,7 +113,7 @@ TestGameDef::~TestGameDef()
 void TestGameDef::defineSomeNodes()
 {
 	IWritableItemDefManager *idef = (IWritableItemDefManager *)m_itemdef;
-	IWritableNodeDefManager *ndef = (IWritableNodeDefManager *)m_nodedef;
+	NodeDefManager *ndef = (NodeDefManager *)m_nodedef;
 
 	ItemDefinition itemdef;
 	ContentFeatures f;

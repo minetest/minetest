@@ -931,97 +931,19 @@ void ContentFeatures::updateTextures(ITextureSource *tsrc, IShaderSource *shdsrc
 #endif
 
 /*
-	CNodeDefManager
+	NodeDefManager
 */
 
-class CNodeDefManager: public IWritableNodeDefManager {
-public:
-	CNodeDefManager();
-	virtual ~CNodeDefManager();
-	void clear();
-
-	inline virtual const ContentFeatures& get(content_t c) const;
-	inline virtual const ContentFeatures& get(const MapNode &n) const;
-	virtual bool getId(const std::string &name, content_t &result) const;
-	virtual content_t getId(const std::string &name) const;
-	virtual bool getIds(const std::string &name, std::vector<content_t> &result) const;
-	virtual const ContentFeatures& get(const std::string &name) const;
-	content_t allocateId();
-	virtual content_t set(const std::string &name, const ContentFeatures &def);
-	virtual content_t allocateDummy(const std::string &name);
-	virtual void removeNode(const std::string &name);
-	virtual void updateAliases(IItemDefManager *idef);
-	virtual void applyTextureOverrides(const std::string &override_filepath);
-	virtual void updateTextures(IGameDef *gamedef,
-		void (*progress_cbk)(void *progress_args, u32 progress, u32 max_progress),
-		void *progress_cbk_args);
-	void serialize(std::ostream &os, u16 protocol_version) const;
-	void deSerialize(std::istream &is);
-
-	inline virtual void setNodeRegistrationStatus(bool completed);
-
-	virtual void pendNodeResolve(NodeResolver *nr);
-	virtual bool cancelNodeResolveCallback(NodeResolver *nr);
-	virtual void runNodeResolveCallbacks();
-	virtual void resetNodeResolveState();
-	virtual void mapNodeboxConnections();
-	virtual bool nodeboxConnects(MapNode from, MapNode to, u8 connect_face);
-	virtual core::aabbox3d<s16> getSelectionBoxIntUnion() const
-	{
-		return m_selection_box_int_union;
-	}
-
-private:
-	void addNameIdMapping(content_t i, std::string name);
-	/*!
-	 * Recalculates m_selection_box_int_union based on
-	 * m_selection_box_union.
-	 */
-	void fixSelectionBoxIntUnion();
-
-	// Features indexed by id
-	std::vector<ContentFeatures> m_content_features;
-
-	// A mapping for fast converting back and forth between names and ids
-	NameIdMapping m_name_id_mapping;
-
-	// Like m_name_id_mapping, but only from names to ids, and includes
-	// item aliases too. Updated by updateAliases()
-	// Note: Not serialized.
-
-	std::unordered_map<std::string, content_t> m_name_id_mapping_with_aliases;
-
-	// A mapping from groups to a vector of content_ts that belong to it.
-	// Necessary for a direct lookup in getIds().
-	// Note: Not serialized.
-	std::unordered_map<std::string, std::vector<content_t>> m_group_to_items;
-
-	// Next possibly free id
-	content_t m_next_id;
-
-	// NodeResolvers to callback once node registration has ended
-	std::vector<NodeResolver *> m_pending_resolve_callbacks;
-
-	// True when all nodes have been registered
-	bool m_node_registration_complete;
-
-	//! The union of all nodes' selection boxes.
-	aabb3f m_selection_box_union;
-	/*!
-	 * The smallest box in node coordinates that
-	 * contains all nodes' selection boxes.
-	 */
-	core::aabbox3d<s16> m_selection_box_int_union;
-};
 
 
-CNodeDefManager::CNodeDefManager()
+
+NodeDefManager::NodeDefManager()
 {
 	clear();
 }
 
 
-CNodeDefManager::~CNodeDefManager()
+NodeDefManager::~NodeDefManager()
 {
 #ifndef SERVER
 	for (ContentFeatures &f : m_content_features) {
@@ -1034,7 +956,7 @@ CNodeDefManager::~CNodeDefManager()
 }
 
 
-void CNodeDefManager::clear()
+void NodeDefManager::clear()
 {
 	m_content_features.clear();
 	m_name_id_mapping.clear();
@@ -1103,20 +1025,7 @@ void CNodeDefManager::clear()
 }
 
 
-inline const ContentFeatures& CNodeDefManager::get(content_t c) const
-{
-	return c < m_content_features.size()
-			? m_content_features[c] : m_content_features[CONTENT_UNKNOWN];
-}
-
-
-inline const ContentFeatures& CNodeDefManager::get(const MapNode &n) const
-{
-	return get(n.getContent());
-}
-
-
-bool CNodeDefManager::getId(const std::string &name, content_t &result) const
+bool NodeDefManager::getId(const std::string &name, content_t &result) const
 {
 	std::unordered_map<std::string, content_t>::const_iterator
 		i = m_name_id_mapping_with_aliases.find(name);
@@ -1127,7 +1036,7 @@ bool CNodeDefManager::getId(const std::string &name, content_t &result) const
 }
 
 
-content_t CNodeDefManager::getId(const std::string &name) const
+content_t NodeDefManager::getId(const std::string &name) const
 {
 	content_t id = CONTENT_IGNORE;
 	getId(name, id);
@@ -1135,7 +1044,7 @@ content_t CNodeDefManager::getId(const std::string &name) const
 }
 
 
-bool CNodeDefManager::getIds(const std::string &name,
+bool NodeDefManager::getIds(const std::string &name,
 		std::vector<content_t> &result) const
 {
 	//TimeTaker t("getIds", NULL, PRECISION_MICRO);
@@ -1160,7 +1069,7 @@ bool CNodeDefManager::getIds(const std::string &name,
 }
 
 
-const ContentFeatures& CNodeDefManager::get(const std::string &name) const
+const ContentFeatures& NodeDefManager::get(const std::string &name) const
 {
 	content_t id = CONTENT_UNKNOWN;
 	getId(name, id);
@@ -1169,7 +1078,7 @@ const ContentFeatures& CNodeDefManager::get(const std::string &name) const
 
 
 // returns CONTENT_IGNORE if no free ID found
-content_t CNodeDefManager::allocateId()
+content_t NodeDefManager::allocateId()
 {
 	for (content_t id = m_next_id;
 			id >= m_next_id; // overflow?
@@ -1297,7 +1206,7 @@ void getNodeBoxUnion(const NodeBox &nodebox, const ContentFeatures &features,
 }
 
 
-inline void CNodeDefManager::fixSelectionBoxIntUnion()
+inline void NodeDefManager::fixSelectionBoxIntUnion()
 {
 	m_selection_box_int_union.MinEdge.X = floorf(
 		m_selection_box_union.MinEdge.X / BS + 0.5f);
@@ -1315,7 +1224,7 @@ inline void CNodeDefManager::fixSelectionBoxIntUnion()
 
 
 // IWritableNodeDefManager
-content_t CNodeDefManager::set(const std::string &name, const ContentFeatures &def)
+content_t NodeDefManager::set(const std::string &name, const ContentFeatures &def)
 {
 	// Pre-conditions
 	assert(name != "");
@@ -1357,7 +1266,7 @@ content_t CNodeDefManager::set(const std::string &name, const ContentFeatures &d
 }
 
 
-content_t CNodeDefManager::allocateDummy(const std::string &name)
+content_t NodeDefManager::allocateDummy(const std::string &name)
 {
 	assert(name != "");	// Pre-condition
 	ContentFeatures f;
@@ -1366,7 +1275,7 @@ content_t CNodeDefManager::allocateDummy(const std::string &name)
 }
 
 
-void CNodeDefManager::removeNode(const std::string &name)
+void NodeDefManager::removeNode(const std::string &name)
 {
 	// Pre-condition
 	assert(name != "");
@@ -1393,7 +1302,7 @@ void CNodeDefManager::removeNode(const std::string &name)
 }
 
 
-void CNodeDefManager::updateAliases(IItemDefManager *idef)
+void NodeDefManager::updateAliases(IItemDefManager *idef)
 {
 	std::set<std::string> all;
 	idef->getAll(all);
@@ -1408,9 +1317,9 @@ void CNodeDefManager::updateAliases(IItemDefManager *idef)
 	}
 }
 
-void CNodeDefManager::applyTextureOverrides(const std::string &override_filepath)
+void NodeDefManager::applyTextureOverrides(const std::string &override_filepath)
 {
-	infostream << "CNodeDefManager::applyTextureOverrides(): Applying "
+	infostream << "NodeDefManager::applyTextureOverrides(): Applying "
 		"overrides to textures from " << override_filepath << std::endl;
 
 	std::ifstream infile(override_filepath.c_str());
@@ -1462,12 +1371,12 @@ void CNodeDefManager::applyTextureOverrides(const std::string &override_filepath
 	}
 }
 
-void CNodeDefManager::updateTextures(IGameDef *gamedef,
+void NodeDefManager::updateTextures(IGameDef *gamedef,
 	void (*progress_callback)(void *progress_args, u32 progress, u32 max_progress),
 	void *progress_callback_args)
 {
 #ifndef SERVER
-	infostream << "CNodeDefManager::updateTextures(): Updating "
+	infostream << "NodeDefManager::updateTextures(): Updating "
 		"textures in node definitions" << std::endl;
 
 	Client *client = (Client *)gamedef;
@@ -1488,7 +1397,7 @@ void CNodeDefManager::updateTextures(IGameDef *gamedef,
 #endif
 }
 
-void CNodeDefManager::serialize(std::ostream &os, u16 protocol_version) const
+void NodeDefManager::serialize(std::ostream &os, u16 protocol_version) const
 {
 	writeU8(os, 1); // version
 	u16 count = 0;
@@ -1517,7 +1426,7 @@ void CNodeDefManager::serialize(std::ostream &os, u16 protocol_version) const
 }
 
 
-void CNodeDefManager::deSerialize(std::istream &is)
+void NodeDefManager::deSerialize(std::istream &is)
 {
 	clear();
 	int version = readU8(is);
@@ -1567,25 +1476,20 @@ void CNodeDefManager::deSerialize(std::istream &is)
 }
 
 
-void CNodeDefManager::addNameIdMapping(content_t i, std::string name)
+void NodeDefManager::addNameIdMapping(content_t i, std::string name)
 {
 	m_name_id_mapping.set(i, name);
 	m_name_id_mapping_with_aliases.insert(std::make_pair(name, i));
 }
 
 
-IWritableNodeDefManager *createNodeDefManager()
+NodeDefManager *createNodeDefManager()
 {
-	return new CNodeDefManager();
-}
-
-inline void CNodeDefManager::setNodeRegistrationStatus(bool completed)
-{
-	m_node_registration_complete = completed;
+	return new NodeDefManager();
 }
 
 
-void CNodeDefManager::pendNodeResolve(NodeResolver *nr)
+void NodeDefManager::pendNodeResolve(NodeResolver *nr) const
 {
 	nr->m_ndef = this;
 	if (m_node_registration_complete)
@@ -1595,7 +1499,7 @@ void CNodeDefManager::pendNodeResolve(NodeResolver *nr)
 }
 
 
-bool CNodeDefManager::cancelNodeResolveCallback(NodeResolver *nr)
+bool NodeDefManager::cancelNodeResolveCallback(NodeResolver *nr) const
 {
 	size_t len = m_pending_resolve_callbacks.size();
 	for (size_t i = 0; i != len; i++) {
@@ -1612,7 +1516,7 @@ bool CNodeDefManager::cancelNodeResolveCallback(NodeResolver *nr)
 }
 
 
-void CNodeDefManager::runNodeResolveCallbacks()
+void NodeDefManager::runNodeResolveCallbacks()
 {
 	for (size_t i = 0; i != m_pending_resolve_callbacks.size(); i++) {
 		NodeResolver *nr = m_pending_resolve_callbacks[i];
@@ -1623,13 +1527,13 @@ void CNodeDefManager::runNodeResolveCallbacks()
 }
 
 
-void CNodeDefManager::resetNodeResolveState()
+void NodeDefManager::resetNodeResolveState()
 {
 	m_node_registration_complete = false;
 	m_pending_resolve_callbacks.clear();
 }
 
-void CNodeDefManager::mapNodeboxConnections()
+void NodeDefManager::mapNodeboxConnections()
 {
 	for (ContentFeatures &f : m_content_features) {
 		if (f.drawtype != NDT_NODEBOX || f.node_box.type != NODEBOX_CONNECTED)
@@ -1641,7 +1545,8 @@ void CNodeDefManager::mapNodeboxConnections()
 	}
 }
 
-bool CNodeDefManager::nodeboxConnects(MapNode from, MapNode to, u8 connect_face)
+bool NodeDefManager::nodeboxConnects(MapNode from, MapNode to,
+	u8 connect_face) const
 {
 	const ContentFeatures &f1 = get(from);
 

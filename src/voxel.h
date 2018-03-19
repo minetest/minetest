@@ -29,7 +29,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <list>
 #include "util/basic_macros.h"
 
-class INodeDefManager;
+class NodeDefManager;
 
 // For VC++
 #undef min
@@ -277,25 +277,36 @@ public:
 		return index(p.X, p.Y, p.Z);
 	}
 
-	// Translate index in the X coordinate
-	void add_x(const v3s16 &extent, u32 &i, s16 a)
+	/**
+	 * Translate index in the X coordinate
+	 */
+	static void add_x(const v3s16 &extent, u32 &i, s16 a)
 	{
 		i += a;
 	}
-	// Translate index in the Y coordinate
-	void add_y(const v3s16 &extent, u32 &i, s16 a)
+
+	/**
+	 * Translate index in the Y coordinate
+	 */
+	static void add_y(const v3s16 &extent, u32 &i, s16 a)
 	{
 		i += a * extent.X;
 	}
-	// Translate index in the Z coordinate
-	void add_z(const v3s16 &extent, u32 &i, s16 a)
+
+	/**
+	 * Translate index in the Z coordinate
+	 */
+	static void add_z(const v3s16 &extent, u32 &i, s16 a)
 	{
-		i += a * extent.X*extent.Y;
+		i += a * extent.X * extent.Y;
 	}
-	// Translate index in space
-	void add_p(const v3s16 &extent, u32 &i, v3s16 a)
+
+	/**
+	 * Translate index in space
+	 */
+	static void add_p(const v3s16 &extent, u32 &i, v3s16 a)
 	{
-		i += a.Z*extent.X*extent.Y + a.Y*extent.X + a.X;
+		i += a.Z * extent.X * extent.Y + a.Y * extent.X + a.X;
 	}
 
 	/*
@@ -449,7 +460,7 @@ public:
 
 	virtual void clear();
 
-	void print(std::ostream &o, INodeDefManager *nodemgr,
+	void print(std::ostream &o, const NodeDefManager *nodemgr,
 			VoxelPrintMode mode=VOXELPRINT_MATERIAL);
 
 	void addArea(const VoxelArea &area);

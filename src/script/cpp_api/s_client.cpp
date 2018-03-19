@@ -144,7 +144,7 @@ bool ScriptApiClient::on_dignode(v3s16 p, MapNode node)
 {
 	SCRIPTAPI_PRECHECKHEADER
 
-	INodeDefManager *ndef = getClient()->ndef();
+	const NodeDefManager *ndef = getClient()->ndef();
 
 	// Get core.registered_on_dignode
 	lua_getglobal(L, "core");
@@ -163,7 +163,7 @@ bool ScriptApiClient::on_punchnode(v3s16 p, MapNode node)
 {
 	SCRIPTAPI_PRECHECKHEADER
 
-	INodeDefManager *ndef = getClient()->ndef();
+	const NodeDefManager *ndef = getClient()->ndef();
 
 	// Get core.registered_on_punchgnode
 	lua_getglobal(L, "core");

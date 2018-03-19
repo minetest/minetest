@@ -136,7 +136,7 @@ int LuaVoxelManip::l_get_node_at(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 
-	INodeDefManager *ndef = getServer(L)->getNodeDefManager();
+	const NodeDefManager *ndef = getServer(L)->getNodeDefManager();
 
 	LuaVoxelManip *o = checkobject(L, 1);
 	v3s16 pos        = check_v3s16(L, 2);
@@ -149,7 +149,7 @@ int LuaVoxelManip::l_set_node_at(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 
-	INodeDefManager *ndef = getServer(L)->getNodeDefManager();
+	const NodeDefManager *ndef = getServer(L)->getNodeDefManager();
 
 	LuaVoxelManip *o = checkobject(L, 1);
 	v3s16 pos        = check_v3s16(L, 2);
@@ -167,7 +167,7 @@ int LuaVoxelManip::l_update_liquids(lua_State *L)
 	LuaVoxelManip *o = checkobject(L, 1);
 
 	Map *map = &(env->getMap());
-	INodeDefManager *ndef = getServer(L)->getNodeDefManager();
+	const NodeDefManager *ndef = getServer(L)->getNodeDefManager();
 	MMVManip *vm = o->vm;
 
 	Mapgen mg;
@@ -188,7 +188,7 @@ int LuaVoxelManip::l_calc_lighting(lua_State *L)
 	if (!o->is_mapgen_vm)
 		return 0;
 
-	INodeDefManager *ndef = getServer(L)->getNodeDefManager();
+	const NodeDefManager *ndef = getServer(L)->getNodeDefManager();
 	EmergeManager *emerge = getServer(L)->getEmergeManager();
 	MMVManip *vm = o->vm;
 

@@ -48,6 +48,8 @@ struct MapgenV7Params : public MapgenParams {
 	s16 cavern_limit = -256;
 	s16 cavern_taper = 256;
 	float cavern_threshold = 0.7f;
+	s16 dungeon_ymin = -31000;
+	s16 dungeon_ymax = 31000;
 
 	NoiseParams np_terrain_base;
 	NoiseParams np_terrain_alt;
@@ -99,6 +101,8 @@ private:
 	float float_mount_exponent;
 	s16 floatland_level;
 	s16 shadow_limit;
+	s16 dungeon_ymin;
+	s16 dungeon_ymax;
 
 	Noise *noise_terrain_base;
 	Noise *noise_terrain_alt;

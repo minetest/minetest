@@ -26,6 +26,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <map>
 #include "debug.h"
 
+class ServerActiveObject;
+
 struct StaticObject
 {
 	u8 type = 0;
@@ -33,12 +35,7 @@ struct StaticObject
 	std::string data;
 
 	StaticObject() = default;
-	StaticObject(u8 type_, const v3f &pos_, const std::string &data_):
-		type(type_),
-		pos(pos_),
-		data(data_)
-	{
-	}
+	StaticObject(const ServerActiveObject *s_obj, const v3f &pos_);
 
 	void serialize(std::ostream &os);
 	void deSerialize(std::istream &is, u8 version);

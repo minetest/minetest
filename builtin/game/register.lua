@@ -116,6 +116,8 @@ function core.register_item(name, itemdef)
 	end
 	itemdef.name = name
 
+	local is_overriding = core.registered_items[name]
+
 	-- Apply defaults and add to registered_* table
 	if itemdef.type == "node" then
 		-- Use the nodebox as selection box if it's not set manually
@@ -177,7 +179,13 @@ function core.register_item(name, itemdef)
 	--core.log("Registering item: " .. itemdef.name)
 	core.registered_items[itemdef.name] = itemdef
 	core.registered_aliases[itemdef.name] = nil
-	register_item_raw(itemdef)
+
+	-- Used to allow builtin to register ignore to registered_items
+	if name ~= "ignore" then
+		register_item_raw(itemdef)
+	elseif is_overriding then
+		core.log("warning", "Attempted redefinition of \"ignore\"")
+	end
 end
 
 function core.unregister_item(name)
@@ -584,6 +592,7 @@ core.registered_on_priv_grant, core.register_on_priv_grant = make_registration()
 core.registered_on_priv_revoke, core.register_on_priv_revoke = make_registration()
 core.registered_can_bypass_userlimit, core.register_can_bypass_userlimit = make_registration()
 core.registered_on_modchannel_message, core.register_on_modchannel_message = make_registration()
+core.registered_on_auth_fail, core.register_on_auth_fail = make_registration()
 
 --
 -- Compatibility for on_mapgen_init()

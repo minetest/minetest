@@ -35,6 +35,8 @@ struct MapgenFractalParams : public MapgenParams
 	float cave_width = 0.09f;
 	s16 large_cave_depth = -33;
 	s16 lava_depth = -256;
+	s16 dungeon_ymin = -31000;
+	s16 dungeon_ymax = 31000;
 	u16 fractal = 1;
 	u16 iterations = 11;
 	v3f scale = v3f(4096.0, 1024.0, 4096.0);
@@ -44,6 +46,7 @@ struct MapgenFractalParams : public MapgenParams
 	float julia_y = 0.2f;
 	float julia_z = 0.133f;
 	float julia_w = 0.067f;
+
 	NoiseParams np_seabed;
 	NoiseParams np_filler_depth;
 	NoiseParams np_cave1;
@@ -74,6 +77,8 @@ private:
 	bool julia;
 
 	s16 large_cave_depth;
+	s16 dungeon_ymin;
+	s16 dungeon_ymax;
 	u16 fractal;
 	u16 iterations;
 	v3f scale;

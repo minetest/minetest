@@ -28,6 +28,10 @@ private:
 	// returns the biome id as used in biomemap and returned by 'get_biome_data()'
 	static int l_get_biome_id(lua_State *L);
 
+	// get_biome_name(biome_id)
+	// returns the biome name string
+	static int l_get_biome_name(lua_State *L);
+
 	// get_heat(pos)
 	// returns the heat at the position
 	static int l_get_heat(lua_State *L);
@@ -43,6 +47,9 @@ private:
 	// get_mapgen_object(objectname)
 	// returns the requested object used during map generation
 	static int l_get_mapgen_object(lua_State *L);
+
+	// get_spawn_level(x = num, z = num)
+	static int l_get_spawn_level(lua_State *L);
 
 	// get_mapgen_params()
 	// returns the currently active map generation parameter set
@@ -70,11 +77,15 @@ private:
 	// get_noiseparam_defaults(name)
 	static int l_get_noiseparams(lua_State *L);
 
-	// set_gen_notify(flagstring)
+	// set_gen_notify(flags, {deco_id_table})
 	static int l_set_gen_notify(lua_State *L);
 
-	// set_gen_notify(flagstring)
+	// get_gen_notify()
 	static int l_get_gen_notify(lua_State *L);
+
+	// get_decoration_id(decoration_name)
+	// returns the decoration ID as used in gennotify
+	static int l_get_decoration_id(lua_State *L);
 
 	// register_biome({lots of stuff})
 	static int l_register_biome(lua_State *L);
@@ -109,11 +120,12 @@ private:
 	// create_schematic(p1, p2, probability_list, filename)
 	static int l_create_schematic(lua_State *L);
 
-	// place_schematic(p, schematic, rotation, replacements, force_placement)
+	// place_schematic(p, schematic, rotation,
+	//     replacements, force_placement, flagstring)
 	static int l_place_schematic(lua_State *L);
 
-	// place_schematic_on_vmanip(vm, p, schematic,
-	//     rotation, replacements, force_placement)
+	// place_schematic_on_vmanip(vm, p, schematic, rotation,
+	//     replacements, force_placement, flagstring)
 	static int l_place_schematic_on_vmanip(lua_State *L);
 
 	// serialize_schematic(schematic, format, options={...})
