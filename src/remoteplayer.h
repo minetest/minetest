@@ -154,14 +154,14 @@ public:
 
 protected:
 	virtual bool checkPrivilege(const std::string &priv) const;
-	virtual void triggerJumpEvent() { /* noop in remote */ };
+	virtual void triggerJumpEvent(){/* noop in remote */};
 	virtual const NodeDefManager *getNodeDefManager() const;
 	virtual void _handleAttachedMove();
 	virtual float _getStepHeight() const;
-	//virtual IGameDef* getGameDef() const;
-	virtual void reportRegainGround() { /* noop in remote */ };
-	virtual void calculateCameraInCeiling(Map *map, const NodeDefManager *nodemgr) {
-		/* noop in remote */ };
+	// virtual IGameDef* getGameDef() const;
+	virtual void reportRegainGround(){/* noop in remote */};
+	virtual void calculateCameraInCeiling(Map *map, const NodeDefManager *nodemgr){
+			/* noop in remote */};
 
 private:
 	/*
