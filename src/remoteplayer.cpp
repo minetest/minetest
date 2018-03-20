@@ -68,6 +68,8 @@ RemotePlayer::RemotePlayer(const char *name, IItemDefManager *idef, Server *serv
 	m_cloud_params.speed = v2f(0.0f, -2.0f);
 
 	m_server = server;
+
+	m_should_check_control_log = g_settings->getBool("should_check_control_log");
 }
 
 void RemotePlayer::serializeExtraAttributes(std::string &output)

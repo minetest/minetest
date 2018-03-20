@@ -312,6 +312,8 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("enable_mod_channels", "false");
 	settings->setDefault("disallow_empty_password", "false");
 	settings->setDefault("disable_anticheat", "false");
+	settings->setDefault("should_send_control_log", "false");
+	settings->setDefault("should_check_control_log", "false");
 	settings->setDefault("enable_rollback_recording", "false");
 #ifdef NDEBUG
 	settings->setDefault("deprecated_lua_api_handling", "legacy");

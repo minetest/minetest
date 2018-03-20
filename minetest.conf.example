@@ -1180,6 +1180,14 @@
 #    type: bool
 # disable_anticheat = false
 
+#    If enabled, the client should send a log of all player controls to the server.
+#    type: bool
+# should_send_control_log = false
+
+#    If enabled, the server should check the client's control log for movement cheats.
+#    type: bool
+# should_check_control_log = false
+
 #    If enabled, actions are recorded for rollback.
 #    This option is only read when server starts.
 #    type: bool

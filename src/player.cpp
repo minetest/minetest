@@ -78,6 +78,8 @@ Player::Player(const char *name, IItemDefManager *idef):
 		HUD_FLAG_MINIMAP_RADAR_VISIBLE;
 
 	hud_hotbar_itemcount = HUD_HOTBAR_ITEMCOUNT_DEFAULT;
+
+	m_should_send_control_log = g_settings->getBool("should_send_control_log");
 }
 
 Player::~Player()

@@ -986,6 +986,12 @@ disallow_empty_password (Disallow empty passwords) bool false
 #    If enabled, disable cheat prevention in multiplayer.
 disable_anticheat (Disable anticheat) bool false
 
+#    If enabled, the client should send a log of all player controls to the server.
+should_send_control_log (Send control log) bool false
+
+#    If enabled, the server should check the client's control log for movement cheats.
+should_check_control_log (Check control log) bool false
+
 #    If enabled, actions are recorded for rollback.
 #    This option is only read when server starts.
 enable_rollback_recording (Rollback recording) bool false
