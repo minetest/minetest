@@ -274,6 +274,7 @@ LOCAL_SRC_FILES := \
 		jni/src/unittest/test_voxelmanipulator.cpp \
 		jni/src/settings.cpp                      \
 		jni/src/wieldmesh.cpp                     \
+		jni/src/client/meshgen/collector.cpp      \
 		jni/src/client/clientlauncher.cpp         \
 		jni/src/client/gameui.cpp                 \
 		jni/src/client/hud.cpp                    \
