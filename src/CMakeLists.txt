@@ -425,6 +425,7 @@ set(common_SRCS
 	server.cpp
 	serverenvironment.cpp
 	serverlist.cpp
+	serveractiveobjectmap.cpp
 	serverobject.cpp
 	settings.cpp
 	staticobject.cpp
