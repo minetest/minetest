@@ -77,7 +77,7 @@ bool ClientLauncher::run(GameParams &game_params, const Settings &cmd_args)
 
 #if USE_SOUND
 	if (g_settings->getBool("enable_sound"))
-		g_sound_manager_global = createSoundManagerGlobal();
+		g_sound_manager_singleton = createSoundManagerSingleton();
 #endif
 
 	if (!init_engine()) {

@@ -45,13 +45,14 @@ with this program; ifnot, write to the Free Software Foundation, Inc.,
 #include <vector>
 #include <fstream>
 #include <unordered_map>
+#include <unordered_set>
 
 #define BUFFER_SIZE 30000
 
-std::shared_ptr<SoundManagerGlobal> g_sound_manager_global;
+std::shared_ptr<SoundManagerSingleton> g_sound_manager_singleton;
 
-typedef ::std::unique_ptr<ALCdevice, void (*)(ALCdevice *p)> unique_ptr_alcdevice;
-typedef ::std::unique_ptr<ALCcontext, void(*)(ALCcontext *p)> unique_ptr_alccontext;
+typedef std::unique_ptr<ALCdevice, void (*)(ALCdevice *p)> unique_ptr_alcdevice;
+typedef std::unique_ptr<ALCcontext, void(*)(ALCcontext *p)> unique_ptr_alccontext;
 
 static void delete_alcdevice(ALCdevice *p)
 {
@@ -180,8 +181,8 @@ SoundBuffer *load_opened_ogg_file(OggVorbis_File *oggFile,
 	ALenum error = alGetError();
 
 	if(error != AL_NO_ERROR){
-		infostream<<"Audio: OpenAL error: "<<alErrorString(error)
-				<<"preparing sound buffer"<<std::endl;
+		infostream << "Audio: OpenAL error: "<<alErrorString(error)
+				<< "preparing sound buffer"<<std::endl;
 	}
 
 	infostream << "Audio file "
@@ -284,23 +285,26 @@ struct PlayingSound
 	bool loop;
 };
 
-class SoundManagerGlobal
+class SoundManagerSingleton
 {
 public:
 	unique_ptr_alcdevice  m_device;
 	unique_ptr_alccontext m_context;
 public:
-	SoundManagerGlobal() :
+	SoundManagerSingleton() :
 		m_device(NULL, delete_alcdevice),
 		m_context(NULL, delete_alccontext)
 	{
-		if (! (m_device = unique_ptr_alcdevice(alcOpenDevice(NULL), delete_alcdevice)))
+		if (!(m_device = unique_ptr_alcdevice(alcOpenDevice(NULL), delete_alcdevice)))
 			throw std::runtime_error("Audio: Global Initialization: Device Open");
 
-		if (! (m_context = unique_ptr_alccontext(alcCreateContext(m_device.get(), NULL), delete_alccontext)))
+		if (!(m_context = unique_ptr_alccontext(
+				alcCreateContext(m_device.get(), NULL), delete_alccontext)))
+		{
 			throw std::runtime_error("Audio: Global Initialization: Context Create");
+		}
 
-		if (! alcMakeContextCurrent(m_context.get()))
+		if (!alcMakeContextCurrent(m_context.get()))
 			throw std::runtime_error("Audio: Global Initialization: Context Current");
 
 		alDistanceModel(AL_INVERSE_DISTANCE_CLAMPED);
@@ -313,7 +317,7 @@ public:
 			<< std::endl;
 	}
 
-	~SoundManagerGlobal()
+	~SoundManagerSingleton()
 	{
 		infostream << "Audio: Global Deinitializing..." << std::endl;
 
@@ -349,27 +353,27 @@ private:
 	std::unordered_map<int, FadeState> m_sounds_fading;
 	float m_fade_delay;
 public:
-	OpenALSoundManager(SoundManagerGlobal *smg, OnDemandSoundFetcher *fetcher):
+	OpenALSoundManager(SoundManagerSingleton *smg, OnDemandSoundFetcher *fetcher):
 		m_fetcher(fetcher),
 		m_device(smg->m_device.get()),
 		m_context(smg->m_context.get()),
 		m_next_id(1),
 		m_fade_delay(0)
 	{
-		infostream<<"Audio: Initializing..."<<std::endl;
-		infostream<<"Audio: Initialized: OpenAL "<<std::endl;
+		infostream << "Audio: Initializing..." << std::endl;
+		infostream << "Audio: Initialized: OpenAL " << std::endl;
 	}
 
 	~OpenALSoundManager()
 	{
-		infostream<<"Audio: Deinitializing..."<<std::endl;
+		infostream << "Audio: Deinitializing..." << std::endl;
 
-		std::set<int> source_del_list;
+		std::unordered_set<int> source_del_list;
 
-		for (auto &sp : m_sounds_playing)
+		for (const auto &sp : m_sounds_playing)
 			source_del_list.insert(sp.second->source_id);
 
-		for (auto &id : source_del_list)
+		for (const auto &id : source_del_list)
 			deleteSound(id);
 
 		for (auto &buffer : m_buffers) {
@@ -380,7 +384,7 @@ public:
 		}
 		m_buffers.clear();
 
-		infostream<<"Audio: Deinitialized."<<std::endl;
+		infostream << "Audio: Deinitialized." << std::endl;
 	}
 
 	void step(float dtime)
@@ -415,7 +419,7 @@ public:
 	PlayingSound* createPlayingSound(SoundBuffer *buf, bool loop,
 			float volume, float pitch)
 	{
-		infostream<<"OpenALSoundManager: Creating playing sound"<<std::endl;
+		infostream << "OpenALSoundManager: Creating playing sound" << std::endl;
 		assert(buf);
 		PlayingSound *sound = new PlayingSound;
 		assert(sound);
@@ -437,8 +441,8 @@ public:
 	PlayingSound* createPlayingSoundAt(SoundBuffer *buf, bool loop,
 			float volume, v3f pos, float pitch)
 	{
-		infostream<<"OpenALSoundManager: Creating positional playing sound"
-				<<std::endl;
+		infostream << "OpenALSoundManager: Creating positional playing sound"
+				<< std::endl;
 		assert(buf);
 		PlayingSound *sound = new PlayingSound;
 		assert(sound);
@@ -525,8 +529,8 @@ public:
 		verbosestream<<"OpenALSoundManager::maintain(): "
 				<<m_sounds_playing.size()<<" playing sounds, "
 				<<m_buffers.size()<<" sound names loaded"<<std::endl;
-		std::set<int> del_list;
-		for (auto &sp : m_sounds_playing) {
+		std::unordered_set<int> del_list;
+		for (const auto &sp : m_sounds_playing) {
 			int id = sp.first;
 			PlayingSound *sound = sp.second;
 			// If not playing, remove it
@@ -590,8 +594,8 @@ public:
 			return 0;
 		SoundBuffer *buf = getFetchBuffer(name);
 		if(!buf){
-			infostream<<"OpenALSoundManager: \""<<name<<"\" not found."
-					<<std::endl;
+			infostream << "OpenALSoundManager: \""<<name<<"\" not found."
+					<< std::endl;
 			return -1;
 		}
 		int handle = -1;
@@ -611,8 +615,8 @@ public:
 			return 0;
 		SoundBuffer *buf = getFetchBuffer(name);
 		if(!buf){
-			infostream<<"OpenALSoundManager: \""<<name<<"\" not found."
-					<<std::endl;
+			infostream << "OpenALSoundManager: \""<<name<<"\" not found."
+					<< std::endl;
 			return -1;
 		}
 		return playSoundRawAt(buf, loop, volume, pos, pitch);
@@ -703,12 +707,12 @@ public:
 	}
 };
 
-std::shared_ptr<SoundManagerGlobal> createSoundManagerGlobal()
+std::shared_ptr<SoundManagerSingleton> createSoundManagerSingleton()
 {
-	return std::shared_ptr<SoundManagerGlobal>(new SoundManagerGlobal());
+	return std::shared_ptr<SoundManagerSingleton>(new SoundManagerSingleton());
 }
 
-ISoundManager *createOpenALSoundManager(SoundManagerGlobal *smg, OnDemandSoundFetcher *fetcher)
+ISoundManager *createOpenALSoundManager(SoundManagerSingleton *smg, OnDemandSoundFetcher *fetcher)
 {
 	return new OpenALSoundManager(smg, fetcher);
 };

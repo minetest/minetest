@@ -23,8 +23,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "sound.h"
 
-class SoundManagerGlobal;
-extern std::shared_ptr<SoundManagerGlobal> g_sound_manager_global;
+class SoundManagerSingleton;
+extern std::shared_ptr<SoundManagerSingleton> g_sound_manager_singleton;
 
-std::shared_ptr<SoundManagerGlobal> createSoundManagerGlobal();
-ISoundManager *createOpenALSoundManager(SoundManagerGlobal *smg, OnDemandSoundFetcher *fetcher);
+std::shared_ptr<SoundManagerSingleton> createSoundManagerSingleton();
+ISoundManager *createOpenALSoundManager(SoundManagerSingleton *smg, OnDemandSoundFetcher *fetcher);
