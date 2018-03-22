@@ -1209,7 +1209,7 @@ Since this controls the balance of fine detail to large-scale detail
 A positive or negative non-zero number, often between 0.3 and 1.0.
 A common medium value is 0.5, such that each octave has half the amplitude of
 the previous octave.
-This may need to be tuned when altering `lacunarity`, when doing so consider
+This may need to be tuned when altering `lacunarity`; when doing so consider
 that a common medium value is 1 / lacunarity.
 
 ### `lacunarity`
