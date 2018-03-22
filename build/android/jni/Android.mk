@@ -269,6 +269,7 @@ LOCAL_SRC_FILES := \
 		jni/src/database-leveldb.cpp              \
 		jni/src/settings.cpp                      \
 		jni/src/wieldmesh.cpp                     \
+		jni/src/client/meshgen/collector.cpp      \
 		jni/src/client/clientlauncher.cpp         \
 		jni/src/client/inputhandler.cpp           \
 		jni/src/client/renderingengine.cpp        \
