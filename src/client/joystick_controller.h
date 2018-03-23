@@ -60,6 +60,8 @@ struct JoystickButtonCmb : public JoystickCombination {
 		this->key = key;
 	}
 
+	virtual ~JoystickButtonCmb() = default;
+
 	virtual bool isTriggered(const irr::SEvent::SJoystickEvent &ev) const;
 
 	u32 filter_mask;
@@ -78,7 +80,9 @@ struct JoystickAxisCmb : public JoystickCombination {
 		this->key = key;
 	}
 
-	virtual bool isTriggered(const irr::SEvent::SJoystickEvent &ev) const;
+	virtual ~JoystickAxisCmb() = default;
+
+	bool isTriggered(const irr::SEvent::SJoystickEvent &ev) const override;
 
 	u16 axis_to_compare;
 
