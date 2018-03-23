@@ -1,9 +1,7 @@
 #! /bin/bash
 function perform_lint() {
 	echo "Performing LINT..."
-	if hash clang-format-5.0 2>/dev/null; then
-		CLANG_FORMAT=clang-format-5.0
-	else
+	if [ -z "${CLANG_FORMAT}" ]; then
 		CLANG_FORMAT=clang-format
 	fi
 	echo "LINT: Using binary $CLANG_FORMAT"
