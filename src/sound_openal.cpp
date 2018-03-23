@@ -63,7 +63,7 @@ static void delete_alcdevice(ALCdevice *p)
 static void delete_alccontext(ALCcontext *p)
 {
 	if (p) {
-		alcMakeContextCurrent(NULL);
+		alcMakeContextCurrent(nullptr);
 		alcDestroyContext(p);
 	}
 }
@@ -166,7 +166,7 @@ SoundBuffer *load_opened_ogg_file(OggVorbis_File *oggFile,
 			infostream << "Audio: Error decoding "
 				<< filename_for_logging << std::endl;
 			delete snd;
-			return NULL;
+			return nullptr;
 		}
 
 		// Append to end of buffer
@@ -204,7 +204,7 @@ SoundBuffer *load_ogg_from_file(const std::string &path)
 	if (ov_fopen(path.c_str(), &oggFile) != 0) {
 		infostream << "Audio: Error opening " << path
 			<< " for decoding" << std::endl;
-		return NULL;
+		return nullptr;
 	}
 
 	return load_opened_ogg_file(&oggFile, path);
@@ -257,7 +257,7 @@ long BufferSourceell_func(void *datasource)
 static ov_callbacks g_buffer_ov_callbacks = {
 	&buffer_sound_read_func,
 	&buffer_sound_seek_func,
-	NULL,
+	nullptr,
 	&BufferSourceell_func
 };
 
@@ -270,10 +270,10 @@ SoundBuffer *load_ogg_from_buffer(const std::string &buf, const std::string &id_
 	s.cur_offset = 0;
 	s.len = buf.size();
 
-	if (ov_open_callbacks(&s, &oggFile, NULL, 0, g_buffer_ov_callbacks) != 0) {
+	if (ov_open_callbacks(&s, &oggFile, nullptr, 0, g_buffer_ov_callbacks) != 0) {
 		infostream << "Audio: Error opening " << id_for_log
 			<< " for decoding" << std::endl;
-		return NULL;
+		return nullptr;
 	}
 
 	return load_opened_ogg_file(&oggFile, id_for_log);
@@ -295,11 +295,11 @@ public:
 		m_device(nullptr, delete_alcdevice),
 		m_context(nullptr, delete_alccontext)
 	{
-		if (!(m_device = unique_ptr_alcdevice(alcOpenDevice(NULL), delete_alcdevice)))
+		if (!(m_device = unique_ptr_alcdevice(alcOpenDevice(nullptr), delete_alcdevice)))
 			throw std::runtime_error("Audio: Global Initialization: Device Open");
 
 		if (!(m_context = unique_ptr_alccontext(
-				alcCreateContext(m_device.get(), NULL), delete_alccontext))) {
+				alcCreateContext(m_device.get(), nullptr), delete_alccontext))) {
 			throw std::runtime_error("Audio: Global Initialization: Context Create");
 		}
 
@@ -403,7 +403,7 @@ public:
 		std::unordered_map<std::string, std::vector<SoundBuffer*>>::iterator i =
 				m_buffers.find(name);
 		if(i == m_buffers.end())
-			return NULL;
+			return nullptr;
 		std::vector<SoundBuffer*> &bufs = i->second;
 		int j = myrand() % bufs.size();
 		return bufs[j];
@@ -503,7 +503,7 @@ public:
 		if(buf)
 			return buf;
 		if(!m_fetcher)
-			return NULL;
+			return nullptr;
 		std::set<std::string> paths;
 		std::set<std::string> datas;
 		m_fetcher->fetchSounds(name, paths, datas);
