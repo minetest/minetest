@@ -13,6 +13,7 @@ BraceWrapping:
   AfterUnion: true
   BeforeCatch: false
   BeforeElse: false
+FixNamespaceComments: false
 AllowShortIfStatementsOnASingleLine: false
 IndentCaseLabels: false
 AccessModifierOffset: -8

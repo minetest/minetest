@@ -4,14 +4,14 @@ echo "Preparing for $TRAVIS_COMMIT_RANGE"
 
 . util/travis/common.sh
 
-if [[ "${LINT}" == "1" ]]; then
+if [[ ! -z "${CLANG_FORMAT}" ]]; then
 	exit 0
 fi
 
 needs_compile || exit 0
 
-if [[ $PLATFORM == "Unix" ]] || [[ $CLANG_TIDY == "1" ]]; then
-	if [[ $TRAVIS_OS_NAME == "linux" ]] || [[ $CLANG_TIDY == "1" ]]; then
+if [[ $PLATFORM == "Unix" ]] || [[ ! -z "${CLANG_TIDY}" ]]; then
+	if [[ $TRAVIS_OS_NAME == "linux" ]] || [[ ! -z "${CLANG_TIDY}" ]]; then
 		install_linux_deps
 	else
 		install_macosx_deps
