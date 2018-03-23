@@ -47,6 +47,7 @@ ServerModManager::ServerModManager(const std::string &worldpath) :
 	addModsFromConfig(worldmt, gamespec.addon_mods_paths);
 }
 
+// clang-format off
 // This function cannot be currenctly easily tested but it should be ASAP
 void ServerModManager::loadMods(ServerScripting *script)
 {
@@ -76,6 +77,7 @@ void ServerModManager::loadMods(ServerScripting *script)
 	}
 }
 
+// clang-format on
 const ModSpec *ServerModManager::getModSpec(const std::string &modname) const
 {
 	std::vector<ModSpec>::const_iterator it;
