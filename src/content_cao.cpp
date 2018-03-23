@@ -26,6 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/numeric.h" // For IntervalLimiter
 #include "util/serialize.h"
 #include "util/basic_macros.h"
+#include "client/sound.h"
 #include "client/tile.h"
 #include "environment.h"
 #include "collision.h"
@@ -1177,7 +1178,7 @@ void GenericCAO::updateAnimationSpeed()
 {
 	if (!m_animated_meshnode)
 		return;
-        
+
 	m_animated_meshnode->setAnimationSpeed(m_animation_speed);
 }
 

@@ -27,7 +27,6 @@ class IItemDefManager;
 class NodeDefManager;
 class ICraftDefManager;
 class ITextureSource;
-class ISoundManager;
 class IShaderSource;
 class MtEventManager;
 class IRollbackManager;

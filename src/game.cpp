@@ -69,7 +69,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "script/scripting_client.h"
 
 #if USE_SOUND
-	#include "sound_openal.h"
+	#include "client/sound_openal.h"
 #endif
 
 

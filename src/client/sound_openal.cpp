@@ -68,26 +68,6 @@ static void delete_alccontext(ALCcontext *p)
 	}
 }
 
-static const char *alcErrorString(ALCenum err)
-{
-	switch (err) {
-	case ALC_NO_ERROR:
-		return "no error";
-	case ALC_INVALID_DEVICE:
-		return "invalid device";
-	case ALC_INVALID_CONTEXT:
-		return "invalid context";
-	case ALC_INVALID_ENUM:
-		return "invalid enum";
-	case ALC_INVALID_VALUE:
-		return "invalid value";
-	case ALC_OUT_OF_MEMORY:
-		return "out of memory";
-	default:
-		return "<unknown OpenAL error>";
-	}
-}
-
 static const char *alErrorString(ALenum err)
 {
 	switch (err) {
@@ -331,7 +311,6 @@ private:
 	int m_next_id;
 	std::unordered_map<std::string, std::vector<SoundBuffer*>> m_buffers;
 	std::unordered_map<int, PlayingSound*> m_sounds_playing;
-	v3f m_listener_pos;
 	struct FadeState {
 		FadeState() = default;
 
@@ -563,9 +542,8 @@ public:
 		return false;
 	}
 
-	void updateListener(v3f pos, v3f vel, v3f at, v3f up)
+	void updateListener(const v3f &pos, const v3f &vel, const v3f &at, const v3f &up)
 	{
-		m_listener_pos = pos;
 		alListener3f(AL_POSITION, pos.X, pos.Y, pos.Z);
 		alListener3f(AL_VELOCITY, vel.X, vel.Y, vel.Z);
 		ALfloat f[6];
@@ -634,7 +612,7 @@ public:
 			return;
 
 		float chkGain = 0;
-		for (std::unordered_map<int, FadeState>::iterator i = m_sounds_fading.begin();
+		for (auto i = m_sounds_fading.begin();
 				i != m_sounds_fading.end();) {
 			if (i->second.step < 0.f)
 				chkGain = -(i->second.current_gain);
@@ -665,7 +643,7 @@ public:
 
 	void updateSoundPosition(int id, v3f pos)
 	{
-		std::unordered_map<int, PlayingSound*>::iterator i = m_sounds_playing.find(id);
+		auto i = m_sounds_playing.find(id);
 		if (i == m_sounds_playing.end())
 			return;
 		PlayingSound *sound = i->second;
@@ -678,7 +656,7 @@ public:
 
 	bool updateSoundGain(int id, float gain)
 	{
-		std::unordered_map<int, PlayingSound*>::iterator i = m_sounds_playing.find(id);
+		auto i = m_sounds_playing.find(id);
 		if (i == m_sounds_playing.end())
 			return false;
 
@@ -689,7 +667,7 @@ public:
 
 	float getSoundGain(int id)
 	{
-		std::unordered_map<int, PlayingSound*>::iterator i = m_sounds_playing.find(id);
+		auto i = m_sounds_playing.find(id);
 		if (i == m_sounds_playing.end())
 			return 0;
 

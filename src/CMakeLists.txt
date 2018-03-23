@@ -101,19 +101,6 @@ if(BUILD_CLIENT AND ENABLE_SOUND)
 	endif()
 endif()
 
-if(USE_SOUND)
-	set(sound_SRCS sound_openal.cpp)
-	set(SOUND_INCLUDE_DIRS
-		${OPENAL_INCLUDE_DIR}
-		${VORBIS_INCLUDE_DIR}
-		${OGG_INCLUDE_DIR}
-		)
-	set(SOUND_LIBRARIES
-		${OPENAL_LIBRARY}
-		${VORBIS_LIBRARIES}
-		)
-endif()
-
 
 option(ENABLE_GLES "Enable OpenGL ES support" FALSE)
 mark_as_advanced(ENABLE_GLES)
@@ -440,7 +427,6 @@ set(common_SRCS
 	serverlist.cpp
 	serverobject.cpp
 	settings.cpp
-	sound.cpp
 	staticobject.cpp
 	subgame.cpp
 	terminal_chat_console.cpp
@@ -489,7 +475,6 @@ set(client_SRCS
 	${client_SRCS}
 	${common_SRCS}
 	${gui_SRCS}
-	${sound_SRCS}
 	${client_network_SRCS}
 	${client_irrlicht_changes_SRCS}
 	camera.cpp

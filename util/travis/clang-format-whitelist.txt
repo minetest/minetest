@@ -7,6 +7,7 @@ src/chat.h
 src/chat_interface.h
 src/client/clientlauncher.cpp
 src/client/clientlauncher.h
+src/client/sound_openal.cpp
 src/client.cpp
 src/clientenvironment.cpp
 src/clientenvironment.h
@@ -328,8 +329,6 @@ src/shader.cpp
 src/shader.h
 src/sky.cpp
 src/sound.cpp
-src/sound_openal.cpp
-src/sound_openal.h
 src/staticobject.cpp
 src/staticobject.h
 src/subgame.cpp

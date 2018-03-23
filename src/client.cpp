@@ -30,6 +30,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client/clientevent.h"
 #include "client/gameui.h"
 #include "client/renderingengine.h"
+#include "client/sound.h"
 #include "client/tile.h"
 #include "util/auth.h"
 #include "util/directiontables.h"
