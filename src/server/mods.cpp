@@ -47,6 +47,7 @@ ServerModManager::ServerModManager(const std::string &worldpath) :
 	addModsFromConfig(worldmt, gamespec.addon_mods_paths);
 }
 
+// clang-format off
 // This function cannot be currenctly easily tested but it should be ASAP
 void ServerModManager::loadMods(ServerScripting *script)
 {
@@ -66,11 +67,17 @@ void ServerModManager::loadMods(ServerScripting *script)
 		}
 		std::string script_path = mod.path + DIR_DELIM + "init.lua";
 		infostream << "  [" << padStringRight(mod.name, 12) << "] [\""
-			   << script_path << "\"]" << std::endl;
+			<< script_path << "\"]" << std::endl;
+		auto t = std::chrono::steady_clock::now();
 		script->loadMod(script_path, mod.name);
+		infostream << "Mod \"" << mod.name << "\" loaded after "
+			<< std::chrono::duration_cast<std::chrono::milliseconds>(
+				std::chrono::steady_clock::now() - t).count() * 0.001f
+			<< " seconds" << std::endl;
 	}
 }
 
+// clang-format on
 const ModSpec *ServerModManager::getModSpec(const std::string &modname) const
 {
 	std::vector<ModSpec>::const_iterator it;
