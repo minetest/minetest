@@ -21,5 +21,3 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 // Global DummySoundManager singleton
 DummySoundManager dummySoundManager;
-
-

@@ -28,8 +28,8 @@ class OnDemandSoundFetcher
 {
 public:
 	virtual void fetchSounds(const std::string &name,
-		std::set<std::string> &dst_paths,
-		std::set<std::string> &dst_datas) = 0;
+			std::set<std::string> &dst_paths,
+			std::set<std::string> &dst_datas) = 0;
 };
 
 class ISoundManager
@@ -41,20 +41,20 @@ public:
 	// should be chosen randomly from alternatives
 	// Return value determines success/failure
 	virtual bool loadSoundFile(
-		const std::string &name, const std::string &filepath) = 0;
+			const std::string &name, const std::string &filepath) = 0;
 	virtual bool loadSoundData(
-		const std::string &name, const std::string &filedata) = 0;
+			const std::string &name, const std::string &filedata) = 0;
 
-	virtual void updateListener(const v3f &pos, const v3f &vel, const v3f &at,
-		const v3f &up) = 0;
+	virtual void updateListener(
+			const v3f &pos, const v3f &vel, const v3f &at, const v3f &up) = 0;
 	virtual void setListenerGain(float gain) = 0;
 
 	// playSound functions return -1 on failure, otherwise a handle to the
 	// sound. If name=="", call should be ignored without error.
 	virtual int playSound(const std::string &name, bool loop, float volume,
-		float fade = 0.0f, float pitch = 1.0f) = 0;
+			float fade = 0.0f, float pitch = 1.0f) = 0;
 	virtual int playSoundAt(const std::string &name, bool loop, float volume, v3f pos,
-		float pitch = 1.0f) = 0;
+			float pitch = 1.0f) = 0;
 	virtual void stopSound(int sound) = 0;
 	virtual bool soundExists(int sound) = 0;
 	virtual void updateSoundPosition(int sound, v3f pos) = 0;
@@ -84,15 +84,17 @@ public:
 	{
 		return true;
 	}
-	void updateListener(const v3f &pos, const v3f &vel, const v3f &at, const v3f &up) {}
+	void updateListener(const v3f &pos, const v3f &vel, const v3f &at, const v3f &up)
+	{
+	}
 	void setListenerGain(float gain) {}
 	int playSound(const std::string &name, bool loop, float volume, float fade,
-		float pitch)
+			float pitch)
 	{
 		return 0;
 	}
 	int playSoundAt(const std::string &name, bool loop, float volume, v3f pos,
-		float pitch)
+			float pitch)
 	{
 		return 0;
 	}
@@ -107,4 +109,3 @@ public:
 
 // Global DummySoundManager singleton
 extern DummySoundManager dummySoundManager;
-
