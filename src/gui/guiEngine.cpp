@@ -137,7 +137,7 @@ GUIEngine::GUIEngine(JoystickController *joystick,
 	//create soundmanager
 	MenuMusicFetcher soundfetcher;
 #if USE_SOUND
-	m_sound_manager = createOpenALSoundManager(&soundfetcher);
+	m_sound_manager = createOpenALSoundManager(g_sound_manager_singleton.get(), &soundfetcher);
 #endif
 	if(!m_sound_manager)
 		m_sound_manager = &dummySoundManager;

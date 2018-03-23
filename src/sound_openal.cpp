@@ -45,8 +45,28 @@ with this program; ifnot, write to the Free Software Foundation, Inc.,
 #include <vector>
 #include <fstream>
 #include <unordered_map>
+#include <unordered_set>
 
 #define BUFFER_SIZE 30000
+
+std::shared_ptr<SoundManagerSingleton> g_sound_manager_singleton;
+
+typedef std::unique_ptr<ALCdevice, void (*)(ALCdevice *p)> unique_ptr_alcdevice;
+typedef std::unique_ptr<ALCcontext, void(*)(ALCcontext *p)> unique_ptr_alccontext;
+
+static void delete_alcdevice(ALCdevice *p)
+{
+	if (p)
+		alcCloseDevice(p);
+}
+
+static void delete_alccontext(ALCcontext *p)
+{
+	if (p) {
+		alcMakeContextCurrent(nullptr);
+		alcDestroyContext(p);
+	}
+}
 
 static const char *alcErrorString(ALCenum err)
 {
@@ -146,7 +166,7 @@ SoundBuffer *load_opened_ogg_file(OggVorbis_File *oggFile,
 			infostream << "Audio: Error decoding "
 				<< filename_for_logging << std::endl;
 			delete snd;
-			return NULL;
+			return nullptr;
 		}
 
 		// Append to end of buffer
@@ -161,8 +181,8 @@ SoundBuffer *load_opened_ogg_file(OggVorbis_File *oggFile,
 	ALenum error = alGetError();
 
 	if(error != AL_NO_ERROR){
-		infostream<<"Audio: OpenAL error: "<<alErrorString(error)
-				<<"preparing sound buffer"<<std::endl;
+		infostream << "Audio: OpenAL error: " << alErrorString(error)
+				<< "preparing sound buffer" << std::endl;
 	}
 
 	infostream << "Audio file "
@@ -184,7 +204,7 @@ SoundBuffer *load_ogg_from_file(const std::string &path)
 	if (ov_fopen(path.c_str(), &oggFile) != 0) {
 		infostream << "Audio: Error opening " << path
 			<< " for decoding" << std::endl;
-		return NULL;
+		return nullptr;
 	}
 
 	return load_opened_ogg_file(&oggFile, path);
@@ -237,7 +257,7 @@ long BufferSourceell_func(void *datasource)
 static ov_callbacks g_buffer_ov_callbacks = {
 	&buffer_sound_read_func,
 	&buffer_sound_seek_func,
-	NULL,
+	nullptr,
 	&BufferSourceell_func
 };
 
@@ -250,10 +270,10 @@ SoundBuffer *load_ogg_from_buffer(const std::string &buf, const std::string &id_
 	s.cur_offset = 0;
 	s.len = buf.size();
 
-	if (ov_open_callbacks(&s, &oggFile, NULL, 0, g_buffer_ov_callbacks) != 0) {
+	if (ov_open_callbacks(&s, &oggFile, nullptr, 0, g_buffer_ov_callbacks) != 0) {
 		infostream << "Audio: Error opening " << id_for_log
 			<< " for decoding" << std::endl;
-		return NULL;
+		return nullptr;
 	}
 
 	return load_opened_ogg_file(&oggFile, id_for_log);
@@ -263,6 +283,43 @@ struct PlayingSound
 {
 	ALuint source_id;
 	bool loop;
+};
+
+class SoundManagerSingleton
+{
+public:
+	unique_ptr_alcdevice  m_device;
+	unique_ptr_alccontext m_context;
+public:
+	SoundManagerSingleton() :
+		m_device(nullptr, delete_alcdevice),
+		m_context(nullptr, delete_alccontext)
+	{
+		if (!(m_device = unique_ptr_alcdevice(alcOpenDevice(nullptr), delete_alcdevice)))
+			throw std::runtime_error("Audio: Global Initialization: Device Open");
+
+		if (!(m_context = unique_ptr_alccontext(
+				alcCreateContext(m_device.get(), nullptr), delete_alccontext))) {
+			throw std::runtime_error("Audio: Global Initialization: Context Create");
+		}
+
+		if (!alcMakeContextCurrent(m_context.get()))
+			throw std::runtime_error("Audio: Global Initialization: Context Current");
+
+		alDistanceModel(AL_INVERSE_DISTANCE_CLAMPED);
+
+		if (alGetError() != AL_NO_ERROR)
+			throw std::runtime_error("Audio: Global Initialization: OpenAL Error");
+
+		infostream << "Audio: Global Initialized: OpenAL " << alGetString(AL_VERSION)
+			<< ", using " << alcGetString(m_device.get(), ALC_DEVICE_SPECIFIER)
+			<< std::endl;
+	}
+
+	~SoundManagerSingleton()
+	{
+		infostream << "Audio: Global Deinitialized." << std::endl;
+	}
 };
 
 class OpenALSoundManager: public ISoundManager
@@ -290,68 +347,27 @@ private:
 	std::unordered_map<int, FadeState> m_sounds_fading;
 	float m_fade_delay;
 public:
-	bool m_is_initialized;
-	OpenALSoundManager(OnDemandSoundFetcher *fetcher):
+	OpenALSoundManager(SoundManagerSingleton *smg, OnDemandSoundFetcher *fetcher):
 		m_fetcher(fetcher),
-		m_device(NULL),
-		m_context(NULL),
+		m_device(smg->m_device.get()),
+		m_context(smg->m_context.get()),
 		m_next_id(1),
-		m_fade_delay(0),
-		m_is_initialized(false)
+		m_fade_delay(0)
 	{
-		ALCenum error = ALC_NO_ERROR;
-
-		infostream<<"Audio: Initializing..."<<std::endl;
-
-		m_device = alcOpenDevice(NULL);
-		if(!m_device){
-			infostream<<"Audio: No audio device available, audio system "
-				<<"not initialized"<<std::endl;
-			return;
-		}
-
-		m_context = alcCreateContext(m_device, NULL);
-		if(!m_context){
-			error = alcGetError(m_device);
-			infostream<<"Audio: Unable to initialize audio context, "
-					<<"aborting audio initialization ("<<alcErrorString(error)
-					<<")"<<std::endl;
-			alcCloseDevice(m_device);
-			m_device = NULL;
-			return;
-		}
-
-		if(!alcMakeContextCurrent(m_context) ||
-				(error = alcGetError(m_device) != ALC_NO_ERROR))
-		{
-			infostream<<"Audio: Error setting audio context, aborting audio "
-					<<"initialization ("<<alcErrorString(error)<<")"<<std::endl;
-			alcDestroyContext(m_context);
-			m_context = NULL;
-			alcCloseDevice(m_device);
-			m_device = NULL;
-			return;
-		}
-
-		alDistanceModel(AL_INVERSE_DISTANCE_CLAMPED);
-
-		infostream<<"Audio: Initialized: OpenAL "<<alGetString(AL_VERSION)
-				<<", using "<<alcGetString(m_device, ALC_DEVICE_SPECIFIER)
-				<<std::endl;
-
-		m_is_initialized = true;
+		infostream << "Audio: Initialized: OpenAL " << std::endl;
 	}
 
 	~OpenALSoundManager()
 	{
-		infostream<<"Audio: Deinitializing..."<<std::endl;
-		// KABOOM!
-		// TODO: Clear SoundBuffers
-		alcMakeContextCurrent(NULL);
-		alcDestroyContext(m_context);
-		m_context = NULL;
-		alcCloseDevice(m_device);
-		m_device = NULL;
+		infostream << "Audio: Deinitializing..." << std::endl;
+
+		std::unordered_set<int> source_del_list;
+
+		for (const auto &sp : m_sounds_playing)
+			source_del_list.insert(sp.second->source_id);
+
+		for (const auto &id : source_del_list)
+			deleteSound(id);
 
 		for (auto &buffer : m_buffers) {
 			for (SoundBuffer *sb : buffer.second) {
@@ -360,7 +376,8 @@ public:
 			buffer.second.clear();
 		}
 		m_buffers.clear();
-		infostream<<"Audio: Deinitialized."<<std::endl;
+
+		infostream << "Audio: Deinitialized." << std::endl;
 	}
 
 	void step(float dtime)
@@ -386,7 +403,7 @@ public:
 		std::unordered_map<std::string, std::vector<SoundBuffer*>>::iterator i =
 				m_buffers.find(name);
 		if(i == m_buffers.end())
-			return NULL;
+			return nullptr;
 		std::vector<SoundBuffer*> &bufs = i->second;
 		int j = myrand() % bufs.size();
 		return bufs[j];
@@ -395,7 +412,7 @@ public:
 	PlayingSound* createPlayingSound(SoundBuffer *buf, bool loop,
 			float volume, float pitch)
 	{
-		infostream<<"OpenALSoundManager: Creating playing sound"<<std::endl;
+		infostream << "OpenALSoundManager: Creating playing sound" << std::endl;
 		assert(buf);
 		PlayingSound *sound = new PlayingSound;
 		assert(sound);
@@ -417,8 +434,8 @@ public:
 	PlayingSound* createPlayingSoundAt(SoundBuffer *buf, bool loop,
 			float volume, v3f pos, float pitch)
 	{
-		infostream<<"OpenALSoundManager: Creating positional playing sound"
-				<<std::endl;
+		infostream << "OpenALSoundManager: Creating positional playing sound"
+				<< std::endl;
 		assert(buf);
 		PlayingSound *sound = new PlayingSound;
 		assert(sound);
@@ -486,7 +503,7 @@ public:
 		if(buf)
 			return buf;
 		if(!m_fetcher)
-			return NULL;
+			return nullptr;
 		std::set<std::string> paths;
 		std::set<std::string> datas;
 		m_fetcher->fetchSounds(name, paths, datas);
@@ -505,8 +522,8 @@ public:
 		verbosestream<<"OpenALSoundManager::maintain(): "
 				<<m_sounds_playing.size()<<" playing sounds, "
 				<<m_buffers.size()<<" sound names loaded"<<std::endl;
-		std::set<int> del_list;
-		for (auto &sp : m_sounds_playing) {
+		std::unordered_set<int> del_list;
+		for (const auto &sp : m_sounds_playing) {
 			int id = sp.first;
 			PlayingSound *sound = sp.second;
 			// If not playing, remove it
@@ -570,8 +587,8 @@ public:
 			return 0;
 		SoundBuffer *buf = getFetchBuffer(name);
 		if(!buf){
-			infostream<<"OpenALSoundManager: \""<<name<<"\" not found."
-					<<std::endl;
+			infostream << "OpenALSoundManager: \"" << name << "\" not found."
+					<< std::endl;
 			return -1;
 		}
 		int handle = -1;
@@ -591,8 +608,8 @@ public:
 			return 0;
 		SoundBuffer *buf = getFetchBuffer(name);
 		if(!buf){
-			infostream<<"OpenALSoundManager: \""<<name<<"\" not found."
-					<<std::endl;
+			infostream << "OpenALSoundManager: \"" << name << "\" not found."
+					<< std::endl;
 			return -1;
 		}
 		return playSoundRawAt(buf, loop, volume, pos, pitch);
@@ -683,12 +700,12 @@ public:
 	}
 };
 
-ISoundManager *createOpenALSoundManager(OnDemandSoundFetcher *fetcher)
+std::shared_ptr<SoundManagerSingleton> createSoundManagerSingleton()
 {
-	OpenALSoundManager *m = new OpenALSoundManager(fetcher);
-	if(m->m_is_initialized)
-		return m;
-	delete m;
-	return NULL;
-};
+	return std::shared_ptr<SoundManagerSingleton>(new SoundManagerSingleton());
+}
 
+ISoundManager *createOpenALSoundManager(SoundManagerSingleton *smg, OnDemandSoundFetcher *fetcher)
+{
+	return new OpenALSoundManager(smg, fetcher);
+};

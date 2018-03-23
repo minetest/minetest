@@ -35,6 +35,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "renderingengine.h"
 #include "network/networkexceptions.h"
 
+#if USE_SOUND
+	#include "sound_openal.h"
+#endif
+
 /* mainmenumanager.h
  */
 gui::IGUIEnvironment *guienv = nullptr;
@@ -70,6 +74,11 @@ bool ClientLauncher::run(GameParams &game_params, const Settings &cmd_args)
 	// List video modes if requested
 	if (list_video_modes)
 		return RenderingEngine::print_video_modes();
+
+#if USE_SOUND
+	if (g_settings->getBool("enable_sound"))
+		g_sound_manager_singleton = createSoundManagerSingleton();
+#endif
 
 	if (!init_engine()) {
 		errorstream << "Could not initialize game engine." << std::endl;
