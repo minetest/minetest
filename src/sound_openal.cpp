@@ -181,8 +181,8 @@ SoundBuffer *load_opened_ogg_file(OggVorbis_File *oggFile,
 	ALenum error = alGetError();
 
 	if(error != AL_NO_ERROR){
-		infostream << "Audio: OpenAL error: "<<alErrorString(error)
-				<< "preparing sound buffer"<<std::endl;
+		infostream << "Audio: OpenAL error: " << alErrorString(error)
+				<< "preparing sound buffer" << std::endl;
 	}
 
 	infostream << "Audio file "
@@ -292,15 +292,14 @@ public:
 	unique_ptr_alccontext m_context;
 public:
 	SoundManagerSingleton() :
-		m_device(NULL, delete_alcdevice),
-		m_context(NULL, delete_alccontext)
+		m_device(nullptr, delete_alcdevice),
+		m_context(nullptr, delete_alccontext)
 	{
 		if (!(m_device = unique_ptr_alcdevice(alcOpenDevice(NULL), delete_alcdevice)))
 			throw std::runtime_error("Audio: Global Initialization: Device Open");
 
 		if (!(m_context = unique_ptr_alccontext(
-				alcCreateContext(m_device.get(), NULL), delete_alccontext)))
-		{
+				alcCreateContext(m_device.get(), NULL), delete_alccontext))) {
 			throw std::runtime_error("Audio: Global Initialization: Context Create");
 		}
 
@@ -319,11 +318,6 @@ public:
 
 	~SoundManagerSingleton()
 	{
-		infostream << "Audio: Global Deinitializing..." << std::endl;
-
-		m_context.reset();
-		m_device.reset();
-
 		infostream << "Audio: Global Deinitialized." << std::endl;
 	}
 };
@@ -360,7 +354,6 @@ public:
 		m_next_id(1),
 		m_fade_delay(0)
 	{
-		infostream << "Audio: Initializing..." << std::endl;
 		infostream << "Audio: Initialized: OpenAL " << std::endl;
 	}
 
@@ -594,7 +587,7 @@ public:
 			return 0;
 		SoundBuffer *buf = getFetchBuffer(name);
 		if(!buf){
-			infostream << "OpenALSoundManager: \""<<name<<"\" not found."
+			infostream << "OpenALSoundManager: \"" << name << "\" not found."
 					<< std::endl;
 			return -1;
 		}
@@ -615,7 +608,7 @@ public:
 			return 0;
 		SoundBuffer *buf = getFetchBuffer(name);
 		if(!buf){
-			infostream << "OpenALSoundManager: \""<<name<<"\" not found."
+			infostream << "OpenALSoundManager: \"" << name << "\" not found."
 					<< std::endl;
 			return -1;
 		}
