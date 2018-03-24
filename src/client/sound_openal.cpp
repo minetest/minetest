@@ -343,7 +343,7 @@ public:
 		std::unordered_set<int> source_del_list;
 
 		for (const auto &sp : m_sounds_playing)
-			source_del_list.insert(sp.second->source_id);
+			source_del_list.insert(sp.first);
 
 		for (const auto &id : source_del_list)
 			deleteSound(id);
