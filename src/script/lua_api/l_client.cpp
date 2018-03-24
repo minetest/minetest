@@ -22,6 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "chatmessage.h"
 #include "client.h"
 #include "client/clientevent.h"
+#include "client/sound.h"
 #include "clientenvironment.h"
 #include "common/c_content.h"
 #include "common/c_converter.h"

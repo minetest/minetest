@@ -31,7 +31,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "settings.h"
 #include "guiMainMenu.h"
 #include "sound.h"
-#include "sound_openal.h"
+#include "client/sound_openal.h"
 #include "clouds.h"
 #include "httpfetch.h"
 #include "log.h"

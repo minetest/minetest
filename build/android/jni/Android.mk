@@ -227,8 +227,6 @@ LOCAL_SRC_FILES := \
 		jni/src/serverobject.cpp                  \
 		jni/src/shader.cpp                        \
 		jni/src/sky.cpp                           \
-		jni/src/sound.cpp                         \
-		jni/src/sound_openal.cpp                  \
 		jni/src/staticobject.cpp                  \
 		jni/src/subgame.cpp                       \
 		jni/src/tileanimation.cpp                 \
@@ -280,6 +278,8 @@ LOCAL_SRC_FILES := \
 		jni/src/client/hud.cpp                    \
 		jni/src/client/inputhandler.cpp           \
 		jni/src/client/renderingengine.cpp        \
+		jni/src/client/sound.cpp                  \
+		jni/src/client/sound_openal.cpp           \
 		jni/src/client/tile.cpp                   \
 		jni/src/client/joystick_controller.cpp    \
 		jni/src/client/render/factory.cpp         \

@@ -19,6 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "test.h"
 
+#include "client/sound.h"
 #include "nodedef.h"
 #include "itemdef.h"
 #include "gamedef.h"

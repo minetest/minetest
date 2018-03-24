@@ -1,4 +1,21 @@
+set(sound_SRCS  ${CMAKE_CURRENT_SOURCE_DIR}/sound.cpp)
+
+if(USE_SOUND)
+	set(sound_SRCS ${sound_SRCS}
+		${CMAKE_CURRENT_SOURCE_DIR}/sound_openal.cpp)
+	set(SOUND_INCLUDE_DIRS
+		${OPENAL_INCLUDE_DIR}
+		${VORBIS_INCLUDE_DIR}
+		${OGG_INCLUDE_DIR}
+		PARENT_SCOPE)
+	set(SOUND_LIBRARIES
+		${OPENAL_LIBRARY}
+		${VORBIS_LIBRARIES}
+		PARENT_SCOPE)
+endif()
+
 set(client_SRCS
+	${sound_SRCS}
 	${CMAKE_CURRENT_SOURCE_DIR}/meshgen/collector.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/render/anaglyph.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/render/core.cpp
