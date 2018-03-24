@@ -70,9 +70,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #if USE_SOUND
 	#include "client/sound_openal.h"
+#else
+	#include "client/sound.h"
 #endif
-
-
 /*
 	Text input system
 */

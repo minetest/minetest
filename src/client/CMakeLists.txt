@@ -1,7 +1,8 @@
+set(sound_SRCS  ${CMAKE_CURRENT_SOURCE_DIR}/sound.cpp)
+
 if(USE_SOUND)
-	set(sound_SRCS
-		${CMAKE_CURRENT_SOURCE_DIR}/sound_openal.cpp
-		${CMAKE_CURRENT_SOURCE_DIR}/sound.cpp)
+	set(sound_SRCS ${sound_SRCS}
+		${CMAKE_CURRENT_SOURCE_DIR}/sound_openal.cpp)
 	set(SOUND_INCLUDE_DIRS
 		${OPENAL_INCLUDE_DIR}
 		${VORBIS_INCLUDE_DIR}
