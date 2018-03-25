@@ -433,7 +433,7 @@ public:
 	bool sendModChannelMessage(const std::string &channel, const std::string &message);
 	ModChannel *getModChannel(const std::string &channel);
 
-	const std::string &getFormspecPrepend()
+	const std::string &getFormspecPrepend() const
 	{
 		return m_env.getLocalPlayer()->formspec_prepend;
 	}

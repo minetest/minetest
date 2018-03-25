@@ -304,7 +304,7 @@ public:
 		regenerateGui(m_screensize_old);
 	}
 
-	void setFormspecPrepend(const std::string formspecPrepend)
+	void setFormspecPrepend(const std::string &formspecPrepend)
 	{
 		m_formspec_prepend = formspecPrepend;
 	}
