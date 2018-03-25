@@ -444,9 +444,9 @@ struct PlayerHPChangeReason {
 			type = FALL;
 		else if (typestr == "node_damage")
 			type = NODE_DAMAGE;
-		else if (typestr == "drowning")
+		else if (typestr == "drown")
 			type = DROWNING;
-		else if (typestr == "respawned")
+		else if (typestr == "respawn")
 			type = RESPAWN;
 		else
 			return false;

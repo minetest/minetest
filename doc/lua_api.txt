@@ -2793,8 +2793,8 @@ Call these functions only at load time!
             * `punch` - Was punched. `reason.puncher` will hold the puncher, or nil if none.
             * `fall`
             * `node_damage` - damage_per_second from a neighbouring node.
-            * `drowning`
-            * `respawned`
+            * `drown`
+            * `respawn`
         * Any of the above types may have additional fields from mods.
         * `reason.from` will be `mod` or `engine`.
     * `modifier`: when true, the function should return the actual `hp_change`.
