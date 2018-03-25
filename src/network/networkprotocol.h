@@ -647,7 +647,7 @@ enum ToClientCommand
 
 	TOCLIENT_FORMSPEC_PREPEND = 0x61,
 	/*
-		u32 len
+		u16 len
 		u8[len] formspec
 	*/
 

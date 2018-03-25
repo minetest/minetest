@@ -1330,7 +1330,7 @@ void Client::handleCommand_FormspecPrepend(NetworkPacket *pkt)
 	assert(player != NULL);
 
 	// Store formspec in LocalPlayer
-	player->formspec_prepend = pkt->readLongString();
+	*pkt >> player->formspec_prepend;
 }
 
 void Client::handleCommand_CSMFlavourLimits(NetworkPacket *pkt)

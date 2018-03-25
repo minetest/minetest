@@ -1886,7 +1886,7 @@ void Server::SendPlayerFormspecPrepend(session_t peer_id)
 		return;
 
 	NetworkPacket pkt(TOCLIENT_FORMSPEC_PREPEND, 0, peer_id);
-	pkt.putLongString(FORMSPEC_VERSION_STRING + player->formspec_prepend);
+	pkt << FORMSPEC_VERSION_STRING + player->formspec_prepend;
 	Send(&pkt);
 }
 
