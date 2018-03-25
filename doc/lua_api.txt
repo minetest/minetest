@@ -2771,9 +2771,6 @@ Call these functions only at load time!
       is a bit faster than usually.
 * `minetest.register_on_newplayer(func(ObjectRef))`
     * Called after a new player has been created
-* `minetest.register_on_dieplayer(func(ObjectRef, reason))`
-    * Called when a player dies
-    * `reason`: a PlayerHPChangeReason, see bullet above
 * `minetest.register_on_punchplayer(func(player, hitter, time_from_last_punch, tool_capabilities, dir, damage))`
     * Called when a player is punched
     * `player` - ObjectRef - Player that was punched
@@ -2801,6 +2798,9 @@ Call these functions only at load time!
        Note: modifiers only get a temporary hp_change that can be modified by later modifiers.
        modifiers can return true as a second argument to stop the execution of further functions.
        Non-modifiers receive the final hp change calculated by the modifiers.
+* `minetest.register_on_dieplayer(func(ObjectRef, reason))`
+    * Called when a player dies
+    * `reason`: a PlayerHPChangeReason, see bullet above
 * `minetest.register_on_respawnplayer(func(ObjectRef))`
     * Called when player is to be respawned
     * Called _before_ repositioning of player occurs
