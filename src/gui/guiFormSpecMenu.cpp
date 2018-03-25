@@ -1925,7 +1925,8 @@ void GUIFormSpecMenu::parseElement(parserData* data, const std::string &element)
 			<< std::endl;
 }
 
-void GUIFormSpecMenu::regenerateGui(v2u32 screensize) {
+void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
+{
 	/* useless to regenerate without a screensize */
 	if ((screensize.X <= 0) || (screensize.Y <= 0)) {
 		return;
@@ -1949,7 +1950,7 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize) {
 	if (focused_element && focused_element->getParent() == this) {
 		s32 focused_id = focused_element->getID();
 		if (focused_id > 257) {
-			for (const GUIFormSpecMenu::FieldSpec& field : m_fields) {
+			for (const GUIFormSpecMenu::FieldSpec &field : m_fields) {
 				if (field.fid == focused_id) {
 					mydata.focused_fieldname = field.fname;
 					break;
@@ -1961,11 +1962,11 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize) {
 	// Remove children
 	removeChildren();
 
-	for (auto& table_it : m_tables) {
+	for (auto &table_it : m_tables) {
 		table_it.second->drop();
 	}
 
-	mydata.size = v2s32(100, 100);
+	mydata.size= v2s32(100,100);
 	mydata.screensize = screensize;
 	mydata.offset = v2f32(0.5f, 0.5f);
 	mydata.anchor = v2f32(0.5f, 0.5f);
@@ -2014,10 +2015,10 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize) {
 	m_slotbg_n = video::SColor(255,128,128,128);
 	m_slotbg_h = video::SColor(255,192,192,192);
 
-	m_default_tooltip_bgcolor = video::SColor(255, 110, 130, 60);
-	m_default_tooltip_color = video::SColor(255, 255, 255, 255);
+	m_default_tooltip_bgcolor = video::SColor(255,110,130,60);
+	m_default_tooltip_color = video::SColor(255,255,255,255);
 
-	m_slotbordercolor = video::SColor(200, 0, 0, 0);
+	m_slotbordercolor = video::SColor(200,0,0,0);
 	m_slotborder = false;
 
 	// Add tooltip
@@ -2165,13 +2166,11 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize) {
 			padding.Y*2+spacing.Y*(mydata.invsize.Y-1.0)+imgsize.Y + m_btn_height*2.0/3.0
 		);
 		DesiredRect = mydata.rect = core::rect<s32>(
-			(s32)((f32)mydata.screensize.X * mydata.offset.X) - (s32)(mydata.anchor.X * (f32)mydata.size.X) + offset.X,
-			(s32)((f32)mydata.screensize.Y * mydata.offset.Y) - (s32)(mydata.anchor.Y * (f32)mydata.size.Y) + offset.Y,
-			(s32)((f32)mydata.screensize.X * mydata.offset.X) + (s32)((1.0 - mydata.anchor.X) * (f32)mydata.size.X) + offset.X,
-			(s32)((f32)mydata.screensize.Y * mydata.offset.Y) + (s32)((1.0 - mydata.anchor.Y) * (f32)mydata.size.Y) + offset.Y
+				(s32)((f32)mydata.screensize.X * mydata.offset.X) - (s32)(mydata.anchor.X * (f32)mydata.size.X) + offset.X,
+				(s32)((f32)mydata.screensize.Y * mydata.offset.Y) - (s32)(mydata.anchor.Y * (f32)mydata.size.Y) + offset.Y,
+				(s32)((f32)mydata.screensize.X * mydata.offset.X) + (s32)((1.0 - mydata.anchor.X) * (f32)mydata.size.X) + offset.X,
+				(s32)((f32)mydata.screensize.Y * mydata.offset.Y) + (s32)((1.0 - mydata.anchor.Y) * (f32)mydata.size.Y) + offset.Y
 		);
-
-
 	} else {
 		// Non-size[] form must consist only of text fields and
 		// implicit "Proceed" button.  Use default font, and
