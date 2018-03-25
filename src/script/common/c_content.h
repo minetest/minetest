@@ -188,6 +188,4 @@ void               push_hud_element          (lua_State *L, HudElement *elem);
 
 HudElementStat     read_hud_change           (lua_State *L, HudElement *elem, void **value);
 
-void               push_PlayerHPChangeReason (lua_State *L, const PlayerHPChangeReason &reason);
-
 extern struct EnumString es_TileAnimationType[];

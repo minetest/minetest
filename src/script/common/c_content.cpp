@@ -1940,37 +1940,3 @@ HudElementStat read_hud_change(lua_State *L, HudElement *elem, void **value)
 	}
 	return stat;
 }
-
-void push_PlayerHPChangeReason(lua_State *L, const PlayerHPChangeReason& reason)
-{
-	lua_newtable(L);
-
-	switch (reason.type) {
-	case PlayerHPChangeReason::SET_HP:
-		lua_pushstring(L, "set_hp");
-		lua_setfield(L, -2, "type");
-		break;
-	case PlayerHPChangeReason::PLAYER_PUNCH:
-		lua_pushstring(L, "punch");
-		lua_setfield(L, -2, "type");
-
-		// TODO: push player
-		break;
-	case PlayerHPChangeReason::FALL:
-		lua_pushstring(L, "fall");
-		lua_setfield(L, -2, "type");
-		break;
-	case PlayerHPChangeReason::NODE_DAMAGE:
-		lua_pushstring(L, "node_damage");
-		lua_setfield(L, -2, "type");
-		break;
-	case PlayerHPChangeReason::DROWNING:
-		lua_pushstring(L, "drowning");
-		lua_setfield(L, -2, "type");
-		break;
-	case PlayerHPChangeReason::RESPAWN:
-		lua_pushstring(L, "respawned");
-		lua_setfield(L, -2, "type");
-		break;
-	}
-}
