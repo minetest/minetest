@@ -466,9 +466,9 @@ struct PlayerHPChangeReason {
 		case PlayerHPChangeReason::NODE_DAMAGE:
 			return "node_damage";
 		case PlayerHPChangeReason::DROWNING:
-			return "drowning";
+			return "drown";
 		case PlayerHPChangeReason::RESPAWN:
-			return "respawned";
+			return "respawn";
 		default:
 			return "?";
 		}
