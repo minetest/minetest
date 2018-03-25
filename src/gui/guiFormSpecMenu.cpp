@@ -92,10 +92,10 @@ GUIFormSpecMenu::GUIFormSpecMenu(JoystickController *joystick,
 	m_invmgr(client),
 	m_tsrc(tsrc),
 	m_client(client),
+	m_formspec_prepend(formspecPrepend),
 	m_form_src(fsrc),
 	m_text_dst(tdst),
 	m_joystick(joystick),
-	m_formspec_prepend(formspecPrepend),
 	m_remap_dbl_click(remap_dbl_click)
 #ifdef __ANDROID__
 	, m_JavaDialogFieldName("")
