@@ -430,7 +430,7 @@ struct PlayerHPChangeReason {
 	};
 
 	Type type = SET_HP;
-	ServerActiveObject *player;
+	ServerActiveObject *object;
 	bool from_mod = false;
 	int lua_reference = -1;
 
@@ -474,7 +474,7 @@ struct PlayerHPChangeReason {
 		}
 	}
 
-	PlayerHPChangeReason(Type type, ServerActiveObject *player=NULL):
-			type(type), player(player)
+	PlayerHPChangeReason(Type type, ServerActiveObject *object=NULL):
+			type(type), object(object)
 	{}
 };

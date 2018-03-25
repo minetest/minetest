@@ -396,16 +396,9 @@ void ScriptApiBase::pushPlayerHPChangeReason(lua_State *L, const PlayerHPChangeR
 	lua_pushstring(L, reason.from_mod ? "mod" : "engine");
 	lua_setfield(L, -2, "from");
 
-	switch (reason.type) {
-	case PlayerHPChangeReason::PLAYER_PUNCH:
-		if (reason.player) {
-			objectrefGetOrCreate(L, reason.player);
-			lua_setfield(L, -2, "puncher");
-		}
-
-		break;
-	default:
-		break;
+	if (reason.object) {
+		objectrefGetOrCreate(L, reason.object);
+		lua_setfield(L, -2, "object");
 	}
 }
 

@@ -2790,7 +2790,7 @@ Call these functions only at load time!
         * The `type` field will have one of the following values:
             * `set_hp` - A mod or the engine called `set_hp` without
                          giving a type - use this for custom damage types.
-            * `punch` - Was punched. `reason.puncher` will hold the puncher, or nil if none.
+            * `punch` - Was punched. `reason.object` will hold the puncher, or nil if none.
             * `fall`
             * `node_damage` - damage_per_second from a neighbouring node.
             * `drown`
