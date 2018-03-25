@@ -1244,13 +1244,15 @@ int ObjectRef::l_get_inventory_formspec(lua_State *L)
 	return 1;
 }
 
-// set_inventory_formspec(self, formspec)
+// set_formspec_prepend(self, formspec)
 int ObjectRef::l_set_formspec_prepend(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
 	RemotePlayer *player = getplayer(ref);
-	if (player == NULL) return 0;
+	if (player == NULL)
+		return 0;
+
 	std::string formspec = luaL_checkstring(L, 2);
 
 	player->formspec_prepend = formspec;
@@ -1259,13 +1261,14 @@ int ObjectRef::l_set_formspec_prepend(lua_State *L)
 	return 1;
 }
 
-// get_inventory_formspec(self) -> formspec
+// get_formspec_prepend(self) -> formspec
 int ObjectRef::l_get_formspec_prepend(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
 	RemotePlayer *player = getplayer(ref);
-	if (player == NULL) return 0;
+	if (player == NULL)
+		 return 0;
 
 	std::string formspec = player->formspec_prepend;
 	lua_pushlstring(L, formspec.c_str(), formspec.size());

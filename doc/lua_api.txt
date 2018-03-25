@@ -2003,7 +2003,7 @@ examples.
 
 WARNING: Minetest allows you to add elements to every single formspec instance
 using player:set_formspec_prepend(), which may be the reason backgrounds are
-appearing when you don't expect them to be. See `no_prepend[]`
+appearing when you don't expect them to. See `no_prepend[]`
 
 ### Examples
 
@@ -2058,7 +2058,7 @@ appearing when you don't expect them to be. See `no_prepend[]`
   extending off the game window due to particular game window sizes.
 
 #### `no_prepend[]`
-* Must be used after both `size`, `position`, and `anchor` (if present) elements.
+* Must be used after the `size`, `position`, and `anchor` elements (if present).
 * Disables player:set_formspec_prepend() from applying to this formspec.
 
 #### `container[<X>,<Y>]`

@@ -1324,7 +1324,7 @@ void Client::handleCommand_SrpBytesSandB(NetworkPacket* pkt)
 	Send(&resp_pkt);
 }
 
-void Client::handleCommand_FormspecPrepend(NetworkPacket* pkt)
+void Client::handleCommand_FormspecPrepend(NetworkPacket *pkt)
 {
 	LocalPlayer *player = m_env.getLocalPlayer();
 	assert(player != NULL);

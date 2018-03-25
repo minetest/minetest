@@ -293,7 +293,8 @@ public:
 	~GUIFormSpecMenu();
 
 	static void create(GUIFormSpecMenu *&cur_formspec, Client *client,
-		JoystickController *joystick, IFormSource *fs_src, TextDest *txt_dest, std::string formspecPrepend);
+		JoystickController *joystick, IFormSource *fs_src, TextDest *txt_dest,
+		const std::string &formspecPrepend);
 
 	void setFormSpec(const std::string &formspec_string,
 			const InventoryLocation &current_inventory_location)

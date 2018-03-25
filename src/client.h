@@ -432,6 +432,11 @@ public:
 	bool leaveModChannel(const std::string &channel);
 	bool sendModChannelMessage(const std::string &channel, const std::string &message);
 	ModChannel *getModChannel(const std::string &channel);
+
+	const std::string &getFormspecPrepend()
+	{
+		return getEnv().getLocalPlayer()->formspec_prepend;
+	}
 private:
 	void loadMods();
 	bool checkBuiltinIntegrity();
