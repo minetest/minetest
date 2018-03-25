@@ -40,10 +40,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 struct EnumString ModApiMapgen::es_BiomeTerrainType[] =
 {
 	{BIOMETYPE_NORMAL, "normal"},
-	{BIOMETYPE_LIQUID, "liquid"},
-	{BIOMETYPE_NETHER, "nether"},
-	{BIOMETYPE_AETHER, "aether"},
-	{BIOMETYPE_FLAT,   "flat"},
 	{0, NULL},
 };
 
