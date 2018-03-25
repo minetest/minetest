@@ -152,7 +152,7 @@ void ScriptApiBase::clientOpenLibs(lua_State *L)
 		{ LUA_JITLIBNAME,  luaopen_jit     },
 #endif
 	};
-	
+
 	for (const std::pair<std::string, lua_CFunction> &lib : m_libs) {
 	    lua_pushcfunction(L, lib.second);
 	    lua_pushstring(L, lib.first.c_str());
@@ -384,38 +384,27 @@ void ScriptApiBase::objectrefGetOrCreate(lua_State *L,
 
 void ScriptApiBase::pushPlayerHPChangeReason(lua_State *L, const PlayerHPChangeReason &reason)
 {
-	lua_newtable(L);
+	if (reason.lua_reference >= 0) {
+		lua_rawgeti(L, LUA_REGISTRYINDEX, reason.lua_reference);
+		luaL_unref(L, LUA_REGISTRYINDEX, reason.lua_reference);
+	} else
+		lua_newtable(L);
+
+	lua_pushstring(L, reason.getTypeAsString().c_str());
+	lua_setfield(L, -2, "type");
+
+	lua_pushstring(L, reason.from_mod ? "mod" : "engine");
+	lua_setfield(L, -2, "from");
 
 	switch (reason.type) {
-	case PlayerHPChangeReason::SET_HP:
-		lua_pushstring(L, "set_hp");
-		lua_setfield(L, -2, "type");
-		break;
 	case PlayerHPChangeReason::PLAYER_PUNCH:
-		lua_pushstring(L, "punch");
-		lua_setfield(L, -2, "type");
-
 		if (reason.player) {
 			objectrefGetOrCreate(L, reason.player);
 			lua_setfield(L, -2, "puncher");
 		}
 
 		break;
-	case PlayerHPChangeReason::FALL:
-		lua_pushstring(L, "fall");
-		lua_setfield(L, -2, "type");
-		break;
-	case PlayerHPChangeReason::NODE_DAMAGE:
-		lua_pushstring(L, "node_damage");
-		lua_setfield(L, -2, "type");
-		break;
-	case PlayerHPChangeReason::DROWNING:
-		lua_pushstring(L, "drowning");
-		lua_setfield(L, -2, "type");
-		break;
-	case PlayerHPChangeReason::RESPAWN:
-		lua_pushstring(L, "respawned");
-		lua_setfield(L, -2, "type");
+	default:
 		break;
 	}
 }

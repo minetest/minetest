@@ -194,8 +194,7 @@ int ObjectRef::l_punch(lua_State *L)
 	// If the punched is a player, and its HP changed
 	if (src_original_hp != co->getHP() &&
 			co->getType() == ACTIVEOBJECT_TYPE_PLAYER) {
-		getServer(L)->SendPlayerHPOrDie((PlayerSAO *)co,
-				PlayerHPChangeReason(PlayerHPChangeReason::PLAYER_PUNCH, puncher));
+		getServer(L)->SendPlayerHPOrDie((PlayerSAO *)co, PlayerHPChangeReason(PlayerHPChangeReason::PLAYER_PUNCH, puncher));
 	}
 
 	// If the puncher is a player, and its HP changed
@@ -228,17 +227,33 @@ int ObjectRef::l_right_click(lua_State *L)
 int ObjectRef::l_set_hp(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
+
+	// Get Object
 	ObjectRef *ref = checkobject(L, 1);
 	luaL_checknumber(L, 2);
 	ServerActiveObject *co = getobject(ref);
-	if (co == NULL) return 0;
+	if (co == NULL)
+		return 0;
+
+	// Get HP
 	int hp = lua_tonumber(L, 2);
-	/*infostream<<"ObjectRef::l_set_hp(): id="<<co->getId()
-			<<" hp="<<hp<<std::endl;*/
-	// Do it
 
+	// Get Reason
 	PlayerHPChangeReason reason(PlayerHPChangeReason::SET_HP);
+	reason.from_mod = true;
+	if (lua_istable(L, 3)) {
+		lua_pushvalue(L, 3);
 
+		lua_getfield(L, -1, "type");
+		if (lua_isstring(L, -1) && !reason.setTypeFromString(lua_tostring(L, -1))) {
+			errorstream << "Bad type given!" << std::endl;
+		}
+		lua_pop(L, 1);
+
+		reason.lua_reference = luaL_ref(L, LUA_REGISTRYINDEX);
+	}
+
+	// Do it
 	co->setHP(hp, reason);
 	if (co->getType() == ACTIVEOBJECT_TYPE_PLAYER)
 		getServer(L)->SendPlayerHPOrDie((PlayerSAO *)co, reason);

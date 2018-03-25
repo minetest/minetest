@@ -431,6 +431,48 @@ struct PlayerHPChangeReason {
 
 	Type type = SET_HP;
 	ServerActiveObject *player;
+	bool from_mod = false;
+	int lua_reference = -1;
+
+	bool setTypeFromString(const std::string &typestr)
+	{
+		if (typestr == "set_hp")
+			type = SET_HP;
+		else if (typestr == "punch")
+			type = PLAYER_PUNCH;
+		else if (typestr == "fall")
+			type = FALL;
+		else if (typestr == "node_damage")
+			type = NODE_DAMAGE;
+		else if (typestr == "drowning")
+			type = DROWNING;
+		else if (typestr == "respawned")
+			type = RESPAWN;
+		else
+			return false;
+
+		return true;
+	}
+
+	std::string getTypeAsString() const
+	{
+		switch (type) {
+		case PlayerHPChangeReason::SET_HP:
+			return "set_hp";
+		case PlayerHPChangeReason::PLAYER_PUNCH:
+			return "punch";
+		case PlayerHPChangeReason::FALL:
+			return "fall";
+		case PlayerHPChangeReason::NODE_DAMAGE:
+			return "node_damage";
+		case PlayerHPChangeReason::DROWNING:
+			return "drowning";
+		case PlayerHPChangeReason::RESPAWN:
+			return "respawned";
+		default:
+			return "?";
+		}
+	}
 
 	PlayerHPChangeReason(Type type, ServerActiveObject *player=NULL):
 			type(type), player(player)
