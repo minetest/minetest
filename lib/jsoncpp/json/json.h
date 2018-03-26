@@ -1,4 +1,4 @@
-/// Json-cpp amalgated header (http://jsoncpp.sourceforge.net/).
+/// Json-cpp amalgamated header (http://jsoncpp.sourceforge.net/).
 /// It is intended to be used with #include "json/json.h"
 
 // //////////////////////////////////////////////////////////////////////
@@ -72,9 +72,9 @@ license you like.
 
 
 
-#ifndef JSON_AMALGATED_H_INCLUDED
-# define JSON_AMALGATED_H_INCLUDED
-/// If defined, indicates that the source file is amalgated
+#ifndef JSON_AMALGAMATED_H_INCLUDED
+# define JSON_AMALGAMATED_H_INCLUDED
+/// If defined, indicates that the source file is amalgamated
 /// to prevent private header inclusion.
 #define JSON_IS_AMALGAMATION
 
@@ -87,10 +87,10 @@ license you like.
 #ifndef JSON_VERSION_H_INCLUDED
 # define JSON_VERSION_H_INCLUDED
 
-# define JSONCPP_VERSION_STRING "1.8.3"
+# define JSONCPP_VERSION_STRING "1.8.4"
 # define JSONCPP_VERSION_MAJOR 1
 # define JSONCPP_VERSION_MINOR 8
-# define JSONCPP_VERSION_PATCH 3
+# define JSONCPP_VERSION_PATCH 4
 # define JSONCPP_VERSION_QUALIFIER
 # define JSONCPP_VERSION_HEXA ((JSONCPP_VERSION_MAJOR << 24) | (JSONCPP_VERSION_MINOR << 16) | (JSONCPP_VERSION_PATCH << 8))
 
@@ -143,9 +143,9 @@ license you like.
 #define JSON_USE_EXCEPTION 1
 #endif
 
-/// If defined, indicates that the source file is amalgated
+/// If defined, indicates that the source file is amalgamated
 /// to prevent private header inclusion.
-/// Remarks: it is automatically defined in the generated amalgated header.
+/// Remarks: it is automatically defined in the generated amalgamated header.
 // #define JSON_IS_AMALGAMATION
 
 #ifdef JSON_IN_CPPTL
@@ -196,7 +196,7 @@ license you like.
 
 #endif // defined(_MSC_VER)
 
-// In c++11 the override keyword allows you to explicity define that a function
+// In c++11 the override keyword allows you to explicitly define that a function
 // is intended to override the base-class version.  This makes the code more
 // managable and fixes a set of common hard-to-find bugs.
 #if __cplusplus >= 201103L
@@ -561,7 +561,7 @@ enum CommentPlacement {
 
 /** \brief Lightweight wrapper to tag static string.
  *
- * Value constructor and objectValue member assignement takes advantage of the
+ * Value constructor and objectValue member assignment takes advantage of the
  * StaticString and avoid the cost of string duplication when storing the
  * string or the member name.
  *
@@ -634,6 +634,9 @@ public:
   typedef Json::LargestInt LargestInt;
   typedef Json::LargestUInt LargestUInt;
   typedef Json::ArrayIndex ArrayIndex;
+
+  // Required for boost integration, e. g. BOOST_TEST
+  typedef std::string value_type;
 
   static const Value& null;  ///< We regret this reference to a global instance; prefer the simpler Value().
   static const Value& nullRef;  ///< just a kludge for binary-compatibility; same as null
@@ -842,8 +845,8 @@ Json::Value obj_value(Json::objectValue); // {}
   /// otherwise, false.
   bool empty() const;
 
-  /// Return isNull()
-  bool operator!() const;
+  /// Return !isNull()
+  explicit operator bool() const;
 
   /// Remove all object members and array elements.
   /// \pre type() is arrayValue, objectValue, or nullValue
@@ -963,13 +966,11 @@ Json::Value obj_value(Json::objectValue); // {}
   /// \pre type() is objectValue or nullValue
   /// \post type() is unchanged
   /// \deprecated
-  JSONCPP_DEPRECATED("")
-  Value removeMember(const char* key);
+  void removeMember(const char* key);
   /// Same as removeMember(const char*)
   /// \param key may contain embedded nulls.
   /// \deprecated
-  JSONCPP_DEPRECATED("")
-  Value removeMember(const JSONCPP_STRING& key);
+  void removeMember(const JSONCPP_STRING& key);
   /// Same as removeMember(const char* begin, const char* end, Value* removed),
   /// but 'key' is null-terminated.
   bool removeMember(const char* key, Value* removed);
@@ -1786,7 +1787,7 @@ JSON_API JSONCPP_ISTREAM& operator>>(JSONCPP_ISTREAM&, Value&);
 
 // Disable warning C4251: <data member>: <type> needs to have dll-interface to
 // be used by...
-#if defined(JSONCPP_DISABLE_DLL_INTERFACE_WARNING)
+#if defined(JSONCPP_DISABLE_DLL_INTERFACE_WARNING) && defined(_MSC_VER)
 #pragma warning(push)
 #pragma warning(disable : 4251)
 #endif // if defined(JSONCPP_DISABLE_DLL_INTERFACE_WARNING)
@@ -1870,7 +1871,7 @@ public:
     - "dropNullPlaceholders": false or true
       - Drop the "null" string from the writer's output for nullValues.
         Strictly speaking, this is not valid JSON. But when the output is being
-        fed to a browser's Javascript, it makes for smaller output and the
+        fed to a browser's JavaScript, it makes for smaller output and the
         browser can handle the output just fine.
     - "useSpecialFloats": false or true
       - If true, outputs non-finite floating point values in the following way:
@@ -1927,8 +1928,11 @@ public:
  * \sa Reader, Value
  * \deprecated Use StreamWriterBuilder.
  */
+#if defined(_MSC_VER)
+#pragma warning(push)
+#pragma warning(disable:4996) // Deriving from deprecated class
+#endif
 class JSONCPP_DEPRECATED("Use StreamWriterBuilder instead") JSON_API FastWriter : public Writer {
-
 public:
   FastWriter();
   ~FastWriter() JSONCPP_OVERRIDE {}
@@ -1937,7 +1941,7 @@ public:
 
   /** \brief Drop the "null" string from the writer's output for nullValues.
    * Strictly speaking, this is not valid JSON. But when the output is being
-   * fed to a browser's Javascript, it makes for smaller output and the
+   * fed to a browser's JavaScript, it makes for smaller output and the
    * browser can handle the output just fine.
    */
   void dropNullPlaceholders();
@@ -1951,10 +1955,13 @@ private:
   void writeValue(const Value& value);
 
   JSONCPP_STRING document_;
-  bool yamlCompatiblityEnabled_;
+  bool yamlCompatibilityEnabled_;
   bool dropNullPlaceholders_;
   bool omitEndingLineFeed_;
 };
+#if defined(_MSC_VER)
+#pragma warning(pop)
+#endif
 
 /** \brief Writes a Value in <a HREF="http://www.json.org">JSON</a> format in a
  *human friendly way.
@@ -1980,6 +1987,10 @@ private:
  * \sa Reader, Value, Value::setComment()
  * \deprecated Use StreamWriterBuilder.
  */
+#if defined(_MSC_VER)
+#pragma warning(push)
+#pragma warning(disable:4996) // Deriving from deprecated class
+#endif
 class JSONCPP_DEPRECATED("Use StreamWriterBuilder instead") JSON_API StyledWriter : public Writer {
 public:
   StyledWriter();
@@ -1995,7 +2006,7 @@ public: // overridden from Writer
 private:
   void writeValue(const Value& value);
   void writeArrayValue(const Value& value);
-  bool isMultineArray(const Value& value);
+  bool isMultilineArray(const Value& value);
   void pushValue(const JSONCPP_STRING& value);
   void writeIndent();
   void writeWithIndent(const JSONCPP_STRING& value);
@@ -2015,6 +2026,9 @@ private:
   unsigned int indentSize_;
   bool addChildValues_;
 };
+#if defined(_MSC_VER)
+#pragma warning(pop)
+#endif
 
 /** \brief Writes a Value in <a HREF="http://www.json.org">JSON</a> format in a
  human friendly way,
@@ -2041,6 +2055,10 @@ private:
  * \sa Reader, Value, Value::setComment()
  * \deprecated Use StreamWriterBuilder.
  */
+#if defined(_MSC_VER)
+#pragma warning(push)
+#pragma warning(disable:4996) // Deriving from deprecated class
+#endif
 class JSONCPP_DEPRECATED("Use StreamWriterBuilder instead") JSON_API StyledStreamWriter {
 public:
 /**
@@ -2061,7 +2079,7 @@ public:
 private:
   void writeValue(const Value& value);
   void writeArrayValue(const Value& value);
-  bool isMultineArray(const Value& value);
+  bool isMultilineArray(const Value& value);
   void pushValue(const JSONCPP_STRING& value);
   void writeIndent();
   void writeWithIndent(const JSONCPP_STRING& value);
@@ -2082,6 +2100,9 @@ private:
   bool addChildValues_ : 1;
   bool indented_ : 1;
 };
+#if defined(_MSC_VER)
+#pragma warning(pop)
+#endif
 
 #if defined(JSON_HAS_INT64)
 JSONCPP_STRING JSON_API valueToString(Int value);
@@ -2183,4 +2204,4 @@ JSON_API JSONCPP_OSTREAM& operator<<(JSONCPP_OSTREAM&, const Value& root);
 
 
 
-#endif //ifndef JSON_AMALGATED_H_INCLUDED
+#endif //ifndef JSON_AMALGAMATED_H_INCLUDED
