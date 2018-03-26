@@ -36,13 +36,8 @@ typedef u8 biome_t;
 
 #define BIOME_NONE ((biome_t)0)
 
-// TODO(hmmmm): Decide whether this is obsolete or will be used in the future
 enum BiomeType {
 	BIOMETYPE_NORMAL,
-	BIOMETYPE_LIQUID,
-	BIOMETYPE_NETHER,
-	BIOMETYPE_AETHER,
-	BIOMETYPE_FLAT,
 };
 
 class Biome : public ObjDef, public NodeResolver {
