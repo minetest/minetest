@@ -120,7 +120,7 @@ public:
 #if !defined(_WIN32)
 		is_tty = isatty(fileno(stdout));
 #else
-		is_tty = false;
+		is_tty = _isatty(_fileno(stdout));
 #endif
 	}
 

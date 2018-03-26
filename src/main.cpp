@@ -266,15 +266,9 @@ static void set_allowed_options(OptionList *allowed_options)
 			"'name' lists names, 'both' lists both)"))));
 	allowed_options->insert(std::make_pair("quiet", ValueSpec(VALUETYPE_FLAG,
 			_("Print to console errors only"))));
-#if !defined(_WIN32)
 	allowed_options->insert(std::make_pair("color", ValueSpec(VALUETYPE_STRING,
 			_("Coloured logs ('always', 'never' or 'auto'), defaults to 'auto'"
 			))));
-#else
-	allowed_options->insert(std::make_pair("color", ValueSpec(VALUETYPE_STRING,
-			_("Coloured logs ('always' or 'never'), defaults to 'never'"
-			))));
-#endif
 	allowed_options->insert(std::make_pair("info", ValueSpec(VALUETYPE_FLAG,
 			_("Print more information to console"))));
 	allowed_options->insert(std::make_pair("verbose",  ValueSpec(VALUETYPE_FLAG,
