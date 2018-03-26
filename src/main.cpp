@@ -407,8 +407,10 @@ static void setup_log_params(const Settings &cmd_args)
 			Logger::color_mode = LOG_COLOR_AUTO;
 		else if (mode == "always")
 			Logger::color_mode = LOG_COLOR_ALWAYS;
-		else
+		else if (mode == "never")
 			Logger::color_mode = LOG_COLOR_NEVER;
+		else
+			errorstream << "Invalid color mode: " << mode << std::endl;
 	}
 
 	// If trace is enabled, enable logging of certain things
