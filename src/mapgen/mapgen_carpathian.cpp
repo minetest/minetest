@@ -405,19 +405,20 @@ int MapgenCarpathian::generateTerrain()
 		float height4 = noise_height4->result[index2d];
 
 		// Rolling hills
-		float hter = noise_hills_terrain->result[index2d];
+		float hterabs = fabs(noise_hills_terrain->result[index2d]);
 		float n_hills = noise_hills->result[index2d];
-		float hill_mnt = pow(fabs(hter), 3.f) * pow(n_hills, 2.f);
+		float hill_mnt = hterabs * hterabs * hterabs * n_hills * n_hills;
 
 		// Ridged mountains
-		float rter = noise_ridge_terrain->result[index2d];
+		float rterabs = fabs(noise_ridge_terrain->result[index2d]);
 		float n_ridge_mnt = noise_ridge_mnt->result[index2d];
-		float ridge_mnt = pow(fabs(rter), 3.f) * (1.f - fabs(n_ridge_mnt));
+		float ridge_mnt = rterabs * rterabs * rterabs *
+			(1.f - fabs(n_ridge_mnt));
 
 		// Step (terraced) mountains
-		float ster = noise_step_terrain->result[index2d];
+		float sterabs = fabs(noise_step_terrain->result[index2d]);
 		float n_step_mnt = noise_step_mnt->result[index2d];
-		float step_mnt = pow(fabs(ster), 3.f) * getSteps(n_step_mnt);
+		float step_mnt = sterabs * sterabs * sterabs * getSteps(n_step_mnt);
 
 		// Initialise 3D noise index and voxelmanip index to column base
 		u32 index3d = (z - node_min.Z) * zstride_1u1d + (x - node_min.X);
