@@ -153,9 +153,8 @@ void GUIKeyChangeMenu::regenerateGui(v2u32 screensize)
 		{
 			core::rect < s32 > rect(0, 0, 100, 30);
 			rect += topleft + v2s32(offset.X + 120, offset.Y - 5);
-			const wchar_t *text = wgettext(k->key.name());
-			k->button = Environment->addButton(rect, this, k->id, text);
-			delete[] text;
+			k->button = Environment->addButton(rect, this, k->id,
+							   k->key.name()[0] ? wgettext(k->key.name()) : L"");
 		}
 		if ((i + 1) % KMaxButtonPerColumns == 0) {
 			offset.X += 230;
