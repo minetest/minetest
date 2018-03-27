@@ -51,12 +51,13 @@ extern wchar_t *utf8_to_wide_c(const char *str);
 // The returned string is allocated using new
 inline const wchar_t *wgettext(const char *str)
 {
-	return utf8_to_wide_c(gettext(str));
+	// We must check here that is not an empty string to avoid trying to translate it
+	return str[0] ? utf8_to_wide_c(gettext(str)) : L"";
 }
 
 inline std::string strgettext(const std::string &text)
 {
-	return gettext(text.c_str());
+	return text.empty() ? "" : gettext(text.c_str());
 }
 
 #endif
