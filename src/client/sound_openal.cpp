@@ -295,6 +295,11 @@ public:
 			<< ", using " << alcGetString(m_device.get(), ALC_DEVICE_SPECIFIER)
 			<< std::endl;
 	}
+
+	~SoundManagerSingleton()
+	{
+		infostream << "Audio: Global Deinitialized." << std::endl;
+	}
 };
 
 class OpenALSoundManager: public ISoundManager
