@@ -29,8 +29,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "porting.h"
 #include "convert_json.h"
 
-static bool parseDependsString(std::string &dep,
-		std::set<char> &symbols)
+bool parseDependsString(std::string &dep,
+		std::unordered_set<char> &symbols)
 {
 	dep = trim(dep);
 	symbols.clear();
@@ -101,8 +101,8 @@ void parseModContents(ModSpec &spec)
 				dependencies.push_back(dep);
 			}
 
-			for (auto dependency : dependencies) {
-				std::set<char> symbols;
+			for (auto &dependency : dependencies) {
+				std::unordered_set<char> symbols;
 				if (parseDependsString(dependency, symbols)) {
 					if (symbols.count('?') != 0) {
 						spec.optdepends.insert(dependency);

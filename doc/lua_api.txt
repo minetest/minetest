@@ -154,7 +154,7 @@ A key-value store of mod details.
 * `name` - the mod name. Allows Minetest to determine the mod name even if the
            folder is wrongly named.
 * `description` - Description of mod to be shown in the Mods tab of the mainmenu.
-* `depends` - A comma separated list of dependencies. These are mods that mus
+* `depends` - A comma separated list of dependencies. These are mods that must
               be loaded before this mod.
 * `optional_depends` - A comma separated list of optional dependencies.
                        Like a dependency, but no error if the mod doesn't exist.
