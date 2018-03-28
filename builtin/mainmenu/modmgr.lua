@@ -281,13 +281,6 @@ function modmgr.get_dependencies(path)
 end
 
 --------------------------------------------------------------------------------
-function modmgr.get_description(path)
-	local info = core.get_mod_info(path)
-	print(dump(info))
-	return info.description or fgettext("No mod description available")
-end
-
---------------------------------------------------------------------------------
 function modmgr.get_worldconfig(worldpath)
 	local filename = worldpath ..
 				DIR_DELIM .. "world.mt"

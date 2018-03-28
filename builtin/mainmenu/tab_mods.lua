@@ -60,7 +60,10 @@ local function get_formspec(tabview, name, tabdata)
 				"label[5.5,1.7;".. fgettext("Mod Information:") .. "]" ..
 				"textlist[5.5,2.2;6.2,2.4;description;"
 
-		local descriptionlines = core.wrap_text(modmgr.get_description(selected_mod.path), 42, true)
+
+		local info = core.get_mod_info(selected_mod.path)
+		local desc = info.description or fgettext("No mod description available")
+		local descriptionlines = core.wrap_text(desc, 42, true)
 		for i = 1, #descriptionlines do
 			retval = retval .. core.formspec_escape(descriptionlines[i]) .. ","
 		end
@@ -73,7 +76,8 @@ local function get_formspec(tabview, name, tabdata)
 				.. fgettext("Uninstall Selected Modpack") .. "]"
 		else
 			--show dependencies
-			local toadd_hard, toadd_soft = modmgr.get_dependencies(selected_mod.path)
+			local toadd_hard = table.concat(info.depends, ",")
+			local toadd_soft = table.concat(info.optional_depends, ",")
 			if toadd_hard == "" and toadd_soft == "" then
 				retval = retval .. "," .. fgettext("No dependencies.")
 			else
