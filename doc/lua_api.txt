@@ -152,9 +152,11 @@ The location of this directory can be fetched by using
 A key-value store of mod details.
 
 * `name` - the mod name. Allows Minetest to determine the mod name even if the folder is wrongly named.
-* `dependencies` - A comma separated list of dependencies. These are mods that must be loaded before this mod.
-* `optional_dependencies` - A comma separated list of optional dependencies. Like a dependency, but no error if the mod doesn't exist.
-* `description` - Description of mod used in the main menu.
+* `description` - Description of mod to be shown in the Mods tab of the mainmenu.
+* `depends` - A comma separated list of dependencies. These are mods that must be loaded before this mod.
+* `optional_depends` - A comma separated list of optional dependencies. Like a dependency, but no error if the mod doesn't exist.
+
+Note: to support 0.4.x, please also provide depends.txt.
 
 ### `screenshot.png`
 A screenshot shown in the mod manager within the main menu. It should
@@ -162,6 +164,8 @@ have an aspect ratio of 3:2 and a minimum size of 300×200 pixels.
 
 ### `depends.txt`
 **Deprecated:** you should use mod.conf instead.
+
+This file is used if there are no dependencies in mod.conf.
 
 List of mods that have to be loaded before loading this mod.
 
@@ -172,13 +176,11 @@ to a single modname. This means that if the specified mod
 is missing, it does not prevent this mod from being loaded.
 
 ### `description.txt`
-<<<<<<< HEAD
-A file containing a description to be shown in the Mods tab of the mainmenu.
-=======
 **Deprecated:** you should use mod.conf instead.
 
-A File containing description to be shown within mainmenu.
->>>>>>> Load dependencies and description from mod.conf
+This file is used if there is no description in mod.conf.
+
+A file containing a description to be shown in the Mods tab of the mainmenu.
 
 ### `settingtypes.txt`
 A file in the same format as the one in builtin. It will be parsed by the

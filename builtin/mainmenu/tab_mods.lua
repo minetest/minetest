@@ -56,18 +56,14 @@ local function get_formspec(tabview, name, tabdata)
 
 		retval = retval ..
 				"image[5.5,0;3,2;" .. core.formspec_escape(modscreenshot) .. "]" ..
-				"label[8.25,0.6;" .. selected_mod.name .. "]"
+				"label[8.25,0.6;" .. selected_mod.name .. "]" ..
+				"label[5.5,1.7;".. fgettext("Mod Information:") .. "]" ..
+				"textlist[5.5,2.2;6.2,2.4;description;"
 
 		local descriptionlines = core.wrap_text(modmgr.get_description(selected_mod.path), 42, true)
-
-		retval = retval ..
-			"label[5.5,1.7;".. fgettext("Mod Information:") .. "]" ..
-			"textlist[5.5,2.2;6.2,2.4;description;"
-
 		for i = 1, #descriptionlines do
 			retval = retval .. core.formspec_escape(descriptionlines[i]) .. ","
 		end
-
 
 		if selected_mod.is_modpack then
 			retval = retval .. ";0]" ..
