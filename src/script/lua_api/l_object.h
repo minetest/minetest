@@ -253,6 +253,12 @@ private:
 	// get_inventory_formspec(self) -> formspec
 	static int l_get_inventory_formspec(lua_State *L);
 
+	// set_formspec_prepend(self, formspec)
+	static int l_set_formspec_prepend(lua_State *L);
+
+	// get_formspec_prepend(self) -> formspec
+	static int l_get_formspec_prepend(lua_State *L);
+
 	// get_player_control(self)
 	static int l_get_player_control(lua_State *L);
 

@@ -2001,6 +2001,10 @@ supported. It is a string, with a somewhat strange format.
 Spaces and newlines can be inserted between the blocks, as is used in the
 examples.
 
+WARNING: Minetest allows you to add elements to every single formspec instance
+using player:set_formspec_prepend(), which may be the reason backgrounds are
+appearing when you don't expect them to. See `no_prepend[]`
+
 ### Examples
 
 #### Chest
@@ -2052,6 +2056,10 @@ examples.
 
 * `position` and `anchor` elements need suitable values to avoid a formspec
   extending off the game window due to particular game window sizes.
+
+#### `no_prepend[]`
+* Must be used after the `size`, `position`, and `anchor` elements (if present).
+* Disables player:set_formspec_prepend() from applying to this formspec.
 
 #### `container[<X>,<Y>]`
 * Start of a container block, moves all physical elements in the container by
@@ -4046,6 +4054,13 @@ This is basically a reference to a C++ `ServerActiveObject`
     * Redefine player's inventory form
     * Should usually be called in `on_joinplayer`
 * `get_inventory_formspec()`: returns a formspec string
+* `set_formspec_prepend(formspec)`:
+    * the formspec string will be added to every formspec shown to the user,
+      except for those with a no_prepend[] tag.
+    * This should be used to set style elements such as background[] and
+      bgcolor[], any non-style elements (eg: label) may result in weird behaviour.
+    * Only affects formspecs shown after this is called.
+* `get_formspec_prepend(formspec)`: returns a formspec string.
 * `get_player_control()`: returns table with player pressed keys
     * The table consists of fields with boolean value representing the pressed
       keys, the fields are jump, right, left, LMB, RMB, sneak, aux1, down, up.

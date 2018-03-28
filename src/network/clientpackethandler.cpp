@@ -1324,6 +1324,15 @@ void Client::handleCommand_SrpBytesSandB(NetworkPacket* pkt)
 	Send(&resp_pkt);
 }
 
+void Client::handleCommand_FormspecPrepend(NetworkPacket *pkt)
+{
+	LocalPlayer *player = m_env.getLocalPlayer();
+	assert(player != NULL);
+
+	// Store formspec in LocalPlayer
+	*pkt >> player->formspec_prepend;
+}
+
 void Client::handleCommand_CSMFlavourLimits(NetworkPacket *pkt)
 {
 	*pkt >> m_csm_flavour_limits >> m_csm_noderange_limit;

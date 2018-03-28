@@ -1244,6 +1244,37 @@ int ObjectRef::l_get_inventory_formspec(lua_State *L)
 	return 1;
 }
 
+// set_formspec_prepend(self, formspec)
+int ObjectRef::l_set_formspec_prepend(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	ObjectRef *ref = checkobject(L, 1);
+	RemotePlayer *player = getplayer(ref);
+	if (player == NULL)
+		return 0;
+
+	std::string formspec = luaL_checkstring(L, 2);
+
+	player->formspec_prepend = formspec;
+	getServer(L)->reportFormspecPrependModified(player->getName());
+	lua_pushboolean(L, true);
+	return 1;
+}
+
+// get_formspec_prepend(self) -> formspec
+int ObjectRef::l_get_formspec_prepend(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	ObjectRef *ref = checkobject(L, 1);
+	RemotePlayer *player = getplayer(ref);
+	if (player == NULL)
+		 return 0;
+
+	std::string formspec = player->formspec_prepend;
+	lua_pushlstring(L, formspec.c_str(), formspec.size());
+	return 1;
+}
+
 // get_player_control(self)
 int ObjectRef::l_get_player_control(lua_State *L)
 {
@@ -1817,6 +1848,8 @@ const luaL_Reg ObjectRef::methods[] = {
 	luamethod(ObjectRef, set_attribute),
 	luamethod(ObjectRef, set_inventory_formspec),
 	luamethod(ObjectRef, get_inventory_formspec),
+	luamethod(ObjectRef, set_formspec_prepend),
+	luamethod(ObjectRef, get_formspec_prepend),
 	luamethod(ObjectRef, get_player_control),
 	luamethod(ObjectRef, get_player_control_bits),
 	luamethod(ObjectRef, set_physics_override),

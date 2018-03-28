@@ -86,11 +86,13 @@ inline u32 clamp_u8(s32 value)
 GUIFormSpecMenu::GUIFormSpecMenu(JoystickController *joystick,
 		gui::IGUIElement *parent, s32 id, IMenuManager *menumgr,
 		Client *client, ISimpleTextureSource *tsrc, IFormSource *fsrc, TextDest *tdst,
-		bool remap_dbl_click) :
+		std::string formspecPrepend,
+		bool remap_dbl_click):
 	GUIModalMenu(RenderingEngine::get_gui_env(), parent, id, menumgr),
 	m_invmgr(client),
 	m_tsrc(tsrc),
 	m_client(client),
+	m_formspec_prepend(formspecPrepend),
 	m_form_src(fsrc),
 	m_text_dst(tdst),
 	m_joystick(joystick),
@@ -128,11 +130,12 @@ GUIFormSpecMenu::~GUIFormSpecMenu()
 }
 
 void GUIFormSpecMenu::create(GUIFormSpecMenu *&cur_formspec, Client *client,
-	JoystickController *joystick, IFormSource *fs_src, TextDest *txt_dest)
+	JoystickController *joystick, IFormSource *fs_src, TextDest *txt_dest,
+	const std::string &formspecPrepend)
 {
 	if (cur_formspec == nullptr) {
 		cur_formspec = new GUIFormSpecMenu(joystick, guiroot, -1, &g_menumgr,
-			client, client->getTextureSource(), fs_src, txt_dest);
+			client, client->getTextureSource(), fs_src, txt_dest, formspecPrepend);
 		cur_formspec->doPause = false;
 
 		/*
@@ -144,6 +147,7 @@ void GUIFormSpecMenu::create(GUIFormSpecMenu *&cur_formspec, Client *client,
 		*/
 
 	} else {
+		cur_formspec->setFormspecPrepend(formspecPrepend);
 		cur_formspec->setFormSource(fs_src);
 		cur_formspec->setTextDest(txt_dest);
 	}
@@ -2008,7 +2012,6 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 		);
 	}
 
-
 	m_slotbg_n = video::SColor(255,128,128,128);
 	m_slotbg_h = video::SColor(255,192,192,192);
 
@@ -2040,7 +2043,7 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 
 	/* try to read version from first element only */
 	if (!elements.empty()) {
-		if ( parseVersionDirect(elements[0]) ) {
+		if (parseVersionDirect(elements[0])) {
 			i++;
 		}
 	}
@@ -2067,6 +2070,18 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 		}
 	}
 
+	/* "no_prepend" element is always after "position" (or  "size" element) if it used */
+	bool enable_prepends = true;
+	for (; i < elements.size(); i++) {
+		if (elements[i].empty())
+			break;
+
+		std::vector<std::string> parts = split(elements[i], '[');
+		if (parts[0] == "no_prepend")
+			enable_prepends = false;
+		else
+			break;
+	}
 
 	if (mydata.explicit_size) {
 		// compute scaling for specified form size
@@ -2120,7 +2135,7 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 			// multiplied by gui_scaling, even if this means
 			// the form doesn't fit the screen.
 			double prefer_imgsize = mydata.screensize.Y / 15 *
-							gui_scaling;
+				gui_scaling;
 			double fitx_imgsize = mydata.screensize.X /
 				((5.0/4.0) * (0.5 + mydata.invsize.X));
 			double fity_imgsize = mydata.screensize.Y /
@@ -2173,12 +2188,19 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 	mydata.basepos = getBasePos();
 	m_tooltip_element->setOverrideFont(m_font);
 
-	gui::IGUISkin* skin = Environment->getSkin();
+	gui::IGUISkin *skin = Environment->getSkin();
 	sanity_check(skin);
 	gui::IGUIFont *old_font = skin->getFont();
 	skin->setFont(m_font);
 
 	pos_offset = v2s32();
+
+	if (enable_prepends) {
+		std::vector<std::string> prepend_elements = split(m_formspec_prepend, ']');
+		for (const auto &element : prepend_elements)
+			parseElement(&mydata, element);
+	}
+
 	for (; i< elements.size(); i++) {
 		parseElement(&mydata, elements[i]);
 	}

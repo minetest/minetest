@@ -165,6 +165,7 @@ GUIEngine::GUIEngine(JoystickController *joystick,
 			m_texture_source,
 			m_formspecgui,
 			m_buttonhandler,
+			"",
 			false);
 
 	m_menu->allowClose(false);

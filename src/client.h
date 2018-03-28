@@ -224,7 +224,8 @@ public:
 	void handleCommand_UpdatePlayerList(NetworkPacket* pkt);
 	void handleCommand_ModChannelMsg(NetworkPacket *pkt);
 	void handleCommand_ModChannelSignal(NetworkPacket *pkt);
-	void handleCommand_SrpBytesSandB(NetworkPacket* pkt);
+	void handleCommand_SrpBytesSandB(NetworkPacket *pkt);
+	void handleCommand_FormspecPrepend(NetworkPacket *pkt);
 	void handleCommand_CSMFlavourLimits(NetworkPacket *pkt);
 
 	void ProcessData(NetworkPacket *pkt);
@@ -432,6 +433,10 @@ public:
 	bool sendModChannelMessage(const std::string &channel, const std::string &message);
 	ModChannel *getModChannel(const std::string &channel);
 
+	const std::string &getFormspecPrepend() const
+	{
+		return m_env.getLocalPlayer()->formspec_prepend;
+	}
 private:
 	void loadMods();
 	bool checkBuiltinIntegrity();

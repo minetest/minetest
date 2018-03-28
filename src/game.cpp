@@ -2028,7 +2028,7 @@ void Game::openInventory()
 			|| !client->getScript()->on_inventory_open(fs_src->m_client->getInventory(inventoryloc))) {
 		TextDest *txt_dst = new TextDestPlayerInventory(client);
 		GUIFormSpecMenu::create(current_formspec, client, &input->joystick, fs_src,
-			txt_dst);
+			txt_dst, client->getFormspecPrepend());
 		cur_formname = "";
 		current_formspec->setFormSpec(fs_src->getForm(), inventoryloc);
 	}
@@ -2535,7 +2535,7 @@ void Game::handleClientEvent_ShowFormSpec(ClientEvent *event, CameraOrientation 
 			new TextDestPlayerInventory(client, *(event->show_formspec.formname));
 
 		GUIFormSpecMenu::create(current_formspec, client, &input->joystick,
-			fs_src, txt_dst);
+			fs_src, txt_dst, client->getFormspecPrepend());
 		cur_formname = *(event->show_formspec.formname);
 	}
 
@@ -2548,7 +2548,8 @@ void Game::handleClientEvent_ShowLocalFormSpec(ClientEvent *event, CameraOrienta
 	FormspecFormSource *fs_src = new FormspecFormSource(*event->show_formspec.formspec);
 	LocalFormspecHandler *txt_dst =
 		new LocalFormspecHandler(*event->show_formspec.formname, client);
-	GUIFormSpecMenu::create(current_formspec, client, &input->joystick, fs_src, txt_dst);
+	GUIFormSpecMenu::create(current_formspec, client, &input->joystick,
+			fs_src, txt_dst, client->getFormspecPrepend());
 
 	delete event->show_formspec.formspec;
 	delete event->show_formspec.formname;
@@ -3210,7 +3211,7 @@ void Game::handlePointingAtNode(const PointedThing &pointed,
 			TextDest *txt_dst = new TextDestNodeMetadata(nodepos, client);
 
 			GUIFormSpecMenu::create(current_formspec, client, &input->joystick, fs_src,
-				txt_dst);
+				txt_dst, client->getFormspecPrepend());
 			cur_formname.clear();
 
 			current_formspec->setFormSpec(meta->getString("formspec"), inventoryloc);
@@ -4105,7 +4106,8 @@ void Game::showPauseMenu()
 	FormspecFormSource *fs_src = new FormspecFormSource(os.str());
 	LocalFormspecHandler *txt_dst = new LocalFormspecHandler("MT_PAUSE_MENU");
 
-	GUIFormSpecMenu::create(current_formspec, client, &input->joystick, fs_src, txt_dst);
+	GUIFormSpecMenu::create(current_formspec, client, &input->joystick,
+			fs_src, txt_dst, client->getFormspecPrepend());
 	current_formspec->setFocus("btn_continue");
 	current_formspec->doPause = true;
 }

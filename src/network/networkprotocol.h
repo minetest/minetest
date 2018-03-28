@@ -187,6 +187,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 			'zoom_fov'.
 		Nodebox version 5
 		Add disconnected nodeboxes
+		Add TOCLIENT_FORMSPEC_PREPEND
 */
 
 #define LATEST_PROTOCOL_VERSION 36
@@ -644,7 +645,13 @@ enum ToClientCommand
 		std::string bytes_B
 	*/
 
-	TOCLIENT_NUM_MSG_TYPES = 0x61,
+	TOCLIENT_FORMSPEC_PREPEND = 0x61,
+	/*
+		u16 len
+		u8[len] formspec
+	*/
+
+	TOCLIENT_NUM_MSG_TYPES = 0x62,
 };
 
 enum ToServerCommand
@@ -930,4 +937,3 @@ enum CSMFlavourLimit : u64 {
 	CSM_FL_LOOKUP_NODES = 0x00000010, // Limit node lookups
 	CSM_FL_ALL = 0xFFFFFFFF,
 };
-

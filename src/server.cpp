@@ -1870,11 +1870,23 @@ void Server::SendPlayerInventoryFormspec(session_t peer_id)
 {
 	RemotePlayer *player = m_env->getPlayer(peer_id);
 	assert(player);
-	if(player->getPeerId() == PEER_ID_INEXISTENT)
+	if (player->getPeerId() == PEER_ID_INEXISTENT)
 		return;
 
 	NetworkPacket pkt(TOCLIENT_INVENTORY_FORMSPEC, 0, peer_id);
 	pkt.putLongString(FORMSPEC_VERSION_STRING + player->inventory_formspec);
+	Send(&pkt);
+}
+
+void Server::SendPlayerFormspecPrepend(session_t peer_id)
+{
+	RemotePlayer *player = m_env->getPlayer(peer_id);
+	assert(player);
+	if (player->getPeerId() == PEER_ID_INEXISTENT)
+		return;
+
+	NetworkPacket pkt(TOCLIENT_FORMSPEC_PREPEND, 0, peer_id);
+	pkt << FORMSPEC_VERSION_STRING + player->formspec_prepend;
 	Send(&pkt);
 }
 
@@ -2916,6 +2928,14 @@ void Server::reportInventoryFormspecModified(const std::string &name)
 	if (!player)
 		return;
 	SendPlayerInventoryFormspec(player->getPeerId());
+}
+
+void Server::reportFormspecPrependModified(const std::string &name)
+{
+	RemotePlayer *player = m_env->getPlayer(name.c_str());
+	if (!player)
+		return;
+	SendPlayerFormspecPrepend(player->getPeerId());
 }
 
 void Server::setIpBanned(const std::string &ip, const std::string &name)

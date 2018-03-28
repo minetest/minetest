@@ -287,12 +287,14 @@ public:
 			ISimpleTextureSource *tsrc,
 			IFormSource* fs_src,
 			TextDest* txt_dst,
+			std::string formspecPrepend,
 			bool remap_dbl_click = true);
 
 	~GUIFormSpecMenu();
 
 	static void create(GUIFormSpecMenu *&cur_formspec, Client *client,
-		JoystickController *joystick, IFormSource *fs_src, TextDest *txt_dest);
+		JoystickController *joystick, IFormSource *fs_src, TextDest *txt_dest,
+		const std::string &formspecPrepend);
 
 	void setFormSpec(const std::string &formspec_string,
 			const InventoryLocation &current_inventory_location)
@@ -300,6 +302,11 @@ public:
 		m_formspec_string = formspec_string;
 		m_current_inventory_location = current_inventory_location;
 		regenerateGui(m_screensize_old);
+	}
+
+	void setFormspecPrepend(const std::string &formspecPrepend)
+	{
+		m_formspec_prepend = formspecPrepend;
 	}
 
 	// form_src is deleted by this GUIFormSpecMenu
@@ -378,6 +385,7 @@ protected:
 	Client *m_client;
 
 	std::string m_formspec_string;
+	std::string m_formspec_prepend;
 	InventoryLocation m_current_inventory_location;
 
 	std::vector<ListDrawSpec> m_inventorylists;
