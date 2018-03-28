@@ -108,6 +108,13 @@ void parseModContents(ModSpec &spec)
 			}
 		}
 
+		if (info.exists("description")) {
+			spec.desc = info.get("description");
+		} else {
+			std::ifstream is((spec.path + DIR_DELIM + "description.txt").c_str());
+			spec.desc = std::string((std::istreambuf_iterator<char>(is)),
+					std::istreambuf_iterator<char>());
+		}
 	}
 }
 

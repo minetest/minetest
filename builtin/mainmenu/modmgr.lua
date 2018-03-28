@@ -276,74 +276,15 @@ function modmgr.get_dependencies(path)
 		return "", ""
 	end
 
-	local hard_dependencies = {}
-	local soft_dependencies = {}
-
-	-- Attempt to load from mod.conf
-	local mod_conf = Settings(path .. DIR_DELIM .. "mod.conf")
-	local mod_conf_contains_deps = false
-	if mod_conf then
-		local conf_hard_deps = mod_conf:get("dependencies")
-		if conf_hard_deps then
-			mod_conf_contains_deps = true
-			local list = conf_hard_deps:split()
-			for i, element in ipairs(list) do
-				table.insert(hard_dependencies, element:trim())
-			end
-		end
-
-		local conf_soft_deps = mod_conf:get("optional_dependencies")
-		if conf_soft_deps then
-			mod_conf_contains_deps = true
-			local list = conf_soft_deps:split()
-			for i, element in ipairs(list) do
-				table.insert(soft_dependencies, element:trim())
-			end
-		end
-	end
-
-	-- Fallback to depends.txt
-	if not mod_conf_contains_deps then
-		local filename = path ..
-				DIR_DELIM .. "depends.txt"
-
-		local dependencyfile = io.open(filename,"r")
-		if dependencyfile then
-			local dependency = dependencyfile:read("*l")
-			while dependency do
-				dependency = dependency:gsub("\r", "")
-				if string.sub(dependency, -1, -1) == "?" then
-					table.insert(soft_dependencies, string.sub(dependency, 1, -2):trim())
-				else
-					table.insert(hard_dependencies, dependency:trim())
-				end
-				dependency = dependencyfile:read()
-			end
-		end
-	end
-
-	return table.concat(hard_dependencies, ","), table.concat(soft_dependencies, ",")
+	local info = core.get_mod_info(path)
+	return table.concat(info.depends, ","), table.concat(info.optional_depends, ",")
 end
 
 --------------------------------------------------------------------------------
 function modmgr.get_description(path)
-	local mod_conf = Settings(path .. DIR_DELIM .. "mod.conf")
-	if mod_conf then
-		local description = mod_conf:get("description")
-		if description then
-			return description
-		end
-	end
-
-	local description_filepath = path .. DIR_DELIM .. "description.txt"
-	local descriptionfile = io.open(description_filepath,"r")
-	if descriptionfile then
-		local description = descriptionfile:read("*all")
-		descriptionfile:close()
-		return description
-	end
-
-	return fgettext("No mod description available")
+	local info = core.get_mod_info(path)
+	print(dump(info))
+	return info.description or fgettext("No mod description available")
 end
 
 --------------------------------------------------------------------------------

@@ -58,7 +58,7 @@ local function get_formspec(tabview, name, tabdata)
 				"image[5.5,0;3,2;" .. core.formspec_escape(modscreenshot) .. "]" ..
 				"label[8.25,0.6;" .. selected_mod.name .. "]"
 
-		local descriptionlines = core.wrap_text(modmgr.get_description(selected_mod.path), 4, true)
+		local descriptionlines = core.wrap_text(modmgr.get_description(selected_mod.path), 42, true)
 
 		retval = retval ..
 			"label[5.5,1.7;".. fgettext("Mod Information:") .. "]" ..
