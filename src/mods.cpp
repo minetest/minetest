@@ -20,6 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <cctype>
 #include <fstream>
 #include <json/json.h>
+#include <algorithm>
 #include "mods.h"
 #include "filesys.h"
 #include "log.h"
