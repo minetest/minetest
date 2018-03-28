@@ -437,38 +437,38 @@ int ModApiMainMenu::l_get_games(lua_State *L)
 	unsigned int index = 1;
 
 	for (const SubgameSpec &game : games) {
-		lua_pushnumber(L,index);
+		lua_pushnumber(L, index);
 		lua_newtable(L);
 		int top_lvl2 = lua_gettop(L);
 
-		lua_pushstring(L,"id");
+		lua_pushstring(L, "id");
 		lua_pushstring(L, game.id.c_str());
-		lua_settable(L, top_lvl2);
+		lua_settable(L,   top_lvl2);
 
-		lua_pushstring(L,"path");
+		lua_pushstring(L, "path");
 		lua_pushstring(L, game.path.c_str());
-		lua_settable(L, top_lvl2);
+		lua_settable(L,   top_lvl2);
 
-		lua_pushstring(L,"gamemods_path");
+		lua_pushstring(L, "gamemods_path");
 		lua_pushstring(L, game.gamemods_path.c_str());
-		lua_settable(L, top_lvl2);
+		lua_settable(L,   top_lvl2);
 
-		lua_pushstring(L,"name");
+		lua_pushstring(L, "name");
 		lua_pushstring(L, game.name.c_str());
-		lua_settable(L, top_lvl2);
+		lua_settable(L,   top_lvl2);
 
-		lua_pushstring(L,"menuicon_path");
+		lua_pushstring(L, "menuicon_path");
 		lua_pushstring(L, game.menuicon_path.c_str());
-		lua_settable(L, top_lvl2);
+		lua_settable(L,   top_lvl2);
 
-		lua_pushstring(L,"addon_mods_paths");
+		lua_pushstring(L, "addon_mods_paths");
 		lua_newtable(L);
 		int table2 = lua_gettop(L);
-		int internal_index=1;
+		int internal_index = 1;
 		for (const std::string &addon_mods_path : game.addon_mods_paths) {
-			lua_pushnumber(L,internal_index);
+			lua_pushnumber(L, internal_index);
 			lua_pushstring(L, addon_mods_path.c_str());
-			lua_settable(L, table2);
+			lua_settable(L,   table2);
 			internal_index++;
 		}
 		lua_settable(L, top_lvl2);
