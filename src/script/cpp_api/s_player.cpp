@@ -36,16 +36,20 @@ void ScriptApiPlayer::on_newplayer(ServerActiveObject *player)
 	runCallbacks(1, RUN_CALLBACKS_MODE_FIRST);
 }
 
-void ScriptApiPlayer::on_dieplayer(ServerActiveObject *player)
+void ScriptApiPlayer::on_dieplayer(ServerActiveObject *player, const PlayerHPChangeReason &reason)
 {
 	SCRIPTAPI_PRECHECKHEADER
 
-	// Get core.registered_on_dieplayers
+	// Get callback table
 	lua_getglobal(L, "core");
 	lua_getfield(L, -1, "registered_on_dieplayers");
-	// Call callbacks
+
+	// Push arguments
 	objectrefGetOrCreate(L, player);
-	runCallbacks(1, RUN_CALLBACKS_MODE_FIRST);
+	pushPlayerHPChangeReason(L, reason);
+
+	// Run callbacks
+	runCallbacks(2, RUN_CALLBACKS_MODE_FIRST);
 }
 
 bool ScriptApiPlayer::on_punchplayer(ServerActiveObject *player,
@@ -71,7 +75,7 @@ bool ScriptApiPlayer::on_punchplayer(ServerActiveObject *player,
 }
 
 s16 ScriptApiPlayer::on_player_hpchange(ServerActiveObject *player,
-	s16 hp_change)
+	s16 hp_change, const PlayerHPChangeReason &reason)
 {
 	SCRIPTAPI_PRECHECKHEADER
 
@@ -82,9 +86,13 @@ s16 ScriptApiPlayer::on_player_hpchange(ServerActiveObject *player,
 	lua_getfield(L, -1, "registered_on_player_hpchange");
 	lua_remove(L, -2);
 
+	// Push arguments
 	objectrefGetOrCreate(L, player);
 	lua_pushnumber(L, hp_change);
-	PCALL_RES(lua_pcall(L, 2, 1, error_handler));
+	pushPlayerHPChangeReason(L, reason);
+
+	// Call callbacks
+	PCALL_RES(lua_pcall(L, 3, 1, error_handler));
 	hp_change = lua_tointeger(L, -1);
 	lua_pop(L, 2); // Pop result and error handler
 	return hp_change;

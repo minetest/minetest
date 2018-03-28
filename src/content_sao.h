@@ -245,7 +245,7 @@ public:
 		ServerActiveObject *puncher,
 		float time_from_last_punch);
 	void rightClick(ServerActiveObject *clicker) {}
-	void setHP(s16 hp);
+	void setHP(s16 hp, const PlayerHPChangeReason &reason);
 	void setHPRaw(s16 hp) { m_hp = hp; }
 	s16 readDamage();
 	u16 getBreath() const { return m_breath; }
@@ -416,4 +416,65 @@ public:
 	bool m_physics_override_sneak_glitch = false;
 	bool m_physics_override_new_move = true;
 	bool m_physics_override_sent = false;
+};
+
+
+struct PlayerHPChangeReason {
+	enum Type : u8 {
+		SET_HP,
+		PLAYER_PUNCH,
+		FALL,
+		NODE_DAMAGE,
+		DROWNING,
+		RESPAWN
+	};
+
+	Type type = SET_HP;
+	ServerActiveObject *object;
+	bool from_mod = false;
+	int lua_reference = -1;
+
+	bool setTypeFromString(const std::string &typestr)
+	{
+		if (typestr == "set_hp")
+			type = SET_HP;
+		else if (typestr == "punch")
+			type = PLAYER_PUNCH;
+		else if (typestr == "fall")
+			type = FALL;
+		else if (typestr == "node_damage")
+			type = NODE_DAMAGE;
+		else if (typestr == "drown")
+			type = DROWNING;
+		else if (typestr == "respawn")
+			type = RESPAWN;
+		else
+			return false;
+
+		return true;
+	}
+
+	std::string getTypeAsString() const
+	{
+		switch (type) {
+		case PlayerHPChangeReason::SET_HP:
+			return "set_hp";
+		case PlayerHPChangeReason::PLAYER_PUNCH:
+			return "punch";
+		case PlayerHPChangeReason::FALL:
+			return "fall";
+		case PlayerHPChangeReason::NODE_DAMAGE:
+			return "node_damage";
+		case PlayerHPChangeReason::DROWNING:
+			return "drown";
+		case PlayerHPChangeReason::RESPAWN:
+			return "respawn";
+		default:
+			return "?";
+		}
+	}
+
+	PlayerHPChangeReason(Type type, ServerActiveObject *object=NULL):
+			type(type), object(object)
+	{}
 };

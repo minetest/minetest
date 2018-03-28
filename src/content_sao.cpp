@@ -921,8 +921,9 @@ void PlayerSAO::step(float dtime, bool send_recommended)
 
 			// No more breath, damage player
 			if (m_breath == 0) {
-				setHP(m_hp - c.drowning);
-				m_env->getGameDef()->SendPlayerHPOrDie(this);
+				PlayerHPChangeReason reason(PlayerHPChangeReason::DROWNING);
+				setHP(m_hp - c.drowning, reason);
+				m_env->getGameDef()->SendPlayerHPOrDie(this, reason);
 			}
 		}
 	}
@@ -961,8 +962,9 @@ void PlayerSAO::step(float dtime, bool send_recommended)
 
 		if (damage_per_second != 0 && m_hp > 0) {
 			s16 newhp = ((s32) damage_per_second > m_hp ? 0 : m_hp - damage_per_second);
-			setHP(newhp);
-			m_env->getGameDef()->SendPlayerHPOrDie(this);
+			PlayerHPChangeReason reason(PlayerHPChangeReason::NODE_DAMAGE);
+			setHP(newhp, reason);
+			m_env->getGameDef()->SendPlayerHPOrDie(this, reason);
 		}
 	}
 
@@ -1208,7 +1210,8 @@ int PlayerSAO::punch(v3f dir,
 				hitparams.hp);
 
 	if (!damage_handled) {
-		setHP(getHP() - hitparams.hp);
+		setHP(getHP() - hitparams.hp,
+				PlayerHPChangeReason(PlayerHPChangeReason::PLAYER_PUNCH, puncher));
 	} else { // override client prediction
 		if (puncher->getType() == ACTIVEOBJECT_TYPE_PLAYER) {
 			std::string str = gob_cmd_punched(0, getHP());
@@ -1238,11 +1241,11 @@ s16 PlayerSAO::readDamage()
 	return damage;
 }
 
-void PlayerSAO::setHP(s16 hp)
+void PlayerSAO::setHP(s16 hp, const PlayerHPChangeReason &reason)
 {
 	s16 oldhp = m_hp;
 
-	s16 hp_change = m_env->getScriptIface()->on_player_hpchange(this, hp - oldhp);
+	s16 hp_change = m_env->getScriptIface()->on_player_hpchange(this, hp - oldhp, reason);
 	if (hp_change == 0)
 		return;
 	hp = oldhp + hp_change;

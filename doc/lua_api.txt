@@ -1136,7 +1136,7 @@ previous.
 
 This combination results in noise varying very roughly between -2.0 and 2.0 and
 with an average value of 0.0, so `scale` and `offset` are then used to multiply
-and offset the noise variation. 
+and offset the noise variation.
 
 The final perlin noise variation is created as follows:
 
@@ -2779,8 +2779,6 @@ Call these functions only at load time!
       is a bit faster than usually.
 * `minetest.register_on_newplayer(func(ObjectRef))`
     * Called after a new player has been created
-* `minetest.register_on_dieplayer(func(ObjectRef))`
-    * Called when a player dies
 * `minetest.register_on_punchplayer(func(player, hitter, time_from_last_punch, tool_capabilities, dir, damage))`
     * Called when a player is punched
     * `player` - ObjectRef - Player that was punched
@@ -2792,15 +2790,28 @@ Call these functions only at load time!
       the puncher to the punched.
     * `damage` - number that represents the damage calculated by the engine
     * should return `true` to prevent the default damage mechanism
-* `minetest.register_on_player_hpchange(func(player, hp_change), modifier)`
+* `minetest.register_on_player_hpchange(func(player, hp_change, reason), modifier)`
     * Called when the player gets damaged or healed
     * `player`: ObjectRef of the player
     * `hp_change`: the amount of change. Negative when it is damage.
+    * `reason`: a PlayerHPChangeReason table.
+        * The `type` field will have one of the following values:
+            * `set_hp` - A mod or the engine called `set_hp` without
+                         giving a type - use this for custom damage types.
+            * `punch` - Was punched. `reason.object` will hold the puncher, or nil if none.
+            * `fall`
+            * `node_damage` - damage_per_second from a neighbouring node.
+            * `drown`
+            * `respawn`
+        * Any of the above types may have additional fields from mods.
+        * `reason.from` will be `mod` or `engine`.
     * `modifier`: when true, the function should return the actual `hp_change`.
-      Note: modifiers only get a temporary hp_change that can be modified by
-      later modifiers. modifiers can return true as a second argument to stop
-      the execution of further functions. Non-modifiers receive the final hp
-      change calculated by the modifiers.
+       Note: modifiers only get a temporary hp_change that can be modified by later modifiers.
+       modifiers can return true as a second argument to stop the execution of further functions.
+       Non-modifiers receive the final hp change calculated by the modifiers.
+* `minetest.register_on_dieplayer(func(ObjectRef, reason))`
+    * Called when a player dies
+    * `reason`: a PlayerHPChangeReason table, see register_on_player_hpchange
 * `minetest.register_on_respawnplayer(func(ObjectRef))`
     * Called when player is to be respawned
     * Called _before_ repositioning of player occurs
@@ -3939,7 +3950,8 @@ This is basically a reference to a C++ `ServerActiveObject`
     * `direction`: can be `nil`
 * `right_click(clicker)`; `clicker` is another `ObjectRef`
 * `get_hp()`: returns number of hitpoints (2 * number of hearts)
-* `set_hp(hp)`: set number of hitpoints (2 * number of hearts)
+* `set_hp(hp, reason)`: set number of hitpoints (2 * number of hearts).
+    * See reason in register_on_player_hpchange
 * `get_inventory()`: returns an `InvRef`
 * `get_wield_list()`: returns the name of the inventory list the wielded item
    is in.
