@@ -130,9 +130,8 @@ Mod directory structure
 
     mods
     |-- modname
-    |   |-- depends.txt
+    |   |-- mod.conf
     |   |-- screenshot.png
-    |   |-- description.txt
     |   |-- settingtypes.txt
     |   |-- init.lua
     |   |-- models
@@ -145,12 +144,32 @@ Mod directory structure
     |   `-- <custom data>
     `-- another
 
-
 ### modname
 The location of this directory can be fetched by using
 `minetest.get_modpath(modname)`.
 
+### mod.conf
+A key-value store of mod details.
+
+* `name` - the mod name. Allows Minetest to determine the mod name even if the
+           folder is wrongly named.
+* `description` - Description of mod to be shown in the Mods tab of the mainmenu.
+* `depends` - A comma separated list of dependencies. These are mods that must
+              be loaded before this mod.
+* `optional_depends` - A comma separated list of optional dependencies.
+                       Like a dependency, but no error if the mod doesn't exist.
+
+Note: to support 0.4.x, please also provide depends.txt.
+
+### `screenshot.png`
+A screenshot shown in the mod manager within the main menu. It should
+have an aspect ratio of 3:2 and a minimum size of 300×200 pixels.
+
 ### `depends.txt`
+**Deprecated:** you should use mod.conf instead.
+
+This file is used if there are no dependencies in mod.conf.
+
 List of mods that have to be loaded before loading this mod.
 
 A single line contains a single modname.
@@ -159,11 +178,11 @@ Optional dependencies can be defined by appending a question mark
 to a single modname. This means that if the specified mod
 is missing, it does not prevent this mod from being loaded.
 
-### `screenshot.png`
-A screenshot shown in the mod manager within the main menu. It should
-have an aspect ratio of 3:2 and a minimum size of 300×200 pixels.
-
 ### `description.txt`
+**Deprecated:** you should use mod.conf instead.
+
+This file is used if there is no description in mod.conf.
+
 A file containing a description to be shown in the Mods tab of the mainmenu.
 
 ### `settingtypes.txt`

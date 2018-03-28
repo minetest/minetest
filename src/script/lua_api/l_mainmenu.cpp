@@ -258,56 +258,6 @@ int ModApiMainMenu::l_get_worlds(lua_State *L)
 }
 
 /******************************************************************************/
-int ModApiMainMenu::l_get_games(lua_State *L)
-{
-	std::vector<SubgameSpec> games = getAvailableGames();
-
-	lua_newtable(L);
-	int top = lua_gettop(L);
-	unsigned int index = 1;
-
-	for (const SubgameSpec &game : games) {
-		lua_pushnumber(L,index);
-		lua_newtable(L);
-		int top_lvl2 = lua_gettop(L);
-
-		lua_pushstring(L,"id");
-		lua_pushstring(L, game.id.c_str());
-		lua_settable(L, top_lvl2);
-
-		lua_pushstring(L,"path");
-		lua_pushstring(L, game.path.c_str());
-		lua_settable(L, top_lvl2);
-
-		lua_pushstring(L,"gamemods_path");
-		lua_pushstring(L, game.gamemods_path.c_str());
-		lua_settable(L, top_lvl2);
-
-		lua_pushstring(L,"name");
-		lua_pushstring(L, game.name.c_str());
-		lua_settable(L, top_lvl2);
-
-		lua_pushstring(L,"menuicon_path");
-		lua_pushstring(L, game.menuicon_path.c_str());
-		lua_settable(L, top_lvl2);
-
-		lua_pushstring(L,"addon_mods_paths");
-		lua_newtable(L);
-		int table2 = lua_gettop(L);
-		int internal_index=1;
-		for (const std::string &addon_mods_path : game.addon_mods_paths) {
-			lua_pushnumber(L,internal_index);
-			lua_pushstring(L, addon_mods_path.c_str());
-			lua_settable(L, table2);
-			internal_index++;
-		}
-		lua_settable(L, top_lvl2);
-		lua_settable(L, top);
-		index++;
-	}
-	return 1;
-}
-/******************************************************************************/
 int ModApiMainMenu::l_get_favorites(lua_State *L)
 {
 	std::string listtype = "local";
@@ -475,6 +425,103 @@ int ModApiMainMenu::l_delete_favorite(lua_State *L)
 	}
 
 	return 0;
+}
+
+/******************************************************************************/
+int ModApiMainMenu::l_get_games(lua_State *L)
+{
+	std::vector<SubgameSpec> games = getAvailableGames();
+
+	lua_newtable(L);
+	int top = lua_gettop(L);
+	unsigned int index = 1;
+
+	for (const SubgameSpec &game : games) {
+		lua_pushnumber(L, index);
+		lua_newtable(L);
+		int top_lvl2 = lua_gettop(L);
+
+		lua_pushstring(L, "id");
+		lua_pushstring(L, game.id.c_str());
+		lua_settable(L,   top_lvl2);
+
+		lua_pushstring(L, "path");
+		lua_pushstring(L, game.path.c_str());
+		lua_settable(L,   top_lvl2);
+
+		lua_pushstring(L, "gamemods_path");
+		lua_pushstring(L, game.gamemods_path.c_str());
+		lua_settable(L,   top_lvl2);
+
+		lua_pushstring(L, "name");
+		lua_pushstring(L, game.name.c_str());
+		lua_settable(L,   top_lvl2);
+
+		lua_pushstring(L, "menuicon_path");
+		lua_pushstring(L, game.menuicon_path.c_str());
+		lua_settable(L,   top_lvl2);
+
+		lua_pushstring(L, "addon_mods_paths");
+		lua_newtable(L);
+		int table2 = lua_gettop(L);
+		int internal_index = 1;
+		for (const std::string &addon_mods_path : game.addon_mods_paths) {
+			lua_pushnumber(L, internal_index);
+			lua_pushstring(L, addon_mods_path.c_str());
+			lua_settable(L,   table2);
+			internal_index++;
+		}
+		lua_settable(L, top_lvl2);
+		lua_settable(L, top);
+		index++;
+	}
+	return 1;
+}
+
+/******************************************************************************/
+int ModApiMainMenu::l_get_mod_info(lua_State *L)
+{
+	std::string path = luaL_checkstring(L, 1);
+
+	ModSpec spec;
+	spec.path = path;
+	parseModContents(spec);
+
+	lua_newtable(L);
+
+	lua_pushstring(L, spec.name.c_str());
+	lua_setfield(L, -2, "name");
+
+	lua_pushstring(L, spec.is_modpack ? "modpack" : "mod");
+	lua_setfield(L, -2, "type");
+
+	lua_pushstring(L, spec.desc.c_str());
+	lua_setfield(L, -2, "description");
+
+	lua_pushstring(L, spec.path.c_str());
+	lua_setfield(L, -2, "path");
+
+	// Dependencies
+	lua_newtable(L);
+	int i = 1;
+	for (const auto &dep : spec.depends) {
+		lua_pushstring(L, dep.c_str());
+		lua_rawseti(L, -2, i);
+		i++;
+	}
+	lua_setfield(L, -2, "depends");
+
+	// Optional Dependencies
+	lua_newtable(L);
+	i = 1;
+	for (const auto &dep : spec.optdepends) {
+		lua_pushstring(L, dep.c_str());
+		lua_rawseti(L, -2, i);
+		i++;
+	}
+	lua_setfield(L, -2, "optional_depends");
+
+	return 1;
 }
 
 /******************************************************************************/
@@ -968,6 +1015,7 @@ void ModApiMainMenu::Initialize(lua_State *L, int top)
 	API_FCT(get_table_index);
 	API_FCT(get_worlds);
 	API_FCT(get_games);
+	API_FCT(get_mod_info);
 	API_FCT(start);
 	API_FCT(close);
 	API_FCT(get_favorites);
