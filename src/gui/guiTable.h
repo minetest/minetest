@@ -50,6 +50,7 @@ public:
 	*/
 	struct DynamicData
 	{
+		bool is_mouse_captured = false;
 		s32 selected = 0;
 		s32 scrollpos = 0;
 		s32 keynav_time = 0;
@@ -185,6 +186,9 @@ protected:
 	s32 m_selected = -1; // index of row (1...n), or 0 if none selected
 	s32 m_sel_column = 0;
 	bool m_sel_doubleclick = false;
+
+	// Mouse state
+	bool m_is_mouse_captured = false;
 
 	// Keyboard navigation stuff
 	u64 m_keynav_time = 0;
