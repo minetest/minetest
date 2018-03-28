@@ -346,7 +346,7 @@ float MapgenCarpathian::terrainLevelAtPoint(s16 x, s16 z)
 		float hills = pow(hter, 3.f) * hill_mnt;
 
 		// Ridged mountains
-		float ridge_mnt = hilliness * (1.f - fabs(n_ridge_mnt));
+		float ridge_mnt = hilliness * (1.f - std::fabs(n_ridge_mnt));
 		float ridged_mountains = pow(rter, 3.f) * ridge_mnt;
 
 		// Step (terraced) mountains
@@ -405,18 +405,18 @@ int MapgenCarpathian::generateTerrain()
 		float height4 = noise_height4->result[index2d];
 
 		// Rolling hills
-		float hterabs = fabs(noise_hills_terrain->result[index2d]);
+		float hterabs = std::fabs(noise_hills_terrain->result[index2d]);
 		float n_hills = noise_hills->result[index2d];
 		float hill_mnt = hterabs * hterabs * hterabs * n_hills * n_hills;
 
 		// Ridged mountains
-		float rterabs = fabs(noise_ridge_terrain->result[index2d]);
+		float rterabs = std::fabs(noise_ridge_terrain->result[index2d]);
 		float n_ridge_mnt = noise_ridge_mnt->result[index2d];
 		float ridge_mnt = rterabs * rterabs * rterabs *
-			(1.f - fabs(n_ridge_mnt));
+			(1.f - std::fabs(n_ridge_mnt));
 
 		// Step (terraced) mountains
-		float sterabs = fabs(noise_step_terrain->result[index2d]);
+		float sterabs = std::fabs(noise_step_terrain->result[index2d]);
 		float n_step_mnt = noise_step_mnt->result[index2d];
 		float step_mnt = sterabs * sterabs * sterabs * getSteps(n_step_mnt);
 
