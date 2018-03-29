@@ -341,7 +341,7 @@ if INIT == "game" then
 	local dirs2 = {20, 23, 22, 21}
 
 	function core.rotate_and_place(itemstack, placer, pointed_thing,
-				infinitestacks, orient_flags)
+			infinitestacks, orient_flags, prevent_after_place)
 		orient_flags = orient_flags or {}
 
 		local unode = core.get_node_or_nil(pointed_thing.under)
@@ -394,7 +394,7 @@ if INIT == "game" then
 
 		local old_itemstack = ItemStack(itemstack)
 		local new_itemstack, removed = core.item_place_node(
-			itemstack, placer, pointed_thing, param2
+			itemstack, placer, pointed_thing, param2, prevent_after_place
 		)
 		return infinitestacks and old_itemstack or new_itemstack
 	end
@@ -415,7 +415,7 @@ if INIT == "game" then
 		local invert_wall = placer and placer:get_player_control().sneak or false
 		core.rotate_and_place(itemstack, placer, pointed_thing,
 				is_creative(name),
-				{invert_wall = invert_wall})
+				{invert_wall = invert_wall}, true)
 		return itemstack
 	end
 end
