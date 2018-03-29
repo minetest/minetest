@@ -2499,7 +2499,7 @@ void Game::handleClientEvent_PlayerDamage(ClientEvent *event, CameraOrientation 
 	player->hurt_tilt_strength =
 		rangelim(event->player_damage.amount / 4, 1.0, 4.0);
 
-	client->event()->put(new SimpleTriggerEvent("PlayerDamage"));
+	client->getEventManager()->put(new SimpleTriggerEvent("PlayerDamage"));
 }
 
 void Game::handleClientEvent_PlayerForceMove(ClientEvent *event, CameraOrientation *cam)
@@ -3586,8 +3586,7 @@ void Game::handleDigging(const PointedThing &pointed, const v3s16 &nodepos,
 
 
 		// Send event to trigger sound
-		MtEvent *e = new NodeDugEvent(nodepos, wasnode);
-		client->event()->put(e);
+		client->getEventManager()->put(new NodeDugEvent(nodepos, wasnode));
 	}
 
 	if (runData.dig_time_complete < 100000.0) {
