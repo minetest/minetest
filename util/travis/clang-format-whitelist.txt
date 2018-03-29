@@ -249,6 +249,8 @@ src/mapgen/mapgen_v7.cpp
 src/mapgen/mapgen_v7.h
 src/mapgen/mapgen_valleys.cpp
 src/mapgen/mapgen_valleys.h
+src/mapgen/mapgen_watershed.cpp
+src/mapgen/mapgen_watershed.h
 src/mapgen/mg_biome.cpp
 src/mapgen/mg_biome.h
 src/mapgen/mg_decoration.cpp
