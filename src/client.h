@@ -253,8 +253,8 @@ public:
 	static const std::string &getBuiltinLuaPath();
 	static const std::string &getClientModsLuaPath();
 
-	virtual const std::vector<ModSpec> &getMods() const;
-	virtual const ModSpec* getModSpec(const std::string &modname) const;
+	const std::vector<ModSpec> &getMods() const override;
+	const ModSpec* getModSpec(const std::string &modname) const override;
 
 	// Causes urgent mesh updates (unlike Map::add/removeNodeWithEvent)
 	void removeNode(v3s16 p);
@@ -282,8 +282,8 @@ public:
 	void getLocalInventory(Inventory &dst);
 
 	/* InventoryManager interface */
-	Inventory* getInventory(const InventoryLocation &loc);
-	void inventoryAction(InventoryAction *a);
+	Inventory* getInventory(const InventoryLocation &loc) override;
+	void inventoryAction(InventoryAction *a) override;
 
 	const std::list<std::string> &getConnectedPlayerNames()
 	{
@@ -365,24 +365,24 @@ public:
 	bool shouldShowMinimap() const;
 
 	// IGameDef interface
-	virtual IItemDefManager* getItemDefManager();
-	virtual const NodeDefManager* getNodeDefManager();
-	virtual ICraftDefManager* getCraftDefManager();
+	IItemDefManager* getItemDefManager() override;
+	const NodeDefManager* getNodeDefManager() override;
+	ICraftDefManager* getCraftDefManager() override;
 	ITextureSource* getTextureSource();
 	virtual IShaderSource* getShaderSource();
 	IShaderSource *shsrc() { return getShaderSource(); }
-	virtual u16 allocateUnknownNodeId(const std::string &name);
+	u16 allocateUnknownNodeId(const std::string &name) override;
 	virtual ISoundManager* getSoundManager();
-	virtual MtEventManager* getEventManager();
+	MtEventManager* getEventManager() override;
 	virtual ParticleManager* getParticleManager();
 	bool checkLocalPrivilege(const std::string &priv)
 	{ return checkPrivilege(priv); }
 	virtual scene::IAnimatedMesh* getMesh(const std::string &filename, bool cache = false);
 	const std::string* getModFile(const std::string &filename);
 
-	virtual std::string getModStoragePath() const;
-	virtual bool registerModStorage(ModMetadata *meta);
-	virtual void unregisterModStorage(const std::string &name);
+	std::string getModStoragePath() const override;
+	bool registerModStorage(ModMetadata *meta) override;
+	void unregisterModStorage(const std::string &name) override;
 
 	// The following set of functions is used by ClientMediaDownloader
 	// Insert a media file appropriately into the appropriate manager
@@ -428,10 +428,11 @@ public:
 		return m_hud_server_to_client;
 	}
 
-	bool joinModChannel(const std::string &channel);
-	bool leaveModChannel(const std::string &channel);
-	bool sendModChannelMessage(const std::string &channel, const std::string &message);
-	ModChannel *getModChannel(const std::string &channel);
+	bool joinModChannel(const std::string &channel) override;
+	bool leaveModChannel(const std::string &channel) override;
+	bool sendModChannelMessage(const std::string &channel,
+			const std::string &message) override;
+	ModChannel *getModChannel(const std::string &channel) override;
 
 	const std::string &getFormspecPrepend() const
 	{
@@ -442,8 +443,8 @@ private:
 	bool checkBuiltinIntegrity();
 
 	// Virtual methods from con::PeerHandler
-	void peerAdded(con::Peer *peer);
-	void deletingPeer(con::Peer *peer, bool timeout);
+	void peerAdded(con::Peer *peer) override;
+	void deletingPeer(con::Peer *peer, bool timeout) override;
 
 	void initLocalMapSaving(const Address &address,
 			const std::string &hostname,
