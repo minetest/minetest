@@ -37,15 +37,17 @@ class EventManager: public MtEventManager
 			f(f), d(d)
 		{}
 	};
-	struct Dest{
+
+	struct Dest
+	{
 		std::list<FuncSpec> funcs;
 	};
-	std::map<MtEvent::Type , Dest> m_dest;
+	std::map<MtEvent::Type , Dest> m_dest{};
 
 public:
-	~EventManager() = default;
+	~EventManager() override = default;
 
-	void put(MtEvent *e)
+	void put(MtEvent *e) override
 	{
 		std::map<MtEvent::Type , Dest>::iterator i = m_dest.find(e->getType());
 		if (i != m_dest.end()){
