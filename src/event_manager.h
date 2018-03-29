@@ -23,34 +23,33 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <list>
 #include <map>
 
-class EventManager: public MtEventManager
+class EventManager : public MtEventManager
 {
 	static void receiverReceive(MtEvent *e, void *data)
 	{
-		MtEventReceiver *r = (MtEventReceiver*)data;
+		MtEventReceiver *r = (MtEventReceiver *)data;
 		r->onEvent(e);
 	}
-	struct FuncSpec{
+	struct FuncSpec
+	{
 		event_receive_func f;
 		void *d;
-		FuncSpec(event_receive_func f, void *d):
-			f(f), d(d)
-		{}
+		FuncSpec(event_receive_func f, void *d) : f(f), d(d) {}
 	};
 
 	struct Dest
 	{
 		std::list<FuncSpec> funcs;
 	};
-	std::map<MtEvent::Type , Dest> m_dest{};
+	std::map<MtEvent::Type, Dest> m_dest{};
 
 public:
 	~EventManager() override = default;
 
 	void put(MtEvent *e) override
 	{
-		std::map<MtEvent::Type , Dest>::iterator i = m_dest.find(e->getType());
-		if (i != m_dest.end()){
+		std::map<MtEvent::Type, Dest>::iterator i = m_dest.find(e->getType());
+		if (i != m_dest.end()) {
 			std::list<FuncSpec> &funcs = i->second.funcs;
 			for (FuncSpec &func : funcs) {
 				(*(func.f))(e, func.d);
@@ -60,10 +59,10 @@ public:
 	}
 	void reg(MtEvent::Type type, event_receive_func f, void *data)
 	{
-		std::map<MtEvent::Type , Dest>::iterator i = m_dest.find(type);
+		std::map<MtEvent::Type, Dest>::iterator i = m_dest.find(type);
 		if (i != m_dest.end()) {
 			i->second.funcs.emplace_back(f, data);
-		} else{
+		} else {
 			std::list<FuncSpec> funcs;
 			Dest dest;
 			dest.funcs.emplace_back(f, data);
@@ -72,13 +71,13 @@ public:
 	}
 	void dereg(MtEvent::Type type, event_receive_func f, void *data)
 	{
-		std::map<MtEvent::Type , Dest>::iterator i = m_dest.find(type);
-		if (i != m_dest.end()){
+		std::map<MtEvent::Type, Dest>::iterator i = m_dest.find(type);
+		if (i != m_dest.end()) {
 			std::list<FuncSpec> &funcs = i->second.funcs;
 			std::list<FuncSpec>::iterator j = funcs.begin();
-			while(j != funcs.end()){
+			while (j != funcs.end()) {
 				bool remove = (j->f == f && (!data || j->d == data));
-				if(remove)
+				if (remove)
 					funcs.erase(j++);
 				else
 					++j;
