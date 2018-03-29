@@ -64,6 +64,10 @@ ClientLauncher::~ClientLauncher()
 	delete g_gamecallback;
 
 	delete RenderingEngine::get_instance();
+
+#if USE_SOUND
+	g_sound_manager_singleton.reset();
+#endif
 }
 
 
