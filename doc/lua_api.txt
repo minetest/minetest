@@ -2857,9 +2857,11 @@ and `minetest.auth_reload` call the authetification handler.
 ### Defaults for the `on_*` item definition functions
 These functions return the leftover itemstack.
 
-* `minetest.item_place_node(itemstack, placer, pointed_thing, param2)`
+* `minetest.item_place_node(itemstack, placer, pointed_thing[, param2, prevent_after_place])`
     * Place item as a node
     * `param2` overrides `facedir` and wallmounted `param2`
+    * `prevent_after_place`: if set to `true`, `after_place_node` is not called
+      for the newly placed node to prevent a callback and placement loop
     * returns `itemstack, success`
 * `minetest.item_place_object(itemstack, placer, pointed_thing)`
     * Place item as-is
@@ -3100,25 +3102,29 @@ These functions return the leftover itemstack.
 * `minetest.record_protection_violation(pos, name)`
      * This function calls functions registered with
        `minetest.register_on_protection_violation`.
-* `minetest.rotate_and_place(itemstack, placer, pointed_thing, infinitestacks, orient_flags)`
+* `minetest.rotate_and_place(itemstack, placer, pointed_thing[, infinitestacks,
+        orient_flags, prevent_after_place])`
     * Attempt to predict the desired orientation of the facedir-capable node
-      defined by `itemstack`, and place it accordingly (on-wall, on the floor, or
-      hanging from the ceiling). Stacks are handled normally if the `infinitestacks`
-      field is false or omitted (else, the itemstack is not changed). `orient_flags`
-      is an optional table containing extra tweaks to the placement code:
-        * `invert_wall`:   if `true`, place wall-orientation on the ground and ground-
-    orientation on the wall.
+      defined by `itemstack`, and place it accordingly (on-wall, on the floor,
+      or hanging from the ceiling).
+    * `infinitestacks`: if `true`, the itemstack is not changed. Otherwise the
+      stacks are handled normally.
+    * `orient_flags`: Optional table containing extra tweaks to the placement code:
+        * `invert_wall`:   if `true`, place wall-orientation on the ground and
+          ground-orientation on the wall.
         * `force_wall` :   if `true`, always place the node in wall orientation.
         * `force_ceiling`: if `true`, always place on the ceiling.
         * `force_floor`:   if `true`, always place the node on the floor.
-        * `force_facedir`: if `true`, forcefully reset the facedir to north when placing on
-          the floor or ceiling
-        * The first four options are mutually-exclusive; the last in the list takes
-          precedence over the first.
+        * `force_facedir`: if `true`, forcefully reset the facedir to north
+          when placing on the floor or ceiling.
+        * The first four options are mutually-exclusive; the last in the list
+          takes precedence over the first.
+    * `prevent_after_place` is directly passed to `minetest.item_place_node`
+    * Returns the new itemstack after placement
 * `minetest.rotate_node(itemstack, placer, pointed_thing)`
-    * calls `rotate_and_place()` with infinitestacks set according to the state of
-       the creative mode setting, and checks for "sneak" to set the `invert_wall`
-       parameter.
+    * calls `rotate_and_place()` with `infinitestacks` set according to the state
+      of the creative mode setting, checks for "sneak" to set the `invert_wall`
+      parameter and `prevent_after_place` set to `true`.
 
 * `minetest.forceload_block(pos[, transient])`
     * forceloads the position `pos`.

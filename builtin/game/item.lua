@@ -261,7 +261,8 @@ local function make_log(name)
 	return name ~= "" and core.log or function() end
 end
 
-function core.item_place_node(itemstack, placer, pointed_thing, param2)
+function core.item_place_node(itemstack, placer, pointed_thing, param2,
+		prevent_after_place)
 	local def = itemstack:get_definition()
 	if def.type ~= "node" or pointed_thing.type ~= "node" then
 		return itemstack, false
@@ -375,7 +376,7 @@ function core.item_place_node(itemstack, placer, pointed_thing, param2)
 	local take_item = true
 
 	-- Run callback
-	if def.after_place_node then
+	if def.after_place_node and not prevent_after_place then
 		-- Deepcopy place_to and pointed_thing because callback can modify it
 		local place_to_copy = {x=place_to.x, y=place_to.y, z=place_to.z}
 		local pointed_thing_copy = copy_pointed_thing(pointed_thing)
