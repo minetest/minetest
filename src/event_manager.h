@@ -40,15 +40,15 @@ class EventManager: public MtEventManager
 	struct Dest{
 		std::list<FuncSpec> funcs;
 	};
-	std::map<std::string, Dest> m_dest;
+	std::map<MtEvent::Type , Dest> m_dest;
 
 public:
 	~EventManager() = default;
 
 	void put(MtEvent *e)
 	{
-		std::map<std::string, Dest>::iterator i = m_dest.find(e->getType());
-		if(i != m_dest.end()){
+		std::map<MtEvent::Type , Dest>::iterator i = m_dest.find(e->getType());
+		if (i != m_dest.end()){
 			std::list<FuncSpec> &funcs = i->second.funcs;
 			for (FuncSpec &func : funcs) {
 				(*(func.f))(e, func.d);
@@ -56,10 +56,10 @@ public:
 		}
 		delete e;
 	}
-	void reg(const char *type, event_receive_func f, void *data)
+	void reg(MtEvent::Type type, event_receive_func f, void *data)
 	{
-		std::map<std::string, Dest>::iterator i = m_dest.find(type);
-		if(i != m_dest.end()){
+		std::map<MtEvent::Type , Dest>::iterator i = m_dest.find(type);
+		if (i != m_dest.end()) {
 			i->second.funcs.emplace_back(f, data);
 		} else{
 			std::list<FuncSpec> funcs;
@@ -68,40 +68,27 @@ public:
 			m_dest[type] = dest;
 		}
 	}
-	void dereg(const char *type, event_receive_func f, void *data)
+	void dereg(MtEvent::Type type, event_receive_func f, void *data)
 	{
-		if(type != NULL){
-			std::map<std::string, Dest>::iterator i = m_dest.find(type);
-			if(i != m_dest.end()){
-				std::list<FuncSpec> &funcs = i->second.funcs;
-				std::list<FuncSpec>::iterator j = funcs.begin();
-				while(j != funcs.end()){
-					bool remove = (j->f == f && (!data || j->d == data));
-					if(remove)
-						funcs.erase(j++);
-					else
-						++j;
-				}
-			}
-		} else{
-			for (auto &dest : m_dest) {
-				std::list<FuncSpec> &funcs = dest.second.funcs;
-				std::list<FuncSpec>::iterator j = funcs.begin();
-				while(j != funcs.end()){
-					bool remove = (j->f == f && (!data || j->d == data));
-					if(remove)
-						funcs.erase(j++);
-					else
-						++j;
-				}
+		std::map<MtEvent::Type , Dest>::iterator i = m_dest.find(type);
+		if (i != m_dest.end()){
+			std::list<FuncSpec> &funcs = i->second.funcs;
+			std::list<FuncSpec>::iterator j = funcs.begin();
+			while(j != funcs.end()){
+				bool remove = (j->f == f && (!data || j->d == data));
+				if(remove)
+					funcs.erase(j++);
+				else
+					++j;
 			}
 		}
 	}
-	void reg(MtEventReceiver *r, const char *type)
+
+	void reg(MtEventReceiver *r, MtEvent::Type type)
 	{
 		reg(type, EventManager::receiverReceive, r);
 	}
-	void dereg(MtEventReceiver *r, const char *type)
+	void dereg(MtEventReceiver *r, MtEvent::Type type)
 	{
 		dereg(type, EventManager::receiverReceive, r);
 	}

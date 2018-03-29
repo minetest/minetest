@@ -246,9 +246,9 @@ public:
 		p(p),
 		n(n)
 	{}
-	const char *getType() const
+	MtEvent::Type getType() const
 	{
-		return "NodeDug";
+		return MtEvent::NODE_DUG;
 	}
 };
 
@@ -331,14 +331,14 @@ public:
 
 	void registerReceiver(MtEventManager *mgr)
 	{
-		mgr->reg("ViewBobbingStep", SoundMaker::viewBobbingStep, this);
-		mgr->reg("PlayerRegainGround", SoundMaker::playerRegainGround, this);
-		mgr->reg("PlayerJump", SoundMaker::playerJump, this);
-		mgr->reg("CameraPunchLeft", SoundMaker::cameraPunchLeft, this);
-		mgr->reg("CameraPunchRight", SoundMaker::cameraPunchRight, this);
-		mgr->reg("NodeDug", SoundMaker::nodeDug, this);
-		mgr->reg("PlayerDamage", SoundMaker::playerDamage, this);
-		mgr->reg("PlayerFallingDamage", SoundMaker::playerFallingDamage, this);
+		mgr->reg(MtEvent::VIEW_BOBBING_STEP, SoundMaker::viewBobbingStep, this);
+		mgr->reg(MtEvent::PLAYER_REGAIN_GROUND, SoundMaker::playerRegainGround, this);
+		mgr->reg(MtEvent::PLAYER_JUMP, SoundMaker::playerJump, this);
+		mgr->reg(MtEvent::CAMERA_PUNCH_LEFT, SoundMaker::cameraPunchLeft, this);
+		mgr->reg(MtEvent::CAMERA_PUNCH_RIGHT, SoundMaker::cameraPunchRight, this);
+		mgr->reg(MtEvent::NODE_DUG, SoundMaker::nodeDug, this);
+		mgr->reg(MtEvent::PLAYER_DAMAGE, SoundMaker::playerDamage, this);
+		mgr->reg(MtEvent::PLAYER_FALLING_DAMAGE, SoundMaker::playerFallingDamage, this);
 	}
 
 	void step(float dtime)
@@ -2491,15 +2491,15 @@ void Game::handleClientEvent_PlayerDamage(ClientEvent *event, CameraOrientation 
 	}
 
 	runData.damage_flash += 95.0 + 3.2 * event->player_damage.amount;
-	runData.damage_flash = MYMIN(runData.damage_flash, 127.0);
+	runData.damage_flash = MYMIN(runData.damage_flash, 127.0f);
 
 	LocalPlayer *player = client->getEnv().getLocalPlayer();
 
 	player->hurt_tilt_timer = 1.5;
 	player->hurt_tilt_strength =
-		rangelim(event->player_damage.amount / 4, 1.0, 4.0);
+		rangelim(event->player_damage.amount / 4, 1.0f, 4.0f);
 
-	client->getEventManager()->put(new SimpleTriggerEvent("PlayerDamage"));
+	client->getEventManager()->put(new SimpleTriggerEvent(MtEvent::PLAYER_DAMAGE));
 }
 
 void Game::handleClientEvent_PlayerForceMove(ClientEvent *event, CameraOrientation *cam)

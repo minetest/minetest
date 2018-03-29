@@ -235,7 +235,7 @@ void ClientEnvironment::step(float dtime)
 			u8 damage = (u8)MYMIN(damage_f + 0.5, 255);
 			if (damage != 0) {
 				damageLocalPlayer(damage, true);
-				m_client->getEventManager()->put(new SimpleTriggerEvent("PlayerFallingDamage"));
+				m_client->getEventManager()->put(new SimpleTriggerEvent(MtEvent::PLAYER_FALLING_DAMAGE));
 			}
 		}
 	}
