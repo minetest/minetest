@@ -192,7 +192,7 @@ void MapgenCarpathianParams::writeParams(Settings *settings) const
 }
 
 
-///////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
 
 
 // Lerp function
@@ -212,7 +212,7 @@ float MapgenCarpathian::getSteps(float noise)
 }
 
 
-///////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
 
 
 void MapgenCarpathian::makeChunk(BlockMakeData *data)
@@ -298,7 +298,7 @@ void MapgenCarpathian::makeChunk(BlockMakeData *data)
 }
 
 
-///////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
 
 
 int MapgenCarpathian::getSpawnLevelAtPoint(v2s16 p)
@@ -338,14 +338,15 @@ float MapgenCarpathian::terrainLevelAtPoint(s16 x, s16 z)
 		float hill2 = getLerp(height3, height4, mnt_var);
 		float hill3 = getLerp(height3, height2, mnt_var);
 		float hill4 = getLerp(height1, height4, mnt_var);
-		float hilliness = std::fmax(std::fmin(hill1, hill2), std::fmin(hill3, hill4));
+		float hilliness =
+			std::fmax(std::fmin(hill1, hill2), std::fmin(hill3, hill4));
 
 		// Rolling hills
 		float hill_mnt = hilliness * pow(n_hills, 2.f);
 		float hills = pow(hter, 3.f) * hill_mnt;
 
 		// Ridged mountains
-		float ridge_mnt = hilliness * (1.f - fabs(n_ridge_mnt));
+		float ridge_mnt = hilliness * (1.f - std::fabs(n_ridge_mnt));
 		float ridged_mountains = pow(rter, 3.f) * ridge_mnt;
 
 		// Step (terraced) mountains
@@ -364,7 +365,7 @@ float MapgenCarpathian::terrainLevelAtPoint(s16 x, s16 z)
 }
 
 
-///////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
 
 
 int MapgenCarpathian::generateTerrain()
@@ -372,10 +373,6 @@ int MapgenCarpathian::generateTerrain()
 	MapNode mn_air(CONTENT_AIR);
 	MapNode mn_stone(c_stone);
 	MapNode mn_water(c_water_source);
-
-	s16 stone_surface_max_y = -MAX_MAP_GENERATION_LIMIT;
-	u32 index2d = 0;
-	u32 index3d = 0;
 
 	// Calculate noise for terrain generation
 	noise_base->perlinMap2D(node_min.X, node_min.Z);
@@ -392,70 +389,81 @@ int MapgenCarpathian::generateTerrain()
 	noise_mnt_var->perlinMap3D(node_min.X, node_min.Y - 1, node_min.Z);
 
 	//// Place nodes
-	for (s16 z = node_min.Z; z <= node_max.Z; z++) {
-		for (s16 y = node_min.Y - 1; y <= node_max.Y + 1; y++) {
-			u32 vi = vm->m_area.index(node_min.X, y, z);
-			for (s16 x = node_min.X; x <= node_max.X;
-					x++, vi++, index2d++, index3d++) {
-				if (vm->m_data[vi].getContent() != CONTENT_IGNORE)
-					continue;
+	const v3s16 &em = vm->m_area.getExtent();
+	s16 stone_surface_max_y = -MAX_MAP_GENERATION_LIMIT;
+	u32 index2d = 0;
 
-				// Base terrain
-				float ground = noise_base->result[index2d];
+	for (s16 z = node_min.Z; z <= node_max.Z; z++)
+	for (s16 x = node_min.X; x <= node_max.X; x++, index2d++) {
+		// Base terrain
+		float ground = noise_base->result[index2d];
 
-				// Gradient & shallow seabed
-				s32 grad = (y < water_level) ? grad_wl + (water_level - y) * 3 : 1 - y;
+		// Hill/Mountain height (hilliness)
+		float height1 = noise_height1->result[index2d];
+		float height2 = noise_height2->result[index2d];
+		float height3 = noise_height3->result[index2d];
+		float height4 = noise_height4->result[index2d];
 
-				// Hill/Mountain height (hilliness)
-				float height1 = noise_height1->result[index2d];
-				float height2 = noise_height2->result[index2d];
-				float height3 = noise_height3->result[index2d];
-				float height4 = noise_height4->result[index2d];
-				float mnt_var = noise_mnt_var->result[index3d];
-				// Combine height noises and apply 3D variation
-				float hill1 = getLerp(height1, height2, mnt_var);
-				float hill2 = getLerp(height3, height4, mnt_var);
-				float hill3 = getLerp(height3, height2, mnt_var);
-				float hill4 = getLerp(height1, height4, mnt_var);
-				// 'hilliness' determines whether hills/mountains are
-				// small or large
-				float hilliness = std::fmax(std::fmin(hill1, hill2), std::fmin(hill3, hill4));
+		// Rolling hills
+		float hterabs = std::fabs(noise_hills_terrain->result[index2d]);
+		float n_hills = noise_hills->result[index2d];
+		float hill_mnt = hterabs * hterabs * hterabs * n_hills * n_hills;
 
-				// Rolling hills
-				float hter = noise_hills_terrain->result[index2d];
-				float n_hills = noise_hills->result[index2d];
-				float hill_mnt = hilliness * pow(n_hills, 2.f);
-				float hills = pow(fabs(hter), 3.f) * hill_mnt;
+		// Ridged mountains
+		float rterabs = std::fabs(noise_ridge_terrain->result[index2d]);
+		float n_ridge_mnt = noise_ridge_mnt->result[index2d];
+		float ridge_mnt = rterabs * rterabs * rterabs *
+			(1.f - std::fabs(n_ridge_mnt));
 
-				// Ridged mountains
-				float rter = noise_ridge_terrain->result[index2d];
-				float n_ridge_mnt = noise_ridge_mnt->result[index2d];
-				float ridge_mnt = hilliness * (1.f - fabs(n_ridge_mnt));
-				float ridged_mountains = pow(fabs(rter), 3.f) * ridge_mnt;
+		// Step (terraced) mountains
+		float sterabs = std::fabs(noise_step_terrain->result[index2d]);
+		float n_step_mnt = noise_step_mnt->result[index2d];
+		float step_mnt = sterabs * sterabs * sterabs * getSteps(n_step_mnt);
 
-				// Step (terraced) mountains
-				float ster = noise_step_terrain->result[index2d];
-				float n_step_mnt = noise_step_mnt->result[index2d];
-				float step_mnt = hilliness * getSteps(n_step_mnt);
-				float step_mountains = pow(fabs(ster), 3.f) * step_mnt;
+		// Initialise 3D noise index and voxelmanip index to column base
+		u32 index3d = (z - node_min.Z) * zstride_1u1d + (x - node_min.X);
+		u32 vi = vm->m_area.index(x, node_min.Y - 1, z);
 
-				// Final terrain level
-				float mountains = hills + ridged_mountains + step_mountains;
-				float surface_level = ground + mountains + grad;
+		for (s16 y = node_min.Y - 1; y <= node_max.Y + 1;
+				y++,
+				index3d += ystride,
+				VoxelArea::add_y(em, vi, 1)) {
+			if (vm->m_data[vi].getContent() != CONTENT_IGNORE)
+				continue;
 
-				if (y < surface_level) {
-					vm->m_data[vi] = mn_stone; // Stone
-					if (y > stone_surface_max_y)
-						stone_surface_max_y = y;
-				} else if (y <= water_level) {
-					vm->m_data[vi] = mn_water; // Sea water
-				} else {
-					vm->m_data[vi] = mn_air; // Air
-				}
+			// Combine height noises and apply 3D variation
+			float mnt_var = noise_mnt_var->result[index3d];
+			float hill1 = getLerp(height1, height2, mnt_var);
+			float hill2 = getLerp(height3, height4, mnt_var);
+			float hill3 = getLerp(height3, height2, mnt_var);
+			float hill4 = getLerp(height1, height4, mnt_var);
+
+			// 'hilliness' determines whether hills/mountains are
+			// small or large
+			float hilliness =
+				std::fmax(std::fmin(hill1, hill2), std::fmin(hill3, hill4));
+			float hills = hill_mnt * hilliness;
+			float ridged_mountains = ridge_mnt * hilliness;
+			float step_mountains = step_mnt * hilliness;
+
+			// Gradient & shallow seabed
+			s32 grad = (y < water_level) ? grad_wl + (water_level - y) * 3 :
+				1 - y;
+
+			// Final terrain level
+			float mountains = hills + ridged_mountains + step_mountains;
+			float surface_level = ground + mountains + grad;
+
+			if (y < surface_level) {
+				vm->m_data[vi] = mn_stone; // Stone
+				if (y > stone_surface_max_y)
+					stone_surface_max_y = y;
+			} else if (y <= water_level) {
+				vm->m_data[vi] = mn_water; // Sea water
+			} else {
+				vm->m_data[vi] = mn_air; // Air
 			}
-			index2d -= ystride;
 		}
-		index2d += ystride;
 	}
 
 	return stone_surface_max_y;
