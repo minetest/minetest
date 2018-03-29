@@ -117,7 +117,7 @@ public:
 	void moveTo(v3f pos, bool continuous);
 	float getMinimumSavedMovement();
 	std::string getDescription();
-	void setHP(s16 hp);
+	void setHP(s16 hp, const PlayerHPChangeReason &reason);
 	s16 getHP() const;
 	/* LuaEntitySAO-specific */
 	void setVelocity(v3f velocity);

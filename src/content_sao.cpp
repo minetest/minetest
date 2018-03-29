@@ -566,7 +566,8 @@ int LuaEntitySAO::punch(v3f dir,
 
 	if (!damage_handled) {
 		if (result.did_punch) {
-			setHP(getHP() - result.damage);
+			setHP(getHP() - result.damage,
+				PlayerHPChangeReason(PlayerHPChangeReason::SET_HP));
 
 			if (result.damage > 0) {
 				std::string punchername = puncher ? puncher->getDescription() : "nil";
@@ -634,9 +635,10 @@ std::string LuaEntitySAO::getDescription()
 	return os.str();
 }
 
-void LuaEntitySAO::setHP(s16 hp)
+void LuaEntitySAO::setHP(s16 hp, const PlayerHPChangeReason &reason)
 {
-	if(hp < 0) hp = 0;
+	if (hp < 0)
+		hp = 0;
 	m_hp = hp;
 }
 
