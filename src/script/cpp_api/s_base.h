@@ -72,7 +72,7 @@ class IGameDef;
 class Environment;
 class GUIEngine;
 class ServerActiveObject;
-class PlayerHPChangeReason;
+struct PlayerHPChangeReason;
 
 class ScriptApiBase {
 public:
@@ -146,7 +146,7 @@ protected:
 	std::string     m_last_run_mod;
 	bool            m_secure = false;
 #ifdef SCRIPTAPI_LOCK_DEBUG
-	int             m_lock_recursion_count;
+	int             m_lock_recursion_count{};
 	std::thread::id m_owning_thread;
 #endif
 
