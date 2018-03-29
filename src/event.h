@@ -19,6 +19,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #pragma once
 
+#import "irrlichttypes.h"
+
 class MtEvent
 {
 public:
@@ -32,6 +34,7 @@ public:
 		NODE_DUG,
 		PLAYER_JUMP,
 		PLAYER_REGAIN_GROUND,
+		TYPE_MAX,
 	};
 
 	virtual ~MtEvent() = default;
@@ -39,14 +42,13 @@ public:
 };
 
 // An event with no parameters and customizable name
-class SimpleTriggerEvent: public MtEvent
+class SimpleTriggerEvent : public MtEvent
 {
 	Type type;
+
 public:
-	SimpleTriggerEvent(Type type):
-		type(type)
-	{}
-	Type getType() const { return type; }
+	SimpleTriggerEvent(Type type) : type(type) {}
+	Type getType() const override { return type; }
 };
 
 class MtEventReceiver
@@ -66,6 +68,4 @@ public:
 	virtual void reg(MtEvent::Type type, event_receive_func f, void *data) = 0;
 	// If data==NULL, every occurence of f is deregistered.
 	virtual void dereg(MtEvent::Type type, event_receive_func f, void *data) = 0;
-	virtual void reg(MtEventReceiver *r, MtEvent::Type type) = 0;
-	virtual void dereg(MtEventReceiver *r, MtEvent::Type  type) = 0;
 };

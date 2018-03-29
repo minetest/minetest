@@ -370,11 +370,10 @@ public:
 	ICraftDefManager* getCraftDefManager() override;
 	ITextureSource* getTextureSource();
 	virtual IShaderSource* getShaderSource();
-	virtual u16 allocateUnknownNodeId(const std::string &name);
+	u16 allocateUnknownNodeId(const std::string &name) override;
 	virtual ISoundManager* getSoundManager();
-	MtEventManager* getEventManager() override;
+	MtEventManager* getEventManager();
 	virtual ParticleManager* getParticleManager();
-	inline MtEventManager *event() { return getEventManager(); }
 	bool checkLocalPrivilege(const std::string &priv)
 	{ return checkPrivilege(priv); }
 	virtual scene::IAnimatedMesh* getMesh(const std::string &filename, bool cache = false);

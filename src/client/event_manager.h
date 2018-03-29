@@ -39,7 +39,7 @@ class EventManager : public MtEventManager
 
 	struct Dest
 	{
-		std::list<FuncSpec> funcs;
+		std::list<FuncSpec> funcs{};
 	};
 	std::map<MtEvent::Type, Dest> m_dest{};
 
@@ -57,24 +57,23 @@ public:
 		}
 		delete e;
 	}
-	void reg(MtEvent::Type type, event_receive_func f, void *data)
+	void reg(MtEvent::Type type, event_receive_func f, void *data) override
 	{
 		std::map<MtEvent::Type, Dest>::iterator i = m_dest.find(type);
 		if (i != m_dest.end()) {
 			i->second.funcs.emplace_back(f, data);
 		} else {
-			std::list<FuncSpec> funcs;
 			Dest dest;
 			dest.funcs.emplace_back(f, data);
 			m_dest[type] = dest;
 		}
 	}
-	void dereg(MtEvent::Type type, event_receive_func f, void *data)
+	void dereg(MtEvent::Type type, event_receive_func f, void *data) override
 	{
 		std::map<MtEvent::Type, Dest>::iterator i = m_dest.find(type);
 		if (i != m_dest.end()) {
 			std::list<FuncSpec> &funcs = i->second.funcs;
-			std::list<FuncSpec>::iterator j = funcs.begin();
+			auto j = funcs.begin();
 			while (j != funcs.end()) {
 				bool remove = (j->f == f && (!data || j->d == data));
 				if (remove)
@@ -83,14 +82,5 @@ public:
 					++j;
 			}
 		}
-	}
-
-	void reg(MtEventReceiver *r, MtEvent::Type type)
-	{
-		reg(type, EventManager::receiverReceive, r);
-	}
-	void dereg(MtEventReceiver *r, MtEvent::Type type)
-	{
-		dereg(type, EventManager::receiverReceive, r);
 	}
 };

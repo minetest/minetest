@@ -69,7 +69,6 @@ src/defaultsettings.cpp
 src/emerge.cpp
 src/emerge.h
 src/environment.cpp
-src/event.h
 src/exceptions.h
 src/face_position_cache.cpp
 src/face_position_cache.h
