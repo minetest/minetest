@@ -28,7 +28,6 @@ class NodeDefManager;
 class ICraftDefManager;
 class ITextureSource;
 class IShaderSource;
-class MtEventManager;
 class IRollbackManager;
 class EmergeManager;
 class Camera;
@@ -58,8 +57,6 @@ public:
 	// Used for keeping track of names/ids of unknown nodes
 	virtual u16 allocateUnknownNodeId(const std::string &name)=0;
 
-	virtual MtEventManager* getEventManager()=0;
-
 	// Only usable on the server, and NOT thread-safe. It is usable from the
 	// environment thread.
 	virtual IRollbackManager* getRollbackManager() { return NULL; }
@@ -68,8 +65,6 @@ public:
 	IItemDefManager  *idef()     { return getItemDefManager(); }
 	const NodeDefManager  *ndef() { return getNodeDefManager(); }
 	ICraftDefManager *cdef()     { return getCraftDefManager(); }
-
-	MtEventManager   *event()    { return getEventManager(); }
 	IRollbackManager *rollback() { return getRollbackManager(); }
 
 	virtual const std::vector<ModSpec> &getMods() const = 0;

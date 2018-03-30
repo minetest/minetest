@@ -50,7 +50,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "content_nodemeta.h"
 #include "content_sao.h"
 #include "mods.h"
-#include "event_manager.h"
 #include "modchannels.h"
 #include "serverlist.h"
 #include "util/string.h"
@@ -168,7 +167,6 @@ Server::Server(
 	m_itemdef(createItemDefManager()),
 	m_nodedef(createNodeDefManager()),
 	m_craftdef(createCraftDefManager()),
-	m_event(new EventManager()),
 	m_uptime(0),
 	m_clients(m_con),
 	m_admin_chat(iface),
@@ -335,7 +333,6 @@ Server::~Server()
 	delete m_env;
 	delete m_rollback;
 	delete m_banmanager;
-	delete m_event;
 	delete m_itemdef;
 	delete m_nodedef;
 	delete m_craftdef;
@@ -3294,11 +3291,6 @@ ICraftDefManager *Server::getCraftDefManager()
 u16 Server::allocateUnknownNodeId(const std::string &name)
 {
 	return m_nodedef->allocateDummy(name);
-}
-
-MtEventManager *Server::getEventManager()
-{
-	return m_event;
 }
 
 IWritableItemDefManager *Server::getWritableItemDefManager()

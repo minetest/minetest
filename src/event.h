@@ -19,31 +19,36 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #pragma once
 
+#import "irrlichttypes.h"
+
 class MtEvent
 {
 public:
-	virtual ~MtEvent() = default;
-	//virtual MtEvent* clone(){ return new IEvent; }
-	virtual const char* getType() const = 0;
-
-	MtEvent* checkIs(const std::string &type)
+	enum Type : u8
 	{
-		if(type == getType())
-			return this;
-		return NULL;
-	}
+		VIEW_BOBBING_STEP = 0,
+		CAMERA_PUNCH_LEFT,
+		CAMERA_PUNCH_RIGHT,
+		PLAYER_FALLING_DAMAGE,
+		PLAYER_DAMAGE,
+		NODE_DUG,
+		PLAYER_JUMP,
+		PLAYER_REGAIN_GROUND,
+		TYPE_MAX,
+	};
+
+	virtual ~MtEvent() = default;
+	virtual Type getType() const = 0;
 };
 
 // An event with no parameters and customizable name
-class SimpleTriggerEvent: public MtEvent
+class SimpleTriggerEvent : public MtEvent
 {
-	const char *type;
+	Type type;
+
 public:
-	SimpleTriggerEvent(const char *type):
-		type(type)
-	{}
-	const char* getType() const
-	{return type;}
+	SimpleTriggerEvent(Type type) : type(type) {}
+	Type getType() const override { return type; }
 };
 
 class MtEventReceiver
@@ -60,9 +65,7 @@ class MtEventManager
 public:
 	virtual ~MtEventManager() = default;
 	virtual void put(MtEvent *e) = 0;
-	virtual void reg(const char *type, event_receive_func f, void *data) = 0;
+	virtual void reg(MtEvent::Type type, event_receive_func f, void *data) = 0;
 	// If data==NULL, every occurence of f is deregistered.
-	virtual void dereg(const char *type, event_receive_func f, void *data) = 0;
-	virtual void reg(MtEventReceiver *r, const char *type) = 0;
-	virtual void dereg(MtEventReceiver *r, const char *type) = 0;
+	virtual void dereg(MtEvent::Type type, event_receive_func f, void *data) = 0;
 };

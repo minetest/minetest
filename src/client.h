@@ -370,10 +370,9 @@ public:
 	ICraftDefManager* getCraftDefManager() override;
 	ITextureSource* getTextureSource();
 	virtual IShaderSource* getShaderSource();
-	IShaderSource *shsrc() { return getShaderSource(); }
 	u16 allocateUnknownNodeId(const std::string &name) override;
 	virtual ISoundManager* getSoundManager();
-	MtEventManager* getEventManager() override;
+	MtEventManager* getEventManager();
 	virtual ParticleManager* getParticleManager();
 	bool checkLocalPrivilege(const std::string &priv)
 	{ return checkPrivilege(priv); }

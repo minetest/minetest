@@ -417,8 +417,7 @@ void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d,
 	*/
 
 	if(!result.standing_on_object && !touching_ground_was && touching_ground) {
-		MtEvent *e = new SimpleTriggerEvent("PlayerRegainGround");
-		m_client->event()->put(e);
+		m_client->getEventManager()->put(new SimpleTriggerEvent(MtEvent::PLAYER_REGAIN_GROUND));
 
 		// Set camera impact value to be used for view bobbing
 		camera_impact = getSpeed().Y * -1;
@@ -634,9 +633,7 @@ void LocalPlayer::applyControl(float dtime, Environment *env)
 			if(speedJ.Y >= -0.5 * BS) {
 				speedJ.Y = movement_speed_jump * physics_override_jump;
 				setSpeed(speedJ);
-
-				MtEvent *e = new SimpleTriggerEvent("PlayerJump");
-				m_client->event()->put(e);
+				m_client->getEventManager()->put(new SimpleTriggerEvent(MtEvent::PLAYER_JUMP));
 			}
 		}
 		else if(in_liquid)
@@ -1013,8 +1010,7 @@ void LocalPlayer::old_move(f32 dtime, Environment *env, f32 pos_max_d,
 	}
 
 	if (!result.standing_on_object && !touching_ground_was && touching_ground) {
-		MtEvent *e = new SimpleTriggerEvent("PlayerRegainGround");
-		m_client->event()->put(e);
+		m_client->getEventManager()->put(new SimpleTriggerEvent(MtEvent::PLAYER_REGAIN_GROUND));
 		// Set camera impact value to be used for view bobbing
 		camera_impact = getSpeed().Y * -1;
 	}

@@ -160,15 +160,13 @@ void Camera::step(f32 dtime)
 					(was < 0.5f && m_view_bobbing_anim >= 0.5f) ||
 					(was > 0.5f && m_view_bobbing_anim <= 0.5f));
 			if(step) {
-				MtEvent *e = new SimpleTriggerEvent("ViewBobbingStep");
-				m_client->event()->put(e);
+				m_client->getEventManager()->put(new SimpleTriggerEvent(MtEvent::VIEW_BOBBING_STEP));
 			}
 		}
 	}
 
-	if (m_digging_button != -1)
-	{
-		f32 offset = dtime * 3.5;
+	if (m_digging_button != -1) {
+		f32 offset = dtime * 3.5f;
 		float m_digging_anim_was = m_digging_anim;
 		m_digging_anim += offset;
 		if (m_digging_anim >= 1)
@@ -179,13 +177,10 @@ void Camera::step(f32 dtime)
 		float lim = 0.15;
 		if(m_digging_anim_was < lim && m_digging_anim >= lim)
 		{
-			if(m_digging_button == 0)
-			{
-				MtEvent *e = new SimpleTriggerEvent("CameraPunchLeft");
-				m_client->event()->put(e);
+			if (m_digging_button == 0) {
+				m_client->getEventManager()->put(new SimpleTriggerEvent(MtEvent::CAMERA_PUNCH_LEFT));
 			} else if(m_digging_button == 1) {
-				MtEvent *e = new SimpleTriggerEvent("CameraPunchRight");
-				m_client->event()->put(e);
+				m_client->getEventManager()->put(new SimpleTriggerEvent(MtEvent::CAMERA_PUNCH_RIGHT));
 			}
 		}
 	}

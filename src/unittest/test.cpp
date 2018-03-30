@@ -51,7 +51,6 @@ public:
 	ITextureSource *getTextureSource() { return m_texturesrc; }
 	IShaderSource *getShaderSource() { return m_shadersrc; }
 	ISoundManager *getSoundManager() { return m_soundmgr; }
-	MtEventManager *getEventManager() { return m_eventmgr; }
 	scene::ISceneManager *getSceneManager() { return m_scenemgr; }
 	IRollbackManager *getRollbackManager() { return m_rollbackmgr; }
 	EmergeManager *getEmergeManager() { return m_emergemgr; }
@@ -86,7 +85,6 @@ private:
 	ITextureSource *m_texturesrc = nullptr;
 	IShaderSource *m_shadersrc = nullptr;
 	ISoundManager *m_soundmgr = nullptr;
-	MtEventManager *m_eventmgr = nullptr;
 	scene::ISceneManager *m_scenemgr = nullptr;
 	IRollbackManager *m_rollbackmgr = nullptr;
 	EmergeManager *m_emergemgr = nullptr;
