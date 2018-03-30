@@ -224,6 +224,7 @@ LOCAL_SRC_FILES := \
 		jni/src/server.cpp                        \
 		jni/src/serverenvironment.cpp             \
 		jni/src/serverlist.cpp                    \
+		jni/src/serveractiveobjectmap.cpp         \
 		jni/src/serverobject.cpp                  \
 		jni/src/shader.cpp                        \
 		jni/src/sky.cpp                           \
