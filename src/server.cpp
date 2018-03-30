@@ -2320,13 +2320,18 @@ void Server::sendMediaAnnouncement(session_t peer_id, const std::string &lang_co
 	std::string lang_suffix;
 	lang_suffix.append(".").append(lang_code).append(".tr");
 	for (const auto &i : m_media) {
-		if (str_ends_with(i.first, ".tr") && !str_ends_with(i.first, lang_suffix))
+		if (str_ends_with(i.first, ".tr") && !str_ends_with(i.first, lang_suffix)
+			&& !str_ends_with(i.first, ".en.tr"))
 			continue;
 		media_sent++;
 	}
 
 	pkt << media_sent;
 
+	if (lang_code.compare("en") != 0)
+		for (const auto &i : m_media)
+			if (str_ends_with(i.first, ".en.tr"))
+				pkt << i.first << i.second.sha1_digest;
 	for (const auto &i : m_media) {
 		if (str_ends_with(i.first, ".tr") && !str_ends_with(i.first, lang_suffix))
 			continue;
