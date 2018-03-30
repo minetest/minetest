@@ -856,7 +856,8 @@ int ObjectRef::l_add_velocity(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
 	LuaEntitySAO *co = getluaobject(ref);
-	if (co == NULL) return 0;
+	if (!co)
+		return 0;
 	v3f pos = checkFloatPos(L, 2);
 	// Do it
 	co->addVelocity(pos);
