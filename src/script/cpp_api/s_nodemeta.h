@@ -23,6 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "cpp_api/s_item.h"
 #include "irr_v3d.h"
 
+struct MoveAction;
 struct ItemStack;
 
 class ScriptApiNodemeta
@@ -34,30 +35,28 @@ public:
 	virtual ~ScriptApiNodemeta() = default;
 
 	// Return number of accepted items to be moved
-	int nodemeta_inventory_AllowMove(v3s16 p,
-			const std::string &from_list, int from_index,
-			const std::string &to_list, int to_index,
-			int count, ServerActiveObject *player);
+	int nodemeta_inventory_AllowMove(
+			const MoveAction &ma, int count,
+			ServerActiveObject *player);
 	// Return number of accepted items to be put
-	int nodemeta_inventory_AllowPut(v3s16 p,
-			const std::string &listname, int index, ItemStack &stack,
+	int nodemeta_inventory_AllowPut(
+			const MoveAction &ma, const ItemStack &stack,
 			ServerActiveObject *player);
 	// Return number of accepted items to be taken
-	int nodemeta_inventory_AllowTake(v3s16 p,
-			const std::string &listname, int index, ItemStack &stack,
+	int nodemeta_inventory_AllowTake(
+			const MoveAction &ma, const ItemStack &stack,
 			ServerActiveObject *player);
 	// Report moved items
-	void nodemeta_inventory_OnMove(v3s16 p,
-			const std::string &from_list, int from_index,
-			const std::string &to_list, int to_index,
-			int count, ServerActiveObject *player);
+	void nodemeta_inventory_OnMove(
+			const MoveAction &ma, int count,
+			ServerActiveObject *player);
 	// Report put items
-	void nodemeta_inventory_OnPut(v3s16 p,
-			const std::string &listname, int index, ItemStack &stack,
+	void nodemeta_inventory_OnPut(
+			const MoveAction &ma, const ItemStack &stack,
 			ServerActiveObject *player);
 	// Report taken items
-	void nodemeta_inventory_OnTake(v3s16 p,
-			const std::string &listname, int index, ItemStack &stack,
+	void nodemeta_inventory_OnTake(
+			const MoveAction &ma, const ItemStack &stack,
 			ServerActiveObject *player);
 private:
 
