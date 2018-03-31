@@ -22,6 +22,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "common/c_converter.h"
 #include "common/c_content.h"
 #include "debug.h"
+#include "inventorymanager.h"
+#include "lua_api/l_inventory.h"
+#include "lua_api/l_item.h"
 #include "util/string.h"
 
 void ScriptApiPlayer::on_newplayer(ServerActiveObject *player)
@@ -224,4 +227,147 @@ void ScriptApiPlayer::on_auth_failure(const std::string &name, const std::string
 	lua_pushstring(L, name.c_str());
 	lua_pushstring(L, ip.c_str());
 	runCallbacks(2, RUN_CALLBACKS_MODE_FIRST);
+}
+
+void ScriptApiPlayer::pushMoveArguments(
+		const InventoryLocation &loc,
+		const std::string &from_list, int from_index,
+		const std::string &to_list, int to_index,
+		int count, ServerActiveObject *player)
+{
+	lua_State *L = getStack();
+	objectrefGetOrCreate(L, player); // player
+	lua_pushstring(L, "move");       // action
+	InvRef::create(L, loc);          // inventory
+	lua_newtable(L);
+	{
+		// Table containing the action information
+		lua_pushstring(L, from_list.c_str());
+		lua_setfield(L, -2, "from_list");
+		lua_pushstring(L, to_list.c_str());
+		lua_setfield(L, -2, "to_list");
+
+		lua_pushinteger(L, from_index + 1);
+		lua_setfield(L, -2, "from_index");
+		lua_pushinteger(L, to_index + 1);
+		lua_setfield(L, -2, "to_index");
+
+		lua_pushinteger(L, count);
+		lua_setfield(L, -2, "count");
+	}
+}
+
+void ScriptApiPlayer::pushPutTakeArguments(
+		const char *method, const InventoryLocation &loc,
+		const std::string &listname, int index, const ItemStack &stack,
+		ServerActiveObject *player)
+{
+	lua_State *L = getStack();
+	objectrefGetOrCreate(L, player); // player
+	lua_pushstring(L, method);       // action
+	InvRef::create(L, loc);          // inventory
+	lua_newtable(L);
+	{
+		// Table containing the action information
+		lua_pushstring(L, listname.c_str());
+		lua_setfield(L, -2, "listname");
+
+		lua_pushinteger(L, index + 1);
+		lua_setfield(L, -2, "index");
+
+		LuaItemStack::create(L, stack);
+		lua_setfield(L, -2, "stack");
+	}
+}
+
+// Return number of accepted items to be moved
+int ScriptApiPlayer::player_inventory_AllowMove(
+		const InventoryLocation &loc,
+		const std::string &from_list, int from_index,
+		const std::string &to_list, int to_index,
+		int count, ServerActiveObject *player)
+{
+	SCRIPTAPI_PRECHECKHEADER
+
+	lua_getglobal(L, "core");
+	lua_getfield(L, -1, "registered_allow_player_inventory_actions");
+	pushMoveArguments(loc, from_list, from_index, to_list, to_index, count, player);
+	runCallbacks(4, RUN_CALLBACKS_MODE_OR_SC);
+
+	return lua_type(L, -1) == LUA_TNUMBER ? lua_tonumber(L, -1) : count;
+}
+
+// Return number of accepted items to be put
+int ScriptApiPlayer::player_inventory_AllowPut(
+		const InventoryLocation &loc,
+		const std::string &listname, int index, const ItemStack &stack,
+		ServerActiveObject *player)
+{
+	SCRIPTAPI_PRECHECKHEADER
+
+	lua_getglobal(L, "core");
+	lua_getfield(L, -1, "registered_allow_player_inventory_actions");
+	pushPutTakeArguments("put", loc, listname, index, stack, player);
+	runCallbacks(4, RUN_CALLBACKS_MODE_OR_SC);
+
+	return lua_type(L, -1) == LUA_TNUMBER ? lua_tonumber(L, -1) : stack.count;
+}
+
+// Return number of accepted items to be taken
+int ScriptApiPlayer::player_inventory_AllowTake(
+		const InventoryLocation &loc,
+		const std::string &listname, int index, const ItemStack &stack,
+		ServerActiveObject *player)
+{
+	SCRIPTAPI_PRECHECKHEADER
+
+	lua_getglobal(L, "core");
+	lua_getfield(L, -1, "registered_allow_player_inventory_actions");
+	pushPutTakeArguments("take", loc, listname, index, stack, player);
+	runCallbacks(4, RUN_CALLBACKS_MODE_OR_SC);
+
+	return lua_type(L, -1) == LUA_TNUMBER ? lua_tonumber(L, -1) : stack.count;
+}
+
+// Report moved items
+void ScriptApiPlayer::player_inventory_OnMove(
+		const InventoryLocation &loc,
+		const std::string &from_list, int from_index,
+		const std::string &to_list, int to_index,
+		int count, ServerActiveObject *player)
+{
+	SCRIPTAPI_PRECHECKHEADER
+
+	lua_getglobal(L, "core");
+	lua_getfield(L, -1, "registered_on_player_inventory_actions");
+	pushMoveArguments(loc, from_list, from_index, to_list, to_index, count, player);
+	runCallbacks(4, RUN_CALLBACKS_MODE_FIRST);
+}
+
+// Report put items
+void ScriptApiPlayer::player_inventory_OnPut(
+		const InventoryLocation &loc,
+		const std::string &listname, int index, const ItemStack &stack,
+		ServerActiveObject *player)
+{
+	SCRIPTAPI_PRECHECKHEADER
+
+	lua_getglobal(L, "core");
+	lua_getfield(L, -1, "registered_on_player_inventory_actions");
+	pushPutTakeArguments("put", loc, listname, index, stack, player);
+	runCallbacks(4, RUN_CALLBACKS_MODE_FIRST);
+}
+
+// Report taken items
+void ScriptApiPlayer::player_inventory_OnTake(
+		const InventoryLocation &loc,
+		const std::string &listname, int index, const ItemStack &stack,
+		ServerActiveObject *player)
+{
+	SCRIPTAPI_PRECHECKHEADER
+
+	lua_getglobal(L, "core");
+	lua_getfield(L, -1, "registered_on_player_inventory_actions");
+	pushPutTakeArguments("take", loc, listname, index, stack, player);
+	runCallbacks(4, RUN_CALLBACKS_MODE_FIRST);
 }
