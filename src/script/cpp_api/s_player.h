@@ -23,6 +23,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "irr_v3d.h"
 #include "util/string.h"
 
+struct InventoryLocation;
+struct ItemStack;
 struct ToolCapabilities;
 struct PlayerHPChangeReason;
 
@@ -48,4 +50,47 @@ public:
 	void on_playerReceiveFields(ServerActiveObject *player,
 			const std::string &formname, const StringMap &fields);
 	void on_auth_failure(const std::string &name, const std::string &ip);
+
+	// Player inventory callbacks
+	// Return number of accepted items to be moved
+	int player_inventory_AllowMove(
+		const InventoryLocation &loc,
+		const std::string &from_list, int from_index,
+		const std::string &to_list, int to_index,
+		int count, ServerActiveObject *player);
+	// Return number of accepted items to be put
+	int player_inventory_AllowPut(
+		const InventoryLocation &loc,
+		const std::string &listname, int index, const ItemStack &stack,
+		ServerActiveObject *player);
+	// Return number of accepted items to be taken
+	int player_inventory_AllowTake(
+		const InventoryLocation &loc,
+		const std::string &listname, int index, const ItemStack &stack,
+		ServerActiveObject *player);
+	// Report moved items
+	void player_inventory_OnMove(
+		const InventoryLocation &loc,
+		const std::string &from_list, int from_index,
+		const std::string &to_list, int to_index,
+		int count, ServerActiveObject *player);
+	// Report put items
+	void player_inventory_OnPut(
+		const InventoryLocation &loc,
+		const std::string &listname, int index, const ItemStack &stack,
+		ServerActiveObject *player);
+	// Report taken items
+	void player_inventory_OnTake(
+		const InventoryLocation &loc,
+		const std::string &listname, int index, const ItemStack &stack,
+		ServerActiveObject *player);
+private:
+	void pushPutTakeArguments(
+		const char *method, const InventoryLocation &loc,
+		const std::string &listname, int index, const ItemStack &stack,
+		ServerActiveObject *player);
+	void pushMoveArguments(const InventoryLocation &loc,
+		const std::string &from_list, int from_index,
+		const std::string &to_list, int to_index,
+		int count, ServerActiveObject *player);
 };

@@ -314,6 +314,33 @@ void IMoveAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 		}
 	}
 
+	// Query player inventories
+
+	// Move occurs in the same player inventory
+	if (from_inv.type == InventoryLocation::PLAYER &&
+			to_inv.type == InventoryLocation::PLAYER &&
+			from_inv.name == to_inv.name) {
+		src_can_take_count = PLAYER_TO_SA(player)->player_inventory_AllowMove(
+			from_inv, from_list, from_i,
+			to_list, to_i, try_take_count, player);
+		dst_can_put_count = src_can_take_count;
+	} else {
+		// Destination is a player
+		if (to_inv.type == InventoryLocation::PLAYER) {
+			ItemStack src_item = list_from->getItem(from_i);
+			src_item.count = try_take_count;
+			dst_can_put_count = PLAYER_TO_SA(player)->player_inventory_AllowPut(
+				to_inv, to_list, to_i, src_item, player);
+		}
+		// Source is a player
+		if (from_inv.type == InventoryLocation::PLAYER) {
+			ItemStack src_item = list_from->getItem(from_i);
+			src_item.count = try_take_count;
+			src_can_take_count = PLAYER_TO_SA(player)->player_inventory_AllowTake(
+				from_inv, from_list, from_i, src_item, player);
+		}
+	}
+
 	int old_count = count;
 
 	/* Modify count according to collected data */
@@ -482,9 +509,31 @@ void IMoveAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 					to_inv.p, to_list, to_i, src_item, player);
 		}
 		// Source is nodemeta
-		else if (from_inv.type == InventoryLocation::NODEMETA) {
+		if (from_inv.type == InventoryLocation::NODEMETA) {
 			PLAYER_TO_SA(player)->nodemeta_inventory_OnTake(
 					from_inv.p, from_list, from_i, src_item, player);
+		}
+	}
+
+	// Player inventories
+
+	// Both endpoints are same player inventory
+	if (from_inv.type == InventoryLocation::PLAYER &&
+			to_inv.type == InventoryLocation::PLAYER &&
+			from_inv.name == to_inv.name) {
+		PLAYER_TO_SA(player)->player_inventory_OnMove(
+			from_inv, from_list, from_i,
+			to_list, to_i, count, player);
+	} else {
+		// Destination is player inventory
+		if (to_inv.type == InventoryLocation::PLAYER) {
+			PLAYER_TO_SA(player)->player_inventory_OnPut(
+				to_inv, to_list, to_i, src_item, player);
+		}
+		// Source is player inventory
+		if (from_inv.type == InventoryLocation::PLAYER) {
+			PLAYER_TO_SA(player)->player_inventory_OnTake(
+				from_inv, from_list, from_i, src_item, player);
 		}
 	}
 
