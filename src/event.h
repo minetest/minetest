@@ -19,7 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #pragma once
 
-#import "irrlichttypes.h"
+#include "irrlichttypes.h"
 
 class MtEvent
 {
