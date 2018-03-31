@@ -1854,6 +1854,7 @@ const luaL_Reg ObjectRef::methods[] = {
 	luamethod(ObjectRef, get_nametag_attributes),
 	// LuaEntitySAO-only
 	luamethod_aliased(ObjectRef, set_velocity, setvelocity),
+	luamethod(ObjectRef, add_velocity),
 	luamethod_aliased(ObjectRef, get_velocity, getvelocity),
 	luamethod_aliased(ObjectRef, set_acceleration, setacceleration),
 	luamethod_aliased(ObjectRef, get_acceleration, getacceleration),
