@@ -36,8 +36,11 @@ template <> struct hash<v3s16>
 	typedef std::size_t result_type;
 	result_type operator()(const argument_type &s) const noexcept
 	{
+		// clang-format off
 		return static_cast<size_t>((static_cast<u64>(s.X) << 20) ^
-		       (static_cast<u64>(s.Y) << 10) ^ (static_cast<u64>(s.Z)));
+		                           (static_cast<u64>(s.Y) << 10) ^
+		                           (static_cast<u64>(s.Z)));
+		// clang-format on
 	}
 };
 }

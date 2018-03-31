@@ -117,7 +117,6 @@ src/inventory.cpp
 src/inventory.h
 src/inventorymanager.cpp
 src/inventorymanager.h
-src/irr_v3d.h
 src/irrlicht_changes/CGUITTFont.cpp
 src/irrlicht_changes/CGUITTFont.h
 src/irrlicht_changes/irrUString.h
