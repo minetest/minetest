@@ -850,6 +850,20 @@ int ObjectRef::l_set_velocity(lua_State *L)
 	return 0;
 }
 
+// add_velocity(self, {x=num, y=num, z=num})
+int ObjectRef::l_add_velocity(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	ObjectRef *ref = checkobject(L, 1);
+	LuaEntitySAO *co = getluaobject(ref);
+	if (!co)
+		return 0;
+	v3f pos = checkFloatPos(L, 2);
+	// Do it
+	co->addVelocity(pos);
+	return 0;
+}
+
 // get_velocity(self)
 int ObjectRef::l_get_velocity(lua_State *L)
 {
@@ -1840,6 +1854,7 @@ const luaL_Reg ObjectRef::methods[] = {
 	luamethod(ObjectRef, get_nametag_attributes),
 	// LuaEntitySAO-only
 	luamethod_aliased(ObjectRef, set_velocity, setvelocity),
+	luamethod(ObjectRef, add_velocity),
 	luamethod_aliased(ObjectRef, get_velocity, getvelocity),
 	luamethod_aliased(ObjectRef, set_acceleration, setacceleration),
 	luamethod_aliased(ObjectRef, get_acceleration, getacceleration),

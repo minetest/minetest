@@ -161,6 +161,9 @@ private:
 	// set_velocity(self, {x=num, y=num, z=num})
 	static int l_set_velocity(lua_State *L);
 
+	// add_velocity(self, {x=num, y=num, z=num})
+	static int l_add_velocity(lua_State *L);
+
 	// get_velocity(self)
 	static int l_get_velocity(lua_State *L);
 

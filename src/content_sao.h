@@ -121,6 +121,10 @@ public:
 	s16 getHP() const;
 	/* LuaEntitySAO-specific */
 	void setVelocity(v3f velocity);
+	void addVelocity(v3f velocity)
+	{
+		m_velocity += velocity;
+	}
 	v3f getVelocity();
 	void setAcceleration(v3f acceleration);
 	v3f getAcceleration();
