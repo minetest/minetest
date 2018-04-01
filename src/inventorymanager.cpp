@@ -245,8 +245,7 @@ void IMoveAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 	*/
 	bool ignore_rollback = (
 		from_inv.type == InventoryLocation::PLAYER &&
-		to_inv.type == InventoryLocation::PLAYER &&
-		from_inv.name == to_inv.name);
+		from_inv == to_inv);
 
 	/*
 		Collect information of endpoints
@@ -263,8 +262,7 @@ void IMoveAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 
 	// Move occurs in the same detached inventory
 	if (from_inv.type == InventoryLocation::DETACHED &&
-			to_inv.type == InventoryLocation::DETACHED &&
-			from_inv.name == to_inv.name) {
+			from_inv == to_inv) {
 		src_can_take_count = PLAYER_TO_SA(player)->detached_inventory_AllowMove(
 			*this, try_take_count, player);
 		dst_can_put_count = src_can_take_count;
@@ -290,8 +288,7 @@ void IMoveAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 	// Both endpoints are nodemeta
 	// Move occurs in the same nodemeta inventory
 	if (from_inv.type == InventoryLocation::NODEMETA &&
-			to_inv.type == InventoryLocation::NODEMETA &&
-			from_inv.p == to_inv.p) {
+			from_inv == to_inv) {
 		src_can_take_count = PLAYER_TO_SA(player)->nodemeta_inventory_AllowMove(
 			*this, try_take_count, player);
 		dst_can_put_count = src_can_take_count;
@@ -316,8 +313,7 @@ void IMoveAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 
 	// Move occurs in the same player inventory
 	if (from_inv.type == InventoryLocation::PLAYER &&
-			to_inv.type == InventoryLocation::PLAYER &&
-			from_inv.name == to_inv.name) {
+			from_inv == to_inv) {
 		src_can_take_count = PLAYER_TO_SA(player)->player_inventory_AllowMove(
 			*this, try_take_count, player);
 		dst_can_put_count = src_can_take_count;
@@ -472,8 +468,7 @@ void IMoveAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 
 	// Both endpoints are same detached
 	if (from_inv.type == InventoryLocation::DETACHED &&
-			to_inv.type == InventoryLocation::DETACHED &&
-			from_inv.name == to_inv.name) {
+			from_inv == to_inv) {
 		PLAYER_TO_SA(player)->detached_inventory_OnMove(
 				*this, count, player);
 	} else {
@@ -493,8 +488,7 @@ void IMoveAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 
 	// Both endpoints are same nodemeta
 	if (from_inv.type == InventoryLocation::NODEMETA &&
-			to_inv.type == InventoryLocation::NODEMETA &&
-			from_inv.p == to_inv.p) {
+			from_inv == to_inv) {
 		PLAYER_TO_SA(player)->nodemeta_inventory_OnMove(
 			*this, count, player);
 	} else {
@@ -514,8 +508,7 @@ void IMoveAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 
 	// Both endpoints are same player inventory
 	if (from_inv.type == InventoryLocation::PLAYER &&
-			to_inv.type == InventoryLocation::PLAYER &&
-			from_inv.name == to_inv.name) {
+			from_inv == to_inv) {
 		PLAYER_TO_SA(player)->player_inventory_OnMove(
 			*this, count, player);
 	} else {
