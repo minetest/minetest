@@ -743,7 +743,7 @@ void GUIEditBoxWithScrollBar::draw()
 				if (m_passwordbox) {
 					if (m_broken_text.size() != 1) {
 						m_broken_text.clear();
-						m_broken_text.push_back(core::stringw());
+						m_broken_text.emplace_back();
 					}
 					if (m_broken_text[0].size() != Text.size()){
 						m_broken_text[0] = Text;
