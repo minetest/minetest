@@ -470,7 +470,7 @@ int TouchScreenGUI::getGuiButtonSize()
 
 void TouchScreenGUI::init(ISimpleTextureSource* tsrc)
 {
-	assert(tsrc != 0);
+	assert(tsrc);
 
 	u32 button_size = getGuiButtonSize();
 	m_visible       = true;
@@ -914,7 +914,7 @@ void TouchScreenGUI::translateEvent(const SEvent &event)
 				s32 distance = sqrt(distance_sq);
 
 				// angle in degrees
-				double angle = acos(dx / distance) * 180 / 3.1415926536;
+				double angle = acos(dx / distance) * 180 / M_PI;
 				if (dy < 0)
 					angle *= -1;
 				// rotate to make comparing easier
@@ -1091,23 +1091,23 @@ TouchScreenGUI::~TouchScreenGUI()
 {
 	for (unsigned int i = 0; i < after_last_element_id; i++) {
 		button_info* btn = &m_buttons[i];
-		if (btn->guibutton != 0) {
+		if (btn->guibutton) {
 			btn->guibutton->drop();
 			btn->guibutton = NULL;
 		}
 	}
 
-	if (m_joystick_btn_off->guibutton != 0) {
+	if (m_joystick_btn_off->guibutton) {
 		m_joystick_btn_off->guibutton->drop();
 		m_joystick_btn_off->guibutton = NULL;
 	}
 
-	if (m_joystick_btn_bg->guibutton != 0) {
+	if (m_joystick_btn_bg->guibutton) {
 		m_joystick_btn_bg->guibutton->drop();
 		m_joystick_btn_bg->guibutton = NULL;
 	}
 
-	if (m_joystick_btn_center->guibutton != 0) {
+	if (m_joystick_btn_center->guibutton) {
 		m_joystick_btn_center->guibutton->drop();
 		m_joystick_btn_center->guibutton = NULL;
 	}
@@ -1192,12 +1192,12 @@ void TouchScreenGUI::Toggle(bool visible)
 	m_visible = visible;
 	for (unsigned int i = 0; i < after_last_element_id; i++) {
 		button_info* btn = &m_buttons[i];
-		if (btn->guibutton != 0) {
+		if (btn->guibutton) {
 			btn->guibutton->setVisible(visible);
 		}
 	}
 
-	if (m_joystick_btn_off->guibutton != 0) {
+	if (m_joystick_btn_off->guibutton) {
 		m_joystick_btn_off->guibutton->setVisible(visible);
 	}
 

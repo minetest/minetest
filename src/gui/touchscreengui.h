@@ -217,9 +217,9 @@ private:
 	bool m_joystick_has_really_moved = false;
 	v2s32 m_joystick_downlocation = v2s32(-10000, -10000);
 	bool m_fixed_joystick = false;
-	button_info *m_joystick_btn_off;
-	button_info *m_joystick_btn_bg;
-	button_info *m_joystick_btn_center;
+	button_info *m_joystick_btn_off = nullptr;
+	button_info *m_joystick_btn_bg = nullptr;
+	button_info *m_joystick_btn_center = nullptr;
 
 	button_info m_buttons[after_last_element_id];
 
