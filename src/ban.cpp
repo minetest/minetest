@@ -77,8 +77,8 @@ void BanManager::save()
 		ss << ip.first << "|" << ip.second << "\n";
 
 	if (!fs::safeWriteToFile(m_banfilepath, ss.str())) {
-		infostream << "BanManager: failed saving to " << m_banfilepath << std::endl;
-		throw SerializationError("BanManager::save(): Couldn't write file");
+		errorstream << "BanManager: failed saving to " << m_banfilepath <<
+			std::endl;
 	}
 
 	m_modified = false;

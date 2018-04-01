@@ -22,6 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <set>
 #include "irr_v3d.h"
 #include "mapnode.h"
+#include "map.h"
 #include "exceptions.h"
 #include "constants.h"
 #include "staticobject.h"
@@ -324,6 +325,9 @@ public:
 
 	inline void setNodeNoCheck(s16 x, s16 y, s16 z, MapNode & n)
 	{
+		if (m_parent->isReadonly())
+			return;
+
 		if (!data)
 			throw InvalidPositionException();
 

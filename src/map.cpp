@@ -1924,6 +1924,13 @@ bool ServerMap::saveBlock(MapBlock *block)
 
 bool ServerMap::saveBlock(MapBlock *block, MapDatabase *db)
 {
+	// If the database is read-only, clear the modified flag without saving
+	static thread_local bool could_not_save = false;
+	if (could_not_save) {
+		block->resetModified();
+		return false;
+	}
+
 	v3s16 p3d = block->getPos();
 
 	// Dummy blocks are not written
@@ -1944,7 +1951,16 @@ bool ServerMap::saveBlock(MapBlock *block, MapDatabase *db)
 	o.write((char*) &version, 1);
 	block->serialize(o, version, true);
 
-	bool ret = db->saveBlock(p3d, o.str());
+	bool ret;
+	try {
+		ret = db->saveBlock(p3d, o.str());
+	} catch (DatabaseException &e) {
+		could_not_save = true;
+		errorstream << "Cannot save map: " << e.what() << std::endl;
+		block->getParent()->setReadonly();
+		block->resetModified();
+		return false;
+	}
 	if (ret) {
 		// We just wrote it to the disk so clear modified flag
 		block->resetModified();

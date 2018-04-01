@@ -273,6 +273,9 @@ public:
 	*/
 	std::map<v2s16, MapSector*> *getSectorsPtr(){return &m_sectors;}
 
+	bool isReadonly() const { return m_readonly; }
+	void setReadonly() { m_readonly = true; }
+
 	/*
 		Variables
 	*/
@@ -312,6 +315,7 @@ private:
 	u32 m_unprocessed_count = 0;
 	u64 m_inc_trending_up_start_time = 0; // milliseconds
 	bool m_queue_size_timer_started = false;
+	bool m_readonly = false;
 };
 
 /*

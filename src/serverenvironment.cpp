@@ -562,26 +562,24 @@ void ServerEnvironment::saveLoadedPlayers(bool force)
 {
 	for (RemotePlayer *player : m_players) {
 		if (force || player->checkModified() || (player->getPlayerSAO() &&
-				player->getPlayerSAO()->getMeta().isModified())) {
-			try {
-				m_player_database->savePlayer(player);
-			} catch (DatabaseException &e) {
-				errorstream << "Failed to save player " << player->getName() << " exception: "
-					<< e.what() << std::endl;
-				throw;
-			}
-		}
+				player->getPlayerSAO()->getMeta().isModified()))
+			savePlayer(player);
 	}
 }
 
 void ServerEnvironment::savePlayer(RemotePlayer *player)
 {
+	// don't try to save again if the database is read only
+	static thread_local bool could_not_save = false;
+	if (could_not_save)
+		return;
+
 	try {
 		m_player_database->savePlayer(player);
 	} catch (DatabaseException &e) {
-		errorstream << "Failed to save player " << player->getName() << " exception: "
+		errorstream << "Failed to save player \"" << player->getName() << "\": "
 			<< e.what() << std::endl;
-		throw;
+		could_not_save = true;
 	}
 }
 
@@ -624,7 +622,10 @@ PlayerSAO *ServerEnvironment::loadPlayer(RemotePlayer *player, bool *new_player,
 
 void ServerEnvironment::saveMeta()
 {
-	if (!m_meta_loaded)
+	// Save only if the env meta has been loaded before
+	// and the file has write permission
+	static thread_local bool could_not_save = false;
+	if (!m_meta_loaded || could_not_save)
 		return;
 
 	std::string path = m_path_world + DIR_DELIM "env_meta.txt";
@@ -643,11 +644,9 @@ void ServerEnvironment::saveMeta()
 	args.writeLines(ss);
 	ss<<"EnvArgsEnd\n";
 
-	if(!fs::safeWriteToFile(path, ss.str()))
-	{
-		infostream<<"ServerEnvironment::saveMeta(): Failed to write "
-			<<path<<std::endl;
-		throw SerializationError("Couldn't save env meta");
+	if (!fs::safeWriteToFile(path, ss.str())) {
+		errorstream << "Cannot save env meta to " << path << std::endl;
+		could_not_save = true;
 	}
 }
 
