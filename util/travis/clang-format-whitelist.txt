@@ -258,6 +258,7 @@ src/script/cpp_api/s_node.h
 src/script/cpp_api/s_nodemeta.cpp
 src/script/cpp_api/s_nodemeta.h
 src/script/cpp_api/s_player.cpp
+src/script/cpp_api/s_player.h
 src/script/cpp_api/s_security.cpp
 src/script/cpp_api/s_security.h
 src/script/cpp_api/s_server.cpp
