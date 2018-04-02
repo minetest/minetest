@@ -22,7 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "activeobject.h"
 #include "environment.h"
 #include "mapnode.h"
-#include "serveractiveobjectmap.h"
+#include "server/serveractiveobjectmap.h"
 #include "settings.h"
 #include "util/numeric.h"
 #include <set>
