@@ -166,5 +166,31 @@ void TestServerActiveObjectMap::testGetObjectsInsideRadius()
 
 void TestServerActiveObjectMap::testGetObjectsTouchingBox()
 {
-	// @TODO
+	ServerActiveObjectMap saom;
+
+	LuaEntitySAO ob1(nullptr, v3f(1 * BS, 0, 0), "", "");
+	ob1.accessObjectProperties()->physical = true;
+	ob1.accessObjectProperties()->collisionbox = {-1, -1, -1, 1, 1, 1}; // this is in nodes
+	ob1.setId(saom.getFreeId());
+	saom.addObject(&ob1);
+
+	LuaEntitySAO ob2(nullptr, v3f(0, 2 * BS, 0), "", "");
+	ob2.accessObjectProperties()->physical = true;
+	ob2.accessObjectProperties()->collisionbox = {1, 0, -1, 5, 2, 1}; // this is in nodes
+	ob2.setId(saom.getFreeId());
+	saom.addObject(&ob2);
+
+	std::vector<u16> list;
+
+	list = saom.getObjectsTouchingBox({2.1 * BS, -1.0 * BS, -1.0 * BS, 2.5 * BS, 1.0 * BS, 1.0 * BS});
+	UASSERT(list.size() == 0);
+
+	list = saom.getObjectsTouchingBox({1.9 * BS, -1.0 * BS, -1.0 * BS, 2.5 * BS, 1.0 * BS, 1.0 * BS});
+	UASSERT(list.size() == 1 && list[0] == ob1.getId());
+
+	list = saom.getObjectsTouchingBox({2.1 * BS, -1.0 * BS, -1.0 * BS, 2.5 * BS, 2.1 * BS, 1.0 * BS});
+	UASSERT(list.size() == 1 && list[0] == ob2.getId());
+
+	list = saom.getObjectsTouchingBox({1.9 * BS, -1.0 * BS, -1.0 * BS, 2.5 * BS, 2.1 * BS, 1.0 * BS});
+	UASSERT(list.size() == 2);
 }
