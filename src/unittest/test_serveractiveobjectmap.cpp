@@ -60,6 +60,7 @@ void TestServerActiveObjectMap::testAddObject()
 	UASSERT(saom.getObjects().empty());
 
 	LuaEntitySAO ob1(nullptr, v3f(0,0,0), "", "");
+	ob1.setId(saom.getFreeId());
 	saom.addObject(&ob1);
 
 	UASSERT(saom.getObjects().size() == 1);
@@ -77,6 +78,7 @@ void TestServerActiveObjectMap::testRemoveObject()
 	UASSERT(saom.getObjects().empty());
 
 	LuaEntitySAO ob1(nullptr, v3f(0,0,0), "", "");
+	ob1.setId(saom.getFreeId());
 	saom.addObject(&ob1);
 
 	UASSERT(saom.getObjects().size() == 1);
