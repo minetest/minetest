@@ -77,7 +77,7 @@ public:
 
 	// Append chat line
 	// Removes oldest chat line if scrollback size is reached
-	void addLine(std::wstring name, std::wstring text);
+	void addLine(const std::wstring &name, const std::wstring &text);
 
 	// Remove all chat lines
 	void clear();

@@ -37,13 +37,12 @@ ChatBuffer::ChatBuffer(u32 scrollback):
 	m_empty_formatted_line.first = true;
 }
 
-void ChatBuffer::addLine(std::wstring name, std::wstring text)
+void ChatBuffer::addLine(const std::wstring &name, const std::wstring &text)
 {
 	ChatLine line(name, text);
 	m_unformatted.push_back(line);
 
-	if (m_rows > 0)
-	{
+	if (m_rows > 0) {
 		// m_formatted is valid and must be kept valid
 		bool scrolled_at_bottom = (m_scroll == getBottomScrollPos());
 		u32 num_added = formatChatLine(line, m_cols, m_formatted);
@@ -52,8 +51,7 @@ void ChatBuffer::addLine(std::wstring name, std::wstring text)
 	}
 
 	// Limit number of lines by m_scrollback
-	if (m_unformatted.size() > m_scrollback)
-	{
+	if (m_unformatted.size() > m_scrollback) {
 		deleteOldest(m_unformatted.size() - m_scrollback);
 	}
 }

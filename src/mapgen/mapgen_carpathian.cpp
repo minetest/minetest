@@ -205,7 +205,7 @@ inline float MapgenCarpathian::getLerp(float noise1, float noise2, float mod)
 float MapgenCarpathian::getSteps(float noise)
 {
 	float w = 0.5f;
-	float k = floor(noise / w);
+	float k = std::floor(noise / w);
 	float f = (noise - k * w) / w;
 	float s = std::fmin(2.f * f, 1.f);
 	return (k + s) * w;
@@ -342,8 +342,8 @@ float MapgenCarpathian::terrainLevelAtPoint(s16 x, s16 z)
 			std::fmax(std::fmin(hill1, hill2), std::fmin(hill3, hill4));
 
 		// Rolling hills
-		float hill_mnt = hilliness * pow(n_hills, 2.f);
-		float hills = pow(hter, 3.f) * hill_mnt;
+		float hill_mnt = hilliness * std::pow(n_hills, 2.f);
+		float hills = std::pow(hter, 3.f) * hill_mnt;
 
 		// Ridged mountains
 		float ridge_mnt = hilliness * (1.f - std::fabs(n_ridge_mnt));

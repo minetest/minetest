@@ -121,7 +121,7 @@ void DungeonGen::generate(MMVManip *vm, u32 bseed, v3s16 nmin, v3s16 nmax)
 	}
 
 	// Add them
-	for (u32 i = 0; i < floor(nval_density); i++)
+	for (u32 i = 0; i < std::floor(nval_density); i++)
 		makeDungeon(v3s16(1, 1, 1) * MAP_BLOCKSIZE);
 
 	// Optionally convert some structure to alternative structure

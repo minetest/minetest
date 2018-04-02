@@ -366,7 +366,7 @@ float MapgenValleys::terrainLevelFromNoise(TerrainNoise *tn)
 	float base = tn->terrain_height + valley_d;
 
 	// "river" represents the distance from the river, in arbitrary units.
-	float river = fabs(*tn->rivers) - river_size_factor;
+	float river = std::fabs(*tn->rivers) - river_size_factor;
 
 	// Use the curve of the function 1-exp(-(x/a)^2) to model valleys.
 	//  Making "a" vary (0 < a <= 1) changes the shape of the valleys.
@@ -375,7 +375,7 @@ float MapgenValleys::terrainLevelFromNoise(TerrainNoise *tn)
 	//  "valley" represents the height of the terrain, from the rivers.
 	{
 		float t = std::fmax(river / tn->valley_profile, 0.0f);
-		*tn->valley = valley_d * (1.f - exp(- MYSQUARE(t)));
+		*tn->valley = valley_d * (1.f - std::exp(- MYSQUARE(t)));
 	}
 
 	// approximate height of the terrain at this point
@@ -392,7 +392,7 @@ float MapgenValleys::terrainLevelFromNoise(TerrainNoise *tn)
 		float depth;
 		{
 			float t = river / river_size_factor + 1;
-			depth = (river_depth_bed * sqrt(MYMAX(0, 1.f - MYSQUARE(t))));
+			depth = (river_depth_bed * std::sqrt(MYMAX(0, 1.f - MYSQUARE(t))));
 		}
 
 		// base - depth : height of the bottom of the river
@@ -496,7 +496,7 @@ int MapgenValleys::generateTerrain()
 		heightmap[index_2d] = -MAX_MAP_GENERATION_LIMIT;
 
 		if (surface_y > surface_max_y)
-			surface_max_y = ceil(surface_y);
+			surface_max_y = std::ceil(surface_y);
 
 		if (humid_rivers) {
 			// Derive heat from (base) altitude. This will be most correct
@@ -562,7 +562,7 @@ int MapgenValleys::generateTerrain()
 			float t_alt = MYMAX(noise_rivers->result[index_2d], (float)heightmap[index_2d]);
 			float humid = m_bgen->humidmap[index_2d];
 			float water_depth = (t_alt - river_y) / humidity_dropoff;
-			humid *= 1.f + pow(0.5f, MYMAX(water_depth, 1.f));
+			humid *= 1.f + std::pow(0.5f, MYMAX(water_depth, 1.f));
 
 			// Reduce humidity with altitude (ignoring riverbeds).
 			// This is similar to the lua version's seawater adjustment,
@@ -637,11 +637,12 @@ void MapgenValleys::generateCaves(s16 max_stone_y, s16 large_cave_depth)
 
 	// lava_depth varies between one and ten as you approach
 	//  the bottom of the world.
-	s16 lava_depth = ceil((lava_max_height - node_min.Y + 1) * 10.f / mapgen_limit);
+	s16 lava_depth = std::ceil((lava_max_height - node_min.Y + 1) * 10.f / mapgen_limit);
 	// This allows random lava spawns to be less common at the surface.
 	s16 lava_chance = MYCUBE(lava_features_lim) * lava_depth;
 	// water_depth varies between ten and one on the way down.
-	s16 water_depth = ceil((mapgen_limit - abs(node_min.Y) + 1) * 10.f / mapgen_limit);
+	s16 water_depth = std::ceil((mapgen_limit - std::abs(node_min.Y) + 1) * 10.f /
+		mapgen_limit);
 	// This allows random water spawns to be more common at the surface.
 	s16 water_chance = MYCUBE(water_features_lim) * water_depth;
 
