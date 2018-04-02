@@ -92,7 +92,17 @@ void TestServerActiveObjectMap::testRemoveObject()
 
 void TestServerActiveObjectMap::testUpdateObject()
 {
-	// @TODO
+	ServerActiveObjectMap saom;
+	LuaEntitySAO ob1(nullptr, v3f(1, 0, 0), "", "");
+	ob1.accessObjectProperties()->physical = true;
+	ob1.setId(saom.getFreeId());
+	saom.addObject(&ob1);
+	UASSERT(saom.getObjectsInsideRadius(v3f(0, 0, 0), 2).size() == 1);
+	UASSERT(saom.getObjectsInsideRadius(v3f(6, 0, 0), 2).size() == 0);
+	ob1.setBasePosition(v3f(5, 0, 0));
+	saom.updateObject(&ob1);
+	UASSERT(saom.getObjectsInsideRadius(v3f(0, 0, 0), 2).size() == 0);
+	UASSERT(saom.getObjectsInsideRadius(v3f(6, 0, 0), 2).size() == 1);
 }
 
 void TestServerActiveObjectMap::testGetObject()
