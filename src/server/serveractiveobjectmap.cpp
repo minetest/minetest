@@ -40,6 +40,9 @@ void ServerActiveObjectMap::addObject(ServerActiveObject *object)
 	aabb3f cb;
 	Wrapper w;
 	u16 id = object->getId();
+	if (!isFreeId(id))
+		throw std::logic_error("ServerActiveObjectMap::addObject: "
+			"object ID in use: " + std::to_string(id));
 	w.object = object;
 	w.has_box = w.object->getCollisionBox(&cb);
 	if (w.has_box) {
