@@ -26,6 +26,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 class ServerActiveObject;
 
+/*!
+ * The class to speed up collision tests.
+ *
+ * @note It stores any objects but only those that has valid collision box
+ * (`physical` Lua entities) are actually processed.
+ * @note It uses world coordinate units, i.e. node size is always BS.
+ */
 struct ServerActiveObjectMap
 {
 	struct Wrapper
@@ -101,6 +108,9 @@ struct ServerActiveObjectMap
 	 * @note Due to inexact nature of floating-point computations, it is
 	 * undefined whether an object lying exactly at the boundary is included
 	 * in the list or not.
+	 * @note Objects with base position outside of the collision box may not
+	 * be returned.
+	 * @note Objects without valid collision box are not returned.
 	 */
 	std::vector<u16> getObjectsInsideRadius(v3f pos, float radius);
 
