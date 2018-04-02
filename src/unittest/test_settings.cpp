@@ -19,6 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "test.h"
 
+#include <cmath>
 #include "settings.h"
 #include "noise.h"
 
@@ -174,14 +175,14 @@ void TestSettings::testAllSettings()
 
 	NoiseParams np;
 	UASSERT(s.getNoiseParams("np_terrain", np) == true);
-	UASSERT(fabs(np.offset - 5) < 0.001);
-	UASSERT(fabs(np.scale - 40) < 0.001);
-	UASSERT(fabs(np.spread.X - 250) < 0.001);
-	UASSERT(fabs(np.spread.Y - 250) < 0.001);
-	UASSERT(fabs(np.spread.Z - 250) < 0.001);
+	UASSERT(std::fabs(np.offset - 5) < 0.001f);
+	UASSERT(std::fabs(np.scale - 40) < 0.001f);
+	UASSERT(std::fabs(np.spread.X - 250) < 0.001f);
+	UASSERT(std::fabs(np.spread.Y - 250) < 0.001f);
+	UASSERT(std::fabs(np.spread.Z - 250) < 0.001f);
 	UASSERT(np.seed == 12341);
 	UASSERT(np.octaves == 5);
-	UASSERT(fabs(np.persist - 0.7) < 0.001);
+	UASSERT(std::fabs(np.persist - 0.7) < 0.001f);
 
 	np.offset  = 3.5;
 	np.octaves = 6;

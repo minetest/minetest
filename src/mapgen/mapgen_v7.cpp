@@ -20,6 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 
 #include "mapgen.h"
+#include <cmath>
 #include "voxel.h"
 #include "noise.h"
 #include "mapblock.h"
@@ -228,7 +229,7 @@ int MapgenV7::getSpawnLevelAtPoint(v2s16 p)
 	if (spflags & MGV7_RIDGES) {
 		float width = 0.2;
 		float uwatern = NoisePerlin2D(&noise_ridge_uwater->np, p.X, p.Y, seed) * 2;
-		if (fabs(uwatern) <= width)
+		if (std::fabs(uwatern) <= width)
 			return MAX_MAP_GENERATION_LIMIT;  // Unsuitable spawn point
 	}
 
@@ -426,9 +427,9 @@ bool MapgenV7::getFloatlandMountainFromMap(int idx_xyz, int idx_xz, s16 y)
 {
 	// Make rim 2 nodes thick to match floatland base terrain
 	float density_gradient = (y >= floatland_level) ?
-		-pow((float)(y - floatland_level) / float_mount_height,
+		-std::pow((float)(y - floatland_level) / float_mount_height,
 		float_mount_exponent) :
-		-pow((float)(floatland_level - 1 - y) / float_mount_height,
+		-std::pow((float)(floatland_level - 1 - y) / float_mount_height,
 		float_mount_exponent);
 
 	float floatn = noise_mountain->result[idx_xyz] + float_mount_density;
@@ -456,7 +457,7 @@ void MapgenV7::floatBaseExtentFromMap(s16 *float_base_min, s16 *float_base_max, 
 			base_max = floatland_level - (amp - ridge * 2.0f) / 2.0f;
 		} else {
 			// Hills and ridges
-			float diff = fabs(amp - ridge) / ridge;
+			float diff = std::fabs(amp - ridge) / ridge;
 			// Smooth ridges using the 'smoothstep function'
 			float smooth_diff = diff * diff * (3.0f - 2.0f * diff);
 			base_max = floatland_level + ridge - smooth_diff * ridge;
@@ -569,7 +570,7 @@ void MapgenV7::generateRidgeTerrain()
 			int j = (z - node_min.Z) * csize.X + (x - node_min.X);
 
 			float uwatern = noise_ridge_uwater->result[j] * 2;
-			if (fabs(uwatern) > width)
+			if (std::fabs(uwatern) > width)
 				continue;
 
 			float altitude = y - water_level;

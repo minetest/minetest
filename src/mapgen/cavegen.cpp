@@ -20,6 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "util/numeric.h"
+#include <cmath>
 #include "map.h"
 #include "mapgen.h"
 #include "mapgen_v5.h"
@@ -248,7 +249,7 @@ bool CavernsNoise::generateCaverns(MMVManip *vm, v3s16 nmin, v3s16 nmax)
 				VoxelArea::add_y(em, vi, -1),
 				cavern_amp_index++) {
 			content_t c = vm->m_data[vi].getContent();
-			float n_absamp_cavern = fabs(noise_cavern->result[index3d]) *
+			float n_absamp_cavern = std::fabs(noise_cavern->result[index3d]) *
 				cavern_amp[cavern_amp_index];
 			// Disable CavesRandomWalk at a safe distance from caverns
 			// to avoid excessively spreading liquids in caverns.

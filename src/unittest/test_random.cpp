@@ -19,6 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "test.h"
 
+#include <cmath>
 #include "util/numeric.h"
 #include "exceptions.h"
 #include "noise.h"
@@ -157,7 +158,7 @@ void TestRandom::testPcgRandomNormalDist()
 	int range      = (max - min + 1);
 	float mean     = (max + min) / 2;
 	float variance = ((range * range - 1) / 12) / num_trials;
-	float stddev   = sqrt(variance);
+	float stddev   = std::sqrt(variance);
 
 	static const float prediction_intervals[] = {
 		0.68269f, // 1.0
@@ -180,7 +181,7 @@ void TestRandom::testPcgRandomNormalDist()
 			accum += bins[j - min];
 
 		float actual = (float)accum / num_samples;
-		UASSERT(fabs(actual - prediction_intervals[i]) < 0.02);
+		UASSERT(std::fabs(actual - prediction_intervals[i]) < 0.02f);
 	}
 }
 

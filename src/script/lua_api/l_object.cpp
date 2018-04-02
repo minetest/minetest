@@ -18,6 +18,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "lua_api/l_object.h"
+#include <cmath>
 #include "lua_api/l_internal.h"
 #include "lua_api/l_inventory.h"
 #include "lua_api/l_item.h"
@@ -1060,7 +1061,8 @@ int ObjectRef::l_get_look_dir(lua_State *L)
 	// Do it
 	float pitch = co->getRadPitchDep();
 	float yaw = co->getRadYawDep();
-	v3f v(cos(pitch)*cos(yaw), sin(pitch), cos(pitch)*sin(yaw));
+	v3f v(std::cos(pitch) * std::cos(yaw), std::sin(pitch), std::cos(pitch) *
+		std::sin(yaw));
 	push_v3f(L, v);
 	return 1;
 }
