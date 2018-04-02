@@ -109,7 +109,14 @@ void TestServerActiveObjectMap::testUpdateObject()
 
 void TestServerActiveObjectMap::testGetObject()
 {
-	// @TODO
+	ServerActiveObjectMap saom;
+	LuaEntitySAO ob1(nullptr, v3f(0, 0, 0), "", "");
+	u16 id = saom.getFreeId();
+	ob1.setId(id);
+	saom.addObject(&ob1);
+	UASSERT(saom.getObject(0) == nullptr);
+	UASSERT(saom.getObject(id) == &ob1);
+	UASSERT(saom.getObject(id + 1) == nullptr);
 }
 
 void TestServerActiveObjectMap::testIsFreeID()
