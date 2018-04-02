@@ -124,16 +124,17 @@ function vector.sort(a, b)
 end
 
 -- returns a new normalized 2d vector with random values
-function vector.random2d()
+function vector.random_2d()
 	local phi = math.random() * 2 * math.pi
 	return {
 		x = math.cos(phi),
 		y = math.sin(phi),
+		z = 0,
 	}
 end
 
 -- returns a new normalized 3d vector with random values
-function vector.random3d()
+function vector.random_3d()
 	local phi = math.random() * 2 * math.pi
 	local y = math.random() * 2 - 1
 	local r = math.sqrt(1 - y * y)
@@ -150,8 +151,9 @@ end
 
 -- limits the length of a vector
 function vector.limit(v, l)
-	if vector.length(v) > l then
-		return vector.set_length(v, l)
+	local length = vector.length(v)
+	if length > l then
+		return vector.multiply(v, l / length)
 	end
 	return v
 end
