@@ -1,6 +1,6 @@
 /*
 Minetest
-Copyright (C) 2010-2017 numZero, Lobachevsky Vitaly <numzer0@yandex.com>
+Copyright (C) 2018 numZero, Lobachevsky Vitaly <numzer0@yandex.com>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
