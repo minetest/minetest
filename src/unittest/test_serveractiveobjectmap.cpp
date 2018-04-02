@@ -119,29 +119,30 @@ void TestServerActiveObjectMap::testGetFreeID()
 void TestServerActiveObjectMap::testGetObjectsInsideRadius()
 {
 	ServerActiveObjectMap saom;
+#define ADD_OBJECT_IMPL(name,pos) \
+	LuaEntitySAO name(nullptr, pos, "", ""); \
+	name.accessObjectProperties()->physical = true; \
+	name.setId(saom.getFreeId()); \
+	saom.addObject(&name)
+#define ADD_OBJECT(pos) ADD_OBJECT_IMPL(NEWNAME(ob), pos)
+#define OBJECT_COUNT (saom.getObjectsInsideRadius(v3f(0,0,0), 5).size())
 
-	auto results = saom.getObjectsInsideRadius(v3f(0,0,0), 5);
-	UASSERT(results.empty());
+	UASSERT(OBJECT_COUNT == 0);
 
-	LuaEntitySAO ob1(nullptr, v3f(0,0,0), "", "");
-	saom.addObject(&ob1);
-	UASSERT(results.size() == 1);
+	ADD_OBJECT(v3f(0, 0, 0));
+	UASSERT(OBJECT_COUNT == 1);
 
-	LuaEntitySAO ob2(nullptr, v3f(-1,-1,-1), "", "");
-	saom.addObject(&ob2);
-	UASSERT(results.size() == 2);
+	ADD_OBJECT(v3f(-1, -1, -1));
+	UASSERT(OBJECT_COUNT == 2);
 
-	LuaEntitySAO ob3(nullptr, v3f(4.9,0,0), "", "");
-	saom.addObject(&ob3);
-	UASSERT(results.size() == 3);
+	ADD_OBJECT(v3f(4.9, 0, 0));
+	UASSERT(OBJECT_COUNT == 3);
 
-	LuaEntitySAO ob4(nullptr, v3f(5,0,0), "", "");
-	saom.addObject(&ob4);
-	UASSERT(results.size() == 3);
+	ADD_OBJECT(v3f(5, 0, 0));
+	UASSERT(OBJECT_COUNT == 3);
 
-	LuaEntitySAO ob5(nullptr, v3f(3,3,3), "", "");
-	saom.addObject(&ob5);
-	UASSERT(results.size() == 3);
+	ADD_OBJECT(v3f(3, 3, 3));
+	UASSERT(OBJECT_COUNT == 3);
 }
 
 void TestServerActiveObjectMap::testGetObjectsTouchingBox()
