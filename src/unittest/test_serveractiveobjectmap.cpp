@@ -59,7 +59,7 @@ void TestServerActiveObjectMap::testAddObject()
 	ServerActiveObjectMap saom;
 	UASSERT(saom.getObjects().empty());
 
-	LuaEntitySAO ob1(nullptr, v3f(0,0,0), "", "");
+	LuaEntitySAO ob1(nullptr, v3f(0, 0, 0), "", "");
 	ob1.setId(saom.getFreeId());
 	saom.addObject(&ob1);
 
@@ -77,7 +77,7 @@ void TestServerActiveObjectMap::testRemoveObject()
 	ServerActiveObjectMap saom;
 	UASSERT(saom.getObjects().empty());
 
-	LuaEntitySAO ob1(nullptr, v3f(0,0,0), "", "");
+	LuaEntitySAO ob1(nullptr, v3f(0, 0, 0), "", "");
 	ob1.setId(saom.getFreeId());
 	saom.addObject(&ob1);
 
@@ -138,13 +138,13 @@ void TestServerActiveObjectMap::testGetFreeID()
 void TestServerActiveObjectMap::testGetObjectsInsideRadius()
 {
 	ServerActiveObjectMap saom;
-#define ADD_OBJECT_IMPL(name,pos) \
-	LuaEntitySAO name(nullptr, pos, "", ""); \
-	name.accessObjectProperties()->physical = true; \
-	name.setId(saom.getFreeId()); \
+#define ADD_OBJECT_IMPL(name, pos)                                                       \
+	LuaEntitySAO name(nullptr, pos, "", "");                                         \
+	name.accessObjectProperties()->physical = true;                                  \
+	name.setId(saom.getFreeId());                                                    \
 	saom.addObject(&name)
 #define ADD_OBJECT(pos) ADD_OBJECT_IMPL(NEWNAME(ob), pos)
-#define OBJECT_COUNT (saom.getObjectsInsideRadius(v3f(0,0,0), 5).size())
+#define OBJECT_COUNT (saom.getObjectsInsideRadius(v3f(0, 0, 0), 5).size())
 
 	UASSERT(OBJECT_COUNT == 0);
 
@@ -170,38 +170,45 @@ void TestServerActiveObjectMap::testGetObjectsTouchingBox()
 
 	LuaEntitySAO ob1(nullptr, v3f(1 * BS, 0, 0), "", "");
 	ob1.accessObjectProperties()->physical = true;
-	ob1.accessObjectProperties()->collisionbox = {-1, -1, -1, 1, 1, 1}; // this is in nodes
+	// Collision boxes are in nodes, not in world units:
+	ob1.accessObjectProperties()->collisionbox = {-1, -1, -1, 1, 1, 1};
 	ob1.setId(saom.getFreeId());
 	saom.addObject(&ob1);
 
 	LuaEntitySAO ob2(nullptr, v3f(1.5 * BS, 2.5 * BS, 0), "", "");
 	ob2.accessObjectProperties()->physical = true;
-	ob2.accessObjectProperties()->collisionbox = {-0.5, -0.5, -1, 3.5, 2, 1}; // this is in nodes
+	ob2.accessObjectProperties()->collisionbox = {-0.5, -0.5, -1, 3.5, 2, 1};
 	ob2.setId(saom.getFreeId());
 	saom.addObject(&ob2);
 
 	std::vector<u16> list;
 
-	list = saom.getObjectsTouchingBox({2.1 * BS, -1.0 * BS, -1.0 * BS, 2.5 * BS, 1.0 * BS, 1.0 * BS});
+	list = saom.getObjectsTouchingBox(
+			{2.1 * BS, -1.0 * BS, -1.0 * BS, 2.5 * BS, 1.0 * BS, 1.0 * BS});
 	UASSERT(list.size() == 0);
 
 	// intersecting ob1
-	list = saom.getObjectsTouchingBox({1.9 * BS, -1.0 * BS, -1.0 * BS, 2.5 * BS, 1.0 * BS, 1.0 * BS});
+	list = saom.getObjectsTouchingBox(
+			{1.9 * BS, -1.0 * BS, -1.0 * BS, 2.5 * BS, 1.0 * BS, 1.0 * BS});
 	UASSERT(list.size() == 1 && list[0] == ob1.getId());
 
 	// intersecting ob2
-	list = saom.getObjectsTouchingBox({2.1 * BS, -1.0 * BS, -1.0 * BS, 2.5 * BS, 2.1 * BS, 1.0 * BS});
+	list = saom.getObjectsTouchingBox(
+			{2.1 * BS, -1.0 * BS, -1.0 * BS, 2.5 * BS, 2.1 * BS, 1.0 * BS});
 	UASSERT(list.size() == 1 && list[0] == ob2.getId());
 
 	// contained in ob1
-	list = saom.getObjectsTouchingBox({1.5 * BS, -0.1 * BS, -0.1 * BS, 1.9 * BS, 0.1 * BS, 0.1 * BS});
+	list = saom.getObjectsTouchingBox(
+			{1.5 * BS, -0.1 * BS, -0.1 * BS, 1.9 * BS, 0.1 * BS, 0.1 * BS});
 	UASSERT(list.size() == 1 && list[0] == ob1.getId());
 
 	// contains ob2
-	list = saom.getObjectsTouchingBox({0.9 * BS, 1.5 * BS, -5.0 * BS, 6.0 * BS, 20.0 * BS, 500.0 * BS});
+	list = saom.getObjectsTouchingBox(
+			{0.9 * BS, 1.5 * BS, -5.0 * BS, 6.0 * BS, 20.0 * BS, 500.0 * BS});
 	UASSERT(list.size() == 1 && list[0] == ob2.getId());
 
 	// intersecting both
-	list = saom.getObjectsTouchingBox({1.9 * BS, -1.0 * BS, -1.0 * BS, 2.5 * BS, 2.1 * BS, 1.0 * BS});
+	list = saom.getObjectsTouchingBox(
+			{1.9 * BS, -1.0 * BS, -1.0 * BS, 2.5 * BS, 2.1 * BS, 1.0 * BS});
 	UASSERT(list.size() == 2);
 }
