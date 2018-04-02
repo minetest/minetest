@@ -119,7 +119,7 @@ struct ServerActiveObjectMap
 	std::size_t size() const { return objects.size(); }
 
 	/*!
-	 * Returns reference to the underlying conatiner.
+	 * Returns reference to the underlying container.
 	 */
 	const std::unordered_map<u16, Wrapper> &getObjects() const { return objects; }
 
