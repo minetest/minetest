@@ -221,10 +221,10 @@ LOCAL_SRC_FILES := \
 		jni/src/rollback_interface.cpp            \
 		jni/src/serialization.cpp                 \
 		jni/src/server/mods.cpp                   \
+		jni/src/server/serveractiveobjectmap.cpp  \
 		jni/src/server.cpp                        \
 		jni/src/serverenvironment.cpp             \
 		jni/src/serverlist.cpp                    \
-		jni/src/serveractiveobjectmap.cpp         \
 		jni/src/serverobject.cpp                  \
 		jni/src/shader.cpp                        \
 		jni/src/sky.cpp                           \
