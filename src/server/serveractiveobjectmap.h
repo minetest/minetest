@@ -47,15 +47,9 @@ struct ServerActiveObjectMap
 	std::vector<u16> getObjectsInsideRadius(v3f pos, float radius);
 	std::vector<u16> getObjectsTouchingBox(const aabb3f &box);
 
-	std::size_t size() const
-	{
-		return objects.size();
-	}
+	std::size_t size() const { return objects.size(); }
 
-	const std::unordered_map<u16, Wrapper> &getObjects() const
-	{
-		return objects;
-	}
+	const std::unordered_map<u16, Wrapper> &getObjects() const { return objects; }
 
 private:
 	void addObjectRefs(u16 id, const aabb3s16 &box);
