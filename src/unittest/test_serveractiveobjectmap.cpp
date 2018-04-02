@@ -138,7 +138,7 @@ void TestServerActiveObjectMap::testGetObjectsInsideRadius()
 	ADD_OBJECT(v3f(4.9, 0, 0));
 	UASSERT(OBJECT_COUNT == 3);
 
-	ADD_OBJECT(v3f(5, 0, 0));
+	ADD_OBJECT(v3f(5.1, 0, 0));
 	UASSERT(OBJECT_COUNT == 3);
 
 	ADD_OBJECT(v3f(3, 3, 3));
