@@ -345,8 +345,7 @@ void OreBlob::generate(MMVManip *vm, int mapseed, u32 blockseed,
 			float ydist = (s32)y1 - (s32)csize / 2;
 			float zdist = (s32)z1 - (s32)csize / 2;
 
-			noiseval -= (std::sqrt(xdist * xdist + ydist * ydist + zdist * zdist) /
-				csize);
+			noiseval -= std::sqrt(xdist * xdist + ydist * ydist + zdist * zdist) / csize;
 
 			if (noiseval < nthresh)
 				continue;
