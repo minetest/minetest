@@ -174,9 +174,9 @@ void TestServerActiveObjectMap::testGetObjectsTouchingBox()
 	ob1.setId(saom.getFreeId());
 	saom.addObject(&ob1);
 
-	LuaEntitySAO ob2(nullptr, v3f(0, 2 * BS, 0), "", "");
+	LuaEntitySAO ob2(nullptr, v3f(1.5 * BS, 2.5 * BS, 0), "", "");
 	ob2.accessObjectProperties()->physical = true;
-	ob2.accessObjectProperties()->collisionbox = {1, 0, -1, 5, 2, 1}; // this is in nodes
+	ob2.accessObjectProperties()->collisionbox = {-0.5, -0.5, -1, 3.5, 2, 1}; // this is in nodes
 	ob2.setId(saom.getFreeId());
 	saom.addObject(&ob2);
 
@@ -185,12 +185,23 @@ void TestServerActiveObjectMap::testGetObjectsTouchingBox()
 	list = saom.getObjectsTouchingBox({2.1 * BS, -1.0 * BS, -1.0 * BS, 2.5 * BS, 1.0 * BS, 1.0 * BS});
 	UASSERT(list.size() == 0);
 
+	// intersecting ob1
 	list = saom.getObjectsTouchingBox({1.9 * BS, -1.0 * BS, -1.0 * BS, 2.5 * BS, 1.0 * BS, 1.0 * BS});
 	UASSERT(list.size() == 1 && list[0] == ob1.getId());
 
+	// intersecting ob2
 	list = saom.getObjectsTouchingBox({2.1 * BS, -1.0 * BS, -1.0 * BS, 2.5 * BS, 2.1 * BS, 1.0 * BS});
 	UASSERT(list.size() == 1 && list[0] == ob2.getId());
 
+	// contained in ob1
+	list = saom.getObjectsTouchingBox({1.5 * BS, -0.1 * BS, -0.1 * BS, 1.9 * BS, 0.1 * BS, 0.1 * BS});
+	UASSERT(list.size() == 1 && list[0] == ob1.getId());
+
+	// contains ob2
+	list = saom.getObjectsTouchingBox({0.9 * BS, 1.5 * BS, -5.0 * BS, 6.0 * BS, 20.0 * BS, 500.0 * BS});
+	UASSERT(list.size() == 1 && list[0] == ob2.getId());
+
+	// intersecting both
 	list = saom.getObjectsTouchingBox({1.9 * BS, -1.0 * BS, -1.0 * BS, 2.5 * BS, 2.1 * BS, 1.0 * BS});
 	UASSERT(list.size() == 2);
 }
