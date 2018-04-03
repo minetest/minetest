@@ -348,7 +348,7 @@ public:
 	void regenerateGui(v2u32 screensize);
 
 	ItemSpec getItemAtPos(v2s32 p) const;
-	void drawList(const ListDrawSpec &s, int phase,	bool &item_hovered);
+	void drawList(const ListDrawSpec &s, int layer,	bool &item_hovered);
 	void drawSelectedItem();
 	void drawMenu();
 	void updateSelectedItem();
@@ -404,14 +404,9 @@ protected:
 	std::vector<std::pair<FieldSpec, std::vector<std::string> > > m_dropdowns;
 
 	ItemSpec *m_selected_item = nullptr;
-	u32 m_selected_amount = 0;
+	u16 m_selected_amount = 0;
 	bool m_selected_dragging = false;
-
-	// WARNING: BLACK MAGIC
-	// Used to guess and keep up with some special things the server can do.
-	// If name is "", no guess exists.
-	ItemStack m_selected_content_guess;
-	InventoryLocation m_selected_content_guess_inventory;
+	ItemStack m_selected_swap;
 
 	v2s32 m_pointer;
 	v2s32 m_old_pointer;  // Mouse position after previous mouse event
