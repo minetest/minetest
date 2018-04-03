@@ -18,7 +18,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "localplayer.h"
-
+#include <cmath>
 #include "event.h"
 #include "collision.h"
 #include "nodedef.h"
@@ -941,8 +941,8 @@ void LocalPlayer::old_move(f32 dtime, Environment *env, f32 pos_max_d,
 			v2f node_p2df(pf.X, pf.Z);
 			f32 distance_f = player_p2df.getDistanceFrom(node_p2df);
 			f32 max_axis_distance_f = MYMAX(
-					fabs(player_p2df.X - node_p2df.X),
-					fabs(player_p2df.Y - node_p2df.Y));
+					std::fabs(player_p2df.X - node_p2df.X),
+					std::fabs(player_p2df.Y - node_p2df.Y));
 
 			if (distance_f > min_distance_f ||
 					max_axis_distance_f > 0.5 * BS + sneak_max + 0.1 * BS)
