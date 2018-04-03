@@ -254,9 +254,7 @@ void LBMManager::applyLBMs(ServerEnvironment *env, MapBlock *block, u32 stamp)
 	MapNode n;
 	content_t c;
 	lbm_lookup_map::const_iterator it = getLBMsIntroducedAfter(stamp);
-
-	for (LBMManager::lbm_lookup_map::const_iterator iit = it;
-		iit != m_lbm_lookup.end(); ++iit) {
+	for (; it != m_lbm_lookup.end(); ++it) {
 		// Cache previous version to speedup lookup which has a very high performance
 		// penalty on each call
 		std::vector<LoadingBlockModifierDef *> *previous_lbm_list = nullptr;
@@ -272,7 +270,7 @@ void LBMManager::applyLBMs(ServerEnvironment *env, MapBlock *block, u32 stamp)
 					// If content_t are not matching perform an LBM lookup
 					if (previous_c != c) {
 						lbm_list = (std::vector<LoadingBlockModifierDef *> *)
-							iit->second.lookup(c);
+							it->second.lookup(c);
 						previous_c = c;
 						previous_lbm_list = lbm_list;
 					// else reused cached lookup
