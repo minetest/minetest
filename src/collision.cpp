@@ -322,9 +322,12 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 			}
 			std::vector<aabb3f> nodeboxes;
 			n.getCollisionBoxes(gamedef->ndef(), &nodeboxes, neighbors);
+
+			// Calculate float position only once
+			v3f posf = intToFloat(p, BS);
 			for (auto box : nodeboxes) {
-				box.MinEdge += intToFloat(p, BS);
-				box.MaxEdge += intToFloat(p, BS);
+				box.MinEdge += posf;
+				box.MaxEdge += posf;
 				cinfo.emplace_back(false, false, n_bouncy_value, p, box);
 			}
 		} else {
@@ -437,7 +440,7 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 			Go through every nodebox, find nearest collision
 		*/
 		for (u32 boxindex = 0; boxindex < cinfo.size(); boxindex++) {
-			NearbyCollisionInfo box_info = cinfo[boxindex];
+			const NearbyCollisionInfo &box_info = cinfo[boxindex];
 			// Ignore if already stepped up this nodebox.
 			if (box_info.is_step_up)
 				continue;
