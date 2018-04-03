@@ -157,7 +157,7 @@ bool isBlockInSight(v3s16 blockpos_b, v3f camera_pos, v3f camera_dir,
 	// HOTFIX: use sligthly increased angle (+10%) to fix too agressive
 	// culling. Somebody have to find out whats wrong with the math here.
 	// Previous value: camera_fov / 2
-	if(cosangle < cos(camera_fov * 0.55))
+	if (cosangle < std::cos(camera_fov * 0.55f))
 		return false;
 
 	return true;
@@ -172,6 +172,6 @@ s16 adjustDist(s16 dist, float zoom_fov)
 		return dist;
 
 	// new_dist = dist * ((1 - cos(FOV / 2)) / (1-cos(zoomFOV /2))) ^ (1/3)
-	return round(dist * cbrt((1.0f - std::cos(default_fov / 2.0f)) /
+	return round(dist * std::cbrt((1.0f - std::cos(default_fov / 2.0f)) /
 		(1.0f - std::cos(zoom_fov / 2.0f))));
 }
