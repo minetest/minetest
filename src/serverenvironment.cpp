@@ -269,7 +269,7 @@ void LBMManager::applyLBMs(ServerEnvironment *env, MapBlock *block, u32 stamp)
 					n = block->getNodeNoEx(pos);
 					c = n.getContent();
 
-					// If content_t are not matching perform an ABM lookup
+					// If content_t are not matching perform an LBM lookup
 					if (previous_c != c) {
 						lbm_list = (std::vector<LoadingBlockModifierDef *> *)
 							iit->second.lookup(c);
