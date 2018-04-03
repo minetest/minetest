@@ -99,6 +99,10 @@ class TestFailedException : public std::exception {
 	UASSERT(exception_thrown);            \
 }
 
+#define CONCAT_IMPL(x,y) x##y
+#define CONCAT(x,y) CONCAT_IMPL(x, y)
+#define NEWNAME(prefix) CONCAT(prefix, __COUNTER__)
+
 class IGameDef;
 
 class TestBase {

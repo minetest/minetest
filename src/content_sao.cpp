@@ -224,6 +224,7 @@ ObjectProperties* UnitSAO::accessObjectProperties()
 
 void UnitSAO::notifyObjectPropertiesModified()
 {
+	m_env->updateActiveObject(this);
 	m_properties_sent = false;
 }
 
@@ -607,6 +608,7 @@ void LuaEntitySAO::setPos(const v3f &pos)
 	if(isAttached())
 		return;
 	m_base_position = pos;
+	m_env->updateActiveObject(this);
 	sendPosition(false, true);
 }
 
@@ -615,6 +617,7 @@ void LuaEntitySAO::moveTo(v3f pos, bool continuous)
 	if(isAttached())
 		return;
 	m_base_position = pos;
+	m_env->updateActiveObject(this);
 	if(!continuous)
 		sendPosition(true, true);
 }
@@ -1102,6 +1105,7 @@ void PlayerSAO::setBasePosition(const v3f &position)
 
 	// This needs to be ran for attachments too
 	ServerActiveObject::setBasePosition(position);
+	m_env->updateActiveObject(this);
 	m_position_not_sent = true;
 }
 
