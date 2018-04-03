@@ -119,7 +119,8 @@ void TestUtilities::testAngleWrapAround()
 		UASSERT(std::fabs(modulo360f(f) - fmodf(f, 360)) < 0.001);
 		UASSERT(std::fabs(wrapDegrees_180(f) - ref_WrapDegrees180(f)) < 0.001);
 		UASSERT(std::fabs(wrapDegrees_0_360(f) - ref_WrapDegrees_0_360(f)) < 0.001);
-		UASSERT(wrapDegrees_0_360(fabs(wrapDegrees_180(f) - wrapDegrees_0_360(f))) < 0.001);
+		UASSERT(wrapDegrees_0_360(
+			std::fabs(wrapDegrees_180(f) - wrapDegrees_0_360(f))) < 0.001);
 	}
 }
 

@@ -433,7 +433,7 @@ int MapgenValleys::getSpawnLevelAtPoint(v2s16 p)
 {
 	// Check to make sure this isn't a request for a location in a river.
 	float rivers = NoisePerlin2D(&noise_rivers->np, p.X, p.Y, seed);
-	if (fabs(rivers) < river_size_factor)
+	if (std::fabs(rivers) < river_size_factor)
 		return MAX_MAP_GENERATION_LIMIT;  // Unsuitable spawn point
 
 	s16 level_at_point = terrainLevelAtPoint(p.X, p.Y);

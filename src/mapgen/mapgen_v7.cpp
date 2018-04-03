@@ -29,7 +29,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "content_sao.h"
 #include "nodedef.h"
 #include "voxelalgorithms.h"
-//#include "profiler.h" // For TimeTaker
 #include "settings.h" // For g_settings
 #include "emerge.h"
 #include "dungeongen.h"
@@ -575,7 +574,7 @@ void MapgenV7::generateRidgeTerrain()
 
 			float altitude = y - water_level;
 			float height_mod = (altitude + 17) / 2.5;
-			float width_mod  = width - fabs(uwatern);
+			float width_mod  = width - std::fabs(uwatern);
 			float nridge = noise_ridge->result[index] * MYMAX(altitude, 0) / 7.0;
 
 			if (nridge + width_mod * height_mod < 0.6)

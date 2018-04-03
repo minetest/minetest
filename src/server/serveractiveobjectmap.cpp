@@ -18,6 +18,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "serveractiveobjectmap.h"
+#include <cmath>
 #include "constants.h"
 #include "log.h"
 #include "serverobject.h"
@@ -27,12 +28,12 @@ static constexpr float granularity = 16.0 * BS;
 static aabb3s16 calcBox(const aabb3f &cb)
 {
 	return aabb3s16(
-			floor(cb.MinEdge.X / granularity),
-			floor(cb.MinEdge.Y / granularity),
-			floor(cb.MinEdge.Z / granularity),
-			ceil(cb.MaxEdge.X / granularity),
-			ceil(cb.MaxEdge.Y / granularity),
-			ceil(cb.MaxEdge.Z / granularity));
+			std::floor(cb.MinEdge.X / granularity),
+			std::floor(cb.MinEdge.Y / granularity),
+			std::floor(cb.MinEdge.Z / granularity),
+			std::ceil(cb.MaxEdge.X / granularity),
+			std::ceil(cb.MaxEdge.Y / granularity),
+			std::ceil(cb.MaxEdge.Z / granularity));
 }
 
 void ServerActiveObjectMap::addObject(ServerActiveObject *object)

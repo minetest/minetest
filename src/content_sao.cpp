@@ -30,6 +30,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "genericobject.h"
 #include "settings.h"
 #include <algorithm>
+#include <cmath>
 
 std::map<u16, ServerActiveObject::Factory> ServerActiveObject::m_types;
 
@@ -411,8 +412,8 @@ void LuaEntitySAO::step(float dtime, bool send_recommended)
 		float move_d = m_base_position.getDistanceFrom(m_last_sent_position);
 		move_d += m_last_sent_move_precision;
 		float vel_d = m_velocity.getDistanceFrom(m_last_sent_velocity);
-		if(move_d > minchange || vel_d > minchange ||
-				fabs(m_yaw - m_last_sent_yaw) > 1.0){
+		if (move_d > minchange || vel_d > minchange ||
+				std::fabs(m_yaw - m_last_sent_yaw) > 1.0) {
 			sendPosition(true, false);
 		}
 	}
