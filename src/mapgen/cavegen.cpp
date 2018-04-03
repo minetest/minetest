@@ -279,7 +279,8 @@ CavesRandomWalk::CavesRandomWalk(
 	int water_level,
 	content_t water_source,
 	content_t lava_source,
-	int lava_depth)
+	int lava_depth,
+	BiomeGen *biomegen)
 {
 	assert(ndef);
 
@@ -289,6 +290,7 @@ CavesRandomWalk::CavesRandomWalk(
 	this->water_level    = water_level;
 	this->np_caveliquids = &nparams_caveliquids;
 	this->lava_depth     = lava_depth;
+	this->bmgn           = biomegen;
 
 	c_water_source = water_source;
 	if (c_water_source == CONTENT_IGNORE)
@@ -495,10 +497,22 @@ void CavesRandomWalk::carveRoute(v3f vec, float f, bool randomize_xz)
 	v3s16 startp(orp.X, orp.Y, orp.Z);
 	startp += of;
 
-	float nval = NoisePerlin3D(np_caveliquids, startp.X,
-		startp.Y, startp.Z, seed);
-	MapNode liquidnode = (nval < 0.40f && node_max.Y < lava_depth) ?
-		lavanode : waternode;
+	// Get biome at 'startp', use 'node_cave_liquid' if stated, otherwise
+	// fallback to classic behaviour.
+	MapNode liquidnode = CONTENT_IGNORE;
+
+	if (bmgn) {
+		Biome *biome = (Biome *)bmgn->calcBiomeAtPoint(startp);
+		if (biome->c_cave_liquid != CONTENT_IGNORE)
+			liquidnode = biome->c_cave_liquid;
+	}
+
+	if (liquidnode == CONTENT_IGNORE) {
+		float nval = NoisePerlin3D(np_caveliquids, startp.X,
+			startp.Y, startp.Z, seed);
+		liquidnode = (nval < 0.40f && node_max.Y < lava_depth) ?
+			lavanode : waternode;
+	}
 
 	v3f fp = orp + vec * f;
 	fp.X += 0.1f * ps->range(-10, 10);

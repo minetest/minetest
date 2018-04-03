@@ -114,6 +114,7 @@ public:
 	const NodeDefManager *ndef;
 	GenerateNotifier *gennotify;
 	s16 *heightmap;
+	BiomeGen *bmgn;
 
 	// configurable parameters
 	s32 seed;
@@ -153,10 +154,11 @@ public:
 
 	// ndef is a mandatory parameter.
 	// If gennotify is NULL, generation events are not logged.
+	// If biomegen is NULL, cave liquids have classic behaviour.
 	CavesRandomWalk(const NodeDefManager *ndef, GenerateNotifier *gennotify =
 		NULL, s32 seed = 0, int water_level = 1, content_t water_source =
 		CONTENT_IGNORE, content_t lava_source = CONTENT_IGNORE,
-		int lava_depth = -256);
+		int lava_depth = -256, BiomeGen *biomegen = NULL);
 
 	// vm and ps are mandatory parameters.
 	// If heightmap is NULL, the surface level at all points is assumed to

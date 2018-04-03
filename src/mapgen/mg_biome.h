@@ -52,6 +52,7 @@ public:
 	content_t c_river_water;
 	content_t c_riverbed;
 	content_t c_dust;
+	content_t c_cave_liquid;
 
 	s16 depth_top;
 	s16 depth_filler;
