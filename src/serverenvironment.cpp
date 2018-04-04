@@ -257,7 +257,6 @@ void LBMManager::applyLBMs(ServerEnvironment *env, MapBlock *block, u32 stamp)
 	for (; it != m_lbm_lookup.end(); ++it) {
 		// Cache previous version to speedup lookup which has a very high performance
 		// penalty on each call
-		std::vector<LoadingBlockModifierDef *> *previous_lbm_list = nullptr;
 		content_t previous_c{};
 		std::vector<LoadingBlockModifierDef *> *lbm_list = nullptr;
 
@@ -272,7 +271,6 @@ void LBMManager::applyLBMs(ServerEnvironment *env, MapBlock *block, u32 stamp)
 						lbm_list = (std::vector<LoadingBlockModifierDef *> *)
 							it->second.lookup(c);
 						previous_c = c;
-						previous_lbm_list = lbm_list;
 					}
 
 					if (!lbm_list)
