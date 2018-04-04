@@ -523,21 +523,18 @@ void Client::step(float dtime)
 		the local inventory (so the player notices the lag problem
 		and knows something is wrong).
 	*/
-	if(m_inventory_from_server)
-	{
-		float interval = 10.0;
-		float count_before = floor(m_inventory_from_server_age / interval);
+	if (m_inventory_from_server) {
+		float interval = 10.0f;
+		float count_before = std::floor(m_inventory_from_server_age / interval);
 
 		m_inventory_from_server_age += dtime;
 
-		float count_after = floor(m_inventory_from_server_age / interval);
+		float count_after = std::floor(m_inventory_from_server_age / interval);
 
-		if(count_after != count_before)
-		{
+		if (count_after != count_before) {
 			// Do this every <interval> seconds after TOCLIENT_INVENTORY
 			// Reset the locally changed inventory to the authoritative inventory
-			LocalPlayer *player = m_env.getLocalPlayer();
-			player->inventory = *m_inventory_from_server;
+			m_env.getLocalPlayer()->inventory = *m_inventory_from_server;
 			m_inventory_updated = true;
 		}
 	}

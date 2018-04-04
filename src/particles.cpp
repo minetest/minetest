@@ -18,6 +18,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "particles.h"
+#include <cmath>
 #include "client.h"
 #include "collision.h"
 #include "client/clientevent.h"
@@ -227,7 +228,8 @@ void Particle::updateVertices()
 	for (video::S3DVertex &vertex : m_vertices) {
 		if (m_vertical) {
 			v3f ppos = m_player->getPosition()/BS;
-			vertex.Pos.rotateXZBy(atan2(ppos.Z-m_pos.Z, ppos.X-m_pos.X)/core::DEGTORAD+90);
+			vertex.Pos.rotateXZBy(std::atan2(ppos.Z - m_pos.Z, ppos.X - m_pos.X) /
+				core::DEGTORAD + 90);
 		} else {
 			vertex.Pos.rotateYZBy(m_player->getPitch());
 			vertex.Pos.rotateXZBy(m_player->getYaw());

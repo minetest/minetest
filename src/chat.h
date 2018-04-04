@@ -153,7 +153,7 @@ public:
 	void input(const std::wstring &str);
 
 	// Add a string to the history
-	void addToHistory(std::wstring line);
+	void addToHistory(const std::wstring &line);
 
 	// Get current line
 	std::wstring getLine() const { return m_line; }
@@ -165,7 +165,7 @@ public:
 	void clear();
 
 	// Replace the current line with the given text
-	std::wstring replace(std::wstring line);
+	std::wstring replace(const std::wstring &line);
 
 	// Select previous command from history
 	void historyPrev();
@@ -256,7 +256,7 @@ public:
 	~ChatBackend() = default;
 
 	// Add chat message
-	void addMessage(std::wstring name, std::wstring text);
+	void addMessage(const std::wstring &name, std::wstring text);
 	// Parse and add unparsed chat message
 	void addUnparsedMessage(std::wstring line);
 

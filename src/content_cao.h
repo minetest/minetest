@@ -199,7 +199,7 @@ public:
 
 	// std::string copy is mandatory as mod can be a class member and there is a swap
 	// on those class members
-	void updateTextures(std::string mod);
+	void updateTextures(const std::string &mod);
 
 	void updateAnimation();
 

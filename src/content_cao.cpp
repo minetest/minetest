@@ -45,6 +45,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client.h"
 #include "wieldmesh.h"
 #include <algorithm>
+#include <cmath>
 #include "client/renderingengine.h"
 
 class Settings;
@@ -947,25 +948,23 @@ void GenericCAO::updateTexturePos()
 		int row = m_tx_basepos.Y;
 		int col = m_tx_basepos.X;
 
-		if(m_tx_select_horiz_by_yawpitch)
-		{
-			if(cam_to_entity.Y > 0.75)
+		if (m_tx_select_horiz_by_yawpitch) {
+			if (cam_to_entity.Y > 0.75)
 				col += 5;
-			else if(cam_to_entity.Y < -0.75)
+			else if (cam_to_entity.Y < -0.75)
 				col += 4;
-			else{
+			else {
 				float mob_dir =
 						atan2(cam_to_entity.Z, cam_to_entity.X) / M_PI * 180.;
 				float dir = mob_dir - m_yaw;
 				dir = wrapDegrees_180(dir);
-				//infostream<<"id="<<m_id<<" dir="<<dir<<std::endl;
-				if(fabs(wrapDegrees_180(dir - 0)) <= 45.1)
+				if (std::fabs(wrapDegrees_180(dir - 0)) <= 45.1f)
 					col += 2;
-				else if(fabs(wrapDegrees_180(dir - 90)) <= 45.1)
+				else if(std::fabs(wrapDegrees_180(dir - 90)) <= 45.1f)
 					col += 3;
-				else if(fabs(wrapDegrees_180(dir - 180)) <= 45.1)
+				else if(std::fabs(wrapDegrees_180(dir - 180)) <= 45.1f)
 					col += 0;
-				else if(fabs(wrapDegrees_180(dir + 90)) <= 45.1)
+				else if(std::fabs(wrapDegrees_180(dir + 90)) <= 45.1f)
 					col += 1;
 				else
 					col += 4;
@@ -977,12 +976,11 @@ void GenericCAO::updateTexturePos()
 
 		float txs = m_tx_size.X;
 		float tys = m_tx_size.Y;
-		setBillboardTextureMatrix(m_spritenode,
-				txs, tys, col, row);
+		setBillboardTextureMatrix(m_spritenode, txs, tys, col, row);
 	}
 }
 
-void GenericCAO::updateTextures(std::string mod)
+void GenericCAO::updateTextures(const std::string &mod)
 {
 	ITextureSource *tsrc = m_client->tsrc();
 
@@ -1292,7 +1290,7 @@ void GenericCAO::processMessage(const std::string &data)
 		m_position = readV3F1000(is);
 		m_velocity = readV3F1000(is);
 		m_acceleration = readV3F1000(is);
-		if(fabs(m_prop.automatic_rotate) < 0.001)
+		if (std::fabs(m_prop.automatic_rotate) < 0.001f)
 			m_yaw = readF1000(is);
 		else
 			readF1000(is);

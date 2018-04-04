@@ -1,3 +1,22 @@
+/*
+Minetest
+Copyright (C) 2010-2013 celeron55, Perttu Ahola <celeron55@gmail.com>
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU Lesser General Public License as published by
+the Free Software Foundation; either version 2.1 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public License along
+with this program; if not, write to the Free Software Foundation, Inc.,
+51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+*/
+
 #include "sky.h"
 #include "IVideoDriver.h"
 #include "ISceneManager.h"
@@ -243,7 +262,7 @@ void Sky::render()
 		{
 			float mid1 = 0.25;
 			float mid = wicked_time_of_day < 0.5 ? mid1 : (1.0 - mid1);
-			float a_ = 1.0 - fabs(wicked_time_of_day - mid) * 35.0;
+			float a_ = 1.0f - std::fabs(wicked_time_of_day - mid) * 35.0f;
 			float a = easeCurve(MYMAX(0, MYMIN(1, a_)));
 			//std::cerr<<"a_="<<a_<<" a="<<a<<std::endl;
 			video::SColor c(255, 255, 255, 255);
@@ -539,7 +558,7 @@ void Sky::update(float time_of_day, float time_brightness,
 
 	float cloud_color_change_fraction = 0.95;
 	if (sunlight_seen) {
-		if (fabs(time_brightness - m_brightness) < 0.2) {
+		if (std::fabs(time_brightness - m_brightness) < 0.2f) {
 			m_brightness = m_brightness * 0.95 + time_brightness * 0.05;
 		} else {
 			m_brightness = m_brightness * 0.80 + time_brightness * 0.20;

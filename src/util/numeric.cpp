@@ -173,6 +173,6 @@ s16 adjustDist(s16 dist, float zoom_fov)
 
 	// new_dist = dist * ((1 - cos(FOV / 2)) / (1-cos(zoomFOV /2))) ^ (1/3)
 	// note: FOV is calculated at compilation time
-	return round(dist * std::cbrt((1.0f - std::cos(default_fov)) /
+	return std::round(dist * std::cbrt((1.0f - std::cos(default_fov)) /
 		(1.0f - std::cos(zoom_fov / 2.0f))));
 }

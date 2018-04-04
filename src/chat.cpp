@@ -402,7 +402,7 @@ void ChatPrompt::input(const std::wstring &str)
 	m_nick_completion_end = 0;
 }
 
-void ChatPrompt::addToHistory(std::wstring line)
+void ChatPrompt::addToHistory(const std::wstring &line)
 {
 	if (!line.empty() &&
 			(m_history.size() == 0 || m_history.back() != line)) {
@@ -426,7 +426,7 @@ void ChatPrompt::clear()
 	m_nick_completion_end = 0;
 }
 
-std::wstring ChatPrompt::replace(std::wstring line)
+std::wstring ChatPrompt::replace(const std::wstring &line)
 {
 	std::wstring old_line = m_line;
 	m_line =  line;
@@ -660,7 +660,7 @@ ChatBackend::ChatBackend():
 {
 }
 
-void ChatBackend::addMessage(std::wstring name, std::wstring text)
+void ChatBackend::addMessage(const std::wstring &name, std::wstring text)
 {
 	// Note: A message may consist of multiple lines, for example the MOTD.
 	text = translate_string(text);
