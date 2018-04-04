@@ -19,7 +19,7 @@ cd ..
 echo "Performing clang-tidy checks..."
 ./util/travis/run-clang-tidy.py -clang-tidy-binary=${CLANG_TIDY} -p cmakebuild \
 	-checks='-*,modernize-use-emplace,modernize-avoid-bind,performance-*' \
-	-warningsaserrors='-*,modernize-use-emplace' \
+	-warningsaserrors='-*,modernize-use-emplace,performance-type-promotion-in-math-fn,performance-faster-string-find,performance-implicit-cast-in-loop' \
 	-no-command-on-stdout -quiet \
 	files 'src/.*'
 RET=$?

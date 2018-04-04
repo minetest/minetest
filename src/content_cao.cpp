@@ -908,8 +908,7 @@ void GenericCAO::step(float dtime, ClientEnvironment *env)
 			updateTextures(m_previous_texture_modifier);
 		}
 	}
-	if(!getParent() && fabs(m_prop.automatic_rotate) > 0.001)
-	{
+	if (!getParent() && std::fabs(m_prop.automatic_rotate) > 0.001) {
 		m_yaw += dtime * m_prop.automatic_rotate * 180 / M_PI;
 		updateNodePos();
 	}

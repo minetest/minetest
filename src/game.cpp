@@ -3638,12 +3638,12 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 	float time_of_day_smooth = runData.time_of_day_smooth;
 	float time_of_day = client->getEnv().getTimeOfDayF();
 
-	static const float maxsm = 0.05;
-	static const float todsm = 0.05;
+	static const float maxsm = 0.05f;
+	static const float todsm = 0.05f;
 
-	if (fabs(time_of_day - time_of_day_smooth) > maxsm &&
-			fabs(time_of_day - time_of_day_smooth + 1.0) > maxsm &&
-			fabs(time_of_day - time_of_day_smooth - 1.0) > maxsm)
+	if (std::fabs(time_of_day - time_of_day_smooth) > maxsm &&
+			std::fabs(time_of_day - time_of_day_smooth + 1.0) > maxsm &&
+			std::fabs(time_of_day - time_of_day_smooth - 1.0) > maxsm)
 		time_of_day_smooth = time_of_day;
 
 	if (time_of_day_smooth > 0.8 && time_of_day < 0.2)
@@ -3715,7 +3715,7 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 				video::EFT_FOG_LINEAR,
 				100000 * BS,
 				110000 * BS,
-				0.01,
+				0.01f,
 				false, // pixel fog
 				false // range fog
 		);
