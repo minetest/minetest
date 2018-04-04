@@ -3237,7 +3237,8 @@ bool Server::rollbackRevertActions(const std::list<RollbackAction> &actions,
 	ServerMap *map = (ServerMap*)(&m_env->getMap());
 
 	// Fail if no actions to handle
-	if(actions.empty()){
+	if (actions.empty()) {
+		assert(log);
 		log->push_back("Nothing to do.");
 		return false;
 	}
