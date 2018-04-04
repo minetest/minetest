@@ -262,16 +262,25 @@ void LBMManager::applyLBMs(ServerEnvironment *env, MapBlock *block, u32 stamp)
 	MapNode n;
 	content_t c;
 	lbm_lookup_map::const_iterator it = getLBMsIntroducedAfter(stamp);
-	for (pos.X = 0; pos.X < MAP_BLOCKSIZE; pos.X++)
-		for (pos.Y = 0; pos.Y < MAP_BLOCKSIZE; pos.Y++)
-			for (pos.Z = 0; pos.Z < MAP_BLOCKSIZE; pos.Z++)
-			{
-				n = block->getNodeNoEx(pos);
-				c = n.getContent();
-				for (LBMManager::lbm_lookup_map::const_iterator iit = it;
-					iit != m_lbm_lookup.end(); ++iit) {
-					const std::vector<LoadingBlockModifierDef *> *lbm_list =
-						iit->second.lookup(c);
+	for (; it != m_lbm_lookup.end(); ++it) {
+		// Cache previous version to speedup lookup which has a very high performance
+		// penalty on each call
+		content_t previous_c{};
+		std::vector<LoadingBlockModifierDef *> *lbm_list = nullptr;
+
+		for (pos.X = 0; pos.X < MAP_BLOCKSIZE; pos.X++)
+			for (pos.Y = 0; pos.Y < MAP_BLOCKSIZE; pos.Y++)
+				for (pos.Z = 0; pos.Z < MAP_BLOCKSIZE; pos.Z++) {
+					n = block->getNodeNoEx(pos);
+					c = n.getContent();
+
+					// If content_t are not matching perform an LBM lookup
+					if (previous_c != c) {
+						lbm_list = (std::vector<LoadingBlockModifierDef *> *)
+							it->second.lookup(c);
+						previous_c = c;
+					}
+
 					if (!lbm_list)
 						continue;
 					for (std::vector<LoadingBlockModifierDef *>::const_iterator iit =
@@ -279,7 +288,7 @@ void LBMManager::applyLBMs(ServerEnvironment *env, MapBlock *block, u32 stamp)
 						(*iit)->trigger(env, pos + pos_of_block, n);
 					}
 				}
-			}
+	}
 }
 
 /*
