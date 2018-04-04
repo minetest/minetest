@@ -109,9 +109,6 @@ struct ServerActiveObjectMap
 	 * @note Due to inexact nature of floating-point computations, it is
 	 * undefined whether an object lying exactly at the boundary is included
 	 * in the list or not.
-	 * @note Objects with base position outside of the collision box may not
-	 * be returned.
-	 * @note Objects without valid collision box are not returned.
 	 */
 	std::vector<u16> getObjectsInsideRadius(v3f pos, float radius);
 
