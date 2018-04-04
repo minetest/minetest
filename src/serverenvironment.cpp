@@ -273,9 +273,6 @@ void LBMManager::applyLBMs(ServerEnvironment *env, MapBlock *block, u32 stamp)
 							it->second.lookup(c);
 						previous_c = c;
 						previous_lbm_list = lbm_list;
-					// else reused cached lookup
-					} else {
-						lbm_list = previous_lbm_list;
 					}
 
 					if (!lbm_list)
