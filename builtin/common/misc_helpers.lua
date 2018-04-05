@@ -212,6 +212,11 @@ function table.count(t)
 end
 
 --------------------------------------------------------------------------------
+function table.random(t)
+	return t[math.random(#t)]
+end
+
+--------------------------------------------------------------------------------
 function table.map(t, f)
 	local ret = {}
 	for key, value in pairs(t) do
