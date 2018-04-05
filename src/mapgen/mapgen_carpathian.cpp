@@ -341,15 +341,15 @@ float MapgenCarpathian::terrainLevelAtPoint(s16 x, s16 z)
 
 		// Rolling hills
 		float hill_mnt = hilliness * std::pow(n_hills, 2.f);
-		float hills = std::pow(hter, 3.f) * hill_mnt;
+		float hills = std::pow(std::fabs(hter), 3.f) * hill_mnt;
 
 		// Ridged mountains
 		float ridge_mnt = hilliness * (1.f - std::fabs(n_ridge_mnt));
-		float ridged_mountains = std::pow(rter, 3.f) * ridge_mnt;
+		float ridged_mountains = std::pow(std::fabs(rter), 3.f) * ridge_mnt;
 
 		// Step (terraced) mountains
 		float step_mnt = hilliness * getSteps(n_step_mnt);
-		float step_mountains = std::pow(ster, 3.f) * step_mnt;
+		float step_mountains = std::pow(std::fabs(ster), 3.f) * step_mnt;
 
 		// Final terrain level
 		float mountains = hills + ridged_mountains + step_mountains;
