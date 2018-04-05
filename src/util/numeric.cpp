@@ -165,14 +165,12 @@ bool isBlockInSight(v3s16 blockpos_b, v3f camera_pos, v3f camera_dir,
 
 s16 adjustDist(s16 dist, float zoom_fov)
 {
-	// 1.775 ~= 72 * PI / 180 * 1.4, the default on the client
-	static constexpr const float default_fov = 1.775f / 2.0f;
-	// heuristic cut-off for zooming
-	if (zoom_fov > default_fov)
+	// 1.775 ~= 72 * PI / 180 * 1.4, the default FOV on the client.
+	// The heuristic threshold for zooming is half of that.
+	static constexpr const float threshold_fov = 1.775f / 2.0f;
+	if (zoom_fov > threshold_fov)
 		return dist;
 
-	// new_dist = dist * ((1 - cos(FOV / 2)) / (1-cos(zoomFOV /2))) ^ (1/3)
-	// note: FOV is calculated at compilation time
-	return std::round(dist * std::cbrt((1.0f - std::cos(default_fov)) /
+	return std::round(dist * std::cbrt((1.0f - std::cos(threshold_fov)) /
 		(1.0f - std::cos(zoom_fov / 2.0f))));
 }
