@@ -189,7 +189,7 @@ function string.split(str, delim, include_empty, max_splits, sep_is_pattern)
 end
 
 --------------------------------------------------------------------------------
-function table.indexof(list, val)
+function table.index_of(list, val)
 	for i, v in ipairs(list) do
 		if v == val then
 			return i
@@ -198,8 +198,38 @@ function table.indexof(list, val)
 	return -1
 end
 
+table.indexof = table.index_of
 assert(table.indexof({"foo", "bar"}, "foo") == 1)
 assert(table.indexof({"foo", "bar"}, "baz") == -1)
+
+--------------------------------------------------------------------------------
+function table.count(t)
+	local i = 0
+	for _ in pairs(t) do
+		i = i + 1
+	end
+	return i
+end
+
+--------------------------------------------------------------------------------
+function table.map(t, f)
+	local ret = {}
+	for key, value in pairs(t) do
+		ret[key] = f(value)
+	end
+	return ret
+end
+
+--------------------------------------------------------------------------------
+function table.map_inplace(t, f)
+	for key, value in pairs(t) do
+		value = f(value)
+		if value ~= nil then
+			t[key] = value
+		end
+	end
+	return t
+end
 
 --------------------------------------------------------------------------------
 if INIT ~= "client" then

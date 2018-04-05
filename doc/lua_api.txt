@@ -2492,6 +2492,44 @@ For the following functions `x` can be either a vector or a number:
 
 Helper functions
 ----------------
+
+Note: calling functions and copying are fairly expensive in plain Lua, so weigh
+up the cost of performance in areas with lots of calls against maintenance and
+readability.
+
+### Table helpers
+
+* `table.copy(t)`: returns a table
+    * returns a deep copy of `table`
+* `table.insert_all(t, other_table)`:
+    * Appends all values in `other_table` to `t` - uses `#t + 1` to
+      find new indices.
+* `table.count(t)`: number of keys in t.
+* `table.index_of(t, v)`: find key of v in t.
+* `table.map(t, f)`:
+    * `f` - function(element), return new value
+    * Returns a new table by iterating over all keys and running f to get value
+    * `t` is not modified.
+* `table.map_inplace(t, f)`:
+    * `f` - function(element), return new value
+    * Each element of `t` is passed to `f` and replaced with the returned value.
+    * `t` **is** modified.
+
+### String helpers
+
+* `string.split(str, separator, include_empty, max_splits, sep_is_pattern)`
+    * `separator`: string, default: `","`
+    * `include_empty`: boolean, default: `false`
+    * `max_splits`: number, if it's positive, splits aren't limited,
+      default: `-1`
+    * `sep_is_pattern`: boolean, it specifies whether separator is a plain
+      string or a pattern (regex), default: `false`
+    * e.g. `"a,b":split","` returns `{"a","b"}`
+* `string:trim()`: returns the string without whitespace pre- and suffixes
+    * e.g. `"\n \t\tfoo bar\t ":trim()` returns `"foo bar"`
+
+### Other helpers
+
 * `dump2(obj, name, dumped)`: returns a string which makes `obj`
   human-readable, handles reference loops.
     * `obj`: arbitrary variable
@@ -2508,16 +2546,9 @@ Helper functions
     * tolerance: number, default: `0.0`
     * If the absolute value of `x` is within the `tolerance` or `x` is NaN,
       `0` is returned.
-* `string.split(str, separator, include_empty, max_splits, sep_is_pattern)`
-    * `separator`: string, default: `","`
-    * `include_empty`: boolean, default: `false`
-    * `max_splits`: number, if it's positive, splits aren't limited,
-      default: `-1`
-    * `sep_is_pattern`: boolean, it specifies whether separator is a plain
-      string or a pattern (regex), default: `false`
-    * e.g. `"a,b":split","` returns `{"a","b"}`
-* `string:trim()`: returns the string without whitespace pre- and suffixes
-    * e.g. `"\n \t\tfoo bar\t ":trim()` returns `"foo bar"`
+
+### Minetest-specific helpers
+
 * `minetest.wrap_text(str, limit, as_table)`: returns a string or table
     * Adds newlines to the string to keep it within the specified character
       limit
@@ -2543,11 +2574,6 @@ Helper functions
     * returns true if passed 'y', 'yes', 'true' or a number that isn't zero.
 * `minetest.get_us_time()`
     * returns time with microsecond precision. May not return wall time.
-* `table.copy(table)`: returns a table
-    * returns a deep copy of `table`
-* `table.insert_all(table, other_table)`:
-    * Appends all values in `other_table` to `table` - uses `#table + 1` to
-      find new indices.
 * `minetest.pointed_thing_to_face_pos(placer, pointed_thing)`: returns a
   position.
     * returns the exact position on the surface of a pointed node
