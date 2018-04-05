@@ -26,6 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 class Metadata
 {
+	bool m_modified = false;
 public:
 	virtual ~Metadata() = default;
 
@@ -63,5 +64,4 @@ public:
 	}
 protected:
 	StringMap m_stringvars;
-	bool m_modified = false;
 };

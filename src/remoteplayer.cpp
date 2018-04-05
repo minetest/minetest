@@ -73,14 +73,14 @@ void RemotePlayer::serializeExtraAttributes(std::string &output)
 	assert(m_sao);
 	Json::Value json_root;
 
-	const StringMap &attrs = m_sao->m_meta.getStrings();
+	const StringMap &attrs = m_sao->getMeta().getStrings();
 	for (const auto &attr : attrs) {
 		json_root[attr.first] = attr.second;
 	}
 
 	output = fastWriteJson(json_root);
 
-	m_sao->m_meta.setModified(false);
+	m_sao->getMeta().setModified(false);
 }
 
 
@@ -133,7 +133,7 @@ void RemotePlayer::deSerialize(std::istream &is, const std::string &playername,
 			const Json::Value::Members attr_list = attr_root.getMemberNames();
 			for (const auto &it : attr_list) {
 				Json::Value attr_value = attr_root[it];
-				sao->m_meta.setString(it, attr_value.asString());
+				sao->getMeta().setString(it, attr_value.asString());
 			}
 		} catch (SettingNotFoundException &e) {}
 	}

@@ -1225,10 +1225,10 @@ int ObjectRef::l_set_attribute(lua_State *L)
 
 	std::string attr = luaL_checkstring(L, 2);
 	if (lua_isnil(L, 3)) {
-		co->m_meta.removeString(attr);
+		co->getMeta().removeString(attr);
 	} else {
 		std::string value = luaL_checkstring(L, 3);
-		co->m_meta.setString(attr, value);
+		co->getMeta().setString(attr, value);
 	}
 	return 1;
 }
@@ -1245,7 +1245,7 @@ int ObjectRef::l_get_attribute(lua_State *L)
 	std::string attr = luaL_checkstring(L, 2);
 
 	std::string value;
-	if (co->m_meta.getStringToRef(attr, value)) {
+	if (co->getMeta().getStringToRef(attr, value)) {
 		lua_pushstring(L, value.c_str());
 		return 1;
 	}
@@ -1263,7 +1263,7 @@ int ObjectRef::l_get_meta(lua_State *L)
 		return 0;
 	}
 
-	PlayerMetaRef::create(L, &co->m_meta);
+	PlayerMetaRef::create(L, &co->getMeta());
 	return 1;
 }
 

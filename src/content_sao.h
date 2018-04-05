@@ -331,6 +331,8 @@ public:
 	v3f getEyePosition() const { return m_base_position + getEyeOffset(); }
 	v3f getEyeOffset() const;
 
+	inline Metadata &getMeta() { return m_meta; }
+
 private:
 	std::string getPropertyPacket();
 	void unlinkPlayerSessionAndSave();
@@ -365,6 +367,8 @@ private:
 	f32 m_pitch = 0.0f;
 	f32 m_fov = 0.0f;
 	s16 m_wanted_range = 0.0f;
+
+	Metadata m_meta;
 public:
 	float m_physics_override_speed = 1.0f;
 	float m_physics_override_jump = 1.0f;
@@ -373,8 +377,6 @@ public:
 	bool m_physics_override_sneak_glitch = false;
 	bool m_physics_override_new_move = true;
 	bool m_physics_override_sent = false;
-
-	Metadata m_meta;
 };
 
 

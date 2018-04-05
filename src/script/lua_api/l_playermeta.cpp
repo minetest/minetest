@@ -22,7 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "common/c_content.h"
 
 /*
-	NodeMetaRef
+	PlayerMetaRef
 */
 PlayerMetaRef* PlayerMetaRef::checkobject(lua_State *L, int narg)
 {

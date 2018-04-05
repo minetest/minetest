@@ -3958,10 +3958,6 @@ Can be obtained using `player:get_meta()`.
 
 #### Methods
 * All methods in MetaDataRef
-* `set_tool_capabilities([tool_capabilities])`
-    * Overrides the item's tool capabilities
-    * A nil value will clear the override data and restore the original
-      behavior.
 
 ### `NodeTimerRef`
 Node Timers: a high resolution persistent per-node timer.

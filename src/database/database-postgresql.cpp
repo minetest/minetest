@@ -518,7 +518,7 @@ void PlayerDatabasePostgreSQL::savePlayer(RemotePlayer *player)
 	}
 
 	execPrepared("remove_player_metadata", 1, rmvalues);
-	const StringMap &attrs = sao->m_meta.getStrings();
+	const StringMap &attrs = sao->getMeta().getStrings();
 	for (const auto &attr : attrs) {
 		const char *meta_values[] = {
 			player->getName(),
@@ -594,7 +594,7 @@ bool PlayerDatabasePostgreSQL::loadPlayer(RemotePlayer *player, PlayerSAO *sao)
 
 	int numrows = PQntuples(results);
 	for (int row = 0; row < numrows; row++) {
-		sao->m_meta.setString(PQgetvalue(results, row, 0), PQgetvalue(results, row, 1));
+		sao->getMeta().setString(PQgetvalue(results, row, 0), PQgetvalue(results, row, 1));
 	}
 
 	PQclear(results);
