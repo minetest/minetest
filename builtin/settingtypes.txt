@@ -1509,6 +1509,9 @@ mgv7_np_cave2 (Cave2 noise) noise_params_3d 0, 12, (67, 67, 67), 10325, 3, 0.5, 
 #    Flags starting with 'no' are used to explicitly disable them.
 mgcarpathian_spflags (Mapgen Carpathian specific flags) flags caverns caverns,nocaverns
 
+#    Defines the base ground level.
+mgcarpathian_base_level (Base ground level) float 12.0
+
 #    Controls width of tunnels, a smaller value creates wider tunnels.
 mgcarpathian_cave_width (Cave width) float 0.09
 
@@ -1534,9 +1537,6 @@ mgcarpathian_dungeon_ymin (Dungeon minimum Y) int -31000
 mgcarpathian_dungeon_ymax (Dungeon maximum Y) int 31000
 
 [**Noises]
-
-#    2D noise that defines the base ground level.
-mgcarpathian_np_base (Base ground noise) noise_params_2d 12, 1, (2557, 2557, 2557), 6538, 4, 0.8, 0.5, eased
 
 #    Variation of biome filler depth.
 mgcarpathian_np_filler_depth (Filler depth noise) noise_params_2d 0, 1, (128, 128, 128), 261, 3, 0.7, 2.0, eased
