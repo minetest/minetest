@@ -527,6 +527,7 @@ void PlayerDatabasePostgreSQL::savePlayer(RemotePlayer *player)
 		};
 		execPrepared("save_player_metadata", 3, meta_values);
 	}
+    sao->getMeta().setModified(false);
 	endSave();
 }
 
