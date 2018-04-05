@@ -69,8 +69,8 @@ const std::string &Metadata::getString(const std::string &name, u16 recursion) c
 	return resolveString(it->second, recursion);
 }
 
-bool Metadata::getStringToRef(const std::string &name, std::string &str,
-		u16 recursion) const
+bool Metadata::getStringToRef(
+		const std::string &name, std::string &str, u16 recursion) const
 {
 	StringMap::const_iterator it = m_stringvars.find(name);
 	if (it == m_stringvars.end()) {

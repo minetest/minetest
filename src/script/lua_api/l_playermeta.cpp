@@ -32,7 +32,7 @@ PlayerMetaRef *PlayerMetaRef::checkobject(lua_State *L, int narg)
 	if (!ud)
 		luaL_typerror(L, narg, className);
 
-	return *(PlayerMetaRef**)ud;  // unbox pointer
+	return *(PlayerMetaRef **)ud;  // unbox pointer
 }
 
 Metadata *PlayerMetaRef::getmeta(bool auto_create)
@@ -51,7 +51,8 @@ void PlayerMetaRef::reportMetadataChange()
 }
 
 // garbage collector
-int PlayerMetaRef::gc_object(lua_State *L) {
+int PlayerMetaRef::gc_object(lua_State *L)
+{
 	PlayerMetaRef *o = *(PlayerMetaRef **)(lua_touserdata(L, 1));
 	delete o;
 	return 0;
@@ -62,7 +63,6 @@ int PlayerMetaRef::gc_object(lua_State *L) {
 void PlayerMetaRef::create(lua_State *L, Metadata *metadata)
 {
 	PlayerMetaRef *o = new PlayerMetaRef(metadata);
-	//infostream<<"NodeMetaRef::create: o="<<o<<std::endl;
 	*(void **)(lua_newuserdata(L, sizeof(void *))) = o;
 	luaL_getmetatable(L, className);
 	lua_setmetatable(L, -2);
@@ -77,7 +77,7 @@ void PlayerMetaRef::Register(lua_State *L)
 
 	lua_pushliteral(L, "__metatable");
 	lua_pushvalue(L, methodtable);
-	lua_settable(L, metatable);  // hide metatable from Lua getmetatable()
+	lua_settable(L, metatable); // hide metatable from Lua getmetatable()
 
 	lua_pushliteral(L, "metadata_class");
 	lua_pushlstring(L, className, strlen(className));
@@ -95,13 +95,13 @@ void PlayerMetaRef::Register(lua_State *L)
 	lua_pushcfunction(L, l_equals);
 	lua_settable(L, metatable);
 
-	lua_pop(L, 1);  // drop metatable
+	lua_pop(L, 1); // drop metatable
 
 	luaL_openlib(L, 0, methods, 0);  // fill methodtable
-	lua_pop(L, 1);  // drop methodtable
+	lua_pop(L, 1);                   // drop methodtable
 
 	// Cannot be created from Lua
-	//lua_register(L, className, create_object);
+	// lua_register(L, className, create_object);
 }
 
 const char PlayerMetaRef::className[] = "PlayerMetaRef";

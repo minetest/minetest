@@ -45,7 +45,7 @@ private:
 	// garbage collector
 	static int gc_object(lua_State *L);
 public:
-	PlayerMetaRef(Metadata *metadata): metadata(metadata) {}
+	PlayerMetaRef(Metadata *metadata) : metadata(metadata) {}
 	~PlayerMetaRef() = default;
 
 	// Creates an ItemStackMetaRef and leaves it on top of stack
