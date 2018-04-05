@@ -33,6 +33,8 @@ extern FlagDesc flagdesc_mapgen_carpathian[];
 
 struct MapgenCarpathianParams : public MapgenParams
 {
+	float base_level       = 12.0f;
+
 	u32 spflags            = MGCARPATHIAN_CAVERNS;
 	float cave_width       = 0.09f;
 	s16 large_cave_depth   = -33;
@@ -43,7 +45,6 @@ struct MapgenCarpathianParams : public MapgenParams
 	s16 dungeon_ymin       = -31000;
 	s16 dungeon_ymax       = 31000;
 
-	NoiseParams np_base;
 	NoiseParams np_filler_depth;
 	NoiseParams np_height1;
 	NoiseParams np_height2;
@@ -83,12 +84,13 @@ public:
 	int getSpawnLevelAtPoint(v2s16 p);
 
 private:
-	s16 large_cave_depth;
+	float base_level;
 	s32 grad_wl;
+
+	s16 large_cave_depth;
 	s16 dungeon_ymin;
 	s16 dungeon_ymax;
 
-	Noise *noise_base;
 	Noise *noise_height1;
 	Noise *noise_height2;
 	Noise *noise_height3;

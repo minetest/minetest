@@ -54,6 +54,8 @@ MapgenCarpathian::MapgenCarpathian(
 		int mapgenid, MapgenCarpathianParams *params, EmergeManager *emerge)
 	: MapgenBasic(mapgenid, params, emerge)
 {
+	base_level       = params->base_level;
+
 	spflags          = params->spflags;
 	cave_width       = params->cave_width;
 	large_cave_depth = params->large_cave_depth;
@@ -67,7 +69,6 @@ MapgenCarpathian::MapgenCarpathian(
 	grad_wl = 1 - water_level;
 
 	//// 2D Terrain noise
-	noise_base          = new Noise(&params->np_base,          seed, csize.X, csize.Z);
 	noise_filler_depth  = new Noise(&params->np_filler_depth,  seed, csize.X, csize.Z);
 	noise_height1       = new Noise(&params->np_height1,       seed, csize.X, csize.Z);
 	noise_height2       = new Noise(&params->np_height2,       seed, csize.X, csize.Z);
@@ -93,7 +94,6 @@ MapgenCarpathian::MapgenCarpathian(
 
 MapgenCarpathian::~MapgenCarpathian()
 {
-	delete noise_base;
 	delete noise_filler_depth;
 	delete noise_height1;
 	delete noise_height2;
@@ -110,7 +110,6 @@ MapgenCarpathian::~MapgenCarpathian()
 
 
 MapgenCarpathianParams::MapgenCarpathianParams():
-	np_base          (12, 1,  v3f(2557, 2557, 2557), 6538,  4, 0.8,  0.5),
 	np_filler_depth  (0,  1,  v3f(128,  128,  128),  261,   3, 0.7,  2.0),
 	np_height1       (0,  5,  v3f(251,  251,  251),  9613,  5, 0.5,  2.0),
 	np_height2       (0,  5,  v3f(383,  383,  383),  1949,  5, 0.5,  2.0),
@@ -133,6 +132,7 @@ MapgenCarpathianParams::MapgenCarpathianParams():
 void MapgenCarpathianParams::readParams(const Settings *settings)
 {
 	settings->getFlagStrNoEx("mgcarpathian_spflags", spflags, flagdesc_mapgen_carpathian);
+	settings->getFloatNoEx("mgcarpathian_base_level",       base_level);
 	settings->getFloatNoEx("mgcarpathian_cave_width",       cave_width);
 	settings->getS16NoEx("mgcarpathian_large_cave_depth",   large_cave_depth);
 	settings->getS16NoEx("mgcarpathian_lava_depth",         lava_depth);
@@ -142,7 +142,6 @@ void MapgenCarpathianParams::readParams(const Settings *settings)
 	settings->getS16NoEx("mgcarpathian_dungeon_ymin",       dungeon_ymin);
 	settings->getS16NoEx("mgcarpathian_dungeon_ymax",       dungeon_ymax);
 
-	settings->getNoiseParams("mgcarpathian_np_base",          np_base);
 	settings->getNoiseParams("mgcarpathian_np_filler_depth",  np_filler_depth);
 	settings->getNoiseParams("mgcarpathian_np_height1",       np_height1);
 	settings->getNoiseParams("mgcarpathian_np_height2",       np_height2);
@@ -164,6 +163,7 @@ void MapgenCarpathianParams::readParams(const Settings *settings)
 void MapgenCarpathianParams::writeParams(Settings *settings) const
 {
 	settings->setFlagStr("mgcarpathian_spflags", spflags, flagdesc_mapgen_carpathian, U32_MAX);
+	settings->setFloat("mgcarpathian_base_level",       base_level);
 	settings->setFloat("mgcarpathian_cave_width",       cave_width);
 	settings->setS16("mgcarpathian_large_cave_depth",   large_cave_depth);
 	settings->setS16("mgcarpathian_lava_depth",         lava_depth);
@@ -173,7 +173,6 @@ void MapgenCarpathianParams::writeParams(Settings *settings) const
 	settings->setS16("mgcarpathian_dungeon_ymin",       dungeon_ymin);
 	settings->setS16("mgcarpathian_dungeon_ymax",       dungeon_ymax);
 
-	settings->setNoiseParams("mgcarpathian_np_base",          np_base);
 	settings->setNoiseParams("mgcarpathian_np_filler_depth",  np_filler_depth);
 	settings->setNoiseParams("mgcarpathian_np_height1",       np_height1);
 	settings->setNoiseParams("mgcarpathian_np_height2",       np_height2);
@@ -313,7 +312,6 @@ int MapgenCarpathian::getSpawnLevelAtPoint(v2s16 p)
 
 float MapgenCarpathian::terrainLevelAtPoint(s16 x, s16 z)
 {
-	float ground = NoisePerlin2D(&noise_base->np, x, z, seed);
 	float height1 = NoisePerlin2D(&noise_height1->np, x, z, seed);
 	float height2 = NoisePerlin2D(&noise_height2->np, x, z, seed);
 	float height3 = NoisePerlin2D(&noise_height3->np, x, z, seed);
@@ -355,7 +353,7 @@ float MapgenCarpathian::terrainLevelAtPoint(s16 x, s16 z)
 
 		// Final terrain level
 		float mountains = hills + ridged_mountains + step_mountains;
-		float surface_level = ground + mountains + grad;
+		float surface_level = base_level + mountains + grad;
 
 		if (y > surface_level && height < 0)
 			height = y;
@@ -375,7 +373,6 @@ int MapgenCarpathian::generateTerrain()
 	MapNode mn_water(c_water_source);
 
 	// Calculate noise for terrain generation
-	noise_base->perlinMap2D(node_min.X, node_min.Z);
 	noise_height1->perlinMap2D(node_min.X, node_min.Z);
 	noise_height2->perlinMap2D(node_min.X, node_min.Z);
 	noise_height3->perlinMap2D(node_min.X, node_min.Z);
@@ -395,9 +392,6 @@ int MapgenCarpathian::generateTerrain()
 
 	for (s16 z = node_min.Z; z <= node_max.Z; z++)
 	for (s16 x = node_min.X; x <= node_max.X; x++, index2d++) {
-		// Base terrain
-		float ground = noise_base->result[index2d];
-
 		// Hill/Mountain height (hilliness)
 		float height1 = noise_height1->result[index2d];
 		float height2 = noise_height2->result[index2d];
@@ -452,7 +446,7 @@ int MapgenCarpathian::generateTerrain()
 
 			// Final terrain level
 			float mountains = hills + ridged_mountains + step_mountains;
-			float surface_level = ground + mountains + grad;
+			float surface_level = base_level + mountains + grad;
 
 			if (y < surface_level) {
 				vm->m_data[vi] = mn_stone; // Stone
