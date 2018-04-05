@@ -580,6 +580,7 @@ bool PlayerDatabaseSQLite3::loadPlayer(RemotePlayer *player, PlayerSAO *sao)
 
 		sao->getMeta().setString(attr, value);
 	}
+	sao->getMeta().setModified(false);
 	sqlite3_reset(m_stmt_player_metadata_load);
 	return true;
 }

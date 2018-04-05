@@ -135,6 +135,7 @@ void RemotePlayer::deSerialize(std::istream &is, const std::string &playername,
 				Json::Value attr_value = attr_root[it];
 				sao->getMeta().setString(it, attr_value.asString());
 			}
+			sao->getMeta().setModified(false);
 		} catch (SettingNotFoundException &e) {}
 	}
 

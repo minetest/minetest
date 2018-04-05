@@ -596,6 +596,7 @@ bool PlayerDatabasePostgreSQL::loadPlayer(RemotePlayer *player, PlayerSAO *sao)
 	for (int row = 0; row < numrows; row++) {
 		sao->getMeta().setString(PQgetvalue(results, row, 0), PQgetvalue(results, row, 1));
 	}
+    sao->getMeta().setModified(false);
 
 	PQclear(results);
 
