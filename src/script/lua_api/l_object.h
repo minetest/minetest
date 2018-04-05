@@ -250,7 +250,7 @@ private:
 	// get_attribute(self, attribute)
 	static int l_get_attribute(lua_State *L);
 
-	// get_meta(self, attribute)
+	// get_meta(self)
 	static int l_get_meta(lua_State *L);
 
 	// set_inventory_formspec(self, formspec)

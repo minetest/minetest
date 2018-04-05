@@ -1219,9 +1219,8 @@ int ObjectRef::l_set_attribute(lua_State *L)
 {
 	ObjectRef *ref = checkobject(L, 1);
 	PlayerSAO* co = getplayersao(ref);
-	if (co == NULL) {
+	if (co == NULL)
 		return 0;
-	}
 
 	std::string attr = luaL_checkstring(L, 2);
 	if (lua_isnil(L, 3)) {
@@ -1238,9 +1237,8 @@ int ObjectRef::l_get_attribute(lua_State *L)
 {
 	ObjectRef *ref = checkobject(L, 1);
 	PlayerSAO* co = getplayersao(ref);
-	if (co == NULL) {
+	if (co == NULL)
 		return 0;
-	}
 
 	std::string attr = luaL_checkstring(L, 2);
 
@@ -1259,9 +1257,8 @@ int ObjectRef::l_get_meta(lua_State *L)
 {
 	ObjectRef *ref = checkobject(L, 1);
 	PlayerSAO *co = getplayersao(ref);
-	if (co == NULL) {
+	if (co == NULL)
 		return 0;
-	}
 
 	PlayerMetaRef::create(L, &co->getMeta());
 	return 1;
