@@ -389,9 +389,11 @@ Biome *read_biome_def(lua_State *L, int index, const NodeDefManager *ndef)
 	b->vertical_blend  = getintfield_default(L,    index, "vertical_blend",  0);
 	b->flags           = 0; // reserved
 
-	b->min_pos = getv3s16field_default(L, index, "min_pos", v3s16(-31000, -31000, -31000));
+	b->min_pos = getv3s16field_default(
+		L, index, "min_pos", v3s16(-31000, -31000, -31000));
 	getintfield(L, index, "y_min", b->min_pos.Y);
-	b->max_pos = getv3s16field_default(L, index, "max_pos", v3s16(31000, 31000, 31000));
+	b->max_pos = getv3s16field_default(
+		L, index, "max_pos", v3s16(31000, 31000, 31000));
 	getintfield(L, index, "y_max", b->max_pos.Y);
 
 	std::vector<std::string> &nn = b->m_nodenames;
@@ -403,6 +405,7 @@ Biome *read_biome_def(lua_State *L, int index, const NodeDefManager *ndef)
 	nn.push_back(getstringfield_default(L, index, "node_river_water", ""));
 	nn.push_back(getstringfield_default(L, index, "node_riverbed",    ""));
 	nn.push_back(getstringfield_default(L, index, "node_dust",        ""));
+	nn.push_back(getstringfield_default(L, index, "node_cave_liquid", ""));
 	ndef->pendNodeResolve(b);
 
 	return b;

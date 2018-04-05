@@ -5662,6 +5662,10 @@ Definition tables
         node_riverbed = "default:gravel",
         depth_riverbed = 2,
     --  ^ Node placed under river water and thickness of this layer.
+        node_cave_liquid = "default:water_source",
+    --  ^ Nodes placed as a blob of liquid in 50% of large caves.
+    --  ^ If absent, cave liquids fall back to classic behaviour of lava or
+    --  ^ water distributed according to a hardcoded 3D noise.
         y_max = 31000,
         y_min = 1,
     --  ^ Upper and lower limits for biome.
