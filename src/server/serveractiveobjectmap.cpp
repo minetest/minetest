@@ -167,11 +167,12 @@ void ServerActiveObjectMap::addObjectRef(u16 id, v3s16 pos)
 void ServerActiveObjectMap::removeObjectRef(u16 id, v3s16 pos)
 {
 	auto bounds = refmap.equal_range(pos);
-	for (auto iter = bounds.first; iter != bounds.second;)
+	for (auto iter = bounds.first; iter != bounds.second;) {
 		if (iter->second == id)
-			refmap.erase(iter++);
+			iter = refmap.erase(iter);
 		else
 			++iter;
+	}
 }
 
 void ServerActiveObjectMap::addObjectRefs(u16 id, const aabb3s16 &box)
