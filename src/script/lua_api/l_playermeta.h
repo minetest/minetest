@@ -36,7 +36,7 @@ private:
 
 	static PlayerMetaRef *checkobject(lua_State *L, int narg);
 
-	virtual Metadata* getmeta(bool auto_create);
+	virtual Metadata *getmeta(bool auto_create);
 
 	virtual void clearMeta();
 

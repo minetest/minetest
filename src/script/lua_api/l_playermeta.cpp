@@ -25,7 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 /*
 	PlayerMetaRef
 */
-PlayerMetaRef* PlayerMetaRef::checkobject(lua_State *L, int narg)
+PlayerMetaRef *PlayerMetaRef::checkobject(lua_State *L, int narg)
 {
 	luaL_checktype(L, narg, LUA_TUSERDATA);
 	void *ud = luaL_checkudata(L, narg, className);
@@ -35,7 +35,7 @@ PlayerMetaRef* PlayerMetaRef::checkobject(lua_State *L, int narg)
 	return *(PlayerMetaRef**)ud;  // unbox pointer
 }
 
-Metadata* PlayerMetaRef::getmeta(bool auto_create)
+Metadata *PlayerMetaRef::getmeta(bool auto_create)
 {
 	return metadata;
 }
