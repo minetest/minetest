@@ -228,10 +228,7 @@ end
 --------------------------------------------------------------------------------
 function table.map_inplace(t, f)
 	for key, value in pairs(t) do
-		value = f(value)
-		if value ~= nil then
-			t[key] = value
-		end
+		t[key] = f(value)
 	end
 	return t
 end

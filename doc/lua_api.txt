@@ -2505,7 +2505,7 @@ readability.
     * Appends all values in `other_table` to `t` - uses `#t + 1` to
       find new indices.
 * `table.count(t)`: number of keys in t.
-* `table.random(t)`: returns random element.
+* `table.random(t)`: returns random element from `t`, an array.
 * `table.index_of(t, v)`: find key of v in t.
 * `table.map(t, f)`:
     * `f` - function(element), return new value
