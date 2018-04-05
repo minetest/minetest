@@ -56,12 +56,8 @@ public:
 	// Add support for variable names in values
 	const std::string &resolveString(const std::string &str, u16 recursion = 0) const;
 
-	inline bool isModified() const {
-		return m_modified;
-	}
-	inline void setModified(bool v) {
-		m_modified = v;
-	}
+	inline bool isModified() const  { return m_modified; }
+	inline void setModified(bool v) { m_modified = v; }
 protected:
 	StringMap m_stringvars;
 };

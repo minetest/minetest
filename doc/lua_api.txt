@@ -3953,7 +3953,9 @@ Can be obtained via `minetest.get_mod_storage()` during load time.
 * All methods in MetaDataRef
 
 ### `PlayerMetaRef`
-Player metadata. Deprecated attributes are automagically imported into player meta.
+Player metadata.
+Uses the same method of storage as the deprecated player attribute API, so
+data there will also be in player meta.
 Can be obtained using `player:get_meta()`.
 
 #### Methods
