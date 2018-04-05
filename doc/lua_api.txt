@@ -3902,7 +3902,7 @@ An interface to use mod channels on client and server
     * Message size is limited to 65535 characters by protocol.
 
 ### `MetaDataRef`
-See `StorageRef`, `NodeMetaRef` and `ItemStackMetaRef`.
+See `StorageRef`, `NodeMetaRef`, `ItemStackMetaRef`, and `PlayerMetaRef`.
 
 #### Methods
 * `set_string(name, value)`
@@ -3951,6 +3951,17 @@ Can be obtained via `minetest.get_mod_storage()` during load time.
 
 #### Methods
 * All methods in MetaDataRef
+
+### `PlayerMetaRef`
+Player metadata. Deprecated attributes are automagically imported into player meta.
+Can be obtained using `player:get_meta()`.
+
+#### Methods
+* All methods in MetaDataRef
+* `set_tool_capabilities([tool_capabilities])`
+    * Overrides the item's tool capabilities
+    * A nil value will clear the override data and restore the original
+      behavior.
 
 ### `NodeTimerRef`
 Node Timers: a high resolution persistent per-node timer.
@@ -4101,14 +4112,15 @@ This is basically a reference to a C++ `ServerActiveObject`
         * `0`: player is drowning
         * max: bubbles bar is not shown
         * See Object Properties for more information
-* `set_attribute(attribute, value)`:
+* `set_attribute(attribute, value)`:  DEPRECATED, use get_meta() instead
     * Sets an extra attribute with value on player.
     * `value` must be a string, or a number which will be converted to a
       string.
     * If `value` is `nil`, remove attribute from player.
-* `get_attribute(attribute)`:
+* `get_attribute(attribute)`:  DEPRECATED, use get_meta() instead
     * Returns value (a string) for extra attribute.
     * Returns `nil` if no attribute found.
+* `get_meta()`: Returns a PlayerMetaRef.
 * `set_inventory_formspec(formspec)`
     * Redefine player's inventory form
     * Should usually be called in `on_joinplayer`
