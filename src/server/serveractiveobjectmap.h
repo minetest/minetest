@@ -39,6 +39,7 @@ struct ServerActiveObjectMap
 	{
 		ServerActiveObject *object;
 		aabb3s16 box;
+		v3s16 pos;
 		bool has_box;
 	};
 
@@ -108,9 +109,6 @@ struct ServerActiveObjectMap
 	 * @note Due to inexact nature of floating-point computations, it is
 	 * undefined whether an object lying exactly at the boundary is included
 	 * in the list or not.
-	 * @note Objects with base position outside of the collision box may not
-	 * be returned.
-	 * @note Objects without valid collision box are not returned.
 	 */
 	std::vector<u16> getObjectsInsideRadius(v3f pos, float radius);
 
@@ -134,6 +132,8 @@ struct ServerActiveObjectMap
 	const std::unordered_map<u16, Wrapper> &getObjects() const { return objects; }
 
 private:
+	void addObjectRef(u16 id, v3s16 pos);
+	void removeObjectRef(u16 id, v3s16 pos);
 	void addObjectRefs(u16 id, const aabb3s16 &box);
 	void removeObjectRefs(u16 id, const aabb3s16 &box);
 	std::unordered_set<u16> getObjectsNearBox(const aabb3s16 &box);

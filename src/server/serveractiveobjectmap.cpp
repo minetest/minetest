@@ -25,15 +25,17 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 static constexpr float granularity = 16.0 * BS;
 
+static v3s16 getChunkPos(const v3f &pos)
+{
+	return v3s16(
+			std::floor(pos.X / granularity),
+			std::floor(pos.Y / granularity),
+			std::floor(pos.Z / granularity));
+}
+
 static aabb3s16 calcBox(const aabb3f &cb)
 {
-	return aabb3s16(
-			std::floor(cb.MinEdge.X / granularity),
-			std::floor(cb.MinEdge.Y / granularity),
-			std::floor(cb.MinEdge.Z / granularity),
-			std::ceil(cb.MaxEdge.X / granularity),
-			std::ceil(cb.MaxEdge.Y / granularity),
-			std::ceil(cb.MaxEdge.Z / granularity));
+	return { getChunkPos(cb.MinEdge), getChunkPos(cb.MaxEdge) };
 }
 
 void ServerActiveObjectMap::addObject(ServerActiveObject *object)
@@ -46,10 +48,12 @@ void ServerActiveObjectMap::addObject(ServerActiveObject *object)
 			"object ID in use: " + std::to_string(id));
 	w.object = object;
 	w.has_box = w.object->getCollisionBox(&cb);
+	w.pos = getChunkPos(w.object->getBasePosition());
 	if (w.has_box) {
 		w.box = calcBox(cb);
 		addObjectRefs(id, w.box);
 	}
+	addObjectRef(id, w.pos);
 	objects.emplace(id, w);
 }
 
@@ -61,6 +65,7 @@ ServerActiveObject *ServerActiveObjectMap::removeObject(u16 id)
 	Wrapper w = pw->second;
 	if (w.has_box)
 		removeObjectRefs(id, w.box);
+	removeObjectRef(id, w.pos);
 	objects.erase(pw);
 	return w.object;
 }
@@ -79,19 +84,22 @@ void ServerActiveObjectMap::updateObject(u16 id)
 		return;
 	}
 	Wrapper &w = pw->second;
+	v3s16 pos = getChunkPos(w.object->getBasePosition());
 	aabb3f cb;
 	aabb3s16 box;
 	bool has_box = w.object->getCollisionBox(&cb);
 	if (has_box)
 		box = calcBox(cb);
-	if (w.has_box && has_box && w.box == box)
+	if (w.has_box && has_box && w.box == box && pos == w.pos)
 		return;
 	if (w.has_box)
 		removeObjectRefs(id, w.box);
+	removeObjectRef(id, w.pos);
 	w.box = box;
 	w.has_box = has_box;
 	if (w.has_box)
 		addObjectRefs(id, w.box);
+	addObjectRef(id, w.pos);
 }
 
 void ServerActiveObjectMap::updateObject(ServerActiveObject *object)
@@ -151,13 +159,29 @@ std::unordered_set<u16> ServerActiveObjectMap::getObjectsNearBox(const aabb3s16 
 	return result;
 }
 
+void ServerActiveObjectMap::addObjectRef(u16 id, v3s16 pos)
+{
+	refmap.emplace(pos, id);
+}
+
+void ServerActiveObjectMap::removeObjectRef(u16 id, v3s16 pos)
+{
+	auto bounds = refmap.equal_range(pos);
+	for (auto iter = bounds.first; iter != bounds.second;) {
+		if (iter->second == id)
+			iter = refmap.erase(iter);
+		else
+			++iter;
+	}
+}
+
 void ServerActiveObjectMap::addObjectRefs(u16 id, const aabb3s16 &box)
 {
 	v3s16 p;
 	for (p.Z = box.MinEdge.Z; p.Z <= box.MaxEdge.Z; p.Z++)
 	for (p.Y = box.MinEdge.Y; p.Y <= box.MaxEdge.Y; p.Y++)
 	for (p.X = box.MinEdge.X; p.X <= box.MaxEdge.X; p.X++)
-		refmap.emplace(p, id);
+		addObjectRef(id, p);
 }
 
 void ServerActiveObjectMap::removeObjectRefs(u16 id, const aabb3s16 &box)
@@ -165,14 +189,8 @@ void ServerActiveObjectMap::removeObjectRefs(u16 id, const aabb3s16 &box)
 	v3s16 p;
 	for (p.Z = box.MinEdge.Z; p.Z <= box.MaxEdge.Z; p.Z++)
 	for (p.Y = box.MinEdge.Y; p.Y <= box.MaxEdge.Y; p.Y++)
-	for (p.X = box.MinEdge.X; p.X <= box.MaxEdge.X; p.X++) {
-		auto bounds = refmap.equal_range(p);
-		for (auto iter = bounds.first; iter != bounds.second;)
-			if (iter->second == id)
-				refmap.erase(iter++);
-			else
-				++iter;
-	}
+	for (p.X = box.MinEdge.X; p.X <= box.MaxEdge.X; p.X++)
+		removeObjectRef(id, p);
 }
 
 bool ServerActiveObjectMap::isFreeId(u16 id)
