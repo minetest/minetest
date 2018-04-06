@@ -32,7 +32,7 @@ PlayerMetaRef *PlayerMetaRef::checkobject(lua_State *L, int narg)
 	if (!ud)
 		luaL_typerror(L, narg, className);
 
-	return *(PlayerMetaRef **)ud;  // unbox pointer
+	return *(PlayerMetaRef **)ud; // unbox pointer
 }
 
 Metadata *PlayerMetaRef::getmeta(bool auto_create)
@@ -97,13 +97,14 @@ void PlayerMetaRef::Register(lua_State *L)
 
 	lua_pop(L, 1); // drop metatable
 
-	luaL_openlib(L, 0, methods, 0);  // fill methodtable
-	lua_pop(L, 1);                   // drop methodtable
+	luaL_openlib(L, 0, methods, 0); // fill methodtable
+	lua_pop(L, 1);                  // drop methodtable
 
 	// Cannot be created from Lua
 	// lua_register(L, className, create_object);
 }
 
+// clang-format off
 const char PlayerMetaRef::className[] = "PlayerMetaRef";
 const luaL_Reg PlayerMetaRef::methods[] = {
 	luamethod(MetaDataRef, get_string),
@@ -117,3 +118,4 @@ const luaL_Reg PlayerMetaRef::methods[] = {
 	luamethod(MetaDataRef, equals),
 	{0,0}
 };
+// clang-format on

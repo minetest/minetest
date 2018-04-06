@@ -81,7 +81,6 @@ bool Metadata::getStringToRef(
 	return true;
 }
 
-
 /**
  * Sets var to name key in the metadata storage
  *
