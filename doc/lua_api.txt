@@ -3905,12 +3905,14 @@ An interface to use mod channels on client and server
 See `StorageRef`, `NodeMetaRef`, `ItemStackMetaRef`, and `PlayerMetaRef`.
 
 #### Methods
-* `set_string(name, value)`
-* `get_string(name)`
-* `set_int(name, value)`
-* `get_int(name)`
-* `set_float(name, value)`
-* `get_float(name)`
+* `contains(key)` - Returns true if key present, otherwise false.
+* `set_string(key, value)` - Value of "" will delete the key.
+* `get_string(key)` - Returns "" if key not present.
+* `get_string_or_nil(key)` - Returns nil if key not present
+* `set_int(key, value)`
+* `get_int(key)` - Returns 0 if key not present.
+* `set_float(key, value)`
+* `get_float(key)` - Returns 0 if key not present.
 * `to_table()`: returns `nil` or a table with keys:
     * `fields`: key-value storage
     * `inventory`: `{list1 = {}, ...}}` (NodeMetaRef only)

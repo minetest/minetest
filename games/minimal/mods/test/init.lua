@@ -43,6 +43,7 @@ end)
 local function run_player_meta_tests(player)
 	local meta = player:get_meta()
 	meta:set_string("foo", "bar")
+	assert(meta:contains("foo"))
 	assert(meta:get_string("foo") == "bar")
 
 	local meta2 = player:get_meta()
@@ -58,6 +59,11 @@ local function run_player_meta_tests(player)
 	assert(meta:equals(meta2))
 	assert(player:get_attribute("foo") == "bar")
 	assert(player:get_attribute("bob") == "dillan")
+
+	meta:set_string("foo", "")
+	assert(not meta:contains("foo"))
+	assert(meta:get_string_or_nil("foo") == nil)
+	assert(meta:get_string("foo") == "")
 end
 
 local function run_player_tests(player)
