@@ -347,6 +347,7 @@ LOCAL_SRC_FILES += \
 		jni/src/script/lua_api/l_nodetimer.cpp    \
 		jni/src/script/lua_api/l_noise.cpp        \
 		jni/src/script/lua_api/l_object.cpp       \
+		jni/src/script/lua_api/l_playermeta.cpp   \
 		jni/src/script/lua_api/l_particles.cpp    \
 		jni/src/script/lua_api/l_particles_local.cpp\
 		jni/src/script/lua_api/l_rollback.cpp     \

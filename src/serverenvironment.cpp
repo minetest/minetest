@@ -535,7 +535,7 @@ void ServerEnvironment::saveLoadedPlayers()
 
 	for (RemotePlayer *player : m_players) {
 		if (player->checkModified() || (player->getPlayerSAO() &&
-				player->getPlayerSAO()->extendedAttributesModified())) {
+				player->getPlayerSAO()->getMeta().isModified())) {
 			try {
 				m_player_database->savePlayer(player);
 			} catch (DatabaseException &e) {

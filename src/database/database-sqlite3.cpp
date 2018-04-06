@@ -520,7 +520,7 @@ void PlayerDatabaseSQLite3::savePlayer(RemotePlayer *player)
 	sqlite3_vrfy(sqlite3_step(m_stmt_player_metadata_remove), SQLITE_DONE);
 	sqlite3_reset(m_stmt_player_metadata_remove);
 
-	const PlayerAttributes &attrs = sao->getExtendedAttributes();
+	const StringMap &attrs = sao->getMeta().getStrings();
 	for (const auto &attr : attrs) {
 		str_to_sqlite(m_stmt_player_metadata_add, 1, player->getName());
 		str_to_sqlite(m_stmt_player_metadata_add, 2, attr.first);
@@ -528,6 +528,7 @@ void PlayerDatabaseSQLite3::savePlayer(RemotePlayer *player)
 		sqlite3_vrfy(sqlite3_step(m_stmt_player_metadata_add), SQLITE_DONE);
 		sqlite3_reset(m_stmt_player_metadata_add);
 	}
+	sao->getMeta().setModified(false);
 
 	endSave();
 }
@@ -578,8 +579,9 @@ bool PlayerDatabaseSQLite3::loadPlayer(RemotePlayer *player, PlayerSAO *sao)
 		std::string attr = sqlite_to_string(m_stmt_player_metadata_load, 0);
 		std::string value = sqlite_to_string(m_stmt_player_metadata_load, 1);
 
-		sao->setExtendedAttribute(attr, value);
+		sao->getMeta().setString(attr, value);
 	}
+	sao->getMeta().setModified(false);
 	sqlite3_reset(m_stmt_player_metadata_load);
 	return true;
 }

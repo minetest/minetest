@@ -27,6 +27,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 void Metadata::clear()
 {
 	m_stringvars.clear();
+	m_modified = true;
 }
 
 bool Metadata::empty() const
@@ -68,6 +69,18 @@ const std::string &Metadata::getString(const std::string &name, u16 recursion) c
 	return resolveString(it->second, recursion);
 }
 
+bool Metadata::getStringToRef(
+		const std::string &name, std::string &str, u16 recursion) const
+{
+	StringMap::const_iterator it = m_stringvars.find(name);
+	if (it == m_stringvars.end()) {
+		return false;
+	}
+
+	str = resolveString(it->second, recursion);
+	return true;
+}
+
 /**
  * Sets var to name key in the metadata storage
  *
@@ -88,6 +101,7 @@ bool Metadata::setString(const std::string &name, const std::string &var)
 	}
 
 	m_stringvars[name] = var;
+	m_modified = true;
 	return true;
 }
 

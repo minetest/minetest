@@ -22,6 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "lua_api/l_internal.h"
 #include "lua_api/l_inventory.h"
 #include "lua_api/l_item.h"
+#include "lua_api/l_playermeta.h"
 #include "common/c_converter.h"
 #include "common/c_content.h"
 #include "log.h"
@@ -1218,16 +1219,15 @@ int ObjectRef::l_set_attribute(lua_State *L)
 {
 	ObjectRef *ref = checkobject(L, 1);
 	PlayerSAO* co = getplayersao(ref);
-	if (co == NULL) {
+	if (co == NULL)
 		return 0;
-	}
 
 	std::string attr = luaL_checkstring(L, 2);
 	if (lua_isnil(L, 3)) {
-		co->removeExtendedAttribute(attr);
+		co->getMeta().removeString(attr);
 	} else {
 		std::string value = luaL_checkstring(L, 3);
-		co->setExtendedAttribute(attr, value);
+		co->getMeta().setString(attr, value);
 	}
 	return 1;
 }
@@ -1237,19 +1237,31 @@ int ObjectRef::l_get_attribute(lua_State *L)
 {
 	ObjectRef *ref = checkobject(L, 1);
 	PlayerSAO* co = getplayersao(ref);
-	if (co == NULL) {
+	if (co == NULL)
 		return 0;
-	}
 
 	std::string attr = luaL_checkstring(L, 2);
 
 	std::string value;
-	if (co->getExtendedAttribute(attr, &value)) {
+	if (co->getMeta().getStringToRef(attr, value)) {
 		lua_pushstring(L, value.c_str());
 		return 1;
 	}
 
 	return 0;
+}
+
+
+// get_meta(self, attribute)
+int ObjectRef::l_get_meta(lua_State *L)
+{
+	ObjectRef *ref = checkobject(L, 1);
+	PlayerSAO *co = getplayersao(ref);
+	if (co == NULL)
+		return 0;
+
+	PlayerMetaRef::create(L, &co->getMeta());
+	return 1;
 }
 
 
@@ -1884,6 +1896,7 @@ const luaL_Reg ObjectRef::methods[] = {
 	luamethod(ObjectRef, set_breath),
 	luamethod(ObjectRef, get_attribute),
 	luamethod(ObjectRef, set_attribute),
+	luamethod(ObjectRef, get_meta),
 	luamethod(ObjectRef, set_inventory_formspec),
 	luamethod(ObjectRef, get_inventory_formspec),
 	luamethod(ObjectRef, set_formspec_prepend),
