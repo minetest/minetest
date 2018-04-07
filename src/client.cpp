@@ -110,17 +110,11 @@ Client::Client(
 	m_cache_save_interval = g_settings->getU16("server_map_save_interval");
 
 	m_modding_enabled = g_settings->getBool("enable_client_modding");
-	m_script = new ClientScripting(this);
-	m_env.setScript(m_script);
-	m_script->setEnv(&m_env);
-}
-
-void Client::loadBuiltin()
-{
-	// Load builtin
-	scanModIntoMemory(BUILTIN_MOD_NAME, getBuiltinLuaPath());
-
-	m_script->loadModFromMemory(BUILTIN_MOD_NAME);
+	if (m_modding_enabled) {
+		m_script = new ClientScripting(this);
+		m_env.setScript(m_script);
+		m_script->setEnv(&m_env);
+	}
 }
 
 void Client::loadMods()
@@ -130,11 +124,15 @@ void Client::loadMods()
 		return;
 	}
 
-	// If modding is not enabled or flavour disable it, don't load mods, just builtin
+	// If modding is not enabled or flavour disable it, don't load mods
 	if (!m_modding_enabled) {
 		warningstream << "Client side mods are disabled by configuration." << std::endl;
 		return;
 	}
+
+	// Load builtin
+	scanModIntoMemory(BUILTIN_MOD_NAME, getBuiltinLuaPath());
+	m_script->loadModFromMemory(BUILTIN_MOD_NAME);
 
 	if (checkCSMFlavourLimit(CSMFlavourLimit::CSM_FL_LOAD_CLIENT_MODS)) {
 		warningstream << "Client side mods are disabled by server." << std::endl;
@@ -224,8 +222,10 @@ const ModSpec* Client::getModSpec(const std::string &modname) const
 void Client::Stop()
 {
 	m_shutdown = true;
-	// Don't disable this part when modding is disabled, it's used in builtin
-	m_script->on_shutdown();
+
+	if (m_mods_loaded)
+		m_script->on_shutdown();
+
 	//request all client managed threads to stop
 	m_mesh_update_thread.stop();
 	// Save local server map
@@ -1486,22 +1486,16 @@ void Client::typeChatMessage(const std::wstring &message)
 		return;
 
 	// If message was ate by script API, don't send it to server
-	if (m_script->on_sending_message(wide_to_utf8(message))) {
+	if (m_mods_loaded && m_script->on_sending_message(wide_to_utf8(message)))
 		return;
-	}
 
 	// Send to others
 	sendChatMessage(message);
 
 	// Show locally
-	if (message[0] != L'/') {
-		// compatibility code
-		if (m_proto_ver < 29) {
-			LocalPlayer *player = m_env.getLocalPlayer();
-			assert(player);
-			std::wstring name = narrow_to_wide(player->getName());
-			pushToChatQueue(new ChatMessage(CHATMESSAGE_TYPE_NORMAL, message, name));
-		}
+	if (message[0] == L'/') {
+		std::wstring notice = wgettext("issued command: ") + message;
+		pushToChatQueue(new ChatMessage(CHATMESSAGE_TYPE_ANNOUNCE, notice));
 	}
 }
 

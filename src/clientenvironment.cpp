@@ -240,7 +240,7 @@ void ClientEnvironment::step(float dtime)
 		}
 	}
 
-	if (m_client->moddingEnabled()) {
+	if (m_client->moddingLoaded() && m_client->moddingEnabled()) {
 		m_script->environment_step(dtime);
 	}
 
