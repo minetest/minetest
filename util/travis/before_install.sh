@@ -10,8 +10,8 @@ fi
 
 needs_compile || exit 0
 
-if [[ $PLATFORM == "Unix" ]]; then
-	if [[ $TRAVIS_OS_NAME == "linux" ]]; then
+if [[ $PLATFORM == "Unix" ]] || [[ $CLANG_TIDY == "1" ]]; then
+	if [[ $TRAVIS_OS_NAME == "linux" ]] || [[ $CLANG_TIDY == "1" ]]; then
 		install_linux_deps
 	else
 		install_macosx_deps

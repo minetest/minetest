@@ -227,7 +227,7 @@ void ClientEnvironment::step(float dtime)
 				get(m_map->getNodeNoEx(info.node_p));
 			// Determine fall damage multiplier
 			int addp = itemgroup_get(f.groups, "fall_damage_add_percent");
-			pre_factor = 1.0 + (float)addp/100.0;
+			pre_factor = 1.0f + (float)addp / 100.0f;
 		}
 		float speed = pre_factor * speed_diff.getLength();
 		if (speed > tolerance && !player_immortal) {
@@ -235,8 +235,7 @@ void ClientEnvironment::step(float dtime)
 			u8 damage = (u8)MYMIN(damage_f + 0.5, 255);
 			if (damage != 0) {
 				damageLocalPlayer(damage, true);
-				MtEvent *e = new SimpleTriggerEvent("PlayerFallingDamage");
-				m_client->event()->put(e);
+				m_client->getEventManager()->put(new SimpleTriggerEvent(MtEvent::PLAYER_FALLING_DAMAGE));
 			}
 		}
 	}

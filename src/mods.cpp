@@ -20,6 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <cctype>
 #include <fstream>
 #include <json/json.h>
+#include <algorithm>
 #include "mods.h"
 #include "filesys.h"
 #include "log.h"
@@ -28,14 +29,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "porting.h"
 #include "convert_json.h"
 
-static bool parseDependsLine(std::istream &is,
-		std::string &dep, std::set<char> &symbols)
+bool parseDependsString(std::string &dep,
+		std::unordered_set<char> &symbols)
 {
-	std::getline(is, dep);
 	dep = trim(dep);
 	symbols.clear();
 	size_t pos = dep.size();
-	while(pos > 0 && !string_allowed(dep.substr(pos-1, 1), MODNAME_ALLOWED_CHARS)){
+	while (pos > 0 && !string_allowed(dep.substr(pos-1, 1), MODNAME_ALLOWED_CHARS)) {
 		// last character is a symbol, not part of the modname
 		symbols.insert(dep[pos-1]);
 		--pos;
@@ -60,49 +60,94 @@ void parseModContents(ModSpec &spec)
 
 	// Handle modpacks (defined by containing modpack.txt)
 	std::ifstream modpack_is((spec.path+DIR_DELIM+"modpack.txt").c_str());
-	if(modpack_is.good()){ //a modpack, recursively get the mods in it
+	if (modpack_is.good()) { // a modpack, recursively get the mods in it
 		modpack_is.close(); // We don't actually need the file
 		spec.is_modpack = true;
 		spec.modpack_content = getModsInPath(spec.path, true);
-
 		// modpacks have no dependencies; they are defined and
 		// tracked separately for each mod in the modpack
-	}
-	else{ // not a modpack, parse the dependencies
-		std::ifstream is((spec.path+DIR_DELIM+"depends.txt").c_str());
-		while(is.good()){
-			std::string dep;
-			std::set<char> symbols;
-			if(parseDependsLine(is, dep, symbols)){
-				if(symbols.count('?') != 0){
-					spec.optdepends.insert(dep);
-				}
-				else{
-					spec.depends.insert(dep);
+
+	} else {
+		// Attempt to load dependencies from mod.conf
+		bool mod_conf_has_depends = false;
+		if (info.exists("depends")) {
+			mod_conf_has_depends = true;
+			std::string dep = info.get("depends");
+			dep.erase(std::remove_if(dep.begin(), dep.end(),
+					static_cast<int(*)(int)>(&std::isspace)), dep.end());
+			for (const auto &dependency : str_split(dep, ',')) {
+				spec.depends.insert(dependency);
+			}
+		}
+
+		if (info.exists("optional_depends")) {
+			mod_conf_has_depends = true;
+			std::string dep = info.get("optional_depends");
+			dep.erase(std::remove_if(dep.begin(), dep.end(),
+					static_cast<int(*)(int)>(&std::isspace)), dep.end());
+			for (const auto &dependency : str_split(dep, ',')) {
+				spec.optdepends.insert(dependency);
+			}
+		}
+
+		// Fallback to depends.txt
+		if (!mod_conf_has_depends) {
+			std::vector<std::string> dependencies;
+
+			std::ifstream is((spec.path + DIR_DELIM + "depends.txt").c_str());
+			while (is.good()) {
+				std::string dep;
+				std::getline(is, dep);
+				dependencies.push_back(dep);
+			}
+
+			for (auto &dependency : dependencies) {
+				std::unordered_set<char> symbols;
+				if (parseDependsString(dependency, symbols)) {
+					if (symbols.count('?') != 0) {
+						spec.optdepends.insert(dependency);
+					} else {
+						spec.depends.insert(dependency);
+					}
 				}
 			}
+		}
+
+		if (info.exists("description")) {
+			spec.desc = info.get("description");
+		} else {
+			std::ifstream is((spec.path + DIR_DELIM + "description.txt").c_str());
+			spec.desc = std::string((std::istreambuf_iterator<char>(is)),
+					std::istreambuf_iterator<char>());
 		}
 	}
 }
 
-std::map<std::string, ModSpec> getModsInPath(std::string path, bool part_of_modpack)
+std::map<std::string, ModSpec> getModsInPath(const std::string &path,
+	bool part_of_modpack)
 {
 	// NOTE: this function works in mutual recursion with parseModContents
 
 	std::map<std::string, ModSpec> result;
 	std::vector<fs::DirListNode> dirlist = fs::GetDirListing(path);
+	std::string modpath;
+
 	for (const fs::DirListNode &dln : dirlist) {
-		if(!dln.dir)
+		if (!dln.dir)
 			continue;
+
 		const std::string &modname = dln.name;
 		// Ignore all directories beginning with a ".", especially
 		// VCS directories like ".git" or ".svn"
 		if (modname[0] == '.')
 			continue;
-		std::string modpath = path + DIR_DELIM + modname;
 
-		ModSpec spec(modname, modpath);
-		spec.part_of_modpack = part_of_modpack;
+		modpath.clear();
+		modpath.append(path)
+			.append(DIR_DELIM)
+			.append(modname);
+
+		ModSpec spec(modname, modpath, part_of_modpack);
 		parseModContents(spec);
 		result.insert(std::make_pair(modname, spec));
 	}
@@ -313,20 +358,6 @@ void ModConfiguration::resolveDependencies()
 
 	// Step 4: write back list of unsatisfied mods
 	m_unsatisfied_mods.assign(unsatisfied.begin(), unsatisfied.end());
-}
-
-ServerModConfiguration::ServerModConfiguration(const std::string &worldpath):
-	ModConfiguration(worldpath)
-{
-	SubgameSpec gamespec = findWorldSubgame(worldpath);
-
-	// Add all game mods and all world mods
-	addModsInPath(gamespec.gamemods_path);
-	addModsInPath(worldpath + DIR_DELIM + "worldmods");
-
-	// Load normal mods
-	std::string worldmt = worldpath + DIR_DELIM + "world.mt";
-	addModsFromConfig(worldmt, gamespec.addon_mods_paths);
 }
 
 #ifndef SERVER

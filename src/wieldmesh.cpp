@@ -27,6 +27,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mesh.h"
 #include "content_mapblock.h"
 #include "mapblock_mesh.h"
+#include "client/meshgen/collector.h"
 #include "client/tile.h"
 #include "log.h"
 #include "util/numeric.h"
@@ -304,7 +305,7 @@ void WieldMeshSceneNode::setExtruded(const std::string &imagename,
 scene::SMesh *createSpecialNodeMesh(Client *client, content_t id, std::vector<ItemPartColor> *colors)
 {
 	MeshMakeData mesh_make_data(client, false, false);
-	MeshCollector collector(false);
+	MeshCollector collector;
 	mesh_make_data.setSmoothLighting(false);
 	MapblockMeshGenerator gen(&mesh_make_data, &collector);
 	gen.renderSingle(id);

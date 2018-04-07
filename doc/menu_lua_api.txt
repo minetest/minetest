@@ -111,7 +111,7 @@ core.get_screen_info()
 	window_height   = <current window height>
 	}
 
-Games:
+Packages:
 core.get_game(index)
 ^ returns {
 	id               = <id>,
@@ -125,6 +125,15 @@ core.get_game(index)
 core.get_games() -> table of all games in upper format (possible in async calls)
 core.get_mapgen_names([include_hidden=false]) -> table of map generator algorithms
     registered in the core (possible in async calls)
+core.get_mod_info(path)
+^ returns  {
+	name             = "name of mod",
+	type             = "mod" or "modpack",
+	description      = "description",
+	path             = "path/to/mod",
+	depends          = {"mod", "names"},
+	optional_depends = {"mod", "names"},
+}
 
 Favorites:
 core.get_favorites(location) -> list of favorites (possible in async calls)

@@ -77,13 +77,6 @@ enum GenNotifyType {
 	NUM_GENNOTIFY_TYPES
 };
 
-enum MgStoneType {
-	MGSTONE_STONE,
-	MGSTONE_DESERT_STONE,
-	MGSTONE_SANDSTONE,
-	MGSTONE_OTHER,
-};
-
 struct GenNotifyEvent {
 	GenNotifyType type;
 	v3s16 pos;
@@ -99,8 +92,8 @@ public:
 	void setNotifyOnDecoIds(std::set<u32> *notify_on_deco_ids);
 
 	bool addEvent(GenNotifyType type, v3s16 pos, u32 id=0);
-	void getEvents(std::map<std::string, std::vector<v3s16> > &event_map,
-		bool peek_events=false);
+	void getEvents(std::map<std::string, std::vector<v3s16> > &event_map);
+	void clearEvents();
 
 private:
 	u32 m_notify_on = 0;
@@ -247,10 +240,8 @@ public:
 
 	virtual void generateCaves(s16 max_stone_y, s16 large_cave_depth);
 	virtual bool generateCaverns(s16 max_stone_y);
-	virtual void generateDungeons(s16 max_stone_y,
-		MgStoneType stone_type, content_t biome_stone);
-	virtual void generateBiomes(MgStoneType *mgstone_type,
-		content_t *biome_stone);
+	virtual void generateDungeons(s16 max_stone_y);
+	virtual void generateBiomes();
 	virtual void dustTopNodes();
 
 protected:

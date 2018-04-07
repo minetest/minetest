@@ -20,6 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 
 #include "mapgen.h"
+#include <cmath>
 #include "voxel.h"
 #include "noise.h"
 #include "mapblock.h"
@@ -28,7 +29,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "content_sao.h"
 #include "nodedef.h"
 #include "voxelalgorithms.h"
-//#include "profiler.h" // For TimeTaker
 #include "settings.h" // For g_settings
 #include "emerge.h"
 #include "dungeongen.h"
@@ -228,7 +228,7 @@ int MapgenV7::getSpawnLevelAtPoint(v2s16 p)
 	if (spflags & MGV7_RIDGES) {
 		float width = 0.2;
 		float uwatern = NoisePerlin2D(&noise_ridge_uwater->np, p.X, p.Y, seed) * 2;
-		if (fabs(uwatern) <= width)
+		if (std::fabs(uwatern) <= width)
 			return MAX_MAP_GENERATION_LIMIT;  // Unsuitable spawn point
 	}
 
@@ -311,10 +311,7 @@ void MapgenV7::makeChunk(BlockMakeData *data)
 
 	// Init biome generator, place biome-specific nodes, and build biomemap
 	biomegen->calcBiomeNoise(node_min);
-
-	MgStoneType mgstone_type;
-	content_t biome_stone;
-	generateBiomes(&mgstone_type, &biome_stone);
+	generateBiomes();
 
 	// Generate caverns, tunnels and classic caves
 	if (flags & MG_CAVES) {
@@ -335,7 +332,7 @@ void MapgenV7::makeChunk(BlockMakeData *data)
 	// Generate dungeons
 	if ((flags & MG_DUNGEONS) && full_node_min.Y >= dungeon_ymin &&
 			full_node_max.Y <= dungeon_ymax)
-		generateDungeons(stone_surface_max_y, mgstone_type, biome_stone);
+		generateDungeons(stone_surface_max_y);
 
 	// Generate the registered decorations
 	if (flags & MG_DECORATIONS)
@@ -426,9 +423,9 @@ bool MapgenV7::getFloatlandMountainFromMap(int idx_xyz, int idx_xz, s16 y)
 {
 	// Make rim 2 nodes thick to match floatland base terrain
 	float density_gradient = (y >= floatland_level) ?
-		-pow((float)(y - floatland_level) / float_mount_height,
+		-std::pow((float)(y - floatland_level) / float_mount_height,
 		float_mount_exponent) :
-		-pow((float)(floatland_level - 1 - y) / float_mount_height,
+		-std::pow((float)(floatland_level - 1 - y) / float_mount_height,
 		float_mount_exponent);
 
 	float floatn = noise_mountain->result[idx_xyz] + float_mount_density;
@@ -456,7 +453,7 @@ void MapgenV7::floatBaseExtentFromMap(s16 *float_base_min, s16 *float_base_max, 
 			base_max = floatland_level - (amp - ridge * 2.0f) / 2.0f;
 		} else {
 			// Hills and ridges
-			float diff = fabs(amp - ridge) / ridge;
+			float diff = std::fabs(amp - ridge) / ridge;
 			// Smooth ridges using the 'smoothstep function'
 			float smooth_diff = diff * diff * (3.0f - 2.0f * diff);
 			base_max = floatland_level + ridge - smooth_diff * ridge;
@@ -539,7 +536,7 @@ int MapgenV7::generateTerrain()
 					vm->m_data[vi] = n_air;
 				}
 			}
-			vm->m_area.add_y(em, vi, 1);
+			VoxelArea::add_y(em, vi, 1);
 			index3d += ystride;
 		}
 	}
@@ -569,12 +566,12 @@ void MapgenV7::generateRidgeTerrain()
 			int j = (z - node_min.Z) * csize.X + (x - node_min.X);
 
 			float uwatern = noise_ridge_uwater->result[j] * 2;
-			if (fabs(uwatern) > width)
+			if (std::fabs(uwatern) > width)
 				continue;
 
 			float altitude = y - water_level;
 			float height_mod = (altitude + 17) / 2.5;
-			float width_mod  = width - fabs(uwatern);
+			float width_mod  = width - std::fabs(uwatern);
 			float nridge = noise_ridge->result[index] * MYMAX(altitude, 0) / 7.0;
 
 			if (nridge + width_mod * height_mod < 0.6)
@@ -584,172 +581,3 @@ void MapgenV7::generateRidgeTerrain()
 		}
 	}
 }
-
-
-////////////////////////////////////////////////////////////////////////////////
-//// Code Boneyard
-////
-//// Much of the stuff here has potential to become useful again at some point
-//// in the future, but we don't want it to get lost or forgotten in version
-//// control.
-////
-
-#if 0
-int MapgenV7::generateMountainTerrain(s16 ymax)
-{
-	MapNode n_stone(c_stone);
-	u32 j = 0;
-
-	for (s16 z = node_min.Z; z <= node_max.Z; z++)
-	for (s16 y = node_min.Y - 1; y <= node_max.Y + 1; y++) {
-		u32 vi = vm->m_area.index(node_min.X, y, z);
-		for (s16 x = node_min.X; x <= node_max.X; x++) {
-			int index = (z - node_min.Z) * csize.X + (x - node_min.X);
-			content_t c = vm->m_data[vi].getContent();
-
-			if (getMountainTerrainFromMap(j, index, y)
-					&& (c == CONTENT_AIR || c == c_water_source)) {
-				vm->m_data[vi] = n_stone;
-				if (y > ymax)
-					ymax = y;
-			}
-
-			vi++;
-			j++;
-		}
-	}
-
-	return ymax;
-}
-#endif
-
-
-#if 0
-void MapgenV7::carveRivers() {
-	MapNode n_air(CONTENT_AIR), n_water_source(c_water_source);
-	MapNode n_stone(c_stone);
-	u32 index = 0;
-
-	int river_depth = 4;
-
-	for (s16 z = node_min.Z; z <= node_max.Z; z++)
-	for (s16 x = node_min.X; x <= node_max.X; x++, index++) {
-		float terrain_mod  = noise_terrain_mod->result[index];
-		NoiseParams *np = noise_terrain_river->np;
-		np.persist = noise_terrain_persist->result[index];
-		float terrain_river = NoisePerlin2DNoTxfm(np, x, z, seed);
-		float height = terrain_river * (1 - abs(terrain_mod)) *
-						noise_terrain_river->np.scale;
-		height = log(height * height); //log(h^3) is pretty interesting for terrain
-
-		s16 y = heightmap[index];
-		if (height < 1.0 && y > river_depth &&
-			y - river_depth >= node_min.Y && y <= node_max.Y) {
-
-			for (s16 ry = y; ry != y - river_depth; ry--) {
-				u32 vi = vm->m_area.index(x, ry, z);
-				vm->m_data[vi] = n_air;
-			}
-
-			u32 vi = vm->m_area.index(x, y - river_depth, z);
-			vm->m_data[vi] = n_water_source;
-		}
-	}
-}
-#endif
-
-
-#if 0
-void MapgenV7::addTopNodes()
-{
-	v3s16 em = vm->m_area.getExtent();
-	s16 ntopnodes;
-	u32 index = 0;
-
-	for (s16 z = node_min.Z; z <= node_max.Z; z++)
-	for (s16 x = node_min.X; x <= node_max.X; x++, index++) {
-		Biome *biome = bmgr->biomes[biomemap[index]];
-
-		//////////////////// First, add top nodes below the ridge
-		s16 y = ridge_heightmap[index];
-
-		// This cutoff is good enough, but not perfect.
-		// It will cut off potentially placed top nodes at chunk boundaries
-		if (y < node_min.Y)
-			continue;
-		if (y > node_max.Y) {
-			y = node_max.Y; // Let's see if we can still go downward anyway
-			u32 vi = vm->m_area.index(x, y, z);
-			content_t c = vm->m_data[vi].getContent();
-			if (ndef->get(c).walkable)
-				continue;
-		}
-
-		// N.B.  It is necessary to search downward since ridge_heightmap[i]
-		// might not be the actual height, just the lowest part in the chunk
-		// where a ridge had been carved
-		u32 i = vm->m_area.index(x, y, z);
-		for (; y >= node_min.Y; y--) {
-			content_t c = vm->m_data[i].getContent();
-			if (ndef->get(c).walkable)
-				break;
-			vm->m_area.add_y(em, i, -1);
-		}
-
-		if (y != node_min.Y - 1 && y >= water_level) {
-			ridge_heightmap[index] = y; //update ridgeheight
-			ntopnodes = biome->top_depth;
-			for (; y <= node_max.Y && ntopnodes; y++) {
-				ntopnodes--;
-				vm->m_data[i] = MapNode(biome->c_top);
-				vm->m_area.add_y(em, i, 1);
-			}
-			// If dirt, grow grass on it.
-			if (y > water_level - 10 &&
-				vm->m_data[i].getContent() == CONTENT_AIR) {
-				vm->m_area.add_y(em, i, -1);
-				if (vm->m_data[i].getContent() == c_dirt)
-					vm->m_data[i] = MapNode(c_dirt_with_grass);
-			}
-		}
-
-		//////////////////// Now, add top nodes on top of the ridge
-		y = heightmap[index];
-		if (y > node_max.Y) {
-			y = node_max.Y; // Let's see if we can still go downward anyway
-			u32 vi = vm->m_area.index(x, y, z);
-			content_t c = vm->m_data[vi].getContent();
-			if (ndef->get(c).walkable)
-				continue;
-		}
-
-		i = vm->m_area.index(x, y, z);
-		for (; y >= node_min.Y; y--) {
-			content_t c = vm->m_data[i].getContent();
-			if (ndef->get(c).walkable)
-				break;
-			vm->m_area.add_y(em, i, -1);
-		}
-
-		if (y != node_min.Y - 1) {
-			ntopnodes = biome->top_depth;
-			// Let's see if we've already added it...
-			if (y == ridge_heightmap[index] + ntopnodes - 1)
-				continue;
-
-			for (; y <= node_max.Y && ntopnodes; y++) {
-				ntopnodes--;
-				vm->m_data[i] = MapNode(biome->c_top);
-				vm->m_area.add_y(em, i, 1);
-			}
-			// If dirt, grow grass on it.
-			if (y > water_level - 10 &&
-				vm->m_data[i].getContent() == CONTENT_AIR) {
-				vm->m_area.add_y(em, i, -1);
-				if (vm->m_data[i].getContent() == c_dirt)
-					vm->m_data[i] = MapNode(c_dirt_with_grass);
-			}
-		}
-	}
-}
-#endif

@@ -32,6 +32,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "server.h"
 #include "util/strfnd.h"
 #include "client/clientevent.h"
+#include "client/sound.h"
 #include "network/clientopcodes.h"
 #include "network/connection.h"
 #include "script/scripting_client.h"
@@ -1321,6 +1322,15 @@ void Client::handleCommand_SrpBytesSandB(NetworkPacket* pkt)
 	NetworkPacket resp_pkt(TOSERVER_SRP_BYTES_M, 0);
 	resp_pkt << std::string(bytes_M, len_M);
 	Send(&resp_pkt);
+}
+
+void Client::handleCommand_FormspecPrepend(NetworkPacket *pkt)
+{
+	LocalPlayer *player = m_env.getLocalPlayer();
+	assert(player != NULL);
+
+	// Store formspec in LocalPlayer
+	*pkt >> player->formspec_prepend;
 }
 
 void Client::handleCommand_CSMFlavourLimits(NetworkPacket *pkt)

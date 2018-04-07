@@ -45,6 +45,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <X11/Xutil.h>
 #endif
 
+#ifdef __ANDROID__
+#include "filesys.h"
+#endif
+
 RenderingEngine *RenderingEngine::s_singleton = nullptr;
 
 RenderingEngine::RenderingEngine(IEventReceiver *receiver)
@@ -566,5 +570,16 @@ v2u32 RenderingEngine::getDisplaySize()
 	nulldevice->drop();
 
 	return deskres;
+}
+
+#else // __ANDROID__
+float RenderingEngine::getDisplayDensity()
+{
+	return porting::getDisplayDensity();
+}
+
+v2u32 RenderingEngine::getDisplaySize()
+{
+	return porting::getDisplaySize();
 }
 #endif // __ANDROID__

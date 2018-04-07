@@ -161,6 +161,9 @@ private:
 	// set_velocity(self, {x=num, y=num, z=num})
 	static int l_set_velocity(lua_State *L);
 
+	// add_velocity(self, {x=num, y=num, z=num})
+	static int l_add_velocity(lua_State *L);
+
 	// get_velocity(self)
 	static int l_get_velocity(lua_State *L);
 
@@ -247,11 +250,20 @@ private:
 	// get_attribute(self, attribute)
 	static int l_get_attribute(lua_State *L);
 
+	// get_meta(self)
+	static int l_get_meta(lua_State *L);
+
 	// set_inventory_formspec(self, formspec)
 	static int l_set_inventory_formspec(lua_State *L);
 
 	// get_inventory_formspec(self) -> formspec
 	static int l_get_inventory_formspec(lua_State *L);
+
+	// set_formspec_prepend(self, formspec)
+	static int l_set_formspec_prepend(lua_State *L);
+
+	// get_formspec_prepend(self) -> formspec
+	static int l_get_formspec_prepend(lua_State *L);
 
 	// get_player_control(self)
 	static int l_get_player_control(lua_State *L);

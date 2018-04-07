@@ -743,7 +743,7 @@ void GUIEditBoxWithScrollBar::draw()
 				if (m_passwordbox) {
 					if (m_broken_text.size() != 1) {
 						m_broken_text.clear();
-						m_broken_text.push_back(core::stringw());
+						m_broken_text.emplace_back();
 					}
 					if (m_broken_text[0].size() != Text.size()){
 						m_broken_text[0] = Text;
@@ -1522,3 +1522,10 @@ void GUIEditBoxWithScrollBar::deserializeAttributes(io::IAttributes* in, io::SAt
 	// setOverrideFont(in->getAttributeAsFont("OverrideFont"));
 	setWritable(in->getAttributeAsBool("Writable"));
 }
+
+bool GUIEditBoxWithScrollBar::isDrawBackgroundEnabled() const { return false; }
+bool GUIEditBoxWithScrollBar::isDrawBorderEnabled() const { return false; }
+void GUIEditBoxWithScrollBar::setCursorChar(const wchar_t cursorChar) { }
+wchar_t GUIEditBoxWithScrollBar::getCursorChar() const { return '|'; }
+void GUIEditBoxWithScrollBar::setCursorBlinkTime(irr::u32 timeMs) { }
+irr::u32 GUIEditBoxWithScrollBar::getCursorBlinkTime() const { return 500; }

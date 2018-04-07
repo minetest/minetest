@@ -11,6 +11,7 @@ core.features = {
 	area_store_custom_ids = true,
 	add_entity_with_staticdata = true,
 	no_chat_message_prediction = true,
+	object_use_texture_alpha = true,
 }
 
 function core.has_feature(arg)

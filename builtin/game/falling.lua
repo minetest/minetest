@@ -39,7 +39,7 @@ core.register_entity(":__builtin:falling_node", {
 
 	on_activate = function(self, staticdata)
 		self.object:set_armor_groups({immortal = 1})
-		
+
 		local ds = core.deserialize(staticdata)
 		if ds and ds.node then
 			self:set_node(ds.node, ds.meta)

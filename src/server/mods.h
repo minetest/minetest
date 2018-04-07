@@ -1,6 +1,6 @@
 /*
 Minetest
-Copyright (C) 2013 celeron55, Perttu Ahola <celeron55@gmail.com>
+Copyright (C) 2018 nerzhul, Loic Blot <loic.blot@unix-experience.fr>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -17,9 +17,27 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#include "sound.h"
+#pragma once
 
-// Global DummySoundManager singleton
-DummySoundManager dummySoundManager;
+#include "../mods.h"
 
+class ServerScripting;
 
+/**
+ * Manage server mods
+ *
+ * All new calls to this class must be tested in test_servermodmanager.cpp
+ */
+class ServerModManager : public ModConfiguration
+{
+public:
+	/**
+	 * Creates a ServerModManager which targets worldpath
+	 * @param worldpath
+	 */
+	ServerModManager(const std::string &worldpath);
+	void loadMods(ServerScripting *script);
+	const ModSpec *getModSpec(const std::string &modname) const;
+	void getModNames(std::vector<std::string> &modlist) const;
+	void getModsMediaPaths(std::vector<std::string> &paths) const;
+};

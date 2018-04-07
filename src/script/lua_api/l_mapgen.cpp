@@ -40,10 +40,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 struct EnumString ModApiMapgen::es_BiomeTerrainType[] =
 {
 	{BIOMETYPE_NORMAL, "normal"},
-	{BIOMETYPE_LIQUID, "liquid"},
-	{BIOMETYPE_NETHER, "nether"},
-	{BIOMETYPE_AETHER, "aether"},
-	{BIOMETYPE_FLAT,   "flat"},
 	{0, NULL},
 };
 
@@ -388,22 +384,31 @@ Biome *read_biome_def(lua_State *L, int index, const NodeDefManager *ndef)
 	b->depth_filler    = getintfield_default(L,    index, "depth_filler",    -31000);
 	b->depth_water_top = getintfield_default(L,    index, "depth_water_top", 0);
 	b->depth_riverbed  = getintfield_default(L,    index, "depth_riverbed",  0);
-	b->y_min           = getintfield_default(L,    index, "y_min",           -31000);
-	b->y_max           = getintfield_default(L,    index, "y_max",           31000);
 	b->heat_point      = getfloatfield_default(L,  index, "heat_point",      0.f);
 	b->humidity_point  = getfloatfield_default(L,  index, "humidity_point",  0.f);
 	b->vertical_blend  = getintfield_default(L,    index, "vertical_blend",  0);
-	b->flags           = 0; //reserved
+	b->flags           = 0; // reserved
+
+	b->min_pos = getv3s16field_default(
+		L, index, "min_pos", v3s16(-31000, -31000, -31000));
+	getintfield(L, index, "y_min", b->min_pos.Y);
+	b->max_pos = getv3s16field_default(
+		L, index, "max_pos", v3s16(31000, 31000, 31000));
+	getintfield(L, index, "y_max", b->max_pos.Y);
 
 	std::vector<std::string> &nn = b->m_nodenames;
-	nn.push_back(getstringfield_default(L, index, "node_top",         ""));
-	nn.push_back(getstringfield_default(L, index, "node_filler",      ""));
-	nn.push_back(getstringfield_default(L, index, "node_stone",       ""));
-	nn.push_back(getstringfield_default(L, index, "node_water_top",   ""));
-	nn.push_back(getstringfield_default(L, index, "node_water",       ""));
-	nn.push_back(getstringfield_default(L, index, "node_river_water", ""));
-	nn.push_back(getstringfield_default(L, index, "node_riverbed",    ""));
-	nn.push_back(getstringfield_default(L, index, "node_dust",        ""));
+	nn.push_back(getstringfield_default(L, index, "node_top",           ""));
+	nn.push_back(getstringfield_default(L, index, "node_filler",        ""));
+	nn.push_back(getstringfield_default(L, index, "node_stone",         ""));
+	nn.push_back(getstringfield_default(L, index, "node_water_top",     ""));
+	nn.push_back(getstringfield_default(L, index, "node_water",         ""));
+	nn.push_back(getstringfield_default(L, index, "node_river_water",   ""));
+	nn.push_back(getstringfield_default(L, index, "node_riverbed",      ""));
+	nn.push_back(getstringfield_default(L, index, "node_dust",          ""));
+	nn.push_back(getstringfield_default(L, index, "node_cave_liquid",   ""));
+	nn.push_back(getstringfield_default(L, index, "node_dungeon",       ""));
+	nn.push_back(getstringfield_default(L, index, "node_dungeon_alt",   ""));
+	nn.push_back(getstringfield_default(L, index, "node_dungeon_stair", ""));
 	ndef->pendNodeResolve(b);
 
 	return b;
@@ -473,16 +478,33 @@ int ModApiMapgen::l_get_biome_id(lua_State *L)
 		return 0;
 
 	BiomeManager *bmgr = getServer(L)->getEmergeManager()->biomemgr;
-
 	if (!bmgr)
 		return 0;
 
 	Biome *biome = (Biome *)bmgr->getByName(biome_str);
-
 	if (!biome || biome->index == OBJDEF_INVALID_INDEX)
 		return 0;
 
 	lua_pushinteger(L, biome->index);
+
+	return 1;
+}
+
+
+// get_biome_name(biome_id)
+// returns the biome name string
+int ModApiMapgen::l_get_biome_name(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+
+	int biome_id = luaL_checkinteger(L, 1);
+
+	BiomeManager *bmgr = getServer(L)->getEmergeManager()->biomemgr;
+	if (!bmgr)
+		return 0;
+
+	Biome *b = (Biome *)bmgr->getRaw(biome_id);
+	lua_pushstring(L, b->name.c_str());
 
 	return 1;
 }
@@ -617,7 +639,7 @@ int ModApiMapgen::l_get_biome_data(lua_State *L)
 	if (!humidity)
 		return 0;
 
-	Biome *biome = (Biome *)bmgr->getBiomeFromNoiseOriginal(heat, humidity, pos.Y);
+	Biome *biome = (Biome *)bmgr->getBiomeFromNoiseOriginal(heat, humidity, pos);
 	if (!biome || biome->index == OBJDEF_INVALID_INDEX)
 		return 0;
 
@@ -751,6 +773,27 @@ int ModApiMapgen::l_get_mapgen_object(lua_State *L)
 	}
 
 	return 0;
+}
+
+
+// get_spawn_level(x = num, z = num)
+int ModApiMapgen::l_get_spawn_level(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+
+	s16 x = luaL_checkinteger(L, 1);
+	s16 z = luaL_checkinteger(L, 2);
+
+	EmergeManager *emerge = getServer(L)->getEmergeManager();
+	int spawn_level = emerge->getSpawnLevelAtPoint(v2s16(x, z));
+	// Unsuitable spawn point
+	if (spawn_level == MAX_MAP_GENERATION_LIMIT)
+		return 0;
+
+	// 'findSpawnPos()' in server.cpp adds at least 1
+	lua_pushinteger(L, spawn_level + 1);
+
+	return 1;
 }
 
 
@@ -1006,6 +1049,32 @@ int ModApiMapgen::l_get_gen_notify(lua_State *L)
 }
 
 
+// get_decoration_id(decoration_name)
+// returns the decoration ID as used in gennotify
+int ModApiMapgen::l_get_decoration_id(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+
+	const char *deco_str = luaL_checkstring(L, 1);
+	if (!deco_str)
+		return 0;
+
+	DecorationManager *dmgr = getServer(L)->getEmergeManager()->decomgr;
+
+	if (!dmgr)
+		return 0;
+
+	Decoration *deco = (Decoration *)dmgr->getByName(deco_str);
+
+	if (!deco)
+		return 0;
+
+	lua_pushinteger(L, deco->index);
+
+	return 1;
+}
+
+
 // register_biome({lots of stuff})
 int ModApiMapgen::l_register_biome(lua_State *L)
 {
@@ -1015,7 +1084,7 @@ int ModApiMapgen::l_register_biome(lua_State *L)
 	luaL_checktype(L, index, LUA_TTABLE);
 
 	const NodeDefManager *ndef = getServer(L)->getNodeDefManager();
-	BiomeManager *bmgr    = getServer(L)->getEmergeManager()->biomemgr;
+	BiomeManager *bmgr = getServer(L)->getEmergeManager()->biomemgr;
 
 	Biome *biome = read_biome_def(L, index, ndef);
 	if (!biome)
@@ -1681,10 +1750,12 @@ int ModApiMapgen::l_serialize_schematic(lua_State *L)
 void ModApiMapgen::Initialize(lua_State *L, int top)
 {
 	API_FCT(get_biome_id);
+	API_FCT(get_biome_name);
 	API_FCT(get_heat);
 	API_FCT(get_humidity);
 	API_FCT(get_biome_data);
 	API_FCT(get_mapgen_object);
+	API_FCT(get_spawn_level);
 
 	API_FCT(get_mapgen_params);
 	API_FCT(set_mapgen_params);
@@ -1696,6 +1767,7 @@ void ModApiMapgen::Initialize(lua_State *L, int top)
 	API_FCT(get_noiseparams);
 	API_FCT(set_gen_notify);
 	API_FCT(get_gen_notify);
+	API_FCT(get_decoration_id);
 
 	API_FCT(register_biome);
 	API_FCT(register_decoration);

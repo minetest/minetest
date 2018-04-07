@@ -31,7 +31,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "settings.h"
 #include "guiMainMenu.h"
 #include "sound.h"
-#include "sound_openal.h"
+#include "client/sound_openal.h"
 #include "clouds.h"
 #include "httpfetch.h"
 #include "log.h"
@@ -137,7 +137,8 @@ GUIEngine::GUIEngine(JoystickController *joystick,
 	//create soundmanager
 	MenuMusicFetcher soundfetcher;
 #if USE_SOUND
-	m_sound_manager = createOpenALSoundManager(&soundfetcher);
+	if (g_settings->getBool("enable_sound"))
+		m_sound_manager = createOpenALSoundManager(g_sound_manager_singleton.get(), &soundfetcher);
 #endif
 	if(!m_sound_manager)
 		m_sound_manager = &dummySoundManager;
@@ -164,6 +165,7 @@ GUIEngine::GUIEngine(JoystickController *joystick,
 			m_texture_source,
 			m_formspecgui,
 			m_buttonhandler,
+			"",
 			false);
 
 	m_menu->allowClose(false);

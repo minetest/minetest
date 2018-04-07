@@ -20,6 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "client/hud.h"
+#include <cmath>
 #include "settings.h"
 #include "util/numeric.h"
 #include "log.h"
@@ -50,7 +51,7 @@ Hud::Hud(gui::IGUIEnvironment *guienv, Client *client, LocalPlayer *player,
 	this->inventory   = inventory;
 
 	m_hud_scaling      = g_settings->getFloat("hud_scaling");
-	m_hotbar_imagesize = floor(HOTBAR_IMAGE_SIZE *
+	m_hotbar_imagesize = std::floor(HOTBAR_IMAGE_SIZE *
 		RenderingEngine::getDisplayDensity() + 0.5f);
 	m_hotbar_imagesize *= m_hud_scaling;
 	m_padding = m_hotbar_imagesize / 12;
@@ -336,7 +337,8 @@ void Hud::drawLuaElements(const v3s16 &camera_offset)
 			case HUD_ELEM_WAYPOINT: {
 				v3f p_pos = player->getPosition() / BS;
 				v3f w_pos = e->world_pos * BS;
-				float distance = floor(10 * p_pos.getDistanceFrom(e->world_pos)) / 10;
+				float distance = std::floor(10 * p_pos.getDistanceFrom(e->world_pos)) /
+					10.0f;
 				scene::ICameraSceneNode* camera =
 					RenderingEngine::get_scene_manager()->getActiveCamera();
 				w_pos -= intToFloat(camera_offset, BS);
@@ -735,12 +737,12 @@ void drawItemStack(video::IVideoDriver *driver,
 		//   wear = 0.5: yellow
 		//   wear = 1.0: red
 		video::SColor color(255,255,255,255);
-		int wear_i = MYMIN(floor(wear * 600), 511);
+		int wear_i = MYMIN(std::floor(wear * 600), 511);
 		wear_i = MYMIN(wear_i + 10, 511);
-		if(wear_i <= 255)
+		if (wear_i <= 255)
 			color.set(255, wear_i, 255, 0);
 		else
-			color.set(255, 255, 511-wear_i, 0);
+			color.set(255, 255, 511 - wear_i, 0);
 
 		core::rect<s32> progressrect2 = progressrect;
 		progressrect2.LowerRightCorner.X = progressmid;

@@ -15,6 +15,7 @@ set(common_SCRIPT_LUA_API_SRCS
 	${CMAKE_CURRENT_SOURCE_DIR}/l_noise.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/l_object.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/l_particles.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/l_playermeta.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/l_rollback.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/l_server.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/l_settings.cpp

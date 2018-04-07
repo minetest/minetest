@@ -32,13 +32,12 @@
 #include <util/numeric.h>
 #include "intlGUIEditBox.h"
 
-#if defined(_IRR_COMPILE_WITH_GUI_) && IRRLICHT_VERSION_MAJOR == 1 && IRRLICHT_VERSION_MINOR < 9
+#if defined(_IRR_COMPILE_WITH_GUI_) && IRRLICHT_VERSION_MAJOR == 1 && IRRLICHT_VERSION_MINOR < 9 || defined(__ANDROID__)
 
 #include "IGUISkin.h"
 #include "IGUIEnvironment.h"
 #include "IGUIFont.h"
 #include "IVideoDriver.h"
-//#include "rect.h"
 //#include "irrlicht/os.cpp"
 #include "porting.h"
 //#include "Keycodes.h"
@@ -354,8 +353,7 @@ bool intlGUIEditBox::processKey(const SEvent& event)
 			break;
 		case KEY_KEY_X:
 			// cut to the clipboard
-			if (!PasswordBox && Operator && MarkBegin != MarkEnd)
-			{
+			if (!PasswordBox && Operator && MarkBegin != MarkEnd) {
 				const s32 realmbgn = MarkBegin < MarkEnd ? MarkBegin : MarkEnd;
 				const s32 realmend = MarkBegin < MarkEnd ? MarkEnd : MarkBegin;
 
@@ -364,8 +362,7 @@ bool intlGUIEditBox::processKey(const SEvent& event)
 				sc = Text.subString(realmbgn, realmend - realmbgn).c_str();
 				Operator->copyToClipboard(sc.c_str());
 
-				if (IsEnabled)
-				{
+				if (IsEnabled && m_writable) {
 					// delete
 					core::stringw s;
 					s = Text.subString(0, realmbgn);
@@ -380,7 +377,7 @@ bool intlGUIEditBox::processKey(const SEvent& event)
 			}
 			break;
 		case KEY_KEY_V:
-			if ( !IsEnabled )
+			if (!IsEnabled || !m_writable)
 				break;
 
 			// paste from the clipboard
@@ -636,7 +633,7 @@ bool intlGUIEditBox::processKey(const SEvent& event)
 		break;
 
 	case KEY_BACK:
-		if ( !this->IsEnabled )
+		if (!this->IsEnabled || !m_writable)
 			break;
 
 		if (!Text.empty()) {
@@ -675,7 +672,7 @@ bool intlGUIEditBox::processKey(const SEvent& event)
 		}
 		break;
 	case KEY_DELETE:
-		if ( !this->IsEnabled )
+		if (!this->IsEnabled || !m_writable)
 			break;
 
 		if (!Text.empty()) {
@@ -1351,7 +1348,7 @@ s32 intlGUIEditBox::getLineFromPos(s32 pos)
 
 void intlGUIEditBox::inputChar(wchar_t c)
 {
-	if (!IsEnabled)
+	if (!IsEnabled || !m_writable)
 		return;
 
 	if (c != 0)

@@ -40,12 +40,11 @@ local function get_formspec(tabview, name, tabdata)
 	end
 
 	if selected_mod ~= nil then
-		local modscreenshot = nil
-
 		--check for screenshot beeing available
 		local screenshotfilename = selected_mod.path .. DIR_DELIM .. "screenshot.png"
-		local error = nil
-		local screenshotfile,error = io.open(screenshotfilename,"r")
+		local screenshotfile, error = io.open(screenshotfilename,"r")
+
+		local modscreenshot
 		if error == nil then
 			screenshotfile:close()
 			modscreenshot = screenshotfilename
@@ -55,32 +54,19 @@ local function get_formspec(tabview, name, tabdata)
 				modscreenshot = defaulttexturedir .. "no_screenshot.png"
 		end
 
-		retval = retval
-				.. "image[5.5,0;3,2;" .. core.formspec_escape(modscreenshot) .. "]"
-				.. "label[8.25,0.6;" .. selected_mod.name .. "]"
-
-		local descriptionlines = nil
-		error = nil
-		local descriptionfilename = selected_mod.path .. "description.txt"
-		local descriptionfile,error = io.open(descriptionfilename,"r")
-		if error == nil then
-			local descriptiontext = descriptionfile:read("*all")
-
-			descriptionlines = core.wrap_text(descriptiontext, 42, true)
-			descriptionfile:close()
-		else
-			descriptionlines = {}
-			descriptionlines[#descriptionlines + 1] = fgettext("No mod description available")
-		end
-
 		retval = retval ..
-			"label[5.5,1.7;".. fgettext("Mod Information:") .. "]" ..
-			"textlist[5.5,2.2;6.2,2.4;description;"
+				"image[5.5,0;3,2;" .. core.formspec_escape(modscreenshot) .. "]" ..
+				"label[8.25,0.6;" .. selected_mod.name .. "]" ..
+				"label[5.5,1.7;".. fgettext("Mod Information:") .. "]" ..
+				"textlist[5.5,2.2;6.2,2.4;description;"
 
-		for i=1,#descriptionlines,1 do
+
+		local info = core.get_mod_info(selected_mod.path)
+		local desc = info.description or fgettext("No mod description available")
+		local descriptionlines = core.wrap_text(desc, 42, true)
+		for i = 1, #descriptionlines do
 			retval = retval .. core.formspec_escape(descriptionlines[i]) .. ","
 		end
-
 
 		if selected_mod.is_modpack then
 			retval = retval .. ";0]" ..
@@ -90,7 +76,8 @@ local function get_formspec(tabview, name, tabdata)
 				.. fgettext("Uninstall Selected Modpack") .. "]"
 		else
 			--show dependencies
-			local toadd_hard, toadd_soft = modmgr.get_dependencies(selected_mod.path)
+			local toadd_hard = table.concat(info.depends, ",")
+			local toadd_soft = table.concat(info.optional_depends, ",")
 			if toadd_hard == "" and toadd_soft == "" then
 				retval = retval .. "," .. fgettext("No dependencies.")
 			else

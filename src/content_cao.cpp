@@ -26,6 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/numeric.h" // For IntervalLimiter
 #include "util/serialize.h"
 #include "util/basic_macros.h"
+#include "client/sound.h"
 #include "client/tile.h"
 #include "environment.h"
 #include "collision.h"
@@ -44,6 +45,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client.h"
 #include "wieldmesh.h"
 #include <algorithm>
+#include <cmath>
 #include "client/renderingengine.h"
 
 class Settings;
@@ -476,6 +478,9 @@ void GenericCAO::addToScene(ITextureSource *tsrc)
 		return;
 	}
 
+	video::E_MATERIAL_TYPE material_type = (m_prop.use_texture_alpha) ?
+		video::EMT_TRANSPARENT_ALPHA_CHANNEL : video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
+
 	if (m_prop.visual == "sprite") {
 		infostream<<"GenericCAO::addToScene(): single_sprite"<<std::endl;
 		m_spritenode = RenderingEngine::get_scene_manager()->addBillboardSceneNode(
@@ -485,7 +490,7 @@ void GenericCAO::addToScene(ITextureSource *tsrc)
 				tsrc->getTextureForMesh("unknown_node.png"));
 		m_spritenode->setMaterialFlag(video::EMF_LIGHTING, false);
 		m_spritenode->setMaterialFlag(video::EMF_BILINEAR_FILTER, false);
-		m_spritenode->setMaterialType(video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF);
+		m_spritenode->setMaterialType(material_type);
 		m_spritenode->setMaterialFlag(video::EMF_FOG_ENABLE, true);
 		u8 li = m_last_light;
 		m_spritenode->setColor(video::SColor(255,li,li,li));
@@ -563,7 +568,7 @@ void GenericCAO::addToScene(ITextureSource *tsrc)
 
 		m_meshnode->setMaterialFlag(video::EMF_LIGHTING, false);
 		m_meshnode->setMaterialFlag(video::EMF_BILINEAR_FILTER, false);
-		m_meshnode->setMaterialType(video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF);
+		m_meshnode->setMaterialType(material_type);
 		m_meshnode->setMaterialFlag(video::EMF_FOG_ENABLE, true);
 	}
 	else if(m_prop.visual == "mesh") {
@@ -586,15 +591,12 @@ void GenericCAO::addToScene(ITextureSource *tsrc)
 
 			setAnimatedMeshColor(m_animated_meshnode, video::SColor(255,li,li,li));
 
-			bool backface_culling = m_prop.backface_culling;
-			if (m_is_player)
-				backface_culling = false;
-
 			m_animated_meshnode->setMaterialFlag(video::EMF_LIGHTING, true);
 			m_animated_meshnode->setMaterialFlag(video::EMF_BILINEAR_FILTER, false);
-			m_animated_meshnode->setMaterialType(video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF);
+			m_animated_meshnode->setMaterialType(material_type);
 			m_animated_meshnode->setMaterialFlag(video::EMF_FOG_ENABLE, true);
-			m_animated_meshnode->setMaterialFlag(video::EMF_BACK_FACE_CULLING, backface_culling);
+			m_animated_meshnode->setMaterialFlag(video::EMF_BACK_FACE_CULLING,
+				m_prop.backface_culling);
 		}
 		else
 			errorstream<<"GenericCAO::addToScene(): Could not load mesh "<<m_prop.mesh<<std::endl;
@@ -906,8 +908,7 @@ void GenericCAO::step(float dtime, ClientEnvironment *env)
 			updateTextures(m_previous_texture_modifier);
 		}
 	}
-	if(!getParent() && fabs(m_prop.automatic_rotate) > 0.001)
-	{
+	if (!getParent() && std::fabs(m_prop.automatic_rotate) > 0.001) {
 		m_yaw += dtime * m_prop.automatic_rotate * 180 / M_PI;
 		updateNodePos();
 	}
@@ -946,25 +947,23 @@ void GenericCAO::updateTexturePos()
 		int row = m_tx_basepos.Y;
 		int col = m_tx_basepos.X;
 
-		if(m_tx_select_horiz_by_yawpitch)
-		{
-			if(cam_to_entity.Y > 0.75)
+		if (m_tx_select_horiz_by_yawpitch) {
+			if (cam_to_entity.Y > 0.75)
 				col += 5;
-			else if(cam_to_entity.Y < -0.75)
+			else if (cam_to_entity.Y < -0.75)
 				col += 4;
-			else{
+			else {
 				float mob_dir =
 						atan2(cam_to_entity.Z, cam_to_entity.X) / M_PI * 180.;
 				float dir = mob_dir - m_yaw;
 				dir = wrapDegrees_180(dir);
-				//infostream<<"id="<<m_id<<" dir="<<dir<<std::endl;
-				if(fabs(wrapDegrees_180(dir - 0)) <= 45.1)
+				if (std::fabs(wrapDegrees_180(dir - 0)) <= 45.1f)
 					col += 2;
-				else if(fabs(wrapDegrees_180(dir - 90)) <= 45.1)
+				else if(std::fabs(wrapDegrees_180(dir - 90)) <= 45.1f)
 					col += 3;
-				else if(fabs(wrapDegrees_180(dir - 180)) <= 45.1)
+				else if(std::fabs(wrapDegrees_180(dir - 180)) <= 45.1f)
 					col += 0;
-				else if(fabs(wrapDegrees_180(dir + 90)) <= 45.1)
+				else if(std::fabs(wrapDegrees_180(dir + 90)) <= 45.1f)
 					col += 1;
 				else
 					col += 4;
@@ -976,12 +975,11 @@ void GenericCAO::updateTexturePos()
 
 		float txs = m_tx_size.X;
 		float tys = m_tx_size.Y;
-		setBillboardTextureMatrix(m_spritenode,
-				txs, tys, col, row);
+		setBillboardTextureMatrix(m_spritenode, txs, tys, col, row);
 	}
 }
 
-void GenericCAO::updateTextures(std::string mod)
+void GenericCAO::updateTextures(const std::string &mod)
 {
 	ITextureSource *tsrc = m_client->tsrc();
 
@@ -993,12 +991,16 @@ void GenericCAO::updateTextures(std::string mod)
 	m_current_texture_modifier = mod;
 	m_glow = m_prop.glow;
 
+	video::E_MATERIAL_TYPE material_type = (m_prop.use_texture_alpha) ?
+		video::EMT_TRANSPARENT_ALPHA_CHANNEL : video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
+
 	if (m_spritenode) {
 		if (m_prop.visual == "sprite") {
 			std::string texturestring = "unknown_node.png";
 			if (!m_prop.textures.empty())
 				texturestring = m_prop.textures[0];
 			texturestring += mod;
+			m_spritenode->getMaterial(0).MaterialType = material_type;
 			m_spritenode->setMaterialTexture(0,
 					tsrc->getTextureForMesh(texturestring));
 
@@ -1033,9 +1035,11 @@ void GenericCAO::updateTextures(std::string mod)
 
 				// Set material flags and texture
 				video::SMaterial& material = m_animated_meshnode->getMaterial(i);
+				material.MaterialType = material_type;
 				material.TextureLayer[0].Texture = texture;
 				material.setFlag(video::EMF_LIGHTING, true);
 				material.setFlag(video::EMF_BILINEAR_FILTER, false);
+				material.setFlag(video::EMF_BACK_FACE_CULLING, m_prop.backface_culling);
 
 				// don't filter low-res textures, makes them look blurry
 				// player models have a res of 64
@@ -1077,6 +1081,7 @@ void GenericCAO::updateTextures(std::string mod)
 
 				// Set material flags and texture
 				video::SMaterial& material = m_meshnode->getMaterial(i);
+				material.MaterialType = material_type;
 				material.setFlag(video::EMF_LIGHTING, false);
 				material.setFlag(video::EMF_BILINEAR_FILTER, false);
 				material.setTexture(0,
@@ -1177,7 +1182,7 @@ void GenericCAO::updateAnimationSpeed()
 {
 	if (!m_animated_meshnode)
 		return;
-        
+
 	m_animated_meshnode->setAnimationSpeed(m_animation_speed);
 }
 
@@ -1284,7 +1289,7 @@ void GenericCAO::processMessage(const std::string &data)
 		m_position = readV3F1000(is);
 		m_velocity = readV3F1000(is);
 		m_acceleration = readV3F1000(is);
-		if(fabs(m_prop.automatic_rotate) < 0.001)
+		if (std::fabs(m_prop.automatic_rotate) < 0.001f)
 			m_yaw = readF1000(is);
 		else
 			readF1000(is);

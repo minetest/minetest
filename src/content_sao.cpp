@@ -30,6 +30,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "genericobject.h"
 #include "settings.h"
 #include <algorithm>
+#include <cmath>
 
 std::map<u16, ServerActiveObject::Factory> ServerActiveObject::m_types;
 
@@ -224,6 +225,7 @@ ObjectProperties* UnitSAO::accessObjectProperties()
 
 void UnitSAO::notifyObjectPropertiesModified()
 {
+	m_env->updateActiveObject(this);
 	m_properties_sent = false;
 }
 
@@ -270,6 +272,8 @@ void LuaEntitySAO::addedToEnvironment(u32 dtime_s)
 		// Get properties
 		m_env->getScriptIface()->
 			luaentity_GetProperties(m_id, &m_prop);
+		// Notify the environment of the new properties
+		m_env->updateActiveObject(this);
 		// Initialize HP from properties
 		m_hp = m_prop.hp_max;
 		// Activate entity, supplying serialized state
@@ -410,8 +414,8 @@ void LuaEntitySAO::step(float dtime, bool send_recommended)
 		float move_d = m_base_position.getDistanceFrom(m_last_sent_position);
 		move_d += m_last_sent_move_precision;
 		float vel_d = m_velocity.getDistanceFrom(m_last_sent_velocity);
-		if(move_d > minchange || vel_d > minchange ||
-				fabs(m_yaw - m_last_sent_yaw) > 1.0){
+		if (move_d > minchange || vel_d > minchange ||
+				std::fabs(m_yaw - m_last_sent_yaw) > 1.0) {
 			sendPosition(true, false);
 		}
 	}
@@ -566,7 +570,8 @@ int LuaEntitySAO::punch(v3f dir,
 
 	if (!damage_handled) {
 		if (result.did_punch) {
-			setHP(getHP() - result.damage);
+			setHP(getHP() - result.damage,
+				PlayerHPChangeReason(PlayerHPChangeReason::SET_HP));
 
 			if (result.damage > 0) {
 				std::string punchername = puncher ? puncher->getDescription() : "nil";
@@ -606,6 +611,7 @@ void LuaEntitySAO::setPos(const v3f &pos)
 	if(isAttached())
 		return;
 	m_base_position = pos;
+	m_env->updateActiveObject(this);
 	sendPosition(false, true);
 }
 
@@ -614,6 +620,7 @@ void LuaEntitySAO::moveTo(v3f pos, bool continuous)
 	if(isAttached())
 		return;
 	m_base_position = pos;
+	m_env->updateActiveObject(this);
 	if(!continuous)
 		sendPosition(true, true);
 }
@@ -634,9 +641,10 @@ std::string LuaEntitySAO::getDescription()
 	return os.str();
 }
 
-void LuaEntitySAO::setHP(s16 hp)
+void LuaEntitySAO::setHP(s16 hp, const PlayerHPChangeReason &reason)
 {
-	if(hp < 0) hp = 0;
+	if (hp < 0)
+		hp = 0;
 	m_hp = hp;
 }
 
@@ -801,6 +809,7 @@ PlayerSAO::PlayerSAO(ServerEnvironment *env_, RemotePlayer *player_, session_t p
 	m_prop.eye_height = 1.625f;
 	// End of default appearance
 	m_prop.is_visible = true;
+	m_prop.backface_culling = false;
 	m_prop.makes_footstep_sound = true;
 	m_prop.stepheight = PLAYER_DEFAULT_STEPHEIGHT * BS;
 	m_hp = m_prop.hp_max;
@@ -921,8 +930,9 @@ void PlayerSAO::step(float dtime, bool send_recommended)
 
 			// No more breath, damage player
 			if (m_breath == 0) {
-				setHP(m_hp - c.drowning);
-				m_env->getGameDef()->SendPlayerHPOrDie(this);
+				PlayerHPChangeReason reason(PlayerHPChangeReason::DROWNING);
+				setHP(m_hp - c.drowning, reason);
+				m_env->getGameDef()->SendPlayerHPOrDie(this, reason);
 			}
 		}
 	}
@@ -961,8 +971,9 @@ void PlayerSAO::step(float dtime, bool send_recommended)
 
 		if (damage_per_second != 0 && m_hp > 0) {
 			s16 newhp = ((s32) damage_per_second > m_hp ? 0 : m_hp - damage_per_second);
-			setHP(newhp);
-			m_env->getGameDef()->SendPlayerHPOrDie(this);
+			PlayerHPChangeReason reason(PlayerHPChangeReason::NODE_DAMAGE);
+			setHP(newhp, reason);
+			m_env->getGameDef()->SendPlayerHPOrDie(this, reason);
 		}
 	}
 
@@ -1097,6 +1108,7 @@ void PlayerSAO::setBasePosition(const v3f &position)
 
 	// This needs to be ran for attachments too
 	ServerActiveObject::setBasePosition(position);
+	m_env->updateActiveObject(this);
 	m_position_not_sent = true;
 }
 
@@ -1208,7 +1220,8 @@ int PlayerSAO::punch(v3f dir,
 				hitparams.hp);
 
 	if (!damage_handled) {
-		setHP(getHP() - hitparams.hp);
+		setHP(getHP() - hitparams.hp,
+				PlayerHPChangeReason(PlayerHPChangeReason::PLAYER_PUNCH, puncher));
 	} else { // override client prediction
 		if (puncher->getType() == ACTIVEOBJECT_TYPE_PLAYER) {
 			std::string str = gob_cmd_punched(0, getHP());
@@ -1238,11 +1251,11 @@ s16 PlayerSAO::readDamage()
 	return damage;
 }
 
-void PlayerSAO::setHP(s16 hp)
+void PlayerSAO::setHP(s16 hp, const PlayerHPChangeReason &reason)
 {
 	s16 oldhp = m_hp;
 
-	s16 hp_change = m_env->getScriptIface()->on_player_hpchange(this, hp - oldhp);
+	s16 hp_change = m_env->getScriptIface()->on_player_hpchange(this, hp - oldhp, reason);
 	if (hp_change == 0)
 		return;
 	hp = oldhp + hp_change;

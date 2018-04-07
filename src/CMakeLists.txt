@@ -101,19 +101,6 @@ if(BUILD_CLIENT AND ENABLE_SOUND)
 	endif()
 endif()
 
-if(USE_SOUND)
-	set(sound_SRCS sound_openal.cpp)
-	set(SOUND_INCLUDE_DIRS
-		${OPENAL_INCLUDE_DIR}
-		${VORBIS_INCLUDE_DIR}
-		${OGG_INCLUDE_DIR}
-		)
-	set(SOUND_LIBRARIES
-		${OPENAL_LIBRARY}
-		${VORBIS_LIBRARIES}
-		)
-endif()
-
 
 option(ENABLE_GLES "Enable OpenGL ES support" FALSE)
 mark_as_advanced(ENABLE_GLES)
@@ -336,12 +323,12 @@ else()
 		endif(HAVE_LIBRT)
 	endif(APPLE)
 
-	if(NOT HAIKU)
+	if(NOT HAIKU AND NOT APPLE)
 	# This way Xxf86vm is found on OpenBSD too
 		find_library(XXF86VM_LIBRARY Xxf86vm)
 		mark_as_advanced(XXF86VM_LIBRARY)
 		set(CLIENT_PLATFORM_LIBS ${CLIENT_PLATFORM_LIBS} ${XXF86VM_LIBRARY})
-	endif(NOT HAIKU)
+	endif(NOT HAIKU AND NOT APPLE)
 
 	# Prefer local iconv if installed
 	find_library(ICONV_LIBRARY iconv)
@@ -379,10 +366,12 @@ add_subdirectory(script)
 add_subdirectory(unittest)
 add_subdirectory(util)
 add_subdirectory(irrlicht_changes)
+add_subdirectory(server)
 
 set(common_SRCS
 	${database_SRCS}
 	${mapgen_SRCS}
+	${server_SRCS}
 	ban.cpp
 	chat.cpp
 	clientiface.cpp
@@ -438,7 +427,6 @@ set(common_SRCS
 	serverlist.cpp
 	serverobject.cpp
 	settings.cpp
-	sound.cpp
 	staticobject.cpp
 	subgame.cpp
 	terminal_chat_console.cpp
@@ -487,7 +475,6 @@ set(client_SRCS
 	${client_SRCS}
 	${common_SRCS}
 	${gui_SRCS}
-	${sound_SRCS}
 	${client_network_SRCS}
 	${client_irrlicht_changes_SRCS}
 	camera.cpp

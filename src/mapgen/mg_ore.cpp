@@ -345,7 +345,7 @@ void OreBlob::generate(MMVManip *vm, int mapseed, u32 blockseed,
 			float ydist = (s32)y1 - (s32)csize / 2;
 			float zdist = (s32)z1 - (s32)csize / 2;
 
-			noiseval -= (sqrt(xdist * xdist + ydist * ydist + zdist * zdist) / csize);
+			noiseval -= std::sqrt(xdist * xdist + ydist * ydist + zdist * zdist) / csize;
 
 			if (noiseval < nthresh)
 				continue;
@@ -469,7 +469,7 @@ void OreStratum::generate(MMVManip *vm, int mapseed, u32 blockseed,
 				noise_stratum_thickness->result[index] : (float)stratum_thickness) /
 				2.0f;
 			float nmid = noise->result[index];
-			y0 = MYMAX(nmin.Y, ceil(nmid - nhalfthick));
+			y0 = MYMAX(nmin.Y, std::ceil(nmid - nhalfthick));
 			y1 = MYMIN(nmax.Y, nmid + nhalfthick);
 		} else { // Simple horizontal stratum
 			y0 = nmin.Y;

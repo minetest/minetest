@@ -40,6 +40,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mg_decoration.h"
 #include "mapgen_valleys.h"
 #include "cavegen.h"
+#include <cmath>
 
 
 //#undef NDEBUG
@@ -241,9 +242,7 @@ void MapgenValleys::makeChunk(BlockMakeData *data)
 	updateHeightmap(node_min, node_max);
 
 	// Place biome-specific nodes and build biomemap
-	MgStoneType mgstone_type;
-	content_t biome_stone;
-	generateBiomes(&mgstone_type, &biome_stone);
+	generateBiomes();
 
 	// Cave creation.
 	if (flags & MG_CAVES)
@@ -252,7 +251,7 @@ void MapgenValleys::makeChunk(BlockMakeData *data)
 	// Dungeon creation
 	if ((flags & MG_DUNGEONS) && full_node_min.Y >= dungeon_ymin &&
 			full_node_max.Y <= dungeon_ymax)
-		generateDungeons(stone_surface_max_y, mgstone_type, biome_stone);
+		generateDungeons(stone_surface_max_y);
 
 	// Generate the registered decorations
 	if (flags & MG_DECORATIONS)
@@ -365,7 +364,7 @@ float MapgenValleys::terrainLevelFromNoise(TerrainNoise *tn)
 	float base = tn->terrain_height + valley_d;
 
 	// "river" represents the distance from the river, in arbitrary units.
-	float river = fabs(*tn->rivers) - river_size_factor;
+	float river = std::fabs(*tn->rivers) - river_size_factor;
 
 	// Use the curve of the function 1-exp(-(x/a)^2) to model valleys.
 	//  Making "a" vary (0 < a <= 1) changes the shape of the valleys.
@@ -373,8 +372,8 @@ float MapgenValleys::terrainLevelFromNoise(TerrainNoise *tn)
 	//   (here x = "river" and a = valley_profile).
 	//  "valley" represents the height of the terrain, from the rivers.
 	{
-		float t = river / tn->valley_profile;
-		*tn->valley = valley_d * (1.f - exp(- MYSQUARE(t)));
+		float t = std::fmax(river / tn->valley_profile, 0.0f);
+		*tn->valley = valley_d * (1.f - std::exp(- MYSQUARE(t)));
 	}
 
 	// approximate height of the terrain at this point
@@ -391,7 +390,7 @@ float MapgenValleys::terrainLevelFromNoise(TerrainNoise *tn)
 		float depth;
 		{
 			float t = river / river_size_factor + 1;
-			depth = (river_depth_bed * sqrt(MYMAX(0, 1.f - MYSQUARE(t))));
+			depth = (river_depth_bed * std::sqrt(MYMAX(0, 1.f - MYSQUARE(t))));
 		}
 
 		// base - depth : height of the bottom of the river
@@ -432,7 +431,7 @@ int MapgenValleys::getSpawnLevelAtPoint(v2s16 p)
 {
 	// Check to make sure this isn't a request for a location in a river.
 	float rivers = NoisePerlin2D(&noise_rivers->np, p.X, p.Y, seed);
-	if (fabs(rivers) < river_size_factor)
+	if (std::fabs(rivers) < river_size_factor)
 		return MAX_MAP_GENERATION_LIMIT;  // Unsuitable spawn point
 
 	s16 level_at_point = terrainLevelAtPoint(p.X, p.Y);
@@ -495,7 +494,7 @@ int MapgenValleys::generateTerrain()
 		heightmap[index_2d] = -MAX_MAP_GENERATION_LIMIT;
 
 		if (surface_y > surface_max_y)
-			surface_max_y = ceil(surface_y);
+			surface_max_y = std::ceil(surface_y);
 
 		if (humid_rivers) {
 			// Derive heat from (base) altitude. This will be most correct
@@ -539,7 +538,7 @@ int MapgenValleys::generateTerrain()
 				}
 			}
 
-			vm->m_area.add_y(em, index_data, 1);
+			VoxelArea::add_y(em, index_data, 1);
 			index_3d += ystride;
 		}
 
@@ -561,7 +560,7 @@ int MapgenValleys::generateTerrain()
 			float t_alt = MYMAX(noise_rivers->result[index_2d], (float)heightmap[index_2d]);
 			float humid = m_bgen->humidmap[index_2d];
 			float water_depth = (t_alt - river_y) / humidity_dropoff;
-			humid *= 1.f + pow(0.5f, MYMAX(water_depth, 1.f));
+			humid *= 1.f + std::pow(0.5f, MYMAX(water_depth, 1.f));
 
 			// Reduce humidity with altitude (ignoring riverbeds).
 			// This is similar to the lua version's seawater adjustment,
@@ -636,11 +635,12 @@ void MapgenValleys::generateCaves(s16 max_stone_y, s16 large_cave_depth)
 
 	// lava_depth varies between one and ten as you approach
 	//  the bottom of the world.
-	s16 lava_depth = ceil((lava_max_height - node_min.Y + 1) * 10.f / mapgen_limit);
+	s16 lava_depth = std::ceil((lava_max_height - node_min.Y + 1) * 10.f / mapgen_limit);
 	// This allows random lava spawns to be less common at the surface.
 	s16 lava_chance = MYCUBE(lava_features_lim) * lava_depth;
 	// water_depth varies between ten and one on the way down.
-	s16 water_depth = ceil((mapgen_limit - abs(node_min.Y) + 1) * 10.f / mapgen_limit);
+	s16 water_depth = std::ceil((mapgen_limit - std::abs(node_min.Y) + 1) * 10.f /
+		mapgen_limit);
 	// This allows random water spawns to be more common at the surface.
 	s16 water_chance = MYCUBE(water_features_lim) * water_depth;
 
@@ -667,7 +667,7 @@ void MapgenValleys::generateCaves(s16 max_stone_y, s16 large_cave_depth)
 		// This 'roof' is removed when the mapchunk above is generated.
 		for (s16 y = node_max.Y; y >= node_min.Y - 1; y--,
 				index_3d -= ystride,
-				vm->m_area.add_y(em, index_data, -1)) {
+				VoxelArea::add_y(em, index_data, -1)) {
 
 			float terrain = noise_terrain_height->result[index_2d];
 
@@ -704,7 +704,7 @@ void MapgenValleys::generateCaves(s16 max_stone_y, s16 large_cave_depth)
 					// at the tunnel floor
 					s16 sr = ps.range(0, 39);
 					u32 j = index_data;
-					vm->m_area.add_y(em, j, 1);
+					VoxelArea::add_y(em, j, 1);
 
 					if (sr > terrain - y) {
 						// Put biome nodes in tunnels near the surface
@@ -742,9 +742,10 @@ void MapgenValleys::generateCaves(s16 max_stone_y, s16 large_cave_depth)
 		u32 bruises_count = ps.range(0, 2);
 		for (u32 i = 0; i < bruises_count; i++) {
 			CavesRandomWalk cave(ndef, &gennotify, seed, water_level,
-				c_water_source, c_lava_source, lava_max_height);
+				c_water_source, c_lava_source, lava_max_height, biomegen);
 
-			cave.makeCave(vm, node_min, node_max, &ps, true, max_stone_y, heightmap);
+			cave.makeCave(vm, node_min, node_max, &ps, true, max_stone_y,
+				heightmap);
 		}
 	}
 }

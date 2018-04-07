@@ -43,6 +43,7 @@ extern "C" {
 #include <cstdio>
 #include <cstdarg>
 #include "script/common/c_content.h"
+#include "content_sao.h"
 #include <sstream>
 
 
@@ -151,7 +152,7 @@ void ScriptApiBase::clientOpenLibs(lua_State *L)
 		{ LUA_JITLIBNAME,  luaopen_jit     },
 #endif
 	};
-	
+
 	for (const std::pair<std::string, lua_CFunction> &lib : m_libs) {
 	    lua_pushcfunction(L, lib.second);
 	    lua_pushstring(L, lib.first.c_str());
@@ -378,6 +379,26 @@ void ScriptApiBase::objectrefGetOrCreate(lua_State *L,
 			warningstream << "ScriptApiBase::objectrefGetOrCreate(): "
 					<< "Pushing ObjectRef to removed/deactivated object"
 					<< ", this is probably a bug." << std::endl;
+	}
+}
+
+void ScriptApiBase::pushPlayerHPChangeReason(lua_State *L, const PlayerHPChangeReason &reason)
+{
+	if (reason.lua_reference >= 0) {
+		lua_rawgeti(L, LUA_REGISTRYINDEX, reason.lua_reference);
+		luaL_unref(L, LUA_REGISTRYINDEX, reason.lua_reference);
+	} else
+		lua_newtable(L);
+
+	lua_pushstring(L, reason.getTypeAsString().c_str());
+	lua_setfield(L, -2, "type");
+
+	lua_pushstring(L, reason.from_mod ? "mod" : "engine");
+	lua_setfield(L, -2, "from");
+
+	if (reason.object) {
+		objectrefGetOrCreate(L, reason.object);
+		lua_setfield(L, -2, "object");
 	}
 }
 

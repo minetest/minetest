@@ -19,6 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "test.h"
 
+#include <cmath>
 #include "util/numeric.h"
 #include "util/string.h"
 
@@ -111,14 +112,15 @@ void TestUtilities::testAngleWrapAround()
 	UASSERT(fabs(modulo360f(-365.5) - (-5.5)) < 0.001);
 
 	for (float f = -720; f <= -360; f += 0.25) {
-		UASSERT(fabs(modulo360f(f) - modulo360f(f + 360)) < 0.001);
+		UASSERT(std::fabs(modulo360f(f) - modulo360f(f + 360)) < 0.001);
 	}
 
 	for (float f = -1440; f <= 1440; f += 0.25) {
-		UASSERT(fabs(modulo360f(f) - fmodf(f, 360)) < 0.001);
-		UASSERT(fabs(wrapDegrees_180(f) - ref_WrapDegrees180(f)) < 0.001);
-		UASSERT(fabs(wrapDegrees_0_360(f) - ref_WrapDegrees_0_360(f)) < 0.001);
-		UASSERT(wrapDegrees_0_360(fabs(wrapDegrees_180(f) - wrapDegrees_0_360(f))) < 0.001);
+		UASSERT(std::fabs(modulo360f(f) - fmodf(f, 360)) < 0.001);
+		UASSERT(std::fabs(wrapDegrees_180(f) - ref_WrapDegrees180(f)) < 0.001);
+		UASSERT(std::fabs(wrapDegrees_0_360(f) - ref_WrapDegrees_0_360(f)) < 0.001);
+		UASSERT(wrapDegrees_0_360(
+			std::fabs(wrapDegrees_180(f) - wrapDegrees_0_360(f))) < 0.001);
 	}
 }
 

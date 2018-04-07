@@ -53,13 +53,16 @@ class Inventory;
 class ModChannelMgr;
 class RemotePlayer;
 class PlayerSAO;
+struct PlayerHPChangeReason;
 class IRollbackManager;
 struct RollbackAction;
 class EmergeManager;
 class ServerScripting;
 class ServerEnvironment;
 struct SimpleSoundSpec;
+struct CloudParams;
 class ServerThread;
+class ServerModManager;
 
 enum ClientDeletionReason {
 	CDR_LEAVE,
@@ -214,6 +217,7 @@ public:
 	bool checkPriv(const std::string &name, const std::string &priv);
 	void reportPrivsModified(const std::string &name=""); // ""=all
 	void reportInventoryFormspecModified(const std::string &name);
+	void reportFormspecPrependModified(const std::string &name);
 
 	void setIpBanned(const std::string &ip, const std::string &name);
 	void unsetIpBanned(const std::string &ip_or_name);
@@ -259,7 +263,6 @@ public:
 	virtual const NodeDefManager* getNodeDefManager();
 	virtual ICraftDefManager* getCraftDefManager();
 	virtual u16 allocateUnknownNodeId(const std::string &name);
-	virtual MtEventManager* getEventManager();
 	IRollbackManager *getRollbackManager() { return m_rollback; }
 	virtual EmergeManager *getEmergeManager() { return m_emerge; }
 
@@ -267,7 +270,7 @@ public:
 	NodeDefManager* getWritableNodeDefManager();
 	IWritableCraftDefManager* getWritableCraftDefManager();
 
-	virtual const std::vector<ModSpec> &getMods() const { return m_mods; }
+	virtual const std::vector<ModSpec> &getMods() const;
 	virtual const ModSpec* getModSpec(const std::string &modname) const;
 	void getModNames(std::vector<std::string> &modlist);
 	std::string getBuiltinLuaPath();
@@ -290,27 +293,19 @@ public:
 	bool hudChange(RemotePlayer *player, u32 id, HudElementStat stat, void *value);
 	bool hudSetFlags(RemotePlayer *player, u32 flags, u32 mask);
 	bool hudSetHotbarItemcount(RemotePlayer *player, s32 hotbar_itemcount);
-	s32 hudGetHotbarItemcount(RemotePlayer *player) const;
 	void hudSetHotbarImage(RemotePlayer *player, std::string name);
-	std::string hudGetHotbarImage(RemotePlayer *player);
 	void hudSetHotbarSelectedImage(RemotePlayer *player, std::string name);
-	const std::string &hudGetHotbarSelectedImage(RemotePlayer *player) const;
 
 	Address getPeerAddress(session_t peer_id);
 
-	bool setLocalPlayerAnimations(RemotePlayer *player, v2s32 animation_frames[4],
+	void setLocalPlayerAnimations(RemotePlayer *player, v2s32 animation_frames[4],
 			f32 frame_speed);
-	bool setPlayerEyeOffset(RemotePlayer *player, v3f first, v3f third);
+	void setPlayerEyeOffset(RemotePlayer *player, const v3f &first, const v3f &third);
 
-	bool setSky(RemotePlayer *player, const video::SColor &bgcolor,
+	void setSky(RemotePlayer *player, const video::SColor &bgcolor,
 			const std::string &type, const std::vector<std::string> &params,
 			bool &clouds);
-	bool setClouds(RemotePlayer *player, float density,
-			const video::SColor &color_bright,
-			const video::SColor &color_ambient,
-			float height,
-			float thickness,
-			const v2f &speed);
+	void setClouds(RemotePlayer *player, const CloudParams &params);
 
 	bool overrideDayNightRatio(RemotePlayer *player, bool do_override, float brightness);
 
@@ -333,7 +328,7 @@ public:
 
 	void printToConsoleOnly(const std::string &text);
 
-	void SendPlayerHPOrDie(PlayerSAO *player);
+	void SendPlayerHPOrDie(PlayerSAO *player, const PlayerHPChangeReason &reason);
 	void SendPlayerBreath(PlayerSAO *sao);
 	void SendInventory(PlayerSAO* playerSAO);
 	void SendMovePlayer(session_t peer_id);
@@ -382,6 +377,7 @@ private:
 	void SendEyeOffset(session_t peer_id, v3f first, v3f third);
 	void SendPlayerPrivileges(session_t peer_id);
 	void SendPlayerInventoryFormspec(session_t peer_id);
+	void SendPlayerFormspecPrepend(session_t peer_id);
 	void SendShowFormspecMessage(session_t peer_id, const std::string &formspec,
 		const std::string &formname);
 	void SendHUDAdd(session_t peer_id, u32 id, HudElement *form);
@@ -392,12 +388,7 @@ private:
 	void SendSetSky(session_t peer_id, const video::SColor &bgcolor,
 			const std::string &type, const std::vector<std::string> &params,
 			bool &clouds);
-	void SendCloudParams(session_t peer_id, float density,
-			const video::SColor &color_bright,
-			const video::SColor &color_ambient,
-			float height,
-			float thickness,
-			const v2f &speed);
+	void SendCloudParams(session_t peer_id, const CloudParams &params);
 	void SendOverrideDayNightRatio(session_t peer_id, bool do_override, float ratio);
 	void broadcastModChannelMessage(const std::string &channel,
 			const std::string &message, session_t from_peer);
@@ -413,7 +404,6 @@ private:
 	void sendAddNode(v3s16 p, MapNode n, u16 ignore_id=0,
 			std::vector<u16> *far_players=NULL, float far_d_nodes=100,
 			bool remove_metadata=true);
-	void setBlockNotSent(v3s16 p);
 
 	// Environment and Connection must be locked when called
 	void SendBlockNoLock(session_t peer_id, MapBlock *block, u8 ver, u16 net_proto_version);
@@ -461,7 +451,7 @@ private:
 		Something random
 	*/
 
-	void DiePlayer(session_t peer_id);
+	void DiePlayer(session_t peer_id, const PlayerHPChangeReason &reason);
 	void RespawnPlayer(session_t peer_id);
 	void DeleteClient(session_t peer_id, ClientDeletionReason reason);
 	void UpdateCrafting(RemotePlayer *player);
@@ -532,7 +522,6 @@ private:
 
 	// Rollback manager (behind m_env_mutex)
 	IRollbackManager *m_rollback = nullptr;
-	bool m_enable_rollback_recording = false; // Updated once in a while
 
 	// Emerge manager
 	EmergeManager *m_emerge = nullptr;
@@ -554,7 +543,7 @@ private:
 	EventManager *m_event;
 
 	// Mods
-	std::vector<ModSpec> m_mods;
+	std::unique_ptr<ServerModManager> m_modmgr;
 
 	/*
 		Threads
@@ -632,12 +621,6 @@ private:
 		This is behind m_env_mutex
 	*/
 	VoxelArea m_ignore_map_edit_events_area;
-	/*
-		If set to !=0, the incoming MapEditEvents are modified to have
-		this peed id as the disabled recipient
-		This is behind m_env_mutex
-	*/
-	session_t m_ignore_map_edit_events_peer_id = 0;
 
 	// media files known to server
 	std::unordered_map<std::string, MediaInfo> m_media;

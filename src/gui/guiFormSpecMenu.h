@@ -287,12 +287,14 @@ public:
 			ISimpleTextureSource *tsrc,
 			IFormSource* fs_src,
 			TextDest* txt_dst,
+			std::string formspecPrepend,
 			bool remap_dbl_click = true);
 
 	~GUIFormSpecMenu();
 
 	static void create(GUIFormSpecMenu *&cur_formspec, Client *client,
-		JoystickController *joystick, IFormSource *fs_src, TextDest *txt_dest);
+		JoystickController *joystick, IFormSource *fs_src, TextDest *txt_dest,
+		const std::string &formspecPrepend);
 
 	void setFormSpec(const std::string &formspec_string,
 			const InventoryLocation &current_inventory_location)
@@ -300,6 +302,11 @@ public:
 		m_formspec_string = formspec_string;
 		m_current_inventory_location = current_inventory_location;
 		regenerateGui(m_screensize_old);
+	}
+
+	void setFormspecPrepend(const std::string &formspecPrepend)
+	{
+		m_formspec_prepend = formspecPrepend;
 	}
 
 	// form_src is deleted by this GUIFormSpecMenu
@@ -341,7 +348,7 @@ public:
 	void regenerateGui(v2u32 screensize);
 
 	ItemSpec getItemAtPos(v2s32 p) const;
-	void drawList(const ListDrawSpec &s, int phase,	bool &item_hovered);
+	void drawList(const ListDrawSpec &s, int layer,	bool &item_hovered);
 	void drawSelectedItem();
 	void drawMenu();
 	void updateSelectedItem();
@@ -378,6 +385,7 @@ protected:
 	Client *m_client;
 
 	std::string m_formspec_string;
+	std::string m_formspec_prepend;
 	InventoryLocation m_current_inventory_location;
 
 	std::vector<ListDrawSpec> m_inventorylists;
@@ -396,14 +404,9 @@ protected:
 	std::vector<std::pair<FieldSpec, std::vector<std::string> > > m_dropdowns;
 
 	ItemSpec *m_selected_item = nullptr;
-	u32 m_selected_amount = 0;
+	u16 m_selected_amount = 0;
 	bool m_selected_dragging = false;
-
-	// WARNING: BLACK MAGIC
-	// Used to guess and keep up with some special things the server can do.
-	// If name is "", no guess exists.
-	ItemStack m_selected_content_guess;
-	InventoryLocation m_selected_content_guess_inventory;
+	ItemStack m_selected_swap;
 
 	v2s32 m_pointer;
 	v2s32 m_old_pointer;  // Mouse position after previous mouse event
@@ -484,6 +487,8 @@ private:
 	void parseFieldCloseOnEnter(parserData *data, const std::string &element);
 	void parsePwdField(parserData* data, const std::string &element);
 	void parseField(parserData* data, const std::string &element, const std::string &type);
+	void createTextField(parserData *data, FieldSpec &spec,
+		core::rect<s32> &rect, bool is_multiline);
 	void parseSimpleField(parserData* data,std::vector<std::string> &parts);
 	void parseTextArea(parserData* data,std::vector<std::string>& parts,
 			const std::string &type);

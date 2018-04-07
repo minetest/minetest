@@ -25,7 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "irrlichttypes.h"
 #include "modalMenu.h"
 #include "guiFormSpecMenu.h"
-#include "sound.h"
+#include "client/sound.h"
 #include "client/tile.h"
 #include "util/enriched_string.h"
 

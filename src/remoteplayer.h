@@ -71,7 +71,7 @@ public:
 
 	void setHotbarImage(const std::string &name) { hud_hotbar_image = name; }
 
-	std::string getHotbarImage() const { return hud_hotbar_image; }
+	const std::string &getHotbarImage() const { return hud_hotbar_image; }
 
 	void setHotbarSelectedImage(const std::string &name)
 	{

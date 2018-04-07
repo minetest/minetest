@@ -7,6 +7,7 @@ src/chat.h
 src/chat_interface.h
 src/client/clientlauncher.cpp
 src/client/clientlauncher.h
+src/client/sound_openal.cpp
 src/client.cpp
 src/clientenvironment.cpp
 src/clientenvironment.h
@@ -68,8 +69,6 @@ src/defaultsettings.cpp
 src/emerge.cpp
 src/emerge.h
 src/environment.cpp
-src/event.h
-src/event_manager.h
 src/exceptions.h
 src/face_position_cache.cpp
 src/face_position_cache.h
@@ -259,6 +258,7 @@ src/script/cpp_api/s_node.h
 src/script/cpp_api/s_nodemeta.cpp
 src/script/cpp_api/s_nodemeta.h
 src/script/cpp_api/s_player.cpp
+src/script/cpp_api/s_player.h
 src/script/cpp_api/s_security.cpp
 src/script/cpp_api/s_security.h
 src/script/cpp_api/s_server.cpp
@@ -311,8 +311,7 @@ src/script/scripting_server.cpp
 src/script/scripting_server.h
 src/serialization.cpp
 src/serialization.h
-src/serveractiveobjectmap.cpp
-src/serveractiveobjectmap.h
+src/server/serveractiveobjectmap.cpp
 src/server.cpp
 src/serverenvironment.cpp
 src/serverenvironment.h
@@ -328,8 +327,6 @@ src/shader.cpp
 src/shader.h
 src/sky.cpp
 src/sound.cpp
-src/sound_openal.cpp
-src/sound_openal.h
 src/staticobject.cpp
 src/staticobject.h
 src/subgame.cpp

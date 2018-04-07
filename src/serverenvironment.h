@@ -22,6 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "activeobject.h"
 #include "environment.h"
 #include "mapnode.h"
+#include "server/serveractiveobjectmap.h"
 #include "settings.h"
 #include "util/numeric.h"
 #include <set>
@@ -193,8 +194,6 @@ enum ClearObjectsMode {
 	This is not thread-safe. Server uses an environment mutex.
 */
 
-typedef std::unordered_map<u16, ServerActiveObject *> ServerActiveObjectMap;
-
 class ServerEnvironment : public Environment
 {
 public:
@@ -232,9 +231,6 @@ public:
 	*/
 	void saveMeta();
 	void loadMeta();
-	// to be called instead of loadMeta if
-	// env_meta.txt doesn't exist (e.g. new world)
-	void loadDefaultMeta();
 
 	u32 addParticleSpawner(float exptime);
 	u32 addParticleSpawner(float exptime, u16 attached_id);
@@ -256,6 +252,8 @@ public:
 		Returns 0 if not added and thus deleted.
 	*/
 	u16 addActiveObject(ServerActiveObject *object);
+
+	void updateActiveObject(ServerActiveObject *object);
 
 	/*
 		Add an active object as a static object to the corresponding
@@ -357,6 +355,11 @@ public:
 	static bool migratePlayersDatabase(const GameParams &game_params,
 			const Settings &cmd_args);
 private:
+
+	/**
+	 * called if env_meta.txt doesn't exist (e.g. new world)
+	 */
+	void loadDefaultMeta();
 
 	static PlayerDatabase *openPlayerDatabase(const std::string &name,
 			const std::string &savedir, const Settings &conf);

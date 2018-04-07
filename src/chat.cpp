@@ -37,13 +37,12 @@ ChatBuffer::ChatBuffer(u32 scrollback):
 	m_empty_formatted_line.first = true;
 }
 
-void ChatBuffer::addLine(std::wstring name, std::wstring text)
+void ChatBuffer::addLine(const std::wstring &name, const std::wstring &text)
 {
 	ChatLine line(name, text);
 	m_unformatted.push_back(line);
 
-	if (m_rows > 0)
-	{
+	if (m_rows > 0) {
 		// m_formatted is valid and must be kept valid
 		bool scrolled_at_bottom = (m_scroll == getBottomScrollPos());
 		u32 num_added = formatChatLine(line, m_cols, m_formatted);
@@ -52,8 +51,7 @@ void ChatBuffer::addLine(std::wstring name, std::wstring text)
 	}
 
 	// Limit number of lines by m_scrollback
-	if (m_unformatted.size() > m_scrollback)
-	{
+	if (m_unformatted.size() > m_scrollback) {
 		deleteOldest(m_unformatted.size() - m_scrollback);
 	}
 }
@@ -404,7 +402,7 @@ void ChatPrompt::input(const std::wstring &str)
 	m_nick_completion_end = 0;
 }
 
-void ChatPrompt::addToHistory(std::wstring line)
+void ChatPrompt::addToHistory(const std::wstring &line)
 {
 	if (!line.empty() &&
 			(m_history.size() == 0 || m_history.back() != line)) {
@@ -428,7 +426,7 @@ void ChatPrompt::clear()
 	m_nick_completion_end = 0;
 }
 
-std::wstring ChatPrompt::replace(std::wstring line)
+std::wstring ChatPrompt::replace(const std::wstring &line)
 {
 	std::wstring old_line = m_line;
 	m_line =  line;
@@ -662,7 +660,7 @@ ChatBackend::ChatBackend():
 {
 }
 
-void ChatBackend::addMessage(std::wstring name, std::wstring text)
+void ChatBackend::addMessage(const std::wstring &name, std::wstring text)
 {
 	// Note: A message may consist of multiple lines, for example the MOTD.
 	text = translate_string(text);

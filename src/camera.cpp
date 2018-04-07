@@ -160,15 +160,13 @@ void Camera::step(f32 dtime)
 					(was < 0.5f && m_view_bobbing_anim >= 0.5f) ||
 					(was > 0.5f && m_view_bobbing_anim <= 0.5f));
 			if(step) {
-				MtEvent *e = new SimpleTriggerEvent("ViewBobbingStep");
-				m_client->event()->put(e);
+				m_client->getEventManager()->put(new SimpleTriggerEvent(MtEvent::VIEW_BOBBING_STEP));
 			}
 		}
 	}
 
-	if (m_digging_button != -1)
-	{
-		f32 offset = dtime * 3.5;
+	if (m_digging_button != -1) {
+		f32 offset = dtime * 3.5f;
 		float m_digging_anim_was = m_digging_anim;
 		m_digging_anim += offset;
 		if (m_digging_anim >= 1)
@@ -179,13 +177,10 @@ void Camera::step(f32 dtime)
 		float lim = 0.15;
 		if(m_digging_anim_was < lim && m_digging_anim >= lim)
 		{
-			if(m_digging_button == 0)
-			{
-				MtEvent *e = new SimpleTriggerEvent("CameraPunchLeft");
-				m_client->event()->put(e);
+			if (m_digging_button == 0) {
+				m_client->getEventManager()->put(new SimpleTriggerEvent(MtEvent::CAMERA_PUNCH_LEFT));
 			} else if(m_digging_button == 1) {
-				MtEvent *e = new SimpleTriggerEvent("CameraPunchRight");
-				m_client->event()->put(e);
+				m_client->getEventManager()->put(new SimpleTriggerEvent(MtEvent::CAMERA_PUNCH_RIGHT));
 			}
 		}
 	}
@@ -296,7 +291,7 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 busytime, f32 tool_r
 	{
 		f32 oldy = old_player_position.Y;
 		f32 newy = player_position.Y;
-		f32 t = exp(-23*frametime);
+		f32 t = std::exp(-23 * frametime);
 		player_position.Y = oldy * t + newy * (1-t);
 	}
 
@@ -486,7 +481,7 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 busytime, f32 tool_r
 		if(m_digging_anim > 0.5)
 			frac = 2.0 * (m_digging_anim - 0.5);
 		// This value starts from 1 and settles to 0
-		f32 ratiothing = pow((1.0f - tool_reload_ratio), 0.5f);
+		f32 ratiothing = std::pow((1.0f - tool_reload_ratio), 0.5f);
 		//f32 ratiothing2 = pow(ratiothing, 0.5f);
 		f32 ratiothing2 = (easeCurve(ratiothing*0.5))*2.0;
 		wield_position.Y -= frac * 25.0 * pow(ratiothing2, 1.7f);

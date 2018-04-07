@@ -116,12 +116,12 @@ void ScriptApiEnv::initializeEnvironment(ServerEnvironment *env)
 			while (lua_next(L, table)) {
 				// key at index -2 and value at index -1
 				luaL_checktype(L, -1, LUA_TSTRING);
-				trigger_contents.push_back(lua_tostring(L, -1));
+				trigger_contents.emplace_back(lua_tostring(L, -1));
 				// removes value, keeps key for next iteration
 				lua_pop(L, 1);
 			}
 		} else if (lua_isstring(L, -1)) {
-			trigger_contents.push_back(lua_tostring(L, -1));
+			trigger_contents.emplace_back(lua_tostring(L, -1));
 		}
 		lua_pop(L, 1);
 
@@ -133,12 +133,12 @@ void ScriptApiEnv::initializeEnvironment(ServerEnvironment *env)
 			while (lua_next(L, table)) {
 				// key at index -2 and value at index -1
 				luaL_checktype(L, -1, LUA_TSTRING);
-				required_neighbors.push_back(lua_tostring(L, -1));
+				required_neighbors.emplace_back(lua_tostring(L, -1));
 				// removes value, keeps key for next iteration
 				lua_pop(L, 1);
 			}
 		} else if (lua_isstring(L, -1)) {
-			required_neighbors.push_back(lua_tostring(L, -1));
+			required_neighbors.emplace_back(lua_tostring(L, -1));
 		}
 		lua_pop(L, 1);
 

@@ -196,17 +196,14 @@ void MapgenFlat::makeChunk(BlockMakeData *data)
 
 	// Init biome generator, place biome-specific nodes, and build biomemap
 	biomegen->calcBiomeNoise(node_min);
-
-	MgStoneType mgstone_type;
-	content_t biome_stone;
-	generateBiomes(&mgstone_type, &biome_stone);
+	generateBiomes();
 
 	if (flags & MG_CAVES)
 		generateCaves(stone_surface_max_y, large_cave_depth);
 
 	if ((flags & MG_DUNGEONS) && full_node_min.Y >= dungeon_ymin &&
 			full_node_max.Y <= dungeon_ymax)
-		generateDungeons(stone_surface_max_y, mgstone_type, biome_stone);
+		generateDungeons(stone_surface_max_y);
 
 	// Generate the registered decorations
 	if (flags & MG_DECORATIONS)
@@ -273,7 +270,7 @@ s16 MapgenFlat::generateTerrain()
 					vm->m_data[vi] = n_air;
 				}
 			}
-			vm->m_area.add_y(em, vi, 1);
+			VoxelArea::add_y(em, vi, 1);
 		}
 	}
 

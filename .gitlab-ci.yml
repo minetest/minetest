@@ -174,53 +174,53 @@ deploy:ubuntu-16.04:
 
 # Yakkety
 
-build:ubuntu-16.10:
-  <<: *build_definition
-  image: ubuntu:yakkety
-  before_script:
-    - apt-get update -y
-    - apt-get -y install build-essential libirrlicht-dev cmake libbz2-dev libpng-dev libjpeg-dev libxxf86vm-dev libgl1-mesa-dev libsqlite3-dev libogg-dev libvorbis-dev libopenal-dev libcurl4-gnutls-dev libfreetype6-dev zlib1g-dev libgmp-dev libjsoncpp-dev
+#build:ubuntu-16.10:
+#  <<: *build_definition
+#  image: ubuntu:yakkety
+#  before_script:
+#    - apt-get update -y
+#    - apt-get -y install build-essential libirrlicht-dev cmake libbz2-dev libpng-dev libjpeg-dev libxxf86vm-dev libgl1-mesa-dev libsqlite3-dev libogg-dev libvorbis-dev libopenal-dev libcurl4-gnutls-dev libfreetype6-dev zlib1g-dev libgmp-dev libjsoncpp-dev
 
-package:ubuntu-16.10:
-  image: ubuntu:yakkety
-  dependencies:
-    - build:ubuntu-16.10
-  variables:
-    LEVELDB_PKG: libleveldb1v5
-  <<: *debpkg_template
+#package:ubuntu-16.10:
+#  image: ubuntu:yakkety
+#  dependencies:
+#    - build:ubuntu-16.10
+#  variables:
+#    LEVELDB_PKG: libleveldb1v5
+#  <<: *debpkg_template
 
-deploy:ubuntu-16.10:
-  image: ubuntu:yakkety
-  dependencies:
-    - package:ubuntu-16.10
-  variables:
-    LEVELDB_PKG: libleveldb1v5
-  <<: *debpkg_install
+#deploy:ubuntu-16.10:
+#  image: ubuntu:yakkety
+#  dependencies:
+#    - package:ubuntu-16.10
+#  variables:
+#    LEVELDB_PKG: libleveldb1v5
+#  <<: *debpkg_install
 
 # Zesty
 
-build:ubuntu-17.04:
-  <<: *build_definition
-  image: ubuntu:zesty
-  before_script:
-    - apt-get update -y
-    - apt-get -y install build-essential libirrlicht-dev cmake libbz2-dev libpng-dev libjpeg-dev libxxf86vm-dev libgl1-mesa-dev libsqlite3-dev libogg-dev libvorbis-dev libopenal-dev libcurl4-gnutls-dev libfreetype6-dev zlib1g-dev libgmp-dev libjsoncpp-dev
+#build:ubuntu-17.04:
+#  <<: *build_definition
+#  image: ubuntu:zesty
+#  before_script:
+#    - apt-get update -y
+#    - apt-get -y install build-essential libirrlicht-dev cmake libbz2-dev libpng-dev libjpeg-dev libxxf86vm-dev libgl1-mesa-dev libsqlite3-dev libogg-dev libvorbis-dev libopenal-dev libcurl4-gnutls-dev libfreetype6-dev zlib1g-dev libgmp-dev libjsoncpp-dev
 
-package:ubuntu-17.04:
-  image: ubuntu:zesty
-  dependencies:
-    - build:ubuntu-17.04
-  variables:
-    LEVELDB_PKG: libleveldb1v5
-  <<: *debpkg_template
+#package:ubuntu-17.04:
+#  image: ubuntu:zesty
+#  dependencies:
+#    - build:ubuntu-17.04
+#  variables:
+#    LEVELDB_PKG: libleveldb1v5
+#  <<: *debpkg_template
 
-deploy:ubuntu-17.04:
-  image: ubuntu:zesty
-  dependencies:
-    - package:ubuntu-17.04
-  variables:
-    LEVELDB_PKG: libleveldb1v5
-  <<: *debpkg_install
+#deploy:ubuntu-17.04:
+#  image: ubuntu:zesty
+#  dependencies:
+#    - package:ubuntu-17.04
+#  variables:
+#    LEVELDB_PKG: libleveldb1v5
+#  <<: *debpkg_install
 
 ##
 ## Fedora

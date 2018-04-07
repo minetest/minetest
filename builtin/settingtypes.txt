@@ -1212,13 +1212,6 @@ language (Language) enum   ,be,ca,cs,da,de,dv,en,eo,es,et,fr,he,hu,id,it,ja,jbo,
 #    -    verbose
 debug_log_level (Debug log level) enum action ,none,error,warning,action,info,verbose
 
-#    ANSI colored logs: red error log, yellow warning and grey info and verbose logs
-#    Note that it doesn't work on Windows
-#    "yes" always enables it,
-#    "detect" enables it when printing to terminal and
-#    "no" disables it
-log_color (Colored logs) enum detect yes,detect,no
-
 #    IPv6 support.
 enable_ipv6 (IPv6) bool true
 
@@ -1242,8 +1235,8 @@ curl_file_download_timeout (cURL file download timeout) int 300000
 high_precision_fpu (High-precision FPU) bool true
 
 #    Changes the main menu UI:
-#    -   Full:  Multple singleplayer worlds, subgame choice, texture pack chooser, etc.
-#    -   Simple: One singleplayer world, no subgame or texture pack choosers. May be necessary for smaller screens.
+#    -   Full:  Multple singleplayer worlds, game choice, texture pack chooser, etc.
+#    -   Simple: One singleplayer world, no game or texture pack choosers. May be necessary for smaller screens.
 #    -   Auto: Simple on Android, full on everything else. 
 main_menu_style (Main menu style) enum auto auto,full,simple
 
@@ -1516,6 +1509,9 @@ mgv7_np_cave2 (Cave2 noise) noise_params_3d 0, 12, (67, 67, 67), 10325, 3, 0.5, 
 #    Flags starting with 'no' are used to explicitly disable them.
 mgcarpathian_spflags (Mapgen Carpathian specific flags) flags caverns caverns,nocaverns
 
+#    Defines the base ground level.
+mgcarpathian_base_level (Base ground level) float 12.0
+
 #    Controls width of tunnels, a smaller value creates wider tunnels.
 mgcarpathian_cave_width (Cave width) float 0.09
 
@@ -1541,9 +1537,6 @@ mgcarpathian_dungeon_ymin (Dungeon minimum Y) int -31000
 mgcarpathian_dungeon_ymax (Dungeon maximum Y) int 31000
 
 [**Noises]
-
-#    2D noise that defines the base ground level.
-mgcarpathian_np_base (Base ground noise) noise_params_2d 12, 1, (2557, 2557, 2557), 6538, 4, 0.8, 0.5, eased
 
 #    Variation of biome filler depth.
 mgcarpathian_np_filler_depth (Filler depth noise) noise_params_2d 0, 1, (128, 128, 128), 261, 3, 0.7, 2.0, eased
@@ -1663,7 +1656,7 @@ mgfractal_dungeon_ymin (Dungeon minimum Y) int -31000
 #    Upper Y limit of dungeons.
 mgfractal_dungeon_ymax (Dungeon maximum Y) int 31000
 
-#    Choice of 18 fractals from 9 formulas.
+#    Selects one of 18 fractal types.
 #    1 = 4D "Roundy" mandelbrot set.
 #    2 = 4D "Roundy" julia set.
 #    3 = 4D "Squarry" mandelbrot set.
@@ -1685,37 +1678,58 @@ mgfractal_dungeon_ymax (Dungeon maximum Y) int 31000
 mgfractal_fractal (Fractal type) int 1 1 18
 
 #    Iterations of the recursive function.
-#    Controls the amount of fine detail.
+#    Increasing this increases the amount of fine detail, but also
+#    increases processing load.
+#    At iterations = 20 this mapgen has a similar load to mapgen V7.
 mgfractal_iterations (Iterations) int 11
 
-#    Approximate (X,Y,Z) scale of fractal in nodes.
+#    (X,Y,Z) scale of fractal in nodes.
+#    Actual fractal size will be 2 to 3 times larger.
+#    These numbers can be made very large, the fractal does
+#    not have to fit inside the world.
+#    Increase these to 'zoom' into the detail of the fractal.
+#    Default is for a vertically-squashed shape suitable for
+#    an island, set all 3 numbers equal for the raw shape.
 mgfractal_scale (Scale) v3f (4096.0, 1024.0, 4096.0)
 
 #    (X,Y,Z) offset of fractal from world centre in units of 'scale'.
-#    Used to move a suitable spawn area of low land close to (0, 0).
-#    The default is suitable for mandelbrot sets, it needs to be edited for julia sets.
+#    Can be used to move a desired point to (0, 0): to create a
+#    suitable spawn point, or to allow 'zooming in' on a desired
+#    point by increasing 'scale'.
+#    The default is tuned for a suitable spawn point for mandelbrot
+#    sets with default parameters, it may need altering in other
+#    situations.
 #    Range roughly -2 to 2. Multiply by 'scale' for offset in nodes.
 mgfractal_offset (Offset) v3f (1.79, 0.0, 0.0)
 
 #    W co-ordinate of the generated 3D slice of a 4D fractal.
 #    Determines which 3D slice of the 4D shape is generated.
+#    Alters the shape of the fractal.
 #    Has no effect on 3D fractals.
 #    Range roughly -2 to 2.
 mgfractal_slice_w (Slice w) float 0.0
 
-#    Julia set only: X component of hypercomplex constant determining julia shape.
+#    Julia set only.
+#    X component of hypercomplex constant.
+#    Alters the shape of the fractal.
 #    Range roughly -2 to 2.
 mgfractal_julia_x (Julia x) float 0.33
 
-#    Julia set only: Y component of hypercomplex constant determining julia shape.
+#    Julia set only.
+#    Y component of hypercomplex constant.
+#    Alters the shape of the fractal.
 #    Range roughly -2 to 2.
 mgfractal_julia_y (Julia y) float 0.33
 
-#    Julia set only: Z component of hypercomplex constant determining julia shape.
+#    Julia set only.
+#    Z component of hypercomplex constant.
+#    Alters the shape of the fractal.
 #    Range roughly -2 to 2.
 mgfractal_julia_z (Julia z) float 0.33
 
-#    Julia set only: W component of hypercomplex constant determining julia shape.
+#    Julia set only.
+#    W component of hypercomplex constant.
+#    Alters the shape of the fractal.
 #    Has no effect on 3D fractals.
 #    Range roughly -2 to 2.
 mgfractal_julia_w (Julia w) float 0.33
@@ -1811,6 +1825,11 @@ mgvalleys_np_inter_valley_slope (Valley slope) noise_params_2d 0.5, 0.5, (128, 1
 [*Advanced]
 
 #    Size of chunks to be generated at once by mapgen, stated in mapblocks (16 nodes).
+#    Increasing this by 1 almost doubles the 3D noise calculation load.
+#    High values can cause noise calculation to overload.
+#    Values smaller than 5 cause a terrain bug in mgv6.
+#    Since there is a fixed number of large caves and dungeons per
+#    mapchunk, values other than 5 alter the density of these.
 chunksize (Chunk size) int 5
 
 #    Dump the mapgen debug infos.

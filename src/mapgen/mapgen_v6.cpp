@@ -223,7 +223,7 @@ s16 MapgenV6::find_stone_level(v2s16 p2d)
 		if (c != CONTENT_IGNORE && (c == c_stone || c == c_desert_stone))
 			break;
 
-		vm->m_area.add_y(em, i, -1);
+		VoxelArea::add_y(em, i, -1);
 	}
 	return (y >= y_nodes_min) ? y : y_nodes_min - 1;
 }
@@ -696,7 +696,7 @@ int MapgenV6::generateGround()
 					vm->m_data[i] = n_air;
 				}
 			}
-			vm->m_area.add_y(em, i, 1);
+			VoxelArea::add_y(em, i, 1);
 		}
 	}
 
@@ -759,7 +759,7 @@ void MapgenV6::addMud()
 			vm->m_data[i] = addnode;
 			mudcount++;
 
-			vm->m_area.add_y(em, i, 1);
+			VoxelArea::add_y(em, i, 1);
 		}
 	}
 }
@@ -799,7 +799,7 @@ void MapgenV6::flowMud(s16 &mudflow_minpos, s16 &mudflow_maxpos)
 							n->getContent() == c_gravel)
 						break;
 
-					vm->m_area.add_y(em, i, -1);
+					VoxelArea::add_y(em, i, -1);
 				}
 
 				// Stop if out of area
@@ -815,7 +815,7 @@ void MapgenV6::flowMud(s16 &mudflow_minpos, s16 &mudflow_maxpos)
 					// Don't flow it if the stuff under it is not mud
 					{
 						u32 i2 = i;
-						vm->m_area.add_y(em, i2, -1);
+						VoxelArea::add_y(em, i2, -1);
 						// Cancel if out of area
 						if (!vm->m_area.contains(i2))
 							continue;
@@ -826,7 +826,7 @@ void MapgenV6::flowMud(s16 &mudflow_minpos, s16 &mudflow_maxpos)
 					}
 				}
 
-				v3s16 dirs4[4] = {
+				static const v3s16 dirs4[4] = {
 					v3s16(0, 0, 1), // back
 					v3s16(1, 0, 0), // right
 					v3s16(0, 0, -1), // front
@@ -836,7 +836,7 @@ void MapgenV6::flowMud(s16 &mudflow_minpos, s16 &mudflow_maxpos)
 				// Check that upper is walkable. Cancel
 				// dropping if upper keeps it in place.
 				u32 i3 = i;
-				vm->m_area.add_y(em, i3, 1);
+				VoxelArea::add_y(em, i3, 1);
 				MapNode *n3 = NULL;
 
 				if (vm->m_area.contains(i3)) {
@@ -849,7 +849,7 @@ void MapgenV6::flowMud(s16 &mudflow_minpos, s16 &mudflow_maxpos)
 				for (const v3s16 &dirp : dirs4) {
 					u32 i2 = i;
 					// Move to side
-					vm->m_area.add_p(em, i2, dirp);
+					VoxelArea::add_p(em, i2, dirp);
 					// Fail if out of area
 					if (!vm->m_area.contains(i2))
 						continue;
@@ -858,7 +858,7 @@ void MapgenV6::flowMud(s16 &mudflow_minpos, s16 &mudflow_maxpos)
 					if (ndef->get(*n2).walkable)
 						continue;
 					// Check that under side is air
-					vm->m_area.add_y(em, i2, -1);
+					VoxelArea::add_y(em, i2, -1);
 					if (!vm->m_area.contains(i2))
 						continue;
 					n2 = &vm->m_data[i2];
@@ -867,7 +867,7 @@ void MapgenV6::flowMud(s16 &mudflow_minpos, s16 &mudflow_maxpos)
 					// Loop further down until not air
 					bool dropped_to_unknown = false;
 					do {
-						vm->m_area.add_y(em, i2, -1);
+						VoxelArea::add_y(em, i2, -1);
 						n2 = &vm->m_data[i2];
 						// if out of known area
 						if (!vm->m_area.contains(i2) ||
@@ -877,7 +877,7 @@ void MapgenV6::flowMud(s16 &mudflow_minpos, s16 &mudflow_maxpos)
 						}
 					} while (!ndef->get(*n2).walkable);
 					// Loop one up so that we're in air
-					vm->m_area.add_y(em, i2, 1);
+					VoxelArea::add_y(em, i2, 1);
 
 					// Move mud to new place. Outside mapchunk remove
 					// any decorations above removed or placed mud.
@@ -917,17 +917,17 @@ void MapgenV6::moveMud(u32 remove_index, u32 place_index,
 				vm->m_data[above_remove_index].getContent() != c_water_source &&
 				vm->m_data[above_remove_index].getContent() != CONTENT_IGNORE) {
 			vm->m_data[above_remove_index] = n_air;
-			vm->m_area.add_y(em, above_remove_index, 1);
+			VoxelArea::add_y(em, above_remove_index, 1);
 		}
 		// Mud placed may have partially-buried a stacked decoration, search
 		// above and remove.
-		vm->m_area.add_y(em, place_index, 1);
+		VoxelArea::add_y(em, place_index, 1);
 		while (vm->m_area.contains(place_index) &&
 				vm->m_data[place_index].getContent() != CONTENT_AIR &&
 				vm->m_data[place_index].getContent() != c_water_source &&
 				vm->m_data[place_index].getContent() != CONTENT_IGNORE) {
 			vm->m_data[place_index] = n_air;
-			vm->m_area.add_y(em, place_index, 1);
+			VoxelArea::add_y(em, place_index, 1);
 		}
 	}
 }
@@ -1001,7 +1001,7 @@ void MapgenV6::placeTreesAndJungleGrass()
 				u32 vi = vm->m_area.index(x, y, z);
 				// place on dirt_with_grass, since we know it is exposed to sunlight
 				if (vm->m_data[vi].getContent() == c_dirt_with_grass) {
-					vm->m_area.add_y(em, vi, 1);
+					VoxelArea::add_y(em, vi, 1);
 					vm->m_data[vi] = n_junglegrass;
 				}
 			}
@@ -1071,7 +1071,7 @@ void MapgenV6::growGrass() // Add surface nodes
 						ndef->get(n).liquid_type != LIQUID_NONE ||
 						n.getContent() == c_ice)
 					break;
-				vm->m_area.add_y(em, i, -1);
+				VoxelArea::add_y(em, i, -1);
 			}
 			surface_y = (y >= full_node_min.Y) ? y : full_node_min.Y;
 		}
@@ -1085,10 +1085,10 @@ void MapgenV6::growGrass() // Add surface nodes
 			} else if (bt == BT_TUNDRA) {
 				if (c == c_dirt) {
 					vm->m_data[i] = n_snowblock;
-					vm->m_area.add_y(em, i, -1);
+					VoxelArea::add_y(em, i, -1);
 					vm->m_data[i] = n_dirt_with_snow;
 				} else if (c == c_stone && surface_y < node_max.Y) {
-					vm->m_area.add_y(em, i, 1);
+					VoxelArea::add_y(em, i, 1);
 					vm->m_data[i] = n_snowblock;
 				}
 			} else if (c == c_dirt) {
