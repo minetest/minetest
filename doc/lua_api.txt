@@ -5676,6 +5676,17 @@ Definition tables
     --  ^ Nodes placed as a blob of liquid in 50% of large caves.
     --  ^ If absent, cave liquids fall back to classic behaviour of lava or
     --  ^ water distributed according to a hardcoded 3D noise.
+        node_dungeon = "default:cobble",
+    --  ^ Node used for primary dungeon structure.
+    --  ^ If absent, dungeon materials fall back to classic behaviour.
+    --  ^ If present, the following two nodes are also used.
+        node_dungeon_alt = "default:mossycobble",
+    --  ^ Node used for randomly-distributed alternative structure nodes.
+    --  ^ If alternative structure nodes are not wanted leave this absent for
+    --  ^ performance reasons.
+        node_dungeon_stair = "stairs:stair_cobble",
+    --  ^ Node used for dungeon stairs.
+    --  ^ If absent, stairs fall back to 'node_dungeon'.
         y_max = 31000,
         y_min = 1,
     --  ^ Upper and lower limits for biome.

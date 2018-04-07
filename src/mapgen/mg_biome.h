@@ -53,6 +53,9 @@ public:
 	content_t c_riverbed;
 	content_t c_dust;
 	content_t c_cave_liquid;
+	content_t c_dungeon;
+	content_t c_dungeon_alt;
+	content_t c_dungeon_stair;
 
 	s16 depth_top;
 	s16 depth_filler;

@@ -397,15 +397,18 @@ Biome *read_biome_def(lua_State *L, int index, const NodeDefManager *ndef)
 	getintfield(L, index, "y_max", b->max_pos.Y);
 
 	std::vector<std::string> &nn = b->m_nodenames;
-	nn.push_back(getstringfield_default(L, index, "node_top",         ""));
-	nn.push_back(getstringfield_default(L, index, "node_filler",      ""));
-	nn.push_back(getstringfield_default(L, index, "node_stone",       ""));
-	nn.push_back(getstringfield_default(L, index, "node_water_top",   ""));
-	nn.push_back(getstringfield_default(L, index, "node_water",       ""));
-	nn.push_back(getstringfield_default(L, index, "node_river_water", ""));
-	nn.push_back(getstringfield_default(L, index, "node_riverbed",    ""));
-	nn.push_back(getstringfield_default(L, index, "node_dust",        ""));
-	nn.push_back(getstringfield_default(L, index, "node_cave_liquid", ""));
+	nn.push_back(getstringfield_default(L, index, "node_top",           ""));
+	nn.push_back(getstringfield_default(L, index, "node_filler",        ""));
+	nn.push_back(getstringfield_default(L, index, "node_stone",         ""));
+	nn.push_back(getstringfield_default(L, index, "node_water_top",     ""));
+	nn.push_back(getstringfield_default(L, index, "node_water",         ""));
+	nn.push_back(getstringfield_default(L, index, "node_river_water",   ""));
+	nn.push_back(getstringfield_default(L, index, "node_riverbed",      ""));
+	nn.push_back(getstringfield_default(L, index, "node_dust",          ""));
+	nn.push_back(getstringfield_default(L, index, "node_cave_liquid",   ""));
+	nn.push_back(getstringfield_default(L, index, "node_dungeon",       ""));
+	nn.push_back(getstringfield_default(L, index, "node_dungeon_alt",   ""));
+	nn.push_back(getstringfield_default(L, index, "node_dungeon_stair", ""));
 	ndef->pendNodeResolve(b);
 
 	return b;
