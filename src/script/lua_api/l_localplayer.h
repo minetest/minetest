@@ -20,18 +20,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #pragma once
 
 #include "l_base.h"
+#include "l_internal.h"
 
 class LocalPlayer;
 
 class LuaLocalPlayer : public ModApiBase
 {
+	LUAREF_OBJECT(LocalPlayer);
 private:
-	static const char className[];
-	static const luaL_Reg methods[];
-
-	// garbage collector
-	static int gc_object(lua_State *L);
-
 	static int l_get_velocity(lua_State *L);
 
 	static int l_get_hp(lua_State *L);
@@ -76,18 +72,6 @@ private:
 	static int l_hud_change(lua_State *L);
 	// hud_get(self, id)
 	static int l_hud_get(lua_State *L);
-
-	LocalPlayer *m_localplayer = nullptr;
-
 public:
-	LuaLocalPlayer(LocalPlayer *m);
-	~LuaLocalPlayer() = default;
-
-	static void create(lua_State *L, LocalPlayer *m);
-
-	static LuaLocalPlayer *checkobject(lua_State *L, int narg);
-	static LocalPlayer *getobject(LuaLocalPlayer *ref);
 	static LocalPlayer *getobject(lua_State *L, int narg);
-
-	static void Register(lua_State *L);
 };

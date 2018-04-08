@@ -24,7 +24,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "hud.h"
 #include "common/c_content.h"
 
-LuaLocalPlayer::LuaLocalPlayer(LocalPlayer *m) : m_localplayer(m)
+LuaLocalPlayer::LuaLocalPlayer(LocalPlayer *m) : m_object(m)
+{
+}
+
+LuaLocalPlayer::~LuaLocalPlayer()
 {
 }
 
@@ -354,7 +358,7 @@ LuaLocalPlayer *LuaLocalPlayer::checkobject(lua_State *L, int narg)
 
 LocalPlayer *LuaLocalPlayer::getobject(LuaLocalPlayer *ref)
 {
-	return ref->m_localplayer;
+	return ref->m_object;
 }
 
 LocalPlayer *LuaLocalPlayer::getobject(lua_State *L, int narg)

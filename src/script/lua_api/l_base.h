@@ -37,25 +37,6 @@ class Server;
 class Environment;
 class GUIEngine;
 
-/**
- * This macro permits to bootstrap easily a Lua Referenced object
- */
-#define LUAREF_OBJECT(name)                                                                                        \
-private:                                                                                                           \
-    name *m_object = nullptr;                                                                                                \
-    static const char className[];                                                                                 \
-    static const luaL_Reg methods[];                                                                               \
-    static int gc_object(lua_State *L);                                                                            \
-                                                                                                                   \
-public:                                                                                                            \
-    explicit Lua##name(name *object);                                                                           \
-    virtual ~Lua##name();                                                                                       \
-    static void Register(lua_State *L);                                                                            \
-    static void create(lua_State *L, name *object);                                                                \
-    static Lua##name *checkobject(lua_State *L, int narg);                                                      \
-    static name *getobject(Lua##name *ref);
-
-
 class ModApiBase {
 
 public:

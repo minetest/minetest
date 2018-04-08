@@ -35,7 +35,7 @@ int ModApiChannels::l_mod_channel_join(lua_State *L)
 	getGameDef(L)->joinModChannel(channel);
 	ModChannel *channelObj = getGameDef(L)->getModChannel(channel);
 	assert(channelObj);
-	ModChannelRef::create(L, channelObj);
+	LuaModChannel::create(L, channelObj);
 
 	int object = lua_gettop(L);
 	lua_pushvalue(L, object);
@@ -48,16 +48,20 @@ void ModApiChannels::Initialize(lua_State *L, int top)
 }
 
 /*
- * ModChannelRef
+ * LuaModChannel
  */
 
-ModChannelRef::ModChannelRef(ModChannel *modchannel) : m_modchannel(modchannel)
+LuaModChannel::LuaModChannel(ModChannel *modchannel) : m_object(modchannel)
 {
 }
 
-int ModChannelRef::l_leave(lua_State *L)
+LuaModChannel::~LuaModChannel()
 {
-	ModChannelRef *ref = checkobject(L, 1);
+}
+
+int LuaModChannel::l_leave(lua_State *L)
+{
+	LuaModChannel *ref = checkobject(L, 1);
 	ModChannel *channel = getobject(ref);
 	if (!channel)
 		return 0;
@@ -66,13 +70,13 @@ int ModChannelRef::l_leave(lua_State *L)
 	// Channel left, invalidate the channel object ptr
 	// This permits to invalidate every object action from Lua because core removed
 	// channel consuming link
-	ref->m_modchannel = nullptr;
+	ref->m_object = nullptr;
 	return 0;
 }
 
-int ModChannelRef::l_send_all(lua_State *L)
+int LuaModChannel::l_send_all(lua_State *L)
 {
-	ModChannelRef *ref = checkobject(L, 1);
+	LuaModChannel *ref = checkobject(L, 1);
 	ModChannel *channel = getobject(ref);
 	if (!channel || !channel->canWrite())
 		return 0;
@@ -84,9 +88,9 @@ int ModChannelRef::l_send_all(lua_State *L)
 	return 0;
 }
 
-int ModChannelRef::l_is_writeable(lua_State *L)
+int LuaModChannel::l_is_writeable(lua_State *L)
 {
-	ModChannelRef *ref = checkobject(L, 1);
+	LuaModChannel *ref = checkobject(L, 1);
 	ModChannel *channel = getobject(ref);
 	if (!channel)
 		return 0;
@@ -94,7 +98,7 @@ int ModChannelRef::l_is_writeable(lua_State *L)
 	lua_pushboolean(L, channel->canWrite());
 	return 1;
 }
-void ModChannelRef::Register(lua_State *L)
+void LuaModChannel::Register(lua_State *L)
 {
 	lua_newtable(L);
 	int methodtable = lua_gettop(L);
@@ -119,22 +123,22 @@ void ModChannelRef::Register(lua_State *L)
 	lua_pop(L, 1);			// Drop methodtable
 }
 
-void ModChannelRef::create(lua_State *L, ModChannel *channel)
+void LuaModChannel::create(lua_State *L, ModChannel *channel)
 {
-	ModChannelRef *o = new ModChannelRef(channel);
+	LuaModChannel *o = new LuaModChannel(channel);
 	*(void **)(lua_newuserdata(L, sizeof(void *))) = o;
 	luaL_getmetatable(L, className);
 	lua_setmetatable(L, -2);
 }
 
-int ModChannelRef::gc_object(lua_State *L)
+int LuaModChannel::gc_object(lua_State *L)
 {
-	ModChannelRef *o = *(ModChannelRef **)(lua_touserdata(L, 1));
+	LuaModChannel *o = *(LuaModChannel **)(lua_touserdata(L, 1));
 	delete o;
 	return 0;
 }
 
-ModChannelRef *ModChannelRef::checkobject(lua_State *L, int narg)
+LuaModChannel *LuaModChannel::checkobject(lua_State *L, int narg)
 {
 	luaL_checktype(L, narg, LUA_TUSERDATA);
 
@@ -142,20 +146,20 @@ ModChannelRef *ModChannelRef::checkobject(lua_State *L, int narg)
 	if (!ud)
 		luaL_typerror(L, narg, className);
 
-	return *(ModChannelRef **)ud; // unbox pointer
+	return *(LuaModChannel **)ud; // unbox pointer
 }
 
-ModChannel *ModChannelRef::getobject(ModChannelRef *ref)
+ModChannel *LuaModChannel::getobject(LuaModChannel *ref)
 {
-	return ref->m_modchannel;
+	return ref->m_object;
 }
 
 // clang-format off
-const char ModChannelRef::className[] = "ModChannelRef";
-const luaL_Reg ModChannelRef::methods[] = {
-	luamethod(ModChannelRef, leave),
-	luamethod(ModChannelRef, is_writeable),
-	luamethod(ModChannelRef, send_all),
+const char LuaModChannel::className[] = "LuaModChannel";
+const luaL_Reg LuaModChannel::methods[] = {
+	luamethod(LuaModChannel, leave),
+	luamethod(LuaModChannel, is_writeable),
+	luamethod(LuaModChannel, send_all),
 	{0, 0},
 };
 // clang-format on

@@ -25,7 +25,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "minimap.h"
 #include "settings.h"
 
-LuaMinimap::LuaMinimap(Minimap *m) : m_minimap(m)
+LuaMinimap::LuaMinimap(Minimap *m) : m_object(m)
+{
+}
+
+LuaMinimap::~LuaMinimap()
 {
 }
 
@@ -177,7 +181,7 @@ LuaMinimap *LuaMinimap::checkobject(lua_State *L, int narg)
 
 Minimap* LuaMinimap::getobject(LuaMinimap *ref)
 {
-	return ref->m_minimap;
+	return ref->m_object;
 }
 
 int LuaMinimap::gc_object(lua_State *L) {

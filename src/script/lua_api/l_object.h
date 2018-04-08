@@ -280,9 +280,6 @@ private:
 	// hud_change(self, id, stat, data)
 	static int l_hud_change(lua_State *L);
 
-	// hud_get_next_id(self)
-	static u32 hud_get_next_id(lua_State *L);
-
 	// hud_get(self, id)
 	static int l_hud_get(lua_State *L);
 

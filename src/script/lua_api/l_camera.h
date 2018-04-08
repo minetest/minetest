@@ -20,6 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #pragma once
 
 #include "l_base.h"
+#include "l_internal.h"
 
 class Camera;
 
