@@ -45,7 +45,7 @@ protected:
 	virtual bool handleFromTable(lua_State *L, int table, Metadata *meta);
 
 	// Exported functions
-	
+
 	// contains(self, name)
 	static int l_contains(lua_State *L);
 
