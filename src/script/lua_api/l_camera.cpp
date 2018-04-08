@@ -192,27 +192,7 @@ int LuaCamera::gc_object(lua_State *L)
 
 void LuaCamera::Register(lua_State *L)
 {
-	lua_newtable(L);
-	int methodtable = lua_gettop(L);
-	luaL_newmetatable(L, className);
-	int metatable = lua_gettop(L);
-
-	lua_pushliteral(L, "__metatable");
-	lua_pushvalue(L, methodtable);
-	lua_settable(L, metatable);
-
-	lua_pushliteral(L, "__index");
-	lua_pushvalue(L, methodtable);
-	lua_settable(L, metatable);
-
-	lua_pushliteral(L, "__gc");
-	lua_pushcfunction(L, gc_object);
-	lua_settable(L, metatable);
-
-	lua_pop(L, 1);
-
-	luaL_openlib(L, 0, methods, 0);
-	lua_pop(L, 1);
+	ModApiBase::BaseRegister(L, className, methods, LuaCamera::gc_object);
 }
 
 const char LuaCamera::className[] = "Camera";

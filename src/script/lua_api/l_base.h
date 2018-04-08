@@ -69,4 +69,14 @@ public:
 			const char* name,
 			lua_CFunction func,
 			int top);
+
+	/**
+	 * Standard function to register objects on the Lua state
+	 * @param L Lua state
+	 * @param name LuaRef name
+	 * @param methods LuaRef methods
+	 * @param gc_f LuaRef gc method
+	 */
+	static void BaseRegister(lua_State *L, const char *name, const luaL_Reg *methods,
+		int (*gc_f)(lua_State *));
 };

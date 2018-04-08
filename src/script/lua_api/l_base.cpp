@@ -84,3 +84,29 @@ bool ModApiBase::registerFunction(lua_State *L, const char *name,
 
 	return true;
 }
+
+void ModApiBase::BaseRegister(lua_State *L, const char *name, const luaL_Reg *methods,
+	int (*gc_f)(lua_State *))
+{
+	lua_newtable(L);
+	int methodtable = lua_gettop(L);
+	luaL_newmetatable(L, name);
+	int metatable = lua_gettop(L);
+
+	lua_pushliteral(L, "__metatable");
+	lua_pushvalue(L, methodtable);
+	lua_settable(L, metatable);
+
+	lua_pushliteral(L, "__index");
+	lua_pushvalue(L, methodtable);
+	lua_settable(L, metatable);
+
+	lua_pushliteral(L, "__gc");
+	lua_pushcfunction(L, gc_f);
+	lua_settable(L, metatable);
+
+	lua_pop(L, 1);
+
+	luaL_openlib(L, 0, methods, 0);
+	lua_pop(L, 1);
+}
