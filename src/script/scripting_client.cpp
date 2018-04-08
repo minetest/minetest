@@ -67,7 +67,7 @@ ClientScripting::ClientScripting(Client *client):
 void ClientScripting::InitializeModApi(lua_State *L, int top)
 {
 	LuaItemStack::Register(L);
-	StorageRef::Register(L);
+	LuaModMetadata::Register(L);
 	LuaMinimap::Register(L);
 	NodeMetaRef::RegisterClient(L);
 	LuaLocalPlayer::Register(L);

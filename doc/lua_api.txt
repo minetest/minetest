@@ -3679,7 +3679,7 @@ These functions return the leftover itemstack.
 
 ### Storage API:
 * `minetest.get_mod_storage()`:
-    * returns reference to mod private `StorageRef`
+    * returns reference to mod private `LuaModMetadata`
     * must be called during mod load time
 
 ### Misc.
@@ -3902,7 +3902,7 @@ An interface to use mod channels on client and server
     * Message size is limited to 65535 characters by protocol.
 
 ### `MetaDataRef`
-See `StorageRef`, `NodeMetaRef`, `ItemStackMetaRef`, and `PlayerMetaRef`.
+See `LuaModMetadata`, `NodeMetaRef`, `ItemStackMetaRef`, and `PlayerMetaRef`.
 
 #### Methods
 * `set_string(name, value)`
@@ -3945,7 +3945,7 @@ Can be obtained via `item:get_meta()`.
     * A nil value will clear the override data and restore the original
       behavior.
 
-### `StorageRef`
+### `LuaModMetadata`
 Mod metadata: per mod metadata, saved automatically.
 Can be obtained via `minetest.get_mod_storage()` during load time.
 

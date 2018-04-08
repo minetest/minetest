@@ -26,13 +26,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 
 #define SET_SECURITY_CHECK(L, name) \
-	if (o->m_settings == g_settings && ScriptApiSecurity::isSecure(L) && \
+	if (o->m_object == g_settings && ScriptApiSecurity::isSecure(L) && \
 			name.compare(0, 7, "secure.") == 0) { \
 		throw LuaError("Attempt to set secure setting."); \
 	}
 
 LuaSettings::LuaSettings(Settings *settings, const std::string &filename) :
-	m_settings(settings),
+	m_object(settings),
 	m_filename(filename)
 {
 }
@@ -42,14 +42,14 @@ LuaSettings::LuaSettings(const std::string &filename, bool write_allowed) :
 	m_is_own_settings(true),
 	m_write_allowed(write_allowed)
 {
-	m_settings = new Settings();
-	m_settings->readConfigFile(filename.c_str());
+	m_object = new Settings();
+	m_object->readConfigFile(filename.c_str());
 }
 
 LuaSettings::~LuaSettings()
 {
 	if (m_is_own_settings)
-		delete m_settings;
+		delete m_object;
 }
 
 
@@ -79,8 +79,8 @@ int LuaSettings::l_get(lua_State* L)
 	LuaSettings* o = checkobject(L, 1);
 
 	std::string key = std::string(luaL_checkstring(L, 2));
-	if (o->m_settings->exists(key)) {
-		std::string value = o->m_settings->get(key);
+	if (o->m_object->exists(key)) {
+		std::string value = o->m_object->get(key);
 		lua_pushstring(L, value.c_str());
 	} else {
 		lua_pushnil(L);
@@ -96,8 +96,8 @@ int LuaSettings::l_get_bool(lua_State* L)
 	LuaSettings* o = checkobject(L, 1);
 
 	std::string key = std::string(luaL_checkstring(L, 2));
-	if (o->m_settings->exists(key)) {
-		bool value = o->m_settings->getBool(key);
+	if (o->m_object->exists(key)) {
+		bool value = o->m_object->getBool(key);
 		lua_pushboolean(L, value);
 	} else {
 		// Push default value
@@ -117,9 +117,9 @@ int LuaSettings::l_get_np_group(lua_State *L)
 	LuaSettings *o = checkobject(L, 1);
 
 	std::string key = std::string(luaL_checkstring(L, 2));
-	if (o->m_settings->exists(key)) {
+	if (o->m_object->exists(key)) {
 		NoiseParams np;
-		o->m_settings->getNoiseParams(key, np);
+		o->m_object->getNoiseParams(key, np);
 		push_noiseparams(L, &np);
 	} else {
 		lua_pushnil(L);
@@ -139,7 +139,7 @@ int LuaSettings::l_set(lua_State* L)
 
 	SET_SECURITY_CHECK(L, key);
 
-	if (!o->m_settings->set(key, value))
+	if (!o->m_object->set(key, value))
 		throw LuaError("Invalid sequence found in setting parameters");
 
 	return 0;
@@ -156,7 +156,7 @@ int LuaSettings::l_set_bool(lua_State* L)
 
 	SET_SECURITY_CHECK(L, key);
 
-	o->m_settings->setBool(key, value);
+	o->m_object->setBool(key, value);
 
 	return 1;
 }
@@ -173,7 +173,7 @@ int LuaSettings::l_set_np_group(lua_State *L)
 
 	SET_SECURITY_CHECK(L, key);
 
-	o->m_settings->setNoiseParams(key, value, false);
+	o->m_object->setNoiseParams(key, value, false);
 
 	return 0;
 }
@@ -188,7 +188,7 @@ int LuaSettings::l_remove(lua_State* L)
 
 	SET_SECURITY_CHECK(L, key);
 
-	bool success = o->m_settings->remove(key);
+	bool success = o->m_object->remove(key);
 	lua_pushboolean(L, success);
 
 	return 1;
@@ -200,7 +200,7 @@ int LuaSettings::l_get_names(lua_State* L)
 	NO_MAP_LOCK_REQUIRED;
 	LuaSettings* o = checkobject(L, 1);
 
-	std::vector<std::string> keys = o->m_settings->getNames();
+	std::vector<std::string> keys = o->m_object->getNames();
 
 	lua_newtable(L);
 	for (unsigned int i=0; i < keys.size(); i++)
@@ -223,7 +223,7 @@ int LuaSettings::l_write(lua_State* L)
 				" not allowed with mod security on.");
 	}
 
-	bool success = o->m_settings->updateConfigFile(o->m_filename.c_str());
+	bool success = o->m_object->updateConfigFile(o->m_filename.c_str());
 	lua_pushboolean(L, success);
 
 	return 1;
@@ -235,11 +235,11 @@ int LuaSettings::l_to_table(lua_State* L)
 	NO_MAP_LOCK_REQUIRED;
 	LuaSettings* o = checkobject(L, 1);
 
-	std::vector<std::string> keys = o->m_settings->getNames();
+	std::vector<std::string> keys = o->m_object->getNames();
 
 	lua_newtable(L);
 	for (const std::string &key : keys) {
-		lua_pushstring(L, o->m_settings->get(key).c_str());
+		lua_pushstring(L, o->m_object->get(key).c_str());
 		lua_setfield(L, -2, key.c_str());
 	}
 

@@ -21,18 +21,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "common/c_content.h"
 #include "lua_api/l_base.h"
+#include "l_internal.h"
 
 class Settings;
 
 class LuaSettings : public ModApiBase
 {
+	LUAREF_OBJECT(Settings);
 private:
-	static const char className[];
-	static const luaL_Reg methods[];
-
-	// garbage collector
-	static int gc_object(lua_State *L);
-
 	// get(self, key) -> value
 	static int l_get(lua_State *L);
 
@@ -63,7 +59,6 @@ private:
 	// to_table(self) -> {[key1]=value1,...}
 	static int l_to_table(lua_State *L);
 
-	Settings *m_settings = nullptr;
 	std::string m_filename;
 	bool m_is_own_settings = false;
 	bool m_write_allowed = true;
@@ -71,15 +66,10 @@ private:
 public:
 	LuaSettings(Settings *settings, const std::string &filename);
 	LuaSettings(const std::string &filename, bool write_allowed);
-	~LuaSettings();
 
 	static void create(lua_State *L, Settings *settings, const std::string &filename);
 
 	// LuaSettings(filename)
 	// Creates a LuaSettings and leaves it on top of the stack
 	static int create_object(lua_State *L);
-
-	static LuaSettings *checkobject(lua_State *L, int narg);
-
-	static void Register(lua_State *L);
 };

@@ -40,7 +40,7 @@ int ModApiStorage::l_get_mod_storage(lua_State *L)
 		assert(false); // this should not happen
 	}
 
-	StorageRef::create(L, store);
+	LuaModMetadata::create(L, store);
 	int object = lua_gettop(L);
 
 	lua_pushvalue(L, object);
@@ -52,22 +52,26 @@ void ModApiStorage::Initialize(lua_State *L, int top)
 	API_FCT(get_mod_storage);
 }
 
-StorageRef::StorageRef(ModMetadata *object):
+LuaModMetadata::LuaModMetadata(ModMetadata *object):
 	m_object(object)
 {
 }
 
-void StorageRef::create(lua_State *L, ModMetadata *object)
+LuaModMetadata::~LuaModMetadata()
 {
-	StorageRef *o = new StorageRef(object);
+}
+
+void LuaModMetadata::create(lua_State *L, ModMetadata *object)
+{
+	LuaModMetadata *o = new LuaModMetadata(object);
 	*(void **)(lua_newuserdata(L, sizeof(void *))) = o;
 	luaL_getmetatable(L, className);
 	lua_setmetatable(L, -2);
 }
 
-int StorageRef::gc_object(lua_State *L)
+int LuaModMetadata::gc_object(lua_State *L)
 {
-	StorageRef *o = *(StorageRef **)(lua_touserdata(L, 1));
+	LuaModMetadata *o = *(LuaModMetadata **)(lua_touserdata(L, 1));
 	// Server side
 	if (IGameDef *gamedef = getGameDef(L))
 		gamedef->unregisterModStorage(getobject(o)->getModName());
@@ -75,7 +79,7 @@ int StorageRef::gc_object(lua_State *L)
 	return 0;
 }
 
-void StorageRef::Register(lua_State *L)
+void LuaModMetadata::Register(lua_State *L)
 {
 	lua_newtable(L);
 	int methodtable = lua_gettop(L);
@@ -108,32 +112,32 @@ void StorageRef::Register(lua_State *L)
 	lua_pop(L, 1);  // drop methodtable
 }
 
-StorageRef* StorageRef::checkobject(lua_State *L, int narg)
+LuaModMetadata* LuaModMetadata::checkobject(lua_State *L, int narg)
 {
 	luaL_checktype(L, narg, LUA_TUSERDATA);
 	void *ud = luaL_checkudata(L, narg, className);
 	if (!ud) luaL_typerror(L, narg, className);
-	return *(StorageRef**)ud;  // unbox pointer
+	return *(LuaModMetadata**)ud;  // unbox pointer
 }
 
-ModMetadata* StorageRef::getobject(StorageRef *ref)
+ModMetadata* LuaModMetadata::getobject(LuaModMetadata *ref)
 {
 	ModMetadata *co = ref->m_object;
 	return co;
 }
 
-Metadata* StorageRef::getmeta(bool auto_create)
+Metadata* LuaModMetadata::getmeta(bool auto_create)
 {
 	return m_object;
 }
 
-void StorageRef::clearMeta()
+void LuaModMetadata::clearMeta()
 {
 	m_object->clear();
 }
 
-const char StorageRef::className[] = "StorageRef";
-const luaL_Reg StorageRef::methods[] = {
+const char LuaModMetadata::className[] = "LuaModMetadata";
+const luaL_Reg LuaModMetadata::methods[] = {
 	luamethod(MetaDataRef, get_string),
 	luamethod(MetaDataRef, set_string),
 	luamethod(MetaDataRef, get_int),

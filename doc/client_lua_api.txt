@@ -770,7 +770,7 @@ Call these functions only at load time!
 
 ### Storage API
 * `minetest.get_mod_storage()`:
-    * returns reference to mod private `StorageRef`
+    * returns reference to mod private `LuaModMetadata`
     * must be called during mod load time
 
 ### Mod channels
