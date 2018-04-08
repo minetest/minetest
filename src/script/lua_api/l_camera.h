@@ -25,13 +25,8 @@ class Camera;
 
 class LuaCamera : public ModApiBase
 {
+	LUAREF_OBJECT(Camera)
 private:
-	static const char className[];
-	static const luaL_Reg methods[];
-
-	// garbage collector
-	static int gc_object(lua_State *L);
-
 	static int l_set_camera_mode(lua_State *L);
 	static int l_get_camera_mode(lua_State *L);
 
@@ -44,17 +39,6 @@ private:
 	static int l_get_look_horizontal(lua_State *L);
 	static int l_get_aspect_ratio(lua_State *L);
 
-	Camera *m_camera = nullptr;
-
 public:
-	LuaCamera(Camera *m);
-	~LuaCamera() = default;
-
-	static void create(lua_State *L, Camera *m);
-
-	static LuaCamera *checkobject(lua_State *L, int narg);
-	static Camera *getobject(LuaCamera *ref);
 	static Camera *getobject(lua_State *L, int narg);
-
-	static void Register(lua_State *L);
 };

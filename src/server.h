@@ -232,7 +232,7 @@ public:
 		bool vertical, const std::string &texture,
 		const struct TileAnimationParams &animation, u8 glow);
 
-	u32 addParticleSpawner(u16 amount, float spawntime,
+	s32 addParticleSpawner(u16 amount, float spawntime,
 		v3f minpos, v3f maxpos,
 		v3f minvel, v3f maxvel,
 		v3f minacc, v3f maxacc,

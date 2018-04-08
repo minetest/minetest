@@ -3154,7 +3154,7 @@ void Server::spawnParticle(const std::string &playername, v3f pos,
 			collision_removal, vertical, texture, animation, glow);
 }
 
-u32 Server::addParticleSpawner(u16 amount, float spawntime,
+s32 Server::addParticleSpawner(u16 amount, float spawntime,
 	v3f minpos, v3f maxpos, v3f minvel, v3f maxvel, v3f minacc, v3f maxacc,
 	float minexptime, float maxexptime, float minsize, float maxsize,
 	bool collisiondetection, bool collision_removal,

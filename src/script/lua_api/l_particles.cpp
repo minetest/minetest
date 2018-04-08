@@ -237,7 +237,7 @@ int ModApiParticles::l_add_particlespawner(lua_State *L)
 		glow = getintfield_default(L, 1, "glow", 0);
 	}
 
-	u32 id = getServer(L)->addParticleSpawner(amount, time,
+	s32 id = getServer(L)->addParticleSpawner(amount, time,
 			minpos, maxpos,
 			minvel, maxvel,
 			minacc, maxacc,

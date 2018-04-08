@@ -25,7 +25,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "camera.h"
 #include "client.h"
 
-LuaCamera::LuaCamera(Camera *m) : m_camera(m)
+LuaCamera::LuaCamera(Camera *m) : m_object(m)
+{
+}
+
+LuaCamera::~LuaCamera()
 {
 }
 
@@ -166,7 +170,7 @@ LuaCamera *LuaCamera::checkobject(lua_State *L, int narg)
 
 Camera *LuaCamera::getobject(LuaCamera *ref)
 {
-	return ref->m_camera;
+	return ref->m_object;
 }
 
 Camera *LuaCamera::getobject(lua_State *L, int narg)
