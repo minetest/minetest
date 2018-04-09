@@ -52,7 +52,7 @@ extern wchar_t *utf8_to_wide_c(const char *str);
 inline const wchar_t *wgettext(const char *str)
 {
 	// We must check here that is not an empty string to avoid trying to translate it
-	return str[0] ? utf8_to_wide_c(gettext(str)) : L"";
+	return str[0] ? utf8_to_wide_c(gettext(str)) : utf8_to_wide_c("");
 }
 
 inline std::string strgettext(const std::string &text)
