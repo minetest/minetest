@@ -144,6 +144,7 @@ void PlayerSettings::readGlobalSettings()
 	always_fly_fast = g_settings->getBool("always_fly_fast");
 	aux1_descends = g_settings->getBool("aux1_descends");
 	noclip = g_settings->getBool("noclip");
+	autojump = g_settings->getBool("autojump");
 }
 
 void Player::settingsChangedCallback(const std::string &name, void *data)

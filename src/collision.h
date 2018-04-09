@@ -41,6 +41,7 @@ struct CollisionInfo
 	v3s16 node_p = v3s16(-32768,-32768,-32768); // COLLISION_NODE
 	v3f old_speed;
 	v3f new_speed;
+	int plane = -1;
 };
 
 struct collisionMoveResult
