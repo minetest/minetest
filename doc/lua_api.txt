@@ -5380,7 +5380,8 @@ Definition tables
             place = <SimpleSoundSpec>,
             place_failed = <SimpleSoundSpec>,
         },
-        drop = "",
+
+        drop = "", --[[
         ^ Name of dropped node when dug. Default is the node itself.
         ^ Alternatively:
         drop = {
@@ -5394,6 +5395,37 @@ Definition tables
                 },
             },
         },
+        ^ This can be filtered by tool type, so that different tools
+        ^ cause different drops, or so that particular tools do not
+        ^ cause particular drops:
+        minetest.register_node("stonesand:stone_sand", { description = "Stone with sand",
+            tiles = { "default_sand.png", "default_stone.png", "default_sand.png^[lowpart:50:default_stone.png" },
+            groups = { cracky=3, crumbly=3 },
+            drop = {
+                max_items = 1,
+                items = {
+                    -- If they are using a shovel, they will get a drop about 60% of the time.
+                    {
+                        tools = { "default:shovel_wood", "default:shovel_stone", "default:shovel_steel",
+                            "default:shovel_bronze", "default:shovel_mese", "default:shovel_diamond" },
+                        rarity = 2,         -- Quite common.
+                        items = { "default:sand" },
+                    },
+                    {
+                        tools = { "default:shovel_wood", "default:shovel_stone", "default:shovel_steel",
+                            "default:shovel_bronze", "default:shovel_mese", "default:shovel_diamond" },
+                        rarity = 5,         -- Less common.
+                        items = { "default:desert_sand" },
+                    },
+                    -- If they are not using a shovel, they will always get a drop.
+                    {
+                        tools = { "~default:shovel" },
+                        items = { "default:cobble" },
+                    },
+                },
+            },
+        }
+        ^ default: the node drops itself ]]
 
         on_construct = func(pos), --[[
         ^ Node constructor; called after adding node
