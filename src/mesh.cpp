@@ -61,6 +61,11 @@ void applyFacesShading(video::SColor &color, const v3f &normal)
 		applyShadeFactor(color, 0.670820f * x2 + 1.000000f * y2 + 0.836660f * z2);
 }
 
+void applyFacesShading(video::SColor &color, const v3s16 &normal)
+{
+	applyFacesShading(color, v3f(normal.X, normal.Y, normal.Z));
+}
+
 scene::IAnimatedMesh* createCubeMesh(v3f scale)
 {
 	video::SColor c(255,255,255,255);

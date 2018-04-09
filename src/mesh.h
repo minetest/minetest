@@ -27,6 +27,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
  * normal vector.
  */
 void applyFacesShading(video::SColor &color, const v3f &normal);
+void applyFacesShading(video::SColor &color, const v3s16 &normal);
 
 /*
 	Create a new cube mesh.

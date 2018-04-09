@@ -142,7 +142,8 @@ void MapblockMeshGenerator::drawQuad(v3f *coords, const v3s16 &normal,
 }
 
 // Create a cuboid.
-//  tiles     - the tiles (materials) to use (for all 6 faces)
+//  tiles     - the tiles (materials) to use (for all 6 faces), in order
+//              as in g_6dirs
 //  tilecount - number of entries in tiles, 1<=tilecount<=6
 //  lights    - vertex light levels. The order is the same as in light_dirs.
 //              NULL may be passed if smooth lighting is disabled.
@@ -161,59 +162,54 @@ void MapblockMeshGenerator::drawCuboid(const aabb3f &box,
 
 	video::SColor colors[6];
 	if (!data->m_smooth_lighting) {
+		video::SColor color = encode_light(light, f->light_source);
 		for (int face = 0; face != 6; ++face) {
-			colors[face] = encode_light(light, f->light_source);
-		}
-		if (!f->light_source) {
-			applyFacesShading(colors[0], v3f(0, 1, 0));
-			applyFacesShading(colors[1], v3f(0, -1, 0));
-			applyFacesShading(colors[2], v3f(1, 0, 0));
-			applyFacesShading(colors[3], v3f(-1, 0, 0));
-			applyFacesShading(colors[4], v3f(0, 0, 1));
-			applyFacesShading(colors[5], v3f(0, 0, -1));
+			colors[face] = color;
+			if (!f->light_source)
+				applyFacesShading(colors[face], g_6dirs[face]);
 		}
 	}
 
 	video::S3DVertex vertices[24] = {
-		// top
-		video::S3DVertex(min.X, max.Y, max.Z, 0, 1, 0, colors[0], txc[0], txc[1]),
-		video::S3DVertex(max.X, max.Y, max.Z, 0, 1, 0, colors[0], txc[2], txc[1]),
-		video::S3DVertex(max.X, max.Y, min.Z, 0, 1, 0, colors[0], txc[2], txc[3]),
-		video::S3DVertex(min.X, max.Y, min.Z, 0, 1, 0, colors[0], txc[0], txc[3]),
-		// bottom
-		video::S3DVertex(min.X, min.Y, min.Z, 0, -1, 0, colors[1], txc[4], txc[5]),
-		video::S3DVertex(max.X, min.Y, min.Z, 0, -1, 0, colors[1], txc[6], txc[5]),
-		video::S3DVertex(max.X, min.Y, max.Z, 0, -1, 0, colors[1], txc[6], txc[7]),
-		video::S3DVertex(min.X, min.Y, max.Z, 0, -1, 0, colors[1], txc[4], txc[7]),
-		// right
+		// +Z back
+		video::S3DVertex(max.X, max.Y, max.Z, 0, 0, 1, colors[0], txc[16], txc[17]),
+		video::S3DVertex(min.X, max.Y, max.Z, 0, 0, 1, colors[0], txc[18], txc[17]),
+		video::S3DVertex(min.X, min.Y, max.Z, 0, 0, 1, colors[0], txc[18], txc[19]),
+		video::S3DVertex(max.X, min.Y, max.Z, 0, 0, 1, colors[0], txc[16], txc[19]),
+		// +Y top
+		video::S3DVertex(min.X, max.Y, max.Z, 0, 1, 0, colors[1], txc[0], txc[1]),
+		video::S3DVertex(max.X, max.Y, max.Z, 0, 1, 0, colors[1], txc[2], txc[1]),
+		video::S3DVertex(max.X, max.Y, min.Z, 0, 1, 0, colors[1], txc[2], txc[3]),
+		video::S3DVertex(min.X, max.Y, min.Z, 0, 1, 0, colors[1], txc[0], txc[3]),
+		// +X right
 		video::S3DVertex(max.X, max.Y, min.Z, 1, 0, 0, colors[2], txc[ 8], txc[9]),
 		video::S3DVertex(max.X, max.Y, max.Z, 1, 0, 0, colors[2], txc[10], txc[9]),
 		video::S3DVertex(max.X, min.Y, max.Z, 1, 0, 0, colors[2], txc[10], txc[11]),
 		video::S3DVertex(max.X, min.Y, min.Z, 1, 0, 0, colors[2], txc[ 8], txc[11]),
-		// left
-		video::S3DVertex(min.X, max.Y, max.Z, -1, 0, 0, colors[3], txc[12], txc[13]),
-		video::S3DVertex(min.X, max.Y, min.Z, -1, 0, 0, colors[3], txc[14], txc[13]),
-		video::S3DVertex(min.X, min.Y, min.Z, -1, 0, 0, colors[3], txc[14], txc[15]),
-		video::S3DVertex(min.X, min.Y, max.Z, -1, 0, 0, colors[3], txc[12], txc[15]),
-		// back
-		video::S3DVertex(max.X, max.Y, max.Z, 0, 0, 1, colors[4], txc[16], txc[17]),
-		video::S3DVertex(min.X, max.Y, max.Z, 0, 0, 1, colors[4], txc[18], txc[17]),
-		video::S3DVertex(min.X, min.Y, max.Z, 0, 0, 1, colors[4], txc[18], txc[19]),
-		video::S3DVertex(max.X, min.Y, max.Z, 0, 0, 1, colors[4], txc[16], txc[19]),
-		// front
-		video::S3DVertex(min.X, max.Y, min.Z, 0, 0, -1, colors[5], txc[20], txc[21]),
-		video::S3DVertex(max.X, max.Y, min.Z, 0, 0, -1, colors[5], txc[22], txc[21]),
-		video::S3DVertex(max.X, min.Y, min.Z, 0, 0, -1, colors[5], txc[22], txc[23]),
-		video::S3DVertex(min.X, min.Y, min.Z, 0, 0, -1, colors[5], txc[20], txc[23]),
+		// -Z front
+		video::S3DVertex(min.X, max.Y, min.Z, 0, 0, -1, colors[3], txc[20], txc[21]),
+		video::S3DVertex(max.X, max.Y, min.Z, 0, 0, -1, colors[3], txc[22], txc[21]),
+		video::S3DVertex(max.X, min.Y, min.Z, 0, 0, -1, colors[3], txc[22], txc[23]),
+		video::S3DVertex(min.X, min.Y, min.Z, 0, 0, -1, colors[3], txc[20], txc[23]),
+		// -Y bottom
+		video::S3DVertex(min.X, min.Y, min.Z, 0, -1, 0, colors[4], txc[4], txc[5]),
+		video::S3DVertex(max.X, min.Y, min.Z, 0, -1, 0, colors[4], txc[6], txc[5]),
+		video::S3DVertex(max.X, min.Y, max.Z, 0, -1, 0, colors[4], txc[6], txc[7]),
+		video::S3DVertex(min.X, min.Y, max.Z, 0, -1, 0, colors[4], txc[4], txc[7]),
+		// -X left
+		video::S3DVertex(min.X, max.Y, max.Z, -1, 0, 0, colors[5], txc[12], txc[13]),
+		video::S3DVertex(min.X, max.Y, min.Z, -1, 0, 0, colors[5], txc[14], txc[13]),
+		video::S3DVertex(min.X, min.Y, min.Z, -1, 0, 0, colors[5], txc[14], txc[15]),
+		video::S3DVertex(min.X, min.Y, max.Z, -1, 0, 0, colors[5], txc[12], txc[15]),
 	};
 
 	static const u8 light_indices[24] = {
-		3, 7, 6, 2,
-		0, 4, 5, 1,
-		6, 7, 5, 4,
-		3, 2, 0, 1,
-		7, 3, 1, 5,
-		2, 6, 4, 0
+		7, 3, 1, 5, // +Z
+		3, 7, 6, 2, // +Y
+		6, 7, 5, 4, // +X
+		2, 6, 4, 0, // -Z
+		0, 4, 5, 1, // -Y
+		3, 2, 0, 1, // -X
 	};
 
 	for (int face = 0; face < 6; face++) {
@@ -1249,15 +1245,6 @@ void MapblockMeshGenerator::drawRaillikeNode()
 
 void MapblockMeshGenerator::drawNodeboxNode()
 {
-	static const v3s16 tile_dirs[6] = {
-		v3s16(0, 1, 0),
-		v3s16(0, -1, 0),
-		v3s16(1, 0, 0),
-		v3s16(-1, 0, 0),
-		v3s16(0, 0, 1),
-		v3s16(0, 0, -1)
-	};
-
 	// we have this order for some reason...
 	static const v3s16 connection_dirs[6] = {
 		v3s16( 0,  1,  0), // top
@@ -1271,7 +1258,7 @@ void MapblockMeshGenerator::drawNodeboxNode()
 	TileSpec tiles[6];
 	for (int face = 0; face < 6; face++) {
 		// Handles facedir rotation for textures
-		getTile(tile_dirs[face], &tiles[face]);
+		getTile(g_6dirs[face], &tiles[face]);
 	}
 
 	// locate possible neighboring nodes to connect to
