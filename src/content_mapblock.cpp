@@ -690,25 +690,6 @@ void MapblockMeshGenerator::drawGlasslikeNode()
 
 void MapblockMeshGenerator::drawGlasslikeFramedNode()
 {
-	TileSpec tiles[6];
-	for (int tile_id = 0; tile_id < 6; tile_id++)
-		getTile(tile_id, &tiles[tile_id]);
-
-	TileSpec glass_tiles[6];
-	if (tiles[1].layers[0].texture &&
-			tiles[2].layers[0].texture &&
-			tiles[3].layers[0].texture) {
-		glass_tiles[0] = tiles[4];
-		glass_tiles[1] = tiles[0];
-		glass_tiles[2] = tiles[4];
-		glass_tiles[3] = tiles[4];
-		glass_tiles[4] = tiles[3];
-		glass_tiles[5] = tiles[4];
-	} else {
-		for (auto &glass_tile : glass_tiles)
-			glass_tile = tiles[4];
-	}
-
 	u8 param2 = n.getParam2();
 	bool H_merge = !(param2 & 128);
 	bool V_merge = !(param2 & 64);
@@ -779,7 +760,7 @@ void MapblockMeshGenerator::drawGlasslikeFramedNode()
 		{0, 1,  8}, {0, 4, 16}, {3, 4, 17}, {3, 1,  9},
 	};
 
-	tile = tiles[1];
+	useTile(0);
 	for (int edge = 0; edge < FRAMED_EDGE_COUNT; edge++) {
 		bool edge_invisible;
 		if (nb[nb_triplet[edge][2]])
@@ -791,10 +772,10 @@ void MapblockMeshGenerator::drawGlasslikeFramedNode()
 		drawAutoLightedCuboid(frame_edges[edge]);
 	}
 
+	useTile(1);
 	for (int face = 0; face < 6; face++) {
 		if (nb[face])
 			continue;
-		tile = glass_tiles[face];
 		drawAutoLightedCuboid(glass_faces[face]);
 	}
 
