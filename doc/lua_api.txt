@@ -5383,48 +5383,33 @@ Definition tables
 
         drop = "", --[[
         ^ Name of dropped node when dug. Default is the node itself.
-        ^ Alternatively:
+        ^ Using a table allows multiple items, random selection among items,
+        ^ palette control and tool filtering:
         drop = {
             max_items = 1,  -- Maximum number of items to drop.
             items = {  -- Choose max_items randomly from this list.
+                -- If they are using a shovel, they will get a drop about 60% of the time.
                 {
-                    items = {"foo:bar", "baz:frob"},  -- Items to drop.
-                    rarity = 1,  -- Probability of dropping is 1 / rarity.
-                    inherit_color = true, -- To inherit palette color from the
-                                             node.
+                    tools = { "default:shovel_wood", "default:shovel_stone", "default:shovel_steel",
+                        "default:shovel_bronze", "default:shovel_mese", "default:shovel_diamond" },
+                    rarity = 2,  -- Probability of dropping is 1 / rarity - default:sand is common.
+                    items = { "default:sand" },  -- Items to drop.
+                },
+                {
+                    tools = { "default:shovel_wood", "default:shovel_stone", "default:shovel_steel",
+                        "default:shovel_bronze", "default:shovel_mese", "default:shovel_diamond" },
+                    rarity = 5,         -- default:desert_sand is less common.
+                    items = { "default:desert_sand" },
+                },
+                -- "~" means "a tool not matching the following expression" - string.find is used for the match.
+                -- So if they are not using some sort of shovel, they will always get these items:
+                {
+                    tools = { "~default:shovel" },
+                    items = {"foo:bar", "baz:frob"},
+                    inherit_color = true, -- To inherit palette color from the node.
                 },
             },
         },
-        ^ This can be filtered by tool type, so that different tools
-        ^ cause different drops, or so that particular tools do not
-        ^ cause particular drops:
-        minetest.register_node("stonesand:stone_sand", { description = "Stone with sand",
-            tiles = { "default_sand.png", "default_stone.png", "default_sand.png^[lowpart:50:default_stone.png" },
-            groups = { cracky=3, crumbly=3 },
-            drop = {
-                max_items = 1,
-                items = {
-                    -- If they are using a shovel, they will get a drop about 60% of the time.
-                    {
-                        tools = { "default:shovel_wood", "default:shovel_stone", "default:shovel_steel",
-                            "default:shovel_bronze", "default:shovel_mese", "default:shovel_diamond" },
-                        rarity = 2,         -- Quite common.
-                        items = { "default:sand" },
-                    },
-                    {
-                        tools = { "default:shovel_wood", "default:shovel_stone", "default:shovel_steel",
-                            "default:shovel_bronze", "default:shovel_mese", "default:shovel_diamond" },
-                        rarity = 5,         -- Less common.
-                        items = { "default:desert_sand" },
-                    },
-                    -- If they are not using a shovel, they will always get a drop.
-                    {
-                        tools = { "~default:shovel" },
-                        items = { "default:cobble" },
-                    },
-                },
-            },
-        }
         ^ default: the node drops itself ]]
 
         on_construct = func(pos), --[[
