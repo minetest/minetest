@@ -653,8 +653,6 @@ void MapblockMeshGenerator::drawLiquidNode()
 
 void MapblockMeshGenerator::drawGlasslikeNode()
 {
-	useTile(0, 0, 0);
-
 	for (int face = 0; face < 6; face++) {
 		// Check this neighbor
 		v3s16 dir = g_6dirs[face];
@@ -663,6 +661,9 @@ void MapblockMeshGenerator::drawGlasslikeNode()
 		// Don't make face if neighbor is of same type
 		if (neighbor.getContent() == n.getContent())
 			continue;
+		getTile(dir, &tile);
+		if (!data->m_smooth_lighting)
+			color = encode_light(light, f->light_source);
 		// Face at Z-
 		v3f vertices[4] = {
 			v3f(-BS / 2,  BS / 2, -BS / 2),
