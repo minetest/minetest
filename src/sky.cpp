@@ -137,13 +137,17 @@ void Sky::render()
 	if (m_sunlight_seen) {
 		float sunsize = 0.07;
 		video::SColorf suncolor_f(1, 1, 0, 1);
-		suncolor_f.r = 1;
-		suncolor_f.g = MYMAX(0.3, MYMIN(1.0, 0.7 + m_time_brightness * 0.5));
-		suncolor_f.b = MYMAX(0.0, m_brightness * 0.95);
+		//suncolor_f.r = 1;
+		//suncolor_f.g = MYMAX(0.3, MYMIN(1.0, 0.7 + m_time_brightness * 0.5));
+		//suncolor_f.b = MYMAX(0.0, m_brightness * 0.95);
 		video::SColorf suncolor2_f(1, 1, 1, 1);
-		suncolor2_f.r = 1;
-		suncolor2_f.g = MYMAX(0.3, MYMIN(1.0, 0.85 + m_time_brightness * 0.5));
-		suncolor2_f.b = MYMAX(0.0, m_brightness);
+		// The values below were probably meant to be suncolor2_f instead of a
+		// reassignment of suncolor_f. However, the resulting colour was chosen
+		// and is our long-running classic colour. So preserve, but comment-out
+		// the unnecessary first assignments above.
+		suncolor_f.r = 1;
+		suncolor_f.g = MYMAX(0.3, MYMIN(1.0, 0.85 + m_time_brightness * 0.5));
+		suncolor_f.b = MYMAX(0.0, m_brightness);
 
 		float moonsize = 0.04;
 		video::SColorf mooncolor_f(0.50, 0.57, 0.65, 1);
