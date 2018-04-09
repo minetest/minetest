@@ -695,8 +695,8 @@ void MapblockMeshGenerator::drawGlasslikeNode()
 void MapblockMeshGenerator::drawGlasslikeFramedNode()
 {
 	TileSpec tiles[6];
-	for (int face = 0; face < 6; face++)
-		getTile(g_6dirs[face], &tiles[face]);
+	for (int tile_id = 0; tile_id < 6; tile_id++)
+		getTile(tile_id, &tiles[tile_id]);
 
 	TileSpec glass_tiles[6];
 	if (tiles[1].layers[0].texture &&
