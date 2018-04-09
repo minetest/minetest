@@ -219,7 +219,7 @@ function core.get_node_drops(node, toolname)
 		if item.tools ~= nil and toolname then
 			for _, tool in ipairs(item.tools) do
 				if tool:sub(1, 1) == '~' then
-					good_tool = toolname:find(tool:sub(2)) ~= nil
+					good_tool = toolname:find(tool:sub(2)) == nil
 				else
 					good_tool = toolname == tool
 				end

@@ -5394,7 +5394,34 @@ Definition tables
                 },
             },
         },
-
+        ^ This can be filtered by tool type, so that different tools
+        ^ cause different drops, or so that particular tools do not
+        ^ cause particular drops:
+        minetest.register_node("stonesand:stonesand", { description = "Stonesand",
+            tiles = { "default_stone.png^[lowpart:50:default_sand.png" },
+            groups = { cracky=3, crumbly=3 },
+            drop = {
+                max_items = 1,
+                items = {
+                    -- If they are using a shovel, they will get a drop about 60% of the time.
+                    {
+                        tools = { "default:shovel" },
+                        rarity = 2,         -- Quite common.
+                        items = { "default:sand" },
+                    },
+                    {
+                        tools = { "default:shovel" },
+                        rarity = 5,         -- Less common.
+                        items = { "default:desert_sand" },
+                    },
+                    -- If they are not using a shovel, they will always get a drop.
+                    {
+                        tools = { "~default:shovel" },
+                        items = { "default:cobble" },
+                    },
+                },
+            },
+        }
         on_construct = func(pos), --[[
         ^ Node constructor; called after adding node
         ^ Can set up metadata and stuff like that
