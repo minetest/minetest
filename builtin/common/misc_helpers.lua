@@ -312,8 +312,7 @@ function core.formspec_escape(text)
 	return text
 end
 
-
-function core.wrap_text(text, max_length, as_table)
+function core.linebreaker function(text, max_length)
 	local result = {}
 	local line = {}
 	if #text <= max_length then
@@ -331,6 +330,19 @@ function core.wrap_text(text, max_length, as_table)
 	end
 
 	table.insert(result, table.concat(line, ' '))
+	return result
+end
+
+function core.wrap_text(text, max_length, as_table, keep_newlines)
+	local result = {}
+	if keep_newlines then
+		for s in string.gmatch(text, "([^\n]*)") do
+			local l = core.linebreaker(text, max_length)
+			table.insert(result,l)
+		end
+	else
+		result = core.linebreaker(text, max_length)
+	end
 	return as_table and result or table.concat(result, '\n')
 end
 
