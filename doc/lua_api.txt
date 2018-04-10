@@ -1004,13 +1004,13 @@ Look for examples in `games/minimal` or `games/minetest_game`.
     * All face-connected nodes are drawn as one volume within a surrounding
       frame.
     * The frame appearence is generated from the edges of the first texture
-      specified in `tiles`. The width of the edges used are 1/16th of texture
-      size: 1 pixel for 16x16, 2 pixels for 32x32 etc.
+      specified in `special_tiles`. The width of the edges used are 1/16th
+      of texture size: 1 pixel for 16x16, 2 pixels for 32x32 etc.
     * The glass 'shine' (or other desired detail) on each node face is supplied
-      by the second texture specified in `tiles`.
+      by the texture specified in `tiles`.
 * `glasslike_framed_optional`
     * This switches between the above 2 drawtypes according to the menu setting
-      'Connected Glass'.
+      'Connected Glass'. `tiles` should be specified as for `glasslike_framed`.
 * `allfaces`
     * Often used for partially-transparent nodes.
     * External and internal sides of textures are visible.

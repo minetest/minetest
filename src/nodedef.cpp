@@ -780,17 +780,56 @@ void ContentFeatures::updateTextures(ITextureSource *tsrc, IShaderSource *shdsrc
 	case NDT_GLASSLIKE_FRAMED:
 		solidness = 0;
 		visual_solidness = 1;
+		if (tdef_spec[0].name.empty()
+				|| (param_type_2 == CPT2_GLASSLIKE_LIQUID_LEVEL
+				&& tdef_spec[1].name.empty())) {
+			// legacy format: tiles[0] is frame with details,
+			// tiles[1] is details only
+			tdef_spec[1] = std::move(tdef_spec[0]);
+			tdef_spec[0] = std::move(tdef[0]);
+			for (u32 j = 0; j < 6; j++) {
+				if (j == 1)
+					continue;
+				tdef[j] = tdef[1];
+				tdef_overlay[j] = tdef_overlay[1];
+			}
+		}
 		break;
 	case NDT_GLASSLIKE_FRAMED_OPTIONAL:
 		solidness = 0;
 		visual_solidness = 1;
 		if (tsettings.connected_glass) {
 			drawtype = NDT_GLASSLIKE_FRAMED;
+			if (tdef_spec[0].name.empty()
+					|| (param_type_2 == CPT2_GLASSLIKE_LIQUID_LEVEL
+					&& tdef_spec[1].name.empty())) {
+				// legacy format: tiles[0] is frame with details,
+				// tiles[1] is details only
+				tdef_spec[1] = std::move(tdef_spec[0]);
+				tdef_spec[0] = std::move(tdef[0]);
+				for (u32 j = 0; j < 6; j++) {
+					if (j == 1)
+						continue;
+					tdef[j] = tdef[1];
+					tdef_overlay[j] = tdef_overlay[1];
+				}
+			}
 		} else {
 			drawtype = NDT_GLASSLIKE;
-			for (u32 j = 1; j < 6; j++) {
-				tdef[j] = tdef[0];
-				tdef_overlay[j] = tdef_overlay[0];
+			if ((param_type_2 != CPT2_GLASSLIKE_LIQUID_LEVEL
+					&& !tdef_spec[0].name.empty())
+					|| !tdef_spec[1].name.empty()) {
+				// modern format: details in `tiles`,
+				// frame in special_tiles[0]
+				for (u32 j = 0; j < 6; j++)
+					tdef[j].name += "^" + tdef_spec[0].name;
+			} else {
+				// legacy format: tiles[0] is frame with details,
+				// tiles[1] is details only
+				for (u32 j = 1; j < 6; j++) {
+					tdef[j] = tdef[0];
+					tdef_overlay[j] = tdef_overlay[0];
+				}
 			}
 		}
 		break;

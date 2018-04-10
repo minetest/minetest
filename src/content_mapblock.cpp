@@ -762,7 +762,7 @@ void MapblockMeshGenerator::drawGlasslikeFramedNode()
 		{0, 1,  8}, {0, 4, 16}, {3, 4, 17}, {3, 1,  9},
 	};
 
-	useTile(0);
+	getSpecialTile(0, &tile);
 	for (int edge = 0; edge < FRAMED_EDGE_COUNT; edge++) {
 		bool edge_invisible;
 		if (nb[nb_triplet[edge][2]])
@@ -774,10 +774,10 @@ void MapblockMeshGenerator::drawGlasslikeFramedNode()
 		drawAutoLightedCuboid(frame_edges[edge]);
 	}
 
-	useTile(1);
 	for (int face = 0; face < 6; face++) {
 		if (nb[face])
 			continue;
+		getTile(g_6dirs[face], &tile);
 		drawAutoLightedCuboid(glass_faces[face]);
 	}
 
@@ -788,7 +788,7 @@ void MapblockMeshGenerator::drawGlasslikeFramedNode()
 		// Internal liquid level has param2 range 0 .. 63,
 		// convert it to -0.5 .. 0.5
 		float vlev = (param2 / 63.0) * 2.0 - 1.0;
-		getSpecialTile(0, &tile);
+		getSpecialTile(1, &tile);
 		drawAutoLightedCuboid(aabb3f(-(nb[5] ? g : b),
 		                             -(nb[4] ? g : b),
 		                             -(nb[3] ? g : b),
