@@ -86,6 +86,15 @@
 #    type: bool
 # continuous_forward = false
 
+#    The length in pixels it takes for touch screen interaction to start.
+#    type: int
+# touchscreen_threshold = 20
+
+#    (Android) Fixes the position of virtual joystick.
+#    If disabled, virtual joystick will center to first-touch's position.
+#    type: int
+# fixed_virtual_joystick = false
+
 #    Enable Joysticks
 #    type: bool
 # enable_joysticks = false
