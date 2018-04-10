@@ -162,7 +162,7 @@ void MapblockMeshGenerator::drawCuboid(const aabb3f &box,
 
 	video::SColor colors[6];
 	if (!data->m_smooth_lighting) {
-		video::SColor color = encode_light(light, f->light_source);
+		color = encode_light(light, f->light_source);
 		for (int face = 0; face != 6; ++face) {
 			colors[face] = color;
 			if (!f->light_source)
@@ -649,6 +649,8 @@ void MapblockMeshGenerator::drawLiquidNode()
 
 void MapblockMeshGenerator::drawGlasslikeNode()
 {
+	if (!data->m_smooth_lighting)
+		color = encode_light(light, f->light_source);
 	for (int face = 0; face < 6; face++) {
 		// Check this neighbor
 		v3s16 dir = g_6dirs[face];
@@ -658,8 +660,6 @@ void MapblockMeshGenerator::drawGlasslikeNode()
 		if (neighbor.getContent() == n.getContent())
 			continue;
 		getTile(dir, &tile);
-		if (!data->m_smooth_lighting)
-			color = encode_light(light, f->light_source);
 		// Face at Z-
 		v3f vertices[4] = {
 			v3f(-BS / 2,  BS / 2, -BS / 2),
@@ -690,6 +690,8 @@ void MapblockMeshGenerator::drawGlasslikeNode()
 
 void MapblockMeshGenerator::drawGlasslikeFramedNode()
 {
+	if (!data->m_smooth_lighting)
+		color = encode_light(light, f->light_source);
 	u8 param2 = n.getParam2();
 	bool H_merge = !(param2 & 128);
 	bool V_merge = !(param2 & 64);
