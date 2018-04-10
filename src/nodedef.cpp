@@ -784,7 +784,15 @@ void ContentFeatures::updateTextures(ITextureSource *tsrc, IShaderSource *shdsrc
 	case NDT_GLASSLIKE_FRAMED_OPTIONAL:
 		solidness = 0;
 		visual_solidness = 1;
-		drawtype = tsettings.connected_glass ? NDT_GLASSLIKE_FRAMED : NDT_GLASSLIKE;
+		if (tsettings.connected_glass) {
+			drawtype = NDT_GLASSLIKE_FRAMED;
+		} else {
+			drawtype = NDT_GLASSLIKE;
+			for (u32 j = 1; j < 6; j++) {
+				tdef[j] = tdef[0];
+				tdef_overlay[j] = tdef_overlay[0];
+			}
+		}
 		break;
 	case NDT_ALLFACES:
 		solidness = 0;
