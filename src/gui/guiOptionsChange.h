@@ -23,18 +23,27 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #include "modalMenu.h"
 #include <string>
 
-class GUIVolumeChange : public GUIModalMenu
+class GUIOptionsChange : public GUIModalMenu
 {
 public:
-	GUIVolumeChange(gui::IGUIEnvironment* env,
+	GUIOptionsChange(gui::IGUIEnvironment* env,
 			gui::IGUIElement* parent, s32 id,
 			IMenuManager *menumgr);
-	~GUIVolumeChange();
-
-	void removeChildren();
+	~GUIOptionsChange();
 	/*
 		Remove and re-add (or reposition) stuff
 	*/
+	void addCheckBox(const std::string& name, const std::string& setting, int ID, int xoff, int yoff);
+	
+	void addSlider(int ID, int max, int min, int init, int xoff, int yoff);
+	
+	//dynamic text
+	void addDynText(const std::string& name, int value, const std::string& ending, int ID, int xoff, int yoff);
+	
+	void addText(const std::string& name, int ID, int xoff, int yoff);
+	
+	void updateDynText(const SEvent& event, const std::string& setting, int scale, int ID, const std::string& beginning, const std::string& ending);
+	
 	void regenerateGui(v2u32 screensize);
 
 	void drawMenu();
@@ -42,4 +51,6 @@ public:
 	bool OnEvent(const SEvent& event);
 
 	bool pausesGame() { return true; }
+private:
+	v2s32 m_size;
 };

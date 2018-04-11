@@ -40,6 +40,15 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define WIELDMESH_OFFSET_X 55.0f
 #define WIELDMESH_OFFSET_Y -35.0f
 
+void Camera::onSettingsChange(const std::string &name){
+	if (name == "fov")
+		m_cache_fov = g_settings->getFloat("fov");
+}
+
+void Camera::settingsCallback(const std::string &name, void *userdata){
+	reinterpret_cast<Camera*>(userdata)->onSettingsChange(name);
+}
+
 Camera::Camera(MapDrawControl &draw_control, Client *client):
 	m_draw_control(draw_control),
 	m_client(client)
@@ -60,11 +69,7 @@ Camera::Camera(MapDrawControl &draw_control, Client *client):
 	m_wieldnode->setItem(ItemStack(), m_client);
 	m_wieldnode->drop(); // m_wieldmgr grabbed it
 
-	/* TODO: Add a callback function so these can be updated when a setting
-	 *       changes.  At this point in time it doesn't matter (e.g. /set
-	 *       is documented to change server settings only)
-	 *
-	 * TODO: Local caching of settings is not optimal and should at some stage
+	/* TODO: Local caching of settings is not optimal and should at some stage
 	 *       be updated to use a global settings object for getting thse values
 	 *       (as opposed to the this local caching). This can be addressed in
 	 *       a later release.
@@ -73,12 +78,16 @@ Camera::Camera(MapDrawControl &draw_control, Client *client):
 	m_cache_view_bobbing_amount = g_settings->getFloat("view_bobbing_amount");
 	m_cache_fov                 = g_settings->getFloat("fov");
 	m_arm_inertia               = g_settings->getBool("arm_inertia");
+	// settings callbacks
+	g_settings->registerChangedCallback("fov", settingsCallback, this);
+	
 	m_nametags.clear();
 }
 
 Camera::~Camera()
 {
 	m_wieldmgr->drop();
+	g_settings->deregisterChangedCallback("fov", settingsCallback, this);
 }
 
 bool Camera::successfullyCreated(std::string &error_message)
