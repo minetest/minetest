@@ -501,6 +501,8 @@ void getItemMesh(Client *client, const ItemStack &item, ItemMesh *result)
 	const ContentFeatures &f = ndef->get(def.name);
 	content_t id = ndef->getId(def.name);
 
+	FATAL_ERROR_IF(!g_extrusion_mesh_cache, "Extrusion mesh cache is not yet initialized");
+	
 	scene::SMesh *mesh = nullptr;
 
 	// Shading is on by default
