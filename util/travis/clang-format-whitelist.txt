@@ -1,4 +1,4 @@
-src/activeobject.h
+src/gui/guiConfirmRegistration.cppsrc/activeobject.h
 src/ban.cpp
 src/camera.cpp
 src/camera.h
@@ -406,3 +406,5 @@ src/voxelalgorithms.h
 src/voxel.cpp
 src/voxel.h
 src/wieldmesh.cpp
+src/remoteplayer.h
+src/gui/guiConfirmRegistration.cpp
