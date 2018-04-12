@@ -338,7 +338,13 @@ function core.wrap_text(text, max_length, as_table, keep_newlines)
 	if keep_newlines then
 		for s in string.gmatch(text, "([^\n]*)") do
 			local l = core.linebreaker(text, max_length)
-			table.insert(result,l)
+			if #l==0 then
+				table.insert(result,"")
+			else
+				for _,e in l do
+					table.insert(result,e)
+				end
+			end
 		end
 	else
 		result = core.linebreaker(text, max_length)
