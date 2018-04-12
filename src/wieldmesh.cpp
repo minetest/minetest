@@ -501,12 +501,6 @@ void getItemMesh(Client *client, const ItemStack &item, ItemMesh *result)
 	const ContentFeatures &f = ndef->get(def.name);
 	content_t id = ndef->getId(def.name);
 
-	if (!g_extrusion_mesh_cache) {
-		g_extrusion_mesh_cache = new ExtrusionMeshCache();
-	} else {
-		g_extrusion_mesh_cache->grab();
-	}
-
 	scene::SMesh *mesh = nullptr;
 
 	// Shading is on by default
