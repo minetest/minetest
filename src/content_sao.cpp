@@ -1473,3 +1473,8 @@ bool PlayerSAO::getSelectionBox(aabb3f *toset) const
 
 	return true;
 }
+
+float PlayerSAO::getZoomFOV() const
+{
+	return m_prop.zoom_fov;
+}
