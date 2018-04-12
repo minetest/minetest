@@ -1,4 +1,4 @@
-src/gui/guiConfirmRegistration.cppsrc/activeobject.h
+src/activeobject.h
 src/ban.cpp
 src/camera.cpp
 src/camera.h
