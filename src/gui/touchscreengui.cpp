@@ -41,7 +41,8 @@ using namespace irr::core;
 
 const char **touchgui_button_imagenames = (const char*[]) {
 	"jump_btn.png",
-	"down.png"
+	"down.png",
+	"zoom.png"
 };
 
 const char **touchgui_joystick_imagenames = (const char *[]) {
@@ -78,6 +79,9 @@ static irr::EKEY_CODE id2keycode(touch_gui_button_id id)
 		case crunch_id:
 			key = "sneak";
 			break;
+		case zoom_id:
+			key = "zoom";
+			break;
 		case fly_id:
 			key = "freemove";
 			break;
@@ -89,6 +93,12 @@ static irr::EKEY_CODE id2keycode(touch_gui_button_id id)
 			break;
 		case debug_id:
 			key = "toggle_debug";
+			break;
+		case toggle_chat_id:
+			key = "toggle_chat";
+			break;
+		case minimap_id:
+			key = "minimap";
 			break;
 		case chat_id:
 			key = "chat";
@@ -246,6 +256,17 @@ void AutoHideButtonBar::addButton(touch_gui_button_id button_id,
 	m_buttons.push_back(btn);
 }
 
+void AutoHideButtonBar::addToggleButton(touch_gui_button_id button_id,
+		const wchar_t* caption, const char* btn_image_1,
+		const char* btn_image_2)
+{
+	addButton(button_id, caption, btn_image_1);
+	button_info *btn = m_buttons.back();
+	btn->togglable = 1;
+	btn->textures.push_back(btn_image_1);
+	btn->textures.push_back(btn_image_2);
+}
+
 bool AutoHideButtonBar::isButton(const SEvent &event)
 {
 	IGUIElement* rootguielement = m_guienv->getRootGUIElement();
@@ -290,6 +311,18 @@ bool AutoHideButtonBar::isButton(const SEvent &event)
 				(*iter)->ids.push_back(event.TouchInput.ID);
 
 				m_timeout = 0;
+
+				if ((*iter)->togglable == 1) {
+					(*iter)->togglable = 2;
+					load_button_texture(*iter, (*iter)->textures[1],
+							(*iter)->guibutton->getRelativePosition(),
+							m_texturesource, m_driver);
+				} else if ((*iter)->togglable == 2) {
+					(*iter)->togglable = 1;
+					load_button_texture(*iter, (*iter)->textures[0],
+							(*iter)->guibutton->getRelativePosition(),
+							m_texturesource, m_driver);
+				}
 
 				return true;
 			}
@@ -519,6 +552,14 @@ void TouchScreenGUI::init(ISimpleTextureSource* tsrc)
 					m_screensize.Y),
 			L"H",false);
 
+	// init crunch button
+	initButton(zoom_id,
+			rect<s32>(m_screensize.X - (1.25 * button_size),
+					m_screensize.Y - (2.5 * button_size),
+					m_screensize.X - (0.25 * button_size),
+					m_screensize.Y - (1.5 * button_size)),
+			L"z",false);
+
 	m_settingsbar.init(m_texturesource, "gear_icon.png", settings_starter_id,
 			v2s32(m_screensize.X - (button_size / 2),
 					m_screensize.Y - ((SETTINGS_BAR_Y_OFFSET + 1) * button_size)
@@ -528,12 +569,17 @@ void TouchScreenGUI::init(ISimpleTextureSource* tsrc)
 							+ (button_size * 0.5)), AHBB_Dir_Right_Left,
 			3.0);
 
-	m_settingsbar.addButton(fly_id,    L"fly",       "fly_btn.png");
-	m_settingsbar.addButton(noclip_id, L"noclip",    "noclip_btn.png");
-	m_settingsbar.addButton(fast_id,   L"fast",      "fast_btn.png");
-	m_settingsbar.addButton(debug_id,  L"debug",     "debug_btn.png");
-	m_settingsbar.addButton(camera_id, L"camera",    "camera_btn.png");
-	m_settingsbar.addButton(range_id,  L"rangeview", "rangeview_btn.png");
+	m_settingsbar.addButton(fly_id,     L"fly",       "fly_btn.png");
+	m_settingsbar.addButton(noclip_id,  L"noclip",    "noclip_btn.png");
+	m_settingsbar.addButton(fast_id,    L"fast",      "fast_btn.png");
+	m_settingsbar.addButton(debug_id,   L"debug",     "debug_btn.png");
+	m_settingsbar.addButton(camera_id,  L"camera",    "camera_btn.png");
+	m_settingsbar.addButton(range_id,   L"rangeview", "rangeview_btn.png");
+	m_settingsbar.addButton(minimap_id, L"minimap",   "minimap_btn.png");
+
+	// Chat is shown by default, so chat_hide_btn.png is shown first.
+	m_settingsbar.addToggleButton(toggle_chat_id,  L"togglechat",
+			"chat_hide_btn.png", "chat_show_btn.png");
 
 	m_rarecontrolsbar.init(m_texturesource, "rare_controls.png",
 			rare_controls_starter_id,

@@ -36,6 +36,7 @@ using namespace irr::gui;
 typedef enum {
 	jump_id = 0,
 	crunch_id,
+	zoom_id,
 	after_last_element_id,
 	settings_starter_id,
 	rare_controls_starter_id,
@@ -45,6 +46,8 @@ typedef enum {
 	debug_id,
 	camera_id,
 	range_id,
+	minimap_id,
+	toggle_chat_id,
 	chat_id,
 	inventory_id,
 	drop_id,
@@ -70,7 +73,7 @@ typedef enum {
 #define MAX_TOUCH_COUNT 64
 #define BUTTON_REPEAT_DELAY 0.2f
 
-#define SETTINGS_BAR_Y_OFFSET 6.5
+#define SETTINGS_BAR_Y_OFFSET 5
 #define RARE_CONTROLS_BAR_Y_OFFSET 4
 
 extern const char **touchgui_button_imagenames;
@@ -84,6 +87,10 @@ struct button_info
 	std::vector<int> ids;
 	IGUIButton *guibutton = nullptr;
 	bool immediate_release;
+
+	// 0: false, 1: (true) first texture, 2: (true) second texture
+	int togglable = 0;
+	std::vector<const char *> textures;
 };
 
 class AutoHideButtonBar
@@ -100,6 +107,10 @@ public:
 	// add button to be shown
 	void addButton(touch_gui_button_id id, const wchar_t *caption,
 			const char *btn_image);
+
+	// add toggle button to be shown
+	void addToggleButton(touch_gui_button_id id, const wchar_t *caption,
+			const char *btn_image_1, const char *btn_image_2);
 
 	// detect settings bar button events
 	bool isButton(const SEvent &event);
