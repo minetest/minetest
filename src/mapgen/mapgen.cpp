@@ -43,6 +43,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mapgen_carpathian.h"
 #include "mapgen_flat.h"
 #include "mapgen_fractal.h"
+#include "mapgen_planet.h"
 #include "mapgen_v5.h"
 #include "mapgen_v6.h"
 #include "mapgen_v7.h"
@@ -88,6 +89,7 @@ static MapgenDesc g_reg_mapgens[] = {
 	{"valleys",    true},
 	{"singlenode", true},
 	{"carpathian", true},
+	{"planet",     true},
 };
 
 STATIC_ASSERT(
@@ -167,6 +169,8 @@ Mapgen *Mapgen::createMapgen(MapgenType mgtype, int mgid,
 		return new MapgenV7(mgid, (MapgenV7Params *)params, emerge);
 	case MAPGEN_VALLEYS:
 		return new MapgenValleys(mgid, (MapgenValleysParams *)params, emerge);
+	case MAPGEN_PLANET:
+		return new MapgenPlanet(mgid, (MapgenPlanetParams *)params, emerge);
 	default:
 		return NULL;
 	}
@@ -192,6 +196,8 @@ MapgenParams *Mapgen::createMapgenParams(MapgenType mgtype)
 		return new MapgenV7Params;
 	case MAPGEN_VALLEYS:
 		return new MapgenValleysParams;
+	case MAPGEN_PLANET:
+		return new MapgenPlanetParams;
 	default:
 		return NULL;
 	}
@@ -596,16 +602,19 @@ MapgenBasic::MapgenBasic(int mapgenid, MapgenParams *params, EmergeManager *emer
 	biomemap = biomegen->biomemap;
 
 	//// Look up some commonly used content
+	c_air                = ndef->getId("mapgen_air");
 	c_stone              = ndef->getId("mapgen_stone");
-	c_desert_stone       = ndef->getId("mapgen_desert_stone");
-	c_sandstone          = ndef->getId("mapgen_sandstone");
 	c_water_source       = ndef->getId("mapgen_water_source");
 	c_river_water_source = ndef->getId("mapgen_river_water_source");
 	c_lava_source        = ndef->getId("mapgen_lava_source");
+	c_desert_stone       = ndef->getId("mapgen_desert_stone");
+	c_sandstone          = ndef->getId("mapgen_sandstone");
 
 	// Fall back to more basic content if not defined
 	// river_water_source cannot fallback to water_source because river water
 	// needs to be non-renewable and have a short flow range.
+	if (c_air == CONTENT_IGNORE)
+		c_air = CONTENT_AIR;
 	if (c_desert_stone == CONTENT_IGNORE)
 		c_desert_stone = c_stone;
 	if (c_sandstone == CONTENT_IGNORE)
@@ -664,7 +673,7 @@ void MapgenBasic::generateBiomes()
 		// Check node at base of mapchunk above, either a node of a previously
 		// generated mapchunk or if not, a node of overgenerated base terrain.
 		content_t c_above = vm->m_data[vi + em.X].getContent();
-		bool air_above = c_above == CONTENT_AIR;
+		bool air_above = ndef->get(c_above).air_equivalent;
 		bool river_water_above = c_above == c_river_water_source;
 		bool water_above = c_above == c_water_source || river_water_above;
 
@@ -677,18 +686,17 @@ void MapgenBasic::generateBiomes()
 		for (s16 y = node_max.Y; y >= node_min.Y; y--) {
 			content_t c = vm->m_data[vi].getContent();
 			// Biome is (re)calculated:
-			// 1. At the surface of stone below air or water.
-			// 2. At the surface of water below air.
-			// 3. When stone or water is detected but biome has not yet been calculated.
-			// 4. When stone or water is detected just below a biome's lower limit.
+			// 1. At column top.
+			// 2. Just below the currently active biome's lower limit.
+			// 3. At the surface of stone below air or water.
+			// 4. At the surface of water below air.
 			bool is_stone_surface = (c == c_stone) &&
-				(air_above || water_above || !biome || y < biome_y_min); // 1, 3, 4
-
+				(air_above || water_above);
 			bool is_water_surface =
-				(c == c_water_source || c == c_river_water_source) &&
-				(air_above || !biome || y < biome_y_min); // 2, 3, 4
+				(c == c_water_source || c == c_river_water_source) && air_above;
 
-			if (is_stone_surface || is_water_surface) {
+			if (y == node_max.Y || y < biome_y_min ||
+					is_stone_surface || is_water_surface) {
 				// (Re)calculate biome
 				biome = biomegen->getBiomeAtIndex(index, v3s16(x, y, z));
 
@@ -749,7 +757,8 @@ void MapgenBasic::generateBiomes()
 				air_above = false;
 				water_above = true;
 				river_water_above = true;
-			} else if (c == CONTENT_AIR) {
+			} else if (c == c_air) {
+				vm->m_data[vi] = MapNode(biome->c_air);
 				nplaced = 0;  // Enable top/filler placement for next surface
 				air_above = true;
 				water_above = false;
@@ -784,13 +793,13 @@ void MapgenBasic::dustTopNodes()
 		content_t c_full_max = vm->m_data[vi].getContent();
 		s16 y_start;
 
-		if (c_full_max == CONTENT_AIR) {
+		if (ndef->get(c_full_max).air_equivalent) {
 			y_start = full_node_max.Y - 1;
 		} else if (c_full_max == CONTENT_IGNORE) {
 			vi = vm->m_area.index(x, node_max.Y + 1, z);
 			content_t c_max = vm->m_data[vi].getContent();
 
-			if (c_max == CONTENT_AIR)
+			if (ndef->get(c_max).air_equivalent)
 				y_start = node_max.Y;
 			else
 				continue;
@@ -800,7 +809,8 @@ void MapgenBasic::dustTopNodes()
 
 		vi = vm->m_area.index(x, y_start, z);
 		for (s16 y = y_start; y >= node_min.Y - 1; y--) {
-			if (vm->m_data[vi].getContent() != CONTENT_AIR)
+			content_t c_loop = vm->m_data[vi].getContent();
+			if (!ndef->get(c_loop).air_equivalent)
 				break;
 
 			VoxelArea::add_y(em, vi, -1);
@@ -829,10 +839,10 @@ void MapgenBasic::generateCaves(s16 max_stone_y, s16 large_cave_depth)
 	if (max_stone_y < node_min.Y)
 		return;
 
-	CavesNoiseIntersection caves_noise(ndef, m_bmgr, csize,
-		&np_cave1, &np_cave2, seed, cave_width);
+	CavesNoiseIntersection caves_noise(ndef, csize,
+		&np_cave1, &np_cave2, seed, cave_width, biomegen);
 
-	caves_noise.generateCaves(vm, node_min, node_max, biomemap);
+	caves_noise.generateCaves(vm, node_min, node_max);
 
 	if (node_max.Y > large_cave_depth)
 		return;
@@ -855,7 +865,7 @@ bool MapgenBasic::generateCaverns(s16 max_stone_y)
 		return false;
 
 	CavernsNoise caverns_noise(ndef, csize, &np_cavern,
-		seed, cavern_limit, cavern_taper, cavern_threshold);
+		seed, cavern_limit, cavern_taper, cavern_threshold, biomegen);
 
 	return caverns_noise.generateCaverns(vm, node_min, node_max);
 }
@@ -873,6 +883,7 @@ void MapgenBasic::generateDungeons(s16 max_stone_y)
 	DungeonParams dp;
 
 	dp.seed             = seed;
+	dp.c_air            = biome->c_air;
 	dp.only_in_ground   = true;
 	dp.corridor_len_min = 1;
 	dp.corridor_len_max = 13;

@@ -376,6 +376,11 @@ struct ContentFeatures
 	// Liquids flow into and replace node
 	bool floodable;
 
+	// --- CONTENT_AIR EQUIVALENCE ---
+
+	// Node is treated like CONTENT_AIR. Used for biome-defined air nodes
+	bool air_equivalent;
+
 	// --- NODEBOXES ---
 
 	NodeBox node_box;

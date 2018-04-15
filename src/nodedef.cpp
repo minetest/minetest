@@ -389,6 +389,7 @@ void ContentFeatures::reset()
 	buildable_to = false;
 	floodable = false;
 	rightclickable = true;
+	air_equivalent = false;
 	leveled = 0;
 	liquid_type = LIQUID_NONE;
 	liquid_alternative_flowing = "";
@@ -488,6 +489,9 @@ void ContentFeatures::serialize(std::ostream &os, u16 protocol_version) const
 	writeU8(os, liquid_range);
 	writeU8(os, drowning);
 	writeU8(os, floodable);
+
+	// CONTENT_AIR equivalence
+	writeU8(os, air_equivalent);
 
 	// node boxes
 	node_box.serialize(os, protocol_version);
@@ -598,6 +602,9 @@ void ContentFeatures::deSerialize(std::istream &is)
 	liquid_range = readU8(is);
 	drowning = readU8(is);
 	floodable = readU8(is);
+
+	// CONTENT_AIR equivalence
+	air_equivalent = readU8(is);	
 
 	// node boxes
 	node_box.deSerialize(is);
@@ -998,6 +1005,7 @@ void NodeDefManager::clear()
 		f.buildable_to        = true;
 		f.floodable           = true;
 		f.is_ground_content   = true;
+		f.air_equivalent      = true;
 		// Insert directly into containers
 		content_t c = CONTENT_AIR;
 		m_content_features[c] = f;

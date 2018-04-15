@@ -409,6 +409,7 @@ Biome *read_biome_def(lua_State *L, int index, const NodeDefManager *ndef)
 	nn.push_back(getstringfield_default(L, index, "node_dungeon",       ""));
 	nn.push_back(getstringfield_default(L, index, "node_dungeon_alt",   ""));
 	nn.push_back(getstringfield_default(L, index, "node_dungeon_stair", ""));
+	nn.push_back(getstringfield_default(L, index, "node_air",           ""));
 	ndef->pendNodeResolve(b);
 
 	return b;
@@ -1527,7 +1528,7 @@ int ModApiMapgen::l_generate_decorations(lua_State *L)
 
 	u32 blockseed = Mapgen::getBlockSeed(pmin, mg.seed);
 
-	emerge->decomgr->placeAllDecos(&mg, blockseed, pmin, pmax);
+	emerge->decomgr->placeAllDecos(&mg, blockseed, pmin, pmax, mg.ndef);
 
 	return 0;
 }

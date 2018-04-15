@@ -336,7 +336,8 @@ void MapgenV7::makeChunk(BlockMakeData *data)
 
 	// Generate the registered decorations
 	if (flags & MG_DECORATIONS)
-		m_emerge->decomgr->placeAllDecos(this, blockseed, node_min, node_max);
+		m_emerge->decomgr->placeAllDecos(this, blockseed, node_min, node_max,
+			ndef);
 
 	// Generate the registered ores
 	m_emerge->oremgr->placeAllOres(this, blockseed, node_min, node_max);
@@ -467,7 +468,7 @@ void MapgenV7::floatBaseExtentFromMap(s16 *float_base_min, s16 *float_base_max, 
 
 int MapgenV7::generateTerrain()
 {
-	MapNode n_air(CONTENT_AIR);
+	MapNode n_air(c_air);
 	MapNode n_stone(c_stone);
 	MapNode n_water(c_water_source);
 
@@ -533,7 +534,7 @@ int MapgenV7::generateTerrain()
 						(y >= float_base_max && y <= floatland_level)) {
 					vm->m_data[vi] = n_water;  // Floatland water
 				} else {
-					vm->m_data[vi] = n_air;
+					vm->m_data[vi] = n_air;  // Air
 				}
 			}
 			VoxelArea::add_y(em, vi, 1);
@@ -555,7 +556,7 @@ void MapgenV7::generateRidgeTerrain()
 	noise_ridge_uwater->perlinMap2D(node_min.X, node_min.Z);
 
 	MapNode n_water(c_water_source);
-	MapNode n_air(CONTENT_AIR);
+	MapNode n_air(c_air);
 	u32 index = 0;
 	float width = 0.2;
 
@@ -577,7 +578,15 @@ void MapgenV7::generateRidgeTerrain()
 			if (nridge + width_mod * height_mod < 0.6)
 				continue;
 
-			vm->m_data[vi] = (y > water_level) ? n_air : n_water;
+			if (y > water_level) {
+				// Don't replace biome air-equivalent nodes with 'mapgen_air'
+				// when overgenerating.
+				content_t c = vm->m_data[vi].getContent();
+				if (!ndef->get(c).air_equivalent)
+					vm->m_data[vi] = n_air;
+			} else {
+				vm->m_data[vi] = n_water;
+			}
 		}
 	}
 }

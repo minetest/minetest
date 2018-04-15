@@ -188,6 +188,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		Nodebox version 5
 		Add disconnected nodeboxes
 		Add TOCLIENT_FORMSPEC_PREPEND
+		Add 'air_equivalent' to ContentFeatures
 */
 
 #define LATEST_PROTOCOL_VERSION 36

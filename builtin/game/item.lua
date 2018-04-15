@@ -710,6 +710,7 @@ core.nodedef_default = {
 	climbable = false,
 	buildable_to = false,
 	floodable = false,
+	air_equivalent = false,
 	liquidtype = "none",
 	liquid_alternative_flowing = "",
 	liquid_alternative_source = "",

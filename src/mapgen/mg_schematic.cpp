@@ -152,7 +152,7 @@ void Schematic::blitToVManip(MMVManip *vm, v3s16 p, Rotation rot, bool force_pla
 
 				if (!force_place && !force_place_node) {
 					content_t c = vm->m_data[vi].getContent();
-					if (c != CONTENT_AIR && c != CONTENT_IGNORE)
+					if (!m_ndef->get(c).air_equivalent && c != CONTENT_IGNORE)
 						continue;
 				}
 

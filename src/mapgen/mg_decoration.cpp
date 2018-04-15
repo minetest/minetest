@@ -51,7 +51,7 @@ DecorationManager::DecorationManager(IGameDef *gamedef) :
 
 
 size_t DecorationManager::placeAllDecos(Mapgen *mg, u32 blockseed,
-	v3s16 nmin, v3s16 nmax)
+	v3s16 nmin, v3s16 nmax, const NodeDefManager *nodedef)
 {
 	size_t nplaced = 0;
 
@@ -60,7 +60,7 @@ size_t DecorationManager::placeAllDecos(Mapgen *mg, u32 blockseed,
 		if (!deco)
 			continue;
 
-		nplaced += deco->placeDeco(mg, blockseed, nmin, nmax);
+		nplaced += deco->placeDeco(mg, blockseed, nmin, nmax, nodedef);
 		blockseed++;
 	}
 
@@ -127,7 +127,8 @@ bool Decoration::canPlaceDecoration(MMVManip *vm, v3s16 p)
 }
 
 
-size_t Decoration::placeDeco(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax)
+size_t Decoration::placeDeco(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax,
+	const NodeDefManager *nodedef)
 {
 	PcgRandom ps(blockseed + 53);
 	int carea_size = nmax.X - nmin.X + 1;
@@ -201,7 +202,7 @@ size_t Decoration::placeDeco(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax)
 							continue;
 
 						v3s16 pos(x, y, z);
-						if (generate(mg->vm, &ps, pos, false))
+						if (generate(mg->vm, &ps, pos, false, nodedef))
 							mg->gennotify.addEvent(
 									GENNOTIFY_DECORATION, pos, index);
 					}
@@ -214,7 +215,7 @@ size_t Decoration::placeDeco(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax)
 							continue;
 
 						v3s16 pos(x, y, z);
-						if (generate(mg->vm, &ps, pos, true))
+						if (generate(mg->vm, &ps, pos, true, nodedef))
 							mg->gennotify.addEvent(
 									GENNOTIFY_DECORATION, pos, index);
 					}
@@ -239,7 +240,7 @@ size_t Decoration::placeDeco(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax)
 				}
 
 				v3s16 pos(x, y, z);
-				if (generate(mg->vm, &ps, pos, false))
+				if (generate(mg->vm, &ps, pos, false, nodedef))
 					mg->gennotify.addEvent(GENNOTIFY_DECORATION, pos, index);
 			}
 		}
@@ -259,7 +260,8 @@ void DecoSimple::resolveNodeNames()
 }
 
 
-size_t DecoSimple::generate(MMVManip *vm, PcgRandom *pr, v3s16 p, bool ceiling)
+size_t DecoSimple::generate(MMVManip *vm, PcgRandom *pr, v3s16 p, bool ceiling,
+	const NodeDefManager *nodedef)
 {
 	// Don't bother if there aren't any decorations to place
 	if (c_decos.empty())
@@ -306,7 +308,8 @@ size_t DecoSimple::generate(MMVManip *vm, PcgRandom *pr, v3s16 p, bool ceiling)
 		for (int i = 0; i < height; i++) {
 			VoxelArea::add_y(em, vi, -1);
 			content_t c = vm->m_data[vi].getContent();
-			if (c != CONTENT_AIR && c != CONTENT_IGNORE && !force_placement)
+			if (!nodedef->get(c).air_equivalent && c != CONTENT_IGNORE &&
+					!force_placement)
 				break;
 
 			vm->m_data[vi] = MapNode(c_place, 0, param2);
@@ -317,7 +320,8 @@ size_t DecoSimple::generate(MMVManip *vm, PcgRandom *pr, v3s16 p, bool ceiling)
 		for (int i = 0; i < height; i++) {
 			VoxelArea::add_y(em, vi, 1);
 			content_t c = vm->m_data[vi].getContent();
-			if (c != CONTENT_AIR && c != CONTENT_IGNORE && !force_placement)
+			if (!nodedef->get(c).air_equivalent && c != CONTENT_IGNORE &&
+					!force_placement)
 				break;
 
 			vm->m_data[vi] = MapNode(c_place, 0, param2);
@@ -331,7 +335,8 @@ size_t DecoSimple::generate(MMVManip *vm, PcgRandom *pr, v3s16 p, bool ceiling)
 ///////////////////////////////////////////////////////////////////////////////
 
 
-size_t DecoSchematic::generate(MMVManip *vm, PcgRandom *pr, v3s16 p, bool ceiling)
+size_t DecoSchematic::generate(MMVManip *vm, PcgRandom *pr, v3s16 p, bool ceiling,
+		const NodeDefManager *nodedef)
 {
 	// Schematic could have been unloaded but not the decoration
 	// In this case generate() does nothing (but doesn't *fail*)

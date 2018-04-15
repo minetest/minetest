@@ -29,26 +29,20 @@ class GenerateNotifier;
 	web-like, continuous tunnels at points where the density of the intersection
 	between two separate 3d noises is above a certain value.  This value,
 	cave_width, can be modified to set the effective width of these tunnels.
-
-	This algorithm is relatively heavyweight, taking ~80ms to generate an
-	80x80x80 chunk of map on a modern processor.  Use sparingly!
-
-	TODO(hmmmm): Remove dependency on biomes
-	TODO(hmmmm): Find alternative to overgeneration as solution for sunlight issue
 */
 class CavesNoiseIntersection
 {
 public:
-	CavesNoiseIntersection(const NodeDefManager *nodedef,
-		BiomeManager *biomemgr, v3s16 chunksize, NoiseParams *np_cave1,
-		NoiseParams *np_cave2, s32 seed, float cave_width);
+	CavesNoiseIntersection(const NodeDefManager *nodedef, v3s16 chunksize,
+		NoiseParams *np_cave1, NoiseParams *np_cave2, s32 seed,
+		float cave_width, BiomeGen *biomegen);
 	~CavesNoiseIntersection();
 
-	void generateCaves(MMVManip *vm, v3s16 nmin, v3s16 nmax, u8 *biomemap);
+	void generateCaves(MMVManip *vm, v3s16 nmin, v3s16 nmax);
 
 private:
 	const NodeDefManager *m_ndef;
-	BiomeManager *m_bmgr;
+	BiomeGen *m_bmgn;
 
 	// configurable parameters
 	v3s16 m_csize;
@@ -69,14 +63,15 @@ class CavernsNoise
 {
 public:
 	CavernsNoise(const NodeDefManager *nodedef, v3s16 chunksize,
-		NoiseParams *np_cavern, s32 seed, float cavern_limit,
-		float cavern_taper, float cavern_threshold);
+	NoiseParams *np_cavern, s32 seed, float cavern_limit, float cavern_taper,
+	float cavern_threshold, BiomeGen *biomegen);
 	~CavernsNoise();
 
 	bool generateCaverns(MMVManip *vm, v3s16 nmin, v3s16 nmax);
 
 private:
 	const NodeDefManager *m_ndef;
+	BiomeGen *m_bmgn;
 
 	// configurable parameters
 	v3s16 m_csize;
@@ -156,9 +151,9 @@ public:
 	// If gennotify is NULL, generation events are not logged.
 	// If biomegen is NULL, cave liquids have classic behaviour.
 	CavesRandomWalk(const NodeDefManager *ndef, GenerateNotifier *gennotify =
-		NULL, s32 seed = 0, int water_level = 1, content_t water_source =
+		nullptr, s32 seed = 0, int water_level = 1, content_t water_source =
 		CONTENT_IGNORE, content_t lava_source = CONTENT_IGNORE,
-		int lava_depth = -256, BiomeGen *biomegen = NULL);
+		int lava_depth = -256, BiomeGen *biomegen = nullptr);
 
 	// vm and ps are mandatory parameters.
 	// If heightmap is NULL, the surface level at all points is assumed to

@@ -56,9 +56,11 @@ public:
 	virtual void resolveNodeNames();
 
 	bool canPlaceDecoration(MMVManip *vm, v3s16 p);
-	size_t placeDeco(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax);
+	size_t placeDeco(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax,
+		const NodeDefManager *nodedef);
 
-	virtual size_t generate(MMVManip *vm, PcgRandom *pr, v3s16 p, bool ceiling) = 0;
+	virtual size_t generate(MMVManip *vm, PcgRandom *pr, v3s16 p, bool ceiling,
+		const NodeDefManager *nodedef) = 0;
 
 	u32 flags = 0;
 	int mapseed = 0;
@@ -79,7 +81,8 @@ public:
 class DecoSimple : public Decoration {
 public:
 	virtual void resolveNodeNames();
-	virtual size_t generate(MMVManip *vm, PcgRandom *pr, v3s16 p, bool ceiling);
+	virtual size_t generate(MMVManip *vm, PcgRandom *pr, v3s16 p, bool ceiling,
+		const NodeDefManager *nodedef);
 
 	std::vector<content_t> c_decos;
 	s16 deco_height;
@@ -93,7 +96,8 @@ class DecoSchematic : public Decoration {
 public:
 	DecoSchematic() = default;
 
-	virtual size_t generate(MMVManip *vm, PcgRandom *pr, v3s16 p, bool ceiling);
+	virtual size_t generate(MMVManip *vm, PcgRandom *pr, v3s16 p, bool ceiling,
+		const NodeDefManager *nodedef);
 
 	Rotation rotation;
 	Schematic *schematic = nullptr;
@@ -132,5 +136,6 @@ public:
 		}
 	}
 
-	size_t placeAllDecos(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax);
+	size_t placeAllDecos(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax,
+		const NodeDefManager *nodedef);
 };

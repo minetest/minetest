@@ -44,6 +44,7 @@ struct DungeonParams {
 	content_t c_wall;
 	content_t c_alt_wall;
 	content_t c_stair;
+	content_t c_air;
 
 	bool diagonal_dirs;
 	bool only_in_ground;

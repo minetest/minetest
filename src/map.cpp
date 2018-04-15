@@ -284,7 +284,23 @@ void Map::addNodeAndUpdate(v3s16 p, MapNode n,
 void Map::removeNodeAndUpdate(v3s16 p,
 		std::map<v3s16, MapBlock*> &modified_blocks)
 {
-	addNodeAndUpdate(p, MapNode(CONTENT_AIR), modified_blocks, true);
+	// Search face-neighbors for air_equivalent nodes
+	const v3s16 *dirs = g_6dirs;
+	// Fallback replace node
+	MapNode n(CONTENT_AIR);
+
+	for (u16 i = 0; i < 6; i++) {
+		v3s16 npos = p + dirs[i];
+		MapNode nb = getNodeNoEx(npos);
+		const ContentFeatures &cfnb = m_nodedef->get(nb);
+		if (cfnb.air_equivalent) {
+			// Replace node with air_equivalent neighbor
+			n = nb;
+			break;
+		}
+	}
+
+	addNodeAndUpdate(p, n, modified_blocks, true);
 }
 
 bool Map::addNodeWithEvent(v3s16 p, MapNode n, bool remove_metadata)
@@ -596,7 +612,7 @@ void Map::transformLiquids(std::map<v3s16, MapBlock*> &modified_blocks,
 		content_t liquid_kind = CONTENT_IGNORE;
 		// The node which will be placed there if liquid
 		// can't flow into this node.
-		content_t floodable_node = CONTENT_AIR;
+		content_t floodable_node = CONTENT_IGNORE;
 		const ContentFeatures &cf = m_nodedef->get(n0);
 		LiquidType liquid_type = cf.liquid_type;
 		switch (liquid_type) {
@@ -671,6 +687,10 @@ void Map::transformLiquids(std::map<v3s16, MapBlock*> &modified_blocks,
 								ignored_sources = true;
 						}
 					}
+					// If 'floodable_node' is not yet decided, detect any
+					// 'air_equivalent' neighbor to place at current node.
+					if (floodable_node == CONTENT_IGNORE && cfnb.air_equivalent)
+						floodable_node = nb.n.getContent();
 					break;
 				case LIQUID_SOURCE:
 					// if this node is not (yet) of a liquid type, choose the first liquid type we encounter
@@ -709,6 +729,9 @@ void Map::transformLiquids(std::map<v3s16, MapBlock*> &modified_blocks,
 		u8 range = m_nodedef->get(liquid_kind).liquid_range;
 		if (range > LIQUID_LEVEL_MAX + 1)
 			range = LIQUID_LEVEL_MAX + 1;
+		// If no 'air_equivalent' neighbor, fallback to CONTENT_AIR
+		if (floodable_node == CONTENT_IGNORE)
+			floodable_node = CONTENT_AIR;
 
 		if ((num_sources >= 2 && m_nodedef->get(liquid_kind).liquid_renewable) || liquid_type == LIQUID_SOURCE) {
 			// liquid_kind will be set to either the flowing alternative of the node (if it's a liquid)

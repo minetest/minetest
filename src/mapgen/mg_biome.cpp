@@ -66,6 +66,7 @@ BiomeManager::BiomeManager(Server *server) :
 	b->m_nodenames.emplace_back("ignore");
 	b->m_nodenames.emplace_back("ignore");
 	b->m_nodenames.emplace_back("ignore");
+	b->m_nodenames.emplace_back("mapgen_air");
 	m_ndef->pendNodeResolve(b);
 
 	add(b);
@@ -329,4 +330,5 @@ void Biome::resolveNodeNames()
 	getIdFromNrBacklog(&c_dungeon,       "ignore",                    CONTENT_IGNORE);
 	getIdFromNrBacklog(&c_dungeon_alt,   "ignore",                    CONTENT_IGNORE);
 	getIdFromNrBacklog(&c_dungeon_stair, "ignore",                    CONTENT_IGNORE);
+	getIdFromNrBacklog(&c_air,           "mapgen_air",                CONTENT_AIR);
 }

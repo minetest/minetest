@@ -365,7 +365,6 @@ core.register_node(":ignore", {
 	pointable = false,
 	diggable = false,
 	buildable_to = true, -- A way to remove accidentally placed ignores
-	air_equivalent = true,
 	drop = "",
 	groups = {not_in_creative_inventory=1},
 })

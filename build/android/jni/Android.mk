@@ -183,6 +183,7 @@ LOCAL_SRC_FILES := \
 		jni/src/mapgen/mapgen_carpathian.cpp      \
 		jni/src/mapgen/mapgen_flat.cpp            \
 		jni/src/mapgen/mapgen_fractal.cpp         \
+		jni/src/mapgen/mapgen_planet.cpp          \
 		jni/src/mapgen/mapgen_singlenode.cpp      \
 		jni/src/mapgen/mapgen_v5.cpp              \
 		jni/src/mapgen/mapgen_v6.cpp              \

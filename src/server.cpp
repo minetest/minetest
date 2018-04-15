@@ -3368,7 +3368,7 @@ v3f Server::findSpawnPos()
 			v3s16 blockpos = getNodeBlockPos(nodepos);
 			map.emergeBlock(blockpos, true);
 			content_t c = map.getNodeNoEx(nodepos).getContent();
-			if (c == CONTENT_AIR || c == CONTENT_IGNORE) {
+			if (m_nodedef->get(c).air_equivalent || c == CONTENT_IGNORE) {
 				air_count++;
 				if (air_count >= 2) {
 					nodeposf = intToFloat(nodepos, BS);

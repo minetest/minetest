@@ -59,6 +59,7 @@ DungeonGen::DungeonGen(const NodeDefManager *ndef,
 		dp.c_wall     = ndef->getId("mapgen_cobble");
 		dp.c_alt_wall = ndef->getId("mapgen_mossycobble");
 		dp.c_stair    = ndef->getId("mapgen_stair_cobble");
+		dp.c_air      = ndef->getId("mapgen_air");
 
 		dp.diagonal_dirs       = false;
 		dp.only_in_ground      = true;
@@ -103,16 +104,16 @@ void DungeonGen::generate(MMVManip *vm, u32 bseed, v3s16 nmin, v3s16 nmax)
 	vm->clearFlag(VMANIP_FLAG_DUNGEON_INSIDE | VMANIP_FLAG_DUNGEON_PRESERVE);
 
 	if (dp.only_in_ground) {
-		// Set all air and liquid drawtypes to be untouchable to make dungeons
-		// open to air and liquids. Optionally set ignore to be untouchable to
-		// prevent projecting dungeons.
+		// Set air-equivalent nodes and liquid drawtypes to be untouchable to
+		// make dungeons open to air-equivalents and liquids. Optionally set
+		// ignore to be untouchable to prevent projecting dungeons.
 		for (s16 z = nmin.Z; z <= nmax.Z; z++) {
 			for (s16 y = nmin.Y; y <= nmax.Y; y++) {
 				u32 i = vm->m_area.index(nmin.X, y, z);
 				for (s16 x = nmin.X; x <= nmax.X; x++) {
 					content_t c = vm->m_data[i].getContent();
-					NodeDrawType dtype = ndef->get(c).drawtype;
-					if (dtype == NDT_AIRLIKE || dtype == NDT_LIQUID ||
+					if (ndef->get(c).air_equivalent ||
+							ndef->get(c).drawtype == NDT_LIQUID ||
 							(preserve_ignore && c == CONTENT_IGNORE))
 						vm->m_flags[i] |= VMANIP_FLAG_DUNGEON_PRESERVE;
 					i++;
@@ -283,7 +284,7 @@ void DungeonGen::makeDungeon(v3s16 start_padding)
 void DungeonGen::makeRoom(v3s16 roomsize, v3s16 roomplace)
 {
 	MapNode n_wall(dp.c_wall);
-	MapNode n_air(CONTENT_AIR);
+	MapNode n_air(dp.c_air);
 
 	// Make +-X walls
 	for (s16 z = 0; z < roomsize.Z; z++)
@@ -388,7 +389,8 @@ void DungeonGen::makeFill(v3s16 place, v3s16 size,
 
 void DungeonGen::makeHole(v3s16 place)
 {
-	makeFill(place, dp.holesize, 0, MapNode(CONTENT_AIR),
+	MapNode n_air(dp.c_air);
+	makeFill(place, dp.holesize, 0, n_air,
 		VMANIP_FLAG_DUNGEON_INSIDE);
 }
 
@@ -526,22 +528,22 @@ bool DungeonGen::findPlaceForDoor(v3s16 &result_place, v3s16 &result_dir)
 		if (vm->getNodeNoExNoEmerge(p +
 				v3s16(0, 0, 0)).getContent() == dp.c_wall &&
 				vm->getNodeNoExNoEmerge(p +
-				v3s16(0, 1, 0)).getContent() == CONTENT_AIR &&
+				v3s16(0, 1, 0)).getContent() == dp.c_air &&
 				vm->getNodeNoExNoEmerge(p +
-				v3s16(0, 2, 0)).getContent() == CONTENT_AIR)
+				v3s16(0, 2, 0)).getContent() == dp.c_air)
 			p += v3s16(0,1,0);
 		// Jump one down if the actual space is there
 		if (vm->getNodeNoExNoEmerge(p +
 				v3s16(0, 1, 0)).getContent() == dp.c_wall &&
 				vm->getNodeNoExNoEmerge(p +
-				v3s16(0, 0, 0)).getContent() == CONTENT_AIR &&
+				v3s16(0, 0, 0)).getContent() == dp.c_air &&
 				vm->getNodeNoExNoEmerge(p +
-				v3s16(0, -1, 0)).getContent() == CONTENT_AIR)
+				v3s16(0, -1, 0)).getContent() == dp.c_air)
 			p += v3s16(0, -1, 0);
 		// Check if walking is now possible
-		if (vm->getNodeNoExNoEmerge(p).getContent() != CONTENT_AIR ||
+		if (vm->getNodeNoExNoEmerge(p).getContent() != dp.c_air ||
 				vm->getNodeNoExNoEmerge(p +
-				v3s16(0, 1, 0)).getContent() != CONTENT_AIR) {
+				v3s16(0, 1, 0)).getContent() != dp.c_air) {
 			// Cannot continue walking here
 			randomizeDir();
 			continue;
