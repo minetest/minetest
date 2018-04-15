@@ -330,6 +330,7 @@ public:
 
 	v3f getEyePosition() const { return m_base_position + getEyeOffset(); }
 	v3f getEyeOffset() const;
+	float getZoomFOV() const;
 
 	inline Metadata &getMeta() { return m_meta; }
 

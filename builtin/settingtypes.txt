@@ -574,7 +574,7 @@ fullscreen_bpp (Full screen BPP) int 24
 vsync (V-Sync) bool false
 
 #    Field of view in degrees.
-fov (Field of view) int 72 30 160
+fov (Field of view) int 72 45 160
 
 #    Adjust the gamma encoding for the light tables. Higher numbers are brighter.
 #    This setting is for the client only and is ignored by the server.
