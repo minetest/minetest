@@ -39,7 +39,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 using namespace irr::core;
 
-const char **touchgui_button_imagenames = (const char*[]) {
+const char **touchgui_button_imagenames = (const char *[]) {
 	"jump_btn.png",
 	"down.png",
 	"zoom.png"
@@ -116,8 +116,8 @@ static irr::EKEY_CODE id2keycode(touch_gui_button_id id)
 
 TouchScreenGUI *g_touchscreengui;
 
-static void load_button_texture(button_info* btn, const char* path,
-		rect<s32> button_rect, ISimpleTextureSource* tsrc, video::IVideoDriver *driver)
+static void load_button_texture(button_info *btn, const char *path,
+		rect<s32> button_rect, ISimpleTextureSource *tsrc, video::IVideoDriver *driver)
 {
 	unsigned int tid;
 	video::ITexture *texture = guiScalingImageButton(driver,
@@ -141,15 +141,15 @@ static void load_button_texture(button_info* btn, const char* path,
 }
 
 AutoHideButtonBar::AutoHideButtonBar(IrrlichtDevice *device,
-		IEventReceiver* receiver) :
+		IEventReceiver *receiver) :
 			m_driver(device->getVideoDriver()),
 			m_guienv(device->getGUIEnvironment()),
 			m_receiver(receiver)
 {
 }
 
-void AutoHideButtonBar::init(ISimpleTextureSource* tsrc,
-		const char* starter_img, int button_id, v2s32 UpperLeft,
+void AutoHideButtonBar::init(ISimpleTextureSource *tsrc,
+		const char *starter_img, int button_id, v2s32 UpperLeft,
 		v2s32 LowerRight, autohide_button_bar_dir dir, float timeout)
 {
 	m_texturesource = tsrc;
@@ -187,7 +187,7 @@ AutoHideButtonBar::~AutoHideButtonBar()
 }
 
 void AutoHideButtonBar::addButton(touch_gui_button_id button_id,
-		const wchar_t* caption, const char* btn_image)
+		const wchar_t *caption, const char *btn_image)
 {
 
 	if (!m_initialized) {
@@ -240,7 +240,7 @@ void AutoHideButtonBar::addButton(touch_gui_button_id button_id,
 				y_end);
 	}
 
-	button_info* btn       = new button_info();
+	button_info *btn       = new button_info();
 	btn->guibutton         = m_guienv->addButton(current_button, 0, button_id, caption, 0);
 	btn->guibutton->grab();
 	btn->guibutton->setVisible(false);
@@ -257,8 +257,8 @@ void AutoHideButtonBar::addButton(touch_gui_button_id button_id,
 }
 
 void AutoHideButtonBar::addToggleButton(touch_gui_button_id button_id,
-		const wchar_t* caption, const char* btn_image_1,
-		const char* btn_image_2)
+		const wchar_t *caption, const char *btn_image_1,
+		const char *btn_image_2)
 {
 	addButton(button_id, caption, btn_image_1);
 	button_info *btn = m_buttons.back();
@@ -269,7 +269,7 @@ void AutoHideButtonBar::addToggleButton(touch_gui_button_id button_id,
 
 bool AutoHideButtonBar::isButton(const SEvent &event)
 {
-	IGUIElement* rootguielement = m_guienv->getRootGUIElement();
+	IGUIElement *rootguielement = m_guienv->getRootGUIElement();
 
 	if (rootguielement == NULL) {
 		return false;
@@ -285,12 +285,12 @@ bool AutoHideButtonBar::isButton(const SEvent &event)
 	if (m_active) {
 		// check for all buttons in vector
 
-		std::vector<button_info*>::iterator iter = m_buttons.begin();
+		std::vector<button_info *>::iterator iter = m_buttons.begin();
 
 		while (iter != m_buttons.end()) {
 			if ((*iter)->guibutton == element) {
 
-				SEvent* translated = new SEvent();
+				SEvent *translated = new SEvent();
 				memset(translated, 0, sizeof(SEvent));
 				translated->EventType            = irr::EET_KEY_INPUT_EVENT;
 				translated->KeyInput.Key         = (*iter)->keycode;
@@ -361,7 +361,7 @@ bool AutoHideButtonBar::isReleaseButton(int eventID)
 		return true;
 	}
 
-	std::vector<button_info*>::iterator iter = m_buttons.begin();
+	std::vector<button_info *>::iterator iter = m_buttons.begin();
 
 	while (iter != m_buttons.end()) {
 		std::vector<int>::iterator id = std::find((*iter)->ids.begin(),
@@ -397,7 +397,7 @@ void AutoHideButtonBar::deactivate()
 	}
 	m_active = false;
 
-	std::vector<button_info*>::iterator iter = m_buttons.begin();
+	std::vector<button_info *>::iterator iter = m_buttons.begin();
 
 	while (iter != m_buttons.end()) {
 			(*iter)->guibutton->setVisible(false);
@@ -412,7 +412,7 @@ void AutoHideButtonBar::hide()
 	m_starter.guibutton->setVisible(false);
 	m_starter.guibutton->setEnabled(false);
 
-	std::vector<button_info*>::iterator iter = m_buttons.begin();
+	std::vector<button_info *>::iterator iter = m_buttons.begin();
 
 	while (iter != m_buttons.end()) {
 		(*iter)->guibutton->setVisible(false);
@@ -426,7 +426,7 @@ void AutoHideButtonBar::show()
 	m_visible = true;
 
 	if (m_active) {
-		std::vector<button_info*>::iterator iter = m_buttons.begin();
+		std::vector<button_info *>::iterator iter = m_buttons.begin();
 
 		while (iter != m_buttons.end()) {
 			(*iter)->guibutton->setVisible(true);
@@ -439,7 +439,7 @@ void AutoHideButtonBar::show()
 	}
 }
 
-TouchScreenGUI::TouchScreenGUI(IrrlichtDevice *device, IEventReceiver* receiver):
+TouchScreenGUI::TouchScreenGUI(IrrlichtDevice *device, IEventReceiver *receiver):
 	m_device(device),
 	m_guienv(device->getGUIEnvironment()),
 	m_receiver(receiver),
@@ -461,7 +461,7 @@ void TouchScreenGUI::initButton(touch_gui_button_id id, rect<s32> button_rect,
 		std::wstring caption, bool immediate_release, float repeat_delay)
 {
 
-	button_info* btn       = &m_buttons[id];
+	button_info *btn       = &m_buttons[id];
 	btn->guibutton         = m_guienv->addButton(button_rect, 0, id, caption.c_str());
 	btn->guibutton->grab();
 	btn->repeatcounter     = -1;
@@ -470,7 +470,7 @@ void TouchScreenGUI::initButton(touch_gui_button_id id, rect<s32> button_rect,
 	btn->immediate_release = immediate_release;
 	btn->ids.clear();
 
-	load_button_texture(btn,touchgui_button_imagenames[id],button_rect,
+	load_button_texture(btn, touchgui_button_imagenames[id], button_rect,
 			m_texturesource, m_device->getVideoDriver());
 }
 
@@ -501,7 +501,7 @@ int TouchScreenGUI::getGuiButtonSize()
 	return control_pad_size / 3;
 }
 
-void TouchScreenGUI::init(ISimpleTextureSource* tsrc)
+void TouchScreenGUI::init(ISimpleTextureSource *tsrc)
 {
 	assert(tsrc);
 
@@ -538,27 +538,27 @@ void TouchScreenGUI::init(ISimpleTextureSource* tsrc)
 
 	// init jump button
 	initButton(jump_id,
-			rect<s32>(m_screensize.X-(1.75*button_size),
-					m_screensize.Y - (0.5*button_size),
-					m_screensize.X-(0.25*button_size),
+			rect<s32>(m_screensize.X - (1.75 * button_size),
+					m_screensize.Y - (0.5 * button_size),
+					m_screensize.X - (0.25 * button_size),
 					m_screensize.Y),
-			L"x",false);
+			L"x", false);
 
 	// init crunch button
 	initButton(crunch_id,
-			rect<s32>(m_screensize.X-(3.25*button_size),
-					m_screensize.Y - (0.5*button_size),
-					m_screensize.X-(1.75*button_size),
+			rect<s32>(m_screensize.X - (3.25 * button_size),
+					m_screensize.Y - (0.5 * button_size),
+					m_screensize.X - (1.75 * button_size),
 					m_screensize.Y),
-			L"H",false);
+			L"H", false);
 
-	// init crunch button
+	// init zoom button
 	initButton(zoom_id,
 			rect<s32>(m_screensize.X - (1.25 * button_size),
 					m_screensize.Y - (2.5 * button_size),
 					m_screensize.X - (0.25 * button_size),
 					m_screensize.Y - (1.5 * button_size)),
-			L"z",false);
+			L"z", false);
 
 	m_settingsbar.init(m_texturesource, "gear_icon.png", settings_starter_id,
 			v2s32(m_screensize.X - (button_size / 2),
@@ -578,7 +578,7 @@ void TouchScreenGUI::init(ISimpleTextureSource* tsrc)
 	m_settingsbar.addButton(minimap_id, L"minimap",   "minimap_btn.png");
 
 	// Chat is shown by default, so chat_hide_btn.png is shown first.
-	m_settingsbar.addToggleButton(toggle_chat_id,  L"togglechat",
+	m_settingsbar.addToggleButton(toggle_chat_id, L"togglechat",
 			"chat_hide_btn.png", "chat_show_btn.png");
 
 	m_rarecontrolsbar.init(m_texturesource, "rare_controls.png",
@@ -600,11 +600,11 @@ void TouchScreenGUI::init(ISimpleTextureSource* tsrc)
 
 touch_gui_button_id TouchScreenGUI::getButtonID(s32 x, s32 y)
 {
-	IGUIElement* rootguielement = m_guienv->getRootGUIElement();
+	IGUIElement *rootguielement = m_guienv->getRootGUIElement();
 
 	if (rootguielement != NULL) {
 		gui::IGUIElement *element =
-				rootguielement->getElementFromPoint(core::position2d<s32>(x,y));
+				rootguielement->getElementFromPoint(core::position2d<s32>(x, y));
 
 		if (element) {
 			for (unsigned int i=0; i < after_last_element_id; i++) {
@@ -620,10 +620,10 @@ touch_gui_button_id TouchScreenGUI::getButtonID(s32 x, s32 y)
 touch_gui_button_id TouchScreenGUI::getButtonID(int eventID)
 {
 	for (unsigned int i=0; i < after_last_element_id; i++) {
-		button_info* btn = &m_buttons[i];
+		button_info *btn = &m_buttons[i];
 
 		std::vector<int>::iterator id =
-				std::find(btn->ids.begin(),btn->ids.end(), eventID);
+				std::find(btn->ids.begin(), btn->ids.end(), eventID);
 
 		if (id != btn->ids.end())
 			return (touch_gui_button_id) i;
@@ -635,15 +635,15 @@ touch_gui_button_id TouchScreenGUI::getButtonID(int eventID)
 bool TouchScreenGUI::isHUDButton(const SEvent &event)
 {
 	// check if hud item is pressed
-	for (std::map<int,rect<s32> >::iterator iter = m_hud_rects.begin();
+	for (std::map<int, rect<s32> >::iterator iter = m_hud_rects.begin();
 			iter != m_hud_rects.end(); ++iter) {
 		if (iter->second.isPointInside(
 				v2s32(event.TouchInput.X,
 						event.TouchInput.Y)
 			)) {
 			if ( iter->first < 8) {
-				SEvent* translated = new SEvent();
-				memset(translated,0,sizeof(SEvent));
+				SEvent *translated = new SEvent();
+				memset(translated, 0, sizeof(SEvent));
 				translated->EventType = irr::EET_KEY_INPUT_EVENT;
 				translated->KeyInput.Key         = (irr::EKEY_CODE) (KEY_KEY_1 + iter->first);
 				translated->KeyInput.Control     = false;
@@ -661,11 +661,11 @@ bool TouchScreenGUI::isHUDButton(const SEvent &event)
 
 bool TouchScreenGUI::isReleaseHUDButton(int eventID)
 {
-	std::map<int,irr::EKEY_CODE>::iterator iter = m_hud_ids.find(eventID);
+	std::map<int, irr::EKEY_CODE>::iterator iter = m_hud_ids.find(eventID);
 
 	if (iter != m_hud_ids.end()) {
-		SEvent* translated = new SEvent();
-		memset(translated,0,sizeof(SEvent));
+		SEvent *translated = new SEvent();
+		memset(translated, 0, sizeof(SEvent));
 		translated->EventType            = irr::EET_KEY_INPUT_EVENT;
 		translated->KeyInput.Key         = iter->second;
 		translated->KeyInput.PressedDown = false;
@@ -682,9 +682,9 @@ bool TouchScreenGUI::isReleaseHUDButton(int eventID)
 void TouchScreenGUI::handleButtonEvent(touch_gui_button_id button,
 		int eventID, bool action)
 {
-	button_info* btn = &m_buttons[button];
-	SEvent* translated = new SEvent();
-	memset(translated,0,sizeof(SEvent));
+	button_info *btn = &m_buttons[button];
+	SEvent *translated = new SEvent();
+	memset(translated, 0, sizeof(SEvent));
 	translated->EventType            = irr::EET_KEY_INPUT_EVENT;
 	translated->KeyInput.Key         = btn->keycode;
 	translated->KeyInput.Control     = false;
@@ -693,7 +693,7 @@ void TouchScreenGUI::handleButtonEvent(touch_gui_button_id button,
 
 	// add this event
 	if (action) {
-		assert(std::find(btn->ids.begin(),btn->ids.end(), eventID) == btn->ids.end());
+		assert(std::find(btn->ids.begin(), btn->ids.end(), eventID) == btn->ids.end());
 
 		btn->ids.push_back(eventID);
 
@@ -708,7 +708,7 @@ void TouchScreenGUI::handleButtonEvent(touch_gui_button_id button,
 	if ((!action) || (btn->immediate_release)) {
 
 		std::vector<int>::iterator pos =
-				std::find(btn->ids.begin(),btn->ids.end(), eventID);
+				std::find(btn->ids.begin(), btn->ids.end(), eventID);
 		// has to be in touch list
 		assert(pos != btn->ids.end());
 		btn->ids.erase(pos);
@@ -745,8 +745,8 @@ void TouchScreenGUI::handleReleaseEvent(int evt_id)
 
 		// if this pointer issued a mouse event issue symmetric release here
 		if (m_move_sent_as_mouse_event) {
-			SEvent* translated = new SEvent;
-			memset(translated,0,sizeof(SEvent));
+			SEvent *translated = new SEvent;
+			memset(translated, 0, sizeof(SEvent));
 			translated->EventType               = EET_MOUSE_INPUT_EVENT;
 			translated->MouseInput.X            = m_move_downlocation.X;
 			translated->MouseInput.Y            = m_move_downlocation.Y;
@@ -1046,12 +1046,12 @@ void TouchScreenGUI::handleChangedButton(const SEvent &event)
 				}
 
 				// remove old button
-				handleButtonEvent((touch_gui_button_id) i,*iter,false);
+				handleButtonEvent((touch_gui_button_id) i, *iter, false);
 
 				if (current_button_id == after_last_element_id) {
 					return;
 				}
-				handleButtonEvent((touch_gui_button_id) current_button_id,*iter,true);
+				handleButtonEvent((touch_gui_button_id) current_button_id, *iter, true);
 				return;
 
 			}
@@ -1064,8 +1064,8 @@ void TouchScreenGUI::handleChangedButton(const SEvent &event)
 		return;
 	}
 
-	button_info* btn = &m_buttons[current_button_id];
-	if (std::find(btn->ids.begin(),btn->ids.end(), event.TouchInput.ID)
+	button_info *btn = &m_buttons[current_button_id];
+	if (std::find(btn->ids.begin(), btn->ids.end(), event.TouchInput.ID)
 			== btn->ids.end())
 	{
 		handleButtonEvent((touch_gui_button_id) current_button_id,
@@ -1095,7 +1095,7 @@ bool TouchScreenGUI::doubleTapDetection()
 	if (distance > (20 + m_touchscreen_threshold))
 		return false;
 
-	SEvent* translated = new SEvent();
+	SEvent *translated = new SEvent();
 	memset(translated, 0, sizeof(SEvent));
 	translated->EventType               = EET_MOUSE_INPUT_EVENT;
 	translated->MouseInput.X            = m_key_events[0].x;
@@ -1142,7 +1142,7 @@ void TouchScreenGUI::applyJoystickStatus()
 TouchScreenGUI::~TouchScreenGUI()
 {
 	for (unsigned int i = 0; i < after_last_element_id; i++) {
-		button_info* btn = &m_buttons[i];
+		button_info *btn = &m_buttons[i];
 		if (btn->guibutton) {
 			btn->guibutton->drop();
 			btn->guibutton = NULL;
@@ -1169,7 +1169,7 @@ void TouchScreenGUI::step(float dtime)
 {
 	// simulate keyboard repeats
 	for (unsigned int i = 0; i < after_last_element_id; i++) {
-		button_info* btn = &m_buttons[i];
+		button_info *btn = &m_buttons[i];
 
 		if (btn->ids.size() > 0) {
 			btn->repeatcounter += dtime;
@@ -1243,7 +1243,7 @@ void TouchScreenGUI::Toggle(bool visible)
 {
 	m_visible = visible;
 	for (unsigned int i = 0; i < after_last_element_id; i++) {
-		button_info* btn = &m_buttons[i];
+		button_info *btn = &m_buttons[i];
 		if (btn->guibutton) {
 			btn->guibutton->setVisible(visible);
 		}
