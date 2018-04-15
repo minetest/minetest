@@ -173,41 +173,12 @@ function core.strip_param2_color(param2, paramtype2)
 	return param2
 end
 
-function core.get_node_drops(node, toolname)
-	-- Compatibility, if node is string
-	local nodename = node
-	local param2 = 0
-	-- New format, if node is table
-	if (type(node) == "table") then
-		nodename = node.name
-		param2 = node.param2
-	end
-	local def = core.registered_nodes[nodename]
-	local drop = def and def.drop
-	local ptype = def and def.paramtype2
-	-- get color, if there is color (otherwise nil)
-	local palette_index = core.strip_param2_color(param2, ptype)
-	if drop == nil then
-		-- default drop
-		if palette_index then
-			local stack = ItemStack(nodename)
-			stack:get_meta():set_int("palette_index", palette_index)
-			return {stack:to_string()}
-		end
-		return {nodename}
-	elseif type(drop) == "string" then
-		-- itemstring drop
-		return {drop}
-	elseif drop.items == nil then
-		-- drop = {} to disable default drop
-		return {}
-	end
-
-	-- Extended drop table
+-- Can be called for nodes, craftitems or tools.
+function core.get_extended_drops(drop_table, toolname, palette_index)
 	local got_items = {}
 	local got_count = 0
 	local _, item, tool
-	for _, item in ipairs(drop.items) do
+	for _, item in ipairs(drop_table.items) do
 		local good_rarity = true
 		local good_tool = true
 		if item.rarity ~= nil then
@@ -239,12 +210,45 @@ function core.get_node_drops(node, toolname)
 				end
 				got_items[#got_items+1] = add_item
 			end
-			if drop.max_items ~= nil and got_count == drop.max_items then
+			if drop_table.max_items ~= nil and got_count >= drop_table.max_items then
 				break
 			end
 		end
 	end
 	return got_items
+end
+
+function core.get_node_drops(node, toolname)
+	-- Compatibility, if node is string
+	local nodename = node
+	local param2 = 0
+	-- New format, if node is table
+	if (type(node) == "table") then
+		nodename = node.name
+		param2 = node.param2
+	end
+	local def = core.registered_nodes[nodename]
+	local drop = def and def.drop
+	local ptype = def and def.paramtype2
+	-- get color, if there is color (otherwise nil)
+	local palette_index = core.strip_param2_color(param2, ptype)
+	if drop == nil then
+		-- default drop
+		if palette_index then
+			local stack = ItemStack(nodename)
+			stack:get_meta():set_int("palette_index", palette_index)
+			return {stack:to_string()}
+		end
+		return {nodename}
+	elseif type(drop) == "string" then
+		-- itemstring drop
+		return {drop}
+	elseif drop.items == nil then
+		-- drop = {} to disable default drop
+		return {}
+	end
+	-- Extended drop table
+	return core.get_extended_drops(drop, toolname, palette_index)
 end
 
 local function user_name(user)

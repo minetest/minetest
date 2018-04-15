@@ -3402,8 +3402,10 @@ You can find mod channels communication scheme in `docs/mod_channels.png`.
     * Returns `nil` if the given `paramtype2` does not contain color
       information.
 * `minetest.get_node_drops(nodename, toolname)`
-    * Returns list of item names.
+    * Returns list of itemstrings.
     * **Note**: This will be removed or modified in a future version.
+* `minetest.get_extended_drops(droptable, toolname, palette_index)
+    * Returns list of itemstrings.
 * `minetest.get_craft_result(input)`: returns `output, decremented_input`
     * `input.method` = `"normal"` or `"cooking"` or `"fuel"`
     * `input.width` = for example `3`
