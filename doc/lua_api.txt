@@ -5387,8 +5387,8 @@ Definition tables
           palette control and tool filtering:
         drop = {
             max_items = 1,  -- Maximum number of choices to drop.
-			-- Get max_items choices randomly from the following items.
-			-- Each choice may be filtered out, each choice may have many items.
+            -- Get max_items choices randomly from the following items.
+            -- Each choice may be filtered out, each choice may have many items.
             items = {
                 -- When using a shovel, the player will get a drop about 60% of the time.
                 {
@@ -5401,7 +5401,7 @@ Definition tables
                     items = { "default:sand", "default:desert_sand" },  -- Items to drop.
                 },
                 {
-                	-- Tool names matched with `==`.
+                    -- Tool names matched with `==`.
                     tools = { "default:shovel_mese", "default:shovel_diamond", },
                     -- default:dirt is less common,  A player with a shovel can
                     -- get dirt or sand, or neither.  No player ever gets both,
@@ -5412,8 +5412,8 @@ Definition tables
                 -- When not using some sort of shovel, the player will always
                 -- get cobblestone.
                 {
-					-- "?" means "a tool not matching the following expression"
-					-- `string.find` is used for the match.
+                    -- "?" means "a tool not matching the following expression"
+                    -- `string.find` is used for the match.
                     tools = { "?default:shovel" },
                     items = { "default:cobble" },
                     inherit_color = true,  -- To inherit palette color from the node.
