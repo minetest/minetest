@@ -2542,6 +2542,9 @@ Helper functions
     * returns true if passed 'y', 'yes', 'true' or a number that isn't zero.
 * `minetest.get_us_time()`
     * returns time with microsecond precision. May not return wall time.
+* `minetest.random_sequence(limit)`
+    * returns an iterator which generates all the integers from 1 to limit once
+      only, in a pseudo-random sequence using `PcgRandom`.
 * `table.copy(table)`: returns a table
     * returns a deep copy of `table`
 * `minetest.pointed_thing_to_face_pos(placer, pointed_thing)`: returns a

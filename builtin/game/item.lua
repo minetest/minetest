@@ -173,6 +173,43 @@ function core.strip_param2_color(param2, paramtype2)
 	return param2
 end
 
+local Rng = PcgRandom(math.random(2000000000))  -- Seeded with os.time, by default.
+
+-- An iterator that returns the numbers 1 to limit, in a psuedo-random order.
+function core.random_sequence(limit)
+	local used, used_count = {}, 0
+	return function()
+		if used_count >= limit then return end
+		local attempt = Rng:next(1,limit)
+		if used[attempt] then attempt = nil end
+		if not attempt then  -- We have 3 retry strategies.
+			attempt = Rng:next(1,limit)  -- 1:  just another random number
+			if used[attempt] then
+				local start = attempt + 1
+				attempt = nil
+				for i = start, limit do  -- 2:  seek upwards
+					if not used[i] then
+						attempt = i
+						break
+					end
+				end
+				if not attempt then
+					for i = start-2, 1, -1 do  -- 3:  seek downwards
+						if not used[i] then
+							attempt = i
+							break
+						end
+					end
+				end
+			end
+		end
+		-- We can be sure that one of the strategies always works.
+		used[attempt] = true
+		used_count = used_count + 1
+		return attempt
+	end
+end
+
 function core.get_node_drops(node, toolname)
 	-- Compatibility, if node is string
 	local nodename = node
