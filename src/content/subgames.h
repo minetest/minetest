@@ -27,39 +27,33 @@ class Settings;
 
 struct SubgameSpec
 {
-	std::string id; // "" = game does not exist
-	std::string path; // path to game
-	std::string gamemods_path; //path to mods of the game
-	std::set<std::string> addon_mods_paths; //paths to addon mods for this game
+	std::string id;
 	std::string name;
+	std::string author;
+	std::string path;
+	std::string gamemods_path;
+	std::set<std::string> addon_mods_paths;
 	std::string menuicon_path;
 
-	SubgameSpec(const std::string &id_ = "",
-			const std::string &path_ = "",
-			const std::string &gamemods_path_ = "",
-			const std::set<std::string> &addon_mods_paths_ = std::set<std::string>(),
-			const std::string &name_ = "",
-			const std::string &menuicon_path_ = ""):
-		id(id_),
-		path(path_),
-		gamemods_path(gamemods_path_),
-		addon_mods_paths(addon_mods_paths_),
-		name(name_),
-		menuicon_path(menuicon_path_)
-	{}
-
-	bool isValid() const
+	SubgameSpec(const std::string &id = "", const std::string &path = "",
+			const std::string &gamemods_path = "",
+			const std::set<std::string> &addon_mods_paths =
+					std::set<std::string>(),
+			const std::string &name = "",
+			const std::string &menuicon_path = "",
+			const std::string &author = "") :
+			id(id),
+			name(name), author(author), path(path),
+			gamemods_path(gamemods_path), addon_mods_paths(addon_mods_paths),
+			menuicon_path(menuicon_path)
 	{
-		return (!id.empty() && !path.empty());
 	}
+
+	bool isValid() const { return (!id.empty() && !path.empty()); }
 };
 
 // minetest.conf
 bool getGameMinetestConfig(const std::string &game_path, Settings &conf);
-// game.conf
-bool getGameConfig(const std::string &game_path, Settings &conf);
-
-std::string getGameName(const std::string &game_path);
 
 SubgameSpec findSubgame(const std::string &id);
 SubgameSpec findWorldSubgame(const std::string &world_path);
@@ -68,8 +62,7 @@ std::set<std::string> getAvailableGameIds();
 std::vector<SubgameSpec> getAvailableGames();
 
 bool getWorldExists(const std::string &world_path);
-std::string getWorldGameId(const std::string &world_path,
-		bool can_be_legacy=false);
+std::string getWorldGameId(const std::string &world_path, bool can_be_legacy = false);
 
 struct WorldSpec
 {
@@ -77,15 +70,12 @@ struct WorldSpec
 	std::string name;
 	std::string gameid;
 
-	WorldSpec(
-		const std::string &path_="",
-		const std::string &name_="",
-		const std::string &gameid_=""
-	):
-		path(path_),
-		name(name_),
-		gameid(gameid_)
-	{}
+	WorldSpec(const std::string &path = "", const std::string &name = "",
+			const std::string &gameid = "") :
+			path(path),
+			name(name), gameid(gameid)
+	{
+	}
 
 	bool isValid() const
 	{

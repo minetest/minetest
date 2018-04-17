@@ -18,8 +18,8 @@
 --------------------------------------------------------------------------------
 
 local function rename_modpack_formspec(dialogdata)
-	
-	dialogdata.mod = modmgr.global_mods:get_list()[dialogdata.selected]
+
+	dialogdata.mod = pkgmgr.global_mods:get_list()[dialogdata.selected]
 
 	local retval =
 		"size[11.5,4.5,true]" ..
@@ -29,7 +29,7 @@ local function rename_modpack_formspec(dialogdata)
 				fgettext("Accept") .. "]" ..
 		"button[5.75,3.5;2.5,0.5;dlg_rename_modpack_cancel;"..
 				fgettext("Cancel") .. "]"
-	
+
 	return retval
 end
 
@@ -39,14 +39,14 @@ local function rename_modpack_buttonhandler(this, fields)
 		local oldpath = core.get_modpath() .. DIR_DELIM .. this.data.mod.name
 		local targetpath = core.get_modpath() .. DIR_DELIM .. fields["te_modpack_name"]
 		core.copy_dir(oldpath,targetpath,false)
-		modmgr.refresh_globals()
-		modmgr.selected_mod = modmgr.global_mods:get_current_index(
-			modmgr.global_mods:raw_index_by_uid(fields["te_modpack_name"]))
-			
+		pkgmgr.refresh_globals()
+		pkgmgr.selected_mod = pkgmgr.global_mods:get_current_index(
+			pkgmgr.global_mods:raw_index_by_uid(fields["te_modpack_name"]))
+
 		this:delete()
 		return true
 	end
-	
+
 	if fields["dlg_rename_modpack_cancel"] then
 		this:delete()
 		return true

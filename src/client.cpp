@@ -43,7 +43,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mapblock.h"
 #include "minimap.h"
 #include "modchannels.h"
-#include "mods.h"
+#include "content/mods.h"
 #include "profiler.h"
 #include "shader.h"
 #include "gettext.h"

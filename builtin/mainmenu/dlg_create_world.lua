@@ -26,7 +26,7 @@ local function create_world_formspec(dialogdata)
 
 	local game, gameidx = nil , 0
 	if gameid ~= nil then
-		game, gameidx = gamemgr.find_by_gameid(gameid)
+		game, gameidx = pkgmgr.find_by_gameid(gameid)
 		
 		if gameidx == nil then
 			gameidx = 0
@@ -77,17 +77,17 @@ local function create_world_formspec(dialogdata)
 		"dropdown[4.2,2;6.3;dd_mapgen;" .. mglist .. ";" .. selindex .. "]" ..
 
 		"label[2,3;" .. fgettext("Game") .. "]"..
-		"textlist[4.2,3;5.8,2.3;games;" .. gamemgr.gamelist() ..
+		"textlist[4.2,3;5.8,2.3;games;" .. pkgmgr.gamelist() ..
 		";" .. gameidx .. ";true]" ..
 
 		"button[3.25,6;2.5,0.5;world_create_confirm;" .. fgettext("Create") .. "]" ..
 		"button[5.75,6;2.5,0.5;world_create_cancel;" .. fgettext("Cancel") .. "]"
 		
-	if #gamemgr.games == 0 then
+	if #pkgmgr.games == 0 then
 		retval = retval .. "box[2,4;8,1;#ff8800]label[2.25,4;" ..
 				fgettext("You have no games installed.") .. "]label[2.25,4.4;" ..
 				fgettext("Download one from minetest.net") .. "]"
-	elseif #gamemgr.games == 1 and gamemgr.games[1].id == "minimal" then
+	elseif #pkgmgr.games == 1 and pkgmgr.games[1].id == "minimal" then
 		retval = retval .. "box[1.75,4;8.7,1;#ff8800]label[2,4;" ..
 				fgettext("Warning: The minimal development test is meant for developers.") .. "]label[2,4.4;" ..
 				fgettext("Download a game, such as minetest_game, from minetest.net") .. "]"
@@ -125,10 +125,10 @@ local function create_world_buttonhandler(this, fields)
 			if message ~= nil then
 				gamedata.errormessage = message
 			else
-				core.settings:set("menu_last_game",gamemgr.games[gameindex].id)
+				core.settings:set("menu_last_game",pkgmgr.games[gameindex].id)
 				if this.data.update_worldlist_filter then
-					menudata.worldlist:set_filtercriteria(gamemgr.games[gameindex].id)
-					mm_texture.update("singleplayer", gamemgr.games[gameindex].id)
+					menudata.worldlist:set_filtercriteria(pkgmgr.games[gameindex].id)
+					mm_texture.update("singleplayer", pkgmgr.games[gameindex].id)
 				end
 				menudata.worldlist:refresh()
 				core.settings:set("mainmenu_last_selected_world",
@@ -145,7 +145,7 @@ local function create_world_buttonhandler(this, fields)
 
 	if fields["games"] then
 		local gameindex = core.get_textlist_index("games")
-		core.settings:set("menu_last_game", gamemgr.games[gameindex].id)
+		core.settings:set("menu_last_game", pkgmgr.games[gameindex].id)
 		return true
 	end
 

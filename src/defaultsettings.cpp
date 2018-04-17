@@ -284,6 +284,7 @@ void set_default_settings(Settings *settings)
 #endif
 	settings->setDefault("font_size", font_size_str);
 	settings->setDefault("mono_font_size", font_size_str);
+	settings->setDefault("contentdb_url", "https://contentdb.rubenwardy.com");
 
 
 	// Server

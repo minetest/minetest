@@ -20,7 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "lua_api/l_storage.h"
 #include "l_internal.h"
-#include "mods.h"
+#include "content/mods.h"
 #include "server.h"
 
 int ModApiStorage::l_get_mod_storage(lua_State *L)

@@ -24,7 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "common/c_converter.h"
 #include "serverobject.h"
 #include "filesys.h"
-#include "mods.h"
+#include "content/mods.h"
 #include "porting.h"
 #include "util/string.h"
 #include "server.h"

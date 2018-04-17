@@ -35,7 +35,7 @@ local function get_formspec(data)
 		mod = {name=""}
 	end
 
-	local hard_deps, soft_deps = modmgr.get_dependencies(mod.path)
+	local hard_deps, soft_deps = pkgmgr.get_dependencies(mod.path)
 
 	retval = retval ..
 		"label[0,0.7;" .. fgettext("Mod:") .. "]" ..
@@ -88,7 +88,7 @@ local function get_formspec(data)
 	retval = retval ..
 		"tablecolumns[color;tree;text]" ..
 		"table[5.5,0.75;5.75,6;world_config_modlist;"
-	retval = retval .. modmgr.render_modlist(data.list)
+	retval = retval .. pkgmgr.render_packagelist(data.list)
 	retval = retval .. ";" .. data.selected_mod .."]"
 
 	return retval
@@ -237,7 +237,7 @@ function create_configure_world_dlg(worldidx)
 	dlg.data.worldspec = core.get_worlds()[worldidx]
 	if dlg.data.worldspec == nil then dlg:delete() return nil end
 
-	dlg.data.worldconfig = modmgr.get_worldconfig(dlg.data.worldspec.path)
+	dlg.data.worldconfig = pkgmgr.get_worldconfig(dlg.data.worldspec.path)
 
 	if dlg.data.worldconfig == nil or dlg.data.worldconfig.id == nil or
 			dlg.data.worldconfig.id == "" then
@@ -247,8 +247,8 @@ function create_configure_world_dlg(worldidx)
 	end
 
 	dlg.data.list = filterlist.create(
-			modmgr.preparemodlist, --refresh
-			modmgr.comparemod, --compare
+			pkgmgr.preparemodlist, --refresh
+			pkgmgr.comparemod, --compare
 			function(element,uid) --uid match
 					if element.name == uid then
 						return true

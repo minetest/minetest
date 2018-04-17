@@ -20,7 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "lua_api/l_base.h"
 #include "lua_api/l_internal.h"
 #include "cpp_api/s_base.h"
-#include <mods.h>
+#include "content/mods.h"
 #include <server.h>
 
 ScriptApiBase *ModApiBase::getScriptApiBase(lua_State *L)

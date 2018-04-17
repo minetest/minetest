@@ -21,7 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "filesys.h"
 #include "log.h"
 #include "scripting_server.h"
-#include "subgame.h"
+#include "content/subgames.h"
 
 /**
  * Manage server mods
