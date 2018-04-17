@@ -73,10 +73,8 @@ int MetaDataRef::l_get(lua_State *L)
 	std::string name = luaL_checkstring(L, 2);
 
 	Metadata *meta = ref->getmeta(false);
-	if (meta == NULL) {
-		lua_pushlstring(L, "", 0);
-		return 1;
-	}
+	if (meta == NULL)
+		return 0;
 
 	std::string str;
 	if (meta->getStringToRef(name, str)) {
