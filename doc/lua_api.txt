@@ -5390,18 +5390,22 @@ Definition tables
             -- Get max_items choices randomly from the following items.
             -- Each choice may be filtered out, each choice may have many items.
             items = {
+                {
+                    -- Diamonds are filtered by chance, but not by tool.
+                    rarity = 1000000,
+                    items = { "default:diamond" },
+                },
                 -- When using a shovel, the player will get a drop about 60% of the time.
                 {
                     -- Tool names matched with `string.find`.
-                    tools = {
-                        "~default:shovel_",
-                    },
+                    tools = { "~default:shovel_" },
                     -- 1/2 the time, two types of sand.  Else, skip this choice.
                     rarity = 2,
                     items = { "default:sand", "default:desert_sand" },  -- Items to drop.
                 },
                 {
-                    -- Tool names matched with `==`.
+                    -- Skip unless toolname `==` at least one of these strings.
+                    -- There is an implied logical OR between each string.
                     tools = { "default:shovel_mese", "default:shovel_diamond", },
                     -- default:dirt is less common,  A player with a shovel can
                     -- get dirt or sand, or neither.  No player ever gets both,
@@ -5410,11 +5414,13 @@ Definition tables
                     items = { "default:dirt" },
                 },
                 -- When not using some sort of shovel, the player will always
-                -- get cobblestone.
+                -- get either cobblestone or the 1 in 1,000,000 diamond.
                 {
                     -- "?" means "a tool not matching the following expression"
+                    -- If all of the entries are "not matching" types, there is
+                    -- an implied logical AND between them.  Else, it is an OR.
                     -- `string.find` is used for the match.
-                    tools = { "?default:shovel" },
+                    tools = { "?default:shovel_" },
                     items = { "default:cobble" },
                     inherit_color = true,  -- To inherit palette color from the node.
                 },
