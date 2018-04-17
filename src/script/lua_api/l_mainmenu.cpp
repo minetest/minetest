@@ -25,11 +25,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "gui/guiMainMenu.h"
 #include "gui/guiKeyChangeMenu.h"
 #include "gui/guiPathSelectMenu.h"
-#include "subgame.h"
 #include "version.h"
 #include "porting.h"
 #include "filesys.h"
 #include "convert_json.h"
+#include "content/packages.h"
+#include "content/content.h"
+#include "content/subgames.h"
 #include "serverlist.h"
 #include "mapgen/mapgen.h"
 #include "settings.h"
@@ -449,12 +451,20 @@ int ModApiMainMenu::l_get_games(lua_State *L)
 		lua_pushstring(L, game.path.c_str());
 		lua_settable(L,   top_lvl2);
 
+		lua_pushstring(L, "type");
+		lua_pushstring(L, "game");
+		lua_settable(L,   top_lvl2);
+
 		lua_pushstring(L, "gamemods_path");
 		lua_pushstring(L, game.gamemods_path.c_str());
 		lua_settable(L,   top_lvl2);
 
 		lua_pushstring(L, "name");
 		lua_pushstring(L, game.name.c_str());
+		lua_settable(L,   top_lvl2);
+
+		lua_pushstring(L, "author");
+		lua_pushstring(L, game.author.c_str());
 		lua_settable(L,   top_lvl2);
 
 		lua_pushstring(L, "menuicon_path");
@@ -479,21 +489,24 @@ int ModApiMainMenu::l_get_games(lua_State *L)
 }
 
 /******************************************************************************/
-int ModApiMainMenu::l_get_mod_info(lua_State *L)
+int ModApiMainMenu::l_get_content_info(lua_State *L)
 {
 	std::string path = luaL_checkstring(L, 1);
 
-	ModSpec spec;
+	ContentSpec spec;
 	spec.path = path;
-	parseModContents(spec);
+	parseContentInfo(spec);
 
 	lua_newtable(L);
 
 	lua_pushstring(L, spec.name.c_str());
 	lua_setfield(L, -2, "name");
 
-	lua_pushstring(L, spec.is_modpack ? "modpack" : "mod");
+	lua_pushstring(L, spec.type.c_str());
 	lua_setfield(L, -2, "type");
+
+	lua_pushstring(L, spec.author.c_str());
+	lua_setfield(L, -2, "author");
 
 	lua_pushstring(L, spec.desc.c_str());
 	lua_setfield(L, -2, "description");
@@ -501,25 +514,31 @@ int ModApiMainMenu::l_get_mod_info(lua_State *L)
 	lua_pushstring(L, spec.path.c_str());
 	lua_setfield(L, -2, "path");
 
-	// Dependencies
-	lua_newtable(L);
-	int i = 1;
-	for (const auto &dep : spec.depends) {
-		lua_pushstring(L, dep.c_str());
-		lua_rawseti(L, -2, i);
-		i++;
-	}
-	lua_setfield(L, -2, "depends");
+	if (spec.type == "mod") {
+		ModSpec spec;
+		spec.path = path;
+		parseModContents(spec);
 
-	// Optional Dependencies
-	lua_newtable(L);
-	i = 1;
-	for (const auto &dep : spec.optdepends) {
-		lua_pushstring(L, dep.c_str());
-		lua_rawseti(L, -2, i);
-		i++;
+		// Dependencies
+		lua_newtable(L);
+		int i = 1;
+		for (const auto &dep : spec.depends) {
+			lua_pushstring(L, dep.c_str());
+			lua_rawseti(L, -2, i);
+			i++;
+		}
+		lua_setfield(L, -2, "depends");
+
+		// Optional Dependencies
+		lua_newtable(L);
+		i = 1;
+		for (const auto &dep : spec.optdepends) {
+			lua_pushstring(L, dep.c_str());
+			lua_rawseti(L, -2, i);
+			i++;
+		}
+		lua_setfield(L, -2, "optional_depends");
 	}
-	lua_setfield(L, -2, "optional_depends");
 
 	return 1;
 }
@@ -838,6 +857,10 @@ bool ModApiMainMenu::isMinetestPath(std::string path)
 	if (fs::PathStartsWith(path,fs::RemoveRelativePathComponents(porting::path_user + DIR_DELIM + "mods")))
 		return true;
 
+	/* mods */
+	if (fs::PathStartsWith(path,fs::RemoveRelativePathComponents(porting::path_user + DIR_DELIM + "textures")))
+		return true;
+
 	/* worlds */
 	if (fs::PathStartsWith(path,fs::RemoveRelativePathComponents(porting::path_user + DIR_DELIM + "worlds")))
 		return true;
@@ -972,6 +995,54 @@ int ModApiMainMenu::l_get_screen_info(lua_State *L)
 	return 1;
 }
 
+int ModApiMainMenu::l_get_package_list(lua_State *L)
+{
+	std::string url = g_settings->get("contentdb_url");
+	std::vector<Package> packages = getPackagesFromURL(url + "/packages/");
+
+	// Make table
+	lua_newtable(L);
+	int top = lua_gettop(L);
+	unsigned int index = 1;
+
+	// Fill table
+	for (const auto &package : packages) {
+		lua_pushnumber(L, index);
+		lua_newtable(L);
+
+		int top_lvl2 = lua_gettop(L);
+
+		lua_pushstring(L, "name");
+		lua_pushstring(L, package.name.c_str());
+		lua_settable  (L, top_lvl2);
+
+		lua_pushstring(L, "title");
+		lua_pushstring(L, package.title.c_str());
+		lua_settable  (L, top_lvl2);
+
+		lua_pushstring(L, "author");
+		lua_pushstring(L, package.author.c_str());
+		lua_settable  (L, top_lvl2);
+
+		lua_pushstring(L, "type");
+		lua_pushstring(L, package.type.c_str());
+		lua_settable  (L, top_lvl2);
+
+		lua_pushstring(L, "short_description");
+		lua_pushstring(L, package.shortDesc.c_str());
+		lua_settable  (L, top_lvl2);
+
+		lua_pushstring(L, "url");
+		lua_pushstring(L, package.url.c_str());
+		lua_settable  (L, top_lvl2);
+
+		lua_settable(L, top);
+		index++;
+	}
+
+	return 1;
+}
+
 /******************************************************************************/
 int ModApiMainMenu::l_get_min_supp_proto(lua_State *L)
 {
@@ -1015,7 +1086,7 @@ void ModApiMainMenu::Initialize(lua_State *L, int top)
 	API_FCT(get_table_index);
 	API_FCT(get_worlds);
 	API_FCT(get_games);
-	API_FCT(get_mod_info);
+	API_FCT(get_content_info);
 	API_FCT(start);
 	API_FCT(close);
 	API_FCT(get_favorites);
@@ -1042,6 +1113,7 @@ void ModApiMainMenu::Initialize(lua_State *L, int top)
 	API_FCT(get_video_drivers);
 	API_FCT(get_video_modes);
 	API_FCT(get_screen_info);
+	API_FCT(get_package_list);
 	API_FCT(get_min_supp_proto);
 	API_FCT(get_max_supp_proto);
 	API_FCT(do_async_callback);
@@ -1050,7 +1122,6 @@ void ModApiMainMenu::Initialize(lua_State *L, int top)
 /******************************************************************************/
 void ModApiMainMenu::InitializeAsync(lua_State *L, int top)
 {
-
 	API_FCT(get_worlds);
 	API_FCT(get_games);
 	API_FCT(get_favorites);
@@ -1066,4 +1137,5 @@ void ModApiMainMenu::InitializeAsync(lua_State *L, int top)
 	//API_FCT(extract_zip); //TODO remove dependency to GuiEngine
 	API_FCT(download_file);
 	//API_FCT(gettext); (gettext lib isn't threadsafe)
+	API_FCT(get_package_list);
 }

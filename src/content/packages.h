@@ -1,6 +1,6 @@
 /*
 Minetest
-Copyright (C) 2018 nerzhul, Loic Blot <loic.blot@unix-experience.fr>
+Copyright (C) 2018 rubenwardy <rw@rubenwardy.com>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -18,26 +18,32 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #pragma once
+#include "config.h"
+#include "convert_json.h"
 
-#include "content/mods.h"
-
-class ServerScripting;
-
-/**
- * Manage server mods
- *
- * All new calls to this class must be tested in test_servermodmanager.cpp
- */
-class ServerModManager : public ModConfiguration
+struct Package
 {
-public:
-	/**
-	 * Creates a ServerModManager which targets worldpath
-	 * @param worldpath
-	 */
-	ServerModManager(const std::string &worldpath);
-	void loadMods(ServerScripting *script);
-	const ModSpec *getModSpec(const std::string &modname) const;
-	void getModNames(std::vector<std::string> &modlist) const;
-	void getModsMediaPaths(std::vector<std::string> &paths) const;
+	std::string name; // Technical name
+	std::string title;
+	std::string author;
+	std::string type; // One of "mod", "game", or "txp"
+
+	std::string shortDesc;
+	std::string url; // download URL
+	std::vector<std::string> screenshots;
+
+	bool valid()
+	{
+		return !(name.empty() || title.empty() || author.empty() ||
+				type.empty() || url.empty());
+	}
 };
+
+#if USE_CURL
+std::vector<Package> getPackagesFromURL(const std::string &url);
+#else
+inline std::vector<Package> getPackagesFromURL(const std::string &url)
+{
+	return std::vector<Package>();
+}
+#endif

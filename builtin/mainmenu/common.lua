@@ -41,7 +41,7 @@ local function render_client_count(n)
 end
 
 local function configure_selected_world_params(idx)
-	local worldconfig = modmgr.get_worldconfig(menudata.worldlist:get_list()[idx].path)
+	local worldconfig = pkgmgr.get_worldconfig(menudata.worldlist:get_list()[idx].path)
 	if worldconfig.creative_mode then
 		core.settings:set("creative_mode", worldconfig.creative_mode)
 	end

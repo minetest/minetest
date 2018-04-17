@@ -33,14 +33,6 @@ core.close()
 Filesystem:
 core.get_builtin_path()
 ^ returns path to builtin root
-core.get_modpath() (possible in async calls)
-^ returns path to global modpath
-core.get_clientmodpath() (possible in async calls)
-^ returns path to global client-side modpath
-core.get_gamepath() (possible in async calls)
-^ returns path to global gamepath
-core.get_texturepath() (possible in async calls)
-^ returns path to default textures
 core.create_dir(absolute_path) (possible in async calls)
 ^ absolute_path to directory to create (needs to be absolute)
 ^ returns true/false
@@ -71,6 +63,8 @@ core.get_video_drivers()
 ^ returns list of available video drivers' settings name and 'friendly' display name
 ^ e.g. { {name="opengl", friendly_name="OpenGL"}, {name="software", friendly_name="Software Renderer"} }
 ^ first element of returned list is guaranteed to be the NULL driver
+core.get_mapgen_names([include_hidden=false]) -> table of map generator algorithms
+    registered in the core (possible in async calls)
 
 Formspec:
 core.update_formspec(formspec)
@@ -111,29 +105,58 @@ core.get_screen_info()
 	window_height   = <current window height>
 	}
 
-Packages:
-core.get_game(index)
-^ returns {
-	id               = <id>,
-	path             = <full path to game>,
-	gamemods_path    = <path>,
-	name             = <name of game>,
-	menuicon_path    = <full path to menuicon>,
-	DEPRECATED:
-	addon_mods_paths = {[1] = <path>,},
-}
-core.get_games() -> table of all games in upper format (possible in async calls)
-core.get_mapgen_names([include_hidden=false]) -> table of map generator algorithms
-    registered in the core (possible in async calls)
-core.get_mod_info(path)
-^ returns  {
-	name             = "name of mod",
-	type             = "mod" or "modpack",
-	description      = "description",
-	path             = "path/to/mod",
-	depends          = {"mod", "names"},
-	optional_depends = {"mod", "names"},
-}
+### Content and Packages
+
+Content - an installed mod, modpack, game, or texture pack (txt)
+Package - content which is downloadable from the content db, may or may not be installed.
+
+* core.get_modpath() (possible in async calls)
+	* returns path to global modpath
+* core.get_clientmodpath() (possible in async calls)
+	* returns path to global client-side modpath
+* core.get_gamepath() (possible in async calls)
+	* returns path to global gamepath
+* core.get_texturepath() (possible in async calls)
+	* returns path to default textures
+* core.get_game(index)
+	* returns:
+
+		{
+			id               = <id>,
+			path             = <full path to game>,
+			gamemods_path    = <path>,
+			name             = <name of game>,
+			menuicon_path    = <full path to menuicon>,
+			author           = "author",
+			DEPRECATED:
+			addon_mods_paths = {[1] = <path>,},
+		}
+
+* core.get_games() -> table of all games in upper format (possible in async calls)
+* core.get_content_info(path)
+	* returns
+
+		{
+			name             = "name of content",
+			type             = "mod" or "modpack" or "game" or "txp",
+			description      = "description",
+			author           = "author",
+			path             = "path/to/content",
+			depends          = {"mod", "names"}, -- mods only
+			optional_depends = {"mod", "names"}, -- mods only
+		}
+
+* core.get_package_list() -> downloads package list from content db
+	* returns a list of:
+
+		{
+			name = "basename",
+			title = "human readable title",
+			author = "username",
+			type = "", -- mod, game, txp
+			short_description = "description",
+			url = "",
+		}
 
 Favorites:
 core.get_favorites(location) -> list of favorites (possible in async calls)

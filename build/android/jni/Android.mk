@@ -130,6 +130,9 @@ LOCAL_SRC_FILES := \
 		jni/src/content_mapnode.cpp               \
 		jni/src/content_nodemeta.cpp              \
 		jni/src/content_sao.cpp                   \
+		jni/src/content/contentdb.cpp             \
+		jni/src/content/mods.cpp                  \
+		jni/src/content/subgames.cpp              \
 		jni/src/convert_json.cpp                  \
 		jni/src/craftdef.cpp                      \
 		jni/src/database/database-dummy.cpp       \
@@ -198,7 +201,6 @@ LOCAL_SRC_FILES := \
 		jni/src/mapgen/mg_ore.cpp                 \
 		jni/src/mapgen/mg_schematic.cpp           \
 		jni/src/minimap.cpp                       \
-		jni/src/mods.cpp                          \
 		jni/src/modchannels.cpp                   \
 		jni/src/nameidmapping.cpp                 \
 		jni/src/nodedef.cpp                       \
@@ -229,7 +231,6 @@ LOCAL_SRC_FILES := \
 		jni/src/shader.cpp                        \
 		jni/src/sky.cpp                           \
 		jni/src/staticobject.cpp                  \
-		jni/src/subgame.cpp                       \
 		jni/src/tileanimation.cpp                 \
 		jni/src/translation.cpp                   \
 		jni/src/tool.cpp                          \

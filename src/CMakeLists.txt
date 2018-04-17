@@ -358,6 +358,7 @@ add_custom_target(GenerateVersion
 
 
 add_subdirectory(threading)
+add_subdirectory(content)
 add_subdirectory(database)
 add_subdirectory(gui)
 add_subdirectory(mapgen)
@@ -372,6 +373,7 @@ set(common_SRCS
 	${database_SRCS}
 	${mapgen_SRCS}
 	${server_SRCS}
+	${content_SRCS}
 	ban.cpp
 	chat.cpp
 	clientiface.cpp
@@ -403,7 +405,6 @@ set(common_SRCS
 	mapsector.cpp
 	metadata.cpp
 	modchannels.cpp
-	mods.cpp
 	nameidmapping.cpp
 	nodedef.cpp
 	nodemetadata.cpp
@@ -428,7 +429,6 @@ set(common_SRCS
 	serverobject.cpp
 	settings.cpp
 	staticobject.cpp
-	subgame.cpp
 	terminal_chat_console.cpp
 	tileanimation.cpp
 	tool.cpp

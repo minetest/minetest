@@ -55,10 +55,10 @@ Where `gameid` is unique to each game.
 
 The game directory can contain the following files:
 
-* `game.conf`, which contains:
-    * `name = <Human-readable full name of the game>` e.g. `name = Minetest`
-    * Optionally, game.conf can also contain
-      `disallowed_mapgens = <comma-separated mapgens>`
+* `game.conf`, with the following keys:
+    * `name` - required, human readable name  e.g. `name = Minetest`
+    * `description` - Short description to be shown in the content tab
+    * `disallowed_mapgens = <comma-separated mapgens>`
       e.g. `disallowed_mapgens = v5,v6,flat`
       These mapgens are removed from the list of mapgens for the game.
 * `minetest.conf`:
@@ -2544,6 +2544,9 @@ Helper functions
     * returns time with microsecond precision. May not return wall time.
 * `table.copy(table)`: returns a table
     * returns a deep copy of `table`
+* `table.insert_all(table, other_table)`:
+    * Appends all values in `other_table` to `table` - uses `#table + 1` to
+      find new indices.
 * `minetest.pointed_thing_to_face_pos(placer, pointed_thing)`: returns a
   position.
     * returns the exact position on the surface of a pointed node

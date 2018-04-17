@@ -245,7 +245,7 @@ HTTPFetchOngoing::HTTPFetchOngoing(const HTTPFetchRequest &request_,
 	curl_easy_setopt(curl, CURLOPT_NOSIGNAL, 1);
 	curl_easy_setopt(curl, CURLOPT_FAILONERROR, 1);
 	curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1);
-	curl_easy_setopt(curl, CURLOPT_MAXREDIRS, 1);
+	curl_easy_setopt(curl, CURLOPT_MAXREDIRS, 3);
 	curl_easy_setopt(curl, CURLOPT_ENCODING, "gzip");
 
 	std::string bind_address = g_settings->get("bind_address");

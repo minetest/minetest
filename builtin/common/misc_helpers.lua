@@ -551,6 +551,16 @@ function table.copy(t, seen)
 	end
 	return n
 end
+
+
+function table.insert_all(t, other)
+	for i=1, #other do
+		t[#t + 1] = other[i]
+	end
+	return t
+end
+
+
 --------------------------------------------------------------------------------
 -- mainmenu only functions
 --------------------------------------------------------------------------------

@@ -49,7 +49,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "content_mapnode.h"
 #include "content_nodemeta.h"
 #include "content_sao.h"
-#include "mods.h"
+#include "content/mods.h"
 #include "modchannels.h"
 #include "serverlist.h"
 #include "util/string.h"
