@@ -3906,9 +3906,9 @@ See `StorageRef`, `NodeMetaRef`, `ItemStackMetaRef`, and `PlayerMetaRef`.
 
 #### Methods
 * `contains(key)` - Returns true if key present, otherwise false.
+* `get(key)` - Returns nil if key not present, else the stored string.
 * `set_string(key, value)` - Value of "" will delete the key.
 * `get_string(key)` - Returns "" if key not present.
-* `get_string_or_nil(key)` - Returns nil if key not present
 * `set_int(key, value)`
 * `get_int(key)` - Returns 0 if key not present.
 * `set_float(key, value)`

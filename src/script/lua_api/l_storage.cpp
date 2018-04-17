@@ -135,7 +135,7 @@ void StorageRef::clearMeta()
 const char StorageRef::className[] = "StorageRef";
 const luaL_Reg StorageRef::methods[] = {
 	luamethod(MetaDataRef, contains),
-	luamethod(MetaDataRef, get_string_or_nil),
+	luamethod(MetaDataRef, get),
 	luamethod(MetaDataRef, get_string),
 	luamethod(MetaDataRef, set_string),
 	luamethod(MetaDataRef, get_int),
