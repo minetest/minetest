@@ -134,7 +134,6 @@ public:
 	bool large_cave_is_flat;
 	bool flooded;
 
-	s16 max_stone_y;
 	v3s16 node_min;
 	v3s16 node_max;
 
