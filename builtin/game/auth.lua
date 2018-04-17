@@ -18,12 +18,17 @@ local function read_auth_file()
 		if line ~= "" then
 			local fields = line:split(":", true)
 			local name, password, privilege_string, last_login = unpack(fields)
-			last_login = tonumber(last_login)
 			if not (name and password and privilege_string) then
 				error("Invalid line in auth.txt: "..dump(line))
 			end
-			local privileges = core.string_to_privs(privilege_string)
-			newtable[name] = {password=password, privileges=privileges, last_login=last_login}
+			if password == "-" then
+				-- "delete" line
+				newtable[name] = nil
+			else
+				last_login = tonumber(last_login)
+				local privileges = core.string_to_privs(privilege_string)
+				newtable[name] = {password=password, privileges=privileges, last_login=last_login}
+			end
 		end
 	end
 	io.close(file)
@@ -53,7 +58,42 @@ local function save_auth_file()
 	end
 end
 
+local function append_auth_file(name)
+	local stuff = auth_table[name]
+	-- Check table for validness before attempting to save
+	assert(type(name) == "string")
+	assert(name ~= "")
+	assert(type(stuff) == "table")
+	assert(type(stuff.password) == "string")
+	assert(type(stuff.privileges) == "table")
+	assert(stuff.last_login == nil or type(stuff.last_login) == "number")
+
+	local priv_string = core.privs_to_string(stuff.privileges)
+	local parts = {name, stuff.password, priv_string, stuff.last_login or ""}
+	local content = table.concat(parts, ":") .. "\n"
+
+	local file, errmsg = io.open(auth_file_path, 'ab')
+	if not file then
+		error(auth_file_path.." could not be opened for appending: "..errmsg)
+	end
+	file:write(content)
+	io.close(file)
+end
+
+local function delete_from_auth_file(name)
+	local file, errmsg = io.open(auth_file_path, 'ab')
+	if not file then
+		error(auth_file_path.." could not be opened for appending: "..errmsg)
+	end
+	-- "delete me" guard values
+	local content = table.concat({name, "-", "-", 0}, ":") .. "\n"
+	file:write(content)
+	io.close(file)
+end
+
 read_auth_file()
+-- reading may have condensed the file, rewrite completely
+save_auth_file()
 
 core.builtin_auth_handler = {
 	get_auth = function(name)
@@ -104,7 +144,7 @@ core.builtin_auth_handler = {
 			privileges = core.string_to_privs(core.settings:get("default_privs")),
 			last_login = os.time(),
 		}
-		save_auth_file()
+		append_auth_file(name)
 	end,
 	delete_auth = function(name)
 		assert(type(name) == "string")
@@ -113,7 +153,7 @@ core.builtin_auth_handler = {
 		end
 		core.log('info', "Built-in authentication handler deleting player '"..name.."'")
 		auth_table[name] = nil
-		save_auth_file()
+		delete_from_auth_file(name)
 		return true
 	end,
 	set_password = function(name, password)
@@ -124,7 +164,7 @@ core.builtin_auth_handler = {
 		else
 			core.log('info', "Built-in authentication handler setting password of player '"..name.."'")
 			auth_table[name].password = password
-			save_auth_file()
+			append_auth_file(name)
 		end
 		return true
 	end,
@@ -153,7 +193,7 @@ core.builtin_auth_handler = {
 
 		auth_table[name].privileges = privileges
 		core.notify_authentication_modified(name)
-		save_auth_file()
+		append_auth_file(name)
 	end,
 	reload = function()
 		read_auth_file()
@@ -162,7 +202,7 @@ core.builtin_auth_handler = {
 	record_login = function(name)
 		assert(type(name) == "string")
 		assert(auth_table[name]).last_login = os.time()
-		save_auth_file()
+		append_auth_file(name)
 	end,
 	iterate = function()
 		local names = {}
