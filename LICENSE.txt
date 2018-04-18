@@ -31,6 +31,14 @@ erlehmann:
 JRottm
   textures/base/pack/player_marker.png
 
+srifqi
+  textures/base/pack/chat_hide_btn.png
+  textures/base/pack/chat_show_btn.png
+  textures/base/pack/joystick_bg.png
+  textures/base/pack/joystick_center.png
+  textures/base/pack/joystick_off.png
+  textures/base/pack/minimap_btn.png
+
 License of Minetest source code
 -------------------------------
 
