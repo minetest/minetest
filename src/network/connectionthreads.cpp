@@ -365,7 +365,7 @@ bool ConnectionSendThread::rawSendAsPacket(session_t peer_id, u8 channelnum,
 			< channel->getWindowSize()) {
 			LOG(dout_con << m_connection->getDesc()
 				<< " INFO: sending a reliable packet to peer_id " << peer_id
-				<< " channel: " << channelnum
+				<< " channel: " << (u32)channelnum
 				<< " seqnum: " << seqnum << std::endl);
 			sendAsPacketReliable(p, channel);
 			return true;
@@ -373,7 +373,7 @@ bool ConnectionSendThread::rawSendAsPacket(session_t peer_id, u8 channelnum,
 
 		LOG(dout_con << m_connection->getDesc()
 			<< " INFO: queueing reliable packet for peer_id: " << peer_id
-			<< " channel: " << channelnum
+			<< " channel: " << (u32)channelnum
 			<< " seqnum: " << seqnum << std::endl);
 		channel->queued_reliables.push(p);
 		return false;
@@ -948,7 +948,7 @@ void ConnectionReceiveThread::receive()
 
 			if (channelnum > CHANNEL_COUNT - 1) {
 				LOG(derr_con << m_connection->getDesc()
-					<< "Receive(): Invalid channel " << channelnum << std::endl);
+					<< "Receive(): Invalid channel " << (u32)channelnum << std::endl);
 				throw InvalidIncomingDataException("Channel doesn't exist");
 			}
 
@@ -1024,7 +1024,7 @@ void ConnectionReceiveThread::receive()
 
 				LOG(dout_con << m_connection->getDesc()
 					<< " ProcessPacket from peer_id: " << peer_id
-					<< ",channel: " << (channelnum & 0xFF) << ", returned "
+					<< ", channel: " << (u32)channelnum << ", returned "
 					<< resultdata.getSize() << " bytes" << std::endl);
 
 				ConnectionEvent e;
