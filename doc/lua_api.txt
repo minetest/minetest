@@ -4844,6 +4844,18 @@ Schematics
           the Lua code generated will use that number of spaces as indentation
           instead of a tab character.
 
+* `minetest.read_schematic(schematic, options)`
+    * Returns a Lua table representing the schematic (see: [Schematic specifier])
+    * `schematic` is the schematic to read (see: [Schematic specifier])
+    * `options` is a table containing the following optional parameters:
+        * `write_yslice_prob`: string value:
+            * `none`: no `write_yslice_prob` table is inserted,
+            * `low`: only probabilities that are not 254 or 255 are written in
+              the `write_ylisce_prob` table,
+            * `all`: write all probabilities to the `write_yslice_prob` table.
+            * The default for this option is `all`.
+            * Any invalid value will be interpreted as `all`.
+
 HTTP Requests
 -------------
 
