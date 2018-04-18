@@ -191,11 +191,12 @@ void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d,
 		return;
 	}
 
+	PlayerSettings &player_settings = getPlayerSettings();
+
 	// Skip collision detection if noclip mode is used
 	bool fly_allowed = m_client->checkLocalPrivilege("fly");
-	bool noclip = m_client->checkLocalPrivilege("noclip") &&
-		g_settings->getBool("noclip");
-	bool free_move = g_settings->getBool("free_move") && fly_allowed;
+	bool noclip = m_client->checkLocalPrivilege("noclip") && player_settings.noclip;
+	bool free_move = player_settings.free_move && fly_allowed;
 
 	if (noclip && free_move) {
 		position += m_speed * dtime;
@@ -479,6 +480,8 @@ void LocalPlayer::applyControl(float dtime, Environment *env)
 		return;
 	}
 
+	PlayerSettings &player_settings = getPlayerSettings();
+
 	v3f move_direction = v3f(0,0,1);
 	move_direction.rotateXZBy(getYaw());
 
@@ -488,12 +491,12 @@ void LocalPlayer::applyControl(float dtime, Environment *env)
 	bool fly_allowed = m_client->checkLocalPrivilege("fly");
 	bool fast_allowed = m_client->checkLocalPrivilege("fast");
 
-	bool free_move = fly_allowed && g_settings->getBool("free_move");
-	bool fast_move = fast_allowed && g_settings->getBool("fast_move");
+	bool free_move = fly_allowed && player_settings.free_move;
+	bool fast_move = fast_allowed && player_settings.fast_move;
 	// When aux1_descends is enabled the fast key is used to go down, so fast isn't possible
-	bool fast_climb = fast_move && control.aux1 && !g_settings->getBool("aux1_descends");
-	bool continuous_forward = g_settings->getBool("continuous_forward");
-	bool always_fly_fast = g_settings->getBool("always_fly_fast");
+	bool fast_climb = fast_move && control.aux1 && !player_settings.aux1_descends;
+	bool continuous_forward = player_settings.continuous_forward;
+	bool always_fly_fast = player_settings.always_fly_fast;
 
 	// Whether superspeed mode is used or not
 	bool superspeed = false;
@@ -502,7 +505,7 @@ void LocalPlayer::applyControl(float dtime, Environment *env)
 		superspeed = true;
 
 	// Old descend control
-	if(g_settings->getBool("aux1_descends"))
+	if (player_settings.aux1_descends)
 	{
 		// If free movement and fast movement, always move fast
 		if(free_move && fast_move)
@@ -610,7 +613,7 @@ void LocalPlayer::applyControl(float dtime, Environment *env)
 	if(control.jump)
 	{
 		if (free_move) {
-			if (g_settings->getBool("aux1_descends") || always_fly_fast) {
+			if (player_settings.aux1_descends || always_fly_fast) {
 				if (fast_move)
 					speedV.Y = movement_speed_fast;
 				else
@@ -773,11 +776,12 @@ void LocalPlayer::old_move(f32 dtime, Environment *env, f32 pos_max_d,
 		return;
 	}
 
+	PlayerSettings &player_settings = getPlayerSettings();
+
 	// Skip collision detection if noclip mode is used
 	bool fly_allowed = m_client->checkLocalPrivilege("fly");
-	bool noclip = m_client->checkLocalPrivilege("noclip") &&
-		g_settings->getBool("noclip");
-	bool free_move = noclip && fly_allowed && g_settings->getBool("free_move");
+	bool noclip = m_client->checkLocalPrivilege("noclip") && player_settings.noclip;
+	bool free_move = noclip && fly_allowed && player_settings.free_move;
 	if (free_move) {
 		position += m_speed * dtime;
 		setPosition(position);
@@ -859,7 +863,7 @@ void LocalPlayer::old_move(f32 dtime, Environment *env, f32 pos_max_d,
 		fall off from it
 	*/
 	if (control.sneak && m_sneak_node_exists &&
-			!(fly_allowed && g_settings->getBool("free_move")) && !in_liquid &&
+			!(fly_allowed && player_settings.free_move) && !in_liquid &&
 			physics_override_sneak) {
 		f32 maxd = 0.5 * BS + sneak_max;
 		v3f lwn_f = intToFloat(m_sneak_node, BS);
@@ -1003,7 +1007,7 @@ void LocalPlayer::old_move(f32 dtime, Environment *env, f32 pos_max_d,
 		Report collisions
 	*/
 	// Dont report if flying
-	if (collision_info && !(g_settings->getBool("free_move") && fly_allowed)) {
+	if (collision_info && !(player_settings.free_move && fly_allowed)) {
 		for (const auto &info : result.collisions) {
 			collision_info->push_back(info);
 		}
