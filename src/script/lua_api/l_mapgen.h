@@ -131,6 +131,9 @@ private:
 	// serialize_schematic(schematic, format, options={...})
 	static int l_serialize_schematic(lua_State *L);
 
+	// read_schematic(schematic, options={...})
+	static int l_read_schematic(lua_State *L);
+
 public:
 	static void Initialize(lua_State *L, int top);
 
