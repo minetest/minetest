@@ -24,6 +24,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "cloudparams.h"
 
 class PlayerSAO;
+class Server;
+class NodeDefManager;
 
 enum RemotePlayerChatResult
 {
@@ -40,7 +42,7 @@ class RemotePlayer : public Player
 	friend class PlayerDatabaseFiles;
 
 public:
-	RemotePlayer(const char *name, IItemDefManager *idef);
+	RemotePlayer(const char *name, IItemDefManager *idef, Server *server = NULL);
 	virtual ~RemotePlayer() = default;
 
 	void deSerialize(std::istream &is, const std::string &playername, PlayerSAO *sao);
@@ -139,6 +141,17 @@ public:
 
 	void setPeerId(session_t peer_id) { m_peer_id = peer_id; }
 
+protected:
+	virtual bool checkPrivilege(const std::string &priv) const;
+	virtual void triggerJumpEvent() { /* noop in remote */ };
+	virtual const NodeDefManager *getNodeDefManager() const;
+	virtual void handleAttachedMove() { /* noop in remote */ };
+	virtual float getStepHeight() const;
+	virtual void reportRegainGround() { /* noop in remote */ };
+	virtual void calculateCameraInCeiling(Map *map, const NodeDefManager *ndef) {
+		/* noop in remote */
+	};
+
 private:
 	/*
 		serialize() writes a bunch of text that can contain
@@ -172,4 +185,5 @@ private:
 	CloudParams m_cloud_params;
 
 	session_t m_peer_id = PEER_ID_INEXISTENT;
+	Server *m_server;
 };

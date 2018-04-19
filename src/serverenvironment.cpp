@@ -1170,8 +1170,8 @@ void ServerEnvironment::step(float dtime)
 			if (player->getPeerId() == PEER_ID_INEXISTENT)
 				continue;
 
-			// Move
-			player->move(dtime, this, 100 * BS);
+			// Move (noop in remote, obsolete)
+			//player->move(dtime, this, 100 * BS);
 		}
 	}
 

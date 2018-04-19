@@ -104,6 +104,7 @@ class Map;
 struct CollisionInfo;
 struct HudElement;
 class Environment;
+class NodeDefManager;
 
 class Player
 {
@@ -114,11 +115,19 @@ public:
 
 	DISABLE_CLASS_COPY(Player);
 
-	virtual void move(f32 dtime, Environment *env, f32 pos_max_d)
-	{}
-	virtual void move(f32 dtime, Environment *env, f32 pos_max_d,
-			std::vector<CollisionInfo> *collision_info)
-	{}
+	void step(float dtime, const PlayerControl &control,
+			const PlayerSettings &player_settings, Environment *env,
+			std::vector<CollisionInfo> *player_collisions = nullptr);
+
+	void applyControl(float dtime, const PlayerControl &control,
+			const PlayerSettings &player_settings, Environment *env);
+
+	void move(f32 dtime, const PlayerControl &control,
+			const PlayerSettings &player_settings, Environment *env,
+			f32 pos_max_d, std::vector<CollisionInfo> *collision_info = NULL);
+	void old_move(f32 dtime, const PlayerControl &control,
+			const PlayerSettings &player_settings, Environment *env,
+			f32 pos_max_d, std::vector<CollisionInfo> *collision_info = NULL);
 
 	const v3f &getSpeed() const
 	{
@@ -166,8 +175,7 @@ public:
 	std::string inventory_formspec;
 	std::string formspec_prepend;
 
-	PlayerControl control;
-	const PlayerControl& getPlayerControl() { return control; }
+	PlayerControl &getPlayerControl() { return m_control; }
 	PlayerSettings &getPlayerSettings() { return m_player_settings; }
 	static void settingsChangedCallback(const std::string &name, void *data);
 
@@ -180,11 +188,95 @@ public:
 
 	u32 hud_flags;
 	s32 hud_hotbar_itemcount;
+
+	bool touching_ground = false;
+	// This oscillates so that the player jumps a bit above the surface
+	bool in_liquid = false;
+	// This is more stable and defines the maximum speed of the player
+	bool in_liquid_stable = false;
+	// Gets the viscosity of water to calculate friction
+	u8 liquid_viscosity = 0;
+	bool is_climbing = false;
+	bool swimming_vertical = false;
+	bool is_slipping = false;
+	bool m_can_jump = false;
+	f32 m_yaw = 0.0f;
+	f32 m_pitch = 0.0f;
+
+	float physics_override_speed = 1.0f;
+	float physics_override_jump = 1.0f;
+	float physics_override_gravity = 1.0f;
+	bool physics_override_sneak = true;
+	bool physics_override_sneak_glitch = false;
+	// Temporary option for old move code
+	bool physics_override_new_move = true;
+
+	bool isAttached = false;
+
+	void setYaw(f32 yaw) { m_yaw = yaw; }
+	f32 getYaw() const { return m_yaw; }
+
+	void setPitch(f32 pitch) { m_pitch = pitch; }
+	f32 getPitch() const { return m_pitch; }
+
+	inline void setPosition(const v3f &position)
+	{
+		m_position = position;
+		m_sneak_node_exists = false;
+	}
+
+	v3f getPosition() const { return m_position; }
+
+	v3s16 getStandingNodePos();
+	void setCollisionbox(const aabb3f &box) { m_collisionbox = box; }
+
 protected:
 	char m_name[PLAYERNAME_SIZE];
 	v3f m_speed;
 
 	std::vector<HudElement *> hud;
+
+	virtual bool checkPrivilege(const std::string &priv) const = 0;
+	virtual void triggerJumpEvent() = 0;
+	void accelerateHorizontal(const v3f &target_speed, const f32 max_increase);
+	void accelerateVertical(const v3f &target_speed, const f32 max_increase);
+	float getSlipFactor(Environment *env, const v3f &speedH);
+	v3f m_position;
+	v3s16 m_standing_node;
+
+	// Whether the player is allowed to sneak
+	bool m_sneak_node_exists = false;
+	v3s16 m_sneak_node = v3s16(32767, 32767, 32767);
+	// Stores the top bounding box of m_sneak_node
+	aabb3f m_sneak_node_bb_top = aabb3f(0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
+	// Whether a "sneak ladder" structure is detected at the players pos
+	// see detectSneakLadder() in the .cpp for more info (always false if disabled)
+	bool m_sneak_ladder_detected = false;
+	bool updateSneakNode(Map *map, const v3f &position, const v3f &sneak_max);
+
+	// ***** Variables for temporary option of the old move code *****
+	// Stores the max player uplift by m_sneak_node
+	f32 m_sneak_node_bb_ymax = 0.0f;
+	// Whether recalculation of m_sneak_node and its top bbox is needed
+	bool m_need_to_get_new_sneak_node = true;
+	// Node below player, used to determine whether it has been removed,
+	// and its old type
+	v3s16 m_old_node_below = v3s16(32767, 32767, 32767);
+	std::string m_old_node_below_type = "air";
+	// ***** End of variables for temporary option *****
+
+	aabb3f m_collisionbox = aabb3f(-BS * 0.30f, 0.0f, -BS * 0.30f, BS * 0.30f,
+			BS * 1.75f, BS * 0.30f);
+
+	PlayerControl m_control;
+
+	virtual const NodeDefManager *getNodeDefManager() const = 0;
+	virtual void handleAttachedMove() = 0;
+	virtual float getStepHeight() const = 0;
+	virtual void reportRegainGround() = 0;
+	virtual void calculateCameraInCeiling(
+			Map *map, const NodeDefManager *ndef) = 0;
+
 private:
 	// Protect some critical areas
 	// hud for example can be modified by EmergeThread

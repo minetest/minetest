@@ -406,7 +406,8 @@ void Client::step(float dtime)
 	// Control local player (0ms)
 	LocalPlayer *player = m_env.getLocalPlayer();
 	assert(player);
-	player->applyControl(dtime, &m_env);
+	player->applyControl(dtime, player->getPlayerControl(),
+			player->getPlayerSettings(), &m_env);
 
 	// Step environment
 	m_env.step(dtime);
@@ -1325,7 +1326,7 @@ void Client::setPlayerControl(PlayerControl &control)
 {
 	LocalPlayer *player = m_env.getLocalPlayer();
 	assert(player);
-	player->control = control;
+	player->getPlayerControl() = control;
 }
 
 void Client::selectPlayerItem(u16 item)

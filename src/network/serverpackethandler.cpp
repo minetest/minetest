@@ -478,15 +478,16 @@ void Server::process_PlayerPos(RemotePlayer *player, PlayerSAO *playersao,
 	playersao->setFov(fov);
 	playersao->setWantedRange(wanted_range);
 	player->keyPressed = keyPressed;
-	player->control.up = (keyPressed & 1);
-	player->control.down = (keyPressed & 2);
-	player->control.left = (keyPressed & 4);
-	player->control.right = (keyPressed & 8);
-	player->control.jump = (keyPressed & 16);
-	player->control.aux1 = (keyPressed & 32);
-	player->control.sneak = (keyPressed & 64);
-	player->control.LMB = (keyPressed & 128);
-	player->control.RMB = (keyPressed & 256);
+	PlayerControl &control = player->getPlayerControl();
+	control.up = (keyPressed & 1);
+	control.down = (keyPressed & 2);
+	control.left = (keyPressed & 4);
+	control.right = (keyPressed & 8);
+	control.jump = (keyPressed & 16);
+	control.aux1 = (keyPressed & 32);
+	control.sneak = (keyPressed & 64);
+	control.LMB = (keyPressed & 128);
+	control.RMB = (keyPressed & 256);
 
 	if (playersao->checkMovementCheat()) {
 		// Call callbacks
