@@ -20,7 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef MT_CPP11_HEADER
 #define MT_CPP11_HEADER
 
-#if __cplusplus < 201103L || _MSC_VER < 1600
+#if __cplusplus < 201103L || (defined(_MSC_VER) && _MSC_VER < 1600)
 #define USE_CPP11_FAKE_KEYWORD
 #endif
 
