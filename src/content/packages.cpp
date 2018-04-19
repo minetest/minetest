@@ -49,6 +49,7 @@ std::vector<Package> getPackagesFromURL(const std::string &url)
 		package.type = json[i]["type"].asString();
 		package.shortDesc = json[i]["shortDesc"].asString();
 		package.url = json[i]["url"].asString();
+		package.release = json[i]["release"].asInt();
 
 		Json::Value jScreenshots = json[i]["screenshots"];
 		for (unsigned int j = 0; j < jScreenshots.size(); ++j) {

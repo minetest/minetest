@@ -32,6 +32,7 @@ function get_mods(path,retval,modpack)
 
 			toadd.name = name
 			toadd.author = mod_conf.author
+			toadd.release = tonumber(mod_conf.release or "0")
 			toadd.path = prefix
 			toadd.type = "mod"
 
@@ -74,6 +75,7 @@ function pkgmgr.get_texture_packs()
 			retval[#retval + 1] = {
 				name = item,
 				author = conf:get("author"),
+				release = tonumber(conf:get("release") or "0"),
 				list_name = name,
 				type = "txp",
 				path = path,

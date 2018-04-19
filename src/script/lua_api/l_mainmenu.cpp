@@ -443,33 +443,37 @@ int ModApiMainMenu::l_get_games(lua_State *L)
 		lua_newtable(L);
 		int top_lvl2 = lua_gettop(L);
 
-		lua_pushstring(L, "id");
-		lua_pushstring(L, game.id.c_str());
-		lua_settable(L,   top_lvl2);
+		lua_pushstring(L,  "id");
+		lua_pushstring(L,  game.id.c_str());
+		lua_settable(L,    top_lvl2);
 
-		lua_pushstring(L, "path");
-		lua_pushstring(L, game.path.c_str());
-		lua_settable(L,   top_lvl2);
+		lua_pushstring(L,  "path");
+		lua_pushstring(L,  game.path.c_str());
+		lua_settable(L,    top_lvl2);
 
-		lua_pushstring(L, "type");
-		lua_pushstring(L, "game");
-		lua_settable(L,   top_lvl2);
+		lua_pushstring(L,  "type");
+		lua_pushstring(L,  "game");
+		lua_settable(L,    top_lvl2);
 
-		lua_pushstring(L, "gamemods_path");
-		lua_pushstring(L, game.gamemods_path.c_str());
-		lua_settable(L,   top_lvl2);
+		lua_pushstring(L,  "gamemods_path");
+		lua_pushstring(L,  game.gamemods_path.c_str());
+		lua_settable(L,    top_lvl2);
 
-		lua_pushstring(L, "name");
-		lua_pushstring(L, game.name.c_str());
-		lua_settable(L,   top_lvl2);
+		lua_pushstring(L,  "name");
+		lua_pushstring(L,  game.name.c_str());
+		lua_settable(L,    top_lvl2);
 
-		lua_pushstring(L, "author");
-		lua_pushstring(L, game.author.c_str());
-		lua_settable(L,   top_lvl2);
+		lua_pushstring(L,  "author");
+		lua_pushstring(L,  game.author.c_str());
+		lua_settable(L,    top_lvl2);
 
-		lua_pushstring(L, "menuicon_path");
-		lua_pushstring(L, game.menuicon_path.c_str());
-		lua_settable(L,   top_lvl2);
+		lua_pushstring(L,  "release");
+		lua_pushinteger(L, game.release);
+		lua_settable(L,    top_lvl2);
+
+		lua_pushstring(L,  "menuicon_path");
+		lua_pushstring(L,  game.menuicon_path.c_str());
+		lua_settable(L,    top_lvl2);
 
 		lua_pushstring(L, "addon_mods_paths");
 		lua_newtable(L);
@@ -507,6 +511,9 @@ int ModApiMainMenu::l_get_content_info(lua_State *L)
 
 	lua_pushstring(L, spec.author.c_str());
 	lua_setfield(L, -2, "author");
+
+	lua_pushinteger(L, spec.release);
+	lua_setfield(L, -2, "release");
 
 	lua_pushstring(L, spec.desc.c_str());
 	lua_setfield(L, -2, "description");
@@ -1034,6 +1041,10 @@ int ModApiMainMenu::l_get_package_list(lua_State *L)
 
 		lua_pushstring(L, "url");
 		lua_pushstring(L, package.url.c_str());
+		lua_settable  (L, top_lvl2);
+
+		lua_pushstring(L, "release");
+		lua_pushinteger(L, package.release);
 		lua_settable  (L, top_lvl2);
 
 		lua_settable(L, top);

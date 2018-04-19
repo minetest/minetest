@@ -30,12 +30,13 @@ struct Package
 
 	std::string shortDesc;
 	std::string url; // download URL
+	int release;
 	std::vector<std::string> screenshots;
 
 	bool valid()
 	{
 		return !(name.empty() || title.empty() || author.empty() ||
-				type.empty() || url.empty());
+				type.empty() || url.empty() || release <= 0);
 	}
 };
 

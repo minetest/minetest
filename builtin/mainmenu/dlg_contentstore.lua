@@ -69,6 +69,7 @@ local function start_install(calling_dialog, package)
 					end
 					set_def("description", result.package.short_description)
 					set_def("author",      result.package.author)
+					conf:set("release",    result.package.release)
 					conf:write()
 				end
 			end
@@ -209,6 +210,7 @@ function store.update_paths()
 
 		if content and content.author == package.author then
 			package.path = content.path
+			package.installed_release = content.release
 		else
 			package.path = nil
 		end
@@ -301,17 +303,23 @@ function store.get_formspec()
 		formspec[#formspec + 1] = "]"
 
 		-- buttons
-		if package.path then
-			formspec[#formspec + 1] = "button[6,0;1.5,1;uninstall_"
-			formspec[#formspec + 1] = tostring(i)
-			formspec[#formspec + 1] = ";"
-			formspec[#formspec + 1] = fgettext("Uninstall")
-			formspec[#formspec + 1] = "]"
-		else
+		if not package.path then
 			formspec[#formspec + 1] = "button[6,0;1.5,1;install_"
 			formspec[#formspec + 1] = tostring(i)
 			formspec[#formspec + 1] = ";"
 			formspec[#formspec + 1] = fgettext("Install")
+			formspec[#formspec + 1] = "]"
+		elseif package.installed_release < package.release then
+			formspec[#formspec + 1] = "button[6,0;1.5,1;install_"
+			formspec[#formspec + 1] = tostring(i)
+			formspec[#formspec + 1] = ";"
+			formspec[#formspec + 1] = fgettext("Update")
+			formspec[#formspec + 1] = "]"
+		else
+			formspec[#formspec + 1] = "button[6,0;1.5,1;uninstall_"
+			formspec[#formspec + 1] = tostring(i)
+			formspec[#formspec + 1] = ";"
+			formspec[#formspec + 1] = fgettext("Uninstall")
 			formspec[#formspec + 1] = "]"
 		end
 		formspec[#formspec + 1] = "button[7.5,0;1.5,1;view_"
