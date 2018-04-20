@@ -317,16 +317,16 @@ Biome *BiomeGenOriginal::calcBiomeFromNoise(float heat, float humidity, v3s16 po
 
 void Biome::resolveNodeNames()
 {
-	getIdFromNrBacklog(&c_top,           "mapgen_stone",              CONTENT_AIR);
-	getIdFromNrBacklog(&c_filler,        "mapgen_stone",              CONTENT_AIR);
-	getIdFromNrBacklog(&c_stone,         "mapgen_stone",              CONTENT_AIR);
-	getIdFromNrBacklog(&c_water_top,     "mapgen_water_source",       CONTENT_AIR);
-	getIdFromNrBacklog(&c_water,         "mapgen_water_source",       CONTENT_AIR);
-	getIdFromNrBacklog(&c_river_water,   "mapgen_river_water_source", CONTENT_AIR);
-	getIdFromNrBacklog(&c_riverbed,      "mapgen_stone",              CONTENT_AIR);
-	getIdFromNrBacklog(&c_dust,          "ignore",                    CONTENT_IGNORE);
-	getIdFromNrBacklog(&c_cave_liquid,   "ignore",                    CONTENT_IGNORE);
-	getIdFromNrBacklog(&c_dungeon,       "ignore",                    CONTENT_IGNORE);
-	getIdFromNrBacklog(&c_dungeon_alt,   "ignore",                    CONTENT_IGNORE);
-	getIdFromNrBacklog(&c_dungeon_stair, "ignore",                    CONTENT_IGNORE);
+	getIdFromNrBacklog(&c_top,           "mapgen_stone",              CONTENT_AIR,    false);
+	getIdFromNrBacklog(&c_filler,        "mapgen_stone",              CONTENT_AIR,    false);
+	getIdFromNrBacklog(&c_stone,         "mapgen_stone",              CONTENT_AIR,    false);
+	getIdFromNrBacklog(&c_water_top,     "mapgen_water_source",       CONTENT_AIR,    false);
+	getIdFromNrBacklog(&c_water,         "mapgen_water_source",       CONTENT_AIR,    false);
+	getIdFromNrBacklog(&c_river_water,   "mapgen_river_water_source", CONTENT_AIR,    false);
+	getIdFromNrBacklog(&c_riverbed,      "mapgen_stone",              CONTENT_AIR,    false);
+	getIdFromNrBacklog(&c_dust,          "ignore",                    CONTENT_IGNORE, false);
+	getIdFromNrBacklog(&c_cave_liquid,   "ignore",                    CONTENT_IGNORE, false);
+	getIdFromNrBacklog(&c_dungeon,       "ignore",                    CONTENT_IGNORE, false);
+	getIdFromNrBacklog(&c_dungeon_alt,   "ignore",                    CONTENT_IGNORE, false);
+	getIdFromNrBacklog(&c_dungeon_stair, "ignore",                    CONTENT_IGNORE, false);
 }
