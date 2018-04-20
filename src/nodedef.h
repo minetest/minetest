@@ -733,9 +733,10 @@ public:
 	virtual void resolveNodeNames() = 0;
 
 	bool getIdFromNrBacklog(content_t *result_out,
-		const std::string &node_alt, content_t c_fallback);
+		const std::string &node_alt, content_t c_fallback,
+		bool error_on_fallback = true);
 	bool getIdsFromNrBacklog(std::vector<content_t> *result_out,
-		bool all_required=false, content_t c_fallback=CONTENT_IGNORE);
+		bool all_required = false, content_t c_fallback = CONTENT_IGNORE);
 
 	void nodeResolveInternal();
 

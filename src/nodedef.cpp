@@ -1621,7 +1621,7 @@ void NodeResolver::nodeResolveInternal()
 
 
 bool NodeResolver::getIdFromNrBacklog(content_t *result_out,
-	const std::string &node_alt, content_t c_fallback)
+	const std::string &node_alt, content_t c_fallback, bool error_on_fallback)
 {
 	if (m_nodenames_idx == m_nodenames.size()) {
 		*result_out = c_fallback;
@@ -1639,8 +1639,9 @@ bool NodeResolver::getIdFromNrBacklog(content_t *result_out,
 	}
 
 	if (!success) {
-		errorstream << "NodeResolver: failed to resolve node name '" << name
-			<< "'." << std::endl;
+		if (error_on_fallback)
+			errorstream << "NodeResolver: failed to resolve node name '" << name
+				<< "'." << std::endl;
 		c = c_fallback;
 	}
 
