@@ -497,27 +497,28 @@ void CavesRandomWalk::carveRoute(v3f vec, float f, bool randomize_xz)
 	v3s16 startp(orp.X, orp.Y, orp.Z);
 	startp += of;
 
-	// Get biome at 'startp', use 'node_cave_liquid' if stated, otherwise
-	// fallback to classic behaviour.
+	v3f fp = orp + vec * f;
+	fp.X += 0.1f * ps->range(-10, 10);
+	fp.Z += 0.1f * ps->range(-10, 10);
+	v3s16 cp(fp.X, fp.Y, fp.Z);
+
+	// Get biome at 'cp + of', the absolute centre point of this route
+	v3s16 cpabs = cp + of;
 	MapNode liquidnode = CONTENT_IGNORE;
 
 	if (bmgn) {
-		Biome *biome = (Biome *)bmgn->calcBiomeAtPoint(startp);
+		Biome *biome = (Biome *)bmgn->calcBiomeAtPoint(cpabs);
 		if (biome->c_cave_liquid != CONTENT_IGNORE)
 			liquidnode = biome->c_cave_liquid;
 	}
 
 	if (liquidnode == CONTENT_IGNORE) {
+		// Fallback to classic behaviour using point 'startp'
 		float nval = NoisePerlin3D(np_caveliquids, startp.X,
 			startp.Y, startp.Z, seed);
 		liquidnode = (nval < 0.40f && node_max.Y < lava_depth) ?
 			lavanode : waternode;
 	}
-
-	v3f fp = orp + vec * f;
-	fp.X += 0.1f * ps->range(-10, 10);
-	fp.Z += 0.1f * ps->range(-10, 10);
-	v3s16 cp(fp.X, fp.Y, fp.Z);
 
 	s16 d0 = -rs / 2;
 	s16 d1 = d0 + rs;
