@@ -130,8 +130,9 @@ LOCAL_SRC_FILES := \
 		jni/src/content_mapnode.cpp               \
 		jni/src/content_nodemeta.cpp              \
 		jni/src/content_sao.cpp                   \
-		jni/src/content/contentdb.cpp             \
+		jni/src/content/content.cpp               \
 		jni/src/content/mods.cpp                  \
+		jni/src/content/packages.cpp              \
 		jni/src/content/subgames.cpp              \
 		jni/src/convert_json.cpp                  \
 		jni/src/craftdef.cpp                      \
