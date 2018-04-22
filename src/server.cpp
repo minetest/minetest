@@ -66,6 +66,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "chat_interface.h"
 #include "remoteplayer.h"
 
+bool disable_asciiart(bool value = false)
+{
+	static bool no_asciiart = false;
+	if (value) no_asciiart = true;
+	return no_asciiart;
+}
+
 class ClientNotFoundException : public BaseException
 {
 public:
