@@ -382,6 +382,25 @@ int ObjectRef::l_get_armor_groups(lua_State *L)
 	return 1;
 }
 
+// Reads in a physics modifier from a table, defaulting to existing values.
+// Returns success.
+bool read_physics_modifier(lua_State *L, int index,
+	PlayerSAO::PhysicsModifier &modifier)
+{
+	if (lua_istable(L, index)) {
+		modifier.speed = getfloatfield_default(L, index, "speed", modifier.speed);
+		modifier.jump = getfloatfield_default(L, index, "jump", modifier.jump);
+		modifier.gravity = getfloatfield_default(L, index, "gravity", modifier.gravity);
+		modifier.sneak = getboolfield_default(L, index, "sneak", modifier.sneak);
+		modifier.sneak_glitch = getboolfield_default(
+				L, index, "sneak_glitch", modifier.sneak_glitch);
+
+		return true;
+	}
+
+	return false;
+}
+
 // set_physics_override(self, physics_override_speed, physics_override_jump,
 //                      physics_override_gravity, sneak, sneak_glitch, new_move)
 int ObjectRef::l_set_physics_override(lua_State *L)
@@ -391,33 +410,27 @@ int ObjectRef::l_set_physics_override(lua_State *L)
 	PlayerSAO *co = (PlayerSAO *) getobject(ref);
 	if (co == NULL) return 0;
 	// Do it
-	if (lua_istable(L, 2)) {
-		co->m_physics_override_speed = getfloatfield_default(
-				L, 2, "speed", co->m_physics_override_speed);
-		co->m_physics_override_jump = getfloatfield_default(
-				L, 2, "jump", co->m_physics_override_jump);
-		co->m_physics_override_gravity = getfloatfield_default(
-				L, 2, "gravity", co->m_physics_override_gravity);
-		co->m_physics_override_sneak = getboolfield_default(
-				L, 2, "sneak", co->m_physics_override_sneak);
-		co->m_physics_override_sneak_glitch = getboolfield_default(
-				L, 2, "sneak_glitch", co->m_physics_override_sneak_glitch);
+	if (read_physics_modifier(L, 2, co->m_physics_override)) {
 		co->m_physics_override_new_move = getboolfield_default(
 				L, 2, "new_move", co->m_physics_override_new_move);
 		co->m_physics_override_sent = false;
+		co->m_physics_override_set = true;
 	} else {
 		// old, non-table format
 		if (!lua_isnil(L, 2)) {
-			co->m_physics_override_speed = lua_tonumber(L, 2);
+			co->m_physics_override.speed = lua_tonumber(L, 2);
 			co->m_physics_override_sent = false;
+			co->m_physics_override_set = true;
 		}
 		if (!lua_isnil(L, 3)) {
-			co->m_physics_override_jump = lua_tonumber(L, 3);
+			co->m_physics_override.jump = lua_tonumber(L, 3);
 			co->m_physics_override_sent = false;
+			co->m_physics_override_set = true;
 		}
 		if (!lua_isnil(L, 4)) {
-			co->m_physics_override_gravity = lua_tonumber(L, 4);
+			co->m_physics_override.gravity = lua_tonumber(L, 4);
 			co->m_physics_override_sent = false;
+			co->m_physics_override_set = true;
 		}
 	}
 	return 0;
@@ -433,19 +446,62 @@ int ObjectRef::l_get_physics_override(lua_State *L)
 		return 0;
 	// Do it
 	lua_newtable(L);
-	lua_pushnumber(L, co->m_physics_override_speed);
+	lua_pushnumber(L, co->m_physics_override.speed);
 	lua_setfield(L, -2, "speed");
-	lua_pushnumber(L, co->m_physics_override_jump);
+	lua_pushnumber(L, co->m_physics_override.jump);
 	lua_setfield(L, -2, "jump");
-	lua_pushnumber(L, co->m_physics_override_gravity);
+	lua_pushnumber(L, co->m_physics_override.gravity);
 	lua_setfield(L, -2, "gravity");
-	lua_pushboolean(L, co->m_physics_override_sneak);
+	lua_pushboolean(L, co->m_physics_override.sneak);
 	lua_setfield(L, -2, "sneak");
-	lua_pushboolean(L, co->m_physics_override_sneak_glitch);
+	lua_pushboolean(L, co->m_physics_override.sneak_glitch);
 	lua_setfield(L, -2, "sneak_glitch");
 	lua_pushboolean(L, co->m_physics_override_new_move);
 	lua_setfield(L, -2, "new_move");
 	return 1;
+}
+
+// set_physics_modifier(self, key, modifier_table)
+int ObjectRef::l_set_physics_modifier(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	ObjectRef *ref = checkobject(L, 1);
+	const std::string key = lua_tostring(L, 2);
+	PlayerSAO::PhysicsModifier modifier;
+	if (!read_physics_modifier(L, 3, modifier))
+		throw LuaError("set_physics_modifier expects (string, table)");
+
+	if (PlayerSAO *player = dynamic_cast<PlayerSAO*>(getobject(ref))) {
+		player->setPhysicsModifier(key, modifier);
+		
+		if (player->m_physics_override_set)
+		{
+			warningstream << "set_physics_modifier will have no effect because ";
+			warningstream << "set_physics_override was previously called" << std::endl;
+		}
+	}
+
+	return 0;
+}
+
+// delete_physics_modifier(self, key)
+int ObjectRef::l_delete_physics_modifier(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	ObjectRef *ref = checkobject(L, 1);
+	const std::string key = lua_tostring(L, 2);
+
+	if (PlayerSAO *player = dynamic_cast<PlayerSAO*>(getobject(ref))) {
+		player->deletePhysicsModifier(key);
+		
+		if (player->m_physics_override_set)
+		{
+			warningstream << "delete_physics_modifier will have no effect because ";
+			warningstream << "set_physics_override was previously called" << std::endl;
+		}
+	}
+
+	return 0;
 }
 
 // set_animation(self, frame_range, frame_speed, frame_blend, frame_loop)
@@ -1892,6 +1948,8 @@ luaL_Reg ObjectRef::methods[] = {
 	luamethod(ObjectRef, get_player_control_bits),
 	luamethod(ObjectRef, set_physics_override),
 	luamethod(ObjectRef, get_physics_override),
+	luamethod(ObjectRef, set_physics_modifier),
+	luamethod(ObjectRef, delete_physics_modifier),
 	luamethod(ObjectRef, hud_add),
 	luamethod(ObjectRef, hud_remove),
 	luamethod(ObjectRef, hud_change),

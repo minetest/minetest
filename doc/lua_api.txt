@@ -5141,7 +5141,25 @@ This is basically a reference to a C++ `ServerActiveObject`
   keys.
     * bit nr/meaning: 0/up, 1/down, 2/left, 3/right, 4/jump, 5/aux1, 6/sneak,
       7/LMB, 8/RMB
-* `set_physics_override(override_table)`
+* `set_physics_modifier(key_string, modifier_table)`: Adds a physics modifier to
+   the player under the given key. Values from all modifiers apply to the player
+   cumulatively.
+   * `key_string`: A string key identifying this modifier. Should take the format
+     "modname:modifier_name".
+   * `modifier_table`: a table with the following fields:
+        * `speed`: multiplier to default walking speed value (default: `1`)
+        * `jump`: multiplier to default jump value (default: `1`)
+        * `gravity`: multiplier to default gravity value (default: `1`)
+        * `sneak`: whether player can sneak (default: `true`)
+        * `sneak_glitch`: whether player can use the new move code replications
+          of the old sneak side-effects: sneak ladders and 2 node sneak jump
+          (default: `false`)
+* `delete_physics_modifier(key_string)`: Removes the physics modifier set with
+  `set_physics_modifier` using key `key_string`.
+* `set_physics_override(override_table)`: Overrides the player's movement physics
+  parameters and disables physics modifiers. After calling this function on a
+  player, only this function will be able to change that player's physics
+  parameters.
     * `override_table` is a table with the following fields:
         * `speed`: multiplier to default walking speed value (default: `1`)
         * `jump`: multiplier to default jump value (default: `1`)

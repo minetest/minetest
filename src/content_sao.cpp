@@ -936,9 +936,7 @@ std::string PlayerSAO::getClientInitializationData(u16 protocol_version)
 	}
 	msg_os << serializeLongString(gob_cmd_update_attachment(m_attachment_parent_id,
 		m_attachment_bone, m_attachment_position, m_attachment_rotation)); // 4
-	msg_os << serializeLongString(gob_cmd_update_physics_override(m_physics_override_speed,
-			m_physics_override_jump, m_physics_override_gravity, m_physics_override_sneak,
-			m_physics_override_sneak_glitch, m_physics_override_new_move)); // 5
+	msg_os << serializeLongString(getPhysicsOverrideString()); // 5
 	// (GENERIC_CMD_UPDATE_NAMETAG_ATTRIBUTES) : Deprecated, for backwards compatibility only.
 	msg_os << serializeLongString(gob_cmd_update_nametag_attributes(m_prop.nametag_color)); // 6
 	int message_count = 6 + m_bone_position.size();
@@ -1107,13 +1105,8 @@ void PlayerSAO::step(float dtime, bool send_recommended)
 	}
 
 	if (!m_physics_override_sent) {
-		m_physics_override_sent = true;
-		std::string str = gob_cmd_update_physics_override(m_physics_override_speed,
-				m_physics_override_jump, m_physics_override_gravity,
-				m_physics_override_sneak, m_physics_override_sneak_glitch,
-				m_physics_override_new_move);
 		// create message and add to list
-		ActiveObjectMessage aom(getId(), true, str);
+		ActiveObjectMessage aom(getId(), true, getPhysicsOverrideString());
 		m_messages_out.push(aom);
 	}
 
@@ -1422,6 +1415,45 @@ void PlayerSAO::unlinkPlayerSessionAndSave()
 	m_env->removePlayer(m_player);
 }
 
+PlayerSAO::PhysicsModifier PlayerSAO::calculatePhysicsModifier()
+{
+	PhysicsModifier result;
+	for (const auto& pair : m_physics_modifiers) {
+		result *= pair.second;
+	}
+
+	return result;
+}
+
+const PlayerSAO::PhysicsModifier& PlayerSAO::getTotalPhysicsModifier()
+{
+	if (physics_modifier_dirty)
+	{
+		physics_modifier = calculatePhysicsModifier();
+		physics_modifier_dirty = false;
+	}
+
+	return physics_modifier;
+}
+
+void PlayerSAO::dirtyPhysicsModifier()
+{
+	physics_modifier_dirty = true;
+	m_physics_override_sent = false;
+}
+
+std::string PlayerSAO::getPhysicsOverrideString()
+{
+	if (!m_physics_override_sent)
+		m_physics_override_sent = true;
+
+	const PhysicsModifier physics = getEffectivePhysics();
+		
+	return gob_cmd_update_physics_override(physics.speed,
+		physics.jump, physics.gravity, physics.sneak,
+		physics.sneak_glitch, m_physics_override_new_move);
+}
+
 std::string PlayerSAO::getPropertyPacket()
 {
 	m_prop.is_visible = (true);
@@ -1447,6 +1479,8 @@ bool PlayerSAO::checkMovementCheat()
 		too, and much more lightweight.
 	*/
 
+	const PhysicsModifier& physics = getEffectivePhysics();
+
 	float player_max_walk = 0; // horizontal movement
 	float player_max_jump = 0; // vertical upwards movement
 
@@ -1454,8 +1488,8 @@ bool PlayerSAO::checkMovementCheat()
 		player_max_walk = m_player->movement_speed_fast; // Fast speed
 	else
 		player_max_walk = m_player->movement_speed_walk; // Normal speed
-	player_max_walk *= m_physics_override_speed;
-	player_max_jump = m_player->movement_speed_jump * m_physics_override_jump;
+	player_max_walk *= physics.speed;
+	player_max_jump = m_player->movement_speed_jump * physics.jump;
 	// FIXME: Bouncy nodes cause practically unbound increase in Y speed,
 	//        until this can be verified correctly, tolerate higher jumping speeds
 	player_max_jump *= 2.0;
@@ -1523,4 +1557,23 @@ bool PlayerSAO::getSelectionBox(aabb3f *toset) const
 float PlayerSAO::getZoomFOV() const
 {
 	return m_prop.zoom_fov;
+}
+
+void PlayerSAO::setPhysicsModifier(
+	const std::string& key, const PhysicsModifier& modifier)
+{
+	dirtyPhysicsModifier();
+	m_physics_modifiers[key] = modifier;
+}
+
+void PlayerSAO::deletePhysicsModifier(
+	const std::string& key)
+{
+	dirtyPhysicsModifier();
+	m_physics_modifiers.erase(key);
+}
+
+const PlayerSAO::PhysicsModifier& PlayerSAO::getEffectivePhysics()
+{
+	return m_physics_override_set ? m_physics_override : getTotalPhysicsModifier();
 }

@@ -210,6 +210,52 @@ class RemotePlayer;
 class PlayerSAO : public UnitSAO
 {
 public:
+	struct PhysicsModifier
+	{
+		PhysicsModifier():
+			PhysicsModifier(1.0f, 1.0f, 1.0f, true, false)
+		{
+		}
+
+		PhysicsModifier(
+			float speed, float jump, float gravity, bool sneak, bool sneak_glitch):
+			speed(speed),
+			jump(jump),
+			gravity(gravity),
+			sneak(sneak),
+			sneak_glitch(sneak_glitch)
+		{
+		}
+
+		PhysicsModifier operator*(const PhysicsModifier &other) const
+		{
+			// Sneak / sneak glitch operations chosen so that the default is
+			// identity
+			return PhysicsModifier {
+				speed * other.speed,
+				jump * other.jump,
+				gravity * other.gravity,
+				sneak && other.sneak,
+				sneak_glitch || other.sneak_glitch
+			};
+		}
+
+		void operator*=(const PhysicsModifier &other)
+		{
+			speed *= other.speed;
+			jump *= other.jump;
+			gravity *= other.gravity;
+			sneak = sneak && other.sneak;
+			sneak_glitch = sneak || other.sneak_glitch;
+		}
+
+		float speed;
+		float jump;
+		float gravity;
+		bool sneak;
+		bool sneak_glitch;
+	};
+		
 	PlayerSAO(ServerEnvironment *env_, RemotePlayer *player_, session_t peer_id_,
 			bool is_singleplayer);
 	~PlayerSAO();
@@ -340,11 +386,23 @@ public:
 	v3f getEyeOffset() const;
 	float getZoomFOV() const;
 
+	void setPhysicsModifier(const std::string& key, const PhysicsModifier& modifier);
+	void deletePhysicsModifier(const std::string& key);
+
+	// Not const - physics modifier is cached
+	const PhysicsModifier& getEffectivePhysics();
+
 	inline Metadata &getMeta() { return m_meta; }
 
 private:
 	std::string getPropertyPacket();
 	void unlinkPlayerSessionAndSave();
+
+	// Not const since it may cache
+	PhysicsModifier calculatePhysicsModifier();
+	const PhysicsModifier& getTotalPhysicsModifier();
+	void dirtyPhysicsModifier();
+	std::string getPhysicsOverrideString();
 
 	RemotePlayer *m_player = nullptr;
 	session_t m_peer_id = 0;
@@ -377,15 +435,20 @@ private:
 	f32 m_fov = 0.0f;
 	s16 m_wanted_range = 0.0f;
 
+	std::unordered_map<std::string, PhysicsModifier> m_physics_modifiers;
+	PhysicsModifier physics_modifier; // Cache for calculatePhysicsModifier
+	bool physics_modifier_dirty = true;
+
 	Metadata m_meta;
 public:
-	float m_physics_override_speed = 1.0f;
-	float m_physics_override_jump = 1.0f;
-	float m_physics_override_gravity = 1.0f;
-	bool m_physics_override_sneak = true;
-	bool m_physics_override_sneak_glitch = false;
-	bool m_physics_override_new_move = true;
+	PhysicsModifier m_physics_override; // Used for compatibility with non-table format
+
+	// Flag, when set to true, disables physics modifiers so that only the override
+	// matters. It is set when a mod calls set_physics_override and is irreversible
+	// until the player leaves and logs back in.
+	bool m_physics_override_set = false;
 	bool m_physics_override_sent = false;
+	bool m_physics_override_new_move = true;
 };
 
 
