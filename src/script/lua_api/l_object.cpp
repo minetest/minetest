@@ -1730,12 +1730,7 @@ int ObjectRef::l_set_time_offset(lua_State *L)
 		return 0;
 
 	int offset_i = luaL_checknumber(L, 2);
-	u16 offset = offset_i;
-	//Negative values
-	if (offset_i < 0) {
-		offset = 24000 + offset_i;
-	}
-
+	s16 offset = offset_i % 24000;
 	player->setTimeOffset(offset);
 	getServer(L)->SendTimeOfDay(player->getPeerId(), 
 		getEnv(L)->getTimeOfDay(), g_settings->getFloat("time_speed"));
