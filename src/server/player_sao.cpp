@@ -305,18 +305,20 @@ void PlayerSAO::step(float dtime, bool send_recommended)
 	sendOutdatedData();
 }
 
-std::string PlayerSAO::generateUpdatePhysicsOverrideCommand() const
+std::string PlayerSAO::generateUpdatePhysicsOverrideCommand()
 {
+	const PhysicsModifier &physics = getEffectivePhysics();
+
 	std::ostringstream os(std::ios::binary);
 	// command
 	writeU8(os, AO_CMD_SET_PHYSICS_OVERRIDE);
 	// parameters
-	writeF32(os, m_physics_override_speed);
-	writeF32(os, m_physics_override_jump);
-	writeF32(os, m_physics_override_gravity);
+	writeF32(os, physics.speed);
+	writeF32(os, physics.jump);
+	writeF32(os, physics.gravity);
 	// these are sent inverted so we get true when the server sends nothing
-	writeU8(os, !m_physics_override_sneak);
-	writeU8(os, !m_physics_override_sneak_glitch);
+	writeU8(os, !physics.sneak);
+	writeU8(os, !physics.sneak_glitch);
 	writeU8(os, !m_physics_override_new_move);
 	return os.str();
 }
@@ -551,6 +553,31 @@ void PlayerSAO::unlinkPlayerSessionAndSave()
 	m_env->removePlayer(m_player);
 }
 
+PlayerSAO::PhysicsModifier PlayerSAO::calculatePhysicsModifier()
+{
+	PhysicsModifier result;
+	for (const auto &pair : m_physics_modifiers)
+		result *= pair.second;
+
+	return result;
+}
+
+const PlayerSAO::PhysicsModifier &PlayerSAO::getTotalPhysicsModifier()
+{
+	if (m_physics_modifier_dirty) {
+		m_physics_modifier = calculatePhysicsModifier();
+		m_physics_modifier_dirty = false;
+	}
+
+	return m_physics_modifier;
+}
+
+void PlayerSAO::dirtyPhysicsModifier()
+{
+	m_physics_modifier_dirty = true;
+	m_physics_override_sent = false;
+}
+
 std::string PlayerSAO::getPropertyPacket()
 {
 	m_prop.is_visible = (true);
@@ -590,6 +617,8 @@ bool PlayerSAO::checkMovementCheat()
 		too, and much more lightweight.
 	*/
 
+	const PhysicsModifier &physics = getEffectivePhysics();
+
 	float override_max_H, override_max_V;
 	if (m_max_speed_override_time > 0.0f) {
 		override_max_H = MYMAX(fabs(m_max_speed_override.X), fabs(m_max_speed_override.Z));
@@ -605,10 +634,10 @@ bool PlayerSAO::checkMovementCheat()
 		player_max_walk = m_player->movement_speed_fast; // Fast speed
 	else
 		player_max_walk = m_player->movement_speed_walk; // Normal speed
-	player_max_walk *= m_physics_override_speed;
+	player_max_walk *= physics.speed;
 	player_max_walk = MYMAX(player_max_walk, override_max_H);
 
-	player_max_jump = m_player->movement_speed_jump * m_physics_override_jump;
+	player_max_jump = m_player->movement_speed_jump * physics.jump;
 	// FIXME: Bouncy nodes cause practically unbound increase in Y speed,
 	//        until this can be verified correctly, tolerate higher jumping speeds
 	player_max_jump *= 2.0;
@@ -677,4 +706,23 @@ bool PlayerSAO::getSelectionBox(aabb3f *toset) const
 float PlayerSAO::getZoomFOV() const
 {
 	return m_prop.zoom_fov;
+}
+
+void PlayerSAO::setPhysicsModifier(
+		const std::string &key, const PhysicsModifier &modifier)
+{
+	dirtyPhysicsModifier();
+	m_physics_modifiers[key] = modifier;
+}
+
+void PlayerSAO::deletePhysicsModifier(
+		const std::string &key)
+{
+	dirtyPhysicsModifier();
+	m_physics_modifiers.erase(key);
+}
+
+const PlayerSAO::PhysicsModifier &PlayerSAO::getEffectivePhysics()
+{
+	return m_physics_override_set ? m_physics_override : getTotalPhysicsModifier();
 }
