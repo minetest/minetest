@@ -69,12 +69,12 @@ public:
 		*ratio = m_day_night_ratio;
 	}
 
-	void setTimeOffset(u16 offset)
+	void setTimeOffset(s16 offset)
 	{
 		m_time_offset = offset;
 	}
 
-	u16 getTimeOffset()
+	s16 getTimeOffset()
 	{
 		return m_time_offset;
 	}
@@ -172,7 +172,7 @@ private:
 	bool m_day_night_ratio_do_override = false;
 	float m_day_night_ratio;
 
-	u16 m_time_offset = 0;
+	s16 m_time_offset = 0;
 
 	std::string hud_hotbar_image = "";
 	std::string hud_hotbar_selected_image = "";
