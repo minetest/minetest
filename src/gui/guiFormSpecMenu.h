@@ -223,7 +223,7 @@ class GUIFormSpecMenu : public GUIModalMenu
 
 	struct BoxDrawSpec
 	{
-		BoxDrawSpec(v2s32 a_pos, v2s32 a_geom,irr::video::SColor a_color):
+		BoxDrawSpec(v2s32 a_pos, v2s32 a_geom, irr::video::SColor a_color):
 			pos(a_pos),
 			geom(a_geom),
 			color(a_color)
