@@ -251,6 +251,7 @@ LOCAL_SRC_FILES := \
 		jni/src/util/srp.cpp                      \
 		jni/src/util/timetaker.cpp                \
 		jni/src/unittest/test.cpp                 \
+		jni/src/unittest/test_authdatabase.cpp    \
 		jni/src/unittest/test_collision.cpp       \
 		jni/src/unittest/test_compression.cpp     \
 		jni/src/unittest/test_connection.cpp      \
@@ -331,6 +332,7 @@ LOCAL_SRC_FILES += \
 		jni/src/script/cpp_api/s_security.cpp     \
 		jni/src/script/cpp_api/s_server.cpp       \
 		jni/src/script/lua_api/l_areastore.cpp    \
+		jni/src/script/lua_api/l_auth.cpp         \
 		jni/src/script/lua_api/l_base.cpp         \
 		jni/src/script/lua_api/l_camera.cpp       \
 		jni/src/script/lua_api/l_client.cpp       \

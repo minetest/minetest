@@ -25,6 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "settings.h"
 #include "porting.h"
 #include "filesys.h"
+#include "util/string.h"
 
 // !!! WARNING !!!
 // This backend is intended to be used on Minetest 0.4.16 only for the transition backend
@@ -176,4 +177,106 @@ void PlayerDatabaseFiles::listPlayers(std::vector<std::string> &res)
 
 		res.emplace_back(player.getName());
 	}
+}
+
+AuthDatabaseFiles::AuthDatabaseFiles(const std::string &savedir) : m_savedir(savedir)
+{
+	readAuthFile();
+}
+
+bool AuthDatabaseFiles::getAuth(const std::string &name, AuthEntry &res)
+{
+	const auto res_i = m_auth_list.find(name);
+	if (res_i == m_auth_list.end()) {
+		return false;
+	}
+	res = res_i->second;
+	return true;
+}
+
+bool AuthDatabaseFiles::saveAuth(const AuthEntry &authEntry)
+{
+	m_auth_list[authEntry.name] = authEntry;
+
+	// save entire file
+	return writeAuthFile();
+}
+
+bool AuthDatabaseFiles::createAuth(AuthEntry &authEntry)
+{
+	m_auth_list[authEntry.name] = authEntry;
+
+	// save entire file
+	return writeAuthFile();
+}
+
+bool AuthDatabaseFiles::deleteAuth(const std::string &name)
+{
+	if (!m_auth_list.erase(name)) {
+		// did not delete anything -> hadn't existed
+		return false;
+	}
+	return writeAuthFile();
+}
+
+void AuthDatabaseFiles::listNames(std::vector<std::string> &res)
+{
+	res.clear();
+	res.reserve(m_auth_list.size());
+	for (const auto &res_pair : m_auth_list) {
+		res.push_back(res_pair.first);
+	}
+}
+
+void AuthDatabaseFiles::reload()
+{
+	readAuthFile();
+}
+
+bool AuthDatabaseFiles::readAuthFile()
+{
+	std::string path = m_savedir + DIR_DELIM + "auth.txt";
+	std::ifstream file(path, std::ios::binary);
+	if (!file.good()) {
+		return false;
+	}
+	m_auth_list.clear();
+	while (file.good()) {
+		std::string line;
+		std::getline(file, line);
+		std::vector<std::string> parts = str_split(line, ':');
+		if (parts.size() < 3) // also: empty line at end
+			continue;
+		const std::string &name = parts[0];
+		const std::string &password = parts[1];
+		std::vector<std::string> privileges = str_split(parts[2], ',');
+		s64 last_login = parts.size() > 3 ? atol(parts[3].c_str()) : 0;
+
+		m_auth_list[name] = {
+				1,
+				name,
+				password,
+				privileges,
+				last_login,
+		};
+	}
+	return true;
+}
+
+bool AuthDatabaseFiles::writeAuthFile()
+{
+	std::string path = m_savedir + DIR_DELIM + "auth.txt";
+	std::ostringstream output(std::ios_base::binary);
+	for (const auto &auth_i : m_auth_list) {
+		const AuthEntry &authEntry = auth_i.second;
+		output << authEntry.name << ":" << authEntry.password << ":";
+		output << str_join(authEntry.privileges, ",");
+		output << ":" << authEntry.last_login;
+		output << std::endl;
+	}
+	if (!fs::safeWriteToFile(path, output.str())) {
+		infostream << "Failed to write " << path << std::endl;
+		return false;
+	}
+	return true;
 }
