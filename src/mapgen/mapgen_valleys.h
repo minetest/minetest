@@ -32,23 +32,19 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define MGVALLEYS_ALT_CHILL    0x01
 #define MGVALLEYS_HUMID_RIVERS 0x02
 
-// Feed only one variable into these.
+// Feed only one variable into these
 #define MYSQUARE(x) (x) * (x)
 #define MYCUBE(x) (x) * (x) * (x)
 
 class BiomeManager;
 class BiomeGenOriginal;
 
-// Global profiler
-//class Profiler;
-//extern Profiler *mapgen_profiler;
-
 
 struct MapgenValleysParams : public MapgenParams {
 	u32 spflags = MGVALLEYS_HUMID_RIVERS | MGVALLEYS_ALT_CHILL;
-	u16 altitude_chill = 90; // The altitude at which temperature drops by 20C.
-	u16 river_depth = 4; // How deep to carve river channels.
-	u16 river_size = 5; // How wide to make rivers.
+	u16 altitude_chill = 90; // The altitude at which temperature drops by 20C
+	u16 river_depth = 4; // How deep to carve river channels
+	u16 river_size = 5; // How wide to make rivers
 
 	float cave_width = 0.09f;
 	s16 large_cave_depth = -33;
@@ -122,9 +118,7 @@ private:
 	Noise *noise_valley_profile;
 
 	float terrainLevelAtPoint(s16 x, s16 z);
-
 	void calculateNoise();
-
 	virtual int generateTerrain();
 	float terrainLevelFromNoise(TerrainNoise *tn);
 	float adjustedTerrainLevelFromNoise(TerrainNoise *tn);
