@@ -27,6 +27,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "map.h"
 #include "client.h"
 #include "content_cao.h"
+#include "nodemetadata.h"
+#include "util/strfnd.h"
 
 /*
 	LocalPlayer
@@ -147,7 +149,18 @@ bool LocalPlayer::updateSneakNode(Map *map, const v3f &position,
 	// Update saved top bounding box of sneak node
 	node = map->getNodeNoEx(m_sneak_node);
 	std::vector<aabb3f> nodeboxes;
-	node.getCollisionBoxes(nodemgr, &nodeboxes);
+
+	v3f offset = v3f(0, 0, 0);
+
+	NodeMetadata *meta = map->getNodeMetadata(m_sneak_node);
+	if (meta) {
+		Strfnd f(meta->getString("offset"));
+		f.next("(");
+		offset.X = stof(f.next(",")) * BS;
+		offset.Y = stof(f.next(",")) * BS;
+		offset.Z = stof(f.next(")")) * BS;
+	}
+	node.getCollisionBoxes(nodemgr, &nodeboxes, 0, offset);
 	m_sneak_node_bb_top = getNodeBoundingBox(nodeboxes);
 
 	if (physics_override_sneak_glitch) {
@@ -980,7 +993,17 @@ void LocalPlayer::old_move(f32 dtime, Environment *env, f32 pos_max_d,
 			f32 cb_max = 0;
 			MapNode n = map->getNodeNoEx(m_sneak_node);
 			std::vector<aabb3f> nodeboxes;
-			n.getCollisionBoxes(nodemgr, &nodeboxes);
+			v3f offset = v3f(0, 0, 0);
+
+			NodeMetadata *meta = map->getNodeMetadata(m_sneak_node);
+			if (meta) {
+				Strfnd f(meta->getString("offset"));
+				f.next("(");
+				offset.X = stof(f.next(",")) * BS;
+				offset.Y = stof(f.next(",")) * BS;
+				offset.Z = stof(f.next(")")) * BS;
+			}
+			n.getCollisionBoxes(nodemgr, &nodeboxes, 0, offset);
 			for (const auto &box : nodeboxes) {
 				if (box.MaxEdge.Y > cb_max)
 					cb_max = box.MaxEdge.Y;

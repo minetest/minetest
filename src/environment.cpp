@@ -26,6 +26,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "server.h"
 #include "daynightratio.h"
 #include "emerge.h"
+#include "nodemetadata.h"
+#include "util/strfnd.h"
 
 
 Environment::Environment(IGameDef *gamedef):
@@ -167,9 +169,20 @@ void Environment::continueRaycast(RaycastState *state, PointedThing *result)
 
 			PointedThing result;
 
+			v3f offset = v3f(0, 0, 0);
+
+			NodeMetadata *meta = map.getNodeMetadata(np);
+			if (meta) {
+				Strfnd f(meta->getString("offset"));
+				f.next("(");
+				offset.X = stof(f.next(",")) * BS;
+				offset.Y = stof(f.next(",")) * BS;
+				offset.Z = stof(f.next(")")) * BS;
+			}
+
 			std::vector<aabb3f> boxes;
 			n.getSelectionBoxes(nodedef, &boxes,
-				n.getNeighbors(np, &map));
+				n.getNeighbors(np, &map), offset);
 
 			// Is there a collision with a selection box?
 			bool is_colliding = false;

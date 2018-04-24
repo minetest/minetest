@@ -248,7 +248,7 @@ void MapNode::rotateAlongYAxis(const NodeDefManager *nodemgr, Rotation rot)
 
 void transformNodeBox(const MapNode &n, const NodeBox &nodebox,
 	const NodeDefManager *nodemgr, std::vector<aabb3f> *p_boxes,
-	u8 neighbors = 0)
+	u8 neighbors = 0, v3f offset = v3f(0, 0, 0))
 {
 	std::vector<aabb3f> &boxes = *p_boxes;
 
@@ -378,6 +378,8 @@ void transformNodeBox(const MapNode &n, const NodeBox &nodebox,
 				break;
 			}
 			box.repair();
+			box.MinEdge += offset;
+			box.MaxEdge += offset;
 			boxes.push_back(box);
 		}
 	}
@@ -388,12 +390,18 @@ void transformNodeBox(const MapNode &n, const NodeBox &nodebox,
 		// top
 		if(dir == v3s16(0,1,0))
 		{
-			boxes.push_back(nodebox.wall_top);
+			aabb3f box = nodebox.wall_top;
+			box.MinEdge += offset;
+			box.MaxEdge += offset;
+			boxes.push_back(box);
 		}
 		// bottom
 		else if(dir == v3s16(0,-1,0))
 		{
-			boxes.push_back(nodebox.wall_bottom);
+			aabb3f box = nodebox.wall_bottom;
+			box.MinEdge += offset;
+			box.MaxEdge += offset;
+			boxes.push_back(box);
 		}
 		// side
 		else
@@ -417,6 +425,8 @@ void transformNodeBox(const MapNode &n, const NodeBox &nodebox,
 
 			aabb3f box = aabb3f(vertices[0]);
 			box.addInternalPoint(vertices[1]);
+			box.MinEdge += offset;
+			box.MaxEdge += offset;
 			boxes.push_back(box);
 		}
 	}
@@ -465,8 +475,12 @@ void transformNodeBox(const MapNode &n, const NodeBox &nodebox,
 #define BOXESPUSHBACK(c) \
 		for (std::vector<aabb3f>::const_iterator \
 				it = (c).begin(); \
-				it != (c).end(); ++it) \
-			(boxes).push_back(*it);
+				it != (c).end(); ++it) { \
+			aabb3f box = *it; \
+			box.MinEdge += offset; \
+			box.MaxEdge += offset; \
+			(boxes).push_back(box); \
+		}
 
 		BOXESPUSHBACK(nodebox.fixed);
 
@@ -517,7 +531,8 @@ void transformNodeBox(const MapNode &n, const NodeBox &nodebox,
 	}
 	else // NODEBOX_REGULAR
 	{
-		boxes.emplace_back(-BS/2,-BS/2,-BS/2,BS/2,BS/2,BS/2);
+		boxes.emplace_back(-BS/2 + offset.X, -BS/2 + offset.Y, -BS/2 + offset.Z,
+			BS/2 + offset.X, BS/2 + offset.Y, BS/2 + offset.Z);
 	}
 }
 
@@ -567,27 +582,27 @@ u8 MapNode::getNeighbors(v3s16 p, Map *map)
 }
 
 void MapNode::getNodeBoxes(const NodeDefManager *nodemgr,
-	std::vector<aabb3f> *boxes, u8 neighbors)
+	std::vector<aabb3f> *boxes, u8 neighbors, v3f offset)
 {
 	const ContentFeatures &f = nodemgr->get(*this);
-	transformNodeBox(*this, f.node_box, nodemgr, boxes, neighbors);
+	transformNodeBox(*this, f.node_box, nodemgr, boxes, neighbors, offset);
 }
 
 void MapNode::getCollisionBoxes(const NodeDefManager *nodemgr,
-	std::vector<aabb3f> *boxes, u8 neighbors)
+	std::vector<aabb3f> *boxes, u8 neighbors, v3f offset)
 {
 	const ContentFeatures &f = nodemgr->get(*this);
 	if (f.collision_box.fixed.empty())
-		transformNodeBox(*this, f.node_box, nodemgr, boxes, neighbors);
+		transformNodeBox(*this, f.node_box, nodemgr, boxes, neighbors, offset);
 	else
-		transformNodeBox(*this, f.collision_box, nodemgr, boxes, neighbors);
+		transformNodeBox(*this, f.collision_box, nodemgr, boxes, neighbors, offset);
 }
 
 void MapNode::getSelectionBoxes(const NodeDefManager *nodemgr,
-	std::vector<aabb3f> *boxes, u8 neighbors)
+	std::vector<aabb3f> *boxes, u8 neighbors, v3f offset)
 {
 	const ContentFeatures &f = nodemgr->get(*this);
-	transformNodeBox(*this, f.selection_box, nodemgr, boxes, neighbors);
+	transformNodeBox(*this, f.selection_box, nodemgr, boxes, neighbors, offset);
 }
 
 u8 MapNode::getMaxLevel(const NodeDefManager *nodemgr) const
