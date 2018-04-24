@@ -1765,28 +1765,29 @@ mgfractal_np_cave2 (Cave2 noise) noise_params_3d 0, 12, (67, 67, 67), 10325, 3, 
 #    Flags starting with 'no' are used to explicitly disable them.
 mg_valleys_spflags (Mapgen Valleys specific flags) flags altitude_chill,humid_rivers altitude_chill,noaltitude_chill,humid_rivers,nohumid_rivers
 
-# The altitude at which temperature drops by 20C
+# The altitude at which temperature drops by 20.
 mgvalleys_altitude_chill (Altitude chill) int 90
 
 # Depth below which you'll find large caves.
 mgvalleys_large_cave_depth (Large cave depth) int -33
 
-# Creates unpredictable lava features in caves.
-# These can make mining difficult. Zero disables them. (0-10)
-mgvalleys_lava_features (Lava features) int 0
+# Y of upper limit of lava in large caves.
+mgvalleys_lava_depth (Lava depth) int 1
 
-# Depth below which you'll find massive caves.
-mgvalleys_massive_cave_depth (Massive cave depth) int -256
+# Depth below which you'll find giant caverns.
+mgvalleys_cavern_limit (Cavern upper limit) int -256
 
-# How deep to make rivers
+# Y-distance over which caverns expand to full size.
+mgvalleys_cavern_taper (Cavern taper) int 192
+
+# Defines full size of caverns, smaller values create larger caverns.
+mgvalleys_cavern_threshold (Cavern threshold) float 0.6
+
+# How deep to make rivers.
 mgvalleys_river_depth (River depth) int 4
 
-# How wide to make rivers
+# How wide to make rivers.
 mgvalleys_river_size (River size) int 5
-
-# Creates unpredictable water features in caves.
-# These can make mining difficult. Zero disables them. (0-10)
-mgvalleys_water_features (Water features) int 0
 
 #    Controls width of tunnels, a smaller value creates wider tunnels.
 mgvalleys_cave_width (Cave width) float 0.09
@@ -1799,34 +1800,34 @@ mgvalleys_dungeon_ymax (Dungeon maximum Y) int 63
 
 [**Noises]
 
-# Caves and tunnels form at the intersection of the two noises
+# Caves and tunnels form at the intersection of the two noises.
 mgvalleys_np_cave1 (Cave noise #1) noise_params_3d 0, 12, (61, 61, 61), 52534, 3, 0.5, 2.0
 
-# Caves and tunnels form at the intersection of the two noises
+# Caves and tunnels form at the intersection of the two noises.
 mgvalleys_np_cave2 (Cave noise #2) noise_params_3d 0, 12, (67, 67, 67), 10325, 3, 0.5, 2.0
 
-# The depth of dirt or other filler
+# The depth of dirt or other biome filler node.
 mgvalleys_np_filler_depth (Filler depth) noise_params_2d 0, 1.2, (256, 256, 256), 1605, 3, 0.5, 2.0, eased
 
-# Massive caves form here.
-mgvalleys_np_massive_caves (Massive cave noise) noise_params_3d 0, 1, (768, 256, 768), 59033, 6, 0.63, 2.0
+# 3D noise defining giant caverns.
+mgvalleys_np_cavern (Cavern noise) noise_params_3d 0, 1, (768, 256, 768), 59033, 6, 0.63, 2.0
 
-# River noise -- rivers occur close to zero
+# River noise. Rivers occur close to noise value zero.
 mgvalleys_np_rivers (River noise) noise_params_2d 0, 1, (256, 256, 256), -6050, 5, 0.6, 2.0, eased
 
-# Base terrain height
+# Base terrain height.
 mgvalleys_np_terrain_height (Terrain height) noise_params_2d -10, 50, (1024, 1024, 1024), 5202, 6, 0.4, 2.0, eased
 
-# Raises terrain to make valleys around the rivers
+# Raises terrain to make valleys around the rivers.
 mgvalleys_np_valley_depth (Valley depth) noise_params_2d 5, 4, (512, 512, 512), -1914, 1, 1.0, 2.0, eased
 
-# Slope and fill work together to modify the heights
+# Slope and fill work together to modify the heights.
 mgvalleys_np_inter_valley_fill (Valley fill) noise_params_3d 0, 1, (256, 512, 256), 1993, 6, 0.8, 2.0
 
-# Amplifies the valleys
+# Amplifies the valleys.
 mgvalleys_np_valley_profile (Valley profile) noise_params_2d 0.6, 0.5, (512, 512, 512), 777, 1, 1.0, 2.0, eased
 
-# Slope and fill work together to modify the heights
+# Slope and fill work together to modify the heights.
 mgvalleys_np_inter_valley_slope (Valley slope) noise_params_2d 0.5, 0.5, (128, 128, 128), 746, 1, 1.0, 2.0, eased
 
 [*Advanced]
