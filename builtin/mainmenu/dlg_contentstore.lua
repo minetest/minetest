@@ -119,7 +119,7 @@ function package_dialog.get_formspec()
 	local formspec = {
 		"size[8,4;true]",
 		"label[2.5,0.2;", core.formspec_escape(package.title), "]",
-		"label[0,1;", core.formspec_escape(package.short_description), "]",
+		"textarea[0.2,1;8,3;;;", core.formspec_escape(package.short_description), "]",
 		"button[0,0;2,1;back;", fgettext("Back"), "]",
 		"button[6,0;2,1;install;", fgettext("Install"), "]",
 	}
@@ -290,18 +290,14 @@ function store.get_formspec()
 		formspec[#formspec + 1] = "]"
 
 		-- title
-		formspec[#formspec + 1] = "label[1,0;"
+		formspec[#formspec + 1] = "label[1,-0.1;"
 		formspec[#formspec + 1] = core.formspec_escape(package.title ..
 				" by " .. package.author)
 		formspec[#formspec + 1] = "]"
 
 		-- description
-		local short = package.short_description
-		if #short > 60 then
-			short = short:sub(1, 59) .. "…"
-		end
-		formspec[#formspec + 1] = "label[1,0.3;"
-		formspec[#formspec + 1] = core.formspec_escape(short)
+		formspec[#formspec + 1] = "textarea[1.25,0.3;5,1;;;"
+		formspec[#formspec + 1] = core.formspec_escape(package.short_description)
 		formspec[#formspec + 1] = "]"
 
 		-- buttons
