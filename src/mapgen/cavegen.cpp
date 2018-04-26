@@ -507,7 +507,7 @@ void CavesRandomWalk::carveRoute(v3f vec, float f, bool randomize_xz)
 	MapNode liquidnode = CONTENT_IGNORE;
 
 	if (bmgn) {
-		Biome *biome = (Biome *)bmgn->calcBiomeAtPoint(cpabs);
+		Biome *biome = (Biome *)bmgn->getBiomeAtPoint(cpabs);
 		if (biome->c_cave_liquid != CONTENT_IGNORE)
 			liquidnode = biome->c_cave_liquid;
 	}
