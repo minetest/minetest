@@ -868,7 +868,7 @@ void MapgenBasic::generateDungeons(s16 max_stone_y)
 
 	// Get biome at mapchunk midpoint
 	v3s16 chunk_mid = node_min + (node_max - node_min) / v3s16(2, 2, 2);
-	Biome *biome = (Biome *)biomegen->calcBiomeAtPoint(chunk_mid);
+	Biome *biome = (Biome *)biomegen->getBiomeAtPoint(chunk_mid);
 
 	DungeonParams dp;
 
