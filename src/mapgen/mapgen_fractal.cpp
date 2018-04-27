@@ -209,8 +209,12 @@ void MapgenFractal::makeChunk(BlockMakeData *data)
 	biomegen->calcBiomeNoise(node_min);
 	generateBiomes();
 
-	if (flags & MG_CAVES)
-		generateCaves(stone_surface_max_y, large_cave_depth);
+	if (flags & MG_CAVES) {
+		// Generate tunnels
+		generateCavesNoiseIntersection(stone_surface_max_y);
+		// Generate large randomwalk caves
+		generateCavesRandomWalk(stone_surface_max_y, large_cave_depth);
+	}
 
 	if ((flags & MG_DUNGEONS) && full_node_min.Y >= dungeon_ymin &&
 			full_node_max.Y <= dungeon_ymax)

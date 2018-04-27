@@ -233,18 +233,23 @@ void MapgenValleys::makeChunk(BlockMakeData *data)
 	// Place biome-specific nodes and build biomemap
 	generateBiomes();
 
-	// Generate caverns, tunnels and classic caves
+	// Generate tunnels, caverns and large randomwalk caves
 	if (flags & MG_CAVES) {
+		// Generate tunnels first as caverns confuse them
+		generateCavesNoiseIntersection(stone_surface_max_y);
+
 		// Generate caverns
-		bool near_cavern = generateCaverns(stone_surface_max_y);
-		// Generate tunnels and classic caves
+		bool near_cavern = generateCavernsNoise(stone_surface_max_y);
+
+		// Generate large randomwalk caves
 		if (near_cavern)
-			// Disable classic caves in this mapchunk by setting
+			// Disable large randomwalk caves in this mapchunk by setting
 			// 'large cave depth' to world base. Avoids excessive liquid in
 			// large caverns and floating blobs of overgenerated liquid.
-			generateCaves(stone_surface_max_y, -MAX_MAP_GENERATION_LIMIT);
+			generateCavesRandomWalk(stone_surface_max_y,
+				-MAX_MAP_GENERATION_LIMIT);
 		else
-			generateCaves(stone_surface_max_y, large_cave_depth);
+			generateCavesRandomWalk(stone_surface_max_y, large_cave_depth);
 	}
 
 	// Dungeon creation

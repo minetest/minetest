@@ -824,21 +824,26 @@ void MapgenBasic::dustTopNodes()
 }
 
 
-void MapgenBasic::generateCaves(s16 max_stone_y, s16 large_cave_depth)
+void MapgenBasic::generateCavesNoiseIntersection(s16 max_stone_y)
 {
-	if (max_stone_y < node_min.Y)
+	if (node_min.Y > max_stone_y)
 		return;
 
 	CavesNoiseIntersection caves_noise(ndef, m_bmgr, csize,
 		&np_cave1, &np_cave2, seed, cave_width);
 
 	caves_noise.generateCaves(vm, node_min, node_max, biomemap);
+}
 
-	if (node_max.Y > large_cave_depth)
+
+void MapgenBasic::generateCavesRandomWalk(s16 max_stone_y, s16 large_cave_depth)
+{
+	if (node_min.Y > max_stone_y || node_max.Y > large_cave_depth)
 		return;
 
 	PseudoRandom ps(blockseed + 21343);
 	u32 bruises_count = ps.range(0, 2);
+
 	for (u32 i = 0; i < bruises_count; i++) {
 		CavesRandomWalk cave(ndef, &gennotify, seed, water_level,
 			c_water_source, c_lava_source, lava_depth, biomegen);
@@ -849,7 +854,7 @@ void MapgenBasic::generateCaves(s16 max_stone_y, s16 large_cave_depth)
 }
 
 
-bool MapgenBasic::generateCaverns(s16 max_stone_y)
+bool MapgenBasic::generateCavernsNoise(s16 max_stone_y)
 {
 	if (node_min.Y > max_stone_y || node_min.Y > cavern_limit)
 		return false;
