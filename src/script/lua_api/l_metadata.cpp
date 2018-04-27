@@ -60,7 +60,10 @@ int MetaDataRef::l_contains(lua_State *L)
 	std::string name = luaL_checkstring(L, 2);
 
 	Metadata *meta = ref->getmeta(false);
-	lua_pushboolean(L, meta != NULL && meta->contains(name));
+	if (meta == NULL)
+		return 0;
+
+	lua_pushboolean(L, meta->contains(name));
 	return 1;
 }
 
