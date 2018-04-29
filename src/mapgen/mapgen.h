@@ -238,11 +238,12 @@ public:
 	MapgenBasic(int mapgenid, MapgenParams *params, EmergeManager *emerge);
 	virtual ~MapgenBasic();
 
-	virtual void generateCaves(s16 max_stone_y, s16 large_cave_depth);
-	virtual bool generateCaverns(s16 max_stone_y);
-	virtual void generateDungeons(s16 max_stone_y);
 	virtual void generateBiomes();
 	virtual void dustTopNodes();
+	virtual void generateCavesNoiseIntersection(s16 max_stone_y);
+	virtual void generateCavesRandomWalk(s16 max_stone_y, s16 large_cave_depth);
+	virtual bool generateCavernsNoise(s16 max_stone_y);
+	virtual void generateDungeons(s16 max_stone_y);
 
 protected:
 	EmergeManager *m_emerge;
