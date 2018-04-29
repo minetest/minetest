@@ -66,7 +66,7 @@ public:
 
 	template <typename B, class = typename std::enable_if <
 		std::is_convertible <B *, ReferenceCounted *>::value>::type>
-	irr_ptr &operator= (const irr_ptr<B> &b) noexcept
+	irr_ptr &operator=(const irr_ptr<B> &b) noexcept
 	{
 		reset(b.get());
 		return *this;
@@ -74,7 +74,7 @@ public:
 
 	template <typename B, class = typename std::enable_if <
 		std::is_convertible <B *, ReferenceCounted *>::value>::type>
-	irr_ptr &operator= (irr_ptr<B> &&b) noexcept
+	irr_ptr &operator=(irr_ptr<B> &&b) noexcept
 	{
 		reset(b.release(), Grab::already_owned);
 		return *this;
