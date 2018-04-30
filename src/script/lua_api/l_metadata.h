@@ -46,6 +46,12 @@ protected:
 
 	// Exported functions
 
+	// contains(self, name)
+	static int l_contains(lua_State *L);
+
+	// get(self, name)
+	static int l_get(lua_State *L);
+
 	// get_string(self, name)
 	static int l_get_string(lua_State *L);
 
