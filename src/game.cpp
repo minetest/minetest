@@ -2761,8 +2761,8 @@ void Game::updateChat(f32 dtime, const v2u32 &screensize)
 	while (!chat_log_error_buf.empty()) {
 		std::wstring error_message = utf8_to_wide(chat_log_error_buf.get());
 		if (!g_settings->getBool("disable_escape_sequences")) {
-			error_message = L"\x1b(c@red)";
-			error_message.append(error_message).append(L"\x1b(c@white)");
+			error_message.insert(0, L"\x1b(c@red)");
+			error_message.append(L"\x1b(c@white)");
 		}
 		chat_backend->addMessage(L"", error_message);
 	}
