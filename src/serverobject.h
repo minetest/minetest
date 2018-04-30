@@ -165,6 +165,8 @@ public:
 	{}
 	virtual void getAttachment(int *parent_id, std::string *bone, v3f *position, v3f *rotation)
 	{}
+	virtual void clearChildAttachments() {}
+	virtual void clearParentAttachment() {}
 	virtual void addAttachmentChild(int child_id)
 	{}
 	virtual void removeAttachmentChild(int child_id)
@@ -250,6 +252,9 @@ public:
 	std::queue<ActiveObjectMessage> m_messages_out;
 
 protected:
+	virtual void onAttach(int parent_id) {}
+	virtual void onDetach(int parent_id) {}
+
 	// Used for creating objects based on type
 	typedef ServerActiveObject* (*Factory)
 			(ServerEnvironment *env, v3f pos,

@@ -103,12 +103,8 @@ int ObjectRef::l_remove(lua_State *L)
 	if (co->getType() == ACTIVEOBJECT_TYPE_PLAYER)
 		return 0;
 
-	const std::unordered_set<int> &child_ids = co->getAttachmentChildIds();
-	for (int child_id : child_ids) {
-		// Child can be NULL if it was deleted earlier
-		if (ServerActiveObject *child = env->getActiveObject(child_id))
-			child->setAttachment(0, "", v3f(0, 0, 0), v3f(0, 0, 0));
-	}
+	co->clearChildAttachments();
+	co->clearParentAttachment();
 
 	verbosestream << "ObjectRef::l_remove(): id=" << co->getId() << std::endl;
 	co->m_pending_removal = true;
@@ -721,21 +717,7 @@ int ObjectRef::l_set_detach(lua_State *L)
 	if (co == NULL)
 		return 0;
 
-	int parent_id = 0;
-	std::string bone;
-	v3f position;
-	v3f rotation;
-	co->getAttachment(&parent_id, &bone, &position, &rotation);
-	ServerActiveObject *parent = NULL;
-	if (parent_id) {
-		parent = env->getActiveObject(parent_id);
-		co->setAttachment(0, "", position, rotation);
-	} else {
-		co->setAttachment(0, "", v3f(0, 0, 0), v3f(0, 0, 0));
-	}
-	// Do it
-	if (parent != NULL)
-		parent->removeAttachmentChild(co->getId());
+	co->clearParentAttachment();
 	return 0;
 }
 

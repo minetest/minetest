@@ -343,7 +343,7 @@ GenericCAO::~GenericCAO()
 bool GenericCAO::getSelectionBox(aabb3f *toset) const
 {
 	if (!m_prop.is_visible || !m_is_visible || m_is_local_player
-			|| !m_prop.pointable || getParent() != NULL) {
+			|| !m_prop.pointable) {
 		return false;
 	}
 	*toset = m_selection_box;
@@ -430,6 +430,7 @@ void GenericCAO::removeFromScene(bool permanent)
 				m_env->attachement_parent_ids[ci] = 0;
 			}
 		}
+		m_children.clear();
 
 		m_env->attachement_parent_ids[getId()] = 0;
 
@@ -1409,17 +1410,18 @@ void GenericCAO::processMessage(const std::string &data)
 
 		updateBonePosition();
 	} else if (cmd == GENERIC_CMD_ATTACH_TO) {
-		u16 parentID = readS16(is);
-		u16 oldparent = m_env->attachement_parent_ids[getId()];
-		if (oldparent) {
-			m_children.erase(std::remove(m_children.begin(), m_children.end(),
-				getId()), m_children.end());
-		}
-		m_env->attachement_parent_ids[getId()] = parentID;
-		GenericCAO *parentobj = m_env->getGenericCAO(parentID);
+		u16 parent_id = readS16(is);
+		u16 &old_parent_id = m_env->attachement_parent_ids[getId()];
+		if (parent_id != old_parent_id) {
+			if (GenericCAO *old_parent = m_env->getGenericCAO(old_parent_id)) {
+				old_parent->m_children.erase(std::remove(
+					m_children.begin(), m_children.end(),
+					getId()), m_children.end());
+			}
+			if (GenericCAO *new_parent = m_env->getGenericCAO(parent_id))
+				new_parent->m_children.push_back(getId());
 
-		if (parentobj) {
-			parentobj->m_children.push_back(getId());
+			old_parent_id = parent_id;
 		}
 
 		m_attachment_bone = deSerializeString(is);

@@ -187,11 +187,17 @@ void UnitSAO::setAttachment(int parent_id, const std::string &bone, v3f position
 	// This breaks some things so we also give the server the most accurate representation
 	// even if players only see the client changes.
 
+	int old_parent = m_attachment_parent_id;
 	m_attachment_parent_id = parent_id;
 	m_attachment_bone = bone;
 	m_attachment_position = position;
 	m_attachment_rotation = rotation;
 	m_attachment_sent = false;
+
+	if (parent_id != old_parent) {
+		onDetach(old_parent);
+		onAttach(parent_id);
+	}
 }
 
 void UnitSAO::getAttachment(int *parent_id, std::string *bone, v3f *position,
@@ -201,6 +207,30 @@ void UnitSAO::getAttachment(int *parent_id, std::string *bone, v3f *position,
 	*bone = m_attachment_bone;
 	*position = m_attachment_position;
 	*rotation = m_attachment_rotation;
+}
+
+void UnitSAO::clearChildAttachments()
+{
+	for (int child_id : m_attachment_child_ids) {
+		// Child can be NULL if it was deleted earlier
+		if (ServerActiveObject *child = m_env->getActiveObject(child_id))
+			child->setAttachment(0, "", v3f(0, 0, 0), v3f(0, 0, 0));
+	}
+	m_attachment_child_ids.clear();
+}
+
+void UnitSAO::clearParentAttachment()
+{
+	ServerActiveObject *parent = nullptr;
+	if (m_attachment_parent_id) {
+		parent = m_env->getActiveObject(m_attachment_parent_id);
+		setAttachment(0, "", m_attachment_position, m_attachment_rotation);
+	} else {
+		setAttachment(0, "", v3f(0, 0, 0), v3f(0, 0, 0));
+	}
+	// Do it
+	if (parent)
+		parent->removeAttachmentChild(m_id);
 }
 
 void UnitSAO::addAttachmentChild(int child_id)
@@ -216,6 +246,38 @@ void UnitSAO::removeAttachmentChild(int child_id)
 const std::unordered_set<int> &UnitSAO::getAttachmentChildIds()
 {
 	return m_attachment_child_ids;
+}
+
+void UnitSAO::onAttach(int parent_id)
+{
+	if (!parent_id)
+		return;
+
+	ServerActiveObject *parent = m_env->getActiveObject(parent_id);
+
+	if (!parent || parent->isGone())
+		return; // Do not try to notify soon gone parent
+
+	if (parent->getType() == ACTIVEOBJECT_TYPE_LUAENTITY) {
+		// Call parent's on_attach field
+		m_env->getScriptIface()->luaentity_on_attach_child(parent_id, this);
+	}
+}
+
+void UnitSAO::onDetach(int parent_id)
+{
+	if (!parent_id)
+		return;
+
+	ServerActiveObject *parent = m_env->getActiveObject(parent_id);
+	if (getType() == ACTIVEOBJECT_TYPE_LUAENTITY)
+		m_env->getScriptIface()->luaentity_on_detach(m_id, parent);
+
+	if (!parent || parent->isGone())
+		return; // Do not try to notify soon gone parent
+
+	if (parent->getType() == ACTIVEOBJECT_TYPE_LUAENTITY)
+		m_env->getScriptIface()->luaentity_on_detach_child(parent_id, this);
 }
 
 ObjectProperties* UnitSAO::accessObjectProperties()
@@ -548,10 +610,6 @@ int LuaEntitySAO::punch(v3f dir,
 		return 0;
 	}
 
-	// It's best that attachments cannot be punched
-	if (isAttached())
-		return 0;
-
 	ItemStack *punchitem = NULL;
 	ItemStack punchitem_static;
 	if (puncher) {
@@ -588,8 +646,10 @@ int LuaEntitySAO::punch(v3f dir,
 		}
 	}
 
-	if (getHP() == 0) {
+	if (getHP() == 0 && !isGone()) {
 		m_pending_removal = true;
+		clearParentAttachment();
+		clearChildAttachments();
 		m_env->getScriptIface()->luaentity_on_death(m_id, puncher);
 	}
 
@@ -600,9 +660,7 @@ void LuaEntitySAO::rightClick(ServerActiveObject *clicker)
 {
 	if (!m_registered)
 		return;
-	// It's best that attachments cannot be clicked
-	if (isAttached())
-		return;
+
 	m_env->getScriptIface()->luaentity_Rightclick(m_id, clicker);
 }
 
@@ -1187,10 +1245,6 @@ int PlayerSAO::punch(v3f dir,
 	ServerActiveObject *puncher,
 	float time_from_last_punch)
 {
-	// It's best that attachments cannot be punched
-	if (isAttached())
-		return 0;
-
 	if (!toolcap)
 		return 0;
 
