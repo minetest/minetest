@@ -669,7 +669,7 @@ core.nodedef_default = {
 	stack_max = 99,
 	usable = false,
 	liquids_pointable = false,
-	tool_capabilities = nil,
+	tool_capabilities = {},
 	node_placement_prediction = nil,
 
 	-- Interaction callbacks
@@ -732,7 +732,7 @@ core.craftitemdef_default = {
 	wield_scale = {x=1,y=1,z=1},
 	stack_max = 99,
 	liquids_pointable = false,
-	tool_capabilities = nil,
+	tool_capabilities = {},
 
 	-- Interaction callbacks
 	on_place = redef_wrapper(core, 'item_place'), -- core.item_place
@@ -751,7 +751,7 @@ core.tooldef_default = {
 	wield_scale = {x=1,y=1,z=1},
 	stack_max = 1,
 	liquids_pointable = false,
-	tool_capabilities = nil,
+	tool_capabilities = {},
 
 	-- Interaction callbacks
 	on_place = redef_wrapper(core, 'item_place'), -- core.item_place
@@ -770,7 +770,7 @@ core.noneitemdef_default = {  -- This is used for the hand and unknown items
 	wield_scale = {x=1,y=1,z=1},
 	stack_max = 99,
 	liquids_pointable = false,
-	tool_capabilities = nil,
+	tool_capabilities = {},
 
 	-- Interaction callbacks
 	on_place = redef_wrapper(core, 'item_place'),
