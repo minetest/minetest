@@ -569,9 +569,6 @@ void CavesRandomWalk::carveRoute(v3f vec, float f, bool randomize_xz)
 					else
 						vm->m_data[i] = airnode;
 				} else {
-					if (c == CONTENT_IGNORE)
-						continue;
-
 					vm->m_data[i] = airnode;
 					vm->m_flags[i] |= VMANIP_FLAG_CAVE;
 				}
@@ -874,7 +871,7 @@ void CavesV6::carveRoute(v3f vec, float f, bool randomize_xz,
 						vm->m_data[i] = airnode;
 					}
 				} else {
-					if (c == CONTENT_IGNORE || c == CONTENT_AIR)
+					if (c == CONTENT_AIR)
 						continue;
 
 					vm->m_data[i] = airnode;
