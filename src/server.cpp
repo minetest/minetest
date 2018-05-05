@@ -2686,7 +2686,7 @@ void Server::DeleteClient(session_t peer_id, ClientDeletionReason reason)
 void Server::UpdateCrafting(RemotePlayer *player)
 {
 	InventoryList *clist = player->inventory.getList("craft");
-	if (!clist || clist->getSize() < 1)
+	if (!clist || clist->getSize() == 0)
 		return;
 
 	// Get a preview for crafting
