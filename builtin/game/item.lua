@@ -177,8 +177,19 @@ end
 function core.get_extended_drops(drop_table, toolname, palette_index)
 	local got_items = {}
 	local got_count = 0
+	-- Compatibility with old (0.4) behaviour:
+	--	allow drop_table.max_items and drop_table.items.items,
+	--	but prefer drop_table.max_choices and drop_table.choices.items.
+	local choices = drop_table.choices or drop_table.items
+	if type(choices) ~= "table" then
+		return {}
+	end
+	local max_choices = drop_table.max_choices or drop_table.max_items
+	if type(max_choices) ~= "number" then
+		max_choices = 1
+	end
 	local _, item, tool
-	for _, item in ipairs(drop_table.items) do
+	for _, item in ipairs(choices) do
 		local good_rarity = true
 		local good_tool = true
 		if item.rarity ~= nil then
@@ -210,7 +221,7 @@ function core.get_extended_drops(drop_table, toolname, palette_index)
 				end
 				got_items[#got_items+1] = add_item
 			end
-			if drop_table.max_items ~= nil and got_count >= drop_table.max_items then
+			if got_count >= max_choices then
 				break
 			end
 		end
@@ -243,7 +254,7 @@ function core.get_node_drops(node, toolname)
 	elseif type(drop) == "string" then
 		-- itemstring drop
 		return {drop}
-	elseif drop.items == nil then
+	elseif drop.choices == nil and drop.items == nil then
 		-- drop = {} to disable default drop
 		return {}
 	end
