@@ -2685,6 +2685,10 @@ void Server::DeleteClient(session_t peer_id, ClientDeletionReason reason)
 
 void Server::UpdateCrafting(RemotePlayer *player)
 {
+	InventoryList *clist = player->inventory.getList("craft");
+	if (!clist || clist->getSize() == 0)
+		return;
+
 	// Get a preview for crafting
 	ItemStack preview;
 	InventoryLocation loc;
@@ -2692,13 +2696,13 @@ void Server::UpdateCrafting(RemotePlayer *player)
 	std::vector<ItemStack> output_replacements;
 	getCraftingResult(&player->inventory, preview, output_replacements, false, this);
 	m_env->getScriptIface()->item_CraftPredict(preview, player->getPlayerSAO(),
-			(&player->inventory)->getList("craft"), loc);
+			clist, loc);
 
-	// Put the new preview in
 	InventoryList *plist = player->inventory.getList("craftpreview");
-	sanity_check(plist);
-	sanity_check(plist->getSize() >= 1);
-	plist->changeItem(0, preview);
+	if (plist && plist->getSize() >= 1) {
+		// Put the new preview in
+		plist->changeItem(0, preview);
+	}
 }
 
 void Server::handleChatInterfaceEvent(ChatEvent *evt)
