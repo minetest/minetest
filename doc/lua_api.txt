@@ -3405,42 +3405,10 @@ You can find mod channels communication scheme in `docs/mod_channels.png`.
     * Returns list of itemstrings.
     * **Note**: This will be removed or modified in a future version.
 * `minetest.get_extended_drops(drop_table, toolname, palette_index)
-    * Calculates the item(s) to drop, given the drop_table and the tool.
-    * palette_index is optional, see Hardware coloring for more detail.
-    * drop_table looks like:
-        drop_table = {
-          max_choices = 1,
-          -- Get max_choices randomly from among the following choices.
-          -- Each choice may be filtered out, each choice may have many items.
-          choices = {
-            -- When using a mese or diamond shovel, the player gets a drop
-            -- about 73% of the time.  For other shovels from `default`, the
-            -- chance is about 67%.  Otherwise, the chance is about 33%.
-            {
-              -- Use a ~ prefix to match tool names with `string.find`.
-              tools = { "~default:shovel_" },
-              -- 50% of the time, two types of sand.  Else, skip this choice.
-              rarity = 2,
-              items = { "default:sand", "default:desert_sand" },  -- Items to drop.
-            },
-            {
-              -- Skip unless toolname `==` at least one of these strings.
-              -- There is an implied logical OR between each string.
-              tools = { "default:shovel_mese", "default:shovel_diamond", },
-              -- default:gold_lump is less common.
-              -- A player with a shovel can get gold or sand, or neither.
-              -- No player ever gets both, because max_choices = 1.
-              rarity = 5,
-              items = { "default:gold_lump" },
-            },
-            {
-              -- default:cobble is possible with any tool.
-              rarity = 3,
-              items = { "default:cobble" },
-            },
-          },
-        },
-    * Returns a list of itemstrings.
+    * calculates the item(s) to drop, given the drop_table and the tool
+    * palette_index is optional (see Hardware coloring)
+    * returns a list of itemstrings
+    * see Drop table definition for more details
 * `minetest.get_craft_result(input)`: returns `output, decremented_input`
     * `input.method` = `"normal"` or `"cooking"` or `"fuel"`
     * `input.width` = for example `3`
@@ -5417,20 +5385,11 @@ Definition tables
             place = <SimpleSoundSpec>,
             place_failed = <SimpleSoundSpec>,
         },
-        drop = "",
-        ^ Name of dropped node when dug. Default is the node itself.
-        ^ Alternatively:
-        drop = {
-            max_choices = 1,  -- Maximum number of items to drop.
-            choices = {  -- Choose max_choices randomly from this list.
-                {
-                    items = {"foo:bar", "baz:frob"},  -- Items to drop.
-                    rarity = 1,  -- Probability of dropping is 1 / rarity.
-                    inherit_color = true, -- To inherit palette color from the
-                                             node.
-                },
-            },
-        },
+        drop = "", --[[
+        ^ Name of dropped node when dug.  For random or multiple or tool-based
+        ^ items, use a table (see Drop table definition).
+        ^ To drop nothing, use an empty table.
+        ^ default: the node itself ]]
 
         on_construct = func(pos), --[[
         ^ Node constructor; called after adding node
@@ -5897,6 +5856,41 @@ Note that in params, use of symbols is as follows:
   provided. For example: `<param1> | <param2>`
 * `()` signifies grouping. For example, when param1 and param2 are both
   required, or only param3 is required: `(<param1> <param2>) | <param3>`
+
+### Drop table definition
+
+    drop_table = {
+      max_choices = 1,
+      -- Get max_choices randomly from among the following choices.
+      -- Each choice may be filtered out, each choice may have many items.
+      choices = {
+        -- When using a mese or diamond shovel, the player gets a drop
+        -- about 73% of the time.  For other shovels from `default`, the
+        -- chance is about 67%.  Otherwise, the chance is about 33%.
+        {
+          -- Use a ~ prefix to match tool names with `string.find`.
+          tools = { "~default:shovel_" },
+          -- 50% of the time, two types of sand.  Else, skip this choice.
+          rarity = 2,
+          items = { "default:sand", "default:desert_sand" },  -- Items to drop.
+        },
+        {
+          -- Skip unless toolname `==` at least one of these strings.
+          -- There is an implied logical OR between each string.
+          tools = { "default:shovel_mese", "default:shovel_diamond", },
+          -- default:gold_lump is less common.
+          -- A player with a shovel can get gold or sand, or neither.
+          -- No player ever gets both, because max_choices = 1.
+          rarity = 5,
+          items = { "default:gold_lump" },
+        },
+        {
+          -- default:cobble is possible with any tool.
+          rarity = 3,
+          items = { "default:cobble" },
+        },
+      },
+    },
 
 ### Detached inventory callbacks
 
