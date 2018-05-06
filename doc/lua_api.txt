@@ -5888,9 +5888,12 @@ Note that in params, use of symbols is as follows:
           -- default:cobble is possible with any tool.
           rarity = 3,
           items = { "default:cobble" },
+          inherit_color = true,  -- To inherit palette color from the node.
         },
       },
-    },
+    }
+    -- ^ max_choices may be called max_items instead, but that is **deprecated**
+    -- ^ choices may be called items instead, but that is **deprecated**
 
 ### Detached inventory callbacks
 
