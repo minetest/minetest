@@ -186,7 +186,7 @@ function core.get_extended_drops(drop_table, toolname, palette_index)
 	end
 	local max_choices = drop_table.max_choices or drop_table.max_items
 	if type(max_choices) ~= "number" then
-		max_choices = 1
+		max_choices = #choices
 	end
 	local _, item, tool
 	for _, item in ipairs(choices) do
