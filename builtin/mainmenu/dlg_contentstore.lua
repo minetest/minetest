@@ -112,7 +112,7 @@ local function start_install(calling_dialog, package)
 	end
 
 	if not core.handle_async(download_package, params, callback) then
-		minetest.log("error", "ERROR: async event failed")
+		core.log("error", "ERROR: async event failed")
 		gamedata.errormessage = fgettext("Failed to download $1", package.name)
 	end
 
