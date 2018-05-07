@@ -15,6 +15,30 @@
 --with this program; if not, write to the Free Software Foundation, Inc.,
 --51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
+local store = {}
+local package_dialog = {}
+
+local search_string = ""
+local cur_page = 1
+local num_per_page = 5
+local filter_type = 1
+local filter_types_titles = {
+	fgettext("All packages"),
+	fgettext("Games"),
+	fgettext("Mods"),
+	fgettext("Texture packs"),
+}
+
+local filter_types_type = {
+	nil,
+	"game",
+	"mod",
+	"txp",
+}
+
+
+
+
 local function download_package(param)
 	if core.download_file(param.package.url, param.filename) then
 		return {
@@ -39,7 +63,9 @@ local function start_install(calling_dialog, package)
 
 	local function callback(result)
 		if result.successful then
-			local path, msg = pkgmgr.install(result.package.type, result.filename, result.package.name)
+			local path, msg = pkgmgr.install(result.package.type,
+					result.filename, result.package.name,
+					result.package.path)
 			if not path then
 				gamedata.errormessage = msg
 			else
@@ -112,18 +138,34 @@ local function start_install(calling_dialog, package)
 end
 
 
-local package_dialog = {}
-
 function package_dialog.get_formspec()
 	local package = package_dialog.package
 
+	store.update_paths()
+
 	local formspec = {
-		"size[8,4;true]",
+		"size[9,4;true]",
 		"label[2.5,0.2;", core.formspec_escape(package.title), "]",
-		"textarea[0.2,1;8,3;;;", core.formspec_escape(package.short_description), "]",
+		"textarea[0.2,1;9,3;;;", core.formspec_escape(package.short_description), "]",
 		"button[0,0;2,1;back;", fgettext("Back"), "]",
-		"button[6,0;2,1;install;", fgettext("Install"), "]",
 	}
+
+	if not package.path then
+		formspec[#formspec + 1] = "button[7,0;2,1;install;"
+		formspec[#formspec + 1] = fgettext("Install")
+		formspec[#formspec + 1] = "]"
+	elseif package.installed_release < package.release then
+		formspec[#formspec + 1] = "button[7,0;2,1;install;"
+		formspec[#formspec + 1] = fgettext("Update")
+		formspec[#formspec + 1] = "]"
+		formspec[#formspec + 1] = "button[7,1;2,1;uninstall;"
+		formspec[#formspec + 1] = fgettext("Uninstall")
+		formspec[#formspec + 1] = "]"
+	else
+		formspec[#formspec + 1] = "button[7,0;2,1;uninstall;"
+		formspec[#formspec + 1] = fgettext("Uninstall")
+		formspec[#formspec + 1] = "]"
+	end
 
 	-- TODO: screenshots
 
@@ -137,7 +179,15 @@ function package_dialog.handle_submit(this, fields, tabname, tabdata)
 	end
 
 	if fields.install then
-		start_install(package_dialog.package)
+		start_install(this, package_dialog.package)
+		return true
+	end
+
+	if fields.uninstall then
+		local dlg_delmod = create_delete_content_dlg(package_dialog.package)
+		dlg_delmod:set_parent(this)
+		this:hide()
+		dlg_delmod:show()
 		return true
 	end
 
@@ -151,28 +201,6 @@ function package_dialog.create(package)
 		package_dialog.handle_submit,
 		nil)
 end
-
-
-
-
-local store = {}
-local search_string = ""
-local cur_page = 1
-local num_per_page = 5
-local filter_type = 1
-local filter_types_titles = {
-	fgettext("All packages"),
-	fgettext("Games"),
-	fgettext("Mods"),
-	fgettext("Texture packs"),
-}
-
-local filter_types_type = {
-	nil,
-	"game",
-	"mod",
-	"txp",
-}
 
 function store.load()
 	store.packages_full = core.get_package_list()
