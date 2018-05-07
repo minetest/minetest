@@ -1043,9 +1043,21 @@ int ModApiMainMenu::l_get_package_list(lua_State *L)
 		lua_pushstring(L, package.url.c_str());
 		lua_settable  (L, top_lvl2);
 
-		lua_pushstring(L, "release");
+		lua_pushstring (L, "release");
 		lua_pushinteger(L, package.release);
-		lua_settable  (L, top_lvl2);
+		lua_settable   (L, top_lvl2);
+
+		lua_pushstring(L, "screenshots");
+		lua_newtable(L);
+		{
+			int top_screenshots = lua_gettop(L);
+			for (size_t i = 0; i < package.screenshots.size(); ++i) {
+				lua_pushnumber(L, i + 1);
+				lua_pushstring(L, package.screenshots[i].c_str());
+				lua_settable(L, top_screenshots);
+			}
+		}
+		lua_settable(L, top_lvl2);
 
 		lua_settable(L, top);
 		index++;

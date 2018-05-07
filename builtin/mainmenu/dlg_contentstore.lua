@@ -18,6 +18,13 @@
 local store = {}
 local package_dialog = {}
 
+-- Screenshot
+local screenshot_dir = os.tempfolder()
+assert(core.create_dir(screenshot_dir))
+local screenshot_downloading = {}
+local screenshot_downloaded = {}
+
+-- Filter
 local search_string = ""
 local cur_page = 1
 local num_per_page = 5
@@ -136,6 +143,58 @@ local function start_install(calling_dialog, package)
 	calling_dialog:hide()
 	new_dlg:show()
 end
+
+local function get_screenshot(package)
+	if #package.screenshots == 0 then
+		return defaulttexturedir .. "no_screenshot.png"
+	elseif screenshot_downloading[package.screenshots[1]] then
+		return defaulttexturedir .. "loading_screenshot.png"
+	end
+
+	-- Get tmp screenshot path
+	local filepath = screenshot_dir .. DIR_DELIM ..
+		package.type .. "-" .. package.author .. "-" .. package.name .. ".png"
+
+	-- Return if already downloaded
+	local file = io.open(filepath, "r")
+	if file then
+		file:close()
+		return filepath
+	end
+
+	-- Show error if we've failed to download before
+	if screenshot_downloaded[package.screenshots[1]] then
+		return defaulttexturedir .. "error_screenshot.png"
+	end
+
+	-- Download
+
+	local function download_screenshot(params)
+		return core.download_file(params.url, params.dest)
+	end
+	local function callback(success)
+		screenshot_downloading[package.screenshots[1]] = nil
+		screenshot_downloaded[package.screenshots[1]] = true
+		if not success then
+			core.log("warning", "Screenshot download failed for some reason")
+		end
+
+		local ele = ui.childlist.store
+		if ele and not ele.hidden then
+			core.update_formspec(ele:formspec())
+		end
+	end
+	if core.handle_async(download_screenshot,
+			{ dest = filepath, url = package.screenshots[1] }, callback) then
+		screenshot_downloading[package.screenshots[1]] = true
+	else
+		core.log("error", "ERROR: async event failed")
+		return defaulttexturedir .. "error_screenshot.png"
+	end
+
+	return defaulttexturedir .. "loading_screenshot.png"
+end
+
 
 
 function package_dialog.get_formspec()
@@ -315,8 +374,7 @@ function store.get_formspec()
 
 		-- image
 		formspec[#formspec + 1] = "image[-0.4,0;1.5,1;"
-		formspec[#formspec + 1] = defaulttexturedir
-		formspec[#formspec + 1] = "no_screenshot.png"
+		formspec[#formspec + 1] = get_screenshot(package)
 		formspec[#formspec + 1] = "]"
 
 		-- title
