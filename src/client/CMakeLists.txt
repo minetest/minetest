@@ -32,5 +32,6 @@ set(client_SRCS
 	${CMAKE_CURRENT_SOURCE_DIR}/tile.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/joystick_controller.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/hud.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/discord.cpp
 	PARENT_SCOPE
 )
