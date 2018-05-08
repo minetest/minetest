@@ -50,6 +50,7 @@ void Discord::setState(const std::string &state)
 
 void Discord::setDetails(const std::string &details)
 {
+	std::cout << "Set details : " << details << std::endl;
 	m_data.details = details;
 }
 

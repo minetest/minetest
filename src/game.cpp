@@ -1067,9 +1067,7 @@ void Game::run()
 		g_settings->getU16("screen_h"));
 
 #if USE_DISCORD
-	Discord::create();
-	Discord::getInstance()->init();
-	Discord::getInstance()->setDetails("In Main Menu");
+	Discord::getInstance()->setDetails("In Game");
 	Discord::getInstance()->setState("");
 	Discord::getInstance()->updatePresence();
 #endif

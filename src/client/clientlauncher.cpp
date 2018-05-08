@@ -35,6 +35,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "renderingengine.h"
 #include "network/networkexceptions.h"
 
+#if USE_DISCORD
+	#include "client/discord.h"
+#endif
+
 #if USE_SOUND
 	#include "sound_openal.h"
 #endif
@@ -149,6 +153,14 @@ bool ClientLauncher::run(GameParams &game_params, const Settings &cmd_args)
 	scene::ICameraSceneNode* camera;
 	camera = g_menucloudsmgr->addCameraSceneNode(NULL, v3f(0, 0, 0), v3f(0, 60, 100));
 	camera->setFarValue(10000);
+
+	/*
+		Discord Rich Presence
+	*/
+#if USE_DISCORD
+	Discord::create();
+	Discord::getInstance()->init();
+#endif
 
 	/*
 		GUI stuff
@@ -498,6 +510,12 @@ bool ClientLauncher::launch_game(std::string &error_message,
 
 void ClientLauncher::main_menu(MainMenuData *menudata)
 {
+#if USE_DISCORD
+	Discord::getInstance()->setDetails("In Main Menu");
+	Discord::getInstance()->setState("");
+	Discord::getInstance()->updatePresence();
+#endif
+
 	bool *kill = porting::signal_handler_killstatus();
 	video::IVideoDriver *driver = RenderingEngine::get_video_driver();
 
