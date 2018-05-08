@@ -3,6 +3,7 @@
 #include "discord_rpc.h"
 #include <string>
 #include <assert.h>
+#include <log.h>
 
 std::unique_ptr<Discord> Discord::s_pDiscord;
 const std::string Discord::s_applicationId = "443156798510333954";
@@ -50,7 +51,6 @@ void Discord::setState(const std::string &state)
 
 void Discord::setDetails(const std::string &details)
 {
-	std::cout << "Set details : " << details << std::endl;
 	m_data.details = details;
 }
 
@@ -76,10 +76,11 @@ void Discord::updatePresence()
 
 void Discord::handleDiscordReady()
 {
-	std::cout << "Discord is ready" << std::endl;
+	infostream << "Discord is ready" << std::endl;
 }
 
-void Discord::handleDiscordError(int errcode, const char* message)
+void Discord::handleDiscordError(int errcode, const char *message)
 {
-	std::cout << "Error discord : " << std::to_string(errcode) << " " << message << std::endl;
+	errorstream << "Error discord : " << std::to_string(errcode) << " " << message
+		<< std::endl;
 }
