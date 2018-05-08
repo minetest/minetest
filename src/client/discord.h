@@ -39,10 +39,8 @@ public:
 	Discord();
 	~Discord();
 
-	static void create();
+	static std::unique_ptr<Discord> createDiscordSingleton();
 	void init();
-
-	static Discord *getInstance();
 
 	void setState(const std::string &state);
 	void setDetails(const std::string &details);
@@ -53,8 +51,7 @@ public:
 
 private:
 	static const std::string s_applicationId;
-	
 	DataRichPresence m_data;
-
-	static std::unique_ptr<Discord> s_pDiscord;
 };
+
+extern std::unique_ptr<Discord> g_pDiscord;

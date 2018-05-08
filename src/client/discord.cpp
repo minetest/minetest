@@ -24,7 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <assert.h>
 #include <log.h>
 
-std::unique_ptr<Discord> Discord::s_pDiscord;
+std::unique_ptr<Discord> g_pDiscord;
 const std::string Discord::s_applicationId = "443156798510333954";
 
 Discord::Discord()
@@ -34,14 +34,13 @@ Discord::Discord()
 
 Discord::~Discord()
 {
-	assert(s_pDiscord);
 	Discord_Shutdown();
 }
 
-void Discord::create()
+std::unique_ptr<Discord> Discord::createDiscordSingleton()
 {
-	assert(!s_pDiscord);
-	s_pDiscord = std::unique_ptr<Discord>(new Discord());
+	assert(!g_pDiscord);
+	return std::unique_ptr<Discord>(new Discord());
 }
 
 void Discord::init()
@@ -55,12 +54,6 @@ void Discord::init()
 	handlers.errored = Discord::handleDiscordError;
 	Discord_Shutdown();
 	Discord_Initialize(s_applicationId.c_str(), &handlers, 1, NULL);
-}
-
-Discord *Discord::getInstance()
-{
-	assert(s_pDiscord);
-	return s_pDiscord.get();
 }
 
 void Discord::setState(const std::string &state)
