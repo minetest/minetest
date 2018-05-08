@@ -25,12 +25,12 @@ struct DataRichPresence
 {
 	std::string state = "";
 	std::string details = "";
-	uint64_t startTimestamp;
-	std::string largeImageKey = "default";
-	std::string smallImageKey = "small_default";
-	std::string partyId = "";
-	uint32_t partySize = 0;
-	uint32_t partyMax = 0;
+	uint64_t start_timestamp;
+	std::string large_image_key = "default";
+	std::string small_image_key = "small_default";
+	std::string party_id = "";
+	uint32_t party_size = 0;
+	uint32_t party_max = 0;
 };
 
 class Discord
@@ -50,7 +50,7 @@ public:
 	static void handleDiscordReady();
 
 private:
-	static const std::string s_applicationId;
+	static const std::string s_application_id;
 	DataRichPresence m_data;
 };
 

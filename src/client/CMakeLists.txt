@@ -15,7 +15,7 @@ if(USE_SOUND)
 endif()
 
 if (USE_DISCORD)
-    set(DISCORD_SRC ${CMAKE_CURRENT_SOURCE_DIR}/discord.cpp)
+	set(DISCORD_SRC ${CMAKE_CURRENT_SOURCE_DIR}/discord.cpp)
 endif()
 
 set(client_SRCS

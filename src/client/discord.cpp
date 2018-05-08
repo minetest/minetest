@@ -25,11 +25,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <log.h>
 
 std::unique_ptr<Discord> g_pDiscord;
-const std::string Discord::s_applicationId = "443156798510333954";
+const std::string Discord::s_application_id = "443156798510333954";
 
-Discord::Discord()
+Discord::Discord() : m_data{}
 {
-	m_data.startTimestamp = time(0);
+	m_data.start_timestamp = time(0);
 }
 
 Discord::~Discord()
@@ -53,7 +53,7 @@ void Discord::init()
 	handlers.ready = Discord::handleDiscordReady;
 	handlers.errored = Discord::handleDiscordError;
 	Discord_Shutdown();
-	Discord_Initialize(s_applicationId.c_str(), &handlers, 1, NULL);
+	Discord_Initialize(s_application_id.c_str(), &handlers, 1, NULL);
 }
 
 void Discord::setState(const std::string &state)
@@ -68,21 +68,21 @@ void Discord::setDetails(const std::string &details)
 
 void Discord::updatePresence()
 {
-	DiscordRichPresence discordPresence;
-	memset(&discordPresence, 0, sizeof(discordPresence));
+	DiscordRichPresence discord_presence;
+	memset(&discord_presence, 0, sizeof(discord_presence));
 
-	discordPresence.state = m_data.state.c_str();
-	discordPresence.details = m_data.details.c_str();
-	discordPresence.startTimestamp = m_data.startTimestamp;
-	discordPresence.largeImageKey = m_data.largeImageKey.c_str();
-	discordPresence.smallImageKey = m_data.smallImageKey.c_str();
-	discordPresence.partyId = m_data.partyId.c_str();
-	discordPresence.partySize = m_data.partySize;
-	discordPresence.partyMax = m_data.partyMax;
-	// discordPresence.matchSecret = "4b2fdce12f639de8bfa7e3591b71a0d679d7c93f";
-	// discordPresence.spectateSecret = "e7eb30d2ee025ed05c71ea495f770b76454ee4e0";
-	// discordPresence.instance = 1;
-	Discord_UpdatePresence(&discordPresence);
+	discord_presence.state = m_data.state.c_str();
+	discord_presence.details = m_data.details.c_str();
+	discord_presence.startTimestamp = m_data.start_timestamp;
+	discord_presence.largeImageKey = m_data.large_image_key.c_str();
+	discord_presence.smallImageKey = m_data.small_image_key.c_str();
+	discord_presence.partyId = m_data.party_id.c_str();
+	discord_presence.partySize = m_data.party_size;
+	discord_presence.partyMax = m_data.party_max;
+	// discord_presence.matchSecret = "4b2fdce12f639de8bfa7e3591b71a0d679d7c93f";
+	// discord_presence.spectateSecret = "e7eb30d2ee025ed05c71ea495f770b76454ee4e0";
+	// discord_presence.instance = 1;
+	Discord_UpdatePresence(&discord_presence);
 }
 
 void Discord::handleDiscordReady()
