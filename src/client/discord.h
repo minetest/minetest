@@ -34,7 +34,7 @@ public:
 
 private:
 	static const std::string s_applicationId;
-	
+
 	DataRichPresence m_data;
 
 	static std::unique_ptr<Discord> s_pDiscord;

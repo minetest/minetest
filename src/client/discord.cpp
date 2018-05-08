@@ -9,7 +9,7 @@ std::unique_ptr<Discord> Discord::s_pDiscord;
 const std::string Discord::s_applicationId = "443156798510333954";
 
 Discord::Discord()
-{	
+{
 	m_data.startTimestamp = time(0);
 }
 
@@ -70,7 +70,6 @@ void Discord::updatePresence()
 	// discordPresence.matchSecret = "4b2fdce12f639de8bfa7e3591b71a0d679d7c93f";
 	// discordPresence.spectateSecret = "e7eb30d2ee025ed05c71ea495f770b76454ee4e0";
 	// discordPresence.instance = 1;
-	
 	Discord_UpdatePresence(&discordPresence);
 }
 
@@ -82,5 +81,5 @@ void Discord::handleDiscordReady()
 void Discord::handleDiscordError(int errcode, const char *message)
 {
 	errorstream << "Error discord : " << std::to_string(errcode) << " " << message
-		<< std::endl;
+		    << std::endl;
 }
