@@ -74,7 +74,7 @@ ClientLauncher::~ClientLauncher()
 #endif
 
 #if USE_DISCORD
-	g_pDiscord.reset();
+	g_discord.reset();
 #endif
 
 }
@@ -163,8 +163,8 @@ bool ClientLauncher::run(GameParams &game_params, const Settings &cmd_args)
 		Discord Rich Presence
 	*/
 #if USE_DISCORD
-	g_pDiscord = Discord::createDiscordSingleton();
-	g_pDiscord->init();
+	g_discord = Discord::createDiscordSingleton();
+	g_discord->init();
 #endif
 
 	/*
@@ -516,9 +516,9 @@ bool ClientLauncher::launch_game(std::string &error_message,
 void ClientLauncher::main_menu(MainMenuData *menudata)
 {
 #if USE_DISCORD
-	g_pDiscord->setDetails("In Main Menu");
-	g_pDiscord->setState("");
-	g_pDiscord->updatePresence();
+	g_discord->setDetails("In Main Menu");
+	g_discord->setState("");
+	g_discord->updatePresence();
 #endif
 
 	bool *kill = porting::signal_handler_killstatus();

@@ -21,17 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <iostream>
 #include <memory>
 
-struct DataRichPresence
-{
-	std::string state = "";
-	std::string details = "";
-	uint64_t start_timestamp;
-	std::string large_image_key = "default";
-	std::string small_image_key = "small_default";
-	std::string party_id = "";
-	uint32_t party_size = 0;
-	uint32_t party_max = 0;
-};
+struct DataRichPresence;
 
 class Discord
 {
@@ -51,7 +41,7 @@ public:
 
 private:
 	static const std::string s_application_id;
-	DataRichPresence m_data;
+	std::unique_ptr<DataRichPresence> m_data;
 };
 
-extern std::unique_ptr<Discord> g_pDiscord;
+extern std::unique_ptr<Discord> g_discord;
