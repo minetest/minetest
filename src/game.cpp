@@ -67,7 +67,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "irrlicht_changes/static_text.h"
 #include "version.h"
 #include "script/scripting_client.h"
-#include "client/discord.h"
+
+#if USE_DISCORD
+	#include "client/discord.h"
+#endif
 
 #if USE_SOUND
 	#include "client/sound_openal.h"
@@ -1063,9 +1066,13 @@ void Game::run()
 	irr::core::dimension2d<u32> previous_screen_size(g_settings->getU16("screen_w"),
 		g_settings->getU16("screen_h"));
 
+#if USE_DISCORD
 	Discord::create();
 	Discord::getInstance()->init();
+	Discord::getInstance()->setDetails("In Main Menu");
+	Discord::getInstance()->setState("");
 	Discord::getInstance()->updatePresence();
+#endif
 
 	while (RenderingEngine::run()
 			&& !(*kill || g_gamecallback->shutdown_requested

@@ -2,8 +2,10 @@
 #include <ctime>
 #include "discord_rpc.h"
 #include <string>
+#include <assert.h>
 
 std::unique_ptr<Discord> Discord::s_pDiscord;
+const std::string Discord::s_applicationId = "443156798510333954";
 
 Discord::Discord()
 {	
@@ -12,12 +14,14 @@ Discord::Discord()
 
 Discord::~Discord()
 {
+	assert(s_pDiscord);
 	Discord_Shutdown();
 }
 
 void Discord::create()
 {
-	s_pDiscord = std::make_unique<Discord>();
+	assert(!s_pDiscord);
+	s_pDiscord = std::unique_ptr<Discord>(new Discord());
 }
 
 void Discord::init()
@@ -30,11 +34,12 @@ void Discord::init()
 	handlers.ready = Discord::handleDiscordReady;
 	handlers.errored = Discord::handleDiscordError;
 	Discord_Shutdown();
-	Discord_Initialize(s_clientId, &handlers, 1, NULL);
+	Discord_Initialize(s_applicationId.c_str(), &handlers, 1, NULL);
 }
 
 Discord *Discord::getInstance()
 {
+	assert(s_pDiscord);
 	return s_pDiscord.get();
 }
 

@@ -32,7 +32,7 @@ public:
 	static void handleDiscordReady();
 
 private:
-	static constexpr const char s_clientId[] = "443156798510333954";
+	static const std::string s_applicationId;
 	
 	DataRichPresence m_data;
 
