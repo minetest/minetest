@@ -96,8 +96,14 @@ void GUIConfirmRegistration::regenerateGui(v2u32 screensize)
 				"Join to confirm account creation or click Cancel to "
 				"abort.");
 		char info_text_buf[1024];
+
+#ifdef _MSC_VER
+		sprintf(info_text_buf, info_text_template.c_str(), address.c_str(),
+				m_playername.c_str());
+#else
 		snprintf(info_text_buf, sizeof(info_text_buf), info_text_template.c_str(),
 				address.c_str(), m_playername.c_str());
+#endif
 
 		gui::IGUIEditBox *e = new gui::intlGUIEditBox(
 				utf8_to_wide_c(info_text_buf), true, Environment, this,
