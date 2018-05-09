@@ -369,9 +369,10 @@ core.register_node(":ignore", {
 	drop = "",
 	groups = {not_in_creative_inventory=1},
 	-- Prevent placement of ignore (to prevent engine error message spam in logs)
+	-- and destroy itemstack.
 	on_place = function(itemstack, placer, pointed_thing)
-		minetest.chat_send_player(placer:get_player_name(), minetest.colorize("#FF0000", "One does not simply place ignore nodes in the world!"))
-		return itemstack
+		minetest.chat_send_player(placer:get_player_name(), minetest.colorize("#FF0000", "One does not simply place 'ignore' nodes!"))
+		return ""
 	end,
 })
 

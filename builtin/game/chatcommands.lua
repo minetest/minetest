@@ -585,8 +585,7 @@ local function handle_give_command(cmd, giver, receiver, stackstring)
 		else
 			msg = "%q %sadded to inventory."
 		end
-		msg = msg:format(stackstring, partiality)
-		return true, msg
+		return true, msg:format(stackstring, partiality)
 	else
 		core.chat_send_player(receiver, ("%q %sadded to inventory.")
 				:format(stackstring, partiality))
@@ -595,8 +594,7 @@ local function handle_give_command(cmd, giver, receiver, stackstring)
 		else
 			msg = "%q %sadded to %s's inventory."
 		end
-		msg = msg:format(stackstring, partiality, receiver)
-		return true, msg
+		return true, msg:format(stackstring, partiality, receiver)
 	end
 end
 
