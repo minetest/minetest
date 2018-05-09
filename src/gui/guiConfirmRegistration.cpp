@@ -158,13 +158,13 @@ void GUIConfirmRegistration::drawMenu()
 
 void GUIConfirmRegistration::closeMenu(bool goNext)
 {
-	quitMenu();
 	if (goNext) {
 		m_client->confirmRegistration();
 	} else {
 		*m_aborted = true;
 		infostream << "Connect aborted [Escape]" << std::endl;
 	}
+	quitMenu();
 }
 
 void GUIConfirmRegistration::acceptInput()
