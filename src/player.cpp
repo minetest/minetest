@@ -36,7 +36,6 @@ Player::Player(const char *name, IItemDefManager *idef):
 
 	inventory.clear();
 	inventory.addList("main", PLAYER_INVENTORY_SIZE);
-	inventory.addList("hand", 1);
 	InventoryList *craft = inventory.addList("craft", 9);
 	craft->setWidth(3);
 	inventory.addList("craftpreview", 1);
