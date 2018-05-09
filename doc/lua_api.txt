@@ -2257,8 +2257,10 @@ Player Inventory lists
 
 * `main`: list containing the default inventory
 * `craft`: list containing the craft input
-* `craftpreview`: list containing the craft output
+* `craftpreview`: list containing the craft prediction
+* `craftresult`: list containing the crafted output
 * `hand`: list containing an override for the empty hand
+    * Is not created automatically, use `InvRef:set_size`
 
 
 
