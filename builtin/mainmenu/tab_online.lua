@@ -55,7 +55,7 @@ local function get_formspec(tabview, name, tabdata)
 		"box[7.73,2.25;4.25,2.6;#999999]"..
         
 		"textarea[8.1,2.3;4.23,2.9;;;" ..
-			core.formspec_escape(core.settings:get("serverdescription"), true) .. "]"..
+			core.formspec_escape(core.settings:get("server_description")) .. "]"..
 
 		-- Connect
 		"button[9.88,4.9;2.3,1;btn_mp_connect;" .. fgettext("Connect") .. "]"
@@ -67,7 +67,7 @@ local function get_formspec(tabview, name, tabdata)
 		end
 		if fav_selected.description then
 			retval = retval .. "textarea[8.1,2.3;4.23,2.9;;;" ..
-				core.formspec_escape((gamedata.serverdescription or ""), true) .. "]"
+				core.formspec_escape((gamedata.serverdescription or "")) .. "]"
 		end
 	end
 
@@ -170,7 +170,7 @@ local function main_button_handler(tabview, fields, name, tabdata)
 				if gamedata.address and gamedata.port then
 					core.settings:set("address", gamedata.address)
 					core.settings:set("remote_port", gamedata.port)
-					core.settings:set("serverdescription", gamedata.serverdescription or "")
+					core.settings:set("server_description", gamedata.serverdescription or "")
 					core.start()
 				end
 			end
@@ -195,7 +195,7 @@ local function main_button_handler(tabview, fields, name, tabdata)
 				if address and port then
 					core.settings:set("address", address)
 					core.settings:set("remote_port", port)
-					core.settings:set("serverdescription", gamedata.serverdescription or "")
+					core.settings:set("server_description", gamedata.serverdescription or "")
 				end
 				tabdata.fav_selected = event.row
 			end
@@ -228,7 +228,7 @@ local function main_button_handler(tabview, fields, name, tabdata)
 		if address and port then
 			core.settings:set("address", address)
 			core.settings:set("remote_port", port)
-			core.settings:set("serverdescription", gamedata.serverdescription or "")
+			core.settings:set("server_description", gamedata.serverdescription or "")
 		end
 
 		tabdata.fav_selected = fav_idx
@@ -245,7 +245,7 @@ local function main_button_handler(tabview, fields, name, tabdata)
 
 		core.settings:set("address", "")
 		core.settings:set("remote_port", "30000")
-		core.settings:set("serverdescription", "")
+		core.settings:set("server_description", "")
 		return true
 	end
 
