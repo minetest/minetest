@@ -1067,9 +1067,11 @@ void Game::run()
 		g_settings->getU16("screen_h"));
 
 #if USE_DISCORD
+	/*
 	g_discord->setDetails("In Game");
 	g_discord->setState("");
 	g_discord->updatePresence();
+	*/
 #endif
 
 	while (RenderingEngine::run()

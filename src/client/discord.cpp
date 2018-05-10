@@ -33,7 +33,7 @@ struct DataRichPresence
 	std::string details = "";
 	uint64_t start_timestamp;
 	std::string large_image_key = "default";
-	std::string small_image_key = "small_default";
+	std::string small_image_key = "";
 	std::string party_id = "";
 	uint32_t party_size = 0;
 	uint32_t party_max = 0;
@@ -71,12 +71,12 @@ void Discord::init()
 
 void Discord::setState(const std::string &state)
 {
-	m_data->state = state;
+	m_data->state = state.substr(0, 128);
 }
 
 void Discord::setDetails(const std::string &details)
 {
-	m_data->details = details;
+	m_data->details = details.substr(0, 128);
 }
 
 void Discord::updatePresence()

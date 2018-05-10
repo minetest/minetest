@@ -51,6 +51,7 @@ protected:
 	bool use_freetype = false;
 	bool random_input = false;
 	std::string address = "";
+	std::string server_description = "";
 	std::string playername = "";
 	std::string password = "";
 	InputHandler *input = nullptr;
