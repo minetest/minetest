@@ -32,6 +32,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "noise.h"
 #include <cctype>
 #include <algorithm>
+#include <clocale>
 
 static Settings main_settings;
 Settings *g_settings = &main_settings;
@@ -118,6 +119,7 @@ std::string Settings::getMultiline(std::istream &is, size_t *num_lines)
 
 bool Settings::readConfigFile(const char *filename)
 {
+	std::setlocale(LC_ALL, "en_US.UTF8");
 	std::ifstream is(filename);
 	if (!is.good())
 		return false;
