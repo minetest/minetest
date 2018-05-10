@@ -99,18 +99,21 @@ void GUIConfirmRegistration::regenerateGui(v2u32 screensize)
 
 #ifdef _MSC_VER
 		int sizeBuffer = sizeof(info_text_buf) -
-				  (info_text_template.length() - 8 + address.length() +
-						  m_playername.length());
+				 (info_text_template.length() - 8 + address.length() +
+						 m_playername.length());
 
 		if (sizeBuffer >= 0) {
-			sprintf(info_text_buf, info_text_template.c_str(), address.c_str(), 
-					m_playername.c_str());
+			sprintf(info_text_buf, info_text_template.c_str(),
+					address.c_str(), m_playername.c_str());
 		} else {
-			warningstream << "the info_text_buf buffer is too small" << std::endl;
+			warningstream << "Failed to generate info_text. Buffer is too "
+					 "small"
+				      << std::endl;
 			int new_size_text_template =
 					(int)info_text_template.size() + (sizeBuffer - 4);
 			if (new_size_text_template > 0) {
-				std::string info_text_template_trunq = info_text_template.substr(0,
+				std::string info_text_template_trunq =
+						info_text_template.substr(0,
 								new_size_text_template);
 				info_text_template_trunq.append("...");
 				sprintf(info_text_buf, info_text_template_trunq.c_str(),
