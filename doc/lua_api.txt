@@ -1962,13 +1962,15 @@ Elements
 
 ### `textarea[<X>,<Y>;<W>,<H>;<name>;<label>;<default>]`
 * Same as fields above, but with multi-line input
-* if the text overflows a vertical scrollbar is added
-* if the name is empty the textarea is readonly, the label is not displayed.
+* If the text overflows, a vertical scrollbar is added.
+* If the name is empty, the textarea is readonly and
+  the background is not shown.
 
 ### `label[<X>,<Y>;<label>]`
 * `x` and `y` work as per field
 * `label` is the text on the label
 * Position and size units are inventory slots
+* If you want to show text with multiple lines, use textarea with empty name.
 
 ### `vertlabel[<X>,<Y>;<label>]`
 * Textual label drawn vertically
