@@ -368,10 +368,11 @@ core.register_node(":ignore", {
 	air_equivalent = true,
 	drop = "",
 	groups = {not_in_creative_inventory=1},
-	-- Prevent placement of ignore (to prevent engine error message spam in logs)
-	-- and destroy itemstack.
 	on_place = function(itemstack, placer, pointed_thing)
-		minetest.chat_send_player(placer:get_player_name(), minetest.colorize("#FF0000", "One does not simply place 'ignore' nodes!"))
+		minetest.chat_send_player(
+				placer:get_player_name(),
+				minetest.colorize("#FF0000",
+				"You can't place 'ignore' nodes!"))
 		return ""
 	end,
 })
