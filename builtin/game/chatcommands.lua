@@ -559,6 +559,14 @@ local function handle_give_command(cmd, giver, receiver, stackstring)
 		return false, "Cannot give an empty item"
 	elseif not itemstack:is_known() then
 		return false, "Cannot give an unknown item"
+	--[[ We forbid giving 'ignore' because it's useless as an item and
+	also a bit dangerous.
+	Note this does NOT make it completely impossible for players to
+	get 'ignore'; they might still obtain it via mods or bugs in mods,
+	so beware. ]]
+	elseif itemstack:get_name() == "ignore" then
+		-- A little humour is good, this is a game, after all. :-)
+		return false, "One does not simpliy give 'ignore' items!"
 	end
 	local receiverref = core.get_player_by_name(receiver)
 	if receiverref == nil then
@@ -576,8 +584,9 @@ local function handle_give_command(cmd, giver, receiver, stackstring)
 	-- The actual item stack string may be different from what the "giver"
 	-- entered (e.g. big numbers are always interpreted as 2^16-1).
 	stackstring = itemstack:to_string()
-	-- easter egg when giving "forbidden" items
-	local you_hacker = itemstack:get_name() == "air" or itemstack:get_name() == "ignore"
+	-- Air is not that useful as an item, but it also does no real harm.
+	-- Thus we do not forbid giving it, but we DO have a snarky comment. ;-)
+	local you_hacker = itemstack:get_name() == "air"
 	local msg
 	if giver == receiver then
 		if you_hacker then
