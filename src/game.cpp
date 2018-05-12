@@ -2333,13 +2333,15 @@ void Game::updateCameraDirection(CameraOrientation *cam, float dtime)
 		}
 #endif
 
-		if (m_first_loop_after_window_activation)
+		if (m_first_loop_after_window_activation) {
 			m_first_loop_after_window_activation = false;
-		else
-			updateCameraOrientation(cam, dtime);
 
-		input->setMousePos((driver->getScreenSize().Width / 2),
-				(driver->getScreenSize().Height / 2));
+			input->setMousePos(driver->getScreenSize().Width / 2,
+				driver->getScreenSize().Height / 2);
+		} else {
+			updateCameraOrientation(cam, dtime);
+		}
+
 	} else {
 
 #ifndef ANDROID
@@ -2361,17 +2363,18 @@ void Game::updateCameraOrientation(CameraOrientation *cam, float dtime)
 		cam->camera_pitch  = g_touchscreengui->getPitch();
 	} else {
 #endif
-
-		s32 dx = input->getMousePos().X - (driver->getScreenSize().Width / 2);
-		s32 dy = input->getMousePos().Y - (driver->getScreenSize().Height / 2);
+		v2s32 center(driver->getScreenSize().Width / 2, driver->getScreenSize().Height / 2);
+		v2s32 dist = input->getMousePos() - center;
 
 		if (m_invert_mouse || camera->getCameraMode() == CAMERA_MODE_THIRD_FRONT) {
-			dy = -dy;
+			dist.Y = -dist.Y;
 		}
 
-		cam->camera_yaw   -= dx * m_cache_mouse_sensitivity;
-		cam->camera_pitch += dy * m_cache_mouse_sensitivity;
+		cam->camera_yaw   -= dist.X * m_cache_mouse_sensitivity;
+		cam->camera_pitch += dist.Y * m_cache_mouse_sensitivity;
 
+		if (dist.X != 0 || dist.Y != 0)
+			input->setMousePos(center.X, center.Y);
 #ifdef HAVE_TOUCHSCREENGUI
 	}
 #endif
