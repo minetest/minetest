@@ -269,8 +269,8 @@ public:
 
 		The id 0 points to a null shader. Its material is EMT_SOLID.
 	*/
-	u32 getShaderIdDirect(const std::string &name,
-		const u8 material_type, const u8 drawtype);
+	virtual u32 getShaderIdDirect(const std::string &name,
+		const u8 material_type, const u8 drawtype) override;
 
 	/*
 		If shader specified by the name pointed by the id doesn't
@@ -281,25 +281,25 @@ public:
 		for processing.
 	*/
 
-	u32 getShader(const std::string &name,
-		const u8 material_type, const u8 drawtype);
+	virtual u32 getShader(const std::string &name,
+		const u8 material_type, const u8 drawtype) override;
 
-	ShaderInfo getShaderInfo(u32 id);
+	virtual ShaderInfo getShaderInfo(u32 id) override;
 
 	// Processes queued shader requests from other threads.
 	// Shall be called from the main thread.
-	void processQueue();
+	virtual void processQueue() override;
 
 	// Insert a shader program into the cache without touching the
 	// filesystem. Shall be called from the main thread.
-	void insertSourceShader(const std::string &name_of_shader,
-		const std::string &filename, const std::string &program);
+	virtual void insertSourceShader(const std::string &name_of_shader,
+		const std::string &filename, const std::string &program) override;
 
 	// Rebuild shaders from the current set of source shaders
 	// Shall be called from the main thread.
-	void rebuildShaders();
+	virtual void rebuildShaders() override;
 
-	void addShaderConstantSetterFactory(IShaderConstantSetterFactory *setter)
+	virtual void addShaderConstantSetterFactory(IShaderConstantSetterFactory *setter) override
 	{
 		m_setter_factories.push_back(setter);
 	}

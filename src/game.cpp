@@ -550,7 +550,7 @@ public:
 		created_nosky.clear();
 	}
 
-	virtual IShaderConstantSetter* create()
+	virtual IShaderConstantSetter* create() override
 	{
 		GameGlobalShaderConstantSetter *scs = new GameGlobalShaderConstantSetter(
 				m_sky, m_force_fog_off, m_fog_range, m_client);

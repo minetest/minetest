@@ -138,10 +138,10 @@ public:
 	virtual ~IWritableShaderSource() = default;
 
 	virtual u32 getShaderIdDirect(const std::string &name,
-		const u8 material_type, const u8 drawtype){return 0;}
-	virtual ShaderInfo getShaderInfo(u32 id){return ShaderInfo();}
+		const u8 material_type, const u8 drawtype) override {return 0;}
+	virtual ShaderInfo getShaderInfo(u32 id) override {return ShaderInfo();}
 	virtual u32 getShader(const std::string &name,
-		const u8 material_type, const u8 drawtype){return 0;}
+		const u8 material_type, const u8 drawtype) override {return 0;}
 
 	virtual void processQueue()=0;
 	virtual void insertSourceShader(const std::string &name_of_shader,
