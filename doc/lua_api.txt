@@ -4869,9 +4869,9 @@ Registered entities
         * `killer`: an `ObjectRef` (can be `nil`)
     * `on_rightclick(self, clicker)`
     * `on_attach_child(self, child)`
-        * `child`: an `ObjectRef` (can be `nil`) of the child that attaches
+        * `child`: an `ObjectRef` of the child that attaches
     * `on_detach_child(self, child)`
-        * `child`: an `ObjectRef` (can be `nil`) of the child that detaches
+        * `child`: an `ObjectRef` of the child that detaches
     * `on_detach(self, parent)`
         * `parent`: an `ObjectRef` (can be `nil`) from where it got detached
         * This happens before the parent object is removed from the world

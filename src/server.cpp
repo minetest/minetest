@@ -2632,6 +2632,9 @@ void Server::DeleteClient(session_t peer_id, ClientDeletionReason reason)
 			PlayerSAO *playersao = player->getPlayerSAO();
 			assert(playersao);
 
+			playersao->clearChildAttachments();
+			playersao->clearParentAttachment();
+
 			// inform connected clients
 			NetworkPacket notice(TOCLIENT_UPDATE_PLAYER_LIST, 0, PEER_ID_INEXISTENT);
 			// (u16) 1 + std::string represents a vector serialization representation
