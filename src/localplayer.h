@@ -45,29 +45,29 @@ public:
 	LocalPlayer(Client *client, const char *name);
 	virtual ~LocalPlayer();
 
-	ClientActiveObject *parent = nullptr;
+	ClientActiveObject *parent;
 
 	// Initialize hp to 0, so that no hearts will be shown if server
 	// doesn't support health points
-	u16 hp = 0;
-	bool isAttached = false;
-	bool touching_ground = false;
+	u16 hp;
+	bool isAttached;
+	bool touching_ground;
 	// This oscillates so that the player jumps a bit above the surface
-	bool in_liquid = false;
+	bool in_liquid;
 	// This is more stable and defines the maximum speed of the player
-	bool in_liquid_stable = false;
+	bool in_liquid_stable;
 	// Gets the viscosity of water to calculate friction
-	u8 liquid_viscosity = 0;
-	bool is_climbing = false;
-	bool swimming_vertical = false;
+	u8 liquid_viscosity;
+	bool is_climbing;
+	bool swimming_vertical;
 
-	float physics_override_speed = 1.0f;
-	float physics_override_jump = 1.0f;
-	float physics_override_gravity = 1.0f;
-	bool physics_override_sneak = true;
-	bool physics_override_sneak_glitch = false;
+	float physics_override_speed;
+	float physics_override_jump;
+	float physics_override_gravity;
+	bool physics_override_sneak;
+	bool physics_override_sneak_glitch;
 	// Temporary option for old move code
-	bool physics_override_new_move = true;
+	bool physics_override_new_move;
 
 	v3f overridePosition;
 
@@ -86,26 +86,26 @@ public:
 	// Used to check if anything changed and prevent sending packets if not
 	v3f last_position;
 	v3f last_speed;
-	float last_pitch = 0.0f;
-	float last_yaw = 0.0f;
-	unsigned int last_keyPressed = 0;
-	u8 last_camera_fov = 0;
-	u8 last_wanted_range = 0;
+	float last_pitch;
+	float last_yaw;
+	unsigned int last_keyPressed;
+	u8 last_camera_fov;
+	u8 last_wanted_range;
 
-	float camera_impact = 0.0f;
+	float camera_impact;
 
-	bool makes_footstep_sound = true;
+	bool makes_footstep_sound;
 
-	int last_animation = NO_ANIM;
+	int last_animation;
 	float last_animation_speed;
 
-	std::string hotbar_image = "";
-	std::string hotbar_selected_image = "";
+	std::string hotbar_image;
+	std::string hotbar_selected_image;
 
-	video::SColor light_color = video::SColor(255, 255, 255, 255);
+	video::SColor light_color;
 
-	float hurt_tilt_timer = 0.0f;
-	float hurt_tilt_strength = 0.0f;
+	float hurt_tilt_timer;
+	float hurt_tilt_strength;
 
 	GenericCAO *getCAO() const { return m_cao; }
 
@@ -148,35 +148,34 @@ private:
 	v3f m_position;
 	v3s16 m_standing_node;
 
-	v3s16 m_sneak_node = v3s16(32767, 32767, 32767);
+	v3s16 m_sneak_node;
 	// Stores the top bounding box of m_sneak_node
-	aabb3f m_sneak_node_bb_top = aabb3f(0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
+	aabb3f m_sneak_node_bb_top;
 	// Whether the player is allowed to sneak
-	bool m_sneak_node_exists = false;
+	bool m_sneak_node_exists;
 	// Whether a "sneak ladder" structure is detected at the players pos
 	// see detectSneakLadder() in the .cpp for more info (always false if disabled)
-	bool m_sneak_ladder_detected = false;
+	bool m_sneak_ladder_detected;
 
 	// ***** Variables for temporary option of the old move code *****
 	// Stores the max player uplift by m_sneak_node
-	f32 m_sneak_node_bb_ymax = 0.0f;
+	f32 m_sneak_node_bb_ymax;
 	// Whether recalculation of m_sneak_node and its top bbox is needed
-	bool m_need_to_get_new_sneak_node = true;
+	bool m_need_to_get_new_sneak_node;
 	// Node below player, used to determine whether it has been removed,
 	// and its old type
-	v3s16 m_old_node_below = v3s16(32767, 32767, 32767);
-	std::string m_old_node_below_type = "air";
+	v3s16 m_old_node_below;
+	std::string m_old_node_below_type;
 	// ***** End of variables for temporary option *****
 
-	bool m_can_jump = false;
-	u16 m_breath = PLAYER_MAX_BREATH;
-	f32 m_yaw = 0.0f;
-	f32 m_pitch = 0.0f;
-	bool camera_barely_in_ceiling = false;
-	aabb3f m_collisionbox = aabb3f(-BS * 0.30f, 0.0f, -BS * 0.30f, BS * 0.30f,
-			BS * 1.75f, BS * 0.30f);
+	bool m_can_jump;
+	u16 m_breath;
+	f32 m_yaw;
+	f32 m_pitch;
+	bool camera_barely_in_ceiling;
+	aabb3f m_collisionbox;
 
-	GenericCAO *m_cao = nullptr;
+	GenericCAO *m_cao;
 	Client *m_client;
 };
 
