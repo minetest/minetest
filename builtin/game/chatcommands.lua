@@ -579,24 +579,13 @@ local function handle_give_command(cmd, giver, receiver, stackstring)
 	-- The actual item stack string may be different from what the "giver"
 	-- entered (e.g. big numbers are always interpreted as 2^16-1).
 	stackstring = itemstack:to_string()
-	-- Air is not that useful as an item, but it also does no real harm.
-	local you_hacker = itemstack:get_name() == "air"
-	local msg
 	if giver == receiver then
-		if you_hacker then
-			msg = "%q %sadded to inventory (you hacker, you!)."
-		else
-			msg = "%q %sadded to inventory."
-		end
+		local msg = "%q %sadded to inventory."
 		return true, msg:format(stackstring, partiality)
 	else
 		core.chat_send_player(receiver, ("%q %sadded to inventory.")
 				:format(stackstring, partiality))
-		if you_hacker then
-			msg = "%q %sadded to %s's inventory (you hacker, you!)."
-		else
-			msg = "%q %sadded to %s's inventory."
-		end
+		local msg = "%q %sadded to %s's inventory."
 		return true, msg:format(stackstring, partiality, receiver)
 	end
 end
