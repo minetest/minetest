@@ -354,6 +354,8 @@ ServerActiveObject* LuaEntitySAO::create(ServerEnvironment *env, v3f pos,
 	s16 hp = 1;
 	v3f velocity;
 	float yaw = 0;
+        float pitch = 0;
+        float roll = 0;
 	if (!data.empty()) {
 		std::istringstream is(data, std::ios::binary);
 		// read version

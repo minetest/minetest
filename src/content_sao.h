@@ -164,6 +164,8 @@ private:
 	v3f m_acceleration;
 
 	float m_last_sent_yaw = 0.0f;
+        float m_last_sent_pitch = 0.0f;
+        float m_last_sent_roll = 0.0f;
 	v3f m_last_sent_position;
 	v3f m_last_sent_velocity;
 	float m_last_sent_position_timer = 0.0f;
