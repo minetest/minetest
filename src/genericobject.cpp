@@ -41,6 +41,8 @@ std::string gob_cmd_update_position(
 	v3f velocity,
 	v3f acceleration,
 	f32 yaw,
+        f32 pitch,
+        f32 roll,
 	bool do_interpolate,
 	bool is_movement_end,
 	f32 update_interval
@@ -56,6 +58,10 @@ std::string gob_cmd_update_position(
 	writeV3F1000(os, acceleration);
 	// yaw
 	writeF1000(os, yaw);
+        // pitch
+	writeF1000(os, pitch);
+        // roll
+	writeF1000(os, roll);
 	// do_interpolate
 	writeU8(os, do_interpolate);
 	// is_end_position (for interpolation)

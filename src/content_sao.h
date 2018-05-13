@@ -33,10 +33,18 @@ public:
 	virtual ~UnitSAO() = default;
 
 	virtual void setYaw(const float yaw) { m_yaw = yaw; }
+        virtual void setPitch(const float pitch) { m_pitch = pitch; }
+        virtual void setRoll(const float roll) { m_roll = roll; }
 	float getYaw() const { return m_yaw; };
 	f32 getRadYaw() const { return m_yaw * core::DEGTORAD; }
 	// Deprecated
 	f32 getRadYawDep() const { return (m_yaw + 90.) * core::DEGTORAD; }
+        
+        float getPitch() const { return m_pitch; };
+	f32 getRadPitch() const { return m_pitch * core::DEGTORAD; }
+        float getRoll() const { return m_roll; };
+	f32 getRadRoll() const { return m_roll * core::DEGTORAD; }
+
 
 	s16 getHP() const { return m_hp; }
 	// Use a function, if isDead can be defined by other conditions
@@ -62,6 +70,8 @@ public:
 protected:
 	s16 m_hp = -1;
 	float m_yaw = 0.0f;
+        float m_pitch = 0.0f;
+        float m_roll = 0.0f;
 
 	bool m_properties_sent = true;
 	struct ObjectProperties m_prop;

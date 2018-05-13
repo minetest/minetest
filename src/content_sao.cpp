@@ -369,6 +369,8 @@ ServerActiveObject* LuaEntitySAO::create(ServerEnvironment *env, v3f pos,
 			hp = readS16(is);
 			velocity = readV3F1000(is);
 			yaw = readF1000(is);
+                        pitch = readF1000(is);
+                        roll = readF1000(is);
 		}
 	}
 	// create object
@@ -378,6 +380,8 @@ ServerActiveObject* LuaEntitySAO::create(ServerEnvironment *env, v3f pos,
 	sao->m_hp = hp;
 	sao->m_velocity = velocity;
 	sao->m_yaw = yaw;
+        sao->m_pitch = pitch;
+        sao->m_roll = roll;
 	return sao;
 }
 
@@ -477,7 +481,9 @@ void LuaEntitySAO::step(float dtime, bool send_recommended)
 		move_d += m_last_sent_move_precision;
 		float vel_d = m_velocity.getDistanceFrom(m_last_sent_velocity);
 		if (move_d > minchange || vel_d > minchange ||
-				std::fabs(m_yaw - m_last_sent_yaw) > 1.0) {
+				std::fabs(m_yaw - m_last_sent_yaw) || 
+                                std::fabs(m_pitch - m_last_sent_pitch) || 
+                                std::fabs(m_roll - m_last_sent_roll) > 1.0) {
 			sendPosition(true, false);
 		}
 	}
@@ -540,6 +546,8 @@ std::string LuaEntitySAO::getClientInitializationData(u16 protocol_version)
 	writeS16(os, getId()); //id
 	writeV3F1000(os, m_base_position);
 	writeF1000(os, m_yaw);
+        writeF1000(os, m_pitch);
+        writeF1000(os, m_roll);
 	writeS16(os, m_hp);
 
 	std::ostringstream msg_os(std::ios::binary);
@@ -596,6 +604,10 @@ void LuaEntitySAO::getStaticData(std::string *result) const
 	writeV3F1000(os, m_velocity);
 	// yaw
 	writeF1000(os, m_yaw);
+        //pitch
+        writeF1000(os, m_pitch);
+        //roll
+        writeF1000(os, m_roll);
 	*result = os.str();
 }
 
@@ -779,6 +791,8 @@ void LuaEntitySAO::sendPosition(bool do_interpolate, bool is_movement_end)
 			m_last_sent_position);
 	m_last_sent_position_timer = 0;
 	m_last_sent_yaw = m_yaw;
+        m_last_sent_pitch = m_pitch;
+        m_last_sent_roll = m_roll;
 	m_last_sent_position = m_base_position;
 	m_last_sent_velocity = m_velocity;
 	//m_last_sent_acceleration = m_acceleration;
@@ -790,6 +804,8 @@ void LuaEntitySAO::sendPosition(bool do_interpolate, bool is_movement_end)
 		m_velocity,
 		m_acceleration,
 		m_yaw,
+                m_pitch,
+                m_roll,
 		do_interpolate,
 		is_movement_end,
 		update_interval
@@ -933,6 +949,8 @@ std::string PlayerSAO::getClientInitializationData(u16 protocol_version)
 	writeS16(os, getId()); //id
 	writeV3F1000(os, m_base_position);
 	writeF1000(os, m_yaw);
+        writeF1000(os, m_pitch);
+        writeF1000(os, m_roll);
 	writeS16(os, getHP());
 
 	std::ostringstream msg_os(std::ios::binary);
@@ -1099,6 +1117,8 @@ void PlayerSAO::step(float dtime, bool send_recommended)
 			v3f(0.0f, 0.0f, 0.0f),
 			v3f(0.0f, 0.0f, 0.0f),
 			m_yaw,
+                        m_pitch,
+                        m_roll,
 			true,
 			false,
 			update_interval

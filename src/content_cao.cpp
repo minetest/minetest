@@ -721,6 +721,8 @@ void GenericCAO::updateNodePos()
 		if (node != m_spritenode) { // rotate if not a sprite
 			v3f rot = node->getRotation();
 			rot.Y = -m_yaw;
+                        rot.X = -m_pitch;
+                        rot.Z = -m_roll;
 			node->setRotation(rot);
 		}
 	}
@@ -1300,10 +1302,14 @@ void GenericCAO::processMessage(const std::string &data)
 		m_position = readV3F1000(is);
 		m_velocity = readV3F1000(is);
 		m_acceleration = readV3F1000(is);
-		if (std::fabs(m_prop.automatic_rotate) < 0.001f)
+		if (std::fabs(m_prop.automatic_rotate) < 0.001f){
 			m_yaw = readF1000(is);
-		else
+                        m_pitch = readF1000(is);
+                        m_roll = readF1000(is);
+                }
+		else{
 			readF1000(is);
+                }
 		bool do_interpolate = readU8(is);
 		bool is_end_position = readU8(is);
 		float update_interval = readF1000(is);
