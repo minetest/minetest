@@ -60,6 +60,8 @@ struct JoystickButtonCmb : public JoystickCombination {
 		this->key = key;
 	}
 
+	virtual ~JoystickButtonCmb() {}
+
 	virtual bool isTriggered(const irr::SEvent::SJoystickEvent &ev) const;
 
 	u32 filter_mask;
