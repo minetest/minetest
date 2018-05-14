@@ -44,10 +44,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <cmath>
 
 
-static FlagDesc flagdesc_mapgen_valleys[] = {
-	{"altitude_chill", MGVALLEYS_ALT_CHILL},
-	{"humid_rivers",   MGVALLEYS_HUMID_RIVERS},
-	{NULL,             0}
+FlagDesc flagdesc_mapgen_valleys[] = {
+	{"altitude_chill",   MGVALLEYS_ALT_CHILL},
+	{"humid_rivers",     MGVALLEYS_HUMID_RIVERS},
+	{"vary_river_depth", MGVALLEYS_VARY_RIVER_DEPTH},
+	{NULL,               0}
 };
 
 
@@ -475,14 +476,15 @@ int MapgenValleys::generateTerrain()
 		if (surface_y > surface_max_y)
 			surface_max_y = std::ceil(surface_y);
 
-		if (humid_rivers) {
-			// Derive heat from (base) altitude. This will be most correct
-			// at rivers, since other surface heights may vary below.
-			if (use_altitude_chill && (surface_y > 0.0f || river_y > 0.0f))
-				t_heat -= alt_to_heat *
-					std::fmax(surface_y, river_y) / altitude_chill;
+		// Derive heat from (base) altitude. This will be most correct
+		// at rivers, since other surface heights may vary below.
+		if (humid_rivers && use_altitude_chill &&
+				(surface_y > 0.0f || river_y > 0.0f))
+			t_heat -= alt_to_heat *
+				std::fmax(surface_y, river_y) / altitude_chill;
 
-			// If humidity is low or heat is high, lower the water table
+		// If humidity is low, lower the rivers according to heat
+		if (spflags & MGVALLEYS_VARY_RIVER_DEPTH) {
 			float delta = m_bgen->humidmap[index_2d] - 50.0f;
 			if (delta < 0.0f) {
 				float t_evap = (t_heat - 32.0f) / evaporation;

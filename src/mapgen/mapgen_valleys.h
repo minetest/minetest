@@ -29,8 +29,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mapgen.h"
 
 ////////////// Mapgen Valleys flags
-#define MGVALLEYS_ALT_CHILL    0x01
-#define MGVALLEYS_HUMID_RIVERS 0x02
+#define MGVALLEYS_ALT_CHILL        0x01
+#define MGVALLEYS_HUMID_RIVERS     0x02
+#define MGVALLEYS_VARY_RIVER_DEPTH 0x04
 
 // Feed only one variable into these
 #define MYSQUARE(x) (x) * (x)
@@ -39,10 +40,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 class BiomeManager;
 class BiomeGenOriginal;
 
+extern FlagDesc flagdesc_mapgen_valleys[];
+
 
 struct MapgenValleysParams : public MapgenParams {
-	u32 spflags = MGVALLEYS_HUMID_RIVERS | MGVALLEYS_ALT_CHILL;
-	u16 altitude_chill = 90; // The altitude at which temperature drops by 20C
+	u32 spflags = MGVALLEYS_ALT_CHILL | MGVALLEYS_HUMID_RIVERS |
+		MGVALLEYS_VARY_RIVER_DEPTH;
+	u16 altitude_chill = 90; // The altitude at which heat has dropped by 20
 	u16 river_depth = 4; // How deep to carve river channels
 	u16 river_size = 5; // How wide to make rivers
 
@@ -88,7 +92,8 @@ struct TerrainNoise {
 class MapgenValleys : public MapgenBasic {
 public:
 
-	MapgenValleys(int mapgenid, MapgenValleysParams *params, EmergeManager *emerge);
+	MapgenValleys(int mapgenid, MapgenValleysParams *params,
+		EmergeManager *emerge);
 	~MapgenValleys();
 
 	virtual MapgenType getType() const { return MAPGEN_VALLEYS; }
