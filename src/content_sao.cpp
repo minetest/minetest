@@ -1166,8 +1166,12 @@ void PlayerSAO::setBasePosition(const v3f &position)
 
 	// This needs to be ran for attachments too
 	ServerActiveObject::setBasePosition(position);
-	m_env->updateActiveObject(this);
-	m_position_not_sent = true;
+
+	// Updating is not wanted/required for player migration
+	if (m_env) {
+		m_env->updateActiveObject(this);
+		m_position_not_sent = true;
+	}
 }
 
 void PlayerSAO::setPos(const v3f &pos)
