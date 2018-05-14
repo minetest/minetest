@@ -33,8 +33,8 @@ public:
 	virtual ~UnitSAO() = default;
 
 	virtual void setYaw(const float yaw) { m_yaw = yaw; }
-        virtual void setPitch(const float pitch) { m_pitch = pitch; }
-        virtual void setRoll(const float roll) { m_roll = roll; }
+	virtual void setPitch(const float pitch) { m_pitch = pitch; }
+	virtual void setRoll(const float roll) { m_roll = roll; }
 
 	float getYaw() const { return m_yaw; };
 	f32 getRadYaw() const { return m_yaw * core::DEGTORAD; }

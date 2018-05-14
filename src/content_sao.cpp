@@ -483,9 +483,9 @@ void LuaEntitySAO::step(float dtime, bool send_recommended)
 		move_d += m_last_sent_move_precision;
 		float vel_d = m_velocity.getDistanceFrom(m_last_sent_velocity);
 		if (move_d > minchange || vel_d > minchange ||
-				std::fabs(m_yaw - m_last_sent_yaw) ||
-				std::fabs(m_pitch - m_last_sent_pitch) ||
-				std::fabs(m_roll - m_last_sent_roll) > 1.0) {
+				std::fabs(m_yaw - m_last_sent_yaw)     > 1.0f ||
+				std::fabs(m_pitch - m_last_sent_pitch) > 1.0f ||
+				std::fabs(m_roll - m_last_sent_roll)   > 1.0f) {
 			sendPosition(true, false);
 		}
 	}
