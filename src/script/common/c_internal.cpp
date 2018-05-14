@@ -153,7 +153,9 @@ void log_deprecated(lua_State *L, const std::string &message)
 		warningstream << message;
 		if (L) { // L can be NULL if we get called from scripting_game.cpp
 			lua_Debug ar;
-			FATAL_ERROR_IF(!lua_getstack(L, 2, &ar), "lua_getstack() failed");
+
+			if (!lua_getstack(L, 2, &ar))
+				FATAL_ERROR_IF(!lua_getstack(L, 1, &ar), "lua_getstack() failed");
 			FATAL_ERROR_IF(!lua_getinfo(L, "Sl", &ar), "lua_getinfo() failed");
 			warningstream << " (at " << ar.short_src << ":" << ar.currentline << ")";
 		}
