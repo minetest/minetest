@@ -105,7 +105,7 @@ core.register_chatcommand("privs", {
 
 core.register_chatcommand("hasprivs", {
 	params = "<priv>",
-	description = "Returns a list of all online players with the priv passed as param. e.g. /hasprivs fly",
+	description = "Return list of all online players with privilege.",
 	privs = {basic_privs = true},
 	func = function(caller, param)
 		param = param:trim()
