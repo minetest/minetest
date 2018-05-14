@@ -35,6 +35,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "renderingengine.h"
 #include "network/networkexceptions.h"
 
+#if USE_DISCORD
+	#include "client/discord.h"
+#endif
+
 #if USE_SOUND
 	#include "sound_openal.h"
 #endif
@@ -68,6 +72,11 @@ ClientLauncher::~ClientLauncher()
 #if USE_SOUND
 	g_sound_manager_singleton.reset();
 #endif
+
+#if USE_DISCORD
+	g_discord.reset();
+#endif
+
 }
 
 
@@ -149,6 +158,14 @@ bool ClientLauncher::run(GameParams &game_params, const Settings &cmd_args)
 	scene::ICameraSceneNode* camera;
 	camera = g_menucloudsmgr->addCameraSceneNode(NULL, v3f(0, 0, 0), v3f(0, 60, 100));
 	camera->setFarValue(10000);
+
+	/*
+		Discord Rich Presence
+	*/
+#if USE_DISCORD
+	g_discord = Discord::createDiscordSingleton();
+	g_discord->init();
+#endif
 
 	/*
 		GUI stuff
@@ -308,6 +325,8 @@ void ClientLauncher::init_args(GameParams &game_params, const Settings &cmd_args
 	if (cmd_args.exists("name"))
 		playername = cmd_args.get("name");
 
+	server_description = g_settings->get("server_description");
+
 	list_video_modes = cmd_args.getFlag("videomodes");
 
 	use_freetype = g_settings->getBool("freetype");
@@ -357,6 +376,7 @@ bool ClientLauncher::launch_game(std::string &error_message,
 	// Initialize menu data
 	MainMenuData menudata;
 	menudata.address                         = address;
+	menudata.serverdescription               = server_description;
 	menudata.name                            = playername;
 	menudata.password                        = password;
 	menudata.port                            = itos(game_params.socket_port);
@@ -390,6 +410,7 @@ bool ClientLauncher::launch_game(std::string &error_message,
 			return false;
 
 		address = menudata.address;
+		server_description = menudata.serverdescription;
 		int newport = stoi(menudata.port);
 		if (newport != 0)
 			game_params.socket_port = newport;
@@ -435,6 +456,12 @@ bool ClientLauncher::launch_game(std::string &error_message,
 		current_password = "";
 		current_address = "";
 		current_port = myrand_range(49152, 65535);
+
+	#if USE_DISCORD
+		g_discord->setDetails("In Singleplayer");
+		g_discord->setState("");
+		g_discord->updatePresence();
+	#endif
 	} else {
 		g_settings->set("name", playername);
 		if (!address.empty()) {
@@ -444,6 +471,13 @@ bool ClientLauncher::launch_game(std::string &error_message,
 			server["port"] = menudata.port;
 			server["description"] = menudata.serverdescription;
 			ServerList::insert(server);
+
+	#if USE_DISCORD
+			g_discord->setDetails("Playing on " + menudata.address + ":" +
+					      menudata.port + " server");
+			g_discord->setState(menudata.serverdescription);
+			g_discord->updatePresence();
+	#endif
 		}
 	}
 
@@ -498,6 +532,12 @@ bool ClientLauncher::launch_game(std::string &error_message,
 
 void ClientLauncher::main_menu(MainMenuData *menudata)
 {
+#if USE_DISCORD
+	g_discord->setDetails("In Main Menu");
+	g_discord->setState("");
+	g_discord->updatePresence();
+#endif
+
 	bool *kill = porting::signal_handler_killstatus();
 	video::IVideoDriver *driver = RenderingEngine::get_video_driver();
 
