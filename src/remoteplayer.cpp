@@ -43,6 +43,7 @@ RemotePlayer::RemotePlayer(const char *name, IItemDefManager *idef):
 	m_last_chat_message_sent(time(NULL)),
 	m_chat_message_allowance(5.0f),
 	m_message_rate_overhead(0),
+	m_day_night_ratio_do_override(false),
 	hud_hotbar_image(""),
 	hud_hotbar_selected_image("")
 {

@@ -79,6 +79,8 @@ struct JoystickAxisCmb : public JoystickCombination {
 		this->key = key;
 	}
 
+	virtual ~JoystickAxisCmb() {}
+
 	virtual bool isTriggered(const irr::SEvent::SJoystickEvent &ev) const;
 
 	u16 axis_to_compare;

@@ -81,7 +81,7 @@ protected:
 	scene::ISceneManager *smgr;
 	SubgameSpec gamespec;
 	WorldSpec worldspec;
-	bool simple_singleplayer_mode = false;
+	bool simple_singleplayer_mode;
 
 	// These are set up based on the menu and other things
 	// TODO: Are these required since there's already playername, password, etc

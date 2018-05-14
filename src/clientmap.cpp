@@ -314,14 +314,15 @@ struct MeshBufListList
 		// Append to the correct layer
 		std::vector<MeshBufList> &list = lists[layer];
 		const video::SMaterial &m = buf->getMaterial();
-		for (MeshBufList &l : list) {
+		for (std::vector<MeshBufList>::iterator it = list.begin(); it != list.end();
+			++it) {
 			// comparing a full material is quite expensive so we don't do it if
 			// not even first texture is equal
-			if (l.m.TextureLayer[0].Texture != m.TextureLayer[0].Texture)
+			if ((*it).m.TextureLayer[0].Texture != m.TextureLayer[0].Texture)
 				continue;
 
-			if (l.m == m) {
-				l.bufs.push_back(buf);
+			if ((*it).m == m) {
+				(*it).bufs.push_back(buf);
 				return;
 			}
 		}
@@ -356,7 +357,7 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 		Measuring time is very useful for long delays when the
 		machine is swapping a lot.
 	*/
-	std::time_t time1 = time(0);
+	time_t time1 = time(0);
 
 	/*
 		Get animation parameters
@@ -477,11 +478,12 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 		std::vector<MeshBufList> &lists = drawbufs.lists[layer];
 
 		int timecheck_counter = 0;
-		for (MeshBufList &list : lists) {
+		for (std::vector<MeshBufList>::iterator it = lists.begin(); it != lists.end();
+			++it) {
 			timecheck_counter++;
 			if (timecheck_counter > 50) {
 				timecheck_counter = 0;
-				std::time_t time2 = time(0);
+				time_t time2 = time(0);
 				if (time2 > time1 + 4) {
 					infostream << "ClientMap::renderMap(): "
 						"Rendering takes ages, returning."
@@ -490,11 +492,12 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 				}
 			}
 
-			driver->setMaterial(list.m);
+			driver->setMaterial((*it).m);
 
-			for (scene::IMeshBuffer *buf : list.bufs) {
-				driver->drawMeshBuffer(buf);
-				vertex_count += buf->getVertexCount();
+			for (std::vector<scene::IMeshBuffer*>::iterator it2 = (*it).bufs.begin();
+				it2 != (*it).bufs.end(); ++it2) {
+				driver->drawMeshBuffer(*it2);
+				vertex_count += (*it2)->getVertexCount();
 				meshbuffer_count++;
 			}
 		}

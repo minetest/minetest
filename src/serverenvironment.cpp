@@ -266,7 +266,7 @@ void LBMManager::applyLBMs(ServerEnvironment *env, MapBlock *block, u32 stamp)
 		// Cache previous version to speedup lookup which has a very high performance
 		// penalty on each call
 		content_t previous_c{};
-		std::vector<LoadingBlockModifierDef *> *lbm_list = nullptr;
+		std::vector<LoadingBlockModifierDef *> *lbm_list = NULL;
 
 		for (pos.X = 0; pos.X < MAP_BLOCKSIZE; pos.X++)
 			for (pos.Y = 0; pos.Y < MAP_BLOCKSIZE; pos.Y++)

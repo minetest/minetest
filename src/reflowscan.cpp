@@ -28,7 +28,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 ReflowScan::ReflowScan(Map *map, INodeDefManager *ndef) :
 	m_map(map),
 	m_ndef(ndef),
-	m_liquid_queue(nullptr)
+	m_liquid_queue(NULL)
 {
 }
 
@@ -42,7 +42,7 @@ void ReflowScan::scan(MapBlock *block, UniqueQueue<v3s16> *liquid_queue)
 	// scanned block. Blocks are only added to the lookup if they are really
 	// needed. The lookup is indexed manually to use the same index in a
 	// bit-array (of uint32 type) which stores for unloaded blocks that they
-	// were already fetched from Map but were actually nullptr.
+	// were already fetched from Map but were actually NULL.
 	memset(m_lookup, 0, sizeof(m_lookup));
 	int block_idx = 1 + (1 * 9) + (1 * 3);
 	m_lookup[block_idx] = block;

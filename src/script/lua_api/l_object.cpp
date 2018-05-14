@@ -23,6 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "lua_api/l_item.h"
 #include "common/c_converter.h"
 #include "common/c_content.h"
+#include "util/cpp11_container.h"
 #include "log.h"
 #include "tool.h"
 #include "serverobject.h"
@@ -137,10 +138,11 @@ int ObjectRef::l_remove(lua_State *L)
 	if (co->getType() == ACTIVEOBJECT_TYPE_PLAYER)
 		return 0;
 
-	const std::unordered_set<int> &child_ids = co->getAttachmentChildIds();
-	for (int child_id : child_ids) {
+	const UNORDERED_SET<int> &child_ids = co->getAttachmentChildIds();
+	for (UNORDERED_SET<int>::const_iterator it = child_ids.begin(); it != child_ids.end();
+			++it) {
 		// Child can be NULL if it was deleted earlier
-		if (ServerActiveObject *child = env->getActiveObject(child_id))
+		if (ServerActiveObject *child = env->getActiveObject(*it))
 			child->setAttachment(0, "", v3f(0, 0, 0), v3f(0, 0, 0));
 	}
 

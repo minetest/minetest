@@ -53,7 +53,7 @@ protected:
 	friend class LuaItemStack;
 	friend class ModApiItemMod;
 
-	bool getItemCallback(const char *name, const char *callbackname, const v3s16 *p = nullptr);
+	bool getItemCallback(const char *name, const char *callbackname, const v3s16 *p = NULL);
 	void pushPointedThing(const PointedThing& pointed);
 
 };
