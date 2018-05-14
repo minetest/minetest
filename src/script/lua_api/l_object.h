@@ -179,16 +179,16 @@ private:
 	// get_yaw(self)
 	static int l_get_yaw(lua_State *L);
         
-        // set_pitch(self, radians)
+	// set_pitch(self, radians)
 	static int l_set_pitch(lua_State *L);
-        
-        // get_pitch(self)
+
+	// get_pitch(self)
 	static int l_get_pitch(lua_State *L);
-        
-        // set_roll(self, radians)
+
+	// set_roll(self, radians)
 	static int l_set_roll(lua_State *L);
-        
-        // get_roll(self)
+
+	// get_roll(self)
 	static int l_get_roll(lua_State *L);
 
 	// set_texture_mod(self, mod)

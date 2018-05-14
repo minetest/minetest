@@ -75,8 +75,8 @@ private:
 	v3f m_velocity;
 	v3f m_acceleration;
 	float m_yaw = 0.0f;
-        float m_pitch = 0.0f;
-        float m_roll = 0.0f;
+	float m_pitch = 0.0f;
+	float m_roll = 0.0f;
 	s16 m_hp = 1;
 	SmoothTranslator pos_translator;
 	// Spritesheet/animation stuff
@@ -147,11 +147,11 @@ public:
 	{
 		return m_yaw;
 	}
-        inline float getPitch() const
+	inline float getPitch() const
 	{
 		return m_pitch;
 	}
-        inline float getRoll() const
+	inline float getRoll() const
 	{
 		return m_roll;
 	}
