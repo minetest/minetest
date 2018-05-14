@@ -168,7 +168,7 @@ s16 adjustDist(s16 dist, float zoom_fov)
 	// 1.775 ~= 72 * PI / 180 * 1.4, the default FOV on the client.
 	// The heuristic threshold for zooming is half of that.
 	static constexpr const float threshold_fov = 1.775f / 2.0f;
-	if (zoom_fov > threshold_fov)
+	if (zoom_fov < 0.001f || zoom_fov > threshold_fov)
 		return dist;
 
 	return std::round(dist * std::cbrt((1.0f - std::cos(threshold_fov)) /
