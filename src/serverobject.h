@@ -213,7 +213,7 @@ public:
 		- This is usually set to true by the step() method when the object wants
 		  to be deleted but can be set by anything else too.
 	*/
-	bool m_pending_removal = false;
+	bool m_pending_removal;
 
 	/*
 		Same purpose as m_pending_removal but for deactivation.
@@ -222,7 +222,7 @@ public:
 		If this is set alongside with m_pending_removal, removal takes
 		priority.
 	*/
-	bool m_pending_deactivation = false;
+	bool m_pending_deactivation;
 
 	/*
 		A getter that unifies the above to answer the question:
