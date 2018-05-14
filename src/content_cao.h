@@ -147,6 +147,14 @@ public:
 	{
 		return m_yaw;
 	}
+        inline float getPitch() const
+	{
+		return m_pitch;
+	}
+        inline float getRoll() const
+	{
+		return m_roll;
+	}
 
 	const bool isImmortal();
 

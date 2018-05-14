@@ -318,6 +318,8 @@ void GenericCAO::processInitData(const std::string &data)
 		m_id = readU16(is);
 		m_position = readV3F1000(is);
 		m_yaw = readF1000(is);
+                m_pitch = readF1000(is);
+                m_roll = readF1000(is);
 		m_hp = readS16(is);
 		num_messages = readU8(is);
 	} else {
