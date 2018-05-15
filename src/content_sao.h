@@ -241,14 +241,14 @@ public:
 	void setBasePosition(const v3f &position);
 	void setPos(const v3f &pos);
 	void moveTo(v3f pos, bool continuous);
-	void setYaw(const float yaw);
+	void setPlayerYaw(const float yaw);
 	// Data should not be sent at player initialization
 	void setYawAndSend(const float yaw);
-	void setPitch(const float pitch);
+	void setLookPitch(const float pitch);
 	// Data should not be sent at player initialization
-	void setPitchAndSend(const float pitch);
-	f32 getPitch() const { return m_pitch; }
-	f32 getRadPitch() const { return m_pitch * core::DEGTORAD; }
+	void setLookPitchAndSend(const float pitch);
+	f32 getLookPitch() const { return m_pitch; }
+	f32 getRadLookPitch() const { return m_pitch * core::DEGTORAD; }
 	// Deprecated
 	f32 getRadPitchDep() const { return -1.0 * m_pitch * core::DEGTORAD; }
 	void setFov(const float pitch);

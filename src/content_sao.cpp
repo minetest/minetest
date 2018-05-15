@@ -1222,7 +1222,7 @@ void PlayerSAO::moveTo(v3f pos, bool continuous)
 	m_env->getGameDef()->SendMovePlayer(m_peer_id);
 }
 
-void PlayerSAO::setYaw(const float yaw)
+void PlayerSAO::setPlayerYaw(const float yaw)
 {
 	if (m_player && yaw != m_yaw)
 		m_player->setDirty(true);
@@ -1248,11 +1248,11 @@ void PlayerSAO::setWantedRange(const s16 range)
 
 void PlayerSAO::setYawAndSend(const float yaw)
 {
-	setYaw(yaw);
+	setPlayerYaw(yaw);
 	m_env->getGameDef()->SendMovePlayer(m_peer_id);
 }
 
-void PlayerSAO::setPitch(const float pitch)
+void PlayerSAO::setLookPitch(const float pitch)
 {
 	if (m_player && pitch != m_pitch)
 		m_player->setDirty(true);
@@ -1260,9 +1260,9 @@ void PlayerSAO::setPitch(const float pitch)
 	m_pitch = pitch;
 }
 
-void PlayerSAO::setPitchAndSend(const float pitch)
+void PlayerSAO::setLookPitchAndSend(const float pitch)
 {
-	setPitch(pitch);
+	setLookPitch(pitch);
 	m_env->getGameDef()->SendMovePlayer(m_peer_id);
 }
 
