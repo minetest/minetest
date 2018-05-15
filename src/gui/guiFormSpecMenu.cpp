@@ -3033,13 +3033,13 @@ bool GUIFormSpecMenu::preprocessEvent(const SEvent& event)
 
 			std::string field_name = getNameByID(hovered->getID());
 			/* read-only field */
-			if (field_name == "")
+			if (field_name.empty())
 				return retval;
 
 			m_JavaDialogFieldName = field_name;
 			std::string message   = gettext("Enter ");
 			std::string label     = wide_to_utf8(getLabelByID(hovered->getID()));
-			if (label == "")
+			if (label.empty())
 				label = "text";
 			message += gettext(label) + ":";
 
