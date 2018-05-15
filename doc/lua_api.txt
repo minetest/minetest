@@ -2613,7 +2613,7 @@ operations such as `minetest.colorize` which are also concatenation.
 
 ### Translation file format
 A translation file has the suffix `.[lang].tr`, where `[lang]` is the language
-it corresponds to.
+it corresponds to. It must be put into the `locale` subdirectory of the mod.
 The file should be a text file, with the following format:
 
 * Lines beginning with `# textdomain:` (the space is significant) can be used
