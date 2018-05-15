@@ -1306,11 +1306,14 @@ void GenericCAO::processMessage(const std::string &data)
 		m_acceleration = readV3F1000(is);
 		if (std::fabs(m_prop.automatic_rotate) < 0.001f) {
 			m_yaw = readF1000(is);
-			m_pitch = readF1000(is);
-			m_roll = readF1000(is);
 		} else {
 			readF1000(is);
 		}
+
+		// Independent of automatic rotate, always update
+		m_pitch = readF1000(is);
+		m_roll = readF1000(is);
+
 		bool do_interpolate = readU8(is);
 		bool is_end_position = readU8(is);
 		float update_interval = readF1000(is);

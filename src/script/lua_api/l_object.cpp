@@ -894,9 +894,9 @@ int ObjectRef::l_set_yaw(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
 	LuaEntitySAO *co = getluaobject(ref);
-	if (!co) 
+	if (!co)
 	    return 0;
-	
+
 	float yaw = luaL_checknumber(L, 2) * core::RADTODEG;
 	co->setYaw(yaw);
 	return 0;
@@ -908,7 +908,7 @@ int ObjectRef::l_get_yaw(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
 	LuaEntitySAO *co = getluaobject(ref);
-	if (!co) 
+	if (!co)
 	    return 0;
 
 	float yaw = co->getYaw() * core::DEGTORAD;
@@ -922,9 +922,9 @@ int ObjectRef::l_set_pitch(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
 	LuaEntitySAO *co = getluaobject(ref);
-	if (!co) 
+	if (!co)
 	    return 0;
-	
+
 	float pitch = luaL_checknumber(L, 2) * core::RADTODEG;
 	co->setPitch(pitch);
 	return 0;
@@ -936,7 +936,7 @@ int ObjectRef::l_get_pitch(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
 	LuaEntitySAO *co = getluaobject(ref);
-	if (!co) 
+	if (!co)
 	    return 0;
 
 	float pitch = co->getPitch() * core::DEGTORAD;
@@ -950,9 +950,9 @@ int ObjectRef::l_set_roll(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
 	LuaEntitySAO *co = getluaobject(ref);
-	if (!co) 
+	if (!co)
 	    return 0;
-	
+
 	float roll = luaL_checknumber(L, 2) * core::RADTODEG;
 	co->setRoll(roll);
 	return 0;
@@ -964,7 +964,7 @@ int ObjectRef::l_get_roll(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
 	LuaEntitySAO *co = getluaobject(ref);
-	if (!co) 
+	if (!co)
 	    return 0;
 
 	float roll = co->getRoll() * core::DEGTORAD;

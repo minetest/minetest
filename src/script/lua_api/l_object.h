@@ -178,7 +178,7 @@ private:
 
 	// get_yaw(self)
 	static int l_get_yaw(lua_State *L);
-        
+
 	// set_pitch(self, radians)
 	static int l_set_pitch(lua_State *L);
 

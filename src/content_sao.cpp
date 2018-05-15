@@ -606,9 +606,9 @@ void LuaEntitySAO::getStaticData(std::string *result) const
 	writeV3F1000(os, m_velocity);
 	// yaw
 	writeF1000(os, m_yaw);
-	//pitch
+	// pitch
 	writeF1000(os, m_pitch);
-	//roll
+	// roll
 	writeF1000(os, m_roll);
 	*result = os.str();
 }
@@ -948,7 +948,7 @@ std::string PlayerSAO::getClientInitializationData(u16 protocol_version)
 	writeU8(os, 1); // version
 	os << serializeString(m_player->getName()); // name
 	writeU8(os, 1); // is_player
-	writeS16(os, getId()); //id
+	writeS16(os, getId()); // id
 	writeV3F1000(os, m_base_position);
 	writeF1000(os, m_yaw);
 	writeF1000(os, m_pitch);
@@ -1227,6 +1227,7 @@ void PlayerSAO::setPlayerYaw(const float yaw)
 	if (m_player && yaw != m_yaw)
 		m_player->setDirty(true);
 
+	// Set player model yaw, not view
 	UnitSAO::setYaw(yaw);
 }
 
