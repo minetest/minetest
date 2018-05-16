@@ -685,6 +685,12 @@ end
 -- Returns the exact coordinate of a pointed surface
 --------------------------------------------------------------------------------
 function core.pointed_thing_to_face_pos(placer, pointed_thing)
+	-- Avoid crash in some situations when player is inside a node, causing
+	-- 'above' to equal 'under'.
+	if vector.equals(pointed_thing.above, pointed_thing.under) then
+		return pointed_thing.under
+	end
+
 	local eye_height = placer:get_properties().eye_height
 	local eye_offset_first = placer:get_eye_offset()
 	local node_pos = pointed_thing.under
