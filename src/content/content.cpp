@@ -98,6 +98,9 @@ void parseContentInfo(ContentSpec &spec)
 
 		if (conf.exists("author"))
 			spec.author = conf.get("author");
+
+		if (conf.exists("release"))
+			spec.release = conf.getS32("release");
 	}
 
 	if (spec.desc.empty()) {

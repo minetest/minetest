@@ -116,13 +116,17 @@ SubgameSpec findSubgame(const std::string &id)
 	if (conf.exists("author"))
 		game_author = conf.get("author");
 
+	int game_release = 0;
+	if (conf.exists("release"))
+		game_release = conf.getS32("release");
+
 	std::string menuicon_path;
 #ifndef SERVER
 	menuicon_path = getImagePath(
 			game_path + DIR_DELIM + "menu" + DIR_DELIM + "icon.png");
 #endif
 	return SubgameSpec(id, game_path, gamemod_path, mods_paths, game_name,
-			menuicon_path, game_author);
+			menuicon_path, game_author, game_release);
 }
 
 SubgameSpec findWorldSubgame(const std::string &world_path)

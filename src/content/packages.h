@@ -20,6 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #pragma once
 #include "config.h"
 #include "convert_json.h"
+#include "irrlichttypes.h"
 
 struct Package
 {
@@ -30,12 +31,13 @@ struct Package
 
 	std::string shortDesc;
 	std::string url; // download URL
+	u32 release;
 	std::vector<std::string> screenshots;
 
 	bool valid()
 	{
 		return !(name.empty() || title.empty() || author.empty() ||
-				type.empty() || url.empty());
+				type.empty() || url.empty() || release <= 0);
 	}
 };
 
