@@ -27,6 +27,10 @@ local function run_hpchangereason_tests(player)
 	assert(expect == nil)
 end
 minetest.register_on_player_hpchange(function(player, hp, reason)
+	if not expect then
+		return
+	end
+
 	for key, value in pairs(reason) do
 		assert(expect[key] == value)
 	end

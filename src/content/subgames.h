@@ -30,6 +30,7 @@ struct SubgameSpec
 	std::string id;
 	std::string name;
 	std::string author;
+	int release;
 	std::string path;
 	std::string gamemods_path;
 	std::set<std::string> addon_mods_paths;
@@ -41,9 +42,9 @@ struct SubgameSpec
 					std::set<std::string>(),
 			const std::string &name = "",
 			const std::string &menuicon_path = "",
-			const std::string &author = "") :
+			const std::string &author = "", int release = 0) :
 			id(id),
-			name(name), author(author), path(path),
+			name(name), author(author), release(release), path(path),
 			gamemods_path(gamemods_path), addon_mods_paths(addon_mods_paths),
 			menuicon_path(menuicon_path)
 	{

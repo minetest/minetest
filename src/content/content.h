@@ -20,11 +20,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #pragma once
 #include "config.h"
 #include "convert_json.h"
+#include "irrlichttypes.h"
 
 struct ContentSpec
 {
 	std::string type;
 	std::string author;
+	u32 release = 0;
 	std::string name;
 	std::string desc;
 	std::string path;
