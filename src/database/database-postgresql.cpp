@@ -553,7 +553,7 @@ bool PlayerDatabasePostgreSQL::loadPlayer(RemotePlayer *player, PlayerSAO *sao)
 		pg_to_float(results, 0, 3),
 		pg_to_float(results, 0, 4))
 	);
-	sao->setHPRaw((s16) pg_to_int(results, 0, 5));
+	sao->setHPRaw((u16) pg_to_int(results, 0, 5));
 	sao->setBreath((u16) pg_to_int(results, 0, 6), false);
 
 	PQclear(results);

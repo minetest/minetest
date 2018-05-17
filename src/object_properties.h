@@ -27,7 +27,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 struct ObjectProperties
 {
-	s16 hp_max = 1;
+	u16 hp_max = 1;
 	u16 breath_max = 0;
 	bool physical = false;
 	bool collideWithObjects = true;

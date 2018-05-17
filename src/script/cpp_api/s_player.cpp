@@ -77,8 +77,8 @@ bool ScriptApiPlayer::on_punchplayer(ServerActiveObject *player,
 	return readParam<bool>(L, -1);
 }
 
-s16 ScriptApiPlayer::on_player_hpchange(ServerActiveObject *player,
-	s16 hp_change, const PlayerHPChangeReason &reason)
+s32 ScriptApiPlayer::on_player_hpchange(ServerActiveObject *player,
+	s32 hp_change, const PlayerHPChangeReason &reason)
 {
 	SCRIPTAPI_PRECHECKHEADER
 

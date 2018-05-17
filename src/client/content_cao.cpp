@@ -371,7 +371,7 @@ void GenericCAO::processInitData(const std::string &data)
 	m_id = readU16(is);
 	m_position = readV3F32(is);
 	m_rotation = readV3F32(is);
-	m_hp = readS16(is);
+	m_hp = readU16(is);
 	const u8 num_messages = readU8(is);
 
 	for (int i = 0; i < num_messages; i++) {
@@ -1488,11 +1488,10 @@ void GenericCAO::processMessage(const std::string &data)
 
 		updateAttachments();
 	} else if (cmd == GENERIC_CMD_PUNCHED) {
-		/*s16 damage =*/ readS16(is);
-		s16 result_hp = readS16(is);
+		u16 result_hp = readU16(is);
 
 		// Use this instead of the send damage to not interfere with prediction
-		s16 damage = m_hp - result_hp;
+		s32 damage = (s32)m_hp - result_hp;
 
 		m_hp = result_hp;
 
@@ -1523,16 +1522,6 @@ void GenericCAO::processMessage(const std::string &data)
 			std::string name = deSerializeString(is);
 			int rating = readS16(is);
 			m_armor_groups[name] = rating;
-		}
-	} else if (cmd == GENERIC_CMD_UPDATE_NAMETAG_ATTRIBUTES) {
-		// Deprecated, for backwards compatibility only.
-		readU8(is); // version
-		m_prop.nametag_color = readARGB8(is);
-		if (m_nametag != NULL) {
-			m_nametag->nametag_color = m_prop.nametag_color;
-			v3f pos;
-			pos.Y = m_prop.collisionbox.MaxEdge.Y + 0.3f;
-			m_nametag->nametag_pos = pos;
 		}
 	} else if (cmd == GENERIC_CMD_SPAWN_INFANT) {
 		u16 child_id = readU16(is);

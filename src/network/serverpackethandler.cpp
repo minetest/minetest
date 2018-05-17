@@ -776,7 +776,7 @@ void Server::handleCommand_ChatMessage(NetworkPacket* pkt)
 
 void Server::handleCommand_Damage(NetworkPacket* pkt)
 {
-	u8 damage;
+	u16 damage;
 
 	*pkt >> damage;
 
@@ -812,7 +812,7 @@ void Server::handleCommand_Damage(NetworkPacket* pkt)
 				<< std::endl;
 
 		PlayerHPChangeReason reason(PlayerHPChangeReason::FALL);
-		playersao->setHP(playersao->getHP() - damage, reason);
+		playersao->setHP((s32)playersao->getHP() - damage, reason);
 		SendPlayerHPOrDie(playersao, reason);
 	}
 }

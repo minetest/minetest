@@ -92,13 +92,11 @@ std::string gob_cmd_set_sprite(
 	return os.str();
 }
 
-std::string gob_cmd_punched(s16 damage, s16 result_hp)
+std::string gob_cmd_punched(u16 result_hp)
 {
 	std::ostringstream os(std::ios::binary);
 	// command
 	writeU8(os, GENERIC_CMD_PUNCHED);
-	// damage
-	writeS16(os, damage);
 	// result_hp
 	writeS16(os, result_hp);
 	return os.str();
@@ -181,17 +179,6 @@ std::string gob_cmd_update_attachment(int parent_id, const std::string &bone,
 	os<<serializeString(bone);
 	writeV3F32(os, position);
 	writeV3F32(os, rotation);
-	return os.str();
-}
-
-std::string gob_cmd_update_nametag_attributes(video::SColor color)
-{
-	std::ostringstream os(std::ios::binary);
-	// command
-	writeU8(os, GENERIC_CMD_UPDATE_NAMETAG_ATTRIBUTES);
-	// parameters
-	writeU8(os, 1); // version for forward compatibility
-	writeARGB8(os, color);
 	return os.str();
 }
 

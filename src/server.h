@@ -376,7 +376,6 @@ private:
 	void SendBreath(session_t peer_id, u16 breath);
 	void SendAccessDenied(session_t peer_id, AccessDeniedCode reason,
 		const std::string &custom_reason, bool reconnect = false);
-	void SendAccessDenied_Legacy(session_t peer_id, const std::wstring &reason);
 	void SendDeathscreen(session_t peer_id, bool set_camera_point_target,
 		v3f camera_point_target);
 	void SendItemDef(session_t peer_id, IItemDefManager *itemdef, u16 protocol_version);

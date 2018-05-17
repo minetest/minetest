@@ -927,20 +927,18 @@ void Client::handleCommand_SpawnParticle(NetworkPacket* pkt)
 	float size              = readF32(is);
 	bool collisiondetection = readU8(is);
 	std::string texture     = deSerializeLongString(is);
+	bool vertical           = readU8(is);
+	bool collision_removal  = readU8(is);
+	bool object_collision   = false;
 
-	bool vertical          = false;
-	bool collision_removal = false;
 	TileAnimationParams animation;
-	animation.type         = TAT_NONE;
-	u8 glow                = 0;
-	bool object_collision  = false;
+	animation.deSerialize(is, m_proto_ver);
+
+	u8 glow = readU8(is);
 	try {
-		vertical = readU8(is);
-		collision_removal = readU8(is);
-		animation.deSerialize(is, m_proto_ver);
-		glow = readU8(is);
 		object_collision = readU8(is);
 	} catch (...) {}
+
 
 	ClientEvent *event = new ClientEvent();
 	event->type                              = CE_SPAWN_PARTICLE;
@@ -964,18 +962,18 @@ void Client::handleCommand_AddParticleSpawner(NetworkPacket* pkt)
 {
 	u16 amount;
 	float spawntime;
-	v3f minpos;
-	v3f maxpos;
-	v3f minvel;
-	v3f maxvel;
-	v3f minacc;
-	v3f maxacc;
-	float minexptime;
-	float maxexptime;
-	float minsize;
-	float maxsize;
+	v3f minpos, maxpos;
+	v3f minvel, maxvel;
+	v3f minacc, maxacc;
+	float minexptime, maxexptime;
+	float minsize, maxsize;
 	bool collisiondetection;
 	u32 server_id;
+	bool vertical;
+	bool collision_removal;
+	u16 attached_id;
+	u8 glow;
+	bool object_collision;
 
 	*pkt >> amount >> spawntime >> minpos >> maxpos >> minvel >> maxvel
 		>> minacc >> maxacc >> minexptime >> maxexptime >> minsize
@@ -983,27 +981,18 @@ void Client::handleCommand_AddParticleSpawner(NetworkPacket* pkt)
 
 	std::string texture = pkt->readLongString();
 
-	*pkt >> server_id;
+	*pkt >> server_id >> vertical >> collision_removal >> attached_id;
 
-	bool vertical          = false;
-	bool collision_removal = false;
-	u16 attached_id        = 0;
 	TileAnimationParams animation;
-	animation.type         = TAT_NONE;
-	u8 glow                = 0;
-	bool object_collision  = false;
-	try {
-		*pkt >> vertical;
-		*pkt >> collision_removal;
-		*pkt >> attached_id;
-
+	{
 		// This is horrible but required (why are there two ways to deserialize pkts?)
 		std::string datastring(pkt->getRemainingString(), pkt->getRemainingBytes());
 		std::istringstream is(datastring, std::ios_base::binary);
 		animation.deSerialize(is, m_proto_ver);
+
 		glow = readU8(is);
 		object_collision = readU8(is);
-	} catch (...) {}
+	}
 
 	u32 client_id = m_particle_manager.getSpawnerId();
 	m_particles_server_to_client[server_id] = client_id;
@@ -1075,15 +1064,7 @@ void Client::handleCommand_HudAdd(NetworkPacket* pkt)
 	v2s32 size;
 
 	*pkt >> server_id >> type >> pos >> name >> scale >> text >> number >> item
-		>> dir >> align >> offset;
-	try {
-		*pkt >> world_pos;
-	}
-	catch(SerializationError &e) {};
-
-	try {
-		*pkt >> size;
-	} catch(SerializationError &e) {};
+		>> dir >> align >> offset >> world_pos >> size;
 
 	ClientEvent *event = new ClientEvent();
 	event->type             = CE_HUDADD;
@@ -1236,10 +1217,7 @@ void Client::handleCommand_HudSetSky(NetworkPacket* pkt)
 	for (size_t i = 0; i < count; i++)
 		params->push_back(deSerializeString(is));
 
-	bool clouds = true;
-	try {
-		clouds = readU8(is);
-	} catch (...) {}
+	bool clouds = readU8(is);
 
 	ClientEvent *event = new ClientEvent();
 	event->type            = CE_SET_SKY;

@@ -551,7 +551,7 @@ std::string LuaEntitySAO::getClientInitializationData(u16 protocol_version)
 	writeS16(os, getId()); //id
 	writeV3F32(os, m_base_position);
 	writeV3F32(os, m_rotation);
-	writeS16(os, m_hp);
+	writeU16(os, m_hp); // U16 since PROTOCOL_VERSION 37
 
 	std::ostringstream msg_os(std::ios::binary);
 	msg_os << serializeLongString(getPropertyPacket()); // message 1
@@ -657,7 +657,7 @@ int LuaEntitySAO::punch(v3f dir,
 						<< " hp, health now " << getHP() << " hp" << std::endl;
 			}
 
-			std::string str = gob_cmd_punched(result.damage, getHP());
+			std::string str = gob_cmd_punched(getHP());
 			// create message and add to list
 			ActiveObjectMessage aom(getId(), true, str);
 			m_messages_out.push(aom);
@@ -715,16 +715,9 @@ std::string LuaEntitySAO::getDescription()
 	return os.str();
 }
 
-void LuaEntitySAO::setHP(s16 hp, const PlayerHPChangeReason &reason)
+void LuaEntitySAO::setHP(s32 hp, const PlayerHPChangeReason &reason)
 {
-	if (hp < 0)
-		hp = 0;
-	m_hp = hp;
-}
-
-s16 LuaEntitySAO::getHP() const
-{
-	return m_hp;
+	m_hp = rangelim(hp, 0, U16_MAX);
 }
 
 void LuaEntitySAO::setVelocity(v3f velocity)
@@ -942,14 +935,14 @@ std::string PlayerSAO::getClientInitializationData(u16 protocol_version)
 {
 	std::ostringstream os(std::ios::binary);
 
-	// Protocol >= 15
-	writeU8(os, 1); // version
+	// Protocol >= 36
+	writeU8(os, 2); // version
 	os << serializeString(m_player->getName()); // name
 	writeU8(os, 1); // is_player
 	writeS16(os, getId()); // id
 	writeV3F32(os, m_base_position);
 	writeV3F32(os, m_rotation);
-	writeS16(os, getHP());
+	writeU16(os, getHP());
 
 	std::ostringstream msg_os(std::ios::binary);
 	msg_os << serializeLongString(getPropertyPacket()); // message 1
@@ -966,9 +959,8 @@ std::string PlayerSAO::getClientInitializationData(u16 protocol_version)
 	msg_os << serializeLongString(gob_cmd_update_physics_override(m_physics_override_speed,
 			m_physics_override_jump, m_physics_override_gravity, m_physics_override_sneak,
 			m_physics_override_sneak_glitch, m_physics_override_new_move)); // 5
-	// (GENERIC_CMD_UPDATE_NAMETAG_ATTRIBUTES) : Deprecated, for backwards compatibility only.
-	msg_os << serializeLongString(gob_cmd_update_nametag_attributes(m_prop.nametag_color)); // 6
-	int message_count = 6 + m_bone_position.size();
+
+	int message_count = 5 + m_bone_position.size();
 	for (std::unordered_set<int>::const_iterator ii = m_attachment_child_ids.begin();
 			ii != m_attachment_child_ids.end(); ++ii) {
 		if (ServerActiveObject *obj = m_env->getActiveObject(*ii)) {
@@ -1044,9 +1036,8 @@ void PlayerSAO::step(float dtime, bool send_recommended)
 			m_env->getGameDef()->ndef()->get(ntop).damage_per_second);
 
 		if (damage_per_second != 0 && m_hp > 0) {
-			s16 newhp = ((s32) damage_per_second > m_hp ? 0 : m_hp - damage_per_second);
 			PlayerHPChangeReason reason(PlayerHPChangeReason::NODE_DAMAGE);
-			setHP(newhp, reason);
+			setHP(m_hp - damage_per_second, reason);
 			m_env->getGameDef()->SendPlayerHPOrDie(this, reason);
 		}
 	}
@@ -1272,7 +1263,7 @@ int PlayerSAO::punch(v3f dir,
 	// No effect if PvP disabled
 	if (!g_settings->getBool("enable_pvp")) {
 		if (puncher->getType() == ACTIVEOBJECT_TYPE_PLAYER) {
-			std::string str = gob_cmd_punched(0, getHP());
+			std::string str = gob_cmd_punched(getHP());
 			// create message and add to list
 			ActiveObjectMessage aom(getId(), true, str);
 			m_messages_out.push(aom);
@@ -1299,7 +1290,7 @@ int PlayerSAO::punch(v3f dir,
 				PlayerHPChangeReason(PlayerHPChangeReason::PLAYER_PUNCH, puncher));
 	} else { // override client prediction
 		if (puncher->getType() == ACTIVEOBJECT_TYPE_PLAYER) {
-			std::string str = gob_cmd_punched(0, getHP());
+			std::string str = gob_cmd_punched(getHP());
 			// create message and add to list
 			ActiveObjectMessage aom(getId(), true, str);
 			m_messages_out.push(aom);
@@ -1319,35 +1310,21 @@ int PlayerSAO::punch(v3f dir,
 	return hitparams.wear;
 }
 
-s16 PlayerSAO::readDamage()
+void PlayerSAO::setHP(s32 hp, const PlayerHPChangeReason &reason)
 {
-	s16 damage = m_damage;
-	m_damage = 0;
-	return damage;
-}
+	hp = rangelim(hp, 0, U16_MAX);
+	u16 oldhp = m_hp;
 
-void PlayerSAO::setHP(s16 hp, const PlayerHPChangeReason &reason)
-{
-	s16 oldhp = m_hp;
-
-	s16 hp_change = m_env->getScriptIface()->on_player_hpchange(this, hp - oldhp, reason);
+	s32 hp_change = m_env->getScriptIface()->on_player_hpchange(this, hp - oldhp, reason);
 	if (hp_change == 0)
 		return;
-	hp = oldhp + hp_change;
 
-	if (hp < 0)
-		hp = 0;
-	else if (hp > m_prop.hp_max)
-		hp = m_prop.hp_max;
+	hp = rangelim(oldhp + hp_change, 0, m_prop.hp_max);
 
-	if (hp < oldhp && !g_settings->getBool("enable_damage")) {
+	if (hp < oldhp && !g_settings->getBool("enable_damage"))
 		return;
-	}
 
 	m_hp = hp;
-
-	if (oldhp > hp)
-		m_damage += (oldhp - hp);
 
 	// Update properties on death
 	if ((hp == 0) != (oldhp == 0))

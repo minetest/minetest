@@ -35,8 +35,7 @@ enum GenericCMD {
 	GENERIC_CMD_SET_BONE_POSITION,
 	GENERIC_CMD_ATTACH_TO,
 	GENERIC_CMD_SET_PHYSICS_OVERRIDE,
-	GENERIC_CMD_UPDATE_NAMETAG_ATTRIBUTES,
-	GENERIC_CMD_SPAWN_INFANT,
+	GENERIC_CMD_SPAWN_INFANT = 11,
 	GENERIC_CMD_SET_ANIMATION_SPEED
 };
 
@@ -63,7 +62,7 @@ std::string gob_cmd_set_sprite(
 	bool select_horiz_by_yawpitch
 );
 
-std::string gob_cmd_punched(s16 damage, s16 result_hp);
+std::string gob_cmd_punched(u16 result_hp);
 
 std::string gob_cmd_update_armor_groups(const ItemGroupList &armor_groups);
 
@@ -80,8 +79,6 @@ std::string gob_cmd_update_bone_position(const std::string &bone, v3f position,
 
 std::string gob_cmd_update_attachment(int parent_id, const std::string &bone,
 		v3f position, v3f rotation);
-
-std::string gob_cmd_update_nametag_attributes(video::SColor color);
 
 std::string gob_cmd_update_infant(u16 id, u8 type,
 		const std::string &client_initialization_data);

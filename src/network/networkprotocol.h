@@ -345,11 +345,7 @@ enum ToClientCommand
 		f1000 player yaw
 	*/
 
-	TOCLIENT_ACCESS_DENIED_LEGACY = 0x35,
-	/*
-		u16 reason_length
-		wstring reason
-	*/
+	TOCLIENT_ACCESS_DENIED_LEGACY = 0x35, // Obsolete
 
 	TOCLIENT_PLAYERITEM = 0x36, // Obsolete
 
@@ -771,7 +767,7 @@ enum ToServerCommand
 
 	TOSERVER_DAMAGE = 0x35,
 	/*
-		u8 amount
+		u16 amount
 	*/
 
 	TOSERVER_PASSWORD_LEGACY = 0x36, // Obsolete

@@ -75,7 +75,7 @@ std::string ObjectProperties::dump()
 void ObjectProperties::serialize(std::ostream &os) const
 {
 	writeU8(os, 4); // PROTOCOL_VERSION >= 37
-	writeS16(os, hp_max);
+	writeU16(os, hp_max);
 	writeU8(os, physical);
 	writeF32(os, weight);
 	writeV3F32(os, collisionbox.MinEdge);
@@ -126,7 +126,7 @@ void ObjectProperties::deSerialize(std::istream &is)
 	if (version != 4)
 		throw SerializationError("unsupported ObjectProperties version");
 
-	hp_max = readS16(is);
+	hp_max = readU16(is);
 	physical = readU8(is);
 	weight = readF32(is);
 	collisionbox.MinEdge = readV3F32(is);

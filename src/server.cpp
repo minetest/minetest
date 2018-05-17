@@ -1010,8 +1010,9 @@ void Server::Receive()
 				<< e.what() << std::endl;
 	} catch (const ClientStateError &e) {
 		errorstream << "ProcessData: peer=" << peer_id << e.what() << std::endl;
-		DenyAccess_Legacy(peer_id, L"Your client sent something server didn't expect."
-				L"Try reconnecting or updating your client");
+		DenyAccess(peer_id, SERVER_ACCESSDENIED_CUSTOM_STRING,
+			"Your client sent something server didn't expect."
+			"Try reconnecting or updating your client");
 	} catch (const con::PeerNotFoundException &e) {
 		// Do nothing
 	}
@@ -1041,13 +1042,15 @@ PlayerSAO* Server::StageTwoClientInit(session_t peer_id)
 		if (player && player->getPeerId() != PEER_ID_INEXISTENT) {
 			actionstream << "Server: Failed to emerge player \"" << playername
 					<< "\" (player allocated to an another client)" << std::endl;
-			DenyAccess_Legacy(peer_id, L"Another client is connected with this "
-					L"name. If your client closed unexpectedly, try again in "
-					L"a minute.");
+			DenyAccess(peer_id, SERVER_ACCESSDENIED_CUSTOM_STRING,
+					"Another client is connected with this name. "
+					"If your client closed unexpectedly, try again in "
+					"a minute.");
 		} else {
 			errorstream << "Server: " << playername << ": Failed to emerge player"
 					<< std::endl;
-			DenyAccess_Legacy(peer_id, L"Could not allocate player.");
+			DenyAccess(peer_id, SERVER_ACCESSDENIED_CUSTOM_STRING,
+					"Could not allocate player.");
 		}
 		return NULL;
 	}
@@ -1119,9 +1122,9 @@ void Server::ProcessData(NetworkPacket *pkt)
 			infostream << "Server: A banned client tried to connect from "
 					<< addr_s << "; banned name was "
 					<< ban_name << std::endl;
-			// This actually doesn't seem to transfer to the client
-			DenyAccess_Legacy(peer_id, L"Your ip is banned. Banned name was "
-					+ utf8_to_wide(ban_name));
+
+			DenyAccess(peer_id, SERVER_ACCESSDENIED_CUSTOM_STRING,
+					"Your IP is banned. Banned name was " + ban_name);
 			return;
 		}
 	}
@@ -1465,13 +1468,6 @@ void Server::SendAccessDenied(session_t peer_id, AccessDeniedCode reason,
 	else if (reason == SERVER_ACCESSDENIED_SHUTDOWN ||
 			reason == SERVER_ACCESSDENIED_CRASH)
 		pkt << custom_reason << (u8)reconnect;
-	Send(&pkt);
-}
-
-void Server::SendAccessDenied_Legacy(session_t peer_id,const std::wstring &reason)
-{
-	NetworkPacket pkt(TOCLIENT_ACCESS_DENIED_LEGACY, 0, peer_id);
-	pkt << reason;
 	Send(&pkt);
 }
 
@@ -1828,7 +1824,7 @@ void Server::SendPlayerHP(session_t peer_id)
 	m_script->player_event(playersao,"health_changed");
 
 	// Send to other clients
-	std::string str = gob_cmd_punched(playersao->readDamage(), playersao->getHP());
+	std::string str = gob_cmd_punched(playersao->getHP());
 	ActiveObjectMessage aom(playersao->getId(), true, str);
 	playersao->m_messages_out.push(aom);
 }
@@ -2018,14 +2014,9 @@ s32 Server::playSound(const SimpleSoundSpec &spec,
 			<< (u8) params.type << pos << params.object
 			<< params.loop << params.fade << params.pitch;
 
-	// Backwards compability
-	bool play_sound = gain > 0;
-
 	for (const u16 dst_client : dst_clients) {
-		if (play_sound || m_clients.getProtocolVersion(dst_client) >= 32) {
-			psound.clients.insert(dst_client);
-			m_clients.send(dst_client, 0, &pkt, true);
-		}
+		psound.clients.insert(dst_client);
+		m_clients.send(dst_client, 0, &pkt, true);
 	}
 	return id;
 }
@@ -2064,36 +2055,16 @@ void Server::fadeSound(s32 handle, float step, float gain)
 	NetworkPacket pkt(TOCLIENT_FADE_SOUND, 4);
 	pkt << handle << step << gain;
 
-	// Backwards compability
 	bool play_sound = gain > 0;
-	ServerPlayingSound compat_psound = psound;
-	compat_psound.clients.clear();
 
-	NetworkPacket compat_pkt(TOCLIENT_STOP_SOUND, 4);
-	compat_pkt << handle;
-
-	for (std::unordered_set<u16>::iterator it = psound.clients.begin();
-			it != psound.clients.end();) {
-		if (m_clients.getProtocolVersion(*it) >= 32) {
-			// Send as reliable
-			m_clients.send(*it, 0, &pkt, true);
-			++it;
-		} else {
-			compat_psound.clients.insert(*it);
-			// Stop old sound
-			m_clients.send(*it, 0, &compat_pkt, true);
-			psound.clients.erase(it++);
-		}
+	for (session_t client_id : psound.clients) {
+		// Send as reliable
+		m_clients.send(client_id, 0, &pkt, true);
 	}
 
 	// Remove sound reference
 	if (!play_sound || psound.clients.empty())
 		m_playing_sounds.erase(i);
-
-	if (play_sound && !compat_psound.clients.empty()) {
-		// Play new sound volume on older clients
-		playSound(compat_psound.spec, compat_psound.params);
-	}
 }
 
 void Server::sendRemoveNode(v3s16 p, std::unordered_set<u16> *far_players,
@@ -2663,15 +2634,6 @@ void Server::DenyAccess(session_t peer_id, AccessDeniedCode reason,
 	DisconnectPeer(peer_id);
 }
 
-// 13/03/15: remove this function when protocol version 25 will become
-// the minimum version for MT users, maybe in 1 year
-void Server::DenyAccess_Legacy(session_t peer_id, const std::wstring &reason)
-{
-	SendAccessDenied_Legacy(peer_id, reason);
-	m_clients.event(peer_id, CSE_SetDenied);
-	DisconnectPeer(peer_id);
-}
-
 void Server::DisconnectPeer(session_t peer_id)
 {
 	m_modchannel_mgr->leaveAllChannels(peer_id);
@@ -2850,8 +2812,8 @@ std::wstring Server::handleChat(const std::string &name, const std::wstring &wna
 				return ws.str();
 			}
 			case RPLAYER_CHATRESULT_KICK:
-				DenyAccess_Legacy(player->getPeerId(),
-						L"You have been kicked due to message flooding.");
+				DenyAccess(player->getPeerId(), SERVER_ACCESSDENIED_CUSTOM_STRING,
+						"You have been kicked due to message flooding.");
 				return L"";
 			case RPLAYER_CHATRESULT_OK:
 				break;
