@@ -265,7 +265,7 @@ void LBMManager::applyLBMs(ServerEnvironment *env, MapBlock *block, u32 stamp)
 	for (; it != m_lbm_lookup.end(); ++it) {
 		// Cache previous version to speedup lookup which has a very high performance
 		// penalty on each call
-		content_t previous_c{};
+		content_t previous_c = CONTENT_IGNORE;
 		std::vector<LoadingBlockModifierDef *> *lbm_list = NULL;
 
 		for (pos.X = 0; pos.X < MAP_BLOCKSIZE; pos.X++)
@@ -1026,9 +1026,10 @@ void ServerEnvironment::clearObjects(ClearObjectsMode mode)
 	infostream << "ServerEnvironment::clearObjects(): "
 		<< "Removing all active objects" << std::endl;
 	std::vector<u16> objects_to_remove;
-	for (auto &it : m_active_objects) {
-		u16 id = it.first;
-		ServerActiveObject* obj = it.second;
+	for (ActiveObjectMap::iterator it = m_active_objects.begin();
+			it != m_active_objects.end(); ++it) {
+		u16 id = it->first;
+		ServerActiveObject* obj = it->second;
 		if (obj->getType() == ACTIVEOBJECT_TYPE_PLAYER)
 			continue;
 
@@ -1054,8 +1055,9 @@ void ServerEnvironment::clearObjects(ClearObjectsMode mode)
 	}
 
 	// Remove references from m_active_objects
-	for (u16 i : objects_to_remove) {
-		m_active_objects.erase(i);
+	for (std::vector<u16>::iterator it = objects_to_remove.begin();
+			it != objects_to_remove.end(); ++it) {
+		m_active_objects.erase(*it);
 	}
 
 	// Get list of loaded blocks
@@ -1822,8 +1824,9 @@ void ServerEnvironment::removeRemovedObjects()
 		objects_to_remove.push_back(id);
 	}
 	// Remove references from m_active_objects
-	for (u16 i : objects_to_remove) {
-		m_active_objects.erase(i);
+	for (std::vector<u16>::iterator it = objects_to_remove.begin();
+			it != objects_to_remove.end(); ++it) {
+		m_active_objects.erase(*it);
 	}
 }
 
@@ -2093,8 +2096,9 @@ void ServerEnvironment::deactivateFarObjects(bool _force_delete)
 	}
 
 	// Remove references from m_active_objects
-	for (u16 i : objects_to_remove) {
-		m_active_objects.erase(i);
+	for (std::vector<u16>::iterator it = objects_to_remove.begin();
+			it != objects_to_remove.end(); ++it) {
+		m_active_objects.erase(*it);
 	}
 }
 
@@ -2128,7 +2132,7 @@ bool ServerEnvironment::saveStaticToBlock(
 		ServerActiveObject *obj, const StaticObject &s_obj,
 		u32 mod_reason)
 {
-	MapBlock *block = nullptr;
+	MapBlock *block = NULL;
 	try {
 		block = m_map->emergeBlock(blockpos);
 	} catch (InvalidPositionException &e) {

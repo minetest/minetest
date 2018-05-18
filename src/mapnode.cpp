@@ -249,7 +249,11 @@ void transformNodeBox(const MapNode &n, const NodeBox &nodebox,
 		int facedir = n.getFaceDir(nodemgr);
 		u8 axisdir = facedir>>2;
 		facedir&=0x03;
-		for (aabb3f box : fixed) {
+		for (std::vector<aabb3f>::const_iterator
+				i = fixed.begin();
+				i != fixed.end(); ++i) {
+			aabb3f box = *i;
+
 			if (nodebox.type == NODEBOX_LEVELED)
 				box.MaxEdge.Y = (-0.5f + n.getLevel(nodemgr) / 64.0f) * BS;
 
