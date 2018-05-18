@@ -516,10 +516,14 @@ void Minimap::drawMinimap()
 		matrix.setRotationDegrees(core::vector3df(0, 0, m_angle));
 		material.TextureLayer[0].Texture = data->player_marker;
 
-		driver->setTransform(video::ETS_WORLD, matrix);
-		driver->setMaterial(material);
-		driver->drawMeshBuffer(m_meshbuffer);
+	} else {
+		matrix.setRotationDegrees(core::vector3df(0, 0, 0));
+		material.TextureLayer[0].Texture = data->player_marker;
+
 	}
+	driver->setTransform(video::ETS_WORLD, matrix);
+	driver->setMaterial(material);
+	driver->drawMeshBuffer(m_meshbuffer);
 
 	// Reset transformations
 	driver->setTransform(video::ETS_VIEW, oldViewMat);
