@@ -1660,8 +1660,10 @@ void Server::SendChatMessage(u16 peer_id, const std::wstring &message)
 
 		Send(&pkt);
 	} else {
-		for (u16 id : m_clients.getClientIDs())
-			SendChatMessage(id, message);
+		std::vector<u16> clients = m_clients.getClientIDs();
+		for (std::vector<u16>::iterator it = clients.begin();
+				it != clients.end(); ++it)
+			SendChatMessage(*it, message);
 	}
 }
 

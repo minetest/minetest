@@ -362,20 +362,22 @@ void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d,
 		// Force update each ClientEnvironment::step()
 		bool is_first = collision_info->empty();
 
-		for (const auto &colinfo : result.collisions) {
-			collision_info->push_back(colinfo);
+		for (std::vector<CollisionInfo>::const_iterator
+				colinfo = result.collisions.begin();
+				colinfo != result.collisions.end(); ++colinfo) {
+			collision_info->push_back(*colinfo);
 
-			if (colinfo.type != COLLISION_NODE ||
-					colinfo.new_speed.Y != 0 ||
+			if (colinfo->type != COLLISION_NODE ||
+					colinfo->new_speed.Y != 0 ||
 					(could_sneak && m_sneak_node_exists))
 				continue;
 
-			diff = intToFloat(colinfo.node_p, BS) - position;
+			diff = intToFloat(colinfo->node_p, BS) - position;
 
 			// Find nearest colliding node
 			f32 len = diff.getLength();
 			if (is_first || len < distance) {
-				m_standing_node = colinfo.node_p;
+				m_standing_node = colinfo->node_p;
 				distance = len;
 			}
 		}
