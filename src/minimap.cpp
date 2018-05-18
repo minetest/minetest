@@ -511,15 +511,17 @@ void Minimap::drawMinimap()
 	driver->setMaterial(material);
 	driver->drawMeshBuffer(m_meshbuffer);
 
-	// If round minimap, draw player marker
-	if (!data->minimap_shape_round) {
+	// Draw player marker on minimap
+	if (data->minimap_shape_round) {
+		matrix.setRotationDegrees(core::vector3df(0, 0, 0));
+	} else {
 		matrix.setRotationDegrees(core::vector3df(0, 0, m_angle));
-		material.TextureLayer[0].Texture = data->player_marker;
-
-		driver->setTransform(video::ETS_WORLD, matrix);
-		driver->setMaterial(material);
-		driver->drawMeshBuffer(m_meshbuffer);
 	}
+
+	material.TextureLayer[0].Texture = data->player_marker;
+	driver->setTransform(video::ETS_WORLD, matrix);
+	driver->setMaterial(material);
+	driver->drawMeshBuffer(m_meshbuffer);
 
 	// Reset transformations
 	driver->setTransform(video::ETS_VIEW, oldViewMat);
