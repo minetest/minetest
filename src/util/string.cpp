@@ -30,6 +30,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <sstream>
 #include <iomanip>
 #include <map>
+#include <cstdarg>
+#include <cstdio>
 
 #ifndef _WIN32
 	#include <iconv.h>
@@ -944,4 +946,23 @@ std::wstring translate_string(const std::wstring &s) {
 	std::wstring res;
 	translate_all(s, i, res);
 	return res;
+}
+
+int mt_snprintf(char * const buf, const size_t buf_size, const char *fmt, ...) {
+	// https://msdn.microsoft.com/en-us/library/bt7tawza.aspx
+	//  Many of the MSVC / Windows printf-style functions do not support positional arguments (eg. "%1$s").
+	//  We just forward the call to vsnprintf for sane platforms, but defer to _vsprintf_p on MSVC / Windows.
+	// https://github.com/FFmpeg/FFmpeg/blob/5ae9fa13f5ac640bec113120d540f70971aa635d/compat/msvcrt/snprintf.c#L46
+	//  _vsprintf_p has to be shimmed with _vscprintf_p on -1 (for an example see above FFmpeg link).
+	va_list args;
+	va_start(args, fmt);
+#ifndef _WIN32
+	int c = vsnprintf(buf, buf_size, fmt, args);
+#else // _WIN32
+	int c = _vsprintf_p(buf, buf_size, fmt, args);
+	if (c == -1)
+		c = _vscprintf_p(fmt, args);
+#endif // _WIN32
+	va_end(args);
+	return c;
 }
