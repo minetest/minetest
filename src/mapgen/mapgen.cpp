@@ -56,7 +56,8 @@ FlagDesc flagdesc_mapgen[] = {
 	{"dungeons",    MG_DUNGEONS},
 	{"light",       MG_LIGHT},
 	{"decorations", MG_DECORATIONS},
-	{NULL,       0}
+	{"biomes",      MG_BIOMES},
+	{NULL,          0}
 };
 
 FlagDesc flagdesc_gennotify[] = {
