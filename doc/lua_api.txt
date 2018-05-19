@@ -2505,13 +2505,13 @@ readability.
     * Appends all values in `other_table` to `t` - uses `#t + 1` to
       find new indices.
 * `table.count(t)`: number of keys in t.
-* `table.random(t)`: returns random element from `t`, an array.
+* `table.random(t)`: returns random element.
 * `table.index_of(t, v)`: find key of v in t.
 * `table.map(t, f)`:
     * `f` - function(element), return new value
     * Returns a new table by iterating over all keys and running f to get value
     * `t` is not modified.
-* `table.map_inplace(t, f)`:
+* `table.mapi(t, f)`: - Map in-place
     * `f` - function(element), return new value
     * Each element of `t` is passed to `f` and replaced with the returned value.
     * `t` **is** modified.

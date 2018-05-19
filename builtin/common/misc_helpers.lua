@@ -226,7 +226,7 @@ function table.map(t, f)
 end
 
 --------------------------------------------------------------------------------
-function table.map_inplace(t, f)
+function table.mapi(t, f)
 	for key, value in pairs(t) do
 		t[key] = f(value)
 	end
