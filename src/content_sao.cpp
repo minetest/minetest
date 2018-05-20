@@ -951,8 +951,10 @@ std::string PlayerSAO::getClientInitializationData(u16 protocol_version)
 	writeS16(os, getId()); // id
 	writeV3F1000(os, m_base_position);
 	writeF1000(os, m_yaw);
-	writeF1000(os, m_pitch);
-	writeF1000(os, m_roll);
+
+	// Send 0 for player pitch and roll (pitch 1st roll 2nd) since we only want the player model to turn/yaw
+	writeF1000(os, 0);
+	writeF1000(os, 0);
 	writeS16(os, getHP());
 
 	std::ostringstream msg_os(std::ios::binary);
@@ -1114,13 +1116,14 @@ void PlayerSAO::step(float dtime, bool send_recommended)
 		else
 			pos = m_base_position;
 
+		// Send 0 for player roll and pitch since we only want the player model to turn/yaw
 		std::string str = gob_cmd_update_position(
 			pos,
 			v3f(0.0f, 0.0f, 0.0f),
 			v3f(0.0f, 0.0f, 0.0f),
 			m_yaw,
-			m_pitch,
-			m_roll,
+			0,
+			0,
 			true,
 			false,
 			update_interval
