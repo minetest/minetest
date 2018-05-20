@@ -116,8 +116,6 @@ function core.register_item(name, itemdef)
 	end
 	itemdef.name = name
 
-	local is_overriding = core.registered_items[name]
-
 	-- Apply defaults and add to registered_* table
 	if itemdef.type == "node" then
 		-- Use the nodebox as selection box if it's not set manually
@@ -179,13 +177,7 @@ function core.register_item(name, itemdef)
 	--core.log("Registering item: " .. itemdef.name)
 	core.registered_items[itemdef.name] = itemdef
 	core.registered_aliases[itemdef.name] = nil
-
-	-- Used to allow builtin to register ignore to registered_items
-	if name ~= "ignore" then
-		register_item_raw(itemdef)
-	elseif is_overriding then
-		core.log("warning", "Attempted redefinition of \"ignore\"")
-	end
+	register_item_raw(itemdef)
 end
 
 function core.unregister_item(name)
@@ -338,7 +330,7 @@ core.register_item(":unknown", {
 })
 
 core.register_node(":air", {
-	description = "Air (you hacker you!)",
+	description = "Air",
 	inventory_image = "air.png",
 	wield_image = "air.png",
 	drawtype = "airlike",
@@ -355,7 +347,7 @@ core.register_node(":air", {
 })
 
 core.register_node(":ignore", {
-	description = "Ignore (you hacker you!)",
+	description = "Ignore",
 	inventory_image = "ignore.png",
 	wield_image = "ignore.png",
 	drawtype = "airlike",
@@ -368,6 +360,13 @@ core.register_node(":ignore", {
 	air_equivalent = true,
 	drop = "",
 	groups = {not_in_creative_inventory=1},
+	on_place = function(itemstack, placer, pointed_thing)
+		minetest.chat_send_player(
+				placer:get_player_name(),
+				minetest.colorize("#FF0000",
+				"You can't place 'ignore' nodes!"))
+		return ""
+	end,
 })
 
 -- The hand (bare definition)
