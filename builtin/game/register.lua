@@ -338,7 +338,7 @@ core.register_item(":unknown", {
 })
 
 core.register_node(":air", {
-	description = "Air (you hacker you!)",
+	description = "Air",
 	inventory_image = "air.png",
 	wield_image = "air.png",
 	drawtype = "airlike",
@@ -355,7 +355,7 @@ core.register_node(":air", {
 })
 
 core.register_node(":ignore", {
-	description = "Ignore (you hacker you!)",
+	description = "Ignore",
 	inventory_image = "ignore.png",
 	wield_image = "ignore.png",
 	drawtype = "airlike",
@@ -368,6 +368,13 @@ core.register_node(":ignore", {
 	air_equivalent = true,
 	drop = "",
 	groups = {not_in_creative_inventory=1},
+	on_place = function(itemstack, placer, pointed_thing)
+		minetest.chat_send_player(
+				placer:get_player_name(),
+				minetest.colorize("#FF0000",
+				"You can't place 'ignore' nodes!"))
+		return ""
+	end,
 })
 
 -- The hand (bare definition)

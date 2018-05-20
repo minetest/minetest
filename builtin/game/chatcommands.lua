@@ -557,8 +557,11 @@ local function handle_give_command(cmd, giver, receiver, stackstring)
 	local itemstack = ItemStack(stackstring)
 	if itemstack:is_empty() then
 		return false, "Cannot give an empty item"
-	elseif not itemstack:is_known() then
+	elseif (not itemstack:is_known()) or (itemstack:get_name() == "unknown") then
 		return false, "Cannot give an unknown item"
+	-- Forbid giving 'ignore' due to unwanted side effects
+	elseif itemstack:get_name() == "ignore" then
+		return false, "Giving 'ignore' is not allowed"
 	end
 	local receiverref = core.get_player_by_name(receiver)
 	if receiverref == nil then
@@ -577,13 +580,13 @@ local function handle_give_command(cmd, giver, receiver, stackstring)
 	-- entered (e.g. big numbers are always interpreted as 2^16-1).
 	stackstring = itemstack:to_string()
 	if giver == receiver then
-		return true, ("%q %sadded to inventory.")
-				:format(stackstring, partiality)
+		local msg = "%q %sadded to inventory."
+		return true, msg:format(stackstring, partiality)
 	else
 		core.chat_send_player(receiver, ("%q %sadded to inventory.")
 				:format(stackstring, partiality))
-		return true, ("%q %sadded to %s's inventory.")
-				:format(stackstring, partiality, receiver)
+		local msg = "%q %sadded to %s's inventory."
+		return true, msg:format(stackstring, partiality, receiver)
 	end
 end
 
