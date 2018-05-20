@@ -34,57 +34,54 @@ local function scaleToDefault(player, field)
  	return current / max_display * nominal 
 end
 
-local function initialize_builtin_statbars(player)
-
-	if not player:is_player() then
-		return
-	end
-
+local function update_builtin_statbars(player)
 	local name = player:get_player_name()
 
 	if name == "" then
 		return
 	end
 
+	local flags = player:hud_get_flags()
 	if not hud_ids[name] then
 		hud_ids[name] = {}
 		-- flags are not transmitted to client on connect, we need to make sure
 		-- our current flags are transmitted by sending them actively
-		player:hud_set_flags(player:hud_get_flags())
+		player:hud_set_flags(flags)
 	end
 	local hud = hud_ids[name]
 
-	if player:hud_get_flags().healthbar and enable_damage then
+	if flags.healthbar and enable_damage then
+		local number = scaleToDefault(player, "hp")
  		if hud.id_healthbar == nil then
  			local hud_def = table.copy(health_bar_definition)
-			hud_def.number = scaleToDefault(player, "hp")
+			hud_def.number = number
 			hud.id_healthbar = player:hud_add(hud_def)
+		else
+			player:hud_change(hud.id_healthbar, "number", number)
 		end
-	elseif hud.id_healthbar ~= nil then
+	elseif hud.id_healthbar then
 		player:hud_remove(hud.id_healthbar)
 		hud.id_healthbar = nil
 	end
 
 	local breath_max = player:get_properties().breath_max
-	if player:hud_get_flags().breathbar and enable_damage and
+	if flags.breathbar and enable_damage and
 			player:get_breath() < breath_max then
+		local number = 2 * scaleToDefault(player, "breath")
 		if hud.id_breathbar == nil then
  			local hud_def = table.copy(breath_bar_definition)
- 			hud_def.number = 2 * scaleToDefault(player, "breath")
+			hud_def.number = number
 			hud.id_breathbar = player:hud_add(hud_def)
+		else
+			player:hud_change(hud.id_breathbar, "number", number)
 		end
-	elseif hud.id_breathbar ~= nil then
+	elseif hud.id_breathbar then
 		player:hud_remove(hud.id_breathbar)
 		hud.id_breathbar = nil
 	end
 end
 
 local function cleanup_builtin_statbars(player)
-
-	if not player:is_player() then
-		return
-	end
-
 	local name = player:get_player_name()
 
 	if name == "" then
@@ -99,32 +96,28 @@ local function player_event_handler(player,eventname)
 
 	local name = player:get_player_name()
 
-	if name == "" then
+	if name == "" or not hud_ids[name] then
 		return
 	end
 
 	if eventname == "health_changed" then
-		initialize_builtin_statbars(player)
+		update_builtin_statbars(player)
 
-		if hud_ids[name].id_healthbar ~= nil then
-			player:hud_change(hud_ids[name].id_healthbar,
-				"number", scaleToDefault(player, "hp"))
+		if hud_ids[name].id_healthbar then
 			return true
 		end
 	end
 
 	if eventname == "breath_changed" then
-		initialize_builtin_statbars(player)
+		update_builtin_statbars(player)
 
-		if hud_ids[name].id_breathbar ~= nil then
-			player:hud_change(hud_ids[name].id_breathbar,
-				"number", 2 * scaleToDefault(player, "breath"))
+		if hud_ids[name].id_breathbar then
 			return true
 		end
 	end
 
 	if eventname == "hud_changed" then
-		initialize_builtin_statbars(player)
+		update_builtin_statbars(player)
 		return true
 	end
 
@@ -133,20 +126,20 @@ end
 
 function core.hud_replace_builtin(name, definition)
 
-	if definition == nil or
-		type(definition) ~= "table" or
-		definition.hud_elem_type ~= "statbar" then
+	if type(definition) ~= "table" or
+			definition.hud_elem_type ~= "statbar" then
 		return false
 	end
 
 	if name == "health" then
 		health_bar_definition = definition
 
-		for name,ids in pairs(hud_ids) do
+		for name, ids in pairs(hud_ids) do
 			local player = core.get_player_by_name(name)
-			if  player and hud_ids[name].id_healthbar then
-				player:hud_remove(hud_ids[name].id_healthbar)
-				initialize_builtin_statbars(player)
+			if player and ids.id_healthbar then
+				player:hud_remove(ids.id_healthbar)
+				ids.id_healthbar = nil
+				update_builtin_statbars(player)
 			end
 		end
 		return true
@@ -155,11 +148,12 @@ function core.hud_replace_builtin(name, definition)
 	if name == "breath" then
 		breath_bar_definition = definition
 
-		for name,ids in pairs(hud_ids) do
+		for name, ids in pairs(hud_ids) do
 			local player = core.get_player_by_name(name)
-			if  player and hud_ids[name].id_breathbar then
-				player:hud_remove(hud_ids[name].id_breathbar)
-				initialize_builtin_statbars(player)
+			if player and ids.id_breathbar then
+				player:hud_remove(ids.id_breathbar)
+				ids.id_breathbar = nil
+				update_builtin_statbars(player)
 			end
 		end
 		return true
@@ -168,6 +162,10 @@ function core.hud_replace_builtin(name, definition)
 	return false
 end
 
-core.register_on_joinplayer(initialize_builtin_statbars)
+-- Append "update_builtin_statbars" as late as possible
+-- This ensures that the HUD is hidden when the flags are updated in this callback
+core.register_on_mods_loaded(function()
+	core.register_on_joinplayer(update_builtin_statbars)
+end)
 core.register_on_leaveplayer(cleanup_builtin_statbars)
 core.register_playerevent(player_event_handler)
