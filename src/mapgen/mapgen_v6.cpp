@@ -564,14 +564,11 @@ void MapgenV6::makeChunk(BlockMakeData *data)
 		DungeonParams dp;
 
 		dp.seed             = seed;
-
 		dp.only_in_ground   = true;
 		dp.corridor_len_min = 1;
 		dp.corridor_len_max = 13;
 		dp.rooms_min        = 2;
 		dp.rooms_max        = 16;
-		dp.y_min            = -MAX_MAP_GENERATION_LIMIT;
-		dp.y_max            = MAX_MAP_GENERATION_LIMIT;
 
 		dp.np_density
 			= NoiseParams(0.9, 0.5, v3f(500.0, 500.0, 500.0), 0, 2, 0.8, 2.0);
