@@ -544,7 +544,7 @@ bool PlayerDatabasePostgreSQL::loadPlayer(RemotePlayer *player, PlayerSAO *sao)
 		PQclear(results);
 		return false;
 	}
-	
+
 	sao->setLookPitch(pg_to_float(results, 0, 0));
 	sao->setYaw(pg_to_float(results, 0, 1));
 	sao->setBasePosition(v3f(
