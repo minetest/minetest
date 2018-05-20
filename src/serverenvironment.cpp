@@ -34,6 +34,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/serialize.h"
 #include "util/basic_macros.h"
 #include "util/pointedthing.h"
+#include "util/string.h"
 #include "threading/mutex_auto_lock.h"
 #include "filesys.h"
 #include "gameparams.h"
@@ -1786,9 +1787,9 @@ static void print_hexdump(std::ostream &o, const std::string &data)
 			int i = i0 + di;
 			char buf[4];
 			if(di<thislinelength)
-				snprintf(buf, 4, "%.2x ", data[i]);
+				mt_snprintf(buf, 4, "%.2x ", data[i]);
 			else
-				snprintf(buf, 4, "   ");
+				mt_snprintf(buf, 4, "   ");
 			o<<buf;
 		}
 		o<<" ";

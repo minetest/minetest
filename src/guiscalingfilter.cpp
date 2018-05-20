@@ -20,6 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "imagefilters.h"
 #include "settings.h"
 #include "util/numeric.h"
+#include "util/string.h"
 #include <cstdio>
 #include "client/renderingengine.h"
 
@@ -78,7 +79,7 @@ video::ITexture *guiScalingResizeCached(video::IVideoDriver *driver,
 
 	// Calculate scaled texture name.
 	char rectstr[200];
-	snprintf(rectstr, sizeof(rectstr), "%d:%d:%d:%d:%d:%d",
+	mt_snprintf(rectstr, sizeof(rectstr), "%d:%d:%d:%d:%d:%d",
 		srcrect.UpperLeftCorner.X,
 		srcrect.UpperLeftCorner.Y,
 		srcrect.getWidth(),
