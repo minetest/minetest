@@ -883,8 +883,6 @@ void MapgenBasic::generateDungeons(s16 max_stone_y)
 	dp.corridor_len_max = 13;
 	dp.rooms_min        = 2;
 	dp.rooms_max        = 16;
-	dp.y_min            = -MAX_MAP_GENERATION_LIMIT;
-	dp.y_max            = MAX_MAP_GENERATION_LIMIT;
 
 	dp.np_density       = nparams_dungeon_density;
 	dp.np_alt_wall      = nparams_dungeon_alt_wall;
