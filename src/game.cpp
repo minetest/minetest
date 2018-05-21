@@ -53,6 +53,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "nodedef.h"         // Needed for determining pointing to nodes
 #include "nodemetadata.h"
 #include "particles.h"
+#include "porting.h"
 #include "profiler.h"
 #include "quicktune_shortcutter.h"
 #include "raycast.h"
@@ -64,7 +65,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/basic_macros.h"
 #include "util/directiontables.h"
 #include "util/pointedthing.h"
-#include "util/string.h"
 #include "irrlicht_changes/static_text.h"
 #include "version.h"
 #include "script/scripting_client.h"
@@ -4024,7 +4024,7 @@ void Game::showPauseMenu()
 
 	 char control_text_buf[600];
 
-	 mt_snprintf(control_text_buf, ARRLEN(control_text_buf), control_text_template.c_str(),
+	 porting::mt_snprintf(control_text_buf, ARRLEN(control_text_buf), control_text_template.c_str(),
 			GET_KEY_NAME(keymap_forward),
 			GET_KEY_NAME(keymap_backward),
 			GET_KEY_NAME(keymap_left),

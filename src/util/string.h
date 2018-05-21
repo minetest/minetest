@@ -651,8 +651,6 @@ std::vector<std::basic_string<T> > split(const std::basic_string<T> &s, T delim)
 
 std::wstring translate_string(const std::wstring &s);
 
-int mt_snprintf(char *const buf, const size_t buf_size, const char *fmt, ...);
-
 inline std::wstring unescape_translate(const std::wstring &s) {
 	return unescape_enriched(translate_string(s));
 }
