@@ -1,4 +1,5 @@
 #!/bin/bash -e
+
 echo "Preparing for $TRAVIS_COMMIT_RANGE"
 
 if [[ "$LINT" == "1" ]]; then
@@ -37,13 +38,17 @@ if [[ $PLATFORM == "Unix" ]]; then
 		#brew upgrade postgresql
 	fi
 elif [[ $PLATFORM == "Win32" ]]; then
-	wget http://minetest.kitsunemimi.pw/mingw_w64_i686_ubuntu12.04_4.9.1.7z -O mingw.7z
+	sudo apt-get update
+	sudo apt-get install p7zip-full
+	wget http://minetest.kitsunemimi.pw/mingw-w64-i686_7.1.1_ubuntu14.04.7z -O mingw.7z
 	sed -e "s|%PREFIX%|i686-w64-mingw32|" \
 		-e "s|%ROOTPATH%|/usr/i686-w64-mingw32|" \
 		< util/travis/toolchain_mingw.cmake.in > util/buildbot/toolchain_mingw.cmake
 	sudo 7z x -y -o/usr mingw.7z
 elif [[ $PLATFORM == "Win64" ]]; then
-	wget http://minetest.kitsunemimi.pw/mingw_w64_x86_64_ubuntu12.04_4.9.1.7z -O mingw.7z
+	sudo apt-get update
+	sudo apt-get install p7zip-full
+	wget http://minetest.kitsunemimi.pw/mingw-w64-x86_64_7.1.1_ubuntu14.04.7z -O mingw.7z
 	sed -e "s|%PREFIX%|x86_64-w64-mingw32|" \
 		-e "s|%ROOTPATH%|/usr/x86_64-w64-mingw32|" \
 		< util/travis/toolchain_mingw.cmake.in > util/buildbot/toolchain_mingw64.cmake
