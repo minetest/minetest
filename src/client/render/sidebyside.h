@@ -37,7 +37,7 @@ protected:
 	void resetEye() override;
 
 public:
-	RenderingCoreSideBySide(IrrlichtDevice *_device, Client *_client,
-		Hud *_hud, bool _horizontal = false, bool _flipped = false);
+	RenderingCoreSideBySide(IrrlichtDevice *_device, Client *_client, Hud *_hud,
+			bool _horizontal = false, bool _flipped = false);
 	void drawAll() override;
 };

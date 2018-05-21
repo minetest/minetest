@@ -42,7 +42,6 @@ RenderingCore *createRenderingCore(const std::string &stereo_mode, IrrlichtDevic
 	if (stereo_mode == "topbottom")
 		return new RenderingCoreSideBySide(device, client, hud, true);
 	if (stereo_mode == "crossview")
-		return new RenderingCoreSideBySide(device, client, hud, false,
-				true);
+		return new RenderingCoreSideBySide(device, client, hud, false, true);
 	throw std::invalid_argument("Invalid rendering mode: " + stereo_mode);
 }
