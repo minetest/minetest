@@ -33,9 +33,7 @@ if [[ $PLATFORM == "Unix" ]]; then
 		fi
 
 	else
-		brew update
-		brew install freetype gettext hiredis irrlicht jpeg leveldb libogg libvorbis luajit
-		#brew upgrade postgresql
+		install_macosx_deps
 	fi
 elif [[ $PLATFORM == "Win32" ]]; then
 	sudo apt-get update
