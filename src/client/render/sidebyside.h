@@ -27,6 +27,7 @@ protected:
 	video::ITexture *left = nullptr;
 	video::ITexture *right = nullptr;
 	bool horizontal = false;
+	bool flipped = false;
 	core::dimension2du image_size;
 	v2s32 rpos;
 
@@ -36,7 +37,7 @@ protected:
 	void resetEye() override;
 
 public:
-	RenderingCoreSideBySide(IrrlichtDevice *_device, Client *_client, Hud *_hud,
-			bool _horizontal = false);
+	RenderingCoreSideBySide(IrrlichtDevice *_device, Client *_client,
+                Hud *_hud, bool _horizontal = false, bool _flipped = false);
 	void drawAll() override;
 };
