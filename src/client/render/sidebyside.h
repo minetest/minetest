@@ -38,6 +38,6 @@ protected:
 
 public:
 	RenderingCoreSideBySide(IrrlichtDevice *_device, Client *_client,
-                Hud *_hud, bool _horizontal = false, bool _flipped = false);
+		Hud *_hud, bool _horizontal = false, bool _flipped = false);
 	void drawAll() override;
 };

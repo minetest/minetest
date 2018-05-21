@@ -62,7 +62,7 @@ void RenderingCoreSideBySide::drawAll()
 void RenderingCoreSideBySide::useEye(bool _right)
 {
 	driver->setRenderTarget(_right ? right : left, true, true, skycolor);
-        RenderingCoreStereo::useEye(flipped != _right);
+	RenderingCoreStereo::useEye(_right ^ flipped);
 }
 
 void RenderingCoreSideBySide::resetEye()
