@@ -442,3 +442,15 @@ Since 0.5.0-dev and 0.4.17-dev, the dev notation refers to the next release,
 ie: 0.5.0-dev is the development version leading to 0.5.0.
 
 Prior to that, we used oldversion-dev.
+
+ How to pull request in the Linux?
+--------------------------------------
+1. Fork the original repository.
+2. Clone in the Linux Terminal.
+3. Make branch or fix what you want to edit.
+4. Git add --all and git commit -m "message" to commit your edited code.
+5. Push request from the terminal
+6. Go to your cloned repository (through internet) and go to pull request page
+7. pull request with some message!
+
+
