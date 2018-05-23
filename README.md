@@ -443,7 +443,7 @@ ie: 0.5.0-dev is the development version leading to 0.5.0.
 
 Prior to that, we used oldversion-dev.
 
-#### How to pull request in the Linux?
+ How to pull request in the Linux?
 --------------------------------------
 1. Fork the original repository.
 2. Clone in the Linux Terminal.
@@ -453,5 +453,5 @@ Prior to that, we used oldversion-dev.
 6. Go to your cloned repository (through internet) and go to pull request page
 7. pull request with some message!
 
-#(for Linux User, when you play minetest, change mouse sensitivity to 0.05)
+##(for Linux User, when you play minetest, change mouse sensitivity to 0.05)
 
