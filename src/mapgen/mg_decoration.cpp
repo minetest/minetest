@@ -360,13 +360,22 @@ size_t DecoSchematic::generate(MMVManip *vm, PcgRandom *pr, v3s16 p, bool ceilin
 	if (p.Y < vm->m_area.MinEdge.Y)
 		return 0;
 
-	if (flags & DECO_PLACE_CENTER_X)
-		p.X -= (schematic->size.X - 1) / 2;
-	if (flags & DECO_PLACE_CENTER_Z)
-		p.Z -= (schematic->size.Z - 1) / 2;
-
 	Rotation rot = (rotation == ROTATE_RAND) ?
 		(Rotation)pr->range(ROTATE_0, ROTATE_270) : rotation;
+
+	if (flags & DECO_PLACE_CENTER_X) {
+		if (rot == ROTATE_0 || rot == ROTATE_180)
+			p.X -= (schematic->size.X - 1) / 2;
+		else
+			p.Z -= (schematic->size.X - 1) / 2;
+	}
+	if (flags & DECO_PLACE_CENTER_Z) {
+		if (rot == ROTATE_0 || rot == ROTATE_180)
+			p.Z -= (schematic->size.Z - 1) / 2;
+		else
+			p.X -= (schematic->size.Z - 1) / 2;
+	}
+
 	bool force_placement = (flags & DECO_FORCE_PLACEMENT);
 
 	schematic->blitToVManip(vm, p, rot, force_placement);
