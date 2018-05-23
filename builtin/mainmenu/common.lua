@@ -173,7 +173,8 @@ os.tempfolder = function()
 
 	local randname = "MTTempModFolder_" .. math.random(0,10000)
 	local backstring = filetocheck:reverse()
-	return filetocheck:sub(0,filetocheck:len()-backstring:find(DIR_DELIM)+1) ..randname
+	return filetocheck:sub(0, filetocheck:len() - backstring:find(DIR_DELIM) + 1) ..
+		randname
 end
 
 --------------------------------------------------------------------------------
