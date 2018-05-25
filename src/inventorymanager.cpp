@@ -248,6 +248,12 @@ void IMoveAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 		from_inv == to_inv);
 
 	/*
+		Fix Drag & Drop
+	*/
+
+	ItemStack dst_item = list_to->getItem(to_i);
+	bool is_being_replaced = !dst_item.empty();
+	/*
 		Collect information of endpoints
 	*/
 
@@ -257,6 +263,8 @@ void IMoveAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 
 	int src_can_take_count = 0xffff;
 	int dst_can_put_count = 0xffff;
+
+	ItemStack src_item = list_from->getItem(from_i);
 
 	/* Query detached inventories */
 
@@ -269,14 +277,26 @@ void IMoveAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 	} else {
 		// Destination is detached
 		if (to_inv.type == InventoryLocation::DETACHED) {
-			ItemStack src_item = list_from->getItem(from_i);
+			if (is_being_replaced) {
+				int count = PLAYER_TO_SA(player)->detached_inventory_AllowTake(
+						to_inv.name, to_list, to_i, dst_item, player);
+				if (dst_item.count > count)
+					return;
+			}
+
 			src_item.count = try_take_count;
 			dst_can_put_count = PLAYER_TO_SA(player)->detached_inventory_AllowPut(
 				*this, src_item, player);
 		}
 		// Source is detached
 		if (from_inv.type == InventoryLocation::DETACHED) {
-			ItemStack src_item = list_from->getItem(from_i);
+			if (is_being_replaced) {
+				int count = PLAYER_TO_SA(player)->detached_inventory_AllowPut(
+						from_inv.name, from_list, from_i, dst_item, player);
+				if (dst_item.count > count)
+					return;
+			}
+
 			src_item.count = try_take_count;
 			src_can_take_count = PLAYER_TO_SA(player)->detached_inventory_AllowTake(
 				*this, src_item, player);
@@ -295,14 +315,27 @@ void IMoveAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 	} else {
 		// Destination is nodemeta
 		if (to_inv.type == InventoryLocation::NODEMETA) {
-			ItemStack src_item = list_from->getItem(from_i);
+			// Drag & Drop
+			if (is_being_replaced) {
+				int count = PLAYER_TO_SA(player)->nodemeta_inventory_AllowTake(
+						to_inv.p, to_list, to_i, dst_item, player);
+				if (dst_item.count > count)
+					return;
+			}
+
 			src_item.count = try_take_count;
 			dst_can_put_count = PLAYER_TO_SA(player)->nodemeta_inventory_AllowPut(
 				*this, src_item, player);
 		}
 		// Source is nodemeta
 		if (from_inv.type == InventoryLocation::NODEMETA) {
-			ItemStack src_item = list_from->getItem(from_i);
+			if (is_being_replaced) {
+				int count = PLAYER_TO_SA(player)->nodemeta_inventory_AllowPut(
+						from_inv.p, from_list, from_i, dst_item, player);
+				if (dst_item.count > count)
+					return;
+			}
+
 			src_item.count = try_take_count;
 			src_can_take_count = PLAYER_TO_SA(player)->nodemeta_inventory_AllowTake(
 				*this, src_item, player);
@@ -360,7 +393,6 @@ void IMoveAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 		return;
 	}
 
-	ItemStack src_item = list_from->getItem(from_i);
 	src_item.count = count;
 	ItemStack from_stack_was = list_from->getItem(from_i);
 	ItemStack to_stack_was = list_to->getItem(to_i);
@@ -474,11 +506,21 @@ void IMoveAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 	} else {
 		// Destination is detached
 		if (to_inv.type == InventoryLocation::DETACHED) {
+			if (is_being_replaced) {
+				PLAYER_TO_SA(player)->detached_inventory_OnTake(
+						to_inv.name, to_list, to_i, dst_item, player);
+			}
+
 			PLAYER_TO_SA(player)->detached_inventory_OnPut(
 				*this, src_item, player);
 		}
 		// Source is detached
 		if (from_inv.type == InventoryLocation::DETACHED) {
+			if (is_being_replaced) {
+				PLAYER_TO_SA(player)->detached_inventory_OnPut(
+						from_inv.name, from_list, from_i, dst_item, player);
+			}
+
 			PLAYER_TO_SA(player)->detached_inventory_OnTake(
 				*this, src_item, player);
 		}
@@ -493,12 +535,23 @@ void IMoveAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 			*this, count, player);
 	} else {
 		// Destination is nodemeta
+
 		if (to_inv.type == InventoryLocation::NODEMETA) {
+			if (is_being_replaced) {
+				PLAYER_TO_SA(player)->nodemeta_inventory_OnTake(
+						to_inv.p, to_list, to_i, dst_item, player);
+			}
+
 			PLAYER_TO_SA(player)->nodemeta_inventory_OnPut(
 				*this, src_item, player);
 		}
 		// Source is nodemeta
 		if (from_inv.type == InventoryLocation::NODEMETA) {
+			if (is_being_replaced) {
+				PLAYER_TO_SA(player)->nodemeta_inventory_OnPut(
+						from_inv.p, from_list, from_i, dst_item, player);
+			}
+
 			PLAYER_TO_SA(player)->nodemeta_inventory_OnTake(
 				*this, src_item, player);
 		}
@@ -919,4 +972,3 @@ bool getCraftingResult(Inventory *inv, ItemStack &result,
 
 	return found;
 }
-
