@@ -126,6 +126,7 @@ public:
 
 	float random_factor;
 	Noise *noise2 = nullptr;
+	int sizey_prev = 0;
 
 	OreVein() = default;
 	virtual ~OreVein();
