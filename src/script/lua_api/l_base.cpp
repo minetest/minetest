@@ -94,5 +94,5 @@ bool ModApiBase::registerFunction(lua_State *L, const char *name,
  */
 bool ModApiBase::isNaN(lua_State *L, int idx)
 {
-	return lua_rawequal(L, idx, idx);
+	return !lua_rawequal(L, idx, idx);
 }
