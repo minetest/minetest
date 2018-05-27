@@ -155,6 +155,31 @@ static void script_log(lua_State *L, const std::string &message,
 		infostream << script_get_backtrace(L) << std::endl;
 }
 
+std::string get_optional_origin(lua_State *L, const std::string &modname)
+{
+	// L can be NULL if we get called from scripting_game.cpp
+	if (!L)
+		return "";
+
+	if (modname != "")
+		return "[" + modname + "] ";
+
+	lua_Debug ar;
+
+	if (!lua_getstack(L, 2, &ar))
+		FATAL_ERROR_IF(!lua_getstack(L, 1, &ar), "lua_getstack() failed");
+	FATAL_ERROR_IF(!lua_getinfo(L, "Sl", &ar), "lua_getinfo() failed");
+
+	std::ostringstream os(std::ios::binary);
+	os << " (at " << ar.short_src << ":" << ar.currentline << ")";
+	return os.str();
+}
+
+void log_warning(lua_State *L, const std::string &message)
+{
+	warningstream << message << get_optional_origin(L, "") << std::endl;
+}
+
 void log_deprecated(lua_State *L, const std::string &message, int stack_depth)
 {
 	static thread_local bool configured = false;
@@ -175,4 +200,9 @@ void log_deprecated(lua_State *L, const std::string &message, int stack_depth)
 
 	if (do_log)
 		script_log(L, message, warningstream, do_error, stack_depth);
+}
+
+void log_error(lua_State *L, const std::string &message)
+{
+	errorstream << message << std::endl << script_get_backtrace(L) << std::endl;
 }

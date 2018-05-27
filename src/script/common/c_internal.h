@@ -116,3 +116,6 @@ void script_run_callbacks_f(lua_State *L, int nargs,
 
 void log_deprecated(lua_State *L, const std::string &message,
 	int stack_depth=1);
+std::string get_optional_origin(lua_State *L, const std::string &modname);
+void log_warning(lua_State *L, const std::string &message);
+void log_error(lua_State *L, const std::string &message);

@@ -69,7 +69,17 @@ int ModApiUtil::l_log(lua_State *L)
 			level = LL_NONE;
 		}
 	}
-	g_logger.log(level, text);
+	switch (level) {
+	case LL_ERROR:
+		log_error(L, text);
+		break;
+	case LL_WARNING:
+		log_warning(L, text);
+		break;
+	default:
+		g_logger.log(level,
+			get_optional_origin(L, getScriptApiBase(L)->getOrigin()) + text);
+	}
 	return 0;
 }
 
