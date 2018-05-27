@@ -84,3 +84,15 @@ bool ModApiBase::registerFunction(lua_State *L, const char *name,
 
 	return true;
 }
+
+/**
+ * A number is Nan if rawequals of itself return false
+ * See Lua doc (https://www.lua.org/manual/5.3/manual.html)
+ * @param L
+ * @param idx
+ * @return
+ */
+bool ModApiBase::isNaN(lua_State *L, int idx)
+{
+	return lua_rawequal(L, idx, idx);
+}

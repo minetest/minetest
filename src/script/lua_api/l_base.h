@@ -69,4 +69,6 @@ public:
 			const char* name,
 			lua_CFunction func,
 			int top);
+
+	static bool isNaN(lua_State *L, int idx);
 };
