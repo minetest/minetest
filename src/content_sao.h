@@ -64,7 +64,7 @@ protected:
 	float m_yaw = 0.0f;
 
 	bool m_properties_sent = true;
-	struct ObjectProperties m_prop;
+	ObjectProperties m_prop;
 
 	ItemGroupList m_armor_groups;
 	bool m_armor_groups_sent = false;
