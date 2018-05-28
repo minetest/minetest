@@ -90,9 +90,9 @@ bool ModApiBase::registerFunction(lua_State *L, const char *name,
  * See Lua doc (https://www.lua.org/manual/5.3/manual.html)
  * @param L
  * @param idx
- * @return
+ * @return isNaN status
  */
 bool ModApiBase::isNaN(lua_State *L, int idx)
 {
-	return !lua_rawequal(L, idx, idx);
+	return lua_type(L, idx) == LUA_TNUMBER && std::isnan(lua_tonumber(L, idx));
 }
