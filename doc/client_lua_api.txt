@@ -609,6 +609,8 @@ Helper functions
     * Converts a string representing an area box into two positions
 * `minetest.is_yes(arg)`
     * returns whether `arg` can be interpreted as yes
+* `minetest.is_nan(arg)`
+    * returns true if passed argument is an number and number is NaN.
 * `table.copy(table)`: returns a table
     * returns a deep copy of `table`
 
