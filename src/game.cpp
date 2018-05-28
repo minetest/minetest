@@ -1014,7 +1014,8 @@ bool Game::startup(bool *kill,
 	RenderingEngine::get_scene_manager()->getParameters()->
 		setAttribute(scene::OBJ_LOADER_IGNORE_MATERIAL_FILES, true);
 
-	memset(&runData, 0, sizeof(runData));
+	// Reinit runData
+	runData = GameRunData();
 	runData.time_from_last_punch = 10.0;
 	runData.update_wielded_item_trigger = true;
 
