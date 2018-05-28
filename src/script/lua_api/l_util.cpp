@@ -241,7 +241,7 @@ int ModApiUtil::l_is_yes(lua_State *L)
 }
 
 // is_nan(arg)
-int ModAiUtil::l_is_nan(lua_State *L)
+int ModApiUtil::l_is_nan(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 
