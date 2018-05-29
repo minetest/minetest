@@ -189,8 +189,6 @@ void GameUI::update(const RunStats &stats, Client *client, MapDrawControl *draw_
 void GameUI::initFlags()
 {
 	m_flags = GameUI::Flags();
-	m_flags.show_chat = true;
-	m_flags.show_hud = true;
 	m_flags.show_debug = g_settings->getBool("show_debug");
 }
 
