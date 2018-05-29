@@ -286,7 +286,7 @@ fake_function() {
 	gettext("Fall bobbing factor");
 	gettext("Multiplier for fall bobbing.\nFor example: 0 for no view bobbing; 1.0 for normal; 2.0 for double.");
 	gettext("3D mode");
-	gettext("3D support.\nCurrently supported:\n-    none: no 3d output.\n-    anaglyph: cyan/magenta color 3d.\n-    interlaced: odd/even line based polarisation screen support.\n-    topbottom: split screen top/bottom.\n-    sidebyside: split screen side by side.\n-    pageflip: quadbuffer based 3d.\nNote that the interlaced mode requires shaders to be enabled.");
+	gettext("3D support.\nCurrently supported:\n-    none: no 3d output.\n-    anaglyph: cyan/magenta color 3d.\n-    interlaced: odd/even line based polarisation screen support.\n-    topbottom: split screen top/bottom.\n-    sidebyside: split screen side by side.\n-    crossview: cross-eyed 3d viewing.\n-    pageflip: quadbuffer based 3d.\nNote that the interlaced mode requires shaders to be enabled.");
 	gettext("Console height");
 	gettext("In-game chat console height, between 0.1 (10%) and 1.0 (100%).");
 	gettext("Console color");
