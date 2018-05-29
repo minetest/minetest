@@ -53,7 +53,7 @@ void TestGameUI::testInit()
 	UASSERT(gui.getFlags().show_hud)
 	UASSERT(!gui.getFlags().show_minimap)
 	UASSERT(!gui.getFlags().show_profiler_graph)
-	
+
 	// And after the initFlags init stage
 	gui.initFlags();
 	UASSERT(gui.getFlags().show_chat)
