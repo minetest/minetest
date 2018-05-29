@@ -104,7 +104,7 @@ core.register_chatcommand("privs", {
 })
 
 core.register_chatcommand("hasprivs", {
-	params = "<priv>",
+	params = "<privilege>",
 	description = "Return list of all online players with privilege.",
 	privs = {basic_privs = true},
 	func = function(caller, param)
@@ -118,12 +118,12 @@ core.register_chatcommand("hasprivs", {
 		local privs = core.string_to_privs(param)
 		local players_with_privs = {}
 		for _, player in pairs(core.get_connected_players()) do
-			local toname = player:get_player_name()
-			if core.check_player_privs(toname, privs) then
-				table.insert(players_with_privs, toname)
+			local player_name = player:get_player_name()
+			if core.check_player_privs(player_name, privs) then
+				table.insert(players_with_privs, player_name)
 			end
 		end	
-		return true, "Players with the " ..param.. " priv: " ..table.concat(players_with_privs, ", ")
+		return true, "Players with the " .. param .. " priv: " .. table.concat(players_with_privs, ", ")
 	end	
 })
 
