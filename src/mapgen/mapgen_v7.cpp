@@ -591,6 +591,11 @@ void MapgenV7::generateRidgeTerrain()
 			float uwatern = noise_ridge_uwater->result[index2d] * 2.0f;
 			if (std::fabs(uwatern) > width)
 				continue;
+			// Optimises, but also avoids removing nodes placed by mods in
+			// 'on-generated', when generating outside mapchunk.
+			content_t c = vm->m_data[vi].getContent();
+			if (c != c_stone)
+				continue;
 
 			float altitude = y - water_level;
 			float height_mod = (altitude + 17.0f) / 2.5f;
