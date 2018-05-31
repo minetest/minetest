@@ -895,9 +895,8 @@ int ObjectRef::l_set_yaw(lua_State *L)
 	ObjectRef *ref = checkobject(L, 1);
 	LuaEntitySAO *co = getluaobject(ref);
 	if (co == NULL) return 0;
-	if (isNaN(L, 2)) {
+	if (isNaN(L, 2))
 		throw LuaError("ObjectRef::set_yaw: NaN value is not allowed.");
-	}
 
 	float yaw = luaL_checknumber(L, 2) * core::RADTODEG;
 	// Do it

@@ -21,8 +21,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "lua_api/l_internal.h"
 #include "cpp_api/s_base.h"
 #include "content/mods.h"
-#include <cmath>
 #include "server.h"
+#include <cmath>
 
 ScriptApiBase *ModApiBase::getScriptApiBase(lua_State *L)
 {
@@ -86,13 +86,6 @@ bool ModApiBase::registerFunction(lua_State *L, const char *name,
 	return true;
 }
 
-/**
- * A number is Nan if rawequals of itself return false
- * See Lua doc (https://www.lua.org/manual/5.3/manual.html)
- * @param L
- * @param idx
- * @return isNaN status
- */
 bool ModApiBase::isNaN(lua_State *L, int idx)
 {
 	return lua_type(L, idx) == LUA_TNUMBER && std::isnan(lua_tonumber(L, idx));
