@@ -894,9 +894,10 @@ int ObjectRef::l_set_yaw(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
 	LuaEntitySAO *co = getluaobject(ref);
-	if (co == NULL) return 0;
+	if (!co)
+	    return 0;
+
 	float yaw = luaL_checknumber(L, 2) * core::RADTODEG;
-	// Do it
 	co->setYaw(yaw);
 	return 0;
 }
@@ -907,10 +908,67 @@ int ObjectRef::l_get_yaw(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
 	LuaEntitySAO *co = getluaobject(ref);
-	if (co == NULL) return 0;
-	// Do it
+	if (!co)
+	    return 0;
+
 	float yaw = co->getYaw() * core::DEGTORAD;
 	lua_pushnumber(L, yaw);
+	return 1;
+}
+
+// set_pitch(self, radians) (X-AXIS)
+int ObjectRef::l_set_pitch(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	ObjectRef *ref = checkobject(L, 1);
+	LuaEntitySAO *co = getluaobject(ref);
+	if (!co)
+	    return 0;
+
+	float pitch = luaL_checknumber(L, 2) * core::RADTODEG;
+	co->setPitch(pitch);
+	return 0;
+}
+
+// get_pitch(self) (X-AXIS)
+int ObjectRef::l_get_pitch(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	ObjectRef *ref = checkobject(L, 1);
+	LuaEntitySAO *co = getluaobject(ref);
+	if (!co)
+	    return 0;
+
+	float pitch = co->getPitch() * core::DEGTORAD;
+	lua_pushnumber(L, pitch);
+	return 1;
+}
+
+// set_roll(self, radians) (Z-AXIS)
+int ObjectRef::l_set_roll(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	ObjectRef *ref = checkobject(L, 1);
+	LuaEntitySAO *co = getluaobject(ref);
+	if (!co)
+	    return 0;
+
+	float roll = luaL_checknumber(L, 2) * core::RADTODEG;
+	co->setRoll(roll);
+	return 0;
+}
+
+// get_roll(self) (Z-AXIS)
+int ObjectRef::l_get_roll(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	ObjectRef *ref = checkobject(L, 1);
+	LuaEntitySAO *co = getluaobject(ref);
+	if (!co)
+	    return 0;
+
+	float roll = co->getRoll() * core::DEGTORAD;
+	lua_pushnumber(L, roll);
 	return 1;
 }
 
@@ -1092,7 +1150,7 @@ int ObjectRef::l_get_look_vertical(lua_State *L)
 	PlayerSAO* co = getplayersao(ref);
 	if (co == NULL) return 0;
 	// Do it
-	lua_pushnumber(L, co->getRadPitch());
+	lua_pushnumber(L, co->getRadLookPitch());
 	return 1;
 }
 
@@ -1117,7 +1175,7 @@ int ObjectRef::l_set_look_vertical(lua_State *L)
 	if (co == NULL) return 0;
 	float pitch = luaL_checknumber(L, 2) * core::RADTODEG;
 	// Do it
-	co->setPitchAndSend(pitch);
+	co->setLookPitchAndSend(pitch);
 	return 1;
 }
 
@@ -1148,7 +1206,7 @@ int ObjectRef::l_set_look_pitch(lua_State *L)
 	if (co == NULL) return 0;
 	float pitch = luaL_checknumber(L, 2) * core::RADTODEG;
 	// Do it
-	co->setPitchAndSend(pitch);
+	co->setLookPitchAndSend(pitch);
 	return 1;
 }
 
@@ -1856,6 +1914,10 @@ const luaL_Reg ObjectRef::methods[] = {
 	luamethod_aliased(ObjectRef, get_acceleration, getacceleration),
 	luamethod_aliased(ObjectRef, set_yaw, setyaw),
 	luamethod_aliased(ObjectRef, get_yaw, getyaw),
+	luamethod(ObjectRef, set_pitch),
+	luamethod(ObjectRef, get_pitch),
+	luamethod(ObjectRef, set_roll),
+	luamethod(ObjectRef, get_roll),
 	luamethod_aliased(ObjectRef, set_texture_mod, settexturemod),
 	luamethod_aliased(ObjectRef, set_sprite, setsprite),
 	luamethod(ObjectRef, get_entity_name),

@@ -454,7 +454,7 @@ void PlayerDatabasePostgreSQL::savePlayer(RemotePlayer *player)
 	verifyDatabase();
 
 	v3f pos = sao->getBasePosition();
-	std::string pitch = ftos(sao->getPitch());
+	std::string pitch = ftos(sao->getLookPitch());
 	std::string yaw = ftos(sao->getYaw());
 	std::string posx = ftos(pos.X);
 	std::string posy = ftos(pos.Y);
@@ -545,7 +545,7 @@ bool PlayerDatabasePostgreSQL::loadPlayer(RemotePlayer *player, PlayerSAO *sao)
 		return false;
 	}
 
-	sao->setPitch(pg_to_float(results, 0, 0));
+	sao->setLookPitch(pg_to_float(results, 0, 0));
 	sao->setYaw(pg_to_float(results, 0, 1));
 	sao->setBasePosition(v3f(
 		pg_to_float(results, 0, 2),

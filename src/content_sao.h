@@ -33,10 +33,18 @@ public:
 	virtual ~UnitSAO() = default;
 
 	virtual void setYaw(const float yaw) { m_yaw = yaw; }
+	virtual void setPitch(const float pitch) { m_pitch = pitch; }
+	virtual void setRoll(const float roll) { m_roll = roll; }
+
 	float getYaw() const { return m_yaw; };
 	f32 getRadYaw() const { return m_yaw * core::DEGTORAD; }
 	// Deprecated
 	f32 getRadYawDep() const { return (m_yaw + 90.) * core::DEGTORAD; }
+	float getPitch() const { return m_pitch; };
+	f32 getRadPitch() const { return m_pitch * core::DEGTORAD; }
+	float getRoll() const { return m_roll; };
+	f32 getRadRoll() const { return m_roll * core::DEGTORAD; }
+
 
 	s16 getHP() const { return m_hp; }
 	// Use a function, if isDead can be defined by other conditions
@@ -62,6 +70,8 @@ public:
 protected:
 	s16 m_hp = -1;
 	float m_yaw = 0.0f;
+	float m_pitch = 0.0f;
+	float m_roll = 0.0f;
 
 	bool m_properties_sent = true;
 	ObjectProperties m_prop;
@@ -154,6 +164,8 @@ private:
 	v3f m_acceleration;
 
 	float m_last_sent_yaw = 0.0f;
+	float m_last_sent_pitch = 0.0f;
+	float m_last_sent_roll = 0.0f;
 	v3f m_last_sent_position;
 	v3f m_last_sent_velocity;
 	float m_last_sent_position_timer = 0.0f;
@@ -229,14 +241,14 @@ public:
 	void setBasePosition(const v3f &position);
 	void setPos(const v3f &pos);
 	void moveTo(v3f pos, bool continuous);
-	void setYaw(const float yaw);
+	void setPlayerYaw(const float yaw);
 	// Data should not be sent at player initialization
 	void setYawAndSend(const float yaw);
-	void setPitch(const float pitch);
+	void setLookPitch(const float pitch);
 	// Data should not be sent at player initialization
-	void setPitchAndSend(const float pitch);
-	f32 getPitch() const { return m_pitch; }
-	f32 getRadPitch() const { return m_pitch * core::DEGTORAD; }
+	void setLookPitchAndSend(const float pitch);
+	f32 getLookPitch() const { return m_pitch; }
+	f32 getRadLookPitch() const { return m_pitch * core::DEGTORAD; }
 	// Deprecated
 	f32 getRadPitchDep() const { return -1.0 * m_pitch * core::DEGTORAD; }
 	void setFov(const float pitch);
