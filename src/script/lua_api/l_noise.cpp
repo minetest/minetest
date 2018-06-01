@@ -69,8 +69,8 @@ int LuaPerlinNoise::create_object(lua_State *L)
 	} else {
 		params.seed    = luaL_checkint(L, 1);
 		params.octaves = luaL_checkint(L, 2);
-		params.persist = luaL_checknumber(L, 3);
-		params.spread  = v3f(1, 1, 1) * luaL_checknumber(L, 4);
+		params.persist = read<float>(L, 3);
+		params.spread  = v3f(1, 1, 1) * read<float>(L, 4);
 	}
 
 	LuaPerlinNoise *o = new LuaPerlinNoise(&params);
@@ -437,7 +437,7 @@ int LuaPseudoRandom::create_object(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 
-	u64 seed = luaL_checknumber(L, 1);
+	u64 seed = read<float>(L, 1);
 	LuaPseudoRandom *o = new LuaPseudoRandom(seed);
 	*(void **)(lua_newuserdata(L, sizeof(void *))) = o;
 	luaL_getmetatable(L, className);
@@ -534,7 +534,7 @@ int LuaPcgRandom::create_object(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 
-	u64 seed = luaL_checknumber(L, 1);
+	u64 seed = read<float>(L, 1);
 	LuaPcgRandom *o = lua_isnumber(L, 2) ?
 		new LuaPcgRandom(seed, lua_tointeger(L, 2)) :
 		new LuaPcgRandom(seed);
