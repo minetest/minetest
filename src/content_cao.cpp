@@ -317,7 +317,7 @@ void GenericCAO::processInitData(const std::string &data)
 		m_is_player = readU8(is);
 		m_id = readU16(is);
 		m_position = readV3F1000(is);
-		m_yaw = readF1000(is);
+		m_rotation = readV3F1000(is);
 		m_hp = readS16(is);
 		num_messages = readU8(is);
 	} else {
@@ -719,9 +719,8 @@ void GenericCAO::updateNodePos()
 		v3s16 camera_offset = m_env->getCameraOffset();
 		node->setPosition(pos_translator.vect_show - intToFloat(camera_offset, BS));
 		if (node != m_spritenode) { // rotate if not a sprite
-			v3f rot = node->getRotation();
-			rot.Y = -m_yaw;
-			node->setRotation(rot);
+
+			node->setRotation(m_rotation * -1);
 		}
 	}
 }
@@ -738,7 +737,7 @@ void GenericCAO::step(float dtime, ClientEnvironment *env)
 			m_velocity = v3f(0,0,0);
 			m_acceleration = v3f(0,0,0);
 			pos_translator.vect_show = m_position;
-			m_yaw = player->getYaw();
+			m_rotation.Y = player->getYaw();
 			const PlayerControl &controls = player->getPlayerControl();
 
 			bool walking = false;
@@ -920,7 +919,7 @@ void GenericCAO::step(float dtime, ClientEnvironment *env)
 		}
 	}
 	if (!getParent() && std::fabs(m_prop.automatic_rotate) > 0.001) {
-		m_yaw += dtime * m_prop.automatic_rotate * 180 / M_PI;
+		m_rotation.Y += dtime * m_prop.automatic_rotate * 180 / M_PI;
 		updateNodePos();
 	}
 
@@ -931,13 +930,13 @@ void GenericCAO::step(float dtime, ClientEnvironment *env)
 				+ m_prop.automatic_face_movement_dir_offset;
 		float max_rotation_delta =
 				dtime * m_prop.automatic_face_movement_max_rotation_per_sec;
-		float delta = wrapDegrees_0_360(target_yaw - m_yaw);
+		float delta = wrapDegrees_0_360(target_yaw - m_rotation.Y);
 
 		if (delta > max_rotation_delta && 360 - delta > max_rotation_delta) {
-			m_yaw += (delta < 180) ? max_rotation_delta : -max_rotation_delta;
-			m_yaw = wrapDegrees_0_360(m_yaw);
+			m_rotation.Y += (delta < 180) ? max_rotation_delta : -max_rotation_delta;
+			m_rotation.Y = wrapDegrees_0_360(m_rotation.Y);
 		} else {
-			m_yaw = target_yaw;
+			m_rotation.Y = target_yaw;
 		}
 		updateNodePos();
 	}
@@ -966,7 +965,7 @@ void GenericCAO::updateTexturePos()
 			else {
 				float mob_dir =
 						atan2(cam_to_entity.Z, cam_to_entity.X) / M_PI * 180.;
-				float dir = mob_dir - m_yaw;
+				float dir = mob_dir - m_rotation.Y;
 				dir = wrapDegrees_180(dir);
 				if (std::fabs(wrapDegrees_180(dir - 0)) <= 45.1f)
 					col += 2;
@@ -1300,10 +1299,8 @@ void GenericCAO::processMessage(const std::string &data)
 		m_position = readV3F1000(is);
 		m_velocity = readV3F1000(is);
 		m_acceleration = readV3F1000(is);
-		if (std::fabs(m_prop.automatic_rotate) < 0.001f)
-			m_yaw = readF1000(is);
-		else
-			readF1000(is);
+		m_rotation = readV3F1000(is);
+
 		bool do_interpolate = readU8(is);
 		bool is_end_position = readU8(is);
 		float update_interval = readF1000(is);

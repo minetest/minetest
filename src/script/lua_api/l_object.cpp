@@ -888,16 +888,52 @@ int ObjectRef::l_get_acceleration(lua_State *L)
 	return 1;
 }
 
+// set_rotation(self, pos)
+int ObjectRef::l_set_rotation(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	ObjectRef *ref = checkobject(L, 1);
+	LuaEntitySAO *co = getluaobject(ref);
+	if (!co) 
+	    return 0;
+
+	// rot
+	v3f rotation = check_v3f(L, 2);//checkFloatPos(L, 2);
+	co->setRotation(rotation);
+	return 0;
+}
+
+// get_rotation(self)
+// returns: {x=num, y=num, z=num}
+int ObjectRef::l_get_rotation(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	ObjectRef *ref = checkobject(L, 1);
+	LuaEntitySAO *co = getluaobject(ref);
+	if (!co) 
+	    return 0;
+
+	v3f rotation = co->getRotation();
+	lua_newtable(L);
+	lua_pushnumber(L, rotation.X);
+	lua_setfield(L, -2, "x");
+	lua_pushnumber(L, rotation.Y);
+	lua_setfield(L, -2, "y");
+	lua_pushnumber(L, rotation.Z);
+	lua_setfield(L, -2, "z");
+	return 1;
+}
 // set_yaw(self, radians)
 int ObjectRef::l_set_yaw(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
 	LuaEntitySAO *co = getluaobject(ref);
-	if (co == NULL) return 0;
+	if (!co) 
+	    return 0;
+
 	float yaw = luaL_checknumber(L, 2) * core::RADTODEG;
-	// Do it
-	co->setYaw(yaw);
+	co->setRotation(v3f(0, yaw, 0));
 	return 0;
 }
 
@@ -907,9 +943,10 @@ int ObjectRef::l_get_yaw(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
 	LuaEntitySAO *co = getluaobject(ref);
-	if (co == NULL) return 0;
-	// Do it
-	float yaw = co->getYaw() * core::DEGTORAD;
+	if (!co) 
+	    return 0;
+
+	float yaw = co->getRotation().Y * core::DEGTORAD;
 	lua_pushnumber(L, yaw);
 	return 1;
 }
@@ -1042,7 +1079,7 @@ int ObjectRef::l_get_look_dir(lua_State *L)
 	PlayerSAO* co = getplayersao(ref);
 	if (co == NULL) return 0;
 	// Do it
-	float pitch = co->getRadPitchDep();
+	float pitch = co->getRadLookPitchDep();
 	float yaw = co->getRadYawDep();
 	v3f v(std::cos(pitch) * std::cos(yaw), std::sin(pitch), std::cos(pitch) *
 		std::sin(yaw));
@@ -1063,7 +1100,7 @@ int ObjectRef::l_get_look_pitch(lua_State *L)
 	PlayerSAO* co = getplayersao(ref);
 	if (co == NULL) return 0;
 	// Do it
-	lua_pushnumber(L, co->getRadPitchDep());
+	lua_pushnumber(L, co->getRadLookPitchDep());
 	return 1;
 }
 
@@ -1092,7 +1129,7 @@ int ObjectRef::l_get_look_vertical(lua_State *L)
 	PlayerSAO* co = getplayersao(ref);
 	if (co == NULL) return 0;
 	// Do it
-	lua_pushnumber(L, co->getRadPitch());
+	lua_pushnumber(L, co->getRadLookPitch());
 	return 1;
 }
 
@@ -1104,7 +1141,7 @@ int ObjectRef::l_get_look_horizontal(lua_State *L)
 	PlayerSAO* co = getplayersao(ref);
 	if (co == NULL) return 0;
 	// Do it
-	lua_pushnumber(L, co->getRadYaw());
+	lua_pushnumber(L, co->getRadRotation().Y);
 	return 1;
 }
 
@@ -1117,7 +1154,7 @@ int ObjectRef::l_set_look_vertical(lua_State *L)
 	if (co == NULL) return 0;
 	float pitch = luaL_checknumber(L, 2) * core::RADTODEG;
 	// Do it
-	co->setPitchAndSend(pitch);
+	co->setLookPitchAndSend(pitch);
 	return 1;
 }
 
@@ -1130,7 +1167,7 @@ int ObjectRef::l_set_look_horizontal(lua_State *L)
 	if (co == NULL) return 0;
 	float yaw = luaL_checknumber(L, 2) * core::RADTODEG;
 	// Do it
-	co->setYawAndSend(yaw);
+	co->setPlayerYawAndSend(yaw);
 	return 1;
 }
 
@@ -1148,7 +1185,7 @@ int ObjectRef::l_set_look_pitch(lua_State *L)
 	if (co == NULL) return 0;
 	float pitch = luaL_checknumber(L, 2) * core::RADTODEG;
 	// Do it
-	co->setPitchAndSend(pitch);
+	co->setLookPitchAndSend(pitch);
 	return 1;
 }
 
@@ -1166,7 +1203,7 @@ int ObjectRef::l_set_look_yaw(lua_State *L)
 	if (co == NULL) return 0;
 	float yaw = luaL_checknumber(L, 2) * core::RADTODEG;
 	// Do it
-	co->setYawAndSend(yaw);
+	co->setPlayerYawAndSend(yaw);
 	return 1;
 }
 
@@ -1856,6 +1893,8 @@ const luaL_Reg ObjectRef::methods[] = {
 	luamethod_aliased(ObjectRef, get_acceleration, getacceleration),
 	luamethod_aliased(ObjectRef, set_yaw, setyaw),
 	luamethod_aliased(ObjectRef, get_yaw, getyaw),
+	luamethod(ObjectRef, set_rotation),
+	luamethod(ObjectRef, get_rotation),
 	luamethod_aliased(ObjectRef, set_texture_mod, settexturemod),
 	luamethod_aliased(ObjectRef, set_sprite, setsprite),
 	luamethod(ObjectRef, get_entity_name),

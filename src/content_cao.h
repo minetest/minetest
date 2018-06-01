@@ -74,7 +74,7 @@ private:
 	v3f m_position = v3f(0.0f, 10.0f * BS, 0);
 	v3f m_velocity;
 	v3f m_acceleration;
-	float m_yaw = 0.0f;
+	v3f m_rotation;
 	s16 m_hp = 1;
 	SmoothTranslator pos_translator;
 	// Spritesheet/animation stuff
@@ -141,9 +141,10 @@ public:
 	virtual bool getSelectionBox(aabb3f *toset) const;
 
 	v3f getPosition();
-	inline float getYaw() const
+
+	inline v3f getRotation() const
 	{
-		return m_yaw;
+	    return m_rotation;
 	}
 
 	const bool isImmortal();
