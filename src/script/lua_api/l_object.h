@@ -173,10 +173,10 @@ private:
 	// get_acceleration(self)
 	static int l_get_acceleration(lua_State *L);
 
-	// set_rotation(self, pos)
+	// set_rotation(self, {x=num, y=num, z=num})
 	static int l_set_rotation(lua_State *L);
 	
-	// get_rotation(self, pos)
+	// get_rotation(self)
 	static int l_get_rotation(lua_State *L);
 	
 	// set_yaw(self, radians)

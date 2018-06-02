@@ -142,7 +142,7 @@ public:
 
 	v3f getPosition();
 
-	inline v3f getRotation() const
+	inline const v3f & getRotation()
 	{
 	    return m_rotation;
 	}

@@ -1809,7 +1809,7 @@ void Server::SendMovePlayer(session_t peer_id)
 	assert(player);
 	PlayerSAO *sao = player->getPlayerSAO();
 	assert(sao);
-
+	
 	NetworkPacket pkt(TOCLIENT_MOVE_PLAYER, sizeof(v3f) + sizeof(f32) * 2, peer_id);
 	pkt << sao->getBasePosition() << sao->getLookPitch() << sao->getRotation().Y;
 

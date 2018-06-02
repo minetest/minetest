@@ -888,7 +888,7 @@ int ObjectRef::l_get_acceleration(lua_State *L)
 	return 1;
 }
 
-// set_rotation(self, pos)
+// set_rotation(self, {x=num, y=num, z=num})
 int ObjectRef::l_set_rotation(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
@@ -897,8 +897,7 @@ int ObjectRef::l_set_rotation(lua_State *L)
 	if (!co) 
 	    return 0;
 
-	// rot
-	v3f rotation = check_v3f(L, 2);//checkFloatPos(L, 2);
+	v3f rotation = check_v3f(L, 2);
 	co->setRotation(rotation);
 	return 0;
 }
@@ -913,14 +912,8 @@ int ObjectRef::l_get_rotation(lua_State *L)
 	if (!co) 
 	    return 0;
 
-	v3f rotation = co->getRotation();
 	lua_newtable(L);
-	lua_pushnumber(L, rotation.X);
-	lua_setfield(L, -2, "x");
-	lua_pushnumber(L, rotation.Y);
-	lua_setfield(L, -2, "y");
-	lua_pushnumber(L, rotation.Z);
-	lua_setfield(L, -2, "z");
+	push_v3f(L, co->getRotation());
 	return 1;
 }
 // set_yaw(self, radians)
