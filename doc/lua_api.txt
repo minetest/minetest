@@ -907,9 +907,19 @@ node definition:
 
     paramtype = "light"
     ^ The value stores light with and without sun in its upper and lower 4 bits
-      respectively. Allows light to propagate from or through the node with
-      light value falling by 1 per node. This is essential for a light source
-      node to spread its light.
+      respectively.
+      Required by a light source node to enable spreading its light.
+      Required by the following drawtypes as they determine their visual
+      brightness from their internal light value:
+        torchlike,
+        signlike,
+        firelike,
+        fencelike,
+        raillike,
+        nodebox,
+        mesh,
+        plantlike,
+        plantlike_rooted.
 
 `param2` is reserved for the engine when any of these are used:
 
@@ -1217,6 +1227,7 @@ size of the finest detail you require. For example:
 if `spread` is 512 nodes, `lacunarity` is 2.0 and finest detail required is 16
 nodes, octaves will be 6 because the 'wavelengths' of the octaves will be
 512, 256, 128, 64, 32, 16 nodes.
+Warning: If the 'wavelength' of any octave falls below 1 an error will occur.
 
 ### `persistence`
 Each additional octave has an amplitude that is the amplitude of the previous
@@ -1505,9 +1516,6 @@ factor!
 
 Below are the specific uses for fields in each type; fields not listed for that
 type are ignored.
-
-**Note**: Future revisions to the HUD API may be incompatible; the HUD API is
-still in the experimental stages.
 
 ### `image`
 Displays an image on the HUD.
@@ -5322,11 +5330,7 @@ Definition tables
         ^ Only when `paramtype2` supports palettes. ]]
         post_effect_color = "green#0F",
         ^ Screen tint if player is inside node, see "ColorSpec".
-        paramtype = "none", --[[
-        ^ See "Nodes".
-        ^ paramtype = "light" allows light to propagate from or through the
-        ^ node with light value falling by 1 per node. This line is essential
-        ^ for a light source node to spread its light. ]]
+        paramtype = "none", -- See "Nodes".
         paramtype2 = "none", -- See "Nodes"
         place_param2 = nil, -- Force value for param2 when player places node
         is_ground_content = true,
@@ -5374,10 +5378,26 @@ Definition tables
         ^ Tells connected nodebox nodes to connect only to these sides of this
         ^ node. ]]
         mesh = "model",
-        selection_box = {type="regular"}, --[[
-        ^ See "Node boxes".
+        selection_box = {
+            type = "fixed",
+            fixed = {
+                {-2 / 16, -0.5, -2 / 16, 2 / 16, 3 / 16, 2 / 16},
+            },
+        },
+        ^ Custom selection box definition. Multiple boxes can be defined.
         ^ If drawtype "nodebox" is used and selection_box is nil, then node_box
-        ^ is used. ]]
+        ^ definition is used for the selection box.
+        collision_box = {
+            type = "fixed",
+            fixed = {
+                {-2 / 16, -0.5, -2 / 16, 2 / 16, 3 / 16, 2 / 16},
+            },
+        },
+        ^ Custom collision box definition. Multiple boxes can be defined.
+        ^ If drawtype "nodebox" is used and collision_box is nil, then node_box
+        ^ definition is used for the collision box.
+        ^ For both of the above a box is defined as:
+        ^ {xmin, ymin, zmin, xmax, ymax, zmax} in nodes from node center.
         legacy_facedir_simple = false,
         ^ Support maps made in and before January 2012.
         legacy_wallmounted = false,
@@ -5946,11 +5966,12 @@ Note that in params, use of symbols is as follows:
         texture = "image.png",
     --  ^ Uses texture (string)
         playername = "singleplayer",
-    --  ^ optional, if specified spawns particle only on the player's client
+    --  ^ Optional, if specified spawns particle only on the player's client
         animation = {Tile Animation definition},
-    --  ^ optional, specifies how to animate the particle texture
+    --  ^ Optional, specifies how to animate the particle texture
         glow = 0
-    --  ^ optional, specify particle self-luminescence in darkness
+    --  ^ Optional, specify particle self-luminescence in darkness.
+    --  ^ Values 0-14.
     }
 
 
@@ -5991,9 +6012,10 @@ Note that in params, use of symbols is as follows:
     --  ^ Playername is optional, if specified spawns particle only on the
     --  ^ player's client.
         animation = {Tile Animation definition},
-    --  ^ optional, specifies how to animate the particle texture
+    --  ^ Optional, specifies how to animate the particle texture
         glow = 0
-    --  ^ optional, specify particle self-luminescence in darkness
+    --  ^ Optional, specify particle self-luminescence in darkness.
+    --  ^ Values 0-14.
     }
 
 ### `HTTPRequest` definition (`HTTPApiTable.fetch_async`, `HTTPApiTable.fetch_async`)
