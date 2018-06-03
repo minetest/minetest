@@ -791,6 +791,10 @@ void MapgenBasic::dustTopNodes()
 		if (biome->c_dust == CONTENT_IGNORE)
 			continue;
 
+		// Check if mapchunk above has generated, if so, drop dust from 16 nodes
+		// above current mapchunk top, above decorations that will extend above
+		// the current mapchunk. If the mapchunk above has not generated, it
+		// will provide this required dust when it does.
 		u32 vi = vm->m_area.index(x, full_node_max.Y, z);
 		content_t c_full_max = vm->m_data[vi].getContent();
 		s16 y_start;
@@ -819,14 +823,15 @@ void MapgenBasic::dustTopNodes()
 
 		content_t c = vm->m_data[vi].getContent();
 		NodeDrawType dtype = ndef->get(c).drawtype;
-		// Only place on walkable cubic non-liquid nodes
-		// Dust check needed due to vertical overgeneration
+		// Only place on cubic, walkable, non-dust nodes.
+		// Dust check needed due to avoid double layer of dust caused by
+		// dropping dust from 16 nodes above mapchunk top.
 		if ((dtype == NDT_NORMAL ||
+				dtype == NDT_ALLFACES ||
 				dtype == NDT_ALLFACES_OPTIONAL ||
-				dtype == NDT_GLASSLIKE_FRAMED_OPTIONAL ||
 				dtype == NDT_GLASSLIKE ||
 				dtype == NDT_GLASSLIKE_FRAMED ||
-				dtype == NDT_ALLFACES) &&
+				dtype == NDT_GLASSLIKE_FRAMED_OPTIONAL) &&
 				ndef->get(c).walkable && c != biome->c_dust) {
 			VoxelArea::add_y(em, vi, 1);
 			vm->m_data[vi] = MapNode(biome->c_dust);
