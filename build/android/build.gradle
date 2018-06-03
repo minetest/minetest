@@ -14,7 +14,7 @@ android {
 	buildToolsVersion "25.0.3"
 
 	defaultConfig {
-		versionCode 17
+		versionCode 18
 		versionName "${System.env.VERSION_STR}.${versionCode}"
 		minSdkVersion 9
 		targetSdkVersion 9
