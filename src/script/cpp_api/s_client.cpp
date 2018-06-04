@@ -50,6 +50,28 @@ bool ScriptApiClient::on_sending_message(const std::string &message)
 	return ate;
 }
 
+void ScriptApiClient::on_keydown(const char *key)
+{
+	SCRIPTAPI_PRECHECKHEADER
+
+	lua_getglobal(L, "core");
+	lua_getfield(L, -1, "registered_on_keydown");
+
+	lua_pushstring(L, key);
+	runCallbacks(1, RUN_CALLBACKS_MODE_OR_SC);
+}
+
+void ScriptApiClient::on_keyup(const char *key)
+{
+	SCRIPTAPI_PRECHECKHEADER
+
+	lua_getglobal(L, "core");
+	lua_getfield(L, -1, "registered_on_keyup");
+
+	lua_pushstring(L, key);
+	runCallbacks(1, RUN_CALLBACKS_MODE_OR_SC);
+}
+
 bool ScriptApiClient::on_receiving_message(const std::string &message)
 {
 	SCRIPTAPI_PRECHECKHEADER

@@ -1172,6 +1172,7 @@ void Game::shutdown()
 			sleep_ms(100);
 		}
 	}
+	input->setScript(nullptr);
 }
 
 
@@ -1386,6 +1387,8 @@ bool Game::createClient(const std::string &playername,
 	mapper = client->getMinimap();
 	if (mapper)
 		mapper->setMinimapMode(MINIMAP_MODE_OFF);
+
+	input->setScript(client->getScript());
 
 	return true;
 }

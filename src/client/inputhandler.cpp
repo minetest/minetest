@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/numeric.h"
 #include "inputhandler.h"
 #include "gui/mainmenumanager.h"
+#include "script/scripting_client.h"
 
 void KeyCache::populate_nonchanging()
 {
@@ -108,6 +109,14 @@ bool MyEventReceiver::OnEvent(const SEvent &event)
 	// Remember whether each key is down or up
 	if (event.EventType == irr::EET_KEY_INPUT_EVENT) {
 		const KeyPress &keyCode = event.KeyInput;
+
+		if (m_script) {
+			if (event.KeyInput.PressedDown) {
+				m_script->on_keydown(keyCode.sym());
+			} else {
+				m_script->on_keyup(keyCode.sym());
+			}
+		}
 		if (keysListenedFor[keyCode]) {
 			if (event.KeyInput.PressedDown) {
 				keyIsDown.set(keyCode);
