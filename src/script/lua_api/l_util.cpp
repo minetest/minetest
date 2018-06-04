@@ -179,8 +179,7 @@ int ModApiUtil::l_get_hit_params(lua_State *L)
 	if(lua_isnoneornil(L, 3))
 		push_hit_params(L, getHitParams(groups, &tp));
 	else
-		push_hit_params(L, getHitParams(groups, &tp,
-					luaL_checknumber(L, 3)));
+		push_hit_params(L, getHitParams(groups, &tp, readParam<float>(L, 3)));
 	return 1;
 }
 
@@ -270,7 +269,7 @@ int ModApiUtil::l_compress(lua_State *L)
 
 	int level = -1;
 	if (!lua_isnone(L, 3) && !lua_isnil(L, 3))
-		level = luaL_checknumber(L, 3);
+		level = readParam<float>(L, 3);
 
 	std::ostringstream os;
 	compressZlib(std::string(data, size), os, level);

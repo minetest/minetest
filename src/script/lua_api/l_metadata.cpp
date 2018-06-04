@@ -190,7 +190,7 @@ int MetaDataRef::l_set_float(lua_State *L)
 
 	MetaDataRef *ref = checkobject(L, 1);
 	std::string name = luaL_checkstring(L, 2);
-	float a = luaL_checknumber(L, 3);
+	float a = readParam<float>(L, 3);
 	std::string str = ftos(a);
 
 	Metadata *meta = ref->getmeta(true);
