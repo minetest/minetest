@@ -172,6 +172,8 @@ void Client::loadMods()
 	for (const ModSpec &mod : m_mods)
 		m_script->loadModFromMemory(mod.name);
 
+	// Run a callback when mods are loaded
+	m_script->on_mods_loaded();
 	m_mods_loaded = true;
 }
 

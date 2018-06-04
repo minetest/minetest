@@ -34,3 +34,7 @@ dofile(gamepath.."forceloading.lua")
 dofile(gamepath.."statbars.lua")
 
 profiler = nil
+
+core.register_on_mods_loaded(function()
+	core.log("Server mods loaded.")
+end)
