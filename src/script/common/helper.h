@@ -1,7 +1,6 @@
 /*
 Minetest
-Copyright (C) 2013 celeron55, Perttu Ahola <celeron55@gmail.com>
-Copyright (C) 2017 nerzhul, Loic Blot <loic.blot@unix-experience.fr>
+Copyright (C) 2018 nerzhul, Loic Blot <loic.blot@unix-experience.fr>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -18,36 +17,26 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#include "l_sound.h"
-#include "l_internal.h"
-#include "common/c_content.h"
-#include "gui/guiEngine.h"
+#pragma once
 
-
-int ModApiSound::l_sound_play(lua_State *L)
-{
-	SimpleSoundSpec spec;
-	read_soundspec(L, 1, spec);
-	bool looped = readParam<bool>(L, 2);
-
-	s32 handle = getGuiEngine(L)->playSound(spec, looped);
-
-	lua_pushinteger(L, handle);
-
-	return 1;
+extern "C" {
+#include <lua.h>
+#include <lauxlib.h>
 }
 
-int ModApiSound::l_sound_stop(lua_State *L)
+class LuaHelper
 {
-	u32 handle = luaL_checkinteger(L, 1);
+protected:
+	static bool isNaN(lua_State *L, int idx);
 
-	getGuiEngine(L)->stopSound(handle);
-
-	return 1;
-}
-
-void ModApiSound::Initialize(lua_State *L, int top)
-{
-	API_FCT(sound_play);
-	API_FCT(sound_stop);
-}
+	/**
+	 * Read a value using a template type T from Lua State L and index
+	 *
+	 * @tparam T type to read from Lua
+	 * @param L Lua state
+	 * @param index Lua Index to read
+	 * @return read value from Lua
+	 */
+	template<typename T>
+	static T readParam(lua_State *L, int index);
+};

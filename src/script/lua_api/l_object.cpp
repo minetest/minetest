@@ -156,7 +156,7 @@ int ObjectRef::l_move_to(lua_State *L)
 	// pos
 	v3f pos = checkFloatPos(L, 2);
 	// continuous
-	bool continuous = lua_toboolean(L, 3);
+	bool continuous = readParam<bool>(L, 3);
 	// Do it
 	co->moveTo(pos, continuous);
 	return 0;
@@ -466,7 +466,7 @@ int ObjectRef::l_set_animation(lua_State *L)
 		frame_blend = lua_tonumber(L, 4);
 	bool frame_loop = true;
 	if (lua_isboolean(L, 5))
-		frame_loop = lua_toboolean(L, 5);
+		frame_loop = readParam<bool>(L, 5);
 	co->setAnimation(frames, frame_speed, frame_blend, frame_loop);
 	return 0;
 }
@@ -963,7 +963,7 @@ int ObjectRef::l_set_sprite(lua_State *L)
 		framelength = lua_tonumber(L, 4);
 	bool select_horiz_by_yawpitch = false;
 	if (!lua_isnil(L, 5))
-		select_horiz_by_yawpitch = lua_toboolean(L, 5);
+		select_horiz_by_yawpitch = readParam<bool>(L, 5);
 	co->setSprite(p, num_frames, framelength, select_horiz_by_yawpitch);
 	return 0;
 }
@@ -1618,7 +1618,7 @@ int ObjectRef::l_set_sky(lua_State *L)
 
 	bool clouds = true;
 	if (lua_isboolean(L, 5))
-		clouds = lua_toboolean(L, 5);
+		clouds = readParam<bool>(L, 5);
 
 	getServer(L)->setSky(player, bgcolor, type, params, clouds);
 	lua_pushboolean(L, true);

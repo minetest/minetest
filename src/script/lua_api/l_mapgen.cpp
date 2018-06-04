@@ -924,7 +924,7 @@ int ModApiMapgen::l_set_mapgen_setting(lua_State *L)
 
 	const char *name   = luaL_checkstring(L, 1);
 	const char *value  = luaL_checkstring(L, 2);
-	bool override_meta = lua_isboolean(L, 3) && lua_toboolean(L, 3);
+	bool override_meta = readParam<bool>(L, 3);
 
 	if (!settingsmgr->setMapSetting(name, value, override_meta)) {
 		errorstream << "set_mapgen_setting: cannot set '"
@@ -953,7 +953,7 @@ int ModApiMapgen::l_set_mapgen_setting_noiseparams(lua_State *L)
 		return 0;
 	}
 
-	bool override_meta = lua_isboolean(L, 3) && lua_toboolean(L, 3);
+	bool override_meta = readParam<bool>(L, 3);
 
 	if (!settingsmgr->setMapSettingNoiseParams(name, &np, override_meta)) {
 		errorstream << "set_mapgen_setting_noiseparams: cannot set '"
@@ -979,7 +979,7 @@ int ModApiMapgen::l_set_noiseparams(lua_State *L)
 		return 0;
 	}
 
-	bool set_default = !lua_isboolean(L, 3) || lua_toboolean(L, 3);
+	bool set_default = !lua_isboolean(L, 3) || readParam<bool>(L, 3);
 
 	g_settings->setNoiseParams(name, np, set_default);
 
@@ -1621,7 +1621,7 @@ int ModApiMapgen::l_place_schematic(lua_State *L)
 	//// Read force placement
 	bool force_placement = true;
 	if (lua_isboolean(L, 5))
-		force_placement = lua_toboolean(L, 5);
+		force_placement = readParam<bool>(L, 5);
 
 	//// Read node replacements
 	StringMap replace_names;
@@ -1669,7 +1669,7 @@ int ModApiMapgen::l_place_schematic_on_vmanip(lua_State *L)
 	//// Read force placement
 	bool force_placement = true;
 	if (lua_isboolean(L, 6))
-		force_placement = lua_toboolean(L, 6);
+		force_placement = readParam<bool>(L, 6);
 
 	//// Read node replacements
 	StringMap replace_names;

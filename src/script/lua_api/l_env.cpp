@@ -165,10 +165,10 @@ int LuaRaycast::create_object(lua_State *L)
 	v3f pos1 = checkFloatPos(L, 1);
 	v3f pos2 = checkFloatPos(L, 2);
 	if (lua_isboolean(L, 3)) {
-		objects = lua_toboolean(L, 3);
+		objects = readParam<bool>(L, 3);
 	}
 	if (lua_isboolean(L, 4)) {
-		liquids = lua_toboolean(L, 4);
+		liquids = readParam<bool>(L, 4);
 	}
 
 	LuaRaycast *o = new LuaRaycast(core::line3d<f32>(pos1, pos2),
@@ -765,7 +765,7 @@ int ModApiEnvMod::l_find_node_near(lua_State *L)
 		ndef->getIds(lua_tostring(L, 3), filter);
 	}
 
-	int start_radius = (lua_toboolean(L, 4)) ? 0 : 1;
+	int start_radius = (readParam<bool>(L, 4)) ? 0 : 1;
 
 #ifndef SERVER
 	// Client API limitations

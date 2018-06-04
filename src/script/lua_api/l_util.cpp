@@ -135,7 +135,7 @@ int ModApiUtil::l_write_json(lua_State *L)
 
 	bool styled = false;
 	if (!lua_isnone(L, 2)) {
-		styled = lua_toboolean(L, 2);
+		styled = readParam<bool>(L, 2);
 		lua_pop(L, 1);
 	}
 
@@ -342,7 +342,7 @@ int ModApiUtil::l_get_dir_list(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 	const char *path = luaL_checkstring(L, 1);
 	bool list_all = !lua_isboolean(L, 2); // if its not a boolean list all
-	bool list_dirs = lua_toboolean(L, 2); // true: list dirs, false: list files
+	bool list_dirs = readParam<bool>(L, 2); // true: list dirs, false: list files
 
 	CHECK_SECURE_PATH(L, path, false);
 
@@ -451,7 +451,7 @@ int ModApiUtil::l_sha1(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 	size_t size;
 	const char *data = luaL_checklstring(L, 1, &size);
-	bool hex = !lua_isboolean(L, 2) || !lua_toboolean(L, 2);
+	bool hex = !lua_isboolean(L, 2) || !readParam<bool>(L, 2);
 
 	// Compute actual checksum of data
 	std::string data_sha1;

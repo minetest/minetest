@@ -85,20 +85,3 @@ bool ModApiBase::registerFunction(lua_State *L, const char *name,
 
 	return true;
 }
-
-bool ModApiBase::isNaN(lua_State *L, int idx)
-{
-	return lua_type(L, idx) == LUA_TNUMBER && std::isnan(lua_tonumber(L, idx));
-}
-
-/*
- * Read template functions
- */
-template<>
-float ModApiBase::readParam(lua_State *L, int index)
-{
-	if (isNaN(L, index))
-		throw LuaError("NaN value is not allowed.");
-
-	return (float) luaL_checknumber(L, index);
-}

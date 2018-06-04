@@ -156,7 +156,7 @@ int LuaAreaStore::l_get_areas_in_area(lua_State *L)
 	bool include_data = false;
 	bool accept_overlap = false;
 	if (lua_isboolean(L, 4)) {
-		accept_overlap = lua_toboolean(L, 4);
+		accept_overlap = readParam<bool>(L, 4);
 		get_data_and_border_flags(L, 5, &include_borders, &include_data);
 	}
 	std::vector<Area *> res;

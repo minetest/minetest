@@ -289,7 +289,7 @@ void ScriptApiBase::stackDump(std::ostream &o)
 				o << "\"" << lua_tostring(m_luastack, i) << "\"";
 				break;
 			case LUA_TBOOLEAN:  /* booleans */
-				o << (lua_toboolean(m_luastack, i) ? "true" : "false");
+				o << (readParam<bool>(m_luastack, i) ? "true" : "false");
 				break;
 			case LUA_TNUMBER:  /* numbers */ {
 				char buf[10];

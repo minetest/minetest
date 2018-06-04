@@ -336,7 +336,7 @@ int InvRef::l_contains_item(lua_State *L)
 	InventoryList *list = getlist(L, ref, listname);
 	bool match_meta = false;
 	if (lua_isboolean(L, 4))
-		match_meta = lua_toboolean(L, 4);
+		match_meta = readParam<bool>(L, 4);
 	if (list) {
 		lua_pushboolean(L, list->containsItem(item, match_meta));
 	} else {

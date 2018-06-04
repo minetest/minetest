@@ -257,7 +257,7 @@ bool ScriptApiEntity::luaentity_Punch(u16 id,
 	setOriginFromTable(object);
 	PCALL_RES(lua_pcall(L, 6, 1, error_handler));
 
-	bool retval = lua_toboolean(L, -1);
+	bool retval = readParam<bool>(L, -1);
 	lua_pop(L, 2); // Pop object and error handler
 	return retval;
 }
@@ -287,7 +287,7 @@ bool ScriptApiEntity::luaentity_run_simple_callback(u16 id,
 	setOriginFromTable(object);
 	PCALL_RES(lua_pcall(L, 2, 1, error_handler));
 
-	bool retval = lua_toboolean(L, -1);
+	bool retval = readParam<bool>(L, -1);
 	lua_pop(L, 2); // Pop object and error handler
 	return retval;
 }
