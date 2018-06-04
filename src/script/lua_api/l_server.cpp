@@ -455,8 +455,8 @@ int ModApiServer::l_sound_fade(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 	s32 handle = luaL_checkinteger(L, 1);
-	float step = read<float>(L, 2);
-	float gain = read<float>(L, 3);
+	float step = readParam<float>(L, 2);
+	float gain = readParam<float>(L, 3);
 	getServer(L)->fadeSound(handle, step, gain);
 	return 0;
 }

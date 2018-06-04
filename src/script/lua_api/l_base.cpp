@@ -95,7 +95,7 @@ bool ModApiBase::isNaN(lua_State *L, int idx)
  * Read template functions
  */
 template<>
-float ModApiBase::read(lua_State *L, int index)
+float ModApiBase::readParam(lua_State *L, int index)
 {
 	if (isNaN(L, index))
 		throw LuaError("NaN value is not allowed.");

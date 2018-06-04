@@ -81,5 +81,5 @@ public:
 	 * @return read value from Lua
 	 */
 	template<typename T>
-	static T read(lua_State *L, int index);
+	static T readParam(lua_State *L, int index);
 };
