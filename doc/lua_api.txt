@@ -2794,7 +2794,8 @@ Call these functions only at load time!
 * `minetest.register_globalstep(func(dtime))`
     * Called every server step, usually interval of 0.1s
 * `minetest.register_on_mods_loaded(func())`
-    * Called just after mods have finished loading.
+    * Called after mods have finished loading and before the media is cached or the
+      aliases handled.
 * `minetest.register_on_shutdown(func())`
     * Called before server shutdown
     * **Warning**: If the server terminates abnormally (i.e. crashes), the

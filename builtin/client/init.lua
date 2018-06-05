@@ -21,7 +21,3 @@ core.register_on_formspec_input(function(formname, fields)
 		core.send_respawn()
 	end
 end)
-
-core.register_on_mods_loaded(function()
-	core.log("Client mods loaded.")
-end)

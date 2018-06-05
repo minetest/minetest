@@ -765,4 +765,9 @@ minetest.log("experimental modname="..dump(minetest.get_current_modname()))
 minetest.log("experimental modpath="..dump(minetest.get_modpath("experimental")))
 minetest.log("experimental worldpath="..dump(minetest.get_worldpath()))
 
+
+core.register_on_mods_loaded(function()
+	core.log("Yeah experimental loaded mods.")
+end)
+
 -- END
