@@ -231,7 +231,7 @@ int ModApiUtil::l_is_yes(lua_State *L)
 	lua_getglobal(L, "tostring"); // function to be called
 	lua_pushvalue(L, 1); // 1st argument
 	lua_call(L, 1, 1); // execute function
-	std::string str(lua_tostring(L, -1)); // get result
+	std::string str = readParam<std::string>(L, -1); // get result
 	lua_pop(L, 1);
 
 	bool yes = is_yes(str);
@@ -410,7 +410,7 @@ int ModApiUtil::l_request_insecure_environment(lua_State *L)
 	}
 
 	// Check secure.trusted_mods
-	const char *mod_name = lua_tostring(L, -1);
+	std::string mod_name = readParam<std::string>(L, -1);
 	std::string trusted_mods = g_settings->get("secure.trusted_mods");
 	trusted_mods.erase(std::remove_if(trusted_mods.begin(),
 			trusted_mods.end(), static_cast<int(*)(int)>(&std::isspace)),

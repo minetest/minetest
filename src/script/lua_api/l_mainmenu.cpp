@@ -640,7 +640,8 @@ int ModApiMainMenu::l_set_topleft_text(lua_State *L)
 int ModApiMainMenu::l_get_mapgen_names(lua_State *L)
 {
 	std::vector<const char *> names;
-	Mapgen::getMapgenNames(&names, readParam<bool>(L, 1));
+	bool include_hidden = lua_isboolean(L, 1) && readParam<bool>(L, 1);
+	Mapgen::getMapgenNames(&names, include_hidden);
 
 	lua_newtable(L);
 	for (size_t i = 0; i != names.size(); i++) {

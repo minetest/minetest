@@ -128,7 +128,7 @@ bool ScriptApiPlayer::on_prejoinplayer(
 	lua_pushstring(L, ip.c_str());
 	runCallbacks(2, RUN_CALLBACKS_MODE_OR);
 	if (lua_isstring(L, -1)) {
-		reason->assign(lua_tostring(L, -1));
+		reason->assign(readParam<std::string>(L, -1));
 		return true;
 	}
 	return false;

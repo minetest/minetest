@@ -525,7 +525,7 @@ int ModApiInventory::l_create_detached_inventory_raw(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 	const char *name = luaL_checkstring(L, 1);
-	const char *player = lua_isstring(L, 2) ? lua_tostring(L, 2) : "";
+	std::string player = readParam<std::string>(L, 2);
 	if (getServer(L)->createDetachedInventory(name, player) != NULL) {
 		InventoryLocation loc;
 		loc.setDetached(name);
