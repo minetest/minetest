@@ -57,7 +57,7 @@ if(NOT USE_CURL)
 endif()
 
 
-option(ENABLE_GETTEXT "Use GetText for internationalization" FALSE)
+option(ENABLE_GETTEXT "Use GetText for internationalization" TRUE)
 set(USE_GETTEXT FALSE)
 
 if(ENABLE_GETTEXT)
