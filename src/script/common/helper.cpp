@@ -55,17 +55,11 @@ template <> float LuaHelper::readParam(lua_State *L, int index)
 
 template <> std::string LuaHelper::readParam(lua_State *L, int index)
 {
-	if (lua_isnil(L, index))
-		return "";
-
-	if (!lua_isstring(L, index))
-		throw LuaError(luahelper_type_error(index, "string"));
-
 	std::string result;
-	const char *str = lua_tostring(L, index);
+	const char *str = luaL_checkstring(L, index);
 	if (str) {
 		result.append(str);
 	}
 
-	return str;
+	return result;
 }
