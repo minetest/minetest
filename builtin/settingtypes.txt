@@ -115,7 +115,8 @@ safe_dig_and_place (Safe digging and placing) bool false
 #    Enable random user input (only used for testing).
 random_input (Random input) bool false
 
-#    Continuous forward movement, toggled by autoforward key.
+#    Continuous forward movement, toggled by autoforward key. 
+#    Press the autoforward key again or the backwards movement to disable.
 continuous_forward (Continuous forward) bool false
 
 #    The length in pixels it takes for touch screen interaction to start.
@@ -147,6 +148,7 @@ joystick_frustum_sensitivity (Joystick frustum sensitivity) float 170
 keymap_forward (Forward key) key KEY_KEY_W
 
 #    Key for moving the player backward.
+#    Will also disable autoforward, when active.
 #    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
 keymap_backward (Backward key) key KEY_KEY_S
 
