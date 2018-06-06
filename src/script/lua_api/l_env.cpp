@@ -666,7 +666,7 @@ int ModApiEnvMod::l_get_objects_inside_radius(lua_State *L)
 
 	// Do it
 	v3f pos = checkFloatPos(L, 1);
-	float radius = luaL_checknumber(L, 2) * BS;
+	float radius = readParam<float>(L, 2) * BS;
 	std::vector<u16> ids;
 	env->getObjectsInsideRadius(ids, pos, radius);
 	ScriptApiBase *script = getScriptApiBase(L);
@@ -690,7 +690,7 @@ int ModApiEnvMod::l_set_timeofday(lua_State *L)
 	GET_ENV_PTR;
 
 	// Do it
-	float timeofday_f = luaL_checknumber(L, 1);
+	float timeofday_f = readParam<float>(L, 1);
 	sanity_check(timeofday_f >= 0.0 && timeofday_f <= 1.0);
 	int timeofday_mh = (int)(timeofday_f * 24000.0);
 	// This should be set directly in the environment but currently
@@ -925,8 +925,8 @@ int ModApiEnvMod::l_get_perlin(lua_State *L)
 	} else {
 		params.seed    = luaL_checkint(L, 1);
 		params.octaves = luaL_checkint(L, 2);
-		params.persist = luaL_checknumber(L, 3);
-		params.spread  = v3f(1, 1, 1) * luaL_checknumber(L, 4);
+		params.persist = readParam<float>(L, 3);
+		params.spread  = v3f(1, 1, 1) * readParam<float>(L, 4);
 	}
 
 	params.seed += (int)env->getServerMap().getSeed();

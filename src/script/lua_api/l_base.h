@@ -71,4 +71,15 @@ public:
 			int top);
 
 	static bool isNaN(lua_State *L, int idx);
+
+	/**
+	 * Read a value using a template type T from Lua State L and index
+	 *
+	 * @tparam T type to read from Lua
+	 * @param L Lua state
+	 * @param index Lua Index to read
+	 * @return read value from Lua
+	 */
+	template<typename T>
+	static T readParam(lua_State *L, int index);
 };

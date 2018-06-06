@@ -927,7 +927,7 @@ int ObjectRef::l_set_yaw(lua_State *L)
 	if (isNaN(L, 2))
 		throw LuaError("ObjectRef::set_yaw: NaN value is not allowed.");
 
-	float yaw = luaL_checknumber(L, 2) * core::RADTODEG;
+	float yaw = readParam<float>(L, 2) * core::RADTODEG;
 	co->setRotation(v3f(0, yaw, 0));
 	return 0;
 }
@@ -1147,7 +1147,7 @@ int ObjectRef::l_set_look_vertical(lua_State *L)
 	ObjectRef *ref = checkobject(L, 1);
 	PlayerSAO* co = getplayersao(ref);
 	if (co == NULL) return 0;
-	float pitch = luaL_checknumber(L, 2) * core::RADTODEG;
+	float pitch = readParam<float>(L, 2) * core::RADTODEG;
 	// Do it
 	co->setLookPitchAndSend(pitch);
 	return 1;
@@ -1160,7 +1160,7 @@ int ObjectRef::l_set_look_horizontal(lua_State *L)
 	ObjectRef *ref = checkobject(L, 1);
 	PlayerSAO* co = getplayersao(ref);
 	if (co == NULL) return 0;
-	float yaw = luaL_checknumber(L, 2) * core::RADTODEG;
+	float yaw = readParam<float>(L, 2) * core::RADTODEG;
 	// Do it
 	co->setPlayerYawAndSend(yaw);
 	return 1;
@@ -1178,7 +1178,7 @@ int ObjectRef::l_set_look_pitch(lua_State *L)
 	ObjectRef *ref = checkobject(L, 1);
 	PlayerSAO* co = getplayersao(ref);
 	if (co == NULL) return 0;
-	float pitch = luaL_checknumber(L, 2) * core::RADTODEG;
+	float pitch = readParam<float>(L, 2) * core::RADTODEG;
 	// Do it
 	co->setLookPitchAndSend(pitch);
 	return 1;
@@ -1196,7 +1196,7 @@ int ObjectRef::l_set_look_yaw(lua_State *L)
 	ObjectRef *ref = checkobject(L, 1);
 	PlayerSAO* co = getplayersao(ref);
 	if (co == NULL) return 0;
-	float yaw = luaL_checknumber(L, 2) * core::RADTODEG;
+	float yaw = readParam<float>(L, 2) * core::RADTODEG;
 	// Do it
 	co->setPlayerYawAndSend(yaw);
 	return 1;
@@ -1768,7 +1768,7 @@ int ObjectRef::l_override_day_night_ratio(lua_State *L)
 	float ratio = 0.0f;
 	if (!lua_isnil(L, 2)) {
 		do_override = true;
-		ratio = luaL_checknumber(L, 2);
+		ratio = readParam<float>(L, 2);
 	}
 
 	if (!getServer(L)->overrideDayNightRatio(player, do_override, ratio))
