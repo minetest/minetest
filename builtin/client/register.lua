@@ -59,6 +59,7 @@ local function make_registration()
 end
 
 core.registered_globalsteps, core.register_globalstep = make_registration()
+core.registered_on_mods_loaded, core.register_on_mods_loaded = make_registration()
 core.registered_on_shutdown, core.register_on_shutdown = make_registration()
 core.registered_on_receiving_chat_message, core.register_on_receiving_chat_message = make_registration()
 core.registered_on_sending_chat_message, core.register_on_sending_chat_message = make_registration()

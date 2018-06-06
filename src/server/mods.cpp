@@ -75,6 +75,9 @@ void ServerModManager::loadMods(ServerScripting *script)
 				std::chrono::steady_clock::now() - t).count() * 0.001f
 			<< " seconds" << std::endl;
 	}
+
+	// Run a callback when mods are loaded
+	script->on_mods_loaded();
 }
 
 // clang-format on
