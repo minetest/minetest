@@ -206,8 +206,10 @@ void MapgenFractal::makeChunk(BlockMakeData *data)
 	updateHeightmap(node_min, node_max);
 
 	// Init biome generator, place biome-specific nodes, and build biomemap
-	biomegen->calcBiomeNoise(node_min);
-	generateBiomes();
+	if (flags & MG_BIOMES) {
+		biomegen->calcBiomeNoise(node_min);
+		generateBiomes();
+	}
 
 	if (flags & MG_CAVES) {
 		// Generate tunnels
@@ -228,7 +230,8 @@ void MapgenFractal::makeChunk(BlockMakeData *data)
 	m_emerge->oremgr->placeAllOres(this, blockseed, node_min, node_max);
 
 	// Sprinkle some dust on top after everything else was generated
-	dustTopNodes();
+	if (flags & MG_BIOMES)
+		dustTopNodes();
 
 	//printf("makeChunk: %dms\n", t.stop());
 

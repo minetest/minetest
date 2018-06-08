@@ -192,7 +192,12 @@ BiomeGenOriginal::BiomeGenOriginal(BiomeManager *biomemgr,
 
 	heatmap  = noise_heat->result;
 	humidmap = noise_humidity->result;
+
 	biomemap = new biome_t[m_csize.X * m_csize.Z];
+	// Initialise with the ID of the default biome so that cavegen can get
+	// biomes when biome generation (which calculates the biomemap IDs) is
+	// disabled.
+	memset(biomemap, 0, sizeof(biome_t) * m_csize.X * m_csize.Z);
 }
 
 BiomeGenOriginal::~BiomeGenOriginal()
