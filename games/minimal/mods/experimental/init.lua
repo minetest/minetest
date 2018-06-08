@@ -750,16 +750,37 @@ minetest.register_chatcommand("bench_bulk_set_node", {
 	end,
 })
 
+local formspec_test_active = false
+
 minetest.register_on_player_receive_fields(function(player, formname, fields)
-	experimental.print_to_everything("Inventory fields 1: player="..player:get_player_name()..", fields="..dump(fields))
+	if formspec_test_active then
+		experimental.print_to_everything("Inventory fields 1: player="..player:get_player_name()..", fields="..dump(fields))
+	end
 end)
 minetest.register_on_player_receive_fields(function(player, formname, fields)
-	experimental.print_to_everything("Inventory fields 2: player="..player:get_player_name()..", fields="..dump(fields))
-	return true -- Disable the first callback
+	if formspec_test_active then
+		experimental.print_to_everything("Inventory fields 2: player="..player:get_player_name()..", fields="..dump(fields))
+		return true -- Disable the first callback
+	end
 end)
 minetest.register_on_player_receive_fields(function(player, formname, fields)
-	experimental.print_to_everything("Inventory fields 3: player="..player:get_player_name()..", fields="..dump(fields))
+	if formspec_test_active then
+		experimental.print_to_everything("Inventory fields 3: player="..player:get_player_name()..", fields="..dump(fields))
+	end
 end)
+
+minetest.register_chatcommand("test_formspec", {
+	param = "",
+	description = "Test 4: Toggle formspec test",
+	func = function(name, param)
+		formspec_test_active = not formspec_test_active
+		if formspec_test_active then
+			minetest.chat_send_player(name, "Formspec test enabled!")
+		else
+			minetest.chat_send_player(name, "Formspec test disabled!")
+		end
+	end
+})
 
 minetest.log("info", "experimental modname="..dump(minetest.get_current_modname()))
 minetest.log("info", "experimental modpath="..dump(minetest.get_modpath("experimental")))
