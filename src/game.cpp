@@ -1861,6 +1861,9 @@ void Game::processKeyInput()
 		dropSelectedItem(isKeyDown(KeyType::SNEAK));
 	} else if (wasKeyDown(KeyType::AUTOFORWARD)) {
 		toggleAutoforward();
+	} else if (wasKeyDown(KeyType::BACKWARD)) {
+		if (g_settings->getBool("continuous_forward"))
+			toggleAutoforward();
 	} else if (wasKeyDown(KeyType::INVENTORY)) {
 		openInventory();
 	} else if (input->cancelPressed()) {

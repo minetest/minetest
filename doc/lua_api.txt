@@ -2793,6 +2793,9 @@ Call these functions only at load time!
 
 * `minetest.register_globalstep(func(dtime))`
     * Called every server step, usually interval of 0.1s
+* `minetest.register_on_mods_loaded(func())`
+    * Called after mods have finished loading and before the media is cached or the
+      aliases handled.
 * `minetest.register_on_shutdown(func())`
     * Called before server shutdown
     * **Warning**: If the server terminates abnormally (i.e. crashes), the
@@ -4736,9 +4739,14 @@ The coordinates are *inclusive*, like most other things in Minetest.
   `MaxEdge`.
 * `index(x, y, z)`: returns the index of an absolute position in a flat array
   starting at `1`.
-    * useful for things like `VoxelManip`, raw Schematic specifiers,
+    * `x`, `y` and `z` must be integers to avoid an incorrect index result.
+    * The position (x, y, z) is not checked for being inside the area volume,
+      being outside can cause an incorrect index result.
+    * Useful for things like `VoxelManip`, raw Schematic specifiers,
       `PerlinNoiseMap:get2d`/`3dMap`, and so on.
-* `indexp(p)`: same as above, except takes a vector
+* `indexp(p)`: same functionality as `index(x, y, z)` but takes a vector.
+    * As with `index(x, y, z)`, the components of `p` must be integers, and `p`
+      is not checked for being inside the area volume.
 * `position(i)`: returns the absolute position vector corresponding to index
   `i`.
 * `contains(x, y, z)`: check if (`x`,`y`,`z`) is inside area formed by
