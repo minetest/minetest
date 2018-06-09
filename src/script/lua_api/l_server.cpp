@@ -74,7 +74,7 @@ int ModApiServer::l_chat_send_all(lua_State *L)
 	// Get server from registry
 	Server *server = getServer(L);
 	// Send
-	server->notifyPlayers(narrow_to_wide(text));
+	server->notifyPlayers(utf8_to_wide(text));
 	return 0;
 }
 
@@ -88,7 +88,7 @@ int ModApiServer::l_chat_send_player(lua_State *L)
 	// Get server from registry
 	Server *server = getServer(L);
 	// Send
-	server->notifyPlayer(name, narrow_to_wide(text));
+	server->notifyPlayer(name, utf8_to_wide(text));
 	return 0;
 }
 
