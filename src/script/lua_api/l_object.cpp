@@ -897,7 +897,7 @@ int ObjectRef::l_set_rotation(lua_State *L)
 	if (!co) 
 	    return 0;
 
-	v3f rotation = check_v3f(L, 2);
+	v3f rotation = check_v3f(L, 2) * core::RADTODEG;
 	co->setRotation(rotation);
 	return 0;
 }
@@ -913,9 +913,11 @@ int ObjectRef::l_get_rotation(lua_State *L)
 	    return 0;
 
 	lua_newtable(L);
-	push_v3f(L, co->getRotation());
+	v3f rotation = co->getRotation() * core::DEGTORAD;
+	push_v3f(L, rotation);
 	return 1;
 }
+
 // set_yaw(self, radians)
 int ObjectRef::l_set_yaw(lua_State *L)
 {
