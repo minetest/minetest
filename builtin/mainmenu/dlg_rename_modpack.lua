@@ -35,7 +35,7 @@ local function rename_modpack_buttonhandler(this, fields)
 	if fields["dlg_rename_modpack_confirm"] ~= nil then
 		local oldpath = core.get_modpath() .. DIR_DELIM .. this.data.mod.name
 		local targetpath = core.get_modpath() .. DIR_DELIM .. fields["te_modpack_name"]
-		core.copy_dir(oldpath,targetpath,false)
+		os.rename(oldpath, targetpath)
 		pkgmgr.refresh_globals()
 		pkgmgr.selected_mod = pkgmgr.global_mods:get_current_index(
 			pkgmgr.global_mods:raw_index_by_uid(fields["te_modpack_name"]))
