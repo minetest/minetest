@@ -164,10 +164,12 @@ local function handle_buttons(tabview, fields, tabname, tabdata)
 	end
 
 	if fields["btn_mod_mgr_rename_modpack"] ~= nil then
-		local dlg_renamemp = create_rename_modpack_dlg(tabdata.selected_pkg)
+		local mod = packages:get_list()[tabdata.selected_pkg]
+		local dlg_renamemp = create_rename_modpack_dlg(mod)
 		dlg_renamemp:set_parent(tabview)
 		tabview:hide()
 		dlg_renamemp:show()
+		packages = nil
 		return true
 	end
 
