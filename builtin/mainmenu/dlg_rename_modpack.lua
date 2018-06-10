@@ -18,9 +18,6 @@
 --------------------------------------------------------------------------------
 
 local function rename_modpack_formspec(dialogdata)
-
-	dialogdata.mod = pkgmgr.global_mods:get_list()[dialogdata.selected]
-
 	local retval =
 		"size[11.5,4.5,true]" ..
 		"field[2.5,2;7,0.5;te_modpack_name;".. fgettext("Rename Modpack:") .. ";" ..
@@ -56,12 +53,12 @@ local function rename_modpack_buttonhandler(this, fields)
 end
 
 --------------------------------------------------------------------------------
-function create_rename_modpack_dlg(selected_index)
+function create_rename_modpack_dlg(modpack)
 
 	local retval = dialog_create("dlg_delete_mod",
 					rename_modpack_formspec,
 					rename_modpack_buttonhandler,
 					nil)
-	retval.data.selected = selected_index
+	retval.data.mod = modpack
 	return retval
 end
