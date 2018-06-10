@@ -86,7 +86,7 @@ OGG_LIB = $(OGG_DIR)libs/$(TARGET_ABI)/libogg.so
 VORBIS_LIB = $(OGG_DIR)libs/$(TARGET_ABI)/libogg.so
 OGG_TIMESTAMP = $(OGG_DIR)timestamp
 OGG_TIMESTAMP_INT = $(ANDR_ROOT)/deps/ogg_timestamp
-OGG_URL_GIT = https://github.com/vincentjames501/libvorbis-libogg-android
+OGG_URL_GIT = https://gitlab.com/minetest/libvorbis-libogg-android
 
 IRRLICHT_REVISION = 5145
 IRRLICHT_DIR = $(ANDR_ROOT)/deps/irrlicht/
@@ -268,11 +268,10 @@ $(OGG_LIB): $(OGG_TIMESTAMP)
 	cd ${OGG_DIR};                                                             \
 	export APP_PLATFORM=${APP_PLATFORM};                                       \
 	export TARGET_ABI=${TARGET_ABI};                                           \
-	export TARGET_CFLAGS_ADDON="${TARGET_CFLAGS_ADDON}";                       \
-	export TARGET_CXXFLAGS_ADDON="${TARGET_CXXFLAGS_ADDON}";                   \
-	export COMPILER_VERSION=${COMPILER_VERSION};                               \
-	${ANDROID_NDK}/ndk-build                                                   \
-		NDK_APPLICATION_MK=${ANDR_ROOT}/jni/Deps.mk || exit 1;                 \
+	${ANDROID_NDK}/build/tools/make-standalone-toolchain.sh                    \
+		--toolchain=${TARGET_TOOLCHAIN}${COMPILER_VERSION}                     \
+		--platform=${APP_PLATFORM}                                             \
+		--install-dir=$${TOOLCHAIN};                                           \
 	touch ${OGG_TIMESTAMP};                                                    \
 	touch ${OGG_TIMESTAMP_INT};                                                \
 	else                                                                       \
