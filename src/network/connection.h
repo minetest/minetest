@@ -593,6 +593,8 @@ class Peer {
 					return m_rtt.jitter_max;
 				case AVG_JITTER:
 					return m_rtt.jitter_avg;
+				case TIMEOUT_COUNTER:
+					return m_timeout_counter;
 			}
 			return -1;
 		}

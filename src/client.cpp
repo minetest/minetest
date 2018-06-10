@@ -437,7 +437,7 @@ void Client::step(float dtime)
 		counter = 0.0;
 		// connectedAndInitialized() is true, peer exists.
 		float avg_rtt = getRTT();
-		infostream << "Client: avg_rtt=" << avg_rtt << std::endl;
+		infostream << "Client: average rtt: " << avg_rtt << std::endl;
 	}
 
 	/*
@@ -1706,9 +1706,17 @@ void Client::afterContentReceived()
 	delete[] text;
 }
 
+// returns the Round Trip Time
+// if the RTT did not become updated within 2 seconds, e.g. before timing out,
+// it returns the expired time instead
 float Client::getRTT()
 {
-	return m_con->getPeerStat(PEER_ID_SERVER,con::AVG_RTT);
+	float avg_rtt = m_con->getPeerStat(PEER_ID_SERVER, con::AVG_RTT);
+	float time_from_last_rtt =
+		m_con->getPeerStat(PEER_ID_SERVER, con::TIMEOUT_COUNTER);
+	if (avg_rtt + 2.0f > time_from_last_rtt)
+		return avg_rtt;
+	return time_from_last_rtt;
 }
 
 float Client::getCurRate()
