@@ -825,8 +825,9 @@ void Peer::DecUseCount()
 	delete this;
 }
 
-void Peer::RTTStatistics(float rtt, const std::string &profiler_id,
-		unsigned int num_samples) {
+void Peer::RTTStatistics(float rtt, const std::string &profiler_id)
+{
+	static const float avg_factor = 0.1 / MAX_RELIABLE_WINDOW_SIZE;
 
 	if (m_last_rtt > 0) {
 		/* set min max values */
@@ -839,8 +840,8 @@ void Peer::RTTStatistics(float rtt, const std::string &profiler_id,
 		if (m_rtt.avg_rtt < 0.0)
 			m_rtt.avg_rtt  = rtt;
 		else
-			m_rtt.avg_rtt  = m_rtt.avg_rtt * (num_samples/(num_samples-1)) +
-								rtt * (1/num_samples);
+			m_rtt.avg_rtt = m_rtt.avg_rtt * (1.0f - avg_factor) +
+				rtt * avg_factor;
 
 		/* do jitter calculation */
 
@@ -861,8 +862,8 @@ void Peer::RTTStatistics(float rtt, const std::string &profiler_id,
 		if (m_rtt.jitter_avg < 0.0)
 			m_rtt.jitter_avg  = jitter;
 		else
-			m_rtt.jitter_avg  = m_rtt.jitter_avg * (num_samples/(num_samples-1)) +
-								jitter * (1/num_samples);
+			m_rtt.jitter_avg = m_rtt.jitter_avg * (1.0f - avg_factor) +
+				jitter * avg_factor;
 
 		if (!profiler_id.empty()) {
 			g_profiler->graphAdd(profiler_id + "_rtt", rtt);
@@ -936,7 +937,7 @@ void UDPPeer::reportRTT(float rtt)
 {
 	assert(rtt >= 0.0f);
 
-	RTTStatistics(rtt,"rudp",MAX_RELIABLE_WINDOW_SIZE*10);
+	RTTStatistics(rtt, "rudp");
 
 	float timeout = getStat(AVG_RTT) * RESEND_TIMEOUT_FACTOR;
 	if (timeout < RESEND_TIMEOUT_MIN)

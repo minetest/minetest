@@ -601,9 +601,7 @@ class Peer {
 	protected:
 		virtual void reportRTT(float rtt) {};
 
-		void RTTStatistics(float rtt,
-							const std::string &profiler_id = "",
-							unsigned int num_samples = 1000);
+		void RTTStatistics(float rtt, const std::string &profiler_id = "");
 
 		bool IncUseCount();
 		void DecUseCount();
