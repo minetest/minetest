@@ -1169,7 +1169,7 @@ SharedBuffer<u8> ConnectionReceiveThread::handlePacketType_Control(Channel *chan
 				// rtt miscalculation we handle it here
 				float rtt;
 				if (current_time > p.absolute_send_time) {
-					rtt = (current_time - p.absolute_send_time) / 1000.0;
+					rtt = (current_time - p.absolute_send_time) / 1000.0f;
 				} else if (p.totaltime > 0) {
 					rtt = p.totaltime;
 				}
