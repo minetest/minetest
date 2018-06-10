@@ -934,9 +934,8 @@ void UDPPeer::setNonLegacyPeer()
 
 void UDPPeer::reportRTT(float rtt)
 {
-	if (rtt < 0.0) {
-		return;
-	}
+	assert(rtt >= 0.0f);
+
 	RTTStatistics(rtt,"rudp",MAX_RELIABLE_WINDOW_SIZE*10);
 
 	float timeout = getStat(AVG_RTT) * RESEND_TIMEOUT_FACTOR;
