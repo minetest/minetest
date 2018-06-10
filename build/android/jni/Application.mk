@@ -3,4 +3,4 @@ APP_ABI := ${TARGET_ABI}
 APP_STL := c++_static
 APP_MODULES := minetest
 
-APP_CPPFLAGS += -fexceptions
+APP_CPPFLAGS += -fexceptions -frtti
