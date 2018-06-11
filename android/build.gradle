@@ -67,3 +67,69 @@ android {
 		}
 	}
 }
+
+task cleanAssets(type:Exec) {
+	workingDir '.'
+	executable 'make'
+	args 'clean_assets'
+}
+
+task cleanIconv(type:Exec) {
+	workingDir '.'
+	executable 'make'
+	args 'clean_iconv'
+}
+
+task cleanIrrlicht(type:Exec) {
+	workingDir '.'
+	executable 'make'
+	args 'clean_irrlicht'
+}
+
+task cleanLevelDB(type:Exec) {
+	workingDir '.'
+	executable 'make'
+	args 'clean_leveldb'
+}
+
+task cleanCURL(type:Exec) {
+	workingDir '.'
+	executable 'make'
+	args 'clean_curl'
+}
+
+task cleanOpenSSL(type:Exec) {
+	workingDir '.'
+	executable 'make'
+	args 'clean_openssl'
+}
+
+task cleanOpenAL(type:Exec) {
+	workingDir '.'
+	executable 'make'
+	args 'clean_openal'
+}
+
+task cleanOgg(type:Exec) {
+	workingDir '.'
+	executable 'make'
+	args 'clean_ogg'
+}
+
+task cleanGMP(type:Exec) {
+	workingDir '.'
+	executable 'make'
+	args 'clean_gmp'
+}
+
+task cleanApk(type:Exec) {
+	workingDir '.'
+	executable 'make'
+	args 'clean_apk'
+}
+
+task cleanAll(type:Exec, dependsOn:[cleanApk,cleanAssets,cleanIconv,cleanIrrlicht,cleanLevelDB,cleanCURL,cleanOpenSSL,cleanOpenAL,cleanOgg,cleanGMP]) {
+	workingDir '.'
+	executable 'echo'
+	args '"Dependencies cleared."'
+}

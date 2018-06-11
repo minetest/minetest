@@ -147,7 +147,7 @@ endif
 	clean_assets assets sqlite3_download \
 	freetype_download clean_freetype freetype \
 	apk clean_apk \
-	clean_all clean prep_srcdir \
+	clean prep_srcdir \
 	install_debug install_release envpaths all \
 	$(ASSETS_TIMESTAMP) $(LEVELDB_TIMESTAMP) \
 	$(OPENAL_TIMESTAMP) $(OGG_TIMESTAMP) \
@@ -775,13 +775,6 @@ prep_srcdir :
 
 clean_apk :
 	./gradlew clean
-
-clean_all :
-	@$(MAKE) clean_apk;                                                        \
-	$(MAKE) clean_assets clean_iconv clean_irrlicht clean_leveldb clean_curl   \
-	clean_openssl clean_openal clean_ogg clean_gmp;                            \
-	sleep 1;                                                                   \
-	$(RM) -r gen libs obj deps bin Debug and_env
 
 $(ANDR_ROOT)/jni/src/android_version_githash.h : prep_srcdir
 	@export VERSION_FILE=${ANDR_ROOT}/jni/src/android_version_githash.h;        \
