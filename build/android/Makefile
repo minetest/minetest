@@ -771,7 +771,7 @@ assets : $(ASSETS_TIMESTAMP)
 	fi
 
 clean_assets :
-	@$(RM) -r assets
+	@$(RM) -r ${APP_ROOT}/assets
 
 apk: local.properties assets $(ICONV_LIB) $(IRRLICHT_LIB) $(CURL_LIB) $(GMP_LIB) $(LEVELDB_TARGET)       \
 	$(OPENAL_LIB) $(OGG_LIB) prep_srcdir $(ANDR_ROOT)/jni/src/android_version.h    \
