@@ -827,13 +827,15 @@ core.register_chatcommand("shutdown", {
 	description = "Shutdown server (-1 cancels a delayed shutdown)",
 	privs = {server=true},
 	func = function(name, param)
-		local delay, reconnect, message = param:match("([^ ][-]?[0-9]+)([^ ]+)(.*)")
-		message = message or ""
+		local delay, reconnect, message
+		delay, param = param:match("^%s*(%S+)(.*)")
+		if param then
+			reconnect, param = param:match("^%s*(%S+)(.*)")
+		end
+		message = param and param:match("^%s*(.+)") or ""
+		delay = tonumber(delay) or 0
 
-		if delay ~= "" then
-			delay = tonumber(delay) or 0
-		else
-			delay = 0
+		if delay == 0 then
 			core.log("action", name .. " shuts down server")
 			core.chat_send_all("*** Server shutting down (operator request).")
 		end
