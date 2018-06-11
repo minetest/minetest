@@ -142,11 +142,11 @@ ifeq ($(HAVE_LEVELDB),1)
 endif
 
 .PHONY : debug release reconfig delconfig \
-	leveldb_download clean_leveldb leveldb\
-	irrlicht_download clean_irrlicht irrlicht \
-	clean_assets assets sqlite3_download \
-	freetype_download clean_freetype freetype \
-	apk clean_apk \
+	leveldb_download leveldb\
+	irrlicht_download irrlicht \
+	assets sqlite3_download \
+	freetype_download freetype \
+	apk \
 	clean prep_srcdir \
 	install_debug install_release envpaths all \
 	$(ASSETS_TIMESTAMP) $(LEVELDB_TIMESTAMP) \
@@ -235,9 +235,6 @@ $(OPENAL_LIB): $(OPENAL_TIMESTAMP)
 		echo "nothing to be done for openal";                                  \
 	fi
 
-clean_openal :
-	$(RM) -rf ${OPENAL_DIR}
-
 $(OGG_TIMESTAMP) : ogg_download
 	@LAST_MODIF=$$(find ${OGG_DIR} -type f -printf '%T@ %p\n' | sort -n | tail -1 | cut -f2- -d" "); \
 	if [ $$(basename $$LAST_MODIF) != "timestamp" ] ; then                     \
@@ -280,9 +277,6 @@ $(OGG_LIB): $(OGG_TIMESTAMP)
 		echo "nothing to be done for libogg/libvorbis";                        \
 	fi
 
-clean_ogg :
-	$(RM) -rf ${OGG_DIR}
-
 $(OPENSSL_TIMESTAMP) : openssl_download
 	@LAST_MODIF=$$(find ${OPENSSL_DIR} -type f -printf '%T@ %p\n' | sort -n | tail -1 | cut -f2- -d" "); \
 	if [ $$(basename $$LAST_MODIF) != "timestamp" ] ; then                     \
@@ -307,11 +301,6 @@ openssl_download :
 	fi
 
 openssl : openssl_download
-
-clean_openssl :
-	$(RM) -rf ${OPENSSL_DIR};                                                  \
-	$(RM) -rf $(ANDR_ROOT)/deps/${OPENSSL_BASEDIR}.tar.gz;                     \
-	$(RM) -rf $(ANDR_ROOT)/deps/openssl
 
 $(LEVELDB_TIMESTAMP) : leveldb_download
 	@LAST_MODIF=$$(find ${LEVELDB_DIR} -type f -printf '%T@ %p\n' | sort -n | tail -1 | cut -f2- -d" "); \
@@ -365,9 +354,6 @@ $(LEVELDB_LIB): $(LEVELDB_TIMESTAMP)
 	fi
 endif
 
-clean_leveldb :
-	$(RM) -rf deps/leveldb
-
 $(FREETYPE_TIMESTAMP) : freetype_download
 	@LAST_MODIF=$$(find ${FREETYPE_DIR} -type f -printf '%T@ %p\n' | sort -n | tail -1 | cut -f2- -d" "); \
 	if [ $$(basename $$LAST_MODIF) != "timestamp" ] ; then                     \
@@ -411,9 +397,6 @@ $(FREETYPE_LIB) : $(FREETYPE_TIMESTAMP)
 	else                                                                       \
 		echo "nothing to be done for freetype";                                \
 	fi
-
-clean_freetype :
-	$(RM) -rf ${FREETYPE_DIR}
 
 $(ICONV_TIMESTAMP) : iconv_download
 	@LAST_MODIF=$$(find ${ICONV_DIR} -type f -printf '%T@ %p\n' | sort -n | tail -1 | cut -f2- -d" "); \
@@ -472,9 +455,6 @@ $(ICONV_LIB) : $(ICONV_TIMESTAMP)
 		echo "nothing to be done for iconv";                               \
 	fi
 
-clean_iconv :
-	$(RM) -rf ${ICONV_DIR}
-
 #Note: Texturehack patch is required for gpu's not supporting color format
 #      correctly. Known bad GPU:
 #      -geforce on emulator
@@ -528,9 +508,6 @@ $(IRRLICHT_LIB): $(IRRLICHT_TIMESTAMP) $(FREETYPE_LIB)
 	else                                                                       \
 		echo "nothing to be done for irrlicht";                                \
 	fi
-
-clean_irrlicht :
-	$(RM) -rf deps/irrlicht
 
 $(CURL_TIMESTAMP) : curl_download
 	@LAST_MODIF=$$(find ${CURL_DIR} -type f -printf '%T@ %p\n' | sort -n | tail -1 | cut -f2- -d" "); \
@@ -589,10 +566,6 @@ $(CURL_LIB): $(CURL_TIMESTAMP) $(OPENSSL_LIB)
 		echo "nothing to be done for curl";                                    \
 	fi
 
-clean_curl :
-	$(RM) -rf deps/curl-${CURL_VERSION}                                        \
-	$(RM) -f deps/curl
-
 $(GMP_TIMESTAMP) : gmp_download
 	@LAST_MODIF=$$(find ${GMP_DIR} -type f -printf '%T@ %p\n' | sort -n | tail -1 | cut -f2- -d" "); \
 	if [ $$(basename $$LAST_MODIF) != "timestamp" ] ; then                     \
@@ -649,10 +622,6 @@ $(GMP_LIB): $(GMP_TIMESTAMP)
 		echo "nothing to be done for gmp";                                 \
 	fi
 
-clean_gmp:
-	$(RM) -rf deps/gmp-${GMP_VERSION}                                          \
-	$(RM) -f deps/gmp
-
 sqlite3_download: deps/${SQLITE3_FOLDER}/sqlite3.c
 
 deps/${SQLITE3_FOLDER}/sqlite3.c :
@@ -661,10 +630,6 @@ deps/${SQLITE3_FOLDER}/sqlite3.c :
 	unzip ${SQLITE3_FOLDER}.zip;                                                \
 	ln -s ${SQLITE3_FOLDER} sqlite;                                             \
 	cd ${SQLITE3_FOLDER};
-
-clean_sqlite3:
-	cd deps && $(RM) -rf ${SQLITE3_FOLDER} && $(RM) -f ${SQLITE3_FOLDER}.zip && \
-	$(RM) -f sqlite
 
 $(ASSETS_TIMESTAMP) : $(IRRLICHT_LIB)
 	@mkdir -p ${ANDR_ROOT}/deps;                                                \
@@ -705,7 +670,7 @@ assets : $(ASSETS_TIMESTAMP)
 	fi;                                                                        \
 	if [ $$REFRESH -ne 0 ] ; then                                              \
 	echo "assets changed, refreshing...";                                      \
-	$(MAKE) clean_assets;                                                      \
+	./gradlew cleanAssets;                                                     \
 	mkdir -p ${APP_ROOT}/assets/Minetest;                                      \
 	cp ${PROJ_ROOT}/minetest.conf.example ${APP_ROOT}/assets/Minetest;         \
 	cp ${PROJ_ROOT}/README.md ${APP_ROOT}/assets/Minetest;                     \
@@ -741,9 +706,6 @@ assets : $(ASSETS_TIMESTAMP)
 		echo "nothing to be done for assets";                                  \
 	fi
 
-clean_assets :
-	@$(RM) -r ${APP_ROOT}/assets
-
 apk: local.properties assets $(ICONV_LIB) $(IRRLICHT_LIB) $(CURL_LIB) $(GMP_LIB) $(LEVELDB_TARGET)       \
 	$(OPENAL_LIB) $(OGG_LIB) prep_srcdir $(ANDR_ROOT)/jni/src/android_version.h    \
 	$(ANDR_ROOT)/jni/src/android_version_githash.h sqlite3_download
@@ -772,9 +734,6 @@ prep_srcdir :
 	if [ ! -e ${ANDR_ROOT}/jni/lib ]; then                                     \
 		ln -s ${PROJ_ROOT}/lib ${ANDR_ROOT}/jni/lib;                       \
 	fi
-
-clean_apk :
-	./gradlew clean
 
 $(ANDR_ROOT)/jni/src/android_version_githash.h : prep_srcdir
 	@export VERSION_FILE=${ANDR_ROOT}/jni/src/android_version_githash.h;        \
@@ -814,5 +773,3 @@ $(ANDR_ROOT)/jni/src/android_version.h : prep_srcdir
 	else                                                                       \
 		rm "$${VERSION_FILE_NEW}";                                         \
 	fi
-
-clean : clean_apk clean_assets
