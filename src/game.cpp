@@ -1065,7 +1065,7 @@ void Game::run()
 
 	while (RenderingEngine::run()
 			&& !(*kill || g_gamecallback->shutdown_requested
-			|| (server && server->getShutdownRequested()))) {
+			|| (server && server->isShutdownRequested()))) {
 
 		const irr::core::dimension2d<u32> &current_screen_size =
 			RenderingEngine::get_video_driver()->getScreenSize();

@@ -201,7 +201,7 @@ public:
 	inline double getUptime() const { return m_uptime.m_value; }
 
 	// read shutdown state
-	inline bool getShutdownRequested() const { return m_shutdown_requested; }
+	inline bool isShutdownRequested() const { return m_shutdown_state.is_requested; }
 
 	// request server to shutdown
 	void requestShutdown(const std::string &msg, bool reconnect, float delay = 0.0f);
@@ -351,6 +351,21 @@ private:
 
 	friend class EmergeThread;
 	friend class RemoteClient;
+
+	struct ShutdownState {
+		public:
+			bool is_requested = false;
+			bool should_reconnect = false;
+			std::string message;
+
+			void reset();
+			void trigger(float delay, const std::string &msg, bool reconnect);
+			void tick(float dtime, Server *server);
+			std::wstring getShutdownTimerMessage() const;
+			bool isTimerRunning() const { return m_timer > 0.0f; }
+		private:
+			float m_timer = 0.0f;
+	};
 
 	void SendMovement(session_t peer_id);
 	void SendHP(session_t peer_id, u16 hp);
@@ -586,10 +601,7 @@ private:
 		Random stuff
 	*/
 
-	bool m_shutdown_requested = false;
-	std::string m_shutdown_msg;
-	bool m_shutdown_ask_reconnect = false;
-	float m_shutdown_timer = 0.0f;
+	ShutdownState m_shutdown_state;
 
 	ChatInterface *m_admin_chat;
 	std::string m_admin_nick;
