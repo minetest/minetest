@@ -25,11 +25,6 @@ Further documentation
 - Github: https://github.com/minetest/minetest/
 - doc/ directory of source distribution
 
-This game is not finished
---------------------------
-- Don't expect it to work as well as a finished game will.
-- Please report any bugs. When doing that, debug.txt is useful.
-
 Default controls
 ----------------
 All controls are re-bindable using settings.
