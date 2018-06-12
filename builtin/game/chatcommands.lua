@@ -123,7 +123,7 @@ core.register_chatcommand("hasprivs", {
 				table.insert(players_with_privs, player_name)
 			end
 		end	
-		return true, "Players with the \"" .. param .. "\" priv: " ..
+		return true, "Players online with the \"" .. param .. "\" priv: " ..
 			table.concat(players_with_privs, ", ")
 	end	
 })
