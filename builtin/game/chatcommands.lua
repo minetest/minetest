@@ -41,7 +41,7 @@ end)
 
 if core.settings:get_bool("profiler.load") then
 	-- Run after register_chatcommand and its register_on_chat_message
-	-- Before any chattcommands that should be profiled
+	-- Before any chatcommands that should be profiled
 	profiler.init_chatcommand()
 end
 
@@ -101,6 +101,31 @@ core.register_chatcommand("privs", {
 			.. core.privs_to_string(
 				core.get_player_privs(name), ' ')
 	end,
+})
+
+core.register_chatcommand("hasprivs", {
+	params = "<privilege>",
+	description = "Return list of all online players with privilege.",
+	privs = {basic_privs = true},
+	func = function(caller, param)
+		param = param:trim()
+		if param == "" then
+			return false, "Invalid parameters (see /help hasprivs)"
+		end
+		if not core.registered_privileges[param] then
+			return false, "Unknown privilege!"
+		end
+		local privs = core.string_to_privs(param)
+		local players_with_privs = {}
+		for _, player in pairs(core.get_connected_players()) do
+			local player_name = player:get_player_name()
+			if core.check_player_privs(player_name, privs) then
+				table.insert(players_with_privs, player_name)
+			end
+		end	
+		return true, "Players online with the \"" .. param .. "\" priv: " ..
+			table.concat(players_with_privs, ", ")
+	end	
 })
 
 local function handle_grant_command(caller, grantname, grantprivstr)
