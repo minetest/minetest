@@ -6,13 +6,23 @@ buildscript {
 	}
 	dependencies {
 		classpath "com.android.tools.build:gradle:2.3.0"
+		classpath 'com.palominolabs.gradle.task:gradle-git-clone-task:0.0.3'
 	}
 }
 
 def curl_version = "7.58.0"
 def gmp_version = "6.1.2"
+def irrlicht_revision = "5150"
+def openal_version = "1.18.2"
 def openssl_version = "1.0.2n"
 def sqlite3_version = "3220000"
+
+def APP_PLATFORM = "android-14"
+def TARGET_ABI = "armeabi-v7a"
+def TARGET_CFLAGS_ADDON = "-mfloat-abi=softfp -mfpu=vfpv3 -O3"
+def TARGET_CXXFLAGS_ADDON = "-mfloat-abi=softfp -mfpu=vfpv3 -O3"
+def COMPILER_VERSION = "clang"
+def ANDROID_NDK = "/home/nerzhul/Devel/Android/android-sdk/ndk-bundle/"
 
 apply plugin: "com.android.application"
 
@@ -71,6 +81,59 @@ android {
 			}
 		}
 	}
+}
+
+task cloneIrrlicht(type: Exec) {
+	workingDir 'deps'
+	commandLine 'svn', 'co', 'https://svn.code.sf.net/p/irrlicht/code/branches/ogl-es@' + irrlicht_revision, 'irrlicht'
+} << {
+	exec {
+		workingDir 'deps/irrlicht'
+		commandLine 'patch', '--binary', '-p1', '-N', '-i', '../../patches/irrlicht-touchcount.patch'
+	}
+
+	exec {
+		workingDir 'deps/irrlicht'
+		commandLine 'patch', '--binary', '-p1', '-N', '-i', '../../patches/irrlicht-back_button.patch'
+	}
+
+	exec {
+		workingDir 'deps/irrlicht'
+		commandLine 'patch', '--binary', '-p1', '-N', '-i', '../../patches/irrlicht-texturehack.patch'
+	}
+
+	exec {
+		workingDir 'deps/irrlicht'
+		commandLine 'patch', '--binary', '-p1', '-N', '-i', '../../patches/irrlicht-native_activity.patch'
+	}
+}
+
+task buildIrrlicht(type: Exec, dependsOn:[cloneIrrlicht]) {
+	workingDir 'deps/irrlicht/source/Irrlicht/Android'
+	# @TODO use the correct options
+	commandLine ANDROID_NDK + '/ndk-build', 'NDK_APPLICATION_MK=../../../../../jni/Deps.mk'
+}
+
+task cloneOpenAL(type: com.palominolabs.gradle.task.git.clone.GitCloneTask) {
+  dir = file("deps/openal-soft")
+  uri = 'https://github.com/kcat/openal-soft'
+  treeish = 'openal-soft-' + openal_version
+} << {
+	exec {
+		workingDir 'deps'
+		commandLine 'patch', '-p0', '-i', '../patches/openal_align.patch'
+	}
+
+	exec { 
+		workingDir 'deps'
+		commandLine 'patch', '-p0', '-i', '../patches/openal_math_defs.h.patch'
+	}
+}
+
+task buildOpenAL(type: Exec, dependsOn:[cloneOpenAL]) {
+	workingDir 'deps/openal-soft'
+	# @TODO use the correct options
+	commandLine ANDROID_NDK + '/ndk-build', 'NDK_APPLICATION_MK=../../jni/Deps.mk'
 }
 
 task cleanAssets(type:Delete) {

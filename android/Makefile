@@ -75,12 +75,8 @@ LEVELDB_TIMESTAMP_INT = $(ANDR_ROOT)/deps/leveldb_timestamp
 LEVELDB_URL_GIT = https://github.com/google/leveldb
 LEVELDB_COMMIT = 2d0320a458d0e6a20fff46d5f80b18bfdcce7018
 
-OPENAL_VERSION = 1.18.2
 OPENAL_DIR = $(ANDR_ROOT)/deps/openal-soft/
 OPENAL_LIB = $(OPENAL_DIR)libs/$(TARGET_ABI)/libopenal.so
-OPENAL_TIMESTAMP = $(OPENAL_DIR)/timestamp
-OPENAL_TIMESTAMP_INT = $(ANDR_ROOT)/deps/openal_timestamp
-OPENAL_URL_GIT = https://github.com/kcat/openal-soft
 
 OGG_DIR = $(ANDR_ROOT)/deps/libvorbis-libogg-android/
 OGG_LIB = $(OGG_DIR)libs/$(TARGET_ABI)/libogg.so
@@ -89,12 +85,8 @@ OGG_TIMESTAMP = $(OGG_DIR)timestamp
 OGG_TIMESTAMP_INT = $(ANDR_ROOT)/deps/ogg_timestamp
 OGG_URL_GIT = https://gitlab.com/minetest/libvorbis-libogg-android
 
-IRRLICHT_REVISION = 5150
 IRRLICHT_DIR = $(ANDR_ROOT)/deps/irrlicht/
 IRRLICHT_LIB = $(IRRLICHT_DIR)lib/Android/libIrrlicht.a
-IRRLICHT_TIMESTAMP = $(IRRLICHT_DIR)timestamp
-IRRLICHT_TIMESTAMP_INT = $(ANDR_ROOT)/deps/irrlicht_timestamp
-IRRLICHT_URL_SVN = https://svn.code.sf.net/p/irrlicht/code/branches/ogl-es@$(IRRLICHT_REVISION)
 
 OPENSSL_VERSION = 1.0.2n
 OPENSSL_BASEDIR = openssl-$(OPENSSL_VERSION)
@@ -150,8 +142,8 @@ endif
 	clean prep_srcdir \
 	install_debug install_release envpaths all \
 	$(ASSETS_TIMESTAMP) $(LEVELDB_TIMESTAMP) \
-	$(OPENAL_TIMESTAMP) $(OGG_TIMESTAMP) \
-	$(IRRLICHT_TIMESTAMP) $(CURL_TIMESTAMP) \
+	$(OGG_TIMESTAMP) \
+	$(CURL_TIMESTAMP) \
 	$(OPENSSL_TIMESTAMP) \
 	$(ANDR_ROOT)/jni/src/android_version.h \
 	$(ANDR_ROOT)/jni/src/android_version_githash.h
@@ -192,48 +184,8 @@ local.properties:
 	fi;                                                                        \
 	echo "sdk.dir = $$SDKFLDR" >> local.properties;
 
-
-$(OPENAL_TIMESTAMP) : openal_download
-	@LAST_MODIF=$$(find ${OPENAL_DIR} -type f -printf '%T@ %p\n' | sort -n | tail -1 | cut -f2- -d" "); \
-	if [ $$(basename $$LAST_MODIF) != "timestamp" ] ; then                     \
-		touch ${OPENAL_TIMESTAMP};                                            \
-	fi
-
-openal_download :
-	@if [ ! -d ${OPENAL_DIR} ] ; then                                              \
-		echo "openal sources missing, downloading...";                         \
-		mkdir -p ${ANDR_ROOT}/deps;                                            \
-		cd ${ANDR_ROOT}/deps ;                                                 \
-		git clone ${OPENAL_URL_GIT} -b openal-soft-${OPENAL_VERSION} || exit 1;\
-		patch -p0 < ${ANDR_ROOT}/patches/openal_align.patch || exit 1; \
-		patch -p0 < ${ANDR_ROOT}/patches/openal_math_defs.h.patch || exit 1; \
-	fi
-
-openal : $(OPENAL_LIB)
-
-$(OPENAL_LIB): $(OPENAL_TIMESTAMP)
-	+ @REFRESH=0;                                                                \
-	if [ ! -e ${OPENAL_TIMESTAMP_INT} ] ; then                                 \
-		REFRESH=1;                                                             \
-	fi;                                                                        \
-	if [ ${OPENAL_TIMESTAMP} -nt ${OPENAL_TIMESTAMP_INT} ] ; then              \
-		REFRESH=1;                                                             \
-	fi;                                                                        \
-	if [ $$REFRESH -ne 0 ] ; then                                              \
-	echo "changed timestamp for openal detected building...";                  \
-	cd ${OPENAL_DIR};                                                          \
-	export APP_PLATFORM=${APP_PLATFORM};                                       \
-	export TARGET_ABI=${TARGET_ABI};                                           \
-	export TARGET_CFLAGS_ADDON="${TARGET_CFLAGS_ADDON}";                       \
-	export TARGET_CXXFLAGS_ADDON="${TARGET_CXXFLAGS_ADDON}";                   \
-	export COMPILER_VERSION=${COMPILER_VERSION};                               \
-	${ANDROID_NDK}/ndk-build                                                   \
-		NDK_APPLICATION_MK=${ANDR_ROOT}/jni/Deps.mk || exit 1;                 \
-	touch ${OPENAL_TIMESTAMP};                                                 \
-	touch ${OPENAL_TIMESTAMP_INT};                                             \
-	else                                                                       \
-		echo "nothing to be done for openal";                                  \
-	fi
+openal :
+	@./gradlew buildOpenAL
 
 $(OGG_TIMESTAMP) : ogg_download
 	@LAST_MODIF=$$(find ${OGG_DIR} -type f -printf '%T@ %p\n' | sort -n | tail -1 | cut -f2- -d" "); \
@@ -455,59 +407,10 @@ $(ICONV_LIB) : $(ICONV_TIMESTAMP)
 		echo "nothing to be done for iconv";                               \
 	fi
 
-#Note: Texturehack patch is required for gpu's not supporting color format
-#      correctly. Known bad GPU:
-#      -geforce on emulator
-#      -Vivante Corporation GC1000 core (e.g. Galaxy Tab 3)
-
-irrlicht_download :
-	@if [ ! -d "deps/irrlicht" ] ; then                                        \
-		echo "irrlicht sources missing, downloading...";                       \
-		mkdir -p ${ANDR_ROOT}/deps;                                            \
-		cd deps;                                                               \
-		svn co ${IRRLICHT_URL_SVN} irrlicht || exit 1;                         \
-		cd irrlicht;                                                           \
-		patch -p1 < ${ANDR_ROOT}/patches/irrlicht-touchcount.patch || exit 1;  \
-		patch -p1 < ${ANDR_ROOT}/patches/irrlicht-back_button.patch || exit 1; \
-		patch -p1 < ${ANDR_ROOT}/patches/irrlicht-texturehack.patch || exit 1; \
-		patch -p1 < ${ANDR_ROOT}/patches/irrlicht-native_activity.patch || exit 1; \
-	fi
-
-$(IRRLICHT_TIMESTAMP) : irrlicht_download
-	@LAST_MODIF=$$(find ${IRRLICHT_DIR} -type f -printf '%T@ %p\n' | sort -n | tail -1 | cut -f2- -d" "); \
-	if [ $$(basename $$LAST_MODIF) != "timestamp" ] ; then                     \
-		touch ${IRRLICHT_TIMESTAMP};                                           \
-	fi
-
 irrlicht : $(IRRLICHT_LIB)
 
-$(IRRLICHT_LIB): $(IRRLICHT_TIMESTAMP) $(FREETYPE_LIB)
-	+ @REFRESH=0;                                                                \
-	if [ ! -e ${IRRLICHT_TIMESTAMP_INT} ] ; then                               \
-		REFRESH=1;                                                             \
-	fi;                                                                        \
-	if [ ! -e ${IRRLICHT_LIB} ] ; then                                         \
-		REFRESH=1;                                                             \
-	fi;                                                                        \
-	if [ ${IRRLICHT_TIMESTAMP} -nt ${IRRLICHT_TIMESTAMP_INT} ] ; then          \
-		REFRESH=1;                                                             \
-	fi;                                                                        \
-	if [ $$REFRESH -ne 0 ] ; then                                              \
-	mkdir -p ${IRRLICHT_DIR};                                                  \
-	echo "changed timestamp for irrlicht detected building...";                \
-	cd deps/irrlicht/source/Irrlicht/Android;                                  \
-	export APP_PLATFORM=${APP_PLATFORM};                                       \
-	export TARGET_ABI=${TARGET_ABI};                                           \
-	export TARGET_CFLAGS_ADDON="${TARGET_CFLAGS_ADDON}";                       \
-	export TARGET_CXXFLAGS_ADDON="${TARGET_CXXFLAGS_ADDON}";                   \
-	export COMPILER_VERSION=${COMPILER_VERSION};                               \
-	${ANDROID_NDK}/ndk-build                                                   \
-		NDK_APPLICATION_MK=${ANDR_ROOT}/jni/Deps.mk || exit 1;                 \
-	touch ${IRRLICHT_TIMESTAMP};                                               \
-	touch ${IRRLICHT_TIMESTAMP_INT};                                           \
-	else                                                                       \
-		echo "nothing to be done for irrlicht";                                \
-	fi
+$(IRRLICHT_LIB): $(FREETYPE_LIB)
+	@./gradlew buildIrrlicht                                                   \
 
 $(CURL_TIMESTAMP) : curl_download
 	@LAST_MODIF=$$(find ${CURL_DIR} -type f -printf '%T@ %p\n' | sort -n | tail -1 | cut -f2- -d" "); \
