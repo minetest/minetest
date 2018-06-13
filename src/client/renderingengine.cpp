@@ -305,7 +305,7 @@ void RenderingEngine::setXorgNetWMPID(
 	hints.ai_flags=AI_CANONNAME;
 
 	// gethostname and getaddrinfo do not support IDN (thank the 
-	// flying spagehti monster) this means that fqdn will be represented
+	// flying spaghetti monster) this means that fqdn will be represented
 	// in ASCII (any IDN names would be converted using punycode).
 	std::string *fqdn_ptr;          
 
