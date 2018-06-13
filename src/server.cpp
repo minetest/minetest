@@ -156,33 +156,33 @@ void Server::ShutdownState::trigger(float delay, const std::string &msg, bool re
 
 void Server::ShutdownState::tick(float dtime, Server *server)
 {
+	if (m_timer <= 0.0f)
+		return;
+
 	// Timed shutdown
 	static const float shutdown_msg_times[] =
 	{
-		1, 2, 3, 4, 5, 10, 15, 20, 25, 30, 45, 60, 120, 180, 300, 600, 1200, 1800, 3600
+		1, 2, 3, 4, 5, 10, 20, 40, 60, 120, 180, 300, 600, 1200, 1800, 3600
 	};
 
-	if (m_timer > 0.0f) {
-		// Automated messages
-		if (m_timer < shutdown_msg_times[ARRLEN(shutdown_msg_times) - 1]) {
-			for (u16 i = 0; i < ARRLEN(shutdown_msg_times) - 1; i++) {
-				// If shutdown timer matches an automessage, shot it
-				if (m_timer > shutdown_msg_times[i] &&
-					m_timer - dtime < shutdown_msg_times[i]) {
-					std::wstring periodicMsg = getShutdownTimerMessage();
+	// Automated messages
+	if (m_timer < shutdown_msg_times[ARRLEN(shutdown_msg_times) - 1]) {
+		for (float t : shutdown_msg_times) {
+			// If shutdown timer matches an automessage, shot it
+			if (m_timer > t && m_timer - dtime < t) {
+				std::wstring periodicMsg = getShutdownTimerMessage();
 
-					infostream << wide_to_utf8(periodicMsg).c_str() << std::endl;
-					server->SendChatMessage(PEER_ID_INEXISTENT, periodicMsg);
-					break;
-				}
+				infostream << wide_to_utf8(periodicMsg).c_str() << std::endl;
+				server->SendChatMessage(PEER_ID_INEXISTENT, periodicMsg);
+				break;
 			}
 		}
+	}
 
-		m_timer -= dtime;
-		if (m_timer < 0.0f) {
-			m_timer = 0.0f;
-			is_requested = true;
-		}
+	m_timer -= dtime;
+	if (m_timer < 0.0f) {
+		m_timer = 0.0f;
+		is_requested = true;
 	}
 }
 
