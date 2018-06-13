@@ -1065,7 +1065,7 @@ void Game::run()
 
 	while (RenderingEngine::run()
 			&& !(*kill || g_gamecallback->shutdown_requested
-			|| (server && server->getShutdownRequested()))) {
+			|| (server && server->isShutdownRequested()))) {
 
 		const irr::core::dimension2d<u32> &current_screen_size =
 			RenderingEngine::get_video_driver()->getScreenSize();
@@ -1271,6 +1271,7 @@ bool Game::createSingleplayerServer(const std::string &map_dir,
 	}
 
 	server = new Server(map_dir, gamespec, simple_singleplayer_mode, bind_addr, false);
+	server->init();
 	server->start();
 
 	return true;

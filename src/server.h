@@ -128,6 +128,7 @@ public:
 	~Server();
 	DISABLE_CLASS_COPY(Server);
 
+	void init();
 	void start();
 	void stop();
 	// This is mainly a way to pass the time to the server.
@@ -201,7 +202,7 @@ public:
 	inline double getUptime() const { return m_uptime.m_value; }
 
 	// read shutdown state
-	inline bool getShutdownRequested() const { return m_shutdown_requested; }
+	inline bool isShutdownRequested() const { return m_shutdown_state.is_requested; }
 
 	// request server to shutdown
 	void requestShutdown(const std::string &msg, bool reconnect, float delay = 0.0f);
@@ -348,9 +349,25 @@ public:
 	std::mutex m_env_mutex;
 
 private:
-
 	friend class EmergeThread;
 	friend class RemoteClient;
+	friend class TestServerShutdownState;
+
+	struct ShutdownState {
+		friend class TestServerShutdownState;
+		public:
+			bool is_requested = false;
+			bool should_reconnect = false;
+			std::string message;
+
+			void reset();
+			void trigger(float delay, const std::string &msg, bool reconnect);
+			void tick(float dtime, Server *server);
+			std::wstring getShutdownTimerMessage() const;
+			bool isTimerRunning() const { return m_timer > 0.0f; }
+		private:
+			float m_timer = 0.0f;
+	};
 
 	void SendMovement(session_t peer_id);
 	void SendHP(session_t peer_id, u16 hp);
@@ -368,7 +385,7 @@ private:
 	void SetBlocksNotSent(std::map<v3s16, MapBlock *>& block);
 
 
-	void SendChatMessage(session_t peer_id, const ChatMessage &message);
+	virtual void SendChatMessage(session_t peer_id, const ChatMessage &message);
 	void SendTimeOfDay(session_t peer_id, u16 time, f32 time_speed);
 	void SendPlayerHP(session_t peer_id);
 
@@ -586,10 +603,7 @@ private:
 		Random stuff
 	*/
 
-	bool m_shutdown_requested = false;
-	std::string m_shutdown_msg;
-	bool m_shutdown_ask_reconnect = false;
-	float m_shutdown_timer = 0.0f;
+	ShutdownState m_shutdown_state;
 
 	ChatInterface *m_admin_chat;
 	std::string m_admin_nick;
