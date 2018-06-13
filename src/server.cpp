@@ -227,22 +227,96 @@ Server::Server(
 {
 	m_lag = g_settings->getFloat("dedicated_server_step");
 
-	if (path_world.empty())
+	if (m_path_world.empty())
 		throw ServerError("Supplied empty world path");
 
-	if(!gamespec.isValid())
+	if (!gamespec.isValid())
 		throw ServerError("Supplied invalid gamespec");
+}
 
-	infostream<<"Server created for gameid \""<<m_gamespec.id<<"\"";
-	if(m_simple_singleplayer_mode)
-		infostream<<" in simple singleplayer mode"<<std::endl;
+Server::~Server()
+{
+	infostream << "Server destructing" << std::endl;
+
+	// Send shutdown message
+	SendChatMessage(PEER_ID_INEXISTENT, ChatMessage(CHATMESSAGE_TYPE_ANNOUNCE,
+			L"*** Server shutting down"));
+
+	if (m_env) {
+		MutexAutoLock envlock(m_env_mutex);
+
+		infostream << "Server: Saving players" << std::endl;
+		m_env->saveLoadedPlayers();
+
+		infostream << "Server: Kicking players" << std::endl;
+		std::string kick_msg;
+		bool reconnect = false;
+		if (isShutdownRequested()) {
+			reconnect = m_shutdown_state.should_reconnect;
+			kick_msg = m_shutdown_state.message;
+		}
+		if (kick_msg.empty()) {
+			kick_msg = g_settings->get("kick_msg_shutdown");
+		}
+		m_env->kickAllPlayers(SERVER_ACCESSDENIED_SHUTDOWN,
+			kick_msg, reconnect);
+	}
+
+	// Do this before stopping the server in case mapgen callbacks need to access
+	// server-controlled resources (like ModStorages). Also do them before
+	// shutdown callbacks since they may modify state that is finalized in a
+	// callback.
+	if (m_emerge)
+		m_emerge->stopThreads();
+
+	if (m_env) {
+		MutexAutoLock envlock(m_env_mutex);
+
+		// Execute script shutdown hooks
+		infostream << "Executing shutdown hooks" << std::endl;
+		m_script->on_shutdown();
+
+		infostream << "Server: Saving environment metadata" << std::endl;
+		m_env->saveMeta();
+	}
+
+	// Stop threads
+	if (m_thread) {
+		stop();
+		delete m_thread;
+	}
+
+	// Delete things in the reverse order of creation
+	delete m_emerge;
+	delete m_env;
+	delete m_rollback;
+	delete m_banmanager;
+	delete m_itemdef;
+	delete m_nodedef;
+	delete m_craftdef;
+
+	// Deinitialize scripting
+	infostream << "Server: Deinitializing scripting" << std::endl;
+	delete m_script;
+
+	// Delete detached inventories
+	for (auto &detached_inventory : m_detached_inventories) {
+		delete detached_inventory.second;
+	}
+}
+
+void Server::init()
+{
+	infostream << "Server created for gameid \"" << m_gamespec.id << "\"";
+	if (m_simple_singleplayer_mode)
+		infostream << " in simple singleplayer mode" << std::endl;
 	else
-		infostream<<std::endl;
-	infostream<<"- world:  "<<m_path_world<<std::endl;
-	infostream<<"- game:   "<<m_gamespec.path<<std::endl;
+		infostream << std::endl;
+	infostream << "- world:  " << m_path_world << std::endl;
+	infostream << "- game:   " << m_gamespec.path << std::endl;
 
 	// Create world if it doesn't exist
-	if(!loadGameConfAndInitWorld(m_path_world, m_gamespec))
+	if (!loadGameConfAndInitWorld(m_path_world, m_gamespec))
 		throw ServerError("Failed to initialize world");
 
 	// Create server thread
@@ -255,8 +329,7 @@ Server::Server(
 	std::string ban_path = m_path_world + DIR_DELIM "ipban.txt";
 	m_banmanager = new BanManager(ban_path);
 
-	m_modmgr = std::unique_ptr<ServerModManager>(new ServerModManager(
-		m_path_world));
+	m_modmgr = std::unique_ptr<ServerModManager>(new ServerModManager(m_path_world));
 	std::vector<ModSpec> unsatisfied_mods = m_modmgr->getUnsatisfiedMods();
 	// complain about mods with unsatisfied dependencies
 	if (!m_modmgr->isConsistent()) {
@@ -267,10 +340,10 @@ Server::Server(
 	MutexAutoLock envlock(m_env_mutex);
 
 	// Create the Map (loads map_meta.txt, overriding configured mapgen params)
-	ServerMap *servermap = new ServerMap(path_world, this, m_emerge);
+	ServerMap *servermap = new ServerMap(m_path_world, this, m_emerge);
 
 	// Initialize scripting
-	infostream<<"Server: Initializing Lua"<<std::endl;
+	infostream << "Server: Initializing Lua" << std::endl;
 
 	m_script = new ServerScripting(this);
 
@@ -330,74 +403,6 @@ Server::Server(
 	m_max_chatmessage_length = g_settings->getU16("chat_message_max_size");
 	m_csm_flavour_limits = g_settings->getU64("csm_flavour_limits");
 	m_csm_noderange_limit = g_settings->getU32("csm_flavour_noderange_limit");
-}
-
-Server::~Server()
-{
-	infostream << "Server destructing" << std::endl;
-
-	// Send shutdown message
-	SendChatMessage(PEER_ID_INEXISTENT, ChatMessage(CHATMESSAGE_TYPE_ANNOUNCE,
-			L"*** Server shutting down"));
-
-	{
-		MutexAutoLock envlock(m_env_mutex);
-
-		infostream << "Server: Saving players" << std::endl;
-		m_env->saveLoadedPlayers();
-
-		infostream << "Server: Kicking players" << std::endl;
-		std::string kick_msg;
-		bool reconnect = false;
-		if (isShutdownRequested()) {
-			reconnect = m_shutdown_state.should_reconnect;
-			kick_msg = m_shutdown_state.message;
-		}
-		if (kick_msg.empty()) {
-			kick_msg = g_settings->get("kick_msg_shutdown");
-		}
-		m_env->kickAllPlayers(SERVER_ACCESSDENIED_SHUTDOWN,
-			kick_msg, reconnect);
-	}
-
-	// Do this before stopping the server in case mapgen callbacks need to access
-	// server-controlled resources (like ModStorages). Also do them before
-	// shutdown callbacks since they may modify state that is finalized in a
-	// callback.
-	m_emerge->stopThreads();
-
-	{
-		MutexAutoLock envlock(m_env_mutex);
-
-		// Execute script shutdown hooks
-		infostream << "Executing shutdown hooks" << std::endl;
-		m_script->on_shutdown();
-
-		infostream << "Server: Saving environment metadata" << std::endl;
-		m_env->saveMeta();
-	}
-
-	// Stop threads
-	stop();
-	delete m_thread;
-
-	// Delete things in the reverse order of creation
-	delete m_emerge;
-	delete m_env;
-	delete m_rollback;
-	delete m_banmanager;
-	delete m_itemdef;
-	delete m_nodedef;
-	delete m_craftdef;
-
-	// Deinitialize scripting
-	infostream << "Server: Deinitializing scripting" << std::endl;
-	delete m_script;
-
-	// Delete detached inventories
-	for (auto &detached_inventory : m_detached_inventories) {
-		delete detached_inventory.second;
-	}
 }
 
 void Server::start()

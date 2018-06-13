@@ -128,6 +128,7 @@ public:
 	~Server();
 	DISABLE_CLASS_COPY(Server);
 
+	void init();
 	void start();
 	void stop();
 	// This is mainly a way to pass the time to the server.
@@ -348,11 +349,12 @@ public:
 	std::mutex m_env_mutex;
 
 private:
-
 	friend class EmergeThread;
 	friend class RemoteClient;
+	friend class TestServerShutdownState;
 
 	struct ShutdownState {
+		friend class TestServerShutdownState;
 		public:
 			bool is_requested = false;
 			bool should_reconnect = false;
@@ -383,7 +385,7 @@ private:
 	void SetBlocksNotSent(std::map<v3s16, MapBlock *>& block);
 
 
-	void SendChatMessage(session_t peer_id, const ChatMessage &message);
+	virtual void SendChatMessage(session_t peer_id, const ChatMessage &message);
 	void SendTimeOfDay(session_t peer_id, u16 time, f32 time_speed);
 	void SendPlayerHP(session_t peer_id);
 
