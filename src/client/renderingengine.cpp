@@ -236,9 +236,7 @@ void RenderingEngine::setXorgNetWMPID(
 
 	// Set the _NET_WM_PID for the window. 
 
-	Atom NET_WM_PID = XInternAtom(x11_dpl,
-		"_NET_WM_PID",
-		false);
+	Atom NET_WM_PID = XInternAtom(x11_dpl, "_NET_WM_PID", false);
 
 	pid_t pid = getpid();
 	infostream << "PID is '" << (long)pid << "'"
@@ -264,12 +262,12 @@ void RenderingEngine::setXorgNetWMPID(
 	// but it can be longer ... instead of trying to guess the length use
 	// the results of gethostname to determine the length. 
 
-	size_t hostname_len=128;
-	char* hostname=0;
+	size_t hostname_len = 128;
+	char *hostname = nullptr;
 	while (1) {
 		// (Re)allocate buffer of length hostname_len.
-		char* realloc_hostname=(char *) realloc(hostname,hostname_len);
-		if (realloc_hostname==0) {
+		char *realloc_hostname = (char *) realloc(hostname,hostname_len);
+		if (realloc_hostname == nullptr) {
 			free(hostname);
 			// This should probably raise an error or exit the program 
 			// if this happens. 
@@ -277,22 +275,22 @@ void RenderingEngine::setXorgNetWMPID(
 				<< std::endl;
 			return;
 		}
-		hostname=realloc_hostname;
+		hostname = realloc_hostname;
 
 		// Terminate the buffer.
-		hostname[hostname_len-1]=0;
+		hostname[hostname_len-1] = 0;
 
 		// Offer all but the last byte of the buffer to gethostname.
-		if (gethostname(hostname,hostname_len-1)==0) {
-			size_t count=strlen(hostname);
-			if (count<hostname_len-2) {
+		if (gethostname(hostname,hostname_len-1) == 0) {
+			size_t count = strlen(hostname);
+			if (count < hostname_len-2) {
 				// Break from loop if hostname definitely not truncated
 				break;
 			}
 		}
 
 		// Double size of buffer and try again.
-		hostname_len*=2;
+		hostname_len *= 2;
 	}
 
 	// The EWMH spec specifies that WM_CLIENT_MACHINE should be set to the 
@@ -300,24 +298,24 @@ void RenderingEngine::setXorgNetWMPID(
 	// to determine the FQDN using getaddrinfo. If that fails then fall
 	// back to the hostname discovered above. 
 
-	struct addrinfo hints={0};
-	hints.ai_family=AF_UNSPEC;
-	hints.ai_flags=AI_CANONNAME;
+	struct addrinfo hints = {0};
+	hints.ai_family = AF_UNSPEC;
+	hints.ai_flags = AI_CANONNAME;
 
 	// gethostname and getaddrinfo do not support IDN (thank the 
 	// flying spaghetti monster) this means that fqdn will be represented
 	// in ASCII (any IDN names would be converted using punycode).
-	std::string *fqdn_ptr;          
+	std::string fqdn;          
 
-	struct addrinfo* res=0;
-	if (getaddrinfo(hostname,0,&hints,&res)==0) {
+	struct addrinfo* res = 0;
+	if (getaddrinfo(hostname,0,&hints,&res) == 0) {
 		infostream << "Hostname '" << hostname
 			<< "' was successfully resolved as '" 
 			<< res->ai_canonname << "'"
 			<< std::endl;
 
 		// Copy canonical name to new string so that addrinfo can be freed
-		fqdn_ptr = new std::string(res->ai_canonname, res->ai_canonname+strlen(res->ai_canonname));
+		fqdn.assign(res->ai_canonname);
 		freeaddrinfo(res);
 	} else {
 		infostream << "Couldn't resolve hostname '"
@@ -325,7 +323,7 @@ void RenderingEngine::setXorgNetWMPID(
 			<< std::endl;
 
 		// Copy hostname to new string so that hostname can be freed
-		fqdn_ptr = new std::string(hostname, hostname+strlen(hostname));
+		fqdn.assign(hostname);
 	}
 	// hostname is no longer needed so free it. 
 	free(hostname);
@@ -338,8 +336,7 @@ void RenderingEngine::setXorgNetWMPID(
 	// The following is needed because XStringListToTextProperty expects
 	// a list of writeable strings to be passed. string::c_str returns a 
 	// const char * and so is not suitable for this purpose. 
-	std::string &fqdn = *fqdn_ptr;
-	char* sl = &fqdn[0];
+	char *sl = &fqdn[0];
 
 	// Create the XTextProperty value here for fqdn.
 	XStringListToTextProperty(&sl, 1, &wm_client_machine);
