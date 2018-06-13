@@ -1,6 +1,6 @@
 /*
 Minetest
-Copyright (C) 2013 celeron55, Perttu Ahola <celeron55@gmail.com>
+Copyright (C) 2018 nerzhul, Loic BLOT <loic.blot@unix-experience.fr>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -23,11 +23,16 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/string.h"
 #include "util/serialize.h"
 
-class FakeServer: public Server
+class FakeServer : public Server
 {
 public:
-	FakeServer(): Server("fakeworld", SubgameSpec("fakespec", "fakespec"), true,
-		Address(), true, nullptr) {}
+	// clang-format off
+	FakeServer() : Server("fakeworld", SubgameSpec("fakespec", "fakespec"), true,
+					Address(), true, nullptr)
+	{
+	}
+	// clang-format on
+
 private:
 	void SendChatMessage(session_t peer_id, const ChatMessage &message)
 	{
@@ -35,7 +40,8 @@ private:
 	}
 };
 
-class TestServerShutdownState : public TestBase {
+class TestServerShutdownState : public TestBase
+{
 public:
 	TestServerShutdownState() { TestManager::registerTestModule(this); }
 	const char *getName() { return "TestServerShutdownState"; }
@@ -113,5 +119,4 @@ void TestServerShutdownState::testTick()
 	UASSERT(ss.should_reconnect);
 	UASSERT(ss.message == "testtrigger");
 	UASSERT(ss.m_timer == 0.0f);
-
 }
