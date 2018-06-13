@@ -3396,10 +3396,6 @@ v3f Server::findSpawnPos()
 
 void Server::requestShutdown(const std::string &msg, bool reconnect, float delay)
 {
-	m_shutdown_timer = delay;
-	m_shutdown_msg = msg;
-	m_shutdown_ask_reconnect = reconnect;
-
 	if (delay == 0.0f) {
 	// No delay, shutdown immediately
 		m_shutdown_requested = true;
@@ -3418,17 +3414,23 @@ void Server::requestShutdown(const std::string &msg, bool reconnect, float delay
 
 		infostream << wide_to_utf8(ws.str()).c_str() << std::endl;
 		SendChatMessage(PEER_ID_INEXISTENT, ws.str());
+		// m_shutdown_* are already handled, skip.
+		return;
 	} else if (delay > 0.0f) {
 	// Positive delay, tell the clients when the server will shut down
 		std::wstringstream ws;
 
 		ws << L"*** Server shutting down in "
-				<< duration_to_string(myround(m_shutdown_timer)).c_str()
+				<< duration_to_string(myround(delay)).c_str()
 				<< ".";
 
 		infostream << wide_to_utf8(ws.str()).c_str() << std::endl;
 		SendChatMessage(PEER_ID_INEXISTENT, ws.str());
 	}
+
+	m_shutdown_timer = delay;
+	m_shutdown_msg = msg;
+	m_shutdown_ask_reconnect = reconnect;
 }
 
 PlayerSAO* Server::emergePlayer(const char *name, session_t peer_id, u16 proto_version)

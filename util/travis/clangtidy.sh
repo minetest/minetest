@@ -1,3 +1,8 @@
+#!/bin/bash -e
+. util/travis/common.sh
+
+needs_compile || exit 0
+
 if hash clang-tidy-5.0 2>/dev/null; then
 	CLANG_TIDY=clang-tidy-5.0
 else

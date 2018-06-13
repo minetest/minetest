@@ -5,18 +5,18 @@ buildscript {
 		google()
 	}
 	dependencies {
-		classpath "com.android.tools.build:gradle:3.0.1"
+		classpath "com.android.tools.build:gradle:2.3.0"
 	}
 }
 
 apply plugin: "com.android.application"
 
 android {
-	compileSdkVersion 25
-	buildToolsVersion "26.0.2"
+	compileSdkVersion 26
+	buildToolsVersion "26.0.3"
 
 	defaultConfig {
-		versionCode 17
+		versionCode 19
 		versionName "${System.env.VERSION_STR}.${versionCode}"
 		minSdkVersion 14
 		targetSdkVersion 14
