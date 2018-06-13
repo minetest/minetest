@@ -53,6 +53,8 @@ public:
 
 	static void setXorgClassHint(const video::SExposedVideoData &video_data,
 			const std::string &name);
+    static void setXorgNetWMPID(const video::SExposedVideoData &video_data);
+
 	bool setWindowIcon();
 	bool setXorgWindowIconFromPath(const std::string &icon_file);
 	static bool print_video_modes();

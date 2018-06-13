@@ -103,6 +103,7 @@ bool ClientLauncher::run(GameParams &game_params, const Settings &cmd_args)
 	}
 
 	RenderingEngine::setXorgClassHint(video_driver->getExposedVideoData(), PROJECT_NAME_C);
+	RenderingEngine::setXorgNetWMPID(video_driver->getExposedVideoData());
 	RenderingEngine::get_instance()->setWindowIcon();
 
 	/*

@@ -41,8 +41,17 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define XORG_USED
 #endif
 #ifdef XORG_USED
+#include <stdlib.h>
+#include <string>
+#include <sys/socket.h>
+#include <sys/utsname.h>
+#include <netdb.h>
+#include <irrlicht.h>
+#include <sys/types.h>
+#include <unistd.h>
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
+#include <X11/Xatom.h>
 #endif
 
 #ifdef __ANDROID__
@@ -200,6 +209,149 @@ void RenderingEngine::setXorgClassHint(
 	XSetClassHint((Display *)video_data.OpenGLLinux.X11Display,
 			video_data.OpenGLLinux.X11Window, classhint);
 	XFree(classhint);
+#endif
+}
+
+void RenderingEngine::setXorgNetWMPID(
+        const video::SExposedVideoData &video_data)
+{
+#ifdef XORG_USED
+    // Used to set the _NET_WM_PID window property according to 
+    // the Extended Window Manager Hints(WWMH) spec. _NET_WM_PID (in
+    // conjunction with WM_CLIENT_MACHINE) can be used by window 
+    // managers to force a shutdown of an application if it doesn't
+    // respond to the destroy window message. 
+    
+    //const video::SExposedVideoData &video_data = device->getExposedVideoData();
+
+    Display *x11_dpl = (Display *)video_data.OpenGLLinux.X11Display;
+	if (x11_dpl == NULL) {
+		warningstream << "Could not find X11 Display in ExposedVideoData"
+            << std::endl;
+		return;
+    }
+
+    verbosestream << "Setting Xorg _NET_WM_PID window property"
+        << std::endl;
+
+    Window x11_win = (Window)video_data.OpenGLLinux.X11Window;
+
+    // Set the _NET_WM_PID for the window. 
+
+    Atom NET_WM_PID = XInternAtom(x11_dpl,
+            "_NET_WM_PID",
+            false);
+
+    pid_t pid = getpid();
+    infostream << "PID is '" << (long)pid << "'"
+        << std::endl;
+    
+    XChangeProperty(x11_dpl, x11_win, NET_WM_PID, XA_CARDINAL, 32, PropModeReplace, (unsigned char *) &pid,1);
+
+    // According to the Extended Window Manager Hints spec if _NET_WM_PID
+    // is set then WM_CLIENT_MACHINE must also be set.
+    
+    verbosestream << "Attempting to determine Fully Qualified Domain Name for client"
+        << std::endl;
+
+    // Get the X client hostname which will be used to get address info 
+    // further down. If a canonical name can't be determined then 
+    // hostname will be used for the FQDN. 
+    //
+    // There is no way to know for sure what the max length of the hostname
+    // will be as in modern linux distributions this is a configurable option. 
+    // Most likely it will be be no longer than 64 bytes as this is the default
+    // but it can be longer ... instead of trying to guess the length use
+    // the results of gethostname to determine the length. 
+
+	size_t hostname_len=128;
+	char* hostname=0;
+	while (1) {
+		// (Re)allocate buffer of length hostname_len.
+		char* realloc_hostname=(char *) realloc(hostname,hostname_len);
+		if (realloc_hostname==0) {
+			free(hostname);
+            // This should probably raise an error or exit the program 
+            // if this happens. 
+            errorstream << "Failed to allocate memory for hostname"
+                << std::endl;
+            return;
+		}
+		hostname=realloc_hostname;
+
+		// Terminate the buffer.
+		hostname[hostname_len-1]=0;
+
+		// Offer all but the last byte of the buffer to gethostname.
+		if (gethostname(hostname,hostname_len-1)==0) {
+			size_t count=strlen(hostname);
+			if (count<hostname_len-2) {
+				// Break from loop if hostname definitely not truncated
+				break;
+			}
+		}
+
+		// Double size of buffer and try again.
+		hostname_len*=2;
+	}
+
+    // The EWMH spec specifies that WM_CLIENT_MACHINE should be set to the 
+    // Fully Qualified Domain Name (FQDN) of the client. Here, attempt 
+    // to determine the FQDN using getaddrinfo. If that fails then fall
+    // back to the hostname discovered above. 
+
+	struct addrinfo hints={0};
+	hints.ai_family=AF_UNSPEC;
+	hints.ai_flags=AI_CANONNAME;
+    // gethostname and getaddrinfo do not support IDN (thank the 
+    // flying spagehti monster) this means that fqdn will be represented
+    // in ASCII (any IDN names would be converted using punycode).
+	std::string *fqdn_ptr;          
+
+	struct addrinfo* res=0;
+	if (getaddrinfo(hostname,0,&hints,&res)==0) {
+        infostream << "Hostname '" << hostname
+            << "' was successfully resolved as '" 
+            << res->ai_canonname << "'"
+            << std::endl;
+
+        // Copy canonical name to new string so that addrinfo can be freed
+		fqdn_ptr = new std::string(res->ai_canonname, res->ai_canonname+strlen(res->ai_canonname));
+		freeaddrinfo(res);
+	} else {
+        infostream << "Couldn't resolve hostname '"
+            << hostname << "' using hostname instead." 
+            << std::endl;
+
+        // Copy hostname to new string so that hostname can be freed
+		fqdn_ptr = new std::string(hostname, hostname+strlen(hostname));
+	}
+    // hostname is no longer needed so free it. 
+	free(hostname);
+
+    verbosestream << "Setting Xorg WM_CLIENT_MACHINE window property"
+        << std::endl;
+
+	XTextProperty wm_client_machine;
+
+    // The following is needed because XStringListToTextProperty expects
+    // a list of writeable strings to be passed. string::c_str returns a 
+    // const char * and so is not suitable for this purpose. 
+	std::string &fqdn = *fqdn_ptr;
+	char* sl = &fqdn[0];
+
+    // Create the XTextProperty value here for fqdn.
+    XStringListToTextProperty(&sl, 1, &wm_client_machine);
+	//XwcTextListToTextProperty(x11_dpl, &sl, 1, XStdICCTextStyle, &wm_client_machine);
+	XSetWMClientMachine(x11_dpl, x11_win, &wm_client_machine);
+
+    // X handles the allocation of memory for the text value in the 
+    // XTextProperty structure but it must be freed here once it is 
+    // no longer needed
+	XFree(wm_client_machine.value);
+
+    verbosestream << "Successfully set Xorg EWMH _NET_WM_PID"
+        << std::endl;
 #endif
 }
 
