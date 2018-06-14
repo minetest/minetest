@@ -88,17 +88,17 @@ function on_step(dtime)
 	experimental.t1 = experimental.t1 + dtime
 	if experimental.t1 >= 2 then
 		experimental.t1 = experimental.t1 - 2
-		minetest.log("time of day is "..minetest.get_timeofday())
+		minetest.log("verbose", "time of day is "..minetest.get_timeofday())
 		if experimental.day then
-			minetest.log("forcing day->night")
+			minetest.log("verbose", "forcing day->night")
 			experimental.day = false
 			minetest.set_timeofday(0.0)
 		else
-			minetest.log("forcing night->day")
+			minetest.log("verbose", "forcing night->day")
 			experimental.day = true
 			minetest.set_timeofday(0.5)
 		end
-		minetest.log("time of day is "..minetest.get_timeofday())
+		minetest.log("verbose", "time of day is "..minetest.get_timeofday())
 	end
 	--]]
 end
@@ -228,7 +228,7 @@ minetest.register_entity("experimental:dummyball", {
 	phasetimer = 0,
 
 	on_activate = function(self, staticdata)
-		minetest.log("Dummyball activated!")
+		minetest.log("action", "Dummyball activated!")
 	end,
 
 	on_step = function(self, dtime)
@@ -750,24 +750,45 @@ minetest.register_chatcommand("bench_bulk_set_node", {
 	end,
 })
 
+local formspec_test_active = false
+
 minetest.register_on_player_receive_fields(function(player, formname, fields)
-	experimental.print_to_everything("Inventory fields 1: player="..player:get_player_name()..", fields="..dump(fields))
+	if formspec_test_active then
+		experimental.print_to_everything("Inventory fields 1: player="..player:get_player_name()..", fields="..dump(fields))
+	end
 end)
 minetest.register_on_player_receive_fields(function(player, formname, fields)
-	experimental.print_to_everything("Inventory fields 2: player="..player:get_player_name()..", fields="..dump(fields))
-	return true -- Disable the first callback
+	if formspec_test_active then
+		experimental.print_to_everything("Inventory fields 2: player="..player:get_player_name()..", fields="..dump(fields))
+		return true -- Disable the first callback
+	end
 end)
 minetest.register_on_player_receive_fields(function(player, formname, fields)
-	experimental.print_to_everything("Inventory fields 3: player="..player:get_player_name()..", fields="..dump(fields))
+	if formspec_test_active then
+		experimental.print_to_everything("Inventory fields 3: player="..player:get_player_name()..", fields="..dump(fields))
+	end
 end)
 
-minetest.log("experimental modname="..dump(minetest.get_current_modname()))
-minetest.log("experimental modpath="..dump(minetest.get_modpath("experimental")))
-minetest.log("experimental worldpath="..dump(minetest.get_worldpath()))
+minetest.register_chatcommand("test_formspec", {
+	param = "",
+	description = "Test 4: Toggle formspec test",
+	func = function(name, param)
+		formspec_test_active = not formspec_test_active
+		if formspec_test_active then
+			minetest.chat_send_player(name, "Formspec test enabled!")
+		else
+			minetest.chat_send_player(name, "Formspec test disabled!")
+		end
+	end
+})
+
+minetest.log("info", "experimental modname="..dump(minetest.get_current_modname()))
+minetest.log("info", "experimental modpath="..dump(minetest.get_modpath("experimental")))
+minetest.log("info", "experimental worldpath="..dump(minetest.get_worldpath()))
 
 
 core.register_on_mods_loaded(function()
-	core.log("Yeah experimental loaded mods.")
+	core.log("action", "Yeah experimental loaded mods.")
 end)
 
 -- END
