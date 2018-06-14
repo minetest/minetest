@@ -41,14 +41,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define XORG_USED
 #endif
 #ifdef XORG_USED
-#include <stdlib.h>
-#include <string>
-#include <sys/socket.h>
-#include <sys/utsname.h>
-#include <netdb.h>
-#include <irrlicht.h>
-#include <sys/types.h>
-#include <unistd.h>
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 #include <X11/Xatom.h>
