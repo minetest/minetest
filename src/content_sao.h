@@ -33,8 +33,8 @@ public:
 	virtual ~UnitSAO() = default;
 
 	void setRotation(v3f rotation) { m_rotation = rotation; }
-	v3f getRotation() const { return m_rotation; }
-	v3f getRadRotation() const { return m_rotation * core::DEGTORAD; }
+	const v3f &getRotation() { return m_rotation; }
+	const v3f &getRadRotation() { return m_rotation * core::DEGTORAD; }
 
 	// Deprecated
 	f32 getRadYawDep() const { return (m_rotation.Y + 90.) * core::DEGTORAD; }

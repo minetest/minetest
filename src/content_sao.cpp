@@ -1088,7 +1088,7 @@ void PlayerSAO::step(float dtime, bool send_recommended)
 		return;
 
 	// If the object is attached client-side, don't waste bandwidth sending its
-	// position to clients.
+	// position or rotation to clients.
 	if (m_position_not_sent && !isAttached()) {
 		m_position_not_sent = false;
 		float update_interval = m_env->getSendRecommendedInterval();
@@ -1102,7 +1102,7 @@ void PlayerSAO::step(float dtime, bool send_recommended)
 			pos,
 			v3f(0.0f, 0.0f, 0.0f),
 			v3f(0.0f, 0.0f, 0.0f),
-			m_rotation,
+			v3f(0.0f, 0.0f, 0.0f),
 			true,
 			false,
 			update_interval
@@ -1208,9 +1208,9 @@ void PlayerSAO::setPlayerYaw(const float yaw)
 {
 	v3f rotation(0, yaw, 0);
 	if (m_player && yaw != m_rotation.Y)
-	    m_player->setDirty(true);
+		m_player->setDirty(true);
 
-	// Set player model yaw, not view
+	// Set player model yaw, not look view
 	UnitSAO::setRotation(rotation);
 }
 

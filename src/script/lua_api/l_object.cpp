@@ -894,8 +894,8 @@ int ObjectRef::l_set_rotation(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
 	LuaEntitySAO *co = getluaobject(ref);
-	if (!co) 
-	    return 0;
+	if (!co)
+		return 0;
 
 	v3f rotation = check_v3f(L, 2) * core::RADTODEG;
 	co->setRotation(rotation);
@@ -909,8 +909,8 @@ int ObjectRef::l_get_rotation(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
 	LuaEntitySAO *co = getluaobject(ref);
-	if (!co) 
-	    return 0;
+	if (!co)
+		return 0;
 
 	lua_newtable(L);
 	v3f rotation = co->getRotation() * core::DEGTORAD;
@@ -940,8 +940,8 @@ int ObjectRef::l_get_yaw(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
 	LuaEntitySAO *co = getluaobject(ref);
-	if (!co) 
-	    return 0;
+	if (!co)
+		return 0;
 
 	float yaw = co->getRotation().Y * core::DEGTORAD;
 	lua_pushnumber(L, yaw);

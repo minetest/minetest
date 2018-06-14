@@ -175,10 +175,10 @@ private:
 
 	// set_rotation(self, {x=num, y=num, z=num})
 	static int l_set_rotation(lua_State *L);
-	
+
 	// get_rotation(self)
 	static int l_get_rotation(lua_State *L);
-	
+
 	// set_yaw(self, radians)
 	static int l_set_yaw(lua_State *L);
 

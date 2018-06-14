@@ -142,9 +142,9 @@ public:
 
 	v3f getPosition();
 
-	inline const v3f & getRotation()
+	inline const v3f &getRotation()
 	{
-	    return m_rotation;
+		return m_rotation;
 	}
 
 	const bool isImmortal();
