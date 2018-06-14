@@ -1,5 +1,5 @@
 Minetest Lua Mainmenu API Reference 0.5.0
-========================================
+=========================================
 
 Introduction
 -------------
@@ -186,11 +186,11 @@ core.log(loglevel, line) (possible in async calls)
 ^ loglevel one of "error", "action", "info", "verbose"
 
 Settings:
-core.setting_set(name, value)
-core.setting_get(name) -> string or nil (possible in async calls)
-core.setting_setbool(name, value)
-core.setting_getbool(name) -> bool or nil (possible in async calls)
-core.setting_save() -> nil, save all settings to config file
+core.settings:set(name, value)
+core.settings:get(name) -> string or nil (possible in async calls)
+core.settings:setbool(name, value)
+core.settings:getbool(name) -> bool or nil (possible in async calls)
+core.settings:save() -> nil, save all settings to config file
 
 Worlds:
 core.get_worlds() -> list of worlds (possible in async calls)
