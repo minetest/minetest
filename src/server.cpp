@@ -1184,9 +1184,7 @@ void Server::setTimeOfDay(u32 time)
 
 void Server::onMapEditEvent(MapEditEvent *event)
 {
-	if(m_ignore_map_edit_events)
-		return;
-	if(m_ignore_map_edit_events_area.contains(event->getArea()))
+	if (m_ignore_map_edit_events_area.contains(event->getArea()))
 		return;
 	MapEditEvent *e = event->clone();
 	m_unsent_map_edit_queue.push(e);

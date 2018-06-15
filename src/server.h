@@ -623,12 +623,6 @@ private:
 	*/
 	std::queue<MapEditEvent*> m_unsent_map_edit_queue;
 	/*
-		Set to true when the server itself is modifying the map and does
-		all sending of information by itself.
-		This is behind m_env_mutex
-	*/
-	bool m_ignore_map_edit_events = false;
-	/*
 		If a non-empty area, map edit events contained within are left
 		unsent. Done at map generation time to speed up editing of the
 		generated area, as it will be sent anyway.
