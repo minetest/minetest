@@ -191,19 +191,11 @@ bool RenderingEngine::setupTopLevelWindow(const std::string &name)
 {
 	// FIXME: It would make more sense for there to be a switch of some
 	// sort here that would call the correct toplevel setup methods for
-	// the environment Minetest is running in but for not deviating from
-	// the original pattern.
+	// the environment Minetest is running in but for now not deviating
+	// from the original pattern.
 	
 	/* Setting Xorg properties for the top level window */
-	verbosestream << "Client: Configuring Xorg specific top level"
-		<< " window properties"
-		<< std::endl;
-
 	setupTopLevelXorgWindow(name);
-
-	verbosestream << "Client: Finished configuring Xorg specific top level"
-		<< " window properties"
-		<< std::endl;
 	/* Done with Xorg properties */
 
 	/* Setting general properties for the top level window */
@@ -235,12 +227,17 @@ void RenderingEngine::setupTopLevelXorgWindow(const std::string &name)
 		return;
 	}
 
+	verbosestream << "Client: Configuring Xorg specific top level"
+		<< " window properties"
+		<< std::endl;
+
+
 	Window x11_win = (Window)exposedData.OpenGLLinux.X11Window;
 
 	// Set application name and class hints. For now name and class are the same.
 	XClassHint *classhint = XAllocClassHint();
-	classhint->res_name = (char *)name.c_str();
-	classhint->res_class = (char *)name.c_str();
+	classhint->res_name = const_cast<char *>(name.c_str());
+	classhint->res_class = const_cast<char *>(name.c_str());
 
 	XSetClassHint(x11_dpl, x11_win, classhint);
 	XFree(classhint);
@@ -251,14 +248,14 @@ void RenderingEngine::setupTopLevelXorgWindow(const std::string &name)
 	// leave the code as is. 
 	
     // The following is borrowed from the above gdk source for setting top
-	// level windows. The source indicates (and the Xlib docs) suggest that
+	// level windows. The source indicates and the Xlib docs suggest that
 	// this will set the WM_CLIENT_MACHINE and WM_LOCAL_NAME. This will not 
 	// set the WM_CLIENT_MACHINE to a Fully Qualified Domain Name (FQDN) which is 
 	// required by the Extended Window Manager Hints (EWMH) spec when setting
-	// the _NET_WM_PID (see further down) but, as running Minetest in an env
+	// the _NET_WM_PID (see further down) but running Minetest in an env
 	// where the window manager is on another machine from Minetest (therefore
-	// making the PID useless) it is not expected to be a problem. Further
-	// more, using gtk/gdk as the model it would seem that using a FQDN is
+	// making the PID useless) is not expected to be a problem. Further
+	// more, using gtk/gdk as the model it would seem that not using a FQDN is
 	// not an issue for modern Xorg window managers.
 	
 	verbosestream << "Client: Setting Xorg window manager Properties"
@@ -277,15 +274,15 @@ void RenderingEngine::setupTopLevelXorgWindow(const std::string &name)
 	Atom NET_WM_PID = XInternAtom(x11_dpl, "_NET_WM_PID", false);
 
 	pid_t pid = getpid();
-	infostream << "Client: PID is '" << (long)pid << "'"
+	infostream << "Client: PID is '" << static_cast<long>(pid) << "'"
 		<< std::endl;
 
 	XChangeProperty(x11_dpl, x11_win, NET_WM_PID, 
 			XA_CARDINAL, 32, PropModeReplace, 
-			(unsigned char *) &pid,1);
+			reinterpret_cast<unsigned char *>(&pid),1);
 
 	// Set the WM_CLIENT_LEADER window property here. Minetest has only one
-	// window so it will always be the leader. 
+	// window and that window will always be the leader. 
 
 	verbosestream << "Client: Setting Xorg WM_CLIENT_LEADER property"
 		<< std::endl;
@@ -294,7 +291,11 @@ void RenderingEngine::setupTopLevelXorgWindow(const std::string &name)
 
 	XChangeProperty (x11_dpl, x11_win, WM_CLIENT_LEADER,
 		XA_WINDOW, 32, PropModeReplace,
-		(unsigned char *) &x11_win, 1);
+		reinterpret_cast<unsigned char *>(&x11_win), 1);
+
+	verbosestream << "Client: Finished configuring Xorg specific top level"
+		<< " window properties"
+		<< std::endl;
 #endif
 }
 
