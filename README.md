@@ -431,9 +431,11 @@ This is how we build Windows releases.
 Version scheme
 --------------
 
-Minetest doesn't follow semver. Instead, we do something roughly similar to 0.major.minor.
+Minetest partially follows semver (major.minor.patch).
 
-Since 0.5.0-dev and 0.4.17-dev, the dev notation refers to the next release, 
-ie: 0.5.0-dev is the development version leading to 0.5.0.
+Since 5.0.0-dev and 0.4.17-dev, the dev notation refers to the next release, 
+ie: 5.0.0-dev is the development version leading to 5.0.0.
 
 Prior to that, we used oldversion-dev.
+
+Semver was adopted after 0.4.X series. Before that we used 0.major.minor scheme.
