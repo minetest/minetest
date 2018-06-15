@@ -220,7 +220,7 @@ void RenderingEngine::setupTopLevelXorgWindow(const std::string &name)
 #ifdef XORG_USED
 	const video::SExposedVideoData exposedData = driver->getExposedVideoData();
 
-	Display *x11_dpl = (Display *)exposedData.OpenGLLinux.X11Display;
+	Display *x11_dpl = reinterpret_cast<Display *>(exposedData.OpenGLLinux.X11Display);
 	if (x11_dpl == NULL) {
 		warningstream << "Client: Could not find X11 Display in ExposedVideoData"
 			<< std::endl; 
@@ -232,7 +232,7 @@ void RenderingEngine::setupTopLevelXorgWindow(const std::string &name)
 		<< std::endl;
 
 
-	Window x11_win = (Window)exposedData.OpenGLLinux.X11Window;
+	Window x11_win = reinterpret_cast<Window>(exposedData.OpenGLLinux.X11Window);
 
 	// Set application name and class hints. For now name and class are the same.
 	XClassHint *classhint = XAllocClassHint();
@@ -247,7 +247,7 @@ void RenderingEngine::setupTopLevelXorgWindow(const std::string &name)
 	// method. But for now (as it would require some significant changes) 
 	// leave the code as is. 
 	
-    // The following is borrowed from the above gdk source for setting top
+	// The following is borrowed from the above gdk source for setting top
 	// level windows. The source indicates and the Xlib docs suggest that
 	// this will set the WM_CLIENT_MACHINE and WM_LOCAL_NAME. This will not 
 	// set the WM_CLIENT_MACHINE to a Fully Qualified Domain Name (FQDN) which is 
