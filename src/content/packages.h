@@ -24,20 +24,19 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 struct Package
 {
+	std::string author;
 	std::string name; // Technical name
 	std::string title;
-	std::string author;
 	std::string type; // One of "mod", "game", or "txp"
 
 	std::string shortDesc;
-	std::string url; // download URL
 	u32 release;
-	std::vector<std::string> screenshots;
+	std::string thumbnail;
 
 	bool valid()
 	{
-		return !(name.empty() || title.empty() || author.empty() ||
-				type.empty() || url.empty() || release <= 0);
+		return !(author.empty() || name.empty() || title.empty() ||
+				type.empty() || release <= 0);
 	}
 };
 
