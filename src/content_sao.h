@@ -34,7 +34,7 @@ public:
 
 	void setRotation(v3f rotation) { m_rotation = rotation; }
 	const v3f &getRotation() { return m_rotation; }
-	const v3f &getRadRotation() { return m_rotation * core::DEGTORAD; }
+	v3f getRadRotation() { return m_rotation * core::DEGTORAD; }
 
 	// Deprecated
 	f32 getRadYawDep() const { return (m_rotation.Y + 90.) * core::DEGTORAD; }
