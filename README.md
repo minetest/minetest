@@ -431,7 +431,7 @@ This is how we build Windows releases.
 Version scheme
 --------------
 
-Minetest follows partially semver.
+Minetest partially follows semver.
 
 Since 5.0.0-dev and 0.4.17-dev, the dev notation refers to the next release, 
 ie: 5.0.0-dev is the development version leading to 5.0.0.
