@@ -1,5 +1,5 @@
 Minetest Lua Mainmenu API Reference 5.0.0
-========================================
+=========================================
 
 Introduction
 -------------
@@ -186,11 +186,14 @@ core.log(loglevel, line) (possible in async calls)
 ^ loglevel one of "error", "action", "info", "verbose"
 
 Settings:
-core.setting_set(name, value)
-core.setting_get(name) -> string or nil (possible in async calls)
-core.setting_setbool(name, value)
-core.setting_getbool(name) -> bool or nil (possible in async calls)
-core.setting_save() -> nil, save all settings to config file
+core.settings:set(name, value)
+core.settings:get(name) -> string or nil (possible in async calls)
+core.settings:set_bool(name, value)
+core.settings:get_bool(name) -> bool or nil (possible in async calls)
+core.settings:save() -> nil, save all settings to config file
+
+For a complete list of methods of the Settings object see
+[lua_api.txt](https://github.com/minetest/minetest/blob/master/doc/lua_api.txt)
 
 Worlds:
 core.get_worlds() -> list of worlds (possible in async calls)
@@ -248,8 +251,3 @@ Limitations of Async operations
  -Limited set of available functions
 	e.g. No access to functions modifying menu like core.start,core.close,
 	core.file_open_dialog
-
-
-Class reference
-----------------
-Settings: see lua_api.txt
