@@ -51,8 +51,8 @@ public:
 	static float getDisplayDensity();
 	static v2u32 getDisplaySize();
 
-	static void setXorgClassHint(const video::SExposedVideoData &video_data,
-			const std::string &name);
+	bool setupTopLevelWindow(const std::string &name);
+	void setupTopLevelXorgWindow(const std::string &name);
 	bool setWindowIcon();
 	bool setXorgWindowIconFromPath(const std::string &icon_file);
 	static bool print_video_modes();

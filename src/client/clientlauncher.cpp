@@ -96,15 +96,13 @@ bool ClientLauncher::run(GameParams &game_params, const Settings &cmd_args)
 		return true;
 	}
 
-	video::IVideoDriver *video_driver = RenderingEngine::get_video_driver();
-	if (video_driver == NULL) {
+	if (RenderingEngine::get_video_driver() == NULL) {
 		errorstream << "Could not initialize video driver." << std::endl;
 		return false;
 	}
 
-	RenderingEngine::setXorgClassHint(video_driver->getExposedVideoData(), PROJECT_NAME_C);
-	RenderingEngine::get_instance()->setWindowIcon();
-
+	RenderingEngine::get_instance()->setupTopLevelWindow(PROJECT_NAME_C);
+	
 	/*
 		This changes the minimum allowed number of vertices in a VBO.
 		Default is 500.
