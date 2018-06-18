@@ -240,7 +240,7 @@ void set_default_settings(Settings *settings)
 
 	// Input
 	settings->setDefault("invert_mouse", "false");
-	settings->setDefault("mouse_sensitivity", "0.2");
+	settings->setDefault("mouse_sensitivity", "0.005");
 	settings->setDefault("repeat_rightclick_time", "0.25");
 	settings->setDefault("safe_dig_and_place", "false");
 	settings->setDefault("random_input", "false");
