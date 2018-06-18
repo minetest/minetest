@@ -209,6 +209,32 @@ void UnitSAO::getAttachment(int *parent_id, std::string *bone, v3f *position,
 	*rotation = m_attachment_rotation;
 }
 
+void UnitSAO::setAttachmentPosition(v3f position)
+{
+	if (isAttached()) {
+		m_attachment_position = position;
+		m_attachment_position_sent = false;
+	}
+}
+
+void UnitSAO::getAttachmentPosition(v3f *position)
+{
+	*position = m_attachment_position;
+}
+
+void UnitSAO::setAttachmentRotation(v3f rotation)
+{
+	if (isAttached()) {
+		m_attachment_rotation = rotation;
+		m_attachment_rotation_sent = false;
+	}
+}
+
+void UnitSAO::getAttachmentRotation(v3f *rotation)
+{
+	*rotation = m_attachment_rotation;
+}
+
 void UnitSAO::clearChildAttachments()
 {
 	for (int child_id : m_attachment_child_ids) {
@@ -523,6 +549,22 @@ void LuaEntitySAO::step(float dtime, bool send_recommended)
 	if (!m_attachment_sent) {
 		m_attachment_sent = true;
 		std::string str = gob_cmd_update_attachment(m_attachment_parent_id, m_attachment_bone, m_attachment_position, m_attachment_rotation);
+		// create message and add to list
+		ActiveObjectMessage aom(getId(), true, str);
+		m_messages_out.push(aom);
+	}
+
+	if (!m_attachment_position_sent) {
+		m_attachment_position_sent = true;
+		std::string str = gob_cmd_update_attachment_position(m_attachment_position);
+		// create message and add to list
+		ActiveObjectMessage aom(getId(), true, str);
+		m_messages_out.push(aom);
+	}
+
+	if (!m_attachment_rotation_sent) {
+		m_attachment_rotation_sent = true;
+		std::string str = gob_cmd_update_attachment_rotation(m_attachment_rotation);
 		// create message and add to list
 		ActiveObjectMessage aom(getId(), true, str);
 		m_messages_out.push(aom);

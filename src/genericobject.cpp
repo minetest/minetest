@@ -184,6 +184,26 @@ std::string gob_cmd_update_attachment(int parent_id, const std::string &bone,
 	return os.str();
 }
 
+std::string gob_cmd_update_attachment_position(v3f position)
+{
+	std::ostringstream os(std::ios::binary);
+	// command
+	writeU8(os, GENERIC_CMD_SET_ATTACH_POSITION);
+	// parameters
+	writeV3F1000(os, position);
+	return os.str();
+}
+
+std::string gob_cmd_update_attachment_rotation(v3f rotation)
+{
+	std::ostringstream os(std::ios::binary);
+	// command
+	writeU8(os, GENERIC_CMD_SET_ATTACH_ROTATION);
+	// parameters
+	writeV3F1000(os, rotation);
+	return os.str();
+}
+
 std::string gob_cmd_update_nametag_attributes(video::SColor color)
 {
 	std::ostringstream os(std::ios::binary);

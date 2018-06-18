@@ -4035,6 +4035,12 @@ This is basically a reference to a C++ `ServerActiveObject`
     * `rotation`: `{x=num, y=num, z=num}` = Rotation on each axis, in degrees
 * `get_attach()`: returns parent, bone, position, rotation or nil if it isn't
   attached.
+* `set_attach_position(position)`
+    * `position`: `{x=num, y=num, z=num}` (relative)
+* `get_attach_position()`: returns position or nil if it isn't attached.
+* `set_attach_rotation(rotation)`
+    * `rotation`: `{x=num, y=num, z=num}` = Rotation on each axis, in degrees
+* `get_attach_rotation()`: returns rotation or nil if it isn't attached.
 * `set_detach()`
 * `set_bone_position(bone, position, rotation)`
     * `bone`: string

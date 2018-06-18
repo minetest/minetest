@@ -165,6 +165,14 @@ public:
 	{}
 	virtual void getAttachment(int *parent_id, std::string *bone, v3f *position, v3f *rotation)
 	{}
+	virtual void setAttachmentPosition(v3f position)
+	{}
+	virtual void getAttachmentPosition(v3f *position)
+	{}
+	virtual void setAttachmentRotation(v3f rotation)
+	{}
+	virtual void getAttachmentRotation(v3f *rotation)
+	{}
 	virtual void clearChildAttachments() {}
 	virtual void clearParentAttachment() {}
 	virtual void addAttachmentChild(int child_id)

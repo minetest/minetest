@@ -52,6 +52,10 @@ public:
 	void getBonePosition(const std::string &bone, v3f *position, v3f *rotation);
 	void setAttachment(int parent_id, const std::string &bone, v3f position, v3f rotation);
 	void getAttachment(int *parent_id, std::string *bone, v3f *position, v3f *rotation);
+	void setAttachmentPosition(v3f position);
+	void getAttachmentPosition(v3f *position);
+	void setAttachmentRotation(v3f rotation);
+	void getAttachmentRotation(v3f *rotation);
 	void clearChildAttachments();
 	void clearParentAttachment();
 	void addAttachmentChild(int child_id);
@@ -86,6 +90,8 @@ protected:
 	v3f m_attachment_position;
 	v3f m_attachment_rotation;
 	bool m_attachment_sent = false;
+	bool m_attachment_position_sent = false;
+	bool m_attachment_rotation_sent = false;
 private:
 	void onAttach(int parent_id);
 	void onDetach(int parent_id);

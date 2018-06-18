@@ -209,6 +209,10 @@ public:
 
 	void updateAttachments();
 
+	void updateAttachmentPosition();
+
+	void updateAttachmentRotation();
+
 	void processMessage(const std::string &data);
 
 	bool directReportPunch(v3f dir, const ItemStack *punchitem=NULL,

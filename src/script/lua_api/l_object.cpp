@@ -721,6 +721,68 @@ int ObjectRef::l_set_detach(lua_State *L)
 	return 0;
 }
 
+// set_attach_position(self, {x=num, y=num, z=num})
+int ObjectRef::l_set_attach_position(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+
+	ObjectRef *ref = checkobject(L, 1);
+	ServerActiveObject *co = getobject(ref);
+	if (!co)
+		return 0;
+
+	v3f pos = checkFloatPos(L, 2);
+	co->setAttachmentPosition(pos);
+	return 0;
+}
+
+// get_attach_position(self)
+int ObjectRef::l_get_attach_position(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+
+	ObjectRef *ref = checkobject(L, 1);
+	ServerActiveObject *co = getobject(ref);
+	if (!co)
+		return 0;
+
+	v3f position = v3f(0, 0, 0);
+	co->getAttachmentPosition(&position);
+	push_v3f(L, position);
+	return 1;
+}
+
+// set_attach_rotation(self, {x=num, y=num, z=num})
+int ObjectRef::l_set_attach_rotation(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+
+	ObjectRef *ref = checkobject(L, 1);
+	ServerActiveObject *co = getobject(ref);
+	if (!co)
+		return 0;
+
+	v3f rot = checkFloatPos(L, 2);
+	co->setAttachmentRotation(rot);
+	return 0;
+}
+
+// get_attach_rotation(self)
+int ObjectRef::l_get_attach_rotation(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+
+	ObjectRef *ref = checkobject(L, 1);
+	ServerActiveObject *co = getobject(ref);
+	if (!co)
+		return 0;
+
+	v3f rotation = v3f(0, 0, 0);
+	co->getAttachmentRotation(&rotation);
+	push_v3f(L, rotation);
+	return 1;
+}
+
 // set_properties(self, properties)
 int ObjectRef::l_set_properties(lua_State *L)
 {
@@ -1844,6 +1906,10 @@ const luaL_Reg ObjectRef::methods[] = {
 	luamethod(ObjectRef, set_attach),
 	luamethod(ObjectRef, get_attach),
 	luamethod(ObjectRef, set_detach),
+	luamethod(ObjectRef, set_attach_position),
+	luamethod(ObjectRef, get_attach_position),
+	luamethod(ObjectRef, set_attach_rotation),
+	luamethod(ObjectRef, get_attach_rotation),
 	luamethod(ObjectRef, set_properties),
 	luamethod(ObjectRef, get_properties),
 	luamethod(ObjectRef, set_nametag_attributes),

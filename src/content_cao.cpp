@@ -1259,6 +1259,26 @@ void GenericCAO::updateAttachments()
 	}
 }
 
+void GenericCAO::updateAttachmentPosition()
+{
+	if (getParent()) {	// Make sure parent exists (child is attached to parent)
+		scene::ISceneNode *node = getSceneNode();
+		if (node) {
+			node->setPosition(m_attachment_position);
+		}
+	}
+}
+
+void GenericCAO::updateAttachmentRotation()
+{
+	if (getParent()) {	// Make sure parent exists (child is attached to parent)
+		scene::ISceneNode *node = getSceneNode();
+		if (node) {
+			node->setRotation(m_attachment_rotation);
+		}
+	}
+}
+
 void GenericCAO::processMessage(const std::string &data)
 {
 	//infostream<<"GenericCAO: Got message"<<std::endl;
@@ -1436,6 +1456,14 @@ void GenericCAO::processMessage(const std::string &data)
 		}
 
 		updateAttachments();
+	} else if (cmd == GENERIC_CMD_SET_ATTACH_POSITION) {
+		m_attachment_position = readV3F1000(is);
+		updateAttachmentPosition();
+
+	} else if (cmd == GENERIC_CMD_SET_ATTACH_ROTATION) {
+		m_attachment_rotation = readV3F1000(is);
+		updateAttachmentRotation();
+
 	} else if (cmd == GENERIC_CMD_PUNCHED) {
 		/*s16 damage =*/ readS16(is);
 		s16 result_hp = readS16(is);

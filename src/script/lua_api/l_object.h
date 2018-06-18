@@ -147,6 +147,18 @@ private:
 	// set_detach(self)
 	static int l_set_detach(lua_State *L);
 
+	// set_attach_position(self, position)
+	static int l_set_attach_position(lua_State *L);
+
+	// get_attach_position(self)
+	static int l_get_attach_position(lua_State *L);
+
+	// set_attach_position(self, position)
+	static int l_set_attach_rotation(lua_State *L);
+
+	// get_attach_position(self)
+	static int l_get_attach_rotation(lua_State *L);
+
 	// set_properties(self, properties)
 	static int l_set_properties(lua_State *L);
 
