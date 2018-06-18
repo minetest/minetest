@@ -49,15 +49,13 @@ std::vector<Package> getPackagesFromURL(const std::string &url)
 		package.type = json[i]["type"].asString();
 		package.shortDesc = json[i]["shortDesc"].asString();
 		package.release = json[i]["release"].asInt();
-		if (json[i].isMember("thumbnail")) {
+		if (json[i].isMember("thumbnail"))
 			package.thumbnail = json[i]["thumbnail"].asString();
-		}
 
-		if (package.valid()) {
+		if (package.valid())
 			packages.push_back(package);
-		} else {
+		else
 			errorstream << "Invalid package at " << i << std::endl;
-		}
 	}
 
 	return packages;

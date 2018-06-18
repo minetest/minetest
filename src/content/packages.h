@@ -33,10 +33,15 @@ struct Package
 	u32 release;
 	std::string thumbnail;
 
-	bool valid()
+	bool valid() const
 	{
 		return !(author.empty() || name.empty() || title.empty() ||
 				type.empty() || release <= 0);
+	}
+
+	std::string getDownloadURL(const std::string &baseURL) const
+	{
+		return baseURL + "/packages/" + author + "/" + name + "/download/";
 	}
 };
 

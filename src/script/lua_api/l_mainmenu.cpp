@@ -1050,7 +1050,7 @@ int ModApiMainMenu::l_get_package_list(lua_State *L)
 		}
 
 		lua_pushstring(L, "url");
-		lua_pushstring(L, (url + "/packages/" + package.author + "/" + package.name + "/download/").c_str());
+		lua_pushstring(L, package.getDownloadURL(url).c_str());
 		lua_settable  (L, top_lvl2);
 
 		lua_settable(L, top);
