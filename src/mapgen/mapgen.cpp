@@ -763,16 +763,6 @@ void MapgenBasic::generateBiomes()
 
 			VoxelArea::add_y(em, vi, -1);
 		}
-		// If no stone surface was detected in this mapchunk column the biomemap
-		// will be empty for this (x, z) position. Add the currently active
-		// biome to the biomemap, or if biome is NULL calculate it for this
-		// position and add it.
-		if (biomemap[index] == BIOME_NONE) {
-			if (!biome)
-				biome = biomegen->getBiomeAtIndex(
-					index, v3s16(x, node_min.Y, z));
-			biomemap[index] = biome->index;
-		}
 	}
 }
 
