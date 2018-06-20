@@ -1605,23 +1605,54 @@ void GUIFormSpecMenu::parseListColors(parserData* data, const std::string &eleme
 void GUIFormSpecMenu::parseTooltip(parserData* data, const std::string &element)
 {
 	std::vector<std::string> parts = split(element,';');
-	if (parts.size() == 2) {
-		std::string name = parts[0];
-		m_tooltips[name] = TooltipSpec(utf8_to_wide(unescape_string(parts[1])),
-			m_default_tooltip_bgcolor, m_default_tooltip_color);
+	if (parts.size() < 2) {
+		errorstream << "Invalid tooltip element(" << parts.size() << "): '"
+				<< element << "'"  << std::endl;
 		return;
 	}
 
-	if (parts.size() == 4) {
-		std::string name = parts[0];
-		video::SColor tmp_color1, tmp_color2;
-		if ( parseColorString(parts[2], tmp_color1, false) && parseColorString(parts[3], tmp_color2, false) ) {
-			m_tooltips[name] = TooltipSpec(utf8_to_wide(unescape_string(parts[1])),
-				tmp_color1, tmp_color2);
-			return;
-		}
+	// Get mode and check size
+	bool rect_mode = parts[0].find(',') != std::string::npos;
+	size_t base_size = rect_mode ? 3 : 2;
+	if (parts.size() != base_size && parts.size() != base_size + 2) {
+		errorstream << "Invalid tooltip element(" << parts.size() << "): '"
+				<< element << "'"  << std::endl;
+		return;
 	}
-	errorstream<< "Invalid tooltip element(" << parts.size() << "): '" << element << "'"  << std::endl;
+
+	// Read colors
+	video::SColor bgcolor = m_default_tooltip_bgcolor;
+	video::SColor color   = m_default_tooltip_color;
+	if (parts.size() == base_size + 2 &&
+			(!parseColorString(parts[base_size], bgcolor, false) ||
+				!parseColorString(parts[base_size + 1], color, false))) {
+		errorstream << "Invalid color in tooltip element(" << parts.size()
+				<< "): '" << element << "'"  << std::endl;
+		return;
+	}
+
+	// Make tooltip spec
+	std::string text = unescape_string(parts[rect_mode ? 2 : 1]);
+	TooltipSpec spec(utf8_to_wide(text), bgcolor, color);
+
+	// Add tooltip
+	if (rect_mode) {
+		std::vector<std::string> v_pos  = split(parts[0], ',');
+		std::vector<std::string> v_geom = split(parts[1], ',');
+
+		MY_CHECKPOS("tooltip",  0);
+		MY_CHECKGEOM("tooltip", 1);
+
+		v2s32 pos = getElementBasePos(true, &v_pos);
+		v2s32 geom;
+		geom.X = stof(v_geom[0]) * spacing.X;
+		geom.Y = stof(v_geom[1]) * spacing.Y;
+
+		irr::core::rect<s32> rect(pos, pos + geom);
+		m_tooltip_rects.emplace_back(rect, spec);
+	} else {
+		m_tooltips[parts[0]] = spec;
+	}
 }
 
 bool GUIFormSpecMenu::parseVersionDirect(const std::string &data)
@@ -1967,6 +1998,7 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 	m_fields.clear();
 	m_boxes.clear();
 	m_tooltips.clear();
+	m_tooltip_rects.clear();
 	m_inventory_rings.clear();
 	m_static_texts.clear();
 	m_dropdowns.clear();
@@ -2457,6 +2489,16 @@ void GUIFormSpecMenu::drawMenu()
 		driver->draw2DRectangle(m_bgcolor, AbsoluteRect, &AbsoluteClippingRect);
 
 	m_tooltip_element->setVisible(false);
+
+	for (const auto &pair : m_tooltip_rects) {
+		if (pair.first.isPointInside(m_pointer)) {
+			const std::wstring &text = pair.second.tooltip;
+			if (!text.empty()) {
+				showTooltip(text, pair.second.color, pair.second.bgcolor);
+				break;
+			}
+		}
+	}
 
 	/*
 		Draw backgrounds
@@ -3436,7 +3478,7 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 						count = (s_count + 1) / 2;
 					else if (button == BET_MIDDLE)
 						count = MYMIN(s_count, 10);
-					else if (button == BET_WHEEL_DOWN) 
+					else if (button == BET_WHEEL_DOWN)
 						count = 1;
 					else  // left
 						count = s_count;

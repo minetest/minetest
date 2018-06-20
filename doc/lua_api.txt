@@ -1883,6 +1883,11 @@ Elements
 * `<bgcolor>` tooltip background color as `ColorString` (optional)
 * `<fontcolor>` tooltip font color as `ColorString` (optional)
 
+### `tooltip[<X>,<Y>;<W>,<H>;<tooltip_text>;<bgcolor>;<fontcolor>]`
+* Adds tooltip for an area. Other tooltips will take priority when present.
+* `<bgcolor>` tooltip background color as `ColorString` (optional)
+* `<fontcolor>` tooltip font color as `ColorString` (optional)
+
 ### `image[<X>,<Y>;<W>,<H>;<texture name>]`
 * Show an image
 
