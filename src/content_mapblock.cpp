@@ -30,6 +30,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client/renderingengine.h"
 #include "client.h"
 #include "noise.h"
+#include "map.h"
+#include "nodemetadata.h"
+#include "util/strfnd.h"
 
 // Distance of light extrapolation (for oversized nodes)
 // After this distance, it gives up and considers light level constant
@@ -843,6 +846,16 @@ void MapblockMeshGenerator::drawTorchlikeNode()
 		v3f( size, -size, 0),
 		v3f(-size, -size, 0),
 	};
+	v3f offset = v3f(0, 0, 0);
+
+	NodeMetadata *meta = data->m_client->getEnv().getMap().getNodeMetadata(blockpos_nodes + p);
+	if (meta) {
+		Strfnd f(meta->getString("offset"));
+		f.next("(");
+		offset.X = stof(f.next(",")) * BS;
+		offset.Y = stof(f.next(",")) * BS;
+		offset.Z = stof(f.next(")")) * BS;
+	}
 
 	for (v3f &vertex : vertices) {
 		switch (wall) {
@@ -859,6 +872,7 @@ void MapblockMeshGenerator::drawTorchlikeNode()
 			case DWM_ZN:
 				vertex.rotateXZBy(-90); break;
 		}
+		vertex += offset;
 	}
 	drawQuad(vertices);
 }
@@ -867,15 +881,25 @@ void MapblockMeshGenerator::drawSignlikeNode()
 {
 	u8 wall = n.getWallMounted(nodedef);
 	useTile(0, MATERIAL_FLAG_CRACK_OVERLAY, MATERIAL_FLAG_BACKFACE_CULLING);
-	static const float offset = BS / 16;
+	static const float x_offset = BS / 16;
 	float size = BS / 2 * f->visual_scale;
 	// Wall at X+ of node
 	v3f vertices[4] = {
-		v3f(BS / 2 - offset,  size,  size),
-		v3f(BS / 2 - offset,  size, -size),
-		v3f(BS / 2 - offset, -size, -size),
-		v3f(BS / 2 - offset, -size,  size),
+		v3f(BS / 2 - x_offset,  size,  size),
+		v3f(BS / 2 - x_offset,  size, -size),
+		v3f(BS / 2 - x_offset, -size, -size),
+		v3f(BS / 2 - x_offset, -size,  size),
 	};
+	v3f offset = v3f(0, 0, 0);
+
+	NodeMetadata *meta = data->m_client->getEnv().getMap().getNodeMetadata(blockpos_nodes + p);
+	if (meta) {
+		Strfnd f(meta->getString("offset"));
+		f.next("(");
+		offset.X = stof(f.next(",")) * BS;
+		offset.Y = stof(f.next(",")) * BS;
+		offset.Z = stof(f.next(")")) * BS;
+	}
 
 	for (v3f &vertex : vertices) {
 		switch (wall) {
@@ -892,6 +916,7 @@ void MapblockMeshGenerator::drawSignlikeNode()
 			case DWM_ZN:
 				vertex.rotateXZBy(-90); break;
 		}
+		vertex += offset;
 	}
 	drawQuad(vertices);
 }
@@ -907,7 +932,7 @@ void MapblockMeshGenerator::drawPlantlikeQuad(float rotation, float quad_offset,
 	};
 	if (random_offset_Y) {
 		PseudoRandom yrng(face_num++ | p.X << 16 | p.Z << 8 | p.Y << 24);
-		offset.Y = -BS * ((yrng.next() % 16 / 16.0) * 0.125);
+		offset.Y += -BS * ((yrng.next() % 16 / 16.0) * 0.125);
 	}
 	int offset_count = offset_top_only ? 2 : 4;
 	for (int i = 0; i < offset_count; i++)
@@ -925,6 +950,16 @@ void MapblockMeshGenerator::drawPlantlike()
 	draw_style = PLANT_STYLE_CROSS;
 	scale = BS / 2 * f->visual_scale;
 	offset = v3f(0, 0, 0);
+
+	NodeMetadata *meta = data->m_client->getEnv().getMap().getNodeMetadata(blockpos_nodes + p);
+	if (meta) {
+		Strfnd f(meta->getString("offset"));
+		f.next("(");
+		offset.X = stof(f.next(",")) * BS;
+		offset.Y = stof(f.next(",")) * BS;
+		offset.Z = stof(f.next(")")) * BS;
+	}
+
 	rotate_degree = 0;
 	random_offset_Y = false;
 	face_num = 0;
@@ -937,8 +972,8 @@ void MapblockMeshGenerator::drawPlantlike()
 			scale *= 1.41421;
 		if (n.param2 & MO_BIT_RANDOM_OFFSET) {
 			PseudoRandom rng(p.X << 8 | p.Z | p.Y << 16);
-			offset.X = BS * ((rng.next() % 16 / 16.0) * 0.29 - 0.145);
-			offset.Z = BS * ((rng.next() % 16 / 16.0) * 0.29 - 0.145);
+			offset.X += BS * ((rng.next() % 16 / 16.0) * 0.29 - 0.145);
+			offset.Z += BS * ((rng.next() % 16 / 16.0) * 0.29 - 0.145);
 		}
 		if (n.param2 & MO_BIT_RANDOM_OFFSET_Y)
 			random_offset_Y = true;
@@ -1020,11 +1055,23 @@ void MapblockMeshGenerator::drawFirelikeQuad(float rotation, float opening_angle
 		v3f(-scale, -BS / 2, 0),
 	};
 
+	v3f offset = v3f(0, 0, 0);
+
+	NodeMetadata *meta = data->m_client->getEnv().getMap().getNodeMetadata(blockpos_nodes + p);
+	if (meta) {
+		Strfnd f(meta->getString("offset"));
+		f.next("(");
+		offset.X = stof(f.next(",")) * BS;
+		offset.Y = stof(f.next(",")) * BS;
+		offset.Z = stof(f.next(")")) * BS;
+	}
+
 	for (v3f &vertex : vertices) {
 		vertex.rotateYZBy(opening_angle);
 		vertex.Z += offset_h;
 		vertex.rotateXZBy(rotation);
 		vertex.Y += offset_v;
+		vertex += offset;
 	}
 	drawQuad(vertices);
 }
@@ -1285,8 +1332,19 @@ void MapblockMeshGenerator::drawNodeboxNode()
 		}
 	}
 
+	v3f offset = v3f(0, 0, 0);
+
+	NodeMetadata *meta = data->m_client->getEnv().getMap().getNodeMetadata(blockpos_nodes + p);
+	if (meta) {
+		Strfnd f(meta->getString("offset"));
+		f.next("(");
+		offset.X = stof(f.next(",")) * BS;
+		offset.Y = stof(f.next(",")) * BS;
+		offset.Z = stof(f.next(")")) * BS;
+	}
+
 	std::vector<aabb3f> boxes;
-	n.getNodeBoxes(nodedef, &boxes, neighbors_set);
+	n.getNodeBoxes(nodedef, &boxes, neighbors_set, offset);
 	for (const auto &box : boxes)
 		drawAutoLightedCuboid(box, nullptr, tiles, 6);
 }
@@ -1309,7 +1367,18 @@ void MapblockMeshGenerator::drawMeshNode()
 			facedir = wallmounted_to_facedir[facedir];
 	}
 
-	if (!data->m_smooth_lighting && f->mesh_ptr[facedir]) {
+	v3f offset = v3f(0, 0, 0);
+
+	NodeMetadata *meta = data->m_client->getEnv().getMap().getNodeMetadata(blockpos_nodes + p);
+	if (meta) {
+		Strfnd f(meta->getString("offset"));
+		f.next("(");
+		offset.X = stof(f.next(",")) * BS;
+		offset.Y = stof(f.next(",")) * BS;
+		offset.Z = stof(f.next(")")) * BS;
+	}
+
+	if (!data->m_smooth_lighting && f->mesh_ptr[facedir] && offset == v3f(0.0, 0.0, 0.0)) {
 		// use cached meshes
 		private_mesh = false;
 		mesh = f->mesh_ptr[facedir];
@@ -1318,6 +1387,7 @@ void MapblockMeshGenerator::drawMeshNode()
 		private_mesh = true;
 		mesh = cloneMesh(f->mesh_ptr[0]);
 		rotateMeshBy6dFacedir(mesh, facedir);
+    	translateMesh(mesh, offset);
 		recalculateBoundingBox(mesh);
 		meshmanip->recalculateNormals(mesh, true, false);
 	} else

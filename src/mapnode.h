@@ -260,19 +260,19 @@ struct MapNode
 		Gets list of node boxes (used for rendering (NDT_NODEBOX))
 	*/
 	void getNodeBoxes(const NodeDefManager *nodemgr, std::vector<aabb3f> *boxes,
-		u8 neighbors = 0);
+		u8 neighbors = 0, v3f offset = v3f(0, 0, 0));
 
 	/*
 		Gets list of selection boxes
 	*/
 	void getSelectionBoxes(const NodeDefManager *nodemg,
-		std::vector<aabb3f> *boxes, u8 neighbors = 0);
+		std::vector<aabb3f> *boxes, u8 neighbors = 0, v3f offset = v3f(0, 0, 0));
 
 	/*
 		Gets list of collision boxes
 	*/
 	void getCollisionBoxes(const NodeDefManager *nodemgr,
-		std::vector<aabb3f> *boxes, u8 neighbors = 0);
+		std::vector<aabb3f> *boxes, u8 neighbors = 0, v3f offset = v3f(0, 0, 0));
 
 	/*
 		Liquid helpers

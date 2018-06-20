@@ -1971,6 +1971,13 @@ Some of the values in the key-value store are handled specially:
 
 * `formspec`: Defines a right-click inventory menu. See "Formspec".
 * `infotext`: Text shown on the screen when the node is pointed at
+* `offset`: Moves the visual appearance of a node and its selection and collision
+            boxes about the given value.
+            The `offset` value must have the format `(<x>, <y>, <z>)`.
+            Correct behaviour is only guaranteed, if the whole node stays inside
+            its { -0.5, -0.5, -0.5, 0.5, 0.5, 0.5 } area.
+            Supported for drawtypes "plantlike", "signlike", "torchlike",
+            "firelike", "mesh" and "nodebox".
 
 Example stuff:
 
@@ -1980,6 +1987,7 @@ Example stuff:
             "list[context;main;0,0;8,4;]"..
             "list[current_player;main;0,5;8,4;]")
     meta:set_string("infotext", "Chest");
+    meta:set_string("offset", "(0.1, 0.2, 0.3)")
     local inv = meta:get_inventory()
     inv:set_size("main", 8*4)
     print(dump(meta:to_table()))

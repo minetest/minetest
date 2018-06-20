@@ -67,6 +67,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "irrlicht_changes/static_text.h"
 #include "version.h"
 #include "script/scripting_client.h"
+#include "util/strfnd.h"
 
 #if USE_SOUND
 	#include "client/sound_openal.h"
@@ -3095,9 +3096,21 @@ PointedThing Game::updatePointedThing(
 	} else if (result.type == POINTEDTHING_NODE) {
 		// Update selection boxes
 		MapNode n = map.getNodeNoEx(result.node_undersurface);
+
+		v3f offset = v3f(0, 0, 0);
+
+		NodeMetadata *meta = map.getNodeMetadata(result.node_undersurface);
+		if (meta) {
+			Strfnd f(meta->getString("offset"));
+			f.next("(");
+			offset.X = stof(f.next(",")) * BS;
+			offset.Y = stof(f.next(",")) * BS;
+			offset.Z = stof(f.next(")")) * BS;
+		}
+
 		std::vector<aabb3f> boxes;
 		n.getSelectionBoxes(nodedef, &boxes,
-			n.getNeighbors(result.node_undersurface, &map));
+			n.getNeighbors(result.node_undersurface, &map), offset);
 
 		f32 d = 0.002 * BS;
 		for (std::vector<aabb3f>::const_iterator i = boxes.begin();

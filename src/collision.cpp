@@ -30,6 +30,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "serverobject.h"
 #include "util/timetaker.h"
 #include "profiler.h"
+#include "util/strfnd.h"
 
 // float error is 10 - 9.96875 = 0.03125
 //#define COLL_ZERO 0.032 // broken unit tests
@@ -321,7 +322,18 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 				getNeighborConnectingFace(p2, nodedef, map, n, 32, &neighbors);
 			}
 			std::vector<aabb3f> nodeboxes;
-			n.getCollisionBoxes(gamedef->ndef(), &nodeboxes, neighbors);
+
+			v3f offset = v3f(0, 0, 0);
+
+			NodeMetadata *meta = map->getNodeMetadata(p);
+			if (meta) {
+				Strfnd f(meta->getString("offset"));
+				f.next("(");
+				offset.X = stof(f.next(",")) * BS;
+				offset.Y = stof(f.next(",")) * BS;
+				offset.Z = stof(f.next(")")) * BS;
+			}
+			n.getCollisionBoxes(gamedef->ndef(), &nodeboxes, neighbors, offset);
 
 			// Calculate float position only once
 			v3f posf = intToFloat(p, BS);
