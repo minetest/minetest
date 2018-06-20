@@ -462,7 +462,7 @@ private:
 	u32 SendActiveObjectRemoveAdd(session_t peer_id, const std::string &datas);
 	void SendActiveObjectMessages(session_t peer_id, const std::string &datas,
 		bool reliable = true);
-	void SendCSMFlavourLimits(session_t peer_id);
+	void SendCSMRestrictionFlags(session_t peer_id);
 
 	/*
 		Something random
@@ -650,9 +650,9 @@ private:
 	std::unordered_map<std::string, ModMetadata *> m_mod_storages;
 	float m_mod_storage_save_timer = 10.0f;
 
-	// CSM flavour limits byteflag
-	u64 m_csm_flavour_limits = CSMFlavourLimit::CSM_FL_NONE;
-	u32 m_csm_noderange_limit = 8;
+	// CSM restrictions byteflag
+	u64 m_csm_restriction_flags = CSMRestrictionFlags::CSM_RF_NONE;
+	u32 m_csm_restriction_noderange = 8;
 
 	// ModChannel manager
 	std::unique_ptr<ModChannelMgr> m_modchannel_mgr;

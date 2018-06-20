@@ -130,13 +130,14 @@ void Client::loadMods()
 		return;
 	}
 
-	// If modding is not enabled or flavour disable it, don't load mods, just builtin
+	// If modding is not enabled or CSM restrictions disable it
+	// don't load CSM mods, only builtin
 	if (!m_modding_enabled) {
 		warningstream << "Client side mods are disabled by configuration." << std::endl;
 		return;
 	}
 
-	if (checkCSMFlavourLimit(CSMFlavourLimit::CSM_FL_LOAD_CLIENT_MODS)) {
+	if (checkCSMRestrictionFlag(CSMRestrictionFlags::CSM_RF_LOAD_CLIENT_MODS)) {
 		warningstream << "Client side mods are disabled by server." << std::endl;
 		// If mods loading is disabled and builtin integrity is wrong, disconnect user.
 		if (!checkBuiltinIntegrity()) {
@@ -1282,16 +1283,16 @@ void Client::removeNode(v3s16 p)
 
 /**
  * Helper function for Client Side Modding
- * Flavour is applied there, this should not be used for core engine
+ * CSM restrictions are applied there, this should not be used for core engine
  * @param p
  * @param is_valid_position
  * @return
  */
 MapNode Client::getNode(v3s16 p, bool *is_valid_position)
 {
-	if (checkCSMFlavourLimit(CSMFlavourLimit::CSM_FL_LOOKUP_NODES)) {
+	if (checkCSMRestrictionFlag(CSMRestrictionFlags::CSM_RF_LOOKUP_NODES)) {
 		v3s16 ppos = floatToInt(m_env.getLocalPlayer()->getPosition(), BS);
-		if ((u32) ppos.getDistanceFrom(p) > m_csm_noderange_limit) {
+		if ((u32) ppos.getDistanceFrom(p) > m_csm_restriction_noderange) {
 			*is_valid_position = false;
 			return {};
 		}
