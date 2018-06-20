@@ -115,7 +115,7 @@ safe_dig_and_place (Safe digging and placing) bool false
 #    Enable random user input (only used for testing).
 random_input (Random input) bool false
 
-#    Continuous forward movement, toggled by autoforward key. 
+#    Continuous forward movement, toggled by autoforward key.
 #    Press the autoforward key again or the backwards movement to disable.
 continuous_forward (Continuous forward) bool false
 
@@ -1134,13 +1134,12 @@ server_side_occlusion_culling (Server side occlusion culling) bool true
 #    CHAT_MESSAGES: 2 (disable send_chat_message call client-side)
 #    READ_ITEMDEFS: 4 (disable get_item_def call client-side)
 #    READ_NODEDEFS: 8 (disable get_node_def call client-side)
-#    LOOKUP_NODES_LIMIT: 16 (limits get_node call client-side to csm_flavour_noderange_limit)
-#    type: int
-csm_flavour_limits (Client side modding flavour limits) int 18
+#    LOOKUP_NODES_LIMIT: 16 (limits get_node call client-side to csm_restriction_noderange)
+csm_restriction_flags (Client side modding restrictions) int 18
 
-#   If the CSM flavour for node range is enabled, get_node is limited to
-#   this many nodes from the player.
-csm_flavour_noderange_limit (Client side noderange flavour limit) int 8
+#   If the CSM restriction for node range is enabled, get_node calls are limited
+#   to this distance from the player to the node.
+csm_restriction_noderange (Client side node lookup range restriction) int 8
 
 [*Security]
 
@@ -1246,7 +1245,7 @@ high_precision_fpu (High-precision FPU) bool true
 #    Changes the main menu UI:
 #    -   Full:  Multple singleplayer worlds, game choice, texture pack chooser, etc.
 #    -   Simple: One singleplayer world, no game or texture pack choosers. May be necessary for smaller screens.
-#    -   Auto: Simple on Android, full on everything else. 
+#    -   Auto: Simple on Android, full on everything else.
 main_menu_style (Main menu style) enum auto auto,full,simple
 
 #    Replaces the default main menu with a custom one.
