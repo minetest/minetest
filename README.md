@@ -70,7 +70,6 @@ Some can be changes in the key config dialog in the settings tab.
 
 Paths
 -----
-
 Locations:
 
 * bin   - Compiled binaries
@@ -110,7 +109,6 @@ Command-line options:
 
 Compiling
 ---------
-
 ### Compiling on GNU/Linux
 
 #### Dependencies
@@ -430,12 +428,15 @@ This is how we build Windows releases.
 
 Version scheme
 --------------
+We use major.minor.patch since 5.0.0-dev. Prior to that we used 0.major.minor.
 
-Minetest partially follows semver (major.minor.patch).
+- Major is incremented when the release contains breaking changes, all other
+numbers are set to 0.
+- Minor is incremented when the release contains new non-breaking features,
+patch is set to 0.
+- Patch is incremented when the release only contains bugfixes and very
+minor/trivial features considered necessary.
 
 Since 5.0.0-dev and 0.4.17-dev, the dev notation refers to the next release, 
-ie: 5.0.0-dev is the development version leading to 5.0.0.
-
-Prior to that, we used oldversion-dev.
-
-Semver was adopted after 0.4.X series. Before that we used 0.major.minor scheme.
+ie: 5.0.0-dev is the development version leading to 5.0.0. 
+Prior to that we used previous_version-dev.
