@@ -1573,7 +1573,7 @@ Representations of simple things
 
     {x=num, y=num, z=num}
 
-For helper functions see "Vector helpers".
+For helper functions see "Spatial Vectors".
 
 ### `pointed_thing`
 * `{type="nothing"}`
