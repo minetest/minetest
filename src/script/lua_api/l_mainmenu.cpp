@@ -126,7 +126,7 @@ int ModApiMainMenu::l_start(lua_State *L)
 		data->address  = getTextData(L,"address");
 		data->port     = getTextData(L,"port");
 	}
-	data->serverdescription = getTextData(L,"serverdescription");
+	data->serverdescription = getTextData(L,"server_description");
 	data->servername        = getTextData(L,"servername");
 
 	//close menu next time
