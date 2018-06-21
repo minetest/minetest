@@ -1000,5 +1000,8 @@ static bool migrate_map_database(const GameParams &game_params, const Settings &
 	else
 		actionstream << "world.mt updated" << std::endl;
 
+	// reset settings
+	g_settings = g_main_settings;
+
 	return true;
 }

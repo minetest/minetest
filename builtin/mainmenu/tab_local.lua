@@ -228,7 +228,7 @@ local function main_button_handler(this, fields, name, tabdata)
 		end
 	end
 
-	if fields["world_create"] ~= nil then
+	if fields["world_create"] then
 		local create_world_dlg = create_create_world_dlg(true)
 		create_world_dlg:set_parent(this)
 		this:hide()
@@ -237,7 +237,7 @@ local function main_button_handler(this, fields, name, tabdata)
 		return true
 	end
 
-	if fields["world_delete"] ~= nil then
+	if fields["world_delete"] then
 		local selected = core.get_textlist_index("sp_worlds")
 		if selected ~= nil and
 			selected <= menudata.worldlist:size() then
@@ -257,7 +257,7 @@ local function main_button_handler(this, fields, name, tabdata)
 		return true
 	end
 
-	if fields["world_configure"] ~= nil then
+	if fields["world_configure"] then
 		local selected = core.get_textlist_index("sp_worlds")
 		if selected ~= nil then
 			local configdialog =
@@ -275,7 +275,7 @@ local function main_button_handler(this, fields, name, tabdata)
 		return true
 	end
 	
-	if fields["world_settings"] ~= nil then
+	if fields["world_settings"] then
 		local selected = core.get_textlist_index("sp_worlds")
 		if not selected then
 			return true

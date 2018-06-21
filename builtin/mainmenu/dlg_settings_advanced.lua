@@ -860,15 +860,14 @@ local function handle_change_setting_buttons(this, fields)
 end
 
 local function filter_world_settings()
-	local current_level = 0
 	local settings = {}
 	local ignore_top_level_category = false
 	local world_settings_categories = {"Server / Singleplayer", "Client and Server", "Games", "Mods"}
 	for _, entry in ipairs(full_settings) do
 		if entry.type == "category" and entry.level == 0 then
 			ignore_top_level_category = true
-			for _, allowed_catergory in ipairs(world_settings_categories) do
-				if entry.name == allowed_catergory then
+			for _, allowed_category in ipairs(world_settings_categories) do
+				if entry.name == allowed_category then
 					ignore_top_level_category = false
 				end
 			end
@@ -1018,7 +1017,7 @@ local function handle_settings_buttons(this, fields, tabname, tabdata)
 		if setting and setting.type ~= "category" then
 			if setting.type == "noise_params_2d"
 					or setting.type == "noise_params_3d" then
-			conf:set(setting.name, setting.default)
+				conf:set_np_group(setting.name, setting.default_table)
 			else
 				conf:set(setting.name, setting.default)
 			end

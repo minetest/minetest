@@ -327,16 +327,14 @@ end
 
 function get_world_setting(selected, setting)
 	local world_conf = get_world_config(selected)
-	if not world_conf then
-		world_conf = core.settings
-	end
-
-	return world_conf:get(setting) or core.settings:get(setting)
+	return (world_conf and world_conf:get(setting)) or core.settings:get(setting)
 end
 
 function set_world_setting(selected, setting, value)
 	local world_conf = get_world_config(selected)
-	if not world_conf or not value then return end
+	if not world_conf or not value then
+		return
+	end
 
 	world_conf:set(setting, value)
 	if not world_conf:write() then
