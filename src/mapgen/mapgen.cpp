@@ -655,6 +655,7 @@ void MapgenBasic::generateBiomes()
 	for (s16 z = node_min.Z; z <= node_max.Z; z++)
 	for (s16 x = node_min.X; x <= node_max.X; x++, index++) {
 		Biome *biome = NULL;
+		biome_t water_biome_index = 0;
 		u16 depth_top = 0;
 		u16 base_filler = 0;
 		u16 depth_water_top = 0;
@@ -696,6 +697,11 @@ void MapgenBasic::generateBiomes()
 				// Add biome to biomemap at first stone surface detected
 				if (biomemap[index] == BIOME_NONE && is_stone_surface)
 					biomemap[index] = biome->index;
+
+				// Store biome of first water surface detected, as a fallback
+				// entry for the biomemap.
+				if (water_biome_index == 0 && is_water_surface)
+					water_biome_index = biome->index;
 
 				depth_top = biome->depth_top;
 				base_filler = MYMAX(depth_top +
@@ -763,6 +769,11 @@ void MapgenBasic::generateBiomes()
 
 			VoxelArea::add_y(em, vi, -1);
 		}
+		// If no stone surface detected in mapchunk column and a water surface
+		// biome fallback exists, add it to the biomemap. This avoids water
+		// surface decorations failing in deep water.
+ 		if (biomemap[index] == BIOME_NONE && water_biome_index != 0)
+			biomemap[index] = water_biome_index;
 	}
 }
 
