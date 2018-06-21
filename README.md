@@ -23,7 +23,7 @@ Further documentation
 - Developer wiki: http://dev.minetest.net/
 - Forum: http://forum.minetest.net/
 - Github: https://github.com/minetest/minetest/
-- [doc/](https://github.com/minetest/minetest/tree/master/docs/) directory of source distribution
+- [doc/](doc/) directory of source distribution
 
 Default controls
 ----------------
