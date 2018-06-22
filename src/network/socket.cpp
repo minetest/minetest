@@ -118,6 +118,15 @@ bool UDPSocket::init(bool ipv6, bool noExceptions)
 
 	setTimeoutMs(0);
 
+	if (m_addr_family == AF_INET6) {
+		// Allow our socket to accept both IPv4 and IPv6 connections
+		// required on Windows:
+		// https://msdn.microsoft.com/en-us/library/windows/desktop/bb513665(v=vs.85).aspx
+		int value = 0;
+		setsockopt(m_handle, IPPROTO_IPV6, IPV6_V6ONLY,
+				reinterpret_cast<char *>(&value), sizeof(value));
+	}
+
 	return true;
 }
 
