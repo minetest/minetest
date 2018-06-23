@@ -648,7 +648,7 @@ void attachOrCreateConsole()
 #endif
 }
 
-int mt_snprintf(char *const buf, const size_t buf_size, const char *fmt, ...)
+int mt_snprintf(char *buf, const size_t buf_size, const char *fmt, ...)
 {
 	// https://msdn.microsoft.com/en-us/library/bt7tawza.aspx
 	//  Many of the MSVC / Windows printf-style functions do not support positional

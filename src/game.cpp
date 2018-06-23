@@ -4024,7 +4024,7 @@ void Game::showPauseMenu()
 
 	 char control_text_buf[600];
 
-	 porting::mt_snprintf(control_text_buf, ARRLEN(control_text_buf), control_text_template.c_str(),
+	 porting::mt_snprintf(control_text_buf, sizeof(control_text_buf), control_text_template.c_str(),
 			GET_KEY_NAME(keymap_forward),
 			GET_KEY_NAME(keymap_backward),
 			GET_KEY_NAME(keymap_left),

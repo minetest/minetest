@@ -1787,9 +1787,9 @@ static void print_hexdump(std::ostream &o, const std::string &data)
 			int i = i0 + di;
 			char buf[4];
 			if(di<thislinelength)
-				porting::mt_snprintf(buf, 4, "%.2x ", data[i]);
+				porting::mt_snprintf(buf, sizeof(buf), "%.2x ", data[i]);
 			else
-				porting::mt_snprintf(buf, 4, "   ");
+				porting::mt_snprintf(buf, sizeof(buf), "   ");
 			o<<buf;
 		}
 		o<<" ";
