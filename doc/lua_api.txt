@@ -2279,7 +2279,7 @@ appearing when you don't expect them to. See `no_prepend[]`
 * Index to be selected within textlist
 * `true`/`false`: draw transparent background
 * See also `minetest.explode_textlist_event`
-  (main menu: `engine.explode_textlist_event`).
+  (main menu: `core.explode_textlist_event`).
 
 #### `tabheader[<X>,<Y>;<name>;<caption 1>,<caption 2>,...,<caption n>;<current_tab>;<transparent>;<draw_border>]`
 * Show a tab**header** at specific position (ignores formsize)
@@ -2326,7 +2326,7 @@ appearing when you don't expect them to. See `no_prepend[]`
 * Fieldname data is transferred to Lua
 * Value this trackbar is set to (`0`-`1000`)
 * See also `minetest.explode_scrollbar_event`
-  (main menu: `engine.explode_scrollbar_event`).
+  (main menu: `core.explode_scrollbar_event`).
 
 #### `table[<X>,<Y>;<W>,<H>;<name>;<cell 1>,<cell 2>,...,<cell n>;<selected idx>]`
 * Show scrollable table using options defined by the previous `tableoptions[]`
@@ -2337,7 +2337,7 @@ appearing when you don't expect them to. See `no_prepend[]`
 * `cell 1`...`cell n`: cell contents given in row-major order
 * `selected idx`: index of row to be selected within table (first row = `1`)
 * See also `minetest.explode_table_event`
-  (main menu: `engine.explode_table_event`).
+  (main menu: `core.explode_table_event`).
 
 #### `tableoptions[<opt 1>;<opt 2>;...]`
 * Sets options for `table[]`
