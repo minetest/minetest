@@ -50,8 +50,14 @@ public:
 	bool processInput();
 
 	bool OnEvent(const SEvent &event);
+#ifdef __ANDROID__
+	bool getAndroidUIInput();
+#endif
 
 private:
+	std::wstring getLabelByID(s32 id) { return L""; }
+	std::string getNameByID(s32 id) { return "password"; }
+
 	Client *m_client = nullptr;
 	const std::string &m_playername;
 	const std::string &m_password;

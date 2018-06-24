@@ -58,6 +58,10 @@ public:
 
 	bool pausesGame() { return true; }
 
+protected:
+	std::wstring getLabelByID(s32 id) { return L""; }
+	std::string getNameByID(s32 id) { return ""; }
+
 private:
 	void init_keys();
 

@@ -372,6 +372,8 @@ protected:
 	{
 			return padding + offset + AbsoluteRect.UpperLeftCorner;
 	}
+	std::wstring getLabelByID(s32 id);
+	std::string getNameByID(s32 id);
 	v2s32 getElementBasePos(bool absolute,
 			const std::vector<std::string> *v_pos);
 
@@ -411,8 +413,6 @@ protected:
 	bool m_selected_dragging = false;
 	ItemStack m_selected_swap;
 
-	v2s32 m_pointer;
-	v2s32 m_old_pointer;  // Mouse position after previous mouse event
 	gui::IGUIStaticText *m_tooltip_element = nullptr;
 
 	u64 m_tooltip_show_delay;
@@ -534,13 +534,6 @@ private:
 
 	int m_btn_height;
 	gui::IGUIFont *m_font = nullptr;
-
-	std::wstring getLabelByID(s32 id);
-	std::string getNameByID(s32 id);
-#ifdef __ANDROID__
-	v2s32 m_down_pos;
-	std::string m_JavaDialogFieldName;
-#endif
 
 	/* If true, remap a double-click (or double-tap) action to ESC. This is so
 	 * that, for example, Android users can double-tap to close a formspec.
