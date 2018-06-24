@@ -1167,7 +1167,7 @@ SharedBuffer<u8> ConnectionReceiveThread::handlePacketType_Control(Channel *chan
 
 				// a overflow is quite unlikely but as it'd result in major
 				// rtt miscalculation we handle it here
-				float rtt;
+				float rtt = 0.0f;
 				if (current_time > p.absolute_send_time) {
 					rtt = (current_time - p.absolute_send_time) / 1000.0f;
 				} else if (p.totaltime > 0) {
@@ -1176,7 +1176,8 @@ SharedBuffer<u8> ConnectionReceiveThread::handlePacketType_Control(Channel *chan
 
 				// Let peer calculate stuff according to it
 				// (avg_rtt and resend_timeout)
-				dynamic_cast<UDPPeer *>(peer)->reportRTT(rtt);
+				if (rtt != 0.0f)
+					dynamic_cast<UDPPeer *>(peer)->reportRTT(rtt);
 			}
 			// put bytes for max bandwidth calculation
 			channel->UpdateBytesSent(p.data.getSize(), 1);

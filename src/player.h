@@ -93,6 +93,10 @@ struct PlayerSettings
 	bool aux1_descends = false;
 	bool noclip = false;
 
+	const std::string setting_names[6] = {
+		"free_move", "fast_move", "continuous_forward", "always_fly_fast",
+		"aux1_descends", "noclip"
+	};
 	void readGlobalSettings();
 };
 
