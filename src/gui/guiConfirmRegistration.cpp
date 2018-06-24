@@ -43,6 +43,9 @@ GUIConfirmRegistration::GUIConfirmRegistration(gui::IGUIEnvironment *env,
 		m_client(client), m_playername(playername), m_password(password),
 		m_address(address), m_aborted(aborted)
 {
+#ifdef __ANDROID__
+	m_touchscreen_visible = false;
+#endif
 }
 
 GUIConfirmRegistration::~GUIConfirmRegistration()
@@ -157,6 +160,9 @@ void GUIConfirmRegistration::drawMenu()
 	driver->draw2DRectangle(bgcolor, AbsoluteRect, &AbsoluteClippingRect);
 
 	gui::IGUIElement::draw();
+#ifdef __ANDROID__
+	getAndroidUIInput();
+#endif
 }
 
 void GUIConfirmRegistration::closeMenu(bool goNext)
@@ -193,10 +199,14 @@ bool GUIConfirmRegistration::processInput()
 bool GUIConfirmRegistration::OnEvent(const SEvent &event)
 {
 	if (event.EventType == EET_KEY_INPUT_EVENT) {
-		if (event.KeyInput.Key == KEY_ESCAPE && event.KeyInput.PressedDown) {
+		// clang-format off
+		if ((event.KeyInput.Key == KEY_ESCAPE ||
+				event.KeyInput.Key == KEY_CANCEL) &&
+				event.KeyInput.PressedDown) {
 			closeMenu(false);
 			return true;
 		}
+		// clang-format on
 		if (event.KeyInput.Key == KEY_RETURN && event.KeyInput.PressedDown) {
 			acceptInput();
 			if (processInput())
@@ -239,3 +249,19 @@ bool GUIConfirmRegistration::OnEvent(const SEvent &event)
 
 	return false;
 }
+
+#ifdef __ANDROID__
+bool GUIConfirmRegistration::getAndroidUIInput()
+{
+	if (!hasAndroidUIInput() || m_jni_field_name != "password")
+		return false;
+
+	std::string text = porting::getInputDialogValue();
+	gui::IGUIElement *e = getElementFromId(ID_confirmPassword);
+	if (e)
+		e->setText(utf8_to_wide(text).c_str());
+
+	m_jni_field_name.clear();
+	return false;
+}
+#endif

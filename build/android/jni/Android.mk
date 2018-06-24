@@ -165,6 +165,7 @@ LOCAL_SRC_FILES := \
 		jni/src/guiscalingfilter.cpp              \
 		jni/src/gui/guiVolumeChange.cpp           \
 		jni/src/gui/intlGUIEditBox.cpp            \
+		jni/src/gui/modalMenu.cpp                 \
 		jni/src/gui/profilergraph.cpp             \
 		jni/src/gui/touchscreengui.cpp            \
 		jni/src/httpfetch.cpp                     \

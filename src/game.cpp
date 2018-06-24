@@ -1288,7 +1288,12 @@ bool Game::createClient(const std::string &playername,
 		return false;
 
 	bool could_connect, connect_aborted;
-
+#ifdef HAVE_TOUCHSCREENGUI
+	if (g_touchscreengui) {
+		g_touchscreengui->init(texture_src);
+		g_touchscreengui->hide();
+	}
+#endif
 	if (!connectToServer(playername, password, address, port,
 			&could_connect, &connect_aborted))
 		return false;
@@ -1414,7 +1419,7 @@ bool Game::initGui()
 #ifdef HAVE_TOUCHSCREENGUI
 
 	if (g_touchscreengui)
-		g_touchscreengui->init(texture_src);
+		g_touchscreengui->show();
 
 #endif
 

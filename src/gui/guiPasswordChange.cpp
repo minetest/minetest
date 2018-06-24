@@ -23,7 +23,8 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #include <IGUIButton.h>
 #include <IGUIStaticText.h>
 #include <IGUIFont.h>
-
+#include "keycode.h"
+#include "porting.h"
 #include "gettext.h"
 
 const int ID_oldPassword = 256;
@@ -180,6 +181,9 @@ void GUIPasswordChange::drawMenu()
 	driver->draw2DRectangle(bgcolor, AbsoluteRect, &AbsoluteClippingRect);
 
 	gui::IGUIElement::draw();
+#ifdef __ANDROID__
+	getAndroidUIInput();
+#endif
 }
 
 void GUIPasswordChange::acceptInput()
@@ -211,10 +215,14 @@ bool GUIPasswordChange::processInput()
 bool GUIPasswordChange::OnEvent(const SEvent &event)
 {
 	if (event.EventType == EET_KEY_INPUT_EVENT) {
-		if (event.KeyInput.Key == KEY_ESCAPE && event.KeyInput.PressedDown) {
+		// clang-format off
+		if ((event.KeyInput.Key == KEY_ESCAPE ||
+				event.KeyInput.Key == KEY_CANCEL) &&
+				event.KeyInput.PressedDown) {
 			quitMenu();
 			return true;
 		}
+		// clang-format on
 		if (event.KeyInput.Key == KEY_RETURN && event.KeyInput.PressedDown) {
 			acceptInput();
 			if (processInput())
@@ -259,3 +267,39 @@ bool GUIPasswordChange::OnEvent(const SEvent &event)
 
 	return Parent ? Parent->OnEvent(event) : false;
 }
+
+std::string GUIPasswordChange::getNameByID(s32 id)
+{
+	switch (id) {
+	case ID_oldPassword:
+		return "old_password";
+	case ID_newPassword1:
+		return "new_password_1";
+	case ID_newPassword2:
+		return "new_password_2";
+	}
+	return "";
+}
+
+#ifdef __ANDROID__
+bool GUIPasswordChange::getAndroidUIInput()
+{
+	if (!hasAndroidUIInput())
+		return false;
+
+	gui::IGUIElement *e = nullptr;
+	if (m_jni_field_name == "old_password")
+		e = getElementFromId(ID_oldPassword);
+	else if (m_jni_field_name == "new_password_1")
+		e = getElementFromId(ID_newPassword1);
+	else if (m_jni_field_name == "new_password_2")
+		e = getElementFromId(ID_newPassword2);
+
+	if (e) {
+		std::string text = porting::getInputDialogValue();
+		e->setText(utf8_to_wide(text).c_str());
+	}
+	m_jni_field_name.clear();
+	return false;
+}
+#endif
