@@ -5769,6 +5769,8 @@ Definition tables
         fill_ratio = 0.02,
     --  ^ The value determines 'decorations per surface node'.
     --  ^ Used only if noise_params is not specified.
+    --  ^ If >= 10.0 complete coverage is enabled and decoration placement uses
+    --  ^ a different and much faster method.
         noise_params = {
             offset = 0,
             scale = 0.45,
@@ -5783,6 +5785,8 @@ Definition tables
     --  ^ distribution.
     --  ^ A noise value is calculated for each square division and determines
     --  ^ 'decorations per surface node' within each division.
+    --  ^ If the noise value >= 10.0 complete coverage is enabled and decoration
+    --  ^ placement uses a different and much faster method.
         biomes = {"Oceanside", "Hills", "Plains"},
     --  ^ List of biomes in which this decoration occurs. Occurs in all biomes
     --  ^ if this is omitted, and ignored if the Mapgen being used does not
