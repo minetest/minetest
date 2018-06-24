@@ -507,7 +507,16 @@ void CavesRandomWalk::carveRoute(v3f vec, float f, bool randomize_xz)
 	MapNode liquidnode = CONTENT_IGNORE;
 
 	if (bmgn) {
-		Biome *biome = (Biome *)bmgn->getBiomeAtPoint(cpabs);
+		Biome *biome = nullptr;
+		if (cpabs.X < node_min.X || cpabs.X > node_max.X ||
+				cpabs.Z < node_min.Z || cpabs.Z > node_max.Z)
+			// Point is outside heat and humidity noise maps so use point noise
+			// calculations.
+			biome = (Biome *)bmgn->calcBiomeAtPoint(cpabs);
+		else
+			// Point is inside heat and humidity noise maps so use them
+			biome = (Biome *)bmgn->getBiomeAtPoint(cpabs);
+
 		if (biome->c_cave_liquid != CONTENT_IGNORE)
 			liquidnode = biome->c_cave_liquid;
 	}
