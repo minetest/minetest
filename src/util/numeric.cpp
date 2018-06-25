@@ -61,13 +61,13 @@ u64 murmur_hash_64_ua(const void *key, int len, unsigned int seed)
 	const int r = 47;
 	u64 h = seed ^ (len * m);
 
-	const u64 *data = (const u64 *)key;
-	const u64 *end = data + (len / 8);
+	const u8 *data = (const u8 *)key;
+	const u8 *end = data + (len / 8) * 8;
 
 	while (data != end) {
 		u64 k;
 		memcpy(&k, data, sizeof(u64));
-		data++;
+		data += sizeof(u64);
 
 		k *= m;
 		k ^= k >> r;
