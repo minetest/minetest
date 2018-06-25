@@ -798,16 +798,19 @@ static video::IImage *createInventoryCubeImage(int size,
 			v2f tex_left = {1.155f * x + 1.000f, y + 0.577f * x + 1.000f};
 			v2f tex_right = {1.155f * x, y - 0.577f * x + 1.000f};
 			video::SColor &pixel = pixels[j * size + i];
-			auto try_paint = [&pixel] (video::IImage *src, v2f uv) -> void {
+			auto try_paint = [&pixel] (video::IImage *src, v2f uv, float b) -> void {
 				auto size = src->getDimension();
 				int k = size.Width * uv.X;
-				int l = size.Height * (1.0f - uv.Y);
-				if (k >= 0 && k < size.Width && l >= 0 && l < size.Height)
-					pixel = src->getPixel(k, l);
+				int l = size.Height * uv.Y;
+				if (k < 0 || k >= size.Width || l < 0 || l >= size.Height)
+					return;
+				video::SColor s = src->getPixel(k, l);
+				pixel.set(s.getAlpha(), b * s.getRed(), b * s.getGreen(), b * s.getBlue());
 			};
-			try_paint(top, tex_top);
-			try_paint(left, tex_left);
-			try_paint(right, tex_right);
+			// brightness is the same as in applyFacesShading
+			try_paint(top, tex_top, 1.000000f);
+			try_paint(left, tex_left, 0.836660f);
+			try_paint(right, tex_right, 0.670820f);
 		}
 	}
 	result->unlock();
