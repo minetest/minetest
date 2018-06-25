@@ -19,6 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "tile.h"
 
+#include <algorithm>
 #include <ICameraSceneNode.h>
 #include "util/string.h"
 #include "util/container.h"
@@ -769,57 +770,75 @@ void TextureSource::rebuildImagesAndTextures()
 	}
 }
 
-/// @returns an 32bpp ARGB copy of @p image, or grab()bed @p image if it is ARGB already.
-/// That is, you can safely drop() the returned pointer after use.
-static video::IImage *getArgbImage(video::IImage *image)
-{
-	if (image->getColorFormat() != video::ECF_A8R8G8B8) {
-		video::IImage *copy = RenderingEngine::get_video_driver()->createImage(video::ECF_A8R8G8B8, image->getDimension());
-		image->copyTo(copy);
-		return copy;
-	}
-	image->grab();
-	return image;
-}
-
-static video::IImage *createInventoryCubeImage(int size,
+static video::IImage *createInventoryCubeImage(
 	video::IImage *top, video::IImage *left, video::IImage *right)
 {
+	core::dimension2du size_top = top->getDimension();
+	core::dimension2du size_left = left->getDimension();
+	core::dimension2du size_right = right->getDimension();
+
+	// Calculate image size to match textures size, but make sure it is
+	// 64px at least as it would look bad otherwise.
+	int size = npot2(std::max({64u,
+		size_top.Width, size_top.Height,
+		size_left.Width, size_left.Height,
+		size_right.Width, size_right.Height,
+	}));
+
 	video::IVideoDriver *driver = RenderingEngine::get_video_driver();
 	video::IImage *result = driver->createImage(video::ECF_A8R8G8B8, {size, size});
 	result->fill(video::SColor(0x00000000u));
-	video::SColor *pixels = reinterpret_cast<video::SColor *>(result->lock());
+
+	// Offset of the view space origin (from the top image edge),
+	// where the upper near cube vertex is. Full image is 2 units.
+	static constexpr float base_y = 0.9f;
+
+	// Cube dimensions. The image is 2x2 in this (view) space.
 	static constexpr float diag_x = 0.8f;
 	static constexpr float diag_y = 0.4f;
-	static constexpr float base_y = 0.9f;
 	static constexpr float vert_y = 1.2f;
+
 	static constexpr float coef_x = 0.5f / diag_x;
 	static constexpr float coef_y = -0.5f / diag_y;
 	static constexpr float coef_z = -1 / vert_y;
-	float coef = 2.f / size;
+
+	float scale = 2.f / size;
+	video::SColor *pixel = reinterpret_cast<video::SColor *>(result->lock());
 	for (int j = 0; j < size; j++) {
 		for (int i = 0; i < size; i++) {
-			float x = coef * (i + 0.5f) - 1.f;
-			float y = coef * (j + 0.5f) - base_y;
+			// View space coordinates
+			float x = scale * (i + 0.5f) - 1.f;
+			float y = scale * (j + 0.5f) - base_y;
+
 			float u = coef_y * y + coef_x * x;
 			float v = coef_y * y - coef_x * x;
+
+			// Texture coordinates for cube faces, at current pixel.
 			v2f tex_top = {1.f - v, 1.f - u};
 			v2f tex_left = {2 * coef_x * x + 1.f, coef_z * u};
 			v2f tex_right = {2 * coef_x * x, coef_z * v};
-			video::SColor &pixel = pixels[j * size + i];
-			auto try_paint = [&pixel] (video::IImage *src, v2f uv, float b) -> void {
-				auto size = src->getDimension();
+
+			// Draw from `src`, if current pixel is inside the corresponding quad,
+			// i.e. if texture coordinates are in range [0, 1).
+			// `b` stands for "brightness."
+			auto try_paint = [pixel] (video::IImage *src, core::dimension2du size, v2f uv, float b) -> void {
 				int k = size.Width * uv.X;
 				int l = size.Height * uv.Y;
 				if (k < 0 || k >= size.Width || l < 0 || l >= size.Height)
 					return;
 				video::SColor s = src->getPixel(k, l);
-				pixel.set(s.getAlpha(), b * s.getRed(), b * s.getGreen(), b * s.getBlue());
+				pixel->set(s.getAlpha(), b * s.getRed(), b * s.getGreen(), b * s.getBlue());
 			};
-			// brightness is the same as in applyFacesShading
-			try_paint(top, tex_top, 1.000000f);
-			try_paint(left, tex_left, 0.836660f);
-			try_paint(right, tex_right, 0.670820f);
+
+			// Brightness is the same as in applyFacesShading
+			try_paint(top, size_top, tex_top, 1.000000f);
+			try_paint(left, size_left, tex_left, 0.836660f);
+			try_paint(right, size_right, tex_right, 0.670820f);
+
+			// Reference next pixel in the row or, if the row (and thus the inner loop)
+			// is over, first pixel of the next row (assuming there is no padding, but
+			// there shouldn't be any as row size is exact power of 2).
+			pixel++;
 		}
 	}
 	result->unlock();
@@ -1366,12 +1385,13 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 				return true;
 			}
 
-			baseimg = createInventoryCubeImage(64, img_top, img_left, img_right);
+			baseimg = createInventoryCubeImage(img_top, img_left, img_right);
 
-			// Drop images
+			// Face images are not needed anymore
 			img_top->drop();
 			img_left->drop();
 			img_right->drop();
+
 			return true;
 		}
 		/*
