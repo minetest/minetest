@@ -427,7 +427,6 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("chunksize", "5");
 
 	settings->setDefault("viewing_range", "50");
-	settings->setDefault("inventory_image_hack", "false");
 
 	// Check for a device with a small screen
 	float x_inches = ((double) porting::getDisplaySize().X /

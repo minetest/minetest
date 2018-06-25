@@ -841,11 +841,6 @@
 #    type: bool
 # inventory_items_animations = false
 
-#    Android systems only: Tries to create inventory textures from meshes
-#    when no supported render was found.
-#    type: bool
-# inventory_image_hack = false
-
 #    Fraction of the visible distance at which fog starts to be rendered
 #    type: float min: 0 max: 0.99
 # fog_start = 0.4
