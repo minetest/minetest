@@ -61,7 +61,13 @@ typedef enum {
 	joystick_center_id
 } touch_gui_button_id;
 
-typedef enum { j_forward = 0, j_backward, j_left, j_right, j_special1 } touch_gui_joystick_move_id;
+typedef enum {
+	j_forward = 0,
+	j_backward,
+	j_left,
+	j_right,
+	j_special1
+} touch_gui_joystick_move_id;
 
 typedef enum {
 	AHBB_Dir_Top_Bottom,

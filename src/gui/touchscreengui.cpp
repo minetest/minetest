@@ -43,7 +43,7 @@ const char **touchgui_button_imagenames = (const char *[]) {
 	"jump_btn.png",
 	"down.png",
 	"zoom.png",
-	"use_btn.png"
+	"aux_btn.png"
 };
 
 const char **touchgui_joystick_imagenames = (const char *[]) {
@@ -560,17 +560,17 @@ void TouchScreenGUI::init(ISimpleTextureSource *tsrc)
 	// init zoom button
 	initButton(zoom_id,
 			rect<s32>(m_screensize.X - (1.25 * button_size),
-					m_screensize.Y - (3 * button_size),
+					m_screensize.Y - (4 * button_size),
 					m_screensize.X - (0.25 * button_size),
-					m_screensize.Y - (2 * button_size)),
+					m_screensize.Y - (3 * button_size)),
 			L"z", false);
 
 	// init special1 button
 	if (!m_joystick_as_special1)
 		initButton(special1_id,
-				rect<s32>(m_screensize.X - (2.25 * button_size),
+				rect<s32>(m_screensize.X - (1.25 * button_size),
 						m_screensize.Y - (3 * button_size),
-						m_screensize.X - (1.25 * button_size),
+						m_screensize.X - (0.25 * button_size),
 						m_screensize.Y - (2 * button_size)),
 				L"spc1", false);
 
