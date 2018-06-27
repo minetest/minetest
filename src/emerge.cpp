@@ -169,7 +169,10 @@ EmergeManager::~EmergeManager()
 		}
 
 		delete thread;
-		delete m_mapgens[i];
+
+		// Mapgen init might not be finished if there is an error during startup.
+		if (m_mapgens.size() > i)
+			delete m_mapgens[i];
 	}
 
 	delete biomemgr;

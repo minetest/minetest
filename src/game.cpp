@@ -1014,7 +1014,8 @@ bool Game::startup(bool *kill,
 	RenderingEngine::get_scene_manager()->getParameters()->
 		setAttribute(scene::OBJ_LOADER_IGNORE_MATERIAL_FILES, true);
 
-	memset(&runData, 0, sizeof(runData));
+	// Reinit runData
+	runData = GameRunData();
 	runData.time_from_last_punch = 10.0;
 	runData.update_wielded_item_trigger = true;
 
@@ -1064,7 +1065,7 @@ void Game::run()
 
 	while (RenderingEngine::run()
 			&& !(*kill || g_gamecallback->shutdown_requested
-			|| (server && server->getShutdownRequested()))) {
+			|| (server && server->isShutdownRequested()))) {
 
 		const irr::core::dimension2d<u32> &current_screen_size =
 			RenderingEngine::get_video_driver()->getScreenSize();
@@ -1270,6 +1271,7 @@ bool Game::createSingleplayerServer(const std::string &map_dir,
 	}
 
 	server = new Server(map_dir, gamespec, simple_singleplayer_mode, bind_addr, false);
+	server->init();
 	server->start();
 
 	return true;
@@ -1860,6 +1862,9 @@ void Game::processKeyInput()
 		dropSelectedItem(isKeyDown(KeyType::SNEAK));
 	} else if (wasKeyDown(KeyType::AUTOFORWARD)) {
 		toggleAutoforward();
+	} else if (wasKeyDown(KeyType::BACKWARD)) {
+		if (g_settings->getBool("continuous_forward"))
+			toggleAutoforward();
 	} else if (wasKeyDown(KeyType::INVENTORY)) {
 		openInventory();
 	} else if (input->cancelPressed()) {
@@ -2333,13 +2338,15 @@ void Game::updateCameraDirection(CameraOrientation *cam, float dtime)
 		}
 #endif
 
-		if (m_first_loop_after_window_activation)
+		if (m_first_loop_after_window_activation) {
 			m_first_loop_after_window_activation = false;
-		else
-			updateCameraOrientation(cam, dtime);
 
-		input->setMousePos((driver->getScreenSize().Width / 2),
-				(driver->getScreenSize().Height / 2));
+			input->setMousePos(driver->getScreenSize().Width / 2,
+				driver->getScreenSize().Height / 2);
+		} else {
+			updateCameraOrientation(cam, dtime);
+		}
+
 	} else {
 
 #ifndef ANDROID
@@ -2361,17 +2368,18 @@ void Game::updateCameraOrientation(CameraOrientation *cam, float dtime)
 		cam->camera_pitch  = g_touchscreengui->getPitch();
 	} else {
 #endif
-
-		s32 dx = input->getMousePos().X - (driver->getScreenSize().Width / 2);
-		s32 dy = input->getMousePos().Y - (driver->getScreenSize().Height / 2);
+		v2s32 center(driver->getScreenSize().Width / 2, driver->getScreenSize().Height / 2);
+		v2s32 dist = input->getMousePos() - center;
 
 		if (m_invert_mouse || camera->getCameraMode() == CAMERA_MODE_THIRD_FRONT) {
-			dy = -dy;
+			dist.Y = -dist.Y;
 		}
 
-		cam->camera_yaw   -= dx * m_cache_mouse_sensitivity;
-		cam->camera_pitch += dy * m_cache_mouse_sensitivity;
+		cam->camera_yaw   -= dist.X * m_cache_mouse_sensitivity;
+		cam->camera_pitch += dist.Y * m_cache_mouse_sensitivity;
 
+		if (dist.X != 0 || dist.Y != 0)
+			input->setMousePos(center.X, center.Y);
 #ifdef HAVE_TOUCHSCREENGUI
 	}
 #endif
@@ -2761,8 +2769,8 @@ void Game::updateChat(f32 dtime, const v2u32 &screensize)
 	while (!chat_log_error_buf.empty()) {
 		std::wstring error_message = utf8_to_wide(chat_log_error_buf.get());
 		if (!g_settings->getBool("disable_escape_sequences")) {
-			error_message = L"\x1b(c@red)";
-			error_message.append(error_message).append(L"\x1b(c@white)");
+			error_message.insert(0, L"\x1b(c@red)");
+			error_message.append(L"\x1b(c@white)");
 		}
 		chat_backend->addMessage(L"", error_message);
 	}

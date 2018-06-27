@@ -52,6 +52,8 @@ public:
 	void getBonePosition(const std::string &bone, v3f *position, v3f *rotation);
 	void setAttachment(int parent_id, const std::string &bone, v3f position, v3f rotation);
 	void getAttachment(int *parent_id, std::string *bone, v3f *position, v3f *rotation);
+	void clearChildAttachments();
+	void clearParentAttachment();
 	void addAttachmentChild(int child_id);
 	void removeAttachmentChild(int child_id);
 	const std::unordered_set<int> &getAttachmentChildIds();
@@ -62,7 +64,7 @@ protected:
 	float m_yaw = 0.0f;
 
 	bool m_properties_sent = true;
-	struct ObjectProperties m_prop;
+	ObjectProperties m_prop;
 
 	ItemGroupList m_armor_groups;
 	bool m_armor_groups_sent = false;
@@ -72,7 +74,7 @@ protected:
 	float m_animation_blend = 0.0f;
 	bool m_animation_loop = true;
 	bool m_animation_sent = false;
-        bool m_animation_speed_sent = false;
+	bool m_animation_speed_sent = false;
 
 	// Stores position and rotation for each bone name
 	std::unordered_map<std::string, core::vector2d<v3f>> m_bone_position;
@@ -84,6 +86,9 @@ protected:
 	v3f m_attachment_position;
 	v3f m_attachment_rotation;
 	bool m_attachment_sent = false;
+private:
+	void onAttach(int parent_id);
+	void onDetach(int parent_id);
 };
 
 /*
@@ -330,6 +335,7 @@ public:
 
 	v3f getEyePosition() const { return m_base_position + getEyeOffset(); }
 	v3f getEyeOffset() const;
+	float getZoomFOV() const;
 
 	inline Metadata &getMeta() { return m_meta; }
 

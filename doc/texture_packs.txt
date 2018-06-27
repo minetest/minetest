@@ -9,6 +9,7 @@ Texture pack directory structure
 
     textures
     |-- Texture Pack
+    |   |-- texture_pack.conf
     |   |-- screenshot.png
     |   |-- description.txt
     |   |-- override.txt
@@ -21,9 +22,17 @@ This is a directory containing the entire contents of a single texture pack.
 It can be chosen more or less freely and will also become the name of the
 texture pack. The name must not be “base”.
 
+### `texture_pack.conf`
+A key-value config file with the following keys:
+
+* `title` - human readable title
+* `description` - short description, shown in the content tab
+
 ### `description.txt`
+**Deprecated**, you should use texture_pack.conf instead.
+
 A file containing a short description of the texture pack to be shown in the
-texture packs tab.
+content tab.
 
 ### `screenshot.png`
 A preview image showing an in-game screenshot of this texture pack; it will be

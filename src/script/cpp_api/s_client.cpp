@@ -25,6 +25,17 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "common/c_content.h"
 #include "s_item.h"
 
+void ScriptApiClient::on_mods_loaded()
+{
+	SCRIPTAPI_PRECHECKHEADER
+
+	// Get registered shutdown hooks
+	lua_getglobal(L, "core");
+	lua_getfield(L, -1, "registered_on_mods_loaded");
+	// Call callbacks
+	runCallbacks(0, RUN_CALLBACKS_MODE_FIRST);
+}
+
 void ScriptApiClient::on_shutdown()
 {
 	SCRIPTAPI_PRECHECKHEADER

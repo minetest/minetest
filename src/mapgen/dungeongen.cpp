@@ -71,8 +71,6 @@ DungeonGen::DungeonGen(const NodeDefManager *ndef,
 		dp.room_size_large_max = v3s16(16, 16, 16);
 		dp.rooms_min           = 2;
 		dp.rooms_max           = 16;
-		dp.y_min               = -MAX_MAP_GENERATION_LIMIT;
-		dp.y_max               = MAX_MAP_GENERATION_LIMIT;
 		dp.notifytype          = GENNOTIFY_DUNGEON;
 
 		dp.np_density  = nparams_dungeon_density;
@@ -86,8 +84,6 @@ void DungeonGen::generate(MMVManip *vm, u32 bseed, v3s16 nmin, v3s16 nmax)
 	assert(vm);
 
 	//TimeTaker t("gen dungeons");
-	if (nmin.Y < dp.y_min || nmax.Y > dp.y_max)
-		return;
 
 	float nval_density = NoisePerlin3D(&dp.np_density, nmin.X, nmin.Y, nmin.Z, dp.seed);
 	if (nval_density < 1.0f)
@@ -431,8 +427,10 @@ void DungeonGen::makeCorridor(v3s16 doorplace, v3s16 doordir,
 					VMANIP_FLAG_DUNGEON_UNTOUCHABLE,
 					MapNode(dp.c_wall),
 					0);
-				makeHole(p);
-				makeHole(p - dir);
+				makeFill(p, dp.holesize, VMANIP_FLAG_DUNGEON_UNTOUCHABLE,
+					MapNode(CONTENT_AIR), VMANIP_FLAG_DUNGEON_INSIDE);
+				makeFill(p - dir, dp.holesize, VMANIP_FLAG_DUNGEON_UNTOUCHABLE,
+					MapNode(CONTENT_AIR), VMANIP_FLAG_DUNGEON_INSIDE);
 
 				// TODO: fix stairs code so it works 100%
 				// (quite difficult)
@@ -451,16 +449,21 @@ void DungeonGen::makeCorridor(v3s16 doorplace, v3s16 doordir,
 					v3s16 swv = (dir.Z != 0) ? v3s16(1, 0, 0) : v3s16(0, 0, 1);
 
 					for (u16 st = 0; st < stair_width; st++) {
-						u32 vi = vm->m_area.index(ps.X - dir.X, ps.Y - 1, ps.Z - dir.Z);
-						if (vm->m_area.contains(ps + v3s16(-dir.X, -1, -dir.Z)) &&
-								vm->m_data[vi].getContent() == dp.c_wall)
-							vm->m_data[vi] = MapNode(dp.c_stair, 0, facedir);
-
-						vi = vm->m_area.index(ps.X, ps.Y, ps.Z);
-						if (vm->m_area.contains(ps) &&
-								vm->m_data[vi].getContent() == dp.c_wall)
-							vm->m_data[vi] = MapNode(dp.c_stair, 0, facedir);
-
+						if (make_stairs == -1) {
+							u32 vi = vm->m_area.index(ps.X - dir.X, ps.Y - 1, ps.Z - dir.Z);
+							if (vm->m_area.contains(ps + v3s16(-dir.X, -1, -dir.Z)) &&
+									vm->m_data[vi].getContent() == dp.c_wall) {
+								vm->m_flags[vi] |= VMANIP_FLAG_DUNGEON_UNTOUCHABLE;
+								vm->m_data[vi] = MapNode(dp.c_stair, 0, facedir);
+							}
+						} else if (make_stairs == 1) {
+							u32 vi = vm->m_area.index(ps.X, ps.Y - 1, ps.Z);
+							if (vm->m_area.contains(ps + v3s16(0, -1, 0)) &&
+									vm->m_data[vi].getContent() == dp.c_wall) {
+								vm->m_flags[vi] |= VMANIP_FLAG_DUNGEON_UNTOUCHABLE;
+								vm->m_data[vi] = MapNode(dp.c_stair, 0, facedir);
+							}
+						}
 						ps += swv;
 					}
 				}

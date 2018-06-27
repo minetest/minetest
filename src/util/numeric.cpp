@@ -61,13 +61,13 @@ u64 murmur_hash_64_ua(const void *key, int len, unsigned int seed)
 	const int r = 47;
 	u64 h = seed ^ (len * m);
 
-	const u64 *data = (const u64 *)key;
-	const u64 *end = data + (len / 8);
+	const u8 *data = (const u8 *)key;
+	const u8 *end = data + (len / 8) * 8;
 
 	while (data != end) {
 		u64 k;
 		memcpy(&k, data, sizeof(u64));
-		data++;
+		data += sizeof(u64);
 
 		k *= m;
 		k ^= k >> r;
@@ -168,7 +168,7 @@ s16 adjustDist(s16 dist, float zoom_fov)
 	// 1.775 ~= 72 * PI / 180 * 1.4, the default FOV on the client.
 	// The heuristic threshold for zooming is half of that.
 	static constexpr const float threshold_fov = 1.775f / 2.0f;
-	if (zoom_fov > threshold_fov)
+	if (zoom_fov < 0.001f || zoom_fov > threshold_fov)
 		return dist;
 
 	return std::round(dist * std::cbrt((1.0f - std::cos(threshold_fov)) /

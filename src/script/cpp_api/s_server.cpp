@@ -147,6 +147,17 @@ bool ScriptApiServer::on_chat_message(const std::string &name,
 	return ate;
 }
 
+void ScriptApiServer::on_mods_loaded()
+{
+	SCRIPTAPI_PRECHECKHEADER
+
+	// Get registered shutdown hooks
+	lua_getglobal(L, "core");
+	lua_getfield(L, -1, "registered_on_mods_loaded");
+	// Call callbacks
+	runCallbacks(0, RUN_CALLBACKS_MODE_FIRST);
+}
+
 void ScriptApiServer::on_shutdown()
 {
 	SCRIPTAPI_PRECHECKHEADER

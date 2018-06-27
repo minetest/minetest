@@ -74,10 +74,20 @@ Player::Player(const char *name, IItemDefManager *idef):
 		HUD_FLAG_MINIMAP_RADAR_VISIBLE;
 
 	hud_hotbar_itemcount = HUD_HOTBAR_ITEMCOUNT_DEFAULT;
+
+	m_player_settings.readGlobalSettings();
+	// Register player setting callbacks
+	for (const std::string &name : m_player_settings.setting_names)
+		g_settings->registerChangedCallback(name,
+			&Player::settingsChangedCallback, &m_player_settings);
 }
 
 Player::~Player()
 {
+	// m_player_settings becomes invalid, remove callbacks
+	for (const std::string &name : m_player_settings.setting_names)
+		g_settings->deregisterChangedCallback(name,
+			&Player::settingsChangedCallback, &m_player_settings);
 	clearHud();
 }
 
@@ -125,4 +135,19 @@ void Player::clearHud()
 		delete hud.back();
 		hud.pop_back();
 	}
+}
+
+void PlayerSettings::readGlobalSettings()
+{
+	free_move = g_settings->getBool("free_move");
+	fast_move = g_settings->getBool("fast_move");
+	continuous_forward = g_settings->getBool("continuous_forward");
+	always_fly_fast = g_settings->getBool("always_fly_fast");
+	aux1_descends = g_settings->getBool("aux1_descends");
+	noclip = g_settings->getBool("noclip");
+}
+
+void Player::settingsChangedCallback(const std::string &name, void *data)
+{
+	((PlayerSettings *)data)->readGlobalSettings();
 }

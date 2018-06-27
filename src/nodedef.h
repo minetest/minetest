@@ -405,8 +405,6 @@ struct ContentFeatures
 	void reset();
 	void serialize(std::ostream &os, u16 protocol_version) const;
 	void deSerialize(std::istream &is);
-	void serializeOld(std::ostream &os, u16 protocol_version) const;
-	void deSerializeOld(std::istream &is, int version);
 	/*!
 	 * Since vertex alpha is no longer supported, this method
 	 * adds opacity directly to the texture pixels.
@@ -733,9 +731,10 @@ public:
 	virtual void resolveNodeNames() = 0;
 
 	bool getIdFromNrBacklog(content_t *result_out,
-		const std::string &node_alt, content_t c_fallback);
+		const std::string &node_alt, content_t c_fallback,
+		bool error_on_fallback = true);
 	bool getIdsFromNrBacklog(std::vector<content_t> *result_out,
-		bool all_required=false, content_t c_fallback=CONTENT_IGNORE);
+		bool all_required = false, content_t c_fallback = CONTENT_IGNORE);
 
 	void nodeResolveInternal();
 

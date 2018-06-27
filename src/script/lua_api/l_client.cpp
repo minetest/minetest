@@ -94,8 +94,12 @@ int ModApiClient::l_send_chat_message(lua_State *L)
 		return 0;
 
 	// If server disabled this API, discard
-	if (getClient(L)->checkCSMFlavourLimit(CSMFlavourLimit::CSM_FL_CHAT_MESSAGES))
+
+	// clang-format off
+	if (getClient(L)->checkCSMRestrictionFlag(
+			CSMRestrictionFlags::CSM_RF_CHAT_MESSAGES))
 		return 0;
+	// clang-format on
 
 	std::string message = luaL_checkstring(L, 1);
 	getClient(L)->sendChatMessage(utf8_to_wide(message));
@@ -290,8 +294,11 @@ int ModApiClient::l_get_item_def(lua_State *L)
 	IItemDefManager *idef = gdef->idef();
 	assert(idef);
 
-	if (getClient(L)->checkCSMFlavourLimit(CSMFlavourLimit::CSM_FL_READ_ITEMDEFS))
+	// clang-format off
+	if (getClient(L)->checkCSMRestrictionFlag(
+			CSMRestrictionFlags::CSM_RF_READ_ITEMDEFS))
 		return 0;
+	// clang-format on
 
 	if (!lua_isstring(L, 1))
 		return 0;
@@ -318,8 +325,11 @@ int ModApiClient::l_get_node_def(lua_State *L)
 	if (!lua_isstring(L, 1))
 		return 0;
 
-	if (getClient(L)->checkCSMFlavourLimit(CSMFlavourLimit::CSM_FL_READ_NODEDEFS))
+	// clang-format off
+	if (getClient(L)->checkCSMRestrictionFlag(
+			CSMRestrictionFlags::CSM_RF_READ_NODEDEFS))
 		return 0;
+	// clang-format on
 
 	const std::string &name = lua_tostring(L, 1);
 	const ContentFeatures &cf = ndef->get(ndef->getId(name));

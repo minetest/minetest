@@ -1560,7 +1560,7 @@ void GUIFormSpecMenu::parseBox(parserData* data, const std::string &element)
 
 		video::SColor tmp_color;
 
-		if (parseColorString(parts[2], tmp_color, false)) {
+		if (parseColorString(parts[2], tmp_color, false, 0x8C)) {
 			BoxDrawSpec spec(pos, geom, tmp_color);
 
 			m_boxes.push_back(spec);
@@ -2515,8 +2515,6 @@ void GUIFormSpecMenu::drawMenu()
 	for (const GUIFormSpecMenu::BoxDrawSpec &spec : m_boxes) {
 		irr::video::SColor todraw = spec.color;
 
-		todraw.setAlpha(140);
-
 		core::rect<s32> rect(spec.pos.X,spec.pos.Y,
 							spec.pos.X + spec.geom.X,spec.pos.Y + spec.geom.Y);
 
@@ -3028,29 +3026,31 @@ bool GUIFormSpecMenu::preprocessEvent(const SEvent& event)
 				core::position2d<s32>(event.MouseInput.X, event.MouseInput.Y));
 		if ((hovered) && (hovered->getType() == irr::gui::EGUIET_EDIT_BOX)) {
 			bool retval = hovered->OnEvent(event);
-			if (retval) {
+			if (retval)
 				Environment->setFocus(hovered);
-			}
-			m_JavaDialogFieldName = getNameByID(hovered->getID());
+
+			std::string field_name = getNameByID(hovered->getID());
+			/* read-only field */
+			if (field_name.empty())
+				return retval;
+
+			m_JavaDialogFieldName = field_name;
 			std::string message   = gettext("Enter ");
 			std::string label     = wide_to_utf8(getLabelByID(hovered->getID()));
-			if (label == "") {
+			if (label.empty())
 				label = "text";
-			}
 			message += gettext(label) + ":";
 
 			/* single line text input */
 			int type = 2;
 
 			/* multi line text input */
-			if (((gui::IGUIEditBox*) hovered)->isMultiLineEnabled()) {
+			if (((gui::IGUIEditBox*) hovered)->isMultiLineEnabled())
 				type = 1;
-			}
 
 			/* passwords are always single line */
-			if (((gui::IGUIEditBox*) hovered)->isPasswordBox()) {
+			if (((gui::IGUIEditBox*) hovered)->isPasswordBox())
 				type = 3;
-			}
 
 			porting::showInputDialog(gettext("ok"), "",
 					wide_to_utf8(((gui::IGUIEditBox*) hovered)->getText()),

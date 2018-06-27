@@ -226,7 +226,7 @@ public:
 	void handleCommand_ModChannelSignal(NetworkPacket *pkt);
 	void handleCommand_SrpBytesSandB(NetworkPacket *pkt);
 	void handleCommand_FormspecPrepend(NetworkPacket *pkt);
-	void handleCommand_CSMFlavourLimits(NetworkPacket *pkt);
+	void handleCommand_CSMRestrictionFlags(NetworkPacket *pkt);
 
 	void ProcessData(NetworkPacket *pkt);
 
@@ -261,7 +261,7 @@ public:
 
 	/**
 	 * Helper function for Client Side Modding
-	 * Flavour is applied there, this should not be used for core engine
+	 * CSM restrictions are applied there, this should not be used for core engine
 	 * @param p
 	 * @param is_valid_position
 	 * @return
@@ -412,14 +412,14 @@ public:
 		return m_address_name;
 	}
 
-	inline bool checkCSMFlavourLimit(CSMFlavourLimit flag) const
+	inline bool checkCSMRestrictionFlag(CSMRestrictionFlags flag) const
 	{
-		return m_csm_flavour_limits & flag;
+		return m_csm_restriction_flags & flag;
 	}
 
 	u32 getCSMNodeRangeLimit() const
 	{
-		return m_csm_noderange_limit;
+		return m_csm_restriction_noderange;
 	}
 
 	inline std::unordered_map<u32, u32> &getHUDTranslationMap()
@@ -600,9 +600,9 @@ private:
 
 	bool m_shutdown = false;
 
-	// CSM flavour limits byteflag
-	u64 m_csm_flavour_limits = CSMFlavourLimit::CSM_FL_NONE;
-	u32 m_csm_noderange_limit = 8;
+	// CSM restrictions byteflag
+	u64 m_csm_restriction_flags = CSMRestrictionFlags::CSM_RF_NONE;
+	u32 m_csm_restriction_noderange = 8;
 
 	std::unique_ptr<ModChannelMgr> m_modchannel_mgr;
 };

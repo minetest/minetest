@@ -141,7 +141,7 @@ void RemotePlayer::deSerialize(std::istream &is, const std::string &playername,
 
 	inventory.deSerialize(is);
 
-	if (inventory.getList("craftpreview") == NULL) {
+	if (!inventory.getList("craftpreview") && inventory.getList("craftresult")) {
 		// Convert players without craftpreview
 		inventory.addList("craftpreview", 1);
 

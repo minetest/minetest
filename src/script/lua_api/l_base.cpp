@@ -20,8 +20,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "lua_api/l_base.h"
 #include "lua_api/l_internal.h"
 #include "cpp_api/s_base.h"
-#include <mods.h>
-#include <server.h>
+#include "content/mods.h"
+#include "server.h"
+#include <cmath>
 
 ScriptApiBase *ModApiBase::getScriptApiBase(lua_State *L)
 {
@@ -83,4 +84,21 @@ bool ModApiBase::registerFunction(lua_State *L, const char *name,
 	lua_setfield(L, top, name);
 
 	return true;
+}
+
+bool ModApiBase::isNaN(lua_State *L, int idx)
+{
+	return lua_type(L, idx) == LUA_TNUMBER && std::isnan(lua_tonumber(L, idx));
+}
+
+/*
+ * Read template functions
+ */
+template<>
+float ModApiBase::readParam(lua_State *L, int index)
+{
+	if (isNaN(L, index))
+		throw LuaError("NaN value is not allowed.");
+
+	return (float) luaL_checknumber(L, index);
 }

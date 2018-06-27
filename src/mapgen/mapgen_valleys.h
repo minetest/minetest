@@ -32,41 +32,40 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define MGVALLEYS_ALT_CHILL    0x01
 #define MGVALLEYS_HUMID_RIVERS 0x02
 
-// Feed only one variable into these.
+// Feed only one variable into these
 #define MYSQUARE(x) (x) * (x)
 #define MYCUBE(x) (x) * (x) * (x)
 
 class BiomeManager;
 class BiomeGenOriginal;
 
-// Global profiler
-//class Profiler;
-//extern Profiler *mapgen_profiler;
-
 
 struct MapgenValleysParams : public MapgenParams {
 	u32 spflags = MGVALLEYS_HUMID_RIVERS | MGVALLEYS_ALT_CHILL;
-	s16 large_cave_depth = -33;
-	s16 massive_cave_depth = -256; // highest altitude of massive caves
-	u16 altitude_chill = 90; // The altitude at which temperature drops by 20C.
-	u16 lava_features = 0; // How often water will occur in caves.
-	u16 river_depth = 4; // How deep to carve river channels.
-	u16 river_size = 5; // How wide to make rivers.
-	u16 water_features = 0; // How often water will occur in caves.
+	u16 altitude_chill = 90; // The altitude at which temperature drops by 20C
+	u16 river_depth = 4; // How deep to carve river channels
+	u16 river_size = 5; // How wide to make rivers
+
 	float cave_width = 0.09f;
+	s16 large_cave_depth = -33;
+	s16 lava_depth = 1;
+	s16 cavern_limit = -256;
+	s16 cavern_taper = 192;
+	float cavern_threshold = 0.6f;
 	s16 dungeon_ymin = -31000;
 	s16 dungeon_ymax = 63; // No higher than surface mapchunks
 
-	NoiseParams np_cave1;
-	NoiseParams np_cave2;
 	NoiseParams np_filler_depth;
 	NoiseParams np_inter_valley_fill;
 	NoiseParams np_inter_valley_slope;
 	NoiseParams np_rivers;
-	NoiseParams np_massive_caves;
 	NoiseParams np_terrain_height;
 	NoiseParams np_valley_depth;
 	NoiseParams np_valley_profile;
+
+	NoiseParams np_cave1;
+	NoiseParams np_cave2;
+	NoiseParams np_cavern;
 
 	MapgenValleysParams();
 	~MapgenValleysParams() = default;
@@ -97,44 +96,30 @@ public:
 	virtual void makeChunk(BlockMakeData *data);
 	int getSpawnLevelAtPoint(v2s16 p);
 
-	s16 large_cave_depth;
-
 private:
 	BiomeGenOriginal *m_bgen;
 
 	float altitude_chill;
-	s16 massive_cave_depth;
-	s16 dungeon_ymin;
-	s16 dungeon_ymax;
-
 	bool humid_rivers;
 	bool use_altitude_chill;
 	float humidity_adjust;
-	s16 cave_water_max_height;
-	s16 lava_max_height;
-	s16 lava_features_lim;
 	float river_depth_bed;
 	float river_size_factor;
-	float *tcave_cache;
-	s16 water_features_lim;
+
+	s16 large_cave_depth;
+	s16 dungeon_ymin;
+	s16 dungeon_ymax;
 
 	Noise *noise_inter_valley_fill;
 	Noise *noise_inter_valley_slope;
 	Noise *noise_rivers;
-	Noise *noise_cave1;
-	Noise *noise_cave2;
-	Noise *noise_massive_caves;
 	Noise *noise_terrain_height;
 	Noise *noise_valley_depth;
 	Noise *noise_valley_profile;
 
 	float terrainLevelAtPoint(s16 x, s16 z);
-
 	void calculateNoise();
-
 	virtual int generateTerrain();
 	float terrainLevelFromNoise(TerrainNoise *tn);
 	float adjustedTerrainLevelFromNoise(TerrainNoise *tn);
-
-	virtual void generateCaves(s16 max_stone_y, s16 large_cave_depth);
 };

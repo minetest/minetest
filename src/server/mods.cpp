@@ -21,7 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "filesys.h"
 #include "log.h"
 #include "scripting_server.h"
-#include "subgame.h"
+#include "content/subgames.h"
 
 /**
  * Manage server mods
@@ -75,6 +75,9 @@ void ServerModManager::loadMods(ServerScripting *script)
 				std::chrono::steady_clock::now() - t).count() * 0.001f
 			<< " seconds" << std::endl;
 	}
+
+	// Run a callback when mods are loaded
+	script->on_mods_loaded();
 }
 
 // clang-format on

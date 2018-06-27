@@ -51,6 +51,42 @@ MetaDataRef* MetaDataRef::checkobject(lua_State *L, int narg)
 
 // Exported functions
 
+// contains(self, name)
+int MetaDataRef::l_contains(lua_State *L)
+{
+	MAP_LOCK_REQUIRED;
+
+	MetaDataRef *ref = checkobject(L, 1);
+	std::string name = luaL_checkstring(L, 2);
+
+	Metadata *meta = ref->getmeta(false);
+	if (meta == NULL)
+		return 0;
+
+	lua_pushboolean(L, meta->contains(name));
+	return 1;
+}
+
+// get(self, name)
+int MetaDataRef::l_get(lua_State *L)
+{
+	MAP_LOCK_REQUIRED;
+
+	MetaDataRef *ref = checkobject(L, 1);
+	std::string name = luaL_checkstring(L, 2);
+
+	Metadata *meta = ref->getmeta(false);
+	if (meta == NULL)
+		return 0;
+
+	std::string str;
+	if (meta->getStringToRef(name, str)) {
+		lua_pushlstring(L, str.c_str(), str.size());
+		return 1;
+	}
+	return 0;
+}
+
 // get_string(self, name)
 int MetaDataRef::l_get_string(lua_State *L)
 {
@@ -154,7 +190,7 @@ int MetaDataRef::l_set_float(lua_State *L)
 
 	MetaDataRef *ref = checkobject(L, 1);
 	std::string name = luaL_checkstring(L, 2);
-	float a = luaL_checknumber(L, 3);
+	float a = readParam<float>(L, 3);
 	std::string str = ftos(a);
 
 	Metadata *meta = ref->getmeta(true);

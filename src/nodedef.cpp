@@ -1228,14 +1228,8 @@ content_t NodeDefManager::set(const std::string &name, const ContentFeatures &de
 {
 	// Pre-conditions
 	assert(name != "");
+	assert(name != "ignore");
 	assert(name == def.name);
-
-	// Don't allow redefining ignore (but allow air and unknown)
-	if (name == "ignore") {
-		warningstream << "NodeDefManager: Ignoring "
-			"CONTENT_IGNORE redefinition"<<std::endl;
-		return CONTENT_IGNORE;
-	}
 
 	content_t id = CONTENT_IGNORE;
 	if (!m_name_id_mapping.getId(name, id)) { // ignore aliases
@@ -1621,7 +1615,7 @@ void NodeResolver::nodeResolveInternal()
 
 
 bool NodeResolver::getIdFromNrBacklog(content_t *result_out,
-	const std::string &node_alt, content_t c_fallback)
+	const std::string &node_alt, content_t c_fallback, bool error_on_fallback)
 {
 	if (m_nodenames_idx == m_nodenames.size()) {
 		*result_out = c_fallback;
@@ -1639,8 +1633,9 @@ bool NodeResolver::getIdFromNrBacklog(content_t *result_out,
 	}
 
 	if (!success) {
-		errorstream << "NodeResolver: failed to resolve node name '" << name
-			<< "'." << std::endl;
+		if (error_on_fallback)
+			errorstream << "NodeResolver: failed to resolve node name '" << name
+				<< "'." << std::endl;
 		c = c_fallback;
 	}
 

@@ -247,23 +247,30 @@ void MapgenCarpathian::makeChunk(BlockMakeData *data)
 	updateHeightmap(node_min, node_max);
 
 	// Init biome generator, place biome-specific nodes, and build biomemap
-	biomegen->calcBiomeNoise(node_min);
-	generateBiomes();
+	if (flags & MG_BIOMES) {
+		biomegen->calcBiomeNoise(node_min);
+		generateBiomes();
+	}
 
-	// Generate caverns, tunnels and classic caves
+	// Generate tunnels, caverns and large randomwalk caves
 	if (flags & MG_CAVES) {
-		bool has_cavern = false;
+		// Generate tunnels first as caverns confuse them
+		generateCavesNoiseIntersection(stone_surface_max_y);
+
 		// Generate caverns
+		bool near_cavern = false;
 		if (spflags & MGCARPATHIAN_CAVERNS)
-			has_cavern = generateCaverns(stone_surface_max_y);
-		// Generate tunnels and classic caves
-		if (has_cavern)
-			// Disable classic caves in this mapchunk by setting
+			near_cavern = generateCavernsNoise(stone_surface_max_y);
+
+		// Generate large randomwalk caves
+		if (near_cavern)
+			// Disable large randomwalk caves in this mapchunk by setting
 			// 'large cave depth' to world base. Avoids excessive liquid in
 			// large caverns and floating blobs of overgenerated liquid.
-			generateCaves(stone_surface_max_y, -MAX_MAP_GENERATION_LIMIT);
+			generateCavesRandomWalk(stone_surface_max_y,
+				-MAX_MAP_GENERATION_LIMIT);
 		else
-			generateCaves(stone_surface_max_y, large_cave_depth);
+			generateCavesRandomWalk(stone_surface_max_y, large_cave_depth);
 	}
 
 	// Generate dungeons
@@ -279,7 +286,8 @@ void MapgenCarpathian::makeChunk(BlockMakeData *data)
 	m_emerge->oremgr->placeAllOres(this, blockseed, node_min, node_max);
 
 	// Sprinkle some dust on top after everything else was generated
-	dustTopNodes();
+	if (flags & MG_BIOMES)
+		dustTopNodes();
 
 	// Update liquids
 	updateLiquid(&data->transforming_liquid, full_node_min, full_node_max);

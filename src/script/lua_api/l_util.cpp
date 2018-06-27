@@ -179,8 +179,7 @@ int ModApiUtil::l_get_hit_params(lua_State *L)
 	if(lua_isnoneornil(L, 3))
 		push_hit_params(L, getHitParams(groups, &tp));
 	else
-		push_hit_params(L, getHitParams(groups, &tp,
-					luaL_checknumber(L, 3)));
+		push_hit_params(L, getHitParams(groups, &tp, readParam<float>(L, 3)));
 	return 1;
 }
 
@@ -240,6 +239,15 @@ int ModApiUtil::l_is_yes(lua_State *L)
 	return 1;
 }
 
+// is_nan(arg)
+int ModApiUtil::l_is_nan(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+
+	lua_pushboolean(L, isNaN(L, 1));
+	return 1;
+}
+
 // get_builtin_path()
 int ModApiUtil::l_get_builtin_path(lua_State *L)
 {
@@ -261,7 +269,7 @@ int ModApiUtil::l_compress(lua_State *L)
 
 	int level = -1;
 	if (!lua_isnone(L, 3) && !lua_isnil(L, 3))
-		level = luaL_checknumber(L, 3);
+		level = readParam<float>(L, 3);
 
 	std::ostringstream os;
 	compressZlib(std::string(data, size), os, level);
@@ -481,6 +489,7 @@ void ModApiUtil::Initialize(lua_State *L, int top)
 	API_FCT(get_password_hash);
 
 	API_FCT(is_yes);
+	API_FCT(is_nan);
 
 	API_FCT(get_builtin_path);
 
@@ -513,6 +522,7 @@ void ModApiUtil::InitializeClient(lua_State *L, int top)
 	API_FCT(write_json);
 
 	API_FCT(is_yes);
+	API_FCT(is_nan);
 
 	API_FCT(compress);
 	API_FCT(decompress);

@@ -195,11 +195,17 @@ void MapgenFlat::makeChunk(BlockMakeData *data)
 	updateHeightmap(node_min, node_max);
 
 	// Init biome generator, place biome-specific nodes, and build biomemap
-	biomegen->calcBiomeNoise(node_min);
-	generateBiomes();
+	if (flags & MG_BIOMES) {
+		biomegen->calcBiomeNoise(node_min);
+		generateBiomes();
+	}
 
-	if (flags & MG_CAVES)
-		generateCaves(stone_surface_max_y, large_cave_depth);
+	if (flags & MG_CAVES) {
+		// Generate tunnels
+		generateCavesNoiseIntersection(stone_surface_max_y);
+		// Generate large randomwalk caves
+		generateCavesRandomWalk(stone_surface_max_y, large_cave_depth);
+	}
 
 	if ((flags & MG_DUNGEONS) && full_node_min.Y >= dungeon_ymin &&
 			full_node_max.Y <= dungeon_ymax)
@@ -213,7 +219,8 @@ void MapgenFlat::makeChunk(BlockMakeData *data)
 	m_emerge->oremgr->placeAllOres(this, blockseed, node_min, node_max);
 
 	// Sprinkle some dust on top after everything else was generated
-	dustTopNodes();
+	if (flags & MG_BIOMES)
+		dustTopNodes();
 
 	//printf("makeChunk: %dms\n", t.stop());
 

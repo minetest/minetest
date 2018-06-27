@@ -24,9 +24,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "hud.h"
 #include "gamedef.h"
 #include "serialization.h" // For SER_FMT_VER_INVALID
-#include "mods.h"
+#include "content/mods.h"
 #include "inventorymanager.h"
-#include "subgame.h"
+#include "content/subgames.h"
 #include "tileanimation.h" // struct TileAnimationParams
 #include "network/peerhandler.h"
 #include "network/address.h"
@@ -128,6 +128,7 @@ public:
 	~Server();
 	DISABLE_CLASS_COPY(Server);
 
+	void init();
 	void start();
 	void stop();
 	// This is mainly a way to pass the time to the server.
@@ -201,7 +202,7 @@ public:
 	inline double getUptime() const { return m_uptime.m_value; }
 
 	// read shutdown state
-	inline bool getShutdownRequested() const { return m_shutdown_requested; }
+	inline bool isShutdownRequested() const { return m_shutdown_state.is_requested; }
 
 	// request server to shutdown
 	void requestShutdown(const std::string &msg, bool reconnect, float delay = 0.0f);
@@ -348,9 +349,25 @@ public:
 	std::mutex m_env_mutex;
 
 private:
-
 	friend class EmergeThread;
 	friend class RemoteClient;
+	friend class TestServerShutdownState;
+
+	struct ShutdownState {
+		friend class TestServerShutdownState;
+		public:
+			bool is_requested = false;
+			bool should_reconnect = false;
+			std::string message;
+
+			void reset();
+			void trigger(float delay, const std::string &msg, bool reconnect);
+			void tick(float dtime, Server *server);
+			std::wstring getShutdownTimerMessage() const;
+			bool isTimerRunning() const { return m_timer > 0.0f; }
+		private:
+			float m_timer = 0.0f;
+	};
 
 	void SendMovement(session_t peer_id);
 	void SendHP(session_t peer_id, u16 hp);
@@ -368,7 +385,7 @@ private:
 	void SetBlocksNotSent(std::map<v3s16, MapBlock *>& block);
 
 
-	void SendChatMessage(session_t peer_id, const ChatMessage &message);
+	virtual void SendChatMessage(session_t peer_id, const ChatMessage &message);
 	void SendTimeOfDay(session_t peer_id, u16 time, f32 time_speed);
 	void SendPlayerHP(session_t peer_id);
 
@@ -445,7 +462,7 @@ private:
 	u32 SendActiveObjectRemoveAdd(session_t peer_id, const std::string &datas);
 	void SendActiveObjectMessages(session_t peer_id, const std::string &datas,
 		bool reliable = true);
-	void SendCSMFlavourLimits(session_t peer_id);
+	void SendCSMRestrictionFlags(session_t peer_id);
 
 	/*
 		Something random
@@ -586,10 +603,7 @@ private:
 		Random stuff
 	*/
 
-	bool m_shutdown_requested = false;
-	std::string m_shutdown_msg;
-	bool m_shutdown_ask_reconnect = false;
-	float m_shutdown_timer = 0.0f;
+	ShutdownState m_shutdown_state;
 
 	ChatInterface *m_admin_chat;
 	std::string m_admin_nick;
@@ -608,12 +622,6 @@ private:
 		This is behind m_env_mutex
 	*/
 	std::queue<MapEditEvent*> m_unsent_map_edit_queue;
-	/*
-		Set to true when the server itself is modifying the map and does
-		all sending of information by itself.
-		This is behind m_env_mutex
-	*/
-	bool m_ignore_map_edit_events = false;
 	/*
 		If a non-empty area, map edit events contained within are left
 		unsent. Done at map generation time to speed up editing of the
@@ -642,9 +650,9 @@ private:
 	std::unordered_map<std::string, ModMetadata *> m_mod_storages;
 	float m_mod_storage_save_timer = 10.0f;
 
-	// CSM flavour limits byteflag
-	u64 m_csm_flavour_limits = CSMFlavourLimit::CSM_FL_NONE;
-	u32 m_csm_noderange_limit = 8;
+	// CSM restrictions byteflag
+	u64 m_csm_restriction_flags = CSMRestrictionFlags::CSM_RF_NONE;
+	u32 m_csm_restriction_noderange = 8;
 
 	// ModChannel manager
 	std::unique_ptr<ModChannelMgr> m_modchannel_mgr;

@@ -36,6 +36,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define MG_FLAT        0x08  // Deprecated. Moved into mgv6 flags
 #define MG_LIGHT       0x10
 #define MG_DECORATIONS 0x20
+#define MG_BIOMES      0x40
 
 typedef u8 biome_t;  // copy from mg_biome.h to avoid an unnecessary include
 
@@ -122,7 +123,7 @@ struct MapgenParams {
 	u64 seed = 0;
 	s16 water_level = 1;
 	s16 mapgen_limit = MAX_MAP_GENERATION_LIMIT;
-	u32 flags = MG_CAVES | MG_LIGHT | MG_DECORATIONS;
+	u32 flags = MG_CAVES | MG_LIGHT | MG_DECORATIONS | MG_BIOMES;
 
 	BiomeParams *bparams = nullptr;
 
@@ -238,11 +239,12 @@ public:
 	MapgenBasic(int mapgenid, MapgenParams *params, EmergeManager *emerge);
 	virtual ~MapgenBasic();
 
-	virtual void generateCaves(s16 max_stone_y, s16 large_cave_depth);
-	virtual bool generateCaverns(s16 max_stone_y);
-	virtual void generateDungeons(s16 max_stone_y);
 	virtual void generateBiomes();
 	virtual void dustTopNodes();
+	virtual void generateCavesNoiseIntersection(s16 max_stone_y);
+	virtual void generateCavesRandomWalk(s16 max_stone_y, s16 large_cave_depth);
+	virtual bool generateCavernsNoise(s16 max_stone_y);
+	virtual void generateDungeons(s16 max_stone_y);
 
 protected:
 	EmergeManager *m_emerge;

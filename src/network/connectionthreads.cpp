@@ -365,7 +365,7 @@ bool ConnectionSendThread::rawSendAsPacket(session_t peer_id, u8 channelnum,
 			< channel->getWindowSize()) {
 			LOG(dout_con << m_connection->getDesc()
 				<< " INFO: sending a reliable packet to peer_id " << peer_id
-				<< " channel: " << channelnum
+				<< " channel: " << (u32)channelnum
 				<< " seqnum: " << seqnum << std::endl);
 			sendAsPacketReliable(p, channel);
 			return true;
@@ -373,7 +373,7 @@ bool ConnectionSendThread::rawSendAsPacket(session_t peer_id, u8 channelnum,
 
 		LOG(dout_con << m_connection->getDesc()
 			<< " INFO: queueing reliable packet for peer_id: " << peer_id
-			<< " channel: " << channelnum
+			<< " channel: " << (u32)channelnum
 			<< " seqnum: " << seqnum << std::endl);
 		channel->queued_reliables.push(p);
 		return false;
@@ -948,7 +948,7 @@ void ConnectionReceiveThread::receive()
 
 			if (channelnum > CHANNEL_COUNT - 1) {
 				LOG(derr_con << m_connection->getDesc()
-					<< "Receive(): Invalid channel " << channelnum << std::endl);
+					<< "Receive(): Invalid channel " << (u32)channelnum << std::endl);
 				throw InvalidIncomingDataException("Channel doesn't exist");
 			}
 
@@ -1024,7 +1024,7 @@ void ConnectionReceiveThread::receive()
 
 				LOG(dout_con << m_connection->getDesc()
 					<< " ProcessPacket from peer_id: " << peer_id
-					<< ",channel: " << (channelnum & 0xFF) << ", returned "
+					<< ", channel: " << (u32)channelnum << ", returned "
 					<< resultdata.getSize() << " bytes" << std::endl);
 
 				ConnectionEvent e;
@@ -1167,19 +1167,17 @@ SharedBuffer<u8> ConnectionReceiveThread::handlePacketType_Control(Channel *chan
 
 				// a overflow is quite unlikely but as it'd result in major
 				// rtt miscalculation we handle it here
+				float rtt = 0.0f;
 				if (current_time > p.absolute_send_time) {
-					float rtt = (current_time - p.absolute_send_time) / 1000.0;
-
-					// Let peer calculate stuff according to it
-					// (avg_rtt and resend_timeout)
-					dynamic_cast<UDPPeer *>(peer)->reportRTT(rtt);
+					rtt = (current_time - p.absolute_send_time) / 1000.0f;
 				} else if (p.totaltime > 0) {
-					float rtt = p.totaltime;
-
-					// Let peer calculate stuff according to it
-					// (avg_rtt and resend_timeout)
-					dynamic_cast<UDPPeer *>(peer)->reportRTT(rtt);
+					rtt = p.totaltime;
 				}
+
+				// Let peer calculate stuff according to it
+				// (avg_rtt and resend_timeout)
+				if (rtt != 0.0f)
+					dynamic_cast<UDPPeer *>(peer)->reportRTT(rtt);
 			}
 			// put bytes for max bandwidth calculation
 			channel->UpdateBytesSent(p.data.getSize(), 1);

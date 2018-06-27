@@ -20,7 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "lua_api/l_storage.h"
 #include "l_internal.h"
-#include "mods.h"
+#include "content/mods.h"
 #include "server.h"
 
 int ModApiStorage::l_get_mod_storage(lua_State *L)
@@ -134,6 +134,8 @@ void StorageRef::clearMeta()
 
 const char StorageRef::className[] = "StorageRef";
 const luaL_Reg StorageRef::methods[] = {
+	luamethod(MetaDataRef, contains),
+	luamethod(MetaDataRef, get),
 	luamethod(MetaDataRef, get_string),
 	luamethod(MetaDataRef, set_string),
 	luamethod(MetaDataRef, get_int),

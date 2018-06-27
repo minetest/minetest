@@ -37,14 +37,15 @@ extern FlagDesc flagdesc_mapgen_v7[];
 struct MapgenV7Params : public MapgenParams {
 	u32 spflags = MGV7_MOUNTAINS | MGV7_RIDGES | MGV7_CAVERNS;
 	s16 mount_zero_level = 0;
-	float cave_width = 0.09f;
-	s16 large_cave_depth = -33;
-	s16 lava_depth = -256;
 	float float_mount_density = 0.6f;
 	float float_mount_height = 128.0f;
 	float float_mount_exponent = 0.75f;
 	s16 floatland_level = 1280;
 	s16 shadow_limit = 1024;
+
+	float cave_width = 0.09f;
+	s16 large_cave_depth = -33;
+	s16 lava_depth = -256;
 	s16 cavern_limit = -256;
 	s16 cavern_taper = 256;
 	float cavern_threshold = 0.7f;
@@ -73,6 +74,7 @@ struct MapgenV7Params : public MapgenParams {
 	void writeParams(Settings *settings) const;
 };
 
+
 class MapgenV7 : public MapgenBasic {
 public:
 	MapgenV7(int mapgenid, MapgenV7Params *params, EmergeManager *emerge);
@@ -95,12 +97,13 @@ public:
 
 private:
 	s16 mount_zero_level;
-	s16 large_cave_depth;
 	float float_mount_density;
 	float float_mount_height;
 	float float_mount_exponent;
 	s16 floatland_level;
 	s16 shadow_limit;
+
+	s16 large_cave_depth;
 	s16 dungeon_ymin;
 	s16 dungeon_ymax;
 

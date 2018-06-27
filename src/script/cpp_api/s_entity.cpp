@@ -262,7 +262,9 @@ bool ScriptApiEntity::luaentity_Punch(u16 id,
 	return retval;
 }
 
-bool ScriptApiEntity::luaentity_on_death(u16 id, ServerActiveObject *killer)
+// Calls entity[field](ObjectRef self, ObjectRef sao)
+bool ScriptApiEntity::luaentity_run_simple_callback(u16 id,
+	ServerActiveObject *sao, const char *field)
 {
 	SCRIPTAPI_PRECHECKHEADER
 
@@ -273,14 +275,14 @@ bool ScriptApiEntity::luaentity_on_death(u16 id, ServerActiveObject *killer)
 	int object = lua_gettop(L);
 	// State: object is at top of stack
 	// Get function
-	lua_getfield(L, -1, "on_death");
+	lua_getfield(L, -1, field);
 	if (lua_isnil(L, -1)) {
-		lua_pop(L, 2); // Pop on_death and entity
+		lua_pop(L, 2); // Pop callback field and entity
 		return false;
 	}
 	luaL_checktype(L, -1, LUA_TFUNCTION);
 	lua_pushvalue(L, object);  // self
-	objectrefGetOrCreate(L, killer);  // killer reference
+	objectrefGetOrCreate(L, sao);  // killer reference
 
 	setOriginFromTable(object);
 	PCALL_RES(lua_pcall(L, 2, 1, error_handler));
@@ -290,33 +292,28 @@ bool ScriptApiEntity::luaentity_on_death(u16 id, ServerActiveObject *killer)
 	return retval;
 }
 
-// Calls entity:on_rightclick(ObjectRef clicker)
-void ScriptApiEntity::luaentity_Rightclick(u16 id,
-		ServerActiveObject *clicker)
+bool ScriptApiEntity::luaentity_on_death(u16 id, ServerActiveObject *killer)
 {
-	SCRIPTAPI_PRECHECKHEADER
-
-	//infostream<<"scriptapi_luaentity_step: id="<<id<<std::endl;
-
-	int error_handler = PUSH_ERROR_HANDLER(L);
-
-	// Get core.luaentities[id]
-	luaentity_get(L, id);
-	int object = lua_gettop(L);
-	// State: object is at top of stack
-	// Get function
-	lua_getfield(L, -1, "on_rightclick");
-	if (lua_isnil(L, -1)) {
-		lua_pop(L, 2); // Pop on_rightclick and entity
-		return;
-	}
-	luaL_checktype(L, -1, LUA_TFUNCTION);
-	lua_pushvalue(L, object); // self
-	objectrefGetOrCreate(L, clicker); // Clicker reference
-
-	setOriginFromTable(object);
-	PCALL_RES(lua_pcall(L, 2, 0, error_handler));
-
-	lua_pop(L, 2); // Pop object and error handler
+	return luaentity_run_simple_callback(id, killer, "on_death");
 }
 
+// Calls entity:on_rightclick(ObjectRef clicker)
+void ScriptApiEntity::luaentity_Rightclick(u16 id, ServerActiveObject *clicker)
+{
+	luaentity_run_simple_callback(id, clicker, "on_rightclick");
+}
+
+void ScriptApiEntity::luaentity_on_attach_child(u16 id, ServerActiveObject *child)
+{
+	luaentity_run_simple_callback(id, child, "on_attach_child");
+}
+
+void ScriptApiEntity::luaentity_on_detach_child(u16 id, ServerActiveObject *child)
+{
+	luaentity_run_simple_callback(id, child, "on_detach_child");
+}
+
+void ScriptApiEntity::luaentity_on_detach(u16 id, ServerActiveObject *parent)
+{
+	luaentity_run_simple_callback(id, parent, "on_detach");
+}

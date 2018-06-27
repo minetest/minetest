@@ -536,11 +536,16 @@ int ModApiItemMod::l_register_item_raw(lua_State *L)
 	idef->registerItem(def);
 
 	// Read the node definition (content features) and register it
-	if(def.type == ITEM_NODE){
+	if (def.type == ITEM_NODE) {
 		ContentFeatures f = read_content_features(L, table);
+		// when a mod reregisters ignore, only texture changes and such should
+		// be done
+		if (f.name == "ignore")
+			return 0;
+
 		content_t id = ndef->set(f.name, f);
 
-		if(id > MAX_REGISTERED_CONTENT){
+		if (id > MAX_REGISTERED_CONTENT) {
 			throw LuaError("Number of registerable nodes ("
 					+ itos(MAX_REGISTERED_CONTENT+1)
 					+ ") exceeded (" + name + ")");

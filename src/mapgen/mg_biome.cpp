@@ -142,7 +142,7 @@ Biome *BiomeManager::getBiomeFromNoiseOriginal(float heat, float humidity, v3s16
 		}
 	}
 
-	mysrand(pos.Y + (heat + humidity) / 2);
+	mysrand(pos.Y + (heat + humidity) * 0.9f);
 	if (biome_closest_blend && dist_min_blend <= dist_min &&
 			myrand_range(0, biome_closest_blend->vertical_blend) >=
 			pos.Y - biome_closest_blend->max_pos.Y)
@@ -192,7 +192,12 @@ BiomeGenOriginal::BiomeGenOriginal(BiomeManager *biomemgr,
 
 	heatmap  = noise_heat->result;
 	humidmap = noise_humidity->result;
+
 	biomemap = new biome_t[m_csize.X * m_csize.Z];
+	// Initialise with the ID of 'BIOME_NONE' so that cavegen can get the
+	// fallback biome when biome generation (which calculates the biomemap IDs)
+	// is disabled.
+	memset(biomemap, 0, sizeof(biome_t) * m_csize.X * m_csize.Z);
 }
 
 BiomeGenOriginal::~BiomeGenOriginal()
@@ -302,7 +307,7 @@ Biome *BiomeGenOriginal::calcBiomeFromNoise(float heat, float humidity, v3s16 po
 	// Carefully tune pseudorandom seed variation to avoid single node dither
 	// and create larger scale blending patterns similar to horizontal biome
 	// blend.
-	mysrand(pos.Y + (heat + humidity) / 2);
+	mysrand(pos.Y + (heat + humidity) * 0.9f);
 
 	if (biome_closest_blend && dist_min_blend <= dist_min &&
 			myrand_range(0, biome_closest_blend->vertical_blend) >=
@@ -317,16 +322,16 @@ Biome *BiomeGenOriginal::calcBiomeFromNoise(float heat, float humidity, v3s16 po
 
 void Biome::resolveNodeNames()
 {
-	getIdFromNrBacklog(&c_top,           "mapgen_stone",              CONTENT_AIR);
-	getIdFromNrBacklog(&c_filler,        "mapgen_stone",              CONTENT_AIR);
-	getIdFromNrBacklog(&c_stone,         "mapgen_stone",              CONTENT_AIR);
-	getIdFromNrBacklog(&c_water_top,     "mapgen_water_source",       CONTENT_AIR);
-	getIdFromNrBacklog(&c_water,         "mapgen_water_source",       CONTENT_AIR);
-	getIdFromNrBacklog(&c_river_water,   "mapgen_river_water_source", CONTENT_AIR);
-	getIdFromNrBacklog(&c_riverbed,      "mapgen_stone",              CONTENT_AIR);
-	getIdFromNrBacklog(&c_dust,          "ignore",                    CONTENT_IGNORE);
-	getIdFromNrBacklog(&c_cave_liquid,   "ignore",                    CONTENT_IGNORE);
-	getIdFromNrBacklog(&c_dungeon,       "ignore",                    CONTENT_IGNORE);
-	getIdFromNrBacklog(&c_dungeon_alt,   "ignore",                    CONTENT_IGNORE);
-	getIdFromNrBacklog(&c_dungeon_stair, "ignore",                    CONTENT_IGNORE);
+	getIdFromNrBacklog(&c_top,           "mapgen_stone",              CONTENT_AIR,    false);
+	getIdFromNrBacklog(&c_filler,        "mapgen_stone",              CONTENT_AIR,    false);
+	getIdFromNrBacklog(&c_stone,         "mapgen_stone",              CONTENT_AIR,    false);
+	getIdFromNrBacklog(&c_water_top,     "mapgen_water_source",       CONTENT_AIR,    false);
+	getIdFromNrBacklog(&c_water,         "mapgen_water_source",       CONTENT_AIR,    false);
+	getIdFromNrBacklog(&c_river_water,   "mapgen_river_water_source", CONTENT_AIR,    false);
+	getIdFromNrBacklog(&c_riverbed,      "mapgen_stone",              CONTENT_AIR,    false);
+	getIdFromNrBacklog(&c_dust,          "ignore",                    CONTENT_IGNORE, false);
+	getIdFromNrBacklog(&c_cave_liquid,   "ignore",                    CONTENT_IGNORE, false);
+	getIdFromNrBacklog(&c_dungeon,       "ignore",                    CONTENT_IGNORE, false);
+	getIdFromNrBacklog(&c_dungeon_alt,   "ignore",                    CONTENT_IGNORE, false);
+	getIdFromNrBacklog(&c_dungeon_stair, "ignore",                    CONTENT_IGNORE, false);
 }

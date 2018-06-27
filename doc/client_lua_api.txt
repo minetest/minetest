@@ -1,4 +1,4 @@
-Minetest Lua Client Modding API Reference 0.5.0
+Minetest Lua Client Modding API Reference 5.0.0
 ================================================
 * More information at <http://www.minetest.net/>
 * Developer Wiki: <http://dev.minetest.net/>
@@ -609,6 +609,8 @@ Helper functions
     * Converts a string representing an area box into two positions
 * `minetest.is_yes(arg)`
     * returns whether `arg` can be interpreted as yes
+* `minetest.is_nan(arg)`
+    * returns true true when the passed number represents NaN.
 * `table.copy(table)`: returns a table
     * returns a deep copy of `table`
 
@@ -646,6 +648,8 @@ Call these functions only at load time!
 
 * `minetest.register_globalstep(func(dtime))`
     * Called every client environment step, usually interval of 0.1s
+* `minetest.register_on_mods_loaded(func())`
+    * Called just after mods have finished loading.
 * `minetest.register_on_shutdown(func())`
     * Called before client shutdown
     * **Warning**: If the client terminates abnormally (i.e. crashes), the registered

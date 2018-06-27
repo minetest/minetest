@@ -74,7 +74,7 @@ int ModApiServer::l_chat_send_all(lua_State *L)
 	// Get server from registry
 	Server *server = getServer(L);
 	// Send
-	server->notifyPlayers(narrow_to_wide(text));
+	server->notifyPlayers(utf8_to_wide(text));
 	return 0;
 }
 
@@ -88,7 +88,7 @@ int ModApiServer::l_chat_send_player(lua_State *L)
 	// Get server from registry
 	Server *server = getServer(L);
 	// Send
-	server->notifyPlayer(name, narrow_to_wide(text));
+	server->notifyPlayer(name, utf8_to_wide(text));
 	return 0;
 }
 
@@ -455,8 +455,8 @@ int ModApiServer::l_sound_fade(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 	s32 handle = luaL_checkinteger(L, 1);
-	float step = luaL_checknumber(L, 2);
-	float gain = luaL_checknumber(L, 3);
+	float step = readParam<float>(L, 2);
+	float gain = readParam<float>(L, 3);
 	getServer(L)->fadeSound(handle, step, gain);
 	return 0;
 }

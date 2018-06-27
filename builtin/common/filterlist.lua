@@ -47,17 +47,17 @@ function filterlist.create(raw_fct,compare_fct,uid_match_fct,filter_fct,fetch_pa
 
 	assert((raw_fct ~= nil) and (type(raw_fct) == "function"))
 	assert((compare_fct ~= nil) and (type(compare_fct) == "function"))
-	
+
 	local self = {}
-	
+
 	self.m_raw_list_fct  = raw_fct
 	self.m_compare_fct   = compare_fct
 	self.m_filter_fct    = filter_fct
 	self.m_uid_match_fct = uid_match_fct
-	
+
 	self.m_filtercriteria = nil
 	self.m_fetch_param = fetch_param
-	
+
 	self.m_sortmode = "none"
 	self.m_sort_list = {}
 
@@ -79,7 +79,7 @@ function filterlist.create(raw_fct,compare_fct,uid_match_fct,filter_fct,fetch_pa
 	self.refresh            = filterlist.refresh
 
 	filterlist.process(self)
-	
+
 	return self
 end
 
@@ -128,49 +128,49 @@ function filterlist.get_raw_element(self,idx)
 	if type(idx) ~= "number" then
 		idx = tonumber(idx)
 	end
-	
+
 	if idx ~= nil and idx > 0 and idx <= #self.m_raw_list then
 		return self.m_raw_list[idx]
 	end
-	
+
 	return nil
 end
 
 --------------------------------------------------------------------------------
 function filterlist.get_raw_index(self,listindex)
 	assert(self.m_processed_list ~= nil)
-	
+
 	if listindex ~= nil and listindex > 0 and
 		listindex <= #self.m_processed_list then
 		local entry = self.m_processed_list[listindex]
-		
+
 		for i,v in ipairs(self.m_raw_list) do
-		
+
 			if self.m_compare_fct(v,entry) then
 				return i
 			end
 		end
 	end
-	
+
 	return 0
 end
 
 --------------------------------------------------------------------------------
 function filterlist.get_current_index(self,listindex)
 	assert(self.m_processed_list ~= nil)
-	
+
 	if listindex ~= nil and listindex > 0 and
 		listindex <= #self.m_raw_list then
 		local entry = self.m_raw_list[listindex]
-		
+
 		for i,v in ipairs(self.m_processed_list) do
-		
+
 			if self.m_compare_fct(v,entry) then
 				return i
 			end
 		end
 	end
-	
+
 	return 0
 end
 
@@ -183,23 +183,23 @@ function filterlist.process(self)
 		self.m_processed_list = self.m_raw_list
 		return
 	end
-	
+
 	self.m_processed_list = {}
-	
+
 	for k,v in pairs(self.m_raw_list) do
 		if self.m_filtercriteria == nil or
 			self.m_filter_fct(v,self.m_filtercriteria) then
 			self.m_processed_list[#self.m_processed_list + 1] = v
 		end
 	end
-	
+
 	if self.m_sortmode == "none" then
 		return
 	end
-	
+
 	if self.m_sort_list[self.m_sortmode] ~= nil and
 		type(self.m_sort_list[self.m_sortmode]) == "function" then
-		
+
 		self.m_sort_list[self.m_sortmode](self)
 	end
 end
@@ -209,7 +209,7 @@ function filterlist.size(self)
 	if self.m_processed_list == nil then
 		return 0
 	end
-	
+
 	return #self.m_processed_list
 end
 
@@ -233,8 +233,8 @@ function filterlist.raw_index_by_uid(self, uid)
 			elementidx = i
 		end
 	end
-	
-	
+
+
 	-- If there are more elements than one with same name uid can't decide which
 	-- one is meant. self shouldn't be possible but just for sure.
 	if elementcount > 1 then
@@ -254,11 +254,11 @@ function compare_worlds(world1,world2)
 	if world1.path ~= world2.path then
 		return false
 	end
-	
+
 	if world1.name ~= world2.name then
 		return false
 	end
-	
+
 	if world1.gameid ~= world2.gameid then
 		return false
 	end
@@ -288,11 +288,11 @@ function sort_mod_list(self)
 
 	table.sort(self.m_processed_list, function(a, b)
 		-- Show game mods at bottom
-		if a.typ ~= b.typ then
-			if b.typ == "game" then	
-				return a.typ ~= "game_mod"
+		if a.type ~= b.type or a.loc ~= b.loc then
+			if b.type == "game" then
+				return a.loc ~= "game"
 			end
-			return b.typ == "game_mod"
+			return b.loc == "game"
 		end
 		-- If in same or no modpack, sort by name
 		if a.modpack == b.modpack then
@@ -308,7 +308,7 @@ function sort_mod_list(self)
 			elseif b.name == a.modpack then
 				return false
 			end
-			
+
 			local name_a = a.modpack or a.name
 			local name_b = b.modpack or b.name
 			if name_a:lower() == name_b:lower() then
