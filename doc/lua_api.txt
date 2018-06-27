@@ -2525,6 +2525,10 @@ Helper functions
     * `limit`: number, maximal amount of characters in one line
     * `as_table`: boolean, if set to true, a table of lines instead of a string
       is returned, default: `false`
+    * `keep_newlines`: boolean, if set to true, newlines contained in the text
+      will be kept, default: `false`
+* `minetest.line_break(text, max_length)`
+    * breaks lines that are longer than max_length and returns the lines as table
 * `minetest.pos_to_string(pos, decimal_places)`: returns string `"(X,Y,Z)"`
     * `pos`: table {x=X, y=Y, z=Z}
     * Converts the position `pos` to a human-readable, printable string
