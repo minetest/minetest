@@ -2198,7 +2198,7 @@ Helper functions
       will be kept, default: `false`
 * `minetest.line_break(text, max_length)`
     * breaks lines that are longer than max_length and returns the lines as table
-    * `minetest.pos_to_string(pos, decimal_places)`: returns string `"(X,Y,Z)"`
+* `minetest.pos_to_string(pos, decimal_places)`: returns string `"(X,Y,Z)"`
     * `pos`: table {x=X, y=Y, z=Z}
     * Converts the position `pos` to a human-readable, printable string
     * `decimal_places`: number, if specified, the x, y and z values of
