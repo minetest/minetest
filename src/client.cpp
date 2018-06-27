@@ -250,6 +250,8 @@ Client::~Client()
 	m_shutdown = true;
 	m_con->Disconnect();
 
+	deleteAuthData();
+
 	m_mesh_update_thread.stop();
 	m_mesh_update_thread.wait();
 	while (!m_mesh_update_thread.m_queue_out.empty()) {
@@ -274,6 +276,7 @@ Client::~Client()
 	}
 
 	delete m_minimap;
+	delete m_media_downloader;
 }
 
 void Client::connect(Address address, bool is_local_server)
