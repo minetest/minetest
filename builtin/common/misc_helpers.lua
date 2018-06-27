@@ -316,7 +316,7 @@ function core.line_break function(text, max_length)
 	local result = {}
 	local line = {}
 	if #text <= max_length then
-		return as_table and {text} or text
+		return {text}
 	end
 
 	for word in text:gmatch('%S+') do
