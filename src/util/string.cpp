@@ -167,6 +167,8 @@ std::string wide_to_utf8(const std::wstring &input)
 
 #endif // _WIN32
 
+// You must free the returned string!
+// The returned string is allocated using new
 wchar_t *utf8_to_wide_c(const char *str)
 {
 	std::wstring ret = utf8_to_wide(std::string(str));

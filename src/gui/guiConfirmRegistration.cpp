@@ -99,9 +99,11 @@ void GUIConfirmRegistration::regenerateGui(v2u32 screensize)
 		snprintf(info_text_buf, sizeof(info_text_buf), info_text_template.c_str(),
 				address.c_str(), m_playername.c_str());
 
+		wchar_t *info_text_buf_wide = utf8_to_wide_c(info_text_buf);
 		gui::IGUIEditBox *e = new gui::intlGUIEditBox(
-				utf8_to_wide_c(info_text_buf), true, Environment, this,
+				info_text_buf_wide, true, Environment, this,
 				ID_message, rect2, false, true);
+		delete[] info_text_buf_wide;
 		e->drop();
 		e->setMultiLine(true);
 		e->setWordWrap(true);
