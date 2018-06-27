@@ -458,7 +458,7 @@ TouchScreenGUI::TouchScreenGUI(IrrlichtDevice *device, IEventReceiver *receiver)
 
 	m_touchscreen_threshold = g_settings->getU16("touchscreen_threshold");
 	m_fixed_joystick = g_settings->getBool("fixed_virtual_joystick");
-	m_joystick_as_special1 = g_settings->getBool("virtual_joystick_controls_use");
+	m_joystick_triggers_special1 = g_settings->getBool("virtual_joystick_triggers_aux");
 	m_screensize = m_device->getVideoDriver()->getScreenSize();
 }
 
@@ -566,7 +566,7 @@ void TouchScreenGUI::init(ISimpleTextureSource *tsrc)
 			L"z", false);
 
 	// init special1 button
-	if (!m_joystick_as_special1)
+	if (!m_joystick_triggers_special1)
 		initButton(special1_id,
 				rect<s32>(m_screensize.X - (1.25 * button_size),
 						m_screensize.Y - (3 * button_size),
@@ -1141,7 +1141,7 @@ bool TouchScreenGUI::doubleTapDetection()
 void TouchScreenGUI::applyJoystickStatus()
 {
 	for (unsigned int i = 0; i < 5; i ++) {
-		if (i == 4 && !m_joystick_as_special1)
+		if (i == 4 && !m_joystick_triggers_special1)
 			continue;
 
 		SEvent translated{};

@@ -234,7 +234,7 @@ private:
 	int m_joystick_id = -1;
 	bool m_joystick_has_really_moved = false;
 	bool m_fixed_joystick = false;
-	bool m_joystick_as_special1 = false;
+	bool m_joystick_triggers_special1 = false;
 	button_info *m_joystick_btn_off = nullptr;
 	button_info *m_joystick_btn_bg = nullptr;
 	button_info *m_joystick_btn_center = nullptr;
