@@ -804,6 +804,10 @@ static video::IImage *createInventoryCubeImage(
 
 	float scale = 2.f / size;
 	video::SColor *pixel = reinterpret_cast<video::SColor *>(result->lock());
+
+	// Make sure there is no row padding
+	sanity_check(result->getPitch() == 4 * size);
+
 	for (int j = 0; j < size; j++) {
 		for (int i = 0; i < size; i++) {
 			// View space coordinates
@@ -836,8 +840,7 @@ static video::IImage *createInventoryCubeImage(
 			try_paint(right, size_right, tex_right, 0.670820f);
 
 			// Reference next pixel in the row or, if the row (and thus the inner loop)
-			// is over, first pixel of the next row (assuming there is no padding, but
-			// there shouldn't be any as row size is exact power of 2).
+			// is over, first pixel of the next row.
 			pixel++;
 		}
 	}
