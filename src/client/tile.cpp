@@ -779,7 +779,7 @@ static video::IImage *createInventoryCubeImage(
 
 	// Calculate image size to match textures size, but make sure it is
 	// 64px at least as it would look bad otherwise.
-	int size = npot2(std::max({64u,
+	u32 size = npot2(std::max({64u,
 		size_top.Width, size_top.Height,
 		size_left.Width, size_left.Height,
 		size_right.Width, size_right.Height,
