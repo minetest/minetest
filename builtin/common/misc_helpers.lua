@@ -312,7 +312,7 @@ function core.formspec_escape(text)
 	return text
 end
 
-function core.line_break function(text, max_length)
+function core.line_break(text, max_length)
 	local result = {}
 	local line = {}
 	if #text <= max_length then
