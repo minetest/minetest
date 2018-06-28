@@ -1764,7 +1764,7 @@ mgfractal_np_cave2 (Cave2 noise) noise_params_3d 0, 12, (67, 67, 67), 10325, 3, 
 #    it may interfere with delicately adjusted biomes.
 #    Flags that are not enabled are not modified from the default.
 #    Flags starting with 'no' are used to explicitly disable them.
-mg_valleys_spflags (Mapgen Valleys specific flags) flags altitude_chill,humid_rivers altitude_chill,noaltitude_chill,humid_rivers,nohumid_rivers
+mgvalleys_spflags (Mapgen Valleys specific flags) flags altitude_chill,humid_rivers altitude_chill,noaltitude_chill,humid_rivers,nohumid_rivers
 
 # The altitude at which temperature drops by 20.
 mgvalleys_altitude_chill (Altitude chill) int 90
