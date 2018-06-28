@@ -72,7 +72,7 @@ public:
 			lua_CFunction func,
 			int top);
 
-	static int l_deprecatedFunction(lua_State *L);
+	static int l_deprecated_function(lua_State *L);
 	static void markAliasDeprecated(luaL_Reg *reg);
 private:
 	// <old_name> = { <new_name>, <new_function> }

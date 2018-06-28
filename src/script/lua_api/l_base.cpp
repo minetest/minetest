@@ -91,7 +91,7 @@ bool ModApiBase::registerFunction(lua_State *L, const char *name,
 std::unordered_map<std::string, luaL_Reg> ModApiBase::m_deprecated_wrappers;
 bool ModApiBase::m_error_deprecated_calls = false;
 
-int ModApiBase::l_deprecatedFunction(lua_State *L)
+int ModApiBase::l_deprecated_function(lua_State *L)
 {
 	thread_local std::vector<u64> deprecated_logged;
 
@@ -131,7 +131,7 @@ int ModApiBase::l_deprecatedFunction(lua_State *L)
 	}
 
 	u64 end_time = porting::getTimeUs();
-	g_profiler->avg("l_deprecatedFunction", end_time - start_time);
+	g_profiler->avg("l_deprecated_function", end_time - start_time);
 
 	return it->second.func(L);
 }
@@ -156,7 +156,7 @@ void ModApiBase::markAliasDeprecated(luaL_Reg *reg)
 				{ .name = last_name, .func = reg->func }
 			);
 			m_deprecated_wrappers.emplace(entry);
-			reg->func = l_deprecatedFunction;
+			reg->func = l_deprecated_function;
 		}
 
 		last_func = reg->func;
