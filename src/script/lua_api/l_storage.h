@@ -50,7 +50,7 @@ private:
 
 public:
 	StorageRef(ModMetadata *object);
-	~StorageRef() = default;
+	~StorageRef();
 
 	static void Register(lua_State *L);
 	static void create(lua_State *L, ModMetadata *object);
