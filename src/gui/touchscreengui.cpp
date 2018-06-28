@@ -541,7 +541,7 @@ void TouchScreenGUI::init(ISimpleTextureSource *tsrc)
 			rect<s32>(m_screensize.X - (1.75 * button_size),
 					m_screensize.Y - button_size,
 					m_screensize.X - (0.25 * button_size),
-					m_screensize.Y - (0.5 * button_size)),
+					m_screensize.Y),
 			L"x", false);
 
 	// init crunch button
@@ -549,7 +549,7 @@ void TouchScreenGUI::init(ISimpleTextureSource *tsrc)
 			rect<s32>(m_screensize.X - (3.25 * button_size),
 					m_screensize.Y - button_size,
 					m_screensize.X - (1.75 * button_size),
-					m_screensize.Y - (0.5 * button_size)),
+					m_screensize.Y),
 			L"H", false);
 
 	// init zoom button
