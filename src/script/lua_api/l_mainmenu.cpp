@@ -594,9 +594,9 @@ int ModApiMainMenu::l_create_world(lua_State *L)
 /******************************************************************************/
 int ModApiMainMenu::l_delete_world(lua_State *L)
 {
-	int world_id = luaL_checkinteger(L,1) - 1;
+	int world_id = luaL_checkinteger(L, 1) - 1;
 	std::vector<WorldSpec> worlds = getAvailableWorlds();
-	if ((world_id < 0) || (world_id >= (int) worlds.size())) {
+	if (world_id < 0 || world_id >= (int) worlds.size()) {
 		lua_pushstring(L, "Invalid world index");
 		return 1;
 	}
