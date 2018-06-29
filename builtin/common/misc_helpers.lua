@@ -337,11 +337,11 @@ function core.wrap_text(text, max_length, as_table, keep_newlines)
 	local result = {}
 	if keep_newlines then
 		for s in string.gmatch(text, "([^\n]*)") do
-			local l = core.line_break(text, max_length)
+			local l = core.line_break(s, max_length)
 			if #l==0 then
 				table.insert(result,"")
 			else
-				for _,e in l do
+				for _,e in pairs(l) do
 					table.insert(result,e)
 				end
 			end
