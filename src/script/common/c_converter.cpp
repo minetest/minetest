@@ -232,28 +232,6 @@ v3d read_v3d(lua_State *L, int index)
 	return pos;
 }
 
-v3d check_v3d(lua_State *L, int index)
-{
-	v3d pos;
-	CHECK_POS_TAB(index);
-	lua_getfield(L, index, "x");
-	CHECK_POS_COORD("x");
-	pos.X = lua_tonumber(L, -1);
-	CHECK_FLOAT_RANGE(pos.X, "x")
-	lua_pop(L, 1);
-	lua_getfield(L, index, "y");
-	CHECK_POS_COORD("y");
-	pos.Y = lua_tonumber(L, -1);
-	CHECK_FLOAT_RANGE(pos.Y, "y")
-	lua_pop(L, 1);
-	lua_getfield(L, index, "z");
-	CHECK_POS_COORD("z");
-	pos.Z = lua_tonumber(L, -1);
-	CHECK_FLOAT_RANGE(pos.Z, "z")
-	lua_pop(L, 1);
-	return pos;
-}
-
 void push_ARGB8(lua_State *L, video::SColor color)
 {
 	lua_newtable(L);
