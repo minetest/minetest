@@ -58,6 +58,11 @@ StorageRef::StorageRef(ModMetadata *object):
 {
 }
 
+StorageRef::~StorageRef()
+{
+	delete m_object;
+}
+
 void StorageRef::create(lua_State *L, ModMetadata *object)
 {
 	StorageRef *o = new StorageRef(object);
