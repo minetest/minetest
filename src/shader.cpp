@@ -37,6 +37,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "log.h"
 #include "gamedef.h"
 #include "client/tile.h"
+#include "cmake_config.h"
 
 /*
 	A cache from shader name to shader path
@@ -209,7 +210,7 @@ class MainShaderConstantSetter : public IShaderConstantSetter
 {
 	CachedVertexShaderSetting<float, 16> m_world_view_proj;
 	CachedVertexShaderSetting<float, 16> m_world;
-#ifdef ENABLE_GLES
+#if ENABLE_GLES
 	// Modelview matrix
 	CachedVertexShaderSetting<float, 16> m_world_view;
 	// Normal matrix
@@ -220,7 +221,7 @@ public:
 	MainShaderConstantSetter() :
 		  m_world_view_proj("mWorldViewProj")
 		, m_world("mWorld")
-#ifdef ENABLE_GLES
+#if ENABLE_GLES
 		, m_world_view("mWorldView")
 		, m_normal("mNormal")
 #endif
@@ -252,7 +253,7 @@ public:
 		else
 			services->setVertexShaderConstant(world.pointer(), 4, 4);
 
-#ifdef ENABLE_GLES
+#if ENABLE_GLES
 		if (is_highlevel) {
 			m_world_view.set(*reinterpret_cast<float(*)[16]>(worldView.pointer()), services);
 			core::matrix4 normal;
@@ -621,7 +622,7 @@ ShaderInfo generate_shader(const std::string &name, u8 material_type, u8 drawtyp
 
 	// Create shaders header
 	bool use_gles = false;
-#ifdef ENABLE_GLES
+#if ENABLE_GLES
 	use_gles = driver->getDriverType() == video::EDT_OGLES2;
 #endif
 	std::string shaders_header = use_gles ?
@@ -914,7 +915,7 @@ void load_shaders(const std::string &name, SourceShaderCache *sourcecache,
 		break;
 
 	case video::EDT_OPENGL:
-#ifdef ENABLE_GLES
+#if ENABLE_GLES
 	case video::EDT_OGLES2:
 #endif
 		// OpenGL: GLSL
