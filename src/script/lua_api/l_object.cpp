@@ -458,7 +458,7 @@ int ObjectRef::l_set_animation(lua_State *L)
 	// Do it
 	v2f frames = v2f(1, 1);
 	if (!lua_isnil(L, 2))
-		frames = read_v2f(L, 2);
+		frames = readParam<v2f>(L, 2);
 	float frame_speed = 15;
 	if (!lua_isnil(L, 3))
 		frame_speed = lua_tonumber(L, 3);
@@ -955,7 +955,7 @@ int ObjectRef::l_set_sprite(lua_State *L)
 	// Do it
 	v2s16 p(0,0);
 	if (!lua_isnil(L, 2))
-		p = read_v2s16(L, 2);
+		p = readParam<v2s16>(L, 2);
 	int num_frames = 1;
 	if (!lua_isnil(L, 3))
 		num_frames = lua_tonumber(L, 3);
