@@ -216,22 +216,6 @@ v3f check_v3f(lua_State *L, int index)
 	return pos;
 }
 
-v3d read_v3d(lua_State *L, int index)
-{
-	v3d pos;
-	CHECK_POS_TAB(index);
-	lua_getfield(L, index, "x");
-	pos.X = lua_tonumber(L, -1);
-	lua_pop(L, 1);
-	lua_getfield(L, index, "y");
-	pos.Y = lua_tonumber(L, -1);
-	lua_pop(L, 1);
-	lua_getfield(L, index, "z");
-	pos.Z = lua_tonumber(L, -1);
-	lua_pop(L, 1);
-	return pos;
-}
-
 void push_ARGB8(lua_State *L, video::SColor color)
 {
 	lua_newtable(L);
@@ -269,8 +253,19 @@ void push_v3s16(lua_State *L, v3s16 p)
 
 v3s16 read_v3s16(lua_State *L, int index)
 {
+	v3d pf;
+	CHECK_POS_TAB(index);
+	lua_getfield(L, index, "x");
+	pf.X = lua_tonumber(L, -1);
+	lua_pop(L, 1);
+	lua_getfield(L, index, "y");
+	pf.Y = lua_tonumber(L, -1);
+	lua_pop(L, 1);
+	lua_getfield(L, index, "z");
+	pf.Z = lua_tonumber(L, -1);
+	lua_pop(L, 1);
+
 	// Correct rounding at <0
-	v3d pf = read_v3d(L, index);
 	static const double d = 1.0;
 	return v3s16((pf.X + (pf.X > 0 ? d / 2 : -d / 2)) / d,
 		(pf.Y + (pf.Y > 0 ? d / 2 : -d / 2)) / d,
