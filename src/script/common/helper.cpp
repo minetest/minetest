@@ -39,10 +39,7 @@ static inline std::string luahelper_type_error(int index, const std::string &typ
  */
 template <> bool LuaHelper::readParam(lua_State *L, int index)
 {
-	if (!lua_isboolean(L, index))
-		throw LuaError(luahelper_type_error(index, "bool"));
-
-	return lua_toboolean(L, index) != 0;
+	return !lua_isnil(L, index) && lua_toboolean(L, index) != 0;
 }
 
 template <> float LuaHelper::readParam(lua_State *L, int index)
@@ -56,7 +53,7 @@ template <> float LuaHelper::readParam(lua_State *L, int index)
 template <> std::string LuaHelper::readParam(lua_State *L, int index)
 {
 	std::string result;
-	const char *str = luaL_checkstring(L, index);
+	const char *str = lua_tostring(L, index);
 	if (str) {
 		result.append(str);
 	}
