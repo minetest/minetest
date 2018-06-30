@@ -1614,9 +1614,9 @@ int ModApiMapgen::l_place_schematic(lua_State *L)
 
 	//// Read rotation
 	int rot = ROTATE_0;
-	const char *enumstr = lua_tostring(L, 3);
-	if (enumstr)
-		string_to_enum(es_Rotation, rot, std::string(enumstr));
+	std::string enumstr = readParam<std::string>(L, 3);
+	if (!enumstr.empty())
+		string_to_enum(es_Rotation, rot, enumstr);
 
 	//// Read force placement
 	bool force_placement = true;
@@ -1662,8 +1662,8 @@ int ModApiMapgen::l_place_schematic_on_vmanip(lua_State *L)
 
 	//// Read rotation
 	int rot = ROTATE_0;
-	const char *enumstr = lua_tostring(L, 4);
-	if (enumstr)
+	std::string enumstr = readParam<std::string>(L, 4);
+	if (!enumstr.empty())
 		string_to_enum(es_Rotation, rot, std::string(enumstr));
 
 	//// Read force placement
@@ -1720,9 +1720,9 @@ int ModApiMapgen::l_serialize_schematic(lua_State *L)
 
 	//// Read format of definition to save as
 	int schem_format = SCHEM_FMT_MTS;
-	const char *enumstr = lua_tostring(L, 2);
-	if (enumstr)
-		string_to_enum(es_SchematicFormatType, schem_format, std::string(enumstr));
+	std::string enumstr = readParam<std::string>(L, 2);
+	if (!enumstr.empty())
+		string_to_enum(es_SchematicFormatType, schem_format, enumstr);
 
 	//// Serialize to binary string
 	std::ostringstream os(std::ios_base::binary);
