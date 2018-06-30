@@ -9,6 +9,13 @@ buildscript {
 	}
 }
 
+def curl_version = "7.60.0"
+def gmp_version = "6.1.2"
+def irrlicht_revision = "5150"
+def openal_version = "1.18.2"
+def openssl_version = "1.0.2n"
+def sqlite3_version = "3240000"
+
 apply plugin: "com.android.application"
 
 android {
@@ -53,4 +60,65 @@ android {
 			}
 		}
 	}
+}
+
+task cleanAssets(type:Delete) {
+	delete 'src/main/assets'
+}
+
+task cleanIconv(type:Delete) {
+	delete 'deps/libiconv'
+}
+
+task cleanIrrlicht(type:Delete) {
+	delete 'deps/irrlicht'
+}
+
+task cleanLevelDB(type:Delete) {
+	delete 'deps/leveldb'
+}
+
+task cleanCURL(type:Delete) {
+	delete 'deps/curl'
+	delete 'deps/curl-' + curl_version
+}
+
+task cleanOpenSSL(type:Delete) {
+	delete 'deps/openssl'
+	delete 'deps/openssl-' + openssl_version
+	delete 'deps/openssl-' + openssl_version + '.tar.gz'
+}
+
+task cleanOpenAL(type:Delete) {
+	delete 'deps/openal-soft'
+}
+
+task cleanFreetype(type:Delete) {
+	delete 'deps/freetype2-android'
+}
+
+task cleanOgg(type:Delete) {
+	delete 'deps/libvorbis-libogg-android'
+}
+
+task cleanSQLite3(type:Delete) {
+	delete 'deps/sqlite-amalgamation-' + sqlite3_version
+	delete 'deps/sqlite-amalgamation-' + sqlite3_version + '.zip'
+}
+
+task cleanGMP(type:Delete) {
+	delete 'deps/gmp'
+	delete 'deps/gmp-' + gmp_version
+}
+
+task cleanAll(type:Delete, dependsOn:[clean,cleanAssets,cleanIconv,
+	cleanFreetype,cleanIrrlicht,cleanLevelDB,cleanSQLite3,cleanCURL,
+	cleanOpenSSL,cleanOpenAL,cleanOgg,cleanGMP]) {
+	delete 'deps'
+	delete 'gen'
+	delete 'libs'
+	delete 'obj'
+	delete 'bin'
+	delete 'Debug'
+	delete 'and_env'
 }
