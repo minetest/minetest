@@ -32,7 +32,7 @@ bool LuaHelper::isNaN(lua_State *L, int idx)
  */
 template <> bool LuaHelper::readParam(lua_State *L, int index)
 {
-	return luaL_checkboolean(L, index);
+	return lua_toboolean(L, index) != 0;
 }
 
 template <> bool LuaHelper::readParam(lua_State *L, int index, const bool &dv)

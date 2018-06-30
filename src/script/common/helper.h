@@ -24,14 +24,6 @@ extern "C" {
 #include <lauxlib.h>
 }
 
-// This function doesn't exists in our Lua version, add it
-inline bool luaL_checkboolean(lua_State *L, int index)
-{
-	if (!lua_isboolean(L, index))
-		luaL_typerror(L, index, "boolean");
-	return lua_toboolean(L, index) != 0;
-}
-
 class LuaHelper
 {
 protected:
