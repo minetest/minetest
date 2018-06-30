@@ -27,6 +27,6 @@ void main (void)
 
 	vec3 color = (1.1 * diffuse + 0.05 * height + 0.5 * specular) * base.rgb;
 	vec4 col = vec4(color.rgb, base.a);
-	col *= gl_Color;
+	col *= varColor;
 	gl_FragColor = vec4(col.rgb, base.a);
 }

@@ -28,5 +28,5 @@ void main(void)
 	lightVec = sunPosition - worldPosition;
 	eyeVec = -(gl_ModelViewMatrix * gl_Vertex).xyz;
 
-	gl_FrontColor = gl_BackColor = gl_Color;
+	varColor = gl_Color;
 }

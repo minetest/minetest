@@ -129,16 +129,16 @@ float disp_z;
 	// The pre-baked colors are halved to prevent overflow.
 	vec4 color;
 	// The alpha gives the ratio of sunlight in the incoming light.
-	float nightRatio = 1 - gl_Color.a;
+	float nightRatio = 1.0 - gl_Color.a;
 	color.rgb = gl_Color.rgb * (gl_Color.a * dayLight.rgb + 
-		nightRatio * artificialLight.rgb) * 2;
-	color.a = 1;
+		nightRatio * artificialLight.rgb) * 2.0;
+	color.a = 1.0;
 	
 	// Emphase blue a bit in darker places
 	// See C++ implementation in mapblock_mesh.cpp final_color_blend()
-	float brightness = (color.r + color.g + color.b) / 3;
+	float brightness = (color.r + color.g + color.b) / 3.0;
 	color.b += max(0.0, 0.021 - abs(0.2 * brightness - 0.021) +
 		0.07 * brightness);
 	
-	gl_FrontColor = gl_BackColor = clamp(color, 0.0, 1.0);
+	varColor = clamp(color, 0.0, 1.0);
 }

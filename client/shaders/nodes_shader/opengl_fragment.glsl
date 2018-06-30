@@ -20,7 +20,7 @@ bool normalTexturePresent = false;
 const float e = 2.718281828459;
 const float BS = 10.0;
 const float fogStart = FOG_START;
-const float fogShadingParameter = 1 / ( 1 - fogStart);
+const float fogShadingParameter = 1.0 / ( 1.0 - fogStart);
 
 #ifdef ENABLE_TONE_MAPPING
 
@@ -195,7 +195,7 @@ void main(void)
 	color = base.rgb;
 #endif
 
-	vec4 col = vec4(color.rgb * gl_Color.rgb, 1.0); 
+	vec4 col = vec4(color.rgb * varColor.rgb, 1.0);
 	
 #ifdef ENABLE_TONE_MAPPING
 	col = applyToneMapping(col);

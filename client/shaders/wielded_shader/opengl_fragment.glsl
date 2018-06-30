@@ -20,7 +20,7 @@ bool texSeamless = false;
 const float e = 2.718281828459;
 const float BS = 10.0;
 const float fogStart = FOG_START;
-const float fogShadingParameter = 1 / ( 1 - fogStart);
+const float fogShadingParameter = 1.0 / ( 1.0 - fogStart);
 
 void get_texture_flags()
 {
@@ -109,7 +109,7 @@ void main(void)
 #endif
 
 	vec4 col = vec4(color.rgb, base.a);
-	col *= gl_Color;
+	col *= varColor;
 	// Due to a bug in some (older ?) graphics stacks (possibly in the glsl compiler ?),
 	// the fog will only be rendered correctly if the last operation before the
 	// clamp() is an addition. Else, the clamp() seems to be ignored.
