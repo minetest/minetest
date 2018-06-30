@@ -68,6 +68,13 @@ void main(void)
 	bool use_normalmap = false;
 	get_texture_flags();
 
+	vec4 base = texture2D(baseTexture, uv).rgba;
+// alpha test (for non-blending materials only)
+#if MATERIAL_TYPE != TILE_MATERIAL_ALPHA && MATERIAL_TYPE != TILE_MATERIAL_LIQUID_TRANSPARENT
+	if (base.a < 0.5)
+		discard;
+#endif
+
 #if USE_NORMALMAPS == 1
 	if (normalTexturePresent) {
 		bump = get_normal_map(uv);
@@ -91,8 +98,6 @@ void main(void)
 		use_normalmap = true;
 	}
 #endif
-
-	vec4 base = texture2D(baseTexture, uv).rgba;
 
 #ifdef ENABLE_BUMPMAPPING
 	if (use_normalmap) {
