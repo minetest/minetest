@@ -59,8 +59,8 @@ template <> std::string LuaHelper::readParam(lua_State *L, int index)
 	return result;
 }
 
-template <> std::string LuaHelper::readParam(lua_State *L, int index,
-		const std::string &dv)
+template <>
+std::string LuaHelper::readParam(lua_State *L, int index, const std::string &dv)
 {
 	std::string result;
 	const char *str = lua_tostring(L, index);
