@@ -46,8 +46,8 @@ int ModApiClient::l_get_current_modname(lua_State *L)
 int ModApiClient::l_get_last_run_mod(lua_State *L)
 {
 	lua_rawgeti(L, LUA_REGISTRYINDEX, CUSTOM_RIDX_CURRENT_MOD_NAME);
-	std::string current_mod = readParam<std::string>(L, -1);
-	if (current_mod.empty()) {
+	const char *current_mod = lua_tostring(L, -1);
+	if (current_mod == NULL || current_mod[0] == '\0') {
 		lua_pop(L, 1);
 		lua_pushstring(L, getScriptApiBase(L)->getOrigin().c_str());
 	}
