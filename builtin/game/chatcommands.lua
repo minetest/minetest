@@ -683,10 +683,13 @@ core.register_chatcommand("pulverize", {
 			core.log("error", "Unable to pulverize, no player.")
 			return false, "Unable to pulverize, no player."
 		end
-		if player:get_wielded_item():is_empty() then
+		local wielded_item = player:get_wielded_item()
+		if wielded_item:is_empty() then
 			return false, "Unable to pulverize, no item in hand."
 		end
-		player:set_wielded_item(nil)
+		core.log("action", name .. " pulverized \"" ..
+			wielded_item:get_name() .. " " .. wielded_item:get_count() .. "\"")
+		player:set_wielded_item(nil)			
 		return true, "An item was pulverized."
 	end,
 })
