@@ -594,31 +594,18 @@ int ModApiMainMenu::l_create_world(lua_State *L)
 /******************************************************************************/
 int ModApiMainMenu::l_delete_world(lua_State *L)
 {
-	int worldidx	= luaL_checkinteger(L,1) -1;
-
+	int world_id = luaL_checkinteger(L, 1) - 1;
 	std::vector<WorldSpec> worlds = getAvailableWorlds();
-
-	if ((worldidx >= 0) &&
-		(worldidx < (int) worlds.size())) {
-
-		WorldSpec spec = worlds[worldidx];
-
-		std::vector<std::string> paths;
-		paths.push_back(spec.path);
-		fs::GetRecursiveSubPaths(spec.path, paths, true);
-
-		// Delete files
-		if (!fs::DeletePaths(paths)) {
-			lua_pushstring(L, "Failed to delete world");
-		}
-		else {
-			lua_pushnil(L);
-		}
-	}
-	else {
+	if (world_id < 0 || world_id >= (int) worlds.size()) {
 		lua_pushstring(L, "Invalid world index");
+		return 1;
 	}
-	return 1;
+	const WorldSpec &spec = worlds[world_id];
+	if (!fs::RecursiveDelete(spec.path)) {
+		lua_pushstring(L, "Failed to delete world");
+		return 1;
+	}
+	return 0;
 }
 
 /******************************************************************************/
