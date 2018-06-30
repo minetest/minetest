@@ -16,6 +16,7 @@ varying vec3 vPosition;
 // cameraOffset + worldPosition (for large coordinates the limits of float
 // precision must be considered).
 varying vec3 worldPosition;
+varying vec4 varColor;
 
 varying vec3 eyeVec;
 
@@ -107,10 +108,10 @@ void main(void)
 	vec3 wavePos = worldPosition + cameraOffset;
 	// The waves are slightly compressed along the z-axis to get
 	// wave-fronts along the x-axis.
-	wavePos.x /= WATER_WAVE_LENGTH * 3;
-	wavePos.z /= WATER_WAVE_LENGTH * 2;
-	wavePos.z += animationTimer * WATER_WAVE_SPEED * 10;
-	pos.y += (snoise(wavePos) - 1) * WATER_WAVE_HEIGHT * 5;
+	wavePos.x /= WATER_WAVE_LENGTH * 3.0;
+	wavePos.z /= WATER_WAVE_LENGTH * 2.0;
+	wavePos.z += animationTimer * WATER_WAVE_SPEED * 10.0;
+	pos.y += (snoise(wavePos) - 1.0) * WATER_WAVE_HEIGHT * 5.0;
 	gl_Position = mWorldViewProj * pos;
 #elif MATERIAL_TYPE == TILE_MATERIAL_WAVING_LEAVES && ENABLE_WAVING_LEAVES
 	vec4 pos = gl_Vertex;
@@ -141,16 +142,16 @@ void main(void)
 	// The pre-baked colors are halved to prevent overflow.
 	vec4 color;
 	// The alpha gives the ratio of sunlight in the incoming light.
-	float nightRatio = 1 - gl_Color.a;
+	float nightRatio = 1.0 - gl_Color.a;
 	color.rgb = gl_Color.rgb * (gl_Color.a * dayLight.rgb + 
-		nightRatio * artificialLight.rgb) * 2;
-	color.a = 1;
+		nightRatio * artificialLight.rgb) * 2.0;
+	color.a = 1.0;
 
 	// Emphase blue a bit in darker places
 	// See C++ implementation in mapblock_mesh.cpp final_color_blend()
-	float brightness = (color.r + color.g + color.b) / 3;
+	float brightness = (color.r + color.g + color.b) / 3.0;
 	color.b += max(0.0, 0.021 - abs(0.2 * brightness - 0.021) +
 		0.07 * brightness);
 
-	gl_FrontColor = gl_BackColor = clamp(color, 0.0, 1.0);
+	varColor = clamp(color, 0.0, 1.0);
 }

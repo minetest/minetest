@@ -8,6 +8,7 @@ uniform vec3 eyePosition;
 varying vec3 vNormal;
 varying vec3 vPosition;
 varying vec3 worldPosition;
+varying vec4 varColor;
 
 varying vec3 eyeVec;
 varying float vIDiff;
@@ -15,7 +16,7 @@ varying float vIDiff;
 const float e = 2.718281828459;
 const float BS = 10.0;
 const float fogStart = FOG_START;
-const float fogShadingParameter = 1 / ( 1 - fogStart);
+const float fogShadingParameter = 1.0 / (1.0 - fogStart);
 
 #ifdef ENABLE_TONE_MAPPING
 
@@ -68,7 +69,7 @@ void main(void)
 
 	vec4 col = vec4(color.rgb, base.a);
 
-	col.rgb *= gl_Color.rgb;
+	col.rgb *= varColor.rgb;
 
 	col.rgb *= emissiveColor.rgb * vIDiff;
 

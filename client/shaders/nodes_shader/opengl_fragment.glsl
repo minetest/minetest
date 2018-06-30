@@ -15,11 +15,11 @@ varying vec3 vPosition;
 // cameraOffset + worldPosition (for large coordinates the limits of float
 // precision must be considered).
 varying vec3 worldPosition;
-
+varying vec4 varColor;
 varying vec3 eyeVec;
 
 const float fogStart = FOG_START;
-const float fogShadingParameter = 1 / ( 1 - fogStart);
+const float fogShadingParameter = 1.0 / ( 1.0 - fogStart);
 
 #ifdef ENABLE_TONE_MAPPING
 
@@ -59,7 +59,6 @@ void main(void)
 	vec2 uv = gl_TexCoord[0].st;
 
 	vec4 base = texture2D(baseTexture, uv).rgba;
-
 #ifdef USE_DISCARD
 	// If alpha is zero, we can just discard the pixel. This fixes transparency
 	// on GPUs like GC7000L, where GL_ALPHA_TEST is not implemented in mesa.
@@ -70,7 +69,7 @@ void main(void)
 
 	color = base.rgb;
 
-	vec4 col = vec4(color.rgb * gl_Color.rgb, 1.0); 
+	vec4 col = vec4(color.rgb * varColor.rgb, 1.0);
 	
 #ifdef ENABLE_TONE_MAPPING
 	col = applyToneMapping(col);
