@@ -35,10 +35,10 @@ template <> bool LuaHelper::readParam(lua_State *L, int index)
 	return lua_toboolean(L, index) != 0;
 }
 
-template <> bool LuaHelper::readParam(lua_State *L, int index, const bool &dv)
+template <> bool LuaHelper::readParam(lua_State *L, int index, const bool &default_value)
 {
 	if (lua_isnil(L, index))
-		return dv;
+		return default_value;
 
 	return lua_toboolean(L, index) != 0;
 }
@@ -60,13 +60,14 @@ template <> std::string LuaHelper::readParam(lua_State *L, int index)
 }
 
 template <>
-std::string LuaHelper::readParam(lua_State *L, int index, const std::string &dv)
+std::string LuaHelper::readParam(
+		lua_State *L, int index, const std::string &default_value)
 {
 	std::string result;
 	const char *str = lua_tostring(L, index);
 	if (str)
 		result.append(str);
 	else
-		result = dv;
+		result = default_value;
 	return result;
 }

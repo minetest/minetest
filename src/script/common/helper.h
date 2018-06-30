@@ -46,8 +46,9 @@ protected:
 	 * @tparam T type to read from Lua
 	 * @param L Lua state
 	 * @param index Lua Index to read
-	 * @param dv default value to apply if nil
+	 * @param default_value default value to apply if nil
 	 * @return read value from Lua or default value if nil
 	 */
-	template <typename T> static T readParam(lua_State *L, int index, const T &dv);
+	template <typename T> static T readParam(lua_State *L, int index,
+		const T &default_value);
 };
