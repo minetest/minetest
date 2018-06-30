@@ -37,6 +37,7 @@ int ModApiStorage::l_get_mod_storage(lua_State *L)
 		store->load(gamedef->getModStoragePath());
 		gamedef->registerModStorage(store);
 	} else {
+		delete store;
 		assert(false); // this should not happen
 	}
 
