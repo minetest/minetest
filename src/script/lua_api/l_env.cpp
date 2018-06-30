@@ -551,7 +551,7 @@ int ModApiEnvMod::l_find_nodes_with_meta(lua_State *L)
 	GET_ENV_PTR;
 
 	std::vector<v3s16> positions = env->getMap().findNodesWithMetadata(
-		check_v3s16(L, 1), check_v3s16(L, 2));
+		read_v3s16(L, 1), read_v3s16(L, 2));
 
 	lua_newtable(L);
 	for (size_t i = 0; i != positions.size(); i++) {

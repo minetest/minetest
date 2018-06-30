@@ -103,7 +103,6 @@ v3f                 checkFloatPos       (lua_State *L, int index);
 v2f                 check_v2f           (lua_State *L, int index);
 v2s16               check_v2s16         (lua_State *L, int index);
 v3f                 check_v3f           (lua_State *L, int index);
-v3s16               check_v3s16         (lua_State *L, int index);
 
 v3f                 read_v3f            (lua_State *L, int index);
 v2f                 read_v2f            (lua_State *L, int index);
@@ -121,7 +120,6 @@ size_t              read_stringlist     (lua_State *L, int index,
 
 void                push_float_string   (lua_State *L, float value);
 void                push_v3_float_string(lua_State *L, v3f p);
-void                push_v2_float_string(lua_State *L, v2f p);
 void                push_v2s16          (lua_State *L, v2s16 p);
 void                push_v2s32          (lua_State *L, v2s32 p);
 void                push_v3s16          (lua_State *L, v3s16 p);
@@ -136,6 +134,4 @@ void                warn_if_field_exists(lua_State *L, int table,
                                          const std::string &message);
 
 size_t write_array_slice_float(lua_State *L, int table_index, float *data,
-	v3u16 data_size, v3u16 slice_offset, v3u16 slice_size);
-size_t write_array_slice_u16(lua_State *L, int table_index, u16 *data,
 	v3u16 data_size, v3u16 slice_offset, v3u16 slice_size);

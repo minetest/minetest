@@ -91,15 +91,6 @@ void push_v3_float_string(lua_State *L, v3f p)
 	lua_setfield(L, -2, "z");
 }
 
-void push_v2_float_string(lua_State *L, v2f p)
-{
-	lua_newtable(L);
-	push_float_string(L, p.X);
-	lua_setfield(L, -2, "x");
-	push_float_string(L, p.Y);
-	lua_setfield(L, -2, "y");
-}
-
 v2s16 read_v2s16(lua_State *L, int index)
 {
 	v2s16 p;
@@ -302,13 +293,6 @@ v3s16 read_v3s16(lua_State *L, int index)
 {
 	// Correct rounding at <0
 	v3d pf = read_v3d(L, index);
-	return doubleToInt(pf, 1.0);
-}
-
-v3s16 check_v3s16(lua_State *L, int index)
-{
-	// Correct rounding at <0
-	v3d pf = check_v3d(L, index);
 	return doubleToInt(pf, 1.0);
 }
 
@@ -632,51 +616,6 @@ size_t write_array_slice_float(
 	for (u32 x = pmin.X; x != pmax.X; x++) {
 		u32 i = z * zstride + y * ystride + x;
 		lua_pushnumber(L, data[i]);
-		lua_rawseti(L, table_index, elem_index);
-		elem_index++;
-	}
-
-	return elem_index - 1;
-}
-
-
-size_t write_array_slice_u16(
-	lua_State *L,
-	int table_index,
-	u16 *data,
-	v3u16 data_size,
-	v3u16 slice_offset,
-	v3u16 slice_size)
-{
-	v3u16 pmin, pmax(data_size);
-
-	if (slice_offset.X > 0) {
-		slice_offset.X--;
-		pmin.X = slice_offset.X;
-		pmax.X = MYMIN(slice_offset.X + slice_size.X, data_size.X);
-	}
-
-	if (slice_offset.Y > 0) {
-		slice_offset.Y--;
-		pmin.Y = slice_offset.Y;
-		pmax.Y = MYMIN(slice_offset.Y + slice_size.Y, data_size.Y);
-	}
-
-	if (slice_offset.Z > 0) {
-		slice_offset.Z--;
-		pmin.Z = slice_offset.Z;
-		pmax.Z = MYMIN(slice_offset.Z + slice_size.Z, data_size.Z);
-	}
-
-	const u32 ystride = data_size.X;
-	const u32 zstride = data_size.X * data_size.Y;
-
-	u32 elem_index = 1;
-	for (u32 z = pmin.Z; z != pmax.Z; z++)
-	for (u32 y = pmin.Y; y != pmax.Y; y++)
-	for (u32 x = pmin.X; x != pmax.X; x++) {
-		u32 i = z * zstride + y * ystride + x;
-		lua_pushinteger(L, data[i]);
 		lua_rawseti(L, table_index, elem_index);
 		elem_index++;
 	}

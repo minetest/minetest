@@ -127,7 +127,7 @@ int LuaAreaStore::l_get_areas_for_pos(lua_State *L)
 	LuaAreaStore *o = checkobject(L, 1);
 	AreaStore *ast = o->as;
 
-	v3s16 pos = check_v3s16(L, 2);
+	v3s16 pos = read_v3s16(L, 2);
 
 	bool include_borders = true;
 	bool include_data = false;
@@ -149,8 +149,8 @@ int LuaAreaStore::l_get_areas_in_area(lua_State *L)
 	LuaAreaStore *o = checkobject(L, 1);
 	AreaStore *ast = o->as;
 
-	v3s16 minedge = check_v3s16(L, 2);
-	v3s16 maxedge = check_v3s16(L, 3);
+	v3s16 minedge = read_v3s16(L, 2);
+	v3s16 maxedge = read_v3s16(L, 3);
 
 	bool include_borders = true;
 	bool include_data = false;
@@ -175,7 +175,7 @@ int LuaAreaStore::l_insert_area(lua_State *L)
 	LuaAreaStore *o = checkobject(L, 1);
 	AreaStore *ast = o->as;
 
-	Area a(check_v3s16(L, 2), check_v3s16(L, 3));
+	Area a(read_v3s16(L, 2), read_v3s16(L, 3));
 
 	size_t d_len;
 	const char *data = luaL_checklstring(L, 4, &d_len);

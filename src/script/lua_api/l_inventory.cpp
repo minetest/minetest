@@ -492,7 +492,7 @@ int ModApiInventory::l_get_inventory(lua_State *L)
 	if(type == "node"){
 		MAP_LOCK_REQUIRED;
 		lua_getfield(L, 1, "pos");
-		v3s16 pos = check_v3s16(L, -1);
+		v3s16 pos = read_v3s16(L, -1);
 		loc.setNodeMeta(pos);
 
 		if (getServer(L)->getInventory(loc) != NULL)

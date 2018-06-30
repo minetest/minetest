@@ -228,7 +228,7 @@ bool read_schematic_def(lua_State *L, int index,
 
 	//// Get schematic size
 	lua_getfield(L, index, "size");
-	v3s16 size = check_v3s16(L, -1);
+	v3s16 size = read_v3s16(L, -1);
 	lua_pop(L, 1);
 
 	schem->size = size;
@@ -1493,9 +1493,9 @@ int ModApiMapgen::l_generate_ores(lua_State *L)
 	mg.vm   = LuaVoxelManip::checkobject(L, 1)->vm;
 	mg.ndef = getServer(L)->getNodeDefManager();
 
-	v3s16 pmin = lua_istable(L, 2) ? check_v3s16(L, 2) :
+	v3s16 pmin = lua_istable(L, 2) ? read_v3s16(L, 2) :
 			mg.vm->m_area.MinEdge + v3s16(1,1,1) * MAP_BLOCKSIZE;
-	v3s16 pmax = lua_istable(L, 3) ? check_v3s16(L, 3) :
+	v3s16 pmax = lua_istable(L, 3) ? read_v3s16(L, 3) :
 			mg.vm->m_area.MaxEdge - v3s16(1,1,1) * MAP_BLOCKSIZE;
 	sortBoxVerticies(pmin, pmax);
 
@@ -1519,9 +1519,9 @@ int ModApiMapgen::l_generate_decorations(lua_State *L)
 	mg.vm   = LuaVoxelManip::checkobject(L, 1)->vm;
 	mg.ndef = getServer(L)->getNodeDefManager();
 
-	v3s16 pmin = lua_istable(L, 2) ? check_v3s16(L, 2) :
+	v3s16 pmin = lua_istable(L, 2) ? read_v3s16(L, 2) :
 			mg.vm->m_area.MinEdge + v3s16(1,1,1) * MAP_BLOCKSIZE;
-	v3s16 pmax = lua_istable(L, 3) ? check_v3s16(L, 3) :
+	v3s16 pmax = lua_istable(L, 3) ? read_v3s16(L, 3) :
 			mg.vm->m_area.MaxEdge - v3s16(1,1,1) * MAP_BLOCKSIZE;
 	sortBoxVerticies(pmin, pmax);
 
@@ -1546,8 +1546,8 @@ int ModApiMapgen::l_create_schematic(lua_State *L)
 	Map *map = &(getEnv(L)->getMap());
 	Schematic schem;
 
-	v3s16 p1 = check_v3s16(L, 1);
-	v3s16 p2 = check_v3s16(L, 2);
+	v3s16 p1 = read_v3s16(L, 1);
+	v3s16 p2 = read_v3s16(L, 2);
 	sortBoxVerticies(p1, p2);
 
 	std::vector<std::pair<v3s16, u8> > prob_list;
@@ -1556,7 +1556,7 @@ int ModApiMapgen::l_create_schematic(lua_State *L)
 		while (lua_next(L, 3)) {
 			if (lua_istable(L, -1)) {
 				lua_getfield(L, -1, "pos");
-				v3s16 pos = check_v3s16(L, -1);
+				v3s16 pos = read_v3s16(L, -1);
 				lua_pop(L, 1);
 
 				u8 prob = getintfield_default(L, -1, "prob", MTSCHEM_PROB_ALWAYS);
@@ -1610,7 +1610,7 @@ int ModApiMapgen::l_place_schematic(lua_State *L)
 	SchematicManager *schemmgr = getServer(L)->getEmergeManager()->schemmgr;
 
 	//// Read position
-	v3s16 p = check_v3s16(L, 1);
+	v3s16 p = read_v3s16(L, 1);
 
 	//// Read rotation
 	int rot = ROTATE_0;
@@ -1658,7 +1658,7 @@ int ModApiMapgen::l_place_schematic_on_vmanip(lua_State *L)
 	MMVManip *vm = LuaVoxelManip::checkobject(L, 1)->vm;
 
 	//// Read position
-	v3s16 p = check_v3s16(L, 2);
+	v3s16 p = read_v3s16(L, 2);
 
 	//// Read rotation
 	int rot = ROTATE_0;
