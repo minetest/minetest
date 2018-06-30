@@ -27,19 +27,20 @@ bool LuaHelper::isNaN(lua_State *L, int idx)
 	return lua_type(L, idx) == LUA_TNUMBER && std::isnan(lua_tonumber(L, idx));
 }
 
-static inline std::string luahelper_type_error(int index, const std::string &type)
-{
-	std::ostringstream oss;
-	oss << "Argument " << index << " is not a " << type;
-	return oss.str();
-}
-
 /*
  * Read template functions
  */
 template <> bool LuaHelper::readParam(lua_State *L, int index)
 {
-	return !lua_isnil(L, index) && lua_toboolean(L, index) != 0;
+	return luaL_checkboolean(L, index);
+}
+
+template <> bool LuaHelper::readParam(lua_State *L, int index, const bool &dv)
+{
+	if (lua_isnil(L, index))
+		return dv;
+
+	return lua_toboolean(L, index) != 0;
 }
 
 template <> float LuaHelper::readParam(lua_State *L, int index)
@@ -53,10 +54,19 @@ template <> float LuaHelper::readParam(lua_State *L, int index)
 template <> std::string LuaHelper::readParam(lua_State *L, int index)
 {
 	std::string result;
-	const char *str = lua_tostring(L, index);
-	if (str) {
-		result.append(str);
-	}
+	const char *str = luaL_checkstring(L, index);
+	result.append(str);
+	return result;
+}
 
+template <> std::string LuaHelper::readParam(lua_State *L, int index,
+		const std::string &dv)
+{
+	std::string result;
+	const char *str = lua_tostring(L, index);
+	if (str)
+		result.append(str);
+	else
+		result = dv;
 	return result;
 }

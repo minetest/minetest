@@ -924,7 +924,7 @@ int ModApiMapgen::l_set_mapgen_setting(lua_State *L)
 
 	const char *name   = luaL_checkstring(L, 1);
 	const char *value  = luaL_checkstring(L, 2);
-	bool override_meta = readParam<bool>(L, 3);
+	bool override_meta = readParam<bool>(L, 3, false);
 
 	if (!settingsmgr->setMapSetting(name, value, override_meta)) {
 		errorstream << "set_mapgen_setting: cannot set '"
@@ -953,7 +953,7 @@ int ModApiMapgen::l_set_mapgen_setting_noiseparams(lua_State *L)
 		return 0;
 	}
 
-	bool override_meta = readParam<bool>(L, 3);
+	bool override_meta = readParam<bool>(L, 3, false);
 
 	if (!settingsmgr->setMapSettingNoiseParams(name, &np, override_meta)) {
 		errorstream << "set_mapgen_setting_noiseparams: cannot set '"
@@ -1614,7 +1614,7 @@ int ModApiMapgen::l_place_schematic(lua_State *L)
 
 	//// Read rotation
 	int rot = ROTATE_0;
-	std::string enumstr = readParam<std::string>(L, 3);
+	std::string enumstr = readParam<std::string>(L, 3, "");
 	if (!enumstr.empty())
 		string_to_enum(es_Rotation, rot, enumstr);
 
@@ -1662,7 +1662,7 @@ int ModApiMapgen::l_place_schematic_on_vmanip(lua_State *L)
 
 	//// Read rotation
 	int rot = ROTATE_0;
-	std::string enumstr = readParam<std::string>(L, 4);
+	std::string enumstr = readParam<std::string>(L, 4, "");
 	if (!enumstr.empty())
 		string_to_enum(es_Rotation, rot, std::string(enumstr));
 
@@ -1720,7 +1720,7 @@ int ModApiMapgen::l_serialize_schematic(lua_State *L)
 
 	//// Read format of definition to save as
 	int schem_format = SCHEM_FMT_MTS;
-	std::string enumstr = readParam<std::string>(L, 2);
+	std::string enumstr = readParam<std::string>(L, 2, "");
 	if (!enumstr.empty())
 		string_to_enum(es_SchematicFormatType, schem_format, enumstr);
 

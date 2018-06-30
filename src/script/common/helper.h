@@ -24,6 +24,14 @@ extern "C" {
 #include <lauxlib.h>
 }
 
+// This function doesn't exists in our Lua version, add it
+inline bool luaL_checkboolean(lua_State *L, int index)
+{
+	if (!lua_isboolean(L, index))
+		luaL_typerror(L, index, "boolean");
+	return lua_toboolean(L, index) != 0;
+}
+
 class LuaHelper
 {
 protected:
@@ -32,10 +40,22 @@ protected:
 	/**
 	 * Read a value using a template type T from Lua State L and index
 	 *
+	 *
 	 * @tparam T type to read from Lua
 	 * @param L Lua state
 	 * @param index Lua Index to read
 	 * @return read value from Lua
 	 */
 	template <typename T> static T readParam(lua_State *L, int index);
+
+	/**
+	 * Read a value using a template type T from Lua State L and index
+	 *
+	 * @tparam T type to read from Lua
+	 * @param L Lua state
+	 * @param index Lua Index to read
+	 * @param dv default value to apply if nil
+	 * @return read value from Lua or default value if nil
+	 */
+	template <typename T> static T readParam(lua_State *L, int index, const T &dv);
 };
