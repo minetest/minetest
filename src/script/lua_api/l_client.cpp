@@ -46,8 +46,8 @@ int ModApiClient::l_get_current_modname(lua_State *L)
 int ModApiClient::l_get_last_run_mod(lua_State *L)
 {
 	lua_rawgeti(L, LUA_REGISTRYINDEX, CUSTOM_RIDX_CURRENT_MOD_NAME);
-	const char *current_mod = lua_tostring(L, -1);
-	if (current_mod == NULL || current_mod[0] == '\0') {
+	std::string current_mod = readParam<std::string>(L, -1, "");
+	if (current_mod.empty()) {
 		lua_pop(L, 1);
 		lua_pushstring(L, getScriptApiBase(L)->getOrigin().c_str());
 	}
@@ -303,7 +303,7 @@ int ModApiClient::l_get_item_def(lua_State *L)
 	if (!lua_isstring(L, 1))
 		return 0;
 
-	const std::string &name(lua_tostring(L, 1));
+	std::string name = readParam<std::string>(L, 1);
 	if (!idef->isKnown(name))
 		return 0;
 	const ItemDefinition &def = idef->get(name);
@@ -331,7 +331,7 @@ int ModApiClient::l_get_node_def(lua_State *L)
 		return 0;
 	// clang-format on
 
-	const std::string &name = lua_tostring(L, 1);
+	std::string name = readParam<std::string>(L, 1);
 	const ContentFeatures &cf = ndef->get(ndef->getId(name));
 	if (cf.name != name) // Unknown node. | name = <whatever>, cf.name = ignore
 		return 0;

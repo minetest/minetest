@@ -156,7 +156,7 @@ int ObjectRef::l_move_to(lua_State *L)
 	// pos
 	v3f pos = checkFloatPos(L, 2);
 	// continuous
-	bool continuous = lua_toboolean(L, 3);
+	bool continuous = readParam<bool>(L, 3);
 	// Do it
 	co->moveTo(pos, continuous);
 	return 0;
@@ -243,7 +243,8 @@ int ObjectRef::l_set_hp(lua_State *L)
 		lua_pushvalue(L, 3);
 
 		lua_getfield(L, -1, "type");
-		if (lua_isstring(L, -1) && !reason.setTypeFromString(lua_tostring(L, -1))) {
+		if (lua_isstring(L, -1) &&
+				!reason.setTypeFromString(readParam<std::string>(L, -1))) {
 			errorstream << "Bad type given!" << std::endl;
 		}
 		lua_pop(L, 1);
@@ -466,7 +467,7 @@ int ObjectRef::l_set_animation(lua_State *L)
 		frame_blend = lua_tonumber(L, 4);
 	bool frame_loop = true;
 	if (lua_isboolean(L, 5))
-		frame_loop = lua_toboolean(L, 5);
+		frame_loop = readParam<bool>(L, 5);
 	co->setAnimation(frames, frame_speed, frame_blend, frame_loop);
 	return 0;
 }
@@ -609,7 +610,7 @@ int ObjectRef::l_set_bone_position(lua_State *L)
 	// Do it
 	std::string bone;
 	if (!lua_isnil(L, 2))
-		bone = lua_tostring(L, 2);
+		bone = readParam<std::string>(L, 2);
 	v3f position = v3f(0, 0, 0);
 	if (!lua_isnil(L, 3))
 		position = check_v3f(L, 3);
@@ -631,7 +632,7 @@ int ObjectRef::l_get_bone_position(lua_State *L)
 	// Do it
 	std::string bone;
 	if (!lua_isnil(L, 2))
-		bone = lua_tostring(L, 2);
+		bone = readParam<std::string>(L, 2);
 
 	v3f position = v3f(0, 0, 0);
 	v3f rotation = v3f(0, 0, 0);
@@ -668,7 +669,7 @@ int ObjectRef::l_set_attach(lua_State *L)
 
 	bone = "";
 	if (!lua_isnil(L, 3))
-		bone = lua_tostring(L, 3);
+		bone = readParam<std::string>(L, 3);
 	position = v3f(0, 0, 0);
 	if (!lua_isnil(L, 4))
 		position = read_v3f(L, 4);
@@ -963,7 +964,7 @@ int ObjectRef::l_set_sprite(lua_State *L)
 		framelength = lua_tonumber(L, 4);
 	bool select_horiz_by_yawpitch = false;
 	if (!lua_isnil(L, 5))
-		select_horiz_by_yawpitch = lua_toboolean(L, 5);
+		select_horiz_by_yawpitch = readParam<bool>(L, 5);
 	co->setSprite(p, num_frames, framelength, select_horiz_by_yawpitch);
 	return 0;
 }
@@ -1536,7 +1537,7 @@ int ObjectRef::l_hud_set_hotbar_image(lua_State *L)
 	if (player == NULL)
 		return 0;
 
-	std::string name = lua_tostring(L, 2);
+	std::string name = readParam<std::string>(L, 2);
 
 	getServer(L)->hudSetHotbarImage(player, name);
 	return 1;
@@ -1565,7 +1566,7 @@ int ObjectRef::l_hud_set_hotbar_selected_image(lua_State *L)
 	if (player == NULL)
 		return 0;
 
-	std::string name = lua_tostring(L, 2);
+	std::string name = readParam<std::string>(L, 2);
 
 	getServer(L)->hudSetHotbarSelectedImage(player, name);
 	return 1;
@@ -1605,7 +1606,7 @@ int ObjectRef::l_set_sky(lua_State *L)
 		while (lua_next(L, 4) != 0) {
 			// key at index -2 and value at index -1
 			if (lua_isstring(L, -1))
-				params.emplace_back(lua_tostring(L, -1));
+				params.emplace_back(readParam<std::string>(L, -1));
 			else
 				params.emplace_back("");
 			// removes value, keeps key for next iteration
@@ -1618,7 +1619,7 @@ int ObjectRef::l_set_sky(lua_State *L)
 
 	bool clouds = true;
 	if (lua_isboolean(L, 5))
-		clouds = lua_toboolean(L, 5);
+		clouds = readParam<bool>(L, 5);
 
 	getServer(L)->setSky(player, bgcolor, type, params, clouds);
 	lua_pushboolean(L, true);

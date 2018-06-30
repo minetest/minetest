@@ -83,7 +83,7 @@ int ModApiMainMenu::getBoolData(lua_State *L, std::string name,bool& valid)
 		}
 
 	valid = true;
-	return lua_toboolean(L, -1);
+	return readParam<bool>(L, -1);
 }
 
 /******************************************************************************/
@@ -158,7 +158,7 @@ int ModApiMainMenu::l_set_background(lua_State *L)
 	unsigned int minsize = 16;
 
 	if (!lua_isnone(L, 3)) {
-		tile_image = lua_toboolean(L, 3);
+		tile_image = readParam<bool>(L, 3);
 	}
 
 	if (!lua_isnone(L, 4)) {
@@ -195,7 +195,7 @@ int ModApiMainMenu::l_set_clouds(lua_State *L)
 	GUIEngine* engine = getGuiEngine(L);
 	sanity_check(engine != NULL);
 
-	bool value = lua_toboolean(L,1);
+	bool value = readParam<bool>(L,1);
 
 	engine->m_clouds_enabled = value;
 
@@ -627,7 +627,8 @@ int ModApiMainMenu::l_set_topleft_text(lua_State *L)
 int ModApiMainMenu::l_get_mapgen_names(lua_State *L)
 {
 	std::vector<const char *> names;
-	Mapgen::getMapgenNames(&names, lua_toboolean(L, 1));
+	bool include_hidden = lua_isboolean(L, 1) && readParam<bool>(L, 1);
+	Mapgen::getMapgenNames(&names, include_hidden);
 
 	lua_newtable(L);
 	for (size_t i = 0; i != names.size(); i++) {
@@ -722,7 +723,7 @@ int ModApiMainMenu::l_copy_dir(lua_State *L)
 
 	if ((!lua_isnone(L,3)) &&
 			(!lua_isnil(L,3))) {
-		keep_source = lua_toboolean(L,3);
+		keep_source = readParam<bool>(L,3);
 	}
 
 	std::string absolute_destination = fs::RemoveRelativePathComponents(destination);
@@ -871,7 +872,7 @@ int ModApiMainMenu::l_show_path_select_dialog(lua_State *L)
 
 	const char *formname= luaL_checkstring(L, 1);
 	const char *title	= luaL_checkstring(L, 2);
-	bool is_file_select = lua_toboolean(L, 3);
+	bool is_file_select = readParam<bool>(L, 3);
 
 	GUIFileSelectMenu* fileOpenMenu =
 		new GUIFileSelectMenu(RenderingEngine::get_gui_env(),

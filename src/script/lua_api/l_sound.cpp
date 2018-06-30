@@ -28,7 +28,7 @@ int ModApiSound::l_sound_play(lua_State *L)
 {
 	SimpleSoundSpec spec;
 	read_soundspec(L, 1, spec);
-	bool looped = lua_toboolean(L, 2);
+	bool looped = readParam<bool>(L, 2);
 
 	s32 handle = getGuiEngine(L)->playSound(spec, looped);
 

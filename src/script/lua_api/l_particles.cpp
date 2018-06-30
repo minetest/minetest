@@ -66,7 +66,7 @@ int ModApiParticles::l_add_particle(lua_State *L)
 		acc = check_v3f(L, 3);
 		expirationtime = luaL_checknumber(L, 4);
 		size = luaL_checknumber(L, 5);
-		collisiondetection = lua_toboolean(L, 6);
+		collisiondetection = readParam<bool>(L, 6);
 		texture = luaL_checkstring(L, 7);
 		if (lua_gettop(L) == 8) // only spawn for a single player
 			playername = luaL_checkstring(L, 8);
@@ -177,7 +177,7 @@ int ModApiParticles::l_add_particlespawner(lua_State *L)
 		maxexptime = luaL_checknumber(L, 10);
 		minsize = luaL_checknumber(L, 11);
 		maxsize = luaL_checknumber(L, 12);
-		collisiondetection = lua_toboolean(L, 13);
+		collisiondetection = readParam<bool>(L, 13);
 		texture = luaL_checkstring(L, 14);
 		if (lua_gettop(L) == 15) // only spawn for a single player
 			playername = luaL_checkstring(L, 15);

@@ -95,11 +95,10 @@ enum RunCallbacksMode
 	// after seeing the first true value
 	RUN_CALLBACKS_MODE_OR_SC,
 	// Note: "a true value" and "a false value" refer to values that
-	// are converted by lua_toboolean to true or false, respectively.
+	// are converted by readParam<bool> to true or false, respectively.
 };
 
 std::string script_get_backtrace(lua_State *L);
-int script_error_handler(lua_State *L);
 int script_exception_wrapper(lua_State *L, lua_CFunction f);
 void script_error(lua_State *L, int pcall_result, const char *mod, const char *fxn);
 void script_run_callbacks_f(lua_State *L, int nargs,

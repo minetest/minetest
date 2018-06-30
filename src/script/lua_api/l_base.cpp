@@ -63,8 +63,8 @@ GUIEngine *ModApiBase::getGuiEngine(lua_State *L)
 std::string ModApiBase::getCurrentModPath(lua_State *L)
 {
 	lua_rawgeti(L, LUA_REGISTRYINDEX, CUSTOM_RIDX_CURRENT_MOD_NAME);
-	const char *current_mod_name = lua_tostring(L, -1);
-	if (!current_mod_name)
+	std::string current_mod_name = readParam<std::string>(L, -1, "");
+	if (current_mod_name.empty())
 		return ".";
 
 	const ModSpec *mod = getServer(L)->getModSpec(current_mod_name);
@@ -84,21 +84,4 @@ bool ModApiBase::registerFunction(lua_State *L, const char *name,
 	lua_setfield(L, top, name);
 
 	return true;
-}
-
-bool ModApiBase::isNaN(lua_State *L, int idx)
-{
-	return lua_type(L, idx) == LUA_TNUMBER && std::isnan(lua_tonumber(L, idx));
-}
-
-/*
- * Read template functions
- */
-template<>
-float ModApiBase::readParam(lua_State *L, int index)
-{
-	if (isNaN(L, index))
-		throw LuaError("NaN value is not allowed.");
-
-	return (float) luaL_checknumber(L, index);
 }

@@ -24,6 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <thread>
 #include <mutex>
 #include <unordered_map>
+#include "common/helper.h"
 #include "util/basic_macros.h"
 
 extern "C" {
@@ -74,7 +75,7 @@ class GUIEngine;
 class ServerActiveObject;
 struct PlayerHPChangeReason;
 
-class ScriptApiBase {
+class ScriptApiBase : protected LuaHelper {
 public:
 	ScriptApiBase(ScriptingType type);
 	// fake constructor to allow script API classes (e.g ScriptApiEnv) to virtually inherit from this one.

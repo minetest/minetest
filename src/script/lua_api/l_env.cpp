@@ -165,10 +165,10 @@ int LuaRaycast::create_object(lua_State *L)
 	v3f pos1 = checkFloatPos(L, 1);
 	v3f pos2 = checkFloatPos(L, 2);
 	if (lua_isboolean(L, 3)) {
-		objects = lua_toboolean(L, 3);
+		objects = readParam<bool>(L, 3);
 	}
 	if (lua_isboolean(L, 4)) {
-		liquids = lua_toboolean(L, 4);
+		liquids = readParam<bool>(L, 4);
 	}
 
 	LuaRaycast *o = new LuaRaycast(core::line3d<f32>(pos1, pos2),
@@ -757,15 +757,15 @@ int ModApiEnvMod::l_find_node_near(lua_State *L)
 		while (lua_next(L, 3) != 0) {
 			// key at index -2 and value at index -1
 			luaL_checktype(L, -1, LUA_TSTRING);
-			ndef->getIds(lua_tostring(L, -1), filter);
+			ndef->getIds(readParam<std::string>(L, -1), filter);
 			// removes value, keeps key for next iteration
 			lua_pop(L, 1);
 		}
 	} else if (lua_isstring(L, 3)) {
-		ndef->getIds(lua_tostring(L, 3), filter);
+		ndef->getIds(readParam<std::string>(L, 3), filter);
 	}
 
-	int start_radius = (lua_toboolean(L, 4)) ? 0 : 1;
+	int start_radius = (lua_isboolean(L, 4) && readParam<bool>(L, 4)) ? 0 : 1;
 
 #ifndef SERVER
 	// Client API limitations
@@ -815,12 +815,12 @@ int ModApiEnvMod::l_find_nodes_in_area(lua_State *L)
 		while (lua_next(L, 3) != 0) {
 			// key at index -2 and value at index -1
 			luaL_checktype(L, -1, LUA_TSTRING);
-			ndef->getIds(lua_tostring(L, -1), filter);
+			ndef->getIds(readParam<std::string>(L, -1), filter);
 			// removes value, keeps key for next iteration
 			lua_pop(L, 1);
 		}
 	} else if (lua_isstring(L, 3)) {
-		ndef->getIds(lua_tostring(L, 3), filter);
+		ndef->getIds(readParam<std::string>(L, 3), filter);
 	}
 
 	std::vector<u32> individual_count;
@@ -884,12 +884,12 @@ int ModApiEnvMod::l_find_nodes_in_area_under_air(lua_State *L)
 		while (lua_next(L, 3) != 0) {
 			// key at index -2 and value at index -1
 			luaL_checktype(L, -1, LUA_TSTRING);
-			ndef->getIds(lua_tostring(L, -1), filter);
+			ndef->getIds(readParam<std::string>(L, -1), filter);
 			// removes value, keeps key for next iteration
 			lua_pop(L, 1);
 		}
 	} else if (lua_isstring(L, 3)) {
-		ndef->getIds(lua_tostring(L, 3), filter);
+		ndef->getIds(readParam<std::string>(L, 3), filter);
 	}
 
 	lua_newtable(L);

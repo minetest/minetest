@@ -88,7 +88,7 @@ void ScriptApiServer::readPrivileges(int index, std::set<std::string> &result)
 	while (lua_next(L, index) != 0) {
 		// key at index -2 and value at index -1
 		std::string key = luaL_checkstring(L, -2);
-		bool value = lua_toboolean(L, -1);
+		bool value = readParam<bool>(L, -1);
 		if (value)
 			result.insert(key);
 		// removes value, keeps key for next iteration
@@ -143,8 +143,7 @@ bool ScriptApiServer::on_chat_message(const std::string &name,
 	lua_pushstring(L, name.c_str());
 	lua_pushstring(L, message.c_str());
 	runCallbacks(2, RUN_CALLBACKS_MODE_OR_SC);
-	bool ate = lua_toboolean(L, -1);
-	return ate;
+	return readParam<bool>(L, -1);
 }
 
 void ScriptApiServer::on_mods_loaded()

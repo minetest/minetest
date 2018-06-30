@@ -74,7 +74,7 @@ bool ScriptApiPlayer::on_punchplayer(ServerActiveObject *player,
 	push_v3f(L, dir);
 	lua_pushnumber(L, damage);
 	runCallbacks(6, RUN_CALLBACKS_MODE_OR);
-	return lua_toboolean(L, -1);
+	return readParam<bool>(L, -1);
 }
 
 s16 ScriptApiPlayer::on_player_hpchange(ServerActiveObject *player,
@@ -111,8 +111,7 @@ bool ScriptApiPlayer::on_respawnplayer(ServerActiveObject *player)
 	// Call callbacks
 	objectrefGetOrCreate(L, player);
 	runCallbacks(1, RUN_CALLBACKS_MODE_OR);
-	bool positioning_handled_by_some = lua_toboolean(L, -1);
-	return positioning_handled_by_some;
+	return readParam<bool>(L, -1);
 }
 
 bool ScriptApiPlayer::on_prejoinplayer(
@@ -129,7 +128,7 @@ bool ScriptApiPlayer::on_prejoinplayer(
 	lua_pushstring(L, ip.c_str());
 	runCallbacks(2, RUN_CALLBACKS_MODE_OR);
 	if (lua_isstring(L, -1)) {
-		reason->assign(lua_tostring(L, -1));
+		reason->assign(readParam<std::string>(L, -1));
 		return true;
 	}
 	return false;
