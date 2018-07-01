@@ -22,12 +22,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <unordered_map>
 
 static std::unordered_map<std::string, Weather::Type> weatherStateMapper = {
-	{"normal", Weather::NORMAL},
-	{"rain", Weather::RAIN},
-	{"huge_clouds", Weather::HUGE_CLOUDS},
-	{"storm", Weather::STORM},
-	{"wind", Weather::WIND},
-	{"snow", Weather::SNOW},
+		{"normal", Weather::NORMAL},
+		{"rain", Weather::RAIN},
+		{"huge_clouds", Weather::HUGE_CLOUDS},
+		{"storm", Weather::STORM},
+		{"wind", Weather::WIND},
+		{"snow", Weather::SNOW},
 };
 
 namespace Weather
@@ -37,11 +37,12 @@ void State::setType(const std::string &strType)
 {
 	const auto &wsm = weatherStateMapper.find(strType);
 	FATAL_ERROR_IF(wsm == weatherStateMapper.end(),
-		std::string("Invalid weather type set: '" + strType + "'").c_str());
+			std::string("Invalid weather type set: '" + strType + "'")
+					.c_str());
 	type = wsm->second;
 }
 
-const std::string& State::getTypeStr() const
+const std::string &State::getTypeStr() const
 {
 	for (const auto &item : weatherStateMapper) {
 		if (item.second == type)
@@ -60,4 +61,4 @@ std::string State::getTextureFilename() const
 	fallback_name.append(getTypeStr()).append(".png");
 	return fallback_name;
 }
-}
+} // namespace Weather

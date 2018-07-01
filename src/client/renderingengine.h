@@ -137,7 +137,7 @@ public:
 	}
 
 	static void startWeatherParticles(video::ITexture *texture, f32 intensity,
-		f32 gravity_factor = 1.0f);
+			f32 gravity_factor = 1.0f);
 	static void stopWeatherParticles(bool definitive = false);
 
 	static std::vector<core::vector3d<u32>> getSupportedVideoModes();
@@ -161,6 +161,6 @@ private:
 	std::unique_ptr<RenderingCore> core;
 	irr::IrrlichtDevice *m_device = nullptr;
 	irr::video::IVideoDriver *driver;
-	scene::IParticleSystemSceneNode* m_weather_pssn = nullptr;
+	scene::IParticleSystemSceneNode *m_weather_pssn = nullptr;
 	static RenderingEngine *s_singleton;
 };

@@ -24,7 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 namespace Weather
 {
-enum Type: u8
+enum Type : u8
 {
 	NORMAL,
 	RAIN,
@@ -44,4 +44,4 @@ struct State
 	const std::string &getTypeStr() const;
 	std::string getTextureFilename() const;
 };
-};
+}; // namespace Weather
