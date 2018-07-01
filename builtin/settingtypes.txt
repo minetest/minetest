@@ -950,9 +950,6 @@ map-dir (Map directory) path
 #    Setting it to -1 disables the feature.
 item_entity_ttl (Item entity TTL) int 900
 
-#    If enabled, show the server status message on player connection.
-show_statusline_on_connect (Status message on connection) bool true
-
 #    Enable players getting damage and dying.
 enable_damage (Damage) bool false
 

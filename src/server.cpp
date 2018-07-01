@@ -1059,11 +1059,6 @@ PlayerSAO* Server::StageTwoClientInit(session_t peer_id)
 	// Send Breath
 	SendPlayerBreath(playersao);
 
-	// Note things in chat if not in simple singleplayer mode
-	if (!m_simple_singleplayer_mode && g_settings->getBool("show_statusline_on_connect")) {
-		// Send information about server to player in chat
-		SendChatMessage(peer_id, ChatMessage(CHATMESSAGE_TYPE_SYSTEM, getStatusString()));
-	}
 	Address addr = getPeerAddress(player->getPeerId());
 	std::string ip_str = addr.serializeString();
 	actionstream<<player->getName() <<" [" << ip_str << "] joins game. " << std::endl;

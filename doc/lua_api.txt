@@ -3997,7 +3997,13 @@ These functions return the leftover itemstack.
       Negative delay cancels the current active shutdown.
       Zero delay triggers an immediate shutdown.
 * `minetest.cancel_shutdown_requests()`: cancel current delayed shutdown
-* `minetest.get_server_status()`: returns server status string
+* `minetest.get_server_status(name, joined)`
+    * Returns the server status string when a player joins or when the command
+      `/status` is called. Returns `nil` or an empty string when the message is
+      disabled.
+    * `joined`: Boolean value, indicates whether the function was called when
+      a player joined.
+    * This function may be overwritten by mods to customize the status message.
 * `minetest.get_server_uptime()`: returns the server uptime in seconds
 * `minetest.remove_player(name)`: remove player from database (if they are not
   connected).

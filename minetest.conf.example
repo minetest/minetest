@@ -1142,10 +1142,6 @@
 #    type: int
 # item_entity_ttl = 900
 
-#    If enabled, show the server status message on player connection.
-#    type: bool
-# show_statusline_on_connect = true
-
 #    Enable players getting damage and dying.
 #    type: bool
 # enable_damage = false

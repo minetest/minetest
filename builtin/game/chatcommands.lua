@@ -799,7 +799,11 @@ core.register_chatcommand("rollback", {
 core.register_chatcommand("status", {
 	description = "Show server status",
 	func = function(name, param)
-		return true, core.get_server_status()
+		local status = core.get_server_status(name, false)
+		if status and status ~= "" then
+			return true, status
+		end
+		return false, "This command was disabled by a mod or game"
 	end,
 })
 
