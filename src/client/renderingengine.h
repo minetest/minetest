@@ -136,6 +136,9 @@ public:
 		return s_singleton->m_device->run();
 	}
 
+	static void startWeatherParticles(const std::string &texture);
+	static void stopWeatherParticles(bool definitive = false);
+
 	static std::vector<core::vector3d<u32>> getSupportedVideoModes();
 	static std::vector<irr::video::E_DRIVER_TYPE> getSupportedVideoDrivers();
 
@@ -154,8 +157,11 @@ private:
 
 	void _finalize();
 
+	void setWeatherTexture(const std::string &texture);
+
 	std::unique_ptr<RenderingCore> core;
 	irr::IrrlichtDevice *m_device = nullptr;
 	irr::video::IVideoDriver *driver;
+	scene::IParticleSystemSceneNode* m_weather_pssn = nullptr;
 	static RenderingEngine *s_singleton;
 };

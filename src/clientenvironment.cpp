@@ -53,6 +53,8 @@ ClientEnvironment::ClientEnvironment(ClientMap *map,
 
 ClientEnvironment::~ClientEnvironment()
 {
+	RenderingEngine::stopWeatherParticles(true);
+
 	// delete active objects
 	for (auto &active_object : m_active_objects) {
 		delete active_object.second;
@@ -309,6 +311,17 @@ void ClientEnvironment::step(float dtime)
 
 void ClientEnvironment::stepWeather(f32 dtime)
 {
+	LocalPlayer *lplayer = getLocalPlayer();
+
+	// Weather particle are shown when:
+	// * it's rain or snow
+	// * player is not in a liquid
+	// @ TODO detect if in a node
+	if (!lplayer->in_liquid && (m_weather_state.type == Weather::Type::RAIN ||
+		m_weather_state.type == Weather::Type::SNOW))
+		RenderingEngine::startWeatherParticles(m_weather_state.texture);
+	else
+		RenderingEngine::stopWeatherParticles();
 	// Do something with player & renderer depending on state
 }
 
