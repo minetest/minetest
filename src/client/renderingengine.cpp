@@ -121,7 +121,7 @@ RenderingEngine::~RenderingEngine()
 	s_singleton = nullptr;
 }
 
-void RenderingEngine::startWeatherParticles(video::ITexture *texture, f32 intensity,
+void RenderingEngine::renderWeatherParticles(video::ITexture *texture, f32 intensity,
 	f32 gravity_factor)
 {
 	// This initialization is differed from renderer creation because scene was not
@@ -137,29 +137,32 @@ void RenderingEngine::startWeatherParticles(video::ITexture *texture, f32 intens
 
 	static const u32 minpps = 700;
 	static const u32 maxpps = 1000;
-	static const f32 gravity_force = -0.25f;
+	static const f32 gravity_force = -0.50f;
 
 	scene::IParticleEmitter* em = pssn->getEmitter();
+
+	f32 applied_gravity_force = gravity_force * gravity_factor;
+	f32 applied_timeforce_lost = 1000 / (gravity_factor * gravity_factor);
 
 	// If emitter was not initialized, initialize it
 	if (!em) {
 		em = pssn->createBoxEmitter(
-			core::aabbox3d<f32>(-100.0f, -100.0f, -100.0f, 110.0f, 110.0f, 110.0f),
-			core::vector3df(0.00f, 0.00f, 0.0f),
+			aabb3f(-100.0f, -130.0f, -100.0f, 110.0f, 200.0f, 110.0f),
+			v3f(0.0f, 0.0f, 0.0f),
 			minpps, maxpps,
 			video::SColor(0, 255, 255, 255), video::SColor(30, 255, 255, 255),
-			500, 3000, 90);
+			500, 3000, 0);
 
 		pssn->setEmitter(em);
 		em->drop();
 
-		scene::IParticleAffector* paf =
-			pssn->createGravityAffector(
-				core::vector3df(0.00f, gravity_force * gravity_factor, 0.0f),
-				2000 / (gravity_factor * gravity_factor* gravity_factor));
+		{
+			scene::IParticleAffector *paf = pssn->createGravityAffector(
+				v3f(0.0f, applied_gravity_force, 0.0f), applied_timeforce_lost);
 
-		pssn->addAffector(paf);
-		paf->drop();
+			pssn->addAffector(paf);
+			paf->drop();
+		}
 
 		pssn->setMaterialFlag(video::EMF_LIGHTING, false);
 		pssn->setMaterialTexture(0, texture);
@@ -171,10 +174,13 @@ void RenderingEngine::startWeatherParticles(video::ITexture *texture, f32 intens
 
 	if (pssn->getMaterial(0).getTexture(0) != texture)
 		pssn->setMaterialTexture(0, texture);
+
 	for (auto &affector: pssn->getAffectors()) {
-		auto iga = (scene::IParticleGravityAffector*) affector;
-		iga->setGravity(core::vector3df(0.00f, gravity_force * gravity_factor, 0.0f));
-		iga->setTimeForceLost(1000 / gravity_factor);
+		if (affector->getType() == scene::EPAT_GRAVITY) {
+			auto iga = (scene::IParticleGravityAffector *) affector;
+			iga->setGravity(core::vector3df(0.00f, applied_gravity_force, 0.0f));
+			iga->setTimeForceLost(applied_timeforce_lost);
+		}
 	}
 
 	scene::ICameraSceneNode *camera = s_singleton->m_device->getSceneManager()->
@@ -187,8 +193,10 @@ void RenderingEngine::startWeatherParticles(video::ITexture *texture, f32 intens
 		camPitch = camDir.dotProduct(v3f(0.0f, -1.0f, 0.0f));
 	camPitch = (1.0f - camPitch) + 0.01f;
 
-	em->setMinStartSize(core::dimension2d<f32>(texture->getOriginalSize().Width * 0.05f, texture->getOriginalSize().Height * 0.05f * camPitch));
-	em->setMaxStartSize(core::dimension2d<f32>(texture->getOriginalSize().Width * 0.05f, texture->getOriginalSize().Height * 0.05f * camPitch));
+	em->setMinStartSize(core::dimension2d<f32>(texture->getOriginalSize().Width * 0.05f,
+		texture->getOriginalSize().Height * 0.05f * camPitch));
+	em->setMaxStartSize(core::dimension2d<f32>(texture->getOriginalSize().Width * 0.05f,
+		texture->getOriginalSize().Height * 0.05f * camPitch));
 }
 
 void RenderingEngine::stopWeatherParticles(bool definitive)

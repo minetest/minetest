@@ -136,8 +136,8 @@ public:
 		return s_singleton->m_device->run();
 	}
 
-	static void startWeatherParticles(video::ITexture *texture, f32 intensity,
-			f32 gravity_factor = 1.0f);
+	static void renderWeatherParticles(video::ITexture *texture, f32 intensity,
+		f32 gravity_factor = 1.0f);
 	static void stopWeatherParticles(bool definitive = false);
 
 	static std::vector<core::vector3d<u32>> getSupportedVideoModes();
