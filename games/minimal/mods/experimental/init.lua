@@ -647,8 +647,8 @@ minetest.register_on_joinplayer(function(player)
 		player:set_weather("snow", 0.3)
 	end)
 
-	minetest.after(15, function()
-		player:set_weather("snow", 8)
+	minetest.after(20, function()
+		player:set_weather("snow", 10)
 	end)
 
 	minetest.after(25, function()

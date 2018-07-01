@@ -327,7 +327,7 @@ void ClientEnvironment::stepWeather(f32 dtime)
 			case Weather::Type::SNOW:
 				RenderingEngine::startWeatherParticles(
 					m_texturesource->getTexture(m_weather_state.getTextureFilename()),
-					m_weather_state.intensity, 0.1f);
+					m_weather_state.intensity, 0.2f);
 				break;
 			default:
 				RenderingEngine::stopWeatherParticles();
