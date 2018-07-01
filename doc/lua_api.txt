@@ -5000,7 +5000,6 @@ This is basically a reference to a C++ `ServerActiveObject`
 	* `weather_type`: Available types:
 		* `"normal"`
 		* `"rain"`
-		* `"huge_clouds"`
 		* `"storm"`
 		* `"snow"`
 	* `weather_intensity`: Intensity of applied weather (between 0.1 and 10.0)

@@ -251,7 +251,9 @@ void ScriptApiClient::on_weather(const Weather::State &weather_state)
 
 	lua_pushstring(L, weather_state.getTypeStr().c_str());
 	lua_pushnumber(L, weather_state.intensity);
-	runCallbacks(2, RUN_CALLBACKS_MODE_FIRST);
+	lua_pushnumber(L, weather_state.wind_direction);
+	lua_pushnumber(L, weather_state.wind_speed);
+	runCallbacks(4, RUN_CALLBACKS_MODE_FIRST);
 }
 
 void ScriptApiClient::setEnv(ClientEnvironment *env)

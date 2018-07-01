@@ -24,8 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 static std::unordered_map<std::string, Weather::Type> weatherStateMapper = {
 		{"normal", Weather::NORMAL},
 		{"rain", Weather::RAIN},
-		{"huge_clouds", Weather::HUGE_CLOUDS},
-		{"storm", Weather::STORM},
+//		{"storm", Weather::STORM},
 		{"snow", Weather::SNOW},
 };
 

@@ -124,7 +124,7 @@ RenderingEngine::~RenderingEngine()
 }
 
 void RenderingEngine::renderWeatherParticles(video::ITexture *texture, f32 intensity,
-	f32 gravity_factor, f32 wind_speed)
+	f32 gravity_factor, f32 wind_speed, u16 wind_direction)
 {
 	// This initialization is differed from renderer creation because scene was not
 	// available in constructor
@@ -148,6 +148,10 @@ void RenderingEngine::renderWeatherParticles(video::ITexture *texture, f32 inten
 	f32 applied_gravity_force = gravity_force * gravity_factor;
 	f32 applied_timeforce_lost = 1000 / (gravity_factor * gravity_factor * 0.5);
 
+	v3f wind_target(1000, 0, 0);
+	wind_target += camera->getAbsolutePosition();
+	wind_target.rotateXZBy(wind_direction, camera->getAbsolutePosition());
+
 	// If emitter was not initialized, initialize it
 	if (!em) {
 		em = pssn->createBoxEmitter(
@@ -170,8 +174,8 @@ void RenderingEngine::renderWeatherParticles(video::ITexture *texture, f32 inten
 
 		{
 			scene::IParticleAffector *paf = new scene::CParticleAttractionAffector(
-				camera->getAbsolutePosition() + v3f(1000, 0, 0),
-				wind_speed * gravity_factor * gravity_factor, true, true, true, true);
+				wind_target, wind_speed * gravity_factor * gravity_factor, true, true,
+				true, true);
 			pssn->addAffector(paf);
 			paf->drop();
 		}
@@ -195,6 +199,7 @@ void RenderingEngine::renderWeatherParticles(video::ITexture *texture, f32 inten
 		} else if (affector->getType() == scene::EPAT_ATTRACT) {
 			auto iaa = (scene::CParticleAttractionAffector *) affector;
 			iaa->setSpeed(wind_speed);
+			iaa->setPoint(wind_target);
 		}
 	}
 

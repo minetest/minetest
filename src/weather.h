@@ -28,8 +28,7 @@ enum Type : u8
 {
 	NORMAL,
 	RAIN,
-	HUGE_CLOUDS,
-	STORM,
+//	STORM,
 	SNOW,
 };
 

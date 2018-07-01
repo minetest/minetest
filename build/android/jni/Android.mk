@@ -294,7 +294,8 @@ LOCAL_SRC_FILES := \
 		jni/src/client/render/core.cpp            \
 		jni/src/client/render/stereo.cpp          \
 		jni/src/irrlicht_changes/static_text.cpp  \
-		jni/src/irrlicht_changes/CGUITTFont.cpp
+		jni/src/irrlicht_changes/CGUITTFont.cpp   \
+		jni/src/irrlicht_changes/CParticleAttractionAffector.cpp
 
 # intentionally kept out (we already build openssl itself): jni/src/util/sha256.c
 
