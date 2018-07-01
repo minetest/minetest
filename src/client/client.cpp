@@ -1470,13 +1470,13 @@ bool Client::getChatMessage(std::wstring &res)
 		case CHATMESSAGE_TYPE_RAW:
 		case CHATMESSAGE_TYPE_ANNOUNCE:
 		case CHATMESSAGE_TYPE_SYSTEM:
-			res = chatMessage->message;
+			res = chatMessage->text;
 			break;
 		case CHATMESSAGE_TYPE_NORMAL: {
 			if (!chatMessage->sender.empty())
-				res = L"<" + chatMessage->sender + L"> " + chatMessage->message;
+				res = L"<" + chatMessage->sender + L"> " + chatMessage->text;
 			else
-				res = chatMessage->message;
+				res = chatMessage->text;
 			break;
 		}
 		default:
@@ -1499,17 +1499,6 @@ void Client::typeChatMessage(const std::wstring &message)
 
 	// Send to others
 	sendChatMessage(message);
-
-	// Show locally
-	if (message[0] != L'/') {
-		// compatibility code
-		if (m_proto_ver < 29) {
-			LocalPlayer *player = m_env.getLocalPlayer();
-			assert(player);
-			std::wstring name = narrow_to_wide(player->getName());
-			pushToChatQueue(new ChatMessage(CHATMESSAGE_TYPE_NORMAL, message, name));
-		}
-	}
 }
 
 void Client::addUpdateMeshTask(v3s16 p, bool ack_to_server, bool urgent)

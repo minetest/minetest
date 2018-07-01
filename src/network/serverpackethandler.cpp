@@ -765,12 +765,12 @@ void Server::handleCommand_ChatMessage(NetworkPacket* pkt)
 	// Get player name of this client
 	std::string name = player->getName();
 	std::wstring wname = narrow_to_wide(name);
+	ChatMessage msg(CHATMESSAGE_TYPE_NORMAL, message, wname);
 
-	std::wstring answer_to_sender = handleChat(name, wname, message, true, player);
-	if (!answer_to_sender.empty()) {
+	msg.text = handleChat(msg, true, player);
+	if (!msg.text.empty()) {
 		// Send the answer to sender
-		SendChatMessage(pkt->getPeerId(), ChatMessage(CHATMESSAGE_TYPE_NORMAL,
-				answer_to_sender, wname));
+		SendChatMessage(pkt->getPeerId(), msg);
 	}
 }
 

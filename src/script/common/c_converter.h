@@ -38,6 +38,8 @@ extern "C" {
 
 std::string        getstringfield_default(lua_State *L, int table,
                              const char *fieldname, const std::string &default_);
+std::wstring       getstringfield_default(lua_State *L, int table,
+                             const char *fieldname, const std::wstring &default_);
 bool               getboolfield_default(lua_State *L, int table,
                              const char *fieldname, bool default_);
 float              getfloatfield_default(lua_State *L, int table,
@@ -78,6 +80,8 @@ v3s16              getv3s16field_default(lua_State *L, int table,
                              const char *fieldname, v3s16 default_);
 bool               getstringfield(lua_State *L, int table,
                              const char *fieldname, std::string &result);
+bool               getstringfield(lua_State *L, int table,
+                             const char *fieldname, std::wstring &result);
 size_t             getstringlistfield(lua_State *L, int table,
                              const char *fieldname,
                              std::vector<std::string> *result);

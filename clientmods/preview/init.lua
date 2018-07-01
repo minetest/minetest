@@ -68,13 +68,11 @@ core.register_on_item_use(function(itemstack, pointed_thing)
 	return false
 end)
 
--- This is an example function to ensure it's working properly, should be removed before merge
 core.register_on_receiving_chat_message(function(message)
-	print("[PREVIEW] Received message " .. message)
+	print("[PREVIEW] Received message " .. dump(message))
 	return false
 end)
 
--- This is an example function to ensure it's working properly, should be removed before merge
 core.register_on_sending_chat_message(function(message)
 	print("[PREVIEW] Sending message " .. message)
 	return false

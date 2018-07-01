@@ -19,7 +19,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "cpp_api/s_server.h"
 #include "cpp_api/s_internal.h"
+#include "common/c_content.h"
 #include "common/c_converter.h"
+#include "chatmessage.h"
+#include "util/string.h"
+
 
 bool ScriptApiServer::getAuth(const std::string &playername,
 		std::string *dst_password,
@@ -131,18 +135,31 @@ bool ScriptApiServer::setPassword(const std::string &playername,
 	return lua_toboolean(L, -1);
 }
 
-bool ScriptApiServer::on_chat_message(const std::string &name,
-		const std::string &message)
+bool ScriptApiServer::on_chat_message(const ChatMessage &msg)
 {
 	SCRIPTAPI_PRECHECKHEADER
 
 	// Get core.registered_on_chat_messages
 	lua_getglobal(L, "core");
 	lua_getfield(L, -1, "registered_on_chat_messages");
-	// Call callbacks
-	lua_pushstring(L, name.c_str());
-	lua_pushstring(L, message.c_str());
+	// Push function arguments
+	lua_pushstring(L, wide_to_utf8(msg.sender).c_str());
+	lua_pushstring(L, wide_to_utf8(msg.text).c_str());
+
 	runCallbacks(2, RUN_CALLBACKS_MODE_OR_SC);
+	return readParam<bool>(L, -1);
+}
+
+bool ScriptApiServer::on_chat_message2(const ChatMessage &msg)
+{
+	SCRIPTAPI_PRECHECKHEADER
+
+	// Get core.registered_on_chat_messages
+	lua_getglobal(L, "core");
+	lua_getfield(L, -1, "registered_on_chat_messages2");
+	push_chat_message(L, msg);
+
+	runCallbacks(1, RUN_CALLBACKS_MODE_OR_SC);
 	return readParam<bool>(L, -1);
 }
 

@@ -44,6 +44,16 @@ struct EnumString es_TileAnimationType[] =
 	{0, NULL},
 };
 
+struct EnumString es_ChatMessageType[] =
+{
+	{ CHATMESSAGE_TYPE_RAW, "raw" },
+	{ CHATMESSAGE_TYPE_NORMAL, "normal" },
+	{ CHATMESSAGE_TYPE_ANNOUNCE, "announce" },
+	{ CHATMESSAGE_TYPE_SYSTEM, "system" },
+	{ 0, nullptr },
+};
+
+
 /******************************************************************************/
 void read_item_definition(lua_State* L, int index,
 		const ItemDefinition &default_def, ItemDefinition &def)
@@ -1151,6 +1161,18 @@ bool string_to_enum(const EnumString *spec, int &result,
 	return false;
 }
 
+bool enum_to_string(const EnumString *spec, const int enum_num,
+		std::string &enum_string)
+{
+	for (const EnumString *esp = spec; esp->str; esp++) {
+		if (esp->num == enum_num) {
+			enum_string = esp->str;
+			return true;
+		}
+	}
+	return false;
+}
+
 /******************************************************************************/
 ItemStack read_item(lua_State* L, int index, IItemDefManager *idef)
 {
@@ -1951,4 +1973,33 @@ HudElementStat read_hud_change(lua_State *L, HudElement *elem, void **value)
 			break;
 	}
 	return stat;
+}
+
+void push_chat_message(lua_State *L, const ChatMessage &msg)
+{
+	lua_newtable(L);
+
+	std::string type = "raw";
+	enum_to_string(es_ChatMessageType, msg.type, type);
+	setstringfield(L, -1, "type", type.c_str());
+	setstringfield(L, -1, "sender", wide_to_utf8(msg.sender).c_str());
+	setstringfield(L, -1, "text", wide_to_utf8(msg.text).c_str());
+	setintfield(L, -1, "timestamp", msg.timestamp);
+
+}
+
+ChatMessage read_chat_message(lua_State *L, int index)
+{
+	ChatMessage msg;
+	if (lua_isstring(L, index)) {
+		msg.text = utf8_to_wide(lua_tostring(L, index));
+	} else {
+		msg.type = static_cast<ChatMessageType>(getenumfield(L, index, "type",
+			es_ChatMessageType, CHATMESSAGE_TYPE_RAW));
+		msg.sender = getstringfield_default(L, index, "sender", msg.sender);
+		msg.text = getstringfield_default(L, index, "text", msg.text);
+		msg.timestamp = getintfield_default(L, index, "timestamp", msg.timestamp);
+	}
+
+	return msg;
 }

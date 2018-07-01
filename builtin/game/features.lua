@@ -13,6 +13,7 @@ core.features = {
 	no_chat_message_prediction = true,
 	object_use_texture_alpha = true,
 	object_independent_selectionbox = true,
+	chat_message_table = true,
 }
 
 function core.has_feature(arg)

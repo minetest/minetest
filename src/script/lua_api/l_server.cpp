@@ -70,11 +70,11 @@ int ModApiServer::l_print(lua_State *L)
 int ModApiServer::l_chat_send_all(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	const char *text = luaL_checkstring(L, 1);
+	ChatMessage msg = read_chat_message(L, 1);
+
 	// Get server from registry
 	Server *server = getServer(L);
-	// Send
-	server->notifyPlayers(utf8_to_wide(text));
+	server->notifyPlayers(msg);
 	return 0;
 }
 
@@ -83,12 +83,11 @@ int ModApiServer::l_chat_send_player(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 	const char *name = luaL_checkstring(L, 1);
-	const char *text = luaL_checkstring(L, 2);
+	ChatMessage msg = read_chat_message(L, 2);
 
 	// Get server from registry
 	Server *server = getServer(L);
-	// Send
-	server->notifyPlayer(name, utf8_to_wide(text));
+	server->notifyPlayer(name, msg);
 	return 0;
 }
 

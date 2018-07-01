@@ -656,11 +656,13 @@ Call these functions only at load time!
       callbacks **will likely not be run**. Data should be saved at
       semi-frequent intervals as well as on server shutdown.
 * `minetest.register_on_receiving_chat_message(function(message))`
-    * Called always when a client receive a message
-    * Return `true` to mark the message as handled, which means that it will not be shown to chat
+    * Called always when the client receives a message
+    * message: (table) see `ChatMessage` in
+      [lua_api.txt](https://github.com/minetest/minetest/blob/master/doc/lua_api.txt)
+    * Return `true` to mark the message as handled by Lua and to abort the callbacks
 * `minetest.register_on_sending_chat_message(function(message))`
-    * Called always when a client send a message from chat
-    * Return `true` to mark the message as handled, which means that it will not be sent to server
+    * Called always when a client sends a chat message
+    * Return `true` to mark the message as handled and to abort sending it to the server
 * `minetest.register_chatcommand(cmd, chatcommand definition)`
     * Adds definition to minetest.registered_chatcommands
 * `minetest.unregister_chatcommand(name)`
@@ -860,10 +862,13 @@ Call these functions only at load time!
     * If client disabled minimap (using enable_minimap setting) this reference will be nil.
 * `minetest.camera`
     * Reference to the camera object. See [`Camera`](#camera) class reference for methods.
-* `minetest.show_formspec(formname, formspec)` : returns true on success
-	* Shows a formspec to the player
-* `minetest.display_chat_message(message)` returns true on success
-	* Shows a chat message to the current player.
+* `minetest.show_formspec(formname, formspec)`
+    * Shows a formspec to the player
+    * Returns true on success
+* `minetest.display_chat_message(message)`
+    * Shows a chat message to the current player. 
+    * message: see `ChatMessage`.
+    * Returns true on success
 
 Class reference
 ---------------
@@ -1161,6 +1166,7 @@ Can be obtained via `minetest.get_meta(pos)`.
         func = function(param),        -- Called when command is run.
                                        -- Returns boolean success and text output.
     }
+
 ### Server info
 ```lua
 {

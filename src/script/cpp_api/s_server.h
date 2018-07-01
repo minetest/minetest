@@ -22,13 +22,16 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "cpp_api/s_base.h"
 #include <set>
 
+struct ChatMessage;
+
 class ScriptApiServer
 		: virtual public ScriptApiBase
 {
 public:
 	// Calls on_chat_message handlers
 	// Returns true if script handled message
-	bool on_chat_message(const std::string &name, const std::string &message);
+	bool on_chat_message(const ChatMessage &msg);
+	bool on_chat_message2(const ChatMessage &msg);
 
 	// Calls when mods are loaded
 	void on_mods_loaded();

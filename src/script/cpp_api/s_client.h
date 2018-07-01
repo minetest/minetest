@@ -33,6 +33,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #endif
 
 class ClientEnvironment;
+struct ChatMessage;
 
 class ScriptApiClient : virtual public ScriptApiBase
 {
@@ -45,7 +46,7 @@ public:
 
 	// Chat message handlers
 	bool on_sending_message(const std::string &message);
-	bool on_receiving_message(const std::string &message);
+	bool on_receiving_message(const ChatMessage &msg);
 
 	void on_damage_taken(int32_t damage_amount);
 	void on_hp_modification(int32_t newhp);

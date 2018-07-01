@@ -224,8 +224,12 @@ public:
 	void unsetIpBanned(const std::string &ip_or_name);
 	std::string getBanDescription(const std::string &ip_or_name);
 
-	void notifyPlayer(const char *name, const std::wstring &msg);
-	void notifyPlayers(const std::wstring &msg);
+	void notifyPlayer(const char *name, const ChatMessage &msg);
+	inline void notifyPlayers(const ChatMessage &msg)
+	{
+		SendChatMessage(PEER_ID_INEXISTENT, msg);
+	}
+
 	void spawnParticle(const std::string &playername,
 		v3f pos, v3f velocity, v3f acceleration,
 		float expirationtime, float size,
@@ -482,9 +486,7 @@ private:
 	void handleChatInterfaceEvent(ChatEvent *evt);
 
 	// This returns the answer to the sender of wmessage, or "" if there is none
-	std::wstring handleChat(const std::string &name, const std::wstring &wname,
-		std::wstring wmessage_input,
-		bool check_shout_priv = false,
+	std::wstring handleChat(ChatMessage msg, bool check_shout_priv = false,
 		RemotePlayer *player = NULL);
 	void handleAdminChat(const ChatEventChat *evt);
 

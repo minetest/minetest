@@ -3416,6 +3416,8 @@ Utilities
           object_use_texture_alpha = true,
           -- Object selectionbox is settable independently from collisionbox
           object_independent_selectionbox = true,
+          -- The `ChatMessage` table is available and accepted by chat functions
+          chat_message_table = true,
       }
 
 * `minetest.has_feature(arg)`: returns `boolean, missing_features`
@@ -3657,10 +3659,11 @@ Call these functions only at load time!
         * `finished_unknown_dig`
         * `dug_unbreakable`
         * `dug_too_fast`
-* `minetest.register_on_chat_message(function(name, message))`
+* `minetest.register_on_chat_message(function(name, message, message_type))`
     * Called always when a player says something
     * Return `true` to mark the message as handled, which means that it will
       not be sent to other players.
+    * message_type: string, see `Chat message type`
 * `minetest.register_on_player_receive_fields(function(player, formname, fields))`
     * Called when a button is pressed in player's inventory form, when form
       values are submitted or when the form is actively closed by the player.
@@ -3669,6 +3672,16 @@ Call these functions only at load time!
       through a button_exit[] element.
     * Newest functions are called first
     * If function returns `true`, remaining functions are not called
+* `minetest.register_on_chat_message(function(name, message, message_type))`
+    * (deprecated) Called when a player says something
+    * message: string, the text line
+    * Return `true` to mark the message as handled, which means that it will
+      not be sent to other players.
+* `minetest.register_on_chat_message2(function(message))`
+    * Called when a player says something
+    * message: (table) see `ChatMessage`
+    * Return `true` to mark the message as handled, which means that it will
+      not be sent to other players.
 * `minetest.register_on_craft(function(itemstack, player, old_craft_grid, craft_inv))`
     * Called when `player` crafts something
     * `itemstack` is the output
@@ -3785,8 +3798,22 @@ handler.
 Chat
 ----
 
-* `minetest.chat_send_all(text)`
-* `minetest.chat_send_player(name, text)`
+* `minetest.chat_send_all(message)`
+    * message: see `ChatMessage`.
+* `minetest.chat_send_player(name, message)`
+    * Like `minetest.chat_send_all` but limited to the given player name
+
+ChatMessage
+-----------
+Can either be a string (chat text) or a table with the following fields:
+* `type` (string), defaults to `raw`
+    * `raw`
+    * `normal`: Regular chat message
+    * `announce`: Global server actions
+    * `system`: Player-specific messages (Password change, ...)
+* `sender` (string), defaults to `""`, is the player name who sent the message
+* `text` (string), defaults to `""`, is the actual chat message text
+* `timestamp` (number), defaults to the current tiem, is a UNIX timestamp
 
 Environment access
 ------------------

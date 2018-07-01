@@ -43,25 +43,26 @@ extern "C" {
 
 namespace Json { class Value; }
 
-struct MapNode;
-class NodeDefManager;
-struct PointedThing;
-struct ItemStack;
-struct ItemDefinition;
-struct ToolCapabilities;
-struct ObjectProperties;
-struct SimpleSoundSpec;
-struct ServerSoundParams;
 class Inventory;
-struct NodeBox;
-struct ContentFeatures;
-struct TileDef;
-class Server;
-struct DigParams;
-struct HitParams;
-struct EnumString;
-struct NoiseParams;
+class NodeDefManager;
 class Schematic;
+class Server;
+struct ChatMessage;
+struct ContentFeatures;
+struct DigParams;
+struct EnumString;
+struct HitParams;
+struct ItemDefinition;
+struct ItemStack;
+struct MapNode;
+struct NodeBox;
+struct NoiseParams;
+struct ObjectProperties;
+struct PointedThing;
+struct ServerSoundParams;
+struct SimpleSoundSpec;
+struct TileDef;
+struct ToolCapabilities;
 
 
 ContentFeatures    read_content_features     (lua_State *L, int index);
@@ -166,6 +167,10 @@ bool               string_to_enum            (const EnumString *spec,
                                               int &result,
                                               const std::string &str);
 
+bool               enum_to_string            (const EnumString *spec,
+                                              const int enum_num,
+                                              std::string &enum_string);
+
 bool               read_noiseparams          (lua_State *L, int index,
                                               NoiseParams *np);
 void               push_noiseparams          (lua_State *L, NoiseParams *np);
@@ -194,4 +199,8 @@ void               push_hud_element          (lua_State *L, HudElement *elem);
 
 HudElementStat     read_hud_change           (lua_State *L, HudElement *elem, void **value);
 
+void               push_chat_message         (lua_State *L, const ChatMessage &msg);
+ChatMessage        read_chat_message         (lua_State *L, int index);
+
 extern struct EnumString es_TileAnimationType[];
+extern struct EnumString es_ChatMessageType[];

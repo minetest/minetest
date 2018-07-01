@@ -78,11 +78,8 @@ int ModApiClient::l_print(lua_State *L)
 // display_chat_message(message)
 int ModApiClient::l_display_chat_message(lua_State *L)
 {
-	if (!lua_isstring(L, 1))
-		return 0;
-
-	std::string message = luaL_checkstring(L, 1);
-	getClient(L)->pushToChatQueue(new ChatMessage(utf8_to_wide(message)));
+	ChatMessage msg = read_chat_message(L, 1);
+	getClient(L)->pushToChatQueue(new ChatMessage(msg));
 	lua_pushboolean(L, true);
 	return 1;
 }
@@ -90,9 +87,6 @@ int ModApiClient::l_display_chat_message(lua_State *L)
 // send_chat_message(message)
 int ModApiClient::l_send_chat_message(lua_State *L)
 {
-	if (!lua_isstring(L, 1))
-		return 0;
-
 	// If server disabled this API, discard
 
 	// clang-format off

@@ -60,7 +60,7 @@ bool ScriptApiClient::on_sending_message(const std::string &message)
 	return readParam<bool>(L, -1);
 }
 
-bool ScriptApiClient::on_receiving_message(const std::string &message)
+bool ScriptApiClient::on_receiving_message(const ChatMessage &msg)
 {
 	SCRIPTAPI_PRECHECKHEADER
 
@@ -68,7 +68,7 @@ bool ScriptApiClient::on_receiving_message(const std::string &message)
 	lua_getglobal(L, "core");
 	lua_getfield(L, -1, "registered_on_receiving_chat_message");
 	// Call callbacks
-	lua_pushstring(L, message.c_str());
+	push_chat_message(L, msg);
 	runCallbacks(1, RUN_CALLBACKS_MODE_OR_SC);
 	return readParam<bool>(L, -1);
 }

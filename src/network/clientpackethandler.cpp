@@ -397,27 +397,19 @@ void Client::handleCommand_ChatMessage(NetworkPacket *pkt)
 		wstring message
 	 */
 
-	ChatMessage *chatMessage = new ChatMessage();
+	ChatMessage msg;
 	u8 version, message_type;
 	*pkt >> version >> message_type;
 
-	if (version != 1 || message_type >= CHATMESSAGE_TYPE_MAX) {
-		delete chatMessage;
+	if (version != 1 || message_type >= CHATMESSAGE_TYPE_MAX)
 		return;
-	}
 
-	*pkt >> chatMessage->sender >> chatMessage->message >> chatMessage->timestamp;
+	*pkt >> msg.sender >> msg.text >> msg.timestamp;
 
-	chatMessage->type = (ChatMessageType) message_type;
+	msg.type = (ChatMessageType) message_type;
 
-	// @TODO send this to CSM using ChatMessage object
-	if (moddingEnabled() && m_script->on_receiving_message(
-			wide_to_utf8(chatMessage->message))) {
-		// Message was consumed by CSM and should not be handled by client
-		delete chatMessage;
-	} else {
-		pushToChatQueue(chatMessage);
-	}
+	if (!moddingEnabled() || !m_script->on_receiving_message(msg))
+		pushToChatQueue(new ChatMessage(msg));
 }
 
 void Client::handleCommand_ActiveObjectRemoveAdd(NetworkPacket* pkt)

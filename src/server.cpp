@@ -1558,7 +1558,7 @@ void Server::SendChatMessage(session_t peer_id, const ChatMessage &message)
 	NetworkPacket pkt(TOCLIENT_CHAT_MESSAGE, 0, peer_id);
 	u8 version = 1;
 	u8 type = message.type;
-	pkt << version << type << std::wstring(L"") << message.message << message.timestamp;
+	pkt << version << type << message.sender << message.text << message.timestamp;
 
 	if (peer_id != PEER_ID_INEXISTENT) {
 		RemotePlayer *player = m_env->getPlayer(peer_id);
@@ -2830,15 +2830,16 @@ void Server::handleChatInterfaceEvent(ChatEvent *evt)
 	}
 }
 
-std::wstring Server::handleChat(const std::string &name, const std::wstring &wname,
-	std::wstring wmessage, bool check_shout_priv, RemotePlayer *player)
+std::wstring Server::handleChat(ChatMessage msg,
+	bool check_shout_priv, RemotePlayer *player)
 {
+	const std::string name = wide_to_utf8(msg.sender);
 	// If something goes wrong, this player is to blame
 	RollbackScopeActor rollback_scope(m_rollback,
 		std::string("player:") + name);
 
 	if (g_settings->getBool("strip_color_codes"))
-		wmessage = unescape_enriched(wmessage);
+		msg.text = unescape_enriched(msg.text);
 
 	if (player) {
 		switch (player->canSendChatMessage()) {
@@ -2861,68 +2862,37 @@ std::wstring Server::handleChat(const std::string &name, const std::wstring &wna
 	}
 
 	if (m_max_chatmessage_length > 0
-			&& wmessage.length() > m_max_chatmessage_length) {
+			&& msg.text.length() > m_max_chatmessage_length) {
 		return L"Your message exceed the maximum chat message limit set on the server. "
 				L"It was refused. Send a shorter message";
 	}
 
 	// Run script hook, exit if script ate the chat message
-	if (m_script->on_chat_message(name, wide_to_utf8(wmessage)))
+	if (m_script->on_chat_message2(msg) || m_script->on_chat_message(msg))
 		return L"";
 
-	// Line to send
-	std::wstring line;
-	// Whether to send line to the player that sent the message, or to all players
-	bool broadcast_line = true;
+	if (check_shout_priv && !checkPriv(name, "shout"))
+		return L"-!- You don't have permission to shout.";
 
-	if (check_shout_priv && !checkPriv(name, "shout")) {
-		line += L"-!- You don't have permission to shout.";
-		broadcast_line = false;
-	} else {
-		line += L"<";
-		line += wname;
-		line += L"> ";
-		line += wmessage;
-	}
+	std::wstring log_message = unescape_enriched(L"<" + msg.sender + L"> " + msg.text);
+	actionstream << "CHAT: " << wide_to_narrow(log_message) << std::endl;
 
-	/*
-		Tell calling method to send the message to sender
-	*/
-	if (!broadcast_line)
-		return line;
-
-	/*
-		Send the message to others
-	*/
-	actionstream << "CHAT: " << wide_to_narrow(unescape_enriched(line)) << std::endl;
-
+	// Send chat message to others
+	msg.type = CHATMESSAGE_TYPE_NORMAL;
 	std::vector<session_t> clients = m_clients.getClientIDs();
 
-	/*
-		Send the message back to the inital sender
-		if they are using protocol version >= 29
-	*/
-
-	session_t peer_id_to_avoid_sending =
-		(player ? player->getPeerId() : PEER_ID_INEXISTENT);
-
-	if (player && player->protocol_version >= 29)
-		peer_id_to_avoid_sending = PEER_ID_INEXISTENT;
-
-	for (u16 cid : clients) {
-		if (cid != peer_id_to_avoid_sending)
-			SendChatMessage(cid, ChatMessage(line));
-	}
+	for (session_t cid : clients)
+		SendChatMessage(cid, msg);
 	return L"";
 }
 
 void Server::handleAdminChat(const ChatEventChat *evt)
 {
-	std::string name = evt->nick;
-	std::wstring wname = utf8_to_wide(name);
+	std::wstring wname = utf8_to_wide(evt->nick);
 	std::wstring wmessage = evt->evt_msg;
 
-	std::wstring answer = handleChat(name, wname, wmessage);
+	std::wstring answer = handleChat(ChatMessage(CHATMESSAGE_TYPE_RAW,
+		wmessage, wname));
 
 	// If asked to send answer to sender
 	if (!answer.empty()) {
@@ -3069,25 +3039,22 @@ std::string Server::getBanDescription(const std::string &ip_or_name)
 	return m_banmanager->getBanDescription(ip_or_name);
 }
 
-void Server::notifyPlayer(const char *name, const std::wstring &msg)
+void Server::notifyPlayer(const char *name, const ChatMessage &msg)
 {
 	// m_env will be NULL if the server is initializing
 	if (!m_env)
 		return;
 
 	if (m_admin_nick == name && !m_admin_nick.empty()) {
-		m_admin_chat->outgoing_queue.push_back(new ChatEventChat("", msg));
+		m_admin_chat->outgoing_queue.push_back(
+			new ChatEventChat("", msg.text));
 	}
 
 	RemotePlayer *player = m_env->getPlayer(name);
-	if (!player) {
-		return;
-	}
-
-	if (player->getPeerId() == PEER_ID_INEXISTENT)
+	if (!player || player->getPeerId() == PEER_ID_INEXISTENT)
 		return;
 
-	SendChatMessage(player->getPeerId(), ChatMessage(msg));
+	SendChatMessage(player->getPeerId(), msg);
 }
 
 bool Server::showFormspec(const char *playername, const std::string &formspec,
@@ -3238,11 +3205,6 @@ bool Server::overrideDayNightRatio(RemotePlayer *player, bool do_override,
 	player->overrideDayNightRatio(do_override, ratio);
 	SendOverrideDayNightRatio(player->getPeerId(), do_override, ratio);
 	return true;
-}
-
-void Server::notifyPlayers(const std::wstring &msg)
-{
-	SendChatMessage(PEER_ID_INEXISTENT, ChatMessage(msg));
 }
 
 void Server::spawnParticle(const std::string &playername, v3f pos,
