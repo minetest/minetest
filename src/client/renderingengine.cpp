@@ -140,16 +140,16 @@ void RenderingEngine::startWeatherParticles(video::ITexture *texture)
 		return;
 
 	scene::IParticleEmitter* em = pssn->createBoxEmitter(
-		core::aabbox3d<f32>(-10,-10,-10,20,20,20),
-		core::vector3df(0.00f,0.00f,0.0f),
-		700,1000,
-		video::SColor(0,255,255,255), video::SColor(0,255,255,255),
-		500,2000);
+		core::aabbox3d<f32>(-10.0f, -10.0f, -10.0f, 20.0f, 20.0f, 20.0f),
+		core::vector3df(0.00f, 0.00f, 0.0f),
+		700, 1000,
+		video::SColor(0, 255, 255, 255), video::SColor(30, 255, 255, 255),
+		500, 2000);
 
 	pssn->setEmitter(em);
 	em->drop();
 	scene::IParticleAffector* paf =
-		pssn->createGravityAffector(core::vector3df(0.00f,-0.25f, 0.0f), 1000);
+		pssn->createGravityAffector(core::vector3df(0.00f, -0.25f, 0.0f), 1000);
 
 	pssn->addAffector(paf);
 	paf->drop();
