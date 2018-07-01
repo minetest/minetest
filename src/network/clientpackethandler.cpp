@@ -40,6 +40,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/srp.h"
 #include "tileanimation.h"
 #include "gettext.h"
+#include "weather.h"
 
 void Client::handleCommand_Deprecated(NetworkPacket* pkt)
 {
@@ -1432,4 +1433,18 @@ void Client::handleCommand_ModChannelSignal(NetworkPacket *pkt)
 	// If signal is valid, forward it to client side mods
 	if (valid_signal)
 		m_script->on_modchannel_signal(channel, signal);
+}
+
+void Client::handleCommand_Weather(NetworkPacket *pkt)
+{
+	Weather::State wState;
+	{
+		u8 tmp;
+		*pkt >> tmp;
+		wState.type = (Weather::Type) tmp;
+	}
+
+	*pkt >> wState.texture;
+
+	m_script->on_weather(wState);
 }

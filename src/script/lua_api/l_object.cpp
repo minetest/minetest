@@ -1726,6 +1726,23 @@ int ObjectRef::l_get_clouds(lua_State *L)
 	return 1;
 }
 
+int ObjectRef::l_set_weather(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	ObjectRef *ref = checkobject(L, 1);
+	RemotePlayer *player = getplayer(ref);
+	if (!player)
+		return 0;
+
+	Weather::State wState;
+	wState.setType(readParam<std::string>(L, 2));
+	wState.texture = readParam<std::string>(L, 3, "");
+
+	getServer(L)->SendWeather(player->getPeerId(), wState);
+	lua_pushboolean(L, true);
+	return 1;
+}
+
 
 // override_day_night_ratio(self, brightness=0...1)
 int ObjectRef::l_override_day_night_ratio(lua_State *L)
@@ -1908,6 +1925,7 @@ luaL_Reg ObjectRef::methods[] = {
 	luamethod(ObjectRef, get_sky),
 	luamethod(ObjectRef, set_clouds),
 	luamethod(ObjectRef, get_clouds),
+	luamethod(ObjectRef, set_weather),
 	luamethod(ObjectRef, override_day_night_ratio),
 	luamethod(ObjectRef, get_day_night_ratio),
 	luamethod(ObjectRef, set_local_animation),

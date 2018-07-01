@@ -321,6 +321,9 @@ private:
 	// get_clouds(self)
 	static int l_get_clouds(lua_State *L);
 
+	// set_weather(self, type, texture="")
+	static int l_set_weather(lua_State *L);
+
 	// override_day_night_ratio(self, type)
 	static int l_override_day_night_ratio(lua_State *L);
 

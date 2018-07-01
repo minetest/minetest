@@ -1,7 +1,6 @@
 /*
 Minetest
-Copyright (C) 2013 celeron55, Perttu Ahola <celeron55@gmail.com>
-Copyright (C) 2017 nerzhul, Loic Blot <loic.blot@unix-experience.fr>
+Copyright (C) 2018 nerzhul, Loic BLOT <loic.blot@unix-experience.fr>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -20,26 +19,27 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #pragma once
 
-#include <weather.h>
-#include "cpp_api/s_base.h"
-#include "cpp_api/s_client.h"
-#include "cpp_api/s_modchannels.h"
-#include "cpp_api/s_security.h"
+#include "irrlichttypes.h"
+#include <string>
 
-class Client;
-class LocalPlayer;
-class Camera;
-class ClientScripting:
-	virtual public ScriptApiBase,
-	public ScriptApiSecurity,
-	public ScriptApiClient,
-	public ScriptApiModChannels
+namespace Weather
 {
-public:
-	ClientScripting(Client *client);
-	void on_client_ready(LocalPlayer *localplayer);
-	void on_camera_ready(Camera *camera);
+enum Type: u8
+{
+	NORMAL,
+	RAIN,
+	HUGE_CLOUDS,
+	STORM,
+	WIND,
+	SNOW,
+};
 
-private:
-	virtual void InitializeModApi(lua_State *L, int top);
+struct State
+{
+	Type type = NORMAL;
+	std::string texture;
+
+	void setType(const std::string &strType);
+	const std::string &getTypeStr() const;
+};
 };

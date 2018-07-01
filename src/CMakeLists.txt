@@ -437,6 +437,7 @@ set(common_SRCS
 	voxel.cpp
 	voxelalgorithms.cpp
 	hud.cpp
+	weather.cpp
 	${common_network_SRCS}
 	${JTHREAD_SRCS}
 	${common_SCRIPT_SRCS}

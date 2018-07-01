@@ -622,15 +622,20 @@ minetest.register_craft({
 	}
 })
 
---[[minetest.register_on_joinplayer(function(player)
+minetest.register_on_joinplayer(function(player)
 	minetest.after(3, function()
-		player:set_inventory_formspec("size[8,7.5]"..
+		player:set_weather("rain")
+		--[[player:set_inventory_formspec("size[8,7.5]"..
 			"image[1,0.6;1,2;player.png]"..
 			"list[current_player;main;0,3.5;8,4;]"..
 			"list[current_player;craft;3,0;3,3;]"..
-			"list[current_player;craftpreview;7,1;1,1;]")
+			"list[current_player;craftpreview;7,1;1,1;]")]]
 	end)
-end)]]
+
+	minetest.after(15, function()
+		player:set_weather("storm")
+	end)
+end)
 
 -- Create a detached inventory
 local inv = minetest.create_detached_inventory("test_inventory", {

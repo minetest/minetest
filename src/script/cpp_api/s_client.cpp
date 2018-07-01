@@ -242,6 +242,19 @@ bool ScriptApiClient::on_inventory_open(Inventory *inventory)
 	return readParam<bool>(L, -1);
 }
 
+void ScriptApiClient::on_weather(const Weather::State &weather_state)
+{
+	SCRIPTAPI_PRECHECKHEADER
+
+	lua_getglobal(L, "core");
+	lua_getfield(L, -1, "registered_on_weather");
+
+	lua_pushstring(L, weather_state.getTypeStr().c_str());
+	runCallbacks(1, RUN_CALLBACKS_MODE_FIRST);
+
+	warningstream << "on_weather" << std::endl;
+}
+
 void ScriptApiClient::setEnv(ClientEnvironment *env)
 {
 	ScriptApiBase::setEnv(env);

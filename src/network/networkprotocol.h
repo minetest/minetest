@@ -637,6 +637,12 @@ enum ToClientCommand
 	 	std::string channel name
 	 */
 
+	TOCLIENT_WEATHER = 0x59,
+	/*
+		u8 weather type
+	 	std::string optional texture
+	 */
+
 	TOCLIENT_SRP_BYTES_S_B = 0x60,
 	/*
 		Belonging to AUTH_MECHANISM_SRP.

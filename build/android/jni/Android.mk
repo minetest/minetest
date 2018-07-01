@@ -238,6 +238,7 @@ LOCAL_SRC_FILES := \
 		jni/src/version.cpp                       \
 		jni/src/voxel.cpp                         \
 		jni/src/voxelalgorithms.cpp               \
+		jni/src/weather.cpp                       \
 		jni/src/util/areastore.cpp                \
 		jni/src/util/auth.cpp                     \
 		jni/src/util/base64.cpp                   \
