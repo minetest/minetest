@@ -30,7 +30,6 @@ enum Type : u8
 	RAIN,
 	HUGE_CLOUDS,
 	STORM,
-	WIND,
 	SNOW,
 };
 
