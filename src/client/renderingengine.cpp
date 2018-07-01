@@ -138,10 +138,12 @@ void RenderingEngine::startWeatherParticles(video::ITexture *texture, f32 intens
 	static const u32 maxpps = 1000;
 
 	// If emitter was initialized, weather particle emitter is already running
-	// @TODO update texture if changed
+	// only intensity & material can be changed
 	if (pssn->getEmitter()) {
 		pssn->getEmitter()->setMinParticlesPerSecond(minpps * intensity);
 		pssn->getEmitter()->setMaxParticlesPerSecond(maxpps * intensity);
+		if (pssn->getMaterial(0).getTexture(0) != texture)
+			pssn->setMaterialTexture(0, texture);
 		return;
 	}
 
