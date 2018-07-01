@@ -23,6 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <ISceneManager.h>
 #include "clientobject.h"
 #include "util/numeric.h"
+#include "weather.h"
 
 class ClientSimpleObject;
 class ClientMap;
@@ -136,13 +137,21 @@ public:
 	void updateCameraOffset(const v3s16 &camera_offset)
 	{ m_camera_offset = camera_offset; }
 	v3s16 getCameraOffset() const { return m_camera_offset; }
+
+	void setWeather(const Weather::State &weatherState)
+	{
+		m_weather_state = weatherState;
+	}
 private:
+	void stepWeather(f32 dtime);
+
 	ClientMap *m_map;
 	LocalPlayer *m_local_player = nullptr;
 	ITextureSource *m_texturesource;
 	Client *m_client;
 	ClientScripting *m_script = nullptr;
 	ClientActiveObjectMap m_active_objects;
+	Weather::State m_weather_state;
 	std::vector<ClientSimpleObject*> m_simple_objects;
 	std::queue<ClientEnvEvent> m_client_event_queue;
 	IntervalLimiter m_active_object_light_update_interval;

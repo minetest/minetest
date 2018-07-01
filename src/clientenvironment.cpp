@@ -206,6 +206,8 @@ void ClientEnvironment::step(float dtime)
 		}
 	} while (dtime_downcount > 0.001);
 
+	stepWeather(dtime);
+
 	bool player_immortal = lplayer->getCAO() && lplayer->getCAO()->isImmortal();
 
 	for (const CollisionInfo &info : player_collisions) {
@@ -303,6 +305,11 @@ void ClientEnvironment::step(float dtime)
 			++i;
 		}
 	}
+}
+
+void ClientEnvironment::stepWeather(f32 dtime)
+{
+	// Do something with player & renderer depending on state
 }
 
 void ClientEnvironment::addSimpleObject(ClientSimpleObject *simple)

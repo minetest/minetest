@@ -1447,4 +1447,5 @@ void Client::handleCommand_Weather(NetworkPacket *pkt)
 	*pkt >> wState.texture;
 
 	m_script->on_weather(wState);
+	m_env.setWeather(wState);
 }
