@@ -41,5 +41,6 @@ struct State
 
 	void setType(const std::string &strType);
 	const std::string &getTypeStr() const;
+	std::string getTextureFilename() const;
 };
 };

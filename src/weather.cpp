@@ -51,4 +51,13 @@ const std::string& State::getTypeStr() const
 	FATAL_ERROR("Weather::State stored type is wrong !");
 }
 
+std::string State::getTextureFilename() const
+{
+	if (!texture.empty())
+		return texture;
+
+	std::string fallback_name = "weather_";
+	fallback_name.append(getTypeStr()).append(".png");
+	return fallback_name;
+}
 }

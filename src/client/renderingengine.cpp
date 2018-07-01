@@ -121,12 +121,7 @@ RenderingEngine::~RenderingEngine()
 	s_singleton = nullptr;
 }
 
-void RenderingEngine::setWeatherTexture(const std::string &texture)
-{
-	m_weather_pssn->setMaterialTexture(0, driver->getTexture(texture.c_str()));
-}
-
-void RenderingEngine::startWeatherParticles(const std::string &texture)
+void RenderingEngine::startWeatherParticles(video::ITexture *texture)
 {
 	// This initialization is differed from renderer creation because scene was not
 	// available in constructor
@@ -140,6 +135,7 @@ void RenderingEngine::startWeatherParticles(const std::string &texture)
 	scene::IParticleSystemSceneNode *pssn = s_singleton->m_weather_pssn;
 
 	// If emitter was initialized, weather particle emitter is already running
+	// @TODO update texture if changed
 	if (pssn->getEmitter())
 		return;
 
@@ -160,10 +156,7 @@ void RenderingEngine::startWeatherParticles(const std::string &texture)
 
 	pssn->setMaterialFlag(video::EMF_LIGHTING, false);
 	pssn->setMaterialType(video::EMT_TRANSPARENT_ALPHA_CHANNEL);
-	pssn->setMaterialTexture(0,
-		s_singleton->getVideoDriver()->getTexture("unknown_node.png"));
-
-	s_singleton->setWeatherTexture("unknown_node.png");
+	pssn->setMaterialTexture(0, texture);
 
 	scene::ICameraSceneNode *camera = s_singleton->m_device->getSceneManager()->
 		getActiveCamera();

@@ -136,7 +136,7 @@ public:
 		return s_singleton->m_device->run();
 	}
 
-	static void startWeatherParticles(const std::string &texture);
+	static void startWeatherParticles(video::ITexture *texture);
 	static void stopWeatherParticles(bool definitive = false);
 
 	static std::vector<core::vector3d<u32>> getSupportedVideoModes();
@@ -156,8 +156,6 @@ private:
 	void _initialize(Client *client, Hud *hud);
 
 	void _finalize();
-
-	void setWeatherTexture(const std::string &texture);
 
 	std::unique_ptr<RenderingCore> core;
 	irr::IrrlichtDevice *m_device = nullptr;

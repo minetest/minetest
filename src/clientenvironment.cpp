@@ -316,13 +316,14 @@ void ClientEnvironment::stepWeather(f32 dtime)
 	// Weather particle are shown when:
 	// * it's rain or snow
 	// * player is not in a liquid
-	// @ TODO detect if in a node
+	// @ TODO detect if in a node or behind a node which protect from rain & snow
 	if (!lplayer->in_liquid && (m_weather_state.type == Weather::Type::RAIN ||
-		m_weather_state.type == Weather::Type::SNOW))
-		RenderingEngine::startWeatherParticles(m_weather_state.texture);
-	else
+		m_weather_state.type == Weather::Type::SNOW)) {
+		RenderingEngine::startWeatherParticles(
+			m_texturesource->getTexture(m_weather_state.getTextureFilename()));
+	} else {
 		RenderingEngine::stopWeatherParticles();
-	// Do something with player & renderer depending on state
+	}
 }
 
 void ClientEnvironment::addSimpleObject(ClientSimpleObject *simple)
