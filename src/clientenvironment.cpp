@@ -317,11 +317,22 @@ void ClientEnvironment::stepWeather(f32 dtime)
 	// * it's rain or snow
 	// * player is not in a liquid
 	// @ TODO detect if in a node or behind a node which protect from rain & snow
-	if (!lplayer->in_liquid && (m_weather_state.type == Weather::Type::RAIN ||
-		m_weather_state.type == Weather::Type::SNOW)) {
-		RenderingEngine::startWeatherParticles(
-			m_texturesource->getTexture(m_weather_state.getTextureFilename()),
-			m_weather_state.intensity);
+	if (!lplayer->in_liquid) {
+		switch (m_weather_state.type) {
+			case Weather::Type::RAIN:
+				RenderingEngine::startWeatherParticles(
+					m_texturesource->getTexture(m_weather_state.getTextureFilename()),
+					m_weather_state.intensity, 1.0f);
+				break;
+			case Weather::Type::SNOW:
+				RenderingEngine::startWeatherParticles(
+					m_texturesource->getTexture(m_weather_state.getTextureFilename()),
+					m_weather_state.intensity, 0.1f);
+				break;
+			default:
+				RenderingEngine::stopWeatherParticles();
+				break;
+		}
 	} else {
 		RenderingEngine::stopWeatherParticles();
 	}

@@ -625,41 +625,33 @@ minetest.register_craft({
 minetest.register_on_joinplayer(function(player)
 	minetest.after(3, function()
 		player:set_weather("rain")
-		--[[player:set_inventory_formspec("size[8,7.5]"..
-			"image[1,0.6;1,2;player.png]"..
-			"list[current_player;main;0,3.5;8,4;]"..
-			"list[current_player;craft;3,0;3,3;]"..
-			"list[current_player;craftpreview;7,1;1,1;]")]]
 	end)
 
 	minetest.after(6, function()
 		player:set_weather("rain", 6)
-		--[[player:set_inventory_formspec("size[8,7.5]"..
-			"image[1,0.6;1,2;player.png]"..
-			"list[current_player;main;0,3.5;8,4;]"..
-			"list[current_player;craft;3,0;3,3;]"..
-			"list[current_player;craftpreview;7,1;1,1;]")]]
 	end)
 
 	minetest.after(8, function()
 		player:set_weather("rain", 0.5)
-		--[[player:set_inventory_formspec("size[8,7.5]"..
-			"image[1,0.6;1,2;player.png]"..
-			"list[current_player;main;0,3.5;8,4;]"..
-			"list[current_player;craft;3,0;3,3;]"..
-			"list[current_player;craftpreview;7,1;1,1;]")]]
 	end)
 
 	minetest.after(12, function()
 		player:set_weather("rain", 10)
-		--[[player:set_inventory_formspec("size[8,7.5]"..
-			"image[1,0.6;1,2;player.png]"..
-			"list[current_player;main;0,3.5;8,4;]"..
-			"list[current_player;craft;3,0;3,3;]"..
-			"list[current_player;craftpreview;7,1;1,1;]")]]
 	end)
 
 	minetest.after(15, function()
+		player:set_weather("snow", 1)
+	end)
+
+	minetest.after(18, function()
+		player:set_weather("snow", 0.3)
+	end)
+
+	minetest.after(15, function()
+		player:set_weather("snow", 8)
+	end)
+
+	minetest.after(25, function()
 		player:set_weather("storm")
 	end)
 end)

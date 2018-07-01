@@ -121,7 +121,8 @@ RenderingEngine::~RenderingEngine()
 	s_singleton = nullptr;
 }
 
-void RenderingEngine::startWeatherParticles(video::ITexture *texture, f32 intensity)
+void RenderingEngine::startWeatherParticles(video::ITexture *texture, f32 intensity,
+	f32 gravity_factor)
 {
 	// This initialization is differed from renderer creation because scene was not
 	// available in constructor
@@ -136,6 +137,7 @@ void RenderingEngine::startWeatherParticles(video::ITexture *texture, f32 intens
 
 	static const u32 minpps = 700;
 	static const u32 maxpps = 1000;
+	static const f32 gravity_force = -0.25f;
 
 	// If emitter was initialized, weather particle emitter is already running
 	// only intensity & material can be changed
@@ -148,16 +150,19 @@ void RenderingEngine::startWeatherParticles(video::ITexture *texture, f32 intens
 	}
 
 	scene::IParticleEmitter* em = pssn->createBoxEmitter(
-		core::aabbox3d<f32>(-10.0f, -10.0f, -10.0f, 20.0f, 20.0f, 20.0f),
+		core::aabbox3d<f32>(-30.0f, -30.0f, -30.0f, 40.0f, 40.0f, 40.0f),
 		core::vector3df(0.00f, 0.00f, 0.0f),
 		minpps, maxpps,
 		video::SColor(0, 255, 255, 255), video::SColor(30, 255, 255, 255),
-		500, 2000);
+		500, 3000);
 
 	pssn->setEmitter(em);
 	em->drop();
+
 	scene::IParticleAffector* paf =
-		pssn->createGravityAffector(core::vector3df(0.00f, -0.25f, 0.0f), 1000);
+		pssn->createGravityAffector(
+			core::vector3df(0.00f, gravity_force * gravity_factor, 0.0f),
+			1000 / gravity_factor);
 
 	pssn->addAffector(paf);
 	paf->drop();
