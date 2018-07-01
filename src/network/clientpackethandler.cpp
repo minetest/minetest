@@ -1445,6 +1445,13 @@ void Client::handleCommand_Weather(NetworkPacket *pkt)
 	}
 
 	*pkt >> wState.texture;
+	*pkt >> wState.intensity;
+
+	// Limit intensity values
+	if (wState.intensity < 0.1f)
+		wState.intensity = 0.1f;
+	else if (wState.intensity > 10.0f)
+		wState.intensity = 10.0f;
 
 	m_script->on_weather(wState);
 	m_env.setWeather(wState);

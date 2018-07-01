@@ -1849,7 +1849,7 @@ void Server::SendWeather(session_t peer_id, const Weather::State &weatherState)
 {
 	NetworkPacket pkt(TOCLIENT_WEATHER, sizeof(Weather::State) +
 		weatherState.texture.size(), peer_id);
-	pkt << (u8) weatherState.type << weatherState.texture;
+	pkt << (u8) weatherState.type << weatherState.texture << weatherState.intensity;
 	Send(&pkt);
 }
 

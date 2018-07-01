@@ -320,7 +320,8 @@ void ClientEnvironment::stepWeather(f32 dtime)
 	if (!lplayer->in_liquid && (m_weather_state.type == Weather::Type::RAIN ||
 		m_weather_state.type == Weather::Type::SNOW)) {
 		RenderingEngine::startWeatherParticles(
-			m_texturesource->getTexture(m_weather_state.getTextureFilename()));
+			m_texturesource->getTexture(m_weather_state.getTextureFilename()),
+			m_weather_state.intensity);
 	} else {
 		RenderingEngine::stopWeatherParticles();
 	}

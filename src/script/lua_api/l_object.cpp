@@ -1736,7 +1736,11 @@ int ObjectRef::l_set_weather(lua_State *L)
 
 	Weather::State wState;
 	wState.setType(readParam<std::string>(L, 2));
-	wState.texture = readParam<std::string>(L, 3, "");
+
+	if (!lua_isnil(L, 3))
+		wState.intensity = readParam<float>(L, 3, 1.0f);
+
+	wState.texture = readParam<std::string>(L, 4, "");
 
 	getServer(L)->SendWeather(player->getPeerId(), wState);
 	lua_pushboolean(L, true);

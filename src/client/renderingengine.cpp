@@ -121,7 +121,7 @@ RenderingEngine::~RenderingEngine()
 	s_singleton = nullptr;
 }
 
-void RenderingEngine::startWeatherParticles(video::ITexture *texture)
+void RenderingEngine::startWeatherParticles(video::ITexture *texture, f32 intensity)
 {
 	// This initialization is differed from renderer creation because scene was not
 	// available in constructor
@@ -134,15 +134,21 @@ void RenderingEngine::startWeatherParticles(video::ITexture *texture)
 
 	scene::IParticleSystemSceneNode *pssn = s_singleton->m_weather_pssn;
 
+	static const u32 minpps = 700;
+	static const u32 maxpps = 1000;
+
 	// If emitter was initialized, weather particle emitter is already running
 	// @TODO update texture if changed
-	if (pssn->getEmitter())
+	if (pssn->getEmitter()) {
+		pssn->getEmitter()->setMinParticlesPerSecond(minpps * intensity);
+		pssn->getEmitter()->setMaxParticlesPerSecond(maxpps * intensity);
 		return;
+	}
 
 	scene::IParticleEmitter* em = pssn->createBoxEmitter(
 		core::aabbox3d<f32>(-10.0f, -10.0f, -10.0f, 20.0f, 20.0f, 20.0f),
 		core::vector3df(0.00f, 0.00f, 0.0f),
-		700, 1000,
+		minpps, maxpps,
 		video::SColor(0, 255, 255, 255), video::SColor(30, 255, 255, 255),
 		500, 2000);
 

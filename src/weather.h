@@ -38,6 +38,7 @@ struct State
 {
 	Type type = NORMAL;
 	std::string texture;
+	float intensity = 1.0f;
 
 	void setType(const std::string &strType);
 	const std::string &getTypeStr() const;
