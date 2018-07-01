@@ -38,6 +38,8 @@ struct State
 	Type type = NORMAL;
 	std::string texture;
 	float intensity = 1.0f;
+	float wind_speed = 0.0f;
+	u16 wind_direction = 0;
 
 	void setType(const std::string &strType);
 	const std::string &getTypeStr() const;

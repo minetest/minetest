@@ -20,7 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "helper.h"
 #include <cmath>
 #include <sstream>
-#include <irr_v2d.h>
+#include "irrlichttypes.h"
 #include "c_types.h"
 #include "c_internal.h"
 
@@ -56,7 +56,7 @@ template <> bool LuaHelper::readParam(lua_State *L, int index)
 
 template <> bool LuaHelper::readParam(lua_State *L, int index, const bool &default_value)
 {
-	if (lua_isnil(L, index))
+	if (lua_isnone(L, index) || lua_isnil(L, index))
 		return default_value;
 
 	return lua_toboolean(L, index) != 0;
@@ -65,6 +65,19 @@ template <> bool LuaHelper::readParam(lua_State *L, int index, const bool &defau
 template <> s16 LuaHelper::readParam(lua_State *L, int index)
 {
 	return lua_tonumber(L, index);
+}
+
+template <> u16 LuaHelper::readParam(lua_State *L, int index)
+{
+	return (u16)luaL_checknumber(L, index);
+}
+
+template <> u16 LuaHelper::readParam(lua_State *L, int index, const u16 &default_)
+{
+	if (lua_isnone(L, index) || lua_isnil(L, index))
+		return default_;
+
+	return (u16)lua_tonumber(L, index);
 }
 
 template <> float LuaHelper::readParam(lua_State *L, int index)
@@ -77,7 +90,7 @@ template <> float LuaHelper::readParam(lua_State *L, int index)
 
 template <> float LuaHelper::readParam(lua_State *L, int index, const float &default_)
 {
-	if (lua_isnil(L, index))
+	if (lua_isnone(L, index) || lua_isnil(L, index))
 		return default_;
 
 	if (isNaN(L, index))

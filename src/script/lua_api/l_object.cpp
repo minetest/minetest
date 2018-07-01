@@ -1737,10 +1737,20 @@ int ObjectRef::l_set_weather(lua_State *L)
 	Weather::State wState;
 	wState.setType(readParam<std::string>(L, 2));
 
-	if (!lua_isnil(L, 3))
-		wState.intensity = readParam<float>(L, 3, 1.0f);
+	wState.intensity = readParam<float>(L, 3, 1.0f);
+	if (wState.intensity < 0.1f || wState.intensity > 10.0f)
+		throw LuaError("Weather intensity must be between 0.1 and 10.0. Found: " +
+			std::to_string(wState.intensity));
 
-	wState.texture = readParam<std::string>(L, 4, "");
+	wState.wind_direction = readParam<u16>(L, 4, 0);
+	if (wState.wind_direction > 359)
+		throw LuaError("Weather wind direction must be between 0 and 359");
+
+	wState.wind_speed = readParam<float>(L, 5, 0.0f);
+	if (wState.intensity < 0.0f || wState.intensity > 500.0f)
+		throw LuaError("Weather wind speed must be between 0.0 and 500.0");
+
+	wState.texture = readParam<std::string>(L, 6, "");
 
 	getServer(L)->SendWeather(player->getPeerId(), wState);
 	lua_pushboolean(L, true);

@@ -23,6 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "fontengine.h"
 #include "client.h"
 #include "clouds.h"
+#include "irrlicht_changes/CParticleAttractionAffector.h"
 #include "util/numeric.h"
 #include "guiscalingfilter.h"
 #include "localplayer.h"
@@ -44,6 +45,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 #include <X11/Xatom.h>
+
 #endif
 
 #ifdef __ANDROID__
@@ -122,7 +124,7 @@ RenderingEngine::~RenderingEngine()
 }
 
 void RenderingEngine::renderWeatherParticles(video::ITexture *texture, f32 intensity,
-	f32 gravity_factor)
+	f32 gravity_factor, f32 wind_speed)
 {
 	// This initialization is differed from renderer creation because scene was not
 	// available in constructor
@@ -134,6 +136,8 @@ void RenderingEngine::renderWeatherParticles(video::ITexture *texture, f32 inten
 	}
 
 	scene::IParticleSystemSceneNode *pssn = s_singleton->m_weather_pssn;
+	scene::ICameraSceneNode *camera = s_singleton->m_device->getSceneManager()->
+		getActiveCamera();
 
 	static const u32 minpps = 700;
 	static const u32 maxpps = 1000;
@@ -142,7 +146,7 @@ void RenderingEngine::renderWeatherParticles(video::ITexture *texture, f32 inten
 	scene::IParticleEmitter* em = pssn->getEmitter();
 
 	f32 applied_gravity_force = gravity_force * gravity_factor;
-	f32 applied_timeforce_lost = 1000 / (gravity_factor * gravity_factor);
+	f32 applied_timeforce_lost = 1000 / (gravity_factor * gravity_factor * 0.5);
 
 	// If emitter was not initialized, initialize it
 	if (!em) {
@@ -164,6 +168,14 @@ void RenderingEngine::renderWeatherParticles(video::ITexture *texture, f32 inten
 			paf->drop();
 		}
 
+		{
+			scene::IParticleAffector *paf = new scene::CParticleAttractionAffector(
+				camera->getAbsolutePosition() + v3f(1000, 0, 0),
+				wind_speed * gravity_factor * gravity_factor, true, true, true, true);
+			pssn->addAffector(paf);
+			paf->drop();
+		}
+
 		pssn->setMaterialFlag(video::EMF_LIGHTING, false);
 		pssn->setMaterialTexture(0, texture);
 		pssn->setMaterialType(video::EMT_TRANSPARENT_ALPHA_CHANNEL);
@@ -180,11 +192,11 @@ void RenderingEngine::renderWeatherParticles(video::ITexture *texture, f32 inten
 			auto iga = (scene::IParticleGravityAffector *) affector;
 			iga->setGravity(core::vector3df(0.00f, applied_gravity_force, 0.0f));
 			iga->setTimeForceLost(applied_timeforce_lost);
+		} else if (affector->getType() == scene::EPAT_ATTRACT) {
+			auto iaa = (scene::CParticleAttractionAffector *) affector;
+			iaa->setSpeed(wind_speed);
 		}
 	}
-
-	scene::ICameraSceneNode *camera = s_singleton->m_device->getSceneManager()->
-		getActiveCamera();
 
 	v3f camDir = camera->getTarget() - camera->getAbsolutePosition();
 	camDir = camDir.normalize();

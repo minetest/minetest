@@ -1453,6 +1453,9 @@ void Client::handleCommand_Weather(NetworkPacket *pkt)
 	else if (wState.intensity > 10.0f)
 		wState.intensity = 10.0f;
 
+	*pkt >> wState.wind_speed;
+	*pkt >> wState.wind_direction;
+
 	m_script->on_weather(wState);
 	m_env.setWeather(wState);
 }

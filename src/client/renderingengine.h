@@ -137,7 +137,7 @@ public:
 	}
 
 	static void renderWeatherParticles(video::ITexture *texture, f32 intensity,
-		f32 gravity_factor = 1.0f);
+		f32 gravity_factor = 1.0f, f32 wind_speed = 0.0f);
 	static void stopWeatherParticles(bool definitive = false);
 
 	static std::vector<core::vector3d<u32>> getSupportedVideoModes();
