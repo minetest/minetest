@@ -255,14 +255,23 @@ v3s16 read_v3s16(lua_State *L, int index)
 {
 	v3d pf;
 	CHECK_POS_TAB(index);
+
 	lua_getfield(L, index, "x");
+	CHECK_POS_COORD("x");
 	pf.X = lua_tonumber(L, -1);
+	CHECK_FLOAT_RANGE(pf.X, "x")
 	lua_pop(L, 1);
+
 	lua_getfield(L, index, "y");
+	CHECK_POS_COORD("y");
 	pf.Y = lua_tonumber(L, -1);
+	CHECK_FLOAT_RANGE(pf.Y, "y")
 	lua_pop(L, 1);
+
 	lua_getfield(L, index, "z");
+	CHECK_POS_COORD("z");
 	pf.Z = lua_tonumber(L, -1);
+	CHECK_FLOAT_RANGE(pf.Z, "z")
 	lua_pop(L, 1);
 
 	// Correct rounding at <0
