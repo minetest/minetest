@@ -50,9 +50,8 @@ public:
 	static ServerActiveObject* getobject(ObjectRef *ref);
 private:
 	ServerActiveObject *m_object = nullptr;
-
 	static const char className[];
-	static const luaL_Reg methods[];
+	static luaL_Reg methods[];
 
 
 	static LuaEntitySAO* getluaobject(ObjectRef *ref);

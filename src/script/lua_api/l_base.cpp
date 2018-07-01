@@ -21,7 +21,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "lua_api/l_internal.h"
 #include "cpp_api/s_base.h"
 #include "content/mods.h"
+#include "profiler.h"
 #include "server.h"
+#include <algorithm>
 #include <cmath>
 
 ScriptApiBase *ModApiBase::getScriptApiBase(lua_State *L)
@@ -84,4 +86,81 @@ bool ModApiBase::registerFunction(lua_State *L, const char *name,
 	lua_setfield(L, top, name);
 
 	return true;
+}
+
+std::unordered_map<std::string, luaL_Reg> ModApiBase::m_deprecated_wrappers;
+bool ModApiBase::m_error_deprecated_calls = false;
+
+int ModApiBase::l_deprecated_function(lua_State *L)
+{
+	thread_local std::vector<u64> deprecated_logged;
+
+	u64 start_time = porting::getTimeUs();
+	lua_Debug ar;
+
+	// Get function name for lookup
+	FATAL_ERROR_IF(!lua_getstack(L, 0, &ar), "lua_getstack() failed");
+	FATAL_ERROR_IF(!lua_getinfo(L, "n", &ar), "lua_getinfo() failed");
+
+	// Combine name with line and script backtrace
+	FATAL_ERROR_IF(!lua_getstack(L, 1, &ar), "lua_getstack() failed");
+	FATAL_ERROR_IF(!lua_getinfo(L, "Sl", &ar), "lua_getinfo() failed");
+
+	// Get parent class to get the wrappers map
+	luaL_checktype(L, 1, LUA_TUSERDATA);
+	void *ud = lua_touserdata(L, 1);
+	ModApiBase *o = *(ModApiBase**)ud;
+
+	// New function and new function name
+	auto it = o->m_deprecated_wrappers.find(ar.name);
+
+	// Get backtrace and hash it to reduce the warning flood
+	std::string backtrace = ar.short_src;
+	backtrace.append(":").append(std::to_string(ar.currentline));
+	u64 hash = murmur_hash_64_ua(backtrace.data(), backtrace.length(), 0xBADBABE);
+
+	if (std::find(deprecated_logged.begin(), deprecated_logged.end(), hash)
+			== deprecated_logged.end()) {
+
+		deprecated_logged.emplace_back(hash);
+		warningstream << "Call to deprecated function '"  << ar.name << "', please use '"
+			<< it->second.name << "' at " << backtrace << std::endl;
+
+		if (m_error_deprecated_calls)
+			script_error(L, LUA_ERRRUN, NULL, NULL);
+	}
+
+	u64 end_time = porting::getTimeUs();
+	g_profiler->avg("l_deprecated_function", end_time - start_time);
+
+	return it->second.func(L);
+}
+
+void ModApiBase::markAliasDeprecated(luaL_Reg *reg)
+{
+	std::string value = g_settings->get("deprecated_lua_api_handling");
+	m_error_deprecated_calls = value == "error";
+
+	if (!m_error_deprecated_calls && value != "log")
+		return;
+
+	const char *last_name = nullptr;
+	lua_CFunction last_func = nullptr;
+
+	// ! Null termination !
+	while (reg->func) {
+		if (last_func == reg->func) {
+			// Duplicate found
+			std::pair<std::string, luaL_Reg> entry(
+				reg->name,
+				{ .name = last_name, .func = reg->func }
+			);
+			m_deprecated_wrappers.emplace(entry);
+			reg->func = l_deprecated_function;
+		}
+
+		last_func = reg->func;
+		last_name = reg->name;
+		++reg;
+	}
 }
