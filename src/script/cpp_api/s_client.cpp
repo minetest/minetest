@@ -250,7 +250,8 @@ void ScriptApiClient::on_weather(const Weather::State &weather_state)
 	lua_getfield(L, -1, "registered_on_weather");
 
 	lua_pushstring(L, weather_state.getTypeStr().c_str());
-	runCallbacks(1, RUN_CALLBACKS_MODE_FIRST);
+	lua_pushnumber(L, weather_state.intensity);
+	runCallbacks(2, RUN_CALLBACKS_MODE_FIRST);
 }
 
 void ScriptApiClient::setEnv(ClientEnvironment *env)

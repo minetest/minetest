@@ -88,8 +88,9 @@ core.register_on_damage_taken(function(hp)
 	print("[PREVIEW] Damage taken " .. hp)
 end)
 
-core.register_on_weather(function(weather_type)
-	print("[PREVIEW] New weather type received: " .. weather_type)
+core.register_on_weather(function(weather_type, weather_intensity)
+	print("[PREVIEW] New weather type received: " .. weather_type .. ", intensity: " ..
+		weather_intensity)
 end)
 
 core.register_globalstep(function(dtime)
