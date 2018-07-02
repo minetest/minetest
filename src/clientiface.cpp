@@ -199,7 +199,10 @@ void RemoteClient::GetNextBlocks (
 	// Distrust client-sent FOV and get server-set player object property
 	// zoom FOV (degrees) as a check to avoid hacked clients using FOV to load
 	// distant world.
-	float prop_zoom_fov = sao->getZoomFOV() * core::DEGTORAD;
+	// (zoom is disabled by value 0)
+	float prop_zoom_fov = sao->getZoomFOV() < 0.001f ?
+		0.0f :
+		std::max(camera_fov, sao->getZoomFOV() * core::DEGTORAD);
 
 	const s16 full_d_max = std::min(adjustDist(m_max_send_distance, prop_zoom_fov),
 		wanted_range);
