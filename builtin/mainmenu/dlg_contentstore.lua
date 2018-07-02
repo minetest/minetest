@@ -145,9 +145,9 @@ local function start_install(calling_dialog, package)
 end
 
 local function get_screenshot(package)
-	if #package.screenshots == 0 then
+	if not package.thumbnail then
 		return defaulttexturedir .. "no_screenshot.png"
-	elseif screenshot_downloading[package.screenshots[1]] then
+	elseif screenshot_downloading[package.thumbnail] then
 		return defaulttexturedir .. "loading_screenshot.png"
 	end
 
@@ -163,7 +163,7 @@ local function get_screenshot(package)
 	end
 
 	-- Show error if we've failed to download before
-	if screenshot_downloaded[package.screenshots[1]] then
+	if screenshot_downloaded[package.thumbnail] then
 		return defaulttexturedir .. "error_screenshot.png"
 	end
 
@@ -173,8 +173,8 @@ local function get_screenshot(package)
 		return core.download_file(params.url, params.dest)
 	end
 	local function callback(success)
-		screenshot_downloading[package.screenshots[1]] = nil
-		screenshot_downloaded[package.screenshots[1]] = true
+		screenshot_downloading[package.thumbnail] = nil
+		screenshot_downloaded[package.thumbnail] = true
 		if not success then
 			core.log("warning", "Screenshot download failed for some reason")
 		end
@@ -185,8 +185,8 @@ local function get_screenshot(package)
 		end
 	end
 	if core.handle_async(download_screenshot,
-			{ dest = filepath, url = package.screenshots[1] }, callback) then
-		screenshot_downloading[package.screenshots[1]] = true
+			{ dest = filepath, url = package.thumbnail }, callback) then
+		screenshot_downloading[package.thumbnail] = true
 	else
 		core.log("error", "ERROR: async event failed")
 		return defaulttexturedir .. "error_screenshot.png"

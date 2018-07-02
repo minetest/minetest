@@ -111,7 +111,7 @@ int LuaVoxelManip::l_write_to_map(lua_State *L)
 	MAP_LOCK_REQUIRED;
 
 	LuaVoxelManip *o = checkobject(L, 1);
-	bool update_light = !lua_isboolean(L, 2) || lua_toboolean(L, 2);
+	bool update_light = !lua_isboolean(L, 2) || readParam<bool>(L, 2);
 	GET_ENV_PTR;
 	ServerMap *map = &(env->getServerMap());
 	if (o->is_mapgen_vm || !update_light) {
@@ -197,7 +197,7 @@ int LuaVoxelManip::l_calc_lighting(lua_State *L)
 	v3s16 fpmax  = vm->m_area.MaxEdge;
 	v3s16 pmin   = lua_istable(L, 2) ? check_v3s16(L, 2) : fpmin + yblock;
 	v3s16 pmax   = lua_istable(L, 3) ? check_v3s16(L, 3) : fpmax - yblock;
-	bool propagate_shadow = !lua_isboolean(L, 4) || lua_toboolean(L, 4);
+	bool propagate_shadow = !lua_isboolean(L, 4) || readParam<bool>(L, 4);
 
 	sortBoxVerticies(pmin, pmax);
 	if (!vm->m_area.contains(VoxelArea(pmin, pmax)))

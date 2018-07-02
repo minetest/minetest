@@ -66,7 +66,7 @@ const ToClientCommandHandler toClientCommandTable[TOCLIENT_NUM_MSG_TYPES] =
 	{ "TOCLIENT_INVENTORY",                TOCLIENT_STATE_CONNECTED, &Client::handleCommand_Inventory }, // 0x27
 	null_command_handler,
 	{ "TOCLIENT_TIME_OF_DAY",              TOCLIENT_STATE_CONNECTED, &Client::handleCommand_TimeOfDay }, // 0x29
-	{ "TOCLIENT_CSM_FLAVOUR_LIMITS",       TOCLIENT_STATE_CONNECTED, &Client::handleCommand_CSMFlavourLimits }, // 0x2A
+	{ "TOCLIENT_CSM_RESTRICTION_FLAGS",    TOCLIENT_STATE_CONNECTED, &Client::handleCommand_CSMRestrictionFlags }, // 0x2A
 	null_command_handler,
 	null_command_handler,
 	null_command_handler,

@@ -76,22 +76,18 @@ Player::Player(const char *name, IItemDefManager *idef):
 	hud_hotbar_itemcount = HUD_HOTBAR_ITEMCOUNT_DEFAULT;
 
 	m_player_settings.readGlobalSettings();
-	g_settings->registerChangedCallback("free_move", &Player::settingsChangedCallback,
-			&m_player_settings);
-	g_settings->registerChangedCallback("fast_move", &Player::settingsChangedCallback,
-			&m_player_settings);
-	g_settings->registerChangedCallback("continuous_forward",
+	// Register player setting callbacks
+	for (const std::string &name : m_player_settings.setting_names)
+		g_settings->registerChangedCallback(name,
 			&Player::settingsChangedCallback, &m_player_settings);
-	g_settings->registerChangedCallback("always_fly_fast",
-			&Player::settingsChangedCallback, &m_player_settings);
-	g_settings->registerChangedCallback("aux1_descends",
-			&Player::settingsChangedCallback, &m_player_settings);
-	g_settings->registerChangedCallback(
-			"noclip", &Player::settingsChangedCallback, &m_player_settings);
 }
 
 Player::~Player()
 {
+	// m_player_settings becomes invalid, remove callbacks
+	for (const std::string &name : m_player_settings.setting_names)
+		g_settings->deregisterChangedCallback(name,
+			&Player::settingsChangedCallback, &m_player_settings);
 	clearHud();
 }
 

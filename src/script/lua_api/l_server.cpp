@@ -33,7 +33,7 @@ int ModApiServer::l_request_shutdown(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 	const char *msg = lua_tolstring(L, 1, NULL);
-	bool reconnect = lua_toboolean(L, 2);
+	bool reconnect = readParam<bool>(L, 2);
 	float seconds_before_shutdown = lua_tonumber(L, 3);
 	getServer(L)->requestShutdown(msg ? msg : "", reconnect, seconds_before_shutdown);
 	return 0;
@@ -310,15 +310,11 @@ int ModApiServer::l_kick_player(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 	const char *name = luaL_checkstring(L, 1);
-	std::string message;
+	std::string message("Kicked");
 	if (lua_isstring(L, 2))
-	{
-		message = std::string("Kicked: ") + lua_tostring(L, 2);
-	}
+		message.append(": ").append(readParam<std::string>(L, 2));
 	else
-	{
-		message = "Kicked.";
-	}
+		message.append(".");
 
 	RemotePlayer *player = dynamic_cast<ServerEnvironment *>(getEnv(L))->getPlayer(name);
 	if (player == NULL) {
@@ -475,7 +471,7 @@ int ModApiServer::l_notify_authentication_modified(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 	std::string name;
 	if(lua_isstring(L, 1))
-		name = lua_tostring(L, 1);
+		name = readParam<std::string>(L, 1);
 	getServer(L)->reportPrivsModified(name);
 	return 0;
 }
@@ -485,8 +481,8 @@ int ModApiServer::l_get_last_run_mod(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 	lua_rawgeti(L, LUA_REGISTRYINDEX, CUSTOM_RIDX_CURRENT_MOD_NAME);
-	const char *current_mod = lua_tostring(L, -1);
-	if (current_mod == NULL || current_mod[0] == '\0') {
+	std::string current_mod = readParam<std::string>(L, -1, "");
+	if (current_mod.empty()) {
 		lua_pop(L, 1);
 		lua_pushstring(L, getScriptApiBase(L)->getOrigin().c_str());
 	}

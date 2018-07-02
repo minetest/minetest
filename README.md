@@ -23,7 +23,7 @@ Further documentation
 - Developer wiki: http://dev.minetest.net/
 - Forum: http://forum.minetest.net/
 - Github: https://github.com/minetest/minetest/
-- doc/ directory of source distribution
+- [doc/](doc/) directory of source distribution
 
 Default controls
 ----------------
@@ -70,29 +70,28 @@ Some can be changes in the key config dialog in the settings tab.
 
 Paths
 -----
-
 Locations:
 
-* bin   - Compiled binaries
-* share - Distributed read-only data
-* user  - User-created modifiable data
+* `bin`   - Compiled binaries
+* `share` - Distributed read-only data
+* `user`  - User-created modifiable data
 
 Where each location is on each platform:
 
 * Windows .zip / RUN_IN_PLACE source:
-    * bin   = bin
-    * share = .
-    * user  = .
+    * `bin`   = `bin`
+    * `share` = `.`
+    * `user`  = `.`
 * Linux installed:
-    * bin   = /usr/bin
-    * share = /usr/share/minetest
-    * user  = ~/.minetest
+    * `bin`   = `/usr/bin`
+    * `share` = `/usr/share/minetest`
+    * `user`  = `~/.minetest`
 * macOS:
-    * bin   = Contents/MacOS
-    * share = Contents/Resources
-    * user  = Contents/User OR ~/Library/Application Support/minetest
+    * `bin`   = `Contents/MacOS`
+    * `share` = `Contents/Resources`
+    * `user`  = `Contents/User OR ~/Library/Application Support/minetest`
 
-Worlds can be found as separate folders in: user/worlds/
+Worlds can be found as separate folders in: `user/worlds/`
 
 Configuration file:
 -------------------
@@ -106,11 +105,10 @@ Configuration file:
 
 Command-line options:
 ---------------------
-- Use --help
+- Use `--help`
 
 Compiling
 ---------
-
 ### Compiling on GNU/Linux
 
 #### Dependencies
@@ -127,11 +125,11 @@ Compiling
 
 For Debian/Ubuntu:
 
-    $ sudo apt-get install build-essential libirrlicht-dev cmake libbz2-dev libpng-dev libjpeg-dev libxxf86vm-dev libgl1-mesa-dev libsqlite3-dev libogg-dev libvorbis-dev libopenal-dev libcurl4-gnutls-dev libfreetype6-dev zlib1g-dev libgmp-dev libjsoncpp-dev
+    sudo apt-get install build-essential libirrlicht-dev cmake libbz2-dev libpng-dev libjpeg-dev libxxf86vm-dev libgl1-mesa-dev libsqlite3-dev libogg-dev libvorbis-dev libopenal-dev libcurl4-gnutls-dev libfreetype6-dev zlib1g-dev libgmp-dev libjsoncpp-dev
 
 For Fedora users:
 
-    $ sudo dnf install make automake gcc gcc-c++ kernel-devel cmake libcurl-devel openal-soft-devel libvorbis-devel libXxf86vm-devel libogg-devel freetype-devel mesa-libGL-devel zlib-devel jsoncpp-devel irrlicht-devel bzip2-libs gmp-devel sqlite-devel luajit-devel leveldb-devel ncurses-devel doxygen spatialindex-devel bzip2-devel
+    sudo dnf install make automake gcc gcc-c++ kernel-devel cmake libcurl-devel openal-soft-devel libvorbis-devel libXxf86vm-devel libogg-devel freetype-devel mesa-libGL-devel zlib-devel jsoncpp-devel irrlicht-devel bzip2-libs gmp-devel sqlite-devel luajit-devel leveldb-devel ncurses-devel doxygen spatialindex-devel bzip2-devel
 
 #### Download
 
@@ -139,55 +137,55 @@ You can install git for easily keeping your copy up to date.
 If you don’t want git, read below on how to get the source without git.  
 This is an example for installing git on Debian/Ubuntu:
 
-    $ sudo apt-get install git
+    sudo apt-get install git
 
 For Fedora users:
 
-    $ sudo dnf install git
+    sudo dnf install git
 
 Download source (this is the URL to the latest of source repository, which might not work at all times) using git:
 
-    $ git clone --depth 1 https://github.com/minetest/minetest.git
-    $ cd minetest
+    git clone --depth 1 https://github.com/minetest/minetest.git
+    cd minetest
 
 Download minetest_game (otherwise only the "Minimal development test" game is available) using git:
 
-    $ git clone --depth 1 https://github.com/minetest/minetest_game.git games/minetest_game
+    git clone --depth 1 https://github.com/minetest/minetest_game.git games/minetest_game
 
 Download source, without using git:
 
-    $ wget https://github.com/minetest/minetest/archive/master.tar.gz
-    $ tar xf master.tar.gz
-    $ cd minetest-master
+    wget https://github.com/minetest/minetest/archive/master.tar.gz
+    tar xf master.tar.gz
+    cd minetest-master
 
 Download minetest_game, without using git:
 
-    $ cd games/
-    $ wget https://github.com/minetest/minetest_game/archive/master.tar.gz
-    $ tar xf master.tar.gz
-    $ mv minetest_game-master minetest_game
-    $ cd ..
+    cd games/
+    wget https://github.com/minetest/minetest_game/archive/master.tar.gz
+    tar xf master.tar.gz
+    mv minetest_game-master minetest_game
+    cd ..
 
 #### Build
 
 Build a version that runs directly from the source directory:
 
-    $ cmake . -DRUN_IN_PLACE=TRUE
-    $ make -j <number of processors>
+    cmake . -DRUN_IN_PLACE=TRUE
+    make -j <number of processors>
 
 Run it:
 
-    $ ./bin/minetest
+    ./bin/minetest
 
-- Use cmake . -LH to see all CMake options and their current state
+- Use `cmake . -LH` to see all CMake options and their current state
 - If you want to install it system-wide (or are making a distribution package),
-  you will want to use -DRUN_IN_PLACE=FALSE
-- You can build a bare server by specifying -DBUILD_SERVER=TRUE
-- You can disable the client build by specifying -DBUILD_CLIENT=FALSE
-- You can select between Release and Debug build by -DCMAKE_BUILD_TYPE=<Debug or Release>
+  you will want to use `-DRUN_IN_PLACE=FALSE`
+- You can build a bare server by specifying `-DBUILD_SERVER=TRUE`
+- You can disable the client build by specifying `-DBUILD_CLIENT=FALSE`
+- You can select between Release and Debug build by `-DCMAKE_BUILD_TYPE=<Debug or Release>`
   - Debug build is slower, but gives much more useful output in a debugger
 - If you build a bare server, you don't need to have Irrlicht installed.
-  In that case use -DIRRLICHT_SOURCE_DIR=/the/irrlicht/source
+  - In that case use `-DIRRLICHT_SOURCE_DIR=/the/irrlicht/source`
 
 ### CMake options
 
@@ -275,7 +273,7 @@ Library specific options:
 ### Compiling on Windows
 
 * This section is outdated. In addition to what is described here:
-  * In addition to minetest, you need to download minetest_game.
+  * In addition to minetest, you need to download [minetest_game](https://github.com/minetest/minetest_game).
   * If you wish to have sound support, you need libogg, libvorbis and libopenal
   
 * You need:
@@ -430,10 +428,15 @@ This is how we build Windows releases.
 
 Version scheme
 --------------
+We use `major.minor.patch` since 5.0.0-dev. Prior to that we used `0.major.minor`.
 
-Minetest doesn't follow semver. Instead, we do something roughly similar to 0.major.minor.
+- Major is incremented when the release contains breaking changes, all other
+numbers are set to 0.
+- Minor is incremented when the release contains new non-breaking features,
+patch is set to 0.
+- Patch is incremented when the release only contains bugfixes and very
+minor/trivial features considered necessary.
 
-Since 0.5.0-dev and 0.4.17-dev, the dev notation refers to the next release, 
-ie: 0.5.0-dev is the development version leading to 0.5.0.
-
-Prior to that, we used oldversion-dev.
+Since 5.0.0-dev and 0.4.17-dev, the dev notation refers to the next release, 
+ie: 5.0.0-dev is the development version leading to 5.0.0. 
+Prior to that we used `previous_version-dev`.

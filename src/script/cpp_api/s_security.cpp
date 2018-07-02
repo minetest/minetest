@@ -524,7 +524,7 @@ bool ScriptApiSecurity::checkPath(lua_State *L, const char *path,
 	// Get mod name
 	lua_rawgeti(L, LUA_REGISTRYINDEX, CUSTOM_RIDX_CURRENT_MOD_NAME);
 	if (lua_isstring(L, -1)) {
-		std::string mod_name = lua_tostring(L, -1);
+		std::string mod_name = readParam<std::string>(L, -1);
 
 		// Builtin can access anything
 		if (mod_name == BUILTIN_MOD_NAME) {
@@ -649,7 +649,7 @@ int ScriptApiSecurity::sl_g_loadfile(lua_State *L)
 	lua_pop(L, 1);
 
 	if (script->getType() == ScriptingType::Client) {
-		std:: string display_path = lua_tostring(L, 1);
+		std::string display_path = readParam<std::string>(L, 1);
 		const std::string *path = script->getClient()->getModFile(display_path);
 		if (!path) {
 			std::string error_msg = "Coudln't find script called:" + display_path;

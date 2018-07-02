@@ -31,7 +31,7 @@ class LuaPerlinNoise : public ModApiBase
 private:
 	NoiseParams np;
 	static const char className[];
-	static const luaL_Reg methods[];
+	static luaL_Reg methods[];
 
 	// Exported functions
 
@@ -63,7 +63,7 @@ class LuaPerlinNoiseMap : public ModApiBase
 	Noise *noise;
 	bool m_is3d;
 	static const char className[];
-	static const luaL_Reg methods[];
+	static luaL_Reg methods[];
 
 	// Exported functions
 

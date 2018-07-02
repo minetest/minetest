@@ -203,10 +203,7 @@ void ClientEnvironment::step(float dtime)
 			lplayer->move(dtime_part, this, position_max_increment,
 				&player_collisions);
 		}
-	}
-	while(dtime_downcount > 0.001);
-
-	//std::cout<<"Looped "<<loopcount<<" times."<<std::endl;
+	} while (dtime_downcount > 0.001);
 
 	bool player_immortal = lplayer->getCAO() && lplayer->getCAO()->isImmortal();
 
@@ -480,14 +477,6 @@ void ClientEnvironment::damageLocalPlayer(u8 damage, bool handle_hp)
 	event.type = CEE_PLAYER_DAMAGE;
 	event.player_damage.amount = damage;
 	event.player_damage.send_to_server = handle_hp;
-	m_client_event_queue.push(event);
-}
-
-void ClientEnvironment::updateLocalPlayerBreath(u16 breath)
-{
-	ClientEnvEvent event;
-	event.type = CEE_PLAYER_BREATH;
-	event.player_breath.amount = breath;
 	m_client_event_queue.push(event);
 }
 

@@ -155,23 +155,43 @@ size_t Decoration::placeDeco(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax)
 			nmin.Z + sidelen + sidelen * z0 - 1
 		);
 
+		bool cover = false;
 		// Amount of decorations
 		float nval = (flags & DECO_USE_NOISE) ?
 			NoisePerlin2D(&np, p2d_center.X, p2d_center.Y, mapseed) :
 			fill_ratio;
 		u32 deco_count = 0;
-		float deco_count_f = (float)area * nval;
-		if (deco_count_f >= 1.f) {
-			deco_count = deco_count_f;
-		} else if (deco_count_f > 0.f) {
-			// For low density decorations calculate a chance for 1 decoration
-			if (ps.range(1000) <= deco_count_f * 1000.f)
-				deco_count = 1;
+
+		if (nval >= 10.0f) {
+			// Complete coverage. Disable random placement to avoid
+			// redundant multiple placements at one position.
+			cover = true;
+			deco_count = area;
+		} else {
+			float deco_count_f = (float)area * nval;
+			if (deco_count_f >= 1.0f) {
+				deco_count = deco_count_f;
+			} else if (deco_count_f > 0.0f) {
+				// For very low density calculate a chance for 1 decoration
+				if (ps.range(1000) <= deco_count_f * 1000.0f)
+					deco_count = 1;
+			}
 		}
 
+		s16 x = p2d_min.X - 1;
+		s16 z = p2d_min.Y;
+
 		for (u32 i = 0; i < deco_count; i++) {
-			s16 x = ps.range(p2d_min.X, p2d_max.X);
-			s16 z = ps.range(p2d_min.Y, p2d_max.Y);
+			if (!cover) {
+				x = ps.range(p2d_min.X, p2d_max.X);
+				z = ps.range(p2d_min.Y, p2d_max.Y);
+			} else {
+				x++;
+				if (x == p2d_max.X + 1) {
+					z++;
+					x = p2d_min.X;
+				}
+			}
 			int mapindex = carea_size * (z - nmin.Z) + (x - nmin.X);
 
 			if ((flags & DECO_ALL_FLOORS) ||

@@ -59,7 +59,7 @@ void ModApiHttp::read_http_fetch_request(lua_State *L, HTTPFetchRequest &req)
 			lua_pop(L, 1);
 		}
 	} else if (lua_isstring(L, 2)) {
-		req.post_data = lua_tostring(L, 2);
+		req.post_data = readParam<std::string>(L, 2);
 	}
 	lua_pop(L, 1);
 
@@ -154,7 +154,7 @@ int ModApiHttp::l_request_http_api(lua_State *L)
 		return 0;
 	}
 
-	const char *mod_name = lua_tostring(L, -1);
+	std::string mod_name = readParam<std::string>(L, -1);
 	std::string http_mods = g_settings->get("secure.http_mods");
 	http_mods.erase(std::remove(http_mods.begin(), http_mods.end(), ' '), http_mods.end());
 	std::vector<std::string> mod_list_http = str_split(http_mods, ',');

@@ -62,6 +62,12 @@ end
 core.register_on_joinplayer(function(player)
 	local player_name = player:get_player_name()
 	player_list[player_name] = player
+	if not minetest.is_singleplayer() then
+		local status = core.get_server_status(player_name, true)
+		if status and status ~= "" then
+			core.chat_send_player(player_name, status)
+		end
+	end
 	core.send_join_message(player_name)
 end)
 

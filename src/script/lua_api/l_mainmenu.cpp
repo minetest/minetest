@@ -83,7 +83,7 @@ int ModApiMainMenu::getBoolData(lua_State *L, std::string name,bool& valid)
 		}
 
 	valid = true;
-	return lua_toboolean(L, -1);
+	return readParam<bool>(L, -1);
 }
 
 /******************************************************************************/
@@ -158,7 +158,7 @@ int ModApiMainMenu::l_set_background(lua_State *L)
 	unsigned int minsize = 16;
 
 	if (!lua_isnone(L, 3)) {
-		tile_image = lua_toboolean(L, 3);
+		tile_image = readParam<bool>(L, 3);
 	}
 
 	if (!lua_isnone(L, 4)) {
@@ -195,7 +195,7 @@ int ModApiMainMenu::l_set_clouds(lua_State *L)
 	GUIEngine* engine = getGuiEngine(L);
 	sanity_check(engine != NULL);
 
-	bool value = lua_toboolean(L,1);
+	bool value = readParam<bool>(L,1);
 
 	engine->m_clouds_enabled = value;
 
@@ -594,31 +594,18 @@ int ModApiMainMenu::l_create_world(lua_State *L)
 /******************************************************************************/
 int ModApiMainMenu::l_delete_world(lua_State *L)
 {
-	int worldidx	= luaL_checkinteger(L,1) -1;
-
+	int world_id = luaL_checkinteger(L, 1) - 1;
 	std::vector<WorldSpec> worlds = getAvailableWorlds();
-
-	if ((worldidx >= 0) &&
-		(worldidx < (int) worlds.size())) {
-
-		WorldSpec spec = worlds[worldidx];
-
-		std::vector<std::string> paths;
-		paths.push_back(spec.path);
-		fs::GetRecursiveSubPaths(spec.path, paths, true);
-
-		// Delete files
-		if (!fs::DeletePaths(paths)) {
-			lua_pushstring(L, "Failed to delete world");
-		}
-		else {
-			lua_pushnil(L);
-		}
-	}
-	else {
+	if (world_id < 0 || world_id >= (int) worlds.size()) {
 		lua_pushstring(L, "Invalid world index");
+		return 1;
 	}
-	return 1;
+	const WorldSpec &spec = worlds[world_id];
+	if (!fs::RecursiveDelete(spec.path)) {
+		lua_pushstring(L, "Failed to delete world");
+		return 1;
+	}
+	return 0;
 }
 
 /******************************************************************************/
@@ -640,7 +627,8 @@ int ModApiMainMenu::l_set_topleft_text(lua_State *L)
 int ModApiMainMenu::l_get_mapgen_names(lua_State *L)
 {
 	std::vector<const char *> names;
-	Mapgen::getMapgenNames(&names, lua_toboolean(L, 1));
+	bool include_hidden = lua_isboolean(L, 1) && readParam<bool>(L, 1);
+	Mapgen::getMapgenNames(&names, include_hidden);
 
 	lua_newtable(L);
 	for (size_t i = 0; i != names.size(); i++) {
@@ -735,7 +723,7 @@ int ModApiMainMenu::l_copy_dir(lua_State *L)
 
 	if ((!lua_isnone(L,3)) &&
 			(!lua_isnil(L,3))) {
-		keep_source = lua_toboolean(L,3);
+		keep_source = readParam<bool>(L,3);
 	}
 
 	std::string absolute_destination = fs::RemoveRelativePathComponents(destination);
@@ -884,7 +872,7 @@ int ModApiMainMenu::l_show_path_select_dialog(lua_State *L)
 
 	const char *formname= luaL_checkstring(L, 1);
 	const char *title	= luaL_checkstring(L, 2);
-	bool is_file_select = lua_toboolean(L, 3);
+	bool is_file_select = readParam<bool>(L, 3);
 
 	GUIFileSelectMenu* fileOpenMenu =
 		new GUIFileSelectMenu(RenderingEngine::get_gui_env(),
@@ -1005,7 +993,7 @@ int ModApiMainMenu::l_get_screen_info(lua_State *L)
 int ModApiMainMenu::l_get_package_list(lua_State *L)
 {
 	std::string url = g_settings->get("contentdb_url");
-	std::vector<Package> packages = getPackagesFromURL(url + "/packages/");
+	std::vector<Package> packages = getPackagesFromURL(url + "/api/packages/");
 
 	// Make table
 	lua_newtable(L);
@@ -1019,16 +1007,16 @@ int ModApiMainMenu::l_get_package_list(lua_State *L)
 
 		int top_lvl2 = lua_gettop(L);
 
+		lua_pushstring(L, "author");
+		lua_pushstring(L, package.author.c_str());
+		lua_settable  (L, top_lvl2);
+
 		lua_pushstring(L, "name");
 		lua_pushstring(L, package.name.c_str());
 		lua_settable  (L, top_lvl2);
 
 		lua_pushstring(L, "title");
 		lua_pushstring(L, package.title.c_str());
-		lua_settable  (L, top_lvl2);
-
-		lua_pushstring(L, "author");
-		lua_pushstring(L, package.author.c_str());
 		lua_settable  (L, top_lvl2);
 
 		lua_pushstring(L, "type");
@@ -1039,25 +1027,19 @@ int ModApiMainMenu::l_get_package_list(lua_State *L)
 		lua_pushstring(L, package.shortDesc.c_str());
 		lua_settable  (L, top_lvl2);
 
-		lua_pushstring(L, "url");
-		lua_pushstring(L, package.url.c_str());
-		lua_settable  (L, top_lvl2);
-
 		lua_pushstring (L, "release");
 		lua_pushinteger(L, package.release);
 		lua_settable   (L, top_lvl2);
 
-		lua_pushstring(L, "screenshots");
-		lua_newtable(L);
-		{
-			int top_screenshots = lua_gettop(L);
-			for (size_t i = 0; i < package.screenshots.size(); ++i) {
-				lua_pushnumber(L, i + 1);
-				lua_pushstring(L, package.screenshots[i].c_str());
-				lua_settable(L, top_screenshots);
-			}
+		if (package.thumbnail != "") {
+			lua_pushstring(L, "thumbnail");
+			lua_pushstring(L, package.thumbnail.c_str());
+			lua_settable  (L, top_lvl2);
 		}
-		lua_settable(L, top_lvl2);
+
+		lua_pushstring(L, "url");
+		lua_pushstring(L, package.getDownloadURL(url).c_str());
+		lua_settable  (L, top_lvl2);
 
 		lua_settable(L, top);
 		index++;

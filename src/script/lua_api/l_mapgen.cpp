@@ -855,26 +855,26 @@ int ModApiMapgen::l_set_mapgen_params(lua_State *L)
 
 	lua_getfield(L, 1, "mgname");
 	if (lua_isstring(L, -1))
-		settingsmgr->setMapSetting("mg_name", lua_tostring(L, -1), true);
+		settingsmgr->setMapSetting("mg_name", readParam<std::string>(L, -1), true);
 
 	lua_getfield(L, 1, "seed");
 	if (lua_isnumber(L, -1))
-		settingsmgr->setMapSetting("seed", lua_tostring(L, -1), true);
+		settingsmgr->setMapSetting("seed", readParam<std::string>(L, -1), true);
 
 	lua_getfield(L, 1, "water_level");
 	if (lua_isnumber(L, -1))
-		settingsmgr->setMapSetting("water_level", lua_tostring(L, -1), true);
+		settingsmgr->setMapSetting("water_level", readParam<std::string>(L, -1), true);
 
 	lua_getfield(L, 1, "chunksize");
 	if (lua_isnumber(L, -1))
-		settingsmgr->setMapSetting("chunksize", lua_tostring(L, -1), true);
+		settingsmgr->setMapSetting("chunksize", readParam<std::string>(L, -1), true);
 
 	warn_if_field_exists(L, 1, "flagmask",
 		"Deprecated: flags field now includes unset flags.");
 
 	lua_getfield(L, 1, "flags");
 	if (lua_isstring(L, -1))
-		settingsmgr->setMapSetting("mg_flags", lua_tostring(L, -1), true);
+		settingsmgr->setMapSetting("mg_flags", readParam<std::string>(L, -1), true);
 
 	return 0;
 }
@@ -924,7 +924,7 @@ int ModApiMapgen::l_set_mapgen_setting(lua_State *L)
 
 	const char *name   = luaL_checkstring(L, 1);
 	const char *value  = luaL_checkstring(L, 2);
-	bool override_meta = lua_isboolean(L, 3) && lua_toboolean(L, 3);
+	bool override_meta = readParam<bool>(L, 3, false);
 
 	if (!settingsmgr->setMapSetting(name, value, override_meta)) {
 		errorstream << "set_mapgen_setting: cannot set '"
@@ -953,7 +953,7 @@ int ModApiMapgen::l_set_mapgen_setting_noiseparams(lua_State *L)
 		return 0;
 	}
 
-	bool override_meta = lua_isboolean(L, 3) && lua_toboolean(L, 3);
+	bool override_meta = readParam<bool>(L, 3, false);
 
 	if (!settingsmgr->setMapSettingNoiseParams(name, &np, override_meta)) {
 		errorstream << "set_mapgen_setting_noiseparams: cannot set '"
@@ -979,7 +979,7 @@ int ModApiMapgen::l_set_noiseparams(lua_State *L)
 		return 0;
 	}
 
-	bool set_default = !lua_isboolean(L, 3) || lua_toboolean(L, 3);
+	bool set_default = !lua_isboolean(L, 3) || readParam<bool>(L, 3);
 
 	g_settings->setNoiseParams(name, np, set_default);
 
@@ -1614,14 +1614,14 @@ int ModApiMapgen::l_place_schematic(lua_State *L)
 
 	//// Read rotation
 	int rot = ROTATE_0;
-	const char *enumstr = lua_tostring(L, 3);
-	if (enumstr)
-		string_to_enum(es_Rotation, rot, std::string(enumstr));
+	std::string enumstr = readParam<std::string>(L, 3, "");
+	if (!enumstr.empty())
+		string_to_enum(es_Rotation, rot, enumstr);
 
 	//// Read force placement
 	bool force_placement = true;
 	if (lua_isboolean(L, 5))
-		force_placement = lua_toboolean(L, 5);
+		force_placement = readParam<bool>(L, 5);
 
 	//// Read node replacements
 	StringMap replace_names;
@@ -1662,14 +1662,14 @@ int ModApiMapgen::l_place_schematic_on_vmanip(lua_State *L)
 
 	//// Read rotation
 	int rot = ROTATE_0;
-	const char *enumstr = lua_tostring(L, 4);
-	if (enumstr)
+	std::string enumstr = readParam<std::string>(L, 4, "");
+	if (!enumstr.empty())
 		string_to_enum(es_Rotation, rot, std::string(enumstr));
 
 	//// Read force placement
 	bool force_placement = true;
 	if (lua_isboolean(L, 6))
-		force_placement = lua_toboolean(L, 6);
+		force_placement = readParam<bool>(L, 6);
 
 	//// Read node replacements
 	StringMap replace_names;
@@ -1720,9 +1720,9 @@ int ModApiMapgen::l_serialize_schematic(lua_State *L)
 
 	//// Read format of definition to save as
 	int schem_format = SCHEM_FMT_MTS;
-	const char *enumstr = lua_tostring(L, 2);
-	if (enumstr)
-		string_to_enum(es_SchematicFormatType, schem_format, std::string(enumstr));
+	std::string enumstr = readParam<std::string>(L, 2, "");
+	if (!enumstr.empty())
+		string_to_enum(es_SchematicFormatType, schem_format, enumstr);
 
 	//// Serialize to binary string
 	std::ostringstream os(std::ios_base::binary);

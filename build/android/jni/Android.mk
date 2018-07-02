@@ -316,6 +316,7 @@ LOCAL_SRC_FILES += \
 		jni/src/script/common/c_converter.cpp     \
 		jni/src/script/common/c_internal.cpp      \
 		jni/src/script/common/c_types.cpp         \
+		jni/src/script/common/helper.cpp          \
 		jni/src/script/cpp_api/s_async.cpp        \
 		jni/src/script/cpp_api/s_base.cpp         \
 		jni/src/script/cpp_api/s_client.cpp       \

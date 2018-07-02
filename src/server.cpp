@@ -401,8 +401,8 @@ void Server::init()
 
 	m_liquid_transform_every = g_settings->getFloat("liquid_update");
 	m_max_chatmessage_length = g_settings->getU16("chat_message_max_size");
-	m_csm_flavour_limits = g_settings->getU64("csm_flavour_limits");
-	m_csm_noderange_limit = g_settings->getU32("csm_flavour_noderange_limit");
+	m_csm_restriction_flags = g_settings->getU64("csm_restriction_flags");
+	m_csm_restriction_noderange = g_settings->getU32("csm_restriction_noderange");
 }
 
 void Server::start()
@@ -1059,11 +1059,6 @@ PlayerSAO* Server::StageTwoClientInit(session_t peer_id)
 	// Send Breath
 	SendPlayerBreath(playersao);
 
-	// Note things in chat if not in simple singleplayer mode
-	if (!m_simple_singleplayer_mode && g_settings->getBool("show_statusline_on_connect")) {
-		// Send information about server to player in chat
-		SendChatMessage(peer_id, ChatMessage(CHATMESSAGE_TYPE_SYSTEM, getStatusString()));
-	}
 	Address addr = getPeerAddress(player->getPeerId());
 	std::string ip_str = addr.serializeString();
 	actionstream<<player->getName() <<" [" << ip_str << "] joins game. " << std::endl;
@@ -1184,9 +1179,7 @@ void Server::setTimeOfDay(u32 time)
 
 void Server::onMapEditEvent(MapEditEvent *event)
 {
-	if(m_ignore_map_edit_events)
-		return;
-	if(m_ignore_map_edit_events_area.contains(event->getArea()))
+	if (m_ignore_map_edit_events_area.contains(event->getArea()))
 		return;
 	MapEditEvent *e = event->clone();
 	m_unsent_map_edit_queue.push(e);
@@ -1936,11 +1929,11 @@ void Server::SendActiveObjectMessages(session_t peer_id, const std::string &data
 			&pkt, reliable);
 }
 
-void Server::SendCSMFlavourLimits(session_t peer_id)
+void Server::SendCSMRestrictionFlags(session_t peer_id)
 {
-	NetworkPacket pkt(TOCLIENT_CSM_FLAVOUR_LIMITS,
-		sizeof(m_csm_flavour_limits) + sizeof(m_csm_noderange_limit), peer_id);
-	pkt << m_csm_flavour_limits << m_csm_noderange_limit;
+	NetworkPacket pkt(TOCLIENT_CSM_RESTRICTION_FLAGS,
+		sizeof(m_csm_restriction_flags) + sizeof(m_csm_restriction_noderange), peer_id);
+	pkt << m_csm_restriction_flags << m_csm_restriction_noderange;
 	Send(&pkt);
 }
 
