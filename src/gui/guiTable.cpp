@@ -334,7 +334,6 @@ void GUITable::setTable(const TableOptions &options,
 
 		// Make template for new cells
 		Cell newcell;
-		memset(&newcell, 0, sizeof newcell);
 		newcell.content_type = columntype;
 		newcell.tooltip_index = tooltip_index;
 		newcell.reported_column = j+1;

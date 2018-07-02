@@ -196,30 +196,19 @@ void RemoteClient::GetNextBlocks (
 	s16 wanted_range = sao->getWantedRange() + 1;
 	float camera_fov = sao->getFov();
 
-	// If below the heuristic zoom threshold (see adjustDist() in numeric.cpp)
-	// distrust client-sent FOV and get server-set player object property
+	// Distrust client-sent FOV and get server-set player object property
 	// zoom FOV (degrees) as a check to avoid hacked clients using FOV to load
 	// distant world.
-	// 0.888 radians is slightly larger than the zoom threshold of 1.775 / 2
-	// radians.
-	if (camera_fov < 0.888f) {
-		float prop_zoom_fov = sao->getZoomFOV();
-		// If zoom is disabled by value 0
-		if (prop_zoom_fov < 0.001f)
-			camera_fov = 0.888f;
-		else
-			// Degrees -> radians
-			camera_fov = prop_zoom_fov * core::DEGTORAD;
-	}
+	float prop_zoom_fov = sao->getZoomFOV() * core::DEGTORAD;
 
-	const s16 full_d_max = std::min(adjustDist(m_max_send_distance, camera_fov),
+	const s16 full_d_max = std::min(adjustDist(m_max_send_distance, prop_zoom_fov),
 		wanted_range);
-	const s16 d_opt = std::min(adjustDist(m_block_optimize_distance, camera_fov),
+	const s16 d_opt = std::min(adjustDist(m_block_optimize_distance, prop_zoom_fov),
 		wanted_range);
 	const s16 d_blocks_in_sight = full_d_max * BS * MAP_BLOCKSIZE;
 
 	s16 d_max = full_d_max;
-	s16 d_max_gen = std::min(adjustDist(m_max_gen_distance, camera_fov),
+	s16 d_max_gen = std::min(adjustDist(m_max_gen_distance, prop_zoom_fov),
 		wanted_range);
 
 	// Don't loop very much at a time, adjust with distance,

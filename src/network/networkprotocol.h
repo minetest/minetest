@@ -169,7 +169,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
  			* sender
  			* type (RAW, NORMAL, ANNOUNCE, SYSTEM)
  			* content
- 		Add TOCLIENT_CSM_FLAVOUR_LIMITS to define which CSM flavour should be
+		Add TOCLIENT_CSM_RESTRICTION_FLAGS to define which CSM features should be
 			limited
 		Add settable player collisionbox. Breaks compatibility with older
 			clients as a 1-node vertical offset has been removed from player's
@@ -283,9 +283,9 @@ enum ToClientCommand
 		f1000 time_speed
 	*/
 
-	TOCLIENT_CSM_FLAVOUR_LIMITS = 0x2A,
+	TOCLIENT_CSM_RESTRICTION_FLAGS = 0x2A,
 	/*
-		u32 CSMFlavourLimits byteflag
+		u32 CSMRestrictionFlags byteflag
 	 */
 
 	// (oops, there is some gap here)
@@ -928,12 +928,12 @@ enum PlayerListModifer: u8
 	PLAYER_LIST_REMOVE,
 };
 
-enum CSMFlavourLimit : u64 {
-	CSM_FL_NONE = 0x00000000,
-	CSM_FL_LOAD_CLIENT_MODS = 0x00000001, // Disable mods provided by clients
-	CSM_FL_CHAT_MESSAGES = 0x00000002, // Disable chat message sending from CSM
-	CSM_FL_READ_ITEMDEFS = 0x00000004, // Disable itemdef lookups
-	CSM_FL_READ_NODEDEFS = 0x00000008, // Disable nodedef lookups
-	CSM_FL_LOOKUP_NODES = 0x00000010, // Limit node lookups
-	CSM_FL_ALL = 0xFFFFFFFF,
+enum CSMRestrictionFlags : u64 {
+	CSM_RF_NONE = 0x00000000,
+	CSM_RF_LOAD_CLIENT_MODS = 0x00000001, // Disable mods provided by clients
+	CSM_RF_CHAT_MESSAGES = 0x00000002, // Disable chat message sending from CSM
+	CSM_RF_READ_ITEMDEFS = 0x00000004, // Disable itemdef lookups
+	CSM_RF_READ_NODEDEFS = 0x00000008, // Disable nodedef lookups
+	CSM_RF_LOOKUP_NODES = 0x00000010, // Limit node lookups
+	CSM_RF_ALL = 0xFFFFFFFF,
 };

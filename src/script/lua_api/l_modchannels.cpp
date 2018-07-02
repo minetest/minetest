@@ -33,9 +33,8 @@ int ModApiChannels::l_mod_channel_join(lua_State *L)
 		return 0;
 
 	getGameDef(L)->joinModChannel(channel);
-	ModChannel *channelObj = getGameDef(L)->getModChannel(channel);
-	assert(channelObj);
-	ModChannelRef::create(L, channelObj);
+	assert(getGameDef(L)->getModChannel(channel) != nullptr);
+	ModChannelRef::create(L, channel);
 
 	int object = lua_gettop(L);
 	lua_pushvalue(L, object);
@@ -51,29 +50,22 @@ void ModApiChannels::Initialize(lua_State *L, int top)
  * ModChannelRef
  */
 
-ModChannelRef::ModChannelRef(ModChannel *modchannel) : m_modchannel(modchannel)
+ModChannelRef::ModChannelRef(const std::string &modchannel) :
+		m_modchannel_name(modchannel)
 {
 }
 
 int ModChannelRef::l_leave(lua_State *L)
 {
 	ModChannelRef *ref = checkobject(L, 1);
-	ModChannel *channel = getobject(ref);
-	if (!channel)
-		return 0;
-
-	getGameDef(L)->leaveModChannel(channel->getName());
-	// Channel left, invalidate the channel object ptr
-	// This permits to invalidate every object action from Lua because core removed
-	// channel consuming link
-	ref->m_modchannel = nullptr;
+	getGameDef(L)->leaveModChannel(ref->m_modchannel_name);
 	return 0;
 }
 
 int ModChannelRef::l_send_all(lua_State *L)
 {
 	ModChannelRef *ref = checkobject(L, 1);
-	ModChannel *channel = getobject(ref);
+	ModChannel *channel = getobject(L, ref);
 	if (!channel || !channel->canWrite())
 		return 0;
 
@@ -87,7 +79,7 @@ int ModChannelRef::l_send_all(lua_State *L)
 int ModChannelRef::l_is_writeable(lua_State *L)
 {
 	ModChannelRef *ref = checkobject(L, 1);
-	ModChannel *channel = getobject(ref);
+	ModChannel *channel = getobject(L, ref);
 	if (!channel)
 		return 0;
 
@@ -119,7 +111,7 @@ void ModChannelRef::Register(lua_State *L)
 	lua_pop(L, 1);			// Drop methodtable
 }
 
-void ModChannelRef::create(lua_State *L, ModChannel *channel)
+void ModChannelRef::create(lua_State *L, const std::string &channel)
 {
 	ModChannelRef *o = new ModChannelRef(channel);
 	*(void **)(lua_newuserdata(L, sizeof(void *))) = o;
@@ -145,9 +137,9 @@ ModChannelRef *ModChannelRef::checkobject(lua_State *L, int narg)
 	return *(ModChannelRef **)ud; // unbox pointer
 }
 
-ModChannel *ModChannelRef::getobject(ModChannelRef *ref)
+ModChannel *ModChannelRef::getobject(lua_State *L, ModChannelRef *ref)
 {
-	return ref->m_modchannel;
+	return getGameDef(L)->getModChannel(ref->m_modchannel_name);
 }
 
 // clang-format off

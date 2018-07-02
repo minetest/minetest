@@ -56,8 +56,6 @@ struct DungeonParams {
 	v3s16 room_size_large_max;
 	u16 rooms_min;
 	u16 rooms_max;
-	s16 y_min;
-	s16 y_max;
 	GenNotifyType notifytype;
 
 	NoiseParams np_density;

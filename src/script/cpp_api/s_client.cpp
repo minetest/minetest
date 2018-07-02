@@ -25,6 +25,17 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "common/c_content.h"
 #include "s_item.h"
 
+void ScriptApiClient::on_mods_loaded()
+{
+	SCRIPTAPI_PRECHECKHEADER
+
+	// Get registered shutdown hooks
+	lua_getglobal(L, "core");
+	lua_getfield(L, -1, "registered_on_mods_loaded");
+	// Call callbacks
+	runCallbacks(0, RUN_CALLBACKS_MODE_FIRST);
+}
+
 void ScriptApiClient::on_shutdown()
 {
 	SCRIPTAPI_PRECHECKHEADER
@@ -46,8 +57,7 @@ bool ScriptApiClient::on_sending_message(const std::string &message)
 	// Call callbacks
 	lua_pushstring(L, message.c_str());
 	runCallbacks(1, RUN_CALLBACKS_MODE_OR_SC);
-	bool ate = lua_toboolean(L, -1);
-	return ate;
+	return readParam<bool>(L, -1);
 }
 
 bool ScriptApiClient::on_receiving_message(const std::string &message)
@@ -60,8 +70,7 @@ bool ScriptApiClient::on_receiving_message(const std::string &message)
 	// Call callbacks
 	lua_pushstring(L, message.c_str());
 	runCallbacks(1, RUN_CALLBACKS_MODE_OR_SC);
-	bool ate = lua_toboolean(L, -1);
-	return ate;
+	return readParam<bool>(L, -1);
 }
 
 void ScriptApiClient::on_damage_taken(int32_t damage_amount)
@@ -175,8 +184,7 @@ bool ScriptApiClient::on_punchnode(v3s16 p, MapNode node)
 
 	// Call functions
 	runCallbacks(2, RUN_CALLBACKS_MODE_OR);
-	bool blocked = lua_toboolean(L, -1);
-	return blocked;
+	return readParam<bool>(L, -1);
 }
 
 bool ScriptApiClient::on_placenode(const PointedThing &pointed, const ItemDefinition &item)
@@ -193,7 +201,7 @@ bool ScriptApiClient::on_placenode(const PointedThing &pointed, const ItemDefini
 
 	// Call functions
 	runCallbacks(2, RUN_CALLBACKS_MODE_OR);
-	return lua_toboolean(L, -1);
+	return readParam<bool>(L, -1);
 }
 
 bool ScriptApiClient::on_item_use(const ItemStack &item, const PointedThing &pointed)
@@ -210,7 +218,7 @@ bool ScriptApiClient::on_item_use(const ItemStack &item, const PointedThing &poi
 
 	// Call functions
 	runCallbacks(2, RUN_CALLBACKS_MODE_OR);
-	return lua_toboolean(L, -1);
+	return readParam<bool>(L, -1);
 }
 
 bool ScriptApiClient::on_inventory_open(Inventory *inventory)
@@ -231,7 +239,7 @@ bool ScriptApiClient::on_inventory_open(Inventory *inventory)
 	}
 
 	runCallbacks(1, RUN_CALLBACKS_MODE_OR);
-	return lua_toboolean(L, -1);
+	return readParam<bool>(L, -1);
 }
 
 void ScriptApiClient::setEnv(ClientEnvironment *env)

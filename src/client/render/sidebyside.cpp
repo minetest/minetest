@@ -23,8 +23,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client/hud.h"
 
 RenderingCoreSideBySide::RenderingCoreSideBySide(
-	IrrlichtDevice *_device, Client *_client, Hud *_hud, bool _horizontal)
-	: RenderingCoreStereo(_device, _client, _hud), horizontal(_horizontal)
+	IrrlichtDevice *_device, Client *_client, Hud *_hud, bool _horizontal, bool _flipped)
+	: RenderingCoreStereo(_device, _client, _hud), horizontal(_horizontal), flipped(_flipped)
 {
 }
 
@@ -62,7 +62,7 @@ void RenderingCoreSideBySide::drawAll()
 void RenderingCoreSideBySide::useEye(bool _right)
 {
 	driver->setRenderTarget(_right ? right : left, true, true, skycolor);
-	RenderingCoreStereo::useEye(_right);
+	RenderingCoreStereo::useEye(_right ^ flipped);
 }
 
 void RenderingCoreSideBySide::resetEye()

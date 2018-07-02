@@ -71,8 +71,6 @@ DungeonGen::DungeonGen(const NodeDefManager *ndef,
 		dp.room_size_large_max = v3s16(16, 16, 16);
 		dp.rooms_min           = 2;
 		dp.rooms_max           = 16;
-		dp.y_min               = -MAX_MAP_GENERATION_LIMIT;
-		dp.y_max               = MAX_MAP_GENERATION_LIMIT;
 		dp.notifytype          = GENNOTIFY_DUNGEON;
 
 		dp.np_density  = nparams_dungeon_density;
@@ -86,8 +84,6 @@ void DungeonGen::generate(MMVManip *vm, u32 bseed, v3s16 nmin, v3s16 nmax)
 	assert(vm);
 
 	//TimeTaker t("gen dungeons");
-	if (nmin.Y < dp.y_min || nmax.Y > dp.y_max)
-		return;
 
 	float nval_density = NoisePerlin3D(&dp.np_density, nmin.X, nmin.Y, nmin.Z, dp.seed);
 	if (nval_density < 1.0f)

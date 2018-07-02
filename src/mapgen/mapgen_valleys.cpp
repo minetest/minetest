@@ -231,7 +231,8 @@ void MapgenValleys::makeChunk(BlockMakeData *data)
 	updateHeightmap(node_min, node_max);
 
 	// Place biome-specific nodes and build biomemap
-	generateBiomes();
+	if (flags & MG_BIOMES)
+		generateBiomes();
 
 	// Generate tunnels, caverns and large randomwalk caves
 	if (flags & MG_CAVES) {
@@ -265,7 +266,8 @@ void MapgenValleys::makeChunk(BlockMakeData *data)
 	m_emerge->oremgr->placeAllOres(this, blockseed, node_min, node_max);
 
 	// Sprinkle some dust on top after everything else was generated
-	dustTopNodes();
+	if (flags & MG_BIOMES)
+		dustTopNodes();
 
 	updateLiquid(&data->transforming_liquid, full_node_min, full_node_max);
 

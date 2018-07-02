@@ -825,8 +825,9 @@ void Peer::DecUseCount()
 	delete this;
 }
 
-void Peer::RTTStatistics(float rtt, const std::string &profiler_id,
-		unsigned int num_samples) {
+void Peer::RTTStatistics(float rtt, const std::string &profiler_id)
+{
+	static const float avg_factor = 100.0f / MAX_RELIABLE_WINDOW_SIZE;
 
 	if (m_last_rtt > 0) {
 		/* set min max values */
@@ -837,21 +838,14 @@ void Peer::RTTStatistics(float rtt, const std::string &profiler_id,
 
 		/* do average calculation */
 		if (m_rtt.avg_rtt < 0.0)
-			m_rtt.avg_rtt  = rtt;
+			m_rtt.avg_rtt = rtt;
 		else
-			m_rtt.avg_rtt  = m_rtt.avg_rtt * (num_samples/(num_samples-1)) +
-								rtt * (1/num_samples);
+			m_rtt.avg_rtt += (rtt - m_rtt.avg_rtt) * avg_factor;
 
 		/* do jitter calculation */
 
 		//just use some neutral value at beginning
-		float jitter = m_rtt.jitter_min;
-
-		if (rtt > m_last_rtt)
-			jitter = rtt-m_last_rtt;
-
-		if (rtt <= m_last_rtt)
-			jitter = m_last_rtt - rtt;
+		float jitter = std::fabs(rtt - m_last_rtt);
 
 		if (jitter < m_rtt.jitter_min)
 			m_rtt.jitter_min = jitter;
@@ -859,10 +853,9 @@ void Peer::RTTStatistics(float rtt, const std::string &profiler_id,
 			m_rtt.jitter_max = jitter;
 
 		if (m_rtt.jitter_avg < 0.0)
-			m_rtt.jitter_avg  = jitter;
+			m_rtt.jitter_avg = jitter;
 		else
-			m_rtt.jitter_avg  = m_rtt.jitter_avg * (num_samples/(num_samples-1)) +
-								jitter * (1/num_samples);
+			m_rtt.jitter_avg += (jitter - m_rtt.jitter_avg) * avg_factor;
 
 		if (!profiler_id.empty()) {
 			g_profiler->graphAdd(profiler_id + "_rtt", rtt);
@@ -934,16 +927,12 @@ void UDPPeer::setNonLegacyPeer()
 
 void UDPPeer::reportRTT(float rtt)
 {
-	if (rtt < 0.0) {
-		return;
-	}
-	RTTStatistics(rtt,"rudp",MAX_RELIABLE_WINDOW_SIZE*10);
+	assert(rtt >= 0.0f);
+
+	RTTStatistics(rtt, "rudp");
 
 	float timeout = getStat(AVG_RTT) * RESEND_TIMEOUT_FACTOR;
-	if (timeout < RESEND_TIMEOUT_MIN)
-		timeout = RESEND_TIMEOUT_MIN;
-	if (timeout > RESEND_TIMEOUT_MAX)
-		timeout = RESEND_TIMEOUT_MAX;
+	timeout = rangelim(timeout, RESEND_TIMEOUT_MIN, RESEND_TIMEOUT_MAX);
 
 	MutexAutoLock usage_lock(m_exclusive_access_mutex);
 	resend_timeout = timeout;

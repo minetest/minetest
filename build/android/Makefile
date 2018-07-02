@@ -86,16 +86,16 @@ OGG_LIB = $(OGG_DIR)libs/$(TARGET_ABI)/libogg.so
 VORBIS_LIB = $(OGG_DIR)libs/$(TARGET_ABI)/libogg.so
 OGG_TIMESTAMP = $(OGG_DIR)timestamp
 OGG_TIMESTAMP_INT = $(ANDR_ROOT)/deps/ogg_timestamp
-OGG_URL_GIT = https://github.com/vincentjames501/libvorbis-libogg-android
+OGG_URL_GIT = https://gitlab.com/minetest/libvorbis-libogg-android
 
-IRRLICHT_REVISION = 5145
+IRRLICHT_REVISION = 5150
 IRRLICHT_DIR = $(ANDR_ROOT)/deps/irrlicht/
 IRRLICHT_LIB = $(IRRLICHT_DIR)lib/Android/libIrrlicht.a
 IRRLICHT_TIMESTAMP = $(IRRLICHT_DIR)timestamp
 IRRLICHT_TIMESTAMP_INT = $(ANDR_ROOT)/deps/irrlicht_timestamp
 IRRLICHT_URL_SVN = https://svn.code.sf.net/p/irrlicht/code/branches/ogl-es@$(IRRLICHT_REVISION)
 
-OPENSSL_VERSION = 1.0.2k
+OPENSSL_VERSION = 1.0.2n
 OPENSSL_BASEDIR = openssl-$(OPENSSL_VERSION)
 OPENSSL_DIR = $(ANDR_ROOT)/deps/$(OPENSSL_BASEDIR)/
 OPENSSL_LIB = $(OPENSSL_DIR)/libssl.a
@@ -103,7 +103,7 @@ OPENSSL_TIMESTAMP = $(OPENSSL_DIR)timestamp
 OPENSSL_TIMESTAMP_INT = $(ANDR_ROOT)/deps/openssl_timestamp
 OPENSSL_URL = https://www.openssl.org/source/openssl-$(OPENSSL_VERSION).tar.gz
 
-CURL_VERSION = 7.54.0
+CURL_VERSION = 7.60.0
 CURL_DIR = $(ANDR_ROOT)/deps/curl-$(CURL_VERSION)
 CURL_LIB = $(CURL_DIR)/lib/.libs/libcurl.a
 CURL_TIMESTAMP = $(CURL_DIR)/timestamp
@@ -130,8 +130,8 @@ ICONV_TIMESTAMP = $(ICONV_DIR)timestamp
 ICONV_TIMESTAMP_INT = $(ANDR_ROOT)/deps/iconv_timestamp
 ICONV_URL_HTTP = https://ftp.gnu.org/pub/gnu/libiconv/libiconv-$(ICONV_VERSION).tar.gz
 
-SQLITE3_FOLDER = sqlite-amalgamation-3180000
-SQLITE3_URL = https://www.sqlite.org/2017/$(SQLITE3_FOLDER).zip
+SQLITE3_FOLDER = sqlite-amalgamation-3240000
+SQLITE3_URL = https://www.sqlite.org/2018/$(SQLITE3_FOLDER).zip
 
 ANDROID_SDK = $(shell grep '^sdk\.dir' local.properties | sed 's/^.*=[[:space:]]*//')
 ANDROID_NDK = $(shell grep '^ndk\.dir' local.properties | sed 's/^.*=[[:space:]]*//')
@@ -268,11 +268,10 @@ $(OGG_LIB): $(OGG_TIMESTAMP)
 	cd ${OGG_DIR};                                                             \
 	export APP_PLATFORM=${APP_PLATFORM};                                       \
 	export TARGET_ABI=${TARGET_ABI};                                           \
-	export TARGET_CFLAGS_ADDON="${TARGET_CFLAGS_ADDON}";                       \
-	export TARGET_CXXFLAGS_ADDON="${TARGET_CXXFLAGS_ADDON}";                   \
-	export COMPILER_VERSION=${COMPILER_VERSION};                               \
-	${ANDROID_NDK}/ndk-build                                                   \
-		NDK_APPLICATION_MK=${ANDR_ROOT}/jni/Deps.mk || exit 1;                 \
+	${ANDROID_NDK}/build/tools/make-standalone-toolchain.sh                    \
+		--toolchain=${TARGET_TOOLCHAIN}${COMPILER_VERSION}                     \
+		--platform=${APP_PLATFORM}                                             \
+		--install-dir=$${TOOLCHAIN};                                           \
 	touch ${OGG_TIMESTAMP};                                                    \
 	touch ${OGG_TIMESTAMP_INT};                                                \
 	else                                                                       \
@@ -393,7 +392,7 @@ $(LEVELDB_LIB): $(LEVELDB_TIMESTAMP)
 endif
 
 clean_leveldb :
-	$(RM) -rf deps/leveldb
+	./gradlew cleanLevelDB
 
 $(FREETYPE_TIMESTAMP) : freetype_download
 	@LAST_MODIF=$$(find ${FREETYPE_DIR} -type f -printf '%T@ %p\n' | sort -n | tail -1 | cut -f2- -d" "); \
@@ -440,7 +439,7 @@ $(FREETYPE_LIB) : $(FREETYPE_TIMESTAMP)
 	fi
 
 clean_freetype :
-	$(RM) -rf ${FREETYPE_DIR}
+	./gradlew cleanFreetype
 
 $(ICONV_TIMESTAMP) : iconv_download
 	@LAST_MODIF=$$(find ${ICONV_DIR} -type f -printf '%T@ %p\n' | sort -n | tail -1 | cut -f2- -d" "); \
@@ -503,7 +502,7 @@ $(ICONV_LIB) : $(ICONV_TIMESTAMP)
 	fi
 
 clean_iconv :
-	$(RM) -rf ${ICONV_DIR}
+	./gradlew cleanIconv
 
 #Note: Texturehack patch is required for gpu's not supporting color format
 #      correctly. Known bad GPU:
@@ -560,7 +559,7 @@ $(IRRLICHT_LIB): $(IRRLICHT_TIMESTAMP) $(FREETYPE_LIB)
 	fi
 
 clean_irrlicht :
-	$(RM) -rf deps/irrlicht
+	./gradlew cleanIrrlicht
 
 $(CURL_TIMESTAMP) : curl_download
 	@LAST_MODIF=$$(find ${CURL_DIR} -type f -printf '%T@ %p\n' | sort -n | tail -1 | cut -f2- -d" "); \
@@ -620,8 +619,7 @@ $(CURL_LIB): $(CURL_TIMESTAMP) $(OPENSSL_LIB)
 	fi
 
 clean_curl :
-	$(RM) -rf deps/curl-${CURL_VERSION}                                        \
-	$(RM) -f deps/curl
+	./gradlew cleanCURL
 
 $(GMP_TIMESTAMP) : gmp_download
 	@LAST_MODIF=$$(find ${GMP_DIR} -type f -printf '%T@ %p\n' | sort -n | tail -1 | cut -f2- -d" "); \
@@ -680,8 +678,7 @@ $(GMP_LIB): $(GMP_TIMESTAMP)
 	fi
 
 clean_gmp:
-	$(RM) -rf deps/gmp-${GMP_VERSION}                                          \
-	$(RM) -f deps/gmp
+	./gradlew cleanGMP
 
 sqlite3_download: deps/${SQLITE3_FOLDER}/sqlite3.c
 
@@ -693,8 +690,7 @@ deps/${SQLITE3_FOLDER}/sqlite3.c :
 	cd ${SQLITE3_FOLDER};
 
 clean_sqlite3:
-	cd deps && $(RM) -rf ${SQLITE3_FOLDER} && $(RM) -f ${SQLITE3_FOLDER}.zip && \
-	$(RM) -f sqlite
+	./gradlew cleanSQLite3
 
 $(ASSETS_TIMESTAMP) : $(IRRLICHT_LIB)
 	@mkdir -p ${ANDR_ROOT}/deps;                                                \
@@ -772,7 +768,7 @@ assets : $(ASSETS_TIMESTAMP)
 	fi
 
 clean_assets :
-	@$(RM) -r assets
+	./gradlew cleanAssets
 
 apk: local.properties assets $(ICONV_LIB) $(IRRLICHT_LIB) $(CURL_LIB) $(GMP_LIB) $(LEVELDB_TARGET)       \
 	$(OPENAL_LIB) $(OGG_LIB) prep_srcdir $(ANDR_ROOT)/jni/src/android_version.h    \
@@ -805,24 +801,20 @@ install_release:
 
 prep_srcdir :
 	@if [ ! -e ${ANDR_ROOT}/jni/src ]; then                                    \
-		ln -s ${PROJ_ROOT}/src ${ANDR_ROOT}/jni/src;                       \
+		ln -s ${PROJ_ROOT}/src ${ANDR_ROOT}/jni/src;                           \
 	fi;                                                                        \
 	if [ ! -e ${ANDR_ROOT}/jni/lib ]; then                                     \
-		ln -s ${PROJ_ROOT}/lib ${ANDR_ROOT}/jni/lib;                       \
+		ln -s ${PROJ_ROOT}/lib ${ANDR_ROOT}/jni/lib;                           \
 	fi
 
 clean_apk :
 	./gradlew clean
 
 clean_all :
-	@$(MAKE) clean_apk;                                                        \
-	$(MAKE) clean_assets clean_iconv clean_irrlicht clean_leveldb clean_curl   \
-	clean_openssl clean_openal clean_ogg clean_gmp;                            \
-	sleep 1;                                                                   \
-	$(RM) -r gen libs obj deps bin Debug and_env
+	./gradlew cleanAll
 
 $(ANDR_ROOT)/jni/src/android_version_githash.h : prep_srcdir
-	@export VERSION_FILE=${ANDR_ROOT}/jni/src/android_version_githash.h;        \
+	@export VERSION_FILE=${ANDR_ROOT}/jni/src/android_version_githash.h;       \
 	export VERSION_FILE_NEW=$${VERSION_FILE}.new;                              \
 	{                                                                          \
 	echo "#ifndef ANDROID_MT_VERSION_GITHASH_H";                               \

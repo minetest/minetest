@@ -40,7 +40,7 @@ const std::wstring &Translations::getTranslation(
 	std::wstring key = textdomain + L"|" + s;
 	try {
 		return m_translations.at(key);
-	} catch (std::out_of_range) {
+	} catch (const std::out_of_range &) {
 		warningstream << "Translations: can't find translation for string \""
 		              << wide_to_utf8(s) << "\" in textdomain \""
 		              << wide_to_utf8(textdomain) << "\"" << std::endl;

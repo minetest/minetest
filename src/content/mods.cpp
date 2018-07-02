@@ -56,6 +56,9 @@ void parseModContents(ModSpec &spec)
 	if (info.exists("author"))
 		spec.author = info.get("author");
 
+	if (info.exists("release"))
+		spec.release = info.getS32("release");
+
 	spec.depends.clear();
 	spec.optdepends.clear();
 	spec.is_modpack = false;

@@ -30,6 +30,9 @@ public:
 	// Returns true if script handled message
 	bool on_chat_message(const std::string &name, const std::string &message);
 
+	// Calls when mods are loaded
+	void on_mods_loaded();
+
 	// Calls on_shutdown handlers
 	void on_shutdown();
 

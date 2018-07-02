@@ -284,7 +284,7 @@ void set_default_settings(Settings *settings)
 #endif
 	settings->setDefault("font_size", font_size_str);
 	settings->setDefault("mono_font_size", font_size_str);
-	settings->setDefault("contentdb_url", "https://contentdb.rubenwardy.com");
+	settings->setDefault("contentdb_url", "https://content.minetest.net");
 
 
 	// Server
@@ -305,7 +305,6 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("motd", "");
 	settings->setDefault("max_users", "15");
 	settings->setDefault("creative_mode", "false");
-	settings->setDefault("show_statusline_on_connect", "true");
 	settings->setDefault("enable_damage", "true");
 	settings->setDefault("default_password", "");
 	settings->setDefault("default_privs", "interact, shout");
@@ -332,8 +331,8 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("max_block_send_distance", "9");
 	settings->setDefault("block_send_optimize_distance", "4");
 	settings->setDefault("server_side_occlusion_culling", "true");
-	settings->setDefault("csm_flavour_limits", "18");
-	settings->setDefault("csm_flavour_noderange_limit", "8");
+	settings->setDefault("csm_restriction_flags", "18");
+	settings->setDefault("csm_restriction_noderange", "8");
 	settings->setDefault("max_clearobjects_extra_loaded_blocks", "4096");
 	settings->setDefault("time_speed", "72");
 	settings->setDefault("world_start_time", "5250");

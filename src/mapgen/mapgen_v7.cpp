@@ -326,8 +326,10 @@ void MapgenV7::makeChunk(BlockMakeData *data)
 	updateHeightmap(node_min, node_max);
 
 	// Init biome generator, place biome-specific nodes, and build biomemap
-	biomegen->calcBiomeNoise(node_min);
-	generateBiomes();
+	if (flags & MG_BIOMES) {
+		biomegen->calcBiomeNoise(node_min);
+		generateBiomes();
+	}
 
 	// Generate tunnels, caverns and large randomwalk caves
 	if (flags & MG_CAVES) {
@@ -363,7 +365,8 @@ void MapgenV7::makeChunk(BlockMakeData *data)
 	m_emerge->oremgr->placeAllOres(this, blockseed, node_min, node_max);
 
 	// Sprinkle some dust on top after everything else was generated
-	dustTopNodes();
+	if (flags & MG_BIOMES)
+		dustTopNodes();
 
 	// Update liquids
 	updateLiquid(&data->transforming_liquid, full_node_min, full_node_max);
@@ -590,6 +593,11 @@ void MapgenV7::generateRidgeTerrain()
 			u32 index2d = (z - node_min.Z) * csize.X + (x - node_min.X);
 			float uwatern = noise_ridge_uwater->result[index2d] * 2.0f;
 			if (std::fabs(uwatern) > width)
+				continue;
+			// Optimises, but also avoids removing nodes placed by mods in
+			// 'on-generated', when generating outside mapchunk.
+			content_t c = vm->m_data[vi].getContent();
+			if (c != c_stone)
 				continue;
 
 			float altitude = y - water_level;

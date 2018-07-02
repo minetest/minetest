@@ -20,22 +20,28 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #pragma once
 #include "config.h"
 #include "convert_json.h"
+#include "irrlichttypes.h"
 
 struct Package
 {
+	std::string author;
 	std::string name; // Technical name
 	std::string title;
-	std::string author;
 	std::string type; // One of "mod", "game", or "txp"
 
 	std::string shortDesc;
-	std::string url; // download URL
-	std::vector<std::string> screenshots;
+	u32 release;
+	std::string thumbnail;
 
-	bool valid()
+	bool valid() const
 	{
-		return !(name.empty() || title.empty() || author.empty() ||
-				type.empty() || url.empty());
+		return !(author.empty() || name.empty() || title.empty() ||
+				type.empty() || release <= 0);
+	}
+
+	std::string getDownloadURL(const std::string &baseURL) const
+	{
+		return baseURL + "/packages/" + author + "/" + name + "/download/";
 	}
 };
 

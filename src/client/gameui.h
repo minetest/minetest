@@ -54,9 +54,9 @@ public:
 	{
 		bool show_chat = true;
 		bool show_hud = true;
-		bool show_minimap = true;
+		bool show_minimap = false;
 		bool show_debug = true;
-		bool show_profiler_graph = true;
+		bool show_profiler_graph = false;
 	};
 
 	void init();

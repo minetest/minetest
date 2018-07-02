@@ -1014,7 +1014,8 @@ bool Game::startup(bool *kill,
 	RenderingEngine::get_scene_manager()->getParameters()->
 		setAttribute(scene::OBJ_LOADER_IGNORE_MATERIAL_FILES, true);
 
-	memset(&runData, 0, sizeof(runData));
+	// Reinit runData
+	runData = GameRunData();
 	runData.time_from_last_punch = 10.0;
 	runData.update_wielded_item_trigger = true;
 
@@ -1064,7 +1065,7 @@ void Game::run()
 
 	while (RenderingEngine::run()
 			&& !(*kill || g_gamecallback->shutdown_requested
-			|| (server && server->getShutdownRequested()))) {
+			|| (server && server->isShutdownRequested()))) {
 
 		const irr::core::dimension2d<u32> &current_screen_size =
 			RenderingEngine::get_video_driver()->getScreenSize();
@@ -1270,6 +1271,7 @@ bool Game::createSingleplayerServer(const std::string &map_dir,
 	}
 
 	server = new Server(map_dir, gamespec, simple_singleplayer_mode, bind_addr, false);
+	server->init();
 	server->start();
 
 	return true;
@@ -1860,6 +1862,9 @@ void Game::processKeyInput()
 		dropSelectedItem(isKeyDown(KeyType::SNEAK));
 	} else if (wasKeyDown(KeyType::AUTOFORWARD)) {
 		toggleAutoforward();
+	} else if (wasKeyDown(KeyType::BACKWARD)) {
+		if (g_settings->getBool("continuous_forward"))
+			toggleAutoforward();
 	} else if (wasKeyDown(KeyType::INVENTORY)) {
 		openInventory();
 	} else if (input->cancelPressed()) {

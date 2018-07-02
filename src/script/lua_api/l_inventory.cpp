@@ -336,7 +336,7 @@ int InvRef::l_contains_item(lua_State *L)
 	InventoryList *list = getlist(L, ref, listname);
 	bool match_meta = false;
 	if (lua_isboolean(L, 4))
-		match_meta = lua_toboolean(L, 4);
+		match_meta = readParam<bool>(L, 4);
 	if (list) {
 		lua_pushboolean(L, list->containsItem(item, match_meta));
 	} else {
@@ -525,7 +525,7 @@ int ModApiInventory::l_create_detached_inventory_raw(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 	const char *name = luaL_checkstring(L, 1);
-	const char *player = lua_isstring(L, 2) ? lua_tostring(L, 2) : "";
+	std::string player = readParam<std::string>(L, 2, "");
 	if (getServer(L)->createDetachedInventory(name, player) != NULL) {
 		InventoryLocation loc;
 		loc.setDetached(name);

@@ -1333,11 +1333,11 @@ void Client::handleCommand_FormspecPrepend(NetworkPacket *pkt)
 	*pkt >> player->formspec_prepend;
 }
 
-void Client::handleCommand_CSMFlavourLimits(NetworkPacket *pkt)
+void Client::handleCommand_CSMRestrictionFlags(NetworkPacket *pkt)
 {
-	*pkt >> m_csm_flavour_limits >> m_csm_noderange_limit;
+	*pkt >> m_csm_restriction_flags >> m_csm_restriction_noderange;
 
-	// Now we have flavours, load mods if it's enabled
+	// Restrictions were received -> load mods if it's enabled
 	// Note: this should be moved after mods receptions from server instead
 	loadMods();
 }

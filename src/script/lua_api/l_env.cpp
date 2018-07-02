@@ -165,10 +165,10 @@ int LuaRaycast::create_object(lua_State *L)
 	v3f pos1 = checkFloatPos(L, 1);
 	v3f pos2 = checkFloatPos(L, 2);
 	if (lua_isboolean(L, 3)) {
-		objects = lua_toboolean(L, 3);
+		objects = readParam<bool>(L, 3);
 	}
 	if (lua_isboolean(L, 4)) {
-		liquids = lua_toboolean(L, 4);
+		liquids = readParam<bool>(L, 4);
 	}
 
 	LuaRaycast *o = new LuaRaycast(core::line3d<f32>(pos1, pos2),
@@ -666,7 +666,7 @@ int ModApiEnvMod::l_get_objects_inside_radius(lua_State *L)
 
 	// Do it
 	v3f pos = checkFloatPos(L, 1);
-	float radius = luaL_checknumber(L, 2) * BS;
+	float radius = readParam<float>(L, 2) * BS;
 	std::vector<u16> ids;
 	env->getObjectsInsideRadius(ids, pos, radius);
 	ScriptApiBase *script = getScriptApiBase(L);
@@ -690,7 +690,7 @@ int ModApiEnvMod::l_set_timeofday(lua_State *L)
 	GET_ENV_PTR;
 
 	// Do it
-	float timeofday_f = luaL_checknumber(L, 1);
+	float timeofday_f = readParam<float>(L, 1);
 	sanity_check(timeofday_f >= 0.0 && timeofday_f <= 1.0);
 	int timeofday_mh = (int)(timeofday_f * 24000.0);
 	// This should be set directly in the environment but currently
@@ -757,20 +757,21 @@ int ModApiEnvMod::l_find_node_near(lua_State *L)
 		while (lua_next(L, 3) != 0) {
 			// key at index -2 and value at index -1
 			luaL_checktype(L, -1, LUA_TSTRING);
-			ndef->getIds(lua_tostring(L, -1), filter);
+			ndef->getIds(readParam<std::string>(L, -1), filter);
 			// removes value, keeps key for next iteration
 			lua_pop(L, 1);
 		}
 	} else if (lua_isstring(L, 3)) {
-		ndef->getIds(lua_tostring(L, 3), filter);
+		ndef->getIds(readParam<std::string>(L, 3), filter);
 	}
 
-	int start_radius = (lua_toboolean(L, 4)) ? 0 : 1;
+	int start_radius = (lua_isboolean(L, 4) && readParam<bool>(L, 4)) ? 0 : 1;
 
 #ifndef SERVER
 	// Client API limitations
 	if (getClient(L) &&
-			getClient(L)->checkCSMFlavourLimit(CSMFlavourLimit::CSM_FL_LOOKUP_NODES)) {
+			getClient(L)->checkCSMRestrictionFlag(
+			CSMRestrictionFlags::CSM_RF_LOOKUP_NODES)) {
 		radius = std::max<int>(radius, getClient(L)->getCSMNodeRangeLimit());
 	}
 #endif
@@ -814,12 +815,12 @@ int ModApiEnvMod::l_find_nodes_in_area(lua_State *L)
 		while (lua_next(L, 3) != 0) {
 			// key at index -2 and value at index -1
 			luaL_checktype(L, -1, LUA_TSTRING);
-			ndef->getIds(lua_tostring(L, -1), filter);
+			ndef->getIds(readParam<std::string>(L, -1), filter);
 			// removes value, keeps key for next iteration
 			lua_pop(L, 1);
 		}
 	} else if (lua_isstring(L, 3)) {
-		ndef->getIds(lua_tostring(L, 3), filter);
+		ndef->getIds(readParam<std::string>(L, 3), filter);
 	}
 
 	std::vector<u32> individual_count;
@@ -883,12 +884,12 @@ int ModApiEnvMod::l_find_nodes_in_area_under_air(lua_State *L)
 		while (lua_next(L, 3) != 0) {
 			// key at index -2 and value at index -1
 			luaL_checktype(L, -1, LUA_TSTRING);
-			ndef->getIds(lua_tostring(L, -1), filter);
+			ndef->getIds(readParam<std::string>(L, -1), filter);
 			// removes value, keeps key for next iteration
 			lua_pop(L, 1);
 		}
 	} else if (lua_isstring(L, 3)) {
-		ndef->getIds(lua_tostring(L, 3), filter);
+		ndef->getIds(readParam<std::string>(L, 3), filter);
 	}
 
 	lua_newtable(L);
@@ -925,8 +926,8 @@ int ModApiEnvMod::l_get_perlin(lua_State *L)
 	} else {
 		params.seed    = luaL_checkint(L, 1);
 		params.octaves = luaL_checkint(L, 2);
-		params.persist = luaL_checknumber(L, 3);
-		params.spread  = v3f(1, 1, 1) * luaL_checknumber(L, 4);
+		params.persist = readParam<float>(L, 3);
+		params.spread  = v3f(1, 1, 1) * readParam<float>(L, 4);
 	}
 
 	params.seed += (int)env->getServerMap().getSeed();

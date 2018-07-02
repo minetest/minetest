@@ -32,6 +32,7 @@ function get_mods(path,retval,modpack)
 
 			toadd.name = name
 			toadd.author = mod_conf.author
+			toadd.release = tonumber(mod_conf.release or "0")
 			toadd.path = prefix
 			toadd.type = "mod"
 
@@ -74,6 +75,7 @@ function pkgmgr.get_texture_packs()
 			retval[#retval + 1] = {
 				name = item,
 				author = conf:get("author"),
+				release = tonumber(conf:get("release") or "0"),
 				list_name = name,
 				type = "txp",
 				path = path,
@@ -307,6 +309,48 @@ function pkgmgr.get_dependencies(path)
 	return table.concat(info.depends or {}, ","), table.concat(info.optional_depends or {}, ",")
 end
 
+----------- tests whether all of the mods in the modpack are enabled -----------
+function pkgmgr.is_modpack_entirely_enabled(data, name)
+	local rawlist = data.list:get_raw_list()
+	for j = 1, #rawlist do
+		if rawlist[j].modpack == name and not rawlist[j].enabled then
+			return false
+		end
+	end
+	return true
+end
+
+---------- toggles or en/disables a mod or modpack -----------------------------
+function pkgmgr.enable_mod(this, toset)
+	local mod = this.data.list:get_list()[this.data.selected_mod]
+
+	-- game mods can't be enabled or disabled
+	if mod.is_game_content then
+		return
+	end
+
+	-- toggle or en/disable the mod
+	if not mod.is_modpack then
+		if toset == nil then
+			mod.enabled = not mod.enabled
+		else
+			mod.enabled = toset
+		end
+		return
+	end
+
+	-- toggle or en/disable every mod in the modpack, interleaved unsupported
+	local list = this.data.list:get_raw_list()
+	for i = 1, #list do
+		if list[i].modpack == mod.name then
+			if toset == nil then
+				toset = not list[i].enabled
+			end
+			list[i].enabled = toset
+		end
+	end
+end
+
 --------------------------------------------------------------------------------
 function pkgmgr.get_worldconfig(worldpath)
 	local filename = worldpath ..
@@ -336,90 +380,113 @@ function pkgmgr.get_worldconfig(worldpath)
 end
 
 --------------------------------------------------------------------------------
-function pkgmgr.install_dir(type, path, basename)
+function pkgmgr.install_dir(type, path, basename, targetpath)
 	local basefolder = pkgmgr.get_base_folder(path)
 
-	local targetpath
+	-- There's no good way to detect a texture pack, so let's just assume
+	-- it's correct for now.
 	if type == "txp" then
 		if basefolder and basefolder.type ~= "invalid" and basefolder.type ~= "txp" then
 			return nil, fgettext("Unable to install a $1 as a texture pack", basefolder.type)
 		end
 
 		local from = basefolder and basefolder.path or path
-		targetpath = core.get_texturepath() .. DIR_DELIM .. basename
-		core.copy_dir(from, targetpath)
+		if targetpath then
+			core.delete_dir(targetpath)
+			core.create_dir(targetpath)
+		else
+			targetpath = core.get_texturepath() .. DIR_DELIM .. basename
+		end
+		if not core.copy_dir(from, targetpath) then
+			return nil,
+				fgettext("Failed to install $1 to $2", basename, targetpath)
+		end
 		return targetpath, nil
 
 	elseif not basefolder then
 		return nil, fgettext("Unable to find a valid mod or modpack")
 	end
 
+	--
+	-- Get destination
+	--
 	if basefolder.type == "modpack" then
 		if type ~= "mod" then
 			return nil, fgettext("Unable to install a modpack as a $1", type)
 		end
-		local clean_path = nil
 
-		if basename ~= nil then
-			clean_path = "mp_" .. basename
-		end
-
-		if clean_path == nil then
-			clean_path = get_last_folder(cleanup_path(basefolder.path))
-		end
-
-		if clean_path ~= nil then
-			targetpath = core.get_modpath() .. DIR_DELIM .. clean_path
-			if not core.copy_dir(basefolder.path,targetpath) then
-				return nil,
-					fgettext("Failed to install $1 to $2", basename, targetpath)
-			end
+		-- Get destination name for modpack
+		if targetpath then
+			core.delete_dir(targetpath)
+			core.create_dir(targetpath)
 		else
-			return nil,
-				fgettext("Install Mod: unable to find suitable foldername for modpack $1",
-				modfilename)
+			local clean_path = nil
+			if basename ~= nil then
+				clean_path = "mp_" .. basename
+			end
+			if not clean_path then
+				clean_path = get_last_folder(cleanup_path(basefolder.path))
+			end
+			if clean_path then
+				targetpath = core.get_modpath() .. DIR_DELIM .. clean_path
+			else
+				return nil,
+					fgettext("Install Mod: unable to find suitable foldername for modpack $1",
+					modfilename)
+			end
 		end
-
-		pkgmgr.refresh_globals()
-
 	elseif basefolder.type == "mod" then
 		if type ~= "mod" then
 			return nil, fgettext("Unable to install a mod as a $1", type)
 		end
-		local targetfolder = basename
 
-		if targetfolder == nil then
-			targetfolder = pkgmgr.identify_modname(basefolder.path,"init.lua")
-		end
-
-		--if heuristic failed try to use current foldername
-		if targetfolder == nil then
-			targetfolder = get_last_folder(basefolder.path)
-		end
-
-		if targetfolder ~= nil and pkgmgr.isValidModname(targetfolder) then
-			targetpath = core.get_modpath() .. DIR_DELIM .. targetfolder
-			core.copy_dir(basefolder.path, targetpath)
+		if targetpath then
+			core.delete_dir(targetpath)
+			core.create_dir(targetpath)
 		else
-			return nil, fgettext("Install Mod: unable to find real modname for: $1", modfilename)
-		end
+			local targetfolder = basename
+			if targetfolder == nil then
+				targetfolder = pkgmgr.identify_modname(basefolder.path, "init.lua")
+			end
 
-		pkgmgr.refresh_globals()
+			-- If heuristic failed try to use current foldername
+			if targetfolder == nil then
+				targetfolder = get_last_folder(basefolder.path)
+			end
+
+			if targetfolder ~= nil and pkgmgr.isValidModname(targetfolder) then
+				targetpath = core.get_modpath() .. DIR_DELIM .. targetfolder
+			else
+				return nil, fgettext("Install Mod: unable to find real modname for: $1", modfilename)
+			end
+		end
 
 	elseif basefolder.type == "game" then
 		if type ~= "game" then
 			return nil, fgettext("Unable to install a game as a $1", type)
 		end
 
-		targetpath = core.get_gamepath() .. DIR_DELIM .. basename
-		core.copy_dir(basefolder.path, targetpath)
+		if targetpath then
+			core.delete_dir(targetpath)
+			core.create_dir(targetpath)
+		else
+			targetpath = core.get_gamepath() .. DIR_DELIM .. basename
+		end
 	end
+
+	-- Copy it
+	if not core.copy_dir(basefolder.path, targetpath) then
+		return nil,
+			fgettext("Failed to install $1 to $2", basename, targetpath)
+	end
+
+	pkgmgr.refresh_globals()
 
 	return targetpath, nil
 end
 
 --------------------------------------------------------------------------------
-function pkgmgr.install(type, modfilename, basename)
+function pkgmgr.install(type, modfilename, basename, dest)
 	local archive_info = pkgmgr.identify_filetype(modfilename)
 	local path = pkgmgr.extract(archive_info)
 
@@ -430,7 +497,7 @@ function pkgmgr.install(type, modfilename, basename)
 				archive_info.type)
 	end
 
-	local targetpath, msg = pkgmgr.install_dir(type, path, basename)
+	local targetpath, msg = pkgmgr.install_dir(type, path, basename, dest)
 	core.delete_dir(path)
 	return targetpath, msg
 end

@@ -200,3 +200,8 @@ core.register_chatcommand("text", {
 		return core.localplayer:hud_change(id, "text", param)
 	end,
 })
+
+
+core.register_on_mods_loaded(function()
+	core.log("Yeah preview mod is loaded with other CSM mods.")
+end)

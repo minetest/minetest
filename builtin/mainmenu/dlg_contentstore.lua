@@ -15,6 +15,37 @@
 --with this program; if not, write to the Free Software Foundation, Inc.,
 --51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
+local store = {}
+local package_dialog = {}
+
+-- Screenshot
+local screenshot_dir = os.tempfolder()
+assert(core.create_dir(screenshot_dir))
+local screenshot_downloading = {}
+local screenshot_downloaded = {}
+
+-- Filter
+local search_string = ""
+local cur_page = 1
+local num_per_page = 5
+local filter_type = 1
+local filter_types_titles = {
+	fgettext("All packages"),
+	fgettext("Games"),
+	fgettext("Mods"),
+	fgettext("Texture packs"),
+}
+
+local filter_types_type = {
+	nil,
+	"game",
+	"mod",
+	"txp",
+}
+
+
+
+
 local function download_package(param)
 	if core.download_file(param.package.url, param.filename) then
 		return {
@@ -39,7 +70,9 @@ local function start_install(calling_dialog, package)
 
 	local function callback(result)
 		if result.successful then
-			local path, msg = pkgmgr.install(result.package.type, result.filename, result.package.name)
+			local path, msg = pkgmgr.install(result.package.type,
+					result.filename, result.package.name,
+					result.package.path)
 			if not path then
 				gamedata.errormessage = msg
 			else
@@ -69,6 +102,7 @@ local function start_install(calling_dialog, package)
 					end
 					set_def("description", result.package.short_description)
 					set_def("author",      result.package.author)
+					conf:set("release",    result.package.release)
 					conf:write()
 				end
 			end
@@ -85,7 +119,7 @@ local function start_install(calling_dialog, package)
 	end
 
 	if not core.handle_async(download_package, params, callback) then
-		minetest.log("error", "ERROR: async event failed")
+		core.log("error", "ERROR: async event failed")
 		gamedata.errormessage = fgettext("Failed to download $1", package.name)
 	end
 
@@ -110,19 +144,87 @@ local function start_install(calling_dialog, package)
 	new_dlg:show()
 end
 
+local function get_screenshot(package)
+	if not package.thumbnail then
+		return defaulttexturedir .. "no_screenshot.png"
+	elseif screenshot_downloading[package.thumbnail] then
+		return defaulttexturedir .. "loading_screenshot.png"
+	end
 
-local package_dialog = {}
+	-- Get tmp screenshot path
+	local filepath = screenshot_dir .. DIR_DELIM ..
+		package.type .. "-" .. package.author .. "-" .. package.name .. ".png"
+
+	-- Return if already downloaded
+	local file = io.open(filepath, "r")
+	if file then
+		file:close()
+		return filepath
+	end
+
+	-- Show error if we've failed to download before
+	if screenshot_downloaded[package.thumbnail] then
+		return defaulttexturedir .. "error_screenshot.png"
+	end
+
+	-- Download
+
+	local function download_screenshot(params)
+		return core.download_file(params.url, params.dest)
+	end
+	local function callback(success)
+		screenshot_downloading[package.thumbnail] = nil
+		screenshot_downloaded[package.thumbnail] = true
+		if not success then
+			core.log("warning", "Screenshot download failed for some reason")
+		end
+
+		local ele = ui.childlist.store
+		if ele and not ele.hidden then
+			core.update_formspec(ele:formspec())
+		end
+	end
+	if core.handle_async(download_screenshot,
+			{ dest = filepath, url = package.thumbnail }, callback) then
+		screenshot_downloading[package.thumbnail] = true
+	else
+		core.log("error", "ERROR: async event failed")
+		return defaulttexturedir .. "error_screenshot.png"
+	end
+
+	return defaulttexturedir .. "loading_screenshot.png"
+end
+
+
 
 function package_dialog.get_formspec()
 	local package = package_dialog.package
 
+	store.update_paths()
+
 	local formspec = {
-		"size[8,4;true]",
+		"size[9,4;true]",
 		"label[2.5,0.2;", core.formspec_escape(package.title), "]",
-		"textarea[0.2,1;8,3;;;", core.formspec_escape(package.short_description), "]",
+		"textarea[0.2,1;9,3;;;", core.formspec_escape(package.short_description), "]",
 		"button[0,0;2,1;back;", fgettext("Back"), "]",
-		"button[6,0;2,1;install;", fgettext("Install"), "]",
 	}
+
+	if not package.path then
+		formspec[#formspec + 1] = "button[7,0;2,1;install;"
+		formspec[#formspec + 1] = fgettext("Install")
+		formspec[#formspec + 1] = "]"
+	elseif package.installed_release < package.release then
+		formspec[#formspec + 1] = "button[7,0;2,1;install;"
+		formspec[#formspec + 1] = fgettext("Update")
+		formspec[#formspec + 1] = "]"
+		formspec[#formspec + 1] = "button[7,1;2,1;uninstall;"
+		formspec[#formspec + 1] = fgettext("Uninstall")
+		formspec[#formspec + 1] = "]"
+	else
+		formspec[#formspec + 1] = "button[7,0;2,1;uninstall;"
+		formspec[#formspec + 1] = fgettext("Uninstall")
+		formspec[#formspec + 1] = "]"
+	end
 
 	-- TODO: screenshots
 
@@ -136,7 +238,15 @@ function package_dialog.handle_submit(this, fields, tabname, tabdata)
 	end
 
 	if fields.install then
-		start_install(package_dialog.package)
+		start_install(this, package_dialog.package)
+		return true
+	end
+
+	if fields.uninstall then
+		local dlg_delmod = create_delete_content_dlg(package_dialog.package)
+		dlg_delmod:set_parent(this)
+		this:hide()
+		dlg_delmod:show()
 		return true
 	end
 
@@ -150,28 +260,6 @@ function package_dialog.create(package)
 		package_dialog.handle_submit,
 		nil)
 end
-
-
-
-
-local store = {}
-local search_string = ""
-local cur_page = 1
-local num_per_page = 5
-local filter_type = 1
-local filter_types_titles = {
-	fgettext("All packages"),
-	fgettext("Games"),
-	fgettext("Mods"),
-	fgettext("Texture packs"),
-}
-
-local filter_types_type = {
-	nil,
-	"game",
-	"mod",
-	"txp",
-}
 
 function store.load()
 	store.packages_full = core.get_package_list()
@@ -209,6 +297,7 @@ function store.update_paths()
 
 		if content and content.author == package.author then
 			package.path = content.path
+			package.installed_release = content.release
 		else
 			package.path = nil
 		end
@@ -285,8 +374,7 @@ function store.get_formspec()
 
 		-- image
 		formspec[#formspec + 1] = "image[-0.4,0;1.5,1;"
-		formspec[#formspec + 1] = defaulttexturedir
-		formspec[#formspec + 1] = "no_screenshot.png"
+		formspec[#formspec + 1] = get_screenshot(package)
 		formspec[#formspec + 1] = "]"
 
 		-- title
@@ -301,17 +389,23 @@ function store.get_formspec()
 		formspec[#formspec + 1] = "]"
 
 		-- buttons
-		if package.path then
-			formspec[#formspec + 1] = "button[6,0;1.5,1;uninstall_"
-			formspec[#formspec + 1] = tostring(i)
-			formspec[#formspec + 1] = ";"
-			formspec[#formspec + 1] = fgettext("Uninstall")
-			formspec[#formspec + 1] = "]"
-		else
+		if not package.path then
 			formspec[#formspec + 1] = "button[6,0;1.5,1;install_"
 			formspec[#formspec + 1] = tostring(i)
 			formspec[#formspec + 1] = ";"
 			formspec[#formspec + 1] = fgettext("Install")
+			formspec[#formspec + 1] = "]"
+		elseif package.installed_release < package.release then
+			formspec[#formspec + 1] = "button[6,0;1.5,1;install_"
+			formspec[#formspec + 1] = tostring(i)
+			formspec[#formspec + 1] = ";"
+			formspec[#formspec + 1] = fgettext("Update")
+			formspec[#formspec + 1] = "]"
+		else
+			formspec[#formspec + 1] = "button[6,0;1.5,1;uninstall_"
+			formspec[#formspec + 1] = tostring(i)
+			formspec[#formspec + 1] = ";"
+			formspec[#formspec + 1] = fgettext("Uninstall")
 			formspec[#formspec + 1] = "]"
 		end
 		formspec[#formspec + 1] = "button[7.5,0;1.5,1;view_"

@@ -190,7 +190,7 @@ int MetaDataRef::l_set_float(lua_State *L)
 
 	MetaDataRef *ref = checkobject(L, 1);
 	std::string name = luaL_checkstring(L, 2);
-	float a = luaL_checknumber(L, 3);
+	float a = readParam<float>(L, 3);
 	std::string str = ftos(a);
 
 	Metadata *meta = ref->getmeta(true);
@@ -275,7 +275,7 @@ bool MetaDataRef::handleFromTable(lua_State *L, int table, Metadata *meta)
 		lua_pushnil(L);
 		while (lua_next(L, fieldstable) != 0) {
 			// key at index -2 and value at index -1
-			std::string name = lua_tostring(L, -2);
+			std::string name = readParam<std::string>(L, -2);
 			size_t cl;
 			const char *cs = lua_tolstring(L, -1, &cl);
 			meta->setString(name, std::string(cs, cl));

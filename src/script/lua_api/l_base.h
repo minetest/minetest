@@ -21,7 +21,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "common/c_types.h"
 #include "common/c_internal.h"
+#include "common/helper.h"
 #include "gamedef.h"
+#include <unordered_map>
 
 extern "C" {
 #include <lua.h>
@@ -37,7 +39,7 @@ class Server;
 class Environment;
 class GUIEngine;
 
-class ModApiBase {
+class ModApiBase : protected LuaHelper {
 
 public:
 	static ScriptApiBase*   getScriptApiBase(lua_State *L);
@@ -69,4 +71,11 @@ public:
 			const char* name,
 			lua_CFunction func,
 			int top);
+
+	static int l_deprecated_function(lua_State *L);
+	static void markAliasDeprecated(luaL_Reg *reg);
+private:
+	// <old_name> = { <new_name>, <new_function> }
+	static std::unordered_map<std::string, luaL_Reg> m_deprecated_wrappers;
+	static bool m_error_deprecated_calls;
 };

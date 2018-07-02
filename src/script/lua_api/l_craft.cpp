@@ -57,7 +57,7 @@ bool ModApiCraft::readCraftRecipeShaped(lua_State *L, int index,
 			// key at index -2 and value at index -1
 			if(!lua_isstring(L, -1))
 				return false;
-			recipe.emplace_back(lua_tostring(L, -1));
+			recipe.emplace_back(readParam<std::string>(L, -1));
 			// removes value, keeps key for next iteration
 			lua_pop(L, 1);
 			colcount++;
@@ -90,7 +90,7 @@ bool ModApiCraft::readCraftRecipeShapeless(lua_State *L, int index,
 		// key at index -2 and value at index -1
 		if(!lua_isstring(L, -1))
 			return false;
-		recipe.emplace_back(lua_tostring(L, -1));
+		recipe.emplace_back(readParam<std::string>(L, -1));
 		// removes value, keeps key for next iteration
 		lua_pop(L, 1);
 	}
@@ -115,12 +115,12 @@ bool ModApiCraft::readCraftReplacements(lua_State *L, int index,
 		lua_rawgeti(L, -1, 1);
 		if(!lua_isstring(L, -1))
 			return false;
-		std::string replace_from = lua_tostring(L, -1);
+		std::string replace_from = readParam<std::string>(L, -1);
 		lua_pop(L, 1);
 		lua_rawgeti(L, -1, 2);
 		if(!lua_isstring(L, -1))
 			return false;
-		std::string replace_to = lua_tostring(L, -1);
+		std::string replace_to = readParam<std::string>(L, -1);
 		lua_pop(L, 1);
 		replacements.pairs.emplace_back(replace_from, replace_to);
 		// removes value, keeps key for next iteration

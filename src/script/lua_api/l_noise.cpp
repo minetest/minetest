@@ -69,8 +69,8 @@ int LuaPerlinNoise::create_object(lua_State *L)
 	} else {
 		params.seed    = luaL_checkint(L, 1);
 		params.octaves = luaL_checkint(L, 2);
-		params.persist = luaL_checknumber(L, 3);
-		params.spread  = v3f(1, 1, 1) * luaL_checknumber(L, 4);
+		params.persist = readParam<float>(L, 3);
+		params.spread  = v3f(1, 1, 1) * readParam<float>(L, 4);
 	}
 
 	LuaPerlinNoise *o = new LuaPerlinNoise(&params);
@@ -122,6 +122,7 @@ void LuaPerlinNoise::Register(lua_State *L)
 
 	lua_pop(L, 1);
 
+	markAliasDeprecated(methods);
 	luaL_openlib(L, 0, methods, 0);
 	lua_pop(L, 1);
 
@@ -130,7 +131,7 @@ void LuaPerlinNoise::Register(lua_State *L)
 
 
 const char LuaPerlinNoise::className[] = "PerlinNoise";
-const luaL_Reg LuaPerlinNoise::methods[] = {
+luaL_Reg LuaPerlinNoise::methods[] = {
 	luamethod_aliased(LuaPerlinNoise, get_2d, get2d),
 	luamethod_aliased(LuaPerlinNoise, get_3d, get3d),
 	{0,0}
@@ -380,6 +381,7 @@ void LuaPerlinNoiseMap::Register(lua_State *L)
 
 	lua_pop(L, 1);
 
+	markAliasDeprecated(methods);
 	luaL_openlib(L, 0, methods, 0);
 	lua_pop(L, 1);
 
@@ -388,7 +390,7 @@ void LuaPerlinNoiseMap::Register(lua_State *L)
 
 
 const char LuaPerlinNoiseMap::className[] = "PerlinNoiseMap";
-const luaL_Reg LuaPerlinNoiseMap::methods[] = {
+luaL_Reg LuaPerlinNoiseMap::methods[] = {
 	luamethod_aliased(LuaPerlinNoiseMap, get_2d_map,      get2dMap),
 	luamethod_aliased(LuaPerlinNoiseMap, get_2d_map_flat, get2dMap_flat),
 	luamethod_aliased(LuaPerlinNoiseMap, calc_2d_map,     calc2dMap),

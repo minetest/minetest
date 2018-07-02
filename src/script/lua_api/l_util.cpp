@@ -135,7 +135,7 @@ int ModApiUtil::l_write_json(lua_State *L)
 
 	bool styled = false;
 	if (!lua_isnone(L, 2)) {
-		styled = lua_toboolean(L, 2);
+		styled = readParam<bool>(L, 2);
 		lua_pop(L, 1);
 	}
 
@@ -179,8 +179,7 @@ int ModApiUtil::l_get_hit_params(lua_State *L)
 	if(lua_isnoneornil(L, 3))
 		push_hit_params(L, getHitParams(groups, &tp));
 	else
-		push_hit_params(L, getHitParams(groups, &tp,
-					luaL_checknumber(L, 3)));
+		push_hit_params(L, getHitParams(groups, &tp, readParam<float>(L, 3)));
 	return 1;
 }
 
@@ -232,11 +231,20 @@ int ModApiUtil::l_is_yes(lua_State *L)
 	lua_getglobal(L, "tostring"); // function to be called
 	lua_pushvalue(L, 1); // 1st argument
 	lua_call(L, 1, 1); // execute function
-	std::string str(lua_tostring(L, -1)); // get result
+	std::string str = readParam<std::string>(L, -1); // get result
 	lua_pop(L, 1);
 
 	bool yes = is_yes(str);
 	lua_pushboolean(L, yes);
+	return 1;
+}
+
+// is_nan(arg)
+int ModApiUtil::l_is_nan(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+
+	lua_pushboolean(L, isNaN(L, 1));
 	return 1;
 }
 
@@ -261,7 +269,7 @@ int ModApiUtil::l_compress(lua_State *L)
 
 	int level = -1;
 	if (!lua_isnone(L, 3) && !lua_isnil(L, 3))
-		level = luaL_checknumber(L, 3);
+		level = readParam<float>(L, 3);
 
 	std::ostringstream os;
 	compressZlib(std::string(data, size), os, level);
@@ -334,7 +342,7 @@ int ModApiUtil::l_get_dir_list(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 	const char *path = luaL_checkstring(L, 1);
 	bool list_all = !lua_isboolean(L, 2); // if its not a boolean list all
-	bool list_dirs = lua_toboolean(L, 2); // true: list dirs, false: list files
+	bool list_dirs = readParam<bool>(L, 2); // true: list dirs, false: list files
 
 	CHECK_SECURE_PATH(L, path, false);
 
@@ -402,7 +410,7 @@ int ModApiUtil::l_request_insecure_environment(lua_State *L)
 	}
 
 	// Check secure.trusted_mods
-	const char *mod_name = lua_tostring(L, -1);
+	std::string mod_name = readParam<std::string>(L, -1);
 	std::string trusted_mods = g_settings->get("secure.trusted_mods");
 	trusted_mods.erase(std::remove_if(trusted_mods.begin(),
 			trusted_mods.end(), static_cast<int(*)(int)>(&std::isspace)),
@@ -443,7 +451,7 @@ int ModApiUtil::l_sha1(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 	size_t size;
 	const char *data = luaL_checklstring(L, 1, &size);
-	bool hex = !lua_isboolean(L, 2) || !lua_toboolean(L, 2);
+	bool hex = !lua_isboolean(L, 2) || !readParam<bool>(L, 2);
 
 	// Compute actual checksum of data
 	std::string data_sha1;
@@ -481,6 +489,7 @@ void ModApiUtil::Initialize(lua_State *L, int top)
 	API_FCT(get_password_hash);
 
 	API_FCT(is_yes);
+	API_FCT(is_nan);
 
 	API_FCT(get_builtin_path);
 
@@ -513,6 +522,7 @@ void ModApiUtil::InitializeClient(lua_State *L, int top)
 	API_FCT(write_json);
 
 	API_FCT(is_yes);
+	API_FCT(is_nan);
 
 	API_FCT(compress);
 	API_FCT(decompress);

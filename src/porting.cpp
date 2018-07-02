@@ -351,6 +351,21 @@ bool getCurrentExecPath(char *buf, size_t len)
 #endif
 
 
+//// Non-Windows
+#if !defined(_WIN32)
+
+const char *getHomeOrFail()
+{
+	const char *home = getenv("HOME");
+	// In rare cases the HOME environment variable may be unset
+	FATAL_ERROR_IF(!home,
+		"Required environment variable HOME is not set");
+	return home;
+}
+
+#endif
+
+
 //// Windows
 #if defined(_WIN32)
 
@@ -430,7 +445,7 @@ bool setSystemPaths()
 	}
 
 #ifndef __ANDROID__
-	path_user = std::string(getenv("HOME")) + DIR_DELIM "."
+	path_user = std::string(getHomeOrFail()) + DIR_DELIM "."
 		+ PROJECT_NAME;
 #endif
 
@@ -454,7 +469,7 @@ bool setSystemPaths()
 	}
 	CFRelease(resources_url);
 
-	path_user = std::string(getenv("HOME"))
+	path_user = std::string(getHomeOrFail())
 		+ "/Library/Application Support/"
 		+ PROJECT_NAME;
 	return true;
@@ -466,7 +481,7 @@ bool setSystemPaths()
 bool setSystemPaths()
 {
 	path_share = STATIC_SHAREDIR;
-	path_user  = std::string(getenv("HOME")) + DIR_DELIM "."
+	path_user  = std::string(getHomeOrFail()) + DIR_DELIM "."
 		+ lowercase(PROJECT_NAME);
 	return true;
 }

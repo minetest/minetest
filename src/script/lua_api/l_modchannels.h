@@ -37,11 +37,11 @@ public:
 class ModChannelRef : public ModApiBase
 {
 public:
-	ModChannelRef(ModChannel *modchannel);
+	ModChannelRef(const std::string &modchannel);
 	~ModChannelRef() = default;
 
 	static void Register(lua_State *L);
-	static void create(lua_State *L, ModChannel *channel);
+	static void create(lua_State *L, const std::string &channel);
 
 	// leave()
 	static int l_leave(lua_State *L);
@@ -57,9 +57,9 @@ private:
 	static int gc_object(lua_State *L);
 
 	static ModChannelRef *checkobject(lua_State *L, int narg);
-	static ModChannel *getobject(ModChannelRef *ref);
+	static ModChannel *getobject(lua_State *L, ModChannelRef *ref);
 
-	ModChannel *m_modchannel = nullptr;
+	std::string m_modchannel_name;
 
 	static const char className[];
 	static const luaL_Reg methods[];

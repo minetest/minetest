@@ -155,7 +155,7 @@ const ClientCommandFactory clientCommandFactoryTable[TOCLIENT_NUM_MSG_TYPES] =
 	{ "TOCLIENT_INVENTORY",                0, true }, // 0x27
 	null_command_factory,
 	{ "TOCLIENT_TIME_OF_DAY",              0, true }, // 0x29
-	{ "TOCLIENT_CSM_FLAVOUR_LIMITS",       0, true }, // 0x2A
+	{ "TOCLIENT_CSM_RESTRICTION_FLAGS",    0, true }, // 0x2A
 	null_command_factory,
 	null_command_factory,
 	null_command_factory,

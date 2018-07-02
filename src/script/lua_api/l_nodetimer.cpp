@@ -43,8 +43,8 @@ int NodeTimerRef::l_set(lua_State *L)
 	NodeTimerRef *o = checkobject(L, 1);
 	ServerEnvironment *env = o->m_env;
 	if(env == NULL) return 0;
-	f32 t = luaL_checknumber(L,2);
-	f32 e = luaL_checknumber(L,3);
+	f32 t = readParam<float>(L,2);
+	f32 e = readParam<float>(L,3);
 	env->getMap().setNodeTimer(NodeTimer(t, e, o->m_p));
 	return 0;
 }
@@ -55,7 +55,7 @@ int NodeTimerRef::l_start(lua_State *L)
 	NodeTimerRef *o = checkobject(L, 1);
 	ServerEnvironment *env = o->m_env;
 	if(env == NULL) return 0;
-	f32 t = luaL_checknumber(L,2);
+	f32 t = readParam<float>(L,2);
 	env->getMap().setNodeTimer(NodeTimer(t, 0, o->m_p));
 	return 0;
 }

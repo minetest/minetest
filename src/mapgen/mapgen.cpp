@@ -56,7 +56,8 @@ FlagDesc flagdesc_mapgen[] = {
 	{"dungeons",    MG_DUNGEONS},
 	{"light",       MG_LIGHT},
 	{"decorations", MG_DECORATIONS},
-	{NULL,       0}
+	{"biomes",      MG_BIOMES},
+	{NULL,          0}
 };
 
 FlagDesc flagdesc_gennotify[] = {
@@ -654,6 +655,7 @@ void MapgenBasic::generateBiomes()
 	for (s16 z = node_min.Z; z <= node_max.Z; z++)
 	for (s16 x = node_min.X; x <= node_max.X; x++, index++) {
 		Biome *biome = NULL;
+		biome_t water_biome_index = 0;
 		u16 depth_top = 0;
 		u16 base_filler = 0;
 		u16 depth_water_top = 0;
@@ -692,8 +694,14 @@ void MapgenBasic::generateBiomes()
 				// (Re)calculate biome
 				biome = biomegen->getBiomeAtIndex(index, v3s16(x, y, z));
 
+				// Add biome to biomemap at first stone surface detected
 				if (biomemap[index] == BIOME_NONE && is_stone_surface)
 					biomemap[index] = biome->index;
+
+				// Store biome of first water surface detected, as a fallback
+				// entry for the biomemap.
+				if (water_biome_index == 0 && is_water_surface)
+					water_biome_index = biome->index;
 
 				depth_top = biome->depth_top;
 				base_filler = MYMAX(depth_top +
@@ -761,6 +769,11 @@ void MapgenBasic::generateBiomes()
 
 			VoxelArea::add_y(em, vi, -1);
 		}
+		// If no stone surface detected in mapchunk column and a water surface
+		// biome fallback exists, add it to the biomemap. This avoids water
+		// surface decorations failing in deep water.
+ 		if (biomemap[index] == BIOME_NONE && water_biome_index != 0)
+			biomemap[index] = water_biome_index;
 	}
 }
 
@@ -780,6 +793,10 @@ void MapgenBasic::dustTopNodes()
 		if (biome->c_dust == CONTENT_IGNORE)
 			continue;
 
+		// Check if mapchunk above has generated, if so, drop dust from 16 nodes
+		// above current mapchunk top, above decorations that will extend above
+		// the current mapchunk. If the mapchunk above has not generated, it
+		// will provide this required dust when it does.
 		u32 vi = vm->m_area.index(x, full_node_max.Y, z);
 		content_t c_full_max = vm->m_data[vi].getContent();
 		s16 y_start;
@@ -808,14 +825,15 @@ void MapgenBasic::dustTopNodes()
 
 		content_t c = vm->m_data[vi].getContent();
 		NodeDrawType dtype = ndef->get(c).drawtype;
-		// Only place on walkable cubic non-liquid nodes
-		// Dust check needed due to vertical overgeneration
+		// Only place on cubic, walkable, non-dust nodes.
+		// Dust check needed due to avoid double layer of dust caused by
+		// dropping dust from 16 nodes above mapchunk top.
 		if ((dtype == NDT_NORMAL ||
+				dtype == NDT_ALLFACES ||
 				dtype == NDT_ALLFACES_OPTIONAL ||
-				dtype == NDT_GLASSLIKE_FRAMED_OPTIONAL ||
 				dtype == NDT_GLASSLIKE ||
 				dtype == NDT_GLASSLIKE_FRAMED ||
-				dtype == NDT_ALLFACES) &&
+				dtype == NDT_GLASSLIKE_FRAMED_OPTIONAL) &&
 				ndef->get(c).walkable && c != biome->c_dust) {
 			VoxelArea::add_y(em, vi, 1);
 			vm->m_data[vi] = MapNode(biome->c_dust);
@@ -883,8 +901,6 @@ void MapgenBasic::generateDungeons(s16 max_stone_y)
 	dp.corridor_len_max = 13;
 	dp.rooms_min        = 2;
 	dp.rooms_max        = 16;
-	dp.y_min            = -MAX_MAP_GENERATION_LIMIT;
-	dp.y_max            = MAX_MAP_GENERATION_LIMIT;
 
 	dp.np_density       = nparams_dungeon_density;
 	dp.np_alt_wall      = nparams_dungeon_alt_wall;
