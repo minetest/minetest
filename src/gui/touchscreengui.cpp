@@ -569,9 +569,9 @@ void TouchScreenGUI::init(ISimpleTextureSource *tsrc)
 	if (!m_joystick_triggers_special1)
 		initButton(special1_id,
 				rect<s32>(m_screensize.X - (1.25 * button_size),
-						m_screensize.Y - (3 * button_size),
+						m_screensize.Y - (2.5 * button_size),
 						m_screensize.X - (0.25 * button_size),
-						m_screensize.Y - (2 * button_size)),
+						m_screensize.Y - (1.5 * button_size)),
 				L"spc1", false);
 
 	m_settingsbar.init(m_texturesource, "gear_icon.png", settings_starter_id,
