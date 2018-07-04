@@ -100,9 +100,8 @@ void GUIConfirmRegistration::regenerateGui(v2u32 screensize)
 				address.c_str(), m_playername.c_str());
 
 		wchar_t *info_text_buf_wide = utf8_to_wide_c(info_text_buf);
-		gui::IGUIEditBox *e = new gui::intlGUIEditBox(
-				info_text_buf_wide, true, Environment, this,
-				ID_message, rect2, false, true);
+		gui::IGUIEditBox *e = new gui::intlGUIEditBox(info_text_buf_wide, true, 
+				Environment, this, ID_message, rect2, false, true);
 		delete[] info_text_buf_wide;
 		e->drop();
 		e->setMultiLine(true);
