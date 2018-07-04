@@ -44,10 +44,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <cmath>
 
 
-static FlagDesc flagdesc_mapgen_valleys[] = {
-	{"altitude_chill", MGVALLEYS_ALT_CHILL},
-	{"humid_rivers",   MGVALLEYS_HUMID_RIVERS},
-	{NULL,             0}
+FlagDesc flagdesc_mapgen_valleys[] = {
+	{"altitude_chill",   MGVALLEYS_ALT_CHILL},
+	{"humid_rivers",     MGVALLEYS_HUMID_RIVERS},
+	{"vary_river_depth", MGVALLEYS_VARY_RIVER_DEPTH},
+	{"altitude_dry",     MGVALLEYS_ALT_DRY},
+	{NULL,               0}
 };
 
 
@@ -94,8 +96,6 @@ MapgenValleys::MapgenValleys(int mapgenid, MapgenValleysParams *params,
 	MapgenBasic::np_cave2   = params->np_cave2;
 	MapgenBasic::np_cavern  = params->np_cavern;
 
-	humid_rivers       = (spflags & MGVALLEYS_HUMID_RIVERS);
-	use_altitude_chill = (spflags & MGVALLEYS_ALT_CHILL);
 	humidity_adjust    = bp->np_humidity.offset - 50.0f;
 }
 
@@ -298,10 +298,10 @@ void MapgenValleys::calculateNoise()
 	float heat_offset = 0.0f;
 	float humidity_scale = 1.0f;
 	// Altitude chill tends to reduce the average heat.
-	if (use_altitude_chill)
+	if (spflags & MGVALLEYS_ALT_CHILL)
 		heat_offset = 5.0f;
 	// River humidity tends to increase the humidity range.
-	if (humid_rivers)
+	if (spflags & MGVALLEYS_HUMID_RIVERS)
 		humidity_scale = 0.8f;
 
 	for (s32 index = 0; index < csize.X * csize.Z; index++) {
@@ -477,17 +477,16 @@ int MapgenValleys::generateTerrain()
 		if (surface_y > surface_max_y)
 			surface_max_y = std::ceil(surface_y);
 
-		if (humid_rivers) {
-			// Derive heat from (base) altitude. This will be most correct
-			// at rivers, since other surface heights may vary below.
-			if (use_altitude_chill && (surface_y > 0.0f || river_y > 0.0f))
-				t_heat -= alt_to_heat *
-					std::fmax(surface_y, river_y) / altitude_chill;
-
-			// If humidity is low or heat is high, lower the water table
+		// Optionally vary river depth according to heat and humidity
+		if (spflags & MGVALLEYS_VARY_RIVER_DEPTH) {
+			float heat = ((spflags & MGVALLEYS_ALT_CHILL) &&
+				(surface_y > 0.0f || river_y > 0.0f)) ?
+				t_heat - alt_to_heat *
+					std::fmax(surface_y, river_y) / altitude_chill :
+				t_heat;
 			float delta = m_bgen->humidmap[index_2d] - 50.0f;
 			if (delta < 0.0f) {
-				float t_evap = (t_heat - 32.0f) / evaporation;
+				float t_evap = (heat - 32.0f) / evaporation;
 				river_y += delta * std::fmax(t_evap, 0.08f);
 			}
 		}
@@ -534,33 +533,32 @@ int MapgenValleys::generateTerrain()
 			}
 		}
 
-		if (humid_rivers) {
-			// Use base ground (water table) in a riverbed, to avoid an
-			// unnatural rise in humidity.
-			float t_alt = std::fmax(noise_rivers->result[index_2d],
-				(float)heightmap[index_2d]);
-			float humid = m_bgen->humidmap[index_2d];
-			float water_depth = (t_alt - river_y) / humidity_dropoff;
-			humid *= 1.0f + std::pow(0.5f, std::fmax(water_depth, 1.0f));
-
-			// Reduce humidity with altitude (ignoring riverbeds)
-			if (t_alt > 0.0f)
-				humid -= alt_to_humid * t_alt / altitude_chill;
-
-			m_bgen->humidmap[index_2d] = humid;
-		}
-
-		// Assign the heat adjusted by any changed altitudes.
-		// The altitude will change about half the time.
-		if (use_altitude_chill) {
+		// Optionally increase humidity around rivers
+		if (spflags & MGVALLEYS_HUMID_RIVERS) {
 			// Ground height ignoring riverbeds
 			float t_alt = std::fmax(noise_rivers->result[index_2d],
 				(float)heightmap[index_2d]);
+			float water_depth = (t_alt - river_y) / humidity_dropoff;
+			m_bgen->humidmap[index_2d] *=
+				1.0f + std::pow(0.5f, std::fmax(water_depth, 1.0f));
+		}
 
-			if (humid_rivers && heightmap[index_2d] == (s16)myround(surface_y))
-				// The altitude hasn't changed. Use the first result
-				m_bgen->heatmap[index_2d] = t_heat;
-			else if (t_alt > 0.0f)
+		// Optionally decrease humidity with altitude
+		if (spflags & MGVALLEYS_ALT_DRY) {
+			// Ground height ignoring riverbeds
+			float t_alt = std::fmax(noise_rivers->result[index_2d],
+				(float)heightmap[index_2d]);
+			if (t_alt > 0.0f)
+				m_bgen->humidmap[index_2d] -=
+					alt_to_humid * t_alt / altitude_chill;
+		}
+
+		// Optionally decrease heat with altitude
+		if (spflags & MGVALLEYS_ALT_CHILL) {
+			// Ground height ignoring riverbeds
+			float t_alt = std::fmax(noise_rivers->result[index_2d],
+				(float)heightmap[index_2d]);
+			if (t_alt > 0.0f)
 				m_bgen->heatmap[index_2d] -=
 					alt_to_heat * t_alt / altitude_chill;
 		}
