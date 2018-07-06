@@ -3,8 +3,12 @@ Minetest Lua Modding API Reference
 * More information at <http://www.minetest.net/>
 * Developer Wiki: <http://dev.minetest.net/>
 
+
+
+
 Introduction
-------------
+============
+
 Content and functionality can be added to Minetest using Lua scripting
 in run-time loaded mods.
 
@@ -44,8 +48,12 @@ Paths
         * Linux: `$HOME/.minetest`
         * Windows: `C:/users/<user>/AppData/minetest` (maybe)
 
+
+
+
 Games
------
+=====
+
 Games are looked up from:
 
 * `$path_share/games/gameid/`
@@ -81,6 +89,12 @@ The images are named `$identifier.png`, where `$identifier` is one of
 If you want to specify multiple images for one identifier, add additional
 images named like `$identifier.$n.png`, with an ascending number $n starting
 with 1, and a random image will be chosen from the provided ones.
+
+
+
+
+Mods
+====
 
 Mod load path
 -------------
@@ -126,7 +140,7 @@ should be a mod, contains a file named `modpack.txt`. This file shall be
 empty, except for lines starting with `#`, which are comments.
 
 Mod directory structure
-------------------------
+-----------------------
 
     mods
     |-- modname
@@ -236,8 +250,12 @@ when registering it.
 
 The `:` prefix can also be used for maintaining backwards compatibility.
 
+
+
+
 Aliases
--------
+=======
+
 Aliases can be added by using `minetest.register_alias(name, convert_to)` or
 `minetest.register_alias_force(name, convert_to)`.
 
@@ -326,8 +344,12 @@ Dungeons:
 "mapgen_mossycobble"
 "mapgen_stair_desert_stone"
 
+
+
+
 Textures
---------
+========
+
 Mods should generally prefix their textures with `modname_`, e.g. given
 the mod name `foomod`, a texture could be called:
 
@@ -719,8 +741,12 @@ Example (colored grass block):
         palette = "default_foilage.png",
     })
 
+
+
+
 Sounds
-------
+======
+
 Only Ogg Vorbis files are supported.
 
 For positional playing of sounds, only single-channel (mono) files are
@@ -790,8 +816,12 @@ one player using `to_player = name,`
 * e.g. `{name = "default_place_node", gain = 1.0}`
 * e.g. `{name = "default_place_node", gain = 1.0, pitch = 1.0}`
 
+
+
+
 Registered definitions of stuff
--------------------------------
+===============================
+
 Anything added using certain `minetest.register_*` functions get added to
 the global `minetest.registered_*` tables.
 
@@ -879,8 +909,12 @@ Example: `minetest.get_item_group(name, group)` has been implemented as:
         return minetest.registered_items[name].groups[group]
     end
 
+
+
+
 Nodes
------
+=====
+
 Nodes are the bulk data of the world: cubes and other things that take the
 space of a cube. Huge amounts of them are handled efficiently, but they
 are quite static.
@@ -1149,6 +1183,10 @@ A box of a regular node would look like:
 
 
 
+
+HUD
+===
+
 HUD element types
 -----------------
 The position field is used for all element types.
@@ -1226,8 +1264,11 @@ Displays distance to selected world position.
   text.
 * `world_pos`: World position of the waypoint.
 
+
+
+
 Representations of simple things
---------------------------------
+================================
 
 ### Position/vector
 
@@ -1240,8 +1281,12 @@ For helper functions see "Spatial Vectors".
 * `{type="node", under=pos, above=pos}`
 * `{type="object", ref=ObjectRef}`
 
+
+
+
 Flag Specifier Format
----------------------
+=====================
+
 Flags using the standardized flag specifier format can be specified in either
 of two ways, by string or table.
 
@@ -1273,8 +1318,11 @@ or even
 
 since, by default, no schematic attributes are set.
 
+
+
+
 Items
------
+=====
 
 ### Item types
 There are three kinds of items: nodes, tools and craftitems.
@@ -1334,8 +1382,11 @@ When an item must be passed to a function, it can usually be in any of
 these formats.
 
 
+
+
 Groups
-------
+======
+
 In a number of places, there is a group table. Groups define the
 properties of a thing (item, node, armor of entity, capabilities of
 tool) in such a way that the engine and other mods can can interact with
@@ -1474,6 +1525,12 @@ Tools define their properties by a list of parameters for groups. They
 cannot dig other groups; thus it is important to use a standard bunch of
 groups to enable interaction with tools.
 
+
+
+
+Tools
+=====
+
 #### Tools definition
 Tools define:
 
@@ -1566,8 +1623,12 @@ Table of resulting tool uses:
   easy nodes to be quickly breakable.
 * At `level > 2`, the node is not diggable, because it's `level > maxlevel`
 
+
+
+
 Entity damage mechanism
------------------------
+=======================
+
 Damage calculation:
 
     damage = 0
@@ -1615,6 +1676,12 @@ To punch an entity/object in Lua, call:
 * Parameters are equal to the above callback.
 * If `direction` equals `nil` and `puncher` does not equal `nil`, `direction`
   will be automatically filled in based on the location of `puncher`.
+
+
+
+
+Metadata
+========
 
 Node Metadata
 -------------
@@ -1680,8 +1747,12 @@ Example stuff:
     meta:set_string("key", "value")
     print(dump(meta:to_table()))
 
+
+
+
 Formspec
---------
+========
+
 Formspec defines a menu. Currently not much else than inventories are
 supported. It is a string, with a somewhat strange format.
 
@@ -2050,6 +2121,12 @@ appearing when you don't expect them to. See `no_prepend[]`
 **Note**: do _not_ use a element name starting with `key_`; those names are
 reserved to pass key press events to formspec!
 
+
+
+
+Inventory
+=========
+
 Inventory locations
 -------------------
 * `"context"`: Selected node metadata (deprecated: `"current_name"`)
@@ -2064,6 +2141,12 @@ Player Inventory lists
 * `craft`: list containing the craft input
 * `craftpreview`: list containing the craft output
 * `hand`: list containing an override for the empty hand
+
+
+
+
+Colours
+=======
 
 `ColorString`
 -------------
@@ -2091,8 +2174,12 @@ numerical form, the raw integer value of an ARGB8 quad:
 or string form, a ColorString (defined above):
     `colorspec = "green"`
 
+
+
+
 Escape sequences
-----------------
+================
+
 Most text can contain escape sequences, that can for example color the text.
 There are a few exceptions: tab headers, dropdowns and vertical labels can't.
 The following functions provide escape sequences:
@@ -2116,8 +2203,12 @@ The following functions provide escape sequences:
 * `minetest.strip_colors(str)`
     * Removes all color escape sequences.
 
+
+
+
 Spatial Vectors
----------------
+===============
+
 For the following functions, `v`, `v1`, `v2` are vectors,
 `p1`, `p2` are positions:
 
@@ -2158,8 +2249,12 @@ For the following functions `x` can be either a vector or a number:
 * `vector.divide(v, x)`:
     * Returns a scaled vector or Schur quotient.
 
+
+
+
 Helper functions
-----------------
+================
+
 * `dump2(obj, name, dumped)`: returns a string which makes `obj`
   human-readable, handles reference loops.
     * `obj`: arbitrary variable
@@ -2222,8 +2317,11 @@ Helper functions
   position.
     * returns the exact position on the surface of a pointed node
 
+
+
+
 Translations
-------------
+============
 
 Texts can be translated client-side with the help of `minetest.translate` and
 translation files.
@@ -2311,8 +2409,12 @@ Strings that need to be translated can contain several escapes, preceded by `@`.
   `minetest.translate`, but is in translation files.
 * `@n` acts as a literal newline as well.
 
+
+
+
 Perlin noise
-------------
+============
+
 Perlin noise creates a continuously-varying value depending on the input values.
 Usually in Minetest the input values are either 2D or 3D co-ordinates in nodes.
 The result is used during map generation to create the terrain shape, vary heat
@@ -2460,6 +2562,12 @@ For 2D or 3D perlin noise or perlin noise maps:
 For 2D noise the Z component of `spread` is still defined but is ignored.
 A single noise parameter table can be used for 2D or 3D noise.
 
+
+
+
+Ores
+====
+
 Ore types
 ---------
 These tell in what manner the ore is generated.
@@ -2587,8 +2695,12 @@ this attribute set, puff ore generation will instead generate the absolute
 difference in noise displacement values. This flag has no effect for ore types
 other than `puff`.
 
+
+
+
 Decoration types
-----------------
+================
+
 The varying types of decorations that can be placed.
 
 ### `simple`
@@ -2604,6 +2716,12 @@ Copies a box of `MapNodes` from a specified schematic file (or raw description).
 Can specify a probability of a node randomly appearing when placed.
 This decoration type is intended to be used for multi-node sized discrete
 structures, such as trees, cave spikes, rocks, and so on.
+
+
+
+
+Schematics
+==========
 
 Schematic specifier
 --------------------
@@ -2650,8 +2768,12 @@ Currently supported flags: `place_center_x`, `place_center_y`, `place_center_z`,
 * `force_placement`: Schematic nodes other than "ignore" will replace existing
   nodes.
 
+
+
+
 Lua Voxel Manipulator
----------------------
+=====================
+
 ### About VoxelManip
 VoxelManip is a scripting interface to the internal 'Map Voxel Manipulator'
 facility. The purpose of this object is for fast, low-level, bulk access to
@@ -2933,8 +3055,12 @@ The coordinates are *inclusive*, like most other things in Minetest.
       `[z [y [x]]]`.
 * `iterp(minp, maxp)`: same as above, except takes a vector
 
+
+
+
 Mapgen objects
---------------
+==============
+
 A mapgen object is a construct used in map generation. Mapgen objects can be
 used by an `on_generate` callback to speed up operations by avoiding
 unnecessary recalculations, these can be retrieved using the
@@ -2986,8 +3112,12 @@ Possible fields of the table returned are:
 Decorations have a key in the format of `"decoration#id"`, where `id` is the
 numeric unique decoration ID.
 
+
+
+
 Registered entities
--------------------
+===================
+
 * Functions receive a "luaentity" as `self`:
     * It has the member `.name`, which is the registered name `("mod:thing")`
     * It has the member `.object`, which is an `ObjectRef` pointing to the
@@ -3027,8 +3157,11 @@ Registered entities
         * Should return a string that will be passed to `on_activate` when
           the object is instantiated the next time.
 
+
+
+
 L-system trees
---------------
+==============
 
 ### Tree definition
 
@@ -3099,8 +3232,10 @@ Spawn a small apple tree:
     minetest.spawn_tree(pos,apple_tree)
 
 
-`minetest` namespace reference
-------------------------------
+
+
+'minetest' namespace reference
+==============================
 
 ### Utilities
 
@@ -4353,8 +4488,12 @@ These functions return the leftover itemstack.
     * List of registered decoration definitions.
 
 
+
+
 Class reference
----------------
+===============
+
+Sorted alphabetically.
 
 ### `AreaStore`
 A fast access data structure to store areas, and find areas near a given
@@ -4975,8 +5114,10 @@ Can be obtained via `minetest.get_mod_storage()` during load time.
 * All methods in MetaDataRef
 
 
+
+
 Definition tables
------------------
+=================
 
 ### Object Properties
 
