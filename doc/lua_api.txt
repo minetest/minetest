@@ -4,8 +4,6 @@ Minetest Lua Modding API Reference
 * Developer Wiki: <http://dev.minetest.net/>
 
 
-
-
 Introduction
 ============
 
