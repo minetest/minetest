@@ -127,7 +127,7 @@ This happens if the following directory exists:
 
     $world/game/
 
-Mods should be then be placed in:
+Mods should then be placed in:
 
     $world/game/mods/
 
@@ -571,12 +571,12 @@ the same texture, in different colors, each in a new node/item definition.
 When you register an item or node, set its `color` field (which accepts a
 `ColorSpec`) to the desired color.
 
-An `ItemStack`s static color can be overwritten by the `color` metadata
+An `ItemStack`'s static color can be overwritten by the `color` metadata
 field. If you set that field to a `ColorString`, that color will be used.
 
 #### Tile color
 Each tile may have an individual static color, which overwrites every
-other coloring methods. To disable the coloring of a face,
+other coloring method. To disable the coloring of a face,
 set its color to white (because multiplying with white does nothing).
 You can set the `color` property of the tiles in the node's definition
 if the tile is in table format.
@@ -817,10 +817,10 @@ one player using `to_player = name,`
 
 
 
-Registered definitions of stuff
-===============================
+Registered definitions
+======================
 
-Anything added using certain `minetest.register_*` functions get added to
+Anything added using certain `minetest.register_*` functions gets added to
 the global `minetest.registered_*` tables.
 
 * `minetest.register_entity(name, prototype table)`
@@ -917,11 +917,11 @@ Nodes are the bulk data of the world: cubes and other things that take the
 space of a cube. Huge amounts of them are handled efficiently, but they
 are quite static.
 
-The definition of a node is stored and can be accessed by name in
+The definition of a node is stored and can be accessed by using
 
     minetest.registered_nodes[node.name]
 
-See "Registered definitions of stuff".
+See "Registered definitions".
 
 Nodes are passed by value between Lua and the engine.
 They are represented by a table:
@@ -2143,8 +2143,8 @@ Player Inventory lists
 
 
 
-Colours
-=======
+Colors
+======
 
 `ColorString`
 -------------
@@ -4675,7 +4675,7 @@ An interface to use mod channels on client and server
     * No more incoming or outgoing messages can be sent to this channel from
       server mods.
     * This invalidate all future object usage.
-    * Ensure your set mod_channel to nil after that to free Lua resources.
+    * Ensure you set mod_channel to nil after that to free Lua resources.
 * `is_writeable()`: returns true if channel is writeable and mod can send over
   it.
 * `send_all(message)`: Send `message` though the mod channel.
