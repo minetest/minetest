@@ -282,65 +282,64 @@ of the game's nodes are to be used by the core mapgens. For example:
 
 ### Aliases needed for all mapgens except Mapgen v6
 
-Base terrain:
+#### Base terrain
+* mapgen_stone
+* mapgen_water_source
+* mapgen_river_water_source
 
-"mapgen_stone"
-"mapgen_water_source"
-"mapgen_river_water_source"
+#### Caves
+* mapgen_lava_source
 
-Caves:
-
-"mapgen_lava_source"
-
-Dungeons:
-
+#### Dungeons
 Only needed for registered biomes where 'node_stone' is stone:
-"mapgen_cobble"
-"mapgen_stair_cobble"
-"mapgen_mossycobble"
+
+* mapgen_cobble
+* mapgen_stair_cobble
+* mapgen_mossycobble
+
 Only needed for registered biomes where 'node_stone' is desert stone:
-"mapgen_desert_stone"
-"mapgen_stair_desert_stone"
+
+* mapgen_desert_stone
+* mapgen_stair_desert_stone
+
 Only needed for registered biomes where 'node_stone' is sandstone:
-"mapgen_sandstone"
-"mapgen_sandstonebrick"
-"mapgen_stair_sandstone_block"
+
+* mapgen_sandstone
+* mapgen_sandstonebrick
+* mapgen_stair_sandstone_block
 
 ### Aliases needed for Mapgen v6
 
-Terrain and biomes:
+#### Terrain and biomes
+* mapgen_stone
+* mapgen_water_source
+* mapgen_lava_source
+* mapgen_dirt
+* mapgen_dirt_with_grass
+* mapgen_sand
+* mapgen_gravel
+* mapgen_desert_stone
+* mapgen_desert_sand
+* mapgen_dirt_with_snow
+* mapgen_snowblock
+* mapgen_snow
+* mapgen_ice
 
-"mapgen_stone"
-"mapgen_water_source"
-"mapgen_lava_source"
-"mapgen_dirt"
-"mapgen_dirt_with_grass"
-"mapgen_sand"
-"mapgen_gravel"
-"mapgen_desert_stone"
-"mapgen_desert_sand"
-"mapgen_dirt_with_snow"
-"mapgen_snowblock"
-"mapgen_snow"
-"mapgen_ice"
+#### Flora
+* mapgen_tree
+* mapgen_leaves
+* mapgen_apple
+* mapgen_jungletree
+* mapgen_jungleleaves
+* mapgen_junglegrass
+* mapgen_pine_tree
+* mapgen_pine_needles
 
-Flora:
-
-"mapgen_tree"
-"mapgen_leaves"
-"mapgen_apple"
-"mapgen_jungletree"
-"mapgen_jungleleaves"
-"mapgen_junglegrass"
-"mapgen_pine_tree"
-"mapgen_pine_needles"
-
-Dungeons:
-
-"mapgen_cobble"
-"mapgen_stair_cobble"
-"mapgen_mossycobble"
-"mapgen_stair_desert_stone"
+#### Dungeons
+* mapgen_cobble
+* mapgen_stair_cobble
+* mapgen_mossycobble
+* mapgen_stair_desert_stone
 
 
 
@@ -402,6 +401,7 @@ on top of `cobble.png`.
 * `[cracko:<t>:<n>:<p>`
 
 Parameters:
+
 * `<t>` = tile count (in each direction)
 * `<n>` = animation frame count
 * `<p>` = current animation frame
@@ -534,7 +534,6 @@ The mask is applied using binary AND.
 #### `[sheet:<w>x<h>:<x>,<y>`
 Retrieves a tile at position x,y from the base image
 which it assumes to be a tilesheet with dimensions w,h.
-
 
 #### `[colorize:<color>:<ratio>`
 Colorize the textures with the given color.
