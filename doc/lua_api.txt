@@ -143,20 +143,20 @@ Mod directory structure
 -----------------------
 
     mods
-    |-- modname
-    |   |-- mod.conf
-    |   |-- screenshot.png
-    |   |-- settingtypes.txt
-    |   |-- init.lua
-    |   |-- models
-    |   |-- textures
-    |   |   |-- modname_stuff.png
-    |   |   `-- modname_something_else.png
-    |   |-- sounds
-    |   |-- media
-    |   |-- locale
-    |   `-- <custom data>
-    `-- another
+    ├── modname
+    │   ├── mod.conf
+    │   ├── screenshot.png
+    │   ├── settingtypes.txt
+    │   ├── init.lua
+    │   ├── models
+    │   ├── textures
+    │   │   ├── modname_stuff.png
+    │   │   └── modname_something_else.png
+    │   ├── sounds
+    │   ├── media
+    │   ├── locale
+    │   └── <custom data>
+    └── another
 
 ### modname
 The location of this directory can be fetched by using
