@@ -32,14 +32,10 @@ the `init.lua` scripts in a shared environment.
 Paths
 -----
 * `RUN_IN_PLACE=1` (Windows release, local build)
-    *  `$path_user`:
-        * Linux: `<build directory>`
-        * Windows: `<build directory>`
-    * `$path_share`
-        * Linux: `<build directory>`
-        * Windows:  `<build directory>`
+    * `$path_user`: `<build directory>`
+    * `$path_share`: `<build directory>`
 * `RUN_IN_PLACE=0`: (Linux release)
-    * `$path_share`
+    * `$path_share`:
         * Linux: `/usr/share/minetest`
         * Windows: `<install directory>/minetest-0.4.x`
     * `$path_user`:
