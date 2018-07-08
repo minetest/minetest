@@ -287,7 +287,6 @@ ObjectProperties* UnitSAO::accessObjectProperties()
 
 void UnitSAO::notifyObjectPropertiesModified()
 {
-	m_env->updateActiveObject(this);
 	m_properties_sent = false;
 }
 
@@ -334,8 +333,6 @@ void LuaEntitySAO::addedToEnvironment(u32 dtime_s)
 		// Get properties
 		m_env->getScriptIface()->
 			luaentity_GetProperties(m_id, &m_prop);
-		// Notify the environment of the new properties
-		m_env->updateActiveObject(this);
 		// Initialize HP from properties
 		m_hp = m_prop.hp_max;
 		// Activate entity, supplying serialized state
@@ -669,7 +666,6 @@ void LuaEntitySAO::setPos(const v3f &pos)
 	if(isAttached())
 		return;
 	m_base_position = pos;
-	m_env->updateActiveObject(this);
 	sendPosition(false, true);
 }
 
@@ -678,7 +674,6 @@ void LuaEntitySAO::moveTo(v3f pos, bool continuous)
 	if(isAttached())
 		return;
 	m_base_position = pos;
-	m_env->updateActiveObject(this);
 	if(!continuous)
 		sendPosition(true, true);
 }
@@ -1169,7 +1164,6 @@ void PlayerSAO::setBasePosition(const v3f &position)
 
 	// Updating is not wanted/required for player migration
 	if (m_env) {
-		m_env->updateActiveObject(this);
 		m_position_not_sent = true;
 	}
 }

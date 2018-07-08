@@ -311,7 +311,8 @@ src/script/scripting_server.cpp
 src/script/scripting_server.h
 src/serialization.cpp
 src/serialization.h
-src/server/serveractiveobjectmap.cpp
+src/serveractiveobjectmap.cpp
+src/serveractiveobjectmap.h
 src/server.cpp
 src/serverenvironment.cpp
 src/serverenvironment.h
