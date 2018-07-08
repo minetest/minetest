@@ -629,7 +629,6 @@ ShaderInfo generate_shader(const std::string &name, u8 material_type, u8 drawtyp
 			"#version 100\n" \
 			"precision mediump float;\n" \
 			"varying vec4 varTexCoord[1];\n" \
-			"varying vec4 varColor;\n" \
 			"#define gl_TexCoord varTexCoord\n" \
 		:
 			"#version 120\n" \

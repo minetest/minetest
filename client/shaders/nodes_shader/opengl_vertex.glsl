@@ -10,6 +10,7 @@ uniform float animationTimer;
 
 varying vec3 vPosition;
 varying vec3 worldPosition;
+varying vec4 varColor;
 
 varying vec3 eyeVec;
 varying vec3 lightVec;

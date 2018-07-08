@@ -1,5 +1,7 @@
 uniform mat4 mWorldViewProj;
 
+varying vec4 varColor;
+
 void main(void)
 {
 	gl_TexCoord[0] = gl_MultiTexCoord0;

@@ -9,6 +9,7 @@ uniform vec3 eyePosition;
 varying vec3 vPosition;
 varying vec3 worldPosition;
 varying float area_enable_parallax;
+varying vec4 varColor;
 
 varying vec3 eyeVec;
 varying vec3 tsEyeVec;

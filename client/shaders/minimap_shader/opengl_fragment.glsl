@@ -2,6 +2,8 @@ uniform sampler2D baseTexture;
 uniform sampler2D normalTexture;
 uniform vec3 yawVec;
 
+varying vec4 varColor;
+
 void main (void)
 {
 	vec2 uv = gl_TexCoord[0].st;
