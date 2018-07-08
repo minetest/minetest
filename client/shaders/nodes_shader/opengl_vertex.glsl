@@ -1,5 +1,7 @@
 uniform mat4 mWorldViewProj;
+uniform mat4 mWorldView;
 uniform mat4 mWorld;
+uniform mat3 mNormal;
 
 // Color of the light emitted by the sun.
 uniform vec3 dayLight;

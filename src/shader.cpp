@@ -636,8 +636,6 @@ ShaderInfo generate_shader(const std::string &name, u8 material_type, u8 drawtyp
 		;
 
 	std::string vertex_header = "" \
-			"attribute mat4 mWorldView;\n" \
-			"attribute mat3 mNormal;\n" \
 			"attribute vec4 inVertexPosition;\n" \
 			"attribute vec3 inVertexNormal;\n" \
 			"attribute vec4 inVertexColor;\n" \
