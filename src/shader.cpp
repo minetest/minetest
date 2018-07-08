@@ -37,7 +37,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "log.h"
 #include "gamedef.h"
 #include "client/tile.h"
-#include "cmake_config.h"
+#include "config.h"
 
 /*
 	A cache from shader name to shader path

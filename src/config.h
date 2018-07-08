@@ -15,6 +15,7 @@
 	#define PROJECT_NAME "minetest"
 	#define PROJECT_NAME_C "Minetest"
 	#define STATIC_SHAREDIR ""
+	#define ENABLE_GLES 1
 	#include "android_version.h"
 	#ifdef NDEBUG
 		#define BUILD_TYPE "Release"
