@@ -113,21 +113,6 @@ v2s16 read_v2s16(lua_State *L, int index)
 	return p;
 }
 
-v2s16 check_v2s16(lua_State *L, int index)
-{
-	v2s16 p;
-	CHECK_POS_TAB(index);
-	lua_getfield(L, index, "x");
-	CHECK_POS_COORD("x");
-	p.X = lua_tonumber(L, -1);
-	lua_pop(L, 1);
-	lua_getfield(L, index, "y");
-	CHECK_POS_COORD("y");
-	p.Y = lua_tonumber(L, -1);
-	lua_pop(L, 1);
-	return p;
-}
-
 void push_v2s16(lua_State *L, v2s16 p)
 {
 	lua_newtable(L);
