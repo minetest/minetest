@@ -1963,14 +1963,15 @@ Elements
 ### `textarea[<X>,<Y>;<W>,<H>;<name>;<label>;<default>]`
 * Same as fields above, but with multi-line input
 * If the text overflows, a vertical scrollbar is added.
-* If the name is empty, the textarea is readonly and
+* If the name is empty, the textarea is read-only and
   the background is not shown, which corresponds to a multi-line label.
 
 ### `label[<X>,<Y>;<label>]`
 * `x` and `y` work as per field
 * The label formspec element displays the text set in `label`
   at the specified position.
-* For text with multiple lines, refer to textarea.
+* The text is displayed directly without automatic line breaking,
+  so label should not be used for big text chunks.
 * To display text which can contain formspec code, e.g. text set by a player,
   use `minetest.formspec_escape`.
 
