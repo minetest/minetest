@@ -23,6 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <vector>
 #include <memory>
 #include <string>
+#include <unordered_map>
 #include "irrlichttypes_extrabloated.h"
 #include "debug.h"
 
@@ -136,9 +137,14 @@ public:
 		return s_singleton->m_device->run();
 	}
 
+	static bool createParticleOverlay(const std::string &name);
+	static bool stopParticleOverlay(const std::string &name, bool definitive = false)
+	{
+		return s_singleton->_stopParticleOverlay(name, definitive);
+	}
+	static void stopAllParticleOverlays(bool definitive = false);
 	static void renderWeatherParticles(video::ITexture *texture, f32 intensity,
 		f32 gravity_factor = 1.0f, f32 wind_speed = 0.0f, u16 wind_direction = 0);
-	static void stopWeatherParticles(bool definitive = false);
 
 	static std::vector<core::vector3d<u32>> getSupportedVideoModes();
 	static std::vector<irr::video::E_DRIVER_TYPE> getSupportedVideoDrivers();
@@ -154,6 +160,8 @@ private:
 	void _draw_scene(video::SColor skycolor, bool show_hud, bool show_minimap,
 			bool draw_wield_tool, bool draw_crosshair);
 
+	bool _stopParticleOverlay(const std::string &name, bool definitive = false);
+
 	void _initialize(Client *client, Hud *hud);
 
 	void _finalize();
@@ -161,6 +169,6 @@ private:
 	std::unique_ptr<RenderingCore> core;
 	irr::IrrlichtDevice *m_device = nullptr;
 	irr::video::IVideoDriver *driver;
-	scene::IParticleSystemSceneNode *m_weather_pssn = nullptr;
+	std::unordered_map<std::string, scene::IParticleSystemSceneNode *> m_particle_overlays;
 	static RenderingEngine *s_singleton;
 };

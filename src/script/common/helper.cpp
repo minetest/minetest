@@ -20,7 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "helper.h"
 #include <cmath>
 #include <sstream>
-#include "irrlichttypes.h"
+#include "irrlichttypes_extrabloated.h"
 #include "c_types.h"
 #include "c_internal.h"
 
@@ -93,9 +93,7 @@ template <> float LuaHelper::readParam(lua_State *L, int index, const float &def
 	if (lua_isnone(L, index) || lua_isnil(L, index))
 		return default_;
 
-	if (isNaN(L, index))
-		throw LuaError("NaN value is not allowed.");
-
+	return readParam<float>(L, index);
 }
 
 template <> v2s16 LuaHelper::readParam(lua_State *L, int index)

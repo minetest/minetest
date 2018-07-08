@@ -123,19 +123,56 @@ RenderingEngine::~RenderingEngine()
 	s_singleton = nullptr;
 }
 
+void RenderingEngine::stopAllParticleOverlays(bool definitive)
+{
+	// If stopping all definitively, don't push the definitive to the single drop
+	// Else the iterator will be dropped while iterating
+	for (auto &overlay : s_singleton->m_particle_overlays) {
+		stopParticleOverlay(overlay.first, false);
+	}
+
+	// Then just clean the map after
+	if (definitive) {
+		s_singleton->m_particle_overlays.clear();
+	}
+}
+
+bool RenderingEngine::_stopParticleOverlay(const std::string &name, bool definitive)
+{
+	auto overlayIt = m_particle_overlays.find(name);
+	if (overlayIt == m_particle_overlays.end()) {
+		warningstream << __FUNCTION__ << ": No overlay with name '" << name << "' found."
+			<< std::endl;
+		return false;
+	}
+
+	scene::IParticleSystemSceneNode *pssn = overlayIt->second;
+	pssn->setEmitter(nullptr);
+	pssn->removeAllAffectors();
+
+	if (definitive) {
+		// Don't run a drop on the Irrlicht object, it will be reclaimed by Irrlicht
+		// when game scene will be removed
+		m_particle_overlays.erase(name);
+	}
+
+	return true;
+}
+
 void RenderingEngine::renderWeatherParticles(video::ITexture *texture, f32 intensity,
 	f32 gravity_factor, f32 wind_speed, u16 wind_direction)
 {
 	// This initialization is differed from renderer creation because scene was not
 	// available in constructor
-	if (!s_singleton->m_weather_pssn) {
-		s_singleton->m_weather_pssn =
+	auto overlayIt = s_singleton->m_particle_overlays.find("weather");
+	if (overlayIt == s_singleton->m_particle_overlays.end()) {
+		s_singleton->m_particle_overlays["weather"] =
 			s_singleton->m_device->getSceneManager()->addParticleSystemSceneNode(false);
-		s_singleton->m_weather_pssn->setParent(
+		s_singleton->m_particle_overlays["weather"]->setParent(
 			s_singleton->m_device->getSceneManager()->getActiveCamera());
 	}
 
-	scene::IParticleSystemSceneNode *pssn = s_singleton->m_weather_pssn;
+	scene::IParticleSystemSceneNode *pssn = s_singleton->m_particle_overlays["weather"];
 	scene::ICameraSceneNode *camera = s_singleton->m_device->getSceneManager()->
 		getActiveCamera();
 
@@ -214,21 +251,6 @@ void RenderingEngine::renderWeatherParticles(video::ITexture *texture, f32 inten
 		texture->getOriginalSize().Height * 0.05f * camPitch));
 	em->setMaxStartSize(core::dimension2d<f32>(texture->getOriginalSize().Width * 0.05f,
 		texture->getOriginalSize().Height * 0.05f * camPitch));
-}
-
-void RenderingEngine::stopWeatherParticles(bool definitive)
-{
-	if (!s_singleton->m_weather_pssn)
-		return;
-
-	s_singleton->m_weather_pssn->setEmitter(nullptr);
-	s_singleton->m_weather_pssn->removeAllAffectors();
-
-	if (definitive) {
-		// Don't run a drop on the Irrlicht object, it will be reclaimed by Irrlicht
-		// when game scene will be removed
-		s_singleton->m_weather_pssn = nullptr;
-	}
 }
 
 v2u32 RenderingEngine::getWindowSize() const

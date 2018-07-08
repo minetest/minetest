@@ -53,7 +53,7 @@ ClientEnvironment::ClientEnvironment(ClientMap *map,
 
 ClientEnvironment::~ClientEnvironment()
 {
-	RenderingEngine::stopWeatherParticles(true);
+	RenderingEngine::stopAllParticleOverlays(true);
 
 	// delete active objects
 	for (auto &active_object : m_active_objects) {
@@ -332,11 +332,11 @@ void ClientEnvironment::stepWeather(f32 dtime)
 					m_weather_state.wind_direction);
 				break;
 			default:
-				RenderingEngine::stopWeatherParticles();
+				RenderingEngine::stopParticleOverlay("weather");
 				break;
 		}
 	} else {
-		RenderingEngine::stopWeatherParticles();
+		RenderingEngine::stopParticleOverlay("weather");
 	}
 }
 
