@@ -78,7 +78,7 @@ core.register_on_leaveplayer(function(player, timed_out)
 	core.send_leave_message(player_name, timed_out)
 end)
 
-minetest.register_on_prejoinplayer(function(name)
+core.register_on_prejoinplayer(function(name)
 	if core.get_player_by_name(name) then
 		return "Another client is connected with this name.  If your client closed unexpectedly, try again in a minute."
 	end
