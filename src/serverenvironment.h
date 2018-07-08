@@ -22,7 +22,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "activeobject.h"
 #include "environment.h"
 #include "mapnode.h"
-#include "server/serveractiveobjectmap.h"
 #include "settings.h"
 #include "util/numeric.h"
 #include <set>
@@ -194,6 +193,8 @@ enum ClearObjectsMode {
 	This is not thread-safe. Server uses an environment mutex.
 */
 
+typedef std::unordered_map<u16, ServerActiveObject *> ServerActiveObjectMap;
+
 class ServerEnvironment : public Environment
 {
 public:
@@ -253,7 +254,18 @@ public:
 	*/
 	u16 addActiveObject(ServerActiveObject *object);
 
-	void updateActiveObject(ServerActiveObject *object);
+	/**
+	 * Verify if id is a free active object id
+	 * @param id
+	 * @return true if slot is free
+	 */
+	bool isFreeServerActiveObjectId(u16 id) const;
+
+	/**
+	 * Retrieve the first free ActiveObject ID
+	 * @return free activeobject ID or 0 if none was found
+	 */
+	u16 getFreeServerActiveObjectId();
 
 	/*
 		Add an active object as a static object to the corresponding
