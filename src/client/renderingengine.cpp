@@ -45,6 +45,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 #include <X11/Xatom.h>
+#include <particleoverlay.h>
 
 #endif
 
@@ -137,6 +138,99 @@ void RenderingEngine::stopAllParticleOverlays(bool definitive)
 	}
 }
 
+bool RenderingEngine::renderParticleOverlay(const ParticleOverlaySpec &spec,
+	video::ITexture *texture)
+{
+	scene::IParticleSystemSceneNode *pssn = nullptr;
+	static const f32 gravity_force = -0.50f;
+
+	auto overlayIt = s_singleton->m_particle_overlays.find(spec.name);
+	if (overlayIt == s_singleton->m_particle_overlays.end()) {
+		pssn = s_singleton->m_device->getSceneManager()->
+			addParticleSystemSceneNode(false);
+		pssn->setParent(s_singleton->m_device->getSceneManager()->getActiveCamera());
+		s_singleton->m_particle_overlays[spec.name] = pssn;
+	} else {
+		pssn = overlayIt->second;
+	}
+
+	scene::ICameraSceneNode *camera = s_singleton->m_device->getSceneManager()->
+		getActiveCamera();
+	scene::IParticleEmitter* em = pssn->getEmitter();
+
+	f32 applied_gravity_force = gravity_force * spec.gravity_factor;
+	f32 applied_timeforce_lost = 1000 / (spec.gravity_factor * spec.gravity_factor * 0.5);
+
+	v3f particle_target(1000, 0, 0);
+	particle_target += camera->getAbsolutePosition();
+	particle_target.rotateXZBy(spec.direction, camera->getAbsolutePosition());
+
+	// If emitter was not initialized, initialize it
+	if (!em) {
+		em = pssn->createBoxEmitter(
+			aabb3f(-100.0f, -130.0f, -100.0f, 110.0f, 200.0f, 110.0f),
+			v3f(0.0f, 0.0f, 0.0f),
+			spec.minpps, spec.maxpps,
+			video::SColor(0, 255, 255, 255), video::SColor(30, 255, 255, 255),
+			500, 3000, 0);
+
+		pssn->setEmitter(em);
+		em->drop();
+
+		{
+			scene::IParticleAffector *paf = pssn->createGravityAffector(
+				v3f(0.0f, applied_gravity_force, 0.0f), applied_timeforce_lost);
+
+			pssn->addAffector(paf);
+			paf->drop();
+		}
+
+		{
+			scene::IParticleAffector *paf = new scene::CParticleAttractionAffector(
+				particle_target, spec.directional_speed * spec.gravity_factor *
+				spec.gravity_factor, true, true, true, true);
+			pssn->addAffector(paf);
+			paf->drop();
+		}
+
+		pssn->setMaterialFlag(video::EMF_LIGHTING, false);
+		pssn->setMaterialTexture(0, texture);
+		pssn->setMaterialType(video::EMT_TRANSPARENT_ALPHA_CHANNEL);
+	}
+
+	em->setMinParticlesPerSecond(spec.minpps);
+	em->setMaxParticlesPerSecond(spec.maxpps);
+
+	if (pssn->getMaterial(0).getTexture(0) != texture)
+		pssn->setMaterialTexture(0, texture);
+
+	for (auto &affector: pssn->getAffectors()) {
+		if (affector->getType() == scene::EPAT_GRAVITY) {
+			auto iga = (scene::IParticleGravityAffector *) affector;
+			iga->setGravity(core::vector3df(0.00f, applied_gravity_force, 0.0f));
+			iga->setTimeForceLost(applied_timeforce_lost);
+		} else if (affector->getType() == scene::EPAT_ATTRACT) {
+			auto iaa = (scene::CParticleAttractionAffector *) affector;
+			iaa->setSpeed(spec.directional_speed);
+			iaa->setPoint(particle_target);
+		}
+	}
+
+	v3f camDir = camera->getTarget() - camera->getAbsolutePosition();
+	camDir = camDir.normalize();
+	f32 camPitch = camDir.dotProduct(v3f(0.0f, 1.0f, 0.0f));
+	if (camPitch < 0.0f)
+		camPitch = camDir.dotProduct(v3f(0.0f, -1.0f, 0.0f));
+	camPitch = (1.0f - camPitch) + 0.01f;
+
+	em->setMinStartSize(core::dimension2d<f32>(texture->getOriginalSize().Width * 0.05f,
+		texture->getOriginalSize().Height * 0.05f * camPitch));
+	em->setMaxStartSize(core::dimension2d<f32>(texture->getOriginalSize().Width * 0.05f,
+		texture->getOriginalSize().Height * 0.05f * camPitch));
+
+	return true;
+}
+
 bool RenderingEngine::_stopParticleOverlay(const std::string &name, bool definitive)
 {
 	auto overlayIt = m_particle_overlays.find(name);
@@ -157,100 +251,6 @@ bool RenderingEngine::_stopParticleOverlay(const std::string &name, bool definit
 	}
 
 	return true;
-}
-
-void RenderingEngine::renderWeatherParticles(video::ITexture *texture, f32 intensity,
-	f32 gravity_factor, f32 wind_speed, u16 wind_direction)
-{
-	// This initialization is differed from renderer creation because scene was not
-	// available in constructor
-	auto overlayIt = s_singleton->m_particle_overlays.find("weather");
-	if (overlayIt == s_singleton->m_particle_overlays.end()) {
-		s_singleton->m_particle_overlays["weather"] =
-			s_singleton->m_device->getSceneManager()->addParticleSystemSceneNode(false);
-		s_singleton->m_particle_overlays["weather"]->setParent(
-			s_singleton->m_device->getSceneManager()->getActiveCamera());
-	}
-
-	scene::IParticleSystemSceneNode *pssn = s_singleton->m_particle_overlays["weather"];
-	scene::ICameraSceneNode *camera = s_singleton->m_device->getSceneManager()->
-		getActiveCamera();
-
-	static const u32 minpps = 700;
-	static const u32 maxpps = 1000;
-	static const f32 gravity_force = -0.50f;
-
-	scene::IParticleEmitter* em = pssn->getEmitter();
-
-	f32 applied_gravity_force = gravity_force * gravity_factor;
-	f32 applied_timeforce_lost = 1000 / (gravity_factor * gravity_factor * 0.5);
-
-	v3f wind_target(1000, 0, 0);
-	wind_target += camera->getAbsolutePosition();
-	wind_target.rotateXZBy(wind_direction, camera->getAbsolutePosition());
-
-	// If emitter was not initialized, initialize it
-	if (!em) {
-		em = pssn->createBoxEmitter(
-			aabb3f(-100.0f, -130.0f, -100.0f, 110.0f, 200.0f, 110.0f),
-			v3f(0.0f, 0.0f, 0.0f),
-			minpps, maxpps,
-			video::SColor(0, 255, 255, 255), video::SColor(30, 255, 255, 255),
-			500, 3000, 0);
-
-		pssn->setEmitter(em);
-		em->drop();
-
-		{
-			scene::IParticleAffector *paf = pssn->createGravityAffector(
-				v3f(0.0f, applied_gravity_force, 0.0f), applied_timeforce_lost);
-
-			pssn->addAffector(paf);
-			paf->drop();
-		}
-
-		{
-			scene::IParticleAffector *paf = new scene::CParticleAttractionAffector(
-				wind_target, wind_speed * gravity_factor * gravity_factor, true, true,
-				true, true);
-			pssn->addAffector(paf);
-			paf->drop();
-		}
-
-		pssn->setMaterialFlag(video::EMF_LIGHTING, false);
-		pssn->setMaterialTexture(0, texture);
-		pssn->setMaterialType(video::EMT_TRANSPARENT_ALPHA_CHANNEL);
-	}
-
-	em->setMinParticlesPerSecond(minpps * intensity);
-	em->setMaxParticlesPerSecond(maxpps * intensity);
-
-	if (pssn->getMaterial(0).getTexture(0) != texture)
-		pssn->setMaterialTexture(0, texture);
-
-	for (auto &affector: pssn->getAffectors()) {
-		if (affector->getType() == scene::EPAT_GRAVITY) {
-			auto iga = (scene::IParticleGravityAffector *) affector;
-			iga->setGravity(core::vector3df(0.00f, applied_gravity_force, 0.0f));
-			iga->setTimeForceLost(applied_timeforce_lost);
-		} else if (affector->getType() == scene::EPAT_ATTRACT) {
-			auto iaa = (scene::CParticleAttractionAffector *) affector;
-			iaa->setSpeed(wind_speed);
-			iaa->setPoint(wind_target);
-		}
-	}
-
-	v3f camDir = camera->getTarget() - camera->getAbsolutePosition();
-	camDir = camDir.normalize();
-	f32 camPitch = camDir.dotProduct(v3f(0.0f, 1.0f, 0.0f));
-	if (camPitch < 0.0f)
-		camPitch = camDir.dotProduct(v3f(0.0f, -1.0f, 0.0f));
-	camPitch = (1.0f - camPitch) + 0.01f;
-
-	em->setMinStartSize(core::dimension2d<f32>(texture->getOriginalSize().Width * 0.05f,
-		texture->getOriginalSize().Height * 0.05f * camPitch));
-	em->setMaxStartSize(core::dimension2d<f32>(texture->getOriginalSize().Width * 0.05f,
-		texture->getOriginalSize().Height * 0.05f * camPitch));
 }
 
 v2u32 RenderingEngine::getWindowSize() const

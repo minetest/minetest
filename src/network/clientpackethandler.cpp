@@ -17,6 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
+#include <particleoverlay.h>
 #include "client.h"
 
 #include "util/base64.h"
@@ -40,7 +41,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/srp.h"
 #include "tileanimation.h"
 #include "gettext.h"
-#include "weather.h"
 
 void Client::handleCommand_Deprecated(NetworkPacket* pkt)
 {
@@ -1435,27 +1435,33 @@ void Client::handleCommand_ModChannelSignal(NetworkPacket *pkt)
 		m_script->on_modchannel_signal(channel, signal);
 }
 
-void Client::handleCommand_Weather(NetworkPacket *pkt)
+void Client::handleCommand_ParticleOverlay(NetworkPacket *pkt)
 {
-	Weather::State wState;
-	{
-		u8 tmp;
-		*pkt >> tmp;
-		wState.type = (Weather::Type) tmp;
-	}
+	std::string specName;
+	// Load spec name first to find the clientEnvironment spec associated
+	*pkt >> specName;
 
-	*pkt >> wState.texture;
-	*pkt >> wState.intensity;
+	ParticleOverlaySpec *spec = m_env.getParticleSpecOverlay(specName);
+	spec->name = specName;
+	*pkt >> spec->texture_name >> spec->minpps >> spec->maxpps >> spec->direction
+		>> spec->directional_speed >> spec->gravity_factor >> spec->enabled;
 
-	// Limit intensity values
-	if (wState.intensity < 0.1f)
-		wState.intensity = 0.1f;
-	else if (wState.intensity > 10.0f)
-		wState.intensity = 10.0f;
+	// Limit max PPS to prevent bad performance values
+#ifdef __ANDROID__
+	// Android devices are less powerful, lower the limits
+	if (spec->minpps > 5000)
+		spec->minpps = 5000;
 
-	*pkt >> wState.wind_speed;
-	*pkt >> wState.wind_direction;
+	if (spec->maxpps > 5000)
+		spec->maxpps = 5000;
+#else
+	if (spec->minpps > 20000)
+		spec->minpps = 20000;
 
-	m_script->on_weather(wState);
-	m_env.setWeather(wState);
+	if (spec->maxpps > 20000)
+		spec->maxpps = 20000;
+#endif
+
+	m_script->on_particle_overlay_spec(*spec);
+	// note: this is not sent anywhere because we just edited the environment object
 }

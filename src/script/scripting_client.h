@@ -20,7 +20,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #pragma once
 
-#include <weather.h>
 #include "cpp_api/s_base.h"
 #include "cpp_api/s_client.h"
 #include "cpp_api/s_modchannels.h"

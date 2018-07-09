@@ -1845,12 +1845,13 @@ void Server::SendMovePlayer(session_t peer_id)
 	Send(&pkt);
 }
 
-void Server::SendWeather(session_t peer_id, const Weather::State &weatherState)
+void Server::SendParticleOverlaySpec(session_t peer_id, const ParticleOverlaySpec &poSpec)
 {
-	NetworkPacket pkt(TOCLIENT_WEATHER, sizeof(Weather::State) +
-		weatherState.texture.size(), peer_id);
-	pkt << (u8) weatherState.type << weatherState.texture << weatherState.intensity
-		<< weatherState.wind_speed << weatherState.wind_direction;
+	NetworkPacket pkt(TOCLIENT_PARTICLE_OVERLAY, sizeof(ParticleOverlaySpec) +
+		poSpec.name.size() + poSpec.texture_name.size(), peer_id);
+	pkt << poSpec.name << poSpec.texture_name << poSpec.minpps << poSpec.maxpps
+		<< poSpec.direction << poSpec.directional_speed << poSpec.gravity_factor
+		<< poSpec.enabled;
 	Send(&pkt);
 }
 

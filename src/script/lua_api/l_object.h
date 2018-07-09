@@ -321,8 +321,9 @@ private:
 	// get_clouds(self)
 	static int l_get_clouds(lua_State *L);
 
-	// set_weather(self, type, intensity=1.0, wind_direction=0, wind_speed=0.0 texture="")
-	static int l_set_weather(lua_State *L);
+	// set_particle_overlay(self, name, texture_name, enabled=true, minpps=700,
+	// maxpps=1000, direction=0, directional_speed=0.0, gravity_factor=1.0)
+	static int l_set_particle_overlay(lua_State *L);
 
 	// override_day_night_ratio(self, type)
 	static int l_override_day_night_ratio(lua_State *L);

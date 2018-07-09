@@ -80,6 +80,19 @@ template <> u16 LuaHelper::readParam(lua_State *L, int index, const u16 &default
 	return (u16)lua_tonumber(L, index);
 }
 
+template <> u32 LuaHelper::readParam(lua_State *L, int index)
+{
+	return (u32)luaL_checknumber(L, index);
+}
+
+template <> u32 LuaHelper::readParam(lua_State *L, int index, const u32 &default_)
+{
+	if (lua_isnone(L, index) || lua_isnil(L, index))
+		return default_;
+
+	return (u32)lua_tonumber(L, index);
+}
+
 template <> float LuaHelper::readParam(lua_State *L, int index)
 {
 	if (isNaN(L, index))

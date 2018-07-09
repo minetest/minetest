@@ -708,8 +708,10 @@ Call these functions only at load time!
     * Called when the local player open inventory
     * Newest functions are called first
     * If any function returns true, inventory doesn't open
-* `minetest.register_on_weather(func(weather_type, weather_intensity))`
-	* Called when weather was updated by server
+* `minetest.register_on_particle_overlay_spec(func(name, enabled, minpps, maxpps,
+	direction, speed, gravity_factor))`
+	* Called when particle overlay spec was pushed by server
+	* Direction is in degrees
 ### Sounds
 * `minetest.sound_play(spec, parameters)`: returns a handle
     * `spec` is a `SimpleSoundSpec`

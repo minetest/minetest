@@ -35,6 +35,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "content_cao.h"
 #include <algorithm>
 #include "client/renderingengine.h"
+#include "particleoverlay.h"
 
 /*
 	ClientEnvironment
@@ -62,6 +63,10 @@ ClientEnvironment::~ClientEnvironment()
 
 	for (auto &simple_object : m_simple_objects) {
 		delete simple_object;
+	}
+
+	for (auto &spec : m_particle_overlay_specs) {
+		delete spec.second;
 	}
 
 	// Drop/delete map
@@ -208,7 +213,7 @@ void ClientEnvironment::step(float dtime)
 		}
 	} while (dtime_downcount > 0.001);
 
-	stepWeather(dtime);
+	stepParticleOverlays(dtime);
 
 	bool player_immortal = lplayer->getCAO() && lplayer->getCAO()->isImmortal();
 
@@ -309,35 +314,46 @@ void ClientEnvironment::step(float dtime)
 	}
 }
 
-void ClientEnvironment::stepWeather(f32 dtime)
+/**
+ * get a registered particle spec overlay. If not found create it
+ * @param name
+ * @return registered particle overlay
+ */
+ParticleOverlaySpec* ClientEnvironment::getParticleSpecOverlay(const std::string &name)
 {
+	auto overlayIt = m_particle_overlay_specs.find(name);
+	if (overlayIt == m_particle_overlay_specs.end()) {
+		ParticleOverlaySpec *poSpec = new ParticleOverlaySpec();
+		m_particle_overlay_specs[name] = poSpec;
+		return poSpec;
+	}
+
+	return overlayIt->second;
+}
+
+void ClientEnvironment::stepParticleOverlays(f32 dtime)
+{
+	// Only refresh that every 0.25 sec
+	static const float refresh_interval = 0.25f;
+	m_overlay_spec_interval -= dtime;
+	if (m_overlay_spec_interval > 0.0f)
+		return;
+
 	LocalPlayer *lplayer = getLocalPlayer();
 
-	// Weather particle are shown when:
-	// * it's rain or snow
-	// * player is not in a liquid
-	// @ TODO detect if in a node or behind a node which protect from rain & snow
-	if (!lplayer->in_liquid) {
-		switch (m_weather_state.type) {
-			case Weather::Type::RAIN:
-				RenderingEngine::renderWeatherParticles(
-					m_texturesource->getTexture(m_weather_state.getTextureFilename()),
-					m_weather_state.intensity, 1.0f, m_weather_state.wind_speed,
-					m_weather_state.wind_direction);
-				break;
-			case Weather::Type::SNOW:
-				RenderingEngine::renderWeatherParticles(
-					m_texturesource->getTexture(m_weather_state.getTextureFilename()),
-					m_weather_state.intensity, 0.2f, m_weather_state.wind_speed,
-					m_weather_state.wind_direction);
-				break;
-			default:
-				RenderingEngine::stopParticleOverlay("weather");
-				break;
+	for (const auto &spec : m_particle_overlay_specs) {
+		// @ TODO detect if in a node or behind a node which protect from the particle spec
+		if (!lplayer->in_liquid) {
+			if (spec.second->enabled) {
+				RenderingEngine::renderParticleOverlay(*spec.second,
+					m_texturesource->getTexture(spec.second->texture_name));
+			} else {
+				RenderingEngine::stopParticleOverlay(spec.second->name);
+			}
 		}
-	} else {
-		RenderingEngine::stopParticleOverlay("weather");
 	}
+
+	m_overlay_spec_interval = refresh_interval;
 }
 
 void ClientEnvironment::addSimpleObject(ClientSimpleObject *simple)

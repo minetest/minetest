@@ -224,7 +224,7 @@ public:
 	void handleCommand_UpdatePlayerList(NetworkPacket* pkt);
 	void handleCommand_ModChannelMsg(NetworkPacket *pkt);
 	void handleCommand_ModChannelSignal(NetworkPacket *pkt);
-	void handleCommand_Weather(NetworkPacket *pkt);
+	void handleCommand_ParticleOverlay(NetworkPacket *pkt);
 	void handleCommand_SrpBytesSandB(NetworkPacket *pkt);
 	void handleCommand_FormspecPrepend(NetworkPacket *pkt);
 	void handleCommand_CSMRestrictionFlags(NetworkPacket *pkt);

@@ -202,7 +202,7 @@ const ClientCommandFactory clientCommandFactoryTable[TOCLIENT_NUM_MSG_TYPES] =
 	{ "TOCLIENT_UPDATE_PLAYER_LIST",       0, true }, // 0x56
 	{ "TOCLIENT_MODCHANNEL_MSG",           0, true}, // 0x57
 	{ "TOCLIENT_MODCHANNEL_SIGNAL",        0, true}, // 0x58
-	{ "TOCLIENT_WEATHER",                  0, true}, // 0x59
+	{ "TOCLIENT_PARTICLE_OVERLAY",                  0, true}, // 0x59
 	null_command_factory,
 	null_command_factory,
 	null_command_factory,

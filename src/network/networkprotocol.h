@@ -637,10 +637,15 @@ enum ToClientCommand
 	 	std::string channel name
 	 */
 
-	TOCLIENT_WEATHER = 0x59,
+	TOCLIENT_PARTICLE_OVERLAY = 0x59,
 	/*
-		u8 weather type
-	 	std::string optional texture
+		std::string name
+	 	std::string texture_name
+	 	float poSpec.intensity
+	 	u16 poSpec.direction
+		float poSpec.directional_speed
+	 	float poSpec.gravity_factor
+	 	bool enabled
 	 */
 
 	TOCLIENT_SRP_BYTES_S_B = 0x60,

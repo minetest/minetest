@@ -622,55 +622,66 @@ minetest.register_craft({
 	}
 })
 
-minetest.register_on_joinplayer(function(player)
-	minetest.after(3, function()
-		player:set_weather("rain")
-	end)
+minetest.register_chatcommand("test_weather", {
+	params = "",
+	description = "Test 1: Modify player's inventory view",
+	func = function(name, param)
+		local player = minetest.get_player_by_name(name)
+		if not player then
+			return
+		end
 
-	minetest.after(6, function()
-		player:set_weather("rain", 6)
-	end)
+		local snow_gravity = 0.2
+		minetest.after(1, function()
+			player:set_particle_overlay("rain", "weather_rain.png", true)
+		end)
 
-	minetest.after(8, function()
-		player:set_weather("rain", 0.5)
-	end)
+		minetest.after(4, function()
+			player:set_particle_overlay("rain", "weather_rain.png", true, 3600, 6000)
+		end)
 
-	minetest.after(12, function()
-		player:set_weather("rain", 10)
-	end)
+		minetest.after(6, function()
+			player:set_particle_overlay("rain", "weather_rain.png", true, 200, 300)
+		end)
 
-	minetest.after(15, function()
-		player:set_weather("snow", 1)
-	end)
+		minetest.after(10, function()
+			player:set_particle_overlay("rain", "weather_rain.png", true, 7000, 15000)
+		end)
 
-	minetest.after(18, function()
-		player:set_weather("snow", 0.3)
-	end)
+		minetest.after(13, function()
+			player:set_particle_overlay("rain", "weather_rain.png", false)
+			player:set_particle_overlay("snow", "weather_snow.png", true)
+		end)
 
-	minetest.after(20, function()
-		player:set_weather("snow", 10)
-	end)
+		minetest.after(16, function()
+			player:set_particle_overlay("snow", "weather_snow.png", true, 200, 400, 0, 0, snow_gravity)
+		end)
 
-	minetest.after(22, function()
-		player:set_weather("snow", 10, 90, 30)
-	end)
+		minetest.after(18, function()
+			player:set_particle_overlay("snow", "weather_snow.png", true, 7000, 12000, 0.3, 0, 0, snow_gravity)
+		end)
 
-	minetest.after(24, function()
-		player:set_weather("snow", 10, 180, 30)
-	end)
+		minetest.after(19., function()
+			player:set_particle_overlay("snow", "weather_snow.png", true, 7000, 12000, 90, 30, snow_gravity)
+		end)
 
-	minetest.after(26, function()
-		player:set_weather("snow", 10, 270, 30)
-	end)
+		minetest.after(22, function()
+			player:set_particle_overlay("snow", "weather_snow.png", true, 7000, 12000, 180, 30, snow_gravity)
+		end)
 
-	minetest.after(28, function()
-		player:set_weather("snow", 10, 45, 30)
-	end)
+		minetest.after(24, function()
+			player:set_particle_overlay("snow", "weather_snow.png", true, 7000, 12000, 270, 30, snow_gravity)
+		end)
 
-	minetest.after(30, function()
-		player:set_weather("normal")
-	end)
-end)
+		minetest.after(26, function()
+			player:set_particle_overlay("snow", "weather_snow.png", true, 7000, 12000, 45, 30, snow_gravity)
+		end)
+
+		minetest.after(38, function()
+			player:set_particle_overlay("snow", "weather_snow.png", false)
+		end)
+	end,
+})
 
 -- Create a detached inventory
 local inv = minetest.create_detached_inventory("test_inventory", {

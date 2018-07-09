@@ -4995,17 +4995,15 @@ This is basically a reference to a C++ `ServerActiveObject`
           (default `{x=0, z=-2}`).
 * `get_clouds()`: returns a table with the current cloud parameters as in
   `set_clouds`.
-* `set_weather(weather_type, weather_intensity=1.0, wind_direction=0, wind_speed=0.0,
-	texture="")`
-	* `weather_type`: Available types:
-		* `"normal"`
-		* `"rain"`
-		* `"storm"`
-		* `"snow"`
-	* `weather_intensity`: Intensity of applied weather (between 0.1 and 10.0)
-	* `wind_direction`: Wind direction (between 0 and 359 degrees)
-	* `wind_speed`: Wind speed (between 0.0 and 500.0)
-	* `texture`: An optional texture to apply. Only rain & snow handle it.
+* `set_particle_overlay(name, texture_name, enabled=true, minpps=700, maxpps=1000,
+	direction=0, directional_speed=0.0, gravity_factor=1.0)`
+	* `name`: overlay name. It must be unique across all mods to prevent conflicts.
+	* `texture_name`: Texture used by particles
+	* `enabled`: Enable or disable the overlay
+	* `minpps`: Minimum particles spawned per second (max 20000)
+	* `maxpps`: Maximum particles spawned per second (max 20000)
+	* `direction`: Wind direction (between 0 and 359 degrees)
+	* `directional_speed`: Wind speed (between 0.0 and 500.0)
 * `override_day_night_ratio(ratio or nil)`
     * `0`...`1`: Overrides day-night ratio, controlling sunlight to a specific
       amount.

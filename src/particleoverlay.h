@@ -1,6 +1,6 @@
 /*
 Minetest
-Copyright (C) 2018 nerzhul, Loic BLOT <loic.blot@unix-experience.fr>
+Copyright (C) 2018 nerzhul, Loic Blot <loic.blot@unix-experience.fr>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -19,29 +19,17 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #pragma once
 
-#include "irrlichttypes.h"
 #include <string>
+#include "irrlichttypes.h"
 
-namespace Weather
+struct ParticleOverlaySpec
 {
-enum Type : u8
-{
-	NORMAL,
-	RAIN,
-//	STORM,
-	SNOW,
+	std::string name;
+	std::string texture_name;
+	u32 minpps = 700;
+	u32 maxpps = 1000;
+	float gravity_factor = 1.0f;
+	float directional_speed = 0.0f;
+	u16 direction = 0;
+	bool enabled = false;
 };
-
-struct State
-{
-	Type type = NORMAL;
-	std::string texture;
-	float intensity = 1.0f;
-	float wind_speed = 0.0f;
-	u16 wind_direction = 0;
-
-	void setType(const std::string &strType);
-	const std::string &getTypeStr() const;
-	std::string getTextureFilename() const;
-};
-}; // namespace Weather

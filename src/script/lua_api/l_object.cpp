@@ -1726,7 +1726,7 @@ int ObjectRef::l_get_clouds(lua_State *L)
 	return 1;
 }
 
-int ObjectRef::l_set_weather(lua_State *L)
+int ObjectRef::l_set_particle_overlay(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
@@ -1734,25 +1734,35 @@ int ObjectRef::l_set_weather(lua_State *L)
 	if (!player)
 		return 0;
 
-	Weather::State wState;
-	wState.setType(readParam<std::string>(L, 2));
+	ParticleOverlaySpec poSpec;
+	poSpec.name = readParam<std::string>(L, 2);
+	poSpec.texture_name = readParam<std::string>(L, 3);
 
-	wState.intensity = readParam<float>(L, 3, 1.0f);
-	if (wState.intensity < 0.1f || wState.intensity > 10.0f)
-		throw LuaError("Weather intensity must be between 0.1 and 10.0. Found: " +
-			std::to_string(wState.intensity));
+	poSpec.enabled = readParam<bool>(L, 4, true);
 
-	wState.wind_direction = readParam<u16>(L, 4, 0);
-	if (wState.wind_direction > 359)
-		throw LuaError("Weather wind direction must be between 0 and 359");
+	poSpec.minpps = readParam<u32>(L, 5, 700);
+	if (poSpec.minpps < 1 || poSpec.minpps > 20000)
+		throw LuaError("ParticleOverlay minpps must be between 1 and 20000. Found: " +
+			std::to_string(poSpec.minpps));
 
-	wState.wind_speed = readParam<float>(L, 5, 0.0f);
-	if (wState.intensity < 0.0f || wState.intensity > 500.0f)
-		throw LuaError("Weather wind speed must be between 0.0 and 500.0");
+	poSpec.maxpps = readParam<u32>(L, 6, 1000);
+	if (poSpec.maxpps < 1 || poSpec.maxpps > 20000)
+		throw LuaError("ParticleOverlay maxpps must be between 1 and 20000. Found: " +
+			std::to_string(poSpec.maxpps));
 
-	wState.texture = readParam<std::string>(L, 6, "");
+	poSpec.direction = readParam<u16>(L, 7, 0);
+	if (poSpec.direction > 359)
+		throw LuaError("ParticleOverlay direction must be between 0 and 359");
 
-	getServer(L)->SendWeather(player->getPeerId(), wState);
+	poSpec.directional_speed = readParam<float>(L, 8, 0.0f);
+	if (poSpec.directional_speed < 0.0f || poSpec.directional_speed > 500.0f)
+		throw LuaError("ParticleOverlay directional speed must be between 0.0 and 500.0");
+
+	poSpec.gravity_factor = readParam<float>(L, 9, 1.0f);
+	if (poSpec.gravity_factor < 0.0f || poSpec.gravity_factor > 100.0f)
+		throw LuaError("ParticleOverlay gravity factor must be between 0.0 and 100.0");
+
+	getServer(L)->SendParticleOverlaySpec(player->getPeerId(), poSpec);
 	lua_pushboolean(L, true);
 	return 1;
 }
@@ -1939,7 +1949,7 @@ luaL_Reg ObjectRef::methods[] = {
 	luamethod(ObjectRef, get_sky),
 	luamethod(ObjectRef, set_clouds),
 	luamethod(ObjectRef, get_clouds),
-	luamethod(ObjectRef, set_weather),
+	luamethod(ObjectRef, set_particle_overlay),
 	luamethod(ObjectRef, override_day_night_ratio),
 	luamethod(ObjectRef, get_day_night_ratio),
 	luamethod(ObjectRef, set_local_animation),

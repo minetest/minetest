@@ -88,11 +88,13 @@ core.register_on_damage_taken(function(hp)
 	print("[PREVIEW] Damage taken " .. hp)
 end)
 
-core.register_on_weather(function(weather_type, weather_intensity, wind_direction,
-	wind_speed)
-	print("[PREVIEW] New weather type received: " .. weather_type .. ", intensity: " ..
-		weather_intensity .. ", wind direction: " .. wind_direction .. " degrees, " ..
-		"wind speed: " .. wind_speed)
+core.register_on_particle_overlay_spec(function(name, enabled, minpps, maxpps, direction,
+	speed, gravity_factor)
+	print("[PREVIEW] New particle spec received: " .. name .. ", minpps: " ..
+			minpps .. ", maxpps: " .. maxpps .. ", direction: " .. direction ..
+			" degrees, " .. "speed: " .. speed .. ", gravity factor: " ..
+			gravity_factor .. ", enabled: " ..
+		(enabled and "yes" or "no"))
 end)
 
 core.register_globalstep(function(dtime)
