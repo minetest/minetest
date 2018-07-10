@@ -44,7 +44,7 @@ local player_list = {}
 
 
 function core.send_join_message(player_name)
-	if not minetest.is_singleplayer() then
+	if not core.is_singleplayer() then
 		core.chat_send_all("*** " .. player_name .. " joined the game.")
 	end
 end
@@ -99,8 +99,8 @@ function core.is_player(player)
 end
 
 
-function minetest.player_exists(name)
-	return minetest.get_auth_handler().get_auth(name) ~= nil
+function core.player_exists(name)
+	return core.get_auth_handler().get_auth(name) ~= nil
 end
 
 
@@ -126,17 +126,19 @@ end
 
 
 function core.hash_node_position(pos)
-	return (pos.z+32768)*65536*65536 + (pos.y+32768)*65536 + pos.x+32768
+	return (pos.z + 32768) * 65536 * 65536
+		 + (pos.y + 32768) * 65536
+		 +  pos.x + 32768
 end
 
 
 function core.get_position_from_hash(hash)
 	local pos = {}
-	pos.x = (hash%65536) - 32768
-	hash = math.floor(hash/65536)
-	pos.y = (hash%65536) - 32768
-	hash = math.floor(hash/65536)
-	pos.z = (hash%65536) - 32768
+	pos.x = (hash % 65536) - 32768
+	hash  = math.floor(hash / 65536)
+	pos.y = (hash % 65536) - 32768
+	hash  = math.floor(hash / 65536)
+	pos.z = (hash % 65536) - 32768
 	return pos
 end
 
@@ -261,7 +263,7 @@ end
 
 
 function core.close_formspec(player_name, formname)
-	return minetest.show_formspec(player_name, formname, "")
+	return core.show_formspec(player_name, formname, "")
 end
 
 

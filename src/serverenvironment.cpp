@@ -1005,7 +1005,14 @@ bool ServerEnvironment::swapNode(v3s16 p, const MapNode &n)
 void ServerEnvironment::getObjectsInsideRadius(std::vector<u16> &objects, v3f pos,
 	float radius)
 {
-	objects = m_active_objects.getObjectsInsideRadius(pos, radius);
+	for (auto &activeObject : m_active_objects) {
+		ServerActiveObject* obj = activeObject.second;
+		u16 id = activeObject.first;
+		v3f objectpos = obj->getBasePosition();
+		if (objectpos.getDistanceFrom(pos) > radius)
+			continue;
+		objects.push_back(id);
+	}
 }
 
 void ServerEnvironment::clearObjects(ClearObjectsMode mode)
@@ -1013,9 +1020,9 @@ void ServerEnvironment::clearObjects(ClearObjectsMode mode)
 	infostream << "ServerEnvironment::clearObjects(): "
 		<< "Removing all active objects" << std::endl;
 	std::vector<u16> objects_to_remove;
-	for (auto &it : m_active_objects.getObjects()) {
+	for (auto &it : m_active_objects) {
 		u16 id = it.first;
-		ServerActiveObject* obj = it.second.object;
+		ServerActiveObject* obj = it.second;
 		if (obj->getType() == ACTIVEOBJECT_TYPE_PLAYER)
 			continue;
 
@@ -1042,7 +1049,7 @@ void ServerEnvironment::clearObjects(ClearObjectsMode mode)
 
 	// Remove references from m_active_objects
 	for (u16 i : objects_to_remove) {
-		m_active_objects.removeObject(i);
+		m_active_objects.erase(i);
 	}
 
 	// Get list of loaded blocks
@@ -1340,8 +1347,8 @@ void ServerEnvironment::step(float dtime)
 			send_recommended = true;
 		}
 
-		for (auto &ao_it : m_active_objects.getObjects()) {
-			ServerActiveObject* obj = ao_it.second.object;
+		for (auto &ao_it : m_active_objects) {
+			ServerActiveObject* obj = ao_it.second;
 			if (obj->isGone())
 				continue;
 
@@ -1427,7 +1434,40 @@ void ServerEnvironment::deleteParticleSpawner(u32 id, bool remove_from_object)
 
 ServerActiveObject* ServerEnvironment::getActiveObject(u16 id)
 {
-	return m_active_objects.getObject(id);
+	ServerActiveObjectMap::const_iterator n = m_active_objects.find(id);
+	return (n != m_active_objects.end() ? n->second : NULL);
+}
+
+/**
+ * Verify if id is a free active object id
+ * @param id
+ * @return true if slot is free
+ */
+bool ServerEnvironment::isFreeServerActiveObjectId(u16 id) const
+{
+	if (id == 0)
+		return false;
+
+	return m_active_objects.find(id) == m_active_objects.end();
+}
+
+/**
+ * Retrieve the first free ActiveObject ID
+ * @return free activeobject ID or 0 if none was found
+ */
+u16 ServerEnvironment::getFreeServerActiveObjectId()
+{
+	// try to reuse id's as late as possible
+	static u16 last_used_id = 0;
+	u16 startid = last_used_id;
+	for (;;) {
+		last_used_id++;
+		if (isFreeServerActiveObjectId(last_used_id))
+			return last_used_id;
+
+		if (last_used_id == startid)
+			return 0;
+	}
 }
 
 u16 ServerEnvironment::addActiveObject(ServerActiveObject *object)
@@ -1436,12 +1476,6 @@ u16 ServerEnvironment::addActiveObject(ServerActiveObject *object)
 	m_added_objects++;
 	u16 id = addActiveObjectRaw(object, true, 0);
 	return id;
-}
-
-void ServerEnvironment::updateActiveObject(ServerActiveObject *object)
-{
-	assert(object);
-	m_active_objects.updateObject(object);
 }
 
 /*
@@ -1465,11 +1499,11 @@ void ServerEnvironment::getAddedActiveObjects(PlayerSAO *playersao, s16 radius,
 		- discard objects that are found in current_objects.
 		- add remaining objects to added_objects
 	*/
-	for (auto &ao_it : m_active_objects.getObjects()) {
+	for (auto &ao_it : m_active_objects) {
 		u16 id = ao_it.first;
 
 		// Get object
-		ServerActiveObject *object = ao_it.second.object;
+		ServerActiveObject *object = ao_it.second;
 		if (object == NULL)
 			continue;
 
@@ -1553,14 +1587,16 @@ void ServerEnvironment::setStaticForActiveObjectsInBlock(
 
 	for (auto &so_it : block->m_static_objects.m_active) {
 		// Get the ServerActiveObject counterpart to this StaticObject
-		ServerActiveObject *sao = m_active_objects.getObject(so_it.first);
-		if (!sao) {
+		ServerActiveObjectMap::const_iterator ao_it = m_active_objects.find(so_it.first);
+		if (ao_it == m_active_objects.end()) {
 			// If this ever happens, there must be some kind of nasty bug.
 			errorstream << "ServerEnvironment::setStaticForObjectsInBlock(): "
 				"Object from MapBlock::m_static_objects::m_active not found "
 				"in m_active_objects";
 			continue;
 		}
+
+		ServerActiveObject *sao = ao_it->second;
 		sao->m_static_exists = static_exists;
 		sao->m_static_block  = static_block;
 	}
@@ -1617,7 +1653,7 @@ u16 ServerEnvironment::addActiveObjectRaw(ServerActiveObject *object,
 {
 	assert(object); // Pre-condition
 	if(object->getId() == 0){
-		u16 new_id = m_active_objects.getFreeId();
+		u16 new_id = getFreeServerActiveObjectId();
 		if(new_id == 0)
 		{
 			errorstream<<"ServerEnvironment::addActiveObjectRaw(): "
@@ -1633,7 +1669,7 @@ u16 ServerEnvironment::addActiveObjectRaw(ServerActiveObject *object,
 			<<"supplied with id "<<object->getId()<<std::endl;
 	}
 
-	if (!m_active_objects.isFreeId(object->getId())) {
+	if(!isFreeServerActiveObjectId(object->getId())) {
 		errorstream<<"ServerEnvironment::addActiveObjectRaw(): "
 			<<"id is not free ("<<object->getId()<<")"<<std::endl;
 		if(object->environmentDeletes())
@@ -1654,7 +1690,7 @@ u16 ServerEnvironment::addActiveObjectRaw(ServerActiveObject *object,
 	/*infostream<<"ServerEnvironment::addActiveObjectRaw(): "
 			<<"added (id="<<object->getId()<<")"<<std::endl;*/
 
-	m_active_objects.addObject(object);
+	m_active_objects[object->getId()] = object;
 
 	verbosestream<<"ServerEnvironment::addActiveObjectRaw(): "
 		<<"Added id="<<object->getId()<<"; there are now "
@@ -1700,9 +1736,9 @@ u16 ServerEnvironment::addActiveObjectRaw(ServerActiveObject *object,
 void ServerEnvironment::removeRemovedObjects()
 {
 	std::vector<u16> objects_to_remove;
-	for (auto &ao_it : m_active_objects.getObjects()) {
+	for (auto &ao_it : m_active_objects) {
 		u16 id = ao_it.first;
-		ServerActiveObject* obj = ao_it.second.object;
+		ServerActiveObject* obj = ao_it.second;
 
 		// This shouldn't happen but check it
 		if (!obj) {
@@ -1767,7 +1803,7 @@ void ServerEnvironment::removeRemovedObjects()
 	}
 	// Remove references from m_active_objects
 	for (u16 i : objects_to_remove) {
-		m_active_objects.removeObject(i);
+		m_active_objects.erase(i);
 	}
 }
 
@@ -1889,11 +1925,11 @@ void ServerEnvironment::activateObjects(MapBlock *block, u32 dtime_s)
 void ServerEnvironment::deactivateFarObjects(bool _force_delete)
 {
 	std::vector<u16> objects_to_remove;
-	for (auto &ao_it : m_active_objects.getObjects()) {
+	for (auto &ao_it : m_active_objects) {
 		// force_delete might be overriden per object
 		bool force_delete = _force_delete;
 
-		ServerActiveObject* obj = ao_it.second.object;
+		ServerActiveObject* obj = ao_it.second;
 		assert(obj);
 
 		// Do not deactivate if static data creation not allowed
@@ -2024,7 +2060,7 @@ void ServerEnvironment::deactivateFarObjects(bool _force_delete)
 
 	// Remove references from m_active_objects
 	for (u16 i : objects_to_remove) {
-		m_active_objects.removeObject(i);
+		m_active_objects.erase(i);
 	}
 }
 
