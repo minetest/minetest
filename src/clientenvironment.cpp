@@ -189,7 +189,7 @@ void ClientEnvironment::step(float dtime)
 						dl = lplayer->movement_liquid_fluidity_smooth;
 					dl *= (lplayer->liquid_viscosity * viscosity_factor) + (1 - viscosity_factor);
 
-					v3f d = d_wanted.normalize() * dl;
+					v3f d = d_wanted.normalize() * (dl * dtime_part * 100.0f);
 					speed += d;
 				}
 
