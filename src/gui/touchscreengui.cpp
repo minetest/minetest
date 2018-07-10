@@ -42,7 +42,8 @@ using namespace irr::core;
 const char **touchgui_button_imagenames = (const char *[]) {
 	"jump_btn.png",
 	"down.png",
-	"zoom.png"
+	"zoom.png",
+	"aux_btn.png"
 };
 
 const char **touchgui_joystick_imagenames = (const char *[]) {
@@ -81,6 +82,9 @@ static irr::EKEY_CODE id2keycode(touch_gui_button_id id)
 			break;
 		case zoom_id:
 			key = "zoom";
+			break;
+		case special1_id:
+			key = "special1";
 			break;
 		case fly_id:
 			key = "freemove";
@@ -454,6 +458,7 @@ TouchScreenGUI::TouchScreenGUI(IrrlichtDevice *device, IEventReceiver *receiver)
 
 	m_touchscreen_threshold = g_settings->getU16("touchscreen_threshold");
 	m_fixed_joystick = g_settings->getBool("fixed_virtual_joystick");
+	m_joystick_triggers_special1 = g_settings->getBool("virtual_joystick_triggers_aux");
 	m_screensize = m_device->getVideoDriver()->getScreenSize();
 }
 
@@ -555,10 +560,19 @@ void TouchScreenGUI::init(ISimpleTextureSource *tsrc)
 	// init zoom button
 	initButton(zoom_id,
 			rect<s32>(m_screensize.X - (1.25 * button_size),
-					m_screensize.Y - (3 * button_size),
+					m_screensize.Y - (4 * button_size),
 					m_screensize.X - (0.25 * button_size),
-					m_screensize.Y - (2 * button_size)),
+					m_screensize.Y - (3 * button_size)),
 			L"z", false);
+
+	// init special1 button
+	if (!m_joystick_triggers_special1)
+		initButton(special1_id,
+				rect<s32>(m_screensize.X - (1.25 * button_size),
+						m_screensize.Y - (2.5 * button_size),
+						m_screensize.X - (0.25 * button_size),
+						m_screensize.Y - (1.5 * button_size)),
+				L"spc1", false);
 
 	m_settingsbar.init(m_texturesource, "gear_icon.png", settings_starter_id,
 			v2s32(m_screensize.X - (button_size / 2),
@@ -973,7 +987,7 @@ void TouchScreenGUI::translateEvent(const SEvent &event)
 				angle = fmod(angle + 180 + 22.5, 360);
 
 				// reset state before applying
-				for (unsigned int i = 0; i < 4; i ++)
+				for (unsigned int i = 0; i < 5; i ++)
 					m_joystick_status[i] = false;
 
 				if (distance <= m_touchscreen_threshold) {
@@ -1000,8 +1014,9 @@ void TouchScreenGUI::translateEvent(const SEvent &event)
 					m_joystick_status[j_left] = true;
 				}
 
-				// move joystick "button"
 				if (distance > button_size) {
+					m_joystick_status[j_special1] = true;
+					// move joystick "button"
 					s32 ndx = (s32) button_size * dx / distance - (s32) button_size / 2;
 					s32 ndy = (s32) button_size * dy / distance - (s32) button_size / 2;
 					if (m_fixed_joystick) {
@@ -1125,7 +1140,10 @@ bool TouchScreenGUI::doubleTapDetection()
 
 void TouchScreenGUI::applyJoystickStatus()
 {
-	for (unsigned int i = 0; i < 4; i ++) {
+	for (unsigned int i = 0; i < 5; i ++) {
+		if (i == 4 && !m_joystick_triggers_special1)
+			continue;
+
 		SEvent translated{};
 		translated.EventType            = irr::EET_KEY_INPUT_EVENT;
 		translated.KeyInput.Key         = id2keycode(m_joystick_names[i]);

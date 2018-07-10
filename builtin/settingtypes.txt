@@ -126,6 +126,10 @@ touchscreen_threshold (Touch screen threshold) int 20 0 100
 #    If disabled, virtual joystick will center to first-touch's position.
 fixed_virtual_joystick (Fixed virtual joystick) bool false
 
+#    (Android) Use virtual joystick to trigger "aux" button.
+#    If enabled, virtual joystick will also tap "aux" button when out of main circle.
+virtual_joystick_triggers_aux (Virtual joystick triggers aux button) bool false
+
 #    Enable joysticks
 enable_joysticks (Enable joysticks) bool false
 
