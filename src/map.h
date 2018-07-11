@@ -469,6 +469,7 @@ private:
 	*/
 	bool m_map_metadata_changed = true;
 	MapDatabase *dbase = nullptr;
+	MapDatabase *dbase_ro = nullptr;
 };
 
 

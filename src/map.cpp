@@ -1159,7 +1159,10 @@ ServerMap::ServerMap(const std::string &savedir, IGameDef *gamedef,
 	}
 	std::string backend = conf.get("backend");
 	dbase = createDatabase(backend, savedir, conf);
-
+	if (conf.exists("readonly_backend")) {
+		std::string readonly_dir = savedir + DIR_DELIM + "readonly";
+		dbase_ro = createDatabase(conf.get("readonly_backend"), readonly_dir, conf);
+	}
 	if (!conf.updateConfigFile(conf_path.c_str()))
 		errorstream << "ServerMap::ServerMap(): Failed to update world.mt!" << std::endl;
 
@@ -1230,6 +1233,8 @@ ServerMap::~ServerMap()
 		Close database if it was opened
 	*/
 	delete dbase;
+	if (dbase_ro)
+		delete dbase_ro;
 
 #if 0
 	/*
@@ -1869,6 +1874,8 @@ void ServerMap::listAllLoadableBlocks(std::vector<v3s16> &dst)
 				<< "all blocks that are stored in flat files." << std::endl;
 	}
 	dbase->listAllLoadableBlocks(dst);
+	if (dbase_ro)
+		dbase_ro->listAllLoadableBlocks(dst);
 }
 
 void ServerMap::listAllLoadedBlocks(std::vector<v3s16> &dst)
@@ -2107,6 +2114,11 @@ MapBlock* ServerMap::loadBlock(v3s16 blockpos)
 	dbase->loadBlock(blockpos, &ret);
 	if (!ret.empty()) {
 		loadBlock(&ret, blockpos, createSector(p2d), false);
+	} else if (dbase_ro) {
+		dbase_ro->loadBlock(blockpos, &ret);
+		if (!ret.empty()) {
+			loadBlock(&ret, blockpos, createSector(p2d), false);
+		}
 	} else {
 		// Not found in database, try the files
 
