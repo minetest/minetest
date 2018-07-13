@@ -923,7 +923,7 @@ ipv6_server (IPv6 server) bool false
 #    Maximum number of blocks that are simultaneously sent per client.
 #    The maximum total count is calculated dynamically:
 #    max_total = ceil((#clients + max_users) * per_client / 4)
-max_simultaneous_block_sends_per_client (Maximum simultaneous block sends per client) int 10
+max_simultaneous_block_sends_per_client (Maximum simultaneous block sends per client) int 40
 
 #    To reduce lag, block transfers are slowed down when a player is building something.
 #    This determines how long they are slowed down after placing or removing a node.
@@ -1846,17 +1846,17 @@ chunksize (Chunk size) int 5
 enable_mapgen_debug_info (Mapgen debug) bool false
 
 #    Maximum number of blocks that can be queued for loading.
-emergequeue_limit_total (Absolute limit of emerge queues) int 256
+emergequeue_limit_total (Absolute limit of emerge queues) int 512
 
 #    Maximum number of blocks to be queued that are to be loaded from file.
 #    Set to blank for an appropriate amount to be chosen automatically.
-emergequeue_limit_diskonly (Limit of emerge queues on disk) int 32
+emergequeue_limit_diskonly (Limit of emerge queues on disk) int 64
 
 #    Maximum number of blocks to be queued that are to be generated.
 #    Set to blank for an appropriate amount to be chosen automatically.
-emergequeue_limit_generate (Limit of emerge queues to generate) int 32
+emergequeue_limit_generate (Limit of emerge queues to generate) int 64
 
-#    Number of emerge threads to use. Make this field blank, or increase this number
+#    Number of emerge threads to use. Make this field blank or 0, or increase this number
 #    to use multiple threads. On multiprocessor systems, this will improve mapgen speed greatly
 #    at the cost of slightly buggy caves.
-num_emerge_threads (Number of emerge threads) int 1
+num_emerge_threads (Number of emerge threads) int 0
