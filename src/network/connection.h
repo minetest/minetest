@@ -176,7 +176,6 @@ controltype and data description:
 #define CONTROLTYPE_SET_PEER_ID 1
 #define CONTROLTYPE_PING 2
 #define CONTROLTYPE_DISCO 3
-#define CONTROLTYPE_ENABLE_BIG_SEND_WINDOW 4
 
 /*
 ORIGINAL: This is a plain packet with no control and no error
@@ -316,8 +315,7 @@ enum ConnectionCommandType{
 	CONNCMD_SEND,
 	CONNCMD_SEND_TO_ALL,
 	CONCMD_ACK,
-	CONCMD_CREATE_PEER,
-	CONCMD_DISABLE_LEGACY
+	CONCMD_CREATE_PEER
 };
 
 struct ConnectionCommand
@@ -384,16 +382,6 @@ struct ConnectionCommand
 		reliable = true;
 		raw = true;
 	}
-
-	void disableLegacy(session_t peer_id_, const SharedBuffer<u8> &data_)
-	{
-		type = CONCMD_DISABLE_LEGACY;
-		peer_id = peer_id_;
-		data = data_;
-		channelnum = 0;
-		reliable = true;
-		raw = true;
-	}
 };
 
 /* maximum window size to use, 0xFFFF is theoretical maximum  don't think about
@@ -442,7 +430,7 @@ public:
 	void UpdateBytesLost(unsigned int bytes);
 	void UpdateBytesReceived(unsigned int bytes);
 
-	void UpdateTimers(float dtime, bool legacy_peer);
+	void UpdateTimers(float dtime);
 
 	const float getCurrentDownloadRateKB()
 		{ MutexAutoLock lock(m_internal_mutex); return cur_kbps; };
@@ -480,7 +468,7 @@ private:
 
 	unsigned int current_packet_loss = 0;
 	unsigned int current_packet_too_late = 0;
-	unsigned int current_packet_successfull = 0;
+	unsigned int current_packet_successful = 0;
 	float packet_loss_counter = 0.0f;
 
 	unsigned int current_bytes_transfered = 0;
@@ -659,11 +647,6 @@ public:
 
 	bool getAddress(MTProtocols type, Address& toset);
 
-	void setNonLegacyPeer();
-
-	bool getLegacyPeer()
-	{ return m_legacy_peer; }
-
 	u16 getNextSplitSequenceNumber(u8 channel);
 	void setNextSplitSequenceNumber(u8 channel, u16 seqnum);
 
@@ -698,8 +681,6 @@ private:
 	bool processReliableSendCommand(
 					ConnectionCommand &c,
 					unsigned int max_packet_size);
-
-	bool m_legacy_peer = true;
 };
 
 /*
