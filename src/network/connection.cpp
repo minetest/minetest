@@ -921,7 +921,7 @@ void UDPPeer::setNonLegacyPeer()
 	m_legacy_peer = false;
 	for(unsigned int i=0; i< CHANNEL_COUNT; i++)
 	{
-		channels->setWindowSize(g_settings->getU16("max_packets_per_iteration"));
+		channels[i].setWindowSize(g_settings->getU16("max_packets_per_iteration"));
 	}
 }
 
