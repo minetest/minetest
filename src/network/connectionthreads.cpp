@@ -1208,6 +1208,10 @@ SharedBuffer<u8> ConnectionReceiveThread::handlePacketType_Control(Channel *chan
 			m_connection->SetPeerID(peer_id_new);
 		}
 
+		// set non legacy mode locally
+		dynamic_cast<UDPPeer *>(peer)->setNonLegacyPeer();
+
+		// request the same from the remote side
 		ConnectionCommand cmd;
 
 		SharedBuffer<u8> reply(2);
