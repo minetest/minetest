@@ -1104,7 +1104,7 @@
 #    The maximum total count is calculated dynamically:
 #    max_total = ceil((#clients + max_users) * per_client / 4)
 #    type: int
-# max_simultaneous_block_sends_per_client = 10
+# max_simultaneous_block_sends_per_client = 40
 
 #    To reduce lag, block transfers are slowed down when a player is building something.
 #    This determines how long they are slowed down after placing or removing a node.
@@ -2896,21 +2896,21 @@
 
 #    Maximum number of blocks that can be queued for loading.
 #    type: int
-# emergequeue_limit_total = 256
+# emergequeue_limit_total = 512
 
 #    Maximum number of blocks to be queued that are to be loaded from file.
 #    Set to blank for an appropriate amount to be chosen automatically.
 #    type: int
-# emergequeue_limit_diskonly = 32
+# emergequeue_limit_diskonly = 64
 
 #    Maximum number of blocks to be queued that are to be generated.
 #    Set to blank for an appropriate amount to be chosen automatically.
 #    type: int
-# emergequeue_limit_generate = 32
+# emergequeue_limit_generate = 64
 
-#    Number of emerge threads to use. Make this field blank, or increase this number
+#    Number of emerge threads to use. Make this field blank or 0, or increase this number
 #    to use multiple threads. On multiprocessor systems, this will improve mapgen speed greatly
 #    at the cost of slightly buggy caves.
 #    type: int
-# num_emerge_threads = 1
+# num_emerge_threads = 0
 
