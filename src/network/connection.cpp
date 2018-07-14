@@ -632,8 +632,7 @@ void Channel::UpdateTimers(float dtime)
 	bpm_counter += dtime;
 	packet_loss_counter += dtime;
 
-	if (packet_loss_counter > 1.0f)
-	{
+	if (packet_loss_counter > 1.0f) {
 		packet_loss_counter -= 1.0f;
 
 		unsigned int packet_loss = 11; /* use a neutral value for initialization */
@@ -648,8 +647,7 @@ void Channel::UpdateTimers(float dtime)
 			//packet_too_late = current_packet_too_late;
 			packets_successful = current_packet_successful;
 
-			if (current_bytes_transfered > (unsigned int) (window_size*512/2))
-			{
+			if (current_bytes_transfered > (unsigned int) (window_size*512/2)) {
 				reasonable_amount_of_data_transmitted = true;
 			}
 			current_packet_loss = 0;
@@ -699,29 +697,26 @@ void Channel::UpdateTimers(float dtime)
 		}
 	}
 
-	if (bpm_counter > 10.0)
-	{
+	if (bpm_counter > 10.0f) {
 		{
 			MutexAutoLock internal(m_internal_mutex);
 			cur_kbps                 =
-					(((float) current_bytes_transfered)/bpm_counter)/1024.0;
+					(((float) current_bytes_transfered)/bpm_counter)/1024.0f;
 			current_bytes_transfered = 0;
 			cur_kbps_lost            =
-					(((float) current_bytes_lost)/bpm_counter)/1024.0;
+					(((float) current_bytes_lost)/bpm_counter)/1024.0f;
 			current_bytes_lost       = 0;
 			cur_incoming_kbps        =
-					(((float) current_bytes_received)/bpm_counter)/1024.0;
+					(((float) current_bytes_received)/bpm_counter)/1024.0f;
 			current_bytes_received   = 0;
-			bpm_counter              = 0;
+			bpm_counter              = 0.0f;
 		}
 
-		if (cur_kbps > max_kbps)
-		{
+		if (cur_kbps > max_kbps) {
 			max_kbps = cur_kbps;
 		}
 
-		if (cur_kbps_lost > max_kbps_lost)
-		{
+		if (cur_kbps_lost > max_kbps_lost) {
 			max_kbps_lost = cur_kbps_lost;
 		}
 
