@@ -130,8 +130,8 @@ void main(void)
 
 #ifdef ENABLE_PARALLAX_OCCLUSION
 	vec2 eyeRay = vec2 (tsEyeVec.x, -tsEyeVec.y);
-	const float scale = PARALLAX_OCCLUSION_SCALE / PARALLAX_OCCLUSION_ITERATIONS.0;
-	const float bias = PARALLAX_OCCLUSION_BIAS / PARALLAX_OCCLUSION_ITERATIONS.0;
+	const float scale = PARALLAX_OCCLUSION_SCALE / float(PARALLAX_OCCLUSION_ITERATIONS);
+	const float bias = PARALLAX_OCCLUSION_BIAS / float(PARALLAX_OCCLUSION_ITERATIONS);
 
 #if PARALLAX_OCCLUSION_MODE == 0
 	// Parallax occlusion with slope information
