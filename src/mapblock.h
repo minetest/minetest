@@ -114,6 +114,8 @@ public:
 		} else if (mod == m_modified) {
 			m_modified_reason |= reason;
 		}
+		if (mod == MOD_STATE_WRITE_NEEDED)
+			contents_cached = false;
 	}
 
 	inline u32 getModified()
@@ -519,6 +521,9 @@ public:
 #ifndef SERVER // Only on client
 	MapBlockMesh *mesh = nullptr;
 #endif
+	std::set<content_t> contents;
+	bool contents_cached = false;
+	bool do_not_cache_contents = false;
 
 	NodeMetadataList m_node_metadata;
 	NodeTimerList m_node_timers;

@@ -800,10 +800,27 @@ public:
 		return active_object_count;
 
 	}
-	void apply(MapBlock *block)
+	void apply(MapBlock *block, int &abm_checked, int &abm_run)
 	{
 		if(m_aabms.empty() || block->isDummy())
 			return;
+
+		if (block->contents_cached) {
+			bool run_abms = false;
+			for(content_t c : block->contents) {
+				if (c < m_aabms.size() && m_aabms[c]) {
+					run_abms = true;
+					break;
+				}
+			}
+			if (!run_abms) {
+				return;
+			}
+		} else {
+			// clear any caching
+			block->contents.clear();
+		}
+		abm_checked++;
 
 		ServerMap *map = &m_env->getServerMap();
 
@@ -818,6 +835,14 @@ public:
 		{
 			const MapNode &n = block->getNodeUnsafe(p0);
 			content_t c = n.getContent();
+			if (!block->contents_cached && !block->do_not_cache_contents) {
+				block->contents.insert(c);
+				if (block->contents.size() > 64) {
+					// too many different nodes... don't try to cache
+					block->do_not_cache_contents = true;
+					block->contents.clear();
+				}
+			}
 
 			if (c >= m_aabms.size() || !m_aabms[c])
 				continue;
@@ -855,6 +880,7 @@ public:
 				}
 				neighbor_found:
 
+				abm_run++;
 				// Call all the trigger variations
 				aabm.abm->trigger(m_env, p, n);
 				aabm.abm->trigger(m_env, p, n,
@@ -867,6 +893,7 @@ public:
 				}
 			}
 		}
+		block->contents_cached = !block->do_not_cache_contents;
 	}
 };
 
@@ -1302,6 +1329,8 @@ void ServerEnvironment::step(float dtime)
 			// Initialize handling of ActiveBlockModifiers
 			ABMHandler abmhandler(m_abms, m_cache_abm_interval, this, true);
 
+			int abm_checked = 0;
+			int abm_run = 0;
 			for (const v3s16 &p : m_active_blocks.m_abm_list) {
 				MapBlock *block = m_map->getBlockNoCreateNoEx(p);
 				if (!block)
@@ -1311,8 +1340,11 @@ void ServerEnvironment::step(float dtime)
 				block->setTimestampNoChangedFlag(m_game_time);
 
 				/* Handle ActiveBlockModifiers */
-				abmhandler.apply(block);
+				abmhandler.apply(block, abm_checked, abm_run);
 			}
+			g_profiler->avg("SEnv: num of active blocks", m_active_blocks.m_abm_list.size());
+			g_profiler->avg("SEnv: num of active blocks checked", abm_checked);
+			g_profiler->avg("SEnv: num of active blocks run", abm_run);
 
 			u32 time_ms = timer.stop(true);
 			u32 max_time_ms = 200;
