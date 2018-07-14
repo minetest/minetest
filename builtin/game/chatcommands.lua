@@ -98,7 +98,7 @@ core.register_chatcommand("privs", {
 		param = param:trim()
 		local name = (param ~= "" and param or caller)
 		if not core.player_exists(name) then
-			return false, "Player " .. name .. "does not exist."
+			return false, "Player " .. name .. " does not exist."
 		end
 		return true, "Privileges of " .. name .. ": "
 			.. core.privs_to_string(
