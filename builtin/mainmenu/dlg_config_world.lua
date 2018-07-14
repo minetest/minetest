@@ -56,7 +56,7 @@ local function get_formspec(data)
 			if soft_deps_str == "" then
 				retval = retval ..
 					"label[0,1.25;" ..
-					fgettext("This mod does not have dependencies.") .. "]"
+					fgettext("No (optional) dependencies") .. "]"
 			else
 				retval = retval ..
 					"label[0,1.25;" .. fgettext("No hard dependencies") ..
@@ -78,7 +78,7 @@ local function get_formspec(data)
 				local ratio = #hard_deps / (#soft_deps + #hard_deps)
 				-- avoid making one of the lists too short
 				local min_l = math.min(0.5,
-					math.min(#soft_deps, #hard_deps) * 0.15)
+					math.min(#soft_deps, #hard_deps) * 0.25)
 				ratio = math.max(min_l, math.min(1.0 - min_l, ratio))
 				local h1 = 4.0 * ratio
 				local h2 = 4.0 - h1
