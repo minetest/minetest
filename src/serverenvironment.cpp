@@ -807,7 +807,7 @@ public:
 
 		if (block->contents_cached) {
 			bool run_abms = false;
-			for(content_t c : block->contents) {
+			for (content_t c : block->contents) {
 				if (c < m_aabms.size() && m_aabms[c]) {
 					run_abms = true;
 					break;

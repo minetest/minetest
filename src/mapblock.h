@@ -521,7 +521,7 @@ public:
 #ifndef SERVER // Only on client
 	MapBlockMesh *mesh = nullptr;
 #endif
-	std::set<content_t> contents;
+	std::unordered_set<content_t> contents;
 	bool contents_cached = false;
 	bool do_not_cache_contents = false;
 
