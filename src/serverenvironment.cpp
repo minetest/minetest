@@ -800,7 +800,7 @@ public:
 		return active_object_count;
 
 	}
-	void apply(MapBlock *block, int &abm_checked, int &abm_run)
+	void apply(MapBlock *block, int &abm_checked, int &abm_run, int &abm_not_cached)
 	{
 		if(m_aabms.empty() || block->isDummy())
 			return;
@@ -819,6 +819,7 @@ public:
 		} else {
 			// clear any caching
 			block->contents.clear();
+			abm_not_cached++;
 		}
 		abm_checked++;
 
@@ -837,7 +838,7 @@ public:
 			content_t c = n.getContent();
 			if (!block->contents_cached && !block->do_not_cache_contents) {
 				block->contents.insert(c);
-				if (block->contents.size() > 64) {
+				if (block->contents.size() > 32) {
 					// too many different nodes... don't try to cache
 					block->do_not_cache_contents = true;
 					block->contents.clear();
@@ -1331,6 +1332,7 @@ void ServerEnvironment::step(float dtime)
 
 			int abm_checked = 0;
 			int abm_run = 0;
+			int abm_not_cached = 0;
 			for (const v3s16 &p : m_active_blocks.m_abm_list) {
 				MapBlock *block = m_map->getBlockNoCreateNoEx(p);
 				if (!block)
@@ -1340,11 +1342,12 @@ void ServerEnvironment::step(float dtime)
 				block->setTimestampNoChangedFlag(m_game_time);
 
 				/* Handle ActiveBlockModifiers */
-				abmhandler.apply(block, abm_checked, abm_run);
+				abmhandler.apply(block, abm_checked, abm_run, abm_not_cached);
 			}
-			g_profiler->avg("SEnv: num of active blocks", m_active_blocks.m_abm_list.size());
-			g_profiler->avg("SEnv: num of active blocks checked", abm_checked);
-			g_profiler->avg("SEnv: num of active blocks run", abm_run);
+			g_profiler->avg("SEnv: active blocks", m_active_blocks.m_abm_list.size());
+			g_profiler->avg("SEnv: active blocks cached", m_active_blocks.m_abm_list.size() - abm_not_cached);
+			g_profiler->avg("SEnv: active blocks checked for ABMs", abm_checked);
+			g_profiler->avg("SEnv: ABMs run", abm_run);
 
 			u32 time_ms = timer.stop(true);
 			u32 max_time_ms = 200;
