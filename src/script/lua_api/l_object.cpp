@@ -1249,6 +1249,37 @@ int ObjectRef::l_set_look_yaw(lua_State *L)
 	return 1;
 }
 
+// set_fov(self, degrees[, is_multiplier])
+int ObjectRef::l_set_fov(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	ObjectRef *ref = checkobject(L, 1);
+	RemotePlayer *player = getplayer(ref);
+	if (!player)
+		return 0;
+
+	player->setFov({ static_cast<f32>(luaL_checknumber(L, 2)), readParam<bool>(L, 3) });
+	getServer(L)->SendPlayerFov(player->getPeerId());
+
+	return 0;
+}
+
+// get_fov(self)
+int ObjectRef::l_get_fov(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	ObjectRef *ref = checkobject(L, 1);
+	RemotePlayer *player = getplayer(ref);
+	if (!player)
+		return 0;
+
+	PlayerFovSpec fov_spec = player->getFov();
+	lua_pushnumber(L, fov_spec.fov);
+	lua_pushboolean(L, fov_spec.is_multiplier);
+
+	return 2;
+}
+
 // set_breath(self, breath)
 int ObjectRef::l_set_breath(lua_State *L)
 {
@@ -1962,6 +1993,8 @@ luaL_Reg ObjectRef::methods[] = {
 	luamethod(ObjectRef, set_look_vertical),
 	luamethod(ObjectRef, set_look_yaw),
 	luamethod(ObjectRef, set_look_pitch),
+	luamethod(ObjectRef, get_fov),
+	luamethod(ObjectRef, set_fov),
 	luamethod(ObjectRef, get_breath),
 	luamethod(ObjectRef, set_breath),
 	luamethod(ObjectRef, get_attribute),

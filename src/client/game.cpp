@@ -1083,7 +1083,7 @@ void Game::run()
 		//    RenderingEngine::run() from this iteration
 		//  + Sleep time until the wanted FPS are reached
 		limitFps(&draw_times, &dtime);
-		
+
 		// Prepare render data for next iteration
 
 		updateStats(&stats, draw_times, dtime);
@@ -2332,7 +2332,7 @@ void Game::toggleFullViewRange()
 void Game::checkZoomEnabled()
 {
 	LocalPlayer *player = client->getEnv().getLocalPlayer();
-	if (player->getZoomFOV() < 0.001f)
+	if (player->getZoomFOV() < 0.001f || player->getFov().fov > 0.0f)
 		m_game_ui->showTranslatedStatusText("Zoom currently disabled by game or mod");
 }
 
