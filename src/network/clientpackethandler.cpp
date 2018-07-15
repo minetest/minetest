@@ -523,13 +523,22 @@ void Client::handleCommand_Movement(NetworkPacket* pkt)
 	player->movement_gravity                = g * BS;
 }
 
-void Client::handleCommand_HP(NetworkPacket* pkt)
+void Client::handleCommand_Fov(NetworkPacket *pkt)
 {
+	f32 fov;
+	bool is_multiplier;
+	*pkt >> fov >> is_multiplier;
 
+	LocalPlayer *player = m_env.getLocalPlayer();
+	player->setFov({ fov, is_multiplier });
+}
+
+void Client::handleCommand_HP(NetworkPacket *pkt)
+{
 	LocalPlayer *player = m_env.getLocalPlayer();
 	assert(player != NULL);
 
-	u16 oldhp   = player->hp;
+	u16 oldhp = player->hp;
 
 	u16 hp;
 	*pkt >> hp;

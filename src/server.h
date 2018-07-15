@@ -336,6 +336,7 @@ public:
 	void SendInventory(PlayerSAO *playerSAO, bool incremental);
 	void SendMovePlayer(session_t peer_id);
 	void SendPlayerSpeed(session_t peer_id, const v3f &added_vel);
+	void SendPlayerFov(session_t peer_id);
 
 	void sendDetachedInventories(session_t peer_id, bool incremental);
 
@@ -515,7 +516,6 @@ private:
 	/*
 		Variables
 	*/
-
 	// World directory
 	std::string m_path_world;
 	// Subgame specification
@@ -575,7 +575,6 @@ private:
 	/*
 		Threads
 	*/
-
 	// A buffer for time steps
 	// step() increments and AsyncRunStep() run by m_thread reads it.
 	float m_step_dtime = 0.0f;
@@ -590,14 +589,14 @@ private:
 	/*
 		Time related stuff
 	*/
-
 	// Timer for sending time of day over network
 	float m_time_of_day_send_timer = 0.0f;
 	// Uptime of server in seconds
 	MutexedVariable<double> m_uptime;
+
 	/*
-	 Client interface
-	 */
+	 	Client interface
+	*/
 	ClientInterface m_clients;
 
 	/*

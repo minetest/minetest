@@ -5580,12 +5580,21 @@ This is basically a reference to a C++ `ServerActiveObject`
   `set_look_vertical`.
 * `set_look_yaw(radians)`: sets look yaw - Deprecated. Use
   `set_look_horizontal`.
-* `get_breath()`: returns players breath
-* `set_breath(value)`: sets players breath
+* `get_breath()`: returns player's breath
+* `set_breath(value)`: sets player's breath
     * values:
         * `0`: player is drowning
         * max: bubbles bar is not shown
         * See [Object properties] for more information
+* `set_fov(fov, is_multiplier)`: Sets player's FOV
+    * `fov`: FOV value.
+    * `is_multiplier`: Set to `true` if the FOV value is a multiplier.
+      Defaults to `false`.
+    * Set to 0 to clear FOV override.
+* `get_fov()`:
+    * Returns player's FOV override in degrees, and a boolean depending on whether
+      the value is a multiplier.
+    * Returns 0 as first value if player's FOV hasn't been overridden.
 * `set_attribute(attribute, value)`:  DEPRECATED, use get_meta() instead
     * Sets an extra attribute with value on player.
     * `value` must be a string, or a number which will be converted to a

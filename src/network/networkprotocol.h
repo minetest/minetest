@@ -199,6 +199,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		Incremental inventory sending mode
 		Unknown inventory serialization fields no longer throw an error
 		Mod-specific formspec version
+		Player FOV override API
 */
 
 #define LATEST_PROTOCOL_VERSION 38
@@ -370,7 +371,13 @@ enum ToClientCommand
 		wstring reason
 	*/
 
-	TOCLIENT_PLAYERITEM = 0x36, // Obsolete
+	TOCLIENT_FOV = 0x36,
+	/*
+		Sends an FOV override/multiplier to client.
+
+		float fov
+		bool is_multiplier
+	*/
 
 	TOCLIENT_DEATHSCREEN = 0x37,
 	/*

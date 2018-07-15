@@ -1765,6 +1765,16 @@ void Server::SendMovePlayer(session_t peer_id)
 	Send(&pkt);
 }
 
+void Server::SendPlayerFov(session_t peer_id)
+{
+	NetworkPacket pkt(TOCLIENT_FOV, 4 + 1, peer_id);
+
+	PlayerFovSpec fov_spec = m_env->getPlayer(peer_id)->getFov();
+	pkt << fov_spec.fov << fov_spec.is_multiplier;
+
+	Send(&pkt);
+}
+
 void Server::SendLocalPlayerAnimations(session_t peer_id, v2s32 animation_frames[4],
 		f32 animation_speed)
 {
