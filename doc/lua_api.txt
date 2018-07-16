@@ -929,6 +929,8 @@ They are represented by a table:
 them for certain automated functions. If you don't use these functions, you can
 use them to store arbitrary values.
 
+Node paramtypes
+---------------
 The functions of `param1` and `param2` are determined by certain fields in the
 node definition:
 
@@ -2757,12 +2759,14 @@ Minetest Schematic file (`.mts`) or through raw data supplied through Lua,
 in the form of a table.  This table specifies the following fields:
 
 * The `size` field is a 3D vector containing the dimensions of the provided
-  schematic. (required)
-* The `yslice_prob` field is a table of {ypos, prob} which sets the `ypos`th
-  vertical slice of the schematic to have a `prob / 256 * 100` chance of
-  occurring. (default: 255)
+  schematic. (required field)
+* The `yslice_prob` field is a table of {ypos, prob} slice tables. A slice table
+  sets the probability of a particular horizontal slice of the schematic being
+  placed. (optional field)
+  `ypos` = 0 for the lowest horizontal slice of a schematic.
+  The default of `prob` is 255.
 * The `data` field is a flat table of MapNode tables making up the schematic,
-  in the order of `[z [y [x]]]`. (required)
+  in the order of `[z [y [x]]]`. (required field)
   Each MapNode table contains:
     * `name`: the name of the map node to place (required)
     * `prob` (alias `param1`): the probability of this node being placed
@@ -6064,12 +6068,13 @@ Decoration definition (`register_decoration`)
     --  ^   by the decoration.
     --  ^ "all_floors", "all_ceilings": Instead of placement on the highest
     --  ^   surface in a mapchunk the decoration is placed on all floor and/or
-    --  ^   ceiling surfaces, for example in caves.
+    --  ^   ceiling surfaces, for example in caves and dungeons.
     --  ^   Ceiling decorations act as an inversion of floor decorations so the
     --  ^   effect of 'place_offset_y' is inverted.
+    --  ^   Y-slice probabilities do not function correctly for ceiling
+    --  ^   schematic decorations as the behaviour is unchanged.
     --  ^   If a single decoration registration has both flags the floor and
-    --  ^   ceiling decorations will be aligned vertically and may sometimes
-    --  ^   meet to form a column.
+    --  ^   ceiling decorations will be aligned vertically.
 
         ----- Simple-type parameters
         decoration = "default:grass",
