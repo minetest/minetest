@@ -84,7 +84,7 @@ core.register_chatcommand("admin", {
 	func = function(name)
 		local admin = core.settings:get("name")
 		if admin then
-			return true, "The administrator of this server is "..admin.."."
+			return true, "The administrator of this server is " .. admin .. "."
 		else
 			return false, "There's no administrator named in the config file."
 		end
@@ -97,6 +97,9 @@ core.register_chatcommand("privs", {
 	func = function(caller, param)
 		param = param:trim()
 		local name = (param ~= "" and param or caller)
+		if not core.player_exists(name) then
+			return false, "Player " .. name .. " does not exist."
+		end
 		return true, "Privileges of " .. name .. ": "
 			.. core.privs_to_string(
 				core.get_player_privs(name), ' ')
