@@ -27,6 +27,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client/mapblock_mesh.h"
 #include "client/mesh.h"
 #include "client/wieldmesh.h"
+#include "client/meshgen/item.h"
 #include "client/tile.h"
 #include "client/client.h"
 #endif
@@ -339,8 +340,7 @@ public:
 		ItemStack item = ItemStack();
 		item.name = def.name;
 
-		getItemMesh(client, item, &(cc->wield_mesh));
-
+		cc->wield_mesh = createInventoryItemMesh(client, item);
 		cc->palette = tsrc->getPalette(def.palette_image);
 
 		// Put in cache

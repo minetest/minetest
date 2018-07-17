@@ -35,7 +35,7 @@ void applyFacesShading(video::SColor &color, const v3f &normal);
 	The resulting mesh has 6 materials (up, down, right, left, back, front)
 	which must be defined by the caller.
 */
-scene::IAnimatedMesh* createCubeMesh(v3f scale);
+scene::SMesh* createCubeMesh(v3f scale);
 
 /*
 	Multiplies each vertex coordinate by the specified scaling factors
