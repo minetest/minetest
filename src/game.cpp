@@ -68,6 +68,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "version.h"
 #include "script/scripting_client.h"
 
+#if USE_DISCORD
+	#include "client/discord.h"
+#endif
+
 #if USE_SOUND
 	#include "client/sound_openal.h"
 #else
@@ -1062,6 +1066,14 @@ void Game::run()
 
 	irr::core::dimension2d<u32> previous_screen_size(g_settings->getU16("screen_w"),
 		g_settings->getU16("screen_h"));
+
+#if USE_DISCORD
+	/*
+	g_discord->setDetails("In Game");
+	g_discord->setState("");
+	g_discord->updatePresence();
+	*/
+#endif
 
 	while (RenderingEngine::run()
 			&& !(*kill || g_gamecallback->shutdown_requested

@@ -96,8 +96,39 @@ void GUIConfirmRegistration::regenerateGui(v2u32 screensize)
 				"Join to confirm account creation or click Cancel to "
 				"abort.");
 		char info_text_buf[1024];
+
+#ifdef _MSC_VER
+		/*
+			Remove 8 to ignore %1$s and %2$s
+			If the template + the server ip + the player name is greater than
+			the buffer then bufferSize will be negative
+		*/
+		int bufferSize = sizeof(info_text_buf) -
+				 (info_text_template.length() - 8 + address.length() +
+						 m_playername.length());
+
+		if (bufferSize >= 0) {
+			sprintf(info_text_buf, info_text_template.c_str(),
+					address.c_str(), m_playername.c_str());
+		} else {
+			warningstream << "Failed to generate info_text. Buffer is too "
+					 "small"
+				      << std::endl;
+			int new_size_text_template =
+					(int)info_text_template.size() + (bufferSize - 4);
+			if (new_size_text_template > 0) {
+				std::string info_text_template_trunc =
+						info_text_template.substr(0,
+								new_size_text_template);
+				info_text_template_trunc.append("...");
+				sprintf(info_text_buf, info_text_template_trunc.c_str(),
+						address.c_str(), m_playername.c_str());
+			}
+		}
+#else
 		snprintf(info_text_buf, sizeof(info_text_buf), info_text_template.c_str(),
 				address.c_str(), m_playername.c_str());
+#endif
 
 		wchar_t *info_text_buf_wide = utf8_to_wide_c(info_text_buf);
 		gui::IGUIEditBox *e = new gui::intlGUIEditBox(info_text_buf_wide, true,
