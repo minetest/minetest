@@ -1,7 +1,7 @@
 #include "item.h"
 #include "client.h"
+#include "collector.h"
 #include "content_mapblock.h"
-#include "extrusion.h"
 #include "itemdef.h"
 #include "mesh.h"
 #include "nodedef.h"
@@ -62,7 +62,7 @@ ItemMeshGenerator::~ItemMeshGenerator()
 void ItemMeshGenerator::createSpecialNodeMesh()
 {
 	MeshMakeData mesh_make_data(client, false, false);
-	MeshCollector collector(false);
+	MeshCollector collector;
 	mesh_make_data.setSmoothLighting(false);
 	MapblockMeshGenerator gen(&mesh_make_data, &collector);
 	gen.renderSingle(id);
@@ -113,7 +113,7 @@ bool ItemMeshGenerator::tryNode()
 	if (def->type != ITEM_NODE)
 		return false;
 	is_flat = false;
-	INodeDefManager *ndef = client->getNodeDefManager();
+	const NodeDefManager *ndef = client->getNodeDefManager();
 	id = ndef->getId(def->name);
 	f = &ndef->get(id);
 	if (f->mesh_ptr[0]) {
