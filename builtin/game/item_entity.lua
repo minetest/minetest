@@ -152,7 +152,7 @@ core.register_entity(":__builtin:item", {
 			return
 		end
 
-		local vel = self.object:getvelocity()
+		local vel = self.object:get_velocity()
 		local def = node and core.registered_nodes[node.name]
 		local is_moving = (def and not def.walkable) or
 			vel.x ~= 0 or vel.y ~= 0 or vel.z ~= 0
