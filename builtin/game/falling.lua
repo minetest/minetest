@@ -52,12 +52,12 @@ core.register_entity(":__builtin:falling_node", {
 
 	on_step = function(self, dtime)
 		-- Set gravity
-		local acceleration = self.object:getacceleration()
+		local acceleration = self.object:get_acceleration()
 		if not vector.equals(acceleration, {x = 0, y = -10, z = 0}) then
-			self.object:setacceleration({x = 0, y = -10, z = 0})
+			self.object:set_acceleration({x = 0, y = -10, z = 0})
 		end
 		-- Turn to actual node when colliding with ground, or continue to move
-		local pos = self.object:getpos()
+		local pos = self.object:get_pos()
 		-- Position of bottom center point
 		local bcp = {x = pos.x, y = pos.y - 0.7, z = pos.z}
 		-- 'bcn' is nil for unloaded nodes
@@ -124,10 +124,10 @@ core.register_entity(":__builtin:falling_node", {
 			core.check_for_falling(np)
 			return
 		end
-		local vel = self.object:getvelocity()
+		local vel = self.object:get_velocity()
 		if vector.equals(vel, {x = 0, y = 0, z = 0}) then
-			local npos = self.object:getpos()
-			self.object:setpos(vector.round(npos))
+			local npos = self.object:get_pos()
+			self.object:set_pos(vector.round(npos))
 		end
 	end
 })

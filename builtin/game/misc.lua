@@ -113,7 +113,7 @@ function core.get_player_radius_area(player_name, radius)
 		return nil
 	end
 
-	local p1 = player:getpos()
+	local p1 = player:get_pos()
 	local p2 = p1
 
 	if radius then

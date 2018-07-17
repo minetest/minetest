@@ -380,7 +380,7 @@ core.register_chatcommand("teleport", {
 			end
 			teleportee = core.get_player_by_name(name)
 			if teleportee then
-				teleportee:setpos(p)
+				teleportee:set_pos(p)
 				return true, "Teleporting to "..core.pos_to_string(p)
 			end
 		end
@@ -393,12 +393,12 @@ core.register_chatcommand("teleport", {
 		if target_name then
 			local target = core.get_player_by_name(target_name)
 			if target then
-				p = target:getpos()
+				p = target:get_pos()
 			end
 		end
 		if teleportee and p then
 			p = find_free_position_near(p)
-			teleportee:setpos(p)
+			teleportee:set_pos(p)
 			return true, "Teleporting to " .. target_name
 					.. " at "..core.pos_to_string(p)
 		end
@@ -417,7 +417,7 @@ core.register_chatcommand("teleport", {
 			teleportee = core.get_player_by_name(teleportee_name)
 		end
 		if teleportee and p.x and p.y and p.z then
-			teleportee:setpos(p)
+			teleportee:set_pos(p)
 			return true, "Teleporting " .. teleportee_name
 					.. " to " .. core.pos_to_string(p)
 		end
@@ -433,12 +433,12 @@ core.register_chatcommand("teleport", {
 		if target_name then
 			local target = core.get_player_by_name(target_name)
 			if target then
-				p = target:getpos()
+				p = target:get_pos()
 			end
 		end
 		if teleportee and p then
 			p = find_free_position_near(p)
-			teleportee:setpos(p)
+			teleportee:set_pos(p)
 			return true, "Teleporting " .. teleportee_name
 					.. " to " .. target_name
 					.. " at " .. core.pos_to_string(p)
@@ -664,7 +664,7 @@ core.register_chatcommand("spawnentity", {
 			return false, "Cannot spawn an unknown entity"
 		end
 		if p == "" then
-			p = player:getpos()
+			p = player:get_pos()
 		else
 			p = core.string_to_pos(p)
 			if p == nil then
