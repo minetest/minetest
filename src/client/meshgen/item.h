@@ -17,6 +17,7 @@ struct ItemPartColor
 	 * buffer.
 	 */
 	bool override_base = false;
+
 	/*!
 	 * The color of the buffer.
 	 */
@@ -33,10 +34,12 @@ struct ItemPartColor
 struct ItemMesh
 {
 	scene::IMesh *mesh = nullptr;
+
 	/*!
 	 * Stores the color of each mesh buffer.
 	 */
 	std::vector<ItemPartColor> buffer_colors;
+
 	/*!
 	 * If false, all faces of the item should have the same brightness.
 	 * Disables shading based on normal vectors.
