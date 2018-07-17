@@ -29,29 +29,32 @@ class Client;
 class ITextureSource;
 struct ContentFeatures;
 
-/*
-	Wield item scene node, renders the wield mesh of some item
-*/
+/*!
+ * Wield item scene node, renders the wield mesh of some item
+ */
 class WieldMeshSceneNode : public scene::ISceneNode
 {
 public:
 	WieldMeshSceneNode(scene::ISceneManager *mgr, s32 id = -1);
-	virtual ~WieldMeshSceneNode();
+	~WieldMeshSceneNode() override;
+	void render() override;
+
+	const aabb3f &getBoundingBox() const override { return m_bounding_box; }
 
 	void setItem(const ItemStack &item, Client *client);
 
-	// Sets the vertex color of the wield mesh.
-	// Must only be used if the constructor was called with lighting = false
+	/*!
+	 * Sets the vertex color of the wield mesh.
+	 * Must only be used if the constructor was called with lighting = false
+	 */
 	void setColor(video::SColor color);
 
 	scene::IMesh *getMesh() { return m_meshnode->getMesh(); }
 
-	virtual void render();
-
-	virtual const aabb3f &getBoundingBox() const { return m_bounding_box; }
-
 private:
-	// Child scene node with the current wield mesh
+	/*!
+	 * Child scene node with the current wield mesh
+	 */
 	scene::IMeshSceneNode *const m_meshnode;
 
 	/*!
@@ -59,14 +62,17 @@ private:
 	 * This does not include lighting.
 	 */
 	std::vector<ItemPartColor> m_colors;
+
 	/*!
 	 * The base color of this mesh. This is the default
 	 * for all mesh buffers.
 	 */
 	video::SColor m_base_color;
 
-	// Bounding box culling is disabled for this type of scene node,
-	// so this variable is just required so we can implement
-	// getBoundingBox() and is set to an empty box.
+	/*!
+	 * Bounding box culling is disabled for this type of scene node,
+	 * so this variable is just required so we can implement
+	 * getBoundingBox() and is set to an empty box.
+	 */
 	aabb3f m_bounding_box;
 };
