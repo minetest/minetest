@@ -98,10 +98,11 @@ bool ItemMeshGenerator::tryImage(
 	video::ITexture *overlay_texture = nullptr;
 	if (!overlay.empty())
 		overlay_texture = tsrc->getTexture(overlay);
+	IItemMeshSource *imsrc = client->getItemMeshSource();
 	if (extrude)
-		mesh = createExtrusionMesh(texture, overlay_texture);
+		mesh = imsrc->createExtrusionMesh(texture, overlay_texture);
 	else
-		mesh = createFlatMesh(texture, overlay_texture);
+		mesh = imsrc->createFlatMesh(texture, overlay_texture);
 	scaleMesh(mesh, v3f(2.0f));
 	colors.emplace_back();
 	colors.emplace_back(true, video::SColor(0xFFFFFFFF)); // overlay is not colored
