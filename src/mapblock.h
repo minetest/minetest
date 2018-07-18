@@ -521,9 +521,6 @@ public:
 #ifndef SERVER // Only on client
 	MapBlockMesh *mesh = nullptr;
 #endif
-	std::unordered_set<content_t> contents;
-	bool contents_cached = false;
-	bool do_not_cache_contents = false;
 
 	NodeMetadataList m_node_metadata;
 	NodeTimerList m_node_timers;
@@ -533,6 +530,14 @@ public:
 	static const u32 zstride = MAP_BLOCKSIZE * MAP_BLOCKSIZE;
 
 	static const u32 nodecount = MAP_BLOCKSIZE * MAP_BLOCKSIZE * MAP_BLOCKSIZE;
+
+	//// ABM optimizations ////
+	// cache of content types
+	std::unordered_set<content_t> contents;
+	// true if content types are cached
+	bool contents_cached = false;
+	// true if we never want to cache content types for this block
+	bool do_not_cache_contents = false;
 
 private:
 	/*
