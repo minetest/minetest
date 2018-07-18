@@ -211,11 +211,11 @@ local function formspec(tabview, name, tabdata)
 	if shaders_supported then
 		tab_string = tab_string ..
 			"checkbox[8.25,0;cb_shaders;" .. fgettext("Shaders") .. ";"
-					.. dump(core.settings:get_bool("enable_shaders")) .. "]"
+					.. tostring(core.settings:get_bool("enable_shaders")) .. "]"
 	else
 		tab_string = tab_string ..
 			"label[8.38,0.2;" .. core.colorize("#888888",
-					fgettext("Shaders")) .. "]"
+					fgettext("Shaders (unavailable)")) .. "]"
 	end
 
 	if PLATFORM == "Android" then
