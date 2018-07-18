@@ -33,7 +33,7 @@ function core.get_pointed_thing_position(pointed_thing, above)
 		-- The position where a node would be dug
 		return pointed_thing.under
 	elseif pointed_thing.type == "object" then
-		return pointed_thing.ref and pointed_thing.ref:getpos()
+		return pointed_thing.ref and pointed_thing.ref:get_pos()
 	end
 end
 
@@ -331,7 +331,7 @@ function core.item_place_node(itemstack, placer, pointed_thing, param2,
 	-- Calculate the direction for furnaces and chests and stuff
 	elseif (def.paramtype2 == "facedir" or
 			def.paramtype2 == "colorfacedir") and not param2 then
-		local placer_pos = placer and placer:getpos()
+		local placer_pos = placer and placer:get_pos()
 		if placer_pos then
 			local dir = {
 				x = above.x - placer_pos.x,
@@ -478,7 +478,7 @@ function core.do_item_eat(hp_change, replace_with_item, itemstack, user, pointed
 				if inv and inv:room_for_item("main", {name=replace_with_item}) then
 					inv:add_item("main", replace_with_item)
 				else
-					local pos = user:getpos()
+					local pos = user:get_pos()
 					pos.y = math.floor(pos.y + 0.5)
 					core.add_item(pos, replace_with_item)
 				end
