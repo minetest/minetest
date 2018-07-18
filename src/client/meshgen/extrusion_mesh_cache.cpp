@@ -119,8 +119,31 @@ scene::SMesh *ExtrusionMeshCache::createExtrusionMesh(
 scene::SMesh *ExtrusionMeshCache::createFlatMesh(
 	video::ITexture *texture, video::ITexture *overlay_texture)
 {
-	// FIXME: should be highly optimized
-	return createExtrusionMesh(texture, overlay_texture);
+	static const video::S3DVertex vertices[4] = {
+			video::S3DVertex(-0.5, -0.5, 0.0, 0, 0, -1,
+					video::SColor(255, 255, 255, 255), 0, 1),
+			video::S3DVertex(-0.5, 0.5, 0.0, 0, 0, -1,
+					video::SColor(255, 255, 255, 255), 0, 0),
+			video::S3DVertex(0.5, 0.5, 0.0, 0, 0, -1,
+					video::SColor(255, 255, 255, 255), 1, 0),
+			video::S3DVertex(0.5, -0.5, 0.0, 0, 0, -1,
+					video::SColor(255, 255, 255, 255), 1, 1),
+	};
+	static const u16 indices[6] = {0, 1, 2, 2, 3, 0};
+	scene::SMesh *mesh = new scene::SMesh();
+	scene::SMeshBuffer *buf = new scene::SMeshBuffer();
+	buf->append(vertices, 4, indices, 6);
+	buf->getMaterial().setTexture(0, texture);
+	mesh->addMeshBuffer(buf);
+	buf->drop();
+	if (overlay_texture) {
+		buf = new scene::SMeshBuffer();
+		buf->append(vertices, 4, indices, 6);
+		buf->getMaterial().setTexture(0, overlay_texture);
+		mesh->addMeshBuffer(buf);
+		buf->drop();
+	}
+	return mesh;
 }
 
 irr::scene::SMesh *ExtrusionMeshCache::create(irr::core::dimension2d<irr::u32> dim)
