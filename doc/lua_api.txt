@@ -1780,8 +1780,8 @@ Spaces and newlines can be inserted between the blocks, as is used in the
 examples.
 
 Position and size units are inventory slots, `X` and `Y` position the formspec
-element relative to the top left of the menu and `W` and `H` are its width and
-height size values.
+element relative to the top left of the menu or container. `W` and `H` are its
+width and height values.
 When displaying text which can contain formspec code, e.g. text set by a player,
 use `minetest.formspec_escape`.
 For coloured text you can use `minetest.colorize`.
