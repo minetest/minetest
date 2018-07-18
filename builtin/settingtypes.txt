@@ -1760,14 +1760,16 @@ mgfractal_np_cave2 (Cave2 noise) noise_params_3d 0, 12, (67, 67, 67), 10325, 3, 
 [*Mapgen Valleys]
 
 #    Map generation attributes specific to Mapgen Valleys.
-#    'altitude_chill' makes higher elevations colder, which may cause biome issues.
-#    'humid_rivers' modifies the humidity around rivers and in areas where water would tend to pool,
-#    it may interfere with delicately adjusted biomes.
-#    Flags that are not enabled are not modified from the default.
-#    Flags starting with 'no' are used to explicitly disable them.
-mgvalleys_spflags (Mapgen Valleys specific flags) flags altitude_chill,humid_rivers altitude_chill,noaltitude_chill,humid_rivers,nohumid_rivers
+#    'altitude_chill': Reduces heat with altitude.
+#    'humid_rivers': Increases humidity around rivers and where water pools.
+#    'vary_river_depth': If enabled, low humidity and high heat causes rivers
+#    to become shallower and occasionally dry.
+#    'altitude_dry': Reduces humidity with altitude.
+mgvalleys_spflags (Mapgen Valleys specific flags) flags altitude_chill,humid_rivers,vary_river_depth,altitude_dry altitude_chill,noaltitude_chill,humid_rivers,nohumid_rivers,vary_river_depth,novary_river_depth,altitude_dry,noaltitude_dry
 
-# The altitude at which temperature drops by 20.
+# The vertical distance over which heat drops by 20 if 'altitude_chill' is
+# enabled. Also the vertical distance over which humidity drops by 10 if
+# 'altitude_dry' is enabled.
 mgvalleys_altitude_chill (Altitude chill) int 90
 
 # Depth below which you'll find large caves.
