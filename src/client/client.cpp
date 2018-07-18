@@ -32,6 +32,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client/renderingengine.h"
 #include "client/sound.h"
 #include "client/tile.h"
+#include "client/meshgen/extrusion_mesh_cache.h"
 #include "util/auth.h"
 #include "util/directiontables.h"
 #include "util/pointedthing.h"
@@ -101,6 +102,7 @@ Client::Client(
 	m_game_ui(game_ui),
 	m_modchannel_mgr(new ModChannelMgr())
 {
+	m_imsrc.reset(new ExtrusionMeshCache());
 	// Add local player
 	m_env.setLocalPlayer(new LocalPlayer(this, playername));
 

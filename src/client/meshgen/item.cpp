@@ -176,6 +176,7 @@ void ItemMeshGenerator::createInventoryMesh()
 	static thread_local bool extrude_inv =
 			g_settings->getBool("inventory_items_animations");
 	// clang-format off
+	// TODO: add custom mesh support
 	tryImage(def->inventory_image, def->inventory_overlay, extrude_inv)
 	|| tryNode();
 	// clang-format on
@@ -198,7 +199,7 @@ void ItemMeshGenerator::createWieldMesh()
 	if (!mesh)
 		return;
 	postProcessMesh();
-	scaleMesh(mesh, v3f(2.0f * BS));
+	scaleMesh(mesh, 2.0f * BS * def->wield_scale);
 }
 
 void ItemMeshGenerator::postProcessMesh()

@@ -34,9 +34,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <map>
 #include <IMeshManipulator.h>
 
-#define WIELD_SCALE_FACTOR 30.0
-#define WIELD_SCALE_FACTOR_EXTRUDED 40.0
-
 WieldMeshSceneNode::WieldMeshSceneNode(scene::ISceneManager *mgr, s32 id):
 	scene::ISceneNode(mgr->getRootSceneNode(), mgr, id),
 	m_meshnode(SceneManager->addMeshSceneNode(nullptr, this, -1, {}, {}, {1.f,1.f,1.f}, true))
