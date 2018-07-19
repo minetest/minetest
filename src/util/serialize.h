@@ -188,6 +188,20 @@ inline f32 readF1000(const u8 *data)
 	return (f32)readS32(data) / FIXEDPOINT_FACTOR;
 }
 
+inline f32 readF32(const u8 *data)
+{
+	const u32 v = readU32(data);
+	u32 fraction_i = v & 0xFFFFFF;
+	u32 exponent_i = v >> 24;
+	// Correct negative number notation
+	if (v & 0x00800000)
+		fraction_i |= 0xFF000000;
+
+	float fraction = (s32)fraction_i / (float)0x800000;
+
+	return ldexp(fraction, (int)exponent_i - 127);
+}
+
 inline video::SColor readARGB8(const u8 *data)
 {
 	video::SColor p(readU32(data));
@@ -245,6 +259,23 @@ inline v3f readV3F1000(const u8 *data)
 	return p;
 }
 
+inline v2f readV2F32(const u8 *data)
+{
+	v2f p;
+	p.X = readF32(&data[0]);
+	p.Y = readF32(&data[4]);
+	return p;
+}
+
+inline v3f readV3F32(const u8 *data)
+{
+	v3f p;
+	p.X = readF32(&data[0]);
+	p.Y = readF32(&data[4]);
+	p.Z = readF32(&data[8]);
+	return p;
+}
+
 /////////////// write routines ////////////////
 
 inline void writeU8(u8 *data, u8 i)
@@ -276,6 +307,18 @@ inline void writeF1000(u8 *data, f32 i)
 {
 	assert(i >= F1000_MIN && i <= F1000_MAX);
 	writeS32(data, i * FIXEDPOINT_FACTOR);
+}
+
+inline void writeF32(u8 *data, f32 i)
+{
+	float fraction;
+	int exponent;
+	fraction = frexp(i, &exponent) * 0x800000;
+
+	// [x...x...][x...x...x...x...x...x...]
+	//  EXPONENT      MANTISSA (24 bits)
+	u32 dat = (u32)(exponent + 127) << 24 | ((u32)fraction & 0xFFFFFF);
+	writeU32(data, dat);
 }
 
 inline void writeARGB8(u8 *data, video::SColor p)
@@ -322,6 +365,20 @@ inline void writeV3F1000(u8 *data, v3f p)
 	writeF1000(&data[8], p.Z);
 }
 
+inline void writeV2F32(u8 *data, v2f p)
+{
+	writeF32(&data[0], p.X);
+	writeF32(&data[4], p.Y);
+}
+
+inline void writeV3F32(u8 *data, v3f p)
+{
+	writeF32(&data[0], p.X);
+	writeF32(&data[4], p.Y);
+	writeF32(&data[8], p.Z);
+}
+
+
 ////
 //// Iostream wrapper for data read/write
 ////
@@ -350,11 +407,14 @@ MAKE_STREAM_READ_FXN(s8,    S8,       1);
 MAKE_STREAM_READ_FXN(s16,   S16,      2);
 MAKE_STREAM_READ_FXN(s32,   S32,      4);
 MAKE_STREAM_READ_FXN(s64,   S64,      8);
+MAKE_STREAM_READ_FXN(f32,   F32,      4);
 MAKE_STREAM_READ_FXN(f32,   F1000,    4);
 MAKE_STREAM_READ_FXN(v2s16, V2S16,    4);
 MAKE_STREAM_READ_FXN(v3s16, V3S16,    6);
 MAKE_STREAM_READ_FXN(v2s32, V2S32,    8);
 MAKE_STREAM_READ_FXN(v3s32, V3S32,   12);
+MAKE_STREAM_READ_FXN(v2f,   V2F32,    8);
+MAKE_STREAM_READ_FXN(v3f,   V3F32,   12);
 MAKE_STREAM_READ_FXN(v2f,   V2F1000,  8);
 MAKE_STREAM_READ_FXN(v3f,   V3F1000, 12);
 MAKE_STREAM_READ_FXN(video::SColor, ARGB8, 4);
@@ -367,11 +427,14 @@ MAKE_STREAM_WRITE_FXN(s8,    S8,       1);
 MAKE_STREAM_WRITE_FXN(s16,   S16,      2);
 MAKE_STREAM_WRITE_FXN(s32,   S32,      4);
 MAKE_STREAM_WRITE_FXN(s64,   S64,      8);
+MAKE_STREAM_WRITE_FXN(f32,   F32,      4);
 MAKE_STREAM_WRITE_FXN(f32,   F1000,    4);
 MAKE_STREAM_WRITE_FXN(v2s16, V2S16,    4);
 MAKE_STREAM_WRITE_FXN(v3s16, V3S16,    6);
 MAKE_STREAM_WRITE_FXN(v2s32, V2S32,    8);
 MAKE_STREAM_WRITE_FXN(v3s32, V3S32,   12);
+MAKE_STREAM_WRITE_FXN(v2f,   V2F32,    8);
+MAKE_STREAM_WRITE_FXN(v3f,   V3F32,   12);
 MAKE_STREAM_WRITE_FXN(v2f,   V2F1000,  8);
 MAKE_STREAM_WRITE_FXN(v3f,   V3F1000, 12);
 MAKE_STREAM_WRITE_FXN(video::SColor, ARGB8, 4);
@@ -463,11 +526,14 @@ public:
 	MAKE_BUFREADER_GETNOEX_FXN(s16,   S16,      2);
 	MAKE_BUFREADER_GETNOEX_FXN(s32,   S32,      4);
 	MAKE_BUFREADER_GETNOEX_FXN(s64,   S64,      8);
+	MAKE_BUFREADER_GETNOEX_FXN(f32,   F32,      4);
 	MAKE_BUFREADER_GETNOEX_FXN(f32,   F1000,    4);
 	MAKE_BUFREADER_GETNOEX_FXN(v2s16, V2S16,    4);
 	MAKE_BUFREADER_GETNOEX_FXN(v3s16, V3S16,    6);
 	MAKE_BUFREADER_GETNOEX_FXN(v2s32, V2S32,    8);
 	MAKE_BUFREADER_GETNOEX_FXN(v3s32, V3S32,   12);
+	MAKE_BUFREADER_GETNOEX_FXN(v2f,   V2F32,    8);
+	MAKE_BUFREADER_GETNOEX_FXN(v3f,   V3F32,   12);
 	MAKE_BUFREADER_GETNOEX_FXN(v2f,   V2F1000,  8);
 	MAKE_BUFREADER_GETNOEX_FXN(v3f,   V3F1000, 12);
 	MAKE_BUFREADER_GETNOEX_FXN(video::SColor, ARGB8, 4);
@@ -485,11 +551,14 @@ public:
 	MAKE_BUFREADER_GET_FXN(s16,           S16);
 	MAKE_BUFREADER_GET_FXN(s32,           S32);
 	MAKE_BUFREADER_GET_FXN(s64,           S64);
+	MAKE_BUFREADER_GET_FXN(f32,           F32);
 	MAKE_BUFREADER_GET_FXN(f32,           F1000);
 	MAKE_BUFREADER_GET_FXN(v2s16,         V2S16);
 	MAKE_BUFREADER_GET_FXN(v3s16,         V3S16);
 	MAKE_BUFREADER_GET_FXN(v2s32,         V2S32);
 	MAKE_BUFREADER_GET_FXN(v3s32,         V3S32);
+	MAKE_BUFREADER_GET_FXN(v2f,           V2F32);
+	MAKE_BUFREADER_GET_FXN(v3f,           V3F32);
 	MAKE_BUFREADER_GET_FXN(v2f,           V2F1000);
 	MAKE_BUFREADER_GET_FXN(v3f,           V3F1000);
 	MAKE_BUFREADER_GET_FXN(video::SColor, ARGB8);
