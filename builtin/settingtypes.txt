@@ -1130,17 +1130,17 @@ block_send_optimize_distance (Block send optimize distance) int 4 2
 server_side_occlusion_culling (Server side occlusion culling) bool true
 
 #    Restricts the access of certain client-side functions on servers
-#    Combine these byteflags below to restrict more client-side features:
+#    Combine these byteflags below to restrict client-side features:
 #    LOAD_CLIENT_MODS: 1 (disable client mods loading)
 #    CHAT_MESSAGES: 2 (disable send_chat_message call client-side)
 #    READ_ITEMDEFS: 4 (disable get_item_def call client-side)
 #    READ_NODEDEFS: 8 (disable get_node_def call client-side)
 #    LOOKUP_NODES_LIMIT: 16 (limits get_node call client-side to csm_restriction_noderange)
-csm_restriction_flags (Client side modding restrictions) int 18
+csm_restriction_flags (Client side modding restrictions) int 30
 
 #   If the CSM restriction for node range is enabled, get_node calls are limited
 #   to this distance from the player to the node.
-csm_restriction_noderange (Client side node lookup range restriction) int 8
+csm_restriction_noderange (Client side node lookup range restriction) int 0
 
 [*Security]
 
