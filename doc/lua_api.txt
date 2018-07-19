@@ -1779,6 +1779,13 @@ supported. It is a string, with a somewhat strange format.
 Spaces and newlines can be inserted between the blocks, as is used in the
 examples.
 
+Position and size units are inventory slots, `X` and `Y` position the formspec
+element relative to the top left of the menu or container. `W` and `H` are its
+width and height values.
+When displaying text which can contain formspec code, e.g. text set by a player,
+use `minetest.formspec_escape`.
+For coloured text you can use `minetest.colorize`.
+
 WARNING: Minetest allows you to add elements to every single formspec instance
 using player:set_formspec_prepend(), which may be the reason backgrounds are
 appearing when you don't expect them to. See `no_prepend[]`
@@ -1892,11 +1899,9 @@ Elements
 
 ### `image[<X>,<Y>;<W>,<H>;<texture name>]`
 * Show an image
-* Position and size units are inventory slots
 
 ### `item_image[<X>,<Y>;<W>,<H>;<item name>]`
 * Show an inventory image of registered item/node
-* Position and size units are inventory slots
 
 ### `bgcolor[<color>;<fullscreen>]`
 * Sets background color of formspec as `ColorString`
@@ -1905,26 +1910,21 @@ Elements
 
 ### `background[<X>,<Y>;<W>,<H>;<texture name>]`
 * Use a background. Inventory rectangles are not drawn then.
-* Position and size units are inventory slots
 * Example for formspec 8x4 in 16x resolution: image shall be sized
   8 times 16px  times  4 times 16px.
 
 ### `background[<X>,<Y>;<W>,<H>;<texture name>;<auto_clip>]`
 * Use a background. Inventory rectangles are not drawn then.
-* Position and size units are inventory slots
 * Example for formspec 8x4 in 16x resolution:
   image shall be sized 8 times 16px  times  4 times 16px
-* If `true` the background is clipped to formspec size
+* If `auto_clip` is `true`, the background is clipped to the formspec size
   (`x` and `y` are used as offset values, `w` and `h` are ignored)
 
 ### `pwdfield[<X>,<Y>;<W>,<H>;<name>;<label>]`
 * Textual password style field; will be sent to server when a button is clicked
 * When enter is pressed in field, fields.key_enter_field will be sent with the
   name of this field.
-* `x` and `y` position the field relative to the top left of the menu
-* `w` and `h` are the size of the field
-* Fields are a set height, but will be vertically centred on `h`
-* Position and size units are inventory slots
+* Fields are a set height, but will be vertically centred on `H`
 * `name` is the name of the field as returned in fields to `on_receive_fields`
 * `label`, if not blank, will be text printed on the top left above the field
 * See field_close_on_enter to stop enter closing the formspec
@@ -1933,10 +1933,7 @@ Elements
 * Textual field; will be sent to server when a button is clicked
 * When enter is pressed in field, `fields.key_enter_field` will be sent with
   the name of this field.
-* `x` and `y` position the field relative to the top left of the menu
-* `w` and `h` are the size of the field
-* Fields are a set height, but will be vertically centred on `h`
-* Position and size units are inventory slots
+* Fields are a set height, but will be vertically centred on `H`
 * `name` is the name of the field as returned in fields to `on_receive_fields`
 * `label`, if not blank, will be text printed on the top left above the field
 * `default` is the default value of the field
@@ -1962,48 +1959,39 @@ Elements
 
 ### `textarea[<X>,<Y>;<W>,<H>;<name>;<label>;<default>]`
 * Same as fields above, but with multi-line input
-* if the text overflows a vertical scrollbar is added
-* if the name is empty the textarea is readonly, the label is not displayed.
+* If the text overflows, a vertical scrollbar is added.
+* If the name is empty, the textarea is read-only and
+  the background is not shown, which corresponds to a multi-line label.
 
 ### `label[<X>,<Y>;<label>]`
-* `x` and `y` work as per field
-* `label` is the text on the label
-* Position and size units are inventory slots
+* The label formspec element displays the text set in `label`
+  at the specified position.
+* The text is displayed directly without automatic line breaking,
+  so label should not be used for big text chunks.
 
 ### `vertlabel[<X>,<Y>;<label>]`
 * Textual label drawn vertically
-* `x` and `y` work as per field
 * `label` is the text on the label
-* Position and size units are inventory slots
 
 ### `button[<X>,<Y>;<W>,<H>;<name>;<label>]`
 * Clickable button. When clicked, fields will be sent.
-* `x`, `y` and `name` work as per field
-* `w` and `h` are the size of the button
-* Fixed button height. It will be vertically centred on `h`
+* Fixed button height. It will be vertically centred on `H`
 * `label` is the text on the button
-* Position and size units are inventory slots
 
 ### `image_button[<X>,<Y>;<W>,<H>;<texture name>;<name>;<label>]`
-* `x`, `y`, `w`, `h`, and `name` work as per button
 * `texture name` is the filename of an image
-* Position and size units are inventory slots
 
 ### `image_button[<X>,<Y>;<W>,<H>;<texture name>;<name>;<label>;<noclip>;<drawborder>;<pressed texture name>]`
-* `x`, `y`, `w`, `h`, and `name` work as per button
 * `texture name` is the filename of an image
-* Position and size units are inventory slots
 * `noclip=true` means the image button doesn't need to be within specified
   formsize.
 * `drawborder`: draw button border or not
 * `pressed texture name` is the filename of an image on pressed state
 
 ### `item_image_button[<X>,<Y>;<W>,<H>;<item name>;<name>;<label>]`
-* `x`, `y`, `w`, `h`, `name` and `label` work as per button
 * `item name` is the registered name of an item/node,
   tooltip will be made out of its description
   to override it use tooltip element
-* Position and size units are inventory slots
 
 ### `button_exit[<X>,<Y>;<W>,<H>;<name>;<label>]`
 * When clicked, fields will be sent and the form will quit.
@@ -2013,8 +2001,6 @@ Elements
 
 ### `textlist[<X>,<Y>;<W>,<H>;<name>;<listelem 1>,<listelem 2>,...,<listelem n>]`
 * Scrollable item list showing arbitrary text elements
-* `x` and `y` position the itemlist relative to the top left of the menu
-* `w` and `h` are the size of the itemlist
 * `name` fieldname sent to server on doubleclick value is current selected
   element.
 * `listelements` can be prepended by #color in hexadecimal format RRGGBB
@@ -2023,8 +2009,6 @@ Elements
 
 ### `textlist[<X>,<Y>;<W>,<H>;<name>;<listelem 1>,<listelem 2>,...,<listelem n>;<selected idx>;<transparent>]`
 * Scrollable itemlist showing arbitrary text elements
-* `x` and `y` position the item list relative to the top left of the menu
-* `w` and `h` are the size of the item list
 * `name` fieldname sent to server on doubleclick value is current selected
   element.
 * `listelements` can be prepended by #RRGGBB (only) in hexadecimal format
@@ -2036,7 +2020,6 @@ Elements
 
 ### `tabheader[<X>,<Y>;<name>;<caption 1>,<caption 2>,...,<caption n>;<current_tab>;<transparent>;<draw_border>]`
 * Show a tab**header** at specific position (ignores formsize)
-* `x` and `y` position the itemlist relative to the top left of the menu
 * `name` fieldname data is transferred to Lua
 * `caption 1`...: name shown on top of tab
 * `current_tab`: index of selected tab 1...
@@ -2045,8 +2028,6 @@ Elements
 
 ### `box[<X>,<Y>;<W>,<H>;<color>]`
 * Simple colored box
-* `x` and `y` position the box relative to the top left of the menu
-* `w` and `h` are the size of box
 * `color` is color specified as a `ColorString`.
   If the alpha component is left blank, the box will be semitransparent.
 
@@ -2063,7 +2044,6 @@ Elements
 
 ### `checkbox[<X>,<Y>;<name>;<label>;<selected>]`
 * Show a checkbox
-* `x` and `y`: position of checkbox
 * `name` fieldname data is transferred to Lua
 * `label` to be shown left of checkbox
 * `selected` (optional): `true`/`false`
@@ -2073,8 +2053,6 @@ Elements
 * There are two ways to use it:
     1. handle the changed event (only changed scrollbar is available)
     2. read the value on pressing a button (all scrollbars are available)
-* `x` and `y`: position of trackbar
-* `w` and `h`: width and height
 * `orientation`:  `vertical`/`horizontal`
 * Fieldname data is transferred to Lua
 * Value this trackbar is set to (`0`-`1000`)
@@ -2084,8 +2062,6 @@ Elements
 ### `table[<X>,<Y>;<W>,<H>;<name>;<cell 1>,<cell 2>,...,<cell n>;<selected idx>]`
 * Show scrollable table using options defined by the previous `tableoptions[]`
 * Displays cells as defined by the previous `tablecolumns[]`
-* `x` and `y`: position the itemlist relative to the top left of the menu
-* `w` and `h` are the size of the itemlist
 * `name`: fieldname sent to server on row select or doubleclick
 * `cell 1`...`cell n`: cell contents given in row-major order
 * `selected idx`: index of row to be selected within table (first row = `1`)

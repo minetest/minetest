@@ -424,7 +424,9 @@ enable_particles (Digging particles) bool true
 
 [**Filtering]
 
-#    Use mip mapping to scale textures. May slightly increase performance.
+#    Use mip mapping to scale textures. May slightly increase performance,
+#    especially when using a high resolution texture pack.
+#    Gamma correct downscaling is not supported.
 mip_map (Mipmapping) bool false
 
 #    Use anisotropic filtering when viewing at textures from an angle.
