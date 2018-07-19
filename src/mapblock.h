@@ -532,11 +532,11 @@ public:
 	static const u32 nodecount = MAP_BLOCKSIZE * MAP_BLOCKSIZE * MAP_BLOCKSIZE;
 
 	//// ABM optimizations ////
-	// cache of content types
+	// Cache of content types
 	std::unordered_set<content_t> contents;
-	// true if content types are cached
+	// True if content types are cached
 	bool contents_cached = false;
-	// true if we never want to cache content types for this block
+	// True if we never want to cache content types for this block
 	bool do_not_cache_contents = false;
 
 private:

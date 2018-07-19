@@ -805,9 +805,9 @@ public:
 		if(m_aabms.empty() || block->isDummy())
 			return;
 
-		// check the content type cache first
+		// Check the content type cache first
 		// to see whether there are any ABMs
-		// to be run at all for this block
+		// to be run at all for this block.
 		if (block->contents_cached) {
 			blocks_cached++;
 			bool run_abms = false;
@@ -820,7 +820,7 @@ public:
 			if (!run_abms)
 				return;
 		} else {
-			// clear any caching
+			// Clear any caching
 			block->contents.clear();
 		}
 		blocks_scanned++;
@@ -838,11 +838,11 @@ public:
 		{
 			const MapNode &n = block->getNodeUnsafe(p0);
 			content_t c = n.getContent();
-			// cache content types as we go
+			// Cache content types as we go
 			if (!block->contents_cached && !block->do_not_cache_contents) {
 				block->contents.insert(c);
 				if (block->contents.size() > 64) {
-					// too many different nodes... don't try to cache
+					// Too many different nodes... don't try to cache
 					block->do_not_cache_contents = true;
 					block->contents.clear();
 				}
