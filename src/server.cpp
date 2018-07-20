@@ -873,14 +873,14 @@ void Server::AsyncRunStep(bool initial_step)
 			case MEET_ADDNODE:
 			case MEET_SWAPNODE:
 				prof.add("MEET_ADDNODE", 1);
-				sendAddNode(event->p, event->n, event->already_known_by_peer,
-						&far_players, disable_single_change_sending ? 5 : 30,
+				sendAddNode(event->p, event->n, &far_players,
+						disable_single_change_sending ? 5 : 30,
 						event->type == MEET_ADDNODE);
 				break;
 			case MEET_REMOVENODE:
 				prof.add("MEET_REMOVENODE", 1);
-				sendRemoveNode(event->p, event->already_known_by_peer,
-						&far_players, disable_single_change_sending ? 5 : 30);
+				sendRemoveNode(event->p, &far_players,
+						disable_single_change_sending ? 5 : 30);
 				break;
 			case MEET_BLOCK_NODE_METADATA_CHANGED:
 				infostream << "Server: MEET_BLOCK_NODE_METADATA_CHANGED" << std::endl;
@@ -2078,8 +2078,8 @@ void Server::fadeSound(s32 handle, float step, float gain)
 	}
 }
 
-void Server::sendRemoveNode(v3s16 p, u16 ignore_id,
-		std::unordered_set<u16> *far_players, float far_d_nodes)
+void Server::sendRemoveNode(v3s16 p, std::unordered_set<u16> *far_players,
+		float far_d_nodes)
 {
 	float maxd = far_d_nodes * BS;
 	v3f p_f = intToFloat(p, BS);
@@ -2116,9 +2116,8 @@ void Server::sendRemoveNode(v3s16 p, u16 ignore_id,
 	m_clients.unlock();
 }
 
-void Server::sendAddNode(v3s16 p, MapNode n, u16 ignore_id,
-		std::unordered_set<u16> *far_players, float far_d_nodes,
-		bool remove_metadata)
+void Server::sendAddNode(v3s16 p, MapNode n, std::unordered_set<u16> *far_players,
+		float far_d_nodes, bool remove_metadata)
 {
 	float maxd = far_d_nodes * BS;
 	v3f p_f = intToFloat(p, BS);
