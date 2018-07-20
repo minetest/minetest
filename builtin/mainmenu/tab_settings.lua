@@ -207,12 +207,14 @@ local function formspec(tabview, name, tabdata)
 
 	local video_driver = core.settings:get("video_driver")
 	local shaders_supported = video_driver == "opengl"
-	local shaders_enabled = shaders_supported and core.settings:get_bool("enable_shaders")
+	local shaders_enabled = false
 	if shaders_supported then
+		shaders_enabled = core.settings:get_bool("enable_shaders")
 		tab_string = tab_string ..
 			"checkbox[8.25,0;cb_shaders;" .. fgettext("Shaders") .. ";"
 					.. tostring(core.settings:get_bool("enable_shaders")) .. "]"
 	else
+		core.settings:set_bool("enable_shaders", false)
 		tab_string = tab_string ..
 			"label[8.38,0.2;" .. core.colorize("#888888",
 					fgettext("Shaders (unavailable)")) .. "]"
