@@ -63,6 +63,7 @@ struct ItemDefinition
 	std::string inventory_overlay; // Overlay of inventory_image.
 	std::string wield_image; // If empty, inventory_image or mesh (only nodes) is used
 	std::string wield_overlay; // Overlay of wield_image.
+	std::string wield_animation; // Named wield animation
 	std::string palette_image; // If specified, the item will be colorized based on this
 	video::SColor color; // The fallback color of the node.
 	v3f wield_scale;

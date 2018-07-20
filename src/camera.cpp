@@ -127,8 +127,12 @@ void Camera::step(f32 dtime)
 	bool was_under_zero = m_wield_change_timer < 0;
 	m_wield_change_timer = MYMIN(m_wield_change_timer + dtime, 0.125);
 
-	if (m_wield_change_timer >= 0 && was_under_zero)
+	if (m_wield_change_timer >= 0 && was_under_zero) {
 		m_wieldnode->setItem(m_wield_item_next, m_client);
+		m_wield_animation = m_wield_item_next
+				.getDefinition(m_client->getItemDefManager())
+				.wield_animation;
+	}
 
 	if (m_view_bobbing_state != 0)
 	{
@@ -520,7 +524,9 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 busytime, f32 tool_r
 		.normalizeDurations()
 		;
 
-	std::string which_anim = "mine";
+	std::string which_anim = m_wield_animation;
+	if (positionsplines.find(which_anim) == positionsplines.end())
+		which_anim = "mine";
 
 	// Position the wielded item
 	//v3f wield_position = v3f(45, -35, 65);

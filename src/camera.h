@@ -215,6 +215,7 @@ private:
 	// If 0, left-click digging animation
 	// If 1, right-click digging animation
 	s32 m_digging_button = -1;
+	std::string m_wield_animation = "";
 
 	// Animation when changing wielded item
 	f32 m_wield_change_timer = 0.125f;
