@@ -212,7 +212,7 @@ local function formspec(tabview, name, tabdata)
 		shaders_enabled = core.settings:get_bool("enable_shaders")
 		tab_string = tab_string ..
 			"checkbox[8.25,0;cb_shaders;" .. fgettext("Shaders") .. ";"
-					.. tostring(core.settings:get_bool("enable_shaders")) .. "]"
+					.. tostring(shaders_enabled) .. "]"
 	else
 		core.settings:set_bool("enable_shaders", false)
 		tab_string = tab_string ..
