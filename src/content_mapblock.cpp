@@ -287,7 +287,7 @@ void MapblockMeshGenerator::setFullLight()
 	// and light works for disabled smooth lighting, so setting both makes it
 	// work with and without smooth lighting
 	for (int k = 0; k < 8; ++k) {
-		frame.lightsB[k] = 255;
+		frame.lightsNight[k] = 255;
 	}
 	light = LightPair(0xff00);
 }

@@ -2214,18 +2214,17 @@ void Game::toggleMinimap(bool shift_pressed)
 void Game::toggleFullbright()
 {
 	bool fullbright = !g_settings->getBool("fullbright_mode");
-	g_settings->set("fullbright_mode", bool_to_cstr(fullbright));
+	g_settings->setBool("fullbright_mode", fullbright);
 
-	runData.statustext_time = 0;
 	if (fullbright) {
 		if (client->checkPrivilege("fullbright")) {
-			showStatusTextSimple("Fullbright mode enabled");
+			m_game_ui->showTranslatedStatusText("Fullbright mode enabled");
 		} else {
-			showStatusTextSimple("Fullbright mode enabled "
+			m_game_ui->showTranslatedStatusText("Fullbright mode enabled "
 				"(note: no 'fullbright' privilege)");
 		}
 	} else {
-		showStatusTextSimple("Fullbright mode disabled");
+		m_game_ui->showTranslatedStatusText("Fullbright mode disabled");
 	}
 }
 
