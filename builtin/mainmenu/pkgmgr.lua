@@ -300,18 +300,6 @@ function pkgmgr.render_packagelist(render_list)
 end
 
 --------------------------------------------------------------------------------
-function pkgmgr.get_modpack_description(modfolder)
-	assert(modfolder, "missing modpack folder")
-	local descf = io.open(modfolder .. DIR_DELIM .. "description.txt", "r")
-	if not descf then
-		return ""
-	end
-	local content = descf:read("*all")
-	descf:close()
-	return content
-end
-
---------------------------------------------------------------------------------
 function pkgmgr.get_dependencies(path)
 	if path == nil then
 		return "", ""

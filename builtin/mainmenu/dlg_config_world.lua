@@ -35,7 +35,7 @@ local function get_formspec(data)
 
 	if mod.is_modpack then
 		local info = minetest.formspec_escape(
-			pkgmgr.get_modpack_description(mod.path))
+			core.get_content_info(mod.path).description)
 		if info == "" then
 			info = fgettext("No modpack description provided.")
 		end
