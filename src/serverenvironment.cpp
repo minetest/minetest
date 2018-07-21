@@ -800,10 +800,30 @@ public:
 		return active_object_count;
 
 	}
-	void apply(MapBlock *block)
+	void apply(MapBlock *block, int &blocks_scanned, int &abms_run, int &blocks_cached)
 	{
 		if(m_aabms.empty() || block->isDummy())
 			return;
+
+		// Check the content type cache first
+		// to see whether there are any ABMs
+		// to be run at all for this block.
+		if (block->contents_cached) {
+			blocks_cached++;
+			bool run_abms = false;
+			for (content_t c : block->contents) {
+				if (c < m_aabms.size() && m_aabms[c]) {
+					run_abms = true;
+					break;
+				}
+			}
+			if (!run_abms)
+				return;
+		} else {
+			// Clear any caching
+			block->contents.clear();
+		}
+		blocks_scanned++;
 
 		ServerMap *map = &m_env->getServerMap();
 
@@ -818,6 +838,15 @@ public:
 		{
 			const MapNode &n = block->getNodeUnsafe(p0);
 			content_t c = n.getContent();
+			// Cache content types as we go
+			if (!block->contents_cached && !block->do_not_cache_contents) {
+				block->contents.insert(c);
+				if (block->contents.size() > 64) {
+					// Too many different nodes... don't try to cache
+					block->do_not_cache_contents = true;
+					block->contents.clear();
+				}
+			}
 
 			if (c >= m_aabms.size() || !m_aabms[c])
 				continue;
@@ -855,6 +884,7 @@ public:
 				}
 				neighbor_found:
 
+				abms_run++;
 				// Call all the trigger variations
 				aabm.abm->trigger(m_env, p, n);
 				aabm.abm->trigger(m_env, p, n,
@@ -867,6 +897,7 @@ public:
 				}
 			}
 		}
+		block->contents_cached = !block->do_not_cache_contents;
 	}
 };
 
@@ -1302,6 +1333,9 @@ void ServerEnvironment::step(float dtime)
 			// Initialize handling of ActiveBlockModifiers
 			ABMHandler abmhandler(m_abms, m_cache_abm_interval, this, true);
 
+			int blocks_scanned = 0;
+			int abms_run = 0;
+			int blocks_cached = 0;
 			for (const v3s16 &p : m_active_blocks.m_abm_list) {
 				MapBlock *block = m_map->getBlockNoCreateNoEx(p);
 				if (!block)
@@ -1311,8 +1345,12 @@ void ServerEnvironment::step(float dtime)
 				block->setTimestampNoChangedFlag(m_game_time);
 
 				/* Handle ActiveBlockModifiers */
-				abmhandler.apply(block);
+				abmhandler.apply(block, blocks_scanned, abms_run, blocks_cached);
 			}
+			g_profiler->avg("SEnv: active blocks", m_active_blocks.m_abm_list.size());
+			g_profiler->avg("SEnv: active blocks cached", blocks_cached);
+			g_profiler->avg("SEnv: active blocks scanned for ABMs", blocks_scanned);
+			g_profiler->avg("SEnv: ABMs run", abms_run);
 
 			u32 time_ms = timer.stop(true);
 			u32 max_time_ms = 200;
