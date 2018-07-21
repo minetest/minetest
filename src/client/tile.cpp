@@ -19,6 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "tile.h"
 
+#include <algorithm>
 #include <ICameraSceneNode.h>
 #include "util/string.h"
 #include "util/container.h"
@@ -361,12 +362,6 @@ public:
 	// Rebuild images and textures from the current set of source images
 	// Shall be called from the main thread.
 	void rebuildImagesAndTextures();
-
-	// Render a mesh to a texture.
-	// Returns NULL if render-to-texture failed.
-	// Shall be called from the main thread.
-	video::ITexture* generateTextureFromMesh(
-			const TextureFromMeshParams &params);
 
 	video::ITexture* getNormalTexture(const std::string &name);
 	video::SColor getTextureAverageColor(const std::string &name);
@@ -775,205 +770,82 @@ void TextureSource::rebuildImagesAndTextures()
 	}
 }
 
-video::ITexture* TextureSource::generateTextureFromMesh(
-		const TextureFromMeshParams &params)
+static video::IImage *createInventoryCubeImage(
+	video::IImage *top, video::IImage *left, video::IImage *right)
 {
+	core::dimension2du size_top = top->getDimension();
+	core::dimension2du size_left = left->getDimension();
+	core::dimension2du size_right = right->getDimension();
+
+	// Calculate image size to match textures size, but make sure it is
+	// 64px at least as it would look bad otherwise.
+	u32 size = npot2(std::max({64u,
+		size_top.Width, size_top.Height,
+		size_left.Width, size_left.Height,
+		size_right.Width, size_right.Height,
+	}));
+
 	video::IVideoDriver *driver = RenderingEngine::get_video_driver();
-	sanity_check(driver);
+	video::IImage *result = driver->createImage(video::ECF_A8R8G8B8, {size, size});
+	result->fill(video::SColor(0x00000000u));
 
-#ifdef __ANDROID__
-	const GLubyte* renderstr = glGetString(GL_RENDERER);
-	std::string renderer((char*) renderstr);
+	// Offset of the view space origin (from the top image edge),
+	// where the upper near cube vertex is. Full image is 2 units.
+	static constexpr float base_y = 0.9f;
 
-	// use no render to texture hack
-	if (
-		(renderer.find("Adreno") != std::string::npos) ||
-		(renderer.find("Mali") != std::string::npos) ||
-		(renderer.find("Immersion") != std::string::npos) ||
-		(renderer.find("Tegra") != std::string::npos) ||
-		g_settings->getBool("inventory_image_hack")
-		) {
-		// Get a scene manager
-		scene::ISceneManager *smgr_main = RenderingEngine::get_raw_device()->getSceneManager();
-		sanity_check(smgr_main);
-		scene::ISceneManager *smgr = smgr_main->createNewSceneManager();
-		sanity_check(smgr);
+	// Cube dimensions. The image is 2x2 in this (view) space.
+	static constexpr float diag_x = 0.8f;
+	static constexpr float diag_y = 0.4f;
+	static constexpr float vert_y = 1.2f;
 
-		const float scaling = 0.2;
+	static constexpr float coef_x = 0.5f / diag_x;
+	static constexpr float coef_y = -0.5f / diag_y;
+	static constexpr float coef_z = -1 / vert_y;
 
-		scene::IMeshSceneNode* meshnode =
-				smgr->addMeshSceneNode(params.mesh, NULL,
-						-1, v3f(0,0,0), v3f(0,0,0),
-						v3f(1.0 * scaling,1.0 * scaling,1.0 * scaling), true);
-		meshnode->setMaterialFlag(video::EMF_LIGHTING, true);
-		meshnode->setMaterialFlag(video::EMF_ANTI_ALIASING, true);
-		meshnode->setMaterialFlag(video::EMF_TRILINEAR_FILTER, m_setting_trilinear_filter);
-		meshnode->setMaterialFlag(video::EMF_BILINEAR_FILTER, m_setting_bilinear_filter);
-		meshnode->setMaterialFlag(video::EMF_ANISOTROPIC_FILTER, m_setting_anisotropic_filter);
+	float scale = 2.f / size;
+	video::SColor *pixel = reinterpret_cast<video::SColor *>(result->lock());
 
-		scene::ICameraSceneNode* camera = smgr->addCameraSceneNode(0,
-				params.camera_position, params.camera_lookat);
-		// second parameter of setProjectionMatrix (isOrthogonal) is ignored
-		camera->setProjectionMatrix(params.camera_projection_matrix, false);
+	// Make sure there is no row padding
+	sanity_check(result->getPitch() == 4 * size);
 
-		smgr->setAmbientLight(params.ambient_light);
-		smgr->addLightSceneNode(0,
-				params.light_position,
-				params.light_color,
-				params.light_radius*scaling);
+	for (int j = 0; j < size; j++) {
+		for (int i = 0; i < size; i++) {
+			// View space coordinates
+			float x = scale * (i + 0.5f) - 1.f;
+			float y = scale * (j + 0.5f) - base_y;
 
-		core::dimension2d<u32> screen = driver->getScreenSize();
+			float u = coef_y * y + coef_x * x;
+			float v = coef_y * y - coef_x * x;
 
-		// Render scene
-		driver->beginScene(true, true, video::SColor(0,0,0,0));
-		driver->clearZBuffer();
-		smgr->drawAll();
+			// Texture coordinates for cube faces, at current pixel.
+			v2f tex_top = {1.f - v, 1.f - u};
+			v2f tex_left = {2 * coef_x * x + 1.f, coef_z * u};
+			v2f tex_right = {2 * coef_x * x, coef_z * v};
 
-		core::dimension2d<u32> partsize(screen.Width * scaling,screen.Height * scaling);
+			// Draw from `src`, if current pixel is inside the corresponding quad,
+			// i.e. if texture coordinates are in range [0, 1).
+			// `b` stands for "brightness."
+			auto try_paint = [pixel] (video::IImage *src, core::dimension2du size, v2f uv, float b) -> void {
+				int k = size.Width * uv.X;
+				int l = size.Height * uv.Y;
+				if (k < 0 || k >= size.Width || l < 0 || l >= size.Height)
+					return;
+				video::SColor s = src->getPixel(k, l);
+				pixel->set(s.getAlpha(), b * s.getRed(), b * s.getGreen(), b * s.getBlue());
+			};
 
-		irr::video::IImage* rawImage =
-				driver->createImage(irr::video::ECF_A8R8G8B8, partsize);
+			// Brightness is the same as in applyFacesShading
+			try_paint(top, size_top, tex_top, 1.000000f);
+			try_paint(left, size_left, tex_left, 0.836660f);
+			try_paint(right, size_right, tex_right, 0.670820f);
 
-		u8* pixels = static_cast<u8*>(rawImage->lock());
-		if (!pixels)
-		{
-			rawImage->drop();
-			return NULL;
+			// Reference next pixel in the row or, if the row (and thus the inner loop)
+			// is over, first pixel of the next row.
+			pixel++;
 		}
-
-		core::rect<s32> source(
-				screen.Width /2 - (screen.Width  * (scaling / 2)),
-				screen.Height/2 - (screen.Height * (scaling / 2)),
-				screen.Width /2 + (screen.Width  * (scaling / 2)),
-				screen.Height/2 + (screen.Height * (scaling / 2))
-			);
-
-		glReadPixels(source.UpperLeftCorner.X, source.UpperLeftCorner.Y,
-				partsize.Width, partsize.Height, GL_RGBA,
-				GL_UNSIGNED_BYTE, pixels);
-
-		driver->endScene();
-
-		// Drop scene manager
-		smgr->drop();
-
-		unsigned int pixelcount = partsize.Width*partsize.Height;
-
-		u8* runptr = pixels;
-		for (unsigned int i=0; i < pixelcount; i++) {
-
-			u8 B = *runptr;
-			u8 G = *(runptr+1);
-			u8 R = *(runptr+2);
-			u8 A = *(runptr+3);
-
-			//BGRA -> RGBA
-			*runptr = R;
-			runptr ++;
-			*runptr = G;
-			runptr ++;
-			*runptr = B;
-			runptr ++;
-			*runptr = A;
-			runptr ++;
-		}
-
-		video::IImage* inventory_image =
-				driver->createImage(irr::video::ECF_A8R8G8B8, params.dim);
-
-		rawImage->copyToScaling(inventory_image);
-		rawImage->drop();
-
-		guiScalingCache(io::path(params.rtt_texture_name.c_str()), driver, inventory_image);
-
-		video::ITexture *rtt = driver->addTexture(params.rtt_texture_name.c_str(), inventory_image);
-		inventory_image->drop();
-
-		if (rtt == NULL) {
-			errorstream << "TextureSource::generateTextureFromMesh(): failed to recreate texture from image: " << params.rtt_texture_name << std::endl;
-			return NULL;
-		}
-
-		driver->makeColorKeyTexture(rtt, v2s32(0,0));
-
-		if (params.delete_texture_on_shutdown)
-			m_texture_trash.push_back(rtt);
-
-		return rtt;
 	}
-#endif
-
-	if (!driver->queryFeature(video::EVDF_RENDER_TO_TARGET)) {
-		static bool warned = false;
-		if (!warned)
-		{
-			errorstream<<"TextureSource::generateTextureFromMesh(): "
-				<<"EVDF_RENDER_TO_TARGET not supported."<<std::endl;
-			warned = true;
-		}
-		return NULL;
-	}
-
-	// Create render target texture
-	video::ITexture *rtt = driver->addRenderTargetTexture(
-			params.dim, params.rtt_texture_name.c_str(),
-			video::ECF_A8R8G8B8);
-	if (rtt == NULL)
-	{
-		errorstream<<"TextureSource::generateTextureFromMesh(): "
-			<<"addRenderTargetTexture returned NULL."<<std::endl;
-		return NULL;
-	}
-
-	// Set render target
-	if (!driver->setRenderTarget(rtt, false, true, video::SColor(0,0,0,0))) {
-		driver->removeTexture(rtt);
-		errorstream<<"TextureSource::generateTextureFromMesh(): "
-			<<"failed to set render target"<<std::endl;
-		return NULL;
-	}
-
-	// Get a scene manager
-	scene::ISceneManager *smgr_main = RenderingEngine::get_scene_manager();
-	assert(smgr_main);
-	scene::ISceneManager *smgr = smgr_main->createNewSceneManager();
-	assert(smgr);
-
-	scene::IMeshSceneNode* meshnode =
-			smgr->addMeshSceneNode(params.mesh, NULL,
-					-1, v3f(0,0,0), v3f(0,0,0), v3f(1,1,1), true);
-	meshnode->setMaterialFlag(video::EMF_LIGHTING, true);
-	meshnode->setMaterialFlag(video::EMF_ANTI_ALIASING, true);
-	meshnode->setMaterialFlag(video::EMF_TRILINEAR_FILTER, m_setting_trilinear_filter);
-	meshnode->setMaterialFlag(video::EMF_BILINEAR_FILTER, m_setting_bilinear_filter);
-	meshnode->setMaterialFlag(video::EMF_ANISOTROPIC_FILTER, m_setting_anisotropic_filter);
-
-	scene::ICameraSceneNode* camera = smgr->addCameraSceneNode(0,
-			params.camera_position, params.camera_lookat);
-	// second parameter of setProjectionMatrix (isOrthogonal) is ignored
-	camera->setProjectionMatrix(params.camera_projection_matrix, false);
-
-	smgr->setAmbientLight(params.ambient_light);
-	smgr->addLightSceneNode(0,
-			params.light_position,
-			params.light_color,
-			params.light_radius);
-
-	// Render scene
-	driver->beginScene(true, true, video::SColor(0,0,0,0));
-	smgr->drawAll();
-	driver->endScene();
-
-	// Drop scene manager
-	smgr->drop();
-
-	// Unset render target
-	driver->setRenderTarget(0, false, true, video::SColor(0,0,0,0));
-
-	if (params.delete_texture_on_shutdown)
-		m_texture_trash.push_back(rtt);
-
-	return rtt;
+	result->unlock();
+	return result;
 }
 
 video::IImage* TextureSource::generateImage(const std::string &name)
@@ -1516,89 +1388,14 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 				return true;
 			}
 
-#ifdef __ANDROID__
-			assert(img_top->getDimension().Height == npot2(img_top->getDimension().Height));
-			assert(img_top->getDimension().Width == npot2(img_top->getDimension().Width));
+			baseimg = createInventoryCubeImage(img_top, img_left, img_right);
 
-			assert(img_left->getDimension().Height == npot2(img_left->getDimension().Height));
-			assert(img_left->getDimension().Width == npot2(img_left->getDimension().Width));
-
-			assert(img_right->getDimension().Height == npot2(img_right->getDimension().Height));
-			assert(img_right->getDimension().Width == npot2(img_right->getDimension().Width));
-#endif
-
-			// Create textures from images
-			video::ITexture *texture_top = driver->addTexture(
-					(imagename_top + "__temp__").c_str(), img_top);
-			video::ITexture *texture_left = driver->addTexture(
-					(imagename_left + "__temp__").c_str(), img_left);
-			video::ITexture *texture_right = driver->addTexture(
-					(imagename_right + "__temp__").c_str(), img_right);
-			FATAL_ERROR_IF(!(texture_top && texture_left && texture_right), "");
-
-			// Drop images
+			// Face images are not needed anymore
 			img_top->drop();
 			img_left->drop();
 			img_right->drop();
 
-			/*
-				Draw a cube mesh into a render target texture
-			*/
-			scene::IMesh* cube = createCubeMesh(v3f(1, 1, 1));
-			setMeshColor(cube, video::SColor(255, 255, 255, 255));
-			cube->getMeshBuffer(0)->getMaterial().setTexture(0, texture_top);
-			cube->getMeshBuffer(1)->getMaterial().setTexture(0, texture_top);
-			cube->getMeshBuffer(2)->getMaterial().setTexture(0, texture_right);
-			cube->getMeshBuffer(3)->getMaterial().setTexture(0, texture_right);
-			cube->getMeshBuffer(4)->getMaterial().setTexture(0, texture_left);
-			cube->getMeshBuffer(5)->getMaterial().setTexture(0, texture_left);
-
-			TextureFromMeshParams params;
-			params.mesh = cube;
-			params.dim.set(64, 64);
-			params.rtt_texture_name = part_of_name + "_RTT";
-			// We will delete the rtt texture ourselves
-			params.delete_texture_on_shutdown = false;
-			params.camera_position.set(0, 1.0, -1.5);
-			params.camera_position.rotateXZBy(45);
-			params.camera_lookat.set(0, 0, 0);
-			// Set orthogonal projection
-			params.camera_projection_matrix.buildProjectionMatrixOrthoLH(
-					1.65, 1.65, 0, 100);
-
-			params.ambient_light.set(1.0, 0.2, 0.2, 0.2);
-			params.light_position.set(10, 100, -50);
-			params.light_color.set(1.0, 0.5, 0.5, 0.5);
-			params.light_radius = 1000;
-
-			video::ITexture *rtt = generateTextureFromMesh(params);
-
-			// Drop mesh
-			cube->drop();
-
-			// Free textures
-			driver->removeTexture(texture_top);
-			driver->removeTexture(texture_left);
-			driver->removeTexture(texture_right);
-
-			if (rtt == NULL) {
-				baseimg = generateImage(imagename_top);
-				return true;
-			}
-
-			// Create image of render target
-			video::IImage *image = driver->createImage(rtt, v2s32(0, 0), params.dim);
-			FATAL_ERROR_IF(!image, "Could not create image of render target");
-
-			// Cleanup texture
-			driver->removeTexture(rtt);
-
-			baseimg = driver->createImage(video::ECF_A8R8G8B8, params.dim);
-
-			if (image) {
-				image->copyTo(baseimg);
-				image->drop();
-			}
+			return true;
 		}
 		/*
 			[lowpart:percent:filename

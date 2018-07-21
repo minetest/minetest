@@ -39,8 +39,6 @@ file can usually be found at /mnt/sdcard/Minetest.
 * gui_scaling: this is a user-specified scaling factor for the GUI- In case
                main menu is too big or small on your device, try changing this
                value.
-* inventory_image_hack: if your inventory items are messed up, try setting
-               this to true
 
 Known issues
 ------------
