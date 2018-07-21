@@ -39,7 +39,7 @@ local function get_formspec(data)
 			info = fgettext("No modpack description provided.")
 		end
 		retval = retval ..
-			"label[0,0.7;" .. info .. "]"
+			"textarea[0.25,0.7;5.75,7.2;;" .. info .. ";]"
 	else
 		retval = retval ..
 			"label[0,0.7;" .. fgettext("Mod:") .. "]" ..
