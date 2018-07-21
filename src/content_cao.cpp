@@ -684,7 +684,7 @@ void GenericCAO::updateLightNoCheck(u8 light_at_pos)
 	if (m_glow < 0)
 		return;
 
-	bool fullbright = true;
+	bool fullbright = g_settings->getBool("fullbright_mode");
 	u8 li = fullbright ? 255 : decode_light(light_at_pos + m_glow);
 	if (li != m_last_light)	{
 		m_last_light = li;

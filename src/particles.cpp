@@ -185,7 +185,7 @@ void Particle::updateLight()
 	else
 		light = blend_light(m_env->getDayNightRatio(), LIGHT_SUN, 0);
 
-	bool fullbright = true;
+	bool fullbright = g_settings->getBool("fullbright_mode");
 	if (fullbright) {
 		m_color = video::SColor(m_base_color.color);
 	} else {

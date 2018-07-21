@@ -1012,7 +1012,7 @@ void MapblockMeshGenerator::drawPlantlikeRootedNode()
 	useTile(0, MATERIAL_FLAG_CRACK_OVERLAY, 0, true);
 	origin += v3f(0.0, BS, 0.0);
 	p.Y++;
-	bool fullbright = true;
+	bool fullbright = g_settings->getBool("fullbright_mode");
 	if (fullbright) {
 		setFullLight();
 	} else if (data->m_smooth_lighting) {
@@ -1386,7 +1386,7 @@ void MapblockMeshGenerator::drawNode()
 			break;
 	}
 	origin = intToFloat(p, BS);
-	bool fullbright = true;
+	bool fullbright = g_settings->getBool("fullbright_mode");
 	if (fullbright)
 		setFullLight();
 	else if (data->m_smooth_lighting)

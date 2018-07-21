@@ -850,7 +850,7 @@ static void getTileInfo(
 			layer.material_flags |= MATERIAL_FLAG_BACKFACE_CULLING;
 	}
 
-	bool fullbright = true;
+	bool fullbright = g_settings->getBool("fullbright_mode");
 
 	// fullbright mode (solid nodes)
 	if (fullbright) {
