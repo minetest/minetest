@@ -343,7 +343,7 @@ GenericCAO::~GenericCAO()
 bool GenericCAO::getSelectionBox(aabb3f *toset) const
 {
 	if (!m_prop.is_visible || !m_is_visible || m_is_local_player
-			|| !m_prop.pointable) {
+			|| !m_prop.pointable || m_hp == 0) {
 		return false;
 	}
 	*toset = m_selection_box;
