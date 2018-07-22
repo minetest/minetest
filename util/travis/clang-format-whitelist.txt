@@ -121,6 +121,8 @@ src/irrlicht_changes/CGUITTFont.cpp
 src/irrlicht_changes/CGUITTFont.h
 src/irrlicht_changes/CParticleAttractionAffector.cpp
 src/irrlicht_changes/CParticleAttractionAffector.h
+src/irrlicht_changes/CParticleScaleAffector.cpp
+src/irrlicht_changes/CParticleScaleAffector.h
 src/irrlicht_changes/irrUString.h
 src/irrlicht_changes/static_text.cpp
 src/irrlicht_changes/static_text.h

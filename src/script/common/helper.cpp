@@ -214,5 +214,13 @@ ParticleOverlaySpec LuaHelper::readParam(lua_State *L, int index)
 	if (poSpec.gravity_factor < 0.0f || poSpec.gravity_factor > 100.0f)
 		throw LuaError("ParticleOverlay gravity factor must be between 0.0 and 100.0");
 
+	lua_getfield(L, index, "texture_scale_factor_x");
+	poSpec.texture_scale_factor.Width = readParam<float>(L, -1, 1.0f);
+	lua_pop(L, 1);
+
+	lua_getfield(L, index, "texture_scale_factor_y");
+	poSpec.texture_scale_factor.Height = readParam<float>(L, -1, 1.0f);
+	lua_pop(L, 1);
+
 	return poSpec;
 }

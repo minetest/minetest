@@ -1443,8 +1443,9 @@ void Client::handleCommand_ParticleOverlay(NetworkPacket *pkt)
 
 	ParticleOverlaySpec *spec = m_env.getParticleSpecOverlay(specName);
 	spec->name = specName;
-	*pkt >> spec->texture_name >> spec->minpps >> spec->maxpps >> spec->direction
-		>> spec->velocity >> spec->gravity_factor >> spec->enabled;
+	*pkt >> spec->texture_name >> spec->texture_scale_factor.Width
+		>> spec->texture_scale_factor.Height >> spec->minpps >> spec->maxpps
+		>> spec->direction >> spec->velocity >> spec->gravity_factor >> spec->enabled;
 
 	// Limit max PPS to prevent bad performance values
 #ifdef __ANDROID__

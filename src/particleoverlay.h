@@ -20,12 +20,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #pragma once
 
 #include <string>
-#include "irrlichttypes.h"
+#include "irrlichttypes_extrabloated.h"
 
 struct ParticleOverlaySpec
 {
 	std::string name;
 	std::string texture_name;
+	core::dimension2df texture_scale_factor = core::dimension2df(1.0f, 1.0f);
 	u32 minpps = 700;
 	u32 maxpps = 1000;
 	float gravity_factor = 1.0f;

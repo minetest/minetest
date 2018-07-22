@@ -24,6 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client.h"
 #include "clouds.h"
 #include "irrlicht_changes/CParticleAttractionAffector.h"
+#include "irrlicht_changes/CParticleScaleAffector.h"
 #include "util/numeric.h"
 #include "guiscalingfilter.h"
 #include "localplayer.h"
@@ -186,6 +187,12 @@ bool RenderingEngine::renderParticleOverlay(const ParticleOverlaySpec &spec,
 		}
 
 		{
+			scene::IParticleAffector *paf = pssn->createScaleParticleAffector();
+			pssn->addAffector(paf);
+			paf->drop();
+		}
+
+		{
 			scene::IParticleAffector *paf = new scene::CParticleAttractionAffector(
 				particle_target, spec.velocity * spec.gravity_factor *
 				spec.gravity_factor, true, true, true, true);
@@ -215,6 +222,9 @@ bool RenderingEngine::renderParticleOverlay(const ParticleOverlaySpec &spec,
 			auto iaa = (scene::CParticleAttractionAffector *) affector;
 			iaa->setSpeed(spec.velocity);
 			iaa->setPoint(particle_target);
+		} else if (affector->getType() == scene::EPAT_SCALE) {
+			auto isa = (scene::CParticleScaleAffector *) affector;
+			isa->setScaleTo(spec.texture_scale_factor);
 		}
 	}
 
