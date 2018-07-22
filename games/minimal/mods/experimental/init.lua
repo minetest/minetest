@@ -657,8 +657,8 @@ minetest.register_chatcommand("test_weather", {
 				enabled=true,
 				minpps=200,
 				maxpps=300,
-				texture_scale_factor_x=0.3,
-				texture_scale_factor_y=0.3
+				size_x=0.3,
+				size_y=0.3
 			})
 		end)
 
@@ -705,8 +705,8 @@ minetest.register_chatcommand("test_weather", {
 				maxpps=12000,
 				velocity=0.3,
 				gravity_factor=snow_gravity,
-				texture_scale_factor_x=0.4,
-				texture_scale_factor_y=0.4
+				size_x=0.4,
+				size_y=0.4
 			})
 		end)
 
@@ -720,8 +720,8 @@ minetest.register_chatcommand("test_weather", {
 				direction=90,
 				velocity=30,
 				gravity_factor=snow_gravity,
-				texture_scale_factor_x=2,
-				texture_scale_factor_y=2
+				size_x=2,
+				size_y=2
 			})
 		end)
 

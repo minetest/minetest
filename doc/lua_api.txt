@@ -5006,6 +5006,8 @@ This is basically a reference to a C++ `ServerActiveObject`
 		* `velocity`: Particle velocity applied on the defined direction (between `0.0`
 		  and `500.0`)
 		* `gravity_factor`: Physics gravity factor (between `0.0` and `100.0`)
+		* `size_x`: Texture width scale factor (default `1.0`)
+		* `size_y`: Texture height scale factor (default `1.0`)
 * `override_day_night_ratio(ratio or nil)`
     * `0`...`1`: Overrides day-night ratio, controlling sunlight to a specific
       amount.
