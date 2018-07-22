@@ -194,6 +194,8 @@ bool RenderingEngine::renderParticleOverlay(const ParticleOverlaySpec &spec,
 		}
 
 		pssn->setMaterialFlag(video::EMF_LIGHTING, false);
+		pssn->setMaterialFlag(video::EMF_BACK_FACE_CULLING, true);
+		pssn->setMaterialFlag(video::EMF_ANTI_ALIASING, true);
 		pssn->setMaterialTexture(0, texture);
 		pssn->setMaterialType(video::EMT_TRANSPARENT_ALPHA_CHANNEL);
 	}
