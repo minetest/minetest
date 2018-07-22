@@ -5173,6 +5173,8 @@ Definition tables
 Object properties
 -----------------
 
+Used by `ObjectRef` methods.
+
     {
         hp_max = 1,
     --  ^ For players: Defaults to `minetest.PLAYER_MAX_HP_DEFAULT`
@@ -5272,8 +5274,10 @@ Object properties
     --    Defaults to 'true'
     }
 
-Entity definition (`register_entity`)
--------------------------------------
+Entity definition
+-----------------
+
+Used by `minetest.register_entity`.
 
     {
     --  Deprecated: Everything in object properties is read directly from here
@@ -5293,8 +5297,10 @@ Entity definition (`register_entity`)
     --    for more info) by using a '_' prefix.
     }
 
-ABM (ActiveBlockModifier) definition (`register_abm`)
------------------------------------------------------
+ABM (ActiveBlockModifier) definition
+------------------------------------
+
+Used by `minetest.register_abm`.
 
     {
         label = "Lava cooling",
@@ -5328,8 +5334,10 @@ ABM (ActiveBlockModifier) definition (`register_abm`)
           loaded mapblocks.
     }
 
-LBM (LoadingBlockModifier) definition (`register_lbm`)
-------------------------------------------------------
+LBM (LoadingBlockModifier) definition
+-------------------------------------
+
+Used by `minetest.register_lbm`.
 
     {
         label = "Upgrade legacy doors",
@@ -5347,8 +5355,11 @@ LBM (LoadingBlockModifier) definition (`register_lbm`)
         action = func(pos, node),
     }
 
-Item definition (`register_node`, `register_craftitem`, `register_tool`)
-------------------------------------------------------------------------
+Item definition
+---------------
+
+Used by `minetest.register_node`, `minetest.register_craftitem`, and
+`minetest.register_tool`.
 
     {
         description = "Steel Axe",
@@ -5504,8 +5515,10 @@ Tile animation definition
         -- ^ specify length of a single frame
     }
 
-Node definition (`register_node`)
----------------------------------
+Node definition
+---------------
+
+Used by `minetest.register_node`.
 
     {
         -- <all fields allowed in item definitions>,
@@ -5758,8 +5771,12 @@ Node definition (`register_node`)
           removing the node ]]
     }
 
-Recipe for `register_craft` (shaped)
-------------------------------------
+Crafting recipes
+----------------
+
+Used by `minetest.register_craft`.
+
+### Shaped
 
     {
         output = 'default:pick_stone',
@@ -5772,8 +5789,7 @@ Recipe for `register_craft` (shaped)
                         replace one input item with another item on crafting>]]
     }
 
-Recipe for `register_craft` (shapeless)
----------------------------------------
+### Shapeless
 
     {
        type = "shapeless",
@@ -5787,16 +5803,14 @@ Recipe for `register_craft` (shapeless)
                        replace one input item with another item on crafting>]]
     }
 
-Recipe for `register_craft` (tool repair)
------------------------------------------
+### Tool repair
 
     {
         type = "toolrepair",
         additional_wear = -0.02,
     }
 
-Recipe for `register_craft` (cooking)
--------------------------------------
+### Cooking
 
     {
         type = "cooking",
@@ -5805,8 +5819,7 @@ Recipe for `register_craft` (cooking)
         cooktime = 3,
     }
 
-Recipe for `register_craft` (furnace fuel)
-------------------------------------------
+### Furnace fuel
 
     {
         type = "fuel",
@@ -5814,8 +5827,10 @@ Recipe for `register_craft` (furnace fuel)
         burntime = 1,
     }
 
-Ore definition (`register_ore`)
--------------------------------
+Ore definition
+--------------
+
+Used by `minetest.register_ore`.
 
 See 'Ore types' section above for essential information.
 
@@ -5903,8 +5918,10 @@ See 'Ore types' section above for essential information.
     --  ^ The above 2 parameters are only valid for "stratum" ore.
     }
 
-Biome definition (`register_biome`)
------------------------------------
+Biome definition
+----------------
+
+Used by `minetest.register_biome`.
 
     {
         name = "tundra",
@@ -5969,8 +5986,10 @@ Biome definition (`register_biome`)
     --  ^ 0 and 100 but can exceed these values.
     }
 
-Decoration definition (`register_decoration`)
----------------------------------------------
+Decoration definition
+---------------------
+
+Used by `minetest.register_decoration`.
 
     {
         deco_type = "simple", -- See "Decoration types"
@@ -6102,8 +6121,10 @@ Decoration definition (`register_decoration`)
     --  ^ to the 'place_on' node.
     }
 
-Chat command definition (`register_chatcommand`)
-------------------------------------------------
+Chat command definition
+-----------------------
+
+Used by `minetest.register_chatcommand`.
 
     {
         params = "<name> <privilege>", -- Short parameter description
@@ -6129,6 +6150,8 @@ Note that in params, use of symbols is as follows:
 Detached inventory callbacks
 ----------------------------
 
+Used by `minetest.create_detached_inventory`.
+
     {
         allow_move = func(inv, from_list, from_index, to_list, to_index, count, player),
     --  ^ Called when a player wants to move items inside the inventory
@@ -6152,8 +6175,10 @@ Detached inventory callbacks
     --  ^ No return value
     }
 
-HUD Definition (`hud_add`, `hud_get`)
--------------------------------------
+HUD Definition
+--------------
+
+Used by `minetest.hud_add`. Returned by `minetest.hud_get`.
 
     {
         hud_elem_type = "image", -- see HUD element types
@@ -6177,8 +6202,10 @@ HUD Definition (`hud_add`, `hud_get`)
     --  ^ Size of element in pixels
     }
 
-Particle definition (`add_particle`)
-------------------------------------
+Particle definition
+-------------------
+
+Used by `minetest.add_particle`.
 
     {
         pos = {x=0, y=0, z=0},
@@ -6207,8 +6234,10 @@ Particle definition (`add_particle`)
     }
 
 
-`ParticleSpawner` definition (`add_particlespawner`)
-----------------------------------------------------
+`ParticleSpawner` definition
+----------------------------
+
+Used by `minetest.add_particlespawner`.
 
     {
         amount = 1,
@@ -6251,8 +6280,10 @@ Particle definition (`add_particle`)
     --  ^ Values 0-14.
     }
 
-`HTTPRequest` definition (`HTTPApiTable.fetch`, `HTTPApiTable.fetch_async`)
----------------------------------------------------------------------------
+`HTTPRequest` definition
+------------------------
+
+Used by `HTTPApiTable.fetch` and `HTTPApiTable.fetch_async`.
 
     {
         url = "http://example.org",
@@ -6275,8 +6306,11 @@ Particle definition (`add_particle`)
     --  ^ Default is false.
     }
 
-`HTTPRequestResult` definition (`HTTPApiTable.fetch` callback, `HTTPApiTable.fetch_async_get`)
-----------------------------------------------------------------------------------------------
+`HTTPRequestResult` definition
+------------------------------
+
+Passed to `HTTPApiTable.fetch` callback. Returned by
+`HTTPApiTable.fetch_async_get`.
 
     {
         completed = true,
@@ -6293,6 +6327,8 @@ Particle definition (`add_particle`)
 
 Authentication handler definition
 ---------------------------------
+
+Used by `minetest.register_authentication_handler`.
 
     {
         get_auth = func(name),
