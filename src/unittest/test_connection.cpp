@@ -20,6 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "test.h"
 
 #include "log.h"
+#include "porting.h"
 #include "settings.h"
 #include "util/serialize.h"
 #include "network/connection.h"
@@ -280,7 +281,7 @@ void TestConnection::testConnectSendReceive()
 			if (i % 2 == 0)
 				infostream << " ";
 			char buf[10];
-			snprintf(buf, 10, "%.2X",
+			porting::mt_snprintf(buf, sizeof(buf), "%.2X",
 				((int)((const char *)pkt.getU8Ptr(0))[i]) & 0xff);
 			infostream<<buf;
 		}
@@ -323,7 +324,7 @@ void TestConnection::testConnectSendReceive()
 			if (i % 2 == 0)
 				infostream << " ";
 			char buf[10];
-			snprintf(buf, 10, "%.2X", ((int)(recvdata[i])) & 0xff);
+			porting::mt_snprintf(buf, sizeof(buf), "%.2X", ((int)(recvdata[i])) & 0xff);
 			infostream << buf;
 		}
 		if (size > 20)

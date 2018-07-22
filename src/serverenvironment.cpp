@@ -26,6 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "nodemetadata.h"
 #include "gamedef.h"
 #include "map.h"
+#include "porting.h"
 #include "profiler.h"
 #include "raycast.h"
 #include "remoteplayer.h"
@@ -1860,9 +1861,9 @@ static void print_hexdump(std::ostream &o, const std::string &data)
 			int i = i0 + di;
 			char buf[4];
 			if(di<thislinelength)
-				snprintf(buf, 4, "%.2x ", data[i]);
+				porting::mt_snprintf(buf, sizeof(buf), "%.2x ", data[i]);
 			else
-				snprintf(buf, 4, "   ");
+				porting::mt_snprintf(buf, sizeof(buf), "   ");
 			o<<buf;
 		}
 		o<<" ";

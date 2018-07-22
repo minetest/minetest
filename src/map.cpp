@@ -1727,13 +1727,13 @@ std::string ServerMap::getSectorDir(v2s16 pos, int layout)
 	switch(layout)
 	{
 		case 1:
-			snprintf(cc, 9, "%.4x%.4x",
+			porting::mt_snprintf(cc, sizeof(cc), "%.4x%.4x",
 				(unsigned int) pos.X & 0xffff,
 				(unsigned int) pos.Y & 0xffff);
 
 			return m_savedir + DIR_DELIM + "sectors" + DIR_DELIM + cc;
 		case 2:
-			snprintf(cc, 9, (std::string("%.3x") + DIR_DELIM + "%.3x").c_str(),
+			porting::mt_snprintf(cc, sizeof(cc), (std::string("%.3x") + DIR_DELIM + "%.3x").c_str(),
 				(unsigned int) pos.X & 0xfff,
 				(unsigned int) pos.Y & 0xfff);
 
@@ -1791,7 +1791,7 @@ v3s16 ServerMap::getBlockPos(const std::string &sectordir, const std::string &bl
 std::string ServerMap::getBlockFilename(v3s16 p)
 {
 	char cc[5];
-	snprintf(cc, 5, "%.4x", (unsigned int)p.Y&0xffff);
+	porting::mt_snprintf(cc, sizeof(cc), "%.4x", (unsigned int)p.Y&0xffff);
 	return cc;
 }
 

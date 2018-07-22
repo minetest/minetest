@@ -53,6 +53,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "nodedef.h"         // Needed for determining pointing to nodes
 #include "nodemetadata.h"
 #include "particles.h"
+#include "porting.h"
 #include "profiler.h"
 #include "quicktune_shortcutter.h"
 #include "raycast.h"
@@ -4028,7 +4029,7 @@ void Game::showPauseMenu()
 
 	 char control_text_buf[600];
 
-	 snprintf(control_text_buf, ARRLEN(control_text_buf), control_text_template.c_str(),
+	 porting::mt_snprintf(control_text_buf, sizeof(control_text_buf), control_text_template.c_str(),
 			GET_KEY_NAME(keymap_forward),
 			GET_KEY_NAME(keymap_backward),
 			GET_KEY_NAME(keymap_left),

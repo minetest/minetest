@@ -18,6 +18,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
+#include "porting.h"
 #include "profilergraph.h"
 #include "util/string.h"
 
@@ -95,12 +96,12 @@ void ProfilerGraph::draw(s32 x_left, s32 y_bottom, video::IVideoDriver *driver,
 
 		s32 texth = 15;
 		char buf[10];
-		snprintf(buf, 10, "%.3g", show_max);
+		porting::mt_snprintf(buf, sizeof(buf), "%.3g", show_max);
 		font->draw(utf8_to_wide(buf).c_str(),
 				core::rect<s32>(textx, y - graphh, textx2,
 						y - graphh + texth),
 				meta.color);
-		snprintf(buf, 10, "%.3g", show_min);
+		porting::mt_snprintf(buf, sizeof(buf), "%.3g", show_min);
 		font->draw(utf8_to_wide(buf).c_str(),
 				core::rect<s32>(textx, y - texth, textx2, y), meta.color);
 		font->draw(utf8_to_wide(id).c_str(),
