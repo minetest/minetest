@@ -162,7 +162,10 @@ function core.hud_replace_builtin(name, definition)
 	return false
 end
 
--- Delay HUD init until the mods decided what to use
-core.after(0, core.register_on_joinplayer, update_builtin_statbars)
+-- Append "update_builtin_statbars" as late as possible
+-- This ensures that the HUD is hidden when the flags are updated in this callback
+core.register_on_mods_loaded(function()
+	core.register_on_joinplayer(update_builtin_statbars)
+end)
 core.register_on_leaveplayer(cleanup_builtin_statbars)
 core.register_playerevent(player_event_handler)
