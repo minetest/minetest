@@ -1734,35 +1734,8 @@ int ObjectRef::l_set_particle_overlay(lua_State *L)
 	if (!player)
 		return 0;
 
-	ParticleOverlaySpec poSpec;
-	poSpec.name = readParam<std::string>(L, 2);
-	poSpec.texture_name = readParam<std::string>(L, 3);
-
-	poSpec.enabled = readParam<bool>(L, 4, true);
-
-	poSpec.minpps = readParam<u32>(L, 5, 700);
-	if (poSpec.minpps < 1 || poSpec.minpps > 20000)
-		throw LuaError("ParticleOverlay minpps must be between 1 and 20000. Found: " +
-			std::to_string(poSpec.minpps));
-
-	poSpec.maxpps = readParam<u32>(L, 6, 1000);
-	if (poSpec.maxpps < 1 || poSpec.maxpps > 20000)
-		throw LuaError("ParticleOverlay maxpps must be between 1 and 20000. Found: " +
-			std::to_string(poSpec.maxpps));
-
-	poSpec.direction = readParam<u16>(L, 7, 0);
-	if (poSpec.direction > 359)
-		throw LuaError("ParticleOverlay direction must be between 0 and 359");
-
-	poSpec.directional_speed = readParam<float>(L, 8, 0.0f);
-	if (poSpec.directional_speed < 0.0f || poSpec.directional_speed > 500.0f)
-		throw LuaError("ParticleOverlay directional speed must be between 0.0 and 500.0");
-
-	poSpec.gravity_factor = readParam<float>(L, 9, 1.0f);
-	if (poSpec.gravity_factor < 0.0f || poSpec.gravity_factor > 100.0f)
-		throw LuaError("ParticleOverlay gravity factor must be between 0.0 and 100.0");
-
-	getServer(L)->SendParticleOverlaySpec(player->getPeerId(), poSpec);
+	getServer(L)->SendParticleOverlaySpec(player->getPeerId(),
+		readParam<ParticleOverlaySpec>(L, 2));
 	lua_pushboolean(L, true);
 	return 1;
 }

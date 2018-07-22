@@ -187,7 +187,7 @@ bool RenderingEngine::renderParticleOverlay(const ParticleOverlaySpec &spec,
 
 		{
 			scene::IParticleAffector *paf = new scene::CParticleAttractionAffector(
-				particle_target, spec.directional_speed * spec.gravity_factor *
+				particle_target, spec.velocity * spec.gravity_factor *
 				spec.gravity_factor, true, true, true, true);
 			pssn->addAffector(paf);
 			paf->drop();
@@ -211,7 +211,7 @@ bool RenderingEngine::renderParticleOverlay(const ParticleOverlaySpec &spec,
 			iga->setTimeForceLost(applied_timeforce_lost);
 		} else if (affector->getType() == scene::EPAT_ATTRACT) {
 			auto iaa = (scene::CParticleAttractionAffector *) affector;
-			iaa->setSpeed(spec.directional_speed);
+			iaa->setSpeed(spec.velocity);
 			iaa->setPoint(particle_target);
 		}
 	}

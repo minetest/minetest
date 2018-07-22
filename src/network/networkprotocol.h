@@ -643,7 +643,7 @@ enum ToClientCommand
 	 	std::string texture_name
 	 	float poSpec.intensity
 	 	u16 poSpec.direction
-		float poSpec.directional_speed
+		float poSpec.velocity
 	 	float poSpec.gravity_factor
 	 	bool enabled
 	 */

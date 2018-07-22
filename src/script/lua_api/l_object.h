@@ -322,7 +322,7 @@ private:
 	static int l_get_clouds(lua_State *L);
 
 	// set_particle_overlay(self, name, texture_name, enabled=true, minpps=700,
-	// maxpps=1000, direction=0, directional_speed=0.0, gravity_factor=1.0)
+	// maxpps=1000, direction=0, velocity=0.0, gravity_factor=1.0)
 	static int l_set_particle_overlay(lua_State *L);
 
 	// override_day_night_ratio(self, type)

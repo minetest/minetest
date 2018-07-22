@@ -1850,7 +1850,7 @@ void Server::SendParticleOverlaySpec(session_t peer_id, const ParticleOverlaySpe
 	NetworkPacket pkt(TOCLIENT_PARTICLE_OVERLAY, sizeof(ParticleOverlaySpec) +
 		poSpec.name.size() + poSpec.texture_name.size(), peer_id);
 	pkt << poSpec.name << poSpec.texture_name << poSpec.minpps << poSpec.maxpps
-		<< poSpec.direction << poSpec.directional_speed << poSpec.gravity_factor
+		<< poSpec.direction << poSpec.velocity << poSpec.gravity_factor
 		<< poSpec.enabled;
 	Send(&pkt);
 }

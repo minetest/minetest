@@ -23,6 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "irrlichttypes_extrabloated.h"
 #include "c_types.h"
 #include "c_internal.h"
+#include "particleoverlay.h"
 
 // imported from c_converter.cpp with pure C++ style
 static inline void check_lua_type(lua_State *L, int index, const char *name, int type)
@@ -158,4 +159,60 @@ std::string LuaHelper::readParam(
 	else
 		result = default_value;
 	return result;
+}
+
+template <>
+ParticleOverlaySpec LuaHelper::readParam(lua_State *L, int index)
+{
+	if (!lua_istable(L, index)) {
+		throw LuaError("ParticleOverlay definition must be a table. Found: " +
+			std::string(lua_typename(L, lua_type(L, index))));
+	}
+
+	ParticleOverlaySpec poSpec;
+	lua_getfield(L, index, "name");
+	poSpec.name = readParam<std::string>(L, -1);
+	lua_pop(L, 1);
+
+	lua_getfield(L, index, "texture");
+	poSpec.texture_name = readParam<std::string>(L, -1);
+	lua_pop(L, 1);
+
+	lua_getfield(L, index, "enabled");
+	poSpec.enabled = readParam<bool>(L, -1, true);
+	lua_pop(L, 1);
+
+	lua_getfield(L, index, "minpps");
+	poSpec.minpps = readParam<u32>(L, -1, 700);
+	lua_pop(L, 1);
+	if (poSpec.minpps < 1 || poSpec.minpps > 20000)
+		throw LuaError("ParticleOverlay minpps must be between 1 and 20000. Found: " +
+			std::to_string(poSpec.minpps));
+
+	lua_getfield(L, index, "maxpps");
+	poSpec.maxpps = readParam<u32>(L, -1, 1000);
+	lua_pop(L, 1);
+	if (poSpec.maxpps < 1 || poSpec.maxpps > 20000)
+		throw LuaError("ParticleOverlay maxpps must be between 1 and 20000. Found: " +
+			std::to_string(poSpec.maxpps));
+
+	lua_getfield(L, index, "direction");
+	poSpec.direction = readParam<u16>(L, -1, 0);
+	lua_pop(L, 1);
+	if (poSpec.direction > 359)
+		throw LuaError("ParticleOverlay direction must be between 0 and 359");
+
+	lua_getfield(L, index, "velocity");
+	poSpec.velocity = readParam<float>(L, -1, 0.0f);
+	lua_pop(L, 1);
+	if (poSpec.velocity < 0.0f || poSpec.velocity > 500.0f)
+		throw LuaError("ParticleOverlay directional speed must be between 0.0 and 500.0");
+
+	lua_getfield(L, index, "gravity_factor");
+	poSpec.gravity_factor = readParam<float>(L, -1, 1.0f);
+	lua_pop(L, 1);
+	if (poSpec.gravity_factor < 0.0f || poSpec.gravity_factor > 100.0f)
+		throw LuaError("ParticleOverlay gravity factor must be between 0.0 and 100.0");
+
+	return poSpec;
 }

@@ -633,52 +633,137 @@ minetest.register_chatcommand("test_weather", {
 
 		local snow_gravity = 0.2
 		minetest.after(1, function()
-			player:set_particle_overlay("rain", "weather_rain.png", true)
+			player:set_particle_overlay({
+				name="rain",
+				texture="weather_rain.png",
+				enabled=true
+			})
 		end)
 
 		minetest.after(4, function()
-			player:set_particle_overlay("rain", "weather_rain.png", true, 3600, 6000)
+			player:set_particle_overlay({
+				name="rain",
+				texture="weather_rain.png",
+				enabled=true,
+				minpps=3600,
+				maxpps=6000
+			})
 		end)
 
 		minetest.after(6, function()
-			player:set_particle_overlay("rain", "weather_rain.png", true, 200, 300)
+			player:set_particle_overlay({
+				name="rain",
+				texture="weather_rain.png",
+				enabled=true,
+				minpps=200,
+				maxpps=300
+			})
 		end)
 
 		minetest.after(10, function()
-			player:set_particle_overlay("rain", "weather_rain.png", true, 7000, 15000)
+			player:set_particle_overlay({
+				name="rain",
+				texture="weather_rain.png",
+				enabled=true,
+				minpps=7000,
+				maxpps=15000
+			})
 		end)
 
 		minetest.after(13, function()
-			player:set_particle_overlay("rain", "weather_rain.png", false)
-			player:set_particle_overlay("snow", "weather_snow.png", true)
+			player:set_particle_overlay({
+				name="rain",
+				texture="weather_rain.png",
+				enabled=false
+			})
+			player:set_particle_overlay({
+				name="snow",
+				texture="weather_snow.png",
+				enabled=true
+			})
 		end)
 
 		minetest.after(16, function()
-			player:set_particle_overlay("snow", "weather_snow.png", true, 200, 400, 0, 0, snow_gravity)
+			player:set_particle_overlay({
+				name="snow",
+				texture="weather_snow.png",
+				enabled=true,
+				minpps=200,
+				maxpps=400,
+				gravity_factor=snow_gravity
+			})
 		end)
 
 		minetest.after(18, function()
-			player:set_particle_overlay("snow", "weather_snow.png", true, 7000, 12000, 0.3, 0, 0, snow_gravity)
+			player:set_particle_overlay({
+				name="snow",
+				texture="weather_snow.png",
+				enabled=true,
+				minpps=7000,
+				maxpps=12000,
+				velocity=0.3,
+				gravity_factor=snow_gravity
+			})
 		end)
 
 		minetest.after(19., function()
-			player:set_particle_overlay("snow", "weather_snow.png", true, 7000, 12000, 90, 30, snow_gravity)
+			player:set_particle_overlay({
+				name="snow",
+				texture="weather_snow.png",
+				enabled=true,
+				minpps=7000,
+				maxpps=12000,
+				direction=90,
+				velocity=30,
+				gravity_factor=snow_gravity
+			})
 		end)
 
 		minetest.after(22, function()
-			player:set_particle_overlay("snow", "weather_snow.png", true, 7000, 12000, 180, 30, snow_gravity)
+			player:set_particle_overlay({
+				name="snow",
+				texture="weather_snow.png",
+				enabled=true,
+				minpps=7000,
+				maxpps=12000,
+				direction=180,
+				velocity=30,
+				gravity_factor=snow_gravity
+			})
 		end)
 
 		minetest.after(24, function()
-			player:set_particle_overlay("snow", "weather_snow.png", true, 7000, 12000, 270, 30, snow_gravity)
+			player:set_particle_overlay({
+				name="snow",
+				texture="weather_snow.png",
+				enabled=true,
+				minpps=7000,
+				maxpps=12000,
+				direction=270,
+				velocity=30,
+				gravity_factor=snow_gravity
+			})
 		end)
 
 		minetest.after(26, function()
-			player:set_particle_overlay("snow", "weather_snow.png", true, 7000, 12000, 45, 30, snow_gravity)
+			player:set_particle_overlay({
+				name="snow",
+				texture="weather_snow.png",
+				enabled=true,
+				minpps=7000,
+				maxpps=12000,
+				direction=45,
+				velocity=50,
+				gravity_factor=snow_gravity
+			})
 		end)
 
 		minetest.after(38, function()
-			player:set_particle_overlay("snow", "weather_snow.png", false)
+			player:set_particle_overlay({
+				name="snow",
+				texture="weather_snow.png",
+				enabled=false,
+			})
 		end)
 	end,
 })
