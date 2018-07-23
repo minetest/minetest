@@ -13,13 +13,15 @@
 	rendering related classes (such as WieldMeshSceneNode) will be
 	used from the rendering thread only.
 */
-class ExtrusionMeshCache: public IItemMeshSource
+class ExtrusionMeshCache : public IItemMeshSource
 {
 public:
 	ExtrusionMeshCache();
 	~ExtrusionMeshCache() override;
-	scene::SMesh *createExtrusionMesh(video::ITexture *texture, video::ITexture *overlay_texture) override;
-	scene::SMesh *createFlatMesh(video::ITexture *texture, video::ITexture *overlay_texture) override;
+	scene::SMesh *createExtrusionMesh(video::ITexture *texture,
+			video::ITexture *overlay_texture) override;
+	scene::SMesh *createFlatMesh(video::ITexture *texture,
+			video::ITexture *overlay_texture) override;
 
 private:
 	// Get closest extrusion mesh for given image dimensions

@@ -80,7 +80,7 @@ static scene::SMesh *createExtrusionMesh(int resolution_x, int resolution_y)
 	scene::SMesh *mesh = new scene::SMesh();
 	mesh->addMeshBuffer(buf);
 	buf->drop();
-	scaleMesh(mesh, scale);  // also recalculates bounding box
+	scaleMesh(mesh, scale); // also recalculates bounding box
 	return mesh;
 }
 
@@ -90,7 +90,7 @@ ExtrusionMeshCache::ExtrusionMeshCache()
 			resolution <= MAX_EXTRUSION_MESH_RESOLUTION;
 			resolution *= 2) {
 		m_extrusion_meshes[resolution] =
-			::createExtrusionMesh(resolution, resolution);
+				::createExtrusionMesh(resolution, resolution);
 	}
 }
 
@@ -102,7 +102,7 @@ ExtrusionMeshCache::~ExtrusionMeshCache()
 }
 
 scene::SMesh *ExtrusionMeshCache::createExtrusionMesh(
-	video::ITexture *texture, video::ITexture *overlay_texture)
+		video::ITexture *texture, video::ITexture *overlay_texture)
 {
 	scene::SMesh *mesh = create(texture->getSize());
 	scene::IMeshBuffer *buf = mesh->getMeshBuffer(0);
@@ -117,7 +117,7 @@ scene::SMesh *ExtrusionMeshCache::createExtrusionMesh(
 }
 
 scene::SMesh *ExtrusionMeshCache::createFlatMesh(
-	video::ITexture *texture, video::ITexture *overlay_texture)
+		video::ITexture *texture, video::ITexture *overlay_texture)
 {
 	static const video::S3DVertex vertices[4] = {
 			video::S3DVertex(-0.5, -0.5, 0.0, 0, 0, -1,
