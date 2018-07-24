@@ -96,6 +96,11 @@
 #    type: bool
 # fixed_virtual_joystick = false
 
+#    (Android) Use virtual joystick to trigger "aux" button.
+#    If enabled, virtual joystick will also tap "aux" button when out of main circle.
+#    type: bool
+# virtual_joystick_triggers_aux = false
+
 #    Enable joysticks
 #    type: bool
 # enable_joysticks = false
@@ -465,7 +470,9 @@
 
 ### Filtering
 
-#    Use mip mapping to scale textures. May slightly increase performance.
+#    Use mip mapping to scale textures. May slightly increase performance,
+#    especially when using a high resolution texture pack.
+#    Gamma correct downscaling is not supported.
 #    type: bool
 # mip_map = false
 
@@ -694,6 +701,10 @@
 # texture_path =
 
 #    The rendering back-end for Irrlicht.
+#    A restart is required after changing this.
+#    Note: on Android, stick with OGLES1 if unsure! App may fail to start otherwise.
+#    On other platforms, OpenGL is recommended, and it’s the only driver with
+#    shader support currently.
 #    type: enum values: null, software, burningsvideo, direct3d8, direct3d9, opengl, ogles1, ogles2
 # video_driver = opengl
 
@@ -1255,6 +1266,18 @@
 #    type: float
 # server_map_save_interval = 5.3
 
+#    Set the maximum character length of a chat message sent by clients.
+#    type: int
+# chat_message_max_size = 500
+
+#    Amount of messages a player may send per 10 seconds.
+#    type: float
+# chat_message_limit_per_10sec = 10.0
+
+#    Kick players who sent more than X messages per 10 seconds.
+#    type: int
+# chat_message_limit_trigger_kick = 50
+
 ### Physics
 
 #    type: float
@@ -1372,19 +1395,19 @@
 # server_side_occlusion_culling = true
 
 #    Restricts the access of certain client-side functions on servers
-#    Combine these byteflags below to restrict more client-side features:
+#    Combine these byteflags below to restrict client-side features:
 #    LOAD_CLIENT_MODS: 1 (disable client mods loading)
 #    CHAT_MESSAGES: 2 (disable send_chat_message call client-side)
 #    READ_ITEMDEFS: 4 (disable get_item_def call client-side)
 #    READ_NODEDEFS: 8 (disable get_node_def call client-side)
 #    LOOKUP_NODES_LIMIT: 16 (limits get_node call client-side to csm_restriction_noderange)
 #    type: int
-# csm_restriction_flags = 18
+# csm_restriction_flags = 30
 
 #    If the CSM restriction for node range is enabled, get_node calls are limited
 #    to this distance from the player to the node.
 #    type: int
-# csm_restriction_noderange = 8
+# csm_restriction_noderange = 0
 
 ## Security
 
@@ -2695,15 +2718,17 @@
 ## Mapgen Valleys
 
 #    Map generation attributes specific to Mapgen Valleys.
-#    'altitude_chill' makes higher elevations colder, which may cause biome issues.
-#    'humid_rivers' modifies the humidity around rivers and in areas where water would tend to pool,
-#    it may interfere with delicately adjusted biomes.
-#    Flags that are not enabled are not modified from the default.
-#    Flags starting with 'no' are used to explicitly disable them.
-#    type: flags possible values: altitude_chill, noaltitude_chill, humid_rivers, nohumid_rivers
-# mg_valleys_spflags = altitude_chill,humid_rivers
+#    'altitude_chill': Reduces heat with altitude.
+#    'humid_rivers': Increases humidity around rivers and where water pools.
+#    'vary_river_depth': If enabled, low humidity and high heat causes rivers
+#    to become shallower and occasionally dry.
+#    'altitude_dry': Reduces humidity with altitude.
+#    type: flags possible values: altitude_chill, noaltitude_chill, humid_rivers, nohumid_rivers, vary_river_depth, novary_river_depth, altitude_dry, noaltitude_dry
+# mgvalleys_spflags = altitude_chill,humid_rivers,vary_river_depth,altitude_dry
 
-#    The altitude at which temperature drops by 20.
+#    The vertical distance over which heat drops by 20 if 'altitude_chill' is
+#    enabled. Also the vertical distance over which humidity drops by 10 if
+#    'altitude_dry' is enabled.
 #    type: int
 # mgvalleys_altitude_chill = 90
 
