@@ -55,8 +55,9 @@ WieldMeshSceneNode::~WieldMeshSceneNode()
 void WieldMeshSceneNode::setItem(const ItemStack &item, Client *client)
 {
 	IItemDefManager *idef = client->getItemDefManager();
+	ItemMeshSource *imsrc = client->getItemMeshSource();
 	m_base_color = idef->getItemstackColor(item, client);
-	ItemMesh m = createWieldItemMesh(client, item);
+	ItemMesh m = imsrc-> createWieldItemMesh(item);
 	m_colors = std::move(m.buffer_colors);
 	m_meshnode->setMesh(m.mesh);
 	m_meshnode->setVisible(bool(m.mesh));

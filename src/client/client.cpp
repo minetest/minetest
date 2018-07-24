@@ -102,7 +102,7 @@ Client::Client(
 	m_game_ui(game_ui),
 	m_modchannel_mgr(new ModChannelMgr())
 {
-	m_imsrc.reset(new ExtrusionMeshCache());
+	m_imsrc.reset(new ExtrusionMeshCache(this));
 	// Add local player
 	m_env.setLocalPlayer(new LocalPlayer(this, playername));
 

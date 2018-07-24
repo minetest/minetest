@@ -327,6 +327,7 @@ public:
 			return cc;
 
 		ITextureSource *tsrc = client->getTextureSource();
+		ItemMeshSource *imsrc = client->getItemMeshSource();
 		const ItemDefinition &def = get(name);
 
 		// Create new ClientCached
@@ -340,7 +341,7 @@ public:
 		ItemStack item = ItemStack();
 		item.name = def.name;
 
-		cc->wield_mesh = createInventoryItemMesh(client, item);
+		cc->wield_mesh = imsrc->createInventoryItemMesh(item);
 		cc->palette = tsrc->getPalette(def.palette_image);
 
 		// Put in cache

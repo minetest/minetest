@@ -104,7 +104,8 @@ scene::SMesh *ExtrusionMeshCache::create(int resolution_x, int resolution_y)
 	return mesh;
 }
 
-ExtrusionMeshCache::ExtrusionMeshCache()
+ExtrusionMeshCache::ExtrusionMeshCache(Client *_client) :
+	ItemMeshSource(_client)
 {
 	for (int resolution = MIN_EXTRUSION_MESH_RESOLUTION;
 			resolution <= MAX_EXTRUSION_MESH_RESOLUTION;

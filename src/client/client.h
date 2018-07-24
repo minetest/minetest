@@ -39,7 +39,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "network/address.h"
 #include "network/peerhandler.h"
 #include <fstream>
-#include "client/meshgen/item_mesh_source.h"
+#include "client/meshgen/item.h"
 
 #define CLIENT_CHAT_MESSAGE_LIMIT_PER_10S 10.0f
 
@@ -371,7 +371,7 @@ public:
 	ICraftDefManager* getCraftDefManager() override;
 	ITextureSource* getTextureSource();
 	virtual IShaderSource* getShaderSource();
-	IItemMeshSource *getItemMeshSource() { return m_imsrc.get(); }
+	ItemMeshSource *getItemMeshSource() { return m_imsrc.get(); }
 	u16 allocateUnknownNodeId(const std::string &name) override;
 	virtual ISoundManager* getSoundManager();
 	MtEventManager* getEventManager();
@@ -484,7 +484,7 @@ private:
 
 	IWritableTextureSource *m_tsrc;
 	IWritableShaderSource *m_shsrc;
-	std::unique_ptr<IItemMeshSource> m_imsrc;
+	std::unique_ptr<ItemMeshSource> m_imsrc;
 	IWritableItemDefManager *m_itemdef;
 	NodeDefManager *m_nodedef;
 	ISoundManager *m_sound;

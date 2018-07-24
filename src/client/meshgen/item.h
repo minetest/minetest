@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #pragma once
 #include <vector>
 #include "irrlichttypes.h"
+#include <ITexture.h>
 #include <SMesh.h>
 
 class Client;
@@ -69,5 +70,20 @@ struct ItemMesh
 	ItemMesh() = default;
 };
 
-ItemMesh createInventoryItemMesh(Client *client, const ItemStack &stack);
-ItemMesh createWieldItemMesh(Client *client, const ItemStack &stack);
+class ItemMeshSource
+{
+public:
+	ItemMeshSource(Client *_client) : client(_client) {}
+	virtual ~ItemMeshSource() = default;
+
+	ItemMesh createInventoryItemMesh(const ItemStack &stack);
+	ItemMesh createWieldItemMesh(const ItemStack &stack);
+
+	virtual scene::SMesh *createExtrusionMesh(
+			video::ITexture *texture, video::ITexture *overlay_texture) = 0;
+	virtual scene::SMesh *createFlatMesh(
+			video::ITexture *texture, video::ITexture *overlay_texture) = 0;
+
+protected:
+	Client *client = nullptr;
+};

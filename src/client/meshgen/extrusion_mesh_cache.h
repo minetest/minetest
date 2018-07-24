@@ -19,7 +19,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #pragma once
 #include <map>
-#include "item_mesh_source.h"
+#include "item.h"
+
+class Client;
 
 /*
 	Caches extrusion meshes so that only one of them per resolution
@@ -32,10 +34,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	rendering related classes (such as WieldMeshSceneNode) will be
 	used from the rendering thread only.
 */
-class ExtrusionMeshCache : public IItemMeshSource
+class ExtrusionMeshCache : public ItemMeshSource
 {
 public:
-	ExtrusionMeshCache();
+	ExtrusionMeshCache(Client *_client);
 	~ExtrusionMeshCache() override;
 	scene::SMesh *createExtrusionMesh(video::ITexture *texture,
 			video::ITexture *overlay_texture) override;

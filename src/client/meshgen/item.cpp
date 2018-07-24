@@ -53,14 +53,14 @@ private:
 
 };
 
-ItemMesh createInventoryItemMesh(Client *client, const ItemStack &stack)
+ItemMesh ItemMeshSource::createInventoryItemMesh(const ItemStack &stack)
 {
 	ItemMeshGenerator generator(client, stack);
 	generator.createInventoryMesh();
 	return generator.takeMesh();
 }
 
-ItemMesh createWieldItemMesh(Client *client, const ItemStack &stack)
+ItemMesh ItemMeshSource::createWieldItemMesh(const ItemStack &stack)
 {
 	ItemMeshGenerator generator(client, stack);
 	generator.createWieldMesh();
@@ -119,7 +119,7 @@ bool ItemMeshGenerator::tryImage(
 	video::ITexture *overlay_texture = nullptr;
 	if (!overlay.empty())
 		overlay_texture = tsrc->getTexture(overlay);
-	IItemMeshSource *imsrc = client->getItemMeshSource();
+	ItemMeshSource *imsrc = client->getItemMeshSource();
 	if (extrude)
 		mesh = imsrc->createExtrusionMesh(texture, overlay_texture);
 	else
