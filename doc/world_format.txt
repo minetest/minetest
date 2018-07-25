@@ -98,8 +98,15 @@ See Player File Format below.
 world.mt
 ---------
 World metadata.
-Example content (added indentation):
-  gameid = mesetint
+Example content (added indentation and - explanations):
+  gameid = mesetint             - name of the game
+  enable_damage = true          - whether damage is enabled or not
+  creative_mode = false         - whether creative mode is enabled or not
+  backend = sqlite3             - which DB backend to use for blocks (sqlite3, dummy, leveldb, redis, postgresql)
+  player_backend = sqlite3      - which DB backend to use for player data
+  readonly_backend = sqlite3    - optionally readonly seed DB (DB file _must_ be located in "readonly" subfolder)
+  server_announce = false       - whether the server is publicly announced or not
+  load_mod_<mod> = false        - whether <mod> is to be loaded in this world
 
 Player File Format
 ===================
