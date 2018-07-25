@@ -895,8 +895,8 @@ server_announce (Announce server) bool false
 #    Announce to this serverlist.
 serverlist_url (Serverlist URL) string servers.minetest.net
 
-# Remove color codes from incoming chat messages
-# Use this to stop players from being able to use color in their messages
+#    Remove color codes from incoming chat messages
+#    Use this to stop players from being able to use color in their messages
 strip_color_codes (Strip color codes) bool false
 
 [*Network]
@@ -1049,13 +1049,13 @@ world_start_time (World start time) int 5250 0 23999
 server_map_save_interval (Map save interval) float 5.3
 
 #    Set the maximum character length of a chat message sent by clients.
-# chat_message_max_size int 500
+chat_message_max_size (Chat message max length) int 500
 
-#    Limit a single player to send X messages per 10 seconds.
-# chat_message_limit_per_10sec float 10.0
+#    Amount of messages a player may send per 10 seconds.
+chat_message_limit_per_10sec (Chat message count limit) float 10.0
 
-#    Kick player if send more than X messages per 10 seconds.
-# chat_message_limit_trigger_kick int 50
+#    Kick players who sent more than X messages per 10 seconds.
+chat_message_limit_trigger_kick (Chat message kick threshold) int 50
 
 [**Physics]
 
@@ -1157,8 +1157,8 @@ secure.enable_security (Enable mod security) bool true
 #    functions even when mod security is on (via request_insecure_environment()).
 secure.trusted_mods (Trusted mods) string
 
-#	Comma-separated list of mods that are allowed to access HTTP APIs, which
-#	allow them to upload and download data to/from the internet.
+#    Comma-separated list of mods that are allowed to access HTTP APIs, which
+#    allow them to upload and download data to/from the internet.
 secure.http_mods (HTTP mods) string
 
 [*Advanced]
@@ -1773,30 +1773,30 @@ mgfractal_np_cave2 (Cave2 noise) noise_params_3d 0, 12, (67, 67, 67), 10325, 3, 
 #    'altitude_dry': Reduces humidity with altitude.
 mgvalleys_spflags (Mapgen Valleys specific flags) flags altitude_chill,humid_rivers,vary_river_depth,altitude_dry altitude_chill,noaltitude_chill,humid_rivers,nohumid_rivers,vary_river_depth,novary_river_depth,altitude_dry,noaltitude_dry
 
-# The vertical distance over which heat drops by 20 if 'altitude_chill' is
-# enabled. Also the vertical distance over which humidity drops by 10 if
-# 'altitude_dry' is enabled.
+#    The vertical distance over which heat drops by 20 if 'altitude_chill' is
+#    enabled. Also the vertical distance over which humidity drops by 10 if
+#    'altitude_dry' is enabled.
 mgvalleys_altitude_chill (Altitude chill) int 90
 
-# Depth below which you'll find large caves.
+#    Depth below which you'll find large caves.
 mgvalleys_large_cave_depth (Large cave depth) int -33
 
-# Y of upper limit of lava in large caves.
+#    Y of upper limit of lava in large caves.
 mgvalleys_lava_depth (Lava depth) int 1
 
-# Depth below which you'll find giant caverns.
+#    Depth below which you'll find giant caverns.
 mgvalleys_cavern_limit (Cavern upper limit) int -256
 
-# Y-distance over which caverns expand to full size.
+#    Y-distance over which caverns expand to full size.
 mgvalleys_cavern_taper (Cavern taper) int 192
 
-# Defines full size of caverns, smaller values create larger caverns.
+#    Defines full size of caverns, smaller values create larger caverns.
 mgvalleys_cavern_threshold (Cavern threshold) float 0.6
 
-# How deep to make rivers.
+#    How deep to make rivers.
 mgvalleys_river_depth (River depth) int 4
 
-# How wide to make rivers.
+#    How wide to make rivers.
 mgvalleys_river_size (River size) int 5
 
 #    Controls width of tunnels, a smaller value creates wider tunnels.
@@ -1810,34 +1810,34 @@ mgvalleys_dungeon_ymax (Dungeon maximum Y) int 63
 
 [**Noises]
 
-# Caves and tunnels form at the intersection of the two noises.
+#    Caves and tunnels form at the intersection of the two noises.
 mgvalleys_np_cave1 (Cave noise #1) noise_params_3d 0, 12, (61, 61, 61), 52534, 3, 0.5, 2.0
 
-# Caves and tunnels form at the intersection of the two noises.
+#    Caves and tunnels form at the intersection of the two noises.
 mgvalleys_np_cave2 (Cave noise #2) noise_params_3d 0, 12, (67, 67, 67), 10325, 3, 0.5, 2.0
 
-# The depth of dirt or other biome filler node.
+#    The depth of dirt or other biome filler node.
 mgvalleys_np_filler_depth (Filler depth) noise_params_2d 0, 1.2, (256, 256, 256), 1605, 3, 0.5, 2.0, eased
 
-# 3D noise defining giant caverns.
+#    3D noise defining giant caverns.
 mgvalleys_np_cavern (Cavern noise) noise_params_3d 0, 1, (768, 256, 768), 59033, 6, 0.63, 2.0
 
-# River noise. Rivers occur close to noise value zero.
+#    River noise. Rivers occur close to noise value zero.
 mgvalleys_np_rivers (River noise) noise_params_2d 0, 1, (256, 256, 256), -6050, 5, 0.6, 2.0, eased
 
-# Base terrain height.
+#    Base terrain height.
 mgvalleys_np_terrain_height (Terrain height) noise_params_2d -10, 50, (1024, 1024, 1024), 5202, 6, 0.4, 2.0, eased
 
-# Raises terrain to make valleys around the rivers.
+#    Raises terrain to make valleys around the rivers.
 mgvalleys_np_valley_depth (Valley depth) noise_params_2d 5, 4, (512, 512, 512), -1914, 1, 1.0, 2.0, eased
 
-# Slope and fill work together to modify the heights.
+#    Slope and fill work together to modify the heights.
 mgvalleys_np_inter_valley_fill (Valley fill) noise_params_3d 0, 1, (256, 512, 256), 1993, 6, 0.8, 2.0
 
-# Amplifies the valleys.
+#    Amplifies the valleys.
 mgvalleys_np_valley_profile (Valley profile) noise_params_2d 0.6, 0.5, (512, 512, 512), 777, 1, 1.0, 2.0, eased
 
-# Slope and fill work together to modify the heights.
+#    Slope and fill work together to modify the heights.
 mgvalleys_np_inter_valley_slope (Valley slope) noise_params_2d 0.5, 0.5, (128, 128, 128), 746, 1, 1.0, 2.0, eased
 
 [*Advanced]
