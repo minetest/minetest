@@ -185,9 +185,11 @@ int LuaVoxelManip::l_calc_lighting(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 
 	LuaVoxelManip *o = checkobject(L, 1);
-	if (!o->is_mapgen_vm)
-		throw LuaError("calc_lighting called for a non-mapgen VoxelManip "
-				"object");
+	if (!o->is_mapgen_vm) {
+		warningstream << "calc_lighting called for a non-mapgen VoxelManip "
+			"object" << std::endl;
+		return 0;
+	}
 
 	const NodeDefManager *ndef = getServer(L)->getNodeDefManager();
 	EmergeManager *emerge = getServer(L)->getEmergeManager();
@@ -219,9 +221,11 @@ int LuaVoxelManip::l_set_lighting(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 
 	LuaVoxelManip *o = checkobject(L, 1);
-	if (!o->is_mapgen_vm)
-		throw LuaError("set_lighting called for a non-mapgen VoxelManip "
-				"object");
+	if (!o->is_mapgen_vm) {
+		warningstream << "set_lighting called for a non-mapgen VoxelManip "
+			"object" << std::endl;
+		return 0;
+	}
 
 	if (!lua_istable(L, 2))
 		throw LuaError("set_lighting called with missing parameter");
