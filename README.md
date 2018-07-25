@@ -125,7 +125,7 @@ Compiling
 
 For Debian/Ubuntu:
 
-    sudo apt-get install build-essential libirrlicht-dev cmake libbz2-dev libpng-dev libjpeg-dev libxxf86vm-dev libgl1-mesa-dev libsqlite3-dev libogg-dev libvorbis-dev libopenal-dev libcurl4-gnutls-dev libfreetype6-dev zlib1g-dev libgmp-dev libjsoncpp-dev
+    sudo apt install build-essential libirrlicht-dev cmake libbz2-dev libpng-dev libjpeg-dev libxxf86vm-dev libgl1-mesa-dev libsqlite3-dev libogg-dev libvorbis-dev libopenal-dev libcurl4-gnutls-dev libfreetype6-dev zlib1g-dev libgmp-dev libjsoncpp-dev
 
 For Fedora users:
 
@@ -137,7 +137,7 @@ You can install git for easily keeping your copy up to date.
 If you don’t want git, read below on how to get the source without git.  
 This is an example for installing git on Debian/Ubuntu:
 
-    sudo apt-get install git
+    sudo apt install git
 
 For Fedora users:
 
