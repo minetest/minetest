@@ -38,6 +38,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	#endif
 #endif
 #include <cstring> // for memcpy
+#include <cmath> // for isinf, isnan
 #include <iostream>
 #include <string>
 #include <vector>
@@ -198,8 +199,13 @@ inline f32 readF32(const u8 *data)
 		fraction_i |= 0xFF000000;
 
 	float fraction = (s32)fraction_i / (float)0x800000;
-
-	return ldexp(fraction, (int)exponent_i - 127);
+	/*
+		In contrast to the scrientific notation, frexp return values in
+		the range of [0.5;1.0[ or ]-1.0;0.5]. This results in a (by 1)
+		higher exponent. To have correct signed number handling for the
+		exponent 128, it is decreased by 1 over the network.
+	*/
+	return ldexp(fraction, (s8)exponent_i + 1);
 }
 
 inline video::SColor readARGB8(const u8 *data)
@@ -311,13 +317,14 @@ inline void writeF1000(u8 *data, f32 i)
 
 inline void writeF32(u8 *data, f32 i)
 {
+	assert(!std::isnan(i) && !std::isinf(i));
 	float fraction;
 	int exponent;
 	fraction = frexp(i, &exponent) * 0x800000;
 
 	// [x...x...][x...x...x...x...x...x...]
 	//  EXPONENT      MANTISSA (24 bits)
-	u32 dat = (u32)(exponent + 127) << 24 | ((u32)fraction & 0xFFFFFF);
+	u32 dat = (u32)(exponent - 1) << 24 | ((u32)fraction & 0xFFFFFF);
 	writeU32(data, dat);
 }
 
