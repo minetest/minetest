@@ -91,7 +91,7 @@ int LuaVoxelManip::l_set_data(lua_State *L)
 	MMVManip *vm = o->vm;
 
 	if (!lua_istable(L, 2))
-		throw LuaError("set_data called with missing parameter");
+		throw LuaError("VoxelManip:set_data called with missing parameter");
 
 	u32 volume = vm->m_area.getVolume();
 	for (u32 i = 0; i != volume; i++) {
@@ -186,8 +186,8 @@ int LuaVoxelManip::l_calc_lighting(lua_State *L)
 
 	LuaVoxelManip *o = checkobject(L, 1);
 	if (!o->is_mapgen_vm) {
-		warningstream << "calc_lighting called for a non-mapgen VoxelManip "
-			"object" << std::endl;
+		warningstream << "VoxelManip:calc_lighting called for a non-mapgen "
+			"VoxelManip object" << std::endl;
 		return 0;
 	}
 
@@ -222,13 +222,13 @@ int LuaVoxelManip::l_set_lighting(lua_State *L)
 
 	LuaVoxelManip *o = checkobject(L, 1);
 	if (!o->is_mapgen_vm) {
-		warningstream << "set_lighting called for a non-mapgen VoxelManip "
-			"object" << std::endl;
+		warningstream << "VoxelManip:set_lighting called for a non-mapgen "
+			"VoxelManip object" << std::endl;
 		return 0;
 	}
 
 	if (!lua_istable(L, 2))
-		throw LuaError("set_lighting called with missing parameter");
+		throw LuaError("VoxelManip:set_lighting called with missing parameter");
 
 	u8 light;
 	light  = (getintfield_default(L, 2, "day",   0) & 0x0F);
@@ -279,7 +279,8 @@ int LuaVoxelManip::l_set_light_data(lua_State *L)
 	MMVManip *vm = o->vm;
 
 	if (!lua_istable(L, 2))
-		throw LuaError("set_light_data called with missing parameter");
+		throw LuaError("VoxelManip:set_light_data called with missing "
+				"parameter");
 
 	u32 volume = vm->m_area.getVolume();
 	for (u32 i = 0; i != volume; i++) {
@@ -327,7 +328,8 @@ int LuaVoxelManip::l_set_param2_data(lua_State *L)
 	MMVManip *vm = o->vm;
 
 	if (!lua_istable(L, 2))
-		throw LuaError("set_param2_data called with missing parameter");
+		throw LuaError("VoxelManip:set_param2_data called with missing "
+				"parameter");
 
 	u32 volume = vm->m_area.getVolume();
 	for (u32 i = 0; i != volume; i++) {
