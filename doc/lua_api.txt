@@ -4938,18 +4938,15 @@ This is basically a reference to a C++ `ServerActiveObject`
     * element `stat` values:
       `position`, `name`, `scale`, `text`, `number`, `item`, `dir`
 * `hud_get(id)`: gets the HUD element definition structure of the specified ID
-* `hud_set_flags(flags)`: sets specified HUD flags to `true`/`false`
-    * `flags`: (is visible) `hotbar`, `healthbar`, `crosshair`, `wielditem`,
-      `breathbar`, `minimap`, `minimap_radar`
-    * pass a table containing a `true`/`false` value of each flag to be set or
-      unset.
+* `hud_set_flags(flags)`: sets specified HUD flags of player.
+    * A table containing a `true`/`false` value of the HUD flags to be set or
+      unset. See `Player HUD Flags` section for a list of possible flags.
     * if a flag equals `nil`, the flag is not modified
     * note that setting `minimap` modifies the client's permission to view the
       minimap - the client may locally elect to not view the minimap.
     * minimap `radar` is only usable when `minimap` is true
-* `hud_get_flags()`: returns a table containing status of hud flags
-    * returns `{hotbar=true, healthbar=true, crosshair=true, wielditem=true,
-      breathbar=true, minimap=true, minimap_radar=true}`
+* `hud_get_flags()`: returns a table containing the player's HUD flags.
+	* See `Player HUD Flags` section for a list of possible flags.
 * `hud_set_hotbar_itemcount(count)`: sets number of items in builtin hotbar
     * `count`: number of items, must be between `1` and `23`
 * `hud_get_hotbar_itemcount`: returns number of visible items
@@ -6178,7 +6175,7 @@ Used by `minetest.create_detached_inventory`.
 HUD Definition
 --------------
 
-Used by `minetest.hud_add`. Returned by `minetest.hud_get`.
+Used by `Player:hud_add`. Returned by `Player:hud_get`.
 
     {
         hud_elem_type = "image", -- see HUD element types
@@ -6200,6 +6197,21 @@ Used by `minetest.hud_add`. Returned by `minetest.hud_get`.
     --  ^ See "HUD Element Types"
         size = { x=100, y=100 },
     --  ^ Size of element in pixels
+    }
+    
+Player HUD Flags
+----------------
+
+Used by `Player:hud_set_flags`. Returned by `Player:hud_get_flags`
+
+    {
+        hotbar,
+        healthbar,
+        crosshair,
+        wielditem,
+        breathbar,
+        minimap,
+        minimap_radar
     }
 
 Particle definition
