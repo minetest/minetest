@@ -21,6 +21,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "util/string.h"
 #include "util/serialize.h"
+#include <cmath>
+#include <limits>
 
 class TestSerialization : public TestBase {
 public:
@@ -48,7 +50,7 @@ public:
 	std::wstring teststring2_w;
 	std::string teststring2_w_encoded;
 
-	static const u8 test_serialized_data[12 * 13];
+	static const u8 test_serialized_data[12 * 13 + 8];
 };
 
 static TestSerialization g_test_instance;
@@ -307,6 +309,11 @@ void TestSerialization::testStreamRead()
 	UASSERT(readF1000(is) == F1000_MIN);
 	UASSERT(readF1000(is) == F1000_MAX);
 
+	UASSERT(std::abs(readF32(is) - 4.19503789E-7f) <=
+			std::numeric_limits<f32>::epsilon());
+	UASSERT(std::abs(readF32(is) + 1.000421E20f) <=
+			std::numeric_limits<f32>::epsilon());
+
 	UASSERT(deSerializeString(is) == "foobar!");
 
 	UASSERT(readV2S16(is) == v2s16(500, 500));
@@ -347,6 +354,9 @@ void TestSerialization::testStreamWrite()
 	writeF1000(os, -300000.32f);
 	writeF1000(os, F1000_MIN);
 	writeF1000(os, F1000_MAX);
+
+	writeF32(os, 4.19503789E-7f);
+	writeF32(os, -1.000421E20f);
 
 	os << serializeString("foobar!");
 
@@ -393,6 +403,9 @@ void TestSerialization::testVecPut()
 	putF1000(&buf, -300000.32f);
 	putF1000(&buf, F1000_MIN);
 	putF1000(&buf, F1000_MAX);
+
+	putF32(&buf, 4.19503789E-7f);
+	putF32(&buf, -1.000421E20f);
 
 	putString(&buf, "foobar!");
 
@@ -446,6 +459,7 @@ void TestSerialization::testBufReader()
 	s32 s32_data;
 	s64 s64_data;
 	f32 f32_data, f32_data2, f32_data3, f32_data4;
+	f32 f32_data5, f32_data6;
 	video::SColor scolor_data;
 	v2s16 v2s16_data;
 	v3s16 v3s16_data;
@@ -473,6 +487,10 @@ void TestSerialization::testBufReader()
 	UASSERT(buf.getF1000() == -300000.32f);
 	UASSERT(buf.getF1000() == F1000_MIN);
 	UASSERT(buf.getF1000() == F1000_MAX);
+	UASSERT(std::abs(buf.getF32() - 4.19503789E-7f) <=
+			std::numeric_limits<f32>::epsilon());
+	UASSERT(std::abs(buf.getF32() + 1.000421E20f) <=
+			std::numeric_limits<f32>::epsilon());
 	UASSERT(buf.getString() == "foobar!");
 	UASSERT(buf.getV2S16() == v2s16(500, 500));
 	UASSERT(buf.getV3S16() == v3s16(4207, 604, -30));
@@ -517,6 +535,7 @@ void TestSerialization::testBufReader()
 	EXCEPTION_CHECK(SerializationError, buf.getS64());
 
 	EXCEPTION_CHECK(SerializationError, buf.getF1000());
+	EXCEPTION_CHECK(SerializationError, buf.getF32());
 	EXCEPTION_CHECK(SerializationError, buf.getARGB8());
 
 	EXCEPTION_CHECK(SerializationError, buf.getV2S16());
@@ -560,6 +579,9 @@ void TestSerialization::testBufReader()
 	UASSERT(buf.getF1000NoEx(&f32_data3));
 	UASSERT(buf.getF1000NoEx(&f32_data4));
 
+	UASSERT(buf.getF32NoEx(&f32_data5));
+	UASSERT(buf.getF32NoEx(&f32_data6));
+
 	UASSERT(buf.getStringNoEx(&string_data));
 	UASSERT(buf.getV2S16NoEx(&v2s16_data));
 	UASSERT(buf.getV3S16NoEx(&v3s16_data));
@@ -585,6 +607,10 @@ void TestSerialization::testBufReader()
 	UASSERT(f32_data2 == -300000.32f);
 	UASSERT(f32_data3 == F1000_MIN);
 	UASSERT(f32_data4 == F1000_MAX);
+	UASSERT(std::abs(f32_data5 - 4.19503789E-7f) <=
+			std::numeric_limits<f32>::epsilon());
+	UASSERT(std::abs(f32_data6 + 1.000421E20f) <=
+			std::numeric_limits<f32>::epsilon());
 	UASSERT(string_data == "foobar!");
 	UASSERT(v2s16_data == v2s16(500, 500));
 	UASSERT(v3s16_data == v3s16(4207, 604, -30));
@@ -616,6 +642,7 @@ void TestSerialization::testBufReader()
 	UASSERT(!buf.getS64NoEx(&s64_data));
 
 	UASSERT(!buf.getF1000NoEx(&f32_data));
+	UASSERT(!buf.getF32NoEx(&f32_data));
 	UASSERT(!buf.getARGB8NoEx(&scolor_data));
 
 	UASSERT(!buf.getV2S16NoEx(&v2s16_data));
@@ -632,11 +659,12 @@ void TestSerialization::testBufReader()
 }
 
 
-const u8 TestSerialization::test_serialized_data[12 * 13] = {
+const u8 TestSerialization::test_serialized_data[12 * 13 + 8] = {
 	0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88, 0x99, 0xaa, 0xbb, 0xcc,
 	0xdd, 0xee, 0xff, 0x80, 0x75, 0x30, 0xff, 0xff, 0xff, 0xfa, 0xff, 0xff,
 	0xff, 0xff, 0xff, 0xff, 0xff, 0xd5, 0x00, 0x00, 0xd1, 0x1e, 0xee, 0x1e,
-	0x5b, 0xc0, 0x80, 0x00, 0x02, 0x80, 0x7F, 0xFF, 0xFD, 0x80, 0x00, 0x07,
+	0x5b, 0xc0, 0x80, 0x00, 0x02, 0x80, 0x7F, 0xFF, 0xFD, 0x80, 0xEA, 0x70,
+	0x9C, 0x14, 0x42, 0xA9, 0x3A, 0x31, 0x00, 0x07,
 	0x66, 0x6f, 0x6f, 0x62, 0x61, 0x72, 0x21, 0x01, 0xf4, 0x01, 0xf4, 0x10,
 	0x6f, 0x02, 0x5c, 0xff, 0xe2, 0x00, 0x00, 0x07, 0x80, 0x00, 0x00, 0x04,
 	0x38, 0xff, 0xff, 0xfe, 0x70, 0x00, 0x61, 0xa8, 0x36, 0x11, 0x51, 0x70,

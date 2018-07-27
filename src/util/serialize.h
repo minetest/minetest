@@ -654,6 +654,17 @@ inline void putF1000(std::vector<u8> *dest, f32 val)
 	putS32(dest, val * FIXEDPOINT_FACTOR);
 }
 
+inline void putF32(std::vector<u8> *dest, f32 val)
+{
+	assert(!std::isnan(val) && !std::isinf(val));
+	float fraction;
+	int exponent;
+	fraction = frexp(val, &exponent) * 0x800000;
+
+	u32 dat = (u32)(exponent - 1) << 24 | ((u32)fraction & 0xFFFFFF);
+	putU32(dest, dat);
+}
+
 inline void putV2S16(std::vector<u8> *dest, v2s16 val)
 {
 	putS16(dest, val.X);
