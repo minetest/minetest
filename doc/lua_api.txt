@@ -4939,14 +4939,22 @@ This is basically a reference to a C++ `ServerActiveObject`
       `position`, `name`, `scale`, `text`, `number`, `item`, `dir`
 * `hud_get(id)`: gets the HUD element definition structure of the specified ID
 * `hud_set_flags(flags)`: sets specified HUD flags of player.
-    * A table containing a `true`/`false` value of the HUD flags to be set or
-      unset. See `Player HUD Flags` section for a list of possible flags.
+    * A table containing fields with boolean values of the HUD flags to be set or
+      unset. See `hud_get_flags` below for a list of possible flags.
     * if a flag equals `nil`, the flag is not modified
     * note that setting `minimap` modifies the client's permission to view the
       minimap - the client may locally elect to not view the minimap.
     * minimap `radar` is only usable when `minimap` is true
-* `hud_get_flags()`: returns a table containing the player's HUD flags.
-	* See `Player HUD Flags` section for a list of possible flags.
+* `hud_get_flags()`: returns a table of booleans containing the player's HUD flags.
+        * {
+               hotbar,
+               healthbar,
+               crosshair,
+               wielditem,
+               breathbar,
+               minimap,
+               minimap_radar
+           }.
 * `hud_set_hotbar_itemcount(count)`: sets number of items in builtin hotbar
     * `count`: number of items, must be between `1` and `23`
 * `hud_get_hotbar_itemcount`: returns number of visible items
@@ -6199,21 +6207,6 @@ Used by `Player:hud_add`. Returned by `Player:hud_get`.
     --  ^ Size of element in pixels
     }
     
-Player HUD Flags
-----------------
-
-Used by `Player:hud_set_flags`. Returned by `Player:hud_get_flags`
-
-    {
-        hotbar,
-        healthbar,
-        crosshair,
-        wielditem,
-        breathbar,
-        minimap,
-        minimap_radar
-    }
-
 Particle definition
 -------------------
 
