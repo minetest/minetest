@@ -25,6 +25,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "content/mods.h"
 #include "content/subgames.h"
 
+std::string Package::getDownloadURL(const std::string &baseURL) const
+{
+	return baseURL + "/packages/" + author + "/" + name + "/releases/" +
+	       std::to_string(release) + "/download/";
+}
+
 #if USE_CURL
 std::vector<Package> getPackagesFromURL(const std::string &url)
 {
@@ -60,5 +66,4 @@ std::vector<Package> getPackagesFromURL(const std::string &url)
 
 	return packages;
 }
-
 #endif

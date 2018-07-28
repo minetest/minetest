@@ -39,6 +39,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <IFileArchive.h>
 #include <IFileSystem.h>
 #include "client/renderingengine.h"
+#include "network/networkprotocol.h"
 
 
 /******************************************************************************/
@@ -993,7 +994,9 @@ int ModApiMainMenu::l_get_screen_info(lua_State *L)
 int ModApiMainMenu::l_get_package_list(lua_State *L)
 {
 	std::string url = g_settings->get("contentdb_url");
-	std::vector<Package> packages = getPackagesFromURL(url + "/api/packages/");
+	std::vector<Package> packages = getPackagesFromURL(url +
+			"/api/packages/?type=mod&type=game&type=txp&protocol_version="
+			LATEST_PROTOCOL_VERSION_STRING);
 
 	// Make table
 	lua_newtable(L);

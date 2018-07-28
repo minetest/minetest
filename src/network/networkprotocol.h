@@ -191,6 +191,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #define LATEST_PROTOCOL_VERSION 36
+#define LATEST_PROTOCOL_VERSION_STRING TOSTRING(LATEST_PROTOCOL_VERSION)
 
 // Server's supported network protocol range
 #define SERVER_PROTOCOL_VERSION_MIN 36
