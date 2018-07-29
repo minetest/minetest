@@ -4945,16 +4945,18 @@ This is basically a reference to a C++ `ServerActiveObject`
     * note that setting `minimap` modifies the client's permission to view the
       minimap - the client may locally elect to not view the minimap.
     * minimap `radar` is only usable when `minimap` is true
-* `hud_get_flags()`: returns a table of booleans containing the player's HUD flags.
-        * {
-               hotbar,
-               healthbar,
-               crosshair,
-               wielditem,
-               breathbar,
-               minimap,
-               minimap_radar
-           }.
+* `hud_get_flags()`: returns a table of player HUD flags with boolean values.
+    * ```
+      {
+           hotbar,
+           healthbar,
+           crosshair,
+           wielditem,
+           breathbar,
+           minimap,
+           minimap_radar
+       }
+       ```
 * `hud_set_hotbar_itemcount(count)`: sets number of items in builtin hotbar
     * `count`: number of items, must be between `1` and `23`
 * `hud_get_hotbar_itemcount`: returns number of visible items
@@ -6206,7 +6208,7 @@ Used by `Player:hud_add`. Returned by `Player:hud_get`.
         size = { x=100, y=100 },
     --  ^ Size of element in pixels
     }
-    
+
 Particle definition
 -------------------
 
