@@ -28,7 +28,7 @@ Further documentation
 Default controls
 ----------------
 All controls are re-bindable using settings.
-Some can be changes in the key config dialog in the settings tab.
+Some can be changed in the key config dialog in the settings tab.
 
 | Button                        | Action                                                         |
 |-------------------------------|----------------------------------------------------------------|
@@ -189,32 +189,32 @@ Run it:
 
 ### CMake options
 
-General options:
+General options and their default values:
 
-    BUILD_CLIENT           - Build Minetest client
-    BUILD_SERVER           - Build Minetest server
-    CMAKE_BUILD_TYPE       - Type of build (Release vs. Debug)
-        Release            - Release build
-        Debug              - Debug build
-        SemiDebug          - Partially optimized debug build
-        RelWithDebInfo     - Release build with Debug information
-        MinSizeRel         - Release build with -Os passed to compiler to make executable as small as possible
-    ENABLE_CURL            - Build with cURL; Enables use of online mod repo, public serverlist and remote media fetching via http
-    ENABLE_CURSES          - Build with (n)curses; Enables a server side terminal (command line option: --terminal)
-    ENABLE_FREETYPE        - Build with FreeType2; Allows using TTF fonts
-    ENABLE_GETTEXT         - Build with Gettext; Allows using translations
-    ENABLE_GLES            - Search for Open GLES headers & libraries and use them
-    ENABLE_LEVELDB         - Build with LevelDB; Enables use of LevelDB map backend
-    ENABLE_POSTGRESQL      - Build with libpq; Enables use of PostgreSQL map backend (PostgreSQL 9.5 or greater recommended)
-    ENABLE_REDIS           - Build with libhiredis; Enables use of Redis map backend
-    ENABLE_SPATIAL         - Build with LibSpatial; Speeds up AreaStores
-    ENABLE_SOUND           - Build with OpenAL, libogg & libvorbis; in-game Sounds
-    ENABLE_LUAJIT          - Build with LuaJIT (much faster than non-JIT Lua)
-    ENABLE_SYSTEM_GMP      - Use GMP from system (much faster than bundled mini-gmp)
-    ENABLE_SYSTEM_JSONCPP  - Use JsonCPP from system
-    RUN_IN_PLACE           - Create a portable install (worlds, settings etc. in current directory)
-    USE_GPROF              - Enable profiling using GProf
-    VERSION_EXTRA          - Text to append to version (e.g. VERSION_EXTRA=foobar -> Minetest 0.4.9-foobar)
+    BUILD_CLIENT=TRUE          - Build Minetest client
+    BUILD_SERVER=FALSE         - Build Minetest server
+    CMAKE_BUILD_TYPE=Release   - Type of build (Release vs. Debug)
+        Release                - Release build
+        Debug                  - Debug build
+        SemiDebug              - Partially optimized debug build
+        RelWithDebInfo         - Release build with Debug information
+        MinSizeRel             - Release build with -Os passed to compiler to make executable as small as possible
+    ENABLE_CURL=ON             - Build with cURL; Enables use of online mod repo, public serverlist and remote media fetching via http
+    ENABLE_CURSES=ON           - Build with (n)curses; Enables a server side terminal (command line option: --terminal)
+    ENABLE_FREETYPE=ON         - Build with FreeType2; Allows using TTF fonts
+    ENABLE_GETTEXT=ON          - Build with Gettext; Allows using translations
+    ENABLE_GLES=OFF            - Search for Open GLES headers & libraries and use them
+    ENABLE_LEVELDB=ON          - Build with LevelDB; Enables use of LevelDB map backend
+    ENABLE_POSTGRESQL=ON       - Build with libpq; Enables use of PostgreSQL map backend (PostgreSQL 9.5 or greater recommended)
+    ENABLE_REDIS=ON            - Build with libhiredis; Enables use of Redis map backend
+    ENABLE_SPATIAL=ON          - Build with LibSpatial; Speeds up AreaStores
+    ENABLE_SOUND=ON            - Build with OpenAL, libogg & libvorbis; in-game Sounds
+    ENABLE_LUAJIT=ON           - Build with LuaJIT (much faster than non-JIT Lua)
+    ENABLE_SYSTEM_GMP=ON       - Use GMP from system (much faster than bundled mini-gmp)
+    ENABLE_SYSTEM_JSONCPP=OFF  - Use JsonCPP from system
+    RUN_IN_PLACE=FALSE         - Create a portable install (worlds, settings etc. in current directory)
+    USE_GPROF=FALSE            - Enable profiling using GProf
+    VERSION_EXTRA=             - Text to append to version (e.g. VERSION_EXTRA=foobar -> Minetest 0.4.9-foobar)
 
 Library specific options:
     
