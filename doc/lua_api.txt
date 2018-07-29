@@ -5280,10 +5280,15 @@ Entity definition
 Used by `minetest.register_entity`.
 
     {
-    --  Deprecated: Everything in object properties is read directly from here
-
-        initial_properties = --[[<initial object properties>]],
-
+        initial_properties = {
+            visual = "mesh",
+            mesh = "boats_boat.obj",
+            ...,
+        },
+    --  ^ A table of object properties, see the `Object properties` section.
+    --  ^ Object properties being read directly from the entity definition
+    --    table is deprecated. Define object properties in this
+    --    `initial_properties` table instead.
         on_activate = function(self, staticdata, dtime_s),
         on_step = function(self, dtime),
         on_punch = function(self, puncher, time_from_last_punch, tool_capabilities, dir),
