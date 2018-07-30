@@ -4941,13 +4941,13 @@ This is basically a reference to a C++ `ServerActiveObject`
 * `hud_set_flags(flags)`: sets specified HUD flags of player.
     * `flags`: A table of player HUD flags with boolean values.
     * List of flags that can be toggled:
-      * hotbar
-      * healthbar
-      * crosshair
-      * wielditem
-      * breathbar
-      * minimap
-      * minimap_radar
+        * hotbar
+        * healthbar
+        * crosshair
+        * wielditem
+        * breathbar
+        * minimap
+        * minimap_radar
     * If a flag equals `nil`, the flag is not modified
     * `minimap`: Modifies the client's permission to view the minimap.
       The client may locally elect to not view the minimap.
