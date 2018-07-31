@@ -478,8 +478,8 @@ void Sky::render()
 				vertices[i * 3 + 2].Pos = p2;
 				vertices[i * 3 + 2].Color = starcolor;
 			}
-			driver->drawIndexedTriangleList(&vertices[0], SKY_STAR_COUNT * 3,
-					&indices[0], SKY_STAR_COUNT);
+			driver->drawIndexedTriangleList(vertices, SKY_STAR_COUNT * 3,
+					indices, SKY_STAR_COUNT);
 #else
 			u16 indices[SKY_STAR_COUNT * 4];
 			video::S3DVertex vertices[SKY_STAR_COUNT * 4];
