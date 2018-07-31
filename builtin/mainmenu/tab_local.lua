@@ -94,8 +94,8 @@ local function get_formspec(tabview, name, tabdata)
 
 	retval = retval ..
 			"button[4,3.95;2.6,1;world_delete;".. fgettext("Delete") .. "]" ..
-			"button[6.5,3.95.15;2.8,1;world_create;".. fgettext("New") .. "]" ..
-			"button[9.2,3.95;2.5,1;world_configure;".. fgettext("Configure") .. "]" ..
+			"button[6.5,3.95;2.8,1;world_configure;".. fgettext("Configure") .. "]" ..
+			"button[9.2,3.95;2.5,1;world_create;".. fgettext("New") .. "]" ..
 			"label[4,-0.25;".. fgettext("Select World:") .. "]"..
 			"checkbox[0.25,0.25;cb_creative_mode;".. fgettext("Creative Mode") .. ";" ..
 			dump(core.settings:get_bool("creative_mode")) .. "]"..
