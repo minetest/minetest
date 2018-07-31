@@ -4774,7 +4774,7 @@ This is basically a reference to a C++ `ServerActiveObject`
 * `remove()`: remove object (after returning from Lua)
     * Note: Doesn't work on players, use `minetest.kick_player` instead
 * `get_pos()`: returns `{x=num, y=num, z=num}`
-* `set_pos(pos)`; `pos`=`{x=num, y=num, z=num}`
+* `set_pos(pos)`: `pos`=`{x=num, y=num, z=num}`
 * `move_to(pos, continuous=false)`: interpolated move
 * `punch(puncher, time_from_last_punch, tool_capabilities, direction)`
     * `puncher` = another `ObjectRef`,
