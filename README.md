@@ -23,7 +23,7 @@ Table of Contents
 2. [Default Controls](#default-controls)
 3. [Paths](#paths)
 4. [Configuration File](#configuration-file)
-5. [Command-Line Options](#command-line-options)
+5. [Command-line Options](#command-line-options)
 6. [Compiling](#compiling)
 7. [Version Scheme](#version-scheme)
 
