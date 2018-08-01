@@ -2339,7 +2339,7 @@ bool ServerEnvironment::migrateAuthDatabase(
 			success = srcdb->getAuth(name, authEntry);
 			success = success && dstdb->createAuth(authEntry);
 			if (!success)
-				actionstream << "Failed to migrate " << name << std::endl;
+				errorstream << "Failed to migrate " << name << std::endl;
 		}
 
 		actionstream << "Successfully migrated " << names_list.size()
@@ -2350,9 +2350,28 @@ bool ServerEnvironment::migrateAuthDatabase(
 		else
 			actionstream << "world.mt updated" << std::endl;
 
+		if (backend == "files") {
+			// special-case files migration:
+			// move auth.txt to auth.txt.bak if possible
+			std::string auth_txt_path =
+					game_params.world_path + DIR_DELIM + "auth.txt";
+			std::string auth_bak_path = auth_txt_path + ".bak";
+			if (!fs::PathExists(auth_bak_path))
+				if (fs::Rename(auth_txt_path, auth_bak_path))
+					actionstream << "Renamed auth.txt to auth.txt.bak"
+						     << std::endl;
+				else
+					errorstream << "Could not rename auth.txt to "
+						       "auth.txt.bak"
+						    << std::endl;
+			else
+				warningstream << "auth.txt.bak already exists, auth.txt "
+						 "not renamed" << std::endl;
+		} else errorstream << "NOT FILES?" << std::endl;
+
 	} catch (BaseException &e) {
 		errorstream << "An error occured during migration: " << e.what()
-				<< std::endl;
+			    << std::endl;
 		return false;
 	}
 	return true;
