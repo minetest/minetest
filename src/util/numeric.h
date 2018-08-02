@@ -376,3 +376,22 @@ inline u32 npot2(u32 orig) {
 	orig |= orig >> 16;
 	return orig + 1;
 }
+
+// Gradual steps towards the target value in a wrapped (circular) system
+// using the shorter of both ways
+template<typename T>
+inline void wrappedApproachShortest(T &current, const T target, const T stepsize,
+	const T maximum)
+{
+	T delta = target - current;
+	if (delta < 0)
+		delta += maximum;
+
+	if (delta > stepsize && maximum - delta > stepsize) {
+		current += (delta < maximum / 2) ? stepsize : -stepsize;
+		if (current >= maximum)
+			current -= maximum;
+	} else {
+		current = target;
+	}
+}

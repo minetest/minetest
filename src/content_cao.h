@@ -34,22 +34,28 @@ struct Nametag;
 	SmoothTranslator
 */
 
+template<typename T>
 struct SmoothTranslator
 {
-	v3f vect_old;
-	v3f vect_show;
-	v3f vect_aim;
-	f32 anim_counter = 0;
+	T val_old;
+	T val_current;
+	T val_target;
 	f32 anim_time = 0;
 	f32 anim_time_counter = 0;
 	bool aim_is_end = true;
 
 	SmoothTranslator() = default;
 
-	void init(v3f vect);
+	void init(T current);
 
-	void update(v3f vect_new, bool is_end_position=false, float update_interval=-1);
+	void update(T new_target, bool is_end_position = false,
+		float update_interval = -1);
 
+	void translate(f32 dtime);
+};
+
+struct SmoothTranslatorWrapped : SmoothTranslator<f32>
+{
 	void translate(f32 dtime);
 };
 
@@ -76,7 +82,8 @@ private:
 	v3f m_acceleration;
 	float m_yaw = 0.0f;
 	s16 m_hp = 1;
-	SmoothTranslator pos_translator;
+	SmoothTranslator<v3f> pos_translator;
+	SmoothTranslatorWrapped yaw_translator;
 	// Spritesheet/animation stuff
 	v2f m_tx_size = v2f(1,1);
 	v2s16 m_tx_basepos;

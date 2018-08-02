@@ -53,51 +53,65 @@ struct ToolCapabilities;
 
 std::unordered_map<u16, ClientActiveObject::Factory> ClientActiveObject::m_types;
 
-void SmoothTranslator::init(v3f vect)
+template<typename T>
+void SmoothTranslator<T>::init(T current)
 {
-	vect_old = vect;
-	vect_show = vect;
-	vect_aim = vect;
-	anim_counter = 0;
+	val_old = current;
+	val_current = current;
+	val_target = current;
 	anim_time = 0;
 	anim_time_counter = 0;
 	aim_is_end = true;
 }
 
-void SmoothTranslator::update(v3f vect_new, bool is_end_position, float update_interval)
+template<typename T>
+void SmoothTranslator<T>::update(T new_target, bool is_end_position, float update_interval)
 {
 	aim_is_end = is_end_position;
-	vect_old = vect_show;
-	vect_aim = vect_new;
-	if(update_interval > 0)
-	{
+	val_old = val_current;
+	val_target = new_target;
+	if (update_interval > 0) {
 		anim_time = update_interval;
 	} else {
-		if(anim_time < 0.001 || anim_time > 1.0)
+		if (anim_time < 0.001 || anim_time > 1.0)
 			anim_time = anim_time_counter;
 		else
 			anim_time = anim_time * 0.9 + anim_time_counter * 0.1;
 	}
 	anim_time_counter = 0;
-	anim_counter = 0;
 }
 
-void SmoothTranslator::translate(f32 dtime)
+template<typename T>
+void SmoothTranslator<T>::translate(f32 dtime)
 {
 	anim_time_counter = anim_time_counter + dtime;
-	anim_counter = anim_counter + dtime;
-	v3f vect_move = vect_aim - vect_old;
+	T val_diff = val_target - val_old;
 	f32 moveratio = 1.0;
-	if(anim_time > 0.001)
+	if (anim_time > 0.001)
 		moveratio = anim_time_counter / anim_time;
+	f32 move_end = aim_is_end ? 1.0 : 1.5;
+
 	// Move a bit less than should, to avoid oscillation
-	moveratio = moveratio * 0.8;
-	float move_end = 1.5;
-	if(aim_is_end)
-		move_end = 1.0;
-	if(moveratio > move_end)
-		moveratio = move_end;
-	vect_show = vect_old + vect_move * moveratio;
+	moveratio = std::min(moveratio * 0.8f, move_end);
+	val_current = val_old + val_diff * moveratio;
+}
+
+void SmoothTranslatorWrapped::translate(f32 dtime)
+{
+	anim_time_counter = anim_time_counter + dtime;
+	f32 val_diff = std::abs(val_target - val_old);
+	if (val_diff > 180.f)
+		val_diff = 360.f - val_diff;
+
+	f32 moveratio = 1.0;
+	if (anim_time > 0.001)
+		moveratio = anim_time_counter / anim_time;
+	f32 move_end = aim_is_end ? 1.0 : 1.5;
+
+	// Move a bit less than should, to avoid oscillation
+	moveratio = std::min(moveratio * 0.8f, move_end);
+	wrappedApproachShortest(val_current, val_target,
+		val_diff * moveratio, 360.f);
 }
 
 /*
@@ -331,7 +345,9 @@ void GenericCAO::processInitData(const std::string &data)
 		processMessage(message);
 	}
 
+	m_yaw = wrapDegrees_0_360(m_yaw);
 	pos_translator.init(m_position);
+	yaw_translator.init(m_yaw);
 	updateNodePos();
 }
 
@@ -359,7 +375,7 @@ v3f GenericCAO::getPosition()
 
 		return m_position;
 	}
-	return pos_translator.vect_show;
+	return pos_translator.val_current;
 }
 
 const bool GenericCAO::isImmortal()
@@ -717,10 +733,10 @@ void GenericCAO::updateNodePos()
 
 	if (node) {
 		v3s16 camera_offset = m_env->getCameraOffset();
-		node->setPosition(pos_translator.vect_show - intToFloat(camera_offset, BS));
+		node->setPosition(pos_translator.val_current - intToFloat(camera_offset, BS));
 		if (node != m_spritenode) { // rotate if not a sprite
 			v3f rot = node->getRotation();
-			rot.Y = -m_yaw;
+			rot.Y = m_is_local_player ? -m_yaw : -yaw_translator.val_current;
 			node->setRotation(rot);
 		}
 	}
@@ -735,10 +751,11 @@ void GenericCAO::step(float dtime, ClientEnvironment *env)
 			int old_anim = player->last_animation;
 			float old_anim_speed = player->last_animation_speed;
 			m_position = player->getPosition();
+			m_yaw = wrapDegrees_0_360(player->getYaw());
 			m_velocity = v3f(0,0,0);
 			m_acceleration = v3f(0,0,0);
-			pos_translator.vect_show = m_position;
-			m_yaw = player->getYaw();
+			pos_translator.val_current = m_position;
+			yaw_translator.val_current = m_yaw;
 			const PlayerControl &controls = player->getPlayerControl();
 
 			bool walking = false;
@@ -841,7 +858,7 @@ void GenericCAO::step(float dtime, ClientEnvironment *env)
 		m_position = getPosition();
 		m_velocity = v3f(0,0,0);
 		m_acceleration = v3f(0,0,0);
-		pos_translator.vect_show = m_position;
+		pos_translator.val_current = m_position;
 
 		if(m_is_local_player) // Update local player attachment position
 		{
@@ -850,7 +867,8 @@ void GenericCAO::step(float dtime, ClientEnvironment *env)
 			m_env->getLocalPlayer()->parent = getParent();
 		}
 	} else {
-		v3f lastpos = pos_translator.vect_show;
+		yaw_translator.translate(dtime);
+		v3f lastpos = pos_translator.val_current;
 
 		if(m_prop.physical)
 		{
@@ -882,7 +900,7 @@ void GenericCAO::step(float dtime, ClientEnvironment *env)
 			updateNodePos();
 		}
 
-		float moved = lastpos.getDistanceFrom(pos_translator.vect_show);
+		float moved = lastpos.getDistanceFrom(pos_translator.val_current);
 		m_step_distance_counter += moved;
 		if (m_step_distance_counter > 1.5f * BS) {
 			m_step_distance_counter = 0.0f;
@@ -921,6 +939,7 @@ void GenericCAO::step(float dtime, ClientEnvironment *env)
 	}
 	if (!getParent() && std::fabs(m_prop.automatic_rotate) > 0.001) {
 		m_yaw += dtime * m_prop.automatic_rotate * 180 / M_PI;
+		yaw_translator.val_current = m_yaw;
 		updateNodePos();
 	}
 
@@ -931,14 +950,9 @@ void GenericCAO::step(float dtime, ClientEnvironment *env)
 				+ m_prop.automatic_face_movement_dir_offset;
 		float max_rotation_delta =
 				dtime * m_prop.automatic_face_movement_max_rotation_per_sec;
-		float delta = wrapDegrees_0_360(target_yaw - m_yaw);
 
-		if (delta > max_rotation_delta && 360 - delta > max_rotation_delta) {
-			m_yaw += (delta < 180) ? max_rotation_delta : -max_rotation_delta;
-			m_yaw = wrapDegrees_0_360(m_yaw);
-		} else {
-			m_yaw = target_yaw;
-		}
+		wrappedApproachShortest(m_yaw, target_yaw, max_rotation_delta, 360.f);
+		yaw_translator.val_current = m_yaw;
 		updateNodePos();
 	}
 }
@@ -1304,6 +1318,7 @@ void GenericCAO::processMessage(const std::string &data)
 			m_yaw = readF1000(is);
 		else
 			readF1000(is);
+		m_yaw = wrapDegrees_0_360(m_yaw);
 		bool do_interpolate = readU8(is);
 		bool is_end_position = readU8(is);
 		float update_interval = readF1000(is);
@@ -1323,6 +1338,7 @@ void GenericCAO::processMessage(const std::string &data)
 		} else {
 			pos_translator.init(m_position);
 		}
+		yaw_translator.update(m_yaw, false, update_interval);
 		updateNodePos();
 	} else if (cmd == GENERIC_CMD_SET_TEXTURE_MOD) {
 		std::string mod = deSerializeString(is);
