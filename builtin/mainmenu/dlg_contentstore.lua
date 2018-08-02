@@ -381,7 +381,7 @@ function store.get_formspec()
 
 		-- image
 		formspec[#formspec + 1] = "image[-0.4,0;1.5,1;"
-		formspec[#formspec + 1] = get_screenshot(package)
+		formspec[#formspec + 1] = core.formspec_escape(get_screenshot(package))
 		formspec[#formspec + 1] = "]"
 
 		-- title
