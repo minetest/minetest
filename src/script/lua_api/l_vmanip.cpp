@@ -91,7 +91,7 @@ int LuaVoxelManip::l_set_data(lua_State *L)
 	MMVManip *vm = o->vm;
 
 	if (!lua_istable(L, 2))
-		return 0;
+		throw LuaError("VoxelManip:set_data called with missing parameter");
 
 	u32 volume = vm->m_area.getVolume();
 	for (u32 i = 0; i != volume; i++) {
@@ -185,8 +185,11 @@ int LuaVoxelManip::l_calc_lighting(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 
 	LuaVoxelManip *o = checkobject(L, 1);
-	if (!o->is_mapgen_vm)
+	if (!o->is_mapgen_vm) {
+		warningstream << "VoxelManip:calc_lighting called for a non-mapgen "
+			"VoxelManip object" << std::endl;
 		return 0;
+	}
 
 	const NodeDefManager *ndef = getServer(L)->getNodeDefManager();
 	EmergeManager *emerge = getServer(L)->getEmergeManager();
@@ -218,11 +221,14 @@ int LuaVoxelManip::l_set_lighting(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 
 	LuaVoxelManip *o = checkobject(L, 1);
-	if (!o->is_mapgen_vm)
+	if (!o->is_mapgen_vm) {
+		warningstream << "VoxelManip:set_lighting called for a non-mapgen "
+			"VoxelManip object" << std::endl;
 		return 0;
+	}
 
 	if (!lua_istable(L, 2))
-		return 0;
+		throw LuaError("VoxelManip:set_lighting called with missing parameter");
 
 	u8 light;
 	light  = (getintfield_default(L, 2, "day",   0) & 0x0F);
@@ -273,7 +279,8 @@ int LuaVoxelManip::l_set_light_data(lua_State *L)
 	MMVManip *vm = o->vm;
 
 	if (!lua_istable(L, 2))
-		return 0;
+		throw LuaError("VoxelManip:set_light_data called with missing "
+				"parameter");
 
 	u32 volume = vm->m_area.getVolume();
 	for (u32 i = 0; i != volume; i++) {
@@ -321,7 +328,8 @@ int LuaVoxelManip::l_set_param2_data(lua_State *L)
 	MMVManip *vm = o->vm;
 
 	if (!lua_istable(L, 2))
-		return 0;
+		throw LuaError("VoxelManip:set_param2_data called with missing "
+				"parameter");
 
 	u32 volume = vm->m_area.getVolume();
 	for (u32 i = 0; i != volume; i++) {
