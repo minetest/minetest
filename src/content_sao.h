@@ -42,7 +42,9 @@ public:
 	// Use a function, if isDead can be defined by other conditions
 	bool isDead() const { return m_hp == 0; }
 
-	bool isAttached() const;
+	inline bool isAttached() const
+	{ return getParent(); }
+
 	void setArmorGroups(const ItemGroupList &armor_groups);
 	const ItemGroupList &getArmorGroups();
 	void setAnimation(v2f frame_range, float frame_speed, float frame_blend, bool frame_loop);
@@ -57,6 +59,7 @@ public:
 	void addAttachmentChild(int child_id);
 	void removeAttachmentChild(int child_id);
 	const std::unordered_set<int> &getAttachmentChildIds();
+	ServerActiveObject *getParent() const;
 	ObjectProperties* accessObjectProperties();
 	void notifyObjectPropertiesModified();
 protected:

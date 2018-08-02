@@ -132,8 +132,6 @@ public:
 
 	void processInitData(const std::string &data);
 
-	ClientActiveObject *getParent() const;
-
 	bool getCollisionBox(aabb3f *toset) const;
 
 	bool collideWithObjects() const;
@@ -173,6 +171,8 @@ public:
 	}
 
 	void setChildrenVisible(bool toset);
+
+	ClientActiveObject *getParent() const;
 
 	void setAttachments();
 
