@@ -5180,7 +5180,7 @@ Used by `ObjectRef` methods. Part of an Entity definition.
 
     {
         hp_max = 1,
-        -- For players defaults to `minetest.PLAYER_MAX_HP_DEFAULT`
+        -- For players only. Defaults to `minetest.PLAYER_MAX_HP_DEFAULT`.
 
         breath_max = 0,
         -- For players only. Defaults to `minetest.PLAYER_MAX_BREATH_DEFAULT`.
@@ -5206,7 +5206,7 @@ Used by `ObjectRef` methods. Part of an Entity definition.
 
         collisionbox = {-0.5, 0.0, -0.5, 0.5, 1.0, 0.5},  -- Default
         selectionbox = {-0.5, 0.0, -0.5, 0.5, 1.0, 0.5},
-        -- ^ Uses collision box dimensions when not set.
+        -- Selection box uses collision box dimensions when not set.
         -- For both boxes: {xmin, ymin, zmin, xmax, ymax, zmax} in nodes from
         -- object position.
 
@@ -5218,17 +5218,17 @@ Used by `ObjectRef` methods. Part of an Entity definition.
         -- "sprite" is a flat texture always facing the player.
         -- "upright_sprite" is a vertical flat texture.
         -- "mesh" uses the defined mesh model.
-        -- "wielditem" is used for dropped items
-        -- (see builtin/game/item_entity.lua).
-        -- For this use 'textures = {itemname}'.
-        -- If the item has a 'wield_image' the object will be an extrusion of
-        -- that, otherwise:
-        -- If 'itemname' is a cubic node or nodebox the object will appear
-        -- identical to 'itemname'.
-        -- If 'itemname' is a plantlike node the object will be an extrusion of
-        -- its texture.
-        -- Otherwise for non-node items, the object will be an extrusion of
-        -- 'inventory_image'.
+        -- "wielditem" is used for dropped items.
+        --   (see builtin/game/item_entity.lua).
+        --   For this use 'textures = {itemname}'.
+        --   If the item has a 'wield_image' the object will be an extrusion of
+        --   that, otherwise:
+        --   If 'itemname' is a cubic node or nodebox the object will appear
+        --   identical to 'itemname'.
+        --   If 'itemname' is a plantlike node the object will be an extrusion
+        --   of its texture.
+        --   Otherwise for non-node items, the object will be an extrusion of
+        --   'inventory_image'.
 
         visual_size = {x = 1, y = 1},
         -- `x` multiplies horizontal (X and Z) visual size.
@@ -5312,7 +5312,11 @@ Entity definition
 Used by `minetest.register_entity`.
 
     {
-        initial_properties = <initial object properties>,
+        initial_properties = {
+            visual = "mesh",
+            mesh = "boats_boat.obj",
+            ...,
+        },
         -- A table of object properties, see the `Object properties` section.
         -- Object properties being read directly from the entity definition
         -- table is deprecated. Define object properties in this
@@ -5877,8 +5881,9 @@ Used by `minetest.register_craft`.
             {'', 'default:stick', ''},
             {'', 'default:stick', ''},  -- Also groups; e.g. 'group:crumbly'
         },
-        -- Optional; replace one input item with another item on crafting
         replacements = <list of item pairs>,
+        -- `replacements`: replace one input item with another item on crafting
+        -- (optional).
     }
 
 ### Shapeless
@@ -5891,8 +5896,9 @@ Used by `minetest.register_craft`.
             "mushrooms:mushroom_brown",
             "mushrooms:mushroom_red",
         },
-        -- Optional; replace one input item with another item on crafting
         replacements = <list of item pairs>,
+        -- `replacements`: replace one input item with another item on crafting
+        -- (optional).
     }
 
 ### Tool repair
@@ -5961,12 +5967,6 @@ See 'Ores' section above for essential information.
         -- If noise is above this threshold, ore is placed. Not needed for a
         -- uniform distribution.
 
-        -- NoiseParams structure describing one of the perlin noises used for
-        -- ore distribution.
-        -- Needed by "sheet", "puff", "blob" and "vein" ores.
-        -- Omit from "scatter" ore for a uniform ore distribution.
-        -- Omit from "stratum" ore for a simple horizontal strata from y_min to
-        -- y_max.
         noise_params = {
             offset = 0,
             scale = 1,
@@ -5975,6 +5975,12 @@ See 'Ores' section above for essential information.
             octaves = 3,
             persist = 0.7
         },
+        -- NoiseParams structure describing one of the perlin noises used for
+        -- ore distribution.
+        -- Needed by "sheet", "puff", "blob" and "vein" ores.
+        -- Omit from "scatter" ore for a uniform ore distribution.
+        -- Omit from "stratum" ore for a simple horizontal strata from y_min to
+        -- y_max.
 
         biomes = {"desert", "rainforest"},
         -- List of biomes in which this ore occurs.
@@ -6060,6 +6066,9 @@ Used by `minetest.register_biome`.
         -- Node placed under river water and thickness of this layer
 
         node_cave_liquid = "default:water_source",
+        -- Nodes placed as a blob of liquid in 50% of large caves.
+        -- If absent, cave liquids fall back to classic behaviour of lava or
+        -- water distributed according to a hardcoded 3D noise.
 
         node_dungeon = "default:cobble",
         -- Node used for primary dungeon structure.
@@ -6222,9 +6231,6 @@ See "Decoration types". Used by `minetest.register_decoration`.
         -- working directory of the specified Minetest schematic file.
         -- Could also be the ID of a previously registered schematic.
 
-        -- Could instead be a table containing two mandatory fields, size and
-        -- data, and an optional table yslice_prob.
-        -- See 'Schematic specifier' for details.
         schematic = {
             size = {x = 4, y = 6, z = 4},
             data = {
@@ -6239,6 +6245,9 @@ See "Decoration types". Used by `minetest.register_decoration`.
                  ...
             },
         },
+        -- Could instead be a table containing two mandatory fields, size and
+        -- data, and an optional table yslice_prob.
+        -- See 'Schematic specifier' for details.
 
         replacements = {["oldname"] = "convert_to", ...},
 
@@ -6402,8 +6411,6 @@ Used by `minetest.add_particlespawner`.
         -- If time is 0 has infinite lifespan and spawns the amount on a
         -- per-second basis.
 
-        -- The particle's properties are random values in between the bounds
-        -- pos, velocity, acceleration, expirationtime, size
         minpos = {x=0, y=0, z=0},
         maxpos = {x=0, y=0, z=0},
         minvel = {x=0, y=0, z=0},
@@ -6414,6 +6421,8 @@ Used by `minetest.add_particlespawner`.
         maxexptime = 1,
         minsize = 1,
         maxsize = 1,
+        -- The particle's properties are random values in between the bounds
+        -- pos, velocity, acceleration, expirationtime, size
 
         collisiondetection = false,
         -- If true collides with physical objects
