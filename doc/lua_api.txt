@@ -5176,105 +5176,134 @@ Definition tables
 Object properties
 -----------------
 
-Used by `ObjectRef` methods.
+Used by `ObjectRef` methods. Part of an Entity definition.
 
     {
         hp_max = 1,
-    --  ^ For players: Defaults to `minetest.PLAYER_MAX_HP_DEFAULT`
+        -- For players only. Defaults to `minetest.PLAYER_MAX_HP_DEFAULT`.
+
         breath_max = 0,
-    --  ^ For players only. Defaults to `minetest.PLAYER_MAX_BREATH_DEFAULT`
+        -- For players only. Defaults to `minetest.PLAYER_MAX_BREATH_DEFAULT`.
+
         zoom_fov = 0.0,
-    --  ^ For players only. Zoom FOV in degrees.
-    --    Note that zoom loads and/or generates world beyond the server's
-    --    maximum send and generate distances, so acts like a telescope.
-    --    Smaller zoomFOV values increase the distance loaded and/or generated.
-    --    Defaults to 15 in creative mode, 0 in survival mode.
-    --    zoom_fov = 0 disables zooming for the player.
+        -- For players only. Zoom FOV in degrees.
+        -- Note that zoom loads and/or generates world beyond the server's
+        -- maximum send and generate distances, so acts like a telescope.
+        -- Smaller zoom_fov values increase the distance loaded/generated.
+        -- Defaults to 15 in creative mode, 0 in survival mode.
+        -- zoom_fov = 0 disables zooming for the player.
+
         eye_height = 1.625,
-    --  ^ For players only. Camera height above feet position in nodes.
-    --    Defaults to 1.625.
+        -- For players only. Camera height above feet position in nodes.
+        -- Defaults to 1.625.
+
         physical = true,
+
         collide_with_objects = true,
-    --  ^ Collide with other objects if physical = true.
+        -- Collide with other objects if physical = true
+
         weight = 5,
-        collisionbox = {-0.5, 0.0, -0.5, 0.5, 1.0, 0.5},
+
+        collisionbox = {-0.5, 0.0, -0.5, 0.5, 1.0, 0.5},  -- Default
         selectionbox = {-0.5, 0.0, -0.5, 0.5, 1.0, 0.5},
-    --  ^ Default, uses collision box dimensions when not set.
-    --  ^ For both boxes: {xmin, ymin, zmin, xmax, ymax, zmax} in nodes from
-    --    object position.
+        -- Selection box uses collision box dimensions when not set.
+        -- For both boxes: {xmin, ymin, zmin, xmax, ymax, zmax} in nodes from
+        -- object position.
+
         pointable = true,
-    --  ^ Overrides selection box when false.
+        -- Overrides selection box when false
+
         visual = "cube" / "sprite" / "upright_sprite" / "mesh" / "wielditem",
-    --  ^ "cube" is a node-sized cube.
-    --  ^ "sprite" is a flat texture always facing the player.
-    --  ^ "upright_sprite" is a vertical flat texture.
-    --  ^ "mesh" uses the defined mesh model.
-    --  ^ "wielditem" is used for dropped items
-    --    (see builtin/game/item_entity.lua).
-    --    For this use 'textures = {itemname}'.
-    --    If the item has a 'wield_image' the object will be an extrusion of
-    --    that, otherwise:
-    --    If 'itemname' is a cubic node or nodebox the object will appear
-    --    identical to 'itemname'.
-    --    If 'itemname' is a plantlike node the object will be an extrusion of
-    --    its texture.
-    --    Otherwise for non-node items, the object will be an extrusion of
-    --    'inventory_image'.
+        -- "cube" is a node-sized cube.
+        -- "sprite" is a flat texture always facing the player.
+        -- "upright_sprite" is a vertical flat texture.
+        -- "mesh" uses the defined mesh model.
+        -- "wielditem" is used for dropped items.
+        --   (see builtin/game/item_entity.lua).
+        --   For this use 'textures = {itemname}'.
+        --   If the item has a 'wield_image' the object will be an extrusion of
+        --   that, otherwise:
+        --   If 'itemname' is a cubic node or nodebox the object will appear
+        --   identical to 'itemname'.
+        --   If 'itemname' is a plantlike node the object will be an extrusion
+        --   of its texture.
+        --   Otherwise for non-node items, the object will be an extrusion of
+        --   'inventory_image'.
+
         visual_size = {x = 1, y = 1},
-    --  ^ `x` multiplies horizontal (X and Z) visual size.
-    --  ^ `y` multiplies vertical (Y) visual size.
+        -- `x` multiplies horizontal (X and Z) visual size.
+        -- `y` multiplies vertical (Y) visual size.
+
         mesh = "model",
+
         textures = {},
-    --  ^ Number of required textures depends on visual.
-    --  ^ "cube" uses 6 textures in the way a node does.
-    --  ^ "sprite" uses 1 texture.
-    --  ^ "upright_sprite" uses 2 textures: {front, back}.
-    --  ^ "wielditem" expects 'textures = {itemname}' (see 'visual' above).
+        -- Number of required textures depends on visual.
+        -- "cube" uses 6 textures in the way a node does.
+        -- "sprite" uses 1 texture.
+        -- "upright_sprite" uses 2 textures: {front, back}.
+        -- "wielditem" expects 'textures = {itemname}' (see 'visual' above).
+
         colors = {},
-    --  ^ Number of required colors depends on visual.
+        -- Number of required colors depends on visual
+
         use_texture_alpha = false,
-    --  ^ Use texture's alpha channel, excludes "upright_sprite" and "wielditem"
-	--  ^ Note: currently causes visual issues when viewed through other
-	--  ^ semi-transparent materials such as water.
+        -- Use texture's alpha channel.
+        -- Excludes "upright_sprite" and "wielditem".
+        -- Note: currently causes visual issues when viewed through other
+        -- semi-transparent materials such as water.
+
         spritediv = {x = 1, y = 1},
-    --  ^ Used with spritesheet textures for animation and/or frame selection
-    --    according to position relative to player.
-    --  ^ Defines the number of columns and rows in the spritesheet:
-    --    {columns, rows}.
+        -- Used with spritesheet textures for animation and/or frame selection
+        -- according to position relative to player.
+        -- Defines the number of columns and rows in the spritesheet:
+        -- {columns, rows}.
+
         initial_sprite_basepos = {x = 0, y = 0},
-    --  ^ Used with spritesheet textures.
-    --  ^ Defines the {column, row} position of the initially used frame in the
-    --    spritesheet.
+        -- Used with spritesheet textures.
+        -- Defines the {column, row} position of the initially used frame in the
+        -- spritesheet.
+
         is_visible = true,
+
         makes_footstep_sound = false,
+
         automatic_rotate = 0,
-    --  ^ Set constant rotation in radians per second, positive or negative.
-    --  ^ Set to 0 to disable constant rotation.
+        -- Set constant rotation in radians per second, positive or negative.
+        -- Set to 0 to disable constant rotation.
+
         stepheight = 0,
+
         automatic_face_movement_dir = 0.0,
-    --  ^ Automatically set yaw to movement direction, offset in degrees,
-    --    'false' to disable.
+        -- Automatically set yaw to movement direction, offset in degrees.
+        -- 'false' to disable.
+
         automatic_face_movement_max_rotation_per_sec = -1,
-    --  ^ Limit automatic rotation to this value in degrees per second,
-    --    value < 0 no limit.
+        -- Limit automatic rotation to this value in degrees per second.
+        -- No limit if value < 0.
+
         backface_culling = true,
-    --  ^ Set to false to disable backface_culling for model.
+        -- Set to false to disable backface_culling for model
+
         glow = 0,
-    --  ^ Add this much extra lighting when calculating texture color.
-    --    Value < 0 disables light's effect on texture color.
-    --    For faking self-lighting, UI style entities, or programmatic coloring
-    --    in mods.
+        -- Add this much extra lighting when calculating texture color.
+        -- Value < 0 disables light's effect on texture color.
+        -- For faking self-lighting, UI style entities, or programmatic coloring
+        -- in mods.
+
         nametag = "",
-    --  ^ By default empty, for players their name is shown if empty.
-        nametag_color = <color>,
-    --  ^ Sets color of nametag as ColorSpec.
+        -- By default empty, for players their name is shown if empty
+
+        nametag_color = <ColorSpec>,
+        -- Sets color of nametag
+
         infotext = "",
-    --  ^ By default empty, text to be shown when pointed at object.
+        -- By default empty, text to be shown when pointed at object
+
         static_save = true,
-    --  ^ If false, never save this object statically. It will simply be
-    --    deleted when the block gets unloaded.
-    --    The get_staticdata() callback is never called then.
-    --    Defaults to 'true'
+        -- If false, never save this object statically. It will simply be
+        -- deleted when the block gets unloaded.
+        -- The get_staticdata() callback is never called then.
+        -- Defaults to 'true'.
     }
 
 Entity definition
@@ -5288,21 +5317,26 @@ Used by `minetest.register_entity`.
             mesh = "boats_boat.obj",
             ...,
         },
-    --  ^ A table of object properties, see the `Object properties` section.
-    --  ^ Object properties being read directly from the entity definition
-    --    table is deprecated. Define object properties in this
-    --    `initial_properties` table instead.
+        -- A table of object properties, see the `Object properties` section.
+        -- Object properties being read directly from the entity definition
+        -- table is deprecated. Define object properties in this
+        -- `initial_properties` table instead.
+
         on_activate = function(self, staticdata, dtime_s),
+
         on_step = function(self, dtime),
+
         on_punch = function(self, puncher, time_from_last_punch, tool_capabilities, dir),
+
         on_rightclick = function(self, clicker),
+
         get_staticdata = function(self),
-    --  ^ Called sometimes; the string returned is passed to on_activate when
-    --    the entity is re-activated from static state
+        -- Called sometimes; the string returned is passed to on_activate when
+        -- the entity is re-activated from static state
 
         _custom_field = whatever,
-    --  ^ You can define arbitrary member variables here (see item definition
-    --    for more info) by using a '_' prefix.
+        -- You can define arbitrary member variables here (see Item definition
+        -- for more info) by using a '_' prefix
     }
 
 ABM (ActiveBlockModifier) definition
@@ -5312,34 +5346,40 @@ Used by `minetest.register_abm`.
 
     {
         label = "Lava cooling",
-        ^ Descriptive label for profiling purposes (optional).
-          Definitions with identical labels will be listed as one.
+        -- Descriptive label for profiling purposes (optional).
+        -- Definitions with identical labels will be listed as one.
+
         nodenames = {"default:lava_source"},
-        ^ Apply `action` function to these nodes.
-        ^ `group:groupname` can also be used here.
+        -- Apply `action` function to these nodes.
+        -- `group:groupname` can also be used here.
+
         neighbors = {"default:water_source", "default:water_flowing"},
-        ^ Only apply `action` to nodes that have one of, or any
-          combination of, these neighbors.
-        ^ If left out or empty, any neighbor will do.
-        ^ `group:groupname` can also be used here.
+        -- Only apply `action` to nodes that have one of, or any
+        -- combination of, these neighbors.
+        -- If left out or empty, any neighbor will do.
+        -- `group:groupname` can also be used here.
+
         interval = 1.0,
-        ^ Operation interval in seconds.
+        -- Operation interval in seconds
+
         chance = 1,
-        ^ Chance of triggering `action` per-node per-interval is 1.0 / this
-          value.
+        -- Chance of triggering `action` per-node per-interval is 1.0 / this
+        -- value
+
         catch_up = true,
-        ^ If true, catch-up behaviour is enabled: The `chance` value is
-          temporarily reduced when returning to an area to simulate time lost
-          by the area being unattended. Note that the `chance` value can often
-          be reduced to 1.
+        -- If true, catch-up behaviour is enabled: The `chance` value is
+        -- temporarily reduced when returning to an area to simulate time lost
+        -- by the area being unattended. Note that the `chance` value can often
+        -- be reduced to 1.
+
         action = function(pos, node, active_object_count, active_object_count_wider),
-        ^ Function triggered for each qualifying node.
-        ^ `active_object_count` is number of active objects in the node's
-          mapblock.
-        ^ `active_object_count_wider` is number of active objects in the node's
-          mapblock plus all 26 neighboring mapblocks. If any neighboring
-          mapblocks are unloaded an estmate is calculated for them based on
-          loaded mapblocks.
+        -- Function triggered for each qualifying node.
+        -- `active_object_count` is number of active objects in the node's
+        -- mapblock.
+        -- `active_object_count_wider` is number of active objects in the node's
+        -- mapblock plus all 26 neighboring mapblocks. If any neighboring
+        -- mapblocks are unloaded an estmate is calculated for them based on
+        -- loaded mapblocks.
     }
 
 LBM (LoadingBlockModifier) definition
@@ -5349,17 +5389,21 @@ Used by `minetest.register_lbm`.
 
     {
         label = "Upgrade legacy doors",
-    --  ^ Descriptive label for profiling purposes (optional).
-    --    Definitions with identical labels will be listed as one.
+        -- Descriptive label for profiling purposes (optional).
+        -- Definitions with identical labels will be listed as one.
+
         name = "modname:replace_legacy_door",
+
         nodenames = {"default:lava_source"},
-    --  ^ List of node names to trigger the LBM on.
-    --    Also non-registered nodes will work.
-    --    Groups (as of group:groupname) will work as well.
+        -- List of node names to trigger the LBM on.
+        -- Also non-registered nodes will work.
+        -- Groups (as of group:groupname) will work as well.
+
         run_at_every_load = false,
-    --  ^ Whether to run the LBM's action every time a block gets loaded,
-    --    and not just for blocks that were saved last time before LBMs were
-    --    introduced to the world.
+        -- Whether to run the LBM's action every time a block gets loaded,
+        -- and not just for blocks that were saved last time before LBMs were
+        -- introduced to the world.
+
         action = func(pos, node),
     }
 
@@ -5371,32 +5415,43 @@ Used by `minetest.register_node`, `minetest.register_craftitem`, and
 
     {
         description = "Steel Axe",
-        groups = {}, -- key = name, value = rating; rating = 1..3.
-                        if rating not applicable, use 1.
-                        e.g. {wool = 1, fluffy = 3}
-                            {soil = 2, outerspace = 1, crumbly = 1}
-                            {bendy = 2, snappy = 1},
-                            {hard = 1, metal = 1, spikes = 1}
+
+        groups = {},
+        -- key = name, value = rating; rating = 1..3.
+        -- If rating not applicable, use 1.
+        -- e.g. {wool = 1, fluffy = 3}
+                {soil = 2, outerspace = 1, crumbly = 1}
+                {bendy = 2, snappy = 1},
+                {hard = 1, metal = 1, spikes = 1}
+
         inventory_image = "default_tool_steelaxe.png",
+
         inventory_overlay = "overlay.png",
-        ^ An overlay which does not get colorized.
+        -- An overlay which does not get colorized
+
         wield_image = "",
+
         wield_overlay = "",
+
         palette = "",
-        --[[
-        ^ An image file containing the palette of a node.
-        ^ You can set the currently used color as the
-        ^ "palette_index" field of the item stack metadata.
-        ^ The palette is always stretched to fit indices
-        ^ between 0 and 255, to ensure compatibility with
-        ^ "colorfacedir" and "colorwallmounted" nodes.
-        ]]
+        -- An image file containing the palette of a node.
+        -- You can set the currently used color as the "palette_index" field of
+        -- the item stack metadata.
+        -- The palette is always stretched to fit indices between 0 and 255, to
+        -- ensure compatibility with "colorfacedir" and "colorwallmounted" nodes.
+
         color = "0xFFFFFFFF",
-        ^ The color of the item. The palette overrides this.
+        -- The color of the item. The palette overrides this.
+
         wield_scale = {x = 1, y = 1, z = 1},
+
         stack_max = 99,
+
         range = 4.0,
+
         liquids_pointable = false,
+
+        -- See "Tools" section
         tool_capabilities = {
             full_punch_interval = 1.0,
             max_drop_level = 0,
@@ -5407,84 +5462,79 @@ Used by `minetest.register_node`, `minetest.register_craftitem`, and
             },
             damage_groups = {groupname = damage},
         },
+
         node_placement_prediction = nil,
-        --[[
-        ^ If nil and item is node, prediction is made automatically
-        ^ If nil and item is not a node, no prediction is made
-        ^ If "" and item is anything, no prediction is made
-        ^ Otherwise should be name of node which the client immediately places
-          on ground when the player places the item. Server will always update
-          actual result to client in a short moment.
-        ]]
+        -- If nil and item is node, prediction is made automatically.
+        -- If nil and item is not a node, no prediction is made.
+        -- If "" and item is anything, no prediction is made.
+        -- Otherwise should be name of node which the client immediately places
+        -- on ground when the player places the item. Server will always update
+        -- actual result to client in a short moment.
+
         node_dig_prediction = "air",
-        --[[
-        ^ if "", no prediction is made
-        ^ if "air", node is removed
-        ^ Otherwise should be name of node which the client immediately places
-          upon digging. Server will always update actual result shortly.
-        ]]
+        -- if "", no prediction is made.
+        -- if "air", node is removed.
+        -- Otherwise should be name of node which the client immediately places
+        -- upon digging. Server will always update actual result shortly.
+
         sound = {
-            breaks = "default_tool_break", -- tools only
-            place = --[[<SimpleSoundSpec>]],
+            breaks = "default_tool_break",  -- tools only
+            place = <SimpleSoundSpec>,
         },
 
         on_place = func(itemstack, placer, pointed_thing),
-        --[[
-        ^ Shall place item and return the leftover itemstack
-        ^ The placer may be any ObjectRef or nil.
-        ^ default: minetest.item_place ]]
+        -- Shall place item and return the leftover itemstack.
+        -- The placer may be any ObjectRef or nil.
+        -- default: minetest.item_place
+
         on_secondary_use = func(itemstack, user, pointed_thing),
-        --[[
-        ^ Same as on_place but called when pointing at nothing.
-        ^ The user may be any ObjectRef or nil.
-        ^ pointed_thing : always { type = "nothing" }
-        ]]
+        -- Same as on_place but called when pointing at nothing.
+        -- The user may be any ObjectRef or nil.
+        -- pointed_thing: always { type = "nothing" }
+
         on_drop = func(itemstack, dropper, pos),
-        --[[
-        ^ Shall drop item and return the leftover itemstack
-        ^ The dropper may be any ObjectRef or nil.
-        ^ default: minetest.item_drop ]]
+        -- Shall drop item and return the leftover itemstack.
+        -- The dropper may be any ObjectRef or nil.
+        -- default: minetest.item_drop
+
         on_use = func(itemstack, user, pointed_thing),
-        --[[
-        ^  default: nil
-        ^ Function must return either nil if no item shall be removed from
-          inventory, or an itemstack to replace the original itemstack.
-          e.g. itemstack:take_item(); return itemstack
-        ^ Otherwise, the function is free to do what it wants.
-        ^ The user may be any ObjectRef or nil.
-        ^ The default functions handle regular use cases.
-        ]]
+        -- default: nil
+        -- Function must return either nil if no item shall be removed from
+        -- inventory, or an itemstack to replace the original itemstack.
+        -- e.g. itemstack:take_item(); return itemstack
+        -- Otherwise, the function is free to do what it wants.
+        -- The user may be any ObjectRef or nil.
+        -- The default functions handle regular use cases.
+
         after_use = func(itemstack, user, node, digparams),
-        --[[
-        ^  default: nil
-        ^ If defined, should return an itemstack and will be called instead of
-          wearing out the tool. If returns nil, does nothing.
-          If after_use doesn't exist, it is the same as:
-            function(itemstack, user, node, digparams)
-              itemstack:add_wear(digparams.wear)
-              return itemstack
-            end
-        ^ The user may be any ObjectRef or nil.
-        ]]
+        -- default: nil
+        -- If defined, should return an itemstack and will be called instead of
+        -- wearing out the tool. If returns nil, does nothing.
+        -- If after_use doesn't exist, it is the same as:
+        --   function(itemstack, user, node, digparams)
+        --     itemstack:add_wear(digparams.wear)
+        --     return itemstack
+        --   end
+        -- The user may be any ObjectRef or nil.
+
         _custom_field = whatever,
-        --[[
-        ^ Add your own custom fields. By convention, all custom field names
-          should start with `_` to avoid naming collisions with future engine
-          usage.
-        ]]
+        -- Add your own custom fields. By convention, all custom field names
+        -- should start with `_` to avoid naming collisions with future engine
+        -- usage.
     }
 
 Tile definition
 ---------------
+
 * `"image.png"`
 * `{name="image.png", animation={Tile Animation definition}}`
 * `{name="image.png", backface_culling=bool, tileable_vertical=bool,
-    tileable_horizontal=bool, align_style="node"/"world"/"user", scale=int}`
+  tileable_horizontal=bool, align_style="node"/"world"/"user", scale=int}`
     * backface culling enabled by default for most nodes
     * tileable flags are info for shaders, how they should treat texture
-      when displacement mapping is used
+      when displacement mapping is used.
       Directions are from the point of view of the tile texture,
-      not the node it's on
+      not the node it's on.
     * align style determines whether the texture will be rotated with the node
       or kept aligned with its surroundings. "user" means that client
       setting will be used, similar to `glasslike_framed_optional`.
@@ -5505,22 +5555,28 @@ Tile animation definition
 
     {
         type = "vertical_frames",
+
         aspect_w = 16,
-        -- ^ specify width of a frame in pixels
+        -- Width of a frame in pixels
+
         aspect_h = 16,
-        -- ^ specify height of a frame in pixels
+        -- Height of a frame in pixels
+
         length = 3.0,
-        -- ^ specify full loop length
+        -- Full loop length
     }
 
     {
         type = "sheet_2d",
+
         frames_w = 5,
-        -- ^ specify width in number of frames
+        -- Width in number of frames
+
         frames_h = 3,
-        -- ^ specify height in number of frames
+        -- Height in number of frames
+
         frame_length = 0.5,
-        -- ^ specify length of a single frame
+        -- Length of a single frame
     }
 
 Node definition
@@ -5531,252 +5587,284 @@ Used by `minetest.register_node`.
     {
         -- <all fields allowed in item definitions>,
 
-        drawtype = "normal", -- See "Node drawtypes"
-        visual_scale = 1.0, --[[
-        ^ Supported for drawtypes "plantlike", "signlike", "torchlike",
-        ^ "firelike", "mesh".
-        ^ For plantlike and firelike, the image will start at the bottom of the
-        ^ node, for the other drawtypes the image will be centered on the node.
-        ^ Note that positioning for "torchlike" may still change. ]]
-        tiles = {tile definition 1, def2, def3, def4, def5, def6}, --[[
-        ^ Textures of node; +Y, -Y, +X, -X, +Z, -Z
-        ^ Old field name was 'tile_images'.
-        ^ List can be shortened to needed length ]]
-        overlay_tiles = {tile definition 1, def2, def3, def4, def5, def6}, --[[
-        ^ Same as `tiles`, but these textures are drawn on top of the
-        ^ base tiles. You can use this to colorize only specific parts of
-        ^ your texture. If the texture name is an empty string, that
-        ^ overlay is not drawn. Since such tiles are drawn twice, it
-        ^ is not recommended to use overlays on very common nodes. ]]
-        special_tiles = {tile definition 1, Tile definition 2}, --[[
-        ^ Special textures of node; used rarely
-        ^ Old field name was 'special_materials'.
-        ^ List can be shortened to needed length ]]
-        color = ColorSpec, --[[
-        ^ The node's original color will be multiplied with this color.
-        ^ If the node has a palette, then this setting only has an effect
-        ^ in the inventory and on the wield item. ]]
+        drawtype = "normal",  -- See "Node drawtypes"
+
+        visual_scale = 1.0,
+        -- Supported for drawtypes "plantlike", "signlike", "torchlike",
+        -- "firelike", "mesh".
+        -- For plantlike and firelike, the image will start at the bottom of the
+        -- node, for the other drawtypes the image will be centered on the node.
+        -- Note that positioning for "torchlike" may still change.
+
+        tiles = {tile definition 1, def2, def3, def4, def5, def6},
+        -- Textures of node; +Y, -Y, +X, -X, +Z, -Z
+        -- Old field name was 'tile_images'.
+        -- List can be shortened to needed length.
+
+        overlay_tiles = {tile definition 1, def2, def3, def4, def5, def6},
+        -- Same as `tiles`, but these textures are drawn on top of the base
+        -- tiles. You can use this to colorize only specific parts of your
+        -- texture. If the texture name is an empty string, that overlay is not
+        -- drawn. Since such tiles are drawn twice, it is not recommended to use
+        -- overlays on very common nodes.
+
+        special_tiles = {tile definition 1, Tile definition 2},
+        -- Special textures of node; used rarely.
+        -- Old field name was 'special_materials'.
+        -- List can be shortened to needed length.
+
+        color = ColorSpec,
+        -- The node's original color will be multiplied with this color.
+        -- If the node has a palette, then this setting only has an effect in
+        -- the inventory and on the wield item.
+
         use_texture_alpha = false,
-        ^ Use texture's alpha channel.
-        palette = "palette.png", --[[
-        ^ The node's `param2` is used to select a pixel from the image
-        ^ (pixels are arranged from left to right and from top to bottom).
-        ^ The node's color will be multiplied with the selected pixel's
-        ^ color. Tiles can override this behavior.
-        ^ Only when `paramtype2` supports palettes. ]]
+        -- Use texture's alpha channel
+
+        palette = "palette.png",
+        -- The node's `param2` is used to select a pixel from the image.
+        -- Pixels are arranged from left to right and from top to bottom.
+        -- The node's color will be multiplied with the selected pixel's color.
+        -- Tiles can override this behavior.
+        -- Only when `paramtype2` supports palettes.
+
         post_effect_color = "green#0F",
-        ^ Screen tint if player is inside node, see "ColorSpec".
-        paramtype = "none", -- See "Nodes".
-        paramtype2 = "none", -- See "Nodes"
-        place_param2 = nil, -- Force value for param2 when player places node
+        -- Screen tint if player is inside node, see "ColorSpec".
+
+        paramtype = "none",  -- See "Nodes"
+
+        paramtype2 = "none",  -- See "Nodes"
+
+        place_param2 = nil,  -- Force value for param2 when player places node
+
         is_ground_content = true,
-        ^ If false, the cave generator will not carve through this node.
+        -- If false, the cave generator will not carve through this node
+
         sunlight_propagates = false,
-        ^ If true, sunlight will go infinitely through this.
-        walkable = true, -- If true, objects collide with node
-        pointable = true, -- If true, can be pointed at
-        diggable = true, -- If false, can never be dug
-        climbable = false, -- If true, can be climbed on (ladder)
-        buildable_to = false, -- If true, placed nodes can replace this node
-        floodable = false, --[[
-        ^ If true, liquids flow into and replace this node.
-        ^ Warning: making a liquid node 'floodable' will cause problems. ]]
-        liquidtype = "none", -- "none"/"source"/"flowing"
-        liquid_alternative_flowing = "", -- Flowing version of source liquid
-        liquid_alternative_source = "", -- Source version of flowing liquid
-        liquid_viscosity = 0, -- Higher viscosity = slower flow (max. 7)
-        liquid_renewable = true, --[[
-        ^ If true, a new liquid source can be created by placing two or more
-          sources nearby. ]]
-        leveled = 16, --[[
-        ^ Only valid for "nodebox" drawtype with 'type = "leveled"'.
-        ^ Allows defining the nodebox height without using param2.
-        ^ The nodebox height is 'leveled' / 64 nodes.
-        ^ The maximum value of 'leveled' is 127. ]]
-        liquid_range = 8, -- number of flowing nodes around source (max. 8)
+        -- If true, sunlight will go infinitely through this node
+
+        walkable = true,  -- If true, objects collide with node
+
+        pointable = true,  -- If true, can be pointed at
+
+        diggable = true,  -- If false, can never be dug
+
+        climbable = false,  -- If true, can be climbed on (ladder)
+
+        buildable_to = false,  -- If true, placed nodes can replace this node
+
+        floodable = false,
+        -- If true, liquids flow into and replace this node.
+        -- Warning: making a liquid node 'floodable' will cause problems.
+
+        liquidtype = "none",  -- "none" / "source" / "flowing"
+
+        liquid_alternative_flowing = "",  -- Flowing version of source liquid
+
+        liquid_alternative_source = "",  -- Source version of flowing liquid
+
+        liquid_viscosity = 0,  -- Higher viscosity = slower flow (max. 7)
+
+        liquid_renewable = true,
+        -- If true, a new liquid source can be created by placing two or more
+        -- sources nearby
+
+        leveled = 16,
+        -- Only valid for "nodebox" drawtype with 'type = "leveled"'.
+        -- Allows defining the nodebox height without using param2.
+        -- The nodebox height is 'leveled' / 64 nodes.
+        -- The maximum value of 'leveled' is 127.
+
+        liquid_range = 8,  -- Number of flowing nodes around source (max. 8)
+
         drowning = 0,
-        ^ Player will take this amount of damage if no bubbles are left.
-        light_source = 0, --[[
-        ^ Amount of light emitted by node.
-        ^ To set the maximum (currently 14), use the value
-        ^ 'minetest.LIGHT_MAX'.
-        ^ A value outside the range 0 to minetest.LIGHT_MAX causes undefined
-        ^ behavior.]]
+        -- Player will take this amount of damage if no bubbles are left
+
+        light_source = 0,
+        -- Amount of light emitted by node.
+        -- To set the maximum (14), use the value 'minetest.LIGHT_MAX'.
+        -- A value outside the range 0 to minetest.LIGHT_MAX causes undefined
+        -- behavior.
+
         damage_per_second = 0,
-        ^ If player is inside node, this damage is caused.
-        node_box = {type="regular"}, -- See "Node boxes"
-        connects_to = nodenames, --[[
-        ^ Used for nodebox nodes with the type == "connected"
-        ^ Specifies to what neighboring nodes connections will be drawn
-        ^ e.g. `{"group:fence", "default:wood"}` or `"default:stone"` ]]
+        -- If player is inside node, this damage is caused
+
+        node_box = {type="regular"},  -- See "Node boxes"
+
+        connects_to = nodenames,
+        -- Used for nodebox nodes with the type == "connected".
+        -- Specifies to what neighboring nodes connections will be drawn.
+        -- e.g. `{"group:fence", "default:wood"}` or `"default:stone"`
+
         connect_sides = { "top", "bottom", "front", "left", "back", "right" },
-		-- [[
-        ^ Tells connected nodebox nodes to connect only to these sides of this
-        ^ node. ]]
+        -- Tells connected nodebox nodes to connect only to these sides of this
+        -- node
+
         mesh = "model",
+
         selection_box = {
             type = "fixed",
             fixed = {
                 {-2 / 16, -0.5, -2 / 16, 2 / 16, 3 / 16, 2 / 16},
             },
         },
-        ^ Custom selection box definition. Multiple boxes can be defined.
-        ^ If drawtype "nodebox" is used and selection_box is nil, then node_box
-        ^ definition is used for the selection box.
+        -- Custom selection box definition. Multiple boxes can be defined.
+        -- If "nodebox" drawtype is used and selection_box is nil, then node_box
+        -- definition is used for the selection box.
+
         collision_box = {
             type = "fixed",
             fixed = {
                 {-2 / 16, -0.5, -2 / 16, 2 / 16, 3 / 16, 2 / 16},
             },
         },
-        ^ Custom collision box definition. Multiple boxes can be defined.
-        ^ If drawtype "nodebox" is used and collision_box is nil, then node_box
-        ^ definition is used for the collision box.
-        ^ For both of the above a box is defined as:
-        ^ {xmin, ymin, zmin, xmax, ymax, zmax} in nodes from node center.
+        -- Custom collision box definition. Multiple boxes can be defined.
+        -- If "nodebox" drawtype is used and collision_box is nil, then node_box
+        -- definition is used for the collision box.
+        -- Both of the boxes above are defined as:
+        -- {xmin, ymin, zmin, xmax, ymax, zmax} in nodes from node center.
+
+        -- Support maps made in and before January 2012
         legacy_facedir_simple = false,
-        ^ Support maps made in and before January 2012.
         legacy_wallmounted = false,
-        ^ Support maps made in and before January 2012.
-        waving = 0, --[[
-        ^ Valid for mesh, nodebox, plantlike, allfaces_optional nodes.
-        ^ 1 - wave node like plants (top of node moves, bottom is fixed)
-        ^ 2 - wave node like leaves (whole node moves side-to-side)
-        ^ caveats: not all models will properly wave.
-        ^ plantlike drawtype nodes can only wave like plants.
-        ^ allfaces_optional drawtype nodes can only wave like leaves. --]]
+
+        waving = 0,
+        -- Valid for mesh, nodebox, plantlike, allfaces_optional nodes.
+        -- 1 - wave node like plants (top of node moves, bottom is fixed)
+        -- 2 - wave node like leaves (whole node moves side-to-side)
+        -- caveats: not all models will properly wave.
+        -- plantlike drawtype nodes can only wave like plants.
+        -- allfaces_optional drawtype nodes can only wave like leaves.
+
         sounds = {
             footstep = <SimpleSoundSpec>,
-            dig = <SimpleSoundSpec>, -- "__group" = group-based sound (default)
+            dig = <SimpleSoundSpec>,  -- "__group" = group-based sound (default)
             dug = <SimpleSoundSpec>,
             place = <SimpleSoundSpec>,
             place_failed = <SimpleSoundSpec>,
         },
+
         drop = "",
-        ^ Name of dropped node when dug. Default is the node itself.
-        ^ Alternatively:
+        -- Name of dropped node when dug. Default is the node itself.
+        -- Alternatively:
         drop = {
-            max_items = 1,  -- Maximum number of items to drop.
-            items = {  -- Choose max_items randomly from this list.
+            -- Maximum number of items to drop
+            max_items = 1,
+            -- Choose max_items randomly from this list
+            items = {
                 {
-                    items = {"foo:bar", "baz:frob"},  -- Items to drop.
-                    rarity = 1,  -- Probability of dropping is 1 / rarity.
-                    inherit_color = true, -- To inherit palette color from the
-                                             node.
+                    items = {"foo:bar", "baz:frob"},  -- Items to drop
+                    rarity = 1,  -- Probability of dropping is 1 / rarity
+                    inherit_color = true, -- Inherit palette color from the node
                 },
             },
         },
 
-        on_construct = func(pos), --[[
-        ^ Node constructor; called after adding node
-        ^ Can set up metadata and stuff like that
-        ^ Not called for bulk node placement (i.e. schematics and VoxelManip)
-        ^ default: nil ]]
+        on_construct = func(pos),
+        -- Node constructor; called after adding node.
+        -- Can set up metadata and stuff like that.
+        -- Not called for bulk node placement (i.e. schematics and VoxelManip).
+        -- default: nil
 
-        on_destruct = func(pos), --[[
-        ^ Node destructor; called before removing node
-        ^ Not called for bulk node placement (i.e. schematics and VoxelManip)
-        ^ default: nil ]]
+        on_destruct = func(pos),
+        -- Node destructor; called before removing node.
+        -- Not called for bulk node placement.
+        -- default: nil
 
-        after_destruct = func(pos, oldnode), --[[
-        ^ Node destructor; called after removing node
-        ^ Not called for bulk node placement (i.e. schematics and VoxelManip)
-        ^ default: nil ]]
+        after_destruct = func(pos, oldnode),
+        -- Node destructor; called after removing node.
+        -- Not called for bulk node placement.
+        -- default: nil
 
-        on_flood = func(pos, oldnode, newnode), --[[
-        ^ Called when a liquid (newnode) is about to flood oldnode, if
-        ^ it has `floodable = true` in the nodedef. Not called for bulk
-        ^ node placement (i.e. schematics and VoxelManip) or air nodes. If
-        ^ return true the node is not flooded, but on_flood callback will
-        ^ most likely be called over and over again every liquid update
-        ^ interval. Default: nil.
-        ^ Warning: making a liquid node 'floodable' will cause problems. ]]
+        on_flood = func(pos, oldnode, newnode),
+        -- Called when a liquid (newnode) is about to flood oldnode, if it has
+        -- `floodable = true` in the nodedef. Not called for bulk node placement
+        -- (i.e. schematics and VoxelManip) or air nodes. If return true the
+        -- node is not flooded, but on_flood callback will most likely be called
+        -- over and over again every liquid update interval.
+        -- Default: nil
+        -- Warning: making a liquid node 'floodable' will cause problems.
 
-        preserve_metadata = func(pos, oldnode, oldmeta, drops) --[[
-        ^ Called when oldnode is about be converted to an item, but before the
-        ^ node is deleted from the world or the drops are added. This is
-        ^ generally the result of either the node being dug or an attached node
-        ^ becoming detached.
-        ^ drops is a table of ItemStacks, so any metadata to be preserved can
-        ^ be added directly to one or more of the dropped items. See
-        ^ "ItemStackMetaRef".
-        ^ default: nil ]]
+        preserve_metadata = func(pos, oldnode, oldmeta, drops),
+        -- Called when oldnode is about be converted to an item, but before the
+        -- node is deleted from the world or the drops are added. This is
+        -- generally the result of either the node being dug or an attached node
+        -- becoming detached.
+        -- drops is a table of ItemStacks, so any metadata to be preserved can
+        -- be added directly to one or more of the dropped items. See
+        -- "ItemStackMetaRef".
+        -- default: nil
 
-        after_place_node = func(pos, placer, itemstack, pointed_thing) --[[
-        ^ Called after constructing node when node was placed using
-        ^ minetest.item_place_node / minetest.place_node
-        ^ If return true no item is taken from itemstack
-        ^ `placer` may be any valid ObjectRef or nil
-        ^ default: nil ]]
+        after_place_node = func(pos, placer, itemstack, pointed_thing),
+        -- Called after constructing node when node was placed using
+        -- minetest.item_place_node / minetest.place_node.
+        -- If return true no item is taken from itemstack.
+        -- `placer` may be any valid ObjectRef or nil.
+        -- default: nil
 
-        after_dig_node = func(pos, oldnode, oldmetadata, digger), --[[
-        ^ oldmetadata is in table format
-        ^ Called after destructing node when node was dug using
-        ^ minetest.node_dig / minetest.dig_node
-        ^ default: nil ]]
+        after_dig_node = func(pos, oldnode, oldmetadata, digger),
+        -- oldmetadata is in table format.
+        -- Called after destructing node when node was dug using
+        -- minetest.node_dig / minetest.dig_node.
+        -- default: nil
 
-        can_dig = function(pos, [player]) --[[
-        ^ returns true if node can be dug, or false if not
-        ^ default: nil ]]
+        can_dig = function(pos, [player]),
 
-        on_punch = func(pos, node, puncher, pointed_thing), --[[
-        ^ default: minetest.node_punch
-        ^ By default: Calls minetest.register_on_punchnode callbacks ]]
+        on_punch = func(pos, node, puncher, pointed_thing),
+        -- Returns true if node can be dug, or false if not.
+        -- default: nil
+        -- default: minetest.node_punch
+        -- By default calls minetest.register_on_punchnode callbacks.
 
         on_rightclick = func(pos, node, clicker, itemstack, pointed_thing),
-        --[[
-        ^ default: nil
-        ^ itemstack will hold clicker's wielded item
-        ^ Shall return the leftover itemstack
-        ^ Note: pointed_thing can be nil, if a mod calls this function
-        ^ This function does not get triggered by clients <=0.4.16 if the
-        ^ "formspec" node metadata field is set ]]
+        -- default: nil
+        -- itemstack will hold clicker's wielded item.
+        -- Shall return the leftover itemstack.
+        -- Note: pointed_thing can be nil, if a mod calls this function.
+        -- This function does not get triggered by clients <=0.4.16 if the
+        -- "formspec" node metadata field is set.
 
-        on_dig = func(pos, node, digger), --[[
-        ^ default: minetest.node_dig
-        ^ By default: checks privileges, wears out tool and removes node ]]
+        on_dig = func(pos, node, digger),
+        -- default: minetest.node_dig
+        -- By default checks privileges, wears out tool and removes node.
 
-        on_timer = function(pos,elapsed), --[[
-        ^ default: nil
-        ^ called by NodeTimers, see minetest.get_node_timer and NodeTimerRef
-        ^ elapsed is the total time passed since the timer was started
-        ^ return true to run the timer for another cycle with the same timeout
-        ^ value. ]]
+        on_timer = function(pos, elapsed),
+        -- default: nil
+        -- called by NodeTimers, see minetest.get_node_timer and NodeTimerRef.
+        -- elapsed is the total time passed since the timer was started.
+        -- return true to run the timer for another cycle with the same timeout
+        -- value.
 
-        on_receive_fields = func(pos, formname, fields, sender), --[[
-        ^ fields = {name1 = value1, name2 = value2, ...}
-        ^ Called when an UI form (e.g. sign text input) returns data
-        ^ default: nil ]]
+        on_receive_fields = func(pos, formname, fields, sender),
+        -- fields = {name1 = value1, name2 = value2, ...}
+        -- Called when an UI form (e.g. sign text input) returns data.
+        -- default: nil
 
         allow_metadata_inventory_move = func(pos, from_list, from_index, to_list, to_index, count, player),
-        --[[
-        ^ Called when a player wants to move items inside the inventory
-        ^ Return value: number of items allowed to move ]]
+        -- Called when a player wants to move items inside the inventory.
+        -- Return value: number of items allowed to move.
 
         allow_metadata_inventory_put = func(pos, listname, index, stack, player),
-        --[[
-        ^ Called when a player wants to put something into the inventory
-        ^ Return value: number of items allowed to put
-        ^ Return value: -1: Allow and don't modify item count in inventory ]]
+        -- Called when a player wants to put something into the inventory.
+        -- Return value: number of items allowed to put.
+        -- Return value -1: Allow and don't modify item count in inventory.
 
         allow_metadata_inventory_take = func(pos, listname, index, stack, player),
-        --[[
-        ^ Called when a player wants to take something out of the inventory
-        ^ Return value: number of items allowed to take
-        ^ Return value: -1: Allow and don't modify item count in inventory ]]
+        -- Called when a player wants to take something out of the inventory.
+        -- Return value: number of items allowed to take.
+        -- Return value -1: Allow and don't modify item count in inventory.
 
         on_metadata_inventory_move = func(pos, from_list, from_index, to_list, to_index, count, player),
         on_metadata_inventory_put = func(pos, listname, index, stack, player),
         on_metadata_inventory_take = func(pos, listname, index, stack, player),
-        --[[
-        ^ Called after the actual action has happened, according to what was
-        ^ allowed.
-        ^ No return value ]]
+        -- Called after the actual action has happened, according to what was
+        -- allowed.
+        -- No return value.
 
-        on_blast = func(pos, intensity), --[[
-        ^ intensity: 1.0 = mid range of regular TNT
-        ^ If defined, called when an explosion touches the node, instead of
-          removing the node ]]
+        on_blast = func(pos, intensity),
+        -- intensity: 1.0 = mid range of regular TNT.
+        -- If defined, called when an explosion touches the node, instead of
+        -- removing the node.
     }
 
 Crafting recipes
@@ -5791,24 +5879,26 @@ Used by `minetest.register_craft`.
         recipe = {
             {'default:cobble', 'default:cobble', 'default:cobble'},
             {'', 'default:stick', ''},
-            {'', 'default:stick', ''}, -- Also groups; e.g. 'group:crumbly'
+            {'', 'default:stick', ''},  -- Also groups; e.g. 'group:crumbly'
         },
-        replacements = --[[<optional list of item pairs,
-                        replace one input item with another item on crafting>]]
+        replacements = <list of item pairs>,
+        -- `replacements`: replace one input item with another item on crafting
+        -- (optional).
     }
 
 ### Shapeless
 
     {
-       type = "shapeless",
-       output = 'mushrooms:mushroom_stew',
-       recipe = {
-           "mushrooms:bowl",
-           "mushrooms:mushroom_brown",
-           "mushrooms:mushroom_red",
-       },
-       replacements = --[[<optional list of item pairs,
-                       replace one input item with another item on crafting>]]
+        type = "shapeless",
+        output = 'mushrooms:mushroom_stew',
+        recipe = {
+            "mushrooms:bowl",
+            "mushrooms:mushroom_brown",
+            "mushrooms:mushroom_red",
+        },
+        replacements = <list of item pairs>,
+        -- `replacements`: replace one input item with another item on crafting
+        -- (optional).
     }
 
 ### Tool repair
@@ -5840,34 +5930,43 @@ Ore definition
 
 Used by `minetest.register_ore`.
 
-See 'Ore types' section above for essential information.
+See 'Ores' section above for essential information.
 
     {
         ore_type = "scatter",
+
         ore = "default:stone_with_coal",
+
         ore_param2 = 3,
-    --  ^ Facedir rotation. Default is 0 (unchanged rotation)
+        -- Facedir rotation. Default is 0 (unchanged rotation)
+
         wherein = "default:stone",
-    --  ^ a list of nodenames is supported too
+        -- A list of nodenames is supported too
+
         clust_scarcity = 8 * 8 * 8,
-    --  ^ Ore has a 1 out of clust_scarcity chance of spawning in a node
-    --  ^ If the desired average distance between ores is 'd', set this to
-    --  ^ d * d * d.
+        -- Ore has a 1 out of clust_scarcity chance of spawning in a node.
+        -- If the desired average distance between ores is 'd', set this to
+        -- d * d * d.
+
         clust_num_ores = 8,
-    --  ^ Number of ores in a cluster
+        -- Number of ores in a cluster
+
         clust_size = 3,
-    --  ^ Size of the bounding box of the cluster
-    --  ^ In this example, there is a 3 * 3 * 3 cluster where 8 out of the 27
-    --  ^ nodes are coal ore.
+        -- Size of the bounding box of the cluster.
+        -- In this example, there is a 3 * 3 * 3 cluster where 8 out of the 27
+        -- nodes are coal ore.
+
+        -- Lower and upper limits for ore
         y_min = -31000,
         y_max = 64,
-    --  ^ Lower and upper limits for ore.
+
         flags = "",
-    --  ^ Attributes for this ore generation, see 'Ore attributes' section
-    --  ^ above.
+        -- Attributes for the ore generation, see 'Ore attributes' section above
+
         noise_threshold = 0.5,
-    --  ^ If noise is above this threshold, ore is placed. Not needed for a
-    --  ^ uniform distribution.
+        -- If noise is above this threshold, ore is placed. Not needed for a
+        -- uniform distribution.
+
         noise_params = {
             offset = 0,
             scale = 1,
@@ -5876,22 +5975,27 @@ See 'Ore types' section above for essential information.
             octaves = 3,
             persist = 0.7
         },
-    --  ^ NoiseParams structure describing one of the perlin noises used for
-    --  ^ ore distribution.
-    --  ^ Needed by "sheet", "puff", "blob" and "vein" ores.
-    --  ^ Omit from "scatter" ore for a uniform ore distribution.
-    --  ^ Omit from "stratum ore for a simple horizontal strata from y_min to
-    --  ^ y_max.
-        biomes = {"desert", "rainforest"}
-    --  ^ List of biomes in which this decoration occurs.
-    --  ^ Occurs in all biomes if this is omitted, and ignored if the Mapgen
-    --  ^ being used does not support biomes.
-    --  ^ Can be a list of (or a single) biome names, IDs, or definitions.
+        -- NoiseParams structure describing one of the perlin noises used for
+        -- ore distribution.
+        -- Needed by "sheet", "puff", "blob" and "vein" ores.
+        -- Omit from "scatter" ore for a uniform ore distribution.
+        -- Omit from "stratum" ore for a simple horizontal strata from y_min to
+        -- y_max.
+
+        biomes = {"desert", "rainforest"},
+        -- List of biomes in which this ore occurs.
+        -- Occurs in all biomes if this is omitted, and ignored if the Mapgen
+        -- being used does not support biomes.
+        -- Can be a list of (or a single) biome names, IDs, or definitions.
+
+        -- Type-specific parameters
+
+        -- sheet
         column_height_min = 1,
         column_height_max = 16,
         column_midpoint_factor = 0.5,
-    --  ^ See 'Ore types' section above.
-    --  ^ The above 3 parameters are only valid for "sheet" ore.
+
+        -- puff
         np_puff_top = {
             offset = 4,
             scale = 2,
@@ -5908,11 +6012,11 @@ See 'Ore types' section above for essential information.
             octaves = 3,
             persist = 0.7
         },
-    --  ^ See 'Ore types' section above.
-    --  ^ The above 2 parameters are only valid for "puff" ore.
+
+        -- vein
         random_factor = 1.0,
-    --  ^ See 'Ore types' section above.
-    --  ^ Only valid for "vein" ore.
+
+        -- stratum
         np_stratum_thickness = {
             offset = 8,
             scale = 4,
@@ -5922,8 +6026,6 @@ See 'Ore types' section above for essential information.
             persist = 0.7
         },
         stratum_thickness = 8,
-    --  ^ See 'Ore types' section above.
-    --  ^ The above 2 parameters are only valid for "stratum" ore.
     }
 
 Biome definition
@@ -5933,86 +6035,105 @@ Used by `minetest.register_biome`.
 
     {
         name = "tundra",
+
         node_dust = "default:snow",
-    --  ^ Node dropped onto upper surface after all else is generated.
+        -- Node dropped onto upper surface after all else is generated
+
         node_top = "default:dirt_with_snow",
         depth_top = 1,
-    --  ^ Node forming surface layer of biome and thickness of this layer.
+        -- Node forming surface layer of biome and thickness of this layer
+
         node_filler = "default:permafrost",
         depth_filler = 3,
-    --  ^ Node forming lower layer of biome and thickness of this layer.
+        -- Node forming lower layer of biome and thickness of this layer
+
         node_stone = "default:bluestone",
-    --  ^ Node that replaces all stone nodes between roughly y_min and y_max.
+        -- Node that replaces all stone nodes between roughly y_min and y_max.
+
         node_water_top = "default:ice",
         depth_water_top = 10,
-    --  ^ Node forming a surface layer in seawater with the defined thickness.
+        -- Node forming a surface layer in seawater with the defined thickness
+
         node_water = "",
-    --  ^ Node that replaces all seawater nodes not in the defined surface
-    --  ^ layer.
+        -- Node that replaces all seawater nodes not in the surface layer
+
         node_river_water = "default:ice",
-    --  ^ Node that replaces river water in mapgens that use
-    --  ^ default:river_water.
+        -- Node that replaces river water in mapgens that use
+        -- default:river_water
+
         node_riverbed = "default:gravel",
         depth_riverbed = 2,
-    --  ^ Node placed under river water and thickness of this layer.
+        -- Node placed under river water and thickness of this layer
+
         node_cave_liquid = "default:water_source",
-    --  ^ Nodes placed as a blob of liquid in 50% of large caves.
-    --  ^ If absent, cave liquids fall back to classic behaviour of lava or
-    --  ^ water distributed according to a hardcoded 3D noise.
+        -- Nodes placed as a blob of liquid in 50% of large caves.
+        -- If absent, cave liquids fall back to classic behaviour of lava or
+        -- water distributed according to a hardcoded 3D noise.
+
         node_dungeon = "default:cobble",
-    --  ^ Node used for primary dungeon structure.
-    --  ^ If absent, dungeon materials fall back to classic behaviour.
-    --  ^ If present, the following two nodes are also used.
+        -- Node used for primary dungeon structure.
+        -- If absent, dungeon materials fall back to classic behaviour.
+        -- If present, the following two nodes are also used.
+
         node_dungeon_alt = "default:mossycobble",
-    --  ^ Node used for randomly-distributed alternative structure nodes.
-    --  ^ If alternative structure nodes are not wanted leave this absent for
-    --  ^ performance reasons.
+        -- Node used for randomly-distributed alternative structure nodes.
+        -- If alternative structure nodes are not wanted leave this absent for
+        -- performance reasons.
+
         node_dungeon_stair = "stairs:stair_cobble",
-    --  ^ Node used for dungeon stairs.
-    --  ^ If absent, stairs fall back to 'node_dungeon'.
+        -- Node used for dungeon stairs.
+        -- If absent, stairs fall back to 'node_dungeon'.
+
         y_max = 31000,
         y_min = 1,
-    --  ^ Upper and lower limits for biome.
-    --  ^ Alternatively you can use xyz limits as shown below.
+        -- Upper and lower limits for biome.
+        -- Alternatively you can use xyz limits as shown below.
+
         max_pos = {x = 31000, y = 128, z = 31000},
         min_pos = {x = -31000, y = 9, z = -31000},
-    --  ^ xyz limits for biome, an alternative to using 'y_min' and 'y_max'.
-    --  ^ Biome is limited to a cuboid defined by these positions.
-    --  ^ Any x, y or z field left undefined defaults to -31000 in 'min_pos' or
-    --  ^ 31000 in 'max_pos'.
+        -- xyz limits for biome, an alternative to using 'y_min' and 'y_max'.
+        -- Biome is limited to a cuboid defined by these positions.
+        -- Any x, y or z field left undefined defaults to -31000 in 'min_pos' or
+        -- 31000 in 'max_pos'.
+
         vertical_blend = 8,
-    --  ^ Vertical distance in nodes above 'y_max' over which the biome will
-    --  ^ blend with the biome above.
-    --  ^ Set to 0 for no vertical blend. Defaults to 0.
+        -- Vertical distance in nodes above 'y_max' over which the biome will
+        -- blend with the biome above.
+        -- Set to 0 for no vertical blend. Defaults to 0.
+
         heat_point = 0,
         humidity_point = 50,
-    --  ^ Characteristic temperature and humidity for the biome.
-    --  ^ These values create 'biome points' on a voronoi diagram with heat and
-    --  ^ humidity as axes. The resulting voronoi cells determine the
-    --  ^ distribution of the biomes.
-    --  ^ Heat and humidity have average values of 50, vary mostly between
-    --  ^ 0 and 100 but can exceed these values.
+        -- Characteristic temperature and humidity for the biome.
+        -- These values create 'biome points' on a voronoi diagram with heat and
+        -- humidity as axes. The resulting voronoi cells determine the
+        -- distribution of the biomes.
+        -- Heat and humidity have average values of 50, vary mostly between
+        -- 0 and 100 but can exceed these values.
     }
 
 Decoration definition
 ---------------------
 
-Used by `minetest.register_decoration`.
+See "Decoration types". Used by `minetest.register_decoration`.
 
     {
-        deco_type = "simple", -- See "Decoration types"
+        deco_type = "simple",
+
         place_on = "default:dirt_with_grass",
-    --  ^ Node (or list of nodes) that the decoration can be placed on
+        -- Node (or list of nodes) that the decoration can be placed on
+
         sidelen = 8,
-    --  ^ Size of the square divisions of the mapchunk being generated.
-    --  ^ Determines the resolution of noise variation if used.
-    --  ^ If the chunk size is not evenly divisible by sidelen, sidelen is made
-    --  ^ equal to the chunk size.
+        -- Size of the square divisions of the mapchunk being generated.
+        -- Determines the resolution of noise variation if used.
+        -- If the chunk size is not evenly divisible by sidelen, sidelen is made
+        -- equal to the chunk size.
+
         fill_ratio = 0.02,
-    --  ^ The value determines 'decorations per surface node'.
-    --  ^ Used only if noise_params is not specified.
-    --  ^ If >= 10.0 complete coverage is enabled and decoration placement uses
-    --  ^ a different and much faster method.
+        -- The value determines 'decorations per surface node'.
+        -- Used only if noise_params is not specified.
+        -- If >= 10.0 complete coverage is enabled and decoration placement uses
+        -- a different and much faster method.
+
         noise_params = {
             offset = 0,
             scale = 0.45,
@@ -6023,82 +6144,93 @@ Used by `minetest.register_decoration`.
             lacunarity = 2.0,
             flags = "absvalue"
         },
-    --  ^ NoiseParams structure describing the perlin noise used for decoration
-    --  ^ distribution.
-    --  ^ A noise value is calculated for each square division and determines
-    --  ^ 'decorations per surface node' within each division.
-    --  ^ If the noise value >= 10.0 complete coverage is enabled and decoration
-    --  ^ placement uses a different and much faster method.
+        -- NoiseParams structure describing the perlin noise used for decoration
+        -- distribution.
+        -- A noise value is calculated for each square division and determines
+        -- 'decorations per surface node' within each division.
+        -- If the noise value >= 10.0 complete coverage is enabled and
+        -- decoration placement uses a different and much faster method.
+
         biomes = {"Oceanside", "Hills", "Plains"},
-    --  ^ List of biomes in which this decoration occurs. Occurs in all biomes
-    --  ^ if this is omitted, and ignored if the Mapgen being used does not
-    --  ^ support biomes.
-    --  ^ Can be a list of (or a single) biome names, IDs, or definitions.
-        y_min = -31000
-        y_max = 31000
-    --  ^ Lower and upper limits for decoration.
-    --  ^ These parameters refer to the Y co-ordinate of the 'place_on' node.
+        -- List of biomes in which this decoration occurs. Occurs in all biomes
+        -- if this is omitted, and ignored if the Mapgen being used does not
+        -- support biomes.
+        -- Can be a list of (or a single) biome names, IDs, or definitions.
+
+        y_min = -31000,
+        y_max = 31000,
+        -- Lower and upper limits for decoration.
+        -- These parameters refer to the Y co-ordinate of the 'place_on' node.
+
         spawn_by = "default:water",
-    --  ^ Node (or list of nodes) that the decoration only spawns next to.
-    --  ^ Checks two horizontal planes of 8 neighbouring nodes (including
-    --  ^ diagonal neighbours), one plane level with the 'place_on' node and a
-    --  ^ plane one node above that.
+        -- Node (or list of nodes) that the decoration only spawns next to.
+        -- Checks two horizontal planes of 8 neighbouring nodes (including
+        -- diagonal neighbours), one plane level with the 'place_on' node and a
+        -- plane one node above that.
+
         num_spawn_by = 1,
-    --  ^ Number of spawn_by nodes that must be surrounding the decoration
-    --  ^ position to occur.
-    --  ^ If absent or -1, decorations occur next to any nodes.
+        -- Number of spawn_by nodes that must be surrounding the decoration
+        -- position to occur.
+        -- If absent or -1, decorations occur next to any nodes.
+
         flags = "liquid_surface, force_placement, all_floors, all_ceilings",
-    --  ^ Flags for all decoration types.
-    --  ^ "liquid_surface": Instead of placement on the highest solid surface
-    --  ^   in a mapchunk column, placement is on the highest liquid surface.
-    --  ^   Placement is disabled if solid nodes are found above the liquid
-    --  ^   surface.
-    --  ^ "force_placement": Nodes other than "air" and "ignore" are replaced
-    --  ^   by the decoration.
-    --  ^ "all_floors", "all_ceilings": Instead of placement on the highest
-    --  ^   surface in a mapchunk the decoration is placed on all floor and/or
-    --  ^   ceiling surfaces, for example in caves and dungeons.
-    --  ^   Ceiling decorations act as an inversion of floor decorations so the
-    --  ^   effect of 'place_offset_y' is inverted.
-    --  ^   Y-slice probabilities do not function correctly for ceiling
-    --  ^   schematic decorations as the behaviour is unchanged.
-    --  ^   If a single decoration registration has both flags the floor and
-    --  ^   ceiling decorations will be aligned vertically.
+        -- Flags for all decoration types.
+        -- "liquid_surface": Instead of placement on the highest solid surface
+        --   in a mapchunk column, placement is on the highest liquid surface.
+        --   Placement is disabled if solid nodes are found above the liquid
+        --   surface.
+        -- "force_placement": Nodes other than "air" and "ignore" are replaced
+        --   by the decoration.
+        -- "all_floors", "all_ceilings": Instead of placement on the highest
+        --   surface in a mapchunk the decoration is placed on all floor and/or
+        --   ceiling surfaces, for example in caves and dungeons.
+        --   Ceiling decorations act as an inversion of floor decorations so the
+        --   effect of 'place_offset_y' is inverted.
+        --   Y-slice probabilities do not function correctly for ceiling
+        --   schematic decorations as the behaviour is unchanged.
+        --   If a single decoration registration has both flags the floor and
+        --   ceiling decorations will be aligned vertically.
 
         ----- Simple-type parameters
+
         decoration = "default:grass",
-    --  ^ The node name used as the decoration.
-    --  ^ If instead a list of strings, a randomly selected node from the list
-    --  ^ is placed as the decoration.
+        -- The node name used as the decoration.
+        -- If instead a list of strings, a randomly selected node from the list
+        -- is placed as the decoration.
+
         height = 1,
-    --  ^ Decoration height in nodes.
-    --  ^ If height_max is not 0, this is the lower limit of a randomly
-    --  ^ selected height.
+        -- Decoration height in nodes.
+        -- If height_max is not 0, this is the lower limit of a randomly
+        -- selected height.
+
         height_max = 0,
-    --  ^ Upper limit of the randomly selected height.
-    --  ^ If absent, the parameter 'height' is used as a constant.
+        -- Upper limit of the randomly selected height.
+        -- If absent, the parameter 'height' is used as a constant.
+
         param2 = 0,
-    --  ^ Param2 value of decoration nodes.
-    --  ^ If param2_max is not 0, this is the lower limit of a randomly
-    --  ^ selected param2.
+        -- Param2 value of decoration nodes.
+        -- If param2_max is not 0, this is the lower limit of a randomly
+        -- selected param2.
+
         param2_max = 0,
-    --  ^ Upper limit of the randomly selected param2.
-    --  ^ If absent, the parameter 'param2' is used as a constant.
+        -- Upper limit of the randomly selected param2.
+        -- If absent, the parameter 'param2' is used as a constant.
+
         place_offset_y = 0,
-    --  ^ Y offset of the decoration base node relative to the standard base
-    --  ^ node position.
-    --  ^ Can be positive or negative. Default is 0.
-    --  ^ Effect is inverted for "all_ceilings" decorations.
-    --  ^ Ignored by 'y_min', 'y_max' and 'spawn_by' checks, which always refer
-    --  ^ to the 'place_on' node.
+        -- Y offset of the decoration base node relative to the standard base
+        -- node position.
+        -- Can be positive or negative. Default is 0.
+        -- Effect is inverted for "all_ceilings" decorations.
+        -- Ignored by 'y_min', 'y_max' and 'spawn_by' checks, which always refer
+        -- to the 'place_on' node.
 
         ----- Schematic-type parameters
+
         schematic = "foobar.mts",
-    --  ^ If schematic is a string, it is the filepath relative to the current
-    --  ^ working directory of the specified Minetest schematic file.
-    --  ^  - OR -, could be the ID of a previously registered schematic
-    --  ^  - OR -, could instead be a table containing two mandatory fields,
-    --  ^ size and data, and an optional table yslice_prob:
+        -- If schematic is a string, it is the filepath relative to the current
+        -- working directory of the specified Minetest schematic file.
+        -- Could also be the ID of a previously registered schematic.
+
         schematic = {
             size = {x = 4, y = 6, z = 4},
             data = {
@@ -6113,20 +6245,26 @@ Used by `minetest.register_decoration`.
                  ...
             },
         },
-    --  ^ See 'Schematic specifier' for details.
+        -- Alternative schematic specification by supplying a table. The fields
+        -- size and data are mandatory whereas yslice_prob is optional.
+        -- See 'Schematic specifier' for details.
+
         replacements = {["oldname"] = "convert_to", ...},
+
         flags = "place_center_x, place_center_y, place_center_z",
-    --  ^ Flags for schematic decorations.  See 'Schematic attributes'.
+        -- Flags for schematic decorations. See 'Schematic attributes'.
+
         rotation = "90",
-    --  ^ Rotation can be "0", "90", "180", "270", or "random".
+        -- Rotation can be "0", "90", "180", "270", or "random"
+
         place_offset_y = 0,
-    --  ^ If the flag 'place_center_y' is set this parameter is ignored.
-    --  ^ Y offset of the schematic base node layer relative to the 'place_on'
-    --  ^ node.
-    --  ^ Can be positive or negative. Default is 0.
-    --  ^ Effect is inverted for "all_ceilings" decorations.
-    --  ^ Ignored by 'y_min', 'y_max' and 'spawn_by' checks, which always refer
-    --  ^ to the 'place_on' node.
+        -- If the flag 'place_center_y' is set this parameter is ignored.
+        -- Y offset of the schematic base node layer relative to the 'place_on'
+        -- node.
+        -- Can be positive or negative. Default is 0.
+        -- Effect is inverted for "all_ceilings" decorations.
+        -- Ignored by 'y_min', 'y_max' and 'spawn_by' checks, which always refer
+        -- to the 'place_on' node.
     }
 
 Chat command definition
@@ -6135,12 +6273,14 @@ Chat command definition
 Used by `minetest.register_chatcommand`.
 
     {
-        params = "<name> <privilege>", -- Short parameter description
-        description = "Remove privilege from player", -- Full description
-        privs = {privs=true}, -- Require the "privs" privilege to run
-        func = function(name, param), -- Called when command is run.
-                                      -- Returns boolean success and text
-                                      -- output.
+        params = "<name> <privilege>",  -- Short parameter description
+
+        description = "Remove privilege from player",  -- Full description
+
+        privs = {privs=true},  -- Require the "privs" privilege to run
+
+        func = function(name, param),
+        -- Called when command is run. Returns boolean success and text output.
     }
 
 Note that in params, use of symbols is as follows:
@@ -6162,52 +6302,61 @@ Used by `minetest.create_detached_inventory`.
 
     {
         allow_move = func(inv, from_list, from_index, to_list, to_index, count, player),
-    --  ^ Called when a player wants to move items inside the inventory
-    --  ^ Return value: number of items allowed to move
+        -- Called when a player wants to move items inside the inventory.
+        -- Return value: number of items allowed to move.
 
         allow_put = func(inv, listname, index, stack, player),
-    --  ^ Called when a player wants to put something into the inventory
-    --  ^ Return value: number of items allowed to put
-    --  ^ Return value: -1: Allow and don't modify item count in inventory
+        -- Called when a player wants to put something into the inventory.
+        -- Return value: number of items allowed to put.
+        -- Return value -1: Allow and don't modify item count in inventory.
 
         allow_take = func(inv, listname, index, stack, player),
-    --  ^ Called when a player wants to take something out of the inventory
-    --  ^ Return value: number of items allowed to take
-    --  ^ Return value: -1: Allow and don't modify item count in inventory
+        -- Called when a player wants to take something out of the inventory.
+        -- Return value: number of items allowed to take.
+        -- Return value -1: Allow and don't modify item count in inventory.
 
         on_move = func(inv, from_list, from_index, to_list, to_index, count, player),
         on_put = func(inv, listname, index, stack, player),
         on_take = func(inv, listname, index, stack, player),
-    --  ^ Called after the actual action has happened, according to what was
-    --  ^ allowed.
-    --  ^ No return value
+        -- Called after the actual action has happened, according to what was
+        -- allowed.
+        -- No return value.
     }
 
 HUD Definition
 --------------
 
+See "HUD" section.
+
 Used by `Player:hud_add`. Returned by `Player:hud_get`.
 
     {
-        hud_elem_type = "image", -- see HUD element types
-    --  ^ type of HUD element, can be either of "image", "text", "statbar",
-          "inventory".
+        hud_elem_type = "image",  -- See HUD element types
+        -- Type of element, can be "image", "text", "statbar", or "inventory"
+
         position = {x=0.5, y=0.5},
-    --  ^ Left corner position of element
+        -- Left corner position of element
+
         name = "<name>",
+
         scale = {x = 2, y = 2},
+
         text = "<text>",
+
         number = 2,
+
         item = 3,
-    --  ^ Selected item in inventory.  0 for no item selected.
+        -- Selected item in inventory. 0 for no item selected.
+
         direction = 0,
-    --  ^ Direction: 0: left-right, 1: right-left, 2: top-bottom, 3: bottom-top
+        -- Direction: 0: left-right, 1: right-left, 2: top-bottom, 3: bottom-top
+
         alignment = {x=0, y=0},
-    --  ^ See "HUD Element Types"
+
         offset = {x=0, y=0},
-    --  ^ See "HUD Element Types"
+
         size = { x=100, y=100 },
-    --  ^ Size of element in pixels
+        -- Size of element in pixels
     }
 
 Particle definition
@@ -6219,26 +6368,34 @@ Used by `minetest.add_particle`.
         pos = {x=0, y=0, z=0},
         velocity = {x=0, y=0, z=0},
         acceleration = {x=0, y=0, z=0},
-    --  ^ Spawn particle at pos with velocity and acceleration
+        -- Spawn particle at pos with velocity and acceleration
+
         expirationtime = 1,
-    --  ^ Disappears after expirationtime seconds
+        -- Disappears after expirationtime seconds
+
         size = 1,
+
         collisiondetection = false,
-    --  ^ collisiondetection: if true collides with physical objects
+        -- If true collides with physical objects
+
         collision_removal = false,
-    --  ^ collision_removal: if true then particle is removed when it collides,
-    --  ^ requires collisiondetection = true to have any effect
+        -- If true particle is removed when it collides.
+        -- Requires collisiondetection = true to have any effect.
+
         vertical = false,
-    --  ^ vertical: if true faces player using y axis only
+        -- If true faces player using y axis only
+
         texture = "image.png",
-    --  ^ Uses texture (string)
+
         playername = "singleplayer",
-    --  ^ Optional, if specified spawns particle only on the player's client
+        -- Optional, if specified spawns particle only on the player's client
+
         animation = {Tile Animation definition},
-    --  ^ Optional, specifies how to animate the particle texture
+        -- Optional, specifies how to animate the particle texture
+
         glow = 0
-    --  ^ Optional, specify particle self-luminescence in darkness.
-    --  ^ Values 0-14.
+        -- Optional, specify particle self-luminescence in darkness.
+        -- Values 0-14.
     }
 
 
@@ -6249,9 +6406,11 @@ Used by `minetest.add_particlespawner`.
 
     {
         amount = 1,
+
         time = 1,
-    --  ^ If time is 0 has infinite lifespan and spawns the amount on a
-    --  ^ per-second basis.
+        -- If time is 0 has infinite lifespan and spawns the amount on a
+        -- per-second basis.
+
         minpos = {x=0, y=0, z=0},
         maxpos = {x=0, y=0, z=0},
         minvel = {x=0, y=0, z=0},
@@ -6262,30 +6421,34 @@ Used by `minetest.add_particlespawner`.
         maxexptime = 1,
         minsize = 1,
         maxsize = 1,
-    --  ^ The particle's properties are random values in between the bounds:
-    --  ^ minpos/maxpos, minvel/maxvel (velocity),
-    --  ^ minacc/maxacc (acceleration), minsize/maxsize,
-    --  ^ minexptime/maxexptime (expirationtime).
+        -- The particle's properties are random values in between the bounds
+        -- pos, velocity, acceleration, expirationtime, size
+
         collisiondetection = false,
-    --  ^ collisiondetection: if true uses collision detection
+        -- If true collides with physical objects
+
         collision_removal = false,
-    --  ^ collision_removal: if true then particle is removed when it collides,
-    --  ^ requires collisiondetection = true to have any effect
+        -- If true particle is removed when it collides.
+        -- Requires collisiondetection = true to have any effect.
+
         attached = ObjectRef,
-    --  ^ attached: if defined, particle positions, velocities and
-    --  ^ accelerations are relative to this object's position and yaw.
+        -- If defined, particle positions, velocities and accelerations are
+        -- relative to this object's position and yaw
+
         vertical = false,
-    --  ^ vertical: if true faces player using y axis only
+        -- If true faces player using y axis only
+
         texture = "image.png",
-    --  ^ Uses texture (string)
-        playername = "singleplayer"
-    --  ^ Playername is optional, if specified spawns particle only on the
-    --  ^ player's client.
+
+        playername = "singleplayer",
+        -- Optional, if specified spawns particle only on the player's client
+
         animation = {Tile Animation definition},
-    --  ^ Optional, specifies how to animate the particle texture
+        -- Optional, specifies how to animate the particle texture
+
         glow = 0
-    --  ^ Optional, specify particle self-luminescence in darkness.
-    --  ^ Values 0-14.
+        -- Optional, specify particle self-luminescence in darkness.
+        -- Values 0-14.
     }
 
 `HTTPRequest` definition
@@ -6295,23 +6458,28 @@ Used by `HTTPApiTable.fetch` and `HTTPApiTable.fetch_async`.
 
     {
         url = "http://example.org",
+
         timeout = 10,
-    --  ^ Timeout for connection in seconds. Default is 3 seconds.
+        -- Timeout for connection in seconds. Default is 3 seconds.
+
         post_data = "Raw POST request data string" OR {field1 = "data1", field2 = "data2"},
-    --  ^ Optional, if specified a POST request with post_data is performed.
-    --  ^ Accepts both a string and a table. If a table is specified, encodes
-    --  ^ table as x-www-form-urlencoded key-value pairs.
-    --  ^ If post_data ist not specified, a GET request is performed instead.
+        -- Optional, if specified a POST request with post_data is performed.
+        -- Accepts both a string and a table. If a table is specified, encodes
+        -- table as x-www-form-urlencoded key-value pairs.
+        -- If post_data is not specified, a GET request is performed instead.
+
         user_agent = "ExampleUserAgent",
-    --  ^ Optional, if specified replaces the default minetest user agent with
-    --  ^ given string.
+        -- Optional, if specified replaces the default minetest user agent with
+        -- given string
+
         extra_headers = { "Accept-Language: en-us", "Accept-Charset: utf-8" },
-    --  ^ Optional, if specified adds additional headers to the HTTP request.
-    --  ^ You must make sure that the header strings follow HTTP specification
-    --  ^ ("Key: Value").
+        -- Optional, if specified adds additional headers to the HTTP request.
+        -- You must make sure that the header strings follow HTTP specification
+        -- ("Key: Value").
+
         multipart = boolean
-    --  ^ Optional, if true performs a multipart HTTP request.
-    --  ^ Default is false.
+        -- Optional, if true performs a multipart HTTP request.
+        -- Default is false.
     }
 
 `HTTPRequestResult` definition
@@ -6322,14 +6490,18 @@ Passed to `HTTPApiTable.fetch` callback. Returned by
 
     {
         completed = true,
-    --  ^ If true, the request has finished (either succeeded, failed or timed
-          out).
+        -- If true, the request has finished (either succeeded, failed or timed
+        -- out)
+
         succeeded = true,
-    --  ^ If true, the request was successful
+        -- If true, the request was successful
+
         timeout = false,
-    --  ^ If true, the request timed out
+        -- If true, the request timed out
+
         code = 200,
-    --  ^ HTTP status code
+        -- HTTP status code
+
         data = "response"
     }
 
@@ -6340,30 +6512,37 @@ Used by `minetest.register_authentication_handler`.
 
     {
         get_auth = func(name),
-    --  ^ Get authentication data for existing player `name` (`nil` if player
-          doesn't exist).
-    --  ^ returns following structure:
-    --  ^ `{password=<string>, privileges=<table>, last_login=<number or nil>}`
+        -- Get authentication data for existing player `name` (`nil` if player
+        -- doesn't exist).
+        -- Returns following structure:
+        -- `{password=<string>, privileges=<table>, last_login=<number or nil>}`
+
         create_auth = func(name, password),
-    --  ^ Create new auth data for player `name`
-    --  ^ Note that `password` is not plain-text but an arbitrary
-    --  ^ representation decided by the engine
+        -- Create new auth data for player `name`.
+        -- Note that `password` is not plain-text but an arbitrary
+        -- representation decided by the engine.
+
         delete_auth = func(name),
-    --  ^ Delete auth data of player `name`, returns boolean indicating success
-    --  ^ (false if player nonexistant).
+        -- Delete auth data of player `name`.
+        -- Returns boolean indicating success (false if player is nonexistent).
+
         set_password = func(name, password),
-    --  ^ Set password of player `name` to `password`
-           Auth data should be created if not present
+        -- Set password of player `name` to `password`.
+        -- Auth data should be created if not present.
+
         set_privileges = func(name, privileges),
-    --  ^ Set privileges of player `name`
-    --  ^ `privileges` is in table form, auth data should be created if not
-    --  ^ present.
+        -- Set privileges of player `name`.
+        -- `privileges` is in table form, auth data should be created if not
+        -- present.
+
         reload = func(),
-    --  ^ Reload authentication data from the storage location
-    --  ^ Returns boolean indicating success
+        -- Reload authentication data from the storage location.
+        -- Returns boolean indicating success.
+
         record_login = func(name),
-    --  ^ Called when player joins, used for keeping track of last_login
+        -- Called when player joins, used for keeping track of last_login
+
         iterate = func(),
-    --  ^ Returns an iterator (use with `for` loops) for all player names
-    --  ^ currently in the auth database.
+        -- Returns an iterator (use with `for` loops) for all player names
+        -- currently in the auth database
     }
