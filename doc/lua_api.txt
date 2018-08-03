@@ -5828,7 +5828,7 @@ Used by `minetest.register_node`.
         -- default: minetest.node_dig
         -- By default checks privileges, wears out tool and removes node.
 
-        on_timer = function(pos,elapsed),
+        on_timer = function(pos, elapsed),
         -- default: nil
         -- called by NodeTimers, see minetest.get_node_timer and NodeTimerRef.
         -- elapsed is the total time passed since the timer was started.
@@ -6245,8 +6245,8 @@ See "Decoration types". Used by `minetest.register_decoration`.
                  ...
             },
         },
-        -- Could instead be a table containing two mandatory fields, size and
-        -- data, and an optional table yslice_prob.
+        -- Alternative schematic specification by supplying a table. The fields
+        -- size and data are mandatory whereas yslice_prob is optional.
         -- See 'Schematic specifier' for details.
 
         replacements = {["oldname"] = "convert_to", ...},
