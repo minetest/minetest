@@ -362,7 +362,7 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 		if (c_env != 0) {
 			// Calculate distance by speed, add own extent and 1.5m of tolerance
 			f32 distance = speed_f->getLength() * dtime +
-					box_0.getExtent().getLength() + 1.5f * BS;
+				box_0.getExtent().getLength() + 1.5f * BS;
 			std::vector<DistanceSortedActiveObject> clientobjects;
 			c_env->getActiveObjects(*pos_f, distance, clientobjects);
 
