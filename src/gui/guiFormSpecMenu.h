@@ -372,13 +372,15 @@ protected:
 	{
 			return padding + offset + AbsoluteRect.UpperLeftCorner;
 	}
+	v2s32 getElementBasePos(bool absolute,
+			const std::vector<std::string> *v_pos);
 
 	v2s32 padding;
-	v2s32 spacing;
+	v2f32 spacing;
 	v2s32 imgsize;
 	v2s32 offset;
-	v2s32 pos_offset;
-	std::stack<v2s32> container_stack;
+	v2f32 pos_offset;
+	std::stack<v2f32> container_stack;
 
 	InventoryManager *m_invmgr;
 	ISimpleTextureSource *m_tsrc;
