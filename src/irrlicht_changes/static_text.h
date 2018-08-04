@@ -274,7 +274,7 @@ inline void setStaticText(irr::gui::IGUIStaticText *static_text, const EnrichedS
 
 inline void setStaticText(irr::gui::IGUIStaticText *static_text, const wchar_t *text)
 {
-	setStaticText(static_text, EnrichedString(text));
+	setStaticText(static_text, EnrichedString(text, static_text->getOverrideColor()));
 }
 
 #endif // _IRR_COMPILE_WITH_GUI_
