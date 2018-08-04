@@ -3,6 +3,7 @@
 core.features = {
 	glasslike_framed = true,
 	nodebox_as_selectionbox = true,
+	independent_selectionbox = true,
 	chat_send_player_param3 = true,
 	get_all_craft_recipes_works = true,
 	use_texture_alpha = true,

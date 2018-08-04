@@ -3265,6 +3265,8 @@ Utilities
       {
           glasslike_framed = true,
           nodebox_as_selectionbox = true,
+          -- selectionbox is settable independently from collisionbox
+          independent_selectionbox = true,
           chat_send_player_param3 = true,
           get_all_craft_recipes_works = true,
           -- The transparency channel of textures can optionally be used on
