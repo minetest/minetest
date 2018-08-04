@@ -2306,6 +2306,51 @@ Helper functions
 
 
 
+
+Test helpers
+============
+
+Minetest includes the same assertion library used by Busted, a popular Lua
+unit testing framework. It also includes a simple integration testing API
+which you will be familiar with if you've used to Busted's API, however there
+may be missing features.
+
+### Assertions
+
+Also see [Luassert's README](https://github.com/Olivine-Labs/luassert/blob/master/README.md).
+
+    assert.True(true)
+    assert.is.True(true)
+    assert.is_true(true)
+    assert.is_not.True(false)
+    assert.is.Not.True(false)
+    assert.is_not_true(false)
+    assert.are.equal(1, 1)
+    assert.equal(1, 1)
+    assert.has.errors(function() error("this should fail") end)
+
+Luassert supports chaining to make the asserts more readable, however they chaining
+is not required. `assert.is` and `assert.are` are both aliases to `assert`.
+
+
+### Testing
+
+Tests are created using `describe` and `it`. `it` must always be inside of a
+describe, and you cannot nest `describe`s
+
+
+    describe("vector", function()
+        it("new", function()
+            assert.same({ x = 1, y = 2, z = 3 }, vector.new(1, 2, 3))
+            assert.same({ x = 3, y = 2, z = 1 }, vector.new({ x = 3, y = 2, z = 1 }))
+
+            local v = vector.new({ x = 3, y = 2, z = 1 })
+            assert.same(v, vector.new(v))
+        end)
+    end)
+
+
+
 Translations
 ============
 

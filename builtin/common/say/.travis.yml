@@ -1,0 +1,37 @@
+language: erlang
+
+env:
+  - LUA=""
+  - LUA="luajit"
+
+branches:
+  only:
+    - master
+
+install:
+  - sudo apt-get install luajit
+  - sudo apt-get install luarocks
+  - sudo luarocks install luafilesystem
+  - git clone git://github.com/Olivine-Labs/say.git
+  - cd say
+  - sudo luarocks make
+  - cd ../
+  - git clone git://github.com/Olivine-Labs/luassert.git
+  - cd luassert
+  - sudo luarocks make
+  - cd ../
+  - git clone git://github.com/Olivine-Labs/busted.git
+  - cd busted
+  - sudo luarocks make busted-scm-0.rockspec
+  - cd ../
+
+script: "busted spec"
+
+notifications:
+  webhooks:
+    - http://hollow-mountain-1250.herokuapp.com/hubot/travis
+  recipients:
+    - engineers@olivinelabs.com
+  email:
+    on_success: always
+    on_failure: always
