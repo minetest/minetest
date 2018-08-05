@@ -51,6 +51,7 @@ public:
 	void testIsNumber();
 	void testIsPowerOfTwo();
 	void testMyround();
+	void testStringJoin();
 };
 
 static TestUtilities g_test_instance;
@@ -78,6 +79,7 @@ void TestUtilities::runTests(IGameDef *gamedef)
 	TEST(testIsNumber);
 	TEST(testIsPowerOfTwo);
 	TEST(testMyround);
+	TEST(testStringJoin);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -326,5 +328,26 @@ void TestUtilities::testMyround()
 	UASSERT(myround(1.2f) == 1);
 	UASSERT(myround(-3.1f) == -3);
 	UASSERT(myround(-6.5f) == -7);
+}
+
+void TestUtilities::testStringJoin()
+{
+	std::vector<std::string> input;
+	UASSERT(str_join(input, ",") == "");
+
+	input.emplace_back("one");
+	UASSERT(str_join(input, ",") == "one");
+
+	input.emplace_back("two");
+	UASSERT(str_join(input, ",") == "one,two");
+
+	input.emplace_back("three");
+	UASSERT(str_join(input, ",") == "one,two,three");
+
+	input[1] = "";
+	UASSERT(str_join(input, ",") == "one,,three");
+
+	input[1] = "two";
+	UASSERT(str_join(input, " and ") == "one and two and three");
 }
 

@@ -29,6 +29,7 @@ It can be copied over from an old world to a newly created world.
 
 World
 |-- auth.txt ----- Authentication data
+|-- auth.sqlite -- Authentication data (SQLite alternative)
 |-- env_meta.txt - Environment metadata
 |-- ipban.txt ---- Banned ips/users
 |-- map_meta.txt - Map metadata
@@ -61,6 +62,34 @@ Example lines:
     foo:#1#hPpy4O3IAn1hsNK00A6wNw#Kpu6rj7McsrPCt4euTb5RA5ltF7wdcWGoYMcRngwDi11cZhPuuR9i5Bo7o6A877TgcEwoc//HNrj9EjR/CGjdyTFmNhiermZOADvd8eu32FYK1kf7RMC0rXWxCenYuOQCG4WF9mMGiyTPxC63VAjAMuc1nCZzmy6D9zt0SIKxOmteI75pAEAIee2hx4OkSXRIiU4Zrxo1Xf7QFxkMY4x77vgaPcvfmuzom0y/fU1EdSnZeopGPvzMpFx80ODFx1P34R52nmVl0W8h4GNo0k8ZiWtRCdrJxs8xIg7z5P1h3Th/BJ0lwexpdK8sQZWng8xaO5ElthNuhO8UQx1l6FgEA:shout
 - Player "bar", no password, no privileges:
     bar::
+
+auth.sqlite
+------------
+Contains authentification data as an SQLite database. This replaces auth.txt
+above when auth_backend is set to "sqlite3" in world.mt .
+
+This database contains two tables "auth" and "user_privileges":
+
+CREATE TABLE `auth` (
+  `id` INTEGER PRIMARY KEY AUTOINCREMENT,
+  `name` VARCHAR(32) UNIQUE,
+  `password` VARCHAR(512),
+  `last_login` INTEGER
+);
+CREATE TABLE `user_privileges` (
+  `id` INTEGER,
+  `privilege` VARCHAR(32),
+  PRIMARY KEY (id, privilege)
+  CONSTRAINT fk_id FOREIGN KEY (id) REFERENCES auth (id) ON DELETE CASCADE
+);
+
+The "name" and "password" fields of the auth table are the same as the auth.txt
+fields (with modern password hash). The "last_login" field is the last login
+time as a unix time stamp.
+
+The "user_privileges" table contains one entry per privilege and player.
+A player with "interact" and "shout" privileges will have two entries, one
+with privilege="interact" and the second with privilege="shout".
 
 env_meta.txt
 -------------
@@ -107,6 +136,7 @@ Example content (added indentation and - explanations):
   readonly_backend = sqlite3    - optionally readonly seed DB (DB file _must_ be located in "readonly" subfolder)
   server_announce = false       - whether the server is publicly announced or not
   load_mod_<mod> = false        - whether <mod> is to be loaded in this world
+  auth_backend = files          - which DB backend to use for authentication data
 
 Player File Format
 ===================

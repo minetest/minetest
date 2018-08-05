@@ -414,6 +414,18 @@ ServerEnvironment::ServerEnvironment(ServerMap *map,
 	std::string name;
 	conf.getNoEx("player_backend", name);
 	m_player_database = openPlayerDatabase(name, path_world, conf);
+
+	std::string auth_name = "files";
+	if (conf.exists("auth_backend")) {
+		conf.getNoEx("auth_backend", auth_name);
+	} else {
+		conf.set("auth_backend", "files");
+		if (!conf.updateConfigFile(conf_path.c_str())) {
+			errorstream << "ServerEnvironment::ServerEnvironment(): "
+					<< "Failed to update world.mt!" << std::endl;
+		}
+	}
+	m_auth_database = openAuthDatabase(auth_name, path_world, conf);
 }
 
 ServerEnvironment::~ServerEnvironment()
@@ -439,6 +451,7 @@ ServerEnvironment::~ServerEnvironment()
 	}
 
 	delete m_player_database;
+	delete m_auth_database;
 }
 
 Map & ServerEnvironment::getMap()
@@ -2270,6 +2283,94 @@ bool ServerEnvironment::migratePlayersDatabase(const GameParams &game_params,
 
 	} catch (BaseException &e) {
 		errorstream << "An error occured during migration: " << e.what() << std::endl;
+		return false;
+	}
+	return true;
+}
+
+AuthDatabase *ServerEnvironment::openAuthDatabase(
+		const std::string &name, const std::string &savedir, const Settings &conf)
+{
+	if (name == "sqlite3")
+		return new AuthDatabaseSQLite3(savedir);
+
+	if (name == "files")
+		return new AuthDatabaseFiles(savedir);
+
+	throw BaseException(std::string("Database backend ") + name + " not supported.");
+}
+
+bool ServerEnvironment::migrateAuthDatabase(
+		const GameParams &game_params, const Settings &cmd_args)
+{
+	std::string migrate_to = cmd_args.get("migrate-auth");
+	Settings world_mt;
+	std::string world_mt_path = game_params.world_path + DIR_DELIM + "world.mt";
+	if (!world_mt.readConfigFile(world_mt_path.c_str())) {
+		errorstream << "Cannot read world.mt!" << std::endl;
+		return false;
+	}
+
+	std::string backend = "files";
+	if (world_mt.exists("auth_backend"))
+		backend = world_mt.get("auth_backend");
+	else
+		warningstream << "No auth_backend found in world.mt, "
+				"assuming \"files\"." << std::endl;
+
+	if (backend == migrate_to) {
+		errorstream << "Cannot migrate: new backend is same"
+				<< " as the old one" << std::endl;
+		return false;
+	}
+
+	try {
+		const std::unique_ptr<AuthDatabase> srcdb(ServerEnvironment::openAuthDatabase(
+				backend, game_params.world_path, world_mt));
+		const std::unique_ptr<AuthDatabase> dstdb(ServerEnvironment::openAuthDatabase(
+				migrate_to, game_params.world_path, world_mt));
+
+		std::vector<std::string> names_list;
+		srcdb->listNames(names_list);
+		for (const std::string &name : names_list) {
+			actionstream << "Migrating auth entry for " << name << std::endl;
+			bool success;
+			AuthEntry authEntry;
+			success = srcdb->getAuth(name, authEntry);
+			success = success && dstdb->createAuth(authEntry);
+			if (!success)
+				errorstream << "Failed to migrate " << name << std::endl;
+		}
+
+		actionstream << "Successfully migrated " << names_list.size()
+				<< " auth entries" << std::endl;
+		world_mt.set("auth_backend", migrate_to);
+		if (!world_mt.updateConfigFile(world_mt_path.c_str()))
+			errorstream << "Failed to update world.mt!" << std::endl;
+		else
+			actionstream << "world.mt updated" << std::endl;
+
+		if (backend == "files") {
+			// special-case files migration:
+			// move auth.txt to auth.txt.bak if possible
+			std::string auth_txt_path =
+					game_params.world_path + DIR_DELIM + "auth.txt";
+			std::string auth_bak_path = auth_txt_path + ".bak";
+			if (!fs::PathExists(auth_bak_path))
+				if (fs::Rename(auth_txt_path, auth_bak_path))
+					actionstream << "Renamed auth.txt to auth.txt.bak"
+							<< std::endl;
+				else
+					errorstream << "Could not rename auth.txt to "
+							"auth.txt.bak" << std::endl;
+			else
+				warningstream << "auth.txt.bak already exists, auth.txt "
+						"not renamed" << std::endl;
+		}
+
+	} catch (BaseException &e) {
+		errorstream << "An error occured during migration: " << e.what()
+			    << std::endl;
 		return false;
 	}
 	return true;
