@@ -2343,7 +2343,7 @@ bool ServerEnvironment::migrateAuthDatabase(
 		}
 
 		actionstream << "Successfully migrated " << names_list.size()
-			     << " auth entries" << std::endl;
+				<< " auth entries" << std::endl;
 		world_mt.set("auth_backend", migrate_to);
 		if (!world_mt.updateConfigFile(world_mt_path.c_str()))
 			errorstream << "Failed to update world.mt!" << std::endl;
@@ -2359,15 +2359,14 @@ bool ServerEnvironment::migrateAuthDatabase(
 			if (!fs::PathExists(auth_bak_path))
 				if (fs::Rename(auth_txt_path, auth_bak_path))
 					actionstream << "Renamed auth.txt to auth.txt.bak"
-						     << std::endl;
+							<< std::endl;
 				else
 					errorstream << "Could not rename auth.txt to "
-						       "auth.txt.bak"
-						    << std::endl;
+							"auth.txt.bak" << std::endl;
 			else
 				warningstream << "auth.txt.bak already exists, auth.txt "
-						 "not renamed" << std::endl;
-		} else errorstream << "NOT FILES?" << std::endl;
+						"not renamed" << std::endl;
+		}
 
 	} catch (BaseException &e) {
 		errorstream << "An error occured during migration: " << e.what()
