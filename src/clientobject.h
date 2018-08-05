@@ -51,6 +51,7 @@ public:
 	virtual scene::ISceneNode *getSceneNode() { return NULL; }
 	virtual scene::IAnimatedMeshSceneNode *getAnimatedMeshSceneNode() { return NULL; }
 	virtual bool isLocalPlayer() const {return false;}
+	virtual ClientActiveObject *getParent() const { return nullptr; };
 	virtual void setAttachments() {}
 	virtual bool doShowSelectionBox(){return true;}
 

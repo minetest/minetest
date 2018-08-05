@@ -118,15 +118,14 @@ UnitSAO::UnitSAO(ServerEnvironment *env, v3f pos):
 	m_armor_groups["fleshy"] = 100;
 }
 
-bool UnitSAO::isAttached() const
+ServerActiveObject *UnitSAO::getParent() const
 {
 	if (!m_attachment_parent_id)
-		return false;
+		return nullptr;
 	// Check if the parent still exists
 	ServerActiveObject *obj = m_env->getActiveObject(m_attachment_parent_id);
-	if (obj)
-		return true;
-	return false;
+
+	return obj;
 }
 
 void UnitSAO::setArmorGroups(const ItemGroupList &armor_groups)

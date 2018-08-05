@@ -360,11 +360,16 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 #ifndef SERVER
 		ClientEnvironment *c_env = dynamic_cast<ClientEnvironment*>(env);
 		if (c_env != 0) {
-			f32 distance = speed_f->getLength();
+			// Calculate distance by speed, add own extent and 1.5m of tolerance
+			f32 distance = speed_f->getLength() * dtime +
+				box_0.getExtent().getLength() + 1.5f * BS;
 			std::vector<DistanceSortedActiveObject> clientobjects;
-			c_env->getActiveObjects(*pos_f, distance * 1.5f, clientobjects);
+			c_env->getActiveObjects(*pos_f, distance, clientobjects);
+
 			for (auto &clientobject : clientobjects) {
-				if (!self || (self != clientobject.obj)) {
+				// Do collide with everything but itself and the parent CAO
+				if (!self || (self != clientobject.obj &&
+						self != clientobject.obj->getParent())) {
 					objects.push_back((ActiveObject*) clientobject.obj);
 				}
 			}
@@ -374,12 +379,17 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 		{
 			ServerEnvironment *s_env = dynamic_cast<ServerEnvironment*>(env);
 			if (s_env != NULL) {
-				f32 distance = speed_f->getLength();
+				// Calculate distance by speed, add own extent and 1.5m of tolerance
+				f32 distance = speed_f->getLength() * dtime +
+					box_0.getExtent().getLength() + 1.5f * BS;
 				std::vector<u16> s_objects;
-				s_env->getObjectsInsideRadius(s_objects, *pos_f, distance * 1.5f);
+				s_env->getObjectsInsideRadius(s_objects, *pos_f, distance);
+
 				for (u16 obj_id : s_objects) {
 					ServerActiveObject *current = s_env->getActiveObject(obj_id);
-					if (!self || (self != current)) {
+
+					if (!self || (self != current &&
+							self != current->getParent())) {
 						objects.push_back((ActiveObject*)current);
 					}
 				}
