@@ -117,12 +117,6 @@ void ScriptApiSecurity::initializeSecurity()
 		"debug",
 		"setlocal",
 	};
-	static const char *package_whitelist[] = {
-		"config",
-		"cpath",
-		"path",
-		"searchpath",
-	};
 #if USE_LUAJIT
 	static const char *jit_whitelist[] = {
 		"arch",
@@ -181,7 +175,6 @@ void ScriptApiSecurity::initializeSecurity()
 	lua_setglobal(L, "io");
 	lua_pop(L, 1);  // Pop old IO
 
-
 	// Copy safe OS functions
 	lua_getfield(L, old_globals, "os");
 	lua_newtable(L);
@@ -194,7 +187,6 @@ void ScriptApiSecurity::initializeSecurity()
 	lua_setglobal(L, "os");
 	lua_pop(L, 1);  // Pop old OS
 
-
 	// Copy safe debug functions
 	lua_getfield(L, old_globals, "debug");
 	lua_newtable(L);
@@ -202,13 +194,14 @@ void ScriptApiSecurity::initializeSecurity()
 	lua_setglobal(L, "debug");
 	lua_pop(L, 1);  // Pop old debug
 
-
-	// Copy safe package fields
-	lua_getfield(L, old_globals, "package");
+	// Add package table
 	lua_newtable(L);
-	copy_safe(L, package_whitelist, sizeof(package_whitelist));
+	lua_pushstring(L, "./?.lua");
+	lua_setfield(L, -2, "path");
+	lua_newtable(L);
+	lua_setfield(L, -2, "_LOADED");
 	lua_setglobal(L, "package");
-	lua_pop(L, 1);  // Pop old package
+
 
 #if USE_LUAJIT
 	// Copy safe jit functions, if they exist
@@ -303,8 +296,6 @@ void ScriptApiSecurity::initializeSecurityClient()
 	SECURE_API(g, require);
 	lua_pop(L, 2);
 
-
-
 	// Copy safe OS functions
 	lua_getglobal(L, "os");
 	lua_newtable(L);
@@ -312,13 +303,21 @@ void ScriptApiSecurity::initializeSecurityClient()
 	lua_setfield(L, -3, "os");
 	lua_pop(L, 1);  // Pop old OS
 
-
 	// Copy safe debug functions
 	lua_getglobal(L, "debug");
 	lua_newtable(L);
 	copy_safe(L, debug_whitelist, sizeof(debug_whitelist));
 	lua_setfield(L, -3, "debug");
 	lua_pop(L, 1);  // Pop old debug
+
+	// Add package table
+	// lua_newtable(L);
+	// lua_pushstring(L, "./?.lua");
+	// lua_setfield(L, -2, "path");
+	// lua_newtable(L);
+	// lua_setfield(L, -2, "_LOADED");
+	// lua_setfield(L, -2, "package");
+
 
 #if USE_LUAJIT
 	// Copy safe jit functions, if they exist
@@ -688,11 +687,140 @@ int ScriptApiSecurity::sl_g_loadstring(lua_State *L)
 }
 
 
+/* The following code section is taken from loadlib.c in the Lua PUC implementation
+/*
+*******************************************************************************
+* Copyright (C) 1994-2006 Lua.org, PUC-Rio.  All rights reserved.
+*
+* Permission is hereby granted, free of charge, to any person obtaining
+* a copy of this software and associated documentation files (the
+* "Software"), to deal in the Software without restriction, including
+* without limitation the rights to use, copy, modify, merge, publish,
+* distribute, sublicense, and/or sell copies of the Software, and to
+* permit persons to whom the Software is furnished to do so, subject to
+* the following conditions:
+*
+* The above copyright notice and this permission notice shall be
+* included in all copies or substantial portions of the Software.
+*
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+******************************************************************************/
+
+static const int sentinel_ = 0;
+#define sentinel	((void *)&sentinel_)
+
+static const char *pushnexttemplate (lua_State *L, const char *path) {
+	const char *l;
+	while (*path == *LUA_PATHSEP)
+		path++;  /* skip separators */
+
+	if (*path == '\0')
+		return NULL;  /* no more templates */
+
+	l = strchr(path, *LUA_PATHSEP);  /* find next separator */
+	if (l == NULL)
+		l = path + strlen(path);
+
+	lua_pushlstring(L, path, l - path);  /* template */
+	return l;
+}
+
+static const char *findfile (lua_State *L, const char *name) {
+	name = luaL_gsub(L, name, ".", DIR_DELIM);
+
+	lua_getglobal(L, "package");
+	lua_getfield(L, -1, "path");
+
+	const char *path = luaL_checkstring(L, -1);
+
+	lua_pushstring(L, "");  /* error accumulator */
+	while ((path = pushnexttemplate(L, path)) != NULL) {
+		const char *filename = luaL_gsub(L, lua_tostring(L, -1), LUA_PATH_MARK, name);
+		if (!ScriptApiSecurity::checkPath(L, filename, false, NULL)) {
+			lua_pop(L, 2);  /* remove path template and file name */
+			lua_pushfstring(L, "\n\tblocked by mod security " LUA_QS, filename);
+			lua_concat(L, 2);
+		} else if (std::ifstream(filename).good()) {
+			return filename;
+		} else {
+			lua_pop(L, 2);  /* remove path template and file name */
+			lua_pushfstring(L, "\n\tno file " LUA_QS, filename);
+			lua_concat(L, 2);
+		}
+
+	}
+	return NULL;  /* not found */
+}
+
 int ScriptApiSecurity::sl_g_require(lua_State *L)
 {
-	lua_pushliteral(L, "require() is disabled when mod security is on.");
-	return lua_error(L);
+	lua_rawgeti(L, LUA_REGISTRYINDEX, CUSTOM_RIDX_SCRIPTAPI);
+	ScriptApiBase *script = (ScriptApiBase *) lua_touserdata(L, -1);
+	lua_pop(L, 1);
+
+	if (script->getType() == ScriptingType::Client) {
+		lua_pushliteral(L, "require() is disabled in CSM");
+		return lua_error(L);
+	}
+
+	const char *name = luaL_checkstring(L, 1);
+
+	lua_settop(L, 1);  /* _LOADED table will be at index 3 */
+	lua_getglobal(L, "package");
+	assert(!lua_isnil(L, -1));
+	static const int package = 2;
+
+	lua_getfield(L, package, "_LOADED");
+	assert(!lua_isnil(L, -1));
+	lua_getfield(L, 3, name);
+	if (lua_toboolean(L, -1)) {  /* is it there? */
+		if (lua_touserdata(L, -1) == sentinel)  /* check loops */
+			luaL_error(L, "loop or previous error loading module " LUA_QS, name);
+		return 1;  /* package is already loaded */
+	}
+
+	// Find library
+	const char *filename = findfile(L, name);
+	if (filename == NULL) {
+		luaL_error(L, "module " LUA_QS " not found:%s",	name, lua_tostring(L, -1));
+		return 1;  /* library not found in this path */
+	}
+
+	errorstream << filename << std::endl;
+
+	// Load library
+	lua_pushcfunction(L, &ScriptApiSecurity::sl_g_loadfile);
+	lua_pushstring(L, filename);
+	lua_call(L, 1, 1);
+	if (lua_isnil(L, -1))
+		luaL_error(L, "Unable to load file %s", filename);
+
+
+	lua_pushlightuserdata(L, sentinel);
+	lua_setfield(L, 3, name);  /* _LOADED[name] = sentinel */
+	lua_pushstring(L, name);  /* pass name as argument to module */
+	lua_call(L, 1, 1);  /* run loaded module */
+	if (!lua_isnil(L, -1))  /* non-nil return? */
+		lua_setfield(L, 3, name);  /* _LOADED[name] = returned value */
+
+	lua_getfield(L, 3, name);
+	if (lua_touserdata(L, -1) == sentinel) {   /* module did not set a value? */
+		lua_pushboolean(L, 1);  /* use true as result */
+		lua_pushvalue(L, -1);  /* extra copy to be returned */
+		lua_setfield(L, 3, name);  /* _LOADED[name] = true */
+	}
+	return 1;
 }
+
+//
+// End of code from Lua
+//
 
 
 int ScriptApiSecurity::sl_io_open(lua_State *L)
@@ -797,4 +925,3 @@ int ScriptApiSecurity::sl_os_remove(lua_State *L)
 	lua_call(L, 1, 2);
 	return 2;
 }
-
