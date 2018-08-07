@@ -115,8 +115,8 @@ void ObjectProperties::serialize(std::ostream &os) const
 	writeU16(os, breath_max);
 	writeF1000(os, eye_height);
 	writeF1000(os, zoom_fov);
-	writeU8(os, use_texture_alpha);
-	writeV3F1000( os, light_anchor );
+	writeU8(os, use_texture_alpha);	
+	writeV3F1000(os, light_anchor);
 	
 	// Add stuff only at the bottom.
 	// Never remove anything, because we don't want new versions of this

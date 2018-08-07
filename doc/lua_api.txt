@@ -5295,6 +5295,11 @@ Used by `ObjectRef` methods. Part of an Entity definition.
         -- For faking self-lighting, UI style entities, or programmatic coloring
         -- in mods.
 
+        light_anchor = {x = 0, y = 0.5, z = 0},
+        -- Use this position when sampling light from the world.
+        -- The anchor is relative to the entity, Z always being its front & back,
+        -- and X always being its left & right.
+
         nametag = "",
         -- By default empty, for players their name is shown if empty
 

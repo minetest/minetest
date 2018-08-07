@@ -720,22 +720,22 @@ m4x4f GenericCAO::getTransform()
 {
 	scene::ISceneNode *node = getSceneNode();
 	if (node)
-		return m4x4f(node->getAbsoluteTransformation());
-	
-	return m4x4f( m4x4f::EM4CONST_IDENTITY );
+		return node->getAbsoluteTransformation();
+
+	return m4x4f(m4x4f::EM4CONST_IDENTITY);
 }
 
 v3s16 GenericCAO::getLightPosition()
 {
 	// Players and entities now both use a property to define the light sampling offset.
 	// The offset is in the entity's local space.
-	
-	v3f offset = v3f( m_prop.light_anchor );
-	
+
+	v3f offset = v3f(m_prop.light_anchor);
+
 	m4x4f transform = getTransform();
-	transform.rotateVect( offset );
-	
-	return floatToInt( m_position + offset , BS );
+	transform.rotateVect(offset);
+
+	return floatToInt(m_position + offset, BS);
 }
 
 void GenericCAO::updateNodePos()

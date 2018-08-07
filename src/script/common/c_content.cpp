@@ -305,6 +305,13 @@ void read_object_properties(lua_State *L, int index,
 
 	getfloatfield(L, -1, "zoom_fov", prop->zoom_fov);
 	getboolfield(L, -1, "use_texture_alpha", prop->use_texture_alpha);
+
+	lua_getfield(L, -1, "light_anchor");
+	bool has_light_anchor = lua_istable(L, -1);
+	if (has_light_anchor)
+		prop->light_anchor = read_v3f(L, -1);
+	lua_pop(L, 1);
+
 }
 
 /******************************************************************************/
@@ -389,6 +396,8 @@ void push_object_properties(lua_State *L, ObjectProperties *prop)
 	lua_setfield(L, -2, "zoom_fov");
 	lua_pushboolean(L, prop->use_texture_alpha);
 	lua_setfield(L, -2, "use_texture_alpha");
+	push_v3f(L, prop->light_anchor);
+	lua_setfield(L, -2, "light_anchor");
 }
 
 /******************************************************************************/
