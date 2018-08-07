@@ -154,6 +154,8 @@ public:
 	const bool isImmortal();
 
 	scene::ISceneNode *getSceneNode();
+	
+	m4x4f getTransform();
 
 	scene::IAnimatedMeshSceneNode *getAnimatedMeshSceneNode();
 
