@@ -5,6 +5,7 @@ project.ext.set("versionMinor", 6)      // Version Minor
 project.ext.set("versionPatch", 0)      // Version Patch
 project.ext.set("versionExtra", "-dev") // Version Extra
 project.ext.set("versionCode", 38)      // Android Version Code
+project.ext.set("developmentBuild", 1) // Whether it is a development build, or a release
 // NOTE: +2 after each release!
 // +1 for ARM and +1 for ARM64 APK's, because
 // each APK must have a larger `versionCode` than the previous
