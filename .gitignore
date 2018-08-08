@@ -107,3 +107,17 @@ build/android/obj
 build/android/local.properties
 build/android/.gradle
 timestamp
+
+#My own ignore files
+"nbproject/configurations (Jarvis's conflicted copy 2018-06-13).xml"
+nbproject/configurations.xml
+nbproject/private/CodeAssistancePathMapper.properties
+nbproject/private/Default-build.log
+nbproject/private/Default-exec.log
+nbproject/private/Default.properties
+nbproject/private/c_standard_headers_indexer.c
+nbproject/private/cpp_standard_headers_indexer.cpp
+nbproject/private/launcher.properties
+nbproject/private/private.xml
+nbproject/project.xml
+"src/cmake_config_githash (Jarvis-satellite's conflicted copy 2018-06-12).h"
