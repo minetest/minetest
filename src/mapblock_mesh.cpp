@@ -175,7 +175,7 @@ static u8 getFaceLight(enum LightBank bank, MapNode n, MapNode n2,
 	Calculate non-smooth lighting at face of node.
 	Both light banks.
 */
-u16 getFaceLight(MapNode n, MapNode n2, v3s16 face_dir,
+u16 getFaceLight(MapNode n, MapNode n2, const v3s16 &face_dir,
 	const NodeDefManager *ndef)
 {
 	u16 day = getFaceLight(LIGHTBANK_DAY, n, n2, face_dir, ndef);
@@ -375,7 +375,7 @@ void final_color_blend(video::SColor *result,
 /*
 	vertex_dirs: v3s16[4]
 */
-static void getNodeVertexDirs(v3s16 dir, v3s16 *vertex_dirs)
+static void getNodeVertexDirs(const v3s16 &dir, v3s16 *vertex_dirs)
 {
 	/*
 		If looked from outside the node towards the face, the corners are:
@@ -424,7 +424,7 @@ static void getNodeVertexDirs(v3s16 dir, v3s16 *vertex_dirs)
 	}
 }
 
-static void getNodeTextureCoords(v3f base, const v3f &scale, v3s16 dir, float *u, float *v)
+static void getNodeTextureCoords(v3f base, const v3f &scale, const v3s16 &dir, float *u, float *v)
 {
 	if (dir.X > 0 || dir.Y > 0 || dir.Z < 0)
 		base -= scale;
@@ -462,7 +462,7 @@ struct FastFace
 };
 
 static void makeFastFace(const TileSpec &tile, u16 li0, u16 li1, u16 li2, u16 li3,
-	v3f tp, v3f p, v3s16 dir, v3f scale, std::vector<FastFace> &dest)
+	const v3f &tp, const v3f &p, const v3s16 &dir, const v3f &scale, std::vector<FastFace> &dest)
 {
 	// Position is at the center of the cube.
 	v3f pos = p * BS;
@@ -704,7 +704,7 @@ static u8 face_contents(content_t m1, content_t m2, bool *equivalent,
 /*
 	Gets nth node tile (0 <= n <= 5).
 */
-void getNodeTileN(MapNode mn, v3s16 p, u8 tileindex, MeshMakeData *data, TileSpec &tile)
+void getNodeTileN(MapNode mn, const v3s16 &p, u8 tileindex, MeshMakeData *data, TileSpec &tile)
 {
 	const NodeDefManager *ndef = data->m_client->ndef();
 	const ContentFeatures &f = ndef->get(mn);
@@ -724,7 +724,7 @@ void getNodeTileN(MapNode mn, v3s16 p, u8 tileindex, MeshMakeData *data, TileSpe
 /*
 	Gets node tile given a face direction.
 */
-void getNodeTile(MapNode mn, v3s16 p, v3s16 dir, MeshMakeData *data, TileSpec &tile)
+void getNodeTile(MapNode mn, const v3s16 &p, const v3s16 &dir, MeshMakeData *data, TileSpec &tile)
 {
 	const NodeDefManager *ndef = data->m_client->ndef();
 

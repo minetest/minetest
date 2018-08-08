@@ -313,10 +313,7 @@ struct TileLayer
  */
 struct TileSpec
 {
-	TileSpec() {
-		for (auto &layer : layers)
-			layer = TileLayer();
-	}
+	TileSpec() = default;
 
 	/*!
 	 * Returns true if this tile can be merged with the other tile.
