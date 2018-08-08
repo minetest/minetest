@@ -59,6 +59,11 @@ struct SmoothTranslatorWrapped : SmoothTranslator<f32>
 	void translate(f32 dtime);
 };
 
+struct SmoothTranslatorWrappedv3f : SmoothTranslator<v3f>
+{
+	void translate(f32 dtime);
+};
+
 class GenericCAO : public ClientActiveObject
 {
 private:
@@ -83,7 +88,7 @@ private:
 	v3f m_rotation;
 	s16 m_hp = 1;
 	SmoothTranslator<v3f> pos_translator;
-	SmoothTranslator<v3f> rot_translator;
+	SmoothTranslatorWrappedv3f rot_translator;
 	// Spritesheet/animation stuff
 	v2f m_tx_size = v2f(1,1);
 	v2s16 m_tx_basepos;
