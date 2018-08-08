@@ -39,10 +39,7 @@ struct Package
 				type.empty() || release <= 0);
 	}
 
-	std::string getDownloadURL(const std::string &baseURL) const
-	{
-		return baseURL + "/packages/" + author + "/" + name + "/download/";
-	}
+	std::string getDownloadURL(const std::string &baseURL) const;
 };
 
 #if USE_CURL

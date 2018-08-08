@@ -332,7 +332,7 @@ void RemoteClient::GetNextBlocks (
 					differs from day-time mesh.
 				*/
 				if (d >= d_opt) {
-					if (!block->getDayNightDiff())
+					if (!block->getIsUnderground() && !block->getDayNightDiff())
 						continue;
 				}
 

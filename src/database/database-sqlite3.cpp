@@ -606,3 +606,170 @@ void PlayerDatabaseSQLite3::listPlayers(std::vector<std::string> &res)
 
 	sqlite3_reset(m_stmt_player_list);
 }
+
+/*
+ * Auth database
+ */
+
+AuthDatabaseSQLite3::AuthDatabaseSQLite3(const std::string &savedir) :
+		Database_SQLite3(savedir, "auth"), AuthDatabase()
+{
+}
+
+AuthDatabaseSQLite3::~AuthDatabaseSQLite3()
+{
+	FINALIZE_STATEMENT(m_stmt_read)
+	FINALIZE_STATEMENT(m_stmt_write)
+	FINALIZE_STATEMENT(m_stmt_create)
+	FINALIZE_STATEMENT(m_stmt_delete)
+	FINALIZE_STATEMENT(m_stmt_list_names)
+	FINALIZE_STATEMENT(m_stmt_read_privs)
+	FINALIZE_STATEMENT(m_stmt_write_privs)
+	FINALIZE_STATEMENT(m_stmt_delete_privs)
+	FINALIZE_STATEMENT(m_stmt_last_insert_rowid)
+}
+
+void AuthDatabaseSQLite3::createDatabase()
+{
+	assert(m_database); // Pre-condition
+
+	SQLOK(sqlite3_exec(m_database,
+		"CREATE TABLE IF NOT EXISTS `auth` ("
+			"`id` INTEGER PRIMARY KEY AUTOINCREMENT,"
+			"`name` VARCHAR(32) UNIQUE,"
+			"`password` VARCHAR(512),"
+			"`last_login` INTEGER"
+		");",
+		NULL, NULL, NULL),
+		"Failed to create auth table");
+
+	SQLOK(sqlite3_exec(m_database,
+		"CREATE TABLE IF NOT EXISTS `user_privileges` ("
+			"`id` INTEGER,"
+			"`privilege` VARCHAR(32),"
+			"PRIMARY KEY (id, privilege)"
+			"CONSTRAINT fk_id FOREIGN KEY (id) REFERENCES auth (id) ON DELETE CASCADE"
+		");",
+		NULL, NULL, NULL),
+		"Failed to create auth privileges table");
+}
+
+void AuthDatabaseSQLite3::initStatements()
+{
+	PREPARE_STATEMENT(read, "SELECT id, name, password, last_login FROM auth WHERE name = ?");
+	PREPARE_STATEMENT(write, "UPDATE auth set name = ?, password = ?, last_login = ? WHERE id = ?");
+	PREPARE_STATEMENT(create, "INSERT INTO auth (name, password, last_login) VALUES (?, ?, ?)");
+	PREPARE_STATEMENT(delete, "DELETE FROM auth WHERE name = ?");
+
+	PREPARE_STATEMENT(list_names, "SELECT name FROM auth ORDER BY name DESC");
+
+	PREPARE_STATEMENT(read_privs, "SELECT privilege FROM user_privileges WHERE id = ?");
+	PREPARE_STATEMENT(write_privs, "INSERT OR IGNORE INTO user_privileges (id, privilege) VALUES (?, ?)");
+	PREPARE_STATEMENT(delete_privs, "DELETE FROM user_privileges WHERE id = ?");
+
+	PREPARE_STATEMENT(last_insert_rowid, "SELECT last_insert_rowid()");
+}
+
+bool AuthDatabaseSQLite3::getAuth(const std::string &name, AuthEntry &res)
+{
+	verifyDatabase();
+	str_to_sqlite(m_stmt_read, 1, name);
+	if (sqlite3_step(m_stmt_read) != SQLITE_ROW) {
+		sqlite3_reset(m_stmt_read);
+		return false;
+	}
+	res.id = sqlite_to_uint(m_stmt_read, 0);
+	res.name = sqlite_to_string(m_stmt_read, 1);
+	res.password = sqlite_to_string(m_stmt_read, 2);
+	res.last_login = sqlite_to_int64(m_stmt_read, 3);
+	sqlite3_reset(m_stmt_read);
+
+	int64_to_sqlite(m_stmt_read_privs, 1, res.id);
+	while (sqlite3_step(m_stmt_read_privs) == SQLITE_ROW) {
+		res.privileges.emplace_back(sqlite_to_string(m_stmt_read_privs, 0));
+	}
+	sqlite3_reset(m_stmt_read_privs);
+
+	return true;
+}
+
+bool AuthDatabaseSQLite3::saveAuth(const AuthEntry &authEntry)
+{
+	beginSave();
+
+	str_to_sqlite(m_stmt_write, 1, authEntry.name);
+	str_to_sqlite(m_stmt_write, 2, authEntry.password);
+	int64_to_sqlite(m_stmt_write, 3, authEntry.last_login);
+	int64_to_sqlite(m_stmt_write, 4, authEntry.id);
+	sqlite3_vrfy(sqlite3_step(m_stmt_write), SQLITE_DONE);
+	sqlite3_reset(m_stmt_write);
+
+	writePrivileges(authEntry);
+
+	endSave();
+	return true;
+}
+
+bool AuthDatabaseSQLite3::createAuth(AuthEntry &authEntry)
+{
+	beginSave();
+
+	// id autoincrements
+	str_to_sqlite(m_stmt_create, 1, authEntry.name);
+	str_to_sqlite(m_stmt_create, 2, authEntry.password);
+	int64_to_sqlite(m_stmt_create, 3, authEntry.last_login);
+	sqlite3_vrfy(sqlite3_step(m_stmt_create), SQLITE_DONE);
+	sqlite3_reset(m_stmt_create);
+
+	// obtain id and write back to original authEntry
+	sqlite3_step(m_stmt_last_insert_rowid);
+	authEntry.id = sqlite_to_uint(m_stmt_last_insert_rowid, 0);
+	sqlite3_reset(m_stmt_last_insert_rowid);
+
+	writePrivileges(authEntry);
+
+	endSave();
+	return true;
+}
+
+bool AuthDatabaseSQLite3::deleteAuth(const std::string &name)
+{
+	verifyDatabase();
+
+	str_to_sqlite(m_stmt_delete, 1, name);
+	sqlite3_vrfy(sqlite3_step(m_stmt_delete), SQLITE_DONE);
+	int changes = sqlite3_changes(m_database);
+	sqlite3_reset(m_stmt_delete);
+
+	// privileges deleted by foreign key on delete cascade
+
+	return changes > 0;
+}
+
+void AuthDatabaseSQLite3::listNames(std::vector<std::string> &res)
+{
+	verifyDatabase();
+
+	while (sqlite3_step(m_stmt_list_names) == SQLITE_ROW) {
+		res.push_back(sqlite_to_string(m_stmt_list_names, 0));
+	}
+	sqlite3_reset(m_stmt_list_names);
+}
+
+void AuthDatabaseSQLite3::reload()
+{
+	// noop for SQLite
+}
+
+void AuthDatabaseSQLite3::writePrivileges(const AuthEntry &authEntry)
+{
+	int64_to_sqlite(m_stmt_delete_privs, 1, authEntry.id);
+	sqlite3_vrfy(sqlite3_step(m_stmt_delete_privs), SQLITE_DONE);
+	sqlite3_reset(m_stmt_delete_privs);
+	for (const std::string &privilege : authEntry.privileges) {
+		int64_to_sqlite(m_stmt_write_privs, 1, authEntry.id);
+		str_to_sqlite(m_stmt_write_privs, 2, privilege);
+		sqlite3_vrfy(sqlite3_step(m_stmt_write_privs), SQLITE_DONE);
+		sqlite3_reset(m_stmt_write_privs);
+	}
+}

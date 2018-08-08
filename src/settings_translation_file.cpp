@@ -35,11 +35,13 @@ fake_function() {
 	gettext("Random input");
 	gettext("Enable random user input (only used for testing).");
 	gettext("Continuous forward");
-	gettext("Continuous forward movement, toggled by autoforward key. \nPress the autoforward key again or the backwards movement to disable.");
+	gettext("Continuous forward movement, toggled by autoforward key.\nPress the autoforward key again or the backwards movement to disable.");
 	gettext("Touch screen threshold");
 	gettext("The length in pixels it takes for touch screen interaction to start.");
 	gettext("Fixed virtual joystick");
 	gettext("(Android) Fixes the position of virtual joystick.\nIf disabled, virtual joystick will center to first-touch's position.");
+	gettext("Virtual joystick triggers aux button");
+	gettext("(Android) Use virtual joystick to trigger \"aux\" button.\nIf enabled, virtual joystick will also tap \"aux\" button when out of main circle.");
 	gettext("Enable joysticks");
 	gettext("Enable joysticks");
 	gettext("Joystick ID");
@@ -191,7 +193,7 @@ fake_function() {
 	gettext("Adds particles when digging a node.");
 	gettext("Filtering");
 	gettext("Mipmapping");
-	gettext("Use mip mapping to scale textures. May slightly increase performance.");
+	gettext("Use mip mapping to scale textures. May slightly increase performance,\nespecially when using a high resolution texture pack.\nGamma correct downscaling is not supported.");
 	gettext("Anisotropic filtering");
 	gettext("Use anisotropic filtering when viewing at textures from an angle.");
 	gettext("Bilinear filtering");
@@ -288,7 +290,7 @@ fake_function() {
 	gettext("Texture path");
 	gettext("Path to texture directory. All textures are first searched from here.");
 	gettext("Video driver");
-	gettext("The rendering back-end for Irrlicht.");
+	gettext("The rendering back-end for Irrlicht.\nA restart is required after changing this.\nNote: on Android, stick with OGLES1 if unsure! App may fail to start otherwise.\nOn other platforms, OpenGL is recommended, and it’s the only driver with\nshader support currently.");
 	gettext("Cloud radius");
 	gettext("Radius of cloud area stated in number of 64 node cloud squares.\nValues larger than 26 will start to produce sharp cutoffs at cloud area corners.");
 	gettext("View bobbing factor");
@@ -438,7 +440,7 @@ fake_function() {
 	gettext("Announce server");
 	gettext("Automaticaly report to the serverlist.");
 	gettext("Serverlist URL");
-	gettext("Announce to this serverlist.\nIf you want to announce your ipv6 address, use  serverlist_url = v6.servers.minetest.net.");
+	gettext("Announce to this serverlist.");
 	gettext("Strip color codes");
 	gettext("Remove color codes from incoming chat messages\nUse this to stop players from being able to use color in their messages");
 	gettext("Network");
@@ -470,8 +472,6 @@ fake_function() {
 	gettext("World directory (everything in the world is stored here).\nNot needed if starting from the main menu.");
 	gettext("Item entity TTL");
 	gettext("Time in seconds for item entity (dropped items) to live.\nSetting it to -1 disables the feature.");
-	gettext("Status message on connection");
-	gettext("If enabled, show the server status message on player connection.");
 	gettext("Damage");
 	gettext("Enable players getting damage and dying.");
 	gettext("Creative");
@@ -522,6 +522,12 @@ fake_function() {
 	gettext("Time of day when a new world is started, in millihours (0-23999).");
 	gettext("Map save interval");
 	gettext("Interval of saving important changes in the world, stated in seconds.");
+	gettext("Chat message max length");
+	gettext("Set the maximum character length of a chat message sent by clients.");
+	gettext("Chat message count limit");
+	gettext("Amount of messages a player may send per 10 seconds.");
+	gettext("Chat message kick threshold");
+	gettext("Kick players who sent more than X messages per 10 seconds.");
 	gettext("Physics");
 	gettext("Default acceleration");
 	gettext("Acceleration in air");
@@ -567,8 +573,8 @@ fake_function() {
 	gettext("Server side occlusion culling");
 	gettext("If enabled the server will perform map block occlusion culling based on\non the eye position of the player. This can reduce the number of blocks\nsent to the client 50-80%. The client will not longer receive most invisible\nso that the utility of noclip mode is reduced.");
 	gettext("Client side modding restrictions");
-	gettext("Restricts the access of certain client-side functions on servers\nCombine these byteflags below to restrict more client-side features:\nLOAD_CLIENT_MODS: 1 (disable client mods loading)\nCHAT_MESSAGES: 2 (disable send_chat_message call client-side)\nREAD_ITEMDEFS: 4 (disable get_item_def call client-side)\nREAD_NODEDEFS: 8 (disable get_node_def call client-side)\nLOOKUP_NODES_LIMIT: 16 (limits get_node call client-side to csm_restriction_noderange)");
-	gettext("Client side node lookup restriction");
+	gettext("Restricts the access of certain client-side functions on servers\nCombine these byteflags below to restrict client-side features:\nLOAD_CLIENT_MODS: 1 (disable client mods loading)\nCHAT_MESSAGES: 2 (disable send_chat_message call client-side)\nREAD_ITEMDEFS: 4 (disable get_item_def call client-side)\nREAD_NODEDEFS: 8 (disable get_node_def call client-side)\nLOOKUP_NODES_LIMIT: 16 (limits get_node call client-side to csm_restriction_noderange)");
+	gettext("Client side node lookup range restriction");
 	gettext("If the CSM restriction for node range is enabled, get_node calls are limited\nto this distance from the player to the node.");
 	gettext("Security");
 	gettext("Enable mod security");
@@ -620,7 +626,7 @@ fake_function() {
 	gettext("High-precision FPU");
 	gettext("Makes DirectX work with LuaJIT. Disable if it causes troubles.");
 	gettext("Main menu style");
-	gettext("Changes the main menu UI:\n-   Full:  Multple singleplayer worlds, game choice, texture pack chooser, etc.\n-   Simple: One singleplayer world, no game or texture pack choosers. May be necessary for smaller screens.\n-   Auto: Simple on Android, full on everything else. ");
+	gettext("Changes the main menu UI:\n-   Full:  Multple singleplayer worlds, game choice, texture pack chooser, etc.\n-   Simple: One singleplayer world, no game or texture pack choosers. May be necessary for smaller screens.\n-   Auto: Simple on Android, full on everything else.");
 	gettext("Main menu script");
 	gettext("Replaces the default main menu with a custom one.");
 	gettext("Main menu game manager");
@@ -901,9 +907,9 @@ fake_function() {
 	gettext("Second of 2 3D noises that together define tunnels.");
 	gettext("Mapgen Valleys");
 	gettext("Mapgen Valleys specific flags");
-	gettext("Map generation attributes specific to Mapgen Valleys.\n'altitude_chill' makes higher elevations colder, which may cause biome issues.\n'humid_rivers' modifies the humidity around rivers and in areas where water would tend to pool,\nit may interfere with delicately adjusted biomes.\nFlags that are not enabled are not modified from the default.\nFlags starting with 'no' are used to explicitly disable them.");
+	gettext("Map generation attributes specific to Mapgen Valleys.\n'altitude_chill': Reduces heat with altitude.\n'humid_rivers': Increases humidity around rivers and where water pools.\n'vary_river_depth': If enabled, low humidity and high heat causes rivers\nto become shallower and occasionally dry.\n'altitude_dry': Reduces humidity with altitude.");
 	gettext("Altitude chill");
-	gettext("The altitude at which temperature drops by 20.");
+	gettext("The vertical distance over which heat drops by 20 if 'altitude_chill' is\nenabled. Also the vertical distance over which humidity drops by 10 if\n'altitude_dry' is enabled.");
 	gettext("Large cave depth");
 	gettext("Depth below which you'll find large caves.");
 	gettext("Lava depth");
@@ -957,5 +963,5 @@ fake_function() {
 	gettext("Limit of emerge queues to generate");
 	gettext("Maximum number of blocks to be queued that are to be generated.\nSet to blank for an appropriate amount to be chosen automatically.");
 	gettext("Number of emerge threads");
-	gettext("Number of emerge threads to use. Make this field blank, or increase this number\nto use multiple threads. On multiprocessor systems, this will improve mapgen speed greatly\nat the cost of slightly buggy caves.");
+	gettext("Number of emerge threads to use. Make this field blank or 0, or increase this number\nto use multiple threads. On multiprocessor systems, this will improve mapgen speed greatly\nat the cost of slightly buggy caves.");
 }

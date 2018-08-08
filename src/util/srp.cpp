@@ -27,6 +27,9 @@
  */
 
 // clang-format off
+
+#include <cstddef>
+
 #ifdef WIN32
 	#include <windows.h>
 	#include <wincrypt.h>

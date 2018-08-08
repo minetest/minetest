@@ -236,7 +236,6 @@ Server::Server(
 
 Server::~Server()
 {
-	infostream << "Server destructing" << std::endl;
 
 	// Send shutdown message
 	SendChatMessage(PEER_ID_INEXISTENT, ChatMessage(CHATMESSAGE_TYPE_ANNOUNCE,
@@ -261,6 +260,8 @@ Server::~Server()
 		m_env->kickAllPlayers(SERVER_ACCESSDENIED_SHUTDOWN,
 			kick_msg, reconnect);
 	}
+	
+	actionstream << "Server: Shutting down" << std::endl;
 
 	// Do this before stopping the server in case mapgen callbacks need to access
 	// server-controlled resources (like ModStorages). Also do them before

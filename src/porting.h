@@ -327,6 +327,8 @@ bool secure_rand_fill_buf(void *buf, size_t len);
 
 // This attaches to the parents process console, or creates a new one if it doesnt exist.
 void attachOrCreateConsole();
+
+int mt_snprintf(char *buf, const size_t buf_size, const char *fmt, ...);
 } // namespace porting
 
 #ifdef __ANDROID__

@@ -26,6 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "nodemetadata.h"
 #include "gamedef.h"
 #include "map.h"
+#include "porting.h"
 #include "profiler.h"
 #include "raycast.h"
 #include "remoteplayer.h"
@@ -413,6 +414,18 @@ ServerEnvironment::ServerEnvironment(ServerMap *map,
 	std::string name;
 	conf.getNoEx("player_backend", name);
 	m_player_database = openPlayerDatabase(name, path_world, conf);
+
+	std::string auth_name = "files";
+	if (conf.exists("auth_backend")) {
+		conf.getNoEx("auth_backend", auth_name);
+	} else {
+		conf.set("auth_backend", "files");
+		if (!conf.updateConfigFile(conf_path.c_str())) {
+			errorstream << "ServerEnvironment::ServerEnvironment(): "
+					<< "Failed to update world.mt!" << std::endl;
+		}
+	}
+	m_auth_database = openAuthDatabase(auth_name, path_world, conf);
 }
 
 ServerEnvironment::~ServerEnvironment()
@@ -438,6 +451,7 @@ ServerEnvironment::~ServerEnvironment()
 	}
 
 	delete m_player_database;
+	delete m_auth_database;
 }
 
 Map & ServerEnvironment::getMap()
@@ -800,10 +814,30 @@ public:
 		return active_object_count;
 
 	}
-	void apply(MapBlock *block)
+	void apply(MapBlock *block, int &blocks_scanned, int &abms_run, int &blocks_cached)
 	{
 		if(m_aabms.empty() || block->isDummy())
 			return;
+
+		// Check the content type cache first
+		// to see whether there are any ABMs
+		// to be run at all for this block.
+		if (block->contents_cached) {
+			blocks_cached++;
+			bool run_abms = false;
+			for (content_t c : block->contents) {
+				if (c < m_aabms.size() && m_aabms[c]) {
+					run_abms = true;
+					break;
+				}
+			}
+			if (!run_abms)
+				return;
+		} else {
+			// Clear any caching
+			block->contents.clear();
+		}
+		blocks_scanned++;
 
 		ServerMap *map = &m_env->getServerMap();
 
@@ -818,6 +852,15 @@ public:
 		{
 			const MapNode &n = block->getNodeUnsafe(p0);
 			content_t c = n.getContent();
+			// Cache content types as we go
+			if (!block->contents_cached && !block->do_not_cache_contents) {
+				block->contents.insert(c);
+				if (block->contents.size() > 64) {
+					// Too many different nodes... don't try to cache
+					block->do_not_cache_contents = true;
+					block->contents.clear();
+				}
+			}
 
 			if (c >= m_aabms.size() || !m_aabms[c])
 				continue;
@@ -855,6 +898,7 @@ public:
 				}
 				neighbor_found:
 
+				abms_run++;
 				// Call all the trigger variations
 				aabm.abm->trigger(m_env, p, n);
 				aabm.abm->trigger(m_env, p, n,
@@ -867,6 +911,7 @@ public:
 				}
 			}
 		}
+		block->contents_cached = !block->do_not_cache_contents;
 	}
 };
 
@@ -1302,6 +1347,9 @@ void ServerEnvironment::step(float dtime)
 			// Initialize handling of ActiveBlockModifiers
 			ABMHandler abmhandler(m_abms, m_cache_abm_interval, this, true);
 
+			int blocks_scanned = 0;
+			int abms_run = 0;
+			int blocks_cached = 0;
 			for (const v3s16 &p : m_active_blocks.m_abm_list) {
 				MapBlock *block = m_map->getBlockNoCreateNoEx(p);
 				if (!block)
@@ -1311,8 +1359,12 @@ void ServerEnvironment::step(float dtime)
 				block->setTimestampNoChangedFlag(m_game_time);
 
 				/* Handle ActiveBlockModifiers */
-				abmhandler.apply(block);
+				abmhandler.apply(block, blocks_scanned, abms_run, blocks_cached);
 			}
+			g_profiler->avg("SEnv: active blocks", m_active_blocks.m_abm_list.size());
+			g_profiler->avg("SEnv: active blocks cached", blocks_cached);
+			g_profiler->avg("SEnv: active blocks scanned for ABMs", blocks_scanned);
+			g_profiler->avg("SEnv: ABMs run", abms_run);
 
 			u32 time_ms = timer.stop(true);
 			u32 max_time_ms = 200;
@@ -1822,9 +1874,9 @@ static void print_hexdump(std::ostream &o, const std::string &data)
 			int i = i0 + di;
 			char buf[4];
 			if(di<thislinelength)
-				snprintf(buf, 4, "%.2x ", data[i]);
+				porting::mt_snprintf(buf, sizeof(buf), "%.2x ", data[i]);
 			else
-				snprintf(buf, 4, "   ");
+				porting::mt_snprintf(buf, sizeof(buf), "   ");
 			o<<buf;
 		}
 		o<<" ";
@@ -2231,6 +2283,94 @@ bool ServerEnvironment::migratePlayersDatabase(const GameParams &game_params,
 
 	} catch (BaseException &e) {
 		errorstream << "An error occured during migration: " << e.what() << std::endl;
+		return false;
+	}
+	return true;
+}
+
+AuthDatabase *ServerEnvironment::openAuthDatabase(
+		const std::string &name, const std::string &savedir, const Settings &conf)
+{
+	if (name == "sqlite3")
+		return new AuthDatabaseSQLite3(savedir);
+
+	if (name == "files")
+		return new AuthDatabaseFiles(savedir);
+
+	throw BaseException(std::string("Database backend ") + name + " not supported.");
+}
+
+bool ServerEnvironment::migrateAuthDatabase(
+		const GameParams &game_params, const Settings &cmd_args)
+{
+	std::string migrate_to = cmd_args.get("migrate-auth");
+	Settings world_mt;
+	std::string world_mt_path = game_params.world_path + DIR_DELIM + "world.mt";
+	if (!world_mt.readConfigFile(world_mt_path.c_str())) {
+		errorstream << "Cannot read world.mt!" << std::endl;
+		return false;
+	}
+
+	std::string backend = "files";
+	if (world_mt.exists("auth_backend"))
+		backend = world_mt.get("auth_backend");
+	else
+		warningstream << "No auth_backend found in world.mt, "
+				"assuming \"files\"." << std::endl;
+
+	if (backend == migrate_to) {
+		errorstream << "Cannot migrate: new backend is same"
+				<< " as the old one" << std::endl;
+		return false;
+	}
+
+	try {
+		const std::unique_ptr<AuthDatabase> srcdb(ServerEnvironment::openAuthDatabase(
+				backend, game_params.world_path, world_mt));
+		const std::unique_ptr<AuthDatabase> dstdb(ServerEnvironment::openAuthDatabase(
+				migrate_to, game_params.world_path, world_mt));
+
+		std::vector<std::string> names_list;
+		srcdb->listNames(names_list);
+		for (const std::string &name : names_list) {
+			actionstream << "Migrating auth entry for " << name << std::endl;
+			bool success;
+			AuthEntry authEntry;
+			success = srcdb->getAuth(name, authEntry);
+			success = success && dstdb->createAuth(authEntry);
+			if (!success)
+				errorstream << "Failed to migrate " << name << std::endl;
+		}
+
+		actionstream << "Successfully migrated " << names_list.size()
+				<< " auth entries" << std::endl;
+		world_mt.set("auth_backend", migrate_to);
+		if (!world_mt.updateConfigFile(world_mt_path.c_str()))
+			errorstream << "Failed to update world.mt!" << std::endl;
+		else
+			actionstream << "world.mt updated" << std::endl;
+
+		if (backend == "files") {
+			// special-case files migration:
+			// move auth.txt to auth.txt.bak if possible
+			std::string auth_txt_path =
+					game_params.world_path + DIR_DELIM + "auth.txt";
+			std::string auth_bak_path = auth_txt_path + ".bak";
+			if (!fs::PathExists(auth_bak_path))
+				if (fs::Rename(auth_txt_path, auth_bak_path))
+					actionstream << "Renamed auth.txt to auth.txt.bak"
+							<< std::endl;
+				else
+					errorstream << "Could not rename auth.txt to "
+							"auth.txt.bak" << std::endl;
+			else
+				warningstream << "auth.txt.bak already exists, auth.txt "
+						"not renamed" << std::endl;
+		}
+
+	} catch (BaseException &e) {
+		errorstream << "An error occured during migration: " << e.what()
+			    << std::endl;
 		return false;
 	}
 	return true;

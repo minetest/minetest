@@ -18,6 +18,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "guiscalingfilter.h"
 #include "imagefilters.h"
+#include "porting.h"
 #include "settings.h"
 #include "util/numeric.h"
 #include <cstdio>
@@ -78,7 +79,7 @@ video::ITexture *guiScalingResizeCached(video::IVideoDriver *driver,
 
 	// Calculate scaled texture name.
 	char rectstr[200];
-	snprintf(rectstr, sizeof(rectstr), "%d:%d:%d:%d:%d:%d",
+	porting::mt_snprintf(rectstr, sizeof(rectstr), "%d:%d:%d:%d:%d:%d",
 		srcrect.UpperLeftCorner.X,
 		srcrect.UpperLeftCorner.Y,
 		srcrect.getWidth(),

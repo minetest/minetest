@@ -15,7 +15,7 @@ local function put_player_in_spawn(player_obj)
 	end
 	core.log("action", "Moving " .. player_obj:get_player_name() ..
 		" to static spawnpoint at " .. core.pos_to_string(static_spawnpoint))
-	player_obj:setpos(static_spawnpoint)
+	player_obj:set_pos(static_spawnpoint)
 	return true
 end
 

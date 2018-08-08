@@ -203,9 +203,22 @@ local function formspec(tabview, name, tabdata)
 		"label[4.25,3.45;" .. fgettext("Screen:") .. "]" ..
 		"checkbox[4.25,3.6;cb_autosave_screensize;" .. fgettext("Autosave Screen Size") .. ";"
 				.. dump(core.settings:get_bool("autosave_screensize")) .. "]" ..
-		"box[8,0;3.75,4.5;#999999]" ..
-		"checkbox[8.25,0;cb_shaders;" .. fgettext("Shaders") .. ";"
-				.. dump(core.settings:get_bool("enable_shaders")) .. "]"
+		"box[8,0;3.75,4.5;#999999]"
+
+	local video_driver = core.settings:get("video_driver")
+	local shaders_supported = video_driver == "opengl"
+	local shaders_enabled = false
+	if shaders_supported then
+		shaders_enabled = core.settings:get_bool("enable_shaders")
+		tab_string = tab_string ..
+			"checkbox[8.25,0;cb_shaders;" .. fgettext("Shaders") .. ";"
+					.. tostring(shaders_enabled) .. "]"
+	else
+		core.settings:set_bool("enable_shaders", false)
+		tab_string = tab_string ..
+			"label[8.38,0.2;" .. core.colorize("#888888",
+					fgettext("Shaders (unavailable)")) .. "]"
+	end
 
 	if PLATFORM == "Android" then
 		tab_string = tab_string ..
@@ -229,7 +242,7 @@ local function formspec(tabview, name, tabdata)
 			((tonumber(core.settings:get("touchscreen_threshold")) / 10) + 1) .. "]"
 	end
 
-	if core.settings:get_bool("enable_shaders") then
+	if shaders_enabled then
 		tab_string = tab_string ..
 			"checkbox[8.25,0.5;cb_bumpmapping;" .. fgettext("Bump Mapping") .. ";"
 					.. dump(core.settings:get_bool("enable_bumpmapping")) .. "]" ..

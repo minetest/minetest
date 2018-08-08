@@ -118,15 +118,14 @@ UnitSAO::UnitSAO(ServerEnvironment *env, v3f pos):
 	m_armor_groups["fleshy"] = 100;
 }
 
-bool UnitSAO::isAttached() const
+ServerActiveObject *UnitSAO::getParent() const
 {
 	if (!m_attachment_parent_id)
-		return false;
+		return nullptr;
 	// Check if the parent still exists
 	ServerActiveObject *obj = m_env->getActiveObject(m_attachment_parent_id);
-	if (obj)
-		return true;
-	return false;
+
+	return obj;
 }
 
 void UnitSAO::setArmorGroups(const ItemGroupList &armor_groups)
@@ -443,14 +442,9 @@ void LuaEntitySAO::step(float dtime, bool send_recommended)
 				+ m_prop.automatic_face_movement_dir_offset;
 			float max_rotation_delta =
 					dtime * m_prop.automatic_face_movement_max_rotation_per_sec;
-			float delta = wrapDegrees_0_360(target_yaw - m_rotation.Y);
 
-			if (delta > max_rotation_delta && 360 - delta > max_rotation_delta) {
-				m_rotation.Y += (delta < 180) ? max_rotation_delta : -max_rotation_delta;
-				m_rotation.Y = wrapDegrees_0_360(m_rotation.Y);
-			} else {
-				m_rotation.Y = target_yaw;
-			}
+			m_rotation.Y = wrapDegrees_0_360(m_rotation.Y);
+			wrappedApproachShortest(m_rotation.Y, target_yaw, max_rotation_delta, 360.f);
 		}
 	}
 

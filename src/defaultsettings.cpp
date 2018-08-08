@@ -298,7 +298,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("port", "30000");
 	settings->setDefault("strict_protocol_version_checking", "false");
 	settings->setDefault("player_transfer_distance", "0");
-	settings->setDefault("max_simultaneous_block_sends_per_client", "10");
+	settings->setDefault("max_simultaneous_block_sends_per_client", "40");
 	settings->setDefault("time_send_interval", "5");
 
 	settings->setDefault("default_game", "minetest");
@@ -331,8 +331,8 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("max_block_send_distance", "9");
 	settings->setDefault("block_send_optimize_distance", "4");
 	settings->setDefault("server_side_occlusion_culling", "true");
-	settings->setDefault("csm_restriction_flags", "18");
-	settings->setDefault("csm_restriction_noderange", "8");
+	settings->setDefault("csm_restriction_flags", "30");
+	settings->setDefault("csm_restriction_noderange", "0");
 	settings->setDefault("max_clearobjects_extra_loaded_blocks", "4096");
 	settings->setDefault("time_speed", "72");
 	settings->setDefault("world_start_time", "5250");
@@ -351,10 +351,10 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("ignore_world_load_errors", "false");
 	settings->setDefault("remote_media", "");
 	settings->setDefault("debug_log_level", "action");
-	settings->setDefault("emergequeue_limit_total", "256");
-	settings->setDefault("emergequeue_limit_diskonly", "32");
-	settings->setDefault("emergequeue_limit_generate", "32");
-	settings->setDefault("num_emerge_threads", "1");
+	settings->setDefault("emergequeue_limit_total", "512");
+	settings->setDefault("emergequeue_limit_diskonly", "64");
+	settings->setDefault("emergequeue_limit_generate", "64");
+	settings->setDefault("num_emerge_threads", "0");
 	settings->setDefault("secure.enable_security", "true");
 	settings->setDefault("secure.trusted_mods", "");
 	settings->setDefault("secure.http_mods", "");
@@ -409,11 +409,12 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("TMPFolder","/sdcard/" PROJECT_NAME_C "/tmp/");
 	settings->setDefault("touchscreen_threshold","20");
 	settings->setDefault("fixed_virtual_joystick", "false");
+	settings->setDefault("virtual_joystick_triggers_aux", "false");
 	settings->setDefault("smooth_lighting", "false");
-	settings->setDefault("max_simultaneous_block_sends_per_client", "3");
-	settings->setDefault("emergequeue_limit_diskonly", "8");
-	settings->setDefault("emergequeue_limit_generate", "8");
-	settings->setDefault("max_block_generate_distance", "3");
+	settings->setDefault("max_simultaneous_block_sends_per_client", "10");
+	settings->setDefault("emergequeue_limit_diskonly", "16");
+	settings->setDefault("emergequeue_limit_generate", "16");
+	settings->setDefault("max_block_generate_distance", "5");
 	settings->setDefault("enable_3d_clouds", "false");
 	settings->setDefault("fps_max", "30");
 	settings->setDefault("pause_fps_max", "10");
@@ -421,11 +422,11 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("sqlite_synchronous", "1");
 	settings->setDefault("gui_scaling", "1.1");
 	settings->setDefault("server_map_save_interval", "15");
-	settings->setDefault("client_mapblock_limit", "500");
-	settings->setDefault("active_block_range", "1");
-	settings->setDefault("chunksize", "3");
+	settings->setDefault("client_mapblock_limit", "1000");
+	settings->setDefault("active_block_range", "2");
+	settings->setDefault("chunksize", "5");
 
-	settings->setDefault("viewing_range", "25");
+	settings->setDefault("viewing_range", "50");
 	settings->setDefault("inventory_image_hack", "false");
 
 	// Check for a device with a small screen

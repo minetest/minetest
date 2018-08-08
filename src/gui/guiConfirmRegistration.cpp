@@ -25,6 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <IGUIStaticText.h>
 #include <IGUIFont.h>
 #include "intlGUIEditBox.h"
+#include "porting.h"
 
 #include "gettext.h"
 
@@ -96,8 +97,9 @@ void GUIConfirmRegistration::regenerateGui(v2u32 screensize)
 				"Join to confirm account creation or click Cancel to "
 				"abort.");
 		char info_text_buf[1024];
-		snprintf(info_text_buf, sizeof(info_text_buf), info_text_template.c_str(),
-				address.c_str(), m_playername.c_str());
+		porting::mt_snprintf(info_text_buf, sizeof(info_text_buf),
+				info_text_template.c_str(), address.c_str(),
+				m_playername.c_str());
 
 		wchar_t *info_text_buf_wide = utf8_to_wide_c(info_text_buf);
 		gui::IGUIEditBox *e = new gui::intlGUIEditBox(info_text_buf_wide, true,

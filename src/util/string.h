@@ -704,3 +704,22 @@ inline const std::string duration_to_string(int sec)
 
 	return ss.str();
 }
+
+/**
+ * Joins a vector of strings by the string \p delimiter.
+ *
+ * @return A std::string
+ */
+inline std::string str_join(const std::vector<std::string> &list,
+		const std::string &delimiter)
+{
+	std::ostringstream oss;
+	bool first = true;
+	for (const auto &part : list) {
+		if (!first)
+			oss << delimiter;
+		oss << part;
+		first = false;
+	}
+	return oss.str();
+}

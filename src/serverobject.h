@@ -173,6 +173,7 @@ public:
 	{}
 	virtual const std::unordered_set<int> &getAttachmentChildIds()
 	{ static const std::unordered_set<int> rv; return rv; }
+	virtual ServerActiveObject *getParent() const { return nullptr; }
 	virtual ObjectProperties* accessObjectProperties()
 	{ return NULL; }
 	virtual void notifyObjectPropertiesModified()
