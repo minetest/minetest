@@ -8,6 +8,14 @@
 
 class ItemMeshGenerator
 {
+public:
+	ItemMeshGenerator(Client *_client, const ItemStack &stack);
+	~ItemMeshGenerator();
+	void createInventoryMesh();
+	void createWieldMesh();
+	ItemMesh takeMesh() noexcept;
+
+private:
 	Client *client = nullptr;
 	ITextureSource *tsrc = nullptr;
 	const ItemDefinition *def = nullptr;
@@ -24,12 +32,6 @@ class ItemMeshGenerator
 	void postProcessMesh();
 	void postProcessNodeMesh();
 
-public:
-	ItemMeshGenerator(Client *_client, const ItemStack &stack);
-	~ItemMeshGenerator();
-	void createInventoryMesh();
-	void createWieldMesh();
-	ItemMesh takeMesh() noexcept;
 };
 
 ItemMesh createInventoryItemMesh(Client *client, const ItemStack &stack)
@@ -178,7 +180,7 @@ void ItemMeshGenerator::createInventoryMesh()
 	// clang-format off
 	// TODO: add custom mesh support
 	tryImage(def->inventory_image, def->inventory_overlay, extrude_inv)
-	|| tryNode();
+		|| tryNode();
 	// clang-format on
 	if (!mesh)
 		return;
@@ -193,8 +195,8 @@ void ItemMeshGenerator::createWieldMesh()
 {
 	// clang-format off
 	tryImage(def->wield_image, def->wield_overlay, true)
-	|| tryNode()
-	|| tryImage(def->inventory_image, def->inventory_overlay, true);
+		|| tryNode()
+		|| tryImage(def->inventory_image, def->inventory_overlay, true);
 	// clang-format on
 	if (!mesh)
 		return;

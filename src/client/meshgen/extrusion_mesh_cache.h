@@ -24,9 +24,11 @@ public:
 			video::ITexture *overlay_texture) override;
 
 private:
+	static scene::SMesh *create(int resolution_x, int resolution_y);
+
 	// Get closest extrusion mesh for given image dimensions
 	// Caller must drop the returned pointer
-	scene::SMesh *create(core::dimension2d<u32> dim);
+	scene::SMesh *getOrCreate(core::dimension2d<u32> dim);
 
 	std::map<int, scene::SMesh *> m_extrusion_meshes;
 };

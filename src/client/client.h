@@ -371,7 +371,7 @@ public:
 	ICraftDefManager* getCraftDefManager() override;
 	ITextureSource* getTextureSource();
 	virtual IShaderSource* getShaderSource();
-	IItemMeshSource* getItemMeshSource() { return m_imsrc.get(); }
+	IItemMeshSource *getItemMeshSource() { return m_imsrc.get(); }
 	u16 allocateUnknownNodeId(const std::string &name) override;
 	virtual ISoundManager* getSoundManager();
 	MtEventManager* getEventManager();

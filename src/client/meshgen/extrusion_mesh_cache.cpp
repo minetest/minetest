@@ -4,7 +4,7 @@
 #define MIN_EXTRUSION_MESH_RESOLUTION 16
 #define MAX_EXTRUSION_MESH_RESOLUTION 512
 
-static scene::SMesh *createExtrusionMesh(int resolution_x, int resolution_y)
+scene::SMesh *ExtrusionMeshCache::create(int resolution_x, int resolution_y)
 {
 	const f32 r = 0.5;
 
@@ -89,8 +89,7 @@ ExtrusionMeshCache::ExtrusionMeshCache()
 	for (int resolution = MIN_EXTRUSION_MESH_RESOLUTION;
 			resolution <= MAX_EXTRUSION_MESH_RESOLUTION;
 			resolution *= 2) {
-		m_extrusion_meshes[resolution] =
-				::createExtrusionMesh(resolution, resolution);
+		m_extrusion_meshes[resolution] = create(resolution, resolution);
 	}
 }
 
@@ -104,7 +103,7 @@ ExtrusionMeshCache::~ExtrusionMeshCache()
 scene::SMesh *ExtrusionMeshCache::createExtrusionMesh(
 		video::ITexture *texture, video::ITexture *overlay_texture)
 {
-	scene::SMesh *mesh = create(texture->getSize());
+	scene::SMesh *mesh = getOrCreate(texture->getSize());
 	scene::IMeshBuffer *buf = mesh->getMeshBuffer(0);
 	buf->getMaterial().setTexture(0, texture);
 	if (overlay_texture) {
@@ -146,11 +145,11 @@ scene::SMesh *ExtrusionMeshCache::createFlatMesh(
 	return mesh;
 }
 
-irr::scene::SMesh *ExtrusionMeshCache::create(irr::core::dimension2d<irr::u32> dim)
+irr::scene::SMesh *ExtrusionMeshCache::getOrCreate(irr::core::dimension2d<irr::u32> dim)
 {
 	// handle non-power of two textures inefficiently without cache
 	if (!is_power_of_two(dim.Width) || !is_power_of_two(dim.Height))
-		return ::createExtrusionMesh(dim.Width, dim.Height);
+		return create(dim.Width, dim.Height);
 	auto it = m_extrusion_meshes.lower_bound(std::max(dim.Width, dim.Height));
 	if (it == m_extrusion_meshes.end())
 		it--;

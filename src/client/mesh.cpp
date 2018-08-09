@@ -61,7 +61,7 @@ void applyFacesShading(video::SColor &color, const v3f &normal)
 		applyShadeFactor(color, 0.670820f * x2 + 1.000000f * y2 + 0.836660f * z2);
 }
 
-scene::SMesh* createCubeMesh(v3f scale)
+scene::SMesh *createCubeMesh(v3f scale)
 {
 	video::SColor c(255,255,255,255);
 	video::S3DVertex vertices[24] =
