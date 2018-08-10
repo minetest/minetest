@@ -1006,22 +1006,21 @@ void Server::handleCommand_Interact(NetworkPacket *pkt)
 	verbosestream << "TOSERVER_INTERACT: action=" << (int)action << ", item="
 			<< item_i << ", pointed=" << pointed.dump() << std::endl;
 
-	RemotePlayer *player = m_env->getPlayer(pkt->getPeerId());
+	session_t peer_id = pkt->getPeerId();
+	RemotePlayer *player = m_env->getPlayer(peer_id);
 
 	if (player == NULL) {
-		errorstream << "Server::ProcessData(): Canceling: "
-				"No player for peer_id=" << pkt->getPeerId()
-				<< " disconnecting peer!" << std::endl;
-		DisconnectPeer(pkt->getPeerId());
+		errorstream << "Server::ProcessData(): Canceling: No player for "
+			"peer_id=" << peer_id << " disconnecting peer!" << std::endl;
+		DisconnectPeer(peer_id);
 		return;
 	}
 
 	PlayerSAO *playersao = player->getPlayerSAO();
 	if (playersao == NULL) {
-		errorstream << "Server::ProcessData(): Canceling: "
-				"No player object for peer_id=" << pkt->getPeerId()
-				<< " disconnecting peer!" << std::endl;
-		DisconnectPeer(pkt->getPeerId());
+		errorstream << "Server::ProcessData(): Canceling: No player object for "
+			"peer_id=" << peer_id << " disconnecting peer!" << std::endl;
+		DisconnectPeer(peer_id);
 		return;
 	}
 
@@ -1123,7 +1122,7 @@ void Server::handleCommand_Interact(NetworkPacket *pkt)
 		if (!checkInteractDistance(player, d, pointed.dump())) {
 			if (may_have_prediction) {
 				// Re-send the whole block to undo placement or dig prediction
-				RemoteClient *client = getClient(pkt->getPeerId());
+				RemoteClient *client = getClient(peer_id);
 				v3s16 blockpos = getNodeBlockPos(
 					floatToInt(pointed_pos_under, BS));
 				client->SetBlockNotSent(blockpos);
@@ -1149,9 +1148,8 @@ void Server::handleCommand_Interact(NetworkPacket *pkt)
 			n = m_env->getMap().getNode(p_under, &pos_ok);
 			if (!pos_ok) {
 				infostream << "Server: Not punching: Node not found."
-						<< " Adding block to emerge queue."
-						<< std::endl;
-				m_emerge->enqueueBlockEmerge(pkt->getPeerId(),
+					<< " Adding block to emerge queue." << std::endl;
+				m_emerge->enqueueBlockEmerge(peer_id,
 					getNodeBlockPos(p_above), false);
 			}
 
@@ -1221,7 +1219,7 @@ void Server::handleCommand_Interact(NetworkPacket *pkt)
 				infostream << "Server: Not finishing digging: Node not found."
 						<< " Adding block to emerge queue."
 						<< std::endl;
-				m_emerge->enqueueBlockEmerge(pkt->getPeerId(),
+				m_emerge->enqueueBlockEmerge(peer_id,
 					getNodeBlockPos(p_above), false);
 			}
 
@@ -1300,13 +1298,11 @@ void Server::handleCommand_Interact(NetworkPacket *pkt)
 
 			/*
 				If the node is still the same, e.g. because of protection,
-				re-send the whole block to undo dig prediction
+				send it to the client to undo dig prediction
 			*/
 			MapNode newnode = m_env->getMap().getNode(p_under);
-			if (newnode.getContent() == n.getContent()) {
-				v3s16 blockpos = getNodeBlockPos(p_under);
-				getClient(pkt->getPeerId())->SetBlockNotSent(blockpos);
-			}
+			if (newnode.getContent() == n.getContent())
+				sendCurrentNode(peer_id, p_under, n);
 		}
 	} // action == INTERACT_DIGGING_COMPLETED
 
@@ -1320,7 +1316,7 @@ void Server::handleCommand_Interact(NetworkPacket *pkt)
 		// Reset build time counter
 		if (pointed.type == POINTEDTHING_NODE &&
 				selected_item.getDefinition(m_itemdef).type == ITEM_NODE)
-			getClient(pkt->getPeerId())->m_time_from_building = 0.0;
+			getClient(peer_id)->m_time_from_building = 0.0;
 
 		if (pointed.type == POINTEDTHING_OBJECT) {
 			// Right click object
@@ -1353,9 +1349,9 @@ void Server::handleCommand_Interact(NetworkPacket *pkt)
 		if (!under_ok || !above_ok) {
 			infostream << "Server: Not finishing placing: Node not found."
 				" Adding blocks to emerge queue." << std::endl;
-			m_emerge->enqueueBlockEmerge(pkt->getPeerId(),
+			m_emerge->enqueueBlockEmerge(peer_id,
 				getNodeBlockPos(p_under), false);
-			m_emerge->enqueueBlockEmerge(pkt->getPeerId(),
+			m_emerge->enqueueBlockEmerge(peer_id,
 				getNodeBlockPos(p_above), false);
 			return;
 		}
@@ -1369,7 +1365,7 @@ void Server::handleCommand_Interact(NetworkPacket *pkt)
 		if (playersao->setWieldedItem(selected_item))
 			SendInventory(playersao, true);
 
-		// Re-send whole mapblocks to undo placement prediction if needed
+		// Send current nodes to undo placement prediction if needed
 		if (selected_item.getDefinition(m_itemdef
 				).node_placement_prediction.empty())
 			return;
@@ -1392,27 +1388,16 @@ void Server::handleCommand_Interact(NetworkPacket *pkt)
 			Server predicts under: always send (where the node(s) didn't change)
 		*/
 
-		v3s16 blockpos_a;
-		bool sent_above = false;
 		MapNode newnode_a = m_env->getMap().getNode(p_above);
-		if (newnode_a.getContent() == oldnode_a.getContent()) {
-			RemoteClient *client = getClient(pkt->getPeerId());
-			blockpos_a = getNodeBlockPos(p_above);
-			client->SetBlockNotSent(blockpos_a);
-			sent_above = true;
-		}
+		if (newnode_a.getContent() == oldnode_a.getContent())
+			sendCurrentNode(peer_id, p_above, oldnode_a);
 
 		if (!m_env->getMap().getNodeDefManager()->get(oldnode_u).buildable_to)
 			return;
 
 		MapNode newnode_u = m_env->getMap().getNode(p_under);
-		if (newnode_u.getContent() == oldnode_u.getContent()) {
-			v3s16 blockpos_u = getNodeBlockPos(p_under);
-			if (!sent_above || blockpos_u != blockpos_a) {
-				RemoteClient *client = getClient(pkt->getPeerId());
-				client->SetBlockNotSent(blockpos_u);
-			}
-		}
+		if (newnode_u.getContent() == oldnode_u.getContent())
+			sendCurrentNode(peer_id, p_under, oldnode_u);
 	} // action == INTERACT_PLACE
 
 	/*

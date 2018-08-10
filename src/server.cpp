@@ -2341,6 +2341,20 @@ void Server::sendMetadataChanged(const std::list<v3s16> &meta_updates, float far
 	m_clients.unlock();
 }
 
+void Server::sendCurrentNode(session_t peer_id, v3s16 p, MapNode n)
+{
+	if (m_env->getMap().getNodeMetadata(p)) {
+		// If the node contains metadata, the whole block needs to be sent
+		RemoteClient *client = getClient(peer_id);
+		v3s16 blockpos = getNodeBlockPos(p);
+		client->SetBlockNotSent(blockpos);
+		return;
+	}
+	NetworkPacket pkt(TOCLIENT_ADDNODE, 6 + 2 + 1 + 1 + 1, peer_id);
+	pkt << p << n.param0 << n.param1 << n.param2 << (u8) 0;
+	Send(&pkt);
+}
+
 void Server::SendBlockNoLock(session_t peer_id, MapBlock *block, u8 ver,
 		u16 net_proto_version)
 {
