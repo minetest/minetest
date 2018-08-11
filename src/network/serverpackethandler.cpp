@@ -1290,8 +1290,16 @@ void Server::handleCommand_Interact(NetworkPacket *pkt)
 				}
 			}
 
-			if (!is_valid_dig || n.getContent() == CONTENT_IGNORE)
+			if (n.getContent() == CONTENT_IGNORE) {
+				// If the node is not loaded, send the mapblock
+				RemoteClient *client = getClient(peer_id);
+				client->SetBlockNotSent(getNodeBlockPos(p_under));
 				return;
+			}
+			if (!is_valid_dig) {
+				sendCurrentNode(peer_id, p_under, n);
+				return;
+			}
 
 			// Actually dig node
 			m_script->node_on_dig(p_under, n, playersao);
