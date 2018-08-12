@@ -1036,19 +1036,9 @@ void Server::handleCommand_Interact(NetworkPacket *pkt)
 		actionstream << "Server: NoCheat: " << player->getName()
 				<< " tried to interact while dead; ignoring." << std::endl;
 		m_script->on_cheat(playersao, "interacted_while_dead");
-		if (may_have_prediction) {
-			// Re-send the whole block(s) to undo placement or dig prediction
-			RemoteClient *client = getClient(pkt->getPeerId());
-			v3s16 blockpos_u = getNodeBlockPos(p_under);
-			client->SetBlockNotSent(blockpos_u);
-			if (action == INTERACT_DIGGING_COMPLETED)
-				// Dig prediction -> send only under
-				return;
-			// Placement prediction -> also send above
-			v3s16 blockpos_a = getNodeBlockPos(p_above);
-			if (blockpos_a != blockpos_u)
-				client->SetBlockNotSent(blockpos_a);
-		}
+		if (may_have_prediction)
+			resendBlocks(peer_id, p_under, p_above,
+				action == INTERACT_DIGGING_COMPLETED);
 		return;
 	}
 
@@ -1088,28 +1078,16 @@ void Server::handleCommand_Interact(NetworkPacket *pkt)
 	if (!checkPriv(player->getName(), "interact")) {
 		// This may only happen while revoking interact before the client
 		// receives its change of privileges
-		actionstream << player->getName() << " attempted to interact with " <<
-				pointed.dump() << " without 'interact' privilege" << std::endl;
-
-		if (may_have_prediction) {
-			// Re-send the whole block(s) to undo placement or dig prediction
-			RemoteClient *client = getClient(pkt->getPeerId());
-			v3s16 blockpos_u = getNodeBlockPos(p_under);
-			client->SetBlockNotSent(blockpos_u);
-			if (action == INTERACT_DIGGING_COMPLETED)
-				// Dig prediction -> send only under
-				return;
-			// Placement prediction -> also send above
-			v3s16 blockpos_a = getNodeBlockPos(p_above);
-			if (blockpos_a != blockpos_u)
-				client->SetBlockNotSent(blockpos_a);
-		}
+		actionstream << player->getName() << " attempted to interact with "
+			<< pointed.dump() << " without 'interact' privilege" << std::endl;
+		if (may_have_prediction)
+			resendBlocks(peer_id, p_under, p_above,
+				action == INTERACT_DIGGING_COMPLETED);
 		return;
 	}
 
 	/*
-		Check that target is reasonably close
-		(only when digging or placing things)
+		Check that target is reasonably close for specific actions
 	*/
 	static thread_local const bool enable_anticheat =
 			!g_settings->getBool("disable_anticheat");
@@ -1120,13 +1098,8 @@ void Server::handleCommand_Interact(NetworkPacket *pkt)
 		float d = playersao->getEyePosition().getDistanceFrom(pointed_pos_under);
 
 		if (!checkInteractDistance(player, d, pointed.dump())) {
-			if (may_have_prediction) {
-				// Re-send the whole block to undo placement or dig prediction
-				RemoteClient *client = getClient(peer_id);
-				v3s16 blockpos = getNodeBlockPos(
-					floatToInt(pointed_pos_under, BS));
-				client->SetBlockNotSent(blockpos);
-			}
+			if (may_have_prediction)
+				resendBlocks(peer_id, p_under, p_above, action == 2);
 			return;
 		}
 	}

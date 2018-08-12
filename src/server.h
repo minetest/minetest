@@ -443,7 +443,12 @@ private:
 	void sendMetadataChanged(const std::list<v3s16> &meta_updates,
 			float far_d_nodes = 100);
 
-	// Used to undo placement and dig prediction
+	/*
+		Functions for undoing placement and dig prediction,
+		resendBlocks should be used only for edge cases
+	*/
+	void resendBlocks(session_t peer_id, v3s16 p_under, v3s16 p_above,
+		bool is_digging_completed);
 	void sendCurrentNode(session_t peer_id, v3s16 p, MapNode n);
 
 	// Environment and Connection must be locked when called

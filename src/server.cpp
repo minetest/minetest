@@ -2341,6 +2341,21 @@ void Server::sendMetadataChanged(const std::list<v3s16> &meta_updates, float far
 	m_clients.unlock();
 }
 
+void Server::resendBlocks(session_t peer_id, v3s16 p_under, v3s16 p_above,
+	bool is_digging_completed)
+{
+	RemoteClient *client = getClient(peer_id);
+	v3s16 blockpos_u = getNodeBlockPos(p_under);
+	client->SetBlockNotSent(blockpos_u);
+	if (is_digging_completed)
+		// Dig prediction -> send only under
+		return;
+	// Placement prediction -> also send above
+	v3s16 blockpos_a = getNodeBlockPos(p_above);
+	if (blockpos_a != blockpos_u)
+		client->SetBlockNotSent(blockpos_a);
+}
+
 void Server::sendCurrentNode(session_t peer_id, v3s16 p, MapNode n)
 {
 	if (m_env->getMap().getNodeMetadata(p)) {
