@@ -1314,7 +1314,7 @@ mg_biome_np_humidity_blend (Humidity blend noise) noise_params_2d 0, 1.5, (8, 8,
 mgv5_spflags (Mapgen V5 specific flags) flags caverns caverns,nocaverns
 
 #    Controls width of tunnels, a smaller value creates wider tunnels.
-mgv5_cave_width (Cave width) float 0.125
+mgv5_cave_width (Cave width) float 0.09
 
 #    Y of upper limit of large caves.
 mgv5_large_cave_depth (Large cave depth) int -256
@@ -1350,10 +1350,10 @@ mgv5_np_factor (Factor noise) noise_params_2d 0, 1, (250, 250, 250), 920381, 3, 
 mgv5_np_height (Height noise) noise_params_2d 0, 10, (250, 250, 250), 84174, 4, 0.5, 2.0, eased
 
 #    First of 2 3D noises that together define tunnels.
-mgv5_np_cave1 (Cave1 noise) noise_params_3d 0, 12, (50, 50, 50), 52534, 4, 0.5, 2.0
+mgv5_np_cave1 (Cave1 noise) noise_params_3d 0, 12, (61, 61, 61), 52534, 3, 0.5, 2.0
 
 #    Second of 2 3D noises that together define tunnels.
-mgv5_np_cave2 (Cave2 noise) noise_params_3d 0, 12, (50, 50, 50), 10325, 4, 0.5, 2.0
+mgv5_np_cave2 (Cave2 noise) noise_params_3d 0, 12, (67, 67, 67), 10325, 3, 0.5, 2.0
 
 #    3D noise defining giant caverns.
 mgv5_np_cavern (Cavern noise) noise_params_3d 0, 1, (384, 128, 384), 723, 5, 0.63, 2.0
