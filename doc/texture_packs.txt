@@ -181,7 +181,7 @@ Uses the texture specified in the `tiles` nodedef field.
 The texture should have some transparent pixels and be in the RGBA format so
 that the transparent pixels can have color information.
 Faces of every leaves node are rendered even if they are inside a solid volume
-of leaves, this gives a dense appearence.
+of leaves; this gives a dense appearance.
 
 ### Opaque
 
@@ -191,7 +191,7 @@ transparent pixel.
 Due to this the `tiles` texture format must be RGBA not 'indexed alpha' to allow
 each transparent pixel to have color information.
 
-The colors of the transparent pixels should be set for a good appearence in
+The colors of the transparent pixels should be set for a good appearance in
 `opaque` mode. This can be done by painting the pixels the desired colors then
 erasing them. Then when saving the texture, use the 'save color information from
 transparent pixels' option (or equivalent).
@@ -200,12 +200,12 @@ transparent pixels' option (or equivalent).
 
 Uses the texture specified in the `special_tiles` nodedef field if it exists, if
 not, the `tiles` texture.
-The `special_tiles` texture should have some transparent pixels and be in the
-'indexed alpha' format.
+The `special_tiles` texture should have fewer transparent pixels than the
+`tiles` texture and be in the 'indexed alpha' format.
 
-This mode is between the other two in terms of appearence and rendering load.
+This mode is between the other two in terms of appearance and rendering load.
 The nodes are rendered using the `glasslike` drawtype, only showing the surface
-faces for any solid volume of leaves, not the internal faces. Due to this the
-appearence can, depending on the texture used, seem lacking in density. So the
-`special_tiles` texture option is there to provide an alternative texture with
-fewer transparent pixels for a denser appearence.
+faces for any solid volume of leaves, not the internal faces.
+Due to this the `tiles` texture might appear lacking in density, so optionally a
+`special_tiles` texture can be used to provide a texture with fewer transparent
+pixels for a denser appearance.
