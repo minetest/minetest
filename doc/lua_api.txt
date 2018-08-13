@@ -98,7 +98,7 @@ Mods
 Mod load path
 -------------
 
-Paths are relative to the directories listed in the Paths section above.
+Paths are relative to the directories listed in the [Paths] section above.
 
 * `games/<gameid>/mods/`
 * `mods/`
@@ -200,7 +200,7 @@ wants to register. Subsequent execution depends on minetest calling the
 registered callbacks.
 
 `minetest.settings` can be used to read custom or existing settings at load
-time, if necessary. (See `Settings`)
+time, if necessary. (See [`Settings`])
 
 ### `models`
 
@@ -213,7 +213,7 @@ client and will be available for use by the mod.
 
 ### `locale`
 
-Translation files for the clients. (See `Translations`)
+Translation files for the clients. (See [Translations])
 
 Naming conventions
 ------------------
@@ -947,7 +947,7 @@ The definition of a node is stored and can be accessed by using
 
     minetest.registered_nodes[node.name]
 
-See "Registered definitions".
+See [Registered definitions].
 
 Nodes are passed by value between Lua and the engine.
 They are represented by a table:
@@ -1051,7 +1051,7 @@ node definition.
       and 63 being full.
     * Liquid texture is defined using `special_tiles = {"modname_tilename.png"}`
 
-Nodes can also contain extra data. See "Node Metadata".
+Nodes can also contain extra data. See [Node Metadata].
 
 Node drawtypes
 --------------
@@ -1125,7 +1125,7 @@ Look for examples in `games/minimal` or `games/minetest_game`.
 * `nodebox`
     * Often used for stairs and slabs.
     * Allows defining nodes consisting of an arbitrary number of boxes.
-    * See 'Node boxes' below for more information.
+    * See [Node boxes] below for more information.
 * `mesh`
     * Uses models for nodes.
     * Tiles should hold model materials textures.
@@ -1308,7 +1308,7 @@ Position/vector
 
     {x=num, y=num, z=num}
 
-For helper functions see "Spatial Vectors".
+For helper functions see [Spatial Vectors].
 
 `pointed_thing`
 ---------------
@@ -1425,7 +1425,7 @@ An apple:
 ### `ItemStack`
 
 A native C++ format with many helper methods. Useful for converting
-between formats. See the Class reference section for details.
+between formats. See the [Class reference] section for details.
 
 
 
@@ -1476,7 +1476,7 @@ Groups of entities
 
 For entities, groups are, as of now, used only for calculating damage.
 The rating is the percentage of damage caused by tools with this damage group.
-See "Entity damage mechanism".
+See [Entity damage mechanism].
 
     object.get_armor_groups() --> a group-rating table (e.g. {fleshy=100})
     object.set_armor_groups({fleshy=30, cracky=80})
@@ -1655,7 +1655,7 @@ i.e. players can more quickly click the nodes away instead of holding LMB.
 
 ### Damage groups
 
-List of damage for groups of entities. See "Entity damage mechanism".
+List of damage for groups of entities. See [Entity damage mechanism].
 
 Example definition of the capabilities of a tool
 ------------------------------------------------
@@ -1763,7 +1763,7 @@ Node Metadata
 -------------
 
 The instance of a node in the world normally only contains the three values
-mentioned in "Nodes". However, it is possible to insert extra data into a node.
+mentioned in [Nodes]. However, it is possible to insert extra data into a node.
 It is called "node metadata"; See `NodeMetaRef`.
 
 Node metadata contains two things:
@@ -1773,7 +1773,7 @@ Node metadata contains two things:
 
 Some of the values in the key-value store are handled specially:
 
-* `formspec`: Defines a right-click inventory menu. See "Formspec".
+* `formspec`: Defines a right-click inventory menu. See [Formspec].
 * `infotext`: Text shown on the screen when the node is pointed at
 
 Example:
@@ -1807,7 +1807,7 @@ Example:
 Item Metadata
 -------------
 
-Item stacks can store metadata too. See `ItemStackMetaRef`.
+Item stacks can store metadata too. See [`ItemStackMetaRef`].
 
 Item metadata only contains a key-value store.
 
@@ -1846,7 +1846,7 @@ For coloured text you can use `minetest.colorize`.
 
 WARNING: Minetest allows you to add elements to every single formspec instance
 using `player:set_formspec_prepend()`, which may be the reason backgrounds are
-appearing when you don't expect them to. See `no_prepend[]`
+appearing when you don't expect them to. See [`no_prepend[]`].
 
 Examples
 --------
@@ -2010,7 +2010,7 @@ Elements
 * Fields are a set height, but will be vertically centred on `H`
 * `name` is the name of the field as returned in fields to `on_receive_fields`
 * `label`, if not blank, will be text printed on the top left above the field
-* See field_close_on_enter to stop enter closing the formspec
+* See `field_close_on_enter` to stop enter closing the formspec
 
 ### `field[<X>,<Y>;<W>,<H>;<name>;<label>;<default>]`
 
@@ -2503,7 +2503,7 @@ The file should be a text file, with the following format:
 * All other empty lines or lines beginning with `#` are ignored.
 * Other lines should be in the format `original=translated`. Both `original`
   and `translated` can contain escape sequences beginning with `@` to insert
-  arguments, literal `@`, `=` or newline (See ### Escapes below).
+  arguments, literal `@`, `=` or newline (See [Escapes] below).
   There must be no extraneous whitespace around the `=` or at the beginning or
   the end of the line.
 
@@ -2817,7 +2817,7 @@ The parameters `clust_num_ores`, `clust_size`, `noise_threshold` and
 Ore attributes
 --------------
 
-See section "Flag Specifier Format".
+See section [Flag Specifier Format].
 
 Currently supported flags:
 `puff_cliffs`, `puff_additive_composition`.
@@ -2906,7 +2906,7 @@ About probability values:
 Schematic attributes
 --------------------
 
-See section "Flag Specifier Format".
+See section [Flag Specifier Format].
 
 Currently supported flags: `place_center_x`, `place_center_y`, `place_center_z`,
                            `force_placement`.
@@ -2975,11 +2975,11 @@ Nodes in a VoxelManip object may also be read in bulk to a flat array table
 using:
 
 * `VoxelManip:get_data()` for node content (in Content ID form, see section
-  'Content IDs'),
+  [Content IDs]),
 * `VoxelManip:get_light_data()` for node light levels, and
 * `VoxelManip:get_param2_data()` for the node type-dependent "param2" values.
 
-See section 'Flat array format' for more details.
+See section [Flat array format] for more details.
 
 It is very important to understand that the tables returned by any of the above
 three functions represent a snapshot of the VoxelManip's internal state at the
@@ -2992,7 +2992,7 @@ Once the bulk data has been edited to your liking, the internal VoxelManip
 state can be set using:
 
 * `VoxelManip:set_data()` for node content (in Content ID form, see section
-  'Content IDs'),
+  [Content IDs]),
 * `VoxelManip:set_light_data()` for node light levels, and
 * `VoxelManip:set_param2_data()` for the node type-dependent `param2` values.
 
@@ -3034,7 +3034,7 @@ and the array index for a position p contained completely in p1..p2 is:
 
 Note that this is the same "flat 3D array" format as
 `PerlinNoiseMap:get3dMap_flat()`.
-VoxelArea objects (see section 'VoxelArea') can be used to simplify calculation
+VoxelArea objects (see section [`VoxelArea`]) can be used to simplify calculation
 of the index for a single point in a flat VoxelManip array.
 
 ### Content IDs
@@ -3528,7 +3528,7 @@ Call these functions only at load time!
 * `minetest.unregister_item(name)`
 * `minetest.register_alias(name, convert_to)`
     * Also use this to set the 'mapgen aliases' needed in a game for the core
-    * mapgens. See 'Mapgen aliases' section above.
+    * mapgens. See [Mapgen aliases] section above.
 * `minetest.register_alias_force(name, convert_to)`
 * `minetest.register_craft(recipe)`
     * Check recipe table syntax for different types below.
@@ -3779,7 +3779,7 @@ Authentication
     * The player needs to be online for this to be successful.
 
 * `minetest.get_auth_handler()`: Return the currently active auth handler
-    * See the `Authentication handler definition`
+    * See the [Authentication handler definition]
     * Use this to e.g. get the authentication data for a player:
       `local auth_data = minetest.get_auth_handler().get_auth(playername)`
 * `minetest.notify_authentication_modified(name)`
@@ -3916,7 +3916,7 @@ Environment access
     * Returns the decoration ID number for the provided decoration name string,
       or `nil` on failure.
 * `minetest.get_mapgen_object(objectname)`
-    * Return requested mapgen object if available (see "Mapgen objects")
+    * Return requested mapgen object if available (see [Mapgen objects])
 * `minetest.get_heat(pos)`
     * Returns the heat at the position, or `nil` on failure.
 * `minetest.get_humidity(pos)`
@@ -4119,7 +4119,7 @@ Inventory
     * `{type="detached", name="creative"}`
 * `minetest.create_detached_inventory(name, callbacks, [player_name])`: returns
   an `InvRef`.
-    * `callbacks`: See "Detached inventory callbacks"
+    * `callbacks`: See [Detached inventory callbacks]
     * `player_name`: Make detached inventory available to one player
       exclusively, by default they will be sent to every player (even if not
       used).
@@ -4428,7 +4428,7 @@ Schematics
     * Saves schematic in the Minetest Schematic format to filename.
 
 * `minetest.place_schematic(pos, schematic, rotation, replacements, force_placement, flags)`
-    * Place the schematic specified by schematic (see: Schematic specifier) at
+    * Place the schematic specified by schematic (see [Schematic specifier]) at
       `pos`.
     * `rotation` can equal `"0"`, `"90"`, `"180"`, `"270"`, or `"random"`.
     * If the `rotation` parameter is omitted, the schematic is not rotated.
@@ -4463,7 +4463,7 @@ Schematics
 
 * `minetest.serialize_schematic(schematic, format, options)`
     * Return the serialized schematic specified by schematic
-      (see: Schematic specifier)
+      (see [Schematic specifier])
     * in the `format` of either "mts" or "lua".
     * "mts" - a string containing the binary MTS data used in the MTS file
       format.
@@ -4885,7 +4885,7 @@ Can be obtained via `item:get_meta()`.
 `MetaDataRef`
 -------------
 
-See `StorageRef`, `NodeMetaRef`, `ItemStackMetaRef`, and `PlayerMetaRef`.
+See [`StorageRef`], [`NodeMetaRef`], [`ItemStackMetaRef`], and [`PlayerMetaRef`].
 
 ### Methods
 
@@ -4903,7 +4903,7 @@ See `StorageRef`, `NodeMetaRef`, `ItemStackMetaRef`, and `PlayerMetaRef`.
     * `inventory`: `{list1 = {}, ...}}` (NodeMetaRef only)
 * `from_table(nil or {})`
     * Any non-table value will clear the metadata
-    * See "Node Metadata" for an example
+    * See [Node Metadata] for an example
     * returns `true` on success
 * `equals(other)`
     * returns `true` if this metadata has the same key-value pairs as `other`
@@ -5098,7 +5098,7 @@ This is basically a reference to a C++ `ServerActiveObject`
     * values:
         * `0`: player is drowning
         * max: bubbles bar is not shown
-        * See Object properties for more information
+        * See [Object properties] for more information
 * `set_attribute(attribute, value)`:  DEPRECATED, use get_meta() instead
     * Sets an extra attribute with value on player.
     * `value` must be a string, or a number which will be converted to a
@@ -5857,7 +5857,7 @@ Used by `minetest.register_node`.
         -- Only when `paramtype2` supports palettes.
 
         post_effect_color = "green#0F",
-        -- Screen tint if player is inside node, see "ColorSpec".
+        -- Screen tint if player is inside node, see "ColorSpec"
 
         paramtype = "none",  -- See "Nodes"
 
@@ -6157,7 +6157,7 @@ Ore definition
 
 Used by `minetest.register_ore`.
 
-See 'Ores' section above for essential information.
+See [Ores] section above for essential information.
 
     {
         ore_type = "scatter",
@@ -6341,7 +6341,7 @@ Used by `minetest.register_biome`.
 Decoration definition
 ---------------------
 
-See "Decoration types". Used by `minetest.register_decoration`.
+See [Decoration types]. Used by `minetest.register_decoration`.
 
     {
         deco_type = "simple",
@@ -6553,7 +6553,7 @@ Used by `minetest.create_detached_inventory`.
 HUD Definition
 --------------
 
-See "HUD" section.
+See [HUD] section.
 
 Used by `Player:hud_add`. Returned by `Player:hud_get`.
 
