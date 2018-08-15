@@ -2090,7 +2090,7 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 			break;
 
 		std::vector<std::string> parts = split(elements[i], '[');
-		if (parts[0] == "no_prepend")
+		if (trim(parts[0]) == "no_prepend")
 			enable_prepends = false;
 		else
 			break;
