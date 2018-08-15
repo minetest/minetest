@@ -1365,16 +1365,15 @@ Item types
 
 There are three kinds of items: nodes, tools and craftitems.
 
-* Node: An item that can be placed in the world as a node.
-* Tool: An item that can be worn out and repaired, cannot be stacked, and often
-  digs or deals damage.
-* Craftitem: A general purpose item that can be used in crafting recipes, eaten,
-  dropped, or used on things in the world.
+* Node: Can be placed in the world's voxel grid
+* Tool: Has a wear property but cannot be stacked. The default use action is to
+  dig nodes or hit objects according to its tool capabilities.
+* Craftitem: Cannot dig nodes or be placed
 
 Amount and wear
 ---------------
 
-All item stacks have an amount between 0 to 65535. It is 1 by
+All item stacks have an amount between 0 and 65535. It is 1 by
 default. Tool item stacks can not have an amount greater than 1.
 
 Tools use a wear (damage) value ranging from 0 to 65535. The
