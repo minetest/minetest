@@ -29,6 +29,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "gui/touchscreengui.h"
 #endif
 
+class ClientScripting;
 class InputHandler;
 
 /****************************************************************************
@@ -170,7 +171,10 @@ public:
 
 		mouse_wheel = 0;
 	}
-
+	void setScript(ClientScripting *script)
+	{
+		m_script = script;
+	}
 	MyEventReceiver()
 	{
 #ifdef HAVE_TOUCHSCREENGUI
@@ -196,6 +200,7 @@ public:
 #endif
 
 private:
+	ClientScripting *m_script = nullptr;
 	// The current state of keys
 	KeyList keyIsDown;
 	// Whether a key has been pressed or not
@@ -243,7 +248,7 @@ public:
 	virtual void resetRightReleased() = 0;
 
 	virtual s32 getMouseWheel() = 0;
-
+	virtual void setScript(ClientScripting *script) = 0;
 	virtual void step(float dtime) {}
 
 	virtual void clear() {}
@@ -355,7 +360,7 @@ public:
 	}
 
 	virtual s32 getMouseWheel() { return m_receiver->getMouseWheel(); }
-
+	virtual void setScript(ClientScripting *script) { m_receiver->setScript(script); }
 	void clear()
 	{
 		joystick.clear();
@@ -393,8 +398,9 @@ public:
 
 	virtual s32 getMouseWheel() { return 0; }
 
-	virtual void step(float dtime);
+	virtual void setScript(ClientScripting *script) {}
 
+	virtual void step(float dtime);
 	s32 Rand(s32 min, s32 max);
 
 private:

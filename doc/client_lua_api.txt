@@ -713,7 +713,13 @@ Call these functions only at load time!
     * `spec` is a `SimpleSoundSpec`
     * `parameters` is a sound parameter table
 * `minetest.sound_stop(handle)`
-
+### Key Input
+* `minetest.register_on_keydown(func(key))`
+    * Called when player presses a key.
+    * Is called accordingly to the keyboard character repetition interval when the key is kept pressed.
+    * Key codes can be found on this [link](http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3)
+* `minetest.register_on_keyup(func(key))`
+    * Called when player releases a key (stops holding it).
 ### Timing
 * `minetest.after(time, func, ...)`
     * Call the function `func` after `time` seconds, may be fractional

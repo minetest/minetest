@@ -43,6 +43,9 @@ public:
 	// Calls on_shutdown handlers
 	void on_shutdown();
 
+	void on_keydown(const char *key);
+	void on_keyup(const char *key);
+
 	// Chat message handlers
 	bool on_sending_message(const std::string &message);
 	bool on_receiving_message(const std::string &message);
