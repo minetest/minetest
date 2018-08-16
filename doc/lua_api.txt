@@ -1318,15 +1318,15 @@ For helper functions see [Spatial Vectors].
 * `{type="object", ref=ObjectRef}`
 
 Exact pointing location (currently only `Raycast` supports these fields):
-* `pointed_thing.intersection_point`: The point on the object's selection box
-  which is pointed at. May be in the selection box if the pointer is in
-  the box too.
+* `pointed_thing.intersection_point`: The absolute world coordinates of the
+  point on the selection box which is pointed at. May be in the selection box
+  if the pointer is in the box too.
 * `pointed_thing.box_id`: The ID of the pointed selection box (counting starts
   from 1).
 * `pointed_thing.intersection_normal`: Unit vector, points outwards of the
   selected selection box. This specifies which face is pointed at.
-  Null vector `{x = 0, y = 0, z = 0}`, if the pointer is inside the
-selection box.
+  Is a null vector `{x = 0, y = 0, z = 0}` when the pointer is inside the
+  selection box.
 
 
 
