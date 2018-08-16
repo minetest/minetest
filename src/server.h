@@ -416,11 +416,11 @@ private:
 		far_d_nodes are ignored and their peer_ids are added to far_players
 	*/
 	// Envlock and conlock should be locked when calling these
-	void sendRemoveNode(v3s16 p, u16 ignore_id=0,
-			std::vector<u16> *far_players=NULL, float far_d_nodes=100);
-	void sendAddNode(v3s16 p, MapNode n, u16 ignore_id=0,
-			std::vector<u16> *far_players=NULL, float far_d_nodes=100,
-			bool remove_metadata=true);
+	void sendRemoveNode(v3s16 p, std::unordered_set<u16> *far_players = nullptr,
+			float far_d_nodes = 100);
+	void sendAddNode(v3s16 p, MapNode n,
+			std::unordered_set<u16> *far_players = nullptr,
+			float far_d_nodes = 100, bool remove_metadata = true);
 
 	// Environment and Connection must be locked when called
 	void SendBlockNoLock(session_t peer_id, MapBlock *block, u8 ver, u16 net_proto_version);
