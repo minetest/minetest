@@ -3,12 +3,12 @@ uniform sampler2D normalTexture;
 uniform sampler2D textureFlags;
 
 uniform vec4 skyBgColor;
-uniform float fogDistance;
 uniform vec3 eyePosition;
 
 varying vec3 vPosition;
 varying vec3 worldPosition;
 varying float area_enable_parallax;
+varying float clarity;
 
 varying vec3 eyeVec;
 varying vec3 tsEyeVec;
@@ -19,8 +19,6 @@ bool normalTexturePresent = false;
 
 const float e = 2.718281828459;
 const float BS = 10.0;
-const float fogStart = FOG_START;
-const float fogShadingParameter = 1 / ( 1 - fogStart);
 
 #ifdef ENABLE_TONE_MAPPING
 
@@ -201,17 +199,6 @@ void main(void)
 	col = applyToneMapping(col);
 #endif
 
-	// Due to a bug in some (older ?) graphics stacks (possibly in the glsl compiler ?),
-	// the fog will only be rendered correctly if the last operation before the
-	// clamp() is an addition. Else, the clamp() seems to be ignored.
-	// E.g. the following won't work:
-	//      float clarity = clamp(fogShadingParameter
-	//		* (fogDistance - length(eyeVec)) / fogDistance), 0.0, 1.0);
-	// As additions usually come for free following a multiplication, the new formula
-	// should be more efficient as well.
-	// Note: clarity = (1 - fogginess)
-	float clarity = clamp(fogShadingParameter
-		- fogShadingParameter * length(eyeVec) / fogDistance, 0.0, 1.0);
 	col = mix(skyBgColor, col, clarity);
 	col = vec4(col.rgb, base.a);
 
