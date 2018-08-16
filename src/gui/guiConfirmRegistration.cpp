@@ -197,7 +197,7 @@ bool GUIConfirmRegistration::OnEvent(const SEvent &event)
 {
 	if (event.EventType == EET_KEY_INPUT_EVENT) {
 		// clang-format off
-		if ((event.KeyInput.Key == KEY_RETURN ||
+		if ((event.KeyInput.Key == KEY_ESCAPE ||
 				event.KeyInput.Key == KEY_CANCEL) &&
 				event.KeyInput.PressedDown) {
 			closeMenu(false);
