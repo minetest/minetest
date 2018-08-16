@@ -770,6 +770,14 @@ void TextureSource::rebuildImagesAndTextures()
 	}
 }
 
+inline static void applyShadeFactor(video::SColor &color, float factor)
+{
+	u8 f = core::clamp<u32>(256 * factor, 0, 256);
+	color.setRed(color.getRed() * f / 256);
+	color.setGreen(color.getGreen() * f / 256);
+	color.setBlue(color.getBlue() * f / 256);
+}
+
 static video::IImage *createInventoryCubeImage(
 	video::IImage *top, video::IImage *left, video::IImage *right)
 {
@@ -777,73 +785,82 @@ static video::IImage *createInventoryCubeImage(
 	core::dimension2du size_left = left->getDimension();
 	core::dimension2du size_right = right->getDimension();
 
-	// Calculate image size to match textures size, but make sure it is
-	// 64px at least as it would look bad otherwise.
-	u32 size = npot2(std::max({64u,
-		size_top.Width, size_top.Height,
-		size_left.Width, size_left.Height,
-		size_right.Width, size_right.Height,
+	u32 size = npot2(std::max({
+			size_top.Width, size_top.Height,
+			size_left.Width, size_left.Height,
+			size_right.Width, size_right.Height,
 	}));
+	u32 dst_size = 4 * size;
 
 	video::IVideoDriver *driver = RenderingEngine::get_video_driver();
-	video::IImage *result = driver->createImage(video::ECF_A8R8G8B8, {size, size});
+	auto lock_image = [size, driver] (video::IImage *&image) -> u32 const * {
+		image->grab();
+		core::dimension2du dim = image->getDimension();
+		video::ECOLOR_FORMAT format = image->getColorFormat();
+		if (dim.Width != size || dim.Height != size || format != video::ECF_A8R8G8B8) {
+			video::IImage *scaled = driver->createImage(video::ECF_A8R8G8B8, {size, size});
+			image->copyToScaling(scaled);
+			image->drop();
+			image = scaled;
+		}
+		sanity_check(image->getPitch() == 4 * size);
+		return reinterpret_cast<u32 *>(image->lock());
+	};
+	auto free_image = [] (video::IImage *image) -> void {
+		image->unlock();
+		image->drop();
+	};
+
+	video::IImage *result = driver->createImage(video::ECF_A8R8G8B8, {dst_size, dst_size});
+	sanity_check(result->getPitch() == 4 * dst_size);
 	result->fill(video::SColor(0x00000000u));
 
-	// Offset of the view space origin (from the top image edge),
-	// where the upper near cube vertex is. Full image is 2 units.
-	static constexpr float base_y = 0.9f;
+	u32 *target = reinterpret_cast<u32 *>(result->lock());
+	u32 const *source;
+#define TARGET(u,v) target[(v) * dst_size + (u)]
 
-	// Cube dimensions. The image is 2x2 in this (view) space.
-	static constexpr float diag_x = 0.8f;
-	static constexpr float diag_y = 0.4f;
-	static constexpr float vert_y = 1.2f;
-
-	static constexpr float coef_x = 0.5f / diag_x;
-	static constexpr float coef_y = -0.5f / diag_y;
-	static constexpr float coef_z = -1 / vert_y;
-
-	float scale = 2.f / size;
-	video::SColor *pixel = reinterpret_cast<video::SColor *>(result->lock());
-
-	// Make sure there is no row padding
-	sanity_check(result->getPitch() == 4 * size);
-
-	for (int j = 0; j < size; j++) {
-		for (int i = 0; i < size; i++) {
-			// View space coordinates
-			float x = scale * (i + 0.5f) - 1.f;
-			float y = scale * (j + 0.5f) - base_y;
-
-			float u = coef_y * y + coef_x * x;
-			float v = coef_y * y - coef_x * x;
-
-			// Texture coordinates for cube faces, at current pixel.
-			v2f tex_top = {1.f - v, 1.f - u};
-			v2f tex_left = {2 * coef_x * x + 1.f, coef_z * u};
-			v2f tex_right = {2 * coef_x * x, coef_z * v};
-
-			// Draw from `src`, if current pixel is inside the corresponding quad,
-			// i.e. if texture coordinates are in range [0, 1).
-			// `b` stands for "brightness."
-			auto try_paint = [pixel] (video::IImage *src, core::dimension2du size, v2f uv, float b) -> void {
-				int k = size.Width * uv.X;
-				int l = size.Height * uv.Y;
-				if (k < 0 || k >= size.Width || l < 0 || l >= size.Height)
-					return;
-				video::SColor s = src->getPixel(k, l);
-				pixel->set(s.getAlpha(), b * s.getRed(), b * s.getGreen(), b * s.getBlue());
-			};
-
-			// Brightness is the same as in applyFacesShading
-			try_paint(top, size_top, tex_top, 1.000000f);
-			try_paint(left, size_left, tex_left, 0.836660f);
-			try_paint(right, size_right, tex_right, 0.670820f);
-
-			// Reference next pixel in the row or, if the row (and thus the inner loop)
-			// is over, first pixel of the next row.
-			pixel++;
+	source = lock_image(top);
+	for (int v = 0; v < size; v++) {
+		for (int u = 0; u < size; u++) {
+			video::SColor pixel(*source);
+			TARGET(2 * u + 2 * (size - 1 - v) + 0, u + v + 1) = pixel.color;
+			TARGET(2 * u + 2 * (size - 1 - v) + 1, u + v + 1) = pixel.color;
+			TARGET(2 * u + 2 * (size - 1 - v) + 2, u + v + 1) = pixel.color;
+			TARGET(2 * u + 2 * (size - 1 - v) + 3, u + v + 1) = pixel.color;
+			source++;
 		}
 	}
+	free_image(top);
+
+	source = lock_image(left);
+	for (int v = 0; v < size; v++) {
+		for (int u = 0; u < size; u++) {
+			video::SColor pixel(*source);
+			applyShadeFactor(pixel, 0.836660f);
+			TARGET(2 * u + 0, 2 * v + u + size + 1) = pixel.color;
+			TARGET(2 * u + 1, 2 * v + u + size + 1) = pixel.color;
+			TARGET(2 * u + 0, 2 * v + u + size + 2) = pixel.color;
+			TARGET(2 * u + 1, 2 * v + u + size + 2) = pixel.color;
+			source++;
+		}
+	}
+	free_image(left);
+
+	source = lock_image(right);
+	for (int v = 0; v < size; v++) {
+		for (int u = 0; u < size; u++) {
+			video::SColor pixel(*source);
+			applyShadeFactor(pixel, 0.670820f);
+			TARGET(2 * u + 2 * size + 0, 2 * v - u + 2 * size + 0) = pixel.color;
+			TARGET(2 * u + 2 * size + 1, 2 * v - u + 2 * size + 0) = pixel.color;
+			TARGET(2 * u + 2 * size + 0, 2 * v - u + 2 * size + 1) = pixel.color;
+			TARGET(2 * u + 2 * size + 1, 2 * v - u + 2 * size + 1) = pixel.color;
+			source++;
+		}
+	}
+	free_image(right);
+
+#undef TARGET
 	result->unlock();
 	return result;
 }
