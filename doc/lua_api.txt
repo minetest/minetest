@@ -1317,6 +1317,17 @@ For helper functions see [Spatial Vectors].
 * `{type="node", under=pos, above=pos}`
 * `{type="object", ref=ObjectRef}`
 
+Exact pointing location (currently only `Raycast` supports these fields):
+* `pointed_thing.intersection_point`: The absolute world coordinates of the
+  point on the selection box which is pointed at. May be in the selection box
+  if the pointer is in the box too.
+* `pointed_thing.box_id`: The ID of the pointed selection box (counting starts
+  from 1).
+* `pointed_thing.intersection_normal`: Unit vector, points outwards of the
+  selected selection box. This specifies which face is pointed at.
+  Is a null vector `{x = 0, y = 0, z = 0}` when the pointer is inside the
+  selection box.
+
 
 
 
@@ -5323,7 +5334,12 @@ It can be created via `PseudoRandom(seed)`.
 ---------
 
 A raycast on the map. It works with selection boxes.
-Can be used as an iterator in a for loop.
+Can be used as an iterator in a for loop as:
+
+    local ray = Raycast(...)
+    for pointed_thing in ray do
+        ...
+    end
 
 The map is loaded as the ray advances. If the map is modified after the
 `Raycast` is created, the changes may or may not have an effect on the object.
@@ -5338,7 +5354,7 @@ It can be created via `Raycast(pos1, pos2, objects, liquids)` or
 
 ### Methods
 
-* `next()`: returns a `pointed_thing`
+* `next()`: returns a `pointed_thing` with exact pointing location
     * Returns the next thing pointed by the ray or nil.
 
 `SecureRandom`

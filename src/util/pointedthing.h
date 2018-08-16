@@ -64,7 +64,8 @@ struct PointedThing
 	s16 object_id = -1;
 	/*!
 	 * Only valid if type isn't POINTEDTHING_NONE.
-	 * First intersection point of the ray and the nodebox.
+	 * First intersection point of the ray and the nodebox in irrlicht
+	 * coordinates.
 	 */
 	v3f intersection_point;
 	/*!
@@ -75,8 +76,13 @@ struct PointedThing
 	 */
 	v3s16 intersection_normal;
 	/*!
+	 * Only valid if type isn't POINTEDTHING_NONE.
+	 * Indicates which selection box is selected, if there are more of them.
+	 */
+	u16 box_id = 0;
+	/*!
 	 * Square of the distance between the pointing
-	 * ray's start point and the intersection point.
+	 * ray's start point and the intersection point in irrlicht coordinates.
 	 */
 	f32 distanceSq = 0;
 
@@ -85,7 +91,7 @@ struct PointedThing
 	//! Constructor for POINTEDTHING_NODE
 	PointedThing(const v3s16 &under, const v3s16 &above,
 		const v3s16 &real_under, const v3f &point, const v3s16 &normal,
-		f32 distSq);
+		u16 box_id, f32 distSq);
 	//! Constructor for POINTEDTHING_OBJECT
 	PointedThing(s16 id, const v3f &point, const v3s16 &normal, f32 distSq);
 	std::string dump() const;

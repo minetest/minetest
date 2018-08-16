@@ -178,7 +178,13 @@ bool               push_json_value           (lua_State *L,
 void               read_json_value           (lua_State *L, Json::Value &root,
                                               int index, u8 recursion = 0);
 
-void               push_pointed_thing        (lua_State *L, const PointedThing &pointed, bool csm = false);
+/*!
+ * Pushes a Lua `pointed_thing` to the given Lua stack.
+ * \param csm If true, a client side pointed thing is pushed
+ * \param hitpoint If true, the exact pointing location is also pushed
+ */
+void push_pointed_thing(lua_State *L, const PointedThing &pointed, bool csm =
+	false, bool hitpoint = false);
 
 void               push_objectRef            (lua_State *L, const u16 id);
 

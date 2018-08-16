@@ -25,13 +25,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 PointedThing::PointedThing(const v3s16 &under, const v3s16 &above,
 	const v3s16 &real_under, const v3f &point, const v3s16 &normal,
-	f32 distSq):
+	u16 box_id, f32 distSq):
 	type(POINTEDTHING_NODE),
 	node_undersurface(under),
 	node_abovesurface(above),
 	node_real_undersurface(real_under),
 	intersection_point(point),
 	intersection_normal(normal),
+	box_id(box_id),
 	distanceSq(distSq)
 {}
 
