@@ -790,9 +790,23 @@ static video::IImage *createInventoryCubeImage(
 			size_left.Width, size_left.Height,
 			size_right.Width, size_right.Height,
 	}));
-	u32 dst_size = 4 * size;
+
+	// It must be divisible by 4, to let everything work correctly.
+	// But it is a power of 2, so being at least 4 is the same.
+	if (size <= 4)
+		size = 4;
+
+	// We don't need *that* large cube textures... I suppose, at least -- numzero
+	if (size >= 64)
+		size = 64;
+
+	// With such parameters, the cube fits exactly, touching each image line
+	// from `0` to `cube_size - 1`. (Note that division is exact here).
+	u32 cube_size = 4 * size + size / 2;
+	u32 offset = size / 4 - 1;
 
 	video::IVideoDriver *driver = RenderingEngine::get_video_driver();
+
 	auto lock_image = [size, driver] (video::IImage *&image) -> u32 const * {
 		image->grab();
 		core::dimension2du dim = image->getDimension();
@@ -811,52 +825,84 @@ static video::IImage *createInventoryCubeImage(
 		image->drop();
 	};
 
-	video::IImage *result = driver->createImage(video::ECF_A8R8G8B8, {dst_size, dst_size});
-	sanity_check(result->getPitch() == 4 * dst_size);
+	video::IImage *result = driver->createImage(video::ECF_A8R8G8B8, {cube_size, cube_size});
+	sanity_check(result->getPitch() == 4 * cube_size);
 	result->fill(video::SColor(0x00000000u));
 
 	u32 *target = reinterpret_cast<u32 *>(result->lock());
 	u32 const *source;
-#define TARGET(u,v) target[(v) * dst_size + (u)]
+	u32 j;
+#define TARGET(u,v) target[(v) * cube_size + (u) + offset]
 
+	/* Draw top image.
+	 *
+	 * Left edge spans lines `0` to `size - 1`, and whole image spans
+	 * lines from `0` to `2 * size - 2` inclusive.
+	 */
 	source = lock_image(top);
 	for (int v = 0; v < size; v++) {
+		std::cout << "row " << v << "\n";
 		for (int u = 0; u < size; u++) {
 			video::SColor pixel(*source);
-			TARGET(2 * u + 2 * (size - 1 - v) + 0, u + v + 1) = pixel.color;
-			TARGET(2 * u + 2 * (size - 1 - v) + 1, u + v + 1) = pixel.color;
-			TARGET(2 * u + 2 * (size - 1 - v) + 2, u + v + 1) = pixel.color;
-			TARGET(2 * u + 2 * (size - 1 - v) + 3, u + v + 1) = pixel.color;
+			TARGET(2 * u + 2 * (size - 1 - v) + 0, u + v) = pixel.color;
+			TARGET(2 * u + 2 * (size - 1 - v) + 1, u + v) = pixel.color;
+			TARGET(2 * u + 2 * (size - 1 - v) + 2, u + v) = pixel.color;
+			TARGET(2 * u + 2 * (size - 1 - v) + 3, u + v) = pixel.color;
 			source++;
 		}
 	}
 	free_image(top);
 
+	/* Draw left image.
+	 *
+	 * Line height on TARGET is alternating between 2 and 3 pixels,
+	 * leading to `2.5 * size` resulting height—*exactly*. Plus starting
+	 * offset of `size`, plus skew (`0` to `size - 1`), so it touches scan
+	 * lines from `size` to `4.5 * size - 2` *exactly*.
+	 */
 	source = lock_image(left);
+	j = size;
 	for (int v = 0; v < size; v++) {
+		bool flag = v % 2;
 		for (int u = 0; u < size; u++) {
 			video::SColor pixel(*source);
 			applyShadeFactor(pixel, 0.836660f);
-			TARGET(2 * u + 0, 2 * v + u + size + 1) = pixel.color;
-			TARGET(2 * u + 1, 2 * v + u + size + 1) = pixel.color;
-			TARGET(2 * u + 0, 2 * v + u + size + 2) = pixel.color;
-			TARGET(2 * u + 1, 2 * v + u + size + 2) = pixel.color;
+			TARGET(2 * u + 0, j + u + 0) = pixel.color;
+			TARGET(2 * u + 1, j + u + 0) = pixel.color;
+			TARGET(2 * u + 0, j + u + 1) = pixel.color;
+			TARGET(2 * u + 1, j + u + 1) = pixel.color;
+			if (flag) {
+				TARGET(2 * u + 0, j + u + 2) = pixel.color;
+				TARGET(2 * u + 1, j + u + 2) = pixel.color;
+			}
 			source++;
 		}
+		j += flag ? 3 : 2;
 	}
 	free_image(left);
 
+	/* Draw right image.
+	 *
+	 * Works the same way as for left image, touching the same lines.
+	 */
 	source = lock_image(right);
+	j = size;
 	for (int v = 0; v < size; v++) {
+		bool flag = v % 2;
 		for (int u = 0; u < size; u++) {
 			video::SColor pixel(*source);
 			applyShadeFactor(pixel, 0.670820f);
-			TARGET(2 * u + 2 * size + 0, 2 * v - u + 2 * size + 0) = pixel.color;
-			TARGET(2 * u + 2 * size + 1, 2 * v - u + 2 * size + 0) = pixel.color;
-			TARGET(2 * u + 2 * size + 0, 2 * v - u + 2 * size + 1) = pixel.color;
-			TARGET(2 * u + 2 * size + 1, 2 * v - u + 2 * size + 1) = pixel.color;
+			TARGET(2 * u + 2 * size + 0, j + size - u - 1) = pixel.color;
+			TARGET(2 * u + 2 * size + 1, j + size - u - 1) = pixel.color;
+			TARGET(2 * u + 2 * size + 0, j + size - u + 0) = pixel.color;
+			TARGET(2 * u + 2 * size + 1, j + size - u + 0) = pixel.color;
+			if (flag) {
+				TARGET(2 * u + 2 * size + 0, j + size - u + 1) = pixel.color;
+				TARGET(2 * u + 2 * size + 1, j + size - u + 1) = pixel.color;
+			}
 			source++;
 		}
+		j += flag ? 3 : 2;
 	}
 	free_image(right);
 
