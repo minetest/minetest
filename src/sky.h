@@ -51,7 +51,7 @@ public:
 	void update(float m_time_of_day, float time_brightness, float direct_brightness,
 			bool sunlight_seen, CameraMode cam_mode, float yaw, float pitch);
 
-	float getBrightness() { return m_brightness; }
+	float getBrightness() { return m_brightness; }	
 
 	const video::SColor &getBgColor() const
 	{
@@ -79,6 +79,22 @@ public:
 		m_skycolor = skycolor;
 	}
 	void setBodiesVisible(bool visible) { m_bodies_visible = visible; }
+	void setSunVisible(bool sun_visible) { m_sun_visible = sun_visible; }
+	void setSunGlowVisible(bool sun_glow) { m_sun_glow = sun_glow; }
+	void setMoonVisible(bool moon_visible) { m_moon_visible = moon_visible; }
+	void setStarsVisible(bool stars_visible) { m_stars_visible = stars_visible; }
+	void setMeshVisible(bool dynamic_visible) { m_dyanmic_visible = dynamic_visible; }
+	void setStarCount(u16 star_count) { m_star_count = star_count; }
+	void setCustomFog(bool use_fog) { m_use_fog = use_fog; }
+	void setSunYaw(f32 sun_yaw) { m_sun_yaw = sun_yaw; }
+	void setSunTilt(f32 sun_tilt) { m_sun_tilt = sun_tilt; }
+	void setSunTexture(std::string sun_texture) { m_sun_name = sun_texture; }
+	void setMoonYaw(f32 moon_yaw) { m_moon_yaw = moon_yaw; }
+	void setMoonTilt(f32 moon_tilt) { m_moon_tilt = moon_tilt; }
+	void setMoonTexture(std::string moon_texture) { m_moon_name = moon_texture; }
+	void setStarYaw(f32 star_yaw) { m_star_yaw = star_yaw; }
+	void setStarTilt(f32 star_tilt) { m_star_tilt = star_tilt; }
+
 
 private:
 	aabb3f m_box;
@@ -133,7 +149,14 @@ private:
 	bool m_clouds_visible; // Whether clouds are disabled due to player underground
 	bool m_clouds_enabled = true; // Initialised to true, reset only by set_sky API
 	bool m_directional_colored_fog;
-	bool m_bodies_visible = true; // sun, moon, stars
+	bool m_bodies_visible = true; // sun, moon, stars (disables the next three bools)
+	bool m_dyanmic_visible = true; // control rendering the mesh skybox visible
+	bool m_sun_visible = true; // render the sun
+	bool m_sun_glow = true; // render the sunrise/set texture
+	bool m_moon_visible = true; // render the moon
+	bool m_stars_visible = true; // render the stars
+	bool m_use_fog = false; // use only if you're using the combined skybox.
+
 	video::SColorf m_bgcolor_bright_f = video::SColorf(1.0f, 1.0f, 1.0f, 1.0f);
 	video::SColorf m_skycolor_bright_f = video::SColorf(1.0f, 1.0f, 1.0f, 1.0f);
 	video::SColorf m_cloudcolor_bright_f = video::SColorf(1.0f, 1.0f, 1.0f, 1.0f);
@@ -145,4 +168,13 @@ private:
 	video::ITexture *m_moon_texture;
 	video::ITexture *m_sun_tonemap;
 	video::ITexture *m_moon_tonemap;
+	std::string m_sun_name = "sun.png";
+	std::string m_moon_name = "moon.png";
+	f32 m_sun_yaw = 90;
+	f32 m_sun_tilt = 0;
+	f32 m_moon_yaw = -90;
+	f32 m_moon_tilt = 0;
+	f32 m_star_yaw = 90;
+	f32 m_star_tilt = 0;
+	u16 m_star_count = 200;
 };

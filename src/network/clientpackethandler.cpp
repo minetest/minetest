@@ -40,6 +40,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/srp.h"
 #include "tileanimation.h"
 #include "gettext.h"
+#include "skyparams.h"
 
 void Client::handleCommand_Deprecated(NetworkPacket* pkt)
 {
@@ -1179,7 +1180,7 @@ void Client::handleCommand_HudSetParam(NetworkPacket* pkt)
 }
 
 void Client::handleCommand_HudSetSky(NetworkPacket* pkt)
-{
+{	
 	std::string datastring(pkt->getString(0), pkt->getSize());
 	std::istringstream is(datastring, std::ios_base::binary);
 
@@ -1196,12 +1197,41 @@ void Client::handleCommand_HudSetSky(NetworkPacket* pkt)
 		clouds = readU8(is);
 	} catch (...) {}
 
+	bool custom_fog = true;
+	try {
+		custom_fog = readU8(is);
+	} catch (...) {}
+
+	bool sun_visible = true;
+	try {
+		sun_visible = readU8(is);
+	} catch (...) {}
+
+	bool sunrise_glow = true;
+	try {
+		sun_visible = readU8(is);
+	} catch (...) {}
+
 	ClientEvent *event = new ClientEvent();
-	event->type            = CE_SET_SKY;
-	event->set_sky.bgcolor = bgcolor;
-	event->set_sky.type    = type;
-	event->set_sky.params  = params;
-	event->set_sky.clouds  = clouds;
+	event->type                    = CE_SET_SKY;
+	event->set_sky.bgcolor         = bgcolor;
+	event->set_sky.type            = type;
+	event->set_sky.params          = params;
+	event->set_sky.clouds          = clouds;
+	event->set_sky.custom_fog      = custom_fog;
+	/*event->set_sky.sun_visible     = sun_visible;
+	event->set_sky.sun_glow        = sunrise_glow;
+	event->set_sky.sun_yaw         = params.sun.yaw;
+	event->set_sky.sun_tilt        = params.sun.tilt;
+	event->set_sky.sun_texture     = params.sun.texture;
+	event->set_sky.moon_visible    = params.moon.visible;
+	event->set_sky.moon_yaw        = params.moon.yaw;
+	event->set_sky.moon_tilt       = params.moon.tilt;
+	event->set_sky.moon_texture    = params.moon.texture;
+	event->set_sky.stars_visible   = params.stars.visible;
+	event->set_sky.star_count      = params.stars.number;
+	event->set_sky.star_yaw        = params.stars.yaw;
+	event->set_sky.star_tilt       = params.stars.tilt; */
 	m_client_event_queue.push(event);
 }
 

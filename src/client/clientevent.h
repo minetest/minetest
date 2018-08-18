@@ -148,8 +148,22 @@ struct ClientEvent
 		{
 			video::SColor *bgcolor;
 			std::string *type;
-			std::vector<std::string> *params;
+			std::vector<std::string> *params; // sky texture table
 			bool clouds;
+			bool custom_fog;
+			bool sun_visible;
+			bool sun_glow;
+			f32 sun_yaw;
+			f32 sun_tilt;
+			std::string *sun_texture;
+			bool moon_visible;
+			f32 moon_yaw;
+			f32 moon_tilt;
+			std::string *moon_texture;
+			bool stars_visible;
+			u16 star_count;
+			f32 star_yaw;
+			f32 star_tilt;
 		} set_sky;
 		struct
 		{

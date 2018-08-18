@@ -1752,17 +1752,23 @@ void Server::SendHUDSetParam(session_t peer_id, u16 param, const std::string &va
 	Send(&pkt);
 }
 
-void Server::SendSetSky(session_t peer_id, const video::SColor &bgcolor,
-		const std::string &type, const std::vector<std::string> &params,
-		bool &clouds)
+void Server::SendSetSky(session_t peer_id, const SkyParams &params)
 {
 	NetworkPacket pkt(TOCLIENT_SET_SKY, 0, peer_id);
-	pkt << bgcolor << type << (u16) params.size();
-
-	for (const std::string &param : params)
+	pkt << params.bgcolor << params.type << (u16) params.params.size();
+	
+	for (const std::string &param : params.params)
 		pkt << param;
 
-	pkt << clouds;
+	
+	pkt << params.clouds << params.custom_fog
+			<< params.sun.visible << params.sun.sunrise_glow
+			<< params.sun.yaw << params.sun.tilt
+			<< params.sun.texture << params.moon.visible
+			<< params.moon.yaw << params.moon.tilt
+			<< params.moon.texture << params.stars.visible
+			<< params.stars.number << params.stars.yaw
+			<< params.stars.tilt;
 
 	Send(&pkt);
 }
@@ -3130,13 +3136,11 @@ void Server::setPlayerEyeOffset(RemotePlayer *player, const v3f &first, const v3
 	SendEyeOffset(player->getPeerId(), first, third);
 }
 
-void Server::setSky(RemotePlayer *player, const video::SColor &bgcolor,
-	const std::string &type, const std::vector<std::string> &params,
-	bool &clouds)
+void Server::setSky(RemotePlayer *player, const SkyParams &params)
 {
 	sanity_check(player);
-	player->setSky(bgcolor, type, params, clouds);
-	SendSetSky(player->getPeerId(), bgcolor, type, params, clouds);
+	player->setSky(params);
+	SendSetSky(player->getPeerId(), params);
 }
 
 void Server::setClouds(RemotePlayer *player, const CloudParams &params)

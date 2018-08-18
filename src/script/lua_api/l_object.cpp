@@ -1586,42 +1586,53 @@ int ObjectRef::l_hud_get_hotbar_selected_image(lua_State *L)
 	return 1;
 }
 
-// set_sky(self, bgcolor, type, list, clouds = true)
+// set_sky(self, {bgcolor, type, list, clouds = true, 
+//                sun = {true, true, 90, 0, "sun.png"},
+//                moon = {true, -90, 0, "moon.png"},
+//                stars = {true, 200}
+//               })
 int ObjectRef::l_set_sky(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
 	RemotePlayer *player = getplayer(ref);
-	if (player == NULL)
+	if (!player)
 		return 0;
 
-	video::SColor bgcolor(255,255,255,255);
-	read_color(L, 2, &bgcolor);
+	SkyParams sky_params = player->getSkyParams();
 
-	std::string type = luaL_checkstring(L, 3);
+	// just in case we're not supplied a bgcolor
+	sky_params.bgcolor = video::SColor(255,255,255,255);
 
-	std::vector<std::string> params;
+	read_color(L, 2, &sky_params.bgcolor);
+
+	if (!lua_isnil(L, -1))
+		read_color(L, -1, &sky_params.bgcolor);
+	lua_pop(L, 1);
+
+	sky_params.type = getstringfield_default(L, 2, "type", "regular");
+
 	if (lua_istable(L, 4)) {
 		lua_pushnil(L);
 		while (lua_next(L, 4) != 0) {
 			// key at index -2 and value at index -1
 			if (lua_isstring(L, -1))
-				params.emplace_back(readParam<std::string>(L, -1));
+				sky_params.params.emplace_back(readParam<std::string>(L, -1));
 			else
-				params.emplace_back("");
+				sky_params.params.emplace_back("");
 			// removes value, keeps key for next iteration
 			lua_pop(L, 1);
 		}
 	}
 
-	if (type == "skybox" && params.size() != 6)
-		throw LuaError("skybox expects 6 textures");
+	if (sky_params.params.size() != 6 && sky_params.type == "skybox")
+		throw LuaError("Skybox expects 6 textures!");
 
-	bool clouds = true;
-	if (lua_isboolean(L, 5))
-		clouds = readParam<bool>(L, 5);
-
-	getServer(L)->setSky(player, bgcolor, type, params, clouds);
+	sky_params.clouds = true;
+	if (lua_isboolean(L, 2))
+		sky_params.clouds = readParam<bool>(L, 2);
+	
+	getServer(L)->setSky(player, sky_params);
 	lua_pushboolean(L, true);
 	return 1;
 }
@@ -1634,25 +1645,10 @@ int ObjectRef::l_get_sky(lua_State *L)
 	RemotePlayer *player = getplayer(ref);
 	if (player == NULL)
 		return 0;
-	video::SColor bgcolor(255, 255, 255, 255);
-	std::string type;
-	std::vector<std::string> params;
-	bool clouds;
 
-	player->getSky(&bgcolor, &type, &params, &clouds);
-	type = type.empty() ? "regular" : type;
-
-	push_ARGB8(L, bgcolor);
-	lua_pushlstring(L, type.c_str(), type.size());
-	lua_newtable(L);
-	s16 i = 1;
-	for (const std::string &param : params) {
-		lua_pushlstring(L, param.c_str(), param.size());
-		lua_rawseti(L, -2, i);
-		i++;
-	}
-	lua_pushboolean(L, clouds);
-	return 4;
+	SkyParams sky_params = player->getSkyParams();
+	
+	return 1;
 }
 
 // set_clouds(self, {density=, color=, ambient=, height=, thickness=, speed=})
