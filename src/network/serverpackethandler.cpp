@@ -287,9 +287,18 @@ void Server::handleCommand_Init2(NetworkPacket* pkt)
 	m_clients.event(pkt->getPeerId(), CSE_GotInit2);
 	u16 protocol_version = m_clients.getProtocolVersion(pkt->getPeerId());
 
-	std::string lang;
-	if (pkt->getSize() > 0)
-		*pkt >> lang;
+	// Receive the client locale
+	std::vector<std::string> locale;
+	u8 locale_count = 0;
+	try {
+		*pkt >> locale_count;
+
+		while (locale_count-- > 0) {
+			std::string code;
+			*pkt >> code;
+			locale.push_back(code);
+		}
+	} catch (PacketError &e) {}
 
 	/*
 		Send some initialization data
@@ -310,7 +319,7 @@ void Server::handleCommand_Init2(NetworkPacket* pkt)
 	m_clients.event(pkt->getPeerId(), CSE_SetDefinitionsSent);
 
 	// Send media announcement
-	sendMediaAnnouncement(pkt->getPeerId(), lang);
+	sendMediaAnnouncement(pkt->getPeerId(), locale);
 
 	// Send detached inventories
 	sendDetachedInventories(pkt->getPeerId());

@@ -683,9 +683,7 @@ bool Client::loadMedia(const std::string &data, const std::string &filename)
 	};
 	name = removeStringEnd(filename, translate_ext);
 	if (!name.empty()) {
-		verbosestream << "Client: Loading translation: "
-				<< "\"" << filename << "\"" << std::endl;
-		g_translations->loadTranslation(data);
+		m_translation_media.emplace(filename, data);
 		return true;
 	}
 
@@ -1135,6 +1133,44 @@ void Client::sendInventoryAction(InventoryAction *a)
 	pkt.putRawString(s.c_str(),s.size());
 
 	Send(&pkt);
+}
+
+const std::vector<std::string> &Client::getLanguageCodes()
+{
+	static thread_local std::vector<std::string> codes;
+	if (!codes.empty())
+		return codes;
+
+	std::string lang = setlocale(LC_ALL, "");
+
+#if defined(_WIN32)
+	// https://msdn.microsoft.com/en-gb/library/39cwe7zf.aspx
+	lang = str_replace(lang, '-', '_');
+#endif
+
+	// POSIX systems: ISO/IEC 15897 format
+	// Remove encoding information (ex. "en_GB@variant.utf-8" -> "en_GB")
+	size_t delim = lang.find('@');
+	if (delim != std::string::npos) {
+		lang.resize(delim);
+		codes.emplace_back(lang);
+	} else {
+		delim = lang.find('.');
+		if (delim != std::string::npos) {
+			lang.resize(delim);
+			codes.emplace_back(lang);
+		}
+	}
+
+	// Remove country specific information
+	delim = lang.find('_');
+	if (delim != std::string::npos) {
+		lang.resize(delim);
+		codes.emplace_back(lang);
+	}
+
+	codes.emplace_back("en"); // Fallback
+	return codes;
 }
 
 bool Client::canSendChatMessage() const
@@ -1652,7 +1688,37 @@ void Client::afterContentReceived()
 	assert(m_nodedef_received); // pre-condition
 	assert(mediaReceived()); // pre-condition
 
-	const wchar_t* text = wgettext("Loading textures...");
+	const wchar_t *text = wgettext("Loading translations...");
+	infostream << "- Loading translations" << std::endl;
+	RenderingEngine::draw_load_screen(text, guienv, m_tsrc, 0, 69);
+	{
+		auto &locale = getLanguageCodes();
+		if (locale.size() <= 1) {
+			for (const auto &i : m_translation_media)
+				g_translations->loadTranslation(i.second);
+		} else {
+			// Do priority sorting (index 0 overwrites all other translations)
+			auto *translations = new std::vector<const std::string *>[locale.size()];
+			for (const auto &i : m_translation_media) {
+				size_t tr_dot = i.first.find_last_of('.');
+				size_t lang_dot = i.first.find_last_of('.', tr_dot - 1);
+				std::string lang_code = i.first.substr(
+					lang_dot + 1, tr_dot - lang_dot - 1);
+
+				auto it = std::find(locale.begin(), locale.end(), lang_code);
+				if (it == locale.end())
+					it--;
+				translations[it - locale.begin()].push_back(&i.second);
+				std::cout << "Load " << (it - locale.begin()) << " -> file=" << i.first
+					<< ", code=" << lang_code << std::endl;
+			}
+			for (size_t i = locale.size(); i > 0; --i) {
+				for (auto &data : translations[i - 1])
+					g_translations->loadTranslation(*data);
+			}
+		}
+	}
+	delete[] text;
 
 	// Clear cached pre-scaled 2D GUI images, as this cache
 	// might have images with the same name but different
@@ -1661,6 +1727,7 @@ void Client::afterContentReceived()
 
 	// Rebuild inherited images and recreate textures
 	infostream<<"- Rebuilding images and textures"<<std::endl;
+	text = wgettext("Loading textures...");
 	RenderingEngine::draw_load_screen(text, guienv, m_tsrc, 0, 70);
 	m_tsrc->rebuildImagesAndTextures();
 	delete[] text;

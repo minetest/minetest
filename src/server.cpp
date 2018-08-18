@@ -65,6 +65,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "chatmessage.h"
 #include "chat_interface.h"
 #include "remoteplayer.h"
+#include <ctime>
 
 class ClientNotFoundException : public BaseException
 {
@@ -2334,7 +2335,8 @@ void Server::fillMediaCache()
 	}
 }
 
-void Server::sendMediaAnnouncement(session_t peer_id, const std::string &lang_code)
+void Server::sendMediaAnnouncement(session_t peer_id,
+		const std::vector<std::string> &locale)
 {
 	verbosestream << "Server: Announcing files to id(" << peer_id << ")"
 		<< std::endl;
@@ -2343,10 +2345,27 @@ void Server::sendMediaAnnouncement(session_t peer_id, const std::string &lang_co
 	NetworkPacket pkt(TOCLIENT_ANNOUNCE_MEDIA, 0, peer_id);
 
 	u16 media_sent = 0;
-	std::string lang_suffix;
-	lang_suffix.append(".").append(lang_code).append(".tr");
+
+	auto can_skip_translation = [locale] (const std::string &name) -> bool {
+		if (!str_ends_with(name, ".tr"))
+			return false;
+
+		// This needs better caching
+		size_t tr_dot = name.find_last_of('.');
+		size_t lang_dot = name.find_last_of('.', tr_dot - 1);
+		if (lang_dot == std::string::npos)
+			return true; // Invalid translation file name
+
+		std::string lang_code = name.substr(
+			lang_dot + 1, tr_dot - lang_dot - 1);
+		auto it = std::find(locale.begin(), locale.end(), lang_code);
+std::cout << "found: " << lang_code << " in " << name << std::endl;
+		return it == locale.end();
+	};
+
+	// Count media list length (might 
 	for (const auto &i : m_media) {
-		if (str_ends_with(i.first, ".tr") && !str_ends_with(i.first, lang_suffix))
+		if (can_skip_translation(i.first))
 			continue;
 		media_sent++;
 	}
@@ -2354,7 +2373,7 @@ void Server::sendMediaAnnouncement(session_t peer_id, const std::string &lang_co
 	pkt << media_sent;
 
 	for (const auto &i : m_media) {
-		if (str_ends_with(i.first, ".tr") && !str_ends_with(i.first, lang_suffix))
+		if (can_skip_translation(i.first))
 			continue;
 		pkt << i.first << i.second.sha1_digest;
 	}

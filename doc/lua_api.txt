@@ -138,6 +138,8 @@ Mod directory structure
     │   ├── sounds
     │   ├── media
     │   ├── locale
+    │   │   └── modname.en.tr
+    │   │   └── modname.fr_FR.tr
     │   └── <custom data>
     └── another
 
@@ -2511,9 +2513,11 @@ operations such as `minetest.colorize` which are also concatenation.
 Translation file format
 -----------------------
 
-A translation file has the suffix `.[lang].tr`, where `[lang]` is the language
-it corresponds to. It must be put into the `locale` subdirectory of the mod.
-The file should be a text file, with the following format:
+A translation file has the suffix `.[lang].tr`, where `[lang]` has the format
+`[ISO 639]_[ISO 3166-1 alpha-2]` whereas the country code addition is optional.
+The best fitting language code will overwrite the fallback translation (`en`).
+The file must be put into the `locale` subdirectory of the mod. It is a text
+file with the following format:
 
 * Lines beginning with `# textdomain:` (the space is significant) can be used
   to specify the text domain of all following translations in the file.

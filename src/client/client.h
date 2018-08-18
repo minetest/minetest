@@ -467,6 +467,8 @@ private:
 	void sendGotBlocks(v3s16 block);
 	void sendRemovedSounds(std::vector<s32> &soundList);
 
+	const std::vector<std::string> &getLanguageCodes();
+
 	// Helper function
 	inline std::string getPlayerName()
 	{ return m_env.getLocalPlayer()->getName(); }
@@ -546,6 +548,7 @@ private:
 	bool m_nodedef_received = false;
 	bool m_mods_loaded = false;
 	ClientMediaDownloader *m_media_downloader;
+	std::unordered_map<std::string, std::string> m_translation_media;
 
 	// time_of_day speed approximation for old protocol
 	bool m_time_of_day_set = false;

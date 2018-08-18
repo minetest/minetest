@@ -132,12 +132,12 @@ void Client::handleCommand_AuthAccept(NetworkPacket* pkt)
 					<< m_recommended_send_interval<<std::endl;
 
 	// Reply to server
-	std::string lang = gettext("LANG_CODE");
-	if (lang == "LANG_CODE")
-		lang = "";
+	auto &locale = getLanguageCodes();
+	NetworkPacket resp_pkt(TOSERVER_INIT2, 1);
+	resp_pkt << (u8)locale.size();
+	for (auto &code : locale)
+		resp_pkt << code;
 
-	NetworkPacket resp_pkt(TOSERVER_INIT2, sizeof(u16) + lang.size());
-	resp_pkt << lang;
 	Send(&resp_pkt);
 
 	m_state = LC_Init;
