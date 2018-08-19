@@ -1707,10 +1707,8 @@ void Client::afterContentReceived()
 
 				auto it = std::find(locale.begin(), locale.end(), lang_code);
 				if (it == locale.end())
-					it--;
+					it--; // Should not happen, load it anyway
 				translations[it - locale.begin()].push_back(&i.second);
-				std::cout << "Load " << (it - locale.begin()) << " -> file=" << i.first
-					<< ", code=" << lang_code << std::endl;
 			}
 			for (size_t i = locale.size(); i > 0; --i) {
 				for (auto &data : translations[i - 1])

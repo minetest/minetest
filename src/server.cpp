@@ -2359,7 +2359,7 @@ void Server::sendMediaAnnouncement(session_t peer_id,
 		std::string lang_code = name.substr(
 			lang_dot + 1, tr_dot - lang_dot - 1);
 		auto it = std::find(locale.begin(), locale.end(), lang_code);
-std::cout << "found: " << lang_code << " in " << name << std::endl;
+		// Skip (return true) when it's not found
 		return it == locale.end();
 	};
 
