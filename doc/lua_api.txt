@@ -279,7 +279,7 @@ of the game's nodes are to be used by the core mapgens. For example:
 
     minetest.register_alias("mapgen_stone", "default:stone")
 
-### Aliases needed for all mapgens except Mapgen v6
+### Aliases needed for all mapgens except Mapgen V6
 
 #### Base terrain
 
@@ -289,28 +289,24 @@ of the game's nodes are to be used by the core mapgens. For example:
 
 #### Caves
 
+Not required if cave liquid nodes are set in biome definitions.
+
 * mapgen_lava_source
 
 #### Dungeons
 
-Only needed for registered biomes where 'node_stone' is stone:
+Not required if dungeon nodes are set in biome definitions.
 
 * mapgen_cobble
 * mapgen_stair_cobble
 * mapgen_mossycobble
-
-Only needed for registered biomes where 'node_stone' is desert stone:
-
 * mapgen_desert_stone
 * mapgen_stair_desert_stone
-
-Only needed for registered biomes where 'node_stone' is sandstone:
-
 * mapgen_sandstone
 * mapgen_sandstonebrick
 * mapgen_stair_sandstone_block
 
-### Aliases needed for Mapgen v6
+### Aliases needed for Mapgen V6
 
 #### Terrain and biomes
 
@@ -345,6 +341,13 @@ Only needed for registered biomes where 'node_stone' is sandstone:
 * mapgen_stair_cobble
 * mapgen_mossycobble
 * mapgen_stair_desert_stone
+
+### Setting the node used in Mapgen Singlenode
+
+By default the world is filled with air nodes. To set a different node use, for
+example:
+
+    minetest.register_alias("mapgen_singlenode", "default:stone")
 
 
 
