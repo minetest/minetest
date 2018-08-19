@@ -1141,29 +1141,12 @@ const std::vector<std::string> &Client::getLanguageCodes()
 	if (!codes.empty())
 		return codes;
 
-	std::string lang = setlocale(LC_ALL, "");
-
-#if defined(_WIN32)
-	// https://msdn.microsoft.com/en-gb/library/39cwe7zf.aspx
-	lang = str_replace(lang, '-', '_');
-#endif
-
-	// POSIX systems: ISO/IEC 15897 format
-	// Remove encoding information (ex. "en_GB@variant.utf-8" -> "en_GB")
-	size_t delim = lang.find('@');
-	if (delim != std::string::npos) {
-		lang.resize(delim);
+	std::string lang = gettext("LANG_CODE");
+	if (!lang.empty())
 		codes.emplace_back(lang);
-	} else {
-		delim = lang.find('.');
-		if (delim != std::string::npos) {
-			lang.resize(delim);
-			codes.emplace_back(lang);
-		}
-	}
 
 	// Remove country specific information
-	delim = lang.find('_');
+	size_t delim = lang.find('_');
 	if (delim != std::string::npos) {
 		lang.resize(delim);
 		codes.emplace_back(lang);

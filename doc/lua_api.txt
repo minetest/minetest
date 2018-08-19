@@ -139,7 +139,7 @@ Mod directory structure
     │   ├── media
     │   ├── locale
     │   │   └── modname.en.tr
-    │   │   └── modname.fr_FR.tr
+    │   │   └── modname.pt_BR.tr
     │   └── <custom data>
     └── another
 
