@@ -160,7 +160,7 @@ struct ClientEvent
 			f32 moon_yaw;
 			f32 moon_tilt;
 			std::string *moon_texture;
-			bool stars_visible;
+			bool star_visible;
 			u16 star_count;
 			f32 star_yaw;
 			f32 star_tilt;

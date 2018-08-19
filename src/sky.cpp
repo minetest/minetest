@@ -113,9 +113,9 @@ void Sky::OnRegisterSceneNode()
 
 void Sky::render()
 {
-	if (!m_visible)
+	if (!m_visible && m_skybox_type == "skybox")
 		return;
-
+	
 	video::IVideoDriver* driver = SceneManager->getVideoDriver();
 	scene::ICameraSceneNode* camera = SceneManager->getActiveCamera();
 
@@ -227,7 +227,7 @@ void Sky::render()
 				driver->drawIndexedTriangleFan(&vertices[0], 4, indices, 2);
 			}
 
-			// Draw far cloudy fog thing
+			// Draw far cloudy fog thingfog
 			for (u32 j = 0; j < 4; j++) {
 				video::SColor c = cloudyfogcolor;
 				vertices[0] = video::S3DVertex(-1, -1.0, -1, 0, 0, 1, c, t, t);
@@ -356,7 +356,9 @@ void Sky::render()
 				}
 				driver->drawIndexedTriangleFan(&vertices[0], 4, indices, 2);
 			} else {
+
 				driver->setMaterial(m_materials[3]);
+
 				float d = sunsize * 1.7;
 				video::SColor c;
 				if (m_sun_tonemap)
@@ -384,10 +386,10 @@ void Sky::render()
 					float d = moonsize * 1.9;
 					video::SColor c = mooncolor;
 					c.setAlpha(0.05 * 255);
-					vertices[0] = video::S3DVertex(-d, -d, -1, 0, 0, 1, c, t, t);
-					vertices[1] = video::S3DVertex( d, -d, -1, 0, 0, 1, c, o, t);
-					vertices[2] = video::S3DVertex( d,  d, -1, 0, 0, 1, c, o, o);
-					vertices[3] = video::S3DVertex(-d,  d, -1, 0, 0, 1, c, t, o);
+					vertices[0] = video::S3DVertex(-d, -d, -0.99, 0, 0, 0.99, c, t, t);
+					vertices[1] = video::S3DVertex( d, -d, -0.99, 0, 0, 0.99, c, o, t);
+					vertices[2] = video::S3DVertex( d,  d, -0.99, 0, 0, 0.99, c, o, o);
+					vertices[3] = video::S3DVertex(-d,  d, -0.99, 0, 0, 0.99, c, t, o);
 					for (video::S3DVertex &vertex : vertices) {
 						// Use the new axial tilt and yaw settings
 						vertex.Pos.rotateXZBy(m_moon_yaw);
@@ -399,10 +401,10 @@ void Sky::render()
 					d = moonsize * 1.3;
 					c = mooncolor;
 					c.setAlpha(0.15 * 255);
-					vertices[0] = video::S3DVertex(-d, -d, -1, 0, 0, 1, c, t, t);
-					vertices[1] = video::S3DVertex( d, -d, -1, 0, 0, 1, c, o, t);
-					vertices[2] = video::S3DVertex( d,  d, -1, 0, 0, 1, c, o, o);
-					vertices[3] = video::S3DVertex(-d,  d, -1, 0, 0, 1, c, t, o);
+					vertices[0] = video::S3DVertex(-d, -d, -0.98, 0, 0, 0.98, c, t, t);
+					vertices[1] = video::S3DVertex( d, -d, -0.98, 0, 0, 0.98, c, o, t);
+					vertices[2] = video::S3DVertex( d,  d, -0.98, 0, 0, 0.98, c, o, o);
+					vertices[3] = video::S3DVertex(-d,  d, -0.98, 0, 0, 0.98, c, t, o);
 					for (video::S3DVertex &vertex : vertices) {
 						// Use the new axial tilt and yaw settings
 						vertex.Pos.rotateXZBy(m_moon_yaw);
@@ -412,10 +414,10 @@ void Sky::render()
 					driver->drawIndexedTriangleFan(&vertices[0], 4, indices, 2);
 
 					d = moonsize;
-					vertices[0] = video::S3DVertex(-d, -d, -1, 0, 0, 1, mooncolor, t, t);
-					vertices[1] = video::S3DVertex( d, -d, -1, 0, 0, 1, mooncolor, o, t);
-					vertices[2] = video::S3DVertex( d,  d, -1, 0, 0, 1, mooncolor, o, o);
-					vertices[3] = video::S3DVertex(-d,  d, -1, 0, 0, 1, mooncolor, t, o);
+					vertices[0] = video::S3DVertex(-d, -d, -0.97, 0, 0, 0.97, mooncolor, t, t);
+					vertices[1] = video::S3DVertex( d, -d, -0.97, 0, 0, 0.97, mooncolor, o, t);
+					vertices[2] = video::S3DVertex( d,  d, -0.97, 0, 0, 0.97, mooncolor, o, o);
+					vertices[3] = video::S3DVertex(-d,  d, -0.97, 0, 0, 0.97, mooncolor, t, o);
 					for (video::S3DVertex &vertex : vertices) {
 						// Use the new axial tilt and yaw settings
 						vertex.Pos.rotateXZBy(m_moon_yaw);
@@ -425,10 +427,10 @@ void Sky::render()
 					driver->drawIndexedTriangleFan(&vertices[0], 4, indices, 2);
 
 					float d2 = moonsize * 0.6;
-					vertices[0] = video::S3DVertex(-d, -d,  -1, 0, 0, 1, mooncolor2, t, t);
-					vertices[1] = video::S3DVertex( d2,-d,  -1, 0, 0, 1, mooncolor2, o, t);
-					vertices[2] = video::S3DVertex( d2, d2, -1, 0, 0, 1, mooncolor2, o, o);
-					vertices[3] = video::S3DVertex(-d,  d2, -1, 0, 0, 1, mooncolor2, t, o);
+					vertices[0] = video::S3DVertex(-d, -d,  -0.96, 0, 0, 0.96, mooncolor2, t, t);
+					vertices[1] = video::S3DVertex( d2,-d,  -0.96, 0, 0, 0.96, mooncolor2, o, t);
+					vertices[2] = video::S3DVertex( d2, d2, -0.96, 0, 0, 0.96, mooncolor2, o, o);
+					vertices[3] = video::S3DVertex(-d,  d2, -0.96, 0, 0, 0.96, mooncolor2, t, o);
 					for (video::S3DVertex &vertex : vertices) {
 						// Use the new axial tilt and yaw settings
 						vertex.Pos.rotateXZBy(m_moon_yaw);
@@ -444,10 +446,10 @@ void Sky::render()
 						c = video::SColor (0, 0, 0, 0);
 					else
 						c = video::SColor (255, 255, 255, 255);
-					vertices[0] = video::S3DVertex(-d, -d, -1, 0, 0, 1, c, t, t);
-					vertices[1] = video::S3DVertex( d, -d, -1, 0, 0, 1, c, o, t);
-					vertices[2] = video::S3DVertex( d,  d, -1, 0, 0, 1, c, o, o);
-					vertices[3] = video::S3DVertex(-d,  d, -1, 0, 0, 1, c, t, o);
+					vertices[0] = video::S3DVertex(-d, -d, -0.99, 0, 0, 0.99, c, t, t);
+					vertices[1] = video::S3DVertex( d, -d, -0.99, 0, 0, 0.99, c, o, t);
+					vertices[2] = video::S3DVertex( d,  d, -0.99, 0, 0, 0.99, c, o, o);
+					vertices[3] = video::S3DVertex(-d,  d, -0.99, 0, 0, 0.99, c, t, o);
 					for (video::S3DVertex &vertex : vertices) {
 						// Use the new axial tilt and yaw settings
 						vertex.Pos.rotateXZBy(m_moon_yaw);
@@ -458,8 +460,7 @@ void Sky::render()
 				}
 			}
 		
-
-		if (m_stars_visible) {
+		if (true) {
 			// Draw stars
 			do {
 				driver->setMaterial(m_materials[1]);
@@ -468,17 +469,18 @@ void Sky::render()
 					wicked_time_of_day : (1.0 - wicked_time_of_day))) * 10));
 				float f = starbrightness;
 				float d = 0.007;
-				video::SColor starcolor(255, f * 90, f * 90, f * 90);
-				if (starcolor.getBlue() < m_skycolor.getBlue())
+				video::SColor starcolor(f * 90, 240, 240, 240);
+				if ((starcolor.getBlue() < m_skycolor.getBlue())
+					&& m_skybox_type == "default")
 					break;
 #ifdef __ANDROID__
-				u16 indices[m_star_count * 3];
-				video::S3DVertex vertices[m_star_count * 3];
-				for (u32 i = 0; i < m_star_count; i++) {
+				u16 indices[_stars * 3];
+				video::S3DVertex vertices[_stars * 3];
+				for (u32 i = 0; i < _stars; i++) {
 					indices[i * 3 + 0] = i * 3 + 0;
 					indices[i * 3 + 1] = i * 3 + 1;
 					indices[i * 3 + 2] = i * 3 + 2;
-					v3f p = m_stars[i];
+					v3f p = _stars[i];
 					core::CMatrix4<f32> a;
 					a.buildRotateFromTo(v3f(0, 1, 0), v3f(d, 1 + d, -d / 2));
 					v3f p1 = p;
@@ -503,7 +505,7 @@ void Sky::render()
 					vertices[i * 3 + 2].Color = starcolor;
 				}
 				driver->drawIndexedTriangleList(vertices, m_star_count * 3,
-						indices, m_star_count);
+						indices, m-star_count);
 #else
 				u16 indices[m_star_count * 4];
 				video::S3DVertex vertices[m_star_count * 4];
@@ -645,7 +647,7 @@ void Sky::update(float time_of_day, float time_brightness,
 
 	m_clouds_visible = true;
 	float color_change_fraction = 0.98;
-	if (sunlight_seen && !m_use_fog) {
+	if (sunlight_seen) {
 		if (is_dawn) {  // Dawn
 			m_bgcolor_bright_f = m_bgcolor_bright_f.getInterpolated(
 				bgcolor_bright_dawn_f, color_change_fraction);
@@ -697,8 +699,7 @@ void Sky::update(float time_of_day, float time_brightness,
 
 	// Horizon coloring based on sun and moon direction during sunset and sunrise
 	video::SColor pointcolor = video::SColor(m_bgcolor.getAlpha(), 255, 255, 255);
-	if (m_dyanmic_visible) {
-
+	
 	if (m_directional_colored_fog) {
 		if (m_horizon_blend() != 0) {
 			// Calculate hemisphere value from yaw, (inverted in third person front view)
@@ -756,34 +757,32 @@ void Sky::update(float time_of_day, float time_brightness,
 		m_bgcolor = m_mix_scolor(m_bgcolor, pointcolor, m_horizon_blend() * 0.5);
 		m_skycolor = m_mix_scolor(m_skycolor, pointcolor, m_horizon_blend() * 0.25);
 	}
-	}
-
-	if (!m_use_fog) {
-		float cloud_direct_brightness = 0;
-		if (sunlight_seen) {
-			if (!m_directional_colored_fog) {
-				cloud_direct_brightness = time_brightness;
-				if (time_brightness >= 0.2 && time_brightness < 0.7)
-					cloud_direct_brightness *= 1.3;
-			} else {
-				cloud_direct_brightness = MYMIN(m_horizon_blend() * 0.15 +
-					m_time_brightness, 1);
-			}
+		
+	float cloud_direct_brightness = 0;
+	if (sunlight_seen) {
+		if (!m_directional_colored_fog) {
+			cloud_direct_brightness = time_brightness;
+			if (time_brightness >= 0.2 && time_brightness < 0.7)
+				cloud_direct_brightness *= 1.3;
 		} else {
-			cloud_direct_brightness = direct_brightness;
+			cloud_direct_brightness = MYMIN(m_horizon_blend() * 0.15 +
+				m_time_brightness, 1);
 		}
-
-		m_cloud_brightness = m_cloud_brightness * cloud_color_change_fraction +
-			cloud_direct_brightness * (1.0 - cloud_color_change_fraction);
-		m_cloudcolor_f = video::SColorf(
-			m_cloudcolor_bright_f.r * m_cloud_brightness,
-			m_cloudcolor_bright_f.g * m_cloud_brightness,
-			m_cloudcolor_bright_f.b * m_cloud_brightness,
-			1.0
-		);
-		if (m_directional_colored_fog) {
-			m_cloudcolor_f = m_mix_scolorf(m_cloudcolor_f,
-				video::SColorf(pointcolor), m_horizon_blend() * 0.25);
-		}
+	} else {
+		cloud_direct_brightness = direct_brightness;
 	}
+
+	m_cloud_brightness = m_cloud_brightness * cloud_color_change_fraction +
+		cloud_direct_brightness * (1.0 - cloud_color_change_fraction);
+	m_cloudcolor_f = video::SColorf(
+		m_cloudcolor_bright_f.r * m_cloud_brightness,
+		m_cloudcolor_bright_f.g * m_cloud_brightness,
+		m_cloudcolor_bright_f.b * m_cloud_brightness,
+		1.0
+	);
+	if (m_directional_colored_fog) {
+		m_cloudcolor_f = m_mix_scolorf(m_cloudcolor_f,
+			video::SColorf(pointcolor), m_horizon_blend() * 0.25);
+	}
+
 }

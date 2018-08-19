@@ -1598,21 +1598,103 @@ int ObjectRef::l_set_sky(lua_State *L)
 	RemotePlayer *player = getplayer(ref);
 	if (!player)
 		return 0;
+	if (lua_istable(L, 2)) {
+		SkyParams sky_params;
 
-	SkyParams sky_params = player->getSkyParams();
+		// just in case we're not supplied a bgcolor
+		sky_params.bgcolor = video::SColor(255,255,255,255);
 
-	// just in case we're not supplied a bgcolor
-	sky_params.bgcolor = video::SColor(255,255,255,255);
+		lua_getfield(L, 2, "sky_color");
+		if (!lua_isnil(L, -1)) {
+			read_color(L, -1, &sky_params.bgcolor);
+		}
+		lua_pop(L, 1);
+		
+		lua_getfield(L, 2, "type");
+		if (!lua_isnil(L, -1))
+			sky_params.type = luaL_checkstring(L, -1);
+		lua_pop(L, 1);
+		
+		lua_getfield(L, 2, "textures");
 
-	read_color(L, 2, &sky_params.bgcolor);
+		lua_pushnil(L);
+		while (lua_next(L, -2) != 0) {
+			// key at index -2 and value at index -1
+			if (lua_isnil(L, -1)) {
+				sky_params.params.emplace_back("__not_supplied__");
+				break;
+			}
 
-	if (!lua_isnil(L, -1))
-		read_color(L, -1, &sky_params.bgcolor);
-	lua_pop(L, 1);
+			if (lua_isstring(L, -1)) {
+				sky_params.params.emplace_back(readParam<std::string>(L, -1));
+			} else
+				sky_params.params.emplace_back("");
+			// removes value, keeps key for next iteration
+			lua_pop(L, 1);
+		}
+		//lua_pop(L, 1);
 
-	sky_params.type = getstringfield_default(L, 2, "type", "regular");
+		// We want to throw an error only when the mod specifies all but
+		// six textures, but not for the custom skybox.
+		if (sky_params.params.size() != 6 && sky_params.type == "skybox")
+			throw LuaError("Skybox expects 6 textures.");
 
-	if (lua_istable(L, 4)) {
+		sky_params.clouds = true;
+		lua_getfield(L, 2, "clouds");
+		if (lua_isboolean(L, -1))
+			sky_params.clouds = readParam<bool>(L, -1);
+		lua_pop(L, 1);
+
+		sky_params.custom_fog = true;
+		lua_getfield(L, 2, "custom_fog");
+		if (lua_isboolean(L, -1))
+			sky_params.custom_fog = readParam<bool>(L, -1);
+		lua_pop(L, 1);
+
+		lua_getfield(L, 2, "sun"); // Sun related object management
+
+		sky_params.sun.visible = getboolfield_default(L, -1, "visible", true);
+		sky_params.sun.yaw = getfloatfield_default(L,-1, "yaw", 90);
+		sky_params.sun.tilt = getfloatfield_default(L, -1, "tilt", 0);
+		sky_params.sun.texture = getstringfield_default(L, -1, "texture", "sun.png");
+		sky_params.sun.sunrise_glow = getboolfield_default(L, -1, "sunrise_glow", true);
+		lua_pop(L, 1);
+
+		lua_getfield(L, 2, "moon"); // Moon related object management
+
+		sky_params.moon.visible = getboolfield_default(L, -1, "visible", true);
+		sky_params.moon.yaw  = getfloatfield_default(L, -1, "yaw", -90);
+		sky_params.moon.tilt = getfloatfield_default(L, -1, "tilt", 0);
+		sky_params.moon.texture = getstringfield_default(L, -1, "texture", "moon.png");
+		lua_pop(L, 1);
+
+		lua_getfield(L, 2, "stars"); //Stars related object management
+
+		sky_params.stars.visible = true;
+		lua_getfield(L, 2, "visible");
+		if (lua_isboolean(L, -1))
+			sky_params.stars.visible = readParam<bool>(L, -1);
+		lua_pop(L, 1);
+
+		sky_params.stars.number = getintfield_default(L, 2, "count", 200);
+		sky_params.stars.yaw    = getfloatfield_default(L, 2, "yaw", 0);
+		sky_params.stars.tilt   = getfloatfield_default(L, 2, "tilt", 0);
+
+		getServer(L)->setSky(player, sky_params);
+		lua_pushboolean(L, true);
+		return 1;
+	} else { 
+		// handle deprecated set_sky here;
+		// we also use the brand new set_sky struct
+
+		SkyParams sky_params;
+
+		video::SColor bgcolor(255,255,255,255);
+		read_color(L, 2, &sky_params.bgcolor);
+
+		sky_params.type = luaL_checkstring(L, 3);
+
+		if (lua_istable(L, 4)) {
 		lua_pushnil(L);
 		while (lua_next(L, 4) != 0) {
 			// key at index -2 and value at index -1
@@ -1625,16 +1707,41 @@ int ObjectRef::l_set_sky(lua_State *L)
 		}
 	}
 
-	if (sky_params.params.size() != 6 && sky_params.type == "skybox")
+	if (sky_params.type == "skybox" && sky_params.params.size() != 6)
 		throw LuaError("Skybox expects 6 textures!");
 
+	if (sky_params.type == "custom")
+		throw LuaError("Custom skyboxes are not supported with this deprecated set_sky call.");
+
 	sky_params.clouds = true;
-	if (lua_isboolean(L, 2))
-		sky_params.clouds = readParam<bool>(L, 2);
-	
+	if (lua_isboolean(L, 5))
+		sky_params.clouds = readParam<bool>(L, 5);
+
+	// Use default settings since this deprecated call
+	// does not support them.
+
+	sky_params.custom_fog = true;
+	sky_params.sun.visible = true;
+	sky_params.sun.yaw = 90;
+	sky_params.sun.tilt = 0;
+	sky_params.sun.texture = "sun.png";
+
+	sky_params.moon.visible = true;
+	sky_params.moon.yaw = -90;
+	sky_params.moon.tilt = 0;
+	sky_params.moon.texture = "moon.png";
+
+	sky_params.stars.visible = true;
+	sky_params.stars.number = 200;
+	sky_params.stars.yaw = 0;
+	sky_params.stars.tilt = 0;
+
 	getServer(L)->setSky(player, sky_params);
 	lua_pushboolean(L, true);
-	return 1;
+
+		return 1;
+	}
+	
 }
 
 // get_sky(self)

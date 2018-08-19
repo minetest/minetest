@@ -158,6 +158,7 @@ private:
 	video::SColor m_sky_bgcolor;
 	std::vector<std::string> m_sky_textures;
 	SkyParams m_sky_params;
+	bool m_sky_clouds;
 	CloudParams m_cloud_params;
 
 	session_t m_peer_id = PEER_ID_INEXISTENT;

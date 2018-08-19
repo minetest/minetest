@@ -1181,57 +1181,65 @@ void Client::handleCommand_HudSetParam(NetworkPacket* pkt)
 
 void Client::handleCommand_HudSetSky(NetworkPacket* pkt)
 {	
-	std::string datastring(pkt->getString(0), pkt->getSize());
-	std::istringstream is(datastring, std::ios_base::binary);
 
-	video::SColor *bgcolor           = new video::SColor(readARGB8(is));
-	std::string *type                = new std::string(deSerializeString(is));
-	u16 count                        = readU16(is);
-	std::vector<std::string> *params = new std::vector<std::string>;
+	video::SColor bgcolor;
+	std::string type;
+	std::vector<std::string> params;
+	bool clouds;
+	bool custom_fog;
 
-	for (size_t i = 0; i < count; i++)
-		params->push_back(deSerializeString(is));
+	bool sun_visible;
+	f32 sun_yaw;
+	f32 sun_tilt;
+	std::string sun_texture;
+	bool sunrise_glow;
 
-	bool clouds = true;
-	try {
-		clouds = readU8(is);
-	} catch (...) {}
+	bool moon_visible;
+	f32 moon_yaw;
+	f32 moon_tilt;
+	std::string moon_texture;
 
-	bool custom_fog = true;
-	try {
-		custom_fog = readU8(is);
-	} catch (...) {}
+	bool stars_visible;
+	f32 stars_yaw;
+	f32 stars_tilt;
+	u16 stars_count;
 
-	bool sun_visible = true;
-	try {
-		sun_visible = readU8(is);
-	} catch (...) {}
+	*pkt >> bgcolor >> type >> clouds
+			>> custom_fog >> sun_visible
+			>> sun_yaw >> sun_tilt
+			>> sun_texture >> sunrise_glow
+			>> moon_visible >> moon_yaw
+			>> moon_tilt >> moon_texture
+			>> stars_visible >> stars_yaw
+			>> stars_tilt >> stars_count;
 
-	bool sunrise_glow = true;
-	try {
-		sun_visible = readU8(is);
-	} catch (...) {}
+	std::string texture;
+
+	for (int i = 0; i < 6; i++) {
+		*pkt >> texture;
+		params.push_back(texture);
+	}
 
 	ClientEvent *event = new ClientEvent();
 	event->type                    = CE_SET_SKY;
-	event->set_sky.bgcolor         = bgcolor;
-	event->set_sky.type            = type;
-	event->set_sky.params          = params;
+	event->set_sky.bgcolor         = new video::SColor(bgcolor);
+	event->set_sky.type            = new std::string(type);
+	event->set_sky.params          = new std::vector<std::string>(params);
 	event->set_sky.clouds          = clouds;
 	event->set_sky.custom_fog      = custom_fog;
-	/*event->set_sky.sun_visible     = sun_visible;
+	event->set_sky.sun_visible     = sun_visible;
 	event->set_sky.sun_glow        = sunrise_glow;
-	event->set_sky.sun_yaw         = params.sun.yaw;
-	event->set_sky.sun_tilt        = params.sun.tilt;
-	event->set_sky.sun_texture     = params.sun.texture;
-	event->set_sky.moon_visible    = params.moon.visible;
-	event->set_sky.moon_yaw        = params.moon.yaw;
-	event->set_sky.moon_tilt       = params.moon.tilt;
-	event->set_sky.moon_texture    = params.moon.texture;
-	event->set_sky.stars_visible   = params.stars.visible;
-	event->set_sky.star_count      = params.stars.number;
-	event->set_sky.star_yaw        = params.stars.yaw;
-	event->set_sky.star_tilt       = params.stars.tilt; */
+	event->set_sky.sun_yaw         = sun_yaw;
+	event->set_sky.sun_tilt        = sun_tilt;
+	event->set_sky.sun_texture     = new std::string(sun_texture);
+	event->set_sky.moon_visible    = moon_visible;
+	event->set_sky.moon_yaw        = moon_yaw;
+	event->set_sky.moon_tilt       = moon_tilt;
+	event->set_sky.moon_texture    = new std::string(moon_texture);
+	event->set_sky.star_visible    = stars_visible;
+	event->set_sky.star_count      = stars_count;
+	event->set_sky.star_yaw        = stars_yaw;
+	event->set_sky.star_tilt       = stars_tilt;
 	m_client_event_queue.push(event);
 }
 

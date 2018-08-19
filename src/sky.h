@@ -19,11 +19,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include <ISceneNode.h>
 #include "camera.h"
+#include "irrlicht/vector3d.h"
 #include "irrlichttypes_extrabloated.h"
 
 #pragma once
 
 #define SKY_MATERIAL_COUNT 5
+
 #define SKY_STAR_COUNT 200
 
 class ITextureSource;
@@ -84,8 +86,14 @@ public:
 	void setMoonVisible(bool moon_visible) { m_moon_visible = moon_visible; }
 	void setStarsVisible(bool stars_visible) { m_stars_visible = stars_visible; }
 	void setMeshVisible(bool dynamic_visible) { m_dyanmic_visible = dynamic_visible; }
-	void setStarCount(u16 star_count) { m_star_count = star_count; }
-	void setCustomFog(bool use_fog) { m_use_fog = use_fog; }
+	void setStarCount(u16 star_count){
+		m_stars[star_count];
+		m_star_count = star_count;
+	}
+	void setCustomFog(bool use_fog)
+	{ 
+		m_directional_colored_fog = !use_fog;
+	}
 	void setSunYaw(f32 sun_yaw) { m_sun_yaw = sun_yaw; }
 	void setSunTilt(f32 sun_tilt) { m_sun_tilt = sun_tilt; }
 	void setSunTexture(std::string sun_texture) { m_sun_name = sun_texture; }
@@ -94,7 +102,7 @@ public:
 	void setMoonTexture(std::string moon_texture) { m_moon_name = moon_texture; }
 	void setStarYaw(f32 star_yaw) { m_star_yaw = star_yaw; }
 	void setStarTilt(f32 star_tilt) { m_star_tilt = star_tilt; }
-
+	void setSkyboxType(std::string type) { m_skybox_type = type; }
 
 private:
 	aabb3f m_box;
@@ -140,6 +148,7 @@ private:
 	bool m_visible = true;
 	// Used when m_visible=false
 	video::SColor m_fallback_bg_color = video::SColor(255, 255, 255, 255);
+	std::string m_skybox_type = "default";
 	bool m_first_update = true;
 	float m_time_of_day;
 	float m_time_brightness;
@@ -148,14 +157,13 @@ private:
 	float m_cloud_brightness = 0.5f;
 	bool m_clouds_visible; // Whether clouds are disabled due to player underground
 	bool m_clouds_enabled = true; // Initialised to true, reset only by set_sky API
-	bool m_directional_colored_fog;
+	bool m_directional_colored_fog = true;
 	bool m_bodies_visible = true; // sun, moon, stars (disables the next three bools)
 	bool m_dyanmic_visible = true; // control rendering the mesh skybox visible
 	bool m_sun_visible = true; // render the sun
 	bool m_sun_glow = true; // render the sunrise/set texture
 	bool m_moon_visible = true; // render the moon
 	bool m_stars_visible = true; // render the stars
-	bool m_use_fog = false; // use only if you're using the combined skybox.
 
 	video::SColorf m_bgcolor_bright_f = video::SColorf(1.0f, 1.0f, 1.0f, 1.0f);
 	video::SColorf m_skycolor_bright_f = video::SColorf(1.0f, 1.0f, 1.0f, 1.0f);
@@ -163,6 +171,7 @@ private:
 	video::SColor m_bgcolor;
 	video::SColor m_skycolor;
 	video::SColorf m_cloudcolor_f;
+	u16 m_star_count = SKY_STAR_COUNT;
 	v3f m_stars[SKY_STAR_COUNT];
 	video::ITexture *m_sun_texture;
 	video::ITexture *m_moon_texture;
@@ -176,5 +185,4 @@ private:
 	f32 m_moon_tilt = 0;
 	f32 m_star_yaw = 90;
 	f32 m_star_tilt = 0;
-	u16 m_star_count = 200;
 };
