@@ -674,6 +674,10 @@ void GUIFormSpecMenu::parseBackground(parserData* data, const std::string &eleme
 			pos.Y = stoi(v_pos[1]); //acts as offset
 			clip = true;
 		}
+		
+		if (!data->explicit_size && !clip)
+			warningstream<<"invalid use of unclipped background without a size[] element"<<std::endl;
+		
 		m_backgrounds.emplace_back(name, pos, geom, clip);
 
 		return;
