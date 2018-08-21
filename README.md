@@ -212,6 +212,7 @@ General options and their default values:
     ENABLE_LUAJIT=ON           - Build with LuaJIT (much faster than non-JIT Lua)
     ENABLE_SYSTEM_GMP=ON       - Use GMP from system (much faster than bundled mini-gmp)
     ENABLE_SYSTEM_JSONCPP=OFF  - Use JsonCPP from system
+    OPENGL_GL_PREFERENCE=LEGACY - Linux client build only; See CMake Policy CMP0072 for reference
     RUN_IN_PLACE=FALSE         - Create a portable install (worlds, settings etc. in current directory)
     USE_GPROF=FALSE            - Enable profiling using GProf
     VERSION_EXTRA=             - Text to append to version (e.g. VERSION_EXTRA=foobar -> Minetest 0.4.9-foobar)
