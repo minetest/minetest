@@ -22,6 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <ctime>
 #include "util/pointer.h"
 #include "util/numeric.h"
+#include "networkexceptions.h"
 #include "networkprotocol.h"
 #include <SColor.h>
 
@@ -117,6 +118,32 @@ public:
 
 	NetworkPacket &operator>>(video::SColor &dst);
 	NetworkPacket &operator<<(video::SColor src);
+
+	template<typename T> NetworkPacket &operator >> (std::vector<T> &dst)
+	{
+		u16 count;
+		*this >> count;
+
+		while (count-- > 0) {
+			T val;
+			*this >> val;
+			dst.emplace_back(val);
+		}
+
+		return *this;
+	}
+
+	template<typename T> NetworkPacket &operator << (const std::vector<T> &src)
+	{
+		if (src.size() > U16_MAX)
+			throw PacketError("Vector is too long");
+
+		*this << (u16)src.size();
+		for (const T &val : src)
+			*this << val;
+
+		return *this;
+	}
 
 	// Temp, we remove SharedBuffer when migration finished
 	SharedBuffer<u8> oldForgePacket();

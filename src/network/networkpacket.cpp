@@ -19,7 +19,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "networkpacket.h"
 #include <sstream>
-#include "networkexceptions.h"
 #include "util/serialize.h"
 #include "networkprotocol.h"
 

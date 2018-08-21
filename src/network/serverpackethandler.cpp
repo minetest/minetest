@@ -289,15 +289,8 @@ void Server::handleCommand_Init2(NetworkPacket* pkt)
 
 	// Receive the client locale
 	std::vector<std::string> locale;
-	u8 locale_count = 0;
 	try {
-		*pkt >> locale_count;
-
-		while (locale_count-- > 0) {
-			std::string code;
-			*pkt >> code;
-			locale.push_back(code);
-		}
+		*pkt >> locale;
 	} catch (PacketError &e) {}
 
 	/*
