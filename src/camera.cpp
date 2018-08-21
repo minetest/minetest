@@ -35,13 +35,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "constants.h"
 #include "fontengine.h"
 #include "script/scripting_client.h"
-#include "splinesequence.h"
-//#include <unordered_map>
-#include <map>
 
 #define CAMERA_OFFSET_STEP 200
 #define WIELDMESH_OFFSET_X 55.0f
 #define WIELDMESH_OFFSET_Y -35.0f
+
+static core::quaternion quatFromAngles(float pitch, float roll, float yaw);
 
 Camera::Camera(MapDrawControl &draw_control, Client *client):
 	m_draw_control(draw_control),
@@ -478,55 +477,8 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 busytime, f32 tool_r
 	if (m_arm_inertia)
 		addArmInertia(player->getYaw());
 
-	// New: via SplineSequences
-	std::map<std::string, SplineSequence<v3f> > positionsplines;
-	positionsplines["mine"]
-		.addNode(v3f(0, 0, 12.5))
-		.addNode(v3f(-70,  50, 12.5))
-		.addNode(v3f(-70,  -50, 12.5))
-		.addNode(v3f(0, 0, 12.5))
-		;
-	positionsplines["mine"]
-		.addIndex(1.0, 0, 3)
-		.normalizeDurations()
-		;
 
-	positionsplines["dig"]
-		.addNode(v3f(0, 0, 12.5))
-		.addNode(v3f(-70,  -50, 12.5))
-		.addNode(v3f(-70,  50, 12.5))
-		.addNode(v3f(0, 0, 12.5))
-		;
-	positionsplines["dig"]
-		.addIndex(1.0, 0, 3)
-		.normalizeDurations()
-		;
-
-	std::map<std::string, SplineSequence<core::quaternion> > rotationsplines;
-	rotationsplines["mine"]
-		.addNode(core::quaternion())
-		.addNode(core::quaternion().fromAngleAxis(90.0 * core::DEGTORAD, v3f(0.0, 0.0, 1.0).normalize()))
-		.addNode(core::quaternion())
-		;
-	rotationsplines["mine"]
-		.addIndex(1.0, 0, 2)
-		.normalizeDurations()
-		;
-
-	rotationsplines["dig"]
-		.addNode(core::quaternion())
-		.addNode(core::quaternion().fromAngleAxis(80.0 * core::DEGTORAD, v3f(0.0, 0.0, 1.0).normalize()))
-		.addNode(core::quaternion().fromAngleAxis(-80.0 * core::DEGTORAD, v3f(0.0, 0.0, 1.0).normalize()))
-		.addNode(core::quaternion())
-		;
-	rotationsplines["dig"]
-		.addIndex(1.0, 0, 3)
-		.normalizeDurations()
-		;
-
-	std::string which_anim = m_wield_animation;
-	if (positionsplines.find(which_anim) == positionsplines.end())
-		which_anim = "mine";
+	const WieldAnimation &wield_anim = WieldAnimation::getNamed(m_wield_animation);
 
 	// Position the wielded item
 	//v3f wield_position = v3f(45, -35, 65);
@@ -555,15 +507,13 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 busytime, f32 tool_r
 	if (m_digging_button != -1)
 	{
 		f32 digfrac = m_digging_anim;
-		v3f anim_position(0, 0, 0);
-		positionsplines[which_anim].interpolate(anim_position, digfrac);
+		v3f anim_position = wield_anim.getTranslationAt(digfrac);
 		wield_position.X += anim_position.X;
 		wield_position.Y += anim_position.Y;
 		wield_position.Z += anim_position.Z;
 
 		// Euler angles are PURE EVIL, so why not use quaternions?
-		core::quaternion quat_rot;
-		rotationsplines[which_anim].interpolate(quat_rot, digfrac);
+		core::quaternion quat_rot = wield_anim.getRotationAt(digfrac);
 		// apply rotation to starting rotation
 		wield_rotation_q *= quat_rot;
 		// convert back to euler angles
@@ -721,4 +671,97 @@ void Camera::removeNametag(Nametag *nametag)
 {
 	m_nametags.remove(nametag);
 	delete nametag;
+}
+
+static core::quaternion quatFromAngles(float pitch, float roll, float yaw)
+{
+	// if the order of angles is important:
+	//core::quaternion res;
+	//res *= core::quaternion().fromAngleAxis(pitch * core::DEGTORAD, v3f(0.0f, 0.0f, 1.0f));
+	//res *= core::quaternion().fromAngleAxis(roll  * core::DEGTORAD, v3f(1.0f, 0.0f, 0.0f));
+	//res *= core::quaternion().fromAngleAxis(yaw   * core::DEGTORAD, v3f(0.0f, 1.0f, 0.0f));
+	return core::quaternion(
+		pitch * core::DEGTORAD,
+		roll  * core::DEGTORAD,
+		yaw   * core::DEGTORAD
+	);
+}
+
+v3f WieldAnimation::getTranslationAt(float time) const
+{
+	v3f translation;
+	m_translationspline.interpolate(translation, time);
+	return translation;
+}
+
+core::quaternion WieldAnimation::getRotationAt(float time) const
+{
+	core::quaternion rotation;
+	m_rotationspline.interpolate(rotation, time);
+	return rotation;
+}
+
+const WieldAnimation& WieldAnimation::getNamed(const std::string &name)
+{
+	if (repository.size() == 0)
+		fillRepository();
+
+	if (repository.find(name) == repository.end())
+		return repository["punch"];
+
+	return repository[name];
+}
+
+std::unordered_map<std::string, WieldAnimation> WieldAnimation::repository;
+
+void WieldAnimation::fillRepository()
+{
+	// default: "punch"
+	WieldAnimation &punch = repository["punch"];
+	punch.m_translationspline
+		.addNode(v3f(0, 0, 12.5))
+		.addNode(v3f(-70,  50, 12.5))
+		.addNode(v3f(-70,  -50, 12.5))
+		.addNode(v3f(0, 0, 12.5))
+		;
+	punch.m_translationspline
+		.addIndex(1.0, 0, 3)
+		.normalizeDurations()
+		;
+
+	punch.m_rotationspline
+		.addNode(quatFromAngles( 0.0f, 0.0f, 0.0f))
+		.addNode(quatFromAngles( 0.0f, 0.0f, 90.0f))
+		.addNode(quatFromAngles( 0.0f, 0.0f, 0.0f))
+		;
+	punch.m_rotationspline
+		.addIndex(1.0, 0, 2)
+		.normalizeDurations()
+		;
+
+	WieldAnimation &dig = repository["dig"];
+	dig.m_translationspline
+		.addNode(v3f(0, 0, 12.5))
+		.addNode(v3f(-70,  -50, 12.5))
+		.addNode(v3f(-70,  50, 12.5))
+		.addNode(v3f(0, 0, 12.5))
+		;
+	dig.m_translationspline
+		.addIndex(1.0, 0, 3)
+		.normalizeDurations()
+		;
+
+	dig.m_rotationspline
+		.addNode(quatFromAngles( 0.0f, 0.0f, 0.0f))
+		.addNode(quatFromAngles( 0.0f, 0.0f, 135.0f))
+		.addNode(quatFromAngles( 0.0f, 0.0f, 135.0f))
+		.addNode(quatFromAngles( 0.0f, 0.0f, 0.0f))
+		.addNode(quatFromAngles( 0.0f, 0.0f, -80.0f))
+		.addNode(quatFromAngles( 0.0f, 0.0f, 0.0f))
+		;
+	dig.m_rotationspline
+		.addIndex(1.0, 0, 2)
+		.addIndex(1.0, 2, 3)
+		.normalizeDurations()
+		;
 }
