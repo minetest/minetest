@@ -150,7 +150,7 @@ struct ClientEvent
 			std::string *type;
 			std::vector<std::string> *params; // sky texture table
 			bool clouds;
-			bool custom_fog;
+			bool default_fog;
 			bool sun_visible;
 			bool sun_glow;
 			f32 sun_yaw;

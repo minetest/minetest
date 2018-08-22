@@ -19,14 +19,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include <ISceneNode.h>
 #include "camera.h"
-#include "irrlicht/vector3d.h"
 #include "irrlichttypes_extrabloated.h"
+#include "settings.h"
 
 #pragma once
 
 #define SKY_MATERIAL_COUNT 5
-
-#define SKY_STAR_COUNT 200
 
 class ITextureSource;
 
@@ -65,6 +63,11 @@ public:
 		return m_visible ? m_skycolor : m_fallback_bg_color;
 	}
 
+	const u16 &getStarCount()
+	{
+		return m_star_count;
+	}
+
 	bool getCloudsVisible() const { return m_clouds_visible && m_clouds_enabled; }
 	const video::SColorf &getCloudColor() const { return m_cloudcolor_f; }
 
@@ -85,24 +88,103 @@ public:
 	void setSunGlowVisible(bool sun_glow) { m_sun_glow = sun_glow; }
 	void setMoonVisible(bool moon_visible) { m_moon_visible = moon_visible; }
 	void setStarsVisible(bool stars_visible) { m_stars_visible = stars_visible; }
-	void setMeshVisible(bool dynamic_visible) { m_dyanmic_visible = dynamic_visible; }
-	void setStarCount(u16 star_count){
-		m_stars[star_count];
-		m_star_count = star_count;
+	void setMeshVisible(bool dynamic_visible) { m_dynamic_visible = dynamic_visible; }
+	void setStarCount(u16 star_count)
+	{ 	
+		if (star_count != m_star_count) {
+
+			m_star_count = star_count; // We want to store this for the next time setStarCount is called.
+			m_stars.clear(); // Clean out the old star position entries.
+
+			for (u16 i = 0; i < star_count; i++) { // Regenerate the star vector table.
+
+				v3f star = v3f(
+					myrand_range(-10000, 10000),
+					myrand_range(-10000, 10000),
+					myrand_range(-10000, 10000)
+				);
+				
+				star.normalize();
+				m_stars.emplace_back(star);
+			}
+		}
 	}
-	void setCustomFog(bool use_fog)
+	void setFog(bool use_fog)
 	{ 
 		m_directional_colored_fog = !use_fog;
 	}
 	void setSunYaw(f32 sun_yaw) { m_sun_yaw = sun_yaw; }
 	void setSunTilt(f32 sun_tilt) { m_sun_tilt = sun_tilt; }
-	void setSunTexture(std::string sun_texture) { m_sun_name = sun_texture; }
+	void setSunTexture(std::string sun_texture, ITextureSource *tsrc)
+	{
+		if (m_sun_name != sun_texture) {
+			m_sun_name = sun_texture;
+
+			if (sun_texture != "default") {
+
+				// Unlike before, we want our player to supply a custom texture
+				m_sun_texture = tsrc->getTextureForMesh(m_sun_name);
+					
+				if (m_sun_texture) {
+					m_materials[3] = m_materials[0];
+					m_materials[3].setTexture(0, m_sun_texture);
+					m_materials[3].MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
+					if (m_sun_tonemap)
+						m_materials[3].Lighting = true;
+				}
+			} else {
+				m_sun_texture = nullptr;
+			}
+		}
+	}
 	void setMoonYaw(f32 moon_yaw) { m_moon_yaw = moon_yaw; }
 	void setMoonTilt(f32 moon_tilt) { m_moon_tilt = moon_tilt; }
-	void setMoonTexture(std::string moon_texture) { m_moon_name = moon_texture; }
+	void setMoonTexture(std::string moon_texture, ITextureSource *tsrc)
+	{
+		if (m_moon_name != moon_texture) {
+			m_moon_name = moon_texture;
+			
+			if (moon_texture == "default") {
+
+				// Unlike before, we want our player to supply a custom texture
+				m_moon_texture = tsrc->getTextureForMesh(m_moon_name);
+				
+				if (m_moon_texture) {
+					m_materials[4] = m_materials[0];
+					m_materials[4].setTexture(0, m_moon_texture);
+					m_materials[4].MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
+					if (m_moon_tonemap)
+						m_materials[4].Lighting = true;
+				}
+			} else {
+				m_moon_texture = nullptr;
+			}
+		}
+	}
 	void setStarYaw(f32 star_yaw) { m_star_yaw = star_yaw; }
 	void setStarTilt(f32 star_tilt) { m_star_tilt = star_tilt; }
 	void setSkyboxType(std::string type) { m_skybox_type = type; }
+	void setSkyDefaults() { // Special command to reset everything to defaults
+		
+		// by default, and Minetest Game, we don't need to
+		// touch this, however, because of allowing the
+		// skybox meshes with a textured skybox, we need
+		// to toggle the directional fog.
+
+		m_directional_colored_fog = g_settings->getBool("directional_colored_fog"); 
+
+		m_sun_glow = true;
+		m_sun_texture = nullptr;
+		m_sun_visible = true;
+		m_sun_yaw = 90;
+		m_sun_tilt = 0;
+
+		m_moon_visible = true;
+		m_moon_yaw = -90;
+		m_moon_tilt = 0;
+		m_moon_texture = nullptr;
+		setStarCount(200);
+	}
 
 private:
 	aabb3f m_box;
@@ -159,7 +241,7 @@ private:
 	bool m_clouds_enabled = true; // Initialised to true, reset only by set_sky API
 	bool m_directional_colored_fog = true;
 	bool m_bodies_visible = true; // sun, moon, stars (disables the next three bools)
-	bool m_dyanmic_visible = true; // control rendering the mesh skybox visible
+	bool m_dynamic_visible = true; // control rendering the mesh skybox
 	bool m_sun_visible = true; // render the sun
 	bool m_sun_glow = true; // render the sunrise/set texture
 	bool m_moon_visible = true; // render the moon
@@ -171,8 +253,8 @@ private:
 	video::SColor m_bgcolor;
 	video::SColor m_skycolor;
 	video::SColorf m_cloudcolor_f;
-	u16 m_star_count = SKY_STAR_COUNT;
-	v3f m_stars[SKY_STAR_COUNT];
+	u16 m_star_count = 0;
+	std::vector<v3f> m_stars;
 	video::ITexture *m_sun_texture;
 	video::ITexture *m_moon_texture;
 	video::ITexture *m_sun_tonemap;

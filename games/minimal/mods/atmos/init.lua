@@ -1,8 +1,8 @@
--- atmos, WTFPL for minimal_game
+-- atmos, WTFPL / LGPL 2?, by Jordach
 
-atmos_enabled = true
+local atmos_enabled = true
 
-atmos = {}
+local atmos = {}
 
 local atmos_clear_weather = {}
 
@@ -116,23 +116,23 @@ function atmos.set_skybox(player)
 	
 	player:set_sky({
         sky_color = minetest.rgba(fog.result.red, fog.result.grn, fog.result.blu), 
-		type = "dynamic",
+		type = "custom",
 		textures = {
 			sky_top .. "^(" .. sky_top_new .. "^[opacity:" .. fade_factor .. ")",
 			sky_bottom .. "^(" .. sky_bottom_new .. "^[opacity:" .. fade_factor .. ")",
-	
+			
 			side_string .. "^(" .. side_string_new .. "^[opacity:" .. fade_factor .. ")",
 			side_string .. "^(" .. side_string_new .. "^[opacity:" .. fade_factor .. ")",
 			side_string .. "^(" .. side_string_new .. "^[opacity:" .. fade_factor .. ")",
 			side_string .. "^(" .. side_string_new .. "^[opacity:" .. fade_factor .. ")"
         },
         clouds = true,
-        custom_fog = true,
+        default_fog = false,
     	sun = {
             visible = true,
-            yaw = 90,
+            yaw = -90,
             tilt = -5,
-			texture = "sun.png",
+			texture = "atmos_sun.png",
 			sunrise_glow = true,
 		},
 		
@@ -140,18 +140,20 @@ function atmos.set_skybox(player)
 			visible = true,
 			yaw = -90,
 			tilt = -5,
-			texture = "moon.png",	
+			texture = "atmos_moon.png",	
 		},
 
 		stars = {
 			visible = true,
 			yaw = 0,
 			tilt = 0,
-			count = 1000,
+			count = 1600,
 			
 		}
 	})
-		
+	
+	--print(dump(player:get_sky()))
+
 	player:set_clouds({
 		
 		density = 0.4,

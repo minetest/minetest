@@ -1756,7 +1756,7 @@ void Server::SendSetSky(session_t peer_id, const SkyParams &params)
 {
 	NetworkPacket pkt(TOCLIENT_SET_SKY, 0, peer_id);
 	pkt << params.bgcolor << params.type
-			<< params.clouds << params.custom_fog
+			<< params.clouds << params.default_fog
 			<< params.sun.visible << params.sun.yaw 
 			<< params.sun.tilt << params.sun.texture
 			<< params.sun.sunrise_glow << params.moon.visible
@@ -1764,6 +1764,7 @@ void Server::SendSetSky(session_t peer_id, const SkyParams &params)
 			<< params.moon.texture << params.stars.visible
 			<< params.stars.number << params.stars.yaw
 			<< params.stars.tilt;
+			
 
 	for (const std::string &param : params.params)
 		pkt << param;

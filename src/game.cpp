@@ -2705,8 +2705,10 @@ void Game::handleClientEvent_SetSky(ClientEvent *event, CameraOrientation *cam)
 	if (*event->set_sky.type == "regular") {
 		sky->setVisible(true);
 		sky->setSkyboxType(*event->set_sky.type);
-		sky->setCustomFog(false);
+		sky->setFog(true);
 		sky->setCloudsEnabled(true);
+		sky->setMeshVisible(true);
+		sky->setStarCount(200);
 	} else if (*event->set_sky.type == "skybox" &&
 		event->set_sky.params->size() == 6) {
 		sky->setFallbackBgColor(*event->set_sky.bgcolor);
@@ -2717,8 +2719,10 @@ void Game::handleClientEvent_SetSky(ClientEvent *event, CameraOrientation *cam)
 			texture_src->getTextureForMesh((*event->set_sky.params)[3]),
 			texture_src->getTextureForMesh((*event->set_sky.params)[4]),
 			texture_src->getTextureForMesh((*event->set_sky.params)[5]));
+			sky->setSkyboxType(*event->set_sky.type);
 	} else if (*event->set_sky.type == "custom") {
 		// combined dynamic and textured skybox mode
+		
 		if (event->set_sky.params->size() == 6) {
 			// if we're using textures, ensure we at least have a fallback colour
 			// and apply textures, otherwise, we'll use the dynamic one
@@ -2730,11 +2734,10 @@ void Game::handleClientEvent_SetSky(ClientEvent *event, CameraOrientation *cam)
 				texture_src->getTextureForMesh((*event->set_sky.params)[3]),
 				texture_src->getTextureForMesh((*event->set_sky.params)[4]),
 				texture_src->getTextureForMesh((*event->set_sky.params)[5]));
-			
-			sky->setVisible(false);
+			//sky->setVisible(true); // enable this line at your peril, and lack of fog.
 			sky->setSkyboxType(*event->set_sky.type);
 			sky->setMeshVisible(false);
-			sky->setCustomFog(event->set_sky.custom_fog);
+			sky->setFog(event->set_sky.default_fog);
 		}
 
 		else {
@@ -2743,19 +2746,19 @@ void Game::handleClientEvent_SetSky(ClientEvent *event, CameraOrientation *cam)
 			sky->setVisible(true);
 			sky->setSkyboxType(*event->set_sky.type);
 			sky->setMeshVisible(true);
-			sky->setCustomFog(event->set_sky.custom_fog);
+			sky->setFog(event->set_sky.default_fog);
 		}
-
+		
 		sky->setSunGlowVisible(event->set_sky.sun_glow);
 		sky->setSunVisible(event->set_sky.sun_visible);
 		sky->setSunYaw(event->set_sky.sun_yaw);
 		sky->setSunTilt(event->set_sky.sun_tilt);
-		sky->setSunTexture(*event->set_sky.sun_texture);
+		sky->setSunTexture(*event->set_sky.sun_texture, texture_src);
 
 		sky->setMoonVisible(event->set_sky.moon_visible);
 		sky->setMoonYaw(event->set_sky.moon_yaw);
 		sky->setMoonTilt(event->set_sky.moon_tilt);
-		sky->setMoonTexture(*event->set_sky.moon_texture);
+		sky->setMoonTexture(*event->set_sky.moon_texture, texture_src);
 
 		sky->setStarsVisible(event->set_sky.star_visible);
 		sky->setStarCount(event->set_sky.star_count);

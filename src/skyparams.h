@@ -50,7 +50,7 @@ struct SkyParams
     std::string type;
     std::vector<std::string> params;
     bool clouds;
-    bool custom_fog;
+    bool default_fog;
     struct sol sun;
     struct luna moon;
     struct star stars;

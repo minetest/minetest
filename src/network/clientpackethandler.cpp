@@ -40,7 +40,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/srp.h"
 #include "tileanimation.h"
 #include "gettext.h"
-#include "skyparams.h"
 
 void Client::handleCommand_Deprecated(NetworkPacket* pkt)
 {
@@ -1186,7 +1185,7 @@ void Client::handleCommand_HudSetSky(NetworkPacket* pkt)
 	std::string type;
 	std::vector<std::string> params;
 	bool clouds;
-	bool custom_fog;
+	bool default_fog;
 
 	bool sun_visible;
 	f32 sun_yaw;
@@ -1204,14 +1203,16 @@ void Client::handleCommand_HudSetSky(NetworkPacket* pkt)
 	f32 stars_tilt;
 	u16 stars_count;
 
-	*pkt >> bgcolor >> type >> clouds
-			>> custom_fog >> sun_visible
-			>> sun_yaw >> sun_tilt
-			>> sun_texture >> sunrise_glow
-			>> moon_visible >> moon_yaw
-			>> moon_tilt >> moon_texture
-			>> stars_visible >> stars_yaw
-			>> stars_tilt >> stars_count;
+	*pkt >> bgcolor >> type
+			>> clouds >> default_fog
+			>> sun_visible >> sun_yaw
+			>> sun_tilt >> sun_texture
+			>> sunrise_glow >> moon_visible
+			>> moon_yaw >> moon_tilt
+			>> moon_texture	>> stars_visible
+			>> stars_count >> stars_yaw
+			>> stars_tilt;
+			
 
 	std::string texture;
 
@@ -1226,7 +1227,7 @@ void Client::handleCommand_HudSetSky(NetworkPacket* pkt)
 	event->set_sky.type            = new std::string(type);
 	event->set_sky.params          = new std::vector<std::string>(params);
 	event->set_sky.clouds          = clouds;
-	event->set_sky.custom_fog      = custom_fog;
+	event->set_sky.default_fog     = default_fog;
 	event->set_sky.sun_visible     = sun_visible;
 	event->set_sky.sun_glow        = sunrise_glow;
 	event->set_sky.sun_yaw         = sun_yaw;

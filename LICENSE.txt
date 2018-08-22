@@ -39,6 +39,11 @@ srifqi
   textures/base/pack/joystick_off.png
   textures/base/pack/minimap_btn.png
 
+Jordach
+  /games/minimal/atmos/atmos_sun.png
+  /games/minimal/atmos/atmos_moon.png
+  /games/minimal/atmos/sun_tonemap.png
+
 License of Minetest source code
 -------------------------------
 
