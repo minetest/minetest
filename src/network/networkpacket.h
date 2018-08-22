@@ -119,7 +119,7 @@ public:
 	NetworkPacket &operator>>(video::SColor &dst);
 	NetworkPacket &operator<<(video::SColor src);
 
-	template<typename T> NetworkPacket &operator >> (std::vector<T> &dst)
+	template <typename T> NetworkPacket &operator>>(std::vector<T> &dst)
 	{
 		u16 count;
 		*this >> count;
@@ -133,7 +133,7 @@ public:
 		return *this;
 	}
 
-	template<typename T> NetworkPacket &operator << (const std::vector<T> &src)
+	template <typename T> NetworkPacket &operator<<(const std::vector<T> &src)
 	{
 		if (src.size() > U16_MAX)
 			throw PacketError("Vector is too long");
