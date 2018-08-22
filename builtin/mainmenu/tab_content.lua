@@ -97,7 +97,7 @@ local function get_formspec(tabview, name, tabdata)
 		if selected_pkg.type == "mod" then
 			if selected_pkg.is_modpack then
 				retval = retval .. ";0]" ..
-					"button[8.9,4.65;3,1;btn_mod_mgr_rename_modpack;" ..
+					"button[8.65,4.65;3.25,1;btn_mod_mgr_rename_modpack;" ..
 					fgettext("Rename") .. "]"
 			else
 				--show dependencies
@@ -128,17 +128,17 @@ local function get_formspec(tabview, name, tabdata)
 			if selected_pkg.type == "txp" then
 				if selected_pkg.enabled then
 					retval = retval ..
-						"button[8.9,4.65;3,1;btn_mod_mgr_disable_txp;" ..
+						"button[8.65,4.65;3.25,1;btn_mod_mgr_disable_txp;" ..
 						fgettext("Disable Texture Pack") .. "]"
 				else
 					retval = retval ..
-						"button[8.9,4.65;3,1;btn_mod_mgr_use_txp;" ..
+						"button[8.65,4.65;3.25,1;btn_mod_mgr_use_txp;" ..
 						fgettext("Use Texture Pack") .. "]"
 				end
 			end
 		end
 
-		retval = retval .. "button[5.5,4.65;3,1;btn_mod_mgr_delete_mod;"
+		retval = retval .. "button[5.5,4.65;3.25,1;btn_mod_mgr_delete_mod;"
 			.. fgettext("Uninstall Package") .. "]"
 	end
 	return retval
