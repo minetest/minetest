@@ -135,7 +135,7 @@ float disp_z;
 	color.a = 1;
 	
 	// Emphase blue a bit in darker places
-	// See C++ implementation in mapblock_mesh.cpp finalColorBlend()
+	// See C++ implementation in mapblock_mesh.cpp final_color_blend()
 	float brightness = (color.r + color.g + color.b) / 3;
 	color.b += max(0.0, 0.021 - abs(0.2 * brightness - 0.021) +
 		0.07 * brightness);
