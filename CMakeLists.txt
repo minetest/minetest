@@ -39,12 +39,7 @@ message(STATUS "*** Will build version ${VERSION_STRING} ***")
 
 
 # Configuration options
-set(DEFAULT_RUN_IN_PLACE FALSE)
-if(WIN32)
-	set(DEFAULT_RUN_IN_PLACE TRUE)
-endif()
-set(RUN_IN_PLACE ${DEFAULT_RUN_IN_PLACE} CACHE BOOL
-	"Run directly in source directory structure")
+set(RUN_IN_PLACE TRUE CACHE BOOL "Run directly in source directory structure")
 
 
 set(BUILD_CLIENT TRUE CACHE BOOL "Build client")
