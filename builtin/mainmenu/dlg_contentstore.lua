@@ -205,7 +205,8 @@ function package_dialog.get_formspec()
 	local formspec = {
 		"size[9,4;true]",
 		"label[2.5,0.2;", core.formspec_escape(package.title), "]",
-		"textarea[0.2,1;9,3;;;", core.formspec_escape(package.short_description), "]",
+		"textarea[3.2,1;6,3;;;", core.formspec_escape(package.short_description), "]",
+		"image[0.2,1.6;3,2;", core.formspec_escape(get_screenshot(package)), "]",
 		"button[0,0;2,1;back;", fgettext("Back"), "]",
 	}
 
