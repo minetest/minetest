@@ -225,9 +225,13 @@ bool Settings::updateConfigObject(std::istream &is, std::ostream &os,
 		case SPE_KVPAIR:
 			it = m_settings.find(name);
 			if (it != m_settings.end() &&
-				(it->second.is_group || it->second.value != value)) {
+					(it->second.is_group || it->second.value != value)) {
 				printEntry(os, name, it->second, tab_depth);
 				was_modified = true;
+			} else if (it == m_settings.end()) {
+				// Remove by skipping
+				was_modified = true;
+				break;
 			} else {
 				os << line << "\n";
 				if (event == SPE_MULTILINE)
@@ -242,6 +246,10 @@ bool Settings::updateConfigObject(std::istream &is, std::ostream &os,
 				sanity_check(it->second.group != NULL);
 				was_modified |= it->second.group->updateConfigObject(is, os,
 					"}", tab_depth + 1);
+			} else if (it == m_settings.end()) {
+				// Remove by skipping
+				was_modified = true;
+				break;
 			} else {
 				printEntry(os, name, it->second, tab_depth);
 				was_modified = true;
@@ -901,6 +909,8 @@ bool Settings::remove(const std::string &name)
 	if (it != m_settings.end()) {
 		delete it->second.group;
 		m_settings.erase(it);
+
+		doCallbacks(name);
 		return true;
 	}
 
