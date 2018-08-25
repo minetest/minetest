@@ -32,6 +32,7 @@ core.register_privilege("interact", "Can interact with things and modify the wor
 core.register_privilege("shout", "Can speak in chat")
 core.register_privilege("basic_privs", "Can modify 'shout' and 'interact' privileges")
 core.register_privilege("privs", "Can modify privileges")
+core.register_privilege("whereis", "Can use /whereis")
 
 core.register_privilege("teleport", {
 	description = "Can teleport self",

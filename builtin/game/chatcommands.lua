@@ -125,10 +125,10 @@ core.register_chatcommand("hasprivs", {
 			if core.check_player_privs(player_name, privs) then
 				table.insert(players_with_privs, player_name)
 			end
-		end	
+		end
 		return true, "Players online with the \"" .. param .. "\" priv: " ..
 			table.concat(players_with_privs, ", ")
-	end	
+	end
 })
 
 local function handle_grant_command(caller, grantname, grantprivstr)
@@ -692,7 +692,7 @@ core.register_chatcommand("pulverize", {
 		end
 		core.log("action", name .. " pulverized \"" ..
 			wielded_item:get_name() .. " " .. wielded_item:get_count() .. "\"")
-		player:set_wielded_item(nil)			
+		player:set_wielded_item(nil)
 		return true, "An item was pulverized."
 	end,
 })
@@ -1055,4 +1055,20 @@ core.register_chatcommand("kill", {
 	func = function(name, param)
 		return handle_kill_command(name, param == "" and name or param)
 	end,
+})
+
+core.register_chatcommand("whereis", {
+	params = "[<name>]",
+	privs = {whereis = true},
+	description = "Show location of yourself or another player",
+	func = function(name, param)
+		param = param == "" and name or param:trim()
+		local player = core.get_player_by_name(param)
+		if not player then
+			return false, "Player " .. param .. " is not online."
+		end
+		local pos = player:get_pos()
+		return true, string.format("Player %s is at (%.3f,%.3f,%.3f)",
+				param, pos.x, pos.y, pos.z)
+	end
 })
