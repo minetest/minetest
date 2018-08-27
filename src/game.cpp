@@ -2705,10 +2705,7 @@ void Game::handleClientEvent_SetSky(ClientEvent *event, CameraOrientation *cam)
 	if (*event->set_sky.type == "regular") {
 		sky->setVisible(true);
 		sky->setSkyboxType(*event->set_sky.type);
-		sky->setFog(true);
-		sky->setCloudsEnabled(true);
-		sky->setMeshVisible(true);
-		sky->setStarCount(200);
+		sky->setSkyDefaults();
 	} else if (*event->set_sky.type == "skybox" &&
 		event->set_sky.params->size() == 6) {
 		sky->setFallbackBgColor(*event->set_sky.bgcolor);

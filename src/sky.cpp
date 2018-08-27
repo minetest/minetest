@@ -353,31 +353,27 @@ void Sky::render()
 
 		// Draw sunrise/sunset horizon glow texture (textures/base/pack/sunrisebg.png)
 		if (m_sun_glow) {
-			bool is_dawn = (wicked_time_of_day >= 0.20 && wicked_time_of_day < 0.35);
-			//std::cout << wicked_time_of_day << std::endl;
-			if (true) {
-				float mid1 = 0.25;
-				float mid = wicked_time_of_day < 0.5 ? mid1 : (1.0 - mid1);
-				float a_ = 1.0f - std::fabs(wicked_time_of_day - mid) * 35.0f;
-				float a = easeCurve(MYMAX(0, MYMIN(1, a_)));
-				//std::cerr<<"a_="<<a_<<" a="<<a<<std::endl;
-				video::SColor c(255, 255, 255, 255);
-				float y = -(1.0 - a) * 0.22;
-				// Sunrise texture now sits behind the sun to prevent z-fighting
-				vertices[0] = video::S3DVertex(-1, -0.05 + y, -1, 0, 0, 1, c, t, t);
-				vertices[1] = video::S3DVertex( 1, -0.05 + y, -1, 0, 0, 1, c, o, t);
-				vertices[2] = video::S3DVertex( 1,   0.2 + y, -1, 0, 0, 1, c, o, o);
-				vertices[3] = video::S3DVertex(-1,   0.2 + y, -1, 0, 0, 1, c, t, o);
-				for (video::S3DVertex &vertex : vertices) {
-					if (wicked_time_of_day < 0.5)
-						// Switch from -Z (south) to +X (east)
-						vertex.Pos.rotateXZBy(m_sun_yaw);
-					else
-						// Switch from -Z (south) to -X (west)
-						vertex.Pos.rotateXZBy(m_sun_yaw - 180);
-				}
-				driver->drawIndexedTriangleFan(&vertices[0], 4, indices, 2);
+			float mid1 = 0.25;
+			float mid = wicked_time_of_day < 0.5 ? mid1 : (1.0 - mid1);
+			float a_ = 1.0f - std::fabs(wicked_time_of_day - mid) * 35.0f;
+			float a = easeCurve(MYMAX(0, MYMIN(1, a_)));
+			//std::cerr<<"a_="<<a_<<" a="<<a<<std::endl;
+			video::SColor c(255, 255, 255, 255);
+			float y = -(1.0 - a) * 0.22;
+			// Sunrise texture now sits behind the sun to prevent z-fighting
+			vertices[0] = video::S3DVertex(-1, -0.05 + y, -0.99, 0, 0, 0.99, c, t, t);
+			vertices[1] = video::S3DVertex( 1, -0.05 + y, -0.99, 0, 0, 0.99, c, o, t);
+			vertices[2] = video::S3DVertex( 1,   0.2 + y, -0.99, 0, 0, 0.99, c, o, o);
+			vertices[3] = video::S3DVertex(-1,   0.2 + y, -0.99, 0, 0, 0.99, c, t, o);
+			for (video::S3DVertex &vertex : vertices) {
+				if (wicked_time_of_day < 0.5)
+					// Switch from -Z (south) to +X (east)
+					vertex.Pos.rotateXZBy(m_sun_yaw);
+				else
+					// Switch from -Z (south) to -X (west)
+					vertex.Pos.rotateXZBy(m_sun_yaw - 180);
 			}
+			driver->drawIndexedTriangleFan(&vertices[0], 4, indices, 2);
 		}
 
 		if (m_sun_visible) {

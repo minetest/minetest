@@ -187,8 +187,8 @@ public:
 		m_overlay_visible = false;
 
 		m_sun_glow = true;
+		m_sun_name = "sun.png";
 		m_sun_texture = nullptr;
-		m_sun_name = "";
 		m_sun_visible = true;
 		m_sun_yaw = 90;
 		m_sun_tilt = 0;
@@ -196,7 +196,7 @@ public:
 		m_moon_visible = true;
 		m_moon_yaw = -90;
 		m_moon_tilt = 0;
-		m_moon_name = "";
+		m_moon_name = "moon.png";
 		m_moon_texture = nullptr;
 
 		setStarCount(200);
