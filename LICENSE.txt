@@ -40,9 +40,15 @@ srifqi
   textures/base/pack/minimap_btn.png
 
 Jordach
-  /games/minimal/atmos/atmos_sun.png
-  /games/minimal/atmos/atmos_moon.png
-  /games/minimal/atmos/sun_tonemap.png
+  games/minimal/atmos/atmos_sun.png
+  games/minimal/atmos/atmos_moon.png
+  games/minimal/atmos/sun_tonemap.png
+  games/minimal/atmos/top.png
+  games/minimal/atmos/bottom.png
+  games/minimal/atmos/north.png
+  games/minimal/atmos/east.png
+  games/minimal/atmos/south.png
+  games/minimal/atmos/west.png
 
 License of Minetest source code
 -------------------------------

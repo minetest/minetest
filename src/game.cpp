@@ -2722,7 +2722,6 @@ void Game::handleClientEvent_SetSky(ClientEvent *event, CameraOrientation *cam)
 			sky->setSkyboxType(*event->set_sky.type);
 	} else if (*event->set_sky.type == "custom") {
 		// combined dynamic and textured skybox mode
-		
 		if (event->set_sky.params->size() == 6) {
 			// if we're using textures, ensure we at least have a fallback colour
 			// and apply textures, otherwise, we'll use the dynamic one
@@ -2738,6 +2737,12 @@ void Game::handleClientEvent_SetSky(ClientEvent *event, CameraOrientation *cam)
 			sky->setSkyboxType(*event->set_sky.type);
 			sky->setMeshVisible(false);
 			sky->setFog(event->set_sky.default_fog);
+
+			sky->setOverlayVisible(event->set_sky.overlay_visible);
+
+			for (int i = 0; i < 6; i++)
+				sky->setOverlayTexture((*event->set_sky.overlay_textures)[i],
+					i, texture_src);
 		}
 
 		else {
@@ -2764,6 +2769,7 @@ void Game::handleClientEvent_SetSky(ClientEvent *event, CameraOrientation *cam)
 		sky->setStarCount(event->set_sky.star_count);
 		sky->setStarYaw(event->set_sky.star_yaw);
 		sky->setStarTilt(event->set_sky.star_tilt);
+
 	} 
 		// Handle everything else as plain color
 	else {

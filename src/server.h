@@ -304,7 +304,7 @@ public:
 			f32 frame_speed);
 	void setPlayerEyeOffset(RemotePlayer *player, const v3f &first, const v3f &third);
 
-	void setSky(RemotePlayer *player, SkyParams params);
+	void setSky(RemotePlayer *player, const SkyParams &params);
 	void setClouds(RemotePlayer *player, const CloudParams &params);
 
 	bool overrideDayNightRatio(RemotePlayer *player, bool do_override, float brightness);

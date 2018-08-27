@@ -5200,6 +5200,9 @@ This is basically a reference to a C++ `ServerActiveObject`
 
         * `default_fog`: Boolean for whether the dyanmic sky's fog and
         directional fog should be used over `sky_color` (default: `false`)
+        * `overlay_visible`: Boolean for whether the texture for space / galaxies to be shown.
+        Note: This texture mode is only enabled when the textures field has been supplied with
+        six textures.
         * `sun`: A table containing the following fields:
             * `visible`: Boolean for whether the sun is visible. (default: `true`)
             * `yaw`: Float, rotation on the vertical axis. Rotates like the 
@@ -5226,6 +5229,8 @@ This is basically a reference to a C++ `ServerActiveObject`
             in a direction. (default: `0`)
             * `count`: Integer, this value controls how many stars are visible in the
             sky at night. (default: `200`)
+        * `overlay_textures`: A table containing six textures, following the same pattern
+        as the regular textured skybox.
         * Please note, the old set_sky definitions are still supported, however, are
         deprecated, and cannot support the custom skybox feature set.
 * `get_sky()`: returns a table with the current sky parameters as in

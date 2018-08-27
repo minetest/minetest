@@ -51,7 +51,9 @@ struct SkyParams
     std::vector<std::string> params;
     bool clouds;
     bool default_fog;
+    bool overlay_visible;
     struct sol sun;
     struct luna moon;
     struct star stars;
+    std::vector<std::string> overlay_textures;
 };

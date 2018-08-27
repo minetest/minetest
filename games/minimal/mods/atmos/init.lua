@@ -1,4 +1,7 @@
--- atmos, WTFPL / LGPL 2?, by Jordach
+-- atmos, by Jordach
+-- this fork and modification of atmos is 
+-- designed to be bundled with minetest (and or minimal)
+-- and thusly is licensed LGPL 2.1
 
 local atmos_enabled = true
 
@@ -126,20 +129,22 @@ function atmos.set_skybox(player)
 			side_string .. "^(" .. side_string_new .. "^[opacity:" .. fade_factor .. ")",
 			side_string .. "^(" .. side_string_new .. "^[opacity:" .. fade_factor .. ")"
         },
-        clouds = true,
-        default_fog = false,
+        clouds = false,
+		default_fog = false,
+		overlay_visible = true,
+
     	sun = {
             visible = true,
-            yaw = -90,
-            tilt = -5,
+            yaw = 105,
+            tilt = -12,
 			texture = "atmos_sun.png",
 			sunrise_glow = true,
 		},
 		
 		moon = {
 			visible = true,
-			yaw = -90,
-			tilt = -5,
+			yaw = -105,
+			tilt = -12,
 			texture = "atmos_moon.png",	
 		},
 
@@ -147,12 +152,19 @@ function atmos.set_skybox(player)
 			visible = true,
 			yaw = 0,
 			tilt = 0,
-			count = 1600,
+			count = 2400,
 			
-		}
+		},
+
+		overlay_textures = {
+			"top.png^[opacity:90",
+			"bottom.png^[opacity:90",
+			"east.png^[opacity:90",
+			"west.png^[opacity:90",
+			"south.png^[opacity:90",
+			"north.png^[opacity:90"
+		},
 	})
-	
-	--print(dump(player:get_sky()))
 
 	player:set_clouds({
 		
@@ -220,3 +232,15 @@ if atmos_enabled then
 	minetest.after(2, atmos.sync_skybox)
 
 end
+
+minetest.register_chatcommand("get_sky", {
+	func = function(name, param)
+
+		-- get a texture from get_sky at random;
+
+		local data = minetest.get_player_by_name(name):get_sky()
+
+		print(dump(data))
+		--print(data.textures[1])
+	end
+})

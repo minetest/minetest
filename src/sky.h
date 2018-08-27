@@ -24,7 +24,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #pragma once
 
-#define SKY_MATERIAL_COUNT 5
+#define SKY_MATERIAL_COUNT 11
+
+// Sun / Star whites, 
 
 class ITextureSource;
 
@@ -144,7 +146,7 @@ public:
 		if (m_moon_name != moon_texture) {
 			m_moon_name = moon_texture;
 			
-			if (moon_texture == "default") {
+			if (moon_texture != "default") {
 
 				// Unlike before, we want our player to supply a custom texture
 				m_moon_texture = tsrc->getTextureForMesh(m_moon_name);
@@ -163,6 +165,16 @@ public:
 	}
 	void setStarYaw(f32 star_yaw) { m_star_yaw = star_yaw; }
 	void setStarTilt(f32 star_tilt) { m_star_tilt = star_tilt; }
+	void setOverlayVisible(bool overlay_visible) { m_overlay_visible = overlay_visible; }
+	void setOverlayTexture(std::string overlay_texture, int material_id, ITextureSource *tsrc) {
+		
+		m_overlay_texture = tsrc->getTextureForMesh(overlay_texture);
+		
+		m_materials[material_id+5] = m_materials[0];
+		m_materials[material_id+5].ZWriteEnable = true;
+		m_materials[material_id+5].setTexture(0, m_overlay_texture);
+		m_materials[material_id+5].MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
+	}
 	void setSkyboxType(std::string type) { m_skybox_type = type; }
 	void setSkyDefaults() { // Special command to reset everything to defaults
 		
@@ -172,9 +184,11 @@ public:
 		// to toggle the directional fog.
 
 		m_directional_colored_fog = g_settings->getBool("directional_colored_fog"); 
+		m_overlay_visible = false;
 
 		m_sun_glow = true;
 		m_sun_texture = nullptr;
+		m_sun_name = "";
 		m_sun_visible = true;
 		m_sun_yaw = 90;
 		m_sun_tilt = 0;
@@ -182,8 +196,12 @@ public:
 		m_moon_visible = true;
 		m_moon_yaw = -90;
 		m_moon_tilt = 0;
+		m_moon_name = "";
 		m_moon_texture = nullptr;
+
 		setStarCount(200);
+		m_star_yaw = 0;
+		m_star_tilt = 0;
 	}
 
 private:
@@ -246,6 +264,7 @@ private:
 	bool m_sun_glow = true; // render the sunrise/set texture
 	bool m_moon_visible = true; // render the moon
 	bool m_stars_visible = true; // render the stars
+	bool m_overlay_visible = false; // render the rotating overlay skybox
 
 	video::SColorf m_bgcolor_bright_f = video::SColorf(1.0f, 1.0f, 1.0f, 1.0f);
 	video::SColorf m_skycolor_bright_f = video::SColorf(1.0f, 1.0f, 1.0f, 1.0f);
@@ -255,10 +274,12 @@ private:
 	video::SColorf m_cloudcolor_f;
 	u16 m_star_count = 0;
 	std::vector<v3f> m_stars;
+	std::vector<std::string> m_overlay_textures;
 	video::ITexture *m_sun_texture;
 	video::ITexture *m_moon_texture;
 	video::ITexture *m_sun_tonemap;
 	video::ITexture *m_moon_tonemap;
+	video::ITexture *m_overlay_texture;
 	std::string m_sun_name = "sun.png";
 	std::string m_moon_name = "moon.png";
 	f32 m_sun_yaw = 90;

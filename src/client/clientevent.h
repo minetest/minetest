@@ -151,6 +151,7 @@ struct ClientEvent
 			std::vector<std::string> *params; // sky texture table
 			bool clouds;
 			bool default_fog;
+			bool overlay_visible;
 			bool sun_visible;
 			bool sun_glow;
 			f32 sun_yaw;
@@ -164,6 +165,7 @@ struct ClientEvent
 			u16 star_count;
 			f32 star_yaw;
 			f32 star_tilt;
+			std::vector<std::string> *overlay_textures;
 		} set_sky;
 		struct
 		{

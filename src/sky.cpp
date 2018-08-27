@@ -46,7 +46,7 @@ Sky::Sky(s32 id, ITextureSource *tsrc):
 	video::SMaterial mat;
 	mat.Lighting = false;
 
-	mat.ZWriteEnable = true;
+	mat.ZWriteEnable = false;
 	mat.AntiAliasing = 0;
 	mat.TextureLayer[0].TextureWrapU = video::ETC_CLAMP_TO_EDGE;
 	mat.TextureLayer[0].TextureWrapV = video::ETC_CLAMP_TO_EDGE;
@@ -92,7 +92,14 @@ Sky::Sky(s32 id, ITextureSource *tsrc):
 
 	setStarCount(200); // Prevent a segfault trying to read missing memory.
 	
-	m_directional_colored_fog = g_settings->getBool("directional_colored_fog");
+	// Configure the overlay_skybox material params here:
+	// We should never define textures here until they're needed.
+
+	for (int i = 5; i < 11; i++) {
+		m_materials[i] = mat;
+		m_materials[i].MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
+	}
+		m_directional_colored_fog = g_settings->getBool("directional_colored_fog");
 }
 
 
@@ -251,12 +258,92 @@ void Sky::render()
 			vertices[1] = video::S3DVertex( 1, -1.0, -1, 0, 1, 0, c, o, t);
 			vertices[2] = video::S3DVertex( 1, -1.0, 1, 0, 1, 0, c, o, o);
 			vertices[3] = video::S3DVertex(-1, -1.0, 1, 0, 1, 0, c, t, o);
-			for (video::S3DVertex &vertex : vertices){
-				vertex.Pos.rotateXZBy(m_sun_yaw);
-			}
 			driver->drawIndexedTriangleFan(&vertices[0], 4, indices, 2);
 		}
 
+		if (m_overlay_visible) {
+			// Draw the rotating skybox outside of
+			// the sun, moon and stars range
+
+			// Todo:
+			// Make the overlay skybox compatible
+			//with the regular dynamic skybox.
+
+			// Render in the following order:
+			// top, bottom, east, west, south, north, in the
+			// same fashion the regular textured skybox works.
+
+			// Top face of the overlay
+
+			driver->setMaterial(m_materials[5]);
+
+			video::SColor c = video::SColor (255, 255, 255, 255);
+			vertices[0] = video::S3DVertex(-1.02, 1.02, -1.02, 0, 1, 0, c, t, t);
+			vertices[1] = video::S3DVertex( 1.02, 1.02, -1.02, 0, 1, 0, c, o, t);
+			vertices[2] = video::S3DVertex( 1.02, 1.02, 1.02, 0, 1, 0, c, o, o);
+			vertices[3] = video::S3DVertex(-1.02, 1.02, 1.02, 0, 1, 0, c, t, o);
+
+			for (video::S3DVertex &vertex : vertices) {
+				vertex.Pos.rotateXZBy(m_star_yaw);
+				vertex.Pos.rotateYZBy(m_star_tilt);
+				vertex.Pos.rotateXYBy(wicked_time_of_day * 360 - 90);
+			}
+
+			driver->drawIndexedTriangleFan(&vertices[0], 4, indices, 2);
+
+			// Bottom face of the overlay
+
+			driver->setMaterial(m_materials[6]);
+
+			vertices[0] = video::S3DVertex(-1.02, -1.02, -1.02, 0, 1, 0, c, t, t);
+			vertices[1] = video::S3DVertex( 1.02, -1.02, -1.02, 0, 1, 0, c, o, t);
+			vertices[2] = video::S3DVertex( 1.02, -1.02, 1.02, 0, 1, 0, c, o, o);
+			vertices[3] = video::S3DVertex(-1.02, -1.02, 1.02, 0, 1, 0, c, t, o);
+
+			for (video::S3DVertex &vertex : vertices) {
+				vertex.Pos.rotateXZBy(m_star_yaw);
+				vertex.Pos.rotateYZBy(m_star_tilt);
+				vertex.Pos.rotateXYBy(wicked_time_of_day * 360 - 90);
+			}
+
+			driver->drawIndexedTriangleFan(&vertices[0], 4, indices, 2);
+
+			// Render sides
+
+			for (int i = 7; i < 11; i++){
+				driver->setMaterial(m_materials[i]);
+				vertices[0] = video::S3DVertex(-1.02, -1.02, -1.02, 0, 0, 1, c, t, t);
+				vertices[1] = video::S3DVertex( 1.02, -1.02, -1.02, 0, 0, 1, c, o, t);
+				vertices[2] = video::S3DVertex( 1.02, 1.02, -1.02, 0, 0, 1, c, o, o);
+				vertices[3] = video::S3DVertex(-1.02, 1.02, -1.02, 0, 0, 1, c, t, o);
+				for (video::S3DVertex &vertex : vertices) {
+					if (i == 7) {
+						// Switch from -Z (south) to +X (east)
+						vertex.Pos.rotateXZBy(90 + m_star_yaw);
+						vertex.Pos.rotateYZBy(m_star_tilt);
+						vertex.Pos.rotateXYBy(wicked_time_of_day * 360 - 90);
+					} else if (i == 8) {
+						// Switch from -Z (south) to -X (west)
+						vertex.Pos.rotateXZBy(-90 + m_star_yaw);
+						vertex.Pos.rotateYZBy(m_star_tilt);
+						vertex.Pos.rotateXYBy(wicked_time_of_day * 360 - 90);
+					} else if (i == 9) {
+						// Don't switch
+						vertex.Pos.rotateXZBy(m_star_yaw);
+						vertex.Pos.rotateYZBy(m_star_tilt);
+						vertex.Pos.rotateXYBy(wicked_time_of_day * 360 - 90);
+					} else {
+						// Switch from -Z (south) to +Z (north)
+						vertex.Pos.rotateXZBy(-180 + m_star_yaw);
+						vertex.Pos.rotateYZBy(m_star_tilt);
+						vertex.Pos.rotateXYBy(wicked_time_of_day * 360 - 90);
+					}
+
+				}
+				driver->drawIndexedTriangleFan(&vertices[0], 4, indices, 2);
+			}
+
+		}
 
 		// If sun, moon and stars are (temporarily) disabled, abort here
 		if (!m_bodies_visible)
@@ -266,27 +353,31 @@ void Sky::render()
 
 		// Draw sunrise/sunset horizon glow texture (textures/base/pack/sunrisebg.png)
 		if (m_sun_glow) {
-			float mid1 = 0.25;
-			float mid = wicked_time_of_day < 0.5 ? mid1 : (1.0 - mid1);
-			float a_ = 1.0f - std::fabs(wicked_time_of_day - mid) * 35.0f;
-			float a = easeCurve(MYMAX(0, MYMIN(1, a_)));
-			//std::cerr<<"a_="<<a_<<" a="<<a<<std::endl;
-			video::SColor c(255, 255, 255, 255);
-			float y = -(1.0 - a) * 0.22;
-			// Sunrise texture now sits behind the sun to prevent z-fighting
-			vertices[0] = video::S3DVertex(-1, -0.05 + y, -0.99, 0, 0, 0.99, c, t, t);
-			vertices[1] = video::S3DVertex( 1, -0.05 + y, -0.99, 0, 0, 0.99, c, o, t);
-			vertices[2] = video::S3DVertex( 1,   0.2 + y, -0.99, 0, 0, 0.99, c, o, o);
-			vertices[3] = video::S3DVertex(-1,   0.2 + y, -0.99, 0, 0, 0.99, c, t, o);
-			for (video::S3DVertex &vertex : vertices) {
-				if (wicked_time_of_day < 0.5)
-					// Switch from -Z (south) to +X (east)
-					vertex.Pos.rotateXZBy(m_sun_yaw);
-				else
-					// Switch from -Z (south) to -X (west)
-					vertex.Pos.rotateXZBy(m_sun_yaw - 180);
+			bool is_dawn = (wicked_time_of_day >= 0.20 && wicked_time_of_day < 0.35);
+			//std::cout << wicked_time_of_day << std::endl;
+			if (true) {
+				float mid1 = 0.25;
+				float mid = wicked_time_of_day < 0.5 ? mid1 : (1.0 - mid1);
+				float a_ = 1.0f - std::fabs(wicked_time_of_day - mid) * 35.0f;
+				float a = easeCurve(MYMAX(0, MYMIN(1, a_)));
+				//std::cerr<<"a_="<<a_<<" a="<<a<<std::endl;
+				video::SColor c(255, 255, 255, 255);
+				float y = -(1.0 - a) * 0.22;
+				// Sunrise texture now sits behind the sun to prevent z-fighting
+				vertices[0] = video::S3DVertex(-1, -0.05 + y, -1, 0, 0, 1, c, t, t);
+				vertices[1] = video::S3DVertex( 1, -0.05 + y, -1, 0, 0, 1, c, o, t);
+				vertices[2] = video::S3DVertex( 1,   0.2 + y, -1, 0, 0, 1, c, o, o);
+				vertices[3] = video::S3DVertex(-1,   0.2 + y, -1, 0, 0, 1, c, t, o);
+				for (video::S3DVertex &vertex : vertices) {
+					if (wicked_time_of_day < 0.5)
+						// Switch from -Z (south) to +X (east)
+						vertex.Pos.rotateXZBy(m_sun_yaw);
+					else
+						// Switch from -Z (south) to -X (west)
+						vertex.Pos.rotateXZBy(m_sun_yaw - 180);
+				}
+				driver->drawIndexedTriangleFan(&vertices[0], 4, indices, 2);
 			}
-			driver->drawIndexedTriangleFan(&vertices[0], 4, indices, 2);
 		}
 
 		if (m_sun_visible) {
@@ -569,6 +660,7 @@ void Sky::render()
 				driver->drawIndexedTriangleFan(&vertices[0], 4, indices, 2);
 			}
 		}
+
 	}
 }
 
