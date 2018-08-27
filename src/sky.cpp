@@ -61,7 +61,6 @@ Sky::Sky(s32 id, ITextureSource *tsrc):
 	m_materials[2] = mat;
 	m_materials[2].setTexture(0, tsrc->getTextureForMesh("sunrisebg.png"));
 	m_materials[2].MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
-	//m_materials[2].MaterialType = video::EMT_TRANSPARENT_ADD_COLOR;
 
 	// we have to now replace our texture instead of caching it in the class
 
@@ -261,6 +260,38 @@ void Sky::render()
 			driver->drawIndexedTriangleFan(&vertices[0], 4, indices, 2);
 		}
 
+		// If sun, moon and stars are (temporarily) disabled, abort here
+		if (!m_bodies_visible)
+			return;
+
+		// Draw sunrise/sunset horizon glow texture (textures/base/pack/sunrisebg.png)
+		if (m_sun_glow) {
+			
+			driver->setMaterial(m_materials[2]);
+
+			float mid1 = 0.25;
+			float mid = wicked_time_of_day < 0.5 ? mid1 : (1.0 - mid1);
+			float a_ = 1.0f - std::fabs(wicked_time_of_day - mid) * 35.0f;
+			float a = easeCurve(MYMAX(0, MYMIN(1, a_)));
+			//std::cerr<<"a_="<<a_<<" a="<<a<<std::endl;
+			video::SColor c(255, 255, 255, 255);
+			float y = -(1.0 - a) * 0.22;
+			// Sunrise texture now sits behind the sun to prevent z-fighting
+			vertices[0] = video::S3DVertex(-0.99, -0.05 + y, -0.99, 0.99, 0, 0.99, c, t, t);
+			vertices[1] = video::S3DVertex( 0.99, -0.05 + y, -0.99, 0.99, 0, 0.99, c, o, t);
+			vertices[2] = video::S3DVertex( 0.99,   0.2 + y, -0.99, 0.99, 0, 0.99, c, o, o);
+			vertices[3] = video::S3DVertex(-0.99,   0.2 + y, -0.99, 0.99, 0, 0.99, c, t, o);
+			for (video::S3DVertex &vertex : vertices) {
+				if (wicked_time_of_day < 0.5)
+					// Switch from -Z (south) to +X (east)
+					vertex.Pos.rotateXZBy(m_sun_yaw);
+				else
+					// Switch from -Z (south) to -X (west)
+					vertex.Pos.rotateXZBy(m_sun_yaw + 180);
+			}
+			driver->drawIndexedTriangleFan(&vertices[0], 4, indices, 2);
+		}
+
 		if (m_overlay_visible) {
 			// Draw the rotating skybox outside of
 			// the sun, moon and stars range
@@ -278,10 +309,10 @@ void Sky::render()
 			driver->setMaterial(m_materials[5]);
 
 			video::SColor c = video::SColor (255, 255, 255, 255);
-			vertices[0] = video::S3DVertex(-1.02, 1.02, -1.02, 0, 1, 0, c, t, t);
-			vertices[1] = video::S3DVertex( 1.02, 1.02, -1.02, 0, 1, 0, c, o, t);
-			vertices[2] = video::S3DVertex( 1.02, 1.02, 1.02, 0, 1, 0, c, o, o);
-			vertices[3] = video::S3DVertex(-1.02, 1.02, 1.02, 0, 1, 0, c, t, o);
+			vertices[0] = video::S3DVertex(-1.1, 1.1, -1.1, 0, 1, 0, c, t, t);
+			vertices[1] = video::S3DVertex( 1.1, 1.1, -1.1, 0, 1, 0, c, o, t);
+			vertices[2] = video::S3DVertex( 1.1, 1.1, 1.1, 0, 1, 0, c, o, o);
+			vertices[3] = video::S3DVertex(-1.1, 1.1, 1.1, 0, 1, 0, c, t, o);
 
 			for (video::S3DVertex &vertex : vertices) {
 				vertex.Pos.rotateXZBy(m_star_yaw);
@@ -295,10 +326,10 @@ void Sky::render()
 
 			driver->setMaterial(m_materials[6]);
 
-			vertices[0] = video::S3DVertex(-1.02, -1.02, -1.02, 0, 1, 0, c, t, t);
-			vertices[1] = video::S3DVertex( 1.02, -1.02, -1.02, 0, 1, 0, c, o, t);
-			vertices[2] = video::S3DVertex( 1.02, -1.02, 1.02, 0, 1, 0, c, o, o);
-			vertices[3] = video::S3DVertex(-1.02, -1.02, 1.02, 0, 1, 0, c, t, o);
+			vertices[0] = video::S3DVertex(-1.1, -1.1, -1.1, 0, 1, 0, c, t, t);
+			vertices[1] = video::S3DVertex( 1.1, -1.1, -1.1, 0, 1, 0, c, o, t);
+			vertices[2] = video::S3DVertex( 1.1, -1.1, 1.1, 0, 1, 0, c, o, o);
+			vertices[3] = video::S3DVertex(-1.1, -1.1, 1.1, 0, 1, 0, c, t, o);
 
 			for (video::S3DVertex &vertex : vertices) {
 				vertex.Pos.rotateXZBy(m_star_yaw);
@@ -312,10 +343,10 @@ void Sky::render()
 
 			for (int i = 7; i < 11; i++){
 				driver->setMaterial(m_materials[i]);
-				vertices[0] = video::S3DVertex(-1.02, -1.02, -1.02, 0, 0, 1, c, t, t);
-				vertices[1] = video::S3DVertex( 1.02, -1.02, -1.02, 0, 0, 1, c, o, t);
-				vertices[2] = video::S3DVertex( 1.02, 1.02, -1.02, 0, 0, 1, c, o, o);
-				vertices[3] = video::S3DVertex(-1.02, 1.02, -1.02, 0, 0, 1, c, t, o);
+				vertices[0] = video::S3DVertex(-1.1, -1.1, -1.1, 0, 0, 1, c, t, t);
+				vertices[1] = video::S3DVertex( 1.1, -1.1, -1.1, 0, 0, 1, c, o, t);
+				vertices[2] = video::S3DVertex( 1.1, 1.1, -1.1, 0, 0, 1, c, o, o);
+				vertices[3] = video::S3DVertex(-1.1, 1.1, -1.1, 0, 0, 1, c, t, o);
 				for (video::S3DVertex &vertex : vertices) {
 					if (i == 7) {
 						// Switch from -Z (south) to +X (east)
@@ -343,37 +374,6 @@ void Sky::render()
 				driver->drawIndexedTriangleFan(&vertices[0], 4, indices, 2);
 			}
 
-		}
-
-		// If sun, moon and stars are (temporarily) disabled, abort here
-		if (!m_bodies_visible)
-			return;
-
-		driver->setMaterial(m_materials[2]);
-
-		// Draw sunrise/sunset horizon glow texture (textures/base/pack/sunrisebg.png)
-		if (m_sun_glow) {
-			float mid1 = 0.25;
-			float mid = wicked_time_of_day < 0.5 ? mid1 : (1.0 - mid1);
-			float a_ = 1.0f - std::fabs(wicked_time_of_day - mid) * 35.0f;
-			float a = easeCurve(MYMAX(0, MYMIN(1, a_)));
-			//std::cerr<<"a_="<<a_<<" a="<<a<<std::endl;
-			video::SColor c(255, 255, 255, 255);
-			float y = -(1.0 - a) * 0.22;
-			// Sunrise texture now sits behind the sun to prevent z-fighting
-			vertices[0] = video::S3DVertex(-1, -0.05 + y, -0.99, 0, 0, 0.99, c, t, t);
-			vertices[1] = video::S3DVertex( 1, -0.05 + y, -0.99, 0, 0, 0.99, c, o, t);
-			vertices[2] = video::S3DVertex( 1,   0.2 + y, -0.99, 0, 0, 0.99, c, o, o);
-			vertices[3] = video::S3DVertex(-1,   0.2 + y, -0.99, 0, 0, 0.99, c, t, o);
-			for (video::S3DVertex &vertex : vertices) {
-				if (wicked_time_of_day < 0.5)
-					// Switch from -Z (south) to +X (east)
-					vertex.Pos.rotateXZBy(m_sun_yaw);
-				else
-					// Switch from -Z (south) to -X (west)
-					vertex.Pos.rotateXZBy(m_sun_yaw - 180);
-			}
-			driver->drawIndexedTriangleFan(&vertices[0], 4, indices, 2);
 		}
 
 		if (m_sun_visible) {
