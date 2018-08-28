@@ -524,6 +524,31 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 busytime, f32 tool_r
 		//std::cout << "Third block, frac = " << bobfrac << std::endl;
 		wield_position.X -= sin(bobfrac*M_PI*2.0) * 3.0;
 		wield_position.Y += sin(my_modf(bobfrac*2.0)*M_PI) * 3.0;
+#if 1
+		// to help with finding rotations, change the '0' above
+		// to '1' and recompile, then fly around.
+
+		wield_position.X += -50;
+		wield_position.Y += 20;
+		wield_position.Z += 0;
+
+		float pitch = wrapDegrees_180(player_position.X);
+		float yaw   = wrapDegrees_180(player_position.Y);
+		float roll  = wrapDegrees_180(player_position.Z);
+		//wield_rotation_q *= core::quaternion(
+		//	(pitch) * core::DEGTORAD,
+		//	(roll) * core::DEGTORAD,
+		//	(yaw) * core::DEGTORAD
+		//);
+		wield_rotation_q *= core::quaternion(pitch * core::DEGTORAD, 0, 0);
+		wield_rotation_q *= core::quaternion(0, yaw * core::DEGTORAD, 0);
+		wield_rotation_q *= core::quaternion(0, 0, roll * core::DEGTORAD);
+		dstream << "Wield rotation " << pitch << ", " << yaw << ", " << roll << std::endl;
+		// -90, 15, -60
+		// convert back to euler angles
+		wield_rotation_q.toEuler(wield_rotation);
+		wield_rotation *= core::RADTODEG;
+#endif
 	}
 	if (!wield_position.equals(v3f(55, -35, 65))) {
 		//std::cout << m_digging_anim << ": " << wield_position.X-55 << ", " << wield_position.Y+35 << ", " << wield_position.Z-65 << std::endl;
@@ -673,18 +698,22 @@ void Camera::removeNametag(Nametag *nametag)
 	delete nametag;
 }
 
-static core::quaternion quatFromAngles(float pitch, float roll, float yaw)
+static core::quaternion quatFromAngles(float pitch, float yaw, float roll)
 {
 	// if the order of angles is important:
-	//core::quaternion res;
+	core::quaternion res;
 	//res *= core::quaternion().fromAngleAxis(pitch * core::DEGTORAD, v3f(0.0f, 0.0f, 1.0f));
 	//res *= core::quaternion().fromAngleAxis(roll  * core::DEGTORAD, v3f(1.0f, 0.0f, 0.0f));
 	//res *= core::quaternion().fromAngleAxis(yaw   * core::DEGTORAD, v3f(0.0f, 1.0f, 0.0f));
-	return core::quaternion(
-		pitch * core::DEGTORAD,
-		roll  * core::DEGTORAD,
-		yaw   * core::DEGTORAD
-	);
+	res *= core::quaternion(pitch * core::DEGTORAD, 0, 0);
+	res *= core::quaternion(0, yaw * core::DEGTORAD, 0);
+	res *= core::quaternion(0, 0, roll * core::DEGTORAD);
+	return res;
+	//return core::quaternion(
+	//	pitch * core::DEGTORAD,
+	//	yaw   * core::DEGTORAD,
+	//	roll  * core::DEGTORAD
+	//);
 }
 
 v3f WieldAnimation::getTranslationAt(float time) const
@@ -719,10 +748,10 @@ void WieldAnimation::fillRepository()
 	// default: "punch"
 	WieldAnimation &punch = repository["punch"];
 	punch.m_translationspline
-		.addNode(v3f(0, 0, 12.5))
-		.addNode(v3f(-70,  50, 12.5))
-		.addNode(v3f(-70,  -50, 12.5))
-		.addNode(v3f(0, 0, 12.5))
+		.addNode(v3f(0, 0, 0))
+		.addNode(v3f(-70,  50, 0))
+		.addNode(v3f(-70,  -50, 0))
+		.addNode(v3f(0, 0, 0))
 		;
 	punch.m_translationspline
 		.addIndex(1.0, 0, 3)
@@ -741,10 +770,10 @@ void WieldAnimation::fillRepository()
 
 	WieldAnimation &dig = repository["dig"];
 	dig.m_translationspline
-		.addNode(v3f(0, 0, 12.5))
-		.addNode(v3f(-70,  -50, 12.5))
-		.addNode(v3f(-70,  50, 12.5))
-		.addNode(v3f(0, 0, 12.5))
+		.addNode(v3f(0, 0, 0))
+		.addNode(v3f(-70,  -50, 0))
+		.addNode(v3f(-70,  50, 0))
+		.addNode(v3f(0, 0, 0))
 		;
 	dig.m_translationspline
 		.addIndex(1.0, 0, 3)
@@ -762,6 +791,32 @@ void WieldAnimation::fillRepository()
 	dig.m_rotationspline
 		.addIndex(1.0, 0, 2)
 		.addIndex(1.0, 2, 3)
+		.normalizeDurations()
+		;
+
+	// eat (without chewing)
+	WieldAnimation &eat = repository["eat"];
+	eat.m_translationspline
+		.addNode(v3f(0, 0, 0))
+		.addNode(v3f(-35,  20, 0))
+		.addNode(v3f(-55,  10, 0))
+		.addNode(v3f(-30,  0, 0))
+		.addNode(v3f(0, 0, 0))
+		;
+	eat.m_translationspline
+		.addIndex(1.0, 0, 2)
+		.addIndex(1.0, 2, 2)
+		.normalizeDurations()
+		;
+
+	eat.m_rotationspline
+		.addNode(quatFromAngles( 0.0f, 0.0f, 0.0f))
+		.addNode(quatFromAngles( -90.0f, 20.0f, -80.0f))
+		.addNode(quatFromAngles( 0.0f, 0.0f, 0.0f))
+		;
+	eat.m_rotationspline
+		.addIndex(1.0, 0, 1)
+		.addIndex(1.0, 1, 1)
 		.normalizeDurations()
 		;
 }
