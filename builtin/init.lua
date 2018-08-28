@@ -33,6 +33,7 @@ local asyncpath = scriptdir .. "async" .. DIR_DELIM
 dofile(commonpath .. "strict.lua")
 dofile(commonpath .. "serialize.lua")
 dofile(commonpath .. "misc_helpers.lua")
+dofile(commonpath .. "datastructures.lua")
 
 if INIT == "game" then
 	dofile(gamepath .. "init.lua")
