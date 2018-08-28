@@ -54,6 +54,7 @@ Particle::Particle(
 	float size,
 	bool collisiondetection,
 	bool collision_removal,
+	bool object_collision,
 	bool vertical,
 	video::ITexture *texture,
 	v2f texpos,
@@ -93,6 +94,7 @@ Particle::Particle(
 	m_size = size;
 	m_collisiondetection = collisiondetection;
 	m_collision_removal = collision_removal;
+	m_object_collision = object_collision;
 	m_vertical = vertical;
 	m_glow = glow;
 
@@ -135,9 +137,9 @@ void Particle::step(float dtime)
 		aabb3f box = m_collisionbox;
 		v3f p_pos = m_pos * BS;
 		v3f p_velocity = m_velocity * BS;
-		collisionMoveResult r = collisionMoveSimple(m_env,
-			m_gamedef, BS * 0.5, box, 0, dtime, &p_pos,
-			&p_velocity, m_acceleration * BS);
+		collisionMoveResult r = collisionMoveSimple(m_env, m_gamedef, BS * 0.5f,
+			box, 0.0f, dtime, &p_pos, &p_velocity, m_acceleration * BS, nullptr,
+			m_object_collision);
 		if (m_collision_removal && r.collides) {
 			// force expiration of the particle
 			m_expiration = -1.0;
@@ -243,14 +245,27 @@ void Particle::updateVertices()
 	ParticleSpawner
 */
 
-ParticleSpawner::ParticleSpawner(IGameDef *gamedef, LocalPlayer *player,
-	u16 amount, float time,
-	v3f minpos, v3f maxpos, v3f minvel, v3f maxvel, v3f minacc, v3f maxacc,
-	float minexptime, float maxexptime, float minsize, float maxsize,
-	bool collisiondetection, bool collision_removal, u16 attached_id, bool vertical,
-	video::ITexture *texture, u32 id, const struct TileAnimationParams &anim,
+ParticleSpawner::ParticleSpawner(
+	IGameDef *gamedef,
+	LocalPlayer *player,
+	u16 amount,
+	float time,
+	v3f minpos, v3f maxpos,
+	v3f minvel, v3f maxvel,
+	v3f minacc, v3f maxacc,
+	float minexptime, float maxexptime,
+	float minsize, float maxsize,
+	bool collisiondetection,
+	bool collision_removal,
+	bool object_collision,
+	u16 attached_id,
+	bool vertical,
+	video::ITexture *texture,
+	u32 id,
+	const struct TileAnimationParams &anim,
 	u8 glow,
-	ParticleManager *p_manager) :
+	ParticleManager *p_manager
+):
 	m_particlemanager(p_manager)
 {
 	m_gamedef = gamedef;
@@ -269,6 +284,7 @@ ParticleSpawner::ParticleSpawner(IGameDef *gamedef, LocalPlayer *player,
 	m_maxsize = maxsize;
 	m_collisiondetection = collisiondetection;
 	m_collision_removal = collision_removal;
+	m_object_collision = object_collision;
 	m_attached_id = attached_id;
 	m_vertical = vertical;
 	m_texture = texture;
@@ -326,6 +342,7 @@ void ParticleSpawner::spawnParticle(ClientEnvironment *env, float radius,
 		size,
 		m_collisiondetection,
 		m_collision_removal,
+		m_object_collision,
 		m_vertical,
 		m_texture,
 		v2f(0.0, 0.0),
@@ -507,6 +524,7 @@ void ParticleManager::handleParticleEvent(ClientEvent *event, Client *client,
 					event->add_particlespawner.maxsize,
 					event->add_particlespawner.collisiondetection,
 					event->add_particlespawner.collision_removal,
+					event->add_particlespawner.object_collision,
 					event->add_particlespawner.attached_id,
 					event->add_particlespawner.vertical,
 					texture,
@@ -545,6 +563,7 @@ void ParticleManager::handleParticleEvent(ClientEvent *event, Client *client,
 					event->spawn_particle.size,
 					event->spawn_particle.collisiondetection,
 					event->spawn_particle.collision_removal,
+					event->spawn_particle.object_collision,
 					event->spawn_particle.vertical,
 					texture,
 					v2f(0.0, 0.0),
@@ -635,6 +654,7 @@ void ParticleManager::addNodeParticle(IGameDef* gamedef,
 		rand() % 100 / 100., // expiration time
 		visual_size,
 		true,
+		false,
 		false,
 		false,
 		texture,

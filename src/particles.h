@@ -45,6 +45,7 @@ class Particle : public scene::ISceneNode
 		float size,
 		bool collisiondetection,
 		bool collision_removal,
+		bool object_collision,
 		bool vertical,
 		video::ITexture *texture,
 		v2f texpos,
@@ -104,6 +105,7 @@ private:
 	video::SColor m_color;
 	bool m_collisiondetection;
 	bool m_collision_removal;
+	bool m_object_collision;
 	bool m_vertical;
 	v3s16 m_camera_offset;
 	struct TileAnimationParams m_animation;
@@ -126,6 +128,7 @@ public:
 		float minsize, float maxsize,
 		bool collisiondetection,
 		bool collision_removal,
+		bool object_collision,
 		u16 attached_id,
 		bool vertical,
 		video::ITexture *texture,
@@ -165,6 +168,7 @@ private:
 	std::vector<float> m_spawntimes;
 	bool m_collisiondetection;
 	bool m_collision_removal;
+	bool m_object_collision;
 	bool m_vertical;
 	u16 m_attached_id;
 	struct TileAnimationParams m_animation;

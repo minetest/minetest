@@ -6619,12 +6619,19 @@ Used by `minetest.add_particle`.
         -- Disappears after expirationtime seconds
 
         size = 1,
+        -- Scales the visual size of the particle texture.
 
         collisiondetection = false,
-        -- If true collides with physical objects
+        -- If true collides with `walkable` nodes and, depending on the
+        -- `object_collision` field, objects too.
 
         collision_removal = false,
         -- If true particle is removed when it collides.
+        -- Requires collisiondetection = true to have any effect.
+
+        object_collision = false,
+        -- If true particle collides with objects that are defined as
+        -- `physical = true,` and `collide_with_objects = true,`.
         -- Requires collisiondetection = true to have any effect.
 
         vertical = false,
@@ -6651,10 +6658,12 @@ Used by `minetest.add_particlespawner`.
 
     {
         amount = 1,
+        -- Number of particles spawned over the time period `time`.
 
         time = 1,
-        -- If time is 0 has infinite lifespan and spawns the amount on a
-        -- per-second basis.
+        -- Lifespan of spawner in seconds.
+        -- If time is 0 spawner has infinite lifespan and spawns the `amount` on
+        -- a per-second basis.
 
         minpos = {x=0, y=0, z=0},
         maxpos = {x=0, y=0, z=0},
@@ -6666,14 +6675,21 @@ Used by `minetest.add_particlespawner`.
         maxexptime = 1,
         minsize = 1,
         maxsize = 1,
-        -- The particle's properties are random values in between the bounds
+        -- The particles' properties are random values between the min and max
+        -- values.
         -- pos, velocity, acceleration, expirationtime, size
 
         collisiondetection = false,
-        -- If true collides with physical objects
+        -- If true collide with `walkable` nodes and, depending on the
+        -- `object_collision` field, objects too.
 
         collision_removal = false,
-        -- If true particle is removed when it collides.
+        -- If true particles are removed when they collide.
+        -- Requires collisiondetection = true to have any effect.
+
+        object_collision = false,
+        -- If true particles collide with objects that are defined as
+        -- `physical = true,` and `collide_with_objects = true,`.
         -- Requires collisiondetection = true to have any effect.
 
         attached = ObjectRef,
@@ -6681,15 +6697,15 @@ Used by `minetest.add_particlespawner`.
         -- relative to this object's position and yaw
 
         vertical = false,
-        -- If true faces player using y axis only
+        -- If true face player using y axis only
 
         texture = "image.png",
 
         playername = "singleplayer",
-        -- Optional, if specified spawns particle only on the player's client
+        -- Optional, if specified spawns particles only on the player's client
 
         animation = {Tile Animation definition},
-        -- Optional, specifies how to animate the particle texture
+        -- Optional, specifies how to animate the particles' texture
 
         glow = 0
         -- Optional, specify particle self-luminescence in darkness.

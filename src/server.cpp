@@ -1578,7 +1578,7 @@ void Server::SendShowFormspecMessage(session_t peer_id, const std::string &forms
 void Server::SendSpawnParticle(session_t peer_id, u16 protocol_version,
 				v3f pos, v3f velocity, v3f acceleration,
 				float expirationtime, float size, bool collisiondetection,
-				bool collision_removal,
+				bool collision_removal, bool object_collision,
 				bool vertical, const std::string &texture,
 				const struct TileAnimationParams &animation, u8 glow)
 {
@@ -1603,8 +1603,8 @@ void Server::SendSpawnParticle(session_t peer_id, u16 protocol_version,
 
 			SendSpawnParticle(client_id, player->protocol_version,
 					pos, velocity, acceleration,
-					expirationtime, size, collisiondetection,
-					collision_removal, vertical, texture, animation, glow);
+					expirationtime, size, collisiondetection, collision_removal,
+					object_collision, vertical, texture, animation, glow);
 		}
 		return;
 	}
@@ -1621,6 +1621,7 @@ void Server::SendSpawnParticle(session_t peer_id, u16 protocol_version,
 	animation.serialize(os, protocol_version);
 	pkt.putRawString(os.str());
 	pkt << glow;
+	pkt << object_collision;
 
 	Send(&pkt);
 }
@@ -1630,7 +1631,7 @@ void Server::SendAddParticleSpawner(session_t peer_id, u16 protocol_version,
 	u16 amount, float spawntime, v3f minpos, v3f maxpos,
 	v3f minvel, v3f maxvel, v3f minacc, v3f maxacc, float minexptime, float maxexptime,
 	float minsize, float maxsize, bool collisiondetection, bool collision_removal,
-	u16 attached_id, bool vertical, const std::string &texture, u32 id,
+	bool object_collision, u16 attached_id, bool vertical, const std::string &texture, u32 id,
 	const struct TileAnimationParams &animation, u8 glow)
 {
 	if (peer_id == PEER_ID_INEXISTENT) {
@@ -1644,7 +1645,8 @@ void Server::SendAddParticleSpawner(session_t peer_id, u16 protocol_version,
 					amount, spawntime, minpos, maxpos,
 					minvel, maxvel, minacc, maxacc, minexptime, maxexptime,
 					minsize, maxsize, collisiondetection, collision_removal,
-					attached_id, vertical, texture, id, animation, glow);
+					object_collision, attached_id, vertical, texture, id,
+					animation, glow);
 		}
 		return;
 	}
@@ -1665,6 +1667,7 @@ void Server::SendAddParticleSpawner(session_t peer_id, u16 protocol_version,
 	animation.serialize(os, protocol_version);
 	pkt.putRawString(os.str());
 	pkt << glow;
+	pkt << object_collision;
 
 	Send(&pkt);
 }
@@ -3165,7 +3168,7 @@ void Server::notifyPlayers(const std::wstring &msg)
 void Server::spawnParticle(const std::string &playername, v3f pos,
 	v3f velocity, v3f acceleration,
 	float expirationtime, float size, bool
-	collisiondetection, bool collision_removal,
+	collisiondetection, bool collision_removal, bool object_collision,
 	bool vertical, const std::string &texture,
 	const struct TileAnimationParams &animation, u8 glow)
 {
@@ -3184,14 +3187,14 @@ void Server::spawnParticle(const std::string &playername, v3f pos,
 	}
 
 	SendSpawnParticle(peer_id, proto_ver, pos, velocity, acceleration,
-			expirationtime, size, collisiondetection,
-			collision_removal, vertical, texture, animation, glow);
+			expirationtime, size, collisiondetection, collision_removal,
+			object_collision, vertical, texture, animation, glow);
 }
 
 u32 Server::addParticleSpawner(u16 amount, float spawntime,
 	v3f minpos, v3f maxpos, v3f minvel, v3f maxvel, v3f minacc, v3f maxacc,
 	float minexptime, float maxexptime, float minsize, float maxsize,
-	bool collisiondetection, bool collision_removal,
+	bool collisiondetection, bool collision_removal, bool object_collision,
 	ServerActiveObject *attached, bool vertical, const std::string &texture,
 	const std::string &playername, const struct TileAnimationParams &animation,
 	u8 glow)
@@ -3220,8 +3223,8 @@ u32 Server::addParticleSpawner(u16 amount, float spawntime,
 
 	SendAddParticleSpawner(peer_id, proto_ver, amount, spawntime,
 		minpos, maxpos, minvel, maxvel, minacc, maxacc,
-		minexptime, maxexptime, minsize, maxsize,
-		collisiondetection, collision_removal, attached_id, vertical,
+		minexptime, maxexptime, minsize, maxsize, collisiondetection,
+		collision_removal, object_collision, attached_id, vertical,
 		texture, id, animation, glow);
 
 	return id;
