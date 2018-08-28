@@ -3833,23 +3833,23 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 	/*
 		Damage flash
 	*/
-	if (runData.damage_flash > 0.0) {
+	if (runData.damage_flash > 0.0f) {
 		video::SColor color(runData.damage_flash, 180, 0, 0);
 		driver->draw2DRectangle(color,
 					core::rect<s32>(0, 0, screensize.X, screensize.Y),
 					NULL);
 
-		runData.damage_flash -= 100.0 * dtime;
+		runData.damage_flash -= 384.0f * dtime;
 	}
 
 	/*
 		Damage camera tilt
 	*/
-	if (player->hurt_tilt_timer > 0.0) {
-		player->hurt_tilt_timer -= dtime * 5;
+	if (player->hurt_tilt_timer > 0.0f) {
+		player->hurt_tilt_timer -= dtime * 6.0f;
 
-		if (player->hurt_tilt_timer < 0)
-			player->hurt_tilt_strength = 0;
+		if (player->hurt_tilt_timer < 0.0f)
+			player->hurt_tilt_strength = 0.0f;
 	}
 
 	/*
