@@ -188,19 +188,21 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		Nodebox version 5
 		Add disconnected nodeboxes
 		Add TOCLIENT_FORMSPEC_PREPEND
+	PROTOCOL VERSION 37:
+		Redo detached inventory sending
 */
 
-#define LATEST_PROTOCOL_VERSION 36
+#define LATEST_PROTOCOL_VERSION 37
 #define LATEST_PROTOCOL_VERSION_STRING TOSTRING(LATEST_PROTOCOL_VERSION)
 
 // Server's supported network protocol range
-#define SERVER_PROTOCOL_VERSION_MIN 36
+#define SERVER_PROTOCOL_VERSION_MIN 37
 #define SERVER_PROTOCOL_VERSION_MAX LATEST_PROTOCOL_VERSION
 
 // Client's supported network protocol range
 // The minimal version depends on whether
 // send_pre_v25_init is enabled or not
-#define CLIENT_PROTOCOL_VERSION_MIN 36
+#define CLIENT_PROTOCOL_VERSION_MIN 37
 #define CLIENT_PROTOCOL_VERSION_MAX LATEST_PROTOCOL_VERSION
 
 // Constant that differentiates the protocol from random data and other protocols
