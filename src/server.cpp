@@ -2498,14 +2498,13 @@ void Server::sendDetachedInventory(const std::string &name, session_t peer_id)
 	if (inv_it == m_detached_inventories.end()) {
 		pkt << false; // Remove inventory
 	} else {
-		pkt << true; // Add/update inventory
+		pkt << true; // Update inventory
 
+		// Serialization & NetworkPacket isn't a love story
 		std::ostringstream os(std::ios_base::binary);
 		inv_it->second->serialize(os);
 		pkt << os.str();
 	}
-
-	// Make data buffer
 
 	if (peer_id == PEER_ID_INEXISTENT)
 		m_clients.sendToAll(&pkt);
