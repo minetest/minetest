@@ -526,7 +526,7 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 busytime, f32 tool_r
 		//std::cout << "Third block, frac = " << bobfrac << std::endl;
 		wield_position.X -= sin(bobfrac*M_PI*2.0) * 3.0;
 		wield_position.Y += sin(my_modf(bobfrac*2.0)*M_PI) * 3.0;
-#if 1
+#if 0
 		// to help with finding rotations, change the '0' above
 		// to '1' and recompile, then fly around.
 
@@ -812,13 +812,22 @@ void WieldAnimation::fillRepository()
 		.addNode(v3f(0, 0, 0))
 		.addNode(v3f(-35,  20, 0))
 		.addNode(v3f(-55,  10, 0))
+		.addNode(v3f(-55,  10, 0))
+		.addNode(v3f(-55,  15, 0))
+		.addNode(v3f(-55,  10, 0))
+		.addNode(v3f(-55,  15, 0))
+		.addNode(v3f(-55,  10, 0))
 		.addNode(v3f(-30,  0, 0))
+		.addNode(v3f(0, 0, 0))
 		.addNode(v3f(0, 0, 0))
 		;
 	eat.m_translationspline
-		.addIndex(1.0, 0, 2)
-		.addIndex(2.0, 2, 0)
-		.addIndex(1.0, 2, 2)
+		.addIndex(1.0, 0, 3)
+		.addIndex(0.5, 3, 1)
+		.addIndex(0.5, 4, 1)
+		.addIndex(0.5, 5, 1)
+		.addIndex(0.5, 6, 1)
+		.addIndex(1.0, 7, 3)
 		;
 
 	eat.m_rotationspline
