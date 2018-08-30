@@ -197,7 +197,7 @@ function core.get_node_drops(node, toolname)
 		return {nodename}
 	elseif type(drop) == "string" then
 		-- itemstring drop
-		return {drop}
+		return drop ~= "" and {drop} or {}
 	elseif drop.items == nil then
 		-- drop = {} to disable default drop
 		return {}
