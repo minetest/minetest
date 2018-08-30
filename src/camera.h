@@ -54,11 +54,15 @@ class WieldAnimation {
 public:
 	v3f getTranslationAt(float time) const;
 	core::quaternion getRotationAt(float time) const;
+	float getDuration() const;
+	// call this *after* filling the splines
+	void setDuration(float duration);
 
 	static const WieldAnimation& getNamed(const std::string &name);
 private:
 	SplineSequence<v3f> m_translationspline;
 	SplineSequence<core::quaternion> m_rotationspline;
+	float m_duration;
 
 	static std::unordered_map<std::string, WieldAnimation> repository;
 	static void fillRepository();
@@ -225,7 +229,8 @@ private:
 	// Fall view bobbing
 	f32 m_view_bobbing_fall = 0.0f;
 
-	// Digging animation frame (0 <= m_digging_anim < 1)
+	// Digging animation frame, in seconds
+	// (0 <= m_digging_anim < m_wield_animation.getDuration())
 	f32 m_digging_anim = 0.0f;
 	// If -1, no digging animation
 	// If 0, left-click digging animation

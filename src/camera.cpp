@@ -174,15 +174,15 @@ void Camera::step(f32 dtime)
 	}
 
 	if (m_digging_button != -1) {
-		f32 offset = dtime * 3.5f;
 		float m_digging_anim_was = m_digging_anim;
-		m_digging_anim += offset;
-		if (m_digging_anim >= 1)
+		m_digging_anim += dtime;
+		const WieldAnimation &wield_anim = WieldAnimation::getNamed(m_wield_animation);
+		if (m_digging_anim >= wield_anim.getDuration())
 		{
 			m_digging_anim = 0;
 			m_digging_button = -1;
 		}
-		float lim = 0.15;
+		float lim = 0.05f;
 		if(m_digging_anim_was < lim && m_digging_anim >= lim)
 		{
 			if (m_digging_button == 0) {
@@ -487,6 +487,7 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 busytime, f32 tool_r
 	v3f wield_rotation = v3f(-100, 120, -100);
 	core::quaternion wield_rotation_q = core::quaternion(wield_rotation * core::DEGTORAD);
 	wield_position.Y += fabs(m_wield_change_timer)*320 - 40;
+#if 0
 	if(m_digging_anim < 0.05 || m_digging_anim > 0.5)
 	{
 		// Why is this block here?
@@ -504,6 +505,7 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 busytime, f32 tool_r
 		//wield_rotation.X -= frac * 15.0 * pow(ratiothing2, 1.4f);
 		//wield_rotation.Z += frac * 15.0 * pow(ratiothing2, 1.0f);
 	}
+#endif
 	if (m_digging_button != -1)
 	{
 		f32 digfrac = m_digging_anim;
@@ -730,6 +732,18 @@ core::quaternion WieldAnimation::getRotationAt(float time) const
 	return rotation;
 }
 
+float WieldAnimation::getDuration() const
+{
+	return m_duration;
+}
+
+void WieldAnimation::setDuration(float duration)
+{
+	m_duration = duration;
+	m_translationspline.normalizeDurations(duration);
+	m_rotationspline.normalizeDurations(duration);
+}
+
 const WieldAnimation& WieldAnimation::getNamed(const std::string &name)
 {
 	if (repository.size() == 0)
@@ -755,7 +769,6 @@ void WieldAnimation::fillRepository()
 		;
 	punch.m_translationspline
 		.addIndex(1.0, 0, 3)
-		.normalizeDurations()
 		;
 
 	punch.m_rotationspline
@@ -765,8 +778,8 @@ void WieldAnimation::fillRepository()
 		;
 	punch.m_rotationspline
 		.addIndex(1.0, 0, 2)
-		.normalizeDurations()
 		;
+	punch.setDuration(0.3f);
 
 	WieldAnimation &dig = repository["dig"];
 	dig.m_translationspline
@@ -777,7 +790,6 @@ void WieldAnimation::fillRepository()
 		;
 	dig.m_translationspline
 		.addIndex(1.0, 0, 3)
-		.normalizeDurations()
 		;
 
 	dig.m_rotationspline
@@ -791,8 +803,8 @@ void WieldAnimation::fillRepository()
 	dig.m_rotationspline
 		.addIndex(1.0, 0, 2)
 		.addIndex(1.0, 2, 3)
-		.normalizeDurations()
 		;
+	dig.setDuration(0.3f);
 
 	// eat (without chewing)
 	WieldAnimation &eat = repository["eat"];
@@ -805,8 +817,8 @@ void WieldAnimation::fillRepository()
 		;
 	eat.m_translationspline
 		.addIndex(1.0, 0, 2)
+		.addIndex(2.0, 2, 0)
 		.addIndex(1.0, 2, 2)
-		.normalizeDurations()
 		;
 
 	eat.m_rotationspline
@@ -816,7 +828,8 @@ void WieldAnimation::fillRepository()
 		;
 	eat.m_rotationspline
 		.addIndex(1.0, 0, 1)
+		.addIndex(2.0, 1, 0)
 		.addIndex(1.0, 1, 1)
-		.normalizeDurations()
 		;
+	eat.setDuration(1.0f);
 }
