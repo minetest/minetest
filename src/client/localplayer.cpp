@@ -170,8 +170,8 @@ void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d,
 		std::vector<CollisionInfo> *collision_info)
 {
 	if (!collision_info || collision_info->empty()) {
-		// Node below the feet, update each ClientEnvironment::step()
-		m_standing_node = floatToInt(m_position, BS) - v3s16(0, 1, 0);
+		// Node at feet position, update each ClientEnvironment::step()
+		m_standing_node = floatToInt(m_position, BS);
 	}
 
 	// Temporary option for old move code
@@ -320,6 +320,7 @@ void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d,
 			if (is_first || len < distance) {
 				m_standing_node = colinfo.node_p;
 				distance = len;
+				is_first = false;
 			}
 		}
 	}
@@ -434,15 +435,20 @@ void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d,
 	/*
 		Check properties of the node on which the player is standing
 	*/
-	const ContentFeatures &f = nodemgr->get(map->getNodeNoEx(m_standing_node));
+	const ContentFeatures &f_under = nodemgr->get(map->getNodeNoEx(m_standing_node));
+	const ContentFeatures &f_above = nodemgr->get(map->getNodeNoEx(
+		floatToInt(m_position + v3f(0, 0.2f * BS, 0), BS)));
+
 	// Determine if jumping is possible
-	m_can_jump = (touching_ground && !in_liquid && !is_climbing)
-			|| sneak_can_jump;
-	if (itemgroup_get(f.groups, "disable_jump"))
-		m_can_jump = false;
+	m_disable_jump = itemgroup_get(f_under.groups, "disable_jump");
+	m_can_jump = ((touching_ground && !is_climbing)
+			|| sneak_can_jump) && !m_disable_jump;
+
+	// Disallow swimming upwards
+	m_disable_jump |= itemgroup_get(f_above.groups, "disable_jump");
 
 	// Jump key pressed while jumping off from a bouncy block
-	if (m_can_jump && control.jump && itemgroup_get(f.groups, "bouncy") &&
+	if (m_can_jump && control.jump && itemgroup_get(f_under.groups, "bouncy") &&
 		m_speed.Y >= -0.5 * BS) {
 		float jumpspeed = movement_speed_jump * physics_override_jump;
 		if (m_speed.Y > 1) {
@@ -637,18 +643,14 @@ void LocalPlayer::applyControl(float dtime, Environment *env)
 				setSpeed(speedJ);
 				m_client->getEventManager()->put(new SimpleTriggerEvent(MtEvent::PLAYER_JUMP));
 			}
-		}
-		else if(in_liquid)
-		{
-			if(fast_climb)
+		} else if (in_liquid && !m_disable_jump) {
+			if (fast_climb)
 				speedV.Y = movement_speed_fast;
 			else
 				speedV.Y = movement_speed_walk;
 			swimming_vertical = true;
-		}
-		else if(is_climbing)
-		{
-			if(fast_climb)
+		} else if (is_climbing && !m_disable_jump) {
+			if (fast_climb)
 				speedV.Y = movement_speed_fast;
 			else
 				speedV.Y = movement_speed_climb;
@@ -1035,13 +1037,20 @@ void LocalPlayer::old_move(f32 dtime, Environment *env, f32 pos_max_d,
 	/*
 		Check properties of the node on which the player is standing
 	*/
-	const ContentFeatures &f = nodemgr->get(map->getNodeNoEx(getStandingNodePos()));
+	const ContentFeatures &f_under = nodemgr->get(map->getNodeNoEx(
+		getStandingNodePos()));
+	const ContentFeatures &f_above = nodemgr->get(map->getNodeNoEx(
+		floatToInt(m_position + v3f(0, 0.2f * BS, 0), BS)));
+
 	// Determine if jumping is possible
-	m_can_jump = touching_ground && !in_liquid;
-	if (itemgroup_get(f.groups, "disable_jump"))
-		m_can_jump = false;
+	m_disable_jump = itemgroup_get(f_under.groups, "disable_jump");
+	m_can_jump = touching_ground && !m_disable_jump;
+
+	// Disallow swimming upwards
+	m_disable_jump |= itemgroup_get(f_above.groups, "disable_jump");
+
 	// Jump key pressed while jumping off from a bouncy block
-	if (m_can_jump && control.jump && itemgroup_get(f.groups, "bouncy") &&
+	if (m_can_jump && control.jump && itemgroup_get(f_under.groups, "bouncy") &&
 			m_speed.Y >= -0.5 * BS) {
 		float jumpspeed = movement_speed_jump * physics_override_jump;
 		if (m_speed.Y > 1) {
