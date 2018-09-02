@@ -243,6 +243,23 @@ inline s32 myround(f32 f)
 	return (s32)(f < 0.f ? (f - 0.5f) : (f + 0.5f));
 }
 
+inline constexpr f32 sqr(f32 f)
+{
+	return f * f;
+}
+
+inline f32 ipow(f32 base, u8 exponent)
+{
+	f32 result = 1.0f;
+	while (exponent) {
+		if (exponent & 1)
+			result *= base;
+		exponent >>= 1;
+		base *= base;
+	}
+	return result;
+}
+
 /*
 	Returns integer position of node in given floating point position
 */
