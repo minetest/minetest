@@ -113,7 +113,7 @@ void Sky::OnRegisterSceneNode()
 
 void Sky::render()
 {
-	if (!m_visible && m_skybox_type == "skybox")
+	if (!m_visible && (m_skybox_type == "skybox" || m_skybox_type == "plain"))
 		return;
 	
 	video::IVideoDriver* driver = SceneManager->getVideoDriver();
@@ -293,18 +293,14 @@ void Sky::render()
 		}
 
 		if (m_overlay_visible) {
-			// Draw the rotating skybox outside of
-			// the sun, moon and stars range
+			/*
+				Draw the rotating skybox outside of
+				the sun, moon and stars range
 
-			// Todo:
-			// Make the overlay skybox compatible
-			//with the regular dynamic skybox.
-
-			// Render in the following order:
-			// top, bottom, east, west, south, north, in the
-			// same fashion the regular textured skybox works.
-
-			// Top face of the overlay
+				Render in the following order:
+				top, bottom, east, west, south, north, in the
+				same fashion the regular textured skybox works.
+			*/
 
 			driver->setMaterial(m_materials[5]);
 
@@ -321,9 +317,7 @@ void Sky::render()
 			}
 
 			driver->drawIndexedTriangleFan(&vertices[0], 4, indices, 2);
-
-			// Bottom face of the overlay
-
+			
 			driver->setMaterial(m_materials[6]);
 
 			vertices[0] = video::S3DVertex(-1.1, -1.1, -1.1, 0, 1, 0, c, t, t);
@@ -645,13 +639,12 @@ void Sky::render()
 				vertices[2] = video::S3DVertex( 1, -0.02, -1, 0, 0, 1, c, o, o);
 				vertices[3] = video::S3DVertex(-1, -0.02, -1, 0, 0, 1, c, t, o);
 				for (video::S3DVertex &vertex : vertices) {
-					//if (wicked_time_of_day < 0.5)
 					if (j == 0)
 						// Switch from -Z (south) to +X (east)
-						vertex.Pos.rotateXZBy(90);
+						vertex.Pos.rotateXZBy(m_sun_yaw);
 					else
 						// Switch from -Z (south) to -X (west)
-						vertex.Pos.rotateXZBy(-90);
+						vertex.Pos.rotateXZBy(m_sun_yaw - 180);
 				}
 				driver->drawIndexedTriangleFan(&vertices[0], 4, indices, 2);
 			}

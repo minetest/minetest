@@ -1599,8 +1599,10 @@ int ObjectRef::l_set_sky(lua_State *L)
 	if (!player)
 		return 0;
 	if (lua_istable(L, 2)) {
-		SkyParams sky_params = player->getSkyParams();
 
+
+		SkyParams sky_params = player->getSkyParams();
+		
 		// just in case we're not supplied a bgcolor
 		sky_params.bgcolor = video::SColor(255,255,255,255);
 
@@ -1617,72 +1619,112 @@ int ObjectRef::l_set_sky(lua_State *L)
 		
 		lua_getfield(L, 2, "textures");
 
-		lua_pushnil(L);
 		sky_params.params.clear();
-		while (lua_next(L, -2) != 0) {
-			// key at index -2 and value at index -1
-			if (lua_isnil(L, -1)) {
-				sky_params.params.emplace_back("__not_supplied__");
-				break;
+		if (lua_isnil(L, -1)) {
+			sky_params.params.emplace_back("__not_supplied__");
+		} else {
+			lua_pushnil(L);
+			while (lua_next(L, -2) != 0) {
+				// key at index -2 and value at index -1
+				if (lua_isstring(L, -1)) {
+					sky_params.params.emplace_back(readParam<std::string>(L, -1));
+				} else
+					sky_params.params.emplace_back("");
+				// removes value, keeps key for next iteration
+				lua_pop(L, 1);
 			}
-
-			if (lua_isstring(L, -1)) {
-				sky_params.params.emplace_back(readParam<std::string>(L, -1));
-			} else
-				sky_params.params.emplace_back("");
-			// removes value, keeps key for next iteration
-			lua_pop(L, 1);
 		}
 		lua_pop(L, 1); // Pop the textures table identifier
 
 		// We want to throw an error only when the mod specifies all but
 		// six textures, but not for the custom skybox.
-		if (sky_params.params.size() != 6 && sky_params.type == "skybox") 
+		if (sky_params.params.size() != 6 && sky_params.type == "skybox")
 			throw LuaError("Skybox expects 6 textures.");
+		if (sky_params.params.size() != 6 && sky_params.type == "custom" &&
+				sky_params.params[0] != "__not_supplied__")
+			throw LuaError("Skybox expects 6 textures.");
+		
+		if (!lua_isnil(L, -1))
+			sky_params.clouds          = getboolfield_default(L, -1,
+				"clouds", true);
 
-		sky_params.clouds = getboolfield_default(L, -1, "clouds", true);
-		sky_params.default_fog = getboolfield_default(L, -1, "default_fog", false);
-		sky_params.overlay_visible = getboolfield_default(L, -1, "overlay_visible", false);
+		if (sky_params.type != "custom") {
+			getServer(L)->setSky(player, sky_params);
+			lua_pushboolean(L, true);
+			return 1;
+		}
+	
+		if (!lua_isnil(L, -1))
+			sky_params.default_fog     = getboolfield_default(L, -1,
+				"default_fog", false);
+		if (!lua_isnil(L, -1))
+			sky_params.overlay_visible = getboolfield_default(L, -1,
+				"overlay_visible", false);
 
 		lua_getfield(L, 2, "sun"); // Moon related object management
 
-		sky_params.sun.visible = getboolfield_default(L, -1, "visible", true);
-		sky_params.sun.yaw = getfloatfield_default(L,-1, "yaw", 90);
-		sky_params.sun.tilt = getfloatfield_default(L, -1, "tilt", 0);
-		sky_params.sun.texture = getstringfield_default(L, -1, "texture", "sun.png");
-		sky_params.sun.sunrise_glow = getboolfield_default(L, -1, "sunrise_glow", true);
+		sky_params.sun.visible      = getboolfield_default(L, -1, 
+			"visible", true);
+		sky_params.sun.yaw          = getfloatfield_default(L,-1,
+			"yaw", 90);
+		sky_params.sun.tilt         = getfloatfield_default(L, -1,
+			"tilt", 0);
+		sky_params.sun.texture      = getstringfield_default(L, -1,
+			"texture", "sun.png");
+		sky_params.sun.sunrise_glow = getboolfield_default(L, -1,
+			"sunrise_glow", true);
 		lua_pop(L, 1);
 
 		lua_getfield(L, 2, "moon"); // Moon related object management
 
-		sky_params.moon.visible = getboolfield_default(L, -1, "visible", true);
-		sky_params.moon.yaw  = getfloatfield_default(L, -1, "yaw", -90);
-		sky_params.moon.tilt = getfloatfield_default(L, -1, "tilt", 0);
-		sky_params.moon.texture = getstringfield_default(L, -1, "texture", "moon.png");
+		sky_params.moon.visible = getboolfield_default(L, -1, 
+			"visible", true);
+		sky_params.moon.yaw     = getfloatfield_default(L, -1, 
+			"yaw", -90);
+		sky_params.moon.tilt    = getfloatfield_default(L, -1, 
+			"tilt", 0);
+		sky_params.moon.texture = getstringfield_default(L, -1, 
+			"texture", "moon.png");
 		lua_pop(L, 1);
 
 		lua_getfield(L, 2, "stars"); //Stars related object management
 
-		sky_params.stars.visible = getboolfield_default(L, -1, "visible", true);
-		sky_params.stars.yaw    = getfloatfield_default(L, -1, "yaw", 0);
-		sky_params.stars.tilt   = getfloatfield_default(L, -1, "tilt", 0);
-		sky_params.stars.number = getintfield_default(L, -1, "count", 200);
+		sky_params.stars.visible = getboolfield_default(L, -1,
+			"visible", true);
+		sky_params.stars.yaw    = getfloatfield_default(L, -1,
+			"yaw", 0);
+		sky_params.stars.tilt   = getfloatfield_default(L, -1,
+			"tilt", 0);
+		sky_params.stars.number = getintfield_default(L, -1,
+			"count", 200);
 		lua_pop(L, 1);
 
 		lua_getfield(L, 2, "overlay_textures");
 
-		lua_pushnil(L);
 		sky_params.overlay_textures.clear();
-		while (lua_next(L, -2) != 0) {
-			// key at index -2 and value at index -1
-			if (lua_isstring(L, -1)) {
-				sky_params.overlay_textures.emplace_back(readParam<std::string>(L, -1));
-			} else
-				sky_params.overlay_textures.emplace_back("");
-			// removes value, keeps key for next iteration
-			lua_pop(L, 1);
+		if (lua_isnil(L, -1)) {
+			sky_params.overlay_textures.emplace_back(
+				"__not_supplied__");
+		} else {
+			lua_pushnil(L);
+			while (lua_next(L, -2) != 0) {
+				// key at index -2 and value at index -1
+				if (lua_isstring(L, -1)) {
+					sky_params.overlay_textures.emplace_back(
+						readParam<std::string>(L, -1));
+				} else
+					sky_params.overlay_textures.emplace_back("");
+				// removes value, keeps key for next iteration
+				lua_pop(L, 1);
+			}
 		}
 		lua_pop(L, 1);
+
+		if (sky_params.overlay_textures.size() != 6 &&
+				sky_params.type == "custom" &&
+				sky_params.overlay_textures[0] !=
+				"__not_supplied__")
+			throw LuaError("Overlay textures expects 6 textures.");
 
 		getServer(L)->setSky(player, sky_params);
 		lua_pushboolean(L, true);
@@ -1694,8 +1736,6 @@ int ObjectRef::l_set_sky(lua_State *L)
 		"Deprecated call to set_sky, see lua_api.txt for details.");
 
 		SkyParams sky_params = player->getSkyParams();
-
-		video::SColor bgcolor(255,255,255,255);
 		read_color(L, 2, &sky_params.bgcolor);
 
 		sky_params.type = luaL_checkstring(L, 3);
@@ -1706,7 +1746,8 @@ int ObjectRef::l_set_sky(lua_State *L)
 		while (lua_next(L, 4) != 0) {
 			// key at index -2 and value at index -1
 			if (lua_isstring(L, -1))
-				sky_params.params.emplace_back(readParam<std::string>(L, -1));
+				sky_params.params.emplace_back(
+					readParam<std::string>(L, -1));
 			else
 				sky_params.params.emplace_back("");
 			// removes value, keeps key for next iteration
@@ -1744,8 +1785,7 @@ int ObjectRef::l_set_sky(lua_State *L)
 		sky_params.stars.yaw = 0;
 		sky_params.stars.tilt = 0;
 
-		for (int i = 0; i < 6; i++)
-			sky_params.overlay_textures.emplace_back("__not_supplied__");
+		sky_params.overlay_textures.emplace_back("__not_supplied__");
 
 		getServer(L)->setSky(player, sky_params);
 		lua_pushboolean(L, true);
@@ -1771,71 +1811,86 @@ int ObjectRef::l_get_sky(lua_State *L)
 	lua_pushstring(L, sky_params.type.c_str());
 	lua_setfield(L, -2, "type");
 
-	lua_newtable(L); // Non-rotating skybox textures
-
-	for (int i = 1; i < 7; i++) {
-		lua_pushnumber(L, i);
-		lua_pushstring(L, sky_params.params[i-1].c_str());
-		lua_settable(L, -3);
+	// Convert __not_supplied__ to nil
+	if (sky_params.params[0] == "__not_supplied__") {
+		lua_pushnil(L);
+	} else {
+		lua_newtable(L);
+		// Non-rotating skybox textures
+		for (int i = 1; i < 7; i++) {
+			lua_pushnumber(L, i);
+			lua_pushstring(L, sky_params.params[i-1].c_str());
+			lua_settable(L, -3);
+		}
 	}
 	lua_setfield(L, -2, "textures");
 
 	lua_pushboolean(L, sky_params.clouds);
 	lua_setfield(L, -2, "clouds");
-	lua_pushboolean(L, sky_params.default_fog);
-	lua_setfield(L, -2, "default_fog");
-	lua_pushboolean(L, sky_params.overlay_visible);
-	lua_setfield(L, -2, "overlay_visible");
-	
-	lua_newtable(L); // Sun Settings
 
-	lua_pushboolean(L, sky_params.sun.visible);
-	lua_setfield(L, -2, "visible");
-	lua_pushnumber(L, sky_params.sun.yaw);
-	lua_setfield(L, -2, "yaw");
-	lua_pushnumber(L, sky_params.sun.tilt);
-	lua_setfield(L, -2, "tilt");
-	lua_pushstring(L, sky_params.sun.texture.c_str());
-	lua_setfield(L, -2, "texture");
-	lua_pushboolean(L, sky_params.sun.sunrise_glow);
-	lua_setfield(L, -2, "sunrise_glow");
+	if (sky_params.type == "custom") {
+		lua_pushboolean(L, sky_params.default_fog);
+		lua_setfield(L, -2, "default_fog");
+		lua_pushboolean(L, sky_params.overlay_visible);
+		lua_setfield(L, -2, "overlay_visible");
+		
+		lua_newtable(L); // Sun Settings
 
-	lua_setfield(L, -2, "sun");
+		lua_pushboolean(L, sky_params.sun.visible);
+		lua_setfield(L, -2, "visible");
+		lua_pushnumber(L, sky_params.sun.yaw);
+		lua_setfield(L, -2, "yaw");
+		lua_pushnumber(L, sky_params.sun.tilt);
+		lua_setfield(L, -2, "tilt");
+		lua_pushstring(L, sky_params.sun.texture.c_str());
+		lua_setfield(L, -2, "texture");
+		lua_pushboolean(L, sky_params.sun.sunrise_glow);
+		lua_setfield(L, -2, "sunrise_glow");
 
-	lua_newtable(L); // Moon settings
+		lua_setfield(L, -2, "sun");
 
-	lua_pushboolean(L, sky_params.moon.visible);
-	lua_setfield(L, -2, "visible");
-	lua_pushnumber(L, sky_params.moon.yaw);
-	lua_setfield(L, -2, "yaw");
-	lua_pushnumber(L, sky_params.moon.tilt);
-	lua_setfield(L, -2, "tilt");
-	lua_pushstring(L, sky_params.moon.texture.c_str());
-	lua_setfield(L, -2, "texture");
-	
-	lua_setfield(L, -2, "moon");
+		lua_newtable(L); // Moon settings
 
-	lua_newtable(L); // Starfield settings
+		lua_pushboolean(L, sky_params.moon.visible);
+		lua_setfield(L, -2, "visible");
+		lua_pushnumber(L, sky_params.moon.yaw);
+		lua_setfield(L, -2, "yaw");
+		lua_pushnumber(L, sky_params.moon.tilt);
+		lua_setfield(L, -2, "tilt");
+		lua_pushstring(L, sky_params.moon.texture.c_str());
+		lua_setfield(L, -2, "texture");
+		
+		lua_setfield(L, -2, "moon");
 
-	lua_pushboolean(L, sky_params.stars.visible);
-	lua_setfield(L, -2, "visible");
-	lua_pushnumber(L, sky_params.stars.number);
-	lua_setfield(L, -2, "count");
-	lua_pushnumber(L, sky_params.stars.yaw);
-	lua_setfield(L, -2, "yaw");
-	lua_pushnumber(L, sky_params.stars.tilt);
-	lua_setfield(L, -2, "tilt");
+		lua_newtable(L); // Starfield settings
 
-	lua_setfield(L, -2, "stars");
+		lua_pushboolean(L, sky_params.stars.visible);
+		lua_setfield(L, -2, "visible");
+		lua_pushnumber(L, sky_params.stars.number);
+		lua_setfield(L, -2, "count");
+		lua_pushnumber(L, sky_params.stars.yaw);
+		lua_setfield(L, -2, "yaw");
+		lua_pushnumber(L, sky_params.stars.tilt);
+		lua_setfield(L, -2, "tilt");
 
-	lua_newtable(L); // Rotating overlay skybox textures
+		lua_setfield(L, -2, "stars");
 
-	for (int i = 1; i < 7; i++) {
-		lua_pushnumber(L, i);
-		lua_pushstring(L, sky_params.overlay_textures[i-1].c_str());
-		lua_settable(L, -3);
+
+		// Convert __not_supplied__ to a nil
+		if (sky_params.overlay_textures[0] == "__not_supplied__") {
+			lua_pushnil(L);
+		} else {
+			// Rotating overlay skybox textures
+			lua_newtable(L);
+			for (int i = 1; i < 7; i++) {
+				lua_pushnumber(L, i);
+				lua_pushstring(L, 
+					sky_params.overlay_textures[i-1].c_str());
+				lua_settable(L, -3);
+			}
+		}
+		lua_setfield(L, -2, "overlay_textures");		
 	}
-	lua_setfield(L, -2, "overlay_textures");
 	
 	return 1;
 }

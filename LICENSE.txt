@@ -43,12 +43,12 @@ Jordach
   games/minimal/atmos/atmos_sun.png
   games/minimal/atmos/atmos_moon.png
   games/minimal/atmos/sun_tonemap.png
-  games/minimal/atmos/top.png
-  games/minimal/atmos/bottom.png
-  games/minimal/atmos/north.png
-  games/minimal/atmos/east.png
-  games/minimal/atmos/south.png
-  games/minimal/atmos/west.png
+  games/minimal/atmos/atmos_nebula_top.png
+  games/minimal/atmos/atmos_nebula_bottom.png
+  games/minimal/atmos/atmos_nebula_north.png
+  games/minimal/atmos/atmos_nebula_east.png
+  games/minimal/atmos/atmos_nebula_south.png
+  games/minimal/atmos/atmos_nebula_west.png
 
 License of Minetest source code
 -------------------------------

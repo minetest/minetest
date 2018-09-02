@@ -5191,8 +5191,13 @@ This is basically a reference to a C++ `ServerActiveObject`
             * `"skybox"`: Uses 6 textures, `sky_color` used
             * `"plain"`: Uses 0 textures, `sky_color` used
             * `"custom": Uses 6 textures, `sky_color` used
+            * Note: Using "plain" or "regular" will only require
+            the fields `bgcolor`, `type` and `clouds`. Using "skybox" will
+            only accept the above and the six textures in their table.
         * `textures`: A table of six textures, setting the sky up in the
         following pattern: top, bottom, east, west, south and north.
+        * Note: Use `nil` instead of a table to enable the regular dynamic sky,
+        this only applies when the `"custom"` skybox is used.
         * `clouds`: Boolean for whether clouds appear in front of `"regular"`, `"skybox"`,
         `"plain"` or `"custom"` custom skyboxes (default: `true`)
 
@@ -5232,7 +5237,7 @@ This is basically a reference to a C++ `ServerActiveObject`
         * `overlay_textures`: A table containing six textures, following the same pattern
         as the regular textured skybox.
         * Please note, the old set_sky definitions are still supported, however, are
-        deprecated, and cannot support the custom skybox feature set.
+        now deprecated, and cannot support the custom skybox feature set.
 * `get_sky()`: returns a table with the current sky parameters as in
     `set_sky`.
 * `set_clouds(parameters)`: set cloud parameters

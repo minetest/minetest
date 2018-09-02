@@ -2704,6 +2704,7 @@ void Game::handleClientEvent_SetSky(ClientEvent *event, CameraOrientation *cam)
 	// Handle according to type
 	if (*event->set_sky.type == "regular") {
 		sky->setVisible(true);
+		sky->setMeshVisible(true);
 		sky->setSkyboxType(*event->set_sky.type);
 		sky->setSkyDefaults();
 	} else if (*event->set_sky.type == "skybox" &&
@@ -2730,19 +2731,26 @@ void Game::handleClientEvent_SetSky(ClientEvent *event, CameraOrientation *cam)
 				texture_src->getTextureForMesh((*event->set_sky.params)[3]),
 				texture_src->getTextureForMesh((*event->set_sky.params)[4]),
 				texture_src->getTextureForMesh((*event->set_sky.params)[5]));
-			//sky->setVisible(true); // enable this line at your peril, and lack of fog.
+			// Enable this line at your peril, and lack of colored fog.
+			// sky->setVisible(true);
 			sky->setSkyboxType(*event->set_sky.type);
 			sky->setMeshVisible(false);
 			sky->setFog(event->set_sky.default_fog);
 
 			sky->setOverlayVisible(event->set_sky.overlay_visible);
 
-			for (int i = 0; i < 6; i++)
+			for (int i = 0; i < 6; i++) {
+				if ((*event->set_sky.overlay_textures)[i] ==
+					"__not_supplied__" || 
+					event->set_sky.overlay_textures->size() != 6) {
+					// Prevent rendering if nil is used
+					sky->setOverlayVisible(false);
+					break;
+				}
 				sky->setOverlayTexture((*event->set_sky.overlay_textures)[i],
 					i, texture_src);
-		}
-
-		else {
+			}
+		} else {
 			// we enable the dynamic skybox mesh if 6 textures
 			// are not supplied
 			sky->setVisible(true);
@@ -2766,20 +2774,21 @@ void Game::handleClientEvent_SetSky(ClientEvent *event, CameraOrientation *cam)
 		sky->setStarCount(event->set_sky.star_count);
 		sky->setStarYaw(event->set_sky.star_yaw);
 		sky->setStarTilt(event->set_sky.star_tilt);
-
-	} 
+	} else {
 		// Handle everything else as plain color
-	else {
 		if (*event->set_sky.type != "plain")
 			infostream << "Unknown sky type: "
 				<< (*event->set_sky.type) << std::endl;
-
+		sky->setSkyboxType(*event->set_sky.type);
 		sky->setFallbackBgColor(*event->set_sky.bgcolor);
 	}
 
 	delete event->set_sky.bgcolor;
 	delete event->set_sky.type;
 	delete event->set_sky.params;
+	delete event->set_sky.sun_texture;
+	delete event->set_sky.moon_texture;
+	delete event->set_sky.overlay_textures;
 }
 
 void Game::handleClientEvent_OverrideDayNigthRatio(ClientEvent *event,

@@ -1206,27 +1206,37 @@ void Client::handleCommand_HudSetSky(NetworkPacket* pkt)
 	std::vector<std::string> overlay_textures;
 	bool overlay_visible;
 
-	*pkt >> bgcolor >> type
-			>> clouds >> default_fog
-			>> overlay_visible >> sun_visible 
-			>> sun_yaw >> sun_tilt
-			>> sun_texture >> sunrise_glow
-			>> moon_visible >> moon_yaw
-			>> moon_tilt >> moon_texture
-			>> stars_visible >> stars_count
-			>> stars_yaw >> stars_tilt;
-			
+	*pkt >> bgcolor >> type >> clouds;
 
-	std::string texture;
-
-	for (int i = 0; i < 6; i++) {
-		*pkt >> texture;
-		params.emplace_back(texture);
+	if (type == "custom"){
+		*pkt >> default_fog	>> overlay_visible
+			>> sun_visible >> sun_yaw
+			>> sun_tilt	>> sun_texture
+			>> sunrise_glow >> moon_visible
+			>> moon_yaw >> moon_tilt
+			>> moon_texture >> stars_visible
+			>> stars_count >> stars_yaw
+			>> stars_tilt;
 	}
 
-	for (int i = 0; i < 6; i++){
-		*pkt >> texture;
-		overlay_textures.emplace_back(texture);
+	std::string texture;
+	
+	if (type == "custom" || type == "skybox") {
+		for (int i = 0; i < 6; i++) {
+			*pkt >> texture;
+			params.emplace_back(texture);
+			if (texture == "__not_supplied__")
+				break;
+		}
+	}
+
+	if (type == "custom") {
+		for (int i = 0; i < 6; i++) {
+			*pkt >> texture;
+			overlay_textures.emplace_back(texture);
+			if (texture == "__not_supplied__")
+				break;
+		}
 	}
 
 	ClientEvent *event = new ClientEvent();
