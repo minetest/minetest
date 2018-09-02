@@ -84,10 +84,7 @@ public:
 		return hud_hotbar_selected_image;
 	}
 
-	void setSky(const SkyParams &sky_params)
-	{
-		m_sky_params = sky_params;
-	}
+	void setSky(const SkyParams &sky_params) { m_sky_params = sky_params; }
 
 	const SkyParams &getSkyParams() const { return m_sky_params; }
 

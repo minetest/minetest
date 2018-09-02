@@ -65,10 +65,7 @@ public:
 		return m_visible ? m_skycolor : m_fallback_bg_color;
 	}
 
-	const u16 &getStarCount()
-	{
-		return m_star_count;
-	}
+	const u16 &getStarCount() { return m_star_count; }
 
 	bool getCloudsVisible() const { return m_clouds_visible && m_clouds_enabled; }
 	const video::SColorf &getCloudColor() const { return m_cloudcolor_f; }
@@ -94,11 +91,14 @@ public:
 	void setStarCount(u16 star_count)
 	{ 	
 		if (star_count != m_star_count) {
+			
+			// We want to store this for the next
+			//time setStarCount is called.
+			m_star_count = star_count;
+			m_stars.clear();
 
-			m_star_count = star_count; // We want to store this for the next time setStarCount is called.
-			m_stars.clear(); // Clean out the old star position entries.
-
-			for (u16 i = 0; i < star_count; i++) { // Regenerate the star vector table.
+			for (u16 i = 0; i < star_count;
+					i++) { // Regenerate the star vector table.
 
 				v3f star = v3f(
 					myrand_range(-10000, 10000),
@@ -111,10 +111,7 @@ public:
 			}
 		}
 	}
-	void setFog(bool use_fog)
-	{ 
-		m_directional_colored_fog = !use_fog;
-	}
+	void setFog(bool use_fog) { m_directional_colored_fog = !use_fog; }
 	void setSunYaw(f32 sun_yaw) { m_sun_yaw = sun_yaw; }
 	void setSunTilt(f32 sun_tilt) { m_sun_tilt = sun_tilt; }
 	void setSunTexture(std::string sun_texture, ITextureSource *tsrc)
@@ -124,13 +121,14 @@ public:
 
 			if (sun_texture != "default") {
 
-				// Unlike before, we want our player to supply a custom texture
+				// Unlike before, we want our mod to supply a custom texture
 				m_sun_texture = tsrc->getTextureForMesh(m_sun_name);
 					
 				if (m_sun_texture) {
 					m_materials[3] = m_materials[0];
 					m_materials[3].setTexture(0, m_sun_texture);
-					m_materials[3].MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
+					m_materials[3].MaterialType = video::
+							EMT_TRANSPARENT_ALPHA_CHANNEL;
 					if (m_sun_tonemap)
 						m_materials[3].Lighting = true;
 				}
@@ -148,13 +146,14 @@ public:
 			
 			if (moon_texture != "default") {
 
-				// Unlike before, we want our player to supply a custom texture
+				// Unlike before, we want our mod to supply a custom texture
 				m_moon_texture = tsrc->getTextureForMesh(m_moon_name);
 				
 				if (m_moon_texture) {
 					m_materials[4] = m_materials[0];
 					m_materials[4].setTexture(0, m_moon_texture);
-					m_materials[4].MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
+					m_materials[4].MaterialType = video::
+							EMT_TRANSPARENT_ALPHA_CHANNEL;
 					if (m_moon_tonemap)
 						m_materials[4].Lighting = true;
 				}
@@ -165,25 +164,31 @@ public:
 	}
 	void setStarYaw(f32 star_yaw) { m_star_yaw = star_yaw; }
 	void setStarTilt(f32 star_tilt) { m_star_tilt = star_tilt; }
-	void setOverlayVisible(bool overlay_visible) { m_overlay_visible = overlay_visible; }
+	void setOverlayVisible(bool overlay_visible)
+	{
+		m_overlay_visible = overlay_visible;
+	}
 	void setOverlayTexture(std::string overlay_texture, int material_id, ITextureSource *tsrc) {
-		
 		m_overlay_texture = tsrc->getTextureForMesh(overlay_texture);
 		
 		m_materials[material_id+5] = m_materials[0];
 		m_materials[material_id+5].ZWriteEnable = true;
 		m_materials[material_id+5].setTexture(0, m_overlay_texture);
-		m_materials[material_id+5].MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
+		m_materials[material_id+5].MaterialType = video::
+				EMT_TRANSPARENT_ALPHA_CHANNEL;
 	}
 	void setSkyboxType(std::string type) { m_skybox_type = type; }
-	void setSkyDefaults() { // Special command to reset everything to defaults
+	void setSkyDefaults()
+	{ 
+		// Special command to reset everything to defaults
 		
-		// by default, and Minetest Game, we don't need to
+		// By default, and Minetest Game, we don't need to
 		// touch this, however, because of allowing the
 		// skybox meshes with a textured skybox, we need
 		// to toggle the directional fog.
 
-		m_directional_colored_fog = g_settings->getBool("directional_colored_fog"); 
+		m_directional_colored_fog =
+				g_settings->getBool("directional_colored_fog"); 
 		m_overlay_visible = false;
 
 		m_sun_glow = true;
@@ -258,12 +263,12 @@ private:
 	bool m_clouds_visible; // Whether clouds are disabled due to player underground
 	bool m_clouds_enabled = true; // Initialised to true, reset only by set_sky API
 	bool m_directional_colored_fog = true;
-	bool m_bodies_visible = true; // sun, moon, stars (disables the next three bools)
+	bool m_bodies_visible = true;  // sun, moon, stars (disables the next three bools)
 	bool m_dynamic_visible = true; // control rendering the mesh skybox
-	bool m_sun_visible = true; // render the sun
-	bool m_sun_glow = true; // render the sunrise/set texture
-	bool m_moon_visible = true; // render the moon
-	bool m_stars_visible = true; // render the stars
+	bool m_sun_visible = true;     // render the sun
+	bool m_sun_glow = true;        // render the sunrise/set texture
+	bool m_moon_visible = true;    // render the moon
+	bool m_stars_visible = true;   // render the stars
 	bool m_overlay_visible = false; // render the rotating overlay skybox
 
 	video::SColorf m_bgcolor_bright_f = video::SColorf(1.0f, 1.0f, 1.0f, 1.0f);

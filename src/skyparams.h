@@ -21,39 +21,39 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 struct sol
 {
-    bool visible;
-    bool sunrise_glow;
-    f32 yaw;
-    f32 tilt;
-    std::string texture;
+		bool visible;
+		bool sunrise_glow;
+		f32 yaw;
+		f32 tilt;
+		std::string texture;
 };
 
 struct luna
 {
-    bool visible;
-    f32 yaw;
-    f32 tilt;
-    std::string texture;
+		bool visible;
+		f32 yaw;
+		f32 tilt;
+		std::string texture;
 };
 
 struct star
 {
-    u16 number;
-    bool visible;
-    f32 yaw;
-    f32 tilt;
+		u16 number;
+		bool visible;
+		f32 yaw;
+		f32 tilt;
 };
 
 struct SkyParams
 {
-	video::SColor bgcolor;
-    std::string type;
-    std::vector<std::string> params;
-    bool clouds;
-    bool default_fog;
-    bool overlay_visible;
-    struct sol sun;
-    struct luna moon;
-    struct star stars;
-    std::vector<std::string> overlay_textures;
+		video::SColor bgcolor;
+		std::string type;
+		std::vector<std::string> params;
+		bool clouds;
+		bool default_fog;
+		bool overlay_visible;
+		struct sol sun;
+		struct luna moon;
+		struct star stars;
+		std::vector<std::string> overlay_textures;
 };

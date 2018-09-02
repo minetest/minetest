@@ -551,7 +551,7 @@ void Sky::render()
 				if ((starcolor.getBlue() < m_skycolor.getBlue()))
 					break;
 #ifdef __ANDROID__
-				u16 indices[m_star_count * 3];
+				u16 *indices = new u16[m_star_count * 3];
 				video::S3DVertex vertices[m_star_count * 3];
 				for (u32 i = 0; i < m_star_count; i++) {
 					indices[i * 3 + 0] = i * 3 + 0;
@@ -584,7 +584,7 @@ void Sky::render()
 				driver->drawIndexedTriangleList(vertices, m_star_count * 3,
 						indices, m_star_count);
 #else
-				u16 indices[m_star_count * 4];
+				u16 *indices = new u16[m_star_count * 4];
 				video::S3DVertex vertices[m_star_count * 4];
 				for (u32 i = 0; i < m_star_count; i++) {
 					indices[i * 4 + 0] = i * 4 + 0;
