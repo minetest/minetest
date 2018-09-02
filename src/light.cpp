@@ -39,6 +39,7 @@ static LightingParams params;
 
 float decode_light_f(float x)
 {
+	x = rangelim(x, 0.0f, 1.0f);
 	float brightness = params.a * ipow(x, 3) + params.b * sqr(x) + params.c * x;
 	float boost = params.boost * std::exp(-0.5f * sqr((x - params.center) / params.sigma));
 	if (brightness <= 0.0f)
