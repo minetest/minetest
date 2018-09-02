@@ -29,6 +29,24 @@ static u8 light_LUT[LIGHT_SUN + 1];
 // The const ref to light_LUT is what is actually used in the code
 const u8 *light_decode_table = light_LUT;
 
+struct LightingParams {
+	float a, b, c; // polynomial coefficients
+	float boost, center, sigma; // normal boost parameters
+	float gamma;
+};
+
+static LightingParams params;
+
+float decode_light_f(float x)
+{
+	float brightness = params.a * ipow(x, 3) + params.b * sqr(x) + params.c * x;
+	float boost = params.boost * std::exp(-0.5f * sqr((x - params.center) / params.sigma));
+	if (brightness <= 0.0f)
+		return 0.0f;
+	brightness = powf(brightness + boost, 1.0f / params.gamma);
+	return rangelim(brightness, 0.0f, 1.0f);
+}
+
 // Initialize or update the light value tables using the specified gamma
 void set_light_table(float gamma)
 {
@@ -36,30 +54,29 @@ void set_light_table(float gamma)
 	const float alpha = g_settings->getFloat("lighting_alpha");
 	const float beta  = g_settings->getFloat("lighting_beta");
 // Lighting curve coefficients
-	const float a = alpha + beta - 2.0f;
-	const float b = 3.0f - 2.0f * alpha - beta;
-	const float c = alpha;
+	params.a = alpha + beta - 2.0f;
+	params.b = 3.0f - 2.0f * alpha - beta;
+	params.c = alpha;
 // Mid boost
-	const float d = g_settings->getFloat("lighting_boost");
-	const float e = g_settings->getFloat("lighting_boost_center");
-	const float f = g_settings->getFloat("lighting_boost_spread");
+	params.boost = g_settings->getFloat("lighting_boost");
+	params.center = g_settings->getFloat("lighting_boost_center");
+	params.sigma = g_settings->getFloat("lighting_boost_spread");
 // Gamma correction
-	gamma = rangelim(gamma, 0.5f, 3.0f);
+	params.gamma = rangelim(gamma, 0.5f, 3.0f);
 
 // Boundary values should be fixed
 	light_LUT[0] = 0;
 	light_LUT[LIGHT_SUN] = 255;
 
 	for (size_t i = 1; i < LIGHT_SUN; i++) {
-		float x = i;
-		x /= LIGHT_SUN;
-		float brightness = a * x * x * x + b * x * x + c * x;
-		float boost = d * std::exp(-((x - e) * (x - e)) / (2.0f * f * f));
-		brightness = powf(brightness + boost, 1.0f / gamma);
-		light_LUT[i] = rangelim((u32)(255.0f * brightness), 0, 255);
+		float brightness = decode_light_f((float)i / LIGHT_SUN);
+		// Strictly speaking, rangelim is not necessary here—if the implementation
+		// is conforming. But we don’t want problems in any case. -- numzero
+		light_LUT[i] = rangelim((s32)(255.0f * brightness), 0, 255);
 		// Ensure light brightens with each level
 		if (i > 1 && light_LUT[i] <= light_LUT[i - 1])
 			light_LUT[i] = light_LUT[i - 1] + 1;
 	}
 }
+
 #endif
