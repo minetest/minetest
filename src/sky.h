@@ -53,7 +53,7 @@ public:
 	void update(float m_time_of_day, float time_brightness, float direct_brightness,
 			bool sunlight_seen, CameraMode cam_mode, float yaw, float pitch);
 
-	float getBrightness() { return m_brightness; }	
+	float getBrightness() { return m_brightness; }
 
 	const video::SColor &getBgColor() const
 	{
@@ -90,25 +90,25 @@ public:
 	void setMeshVisible(bool dynamic_visible) { m_dynamic_visible = dynamic_visible; }
 	void setStarCount(u16 star_count)
 	{ 	
-		if (star_count != m_star_count) {
+		if (star_count == m_star_count)
+			return;
+
+		// We want to store this for the next
+		//time setStarCount is called.
+		m_star_count = star_count;
+		m_stars.clear();
+
+		for (u16 i = 0; i < star_count;
+				i++) { // Regenerate the star vector table.
+
+			v3f star = v3f(
+				myrand_range(-10000, 10000),
+				myrand_range(-10000, 10000),
+				myrand_range(-10000, 10000)
+			);
 			
-			// We want to store this for the next
-			//time setStarCount is called.
-			m_star_count = star_count;
-			m_stars.clear();
-
-			for (u16 i = 0; i < star_count;
-					i++) { // Regenerate the star vector table.
-
-				v3f star = v3f(
-					myrand_range(-10000, 10000),
-					myrand_range(-10000, 10000),
-					myrand_range(-10000, 10000)
-				);
-				
-				star.normalize();
-				m_stars.emplace_back(star);
-			}
+			star.normalize();
+			m_stars.emplace_back(star);
 		}
 	}
 	void setFog(bool use_fog) { m_directional_colored_fog = !use_fog; }
@@ -116,25 +116,25 @@ public:
 	void setSunTilt(f32 sun_tilt) { m_sun_tilt = sun_tilt; }
 	void setSunTexture(std::string sun_texture, ITextureSource *tsrc)
 	{
-		if (m_sun_name != sun_texture) {
-			m_sun_name = sun_texture;
+		if (m_sun_name != sun_texture)
+			return;
+		
+		m_sun_name = sun_texture;
+		if (sun_texture != "default") {
 
-			if (sun_texture != "default") {
-
-				// Unlike before, we want our mod to supply a custom texture
-				m_sun_texture = tsrc->getTextureForMesh(m_sun_name);
-					
-				if (m_sun_texture) {
-					m_materials[3] = m_materials[0];
-					m_materials[3].setTexture(0, m_sun_texture);
-					m_materials[3].MaterialType = video::
-							EMT_TRANSPARENT_ALPHA_CHANNEL;
-					if (m_sun_tonemap)
-						m_materials[3].Lighting = true;
-				}
-			} else {
-				m_sun_texture = nullptr;
+			// Unlike before, we want our mod to supply a custom texture
+			m_sun_texture = tsrc->getTextureForMesh(m_sun_name);
+				
+			if (m_sun_texture) {
+				m_materials[3] = m_materials[0];
+				m_materials[3].setTexture(0, m_sun_texture);
+				m_materials[3].MaterialType = video::
+						EMT_TRANSPARENT_ALPHA_CHANNEL;
+				if (m_sun_tonemap)
+					m_materials[3].Lighting = true;
 			}
+		} else {
+			m_sun_texture = nullptr;
 		}
 	}
 	void setMoonYaw(f32 moon_yaw) { m_moon_yaw = moon_yaw; }

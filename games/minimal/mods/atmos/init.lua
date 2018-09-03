@@ -19,14 +19,14 @@ for line in io.lines(storage.."skybox_clear_gradient.atm") do
 end
 
 local function atmos_ratio(current_data, next_data, time_percent)
-	-- Check if we're darker than the next skybox frame.
-	if current_data < next_data then
-		local ratio = (next_data - current_data) * time_percent
-		return (current_data + ratio)
-	else
-		local ratio = (current_data - next_data) * time_percent
-		return (current_data - ratio)
-	end	
+	return current_data + (next_data - current_data) * time_percent
+end
+
+local function convert_hex(input_hex)
+	-- Convert ColorSpec strings into individual intergers
+	-- compatible with minetest.rgba().
+	local r, g, b = input_hex:match("^#(%x%x)(%x%x)(%x%x)")
+	return tonumber(r, 16), tonumber(g, 16), tonumber(b, 16)
 end
 
 local function atmos_set_skybox(player)
@@ -40,7 +40,9 @@ local function atmos_set_skybox(player)
 
 	-- Fix for skyboxes randomly flickering when
 	-- changing from one color to another.
-	if time_percent == 0 then time_percent = 0.01 end
+	if time_percent == 0 then 
+		time_percent = 0.01
+	end
 
 	local fade_factor =  math.floor(255 * time_percent)
 	current_time = math.floor(current_time)
@@ -84,45 +86,27 @@ local function atmos_set_skybox(player)
 	fog.current = {}
 	fog.next = {}
 	fog.result = {}
-
-	fog.current.red = 0
-	fog.current.grn = 0
-	fog.current.blu = 0
-
-	fog.next.red = 0
-	fog.next.grn = 0
-	fog.next.blu = 0
-
-	fog.result.red = 0
-	fog.result.grn = 0
-	fog.result.blu = 0
-
+	
 	-- Convert our hexidecial into compatible minetest.rgba() components:
 	-- we need these to make our lives easier when it 
 	-- comes to updating the sky.
-	fog.current.red = tonumber("0x" ..
-		atmos_clear_weather[current_time].base:sub(2,3))
-	fog.current.grn = tonumber("0x" ..
-		atmos_clear_weather[current_time].base:sub(4,5))
-	fog.current.blu = tonumber("0x" ..
-		atmos_clear_weather[current_time].base:sub(6,7))
-	fog.next.red = tonumber("0x" ..
-		atmos_clear_weather[current_time+1].base:sub(2,3))
-	fog.next.grn = tonumber("0x" ..
-		atmos_clear_weather[current_time+1].base:sub(4,5))
-	fog.next.blu = tonumber("0x" ..
-		atmos_clear_weather[current_time+1].base:sub(6,7))
+	fog.current.r, fog.current.g, fog.current.b = convert_hex(
+		atmos_clear_weather[current_time].base)
+	fog.next.r, fog.next.g, fog.next.b = convert_hex(
+		atmos_clear_weather[current_time+1].base)
+	fog.result.r, fog.result.g, fog.result.b = 0
+
 
 	if atmos_clear_weather[current_time].base ~= 
 			atmos_clear_weather[current_time+1].base then
 		-- We compare colours the same way we do it for the light level.
-		fog.result.red = atmos_ratio(fog.current.red, fog.next.red, time_percent)
-		fog.result.grn = atmos_ratio(fog.current.grn, fog.next.grn, time_percent)
-		fog.result.blu = atmos_ratio(fog.current.blu, fog.next.blu, time_percent)
+		fog.result.r = atmos_ratio(fog.current.r, fog.next.r, time_percent)
+		fog.result.g = atmos_ratio(fog.current.g, fog.next.g, time_percent)
+		fog.result.b = atmos_ratio(fog.current.b, fog.next.b, time_percent)
 	else
-		fog.result.red = fog.current.red
-		fog.result.grn = fog.current.grn
-		fog.result.blu = fog.current.blu
+		fog.result.r = fog.current.r
+		fog.result.g = fog.current.g
+		fog.result.b = fog.current.b
 	end
 	if atmos_clear_weather[current_time].bottom == 
 				atmos_clear_weather[current_time+1].bottom then
@@ -159,35 +143,35 @@ local function atmos_set_skybox(player)
 			"atmos_nebula_north.png^[opacity:90"
 	}
 	
-	local rgba = minetest.rgba(fog.result.red, fog.result.grn, fog.result.blu)
+	local rgba = minetest.rgba(fog.result.r, fog.result.g, fog.result.b)
 
 	player:set_sky({
-			sky_color = rgba,
-			type = "custom",
-			textures = tex_table,
-			clouds = true,
-			default_fog = false,
-			overlay_visible = true,
-			sun = {
-				visible = true,
-				yaw = 105,
-				tilt = -12,
-				texture = "atmos_sun.png",
-				sunrise_glow = true,
-			},
-			moon = {
-				visible = true,
-				yaw = -105,
-				tilt = -12,
-				texture = "atmos_moon.png",	
-			},
-			stars = {
-				visible = true,
-				yaw = 0,
-				tilt = 0,
-				count = 2400,	
-			},
-			overlay_textures = ovl_table,
+		sky_color = rgba,
+		type = "custom",
+		textures = tex_table,
+		clouds = true,
+		default_fog = false,
+		overlay_visible = true,
+		sun = {
+			visible = true,
+			yaw = 105,
+			tilt = -12,
+			texture = "atmos_sun.png",
+			sunrise_glow = true,
+		},
+		moon = {
+			visible = true,
+			yaw = -105,
+			tilt = -12,
+			texture = "atmos_moon.png",	
+		},
+		stars = {
+			visible = true,
+			yaw = 0,
+			tilt = 0,
+			count = 2400,	
+		},
+		overlay_textures = ovl_table,
 	})
 
 	local light_level = 0
@@ -202,10 +186,9 @@ local function atmos_set_skybox(player)
 	end
 	-- Sanity checks, going over 1 makes it dark again
 	-- as going under 0 makes it bright again.
-	if light_level > 1 then light_level = 1 end 
-	if light_level < 0 then light_level = 0 end 
+	if light_level > 1 then light_level = 1 end
+	if light_level < 0 then light_level = 0 end
 	player:override_day_night_ratio(light_level)
-	
 end
 
 local function atmos_sync_skybox()
@@ -213,10 +196,10 @@ local function atmos_sync_skybox()
 		-- Do not sync the current weather to players under -32 depth.
 		if player:get_pos().y <= -32 then
 			player:set_sky({
-					sky_color = "#000000",
-					type = "plain",
-					textures = nil,
-					clouds = false,
+				sky_color = "#000000",
+				type = "plain",
+				textures = nil,
+				clouds = false,
 			})
 			player:override_day_night_ratio(0)
 		else

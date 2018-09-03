@@ -5240,6 +5240,8 @@ This is basically a reference to a C++ `ServerActiveObject`
         now deprecated, and cannot support the custom skybox feature set.
 * `get_sky()`: returns a table with the current sky parameters as in
     `set_sky`.
+    * Note: The skybox types `"skybox"`, `"regular"` and `"plain"` will only show their
+    required parameters, to see them all, use `"custom"`.
 * `set_clouds(parameters)`: set cloud parameters
     * `parameters` is a table with the following optional fields:
         * `density`: from `0` (no clouds) to `1` (full clouds) (default `0.4`)

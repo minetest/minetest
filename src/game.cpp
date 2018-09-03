@@ -2739,9 +2739,10 @@ void Game::handleClientEvent_SetSky(ClientEvent *event, CameraOrientation *cam)
 
 			sky->setOverlayVisible(event->set_sky.overlay_visible);
 
-			for (int i = 0; i < 6; i++) {
+			for (u16 i = 0; i < 
+					event->set_sky.overlay_textures->size(); i++) {
 				if ((*event->set_sky.overlay_textures)[i] ==
-					"__not_supplied__" || 
+					"" || 
 					event->set_sky.overlay_textures->size() != 6) {
 					// Prevent rendering if nil is used
 					sky->setOverlayVisible(false);

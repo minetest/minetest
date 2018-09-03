@@ -1599,8 +1599,6 @@ int ObjectRef::l_set_sky(lua_State *L)
 	if (!player)
 		return 0;
 	if (lua_istable(L, 2)) {
-
-
 		SkyParams sky_params = player->getSkyParams();
 		
 		// just in case we're not supplied a bgcolor
@@ -1621,15 +1619,12 @@ int ObjectRef::l_set_sky(lua_State *L)
 
 		sky_params.params.clear();
 		if (lua_isnil(L, -1)) {
-			sky_params.params.emplace_back("__not_supplied__");
+			sky_params.params.emplace_back("");
 		} else {
 			lua_pushnil(L);
 			while (lua_next(L, -2) != 0) {
 				// key at index -2 and value at index -1
-				if (lua_isstring(L, -1)) {
-					sky_params.params.emplace_back(readParam<std::string>(L, -1));
-				} else
-					sky_params.params.emplace_back("");
+				sky_params.params.emplace_back(readParam<std::string>(L, -1));
 				// removes value, keeps key for next iteration
 				lua_pop(L, 1);
 			}
@@ -1641,11 +1636,11 @@ int ObjectRef::l_set_sky(lua_State *L)
 		if (sky_params.params.size() != 6 && sky_params.type == "skybox")
 			throw LuaError("Skybox expects 6 textures.");
 		if (sky_params.params.size() != 6 && sky_params.type == "custom" &&
-				sky_params.params[0] != "__not_supplied__")
+				sky_params.params[0] != "")
 			throw LuaError("Skybox expects 6 textures.");
 		
 		if (!lua_isnil(L, -1))
-			sky_params.clouds          = getboolfield_default(L, -1,
+			sky_params.clouds = getboolfield_default(L, -1,
 				"clouds", true);
 
 		if (sky_params.type != "custom") {
@@ -1663,13 +1658,13 @@ int ObjectRef::l_set_sky(lua_State *L)
 
 		lua_getfield(L, 2, "sun"); // Moon related object management
 
-		sky_params.sun.visible      = getboolfield_default(L, -1, 
+		sky_params.sun.visible = getboolfield_default(L, -1, 
 			"visible", true);
-		sky_params.sun.yaw          = getfloatfield_default(L,-1,
+		sky_params.sun.yaw = getfloatfield_default(L,-1,
 			"yaw", 90);
-		sky_params.sun.tilt         = getfloatfield_default(L, -1,
+		sky_params.sun.tilt = getfloatfield_default(L, -1,
 			"tilt", 0);
-		sky_params.sun.texture      = getstringfield_default(L, -1,
+		sky_params.sun.texture = getstringfield_default(L, -1,
 			"texture", "sun.png");
 		sky_params.sun.sunrise_glow = getboolfield_default(L, -1,
 			"sunrise_glow", true);
@@ -1679,9 +1674,9 @@ int ObjectRef::l_set_sky(lua_State *L)
 
 		sky_params.moon.visible = getboolfield_default(L, -1, 
 			"visible", true);
-		sky_params.moon.yaw     = getfloatfield_default(L, -1, 
+		sky_params.moon.yaw = getfloatfield_default(L, -1, 
 			"yaw", -90);
-		sky_params.moon.tilt    = getfloatfield_default(L, -1, 
+		sky_params.moon.tilt = getfloatfield_default(L, -1, 
 			"tilt", 0);
 		sky_params.moon.texture = getstringfield_default(L, -1, 
 			"texture", "moon.png");
@@ -1691,9 +1686,9 @@ int ObjectRef::l_set_sky(lua_State *L)
 
 		sky_params.stars.visible = getboolfield_default(L, -1,
 			"visible", true);
-		sky_params.stars.yaw    = getfloatfield_default(L, -1,
+		sky_params.stars.yaw = getfloatfield_default(L, -1,
 			"yaw", 0);
-		sky_params.stars.tilt   = getfloatfield_default(L, -1,
+		sky_params.stars.tilt = getfloatfield_default(L, -1,
 			"tilt", 0);
 		sky_params.stars.number = getintfield_default(L, -1,
 			"count", 200);
@@ -1703,17 +1698,13 @@ int ObjectRef::l_set_sky(lua_State *L)
 
 		sky_params.overlay_textures.clear();
 		if (lua_isnil(L, -1)) {
-			sky_params.overlay_textures.emplace_back(
-				"__not_supplied__");
+			sky_params.overlay_textures.emplace_back("");
 		} else {
 			lua_pushnil(L);
 			while (lua_next(L, -2) != 0) {
 				// key at index -2 and value at index -1
-				if (lua_isstring(L, -1)) {
-					sky_params.overlay_textures.emplace_back(
-						readParam<std::string>(L, -1));
-				} else
-					sky_params.overlay_textures.emplace_back("");
+				sky_params.overlay_textures.emplace_back(
+					readParam<std::string>(L, -1));
 				// removes value, keeps key for next iteration
 				lua_pop(L, 1);
 			}
@@ -1723,7 +1714,7 @@ int ObjectRef::l_set_sky(lua_State *L)
 		if (sky_params.overlay_textures.size() != 6 &&
 				sky_params.type == "custom" &&
 				sky_params.overlay_textures[0] !=
-				"__not_supplied__")
+				"")
 			throw LuaError("Overlay textures expects 6 textures.");
 
 		getServer(L)->setSky(player, sky_params);
@@ -1733,7 +1724,7 @@ int ObjectRef::l_set_sky(lua_State *L)
 		// handle deprecated set_sky here;
 		// we also use the brand new set_sky struct
 		log_deprecated(L,
-		"Deprecated call to set_sky, see lua_api.txt for details.");
+			"Deprecated call to set_sky, see lua_api.txt for details.");
 
 		SkyParams sky_params = player->getSkyParams();
 		read_color(L, 2, &sky_params.bgcolor);
@@ -1741,17 +1732,17 @@ int ObjectRef::l_set_sky(lua_State *L)
 		sky_params.type = luaL_checkstring(L, 3);
 
 		if (lua_istable(L, 4)) {
-		lua_pushnil(L);
-		sky_params.params.clear();
-		while (lua_next(L, 4) != 0) {
-			// key at index -2 and value at index -1
-			if (lua_isstring(L, -1))
-				sky_params.params.emplace_back(
-					readParam<std::string>(L, -1));
-			else
-				sky_params.params.emplace_back("");
-			// removes value, keeps key for next iteration
-			lua_pop(L, 1);
+			lua_pushnil(L);
+			sky_params.params.clear();
+			while (lua_next(L, 4) != 0) {
+				// key at index -2 and value at index -1
+				if (lua_isstring(L, -1))
+					sky_params.params.emplace_back(
+						readParam<std::string>(L, -1));
+				else
+					sky_params.params.emplace_back("");
+				// removes value, keeps key for next iteration
+				lua_pop(L, 1);
 			}
 		}
 
@@ -1791,7 +1782,6 @@ int ObjectRef::l_set_sky(lua_State *L)
 		lua_pushboolean(L, true);
 		return 1;
 	}
-	
 }
 
 // get_sky(self)

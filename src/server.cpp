@@ -1754,19 +1754,22 @@ void Server::SendHUDSetParam(session_t peer_id, u16 param, const std::string &va
 
 void Server::SendSetSky(session_t peer_id, const SkyParams &params)
 {
+	u16 tex_size = params.params.size();
+	u16 ovl_size = params.overlay_textures.size();
+
 	NetworkPacket pkt(TOCLIENT_SET_SKY, 0, peer_id);
 	pkt << params.bgcolor << params.type
-			<< params.clouds;
+			<< params.clouds << tex_size << ovl_size;
 
 	if (params.type	== "custom") {
-		pkt << params.default_fog
-				<< params.overlay_visible << params.sun.visible
-				<< params.sun.yaw << params.sun.tilt
-				<< params.sun.texture << params.sun.sunrise_glow
-				<< params.moon.visible << params.moon.yaw
-				<< params.moon.tilt << params.moon.texture
-				<< params.stars.visible << params.stars.number
-				<< params.stars.yaw << params.stars.tilt;
+		pkt << params.default_fog << params.overlay_visible
+				<< params.sun.visible << params.sun.yaw
+				<< params.sun.tilt << params.sun.texture
+				<< params.sun.sunrise_glow << params.moon.visible
+				<< params.moon.yaw << params.moon.tilt
+				<< params.moon.texture << params.stars.visible
+				<< params.stars.number << params.stars.yaw
+				<< params.stars.tilt;
 	}
 
 	for (const std::string &param : params.params)

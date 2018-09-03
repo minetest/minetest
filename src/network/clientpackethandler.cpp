@@ -1203,12 +1203,16 @@ void Client::handleCommand_HudSetSky(NetworkPacket* pkt)
 	f32 stars_tilt;
 	u16 stars_count;
 
-	std::vector<std::string> overlay_textures;
 	bool overlay_visible;
+	std::vector<std::string> overlay_textures;
+	u16 tex_size;
+	u16 ovl_size;
+	std::string texture;
 
-	*pkt >> bgcolor >> type >> clouds;
+	*pkt >> bgcolor >> type >> clouds
+			>> tex_size >> ovl_size;
 
-	if (type == "custom"){
+	if (type == "custom") {
 		*pkt >> default_fog	>> overlay_visible
 			>> sun_visible >> sun_yaw
 			>> sun_tilt	>> sun_texture
@@ -1219,22 +1223,20 @@ void Client::handleCommand_HudSetSky(NetworkPacket* pkt)
 			>> stars_tilt;
 	}
 
-	std::string texture;
-	
 	if (type == "custom" || type == "skybox") {
-		for (int i = 0; i < 6; i++) {
+		for (int i = 0; i < tex_size; i++) {
 			*pkt >> texture;
 			params.emplace_back(texture);
-			if (texture == "__not_supplied__")
+			if (texture == "")
 				break;
 		}
 	}
 
 	if (type == "custom") {
-		for (int i = 0; i < 6; i++) {
+		for (int i = 0; i < ovl_size; i++) {
 			*pkt >> texture;
 			overlay_textures.emplace_back(texture);
-			if (texture == "__not_supplied__")
+			if (texture == "")
 				break;
 		}
 	}
