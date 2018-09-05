@@ -31,10 +31,6 @@ local function get_formspec(data)
 		"label[0.5,0;" .. fgettext("World:") .. "]" ..
 		"label[1.75,0;" .. data.worldspec.name .. "]"
 
-	local hard_deps, soft_deps = pkgmgr.get_dependencies(mod.path)
-	local hard_deps_str = table.concat(hard_deps, ",")
-	local soft_deps_str = table.concat(soft_deps, ",")
-
 	if mod.is_modpack or mod.type == "game" then
 		local info = minetest.formspec_escape(
 			core.get_content_info(mod.path).description)
@@ -48,6 +44,10 @@ local function get_formspec(data)
 		retval = retval ..
 			"textarea[0.25,0.7;5.75,7.2;;" .. info .. ";]"
 	else
+		local hard_deps, soft_deps = pkgmgr.get_dependencies(mod.path)
+		local hard_deps_str = table.concat(hard_deps, ",")
+		local soft_deps_str = table.concat(soft_deps, ",")
+
 		retval = retval ..
 			"label[0,0.7;" .. fgettext("Mod:") .. "]" ..
 			"label[0.75,0.7;" .. mod.name .. "]"
