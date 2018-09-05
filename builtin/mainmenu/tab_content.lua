@@ -81,18 +81,17 @@ local function get_formspec(tabview, name, tabdata)
 				modscreenshot = defaulttexturedir .. "no_screenshot.png"
 		end
 
+		local info = core.get_content_info(selected_pkg.path)
+		local desc = fgettext("No package description available")
+		if info.description and info.description:trim() ~= "" then
+			desc = info.description
+		end
+
 		retval = retval ..
 				"image[5.5,0;3,2;" .. core.formspec_escape(modscreenshot) .. "]" ..
 				"label[8.25,0.6;" .. core.formspec_escape(selected_pkg.name) .. "]" ..
-				"label[5.5,1.7;".. fgettext("Information:") .. "]" ..
-				"textlist[5.5,2.2;6.2,2.4;description;"
-
-		local info = core.get_content_info(selected_pkg.path)
-		local desc = info.description or fgettext("No package description available")
-		local descriptionlines = core.wrap_text(desc, 42, true)
-		for i = 1, #descriptionlines do
-			retval = retval .. core.formspec_escape(descriptionlines[i]) .. ","
-		end
+				"textarea[5.9,2.2;6.3,2.8;;" .. fgettext("Information:") ..
+				";" .. desc .. "]"
 
 		if selected_pkg.type == "mod" then
 			if selected_pkg.is_modpack then
