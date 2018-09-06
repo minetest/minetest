@@ -90,7 +90,7 @@ local function get_formspec(tabview, name, tabdata)
 		retval = retval ..
 				"image[5.5,0;3,2;" .. core.formspec_escape(modscreenshot) .. "]" ..
 				"label[8.25,0.6;" .. core.formspec_escape(selected_pkg.name) .. "]" ..
-				"box[5.5,2.2;6.15,2.25;#000]"
+				"box[5.5,2.2;6.15,2.35;#000]"
 
 		if selected_pkg.type == "mod" then
 			if selected_pkg.is_modpack then
@@ -133,7 +133,7 @@ local function get_formspec(tabview, name, tabdata)
 			end
 		end
 
-		retval = retval .. "textarea[5.9,2.2;6.3,2.8;;" ..
+		retval = retval .. "textarea[5.85,2.2;6.35,2.9;;" ..
 			fgettext("Information:") .. ";" .. desc .. "]" ..
 			"button[5.5,4.65;3.25,1;btn_mod_mgr_delete_mod;" ..
 			fgettext("Uninstall Package") .. "]"
