@@ -74,23 +74,14 @@ local function get_formspec(data)
 					hard_deps_str .. ";0]" ..
 					"label[0,6;" .. fgettext("No optional dependencies") .. "]"
 			else
-				-- set the heights according to the number of list elements
-				local ratio = #hard_deps / (#soft_deps + #hard_deps)
-				-- avoid making one of the lists too short
-				local min_l = math.min(0.5,
-					math.min(#soft_deps, #hard_deps) * 0.25)
-				ratio = math.max(min_l, math.min(1.0 - min_l, ratio))
-				local h1 = 4.0 * ratio
-				local h2 = 4.0 - h1
-				local s_opt = 1.25 + h1 + 0.5
 				retval = retval ..
 					"label[0,1.25;" .. fgettext("Dependencies:") .. "]" ..
-					"textlist[0,1.75;5," .. h1 .. ";world_config_depends;" ..
+					"textlist[0,1.75;5,2.125;world_config_depends;" ..
 					hard_deps_str .. ";0]" ..
-					"label[0," .. s_opt .. ";" ..
-					fgettext("Optional dependencies:") .. "]" ..
-					"textlist[0," .. s_opt + 0.5 .. ";5," .. h2 ..
-					";world_config_optdepends;" .. soft_deps_str .. ";0]"
+					"label[0,3.9;" .. fgettext("Optional dependencies:") ..
+					"]" ..
+					"textlist[0,4.375;5,1.8;world_config_optdepends;" ..
+					soft_deps_str .. ";0]"
 			end
 		end
 	end
