@@ -90,41 +90,36 @@ local function get_formspec(tabview, name, tabdata)
 		retval = retval ..
 				"image[5.5,0;3,2;" .. core.formspec_escape(modscreenshot) .. "]" ..
 				"label[8.25,0.6;" .. core.formspec_escape(selected_pkg.name) .. "]" ..
-				"box[5.5,2.2;6.15,2.25;#000]" ..
-				"textarea[5.9,2.2;6.3,2.8;;" .. fgettext("Information:") ..
-				";" .. desc .. "]"
+				"box[5.5,2.2;6.15,2.25;#000]"
 
 		if selected_pkg.type == "mod" then
 			if selected_pkg.is_modpack then
-				retval = retval .. ";0]" ..
+				retval = retval ..
 					"button[8.65,4.65;3.25,1;btn_mod_mgr_rename_modpack;" ..
 					fgettext("Rename") .. "]"
 			else
 				--show dependencies
-				local toadd_hard = table.concat(info.depends or {}, ",")
-				local toadd_soft = table.concat(info.optional_depends or {}, ",")
+				desc = desc .. "\n\n"
+				local toadd_hard = table.concat(info.depends or {}, "\n")
+				local toadd_soft = table.concat(info.optional_depends or {}, "\n")
 				if toadd_hard == "" and toadd_soft == "" then
-					retval = retval .. "," .. fgettext("No dependencies.")
+					desc = desc .. fgettext("No dependencies.")
 				else
 					if toadd_hard ~= "" then
-						retval = retval .. "," .. fgettext("Dependencies:") .. ","
-						retval = retval .. toadd_hard
+						desc = desc ..fgettext("Dependencies:") ..
+							"\n" .. toadd_hard
 					end
 					if toadd_soft ~= "" then
 						if toadd_hard ~= "" then
-							retval = retval .. ","
+							desc = desc .. "\n\n"
 						end
-						retval = retval .. "," .. fgettext("Optional dependencies:") .. ","
-						retval = retval .. toadd_soft
+						desc = desc .. fgettext("Optional dependencies:") ..
+							"\n" .. toadd_soft
 					end
 				end
-
-				retval = retval .. ";0]"
 			end
 
 		else
-			retval = retval .. ";0]"
-
 			if selected_pkg.type == "txp" then
 				if selected_pkg.enabled then
 					retval = retval ..
@@ -138,8 +133,10 @@ local function get_formspec(tabview, name, tabdata)
 			end
 		end
 
-		retval = retval .. "button[5.5,4.65;3.25,1;btn_mod_mgr_delete_mod;"
-			.. fgettext("Uninstall Package") .. "]"
+		retval = retval .. "textarea[5.9,2.2;6.3,2.8;;" ..
+			fgettext("Information:") .. ";" .. desc .. "]" ..
+			"button[5.5,4.65;3.25,1;btn_mod_mgr_delete_mod;" ..
+			fgettext("Uninstall Package") .. "]"
 	end
 	return retval
 end
