@@ -90,6 +90,7 @@ local function get_formspec(tabview, name, tabdata)
 		retval = retval ..
 				"image[5.5,0;3,2;" .. core.formspec_escape(modscreenshot) .. "]" ..
 				"label[8.25,0.6;" .. core.formspec_escape(selected_pkg.name) .. "]" ..
+				"box[5.5,2.2;6.15,2.25;#000]" ..
 				"textarea[5.9,2.2;6.3,2.8;;" .. fgettext("Information:") ..
 				";" .. desc .. "]"
 
