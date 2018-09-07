@@ -22,11 +22,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "irrlichttypes_extrabloated.h"
 #include "inventory.h"
 #include "client/tile.h"
-#include "splinesequence.h"
 #include <ICameraSceneNode.h>
 #include <ISceneNode.h>
 #include <list>
-#include <unordered_map>
 
 class LocalPlayer;
 struct MapDrawControl;
@@ -48,24 +46,6 @@ struct Nametag {
 	std::string nametag_text;
 	video::SColor nametag_color;
 	v3f nametag_pos;
-};
-
-class WieldAnimation {
-public:
-	v3f getTranslationAt(float time) const;
-	core::quaternion getRotationAt(float time) const;
-	float getDuration() const;
-	// call this *after* filling the splines
-	void setDuration(float duration);
-
-	static const WieldAnimation& getNamed(const std::string &name);
-private:
-	SplineSequence<v3f> m_translationspline;
-	SplineSequence<core::quaternion> m_rotationspline;
-	float m_duration;
-
-	static std::unordered_map<std::string, WieldAnimation> repository;
-	static void fillRepository();
 };
 
 enum CameraMode {CAMERA_MODE_FIRST, CAMERA_MODE_THIRD, CAMERA_MODE_THIRD_FRONT};

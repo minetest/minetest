@@ -510,6 +510,7 @@ set(client_SRCS
 	shader.cpp
 	sky.cpp
 	splinesequence.cpp
+	wieldanimation.cpp
 	wieldmesh.cpp
 	${client_SCRIPT_SRCS}
 	${UNITTEST_CLIENT_SRCS}
