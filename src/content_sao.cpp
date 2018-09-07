@@ -966,7 +966,9 @@ void PlayerSAO::getStaticData(std::string * result) const
 
 void PlayerSAO::step(float dtime, bool send_recommended)
 {
-	if ( g_settings->getBool("enable_drowning") ){
+	static thread_local cache_is_drowning = g_settings->getBool("enable_drowning");
+	
+	if ( cache_is_drowning ){
 		
 	    if (m_drowning_interval.step(dtime, 2.0f)) {
 		    // Get nose/mouth position, approximate with eye position
