@@ -889,16 +889,19 @@ void Client::handleCommand_SpawnParticle(NetworkPacket* pkt)
 	float size              = readF1000(is);
 	bool collisiondetection = readU8(is);
 	std::string texture     = deSerializeLongString(is);
-	bool vertical           = false;
-	bool collision_removal  = false;
+
+	bool vertical          = false;
+	bool collision_removal = false;
 	TileAnimationParams animation;
-	animation.type = TAT_NONE;
-	u8 glow = 0;
+	animation.type         = TAT_NONE;
+	u8 glow                = 0;
+	bool object_collision  = false;
 	try {
 		vertical = readU8(is);
 		collision_removal = readU8(is);
 		animation.deSerialize(is, m_proto_ver);
 		glow = readU8(is);
+		object_collision = readU8(is);
 	} catch (...) {}
 
 	ClientEvent *event = new ClientEvent();
@@ -910,6 +913,7 @@ void Client::handleCommand_SpawnParticle(NetworkPacket* pkt)
 	event->spawn_particle.size               = size;
 	event->spawn_particle.collisiondetection = collisiondetection;
 	event->spawn_particle.collision_removal  = collision_removal;
+	event->spawn_particle.object_collision   = object_collision;
 	event->spawn_particle.vertical           = vertical;
 	event->spawn_particle.texture            = new std::string(texture);
 	event->spawn_particle.animation          = animation;
@@ -943,12 +947,13 @@ void Client::handleCommand_AddParticleSpawner(NetworkPacket* pkt)
 
 	*pkt >> server_id;
 
-	bool vertical = false;
+	bool vertical          = false;
 	bool collision_removal = false;
+	u16 attached_id        = 0;
 	TileAnimationParams animation;
-	animation.type = TAT_NONE;
-	u8 glow = 0;
-	u16 attached_id = 0;
+	animation.type         = TAT_NONE;
+	u8 glow                = 0;
+	bool object_collision  = false;
 	try {
 		*pkt >> vertical;
 		*pkt >> collision_removal;
@@ -959,6 +964,7 @@ void Client::handleCommand_AddParticleSpawner(NetworkPacket* pkt)
 		std::istringstream is(datastring, std::ios_base::binary);
 		animation.deSerialize(is, m_proto_ver);
 		glow = readU8(is);
+		object_collision = readU8(is);
 	} catch (...) {}
 
 	u32 client_id = m_particle_manager.getSpawnerId();
@@ -980,6 +986,7 @@ void Client::handleCommand_AddParticleSpawner(NetworkPacket* pkt)
 	event->add_particlespawner.maxsize            = maxsize;
 	event->add_particlespawner.collisiondetection = collisiondetection;
 	event->add_particlespawner.collision_removal  = collision_removal;
+	event->add_particlespawner.object_collision   = object_collision;
 	event->add_particlespawner.attached_id        = attached_id;
 	event->add_particlespawner.vertical           = vertical;
 	event->add_particlespawner.texture            = new std::string(texture);

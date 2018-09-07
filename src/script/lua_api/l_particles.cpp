@@ -26,13 +26,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "particles.h"
 
 // add_particle({pos=, velocity=, acceleration=, expirationtime=,
-// 		size=, collisiondetection=, collision_removal=, vertical=,
-//		texture=, player=})
+//     size=, collisiondetection=, collision_removal=, object_collision=,
+//     vertical=, texture=, player=})
 // pos/velocity/acceleration = {x=num, y=num, z=num}
 // expirationtime = num (seconds)
 // size = num
 // collisiondetection = bool
 // collision_removal = bool
+// object_collision = bool
 // vertical = bool
 // texture = e.g."default_wood.png"
 // animation = TileAnimation definition
@@ -43,19 +44,14 @@ int ModApiParticles::l_add_particle(lua_State *L)
 
 	// Get parameters
 	v3f pos, vel, acc;
-	pos = vel = acc = v3f(0, 0, 0);
-
 	float expirationtime, size;
 	expirationtime = size = 1;
-
-	bool collisiondetection, vertical, collision_removal;
-	collisiondetection = vertical = collision_removal = false;
+	bool collisiondetection, vertical, collision_removal, object_collision;
+	collisiondetection = vertical = collision_removal = object_collision = false;
 	struct TileAnimationParams animation;
 	animation.type = TAT_NONE;
-
 	std::string texture;
 	std::string playername;
-
 	u8 glow = 0;
 
 	if (lua_gettop(L) > 1) // deprecated
@@ -107,6 +103,8 @@ int ModApiParticles::l_add_particle(lua_State *L)
 			"collisiondetection", collisiondetection);
 		collision_removal = getboolfield_default(L, 1,
 			"collision_removal", collision_removal);
+		object_collision = getboolfield_default(L, 1,
+			"object_collision", object_collision);
 		vertical = getboolfield_default(L, 1, "vertical", vertical);
 
 		lua_getfield(L, 1, "animation");
@@ -119,7 +117,8 @@ int ModApiParticles::l_add_particle(lua_State *L)
 		glow = getintfield_default(L, 1, "glow", 0);
 	}
 	getServer(L)->spawnParticle(playername, pos, vel, acc, expirationtime, size,
-			collisiondetection, collision_removal, vertical, texture, animation, glow);
+			collisiondetection, collision_removal, object_collision, vertical,
+			texture, animation, glow);
 	return 1;
 }
 
@@ -131,6 +130,7 @@ int ModApiParticles::l_add_particle(lua_State *L)
 //				minsize=, maxsize=,
 //				collisiondetection=,
 //				collision_removal=,
+//				object_collision=,
 //				vertical=,
 //				texture=,
 //				player=})
@@ -139,6 +139,7 @@ int ModApiParticles::l_add_particle(lua_State *L)
 // minsize/maxsize = num
 // collisiondetection = bool
 // collision_removal = bool
+// object_collision = bool
 // vertical = bool
 // texture = e.g."default_wood.png"
 // animation = TileAnimation definition
@@ -150,11 +151,10 @@ int ModApiParticles::l_add_particlespawner(lua_State *L)
 	// Get parameters
 	u16 amount = 1;
 	v3f minpos, maxpos, minvel, maxvel, minacc, maxacc;
-	    minpos= maxpos= minvel= maxvel= minacc= maxacc= v3f(0, 0, 0);
 	float time, minexptime, maxexptime, minsize, maxsize;
-	      time= minexptime= maxexptime= minsize= maxsize= 1;
-	bool collisiondetection, vertical, collision_removal;
-	     collisiondetection = vertical = collision_removal = false;
+	time = minexptime = maxexptime = minsize = maxsize = 1;
+	bool collisiondetection, vertical, collision_removal, object_collision;
+	collisiondetection = vertical = collision_removal = object_collision = false;
 	struct TileAnimationParams animation;
 	animation.type = TAT_NONE;
 	ServerActiveObject *attached = NULL;
@@ -219,6 +219,8 @@ int ModApiParticles::l_add_particlespawner(lua_State *L)
 			"collisiondetection", collisiondetection);
 		collision_removal = getboolfield_default(L, 1,
 			"collision_removal", collision_removal);
+		object_collision = getboolfield_default(L, 1,
+			"object_collision", object_collision);
 
 		lua_getfield(L, 1, "animation");
 		animation = read_animation_definition(L, -1);
@@ -245,6 +247,7 @@ int ModApiParticles::l_add_particlespawner(lua_State *L)
 			minsize, maxsize,
 			collisiondetection,
 			collision_removal,
+			object_collision,
 			attached,
 			vertical,
 			texture, playername,

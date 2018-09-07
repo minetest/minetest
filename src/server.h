@@ -229,7 +229,7 @@ public:
 	void spawnParticle(const std::string &playername,
 		v3f pos, v3f velocity, v3f acceleration,
 		float expirationtime, float size,
-		bool collisiondetection, bool collision_removal,
+		bool collisiondetection, bool collision_removal, bool object_collision,
 		bool vertical, const std::string &texture,
 		const struct TileAnimationParams &animation, u8 glow);
 
@@ -239,7 +239,7 @@ public:
 		v3f minacc, v3f maxacc,
 		float minexptime, float maxexptime,
 		float minsize, float maxsize,
-		bool collisiondetection, bool collision_removal,
+		bool collisiondetection, bool collision_removal, bool object_collision,
 		ServerActiveObject *attached,
 		bool vertical, const std::string &texture,
 		const std::string &playername, const struct TileAnimationParams &animation,
@@ -444,7 +444,7 @@ private:
 		v3f minacc, v3f maxacc,
 		float minexptime, float maxexptime,
 		float minsize, float maxsize,
-		bool collisiondetection, bool collision_removal,
+		bool collisiondetection, bool collision_removal, bool object_collision,
 		u16 attached_id,
 		bool vertical, const std::string &texture, u32 id,
 		const struct TileAnimationParams &animation, u8 glow);
@@ -455,7 +455,7 @@ private:
 	void SendSpawnParticle(session_t peer_id, u16 protocol_version,
 		v3f pos, v3f velocity, v3f acceleration,
 		float expirationtime, float size,
-		bool collisiondetection, bool collision_removal,
+		bool collisiondetection, bool collision_removal, bool object_collision,
 		bool vertical, const std::string &texture,
 		const struct TileAnimationParams &animation, u8 glow);
 
