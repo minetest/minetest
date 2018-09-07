@@ -39,6 +39,9 @@ static LightingParams params;
 
 float decode_light_f(float x)
 {
+	// x is equal to 1.0f most of time, so paramat asked me to add this. -- numzero
+	if (x >= 1.0f)
+		return 1.0f;
 	x = rangelim(x, 0.0f, 1.0f);
 	float brightness = ((params.a * x + params.b) * x + params.c) * x;
 	float boost = params.boost * std::exp(-0.5f * sqr((x - params.center) / params.sigma));
