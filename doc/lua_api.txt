@@ -5288,6 +5288,12 @@ Call these functions only at load time!
 * `minetest.register_on_item_eat(function(hp_change, replace_with_item, itemstack, user, pointed_thing))`
     * Called when an item is eaten, by `minetest.item_eat`
     * Return `itemstack` to cancel the default item eat response (i.e.: hp increase).
+* `minetest.register_on_item_pickup(function(luaentity, inventory, picker, ...))`
+    * Called when an item is picked up, by `minetest.item_pickup`.
+    * Function is added to `minetest.registered_on_item_pickups`.
+    * Oldest functions are called first.
+    * If function returns `true`, remaining functions are not called.
+    * If function returns `false`, remaining functions are not called and the item is not picked up.
 * `minetest.register_on_priv_grant(function(name, granter, priv))`
     * Called when `granter` grants the priv `priv` to `name`.
     * Note that the callback will be called twice if it's done by a player,
@@ -5460,6 +5466,12 @@ Environment access
     * Returns `ObjectRef`, or `nil` if failed
 * `minetest.add_item(pos, item)`: Spawn item
     * Returns `ObjectRef`, or `nil` if failed
+* `minetest.item_pickup(item_luaentity[, inventory, picker, ...])`: Pick up a spawned item.
+    * First, if defined, the `on_pickup` callback in item definition is called.
+    * Then the callbacks registered on pickup are invoked (see `minetest.register_on_item_pickup`).
+    * If the inventory is given, the item will be added to it and will be removed.
+    * `picker, ...` should be the parameters given by object `on_punch`.
+    * This function is called when a dropped item gets punched by a player.
 * `minetest.get_player_by_name(name)`: Get an `ObjectRef` to a player
 * `minetest.get_objects_inside_radius(pos, radius)`: returns a list of
   ObjectRefs.
@@ -8033,6 +8045,12 @@ Used by `minetest.register_node`, `minetest.register_craftitem`, and
         -- Shall drop item and return the leftover itemstack.
         -- The dropper may be any ObjectRef or nil.
         -- default: minetest.item_drop
+
+        on_pickup = function(luaentity, inventory, picker, ...),
+        -- Called by `minetest.item_pickup`.
+        -- If this callback is defined, it will be executed before all the
+        -- `registered_on_item_pickup` callbacks (see `minetest.register_on_item_pickup`).
+        -- Returning `false` or `nil` will cancel their execution and the pick up.
 
         on_use = function(itemstack, user, pointed_thing),
         -- default: nil

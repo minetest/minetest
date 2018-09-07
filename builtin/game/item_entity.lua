@@ -11,6 +11,36 @@ function core.spawn_item(pos, item)
 	return obj
 end
 
+function core.item_pickup(ent, inv, ...)
+	if ent.itemstring ~= "" then
+		-- Call the on_pickup callback of item definition.
+		local item_def = ItemStack(ent.itemstring):get_definition()
+		if item_def and item_def.on_pickup and
+				not item_def.on_pickup(ent, inv, ...) then
+			return
+		end
+
+		-- Invoke all general on_pickup callbacks.
+		if core.run_callbacks(core.registered_on_item_pickups,
+				6, ent, inv, ...) == false then
+			return
+		end
+
+		-- Pickup item if none of the on_pickup callbacks returned false.
+		if not inv then
+			return
+		end
+
+		local left = inv:add_item("main", ent.itemstring)
+		if left and not left:is_empty() then
+			ent:set_item(left)
+			return
+		end
+	end
+	ent.itemstring = ""
+	ent.object:remove()
+end
+
 -- If item_entity_ttl is not set, enity will have default life time
 -- Setting it to -1 disables the feature
 
@@ -318,16 +348,11 @@ core.register_entity(":__builtin:item", {
 		end
 	end,
 
-	on_punch = function(self, hitter)
-		local inv = hitter:get_inventory()
-		if inv and self.itemstring ~= "" then
-			local left = inv:add_item("main", self.itemstring)
-			if left and not left:is_empty() then
-				self:set_item(left)
-				return
-			end
+	on_punch = function(self, hitter, ...)
+		local inv
+		if hitter then
+			inv = hitter:get_inventory()
 		end
-		self.itemstring = ""
-		self.object:remove()
+		core.item_pickup(self, inv, hitter, ...)
 	end,
 })

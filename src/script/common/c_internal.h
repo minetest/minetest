@@ -105,6 +105,10 @@ enum RunCallbacksMode
 	// Like above, but stops calling callbacks (short circuit)
 	// after seeing the first true value
 	RUN_CALLBACKS_MODE_OR_SC,
+	// If any callback returns a not nil value, the first such is returned
+	// Otherwise, returns nil
+	// Stops calling callbacks (short circuit) after seeing the first not nil value
+	RUN_CALLBACKS_MODE_NOT_NIL_SC,
 	// Note: "a true value" and "a false value" refer to values that
 	// are converted by readParam<bool> to true or false, respectively.
 };
