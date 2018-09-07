@@ -963,6 +963,9 @@ item_entity_ttl (Item entity TTL) int 900
 #    Enable players getting damage and dying.
 enable_damage (Damage) bool false
 
+#    Enable players to drown.
+enable_drowning bool true
+
 #    Enable creative mode for new created maps.
 creative_mode (Creative) bool false
 
