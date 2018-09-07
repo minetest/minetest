@@ -117,6 +117,8 @@ bool ScriptApiPlayer::on_respawnplayer(ServerActiveObject *player)
 bool ScriptApiPlayer::on_prejoinplayer(
 	const std::string &name,
 	const std::string &ip,
+	const u16 min_net_proto_version,
+	const u16 max_net_proto_version,
 	std::string *reason)
 {
 	SCRIPTAPI_PRECHECKHEADER
@@ -126,7 +128,10 @@ bool ScriptApiPlayer::on_prejoinplayer(
 	lua_getfield(L, -1, "registered_on_prejoinplayers");
 	lua_pushstring(L, name.c_str());
 	lua_pushstring(L, ip.c_str());
-	runCallbacks(2, RUN_CALLBACKS_MODE_OR);
+	lua_pushnumber(L, min_net_proto_version);
+	lua_pushnumber(L, max_net_proto_version);
+
+	runCallbacks(4, RUN_CALLBACKS_MODE_OR);
 	if (lua_isstring(L, -1)) {
 		reason->assign(readParam<std::string>(L, -1));
 		return true;

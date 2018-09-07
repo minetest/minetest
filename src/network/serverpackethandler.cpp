@@ -187,7 +187,8 @@ void Server::handleCommand_Init(NetworkPacket* pkt)
 
 	{
 		std::string reason;
-		if (m_script->on_prejoinplayer(playername, addr_s, &reason)) {
+		if (m_script->on_prejoinplayer(playername, addr_s,
+				min_net_proto_version, max_net_proto_version, &reason)) {
 			actionstream << "Server: Player with the name \"" << playerName << "\" "
 					<< "tried to connect from " << addr_s << " "
 					<< "but it was disallowed for the following reason: "

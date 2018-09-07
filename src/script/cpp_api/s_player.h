@@ -38,6 +38,7 @@ public:
 	void on_dieplayer(ServerActiveObject *player, const PlayerHPChangeReason &reason);
 	bool on_respawnplayer(ServerActiveObject *player);
 	bool on_prejoinplayer(const std::string &name, const std::string &ip,
+			const u16 min_net_proto_version, const u16 max_net_proto_version,
 			std::string *reason);
 	bool can_bypass_userlimit(const std::string &name, const std::string &ip);
 	void on_joinplayer(ServerActiveObject *player);
