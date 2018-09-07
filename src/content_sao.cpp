@@ -1,6 +1,7 @@
 /*
 Minetest
 Copyright (C) 2010-2013 celeron55, Perttu Ahola <celeron55@gmail.com>
+(C) 2018 N Ferreira, nuno360@gmail.com
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -965,33 +966,36 @@ void PlayerSAO::getStaticData(std::string * result) const
 
 void PlayerSAO::step(float dtime, bool send_recommended)
 {
-	if (m_drowning_interval.step(dtime, 2.0f)) {
-		// Get nose/mouth position, approximate with eye position
-		v3s16 p = floatToInt(getEyePosition(), BS);
-		MapNode n = m_env->getMap().getNodeNoEx(p);
-		const ContentFeatures &c = m_env->getGameDef()->ndef()->get(n);
-		// If node generates drown
-		if (c.drowning > 0 && m_hp > 0) {
-			if (m_breath > 0)
-				setBreath(m_breath - 1);
+	if ( g_settings->getBool("enable_drowning") ){
+		
+	    if (m_drowning_interval.step(dtime, 2.0f)) {
+		    // Get nose/mouth position, approximate with eye position
+		    v3s16 p = floatToInt(getEyePosition(), BS);
+		    MapNode n = m_env->getMap().getNodeNoEx(p);
+		    const ContentFeatures &c = m_env->getGameDef()->ndef()->get(n);
+		    // If node generates drown
+		    if (c.drowning > 0 && m_hp > 0) {
+		    	if (m_breath > 0)
+			    	setBreath(m_breath - 1);
 
-			// No more breath, damage player
-			if (m_breath == 0) {
-				PlayerHPChangeReason reason(PlayerHPChangeReason::DROWNING);
-				setHP(m_hp - c.drowning, reason);
-				m_env->getGameDef()->SendPlayerHPOrDie(this, reason);
-			}
-		}
-	}
+			    // No more breath, damage player
+			    if (m_breath == 0) {
+			    	PlayerHPChangeReason reason(PlayerHPChangeReason::DROWNING);
+			    	setHP(m_hp - c.drowning, reason);
+			    	m_env->getGameDef()->SendPlayerHPOrDie(this, reason);
+			    }
+		    }
+	    }
 
-	if (m_breathing_interval.step(dtime, 0.5f)) {
-		// Get nose/mouth position, approximate with eye position
-		v3s16 p = floatToInt(getEyePosition(), BS);
-		MapNode n = m_env->getMap().getNodeNoEx(p);
-		const ContentFeatures &c = m_env->getGameDef()->ndef()->get(n);
-		// If player is alive & no drowning, breathe
-		if (m_hp > 0 && m_breath < m_prop.breath_max && c.drowning == 0)
-			setBreath(m_breath + 1);
+	    if (m_breathing_interval.step(dtime, 0.5f)) {
+	    	// Get nose/mouth position, approximate with eye position
+	    	v3s16 p = floatToInt(getEyePosition(), BS);
+	    	MapNode n = m_env->getMap().getNodeNoEx(p);
+	    	const ContentFeatures &c = m_env->getGameDef()->ndef()->get(n);
+	    	// If player is alive & no drowning, breathe
+	    	if (m_hp > 0 && m_breath < m_prop.breath_max && c.drowning == 0)
+	    		setBreath(m_breath + 1);
+	    }
 	}
 
 	if (m_node_hurt_interval.step(dtime, 1.0f)) {

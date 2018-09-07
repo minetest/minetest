@@ -306,6 +306,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("max_users", "15");
 	settings->setDefault("creative_mode", "false");
 	settings->setDefault("enable_damage", "true");
+	settings->setDefault("enable_drowning", "true");
 	settings->setDefault("default_password", "");
 	settings->setDefault("default_privs", "interact, shout");
 	settings->setDefault("enable_pvp", "true");
