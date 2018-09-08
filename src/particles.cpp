@@ -592,7 +592,7 @@ void ParticleManager::addDiggingParticles(IGameDef* gamedef,
 		return;
 
 	// set the amount of particles here
-	for (u16 j = 0; j < 32; j++) {
+	for (u16 j = 0; j < 16; j++) {
 		addNodeParticle(gamedef, player, pos, n, f);
 	}
 }
@@ -617,7 +617,7 @@ void ParticleManager::addNodeParticle(IGameDef* gamedef,
 	else
 		texture = tile.texture;
 
-	float size = (rand() % 64) / 512.0f;
+	float size = (rand() % 8) / 64.0f;
 	float visual_size = BS * size;
 	if (tile.scale)
 		size /= tile.scale;
@@ -628,9 +628,9 @@ void ParticleManager::addNodeParticle(IGameDef* gamedef,
 
 	// Physics
 	v3f velocity(
-		((rand() % 100) / 50.0f - 1.0f) / 1.5f,
-		(rand() % 100) / 35.0f,
-		((rand() % 100) / 50.0f - 1.0f) / 1.5f
+		(rand() % 150) / 50.0f - 1.5f,
+		(rand() % 150) / 50.0f,
+		(rand() % 150) / 50.0f - 1.5f
 	);
 	v3f acceleration(0.0f, -player->movement_gravity / BS, 0.0f);
 	v3f particlepos = v3f(
