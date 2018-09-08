@@ -360,7 +360,7 @@ public:
 	{
 		m_nocheat_dig_pos = v3s16(32767, 32767, 32767);
 	}
-	LagPool& getDigPool()
+	LagPool &getDigPool()
 	{
 		return m_dig_pool;
 	}
@@ -386,11 +386,16 @@ public:
 	v3f getEyeOffset() const;
 	float getZoomFOV() const;
 
-	void setPhysicsModifier(const std::string& key, const PhysicsModifier& modifier);
-	void deletePhysicsModifier(const std::string& key);
+	const std::unordered_map<std::string, PhysicsModifier>& getPhysicsModifiers()
+	{
+		return m_physics_modifiers;
+	}
+		
+	void setPhysicsModifier(const std::string &key, const PhysicsModifier &modifier);
+	void deletePhysicsModifier(const std::string &key);
 
 	// Not const - physics modifier is cached
-	const PhysicsModifier& getEffectivePhysics();
+	const PhysicsModifier &getEffectivePhysics();
 
 	inline Metadata &getMeta() { return m_meta; }
 
@@ -400,7 +405,7 @@ private:
 
 	// Not const since it may cache
 	PhysicsModifier calculatePhysicsModifier();
-	const PhysicsModifier& getTotalPhysicsModifier();
+	const PhysicsModifier &getTotalPhysicsModifier();
 	void dirtyPhysicsModifier();
 	std::string getPhysicsOverrideString();
 
@@ -441,7 +446,7 @@ private:
 
 	Metadata m_meta;
 public:
-	PhysicsModifier m_physics_override; // Used for compatibility with non-table format
+	PhysicsModifier m_physics_override;
 
 	// Flag, when set to true, disables physics modifiers so that only the override
 	// matters. It is set when a mod calls set_physics_override and is irreversible

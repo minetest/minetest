@@ -1418,17 +1418,15 @@ void PlayerSAO::unlinkPlayerSessionAndSave()
 PlayerSAO::PhysicsModifier PlayerSAO::calculatePhysicsModifier()
 {
 	PhysicsModifier result;
-	for (const auto& pair : m_physics_modifiers) {
+	for (const auto &pair : m_physics_modifiers)
 		result *= pair.second;
-	}
 
 	return result;
 }
 
-const PlayerSAO::PhysicsModifier& PlayerSAO::getTotalPhysicsModifier()
+const PlayerSAO::PhysicsModifier &PlayerSAO::getTotalPhysicsModifier()
 {
-	if (physics_modifier_dirty)
-	{
+	if (physics_modifier_dirty) {
 		physics_modifier = calculatePhysicsModifier();
 		physics_modifier_dirty = false;
 	}
@@ -1444,9 +1442,7 @@ void PlayerSAO::dirtyPhysicsModifier()
 
 std::string PlayerSAO::getPhysicsOverrideString()
 {
-	if (!m_physics_override_sent)
-		m_physics_override_sent = true;
-
+	m_physics_override_sent = true;
 	const PhysicsModifier physics = getEffectivePhysics();
 		
 	return gob_cmd_update_physics_override(physics.speed,
@@ -1479,7 +1475,7 @@ bool PlayerSAO::checkMovementCheat()
 		too, and much more lightweight.
 	*/
 
-	const PhysicsModifier& physics = getEffectivePhysics();
+	const PhysicsModifier &physics = getEffectivePhysics();
 
 	float player_max_walk = 0; // horizontal movement
 	float player_max_jump = 0; // vertical upwards movement
@@ -1560,20 +1556,20 @@ float PlayerSAO::getZoomFOV() const
 }
 
 void PlayerSAO::setPhysicsModifier(
-	const std::string& key, const PhysicsModifier& modifier)
+	const std::string &key, const PhysicsModifier &modifier)
 {
 	dirtyPhysicsModifier();
 	m_physics_modifiers[key] = modifier;
 }
 
 void PlayerSAO::deletePhysicsModifier(
-	const std::string& key)
+	const std::string &key)
 {
 	dirtyPhysicsModifier();
 	m_physics_modifiers.erase(key);
 }
 
-const PlayerSAO::PhysicsModifier& PlayerSAO::getEffectivePhysics()
+const PlayerSAO::PhysicsModifier &PlayerSAO::getEffectivePhysics()
 {
 	return m_physics_override_set ? m_physics_override : getTotalPhysicsModifier();
 }

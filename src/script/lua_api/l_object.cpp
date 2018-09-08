@@ -433,6 +433,13 @@ int ObjectRef::l_set_physics_override(lua_State *L)
 			co->m_physics_override_set = true;
 		}
 	}
+
+		if (!co->getPhysicsModifiers().empty()) {
+		warningstream << "Use of set_physics_override will remove active ";
+		warningstream << "physics modifiers" << std::endl;
+		warningstream << script_get_backtrace(L);
+	}
+		
 	return 0;
 }
 
@@ -466,7 +473,7 @@ int ObjectRef::l_set_physics_modifier(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
-	const std::string key = lua_tostring(L, 2);
+	const std::string key = readParam<std::string>(L, 2);
 	PlayerSAO::PhysicsModifier modifier;
 	if (!read_physics_modifier(L, 3, modifier))
 		throw LuaError("set_physics_modifier expects (string, table)");
@@ -474,10 +481,10 @@ int ObjectRef::l_set_physics_modifier(lua_State *L)
 	if (PlayerSAO *player = dynamic_cast<PlayerSAO*>(getobject(ref))) {
 		player->setPhysicsModifier(key, modifier);
 		
-		if (player->m_physics_override_set)
-		{
+		if (player->m_physics_override_set) {
 			warningstream << "set_physics_modifier will have no effect because ";
 			warningstream << "set_physics_override was previously called" << std::endl;
+			warningstream << script_get_backtrace(L);
 		}
 	}
 
@@ -489,15 +496,15 @@ int ObjectRef::l_delete_physics_modifier(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
-	const std::string key = lua_tostring(L, 2);
+	const std::string key = readParam<std::string>(L, 2);
 
 	if (PlayerSAO *player = dynamic_cast<PlayerSAO*>(getobject(ref))) {
 		player->deletePhysicsModifier(key);
 		
-		if (player->m_physics_override_set)
-		{
+		if (player->m_physics_override_set) {
 			warningstream << "delete_physics_modifier will have no effect because ";
 			warningstream << "set_physics_override was previously called" << std::endl;
+			warningstream << script_get_backtrace(L);
 		}
 	}
 
