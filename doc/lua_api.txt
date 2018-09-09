@@ -3666,7 +3666,8 @@ Call these functions only at load time!
     * Called when a button is pressed in player's inventory form, or when the
       form is closed by the player's keypress
     * Fields are sent for formspec elements which define a field, and the "quit"
-      field is sent when closing the form by keypress.
+      field is sent when closing the form by keypress or through a
+      button_exit[] element.
     * Newest functions are called first
     * If function returns `true`, remaining functions are not called
 * `minetest.register_on_craft(func(itemstack, player, old_craft_grid, craft_inv))`
