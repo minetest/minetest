@@ -141,6 +141,11 @@ local function convert_to_falling_node(pos, node)
 	local meta = core.get_meta(pos)
 	local metatable = meta and meta:to_table() or {}
 
+	local def = core.registered_nodes[node.name]
+	if def and def.sounds and def.sounds.fall and def.sounds.fall.name then
+		core.sound_play(def.sounds.fall, {pos = pos})
+	end
+
 	obj:get_luaentity():set_node(node, metatable)
 	core.remove_node(pos)
 	return true
@@ -169,6 +174,9 @@ local function drop_attached_node(p)
 		end
 		drops = drop_stacks
 		def.preserve_metadata(pos_copy, node_copy, oldmeta, drops)
+	end
+	if def and def.sounds and def.sounds.fall and def.sounds.fall.name then
+		core.sound_play(def.sounds.fall, {pos = p})
 	end
 	core.remove_node(p)
 	for _, item in pairs(drops) do
