@@ -1938,11 +1938,11 @@ Elements
 
 ### `list[<inventory location>;<list name>;<X>,<Y>;<W>,<H>;]`
 
-* Show an inventory list
+* Show an inventory list if it has been sent to the client
 
 ### `list[<inventory location>;<list name>;<X>,<Y>;<W>,<H>;<starting item index>]`
 
-* Show an inventory list
+* Show an inventory list if it has been sent to the client
 
 ### `listring[<inventory location>;<list name>]`
 
@@ -2237,6 +2237,8 @@ Elements
 **Note**: do _not_ use a element name starting with `key_`; those names are
 reserved to pass key press events to formspec!
 
+Inventories with a "player:<name>" inventory location are only sent to the
+player named "<name>".
 
 
 
