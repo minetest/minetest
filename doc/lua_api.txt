@@ -3663,7 +3663,10 @@ Call these functions only at load time!
     * Return `true` to mark the message as handled, which means that it will
       not be sent to other players.
 * `minetest.register_on_player_receive_fields(func(player, formname, fields))`
-    * Called when a button is pressed in player's inventory form
+    * Called when a button is pressed in player's inventory form, or when the
+      form is closed by the player's keypress
+    * Fields are sent for formspec elements which define a field, and the "quit"
+      field is sent when closing the form by keypress.
     * Newest functions are called first
     * If function returns `true`, remaining functions are not called
 * `minetest.register_on_craft(func(itemstack, player, old_craft_grid, craft_inv))`
