@@ -63,7 +63,7 @@ local function get_formspec(data)
 					"]" ..
 					"label[0,1.75;" .. fgettext("Optional dependencies:") ..
 					"]" ..
-					"textlist[0,2.1;5,4;world_config_optdepends;" ..
+					"textlist[0,2.25;5,4;world_config_optdepends;" ..
 					soft_deps_str .. ";0]"
 			end
 		else
