@@ -152,4 +152,31 @@ void WieldAnimation::fillRepository()
 		.addIndex(1.0, 1, 1)
 		;
 	eat.setDuration(1.0f);
+
+	// "poke"
+	WieldAnimation &poke = repository["poke"];
+	poke.m_translationspline
+		.addNode(v3f(0, 0, 0))
+		.addNode(v3f(0, -10, 0))
+		.addNode(v3f(-50,  20, 50))
+		.addNode(v3f(0, -10, 0))
+		.addNode(v3f(0, 0, 0))
+		;
+	poke.m_translationspline
+		.addIndex(1.0, 0, 2)
+		.addIndex(1.0, 2, 2)
+		;
+
+	poke.m_rotationspline
+		.addNode(quatFromAngles( 0.0f, 0.0f, 0.0f))
+		.addNode(quatFromAngles( 0.0f, 0.0f, 90.0f))
+		.addNode(quatFromAngles( 0.0f, 0.0f, 90.0f))
+		.addNode(quatFromAngles( 0.0f, 0.0f, 90.0f))
+		.addNode(quatFromAngles( 0.0f, 0.0f, 0.0f))
+		;
+	poke.m_rotationspline
+		.addIndex(1.0, 0, 2)
+		.addIndex(1.0, 2, 2)
+		;
+	poke.setDuration(0.5f);
 }
