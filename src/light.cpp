@@ -39,16 +39,17 @@ static LightingParams params;
 
 float decode_light_f(float x)
 {
-	// x is equal to 1.0f most of time, so paramat asked me to add this. -- numzero
+	// x is equal to 1.0f half the time, so paramat asked me to add this. -- numzero
 	if (x >= 1.0f)
 		return 1.0f;
-	x = rangelim(x, 0.0f, 1.0f);
+	x = std::fmax(x, 0.0f);
 	float brightness = ((params.a * x + params.b) * x + params.c) * x;
-	float boost = params.boost * std::exp(-0.5f * sqr((x - params.center) / params.sigma));
+	brightness += params.boost * std::exp(-0.5f * sqr((x - params.center) / params.sigma));
 	if (brightness <= 0.0f)
 		return 0.0f;
-	brightness = powf(brightness + boost, 1.0f / params.gamma);
-	return rangelim(brightness, 0.0f, 1.0f);
+	if (brightness >= 1.0f)
+		return 1.0f;
+	return powf(brightness, 1.0f / params.gamma);
 }
 
 // Initialize or update the light value tables using the specified gamma
@@ -75,7 +76,7 @@ void set_light_table(float gamma)
 	for (size_t i = 1; i < LIGHT_SUN; i++) {
 		float brightness = decode_light_f((float)i / LIGHT_SUN);
 		// Strictly speaking, rangelim is not necessary here—if the implementation
-		// is conforming. But we don’t want problems in any case. -- numzero
+		// is conforming. But we don’t want problems in any case.
 		light_LUT[i] = rangelim((s32)(255.0f * brightness), 0, 255);
 		// Ensure light brightens with each level
 		if (i > 1 && light_LUT[i] <= light_LUT[i - 1])
