@@ -46,16 +46,20 @@ void set_light_table(float gamma)
 // Gamma correction
 	gamma = rangelim(gamma, 0.5f, 3.0f);
 
-	for (size_t i = 0; i < LIGHT_SUN; i++) {
+// Boundary values should be fixed
+	light_LUT[0] = 0;
+	light_LUT[LIGHT_SUN] = 255;
+
+	for (size_t i = 1; i < LIGHT_SUN; i++) {
 		float x = i;
 		x /= LIGHT_SUN;
 		float brightness = a * x * x * x + b * x * x + c * x;
 		float boost = d * std::exp(-((x - e) * (x - e)) / (2.0f * f * f));
 		brightness = powf(brightness + boost, 1.0f / gamma);
 		light_LUT[i] = rangelim((u32)(255.0f * brightness), 0, 255);
+		// Ensure light brightens with each level
 		if (i > 1 && light_LUT[i] <= light_LUT[i - 1])
 			light_LUT[i] = light_LUT[i - 1] + 1;
 	}
-	light_LUT[LIGHT_SUN] = 255;
 }
 #endif
