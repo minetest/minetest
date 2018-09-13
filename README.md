@@ -62,7 +62,7 @@ Some can be changed in the key config dialog in the settings tab.
 | F5                            |  Cycle through debug info screens                              |
 | F6                            |  Cycle through profiler info screens                           |
 | F7                            |  Cycle through camera modes                                    |
-| F8                            |  Toggle cinematic mode                                         |
+| F8                            |  Toggle fullscreen mode                                         |
 | F9                            |  Cycle through minimap modes                                   |
 | Shift + F9                    |  Change minimap orientation                                    |
 | F10                           |  Show/hide console                                             |
