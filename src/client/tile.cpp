@@ -841,7 +841,6 @@ static video::IImage *createInventoryCubeImage(
 	 */
 	source = lock_image(top);
 	for (int v = 0; v < size; v++) {
-		std::cout << "row " << v << "\n";
 		for (int u = 0; u < size; u++) {
 			video::SColor pixel(*source);
 			TARGET(2 * u + 2 * (size - 1 - v) + 0, u + v) = pixel.color;
