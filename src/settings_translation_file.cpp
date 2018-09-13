@@ -290,7 +290,7 @@ fake_function() {
 	gettext("Texture path");
 	gettext("Path to texture directory. All textures are first searched from here.");
 	gettext("Video driver");
-	gettext("The rendering back-end for Irrlicht.\nA restart is required after changing this.\nNote: On Android, stick with OGLES1 if unsure! App may fail to start otherwise.\nOn other platforms, OpenGL is recommended, and it’s currently the only driver with\NShader support.");
+	gettext("The rendering back-end for Irrlicht.\nA restart is required after changing this.\nNote: On Android, stick with OGLES1 if unsure! App may fail to start otherwise.\nOn other platforms, OpenGL is recommended, and it’s currently the only driver with\nshader support.");
 	gettext("Cloud radius");
 	gettext("Radius of cloud area stated in number of 64 node cloud squares.\nValues larger than 26 will start to produce sharp cutoffs at cloud area corners.");
 	gettext("View bobbing factor");
