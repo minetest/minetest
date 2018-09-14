@@ -376,11 +376,14 @@ void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d,
 				m_speed.Z = 0;
 		}
 
-		if (y_diff > 0 && m_speed.Y < 0 &&
+		if (y_diff > 0 && m_speed.Y <= 0 &&
 				(physics_override_sneak_glitch || y_diff < BS * 0.6f)) {
 			// Move player to the maximal height when falling or when
 			// the ledge is climbed on the next step.
-			position.Y = bmax.Y;
+
+			// Smoothen the movement (based on 'position.Y = bmax.Y')
+			position.Y += y_diff * dtime * 22.0f + BS * 0.01f;
+			position.Y = std::min(position.Y, bmax.Y);
 			m_speed.Y = 0;
 		}
 
