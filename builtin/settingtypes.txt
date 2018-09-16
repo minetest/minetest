@@ -1177,7 +1177,7 @@ profiler.report_path (Report path) string ""
 #    Instrument the methods of entities on registration.
 instrument.entity (Entity methods) bool true
 
-#    Instrument the action function of active block modifiers on registration.
+#    Instrument the action function of Active Block Modifiers on registration.
 instrument.abm (Active Block Modifiers) bool true
 
 #    Instrument the action function of Loading Block Modifiers on registration.
