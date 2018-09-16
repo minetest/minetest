@@ -7,14 +7,14 @@ Minetest
 
 An InfiniMiner/Minecraft inspired game.
 
-Copyright © 2010-2018 Perttu Ahola <celeron55@gmail.com>
+Copyright (C) 2010-2018 Perttu Ahola <celeron55@gmail.com>
 and contributors (see source file comments and the version control log)
 
 In case you downloaded the source code:
 ---------------------------------------
 If you downloaded the Minetest Engine source code in which this file is
 contained, you probably want to download the [Minetest Game](https://github.com/minetest/minetest_game/)
-project too. See its README.txt for more info.
+project too. See its README.txt for more information.
 
 Further documentation
 ----------------------
@@ -59,10 +59,9 @@ Some can be changed in the key config dialog in the settings tab.
 | F2                            |  Hide/show chat                                                |
 | F3                            |  Disable/enable fog                                            |
 | F4                            |  Disable/enable camera update (Mapblocks are not updated anymore when disabled, disabled in release builds)  |
-| F5                            |  Cycle through debug info screens                              |
+| F5                            |  Cycle through debug information screens                              |
 | F6                            |  Cycle through profiler info screens                           |
 | F7                            |  Cycle through camera modes                                    |
-| F8                            |  Toggle fullscreen mode                                         |
 | F9                            |  Cycle through minimap modes                                   |
 | Shift + F9                    |  Change minimap orientation                                    |
 | F10                           |  Show/hide console                                             |
@@ -438,5 +437,5 @@ patch is set to 0.
 minor/trivial features considered necessary.
 
 Since 5.0.0-dev and 0.4.17-dev, the dev notation refers to the next release, 
-i.e: 5.0.0-dev is the development version leading to 5.0.0. 
+i.e.: 5.0.0-dev is the development version leading to 5.0.0. 
 Prior to that we used `previous_version-dev`.
