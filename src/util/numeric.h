@@ -243,6 +243,11 @@ inline s32 myround(f32 f)
 	return (s32)(f < 0.f ? (f - 0.5f) : (f + 0.5f));
 }
 
+inline constexpr f32 sqr(f32 f)
+{
+	return f * f;
+}
+
 /*
 	Returns integer position of node in given floating point position
 */
