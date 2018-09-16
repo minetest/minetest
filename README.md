@@ -196,7 +196,7 @@ General options and their default values:
         Release                - Release build
         Debug                  - Debug build
         SemiDebug              - Partially optimized debug build
-        RelWithDebInfo         - Release build with debug info
+        RelWithDebInfo         - Release build with debug information
         MinSizeRel             - Release build with -Os passed to compiler to make executable as small as possible
     ENABLE_CURL=ON             - Build with cURL; Enables use of online mod repo, public serverlist and remote media fetching via http
     ENABLE_CURSES=ON           - Build with (n)curses; Enables a server side terminal (command line option: --terminal)
