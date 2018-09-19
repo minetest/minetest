@@ -43,6 +43,7 @@ GUIConfirmRegistration::GUIConfirmRegistration(gui::IGUIEnvironment *env,
 		m_client(client), m_playername(playername), m_password(password),
 		m_address(address), m_aborted(aborted)
 {
+	m_touchscreen_visible = false;
 }
 
 GUIConfirmRegistration::~GUIConfirmRegistration()
