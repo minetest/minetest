@@ -803,7 +803,7 @@ static video::IImage *createInventoryCubeImage(
 	// With such parameters, the cube fits exactly, touching each image line
 	// from `0` to `cube_size - 1`. (Note that division is exact here).
 	u32 cube_size = 4 * size + size / 2;
-	u32 offset = size / 4 - 1;
+	u32 offset = size / 4;
 
 	video::IVideoDriver *driver = RenderingEngine::get_video_driver();
 
