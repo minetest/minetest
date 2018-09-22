@@ -296,7 +296,11 @@ else()
 		if(NOT HAIKU)
 			find_package(X11 REQUIRED)
 		endif(NOT HAIKU)
-		set(OpenGL_GL_PREFERENCE "GLVND")
+
+		set(OPENGL_GL_PREFERENCE "LEGACY" CACHE STRING
+			"See CMake Policy CMP0072 for reference. GLVND is broken on some nvidia setups")
+		set(OpenGL_GL_PREFERENCE ${OPENGL_GL_PREFERENCE})
+
 		find_package(OpenGL REQUIRED)
 		find_package(JPEG REQUIRED)
 		find_package(BZip2 REQUIRED)
