@@ -802,8 +802,8 @@ static video::IImage *createInventoryCubeImage(
 
 	// With such parameters, the cube fits exactly, touching each image line
 	// from `0` to `cube_size - 1`. (Note that division is exact here).
-	u32 cube_size = 4 * size + size / 2;
-	u32 offset = size / 4;
+	u32 cube_size = 9 * size;
+	u32 offset = size / 2;
 
 	video::IVideoDriver *driver = RenderingEngine::get_video_driver();
 
@@ -834,74 +834,91 @@ static video::IImage *createInventoryCubeImage(
 	u32 j;
 #define TARGET(u,v) target[(v) * cube_size + (u) + offset]
 
-	/* Draw top image.
-	 *
-	 * Left edge spans lines `0` to `size - 1`, and whole image spans
-	 * lines from `0` to `2 * size - 2` inclusive.
-	 */
+	// Draw top image
 	source = lock_image(top);
 	for (int v = 0; v < size; v++) {
 		for (int u = 0; u < size; u++) {
 			video::SColor pixel(*source);
-			TARGET(2 * u + 2 * (size - 1 - v) + 0, u + v) = pixel.color;
-			TARGET(2 * u + 2 * (size - 1 - v) + 1, u + v) = pixel.color;
-			TARGET(2 * u + 2 * (size - 1 - v) + 2, u + v) = pixel.color;
-			TARGET(2 * u + 2 * (size - 1 - v) + 3, u + v) = pixel.color;
+			TARGET(4 * u + 4 * (size - 1 - v) + 2, 2 * u + 2 * v + 0) = pixel.color;
+			TARGET(4 * u + 4 * (size - 1 - v) + 3, 2 * u + 2 * v + 0) = pixel.color;
+			TARGET(4 * u + 4 * (size - 1 - v) + 4, 2 * u + 2 * v + 0) = pixel.color;
+			TARGET(4 * u + 4 * (size - 1 - v) + 5, 2 * u + 2 * v + 0) = pixel.color;
+			TARGET(4 * u + 4 * (size - 1 - v) + 0, 2 * u + 2 * v + 1) = pixel.color;
+			TARGET(4 * u + 4 * (size - 1 - v) + 1, 2 * u + 2 * v + 1) = pixel.color;
+			TARGET(4 * u + 4 * (size - 1 - v) + 2, 2 * u + 2 * v + 1) = pixel.color;
+			TARGET(4 * u + 4 * (size - 1 - v) + 3, 2 * u + 2 * v + 1) = pixel.color;
+			TARGET(4 * u + 4 * (size - 1 - v) + 4, 2 * u + 2 * v + 1) = pixel.color;
+			TARGET(4 * u + 4 * (size - 1 - v) + 5, 2 * u + 2 * v + 1) = pixel.color;
+			TARGET(4 * u + 4 * (size - 1 - v) + 6, 2 * u + 2 * v + 1) = pixel.color;
+			TARGET(4 * u + 4 * (size - 1 - v) + 7, 2 * u + 2 * v + 1) = pixel.color;
+			TARGET(4 * u + 4 * (size - 1 - v) + 2, 2 * u + 2 * v + 2) = pixel.color;
+			TARGET(4 * u + 4 * (size - 1 - v) + 3, 2 * u + 2 * v + 2) = pixel.color;
+			TARGET(4 * u + 4 * (size - 1 - v) + 4, 2 * u + 2 * v + 2) = pixel.color;
+			TARGET(4 * u + 4 * (size - 1 - v) + 5, 2 * u + 2 * v + 2) = pixel.color;
 			source++;
 		}
 	}
 	free_image(top);
 
-	/* Draw left image.
-	 *
-	 * Line height on TARGET is alternating between 2 and 3 pixels,
-	 * leading to `2.5 * size` resulting height—*exactly*. Plus starting
-	 * offset of `size`, plus skew (`0` to `size - 1`), so it touches scan
-	 * lines from `size` to `4.5 * size - 2` *exactly*.
-	 */
+	// Draw left image
 	source = lock_image(left);
-	j = size;
 	for (int v = 0; v < size; v++) {
-		bool flag = v % 2;
 		for (int u = 0; u < size; u++) {
 			video::SColor pixel(*source);
 			applyShadeFactor(pixel, 0.836660f);
-			TARGET(2 * u + 0, j + u + 0) = pixel.color;
-			TARGET(2 * u + 1, j + u + 0) = pixel.color;
-			TARGET(2 * u + 0, j + u + 1) = pixel.color;
-			TARGET(2 * u + 1, j + u + 1) = pixel.color;
-			if (flag) {
-				TARGET(2 * u + 0, j + u + 2) = pixel.color;
-				TARGET(2 * u + 1, j + u + 2) = pixel.color;
-			}
+			TARGET(4 * u + 0, 2 * size + 5 * v + 2 * u + 0) = pixel.color;
+			TARGET(4 * u + 1, 2 * size + 5 * v + 2 * u + 0) = pixel.color;
+			TARGET(4 * u + 2, 2 * size + 5 * v + 2 * u + 1) = pixel.color;
+			TARGET(4 * u + 3, 2 * size + 5 * v + 2 * u + 1) = pixel.color;
+			TARGET(4 * u + 0, 2 * size + 5 * v + 2 * u + 1) = pixel.color;
+			TARGET(4 * u + 1, 2 * size + 5 * v + 2 * u + 1) = pixel.color;
+			TARGET(4 * u + 2, 2 * size + 5 * v + 2 * u + 2) = pixel.color;
+			TARGET(4 * u + 3, 2 * size + 5 * v + 2 * u + 2) = pixel.color;
+			TARGET(4 * u + 0, 2 * size + 5 * v + 2 * u + 2) = pixel.color;
+			TARGET(4 * u + 1, 2 * size + 5 * v + 2 * u + 2) = pixel.color;
+			TARGET(4 * u + 2, 2 * size + 5 * v + 2 * u + 3) = pixel.color;
+			TARGET(4 * u + 3, 2 * size + 5 * v + 2 * u + 3) = pixel.color;
+			TARGET(4 * u + 0, 2 * size + 5 * v + 2 * u + 3) = pixel.color;
+			TARGET(4 * u + 1, 2 * size + 5 * v + 2 * u + 3) = pixel.color;
+			TARGET(4 * u + 2, 2 * size + 5 * v + 2 * u + 4) = pixel.color;
+			TARGET(4 * u + 3, 2 * size + 5 * v + 2 * u + 4) = pixel.color;
+			TARGET(4 * u + 0, 2 * size + 5 * v + 2 * u + 4) = pixel.color;
+			TARGET(4 * u + 1, 2 * size + 5 * v + 2 * u + 4) = pixel.color;
+			TARGET(4 * u + 2, 2 * size + 5 * v + 2 * u + 5) = pixel.color;
+			TARGET(4 * u + 3, 2 * size + 5 * v + 2 * u + 5) = pixel.color;
 			source++;
 		}
-		j += flag ? 3 : 2;
 	}
 	free_image(left);
 
-	/* Draw right image.
-	 *
-	 * Works the same way as for left image, touching the same lines.
-	 */
+	// Draw right image
 	source = lock_image(right);
-	j = size;
 	for (int v = 0; v < size; v++) {
-		bool flag = v % 2;
 		for (int u = 0; u < size; u++) {
 			video::SColor pixel(*source);
 			applyShadeFactor(pixel, 0.670820f);
-			TARGET(2 * u + 2 * size + 0, j + size - u - 1) = pixel.color;
-			TARGET(2 * u + 2 * size + 1, j + size - u - 1) = pixel.color;
-			TARGET(2 * u + 2 * size + 0, j + size - u + 0) = pixel.color;
-			TARGET(2 * u + 2 * size + 1, j + size - u + 0) = pixel.color;
-			if (flag) {
-				TARGET(2 * u + 2 * size + 0, j + size - u + 1) = pixel.color;
-				TARGET(2 * u + 2 * size + 1, j + size - u + 1) = pixel.color;
-			}
+			TARGET(4 * u + 4 * size + 0, 4 * size + 5 * v - 2 * u - 1) = pixel.color;
+			TARGET(4 * u + 4 * size + 1, 4 * size + 5 * v - 2 * u - 1) = pixel.color;
+			TARGET(4 * u + 4 * size + 2, 4 * size + 5 * v - 2 * u - 2) = pixel.color;
+			TARGET(4 * u + 4 * size + 3, 4 * size + 5 * v - 2 * u - 2) = pixel.color;
+			TARGET(4 * u + 4 * size + 0, 4 * size + 5 * v - 2 * u + 0) = pixel.color;
+			TARGET(4 * u + 4 * size + 1, 4 * size + 5 * v - 2 * u + 0) = pixel.color;
+			TARGET(4 * u + 4 * size + 2, 4 * size + 5 * v - 2 * u - 1) = pixel.color;
+			TARGET(4 * u + 4 * size + 3, 4 * size + 5 * v - 2 * u - 1) = pixel.color;
+			TARGET(4 * u + 4 * size + 0, 4 * size + 5 * v - 2 * u + 1) = pixel.color;
+			TARGET(4 * u + 4 * size + 1, 4 * size + 5 * v - 2 * u + 1) = pixel.color;
+			TARGET(4 * u + 4 * size + 2, 4 * size + 5 * v - 2 * u + 0) = pixel.color;
+			TARGET(4 * u + 4 * size + 3, 4 * size + 5 * v - 2 * u + 0) = pixel.color;
+			TARGET(4 * u + 4 * size + 0, 4 * size + 5 * v - 2 * u + 2) = pixel.color;
+			TARGET(4 * u + 4 * size + 1, 4 * size + 5 * v - 2 * u + 2) = pixel.color;
+			TARGET(4 * u + 4 * size + 2, 4 * size + 5 * v - 2 * u + 1) = pixel.color;
+			TARGET(4 * u + 4 * size + 3, 4 * size + 5 * v - 2 * u + 1) = pixel.color;
+			TARGET(4 * u + 4 * size + 0, 4 * size + 5 * v - 2 * u + 3) = pixel.color;
+			TARGET(4 * u + 4 * size + 1, 4 * size + 5 * v - 2 * u + 3) = pixel.color;
+			TARGET(4 * u + 4 * size + 2, 4 * size + 5 * v - 2 * u + 2) = pixel.color;
+			TARGET(4 * u + 4 * size + 3, 4 * size + 5 * v - 2 * u + 2) = pixel.color;
 			source++;
 		}
-		j += flag ? 3 : 2;
 	}
 	free_image(right);
 
