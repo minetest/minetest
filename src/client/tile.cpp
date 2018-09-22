@@ -770,9 +770,9 @@ void TextureSource::rebuildImagesAndTextures()
 	}
 }
 
-inline static void applyShadeFactor(video::SColor &color, float factor)
+inline static void applyShadeFactor(video::SColor &color, u32 factor)
 {
-	u8 f = core::clamp<u32>(256 * factor, 0, 256);
+	u32 f = core::clamp<u32>(factor, 0, 256);
 	color.setRed(color.getRed() * f / 256);
 	color.setGreen(color.getGreen() * f / 256);
 	color.setBlue(color.getBlue() * f / 256);
@@ -828,101 +828,65 @@ static video::IImage *createInventoryCubeImage(
 	video::IImage *result = driver->createImage(video::ECF_A8R8G8B8, {cube_size, cube_size});
 	sanity_check(result->getPitch() == 4 * cube_size);
 	result->fill(video::SColor(0x00000000u));
-
 	u32 *target = reinterpret_cast<u32 *>(result->lock());
-	u32 const *source;
-	u32 j;
-#define TARGET(u,v) target[(v) * cube_size + (u) + offset]
 
-	// Draw top image
-	source = lock_image(top);
-	for (int v = 0; v < size; v++) {
-		for (int u = 0; u < size; u++) {
-			video::SColor pixel(*source);
-			TARGET(4 * u + 4 * (size - 1 - v) + 2, 2 * u + 2 * v + 0) = pixel.color;
-			TARGET(4 * u + 4 * (size - 1 - v) + 3, 2 * u + 2 * v + 0) = pixel.color;
-			TARGET(4 * u + 4 * (size - 1 - v) + 4, 2 * u + 2 * v + 0) = pixel.color;
-			TARGET(4 * u + 4 * (size - 1 - v) + 5, 2 * u + 2 * v + 0) = pixel.color;
-			TARGET(4 * u + 4 * (size - 1 - v) + 0, 2 * u + 2 * v + 1) = pixel.color;
-			TARGET(4 * u + 4 * (size - 1 - v) + 1, 2 * u + 2 * v + 1) = pixel.color;
-			TARGET(4 * u + 4 * (size - 1 - v) + 2, 2 * u + 2 * v + 1) = pixel.color;
-			TARGET(4 * u + 4 * (size - 1 - v) + 3, 2 * u + 2 * v + 1) = pixel.color;
-			TARGET(4 * u + 4 * (size - 1 - v) + 4, 2 * u + 2 * v + 1) = pixel.color;
-			TARGET(4 * u + 4 * (size - 1 - v) + 5, 2 * u + 2 * v + 1) = pixel.color;
-			TARGET(4 * u + 4 * (size - 1 - v) + 6, 2 * u + 2 * v + 1) = pixel.color;
-			TARGET(4 * u + 4 * (size - 1 - v) + 7, 2 * u + 2 * v + 1) = pixel.color;
-			TARGET(4 * u + 4 * (size - 1 - v) + 2, 2 * u + 2 * v + 2) = pixel.color;
-			TARGET(4 * u + 4 * (size - 1 - v) + 3, 2 * u + 2 * v + 2) = pixel.color;
-			TARGET(4 * u + 4 * (size - 1 - v) + 4, 2 * u + 2 * v + 2) = pixel.color;
-			TARGET(4 * u + 4 * (size - 1 - v) + 5, 2 * u + 2 * v + 2) = pixel.color;
-			source++;
+	// Draws single cube face
+	// `shade_factor` is face brightness, in range [0.0, 1.0]
+	// (xu, xv, x1; yu, yv, y1) form coordinate transformation matrix
+	// `offsets` list pixels to be drawn for single source pixel
+	auto draw_image = [=] (video::IImage *image, float shade_factor,
+			s16 xu, s16 xv, s16 x1,
+			s16 yu, s16 yv, s16 y1,
+			std::initializer_list<v2s16> offsets) -> void {
+		u32 brightness = core::clamp<u32>(256 * shade_factor, 0, 256);
+		u32 const *source = lock_image(image);
+		for (u16 v = 0; v < size; v++) {
+			for (u16 u = 0; u < size; u++) {
+				video::SColor pixel(*source);
+				applyShadeFactor(pixel, brightness);
+				s16 x = xu * u + xv * v + x1;
+				s16 y = yu * u + yv * v + y1;
+				for (auto const &off: offsets)
+					target[(y + off.Y) * cube_size + (x + off.X) + offset] = pixel.color;
+				source++;
+			}
 		}
-	}
-	free_image(top);
+		free_image(image);
+	};
 
-	// Draw left image
-	source = lock_image(left);
-	for (int v = 0; v < size; v++) {
-		for (int u = 0; u < size; u++) {
-			video::SColor pixel(*source);
-			applyShadeFactor(pixel, 0.836660f);
-			TARGET(4 * u + 0, 2 * size + 5 * v + 2 * u + 0) = pixel.color;
-			TARGET(4 * u + 1, 2 * size + 5 * v + 2 * u + 0) = pixel.color;
-			TARGET(4 * u + 2, 2 * size + 5 * v + 2 * u + 1) = pixel.color;
-			TARGET(4 * u + 3, 2 * size + 5 * v + 2 * u + 1) = pixel.color;
-			TARGET(4 * u + 0, 2 * size + 5 * v + 2 * u + 1) = pixel.color;
-			TARGET(4 * u + 1, 2 * size + 5 * v + 2 * u + 1) = pixel.color;
-			TARGET(4 * u + 2, 2 * size + 5 * v + 2 * u + 2) = pixel.color;
-			TARGET(4 * u + 3, 2 * size + 5 * v + 2 * u + 2) = pixel.color;
-			TARGET(4 * u + 0, 2 * size + 5 * v + 2 * u + 2) = pixel.color;
-			TARGET(4 * u + 1, 2 * size + 5 * v + 2 * u + 2) = pixel.color;
-			TARGET(4 * u + 2, 2 * size + 5 * v + 2 * u + 3) = pixel.color;
-			TARGET(4 * u + 3, 2 * size + 5 * v + 2 * u + 3) = pixel.color;
-			TARGET(4 * u + 0, 2 * size + 5 * v + 2 * u + 3) = pixel.color;
-			TARGET(4 * u + 1, 2 * size + 5 * v + 2 * u + 3) = pixel.color;
-			TARGET(4 * u + 2, 2 * size + 5 * v + 2 * u + 4) = pixel.color;
-			TARGET(4 * u + 3, 2 * size + 5 * v + 2 * u + 4) = pixel.color;
-			TARGET(4 * u + 0, 2 * size + 5 * v + 2 * u + 4) = pixel.color;
-			TARGET(4 * u + 1, 2 * size + 5 * v + 2 * u + 4) = pixel.color;
-			TARGET(4 * u + 2, 2 * size + 5 * v + 2 * u + 5) = pixel.color;
-			TARGET(4 * u + 3, 2 * size + 5 * v + 2 * u + 5) = pixel.color;
-			source++;
-		}
-	}
-	free_image(left);
+	draw_image(top, 1.000000f,
+			4, -4, 4 * (size - 1),
+			2, 2, 0,
+			{
+				                {2, 0}, {3, 0}, {4, 0}, {5, 0},
+				{0, 1}, {1, 1}, {2, 1}, {3, 1}, {4, 1}, {5, 1}, {6, 1}, {7, 1},
+				                {2, 2}, {3, 2}, {4, 2}, {5, 2},
+			});
 
-	// Draw right image
-	source = lock_image(right);
-	for (int v = 0; v < size; v++) {
-		for (int u = 0; u < size; u++) {
-			video::SColor pixel(*source);
-			applyShadeFactor(pixel, 0.670820f);
-			TARGET(4 * u + 4 * size + 0, 4 * size + 5 * v - 2 * u - 1) = pixel.color;
-			TARGET(4 * u + 4 * size + 1, 4 * size + 5 * v - 2 * u - 1) = pixel.color;
-			TARGET(4 * u + 4 * size + 2, 4 * size + 5 * v - 2 * u - 2) = pixel.color;
-			TARGET(4 * u + 4 * size + 3, 4 * size + 5 * v - 2 * u - 2) = pixel.color;
-			TARGET(4 * u + 4 * size + 0, 4 * size + 5 * v - 2 * u + 0) = pixel.color;
-			TARGET(4 * u + 4 * size + 1, 4 * size + 5 * v - 2 * u + 0) = pixel.color;
-			TARGET(4 * u + 4 * size + 2, 4 * size + 5 * v - 2 * u - 1) = pixel.color;
-			TARGET(4 * u + 4 * size + 3, 4 * size + 5 * v - 2 * u - 1) = pixel.color;
-			TARGET(4 * u + 4 * size + 0, 4 * size + 5 * v - 2 * u + 1) = pixel.color;
-			TARGET(4 * u + 4 * size + 1, 4 * size + 5 * v - 2 * u + 1) = pixel.color;
-			TARGET(4 * u + 4 * size + 2, 4 * size + 5 * v - 2 * u + 0) = pixel.color;
-			TARGET(4 * u + 4 * size + 3, 4 * size + 5 * v - 2 * u + 0) = pixel.color;
-			TARGET(4 * u + 4 * size + 0, 4 * size + 5 * v - 2 * u + 2) = pixel.color;
-			TARGET(4 * u + 4 * size + 1, 4 * size + 5 * v - 2 * u + 2) = pixel.color;
-			TARGET(4 * u + 4 * size + 2, 4 * size + 5 * v - 2 * u + 1) = pixel.color;
-			TARGET(4 * u + 4 * size + 3, 4 * size + 5 * v - 2 * u + 1) = pixel.color;
-			TARGET(4 * u + 4 * size + 0, 4 * size + 5 * v - 2 * u + 3) = pixel.color;
-			TARGET(4 * u + 4 * size + 1, 4 * size + 5 * v - 2 * u + 3) = pixel.color;
-			TARGET(4 * u + 4 * size + 2, 4 * size + 5 * v - 2 * u + 2) = pixel.color;
-			TARGET(4 * u + 4 * size + 3, 4 * size + 5 * v - 2 * u + 2) = pixel.color;
-			source++;
-		}
-	}
-	free_image(right);
+	draw_image(left, 0.836660f,
+			4, 0, 0,
+			2, 5, 2 * size,
+			{
+				{0, 0}, {1, 0},
+				{0, 1}, {1, 1}, {2, 1}, {3, 1},
+				{0, 2}, {1, 2}, {2, 2}, {3, 2},
+				{0, 3}, {1, 3}, {2, 3}, {3, 3},
+				{0, 4}, {1, 4}, {2, 4}, {3, 4},
+				                {2, 5}, {3, 5},
+			});
 
-#undef TARGET
+	draw_image(right, 0.670820f,
+			4, 0, 4 * size,
+			-2, 5, 4 * size - 2,
+			{
+				                {2, 0}, {3, 0},
+				{0, 1}, {1, 1}, {2, 1}, {3, 1},
+				{0, 2}, {1, 2}, {2, 2}, {3, 2},
+				{0, 3}, {1, 3}, {2, 3}, {3, 3},
+				{0, 4}, {1, 4}, {2, 4}, {3, 4},
+				{0, 5}, {1, 5},
+			});
+
 	result->unlock();
 	return result;
 }
