@@ -33,8 +33,6 @@ MapgenSinglenode::MapgenSinglenode(int mapgenid,
 	MapgenParams *params, EmergeManager *emerge)
 	: Mapgen(mapgenid, params, emerge)
 {
-	flags = params->flags;
-
 	const NodeDefManager *ndef = emerge->ndef;
 
 	c_node = ndef->getId("mapgen_singlenode");
