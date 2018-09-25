@@ -61,7 +61,7 @@ struct ObjectProperties
 	float eye_height = 1.625f;
 	float zoom_fov = 0.0f;
 	bool use_texture_alpha = false;
-	v3f light_anchor = v3f(0.0f, 0.5f, 0.0f);
+	v3f light_anchor = v3f(0.0f, 0.0f, 0.0f);
 
 	ObjectProperties();
 	std::string dump();

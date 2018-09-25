@@ -863,6 +863,8 @@ PlayerSAO::PlayerSAO(ServerEnvironment *env_, RemotePlayer *player_, session_t p
 	m_breath = m_prop.breath_max;
 	// Disable zoom in survival mode using a value of 0
 	m_prop.zoom_fov = g_settings->getBool("creative_mode") ? 15.0f : 0.0f;
+	// Emulate old light anchor
+	m_prop.light_anchor = v3f(0.0f, 0.5f, 0.0f);
 }
 
 PlayerSAO::~PlayerSAO()
