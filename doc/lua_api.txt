@@ -5299,7 +5299,8 @@ Used by `ObjectRef` methods. Part of an Entity definition.
         -- Use this position when sampling light from the world.
         -- The anchor is relative to the entity, Z always being its front & back,
         -- and X always being its left & right.
-        -- Player objects have a default light anchor of { x = 0, y = 0.5, z = 0 } instead of the one above.
+        -- Player objects have a different default light anchor,
+        -- { x = 0, y = 0.5, z = 0 } instead of the one above.
 
         nametag = "",
         -- By default empty, for players their name is shown if empty
