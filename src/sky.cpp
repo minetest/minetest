@@ -720,15 +720,16 @@ void Sky::update(float time_of_day, float time_brightness,
 		m_skycolor = m_mix_scolor(m_skycolor, pointcolor, m_horizon_blend() * 0.25);
 	}
 
-	float cloud_direct_brightness = 0;
+	float cloud_direct_brightness = 0.0f;
 	if (sunlight_seen) {
 		if (!m_directional_colored_fog) {
 			cloud_direct_brightness = time_brightness;
-			if (time_brightness >= 0.2 && time_brightness < 0.7)
-				cloud_direct_brightness *= 1.3;
+			// Boost cloud brightness relative to sky, at dawn, dusk and at night
+			if (time_brightness < 0.7f)
+				cloud_direct_brightness *= 1.3f;
 		} else {
-			cloud_direct_brightness = MYMIN(m_horizon_blend() * 0.15 +
-				m_time_brightness, 1);
+			cloud_direct_brightness = std::fmin(m_horizon_blend() * 0.15f +
+				m_time_brightness, 1.0f);
 		}
 	} else {
 		cloud_direct_brightness = direct_brightness;
