@@ -729,11 +729,11 @@ v3s16 GenericCAO::getLightPosition()
 {
 	// Players and entities now both use a property to define the light sampling offset.
 	// The offset is in the entity's local space.
-	
+
 	v3f offset = v3f(m_prop.light_anchor);
 	if (offset == v3f(0,0,0)) {
 		// No transformation is applied if the offset is zero.
-		return floatToInt( m_position, BS );
+		return floatToInt(m_position, BS);
 	}
 
 	m4x4f transform = getTransform();
