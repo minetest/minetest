@@ -290,6 +290,83 @@ void Sky::render()
 			driver->drawIndexedTriangleFan(&vertices[0], 4, indices, 2);
 		}
 
+		// Draw stars
+		do {
+			driver->setMaterial(m_materials[1]);
+			float starbrightness = MYMAX(0, MYMIN(1,
+				(0.285 - fabs(wicked_time_of_day < 0.5 ?
+				wicked_time_of_day : (1.0 - wicked_time_of_day))) * 10));
+			float f = starbrightness;
+			float d = 0.007/2;
+			video::SColor starcolor(255, f * 90, f * 90, f * 90);
+			if (starcolor.getBlue() < m_skycolor.getBlue())
+				break;
+#ifdef __ANDROID__
+			u16 indices[SKY_STAR_COUNT * 3];
+			video::S3DVertex vertices[SKY_STAR_COUNT * 3];
+			for (u32 i = 0; i < SKY_STAR_COUNT; i++) {
+				indices[i * 3 + 0] = i * 3 + 0;
+				indices[i * 3 + 1] = i * 3 + 1;
+				indices[i * 3 + 2] = i * 3 + 2;
+				v3f r = m_stars[i];
+				core::CMatrix4<f32> a;
+				a.buildRotateFromTo(v3f(0, 1, 0), r);
+				v3f p = v3f(-d, 1, -d);
+				v3f p1 = v3f(d, 1, 0);
+				v3f p2 = v3f(-d, 1, d);
+				a.rotateVect(p);
+				a.rotateVect(p1);
+				a.rotateVect(p2);
+				p.rotateXYBy(wicked_time_of_day * 360 - 90);
+				p1.rotateXYBy(wicked_time_of_day * 360 - 90);
+				p2.rotateXYBy(wicked_time_of_day * 360 - 90);
+				vertices[i * 3 + 0].Pos = p;
+				vertices[i * 3 + 0].Color = starcolor;
+				vertices[i * 3 + 1].Pos = p1;
+				vertices[i * 3 + 1].Color = starcolor;
+				vertices[i * 3 + 2].Pos = p2;
+				vertices[i * 3 + 2].Color = starcolor;
+			}
+			driver->drawIndexedTriangleList(vertices, SKY_STAR_COUNT * 3,
+					indices, SKY_STAR_COUNT);
+#else
+			u16 indices[SKY_STAR_COUNT * 4];
+			video::S3DVertex vertices[SKY_STAR_COUNT * 4];
+			for (u32 i = 0; i < SKY_STAR_COUNT; i++) {
+				indices[i * 4 + 0] = i * 4 + 0;
+				indices[i * 4 + 1] = i * 4 + 1;
+				indices[i * 4 + 2] = i * 4 + 2;
+				indices[i * 4 + 3] = i * 4 + 3;
+				v3f r = m_stars[i];
+				core::CMatrix4<f32> a;
+				a.buildRotateFromTo(v3f(0, 1, 0), r);
+				v3f p = v3f(-d, 1, -d);
+				v3f p1 = v3f( d, 1, -d);
+				v3f p2 = v3f( d, 1, d);
+				v3f p3 = v3f(-d, 1, d);
+				a.rotateVect(p);
+				a.rotateVect(p1);
+				a.rotateVect(p2);
+				a.rotateVect(p3);
+				p.rotateXYBy(wicked_time_of_day * 360 - 90);
+				p1.rotateXYBy(wicked_time_of_day * 360 - 90);
+				p2.rotateXYBy(wicked_time_of_day * 360 - 90);
+				p3.rotateXYBy(wicked_time_of_day * 360 - 90);
+				vertices[i * 4 + 0].Pos = p;
+				vertices[i * 4 + 0].Color = starcolor;
+				vertices[i * 4 + 1].Pos = p1;
+				vertices[i * 4 + 1].Color = starcolor;
+				vertices[i * 4 + 2].Pos = p2;
+				vertices[i * 4 + 2].Color = starcolor;
+				vertices[i * 4 + 3].Pos = p3;
+				vertices[i * 4 + 3].Color = starcolor;
+			}
+			driver->drawVertexPrimitiveList(vertices, SKY_STAR_COUNT * 4,
+				indices, SKY_STAR_COUNT, video::EVT_STANDARD,
+				scene::EPT_QUADS, video::EIT_16BIT);
+#endif
+		} while(false);
+
 		// Draw sun
 		if (wicked_time_of_day > 0.15 && wicked_time_of_day < 0.85) {
 			if (!m_sun_texture) {
@@ -441,82 +518,6 @@ void Sky::render()
 				driver->drawIndexedTriangleFan(&vertices[0], 4, indices, 2);
 			}
 		}
-
-		// Draw stars
-		do {
-			driver->setMaterial(m_materials[1]);
-			float starbrightness = MYMAX(0, MYMIN(1,
-				(0.285 - fabs(wicked_time_of_day < 0.5 ?
-				wicked_time_of_day : (1.0 - wicked_time_of_day))) * 10));
-			float f = starbrightness;
-			float d = 0.007;
-			video::SColor starcolor(255, f * 90, f * 90, f * 90);
-			if (starcolor.getBlue() < m_skycolor.getBlue())
-				break;
-#ifdef __ANDROID__
-			u16 indices[SKY_STAR_COUNT * 3];
-			video::S3DVertex vertices[SKY_STAR_COUNT * 3];
-			for (u32 i = 0; i < SKY_STAR_COUNT; i++) {
-				indices[i * 3 + 0] = i * 3 + 0;
-				indices[i * 3 + 1] = i * 3 + 1;
-				indices[i * 3 + 2] = i * 3 + 2;
-				v3f p = m_stars[i];
-				core::CMatrix4<f32> a;
-				a.buildRotateFromTo(v3f(0, 1, 0), v3f(d, 1 + d, -d / 2));
-				v3f p1 = p;
-				a.rotateVect(p1);
-				a.buildRotateFromTo(v3f(0, 1, 0), v3f(d, 1 - d, d / 2));
-				v3f p2 = p;
-				a.rotateVect(p2);
-				p.rotateXYBy(wicked_time_of_day * 360 - 90);
-				p1.rotateXYBy(wicked_time_of_day * 360 - 90);
-				p2.rotateXYBy(wicked_time_of_day * 360 - 90);
-				vertices[i * 3 + 0].Pos = p;
-				vertices[i * 3 + 0].Color = starcolor;
-				vertices[i * 3 + 1].Pos = p1;
-				vertices[i * 3 + 1].Color = starcolor;
-				vertices[i * 3 + 2].Pos = p2;
-				vertices[i * 3 + 2].Color = starcolor;
-			}
-			driver->drawIndexedTriangleList(vertices, SKY_STAR_COUNT * 3,
-					indices, SKY_STAR_COUNT);
-#else
-			u16 indices[SKY_STAR_COUNT * 4];
-			video::S3DVertex vertices[SKY_STAR_COUNT * 4];
-			for (u32 i = 0; i < SKY_STAR_COUNT; i++) {
-				indices[i * 4 + 0] = i * 4 + 0;
-				indices[i * 4 + 1] = i * 4 + 1;
-				indices[i * 4 + 2] = i * 4 + 2;
-				indices[i * 4 + 3] = i * 4 + 3;
-				v3f p = m_stars[i];
-				core::CMatrix4<f32> a;
-				a.buildRotateFromTo(v3f(0, 1, 0), v3f(d, 1 + d / 2, 0));
-				v3f p1 = p;
-				a.rotateVect(p1);
-				a.buildRotateFromTo(v3f(0, 1, 0), v3f(d, 1, d));
-				v3f p2 = p;
-				a.rotateVect(p2);
-				a.buildRotateFromTo(v3f(0, 1, 0), v3f(0, 1 - d / 2, d));
-				v3f p3 = p;
-				a.rotateVect(p3);
-				p.rotateXYBy(wicked_time_of_day * 360 - 90);
-				p1.rotateXYBy(wicked_time_of_day * 360 - 90);
-				p2.rotateXYBy(wicked_time_of_day * 360 - 90);
-				p3.rotateXYBy(wicked_time_of_day * 360 - 90);
-				vertices[i * 4 + 0].Pos = p;
-				vertices[i * 4 + 0].Color = starcolor;
-				vertices[i * 4 + 1].Pos = p1;
-				vertices[i * 4 + 1].Color = starcolor;
-				vertices[i * 4 + 2].Pos = p2;
-				vertices[i * 4 + 2].Color = starcolor;
-				vertices[i * 4 + 3].Pos = p3;
-				vertices[i * 4 + 3].Color = starcolor;
-			}
-			driver->drawVertexPrimitiveList(vertices, SKY_STAR_COUNT * 4,
-				indices, SKY_STAR_COUNT, video::EVT_STANDARD,
-				scene::EPT_QUADS, video::EIT_16BIT);
-#endif
-		} while(false);
 
 		// Draw far cloudy fog thing below east and west horizons
 		for (u32 j = 0; j < 2; j++) {
