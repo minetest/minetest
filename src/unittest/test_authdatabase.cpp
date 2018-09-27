@@ -90,10 +90,7 @@ private:
 class TestAuthDatabase : public TestBase
 {
 public:
-	TestAuthDatabase()
-	{
-		TestManager::registerTestModule(this);
-	}
+	TestAuthDatabase() { TestManager::registerTestModule(this); }
 	const char *getName() { return "TestAuthDatabase"; }
 
 	void runTests(IGameDef *gamedef);
