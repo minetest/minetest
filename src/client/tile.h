@@ -68,25 +68,6 @@ std::string getTexturePath(const std::string &filename);
 void clearTextureNameCache();
 
 /*
-	ITextureSource::generateTextureFromMesh parameters
-*/
-namespace irr {namespace scene {class IMesh;}}
-struct TextureFromMeshParams
-{
-	scene::IMesh *mesh = nullptr;
-	core::dimension2d<u32> dim;
-	std::string rtt_texture_name;
-	bool delete_texture_on_shutdown;
-	v3f camera_position;
-	v3f camera_lookat;
-	core::CMatrix4<f32> camera_projection_matrix;
-	video::SColorf ambient_light;
-	v3f light_position;
-	video::SColorf light_color;
-	f32 light_radius;
-};
-
-/*
 	TextureSource creates and caches textures.
 */
 
@@ -123,8 +104,6 @@ public:
 	 */
 	virtual Palette* getPalette(const std::string &name) = 0;
 	virtual bool isKnownSourceImage(const std::string &name)=0;
-	virtual video::ITexture* generateTextureFromMesh(
-			const TextureFromMeshParams &params)=0;
 	virtual video::ITexture* getNormalTexture(const std::string &name)=0;
 	virtual video::SColor getTextureAverageColor(const std::string &name)=0;
 	virtual video::ITexture *getShaderFlagsTexture(bool normalmap_present)=0;
@@ -143,8 +122,6 @@ public:
 	virtual video::ITexture* getTexture(
 			const std::string &name, u32 *id = nullptr)=0;
 	virtual bool isKnownSourceImage(const std::string &name)=0;
-	virtual video::ITexture* generateTextureFromMesh(
-			const TextureFromMeshParams &params)=0;
 
 	virtual void processQueue()=0;
 	virtual void insertSourceImage(const std::string &name, video::IImage *img)=0;
