@@ -793,12 +793,8 @@ static video::IImage *createInventoryCubeImage(
 
 	// It must be divisible by 4, to let everything work correctly.
 	// But it is a power of 2, so being at least 4 is the same.
-	if (size <= 4)
-		size = 4;
-
-	// We don't need *that* large cube textures... I suppose, at least -- numzero
-	if (size >= 64)
-		size = 64;
+	// And the resulting texture should't be too large as well.
+	size = core::clamp<u32>(size, 4, 64);
 
 	// With such parameters, the cube fits exactly, touching each image line
 	// from `0` to `cube_size - 1`. (Note that division is exact here).
@@ -807,7 +803,7 @@ static video::IImage *createInventoryCubeImage(
 
 	video::IVideoDriver *driver = RenderingEngine::get_video_driver();
 
-	auto lock_image = [size, driver] (video::IImage *&image) -> u32 const * {
+	auto lock_image = [size, driver] (video::IImage *&image) -> const u32 * {
 		image->grab();
 		core::dimension2du dim = image->getDimension();
 		video::ECOLOR_FORMAT format = image->getColorFormat();
@@ -839,14 +835,14 @@ static video::IImage *createInventoryCubeImage(
 			s16 yu, s16 yv, s16 y1,
 			std::initializer_list<v2s16> offsets) -> void {
 		u32 brightness = core::clamp<u32>(256 * shade_factor, 0, 256);
-		u32 const *source = lock_image(image);
+		const u32 *source = lock_image(image);
 		for (u16 v = 0; v < size; v++) {
 			for (u16 u = 0; u < size; u++) {
 				video::SColor pixel(*source);
 				applyShadeFactor(pixel, brightness);
 				s16 x = xu * u + xv * v + x1;
 				s16 y = yu * u + yv * v + y1;
-				for (auto const &off: offsets)
+				for (const auto &off : offsets)
 					target[(y + off.Y) * cube_size + (x + off.X) + offset] = pixel.color;
 				source++;
 			}
