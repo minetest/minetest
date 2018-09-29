@@ -89,6 +89,7 @@ locale/
 *.ninja
 .ninja*
 *.gch
+test_config.h
 cmake-build-debug/
 cmake-build-release/
 cmake_config.h
