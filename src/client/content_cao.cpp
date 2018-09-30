@@ -1347,19 +1347,19 @@ void GenericCAO::processMessage(const std::string &data)
 	} else if (cmd == GENERIC_CMD_UPDATE_POSITION) {
 		// Not sent by the server if this object is an attachment.
 		// We might however get here if the server notices the object being detached before the client.
-		m_position = readV3F1000(is);
-		m_velocity = readV3F1000(is);
-		m_acceleration = readV3F1000(is);
+		m_position = readV3F32(is);
+		m_velocity = readV3F32(is);
+		m_acceleration = readV3F32(is);
 
 		if (std::fabs(m_prop.automatic_rotate) < 0.001f)
-			m_rotation = readV3F1000(is);
+			m_rotation = readV3F32(is);
 		else
-			readV3F1000(is);
+			readV3F32(is);
 
 		m_rotation = wrapDegrees_0_360_v3f(m_rotation);
 		bool do_interpolate = readU8(is);
 		bool is_end_position = readU8(is);
-		float update_interval = readF1000(is);
+		float update_interval = readF32(is);
 
 		// Place us a bit higher if we're physical, to not sink into
 		// the ground due to sucky collision detection...

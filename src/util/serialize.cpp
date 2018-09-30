@@ -28,6 +28,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <iomanip>
 #include <vector>
 
+FloatType g_serialize_f32_type = FLOATTYPE_UNKNOWN;
+
 ////
 //// BufReader
 ////
