@@ -5765,20 +5765,6 @@ Used by `minetest.register_node`, `minetest.register_craftitem`, and
             damage_groups = {groupname = damage},
         },
 
-        node_placement_prediction = nil,
-        -- If nil and item is node, prediction is made automatically.
-        -- If nil and item is not a node, no prediction is made.
-        -- If "" and item is anything, no prediction is made.
-        -- Otherwise should be name of node which the client immediately places
-        -- on ground when the player places the item. Server will always update
-        -- actual result to client in a short moment.
-
-        node_dig_prediction = "air",
-        -- if "", no prediction is made.
-        -- if "air", node is removed.
-        -- Otherwise should be name of node which the client immediately places
-        -- upon digging. Server will always update actual result shortly.
-
         sound = {
             breaks = "default_tool_break",  -- tools only
             place = <SimpleSoundSpec>,
@@ -5973,6 +5959,20 @@ Used by `minetest.register_node`.
         -- Support maps made in and before January 2012
         legacy_facedir_simple = false,
         legacy_wallmounted = false,
+
+        node_placement_prediction = nil,
+        -- If nil and item is node, prediction is made automatically.
+        -- If nil and item is not a node, no prediction is made.
+        -- If "" and item is anything, no prediction is made.
+        -- Otherwise should be name of node which the client immediately places
+        -- on ground when the player places the item. Server will always update
+        -- actual result to client in a short moment.
+
+        node_dig_prediction = "air",
+        -- if "", no prediction is made.
+        -- if "air", node is removed.
+        -- Otherwise should be name of node which the client immediately places
+        -- upon digging. Server will always update actual result shortly.
 
         waving = 0,
         -- Valid for mesh, nodebox, plantlike, allfaces_optional nodes.
