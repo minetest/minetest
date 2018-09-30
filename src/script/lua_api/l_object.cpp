@@ -890,7 +890,7 @@ int ObjectRef::l_get_acceleration(lua_State *L)
 }
 
 // set_rotation(self, {x=num, y=num, z=num})
-// Each 'num' is in degrees
+// Each 'num' is in radians
 int ObjectRef::l_set_rotation(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
@@ -899,14 +899,14 @@ int ObjectRef::l_set_rotation(lua_State *L)
 	if (!co)
 		return 0;
 
-	v3f rotation = check_v3f(L, 2);
+	v3f rotation = check_v3f(L, 2) * core::RADTODEG;
 	co->setRotation(rotation);
 	return 0;
 }
 
 // get_rotation(self)
 // returns: {x=num, y=num, z=num}
-// Each 'num' is in degrees
+// Each 'num' is in radians
 int ObjectRef::l_get_rotation(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
@@ -916,7 +916,7 @@ int ObjectRef::l_get_rotation(lua_State *L)
 		return 0;
 
 	lua_newtable(L);
-	v3f rotation = co->getRotation();
+	v3f rotation = co->getRotation() * core::DEGTORAD;
 	push_v3f(L, rotation);
 	return 1;
 }
