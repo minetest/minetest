@@ -841,11 +841,6 @@
 #    type: bool
 # inventory_items_animations = false
 
-#    Android systems only: Tries to create inventory textures from meshes
-#    when no supported render was found.
-#    type: bool
-# inventory_image_hack = false
-
 #    Fraction of the visible distance at which fog starts to be rendered
 #    type: float min: 0 max: 0.99
 # fog_start = 0.4
@@ -1654,7 +1649,7 @@
 
 #    Controls width of tunnels, a smaller value creates wider tunnels.
 #    type: float
-# mgv5_cave_width = 0.125
+# mgv5_cave_width = 0.09
 
 #    Y of upper limit of large caves.
 #    type: int
@@ -1731,9 +1726,9 @@
 # mgv5_np_cave1 = {
 #    offset      = 0,
 #    scale       = 12,
-#    spread      = (50, 50, 50),
+#    spread      = (61, 61, 61),
 #    seed        = 52534,
-#    octaves     = 4,
+#    octaves     = 3,
 #    persistence = 0.5,
 #    lacunarity  = 2.0,
 #    flags       = ""
@@ -1744,9 +1739,9 @@
 # mgv5_np_cave2 = {
 #    offset      = 0,
 #    scale       = 12,
-#    spread      = (50, 50, 50),
+#    spread      = (67, 67, 67),
 #    seed        = 10325,
-#    octaves     = 4,
+#    octaves     = 3,
 #    persistence = 0.5,
 #    lacunarity  = 2.0,
 #    flags       = ""

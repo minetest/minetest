@@ -1757,7 +1757,8 @@ void read_json_value(lua_State *L, Json::Value &root, int index, u8 recursion)
 	lua_pop(L, 1); // Pop value
 }
 
-void push_pointed_thing(lua_State *L, const PointedThing &pointed, bool csm)
+void push_pointed_thing(lua_State *L, const PointedThing &pointed, bool csm,
+	bool hitpoint)
 {
 	lua_newtable(L);
 	if (pointed.type == POINTEDTHING_NODE) {
@@ -1781,6 +1782,14 @@ void push_pointed_thing(lua_State *L, const PointedThing &pointed, bool csm)
 	} else {
 		lua_pushstring(L, "nothing");
 		lua_setfield(L, -2, "type");
+	}
+	if (hitpoint && (pointed.type != POINTEDTHING_NOTHING)) {
+		push_v3f(L, pointed.intersection_point / BS); // convert to node coords
+		lua_setfield(L, -2, "intersection_point");
+		push_v3s16(L, pointed.intersection_normal);
+		lua_setfield(L, -2, "intersection_normal");
+		lua_pushinteger(L, pointed.box_id + 1); // change to Lua array index
+		lua_setfield(L, -2, "box_id");
 	}
 }
 

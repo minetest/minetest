@@ -125,45 +125,32 @@ bool IsDirDelimiter(char c)
 
 bool RecursiveDelete(const std::string &path)
 {
-	infostream<<"Recursively deleting \""<<path<<"\""<<std::endl;
-
-	DWORD attr = GetFileAttributes(path.c_str());
-	bool is_directory = (attr != INVALID_FILE_ATTRIBUTES &&
-			(attr & FILE_ATTRIBUTE_DIRECTORY));
-	if(!is_directory)
-	{
-		infostream<<"RecursiveDelete: Deleting file "<<path<<std::endl;
-		//bool did = DeleteFile(path.c_str());
-		bool did = true;
-		if(!did){
-			errorstream<<"RecursiveDelete: Failed to delete file "
-					<<path<<std::endl;
+	infostream << "Recursively deleting \"" << path << "\"" << std::endl;
+	if (!IsDir(path)) {
+		infostream << "RecursiveDelete: Deleting file  " << path << std::endl;
+		if (!DeleteFile(path.c_str())) {
+			errorstream << "RecursiveDelete: Failed to delete file "
+					<< path << std::endl;
+			return false;
+		}
+		return true;
+	}
+	infostream << "RecursiveDelete: Deleting content of directory "
+			<< path << std::endl;
+	std::vector<DirListNode> content = GetDirListing(path);
+	for (const DirListNode &n: content) {
+		std::string fullpath = path + DIR_DELIM + n.name;
+		if (!RecursiveDelete(fullpath)) {
+			errorstream << "RecursiveDelete: Failed to recurse to "
+					<< fullpath << std::endl;
 			return false;
 		}
 	}
-	else
-	{
-		infostream<<"RecursiveDelete: Deleting content of directory "
-				<<path<<std::endl;
-		std::vector<DirListNode> content = GetDirListing(path);
-		for(size_t i=0; i<content.size(); i++){
-			const DirListNode &n = content[i];
-			std::string fullpath = path + DIR_DELIM + n.name;
-			bool did = RecursiveDelete(fullpath);
-			if(!did){
-				errorstream<<"RecursiveDelete: Failed to recurse to "
-						<<fullpath<<std::endl;
-				return false;
-			}
-		}
-		infostream<<"RecursiveDelete: Deleting directory "<<path<<std::endl;
-		//bool did = RemoveDirectory(path.c_str();
-		bool did = true;
-		if(!did){
-			errorstream<<"Failed to recursively delete directory "
-					<<path<<std::endl;
-			return false;
-		}
+	infostream << "RecursiveDelete: Deleting directory " << path << std::endl;
+	if (!RemoveDirectory(path.c_str())) {
+		errorstream << "Failed to recursively delete directory "
+				<< path << std::endl;
+		return false;
 	}
 	return true;
 }

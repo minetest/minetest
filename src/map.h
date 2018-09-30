@@ -76,7 +76,6 @@ struct MapEditEvent
 	v3s16 p;
 	MapNode n = CONTENT_AIR;
 	std::set<v3s16> modified_blocks;
-	u16 already_known_by_peer = 0;
 
 	MapEditEvent() = default;
 

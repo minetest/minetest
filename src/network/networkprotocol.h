@@ -477,10 +477,13 @@ enum ToClientCommand
 		f1000 expirationtime
 		f1000 size
 		u8 bool collisiondetection
-		u8 bool vertical
 		u32 len
 		u8[len] texture
+		u8 bool vertical
 		u8 collision_removal
+		TileAnimation animation
+		u8 glow
+		u8 object_collision
 	*/
 
 	TOCLIENT_ADD_PARTICLESPAWNER = 0x47,
@@ -498,11 +501,14 @@ enum ToClientCommand
 		f1000 minsize
 		f1000 maxsize
 		u8 bool collisiondetection
-		u8 bool vertical
 		u32 len
 		u8[len] texture
-		u32 id
+		u8 bool vertical
 		u8 collision_removal
+		u32 id
+		TileAnimation animation
+		u8 glow
+		u8 object_collision
 	*/
 
 	TOCLIENT_DELETE_PARTICLESPAWNER_LEGACY = 0x48, // Obsolete

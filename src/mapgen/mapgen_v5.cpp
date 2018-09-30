@@ -87,8 +87,8 @@ MapgenV5Params::MapgenV5Params():
 	np_factor       (0, 1,  v3f(250, 250, 250), 920381, 3, 0.45, 2.0),
 	np_height       (0, 10, v3f(250, 250, 250), 84174,  4, 0.5,  2.0),
 	np_ground       (0, 40, v3f(80,  80,  80),  983240, 4, 0.55, 2.0, NOISE_FLAG_EASED),
-	np_cave1        (0, 12, v3f(50,  50,  50),  52534,  4, 0.5,  2.0),
-	np_cave2        (0, 12, v3f(50,  50,  50),  10325,  4, 0.5,  2.0),
+	np_cave1        (0, 12, v3f(61,  61,  61),  52534,  3, 0.5,  2.0),
+	np_cave2        (0, 12, v3f(67,  67,  67),  10325,  3, 0.5,  2.0),
 	np_cavern       (0, 1,  v3f(384, 128, 384), 723,    5, 0.63, 2.0)
 {
 }
@@ -232,6 +232,9 @@ void MapgenV5::makeChunk(BlockMakeData *data)
 			generateCavesRandomWalk(stone_surface_max_y, large_cave_depth);
 	}
 
+	// Generate the registered ores
+	m_emerge->oremgr->placeAllOres(this, blockseed, node_min, node_max);
+
 	// Generate dungeons and desert temples
 	if ((flags & MG_DUNGEONS) && full_node_min.Y >= dungeon_ymin &&
 			full_node_max.Y <= dungeon_ymax)
@@ -240,9 +243,6 @@ void MapgenV5::makeChunk(BlockMakeData *data)
 	// Generate the registered decorations
 	if (flags & MG_DECORATIONS)
 		m_emerge->decomgr->placeAllDecos(this, blockseed, node_min, node_max);
-
-	// Generate the registered ores
-	m_emerge->oremgr->placeAllOres(this, blockseed, node_min, node_max);
 
 	// Sprinkle some dust on top after everything else was generated
 	if (flags & MG_BIOMES)

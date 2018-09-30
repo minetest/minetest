@@ -532,11 +532,8 @@ static bool read_config_file(const Settings &cmd_args)
 
 static void init_log_streams(const Settings &cmd_args)
 {
-#if RUN_IN_PLACE
-	std::string log_filename = DEBUGFILE;
-#else
 	std::string log_filename = porting::path_user + DIR_DELIM + DEBUGFILE;
-#endif
+
 	if (cmd_args.exists("logfile"))
 		log_filename = cmd_args.get("logfile");
 

@@ -175,12 +175,12 @@ void Environment::continueRaycast(RaycastState *state, PointedThing *result)
 			bool is_colliding = false;
 			// Minimal distance of all collisions
 			float min_distance_sq = 10000000;
+			// ID of the current box (loop counter)
+			u16 id = 0;
 
 			v3f npf = intToFloat(np, BS);
-			for (std::vector<aabb3f>::const_iterator i = boxes.begin();
-					i != boxes.end(); ++i) {
-				// Get current collision box
-				aabb3f box = *i;
+			// This loop translates the boxes to their in-world place.
+			for (aabb3f &box : boxes) {
 				box.MinEdge += npf;
 				box.MaxEdge += npf;
 
@@ -188,8 +188,10 @@ void Environment::continueRaycast(RaycastState *state, PointedThing *result)
 				v3s16 intersection_normal;
 				if (!boxLineCollision(box, state->m_shootline.start,
 						state->m_shootline.getVector(), &intersection_point,
-						&intersection_normal))
+						&intersection_normal)) {
+					++id;
 					continue;
+				}
 
 				f32 distanceSq = (intersection_point
 					- state->m_shootline.start).getLengthSQ();
@@ -198,9 +200,11 @@ void Environment::continueRaycast(RaycastState *state, PointedThing *result)
 					min_distance_sq = distanceSq;
 					result.intersection_point = intersection_point;
 					result.intersection_normal = intersection_normal;
+					result.box_id = id;
 					found_boxcenter = box.getCenter();
 					is_colliding = true;
 				}
+				++id;
 			}
 			// If there wasn't a collision, stop
 			if (!is_colliding) {

@@ -33,14 +33,26 @@ local function get_formspec(data)
 
 	local hard_deps, soft_deps = pkgmgr.get_dependencies(mod.path)
 
+	if mod.is_modpack then
+		local info = minetest.formspec_escape(
+			core.get_content_info(mod.path).description)
+		if info == "" then
+			info = fgettext("No modpack description provided.")
+		end
+		retval = retval ..
+			"textarea[0.25,0.7;5.75,7.2;;" .. info .. ";]"
+	else
+		retval = retval ..
+			"label[0,0.7;" .. fgettext("Mod:") .. "]" ..
+			"label[0.75,0.7;" .. mod.name .. "]" ..
+			"label[0,1.25;" .. fgettext("Dependencies:") .. "]" ..
+			"textlist[0,1.75;5,2.125;world_config_depends;" .. hard_deps ..
+			";0]" ..
+			"label[0,3.875;" .. fgettext("Optional dependencies:") .. "]" ..
+			"textlist[0,4.375;5,1.8;world_config_optdepends;" ..
+			soft_deps .. ";0]"
+	end
 	retval = retval ..
-		"label[0,0.7;" .. fgettext("Mod:") .. "]" ..
-		"label[0.75,0.7;" .. mod.name .. "]" ..
-		"label[0,1.25;" .. fgettext("Dependencies:") .. "]" ..
-		"textlist[0,1.75;5,2.125;world_config_depends;" .. hard_deps .. ";0]" ..
-		"label[0,3.875;" .. fgettext("Optional dependencies:") .. "]" ..
-		"textlist[0,4.375;5,1.8;world_config_optdepends;" ..
-		soft_deps .. ";0]" ..
 		"button[3.25,7;2.5,0.5;btn_config_world_save;" ..
 		fgettext("Save") .. "]" ..
 		"button[5.75,7;2.5,0.5;btn_config_world_cancel;" ..

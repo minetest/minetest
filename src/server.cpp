@@ -868,20 +868,20 @@ void Server::AsyncRunStep(bool initial_step)
 			// Players far away from the change are stored here.
 			// Instead of sending the changes, MapBlocks are set not sent
 			// for them.
-			std::vector<u16> far_players;
+			std::unordered_set<u16> far_players;
 
 			switch (event->type) {
 			case MEET_ADDNODE:
 			case MEET_SWAPNODE:
 				prof.add("MEET_ADDNODE", 1);
-				sendAddNode(event->p, event->n, event->already_known_by_peer,
-						&far_players, disable_single_change_sending ? 5 : 30,
+				sendAddNode(event->p, event->n, &far_players,
+						disable_single_change_sending ? 5 : 30,
 						event->type == MEET_ADDNODE);
 				break;
 			case MEET_REMOVENODE:
 				prof.add("MEET_REMOVENODE", 1);
-				sendRemoveNode(event->p, event->already_known_by_peer,
-						&far_players, disable_single_change_sending ? 5 : 30);
+				sendRemoveNode(event->p, &far_players,
+						disable_single_change_sending ? 5 : 30);
 				break;
 			case MEET_BLOCK_NODE_METADATA_CHANGED:
 				infostream << "Server: MEET_BLOCK_NODE_METADATA_CHANGED" << std::endl;
@@ -1578,7 +1578,7 @@ void Server::SendShowFormspecMessage(session_t peer_id, const std::string &forms
 void Server::SendSpawnParticle(session_t peer_id, u16 protocol_version,
 				v3f pos, v3f velocity, v3f acceleration,
 				float expirationtime, float size, bool collisiondetection,
-				bool collision_removal,
+				bool collision_removal, bool object_collision,
 				bool vertical, const std::string &texture,
 				const struct TileAnimationParams &animation, u8 glow)
 {
@@ -1603,8 +1603,8 @@ void Server::SendSpawnParticle(session_t peer_id, u16 protocol_version,
 
 			SendSpawnParticle(client_id, player->protocol_version,
 					pos, velocity, acceleration,
-					expirationtime, size, collisiondetection,
-					collision_removal, vertical, texture, animation, glow);
+					expirationtime, size, collisiondetection, collision_removal,
+					object_collision, vertical, texture, animation, glow);
 		}
 		return;
 	}
@@ -1621,6 +1621,7 @@ void Server::SendSpawnParticle(session_t peer_id, u16 protocol_version,
 	animation.serialize(os, protocol_version);
 	pkt.putRawString(os.str());
 	pkt << glow;
+	pkt << object_collision;
 
 	Send(&pkt);
 }
@@ -1630,7 +1631,7 @@ void Server::SendAddParticleSpawner(session_t peer_id, u16 protocol_version,
 	u16 amount, float spawntime, v3f minpos, v3f maxpos,
 	v3f minvel, v3f maxvel, v3f minacc, v3f maxacc, float minexptime, float maxexptime,
 	float minsize, float maxsize, bool collisiondetection, bool collision_removal,
-	u16 attached_id, bool vertical, const std::string &texture, u32 id,
+	bool object_collision, u16 attached_id, bool vertical, const std::string &texture, u32 id,
 	const struct TileAnimationParams &animation, u8 glow)
 {
 	if (peer_id == PEER_ID_INEXISTENT) {
@@ -1644,7 +1645,8 @@ void Server::SendAddParticleSpawner(session_t peer_id, u16 protocol_version,
 					amount, spawntime, minpos, maxpos,
 					minvel, maxvel, minacc, maxacc, minexptime, maxexptime,
 					minsize, maxsize, collisiondetection, collision_removal,
-					attached_id, vertical, texture, id, animation, glow);
+					object_collision, attached_id, vertical, texture, id,
+					animation, glow);
 		}
 		return;
 	}
@@ -1665,6 +1667,7 @@ void Server::SendAddParticleSpawner(session_t peer_id, u16 protocol_version,
 	animation.serialize(os, protocol_version);
 	pkt.putRawString(os.str());
 	pkt << glow;
+	pkt << object_collision;
 
 	Send(&pkt);
 }
@@ -2079,76 +2082,81 @@ void Server::fadeSound(s32 handle, float step, float gain)
 	}
 }
 
-void Server::sendRemoveNode(v3s16 p, u16 ignore_id,
-	std::vector<u16> *far_players, float far_d_nodes)
+void Server::sendRemoveNode(v3s16 p, std::unordered_set<u16> *far_players,
+		float far_d_nodes)
 {
-	float maxd = far_d_nodes*BS;
+	float maxd = far_d_nodes * BS;
 	v3f p_f = intToFloat(p, BS);
+	v3s16 block_pos = getNodeBlockPos(p);
 
 	NetworkPacket pkt(TOCLIENT_REMOVENODE, 6);
 	pkt << p;
 
 	std::vector<session_t> clients = m_clients.getClientIDs();
-	for (session_t client_id : clients) {
-		if (far_players) {
-			// Get player
-			if (RemotePlayer *player = m_env->getPlayer(client_id)) {
-				PlayerSAO *sao = player->getPlayerSAO();
-				if (!sao)
-					continue;
+	m_clients.lock();
 
-				// If player is far away, only set modified blocks not sent
-				v3f player_pos = sao->getBasePosition();
-				if (player_pos.getDistanceFrom(p_f) > maxd) {
-					far_players->push_back(client_id);
-					continue;
-				}
-			}
+	for (session_t client_id : clients) {
+		RemoteClient *client = m_clients.lockedGetClientNoEx(client_id);
+		if (!client)
+			continue;
+
+		RemotePlayer *player = m_env->getPlayer(client_id);
+		PlayerSAO *sao = player ? player->getPlayerSAO() : nullptr;
+
+		// If player is far away, only set modified blocks not sent
+		if (!client->isBlockSent(block_pos) || (sao &&
+				sao->getBasePosition().getDistanceFrom(p_f) > maxd)) {
+			if (far_players)
+				far_players->emplace(client_id);
+			else
+				client->SetBlockNotSent(block_pos);
+			continue;
 		}
 
 		// Send as reliable
 		m_clients.send(client_id, 0, &pkt, true);
 	}
+
+	m_clients.unlock();
 }
 
-void Server::sendAddNode(v3s16 p, MapNode n, u16 ignore_id,
-		std::vector<u16> *far_players, float far_d_nodes,
-		bool remove_metadata)
+void Server::sendAddNode(v3s16 p, MapNode n, std::unordered_set<u16> *far_players,
+		float far_d_nodes, bool remove_metadata)
 {
-	float maxd = far_d_nodes*BS;
+	float maxd = far_d_nodes * BS;
 	v3f p_f = intToFloat(p, BS);
+	v3s16 block_pos = getNodeBlockPos(p);
+
+	NetworkPacket pkt(TOCLIENT_ADDNODE, 6 + 2 + 1 + 1 + 1);
+	pkt << p << n.param0 << n.param1 << n.param2
+			<< (u8) (remove_metadata ? 0 : 1);
 
 	std::vector<session_t> clients = m_clients.getClientIDs();
-	for (const session_t client_id : clients) {
-		if (far_players) {
-			// Get player
-			if (RemotePlayer *player = m_env->getPlayer(client_id)) {
-				PlayerSAO *sao = player->getPlayerSAO();
-				if (!sao)
-					continue;
+	m_clients.lock();
 
-				// If player is far away, only set modified blocks not sent
-				v3f player_pos = sao->getBasePosition();
-				if(player_pos.getDistanceFrom(p_f) > maxd) {
-					far_players->push_back(client_id);
-					continue;
-				}
-			}
-		}
+	for (session_t client_id : clients) {
+		RemoteClient *client = m_clients.lockedGetClientNoEx(client_id);
+		if (!client)
+			continue;
 
-		NetworkPacket pkt(TOCLIENT_ADDNODE, 6 + 2 + 1 + 1 + 1);
-		m_clients.lock();
-		RemoteClient* client = m_clients.lockedGetClientNoEx(client_id);
-		if (client) {
-			pkt << p << n.param0 << n.param1 << n.param2
-					<< (u8) (remove_metadata ? 0 : 1);
+		RemotePlayer *player = m_env->getPlayer(client_id);
+		PlayerSAO *sao = player ? player->getPlayerSAO() : nullptr;
+
+		// If player is far away, only set modified blocks not sent
+		if (!client->isBlockSent(block_pos) || (sao &&
+				sao->getBasePosition().getDistanceFrom(p_f) > maxd)) {
+			if (far_players)
+				far_players->emplace(client_id);
+			else
+				client->SetBlockNotSent(block_pos);
+			continue;
 		}
-		m_clients.unlock();
 
 		// Send as reliable
-		if (pkt.getSize() > 0)
-			m_clients.send(client_id, 0, &pkt, true);
+		m_clients.send(client_id, 0, &pkt, true);
 	}
+
+	m_clients.unlock();
 }
 
 void Server::SendBlockNoLock(session_t peer_id, MapBlock *block, u8 ver,
@@ -3160,7 +3168,7 @@ void Server::notifyPlayers(const std::wstring &msg)
 void Server::spawnParticle(const std::string &playername, v3f pos,
 	v3f velocity, v3f acceleration,
 	float expirationtime, float size, bool
-	collisiondetection, bool collision_removal,
+	collisiondetection, bool collision_removal, bool object_collision,
 	bool vertical, const std::string &texture,
 	const struct TileAnimationParams &animation, u8 glow)
 {
@@ -3179,14 +3187,14 @@ void Server::spawnParticle(const std::string &playername, v3f pos,
 	}
 
 	SendSpawnParticle(peer_id, proto_ver, pos, velocity, acceleration,
-			expirationtime, size, collisiondetection,
-			collision_removal, vertical, texture, animation, glow);
+			expirationtime, size, collisiondetection, collision_removal,
+			object_collision, vertical, texture, animation, glow);
 }
 
 u32 Server::addParticleSpawner(u16 amount, float spawntime,
 	v3f minpos, v3f maxpos, v3f minvel, v3f maxvel, v3f minacc, v3f maxacc,
 	float minexptime, float maxexptime, float minsize, float maxsize,
-	bool collisiondetection, bool collision_removal,
+	bool collisiondetection, bool collision_removal, bool object_collision,
 	ServerActiveObject *attached, bool vertical, const std::string &texture,
 	const std::string &playername, const struct TileAnimationParams &animation,
 	u8 glow)
@@ -3215,8 +3223,8 @@ u32 Server::addParticleSpawner(u16 amount, float spawntime,
 
 	SendAddParticleSpawner(peer_id, proto_ver, amount, spawntime,
 		minpos, maxpos, minvel, maxvel, minacc, maxacc,
-		minexptime, maxexptime, minsize, maxsize,
-		collisiondetection, collision_removal, attached_id, vertical,
+		minexptime, maxexptime, minsize, maxsize, collisiondetection,
+		collision_removal, object_collision, attached_id, vertical,
 		texture, id, animation, glow);
 
 	return id;

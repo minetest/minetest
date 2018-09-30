@@ -2492,22 +2492,23 @@ void Game::handleClientEvent_None(ClientEvent *event, CameraOrientation *cam)
 
 void Game::handleClientEvent_PlayerDamage(ClientEvent *event, CameraOrientation *cam)
 {
-	if (client->getHP() == 0)
-		return;
-
 	if (client->moddingEnabled()) {
 		client->getScript()->on_damage_taken(event->player_damage.amount);
 	}
 
-	runData.damage_flash += 95.0 + 3.2 * event->player_damage.amount;
-	runData.damage_flash = MYMIN(runData.damage_flash, 127.0f);
+	// Damage flash and hurt tilt are not used at death
+	if (client->getHP() > 0) {
+		runData.damage_flash += 95.0f + 3.2f * event->player_damage.amount;
+		runData.damage_flash = MYMIN(runData.damage_flash, 127.0f);
 
-	LocalPlayer *player = client->getEnv().getLocalPlayer();
+		LocalPlayer *player = client->getEnv().getLocalPlayer();
 
-	player->hurt_tilt_timer = 1.5;
-	player->hurt_tilt_strength =
-		rangelim(event->player_damage.amount / 4, 1.0f, 4.0f);
+		player->hurt_tilt_timer = 1.5f;
+		player->hurt_tilt_strength =
+			rangelim(event->player_damage.amount / 4.0f, 1.0f, 4.0f);
+	}
 
+	// Play damage sound
 	client->getEventManager()->put(new SimpleTriggerEvent(MtEvent::PLAYER_DAMAGE));
 }
 
@@ -3832,23 +3833,23 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 	/*
 		Damage flash
 	*/
-	if (runData.damage_flash > 0.0) {
+	if (runData.damage_flash > 0.0f) {
 		video::SColor color(runData.damage_flash, 180, 0, 0);
 		driver->draw2DRectangle(color,
 					core::rect<s32>(0, 0, screensize.X, screensize.Y),
 					NULL);
 
-		runData.damage_flash -= 100.0 * dtime;
+		runData.damage_flash -= 384.0f * dtime;
 	}
 
 	/*
 		Damage camera tilt
 	*/
-	if (player->hurt_tilt_timer > 0.0) {
-		player->hurt_tilt_timer -= dtime * 5;
+	if (player->hurt_tilt_timer > 0.0f) {
+		player->hurt_tilt_timer -= dtime * 6.0f;
 
-		if (player->hurt_tilt_timer < 0)
-			player->hurt_tilt_strength = 0;
+		if (player->hurt_tilt_timer < 0.0f)
+			player->hurt_tilt_strength = 0.0f;
 	}
 
 	/*

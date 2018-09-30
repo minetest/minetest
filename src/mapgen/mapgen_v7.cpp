@@ -352,6 +352,9 @@ void MapgenV7::makeChunk(BlockMakeData *data)
 			generateCavesRandomWalk(stone_surface_max_y, large_cave_depth);
 	}
 
+	// Generate the registered ores
+	m_emerge->oremgr->placeAllOres(this, blockseed, node_min, node_max);
+
 	// Generate dungeons
 	if ((flags & MG_DUNGEONS) && full_node_min.Y >= dungeon_ymin &&
 			full_node_max.Y <= dungeon_ymax)
@@ -360,9 +363,6 @@ void MapgenV7::makeChunk(BlockMakeData *data)
 	// Generate the registered decorations
 	if (flags & MG_DECORATIONS)
 		m_emerge->decomgr->placeAllDecos(this, blockseed, node_min, node_max);
-
-	// Generate the registered ores
-	m_emerge->oremgr->placeAllOres(this, blockseed, node_min, node_max);
 
 	// Sprinkle some dust on top after everything else was generated
 	if (flags & MG_BIOMES)
