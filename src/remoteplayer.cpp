@@ -139,7 +139,12 @@ void RemotePlayer::deSerialize(std::istream &is, const std::string &playername,
 		} catch (SettingNotFoundException &e) {}
 	}
 
-	inventory.deSerialize(is);
+	try {
+		inventory.deSerialize(is);
+	} catch (SerializationError &e) {
+		errorstream << "Failed to deserialize player inventory. player_name="
+			<< name << " " << e.what() << std::endl;
+	}
 
 	if (!inventory.getList("craftpreview") && inventory.getList("craftresult")) {
 		// Convert players without craftpreview

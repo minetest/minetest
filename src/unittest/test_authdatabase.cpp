@@ -90,12 +90,7 @@ private:
 class TestAuthDatabase : public TestBase
 {
 public:
-	TestAuthDatabase()
-	{
-		TestManager::registerTestModule(this);
-		// fixed directory, for persistence
-		test_dir = getTestTempDirectory();
-	}
+	TestAuthDatabase() { TestManager::registerTestModule(this); }
 	const char *getName() { return "TestAuthDatabase"; }
 
 	void runTests(IGameDef *gamedef);
@@ -112,7 +107,6 @@ public:
 	void testDelete();
 
 private:
-	std::string test_dir;
 	AuthDatabaseProvider *auth_provider;
 };
 
@@ -120,6 +114,9 @@ static TestAuthDatabase g_test_instance;
 
 void TestAuthDatabase::runTests(IGameDef *gamedef)
 {
+	// fixed directory, for persistence
+	thread_local const std::string test_dir = getTestTempDirectory();
+
 	// Each set of tests is run twice for each database type:
 	// one where we reuse the same AuthDatabase object (to test local caching),
 	// and one where we create a new AuthDatabase object for each call

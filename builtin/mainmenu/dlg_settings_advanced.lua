@@ -977,12 +977,7 @@ local function handle_settings_buttons(this, fields, tabname, tabdata)
 	if fields["btn_restore"] then
 		local setting = settings[selected_setting]
 		if setting and setting.type ~= "category" then
-			if setting.type == "noise_params_2d"
-					or setting.type == "noise_params_3d" then
-				core.settings:set_np_group(setting.name, setting.default_table)
-			else
-				core.settings:set(setting.name, setting.default)
-			end
+			core.settings:remove(setting.name)
 			core.settings:write()
 			core.update_formspec(this:get_formspec())
 		end

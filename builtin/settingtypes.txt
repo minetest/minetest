@@ -719,10 +719,6 @@ ambient_occlusion_gamma (Ambient occlusion gamma) float 2.2 0.25 4.0
 #    Enables animation of inventory items.
 inventory_items_animations (Inventory items animations) bool false
 
-#    Android systems only: Tries to create inventory textures from meshes
-#    when no supported render was found.
-inventory_image_hack (Inventory image hack) bool false
-
 #    Fraction of the visible distance at which fog starts to be rendered
 fog_start (Fog start) float 0.4 0.0 0.99
 

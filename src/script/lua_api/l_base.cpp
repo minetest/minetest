@@ -151,11 +151,12 @@ void ModApiBase::markAliasDeprecated(luaL_Reg *reg)
 	while (reg->func) {
 		if (last_func == reg->func) {
 			// Duplicate found
-			std::pair<std::string, luaL_Reg> entry(
-				reg->name,
-				{ .name = last_name, .func = reg->func }
-			);
-			m_deprecated_wrappers.emplace(entry);
+			luaL_Reg original_reg;
+			// Do not inline struct. Breaks MSVC or is error-prone
+			original_reg.name = last_name;
+			original_reg.func = reg->func;
+			m_deprecated_wrappers.emplace(
+				std::pair<std::string, luaL_Reg>(reg->name, original_reg));
 			reg->func = l_deprecated_function;
 		}
 

@@ -436,8 +436,7 @@ void InventoryList::deSerialize(std::istream &is)
 	u32 item_i = 0;
 	m_width = 0;
 
-	for(;;)
-	{
+	while (is.good()) {
 		std::string line;
 		std::getline(is, line, '\n');
 
@@ -447,14 +446,12 @@ void InventoryList::deSerialize(std::istream &is)
 		std::string name;
 		std::getline(iss, name, ' ');
 
-		if (name == "EndInventoryList") {
-			break;
-		}
+		if (name == "EndInventoryList")
+			return;
 
 		// This is a temporary backwards compatibility fix
-		if (name == "end") {
-			break;
-		}
+		if (name == "end")
+			return;
 
 		if (name == "Width") {
 			iss >> m_width;
@@ -476,6 +473,14 @@ void InventoryList::deSerialize(std::istream &is)
 			m_items[item_i++].clear();
 		}
 	}
+
+	// Contents given to deSerialize() were not terminated properly: throw error.
+
+	std::ostringstream ss;
+	ss << "Malformatted inventory list. list="
+		<< m_name << ", read " << item_i << " of " << getSize()
+		<< " ItemStacks." << std::endl;
+	throw SerializationError(ss.str());
 }
 
 InventoryList::InventoryList(const InventoryList &other)
@@ -859,8 +864,7 @@ void Inventory::deSerialize(std::istream &is)
 {
 	clear();
 
-	for(;;)
-	{
+	while (is.good()) {
 		std::string line;
 		std::getline(is, line, '\n');
 
@@ -869,14 +873,12 @@ void Inventory::deSerialize(std::istream &is)
 		std::string name;
 		std::getline(iss, name, ' ');
 
-		if (name == "EndInventory") {
-			break;
-		}
+		if (name == "EndInventory")
+			return;
 
 		// This is a temporary backwards compatibility fix
-		if (name == "end") {
-			break;
-		}
+		if (name == "end")
+			return;
 
 		if (name == "List") {
 			std::string listname;
@@ -895,6 +897,13 @@ void Inventory::deSerialize(std::istream &is)
 			throw SerializationError("invalid inventory specifier: " + name);
 		}
 	}
+
+	// Contents given to deSerialize() were not terminated properly: throw error.
+
+	std::ostringstream ss;
+	ss << "Malformatted inventory (damaged?). "
+		<< m_lists.size() << " lists read." << std::endl;
+	throw SerializationError(ss.str());
 }
 
 InventoryList * Inventory::addList(const std::string &name, u32 size)

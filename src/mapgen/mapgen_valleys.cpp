@@ -393,18 +393,27 @@ float MapgenValleys::terrainLevelFromNoise(TerrainNoise *tn)
 float MapgenValleys::adjustedTerrainLevelFromNoise(TerrainNoise *tn)
 {
 	float mount = terrainLevelFromNoise(tn);
+	float result = mount;
 	s16 y_start = myround(mount);
+	float fill =
+		NoisePerlin3D(&noise_inter_valley_fill->np, tn->x, y_start, tn->z, seed);
+	bool is_ground = fill * *tn->slope >= y_start - mount;
+	s16 search_direction = is_ground ? 1 : -1;
 
-	for (s16 y = y_start; y <= y_start + 1000; y++) {
-		float fill =
+	for (s16 i = 1; i <= 1000; i++) {
+		s16 y = y_start + i * search_direction;
+		fill =
 			NoisePerlin3D(&noise_inter_valley_fill->np, tn->x, y, tn->z, seed);
-		if (fill * *tn->slope < y - mount) {
-			mount = std::fmax((float)(y - 1), mount);
+
+		bool was_ground = is_ground;
+		is_ground = fill * *tn->slope >= y - mount;
+		if (is_ground)
+			result = y;
+		if (is_ground != was_ground)
 			break;
-		}
 	}
 
-	return mount;
+	return result;
 }
 
 
@@ -420,7 +429,8 @@ int MapgenValleys::getSpawnLevelAtPoint(v2s16 p)
 			level_at_point > water_level + 16)
 		return MAX_MAP_GENERATION_LIMIT;  // Unsuitable spawn point
 
-	return level_at_point;
+	// +1 to account for biome dust that can be 1 node deep
+	return level_at_point + 1; 
 }
 
 

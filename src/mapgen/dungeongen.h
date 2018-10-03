@@ -64,7 +64,7 @@ struct DungeonParams {
 
 class DungeonGen {
 public:
-	MMVManip *vm;
+	MMVManip *vm = nullptr;
 	const NodeDefManager *ndef;
 	GenerateNotifier *gennotify;
 
