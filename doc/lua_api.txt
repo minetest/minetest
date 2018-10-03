@@ -1938,11 +1938,13 @@ Elements
 
 ### `list[<inventory location>;<list name>;<X>,<Y>;<W>,<H>;]`
 
-* Show an inventory list if it has been sent to the client
+* Show an inventory list if it has been sent to the client. Nothing will
+  be shown if the inventory list is of size 0.
 
 ### `list[<inventory location>;<list name>;<X>,<Y>;<W>,<H>;<starting item index>]`
 
-* Show an inventory list if it has been sent to the client
+* Show an inventory list if it has been sent to the client. Nothing will
+  be shown if the inventory list is of size 0.
 
 ### `listring[<inventory location>;<list name>]`
 
