@@ -3404,6 +3404,10 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 			s_count = list_s->getItem(s.i).count;
 		} while(0);
 
+		// Prevent visual desync with server: Deny interacting with this slot
+		if (s.listname == "hand")
+			s.i = -1; // Mark as invalid
+
 		bool identical = m_selected_item && s.isValid() &&
 			(inv_selected == inv_s) &&
 			(m_selected_item->listname == s.listname) &&

@@ -632,9 +632,9 @@ void Server::handleCommand_InventoryAction(NetworkPacket* pkt)
 		}
 
 		/*
-			Disable moving items out of craftpreview
+			Disable moving items out of craftpreview and hand
 		*/
-		if (ma->from_list == "craftpreview") {
+		if (ma->from_list == "craftpreview" || ma->from_list == "hand") {
 			infostream << "Ignoring IMoveAction from "
 					<< (ma->from_inv.dump()) << ":" << ma->from_list
 					<< " to " << (ma->to_inv.dump()) << ":" << ma->to_list
@@ -644,9 +644,10 @@ void Server::handleCommand_InventoryAction(NetworkPacket* pkt)
 		}
 
 		/*
-			Disable moving items into craftresult and craftpreview
+			Disable moving items into craftresult, craftpreview and hand
 		*/
-		if (ma->to_list == "craftpreview" || ma->to_list == "craftresult") {
+		if (ma->to_list == "craftpreview" || ma->to_list == "craftresult" ||
+				ma->to_list == "hand") {
 			infostream << "Ignoring IMoveAction from "
 					<< (ma->from_inv.dump()) << ":" << ma->from_list
 					<< " to " << (ma->to_inv.dump()) << ":" << ma->to_list
@@ -677,9 +678,9 @@ void Server::handleCommand_InventoryAction(NetworkPacket* pkt)
 		setInventoryModified(da->from_inv, false);
 
 		/*
-			Disable dropping items out of craftpreview
+			Disable dropping items out of craftpreview and hand
 		*/
-		if (da->from_list == "craftpreview") {
+		if (da->from_list == "craftpreview" || da->from_list == "hand") {
 			infostream << "Ignoring IDropAction from "
 					<< (da->from_inv.dump()) << ":" << da->from_list
 					<< " because src is " << da->from_list << std::endl;
