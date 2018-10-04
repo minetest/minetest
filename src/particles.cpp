@@ -584,6 +584,9 @@ void ParticleManager::handleParticleEvent(ClientEvent *event, Client *client,
 	}
 }
 
+// The final burst of particles when a node is finally dug, *not* particles
+// spawned during the digging of a node.
+
 void ParticleManager::addDiggingParticles(IGameDef* gamedef,
 	LocalPlayer *player, v3s16 pos, const MapNode &n, const ContentFeatures &f)
 {
@@ -591,11 +594,13 @@ void ParticleManager::addDiggingParticles(IGameDef* gamedef,
 	if (f.drawtype == NDT_AIRLIKE)
 		return;
 
-	// set the amount of particles here
-	for (u16 j = 0; j < 32; j++) {
+	for (u16 j = 0; j < 16; j++) {
 		addNodeParticle(gamedef, player, pos, n, f);
 	}
 }
+
+// During the digging of a node particles are spawned individually by this
+// function, called from Game::handleDigging() in game.cpp.
 
 void ParticleManager::addNodeParticle(IGameDef* gamedef,
 	LocalPlayer *player, v3s16 pos, const MapNode &n, const ContentFeatures &f)
@@ -617,25 +622,30 @@ void ParticleManager::addNodeParticle(IGameDef* gamedef,
 	else
 		texture = tile.texture;
 
-	float size = rand() % 64 / 512.;
+	float size = (rand() % 8) / 64.0f;
 	float visual_size = BS * size;
 	if (tile.scale)
 		size /= tile.scale;
-	v2f texsize(size * 2, size * 2);
+	v2f texsize(size * 2.0f, size * 2.0f);
 	v2f texpos;
-	texpos.X = ((rand() % 64) / 64. - texsize.X);
-	texpos.Y = ((rand() % 64) / 64. - texsize.Y);
+	texpos.X = (rand() % 64) / 64.0f - texsize.X;
+	texpos.Y = (rand() % 64) / 64.0f - texsize.Y;
 
 	// Physics
-	v3f velocity((rand() % 100 / 50. - 1) / 1.5,
-			rand() % 100 / 35.,
-			(rand() % 100 / 50. - 1) / 1.5);
-
-	v3f acceleration(0,-9,0);
+	v3f velocity(
+		(rand() % 150) / 50.0f - 1.5f,
+		(rand() % 150) / 50.0f,
+		(rand() % 150) / 50.0f - 1.5f
+	);
+	v3f acceleration(
+		0.0f,
+		-player->movement_gravity * player->physics_override_gravity / BS,
+		0.0f
+	);
 	v3f particlepos = v3f(
-		(f32) pos.X + rand() %100 /200. - 0.25,
-		(f32) pos.Y + rand() %100 /200. - 0.25,
-		(f32) pos.Z + rand() %100 /200. - 0.25
+		(f32)pos.X + (rand() % 100) / 200.0f - 0.25f,
+		(f32)pos.Y + (rand() % 100) / 200.0f - 0.25f,
+		(f32)pos.Z + (rand() % 100) / 200.0f - 0.25f
 	);
 
 	video::SColor color;
@@ -651,7 +661,7 @@ void ParticleManager::addNodeParticle(IGameDef* gamedef,
 		particlepos,
 		velocity,
 		acceleration,
-		rand() % 100 / 100., // expiration time
+		(rand() % 100) / 100.0f, // expiration time
 		visual_size,
 		true,
 		false,
