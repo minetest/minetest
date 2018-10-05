@@ -33,7 +33,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 inline static const char *yawToDirectionString(int yaw)
 {
-	static const char *direction[4] = {"N +Z", "W -X", "S -Z", "E +X"};
+	static const char *direction[4] =
+		{"North +Z", "West -X", "South -Z", "East +X"};
 
 	yaw = wrapDegrees_0_360(yaw);
 	yaw = (yaw + 45) % 360 / 90;
