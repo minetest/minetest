@@ -7,7 +7,7 @@ Minetest
 
 An InfiniMiner/Minecraft inspired game.
 
-Copyright (c) 2010-2018 Perttu Ahola <celeron55@gmail.com>
+Copyright (C) 2010-2018 Perttu Ahola <celeron55@gmail.com>
 and contributors (see source file comments and the version control log)
 
 In case you downloaded the source code:
@@ -22,7 +22,7 @@ Further documentation
 - Wiki: http://wiki.minetest.net/
 - Developer wiki: http://dev.minetest.net/
 - Forum: http://forum.minetest.net/
-- Github: https://github.com/minetest/minetest/
+- GitHub: https://github.com/minetest/minetest/
 - [doc/](doc/) directory of source distribution
 
 Default controls
@@ -55,15 +55,14 @@ Some can be changed in the key config dialog in the settings tab.
 | J                             | Enable/disable fast mode (needs fast privilege)                |
 | H                             | Enable/disable noclip mode (needs noclip privilege)            |
 | E                             | Move fast in fast mode                                         |
-| F1                            |  Hide/show HUD                                                 |
-| F2                            |  Hide/show chat                                                |
-| F3                            |  Disable/enable fog                                            |
-| F4                            |  Disable/enable camera update (Mapblocks are not updated anymore when disabled, disabled in release builds)  |
-| F5                            |  Cycle through debug info screens                              |
-| F6                            |  Cycle through profiler info screens                           |
-| F7                            |  Cycle through camera modes                                    |
-| F8                            |  Toggle cinematic mode                                         |
-| F9                            |  Cycle through minimap modes                                   |
+| F1                            | Hide/show HUD                                                  |
+| F2                            | Hide/show chat                                                 |
+| F3                            | Disable/enable fog                                             |
+| F4                            | Disable/enable camera update (Mapblocks are not updated anymore when disabled, disabled in release builds)  |
+| F5                            | Cycle through debug information screens                        |
+| F6                            | Cycle through profiler info screens                            |
+| F7                            | Cycle through camera modes                                     |
+| F9                            | Cycle through minimap modes                                    |
 | Shift + F9                    | Change minimap orientation                                     |
 | F10                           | Show/hide console                                              |
 | F12                           | Take screenshot                                                |
@@ -133,9 +132,9 @@ For Fedora users:
 
 #### Download
 
-You can install git for easily keeping your copy up to date.
-If you don’t want git, read below on how to get the source without git.  
-This is an example for installing git on Debian/Ubuntu:
+You can install Git for easily keeping your copy up to date.
+If you don’t want Git, read below on how to get the source without Git.  
+This is an example for installing Git on Debian/Ubuntu:
 
     sudo apt install git
 
@@ -143,22 +142,22 @@ For Fedora users:
 
     sudo dnf install git
 
-Download source (this is the URL to the latest of source repository, which might not work at all times) using git:
+Download source (this is the URL to the latest of source repository, which might not work at all times) using Git:
 
     git clone --depth 1 https://github.com/minetest/minetest.git
     cd minetest
 
-Download minetest_game (otherwise only the "Minimal development test" game is available) using git:
+Download minetest_game (otherwise only the "Minimal development test" game is available) using Git:
 
     git clone --depth 1 https://github.com/minetest/minetest_game.git games/minetest_game
 
-Download source, without using git:
+Download source, without using Git:
 
     wget https://github.com/minetest/minetest/archive/master.tar.gz
     tar xf master.tar.gz
     cd minetest-master
 
-Download minetest_game, without using git:
+Download minetest_game, without using Git:
 
     cd games/
     wget https://github.com/minetest/minetest_game/archive/master.tar.gz
@@ -197,7 +196,7 @@ General options and their default values:
         Release                - Release build
         Debug                  - Debug build
         SemiDebug              - Partially optimized debug build
-        RelWithDebInfo         - Release build with Debug information
+        RelWithDebInfo         - Release build with debug information
         MinSizeRel             - Release build with -Os passed to compiler to make executable as small as possible
     ENABLE_CURL=ON             - Build with cURL; Enables use of online mod repo, public serverlist and remote media fetching via http
     ENABLE_CURSES=ON           - Build with (n)curses; Enables a server side terminal (command line option: --terminal)
@@ -208,7 +207,7 @@ General options and their default values:
     ENABLE_POSTGRESQL=ON       - Build with libpq; Enables use of PostgreSQL map backend (PostgreSQL 9.5 or greater recommended)
     ENABLE_REDIS=ON            - Build with libhiredis; Enables use of Redis map backend
     ENABLE_SPATIAL=ON          - Build with LibSpatial; Speeds up AreaStores
-    ENABLE_SOUND=ON            - Build with OpenAL, libogg & libvorbis; in-game Sounds
+    ENABLE_SOUND=ON            - Build with OpenAL, libogg & libvorbis; in-game sounds
     ENABLE_LUAJIT=ON           - Build with LuaJIT (much faster than non-JIT Lua)
     ENABLE_SYSTEM_GMP=ON       - Use GMP from system (much faster than bundled mini-gmp)
     ENABLE_SYSTEM_JSONCPP=OFF  - Use JsonCPP from system
@@ -226,15 +225,15 @@ Library specific options:
     CURL_LIBRARY                    - Only if building with cURL; path to libcurl.a/libcurl.so/libcurl.lib
     EGL_INCLUDE_DIR                 - Only if building with GLES; directory that contains egl.h
     EGL_LIBRARY                     - Only if building with GLES; path to libEGL.a/libEGL.so
-    FREETYPE_INCLUDE_DIR_freetype2  - Only if building with Freetype2; directory that contains an freetype directory with files such as ftimage.h in it
-    FREETYPE_INCLUDE_DIR_ft2build   - Only if building with Freetype2; directory that contains ft2build.h
-    FREETYPE_LIBRARY                - Only if building with Freetype2; path to libfreetype.a/libfreetype.so/freetype.lib
-    FREETYPE_DLL                    - Only if building with Freetype2 on Windows; path to libfreetype.dll
-    GETTEXT_DLL                     - Only when building with Gettext on Windows; path to libintl3.dll
-    GETTEXT_ICONV_DLL               - Only when building with Gettext on Windows; path to libiconv2.dll
-    GETTEXT_INCLUDE_DIR             - Only when building with Gettext; directory that contains iconv.h
-    GETTEXT_LIBRARY                 - Only when building with Gettext on Windows; path to libintl.dll.a
-    GETTEXT_MSGFMT                  - Only when building with Gettext; path to msgfmt/msgfmt.exe
+    FREETYPE_INCLUDE_DIR_freetype2  - Only if building with FreeType 2; directory that contains an freetype directory with files such as ftimage.h in it
+    FREETYPE_INCLUDE_DIR_ft2build   - Only if building with FreeType 2; directory that contains ft2build.h
+    FREETYPE_LIBRARY                - Only if building with FreeType 2; path to libfreetype.a/libfreetype.so/freetype.lib
+    FREETYPE_DLL                    - Only if building with FreeType 2 on Windows; path to libfreetype.dll
+    GETTEXT_DLL                     - Only when building with gettext on Windows; path to libintl3.dll
+    GETTEXT_ICONV_DLL               - Only when building with gettext on Windows; path to libiconv2.dll
+    GETTEXT_INCLUDE_DIR             - Only when building with gettext; directory that contains iconv.h
+    GETTEXT_LIBRARY                 - Only when building with gettext on Windows; path to libintl.dll.a
+    GETTEXT_MSGFMT                  - Only when building with gettext; path to msgfmt/msgfmt.exe
     IRRLICHT_DLL                    - Only on Windows; path to Irrlicht.dll
     IRRLICHT_INCLUDE_DIR            - Directory that contains IrrCompileConfig.h
     IRRLICHT_LIBRARY                - Path to libIrrlicht.a/libIrrlicht.so/libIrrlicht.dll.a/Irrlicht.lib
@@ -302,10 +301,10 @@ Library specific options:
 	* Download all the other stuff to DIR and extract them into there.
 	  ("extract here", not "extract to packagename/")
 	    * NOTE: zlib125dll.zip needs to be extracted into zlib125dll
-	    * NOTE: You need to extract sqlite3.h & sqlite3ext.h from sqlite3 source
-	      and sqlite3.dll & sqlite3.def from sqlite3 precompiled binaries
-	      into "sqlite3" directory, and generate sqlite3.lib using command
-	      "LIB /DEF:sqlite3.def /OUT:sqlite3.lib"
+	    * NOTE: You need to extract sqlite3.h & sqlite3ext.h from the SQLite 3
+	      source and sqlite3.dll & sqlite3.def from the SQLite 3 precompiled
+	      binaries into "sqlite3" directory, and generate sqlite3.lib using
+	      command "LIB /DEF:sqlite3.def /OUT:sqlite3.lib"
 	* All those packages contain a nice base directory in them, which
 	  should end up being the direct subdirectories of DIR.
 	* You will end up with a directory structure like this (+=dir, -=file):
@@ -439,5 +438,5 @@ patch is set to 0.
 minor/trivial features considered necessary.
 
 Since 5.0.0-dev and 0.4.17-dev, the dev notation refers to the next release, 
-ie: 5.0.0-dev is the development version leading to 5.0.0. 
+i.e.: 5.0.0-dev is the development version leading to 5.0.0. 
 Prior to that we used `previous_version-dev`.

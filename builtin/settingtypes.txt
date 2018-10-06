@@ -349,7 +349,7 @@ keymap_slot23 (Hotbar slot 23 key) key
 #    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
 keymap_toggle_hud (HUD toggle key) key KEY_F1
 
-#    Key for toggling the display of the chat.
+#    Key for toggling the display of chat.
 #    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
 keymap_toggle_chat (Chat toggle key) key KEY_F2
 
@@ -357,7 +357,7 @@ keymap_toggle_chat (Chat toggle key) key KEY_F2
 #    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
 keymap_console (Large chat console key) key KEY_F10
 
-#    Key for toggling the display of the fog.
+#    Key for toggling the display of fog.
 #    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
 keymap_toggle_force_fog_off (Fog toggle key) key KEY_F3
 
@@ -440,15 +440,15 @@ trilinear_filter (Trilinear filtering) bool false
 
 #    Filtered textures can blend RGB values with fully-transparent neighbors,
 #    which PNG optimizers usually discard, sometimes resulting in a dark or
-#    light edge to transparent textures.  Apply this filter to clean that up
+#    light edge to transparent textures. Apply this filter to clean that up
 #    at texture load time.
 texture_clean_transparent (Clean transparent textures) bool false
 
 #    When using bilinear/trilinear/anisotropic filters, low-resolution textures
 #    can be blurred, so automatically upscale them with nearest-neighbor
-#    interpolation to preserve crisp pixels.  This sets the minimum texture size
+#    interpolation to preserve crisp pixels. This sets the minimum texture size
 #    for the upscaled textures; higher values look sharper, but require more
-#    memory.  Powers of 2 are recommended.  Setting this higher than 1 may not
+#    memory.  Powers of 2 are recommended. Setting this higher than 1 may not
 #    have a visible effect unless bilinear/trilinear/anisotropic filtering is
 #    enabled.
 #    This is also used as the base node texture size for world-aligned
@@ -579,7 +579,7 @@ fullscreen (Full screen) bool false
 fullscreen_bpp (Full screen BPP) int 24
 
 #    Vertical screen synchronization.
-vsync (V-Sync) bool false
+vsync (VSync) bool false
 
 #    Field of view in degrees.
 fov (Field of view) int 72 45 160
@@ -609,7 +609,7 @@ texture_path (Texture path) path
 
 #    The rendering back-end for Irrlicht.
 #    A restart is required after changing this.
-#    Note: on Android, stick with OGLES1 if unsure! App may fail to start otherwise.
+#    Note: On Android, stick with OGLES1 if unsure! App may fail to start otherwise.
 #    On other platforms, OpenGL is recommended, and it’s the only driver with
 #    shader support currently.
 video_driver (Video driver) enum opengl null,software,burningsvideo,direct3d8,direct3d9,opengl,ogles1,ogles2
@@ -738,7 +738,7 @@ world_aligned_mode (World-aligned textures mode) enum enable disable,enable,forc
 #    a specially-designed texture pack; with this option, the client tries
 #    to determine the scale automatically basing on the texture size.
 #    See also texture_min_size.
-#    Warning: this option is EXPERIMENTAL!
+#    Warning: This option is EXPERIMENTAL!
 autoscale_mode (Autoscaling mode) enum disable disable,enable,force
 
 #    Show entity selection boxes
@@ -773,8 +773,8 @@ tooltip_show_delay (Tooltip delay) int 400
 #    Append item name to tooltip.
 tooltip_append_itemname (Append item name) bool false
 
-#    Whether freetype fonts are used, requires freetype support to be compiled in.
-freetype (Freetype fonts) bool true
+#    Whether FreeType fonts are used, requires FreeType support to be compiled in.
+freetype (FreeType fonts) bool true
 
 #    Path to TrueTypeFont or bitmap.
 font_path (Font path) filepath fonts/liberationsans.ttf
@@ -883,7 +883,7 @@ server_description (Server description) string mine here
 server_address (Server address) string game.minetest.net
 
 #    Homepage of server, to be displayed in the serverlist.
-server_url (Server URL) string http://minetest.net
+server_url (Server URL) string https://minetest.net
 
 #    Automaticaly report to the serverlist.
 server_announce (Announce server) bool false
@@ -1088,17 +1088,17 @@ server_unload_unused_data_timeout (Unload unused server data) int 29
 #    Maximum number of statically stored objects in a block.
 max_objects_per_block (Maximum objects per block) int 64
 
-#    See http://www.sqlite.org/pragma.html#pragma_synchronous
+#    See https://www.sqlite.org/pragma.html#pragma_synchronous
 sqlite_synchronous (Synchronous SQLite) enum 2 0,1,2
 
 #    Length of a server tick and the interval at which objects are generally updated over network.
 dedicated_server_step (Dedicated server step) float 0.09
 
-#    Time in between active block management cycles
-active_block_mgmt_interval (Active Block Management interval) float 2.0
+#    Length of time between active block management cycles
+active_block_mgmt_interval (Active block management interval) float 2.0
 
-#    Length of time between ABM execution cycles
-abm_interval (Active Block Modifier interval) float 1.0
+#    Length of time between Active Block Modifier (ABM) execution cycles
+abm_interval (ABM interval) float 1.0
 
 #    Length of time between NodeTimer execution cycles
 nodetimer_interval (NodeTimer interval) float 0.2
@@ -1704,7 +1704,7 @@ mgfractal_iterations (Iterations) int 11
 mgfractal_scale (Scale) v3f (4096.0, 1024.0, 4096.0)
 
 #    (X,Y,Z) offset of fractal from world centre in units of 'scale'.
-#    Can be used to move a desired point to (0, 0): to create a
+#    Can be used to move a desired point to (0, 0) to create a
 #    suitable spawn point, or to allow 'zooming in' on a desired
 #    point by increasing 'scale'.
 #    The default is tuned for a suitable spawn point for mandelbrot
@@ -1841,12 +1841,12 @@ mgvalleys_np_inter_valley_slope (Valley slope) noise_params_2d 0.5, 0.5, (128, 1
 #    Size of chunks to be generated at once by mapgen, stated in mapblocks (16 nodes).
 #    Increasing this by 1 almost doubles the 3D noise calculation load.
 #    High values can cause noise calculation to overload.
-#    Values smaller than 5 cause a terrain bug in mgv6.
+#    Values smaller than 5 cause a terrain bug in Mapgen V6.
 #    Since there is a fixed number of large caves and dungeons per
 #    mapchunk, values other than 5 alter the density of these.
 chunksize (Chunk size) int 5
 
-#    Dump the mapgen debug infos.
+#    Dump the mapgen debug information.
 enable_mapgen_debug_info (Mapgen debug) bool false
 
 #    Maximum number of blocks that can be queued for loading.

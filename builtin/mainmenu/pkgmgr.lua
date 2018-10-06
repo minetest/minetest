@@ -431,7 +431,7 @@ function pkgmgr.install_dir(type, path, basename, targetpath)
 				targetpath = core.get_modpath() .. DIR_DELIM .. clean_path
 			else
 				return nil,
-					fgettext("Install Mod: unable to find suitable foldername for modpack $1",
+					fgettext("Install Mod: Unable to find suitable folder name for modpack $1",
 					modfilename)
 			end
 		end
@@ -457,7 +457,7 @@ function pkgmgr.install_dir(type, path, basename, targetpath)
 			if targetfolder ~= nil and pkgmgr.isValidModname(targetfolder) then
 				targetpath = core.get_modpath() .. DIR_DELIM .. targetfolder
 			else
-				return nil, fgettext("Install Mod: unable to find real modname for: $1", modfilename)
+				return nil, fgettext("Install Mod: Unable to find real mod name for: $1", modfilename)
 			end
 		end
 
@@ -493,7 +493,7 @@ function pkgmgr.install(type, modfilename, basename, dest)
 	if path == nil then
 		return nil,
 			fgettext("Install: file: \"$1\"", archive_info.name) .. "\n" ..
-			fgettext("Install: unsupported filetype \"$1\" or broken archive",
+			fgettext("Install: Unsupported file type \"$1\" or broken archive",
 				archive_info.type)
 	end
 
