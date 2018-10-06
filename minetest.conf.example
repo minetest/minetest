@@ -96,8 +96,8 @@
 #    type: bool
 # fixed_virtual_joystick = false
 
-#    (Android) Use virtual joystick to trigger "aux" button.
-#    If enabled, virtual joystick will also tap "aux" button when out of main circle.
+#    (Android) Use virtual joystick to trigger "AUX" button.
+#    If enabled, virtual joystick will also tap "AUX" button when out of main circle.
 #    type: bool
 # virtual_joystick_triggers_aux = false
 
