@@ -17,27 +17,18 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-
 #pragma once
 
 #include "irrlichttypes.h"
 
-enum FloatType {
+enum FloatType
+{
 	FLOATTYPE_UNKNOWN,
-	FLOATTYPE_INVALID,
-	FLOATTYPE_ABCD,
-	FLOATTYPE_DCBA,
-	FLOATTYPE_BADC,
-	FLOATTYPE_CDAB
+	FLOATTYPE_SLOW,
+	FLOATTYPE_SYSTEM
 };
-
-typedef union {
-	f32 f;
-	u32 u;
-} conv_f32_u32_t;
-
 
 f32 u32Tof32Slow(u32 i);
 u32 f32Tou32Slow(f32 f);
 
-FloatType getFloatSerializationType(bool do_full_unittest = false);
+FloatType getFloatSerializationType();

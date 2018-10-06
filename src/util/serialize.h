@@ -193,23 +193,16 @@ inline f32 readF1000(const u8 *data)
 
 inline f32 readF32(const u8 *data)
 {
-	conv_f32_u32_t fui;
-	fui.u = readU32(data);
+	u32 u = readU32(data);
 
 	switch (g_serialize_f32_type) {
-	case FLOATTYPE_ABCD:
-		return fui.f;
-	case FLOATTYPE_DCBA:
-		fui.u = htobe32(le32toh(fui.u));
-		return fui.f;
-	case FLOATTYPE_BADC:
-		fui.u = (fui.u >>  8 & 0x00FF00FFUL) | (fui.u <<  8 & 0xFF00FF00UL);
-		return fui.f;
-	case FLOATTYPE_CDAB:
-		fui.u = (fui.u >> 16 & 0x0000FFFFUL) | (fui.u << 16 & 0xFFFF0000UL);
-		return fui.f;
-	case FLOATTYPE_INVALID:
-		return u32Tof32Slow(fui.u);
+	case FLOATTYPE_SYSTEM: {
+			f32 f;
+			memcpy(&f, &u, 4);
+			return f;
+		}
+	case FLOATTYPE_SLOW:
+		return u32Tof32Slow(u);
 	case FLOATTYPE_UNKNOWN: // First initialization
 		g_serialize_f32_type = getFloatSerializationType();
 		return readF32(data);
@@ -318,23 +311,14 @@ inline void writeF1000(u8 *data, f32 i)
 
 inline void writeF32(u8 *data, f32 i)
 {
-	conv_f32_u32_t fui;
-	fui.f = i;
-
 	switch (g_serialize_f32_type) {
-	case FLOATTYPE_ABCD:
-		return writeU32(data, fui.u);
-	case FLOATTYPE_DCBA:
-		fui.u = htobe32(le32toh(fui.u));
-		return writeU32(data, fui.u);
-	case FLOATTYPE_BADC:
-		fui.u = (fui.u >>  8 & 0x00FF00FFUL) | (fui.u <<  8 & 0xFF00FF00UL);
-		return writeU32(data, fui.u);
-	case FLOATTYPE_CDAB:
-		fui.u = (fui.u >> 16 & 0x0000FFFFUL) | (fui.u << 16 & 0xFFFF0000UL);
-		return writeU32(data, fui.u);
-	case FLOATTYPE_INVALID:
-		return writeU32(data, f32Tou32Slow(fui.f));
+	case FLOATTYPE_SYSTEM: {
+			u32 u;
+			memcpy(&u, &i, 4);
+			return writeU32(data, u);
+		}
+	case FLOATTYPE_SLOW:
+		return writeU32(data, f32Tou32Slow(i));
 	case FLOATTYPE_UNKNOWN: // First initialization
 		g_serialize_f32_type = getFloatSerializationType();
 		return writeF32(data, i);
