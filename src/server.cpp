@@ -2480,14 +2480,14 @@ void Server::sendDetachedInventory(const std::string &name, session_t peer_id)
 
 	if (player_it == m_detached_inventories_player.end() ||
 			player_it->second.empty()) {
-		// ok. no restriction
+		// OK. Send to everyone
 	} else {
 		RemotePlayer *p = m_env->getPlayer(player_it->second.c_str());
 		if (!p)
 			return; // Player is offline
 
 		if (peer_id != PEER_ID_INEXISTENT && peer_id != p->getPeerId())
-			return; // Send to nobody
+			return; // Caller requested send to a different player, so don't send.
 
 		peer_id = p->getPeerId();
 	}
