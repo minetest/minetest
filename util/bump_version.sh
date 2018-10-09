@@ -25,7 +25,7 @@ perform_release() {
 
 	sed -i -re "s/versionCode [0-9]+$/versionCode $NEW_ANDROID_VERSION_CODE/" build/android/build.gradle
 
-	sed -i 's/\(version\)="[^"]*"/\1="'"$RELEASE_VERSION"'"/' misc/net.minetest.minetest.appdata.xml
+	sed -i '/\<release/s/\(version\)="[^"]*"/\1="'"$RELEASE_VERSION"'"/' misc/net.minetest.minetest.appdata.xml
 
 	RELEASE_DATE=`date +%Y-%m-%d`
 
