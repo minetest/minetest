@@ -17,7 +17,7 @@ prompt_for_number() {
 # On a release the following actions are performed
 # * DEVELOPMENT_BUILD is set to false
 # * android versionCode is bumped
-# * appdata release version is bumped
+# * appdata release version and date are updated
 # * Commit the changes
 # * Tag with current version
 perform_release() {
@@ -27,7 +27,11 @@ perform_release() {
 
 	sed -i 's/\(version\)="[^"]*"/\1="'"$RELEASE_VERSION"'"/' misc/net.minetest.minetest.appdata.xml
 
-	git add -f CMakeLists.txt build/android/build.gradle
+	RELEASE_DATE=`date +%Y-%m-%d`
+
+	sed -i 's/\(<release date\)="[^"]*"/\1="'"$RELEASE_DATE"'"/' misc/net.minetest.minetest.appdata.xml
+
+	git add -f CMakeLists.txt build/android/build.gradle misc/net.minetest.minetest.appdata.xml
 
 	git commit -m "Bump version to $RELEASE_VERSION"
 
