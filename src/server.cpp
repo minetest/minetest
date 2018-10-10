@@ -2478,33 +2478,41 @@ void Server::sendRequestedMedia(session_t peer_id,
 
 void Server::sendDetachedInventory(const std::string &name, session_t peer_id)
 {
-	if(m_detached_inventories.count(name) == 0) {
-		errorstream<<FUNCTION_NAME<<": \""<<name<<"\" not found"<<std::endl;
-		return;
+	const auto &inv_it = m_detached_inventories.find(name);
+	const auto &player_it = m_detached_inventories_player.find(name);
+
+	if (player_it == m_detached_inventories_player.end() ||
+			player_it->second.empty()) {
+		// OK. Send to everyone
+	} else {
+		RemotePlayer *p = m_env->getPlayer(player_it->second.c_str());
+		if (!p)
+			return; // Player is offline
+
+		if (peer_id != PEER_ID_INEXISTENT && peer_id != p->getPeerId())
+			return; // Caller requested send to a different player, so don't send.
+
+		peer_id = p->getPeerId();
 	}
-	Inventory *inv = m_detached_inventories[name];
-	std::ostringstream os(std::ios_base::binary);
-
-	os << serializeString(name);
-	inv->serialize(os);
-
-	// Make data buffer
-	std::string s = os.str();
 
 	NetworkPacket pkt(TOCLIENT_DETACHED_INVENTORY, 0, peer_id);
-	pkt.putRawString(s.c_str(), s.size());
+	pkt << name;
 
-	const std::string &check = m_detached_inventories_player[name];
-	if (peer_id == PEER_ID_INEXISTENT) {
-		if (check.empty())
-			return m_clients.sendToAll(&pkt);
-		RemotePlayer *p = m_env->getPlayer(check.c_str());
-		if (p)
-			m_clients.send(p->getPeerId(), 0, &pkt, true);
+	if (inv_it == m_detached_inventories.end()) {
+		pkt << false; // Remove inventory
 	} else {
-		if (check.empty() || getPlayerName(peer_id) == check)
-			Send(&pkt);
+		pkt << true; // Update inventory
+
+		// Serialization & NetworkPacket isn't a love story
+		std::ostringstream os(std::ios_base::binary);
+		inv_it->second->serialize(os);
+		pkt << os.str();
 	}
+
+	if (peer_id == PEER_ID_INEXISTENT)
+		m_clients.sendToAll(&pkt);
+	else
+		Send(&pkt);
 }
 
 void Server::sendDetachedInventories(session_t peer_id)
@@ -2665,9 +2673,10 @@ void Server::DeleteClient(session_t peer_id, ClientDeletionReason reason)
 			playersao->clearParentAttachment();
 
 			// inform connected clients
+			const std::string &player_name = player->getName();
 			NetworkPacket notice(TOCLIENT_UPDATE_PLAYER_LIST, 0, PEER_ID_INEXISTENT);
 			// (u16) 1 + std::string represents a vector serialization representation
-			notice << (u8) PLAYER_LIST_REMOVE  << (u16) 1 << std::string(playersao->getPlayer()->getName());
+			notice << (u8) PLAYER_LIST_REMOVE  << (u16) 1 << player_name;
 			m_clients.sendToAll(&notice);
 			// run scripts
 			m_script->on_leaveplayer(playersao, reason == CDR_TIMEOUT);
@@ -3263,6 +3272,30 @@ Inventory* Server::createDetachedInventory(const std::string &name, const std::s
 	//TODO find a better way to do this
 	sendDetachedInventory(name,PEER_ID_INEXISTENT);
 	return inv;
+}
+
+bool Server::removeDetachedInventory(const std::string &name)
+{
+	const auto &inv_it = m_detached_inventories.find(name);
+	if (inv_it == m_detached_inventories.end())
+		return false;
+
+	delete inv_it->second;
+	m_detached_inventories.erase(inv_it);
+
+	const auto &player_it = m_detached_inventories_player.find(name);
+	if (player_it != m_detached_inventories_player.end()) {
+		RemotePlayer *player = m_env->getPlayer(player_it->second.c_str());
+
+		if (player && player->getPeerId() != PEER_ID_INEXISTENT)
+			sendDetachedInventory(name, player->getPeerId());
+
+		m_detached_inventories_player.erase(player_it);
+	} else {
+		// Notify all players about the change
+		sendDetachedInventory(name, PEER_ID_INEXISTENT);
+	}
+	return true;
 }
 
 // actions: time-reversed list

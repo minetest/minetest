@@ -4141,6 +4141,8 @@ Inventory
       Note that this parameter is mostly just a workaround and will be removed
       in future releases.
     * Creates a detached inventory. If it already exists, it is cleared.
+* `minetest.remove_detached_inventory(name)`
+    * Returns a `boolean` indicating whether the removal succeeded.
 * `minetest.do_item_eat(hp_change, replace_with_item, itemstack, user, pointed_thing)`:
   returns left over ItemStack.
     * See `minetest.item_eat` and `minetest.register_on_item_eat`
