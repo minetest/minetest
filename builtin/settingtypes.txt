@@ -96,16 +96,19 @@ invert_mouse (Invert mouse) bool false
 #    Mouse sensitivity multiplier.
 mouse_sensitivity (Mouse sensitivity) float 0.2
 
-#    If enabled, "special" key instead of "sneak" key is used for climbing down and descending.
+#    If enabled, "special" key instead of "sneak" key is used for climbing down and
+#    descending.
 aux1_descends (Special key for climbing/descending) bool false
 
 #    Double-tapping the jump key toggles fly mode.
 doubletap_jump (Double tap jump for fly) bool false
 
-#    If disabled, "special" key is used to fly fast if both fly and fast mode are enabled.
+#    If disabled, "special" key is used to fly fast if both fly and fast mode are
+#    enabled.
 always_fly_fast (Always fly and fast) bool true
 
-#    The time in seconds it takes between repeated right clicks when holding the right mouse button.
+#    The time in seconds it takes between repeated right clicks when holding the right
+#    mouse button.
 repeat_rightclick_time (Rightclick repetition interval) float 0.25
 
 #    Prevent digging and placing from repeating when holding the mouse buttons.
@@ -466,7 +469,8 @@ undersampling (Undersampling) enum 0 0,2,3,4
 
 [**Shaders]
 
-#    Shaders allow advanced visual effects and may increase performance on some video cards.
+#    Shaders allow advanced visual effects and may increase performance on some video
+#    cards.
 #    This only works with the OpenGL video backend.
 enable_shaders (Shaders) bool true
 
@@ -551,7 +555,8 @@ fps_max (Maximum FPS) int 60
 #    Maximum FPS when game is paused.
 pause_fps_max (FPS in pause menu) int 20
 
-#    Open the pause menu when the window's focus is lost. Does not pause if a formspec is open.
+#    Open the pause menu when the window's focus is lost. Does not pause if a formspec is
+#    open.
 pause_on_lost_focus (Pause on lost window focus) bool false
 
 #    View distance in nodes.
@@ -853,10 +858,12 @@ enable_client_modding (Client modding) bool false
 #    URL to the server list displayed in the Multiplayer Tab.
 serverlist_url (Serverlist URL) string servers.minetest.net
 
-#    File in client/serverlist/ that contains your favorite servers displayed in the Multiplayer Tab.
+#    File in client/serverlist/ that contains your favorite servers displayed in the
+#    Multiplayer Tab.
 serverlist_file (Serverlist file) string favoriteservers.txt
 
-#    Maximum size of the out chat queue. 0 to disable queueing and -1 to make the queue size unlimited
+#    Maximum size of the out chat queue.
+#    0 to disable queueing and -1 to make the queue size unlimited.
 max_out_chat_queue_size (Maximum size of the out chat queue) int 20
 
 [*Advanced]
@@ -1019,7 +1026,8 @@ ask_reconnect_on_crash (Ask to reconnect after crash) bool false
 #    player is looking. (This can avoid mobs suddenly disappearing from view)
 active_object_send_range_blocks (Active object send range) int 3
 
-#    How large area of blocks are subject to the active block stuff, stated in mapblocks (16 nodes).
+#    The radius of the volume of blocks around every player that is subject to the
+#    active block stuff, stated in mapblocks (16 nodes).
 #    In active blocks objects are loaded and ABMs run.
 #    This is also the minimum range in which active objects (mobs) are maintained.
 #    This should be configured together with active_object_range.
@@ -1035,7 +1043,8 @@ max_forceloaded_blocks (Maximum forceloaded blocks) int 16
 time_send_interval (Time send interval) int 5
 
 #    Controls length of day/night cycle.
-#    Examples: 72 = 20min, 360 = 4min, 1 = 24hour, 0 = day/night/whatever stays unchanged.
+#    Examples:
+#    72 = 20min, 360 = 4min, 1 = 24hour, 0 = day/night/whatever stays unchanged.
 time_speed (Time speed) int 72
 
 #    Time of day when a new world is started, in millihours (0-23999).
@@ -1091,7 +1100,8 @@ max_objects_per_block (Maximum objects per block) int 64
 #    See https://www.sqlite.org/pragma.html#pragma_synchronous
 sqlite_synchronous (Synchronous SQLite) enum 2 0,1,2
 
-#    Length of a server tick and the interval at which objects are generally updated over network.
+#    Length of a server tick and the interval at which objects are generally updated over
+#    network.
 dedicated_server_step (Dedicated server step) float 0.09
 
 #    Length of time between active block management cycles
@@ -1118,11 +1128,14 @@ liquid_queue_purge_time (Liquid queue purge time) int 0
 #    Liquid update interval in seconds.
 liquid_update (Liquid update tick) float 1.0
 
-#    At this distance the server will aggressively optimize which blocks are sent to clients.
-#    Small values potentially improve performance a lot, at the expense of visible rendering glitches.
-#    (some blocks will not be rendered under water and in caves, as well as sometimes on land)
-#    Setting this to a value greater than max_block_send_distance disables this optimization.
-#    Stated in mapblocks (16 nodes)
+#    At this distance the server will aggressively optimize which blocks are sent to
+#    clients.
+#    Small values potentially improve performance a lot, at the expense of visible
+#    rendering glitches (some blocks will not be rendered under water and in caves,
+#    as well as sometimes on land).
+#    Setting this to a value greater than max_block_send_distance disables this
+#    optimization.
+#    Stated in mapblocks (16 nodes).
 block_send_optimize_distance (Block send optimize distance) int 4 2
 
 #    If enabled the server will perform map block occlusion culling based on
@@ -1137,7 +1150,8 @@ server_side_occlusion_culling (Server side occlusion culling) bool true
 #    CHAT_MESSAGES: 2 (disable send_chat_message call client-side)
 #    READ_ITEMDEFS: 4 (disable get_item_def call client-side)
 #    READ_NODEDEFS: 8 (disable get_node_def call client-side)
-#    LOOKUP_NODES_LIMIT: 16 (limits get_node call client-side to csm_restriction_noderange)
+#    LOOKUP_NODES_LIMIT: 16 (limits get_node call client-side to
+#    csm_restriction_noderange)
 csm_restriction_flags (Client side modding restrictions) int 30
 
 #   If the CSM restriction for node range is enabled, get_node calls are limited
@@ -1247,7 +1261,8 @@ high_precision_fpu (High-precision FPU) bool true
 
 #    Changes the main menu UI:
 #    -   Full:  Multple singleplayer worlds, game choice, texture pack chooser, etc.
-#    -   Simple: One singleplayer world, no game or texture pack choosers. May be necessary for smaller screens.
+#    -   Simple: One singleplayer world, no game or texture pack choosers. May be
+#                necessary for smaller screens.
 #    -   Auto: Simple on Android, full on everything else.
 main_menu_style (Main menu style) enum auto auto,full,simple
 
@@ -1258,7 +1273,8 @@ main_menu_game_mgr (Main menu game manager) int 0
 
 main_menu_mod_mgr (Main menu mod manager) int 1
 
-#    Print the engine's profiling data in regular intervals (in seconds). 0 = disable. Useful for developers.
+#    Print the engine's profiling data in regular intervals (in seconds).
+#    0 = disable. Useful for developers.
 profiler_print_interval (Engine profiling data print interval) int 0
 
 [Mapgen]
@@ -1860,7 +1876,8 @@ emergequeue_limit_diskonly (Limit of emerge queues on disk) int 64
 #    Set to blank for an appropriate amount to be chosen automatically.
 emergequeue_limit_generate (Limit of emerge queues to generate) int 64
 
-#    Number of emerge threads to use. Make this field blank or 0, or increase this number
-#    to use multiple threads. On multiprocessor systems, this will improve mapgen speed greatly
-#    at the cost of slightly buggy caves.
+#    Number of emerge threads to use.
+#    Make this field blank or 0, or increase this number to use multiple threads.
+#    On multiprocessor systems, this will improve mapgen speed greatly at the cost
+#    of slightly buggy caves.
 num_emerge_threads (Number of emerge threads) int 0
