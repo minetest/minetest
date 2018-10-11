@@ -704,7 +704,7 @@ local function create_change_setting_formspec(dialogdata)
 				text = dialogdata.entered_text
 			end
 		end
-		formspec = formspec .. "field[0.5,4;" .. width .. ",1;te_setting_value;;"
+		formspec = formspec .. "field[0.28,4;" .. width .. ",1;te_setting_value;;"
 				.. core.formspec_escape(text) .. "]"
 	end
 	return formspec
