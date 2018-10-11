@@ -21,6 +21,10 @@ local setmetatable, rawset, rawget = setmetatable, rawset, rawget
 local type, tostring = type, tostring
 local huge, pairs = math.huge, pairs
 
+--
+-- Localized table ref to profiler.data.ins_total
+-- the total statistics over all instruments of the current profile session
+local ins_total
 --------------------------------------------------------------------------------
 
 ---
@@ -28,6 +32,10 @@ local huge, pairs = math.huge, pairs
 local Stats = {
 	get_mean = function(self, key)
 		return self[key] and self[key] / self.samples
+	end,
+
+	get_use = function(self)
+		return self.samples / ins_total.samples
 	end,
 
 	---
@@ -76,12 +84,10 @@ DataSet.__index = function(table, ins)
 	local new = setmetatable({
 		instrument = ins,
 		samples = 0,
+		call_all = 0,
 		time_min = huge,
 		time_max = 0,
 		time_all = 0,
-		part_min = 100,
-		part_max = 0,
-		part_all = 0,
 	}, Stats)
 	rawset(table, ins, new)
 
@@ -130,10 +136,9 @@ function Data.reset()
 			time_min = huge,
 			time_max = 0,
 			time_all = 0,
-			part_min = 100,
-			part_max = 100
 		}, Stats),
 	}, Data)
+	ins_total = profiler.data.ins_total
 
 	return old_data
 end

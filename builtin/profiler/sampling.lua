@@ -60,8 +60,9 @@ end
 -- Update a Stats table
 -- @see data.lua/Stats
 --
-local function update_statistic(stats_table, time)
+local function update_statistic(stats_table, calls, time)
 	stats_table.samples = stats_table.samples + 1
+	stats_table.call_all = stats_table.call_all + calls
 
 	-- Update absolute time (µs) spend by the subject
 	if stats_table.time_max < time then
@@ -71,16 +72,6 @@ local function update_statistic(stats_table, time)
 		stats_table.time_min = time
 	end
 	stats_table.time_all = stats_table.time_all + time
-
-	-- Update relative time (%) of this sample spend by the subject
-	local current_part = (time / sample_logged_time) * 100
-	if stats_table.part_max < current_part then
-		stats_table.part_max = current_part
-	end
-	if stats_table.part_min > current_part then
-		stats_table.part_min = current_part
-	end
-	stats_table.part_all = stats_table.part_all + current_part
 end
 
 ---
@@ -94,24 +85,29 @@ local function sample(dtime)
 		local mod = instrument.mod
 		logged_mods[mod] = true
 
+		local calls = instrument.logged_calls
+		mod.logged_calls = mod.logged_calls + calls
+
 		local time = instrument.logged_time
 		mod.logged_time = mod.logged_time + time
 		-- Accumulate total logged time of this sample for total stats calculations
 		sample_logged_time = sample_logged_time + time
 
 		-- Update time of this sample spend by the instrumented function.
-		update_statistic(ins_stats[instrument], time)
+		update_statistic(ins_stats[instrument], calls, time)
 
 		-- Reset logged data for the next sample.
+		instrument.logged_calls = 0
 		instrument.logged_time = 0
 		logged_instruments[instrument] = nil
 	end
 
 	for mod in pairs(logged_mods) do
 		-- Update time of this sample spend by this mod.
-		update_statistic(ins_stats[mod], mod.logged_time)
+		update_statistic(ins_stats[mod], mod.logged_calls, mod.logged_time)
 
 		-- Reset logged data for the next sample.
+		mod.logged_calls = 0
 		mod.logged_time = 0
 		logged_mods[mod] = nil
 	end

@@ -95,7 +95,7 @@ local TxtFormatter = Formatter:new {
 	update = function(self)
 		-- initial widths of the columns in characters
 		-- the first column will expand as needed up to max_fcol_width
-		self.widths = self.widths or { 30, 9, 9, 9, 5, 5, 5 }
+		self.widths = self.widths or { 30, 5, 5, 9, 9, 9 }
 		local widths = self.widths
 
 		local col1_width = widths[1]
@@ -134,20 +134,23 @@ local TxtFormatter = Formatter:new {
 			label = shorten(modname, fcol_width - 2) .. ":"
 		end
 
+		local call_mean = stats:get_mean("call_all")
 		self:print(self.txt_row_format, label,
-			format_number(stats.time_min),
-			format_number(stats.time_max),
+			format_number(call_mean, call_mean and call_mean < 1000 and "%.1f"),
+			format_number(stats:get_use() * 100, "%.1f"),
 			format_number(stats:get_mean("time_all")),
-			format_number(stats.part_min, "%.1f"),
-			format_number(stats.part_max, "%.1f"),
-			format_number(stats:get_mean("part_all") or 100, "%.1f")
+			format_number(stats.time_min),
+			format_number(stats.time_max)
 		)
 	end,
 
 	format = function(self, filter)
 		self:update()
 		local profile = self.profile
-		self:print("Values below show absolute/relative times spend per server step by the instrumented function.")
+		self:print("Values are per sample. A sample is taken every server step of measurements from instrumentation.")
+		self:print(" calls: Mean calls of the instrumented function per sample during instrument activity.")
+		self:print(" use %: Percentage of samples this instrument was active.")
+		self:print(" avg/min/max µs: Average (mean), minimum and maximum time spent per sample during instrument activity.")
 		self:print("A total of %d samples were taken", profile.ins_total.samples)
 
 		if filter then
@@ -157,7 +160,7 @@ local TxtFormatter = Formatter:new {
 		self:print()
 		self:print(
 			self.txt_row_format,
-			"instrumentation", "min Ms", "max Ms", "avg Ms", "min %", "max %", "avg %"
+			"instrumentation", "calls", "use %", "avg Ms", "min Ms", "max Ms"
 		)
 		self:print(self.HR)
 
@@ -186,33 +189,31 @@ local TxtFormatter = Formatter:new {
 local CsvFormatter = Formatter:new {
 	format_row = function(self, modname, stats, instrument)
 		self:print(
-			"%q,%q,%d,%d,%d,%d,%d,%f,%f,%f",
+			"%q,%q,%d,%d,%f,%f,%f,%d,%d",
 			modname,
 			instrument.mod and tolabel(instrument) or "*",
 			stats.samples,
-			stats.time_min,
-			stats.time_max,
-			stats:get_mean("time_all"),
+			stats.call_all,
+			stats:get_use(),
 			stats.time_all,
-			stats.part_min,
-			stats.part_max,
-			stats:get_mean("part_all")
+			stats:get_mean("time_all"),
+			stats.time_min,
+			stats.time_max
 		)
 	end,
 
 	format = function(self, filter)
 		self:print(
-			"%q,%q,%q,%q,%q,%q,%q,%q,%q,%q",
+			"%q,%q,%q,%q,%q,%q,%q,%q,%q",
 			"modname",
 			"instrumentation",
 			"samples",
-			"time min µs",
-			"time max µs",
-			"time avg µs",
+			"total calls",
+			"relative use",
 			"time all µs",
-			"part min %",
-			"part max %",
-			"part avg %"
+			"time avg µs",
+			"time min µs",
+			"time max µs"
 		)
 		for instrument, stats in pairs(self.profile.ins_stats) do
 			local modname = instrument:get_modname()

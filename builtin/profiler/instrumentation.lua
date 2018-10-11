@@ -89,6 +89,7 @@ local Instrument = {
 	-- set all measured quantities to 0 that were logged for this instrument
 	reset = function(self)
 		self.logged_time = 0
+		self.logged_calls = 0
 		return self
 	end,
 
@@ -117,8 +118,9 @@ local get_time = core.get_us_time
 local logged_instruments = sampler.logged_instruments
 local function measure(ins, time_diff, ...)
 	time_diff = get_time() - time_diff
-	if time_diff > 0 then
+	if time_diff >= 0 then
 		ins.logged_time = ins.logged_time + time_diff
+		ins.logged_calls = ins.logged_calls + 1
 		logged_instruments[ins] = true
 	end
 	return ...
