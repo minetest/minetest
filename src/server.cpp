@@ -980,7 +980,7 @@ void Server::AsyncRunStep(bool initial_step)
 
 void Server::Receive()
 {
-	session_t peer_id;
+	session_t peer_id = 0;
 	try {
 		NetworkPacket pkt;
 		m_con->Receive(&pkt);

@@ -429,7 +429,7 @@ float NoisePerlin3D(NoiseParams *np, float x, float y, float z, s32 seed)
 
 Noise::Noise(NoiseParams *np_, s32 seed, u32 sx, u32 sy, u32 sz)
 {
-	memcpy(&np, np_, sizeof(np));
+	memcpy((void*)&np, np_, sizeof(np));
 	this->seed = seed;
 	this->sx   = sx;
 	this->sy   = sy;

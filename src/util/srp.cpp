@@ -429,7 +429,7 @@ static SRP_Result H_ns(mpz_t result, SRP_HashAlgorithm alg, const unsigned char 
 	unsigned char *bin = (unsigned char *)srp_alloc(nbytes);
 	if (!bin) return SRP_ERR;
 	memcpy(bin, n, len_n);
-	memcpy(bin + len_n, bytes, len_bytes);
+	memcpy(bin + len_n, bytes, SHA512_DIGEST_LENGTH);
 	hash(alg, bin, nbytes, buff);
 	srp_free(bin);
 	mpz_from_bin(buff, hash_length(alg), result);
