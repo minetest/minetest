@@ -43,6 +43,7 @@ public:
 	void on_joinplayer(ServerActiveObject *player);
 	void on_leaveplayer(ServerActiveObject *player, bool timeout);
 	void on_cheat(ServerActiveObject *player, const std::string &cheat_type);
+	void on_moveplayer(ServerActiveObject *player, const v3s16 newpos, const v3s16 oldpos);
 	bool on_punchplayer(ServerActiveObject *player, ServerActiveObject *hitter,
 			float time_from_last_punch, const ToolCapabilities *toolcap,
 			v3f dir, s16 damage);
