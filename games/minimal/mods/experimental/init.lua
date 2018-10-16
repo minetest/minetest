@@ -615,6 +615,34 @@ minetest.register_craftitem("experimental:tester_tool_2", {
 	end,
 })
 
+-- Test the disable_repair=1 group
+minetest.register_tool("experimental:unrepairable_tool", {
+	description = "Unrepairable Tool",
+	wield_image = "default_stone.png",
+	inventory_image = "default_stone.png",
+	tool_capabilities = {
+		groupcaps = {
+			cracky = {
+				times = {3, 2, 1},
+			}
+		}
+	},
+	groups = { disable_repair = 1 }
+})
+
+minetest.register_tool("experimental:repairable_tool", {
+	description = "Repairable Tool",
+	wield_image = "default_dirt.png",
+	inventory_image = "default_dirt.png",
+	tool_capabilities = {
+		groupcaps = {
+			cracky = {
+				times = {3, 2, 1},
+			}
+		}
+	},
+})
+
 minetest.register_craft({
 	output = 'experimental:tester_tool_2',
 	recipe = {

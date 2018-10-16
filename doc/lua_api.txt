@@ -1551,6 +1551,8 @@ Special groups
   connect to each other
 * `slippery`: Players and items will slide on the node.
   Slipperiness rises steadily with `slippery` value, starting at 1.
+* `disable_repair`: If set to 1 for a tool, it cannot be repaired using the
+  `"toolrepair"` crafting recipe
 
 
 Known damage and digging time defining groups
@@ -6155,6 +6157,8 @@ Used by `minetest.register_craft`.
         type = "toolrepair",
         additional_wear = -0.02,
     }
+
+Note: Tools with group `disable_repair=1` will not repairable by this recipe.
 
 ### Cooking
 

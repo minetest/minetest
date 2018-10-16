@@ -579,7 +579,7 @@ static ItemStack craftToolRepair(
 	IItemDefManager *idef = gamedef->idef();
 	if (item1.count != 1 || item2.count != 1 || item1.name != item2.name
 			|| idef->get(item1.name).type != ITEM_TOOL
-			|| idef->get(item2.name).type != ITEM_TOOL) {
+			|| itemgroup_get(idef->get(item1.name).groups, "disable_repair") == 1) {
 		// Failure
 		return ItemStack();
 	}
