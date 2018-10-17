@@ -532,6 +532,7 @@ local checkboxes = {} -- handle checkboxes events
 
 local function create_change_setting_formspec(dialogdata)
 	local setting = settings[selected_setting]
+	local width = 10
 	local height = 5.2
 	if setting.type == "noise_params_2d" or setting.type == "noise_params_3d" then
 		-- Three flags, checkboxes on 2 columns, with a vertical space of 1/2 unit
@@ -539,37 +540,38 @@ local function create_change_setting_formspec(dialogdata)
 	elseif setting.type == "flags" then
 		-- Checkboxes on 2 columns, with a vertical space of 1/2 unit
 		height = 5.2 + math.ceil(#setting.possible / 2) / 2
+	elseif not (setting.type == "bool" or setting.type == "enum" or
+			setting.type == "file" or setting.type == "filepath" or
+			setting.type == "v3f") then
+		-- Integer or float
+		-- Make small to make GUI/HUD scaling, font size settable on Android
+		width = 8
+		height = 4.23
 	end
-	local formspec = "size[10," .. height .. ",true]" ..
-			"button[5," .. height - 0.7 .. ";2,1;btn_done;" .. fgettext("Save") .. "]" ..
-			"button[3," .. height - 0.7 .. ";2,1;btn_cancel;" .. fgettext("Cancel") .. "]" ..
-			"tablecolumns[color;text]" ..
-			"tableoptions[background=#00000000;highlight=#00000000;border=false]" ..
-			"table[0,0;10,3;info;"
 
+	local setting_name = ""
 	if setting.readable_name then
-		formspec = formspec .. "#FFFF00," .. fgettext(setting.readable_name)
-				.. " (" .. core.formspec_escape(setting.name) .. "),"
+		setting_name = fgettext(setting.readable_name) ..
+			" (" .. core.formspec_escape(setting.name) .. ")"
 	else
-		formspec = formspec .. "#FFFF00," .. core.formspec_escape(setting.name) .. ","
+		setting_name = core.formspec_escape(setting.name)
 	end
-
-	formspec = formspec .. ",,"
 
 	local comment_text = ""
-
 	if setting.comment == "" then
 		comment_text = fgettext_ne("(No description of setting given)")
 	else
 		comment_text = fgettext_ne(setting.comment)
 	end
-	for _, comment_line in ipairs(comment_text:split("\n", true)) do
-		formspec = formspec .. "," .. core.formspec_escape(comment_line) .. ","
-	end
 
-	formspec = formspec:sub(1, -2) -- remove trailing comma
-
-	formspec = formspec .. ";1]"
+	local formspec = "size[" .. width .. "," .. height .. ",true]" ..
+		"label[-0.05,-0.16;" .. setting_name .. "]"..
+		"box[-0.04,0.42;" .. width - 0.12 .. ",2.45;#000]" .. 
+		"textarea[0.23,0.38;" .. width + 0.13 .. ",3;;;" .. comment_text .. "]" ..
+		"button[" .. width / 2 + 0.5 .. "," .. height - 0.5 .. ";2,1;btn_done;" ..
+			fgettext("Save") .. "]" ..
+		"button[" .. width / 2 - 2.5 .. "," .. height - 0.5 .. ";2,1;btn_cancel;" ..
+			fgettext("Cancel") .. "]"
 
 	if setting.type == "bool" then
 		local selected_index
@@ -615,7 +617,7 @@ local function create_change_setting_formspec(dialogdata)
 		end
 
 		formspec = formspec
-				.. "label[0,2.5;(" .. dimension .. "D Noise)]"
+				.. "label[0,2.9;(" .. dimension .. "D Noise)]"
 				.. "field[0.5,4;3.3,1;te_offset;Offset;" -- Offset
 				.. core.formspec_escape(t[1] or "") .. "]"
 				.. "field[3.8,4;3.3,1;te_scale;Scale;" -- Scale
@@ -692,20 +694,20 @@ local function create_change_setting_formspec(dialogdata)
 
 	else
 		-- TODO: fancy input for float, int
-		local width = 10
+		local fwidth = width + 0.1
 		local text = get_current_value(setting)
 		if dialogdata.error_message then
 			formspec = formspec .. "tablecolumns[color;text]" ..
 			"tableoptions[background=#00000000;highlight=#00000000;border=false]" ..
 			"table[5,3.9;5,0.6;error_message;#FF0000,"
 					.. core.formspec_escape(dialogdata.error_message) .. ";0]"
-			width = 5
+			fwidth = 5
 			if dialogdata.entered_text then
 				text = dialogdata.entered_text
 			end
 		end
-		formspec = formspec .. "field[0.28,4;" .. width .. ",1;te_setting_value;;"
-				.. core.formspec_escape(text) .. "]"
+		formspec = formspec .. "field[0.23," .. height - 1 .. ";" .. fwidth ..
+			",1;te_setting_value;;" .. core.formspec_escape(text) .. "]"
 	end
 	return formspec
 end
