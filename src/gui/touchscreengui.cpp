@@ -565,7 +565,7 @@ void TouchScreenGUI::init(ISimpleTextureSource *tsrc)
 					m_screensize.Y - (3 * button_size)),
 			L"z", false);
 
-	// init special1 button
+	// init special1/aux button
 	if (!m_joystick_triggers_special1)
 		initButton(special1_id,
 				rect<s32>(m_screensize.X - (1.25 * button_size),
@@ -575,13 +575,13 @@ void TouchScreenGUI::init(ISimpleTextureSource *tsrc)
 				L"spc1", false);
 
 	m_settingsbar.init(m_texturesource, "gear_icon.png", settings_starter_id,
-			v2s32(m_screensize.X - (button_size / 2),
-					m_screensize.Y - ((SETTINGS_BAR_Y_OFFSET + 1) * button_size)
-							+ (button_size * 0.5)),
-			v2s32(m_screensize.X,
-					m_screensize.Y - (SETTINGS_BAR_Y_OFFSET * button_size)
-							+ (button_size * 0.5)), AHBB_Dir_Right_Left,
-			3.0);
+		v2s32(m_screensize.X - (1.25 * button_size),
+			m_screensize.Y - ((SETTINGS_BAR_Y_OFFSET + 1.0) * button_size)
+				+ (0.5 * button_size)),
+		v2s32(m_screensize.X - (0.25 * button_size),
+			m_screensize.Y - (SETTINGS_BAR_Y_OFFSET * button_size)
+				+ (0.5 * button_size)),
+		AHBB_Dir_Right_Left, 3.0);
 
 	m_settingsbar.addButton(fly_id,     L"fly",       "fly_btn.png");
 	m_settingsbar.addButton(noclip_id,  L"noclip",    "noclip_btn.png");
@@ -596,15 +596,14 @@ void TouchScreenGUI::init(ISimpleTextureSource *tsrc)
 			"chat_hide_btn.png", "chat_show_btn.png");
 
 	m_rarecontrolsbar.init(m_texturesource, "rare_controls.png",
-			rare_controls_starter_id,
-			v2s32(0,
-					m_screensize.Y
-							- ((RARE_CONTROLS_BAR_Y_OFFSET + 1) * button_size)
-							+ (button_size * 0.5)),
-			v2s32(button_size / 2,
-					m_screensize.Y - (RARE_CONTROLS_BAR_Y_OFFSET * button_size)
-							+ (button_size * 0.5)), AHBB_Dir_Left_Right,
-			2);
+		rare_controls_starter_id,
+		v2s32(0.25 * button_size,
+			m_screensize.Y - ((RARE_CONTROLS_BAR_Y_OFFSET + 1.0) * button_size)
+				+ (0.5 * button_size)),
+		v2s32(0.75 * button_size,
+			m_screensize.Y - (RARE_CONTROLS_BAR_Y_OFFSET * button_size)
+				+ (0.5 * button_size)),
+		AHBB_Dir_Left_Right, 2.0);
 
 	m_rarecontrolsbar.addButton(chat_id,      L"Chat", "chat_btn.png");
 	m_rarecontrolsbar.addButton(inventory_id, L"inv",  "inventory_btn.png");
