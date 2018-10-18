@@ -855,13 +855,13 @@ local function handle_change_setting_buttons(this, fields)
 end
 
 local function create_settings_formspec(tabview, name, tabdata)
-	local formspec = "size[12,6.5;true]" ..
-			"tablecolumns[color;tree;text,width=32;text]" ..
+	local formspec = "size[12,5.4;true]" ..
+			"tablecolumns[color;tree;text,width=28;text]" ..
 			"tableoptions[background=#00000000;border=false]" ..
 			"field[0.3,0.1;10.2,1;search_string;;" .. core.formspec_escape(search_string) .. "]" ..
 			"field_close_on_enter[search_string;false]" ..
 			"button[10.2,-0.2;2,1;search;" .. fgettext("Search") .. "]" ..
-			"table[0,0.8;12,4.5;list_settings;"
+			"table[0,0.8;12,3.5;list_settings;"
 
 	local current_level = 0
 	for _, entry in ipairs(settings) do
@@ -903,10 +903,10 @@ local function create_settings_formspec(tabview, name, tabdata)
 		formspec = formspec:sub(1, -2) -- remove trailing comma
 	end
 	formspec = formspec .. ";" .. selected_setting .. "]" ..
-			"button[0,6;4,1;btn_back;".. fgettext("< Back to Settings page") .. "]" ..
-			"button[10,6;2,1;btn_edit;" .. fgettext("Edit") .. "]" ..
-			"button[7,6;3,1;btn_restore;" .. fgettext("Restore Default") .. "]" ..
-			"checkbox[0,5.3;cb_tech_settings;" .. fgettext("Show technical names") .. ";"
+			"button[0,4.9;4,1;btn_back;".. fgettext("< Back to Settings page") .. "]" ..
+			"button[10,4.9;2,1;btn_edit;" .. fgettext("Edit") .. "]" ..
+			"button[7,4.9;3,1;btn_restore;" .. fgettext("Restore Default") .. "]" ..
+			"checkbox[0,4.3;cb_tech_settings;" .. fgettext("Show technical names") .. ";"
 					.. dump(core.settings:get_bool("main_menu_technical_settings")) .. "]"
 
 	return formspec
