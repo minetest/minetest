@@ -605,12 +605,12 @@ local function create_change_setting_formspec(dialogdata)
 
 		-- Second row
 		add_field(0.3, "te_spreadx", "X spread", t[3])
-		add_field(3.6, "te_spready", "Y spread", t[4])
 		if dimension == 3 then
-			add_field(6.9, "te_spreadz", "Z spread", t[5])
+			add_field(3.6, "te_spready", "Y spread", t[4])
 		else
-			fields[#fields + 1] = "label[7.5," .. height - 0.2 .. ";2D Noise]"
+			fields[#fields + 1] = "label[4," .. height - 0.2 .. ";2D Noise]"
 		end
+		add_field(6.9, "te_spreadz", "Z spread", t[5])
 		height = height + 1.1
 
 		-- Third row
@@ -628,11 +628,11 @@ local function create_change_setting_formspec(dialogdata)
 		end
 		-- Flags
 		formspec = table.concat(fields)
-				.. "checkbox[0.5," .. height .. ";cb_defaults;defaults;" -- defaults
+				.. "checkbox[0.5," .. height - 0.6 .. ";cb_defaults;defaults;" -- defaults
 				.. tostring(flags["defaults"] == true) .. "]" -- to get false if nil
-				.. "checkbox[5," .. height .. ";cb_eased;eased;" -- eased
+				.. "checkbox[5," .. height - 0.6 .. ";cb_eased;eased;" -- eased
 				.. tostring(flags["eased"] == true) .. "]"
-				.. "checkbox[5," .. height + 0.5 .. ";cb_absvalue;absvalue;" -- absvalue
+				.. "checkbox[5," .. height - 0.15 .. ";cb_absvalue;absvalue;" -- absvalue
 				.. tostring(flags["absvalue"] == true) .. "]"
 		height = height + 1
 
@@ -838,7 +838,7 @@ local function handle_change_setting_buttons(this, fields)
 			checkboxes = {}
 
 			if setting.type == "noise_params_2d" then
-				 fields["te_spreadz"] = fields["te_spready"]
+				 fields["te_spready"] = fields["te_spreadz"]
 			end
 			local new_value = {
 				offset = fields["te_offset"],
