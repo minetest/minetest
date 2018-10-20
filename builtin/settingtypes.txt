@@ -667,7 +667,7 @@ formspec_default_bg_color (Formspec Default Background Color) string (0,0,0)
 #    Selection box border color (R,G,B).
 selectionbox_color (Selection box color) string (0,0,0)
 
-#    Width of the selectionbox's lines around nodes.
+#    Width of the selection box lines around nodes.
 selectionbox_width (Selection box width) int 2 1 5
 
 #    Crosshair color (R,G,B).
@@ -699,7 +699,7 @@ mesh_generation_interval (Mapblock mesh generation delay) int 0 0 50
 #    Size of the MapBlock cache of the mesh generator. Increasing this will
 #    increase the cache hit %, reducing the data being copied from the main
 #    thread, thus reducing jitter.
-meshgen_block_cache_size (Mapblock mesh generator's MapBlock cache size MB) int 20 0 1000
+meshgen_block_cache_size (Mapblock mesh generator's MapBlock cache size in MB) int 20 0 1000
 
 #    Enables minimap.
 enable_minimap (Minimap) bool true
@@ -754,7 +754,7 @@ show_entity_selectionbox (Show entity selection boxes) bool true
 #    Use a cloud animation for the main menu background.
 menu_clouds (Clouds in menu) bool true
 
-#    Scale gui by a user specified value.
+#    Scale GUI by a user specified value.
 #    Use a nearest-neighbor-anti-alias filter to scale the GUI.
 #    This will smooth over some of the rough edges, and blend
 #    pixels when scaling down, at the cost of blurring some
@@ -952,7 +952,7 @@ default_game (Default game) string minetest
 #    Message of the day displayed to players connecting.
 motd (Message of the day) string
 
-#    Maximum number of players that can connect simultaneously.
+#    Maximum number of players that can be connected simultaneously.
 max_users (Maximum users) int 15
 
 #    World directory (everything in the world is stored here).
@@ -1068,13 +1068,13 @@ movement_acceleration_default (Default acceleration) float 3
 movement_acceleration_air (Acceleration in air) float 2
 movement_acceleration_fast (Fast mode acceleration) float 10
 movement_speed_walk (Walking speed) float 4
-movement_speed_crouch (Crouch speed) float 1.35
+movement_speed_crouch (Sneaking speed) float 1.35
 movement_speed_fast (Fast mode speed) float 20
 movement_speed_climb (Climbing speed) float 3
 movement_speed_jump (Jumping speed) float 6.5
 movement_liquid_fluidity (Liquid fluidity) float 1
 movement_liquid_fluidity_smooth (Liquid fluidity smoothing) float 0.5
-movement_liquid_sink (Liquid sink) float 10
+movement_liquid_sink (Liquid sinking speed) float 10
 movement_gravity (Gravity) float 9.81
 
 [**Advanced]
@@ -1281,6 +1281,10 @@ profiler_print_interval (Engine profiling data print interval) int 0
 
 #    Name of map generator to be used when creating a new world.
 #    Creating a world in the main menu will override this.
+#    Current stable mapgens: v6, v7 (except floatlands).
+#    'stable' means the terrain shape in an existing world will not
+#    be changed in the future. Note that biomes are defined by games
+#    and may still change.
 mg_name (Mapgen name) enum v7 v5,v6,v7,flat,valleys,fractal,singlenode
 
 #    Water surface level of the world.
@@ -1361,10 +1365,10 @@ mgv5_np_factor (Factor noise) noise_params_2d 0, 1, (250, 250, 250), 920381, 3, 
 #    Y-level of average terrain surface.
 mgv5_np_height (Height noise) noise_params_2d 0, 10, (250, 250, 250), 84174, 4, 0.5, 2.0, eased
 
-#    First of 2 3D noises that together define tunnels.
+#    First of two 3D noises that together define tunnels.
 mgv5_np_cave1 (Cave1 noise) noise_params_3d 0, 12, (61, 61, 61), 52534, 3, 0.5, 2.0
 
-#    Second of 2 3D noises that together define tunnels.
+#    Second of two 3D noises that together define tunnels.
 mgv5_np_cave2 (Cave2 noise) noise_params_3d 0, 12, (67, 67, 67), 10325, 3, 0.5, 2.0
 
 #    3D noise defining giant caverns.
@@ -1398,16 +1402,16 @@ mgv6_dungeon_ymax (Dungeon maximum Y) int 31000
 
 [**Noises]
 
-#    Y-level of lower terrain and lakebeds.
+#    Y-level of lower terrain and seabed.
 mgv6_np_terrain_base (Terrain base noise) noise_params_2d -4, 20, (250, 250, 250), 82341, 5, 0.6, 2.0, eased
 
-#    Y-level of higher (cliff-top) terrain.
+#    Y-level of higher terrain that creates cliffs.
 mgv6_np_terrain_higher (Terrain higher noise) noise_params_2d 20, 16, (500, 500, 500), 85039, 5, 0.6, 2.0, eased
 
 #    Varies steepness of cliffs.
 mgv6_np_steepness (Steepness noise) noise_params_2d 0.85, 0.5, (125, 125, 125), -932, 5, 0.7, 2.0, eased
 
-#    Defines areas of 'terrain_higher' (cliff-top terrain).
+#    Defines distribution of higher terrain.
 mgv6_np_height_select (Height select noise) noise_params_2d 0.5, 1, (250, 250, 250), 4213, 5, 0.69, 2.0, eased
 
 #    Varies depth of biome surface nodes.
@@ -1484,17 +1488,17 @@ mgv7_dungeon_ymax (Dungeon maximum Y) int 31000
 
 [**Noises]
 
-#    Y-level of higher (cliff-top) terrain.
+#    Y-level of higher terrain that creates cliffs.
 mgv7_np_terrain_base (Terrain base noise) noise_params_2d 4, 70, (600, 600, 600), 82341, 5, 0.6, 2.0, eased
 
-#    Y-level of lower terrain and lakebeds.
-mgv7_np_terrain_alt (Terrain alt noise) noise_params_2d 4, 25, (600, 600, 600), 5934, 5, 0.6, 2.0, eased
+#    Y-level of lower terrain and seabed.
+mgv7_np_terrain_alt (Terrain alternative noise) noise_params_2d 4, 25, (600, 600, 600), 5934, 5, 0.6, 2.0, eased
 
 #    Varies roughness of terrain.
 #    Defines the 'persistence' value for terrain_base and terrain_alt noises.
 mgv7_np_terrain_persist (Terrain persistence noise) noise_params_2d 0.6, 0.1, (2000, 2000, 2000), 539, 3, 0.6, 2.0, eased
 
-#    Defines areas of higher (cliff-top) terrain and affects steepness of cliffs.
+#    Defines distribution of higher terrain and steepness of cliffs.
 mgv7_np_height_select (Height select noise) noise_params_2d -8, 16, (500, 500, 500), 4213, 6, 0.7, 2.0, eased
 
 #    Variation of biome filler depth.
@@ -1523,10 +1527,10 @@ mgv7_np_ridge (Ridge noise) noise_params_3d 0, 1, (100, 100, 100), 6467, 4, 0.75
 #    3D noise defining giant caverns.
 mgv7_np_cavern (Cavern noise) noise_params_3d 0, 1, (384, 128, 384), 723, 5, 0.63, 2.0
 
-#    First of 2 3D noises that together define tunnels.
+#    First of two 3D noises that together define tunnels.
 mgv7_np_cave1 (Cave1 noise) noise_params_3d 0, 12, (61, 61, 61), 52534, 3, 0.5, 2.0
 
-#    Second of 2 3D noises that together define tunnels.
+#    Second of two 3D noises that together define tunnels.
 mgv7_np_cave2 (Cave2 noise) noise_params_3d 0, 12, (67, 67, 67), 10325, 3, 0.5, 2.0
 
 [*Mapgen Carpathian]
@@ -1601,10 +1605,10 @@ mgcarpathian_np_step_mnt (Step mountain size noise) noise_params_2d 0, 8, (509, 
 #    3D noise for mountain overhangs, cliffs, etc. Usually small variations.
 mgcarpathian_np_mnt_var (Mountain variation noise) noise_params_3d 0, 1, (499, 499, 499), 2490, 5, 0.55, 2.0
 
-#    First of 2 3D noises that together define tunnels.
+#    First of two 3D noises that together define tunnels.
 mgcarpathian_np_cave1 (Cave1 noise) noise_params_3d 0, 12, (61, 61, 61), 52534, 3, 0.5, 2.0
 
-#    Second of 2 3D noises that together define tunnels.
+#    Second of two 3D noises that together define tunnels.
 mgcarpathian_np_cave2 (Cave2 noise) noise_params_3d 0, 12, (67, 67, 67), 10325, 3, 0.5, 2.0
 
 #    3D noise defining giant caverns.
@@ -1660,10 +1664,10 @@ mgflat_np_terrain (Terrain noise) noise_params_2d 0, 1, (600, 600, 600), 7244, 5
 #    Variation of biome filler depth.
 mgflat_np_filler_depth (Filler depth noise) noise_params_2d 0, 1.2, (150, 150, 150), 261, 3, 0.7, 2.0, eased
 
-#    First of 2 3D noises that together define tunnels.
+#    First of two 3D noises that together define tunnels.
 mgflat_np_cave1 (Cave1 noise) noise_params_3d 0, 12, (61, 61, 61), 52534, 3, 0.5, 2.0
 
-#    Second of 2 3D noises that together define tunnels.
+#    Second of two 3D noises that together define tunnels.
 mgflat_np_cave2 (Cave2 noise) noise_params_3d 0, 12, (67, 67, 67), 10325, 3, 0.5, 2.0
 
 [*Mapgen Fractal]
@@ -1769,10 +1773,10 @@ mgfractal_np_seabed (Seabed noise) noise_params_2d -14, 9, (600, 600, 600), 4190
 #    Variation of biome filler depth.
 mgfractal_np_filler_depth (Filler depth noise) noise_params_2d 0, 1.2, (150, 150, 150), 261, 3, 0.7, 2.0, eased
 
-#    First of 2 3D noises that together define tunnels.
+#    First of two 3D noises that together define tunnels.
 mgfractal_np_cave1 (Cave1 noise) noise_params_3d 0, 12, (61, 61, 61), 52534, 3, 0.5, 2.0
 
-#    Second of 2 3D noises that together define tunnels.
+#    Second of two 3D noises that together define tunnels.
 mgfractal_np_cave2 (Cave2 noise) noise_params_3d 0, 12, (67, 67, 67), 10325, 3, 0.5, 2.0
 
 [*Mapgen Valleys]
@@ -1822,10 +1826,10 @@ mgvalleys_dungeon_ymax (Dungeon maximum Y) int 63
 
 [**Noises]
 
-#    Caves and tunnels form at the intersection of the two noises.
+#    First of two 3D noises that together define tunnels.
 mgvalleys_np_cave1 (Cave noise #1) noise_params_3d 0, 12, (61, 61, 61), 52534, 3, 0.5, 2.0
 
-#    Caves and tunnels form at the intersection of the two noises.
+#    Second of two 3D noises that together define tunnels.
 mgvalleys_np_cave2 (Cave noise #2) noise_params_3d 0, 12, (67, 67, 67), 10325, 3, 0.5, 2.0
 
 #    The depth of dirt or other biome filler node.
@@ -1834,7 +1838,7 @@ mgvalleys_np_filler_depth (Filler depth) noise_params_2d 0, 1.2, (256, 256, 256)
 #    3D noise defining giant caverns.
 mgvalleys_np_cavern (Cavern noise) noise_params_3d 0, 1, (768, 256, 768), 59033, 6, 0.63, 2.0
 
-#    River noise. Rivers occur close to noise value zero.
+#    Defines large-scale river channel structure.
 mgvalleys_np_rivers (River noise) noise_params_2d 0, 1, (256, 256, 256), -6050, 5, 0.6, 2.0, eased
 
 #    Base terrain height.
