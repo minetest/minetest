@@ -294,11 +294,14 @@ int ModApiCraft::l_clear_craft(lua_State *L)
 	std::string type = getstringfield_default(L, table, "type", "shaped");
 	CraftOutput c_output(output, 0);
 	if (!output.empty()) {
-		if (craftdef->clearCraftRecipesByOutput(c_output, getServer(L)))
-			return 0;
+		if (craftdef->clearCraftRecipesByOutput(c_output, getServer(L))) {
+			lua_pushboolean(L, true);
+			return 1;
+		}
 
-		throw LuaError("No craft recipe known for output"
-				" (output=\"" + output + "\")");
+		warningstream << "No craft recipe known for output" << std::endl;
+		lua_pushboolean(L, false);
+		return 1;
 	}
 	std::vector<std::string> recipe;
 	int width = 0;
@@ -347,10 +350,15 @@ int ModApiCraft::l_clear_craft(lua_State *L)
 	} else {
 		throw LuaError("Unknown crafting definition type: \"" + type + "\"");
 	}
-	if (!craftdef->clearCraftRecipesByInput(method, width, recipe, getServer(L)))
-		throw LuaError("No crafting specified for input");
-	lua_pop(L, 1);
-	return 0;
+
+	if (!craftdef->clearCraftRecipesByInput(method, width, recipe, getServer(L))) {
+		warningstream << "No craft recipe matches input" << std::endl;
+		lua_pushboolean(L, false);
+		return 1;
+	}
+
+	lua_pushboolean(L, true);
+	return 1;
 }
 
 // get_craft_result(input)

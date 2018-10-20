@@ -3555,7 +3555,7 @@ Call these functions only at load time!
       ignored. For input use the same recipe table syntax as for
       `minetest.register_craft(recipe)`. For output specify only the item,
       without a quantity.
-    * If no erase candidate could be found, Lua exception will be thrown.
+    * Returns false if no erase candidate could be found, otherwise returns true.
     * **Warning**! The type field ("shaped", "cooking" or any other) will be
       ignored if the recipe contains output. Erasing is then done independently
       from the crafting method.
