@@ -1426,17 +1426,17 @@ PlayerSAO::PhysicsModifier PlayerSAO::calculatePhysicsModifier()
 
 const PlayerSAO::PhysicsModifier &PlayerSAO::getTotalPhysicsModifier()
 {
-	if (physics_modifier_dirty) {
-		physics_modifier = calculatePhysicsModifier();
-		physics_modifier_dirty = false;
+	if (m_physics_modifier_dirty) {
+		m_physics_modifier = calculatePhysicsModifier();
+		m_physics_modifier_dirty = false;
 	}
 
-	return physics_modifier;
+	return m_physics_modifier;
 }
 
 void PlayerSAO::dirtyPhysicsModifier()
 {
-	physics_modifier_dirty = true;
+	m_physics_modifier_dirty = true;
 	m_physics_override_sent = false;
 }
 

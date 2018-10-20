@@ -435,7 +435,7 @@ int ObjectRef::l_set_physics_override(lua_State *L)
 	}
 
 		if (!co->getPhysicsModifiers().empty()) {
-		warningstream << "Use of set_physics_override will remove active ";
+		warningstream << "Use of set_physics_override will disable active ";
 		warningstream << "physics modifiers" << std::endl;
 		warningstream << script_get_backtrace(L);
 	}

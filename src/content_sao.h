@@ -441,8 +441,8 @@ private:
 	s16 m_wanted_range = 0.0f;
 
 	std::unordered_map<std::string, PhysicsModifier> m_physics_modifiers;
-	PhysicsModifier physics_modifier; // Cache for calculatePhysicsModifier
-	bool physics_modifier_dirty = true;
+	PhysicsModifier m_physics_modifier; // Cache for calculatePhysicsModifier
+	bool m_physics_modifier_dirty = true;
 
 	Metadata m_meta;
 public:
