@@ -559,7 +559,6 @@ local function create_change_setting_formspec(dialogdata)
 			formspec = formspec ..  core.formspec_escape(value) .. ","
 			if get_current_value(setting) == value then
 				selected_index = index
-				break
 			end
 		end
 		if #setting.values > 0 then
@@ -751,9 +750,9 @@ local function create_change_setting_formspec(dialogdata)
 		"size[" .. width .. "," .. height + 0.25 .. ",true]" ..
 		create_textfield(description_box, setting_name, comment_text) ..
 		formspec ..
-		"button[" .. width / 2 - 2.5 .. "," .. height - 0.25 .. ";2.5,0.75;btn_done;" ..
+		"button[" .. width / 2 - 2.5 .. "," .. height - 0.4 .. ";2.5,1;btn_done;" ..
 			fgettext("Save") .. "]" ..
-		"button[" .. width / 2 .. "," .. height - 0.25 .. ";2.5,0.75;btn_cancel;" ..
+		"button[" .. width / 2 .. "," .. height - 0.4 .. ";2.5,1;btn_cancel;" ..
 			fgettext("Cancel") .. "]"
 	)
 end
