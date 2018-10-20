@@ -532,59 +532,27 @@ local checkboxes = {} -- handle checkboxes events
 
 local function create_change_setting_formspec(dialogdata)
 	local setting = settings[selected_setting]
-	local height = 5.2
-	if setting.type == "noise_params_2d" or setting.type == "noise_params_3d" then
-		-- Three flags, checkboxes on 2 columns, with a vertical space of 1/2 unit
-		height = 8.7
-	elseif setting.type == "flags" then
-		-- Checkboxes on 2 columns, with a vertical space of 1/2 unit
-		height = 5.2 + math.ceil(#setting.possible / 2) / 2
-	end
-	local formspec = "size[10," .. height .. ",true]" ..
-			"button[5," .. height - 0.7 .. ";2,1;btn_done;" .. fgettext("Save") .. "]" ..
-			"button[3," .. height - 0.7 .. ";2,1;btn_cancel;" .. fgettext("Cancel") .. "]" ..
-			"tablecolumns[color;text]" ..
-			"tableoptions[background=#00000000;highlight=#00000000;border=false]" ..
-			"table[0,0;10,3;info;"
+	-- Final formspec will be created at the end of this function
+	-- Default values below, may be changed depending on setting type
+	local width = 10
+	local height = 3.5
+	local description_height = 3
+	local formspec = ""
 
-	if setting.readable_name then
-		formspec = formspec .. "#FFFF00," .. fgettext(setting.readable_name)
-				.. " (" .. core.formspec_escape(setting.name) .. "),"
-	else
-		formspec = formspec .. "#FFFF00," .. core.formspec_escape(setting.name) .. ","
-	end
-
-	formspec = formspec .. ",,"
-
-	local comment_text = ""
-
-	if setting.comment == "" then
-		comment_text = fgettext_ne("(No description of setting given)")
-	else
-		comment_text = fgettext_ne(setting.comment)
-	end
-	for _, comment_line in ipairs(comment_text:split("\n", true)) do
-		formspec = formspec .. "," .. core.formspec_escape(comment_line) .. ","
-	end
-
-	formspec = formspec:sub(1, -2) -- remove trailing comma
-
-	formspec = formspec .. ";1]"
-
+	-- Setting-specific formspec elements
 	if setting.type == "bool" then
-		local selected_index
+		local selected_index = 1
 		if core.is_yes(get_current_value(setting)) then
 			selected_index = 2
-		else
-			selected_index = 1
 		end
-		formspec = formspec .. "dropdown[0.5,3.5;3,1;dd_setting_value;"
+		formspec = "dropdown[3," .. height .. ";4,1;dd_setting_value;"
 				.. fgettext("Disabled") .. "," .. fgettext("Enabled") .. ";"
 				.. selected_index .. "]"
+		height = height + 1.25
 
 	elseif setting.type == "enum" then
 		local selected_index = 0
-		formspec = formspec .. "dropdown[0.5,3.5;3,1;dd_setting_value;"
+		formspec = "dropdown[3," .. height .. ";4,1;dd_setting_value;"
 		for index, value in ipairs(setting.values) do
 			-- translating value is not possible, since it's the value
 			--  that we set the setting to
@@ -597,15 +565,18 @@ local function create_change_setting_formspec(dialogdata)
 			formspec = formspec:sub(1, -2) -- remove trailing comma
 		end
 		formspec = formspec .. ";" .. selected_index .. "]"
+		height = height + 1.25
 
 	elseif setting.type == "path" or setting.type == "filepath" then
 		local current_value = dialogdata.selected_path
 		if not current_value then
 			current_value = get_current_value(setting)
 		end
-		formspec = formspec .. "field[0.5,4;7.5,1;te_setting_value;;"
+		formspec = "field[0.28," .. height + 0.15 .. ";8,1;te_setting_value;;"
 				.. core.formspec_escape(current_value) .. "]"
-				.. "button[8,3.75;2,1;btn_browser_" .. setting.type .. ";" .. fgettext("Browse") .. "]"
+				.. "button[8," .. height - 0.15 .. ";2,1;btn_browser_"
+				.. setting.type .. ";" .. fgettext("Browse") .. "]"
+		height = height + 1.15
 
 	elseif setting.type == "noise_params_2d" or setting.type == "noise_params_3d" then
 		local t = get_current_np_group(setting)
@@ -614,27 +585,39 @@ local function create_change_setting_formspec(dialogdata)
 			dimension = 2
 		end
 
-		formspec = formspec
-				.. "label[0,2.5;(" .. dimension .. "D Noise)]"
-				.. "field[0.5,4;3.3,1;te_offset;Offset;" -- Offset
-				.. core.formspec_escape(t[1] or "") .. "]"
-				.. "field[3.8,4;3.3,1;te_scale;Scale;" -- Scale
-				.. core.formspec_escape(t[2] or "") .. "]"
-				.. "field[7.1,4;3.3,1;te_seed;Seed;" -- Seed
-				.. core.formspec_escape(t[6] or "") .. "]"
-				.. "label[0.5,4.7;Spread]" -- Spread
-				.. "field[2.0,5;2.8,1;te_spreadx;X;"
-				.. core.formspec_escape(t[3] or "") .. "]"
-				.. "field[4.8,5;2.8,1;te_spready;Y;"
-				.. core.formspec_escape(t[4] or "") .. "]"
-				.. "field[7.6,5;2.8,1;te_spreadz;Z;"
-				.. core.formspec_escape(t[5] or "") .. "]"
-				.. "field[0.5,6;3.3,1;te_octaves;Octaves;" -- Octaves
-				.. core.formspec_escape(t[7] or "") .. "]"
-				.. "field[3.8,6;3.3,1;te_persist;Persistance;" -- Persistance
-				.. core.formspec_escape(t[8] or "") .. "]"
-				.. "field[7.1,6;3.3,1;te_lacun;Lacunarity;" -- Lacunarity
-				.. core.formspec_escape(t[9] or "") .. "]"
+		-- More space for 3x3 fields
+		description_height = description_height - 1.5
+		height = height - 1.5
+
+		local fields = {}
+		local function add_field(x, name, label, value)
+			fields[#fields + 1] = ("field[%f,%f;3.3,1;%s;%s;%s]"):format(
+				x, height, name, label, core.formspec_escape(value or "")
+			)
+		end
+		-- First row
+		height = height + 0.3
+		add_field(0.3, "te_offset", "Offset", t[1])
+		add_field(3.6, "te_scale",  "Scale",  t[2])
+		add_field(6.9, "te_seed",   "Seed",   t[6])
+		height = height + 1.1
+
+		-- Second row
+		add_field(0.3, "te_spreadx", "X spread", t[3])
+		if dimension == 3 then
+			add_field(3.6, "te_spready", "Y spread", t[4])
+		else
+			fields[#fields + 1] = "label[4," .. height - 0.2 .. ";2D Noise]"
+		end
+		add_field(6.9, "te_spreadz", "Z spread", t[5])
+		height = height + 1.1
+
+		-- Third row
+		add_field(0.3, "te_octaves", "Octaves",     t[7])
+		add_field(3.6, "te_persist", "Persistance", t[8])
+		add_field(6.9, "te_lacun",   "Lacunarity",  t[9])
+		height = height + 1.1
+
 
 		local enabled_flags = flags_to_table(t[10])
 		local flags = {}
@@ -643,13 +626,14 @@ local function create_change_setting_formspec(dialogdata)
 			flags[name] = true
 		end
 		-- Flags
-		formspec = formspec
-				.. "checkbox[0.5,6.5;cb_defaults;defaults;" -- defaults
+		formspec = table.concat(fields)
+				.. "checkbox[0.5," .. height - 0.6 .. ";cb_defaults;defaults;" -- defaults
 				.. tostring(flags["defaults"] == true) .. "]" -- to get false if nil
-				.. "checkbox[5,6.5;cb_eased;eased;" -- eased
+				.. "checkbox[5," .. height - 0.6 .. ";cb_eased;eased;" -- eased
 				.. tostring(flags["eased"] == true) .. "]"
-				.. "checkbox[5,7.0;cb_absvalue;absvalue;" -- absvalue
+				.. "checkbox[5," .. height - 0.15 .. ";cb_absvalue;absvalue;" -- absvalue
 				.. tostring(flags["absvalue"] == true) .. "]"
+		height = height + 1
 
 	elseif setting.type == "v3f" then
 		local val = get_current_value(setting)
@@ -658,13 +642,15 @@ local function create_change_setting_formspec(dialogdata)
 			table.insert(v3f, line)
 		end
 
+		height = height + 0.3
 		formspec = formspec
-				.. "field[0.5,4;3.3,1;te_x;X;" -- X
+				.. "field[0.3," .. height .. ";3.3,1;te_x;X;" -- X
 				.. core.formspec_escape(v3f[1] or "") .. "]"
-				.. "field[3.8,4;3.3,1;te_y;Y;" -- Y
+				.. "field[3.6," .. height .. ";3.3,1;te_y;Y;" -- Y
 				.. core.formspec_escape(v3f[2] or "") .. "]"
-				.. "field[7.1,4;3.3,1;te_z;Z;" -- Z
+				.. "field[6.9," .. height .. ";3.3,1;te_z;Z;" -- Z
 				.. core.formspec_escape(v3f[3] or "") .. "]"
+		height = height + 1.1
 
 	elseif setting.type == "flags" then
 		local enabled_flags = flags_to_table(get_current_value(setting))
@@ -674,40 +660,101 @@ local function create_change_setting_formspec(dialogdata)
 			flags[name] = true
 		end
 		local flags_count = #setting.possible
+		local max_height = flags_count / 4
+
+		-- More space for flags
+		description_height = description_height - 1
+		height = height - 1
+
+		local fields = {} -- To build formspec
 		for i, name in ipairs(setting.possible) do
 			local x = 0.5
-			local y = 3.5 + i / 2
+			local y = height + i / 2 - 0.75
 			if i - 1 >= flags_count / 2 then -- 2nd column
 				x = 5
-				y = y - flags_count / 4
+				y = y - max_height
 			end
 			local checkbox_name = "cb_" .. name
 			local is_enabled = flags[name] == true -- to get false if nil
 			checkboxes[checkbox_name] = is_enabled
-			formspec = formspec .. "checkbox["
-					.. x .. "," .. y
-					.. ";" .. checkbox_name .. ";"
-					.. name .. ";" .. tostring(is_enabled) .. "]"
+
+			fields[#fields + 1] = ("checkbox[%f,%f;%s;%s;%s]"):format(
+				x, y, checkbox_name, name, tostring(is_enabled)
+			)
 		end
+		formspec = table.concat(fields)
+		height = height + max_height + 0.25
 
 	else
 		-- TODO: fancy input for float, int
-		local width = 10
 		local text = get_current_value(setting)
-		if dialogdata.error_message then
-			formspec = formspec .. "tablecolumns[color;text]" ..
-			"tableoptions[background=#00000000;highlight=#00000000;border=false]" ..
-			"table[5,3.9;5,0.6;error_message;#FF0000,"
-					.. core.formspec_escape(dialogdata.error_message) .. ";0]"
-			width = 5
-			if dialogdata.entered_text then
-				text = dialogdata.entered_text
-			end
+		if dialogdata.error_message and dialogdata.entered_text then
+			text = dialogdata.entered_text
 		end
-		formspec = formspec .. "field[0.28,4;" .. width .. ",1;te_setting_value;;"
+		formspec = "field[0.28," .. height + 0.15 .. ";" .. width .. ",1;te_setting_value;;"
 				.. core.formspec_escape(text) .. "]"
+		height = height + 1.15
 	end
-	return formspec
+
+	-- Box good, textarea bad. Calculate textarea size from box.
+	local function create_textfield(size, label, text, bg_color)
+		local textarea = {
+			x = size.x + 0.3,
+			y = size.y,
+			w = size.w + 0.25,
+			h = size.h * 1.16 + 0.12
+		}
+		return ("box[%f,%f;%f,%f;%s]textarea[%f,%f;%f,%f;;%s;%s]"):format(
+			size.x, size.y, size.w, size.h, bg_color or "#000",
+			textarea.x, textarea.y, textarea.w, textarea.h,
+			core.formspec_escape(label), core.formspec_escape(text)
+		)
+
+	end
+
+	-- When there's an error: Shrink description textarea and add error below
+	if dialogdata.error_message then
+		local error_box = {
+			x = 0,
+			y = description_height - 0.4,
+			w = width - 0.25,
+			h = 0.5
+		}
+		formspec = formspec ..
+			create_textfield(error_box, "", dialogdata.error_message, "#600")
+		description_height = description_height - 0.75
+	end
+
+	-- Get description field
+	local description_box = {
+		x = 0,
+		y = 0.2,
+		w = width - 0.25,
+		h = description_height
+	}
+
+	local setting_name = setting.name
+	if setting.readable_name then
+		setting_name = fgettext_ne(setting.readable_name) ..
+			" (" .. setting.name .. ")"
+	end
+
+	local comment_text = ""
+	if setting.comment == "" then
+		comment_text = fgettext_ne("(No description of setting given)")
+	else
+		comment_text = fgettext_ne(setting.comment)
+	end
+
+	return (
+		"size[" .. width .. "," .. height + 0.25 .. ",true]" ..
+		create_textfield(description_box, setting_name, comment_text) ..
+		formspec ..
+		"button[" .. width / 2 - 2.5 .. "," .. height - 0.4 .. ";2.5,1;btn_done;" ..
+			fgettext("Save") .. "]" ..
+		"button[" .. width / 2 .. "," .. height - 0.4 .. ";2.5,1;btn_cancel;" ..
+			fgettext("Cancel") .. "]"
+	)
 end
 
 local function handle_change_setting_buttons(this, fields)
@@ -789,6 +836,9 @@ local function handle_change_setting_buttons(this, fields)
 
 			checkboxes = {}
 
+			if setting.type == "noise_params_2d" then
+				 fields["te_spready"] = fields["te_spreadz"]
+			end
 			local new_value = {
 				offset = fields["te_offset"],
 				scale = fields["te_scale"],
