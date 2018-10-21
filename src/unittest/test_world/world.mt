@@ -1,1 +1,0 @@
-gameid = minimal

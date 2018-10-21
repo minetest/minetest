@@ -1,7 +1,0 @@
-#!/bin/sh
-cd ..
-git clone https://github.com/open-source-parsers/jsoncpp -b 1.8.3 --depth 1
-cd jsoncpp
-python amalgamate.py
-cp -R dist/json ../json
-cp dist/jsoncpp.cpp ..
