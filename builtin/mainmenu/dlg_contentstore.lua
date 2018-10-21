@@ -379,12 +379,13 @@ function store.get_formspec()
 
 		-- title
 		formspec[#formspec + 1] = "label[1,-0.1;"
-		formspec[#formspec + 1] = core.formspec_escape(package.title ..
-				" by " .. package.author)
+		formspec[#formspec + 1] = core.formspec_escape(
+				minetest.colorize(mt_color_green, package.title) ..
+				minetest.colorize(mt_color_grey, " by " .. package.author))
 		formspec[#formspec + 1] = "]"
 
 		-- description
-		formspec[#formspec + 1] = "textarea[1.25,0.3;5,1;;;"
+		formspec[#formspec + 1] = "textarea[1.5,0.3;4.75,1;;;"
 		formspec[#formspec + 1] = core.formspec_escape(package.short_description)
 		formspec[#formspec + 1] = "]"
 
