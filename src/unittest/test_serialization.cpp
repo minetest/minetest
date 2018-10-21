@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "util/string.h"
 #include "util/serialize.h"
+#include <cmath>
 
 class TestSerialization : public TestBase {
 public:
@@ -641,15 +642,15 @@ void TestSerialization::testFloatFormat()
 
 	// Check precision of float calculations on this platform
 	const std::unordered_map<f32, u32> float_results = {
-		{  0.0f, 0x00000000UL},
-		{  1.0f, 0x3F800000UL},
-		{ -1.0f, 0xBF800000UL},
-		{  0.1f, 0x3DCCCCCDUL},
-		{ -0.1f, 0xBDCCCCCDUL},
-		{ 1945329.25f, 0x49ED778AUL},
-		{ -23298764.f, 0xCBB1C166UL},
-		{  0.5f, 0x3F000000UL},
-		{ -0.5f, 0xBF000000UL}
+		{  0.0f, 0x00000000UL },
+		{  1.0f, 0x3F800000UL },
+		{ -1.0f, 0xBF800000UL },
+		{  0.1f, 0x3DCCCCCDUL },
+		{ -0.1f, 0xBDCCCCCDUL },
+		{ 1945329.25f, 0x49ED778AUL },
+		{ -23298764.f, 0xCBB1C166UL },
+		{  0.5f, 0x3F000000UL },
+		{ -0.5f, 0xBF000000UL }
 	};
 	for (const auto &v : float_results) {
 		i = f32Tou32Slow(v.first);
@@ -660,7 +661,7 @@ void TestSerialization::testFloatFormat()
 		}
 
 		fs = u32Tof32Slow(v.second);
-		if (std::abs(v.first - fs) > std::abs(v.first * 0.000005f)) {
+		if (std::fabs(v.first - fs) > std::fabs(v.first * 0.000005f)) {
 			printf("Inaccurate float values on 0x%X, expected %.9g, actual 0x%.9g\n",
 				v.second, v.first, fs);
 			UASSERT(false);
