@@ -892,6 +892,12 @@ void LocalPlayer::old_move(f32 dtime, Environment *env, f32 pos_max_d,
 		pos_max_d, m_collisionbox, player_stepheight, dtime,
 		&position, &m_speed, accel_f);
 
+	// Positition was slightly changed; update standing node pos
+	if (touching_ground)
+		m_standing_node = floatToInt(m_position - v3f(0, 0.1f * BS, 0), BS);
+	else
+		m_standing_node = floatToInt(m_position, BS);
+
 	/*
 		If the player's feet touch the topside of any node, this is
 		set to true.
@@ -1032,20 +1038,15 @@ void LocalPlayer::old_move(f32 dtime, Environment *env, f32 pos_max_d,
 	/*
 		Check properties of the node on which the player is standing
 	*/
-	const ContentFeatures &f_under = nodemgr->get(map->getNodeNoEx(
+	const ContentFeatures &f = nodemgr->get(map->getNodeNoEx(
 		getStandingNodePos()));
-	const ContentFeatures &f_above = nodemgr->get(map->getNodeNoEx(
-		floatToInt(m_position + v3f(0, 0.2f * BS, 0), BS)));
 
 	// Determine if jumping is possible
-	m_disable_jump = itemgroup_get(f_under.groups, "disable_jump");
+	m_disable_jump = itemgroup_get(f.groups, "disable_jump");
 	m_can_jump = touching_ground && !m_disable_jump;
 
-	// Disallow swimming upwards
-	m_disable_jump |= itemgroup_get(f_above.groups, "disable_jump");
-
 	// Jump key pressed while jumping off from a bouncy block
-	if (m_can_jump && control.jump && itemgroup_get(f_under.groups, "bouncy") &&
+	if (m_can_jump && control.jump && itemgroup_get(f.groups, "bouncy") &&
 			m_speed.Y >= -0.5 * BS) {
 		float jumpspeed = movement_speed_jump * physics_override_jump;
 		if (m_speed.Y > 1) {
