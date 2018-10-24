@@ -97,6 +97,7 @@ intlGUIEditBox::intlGUIEditBox(const wchar_t* text, bool border,
 
 		if (m_scrollbar_width > 0) {
 			createVScrollBar();
+			RelativeRect.LowerRightCorner.X -= m_scrollbar_width + 4;
 		}
 	}
 

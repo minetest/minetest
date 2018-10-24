@@ -57,6 +57,7 @@ GUIEditBoxWithScrollBar::GUIEditBoxWithScrollBar(const wchar_t* text, bool borde
 
 	if (has_vscrollbar) {
 		createVScrollBar();
+		RelativeRect.LowerRightCorner.X -= m_scrollbar_width + 4;
 	}
 
 	calculateFrameRect();
