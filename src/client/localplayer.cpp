@@ -309,7 +309,7 @@ void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d,
 			collision_info->push_back(colinfo);
 
 			if (colinfo.type != COLLISION_NODE ||
-					colinfo.new_speed.Y != 0 ||
+					colinfo.axis != COLLISION_AXIS_Y ||
 					(could_sneak && m_sneak_node_exists))
 				continue;
 
@@ -435,20 +435,15 @@ void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d,
 	/*
 		Check properties of the node on which the player is standing
 	*/
-	const ContentFeatures &f_under = nodemgr->get(map->getNodeNoEx(m_standing_node));
-	const ContentFeatures &f_above = nodemgr->get(map->getNodeNoEx(
-		floatToInt(m_position + v3f(0, 0.2f * BS, 0), BS)));
+	const ContentFeatures &f = nodemgr->get(map->getNodeNoEx(m_standing_node));
 
 	// Determine if jumping is possible
-	m_disable_jump = itemgroup_get(f_under.groups, "disable_jump");
+	m_disable_jump = itemgroup_get(f.groups, "disable_jump");
 	m_can_jump = ((touching_ground && !is_climbing)
 			|| sneak_can_jump) && !m_disable_jump;
 
-	// Disallow swimming upwards
-	m_disable_jump |= itemgroup_get(f_above.groups, "disable_jump");
-
 	// Jump key pressed while jumping off from a bouncy block
-	if (m_can_jump && control.jump && itemgroup_get(f_under.groups, "bouncy") &&
+	if (m_can_jump && control.jump && itemgroup_get(f.groups, "bouncy") &&
 		m_speed.Y >= -0.5 * BS) {
 		float jumpspeed = movement_speed_jump * physics_override_jump;
 		if (m_speed.Y > 1) {
