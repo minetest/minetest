@@ -164,7 +164,10 @@ if(RUN_IN_PLACE)
 	install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/textures/texture_packs_here.txt" DESTINATION "${SHAREDIR}/textures")
 endif()
 
-install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/games" DESTINATION "${SHAREDIR}" PATTERN ".git*" EXCLUDE)
+install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/games/minetest_game" DESTINATION "${SHAREDIR}/games/" 
+	COMPONENT "SUBGAME_MINETEST_GAME" OPTIONAL PATTERN ".git*" EXCLUDE )
+install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/games/minimal" DESTINATION "${SHAREDIR}/games/" 
+	COMPONENT "SUBGAME_MINIMAL" OPTIONAL PATTERN ".git*" EXCLUDE )
 
 if(BUILD_CLIENT)
 	install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/client/shaders" DESTINATION "${SHAREDIR}/client")
@@ -177,12 +180,11 @@ endif()
 
 install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/fonts" DESTINATION "${SHAREDIR}")
 
-install(FILES "README.md" DESTINATION "${DOCDIR}")
-install(FILES "LICENSE.txt" DESTINATION "${DOCDIR}")
-install(FILES "doc/lua_api.txt" DESTINATION "${DOCDIR}")
-install(FILES "doc/menu_lua_api.txt" DESTINATION "${DOCDIR}")
-install(FILES "doc/texture_packs.txt" DESTINATION "${DOCDIR}")
-install(FILES "doc/world_format.txt" DESTINATION "${DOCDIR}")
+install(FILES "README.md" DESTINATION "${DOCDIR}" COMPONENT "Docs")
+install(FILES "doc/lua_api.txt" DESTINATION "${DOCDIR}" COMPONENT "Docs")
+install(FILES "doc/menu_lua_api.txt" DESTINATION "${DOCDIR}" COMPONENT "Docs")
+install(FILES "doc/texture_packs.txt" DESTINATION "${DOCDIR}" COMPONENT "Docs")
+install(FILES "doc/world_format.txt" DESTINATION "${DOCDIR}" COMPONENT "Docs")
 install(FILES "minetest.conf.example" DESTINATION "${EXAMPLE_CONF_DIR}")
 
 if(UNIX AND NOT APPLE)
@@ -237,14 +239,68 @@ set(CPACK_PACKAGE_VERSION_PATCH ${VERSION_PATCH})
 set(CPACK_PACKAGE_VENDOR "celeron55")
 set(CPACK_PACKAGE_CONTACT "Perttu Ahola <celeron55@gmail.com>")
 
-if(WIN32)
-	if(CMAKE_SIZEOF_VOID_P EQUAL 8)
-		set(CPACK_PACKAGE_FILE_NAME "${PROJECT_NAME}-${VERSION_STRING}-win64")
-	else()
-		set(CPACK_PACKAGE_FILE_NAME "${PROJECT_NAME}-${VERSION_STRING}-win32")
-	endif()
+include(CPackComponent)
 
-	set(CPACK_GENERATOR ZIP)
+cpack_add_component(Docs
+	DISPLAY_NAME "Documentation"
+	DESCRIPTION "Documentation about Minetest and Minetest modding"
+)
+
+cpack_add_component(SUBGAME_MINETEST_GAME
+	DISPLAY_NAME "Minetest Game"
+	DESCRIPTION "The official subgame for the Minetest engine, that can easily extended by mods."
+	GROUP "Subgames"
+)
+
+cpack_add_component(SUBGAME_MINIMAL
+	DISPLAY_NAME "Minimal development test"
+	DESCRIPTION "A minimal subgame helping to develop the engine."
+	DISABLED #DISABLED does not mean it is disabled, and is just not selected by default.
+	GROUP "Subgames"
+)
+
+cpack_add_component_group(Subgames
+	DESCRIPTION "Games for the Minetest engine."
+)
+
+if(WIN32)
+	# Include all dynamically linked runtime libaries such as MSVCRxxx.dll
+	include(InstallRequiredSystemLibraries)
+
+	if(RUN_IN_PLACE)
+		if(CMAKE_SIZEOF_VOID_P EQUAL 8)
+			set(CPACK_PACKAGE_FILE_NAME "${PROJECT_NAME}-${VERSION_STRING}-win64")
+		else()
+			set(CPACK_PACKAGE_FILE_NAME "${PROJECT_NAME}-${VERSION_STRING}-win32")
+		endif()
+
+		set(CPACK_GENERATOR ZIP)
+
+	else()
+		set(CPACK_GENERATOR WIX ZIP)
+		set(CPACK_PACKAGE_NAME "${PROJECT_NAME_CAPITALIZED}")
+		set(CPACK_PACKAGE_INSTALL_DIRECTORY "${PROJECT_NAME_CAPITALIZED}")
+		set(CPACK_PACKAGE_EXECUTABLES ${PROJECT_NAME} "${PROJECT_NAME_CAPITALIZED}")
+		set(CPACK_CREATE_DESKTOP_LINKS ${PROJECT_NAME})
+
+		set(CPACK_WIX_PRODUCT_ICON "${CMAKE_CURRENT_SOURCE_DIR}/misc/minetest-icon.ico")
+		# Supported languages can be found at 
+		# http://wixtoolset.org/documentation/manual/v3/wixui/wixui_localization.html
+		#set(CPACK_WIX_CULTURES "ar-SA,bg-BG,ca-ES,hr-HR,cs-CZ,da-DK,nl-NL,en-US,et-EE,fi-FI,fr-FR,de-DE")
+		set(CPACK_WIX_UI_BANNER "${CMAKE_CURRENT_SOURCE_DIR}/misc/CPACK_WIX_UI_BANNER.BMP")
+		set(CPACK_WIX_UI_DIALOG "${CMAKE_CURRENT_SOURCE_DIR}/misc/CPACK_WIX_UI_DIALOG.BMP")
+		
+		set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/doc/lgpl-2.1.txt")
+
+		# The correct way would be to include both x32 and x64 into one installer
+		# and install the appropriate one.
+		# CMake does not support that, so there are two separate GUID's
+		if(CMAKE_SIZEOF_VOID_P EQUAL 8)
+			set(CPACK_WIX_UPGRADE_GUID "745A0FB3-5552-44CA-A587-A91C397CCC56")
+		else()
+			set(CPACK_WIX_UPGRADE_GUID "814A2E2D-2779-4BBD-9ACD-FC3BD51FBBA2")
+		endif()
+	endif()
 elseif(APPLE)
 	set(CPACK_INCLUDE_TOPLEVEL_DIRECTORY 0)
 	set(CPACK_PACKAGE_FILE_NAME "${PROJECT_NAME}-${VERSION_STRING}-osx")

@@ -696,7 +696,7 @@ if(MSVC)
 	# Visual Studio
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /D WIN32_LEAN_AND_MEAN /MP")
 	# EHa enables SEH exceptions (used for catching segfaults)
-	set(CMAKE_CXX_FLAGS_RELEASE "/EHa /Ox /GL /FD /MT /GS- /Zi /fp:fast /D NDEBUG /D _HAS_ITERATOR_DEBUGGING=0 /TP")
+	set(CMAKE_CXX_FLAGS_RELEASE "/EHa /Ox /GL /FD /MD /GS- /Zi /fp:fast /D NDEBUG /D _HAS_ITERATOR_DEBUGGING=0 /TP")
 	if(CMAKE_SIZEOF_VOID_P EQUAL 4)
 		set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /arch:SSE")
 	endif()
@@ -714,8 +714,8 @@ if(MSVC)
 	set(CMAKE_CXX_FLAGS_DEBUG "/MDd /Zi /Ob0 /Od /RTC1")
 
 	# Flags for C files (sqlite)
-	# /MT = Link statically with standard library stuff
-	set(CMAKE_C_FLAGS_RELEASE "/O2 /Ob2 /MT")
+	# /MD = dynamically link to MSVCRxxx.dll
+	set(CMAKE_C_FLAGS_RELEASE "/O2 /Ob2 /MD")
 else()
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 	# Probably GCC
@@ -826,6 +826,14 @@ if(BUILD_CLIENT)
 			set(MO_BUILD_PATH "${MO_BUILD_PATH}/${PROJECT_NAME}.mo")
 			install(FILES ${MO_BUILD_PATH} DESTINATION ${MO_DEST_PATH})
 		endforeach()
+	endif()
+
+	if(USE_FREETYPE)
+		install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/../fonts" DESTINATION "${SHAREDIR}" 
+				FILES_MATCHING PATTERN "*.ttf" PATTERN "*.txt")
+	else()
+		install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/../fonts" DESTINATION "${SHAREDIR}" 
+				FILES_MATCHING PATTERN "*.png" PATTERN "*.xml")
 	endif()
 
 	if(WIN32)
