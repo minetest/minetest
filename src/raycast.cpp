@@ -28,12 +28,22 @@ bool RaycastSort::operator() (const PointedThing &pt1,
 	// "nothing" can not be sorted
 	assert(pt1.type != POINTEDTHING_NOTHING);
 	assert(pt2.type != POINTEDTHING_NOTHING);
+	f32 pt1_distSq = pt1.distanceSq;
+
+	// Add some bonus when one of them is an object
+	if (pt1.type != pt2.type) {
+		if (pt1.type == POINTEDTHING_OBJECT)
+			pt1_distSq -= BS * BS;
+		else if (pt2.type == POINTEDTHING_OBJECT)
+			pt1_distSq += BS * BS;
+	}
+
 	// returns false if pt1 is nearer than pt2
-	if (pt1.distanceSq < pt2.distanceSq) {
+	if (pt1_distSq < pt2.distanceSq) {
 		return false;
 	}
 
-	if (pt1.distanceSq == pt2.distanceSq) {
+	if (pt1_distSq == pt2.distanceSq) {
 		// Sort them to allow only one order
 		if (pt1.type == POINTEDTHING_OBJECT)
 			return (pt2.type == POINTEDTHING_OBJECT
