@@ -1,6 +1,5 @@
 package net.minetest.minetest;
 
-
 import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
@@ -20,15 +19,12 @@ import java.util.List;
 public class MainActivity extends Activity {
 
     private final static int PERMISSIONS = 1;
-
     private static final String[] REQUIRED_SDK_PERMISSIONS = new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE};
-
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-        if (Build.VERSION.SDK_INT >= 23) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             Permission();
         } else {
             Next();
@@ -37,7 +33,7 @@ public class MainActivity extends Activity {
 
     protected void Permission() {
         final List<String> missingPermissions = new ArrayList<String>();
-        // check all required dynamic permissions
+        // check required permission
         for (final String permission : REQUIRED_SDK_PERMISSIONS) {
             final int result = ContextCompat.checkSelfPermission(this, permission);
             if (result != PackageManager.PERMISSION_GRANTED) {
@@ -65,7 +61,7 @@ public class MainActivity extends Activity {
                 for (int index = permissions.length - 1; index >= 0; --index) {
                     if (grantResults[index] != PackageManager.PERMISSION_GRANTED) {
                         // permission not granted - toast and exit
-                        Toast.makeText(this, "Required permission need for unpacking game data not granted. Minetest can't run without it", Toast.LENGTH_LONG).show();
+                        Toast.makeText(this, R.string.not_granted, Toast.LENGTH_LONG).show();
                         finish();
                         return;
                     }

@@ -28,11 +28,10 @@ public class MinetestAssetCopy extends Activity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.assetcopy);
 
-        m_ProgressBar = (ProgressBar) findViewById(R.id.progressBar1);
-        m_Filename = (TextView) findViewById(R.id.textView1);
+        m_ProgressBar = findViewById(R.id.progressBar1);
+        m_Filename = findViewById(R.id.textView1);
 
         Display display = getWindowManager().getDefaultDisplay();
         m_ProgressBar.getLayoutParams().width = (int) (display.getWidth() * 0.8);
