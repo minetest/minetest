@@ -255,7 +255,7 @@ cpack_add_component(SUBGAME_MINETEST_GAME
 cpack_add_component(SUBGAME_MINIMAL
 	DISPLAY_NAME "Minimal development test"
 	DESCRIPTION "A minimal subgame helping to develop the engine."
-	DISABLED #DISABLED does not mean it is disabled, it means its not selected on default!
+	DISABLED #DISABLED does not mean it is disabled, and is just not selected by default.
 	GROUP "Subgames"
 )
 
