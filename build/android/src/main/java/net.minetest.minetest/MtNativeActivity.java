@@ -3,96 +3,90 @@ package net.minetest.minetest;
 import android.app.NativeActivity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.WindowManager;
 
 public class MtNativeActivity extends NativeActivity {
-	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-		m_MessagReturnCode = -1;
-		m_MessageReturnValue = "";
 
-	}
+    static {
+        System.loadLibrary("openal");
+        System.loadLibrary("ogg");
+        System.loadLibrary("vorbis");
+        System.loadLibrary("gmp");
+        System.loadLibrary("iconv");
+        System.loadLibrary("minetest");
+    }
 
-	@Override
-	public void onDestroy() {
-		super.onDestroy();
-	}
+    private int m_MessagReturnCode;
+    private String m_MessageReturnValue;
 
-	public void copyAssets() {
-		Intent intent = new Intent(this, MinetestAssetCopy.class);
-		startActivity(intent);
-	}
+    public static native void putMessageBoxResult(String text);
 
-	public void showDialog(String acceptButton, String hint, String current,
-			int editType) {
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        m_MessagReturnCode = -1;
+        m_MessageReturnValue = "";
+    }
 
-		Intent intent = new Intent(this, MinetestTextEntry.class);
-		Bundle params = new Bundle();
-		params.putString("acceptButton", acceptButton);
-		params.putString("hint", hint);
-		params.putString("current", current);
-		params.putInt("editType", editType);
-		intent.putExtras(params);
-		startActivityForResult(intent, 101);
-		m_MessageReturnValue = "";
-		m_MessagReturnCode   = -1;
-	}
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+    }
 
-	public static native void putMessageBoxResult(String text);
+    public void copyAssets() {
+        Intent intent = new Intent(this, MinetestAssetCopy.class);
+        startActivity(intent);
+    }
 
-	/* ugly code to workaround putMessageBoxResult not beeing found */
-	public int getDialogState() {
-		return m_MessagReturnCode;
-	}
+    public void showDialog(String acceptButton, String hint, String current,
+                           int editType) {
 
-	public String getDialogValue() {
-		m_MessagReturnCode = -1;
-		return m_MessageReturnValue;
-	}
+        Intent intent = new Intent(this, MinetestTextEntry.class);
+        Bundle params = new Bundle();
+        params.putString("acceptButton", acceptButton);
+        params.putString("hint", hint);
+        params.putString("current", current);
+        params.putInt("editType", editType);
+        intent.putExtras(params);
+        startActivityForResult(intent, 101);
+        m_MessageReturnValue = "";
+        m_MessagReturnCode = -1;
+    }
 
-	public float getDensity() {
-		return getResources().getDisplayMetrics().density;
-	}
+    /* ugly code to workaround putMessageBoxResult not beeing found */
+    public int getDialogState() {
+        return m_MessagReturnCode;
+    }
 
-	public int getDisplayWidth() {
-		return getResources().getDisplayMetrics().widthPixels;
-	}
+    public String getDialogValue() {
+        m_MessagReturnCode = -1;
+        return m_MessageReturnValue;
+    }
 
-	public int getDisplayHeight() {
-		return getResources().getDisplayMetrics().heightPixels;
-	}
+    public float getDensity() {
+        return getResources().getDisplayMetrics().density;
+    }
 
-	@Override
-	protected void onActivityResult(int requestCode, int resultCode,
-			Intent data) {
-		if (requestCode == 101) {
-			if (resultCode == RESULT_OK) {
-				String text = data.getStringExtra("text");
-				m_MessagReturnCode = 0;
-				m_MessageReturnValue = text;
-			}
-			else {
-				m_MessagReturnCode = 1;
-			}
-		}
-	}
+    public int getDisplayWidth() {
+        return getResources().getDisplayMetrics().widthPixels;
+    }
 
-	static {
-		System.loadLibrary("openal");
-		System.loadLibrary("ogg");
-		System.loadLibrary("vorbis");
-		System.loadLibrary("gmp");
-		System.loadLibrary("iconv");
+    public int getDisplayHeight() {
+        return getResources().getDisplayMetrics().heightPixels;
+    }
 
-		// We don't have to load libminetest.so ourselves,
-		// but if we do, we get nicer logcat errors when
-		// loading fails.
-		System.loadLibrary("minetest");
-	}
-
-	private int m_MessagReturnCode;
-	private String m_MessageReturnValue;
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode,
+                                    Intent data) {
+        if (requestCode == 101) {
+            if (resultCode == RESULT_OK) {
+                String text = data.getStringExtra("text");
+                m_MessagReturnCode = 0;
+                m_MessageReturnValue = text;
+            } else {
+                m_MessagReturnCode = 1;
+            }
+        }
+    }
 }
