@@ -625,6 +625,11 @@ local function create_change_setting_formspec(dialogdata)
 			-- Index by name, to avoid iterating over all enabled_flags for every possible flag.
 			flags[name] = true
 		end
+		for _, name in ipairs(setting.flags) do
+			local checkbox_name = "cb_" .. name
+			local is_enabled = flags[name] == true -- to get false if nil
+			checkboxes[checkbox_name] = is_enabled
+		end
 		-- Flags
 		formspec = table.concat(fields)
 				.. "checkbox[0.5," .. height - 0.6 .. ";cb_defaults;defaults;" -- defaults
