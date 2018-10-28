@@ -1,14 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="AppTheme" parent="android:Theme.Material.Light.NoActionBar.Fullscreen">
+    <style name="AppTheme" parent="@android:style/android:Theme.Material.Light.NoActionBar.Fullscreen">
         <item name="android:windowNoTitle">true</item>
+        <item name="android:windowAnimationStyle">@null</item>
     </style>
 
-    <style name="Theme.Transparent" parent="@android:style/Theme.Material.NoActionBar.Fullscreen">
-        <item name="android:windowNoTitle">true</item>
-        <item name="android:windowBackground">@android:color/transparent</item>
-        <item name="android:windowIsTranslucent">true</item>
-    </style>
+    <style name="Theme.Dialog" parent="@android:style/Theme.Material.Light.Dialog.NoActionBar"></style>
 
 </resources>

@@ -48,9 +48,9 @@
         </activity>
         <activity
             android:name=".MinetestTextEntry"
-            android:screenOrientation="sensorLandscape"
-            android:theme="@style/Theme.Transparent"
-            android:windowSoftInputMode="stateAlwaysHidden"></activity>
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:windowSoftInputMode="stateAlwaysHidden"
+            android:theme="@style/Theme.Dialog"></activity>
         <activity
             android:name=".MinetestAssetCopy"
             android:screenOrientation="sensorLandscape"

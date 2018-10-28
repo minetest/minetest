@@ -3,10 +3,12 @@ package net.minetest.minetest;
 import android.app.Activity;
 import android.content.res.AssetFileDescriptor;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
 import android.view.Display;
+import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -29,10 +31,8 @@ public class MinetestAssetCopy extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.assetcopy);
-
         m_ProgressBar = findViewById(R.id.progressBar1);
         m_Filename = findViewById(R.id.textView1);
-
         Display display = getWindowManager().getDefaultDisplay();
         m_ProgressBar.getLayoutParams().width = (int) (display.getWidth() * 0.8);
         m_ProgressBar.invalidate();
@@ -45,6 +45,28 @@ public class MinetestAssetCopy extends Activity {
         } else {
             m_AssetCopy = new copyAssetTask();
             m_AssetCopy.execute();
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        makeFullScreen();
+    }
+
+    public void makeFullScreen() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            this.getWindow().getDecorView().setSystemUiVisibility(
+                    View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+            );
+        }
+    }
+
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+        if (hasFocus) {
+            makeFullScreen();
         }
     }
 
@@ -152,7 +174,7 @@ public class MinetestAssetCopy extends Activity {
                     }
 
                     // Transfer bytes from in to out
-                    byte[] buf = new byte[1 * 1024];
+                    byte[] buf = new byte[1024];
                     int len = src.read(buf, 0, 1024);
 
                     /* following handling is crazy but we need to deal with    */
@@ -232,7 +254,7 @@ public class MinetestAssetCopy extends Activity {
         }
 
         /**
-         * check al files and folders in filelist
+         * check all files and folders in filelist
          */
         protected void ProcessFileList() {
             String FlashBaseDir =

@@ -9,7 +9,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
-import android.view.WindowManager;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -20,10 +20,14 @@ public class MainActivity extends Activity {
 
     private final static int PERMISSIONS = 1;
     private static final String[] REQUIRED_SDK_PERMISSIONS = new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE};
+    RelativeLayout relativeLayout;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        relativeLayout = new RelativeLayout(this);
+        relativeLayout.setBackgroundResource(R.drawable.bg);
+        setContentView(relativeLayout);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             Permission();
         } else {

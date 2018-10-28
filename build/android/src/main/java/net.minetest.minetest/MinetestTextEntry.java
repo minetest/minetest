@@ -21,7 +21,6 @@ public class MinetestTextEntry extends Activity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         Bundle b = getIntent().getExtras();
         String acceptButton = b.getString("EnterButton");
         String hint = b.getString("hint");
@@ -39,7 +38,6 @@ public class MinetestTextEntry extends Activity {
         } else {
             mTextInputWidget.setInputType(InputType.TYPE_CLASS_TEXT);
         }
-
 
         builder.setView(mTextInputWidget);
 

@@ -2,7 +2,9 @@ package net.minetest.minetest;
 
 import android.app.NativeActivity;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
+import android.view.View;
 import android.view.WindowManager;
 
 public class MtNativeActivity extends NativeActivity {
@@ -30,8 +32,25 @@ public class MtNativeActivity extends NativeActivity {
     }
 
     @Override
-    public void onDestroy() {
-        super.onDestroy();
+    protected void onResume() {
+        super.onResume();
+        makeFullScreen();
+    }
+
+    public void makeFullScreen() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            this.getWindow().getDecorView().setSystemUiVisibility(
+                    View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+            );
+        }
+    }
+
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+        if (hasFocus) {
+            makeFullScreen();
+        }
     }
 
     public void copyAssets() {
