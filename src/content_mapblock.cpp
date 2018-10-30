@@ -702,7 +702,7 @@ void MapblockMeshGenerator::drawGlasslikeFramedNode()
 			tiles[2].layers[0].texture &&
 			tiles[3].layers[0].texture) {
 		glass_tiles[0] = tiles[4];
-		glass_tiles[1] = tiles[0];
+		glass_tiles[1] = tiles[2];
 		glass_tiles[2] = tiles[4];
 		glass_tiles[3] = tiles[4];
 		glass_tiles[4] = tiles[3];
