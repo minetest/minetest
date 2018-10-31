@@ -719,7 +719,7 @@ void MapblockMeshGenerator::drawGlasslikeFramedNode()
 
 	static const float a = BS / 2.0f;
 	static const float g = a - 0.03f;
-	static const float b = .876f * ( BS / 2.0f );
+	static const float b = 0.876f * (BS / 2.0f);
 
 	static const aabb3f frame_edges[FRAMED_EDGE_COUNT] = {
 		aabb3f( b,  b, -a,  a,  a,  a), // y+
