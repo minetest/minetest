@@ -717,9 +717,9 @@ void MapblockMeshGenerator::drawGlasslikeFramedNode()
 	bool V_merge = !(param2 & 64);
 	param2 &= 63;
 
-	static const float a = BS / 2;
-	static const float g = a - 0.003;
-	static const float b = .876 * ( BS / 2 );
+	static const float a = BS / 2.0f;
+	static const float g = a - 0.03f;
+	static const float b = 0.876f * (BS / 2.0f);
 
 	static const aabb3f frame_edges[FRAMED_EDGE_COUNT] = {
 		aabb3f( b,  b, -a,  a,  a,  a), // y+
@@ -751,9 +751,12 @@ void MapblockMeshGenerator::drawGlasslikeFramedNode()
 	bool nb[FRAMED_NEIGHBOR_COUNT] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 
 	// 1 = check
-	static const bool check_nb_vertical   [FRAMED_NEIGHBOR_COUNT] = {0,1,0,0,1,0, 0,0,0,0, 0,0,0,0, 0,0,0,0};
-	static const bool check_nb_horizontal [FRAMED_NEIGHBOR_COUNT] = {1,0,1,1,0,1, 0,0,0,0, 1,1,1,1, 0,0,0,0};
-	static const bool check_nb_all        [FRAMED_NEIGHBOR_COUNT] = {1,1,1,1,1,1, 1,1,1,1, 1,1,1,1, 1,1,1,1};
+	static const bool check_nb_vertical [FRAMED_NEIGHBOR_COUNT] =
+		{0,1,0,0,1,0, 0,0,0,0, 0,0,0,0, 0,0,0,0};
+	static const bool check_nb_horizontal [FRAMED_NEIGHBOR_COUNT] =
+		{1,0,1,1,0,1, 0,0,0,0, 1,1,1,1, 0,0,0,0};
+	static const bool check_nb_all [FRAMED_NEIGHBOR_COUNT] =
+		{1,1,1,1,1,1, 1,1,1,1, 1,1,1,1, 1,1,1,1};
 	const bool *check_nb = check_nb_all;
 
 	// neighbours checks for frames visibility
@@ -807,7 +810,7 @@ void MapblockMeshGenerator::drawGlasslikeFramedNode()
 			f->special_tiles[0].layers[0].texture) {
 		// Internal liquid level has param2 range 0 .. 63,
 		// convert it to -0.5 .. 0.5
-		float vlev = (param2 / 63.0) * 2.0 - 1.0;
+		float vlev = (param2 / 63.0f) * 2.0f - 1.0f;
 		getSpecialTile(0, &tile);
 		drawAutoLightedCuboid(aabb3f(-(nb[5] ? g : b),
 		                             -(nb[4] ? g : b),
