@@ -204,8 +204,11 @@ function package_dialog.get_formspec()
 
 	local formspec = {
 		"size[9,4;true]",
-		"label[2.5,0.2;", core.formspec_escape(package.title), "]",
-		"textarea[0.2,1;9,3;;;", core.formspec_escape(package.short_description), "]",
+		"image[0,1;4.5,3;", get_screenshot(package), ']',
+		"label[3.8,1;",
+		minetest.colorize(mt_color_green, core.formspec_escape(package.title)), "\n",
+		minetest.colorize('#BFBFBF', "by " .. core.formspec_escape(package.author)), "]",
+		"textarea[4,2;5.3,2;;;", core.formspec_escape(package.short_description), "]",
 		"button[0,0;2,1;back;", fgettext("Back"), "]",
 	}
 
@@ -217,7 +220,7 @@ function package_dialog.get_formspec()
 		formspec[#formspec + 1] = "button[7,0;2,1;install;"
 		formspec[#formspec + 1] = fgettext("Update")
 		formspec[#formspec + 1] = "]"
-		formspec[#formspec + 1] = "button[7,1;2,1;uninstall;"
+		formspec[#formspec + 1] = "button[5,0;2,1;uninstall;"
 		formspec[#formspec + 1] = fgettext("Uninstall")
 		formspec[#formspec + 1] = "]"
 	else
@@ -352,12 +355,12 @@ function store.get_formspec()
 
 	local formspec = {
 		"size[12,6.5;true]",
-		"field[0.3,0.1;10.2,1;search_string;;", core.formspec_escape(search_string), "]",
+		"field[0.2,0.1;7.8,1;search_string;;", core.formspec_escape(search_string), "]",
 		"field_close_on_enter[search_string;false]",
-		"button[10.2,-0.2;2,1;search;", fgettext("Search"), "]",
-		"dropdown[0,1;2.4;type;",
+		"dropdown[7.7,-0.1;2.4;type;",
 		table.concat(filter_types_titles, ","),
-		";",
+		";]",
+		"button[10.1,-0.2;2,1;search;", fgettext("Search"), "]",
 		filter_type,
 		"]",
 		-- "textlist[0,1;2.4,5.6;a;",
@@ -368,7 +371,7 @@ function store.get_formspec()
 	local start_idx = (cur_page - 1) * num_per_page + 1
 	for i=start_idx, math.min(#store.packages, start_idx+num_per_page-1) do
 		local package = store.packages[i]
-		formspec[#formspec + 1] = "container[3,"
+		formspec[#formspec + 1] = "container[0.5,"
 		formspec[#formspec + 1] = i - start_idx + 1
 		formspec[#formspec + 1] = "]"
 
@@ -381,35 +384,35 @@ function store.get_formspec()
 		formspec[#formspec + 1] = "label[1,-0.1;"
 		formspec[#formspec + 1] = core.formspec_escape(
 				minetest.colorize(mt_color_green, package.title) ..
-				minetest.colorize(mt_color_grey, " by " .. package.author))
+				minetest.colorize("#BFBFBF", " by " .. package.author))
 		formspec[#formspec + 1] = "]"
 
 		-- description
-		formspec[#formspec + 1] = "textarea[1.5,0.3;4.75,1;;;"
+		formspec[#formspec + 1] = "textarea[1.5,0.3;7.25,1;;;"
 		formspec[#formspec + 1] = core.formspec_escape(package.short_description)
 		formspec[#formspec + 1] = "]"
 
 		-- buttons
 		if not package.path then
-			formspec[#formspec + 1] = "button[6,0;1.5,1;install_"
+			formspec[#formspec + 1] = "button[8.4,0;1.5,1;install_"
 			formspec[#formspec + 1] = tostring(i)
 			formspec[#formspec + 1] = ";"
 			formspec[#formspec + 1] = fgettext("Install")
 			formspec[#formspec + 1] = "]"
 		elseif package.installed_release < package.release then
-			formspec[#formspec + 1] = "button[6,0;1.5,1;install_"
+			formspec[#formspec + 1] = "button[8.4,0;1.5,1;install_"
 			formspec[#formspec + 1] = tostring(i)
 			formspec[#formspec + 1] = ";"
 			formspec[#formspec + 1] = fgettext("Update")
 			formspec[#formspec + 1] = "]"
 		else
-			formspec[#formspec + 1] = "button[6,0;1.5,1;uninstall_"
+			formspec[#formspec + 1] = "button[8.4,0;1.5,1;uninstall_"
 			formspec[#formspec + 1] = tostring(i)
 			formspec[#formspec + 1] = ";"
 			formspec[#formspec + 1] = fgettext("Uninstall")
 			formspec[#formspec + 1] = "]"
 		end
-		formspec[#formspec + 1] = "button[7.5,0;1.5,1;view_"
+		formspec[#formspec + 1] = "button[9.9,0;1.5,1;view_"
 		formspec[#formspec + 1] = tostring(i)
 		formspec[#formspec + 1] = ";"
 		formspec[#formspec + 1] = fgettext("View")
@@ -421,18 +424,18 @@ function store.get_formspec()
 	formspec[#formspec + 1] = "container[0,"
 	formspec[#formspec + 1] = num_per_page + 1
 	formspec[#formspec + 1] = "]"
-	formspec[#formspec + 1] = "button[2.6,0;3,1;back;"
+	formspec[#formspec + 1] = "button[-0.1,0;3,1;back;"
 	formspec[#formspec + 1] = fgettext("Back to Main Menu")
 	formspec[#formspec + 1] = "]"
-	formspec[#formspec + 1] = "button[7,0;1,1;pstart;<<]"
-	formspec[#formspec + 1] = "button[8,0;1,1;pback;<]"
+	formspec[#formspec + 1] = "button[7.1,0;1,1;pstart;<<]"
+	formspec[#formspec + 1] = "button[8.1,0;1,1;pback;<]"
 	formspec[#formspec + 1] = "label[9.2,0.2;"
 	formspec[#formspec + 1] = tonumber(cur_page)
 	formspec[#formspec + 1] = " / "
 	formspec[#formspec + 1] = tonumber(pages)
 	formspec[#formspec + 1] = "]"
-	formspec[#formspec + 1] = "button[10,0;1,1;pnext;>]"
-	formspec[#formspec + 1] = "button[11,0;1,1;pend;>>]"
+	formspec[#formspec + 1] = "button[10.1,0;1,1;pnext;>]"
+	formspec[#formspec + 1] = "button[11.1,0;1,1;pend;>>]"
 	formspec[#formspec + 1] = "container_end[]"
 
 	formspec[#formspec + 1] = "]"
