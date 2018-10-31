@@ -1193,6 +1193,7 @@ Below are the specific uses for fields in each type; fields not listed for that
 type are ignored.
 
 ### `image`
+
 Displays an image on the HUD.
 
 * `scale`: The scale of the image, with 1 being the original texture size.
@@ -1266,6 +1267,7 @@ For helper functions see [Spatial Vectors].
 * `{type="object", ref=ObjectRef}`
 
 Exact pointing location (currently only `Raycast` supports these fields):
+
 * `pointed_thing.intersection_point`: The absolute world coordinates of the
   point on the selection box which is pointed at. May be in the selection box
   if the pointer is in the box too.
@@ -1498,7 +1500,6 @@ Special groups
   Slipperiness rises steadily with `slippery` value, starting at 1.
 * `disable_repair`: If set to 1 for a tool, it cannot be repaired using the
   `"toolrepair"` crafting recipe
-
 
 Known damage and digging time defining groups
 ---------------------------------------------
@@ -1930,6 +1931,7 @@ Elements
 * `<fontcolor>` tooltip font color as `ColorString` (optional)
 
 ### `tooltip[<X>,<Y>;<W>,<H>;<tooltip_text>;<bgcolor>;<fontcolor>]`
+
 * Adds tooltip for an area. Other tooltips will take priority when present.
 * `<bgcolor>` tooltip background color as `ColorString` (optional)
 * `<fontcolor>` tooltip font color as `ColorString` (optional)
@@ -2042,9 +2044,9 @@ Elements
 
 ### `item_image_button[<X>,<Y>;<W>,<H>;<item name>;<name>;<label>]`
 
-* `item name` is the registered name of an item/node,
-  tooltip will be made out of its description
-  to override it use tooltip element
+* `item name` is the registered name of an item/node
+* The item description will be used as the tooltip. This can be overridden with
+  a tooltip element.
 
 ### `button_exit[<X>,<Y>;<W>,<H>;<name>;<label>]`
 
@@ -2965,7 +2967,6 @@ to be a table retrieved from `get_data()`.
 Once the internal VoxelManip state has been modified to your liking, the
 changes can be committed back to the map by calling `VoxelManip:write_to_map()`
 
-
 ### Flat array format
 
 Let
@@ -3532,9 +3533,9 @@ Call these functions only at load time!
     * returns an integer uniquely identifying the registered schematic
     * added to `minetest.registered_schematic` with the key of `schematic.name`
     * if `schematic.name` is nil, the key is the returned ID
-    * if the schematic is loaded from a file, schematic.name is set to the
+    * if the schematic is loaded from a file, `schematic.name` is set to the
       filename.
-    * if the function is called when loading the mod, and schematic.name is a
+    * if the function is called when loading the mod, and `schematic.name` is a
       relative path, then the current mod path will be prepended to the
       schematic filename.
 * `minetest.override_item(name, redefinition)`
