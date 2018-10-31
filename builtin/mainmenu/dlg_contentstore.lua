@@ -182,6 +182,11 @@ local function get_screenshot(package)
 		local ele = ui.childlist.store
 		if ele and not ele.hidden then
 			core.update_formspec(ele:formspec())
+		else
+			ele = ui.childlist.package_view
+			if ele and not ele.hidden then
+				core.update_formspec(ele:formspec())
+			end
 		end
 	end
 	if core.handle_async(download_screenshot,
@@ -228,8 +233,6 @@ function package_dialog.get_formspec()
 		formspec[#formspec + 1] = fgettext("Uninstall")
 		formspec[#formspec + 1] = "]"
 	end
-
-	-- TODO: screenshots
 
 	return table.concat(formspec, "")
 end
