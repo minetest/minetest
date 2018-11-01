@@ -166,7 +166,7 @@ end
 --------------------------------------------------------------------------------
 function string.split(str, delim, include_empty, max_splits, sep_is_pattern)
 	delim = delim or ","
-	max_splits = max_splits or -1
+	max_splits = max_splits or -2
 	local items = {}
 	local pos, len = 1, #str
 	local plain = not sep_is_pattern
