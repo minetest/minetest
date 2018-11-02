@@ -366,6 +366,12 @@ bool ClientLauncher::launch_game(std::string &error_message,
 	if (cmd_args.exists("password"))
 		menudata.password = cmd_args.get("password");
 
+
+	if (cmd_args.exists("password-file")) {
+		std::ifstream passfile(cmd_args.get("password-file"));
+		passfile >> menudata.password;
+	}
+
 	// If a world was commanded, append and select it
 	if (!game_params.world_path.empty()) {
 		worldspec.gameid = getWorldGameId(game_params.world_path, true);
