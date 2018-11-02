@@ -284,12 +284,13 @@ void GUIFormSpecMenu::parseSize(parserData* data, const std::string &element)
 		data->invsize.Y = MYMAX(0, stof(parts[1]));
 
 		lockSize(false);
+#ifndef __ANDROID__
 		if (parts.size() == 3) {
 			if (parts[2] == "true") {
 				lockSize(true,v2u32(800,600));
 			}
 		}
-
+#endif
 		data->explicit_size = true;
 		return;
 	}
@@ -437,10 +438,11 @@ void GUIFormSpecMenu::parseCheckbox(parserData* data, const std::string &element
 			fselected = true;
 
 		std::wstring wlabel = translate_string(utf8_to_wide(unescape_string(label)));
+		s32 spacing = Environment->getSkin()->getSize(gui::EGDS_CHECK_BOX_WIDTH) + 7;
 
 		core::rect<s32> rect = core::rect<s32>(
 				pos.X, pos.Y + ((imgsize.Y/2) - m_btn_height),
-				pos.X + m_font->getDimension(wlabel.c_str()).Width + 25, // text size + size of checkbox
+				pos.X + m_font->getDimension(wlabel.c_str()).Width + spacing,
 				pos.Y + ((imgsize.Y/2) + m_btn_height));
 
 		FieldSpec spec(
@@ -2145,6 +2147,16 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 			// the image size can't be less than 0.3 inch
 			// multiplied by gui_scaling, even if this means
 			// the form doesn't fit the screen.
+#ifdef __ANDROID__
+			// For mobile devices these magic numbers are
+			// different and forms should always use the
+			// maximum screen space available.
+			double fitx_imgsize = mydata.screensize.X /
+				((12.0/8.0) * (0.5 + mydata.invsize.X));
+			double fity_imgsize = mydata.screensize.Y /
+				((15.0/11.0) * (0.85 + mydata.invsize.Y));
+			use_imgsize = MYMIN(fitx_imgsize, fity_imgsize);
+#else
 			double prefer_imgsize = mydata.screensize.Y / 15 *
 				gui_scaling;
 			double fitx_imgsize = mydata.screensize.X /
@@ -2155,6 +2167,7 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 			double min_imgsize = 0.3 * screen_dpi * gui_scaling;
 			use_imgsize = MYMAX(min_imgsize, MYMIN(prefer_imgsize,
 				MYMIN(fitx_imgsize, fity_imgsize)));
+#endif
 		}
 
 		// Everything else is scaled in proportion to the
