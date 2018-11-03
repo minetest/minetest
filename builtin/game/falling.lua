@@ -6,6 +6,8 @@ local builtin_shared = ...
 -- Falling stuff
 --
 
+local gravity = core.settings:get("movement_gravity") or 9.81
+
 core.register_entity(":__builtin:falling_node", {
 	initial_properties = {
 		visual = "wielditem",
@@ -20,17 +22,22 @@ core.register_entity(":__builtin:falling_node", {
 	set_node = function(self, node, meta)
 		self.node = node
 		self.meta = meta
-		self.hurt_toggle = true
-		self.object:set_properties({is_visible = true, textures = {node.name}})
+		self.object:set_properties({
+			is_visible = true,
+			textures = {node.name}
+		})
 	end,
 
 	get_staticdata = function(self)
-		return core.serialize({node = self.node, meta = self.meta})
+		return core.serialize({
+			node = self.node,
+			meta = self.meta
+		})
 	end,
 
 	on_activate = function(self, staticdata)
 		self.object:set_armor_groups({immortal = 1})
-		self.object:set_acceleration({x = 0, y = -10, z = 0})
+		self.object:set_acceleration({x = 0, y = -gravity, z = 0})
 
 		local ds = core.deserialize(staticdata)
 		if ds and ds.node then
@@ -45,8 +52,8 @@ core.register_entity(":__builtin:falling_node", {
 	on_step = function(self, dtime)
 		-- Set gravity
 		local acceleration = self.object:get_acceleration()
-		if not vector.equals(acceleration, {x = 0, y = -10, z = 0}) then
-			self.object:set_acceleration({x = 0, y = -10, z = 0})
+		if not vector.equals(acceleration, {x = 0, y = -gravity, z = 0}) then
+			self.object:set_acceleration({x = 0, y = -gravity, z = 0})
 		end
 
 		local pos = self.object:get_pos()
@@ -62,9 +69,8 @@ core.register_entity(":__builtin:falling_node", {
 
 		local below_nodef = core.registered_nodes[below_node.name]
 		-- Is it a level node we can add to?
-		if below_nodef
-		and below_nodef.leveled
-		and below_node.name == self.node.name then
+		if below_nodef and below_nodef.leveled and
+				below_node.name == self.node.name then
 			local addlevel = self.node.level
 			if not addlevel or addlevel <= 0 then
 				addlevel = below_nodef.leveled
@@ -77,10 +83,9 @@ core.register_entity(":__builtin:falling_node", {
 
 		-- Stop node if it falls on walkable surface, or floats on water
 		if (below_nodef and below_nodef.walkable == true)
-		or (below_nodef
+				or (below_nodef
 				and core.get_item_group(self.node.name, "float") ~= 0
 				and below_nodef.liquidtype ~= "none") then
-
 			self.object:set_velocity({x = 0, y = 0, z = 0})
 		end
 
@@ -91,12 +96,12 @@ core.register_entity(":__builtin:falling_node", {
 			-- Get node we've landed inside
 			local cnode = minetest.get_node(npos).name
 			local cdef = core.registered_nodes[cnode]
-			-- If 'air' or buildable_to or an attached_node then place node,
+			-- If airlike or buildable_to or an attached_node then place node,
 			-- otherwise drop falling node as an item instead.
-			if cnode == "air"
-			or (cdef and cdef.buildable_to == true)
-			or (cdef and cdef.liquidtype ~= "none")
-			or core.get_item_group(cnode, "attached_node") ~= 0 then
+			if (cdef and cdef.air_equivalent == true)
+					or (cdef and cdef.buildable_to == true)
+					or (cdef and cdef.liquidtype ~= "none")
+					or core.get_item_group(cnode, "attached_node") ~= 0 then
 				-- Are we an attached node ? (grass, flowers, torch)
 				if core.get_item_group(cnode, "attached_node") ~= 0 then
 					-- Add drops from attached node
