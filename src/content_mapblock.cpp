@@ -701,19 +701,8 @@ void MapblockMeshGenerator::drawGlasslikeFramedNode()
 		color = encode_light(light, f->light_source);
 
 	TileSpec glass_tiles[6];
-	if (tiles[1].layers[0].texture &&
-			tiles[2].layers[0].texture &&
-			tiles[3].layers[0].texture) {
-		glass_tiles[0] = tiles[4];
-		glass_tiles[1] = tiles[2];
-		glass_tiles[2] = tiles[4];
-		glass_tiles[3] = tiles[4];
-		glass_tiles[4] = tiles[3];
-		glass_tiles[5] = tiles[4];
-	} else {
-		for (auto &glass_tile : glass_tiles)
-			glass_tile = tiles[4];
-	}
+	for (auto &glass_tile : glass_tiles)
+		glass_tile = tiles[4];
 
 	u8 param2 = n.getParam2();
 	bool H_merge = !(param2 & 128);
