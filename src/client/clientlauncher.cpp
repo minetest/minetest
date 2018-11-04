@@ -369,7 +369,9 @@ bool ClientLauncher::launch_game(std::string &error_message,
 
 	if (cmd_args.exists("password-file")) {
 		std::ifstream passfile(cmd_args.get("password-file"));
-		passfile >> menudata.password;
+		if (passfile.good()) {
+			passfile >> menudata.password;
+		}
 	}
 
 	// If a world was commanded, append and select it
