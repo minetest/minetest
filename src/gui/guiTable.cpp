@@ -78,7 +78,7 @@ GUITable::GUITable(gui::IGUIEnvironment *env,
 	setTabStop(true);
 	setTabOrder(-1);
 	updateAbsolutePosition();
-
+#ifndef __ANDROID__
 	core::rect<s32> relative_rect = m_scrollbar->getRelativePosition();
 	s32 width = (relative_rect.getWidth()/(2.0/3.0)) *
 			RenderingEngine::getDisplayDensity() *
@@ -87,6 +87,7 @@ GUITable::GUITable(gui::IGUIEnvironment *env,
 			relative_rect.LowerRightCorner.X-width,relative_rect.UpperLeftCorner.Y,
 			relative_rect.LowerRightCorner.X,relative_rect.LowerRightCorner.Y
 			));
+#endif
 }
 
 GUITable::~GUITable()
