@@ -371,6 +371,12 @@ bool ClientLauncher::launch_game(std::string &error_message,
 		std::ifstream passfile(cmd_args.get("password-file"));
 		if (passfile.good()) {
 			passfile >> menudata.password;
+		} else {
+			error_message = gettext("Provided password file "
+					"failed to open: ")
+					+ cmd_args.get("password-file");
+			errorstream << error_message << std::endl;
+			return false;
 		}
 	}
 
