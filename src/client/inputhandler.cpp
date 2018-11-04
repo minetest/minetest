@@ -170,8 +170,11 @@ bool MyEventReceiver::OnEvent(const SEvent &event)
 				LL_NONE,    // ELL_NONE
 		};
 		assert(event.LogEvent.Level < ARRLEN(irr_loglev_conv));
+// Temporarily disable Irrlicht logging to hide 'GL_INVALID_ENUM' error messages
+#if !defined(__ANDROID__) || !defined(NDEBUG)
 		g_logger.log(irr_loglev_conv[event.LogEvent.Level],
 				std::string("Irrlicht: ") + event.LogEvent.Text);
+#endif
 		return true;
 	}
 	/* always return false in order to continue processing events */
