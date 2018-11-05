@@ -97,7 +97,6 @@ intlGUIEditBox::intlGUIEditBox(const wchar_t* text, bool border,
 
 		if (m_scrollbar_width > 0) {
 			createVScrollBar();
-			RelativeRect.LowerRightCorner.X -= m_scrollbar_width + 4;
 		}
 	}
 
@@ -1482,6 +1481,8 @@ void intlGUIEditBox::createVScrollBar()
 			}
 		}
 	}
+
+	RelativeRect.LowerRightCorner.X -= m_scrollbar_width + 4;
 
 	irr::core::rect<s32> scrollbarrect = FrameRect;
 	scrollbarrect.UpperLeftCorner.X += FrameRect.getWidth() - m_scrollbar_width;

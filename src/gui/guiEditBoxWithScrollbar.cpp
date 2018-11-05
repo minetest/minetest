@@ -57,7 +57,6 @@ GUIEditBoxWithScrollBar::GUIEditBoxWithScrollBar(const wchar_t* text, bool borde
 
 	if (has_vscrollbar) {
 		createVScrollBar();
-		RelativeRect.LowerRightCorner.X -= m_scrollbar_width + 4;
 	}
 
 	calculateFrameRect();
@@ -1401,6 +1400,8 @@ void GUIEditBoxWithScrollBar::createVScrollBar()
 		skin = Environment->getSkin();
 
 	m_scrollbar_width = skin ? skin->getSize(gui::EGDS_SCROLLBAR_SIZE) : 16;
+
+	RelativeRect.LowerRightCorner.X -= m_scrollbar_width + 4;
 
 	irr::core::rect<s32> scrollbarrect = m_frame_rect;
 	scrollbarrect.UpperLeftCorner.X += m_frame_rect.getWidth() - m_scrollbar_width;
