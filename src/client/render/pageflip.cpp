@@ -20,6 +20,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "pageflip.h"
 
+#ifdef STEREO_PAGEFLIP_SUPPORTED
+
 void RenderingCorePageflip::initTextures()
 {
 	hud = driver->addRenderTargetTexture(
@@ -53,3 +55,5 @@ void RenderingCorePageflip::resetEye()
 	driver->setRenderTarget(video::ERT_FRAME_BUFFER, false, false, skycolor);
 	RenderingCoreStereo::resetEye();
 }
+
+#endif // STEREO_PAGEFLIP_SUPPORTED
