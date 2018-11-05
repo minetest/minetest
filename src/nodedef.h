@@ -64,7 +64,7 @@ enum ContentParamType2
 	CPT2_WALLMOUNTED,
 	// Block level like FLOWINGLIQUID
 	CPT2_LEVELED,
-	// 2D rotation for things like plants
+	// 2D rotation
 	CPT2_DEGROTATE,
 	// Mesh options for plants
 	CPT2_MESHOPTIONS,
@@ -76,6 +76,8 @@ enum ContentParamType2
 	CPT2_COLORED_WALLMOUNTED,
 	// Glasslike framed drawtype internal liquid level, param2 values 0 to 63
 	CPT2_GLASSLIKE_LIQUID_LEVEL,
+	// 3 bits of palette index, then degrotate
+	CPT2_COLORED_DEGROTATE,
 };
 
 enum LiquidType

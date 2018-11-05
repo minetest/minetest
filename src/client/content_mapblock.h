@@ -139,7 +139,7 @@ public:
 // plantlike-specific
 	PlantlikeStyle draw_style;
 	v3f offset;
-	int rotate_degree;
+	float rotate_degree;
 	bool random_offset_Y;
 	int face_num;
 	float plant_height;

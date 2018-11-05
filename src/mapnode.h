@@ -240,6 +240,9 @@ struct MapNode
 	u8 getWallMounted(const NodeDefManager *nodemgr) const;
 	v3s16 getWallMountedDir(const NodeDefManager *nodemgr) const;
 
+	/// @returns Rotation in range 0–239 (in 1.5° steps)
+	u8 getDegRotate(const NodeDefManager *nodemgr) const;
+
 	void rotateAlongYAxis(const NodeDefManager *nodemgr, Rotation rot);
 
 	/*!
