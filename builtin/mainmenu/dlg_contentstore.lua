@@ -357,7 +357,8 @@ function store.get_formspec()
 	end
 
 	local formspec = {
-		"size[12,6.5;true]",
+		"size[12,7;true]",
+		"position[0.5,0.55]",
 		"field[0.2,0.1;7.8,1;search_string;;", core.formspec_escape(search_string), "]",
 		"field_close_on_enter[search_string;false]",
 		"dropdown[7.7,-0.1;2.4;type;",
@@ -375,7 +376,7 @@ function store.get_formspec()
 	for i=start_idx, math.min(#store.packages, start_idx+num_per_page-1) do
 		local package = store.packages[i]
 		formspec[#formspec + 1] = "container[0.5,"
-		formspec[#formspec + 1] = i - start_idx + 1
+		formspec[#formspec + 1] = (i - start_idx) * 1.1 + 1
 		formspec[#formspec + 1] = "]"
 
 		-- image
@@ -391,7 +392,7 @@ function store.get_formspec()
 		formspec[#formspec + 1] = "]"
 
 		-- description
-		formspec[#formspec + 1] = "textarea[1.5,0.3;7.25,1;;;"
+		formspec[#formspec + 1] = "textarea[1.25,0.3;7.5,1;;;"
 		formspec[#formspec + 1] = core.formspec_escape(package.short_description)
 		formspec[#formspec + 1] = "]"
 
@@ -425,7 +426,7 @@ function store.get_formspec()
 	end
 
 	formspec[#formspec + 1] = "container[0,"
-	formspec[#formspec + 1] = num_per_page + 1
+	formspec[#formspec + 1] = num_per_page + 1.5
 	formspec[#formspec + 1] = "]"
 	formspec[#formspec + 1] = "button[-0.1,0;3,1;back;"
 	formspec[#formspec + 1] = fgettext("Back to Main Menu")
