@@ -148,7 +148,6 @@ void GUIEditBoxWithScrollBar::enableOverrideColor(bool enable)
 
 bool GUIEditBoxWithScrollBar::isOverrideColorEnabled() const
 {
-	_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 	return m_override_color_enabled;
 }
 
@@ -174,7 +173,6 @@ void GUIEditBoxWithScrollBar::updateAbsolutePosition()
 //! Checks if word wrap is enabled
 bool GUIEditBoxWithScrollBar::isWordWrapEnabled() const
 {
-	_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 	return m_word_wrap;
 }
 
@@ -189,7 +187,6 @@ void GUIEditBoxWithScrollBar::setMultiLine(bool enable)
 //! Checks if multi line editing is enabled
 bool GUIEditBoxWithScrollBar::isMultiLineEnabled() const
 {
-	_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 	return m_multiline;
 }
 
@@ -208,7 +205,6 @@ void GUIEditBoxWithScrollBar::setPasswordBox(bool password_box, wchar_t password
 
 bool GUIEditBoxWithScrollBar::isPasswordBox() const
 {
-	_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 	return m_passwordbox;
 }
 
@@ -866,7 +862,6 @@ void GUIEditBoxWithScrollBar::setAutoScroll(bool enable)
 //! \return true if automatic scrolling is enabled, false if not
 bool GUIEditBoxWithScrollBar::isAutoScrollEnabled() const
 {
-	_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 	return m_autoscroll;
 }
 

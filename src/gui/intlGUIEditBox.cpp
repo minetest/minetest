@@ -182,7 +182,6 @@ void intlGUIEditBox::enableOverrideColor(bool enable)
 
 bool intlGUIEditBox::isOverrideColorEnabled() const
 {
-	_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 	return OverrideColorEnabled;
 }
 
@@ -208,7 +207,6 @@ void intlGUIEditBox::updateAbsolutePosition()
 //! Checks if word wrap is enabled
 bool intlGUIEditBox::isWordWrapEnabled() const
 {
-	_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 	return WordWrap;
 }
 
@@ -223,7 +221,6 @@ void intlGUIEditBox::setMultiLine(bool enable)
 //! Checks if multi line editing is enabled
 bool intlGUIEditBox::isMultiLineEnabled() const
 {
-	_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 	return MultiLine;
 }
 
@@ -243,7 +240,6 @@ void intlGUIEditBox::setPasswordBox(bool passwordBox, wchar_t passwordChar)
 
 bool intlGUIEditBox::isPasswordBox() const
 {
-	_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 	return PasswordBox;
 }
 
@@ -980,7 +976,6 @@ void intlGUIEditBox::setAutoScroll(bool enable)
 //! \return true if automatic scrolling is enabled, false if not
 bool intlGUIEditBox::isAutoScrollEnabled() const
 {
-	_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 	return AutoScroll;
 }
 
