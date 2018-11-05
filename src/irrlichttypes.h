@@ -31,8 +31,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #endif
 
 #include <irrTypes.h>
+#include <irrMath.h>
 
 using namespace irr;
+
+namespace irr {
 
 // Irrlicht 1.8+ defines 64bit unsigned symbol in irrTypes.h
 #if (IRRLICHT_VERSION_MAJOR == 1 && IRRLICHT_VERSION_MINOR < 8)
@@ -46,6 +49,18 @@ using namespace irr;
 	typedef uint64_t u64;
 #endif
 #endif
+
+#if (IRRLICHT_VERSION_MAJOR == 1 && IRRLICHT_VERSION_MINOR >= 9)
+namespace core {
+	template <>
+	inline s16 roundingError()
+	{
+		return 0;
+	}
+}
+#endif
+
+}
 
 #define S8_MIN  (-0x7F - 1)
 #define S16_MIN (-0x7FFF - 1)
