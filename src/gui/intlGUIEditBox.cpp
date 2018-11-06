@@ -1482,6 +1482,8 @@ void intlGUIEditBox::createVScrollBar()
 		}
 	}
 
+	RelativeRect.LowerRightCorner.X -= m_scrollbar_width + 4;
+
 	irr::core::rect<s32> scrollbarrect = FrameRect;
 	scrollbarrect.UpperLeftCorner.X += FrameRect.getWidth() - m_scrollbar_width;
 	m_vscrollbar = Environment->addScrollBar(false, scrollbarrect, getParent(), getID());
