@@ -138,11 +138,11 @@ bool ClientLauncher::run(GameParams &game_params, const Settings &cmd_args)
 	if (density > 1.5f) {
 		std::string sprite_path = porting::path_user + "/textures/base/pack/";
 		if (density > 3.5f)
-			sprite_path += "checkbox_64.png";
+			sprite_path.append("checkbox_64.png");
 		else if (density > 2.0f)
-			sprite_path += "checkbox_32.png";
+			sprite_path.append("checkbox_32.png");
 		else
-			sprite_path += "checkbox_16.png";
+			sprite_path.append("checkbox_16.png");
 		// Texture dimensions should be a power of 2
 		gui::IGUISpriteBank *sprites = skin->getSpriteBank();
 		video::IVideoDriver *driver = RenderingEngine::get_video_driver();
