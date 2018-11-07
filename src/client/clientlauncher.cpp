@@ -133,7 +133,7 @@ bool ClientLauncher::run(GameParams &game_params, const Settings &cmd_args)
 #ifdef __ANDROID__
 	float density = porting::getDisplayDensity();
 	skin->setSize(gui::EGDS_CHECK_BOX_WIDTH, (s32)(17.0f * density));
-	skin->setSize(gui::EGDS_SCROLLBAR_SIZE, (s32)(15.0f * density));
+	skin->setSize(gui::EGDS_SCROLLBAR_SIZE, (s32)(14.0f * density));
 	skin->setSize(gui::EGDS_WINDOW_BUTTON_WIDTH, (s32)(15.0f * density));
 	if (density > 1.5f) {
 		std::string sprite_path = porting::path_user + "/textures/base/pack/";

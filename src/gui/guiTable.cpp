@@ -78,16 +78,17 @@ GUITable::GUITable(gui::IGUIEnvironment *env,
 	setTabStop(true);
 	setTabOrder(-1);
 	updateAbsolutePosition();
-#ifndef __ANDROID__
+	float density = RenderingEngine::getDisplayDensity();
+#ifdef __ANDROID__
+	density = 1; // dp scaling is applied by the skin
+#endif
 	core::rect<s32> relative_rect = m_scrollbar->getRelativePosition();
-	s32 width = (relative_rect.getWidth()/(2.0/3.0)) *
-			RenderingEngine::getDisplayDensity() *
+	s32 width = (relative_rect.getWidth()/(2.0/3.0)) * density *
 			g_settings->getFloat("gui_scaling");
 	m_scrollbar->setRelativePosition(core::rect<s32>(
 			relative_rect.LowerRightCorner.X-width,relative_rect.UpperLeftCorner.Y,
 			relative_rect.LowerRightCorner.X,relative_rect.LowerRightCorner.Y
 			));
-#endif
 }
 
 GUITable::~GUITable()
