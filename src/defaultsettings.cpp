@@ -285,6 +285,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("font_size", font_size_str);
 	settings->setDefault("mono_font_size", font_size_str);
 	settings->setDefault("contentdb_url", "https://content.minetest.net");
+	settings->setDefault("show_nonfree_packages", "false");
 
 
 	// Server
