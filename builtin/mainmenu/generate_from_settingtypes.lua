@@ -31,7 +31,7 @@ local group_format_template = [[
 #    octaves     = %s,
 #    persistence = %s,
 #    lacunarity  = %s,
-#    flags       = "%s"
+#    flags       = %s
 # }
 
 ]]
