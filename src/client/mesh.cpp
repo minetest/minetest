@@ -202,6 +202,20 @@ void setMeshColor(scene::IMesh *mesh, const video::SColor &color)
 		setMeshBufferColor(mesh->getMeshBuffer(j), color);
 }
 
+template <typename F>
+static void applyToMesh(scene::IMesh *mesh, const F &fn)
+{
+	u16 mc = mesh->getMeshBufferCount();
+	for (u16 j = 0; j < mc; j++) {
+		scene::IMeshBuffer *buf = mesh->getMeshBuffer(j);
+		const u32 stride = getVertexPitchFromType(buf->getVertexType());
+		u32 vertex_count = buf->getVertexCount();
+		char *vertices = reinterpret_cast<char *>(buf->getVertices());
+		for (u32 i = 0; i < vertex_count; i++)
+			fn(reinterpret_cast<video::S3DVertex *>(vertices + i * stride));
+	}
+}
+
 void colorizeMeshBuffer(scene::IMeshBuffer *buf, const video::SColor *buffercolor)
 {
 	const u32 stride = getVertexPitchFromType(buf->getVertexType());
@@ -222,28 +236,20 @@ void setMeshColorByNormalXYZ(scene::IMesh *mesh,
 		const video::SColor &colorY,
 		const video::SColor &colorZ)
 {
-	if (mesh == NULL)
+	if (!mesh)
 		return;
-
-	u16 mc = mesh->getMeshBufferCount();
-	for (u16 j = 0; j < mc; j++) {
-		scene::IMeshBuffer *buf = mesh->getMeshBuffer(j);
-		const u32 stride = getVertexPitchFromType(buf->getVertexType());
-		u32 vertex_count = buf->getVertexCount();
-		u8 *vertices = (u8 *)buf->getVertices();
-		for (u32 i = 0; i < vertex_count; i++) {
-			video::S3DVertex *vertex = (video::S3DVertex *)(vertices + i * stride);
-			f32 x = fabs(vertex->Normal.X);
-			f32 y = fabs(vertex->Normal.Y);
-			f32 z = fabs(vertex->Normal.Z);
-			if (x >= y && x >= z)
-				vertex->Color = colorX;
-			else if (y >= z)
-				vertex->Color = colorY;
-			else
-				vertex->Color = colorZ;
-		}
-	}
+	auto colorizator = [=] (video::S3DVertex *vertex) {
+		f32 x = fabs(vertex->Normal.X);
+		f32 y = fabs(vertex->Normal.Y);
+		f32 z = fabs(vertex->Normal.Z);
+		if (x >= y && x >= z)
+			vertex->Color = colorX;
+		else if (y >= z)
+			vertex->Color = colorY;
+		else
+			vertex->Color = colorZ;
+	};
+	applyToMesh(mesh, colorizator);
 }
 
 void setMeshColorByNormal(scene::IMesh *mesh, const v3f &normal,
@@ -251,20 +257,11 @@ void setMeshColorByNormal(scene::IMesh *mesh, const v3f &normal,
 {
 	if (!mesh)
 		return;
-
-	u16 mc = mesh->getMeshBufferCount();
-	for (u16 j = 0; j < mc; j++) {
-		scene::IMeshBuffer *buf = mesh->getMeshBuffer(j);
-		const u32 stride = getVertexPitchFromType(buf->getVertexType());
-		u32 vertex_count = buf->getVertexCount();
-		u8 *vertices = (u8 *)buf->getVertices();
-		for (u32 i = 0; i < vertex_count; i++) {
-			video::S3DVertex *vertex = (video::S3DVertex *)(vertices + i * stride);
-			if (normal == vertex->Normal) {
-				vertex->Color = color;
-			}
-		}
-	}
+	auto colorizator = [normal, color] (video::S3DVertex *vertex) {
+		if (vertex->Normal == normal)
+			vertex->Color = color;
+	};
+	applyToMesh(mesh, colorizator);
 }
 
 template <float v3f::*U, float v3f::*V>
@@ -273,20 +270,13 @@ static void rotateMesh(scene::IMesh *mesh, float degrees)
 	degrees *= M_PI / 180.0f;
 	float c = std::cos(degrees);
 	float s = std::sin(degrees);
-	u16 mc = mesh->getMeshBufferCount();
-	for (u16 j = 0; j < mc; j++) {
-		scene::IMeshBuffer *buf = mesh->getMeshBuffer(j);
-		const u32 stride = getVertexPitchFromType(buf->getVertexType());
-		u32 vertex_count = buf->getVertexCount();
-		char *vertices = reinterpret_cast<char *>(buf->getVertices());
-		for (u32 i = 0; i < vertex_count; i++) {
-			auto vertex = reinterpret_cast<video::S3DVertex *>(vertices + i * stride);
-			float u = vertex->Pos.*U;
-			float v = vertex->Pos.*V;
-			vertex->Pos.*U = c * u - s * v;
-			vertex->Pos.*V = s * u + c * v;
-		}
-	}
+	auto rotator = [c, s] (video::S3DVertex *vertex) {
+		float u = vertex->Pos.*U;
+		float v = vertex->Pos.*V;
+		vertex->Pos.*U = c * u - s * v;
+		vertex->Pos.*V = s * u + c * v;
+	};
+	applyToMesh(mesh, rotator);
 }
 
 void rotateMeshXYby(scene::IMesh *mesh, f64 degrees)
