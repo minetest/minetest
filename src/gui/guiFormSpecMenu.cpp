@@ -441,9 +441,9 @@ void GUIFormSpecMenu::parseCheckbox(parserData* data, const std::string &element
 		s32 spacing = Environment->getSkin()->getSize(gui::EGDS_CHECK_BOX_WIDTH) + 7;
 
 		core::rect<s32> rect = core::rect<s32>(
-				pos.X, pos.Y + ((imgsize.Y/2) - m_btn_height),
+				pos.X, pos.Y + ((imgsize.Y / 2) - m_btn_height),
 				pos.X + m_font->getDimension(wlabel.c_str()).Width + spacing,
-				pos.Y + ((imgsize.Y/2) + m_btn_height));
+				pos.Y + ((imgsize.Y / 2) + m_btn_height));
 
 		FieldSpec spec(
 				name,
@@ -2152,17 +2152,16 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 			// different and forms should always use the
 			// maximum screen space available.
 			double fitx_imgsize = mydata.screensize.X /
-				((12.0/8.0) * (0.5 + mydata.invsize.X));
+				((12.0 / 8.0) * (0.5 + mydata.invsize.X));
 			double fity_imgsize = mydata.screensize.Y /
-				((15.0/11.0) * (0.85 + mydata.invsize.Y));
+				((15.0 / 11.0) * (0.85 + mydata.invsize.Y));
 			use_imgsize = MYMIN(fitx_imgsize, fity_imgsize);
 #else
-			double prefer_imgsize = mydata.screensize.Y / 15 *
-				gui_scaling;
+			double prefer_imgsize = mydata.screensize.Y / 15 * gui_scaling;
 			double fitx_imgsize = mydata.screensize.X /
-				((5.0/4.0) * (0.5 + mydata.invsize.X));
+				((5.0 / 4.0) * (0.5 + mydata.invsize.X));
 			double fity_imgsize = mydata.screensize.Y /
-				((15.0/13.0) * (0.85 * mydata.invsize.Y));
+				((15.0 / 13.0) * (0.85 * mydata.invsize.Y));
 			double screen_dpi = RenderingEngine::getDisplayDensity() * 96;
 			double min_imgsize = 0.3 * screen_dpi * gui_scaling;
 			use_imgsize = MYMAX(min_imgsize, MYMIN(prefer_imgsize,
