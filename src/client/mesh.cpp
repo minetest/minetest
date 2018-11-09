@@ -308,73 +308,17 @@ void rotateMeshBy6dFacedir(scene::IMesh *mesh, int facedir)
 {
 	int axisdir = facedir >> 2;
 	facedir &= 0x03;
-
-	u16 mc = mesh->getMeshBufferCount();
-	for (u16 j = 0; j < mc; j++) {
-		scene::IMeshBuffer *buf = mesh->getMeshBuffer(j);
-		const u32 stride = getVertexPitchFromType(buf->getVertexType());
-		u32 vertex_count = buf->getVertexCount();
-		u8 *vertices = (u8 *)buf->getVertices();
-		for (u32 i = 0; i < vertex_count; i++) {
-			video::S3DVertex *vertex = (video::S3DVertex *)(vertices + i * stride);
-			switch (axisdir) {
-				case 0:
-					if (facedir == 1)
-						vertex->Pos.rotateXZBy(-90);
-					else if (facedir == 2)
-						vertex->Pos.rotateXZBy(180);
-					else if (facedir == 3)
-						vertex->Pos.rotateXZBy(90);
-					break;
-				case 1: // z+
-					vertex->Pos.rotateYZBy(90);
-					if (facedir == 1)
-						vertex->Pos.rotateXYBy(90);
-					else if (facedir == 2)
-						vertex->Pos.rotateXYBy(180);
-					else if (facedir == 3)
-						vertex->Pos.rotateXYBy(-90);
-					break;
-				case 2: //z-
-					vertex->Pos.rotateYZBy(-90);
-					if (facedir == 1)
-						vertex->Pos.rotateXYBy(-90);
-					else if (facedir == 2)
-						vertex->Pos.rotateXYBy(180);
-					else if (facedir == 3)
-						vertex->Pos.rotateXYBy(90);
-					break;
-				case 3:  //x+
-					vertex->Pos.rotateXYBy(-90);
-					if (facedir == 1)
-						vertex->Pos.rotateYZBy(90);
-					else if (facedir == 2)
-						vertex->Pos.rotateYZBy(180);
-					else if (facedir == 3)
-						vertex->Pos.rotateYZBy(-90);
-					break;
-				case 4:  //x-
-					vertex->Pos.rotateXYBy(90);
-					if (facedir == 1)
-						vertex->Pos.rotateYZBy(-90);
-					else if (facedir == 2)
-						vertex->Pos.rotateYZBy(180);
-					else if (facedir == 3)
-						vertex->Pos.rotateYZBy(90);
-					break;
-				case 5:
-					vertex->Pos.rotateXYBy(-180);
-					if (facedir == 1)
-						vertex->Pos.rotateXZBy(90);
-					else if (facedir == 2)
-						vertex->Pos.rotateXZBy(180);
-					else if (facedir == 3)
-						vertex->Pos.rotateXZBy(-90);
-					break;
-				default:
-					break;
-			}
-		}
+	switch (facedir) {
+		case 1: rotateMeshXZby(mesh, -90); break;
+		case 2: rotateMeshXZby(mesh, 180); break;
+		case 3: rotateMeshXZby(mesh, 90); break;
+	}
+	switch (axisdir) {
+		case 1: rotateMeshYZby(mesh, 90); break; // z+
+		case 2: rotateMeshYZby(mesh, -90); break; // z-
+		case 3: rotateMeshXYby(mesh, -90); break; // x+
+		case 4: rotateMeshXYby(mesh, 90); break; // x-
+		case 5: rotateMeshXYby(mesh, -180); break;
 	}
 }
 
