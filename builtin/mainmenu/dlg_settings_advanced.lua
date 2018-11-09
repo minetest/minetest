@@ -667,13 +667,17 @@ local function create_change_setting_formspec(dialogdata)
 		height = height + 1.1
 
 	elseif setting.type == "flags" then
-		local enabled_flags = flags_to_table(get_current_value(setting))
+		local current_flags = flags_to_table(get_current_value(setting))
 		local flags = {}
-		for _, name in ipairs(enabled_flags) do
+		for _, name in ipairs(current_flags) do
 			-- Index by name, to avoid iterating over all enabled_flags for every possible flag.
-			flags[name] = true
+			if name:sub(1, 2) == "no" then
+				flags[name:sub(3)] = false
+			else
+				flags[name] = true
+			end
 		end
-		local flags_count = #setting.possible
+		local flags_count = #setting.possible / 2
 		local max_height = flags_count / 4
 
 		-- More space for flags
@@ -682,19 +686,21 @@ local function create_change_setting_formspec(dialogdata)
 
 		local fields = {} -- To build formspec
 		for i, name in ipairs(setting.possible) do
-			local x = 0.5
-			local y = height + i / 2 - 0.75
-			if i - 1 >= flags_count / 2 then -- 2nd column
-				x = 5
-				y = y - max_height
-			end
-			local checkbox_name = "cb_" .. name
-			local is_enabled = flags[name] == true -- to get false if nil
-			checkboxes[checkbox_name] = is_enabled
+			if name:sub(1, 2) ~= "no" then
+				local x = 0.5
+				local y = height + i / 2 - 0.75
+				if i - 1 >= flags_count / 2 then -- 2nd column
+					x = 5
+					y = y - max_height
+				end
+				local checkbox_name = "cb_" .. name
+				local is_enabled = flags[name] == true -- to get false if nil
+				checkboxes[checkbox_name] = is_enabled
 
-			fields[#fields + 1] = ("checkbox[%f,%f;%s;%s;%s]"):format(
-				x, y, checkbox_name, name, tostring(is_enabled)
-			)
+				fields[#fields + 1] = ("checkbox[%f,%f;%s;%s;%s]"):format(
+					x, y, checkbox_name, name, tostring(is_enabled)
+				)
+			end
 		end
 		formspec = table.concat(fields)
 		height = height + max_height + 0.25
@@ -832,6 +838,8 @@ local function handle_change_setting_buttons(this, fields)
 			for _, name in ipairs(setting.possible) do
 				if checkboxes["cb_" .. name] then
 					table.insert(values, name)
+				else
+					table.insert(values, "no" .. name)
 				end
 			end
 
