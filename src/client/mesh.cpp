@@ -267,43 +267,41 @@ void setMeshColorByNormal(scene::IMesh *mesh, const v3f &normal,
 	}
 }
 
-void rotateMeshXYby(scene::IMesh *mesh, f64 degrees)
+template <float v3f::*U, float v3f::*V>
+static void rotateMesh(scene::IMesh *mesh, float degrees)
 {
+	degrees *= M_PI / 180.0f;
+	float c = std::cos(degrees);
+	float s = std::sin(degrees);
 	u16 mc = mesh->getMeshBufferCount();
 	for (u16 j = 0; j < mc; j++) {
 		scene::IMeshBuffer *buf = mesh->getMeshBuffer(j);
 		const u32 stride = getVertexPitchFromType(buf->getVertexType());
 		u32 vertex_count = buf->getVertexCount();
-		u8 *vertices = (u8 *)buf->getVertices();
-		for (u32 i = 0; i < vertex_count; i++)
-			((video::S3DVertex *)(vertices + i * stride))->Pos.rotateXYBy(degrees);
+		char *vertices = reinterpret_cast<char *>(buf->getVertices());
+		for (u32 i = 0; i < vertex_count; i++) {
+			auto vertex = reinterpret_cast<video::S3DVertex *>(vertices + i * stride);
+			float u = vertex->Pos.*U;
+			float v = vertex->Pos.*V;
+			vertex->Pos.*U = c * u - s * v;
+			vertex->Pos.*V = s * u + c * v;
+		}
 	}
+}
+
+void rotateMeshXYby(scene::IMesh *mesh, f64 degrees)
+{
+	rotateMesh<&v3f::X, &v3f::Y>(mesh, degrees);
 }
 
 void rotateMeshXZby(scene::IMesh *mesh, f64 degrees)
 {
-	u16 mc = mesh->getMeshBufferCount();
-	for (u16 j = 0; j < mc; j++) {
-		scene::IMeshBuffer *buf = mesh->getMeshBuffer(j);
-		const u32 stride = getVertexPitchFromType(buf->getVertexType());
-		u32 vertex_count = buf->getVertexCount();
-		u8 *vertices = (u8 *)buf->getVertices();
-		for (u32 i = 0; i < vertex_count; i++)
-			((video::S3DVertex *)(vertices + i * stride))->Pos.rotateXZBy(degrees);
-	}
+	rotateMesh<&v3f::X, &v3f::Z>(mesh, degrees);
 }
 
 void rotateMeshYZby(scene::IMesh *mesh, f64 degrees)
 {
-	u16 mc = mesh->getMeshBufferCount();
-	for (u16 j = 0; j < mc; j++) {
-		scene::IMeshBuffer *buf = mesh->getMeshBuffer(j);
-		const u32 stride = getVertexPitchFromType(buf->getVertexType());
-		u32 vertex_count = buf->getVertexCount();
-		u8 *vertices = (u8 *)buf->getVertices();
-		for (u32 i = 0; i < vertex_count; i++)
-			((video::S3DVertex *)(vertices + i * stride))->Pos.rotateYZBy(degrees);
-	}
+	rotateMesh<&v3f::Y, &v3f::Z>(mesh, degrees);
 }
 
 void rotateMeshBy6dFacedir(scene::IMesh *mesh, int facedir)
