@@ -296,14 +296,14 @@ void Sky::render()
 			float a = easeCurve(MYMAX(0, MYMIN(1, a_)));
 			//std::cerr<<"a_="<<a_<<" a="<<a<<std::endl;
 			video::SColor c(255, 255, 255, 255);
-			float y = -(1.0 - a) * 0.5;
+			float y = -(1.0 - a) * 0.22;
 			if (y > 0)
+				// Prevent sunrise texture creeping too far above the horizon
 				y = 0;
-			std::cout << y << std::endl;
 			vertices[0] = video::S3DVertex(-1, -0.05 + y, -1, 0, 0, 1, c, t, t);
 			vertices[1] = video::S3DVertex( 1, -0.05 + y, -1, 0, 0, 1, c, o, t);
-			vertices[2] = video::S3DVertex( 1,   0.2 + y, -1, 0, 0, 1, c, o, o);
-			vertices[3] = video::S3DVertex(-1,   0.2 + y, -1, 0, 0, 1, c, t, o);
+			vertices[2] = video::S3DVertex( 1,  0.2  + y, -1, 0, 0, 1, c, o, o);
+			vertices[3] = video::S3DVertex(-1,  0.2  + y, -1, 0, 0, 1, c, t, o);
 			for (video::S3DVertex &vertex : vertices) {
 				if (wicked_time_of_day < 0.5)
 					// Switch from -Z (south) to +X (east)
@@ -559,7 +559,9 @@ void Sky::render()
 			}
 		}
 
-		// Draw far cloudy fog thing below east and west horizons
+		driver->setMaterial(m_materials[1]);
+
+		// Draw lower blend fog band
 		for (u32 j = 0; j < 2; j++) {
 			video::SColor c = m_bgcolor;
 			video::SColor c_blend = m_bgcolor_alpha;
@@ -579,6 +581,7 @@ void Sky::render()
 			driver->drawIndexedTriangleFan(&vertices[0], 4, indices, 2);
 		}
 
+		// Draw upper blend fog band
 		for (u32 j = 0; j < 2; j++) {
 			video::SColor c = m_bgcolor_alpha;
 			video::SColor c_blend = m_skycolor_alpha; //
@@ -591,6 +594,24 @@ void Sky::render()
 					// Switch from -Z (south) to +X (east)
 					vertex.Pos.rotateXZBy(90);
 				else if (j == 1)
+					// Switch from -Z (south) to -X (west)
+					vertex.Pos.rotateXZBy(-90);
+			}
+			driver->drawIndexedTriangleFan(&vertices[0], 4, indices, 2);
+		}
+
+		// Draw bottom sides of the sky, to hide the sunrise texture
+		for (u32 j = 0; j < 2; j++) {
+			video::SColor c = m_bgcolor;
+				vertices[0] = video::S3DVertex(-1, -0.2, -1, 0, 0, 1, c, t, t);
+				vertices[1] = video::S3DVertex( 1, -0.2, -1, 0, 0, 1, c, o, t);
+				vertices[2] = video::S3DVertex( 1, -1,   -1, 0, 0, 1, c, o, o);
+				vertices[3] = video::S3DVertex(-1, -1,   -1, 0, 0, 1, c, t, o);
+			for (video::S3DVertex &vertex : vertices) {
+				if (j == 0)
+					// Switch from -Z (south) to +X (east)
+					vertex.Pos.rotateXZBy(90);
+				else
 					// Switch from -Z (south) to -X (west)
 					vertex.Pos.rotateXZBy(-90);
 			}
