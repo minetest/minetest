@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "debug.h"
 #include "log.h"
 #include "irrMap.h"
+#include <cmath>
 #include <iostream>
 #include <IAnimatedMesh.h>
 #include <SAnimatedMesh.h>
