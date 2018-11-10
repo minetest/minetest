@@ -138,7 +138,9 @@ private:
 	video::SColorf m_skycolor_bright_f = video::SColorf(1.0f, 1.0f, 1.0f, 1.0f);
 	video::SColorf m_cloudcolor_bright_f = video::SColorf(1.0f, 1.0f, 1.0f, 1.0f);
 	video::SColor m_bgcolor;
+	video::SColor m_bgcolor_alpha;
 	video::SColor m_skycolor;
+	video::SColor m_skycolor_alpha;
 	video::SColorf m_cloudcolor_f;
 	v3f m_stars[SKY_STAR_COUNT];
 	video::ITexture *m_sun_texture;

@@ -202,15 +202,14 @@ void Sky::render()
 
 		driver->setMaterial(m_materials[1]);
 
-		video::SColor cloudyfogcolor = m_bgcolor;
-
-		// Draw far cloudy fog thing blended with skycolor
+		// Draw top band of our smooth skybox
 		for (u32 j = 0; j < 4; j++) {
-			video::SColor c = cloudyfogcolor.getInterpolated(m_skycolor, 0.45);
-			vertices[0] = video::S3DVertex(-1, 0.08, -1, 0, 0, 1, c, t, t);
-			vertices[1] = video::S3DVertex( 1, 0.08, -1, 0, 0, 1, c, o, t);
-			vertices[2] = video::S3DVertex( 1, 0.12, -1, 0, 0, 1, c, o, o);
-			vertices[3] = video::S3DVertex(-1, 0.12, -1, 0, 0, 1, c, t, o);
+			video::SColor c = m_bgcolor;
+			video::SColor c_blend = m_skycolor; //
+				vertices[0] = video::S3DVertex(-1, -0.1, -1, 0, 0, 1, c, t, t);
+				vertices[1] = video::S3DVertex( 1, -0.1, -1, 0, 0, 1, c, o, t);
+				vertices[2] = video::S3DVertex( 1, 0.3, -1, 0, 0, 1, c_blend, o, o);
+				vertices[3] = video::S3DVertex(-1, 0.3, -1, 0, 0, 1, c_blend, t, o);
 			for (video::S3DVertex &vertex : vertices) {
 				if (j == 0)
 					// Don't switch
@@ -228,13 +227,36 @@ void Sky::render()
 			driver->drawIndexedTriangleFan(&vertices[0], 4, indices, 2);
 		}
 
-		// Draw far cloudy fog thing
+		// Draw middle band of our smooth skybox
 		for (u32 j = 0; j < 4; j++) {
-			video::SColor c = cloudyfogcolor;
-			vertices[0] = video::S3DVertex(-1, -1.0, -1, 0, 0, 1, c, t, t);
-			vertices[1] = video::S3DVertex( 1, -1.0, -1, 0, 0, 1, c, o, t);
-			vertices[2] = video::S3DVertex( 1, 0.08, -1, 0, 0, 1, c, o, o);
-			vertices[3] = video::S3DVertex(-1, 0.08, -1, 0, 0, 1, c, t, o);
+			video::SColor c = m_bgcolor;
+				vertices[0] = video::S3DVertex(-1, -0.2, -1, 0, 0, 1, c, t, t);
+				vertices[1] = video::S3DVertex( 1, -0.2, -1, 0, 0, 1, c, o, t);
+				vertices[2] = video::S3DVertex( 1, -0.1, -1, 0, 0, 1, c, o, o);
+				vertices[3] = video::S3DVertex(-1, -0.1, -1, 0, 0, 1, c, t, o);
+			for (video::S3DVertex &vertex : vertices) {
+				if (j == 0)
+					// Don't switch
+					{}
+				else if (j == 1)
+					// Switch from -Z (south) to +X (east)
+					vertex.Pos.rotateXZBy(90);
+				else if (j == 2)
+					// Switch from -Z (south) to -X (west)
+					vertex.Pos.rotateXZBy(-90);
+				else
+					// Switch from -Z (south) to +Z (north)
+					vertex.Pos.rotateXZBy(-180);
+			}
+			driver->drawIndexedTriangleFan(&vertices[0], 4, indices, 2);
+		}
+		// Draw bottom sides of the sky
+		for (u32 j = 0; j < 4; j++) {
+			video::SColor c = m_bgcolor;
+				vertices[0] = video::S3DVertex(-1, -0.2, -1, 0, 0, 1, c, t, t);
+				vertices[1] = video::S3DVertex( 1, -0.2, -1, 0, 0, 1, c, o, t);
+				vertices[2] = video::S3DVertex( 1, -1,   -1, 0, 0, 1, c, o, o);
+				vertices[3] = video::S3DVertex(-1, -1,   -1, 0, 0, 1, c, t, o);
 			for (video::S3DVertex &vertex : vertices) {
 				if (j == 0)
 					// Don't switch
@@ -252,8 +274,8 @@ void Sky::render()
 			driver->drawIndexedTriangleFan(&vertices[0], 4, indices, 2);
 		}
 
-		// Draw bottom far cloudy fog thing
-		video::SColor c = cloudyfogcolor;
+		// Draw world bottom
+		video::SColor c = m_bgcolor;
 		vertices[0] = video::S3DVertex(-1, -1.0, -1, 0, 1, 0, c, t, t);
 		vertices[1] = video::S3DVertex( 1, -1.0, -1, 0, 1, 0, c, o, t);
 		vertices[2] = video::S3DVertex( 1, -1.0, 1, 0, 1, 0, c, o, o);
@@ -274,11 +296,29 @@ void Sky::render()
 			float a = easeCurve(MYMAX(0, MYMIN(1, a_)));
 			//std::cerr<<"a_="<<a_<<" a="<<a<<std::endl;
 			video::SColor c(255, 255, 255, 255);
-			float y = -(1.0 - a) * 0.22;
+			float y = -(1.0 - a) * 0.5;
+			if (y > 0)
+				y = 0;
+			std::cout << y << std::endl;
 			vertices[0] = video::S3DVertex(-1, -0.05 + y, -1, 0, 0, 1, c, t, t);
 			vertices[1] = video::S3DVertex( 1, -0.05 + y, -1, 0, 0, 1, c, o, t);
 			vertices[2] = video::S3DVertex( 1,   0.2 + y, -1, 0, 0, 1, c, o, o);
 			vertices[3] = video::S3DVertex(-1,   0.2 + y, -1, 0, 0, 1, c, t, o);
+			for (video::S3DVertex &vertex : vertices) {
+				if (wicked_time_of_day < 0.5)
+					// Switch from -Z (south) to +X (east)
+					vertex.Pos.rotateXZBy(90);
+				else
+					// Switch from -Z (south) to -X (west)
+					vertex.Pos.rotateXZBy(-90);
+			}
+			driver->drawIndexedTriangleFan(&vertices[0], 4, indices, 2);
+			// Flip sunrise/set texture upsidedown
+
+			vertices[0] = video::S3DVertex(-1, -0.3  + y, -1, 0, 0, 1, c, t, o);
+			vertices[1] = video::S3DVertex( 1, -0.3  + y, -1, 0, 0, 1, c, o, o);
+			vertices[2] = video::S3DVertex( 1, -0.05 + y, -1, 0, 0, 1, c, o, t);
+			vertices[3] = video::S3DVertex(-1, -0.05 + y, -1, 0, 0, 1, c, t, t);
 			for (video::S3DVertex &vertex : vertices) {
 				if (wicked_time_of_day < 0.5)
 					// Switch from -Z (south) to +X (east)
@@ -521,11 +561,12 @@ void Sky::render()
 
 		// Draw far cloudy fog thing below east and west horizons
 		for (u32 j = 0; j < 2; j++) {
-			video::SColor c = cloudyfogcolor;
-			vertices[0] = video::S3DVertex(-1, -1.0,  -1, 0, 0, 1, c, t, t);
-			vertices[1] = video::S3DVertex( 1, -1.0,  -1, 0, 0, 1, c, o, t);
-			vertices[2] = video::S3DVertex( 1, -0.02, -1, 0, 0, 1, c, o, o);
-			vertices[3] = video::S3DVertex(-1, -0.02, -1, 0, 0, 1, c, t, o);
+			video::SColor c = m_bgcolor;
+			video::SColor c_blend = m_bgcolor_alpha;
+			vertices[0] = video::S3DVertex(-1, -0.2,  -1, 0, 0, 1, c, t, t);
+			vertices[1] = video::S3DVertex( 1, -0.2,  -1, 0, 0, 1, c, o, t);
+			vertices[2] = video::S3DVertex( 1, -0.1, -1, 0, 0, 1, c_blend, o, o);
+			vertices[3] = video::S3DVertex(-1, -0.1, -1, 0, 0, 1, c_blend, t, o);
 			for (video::S3DVertex &vertex : vertices) {
 				//if (wicked_time_of_day < 0.5)
 				if (j == 0)
@@ -537,6 +578,25 @@ void Sky::render()
 			}
 			driver->drawIndexedTriangleFan(&vertices[0], 4, indices, 2);
 		}
+
+		for (u32 j = 0; j < 2; j++) {
+			video::SColor c = m_bgcolor_alpha;
+			video::SColor c_blend = m_skycolor_alpha; //
+				vertices[0] = video::S3DVertex(-1, -0.1, -1, 0, 0, 1, c, t, t);
+				vertices[1] = video::S3DVertex( 1, -0.1, -1, 0, 0, 1, c, o, t);
+				vertices[2] = video::S3DVertex( 1, 0.3, -1, 0, 0, 1, c_blend, o, o);
+				vertices[3] = video::S3DVertex(-1, 0.3, -1, 0, 0, 1, c_blend, t, o);
+			for (video::S3DVertex &vertex : vertices) {
+				if (j == 0)
+					// Switch from -Z (south) to +X (east)
+					vertex.Pos.rotateXZBy(90);
+				else if (j == 1)
+					// Switch from -Z (south) to -X (west)
+					vertex.Pos.rotateXZBy(-90);
+			}
+			driver->drawIndexedTriangleFan(&vertices[0], 4, indices, 2);
+		}
+
 	}
 }
 
@@ -579,12 +639,13 @@ void Sky::update(float time_of_day, float time_brightness,
 	video::SColorf cloudcolor_bright_dawn_f(1.0, 0.65, 0.44);
 	video::SColorf cloudcolor_bright_dawn_f(1.0, 0.7, 0.5);
 	*/
-
+	//video::SColorf bgcolor_bright_normal_f = video::SColor(255, 228, 243, 255);
 	video::SColorf bgcolor_bright_normal_f = video::SColor(255, 155, 193, 240);
 	video::SColorf bgcolor_bright_indoor_f = video::SColor(255, 100, 100, 100);
 	video::SColorf bgcolor_bright_dawn_f = video::SColor(255, 186, 193, 240);
 	video::SColorf bgcolor_bright_night_f = video::SColor(255, 64, 144, 255);
 
+	//video::SColorf skycolor_bright_normal_f = video::SColor(255, 59, 105, 187);
 	video::SColorf skycolor_bright_normal_f = video::SColor(255, 140, 186, 250);
 	video::SColorf skycolor_bright_dawn_f = video::SColor(255, 180, 186, 250);
 	video::SColorf skycolor_bright_night_f = video::SColor(255, 0, 107, 255);
@@ -652,6 +713,12 @@ void Sky::update(float time_of_day, float time_brightness,
 		bgcolor_bright.getGreen() * m_brightness,
 		bgcolor_bright.getBlue() * m_brightness
 	);
+	m_bgcolor_alpha = video::SColor(
+		0,
+		bgcolor_bright.getRed() * m_brightness,
+		bgcolor_bright.getGreen() * m_brightness,
+		bgcolor_bright.getBlue() * m_brightness
+	);
 
 	video::SColor skycolor_bright = m_skycolor_bright_f.toSColor();
 	m_skycolor = video::SColor(
@@ -660,9 +727,16 @@ void Sky::update(float time_of_day, float time_brightness,
 		skycolor_bright.getGreen() * m_brightness,
 		skycolor_bright.getBlue() * m_brightness
 	);
+	m_skycolor_alpha = video::SColor(
+		0,
+		skycolor_bright.getRed() * m_brightness,
+		skycolor_bright.getGreen() * m_brightness,
+		skycolor_bright.getBlue() * m_brightness
+	);
 
 	// Horizon coloring based on sun and moon direction during sunset and sunrise
 	video::SColor pointcolor = video::SColor(m_bgcolor.getAlpha(), 255, 255, 255);
+	video::SColor pointcolor_alpha = video::SColor(m_bgcolor_alpha.getAlpha(), 255, 255, 255);
 	if (m_directional_colored_fog) {
 		if (m_horizon_blend() != 0) {
 			// Calculate hemisphere value from yaw, (inverted in third person front view)
@@ -716,9 +790,12 @@ void Sky::update(float time_of_day, float time_brightness,
 			video::SColor pointcolor_moon = pointcolor_moon_f.toSColor();
 			// Calculate the blend color
 			pointcolor = m_mix_scolor(pointcolor_moon, pointcolor_sun, pointcolor_blend);
+			pointcolor_alpha = m_mix_scolor(pointcolor_moon, pointcolor_sun, pointcolor_blend);
 		}
 		m_bgcolor = m_mix_scolor(m_bgcolor, pointcolor, m_horizon_blend() * 0.5);
+		m_bgcolor_alpha = m_mix_scolor(m_bgcolor_alpha, pointcolor_alpha, m_horizon_blend() * 0.5);
 		m_skycolor = m_mix_scolor(m_skycolor, pointcolor, m_horizon_blend() * 0.25);
+		m_skycolor_alpha = m_mix_scolor(m_skycolor_alpha, pointcolor_alpha, m_horizon_blend() * 0.25);
 	}
 
 	float cloud_direct_brightness = 0.0f;
