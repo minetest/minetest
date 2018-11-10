@@ -256,6 +256,7 @@ local function main_button_handler(tabview, fields, name, tabdata)
 		-- setup the keyword list
 		local keywords = {}
 		for word in input:gmatch("%S+") do
+			word = word:gsub("(%W)", "%%%1")
 			table.insert(keywords, word)
 		end
 
