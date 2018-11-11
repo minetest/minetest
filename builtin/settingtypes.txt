@@ -1885,3 +1885,9 @@ emergequeue_limit_generate (Limit of emerge queues to generate) int 64
 #    On multiprocessor systems, this will improve mapgen speed greatly at the cost
 #    of slightly buggy caves.
 num_emerge_threads (Number of emerge threads) int 0
+
+[Content Store]
+
+#    Show packages in the content store that do not qualify as 'free software'
+#    as defined by the Free Software Foundation.
+show_nonfree_packages (Show non-free packages) bool false

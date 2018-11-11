@@ -993,10 +993,12 @@ int ModApiMainMenu::l_get_screen_info(lua_State *L)
 
 int ModApiMainMenu::l_get_package_list(lua_State *L)
 {
-	std::string url = g_settings->get("contentdb_url");
+	std::string url   = g_settings->get("contentdb_url");
+	bool show_nonfree = g_settings->getBool("show_nonfree_packages");
 	std::vector<Package> packages = getPackagesFromURL(url +
 			"/api/packages/?type=mod&type=game&type=txp&protocol_version="
-			LATEST_PROTOCOL_VERSION_STRING);
+			LATEST_PROTOCOL_VERSION_STRING "&nonfree=" +
+			(show_nonfree ? "true" : "false"));
 
 	// Make table
 	lua_newtable(L);
