@@ -204,12 +204,12 @@ void Sky::render()
 
 		// Draw top band of our smooth skybox
 		for (u32 j = 0; j < 4; j++) {
-			video::SColor c = m_bgcolor;
-			video::SColor c_blend = m_skycolor; //
+			video::SColor c = m_sky_color_bottom;
+			video::SColor c_blend = m_sky_color_top; //
 				vertices[0] = video::S3DVertex(-1, -0.1, -1, 0, 0, 1, c, t, t);
 				vertices[1] = video::S3DVertex( 1, -0.1, -1, 0, 0, 1, c, o, t);
-				vertices[2] = video::S3DVertex( 1, 0.3, -1, 0, 0, 1, c_blend, o, o);
-				vertices[3] = video::S3DVertex(-1, 0.3, -1, 0, 0, 1, c_blend, t, o);
+				vertices[2] = video::S3DVertex( 1, 0.7, -1, 0, 0, 1, c_blend, o, o);
+				vertices[3] = video::S3DVertex(-1, 0.7, -1, 0, 0, 1, c_blend, t, o);
 			for (video::S3DVertex &vertex : vertices) {
 				if (j == 0)
 					// Don't switch
@@ -229,7 +229,7 @@ void Sky::render()
 
 		// Draw middle band of our smooth skybox
 		for (u32 j = 0; j < 4; j++) {
-			video::SColor c = m_bgcolor;
+			video::SColor c = m_sky_color_bottom;
 				vertices[0] = video::S3DVertex(-1, -0.2, -1, 0, 0, 1, c, t, t);
 				vertices[1] = video::S3DVertex( 1, -0.2, -1, 0, 0, 1, c, o, t);
 				vertices[2] = video::S3DVertex( 1, -0.1, -1, 0, 0, 1, c, o, o);
@@ -252,7 +252,7 @@ void Sky::render()
 		}
 		// Draw bottom sides of the sky
 		for (u32 j = 0; j < 4; j++) {
-			video::SColor c = m_bgcolor;
+			video::SColor c = m_sky_color_bottom;
 				vertices[0] = video::S3DVertex(-1, -0.2, -1, 0, 0, 1, c, t, t);
 				vertices[1] = video::S3DVertex( 1, -0.2, -1, 0, 0, 1, c, o, t);
 				vertices[2] = video::S3DVertex( 1, -1,   -1, 0, 0, 1, c, o, o);
@@ -275,7 +275,7 @@ void Sky::render()
 		}
 
 		// Draw world bottom
-		video::SColor c = m_bgcolor;
+		video::SColor c = m_sky_color_bottom;
 		vertices[0] = video::S3DVertex(-1, -1.0, -1, 0, 1, 0, c, t, t);
 		vertices[1] = video::S3DVertex( 1, -1.0, -1, 0, 1, 0, c, o, t);
 		vertices[2] = video::S3DVertex( 1, -1.0, 1, 0, 1, 0, c, o, o);
@@ -340,7 +340,7 @@ void Sky::render()
 			float f = starbrightness;
 			float d = 0.007/2;
 			video::SColor starcolor(255, f * 90, f * 90, f * 90);
-			if (starcolor.getBlue() < m_skycolor.getBlue())
+			if (starcolor.getBlue() < m_sky_color_top.getBlue())
 				break;
 #ifdef __ANDROID__
 			u16 indices[SKY_STAR_COUNT * 3];
@@ -564,8 +564,8 @@ void Sky::render()
 
 		// Draw lower blend fog band
 		for (u32 j = 0; j < 2; j++) {
-			video::SColor c = m_bgcolor;
-			video::SColor c_blend = m_bgcolor_alpha;
+			video::SColor c = m_sky_color_bottom;
+			video::SColor c_blend = m_sky_color_bottom_alpha;
 			vertices[0] = video::S3DVertex(-1, -0.2,  -1, 0, 0, 1, c, t, t);
 			vertices[1] = video::S3DVertex( 1, -0.2,  -1, 0, 0, 1, c, o, t);
 			vertices[2] = video::S3DVertex( 1, -0.1, -1, 0, 0, 1, c_blend, o, o);
@@ -584,12 +584,12 @@ void Sky::render()
 
 		// Draw upper blend fog band
 		for (u32 j = 0; j < 2; j++) {
-			video::SColor c = m_bgcolor_alpha;
-			video::SColor c_blend = m_skycolor_alpha; //
+			video::SColor c = m_sky_color_bottom_alpha;
+			video::SColor c_blend = m_sky_color_top_alpha; //
 				vertices[0] = video::S3DVertex(-1, -0.1, -1, 0, 0, 1, c, t, t);
 				vertices[1] = video::S3DVertex( 1, -0.1, -1, 0, 0, 1, c, o, t);
-				vertices[2] = video::S3DVertex( 1, 0.3, -1, 0, 0, 1, c_blend, o, o);
-				vertices[3] = video::S3DVertex(-1, 0.3, -1, 0, 0, 1, c_blend, t, o);
+				vertices[2] = video::S3DVertex( 1, 0.7, -1, 0, 0, 1, c_blend, o, o);
+				vertices[3] = video::S3DVertex(-1, 0.7, -1, 0, 0, 1, c_blend, t, o);
 			for (video::S3DVertex &vertex : vertices) {
 				if (j == 0)
 					// Switch from -Z (south) to +X (east)
@@ -603,7 +603,7 @@ void Sky::render()
 
 		// Draw bottom sides of the sky, to hide the sunrise texture
 		for (u32 j = 0; j < 2; j++) {
-			video::SColor c = m_bgcolor;
+			video::SColor c = m_sky_color_bottom;
 				vertices[0] = video::S3DVertex(-1, -0.2, -1, 0, 0, 1, c, t, t);
 				vertices[1] = video::S3DVertex( 1, -0.2, -1, 0, 0, 1, c, o, t);
 				vertices[2] = video::S3DVertex( 1, -1,   -1, 0, 0, 1, c, o, o);
@@ -651,25 +651,28 @@ void Sky::update(float time_of_day, float time_brightness,
 	/*
 	Development colours
 
-	video::SColorf bgcolor_bright_normal_f(170. / 255, 200. / 255, 230. / 255, 1.0);
-	video::SColorf bgcolor_bright_dawn_f(0.666, 200. / 255 * 0.7, 230. / 255 * 0.5, 1.0);
-	video::SColorf bgcolor_bright_dawn_f(0.666, 0.549, 0.220, 1.0);
-	video::SColorf bgcolor_bright_dawn_f(0.666 * 1.2, 0.549 * 1.0, 0.220 * 1.0, 1.0);
-	video::SColorf bgcolor_bright_dawn_f(0.666 * 1.2, 0.549 * 1.0, 0.220 * 1.2, 1.0);
+	video::SColorf sky_bottom_bright_normal_f(170. / 255, 200. / 255, 230. / 255, 1.0);
+	video::SColorf sky_bottom_bright_dawn_f(0.666, 200. / 255 * 0.7, 230. / 255 * 0.5, 1.0);
+	video::SColorf sky_bottom_bright_dawn_f(0.666, 0.549, 0.220, 1.0);
+	video::SColorf sky_bottom_bright_dawn_f(0.666 * 1.2, 0.549 * 1.0, 0.220 * 1.0, 1.0);
+	video::SColorf sky_bottom_bright_dawn_f(0.666 * 1.2, 0.549 * 1.0, 0.220 * 1.2, 1.0);
 
 	video::SColorf cloudcolor_bright_dawn_f(1.0, 0.591, 0.4);
 	video::SColorf cloudcolor_bright_dawn_f(1.0, 0.65, 0.44);
 	video::SColorf cloudcolor_bright_dawn_f(1.0, 0.7, 0.5);
 	*/
 
-	video::SColorf bgcolor_bright_normal_f = video::SColor(255, 155, 193, 240);
-	video::SColorf bgcolor_bright_indoor_f = video::SColor(255, 100, 100, 100);
-	video::SColorf bgcolor_bright_dawn_f = video::SColor(255, 186, 193, 240);
-	video::SColorf bgcolor_bright_night_f = video::SColor(255, 64, 144, 255);
+	//video::SColorf bgcolor_bright_normal_f = video::SColor(255, 155, 193, 240);
+	video::SColorf sky_bottom_bright_normal_f = video::SColor(255, 0, 0, 0);
+	video::SColorf sky_bottom_bright_indoor_f = video::SColor(255, 100, 100, 100);
+	video::SColorf sky_bottom_bright_dawn_f = video::SColor(255, 186, 193, 240);
+	video::SColorf sky_bottom_bright_night_f = video::SColor(255, 64, 144, 255);
 
-	video::SColorf skycolor_bright_normal_f = video::SColor(255, 140, 186, 250);
-	video::SColorf skycolor_bright_dawn_f = video::SColor(255, 180, 186, 250);
-	video::SColorf skycolor_bright_night_f = video::SColor(255, 0, 107, 255);
+	//video::SColorf skycolor_bright_normal_f = video::SColor(255, 140, 186, 250);
+	video::SColorf sky_top_bright_normal_f = video::SColor(255, 255, 255, 255);
+
+	video::SColorf sky_top_bright_dawn_f = video::SColor(255, 180, 186, 250);
+	video::SColorf sky_top_bright_night_f = video::SColor(255, 0, 107, 255);
 
 	// pure white: becomes "diffuse light component" for clouds
 	video::SColorf cloudcolor_bright_normal_f = video::SColor(255, 255, 255, 255);
@@ -695,60 +698,64 @@ void Sky::update(float time_of_day, float time_brightness,
 	float color_change_fraction = 0.98;
 	if (sunlight_seen) {
 		if (is_dawn) {  // Dawn
-			m_bgcolor_bright_f = m_bgcolor_bright_f.getInterpolated(
-				bgcolor_bright_dawn_f, color_change_fraction);
-			m_skycolor_bright_f = m_skycolor_bright_f.getInterpolated(
-				skycolor_bright_dawn_f, color_change_fraction);
+			m_sky_color_bottom_bright_f = m_sky_color_bottom_bright_f.getInterpolated(
+				sky_bottom_bright_dawn_f, color_change_fraction);
+
+			m_sky_color_top_bright_f = m_sky_color_top_bright_f.getInterpolated(
+				sky_top_bright_dawn_f, color_change_fraction);
+
 			m_cloudcolor_bright_f = m_cloudcolor_bright_f.getInterpolated(
 				cloudcolor_bright_dawn_f, color_change_fraction);
 		} else {
 			if (time_brightness < 0.07) {  // Night
-				m_bgcolor_bright_f = m_bgcolor_bright_f.getInterpolated(
-					bgcolor_bright_night_f, color_change_fraction);
-				m_skycolor_bright_f = m_skycolor_bright_f.getInterpolated(
-					skycolor_bright_night_f, color_change_fraction);
+				m_sky_color_bottom_bright_f = m_sky_color_bottom_bright_f.getInterpolated(
+					sky_bottom_bright_night_f, color_change_fraction);
+
+				m_sky_color_top_bright_f = m_sky_color_top_bright_f.getInterpolated(
+					sky_top_bright_night_f, color_change_fraction);
 			} else {  // Day
-				m_bgcolor_bright_f = m_bgcolor_bright_f.getInterpolated(
-					bgcolor_bright_normal_f, color_change_fraction);
-				m_skycolor_bright_f = m_skycolor_bright_f.getInterpolated(
-					skycolor_bright_normal_f, color_change_fraction);
+				m_sky_color_bottom_bright_f = m_sky_color_bottom_bright_f.getInterpolated(
+					sky_bottom_bright_normal_f, color_change_fraction);
+
+				m_sky_color_top_bright_f = m_sky_color_top_bright_f.getInterpolated(
+					sky_top_bright_normal_f, color_change_fraction);
 			}
 
 			m_cloudcolor_bright_f = m_cloudcolor_bright_f.getInterpolated(
 				cloudcolor_bright_normal_f, color_change_fraction);
 		}
 	} else {
-		m_bgcolor_bright_f = m_bgcolor_bright_f.getInterpolated(
-			bgcolor_bright_indoor_f, color_change_fraction);
-		m_skycolor_bright_f = m_skycolor_bright_f.getInterpolated(
-			bgcolor_bright_indoor_f, color_change_fraction);
+		m_sky_color_bottom_bright_f = m_sky_color_bottom_bright_f.getInterpolated(
+			sky_bottom_bright_indoor_f, color_change_fraction);
+		m_sky_color_top_bright_f = m_sky_color_top_bright_f.getInterpolated(
+			sky_bottom_bright_indoor_f, color_change_fraction);
 		m_cloudcolor_bright_f = m_cloudcolor_bright_f.getInterpolated(
 			cloudcolor_bright_normal_f, color_change_fraction);
 		m_clouds_visible = false;
 	}
 
-	video::SColor bgcolor_bright = m_bgcolor_bright_f.toSColor();
-	m_bgcolor = video::SColor(
+	video::SColor bgcolor_bright = m_sky_color_bottom_bright_f.toSColor();
+	m_sky_color_bottom = video::SColor(
 		255,
 		bgcolor_bright.getRed() * m_brightness,
 		bgcolor_bright.getGreen() * m_brightness,
 		bgcolor_bright.getBlue() * m_brightness
 	);
-	m_bgcolor_alpha = video::SColor(
+	m_sky_color_bottom_alpha = video::SColor(
 		0,
 		bgcolor_bright.getRed() * m_brightness,
 		bgcolor_bright.getGreen() * m_brightness,
 		bgcolor_bright.getBlue() * m_brightness
 	);
 
-	video::SColor skycolor_bright = m_skycolor_bright_f.toSColor();
-	m_skycolor = video::SColor(
+	video::SColor skycolor_bright = m_sky_color_top_bright_f.toSColor();
+	m_sky_color_top = video::SColor(
 		255,
 		skycolor_bright.getRed() * m_brightness,
 		skycolor_bright.getGreen() * m_brightness,
 		skycolor_bright.getBlue() * m_brightness
 	);
-	m_skycolor_alpha = video::SColor(
+	m_sky_color_top_alpha = video::SColor(
 		0,
 		skycolor_bright.getRed() * m_brightness,
 		skycolor_bright.getGreen() * m_brightness,
@@ -756,8 +763,8 @@ void Sky::update(float time_of_day, float time_brightness,
 	);
 
 	// Horizon coloring based on sun and moon direction during sunset and sunrise
-	video::SColor pointcolor = video::SColor(m_bgcolor.getAlpha(), 255, 255, 255);
-	video::SColor pointcolor_alpha = video::SColor(m_bgcolor_alpha.getAlpha(), 255, 255, 255);
+	video::SColor pointcolor = video::SColor(m_sky_color_bottom.getAlpha(), 255, 255, 255);
+	video::SColor pointcolor_alpha = video::SColor(m_sky_color_bottom_alpha.getAlpha(), 255, 255, 255);
 	if (m_directional_colored_fog) {
 		if (m_horizon_blend() != 0) {
 			// Calculate hemisphere value from yaw, (inverted in third person front view)
@@ -813,10 +820,14 @@ void Sky::update(float time_of_day, float time_brightness,
 			pointcolor = m_mix_scolor(pointcolor_moon, pointcolor_sun, pointcolor_blend);
 			pointcolor_alpha = m_mix_scolor(pointcolor_moon, pointcolor_sun, pointcolor_blend);
 		}
-		m_bgcolor = m_mix_scolor(m_bgcolor, pointcolor, m_horizon_blend() * 0.5);
-		m_bgcolor_alpha = m_mix_scolor(m_bgcolor_alpha, pointcolor_alpha, m_horizon_blend() * 0.5);
-		m_skycolor = m_mix_scolor(m_skycolor, pointcolor, m_horizon_blend() * 0.25);
-		m_skycolor_alpha = m_mix_scolor(m_skycolor_alpha, pointcolor_alpha, m_horizon_blend() * 0.25);
+		m_sky_color_bottom = m_mix_scolor(m_sky_color_bottom, pointcolor,
+				m_horizon_blend() * 0.5);
+		m_sky_color_bottom_alpha = m_mix_scolor(m_sky_color_bottom_alpha, pointcolor_alpha,
+				m_horizon_blend() * 0.5);
+		m_sky_color_top = m_mix_scolor(m_sky_color_top, pointcolor,
+				m_horizon_blend() * 0.25);
+		m_sky_color_top_alpha = m_mix_scolor(m_sky_color_top_alpha, pointcolor_alpha,
+				m_horizon_blend() * 0.25);
 	}
 
 	float cloud_direct_brightness = 0.0f;

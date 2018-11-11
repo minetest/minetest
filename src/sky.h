@@ -55,12 +55,12 @@ public:
 
 	const video::SColor &getBgColor() const
 	{
-		return m_visible ? m_bgcolor : m_fallback_bg_color;
+		return m_visible ? m_sky_color_bottom : m_fallback_bg_color;
 	}
 
 	const video::SColor &getSkyColor() const
 	{
-		return m_visible ? m_skycolor : m_fallback_bg_color;
+		return m_visible ? m_sky_color_top : m_fallback_bg_color;
 	}
 
 	bool getCloudsVisible() const { return m_clouds_visible && m_clouds_enabled; }
@@ -75,8 +75,8 @@ public:
 	}
 	void overrideColors(const video::SColor &bgcolor, const video::SColor &skycolor)
 	{
-		m_bgcolor = bgcolor;
-		m_skycolor = skycolor;
+		m_sky_color_bottom = bgcolor;
+		m_sky_color_top = skycolor;
 	}
 	void setBodiesVisible(bool visible) { m_bodies_visible = visible; }
 
@@ -134,13 +134,13 @@ private:
 	bool m_clouds_enabled = true; // Initialised to true, reset only by set_sky API
 	bool m_directional_colored_fog;
 	bool m_bodies_visible = true; // sun, moon, stars
-	video::SColorf m_bgcolor_bright_f = video::SColorf(1.0f, 1.0f, 1.0f, 1.0f);
-	video::SColorf m_skycolor_bright_f = video::SColorf(1.0f, 1.0f, 1.0f, 1.0f);
+	video::SColorf m_sky_color_top_bright_f = video::SColorf(1.0f, 1.0f, 1.0f, 1.0f);
+	video::SColorf m_sky_color_bottom_bright_f = video::SColorf(1.0f, 1.0f, 1.0f, 1.0f);
 	video::SColorf m_cloudcolor_bright_f = video::SColorf(1.0f, 1.0f, 1.0f, 1.0f);
-	video::SColor m_bgcolor;
-	video::SColor m_bgcolor_alpha;
-	video::SColor m_skycolor;
-	video::SColor m_skycolor_alpha;
+	video::SColor m_sky_color_bottom;
+	video::SColor m_sky_color_bottom_alpha;
+	video::SColor m_sky_color_top;
+	video::SColor m_sky_color_top_alpha;
 	video::SColorf m_cloudcolor_f;
 	v3f m_stars[SKY_STAR_COUNT];
 	video::ITexture *m_sun_texture;
