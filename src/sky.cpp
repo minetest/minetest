@@ -296,10 +296,11 @@ void Sky::render()
 			float a = easeCurve(MYMAX(0, MYMIN(1, a_)));
 			//std::cerr<<"a_="<<a_<<" a="<<a<<std::endl;
 			video::SColor c(255, 255, 255, 255);
-			float y = -(1.0 - a) * 0.22;
+			float y = -(1.0 - a) * 0.44;
 			if (y > 0)
 				// Prevent sunrise texture creeping too far above the horizon
 				y = 0;
+
 			vertices[0] = video::S3DVertex(-1, -0.05 + y, -1, 0, 0, 1, c, t, t);
 			vertices[1] = video::S3DVertex( 1, -0.05 + y, -1, 0, 0, 1, c, o, t);
 			vertices[2] = video::S3DVertex( 1,  0.2  + y, -1, 0, 0, 1, c, o, o);
@@ -313,8 +314,8 @@ void Sky::render()
 					vertex.Pos.rotateXZBy(-90);
 			}
 			driver->drawIndexedTriangleFan(&vertices[0], 4, indices, 2);
-			// Flip sunrise/set texture upsidedown
 
+			// Flip sunrise/set texture upsidedown
 			vertices[0] = video::S3DVertex(-1, -0.3  + y, -1, 0, 0, 1, c, t, o);
 			vertices[1] = video::S3DVertex( 1, -0.3  + y, -1, 0, 0, 1, c, o, o);
 			vertices[2] = video::S3DVertex( 1, -0.05 + y, -1, 0, 0, 1, c, o, t);
