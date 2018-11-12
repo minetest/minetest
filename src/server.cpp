@@ -260,7 +260,7 @@ Server::~Server()
 		m_env->kickAllPlayers(SERVER_ACCESSDENIED_SHUTDOWN,
 			kick_msg, reconnect);
 	}
-	
+
 	actionstream << "Server: Shutting down" << std::endl;
 
 	// Do this before stopping the server in case mapgen callbacks need to access
@@ -2897,38 +2897,44 @@ PlayerSAO *Server::getPlayerSAO(session_t peer_id)
 std::wstring Server::getStatusString()
 {
 	std::wostringstream os(std::ios_base::binary);
-	os<<L"# Server: ";
+	os << L"# Server: ";
 	// Version
-	os<<L"version="<<narrow_to_wide(g_version_string);
+	os << L"version=" << narrow_to_wide(g_version_string);
 	// Uptime
-	os<<L", uptime="<<m_uptime.get();
+	os << L", uptime=" << m_uptime.get();
 	// Max lag estimate
-	os<<L", max_lag="<<m_env->getMaxLagEstimate();
+	os << L", max_lag=" << (m_env ? m_env->getMaxLagEstimate() : 0);
+
 	// Information about clients
 	bool first = true;
-	os<<L", clients={";
-	std::vector<session_t> clients = m_clients.getClientIDs();
-	for (session_t client_id : clients) {
-		// Get player
-		RemotePlayer *player = m_env->getPlayer(client_id);
-		// Get name of player
-		std::wstring name = L"unknown";
-		if (player)
-			name = narrow_to_wide(player->getName());
-		// Add name to information string
-		if(!first)
-			os << L", ";
-		else
-			first = false;
-		os << name;
+	os << L", clients={";
+	if (m_env) {
+		std::vector<session_t> clients = m_clients.getClientIDs();
+		for (session_t client_id : clients) {
+			RemotePlayer *player = m_env->getPlayer(client_id);
+
+			// Get name of player
+			std::wstring name = L"unknown";
+			if (player)
+				name = narrow_to_wide(player->getName());
+
+			// Add name to information string
+			if (!first)
+				os << L", ";
+			else
+				first = false;
+
+			os << name;
+		}
 	}
 	os << L"}";
 
-	if (!((ServerMap*)(&m_env->getMap()))->isSavingEnabled())
-		os<<std::endl<<L"# Server: "<<" WARNING: Map saving is disabled.";
+	if (m_env && !((ServerMap*)(&m_env->getMap()))->isSavingEnabled())
+		os << std::endl << L"# Server: " << " WARNING: Map saving is disabled.";
 
 	if (!g_settings->get("motd").empty())
-		os<<std::endl<<L"# Server: "<<narrow_to_wide(g_settings->get("motd"));
+		os << std::endl << L"# Server: " << narrow_to_wide(g_settings->get("motd"));
+
 	return os.str();
 }
 
