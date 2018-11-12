@@ -102,6 +102,7 @@ Sky::Sky(s32 id, ITextureSource *tsrc):
 
 	m_directional_colored_fog = g_settings->getBool("directional_colored_fog");
 	m_use_old_skybox = g_settings->getBool("use_old_skybox");
+	m_use_old_colors = g_settings->getBool("use_old_sky_color");
 }
 
 
@@ -252,14 +253,13 @@ void Sky::render()
 				driver->drawIndexedTriangleFan(&vertices[0], 4, indices, 2);
 			}
 		} else {
-			// Draw top band of our smooth skybox
+			// Draw middle band of our smooth skybox
 			for (u32 j = 0; j < 4; j++) {
 				video::SColor c = m_sky_color_bottom;
-				video::SColor c_blend = m_sky_color_top; //
-					vertices[0] = video::S3DVertex(-1, -0.1, -1, 0, 0, 1, c, t, t);
-					vertices[1] = video::S3DVertex( 1, -0.1, -1, 0, 0, 1, c, o, t);
-					vertices[2] = video::S3DVertex( 1, 0.3, -1, 0, 0, 1, c_blend, o, o);
-					vertices[3] = video::S3DVertex(-1, 0.3, -1, 0, 0, 1, c_blend, t, o);
+				vertices[0] = video::S3DVertex(-1, -0.03, -1, 0, 0, 1, c, t, t);
+				vertices[1] = video::S3DVertex( 1, -0.03, -1, 0, 0, 1, c, o, t);
+				vertices[2] = video::S3DVertex( 1,  0.02, -1, 0, 0, 1, c, o, o);
+				vertices[3] = video::S3DVertex(-1,  0.02, -1, 0, 0, 1, c, t, o);
 				for (video::S3DVertex &vertex : vertices) {
 					if (j == 0)
 						// Don't switch
@@ -276,14 +276,15 @@ void Sky::render()
 				}
 				driver->drawIndexedTriangleFan(&vertices[0], 4, indices, 2);
 			}
-
-			// Draw middle band of our smooth skybox
+			
+			// Draw top band of our smooth skybox
 			for (u32 j = 0; j < 4; j++) {
 				video::SColor c = m_sky_color_bottom;
-					vertices[0] = video::S3DVertex(-1, -0.2, -1, 0, 0, 1, c, t, t);
-					vertices[1] = video::S3DVertex( 1, -0.2, -1, 0, 0, 1, c, o, t);
-					vertices[2] = video::S3DVertex( 1, -0.1, -1, 0, 0, 1, c, o, o);
-					vertices[3] = video::S3DVertex(-1, -0.1, -1, 0, 0, 1, c, t, o);
+				video::SColor c_blend = m_sky_color_top;
+				vertices[0] = video::S3DVertex(-1, 0.02, -1, 0, 0, 1, c, t, t);
+				vertices[1] = video::S3DVertex( 1, 0.02, -1, 0, 0, 1, c, o, t);
+				vertices[2] = video::S3DVertex( 1, 0.5, -1, 0, 0, 1, c_blend, o, o);
+				vertices[3] = video::S3DVertex(-1, 0.5, -1, 0, 0, 1, c_blend, t, o);
 				for (video::S3DVertex &vertex : vertices) {
 					if (j == 0)
 						// Don't switch
@@ -304,10 +305,10 @@ void Sky::render()
 			// Draw bottom sides of the sky
 			for (u32 j = 0; j < 4; j++) {
 				video::SColor c = m_sky_color_bottom;
-					vertices[0] = video::S3DVertex(-1, -0.2, -1, 0, 0, 1, c, t, t);
-					vertices[1] = video::S3DVertex( 1, -0.2, -1, 0, 0, 1, c, o, t);
-					vertices[2] = video::S3DVertex( 1, -1,   -1, 0, 0, 1, c, o, o);
-					vertices[3] = video::S3DVertex(-1, -1,   -1, 0, 0, 1, c, t, o);
+				vertices[0] = video::S3DVertex(-1, -0.03, -1, 0, 0, 1, c, t, t);
+				vertices[1] = video::S3DVertex( 1, -0.03, -1, 0, 0, 1, c, o, t);
+				vertices[2] = video::S3DVertex( 1, -1,   -1, 0, 0, 1, c, o, o);
+				vertices[3] = video::S3DVertex(-1, -1,   -1, 0, 0, 1, c, t, o);
 				for (video::S3DVertex &vertex : vertices) {
 					if (j == 0)
 						// Don't switch
@@ -348,10 +349,7 @@ void Sky::render()
 			float a = easeCurve(MYMAX(0, MYMIN(1, a_)));
 			//std::cerr<<"a_="<<a_<<" a="<<a<<std::endl;
 			video::SColor c(255, 255, 255, 255);
-			float y = -(1.0 - a) * 0.44;
-			if (y > 0)
-				// Prevent sunrise texture creeping too far above the horizon
-				y = 0;
+			float y = -(1.0 - a) * 0.3;
 
 			vertices[0] = video::S3DVertex(-1, -0.05 + y, -1, 0, 0, 1, c, t, t);
 			vertices[1] = video::S3DVertex( 1, -0.05 + y, -1, 0, 0, 1, c, o, t);
@@ -638,12 +636,11 @@ void Sky::render()
 			for (u32 j = 0; j < 2; j++) {
 				video::SColor c = m_sky_color_bottom;
 				video::SColor c_blend = m_sky_color_bottom_alpha;
-				vertices[0] = video::S3DVertex(-1, -0.2,  -1, 0, 0, 1, c, t, t);
-				vertices[1] = video::S3DVertex( 1, -0.2,  -1, 0, 0, 1, c, o, t);
-				vertices[2] = video::S3DVertex( 1, -0.1, -1, 0, 0, 1, c_blend, o, o);
-				vertices[3] = video::S3DVertex(-1, -0.1, -1, 0, 0, 1, c_blend, t, o);
+				vertices[0] = video::S3DVertex(-1, -0.03,  -1, 0, 0, 1, c, t, t);
+				vertices[1] = video::S3DVertex( 1, -0.03,  -1, 0, 0, 1, c, o, t);
+				vertices[2] = video::S3DVertex( 1,  0.02, -1, 0, 0, 1, c_blend, o, o);
+				vertices[3] = video::S3DVertex(-1,  0.02, -1, 0, 0, 1, c_blend, t, o);
 				for (video::S3DVertex &vertex : vertices) {
-					//if (wicked_time_of_day < 0.5)
 					if (j == 0)
 						// Switch from -Z (south) to +X (east)
 						vertex.Pos.rotateXZBy(90);
@@ -657,11 +654,11 @@ void Sky::render()
 			// Draw upper blend fog band
 			for (u32 j = 0; j < 2; j++) {
 				video::SColor c = m_sky_color_bottom_alpha;
-				video::SColor c_blend = m_sky_color_top_alpha; //
-					vertices[0] = video::S3DVertex(-1, -0.1, -1, 0, 0, 1, c, t, t);
-					vertices[1] = video::S3DVertex( 1, -0.1, -1, 0, 0, 1, c, o, t);
-					vertices[2] = video::S3DVertex( 1, 0.3, -1, 0, 0, 1, c_blend, o, o);
-					vertices[3] = video::S3DVertex(-1, 0.3, -1, 0, 0, 1, c_blend, t, o);
+				video::SColor c_blend = m_sky_color_top_alpha;
+					vertices[0] = video::S3DVertex(-1, 0.02, -1, 0, 0, 1, c, t, t);
+					vertices[1] = video::S3DVertex( 1, 0.02, -1, 0, 0, 1, c, o, t);
+					vertices[2] = video::S3DVertex( 1, 0.5, -1, 0, 0, 1, c_blend, o, o);
+					vertices[3] = video::S3DVertex(-1, 0.5, -1, 0, 0, 1, c_blend, t, o);
 				for (video::S3DVertex &vertex : vertices) {
 					if (j == 0)
 						// Switch from -Z (south) to +X (east)
@@ -676,8 +673,8 @@ void Sky::render()
 			// Draw bottom sides of the sky, to hide the sunrise texture
 			for (u32 j = 0; j < 2; j++) {
 				video::SColor c = m_sky_color_bottom;
-					vertices[0] = video::S3DVertex(-1, -0.2, -1, 0, 0, 1, c, t, t);
-					vertices[1] = video::S3DVertex( 1, -0.2, -1, 0, 0, 1, c, o, t);
+					vertices[0] = video::S3DVertex(-1, -0.03, -1, 0, 0, 1, c, t, t);
+					vertices[1] = video::S3DVertex( 1, -0.03, -1, 0, 0, 1, c, o, t);
 					vertices[2] = video::S3DVertex( 1, -1,   -1, 0, 0, 1, c, o, o);
 					vertices[3] = video::S3DVertex(-1, -1,   -1, 0, 0, 1, c, t, o);
 				for (video::S3DVertex &vertex : vertices) {
@@ -718,7 +715,7 @@ void Sky::update(float time_of_day, float time_brightness,
 	m_sunlight_seen = sunlight_seen;
 	m_bodies_visible = true;
 
-	bool is_dawn = (time_brightness >= 0.20 && time_brightness < 0.35);
+	bool is_dawn = (time_brightness >= 0.10 && time_brightness < 0.35);
 
 	/*
 	Development colours
@@ -734,17 +731,37 @@ void Sky::update(float time_of_day, float time_brightness,
 	video::SColorf cloudcolor_bright_dawn_f(1.0, 0.7, 0.5);
 	*/
 
-	video::SColorf sky_bottom_bright_normal_f = video::SColor(255, 155, 193, 240);
-	//video::SColorf sky_bottom_bright_normal_f = video::SColor(255, 0, 0, 0);
+
+	// Values here are unlikely to change and should be constant
 	video::SColorf sky_bottom_bright_indoor_f = video::SColor(255, 100, 100, 100);
-	video::SColorf sky_bottom_bright_dawn_f = video::SColor(255, 186, 193, 240);
-	video::SColorf sky_bottom_bright_night_f = video::SColor(255, 64, 144, 255);
 
-	video::SColorf sky_top_bright_normal_f = video::SColor(255, 140, 186, 250);
-	//video::SColorf sky_top_bright_normal_f = video::SColor(255, 255, 255, 255);
+	// Ready our sky colours before we assign them based on skybox settings
+	video::SColorf sky_bottom_bright_normal_f;
+	video::SColorf sky_bottom_bright_dawn_f;
+	video::SColorf sky_bottom_bright_night_f;
 
-	video::SColorf sky_top_bright_dawn_f = video::SColor(255, 180, 186, 250);
-	video::SColorf sky_top_bright_night_f = video::SColor(255, 0, 107, 255);
+	video::SColorf sky_top_bright_normal_f;
+	video::SColorf sky_top_bright_dawn_f;
+	video::SColorf sky_top_bright_night_f;
+
+	if (m_use_old_skybox || m_use_old_colors) {
+		// Use classical sky color
+		sky_bottom_bright_normal_f = video::SColor(255, 155, 193, 240);
+		sky_bottom_bright_dawn_f = video::SColor(255, 186, 193, 240);
+		sky_bottom_bright_night_f = video::SColor(255, 64, 144, 255);
+
+		sky_top_bright_normal_f = video::SColor(255, 140, 186, 250);
+		sky_top_bright_dawn_f = video::SColor(255, 180, 186, 250);
+		sky_top_bright_night_f = video::SColor(255, 0, 107, 255);
+	} else {
+		sky_bottom_bright_normal_f = video::SColor(255, 180, 222, 255);
+		sky_bottom_bright_dawn_f = video::SColor(255, 215, 201, 240);
+		sky_bottom_bright_night_f = video::SColor(255, 62, 115, 194);
+		
+		sky_top_bright_normal_f = video::SColor(255, 108, 156, 255);
+		sky_top_bright_dawn_f = video::SColor(255, 144, 180, 209);
+		sky_top_bright_night_f = video::SColor(255, 0, 45, 205);
+	}
 
 	// pure white: becomes "diffuse light component" for clouds
 	video::SColorf cloudcolor_bright_normal_f = video::SColor(255, 255, 255, 255);
@@ -779,7 +796,7 @@ void Sky::update(float time_of_day, float time_brightness,
 			m_cloudcolor_bright_f = m_cloudcolor_bright_f.getInterpolated(
 				cloudcolor_bright_dawn_f, color_change_fraction);
 		} else {
-			if (time_brightness < 0.07) {  // Night
+			if (time_brightness < 0.08) {  // Night
 				m_sky_color_bottom_bright_f = m_sky_color_bottom_bright_f.getInterpolated(
 					sky_bottom_bright_night_f, color_change_fraction);
 

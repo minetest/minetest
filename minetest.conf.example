@@ -471,9 +471,13 @@
 #    type: bool
 # enable_particles = true
 
-#    Enables the non-gradient filled skybox.
+#    Enables the non-gradient filled skybox, and uses classic sky colors.
 #    type: bool
 # use_old_skybox = false
+
+#    Enables the classic MT skybox colors, does not affect use_old_skybox.
+#    type: bool
+# use_old_sky_color = false
 
 ### Filtering
 

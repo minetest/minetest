@@ -425,8 +425,11 @@ node_highlighting (Node highlighting) enum box box,halo,none
 #    Adds particles when digging a node.
 enable_particles (Digging particles) bool true
 
-#    Enables the non-gradient filled skybox.
+#    Enables the non-gradient filled skybox, and uses classic sky colors.
 use_old_skybox (Pre 5.0 skybox) bool false
+
+#    Enables the classic MT skybox colors, does not affect use_old_skybox.
+use_old_sky_color (Classic sky color) bool false
 
 [**Filtering]
 

@@ -192,7 +192,9 @@ fake_function() {
 	gettext("Digging particles");
 	gettext("Adds particles when digging a node.");
 	gettext("Pre 5.0 skybox");
-	gettext("Enables the non-gradient filled skybox.");
+	gettext("Enables the non-gradient filled skybox, and uses classic sky colors.");
+	gettext("Classic sky color");
+	gettext("Enables the classic MT skybox colors, does not affect use_old_skybox.");
 	gettext("Filtering");
 	gettext("Mipmapping");
 	gettext("Use mip mapping to scale textures. May slightly increase performance,\nespecially when using a high resolution texture pack.\nGamma correct downscaling is not supported.");

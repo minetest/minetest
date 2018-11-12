@@ -134,6 +134,7 @@ private:
 	bool m_clouds_enabled = true; // Initialised to true, reset only by set_sky API
 	bool m_directional_colored_fog;
 	bool m_use_old_skybox; // Enable to display the classic MT skybox
+	bool m_use_old_colors; // Enable to use pre 5.0 sky colours
 	bool m_bodies_visible = true; // sun, moon, stars
 	video::SColorf m_sky_color_top_bright_f = video::SColorf(1.0f, 1.0f, 1.0f, 1.0f);
 	video::SColorf m_sky_color_bottom_bright_f = video::SColorf(1.0f, 1.0f, 1.0f, 1.0f);
