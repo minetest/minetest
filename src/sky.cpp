@@ -610,9 +610,9 @@ void Sky::update(float time_of_day, float time_brightness,
 	}
 
 	m_clouds_visible = true;
-	float color_change_fraction = 0.98;
+	float color_change_fraction = 0.98f;
 	if (sunlight_seen) {
-		if (is_dawn) {  // Dawn
+		if (is_dawn) { // Dawn
 			m_bgcolor_bright_f = m_bgcolor_bright_f.getInterpolated(
 				bgcolor_bright_dawn_f, color_change_fraction);
 			m_skycolor_bright_f = m_skycolor_bright_f.getInterpolated(
@@ -620,12 +620,12 @@ void Sky::update(float time_of_day, float time_brightness,
 			m_cloudcolor_bright_f = m_cloudcolor_bright_f.getInterpolated(
 				cloudcolor_bright_dawn_f, color_change_fraction);
 		} else {
-			if (time_brightness < 0.07) {  // Night
+			if (time_brightness < 0.13f) { // Night
 				m_bgcolor_bright_f = m_bgcolor_bright_f.getInterpolated(
 					bgcolor_bright_night_f, color_change_fraction);
 				m_skycolor_bright_f = m_skycolor_bright_f.getInterpolated(
 					skycolor_bright_night_f, color_change_fraction);
-			} else {  // Day
+			} else { // Day
 				m_bgcolor_bright_f = m_bgcolor_bright_f.getInterpolated(
 					bgcolor_bright_normal_f, color_change_fraction);
 				m_skycolor_bright_f = m_skycolor_bright_f.getInterpolated(
