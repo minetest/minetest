@@ -106,28 +106,28 @@ core.register_chatcommand("privs", {
 	end,
 })
 
-core.register_chatcommand("hasprivs", {
+core.register_chatcommand("haspriv", {
 	params = "<privilege>",
 	description = "Return list of all online players with privilege.",
 	privs = {basic_privs = true},
 	func = function(caller, param)
 		param = param:trim()
 		if param == "" then
-			return false, "Invalid parameters (see /help hasprivs)"
+			return false, "Invalid parameters (see /help haspriv)"
 		end
 		if not core.registered_privileges[param] then
 			return false, "Unknown privilege!"
 		end
 		local privs = core.string_to_privs(param)
-		local players_with_privs = {}
+		local players_with_priv = {}
 		for _, player in pairs(core.get_connected_players()) do
 			local player_name = player:get_player_name()
 			if core.check_player_privs(player_name, privs) then
-				table.insert(players_with_privs, player_name)
+				table.insert(players_with_priv, player_name)
 			end
 		end	
-		return true, "Players online with the \"" .. param .. "\" priv: " ..
-			table.concat(players_with_privs, ", ")
+		return true, "Players online with the \"" .. param .. "\" privilege: " ..
+			table.concat(players_with_priv, ", ")
 	end	
 })
 
