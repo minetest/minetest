@@ -425,6 +425,9 @@ node_highlighting (Node highlighting) enum box box,halo,none
 #    Adds particles when digging a node.
 enable_particles (Digging particles) bool true
 
+#    Enables the non-gradient filled skybox.
+use_old_skybox (Pre 5.0 skybox) bool false
+
 [**Filtering]
 
 #    Use mip mapping to scale textures. May slightly increase performance,

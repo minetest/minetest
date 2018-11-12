@@ -101,6 +101,7 @@ Sky::Sky(s32 id, ITextureSource *tsrc):
 	}
 
 	m_directional_colored_fog = g_settings->getBool("directional_colored_fog");
+	m_use_old_skybox = g_settings->getBool("use_old_skybox");
 }
 
 
@@ -111,7 +112,6 @@ void Sky::OnRegisterSceneNode()
 
 	scene::ISceneNode::OnRegisterSceneNode();
 }
-
 
 void Sky::render()
 {
@@ -202,76 +202,128 @@ void Sky::render()
 
 		driver->setMaterial(m_materials[1]);
 
-		// Draw top band of our smooth skybox
-		for (u32 j = 0; j < 4; j++) {
-			video::SColor c = m_sky_color_bottom;
-			video::SColor c_blend = m_sky_color_top; //
-				vertices[0] = video::S3DVertex(-1, -0.1, -1, 0, 0, 1, c, t, t);
-				vertices[1] = video::S3DVertex( 1, -0.1, -1, 0, 0, 1, c, o, t);
-				vertices[2] = video::S3DVertex( 1, 0.7, -1, 0, 0, 1, c_blend, o, o);
-				vertices[3] = video::S3DVertex(-1, 0.7, -1, 0, 0, 1, c_blend, t, o);
-			for (video::S3DVertex &vertex : vertices) {
-				if (j == 0)
-					// Don't switch
-					{}
-				else if (j == 1)
-					// Switch from -Z (south) to +X (east)
-					vertex.Pos.rotateXZBy(90);
-				else if (j == 2)
-					// Switch from -Z (south) to -X (west)
-					vertex.Pos.rotateXZBy(-90);
-				else
-					// Switch from -Z (south) to +Z (north)
-					vertex.Pos.rotateXZBy(-180);
+		if (m_use_old_skybox) {
+			// Draw middle band of the sky, unsmoothed:
+			for (u32 j = 0; j < 4; j++) {
+				video::SColor c = m_sky_color_bottom.getInterpolated(
+						m_sky_color_top, 0.45);
+				vertices[0] = video::S3DVertex(-1, 0.08, -1, 0, 0, 1, c, t, t);
+				vertices[1] = video::S3DVertex( 1, 0.08, -1, 0, 0, 1, c, o, t);
+				vertices[2] = video::S3DVertex( 1, 0.12, -1, 0, 0, 1, c, o, o);
+				vertices[3] = video::S3DVertex(-1, 0.12, -1, 0, 0, 1, c, t, o);
+				for (video::S3DVertex &vertex : vertices) {
+					if (j == 0)
+						// Don't switch
+						{}
+					else if (j == 1)
+						// Switch from -Z (south) to +X (east)
+						vertex.Pos.rotateXZBy(90);
+					else if (j == 2)
+						// Switch from -Z (south) to -X (west)
+						vertex.Pos.rotateXZBy(-90);
+					else
+						// Switch from -Z (south) to +Z (north)
+						vertex.Pos.rotateXZBy(-180);
+				}
+				driver->drawIndexedTriangleFan(&vertices[0], 4, indices, 2);
 			}
-			driver->drawIndexedTriangleFan(&vertices[0], 4, indices, 2);
-		}
 
-		// Draw middle band of our smooth skybox
-		for (u32 j = 0; j < 4; j++) {
-			video::SColor c = m_sky_color_bottom;
-				vertices[0] = video::S3DVertex(-1, -0.2, -1, 0, 0, 1, c, t, t);
-				vertices[1] = video::S3DVertex( 1, -0.2, -1, 0, 0, 1, c, o, t);
-				vertices[2] = video::S3DVertex( 1, -0.1, -1, 0, 0, 1, c, o, o);
-				vertices[3] = video::S3DVertex(-1, -0.1, -1, 0, 0, 1, c, t, o);
-			for (video::S3DVertex &vertex : vertices) {
-				if (j == 0)
-					// Don't switch
-					{}
-				else if (j == 1)
-					// Switch from -Z (south) to +X (east)
-					vertex.Pos.rotateXZBy(90);
-				else if (j == 2)
-					// Switch from -Z (south) to -X (west)
-					vertex.Pos.rotateXZBy(-90);
-				else
-					// Switch from -Z (south) to +Z (north)
-					vertex.Pos.rotateXZBy(-180);
+			// Draw bottom half of the world, without smoothing
+			for (u32 j = 0; j < 4; j++) {
+				video::SColor c = m_sky_color_bottom;
+				vertices[0] = video::S3DVertex(-1, -1.0, -1, 0, 0, 1, c, t, t);
+				vertices[1] = video::S3DVertex( 1, -1.0, -1, 0, 0, 1, c, o, t);
+				vertices[2] = video::S3DVertex( 1, 0.08, -1, 0, 0, 1, c, o, o);
+				vertices[3] = video::S3DVertex(-1, 0.08, -1, 0, 0, 1, c, t, o);
+				for (video::S3DVertex &vertex : vertices) {
+					if (j == 0)
+						// Don't switch
+						{}
+					else if (j == 1)
+						// Switch from -Z (south) to +X (east)
+						vertex.Pos.rotateXZBy(90);
+					else if (j == 2)
+						// Switch from -Z (south) to -X (west)
+						vertex.Pos.rotateXZBy(-90);
+					else
+						// Switch from -Z (south) to +Z (north)
+						vertex.Pos.rotateXZBy(-180);
+				}
+				driver->drawIndexedTriangleFan(&vertices[0], 4, indices, 2);
 			}
-			driver->drawIndexedTriangleFan(&vertices[0], 4, indices, 2);
-		}
-		// Draw bottom sides of the sky
-		for (u32 j = 0; j < 4; j++) {
-			video::SColor c = m_sky_color_bottom;
-				vertices[0] = video::S3DVertex(-1, -0.2, -1, 0, 0, 1, c, t, t);
-				vertices[1] = video::S3DVertex( 1, -0.2, -1, 0, 0, 1, c, o, t);
-				vertices[2] = video::S3DVertex( 1, -1,   -1, 0, 0, 1, c, o, o);
-				vertices[3] = video::S3DVertex(-1, -1,   -1, 0, 0, 1, c, t, o);
-			for (video::S3DVertex &vertex : vertices) {
-				if (j == 0)
-					// Don't switch
-					{}
-				else if (j == 1)
-					// Switch from -Z (south) to +X (east)
-					vertex.Pos.rotateXZBy(90);
-				else if (j == 2)
-					// Switch from -Z (south) to -X (west)
-					vertex.Pos.rotateXZBy(-90);
-				else
-					// Switch from -Z (south) to +Z (north)
-					vertex.Pos.rotateXZBy(-180);
+		} else {
+			// Draw top band of our smooth skybox
+			for (u32 j = 0; j < 4; j++) {
+				video::SColor c = m_sky_color_bottom;
+				video::SColor c_blend = m_sky_color_top; //
+					vertices[0] = video::S3DVertex(-1, -0.1, -1, 0, 0, 1, c, t, t);
+					vertices[1] = video::S3DVertex( 1, -0.1, -1, 0, 0, 1, c, o, t);
+					vertices[2] = video::S3DVertex( 1, 0.3, -1, 0, 0, 1, c_blend, o, o);
+					vertices[3] = video::S3DVertex(-1, 0.3, -1, 0, 0, 1, c_blend, t, o);
+				for (video::S3DVertex &vertex : vertices) {
+					if (j == 0)
+						// Don't switch
+						{}
+					else if (j == 1)
+						// Switch from -Z (south) to +X (east)
+						vertex.Pos.rotateXZBy(90);
+					else if (j == 2)
+						// Switch from -Z (south) to -X (west)
+						vertex.Pos.rotateXZBy(-90);
+					else
+						// Switch from -Z (south) to +Z (north)
+						vertex.Pos.rotateXZBy(-180);
+				}
+				driver->drawIndexedTriangleFan(&vertices[0], 4, indices, 2);
 			}
-			driver->drawIndexedTriangleFan(&vertices[0], 4, indices, 2);
+
+			// Draw middle band of our smooth skybox
+			for (u32 j = 0; j < 4; j++) {
+				video::SColor c = m_sky_color_bottom;
+					vertices[0] = video::S3DVertex(-1, -0.2, -1, 0, 0, 1, c, t, t);
+					vertices[1] = video::S3DVertex( 1, -0.2, -1, 0, 0, 1, c, o, t);
+					vertices[2] = video::S3DVertex( 1, -0.1, -1, 0, 0, 1, c, o, o);
+					vertices[3] = video::S3DVertex(-1, -0.1, -1, 0, 0, 1, c, t, o);
+				for (video::S3DVertex &vertex : vertices) {
+					if (j == 0)
+						// Don't switch
+						{}
+					else if (j == 1)
+						// Switch from -Z (south) to +X (east)
+						vertex.Pos.rotateXZBy(90);
+					else if (j == 2)
+						// Switch from -Z (south) to -X (west)
+						vertex.Pos.rotateXZBy(-90);
+					else
+						// Switch from -Z (south) to +Z (north)
+						vertex.Pos.rotateXZBy(-180);
+				}
+				driver->drawIndexedTriangleFan(&vertices[0], 4, indices, 2);
+			}
+
+			// Draw bottom sides of the sky
+			for (u32 j = 0; j < 4; j++) {
+				video::SColor c = m_sky_color_bottom;
+					vertices[0] = video::S3DVertex(-1, -0.2, -1, 0, 0, 1, c, t, t);
+					vertices[1] = video::S3DVertex( 1, -0.2, -1, 0, 0, 1, c, o, t);
+					vertices[2] = video::S3DVertex( 1, -1,   -1, 0, 0, 1, c, o, o);
+					vertices[3] = video::S3DVertex(-1, -1,   -1, 0, 0, 1, c, t, o);
+				for (video::S3DVertex &vertex : vertices) {
+					if (j == 0)
+						// Don't switch
+						{}
+					else if (j == 1)
+						// Switch from -Z (south) to +X (east)
+						vertex.Pos.rotateXZBy(90);
+					else if (j == 2)
+						// Switch from -Z (south) to -X (west)
+						vertex.Pos.rotateXZBy(-90);
+					else
+						// Switch from -Z (south) to +Z (north)
+						vertex.Pos.rotateXZBy(-180);
+				}
+				driver->drawIndexedTriangleFan(&vertices[0], 4, indices, 2);
+			}
 		}
 
 		// Draw world bottom
@@ -562,63 +614,83 @@ void Sky::render()
 
 		driver->setMaterial(m_materials[1]);
 
-		// Draw lower blend fog band
-		for (u32 j = 0; j < 2; j++) {
-			video::SColor c = m_sky_color_bottom;
-			video::SColor c_blend = m_sky_color_bottom_alpha;
-			vertices[0] = video::S3DVertex(-1, -0.2,  -1, 0, 0, 1, c, t, t);
-			vertices[1] = video::S3DVertex( 1, -0.2,  -1, 0, 0, 1, c, o, t);
-			vertices[2] = video::S3DVertex( 1, -0.1, -1, 0, 0, 1, c_blend, o, o);
-			vertices[3] = video::S3DVertex(-1, -0.1, -1, 0, 0, 1, c_blend, t, o);
-			for (video::S3DVertex &vertex : vertices) {
-				//if (wicked_time_of_day < 0.5)
-				if (j == 0)
-					// Switch from -Z (south) to +X (east)
-					vertex.Pos.rotateXZBy(90);
-				else
-					// Switch from -Z (south) to -X (west)
-					vertex.Pos.rotateXZBy(-90);
+		if (m_use_old_skybox) {
+			// Draw fog below east and west horizons
+			for (u32 j = 0; j < 2; j++) {
+				video::SColor c = m_sky_color_bottom;
+				vertices[0] = video::S3DVertex(-1, -1.0,  -1, 0, 0, 1, c, t, t);
+				vertices[1] = video::S3DVertex( 1, -1.0,  -1, 0, 0, 1, c, o, t);
+				vertices[2] = video::S3DVertex( 1, -0.02, -1, 0, 0, 1, c, o, o);
+				vertices[3] = video::S3DVertex(-1, -0.02, -1, 0, 0, 1, c, t, o);
+				for (video::S3DVertex &vertex : vertices) {
+					//if (wicked_time_of_day < 0.5)
+					if (j == 0)
+						// Switch from -Z (south) to +X (east)
+						vertex.Pos.rotateXZBy(90);
+					else
+						// Switch from -Z (south) to -X (west)
+						vertex.Pos.rotateXZBy(-90);
+				}
+				driver->drawIndexedTriangleFan(&vertices[0], 4, indices, 2);
 			}
-			driver->drawIndexedTriangleFan(&vertices[0], 4, indices, 2);
-		}
-
-		// Draw upper blend fog band
-		for (u32 j = 0; j < 2; j++) {
-			video::SColor c = m_sky_color_bottom_alpha;
-			video::SColor c_blend = m_sky_color_top_alpha; //
-				vertices[0] = video::S3DVertex(-1, -0.1, -1, 0, 0, 1, c, t, t);
-				vertices[1] = video::S3DVertex( 1, -0.1, -1, 0, 0, 1, c, o, t);
-				vertices[2] = video::S3DVertex( 1, 0.7, -1, 0, 0, 1, c_blend, o, o);
-				vertices[3] = video::S3DVertex(-1, 0.7, -1, 0, 0, 1, c_blend, t, o);
-			for (video::S3DVertex &vertex : vertices) {
-				if (j == 0)
-					// Switch from -Z (south) to +X (east)
-					vertex.Pos.rotateXZBy(90);
-				else if (j == 1)
-					// Switch from -Z (south) to -X (west)
-					vertex.Pos.rotateXZBy(-90);
+		} else {
+			// Draw lower blend fog band
+			for (u32 j = 0; j < 2; j++) {
+				video::SColor c = m_sky_color_bottom;
+				video::SColor c_blend = m_sky_color_bottom_alpha;
+				vertices[0] = video::S3DVertex(-1, -0.2,  -1, 0, 0, 1, c, t, t);
+				vertices[1] = video::S3DVertex( 1, -0.2,  -1, 0, 0, 1, c, o, t);
+				vertices[2] = video::S3DVertex( 1, -0.1, -1, 0, 0, 1, c_blend, o, o);
+				vertices[3] = video::S3DVertex(-1, -0.1, -1, 0, 0, 1, c_blend, t, o);
+				for (video::S3DVertex &vertex : vertices) {
+					//if (wicked_time_of_day < 0.5)
+					if (j == 0)
+						// Switch from -Z (south) to +X (east)
+						vertex.Pos.rotateXZBy(90);
+					else
+						// Switch from -Z (south) to -X (west)
+						vertex.Pos.rotateXZBy(-90);
+				}
+				driver->drawIndexedTriangleFan(&vertices[0], 4, indices, 2);
 			}
-			driver->drawIndexedTriangleFan(&vertices[0], 4, indices, 2);
-		}
 
-		// Draw bottom sides of the sky, to hide the sunrise texture
-		for (u32 j = 0; j < 2; j++) {
-			video::SColor c = m_sky_color_bottom;
-				vertices[0] = video::S3DVertex(-1, -0.2, -1, 0, 0, 1, c, t, t);
-				vertices[1] = video::S3DVertex( 1, -0.2, -1, 0, 0, 1, c, o, t);
-				vertices[2] = video::S3DVertex( 1, -1,   -1, 0, 0, 1, c, o, o);
-				vertices[3] = video::S3DVertex(-1, -1,   -1, 0, 0, 1, c, t, o);
-			for (video::S3DVertex &vertex : vertices) {
-				if (j == 0)
-					// Switch from -Z (south) to +X (east)
-					vertex.Pos.rotateXZBy(90);
-				else
-					// Switch from -Z (south) to -X (west)
-					vertex.Pos.rotateXZBy(-90);
+			// Draw upper blend fog band
+			for (u32 j = 0; j < 2; j++) {
+				video::SColor c = m_sky_color_bottom_alpha;
+				video::SColor c_blend = m_sky_color_top_alpha; //
+					vertices[0] = video::S3DVertex(-1, -0.1, -1, 0, 0, 1, c, t, t);
+					vertices[1] = video::S3DVertex( 1, -0.1, -1, 0, 0, 1, c, o, t);
+					vertices[2] = video::S3DVertex( 1, 0.3, -1, 0, 0, 1, c_blend, o, o);
+					vertices[3] = video::S3DVertex(-1, 0.3, -1, 0, 0, 1, c_blend, t, o);
+				for (video::S3DVertex &vertex : vertices) {
+					if (j == 0)
+						// Switch from -Z (south) to +X (east)
+						vertex.Pos.rotateXZBy(90);
+					else if (j == 1)
+						// Switch from -Z (south) to -X (west)
+						vertex.Pos.rotateXZBy(-90);
+				}
+				driver->drawIndexedTriangleFan(&vertices[0], 4, indices, 2);
 			}
-			driver->drawIndexedTriangleFan(&vertices[0], 4, indices, 2);
-		}
 
+			// Draw bottom sides of the sky, to hide the sunrise texture
+			for (u32 j = 0; j < 2; j++) {
+				video::SColor c = m_sky_color_bottom;
+					vertices[0] = video::S3DVertex(-1, -0.2, -1, 0, 0, 1, c, t, t);
+					vertices[1] = video::S3DVertex( 1, -0.2, -1, 0, 0, 1, c, o, t);
+					vertices[2] = video::S3DVertex( 1, -1,   -1, 0, 0, 1, c, o, o);
+					vertices[3] = video::S3DVertex(-1, -1,   -1, 0, 0, 1, c, t, o);
+				for (video::S3DVertex &vertex : vertices) {
+					if (j == 0)
+						// Switch from -Z (south) to +X (east)
+						vertex.Pos.rotateXZBy(90);
+					else
+						// Switch from -Z (south) to -X (west)
+						vertex.Pos.rotateXZBy(-90);
+				}
+				driver->drawIndexedTriangleFan(&vertices[0], 4, indices, 2);
+			}
+		}
 	}
 }
 
@@ -662,14 +734,14 @@ void Sky::update(float time_of_day, float time_brightness,
 	video::SColorf cloudcolor_bright_dawn_f(1.0, 0.7, 0.5);
 	*/
 
-	//video::SColorf bgcolor_bright_normal_f = video::SColor(255, 155, 193, 240);
-	video::SColorf sky_bottom_bright_normal_f = video::SColor(255, 0, 0, 0);
+	video::SColorf sky_bottom_bright_normal_f = video::SColor(255, 155, 193, 240);
+	//video::SColorf sky_bottom_bright_normal_f = video::SColor(255, 0, 0, 0);
 	video::SColorf sky_bottom_bright_indoor_f = video::SColor(255, 100, 100, 100);
 	video::SColorf sky_bottom_bright_dawn_f = video::SColor(255, 186, 193, 240);
 	video::SColorf sky_bottom_bright_night_f = video::SColor(255, 64, 144, 255);
 
-	//video::SColorf skycolor_bright_normal_f = video::SColor(255, 140, 186, 250);
-	video::SColorf sky_top_bright_normal_f = video::SColor(255, 255, 255, 255);
+	video::SColorf sky_top_bright_normal_f = video::SColor(255, 140, 186, 250);
+	//video::SColorf sky_top_bright_normal_f = video::SColor(255, 255, 255, 255);
 
 	video::SColorf sky_top_bright_dawn_f = video::SColor(255, 180, 186, 250);
 	video::SColorf sky_top_bright_night_f = video::SColor(255, 0, 107, 255);
