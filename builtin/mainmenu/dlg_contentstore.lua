@@ -356,21 +356,29 @@ function store.get_formspec()
 		cur_page = 1
 	end
 
-	local formspec = {
-		"size[12,7;true]",
-		"position[0.5,0.55]",
-		"field[0.2,0.1;7.8,1;search_string;;", core.formspec_escape(search_string), "]",
-		"field_close_on_enter[search_string;false]",
-		"button[7.7,-0.2;2,1;search;", fgettext("Search"), "]",
-		"dropdown[9.7,-0.1;2.4;type;",
-		table.concat(filter_types_titles, ","),
-		";",
-		filter_type,
-		"]",
-		-- "textlist[0,1;2.4,5.6;a;",
-		-- table.concat(taglist, ","),
-		-- "]"
-	}
+	local formspec
+	if #store.packages ~= 0 then
+		formspec = {
+			"size[12,7;true]",
+			"position[0.5,0.55]",
+			"field[0.2,0.1;7.8,1;search_string;;",
+			core.formspec_escape(search_string), "]",
+			"field_close_on_enter[search_string;false]",
+			"button[7.7,-0.2;2,1;search;",
+			fgettext("Search"), "]",
+			"dropdown[9.7,-0.1;2.4;type;",
+			table.concat(filter_types_titles, ","),
+			";", filter_type, "]",
+			-- "textlist[0,1;2.4,5.6;a;",
+			-- table.concat(taglist, ","), "]",
+		}
+	else
+		formspec = {
+			"size[12,7;true]",
+			"position[0.5,0.55]",
+			"label[4,3;No packages could be retrieved]",
+		}
+	end
 
 	local start_idx = (cur_page - 1) * num_per_page + 1
 	for i=start_idx, math.min(#store.packages, start_idx+num_per_page-1) do
@@ -381,7 +389,7 @@ function store.get_formspec()
 
 		-- image
 		formspec[#formspec + 1] = "image[-0.4,0;1.5,1;"
-		formspec[#formspec + 1] = get_screenshot(package)
+		formspec[#formspec + 1] = core.formspec_escape(get_screenshot(package))
 		formspec[#formspec + 1] = "]"
 
 		-- title
@@ -404,7 +412,7 @@ function store.get_formspec()
 			formspec[#formspec + 1] = fgettext("Install")
 			formspec[#formspec + 1] = "]"
 		elseif package.installed_release < package.release then
-			formspec[#formspec + 1] = "button[8.4,0;1.5,1;install_"
+			formspec[#formspec + 1] = "button[8.4,0;1.5,1;update_"
 			formspec[#formspec + 1] = tostring(i)
 			formspec[#formspec + 1] = ";"
 			formspec[#formspec + 1] = fgettext("Update")
