@@ -29,6 +29,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "client/tile.h"
 #include "client/game.h"
+#include "client/camera.h"
 
 using namespace irr;
 using namespace irr::core;
@@ -194,6 +195,7 @@ public:
 	void step(float dtime);
 	void resetHud();
 	void registerHudItem(int index, const rect<s32> &rect);
+	inline void setCameraMode(CameraMode camera_mode) { m_camera_mode = camera_mode; }
 	void Toggle(bool visible);
 
 	void hide();
@@ -214,6 +216,9 @@ private:
 	// value in degree
 	double m_camera_yaw_change = 0.0;
 	double m_camera_pitch = 0.0;
+
+	// camera mode (used for crosshair)
+	CameraMode m_camera_mode = CAMERA_MODE_FIRST;
 
 	// forward, backward, left, right
 	touch_gui_button_id m_joystick_names[5] = {
@@ -240,6 +245,7 @@ private:
 	bool m_joystick_has_really_moved = false;
 	bool m_fixed_joystick = false;
 	bool m_joystick_triggers_aux1 = false;
+	bool m_use_crosshair = false;
 	button_info *m_joystick_btn_off = nullptr;
 	button_info *m_joystick_btn_bg = nullptr;
 	button_info *m_joystick_btn_center = nullptr;
