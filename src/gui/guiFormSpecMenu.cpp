@@ -2151,11 +2151,13 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 			// For mobile devices these magic numbers are
 			// different and forms should always use the
 			// maximum screen space available.
+			double prefer_imgsize = mydata.screensize.Y / 10 * gui_scaling;
 			double fitx_imgsize = mydata.screensize.X /
 				((12.0 / 8.0) * (0.5 + mydata.invsize.X));
 			double fity_imgsize = mydata.screensize.Y /
 				((15.0 / 11.0) * (0.85 + mydata.invsize.Y));
-			use_imgsize = MYMIN(fitx_imgsize, fity_imgsize);
+			use_imgsize = MYMIN(prefer_imgsize,
+					MYMIN(fitx_imgsize, fity_imgsize));
 #else
 			double prefer_imgsize = mydata.screensize.Y / 15 * gui_scaling;
 			double fitx_imgsize = mydata.screensize.X /
