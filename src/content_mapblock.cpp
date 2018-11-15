@@ -697,20 +697,12 @@ void MapblockMeshGenerator::drawGlasslikeFramedNode()
 	for (int face = 0; face < 6; face++)
 		getTile(g_6dirs[face], &tiles[face]);
 
+	if (!data->m_smooth_lighting)
+		color = encode_light(light, f->light_source);
+
 	TileSpec glass_tiles[6];
-	if (tiles[1].layers[0].texture &&
-			tiles[2].layers[0].texture &&
-			tiles[3].layers[0].texture) {
-		glass_tiles[0] = tiles[4];
-		glass_tiles[1] = tiles[2];
-		glass_tiles[2] = tiles[4];
-		glass_tiles[3] = tiles[4];
-		glass_tiles[4] = tiles[3];
-		glass_tiles[5] = tiles[4];
-	} else {
-		for (auto &glass_tile : glass_tiles)
-			glass_tile = tiles[4];
-	}
+	for (auto &glass_tile : glass_tiles)
+		glass_tile = tiles[4];
 
 	u8 param2 = n.getParam2();
 	bool H_merge = !(param2 & 128);
@@ -734,14 +726,6 @@ void MapblockMeshGenerator::drawGlasslikeFramedNode()
 		aabb3f(-a, -a,  b,  a, -b,  a), // z+
 		aabb3f(-a, -a, -a,  a, -b, -b), // z-
 		aabb3f(-a,  b, -a,  a,  a, -b), // z-
-	};
-	static const aabb3f glass_faces[6] = {
-		aabb3f(-g, -g,  g,  g,  g,  g), // z+
-		aabb3f(-g,  g, -g,  g,  g,  g), // y+
-		aabb3f( g, -g, -g,  g,  g,  g), // x+
-		aabb3f(-g, -g, -g,  g,  g, -g), // z-
-		aabb3f(-g, -g, -g,  g, -g,  g), // y-
-		aabb3f(-g, -g, -g, -g,  g,  g), // x-
 	};
 
 	// tables of neighbour (connect if same type and merge allowed),
@@ -800,8 +784,34 @@ void MapblockMeshGenerator::drawGlasslikeFramedNode()
 	for (int face = 0; face < 6; face++) {
 		if (nb[face])
 			continue;
+
 		tile = glass_tiles[face];
-		drawAutoLightedCuboid(glass_faces[face]);
+		// Face at Z-
+		v3f vertices[4] = {
+			v3f(-a,  a, -g),
+			v3f( a,  a, -g),
+			v3f( a, -a, -g),
+			v3f(-a, -a, -g),
+		};
+
+		for (v3f &vertex : vertices) {
+			switch (face) {
+				case D6D_ZP:
+					vertex.rotateXZBy(180); break;
+				case D6D_YP:
+					vertex.rotateYZBy( 90); break;
+				case D6D_XP:
+					vertex.rotateXZBy( 90); break;
+				case D6D_ZN:
+					vertex.rotateXZBy(  0); break;
+				case D6D_YN:
+					vertex.rotateYZBy(-90); break;
+				case D6D_XN:
+					vertex.rotateXZBy(-90); break;
+			}
+		}
+		v3s16 dir = g_6dirs[face];
+		drawQuad(vertices, dir);
 	}
 
 	// Optionally render internal liquid level defined by param2
