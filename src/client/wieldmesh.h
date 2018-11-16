@@ -80,6 +80,7 @@ public:
 	void setCube(const ContentFeatures &f, v3f wield_scale);
 	void setExtruded(const std::string &imagename, const std::string &overlay_image,
 			v3f wield_scale, ITextureSource *tsrc, u8 num_frames);
+	void setItemCheck(const ItemStack &item, Client *client, bool check_wield_image);
 	void setItem(const ItemStack &item, Client *client);
 
 	// Sets the vertex color of the wield mesh.
