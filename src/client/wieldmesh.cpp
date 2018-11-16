@@ -333,8 +333,7 @@ scene::SMesh *createSpecialNodeMesh(Client *client, content_t id, std::vector<It
 	return mesh;
 }
 
-// Wrapper for original setItem to not break things
-void WieldMeshSceneNode::setItemCheck(const ItemStack &item, Client *client, bool check_wield_image)
+void WieldMeshSceneNode::setItem(const ItemStack &item, Client *client, bool check_wield_image)
 {
 	ITextureSource *tsrc = client->getTextureSource();
 	IItemDefManager *idef = client->getItemDefManager();
@@ -444,12 +443,6 @@ void WieldMeshSceneNode::setItemCheck(const ItemStack &item, Client *client, boo
 
 	// no wield mesh found
 	changeToMesh(nullptr);
-}
-
-void WieldMeshSceneNode::setItem(const ItemStack &item, Client *client)
-{
-	// Call with default of true
-	this->setItemCheck(item, client, true);
 }
 
 void WieldMeshSceneNode::setColor(video::SColor c)
