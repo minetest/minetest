@@ -5488,7 +5488,7 @@ Used by `ObjectRef` methods. Part of an Entity definition.
         --   of its texture.
         --   Otherwise for non-node items, the object will be an extrusion of
         --   'inventory_image'.
-	    -- "node" mirrors behavior of "mesh" without the 'wield_image' check.
+	    -- "node" is similar to "wielditem" but ignores the 'wield_image' parameter.
 
         visual_size = {x = 1, y = 1},
         -- `x` multiplies horizontal (X and Z) visual size.
