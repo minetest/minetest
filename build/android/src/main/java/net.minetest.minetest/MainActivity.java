@@ -18,67 +18,67 @@ import java.util.List;
 
 public class MainActivity extends Activity {
 
-    private final static int PERMISSIONS = 1;
-    private static final String[] REQUIRED_SDK_PERMISSIONS = new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE};
-    RelativeLayout relativeLayout;
+	private final static int PERMISSIONS = 1;
+	private static final String[] REQUIRED_SDK_PERMISSIONS = new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE};
+	RelativeLayout relativeLayout;
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        relativeLayout = new RelativeLayout(this);
-        relativeLayout.setBackgroundResource(R.drawable.bg);
-        setContentView(relativeLayout);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            Permission();
-        } else {
-            Next();
-        }
-    }
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		relativeLayout = new RelativeLayout(this);
+		relativeLayout.setBackgroundResource(R.drawable.bg);
+		setContentView(relativeLayout);
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+			Permission();
+		} else {
+			Next();
+		}
+	}
 
-    protected void Permission() {
-        final List<String> missingPermissions = new ArrayList<String>();
-        // check required permission
-        for (final String permission : REQUIRED_SDK_PERMISSIONS) {
-            final int result = ContextCompat.checkSelfPermission(this, permission);
-            if (result != PackageManager.PERMISSION_GRANTED) {
-                missingPermissions.add(permission);
-            }
-        }
-        if (!missingPermissions.isEmpty()) {
-            // request permission
-            final String[] permissions = missingPermissions
-                    .toArray(new String[missingPermissions.size()]);
-            ActivityCompat.requestPermissions(this, permissions, PERMISSIONS);
-        } else {
-            final int[] grantResults = new int[REQUIRED_SDK_PERMISSIONS.length];
-            Arrays.fill(grantResults, PackageManager.PERMISSION_GRANTED);
-            onRequestPermissionsResult(PERMISSIONS, REQUIRED_SDK_PERMISSIONS,
-                    grantResults);
-        }
-    }
+	protected void Permission() {
+		final List<String> missingPermissions = new ArrayList<String>();
+		// check required permission
+		for (final String permission : REQUIRED_SDK_PERMISSIONS) {
+			final int result = ContextCompat.checkSelfPermission(this, permission);
+			if (result != PackageManager.PERMISSION_GRANTED) {
+				missingPermissions.add(permission);
+			}
+		}
+		if (!missingPermissions.isEmpty()) {
+			// request permission
+			final String[] permissions = missingPermissions
+					.toArray(new String[missingPermissions.size()]);
+			ActivityCompat.requestPermissions(this, permissions, PERMISSIONS);
+		} else {
+			final int[] grantResults = new int[REQUIRED_SDK_PERMISSIONS.length];
+			Arrays.fill(grantResults, PackageManager.PERMISSION_GRANTED);
+			onRequestPermissionsResult(PERMISSIONS, REQUIRED_SDK_PERMISSIONS,
+					grantResults);
+		}
+	}
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[],
-                                           @NonNull int[] grantResults) {
-        switch (requestCode) {
-            case PERMISSIONS:
-                for (int index = permissions.length - 1; index >= 0; --index) {
-                    if (grantResults[index] != PackageManager.PERMISSION_GRANTED) {
-                        // permission not granted - toast and exit
-                        Toast.makeText(this, R.string.not_granted, Toast.LENGTH_LONG).show();
-                        finish();
-                        return;
-                    }
-                }
-                // permission were granted - run
-                Next();
-                break;
-        }
-    }
+	@Override
+	public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[],
+										   @NonNull int[] grantResults) {
+		switch (requestCode) {
+			case PERMISSIONS:
+				for (int index = permissions.length - 1; index >= 0; --index) {
+					if (grantResults[index] != PackageManager.PERMISSION_GRANTED) {
+						// permission not granted - toast and exit
+						Toast.makeText(this, R.string.not_granted, Toast.LENGTH_LONG).show();
+						finish();
+						return;
+					}
+				}
+				// permission were granted - run
+				Next();
+				break;
+		}
+	}
 
-    public void Next() {
-        Intent intent = new Intent(this, MtNativeActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        startActivity(intent);
-    }
+	public void Next() {
+		Intent intent = new Intent(this, MtNativeActivity.class);
+		intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+		startActivity(intent);
+	}
 }

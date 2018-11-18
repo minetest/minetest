@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="AppTheme" parent="@android:style/android:Theme.Holo.Light.NoActionBar.Fullscreen">
-        <item name="android:windowNoTitle">true</item>
-        <item name="android:windowAnimationStyle">@null</item>
-    </style>
+	<style name="AppTheme" parent="@android:style/android:Theme.Holo.Light.NoActionBar.Fullscreen">
+		<item name="android:windowNoTitle">true</item>
+		<item name="android:windowAnimationStyle">@null</item>
+	</style>
 
-    <style name="Theme.Dialog" parent="@android:style/android:Theme.Holo.Light.Dialog.NoActionBar"></style>
+	<style name="Theme.Dialog" parent="@android:style/android:Theme.Holo.Light.Dialog.NoActionBar"></style>
 
 </resources>
