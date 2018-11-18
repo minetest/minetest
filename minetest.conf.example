@@ -1098,8 +1098,7 @@
 #    type: string
 # remote_media =
 
-#    Enable/disable running an IPv6 server.  An IPv6 server may be restricted
-#    to IPv6 clients, depending on system configuration.
+#    Enable/disable running an IPv6 server.
 #    Ignored if bind_address is set.
 #    type: bool
 # ipv6_server = false

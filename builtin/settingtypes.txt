@@ -922,8 +922,7 @@ strict_protocol_version_checking (Strict protocol checking) bool false
 #    Files that are not present will be fetched the usual way.
 remote_media (Remote media) string
 
-#    Enable/disable running an IPv6 server.  An IPv6 server may be restricted
-#    to IPv6 clients, depending on system configuration.
+#    Enable/disable running an IPv6 server.
 #    Ignored if bind_address is set.
 ipv6_server (IPv6 server) bool false
 
