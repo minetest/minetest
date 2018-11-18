@@ -110,17 +110,11 @@ Client::Client(
 	m_cache_save_interval = g_settings->getU16("server_map_save_interval");
 
 	m_modding_enabled = g_settings->getBool("enable_client_modding");
-	m_script = new ClientScripting(this);
-	m_env.setScript(m_script);
-	m_script->setEnv(&m_env);
-}
-
-void Client::loadBuiltin()
-{
-	// Load builtin
-	scanModIntoMemory(BUILTIN_MOD_NAME, getBuiltinLuaPath());
-
-	m_script->loadModFromMemory(BUILTIN_MOD_NAME);
+	if (m_modding_enabled) {
+		m_script = new ClientScripting(this);
+		m_env.setScript(m_script);
+		m_script->setEnv(&m_env);
+	}
 }
 
 void Client::loadMods()
@@ -130,12 +124,15 @@ void Client::loadMods()
 		return;
 	}
 
-	// If modding is not enabled or CSM restrictions disable it
-	// don't load CSM mods, only builtin
+	// If modding is not enabled or CSM restrictions disable it, don't load CSM mods
 	if (!m_modding_enabled) {
 		warningstream << "Client side mods are disabled by configuration." << std::endl;
 		return;
 	}
+
+	// Load builtin
+	scanModIntoMemory(BUILTIN_MOD_NAME, getBuiltinLuaPath());
+	m_script->loadModFromMemory(BUILTIN_MOD_NAME);
 
 	if (checkCSMRestrictionFlag(CSMRestrictionFlags::CSM_RF_LOAD_CLIENT_MODS)) {
 		warningstream << "Client side mods are disabled by server." << std::endl;
@@ -227,8 +224,8 @@ const ModSpec* Client::getModSpec(const std::string &modname) const
 void Client::Stop()
 {
 	m_shutdown = true;
-	// Don't disable this part when modding is disabled, it's used in builtin
-	m_script->on_shutdown();
+	if (m_mods_loaded)
+		m_script->on_shutdown();
 	//request all client managed threads to stop
 	m_mesh_update_thread.stop();
 	// Save local server map
