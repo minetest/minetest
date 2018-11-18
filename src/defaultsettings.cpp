@@ -400,6 +400,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("high_precision_fpu", "true");
 	settings->setDefault("enable_console", "false");
 
+	// Altered settings for Android
 #ifdef __ANDROID__
 	settings->setDefault("screen_w", "0");
 	settings->setDefault("screen_h", "0");
@@ -421,23 +422,31 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("pause_fps_max", "10");
 	settings->setDefault("max_objects_per_block", "20");
 	settings->setDefault("sqlite_synchronous", "1");
-	settings->setDefault("gui_scaling", "1.1");
 	settings->setDefault("server_map_save_interval", "15");
 	settings->setDefault("client_mapblock_limit", "1000");
 	settings->setDefault("active_block_range", "2");
 	settings->setDefault("chunksize", "5");
-
 	settings->setDefault("viewing_range", "50");
+	settings->setDefault("curl_verify_cert","false");
 
-	// Check for a device with a small screen
+	// Apply settings according to screen size
 	float x_inches = ((double) porting::getDisplaySize().X /
 			(160 * porting::getDisplayDensity()));
-	if (x_inches  < 3.5) {
+
+	if (x_inches < 3.7f) {
 		settings->setDefault("hud_scaling", "0.6");
-	} else if (x_inches < 4.5) {
+		settings->setDefault("font_size", "14");
+		settings->setDefault("mono_font_size", "14");
+	} else if (x_inches < 4.5f) {
 		settings->setDefault("hud_scaling", "0.7");
+		settings->setDefault("font_size", "14");
+		settings->setDefault("mono_font_size", "14");
+	} else if (x_inches < 6.0f) {
+		settings->setDefault("hud_scaling", "0.85");
+		settings->setDefault("font_size", "14");
+		settings->setDefault("mono_font_size", "14");
 	}
-	settings->setDefault("curl_verify_cert","false");
+	// Tablets >= 6.0 use non-Android defaults for these settings
 #else
 	settings->setDefault("screen_dpi", "72");
 #endif
