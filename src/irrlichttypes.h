@@ -31,7 +31,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #endif
 
 #include <irrTypes.h>
-#include <irrMath.h>
 
 using namespace irr;
 
@@ -52,6 +51,9 @@ namespace irr {
 
 #if (IRRLICHT_VERSION_MAJOR == 1 && IRRLICHT_VERSION_MINOR >= 9)
 namespace core {
+	template <typename T>
+	inline T roundingError();
+
 	template <>
 	inline s16 roundingError()
 	{
