@@ -237,9 +237,10 @@ local function formspec(tabview, name, tabdata)
 
 	if core.settings:get("touchscreen_threshold") ~= nil then
 		tab_string = tab_string ..
-			"label[4.3,4.1;" .. fgettext("Touchthreshold (px)") .. "]" ..
-			"dropdown[3.85,4.55;3.85;dd_touchthreshold;0,10,20,30,40,50;" ..
-			((tonumber(core.settings:get("touchscreen_threshold")) / 10) + 1) .. "]"
+			"label[4.3,4.2;" .. fgettext("Touchthreshold: (px)") .. "]" ..
+			"dropdown[4.25,4.65;3.5;dd_touchthreshold;0,10,20,30,40,50;" ..
+			((tonumber(core.settings:get("touchscreen_threshold")) / 10) + 1) ..
+			"]box[4.0,4.5;3.75,1.0;#999999]"
 	end
 
 	if shaders_enabled then
