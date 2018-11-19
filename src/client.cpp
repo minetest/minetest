@@ -234,7 +234,8 @@ void Client::Stop()
 		m_localdb->endSave();
 	}
 
-	delete m_script;
+	if (m_mods_loaded)
+		delete m_script;
 }
 
 bool Client::isShutdown()
@@ -1488,9 +1489,10 @@ void Client::typeChatMessage(const std::wstring &message)
 	if (message.empty())
 		return;
 
-	// If message was ate by script API, don't send it to server
-	if (m_script->on_sending_message(wide_to_utf8(message))) {
-		return;
+	if (m_mods_loaded) {
+		// If message was eaten by script API, don't send it to server
+		if (m_script->on_sending_message(wide_to_utf8(message)))
+			return;
 	}
 
 	// Send to others

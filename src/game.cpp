@@ -183,7 +183,7 @@ struct LocalFormspecHandler : public TextDest
 			return;
 		}
 
-		if (m_client && m_client->moddingLoaded() && m_client->getScript())
+		if (m_client && m_client->modsLoaded() && m_client->getScript())
 			m_client->getScript()->on_formspec_input(m_formname, fields);
 	}
 
@@ -1889,7 +1889,7 @@ void Game::processKeyInput()
 		if (client->moddingEnabled())
 			openConsole(0.2, L".");
 		else
-			m_game_ui->showStatusText(wgettext("CSM Disabled"));
+			m_game_ui->showStatusText(wgettext("CSM is disabled"));
 	} else if (wasKeyDown(KeyType::CONSOLE)) {
 		openConsole(core::clamp(g_settings->getFloat("console_height"), 0.1f, 1.0f));
 	} else if (wasKeyDown(KeyType::FREEMOVE)) {
@@ -2532,7 +2532,7 @@ void Game::handleClientEvent_PlayerForceMove(ClientEvent *event, CameraOrientati
 
 void Game::handleClientEvent_Deathscreen(ClientEvent *event, CameraOrientation *cam)
 {
-	if (client->moddingLoaded())
+	if (client->modsLoaded())
 		client->getScript()->on_death();
 
 	LocalPlayer *player = client->getEnv().getLocalPlayer();
