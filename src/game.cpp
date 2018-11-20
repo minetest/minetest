@@ -183,7 +183,7 @@ struct LocalFormspecHandler : public TextDest
 			return;
 		}
 
-		if (m_client && m_client->modsLoaded() && m_client->getScript())
+		if (m_client && m_client->modsLoaded())
 			m_client->getScript()->on_formspec_input(m_formname, fields);
 	}
 
