@@ -4009,7 +4009,7 @@ void Game::extendedResourceCleanup()
 
 void Game::showDeathFormspec()
 {
-	std::string formspec =
+	static std::string formspec =
 		std::string(FORMSPEC_VERSION_STRING) +
 		SIZE_TAG
 		"bgcolor[#320000b4;true]"
