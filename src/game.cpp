@@ -2532,13 +2532,14 @@ void Game::handleClientEvent_PlayerForceMove(ClientEvent *event, CameraOrientati
 
 void Game::handleClientEvent_Deathscreen(ClientEvent *event, CameraOrientation *cam)
 {
+	// If CSM enabled, deathscreen is handled by CSM code in builtin
 	if (client->modsLoaded())
 		client->getScript()->on_death();
-
-	LocalPlayer *player = client->getEnv().getLocalPlayer();
+	else
+		showDeathFormspec();
 
 	/* Handle visualization */
-	showDeathFormspec();
+	LocalPlayer *player = client->getEnv().getLocalPlayer();
 	runData.damage_flash = 0;
 	player->hurt_tilt_timer = 0;
 	player->hurt_tilt_strength = 0;
@@ -4013,7 +4014,7 @@ void Game::showDeathFormspec()
 		std::string(FORMSPEC_VERSION_STRING) +
 		SIZE_TAG
 		"bgcolor[#320000b4;true]"
-		"label[4.85,1.35;" + gettext("You died.") + "]"
+		"label[4.85,1.35;" + gettext("You died") + "]"
 		"button_exit[4,3;3,0.5;btn_respawn;" + gettext("Respawn") + "]"
 		;
 
