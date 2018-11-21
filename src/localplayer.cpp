@@ -288,8 +288,8 @@ void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d,
 		(touching_ground ? m_cao->getStepHeight() : (0.2f * BS));
 
 	v3f accel_f = v3f(0,0,0);
-	const v3f position_before_move = position;
-	const v3f speed_before_move = m_speed;
+	const v3f initial_position = position;
+	const v3f initial_speed = m_speed;
 
 	collisionMoveResult result = collisionMoveSimple(env, m_client,
 		pos_max_d, m_collisionbox, player_stepheight, dtime,
@@ -456,7 +456,7 @@ void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d,
 	}
 
 	// Autojump
-	handleAutojump(dtime, env, result, position_before_move, speed_before_move, pos_max_d);
+	handleAutojump(dtime, env, result, initial_position, initial_speed, pos_max_d);
 }
 
 void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d)
@@ -888,8 +888,8 @@ void LocalPlayer::old_move(f32 dtime, Environment *env, f32 pos_max_d,
 	float player_stepheight = touching_ground ? (BS * 0.6) : (BS * 0.2);
 
 	v3f accel_f = v3f(0, 0, 0);
-	const v3f position_before_move = position;
-	const v3f speed_before_move = m_speed;
+	const v3f initial_position = position;
+	const v3f initial_speed = m_speed;
 
 	collisionMoveResult result = collisionMoveSimple(env, m_client,
 		pos_max_d, m_collisionbox, player_stepheight, dtime,
@@ -1055,7 +1055,7 @@ void LocalPlayer::old_move(f32 dtime, Environment *env, f32 pos_max_d,
 	}
 
 	// Autojump
-	handleAutojump(dtime, env, result, position_before_move, speed_before_move, pos_max_d);
+	handleAutojump(dtime, env, result, initial_position, initial_speed, pos_max_d);
 }
 
 float LocalPlayer::getSlipFactor(Environment *env, const v3f &speedH)
@@ -1079,8 +1079,8 @@ float LocalPlayer::getSlipFactor(Environment *env, const v3f &speedH)
 }
 
 void LocalPlayer::handleAutojump(f32 dtime, Environment *env,
-		const collisionMoveResult &result, const v3f &position_before_move,
-		const v3f &speed_before_move, f32 pos_max_d)
+		const collisionMoveResult &result, const v3f &initial_position,
+		const v3f &initial_speed, f32 pos_max_d)
 {
 	PlayerSettings &player_settings = getPlayerSettings();
 	if (!player_settings.autojump)
@@ -1137,8 +1137,8 @@ void LocalPlayer::handleAutojump(f32 dtime, Environment *env,
 	}
 
 	float jump_height = 1.1f; // TODO: better than a magic number
-	v3f jump_pos = position_before_move + v3f(0.0f, jump_height * BS, 0.0f);
-	v3f jump_speed = speed_before_move;
+	v3f jump_pos = initial_position + v3f(0.0f, jump_height * BS, 0.0f);
+	v3f jump_speed = initial_speed;
 
 	// try at peak of jump, zero step height
 	collisionMoveResult jump_result = collisionMoveSimple(env, m_client, pos_max_d,
@@ -1147,9 +1147,9 @@ void LocalPlayer::handleAutojump(f32 dtime, Environment *env,
 
 	// see if we can get a little bit farther horizontally if we had
 	// jumped
-	v3f run_delta = position_before_move - m_position;
+	v3f run_delta = initial_position - m_position;
 	run_delta.Y = 0.0f;
-	v3f jump_delta = position_before_move - jump_pos;
+	v3f jump_delta = initial_position - jump_pos;
 	jump_delta.Y = 0.0f;
 	if (jump_delta.getLengthSQ() > run_delta.getLengthSQ() * 1.01f) {
 		m_autojump = true;
