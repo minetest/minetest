@@ -303,7 +303,11 @@ bool RecursiveDelete(const std::string &path)
 	{
 		// Child
 		char argv_data[3][10000];
+#ifdef __ANDROID__
+		strcpy(argv_data[0], "/system/bin/rm");
+#else
 		strcpy(argv_data[0], "/bin/rm");
+#endif
 		strcpy(argv_data[1], "-rf");
 		strncpy(argv_data[2], path.c_str(), 10000);
 		char *argv[4];
