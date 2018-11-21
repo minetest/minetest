@@ -682,13 +682,6 @@ void GenericCAO::addToScene(ITextureSource *tsrc)
 			RenderingEngine::get_scene_manager(), -1);
 		m_wield_meshnode->setItem(item, m_client,
 			(m_prop.visual == "wielditem"));
-		
-		// Does wield_image need to be checked or not
-		if (m_prop.visual == "wielditem") {
-			m_wield_meshnode->setItem(item, m_client, true);
-		} else {
-			m_wield_meshnode->setItem(item, m_client, false);
-		}
 
 		m_wield_meshnode->setScale(
 			v3f(m_prop.visual_size.X / 2, m_prop.visual_size.Y / 2,
