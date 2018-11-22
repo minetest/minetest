@@ -403,6 +403,7 @@ void set_default_settings(Settings *settings)
 	// Altered settings for macOS
 #ifdef __MACH__ && __APPLE__
 	settings->setDefault("keymap_sneak", "KEY_SHIFT");
+	settings->setDefault("fps_max", "0");
 #endif
 
 	// Altered settings for Android
