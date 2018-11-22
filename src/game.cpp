@@ -1886,7 +1886,7 @@ void Game::processKeyInput()
 	} else if (wasKeyDown(KeyType::CMD)) {
 		openConsole(0.2, L"/");
 	} else if (wasKeyDown(KeyType::CMD_LOCAL)) {
-		if (client->moddingEnabled())
+		if (client->modsLoaded())
 			openConsole(0.2, L".");
 		else
 			m_game_ui->showStatusText(wgettext("CSM is disabled"));
