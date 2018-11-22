@@ -1147,9 +1147,9 @@ void LocalPlayer::handleAutojump(f32 dtime, Environment *env,
 
 	// see if we can get a little bit farther horizontally if we had
 	// jumped
-	v3f run_delta = initial_position - m_position;
+	v3f run_delta = m_position - initial_position;
 	run_delta.Y = 0.0f;
-	v3f jump_delta = initial_position - jump_pos;
+	v3f jump_delta = jump_pos - initial_position;
 	jump_delta.Y = 0.0f;
 	if (jump_delta.getLengthSQ() > run_delta.getLengthSQ() * 1.01f) {
 		m_autojump = true;
