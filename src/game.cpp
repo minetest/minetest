@@ -2449,8 +2449,15 @@ void Game::updatePlayerControl(const CameraOrientation &cam)
 	}
 #endif
 
-	client->setPlayerControl(control);
 	LocalPlayer *player = client->getEnv().getLocalPlayer();
+
+	// autojump if set: simulate "jump" key
+	if (player->getAutojump()) {
+		control.jump = true;
+		keypress_bits |= 1U << 4;
+	}
+
+	client->setPlayerControl(control);
 	player->keyPressed = keypress_bits;
 
 	//tt.stop();

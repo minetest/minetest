@@ -31,6 +31,7 @@ class GenericCAO;
 class ClientActiveObject;
 class ClientEnvironment;
 class IGameDef;
+struct collisionMoveResult;
 
 enum LocalPlayerAnimations
 {
@@ -145,11 +146,17 @@ public:
 	float getZoomFOV() const { return m_zoom_fov; }
 	void setZoomFOV(float zoom_fov) { m_zoom_fov = zoom_fov; }
 
+	bool getAutojump() const { return m_autojump; }
+
 private:
 	void accelerateHorizontal(const v3f &target_speed, const f32 max_increase);
 	void accelerateVertical(const v3f &target_speed, const f32 max_increase);
 	bool updateSneakNode(Map *map, const v3f &position, const v3f &sneak_max);
 	float getSlipFactor(Environment *env, const v3f &speedH);
+	void handleAutojump(f32 dtime, Environment *env,
+			const collisionMoveResult &result,
+			const v3f &position_before_move, const v3f &speed_before_move,
+			f32 pos_max_d);
 
 	v3f m_position;
 	v3s16 m_standing_node;
@@ -183,6 +190,8 @@ private:
 			BS * 1.75f, BS * 0.30f);
 	float m_eye_height = 1.625f;
 	float m_zoom_fov = 0.0f;
+	bool m_autojump = false;
+	float m_autojump_time = 0.0f;
 
 	GenericCAO *m_cao = nullptr;
 	Client *m_client;

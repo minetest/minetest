@@ -69,6 +69,10 @@
 #    type: bool
 # always_fly_fast = true
 
+#    Automatically jump up single-node obstacles.
+#    type: bool
+# autojump = false
+
 #    The time in seconds it takes between repeated right clicks when holding the right mouse button.
 #    type: float
 # repeat_rightclick_time = 0.25
