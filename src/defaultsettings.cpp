@@ -247,6 +247,11 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("aux1_descends", "false");
 	settings->setDefault("doubletap_jump", "false");
 	settings->setDefault("always_fly_fast", "true");
+#ifdef __ANDROID__
+	settings->setDefault("autojump", "true");
+#else
+	settings->setDefault("autojump", "false");
+#endif
 	settings->setDefault("continuous_forward", "false");
 	settings->setDefault("enable_joysticks", "false");
 	settings->setDefault("joystick_id", "0");

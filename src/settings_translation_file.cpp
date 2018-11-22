@@ -27,6 +27,7 @@ fake_function() {
 	gettext("Double tap jump for fly");
 	gettext("Double-tapping the jump key toggles fly mode.");
 	gettext("Always fly and fast");
+	gettext("Automatic jumping");
 	gettext("If disabled, \"special\" key is used to fly fast if both fly and fast mode are enabled.");
 	gettext("Rightclick repetition interval");
 	gettext("The time in seconds it takes between repeated right clicks when holding the right mouse button.");

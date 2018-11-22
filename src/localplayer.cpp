@@ -287,16 +287,9 @@ void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d,
 	float player_stepheight = (m_cao == nullptr) ? 0.0f :
 		(touching_ground ? m_cao->getStepHeight() : (0.2f * BS));
 
-	// TODO this is a problematic hack.
-	// Use a better implementation for autojump, or apply a custom stepheight
-	// to all players, as this currently creates unintended special movement
-	// abilities and advantages for Android players on a server.
-#ifdef __ANDROID__
-	if (touching_ground)
-		player_stepheight += (0.6f * BS);
-#endif
-
 	v3f accel_f = v3f(0,0,0);
+	const v3f initial_position = position;
+	const v3f initial_speed = m_speed;
 
 	collisionMoveResult result = collisionMoveSimple(env, m_client,
 		pos_max_d, m_collisionbox, player_stepheight, dtime,
@@ -461,6 +454,9 @@ void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d,
 		setSpeed(m_speed);
 		m_can_jump = false;
 	}
+
+	// Autojump
+	handleAutojump(dtime, env, result, initial_position, initial_speed, pos_max_d);
 }
 
 void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d)
@@ -891,11 +887,9 @@ void LocalPlayer::old_move(f32 dtime, Environment *env, f32 pos_max_d,
 	// this shouldn't be hardcoded but transmitted from server
 	float player_stepheight = touching_ground ? (BS * 0.6) : (BS * 0.2);
 
-#ifdef __ANDROID__
-	player_stepheight += (0.6 * BS);
-#endif
-
 	v3f accel_f = v3f(0, 0, 0);
+	const v3f initial_position = position;
+	const v3f initial_speed = m_speed;
 
 	collisionMoveResult result = collisionMoveSimple(env, m_client,
 		pos_max_d, m_collisionbox, player_stepheight, dtime,
@@ -1059,6 +1053,9 @@ void LocalPlayer::old_move(f32 dtime, Environment *env, f32 pos_max_d,
 		setSpeed(m_speed);
 		m_can_jump = false;
 	}
+
+	// Autojump
+	handleAutojump(dtime, env, result, initial_position, initial_speed, pos_max_d);
 }
 
 float LocalPlayer::getSlipFactor(Environment *env, const v3f &speedH)
@@ -1079,4 +1076,83 @@ float LocalPlayer::getSlipFactor(Environment *env, const v3f &speedH)
 		return core::clamp(1.0f / (slippery + 1), 0.001f, 1.0f);
 	}
 	return 1.0f;
+}
+
+void LocalPlayer::handleAutojump(f32 dtime, Environment *env,
+		const collisionMoveResult &result, const v3f &initial_position,
+		const v3f &initial_speed, f32 pos_max_d)
+{
+	PlayerSettings &player_settings = getPlayerSettings();
+	if (!player_settings.autojump)
+		return;
+
+	if (m_autojump) {
+		// release autojump after a given time
+		m_autojump_time -= dtime;
+		if (m_autojump_time <= 0.0f)
+			m_autojump = false;
+		return;
+	}
+
+	bool control_forward = control.up ||
+			       (!control.up && !control.down &&
+					       control.forw_move_joystick_axis < -0.05);
+	bool could_autojump =
+			m_can_jump && !control.jump && !control.sneak && control_forward;
+	if (!could_autojump)
+		return;
+
+	bool horizontal_collision = false;
+	for (const auto &colinfo : result.collisions) {
+		if (colinfo.type == COLLISION_NODE && colinfo.plane != 1) {
+			horizontal_collision = true;
+			break; // one is enough
+		}
+	}
+
+	// must be running against something to trigger autojumping
+	if (!horizontal_collision)
+		return;
+
+	// check for nodes above
+	v3f headpos_min = m_position + m_collisionbox.MinEdge * 0.99f;
+	v3f headpos_max = m_position + m_collisionbox.MaxEdge * 0.99f;
+	headpos_min.Y = headpos_max.Y; // top face of collision box
+	v3s16 ceilpos_min = floatToInt(headpos_min, BS) + v3s16(0, 1, 0);
+	v3s16 ceilpos_max = floatToInt(headpos_max, BS) + v3s16(0, 1, 0);
+	const NodeDefManager *ndef = env->getGameDef()->ndef();
+	bool is_position_valid;
+	for (s16 z = ceilpos_min.Z; z <= ceilpos_max.Z; z++) {
+		for (s16 x = ceilpos_min.X; x <= ceilpos_max.X; x++) {
+			MapNode n = env->getMap().getNodeNoEx(v3s16(x, ceilpos_max.Y, z), &is_position_valid);
+
+			if (!is_position_valid)
+				break;  // won't collide with the void outside
+			if (n.getContent() == CONTENT_IGNORE)
+				return; // players collide with ignore blocks -> same as walkable
+			const ContentFeatures &f = ndef->get(n);
+			if (f.walkable)
+				return; // would bump head, don't jump
+		}
+	}
+
+	float jump_height = 1.1f; // TODO: better than a magic number
+	v3f jump_pos = initial_position + v3f(0.0f, jump_height * BS, 0.0f);
+	v3f jump_speed = initial_speed;
+
+	// try at peak of jump, zero step height
+	collisionMoveResult jump_result = collisionMoveSimple(env, m_client, pos_max_d,
+			m_collisionbox, 0.0f, dtime, &jump_pos, &jump_speed,
+			v3f(0, 0, 0));
+
+	// see if we can get a little bit farther horizontally if we had
+	// jumped
+	v3f run_delta = m_position - initial_position;
+	run_delta.Y = 0.0f;
+	v3f jump_delta = jump_pos - initial_position;
+	jump_delta.Y = 0.0f;
+	if (jump_delta.getLengthSQ() > run_delta.getLengthSQ() * 1.01f) {
+		m_autojump = true;
+		m_autojump_time = 0.1f;
+	}
 }
