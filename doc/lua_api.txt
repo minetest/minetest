@@ -1077,16 +1077,11 @@ Look for examples in `games/minimal` or `games/minetest_game`.
 * `glasslike_framed`
     * All face-connected nodes are drawn as one volume within a surrounding
       frame.
-    * The frame appearence is generated from the edges of the first texture
+    * The frame appearance is generated from the edges of the first texture
       specified in `tiles`. The width of the edges used are 1/16th of texture
       size: 1 pixel for 16x16, 2 pixels for 32x32 etc.
     * The glass 'shine' (or other desired detail) on each node face is supplied
       by the second texture specified in `tiles`.
-    * If a third texture is specified in `tiles` it will be used for the top and
-      base of the glass volume.
-    * If third and fourth textures are specified in `tiles`, the third will be
-      used for the top of the glass volume and the fourth will be used for the
-      base of the glass volume.
 * `glasslike_framed_optional`
     * This switches between the above 2 drawtypes according to the menu setting
       'Connected Glass'.
