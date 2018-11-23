@@ -119,12 +119,12 @@ Client::Client(
 
 void Client::loadMods()
 {
-	// Don't permit to load mods twice
+	// Don't load mods twice
 	if (m_mods_loaded) {
 		return;
 	}
 
-	// If modding is not enabled or CSM restrictions disable it, don't load CSM mods
+	// If client modding is not enabled clientside, don't load CSM mods or builtin
 	if (!m_modding_enabled) {
 		warningstream << "Client side mods are disabled by configuration." << std::endl;
 		return;
@@ -134,9 +134,10 @@ void Client::loadMods()
 	scanModIntoMemory(BUILTIN_MOD_NAME, getBuiltinLuaPath());
 	m_script->loadModFromMemory(BUILTIN_MOD_NAME);
 
+	// If server disabled client mod loading, don't load CSM mods
 	if (checkCSMRestrictionFlag(CSMRestrictionFlags::CSM_RF_LOAD_CLIENT_MODS)) {
 		warningstream << "Client side mods are disabled by server." << std::endl;
-		// If mods loading is disabled and builtin integrity is wrong, disconnect user.
+		// If builtin integrity is wrong, disconnect user
 		if (!checkBuiltinIntegrity()) {
 			// @TODO disconnect user
 		}
@@ -1489,7 +1490,7 @@ void Client::typeChatMessage(const std::wstring &message)
 	if (message.empty())
 		return;
 
-	// If message was eaten by script API, don't send it to server
+	// If message was consumed by script API, don't send it to server
 	if (m_mods_loaded && m_script->on_sending_message(wide_to_utf8(message)))
 		return;
 
