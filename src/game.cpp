@@ -183,7 +183,7 @@ struct LocalFormspecHandler : public TextDest
 			return;
 		}
 
-		if (m_client && m_client->modsLoaded())
+		if (m_client && m_client->moddingEnabled())
 			m_client->getScript()->on_formspec_input(m_formname, fields);
 	}
 
@@ -1886,7 +1886,7 @@ void Game::processKeyInput()
 	} else if (wasKeyDown(KeyType::CMD)) {
 		openConsole(0.2, L"/");
 	} else if (wasKeyDown(KeyType::CMD_LOCAL)) {
-		if (client->modsLoaded())
+		if (client->moddingEnabled())
 			openConsole(0.2, L".");
 		else
 			m_game_ui->showStatusText(wgettext("CSM is disabled"));
@@ -2533,7 +2533,7 @@ void Game::handleClientEvent_PlayerForceMove(ClientEvent *event, CameraOrientati
 void Game::handleClientEvent_Deathscreen(ClientEvent *event, CameraOrientation *cam)
 {
 	// If CSM enabled, deathscreen is handled by CSM code in builtin
-	if (client->modsLoaded())
+	if (client->moddingEnabled())
 		client->getScript()->on_death();
 	else
 		showDeathFormspec();

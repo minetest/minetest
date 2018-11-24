@@ -233,12 +233,13 @@ void ClientEnvironment::step(float dtime)
 			u8 damage = (u8)MYMIN(damage_f + 0.5, 255);
 			if (damage != 0) {
 				damageLocalPlayer(damage, true);
-				m_client->getEventManager()->put(new SimpleTriggerEvent(MtEvent::PLAYER_FALLING_DAMAGE));
+				m_client->getEventManager()->put(
+					new SimpleTriggerEvent(MtEvent::PLAYER_FALLING_DAMAGE));
 			}
 		}
 	}
 
-	if (m_client->modsLoaded())
+	if (m_client->moddingEnabled())
 		m_script->environment_step(dtime);
 
 	// Update lighting on local player (used for wield item)
