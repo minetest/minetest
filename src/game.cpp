@@ -2532,7 +2532,8 @@ void Game::handleClientEvent_PlayerForceMove(ClientEvent *event, CameraOrientati
 
 void Game::handleClientEvent_Deathscreen(ClientEvent *event, CameraOrientation *cam)
 {
-	// If CSM enabled, deathscreen is handled by CSM code in builtin
+	// If CSM enabled, deathscreen is handled by CSM code in
+	// builtin/client/init.lua
 	if (client->moddingEnabled())
 		client->getScript()->on_death();
 	else

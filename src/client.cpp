@@ -110,6 +110,7 @@ Client::Client(
 	m_cache_save_interval = g_settings->getU16("server_map_save_interval");
 
 	m_modding_enabled = g_settings->getBool("enable_client_modding");
+	// Only create the client script environment if client modding is enabled
 	if (m_modding_enabled) {
 		m_script = new ClientScripting(this);
 		m_env.setScript(m_script);
@@ -124,7 +125,8 @@ void Client::loadMods()
 		return;
 	}
 
-	// If client modding is not enabled clientside, don't load CSM mods or builtin
+	// If client modding is not enabled, don't load client-provided CSM mods or
+	// builtin.
 	if (!m_modding_enabled) {
 		warningstream << "Client side mods are disabled by configuration." << std::endl;
 		return;
@@ -134,7 +136,8 @@ void Client::loadMods()
 	scanModIntoMemory(BUILTIN_MOD_NAME, getBuiltinLuaPath());
 	m_script->loadModFromMemory(BUILTIN_MOD_NAME);
 
-	// If server disabled client mod loading, don't load CSM mods
+	// If the server has disabled client-provided CSM mod loading, don't load
+	// client-provided CSM mods. Builtin is loaded so needs verfying.
 	if (checkCSMRestrictionFlag(CSMRestrictionFlags::CSM_RF_LOAD_CLIENT_MODS)) {
 		warningstream << "Client side mods are disabled by server." << std::endl;
 		// If builtin integrity is wrong, disconnect user

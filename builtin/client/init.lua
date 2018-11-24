@@ -9,6 +9,9 @@ dofile(commonpath .. "chatcommands.lua")
 dofile(clientpath .. "chatcommands.lua")
 dofile(commonpath .. "vector.lua")
 
+-- CSM death screen. Only used when clientside modding is enabled, otherwise
+-- implemented in the engine.
+
 core.register_on_death(function()
 	core.display_chat_message("You died.")
 	local formspec = "size[11,5.5]bgcolor[#320000b4;true]" ..
