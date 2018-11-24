@@ -405,6 +405,12 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("high_precision_fpu", "true");
 	settings->setDefault("enable_console", "false");
 
+	// Altered settings for macOS
+#ifdef __MACH__ && __APPLE__
+	settings->setDefault("keymap_sneak", "KEY_SHIFT");
+	settings->setDefault("fps_max", "0");
+#endif
+
 	// Altered settings for Android
 #ifdef __ANDROID__
 	settings->setDefault("screen_w", "0");
