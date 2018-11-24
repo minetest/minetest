@@ -141,7 +141,6 @@ public:
 	DISABLE_CLASS_COPY(Client);
 
 	// Load local mods into memory
-	void loadBuiltin();
 	void scanModSubfolder(const std::string &mod_name, const std::string &mod_path,
 				std::string mod_subpath);
 	inline void scanModIntoMemory(const std::string &mod_name, const std::string &mod_path)
@@ -400,6 +399,7 @@ public:
 
 	ClientScripting *getScript() { return m_script; }
 	const bool moddingEnabled() const { return m_modding_enabled; }
+	const bool modsLoaded() const { return m_mods_loaded; }
 
 	void pushToEventQueue(ClientEvent *event);
 

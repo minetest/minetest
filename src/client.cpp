@@ -110,36 +110,37 @@ Client::Client(
 	m_cache_save_interval = g_settings->getU16("server_map_save_interval");
 
 	m_modding_enabled = g_settings->getBool("enable_client_modding");
-	m_script = new ClientScripting(this);
-	m_env.setScript(m_script);
-	m_script->setEnv(&m_env);
-}
-
-void Client::loadBuiltin()
-{
-	// Load builtin
-	scanModIntoMemory(BUILTIN_MOD_NAME, getBuiltinLuaPath());
-
-	m_script->loadModFromMemory(BUILTIN_MOD_NAME);
+	// Only create the client script environment if client modding is enabled
+	if (m_modding_enabled) {
+		m_script = new ClientScripting(this);
+		m_env.setScript(m_script);
+		m_script->setEnv(&m_env);
+	}
 }
 
 void Client::loadMods()
 {
-	// Don't permit to load mods twice
+	// Don't load mods twice
 	if (m_mods_loaded) {
 		return;
 	}
 
-	// If modding is not enabled or CSM restrictions disable it
-	// don't load CSM mods, only builtin
+	// If client modding is not enabled, don't load client-provided CSM mods or
+	// builtin.
 	if (!m_modding_enabled) {
 		warningstream << "Client side mods are disabled by configuration." << std::endl;
 		return;
 	}
 
+	// Load builtin
+	scanModIntoMemory(BUILTIN_MOD_NAME, getBuiltinLuaPath());
+	m_script->loadModFromMemory(BUILTIN_MOD_NAME);
+
+	// If the server has disabled client-provided CSM mod loading, don't load
+	// client-provided CSM mods. Builtin is loaded so needs verfying.
 	if (checkCSMRestrictionFlag(CSMRestrictionFlags::CSM_RF_LOAD_CLIENT_MODS)) {
 		warningstream << "Client side mods are disabled by server." << std::endl;
-		// If mods loading is disabled and builtin integrity is wrong, disconnect user.
+		// If builtin integrity is wrong, disconnect user
 		if (!checkBuiltinIntegrity()) {
 			// @TODO disconnect user
 		}
@@ -227,8 +228,8 @@ const ModSpec* Client::getModSpec(const std::string &modname) const
 void Client::Stop()
 {
 	m_shutdown = true;
-	// Don't disable this part when modding is disabled, it's used in builtin
-	m_script->on_shutdown();
+	if (m_modding_enabled)
+		m_script->on_shutdown();
 	//request all client managed threads to stop
 	m_mesh_update_thread.stop();
 	// Save local server map
@@ -237,7 +238,8 @@ void Client::Stop()
 		m_localdb->endSave();
 	}
 
-	delete m_script;
+	if (m_modding_enabled)
+		delete m_script;
 }
 
 bool Client::isShutdown()
@@ -1491,10 +1493,9 @@ void Client::typeChatMessage(const std::wstring &message)
 	if (message.empty())
 		return;
 
-	// If message was ate by script API, don't send it to server
-	if (m_script->on_sending_message(wide_to_utf8(message))) {
+	// If message was consumed by script API, don't send it to server
+	if (m_modding_enabled && m_script->on_sending_message(wide_to_utf8(message)))
 		return;
-	}
 
 	// Send to others
 	sendChatMessage(message);
