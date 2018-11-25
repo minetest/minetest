@@ -37,7 +37,8 @@ std::vector<Package> getPackagesFromURL(const std::string &url)
 	std::vector<std::string> extra_headers;
 	extra_headers.emplace_back("Accept: application/json");
 
-	Json::Value json = fetchJsonValue(url, &extra_headers);
+	Json::Value json = fetchJsonValue(url, &extra_headers,
+			g_settings->getS32("curl_file_download_timeout"));
 	if (!json.isArray()) {
 		errorstream << "Invalid JSON download " << std::endl;
 		return std::vector<Package>();
@@ -53,7 +54,7 @@ std::vector<Package> getPackagesFromURL(const std::string &url)
 		package.name = json[i]["name"].asString();
 		package.title = json[i]["title"].asString();
 		package.type = json[i]["type"].asString();
-		package.shortDesc = json[i]["shortDesc"].asString();
+		package.shortDesc = json[i]["short_description"].asString();
 		package.release = json[i]["release"].asInt();
 		if (json[i].isMember("thumbnail"))
 			package.thumbnail = json[i]["thumbnail"].asString();
