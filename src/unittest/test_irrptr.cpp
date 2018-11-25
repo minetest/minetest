@@ -52,12 +52,7 @@ void TestIrrPtr::testRefCounting()
 	obj->grab();
 	UASSERT_REFERENCE_COUNT(obj, 2, "Pre-condition failed: ");
 	{
-		irr_ptr<IReferenceCounted> p1{obj, Grab::do_grab}; // copy semantics
-		UASSERT_REFERENCE_COUNT(obj, 3, );
-	}
-	UASSERT_REFERENCE_COUNT(obj, 2, );
-	{
-		irr_ptr<IReferenceCounted> p1{obj, Grab::already_owned}; // move semantics
+		irr_ptr<IReferenceCounted> p1{obj}; // move semantics
 		UASSERT(p1.get() == obj);
 		UASSERT_REFERENCE_COUNT(obj, 2, );
 
@@ -83,8 +78,9 @@ void TestIrrPtr::testRefCounting()
 
 		p1.release();
 		UASSERT(p1.get() == nullptr);
-		UASSERT_REFERENCE_COUNT(obj, 3, );
+		UASSERT_REFERENCE_COUNT(obj, 4, );
 	}
-	UASSERT_REFERENCE_COUNT(obj, 1, );
+	UASSERT_REFERENCE_COUNT(obj, 2, );
+	obj->drop();
 	UTEST(obj->drop(), "Dropping failed: reference count is %d", obj->getReferenceCount());
 }

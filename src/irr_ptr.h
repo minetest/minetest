@@ -22,41 +22,55 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "irrlichttypes.h"
 #include "IReferenceCounted.h"
 
-enum class Grab
-{
-	already_owned = 0,
-	do_grab = 1,
-};
-
 template <class ReferenceCounted, class = typename std::enable_if <
 	std::is_base_of <IReferenceCounted, ReferenceCounted>::value>::type>
 class irr_ptr
 {
 	ReferenceCounted *value = nullptr;
+
+	void grab(ReferenceCounted *object)
+	{
+		if (object)
+			object->grab();
+		reset(object);
+	}
+
 public:
-	irr_ptr() = default;
+	irr_ptr()
+	{
+	}
 
 	irr_ptr(std::nullptr_t) noexcept
 	{
+	}
+
+	irr_ptr(const irr_ptr &b) noexcept
+	{
+		grab(b.get());
+	}
+
+	irr_ptr(irr_ptr &&b) noexcept
+	{
+		reset(b.release());
 	}
 
 	template <typename B, class = typename std::enable_if <
 		std::is_convertible <B *, ReferenceCounted *>::value>::type>
 	irr_ptr(const irr_ptr<B> &b) noexcept
 	{
-		reset(b.get());
+		grab(b.get());
 	}
 
 	template <typename B, class = typename std::enable_if <
 		std::is_convertible <B *, ReferenceCounted *>::value>::type>
 	irr_ptr(irr_ptr<B> &&b) noexcept
 	{
-		reset(b.release(), Grab::already_owned);
+		reset(b.release());
 	}
 
-	irr_ptr(ReferenceCounted *object, Grab grab) noexcept
+	explicit irr_ptr(ReferenceCounted *object) noexcept
 	{
-		reset(object, grab);
+		reset(object);
 	}
 
 	~irr_ptr()
@@ -64,11 +78,23 @@ public:
 		reset();
 	}
 
+	irr_ptr &operator=(const irr_ptr &b) noexcept
+	{
+		grab(b.get());
+		return *this;
+	}
+
+	irr_ptr &operator=(irr_ptr &&b) noexcept
+	{
+		reset(b.release());
+		return *this;
+	}
+
 	template <typename B, class = typename std::enable_if <
 		std::is_convertible <B *, ReferenceCounted *>::value>::type>
 	irr_ptr &operator=(const irr_ptr<B> &b) noexcept
 	{
-		reset(b.get());
+		grab(b.get());
 		return *this;
 	}
 
@@ -76,7 +102,7 @@ public:
 		std::is_convertible <B *, ReferenceCounted *>::value>::type>
 	irr_ptr &operator=(irr_ptr<B> &&b) noexcept
 	{
-		reset(b.release(), Grab::already_owned);
+		reset(b.release());
 		return *this;
 	}
 
@@ -97,18 +123,10 @@ public:
 		return object;
 	}
 
-	void reset() noexcept
+	void reset(ReferenceCounted *object = nullptr) noexcept
 	{
 		if (value)
 			value->drop();
-		value = nullptr;
-	}
-
-	void reset(ReferenceCounted *object, Grab grab) noexcept
-	{
-		reset();
 		value = object;
-		if (value && grab == Grab::do_grab)
-			value->grab();
 	}
 };
