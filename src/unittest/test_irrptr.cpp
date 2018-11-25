@@ -31,6 +31,8 @@ public:
 	void runTests(IGameDef *gamedef);
 
 	void testRefCounting();
+	void testSelfAssignment();
+	void testNullHandling();
 };
 
 static TestIrrPtr g_test_instance;
@@ -38,6 +40,8 @@ static TestIrrPtr g_test_instance;
 void TestIrrPtr::runTests(IGameDef *gamedef)
 {
 	TEST(testRefCounting);
+	TEST(testSelfAssignment);
+	TEST(testNullHandling);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -83,4 +87,43 @@ void TestIrrPtr::testRefCounting()
 	UASSERT_REFERENCE_COUNT(obj, 2, );
 	obj->drop();
 	UTEST(obj->drop(), "Dropping failed: reference count is %d", obj->getReferenceCount());
+}
+
+void TestIrrPtr::testSelfAssignment()
+{
+	irr_ptr<IReferenceCounted> p1{new IReferenceCounted()};
+	UASSERT(p1);
+	UASSERT_REFERENCE_COUNT(p1, 1, );
+	p1 = p1;
+	UASSERT(p1);
+	UASSERT_REFERENCE_COUNT(p1, 1, );
+	p1 = std::move(p1);
+	UASSERT(p1);
+	UASSERT_REFERENCE_COUNT(p1, 1, );
+}
+
+void TestIrrPtr::testNullHandling()
+{
+	// In the case of an error, it will probably crash with SEGV.
+	// Nevertheless, UASSERTs are used to catch possible corner cases.
+	irr_ptr<IReferenceCounted> p1{new IReferenceCounted()};
+	UASSERT(p1);
+	irr_ptr<IReferenceCounted> p2;
+	UASSERT(!p2);
+	irr_ptr<IReferenceCounted> p3{p2};
+	UASSERT(!p2);
+	UASSERT(!p3);
+	irr_ptr<IReferenceCounted> p4{std::move(p2)};
+	UASSERT(!p2);
+	UASSERT(!p4);
+	p2 = p2;
+	UASSERT(!p2);
+	p2 = std::move(p2);
+	UASSERT(!p2);
+	p3 = p2;
+	UASSERT(!p2);
+	UASSERT(!p3);
+	p3 = std::move(p2);
+	UASSERT(!p2);
+	UASSERT(!p3);
 }
