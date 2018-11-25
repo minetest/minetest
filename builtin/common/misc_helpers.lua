@@ -128,6 +128,7 @@ function dump(o, indent, nested, level)
 	if t ~= "table" then
 		return basic_dump(o)
 	end
+
 	-- Contains table -> true/nil of currently nested tables
 	nested = nested or {}
 	if nested[o] then
@@ -136,10 +137,11 @@ function dump(o, indent, nested, level)
 	nested[o] = true
 	indent = indent or "\t"
 	level = level or 1
-	local t = {}
+
+	local ret = {}
 	local dumped_indexes = {}
 	for i, v in ipairs(o) do
-		t[#t + 1] = dump(v, indent, nested, level + 1)
+		ret[#ret + 1] = dump(v, indent, nested, level + 1)
 		dumped_indexes[i] = true
 	end
 	for k, v in pairs(o) do
@@ -148,7 +150,7 @@ function dump(o, indent, nested, level)
 				k = "["..dump(k, indent, nested, level + 1).."]"
 			end
 			v = dump(v, indent, nested, level + 1)
-			t[#t + 1] = k.." = "..v
+			ret[#ret + 1] = k.." = "..v
 		end
 	end
 	nested[o] = nil
@@ -157,10 +159,10 @@ function dump(o, indent, nested, level)
 		local end_indent_str = "\n"..string.rep(indent, level - 1)
 		return string.format("{%s%s%s}",
 				indent_str,
-				table.concat(t, ","..indent_str),
+				table.concat(ret, ","..indent_str),
 				end_indent_str)
 	end
-	return "{"..table.concat(t, ", ").."}"
+	return "{"..table.concat(ret, ", ").."}"
 end
 
 --------------------------------------------------------------------------------
@@ -407,9 +409,8 @@ if INIT == "game" then
 		end
 
 		local old_itemstack = ItemStack(itemstack)
-		local new_itemstack, removed = core.item_place_node(
-			itemstack, placer, pointed_thing, param2, prevent_after_place
-		)
+		local new_itemstack = core.item_place_node(itemstack, placer,
+				pointed_thing, param2, prevent_after_place)
 		return infinitestacks and old_itemstack or new_itemstack
 	end
 

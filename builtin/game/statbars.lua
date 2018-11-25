@@ -1,8 +1,7 @@
 -- cache setting
 local enable_damage = core.settings:get_bool("enable_damage")
 
-local health_bar_definition =
-{
+local health_bar_definition = {
 	hud_elem_type = "statbar",
 	position = { x=0.5, y=1 },
 	text = "heart.png",
@@ -12,8 +11,7 @@ local health_bar_definition =
 	offset = { x=(-10*24)-25, y=-(48+24+16)},
 }
 
-local breath_bar_definition =
-{
+local breath_bar_definition = {
 	hud_elem_type = "statbar",
 	position = { x=0.5, y=1 },
 	text = "bubble.png",
@@ -30,8 +28,8 @@ local function scaleToDefault(player, field)
 	local current = player["get_" .. field](player)
 	local nominal = core["PLAYER_MAX_".. field:upper() .. "_DEFAULT"]
 	local max_display = math.max(nominal,
- 		math.max(player:get_properties()[field .. "_max"], current))
- 	return current / max_display * nominal 
+		math.max(player:get_properties()[field .. "_max"], current))
+	return current / max_display * nominal
 end
 
 local function update_builtin_statbars(player)
@@ -132,7 +130,7 @@ function core.hud_replace_builtin(name, definition)
 		return false
 	end
 
-	if name == "health" then
+	if hud_name == "health" then
 		health_bar_definition = definition
 
 		for name, ids in pairs(hud_ids) do
@@ -146,7 +144,7 @@ function core.hud_replace_builtin(name, definition)
 		return true
 	end
 
-	if name == "breath" then
+	if hud_name == "breath" then
 		breath_bar_definition = definition
 
 		for name, ids in pairs(hud_ids) do
