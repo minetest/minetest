@@ -28,6 +28,8 @@ class irr_ptr
 {
 	ReferenceCounted *value = nullptr;
 
+	/// Drops stored pointer replacing it with the given one.
+	/// @note Copy semantics: reference counter *is* increased.
 	void grab(ReferenceCounted *object)
 	{
 		if (object)
@@ -111,11 +113,14 @@ public:
 	explicit operator ReferenceCounted*() const noexcept { return value; }
 	explicit operator bool() const noexcept { return !!value; }
 
+	/// Returns the stored pointer.
 	ReferenceCounted *get() const noexcept
 	{
 		return value;
 	}
 
+	/// Returns the stored pointer, erasing it from this class.
+	/// @note Move semantics: reference counter is not changed.
 	ReferenceCounted *release() noexcept
 	{
 		ReferenceCounted *object = value;
@@ -123,6 +128,8 @@ public:
 		return object;
 	}
 
+	/// Drops stored pointer replacing it with the given one.
+	/// @note Move semantics: reference counter is *not* increased.
 	void reset(ReferenceCounted *object = nullptr) noexcept
 	{
 		if (value)
