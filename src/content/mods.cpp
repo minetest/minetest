@@ -66,12 +66,16 @@ void parseModContents(ModSpec &spec)
 
 	// Handle modpacks (defined by containing modpack.txt)
 	std::ifstream modpack_is((spec.path + DIR_DELIM + "modpack.txt").c_str());
-	if (modpack_is.good()) {    // a modpack, recursively get the mods in it
-		modpack_is.close(); // We don't actually need the file
+	std::ifstream modpack2_is((spec.path + DIR_DELIM + "modpack.conf").c_str());
+	if (modpack_is.good() || modpack2_is.good()) {
+		if (modpack_is.good())
+			modpack_is.close();
+
+		if (modpack2_is.good())
+			modpack2_is.close();
+
 		spec.is_modpack = true;
 		spec.modpack_content = getModsInPath(spec.path, true);
-		// modpacks have no dependencies; they are defined and
-		// tracked separately for each mod in the modpack
 
 	} else {
 		// Attempt to load dependencies from mod.conf

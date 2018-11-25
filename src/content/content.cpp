@@ -41,6 +41,12 @@ ContentType getContentType(const ContentSpec &spec)
 		return ECT_MODPACK;
 	}
 
+	std::ifstream modpack2_is((spec.path + DIR_DELIM + "modpack.conf").c_str());
+	if (modpack2_is.good()) {
+		modpack2_is.close();
+		return ECT_MODPACK;
+	}
+
 	std::ifstream init_is((spec.path + DIR_DELIM + "init.lua").c_str());
 	if (init_is.good()) {
 		init_is.close();
@@ -73,7 +79,7 @@ void parseContentInfo(ContentSpec &spec)
 		break;
 	case ECT_MODPACK:
 		spec.type = "modpack";
-		conf_path = spec.path + DIR_DELIM + "mod.conf";
+		conf_path = spec.path + DIR_DELIM + "modpack.conf";
 		break;
 	case ECT_GAME:
 		spec.type = "game";

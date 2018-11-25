@@ -68,8 +68,12 @@ Modpack support
 **NOTE: Not implemented yet.**
 
 Mods can be put in a subdirectory, if the parent directory, which otherwise
-should be a mod, contains a file named `modpack.txt`. This file shall be
-empty, except for lines starting with `#`, which are comments.
+should be a mod, contains a file named `modpack.conf`.
+The file is a key-value store of modpack details.
+
+* `name`: The modpack name.
+* `description`: Description of mod to be shown in the Mods tab of the main
+                 menu.
 
 Mod directory structure
 ------------------------
