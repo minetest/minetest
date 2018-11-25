@@ -373,75 +373,14 @@ add_subdirectory(unittest)
 add_subdirectory(util)
 add_subdirectory(irrlicht_changes)
 add_subdirectory(server)
+add_subdirectory(engine)
 
 set(common_SRCS
 	${database_SRCS}
 	${mapgen_SRCS}
 	${server_SRCS}
 	${content_SRCS}
-	ban.cpp
-	chat.cpp
-	clientiface.cpp
-	collision.cpp
-	content_mapnode.cpp
-	content_nodemeta.cpp
-	content_sao.cpp
-	convert_json.cpp
-	craftdef.cpp
-	debug.cpp
-	defaultsettings.cpp
-	emerge.cpp
-	environment.cpp
-	face_position_cache.cpp
-	filesys.cpp
-	genericobject.cpp
-	gettext.cpp
-	httpfetch.cpp
-	inventory.cpp
-	inventorymanager.cpp
-	itemdef.cpp
-	itemstackmetadata.cpp
-	light.cpp
-	log.cpp
-	map.cpp
-	map_settings_manager.cpp
-	mapblock.cpp
-	mapnode.cpp
-	mapsector.cpp
-	metadata.cpp
-	modchannels.cpp
-	nameidmapping.cpp
-	nodedef.cpp
-	nodemetadata.cpp
-	nodetimer.cpp
-	noise.cpp
-	objdef.cpp
-	object_properties.cpp
-	pathfinder.cpp
-	player.cpp
-	porting.cpp
-	profiler.cpp
-	quicktune.cpp
-	raycast.cpp
-	reflowscan.cpp
-	remoteplayer.cpp
-	rollback.cpp
-	rollback_interface.cpp
-	serialization.cpp
-	server.cpp
-	serverenvironment.cpp
-	serverlist.cpp
-	serverobject.cpp
-	settings.cpp
-	staticobject.cpp
-	terminal_chat_console.cpp
-	tileanimation.cpp
-	tool.cpp
-	translation.cpp
-	version.cpp
-	voxel.cpp
-	voxelalgorithms.cpp
-	hud.cpp
+	${common_engine_SRCS}
 	${common_network_SRCS}
 	${JTHREAD_SRCS}
 	${common_SCRIPT_SRCS}
@@ -482,34 +421,7 @@ set(client_SRCS
 	${gui_SRCS}
 	${client_network_SRCS}
 	${client_irrlicht_changes_SRCS}
-	camera.cpp
-	client.cpp
-	clientenvironment.cpp
-	clientmap.cpp
-	clientmedia.cpp
-	clientobject.cpp
-	clouds.cpp
-	content_cao.cpp
-	content_cso.cpp
-	content_mapblock.cpp
-	convert_json.cpp
-	filecache.cpp
-	fontengine.cpp
-	game.cpp
-	guiscalingfilter.cpp
-	hud.cpp
-	imagefilters.cpp
-	keycode.cpp
-	localplayer.cpp
-	main.cpp
-	mapblock_mesh.cpp
-	mesh.cpp
-	mesh_generator_thread.cpp
-	minimap.cpp
-	particles.cpp
-	shader.cpp
-	sky.cpp
-	wieldmesh.cpp
+	${client_engine_SRCS}
 	${client_SCRIPT_SRCS}
 	${UNITTEST_CLIENT_SRCS}
 )
@@ -544,6 +456,7 @@ include_directories(
 	${JSON_INCLUDE_DIR}
 	${X11_INCLUDE_DIR}
 	${PROJECT_SOURCE_DIR}/script
+	${PROJECT_SOURCE_DIR}/engine
 )
 
 
@@ -829,10 +742,10 @@ if(BUILD_CLIENT)
 	endif()
 
 	if(USE_FREETYPE)
-		install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/../fonts" DESTINATION "${SHAREDIR}" 
+		install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/../fonts" DESTINATION "${SHAREDIR}"
 				FILES_MATCHING PATTERN "*.ttf" PATTERN "*.txt")
 	else()
-		install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/../fonts" DESTINATION "${SHAREDIR}" 
+		install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/../fonts" DESTINATION "${SHAREDIR}"
 				FILES_MATCHING PATTERN "*.png" PATTERN "*.xml")
 	endif()
 

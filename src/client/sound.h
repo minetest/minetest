@@ -22,7 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <set>
 #include <string>
 #include "irr_v3d.h"
-#include "../sound.h"
+#include "../engine/sound.h"
 
 class OnDemandSoundFetcher
 {
