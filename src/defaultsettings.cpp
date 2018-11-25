@@ -406,7 +406,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("enable_console", "false");
 
 	// Altered settings for macOS
-#ifdef __MACH__ && __APPLE__
+#if defined(__MACH__) && defined(__APPLE__)
 	settings->setDefault("keymap_sneak", "KEY_SHIFT");
 	settings->setDefault("fps_max", "0");
 #endif
