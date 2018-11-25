@@ -133,9 +133,6 @@ private:
 
 	static int l_get_video_modes(lua_State *L);
 
-	//content store
-	static int l_get_package_list(lua_State *L);
-
 	//version compatibility
 	static int l_get_min_supp_proto(lua_State *L);
 
