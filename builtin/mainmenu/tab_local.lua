@@ -222,7 +222,7 @@ local function main_button_handler(this, fields, name, tabdata)
 				--update last game
 				local world = menudata.worldlist:get_raw_element(gamedata.selected_world)
 				if world then
-					local game, index = pkgmgr.find_by_gameid(world.gameid)
+					local game = pkgmgr.find_by_gameid(world.gameid)
 					core.settings:set("menu_last_game", game.id)
 				end
 

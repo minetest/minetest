@@ -148,9 +148,9 @@ local function parse_setting_line(settings, line, read_all, base_level, allow_se
 		local values = {}
 		local ti = 1
 		local index = 1
-		for line in default:gmatch("[+-]?[%d.-e]+") do -- All numeric characters
-			index = default:find("[+-]?[%d.-e]+", index) + line:len()
-			table.insert(values, line)
+		for match in default:gmatch("[+-]?[%d.-e]+") do -- All numeric characters
+			index = default:find("[+-]?[%d.-e]+", index) + match:len()
+			table.insert(values, match)
 			ti = ti + 1
 			if ti > 9 then
 				break
@@ -322,17 +322,20 @@ end
 -- read_all: whether to ignore certain setting types for GUI or not
 -- parse_mods: whether to parse settingtypes.txt in mods and games
 local function parse_config_file(read_all, parse_mods)
-	local builtin_path = core.get_builtin_path() .. FILENAME
-	local file = io.open(builtin_path, "r")
 	local settings = {}
-	if not file then
-		core.log("error", "Can't load " .. FILENAME)
-		return settings
+
+	do
+		local builtin_path = core.get_builtin_path() .. FILENAME
+		local file = io.open(builtin_path, "r")
+		if not file then
+			core.log("error", "Can't load " .. FILENAME)
+			return settings
+		end
+
+		parse_single_file(file, builtin_path, read_all, settings, 0, true)
+
+		file:close()
 	end
-
-	parse_single_file(file, builtin_path, read_all, settings, 0, true)
-
-	file:close()
 
 	if parse_mods then
 		-- Parse games
@@ -344,7 +347,7 @@ local function parse_config_file(read_all, parse_mods)
 			local file = io.open(path, "r")
 			if file then
 				if not games_category_initialized then
-					local translation = fgettext_ne("Games"), -- not used, but needed for xgettext
+					fgettext_ne("Games") -- not used, but needed for xgettext
 					table.insert(settings, {
 						name = "Games",
 						level = 0,
@@ -377,7 +380,7 @@ local function parse_config_file(read_all, parse_mods)
 			local file = io.open(path, "r")
 			if file then
 				if not mods_category_initialized then
-					local translation = fgettext_ne("Mods"), -- not used, but needed for xgettext
+					fgettext_ne("Mods") -- not used, but needed for xgettext
 					table.insert(settings, {
 						name = "Mods",
 						level = 0,
@@ -753,7 +756,7 @@ local function create_change_setting_formspec(dialogdata)
 			" (" .. setting.name .. ")"
 	end
 
-	local comment_text = ""
+	local comment_text
 	if setting.comment == "" then
 		comment_text = fgettext_ne("(No description of setting given)")
 	else
@@ -918,7 +921,7 @@ local function handle_change_setting_buttons(this, fields)
 	return false
 end
 
-local function create_settings_formspec(tabview, name, tabdata)
+local function create_settings_formspec(tabview, _, tabdata)
 	local formspec = "size[12,5.4;true]" ..
 			"tablecolumns[color;tree;text,width=28;text]" ..
 			"tableoptions[background=#00000000;border=false]" ..
@@ -950,7 +953,7 @@ local function create_settings_formspec(tabview, name, tabdata)
 			formspec = formspec .. "," .. (current_level + 1) .. "," .. core.formspec_escape(name) .. ","
 					.. value .. ","
 
-		elseif entry.type == "key" then
+		elseif entry.type == "key" then --luacheck: ignore
 			-- ignore key settings, since we have a special dialog for them
 
 		elseif entry.type == "noise_params_2d" or entry.type == "noise_params_3d" then
@@ -1029,8 +1032,8 @@ local function handle_settings_buttons(this, fields, tabname, tabdata)
 	if fields["btn_edit"] or list_enter then
 		local setting = settings[selected_setting]
 		if setting and setting.type ~= "category" then
-			local edit_dialog = dialog_create("change_setting", create_change_setting_formspec,
-					handle_change_setting_buttons)
+			local edit_dialog = dialog_create("change_setting",
+					create_change_setting_formspec, handle_change_setting_buttons)
 			edit_dialog:set_parent(this)
 			this:hide()
 			edit_dialog:show()
@@ -1076,4 +1079,5 @@ end
 -- For RUN_IN_PLACE the generated files may appear in the 'bin' folder.
 -- See comment and alternative line at the end of 'generate_from_settingtypes.lua'.
 
---assert(loadfile(core.get_builtin_path().."mainmenu"..DIR_DELIM.."generate_from_settingtypes.lua"))(parse_config_file(true, false))
+--assert(loadfile(core.get_builtin_path().."mainmenu"..DIR_DELIM..
+--		"generate_from_settingtypes.lua"))(parse_config_file(true, false))

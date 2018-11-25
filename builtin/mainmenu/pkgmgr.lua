@@ -285,8 +285,6 @@ function pkgmgr.identify_modname(modpath,filename)
 end
 --------------------------------------------------------------------------------
 function pkgmgr.render_packagelist(render_list)
-	local retval = ""
-
 	if render_list == nil then
 		if pkgmgr.global_mods == nil then
 			pkgmgr.refresh_globals()
@@ -295,7 +293,6 @@ function pkgmgr.render_packagelist(render_list)
 	end
 
 	local list = render_list:get_list()
-	local last_modpack = nil
 	local retval = {}
 	for i, v in ipairs(list) do
 		local color = ""
@@ -465,7 +462,7 @@ function pkgmgr.install_dir(type, path, basename, targetpath)
 			else
 				return nil,
 					fgettext("Install Mod: Unable to find suitable folder name for modpack $1",
-					modfilename)
+					path)
 			end
 		end
 	elseif basefolder.type == "mod" then
@@ -490,7 +487,7 @@ function pkgmgr.install_dir(type, path, basename, targetpath)
 			if targetfolder ~= nil and pkgmgr.isValidModname(targetfolder) then
 				targetpath = core.get_modpath() .. DIR_DELIM .. targetfolder
 			else
-				return nil, fgettext("Install Mod: Unable to find real mod name for: $1", modfilename)
+				return nil, fgettext("Install Mod: Unable to find real mod name for: $1", path)
 			end
 		end
 
