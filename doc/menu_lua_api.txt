@@ -146,17 +146,6 @@ Package - content which is downloadable from the content db, may or may not be i
 			optional_depends = {"mod", "names"}, -- mods only
 		}
 
-* core.get_package_list() -> downloads package list from content db
-	* returns a list of:
-
-		{
-			name = "basename",
-			title = "human readable title",
-			author = "username",
-			type = "", -- mod, game, txp
-			short_description = "description",
-			url = "",
-		}
 
 Favorites:
 core.get_favorites(location) -> list of favorites (possible in async calls)
