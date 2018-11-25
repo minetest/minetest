@@ -5,7 +5,6 @@ set(common_engine_SRCS
 	${CMAKE_CURRENT_SOURCE_DIR}/collision.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/content_mapnode.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/content_nodemeta.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/content_sao.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/convert_json.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/craftdef.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/debug.cpp
@@ -62,6 +61,12 @@ set(common_engine_SRCS
 	${CMAKE_CURRENT_SOURCE_DIR}/voxel.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/voxelalgorithms.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/hud.cpp
+
+	${CMAKE_CURRENT_SOURCE_DIR}/server/object/UnitSAO.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/server/object/TestSAO.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/server/object/LuaEntitySAO.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/server/object/PlayerSAO.cpp
+
 	PARENT_SCOPE
 )
 
