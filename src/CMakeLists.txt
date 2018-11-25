@@ -424,6 +424,7 @@ set(client_SRCS
 	${client_engine_SRCS}
 	${client_SCRIPT_SRCS}
 	${UNITTEST_CLIENT_SRCS}
+	main.cpp
 )
 list(SORT client_SRCS)
 
@@ -456,7 +457,9 @@ include_directories(
 	${JSON_INCLUDE_DIR}
 	${X11_INCLUDE_DIR}
 	${PROJECT_SOURCE_DIR}/script
+
 	${PROJECT_SOURCE_DIR}/engine
+	${PROJECT_SOURCE_DIR}/engine/client
 )
 
 
