@@ -18,7 +18,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "serverenvironment.h"
-#include "content_sao.h"
+#include "server/object/LuaEntitySAO.hpp"
+#include "server/object/LagPool.hpp"
+#include "server/object/PlayerSAO.hpp"
 #include "settings.h"
 #include "log.h"
 #include "mapblock.h"

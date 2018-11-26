@@ -43,7 +43,10 @@ extern "C" {
 #include <cstdio>
 #include <cstdarg>
 #include "script/common/c_content.h"
-#include "content_sao.h"
+#include "server/object/LuaEntitySAO.hpp"
+#include "server/object/LagPool.hpp"
+#include "server/object/PlayerSAO.hpp"
+#include "server/object/PlayerHPChangeReason.hpp"
 #include <sstream>
 
 

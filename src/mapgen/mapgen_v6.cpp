@@ -27,7 +27,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mapnode.h"
 #include "map.h"
 //#include "serverobject.h"
-#include "content_sao.h"
+#include "server/object/LuaEntitySAO.hpp"
+#include "server/object/LagPool.hpp"
+#include "server/object/PlayerSAO.hpp"
 #include "nodedef.h"
 #include "voxelalgorithms.h"
 //#include "profiler.h" // For TimeTaker

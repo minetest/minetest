@@ -20,7 +20,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "remoteplayer.h"
 #include <json/json.h>
-#include "content_sao.h"
+#include "server/object/LuaEntitySAO.hpp"
+#include "server/object/LagPool.hpp"
+#include "server/object/PlayerSAO.hpp"
 #include "filesys.h"
 #include "gamedef.h"
 #include "porting.h"  // strlcpy

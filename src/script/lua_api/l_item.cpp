@@ -25,7 +25,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "itemdef.h"
 #include "nodedef.h"
 #include "server.h"
-#include "content_sao.h"
+#include "server/object/LuaEntitySAO.hpp"
+#include "server/object/LagPool.hpp"
+#include "server/object/PlayerSAO.hpp"
 #include "inventory.h"
 #include "log.h"
 

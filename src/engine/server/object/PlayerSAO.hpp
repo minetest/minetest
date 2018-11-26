@@ -19,6 +19,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #pragma once
 
+#include "constants.h"
+#include "network/networkprotocol.h"
+#include "util/numeric.h"
 #include "server/object/UnitSAO.hpp"
 
 class RemotePlayer;
