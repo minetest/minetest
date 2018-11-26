@@ -19,9 +19,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "server/object/TestSAO.hpp"
 
-// Prototype (registers item for deserialization)
-TestSAO proto_TestSAO(NULL, v3f(0,0,0));
-
 void TestSAO::step(float dtime, bool send_recommended)
 {
 	m_age += dtime;

@@ -25,9 +25,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "server/object/LuaEntitySAO.hpp"
 #include "server/object/PlayerHPChangeReason.hpp"
 
-// Prototype (registers item for deserialization)
-LuaEntitySAO proto_LuaEntitySAO(NULL, v3f(0,0,0), "_prototype", "");
-
 LuaEntitySAO::LuaEntitySAO(ServerEnvironment *env, v3f pos,
 		const std::string &name, const std::string &state):
 	UnitSAO(env, pos),

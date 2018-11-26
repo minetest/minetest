@@ -23,6 +23,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "constants.h" // BS
 #include "log.h"
 
+std::map<u16, ServerActiveObject::Factory> ServerActiveObject::m_types;
+
 ServerActiveObject::ServerActiveObject(ServerEnvironment *env, v3f pos):
 	ActiveObject(0),
 	m_env(env),

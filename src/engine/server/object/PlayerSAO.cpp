@@ -27,8 +27,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "server/object/PlayerHPChangeReason.hpp"
 #include "server/object/PlayerSAO.hpp"
 
-// No prototype, PlayerSAO does not need to be deserialized
-
 PlayerSAO::PlayerSAO(ServerEnvironment *env_, RemotePlayer *player_, session_t peer_id_,
 		bool is_singleplayer):
 	UnitSAO(env_, v3f(0,0,0)),

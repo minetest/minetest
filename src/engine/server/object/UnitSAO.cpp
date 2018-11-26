@@ -21,8 +21,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "scripting_server.h"
 #include "server/object/UnitSAO.hpp"
 
-std::map<u16, ServerActiveObject::Factory> ServerActiveObject::m_types;
-
 UnitSAO::UnitSAO(ServerEnvironment *env, v3f pos):
 	ServerActiveObject(env, pos)
 {
