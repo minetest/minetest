@@ -24,7 +24,7 @@
 #include "irrlichttypes_extrabloated.h"
 #include "modalMenu.h"
 #include "gettext.h"
-#include "keycode.h"
+#include "client/keycode.h"
 #include <string>
 #include <vector>
 

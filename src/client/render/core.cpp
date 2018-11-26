@@ -19,11 +19,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "core.h"
-#include "camera.h"
-#include "client.h"
-#include "clientmap.h"
-#include "hud.h"
-#include "minimap.h"
+#include "client/camera.h"
+#include "client/client.h"
+#include "client/clientmap.h"
+#include "client/hud.h"
+#include "client/minimap.h"
 
 RenderingCore::RenderingCore(IrrlichtDevice *_device, Client *_client, Hud *_hud)
 	: device(_device), driver(device->getVideoDriver()), smgr(device->getSceneManager()),

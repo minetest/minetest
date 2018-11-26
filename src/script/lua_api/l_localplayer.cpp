@@ -20,7 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "l_localplayer.h"
 #include "l_internal.h"
 #include "script/common/c_converter.h"
-#include "localplayer.h"
+#include "client/localplayer.h"
 #include "hud.h"
 #include "common/c_content.h"
 

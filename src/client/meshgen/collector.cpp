@@ -20,7 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "collector.h"
 #include <stdexcept>
 #include "log.h"
-#include "mesh.h"
+#include "client/mesh.h"
 
 void MeshCollector::append(const TileSpec &tile, const video::S3DVertex *vertices,
 		u32 numVertices, const u16 *indices, u32 numIndices)

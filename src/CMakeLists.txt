@@ -517,7 +517,6 @@ include_directories(
 	${JSON_INCLUDE_DIR}
 	${X11_INCLUDE_DIR}
 	${PROJECT_SOURCE_DIR}/script
-	${PROJECT_SOURCE_DIR}/client
 )
 
 

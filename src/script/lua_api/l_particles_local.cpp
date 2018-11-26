@@ -23,8 +23,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "common/c_converter.h"
 #include "lua_api/l_internal.h"
 #include "lua_api/l_object.h"
-#include "particles.h"
-#include "client.h"
+#include "client/particles.h"
+#include "client/client.h"
 #include "client/clientevent.h"
 
 int ModApiParticlesLocal::l_add_particle(lua_State *L)
