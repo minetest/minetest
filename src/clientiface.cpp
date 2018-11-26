@@ -27,10 +27,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "serverenvironment.h"
 #include "map.h"
 #include "emerge.h"
-#include "content_sao.h"              // TODO this is used for cleanup of only
 #include "log.h"
 #include "util/srp.h"
 #include "face_position_cache.h"
+// TODO this is used for cleanup of only
+#include "server/object/LuaEntitySAO.h"
+#include "server/object/LagPool.h"
+#include "server/object/PlayerSAO.h"
 
 const char *ClientInterface::statenames[] = {
 	"Invalid",

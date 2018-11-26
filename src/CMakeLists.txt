@@ -385,7 +385,6 @@ set(common_SRCS
 	collision.cpp
 	content_mapnode.cpp
 	content_nodemeta.cpp
-	content_sao.cpp
 	convert_json.cpp
 	craftdef.cpp
 	debug.cpp

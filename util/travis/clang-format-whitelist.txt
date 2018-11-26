@@ -393,6 +393,16 @@ src/serverlist.cpp
 src/serverlist.h
 src/serverobject.cpp
 src/serverobject.h
+src/server/object/TestSAO.h
+src/server/object/PlayerSAO.h
+src/server/object/UnitSAO.h
+src/server/object/LuaEntitySAO.cpp
+src/server/object/LagPool.h
+src/server/object/UnitSAO.cpp
+src/server/object/PlayerSAO.cpp
+src/server/object/LuaEntitySAO.h
+src/server/object/PlayerHPChangeReason.h
+src/server/object/TestSAO.cpp
 src/settings.cpp
 src/settings.h
 src/settings_translation_file.cpp

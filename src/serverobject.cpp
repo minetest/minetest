@@ -23,6 +23,17 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "constants.h" // BS
 #include "log.h"
 
+std::map<u16, ServerActiveObject::Factory> ServerActiveObject::m_types;
+
+#include "server/object/TestSAO.h"
+#include "server/object/LuaEntitySAO.h"
+
+// Prototypes (registers item for deserialization)
+// FIXME: This code and the headers inclusion above can't stay here
+TestSAO proto_TestSAO(NULL, v3f(0,0,0));
+LuaEntitySAO proto_LuaEntitySAO(NULL, v3f(0,0,0), "_prototype", "");
+// PlayerSAO does not need to be deserialized
+
 ServerActiveObject::ServerActiveObject(ServerEnvironment *env, v3f pos):
 	ActiveObject(0),
 	m_env(env),

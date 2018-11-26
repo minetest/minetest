@@ -19,10 +19,38 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #pragma once
 
-#include "network/networkprotocol.h"
-#include "util/numeric.h"
 #include "serverobject.h"
-#include "itemgroup.h"
-#include "object_properties.h"
 #include "constants.h"
+
+class TestSAO : public ServerActiveObject
+{
+public:
+	TestSAO(ServerEnvironment *env, v3f pos):
+		ServerActiveObject(env, pos),
+		m_timer1(0),
+		m_age(0)
+	{
+		ServerActiveObject::registerType(getType(), create);
+	}
+	ActiveObjectType getType() const
+	{ return ACTIVEOBJECT_TYPE_TEST; }
+
+	static ServerActiveObject* create(ServerEnvironment *env, v3f pos,
+			const std::string &data)
+	{
+		return new TestSAO(env, pos);
+	}
+
+	void step(float dtime, bool send_recommended);
+
+	bool getCollisionBox(aabb3f *toset) const { return false; }
+
+	virtual bool getSelectionBox(aabb3f *toset) const { return false; }
+
+	bool collideWithObjects() const { return false; }
+
+private:
+	float m_timer1;
+	float m_age;
+};
 

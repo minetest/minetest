@@ -20,7 +20,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <cassert>
 #include <json/json.h>
 #include "database-files.h"
-#include "content_sao.h"
+#include "server/object/LuaEntitySAO.h"
+#include "server/object/LagPool.h"
+#include "server/object/PlayerSAO.h"
 #include "remoteplayer.h"
 #include "settings.h"
 #include "porting.h"

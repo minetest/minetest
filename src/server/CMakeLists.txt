@@ -1,3 +1,7 @@
 set(server_SRCS
 	${CMAKE_CURRENT_SOURCE_DIR}/mods.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/object/UnitSAO.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/object/TestSAO.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/object/LuaEntitySAO.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/object/PlayerSAO.cpp
 	PARENT_SCOPE)

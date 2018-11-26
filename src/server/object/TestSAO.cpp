@@ -17,12 +17,41 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#pragma once
+#include "server/object/TestSAO.h"
 
-#include "network/networkprotocol.h"
-#include "util/numeric.h"
-#include "serverobject.h"
-#include "itemgroup.h"
-#include "object_properties.h"
-#include "constants.h"
+void TestSAO::step(float dtime, bool send_recommended)
+{
+	m_age += dtime;
+	if(m_age > 10)
+	{
+		m_pending_removal = true;
+		return;
+	}
+
+	m_base_position.Y += dtime * BS * 2;
+	if(m_base_position.Y > 8*BS)
+		m_base_position.Y = 2*BS;
+
+	if (!send_recommended)
+		return;
+
+	m_timer1 -= dtime;
+	if(m_timer1 < 0.0)
+	{
+		m_timer1 += 0.125;
+
+		std::string data;
+
+		data += itos(0); // 0 = position
+		data += " ";
+		data += itos(m_base_position.X);
+		data += " ";
+		data += itos(m_base_position.Y);
+		data += " ";
+		data += itos(m_base_position.Z);
+
+		ActiveObjectMessage aom(getId(), false, data);
+		m_messages_out.push(aom);
+	}
+}
 

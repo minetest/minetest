@@ -19,10 +19,40 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #pragma once
 
-#include "network/networkprotocol.h"
-#include "util/numeric.h"
-#include "serverobject.h"
-#include "itemgroup.h"
-#include "object_properties.h"
-#include "constants.h"
+class LagPool
+{
+	float m_pool = 15.0f;
+	float m_max = 15.0f;
+public:
+	LagPool() = default;
+
+	void setMax(float new_max)
+	{
+		m_max = new_max;
+		if(m_pool > new_max)
+			m_pool = new_max;
+	}
+
+	void add(float dtime)
+	{
+		m_pool -= dtime;
+		if(m_pool < 0)
+			m_pool = 0;
+	}
+
+	void empty()
+	{
+		m_pool = m_max;
+	}
+
+	bool grab(float dtime)
+	{
+		if(dtime <= 0)
+			return true;
+		if(m_pool + dtime > m_max)
+			return false;
+		m_pool += dtime;
+		return true;
+	}
+};
 

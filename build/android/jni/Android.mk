@@ -129,7 +129,10 @@ LOCAL_SRC_FILES := \
 		jni/src/client/content_mapblock.cpp       \
 		jni/src/content_mapnode.cpp               \
 		jni/src/content_nodemeta.cpp              \
-		jni/src/content_sao.cpp                   \
+		jni/src/server/object/UnitSAO.cpp         \
+		jni/src/server/object/TestSAO.cpp         \
+		jni/src/server/object/LuaEntitySAO.cpp    \
+		jni/src/server/object/PlayerSAO.cpp       \
 		jni/src/content/content.cpp               \
 		jni/src/content/mods.cpp                  \
 		jni/src/content/packages.cpp              \
