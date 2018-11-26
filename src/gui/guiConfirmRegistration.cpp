@@ -70,13 +70,16 @@ void GUIConfirmRegistration::regenerateGui(v2u32 screensize)
 	/*
 		Calculate new sizes and positions
 	*/
-	core::rect<s32> rect(screensize.X / 2 - 600 / 2, screensize.Y / 2 - 360 / 2,
-			screensize.X / 2 + 600 / 2, screensize.Y / 2 + 360 / 2);
-
-	DesiredRect = rect;
+	const float s = m_gui_scale;
+	DesiredRect = core::rect<s32>(
+		screensize.X / 2 - 600 * s / 2,
+		screensize.Y / 2 - 360 * s / 2,
+		screensize.X / 2 + 600 * s / 2,
+		screensize.Y / 2 + 360 * s / 2
+	);
 	recalculateAbsolutePosition(false);
 
-	v2s32 size = rect.getSize();
+	v2s32 size = DesiredRect.getSize();
 	v2s32 topleft_client(0, 0);
 
 	const wchar_t *text;
@@ -84,13 +87,13 @@ void GUIConfirmRegistration::regenerateGui(v2u32 screensize)
 	/*
 		Add stuff
 	*/
-	s32 ypos = 30;
+	s32 ypos = 30 * s;
 	{
 		std::string address = m_address;
 		if (address.empty())
 			address = "localhost";
-		core::rect<s32> rect2(0, 0, 540, 180);
-		rect2 += topleft_client + v2s32(30, ypos);
+		core::rect<s32> rect2(0, 0, 540 * s, 180 * s);
+		rect2 += topleft_client + v2s32(30 * s, ypos);
 		static const std::string info_text_template = strgettext(
 				"You are about to join the server at %1$s with the "
 				"name \"%2$s\" for the first time. If you proceed, a "
@@ -114,33 +117,33 @@ void GUIConfirmRegistration::regenerateGui(v2u32 screensize)
 		e->setTextAlignment(gui::EGUIA_UPPERLEFT, gui::EGUIA_CENTER);
 	}
 
-	ypos += 210;
+	ypos += 210 * s;
 	{
-		core::rect<s32> rect2(0, 0, 540, 30);
-		rect2 += topleft_client + v2s32(30, ypos);
+		core::rect<s32> rect2(0, 0, 540 * s, 30 * s);
+		rect2 += topleft_client + v2s32(30 * s, ypos);
 		gui::IGUIEditBox *e = Environment->addEditBox(m_pass_confirm.c_str(),
 				rect2, true, this, ID_confirmPassword);
 		e->setPasswordBox(true);
 	}
 
-	ypos += 60;
+	ypos += 60 * s;
 	{
-		core::rect<s32> rect2(0, 0, 230, 35);
-		rect2 = rect2 + v2s32(size.X / 2 - 220, ypos);
+		core::rect<s32> rect2(0, 0, 230 * s, 35 * s);
+		rect2 = rect2 + v2s32(size.X / 2 - 220 * s, ypos);
 		text = wgettext("Register and Join");
 		Environment->addButton(rect2, this, ID_confirm, text);
 		delete[] text;
 	}
 	{
-		core::rect<s32> rect2(0, 0, 120, 35);
-		rect2 = rect2 + v2s32(size.X / 2 + 70, ypos);
+		core::rect<s32> rect2(0, 0, 120 * s, 35 * s);
+		rect2 = rect2 + v2s32(size.X / 2 + 70 * s, ypos);
 		text = wgettext("Cancel");
 		Environment->addButton(rect2, this, ID_cancel, text);
 		delete[] text;
 	}
 	{
-		core::rect<s32> rect2(0, 0, 200, 20);
-		rect2 += topleft_client + v2s32(30, ypos - 40);
+		core::rect<s32> rect2(0, 0, 200 * s, 20 * s);
+		rect2 += topleft_client + v2s32(30 * s, ypos - 40 * s);
 		text = wgettext("Passwords do not match!");
 		IGUIElement *e = Environment->addStaticText(
 				text, rect2, false, true, this, ID_message);
