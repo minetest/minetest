@@ -22,7 +22,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define CLIENT_HUD_HEADER
 
 #include <vector>
+#include <IGUIEnvironment.h>
 #include <IGUIFont.h>
+#include <ISceneManager.h>
+#include <IVideoDriver.h>
 #include "irr_aabb3d.h"
 #include "../engine/hud.h"
 

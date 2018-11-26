@@ -70,34 +70,3 @@ set(common_engine_SRCS
 	PARENT_SCOPE
 )
 
-if (BUILD_CLIENT)
-	set(client_engine_SRCS
-		${CMAKE_CURRENT_SOURCE_DIR}/client/camera.cpp
-		${CMAKE_CURRENT_SOURCE_DIR}/client/client.cpp
-		${CMAKE_CURRENT_SOURCE_DIR}/client/clientenvironment.cpp
-		${CMAKE_CURRENT_SOURCE_DIR}/client/clientmap.cpp
-		${CMAKE_CURRENT_SOURCE_DIR}/client/clientmedia.cpp
-		${CMAKE_CURRENT_SOURCE_DIR}/client/clientobject.cpp
-		${CMAKE_CURRENT_SOURCE_DIR}/client/clouds.cpp
-		${CMAKE_CURRENT_SOURCE_DIR}/client/content_cao.cpp
-		${CMAKE_CURRENT_SOURCE_DIR}/client/content_cso.cpp
-		${CMAKE_CURRENT_SOURCE_DIR}/client/content_mapblock.cpp
-		${CMAKE_CURRENT_SOURCE_DIR}/client/filecache.cpp
-		${CMAKE_CURRENT_SOURCE_DIR}/client/fontengine.cpp
-		${CMAKE_CURRENT_SOURCE_DIR}/client/game.cpp
-		${CMAKE_CURRENT_SOURCE_DIR}/client/guiscalingfilter.cpp
-		${CMAKE_CURRENT_SOURCE_DIR}/client/imagefilters.cpp
-		${CMAKE_CURRENT_SOURCE_DIR}/client/keycode.cpp
-		${CMAKE_CURRENT_SOURCE_DIR}/client/localplayer.cpp
-		${CMAKE_CURRENT_SOURCE_DIR}/client/mapblock_mesh.cpp
-		${CMAKE_CURRENT_SOURCE_DIR}/client/mesh.cpp
-		${CMAKE_CURRENT_SOURCE_DIR}/client/mesh_generator_thread.cpp
-		${CMAKE_CURRENT_SOURCE_DIR}/client/minimap.cpp
-		${CMAKE_CURRENT_SOURCE_DIR}/client/particles.cpp
-		${CMAKE_CURRENT_SOURCE_DIR}/client/shader.cpp
-		${CMAKE_CURRENT_SOURCE_DIR}/client/sky.cpp
-		${CMAKE_CURRENT_SOURCE_DIR}/client/wieldmesh.cpp
-		PARENT_SCOPE
-	)
-endif()
-

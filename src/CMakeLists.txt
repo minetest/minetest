@@ -421,7 +421,6 @@ set(client_SRCS
 	${gui_SRCS}
 	${client_network_SRCS}
 	${client_irrlicht_changes_SRCS}
-	${client_engine_SRCS}
 	${client_SCRIPT_SRCS}
 	${UNITTEST_CLIENT_SRCS}
 	main.cpp
@@ -458,8 +457,8 @@ include_directories(
 	${X11_INCLUDE_DIR}
 	${PROJECT_SOURCE_DIR}/script
 
+	${PROJECT_SOURCE_DIR}/client
 	${PROJECT_SOURCE_DIR}/engine
-	${PROJECT_SOURCE_DIR}/engine/client
 )
 
 
