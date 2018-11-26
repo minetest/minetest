@@ -22,14 +22,24 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "irrlichttypes.h"
 #include "IReferenceCounted.h"
 
+/** Shared pointer for IrrLicht objects.
+ *
+ * It should only be used for user-managed objects, i.e. those created with
+ * the @c new operator or @c create* functions, like:
+ * `irr_ptr<scene::IMeshBuffer> buf{new scene::SMeshBuffer()};`
+ *
+ * It should *never* be used for engine-managed objects, including
+ * those created with @c addTexture and similar methods.
+ */
 template <class ReferenceCounted, class = typename std::enable_if <
 	std::is_base_of <IReferenceCounted, ReferenceCounted>::value>::type>
 class irr_ptr
 {
 	ReferenceCounted *value = nullptr;
 
-	/// Drops stored pointer replacing it with the given one.
-	/// @note Copy semantics: reference counter *is* increased.
+	/** Drops stored pointer replacing it with the given one.
+	 * @note Copy semantics: reference counter *is* increased.
+	 */
 	void grab(ReferenceCounted *object)
 	{
 		if (object)
@@ -70,6 +80,9 @@ public:
 		reset(b.release());
 	}
 
+	/** Constructs a shared pointer out of a plain one
+	 * @note Move semantics: reference counter is *not* increased.
+	 */
 	explicit irr_ptr(ReferenceCounted *object) noexcept
 	{
 		reset(object);
@@ -113,14 +126,16 @@ public:
 	explicit operator ReferenceCounted*() const noexcept { return value; }
 	explicit operator bool() const noexcept { return !!value; }
 
-	/// Returns the stored pointer.
+	/** Returns the stored pointer.
+	 */
 	ReferenceCounted *get() const noexcept
 	{
 		return value;
 	}
 
-	/// Returns the stored pointer, erasing it from this class.
-	/// @note Move semantics: reference counter is not changed.
+	/** Returns the stored pointer, erasing it from this class.
+	 * @note Move semantics: reference counter is not changed.
+	 */
 	ReferenceCounted *release() noexcept
 	{
 		ReferenceCounted *object = value;
@@ -128,8 +143,9 @@ public:
 		return object;
 	}
 
-	/// Drops stored pointer replacing it with the given one.
-	/// @note Move semantics: reference counter is *not* increased.
+	/** Drops stored pointer replacing it with the given one.
+	 * @note Move semantics: reference counter is *not* increased.
+	 */
 	void reset(ReferenceCounted *object = nullptr) noexcept
 	{
 		if (value)
