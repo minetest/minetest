@@ -86,6 +86,7 @@ src/gettext.cpp
 src/gettext.h
 src/gui/guiChatConsole.cpp
 src/gui/guiChatConsole.h
+src/gui/guiConfirmRegistration.cpp
 src/gui/guiEditBoxWithScrollbar.cpp
 src/gui/guiEditBoxWithScrollbar.h
 src/gui/guiEngine.cpp

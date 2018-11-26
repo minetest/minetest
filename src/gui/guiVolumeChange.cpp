@@ -66,15 +66,15 @@ void GUIVolumeChange::regenerateGui(v2u32 screensize)
 		Remove stuff
 	*/
 	removeChildren();
-
 	/*
 		Calculate new sizes and positions
 	*/
+	const float s = m_gui_scale;
 	DesiredRect = core::rect<s32>(
-		screensize.X/2 - 380/2,
-		screensize.Y/2 - 200/2,
-		screensize.X/2 + 380/2,
-		screensize.Y/2 + 200/2
+		screensize.X / 2 - 380 * s / 2,
+		screensize.Y / 2 - 200 * s / 2,
+		screensize.X / 2 + 380 * s / 2,
+		screensize.Y / 2 + 200 * s / 2
 	);
 	recalculateAbsolutePosition(false);
 
@@ -85,8 +85,8 @@ void GUIVolumeChange::regenerateGui(v2u32 screensize)
 		Add stuff
 	*/
 	{
-		core::rect<s32> rect(0, 0, 160, 20);
-		rect = rect + v2s32(size.X / 2 - 80, size.Y / 2 - 70);
+		core::rect<s32> rect(0, 0, 160 * s, 20 * s);
+		rect = rect + v2s32(size.X / 2 - 80 * s, size.Y / 2 - 70 * s);
 
 		const wchar_t *text = wgettext("Sound Volume: ");
 		core::stringw volume_text = text;
@@ -97,24 +97,24 @@ void GUIVolumeChange::regenerateGui(v2u32 screensize)
 				true, this, ID_soundText);
 	}
 	{
-		core::rect<s32> rect(0, 0, 80, 30);
-		rect = rect + v2s32(size.X/2-80/2, size.Y/2+55);
+		core::rect<s32> rect(0, 0, 80 * s, 30 * s);
+		rect = rect + v2s32(size.X / 2 - 80 * s / 2, size.Y / 2 + 55 * s);
 		const wchar_t *text = wgettext("Exit");
 		Environment->addButton(rect, this, ID_soundExitButton,
 			text);
 		delete[] text;
 	}
 	{
-		core::rect<s32> rect(0, 0, 300, 20);
-		rect = rect + v2s32(size.X / 2 - 150, size.Y / 2);
+		core::rect<s32> rect(0, 0, 300 * s, 20 * s);
+		rect = rect + v2s32(size.X / 2 - 150 * s, size.Y / 2);
 		gui::IGUIScrollBar *e = Environment->addScrollBar(true,
 			rect, this, ID_soundSlider);
 		e->setMax(100);
 		e->setPos(volume);
 	}
 	{
-		core::rect<s32> rect(0, 0, 160, 20);
-		rect = rect + v2s32(size.X / 2 - 80, size.Y / 2 - 35);
+		core::rect<s32> rect(0, 0, 160 * s, 20 * s);
+		rect = rect + v2s32(size.X / 2 - 80 * s, size.Y / 2 - 35 * s);
 		const wchar_t *text = wgettext("Muted");
 		Environment->addCheckBox(g_settings->getBool("mute_sound"), rect, this,
 				ID_soundMuteButton, text);

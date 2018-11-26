@@ -116,20 +116,22 @@ void GUIKeyChangeMenu::removeChildren()
 void GUIKeyChangeMenu::regenerateGui(v2u32 screensize)
 {
 	removeChildren();
-	v2s32 size(745, 430);
 
-	core::rect < s32 > rect(screensize.X / 2 - size.X / 2,
-							screensize.Y / 2 - size.Y / 2, screensize.X / 2 + size.X / 2,
-							screensize.Y / 2 + size.Y / 2);
-
-	DesiredRect = rect;
+	const float s = m_gui_scale;
+	DesiredRect = core::rect<s32>(
+		screensize.X / 2 - 745 * s / 2,
+		screensize.Y / 2 - 430 * s / 2,
+		screensize.X / 2 + 745 * s / 2,
+		screensize.Y / 2 + 430 * s / 2
+	);
 	recalculateAbsolutePosition(false);
 
+	v2s32 size = DesiredRect.getSize();
 	v2s32 topleft(0, 0);
 
 	{
-		core::rect < s32 > rect(0, 0, 600, 40);
-		rect += topleft + v2s32(25, 3);
+		core::rect<s32> rect(0, 0, 600 * s, 40 * s);
+		rect += topleft + v2s32(25 * s, 3 * s);
 		//gui::IGUIStaticText *t =
 		const wchar_t *text = wgettext("Keybindings. (If this menu screws up, remove stuff from minetest.conf)");
 		Environment->addStaticText(text,
@@ -140,68 +142,68 @@ void GUIKeyChangeMenu::regenerateGui(v2u32 screensize)
 
 	// Build buttons
 
-	v2s32 offset(25, 60);
+	v2s32 offset(25 * s, 60 * s);
 
 	for(size_t i = 0; i < key_settings.size(); i++)
 	{
 		key_setting *k = key_settings.at(i);
 		{
-			core::rect < s32 > rect(0, 0, 150, 20);
+			core::rect<s32> rect(0, 0, 150 * s, 20 * s);
 			rect += topleft + v2s32(offset.X, offset.Y);
 			Environment->addStaticText(k->button_name, rect, false, true, this, -1);
 		}
 
 		{
-			core::rect < s32 > rect(0, 0, 100, 30);
-			rect += topleft + v2s32(offset.X + 120, offset.Y - 5);
+			core::rect<s32> rect(0, 0, 100 * s, 30 * s);
+			rect += topleft + v2s32(offset.X + 120 * s, offset.Y - 5 * s);
 			const wchar_t *text = wgettext(k->key.name());
 			k->button = Environment->addButton(rect, this, k->id, text);
 			delete[] text;
 		}
 		if ((i + 1) % KMaxButtonPerColumns == 0) {
-			offset.X += 230;
-			offset.Y = 60;
+			offset.X += 230 * s;
+			offset.Y = 60 * s;
 		} else {
-			offset += v2s32(0, 25);
+			offset += v2s32(0, 25 * s);
 		}
 	}
 
 	{
 		s32 option_x = offset.X;
-		s32 option_y = offset.Y + 5;
-		u32 option_w = 180;
+		s32 option_y = offset.Y + 5 * s;
+		u32 option_w = 180 * s;
 		{
-			core::rect<s32> rect(0, 0, option_w, 30);
+			core::rect<s32> rect(0, 0, option_w, 30 * s);
 			rect += topleft + v2s32(option_x, option_y);
 			const wchar_t *text = wgettext("\"Special\" = climb down");
 			Environment->addCheckBox(g_settings->getBool("aux1_descends"), rect, this,
 					GUI_ID_CB_AUX1_DESCENDS, text);
 			delete[] text;
 		}
-		offset += v2s32(0, 25);
+		offset += v2s32(0, 25 * s);
 	}
 
 	{
 		s32 option_x = offset.X;
-		s32 option_y = offset.Y + 5;
-		u32 option_w = 280;
+		s32 option_y = offset.Y + 5 * s;
+		u32 option_w = 280 * s;
 		{
-			core::rect<s32> rect(0, 0, option_w, 30);
+			core::rect<s32> rect(0, 0, option_w, 30 * s);
 			rect += topleft + v2s32(option_x, option_y);
 			const wchar_t *text = wgettext("Double tap \"jump\" to toggle fly");
 			Environment->addCheckBox(g_settings->getBool("doubletap_jump"), rect, this,
 					GUI_ID_CB_DOUBLETAP_JUMP, text);
 			delete[] text;
 		}
-		offset += v2s32(0, 25);
+		offset += v2s32(0, 25 * s);
 	}
 
 	{
 		s32 option_x = offset.X;
-		s32 option_y = offset.Y + 5;
+		s32 option_y = offset.Y + 5 * s;
 		u32 option_w = 280;
 		{
-			core::rect<s32> rect(0, 0, option_w, 30);
+			core::rect<s32> rect(0, 0, option_w, 30 * s);
 			rect += topleft + v2s32(option_x, option_y);
 			const wchar_t *text = wgettext("Automatic jumping");
 			Environment->addCheckBox(g_settings->getBool("autojump"), rect, this,
@@ -212,16 +214,16 @@ void GUIKeyChangeMenu::regenerateGui(v2u32 screensize)
 	}
 
 	{
-		core::rect < s32 > rect(0, 0, 100, 30);
-		rect += topleft + v2s32(size.X / 2 - 105, size.Y - 40);
+		core::rect<s32> rect(0, 0, 100 * s, 30 * s);
+		rect += topleft + v2s32(size.X / 2 - 105 * s, size.Y - 40 * s);
 		const wchar_t *text =  wgettext("Save");
 		Environment->addButton(rect, this, GUI_ID_BACK_BUTTON,
 				 text);
 		delete[] text;
 	}
 	{
-		core::rect < s32 > rect(0, 0, 100, 30);
-		rect += topleft + v2s32(size.X / 2 + 5, size.Y - 40);
+		core::rect<s32> rect(0, 0, 100 * s, 30 * s);
+		rect += topleft + v2s32(size.X / 2 + 5 * s, size.Y - 40 * s);
 		const wchar_t *text = wgettext("Cancel");
 		Environment->addButton(rect, this, GUI_ID_ABORT_BUTTON,
 				text);
@@ -237,12 +239,7 @@ void GUIKeyChangeMenu::drawMenu()
 	video::IVideoDriver* driver = Environment->getVideoDriver();
 
 	video::SColor bgcolor(140, 0, 0, 0);
-
-	{
-		core::rect < s32 > rect(0, 0, 745, 620);
-		rect += AbsoluteRect.UpperLeftCorner;
-		driver->draw2DRectangle(bgcolor, rect, &AbsoluteClippingRect);
-	}
+	driver->draw2DRectangle(bgcolor, AbsoluteRect, &AbsoluteClippingRect);
 
 	gui::IGUIElement::draw();
 }
