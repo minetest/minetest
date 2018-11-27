@@ -1,0 +1,158 @@
+version: 2
+jobs:
+  clang-format:
+    machine: true
+    environment:
+      LINT: 1
+    steps:
+      - checkout
+      - run: sudo add-apt-repository "deb http://apt.llvm.org/trusty/ llvm-toolchain-trusty-5.0 main"
+      - run: sudo apt-get update -y
+      - run: sudo apt-get install -y clang-format-5.0
+      - run: ./util/circleci/before_install.sh
+      - run: ./util/circleci/script.sh
+  clang-tidy:
+    machine: true
+    environment:
+      CLANG_TIDY: 1
+      COMPILER: gcc-4.9
+    steps:
+      - checkout
+      - run: sudo add-apt-repository "deb http://apt.llvm.org/trusty/ llvm-toolchain-trusty-5.0 main"
+      - run: sudo add-apt-repository "ppa:ubuntu-toolchain-r/test"
+      - run: sudo apt-get update -y
+      - run: sudo apt-get install -y gcc-4.9 g++-4.9
+      - run: sudo apt-get install -y clang-tidy-5.0
+      - run: ./util/circleci/before_install.sh
+      - run: ./util/circleci/clangtidy.sh
+  win32:
+    machine: true
+    environment:
+      PLATFORM: Win32
+    steps:
+      - checkout
+      - run: ./util/circleci/before_install.sh
+      - run: ./util/circleci/script.sh
+  win64:
+    machine: true
+    environment:
+      PLATFORM: Win64
+    steps:
+      - checkout
+      - run: ./util/circleci/before_install.sh
+      - run: ./util/circleci/script.sh
+  osx:
+    macos:
+        xcode: "8.0"
+    environment:
+      PLATFORM: Unix
+      TRAVIS_OS_NAME: osx
+    steps:
+      - checkout
+      - run: ./util/circleci/before_install.sh
+      - run: ./util/circleci/script.sh
+  gcc6:
+    machine: true
+    environment:
+      PLATFORM: Unix
+      COMPILER: gcc-6
+      TRAVIS_OS_NAME: linux
+    steps:
+      - checkout
+      - run: sudo add-apt-repository "ppa:ubuntu-toolchain-r/test"
+      - run: sudo apt-get update -y
+      - run: sudo apt-get install -y gcc-6 g++-6
+      - run: ./util/circleci/before_install.sh
+      - run: ./util/circleci/script.sh
+  gcc7:
+    machine: true
+    environment:
+      PLATFORM: Unix
+      COMPILER: gcc-7
+      TRAVIS_OS_NAME: linux
+    steps:
+      - checkout
+      - run: sudo add-apt-repository "ppa:ubuntu-toolchain-r/test"
+      - run: sudo apt-get update -y
+      - run: sudo apt-get install -y gcc-7 g++-7
+      - run: ./util/circleci/before_install.sh
+      - run: ./util/circleci/script.sh
+  clang36:
+    machine: true
+    environment:
+      PLATFORM: Unix
+      COMPILER: clang-3.6
+      TRAVIS_OS_NAME: linux
+    steps:
+      - checkout
+      - run: sudo add-apt-repository "deb http://apt.llvm.org/trusty/ llvm-toolchain-trusty-3.6 main"
+      - run: sudo add-apt-repository "ppa:ubuntu-toolchain-r/test"
+      - run: sudo apt-get update -y
+      - run: sudo apt-get install -y gcc-4.9 g++-4.9
+      - run: sudo apt-get install -y clang-3.6 clang++-3.6
+      - run: ./util/circleci/before_install.sh
+      - run: ./util/circleci/script.sh
+  clang50:
+    machine: true
+    environment:
+      PLATFORM: Unix
+      COMPILER: clang-5.0
+      TRAVIS_OS_NAME: linux
+    steps:
+      - checkout
+      - run: sudo add-apt-repository "deb http://apt.llvm.org/trusty/ llvm-toolchain-trusty-5.0 main"
+      - run: sudo add-apt-repository "ppa:ubuntu-toolchain-r/test"
+      - run: sudo apt-get update -y
+      - run: sudo apt-get install -y gcc-4.9 g++-4.9
+      - run: sudo apt-get install -y clang-5.0 clang++-5.0
+      - run: ./util/circleci/before_install.sh
+      - run: ./util/circleci/script.sh
+  clang50_no_freetype:
+    machine: true
+    environment:
+      PLATFORM: Unix
+      COMPILER: clang-5.0
+      TRAVIS_OS_NAME: linux
+      FREETYPE: 0
+    steps:
+      - checkout
+      - run: sudo add-apt-repository "deb http://apt.llvm.org/trusty/ llvm-toolchain-trusty-5.0 main"
+      - run: sudo add-apt-repository "ppa:ubuntu-toolchain-r/test"
+      - run: sudo apt-get update -y
+      - run: sudo apt-get install -y gcc-4.9 g++-4.9
+      - run: sudo apt-get install -y clang-5.0 clang++-5.0
+      - run: ./util/circleci/before_install.sh
+      - run: ./util/circleci/script.sh
+  clang50_valgrind:
+    machine: true
+    environment:
+      PLATFORM: Unix
+      COMPILER: clang-5.0
+      TRAVIS_OS_NAME: linux
+      VALGRIND: 1
+    steps:
+      - checkout
+      - run: sudo add-apt-repository "deb http://apt.llvm.org/trusty/ llvm-toolchain-trusty-5.0 main"
+      - run: sudo add-apt-repository "ppa:ubuntu-toolchain-r/test"
+      - run: sudo apt-get update -y
+      - run: sudo apt-get install -y gcc-4.9 g++-4.9
+      - run: sudo apt-get install -y valgrind clang-5.0 clang++-5.0
+      - run: ./util/circleci/before_install.sh
+      - run: ./util/circleci/script.sh
+workflows:
+  version: 2
+  lint:
+    jobs:
+        - clang-format
+        - clang-tidy
+  build:
+    jobs:
+        - win32
+        - win64
+        - gcc6
+        - gcc7
+        - clang36
+        - clang50
+        - clang50_no_freetype
+        - clang50_valgrind
+

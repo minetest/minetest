@@ -30,6 +30,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #	include <cstdint>
 #endif
 
+// Fixes MinGW error in CircleCI
+#ifndef M_PI
+#define M_PI (3.14159265358979323846)
+// #define M_PI (3.14159265358979323846264338327950288)
+#endif
+
 #include <irrTypes.h>
 
 using namespace irr;
