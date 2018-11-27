@@ -770,8 +770,7 @@ void GenericCAO::updateNodePos()
 		v3s16 camera_offset = m_env->getCameraOffset();
 		node->setPosition(pos_translator.val_current - intToFloat(camera_offset, BS));
 		if (node != m_spritenode) { // rotate if not a sprite
-			v3f rot = node->getRotation();
-			rot = m_is_local_player ? -m_rotation : -rot_translator.val_current;
+			v3f rot = m_is_local_player ? -m_rotation : -rot_translator.val_current;
 			node->setRotation(rot);
 		}
 	}
