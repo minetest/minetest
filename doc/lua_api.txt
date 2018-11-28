@@ -5070,6 +5070,9 @@ This is basically a reference to a C++ `ServerActiveObject`
 * `set_acceleration(acc)`
     * `acc` is a vector
 * `get_acceleration()`: returns the acceleration, a vector
+* `set_rotation(rot)`
+    * `rot` is a vector (radians)
+* `get_rotation()` : returns the rotation, a vector (radians)
 * `set_yaw(radians)`
 * `get_yaw()`: returns number in radians
 * `set_texture_mod(mod)`

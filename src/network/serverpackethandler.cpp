@@ -473,8 +473,8 @@ void Server::process_PlayerPos(RemotePlayer *player, PlayerSAO *playersao,
 
 	playersao->setBasePosition(position);
 	player->setSpeed(speed);
-	playersao->setPitch(pitch);
-	playersao->setYaw(yaw);
+	playersao->setLookPitch(pitch);
+	playersao->setPlayerYaw(yaw);
 	playersao->setFov(fov);
 	playersao->setWantedRange(wanted_range);
 	player->keyPressed = keyPressed;

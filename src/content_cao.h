@@ -59,6 +59,11 @@ struct SmoothTranslatorWrapped : SmoothTranslator<f32>
 	void translate(f32 dtime);
 };
 
+struct SmoothTranslatorWrappedv3f : SmoothTranslator<v3f>
+{
+	void translate(f32 dtime);
+};
+
 class GenericCAO : public ClientActiveObject
 {
 private:
@@ -80,10 +85,10 @@ private:
 	v3f m_position = v3f(0.0f, 10.0f * BS, 0);
 	v3f m_velocity;
 	v3f m_acceleration;
-	float m_yaw = 0.0f;
+	v3f m_rotation;
 	s16 m_hp = 1;
 	SmoothTranslator<v3f> pos_translator;
-	SmoothTranslatorWrapped yaw_translator;
+	SmoothTranslatorWrappedv3f rot_translator;
 	// Spritesheet/animation stuff
 	v2f m_tx_size = v2f(1,1);
 	v2s16 m_tx_basepos;
@@ -146,9 +151,10 @@ public:
 	virtual bool getSelectionBox(aabb3f *toset) const;
 
 	v3f getPosition();
-	inline float getYaw() const
+
+	inline const v3f &getRotation()
 	{
-		return m_yaw;
+		return m_rotation;
 	}
 
 	const bool isImmortal();
