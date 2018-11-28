@@ -1835,14 +1835,14 @@ void Server::SendMovePlayer(session_t peer_id)
 	assert(sao);
 
 	NetworkPacket pkt(TOCLIENT_MOVE_PLAYER, sizeof(v3f) + sizeof(f32) * 2, peer_id);
-	pkt << sao->getBasePosition() << sao->getPitch() << sao->getYaw();
+	pkt << sao->getBasePosition() << sao->getLookPitch() << sao->getRotation().Y;
 
 	{
 		v3f pos = sao->getBasePosition();
 		verbosestream << "Server: Sending TOCLIENT_MOVE_PLAYER"
 				<< " pos=(" << pos.X << "," << pos.Y << "," << pos.Z << ")"
-				<< " pitch=" << sao->getPitch()
-				<< " yaw=" << sao->getYaw()
+				<< " pitch=" << sao->getLookPitch()
+				<< " yaw=" << sao->getRotation().Y
 				<< std::endl;
 	}
 
