@@ -19,7 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "stereo.h"
-#include "camera.h"
+#include "client/camera.h"
 #include "constants.h"
 #include "settings.h"
 

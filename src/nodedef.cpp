@@ -21,9 +21,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "itemdef.h"
 #ifndef SERVER
-#include "mesh.h"
-#include "shader.h"
-#include "client.h"
+#include "client/mesh.h"
+#include "client/shader.h"
+#include "client/client.h"
 #include "client/renderingengine.h"
 #include "client/tile.h"
 #include <IMeshManipulator.h>

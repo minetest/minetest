@@ -24,7 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "nodedef.h"
 #include "gamedef.h"
 #ifndef SERVER
-#include "clientenvironment.h"
+#include "client/clientenvironment.h"
 #endif
 #include "serverenvironment.h"
 #include "serverobject.h"

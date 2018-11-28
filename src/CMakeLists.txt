@@ -397,12 +397,14 @@ set(common_SRCS
 	genericobject.cpp
 	gettext.cpp
 	httpfetch.cpp
+	hud.cpp
 	inventory.cpp
 	inventorymanager.cpp
 	itemdef.cpp
 	itemstackmetadata.cpp
 	light.cpp
 	log.cpp
+	main.cpp
 	map.cpp
 	map_settings_manager.cpp
 	mapblock.cpp
@@ -482,34 +484,6 @@ set(client_SRCS
 	${gui_SRCS}
 	${client_network_SRCS}
 	${client_irrlicht_changes_SRCS}
-	camera.cpp
-	client.cpp
-	clientenvironment.cpp
-	clientmap.cpp
-	clientmedia.cpp
-	clientobject.cpp
-	clouds.cpp
-	content_cao.cpp
-	content_cso.cpp
-	content_mapblock.cpp
-	convert_json.cpp
-	filecache.cpp
-	fontengine.cpp
-	game.cpp
-	guiscalingfilter.cpp
-	hud.cpp
-	imagefilters.cpp
-	keycode.cpp
-	localplayer.cpp
-	main.cpp
-	mapblock_mesh.cpp
-	mesh.cpp
-	mesh_generator_thread.cpp
-	minimap.cpp
-	particles.cpp
-	shader.cpp
-	sky.cpp
-	wieldmesh.cpp
 	${client_SCRIPT_SRCS}
 	${UNITTEST_CLIENT_SRCS}
 )
@@ -518,7 +492,6 @@ list(SORT client_SRCS)
 # Server sources
 set(server_SRCS
 	${common_SRCS}
-	main.cpp
 )
 list(SORT server_SRCS)
 
@@ -829,10 +802,10 @@ if(BUILD_CLIENT)
 	endif()
 
 	if(USE_FREETYPE)
-		install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/../fonts" DESTINATION "${SHAREDIR}" 
+		install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/../fonts" DESTINATION "${SHAREDIR}"
 				FILES_MATCHING PATTERN "*.ttf" PATTERN "*.txt")
 	else()
-		install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/../fonts" DESTINATION "${SHAREDIR}" 
+		install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/../fonts" DESTINATION "${SHAREDIR}"
 				FILES_MATCHING PATTERN "*.png" PATTERN "*.xml")
 	endif()
 
