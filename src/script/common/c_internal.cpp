@@ -27,7 +27,9 @@ std::string script_get_backtrace(lua_State *L)
 {
 	lua_rawgeti(L, LUA_REGISTRYINDEX, CUSTOM_RIDX_BACKTRACE);
 	lua_call(L, 0, 1);
-	return luaL_checkstring(L, -1);
+	std::string result = luaL_checkstring(L, -1);
+	lua_pop(L, 1);
+	return result;
 }
 
 int script_exception_wrapper(lua_State *L, lua_CFunction f)
