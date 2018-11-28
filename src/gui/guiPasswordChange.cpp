@@ -17,7 +17,7 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
 
 #include "guiPasswordChange.h"
-#include "client.h"
+#include "client/client.h"
 #include <IGUICheckBox.h>
 #include <IGUIEditBox.h>
 #include <IGUIButton.h>

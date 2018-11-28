@@ -19,7 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "guiConfirmRegistration.h"
-#include "client.h"
+#include "client/client.h"
 #include <IGUICheckBox.h>
 #include <IGUIButton.h>
 #include <IGUIStaticText.h>

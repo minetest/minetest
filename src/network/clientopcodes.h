@@ -20,7 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #pragma once
 
-#include "client.h"
+#include "client/client.h"
 #include "networkprotocol.h"
 
 class NetworkPacket;

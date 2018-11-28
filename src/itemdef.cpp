@@ -24,11 +24,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "tool.h"
 #include "inventory.h"
 #ifndef SERVER
-#include "mapblock_mesh.h"
-#include "mesh.h"
-#include "wieldmesh.h"
+#include "client/mapblock_mesh.h"
+#include "client/mesh.h"
+#include "client/wieldmesh.h"
 #include "client/tile.h"
-#include "client.h"
+#include "client/client.h"
 #endif
 #include "log.h"
 #include "settings.h"

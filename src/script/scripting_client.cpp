@@ -19,7 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "scripting_client.h"
-#include "client.h"
+#include "client/client.h"
 #include "cpp_api/s_internal.h"
 #include "lua_api/l_client.h"
 #include "lua_api/l_env.h"

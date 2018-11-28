@@ -19,14 +19,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "guiChatConsole.h"
 #include "chat.h"
-#include "client.h"
+#include "client/client.h"
 #include "debug.h"
 #include "gettime.h"
-#include "keycode.h"
+#include "client/keycode.h"
 #include "settings.h"
 #include "porting.h"
 #include "client/tile.h"
-#include "fontengine.h"
+#include "client/fontengine.h"
 #include "log.h"
 #include "gettext.h"
 #include <string>

@@ -36,7 +36,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/string.h" // for parseColorString()
 #include "settings.h" // for settings
 #include "porting.h" // for dpi
-#include "guiscalingfilter.h"
+#include "client/guiscalingfilter.h"
 
 /*
 	GUITable

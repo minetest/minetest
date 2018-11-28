@@ -27,7 +27,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "guiTable.h"
 #include "constants.h"
 #include "gamedef.h"
-#include "keycode.h"
+#include "client/keycode.h"
 #include "util/strfnd.h"
 #include <IGUICheckBox.h>
 #include <IGUIEditBox.h>
@@ -47,13 +47,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mainmenumanager.h"
 #include "porting.h"
 #include "settings.h"
-#include "client.h"
-#include "fontengine.h"
+#include "client/client.h"
+#include "client/fontengine.h"
 #include "util/hex.h"
 #include "util/numeric.h"
 #include "util/string.h" // for parseColorString()
 #include "irrlicht_changes/static_text.h"
-#include "guiscalingfilter.h"
+#include "client/guiscalingfilter.h"
 #include "guiEditBoxWithScrollbar.h"
 #include "intlGUIEditBox.h"
 
@@ -673,10 +673,10 @@ void GUIFormSpecMenu::parseBackground(parserData* data, const std::string &eleme
 			pos.Y = stoi(v_pos[1]); //acts as offset
 			clip = true;
 		}
-		
+
 		if (!data->explicit_size && !clip)
 			warningstream << "invalid use of unclipped background without a size[] element" << std::endl;
-		
+
 		m_backgrounds.emplace_back(name, pos, geom, clip);
 
 		return;
