@@ -16,26 +16,27 @@ You should have received a copy of the GNU Lesser General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
+#ifndef PLAYERINVENTORYFORMSOURCE_H_
+#define PLAYERINVENTORYFORMSOURCE_H_
 
-#pragma once
+#include "client/client.h"
+#include "gui/guiFormSpecMenu.h"
 
-#include "irrlichttypes.h"
-#include <string>
+class PlayerInventoryFormSource: public IFormSource
+{
+public:
+	PlayerInventoryFormSource(Client *client):
+		m_client(client)
+	{
+	}
 
-class InputHandler;
-class ChatBackend;  /* to avoid having to include chat.h */
-struct SubgameSpec;
+	const std::string &getForm() const
+	{
+		LocalPlayer *player = m_client->getEnv().getLocalPlayer();
+		return player->inventory_formspec;
+	}
 
-void the_game(bool *kill,
-		bool random_input,
-		InputHandler *input,
-		const std::string &map_dir,
-		const std::string &playername,
-		const std::string &password,
-		const std::string &address, // If "", local server is used
-		u16 port,
-		std::string &error_message,
-		ChatBackend &chat_backend,
-		bool *reconnect_requested,
-		const SubgameSpec &gamespec, // Used for local game
-		bool simple_singleplayer_mode);
+	Client *m_client;
+};
+
+#endif // PLAYERINVENTORYFORMSOURCE_H_

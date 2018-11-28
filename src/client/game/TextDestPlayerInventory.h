@@ -16,26 +16,32 @@ You should have received a copy of the GNU Lesser General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
+#ifndef TEXTDESTPLAYERINVENTORY_H_
+#define TEXTDESTPLAYERINVENTORY_H_
 
-#pragma once
+#include "client/client.h"
+#include "gui/guiFormSpecMenu.h"
 
-#include "irrlichttypes.h"
-#include <string>
+struct TextDestPlayerInventory : public TextDest
+{
+	TextDestPlayerInventory(Client *client)
+	{
+		m_client = client;
+		m_formname = "";
+	}
 
-class InputHandler;
-class ChatBackend;  /* to avoid having to include chat.h */
-struct SubgameSpec;
+	TextDestPlayerInventory(Client *client, const std::string &formname)
+	{
+		m_client = client;
+		m_formname = formname;
+	}
 
-void the_game(bool *kill,
-		bool random_input,
-		InputHandler *input,
-		const std::string &map_dir,
-		const std::string &playername,
-		const std::string &password,
-		const std::string &address, // If "", local server is used
-		u16 port,
-		std::string &error_message,
-		ChatBackend &chat_backend,
-		bool *reconnect_requested,
-		const SubgameSpec &gamespec, // Used for local game
-		bool simple_singleplayer_mode);
+	void gotText(const StringMap &fields)
+	{
+		m_client->sendInventoryFields(m_formname, fields);
+	}
+
+	Client *m_client;
+};
+
+#endif // TEXTDESTPLAYERINVENTORY_H_

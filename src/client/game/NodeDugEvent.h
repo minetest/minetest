@@ -16,26 +16,27 @@ You should have received a copy of the GNU Lesser General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
+#ifndef NODEDUGEVENT_H_
+#define NODEDUGEVENT_H_
 
-#pragma once
+#include "event.h"
+#include "mapnode.h"
 
-#include "irrlichttypes.h"
-#include <string>
+class NodeDugEvent: public MtEvent
+{
+public:
+	v3s16 p;
+	MapNode n;
 
-class InputHandler;
-class ChatBackend;  /* to avoid having to include chat.h */
-struct SubgameSpec;
+	NodeDugEvent(v3s16 p, MapNode n):
+		p(p),
+		n(n)
+	{}
 
-void the_game(bool *kill,
-		bool random_input,
-		InputHandler *input,
-		const std::string &map_dir,
-		const std::string &playername,
-		const std::string &password,
-		const std::string &address, // If "", local server is used
-		u16 port,
-		std::string &error_message,
-		ChatBackend &chat_backend,
-		bool *reconnect_requested,
-		const SubgameSpec &gamespec, // Used for local game
-		bool simple_singleplayer_mode);
+	MtEvent::Type getType() const
+	{
+		return MtEvent::NODE_DUG;
+	}
+};
+
+#endif // NODEDUGEVENT_H_

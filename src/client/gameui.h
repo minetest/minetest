@@ -23,11 +23,25 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <IGUIEnvironment.h>
 #include "util/enriched_string.h"
 #include "util/pointedthing.h"
-#include "game.h"
 
 using namespace irr;
 class Client;
 struct MapDrawControl;
+
+struct Jitter {
+	f32 max, min, avg, counter, max_sample, min_sample, max_fraction;
+};
+
+struct RunStats {
+	u32 drawtime;
+
+	Jitter dtime_jitter, busy_time_jitter;
+};
+
+struct CameraOrientation {
+	f32 camera_yaw;    // "right/left"
+	f32 camera_pitch;  // "up/down"
+};
 
 /*
  * This object intend to contain the core UI elements

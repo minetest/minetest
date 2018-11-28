@@ -16,26 +16,45 @@ You should have received a copy of the GNU Lesser General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
+#ifndef NODEMETADATAFORMSOURCE_H_
+#define NODEMETADATAFORMSOURCE_H_
 
-#pragma once
+#include "client/clientmap.h"
+#include "gui/guiFormSpecMenu.h"
+#include "nodemetadata.h"
 
-#include "irrlichttypes.h"
-#include <string>
+class NodeMetadataFormSource: public IFormSource
+{
+public:
+	NodeMetadataFormSource(ClientMap *map, v3s16 p):
+		m_map(map),
+		m_p(p)
+	{
+	}
 
-class InputHandler;
-class ChatBackend;  /* to avoid having to include chat.h */
-struct SubgameSpec;
+	const std::string &getForm() const
+	{
+		static const std::string empty_string = "";
+		NodeMetadata *meta = m_map->getNodeMetadata(m_p);
 
-void the_game(bool *kill,
-		bool random_input,
-		InputHandler *input,
-		const std::string &map_dir,
-		const std::string &playername,
-		const std::string &password,
-		const std::string &address, // If "", local server is used
-		u16 port,
-		std::string &error_message,
-		ChatBackend &chat_backend,
-		bool *reconnect_requested,
-		const SubgameSpec &gamespec, // Used for local game
-		bool simple_singleplayer_mode);
+		if (!meta)
+			return empty_string;
+
+		return meta->getString("formspec");
+	}
+
+	virtual std::string resolveText(const std::string &str)
+	{
+		NodeMetadata *meta = m_map->getNodeMetadata(m_p);
+
+		if (!meta)
+			return str;
+
+		return meta->resolveString(str);
+	}
+
+	ClientMap *m_map;
+	v3s16 m_p;
+};
+
+#endif // NODEMETADATAFORMSOURCE_H_

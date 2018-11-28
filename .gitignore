@@ -5,6 +5,7 @@
 *.orig
 # Vim
 *.vim
+.ycm_extra_conf.py
 # Kate
 .*.kate-swp
 .swp.*
