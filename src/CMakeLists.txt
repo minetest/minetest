@@ -5,6 +5,8 @@ project(minetest)
 INCLUDE(CheckIncludeFiles)
 INCLUDE(CheckLibraryExists)
 
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
 # Add custom SemiDebug build mode
 set(CMAKE_CXX_FLAGS_SEMIDEBUG "-O1 -g -Wall -Wabi" CACHE STRING
 	"Flags used by the C++ compiler during semidebug builds."
@@ -374,76 +376,15 @@ add_subdirectory(util)
 add_subdirectory(irrlicht_changes)
 add_subdirectory(server)
 
+file(GLOB core_SRCS RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}" "*.cpp")
+list(FILTER core_SRCS EXCLUDE REGEX "^settings_translation_file.cpp")
+
 set(common_SRCS
 	${database_SRCS}
 	${mapgen_SRCS}
 	${server_SRCS}
 	${content_SRCS}
-	ban.cpp
-	chat.cpp
-	clientiface.cpp
-	collision.cpp
-	content_mapnode.cpp
-	content_nodemeta.cpp
-	content_sao.cpp
-	convert_json.cpp
-	craftdef.cpp
-	debug.cpp
-	defaultsettings.cpp
-	emerge.cpp
-	environment.cpp
-	face_position_cache.cpp
-	filesys.cpp
-	genericobject.cpp
-	gettext.cpp
-	httpfetch.cpp
-	hud.cpp
-	inventory.cpp
-	inventorymanager.cpp
-	itemdef.cpp
-	itemstackmetadata.cpp
-	light.cpp
-	log.cpp
-	main.cpp
-	map.cpp
-	map_settings_manager.cpp
-	mapblock.cpp
-	mapnode.cpp
-	mapsector.cpp
-	metadata.cpp
-	modchannels.cpp
-	nameidmapping.cpp
-	nodedef.cpp
-	nodemetadata.cpp
-	nodetimer.cpp
-	noise.cpp
-	objdef.cpp
-	object_properties.cpp
-	pathfinder.cpp
-	player.cpp
-	porting.cpp
-	profiler.cpp
-	quicktune.cpp
-	raycast.cpp
-	reflowscan.cpp
-	remoteplayer.cpp
-	rollback.cpp
-	rollback_interface.cpp
-	serialization.cpp
-	server.cpp
-	serverenvironment.cpp
-	serverlist.cpp
-	serverobject.cpp
-	settings.cpp
-	staticobject.cpp
-	terminal_chat_console.cpp
-	tileanimation.cpp
-	tool.cpp
-	translation.cpp
-	version.cpp
-	voxel.cpp
-	voxelalgorithms.cpp
-	hud.cpp
+	${core_SRCS}
 	${common_network_SRCS}
 	${JTHREAD_SRCS}
 	${common_SCRIPT_SRCS}

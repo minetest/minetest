@@ -112,6 +112,7 @@ LOCAL_C_INCLUDES := \
 		deps/sqlite/
 
 LOCAL_SRC_FILES := \
+		jni/src/android/porting_android.cpp       \
 		jni/src/ban.cpp                           \
 		jni/src/client/camera.cpp                 \
 		jni/src/mapgen/cavegen.cpp                \
@@ -162,7 +163,7 @@ LOCAL_SRC_FILES := \
 		jni/src/gui/guiKeyChangeMenu.cpp          \
 		jni/src/gui/guiPasswordChange.cpp         \
 		jni/src/gui/guiTable.cpp                  \
-		jni/src/client/guiscalingfilter.cpp              \
+		jni/src/client/guiscalingfilter.cpp       \
 		jni/src/gui/guiVolumeChange.cpp           \
 		jni/src/gui/intlGUIEditBox.cpp            \
 		jni/src/gui/modalMenu.cpp                 \
@@ -170,20 +171,20 @@ LOCAL_SRC_FILES := \
 		jni/src/gui/touchscreengui.cpp            \
 		jni/src/httpfetch.cpp                     \
 		jni/src/hud.cpp                           \
-		jni/src/client/imagefilters.cpp                  \
+		jni/src/client/imagefilters.cpp           \
 		jni/src/inventory.cpp                     \
 		jni/src/inventorymanager.cpp              \
 		jni/src/itemdef.cpp                       \
 		jni/src/itemstackmetadata.cpp             \
-		jni/src/client/keycode.cpp                       \
+		jni/src/client/keycode.cpp                \
 		jni/src/light.cpp                         \
-		jni/src/client/localplayer.cpp                   \
+		jni/src/client/localplayer.cpp            \
 		jni/src/log.cpp                           \
 		jni/src/main.cpp                          \
 		jni/src/map.cpp                           \
 		jni/src/map_settings_manager.cpp          \
 		jni/src/mapblock.cpp                      \
-		jni/src/client/mapblock_mesh.cpp                 \
+		jni/src/client/mapblock_mesh.cpp          \
 		jni/src/mapgen/mapgen.cpp                 \
 		jni/src/mapgen/mapgen_carpathian.cpp      \
 		jni/src/mapgen/mapgen_flat.cpp            \
@@ -211,10 +212,9 @@ LOCAL_SRC_FILES := \
 		jni/src/noise.cpp                         \
 		jni/src/objdef.cpp                        \
 		jni/src/object_properties.cpp             \
-		jni/src/client/particles.cpp                     \
+		jni/src/client/particles.cpp              \
 		jni/src/pathfinder.cpp                    \
 		jni/src/player.cpp                        \
-		jni/src/porting_android.cpp               \
 		jni/src/porting.cpp                       \
 		jni/src/profiler.cpp                      \
 		jni/src/quicktune.cpp                     \
