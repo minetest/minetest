@@ -50,10 +50,10 @@
 			android:name=".MinetestTextEntry"
 			android:configChanges="keyboardHidden|orientation|screenSize"
 			android:theme="@style/Theme.Dialog"
-			android:windowSoftInputMode="stateAlwaysHidden"></activity>
+			android:windowSoftInputMode="stateAlwaysHidden"/>
 		<activity
 			android:name=".MinetestAssetCopy"
 			android:screenOrientation="sensorLandscape"
-			android:theme="@style/AppTheme"></activity>
+			android:theme="@style/AppTheme"/>
 	</application>
 </manifest>

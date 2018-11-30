@@ -8,8 +8,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
-import android.widget.RelativeLayout;
+import android.support.v4.content.ContextCompat;;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -20,22 +19,18 @@ public class MainActivity extends Activity {
 
 	private final static int PERMISSIONS = 1;
 	private static final String[] REQUIRED_SDK_PERMISSIONS = new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE};
-	RelativeLayout relativeLayout;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		relativeLayout = new RelativeLayout(this);
-		relativeLayout.setBackgroundResource(R.drawable.bg);
-		setContentView(relativeLayout);
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-			Permission();
+			checkPermission();
 		} else {
-			Next();
+			next();
 		}
 	}
 
-	protected void Permission() {
+	protected void checkPermission() {
 		final List<String> missingPermissions = new ArrayList<String>();
 		// check required permission
 		for (final String permission : REQUIRED_SDK_PERMISSIONS) {
@@ -62,7 +57,7 @@ public class MainActivity extends Activity {
 										   @NonNull int[] grantResults) {
 		switch (requestCode) {
 			case PERMISSIONS:
-				for (int index = permissions.length - 1; index >= 0; --index) {
+				for (int index = 0; index < permissions.length; index++) {
 					if (grantResults[index] != PackageManager.PERMISSION_GRANTED) {
 						// permission not granted - toast and exit
 						Toast.makeText(this, R.string.not_granted, Toast.LENGTH_LONG).show();
@@ -71,12 +66,12 @@ public class MainActivity extends Activity {
 					}
 				}
 				// permission were granted - run
-				Next();
+				next();
 				break;
 		}
 	}
 
-	public void Next() {
+	public void next() {
 		Intent intent = new Intent(this, MtNativeActivity.class);
 		intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_CLEAR_TASK);
 		startActivity(intent);
