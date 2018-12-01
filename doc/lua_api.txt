@@ -3557,22 +3557,12 @@ Call these functions only at load time!
 * `minetest.unregister_chatcommand(name)`
     * Unregisters a chatcommands registered with `register_chatcommand`.
 * `minetest.register_privilege(name, definition)`
-    * `definition`: `"description text"`
-    * `definition`:
-      `{description = "description text", give_to_singleplayer = boolean}`
-      the default of `give_to_singleplayer` is true.
-    * To allow players with `basic_privs` to grant, see `basic_privs`
+    * `definition` can be a description or a definition table (see [Privilege
+      definition]).
+    * If it is a description, the priv will be granted to singleplayer and admin
+      by default.
+    * To allow players with `basic_privs` to grant, see the `basic_privs`
       minetest.conf setting.
-    * `on_grant(name, granter_name)`: Called when given to player `name` by
-      `granter_name`.
-      `granter_name` will be nil if the priv was granted by a mod.
-    * `on_revoke(name, revoker_name)`: Called when taken from player `name` by
-      `revoker_name`.
-      `revoker_name` will be nil if the priv was revoked by a mod
-    * Note that the above two callbacks will be called twice if a player is
-      responsible, once with the player name, and then with a nil player name.
-    * Return true in the above callbacks to stop register_on_priv_grant or
-      revoke being called.
 * `minetest.register_authentication_handler(authentication handler definition)`
     * Registers an auth handler that overrides the builtin one.
     * This function can be called by a single mod once only.
@@ -6542,6 +6532,36 @@ Note that in params, use of symbols is as follows:
   provided. For example: `<param1> | <param2>`
 * `()` signifies grouping. For example, when param1 and param2 are both
   required, or only param3 is required: `(<param1> <param2>) | <param3>`
+
+Privilege definition
+--------------------
+
+Used by `minetest.register_privilege`.
+
+    {
+        description = "Can teleport",  -- Privilege description
+
+        give_to_singleplayer = false,
+        -- Whether to grant the privilege to singleplayer (default true).
+
+        give_to_admin = true,
+        -- Whether to grant the privilege to the server admin.
+        -- Uses value of 'give_to_singleplayer' by default.
+
+        on_grant = function(name, granter_name),
+        -- Called when given to player 'name' by 'granter_name'.
+        -- 'granter_name' will be nil if the priv was granted by a mod.
+
+        on_revoke = function(name, revoker_name),
+        -- Called when taken from player 'name' by 'revoker_name'.
+        -- 'revoker_name' will be nil if the priv was revoked by a mod.
+
+        -- Note that the above two callbacks will be called twice if a player is
+        -- responsible, once with the player name, and then with a nil player
+        -- name.
+        -- Return true in the above callbacks to stop register_on_priv_grant or
+        -- revoke being called.
+    }
 
 Detached inventory callbacks
 ----------------------------
