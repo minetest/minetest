@@ -139,6 +139,7 @@ void Player::clearHud()
 void PlayerSettings::readGlobalSettings()
 {
 	free_move = g_settings->getBool("free_move");
+	pitch_fly = g_settings->getBool("pitch_fly");
 	fast_move = g_settings->getBool("fast_move");
 	continuous_forward = g_settings->getBool("continuous_forward");
 	always_fly_fast = g_settings->getBool("always_fly_fast");

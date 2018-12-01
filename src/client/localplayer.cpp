@@ -481,9 +481,9 @@ void LocalPlayer::applyControl(float dtime, Environment *env)
 
 	PlayerSettings &player_settings = getPlayerSettings();
 
-	v3f move_direction = v3f(0,0,1);
-	move_direction.rotateXZBy(getYaw());
-
+	// All vectors are relative to the player's yaw,
+	// (and pitch if pitch fly mode enabled),
+	// and will be rotated at the end
 	v3f speedH = v3f(0,0,0); // Horizontal (X, Z)
 	v3f speedV = v3f(0,0,0); // Vertical (Y)
 
@@ -492,6 +492,7 @@ void LocalPlayer::applyControl(float dtime, Environment *env)
 
 	bool free_move = fly_allowed && player_settings.free_move;
 	bool fast_move = fast_allowed && player_settings.fast_move;
+	bool pitch_fly = free_move && player_settings.pitch_fly;
 	// When aux1_descends is enabled the fast key is used to go down, so fast isn't possible
 	bool fast_climb = fast_move && control.aux1 && !player_settings.aux1_descends;
 	bool continuous_forward = player_settings.continuous_forward;
@@ -582,31 +583,31 @@ void LocalPlayer::applyControl(float dtime, Environment *env)
 	}
 
 	if (continuous_forward)
-		speedH += move_direction;
+		speedH += v3f(0,0,1);
 
 	if (control.up) {
 		if (continuous_forward) {
 			if (fast_move)
 				superspeed = true;
 		} else {
-			speedH += move_direction;
+			speedH += v3f(0,0,1);
 		}
 	}
 	if (control.down) {
-		speedH -= move_direction;
+		speedH -= v3f(0,0,1);
 	}
 	if (!control.up && !control.down) {
-		speedH -= move_direction *
+		speedH -= v3f(0,0,1) *
 			(control.forw_move_joystick_axis / 32767.f);
 	}
 	if (control.left) {
-		speedH += move_direction.crossProduct(v3f(0,1,0));
+		speedH += v3f(-1,0,0);
 	}
 	if (control.right) {
-		speedH += move_direction.crossProduct(v3f(0,-1,0));
+		speedH += v3f(1,0,0);
 	}
 	if (!control.left && !control.right) {
-		speedH -= move_direction.crossProduct(v3f(0,1,0)) *
+		speedH += v3f(1,0,0) *
 			(control.sidew_move_joystick_axis / 32767.f);
 	}
 	if(control.jump)
@@ -685,10 +686,9 @@ void LocalPlayer::applyControl(float dtime, Environment *env)
 		slip_factor = getSlipFactor(env, speedH);
 
 	// Accelerate to target speed with maximum increment
-	accelerateHorizontal(speedH * physics_override_speed,
-			incH * physics_override_speed * slip_factor);
-	accelerateVertical(speedV * physics_override_speed,
-			incV * physics_override_speed);
+	accelerate((speedH + speedV) * physics_override_speed,
+			incH * physics_override_speed * slip_factor, incV * physics_override_speed,
+			pitch_fly);
 }
 
 v3s16 LocalPlayer::getStandingNodePos()
@@ -725,38 +725,46 @@ v3f LocalPlayer::getEyeOffset() const
 	return v3f(0, BS * eye_height, 0);
 }
 
-// Horizontal acceleration (X and Z), Y direction is ignored
-void LocalPlayer::accelerateHorizontal(const v3f &target_speed,
-	const f32 max_increase)
+// 3D acceleration
+void LocalPlayer::accelerate(const v3f &target_speed, const f32 max_increase_H,
+		const f32 max_increase_V, const bool use_pitch)
 {
-        if (max_increase == 0)
-                return;
+	const f32 yaw = getYaw();
+	const f32 pitch = getPitch();
+	v3f flat_speed = m_speed;
+	// Rotate speed vector by -yaw and -pitch to make it relative to the player's yaw and pitch
+	flat_speed.rotateXZBy(-yaw);
+	if (use_pitch)
+		flat_speed.rotateYZBy(-pitch);
 
-	v3f d_wanted = target_speed - m_speed;
-	d_wanted.Y = 0.0f;
-	f32 dl = d_wanted.getLength();
-	if (dl > max_increase)
-		dl = max_increase;
+	v3f d_wanted = target_speed - flat_speed;
+	v3f d = v3f(0,0,0);
 
-	v3f d = d_wanted.normalize() * dl;
+	// Then compare the horizontal and vertical components with the wanted speed
+	if (max_increase_H > 0) {
+		v3f d_wanted_H = d_wanted * v3f(1,0,1);
+		if (d_wanted_H.getLength() > max_increase_H)
+			d += d_wanted_H.normalize() * max_increase_H;
+		else
+			d += d_wanted_H;
+	}
 
-	m_speed.X += d.X;
-	m_speed.Z += d.Z;
-}
+	if (max_increase_V > 0) {
+		f32 d_wanted_V = d_wanted.Y;
+		if (d_wanted_V > max_increase_V)
+			d.Y += max_increase_V;
+		else if (d_wanted_V < -max_increase_V)
+			d.Y -= max_increase_V;
+		else
+			d.Y += d_wanted_V;
+	}
 
-// Vertical acceleration (Y), X and Z directions are ignored
-void LocalPlayer::accelerateVertical(const v3f &target_speed, const f32 max_increase)
-{
-	if (max_increase == 0)
-		return;
+	// Finally rotate it again
+	if (use_pitch)
+		d.rotateYZBy(pitch);
+	d.rotateXZBy(yaw);
 
-	f32 d_wanted = target_speed.Y - m_speed.Y;
-	if (d_wanted > max_increase)
-		d_wanted = max_increase;
-	else if (d_wanted < -max_increase)
-		d_wanted = -max_increase;
-
-	m_speed.Y += d_wanted;
+	m_speed += d;
 }
 
 // Temporary option for old move code

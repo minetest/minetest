@@ -87,6 +87,7 @@ struct PlayerControl
 struct PlayerSettings
 {
 	bool free_move = false;
+	bool pitch_fly = false;
 	bool fast_move = false;
 	bool continuous_forward = false;
 	bool always_fly_fast = false;
@@ -94,8 +95,8 @@ struct PlayerSettings
 	bool noclip = false;
 	bool autojump = false;
 
-	const std::string setting_names[7] = {
-		"free_move", "fast_move", "continuous_forward", "always_fly_fast",
+	const std::string setting_names[8] = {
+		"free_move", "pitch_fly", "fast_move", "continuous_forward", "always_fly_fast",
 		"aux1_descends", "noclip", "autojump"
 	};
 	void readGlobalSettings();
