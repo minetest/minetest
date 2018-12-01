@@ -26,6 +26,10 @@
 #    type: bool
 # free_move = false
 
+#    If enabled together with fly mode, makes move directions relative to the player's pitch.
+#    type: bool
+# pitch_fly = false
+
 #    Fast movement (via the "special" key).
 #    This requires the "fast" privilege on the server.
 #    type: bool
@@ -193,6 +197,11 @@
 #    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
 #    type: key
 # keymap_freemove = KEY_KEY_K
+
+#    Key for toggling pitch fly mode.
+#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    type: key
+# keymap_pitchfly = KEY_KEY_L
 
 #    Key for toggling fast mode.
 #    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3

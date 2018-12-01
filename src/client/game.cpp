@@ -701,6 +701,7 @@ protected:
 	void openConsole(float scale, const wchar_t *line=NULL);
 	void toggleFreeMove();
 	void toggleFreeMoveAlt();
+	void togglePitchFly();
 	void toggleFast();
 	void toggleNoClip();
 	void toggleCinematic();
@@ -1896,6 +1897,8 @@ void Game::processKeyInput()
 		toggleFreeMove();
 	} else if (wasKeyDown(KeyType::JUMP)) {
 		toggleFreeMoveAlt();
+	} else if (wasKeyDown(KeyType::PITCHFLY)) {
+		togglePitchFly();
 	} else if (wasKeyDown(KeyType::FASTMOVE)) {
 		toggleFast();
 	} else if (wasKeyDown(KeyType::NOCLIP)) {
@@ -2104,6 +2107,19 @@ void Game::toggleFreeMoveAlt()
 		toggleFreeMove();
 
 	runData.reset_jump_timer = true;
+}
+
+
+void Game::togglePitchFly()
+{
+	bool pitch_fly = !g_settings->getBool("pitch_fly");
+	g_settings->set("pitch_fly", bool_to_cstr(pitch_fly));
+
+	if (pitch_fly) {
+		m_game_ui->showTranslatedStatusText("Pitch fly mode enabled");
+	} else {
+		m_game_ui->showTranslatedStatusText("Pitch fly mode disabled");
+	}
 }
 
 
