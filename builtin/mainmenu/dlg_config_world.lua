@@ -67,11 +67,11 @@ local function get_formspec(data)
 
 			if pkgmgr.is_modpack_entirely_enabled(data, mod.name) then
 				retval = retval ..
-					"button[5.5,0.125;2.5,0.5;btn_mp_disable;" ..
+					"button[5.5,0.125;3,0.5;btn_mp_disable;" ..
 					fgettext("Disable modpack") .. "]"
 			else
 				retval = retval ..
-					"button[5.5,0.125;2.5,0.5;btn_mp_enable;" ..
+					"button[5.5,0.125;3,0.5;btn_mp_enable;" ..
 					fgettext("Enable modpack") .. "]"
 			end
 		else
@@ -82,11 +82,11 @@ local function get_formspec(data)
 	end
 	if enabled_all then
 		retval = retval ..
-			"button[8.75,0.125;2.5,0.5;btn_disable_all_mods;" ..
+			"button[8.95,0.125;2.5,0.5;btn_disable_all_mods;" ..
 			fgettext("Disable all") .. "]"
 	else
 		retval = retval ..
-			"button[8.75,0.125;2.5,0.5;btn_enable_all_mods;" ..
+			"button[8.95,0.125;2.5,0.5;btn_enable_all_mods;" ..
 			fgettext("Enable all") .. "]"
 	end
 	return retval ..
