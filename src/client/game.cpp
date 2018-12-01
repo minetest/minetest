@@ -68,6 +68,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "irrlicht_changes/static_text.h"
 #include "version.h"
 #include "script/scripting_client.h"
+#include "hud.h"
 
 #if USE_SOUND
 	#include "client/sound_openal.h"
@@ -2001,7 +2002,7 @@ void Game::processItemSelection(u16 *new_playeritem)
 
 	/* Item selection using hotbar slot keys
 	 */
-	for (u16 i = 0; i < 23; i++) {
+	for (u16 i = 0; i < HUD_HOTBAR_ITEMCOUNT_MAX; i++) {
 		if (wasKeyDown((GameKeyType) (KeyType::SLOT_1 + i))) {
 			if (i < PLAYER_INVENTORY_SIZE && i < player->hud_hotbar_itemcount) {
 				*new_playeritem = i;
