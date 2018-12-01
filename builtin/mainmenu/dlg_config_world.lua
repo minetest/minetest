@@ -33,11 +33,15 @@ local function get_formspec(data)
 
 	local hard_deps, soft_deps = pkgmgr.get_dependencies(mod.path)
 
-	if mod.is_modpack then
+	if mod.is_modpack or mod.type == "game" then
 		local info = minetest.formspec_escape(
 			core.get_content_info(mod.path).description)
 		if info == "" then
-			info = fgettext("No modpack description provided.")
+			if mod.is_modpack then
+				info = fgettext("No modpack description provided.")
+			else
+				info = fgettext("No game description provided.")
+			end
 		end
 		retval = retval ..
 			"textarea[0.25,0.7;5.75,7.2;;" .. info .. ";]"
