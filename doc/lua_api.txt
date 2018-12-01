@@ -1493,7 +1493,6 @@ Special groups
 * `attached_node`: if the node under it is not a walkable block the node will be
   dropped as an item. If the node is wallmounted the wallmounted direction is
   checked.
-* `soil`: saplings will grow on nodes in this group
 * `connect_to_raillike`: makes nodes of raillike drawtype with same group value
   connect to each other
 * `slippery`: Players and items will slide on the node.
