@@ -5190,7 +5190,7 @@ This is basically a reference to a C++ `ServerActiveObject`
 * `hud_get_flags()`: returns a table of player HUD flags with boolean values.
     * See `hud_set_flags` for a list of flags that can be toggled.
 * `hud_set_hotbar_itemcount(count)`: sets number of items in builtin hotbar
-    * `count`: number of items, must be between `1` and `23`
+    * `count`: number of items, must be between `1` and `32`
 * `hud_get_hotbar_itemcount`: returns number of visible items
 * `hud_set_hotbar_image(texturename)`
     * sets background image for hotbar
