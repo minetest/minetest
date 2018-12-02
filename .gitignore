@@ -77,6 +77,7 @@ src/cmake_config_githash.h
 src/lua/build/
 locale/
 .directory
+.gradle/
 *.cbp
 *.layout
 *.o
@@ -84,6 +85,8 @@ locale/
 *.ninja
 .ninja*
 *.gch
+*.iml
+test_config.h
 cmake-build-debug/
 cmake-build-release/
 
