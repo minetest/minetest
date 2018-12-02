@@ -445,12 +445,16 @@ void Sky::render()
 		// Draw stars
 		do {
 			driver->setMaterial(m_materials[1]);
+			// Tune values, so that stars begin to be drawn at the same time the
+			// sun disappears over the horizon, and so that star full brightness
+			// is reached at time 20000, for 8 'hours' of full star brightness.
 			float starbrightness = MYMAX(0, MYMIN(1,
-				(0.285 - fabs(wicked_time_of_day < 0.5 ?
-				wicked_time_of_day : (1.0 - wicked_time_of_day))) * 10));
+				(0.25 - fabs(wicked_time_of_day < 0.5 ?
+				wicked_time_of_day : (1.0 - wicked_time_of_day))) * 20));
 			float f = starbrightness;
-			float d = 0.007/2;
+			float d = 0.007 / 2;
 			video::SColor starcolor(255, f * 90, f * 90, f * 90);
+			// Stars are only drawn when brighter than skycolor
 			if (starcolor.getBlue() < m_skycolor.getBlue())
 				break;
 #ifdef __ANDROID__
