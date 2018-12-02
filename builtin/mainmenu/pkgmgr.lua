@@ -357,14 +357,20 @@ function pkgmgr.enable_mod(this, toset)
 		return
 	end
 
+	local toggled_mods = {}
+
 	local enabled_mods = {}
 	if not mod.is_modpack then
 		-- Toggle or en/disable the mod
 		if toset == nil then
 			toset = not mod.enabled
 		end
-		mod.enabled = toset
+		if mod.enabled ~= toset then
+			mod.enabled = toset
+			toggled_mods[#toggled_mods+1] = mod.name
+		end
 		if toset then
+			-- Mark this mod for recursive dependency traversal
 			enabled_mods[mod.name] = true
 		end
 	else
@@ -375,7 +381,10 @@ function pkgmgr.enable_mod(this, toset)
 				if toset == nil then
 					toset = not list[i].enabled
 				end
-				list[i].enabled = toset
+				if list[i].enabled ~= toset then
+					list[i].enabled = toset
+					toggled_mods[#toggled_mods+1] = list[i].name
+				end
 				if toset then
 					enabled_mods[list[i].name] = true
 				end
@@ -383,7 +392,10 @@ function pkgmgr.enable_mod(this, toset)
 		end
 	end
 	if not toset then
-		-- Mod(s) were disabled
+		-- Mod(s) were disabled, so no dependencies need to be enabled
+		table.sort(toggled_mods)
+		minetest.log("action", "Following mods were disabled: " ..
+			table.concat(toggled_mods, ", "))
 		return
 	end
 
@@ -422,7 +434,10 @@ function pkgmgr.enable_mod(this, toset)
 				minetest.log("warning", "Mod dependency \"" .. name ..
 					"\" not found!")
 			else
-				mod.enabled = true
+				if mod.enabled == false then
+					mod.enabled = true
+					toggled_mods[#toggled_mods+1] = mod.name
+				end
 				-- push the dependencies of the dependency onto the stack
 				local depends = pkgmgr.get_dependencies(mod.path)
 				for i = 1, #depends do
@@ -432,6 +447,11 @@ function pkgmgr.enable_mod(this, toset)
 			end
 		end
 	end
+
+	-- Log the list of enabled mods
+	table.sort(toggled_mods)
+	minetest.log("action", "Following mods were enabled: " ..
+		table.concat(toggled_mods, ", "))
 end
 
 --------------------------------------------------------------------------------
