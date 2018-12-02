@@ -2002,12 +2002,10 @@ void Game::processItemSelection(u16 *new_playeritem)
 
 	/* Item selection using hotbar slot keys
 	 */
-	for (u16 i = 0; i < HUD_HOTBAR_ITEMCOUNT_MAX; i++) {
+	for (u16 i = 0; i <= max_item; i++) {
 		if (wasKeyDown((GameKeyType) (KeyType::SLOT_1 + i))) {
-			if (i < PLAYER_INVENTORY_SIZE && i < player->hud_hotbar_itemcount) {
-				*new_playeritem = i;
-				infostream << "Selected item: " << new_playeritem << std::endl;
-			}
+			*new_playeritem = i;
+			infostream << "Selected item: " << new_playeritem << std::endl;
 			break;
 		}
 	}
