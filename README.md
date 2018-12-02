@@ -16,6 +16,18 @@ If you downloaded the Minetest Engine source code in which this file is
 contained, you probably want to download the [Minetest Game](https://github.com/minetest/minetest_game/)
 project too. See its README.txt for more information.
 
+Table of Contents
+------------------
+
+1. [Further Documentation](#further-documentation)
+2. [Default Controls](#default-controls)
+3. [Paths](#paths)
+4. [Configuration File](#configuration-file)
+5. [Command-line Options](#command-line-options)
+6. [Compiling](#compiling)
+7. [Version Scheme](#version-scheme)
+
+
 Further documentation
 ----------------------
 - Website: http://minetest.net/
