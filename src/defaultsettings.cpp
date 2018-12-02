@@ -264,8 +264,6 @@ void set_default_settings(Settings *settings)
 	// Main menu
 	settings->setDefault("main_menu_style", "auto");
 	settings->setDefault("main_menu_path", "");
-	settings->setDefault("main_menu_mod_mgr", "1");
-	settings->setDefault("main_menu_game_mgr", "0");
 	settings->setDefault("serverlist_file", "favoriteservers.txt");
 
 #if USE_FREETYPE

@@ -1279,10 +1279,6 @@ main_menu_style (Main menu style) enum auto auto,full,simple
 #    Replaces the default main menu with a custom one.
 main_menu_script (Main menu script) string
 
-main_menu_game_mgr (Main menu game manager) int 0
-
-main_menu_mod_mgr (Main menu mod manager) int 1
-
 #    Print the engine's profiling data in regular intervals (in seconds).
 #    0 = disable. Useful for developers.
 profiler_print_interval (Engine profiling data print interval) int 0
