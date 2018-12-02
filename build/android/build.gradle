@@ -1,12 +1,17 @@
 buildscript {
 	repositories {
-		mavenCentral()
-		jcenter()
-		google()
 		maven { url 'https://maven.google.com' }
+		jcenter()
 	}
 	dependencies {
-		classpath "com.android.tools.build:gradle:3.1.3"
+		classpath 'com.android.tools.build:gradle:3.1.3'
+	}
+}
+
+allprojects {
+	repositories {
+		maven { url 'https://maven.google.com' }
+		jcenter()
 	}
 }
 
@@ -20,21 +25,21 @@ def sqlite3_version = "3240000"
 apply plugin: "com.android.application"
 
 android {
-	compileSdkVersion 26
-	buildToolsVersion "26.0.3"
+	compileSdkVersion 28
+	buildToolsVersion "28.0.3"
 
 	defaultConfig {
 		versionCode 20
 		versionName "${System.env.VERSION_STR}.${versionCode}"
 		minSdkVersion 14
-		targetSdkVersion 14
+		targetSdkVersion 28
 		applicationId "net.minetest.minetest"
-		manifestPlaceholders = [ package: "net.minetest.minetest", project: project.name ]
+		manifestPlaceholders = [package: "net.minetest.minetest", project: project.name]
 		ndk {
 			// Specifies the ABI configurations of your native
 			// libraries Gradle should build and package with your APK.
-			abiFilters 'x86', 'x86_64', 'armeabi', 'armeabi-v7a',
-			'arm64-v8a'
+			// abiFilters 'armeabi-v7a', 'arm64-v8a', 'x86', 'x86_64'
+			abiFilters 'armeabi-v7a', 'x86'
 		}
 	}
 
@@ -63,58 +68,58 @@ android {
 	}
 }
 
-task cleanAssets(type:Delete) {
+task cleanAssets(type: Delete) {
 	delete 'src/main/assets'
 }
 
-task cleanIconv(type:Delete) {
+task cleanIconv(type: Delete) {
 	delete 'deps/libiconv'
 }
 
-task cleanIrrlicht(type:Delete) {
+task cleanIrrlicht(type: Delete) {
 	delete 'deps/irrlicht'
 }
 
-task cleanLevelDB(type:Delete) {
+task cleanLevelDB(type: Delete) {
 	delete 'deps/leveldb'
 }
 
-task cleanCURL(type:Delete) {
+task cleanCURL(type: Delete) {
 	delete 'deps/curl'
 	delete 'deps/curl-' + curl_version
 }
 
-task cleanOpenSSL(type:Delete) {
+task cleanOpenSSL(type: Delete) {
 	delete 'deps/openssl'
 	delete 'deps/openssl-' + openssl_version
 	delete 'deps/openssl-' + openssl_version + '.tar.gz'
 }
 
-task cleanOpenAL(type:Delete) {
+task cleanOpenAL(type: Delete) {
 	delete 'deps/openal-soft'
 }
 
-task cleanFreetype(type:Delete) {
+task cleanFreetype(type: Delete) {
 	delete 'deps/freetype2-android'
 }
 
-task cleanOgg(type:Delete) {
+task cleanOgg(type: Delete) {
 	delete 'deps/libvorbis-libogg-android'
 }
 
-task cleanSQLite3(type:Delete) {
+task cleanSQLite3(type: Delete) {
 	delete 'deps/sqlite-amalgamation-' + sqlite3_version
 	delete 'deps/sqlite-amalgamation-' + sqlite3_version + '.zip'
 }
 
-task cleanGMP(type:Delete) {
+task cleanGMP(type: Delete) {
 	delete 'deps/gmp'
 	delete 'deps/gmp-' + gmp_version
 }
 
-task cleanAll(type:Delete, dependsOn:[clean,cleanAssets,cleanIconv,
-	cleanFreetype,cleanIrrlicht,cleanLevelDB,cleanSQLite3,cleanCURL,
-	cleanOpenSSL,cleanOpenAL,cleanOgg,cleanGMP]) {
+task cleanAll(type: Delete, dependsOn: [clean, cleanAssets, cleanIconv,
+										cleanFreetype, cleanIrrlicht, cleanLevelDB, cleanSQLite3, cleanCURL,
+										cleanOpenSSL, cleanOpenAL, cleanOgg, cleanGMP]) {
 	delete 'deps'
 	delete 'gen'
 	delete 'libs'
@@ -122,4 +127,8 @@ task cleanAll(type:Delete, dependsOn:[clean,cleanAssets,cleanIconv,
 	delete 'bin'
 	delete 'Debug'
 	delete 'and_env'
+}
+
+dependencies {
+	implementation 'com.android.support:support-v4:28.0.0'
 }
