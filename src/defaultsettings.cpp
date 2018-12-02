@@ -127,6 +127,15 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("keymap_slot21", "");
 	settings->setDefault("keymap_slot22", "");
 	settings->setDefault("keymap_slot23", "");
+	settings->setDefault("keymap_slot24", "");
+	settings->setDefault("keymap_slot25", "");
+	settings->setDefault("keymap_slot26", "");
+	settings->setDefault("keymap_slot27", "");
+	settings->setDefault("keymap_slot28", "");
+	settings->setDefault("keymap_slot29", "");
+	settings->setDefault("keymap_slot30", "");
+	settings->setDefault("keymap_slot31", "");
+	settings->setDefault("keymap_slot32", "");
 
 	// Some (temporary) keys for debugging
 	settings->setDefault("keymap_quicktune_prev", "KEY_HOME");
