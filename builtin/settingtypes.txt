@@ -903,7 +903,7 @@ server_address (Server address) string game.minetest.net
 #    Homepage of server, to be displayed in the serverlist.
 server_url (Server URL) string https://minetest.net
 
-#    Automaticaly report to the serverlist.
+#    Automatically report to the serverlist.
 server_announce (Announce server) bool false
 
 #    Announce to this serverlist.
@@ -1733,7 +1733,7 @@ mgfractal_iterations (Iterations) int 11
 #    an island, set all 3 numbers equal for the raw shape.
 mgfractal_scale (Scale) v3f (4096.0, 1024.0, 4096.0)
 
-#    (X,Y,Z) offset of fractal from world centre in units of 'scale'.
+#    (X,Y,Z) offset of fractal from world center in units of 'scale'.
 #    Can be used to move a desired point to (0, 0) to create a
 #    suitable spawn point, or to allow 'zooming in' on a desired
 #    point by increasing 'scale'.
@@ -1743,7 +1743,7 @@ mgfractal_scale (Scale) v3f (4096.0, 1024.0, 4096.0)
 #    Range roughly -2 to 2. Multiply by 'scale' for offset in nodes.
 mgfractal_offset (Offset) v3f (1.79, 0.0, 0.0)
 
-#    W co-ordinate of the generated 3D slice of a 4D fractal.
+#    W coordinate of the generated 3D slice of a 4D fractal.
 #    Determines which 3D slice of the 4D shape is generated.
 #    Alters the shape of the fractal.
 #    Has no effect on 3D fractals.
