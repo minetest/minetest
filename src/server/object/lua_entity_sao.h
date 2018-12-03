@@ -19,7 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #pragma once
 
-#include "server/object/UnitSAO.h"
+#include "server/object/unit_sao.h"
 
 /*
 	LuaEntitySAO needs some internals exposed.

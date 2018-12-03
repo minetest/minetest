@@ -22,7 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "constants.h"
 #include "network/networkprotocol.h"
 #include "util/numeric.h"
-#include "server/object/UnitSAO.h"
+#include "server/object/unit_sao.h"
 
 class RemotePlayer;
 

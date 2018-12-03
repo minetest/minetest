@@ -25,8 +25,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 std::map<u16, ServerActiveObject::Factory> ServerActiveObject::m_types;
 
-#include "server/object/TestSAO.h"
-#include "server/object/LuaEntitySAO.h"
+#include "server/object/test_sao.h"
+#include "server/object/lua_entity_sao.h"
 
 // Prototypes (registers item for deserialization)
 // FIXME: This code and the headers inclusion above can't stay here

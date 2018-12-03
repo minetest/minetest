@@ -23,9 +23,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "server.h"
 #include "scripting_server.h"
 #include "genericobject.h"
-#include "server/object/LagPool.h"
-#include "server/object/PlayerHPChangeReason.h"
-#include "server/object/PlayerSAO.h"
+#include "server/object/lag_pool.h"
+#include "server/object/player_hp_change_reason.h"
+#include "server/object/player_sao.h"
 
 PlayerSAO::PlayerSAO(ServerEnvironment *env_, RemotePlayer *player_, session_t peer_id_,
 		bool is_singleplayer):

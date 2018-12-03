@@ -23,8 +23,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "server.h"
 #include "scripting_server.h"
 #include "genericobject.h"
-#include "server/object/LuaEntitySAO.h"
-#include "server/object/PlayerHPChangeReason.h"
+#include "server/object/lua_entity_sao.h"
+#include "server/object/player_hp_change_reason.h"
 
 LuaEntitySAO::LuaEntitySAO(ServerEnvironment *env, v3f pos,
 		const std::string &name, const std::string &state):

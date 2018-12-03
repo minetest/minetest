@@ -19,7 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "server.h"
 #include "scripting_server.h"
-#include "server/object/UnitSAO.h"
+#include "server/object/unit_sao.h"
 
 UnitSAO::UnitSAO(ServerEnvironment *env, v3f pos):
 	ServerActiveObject(env, pos)

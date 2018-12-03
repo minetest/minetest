@@ -21,9 +21,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "exceptions.h"
 #include "remoteplayer.h"
-#include "server/object/LuaEntitySAO.h"
-#include "server/object/LagPool.h"
-#include "server/object/PlayerSAO.h"
+#include "server/object/lua_entity_sao.h"
+#include "server/object/lag_pool.h"
+#include "server/object/player_sao.h"
 #include "server.h"
 
 class TestPlayer : public TestBase
