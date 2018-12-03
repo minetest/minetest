@@ -22,9 +22,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client/content_cao.h"
 #include "client/event_manager.h"
 #include "client/fontengine.h"
-#include "client/game/Game.h"
-#include "client/game/GameGlobalShaderConstantSetter.h"
-#include "client/game/SoundMaker.h"
+#include "client/game/game.h"
+#include "client/game/game_global_shader_constant_setter.h"
+#include "client/game/sound_maker.h"
 #include "client/keys.h"
 #include "gui/guiConfirmRegistration.h"
 #include "gui/guiChatConsole.h"
@@ -40,14 +40,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 /* Text input system */
 
-#include "client/game/TextDestNodeMetadata.h"
-#include "client/game/TextDestPlayerInventory.h"
-#include "client/game/LocalFormspecHandler.h"
+#include "client/game/text_dest_node_metadata.h"
+#include "client/game/text_dest_player_inventory.h"
+#include "client/game/local_formspec_handler.h"
 
 /* Form update callback */
 
-#include "client/game/NodeMetadataFormSource.h"
-#include "client/game/PlayerInventoryFormSource.h"
+#include "client/game/node_metadata_form_source.h"
+#include "client/game/player_inventory_form_source.h"
 
 Game::Game() :
 	m_game_ui(new GameUI())

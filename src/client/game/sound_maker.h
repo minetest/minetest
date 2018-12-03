@@ -19,7 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef SOUNDMAKER_H_
 #define SOUNDMAKER_H_
 
-#include "client/game/NodeDugEvent.h"
+#include "client/game/node_dug_event.h"
 #include "nodedef.h"
 
 #if USE_SOUND

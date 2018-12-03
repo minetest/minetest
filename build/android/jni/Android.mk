@@ -150,7 +150,7 @@ LOCAL_SRC_FILES := \
 		jni/src/client/filecache.cpp              \
 		jni/src/filesys.cpp                       \
 		jni/src/client/fontengine.cpp             \
-		jni/src/client/game.cpp                   \
+		jni/src/client/game/game.cpp              \
 		jni/src/genericobject.cpp                 \
 		jni/src/gettext.cpp                       \
 		jni/src/gui/guiChatConsole.cpp            \

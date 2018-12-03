@@ -25,7 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "gui/profilergraph.h"
 #include "server.h"
 
-#include "client/game/GameOnDemandSoundFetcher.h"
+#include "client/game/game_on_demand_sound_fetcher.h"
 
 class ChatBackend;
 class ClientActiveObject;
