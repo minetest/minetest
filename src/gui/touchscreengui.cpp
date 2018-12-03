@@ -22,12 +22,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "irrlichttypes.h"
 #include "irr_v2d.h"
 #include "log.h"
-#include "keycode.h"
+#include "client/keycode.h"
 #include "settings.h"
 #include "gettime.h"
 #include "util/numeric.h"
 #include "porting.h"
-#include "guiscalingfilter.h"
+#include "client/guiscalingfilter.h"
 
 #include <iostream>
 #include <algorithm>
