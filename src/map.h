@@ -63,8 +63,7 @@ enum MapEditEventType{
 	MEET_REMOVENODE,
 	// Node swapped (changed without metadata change)
 	MEET_SWAPNODE,
-	// Node metadata of block changed (not knowing which node exactly)
-	// p stores block coordinate
+	// Node metadata changed
 	MEET_BLOCK_NODE_METADATA_CHANGED,
 	// Anything else (modified_blocks are set unsent)
 	MEET_OTHER
@@ -76,6 +75,7 @@ struct MapEditEvent
 	v3s16 p;
 	MapNode n = CONTENT_AIR;
 	std::set<v3s16> modified_blocks;
+	bool is_private_change = false;
 
 	MapEditEvent() = default;
 
@@ -86,6 +86,7 @@ struct MapEditEvent
 		event->p = p;
 		event->n = n;
 		event->modified_blocks = modified_blocks;
+		event->is_private_change = is_private_change;
 		return event;
 	}
 

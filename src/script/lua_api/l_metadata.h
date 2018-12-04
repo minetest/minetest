@@ -37,7 +37,7 @@ public:
 protected:
 	static MetaDataRef *checkobject(lua_State *L, int narg);
 
-	virtual void reportMetadataChange() {}
+	virtual void reportMetadataChange(const std::string *name = nullptr) {}
 	virtual Metadata *getmeta(bool auto_create) = 0;
 	virtual void clearMeta() = 0;
 
