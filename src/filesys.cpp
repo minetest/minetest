@@ -309,7 +309,7 @@ bool RecursiveDelete(const std::string &path)
 		strcpy(argv_data[0], "/bin/rm");
 #endif
 		strcpy(argv_data[1], "-rf");
-		strncpy(argv_data[2], path.c_str(), 10000);
+		strncpy(argv_data[2], path.c_str(), sizeof(argv_data[2]) - 1);
 		char *argv[4];
 		argv[0] = argv_data[0];
 		argv[1] = argv_data[1];
