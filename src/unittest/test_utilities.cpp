@@ -171,8 +171,8 @@ void TestUtilities::testWrapDegrees_0_360_v3f()
 void TestUtilities::testLowercase()
 {
 	UASSERT(lowercase("Foo bAR") == "foo bar");
-    UASSERT(lowercase("eeeeeeaaaaaaaaaaaààààà") == "eeeeeeaaaaaaaaaaaààààà");
-    UASSERT(lowercase("MINETEST-powa") == "minetest-powa");
+	UASSERT(lowercase("eeeeeeaaaaaaaaaaaààààà") == "eeeeeeaaaaaaaaaaaààààà");
+	UASSERT(lowercase("MINETEST-powa") == "minetest-powa");
 }
 
 
