@@ -46,7 +46,7 @@ void ItemStackMetaRef::clearMeta()
 	istack->metadata.clear();
 }
 
-void ItemStackMetaRef::reportMetadataChange()
+void ItemStackMetaRef::reportMetadataChange(const std::string *name)
 {
 	// TODO
 }

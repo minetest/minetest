@@ -609,7 +609,9 @@ void Server::handleCommand_InventoryAction(NetworkPacket* pkt)
 		ma->to_inv.applyCurrentPlayer(player->getName());
 
 		setInventoryModified(ma->from_inv, false);
-		setInventoryModified(ma->to_inv, false);
+		if (ma->from_inv != ma->to_inv) {
+			setInventoryModified(ma->to_inv, false);
+		}
 
 		bool from_inv_is_current_player =
 			(ma->from_inv.type == InventoryLocation::PLAYER) &&

@@ -113,7 +113,7 @@ const ToClientCommandHandler toClientCommandTable[TOCLIENT_NUM_MSG_TYPES] =
 	{ "TOCLIENT_UPDATE_PLAYER_LIST",       TOCLIENT_STATE_CONNECTED, &Client::handleCommand_UpdatePlayerList }, // 0x56
 	{ "TOCLIENT_MODCHANNEL_MSG",           TOCLIENT_STATE_CONNECTED, &Client::handleCommand_ModChannelMsg }, // 0x57
 	{ "TOCLIENT_MODCHANNEL_SIGNAL",        TOCLIENT_STATE_CONNECTED, &Client::handleCommand_ModChannelSignal }, // 0x58
-	null_command_handler,
+	{ "TOCLIENT_NODEMETA_CHANGED",         TOCLIENT_STATE_CONNECTED, &Client::handleCommand_NodemetaChanged }, // 0x59
 	null_command_handler,
 	null_command_handler,
 	null_command_handler,
