@@ -36,7 +36,7 @@ void ActiveObjectMgr::clear(bool force)
 
 void ActiveObjectMgr::step(float dtime, std::function<void(ClientActiveObject *)> &f)
 {
-	g_profiler->avg("CAOMgr: num of objects", m_active_objects.size());
+	g_profiler->avg("Client::ActiveObjectMgr: num of objects", m_active_objects.size());
 	for (auto &ao_it : m_active_objects) {
 		f(ao_it.second);
 	}
@@ -55,6 +55,7 @@ bool ActiveObjectMgr::registerObject(ClientActiveObject *obj)
 		}
 		obj->setId(new_id);
 	}
+
 	if (!isFreeId(obj->getId())) {
 		infostream << "Client::ActiveObjectMgr::registerObject(): "
 				  << "id is not free (" << obj->getId() << ")" << std::endl;

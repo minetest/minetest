@@ -42,13 +42,14 @@ public:
 		return (n != m_active_objects.end() ? n->second : NULL);
 	}
 
+protected:
 	u16 getFreeId() const
 	{
 		// try to reuse id's as late as possible
-		static u16 last_used_id = 0;
+		static thread_local u16 last_used_id = 0;
 		u16 startid = last_used_id;
 		for(;;) {
-			last_used_id ++;
+			last_used_id++;
 			if (isFreeId(last_used_id))
 				return last_used_id;
 
@@ -62,7 +63,7 @@ public:
 		return id != 0 && m_active_objects.find(id) == m_active_objects.end();
 
 	}
-protected:
+
 	std::unordered_map<u16, T *> m_active_objects;
 };
 
