@@ -152,7 +152,7 @@ private:
 	ITextureSource *m_texturesource;
 	Client *m_client;
 	ClientScripting *m_script = nullptr;
-	mt::client::ActiveObjectMgr m_ao_manager;
+	client::ActiveObjectMgr m_ao_manager;
 	std::vector<ClientSimpleObject*> m_simple_objects;
 	std::queue<ClientEnvEvent> m_client_event_queue;
 	IntervalLimiter m_active_object_light_update_interval;

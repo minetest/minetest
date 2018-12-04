@@ -21,8 +21,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "profiler.h"
 #include "activeobjectmgr.h"
 
-namespace mt
-{
 namespace client
 {
 
@@ -34,7 +32,7 @@ void ActiveObjectMgr::clear(bool force)
 	}
 }
 
-void ActiveObjectMgr::step(float dtime, std::function<void(ClientActiveObject *)> &f)
+void ActiveObjectMgr::step(float dtime, const std::function<void(ClientActiveObject *)> &f)
 {
 	g_profiler->avg("Client::ActiveObjectMgr: num of objects", m_active_objects.size());
 	for (auto &ao_it : m_active_objects) {
@@ -100,5 +98,4 @@ void ActiveObjectMgr::getActiveObjects(v3f origin, f32 max_d,
 	}
 }
 
-}
 }

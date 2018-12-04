@@ -23,15 +23,17 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <client/clientobject.h>
 #include "irrlichttypes.h"
 
-namespace mt {
+class TestActiveObjectMgr;
 
 template<typename T>
 class ActiveObjectMgr {
 public:
+
+
 	ActiveObjectMgr() = default;
 	~ActiveObjectMgr() = default;
 
-	virtual void step(float dtime, std::function<void(T *)> &f) = 0;
+	virtual void step(float dtime, const std::function<void(T *)> &f) = 0;
 	virtual void clear(bool force) = 0;
 	virtual bool registerObject(T *obj) = 0;
 	virtual void removeObject(u16 id) = 0;
@@ -39,7 +41,7 @@ public:
 	T * getActiveObject(u16 id)
 	{
 		typename std::unordered_map<u16, T *>::const_iterator n = m_active_objects.find(id);
-		return (n != m_active_objects.end() ? n->second : NULL);
+		return (n != m_active_objects.end() ? n->second : nullptr);
 	}
 
 protected:
@@ -64,5 +66,3 @@ protected:
 
 	std::unordered_map<u16, T *> m_active_objects;
 };
-
-}

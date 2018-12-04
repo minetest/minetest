@@ -281,9 +281,7 @@ void ClientEnvironment::step(float dtime)
 		}
 	};
 
-	// hold the callback state
-	std::function<void(ClientActiveObject *)> cb = std::ref(cb_state);
-	m_ao_manager.step(dtime, cb);
+	m_ao_manager.step(dtime, cb_state);
 
 	/*
 		Step and handle simple objects

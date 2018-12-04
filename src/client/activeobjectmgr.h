@@ -20,25 +20,24 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #pragma once
 
 #include <functional>
+#include <vector>
 #include "../activeobjectmgr.h"
 #include "clientobject.h"
 
-namespace mt
-{
 namespace client
 {
-class ActiveObjectMgr : public  mt::ActiveObjectMgr<ClientActiveObject>
+class ActiveObjectMgr : public ::ActiveObjectMgr<ClientActiveObject>
 {
+	friend class ::TestActiveObjectMgr;
 public:
 	ActiveObjectMgr() = default;
 	~ActiveObjectMgr() = default;
 
 	void clear(bool force) override;
-	void step(float dtime, std::function<void(ClientActiveObject *)> &f) override;
+	void step(float dtime, const std::function<void(ClientActiveObject *)> &f) override;
 	bool registerObject(ClientActiveObject *obj) override;
 	void removeObject(u16 id) override;
 
 	void getActiveObjects(v3f origin, f32 max_d, std::vector<DistanceSortedActiveObject> &dest);
 };
-}
 }
