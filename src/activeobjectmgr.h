@@ -48,14 +48,12 @@ protected:
 		// try to reuse id's as late as possible
 		static thread_local u16 last_used_id = 0;
 		u16 startid = last_used_id;
-		for(;;) {
-			last_used_id++;
-			if (isFreeId(last_used_id))
-				return last_used_id;
-
+		while (!isFreeId(++last_used_id)) {
 			if (last_used_id == startid)
 				return 0;
 		}
+
+		return last_used_id;
 	}
 
 	bool isFreeId(const u16 id) const
