@@ -72,6 +72,48 @@ task cleanAssets(type: Delete) {
 	delete 'src/main/assets'
 }
 
+task copyAssets {
+	dependsOn 'cleanAssets'
+	mkdir "src/main/assets"
+
+	def mtAssetsFolder = "src/main/assets/Minetest"
+	def projRoot = "../.."
+	def gameToCopy = "minetest_game"
+
+	doLast {
+		mkdir "${mtAssetsFolder}"
+		mkdir "${mtAssetsFolder}/client"
+		mkdir "${mtAssetsFolder}/fonts"
+		mkdir "${mtAssetsFolder}/games"
+		mkdir "${mtAssetsFolder}/media"
+
+		copy {
+			from "${projRoot}/minetest.conf.example", "${projRoot}/README.md" into mtAssetsFolder
+		}
+		copy {
+			from "${projRoot}/doc/lgpl-2.1.txt" into "${mtAssetsFolder}/LICENSE.txt"
+		}
+		copy {
+			from "${projRoot}/builtin" into "${mtAssetsFolder}/builtin"
+		}
+		copy {
+			from "${projRoot}/client/shaders" into "${mtAssetsFolder}/client/shaders"
+		}
+		copy {
+			from "${projRoot}/fonts" include "*.ttf" into "${mtAssetsFolder}/fonts"
+		}
+		copy {
+			from "${projRoot}/games/${gameToCopy}" into "${mtAssetsFolder}/games/${gameToCopy}"
+		}
+		copy {
+			from "${projRoot}/po" into "${mtAssetsFolder}/po"
+		}
+		copy {
+			from "${projRoot}/textures" into "${mtAssetsFolder}/textures"
+		}
+	}
+}
+
 task cleanIconv(type: Delete) {
 	delete 'deps/libiconv'
 }
@@ -118,8 +160,8 @@ task cleanGMP(type: Delete) {
 }
 
 task cleanAll(type: Delete, dependsOn: [clean, cleanAssets, cleanIconv,
-										cleanFreetype, cleanIrrlicht, cleanLevelDB, cleanSQLite3, cleanCURL,
-										cleanOpenSSL, cleanOpenAL, cleanOgg, cleanGMP]) {
+		cleanFreetype, cleanIrrlicht, cleanLevelDB, cleanSQLite3, cleanCURL,
+		cleanOpenSSL, cleanOpenAL, cleanOgg, cleanGMP]) {
 	delete 'deps'
 	delete 'gen'
 	delete 'libs'
