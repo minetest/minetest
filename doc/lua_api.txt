@@ -859,8 +859,8 @@ one player using `to_player = name,`
 Registered definitions
 ======================
 
-Anything added using certain `minetest.register_*` functions gets added to
-the global `minetest.registered_*` tables.
+Anything added using certain [Registration functions] gets added to one or more
+of the global [Registered definition tables].
 
 * `minetest.register_entity(name, entity definition)`
     * added to `minetest.registered_entities[name]`
@@ -4709,6 +4709,8 @@ Global objects
 Global tables
 -------------
 
+### Registered definition tables
+
 * `minetest.registered_items`
     * Map of registered items, indexed by name
 * `minetest.registered_nodes`
@@ -4723,14 +4725,27 @@ Global tables
     * Map of object references, indexed by active object id
 * `minetest.luaentities`
     * Map of Lua entities, indexed by active object id
+* `minetest.registered_abms`
+    * List of ABM definitions
+* `minetest.registered_lbms`
+    * List of LBM definitions
+* `minetest.registered_aliases`
+    * Map of registered aliases, indexed by name
 * `minetest.registered_chatcommands`
     * Map of registered chat command definitions, indexed by name
+* `minetest.registered_privileges`
+    * Map of registered privilege definitions, indexed by name
 * `minetest.registered_ores`
     * List of registered ore definitions.
 * `minetest.registered_biomes`
     * List of registered biome definitions.
 * `minetest.registered_decorations`
     * List of registered decoration definitions.
+
+### Registered callback tables
+
+All callbacks registered with [Global callback registration functions] are added
+to corresponding `minetest.registered_*` tables.
 
 
 
