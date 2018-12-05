@@ -20,7 +20,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #pragma once
 
 #include <unordered_map>
-#include <client/clientobject.h>
 #include "irrlichttypes.h"
 
 class TestActiveObjectMgr;

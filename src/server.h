@@ -531,7 +531,7 @@ private:
 	IntervalLimiter m_map_timer_and_unload_interval;
 
 	// Environment
-	ServerEnvironment *m_env = nullptr;z
+	ServerEnvironment *m_env = nullptr;
 
 	// server connection
 	std::shared_ptr<con::Connection> m_con;
