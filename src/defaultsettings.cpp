@@ -43,7 +43,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("meshgen_block_cache_size", "20");
 	settings->setDefault("enable_vbo", "true");
 	settings->setDefault("free_move", "false");
-	settings->setDefault("pitch_fly", "false");
+	settings->setDefault("pitch_move", "false");
 	settings->setDefault("fast_move", "false");
 	settings->setDefault("noclip", "false");
 	settings->setDefault("screenshot_path", ".");
@@ -81,7 +81,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("keymap_console", "KEY_F10");
 	settings->setDefault("keymap_rangeselect", "KEY_KEY_R");
 	settings->setDefault("keymap_freemove", "KEY_KEY_K");
-	settings->setDefault("keymap_pitchfly", "KEY_KEY_L");
+	settings->setDefault("keymap_pitchmove", "KEY_KEY_L");
 	settings->setDefault("keymap_fastmove", "KEY_KEY_J");
 	settings->setDefault("keymap_noclip", "KEY_KEY_H");
 	settings->setDefault("keymap_hotbar_next", "KEY_KEY_N");
