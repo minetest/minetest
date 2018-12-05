@@ -3550,6 +3550,32 @@ Call these functions only at load time!
     * clears all decorations currently registered
 * `minetest.clear_registered_schematics()`
     * clears all schematics currently registered
+* `minetest.register_chatcommand(cmd, chatcommand definition)`
+    * Adds definition to `minetest.registered_chatcommands`
+* `minetest.override_chatcommand(name, redefinition)`
+    * Overrides fields of a chatcommand registered with `register_chatcommand`.
+* `minetest.unregister_chatcommand(name)`
+    * Unregisters a chatcommands registered with `register_chatcommand`.
+* `minetest.register_privilege(name, definition)`
+    * `definition`: `"description text"`
+    * `definition`:
+      `{description = "description text", give_to_singleplayer = boolean}`
+      the default of `give_to_singleplayer` is true.
+    * To allow players with `basic_privs` to grant, see `basic_privs`
+      minetest.conf setting.
+    * `on_grant(name, granter_name)`: Called when given to player `name` by
+      `granter_name`.
+      `granter_name` will be nil if the priv was granted by a mod.
+    * `on_revoke(name, revoker_name)`: Called when taken from player `name` by
+      `revoker_name`.
+      `revoker_name` will be nil if the priv was revoked by a mod
+    * Note that the above two callbacks will be called twice if a player is
+      responsible, once with the player name, and then with a nil player name.
+    * Return true in the above callbacks to stop register_on_priv_grant or
+      revoke being called.
+* `minetest.register_authentication_handler(authentication handler definition)`
+    * Registers an auth handler that overrides the builtin one.
+    * This function can be called by a single mod once only.
 
 Global callback registration functions
 --------------------------------------
@@ -3705,36 +3731,6 @@ Call these functions only at load time!
     * Called when an incoming mod channel message is received
     * You should have joined some channels to receive events.
     * If message comes from a server mod, `sender` field is an empty string.
-
-Other registration functions
-----------------------------
-
-* `minetest.register_chatcommand(cmd, chatcommand definition)`
-    * Adds definition to `minetest.registered_chatcommands`
-* `minetest.override_chatcommand(name, redefinition)`
-    * Overrides fields of a chatcommand registered with `register_chatcommand`.
-* `minetest.unregister_chatcommand(name)`
-    * Unregisters a chatcommands registered with `register_chatcommand`.
-* `minetest.register_privilege(name, definition)`
-    * `definition`: `"description text"`
-    * `definition`:
-      `{description = "description text", give_to_singleplayer = boolean}`
-      the default of `give_to_singleplayer` is true.
-    * To allow players with `basic_privs` to grant, see `basic_privs`
-      minetest.conf setting.
-    * `on_grant(name, granter_name)`: Called when given to player `name` by
-      `granter_name`.
-      `granter_name` will be nil if the priv was granted by a mod.
-    * `on_revoke(name, revoker_name)`: Called when taken from player `name` by
-      `revoker_name`.
-      `revoker_name` will be nil if the priv was revoked by a mod
-    * Note that the above two callbacks will be called twice if a player is
-      responsible, once with the player name, and then with a nil player name.
-    * Return true in the above callbacks to stop register_on_priv_grant or
-      revoke being called.
-* `minetest.register_authentication_handler(authentication handler definition)`
-    * Registers an auth handler that overrides the builtin one
-    * This function can be called by a single mod once only.
 
 Setting-related
 ---------------
