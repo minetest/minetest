@@ -23,6 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "environment.h"
 #include "mapnode.h"
 #include "settings.h"
+#include "server/activeobjectmgr.h"
 #include "util/numeric.h"
 #include <set>
 
@@ -438,6 +439,8 @@ private:
 	ServerScripting* m_script;
 	// Server definition
 	Server *m_server;
+	// Active Object Manager
+	server::ActiveObjectMgr m_ao_mgr;
 	// World path
 	const std::string m_path_world;
 	// Active object list
