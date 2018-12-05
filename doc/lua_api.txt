@@ -862,71 +862,16 @@ Registered definitions
 Anything added using certain [Registration functions] gets added to one or more
 of the global [Registered definition tables].
 
-* `minetest.register_entity(name, entity definition)`
-    * added to `minetest.registered_entities[name]`
-
-* `minetest.register_node(name, node definition)`
-    * added to `minetest.registered_items[name]`
-    * added to `minetest.registered_nodes[name]`
-
-* `minetest.register_tool(name, item definition)`
-    * added to `minetest.registered_items[name]`
-
-* `minetest.register_craftitem(name, item definition)`
-    * added to `minetest.registered_items[name]`
-
-* `minetest.unregister_item(name)`
-    * Unregisters the item name from engine, and deletes the entry with key
-      `name` from `minetest.registered_items` and from the associated item
-      table according to its nature: `minetest.registered_nodes[]` etc
-
-* `minetest.register_biome(biome definition)`
-    * returns an integer uniquely identifying the registered biome
-    * added to `minetest.registered_biome` with the key of `biome.name`
-    * if `biome.name` is nil, the key is the returned ID
-
-* `minetest.unregister_biome(name)`
-    * Unregisters the biome name from engine, and deletes the entry with key
-      `name` from `minetest.registered_biome`
-
-* `minetest.register_ore(ore definition)`
-    * returns an integer uniquely identifying the registered ore
-    * added to `minetest.registered_ores` with the key of `ore.name`
-    * if `ore.name` is nil, the key is the returned ID
-
-* `minetest.register_decoration(decoration definition)`
-    * returns an integer uniquely identifying the registered decoration
-    * added to `minetest.registered_decorations` with the key of
-      `decoration.name`.
-    * if `decoration.name` is nil, the key is the returned ID
-
-* `minetest.register_schematic(schematic definition)`
-    * returns an integer uniquely identifying the registered schematic
-    * added to `minetest.registered_schematic` with the key of `schematic.name`
-    * if `schematic.name` is nil, the key is the returned ID
-    * if the schematic is loaded from a file, schematic.name is set to the
-      filename.
-    * if the function is called when loading the mod, and schematic.name is a
-      relative path, then the current mod path will be prepended to the
-      schematic filename.
-
-* `minetest.clear_registered_biomes()`
-    * clears all biomes currently registered
-
-* `minetest.clear_registered_ores()`
-    * clears all ores currently registered
-
-* `minetest.clear_registered_decorations()`
-    * clears all decorations currently registered
-
-* `minetest.clear_registered_schematics()`
-    * clears all schematics currently registered
-
 Note that in some cases you will stumble upon things that are not contained
 in these tables (e.g. when a mod has been removed). Always check for
 existence before trying to access the fields.
 
-Example: If you want to check the drawtype of a node, you could do:
+Example:
+
+All nodes register with `minetest.register_node` get added to the table
+`minetest.registered_nodes`.
+
+If you want to check the drawtype of a node, you could do:
 
     local function get_nodedef_field(nodename, fieldname)
         if not minetest.registered_nodes[nodename] then
@@ -3537,12 +3482,20 @@ Registration functions
 Call these functions only at load time!
 
 * `minetest.register_entity(name, entity definition)`
+    * added to `minetest.registered_entities[name]`
 * `minetest.register_abm(abm definition)`
 * `minetest.register_lbm(lbm definition)`
 * `minetest.register_node(name, node definition)`
+    * added to `minetest.registered_items[name]`
+    * added to `minetest.registered_nodes[name]`
 * `minetest.register_tool(name, item definition)`
+    * added to `minetest.registered_items[name]`
 * `minetest.register_craftitem(name, item definition)`
+    * added to `minetest.registered_items[name]`
 * `minetest.unregister_item(name)`
+    * Unregisters the item name from engine, and deletes the entry with key
+      `name` from `minetest.registered_items` and from the associated item table
+      according to its nature: `minetest.registered_nodes[]` etc
 * `minetest.register_alias(name, convert_to)`
     * Also use this to set the 'mapgen aliases' needed in a game for the core
     * mapgens. See [Mapgen aliases] section above.
@@ -3560,15 +3513,42 @@ Call these functions only at load time!
       ignored if the recipe contains output. Erasing is then done independently
       from the crafting method.
 * `minetest.register_ore(ore definition)`
+    * returns an integer uniquely identifying the registered ore
+    * added to `minetest.registered_ores` with the key of `ore.name`
+    * if `ore.name` is nil, the key is the returned ID
 * `minetest.register_biome(biome definition)`
+    * returns an integer uniquely identifying the registered biome
+    * added to `minetest.registered_biomes` with the key of `biome.name`
+    * if `biome.name` is nil, the key is the returned ID
+* `minetest.unregister_biome(name)`
+    * Unregisters the biome name from engine, and deletes the entry with key
+      `name` from `minetest.registered_biomes`
 * `minetest.register_decoration(decoration definition)`
+    * returns an integer uniquely identifying the registered decoration
+    * added to `minetest.registered_decorations` with the key of
+      `decoration.name`.
+    * if `decoration.name` is nil, the key is the returned ID
+* `minetest.register_schematic(schematic definition)`
+    * returns an integer uniquely identifying the registered schematic
+    * added to `minetest.registered_schematic` with the key of `schematic.name`
+    * if `schematic.name` is nil, the key is the returned ID
+    * if the schematic is loaded from a file, schematic.name is set to the
+      filename.
+    * if the function is called when loading the mod, and schematic.name is a
+      relative path, then the current mod path will be prepended to the
+      schematic filename.
 * `minetest.override_item(name, redefinition)`
     * Overrides fields of an item registered with register_node/tool/craftitem.
     * Note: Item must already be defined, (opt)depend on the mod defining it.
     * Example: `minetest.override_item("default:mese", {light_source=LIGHT_MAX})`
 * `minetest.clear_registered_ores()`
+    * clears all ores currently registered
 * `minetest.clear_registered_biomes()`
+    * clears all biomes currently registered
 * `minetest.clear_registered_decorations()`
+    * clears all decorations currently registered
+* `minetest.clear_registered_schematics()`
+    * clears all schematics currently registered
 
 Global callback registration functions
 --------------------------------------
