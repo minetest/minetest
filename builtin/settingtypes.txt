@@ -1323,11 +1323,11 @@ profiler_print_interval (Engine profiling data print interval) int 0
 
 #    Name of map generator to be used when creating a new world.
 #    Creating a world in the main menu will override this.
-#    Current stable mapgens: v6, v7 (except floatlands).
-#    'stable' means the terrain shape in an existing world will not
-#    be changed in the future. Note that biomes are defined by games
-#    and may still change.
-mg_name (Mapgen name) enum v7 v5,v6,v7,flat,valleys,fractal,singlenode
+#    Current stable mapgens:
+#    v5, v6, v7 (except floatlands), flat, singlenode.
+#    'stable' means the terrain shape in an existing world will not be changed
+#    in the future. Note that biomes are defined by games and may still change.
+mg_name (Mapgen name) enum v7 v5,v6,v7,valleys,carpathian,fractal,flat,singlenode
 
 #    Water surface level of the world.
 water_level (Water level) int 1
