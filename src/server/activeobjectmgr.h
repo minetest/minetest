@@ -30,12 +30,15 @@ class ActiveObjectMgr : public ::ActiveObjectMgr<ServerActiveObject>
 {
 	friend class ::TestActiveObjectMgr;
 public:
-	ActiveObjectMgr() = default;
-	~ActiveObjectMgr() = default;
 
-	void clear(bool force) override;
+	void clear(const std::function<bool(ServerActiveObject *, u16)> &cb);
 	void step(float dtime, const std::function<void(ServerActiveObject *)> &f) override;
 	bool registerObject(ServerActiveObject *obj) override;
 	void removeObject(u16 id) override;
+
+	void getObjectsInsideRadius(const v3f &pos, float radius, std::vector<u16> &result);
+
+	void getAddedActiveObjectsAroundPlayer(const v3f &player_pos, f32 radius, f32 player_radius,
+			std::set<u16> &current_objects, std::queue<u16> &added_objects);
 };
 }

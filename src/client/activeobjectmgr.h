@@ -30,14 +30,12 @@ class ActiveObjectMgr : public ::ActiveObjectMgr<ClientActiveObject>
 {
 	friend class ::TestActiveObjectMgr;
 public:
-	ActiveObjectMgr() = default;
-	~ActiveObjectMgr() = default;
 
-	void clear(bool force) override;
+	void clear();
 	void step(float dtime, const std::function<void(ClientActiveObject *)> &f) override;
 	bool registerObject(ClientActiveObject *obj) override;
 	void removeObject(u16 id) override;
 
-	void getActiveObjects(v3f origin, f32 max_d, std::vector<DistanceSortedActiveObject> &dest);
+	void getActiveObjects(const v3f &origin, f32 max_d, std::vector<DistanceSortedActiveObject> &dest);
 };
 }

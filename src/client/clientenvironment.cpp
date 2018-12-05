@@ -53,7 +53,7 @@ ClientEnvironment::ClientEnvironment(ClientMap *map,
 
 ClientEnvironment::~ClientEnvironment()
 {
-	m_ao_manager.clear(false);
+	m_ao_manager.clear();
 
 	for (auto &simple_object : m_simple_objects) {
 		delete simple_object;

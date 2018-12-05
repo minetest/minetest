@@ -24,7 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 namespace client
 {
 
-void ActiveObjectMgr::clear(bool force)
+void ActiveObjectMgr::clear()
 {
 	// delete active objects
 	for (auto &active_object: m_active_objects) {
@@ -83,7 +83,7 @@ void ActiveObjectMgr::removeObject(u16 id)
 	delete obj;
 }
 
-void ActiveObjectMgr::getActiveObjects(v3f origin, f32 max_d,
+void ActiveObjectMgr::getActiveObjects(const v3f &origin, f32 max_d,
 		std::vector<DistanceSortedActiveObject> &dest)
 {
 	for (auto &ao_it : m_active_objects) {

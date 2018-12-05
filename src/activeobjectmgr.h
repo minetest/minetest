@@ -28,12 +28,7 @@ template<typename T>
 class ActiveObjectMgr {
 public:
 
-
-	ActiveObjectMgr() = default;
-	~ActiveObjectMgr() = default;
-
 	virtual void step(float dtime, const std::function<void(T *)> &f) = 0;
-	virtual void clear(bool force) = 0;
 	virtual bool registerObject(T *obj) = 0;
 	virtual void removeObject(u16 id) = 0;
 
