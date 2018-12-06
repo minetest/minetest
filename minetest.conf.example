@@ -61,7 +61,8 @@
 #    type: float
 # mouse_sensitivity = 0.2
 
-#    If enabled, "special" key instead of "sneak" key is used for climbing down and descending.
+#    If enabled, "special" key instead of "sneak" key is used for climbing down and
+#    descending.
 #    type: bool
 # aux1_descends = false
 
@@ -69,17 +70,20 @@
 #    type: bool
 # doubletap_jump = false
 
-#    If disabled, "special" key is used to fly fast if both fly and fast mode are enabled.
+#    If disabled, "special" key is used to fly fast if both fly and fast mode are
+#    enabled.
 #    type: bool
 # always_fly_fast = true
 
-#    Automatically jump up single-node obstacles.
-#    type: bool
-# autojump = false
-
-#    The time in seconds it takes between repeated right clicks when holding the right mouse button.
+#    The time in seconds it takes between repeated right clicks when holding the right
+#    mouse button.
 #    type: float
 # repeat_rightclick_time = 0.25
+
+#    Automatically jump up single-node obstacles.
+#    type: bool
+#    type: bool
+# autojump = false
 
 #    Prevent digging and placing from repeating when holding the mouse buttons.
 #    Enable this when you dig or place too often by accident.
@@ -368,27 +372,72 @@
 #    type: key
 # keymap_slot20 =
 
-#    Key for selecting the 21th hotbar slot.
+#    Key for selecting the 21st hotbar slot.
 #    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
 #    type: key
 # keymap_slot21 =
 
-#    Key for selecting the 22th hotbar slot.
+#    Key for selecting the 22nd hotbar slot.
 #    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
 #    type: key
 # keymap_slot22 =
 
-#    Key for selecting the 23th hotbar slot.
+#    Key for selecting the 23rd hotbar slot.
 #    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
 #    type: key
 # keymap_slot23 =
+
+#    Key for selecting the 24th hotbar slot.
+#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    type: key
+# keymap_slot24 =
+
+#    Key for selecting the 25th hotbar slot.
+#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    type: key
+# keymap_slot25 =
+
+#    Key for selecting the 26th hotbar slot.
+#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    type: key
+# keymap_slot26 =
+
+#    Key for selecting the 27th hotbar slot.
+#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    type: key
+# keymap_slot27 =
+
+#    Key for selecting the 28th hotbar slot.
+#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    type: key
+# keymap_slot28 =
+
+#    Key for selecting the 29th hotbar slot.
+#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    type: key
+# keymap_slot29 =
+
+#    Key for selecting the 30th hotbar slot.
+#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    type: key
+# keymap_slot30 =
+
+#    Key for selecting the 31st hotbar slot.
+#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    type: key
+# keymap_slot31 =
+
+#    Key for selecting the 32nd hotbar slot.
+#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    type: key
+# keymap_slot32 =
 
 #    Key for toggling the display of the HUD.
 #    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
 #    type: key
 # keymap_toggle_hud = KEY_F1
 
-#    Key for toggling the display of the chat.
+#    Key for toggling the display of chat.
 #    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
 #    type: key
 # keymap_toggle_chat = KEY_F2
@@ -398,7 +447,7 @@
 #    type: key
 # keymap_console = KEY_F10
 
-#    Key for toggling the display of the fog.
+#    Key for toggling the display of fog.
 #    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
 #    type: key
 # keymap_toggle_force_fog_off = KEY_F3
@@ -503,16 +552,16 @@
 
 #    Filtered textures can blend RGB values with fully-transparent neighbors,
 #    which PNG optimizers usually discard, sometimes resulting in a dark or
-#    light edge to transparent textures.  Apply this filter to clean that up
+#    light edge to transparent textures. Apply this filter to clean that up
 #    at texture load time.
 #    type: bool
 # texture_clean_transparent = false
 
 #    When using bilinear/trilinear/anisotropic filters, low-resolution textures
 #    can be blurred, so automatically upscale them with nearest-neighbor
-#    interpolation to preserve crisp pixels.  This sets the minimum texture size
+#    interpolation to preserve crisp pixels. This sets the minimum texture size
 #    for the upscaled textures; higher values look sharper, but require more
-#    memory.  Powers of 2 are recommended.  Setting this higher than 1 may not
+#    memory.  Powers of 2 are recommended. Setting this higher than 1 may not
 #    have a visible effect unless bilinear/trilinear/anisotropic filtering is
 #    enabled.
 #    This is also used as the base node texture size for world-aligned
@@ -533,7 +582,8 @@
 
 ### Shaders
 
-#    Shaders allow advanced visual effects and may increase performance on some video cards.
+#    Shaders allow advanced visual effects and may increase performance on some video
+#    cards.
 #    This only works with the OpenGL video backend.
 #    type: bool
 # enable_shaders = true
@@ -640,7 +690,8 @@
 #    type: int
 # pause_fps_max = 20
 
-#    Open the pause menu when the window's focus is lost. Does not pause if a formspec is open.
+#    Open the pause menu when the window's focus is lost. Does not pause if a formspec is
+#    open.
 #    type: bool
 # pause_on_lost_focus = false
 
@@ -715,7 +766,7 @@
 
 #    The rendering back-end for Irrlicht.
 #    A restart is required after changing this.
-#    Note: on Android, stick with OGLES1 if unsure! App may fail to start otherwise.
+#    Note: On Android, stick with OGLES1 if unsure! App may fail to start otherwise.
 #    On other platforms, OpenGL is recommended, and it’s the only driver with
 #    shader support currently.
 #    type: enum values: null, software, burningsvideo, direct3d8, direct3d9, opengl, ogles1, ogles2
@@ -734,7 +785,7 @@
 #    Multiplier for fall bobbing.
 #    For example: 0 for no view bobbing; 1.0 for normal; 2.0 for double.
 #    type: float
-# fall_bobbing_amount = 0.0
+# fall_bobbing_amount = 0.03
 
 #    3D support.
 #    Currently supported:
@@ -781,7 +832,7 @@
 #    type: string
 # selectionbox_color = (0,0,0)
 
-#    Width of the selectionbox's lines around nodes.
+#    Width of the selection box lines around nodes.
 #    type: int min: 1 max: 5
 # selectionbox_width = 2
 
@@ -876,7 +927,7 @@
 #    a specially-designed texture pack; with this option, the client tries
 #    to determine the scale automatically basing on the texture size.
 #    See also texture_min_size.
-#    Warning: this option is EXPERIMENTAL!
+#    Warning: This option is EXPERIMENTAL!
 #    type: enum values: disable, enable, force
 # autoscale_mode = disable
 
@@ -890,7 +941,7 @@
 #    type: bool
 # menu_clouds = true
 
-#    Scale gui by a user specified value.
+#    Scale GUI by a user specified value.
 #    Use a nearest-neighbor-anti-alias filter to scale the GUI.
 #    This will smooth over some of the rough edges, and blend
 #    pixels when scaling down, at the cost of blurring some
@@ -919,7 +970,7 @@
 #    type: bool
 # tooltip_append_itemname = false
 
-#    Whether freetype fonts are used, requires freetype support to be compiled in.
+#    Whether FreeType fonts are used, requires FreeType support to be compiled in.
 #    type: bool
 # freetype = true
 
@@ -1031,11 +1082,13 @@
 #    type: string
 # serverlist_url = servers.minetest.net
 
-#    File in client/serverlist/ that contains your favorite servers displayed in the Multiplayer Tab.
+#    File in client/serverlist/ that contains your favorite servers displayed in the
+#    Multiplayer Tab.
 #    type: string
 # serverlist_file = favoriteservers.txt
 
-#    Maximum size of the out chat queue. 0 to disable queueing and -1 to make the queue size unlimited
+#    Maximum size of the out chat queue.
+#    0 to disable queueing and -1 to make the queue size unlimited.
 #    type: int
 # max_out_chat_queue_size = 20
 
@@ -1072,9 +1125,9 @@
 
 #    Homepage of server, to be displayed in the serverlist.
 #    type: string
-# server_url = http://minetest.net
+# server_url = https://minetest.net
 
-#    Automaticaly report to the serverlist.
+#    Automatically report to the serverlist.
 #    type: bool
 # server_announce = false
 
@@ -1146,7 +1199,7 @@
 #    type: string
 # motd =
 
-#    Maximum number of players that can connect simultaneously.
+#    Maximum number of players that can be connected simultaneously.
 #    type: int
 # max_users = 15
 
@@ -1241,7 +1294,8 @@
 #    type: int
 # active_object_send_range_blocks = 3
 
-#    How large area of blocks are subject to the active block stuff, stated in mapblocks (16 nodes).
+#    The radius of the volume of blocks around every player that is subject to the
+#    active block stuff, stated in mapblocks (16 nodes).
 #    In active blocks objects are loaded and ABMs run.
 #    This is also the minimum range in which active objects (mobs) are maintained.
 #    This should be configured together with active_object_range.
@@ -1261,7 +1315,8 @@
 # time_send_interval = 5
 
 #    Controls length of day/night cycle.
-#    Examples: 72 = 20min, 360 = 4min, 1 = 24hour, 0 = day/night/whatever stays unchanged.
+#    Examples:
+#    72 = 20min, 360 = 4min, 1 = 24hour, 0 = day/night/whatever stays unchanged.
 #    type: int
 # time_speed = 72
 
@@ -1347,19 +1402,20 @@
 #    type: int
 # max_objects_per_block = 64
 
-#    See http://www.sqlite.org/pragma.html#pragma_synchronous
+#    See https://www.sqlite.org/pragma.html#pragma_synchronous
 #    type: enum values: 0, 1, 2
 # sqlite_synchronous = 2
 
-#    Length of a server tick and the interval at which objects are generally updated over network.
+#    Length of a server tick and the interval at which objects are generally updated over
+#    network.
 #    type: float
 # dedicated_server_step = 0.09
 
-#    Time in between active block management cycles
+#    Length of time between active block management cycles
 #    type: float
 # active_block_mgmt_interval = 2.0
 
-#    Length of time between ABM execution cycles
+#    Length of time between Active Block Modifier (ABM) execution cycles
 #    type: float
 # abm_interval = 1.0
 
@@ -1386,11 +1442,14 @@
 #    type: float
 # liquid_update = 1.0
 
-#    At this distance the server will aggressively optimize which blocks are sent to clients.
-#    Small values potentially improve performance a lot, at the expense of visible rendering glitches.
-#    (some blocks will not be rendered under water and in caves, as well as sometimes on land)
-#    Setting this to a value greater than max_block_send_distance disables this optimization.
-#    Stated in mapblocks (16 nodes)
+#    At this distance the server will aggressively optimize which blocks are sent to
+#    clients.
+#    Small values potentially improve performance a lot, at the expense of visible
+#    rendering glitches (some blocks will not be rendered under water and in caves,
+#    as well as sometimes on land).
+#    Setting this to a value greater than max_block_send_distance disables this
+#    optimization.
+#    Stated in mapblocks (16 nodes).
 #    type: int min: 2
 # block_send_optimize_distance = 4
 
@@ -1407,7 +1466,8 @@
 #    CHAT_MESSAGES: 2 (disable send_chat_message call client-side)
 #    READ_ITEMDEFS: 4 (disable get_item_def call client-side)
 #    READ_NODEDEFS: 8 (disable get_node_def call client-side)
-#    LOOKUP_NODES_LIMIT: 16 (limits get_node call client-side to csm_restriction_noderange)
+#    LOOKUP_NODES_LIMIT: 16 (limits get_node call client-side to
+#    csm_restriction_noderange)
 #    type: int
 # csm_restriction_flags = 30
 
@@ -1543,7 +1603,8 @@
 
 #    Changes the main menu UI:
 #    -   Full:  Multple singleplayer worlds, game choice, texture pack chooser, etc.
-#    -   Simple: One singleplayer world, no game or texture pack choosers. May be necessary for smaller screens.
+#    -   Simple: One singleplayer world, no game or texture pack choosers. May be
+#    necessary for smaller screens.
 #    -   Auto: Simple on Android, full on everything else.
 #    type: enum values: auto, full, simple
 # main_menu_style = auto
@@ -1552,13 +1613,8 @@
 #    type: string
 # main_menu_script =
 
-#    type: int
-# main_menu_game_mgr = 0
-
-#    type: int
-# main_menu_mod_mgr = 1
-
-#    Print the engine's profiling data in regular intervals (in seconds). 0 = disable. Useful for developers.
+#    Print the engine's profiling data in regular intervals (in seconds).
+#    0 = disable. Useful for developers.
 #    type: int
 # profiler_print_interval = 0
 
@@ -1568,7 +1624,11 @@
 
 #    Name of map generator to be used when creating a new world.
 #    Creating a world in the main menu will override this.
-#    type: enum values: v5, v6, v7, flat, valleys, fractal, singlenode
+#    Current stable mapgens:
+#    v5, v6, v7 (except floatlands), flat, singlenode.
+#    'stable' means the terrain shape in an existing world will not be changed
+#    in the future. Note that biomes are defined by games and may still change.
+#    type: enum values: v5, v6, v7, valleys, carpathian, fractal, flat, singlenode
 # mg_name = v7
 
 #    Water surface level of the world.
@@ -1609,7 +1669,7 @@
 #    octaves     = 3,
 #    persistence = 0.5,
 #    lacunarity  = 2.0,
-#    flags       = "eased"
+#    flags       = eased
 # }
 
 #    Small-scale temperature variation for blending biomes on borders.
@@ -1622,7 +1682,7 @@
 #    octaves     = 2,
 #    persistence = 1.0,
 #    lacunarity  = 2.0,
-#    flags       = "eased"
+#    flags       = eased
 # }
 
 #    Humidity variation for biomes.
@@ -1635,7 +1695,7 @@
 #    octaves     = 3,
 #    persistence = 0.5,
 #    lacunarity  = 2.0,
-#    flags       = "eased"
+#    flags       = eased
 # }
 
 #    Small-scale humidity variation for blending biomes on borders.
@@ -1648,7 +1708,7 @@
 #    octaves     = 2,
 #    persistence = 1.0,
 #    lacunarity  = 2.0,
-#    flags       = "eased"
+#    flags       = eased
 # }
 
 ## Mapgen V5
@@ -1703,7 +1763,7 @@
 #    octaves     = 4,
 #    persistence = 0.7,
 #    lacunarity  = 2.0,
-#    flags       = "eased"
+#    flags       = eased
 # }
 
 #    Variation of terrain vertical scale.
@@ -1717,7 +1777,7 @@
 #    octaves     = 3,
 #    persistence = 0.45,
 #    lacunarity  = 2.0,
-#    flags       = "eased"
+#    flags       = eased
 # }
 
 #    Y-level of average terrain surface.
@@ -1730,10 +1790,10 @@
 #    octaves     = 4,
 #    persistence = 0.5,
 #    lacunarity  = 2.0,
-#    flags       = "eased"
+#    flags       = eased
 # }
 
-#    First of 2 3D noises that together define tunnels.
+#    First of two 3D noises that together define tunnels.
 #    type: noise_params_3d
 # mgv5_np_cave1 = {
 #    offset      = 0,
@@ -1743,10 +1803,10 @@
 #    octaves     = 3,
 #    persistence = 0.5,
 #    lacunarity  = 2.0,
-#    flags       = ""
+#    flags       = 
 # }
 
-#    Second of 2 3D noises that together define tunnels.
+#    Second of two 3D noises that together define tunnels.
 #    type: noise_params_3d
 # mgv5_np_cave2 = {
 #    offset      = 0,
@@ -1756,7 +1816,7 @@
 #    octaves     = 3,
 #    persistence = 0.5,
 #    lacunarity  = 2.0,
-#    flags       = ""
+#    flags       = 
 # }
 
 #    3D noise defining giant caverns.
@@ -1769,7 +1829,7 @@
 #    octaves     = 5,
 #    persistence = 0.63,
 #    lacunarity  = 2.0,
-#    flags       = ""
+#    flags       = 
 # }
 
 #    3D noise defining terrain.
@@ -1782,7 +1842,7 @@
 #    octaves     = 4,
 #    persistence = 0.55,
 #    lacunarity  = 2.0,
-#    flags       = "eased"
+#    flags       = eased
 # }
 
 ## Mapgen V6
@@ -1815,7 +1875,7 @@
 
 ### Noises
 
-#    Y-level of lower terrain and lakebeds.
+#    Y-level of lower terrain and seabed.
 #    type: noise_params_2d
 # mgv6_np_terrain_base = {
 #    offset      = -4,
@@ -1825,10 +1885,10 @@
 #    octaves     = 5,
 #    persistence = 0.6,
 #    lacunarity  = 2.0,
-#    flags       = "eased"
+#    flags       = eased
 # }
 
-#    Y-level of higher (cliff-top) terrain.
+#    Y-level of higher terrain that creates cliffs.
 #    type: noise_params_2d
 # mgv6_np_terrain_higher = {
 #    offset      = 20,
@@ -1838,7 +1898,7 @@
 #    octaves     = 5,
 #    persistence = 0.6,
 #    lacunarity  = 2.0,
-#    flags       = "eased"
+#    flags       = eased
 # }
 
 #    Varies steepness of cliffs.
@@ -1851,10 +1911,10 @@
 #    octaves     = 5,
 #    persistence = 0.7,
 #    lacunarity  = 2.0,
-#    flags       = "eased"
+#    flags       = eased
 # }
 
-#    Defines areas of 'terrain_higher' (cliff-top terrain).
+#    Defines distribution of higher terrain.
 #    type: noise_params_2d
 # mgv6_np_height_select = {
 #    offset      = 0.5,
@@ -1864,7 +1924,7 @@
 #    octaves     = 5,
 #    persistence = 0.69,
 #    lacunarity  = 2.0,
-#    flags       = "eased"
+#    flags       = eased
 # }
 
 #    Varies depth of biome surface nodes.
@@ -1877,7 +1937,7 @@
 #    octaves     = 3,
 #    persistence = 0.55,
 #    lacunarity  = 2.0,
-#    flags       = "eased"
+#    flags       = eased
 # }
 
 #    Defines areas with sandy beaches.
@@ -1890,7 +1950,7 @@
 #    octaves     = 3,
 #    persistence = 0.50,
 #    lacunarity  = 2.0,
-#    flags       = "eased"
+#    flags       = eased
 # }
 
 #    Temperature variation for biomes.
@@ -1903,7 +1963,7 @@
 #    octaves     = 3,
 #    persistence = 0.50,
 #    lacunarity  = 2.0,
-#    flags       = "eased"
+#    flags       = eased
 # }
 
 #    Variation of number of caves.
@@ -1916,7 +1976,7 @@
 #    octaves     = 3,
 #    persistence = 0.50,
 #    lacunarity  = 2.0,
-#    flags       = "eased"
+#    flags       = eased
 # }
 
 #    Humidity variation for biomes.
@@ -1929,7 +1989,7 @@
 #    octaves     = 3,
 #    persistence = 0.50,
 #    lacunarity  = 2.0,
-#    flags       = "eased"
+#    flags       = eased
 # }
 
 #    Defines tree areas and tree density.
@@ -1942,7 +2002,7 @@
 #    octaves     = 4,
 #    persistence = 0.66,
 #    lacunarity  = 2.0,
-#    flags       = "eased"
+#    flags       = eased
 # }
 
 #    Defines areas where trees have apples.
@@ -1955,7 +2015,7 @@
 #    octaves     = 3,
 #    persistence = 0.45,
 #    lacunarity  = 2.0,
-#    flags       = "eased"
+#    flags       = eased
 # }
 
 ## Mapgen V7
@@ -2026,7 +2086,7 @@
 
 ### Noises
 
-#    Y-level of higher (cliff-top) terrain.
+#    Y-level of higher terrain that creates cliffs.
 #    type: noise_params_2d
 # mgv7_np_terrain_base = {
 #    offset      = 4,
@@ -2036,10 +2096,10 @@
 #    octaves     = 5,
 #    persistence = 0.6,
 #    lacunarity  = 2.0,
-#    flags       = "eased"
+#    flags       = eased
 # }
 
-#    Y-level of lower terrain and lakebeds.
+#    Y-level of lower terrain and seabed.
 #    type: noise_params_2d
 # mgv7_np_terrain_alt = {
 #    offset      = 4,
@@ -2049,7 +2109,7 @@
 #    octaves     = 5,
 #    persistence = 0.6,
 #    lacunarity  = 2.0,
-#    flags       = "eased"
+#    flags       = eased
 # }
 
 #    Varies roughness of terrain.
@@ -2063,10 +2123,10 @@
 #    octaves     = 3,
 #    persistence = 0.6,
 #    lacunarity  = 2.0,
-#    flags       = "eased"
+#    flags       = eased
 # }
 
-#    Defines areas of higher (cliff-top) terrain and affects steepness of cliffs.
+#    Defines distribution of higher terrain and steepness of cliffs.
 #    type: noise_params_2d
 # mgv7_np_height_select = {
 #    offset      = -8,
@@ -2076,7 +2136,7 @@
 #    octaves     = 6,
 #    persistence = 0.7,
 #    lacunarity  = 2.0,
-#    flags       = "eased"
+#    flags       = eased
 # }
 
 #    Variation of biome filler depth.
@@ -2089,7 +2149,7 @@
 #    octaves     = 3,
 #    persistence = 0.7,
 #    lacunarity  = 2.0,
-#    flags       = "eased"
+#    flags       = eased
 # }
 
 #    Variation of maximum mountain height (in nodes).
@@ -2102,7 +2162,7 @@
 #    octaves     = 3,
 #    persistence = 0.6,
 #    lacunarity  = 2.0,
-#    flags       = "eased"
+#    flags       = eased
 # }
 
 #    Defines large-scale river channel structure.
@@ -2115,7 +2175,7 @@
 #    octaves     = 5,
 #    persistence = 0.6,
 #    lacunarity  = 2.0,
-#    flags       = "eased"
+#    flags       = eased
 # }
 
 #    Defines areas of floatland smooth terrain.
@@ -2129,7 +2189,7 @@
 #    octaves     = 5,
 #    persistence = 0.6,
 #    lacunarity  = 2.0,
-#    flags       = "eased"
+#    flags       = eased
 # }
 
 #    Variation of hill height and lake depth on floatland smooth terrain.
@@ -2142,7 +2202,7 @@
 #    octaves     = 4,
 #    persistence = 0.7,
 #    lacunarity  = 2.0,
-#    flags       = "eased"
+#    flags       = eased
 # }
 
 #    3D noise defining mountain structure and height.
@@ -2156,7 +2216,7 @@
 #    octaves     = 5,
 #    persistence = 0.63,
 #    lacunarity  = 2.0,
-#    flags       = ""
+#    flags       = 
 # }
 
 #    3D noise defining structure of river canyon walls.
@@ -2169,7 +2229,7 @@
 #    octaves     = 4,
 #    persistence = 0.75,
 #    lacunarity  = 2.0,
-#    flags       = ""
+#    flags       = 
 # }
 
 #    3D noise defining giant caverns.
@@ -2182,10 +2242,10 @@
 #    octaves     = 5,
 #    persistence = 0.63,
 #    lacunarity  = 2.0,
-#    flags       = ""
+#    flags       = 
 # }
 
-#    First of 2 3D noises that together define tunnels.
+#    First of two 3D noises that together define tunnels.
 #    type: noise_params_3d
 # mgv7_np_cave1 = {
 #    offset      = 0,
@@ -2195,10 +2255,10 @@
 #    octaves     = 3,
 #    persistence = 0.5,
 #    lacunarity  = 2.0,
-#    flags       = ""
+#    flags       = 
 # }
 
-#    Second of 2 3D noises that together define tunnels.
+#    Second of two 3D noises that together define tunnels.
 #    type: noise_params_3d
 # mgv7_np_cave2 = {
 #    offset      = 0,
@@ -2208,7 +2268,7 @@
 #    octaves     = 3,
 #    persistence = 0.5,
 #    lacunarity  = 2.0,
-#    flags       = ""
+#    flags       = 
 # }
 
 ## Mapgen Carpathian
@@ -2267,7 +2327,7 @@
 #    octaves     = 3,
 #    persistence = 0.7,
 #    lacunarity  = 2.0,
-#    flags       = "eased"
+#    flags       = eased
 # }
 
 #    First of 4 2D noises that together define hill/mountain range height.
@@ -2280,7 +2340,7 @@
 #    octaves     = 5,
 #    persistence = 0.5,
 #    lacunarity  = 2.0,
-#    flags       = "eased"
+#    flags       = eased
 # }
 
 #    Second of 4 2D noises that together define hill/mountain range height.
@@ -2293,7 +2353,7 @@
 #    octaves     = 5,
 #    persistence = 0.5,
 #    lacunarity  = 2.0,
-#    flags       = "eased"
+#    flags       = eased
 # }
 
 #    Third of 4 2D noises that together define hill/mountain range height.
@@ -2306,7 +2366,7 @@
 #    octaves     = 5,
 #    persistence = 0.5,
 #    lacunarity  = 2.0,
-#    flags       = "eased"
+#    flags       = eased
 # }
 
 #    Fourth of 4 2D noises that together define hill/mountain range height.
@@ -2319,7 +2379,7 @@
 #    octaves     = 5,
 #    persistence = 0.5,
 #    lacunarity  = 2.0,
-#    flags       = "eased"
+#    flags       = eased
 # }
 
 #    2D noise that controls the size/occurance of rolling hills.
@@ -2332,7 +2392,7 @@
 #    octaves     = 3,
 #    persistence = 0.5,
 #    lacunarity  = 2.0,
-#    flags       = "eased"
+#    flags       = eased
 # }
 
 #    2D noise that controls the size/occurance of ridged mountain ranges.
@@ -2345,7 +2405,7 @@
 #    octaves     = 3,
 #    persistence = 0.5,
 #    lacunarity  = 2.0,
-#    flags       = "eased"
+#    flags       = eased
 # }
 
 #    2D noise that controls the size/occurance of step mountain ranges.
@@ -2358,7 +2418,7 @@
 #    octaves     = 3,
 #    persistence = 0.5,
 #    lacunarity  = 2.0,
-#    flags       = "eased"
+#    flags       = eased
 # }
 
 #    2D noise that controls the shape/size of rolling hills.
@@ -2371,7 +2431,7 @@
 #    octaves     = 6,
 #    persistence = 0.5,
 #    lacunarity  = 2.0,
-#    flags       = "eased"
+#    flags       = eased
 # }
 
 #    2D noise that controls the shape/size of ridged mountains.
@@ -2384,7 +2444,7 @@
 #    octaves     = 6,
 #    persistence = 0.7,
 #    lacunarity  = 2.0,
-#    flags       = "eased"
+#    flags       = eased
 # }
 
 #    2D noise that controls the shape/size of step mountains.
@@ -2397,7 +2457,7 @@
 #    octaves     = 6,
 #    persistence = 0.6,
 #    lacunarity  = 2.0,
-#    flags       = "eased"
+#    flags       = eased
 # }
 
 #    3D noise for mountain overhangs, cliffs, etc. Usually small variations.
@@ -2410,10 +2470,10 @@
 #    octaves     = 5,
 #    persistence = 0.55,
 #    lacunarity  = 2.0,
-#    flags       = ""
+#    flags       = 
 # }
 
-#    First of 2 3D noises that together define tunnels.
+#    First of two 3D noises that together define tunnels.
 #    type: noise_params_3d
 # mgcarpathian_np_cave1 = {
 #    offset      = 0,
@@ -2423,10 +2483,10 @@
 #    octaves     = 3,
 #    persistence = 0.5,
 #    lacunarity  = 2.0,
-#    flags       = ""
+#    flags       = 
 # }
 
-#    Second of 2 3D noises that together define tunnels.
+#    Second of two 3D noises that together define tunnels.
 #    type: noise_params_3d
 # mgcarpathian_np_cave2 = {
 #    offset      = 0,
@@ -2436,7 +2496,7 @@
 #    octaves     = 3,
 #    persistence = 0.5,
 #    lacunarity  = 2.0,
-#    flags       = ""
+#    flags       = 
 # }
 
 #    3D noise defining giant caverns.
@@ -2449,7 +2509,7 @@
 #    octaves     = 5,
 #    persistence = 0.63,
 #    lacunarity  = 2.0,
-#    flags       = ""
+#    flags       = 
 # }
 
 ## Mapgen Flat
@@ -2517,7 +2577,7 @@
 #    octaves     = 5,
 #    persistence = 0.6,
 #    lacunarity  = 2.0,
-#    flags       = "eased"
+#    flags       = eased
 # }
 
 #    Variation of biome filler depth.
@@ -2530,10 +2590,10 @@
 #    octaves     = 3,
 #    persistence = 0.7,
 #    lacunarity  = 2.0,
-#    flags       = "eased"
+#    flags       = eased
 # }
 
-#    First of 2 3D noises that together define tunnels.
+#    First of two 3D noises that together define tunnels.
 #    type: noise_params_3d
 # mgflat_np_cave1 = {
 #    offset      = 0,
@@ -2543,10 +2603,10 @@
 #    octaves     = 3,
 #    persistence = 0.5,
 #    lacunarity  = 2.0,
-#    flags       = ""
+#    flags       = 
 # }
 
-#    Second of 2 3D noises that together define tunnels.
+#    Second of two 3D noises that together define tunnels.
 #    type: noise_params_3d
 # mgflat_np_cave2 = {
 #    offset      = 0,
@@ -2556,7 +2616,7 @@
 #    octaves     = 3,
 #    persistence = 0.5,
 #    lacunarity  = 2.0,
-#    flags       = ""
+#    flags       = 
 # }
 
 ## Mapgen Fractal
@@ -2620,8 +2680,8 @@
 #    type: v3f
 # mgfractal_scale = (4096.0, 1024.0, 4096.0)
 
-#    (X,Y,Z) offset of fractal from world centre in units of 'scale'.
-#    Can be used to move a desired point to (0, 0): to create a
+#    (X,Y,Z) offset of fractal from world center in units of 'scale'.
+#    Can be used to move a desired point to (0, 0) to create a
 #    suitable spawn point, or to allow 'zooming in' on a desired
 #    point by increasing 'scale'.
 #    The default is tuned for a suitable spawn point for mandelbrot
@@ -2631,7 +2691,7 @@
 #    type: v3f
 # mgfractal_offset = (1.79, 0.0, 0.0)
 
-#    W co-ordinate of the generated 3D slice of a 4D fractal.
+#    W coordinate of the generated 3D slice of a 4D fractal.
 #    Determines which 3D slice of the 4D shape is generated.
 #    Alters the shape of the fractal.
 #    Has no effect on 3D fractals.
@@ -2680,7 +2740,7 @@
 #    octaves     = 5,
 #    persistence = 0.6,
 #    lacunarity  = 2.0,
-#    flags       = "eased"
+#    flags       = eased
 # }
 
 #    Variation of biome filler depth.
@@ -2693,10 +2753,10 @@
 #    octaves     = 3,
 #    persistence = 0.7,
 #    lacunarity  = 2.0,
-#    flags       = "eased"
+#    flags       = eased
 # }
 
-#    First of 2 3D noises that together define tunnels.
+#    First of two 3D noises that together define tunnels.
 #    type: noise_params_3d
 # mgfractal_np_cave1 = {
 #    offset      = 0,
@@ -2706,10 +2766,10 @@
 #    octaves     = 3,
 #    persistence = 0.5,
 #    lacunarity  = 2.0,
-#    flags       = ""
+#    flags       = 
 # }
 
-#    Second of 2 3D noises that together define tunnels.
+#    Second of two 3D noises that together define tunnels.
 #    type: noise_params_3d
 # mgfractal_np_cave2 = {
 #    offset      = 0,
@@ -2719,7 +2779,7 @@
 #    octaves     = 3,
 #    persistence = 0.5,
 #    lacunarity  = 2.0,
-#    flags       = ""
+#    flags       = 
 # }
 
 ## Mapgen Valleys
@@ -2781,7 +2841,7 @@
 
 ### Noises
 
-#    Caves and tunnels form at the intersection of the two noises.
+#    First of two 3D noises that together define tunnels.
 #    type: noise_params_3d
 # mgvalleys_np_cave1 = {
 #    offset      = 0,
@@ -2791,10 +2851,10 @@
 #    octaves     = 3,
 #    persistence = 0.5,
 #    lacunarity  = 2.0,
-#    flags       = ""
+#    flags       = 
 # }
 
-#    Caves and tunnels form at the intersection of the two noises.
+#    Second of two 3D noises that together define tunnels.
 #    type: noise_params_3d
 # mgvalleys_np_cave2 = {
 #    offset      = 0,
@@ -2804,7 +2864,7 @@
 #    octaves     = 3,
 #    persistence = 0.5,
 #    lacunarity  = 2.0,
-#    flags       = ""
+#    flags       = 
 # }
 
 #    The depth of dirt or other biome filler node.
@@ -2817,7 +2877,7 @@
 #    octaves     = 3,
 #    persistence = 0.5,
 #    lacunarity  = 2.0,
-#    flags       = "eased"
+#    flags       = eased
 # }
 
 #    3D noise defining giant caverns.
@@ -2830,10 +2890,10 @@
 #    octaves     = 6,
 #    persistence = 0.63,
 #    lacunarity  = 2.0,
-#    flags       = ""
+#    flags       = 
 # }
 
-#    River noise. Rivers occur close to noise value zero.
+#    Defines large-scale river channel structure.
 #    type: noise_params_2d
 # mgvalleys_np_rivers = {
 #    offset      = 0,
@@ -2843,7 +2903,7 @@
 #    octaves     = 5,
 #    persistence = 0.6,
 #    lacunarity  = 2.0,
-#    flags       = "eased"
+#    flags       = eased
 # }
 
 #    Base terrain height.
@@ -2856,7 +2916,7 @@
 #    octaves     = 6,
 #    persistence = 0.4,
 #    lacunarity  = 2.0,
-#    flags       = "eased"
+#    flags       = eased
 # }
 
 #    Raises terrain to make valleys around the rivers.
@@ -2869,7 +2929,7 @@
 #    octaves     = 1,
 #    persistence = 1.0,
 #    lacunarity  = 2.0,
-#    flags       = "eased"
+#    flags       = eased
 # }
 
 #    Slope and fill work together to modify the heights.
@@ -2882,7 +2942,7 @@
 #    octaves     = 6,
 #    persistence = 0.8,
 #    lacunarity  = 2.0,
-#    flags       = ""
+#    flags       = 
 # }
 
 #    Amplifies the valleys.
@@ -2895,7 +2955,7 @@
 #    octaves     = 1,
 #    persistence = 1.0,
 #    lacunarity  = 2.0,
-#    flags       = "eased"
+#    flags       = eased
 # }
 
 #    Slope and fill work together to modify the heights.
@@ -2908,21 +2968,21 @@
 #    octaves     = 1,
 #    persistence = 1.0,
 #    lacunarity  = 2.0,
-#    flags       = "eased"
+#    flags       = eased
 # }
 
 ## Advanced
 
-#    Size of chunks to be generated at once by mapgen, stated in mapblocks (16 nodes).
-#    Increasing this by 1 almost doubles the 3D noise calculation load.
-#    High values can cause noise calculation to overload.
-#    Values smaller than 5 cause a terrain bug in mgv6.
-#    Since there is a fixed number of large caves and dungeons per
-#    mapchunk, values other than 5 alter the density of these.
+#    Size of mapchunks generated by mapgen, stated in mapblocks (16 nodes).
+#    WARNING!: There is no benefit, and there are several dangers, in
+#    increasing this value above 5.
+#    Reducing this value increases cave and dungeon density.
+#    Altering this value is for special usage, leaving it unchanged is
+#    recommended.
 #    type: int
 # chunksize = 5
 
-#    Dump the mapgen debug infos.
+#    Dump the mapgen debug information.
 #    type: bool
 # enable_mapgen_debug_info = false
 
@@ -2940,9 +3000,19 @@
 #    type: int
 # emergequeue_limit_generate = 64
 
-#    Number of emerge threads to use. Make this field blank or 0, or increase this number
-#    to use multiple threads. On multiprocessor systems, this will improve mapgen speed greatly
-#    at the cost of slightly buggy caves.
+#    Number of emerge threads to use.
+#    Make this field blank or 0, or increase this number to use multiple threads.
+#    On multiprocessor systems, this will improve mapgen speed greatly at the cost
+#    of slightly buggy caves.
 #    type: int
 # num_emerge_threads = 0
+
+#
+# Content Store
+#
+
+#    Show packages in the content store that do not qualify as 'free software'
+#    as defined by the Free Software Foundation.
+#    type: bool
+# show_nonfree_packages = false
 
