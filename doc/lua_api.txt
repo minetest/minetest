@@ -3488,9 +3488,9 @@ Call these functions only at load time!
 * `minetest.register_tool(name, item definition)`
 * `minetest.register_craftitem(name, item definition)`
 * `minetest.unregister_item(name)`
-    * Unregisters the item name from engine, and deletes the entry with key
+    * Unregisters the item from the engine, and deletes the entry with key
       `name` from `minetest.registered_items` and from the associated item table
-      according to its nature: `minetest.registered_nodes[]` etc
+      according to its nature: `minetest.registered_nodes`, etc.
 * `minetest.register_alias(name, convert_to)`
     * Also use this to set the 'mapgen aliases' needed in a game for the core
     * mapgens. See [Mapgen aliases] section above.
@@ -3512,7 +3512,7 @@ Call these functions only at load time!
 * `minetest.register_biome(biome definition)`
     * Returns an integer uniquely identifying the registered biome.
 * `minetest.unregister_biome(name)`
-    * Unregisters the biome name from engine, and deletes the entry with key
+    * Unregisters the biome from the engine, and deletes the entry with key
       `name` from `minetest.registered_biomes`.
 * `minetest.register_decoration(decoration definition)`
     * Returns an integer uniquely identifying the registered decoration.
