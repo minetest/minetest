@@ -1138,7 +1138,7 @@ void Game::shutdown()
 	if (current_formspec)
 		current_formspec->quitMenu();
 
-	showOverlayMessage("Shutting down...", 0, 0, false);
+	showOverlayMessage(N_("Shutting down..."), 0, 0, false);
 
 	if (clouds)
 		clouds->drop();
@@ -1190,7 +1190,7 @@ bool Game::init(
 {
 	texture_src = createTextureSource();
 
-	showOverlayMessage("Loading...", 0, 0);
+	showOverlayMessage(N_("Loading..."), 0, 0);
 
 	shader_src = createShaderSource();
 
@@ -1246,7 +1246,7 @@ bool Game::initSound()
 bool Game::createSingleplayerServer(const std::string &map_dir,
 		const SubgameSpec &gamespec, u16 port, std::string *address)
 {
-	showOverlayMessage("Creating server...", 0, 5);
+	showOverlayMessage(N_("Creating server..."), 0, 5);
 
 	std::string bind_str = g_settings->get("bind_address");
 	Address bind_addr(0, 0, 0, 0, port);
@@ -1281,7 +1281,7 @@ bool Game::createSingleplayerServer(const std::string &map_dir,
 bool Game::createClient(const std::string &playername,
 		const std::string &password, std::string *address, u16 port)
 {
-	showOverlayMessage("Creating client...", 0, 10);
+	showOverlayMessage(N_("Creating client..."), 0, 10);
 
 	draw_control = new MapDrawControl;
 	if (!draw_control)
@@ -1434,7 +1434,7 @@ bool Game::connectToServer(const std::string &playername,
 	*connection_aborted = false;
 	bool local_server_mode = false;
 
-	showOverlayMessage("Resolving address...", 0, 15);
+	showOverlayMessage(N_("Resolving address..."), 0, 15);
 
 	Address connect_address(0, 0, 0, 0, port);
 
@@ -1551,7 +1551,7 @@ bool Game::connectToServer(const std::string &playername,
 				}
 
 				// Update status
-				showOverlayMessage("Connecting to server...", dtime, 20);
+				showOverlayMessage(N_("Connecting to server..."), dtime, 20);
 			}
 		}
 	} catch (con::PeerNotFoundException &e) {
