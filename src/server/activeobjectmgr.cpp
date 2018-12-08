@@ -97,10 +97,21 @@ bool ActiveObjectMgr::registerObject(ServerActiveObject *obj)
 
 void ActiveObjectMgr::removeObject(u16 id)
 {
+	verbosestream << "Server::ActiveObjectMgr::removeObject(): "
+				  << "id=" << id << std::endl;
+	ServerActiveObject* obj = getActiveObject(id);
+	if (!obj) {
+		infostream << "Server::ActiveObjectMgr::removeObject(): "
+				   << "id=" << id << " not found" << std::endl;
+		return;
+	}
 
+	m_active_objects.erase(id);
+	delete obj;
 }
 
-void ActiveObjectMgr::getObjectsInsideRadius(const v3f &pos, float radius, std::vector<u16> &result)
+void ActiveObjectMgr::getObjectsInsideRadius(const v3f &pos, float radius,
+		std::vector<u16> &result)
 {
 	for (auto &activeObject : m_active_objects) {
 		ServerActiveObject* obj = activeObject.second;
@@ -112,8 +123,8 @@ void ActiveObjectMgr::getObjectsInsideRadius(const v3f &pos, float radius, std::
 	}
 }
 
-void ActiveObjectMgr::getAddedActiveObjectsAroundPlayer(const v3f &player_pos, f32 radius, f32 player_radius,
-		std::set<u16> &current_objects, std::queue<u16> &added_objects)
+void ActiveObjectMgr::getAddedActiveObjectsAroundPos(const v3f &player_pos, f32 radius,
+		f32 player_radius, std::set<u16> &current_objects, std::queue<u16> &added_objects)
 {
 	/*
 		Go through the object list,

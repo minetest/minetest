@@ -1484,8 +1484,9 @@ void ServerEnvironment::getAddedActiveObjects(PlayerSAO *playersao, s16 radius,
 	if (player_radius_f < 0.0f)
 		player_radius_f = 0.0f;
 
-	m_ao_manager.getAddedActiveObjectsAroundPlayer(playersao->getBasePosition(), radius_f,
-			player_radius_f, current_objects, added_objects);
+	m_ao_manager.getAddedActiveObjectsAroundPos(playersao->getBasePosition(), radius_f,
+												player_radius_f, current_objects,
+												added_objects);
 }
 
 /*

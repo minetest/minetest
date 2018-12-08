@@ -37,7 +37,8 @@ public:
 
 	void getObjectsInsideRadius(const v3f &pos, float radius, std::vector<u16> &result);
 
-	void getAddedActiveObjectsAroundPlayer(const v3f &player_pos, f32 radius, f32 player_radius,
+	void getAddedActiveObjectsAroundPos(const v3f &player_pos, f32 radius,
+			f32 player_radius,
 			std::set<u16> &current_objects, std::queue<u16> &added_objects);
 };
 }

@@ -26,7 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 class TestServerActiveObject : public ServerActiveObject
 {
 public:
-	TestServerActiveObject() : ServerActiveObject(nullptr, v3f()) {}
+	TestServerActiveObject(const v3f &p = v3f()) : ServerActiveObject(nullptr, p) {}
 	~TestServerActiveObject() = default;
 	ActiveObjectType getType() const override { return ACTIVEOBJECT_TYPE_TEST; }
 	bool getCollisionBox(aabb3f *toset) const override { return false; }
@@ -45,6 +45,8 @@ public:
 	void testFreeID();
 	void testRegisterObject();
 	void testRemoveObject();
+	void testGetObjectsInsideRadius();
+	void testGetAddedActiveObjectsAroundPos();
 };
 
 static TestServerActiveObjectMgr g_test_instance;
@@ -54,58 +56,113 @@ void TestServerActiveObjectMgr::runTests(IGameDef *gamedef)
 	TEST(testFreeID);
 	TEST(testRegisterObject)
 	TEST(testRemoveObject)
+	TEST(testGetObjectsInsideRadius);
+	TEST(testGetAddedActiveObjectsAroundPos);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
 void TestServerActiveObjectMgr::testFreeID()
 {
-	server::ActiveObjectMgr caomgr;
+	server::ActiveObjectMgr saomgr;
 	std::vector<u16> aoids;
 
-	u16 aoid = caomgr.getFreeId();
+	u16 aoid = saomgr.getFreeId();
 	// Ensure it's not the same id
-	UASSERT(caomgr.getFreeId() != aoid);
+	UASSERT(saomgr.getFreeId() != aoid);
 
 	aoids.push_back(aoid);
 
 	// Register basic objects, ensure we never found
 	for (u8 i = 0; i < UINT8_MAX; i++) {
 		// Register an object
-		auto tcao = new TestServerActiveObject();
-		caomgr.registerObject(tcao);
-		aoid = tcao->getId();
+		auto tsao = new TestServerActiveObject();
+		saomgr.registerObject(tsao);
+		aoid = tsao->getId();
 
 		// Ensure next id is not in registered list
-		UASSERT(std::find(aoids.begin(), aoids.end(), caomgr.getFreeId()) == aoids.end());
+		UASSERT(std::find(aoids.begin(), aoids.end(), saomgr.getFreeId()) == aoids.end());
 	}
 }
 
 void TestServerActiveObjectMgr::testRegisterObject()
 {
-	server::ActiveObjectMgr caomgr;
-	auto tcao = new TestServerActiveObject();
-	UASSERT(caomgr.registerObject(tcao));
+	server::ActiveObjectMgr saomgr;
+	auto tsao = new TestServerActiveObject();
+	UASSERT(saomgr.registerObject(tsao));
 
-	u16 id = tcao->getId();
+	u16 id = tsao->getId();
 
-	auto tcaoToCompare = caomgr.getActiveObject(id);
-	UASSERT(tcaoToCompare->getId() == id);
-	UASSERT(tcaoToCompare == tcao);
+	auto tsaoToCompare = saomgr.getActiveObject(id);
+	UASSERT(tsaoToCompare->getId() == id);
+	UASSERT(tsaoToCompare == tsao);
 
-	tcao = new TestServerActiveObject();
-	UASSERT(caomgr.registerObject(tcao));
-	UASSERT(caomgr.getActiveObject(tcao->getId()) == tcao);
-	UASSERT(caomgr.getActiveObject(tcao->getId()) != tcaoToCompare);
+	tsao = new TestServerActiveObject();
+	UASSERT(saomgr.registerObject(tsao));
+	UASSERT(saomgr.getActiveObject(tsao->getId()) == tsao);
+	UASSERT(saomgr.getActiveObject(tsao->getId()) != tsaoToCompare);
 }
 
 void TestServerActiveObjectMgr::testRemoveObject()
 {
-	server::ActiveObjectMgr caomgr;
-	auto tcao = new TestServerActiveObject();
-	UASSERT(caomgr.registerObject(tcao));
-	UASSERT(caomgr.getActiveObject(tcao->getId()) != nullptr)
+	server::ActiveObjectMgr saomgr;
+	auto tsao = new TestServerActiveObject();
+	UASSERT(saomgr.registerObject(tsao));
+	UASSERT(saomgr.getActiveObject(tsao->getId()) != nullptr)
 
-	caomgr.removeObject(tcao->getId());
-	UASSERT(caomgr.getActiveObject(tcao->getId()) == nullptr)
+	saomgr.removeObject(tsao->getId());
+	UASSERT(saomgr.getActiveObject(tsao->getId()) == nullptr)
+}
+
+void TestServerActiveObjectMgr::testGetObjectsInsideRadius()
+{
+	server::ActiveObjectMgr saomgr;
+	static const v3f sao_pos[] = {
+			v3f(10, 40, 10),
+			v3f(740, 100, -304),
+			v3f(-200, 100, -304),
+			v3f(740, -740, -304),
+			v3f(1500, -740, -304),
+	};
+
+	for (const auto &p : sao_pos) {
+		saomgr.registerObject(new TestServerActiveObject(p));
+	}
+
+	std::vector<u16> result;
+	saomgr.getObjectsInsideRadius(v3f(), 50, result);
+	UASSERTCMP(int, ==, result.size(), 1);
+
+	result.clear();
+	saomgr.getObjectsInsideRadius(v3f(), 750, result);
+	UASSERTCMP(int, ==, result.size(), 2);
+}
+
+void TestServerActiveObjectMgr::testGetAddedActiveObjectsAroundPos()
+{
+	server::ActiveObjectMgr saomgr;
+	static const v3f sao_pos[] = {
+			v3f(10, 40, 10),
+			v3f(740, 100, -304),
+			v3f(-200, 100, -304),
+			v3f(740, -740, -304),
+			v3f(1500, -740, -304),
+	};
+
+	for (const auto &p : sao_pos) {
+		saomgr.registerObject(new TestServerActiveObject(p));
+	}
+
+	std::queue<u16> result;
+	std::set<u16> cur_objects;
+	saomgr.getAddedActiveObjectsAroundPos(v3f(), 100, 50, cur_objects, result);
+	UASSERTCMP(int, ==, result.size(), 1);
+
+	result = {};
+	cur_objects.clear();
+	saomgr.getAddedActiveObjectsAroundPos(v3f(), 740, 50, cur_objects, result);
+	UASSERTCMP(int, ==, result.size(), 2);
+
+
+
 }
