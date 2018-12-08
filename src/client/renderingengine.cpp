@@ -624,20 +624,17 @@ static float calcDisplayDensity()
 
 		if (x11display != NULL) {
 			/* try x direct */
-			float dpi_height = floor(
-					DisplayHeight(x11display, 0) /
-							(DisplayHeightMM(x11display, 0) *
-									0.039370) +
-					0.5);
-			float dpi_width = floor(
-					DisplayWidth(x11display, 0) /
-							(DisplayWidthMM(x11display, 0) *
-									0.039370) +
-					0.5);
-
+			int dh = DisplayHeight(x11display, 0);
+			int dw = DisplayWidth(x11display, 0);
+			int dh_mm = DisplayHeightMM(x11display, 0);
+			int dw_mm = DisplayWidthMM(x11display, 0);
 			XCloseDisplay(x11display);
 
-			return std::max(dpi_height, dpi_width) / 96.0;
+			if (dh_mm != 0 && dw_mm != 0) {
+				float dpi_height = floor(dh / (dh_mm * 0.039370) + 0.5);
+				float dpi_width = floor(dw / (dw_mm * 0.039370) + 0.5);
+				return std::max(dpi_height, dpi_width) / 96.0;
+			}
 		}
 	}
 
