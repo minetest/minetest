@@ -898,6 +898,7 @@ enable_local_map_saving (Saving map received from server) bool false
 #    when connecting to the server.
 enable_remote_media_server (Connect to external media server) bool true
 
+#    Note: Setting currently has no effect as CSM is in development.
 #    Enable Lua modding support on client.
 #    This support is experimental and API can change.
 enable_client_modding (Client modding) bool false
@@ -1190,6 +1191,7 @@ block_send_optimize_distance (Block send optimize distance) int 4 2
 #    so that the utility of noclip mode is reduced.
 server_side_occlusion_culling (Server side occlusion culling) bool true
 
+#    Note: Setting currently has no effect as CSM is in development.
 #    Restricts the access of certain client-side functions on servers
 #    Combine these byteflags below to restrict client-side features:
 #    LOAD_CLIENT_MODS: 1 (disable client mods loading)
@@ -1198,10 +1200,11 @@ server_side_occlusion_culling (Server side occlusion culling) bool true
 #    READ_NODEDEFS: 8 (disable get_node_def call client-side)
 #    LOOKUP_NODES_LIMIT: 16 (limits get_node call client-side to
 #    csm_restriction_noderange)
-csm_restriction_flags (Client side modding restrictions) int 30
+csm_restriction_flags (Client side modding restrictions) int 31
 
-#   If the CSM restriction for node range is enabled, get_node calls are limited
-#   to this distance from the player to the node.
+#    Note: Setting currently has no effect as CSM is in development.
+#    If the CSM restriction for node range is enabled, get_node calls are limited
+#    to this distance from the player to the node.
 csm_restriction_noderange (Client side node lookup range restriction) int 0
 
 [*Security]

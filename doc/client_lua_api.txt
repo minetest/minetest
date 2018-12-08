@@ -3,6 +3,8 @@ Minetest Lua Client Modding API Reference 5.0.0
 * More information at <http://www.minetest.net/>
 * Developer Wiki: <http://dev.minetest.net/>
 
+** NOTE: Client-side modding is in development and is currently unusable. **
+
 Introduction
 ------------
 

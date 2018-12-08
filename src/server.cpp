@@ -402,8 +402,10 @@ void Server::init()
 
 	m_liquid_transform_every = g_settings->getFloat("liquid_update");
 	m_max_chatmessage_length = g_settings->getU16("chat_message_max_size");
-	m_csm_restriction_flags = g_settings->getU64("csm_restriction_flags");
-	m_csm_restriction_noderange = g_settings->getU32("csm_restriction_noderange");
+
+	// Disable client-provided CSM mod loading until server-sent CSM is completed
+	m_csm_restriction_flags = 31; //g_settings->getU64("csm_restriction_flags");
+	m_csm_restriction_noderange = 0; //g_settings->getU32("csm_restriction_noderange");
 }
 
 void Server::start()

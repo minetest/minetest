@@ -109,7 +109,8 @@ Client::Client(
 	}
 	m_cache_save_interval = g_settings->getU16("server_map_save_interval");
 
-	m_modding_enabled = g_settings->getBool("enable_client_modding");
+	// Disable client-provided CSM until server-sent CSM is completed
+	m_modding_enabled = false; // g_settings->getBool("enable_client_modding");
 	// Only create the client script environment if client modding is enabled
 	if (m_modding_enabled) {
 		m_script = new ClientScripting(this);
