@@ -19,6 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "server/activeobjectmgr.h"
 #include <algorithm>
+#include <queue>
 #include "test.h"
 
 #include "profiler.h"
@@ -60,6 +61,15 @@ void TestServerActiveObjectMgr::runTests(IGameDef *gamedef)
 	TEST(testGetAddedActiveObjectsAroundPos);
 }
 
+void clearSAOMgr(server::ActiveObjectMgr *saomgr)
+{
+	auto clear_cb = [](ServerActiveObject *obj, u16 id) {
+		delete obj;
+		return true;
+	};
+	saomgr->clear(clear_cb);
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 
 void TestServerActiveObjectMgr::testFreeID()
@@ -78,11 +88,14 @@ void TestServerActiveObjectMgr::testFreeID()
 		// Register an object
 		auto tsao = new TestServerActiveObject();
 		saomgr.registerObject(tsao);
-		aoid = tsao->getId();
+		aoids.push_back(tsao->getId());
 
 		// Ensure next id is not in registered list
-		UASSERT(std::find(aoids.begin(), aoids.end(), saomgr.getFreeId()) == aoids.end());
+		UASSERT(std::find(aoids.begin(), aoids.end(), saomgr.getFreeId()) ==
+				aoids.end());
 	}
+
+	clearSAOMgr(&saomgr);
 }
 
 void TestServerActiveObjectMgr::testRegisterObject()
@@ -101,6 +114,8 @@ void TestServerActiveObjectMgr::testRegisterObject()
 	UASSERT(saomgr.registerObject(tsao));
 	UASSERT(saomgr.getActiveObject(tsao->getId()) == tsao);
 	UASSERT(saomgr.getActiveObject(tsao->getId()) != tsaoToCompare);
+
+	clearSAOMgr(&saomgr);
 }
 
 void TestServerActiveObjectMgr::testRemoveObject()
@@ -108,10 +123,14 @@ void TestServerActiveObjectMgr::testRemoveObject()
 	server::ActiveObjectMgr saomgr;
 	auto tsao = new TestServerActiveObject();
 	UASSERT(saomgr.registerObject(tsao));
-	UASSERT(saomgr.getActiveObject(tsao->getId()) != nullptr)
+
+	u16 id = tsao->getId();
+	UASSERT(saomgr.getActiveObject(id) != nullptr)
 
 	saomgr.removeObject(tsao->getId());
-	UASSERT(saomgr.getActiveObject(tsao->getId()) == nullptr)
+	UASSERT(saomgr.getActiveObject(id) == nullptr);
+
+	clearSAOMgr(&saomgr);
 }
 
 void TestServerActiveObjectMgr::testGetObjectsInsideRadius()
@@ -136,6 +155,8 @@ void TestServerActiveObjectMgr::testGetObjectsInsideRadius()
 	result.clear();
 	saomgr.getObjectsInsideRadius(v3f(), 750, result);
 	UASSERTCMP(int, ==, result.size(), 2);
+
+	clearSAOMgr(&saomgr);
 }
 
 void TestServerActiveObjectMgr::testGetAddedActiveObjectsAroundPos()
@@ -158,11 +179,10 @@ void TestServerActiveObjectMgr::testGetAddedActiveObjectsAroundPos()
 	saomgr.getAddedActiveObjectsAroundPos(v3f(), 100, 50, cur_objects, result);
 	UASSERTCMP(int, ==, result.size(), 1);
 
-	result = {};
+	result = std::queue<u16>();
 	cur_objects.clear();
 	saomgr.getAddedActiveObjectsAroundPos(v3f(), 740, 50, cur_objects, result);
 	UASSERTCMP(int, ==, result.size(), 2);
 
-
-
+	clearSAOMgr(&saomgr);
 }

@@ -27,14 +27,16 @@ namespace client
 void ActiveObjectMgr::clear()
 {
 	// delete active objects
-	for (auto &active_object: m_active_objects) {
+	for (auto &active_object : m_active_objects) {
 		delete active_object.second;
 	}
 }
 
-void ActiveObjectMgr::step(float dtime, const std::function<void(ClientActiveObject *)> &f)
+void ActiveObjectMgr::step(
+		float dtime, const std::function<void(ClientActiveObject *)> &f)
 {
-	g_profiler->avg("Client::ActiveObjectMgr: num of objects", m_active_objects.size());
+	g_profiler->avg("Client::ActiveObjectMgr: num of objects",
+			m_active_objects.size());
 	for (auto &ao_it : m_active_objects) {
 		f(ao_it.second);
 	}
@@ -47,7 +49,7 @@ bool ActiveObjectMgr::registerObject(ClientActiveObject *obj)
 		u16 new_id = getFreeId();
 		if (new_id == 0) {
 			infostream << "Client::ActiveObjectMgr::registerObject(): "
-				<< "no free id available" << std::endl;
+				   << "no free id available" << std::endl;
 			delete obj;
 			return false;
 		}
@@ -56,12 +58,12 @@ bool ActiveObjectMgr::registerObject(ClientActiveObject *obj)
 
 	if (!isFreeId(obj->getId())) {
 		infostream << "Client::ActiveObjectMgr::registerObject(): "
-				  << "id is not free (" << obj->getId() << ")" << std::endl;
+			   << "id is not free (" << obj->getId() << ")" << std::endl;
 		delete obj;
 		return false;
 	}
 	infostream << "Client::ActiveObjectMgr::registerObject(): "
-			  << "added (id=" << obj->getId() << ")" << std::endl;
+		   << "added (id=" << obj->getId() << ")" << std::endl;
 	m_active_objects[obj->getId()] = obj;
 	return true;
 }
@@ -69,11 +71,11 @@ bool ActiveObjectMgr::registerObject(ClientActiveObject *obj)
 void ActiveObjectMgr::removeObject(u16 id)
 {
 	verbosestream << "Client::ActiveObjectMgr::removeObject(): "
-				 << "id=" << id << std::endl;
-	ClientActiveObject* obj = getActiveObject(id);
+		      << "id=" << id << std::endl;
+	ClientActiveObject *obj = getActiveObject(id);
 	if (!obj) {
 		infostream << "Client::ActiveObjectMgr::removeObject(): "
-				  << "id=" << id << " not found" << std::endl;
+			   << "id=" << id << " not found" << std::endl;
 		return;
 	}
 
@@ -87,7 +89,7 @@ void ActiveObjectMgr::getActiveObjects(const v3f &origin, f32 max_d,
 		std::vector<DistanceSortedActiveObject> &dest)
 {
 	for (auto &ao_it : m_active_objects) {
-		ClientActiveObject* obj = ao_it.second;
+		ClientActiveObject *obj = ao_it.second;
 
 		f32 d = (obj->getPosition() - origin).getLength();
 
@@ -98,4 +100,4 @@ void ActiveObjectMgr::getActiveObjects(const v3f &origin, f32 max_d,
 	}
 }
 
-}
+} // namespace client

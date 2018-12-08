@@ -71,10 +71,11 @@ void TestClientActiveObjectMgr::testFreeID()
 		// Register an object
 		auto tcao = new TestClientActiveObject();
 		caomgr.registerObject(tcao);
-		aoid = tcao->getId();
+		aoids.push_back(tcao->getId());
 
 		// Ensure next id is not in registered list
-		UASSERT(std::find(aoids.begin(), aoids.end(), caomgr.getFreeId()) == aoids.end());
+		UASSERT(std::find(aoids.begin(), aoids.end(), caomgr.getFreeId()) ==
+				aoids.end());
 	}
 }
 
@@ -101,8 +102,10 @@ void TestClientActiveObjectMgr::testRemoveObject()
 	client::ActiveObjectMgr caomgr;
 	auto tcao = new TestClientActiveObject();
 	UASSERT(caomgr.registerObject(tcao));
-	UASSERT(caomgr.getActiveObject(tcao->getId()) != nullptr)
+
+	u16 id = tcao->getId();
+	UASSERT(caomgr.getActiveObject(id) != nullptr)
 
 	caomgr.removeObject(tcao->getId());
-	UASSERT(caomgr.getActiveObject(tcao->getId()) == nullptr)
+	UASSERT(caomgr.getActiveObject(id) == nullptr)
 }

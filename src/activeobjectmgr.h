@@ -25,19 +25,20 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 class TestClientActiveObjectMgr;
 class TestServerActiveObjectMgr;
 
-template<typename T>
-class ActiveObjectMgr {
+template <typename T> class ActiveObjectMgr
+{
 	friend class ::TestClientActiveObjectMgr;
 	friend class ::TestServerActiveObjectMgr;
-public:
 
+public:
 	virtual void step(float dtime, const std::function<void(T *)> &f) = 0;
 	virtual bool registerObject(T *obj) = 0;
 	virtual void removeObject(u16 id) = 0;
 
-	T * getActiveObject(u16 id)
+	T *getActiveObject(u16 id)
 	{
-		typename std::unordered_map<u16, T *>::const_iterator n = m_active_objects.find(id);
+		typename std::unordered_map<u16, T *>::const_iterator n =
+				m_active_objects.find(id);
 		return (n != m_active_objects.end() ? n->second : nullptr);
 	}
 
@@ -58,7 +59,6 @@ protected:
 	bool isFreeId(const u16 id) const
 	{
 		return id != 0 && m_active_objects.find(id) == m_active_objects.end();
-
 	}
 
 	std::unordered_map<u16, T *> m_active_objects;
