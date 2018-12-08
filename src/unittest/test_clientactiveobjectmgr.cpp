@@ -31,11 +31,11 @@ public:
 	ActiveObjectType getType() const { return ACTIVEOBJECT_TYPE_TEST; }
 };
 
-class TestActiveObjectMgr : public TestBase
+class TestClientActiveObjectMgr : public TestBase
 {
 public:
-	TestActiveObjectMgr() { TestManager::registerTestModule(this); }
-	const char *getName() { return "TestActiveObjectMgr"; }
+	TestClientActiveObjectMgr() { TestManager::registerTestModule(this); }
+	const char *getName() { return "TestClientActiveObjectMgr"; }
 
 	void runTests(IGameDef *gamedef);
 
@@ -44,9 +44,9 @@ public:
 	void testRemoveObject();
 };
 
-static TestActiveObjectMgr g_test_instance;
+static TestClientActiveObjectMgr g_test_instance;
 
-void TestActiveObjectMgr::runTests(IGameDef *gamedef)
+void TestClientActiveObjectMgr::runTests(IGameDef *gamedef)
 {
 	TEST(testFreeID);
 	TEST(testRegisterObject)
@@ -55,7 +55,7 @@ void TestActiveObjectMgr::runTests(IGameDef *gamedef)
 
 ////////////////////////////////////////////////////////////////////////////////
 
-void TestActiveObjectMgr::testFreeID()
+void TestClientActiveObjectMgr::testFreeID()
 {
 	client::ActiveObjectMgr caomgr;
 	std::vector<u16> aoids;
@@ -78,7 +78,7 @@ void TestActiveObjectMgr::testFreeID()
 	}
 }
 
-void TestActiveObjectMgr::testRegisterObject()
+void TestClientActiveObjectMgr::testRegisterObject()
 {
 	client::ActiveObjectMgr caomgr;
 	auto tcao = new TestClientActiveObject();
@@ -96,7 +96,7 @@ void TestActiveObjectMgr::testRegisterObject()
 	UASSERT(caomgr.getActiveObject(tcao->getId()) != tcaoToCompare);
 }
 
-void TestActiveObjectMgr::testRemoveObject()
+void TestClientActiveObjectMgr::testRemoveObject()
 {
 	client::ActiveObjectMgr caomgr;
 	auto tcao = new TestClientActiveObject();

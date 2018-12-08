@@ -28,7 +28,6 @@ namespace server
 {
 class ActiveObjectMgr : public ::ActiveObjectMgr<ServerActiveObject>
 {
-	friend class ::TestActiveObjectMgr;
 public:
 
 	void clear(const std::function<bool(ServerActiveObject *, u16)> &cb);

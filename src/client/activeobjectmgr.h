@@ -28,7 +28,6 @@ namespace client
 {
 class ActiveObjectMgr : public ::ActiveObjectMgr<ClientActiveObject>
 {
-	friend class ::TestActiveObjectMgr;
 public:
 
 	void clear();
