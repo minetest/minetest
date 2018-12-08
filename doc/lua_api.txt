@@ -3489,7 +3489,8 @@ Call these functions only at load time!
 * `minetest.override_item(name, redefinition)`
     * Overrides fields of an item registered with register_node/tool/craftitem.
     * Note: Item must already be defined, (opt)depend on the mod defining it.
-    * Example: `minetest.override_item("default:mese", {light_source=LIGHT_MAX})`
+    * Example: `minetest.override_item("default:mese",
+      {light_source=minetest.LIGHT_MAX})`
 * `minetest.unregister_item(name)`
     * Unregisters the item from the engine, and deletes the entry with key
       `name` from `minetest.registered_items` and from the associated item table
@@ -3502,16 +3503,18 @@ Call these functions only at load time!
       mapgens. See [Mapgen aliases] section above.
 * `minetest.register_alias_force(name, convert_to)`
 * `minetest.register_ore(ore definition)`
-    * Returns an integer uniquely identifying the registered ore.
+    * Returns an integer uniquely identifying the registered ore on success.
 * `minetest.register_biome(biome definition)`
-    * Returns an integer uniquely identifying the registered biome.
+    * Returns an integer uniquely identifying the registered biome on success.
 * `minetest.unregister_biome(name)`
     * Unregisters the biome from the engine, and deletes the entry with key
       `name` from `minetest.registered_biomes`.
 * `minetest.register_decoration(decoration definition)`
-    * Returns an integer uniquely identifying the registered decoration.
+    * Returns an integer uniquely identifying the registered decoration on
+      success.
 * `minetest.register_schematic(schematic definition)`
-    * Returns an integer uniquely identifying the registered schematic.
+    * Returns an integer uniquely identifying the registered schematic on
+      success.
     * If the schematic is loaded from a file, the `name` field is set to the
       filename.
     * If the function is called when loading the mod, and `name` is a relative
