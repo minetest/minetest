@@ -469,6 +469,11 @@ function core.do_item_eat(hp_change, replace_with_item, itemstack, user, pointed
 	if itemstack:take_item() ~= nil then
 		user:set_hp(user:get_hp() + hp_change)
 
+		local def = itemstack:get_definition()
+		if def and def.sound and def.sound.eat then
+			minetest.sound_play(def.sound.eat, { pos = user:get_pos(), max_hear_distance = 16 })
+		end
+
 		if replace_with_item then
 			if itemstack:is_empty() then
 				itemstack:add_item(replace_with_item)
