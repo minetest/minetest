@@ -68,6 +68,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "irrlicht_changes/static_text.h"
 #include "version.h"
 #include "script/scripting_client.h"
+#include "hud.h"
 
 #if USE_SOUND
 	#include "client/sound_openal.h"
@@ -177,8 +178,13 @@ struct LocalFormspecHandler : public TextDest
 			}
 		}
 
-		// Don't disable this part when modding is disabled, it's used in builtin
-		if (m_client && m_client->getScript())
+		if (m_formname == "MT_DEATH_SCREEN") {
+			assert(m_client != 0);
+			m_client->sendRespawn();
+			return;
+		}
+
+		if (m_client && m_client->moddingEnabled())
 			m_client->getScript()->on_formspec_input(m_formname, fields);
 	}
 
@@ -696,6 +702,7 @@ protected:
 	void openConsole(float scale, const wchar_t *line=NULL);
 	void toggleFreeMove();
 	void toggleFreeMoveAlt();
+	void togglePitchFly();
 	void toggleFast();
 	void toggleNoClip();
 	void toggleCinematic();
@@ -775,6 +782,7 @@ private:
 		bool disable_camera_update = false;
 	};
 
+	void showDeathFormspec();
 	void showPauseMenu();
 
 	// ClientEvent handlers
@@ -1496,8 +1504,6 @@ bool Game::connectToServer(const std::string &playername,
 
 		fps_control.last_time = RenderingEngine::get_timer_time();
 
-		client->loadBuiltin();
-
 		while (RenderingEngine::run()) {
 
 			limitFps(&fps_control, &dtime);
@@ -1882,13 +1888,18 @@ void Game::processKeyInput()
 	} else if (wasKeyDown(KeyType::CMD)) {
 		openConsole(0.2, L"/");
 	} else if (wasKeyDown(KeyType::CMD_LOCAL)) {
-		openConsole(0.2, L".");
+		if (client->moddingEnabled())
+			openConsole(0.2, L".");
+		else
+			m_game_ui->showStatusText(wgettext("CSM is disabled"));
 	} else if (wasKeyDown(KeyType::CONSOLE)) {
 		openConsole(core::clamp(g_settings->getFloat("console_height"), 0.1f, 1.0f));
 	} else if (wasKeyDown(KeyType::FREEMOVE)) {
 		toggleFreeMove();
 	} else if (wasKeyDown(KeyType::JUMP)) {
 		toggleFreeMoveAlt();
+	} else if (wasKeyDown(KeyType::PITCHFLY)) {
+		togglePitchFly();
 	} else if (wasKeyDown(KeyType::FASTMOVE)) {
 		toggleFast();
 	} else if (wasKeyDown(KeyType::NOCLIP)) {
@@ -1994,12 +2005,10 @@ void Game::processItemSelection(u16 *new_playeritem)
 
 	/* Item selection using hotbar slot keys
 	 */
-	for (u16 i = 0; i < 23; i++) {
+	for (u16 i = 0; i <= max_item; i++) {
 		if (wasKeyDown((GameKeyType) (KeyType::SLOT_1 + i))) {
-			if (i < PLAYER_INVENTORY_SIZE && i < player->hud_hotbar_itemcount) {
-				*new_playeritem = i;
-				infostream << "Selected item: " << new_playeritem << std::endl;
-			}
+			*new_playeritem = i;
+			infostream << "Selected item: " << new_playeritem << std::endl;
 			break;
 		}
 	}
@@ -2097,6 +2106,19 @@ void Game::toggleFreeMoveAlt()
 		toggleFreeMove();
 
 	runData.reset_jump_timer = true;
+}
+
+
+void Game::togglePitchFly()
+{
+	bool pitch_fly = !g_settings->getBool("pitch_fly");
+	g_settings->set("pitch_fly", bool_to_cstr(pitch_fly));
+
+	if (pitch_fly) {
+		m_game_ui->showTranslatedStatusText("Pitch fly mode enabled");
+	} else {
+		m_game_ui->showTranslatedStatusText("Pitch fly mode disabled");
+	}
 }
 
 
@@ -2449,8 +2471,15 @@ void Game::updatePlayerControl(const CameraOrientation &cam)
 	}
 #endif
 
-	client->setPlayerControl(control);
 	LocalPlayer *player = client->getEnv().getLocalPlayer();
+
+	// autojump if set: simulate "jump" key
+	if (player->getAutojump()) {
+		control.jump = true;
+		keypress_bits |= 1U << 4;
+	}
+
+	client->setPlayerControl(control);
 	player->keyPressed = keypress_bits;
 
 	//tt.stop();
@@ -2525,12 +2554,15 @@ void Game::handleClientEvent_PlayerForceMove(ClientEvent *event, CameraOrientati
 
 void Game::handleClientEvent_Deathscreen(ClientEvent *event, CameraOrientation *cam)
 {
-	// This should be enabled for death formspec in builtin
-	client->getScript()->on_death();
-
-	LocalPlayer *player = client->getEnv().getLocalPlayer();
+	// If CSM enabled, deathscreen is handled by CSM code in
+	// builtin/client/init.lua
+	if (client->moddingEnabled())
+		client->getScript()->on_death();
+	else
+		showDeathFormspec();
 
 	/* Handle visualization */
+	LocalPlayer *player = client->getEnv().getLocalPlayer();
 	runData.damage_flash = 0;
 	player->hurt_tilt_timer = 0;
 	player->hurt_tilt_strength = 0;
@@ -3997,6 +4029,27 @@ void Game::extendedResourceCleanup()
 	infostream << "\tRemaining materials: "
                << driver-> getMaterialRendererCount()
 		       << " (note: irrlicht doesn't support removing renderers)" << std::endl;
+}
+
+void Game::showDeathFormspec()
+{
+	static std::string formspec =
+		std::string(FORMSPEC_VERSION_STRING) +
+		SIZE_TAG
+		"bgcolor[#320000b4;true]"
+		"label[4.85,1.35;" + gettext("You died") + "]"
+		"button_exit[4,3;3,0.5;btn_respawn;" + gettext("Respawn") + "]"
+		;
+
+	/* Create menu */
+	/* Note: FormspecFormSource and LocalFormspecHandler  *
+	 * are deleted by guiFormSpecMenu                     */
+	FormspecFormSource *fs_src = new FormspecFormSource(formspec);
+	LocalFormspecHandler *txt_dst = new LocalFormspecHandler("MT_DEATH_SCREEN", client);
+
+	GUIFormSpecMenu::create(current_formspec, client, &input->joystick, fs_src,
+		txt_dst, client->getFormspecPrepend());
+	current_formspec->setFocus("btn_respawn");
 }
 
 #define GET_KEY_NAME(KEY) gettext(getKeySetting(#KEY).name())

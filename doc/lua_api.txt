@@ -1077,16 +1077,11 @@ Look for examples in `games/minimal` or `games/minetest_game`.
 * `glasslike_framed`
     * All face-connected nodes are drawn as one volume within a surrounding
       frame.
-    * The frame appearence is generated from the edges of the first texture
+    * The frame appearance is generated from the edges of the first texture
       specified in `tiles`. The width of the edges used are 1/16th of texture
       size: 1 pixel for 16x16, 2 pixels for 32x32 etc.
     * The glass 'shine' (or other desired detail) on each node face is supplied
       by the second texture specified in `tiles`.
-    * If a third texture is specified in `tiles` it will be used for the top and
-      base of the glass volume.
-    * If third and fourth textures are specified in `tiles`, the third will be
-      used for the top of the glass volume and the fourth will be used for the
-      base of the glass volume.
 * `glasslike_framed_optional`
     * This switches between the above 2 drawtypes according to the menu setting
       'Connected Glass'.
@@ -3672,7 +3667,11 @@ Call these functions only at load time!
     * Return `true` to mark the message as handled, which means that it will
       not be sent to other players.
 * `minetest.register_on_player_receive_fields(func(player, formname, fields))`
-    * Called when a button is pressed in player's inventory form
+    * Called when a button is pressed in player's inventory form, when form
+      values are submitted or when the form is actively closed by the player.
+    * Fields are sent for formspec elements which define a field, and the "quit"
+      field is sent when actively closing the form by mouse click, keypress or
+      through a button_exit[] element.
     * Newest functions are called first
     * If function returns `true`, remaining functions are not called
 * `minetest.register_on_craft(func(itemstack, player, old_craft_grid, craft_inv))`
@@ -5075,6 +5074,9 @@ This is basically a reference to a C++ `ServerActiveObject`
 * `set_acceleration(acc)`
     * `acc` is a vector
 * `get_acceleration()`: returns the acceleration, a vector
+* `set_rotation(rot)`
+    * `rot` is a vector (radians)
+* `get_rotation()` : returns the rotation, a vector (radians)
 * `set_yaw(radians)`
 * `get_yaw()`: returns number in radians
 * `set_texture_mod(mod)`
@@ -5188,7 +5190,7 @@ This is basically a reference to a C++ `ServerActiveObject`
 * `hud_get_flags()`: returns a table of player HUD flags with boolean values.
     * See `hud_set_flags` for a list of flags that can be toggled.
 * `hud_set_hotbar_itemcount(count)`: sets number of items in builtin hotbar
-    * `count`: number of items, must be between `1` and `23`
+    * `count`: number of items, must be between `1` and `32`
 * `hud_get_hotbar_itemcount`: returns number of visible items
 * `hud_set_hotbar_image(texturename)`
     * sets background image for hotbar

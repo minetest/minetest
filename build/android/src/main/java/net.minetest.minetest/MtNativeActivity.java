@@ -2,23 +2,55 @@ package net.minetest.minetest;
 
 import android.app.NativeActivity;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
+import android.view.View;
 import android.view.WindowManager;
 
 public class MtNativeActivity extends NativeActivity {
+
+	static {
+		System.loadLibrary("openal");
+		System.loadLibrary("ogg");
+		System.loadLibrary("vorbis");
+		System.loadLibrary("gmp");
+		System.loadLibrary("iconv");
+		System.loadLibrary("minetest");
+	}
+
+	private int m_MessagReturnCode;
+	private String m_MessageReturnValue;
+
+	public static native void putMessageBoxResult(String text);
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 		m_MessagReturnCode = -1;
 		m_MessageReturnValue = "";
-
 	}
 
 	@Override
-	public void onDestroy() {
-		super.onDestroy();
+	protected void onResume() {
+		super.onResume();
+		makeFullScreen();
+	}
+
+	public void makeFullScreen() {
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+			this.getWindow().getDecorView().setSystemUiVisibility(
+					View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+			);
+		}
+	}
+
+	@Override
+	public void onWindowFocusChanged(boolean hasFocus) {
+		super.onWindowFocusChanged(hasFocus);
+		if (hasFocus) {
+			makeFullScreen();
+		}
 	}
 
 	public void copyAssets() {
@@ -27,7 +59,7 @@ public class MtNativeActivity extends NativeActivity {
 	}
 
 	public void showDialog(String acceptButton, String hint, String current,
-			int editType) {
+						   int editType) {
 
 		Intent intent = new Intent(this, MinetestTextEntry.class);
 		Bundle params = new Bundle();
@@ -38,10 +70,8 @@ public class MtNativeActivity extends NativeActivity {
 		intent.putExtras(params);
 		startActivityForResult(intent, 101);
 		m_MessageReturnValue = "";
-		m_MessagReturnCode   = -1;
+		m_MessagReturnCode = -1;
 	}
-
-	public static native void putMessageBoxResult(String text);
 
 	/* ugly code to workaround putMessageBoxResult not beeing found */
 	public int getDialogState() {
@@ -67,32 +97,15 @@ public class MtNativeActivity extends NativeActivity {
 
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode,
-			Intent data) {
+									Intent data) {
 		if (requestCode == 101) {
 			if (resultCode == RESULT_OK) {
 				String text = data.getStringExtra("text");
 				m_MessagReturnCode = 0;
 				m_MessageReturnValue = text;
-			}
-			else {
+			} else {
 				m_MessagReturnCode = 1;
 			}
 		}
 	}
-
-	static {
-		System.loadLibrary("openal");
-		System.loadLibrary("ogg");
-		System.loadLibrary("vorbis");
-		System.loadLibrary("gmp");
-		System.loadLibrary("iconv");
-
-		// We don't have to load libminetest.so ourselves,
-		// but if we do, we get nicer logcat errors when
-		// loading fails.
-		System.loadLibrary("minetest");
-	}
-
-	private int m_MessagReturnCode;
-	private String m_MessageReturnValue;
 }

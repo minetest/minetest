@@ -25,7 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "server.h"
 #include "filesys.h"
 #include "version.h"
-#include "game.h"
+#include "client/game.h"
 #include "defaultsettings.h"
 #include "gettext.h"
 #include "log.h"

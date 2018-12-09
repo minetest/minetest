@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-	<string name="preparing_media">Preparing media...</string>
+	<string name="preparing_media">Preparing media&#8230;</string>
+	<string name="not_granted">Required permission wasn\'t granted, Minetest can\'t run without it</string>
 </resources>
-

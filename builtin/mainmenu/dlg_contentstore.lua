@@ -357,7 +357,7 @@ function store.get_formspec()
 	end
 
 	local formspec
-	if #store.packages ~= 0 then
+	if #store.packages > 0 then
 		formspec = {
 			"size[12,7;true]",
 			"position[0.5,0.55]",
@@ -371,12 +371,30 @@ function store.get_formspec()
 			";", filter_type, "]",
 			-- "textlist[0,1;2.4,5.6;a;",
 			-- table.concat(taglist, ","), "]",
+
+			-- Page nav buttons
+			"container[0,",
+			num_per_page + 1.5, "]",
+			"button[-0.1,0;3,1;back;",
+			fgettext("Back to Main Menu"), "]",
+			"button[7.1,0;1,1;pstart;<<]",
+			"button[8.1,0;1,1;pback;<]",
+			"label[9.2,0.2;",
+			tonumber(cur_page), " / ",
+			tonumber(pages), "]",
+			"button[10.1,0;1,1;pnext;>]",
+			"button[11.1,0;1,1;pend;>>]",
+			"container_end[]",
 		}
 	else
 		formspec = {
 			"size[12,7;true]",
 			"position[0.5,0.55]",
 			"label[4,3;No packages could be retrieved]",
+			"button[-0.1,",
+			num_per_page + 1.5,
+			";3,1;back;",
+			fgettext("Back to Main Menu"), "]",
 		}
 	end
 
@@ -433,24 +451,6 @@ function store.get_formspec()
 		formspec[#formspec + 1] = "container_end[]"
 	end
 
-	formspec[#formspec + 1] = "container[0,"
-	formspec[#formspec + 1] = num_per_page + 1.5
-	formspec[#formspec + 1] = "]"
-	formspec[#formspec + 1] = "button[-0.1,0;3,1;back;"
-	formspec[#formspec + 1] = fgettext("Back to Main Menu")
-	formspec[#formspec + 1] = "]"
-	formspec[#formspec + 1] = "button[7.1,0;1,1;pstart;<<]"
-	formspec[#formspec + 1] = "button[8.1,0;1,1;pback;<]"
-	formspec[#formspec + 1] = "label[9.2,0.2;"
-	formspec[#formspec + 1] = tonumber(cur_page)
-	formspec[#formspec + 1] = " / "
-	formspec[#formspec + 1] = tonumber(pages)
-	formspec[#formspec + 1] = "]"
-	formspec[#formspec + 1] = "button[10.1,0;1,1;pnext;>]"
-	formspec[#formspec + 1] = "button[11.1,0;1,1;pend;>>]"
-	formspec[#formspec + 1] = "container_end[]"
-
-	formspec[#formspec + 1] = "]"
 	return table.concat(formspec, "")
 end
 

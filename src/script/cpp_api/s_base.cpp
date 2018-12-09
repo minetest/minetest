@@ -29,7 +29,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/string.h"
 #include "server.h"
 #ifndef SERVER
-#include "client.h"
+#include "client/client.h"
 #endif
 
 

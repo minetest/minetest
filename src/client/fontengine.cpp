@@ -315,6 +315,11 @@ void FontEngine::initFont(unsigned int basesize, FontMode mode)
 		}
 		u32 size = std::floor(RenderingEngine::getDisplayDensity() *
 				m_settings->getFloat("gui_scaling") * basesize);
+		if (size == 0) {
+			errorstream << "FontEngine: attempt to use font size 0" << std::endl;
+			errorstream << "  display density: " << RenderingEngine::getDisplayDensity() << std::endl;
+			abort();
+		}
 		u32 font_shadow       = 0;
 		u32 font_shadow_alpha = 0;
 

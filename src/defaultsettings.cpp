@@ -43,6 +43,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("meshgen_block_cache_size", "20");
 	settings->setDefault("enable_vbo", "true");
 	settings->setDefault("free_move", "false");
+	settings->setDefault("pitch_fly", "false");
 	settings->setDefault("fast_move", "false");
 	settings->setDefault("noclip", "false");
 	settings->setDefault("screenshot_path", ".");
@@ -80,6 +81,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("keymap_console", "KEY_F10");
 	settings->setDefault("keymap_rangeselect", "KEY_KEY_R");
 	settings->setDefault("keymap_freemove", "KEY_KEY_K");
+	settings->setDefault("keymap_pitchfly", "KEY_KEY_L");
 	settings->setDefault("keymap_fastmove", "KEY_KEY_J");
 	settings->setDefault("keymap_noclip", "KEY_KEY_H");
 	settings->setDefault("keymap_hotbar_next", "KEY_KEY_N");
@@ -125,6 +127,15 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("keymap_slot21", "");
 	settings->setDefault("keymap_slot22", "");
 	settings->setDefault("keymap_slot23", "");
+	settings->setDefault("keymap_slot24", "");
+	settings->setDefault("keymap_slot25", "");
+	settings->setDefault("keymap_slot26", "");
+	settings->setDefault("keymap_slot27", "");
+	settings->setDefault("keymap_slot28", "");
+	settings->setDefault("keymap_slot29", "");
+	settings->setDefault("keymap_slot30", "");
+	settings->setDefault("keymap_slot31", "");
+	settings->setDefault("keymap_slot32", "");
 
 	// Some (temporary) keys for debugging
 	settings->setDefault("keymap_quicktune_prev", "KEY_HOME");
@@ -247,6 +258,11 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("aux1_descends", "false");
 	settings->setDefault("doubletap_jump", "false");
 	settings->setDefault("always_fly_fast", "true");
+#ifdef __ANDROID__
+	settings->setDefault("autojump", "true");
+#else
+	settings->setDefault("autojump", "false");
+#endif
 	settings->setDefault("continuous_forward", "false");
 	settings->setDefault("enable_joysticks", "false");
 	settings->setDefault("joystick_id", "0");
@@ -255,10 +271,8 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("joystick_frustum_sensitivity", "170");
 
 	// Main menu
-	settings->setDefault("main_menu_style", "auto");
+	settings->setDefault("main_menu_style", "full");
 	settings->setDefault("main_menu_path", "");
-	settings->setDefault("main_menu_mod_mgr", "1");
-	settings->setDefault("main_menu_game_mgr", "0");
 	settings->setDefault("serverlist_file", "favoriteservers.txt");
 
 #if USE_FREETYPE
@@ -399,6 +413,12 @@ void set_default_settings(Settings *settings)
 
 	settings->setDefault("high_precision_fpu", "true");
 	settings->setDefault("enable_console", "false");
+
+	// Altered settings for macOS
+#if defined(__MACH__) && defined(__APPLE__)
+	settings->setDefault("keymap_sneak", "KEY_SHIFT");
+	settings->setDefault("fps_max", "0");
+#endif
 
 	// Altered settings for Android
 #ifdef __ANDROID__

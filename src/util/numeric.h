@@ -182,6 +182,23 @@ inline float wrapDegrees_0_360(float f)
 }
 
 
+/** Returns \p v3f wrapped to the range [0, 360]
+  */
+inline v3f wrapDegrees_0_360_v3f(v3f v)
+{
+	v3f value_v3f;
+	value_v3f.X = modulo360f(v.X);
+	value_v3f.Y = modulo360f(v.Y);
+	value_v3f.Z = modulo360f(v.Z);
+
+	// Now that values are wrapped, use to get values for certain ranges
+	value_v3f.X = value_v3f.X < 0 ? value_v3f.X + 360 : value_v3f.X;
+	value_v3f.Y = value_v3f.Y < 0 ? value_v3f.Y + 360 : value_v3f.Y;
+	value_v3f.Z = value_v3f.Z < 0 ? value_v3f.Z + 360 : value_v3f.Z;
+	return value_v3f;
+}
+
+
 /** Returns \p f wrapped to the range [-180, 180]
   */
 inline float wrapDegrees_180(float f)

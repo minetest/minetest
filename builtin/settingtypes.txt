@@ -72,6 +72,9 @@ enable_build_where_you_stand (Build inside player) bool false
 #    This requires the "fly" privilege on the server.
 free_move (Flying) bool false
 
+#    If enabled together with fly mode, makes move directions relative to the player's pitch.
+pitch_fly (Pitch fly mode) bool false
+
 #    Fast movement (via the "special" key).
 #    This requires the "fast" privilege on the server.
 fast_move (Fast movement) bool false
@@ -110,6 +113,10 @@ always_fly_fast (Always fly and fast) bool true
 #    The time in seconds it takes between repeated right clicks when holding the right
 #    mouse button.
 repeat_rightclick_time (Rightclick repetition interval) float 0.25
+
+#    Automatically jump up single-node obstacles.
+#    type: bool
+autojump (Automatic jumping) bool false
 
 #    Prevent digging and placing from repeating when holding the mouse buttons.
 #    Enable this when you dig or place too often by accident.
@@ -203,6 +210,10 @@ keymap_rangeselect (Range select key) key KEY_KEY_R
 #    Key for toggling flying.
 #    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
 keymap_freemove (Fly key) key KEY_KEY_K
+
+#    Key for toggling pitch fly mode.
+#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+keymap_pitchfly (Pitch fly key) key KEY_KEY_L
 
 #    Key for toggling fast mode.
 #    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
@@ -336,17 +347,53 @@ keymap_slot19 (Hotbar slot 19 key) key
 #    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
 keymap_slot20 (Hotbar slot 20 key) key
 
-#    Key for selecting the 21th hotbar slot.
+#    Key for selecting the 21st hotbar slot.
 #    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
 keymap_slot21 (Hotbar slot 21 key) key
 
-#    Key for selecting the 22th hotbar slot.
+#    Key for selecting the 22nd hotbar slot.
 #    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
 keymap_slot22 (Hotbar slot 22 key) key
 
-#    Key for selecting the 23th hotbar slot.
+#    Key for selecting the 23rd hotbar slot.
 #    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
 keymap_slot23 (Hotbar slot 23 key) key
+
+#    Key for selecting the 24th hotbar slot.
+#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+keymap_slot24 (Hotbar slot 24 key) key
+
+#    Key for selecting the 25th hotbar slot.
+#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+keymap_slot25 (Hotbar slot 25 key) key
+
+#    Key for selecting the 26th hotbar slot.
+#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+keymap_slot26 (Hotbar slot 26 key) key
+
+#    Key for selecting the 27th hotbar slot.
+#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+keymap_slot27 (Hotbar slot 27 key) key
+
+#    Key for selecting the 28th hotbar slot.
+#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+keymap_slot28 (Hotbar slot 28 key) key
+
+#    Key for selecting the 29th hotbar slot.
+#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+keymap_slot29 (Hotbar slot 29 key) key
+
+#    Key for selecting the 30th hotbar slot.
+#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+keymap_slot30 (Hotbar slot 30 key) key
+
+#    Key for selecting the 31st hotbar slot.
+#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+keymap_slot31 (Hotbar slot 31 key) key
+
+#    Key for selecting the 32nd hotbar slot.
+#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+keymap_slot32 (Hotbar slot 32 key) key
 
 #    Key for toggling the display of the HUD.
 #    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
@@ -892,7 +939,7 @@ server_address (Server address) string game.minetest.net
 #    Homepage of server, to be displayed in the serverlist.
 server_url (Server URL) string https://minetest.net
 
-#    Automaticaly report to the serverlist.
+#    Automatically report to the serverlist.
 server_announce (Announce server) bool false
 
 #    Announce to this serverlist.
@@ -1262,15 +1309,10 @@ high_precision_fpu (High-precision FPU) bool true
 #    -   Full:  Multple singleplayer worlds, game choice, texture pack chooser, etc.
 #    -   Simple: One singleplayer world, no game or texture pack choosers. May be
 #                necessary for smaller screens.
-#    -   Auto: Simple on Android, full on everything else.
-main_menu_style (Main menu style) enum auto auto,full,simple
+main_menu_style (Main menu style) enum full full,simple
 
 #    Replaces the default main menu with a custom one.
 main_menu_script (Main menu script) string
-
-main_menu_game_mgr (Main menu game manager) int 0
-
-main_menu_mod_mgr (Main menu mod manager) int 1
 
 #    Print the engine's profiling data in regular intervals (in seconds).
 #    0 = disable. Useful for developers.
@@ -1280,11 +1322,11 @@ profiler_print_interval (Engine profiling data print interval) int 0
 
 #    Name of map generator to be used when creating a new world.
 #    Creating a world in the main menu will override this.
-#    Current stable mapgens: v6, v7 (except floatlands).
-#    'stable' means the terrain shape in an existing world will not
-#    be changed in the future. Note that biomes are defined by games
-#    and may still change.
-mg_name (Mapgen name) enum v7 v5,v6,v7,flat,valleys,fractal,singlenode
+#    Current stable mapgens:
+#    v5, v6, v7 (except floatlands), flat, singlenode.
+#    'stable' means the terrain shape in an existing world will not be changed
+#    in the future. Note that biomes are defined by games and may still change.
+mg_name (Mapgen name) enum v7 v5,v6,v7,valleys,carpathian,fractal,flat,singlenode
 
 #    Water surface level of the world.
 water_level (Water level) int 1
@@ -1722,7 +1764,7 @@ mgfractal_iterations (Iterations) int 11
 #    an island, set all 3 numbers equal for the raw shape.
 mgfractal_scale (Scale) v3f (4096.0, 1024.0, 4096.0)
 
-#    (X,Y,Z) offset of fractal from world centre in units of 'scale'.
+#    (X,Y,Z) offset of fractal from world center in units of 'scale'.
 #    Can be used to move a desired point to (0, 0) to create a
 #    suitable spawn point, or to allow 'zooming in' on a desired
 #    point by increasing 'scale'.
@@ -1732,7 +1774,7 @@ mgfractal_scale (Scale) v3f (4096.0, 1024.0, 4096.0)
 #    Range roughly -2 to 2. Multiply by 'scale' for offset in nodes.
 mgfractal_offset (Offset) v3f (1.79, 0.0, 0.0)
 
-#    W co-ordinate of the generated 3D slice of a 4D fractal.
+#    W coordinate of the generated 3D slice of a 4D fractal.
 #    Determines which 3D slice of the 4D shape is generated.
 #    Alters the shape of the fractal.
 #    Has no effect on 3D fractals.

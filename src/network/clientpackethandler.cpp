@@ -17,15 +17,15 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#include "client.h"
+#include "client/client.h"
 
 #include "util/base64.h"
 #include "chatmessage.h"
-#include "clientmedia.h"
+#include "client/clientmedia.h"
 #include "log.h"
 #include "map.h"
 #include "mapsector.h"
-#include "minimap.h"
+#include "client/minimap.h"
 #include "modchannels.h"
 #include "nodedef.h"
 #include "serialization.h"
@@ -243,6 +243,33 @@ void Client::handleCommand_AddNode(NetworkPacket* pkt)
 
 	addNode(p, n, remove_metadata);
 }
+
+void Client::handleCommand_NodemetaChanged(NetworkPacket *pkt)
+{
+	if (pkt->getSize() < 1)
+		return;
+
+	std::istringstream is(pkt->readLongString(), std::ios::binary);
+	std::stringstream sstr;
+	decompressZlib(is, sstr);
+
+	NodeMetadataList meta_updates_list(false);
+	meta_updates_list.deSerialize(sstr, m_itemdef, true);
+
+	Map &map = m_env.getMap();
+	for (NodeMetadataMap::const_iterator i = meta_updates_list.begin();
+			i != meta_updates_list.end(); ++i) {
+		v3s16 pos = i->first;
+
+		if (map.isValidPosition(pos) &&
+				map.setNodeMetadata(pos, i->second))
+			continue; // Prevent from deleting metadata
+
+		// Meta couldn't be set, unused metadata
+		delete i->second;
+	}
+}
+
 void Client::handleCommand_BlockData(NetworkPacket* pkt)
 {
 	// Ignore too small packet
@@ -384,12 +411,12 @@ void Client::handleCommand_ChatMessage(NetworkPacket *pkt)
 	chatMessage->type = (ChatMessageType) message_type;
 
 	// @TODO send this to CSM using ChatMessage object
-	if (!moddingEnabled() || !m_script->on_receiving_message(
+	if (moddingEnabled() && m_script->on_receiving_message(
 			wide_to_utf8(chatMessage->message))) {
-		pushToChatQueue(chatMessage);
-	} else {
-		// Message was consumed by CSM and should not handled by client, destroying
+		// Message was consumed by CSM and should not be handled by client
 		delete chatMessage;
+	} else {
+		pushToChatQueue(chatMessage);
 	}
 }
 

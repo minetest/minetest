@@ -19,8 +19,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "interlaced.h"
-#include "client.h"
-#include "shader.h"
+#include "client/client.h"
+#include "client/shader.h"
 #include "client/tile.h"
 
 RenderingCoreInterlaced::RenderingCoreInterlaced(

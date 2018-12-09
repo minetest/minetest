@@ -22,6 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "modalMenu.h"
 #include "gettext.h"
 #include "porting.h"
+#include "settings.h"
 
 #ifdef HAVE_TOUCHSCREENGUI
 #include "touchscreengui.h"
@@ -37,6 +38,11 @@ GUIModalMenu::GUIModalMenu(gui::IGUIEnvironment* env, gui::IGUIElement* parent, 
 #endif
 		m_menumgr(menumgr)
 {
+	m_gui_scale = g_settings->getFloat("gui_scaling");
+#ifdef __ANDROID__
+	float d = porting::getDisplayDensity();
+	m_gui_scale *= 1.1 - 0.3 * d + 0.2 * d * d;
+#endif
 	setVisible(true);
 	Environment->setFocus(this);
 	m_menumgr->createdMenu(this);

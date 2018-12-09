@@ -24,7 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "nodedef.h"
 #include "gamedef.h"
 #ifndef SERVER
-#include "clientenvironment.h"
+#include "client/clientenvironment.h"
 #endif
 #include "serverenvironment.h"
 #include "serverobject.h"
@@ -515,6 +515,7 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 
 			info.node_p = nearest_info.position;
 			info.old_speed = *speed_f;
+			info.plane = nearest_collided;
 
 			// Set the speed component that caused the collision to zero
 			if (step_up) {

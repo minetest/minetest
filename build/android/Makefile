@@ -13,10 +13,6 @@ ANDR_ROOT = $(shell pwd)
 PROJ_ROOT = $(shell realpath $(ANDR_ROOT)/../..)
 APP_ROOT = $(ANDR_ROOT)/src/main
 
-GAMES_TO_COPY = minetest_game
-MODS_TO_COPY =
-
-
 VERSION_MAJOR := $(shell cat $(PROJ_ROOT)/CMakeLists.txt | \
 	grep ^set\(VERSION_MAJOR\ | sed 's/)/ /' | cut -f2 -d' ')
 VERSION_MINOR := $(shell cat $(PROJ_ROOT)/CMakeLists.txt | \
@@ -732,26 +728,7 @@ assets : $(ASSETS_TIMESTAMP)
 	if [ $$REFRESH -ne 0 ] ; then                                              \
 	echo "assets changed, refreshing...";                                      \
 	$(MAKE) clean_assets;                                                      \
-	mkdir -p ${APP_ROOT}/assets/Minetest;                                      \
-	cp ${PROJ_ROOT}/minetest.conf.example ${APP_ROOT}/assets/Minetest;         \
-	cp ${PROJ_ROOT}/README.md ${APP_ROOT}/assets/Minetest;                     \
-	cp -r ${PROJ_ROOT}/builtin ${APP_ROOT}/assets/Minetest;                    \
-	mkdir -p ${APP_ROOT}/assets/Minetest/client;                                  \
-	cp -r ${PROJ_ROOT}/client/shaders ${APP_ROOT}/assets/Minetest/client;      \
-	cp ${PROJ_ROOT}/doc/lgpl-2.1.txt ${APP_ROOT}/assets/Minetest/LICENSE.txt;  \
-	mkdir -p ${APP_ROOT}/assets/Minetest/fonts;                                   \
-	cp -r ${PROJ_ROOT}/fonts/*.ttf ${APP_ROOT}/assets/Minetest/fonts/;         \
-	mkdir -p ${APP_ROOT}/assets/Minetest/games;                                   \
-	for game in ${GAMES_TO_COPY}; do                                           \
-	    cp -r ${PROJ_ROOT}/games/$$game ${APP_ROOT}/assets/Minetest/games/;    \
-	done;                                                                      \
-	mkdir -p ${APP_ROOT}/assets/Minetest/mods;                                    \
-	for mod in ${MODS_TO_COPY}; do                                             \
-	    cp -r ${PROJ_ROOT}/mods/$$mod ${APP_ROOT}/assets/Minetest/mods/;       \
-	done;                                                                      \
-	cp -r ${PROJ_ROOT}/po ${APP_ROOT}/assets/Minetest;                         \
-	cp -r ${PROJ_ROOT}/textures ${APP_ROOT}/assets/Minetest;                   \
-	mkdir -p ${APP_ROOT}/assets/Minetest/media;                                \
+	./gradlew copyAssets;                                                      \
 	cp -r ${IRRLICHT_DIR}/media/Shaders ${APP_ROOT}/assets/Minetest/media;     \
 	cd ${APP_ROOT}/assets ||  exit 1;                                          \
 	find . -name "timestamp" -exec rm {} \; ;                                  \

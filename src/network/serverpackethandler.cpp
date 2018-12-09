@@ -473,8 +473,8 @@ void Server::process_PlayerPos(RemotePlayer *player, PlayerSAO *playersao,
 
 	playersao->setBasePosition(position);
 	player->setSpeed(speed);
-	playersao->setPitch(pitch);
-	playersao->setYaw(yaw);
+	playersao->setLookPitch(pitch);
+	playersao->setPlayerYaw(yaw);
 	playersao->setFov(fov);
 	playersao->setWantedRange(wanted_range);
 	player->keyPressed = keyPressed;
@@ -609,7 +609,9 @@ void Server::handleCommand_InventoryAction(NetworkPacket* pkt)
 		ma->to_inv.applyCurrentPlayer(player->getName());
 
 		setInventoryModified(ma->from_inv, false);
-		setInventoryModified(ma->to_inv, false);
+		if (ma->from_inv != ma->to_inv) {
+			setInventoryModified(ma->to_inv, false);
+		}
 
 		bool from_inv_is_current_player =
 			(ma->from_inv.type == InventoryLocation::PLAYER) &&

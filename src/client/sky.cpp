@@ -228,7 +228,7 @@ void Sky::render()
 			driver->drawIndexedTriangleFan(&vertices[0], 4, indices, 2);
 		}
 
-		// Draw far cloudy fog thing
+		// Draw far cloudy fog thing at and below all horizons
 		for (u32 j = 0; j < 4; j++) {
 			video::SColor c = cloudyfogcolor;
 			vertices[0] = video::S3DVertex(-1, -1.0, -1, 0, 0, 1, c, t, t);
@@ -252,53 +252,25 @@ void Sky::render()
 			driver->drawIndexedTriangleFan(&vertices[0], 4, indices, 2);
 		}
 
-		// Draw bottom far cloudy fog thing
-		video::SColor c = cloudyfogcolor;
-		vertices[0] = video::S3DVertex(-1, -1.0, -1, 0, 1, 0, c, t, t);
-		vertices[1] = video::S3DVertex( 1, -1.0, -1, 0, 1, 0, c, o, t);
-		vertices[2] = video::S3DVertex( 1, -1.0, 1, 0, 1, 0, c, o, o);
-		vertices[3] = video::S3DVertex(-1, -1.0, 1, 0, 1, 0, c, t, o);
-		driver->drawIndexedTriangleFan(&vertices[0], 4, indices, 2);
-
 		// If sun, moon and stars are (temporarily) disabled, abort here
 		if (!m_bodies_visible)
 			return;
 
-		driver->setMaterial(m_materials[2]);
-
-		// Draw sunrise/sunset horizon glow texture (textures/base/pack/sunrisebg.png)
-		{
-			float mid1 = 0.25;
-			float mid = wicked_time_of_day < 0.5 ? mid1 : (1.0 - mid1);
-			float a_ = 1.0f - std::fabs(wicked_time_of_day - mid) * 35.0f;
-			float a = easeCurve(MYMAX(0, MYMIN(1, a_)));
-			//std::cerr<<"a_="<<a_<<" a="<<a<<std::endl;
-			video::SColor c(255, 255, 255, 255);
-			float y = -(1.0 - a) * 0.22;
-			vertices[0] = video::S3DVertex(-1, -0.05 + y, -1, 0, 0, 1, c, t, t);
-			vertices[1] = video::S3DVertex( 1, -0.05 + y, -1, 0, 0, 1, c, o, t);
-			vertices[2] = video::S3DVertex( 1,   0.2 + y, -1, 0, 0, 1, c, o, o);
-			vertices[3] = video::S3DVertex(-1,   0.2 + y, -1, 0, 0, 1, c, t, o);
-			for (video::S3DVertex &vertex : vertices) {
-				if (wicked_time_of_day < 0.5)
-					// Switch from -Z (south) to +X (east)
-					vertex.Pos.rotateXZBy(90);
-				else
-					// Switch from -Z (south) to -X (west)
-					vertex.Pos.rotateXZBy(-90);
-			}
-			driver->drawIndexedTriangleFan(&vertices[0], 4, indices, 2);
-		}
-
-		// Draw stars
+		// Draw stars before sun and moon to be behind them
 		do {
 			driver->setMaterial(m_materials[1]);
+			// Tune values so that stars first appear just after the sun
+			// disappears over the horizon, and disappear just before the sun 
+			// appears over the horizon.
+			// Also tune so that stars are at full brightness from time 20000 to 
+			// time 4000.
 			float starbrightness = MYMAX(0, MYMIN(1,
-				(0.285 - fabs(wicked_time_of_day < 0.5 ?
-				wicked_time_of_day : (1.0 - wicked_time_of_day))) * 10));
+				(0.25 - fabs(wicked_time_of_day < 0.5 ?
+				wicked_time_of_day : (1.0 - wicked_time_of_day))) * 20));
 			float f = starbrightness;
-			float d = 0.007/2;
+			float d = 0.007 / 2;
 			video::SColor starcolor(255, f * 90, f * 90, f * 90);
+			// Stars are only drawn when brighter than skycolor
 			if (starcolor.getBlue() < m_skycolor.getBlue())
 				break;
 #ifdef __ANDROID__
@@ -366,6 +338,31 @@ void Sky::render()
 				scene::EPT_QUADS, video::EIT_16BIT);
 #endif
 		} while(false);
+
+		// Draw sunrise/sunset horizon glow texture (textures/base/pack/sunrisebg.png)
+		{
+			driver->setMaterial(m_materials[2]);
+			float mid1 = 0.25;
+			float mid = wicked_time_of_day < 0.5 ? mid1 : (1.0 - mid1);
+			float a_ = 1.0f - std::fabs(wicked_time_of_day - mid) * 35.0f;
+			float a = easeCurve(MYMAX(0, MYMIN(1, a_)));
+			//std::cerr<<"a_="<<a_<<" a="<<a<<std::endl;
+			video::SColor c(255, 255, 255, 255);
+			float y = -(1.0 - a) * 0.22;
+			vertices[0] = video::S3DVertex(-1, -0.05 + y, -1, 0, 0, 1, c, t, t);
+			vertices[1] = video::S3DVertex( 1, -0.05 + y, -1, 0, 0, 1, c, o, t);
+			vertices[2] = video::S3DVertex( 1,   0.2 + y, -1, 0, 0, 1, c, o, o);
+			vertices[3] = video::S3DVertex(-1,   0.2 + y, -1, 0, 0, 1, c, t, o);
+			for (video::S3DVertex &vertex : vertices) {
+				if (wicked_time_of_day < 0.5)
+					// Switch from -Z (south) to +X (east)
+					vertex.Pos.rotateXZBy(90);
+				else
+					// Switch from -Z (south) to -X (west)
+					vertex.Pos.rotateXZBy(-90);
+			}
+			driver->drawIndexedTriangleFan(&vertices[0], 4, indices, 2);
+		}
 
 		// Draw sun
 		if (wicked_time_of_day > 0.15 && wicked_time_of_day < 0.85) {
@@ -519,24 +516,40 @@ void Sky::render()
 			}
 		}
 
-		// Draw far cloudy fog thing below east and west horizons
-		for (u32 j = 0; j < 2; j++) {
+		// Draw far cloudy fog thing below all horizons in front of sun, moon
+		// and stars.
+		driver->setMaterial(m_materials[1]);
+
+		for (u32 j = 0; j < 4; j++) {
 			video::SColor c = cloudyfogcolor;
 			vertices[0] = video::S3DVertex(-1, -1.0,  -1, 0, 0, 1, c, t, t);
 			vertices[1] = video::S3DVertex( 1, -1.0,  -1, 0, 0, 1, c, o, t);
 			vertices[2] = video::S3DVertex( 1, -0.02, -1, 0, 0, 1, c, o, o);
 			vertices[3] = video::S3DVertex(-1, -0.02, -1, 0, 0, 1, c, t, o);
 			for (video::S3DVertex &vertex : vertices) {
-				//if (wicked_time_of_day < 0.5)
 				if (j == 0)
+					// Don't switch
+					{}
+				else if (j == 1)
 					// Switch from -Z (south) to +X (east)
 					vertex.Pos.rotateXZBy(90);
-				else
+				else if (j == 2)
 					// Switch from -Z (south) to -X (west)
 					vertex.Pos.rotateXZBy(-90);
+				else
+					// Switch from -Z (south) to +Z (north)
+					vertex.Pos.rotateXZBy(-180);
 			}
 			driver->drawIndexedTriangleFan(&vertices[0], 4, indices, 2);
 		}
+
+		// Draw bottom far cloudy fog thing in front of sun, moon and stars
+		video::SColor c = cloudyfogcolor;
+		vertices[0] = video::S3DVertex(-1, -1.0, -1, 0, 1, 0, c, t, t);
+		vertices[1] = video::S3DVertex( 1, -1.0, -1, 0, 1, 0, c, o, t);
+		vertices[2] = video::S3DVertex( 1, -1.0, 1, 0, 1, 0, c, o, o);
+		vertices[3] = video::S3DVertex(-1, -1.0, 1, 0, 1, 0, c, t, o);
+		driver->drawIndexedTriangleFan(&vertices[0], 4, indices, 2);
 	}
 }
 

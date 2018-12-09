@@ -141,7 +141,6 @@ public:
 	DISABLE_CLASS_COPY(Client);
 
 	// Load local mods into memory
-	void loadBuiltin();
 	void scanModSubfolder(const std::string &mod_name, const std::string &mod_path,
 				std::string mod_subpath);
 	inline void scanModIntoMemory(const std::string &mod_name, const std::string &mod_path)
@@ -186,6 +185,7 @@ public:
 	void handleCommand_AccessDenied(NetworkPacket* pkt);
 	void handleCommand_RemoveNode(NetworkPacket* pkt);
 	void handleCommand_AddNode(NetworkPacket* pkt);
+	void handleCommand_NodemetaChanged(NetworkPacket *pkt);
 	void handleCommand_BlockData(NetworkPacket* pkt);
 	void handleCommand_Inventory(NetworkPacket* pkt);
 	void handleCommand_TimeOfDay(NetworkPacket* pkt);
@@ -400,6 +400,7 @@ public:
 
 	ClientScripting *getScript() { return m_script; }
 	const bool moddingEnabled() const { return m_modding_enabled; }
+	const bool modsLoaded() const { return m_mods_loaded; }
 
 	void pushToEventQueue(ClientEvent *event);
 

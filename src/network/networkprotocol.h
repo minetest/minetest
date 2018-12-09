@@ -190,6 +190,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		Add TOCLIENT_FORMSPEC_PREPEND
 	PROTOCOL VERSION 37:
 		Redo detached inventory sending
+		Add TOCLIENT_NODEMETA_CHANGED
 */
 
 #define LATEST_PROTOCOL_VERSION 37
@@ -638,13 +639,19 @@ enum ToClientCommand
 	 	std::string channel name
 	 	u16 message length
 	 	std::string message
-	 */
+	*/
+
 	TOCLIENT_MODCHANNEL_SIGNAL = 0x58,
 	/*
 		u8 signal id
 	 	u16 channel name length
 	 	std::string channel name
-	 */
+	*/
+
+	TOCLIENT_NODEMETA_CHANGED = 0x59,
+	/*
+		serialized and compressed node metadata
+	*/
 
 	TOCLIENT_SRP_BYTES_S_B = 0x60,
 	/*
