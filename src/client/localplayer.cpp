@@ -735,13 +735,10 @@ v3f LocalPlayer::getEyeOffset() const
 
 // 3D acceleration
 void LocalPlayer::accelerate(const v3f &target_speed, const f32 max_increase_H,
-		const f32 max_increase_V, bool use_pitch)
+		const f32 max_increase_V, const bool use_pitch)
 {
 	const f32 yaw = getYaw();
 	const f32 pitch = getPitch();
-	if (use_pitch && touching_ground && pitch > 0.0f)
-		// Prevent player from slowing down when looking at the ground in pitch mode
-		use_pitch = false;
 	v3f flat_speed = m_speed;
 	// Rotate speed vector by -yaw and -pitch to make it relative to the player's yaw and pitch
 	flat_speed.rotateXZBy(-yaw);
