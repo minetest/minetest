@@ -30,10 +30,8 @@ core.env = {}
 local envref_deprecation_message_printed = false
 setmetatable(core.env, {
 	__index = function(table, key)
-		if not envref_deprecation_message_printed then
-			core.log("deprecated", "core.env:[...] is deprecated and should be replaced with core.[...]")
-			envref_deprecation_message_printed = true
-		end
+		core.log("deprecated", "core.env:[...] is deprecated and "
+			.. "should be replaced with core.[...]", 2)
 		local func = core[key]
 		if type(func) == "function" then
 			rawset(table, key, function(self, ...)
@@ -58,9 +56,8 @@ local settings = core.settings
 
 local function setting_proxy(name)
 	return function(...)
-		core.log("deprecated", "WARNING: minetest.setting_* "..
-			"functions are deprecated.  "..
-			"Use methods on the minetest.settings object.")
+		core.log("deprecated", "Call to deprecated function. "
+			.. "Instead, use the minetest.settings object.", 1)
 		return settings[name](settings, ...)
 	end
 end

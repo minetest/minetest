@@ -373,12 +373,13 @@ void ScriptApiBase::objectrefGetOrCreate(lua_State *L,
 {
 	if (cobj == NULL || cobj->getId() == 0) {
 		ObjectRef::create(L, cobj);
+		log_deprecated(L, "ScriptApiBase::objectrefGetOrCreate() "
+			"Created reference for non-existing object");
 	} else {
 		push_objectRef(L, cobj->getId());
 		if (cobj->isGone())
-			warningstream << "ScriptApiBase::objectrefGetOrCreate(): "
-					<< "Pushing ObjectRef to removed/deactivated object"
-					<< ", this is probably a bug." << std::endl;
+			log_deprecated(L, "ScriptApiBase::objectrefGetOrCreate() "
+				"Pushing removed/deactivated object");
 	}
 }
 

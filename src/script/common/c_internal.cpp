@@ -18,10 +18,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "common/c_internal.h"
+#include "util/numeric.h"
 #include "debug.h"
 #include "log.h"
 #include "porting.h"
 #include "settings.h"
+#include <algorithm>
 
 std::string script_get_backtrace(lua_State *L)
 {
@@ -135,8 +137,17 @@ void script_run_callbacks_f(lua_State *L, int nargs,
 	lua_remove(L, error_handler);
 }
 
-void log_deprecated(lua_State *L, const std::string &message)
+/* Very similar to ModApiBase::l_deprecated_function but they cannot be combined:
+log_deprecated:
+	Custom warning message
+	ModApiBase independent
+l_deprecated_function:
+	Fast luaL_Reg wrapper for renamed object functions
+	Fast line lookup (vector per object type)
+*/
+void log_deprecated(lua_State *L, const std::string &message, int depth)
 {
+	thread_local std::vector<u64> lines_logged;
 	static bool configured = false;
 	static bool do_log     = false;
 	static bool do_error   = false;
@@ -152,24 +163,43 @@ void log_deprecated(lua_State *L, const std::string &message)
 		}
 	}
 
-	if (do_log) {
-		warningstream << message;
-		if (L) { // L can be NULL if we get called from scripting_game.cpp
-			lua_Debug ar;
+	if (!do_log)
+		return;
 
-			if (!lua_getstack(L, 2, &ar))
-				FATAL_ERROR_IF(!lua_getstack(L, 1, &ar), "lua_getstack() failed");
-			FATAL_ERROR_IF(!lua_getinfo(L, "Sl", &ar), "lua_getinfo() failed");
-			warningstream << " (at " << ar.short_src << ":" << ar.currentline << ")";
-		}
-		warningstream << std::endl;
-
-		if (L) {
-			if (do_error)
-				script_error(L, LUA_ERRRUN, NULL, NULL);
-			else
-				infostream << script_get_backtrace(L) << std::endl;
-		}
+	if (!L) {
+		// L can be NULL if we get called from scripting_game.cpp
+		warningstream << message << std::endl;
+		return;
 	}
+
+	lua_Debug ar;
+
+	// Get function name (if available)
+	FATAL_ERROR_IF(!lua_getstack(L, depth, &ar), "lua_getstack() failed");
+	FATAL_ERROR_IF(!lua_getinfo(L, "n", &ar), "lua_getinfo() failed");
+
+	if (!lua_getstack(L, depth + 1, &ar))
+		FATAL_ERROR_IF(!lua_getstack(L, depth, &ar), "lua_getstack() failed");
+	FATAL_ERROR_IF(!lua_getinfo(L, "Sl", &ar), "lua_getinfo() failed");
+
+	// Get backtrace and hash it to reduce the warning flood
+	std::string backtrace = ar.short_src;
+	backtrace.append(":").append(std::to_string(ar.currentline));
+	u64 hash = murmur_hash_64_ua(backtrace.data(), backtrace.length(), 0xBADBABE);
+
+	if (std::find(lines_logged.begin(), lines_logged.end(), hash)
+			!= lines_logged.end())
+		return;
+
+	lines_logged.emplace_back(hash);
+
+	if (ar.name)
+		warningstream << "Function '" << ar.name << "': ";
+	warningstream << message << " (at " << backtrace << ")" << std::endl;
+
+	if (do_error)
+		script_error(L, LUA_ERRRUN, NULL, NULL);
+	else
+		infostream << script_get_backtrace(L) << std::endl;
 }
 

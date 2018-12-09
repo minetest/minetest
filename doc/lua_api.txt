@@ -3538,7 +3538,10 @@ Logging
     * Equivalent to `minetest.log(table.concat({...}, "\t"))`
 * `minetest.log([level,] text)`
     * `level` is one of `"none"`, `"error"`, `"warning"`, `"action"`,
-      `"info"`, or `"verbose"`.  Default is `"none"`.
+      `"info"`, `"verbose"` or `"deprecated"`.  Default is `"none"`.
+    * When `level` is `"deprecated"`, then an optional 3rd integer parameter
+      may be used to specify the function call depth for the log message.
+
 
 Registration functions
 ----------------------
