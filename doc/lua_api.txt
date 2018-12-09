@@ -3685,7 +3685,7 @@ Call these functions only at load time!
 * `minetest.register_craft_predict(func(itemstack, player, old_craft_grid, craft_inv))`
     * The same as before, except that it is called before the player crafts, to
       make craft prediction, and it should not change anything.
-* `minetest.register_allow_player_inventory_action(func(player, inventory, action, inventory_info))`
+* `minetest.register_allow_player_inventory_action(func(player, action, inventory, inventory_info))`
     * Determinates how much of a stack may be taken, put or moved to a
       player inventory.
     * `player` (type `ObjectRef`) is the player who modified the inventory
@@ -3697,7 +3697,7 @@ Call these functions only at load time!
         * `take`: Same as `put`
     * Return a numeric value to limit the amount of items to be taken, put or
       moved. A value of `-1` for `take` will make the source stack infinite.
-* `minetest.register_on_player_inventory_action(func(player, inventory, action, inventory_info))`
+* `minetest.register_on_player_inventory_action(func(player, action, inventory, inventory_info))`
     * Called after a take, put or move event from/to/in a player inventory
     * Function arguments: see `minetest.register_allow_player_inventory_action`
     * Does not accept or handle any return value.
