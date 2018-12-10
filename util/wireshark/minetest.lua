@@ -118,7 +118,7 @@ end
 
 do
 	local f_count = ProtoField.uint8("minetest.client.gotblocks_count", "Count", base.DEC)
-	local f_block = ProtoField.bytes("minetest.client.gotblocks_block", "Block", base.DEC)
+	local f_block = ProtoField.bytes("minetest.client.gotblocks_block", "Block", base.NONE)
 	local f_x = ProtoField.int16("minetest.client.gotblocks_x", "Block position X", base.DEC)
 	local f_y = ProtoField.int16("minetest.client.gotblocks_y", "Block position Y", base.DEC)
 	local f_z = ProtoField.int16("minetest.client.gotblocks_z", "Block position Z", base.DEC)
@@ -152,7 +152,7 @@ end
 
 do
 	local f_count = ProtoField.uint8("minetest.client.deletedblocks_count", "Count", base.DEC)
-	local f_block = ProtoField.bytes("minetest.client.deletedblocks_block", "Block", base.DEC)
+	local f_block = ProtoField.bytes("minetest.client.deletedblocks_block", "Block", base.NONE)
 	local f_x = ProtoField.int16("minetest.client.deletedblocks_x", "Block position X", base.DEC)
 	local f_y = ProtoField.int16("minetest.client.deletedblocks_y", "Block position Y", base.DEC)
 	local f_z = ProtoField.int16("minetest.client.deletedblocks_z", "Block position Z", base.DEC)
@@ -548,7 +548,7 @@ minetest_server_obsolete[0x23] = true
 
 do
 	local f_count = ProtoField.uint16("minetest.server.playerinfo_count", "Count", base.DEC)
-	local f_player = ProtoField.bytes("minetest.server.playerinfo_player", "Player", base.DEC)
+	local f_player = ProtoField.bytes("minetest.server.playerinfo_player", "Player", base.NONE)
 	local f_peer_id = ProtoField.uint16("minetest.server.playerinfo_peer_id", "Peer ID", base.DEC)
 	local f_name = ProtoField.string("minetest.server.playerinfo_name", "Name")
 
