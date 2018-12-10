@@ -646,55 +646,55 @@ Minetest namespace reference
 ### Global callback registration functions
 Call these functions only at load time!
 
-* `minetest.register_globalstep(func(dtime))`
+* `minetest.register_globalstep(function(dtime))`
     * Called every client environment step, usually interval of 0.1s
-* `minetest.register_on_mods_loaded(func())`
+* `minetest.register_on_mods_loaded(function())`
     * Called just after mods have finished loading.
-* `minetest.register_on_shutdown(func())`
+* `minetest.register_on_shutdown(function())`
     * Called before client shutdown
     * **Warning**: If the client terminates abnormally (i.e. crashes), the registered
       callbacks **will likely not be run**. Data should be saved at
       semi-frequent intervals as well as on server shutdown.
-* `minetest.register_on_receiving_chat_message(func(message))`
+* `minetest.register_on_receiving_chat_message(function(message))`
     * Called always when a client receive a message
     * Return `true` to mark the message as handled, which means that it will not be shown to chat
-* `minetest.register_on_sending_chat_message(func(message))`
+* `minetest.register_on_sending_chat_message(function(message))`
     * Called always when a client send a message from chat
     * Return `true` to mark the message as handled, which means that it will not be sent to server
 * `minetest.register_chatcommand(cmd, chatcommand definition)`
     * Adds definition to minetest.registered_chatcommands
 * `minetest.unregister_chatcommand(name)`
     * Unregisters a chatcommands registered with register_chatcommand.
-* `minetest.register_on_death(func())`
+* `minetest.register_on_death(function())`
     * Called when the local player dies
-* `minetest.register_on_hp_modification(func(hp))`
+* `minetest.register_on_hp_modification(function(hp))`
     * Called when server modified player's HP
-* `minetest.register_on_damage_taken(func(hp))`
+* `minetest.register_on_damage_taken(function(hp))`
     * Called when the local player take damages
-* `minetest.register_on_formspec_input(func(formname, fields))`
+* `minetest.register_on_formspec_input(function(formname, fields))`
     * Called when a button is pressed in the local player's inventory form
     * Newest functions are called first
     * If function returns `true`, remaining functions are not called
-* `minetest.register_on_dignode(func(pos, node))`
+* `minetest.register_on_dignode(function(pos, node))`
     * Called when the local player digs a node
     * Newest functions are called first
     * If any function returns true, the node isn't dug
-* `minetest.register_on_punchnode(func(pos, node))`
+* `minetest.register_on_punchnode(function(pos, node))`
     * Called when the local player punches a node
     * Newest functions are called first
     * If any function returns true, the punch is ignored
 * `minetest.register_on_placenode(function(pointed_thing, node))`
     * Called when a node has been placed
-* `minetest.register_on_item_use(func(item, pointed_thing))`
+* `minetest.register_on_item_use(function(item, pointed_thing))`
     * Called when the local player uses an item.
     * Newest functions are called first.
     * If any function returns true, the item use is not sent to server.
-* `minetest.register_on_modchannel_message(func(channel_name, sender, message))`
+* `minetest.register_on_modchannel_message(function(channel_name, sender, message))`
     * Called when an incoming mod channel message is received
     * You must have joined some channels before, and server must acknowledge the
       join request.
     * If message comes from a server mod, `sender` field is an empty string.
-* `minetest.register_on_modchannel_signal(func(channel_name, signal))`
+* `minetest.register_on_modchannel_signal(function(channel_name, signal))`
     * Called when a valid incoming mod channel signal is received
     * Signal id permit to react to server mod channel events
     * Possible values are:
@@ -704,7 +704,7 @@ Call these functions only at load time!
       3: leave_failed
       4: event_on_not_joined_channel
       5: state_changed
-* `minetest.register_on_inventory_open(func(inventory))`
+* `minetest.register_on_inventory_open(function(inventory))`
     * Called when the local player open inventory
     * Newest functions are called first
     * If any function returns true, inventory doesn't open

@@ -3564,34 +3564,34 @@ Global callback registration functions
 
 Call these functions only at load time!
 
-* `minetest.register_globalstep(func(dtime))`
+* `minetest.register_globalstep(function(dtime))`
     * Called every server step, usually interval of 0.1s
-* `minetest.register_on_mods_loaded(func())`
+* `minetest.register_on_mods_loaded(function())`
     * Called after mods have finished loading and before the media is cached or the
       aliases handled.
-* `minetest.register_on_shutdown(func())`
+* `minetest.register_on_shutdown(function())`
     * Called before server shutdown
     * **Warning**: If the server terminates abnormally (i.e. crashes), the
       registered callbacks **will likely not be run**. Data should be saved at
       semi-frequent intervals as well as on server shutdown.
-* `minetest.register_on_placenode(func(pos, newnode, placer, oldnode, itemstack, pointed_thing))`
+* `minetest.register_on_placenode(function(pos, newnode, placer, oldnode, itemstack, pointed_thing))`
     * Called when a node has been placed
     * If return `true` no item is taken from `itemstack`
     * `placer` may be any valid ObjectRef or nil.
     * **Not recommended**; use `on_construct` or `after_place_node` in node
       definition whenever possible.
-* `minetest.register_on_dignode(func(pos, oldnode, digger))`
+* `minetest.register_on_dignode(function(pos, oldnode, digger))`
     * Called when a node has been dug.
     * **Not recommended**; Use `on_destruct` or `after_dig_node` in node
       definition whenever possible.
-* `minetest.register_on_punchnode(func(pos, node, puncher, pointed_thing))`
+* `minetest.register_on_punchnode(function(pos, node, puncher, pointed_thing))`
     * Called when a node is punched
-* `minetest.register_on_generated(func(minp, maxp, blockseed))`
+* `minetest.register_on_generated(function(minp, maxp, blockseed))`
     * Called after generating a piece of world. Modifying nodes inside the area
       is a bit faster than usually.
-* `minetest.register_on_newplayer(func(ObjectRef))`
+* `minetest.register_on_newplayer(function(ObjectRef))`
     * Called after a new player has been created
-* `minetest.register_on_punchplayer(func(player, hitter, time_from_last_punch, tool_capabilities, dir, damage))`
+* `minetest.register_on_punchplayer(function(player, hitter, time_from_last_punch, tool_capabilities, dir, damage))`
     * Called when a player is punched
     * `player`: ObjectRef - Player that was punched
     * `hitter`: ObjectRef - Player that hit
@@ -3602,7 +3602,7 @@ Call these functions only at load time!
       the puncher to the punched.
     * `damage`: Number that represents the damage calculated by the engine
     * should return `true` to prevent the default damage mechanism
-* `minetest.register_on_player_hpchange(func(player, hp_change, reason), modifier)`
+* `minetest.register_on_player_hpchange(function(player, hp_change, reason), modifier)`
     * Called when the player gets damaged or healed
     * `player`: ObjectRef of the player
     * `hp_change`: the amount of change. Negative when it is damage.
@@ -3621,28 +3621,28 @@ Call these functions only at load time!
        Note: modifiers only get a temporary hp_change that can be modified by later modifiers.
        modifiers can return true as a second argument to stop the execution of further functions.
        Non-modifiers receive the final hp change calculated by the modifiers.
-* `minetest.register_on_dieplayer(func(ObjectRef, reason))`
+* `minetest.register_on_dieplayer(function(ObjectRef, reason))`
     * Called when a player dies
     * `reason`: a PlayerHPChangeReason table, see register_on_player_hpchange
-* `minetest.register_on_respawnplayer(func(ObjectRef))`
+* `minetest.register_on_respawnplayer(function(ObjectRef))`
     * Called when player is to be respawned
     * Called _before_ repositioning of player occurs
     * return true in func to disable regular player placement
-* `minetest.register_on_prejoinplayer(func(name, ip))`
+* `minetest.register_on_prejoinplayer(function(name, ip))`
     * Called before a player joins the game
     * If it returns a string, the player is disconnected with that string as
       reason.
-* `minetest.register_on_joinplayer(func(ObjectRef))`
+* `minetest.register_on_joinplayer(function(ObjectRef))`
     * Called when a player joins the game
-* `minetest.register_on_leaveplayer(func(ObjectRef, timed_out))`
+* `minetest.register_on_leaveplayer(function(ObjectRef, timed_out))`
     * Called when a player leaves the game
     * `timed_out`: True for timeout, false for other reasons.
-* `minetest.register_on_auth_fail(func(name, ip))`
+* `minetest.register_on_auth_fail(function(name, ip))`
     * Called when a client attempts to log into an account but supplies the
       wrong password.
     * `ip`: The IP address of the client.
     * `name`: The account the client attempted to log into.
-* `minetest.register_on_cheat(func(ObjectRef, cheat))`
+* `minetest.register_on_cheat(function(ObjectRef, cheat))`
     * Called when a player cheats
     * `cheat`: `{type=<cheat_type>}`, where `<cheat_type>` is one of:
         * `moved_too_fast`
@@ -3651,11 +3651,11 @@ Call these functions only at load time!
         * `finished_unknown_dig`
         * `dug_unbreakable`
         * `dug_too_fast`
-* `minetest.register_on_chat_message(func(name, message))`
+* `minetest.register_on_chat_message(function(name, message))`
     * Called always when a player says something
     * Return `true` to mark the message as handled, which means that it will
       not be sent to other players.
-* `minetest.register_on_player_receive_fields(func(player, formname, fields))`
+* `minetest.register_on_player_receive_fields(function(player, formname, fields))`
     * Called when a button is pressed in player's inventory form, when form
       values are submitted or when the form is actively closed by the player.
     * Fields are sent for formspec elements which define a field, and the "quit"
@@ -3663,7 +3663,7 @@ Call these functions only at load time!
       through a button_exit[] element.
     * Newest functions are called first
     * If function returns `true`, remaining functions are not called
-* `minetest.register_on_craft(func(itemstack, player, old_craft_grid, craft_inv))`
+* `minetest.register_on_craft(function(itemstack, player, old_craft_grid, craft_inv))`
     * Called when `player` crafts something
     * `itemstack` is the output
     * `old_craft_grid` contains the recipe (Note: the one in the inventory is
@@ -3671,10 +3671,10 @@ Call these functions only at load time!
     * `craft_inv` is the inventory with the crafting grid
     * Return either an `ItemStack`, to replace the output, or `nil`, to not
       modify it.
-* `minetest.register_craft_predict(func(itemstack, player, old_craft_grid, craft_inv))`
+* `minetest.register_craft_predict(function(itemstack, player, old_craft_grid, craft_inv))`
     * The same as before, except that it is called before the player crafts, to
       make craft prediction, and it should not change anything.
-* `minetest.register_allow_player_inventory_action(func(player, action, inventory, inventory_info))`
+* `minetest.register_allow_player_inventory_action(function(player, action, inventory, inventory_info))`
     * Determinates how much of a stack may be taken, put or moved to a
       player inventory.
     * `player` (type `ObjectRef`) is the player who modified the inventory
@@ -3686,11 +3686,11 @@ Call these functions only at load time!
         * `take`: Same as `put`
     * Return a numeric value to limit the amount of items to be taken, put or
       moved. A value of `-1` for `take` will make the source stack infinite.
-* `minetest.register_on_player_inventory_action(func(player, action, inventory, inventory_info))`
+* `minetest.register_on_player_inventory_action(function(player, action, inventory, inventory_info))`
     * Called after a take, put or move event from/to/in a player inventory
     * Function arguments: see `minetest.register_allow_player_inventory_action`
     * Does not accept or handle any return value.
-* `minetest.register_on_protection_violation(func(pos, name))`
+* `minetest.register_on_protection_violation(function(pos, name))`
     * Called by `builtin` and mods when a player violates protection at a
       position (eg, digs a node or punches a protected entity).
     * The registered functions can be called using
@@ -3698,7 +3698,7 @@ Call these functions only at load time!
     * The provided function should check that the position is protected by the
       mod calling this function before it prints a message, if it does, to
       allow for multiple protection mods.
-* `minetest.register_on_item_eat(func(hp_change, replace_with_item, itemstack, user, pointed_thing))`
+* `minetest.register_on_item_eat(function(hp_change, replace_with_item, itemstack, user, pointed_thing))`
     * Called when an item is eaten, by `minetest.item_eat`
     * Return `true` or `itemstack` to cancel the default item eat response
       (i.e.: hp increase).
@@ -3713,7 +3713,7 @@ Call these functions only at load time!
 * `minetest.register_can_bypass_userlimit(function(name, ip))`
     * Called when `name` user connects with `ip`.
     * Return `true` to by pass the player limit
-* `minetest.register_on_modchannel_message(func(channel_name, sender, message))`
+* `minetest.register_on_modchannel_message(function(channel_name, sender, message))`
     * Called when an incoming mod channel message is received
     * You should have joined some channels to receive events.
     * If message comes from a server mod, `sender` field is an empty string.
@@ -5646,7 +5646,7 @@ Used by `minetest.register_lbm`.
         -- and not just for blocks that were saved last time before LBMs were
         -- introduced to the world.
 
-        action = func(pos, node),
+        action = function(pos, node),
     }
 
 Tile definition
@@ -5781,22 +5781,22 @@ Used by `minetest.register_node`, `minetest.register_craftitem`, and
             eat = <SimpleSoundSpec>,
         },
 
-        on_place = func(itemstack, placer, pointed_thing),
+        on_place = function(itemstack, placer, pointed_thing),
         -- Shall place item and return the leftover itemstack.
         -- The placer may be any ObjectRef or nil.
         -- default: minetest.item_place
 
-        on_secondary_use = func(itemstack, user, pointed_thing),
+        on_secondary_use = function(itemstack, user, pointed_thing),
         -- Same as on_place but called when pointing at nothing.
         -- The user may be any ObjectRef or nil.
         -- pointed_thing: always { type = "nothing" }
 
-        on_drop = func(itemstack, dropper, pos),
+        on_drop = function(itemstack, dropper, pos),
         -- Shall drop item and return the leftover itemstack.
         -- The dropper may be any ObjectRef or nil.
         -- default: minetest.item_drop
 
-        on_use = func(itemstack, user, pointed_thing),
+        on_use = function(itemstack, user, pointed_thing),
         -- default: nil
         -- Function must return either nil if no item shall be removed from
         -- inventory, or an itemstack to replace the original itemstack.
@@ -5805,7 +5805,7 @@ Used by `minetest.register_node`, `minetest.register_craftitem`, and
         -- The user may be any ObjectRef or nil.
         -- The default functions handle regular use cases.
 
-        after_use = func(itemstack, user, node, digparams),
+        after_use = function(itemstack, user, node, digparams),
         -- default: nil
         -- If defined, should return an itemstack and will be called instead of
         -- wearing out the tool. If returns nil, does nothing.
@@ -6003,23 +6003,23 @@ Used by `minetest.register_node`.
             },
         },
 
-        on_construct = func(pos),
+        on_construct = function(pos),
         -- Node constructor; called after adding node.
         -- Can set up metadata and stuff like that.
         -- Not called for bulk node placement (i.e. schematics and VoxelManip).
         -- default: nil
 
-        on_destruct = func(pos),
+        on_destruct = function(pos),
         -- Node destructor; called before removing node.
         -- Not called for bulk node placement.
         -- default: nil
 
-        after_destruct = func(pos, oldnode),
+        after_destruct = function(pos, oldnode),
         -- Node destructor; called after removing node.
         -- Not called for bulk node placement.
         -- default: nil
 
-        on_flood = func(pos, oldnode, newnode),
+        on_flood = function(pos, oldnode, newnode),
         -- Called when a liquid (newnode) is about to flood oldnode, if it has
         -- `floodable = true` in the nodedef. Not called for bulk node placement
         -- (i.e. schematics and VoxelManip) or air nodes. If return true the
@@ -6028,7 +6028,7 @@ Used by `minetest.register_node`.
         -- Default: nil
         -- Warning: making a liquid node 'floodable' will cause problems.
 
-        preserve_metadata = func(pos, oldnode, oldmeta, drops),
+        preserve_metadata = function(pos, oldnode, oldmeta, drops),
         -- Called when oldnode is about be converted to an item, but before the
         -- node is deleted from the world or the drops are added. This is
         -- generally the result of either the node being dug or an attached node
@@ -6038,14 +6038,14 @@ Used by `minetest.register_node`.
         -- "ItemStackMetaRef".
         -- default: nil
 
-        after_place_node = func(pos, placer, itemstack, pointed_thing),
+        after_place_node = function(pos, placer, itemstack, pointed_thing),
         -- Called after constructing node when node was placed using
         -- minetest.item_place_node / minetest.place_node.
         -- If return true no item is taken from itemstack.
         -- `placer` may be any valid ObjectRef or nil.
         -- default: nil
 
-        after_dig_node = func(pos, oldnode, oldmetadata, digger),
+        after_dig_node = function(pos, oldnode, oldmetadata, digger),
         -- oldmetadata is in table format.
         -- Called after destructing node when node was dug using
         -- minetest.node_dig / minetest.dig_node.
@@ -6053,13 +6053,13 @@ Used by `minetest.register_node`.
 
         can_dig = function(pos, [player]),
 
-        on_punch = func(pos, node, puncher, pointed_thing),
+        on_punch = function(pos, node, puncher, pointed_thing),
         -- Returns true if node can be dug, or false if not.
         -- default: nil
         -- default: minetest.node_punch
         -- By default calls minetest.register_on_punchnode callbacks.
 
-        on_rightclick = func(pos, node, clicker, itemstack, pointed_thing),
+        on_rightclick = function(pos, node, clicker, itemstack, pointed_thing),
         -- default: nil
         -- itemstack will hold clicker's wielded item.
         -- Shall return the leftover itemstack.
@@ -6067,7 +6067,7 @@ Used by `minetest.register_node`.
         -- This function does not get triggered by clients <=0.4.16 if the
         -- "formspec" node metadata field is set.
 
-        on_dig = func(pos, node, digger),
+        on_dig = function(pos, node, digger),
         -- default: minetest.node_dig
         -- By default checks privileges, wears out tool and removes node.
 
@@ -6078,33 +6078,33 @@ Used by `minetest.register_node`.
         -- return true to run the timer for another cycle with the same timeout
         -- value.
 
-        on_receive_fields = func(pos, formname, fields, sender),
+        on_receive_fields = function(pos, formname, fields, sender),
         -- fields = {name1 = value1, name2 = value2, ...}
         -- Called when an UI form (e.g. sign text input) returns data.
         -- default: nil
 
-        allow_metadata_inventory_move = func(pos, from_list, from_index, to_list, to_index, count, player),
+        allow_metadata_inventory_move = function(pos, from_list, from_index, to_list, to_index, count, player),
         -- Called when a player wants to move items inside the inventory.
         -- Return value: number of items allowed to move.
 
-        allow_metadata_inventory_put = func(pos, listname, index, stack, player),
+        allow_metadata_inventory_put = function(pos, listname, index, stack, player),
         -- Called when a player wants to put something into the inventory.
         -- Return value: number of items allowed to put.
         -- Return value -1: Allow and don't modify item count in inventory.
 
-        allow_metadata_inventory_take = func(pos, listname, index, stack, player),
+        allow_metadata_inventory_take = function(pos, listname, index, stack, player),
         -- Called when a player wants to take something out of the inventory.
         -- Return value: number of items allowed to take.
         -- Return value -1: Allow and don't modify item count in inventory.
 
-        on_metadata_inventory_move = func(pos, from_list, from_index, to_list, to_index, count, player),
-        on_metadata_inventory_put = func(pos, listname, index, stack, player),
-        on_metadata_inventory_take = func(pos, listname, index, stack, player),
+        on_metadata_inventory_move = function(pos, from_list, from_index, to_list, to_index, count, player),
+        on_metadata_inventory_put = function(pos, listname, index, stack, player),
+        on_metadata_inventory_take = function(pos, listname, index, stack, player),
         -- Called after the actual action has happened, according to what was
         -- allowed.
         -- No return value.
 
-        on_blast = func(pos, intensity),
+        on_blast = function(pos, intensity),
         -- intensity: 1.0 = mid range of regular TNT.
         -- If defined, called when an explosion touches the node, instead of
         -- removing the node.
@@ -6575,23 +6575,23 @@ Detached inventory callbacks
 Used by `minetest.create_detached_inventory`.
 
     {
-        allow_move = func(inv, from_list, from_index, to_list, to_index, count, player),
+        allow_move = function(inv, from_list, from_index, to_list, to_index, count, player),
         -- Called when a player wants to move items inside the inventory.
         -- Return value: number of items allowed to move.
 
-        allow_put = func(inv, listname, index, stack, player),
+        allow_put = function(inv, listname, index, stack, player),
         -- Called when a player wants to put something into the inventory.
         -- Return value: number of items allowed to put.
         -- Return value -1: Allow and don't modify item count in inventory.
 
-        allow_take = func(inv, listname, index, stack, player),
+        allow_take = function(inv, listname, index, stack, player),
         -- Called when a player wants to take something out of the inventory.
         -- Return value: number of items allowed to take.
         -- Return value -1: Allow and don't modify item count in inventory.
 
-        on_move = func(inv, from_list, from_index, to_list, to_index, count, player),
-        on_put = func(inv, listname, index, stack, player),
-        on_take = func(inv, listname, index, stack, player),
+        on_move = function(inv, from_list, from_index, to_list, to_index, count, player),
+        on_put = function(inv, listname, index, stack, player),
+        on_take = function(inv, listname, index, stack, player),
         -- Called after the actual action has happened, according to what was
         -- allowed.
         -- No return value.
@@ -6801,38 +6801,38 @@ Authentication handler definition
 Used by `minetest.register_authentication_handler`.
 
     {
-        get_auth = func(name),
+        get_auth = function(name),
         -- Get authentication data for existing player `name` (`nil` if player
         -- doesn't exist).
         -- Returns following structure:
         -- `{password=<string>, privileges=<table>, last_login=<number or nil>}`
 
-        create_auth = func(name, password),
+        create_auth = function(name, password),
         -- Create new auth data for player `name`.
         -- Note that `password` is not plain-text but an arbitrary
         -- representation decided by the engine.
 
-        delete_auth = func(name),
+        delete_auth = function(name),
         -- Delete auth data of player `name`.
         -- Returns boolean indicating success (false if player is nonexistent).
 
-        set_password = func(name, password),
+        set_password = function(name, password),
         -- Set password of player `name` to `password`.
         -- Auth data should be created if not present.
 
-        set_privileges = func(name, privileges),
+        set_privileges = function(name, privileges),
         -- Set privileges of player `name`.
         -- `privileges` is in table form, auth data should be created if not
         -- present.
 
-        reload = func(),
+        reload = function(),
         -- Reload authentication data from the storage location.
         -- Returns boolean indicating success.
 
-        record_login = func(name),
+        record_login = function(name),
         -- Called when player joins, used for keeping track of last_login
 
-        iterate = func(),
+        iterate = function(),
         -- Returns an iterator (use with `for` loops) for all player names
         -- currently in the auth database
     }
