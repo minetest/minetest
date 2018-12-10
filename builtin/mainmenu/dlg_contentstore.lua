@@ -209,7 +209,7 @@ function package_dialog.get_formspec()
 
 	local formspec = {
 		"size[9,4;true]",
-		"image[0,1;4.5,3;", get_screenshot(package), ']',
+		"image[0,1;4.5,3;", core.formspec_escape(get_screenshot(package)), ']',
 		"label[3.8,1;",
 		minetest.colorize(mt_color_green, core.formspec_escape(package.title)), "\n",
 		minetest.colorize('#BFBFBF', "by " .. core.formspec_escape(package.author)), "]",
