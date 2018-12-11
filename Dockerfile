@@ -33,9 +33,10 @@ WORKDIR /var/lib/minetest
 
 COPY --from=0 /usr/local/share/minetest /usr/local/share/minetest
 COPY --from=0 /usr/local/bin/minetestserver /usr/local/bin/minetestserver
+COPY --from=0 /usr/local/share/doc/minetest/minetest.conf.example /etc/minetest/minetest.conf
 
-RUN find /usr/local
+USER minetest
 
 EXPOSE 30000/udp
 
-CMD ["/usr/local/bin/minetestserver"]
+CMD ["/usr/local/bin/minetestserver", "--config", "/etc/minetest/minetest.conf"]
