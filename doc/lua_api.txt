@@ -859,74 +859,19 @@ one player using `to_player = name,`
 Registered definitions
 ======================
 
-Anything added using certain `minetest.register_*` functions gets added to
-the global `minetest.registered_*` tables.
-
-* `minetest.register_entity(name, entity definition)`
-    * added to `minetest.registered_entities[name]`
-
-* `minetest.register_node(name, node definition)`
-    * added to `minetest.registered_items[name]`
-    * added to `minetest.registered_nodes[name]`
-
-* `minetest.register_tool(name, item definition)`
-    * added to `minetest.registered_items[name]`
-
-* `minetest.register_craftitem(name, item definition)`
-    * added to `minetest.registered_items[name]`
-
-* `minetest.unregister_item(name)`
-    * Unregisters the item name from engine, and deletes the entry with key
-      `name` from `minetest.registered_items` and from the associated item
-      table according to its nature: `minetest.registered_nodes[]` etc
-
-* `minetest.register_biome(biome definition)`
-    * returns an integer uniquely identifying the registered biome
-    * added to `minetest.registered_biome` with the key of `biome.name`
-    * if `biome.name` is nil, the key is the returned ID
-
-* `minetest.unregister_biome(name)`
-    * Unregisters the biome name from engine, and deletes the entry with key
-      `name` from `minetest.registered_biome`
-
-* `minetest.register_ore(ore definition)`
-    * returns an integer uniquely identifying the registered ore
-    * added to `minetest.registered_ores` with the key of `ore.name`
-    * if `ore.name` is nil, the key is the returned ID
-
-* `minetest.register_decoration(decoration definition)`
-    * returns an integer uniquely identifying the registered decoration
-    * added to `minetest.registered_decorations` with the key of
-      `decoration.name`.
-    * if `decoration.name` is nil, the key is the returned ID
-
-* `minetest.register_schematic(schematic definition)`
-    * returns an integer uniquely identifying the registered schematic
-    * added to `minetest.registered_schematic` with the key of `schematic.name`
-    * if `schematic.name` is nil, the key is the returned ID
-    * if the schematic is loaded from a file, schematic.name is set to the
-      filename.
-    * if the function is called when loading the mod, and schematic.name is a
-      relative path, then the current mod path will be prepended to the
-      schematic filename.
-
-* `minetest.clear_registered_biomes()`
-    * clears all biomes currently registered
-
-* `minetest.clear_registered_ores()`
-    * clears all ores currently registered
-
-* `minetest.clear_registered_decorations()`
-    * clears all decorations currently registered
-
-* `minetest.clear_registered_schematics()`
-    * clears all schematics currently registered
+Anything added using certain [Registration functions] gets added to one or more
+of the global [Registered definition tables].
 
 Note that in some cases you will stumble upon things that are not contained
 in these tables (e.g. when a mod has been removed). Always check for
 existence before trying to access the fields.
 
-Example: If you want to check the drawtype of a node, you could do:
+Example:
+
+All nodes register with `minetest.register_node` get added to the table
+`minetest.registered_nodes`.
+
+If you want to check the drawtype of a node, you could do:
 
     local function get_nodedef_field(nodename, fieldname)
         if not minetest.registered_nodes[nodename] then
@@ -1248,6 +1193,7 @@ Below are the specific uses for fields in each type; fields not listed for that
 type are ignored.
 
 ### `image`
+
 Displays an image on the HUD.
 
 * `scale`: The scale of the image, with 1 being the original texture size.
@@ -1321,6 +1267,7 @@ For helper functions see [Spatial Vectors].
 * `{type="object", ref=ObjectRef}`
 
 Exact pointing location (currently only `Raycast` supports these fields):
+
 * `pointed_thing.intersection_point`: The absolute world coordinates of the
   point on the selection box which is pointed at. May be in the selection box
   if the pointer is in the box too.
@@ -1546,14 +1493,12 @@ Special groups
 * `attached_node`: if the node under it is not a walkable block the node will be
   dropped as an item. If the node is wallmounted the wallmounted direction is
   checked.
-* `soil`: saplings will grow on nodes in this group
 * `connect_to_raillike`: makes nodes of raillike drawtype with same group value
   connect to each other
 * `slippery`: Players and items will slide on the node.
   Slipperiness rises steadily with `slippery` value, starting at 1.
 * `disable_repair`: If set to 1 for a tool, it cannot be repaired using the
   `"toolrepair"` crafting recipe
-
 
 Known damage and digging time defining groups
 ---------------------------------------------
@@ -1985,6 +1930,7 @@ Elements
 * `<fontcolor>` tooltip font color as `ColorString` (optional)
 
 ### `tooltip[<X>,<Y>;<W>,<H>;<tooltip_text>;<bgcolor>;<fontcolor>]`
+
 * Adds tooltip for an area. Other tooltips will take priority when present.
 * `<bgcolor>` tooltip background color as `ColorString` (optional)
 * `<fontcolor>` tooltip font color as `ColorString` (optional)
@@ -2097,9 +2043,9 @@ Elements
 
 ### `item_image_button[<X>,<Y>;<W>,<H>;<item name>;<name>;<label>]`
 
-* `item name` is the registered name of an item/node,
-  tooltip will be made out of its description
-  to override it use tooltip element
+* `item name` is the registered name of an item/node
+* The item description will be used as the tooltip. This can be overridden with
+  a tooltip element.
 
 ### `button_exit[<X>,<Y>;<W>,<H>;<name>;<label>]`
 
@@ -3020,7 +2966,6 @@ to be a table retrieved from `get_data()`.
 Once the internal VoxelManip state has been modified to your liking, the
 changes can be committed back to the map by calling `VoxelManip:write_to_map()`
 
-
 ### Flat array format
 
 Let
@@ -3536,17 +3481,56 @@ Registration functions
 
 Call these functions only at load time!
 
+### Environment
+
+* `minetest.register_node(name, node definition)`
+* `minetest.register_craftitem(name, item definition)`
+* `minetest.register_tool(name, item definition)`
+* `minetest.override_item(name, redefinition)`
+    * Overrides fields of an item registered with register_node/tool/craftitem.
+    * Note: Item must already be defined, (opt)depend on the mod defining it.
+    * Example: `minetest.override_item("default:mese",
+      {light_source=minetest.LIGHT_MAX})`
+* `minetest.unregister_item(name)`
+    * Unregisters the item from the engine, and deletes the entry with key
+      `name` from `minetest.registered_items` and from the associated item table
+      according to its nature: `minetest.registered_nodes`, etc.
 * `minetest.register_entity(name, entity definition)`
 * `minetest.register_abm(abm definition)`
 * `minetest.register_lbm(lbm definition)`
-* `minetest.register_node(name, node definition)`
-* `minetest.register_tool(name, item definition)`
-* `minetest.register_craftitem(name, item definition)`
-* `minetest.unregister_item(name)`
 * `minetest.register_alias(name, convert_to)`
     * Also use this to set the 'mapgen aliases' needed in a game for the core
-    * mapgens. See [Mapgen aliases] section above.
+      mapgens. See [Mapgen aliases] section above.
 * `minetest.register_alias_force(name, convert_to)`
+* `minetest.register_ore(ore definition)`
+    * Returns an integer uniquely identifying the registered ore on success.
+* `minetest.register_biome(biome definition)`
+    * Returns an integer uniquely identifying the registered biome on success.
+* `minetest.unregister_biome(name)`
+    * Unregisters the biome from the engine, and deletes the entry with key
+      `name` from `minetest.registered_biomes`.
+* `minetest.register_decoration(decoration definition)`
+    * Returns an integer uniquely identifying the registered decoration on
+      success.
+* `minetest.register_schematic(schematic definition)`
+    * Returns an integer uniquely identifying the registered schematic on
+      success.
+    * If the schematic is loaded from a file, the `name` field is set to the
+      filename.
+    * If the function is called when loading the mod, and `name` is a relative
+      path, then the current mod path will be prepended to the schematic
+      filename.
+* `minetest.clear_registered_ores()`
+    * Clears all ores currently registered.
+* `minetest.clear_registered_biomes()`
+    * Clears all biomes currently registered.
+* `minetest.clear_registered_decorations()`
+    * Clears all decorations currently registered.
+* `minetest.clear_registered_schematics()`
+    * Clears all schematics currently registered.
+
+### Gameplay
+
 * `minetest.register_craft(recipe)`
     * Check recipe table syntax for different types below.
 * `minetest.clear_craft(recipe)`
@@ -3559,16 +3543,21 @@ Call these functions only at load time!
     * **Warning**! The type field ("shaped", "cooking" or any other) will be
       ignored if the recipe contains output. Erasing is then done independently
       from the crafting method.
-* `minetest.register_ore(ore definition)`
-* `minetest.register_biome(biome definition)`
-* `minetest.register_decoration(decoration definition)`
-* `minetest.override_item(name, redefinition)`
-    * Overrides fields of an item registered with register_node/tool/craftitem.
-    * Note: Item must already be defined, (opt)depend on the mod defining it.
-    * Example: `minetest.override_item("default:mese", {light_source=LIGHT_MAX})`
-* `minetest.clear_registered_ores()`
-* `minetest.clear_registered_biomes()`
-* `minetest.clear_registered_decorations()`
+* `minetest.register_chatcommand(cmd, chatcommand definition)`
+* `minetest.override_chatcommand(name, redefinition)`
+    * Overrides fields of a chatcommand registered with `register_chatcommand`.
+* `minetest.unregister_chatcommand(name)`
+    * Unregisters a chatcommands registered with `register_chatcommand`.
+* `minetest.register_privilege(name, definition)`
+    * `definition` can be a description or a definition table (see [Privilege
+      definition]).
+    * If it is a description, the priv will be granted to singleplayer and admin
+      by default.
+    * To allow players with `basic_privs` to grant, see the `basic_privs`
+      minetest.conf setting.
+* `minetest.register_authentication_handler(authentication handler definition)`
+    * Registers an auth handler that overrides the builtin one.
+    * This function can be called by a single mod once only.
 
 Global callback registration functions
 --------------------------------------
@@ -3728,36 +3717,6 @@ Call these functions only at load time!
     * Called when an incoming mod channel message is received
     * You should have joined some channels to receive events.
     * If message comes from a server mod, `sender` field is an empty string.
-
-Other registration functions
-----------------------------
-
-* `minetest.register_chatcommand(cmd, chatcommand definition)`
-    * Adds definition to `minetest.registered_chatcommands`
-* `minetest.override_chatcommand(name, redefinition)`
-    * Overrides fields of a chatcommand registered with `register_chatcommand`.
-* `minetest.unregister_chatcommand(name)`
-    * Unregisters a chatcommands registered with `register_chatcommand`.
-* `minetest.register_privilege(name, definition)`
-    * `definition`: `"description text"`
-    * `definition`:
-      `{description = "description text", give_to_singleplayer = boolean}`
-      the default of `give_to_singleplayer` is true.
-    * To allow players with `basic_privs` to grant, see `basic_privs`
-      minetest.conf setting.
-    * `on_grant(name, granter_name)`: Called when given to player `name` by
-      `granter_name`.
-      `granter_name` will be nil if the priv was granted by a mod.
-    * `on_revoke(name, revoker_name)`: Called when taken from player `name` by
-      `revoker_name`.
-      `revoker_name` will be nil if the priv was revoked by a mod
-    * Note that the above two callbacks will be called twice if a player is
-      responsible, once with the player name, and then with a nil player name.
-    * Return true in the above callbacks to stop register_on_priv_grant or
-      revoke being called.
-* `minetest.register_authentication_handler(authentication handler definition)`
-    * Registers an auth handler that overrides the builtin one
-    * This function can be called by a single mod once only.
 
 Setting-related
 ---------------
@@ -4713,6 +4672,8 @@ Global objects
 Global tables
 -------------
 
+### Registered definition tables
+
 * `minetest.registered_items`
     * Map of registered items, indexed by name
 * `minetest.registered_nodes`
@@ -4727,14 +4688,35 @@ Global tables
     * Map of object references, indexed by active object id
 * `minetest.luaentities`
     * Map of Lua entities, indexed by active object id
+* `minetest.registered_abms`
+    * List of ABM definitions
+* `minetest.registered_lbms`
+    * List of LBM definitions
+* `minetest.registered_aliases`
+    * Map of registered aliases, indexed by name
+* `minetest.registered_ores`
+    * Map of registered ore definitions, indexed by the `name` field.
+    * If `name` is nil, the key is the ID returned by `minetest.register_ore`.
+* `minetest.registered_biomes`
+    * Map of registered biome definitions, indexed by the `name` field.
+    * If `name` is nil, the key is the ID returned by `minetest.register_biome`.
+* `minetest.registered_decorations`
+    * Map of registered decoration definitions, indexed by the `name` field.
+    * If `name` is nil, the key is the ID returned by
+      `minetest.register_decoration`.
+* `minetest.registered_schematics`
+    * Map of registered schematic definitions, indexed by the `name` field.
+    * If `name` is nil, the key is the ID returned by
+      `minetest.register_schematic`.
 * `minetest.registered_chatcommands`
     * Map of registered chat command definitions, indexed by name
-* `minetest.registered_ores`
-    * List of registered ore definitions.
-* `minetest.registered_biomes`
-    * List of registered biome definitions.
-* `minetest.registered_decorations`
-    * List of registered decoration definitions.
+* `minetest.registered_privileges`
+    * Map of registered privilege definitions, indexed by name
+
+### Registered callback tables
+
+All callbacks registered with [Global callback registration functions] are added
+to corresponding `minetest.registered_*` tables.
 
 
 
@@ -6556,6 +6538,36 @@ Note that in params, use of symbols is as follows:
   provided. For example: `<param1> | <param2>`
 * `()` signifies grouping. For example, when param1 and param2 are both
   required, or only param3 is required: `(<param1> <param2>) | <param3>`
+
+Privilege definition
+--------------------
+
+Used by `minetest.register_privilege`.
+
+    {
+        description = "Can teleport",  -- Privilege description
+
+        give_to_singleplayer = false,
+        -- Whether to grant the privilege to singleplayer (default true).
+
+        give_to_admin = true,
+        -- Whether to grant the privilege to the server admin.
+        -- Uses value of 'give_to_singleplayer' by default.
+
+        on_grant = function(name, granter_name),
+        -- Called when given to player 'name' by 'granter_name'.
+        -- 'granter_name' will be nil if the priv was granted by a mod.
+
+        on_revoke = function(name, revoker_name),
+        -- Called when taken from player 'name' by 'revoker_name'.
+        -- 'revoker_name' will be nil if the priv was revoked by a mod.
+
+        -- Note that the above two callbacks will be called twice if a player is
+        -- responsible, once with the player name, and then with a nil player
+        -- name.
+        -- Return true in the above callbacks to stop register_on_priv_grant or
+        -- revoke being called.
+    }
 
 Detached inventory callbacks
 ----------------------------
