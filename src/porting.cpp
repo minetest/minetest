@@ -400,7 +400,7 @@ bool setSystemPaths()
 
 
 //// Linux
-#elif defined(__linux__)
+#elif defined(__linux__) || defined(__FreeBSD__) || defined(__NetBSD__) || defined(__DragonFly__)
 
 bool setSystemPaths()
 {
