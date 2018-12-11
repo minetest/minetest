@@ -5472,7 +5472,7 @@ Used by `ObjectRef` methods. Part of an Entity definition.
         pointable = true,
         -- Overrides selection box when false
 
-        visual = "cube" / "sprite" / "upright_sprite" / "mesh" / "wielditem",
+        visual = "cube" / "sprite" / "upright_sprite" / "mesh" / "wielditem" / "item",
         -- "cube" is a node-sized cube.
         -- "sprite" is a flat texture always facing the player.
         -- "upright_sprite" is a vertical flat texture.
@@ -5488,6 +5488,7 @@ Used by `ObjectRef` methods. Part of an Entity definition.
         --   of its texture.
         --   Otherwise for non-node items, the object will be an extrusion of
         --   'inventory_image'.
+        -- "item" is similar to "wielditem" but ignores the 'wield_image' parameter.
 
         visual_size = {x = 1, y = 1},
         -- `x` multiplies horizontal (X and Z) visual size.

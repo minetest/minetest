@@ -662,7 +662,7 @@ void GenericCAO::addToScene(ITextureSource *tsrc)
 		}
 		else
 			errorstream<<"GenericCAO::addToScene(): Could not load mesh "<<m_prop.mesh<<std::endl;
-	} else if (m_prop.visual == "wielditem") {
+	} else if (m_prop.visual == "wielditem" || m_prop.visual == "item") {
 		ItemStack item;
 		infostream << "GenericCAO::addToScene(): wielditem" << std::endl;
 		if (m_prop.wield_item.empty()) {
@@ -680,7 +680,8 @@ void GenericCAO::addToScene(ITextureSource *tsrc)
 		}
 		m_wield_meshnode = new WieldMeshSceneNode(
 			RenderingEngine::get_scene_manager(), -1);
-		m_wield_meshnode->setItem(item, m_client);
+		m_wield_meshnode->setItem(item, m_client,
+			(m_prop.visual == "wielditem"));
 
 		m_wield_meshnode->setScale(
 			v3f(m_prop.visual_size.X / 2, m_prop.visual_size.Y / 2,

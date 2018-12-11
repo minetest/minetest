@@ -333,7 +333,7 @@ scene::SMesh *createSpecialNodeMesh(Client *client, content_t id, std::vector<It
 	return mesh;
 }
 
-void WieldMeshSceneNode::setItem(const ItemStack &item, Client *client)
+void WieldMeshSceneNode::setItem(const ItemStack &item, Client *client, bool check_wield_image)
 {
 	ITextureSource *tsrc = client->getTextureSource();
 	IItemDefManager *idef = client->getItemDefManager();
@@ -354,8 +354,8 @@ void WieldMeshSceneNode::setItem(const ItemStack &item, Client *client)
 	m_colors.clear();
 	m_base_color = idef->getItemstackColor(item, client);
 
-	// If wield_image is defined, it overrides everything else
-	if (!def.wield_image.empty()) {
+	// If wield_image needs to be checked and is defined, it overrides everything else
+	if (!def.wield_image.empty() && check_wield_image) {
 		setExtruded(def.wield_image, def.wield_overlay, def.wield_scale, tsrc,
 			1);
 		m_colors.emplace_back();
