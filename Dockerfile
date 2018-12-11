@@ -11,11 +11,9 @@ COPY . /usr/src/minetest
 
 RUN	mkdir -p /usr/src/minetest/cmakebuild && cd /usr/src/minetest/cmakebuild && \
     	cmake -DCMAKE_INSTALL_PREFIX=/usr/local -DCMAKE_BUILD_TYPE=Release -DRUN_IN_PLACE=FALSE \
-		-DENABLE_GETTEXT=TRUE \
 		-DBUILD_SERVER=TRUE \
 		-DBUILD_CLIENT=FALSE \
 		-DENABLE_SYSTEM_JSONCPP=1 \
-		-DENABLE_SOUND=0 \
 		.. && \
 		make -j2 && \
 		rm -Rf ../games/minetest_game && git clone https://github.com/minetest/minetest_game ../games/minetest_game && \
@@ -27,7 +25,7 @@ USER root
 RUN groupadd minetest && useradd -m -g minetest -d /var/lib/minetest minetest && \
     apt-get update -y && \
     apt-get -y install libcurl3-gnutls libjsoncpp1 liblua5.1-0 libluajit-5.1-2 libpq5 libsqlite3-0 \
-        libstdc++6 zlib1g libirrlicht1.8 libc6
+        libstdc++6 zlib1g libc6
 
 WORKDIR /var/lib/minetest
 
