@@ -10,6 +10,7 @@ stages:
 
 variables:
   MINETEST_GAME_REPO: "https://github.com/minetest/minetest_game.git"
+  CONTAINER_IMAGE: registry.gitlab.com/$CI_PROJECT_PATH
 
 .build_template: &build_definition
   stage: build
@@ -308,3 +309,15 @@ package:win64:
     NO_PACKAGE: "1"
     WIN_ARCH: "x86_64"
     TOOLCHAIN_OUTPUT: "util/buildbot/toolchain_mingw64.cmake"
+
+package:docker:
+  stage: package
+  image: docker:stable
+  services:
+    - docker:dind
+  before_script:
+    - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN registry.gitlab.com
+  script:
+    - docker build . -t ${CONTAINER_IMAGE}/minetestserver:$CI_COMMIT_REF_NAME -t ${CONTAINER_IMAGE}/minetestserver:latest
+    - docker push ${CONTAINER_IMAGE}/minetestserver:$CI_COMMIT_REF_NAME
+    - docker push ${CONTAINER_IMAGE}/minetestserver:latest
