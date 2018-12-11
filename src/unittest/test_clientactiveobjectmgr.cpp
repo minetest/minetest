@@ -77,6 +77,8 @@ void TestClientActiveObjectMgr::testFreeID()
 		UASSERT(std::find(aoids.begin(), aoids.end(), caomgr.getFreeId()) ==
 				aoids.end());
 	}
+
+	caomgr.clear();
 }
 
 void TestClientActiveObjectMgr::testRegisterObject()
@@ -95,6 +97,8 @@ void TestClientActiveObjectMgr::testRegisterObject()
 	UASSERT(caomgr.registerObject(tcao));
 	UASSERT(caomgr.getActiveObject(tcao->getId()) == tcao);
 	UASSERT(caomgr.getActiveObject(tcao->getId()) != tcaoToCompare);
+
+	caomgr.clear();
 }
 
 void TestClientActiveObjectMgr::testRemoveObject()
@@ -108,4 +112,6 @@ void TestClientActiveObjectMgr::testRemoveObject()
 
 	caomgr.removeObject(tcao->getId());
 	UASSERT(caomgr.getActiveObject(id) == nullptr)
+
+	caomgr.clear();
 }
