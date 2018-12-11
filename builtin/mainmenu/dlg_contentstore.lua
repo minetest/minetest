@@ -268,9 +268,37 @@ function package_dialog.create(package)
 end
 
 function store.load()
-	store.packages_full = core.get_package_list()
-	store.packages = store.packages_full
-	store.loaded = true
+	local tmpdir = os.tempfolder()
+	local target = tmpdir .. DIR_DELIM .. "packages.json"
+
+	assert(core.create_dir(tmpdir))
+
+	local base_url     = core.settings:get("contentdb_url")
+	local show_nonfree = core.settings:get_bool("show_nonfree_packages")
+	local url = base_url ..
+		"/api/packages/?type=mod&type=game&type=txp&protocol_version=" ..
+		core.get_max_supp_proto() ..
+		"&nonfree=" ..
+		(show_nonfree and "true" or "false")
+
+	core.download_file(url, target)
+
+	local file = io.open(target, "r")
+	if file then
+		store.packages_full = core.parse_json(file:read("*all"))
+		file:close()
+
+		for _, package in pairs(store.packages_full) do
+			package.url = base_url .. "/packages/" ..
+				package.author .. "/" .. package.name ..
+				"/releases/" .. package.release .. "/download/"
+		end
+
+		store.packages = store.packages_full
+		store.loaded = true
+	end
+
+	core.delete_dir(tmpdir)
 end
 
 function store.update_paths()
