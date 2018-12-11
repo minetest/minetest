@@ -193,6 +193,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		Add TOCLIENT_NODEMETA_CHANGED
 		New network float format
 		ContentFeatures version 13
+		Add full Euler rotations instead of just yaw
 */
 
 #define LATEST_PROTOCOL_VERSION 37

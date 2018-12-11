@@ -26,6 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <IImage.h>
 #include <IrrlichtDevice.h>
 #include <IMeshSceneNode.h>
+#include <IDummyTransformationSceneNode.h>
 #include <SMesh.h>
 #include <ISceneManager.h>
 #include <IMeshBuffer.h>

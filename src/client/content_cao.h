@@ -81,6 +81,7 @@ private:
 	scene::IAnimatedMeshSceneNode *m_animated_meshnode = nullptr;
 	WieldMeshSceneNode *m_wield_meshnode = nullptr;
 	scene::IBillboardSceneNode *m_spritenode = nullptr;
+	scene::IDummyTransformationSceneNode *m_matrixnode = nullptr;
 	Nametag *m_nametag = nullptr;
 	v3f m_position = v3f(0.0f, 10.0f * BS, 0);
 	v3f m_velocity;
@@ -162,6 +163,11 @@ public:
 	scene::ISceneNode *getSceneNode();
 
 	scene::IAnimatedMeshSceneNode *getAnimatedMeshSceneNode();
+
+	inline core::matrix4 &getPosRotMatrix()
+	{
+		return m_matrixnode->getRelativeTransformationMatrix();
+	}
 
 	inline f32 getStepHeight() const
 	{
