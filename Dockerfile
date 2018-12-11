@@ -3,7 +3,7 @@ FROM debian:stretch
 USER root
 RUN apt-get update -y && \
 	apt-get -y install build-essential libirrlicht-dev cmake libbz2-dev libpng-dev libjpeg-dev \
-		libsqlite3-dev libcurl4-gnutls-dev zlib1g-dev libgmp-dev libjsoncpp-dev && \
+		libsqlite3-dev libcurl4-gnutls-dev zlib1g-dev libgmp-dev libjsoncpp-dev git && \
 		apt-get clean && rm -rf /var/cache/apt/archives/* && \
 		rm -rf /var/lib/apt/lists/*
 
@@ -17,7 +17,9 @@ RUN	mkdir -p /usr/src/minetest/cmakebuild && cd /usr/src/minetest/cmakebuild && 
 		-DENABLE_SYSTEM_JSONCPP=1 \
 		-DENABLE_SOUND=0 \
 		.. && \
-		make -j2 && make install
+		make -j2 && \
+		rm -Rf ../games/minetest_game && git clone https://github.com/minetest/minetest_game ../games/minetest_game && \
+		make install
 
 FROM debian:stretch
 
