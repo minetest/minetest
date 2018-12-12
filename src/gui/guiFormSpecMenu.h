@@ -31,6 +31,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/string.h"
 #include "util/enriched_string.h"
 
+#include "gui/parser_data.h"
+#include "gui/formspec_data.h"
+#include "gui/widget/box_widget.h"
+
 class InventoryManager;
 class ISimpleTextureSource;
 class Client;
@@ -221,19 +225,6 @@ class GUIFormSpecMenu : public GUIModalMenu
 		core::rect<s32> rect;
 	};
 
-	struct BoxDrawSpec
-	{
-		BoxDrawSpec(v2s32 a_pos, v2s32 a_geom, irr::video::SColor a_color):
-			pos(a_pos),
-			geom(a_geom),
-			color(a_color)
-		{
-		}
-		v2s32 pos;
-		v2s32 geom;
-		irr::video::SColor color;
-	};
-
 	struct TooltipSpec
 	{
 		TooltipSpec() = default;
@@ -370,19 +361,14 @@ public:
 protected:
 	v2s32 getBasePos() const
 	{
-			return padding + offset + AbsoluteRect.UpperLeftCorner;
+			return m_data.padding + m_data.offset + AbsoluteRect.UpperLeftCorner;
 	}
 	std::wstring getLabelByID(s32 id);
 	std::string getNameByID(s32 id);
 	v2s32 getElementBasePos(bool absolute,
 			const std::vector<std::string> *v_pos);
 
-	v2s32 padding;
-	v2f32 spacing;
-	v2s32 imgsize;
-	v2s32 offset;
-	v2f32 pos_offset;
-	std::stack<v2f32> container_stack;
+	FormSpecData m_data;
 
 	InventoryManager *m_invmgr;
 	ISimpleTextureSource *m_tsrc;
@@ -397,7 +383,6 @@ protected:
 	std::vector<ImageDrawSpec> m_backgrounds;
 	std::vector<ImageDrawSpec> m_images;
 	std::vector<ImageDrawSpec> m_itemimages;
-	std::vector<BoxDrawSpec> m_boxes;
 	std::unordered_map<std::string, bool> field_close_on_enter;
 	std::vector<FieldSpec> m_fields;
 	std::vector<StaticTextSpec> m_static_texts;
@@ -407,6 +392,8 @@ protected:
 	std::vector<std::pair<irr::core::rect<s32>, TooltipSpec>> m_tooltip_rects;
 	std::vector<std::pair<FieldSpec,gui::IGUIScrollBar*> > m_scrollbars;
 	std::vector<std::pair<FieldSpec, std::vector<std::string> > > m_dropdowns;
+
+	std::vector<BoxWidget> m_box_widgets;
 
 	ItemSpec *m_selected_item = nullptr;
 	u16 m_selected_amount = 0;
@@ -439,25 +426,8 @@ protected:
 private:
 	IFormSource        *m_form_src;
 	TextDest           *m_text_dst;
-	u32                 m_formspec_version = 0;
 	std::string         m_focused_element = "";
 	JoystickController *m_joystick;
-
-	typedef struct {
-		bool explicit_size;
-		v2f invsize;
-		v2s32 size;
-		v2f32 offset;
-		v2f32 anchor;
-		core::rect<s32> rect;
-		v2s32 basepos;
-		v2u32 screensize;
-		std::string focused_fieldname;
-		GUITable::TableOptions table_options;
-		GUITable::TableColumns table_columns;
-		// used to restore table selection/scroll/treeview state
-		std::unordered_map<std::string, GUITable::DynamicData> table_dyndata;
-	} parserData;
 
 	typedef struct {
 		bool key_up;
@@ -501,7 +471,6 @@ private:
 			const std::string &type);
 	void parseItemImageButton(parserData* data, const std::string &element);
 	void parseTabHeader(parserData* data, const std::string &element);
-	void parseBox(parserData* data, const std::string &element);
 	void parseBackgroundColor(parserData* data, const std::string &element);
 	void parseListColors(parserData* data, const std::string &element);
 	void parseTooltip(parserData* data, const std::string &element);
