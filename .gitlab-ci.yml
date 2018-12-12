@@ -318,6 +318,7 @@ package:docker:
   before_script:
     - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN registry.gitlab.com
   script:
-    - docker build . -t ${CONTAINER_IMAGE}/minetestserver:$CI_COMMIT_REF_NAME -t ${CONTAINER_IMAGE}/minetestserver:latest
-    - docker push ${CONTAINER_IMAGE}/minetestserver:$CI_COMMIT_REF_NAME
-    - docker push ${CONTAINER_IMAGE}/minetestserver:latest
+    - docker build . -t ${CONTAINER_IMAGE}/server:$CI_COMMIT_SHA -t ${CONTAINER_IMAGE}/server:$CI_COMMIT_REF_NAME -t ${CONTAINER_IMAGE}/server:latest
+    - docker push ${CONTAINER_IMAGE}/server:$CI_COMMIT_SHA
+    - docker push ${CONTAINER_IMAGE}/server:$CI_COMMIT_REF_NAME
+    - docker push ${CONTAINER_IMAGE}/server:latest
