@@ -53,10 +53,7 @@ ClientEnvironment::ClientEnvironment(ClientMap *map,
 
 ClientEnvironment::~ClientEnvironment()
 {
-	// delete active objects
-	for (auto &active_object : m_active_objects) {
-		delete active_object.second;
-	}
+	m_ao_manager.clear();
 
 	for (auto &simple_object : m_simple_objects) {
 		delete simple_object;
@@ -262,12 +259,10 @@ void ClientEnvironment::step(float dtime)
 		Step active objects and update lighting of them
 	*/
 
-	g_profiler->avg("CEnv: num of objects", m_active_objects.size());
 	bool update_lighting = m_active_object_light_update_interval.step(dtime, 0.21);
-	for (auto &ao_it : m_active_objects) {
-		ClientActiveObject* obj = ao_it.second;
+	auto cb_state = [this, dtime, update_lighting, day_night_ratio] (ClientActiveObject *cao) {
 		// Step object
-		obj->step(dtime, this);
+		cao->step(dtime, this);
 
 		if (update_lighting) {
 			// Update lighting
@@ -275,16 +270,18 @@ void ClientEnvironment::step(float dtime)
 			bool pos_ok;
 
 			// Get node at head
-			v3s16 p = obj->getLightPosition();
-			MapNode n = m_map->getNodeNoEx(p, &pos_ok);
+			v3s16 p = cao->getLightPosition();
+			MapNode n = this->m_map->getNodeNoEx(p, &pos_ok);
 			if (pos_ok)
 				light = n.getLightBlend(day_night_ratio, m_client->ndef());
 			else
 				light = blend_light(day_night_ratio, LIGHT_SUN, 0);
 
-			obj->updateLight(light);
+			cao->updateLight(light);
 		}
-	}
+	};
+
+	m_ao_manager.step(dtime, cb_state);
 
 	/*
 		Step and handle simple objects
@@ -319,14 +316,6 @@ GenericCAO* ClientEnvironment::getGenericCAO(u16 id)
 	return NULL;
 }
 
-ClientActiveObject* ClientEnvironment::getActiveObject(u16 id)
-{
-	auto n = m_active_objects.find(id);
-	if (n == m_active_objects.end())
-		return NULL;
-	return n->second;
-}
-
 bool isFreeClientActiveObjectId(const u16 id,
 	ClientActiveObjectMap &objects)
 {
@@ -336,7 +325,7 @@ bool isFreeClientActiveObjectId(const u16 id,
 
 u16 getFreeClientActiveObjectId(ClientActiveObjectMap &objects)
 {
-	//try to reuse id's as late as possible
+	// try to reuse id's as late as possible
 	static u16 last_used_id = 0;
 	u16 startid = last_used_id;
 	for(;;) {
@@ -351,43 +340,25 @@ u16 getFreeClientActiveObjectId(ClientActiveObjectMap &objects)
 
 u16 ClientEnvironment::addActiveObject(ClientActiveObject *object)
 {
-	assert(object); // Pre-condition
-	if(object->getId() == 0)
-	{
-		u16 new_id = getFreeClientActiveObjectId(m_active_objects);
-		if(new_id == 0)
-		{
-			infostream<<"ClientEnvironment::addActiveObject(): "
-				<<"no free ids available"<<std::endl;
-			delete object;
-			return 0;
-		}
-		object->setId(new_id);
-	}
-	if (!isFreeClientActiveObjectId(object->getId(), m_active_objects)) {
-		infostream<<"ClientEnvironment::addActiveObject(): "
-			<<"id is not free ("<<object->getId()<<")"<<std::endl;
-		delete object;
+	// Register object. If failed return zero id
+	if (!m_ao_manager.registerObject(object))
 		return 0;
-	}
-	infostream<<"ClientEnvironment::addActiveObject(): "
-		<<"added (id="<<object->getId()<<")"<<std::endl;
-	m_active_objects[object->getId()] = object;
+
 	object->addToScene(m_texturesource);
-	{ // Update lighting immediately
-		u8 light = 0;
-		bool pos_ok;
 
-		// Get node at head
-		v3s16 p = object->getLightPosition();
-		MapNode n = m_map->getNodeNoEx(p, &pos_ok);
-		if (pos_ok)
-			light = n.getLightBlend(getDayNightRatio(), m_client->ndef());
-		else
-			light = blend_light(getDayNightRatio(), LIGHT_SUN, 0);
+	// Update lighting immediately
+	u8 light = 0;
+	bool pos_ok;
 
-		object->updateLight(light);
-	}
+	// Get node at head
+	v3s16 p = object->getLightPosition();
+	MapNode n = m_map->getNodeNoEx(p, &pos_ok);
+	if (pos_ok)
+		light = n.getLightBlend(getDayNightRatio(), m_client->ndef());
+	else
+		light = blend_light(getDayNightRatio(), LIGHT_SUN, 0);
+
+	object->updateLight(light);
 	return object->getId();
 }
 
@@ -421,21 +392,6 @@ void ClientEnvironment::addActiveObject(u16 id, u8 type,
 	}
 
 	addActiveObject(obj);
-}
-
-void ClientEnvironment::removeActiveObject(u16 id)
-{
-	verbosestream<<"ClientEnvironment::removeActiveObject(): "
-		<<"id="<<id<<std::endl;
-	ClientActiveObject* obj = getActiveObject(id);
-	if (obj == NULL) {
-		infostream<<"ClientEnvironment::removeActiveObject(): "
-			<<"id="<<id<<" not found"<<std::endl;
-		return;
-	}
-	obj->removeFromScene(true);
-	delete obj;
-	m_active_objects.erase(id);
 }
 
 void ClientEnvironment::processActiveObjectMessage(u16 id, const std::string &data)
@@ -484,21 +440,6 @@ void ClientEnvironment::damageLocalPlayer(u8 damage, bool handle_hp)
 /*
 	Client likes to call these
 */
-
-void ClientEnvironment::getActiveObjects(v3f origin, f32 max_d,
-	std::vector<DistanceSortedActiveObject> &dest)
-{
-	for (auto &ao_it : m_active_objects) {
-		ClientActiveObject* obj = ao_it.second;
-
-		f32 d = (obj->getPosition() - origin).getLength();
-
-		if (d > max_d)
-			continue;
-
-		dest.emplace_back(obj, d);
-	}
-}
 
 ClientEnvEvent ClientEnvironment::getClientEnvEvent()
 {

@@ -23,6 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <ISceneManager.h>
 #include "clientobject.h"
 #include "util/numeric.h"
+#include "activeobjectmgr.h"
 
 class ClientSimpleObject;
 class ClientMap;
@@ -87,7 +88,10 @@ public:
 	*/
 
 	GenericCAO* getGenericCAO(u16 id);
-	ClientActiveObject* getActiveObject(u16 id);
+	ClientActiveObject* getActiveObject(u16 id)
+	{
+		return m_ao_manager.getActiveObject(id);
+	}
 
 	/*
 		Adds an active object to the environment.
@@ -100,7 +104,10 @@ public:
 	u16 addActiveObject(ClientActiveObject *object);
 
 	void addActiveObject(u16 id, u8 type, const std::string &init_data);
-	void removeActiveObject(u16 id);
+	void removeActiveObject(u16 id)
+	{
+		m_ao_manager.removeObject(id);
+	}
 
 	void processActiveObjectMessage(u16 id, const std::string &data);
 
@@ -115,8 +122,11 @@ public:
 	*/
 
 	// Get all nearby objects
-	void getActiveObjects(v3f origin, f32 max_d,
-		std::vector<DistanceSortedActiveObject> &dest);
+	void getActiveObjects(const v3f &origin, f32 max_d,
+		std::vector<DistanceSortedActiveObject> &dest)
+	{
+		return m_ao_manager.getActiveObjects(origin, max_d, dest);
+	}
 
 	bool hasClientEnvEvents() const { return !m_client_event_queue.empty(); }
 
@@ -142,7 +152,7 @@ private:
 	ITextureSource *m_texturesource;
 	Client *m_client;
 	ClientScripting *m_script = nullptr;
-	ClientActiveObjectMap m_active_objects;
+	client::ActiveObjectMgr m_ao_manager;
 	std::vector<ClientSimpleObject*> m_simple_objects;
 	std::queue<ClientEnvEvent> m_client_event_queue;
 	IntervalLimiter m_active_object_light_update_interval;
