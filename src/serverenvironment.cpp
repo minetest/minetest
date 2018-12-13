@@ -1485,8 +1485,7 @@ void ServerEnvironment::getAddedActiveObjects(PlayerSAO *playersao, s16 radius,
 		player_radius_f = 0.0f;
 
 	m_ao_manager.getAddedActiveObjectsAroundPos(playersao->getBasePosition(), radius_f,
-												player_radius_f, current_objects,
-												added_objects);
+		player_radius_f, current_objects, added_objects);
 }
 
 /*
@@ -1905,9 +1904,9 @@ void ServerEnvironment::deactivateFarObjects(bool _force_delete)
 							data_changed = false;
 					} else {
 						warningstream << "ServerEnvironment::deactivateFarObjects(): "
-									  << "id=" << id << " m_static_exists=true but "
-									  << "static data doesn't actually exist in "
-									  << PP(obj->m_static_block) << std::endl;
+								<< "id=" << id << " m_static_exists=true but "
+								<< "static data doesn't actually exist in "
+								<< PP(obj->m_static_block) << std::endl;
 					}
 				}
 			}

@@ -51,6 +51,7 @@ void ActiveObjectMgr::step(
 	}
 }
 
+// clang-format off
 bool ActiveObjectMgr::registerObject(ServerActiveObject *obj)
 {
 	assert(obj); // Pre-condition
@@ -58,7 +59,7 @@ bool ActiveObjectMgr::registerObject(ServerActiveObject *obj)
 		u16 new_id = getFreeId();
 		if (new_id == 0) {
 			errorstream << "Server::ActiveObjectMgr::addActiveObjectRaw(): "
-				    << "no free id available" << std::endl;
+					<< "no free id available" << std::endl;
 			if (obj->environmentDeletes())
 				delete obj;
 			return false;
@@ -66,12 +67,12 @@ bool ActiveObjectMgr::registerObject(ServerActiveObject *obj)
 		obj->setId(new_id);
 	} else {
 		verbosestream << "Server::ActiveObjectMgr::addActiveObjectRaw(): "
-			      << "supplied with id " << obj->getId() << std::endl;
+				<< "supplied with id " << obj->getId() << std::endl;
 	}
 
 	if (!isFreeId(obj->getId())) {
 		errorstream << "Server::ActiveObjectMgr::addActiveObjectRaw(): "
-			    << "id is not free (" << obj->getId() << ")" << std::endl;
+				<< "id is not free (" << obj->getId() << ")" << std::endl;
 		if (obj->environmentDeletes())
 			delete obj;
 		return false;
@@ -80,8 +81,8 @@ bool ActiveObjectMgr::registerObject(ServerActiveObject *obj)
 	if (objectpos_over_limit(obj->getBasePosition())) {
 		v3f p = obj->getBasePosition();
 		warningstream << "Server::ActiveObjectMgr::addActiveObjectRaw(): "
-			      << "object position (" << p.X << "," << p.Y << "," << p.Z
-			      << ") outside maximum range" << std::endl;
+				<< "object position (" << p.X << "," << p.Y << "," << p.Z
+				<< ") outside maximum range" << std::endl;
 		if (obj->environmentDeletes())
 			delete obj;
 		return false;
@@ -90,19 +91,19 @@ bool ActiveObjectMgr::registerObject(ServerActiveObject *obj)
 	m_active_objects[obj->getId()] = obj;
 
 	verbosestream << "Server::ActiveObjectMgr::addActiveObjectRaw(): "
-		      << "Added id=" << obj->getId() << "; there are now "
-		      << m_active_objects.size() << " active objects." << std::endl;
+			<< "Added id=" << obj->getId() << "; there are now "
+			<< m_active_objects.size() << " active objects." << std::endl;
 	return true;
 }
 
 void ActiveObjectMgr::removeObject(u16 id)
 {
 	verbosestream << "Server::ActiveObjectMgr::removeObject(): "
-		      << "id=" << id << std::endl;
+			<< "id=" << id << std::endl;
 	ServerActiveObject *obj = getActiveObject(id);
 	if (!obj) {
 		infostream << "Server::ActiveObjectMgr::removeObject(): "
-			   << "id=" << id << " not found" << std::endl;
+				<< "id=" << id << " not found" << std::endl;
 		return;
 	}
 
@@ -110,6 +111,7 @@ void ActiveObjectMgr::removeObject(u16 id)
 	delete obj;
 }
 
+// clang-format on
 void ActiveObjectMgr::getObjectsInsideRadius(
 		const v3f &pos, float radius, std::vector<u16> &result)
 {

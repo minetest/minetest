@@ -56,7 +56,7 @@ protected:
 		return last_used_id;
 	}
 
-	bool isFreeId(const u16 id) const
+	bool isFreeId(u16 id) const
 	{
 		return id != 0 && m_active_objects.find(id) == m_active_objects.end();
 	}

@@ -42,6 +42,7 @@ void ActiveObjectMgr::step(
 	}
 }
 
+// clang-format off
 bool ActiveObjectMgr::registerObject(ClientActiveObject *obj)
 {
 	assert(obj); // Pre-condition
@@ -49,7 +50,8 @@ bool ActiveObjectMgr::registerObject(ClientActiveObject *obj)
 		u16 new_id = getFreeId();
 		if (new_id == 0) {
 			infostream << "Client::ActiveObjectMgr::registerObject(): "
-				   << "no free id available" << std::endl;
+					<< "no free id available" << std::endl;
+
 			delete obj;
 			return false;
 		}
@@ -58,12 +60,12 @@ bool ActiveObjectMgr::registerObject(ClientActiveObject *obj)
 
 	if (!isFreeId(obj->getId())) {
 		infostream << "Client::ActiveObjectMgr::registerObject(): "
-			   << "id is not free (" << obj->getId() << ")" << std::endl;
+				<< "id is not free (" << obj->getId() << ")" << std::endl;
 		delete obj;
 		return false;
 	}
 	infostream << "Client::ActiveObjectMgr::registerObject(): "
-		   << "added (id=" << obj->getId() << ")" << std::endl;
+			<< "added (id=" << obj->getId() << ")" << std::endl;
 	m_active_objects[obj->getId()] = obj;
 	return true;
 }
@@ -71,11 +73,11 @@ bool ActiveObjectMgr::registerObject(ClientActiveObject *obj)
 void ActiveObjectMgr::removeObject(u16 id)
 {
 	verbosestream << "Client::ActiveObjectMgr::removeObject(): "
-		      << "id=" << id << std::endl;
+			<< "id=" << id << std::endl;
 	ClientActiveObject *obj = getActiveObject(id);
 	if (!obj) {
 		infostream << "Client::ActiveObjectMgr::removeObject(): "
-			   << "id=" << id << " not found" << std::endl;
+				<< "id=" << id << " not found" << std::endl;
 		return;
 	}
 
@@ -85,6 +87,7 @@ void ActiveObjectMgr::removeObject(u16 id)
 	delete obj;
 }
 
+// clang-format on
 void ActiveObjectMgr::getActiveObjects(const v3f &origin, f32 max_d,
 		std::vector<DistanceSortedActiveObject> &dest)
 {
