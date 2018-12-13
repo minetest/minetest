@@ -25,7 +25,8 @@ Table of Contents
 4. [Configuration File](#configuration-file)
 5. [Command-line Options](#command-line-options)
 6. [Compiling](#compiling)
-7. [Version Scheme](#version-scheme)
+7. [Docker](#docker)
+8. [Version Scheme](#version-scheme)
 
 
 Further documentation
@@ -455,6 +456,31 @@ Build the binaries like described above, but make sure you unselect "RUN_IN_PLAC
 
 Open the generated Project file with VS. Right click "PACKAGE" and choose "Generate".
 It may take some minutes to generate the installer.
+
+
+Docker
+------
+We provide Minetest server docker images using the Gitlab mirror registry.
+
+Images are built on each commit and available using the following tag scheme:
+
+* `registry.gitlab.com/minetest/minetest/server:latest` (latest build)
+* `registry.gitlab.com/minetest/minetest/server:<branch/tag>` (current branch or current tag)
+* `registry.gitlab.com/minetest/minetest/server:<commit-id>` (current commit id)
+
+If you want to test it on a docker server, you can easily run:
+
+	sudo docker run registry.gitlab.com/minetest/minetest/server:<docker tag>
+
+If you want to use it in a production environment you should use volumes bound to the docker host
+to persist data and modify the configuration:
+
+	sudo docker create -v /home/minetest/data/:/var/lib/minetest/ -v /home/minetest/conf/:/etc/minetest/ registry.gitlab.com/minetest/minetest/server:master
+
+Data will be written to `/home/minetest/data` on the host, and configuration will be read from `/home/minetest/conf/minetest.conf`.
+
+Note: If you don't understand the previous commands, please read the official Docker documentation before use.
+
 
 Version scheme
 --------------
