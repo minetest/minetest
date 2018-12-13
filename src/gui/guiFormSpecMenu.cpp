@@ -339,15 +339,9 @@ void GUIFormSpecMenu::parseList(parserData* data, const std::string &element)
 		std::string listname = parts[1];
 		std::vector<std::string> v_pos  = split(parts[2],',');
 		std::vector<std::string> v_geom = split(parts[3],',');
-		bool has_startindex = parts.size() > 4;
-		std::string startindex = has_startindex ? parts[4] : "";
-		bool has_spacing_factors = parts.size() > 5;
-		std::vector<std::string> v_spacing_factors =
-			has_spacing_factors ?
-			split(parts[5], ',') : std::vector<std::string>();
-		bool has_slot_size_factor = parts.size() > 6;
-		std::string slot_size_factor = has_slot_size_factor ? parts[6] : "";
-		const s32 border = 1;
+		std::string startindex;
+		if (parts.size() == 5)
+			startindex = parts[4];
 
 		MY_CHECKPOS("list",2);
 		MY_CHECKGEOM("list",3);
@@ -365,34 +359,17 @@ void GUIFormSpecMenu::parseList(parserData* data, const std::string &element)
 		geom.Y = stoi(v_geom[1]);
 
 		s32 start_i = 0;
-		if (has_startindex)
+		if (!startindex.empty())
 			start_i = stoi(startindex);
 
-		v2s32 _imgsize = imgsize;
-		if (has_slot_size_factor && !slot_size_factor.empty()) {
-			f32 size_factor = stof(slot_size_factor);
-			_imgsize.X = (s32)(imgsize.X * size_factor);
-			_imgsize.Y = (s32)(imgsize.Y * size_factor);
-		}
-
-		v2f32 _spacing = spacing;
-		if (has_spacing_factors && v_spacing_factors.size() == 2) {
-			_spacing.X = _imgsize.X + 2 * border
-			+ stof(v_spacing_factors[0]) * (spacing.X - imgsize.X - 2 * border);
-			_spacing.Y = _imgsize.Y + 2 * border
-			+ stof(v_spacing_factors[1]) * (spacing.Y - imgsize.Y - 2 * border);
-		}
-
-		if (geom.X < 0 || geom.Y < 0 || start_i < 0
-			|| (has_spacing_factors && v_spacing_factors.size() != 2)) {
+		if (geom.X < 0 || geom.Y < 0 || start_i < 0) {
 			errorstream<< "Invalid list element: '" << element << "'"  << std::endl;
 			return;
 		}
 
 		if(!data->explicit_size)
 			warningstream<<"invalid use of list without a size[] element"<<std::endl;
-		m_inventorylists.emplace_back(loc, listname, pos, geom, start_i,
-				_imgsize, _spacing, border);
+		m_inventorylists.emplace_back(loc, listname, pos, geom, start_i);
 		return;
 	}
 	errorstream<< "Invalid list element(" << parts.size() << "): '" << element << "'"  << std::endl;
@@ -1625,6 +1602,44 @@ void GUIFormSpecMenu::parseListColors(parserData* data, const std::string &eleme
 	errorstream<< "Invalid listcolors element(" << parts.size() << "): '" << element << "'"  << std::endl;
 }
 
+void GUIFormSpecMenu::parseListOptions(parserData* data, const std::string &element)
+{
+	std::vector<std::string> parts = split(element,';');
+
+	if (((parts.size() == 1) || (parts.size() == 2) || (parts.size() == 3)) ||
+		((parts.size() > 3) && (m_formspec_version > FORMSPEC_API_VERSION)))
+	{
+		std::vector<std::string> v_spacing_factors = split(parts[0], ',');
+
+		bool has_slot_size_factor = parts.size() > 1;
+		std::string slot_size_factor = has_slot_size_factor ? parts[1] : "";
+
+		bool has_border = parts.size() > 2;
+		std::string slot_border = has_border ? parts[2] : "";
+
+		if (has_border && !slot_border.empty()) {
+			m_list_border = stoi(slot_border);
+		}
+
+		if (has_slot_size_factor && !slot_size_factor.empty()) {
+			f32 size_factor = stof(slot_size_factor);
+			m_list_imgsize.X = (s32)(imgsize.X * size_factor);
+			m_list_imgsize.Y = (s32)(imgsize.Y * size_factor);
+		}
+
+		if (v_spacing_factors.size() == 2) {
+			m_list_spacing.X = m_list_imgsize.X + 2 * m_list_border
+				+ stof(v_spacing_factors[0]) * (spacing.X - imgsize.X - 2 * m_list_border);
+			m_list_spacing.Y = m_list_imgsize.Y + 2 * m_list_border
+				+ stof(v_spacing_factors[1]) * (spacing.Y - imgsize.Y - 2 * m_list_border);
+		} else {
+			errorstream << "Invalid listoptions element: '" << element << "'"  << std::endl;
+		}
+	} else {
+		errorstream << "Invalid listoptions element(" << parts.size() << "): '" << element << "'"  << std::endl;
+	}
+}
+
 void GUIFormSpecMenu::parseTooltip(parserData* data, const std::string &element)
 {
 	std::vector<std::string> parts = split(element,';');
@@ -1945,6 +1960,11 @@ void GUIFormSpecMenu::parseElement(parserData* data, const std::string &element)
 		return;
 	}
 
+	if (type == "listoptions") {
+		parseListOptions(data, description);
+		return;
+	}
+
 	if (type == "tooltip") {
 		parseTooltip(data,description);
 		return;
@@ -2207,6 +2227,12 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 		padding = v2s32(use_imgsize*3.0/8, use_imgsize*3.0/8);
 		m_btn_height = use_imgsize*15.0/13 * 0.35;
 
+		m_list_imgsize.X = imgsize.X;
+		m_list_imgsize.Y = imgsize.Y;
+
+		m_list_spacing.X = m_list_imgsize.X + spacing.X - imgsize.X;
+		m_list_spacing.Y = m_list_imgsize.Y + spacing.Y - imgsize.Y;
+
 		m_font = g_fontengine->getFont();
 
 		mydata.size = v2s32(
@@ -2331,24 +2357,23 @@ bool GUIFormSpecMenu::getAndroidUIInput()
 
 GUIFormSpecMenu::ItemSpec GUIFormSpecMenu::getItemAtPos(v2s32 p) const
 {
-	core::rect<s32> imgrect(0,0,imgsize.X,imgsize.Y);
+	core::rect<s32> imgrect(0, 0, m_list_imgsize.X, m_list_imgsize.Y);
 
 	for (const GUIFormSpecMenu::ListDrawSpec &s : m_inventorylists) {
-		for(s32 i=0; i<s.geom.X*s.geom.Y; i++) {
+		for(s32 i = 0; i < s.geom.X * s.geom.Y; i++) {
 			s32 item_i = i + s.start_item_i;
-			s32 x = (i % s.geom.X) * s.spacing.X;
-			s32 y = (i / s.geom.X) * s.spacing.Y;
+			s32 x = (i % s.geom.X) * m_list_spacing.X;
+			s32 y = (i / s.geom.X) * m_list_spacing.Y;
 			v2s32 p0(x,y);
 			core::rect<s32> rect = imgrect + s.pos + p0;
 			if(rect.isPointInside(p))
 			{
-				return ItemSpec(s.inventoryloc, s.listname, item_i, s.imgsize,
-					s.spacing, s.border);
+				return ItemSpec(s.inventoryloc, s.listname, item_i);
 			}
 		}
 	}
 
-	return ItemSpec(InventoryLocation(), "", -1, imgsize, spacing, 1);
+	return ItemSpec(InventoryLocation(), "", -1);
 }
 
 void GUIFormSpecMenu::drawList(const ListDrawSpec &s, int layer,
@@ -2373,15 +2398,15 @@ void GUIFormSpecMenu::drawList(const ListDrawSpec &s, int layer,
 		return;
 	}
 
-	core::rect<s32> imgrect(0, 0, s.imgsize.X, s.imgsize.Y);
+	core::rect<s32> imgrect(0, 0, m_list_imgsize.X, m_list_imgsize.Y);
 
 	for (s32 i = 0; i < s.geom.X * s.geom.Y; i++) {
 		s32 item_i = i + s.start_item_i;
 		if (item_i >= (s32)ilist->getSize())
 			break;
 
-		s32 x = (i % s.geom.X) * s.spacing.X;
-		s32 y = (i / s.geom.X) * s.spacing.Y;
+		s32 x = (i % s.geom.X) * m_list_spacing.X;
+		s32 y = (i / s.geom.X) * m_list_spacing.Y;
 
 		v2s32 p(x,y);
 		core::rect<s32> rect = imgrect + s.pos + p;
@@ -2410,7 +2435,7 @@ void GUIFormSpecMenu::drawList(const ListDrawSpec &s, int layer,
 			s32 y1 = rect.UpperLeftCorner.Y;
 			s32 x2 = rect.LowerRightCorner.X;
 			s32 y2 = rect.LowerRightCorner.Y;
-			s32 border = s.border;
+			s32 border = m_list_border;
 			driver->draw2DRectangle(m_slotbordercolor,
 				core::rect<s32>(v2s32(x1 - border, y1 - border),
 								v2s32(x2 + border, y1)), NULL);
@@ -2479,7 +2504,7 @@ void GUIFormSpecMenu::drawSelectedItem()
 	ItemStack stack = list->getItem(m_selected_item->i);
 	stack.count = m_selected_amount;
 
-	core::rect<s32> imgrect(0,0, m_selected_item->imgsize.X, m_selected_item->imgsize.Y);
+	core::rect<s32> imgrect(0,0, m_list_imgsize.X, m_list_imgsize.Y);
 	core::rect<s32> rect = imgrect + (m_pointer - imgrect.getCenter());
 	rect.constrainTo(driver->getViewPort());
 	drawItemStack(driver, m_font, stack, rect, NULL, m_client, IT_ROT_DRAGGED);
@@ -2797,9 +2822,6 @@ void GUIFormSpecMenu::updateSelectedItem()
 			m_selected_item->inventoryloc = s.inventoryloc;
 			m_selected_item->listname = "craftresult";
 			m_selected_item->i = 0;
-			m_selected_item->imgsize = s.imgsize;
-			m_selected_item->spacing = s.spacing;
-			m_selected_item->border = s.border;
 			m_selected_amount = item.count;
 			m_selected_dragging = false;
 			break;

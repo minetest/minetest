@@ -1891,18 +1891,6 @@ Elements
 
 * Show an inventory list
 
-### `list[<inventory location>;<list name>;<X>,<Y>;<W>,<H>;<starting item index>;<spacing factor width>,<spacing factor height>;<img factor size>]`
-
-* Show an inventory list
-* `spacing factor width` and `spacing factor height` are spacing factor sizes (relative to the slot size) of a slot
-  example 1 : (0.0,0.0) for spacing means that there are no space between slots
-  example 2 : (1.0,1.0) for spacing means that default space between slots is used
-  example 3 : (2.0,2.0) for spacing means that default space between slots x2 is used
-* `img factor size` is the size factor (relative to the screen size) of a slot : a slot is always a square
-  the default value for the `img factor size` is 1.0 (42 pixels with border included for a 800x600 screen size)
-  example 1 : 1.0 for `img factor size` means that you use the default size for a slot
-  example 2 : 2.0 for `img factor size` means that you use the default size x2 for a slot
-
 ### `listring[<inventory location>;<list name>]`
 
 * Allows to create a ring of inventory lists
@@ -1934,6 +1922,18 @@ Elements
 * Sets color of slots border
 * Sets default background color of tooltips
 * Sets default font color of tooltips
+
+### `listoptions[<spacing factor width>,<spacing factor height>;<img factor size>]`
+
+* Set style options for inventory lists
+* `spacing factor width` and `spacing factor height` are spacing factor sizes (relative to the slot size) of a slot
+  example 1 : (0.0,0.0) for spacing means that there are no space between slots
+  example 2 : (1.0,1.0) for spacing means that default space between slots is used
+  example 3 : (2.0,2.0) for spacing means that default space between slots x2 is used
+* `img factor size` is the size factor (relative to the screen size) of a slot : a slot is always a square
+  the default value for the `img factor size` is 1.0 (42 pixels with border included for a 800x600 screen size)
+  example 1 : 1.0 for `img factor size` means that you use the default size for a slot
+  example 2 : 2.0 for `img factor size` means that you use the default size x2 for a slot
 
 ### `tooltip[<gui_element_name>;<tooltip_text>;<bgcolor>;<fontcolor>]`
 
