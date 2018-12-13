@@ -49,19 +49,19 @@ std::string gob_cmd_update_position(
 	// command
 	writeU8(os, GENERIC_CMD_UPDATE_POSITION);
 	// pos
-	writeV3F1000(os, position);
+	writeV3F32(os, position);
 	// velocity
-	writeV3F1000(os, velocity);
+	writeV3F32(os, velocity);
 	// acceleration
-	writeV3F1000(os, acceleration);
+	writeV3F32(os, acceleration);
 	// rotation
-	writeV3F1000(os, rotation);
+	writeV3F32(os, rotation);
 	// do_interpolate
 	writeU8(os, do_interpolate);
 	// is_end_position (for interpolation)
 	writeU8(os, is_movement_end);
 	// update_interval (for interpolation)
-	writeF1000(os, update_interval);
+	writeF32(os, update_interval);
 	return os.str();
 }
 

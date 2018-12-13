@@ -4,6 +4,7 @@ set(UTIL_SRCS
 	${CMAKE_CURRENT_SOURCE_DIR}/base64.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/directiontables.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/enriched_string.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/ieee_float.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/numeric.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/pointedthing.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/serialize.cpp
