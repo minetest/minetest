@@ -19,7 +19,7 @@ spec:
       - image: registry.gitlab.com/minetest/minetest/server:master
         name: minetest
         ports:
-        - containerPort: UDP
+        - containerPort: 30000
           protocol: UDP
         volumeMounts:
         - mountPath: /var/lib/minetest
