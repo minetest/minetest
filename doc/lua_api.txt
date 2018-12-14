@@ -1923,7 +1923,7 @@ Elements
 * Sets default background color of tooltips
 * Sets default font color of tooltips
 
-### `listoptions[<spacing factor width>,<spacing factor height>;<img factor size>]`
+### `listoptions[<spacing factor width>,<spacing factor height>;<img factor size>;<border>]`
 
 * Set style options for inventory lists
 * `spacing factor width` and `spacing factor height` are spacing factor sizes (relative to the slot size) of a slot
@@ -1934,6 +1934,7 @@ Elements
   the default value for the `img factor size` is 1.0 (42 pixels with border included for a 800x600 screen size)
   example 1 : 1.0 for `img factor size` means that you use the default size for a slot
   example 2 : 2.0 for `img factor size` means that you use the default size x2 for a slot
+* `border` is the border of a slot, 1 is the default and 0 means no border
 
 ### `tooltip[<gui_element_name>;<tooltip_text>;<bgcolor>;<fontcolor>]`
 
