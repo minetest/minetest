@@ -771,6 +771,9 @@ void drawItemStack(video::IVideoDriver *driver,
 		video::SColor bgcolor(128,0,0,0);
 		driver->draw2DRectangle(bgcolor, rect2, clip);
 
+		video::SColor shadow_color(0,0,0,255);
+		font->draw(text.c_str(), rect2 + v2s32(1, 1), shadow_color, false, false, clip);
+
 		video::SColor color(255,255,255,255);
 		font->draw(text.c_str(), rect2, color, false, false, clip);
 	}
