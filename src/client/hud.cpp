@@ -761,18 +761,15 @@ void drawItemStack(video::IVideoDriver *driver,
 		v2u32 dim = font->getDimension(utf8_to_wide(text).c_str());
 		v2s32 sdim(dim.X,dim.Y);
 
+		s32 shadow_offset = 1;
 		core::rect<s32> rect2(
-			/*rect.UpperLeftCorner,
-			core::dimension2d<u32>(rect.getWidth(), 15)*/
-			rect.LowerRightCorner - sdim,
-			sdim
+			rect.LowerRightCorner - sdim - shadow_offset,
+			sdim - shadow_offset
 		);
 
-		video::SColor bgcolor(128,0,0,0);
-		driver->draw2DRectangle(bgcolor, rect2, clip);
-
 		video::SColor shadow_color(0,0,0,255);
-		font->draw(text.c_str(), rect2 + v2s32(1, 1), shadow_color, false, false, clip);
+		font->draw(text.c_str(), rect2 + v2s32(shadow_offset, shadow_offset),
+				shadow_color, false, false, clip);
 
 		video::SColor color(255,255,255,255);
 		font->draw(text.c_str(), rect2, color, false, false, clip);
