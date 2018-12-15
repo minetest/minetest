@@ -25,7 +25,7 @@ function get_mods(path,retval,modpack)
 			local toadd = {}
 			retval[#retval + 1] = toadd
 
-			local mod_conf = Settings(prefix .. "mod.conf"):to_table()
+			local mod_conf = Settings(prefix .. DIR_DELIM .. "mod.conf"):to_table()
 			if mod_conf.name then
 				name = mod_conf.name
 			end
