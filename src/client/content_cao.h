@@ -25,6 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "object_properties.h"
 #include "itemgroup.h"
 #include "constants.h"
+#include <cassert>
 
 class Camera;
 class Client;
@@ -164,8 +165,16 @@ public:
 
 	scene::IAnimatedMeshSceneNode *getAnimatedMeshSceneNode();
 
+	// m_matrixnode controls the position and rotation of the child node
+	// for all scene nodes, as a workaround for an Irrlicht problem with
+	// rotations. The child node's position can't be used because it's
+	// rotated, and must remain as 0.
+	// Note that m_matrixnode.setPosition() shouldn't be called. Use
+	// m_matrixnode->getRelativeTransformationMatrix().setTranslation()
+	// instead (aka getPosRotMatrix().setTranslation()).
 	inline core::matrix4 &getPosRotMatrix()
 	{
+		assert(m_matrixnode);
 		return m_matrixnode->getRelativeTransformationMatrix();
 	}
 

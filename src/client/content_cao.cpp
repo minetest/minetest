@@ -406,9 +406,6 @@ v3f GenericCAO::getPosition()
 		if (m_matrixnode)
 			return m_matrixnode->getAbsolutePosition();
 
-		if (m_spritenode)
-			return m_spritenode->getAbsolutePosition();
-
 		return m_position;
 	}
 	return pos_translator.val_current;
@@ -541,8 +538,11 @@ void GenericCAO::addToScene(ITextureSource *tsrc)
 
 	if (m_prop.visual == "sprite") {
 		infostream<<"GenericCAO::addToScene(): single_sprite"<<std::endl;
+		m_matrixnode = RenderingEngine::get_scene_manager()->
+				addDummyTransformationSceneNode();
+		m_matrixnode->grab();
 		m_spritenode = RenderingEngine::get_scene_manager()->addBillboardSceneNode(
-				NULL, v2f(1, 1), v3f(0,0,0), -1);
+				m_matrixnode, v2f(1, 1), v3f(0,0,0), -1);
 		m_spritenode->grab();
 		m_spritenode->setMaterialTexture(0,
 				tsrc->getTextureForMesh("unknown_node.png"));
@@ -785,12 +785,11 @@ void GenericCAO::updateNodePos()
 		v3s16 camera_offset = m_env->getCameraOffset();
 		v3f pos = pos_translator.val_current -
 				intToFloat(camera_offset, BS);
+		getPosRotMatrix().setTranslation(pos);
 		if (node != m_spritenode) { // rotate if not a sprite
 			v3f rot = m_is_local_player ? -m_rotation : -rot_translator.val_current;
 			setPitchYawRoll(getPosRotMatrix(), rot);
-			getPosRotMatrix().setTranslation(pos);
-		} else
-			node->setPosition(pos); // sprites have no m_matrixnode
+		}
 	}
 }
 
