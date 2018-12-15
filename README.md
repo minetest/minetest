@@ -481,6 +481,8 @@ Data will be written to `/home/minetest/data` on the host, and configuration wil
 
 Note: If you don't understand the previous commands, please read the official Docker documentation before use.
 
+You can also host your minetest server inside a Kubernetes cluster. See our example implementation in `misc/kubernetes.yml`.
+
 
 Version scheme
 --------------

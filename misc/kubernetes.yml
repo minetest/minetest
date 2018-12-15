@@ -1,0 +1,53 @@
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    app: minetest
+  name: minetest
+  namespace: default
+spec:
+  selector:
+    matchLabels:
+      app: minetest
+  template:
+    metadata:
+      labels:
+        app: minetest
+    spec:
+      containers:
+      - image: registry.gitlab.com/minetest/minetest/server:master
+        name: minetest
+        ports:
+        - containerPort: 30000
+          protocol: UDP
+        volumeMounts:
+        - mountPath: /var/lib/minetest
+          name: minetest-data
+        - mountPath: /etc/minetest
+          name: config
+      restartPolicy: Always
+      volumes:
+      - name: minetest-data
+        persistentVolumeClaim:
+          claimName: minetest-data
+      - configMap:
+          defaultMode: 420
+          name: minetest
+        name: config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: minetest
+  name: minetest
+  namespace: default
+spec:
+  ports:
+  - name: minetest
+    port: 30000
+    protocol: UDP
+  selector:
+    app: minetest
+  type: NodePort
