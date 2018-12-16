@@ -3424,13 +3424,12 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 
 			// If the mouse was let go off once and we are in left drag mode
 			if (m_auto_place && m_left_dragging) {
-				int each = MYMIN(m_selected_amount_left_drag_copy/m_left_drag_to_stack.size(), m_left_drag_stack.getStackMax(m_client->idef()));
+				int each = MYMIN(m_selected_amount_left_drag_copy / m_left_drag_to_stack.size(),
+						m_left_drag_stack.getStackMax(m_client->idef()));
 
 				m_selected_amount = m_selected_amount_left_drag_copy;
 
-				for (std::set<ItemSpec*>::iterator it=m_left_drag_to_stack.begin(); it!=m_left_drag_to_stack.end(); ++it) {
-					ItemSpec *s = *it;
-
+				for (auto &s : m_left_drag_to_stack) {
 					IMoveAction *a = new IMoveAction();
 					a->from_inv = m_left_drag_item->inventoryloc;
 					a->from_list = m_left_drag_item->listname;
@@ -3639,10 +3638,11 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 
 					m_client->m_inhibit_inventory_revert = true;
 
-					int each = MYMIN(m_selected_amount_left_drag_copy/(m_left_drag_to_stack.size()+1), m_left_drag_stack.getStackMax(m_client->idef()));
+					int each = MYMIN(m_selected_amount_left_drag_copy / (m_left_drag_to_stack.size() + 1),
+							m_left_drag_stack.getStackMax(m_client->idef()));
 
 					// Check there is enough item to split into the new slot
-					if (each > 0){
+					if (each > 0) {
 						m_selected_amount = m_selected_amount_left_drag_copy;
 						Inventory *inv_selected = m_invmgr->getInventory(m_left_drag_item->inventoryloc);
 						InventoryList *list_from = inv_selected->getList(m_left_drag_item->listname);
@@ -3656,8 +3656,7 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 						m_left_drag_to_stack.insert(i_s);
 
 						// Replay the dragged list, updating the slot amount
-						for (std::set<ItemSpec*>::iterator it=m_left_drag_to_stack.begin(); it!=m_left_drag_to_stack.end(); ++it) {
-							ItemSpec *s = *it;
+						for (auto &s : m_left_drag_to_stack) {
 							Inventory *inv_to = m_invmgr->getInventory(s->inventoryloc);
 							InventoryList *list_to = inv_to->getList(s->listname);
 							ItemStack stack_to = list_to->getItem(s->i);
