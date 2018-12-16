@@ -408,8 +408,8 @@ protected:
 	std::vector<std::pair<FieldSpec,gui::IGUIScrollBar*> > m_scrollbars;
 	std::vector<std::pair<FieldSpec, std::vector<std::string> > > m_dropdowns;
 
-	ItemSpec *m_selected_item = nullptr;
-	ItemSpec *m_left_drag_item = nullptr;
+	std::unique_ptr<ItemSpec> m_selected_item{nullptr};
+	std::unique_ptr<ItemSpec> m_left_drag_item{nullptr};
 	ItemStack m_left_drag_stack;
 	u16 m_selected_amount = 0;
 	bool m_selected_dragging = false;

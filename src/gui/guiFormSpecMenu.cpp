@@ -121,7 +121,6 @@ GUIFormSpecMenu::~GUIFormSpecMenu()
 		table_it.second->drop();
 	}
 
-	delete m_selected_item;
 	delete m_form_src;
 	delete m_text_dst;
 }
@@ -2768,12 +2767,13 @@ void GUIFormSpecMenu::updateSelectedItem()
 				continue;
 
 			// Grab selected item from the crafting result list
-			m_selected_item = new ItemSpec;
+			m_selected_item.reset(new ItemSpec);
 			m_selected_item->inventoryloc = s.inventoryloc;
 			m_selected_item->listname = "craftresult";
 			m_selected_item->i = 0;
 			m_selected_amount = item.count;
 			m_selected_dragging = false;
+			m_left_drag_item.reset(new ItemSpec(*m_selected_item));
 			break;
 		}
 	}
@@ -2816,8 +2816,7 @@ ItemStack GUIFormSpecMenu::verifySelectedItem()
 		}
 
 		// selection was not valid
-		delete m_selected_item;
-		m_selected_item = NULL;
+		m_selected_item.release();
 		m_selected_amount = 0;
 		m_selected_dragging = false;
 	}
@@ -3323,7 +3322,7 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 			} else if (!m_selected_item) {
 				if (s_count && m_button != BET_WHEEL_UP) {
 					// Non-empty stack has been clicked: select or shift-move it
-					m_selected_item = new ItemSpec(s);
+					m_selected_item.reset(new ItemSpec(s));
 
 					u32 count;
 					if (m_button == BET_RIGHT)
@@ -3340,7 +3339,7 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 
 						// m_selected_item can be deleted by the black magic when it's empty
 						// As such we create our own copy of it for left drag handling
-						m_left_drag_item = new ItemSpec(s);
+						m_left_drag_item.reset(new ItemSpec(s));
 						m_selected_amount = count;
 						m_selected_dragging = m_button != BET_WHEEL_DOWN;
 						m_auto_place = false;
@@ -3372,7 +3371,7 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 							// m_selected_item can be deleted by the black magic when it's empty
 							// As such we point it to the starting drag slot which will not be empty
 							// and have the require item for drag leftover item preview
-							m_selected_item = new ItemSpec(s);
+							m_selected_item.reset(new ItemSpec(s));
 						}
 						else
 							move_amount = m_selected_amount;
@@ -3447,7 +3446,7 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 
 				if (!leftover_item_stack.empty()) {
 					// If there are leftovers, restore it at the original slot
-					m_selected_item = m_left_drag_item;
+					m_selected_item.reset(new ItemSpec(*m_left_drag_item));
 
 					Inventory *inv = m_invmgr->getInventory(m_selected_item->inventoryloc);
 					InventoryList *list = inv->getList(m_selected_item->listname);
@@ -3682,8 +3681,8 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 		// If m_selected_amount has been decreased to zero, deselect
 		else if (m_selected_amount == 0) {
 			m_selected_swap.clear();
-			delete m_selected_item;
-			m_selected_item = NULL;
+
+			m_selected_item.release();
 			m_selected_amount = 0;
 			m_selected_dragging = false;
 		}
