@@ -367,20 +367,17 @@ ServerActiveObject* LuaEntitySAO::create(ServerEnvironment *env, v3f pos,
 		hp = readS16(is);
 		velocity = readV3F1000(is);
 		// yaw must be yaw to be backwards-compatible
-		f32 yaw = readF1000(is);
+		rotation.Y = readF1000(is);
 
 		if (is.good()) // EOF for old formats
 			version2 = readU8(is);
 
-		if (version2 < 1) {
-			// PROTOCOL_VERSION < 37
-			rotation.Y = yaw;
+		if (version2 < 1) // PROTOCOL_VERSION < 37
 			break;
-		}
+
 		// version2 >= 1
-		f32 r1 = readF1000(is);
-		f32 r3 = readF1000(is);
-		rotation = v3f(r1, yaw, r3);
+		rotation.X = readF1000(is);
+		rotation.Z = readF1000(is);
 
 		// if (version2 < 2)
 		//     break;
