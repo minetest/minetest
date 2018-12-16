@@ -230,6 +230,9 @@ public:
 
 	void addToScene(ITextureSource *tsrc);
 
+	void setSceneNodeMaterial(scene::ISceneNode *node,
+			video::E_MATERIAL_TYPE material_type);
+
 	inline void expireVisuals()
 	{
 		m_visuals_expired = true;

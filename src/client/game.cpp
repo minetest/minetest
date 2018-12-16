@@ -533,8 +533,8 @@ public:
 
 		m_light_color.set(light_color, services);
 
-		const float as = sin(sun_angle);
-		const float ac = -cos(sun_angle);
+		const float as = (float)std::sin(sun_angle);
+		const float ac = -(float)std::cos(sun_angle);
 		float light_direction[3] = {
 			as,
 			ac,
