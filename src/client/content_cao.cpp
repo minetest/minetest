@@ -523,6 +523,22 @@ void GenericCAO::removeFromScene(bool permanent)
 	}
 }
 
+void GenericCAO::setSceneNodeMaterial(scene::ISceneNode *node,
+		video::E_MATERIAL_TYPE material_type)
+{
+	node->setMaterialFlag(video::EMF_LIGHTING, false);
+	node->setMaterialFlag(video::EMF_BILINEAR_FILTER, false);
+	node->setMaterialFlag(video::EMF_FOG_ENABLE, true);
+
+	if (m_enable_shaders) {
+		node->setMaterialType(m_material_type);
+		node->setMaterialFlag(video::EMF_GOURAUD_SHADING, false);
+		node->setMaterialFlag(video::EMF_NORMALIZE_NORMALS, true);
+	} else {
+		node->setMaterialType(material_type);
+	}
+}
+
 void GenericCAO::addToScene(ITextureSource *tsrc)
 {
 	m_smgr = RenderingEngine::get_scene_manager();
@@ -557,17 +573,8 @@ void GenericCAO::addToScene(ITextureSource *tsrc)
 		m_spritenode->grab();
 		m_spritenode->setMaterialTexture(0,
 				tsrc->getTextureForMesh("unknown_node.png"));
-		m_spritenode->setMaterialFlag(video::EMF_LIGHTING, false);
-		m_spritenode->setMaterialFlag(video::EMF_BILINEAR_FILTER, false);
-		m_spritenode->setMaterialFlag(video::EMF_FOG_ENABLE, true);
 
-		if (m_enable_shaders) {
-			m_spritenode->setMaterialType(m_material_type);
-			m_spritenode->setMaterialFlag(video::EMF_GOURAUD_SHADING, false);
-			m_spritenode->setMaterialFlag(video::EMF_NORMALIZE_NORMALS, true);
-		} else {
-			m_spritenode->setMaterialType(material_type);
-		}
+		setSceneNodeMaterial(m_spritenode, material_type);
 
 		u8 li = m_last_light;
 		m_spritenode->setColor(video::SColor(255,li,li,li));
@@ -675,18 +682,7 @@ void GenericCAO::addToScene(ITextureSource *tsrc)
 		u8 li = m_last_light;
 		setMeshColor(m_meshnode->getMesh(), video::SColor(255,li,li,li));
 
-		m_meshnode->setMaterialFlag(video::EMF_LIGHTING, false);
-		m_meshnode->setMaterialFlag(video::EMF_BILINEAR_FILTER, false);
-
-		if (m_enable_shaders) {
-			m_meshnode->setMaterialType(m_material_type);
-			m_meshnode->setMaterialFlag(video::EMF_GOURAUD_SHADING, false);
-			m_meshnode->setMaterialFlag(video::EMF_NORMALIZE_NORMALS, true);
-		} else {
-			m_meshnode->setMaterialType(material_type);
-		}
-
-		m_meshnode->setMaterialFlag(video::EMF_FOG_ENABLE, true);
+		setSceneNodeMaterial(m_meshnode, material_type);
 	} else if (m_prop.visual == "mesh") {
 		infostream<<"GenericCAO::addToScene(): mesh"<<std::endl;
 		scene::IAnimatedMesh *mesh = m_client->getMesh(m_prop.mesh, true);
@@ -707,18 +703,8 @@ void GenericCAO::addToScene(ITextureSource *tsrc)
 
 			setAnimatedMeshColor(m_animated_meshnode, video::SColor(255,li,li,li));
 
-			m_animated_meshnode->setMaterialFlag(video::EMF_LIGHTING, true);
-			m_animated_meshnode->setMaterialFlag(video::EMF_BILINEAR_FILTER, false);
+			setSceneNodeMaterial(m_animated_meshnode, material_type);
 
-			if (m_enable_shaders) {
-				m_animated_meshnode->setMaterialType(m_material_type);
-				m_animated_meshnode->setMaterialFlag(video::EMF_GOURAUD_SHADING, false);
-				m_animated_meshnode->setMaterialFlag(video::EMF_NORMALIZE_NORMALS, true);
-			} else {
-				m_animated_meshnode->setMaterialType(material_type);
-			}
-
-			m_animated_meshnode->setMaterialFlag(video::EMF_FOG_ENABLE, true);
 			m_animated_meshnode->setMaterialFlag(video::EMF_BACK_FACE_CULLING,
 				m_prop.backface_culling);
 		} else

@@ -97,18 +97,15 @@ static u8 get_artificial_light_ratio(MapNode n, const ContentFeatures f)
 	if (day < night)
 		day = 0;
 	else
-		day = day - night;
+		day -= night;
 
 	u32 sum = day + night;
 
-	// Ratio of sunlight:
-	u32 r;
+	// Ratio of sunlight
 	if (sum > 0)
-		r = day * 255 / sum;
-	else
-		r = 0;
+		return 255 - (day * 255 / sum);
 
-	return 255 - r;
+	return 255;
 }
 
 void ClientEnvironment::step(float dtime)
