@@ -599,11 +599,11 @@
 
 #### Advanced Lighting
 
-#    Enables directional environment lighting
+#    Enables directional environment lighting (Experimental)
 #    type: bool
 # directional_shading = false
 
-#    Enables per-pixel specular highlights
+#    Enables per-pixel specular highlights (Experimental)
 #    type: bool
 # specular_lighting = false
 
