@@ -603,10 +603,6 @@
 #    type: bool
 # directional_shading = false
 
-#    Enables per-pixel specular highlights (Experimental)
-#    type: bool
-# specular_lighting = false
-
 #### Bumpmapping
 
 #    Enables bumpmapping for textures. Normalmaps need to be supplied by the texture pack

@@ -13,11 +13,6 @@ uniform float animationTimer;
 varying vec3 vPosition;
 varying vec3 worldPosition;
 
-// Specular lighting information
-varying float sunLight;
-varying float specularIntensity;
-varying float specularExponent;
-
 varying vec3 worldNormal;
 
 varying vec3 eyeVec;
@@ -137,16 +132,6 @@ float disp_z;
 	v.y = dot(eyeVec, binormal);
 	v.z = dot(eyeVec, normal);
 	tsEyeVec = normalize (v);
-
-	// Specular settings
-#ifdef ENABLE_SPECULAR_LIGHTING
-	sunLight = gl_Color.a; // Copy alpha into sunlight for specular
-
-	worldNormal = normalize(alwaysNormal); // The actual world-space normal
-
-	specularIntensity = 0.06;
-	specularExponent = 35.0;
-#endif
 
 	// Calculate color.
 	// Red, green and blue components are pre-multiplied with

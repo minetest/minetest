@@ -260,10 +260,9 @@ local function formspec(tabview, name, tabdata)
 					.. dump(core.settings:get_bool("enable_waving_leaves")) .. "]" ..
 			"checkbox[8.25,3.5;cb_waving_plants;" .. fgettext("Waving Plants") .. ";"
 					.. dump(core.settings:get_bool("enable_waving_plants")) .. "]" ..
-			"checkbox[8.25,4.0;cb_directional_shading;" .. fgettext("Directional Shading") .. ";"
+			"checkbox[8.25,4.0;cb_directional_shading;" .. fgettext("Directional Shading *") .. ";"
 					.. dump(core.settings:get_bool("directional_shading")) .. "]" ..
-			"checkbox[8.25,4.5;cb_specular_lighting;" .. fgettext("Specular Lighting") .. ";"
-					.. dump(core.settings:get_bool("specular_lighting")) .. "]"
+			"label[8.25,4.8;* " .. fgettext("Experimental") .. "]"
 	else
 		tab_string = tab_string ..
 			"label[8.38,0.7;" .. core.colorize("#888888",
@@ -281,9 +280,7 @@ local function formspec(tabview, name, tabdata)
 			"label[8.38,3.7;" .. core.colorize("#888888",
 					fgettext("Waving Plants")) .. "]" ..
 			"label[8.38,4.2;" .. core.colorize("#888888",
-					fgettext("Directional Shading")) .. "]" ..
-			"label[8.38,4.7;" .. core.colorize("#888888",
-					fgettext("Specular Lighting")) .. "]"
+					fgettext("Directional Shading")) .. "]"
 	end
 
 	return tab_string
@@ -363,10 +360,6 @@ local function handle_settings_buttons(this, fields, tabname, tabdata)
 	end
 	if fields["cb_directional_shading"] then
 		core.settings:set("directional_shading", fields["cb_directional_shading"])
-		return true
-	end
-	if fields["cb_specular_lighting"] then
-		core.settings:set("specular_lighting", fields["cb_specular_lighting"])
 		return true
 	end
 	if fields["btn_change_keys"] then

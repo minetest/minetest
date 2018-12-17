@@ -528,9 +528,6 @@ shader_path (Shader path) path
 #    Enables directional environment lighting (Experimental)
 directional_shading (Directional shading) bool false
 
-#    Enables per-pixel specular highlights (Experimental)
-specular_lighting (Specular lighting) bool false
-
 [***Tone Mapping]
 
 #    Enables filmic tone mapping
