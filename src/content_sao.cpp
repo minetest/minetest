@@ -610,7 +610,7 @@ void LuaEntitySAO::getStaticData(std::string *result) const
 	writeU8(os, 1); // PROTOCOL_VERSION >= 37
 
 	writeF1000(os, m_rotation.X);
-	writeF1000(os, m_rotation.Y);
+	writeF1000(os, m_rotation.Z);
 
 	// <write new values>
 
