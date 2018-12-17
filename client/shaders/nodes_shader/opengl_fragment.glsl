@@ -24,11 +24,6 @@ varying vec3 vPosition;
 // precision must be considered).
 varying vec3 worldPosition;
 
-// Specular lighting information
-varying float sunLight;
-varying float specularIntensity;
-varying float specularExponent;
-
 varying vec3 worldNormal;
 
 varying float area_enable_parallax;
@@ -74,22 +69,6 @@ vec4 applyToneMapping(vec4 color)
 	vec3 whiteScale = vec3(1.036015346);
 	color.rgb *= whiteScale;
 	return vec4(pow(color.rgb, vec3(1.0 / gamma)), color.a);
-}
-#endif
-
-#ifdef ENABLE_SPECULAR_LIGHTING
-vec4 applySpecularLighting(vec4 col, float intensity, float exponent)
-{
-	// Specular highlights
-	vec3 e = normalize(worldPosition - wrappedEyePosition);
-	vec3 l = normalize(lightDirection);
-	float d = dot(e, reflect(l, worldNormal));
-
-	float specular = intensity * pow(max(d, 0.0), exponent);
-
-	col.rgb += lightColor.rgb * lightColor.a * specular * sunLight;
-
-	return col;
 }
 #endif
 
@@ -235,10 +214,6 @@ void main(void)
 #endif
 
 	vec4 col = vec4(color.rgb * gl_Color.rgb, 1.0);
-
-#ifdef ENABLE_SPECULAR_LIGHTING
-	col = applySpecularLighting(col, specularIntensity, specularExponent);
-#endif
 
 #ifdef ENABLE_TONE_MAPPING
 	col = applyToneMapping(col);
