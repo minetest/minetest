@@ -1800,6 +1800,9 @@ examples.
 Position and size units are inventory slots, `X` and `Y` position the formspec
 element relative to the top left of the menu or container. `W` and `H` are its
 width and height values.
+Inventories with a `player:<name>` inventory location are only sent to the
+player named `<name>`.
+
 When displaying text which can contain formspec code, e.g. text set by a player,
 use `minetest.formspec_escape`.
 For coloured text you can use `minetest.colorize`.
@@ -1885,11 +1888,13 @@ Elements
 
 ### `list[<inventory location>;<list name>;<X>,<Y>;<W>,<H>;]`
 
-* Show an inventory list
+* Show an inventory list if it has been sent to the client. Nothing will
+  be shown if the inventory list is of size 0.
 
 ### `list[<inventory location>;<list name>;<X>,<Y>;<W>,<H>;<starting item index>]`
 
-* Show an inventory list
+* Show an inventory list if it has been sent to the client. Nothing will
+  be shown if the inventory list is of size 0.
 
 ### `listring[<inventory location>;<list name>]`
 
