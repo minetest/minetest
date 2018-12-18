@@ -392,6 +392,20 @@ bool ClientLauncher::launch_game(std::string &error_message,
 	if (cmd_args.exists("password"))
 		menudata.password = cmd_args.get("password");
 
+
+	if (cmd_args.exists("password-file")) {
+		std::ifstream passfile(cmd_args.get("password-file"));
+		if (passfile.good()) {
+			getline(passfile, menudata.password);
+		} else {
+			error_message = gettext("Provided password file "
+					"failed to open: ")
+					+ cmd_args.get("password-file");
+			errorstream << error_message << std::endl;
+			return false;
+		}
+	}
+
 	// If a world was commanded, append and select it
 	if (!game_params.world_path.empty()) {
 		worldspec.gameid = getWorldGameId(game_params.world_path, true);
