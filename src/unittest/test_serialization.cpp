@@ -674,6 +674,19 @@ void TestSerialization::testFloatFormat()
 		return;
 	}
 
+	// The code below compares the IEEE conversion functions with a
+	// known good IEC559/IEEE754 implementation. This test neeeds
+	// IEC559 compliance in the compiler.
+#if defined(__GNUC__) && (!defined(__STDC_IEC_559__) || defined(__FAST_MATH__))
+	// GNU C++ lies about its IEC559 support when -ffast-math is active.
+	// https://gcc.gnu.org/bugzilla//show_bug.cgi?id=84949
+	bool is_iec559 = false;
+#else
+	bool is_iec559 = std::numeric_limits<f32>::is_iec559;
+#endif
+	if (!is_iec559)
+		return;
+
 	auto test_single = [&fs, &fm](const u32 &i) -> bool {
 		memcpy(&fm, &i, 4);
 		fs = u32Tof32Slow(i);
