@@ -70,7 +70,7 @@ u32 f32Tou32Slow(f32 f)
 		return signbit | 0x7FC00000UL;
 	if (std::isinf(f))
 		return signbit | 0x7F800000UL;
-	int exp;
+	int exp = 0; // silence warning
 	f32 mant = frexpf(f, &exp);
 	u32 imant = (u32)std::floor((signbit ? -16777216.f : 16777216.f) * mant);
 	exp += 126;
