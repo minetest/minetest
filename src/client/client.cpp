@@ -110,7 +110,8 @@ Client::Client(
 	m_cache_save_interval = g_settings->getU16("server_map_save_interval");
 
 	m_modding_enabled = g_settings->getBool("enable_client_modding");
-	// Only create the client script environment if client modding is enabled
+	// Only create the client script environment if client scripting is enabled by the
+	// client.
 	if (m_modding_enabled) {
 		m_script = new ClientScripting(this);
 		m_env.setScript(m_script);
@@ -125,10 +126,22 @@ void Client::loadMods()
 		return;
 	}
 
-	// If client modding is not enabled, don't load client-provided CSM mods or
-	// builtin.
+	// If client scripting is disabled by the client, don't load builtin or
+	// client-provided mods.
 	if (!m_modding_enabled) {
-		warningstream << "Client side mods are disabled by configuration." << std::endl;
+		warningstream << "Client side scripting is disabled by client." << std::endl;
+		return;
+	}
+
+	// If client scripting is disabled by the server, don't load builtin or
+	// client-provided mods.
+	// TODO Delete this code block when server-sent CSM and verifying of builtin are
+	// complete.
+	if (checkCSMRestrictionFlag(CSMRestrictionFlags::CSM_RF_LOAD_CLIENT_MODS)) {
+		warningstream << "Client-provided mod loading is disabled by server." <<
+			std::endl;
+		// This line is needed because builtin is not loaded
+		m_modding_enabled = false;
 		return;
 	}
 
@@ -136,16 +149,19 @@ void Client::loadMods()
 	scanModIntoMemory(BUILTIN_MOD_NAME, getBuiltinLuaPath());
 	m_script->loadModFromMemory(BUILTIN_MOD_NAME);
 
-	// If the server has disabled client-provided CSM mod loading, don't load
-	// client-provided CSM mods. Builtin is loaded so needs verfying.
+	// TODO Uncomment when server-sent CSM and verifying of builtin are complete
+	/*
+	// Don't load client-provided mods if disabled by server
 	if (checkCSMRestrictionFlag(CSMRestrictionFlags::CSM_RF_LOAD_CLIENT_MODS)) {
-		warningstream << "Client side mods are disabled by server." << std::endl;
+		warningstream << "Client-provided mod loading is disabled by server." <<
+			std::endl;
 		// If builtin integrity is wrong, disconnect user
 		if (!checkBuiltinIntegrity()) {
-			// @TODO disconnect user
+			// TODO disconnect user
 		}
 		return;
 	}
+	*/
 
 	ClientModConfiguration modconf(getClientModsLuaPath());
 	m_mods = modconf.getMods();
@@ -155,7 +171,7 @@ void Client::loadMods()
 	}
 
 	// Print mods
-	infostream << "Client Loading mods: ";
+	infostream << "Client loading mods: ";
 	for (const ModSpec &mod : m_mods)
 		infostream << mod.name << " ";
 	infostream << std::endl;
@@ -181,7 +197,7 @@ void Client::loadMods()
 
 bool Client::checkBuiltinIntegrity()
 {
-	// @TODO
+	// TODO
 	return true;
 }
 

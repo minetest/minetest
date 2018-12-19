@@ -947,7 +947,11 @@ enum PlayerListModifer: u8
 
 enum CSMRestrictionFlags : u64 {
 	CSM_RF_NONE = 0x00000000,
-	CSM_RF_LOAD_CLIENT_MODS = 0x00000001, // Disable mods provided by clients
+	// Until server-sent CSM and verifying of builtin are complete,
+	// 'CSM_RF_LOAD_CLIENT_MODS' also disables loading 'builtin'.
+	// When those are complete, this should return to only being a restriction on the
+	// loading of client mods.
+	CSM_RF_LOAD_CLIENT_MODS = 0x00000001, // Don't load client-provided mods or 'builtin'
 	CSM_RF_CHAT_MESSAGES = 0x00000002, // Disable chat message sending from CSM
 	CSM_RF_READ_ITEMDEFS = 0x00000004, // Disable itemdef lookups
 	CSM_RF_READ_NODEDEFS = 0x00000008, // Disable nodedef lookups
