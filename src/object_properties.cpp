@@ -69,6 +69,7 @@ std::string ObjectProperties::dump()
 	os << ", eye_height=" << eye_height;
 	os << ", zoom_fov=" << zoom_fov;
 	os << ", use_texture_alpha=" << use_texture_alpha;
+	os << ", show_selection_box=" << show_selection_box;
 	return os.str();
 }
 
@@ -115,6 +116,7 @@ void ObjectProperties::serialize(std::ostream &os) const
 	writeF1000(os, eye_height);
 	writeF1000(os, zoom_fov);
 	writeU8(os, use_texture_alpha);
+	writeU8(os, show_selection_box);
 
 	// Add stuff only at the bottom.
 	// Never remove anything, because we don't want new versions of this
@@ -167,4 +169,5 @@ void ObjectProperties::deSerialize(std::istream &is)
 	eye_height = readF1000(is);
 	zoom_fov = readF1000(is);
 	use_texture_alpha = readU8(is);
+	show_selection_box = readU8(is);
 }
