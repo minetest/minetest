@@ -282,6 +282,7 @@ void WieldMeshSceneNode::setExtruded(const std::string &imagename,
 		material.TextureLayer[0].TextureWrapU = video::ETC_CLAMP_TO_EDGE;
 		material.TextureLayer[0].TextureWrapV = video::ETC_CLAMP_TO_EDGE;
 		material.MaterialType = m_material_type;
+		material.MaterialTypeParam = 0.5f;
 		material.setFlag(video::EMF_BACK_FACE_CULLING, true);
 		// Enable bi/trilinear filtering only for high resolution textures
 		if (dim.Width > 32) {
@@ -426,6 +427,7 @@ void WieldMeshSceneNode::setItem(const ItemStack &item, Client *client, bool che
 		for (u32 i = 0; i < material_count; ++i) {
 			video::SMaterial &material = m_meshnode->getMaterial(i);
 			material.MaterialType = m_material_type;
+			material.MaterialTypeParam = 0.5f;
 			material.setFlag(video::EMF_BACK_FACE_CULLING, true);
 			material.setFlag(video::EMF_BILINEAR_FILTER, m_bilinear_filter);
 			material.setFlag(video::EMF_TRILINEAR_FILTER, m_trilinear_filter);
@@ -569,6 +571,7 @@ void getItemMesh(Client *client, const ItemStack &item, ItemMesh *result)
 			scene::IMeshBuffer *buf = mesh->getMeshBuffer(i);
 			video::SMaterial &material = buf->getMaterial();
 			material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
+			material.MaterialTypeParam = 0.5f;
 			material.setFlag(video::EMF_BILINEAR_FILTER, false);
 			material.setFlag(video::EMF_TRILINEAR_FILTER, false);
 			material.setFlag(video::EMF_BACK_FACE_CULLING, true);
@@ -619,6 +622,7 @@ scene::SMesh *getExtrudedMesh(ITextureSource *tsrc,
 		material.setFlag(video::EMF_BACK_FACE_CULLING, true);
 		material.setFlag(video::EMF_LIGHTING, false);
 		material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
+		material.MaterialTypeParam = 0.5f;
 	}
 	scaleMesh(mesh, v3f(2.0, 2.0, 2.0));
 

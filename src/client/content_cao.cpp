@@ -1062,6 +1062,7 @@ void GenericCAO::updateTextures(std::string mod)
 				texturestring = m_prop.textures[0];
 			texturestring += mod;
 			m_spritenode->getMaterial(0).MaterialType = material_type;
+			m_spritenode->getMaterial(0).MaterialTypeParam = 0.5f;
 			m_spritenode->setMaterialTexture(0,
 					tsrc->getTextureForMesh(texturestring));
 
@@ -1097,6 +1098,7 @@ void GenericCAO::updateTextures(std::string mod)
 				// Set material flags and texture
 				video::SMaterial& material = m_animated_meshnode->getMaterial(i);
 				material.MaterialType = material_type;
+				material.MaterialTypeParam = 0.5f;
 				material.TextureLayer[0].Texture = texture;
 				material.setFlag(video::EMF_LIGHTING, true);
 				material.setFlag(video::EMF_BILINEAR_FILTER, false);
@@ -1143,6 +1145,7 @@ void GenericCAO::updateTextures(std::string mod)
 				// Set material flags and texture
 				video::SMaterial& material = m_meshnode->getMaterial(i);
 				material.MaterialType = material_type;
+				material.MaterialTypeParam = 0.5f;
 				material.setFlag(video::EMF_LIGHTING, false);
 				material.setFlag(video::EMF_BILINEAR_FILTER, false);
 				material.setTexture(0,
