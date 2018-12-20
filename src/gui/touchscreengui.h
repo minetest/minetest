@@ -81,7 +81,7 @@ typedef enum {
 #define BUTTON_REPEAT_DELAY 0.2f
 
 #define SETTINGS_BAR_Y_OFFSET 5
-#define RARE_CONTROLS_BAR_Y_OFFSET 4
+#define RARE_CONTROLS_BAR_Y_OFFSET 5
 
 extern const char **touchgui_button_imagenames;
 extern const char **touchgui_joystick_imagenames;
