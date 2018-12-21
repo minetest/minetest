@@ -116,6 +116,11 @@ int ModApiClient::l_clear_out_chat_queue(lua_State *L)
 // get_player_names()
 int ModApiClient::l_get_player_names(lua_State *L)
 {
+	if (getClient(L)->checkCSMRestrictionFlag(
+			CSMRestrictionFlags::CSM_RF_READ_PLAYERINFO)) {
+		return 0;
+	}
+
 	const std::list<std::string> &plist = getClient(L)->getConnectedPlayerNames();
 	lua_createtable(L, plist.size(), 0);
 	int newTable = lua_gettop(L);
