@@ -40,7 +40,7 @@ private:
 
 	virtual void clearMeta();
 
-	virtual void reportMetadataChange();
+	virtual void reportMetadataChange(const std::string *name = nullptr);
 
 	// garbage collector
 	static int gc_object(lua_State *L);

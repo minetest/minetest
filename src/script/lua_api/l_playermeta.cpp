@@ -45,7 +45,7 @@ void PlayerMetaRef::clearMeta()
 	metadata->clear();
 }
 
-void PlayerMetaRef::reportMetadataChange()
+void PlayerMetaRef::reportMetadataChange(const std::string *name)
 {
 	// TODO
 }
