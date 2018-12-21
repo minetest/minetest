@@ -40,7 +40,7 @@ end)
 core.register_chatcommand("list_players", {
 	description = core.gettext("List online players"),
 	func = function(param)
-	    player_names = core.get_player_names()
+	    local player_names = core.get_player_names()
 	    if player_names == nil then
 	        core.display_chat_message(core.gettext("This command is restricted by server."))
 	        return
