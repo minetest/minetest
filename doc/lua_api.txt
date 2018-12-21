@@ -3268,7 +3268,7 @@ Callbacks:
     * Called on every server tick, after movement and collision processing.
       `dtime` is usually 0.1 seconds, as per the `dedicated_server_step` setting
       in `minetest.conf`.
-* `on_punch(self, puncher, time_from_last_punch, tool_capabilities, dir)`
+* `on_punch(self, puncher, time_from_last_punch, tool_capabilities, dir, damage)`
     * Called when somebody punches the object.
     * Note that you probably want to handle most punches using the automatic
       armor group system.
@@ -3278,6 +3278,7 @@ Callbacks:
     * `tool_capabilities`: capability table of used tool (can be `nil`)
     * `dir`: unit vector of direction of punch. Always defined. Points from the
       puncher to the punched.
+    * `damage`: damage that will be done to entity.
 * `on_death(self, killer)`
     * Called when the object dies.
     * `killer`: an `ObjectRef` (can be `nil`)
