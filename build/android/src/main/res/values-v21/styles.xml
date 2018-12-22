@@ -4,7 +4,7 @@
 	<style name="AppTheme" parent="@android:style/android:Theme.Material.Light.NoActionBar.Fullscreen">
 		<item name="android:windowNoTitle">true</item>
 		<item name="android:windowAnimationStyle">@null</item>
-		<item name="android:background">@drawable/bg</item>
+		<item name="android:windowBackground">@drawable/bg</item>
 	</style>
 
 	<style name="Theme.Dialog" parent="@android:style/Theme.Material.Light.Dialog.NoActionBar"/>
