@@ -1681,8 +1681,7 @@ int ObjectRef::l_get_sky(lua_State *L)
 	s16 i = 1;
 	for (const std::string &param : params) {
 		lua_pushlstring(L, param.c_str(), param.size());
-		lua_rawseti(L, -2, i);
-		i++;
+		lua_rawseti(L, -2, i++);
 	}
 	lua_pushboolean(L, clouds);
 	return 4;
