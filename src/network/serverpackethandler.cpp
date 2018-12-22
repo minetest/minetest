@@ -970,8 +970,7 @@ bool Server::checkInteractDistance(RemotePlayer *player, const f32 d, const std:
 		max_d = BS * 4.0f;
 
 	// Cube diagonal: sqrt(3) = 1.732
-	// Round up to avoid false-positives due to lag
-	if (d > max_d + 2.0f * BS) {
+	if (d > max_d + 1.732f * BS) {
 		actionstream << "Player " << player->getName()
 				<< " tried to access " << what
 				<< " from too far: "
