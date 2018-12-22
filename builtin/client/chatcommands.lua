@@ -42,7 +42,7 @@ core.register_chatcommand("list_players", {
 	func = function(param)
 	    local player_names = core.get_player_names()
 	    if player_names == nil then
-	        core.display_chat_message(core.gettext("This command is restricted by server."))
+	        core.display_chat_message(core.gettext("This command is disabled by server."))
 	        return
 	    end
 
