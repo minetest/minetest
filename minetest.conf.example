@@ -1470,7 +1470,7 @@
 #    csm_restriction_noderange)
 #    READ_PLAYERINFO: 32 (disable get_player_names call client-side)
 #    type: int
-# csm_restriction_flags = 63
+# csm_restriction_flags = 62
 
 #    If the CSM restriction for node range is enabled, get_node calls are limited
 #    to this distance from the player to the node.
