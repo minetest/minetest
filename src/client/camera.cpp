@@ -28,6 +28,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "settings.h"
 #include "wieldmesh.h"
 #include "noise.h"         // easeCurve
+#include "raycast.h"
 #include "sound.h"
 #include "event.h"
 #include "nodedef.h"
@@ -73,7 +74,7 @@ Camera::Camera(MapDrawControl &draw_control, Client *client):
 	m_cache_view_bobbing_amount = g_settings->getFloat("view_bobbing_amount");
 	// 45 degrees is the lowest FOV that doesn't cause the server to treat this
 	// as a zoom FOV and load world beyond the set server limits.
-	m_cache_fov                 = std::fmax(g_settings->getFloat("fov"), 45.0f);
+	m_cache_fov = m_last_fov    = std::fmax(g_settings->getFloat("fov"), 45.0f);
 	m_arm_inertia               = g_settings->getBool("arm_inertia");
 	m_nametags.clear();
 }
@@ -279,7 +280,7 @@ void Camera::addArmInertia(f32 player_yaw)
 	}
 }
 
-void Camera::update(LocalPlayer* player, f32 frametime, f32 busytime, f32 tool_reload_ratio)
+void Camera::update(LocalPlayer* player, f32 frametime, f32 tool_reload_ratio)
 {
 	// Get player position
 	// Smooth the movement when walking up stairs
@@ -391,7 +392,7 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 busytime, f32 tool_r
 	m_headnode->getAbsoluteTransformation().rotateVect(abs_cam_up, rel_cam_up);
 
 	// Seperate camera position for calculation
-	v3f my_cp = m_camera_position;
+	v3f new_camera_pos = m_camera_position;
 
 	// Reposition the camera for third person view
 	if (m_camera_mode > CAMERA_MODE_FIRST)
@@ -399,54 +400,57 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 busytime, f32 tool_r
 		if (m_camera_mode == CAMERA_MODE_THIRD_FRONT)
 			m_camera_direction *= -1;
 
-		my_cp.Y += 2;
+		v3f shootline_end = new_camera_pos + m_camera_direction * -2.75f * BS;
+		v3f shootline_extended = shootline_end - m_camera_direction * BS;
 
-		// Calculate new position
-		bool abort = false;
-		for (int i = BS; i <= BS * 2.75; i++) {
-			my_cp.X = m_camera_position.X + m_camera_direction.X * -i;
-			my_cp.Z = m_camera_position.Z + m_camera_direction.Z * -i;
-			if (i > 12)
-				my_cp.Y = m_camera_position.Y + (m_camera_direction.Y * -i);
+		RaycastState ray(core::line3d<f32>(m_camera_position, shootline_extended),
+			true, false);
+		PointedThing pointed;
 
-			// Prevent camera positioned inside nodes
-			const NodeDefManager *nodemgr = m_client->ndef();
-			MapNode n = m_client->getEnv().getClientMap()
-				.getNodeNoEx(floatToInt(my_cp, BS));
+		const NodeDefManager *nodemgr = m_client->ndef();
+		ClientMap &map = m_client->getEnv().getClientMap();
 
-			const ContentFeatures& features = nodemgr->get(n);
-			if (features.walkable) {
-				my_cp.X += m_camera_direction.X*-1*-BS/2;
-				my_cp.Z += m_camera_direction.Z*-1*-BS/2;
-				my_cp.Y += m_camera_direction.Y*-1*-BS/2;
-				abort = true;
+		// Prevent camera positioned inside nodes or objects
+		while (true) {
+			m_client->getEnv().continueRaycast(&ray, &pointed);
+
+			if (pointed.type == POINTEDTHING_NOTHING) {
+				new_camera_pos = shootline_end;
+				break;
+			}
+			if (pointed.type == POINTEDTHING_OBJECT) {
+				new_camera_pos = pointed.intersection_point + m_camera_direction * BS;
+				break;
+			}
+			if (pointed.type != POINTEDTHING_NODE)
+				break; // Cannot be anything else here but - Safety first!
+
+			MapNode n = map.getNodeNoEx(pointed.node_undersurface);
+			if (nodemgr->get(n).walkable) {
+				new_camera_pos = pointed.intersection_point + m_camera_direction * BS;
 				break;
 			}
 		}
-
-		// If node blocks camera position don't move y to heigh
-		if (abort && my_cp.Y > player_position.Y+BS*2)
-			my_cp.Y = player_position.Y+BS*2;
 	}
 
 	// Update offset if too far away from the center of the map
-	m_camera_offset.X += CAMERA_OFFSET_STEP*
-			(((s16)(my_cp.X/BS) - m_camera_offset.X)/CAMERA_OFFSET_STEP);
-	m_camera_offset.Y += CAMERA_OFFSET_STEP*
-			(((s16)(my_cp.Y/BS) - m_camera_offset.Y)/CAMERA_OFFSET_STEP);
-	m_camera_offset.Z += CAMERA_OFFSET_STEP*
-			(((s16)(my_cp.Z/BS) - m_camera_offset.Z)/CAMERA_OFFSET_STEP);
+	{
+		v3s16 d_nodepos_offset = floatToInt(new_camera_pos, BS) - m_camera_offset;
+		m_camera_offset += CAMERA_OFFSET_STEP *
+			(d_nodepos_offset / CAMERA_OFFSET_STEP);
+	}
 
 	// Set camera node transformation
-	m_cameranode->setPosition(my_cp-intToFloat(m_camera_offset, BS));
+	m_cameranode->setPosition(new_camera_pos - intToFloat(m_camera_offset, BS));
 	m_cameranode->setUpVector(abs_cam_up);
 	// *100.0 helps in large map coordinates
-	m_cameranode->setTarget(my_cp-intToFloat(m_camera_offset, BS) + 100 * m_camera_direction);
+	m_cameranode->setTarget(new_camera_pos - intToFloat(m_camera_offset, BS) +
+			100 * m_camera_direction);
 
 	// update the camera position in third-person mode to render blocks behind player
 	// and correctly apply liquid post FX.
 	if (m_camera_mode != CAMERA_MODE_FIRST)
-		m_camera_position = my_cp;
+		m_camera_position = new_camera_pos;
 
 	// Get FOV
 	f32 fov_degrees;
@@ -456,7 +460,10 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 busytime, f32 tool_r
 	} else {
 		fov_degrees = m_cache_fov;
 	}
-	fov_degrees = rangelim(fov_degrees, 1.0f, 160.0f);
+
+	fov_degrees += (m_last_fov - rangelim(fov_degrees, 1.0f, 160.0f)) *
+		(1 - frametime) * 0.5f;
+	m_last_fov = fov_degrees;
 
 	// FOV and aspect ratio
 	const v2u32 &window_size = RenderingEngine::get_instance()->getWindowSize();

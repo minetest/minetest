@@ -114,8 +114,7 @@ public:
 
 	// Update the camera from the local player's position.
 	// busytime is used to adjust the viewing range.
-	void update(LocalPlayer* player, f32 frametime, f32 busytime,
-			f32 tool_reload_ratio);
+	void update(LocalPlayer *player, f32 frametime, f32 tool_reload_ratio);
 
 	// Update render distance
 	void updateViewingRange();
@@ -225,6 +224,7 @@ private:
 	f32 m_cache_fall_bobbing_amount;
 	f32 m_cache_view_bobbing_amount;
 	f32 m_cache_fov;
+	f32 m_last_fov;
 	bool m_arm_inertia;
 
 	std::list<Nametag *> m_nametags;
