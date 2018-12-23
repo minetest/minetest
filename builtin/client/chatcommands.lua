@@ -42,12 +42,12 @@ core.register_chatcommand("list_players", {
 	func = function(param)
 		local player_names = core.get_player_names()
 		if player_names == nil then
-			core.display_chat_message(core.gettext("This command is disabled by server."))
-		return
-	end
+			return false, core.display_chat_message(core.gettext("This command is disabled by server."))
+
+        end
 
         local players = table.concat(player_names, ", ")
-        core.display_chat_message(core.gettext("Online players: ") .. players)
+        return true, core.display_chat_message(core.gettext("Online players: ") .. players)
 	end
 })
 
