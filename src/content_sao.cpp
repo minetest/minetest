@@ -350,26 +350,43 @@ ServerActiveObject* LuaEntitySAO::create(ServerEnvironment *env, v3f pos,
 	s16 hp = 1;
 	v3f velocity;
 	v3f rotation;
-	if (!data.empty()) {
+
+	while (!data.empty()) { // breakable, run for one iteration
 		std::istringstream is(data, std::ios::binary);
-		// read version
+		// 'version' does not allow to incrementally extend the parameter list thus
+		// we need another variable to build on top of 'version=1'. Ugly hack but works™
+		u8 version2 = 0;
 		u8 version = readU8(is);
-		// check if version is supported
-		if(version == 0){
-			name = deSerializeString(is);
-			state = deSerializeLongString(is);
-		}
-		else if(version == 1){
-			name = deSerializeString(is);
-			state = deSerializeLongString(is);
-			hp = readS16(is);
-			velocity = readV3F1000(is);
-			rotation = readV3F1000(is);
-		}
+
+		name = deSerializeString(is);
+		state = deSerializeLongString(is);
+
+		if (version < 1)
+			break;
+
+		hp = readS16(is);
+		velocity = readV3F1000(is);
+		// yaw must be yaw to be backwards-compatible
+		rotation.Y = readF1000(is);
+
+		if (is.good()) // EOF for old formats
+			version2 = readU8(is);
+
+		if (version2 < 1) // PROTOCOL_VERSION < 37
+			break;
+
+		// version2 >= 1
+		rotation.X = readF1000(is);
+		rotation.Z = readF1000(is);
+
+		// if (version2 < 2)
+		//     break;
+		// <read new values>
+		break;
 	}
 	// create object
-	infostream<<"LuaEntitySAO::create(name=\""<<name<<"\" state=\""
-			<<state<<"\")"<<std::endl;
+	infostream << "LuaEntitySAO::create(name=\"" << name << "\" state=\""
+			 << state << "\")" << std::endl;
 	LuaEntitySAO *sao = new LuaEntitySAO(env, pos, name, state);
 	sao->m_hp = hp;
 	sao->m_velocity = velocity;
@@ -527,7 +544,7 @@ std::string LuaEntitySAO::getClientInitializationData(u16 protocol_version)
 {
 	std::ostringstream os(std::ios::binary);
 
-	// protocol >= 14
+	// PROTOCOL_VERSION >= 37
 	writeU8(os, 1); // version
 	os << serializeString(""); // name
 	writeU8(os, 0); // is_player
@@ -572,7 +589,7 @@ void LuaEntitySAO::getStaticData(std::string *result) const
 {
 	verbosestream<<FUNCTION_NAME<<std::endl;
 	std::ostringstream os(std::ios::binary);
-	// version
+	// version must be 1 to keep backwards-compatibility. See version2
 	writeU8(os, 1);
 	// name
 	os<<serializeString(m_init_name);
@@ -584,12 +601,18 @@ void LuaEntitySAO::getStaticData(std::string *result) const
 	} else {
 		os<<serializeLongString(m_init_state);
 	}
-	// hp
 	writeS16(os, m_hp);
-	// velocity
 	writeV3F1000(os, m_velocity);
-	// rotation
-	writeV3F1000(os, m_rotation);
+	// yaw
+	writeF1000(os, m_rotation.Y);
+
+	// version2. Increase this variable for new values
+	writeU8(os, 1); // PROTOCOL_VERSION >= 37
+
+	writeF1000(os, m_rotation.X);
+	writeF1000(os, m_rotation.Z);
+
+	// <write new values>
 
 	*result = os.str();
 }
