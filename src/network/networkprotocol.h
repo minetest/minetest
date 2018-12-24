@@ -952,5 +952,6 @@ enum CSMRestrictionFlags : u64 {
 	CSM_RF_READ_ITEMDEFS = 0x00000004, // Disable itemdef lookups
 	CSM_RF_READ_NODEDEFS = 0x00000008, // Disable nodedef lookups
 	CSM_RF_LOOKUP_NODES = 0x00000010, // Limit node lookups
+	CSM_RF_READ_PLAYERINFO = 0x00000020, // Disable player info lookups
 	CSM_RF_ALL = 0xFFFFFFFF,
 };

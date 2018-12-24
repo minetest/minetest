@@ -40,8 +40,13 @@ end)
 core.register_chatcommand("list_players", {
 	description = core.gettext("List online players"),
 	func = function(param)
-		local players = table.concat(core.get_player_names(), ", ")
-		core.display_chat_message(core.gettext("Online players: ") .. players)
+		local player_names = core.get_player_names()
+		if not player_names then
+			return false, core.gettext("This command is disabled by server.")
+		end
+
+		local players = table.concat(player_names, ", ")
+		return true, core.gettext("Online players: ") .. players
 	end
 })
 

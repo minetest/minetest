@@ -346,7 +346,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("max_block_send_distance", "9");
 	settings->setDefault("block_send_optimize_distance", "4");
 	settings->setDefault("server_side_occlusion_culling", "true");
-	settings->setDefault("csm_restriction_flags", "30");
+	settings->setDefault("csm_restriction_flags", "62");
 	settings->setDefault("csm_restriction_noderange", "0");
 	settings->setDefault("max_clearobjects_extra_loaded_blocks", "4096");
 	settings->setDefault("time_speed", "72");
