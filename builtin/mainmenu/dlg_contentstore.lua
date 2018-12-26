@@ -305,18 +305,24 @@ function store.update_paths()
 	local mod_hash = {}
 	pkgmgr.refresh_globals()
 	for _, mod in pairs(pkgmgr.global_mods:get_list()) do
-		mod_hash[mod.name] = mod
+		if mod.author then
+			mod_hash[mod.name] = mod
+		end
 	end
 
 	local game_hash = {}
 	pkgmgr.update_gamelist()
 	for _, game in pairs(pkgmgr.games) do
-		game_hash[game.id] = game
+		if game.author then
+			game_hash[game.id] = game
+		end
 	end
 
 	local txp_hash = {}
 	for _, txp in pairs(pkgmgr.get_texture_packs()) do
-		txp_hash[txp.name] = txp
+		if txp.author then
+			txp_hash[txp.name] = txp
+		end
 	end
 
 	for _, package in pairs(store.packages_full) do
