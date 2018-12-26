@@ -285,7 +285,7 @@ function store.load()
 
 	local file = io.open(target, "r")
 	if file then
-		store.packages_full = core.parse_json(file:read("*all"))
+		store.packages_full = core.parse_json(file:read("*all")) or {}
 		file:close()
 
 		for _, package in pairs(store.packages_full) do
@@ -385,7 +385,7 @@ function store.get_formspec()
 	end
 
 	local formspec
-	if #store.packages > 0 then
+	if #store.packages_full > 0 then
 		formspec = {
 			"size[12,7;true]",
 			"position[0.5,0.55]",
@@ -424,6 +424,12 @@ function store.get_formspec()
 			";3,1;back;",
 			fgettext("Back to Main Menu"), "]",
 		}
+	end
+
+	if #store.packages == 0 then
+		formspec[#formspec + 1] = "label[4,3;"
+		formspec[#formspec + 1] = fgettext("No results")
+		formspec[#formspec + 1] = "]"
 	end
 
 	local start_idx = (cur_page - 1) * num_per_page + 1
@@ -570,7 +576,7 @@ function store.handle_submit(this, fields, tabname, tabdata)
 end
 
 function create_store_dlg(type)
-	if not store.loaded then
+	if not store.loaded or #store.packages_full == 0 then
 		store.load()
 	end
 
