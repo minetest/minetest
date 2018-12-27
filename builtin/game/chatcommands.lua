@@ -79,6 +79,16 @@ core.register_chatcommand("me", {
 	end,
 })
 
+core.register_chatcommand("say", {
+	params = "<message>",
+	description = "Send a raw chat message",
+	privs = {shout = true},
+	func = function(name, param)
+		param = param:trim()
+		core.chat_send_all("<" .. name .. "> " .. param)
+	end
+})
+
 core.register_chatcommand("admin", {
 	description = "Show the name of the server owner",
 	func = function(name)
