@@ -69,8 +69,8 @@ following software packages. The version number in parenthesis denotes the
 version that was tested at the time this README was drafted; newer/older
 versions may or may not work.
 
-* android SDK (x86_64 20131030)
-* android NDK (r9d)
+* android SDK (api-26)
+* android NDK (r17c)
 * wget (1.13.4)
 
 Additionally, you'll need to have an Internet connection available on the
