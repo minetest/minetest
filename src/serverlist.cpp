@@ -268,4 +268,3 @@ void sendAnnounce(AnnounceAction action,
 #endif
 
 } // namespace ServerList
-

@@ -105,7 +105,7 @@ bool ClientLauncher::run(GameParams &game_params, const Settings &cmd_args)
 	}
 
 	RenderingEngine::get_instance()->setupTopLevelWindow(PROJECT_NAME_C);
-	
+
 	/*
 		This changes the minimum allowed number of vertices in a VBO.
 		Default is 500.
@@ -475,14 +475,6 @@ bool ClientLauncher::launch_game(std::string &error_message,
 		current_port = myrand_range(49152, 65535);
 	} else {
 		g_settings->set("name", playername);
-		if (!address.empty()) {
-			ServerListSpec server;
-			server["name"] = menudata.servername;
-			server["address"] = menudata.address;
-			server["port"] = menudata.port;
-			server["description"] = menudata.serverdescription;
-			ServerList::insert(server);
-		}
 	}
 
 	infostream << "Selected world: " << worldspec.name

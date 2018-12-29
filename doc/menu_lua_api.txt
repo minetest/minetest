@@ -17,12 +17,12 @@ Gamedata
 --------
 The "gamedata" table is read when calling core.start(). It should contain:
 {
-	playername     = <name>,
-	password       = <password>,
-	address        = <IP/adress>,
-	port           = <port>,
-	selected_world = <index>, -- 0 for client mode
-	singleplayer   = <true/false>,
+    playername     = <name>,
+    password       = <password>,
+    address        = <IP/adress>,
+    port           = <port>,
+    selected_world = <index>, -- 0 for client mode
+    singleplayer   = <true/false>,
 }
 
 Functions
@@ -102,12 +102,12 @@ core.show_path_select_dialog(formname, caption, is_file_select)
 ^ returns nil or selected file/folder
 core.get_screen_info()
 ^ returns {
-	density         = <screen density 0.75,1.0,2.0,3.0 ... (dpi)>,
-	display_width   = <width of display>,
-	display_height  = <height of display>,
-	window_width    = <current window width>,
-	window_height   = <current window height>
-	}
+    density         = <screen density 0.75,1.0,2.0,3.0 ... (dpi)>,
+    display_width   = <width of display>,
+    display_height  = <height of display>,
+    window_width    = <current window width>,
+    window_height   = <current window height>
+    }
 
 ### Content and Packages
 
@@ -115,61 +115,73 @@ Content - an installed mod, modpack, game, or texture pack (txt)
 Package - content which is downloadable from the content db, may or may not be installed.
 
 * core.get_modpath() (possible in async calls)
-	* returns path to global modpath
+    * returns path to global modpath
 * core.get_clientmodpath() (possible in async calls)
-	* returns path to global client-side modpath
+    * returns path to global client-side modpath
 * core.get_gamepath() (possible in async calls)
-	* returns path to global gamepath
+    * returns path to global gamepath
 * core.get_texturepath() (possible in async calls)
-	* returns path to default textures
+    * returns path to default textures
 * core.get_game(index)
-	* returns:
+    * returns:
 
-		{
-			id               = <id>,
-			path             = <full path to game>,
-			gamemods_path    = <path>,
-			name             = <name of game>,
-			menuicon_path    = <full path to menuicon>,
-			author           = "author",
-			DEPRECATED:
-			addon_mods_paths = {[1] = <path>,},
-		}
+        {
+            id               = <id>,
+            path             = <full path to game>,
+            gamemods_path    = <path>,
+            name             = <name of game>,
+            menuicon_path    = <full path to menuicon>,
+            author           = "author",
+            DEPRECATED:
+            addon_mods_paths = {[1] = <path>,},
+        }
 
 * core.get_games() -> table of all games in upper format (possible in async calls)
 * core.get_content_info(path)
-	* returns
+    * returns
 
-		{
-			name             = "name of content",
-			type             = "mod" or "modpack" or "game" or "txp",
-			description      = "description",
-			author           = "author",
-			path             = "path/to/content",
-			depends          = {"mod", "names"}, -- mods only
-			optional_depends = {"mod", "names"}, -- mods only
-		}
+        {
+            name             = "name of content",
+            type             = "mod" or "modpack" or "game" or "txp",
+            description      = "description",
+            author           = "author",
+            path             = "path/to/content",
+            depends          = {"mod", "names"}, -- mods only
+            optional_depends = {"mod", "names"}, -- mods only
+        }
 
 
 Favorites:
-core.get_favorites(location) -> list of favorites (possible in async calls)
-^ location: "local" or "online"
-^ returns {
-	[1] = {
-	clients       = <number of clients/nil>,
-	clients_max   = <maximum number of clients/nil>,
-	version       = <server version/nil>,
-	password      = <true/nil>,
-	creative      = <true/nil>,
-	damage        = <true/nil>,
-	pvp           = <true/nil>,
-	description   = <server description/nil>,
-	name          = <server name/nil>,
-	address       = <address of server/nil>,
-	port          = <port>
-	},
+- core.get_favorites(location) -> list of favorites (possible in async calls)
+  - `location`: "local" or "online"
+  - returns {
+    [1] = {
+    clients       = <number of clients/nil>,
+    clients_max   = <maximum number of clients/nil>,
+    version       = <server version/nil>,
+    password      = <true/nil>,
+    creative      = <true/nil>,
+    damage        = <true/nil>,
+    pvp           = <true/nil>,
+    description   = <server description/nil>,
+    name          = <server name/nil>,
+    address       = <address of server/nil>,
+    port          = <port>
+    },
 }
-core.delete_favorite(id, location) -> success
+
+- core.add_favorite(server)
+  - Adds a server to the local favorites list
+  - `server`: {
+        `name` (server name)
+        `address`
+        `port`
+        `description`
+    }
+
+- core.delete_favorite(idx)
+  - Removes a server from the local favorites list. Returns `true` on success.
+  - `idx`: Index of server to be removed
 
 Logging:
 core.debug(line) (possible in async calls)
@@ -191,11 +203,11 @@ For a complete list of methods of the Settings object see
 Worlds:
 core.get_worlds() -> list of worlds (possible in async calls)
 ^ returns {
-	[1] = {
-	path   = <full path to world>,
-	name   = <name of world>,
-	gameid = <gameid of world>,
-	},
+    [1] = {
+    path   = <full path to world>,
+    name   = <name of world>,
+    gameid = <gameid of world>,
+    },
 }
 core.create_world(worldname, gameid)
 core.delete_world(index)
@@ -242,7 +254,7 @@ core.handle_async(async_job,parameters,finished)
 Limitations of Async operations
  -No access to global lua variables, don't even try
  -Limited set of available functions
-	e.g. No access to functions modifying menu like core.start,core.close,
+	e.g. No access to functions modifying menu like core.start, core.close,
 	core.show_path_select_dialog
 
 Background music

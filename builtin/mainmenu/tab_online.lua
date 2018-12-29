@@ -61,7 +61,11 @@ local function get_formspec(tabview, name, tabdata)
 		if gamedata.fav then
 			retval = retval .. "button[7.73,4.9;2.3,1;btn_delete_favorite;" ..
 				fgettext("Del. Favorite") .. "]"
+		else
+			retval = retval .. "button[7.73,4.9;2.3,1;btn_add_favorite;" ..
+				fgettext("Add Favorite") .. "]"
 		end
+
 		if fav_selected.description then
 			retval = retval .. "textarea[8.1,2.3;4.23,2.9;;;" ..
 				core.formspec_escape((gamedata.serverdescription or ""), true) .. "]"
@@ -228,6 +232,17 @@ local function main_button_handler(tabview, fields, name, tabdata)
 
 		tabdata.fav_selected = fav_idx
 		return true
+	end
+
+	if fields.btn_add_favorite then
+		core.add_favorite({
+			name        = gamedata.servername,
+			address     = gamedata.address,
+			port        = gamedata.port,
+			description = gamedata.description
+		})
+		asyncOnlineFavourites()
+		tabdata.fav_selected = core.get_table_index("favourites")
 	end
 
 	if fields.btn_delete_favorite then

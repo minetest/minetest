@@ -413,32 +413,41 @@ int ModApiMainMenu::l_get_favorites(lua_State *L)
 }
 
 /******************************************************************************/
-int ModApiMainMenu::l_delete_favorite(lua_State *L)
+int ModApiMainMenu::l_add_favorite(lua_State *L)
 {
-	std::vector<ServerListSpec> servers;
-
-	std::string listtype = "local";
-
-	if (!lua_isnone(L,2)) {
-		listtype = luaL_checkstring(L,2);
-	}
-
-	if ((listtype != "local") &&
-		(listtype != "online"))
+	ServerListSpec server;
+	if (!lua_istable(L,1))
 		return 0;
 
+	lua_getfield(L, 1, "name");
+	server["name"] = lua_tostring(L, -1);
+	lua_pop(L, 1);
 
-	if(listtype == "online") {
-		servers = ServerList::getOnline();
-	} else {
-		servers = ServerList::getLocal();
-	}
+	lua_getfield(L, 1, "address");
+	server["address"] = lua_tostring(L, -1);
+	lua_pop(L, 1);
 
-	int fav_idx	= luaL_checkinteger(L,1) -1;
+	lua_getfield(L, 1, "port");
+	server["port"] = lua_tostring(L, -1);
+	lua_pop(L, 1);
 
+	lua_getfield(L, 1, "description");
+	server["description"] = lua_tostring(L, -1);
+	lua_pop(L, 1);
+
+	ServerList::insert(server);
+
+	return 0;
+}
+
+/******************************************************************************/
+int ModApiMainMenu::l_delete_favorite(lua_State *L)
+{
+	std::vector<ServerListSpec> servers = ServerList::getLocal();
+
+	int fav_idx = luaL_checkinteger(L, 1) - 1;
 	if ((fav_idx >= 0) &&
 			(fav_idx < (int) servers.size())) {
-
 		ServerList::deleteEntry(servers[fav_idx]);
 	}
 
@@ -1066,6 +1075,7 @@ void ModApiMainMenu::Initialize(lua_State *L, int top)
 	API_FCT(get_content_info);
 	API_FCT(start);
 	API_FCT(close);
+	API_FCT(add_favorite);
 	API_FCT(get_favorites);
 	API_FCT(show_keys_menu);
 	API_FCT(create_world);
