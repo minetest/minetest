@@ -192,6 +192,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		Redo detached inventory sending
 		Add TOCLIENT_NODEMETA_CHANGED
 		New network float format
+		ContentFeatures version 13
 */
 
 #define LATEST_PROTOCOL_VERSION 37

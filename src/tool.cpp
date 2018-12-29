@@ -55,8 +55,8 @@ void ToolGroupCap::fromJson(const Json::Value &json)
 
 void ToolCapabilities::serialize(std::ostream &os, u16 protocol_version) const
 {
-	writeU8(os, 3); // protocol_version >= 36
-	writeF1000(os, full_punch_interval);
+	writeU8(os, 4); // protocol_version >= 37
+	writeF32(os, full_punch_interval);
 	writeS16(os, max_drop_level);
 	writeU32(os, groupcaps.size());
 	for (const auto &groupcap : groupcaps) {
@@ -68,7 +68,7 @@ void ToolCapabilities::serialize(std::ostream &os, u16 protocol_version) const
 		writeU32(os, cap->times.size());
 		for (const auto &time : cap->times) {
 			writeS16(os, time.first);
-			writeF1000(os, time.second);
+			writeF32(os, time.second);
 		}
 	}
 
@@ -83,10 +83,10 @@ void ToolCapabilities::serialize(std::ostream &os, u16 protocol_version) const
 void ToolCapabilities::deSerialize(std::istream &is)
 {
 	int version = readU8(is);
-	if (version < 3)
+	if (version < 4)
 		throw SerializationError("unsupported ToolCapabilities version");
 
-	full_punch_interval = readF1000(is);
+	full_punch_interval = readF32(is);
 	max_drop_level = readS16(is);
 	groupcaps.clear();
 	u32 groupcaps_size = readU32(is);
@@ -98,7 +98,7 @@ void ToolCapabilities::deSerialize(std::istream &is)
 		u32 times_size = readU32(is);
 		for(u32 i = 0; i < times_size; i++) {
 			int level = readS16(is);
-			float time = readF1000(is);
+			float time = readF32(is);
 			cap.times[level] = time;
 		}
 		groupcaps[name] = cap;

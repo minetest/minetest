@@ -357,23 +357,22 @@ void GenericCAO::initialize(const std::string &data)
 void GenericCAO::processInitData(const std::string &data)
 {
 	std::istringstream is(data, std::ios::binary);
-	int num_messages = 0;
-	// version
-	u8 version = readU8(is);
-	// check version
-	if (version == 1) { // In PROTOCOL_VERSION 14
-		m_name = deSerializeString(is);
-		m_is_player = readU8(is);
-		m_id = readU16(is);
-		m_position = readV3F1000(is);
-		m_rotation = readV3F1000(is);
-		m_hp = readS16(is);
-		num_messages = readU8(is);
-	} else {
-		errorstream<<"GenericCAO: Unsupported init data version"
-				<<std::endl;
+	const u8 version = readU8(is);
+
+	if (version < 1) {
+		errorstream << "GenericCAO: Unsupported init data version"
+				<< std::endl;
 		return;
 	}
+
+	// PROTOCOL_VERSION >= 37 
+	m_name = deSerializeString(is);
+	m_is_player = readU8(is);
+	m_id = readU16(is);
+	m_position = readV3F32(is);
+	m_rotation = readV3F32(is);
+	m_hp = readS16(is);
+	const u8 num_messages = readU8(is);
 
 	for (int i = 0; i < num_messages; i++) {
 		std::string message = deSerializeLongString(is);
@@ -546,7 +545,8 @@ void GenericCAO::addToScene(ITextureSource *tsrc)
 		m_spritenode->setMaterialFlag(video::EMF_FOG_ENABLE, true);
 		u8 li = m_last_light;
 		m_spritenode->setColor(video::SColor(255,li,li,li));
-		m_spritenode->setSize(m_prop.visual_size*BS);
+		m_spritenode->setSize(v2f(m_prop.visual_size.X,
+				m_prop.visual_size.Y) * BS);
 		{
 			const float txs = 1.0 / 1;
 			const float tys = 1.0 / 1;
@@ -622,9 +622,7 @@ void GenericCAO::addToScene(ITextureSource *tsrc)
 		m_meshnode->grab();
 		mesh->drop();
 
-		m_meshnode->setScale(v3f(m_prop.visual_size.X,
-				m_prop.visual_size.Y,
-				m_prop.visual_size.X));
+		m_meshnode->setScale(m_prop.visual_size);
 		u8 li = m_last_light;
 		setMeshColor(m_meshnode->getMesh(), video::SColor(255,li,li,li));
 
@@ -643,9 +641,7 @@ void GenericCAO::addToScene(ITextureSource *tsrc)
 			m_animated_meshnode->grab();
 			mesh->drop(); // The scene node took hold of it
 			m_animated_meshnode->animateJoints(); // Needed for some animations
-			m_animated_meshnode->setScale(v3f(m_prop.visual_size.X,
-					m_prop.visual_size.Y,
-					m_prop.visual_size.X));
+			m_animated_meshnode->setScale(m_prop.visual_size);
 			u8 li = m_last_light;
 
 			// set vertex colors to ensure alpha is set
@@ -683,9 +679,7 @@ void GenericCAO::addToScene(ITextureSource *tsrc)
 		m_wield_meshnode->setItem(item, m_client,
 			(m_prop.visual == "wielditem"));
 
-		m_wield_meshnode->setScale(
-			v3f(m_prop.visual_size.X / 2, m_prop.visual_size.Y / 2,
-				m_prop.visual_size.X / 2));
+		m_wield_meshnode->setScale(m_prop.visual_size / 2.0f);
 		u8 li = m_last_light;
 		m_wield_meshnode->setColor(video::SColor(255, li, li, li));
 	} else {
@@ -1393,7 +1387,7 @@ void GenericCAO::processMessage(const std::string &data)
 	} else if (cmd == GENERIC_CMD_SET_SPRITE) {
 		v2s16 p = readV2S16(is);
 		int num_frames = readU16(is);
-		float framelength = readF1000(is);
+		float framelength = readF32(is);
 		bool select_horiz_by_yawpitch = readU8(is);
 
 		m_tx_basepos = p;
@@ -1403,9 +1397,9 @@ void GenericCAO::processMessage(const std::string &data)
 
 		updateTexturePos();
 	} else if (cmd == GENERIC_CMD_SET_PHYSICS_OVERRIDE) {
-		float override_speed = readF1000(is);
-		float override_jump = readF1000(is);
-		float override_gravity = readF1000(is);
+		float override_speed = readF32(is);
+		float override_jump = readF32(is);
+		float override_gravity = readF32(is);
 		// these are sent inverted so we get true when the server sends nothing
 		bool sneak = !readU8(is);
 		bool sneak_glitch = !readU8(is);
@@ -1424,11 +1418,11 @@ void GenericCAO::processMessage(const std::string &data)
 		}
 	} else if (cmd == GENERIC_CMD_SET_ANIMATION) {
 		// TODO: change frames send as v2s32 value
-		v2f range = readV2F1000(is);
+		v2f range = readV2F32(is);
 		if (!m_is_local_player) {
 			m_animation_range = v2s32((s32)range.X, (s32)range.Y);
-			m_animation_speed = readF1000(is);
-			m_animation_blend = readF1000(is);
+			m_animation_speed = readF32(is);
+			m_animation_blend = readF32(is);
 			// these are sent inverted so we get true when the server sends nothing
 			m_animation_loop = !readU8(is);
 			updateAnimation();
@@ -1437,8 +1431,8 @@ void GenericCAO::processMessage(const std::string &data)
 			if(player->last_animation == NO_ANIM)
 			{
 				m_animation_range = v2s32((s32)range.X, (s32)range.Y);
-				m_animation_speed = readF1000(is);
-				m_animation_blend = readF1000(is);
+				m_animation_speed = readF32(is);
+				m_animation_blend = readF32(is);
 				// these are sent inverted so we get true when the server sends nothing
 				m_animation_loop = !readU8(is);
 			}
@@ -1457,12 +1451,12 @@ void GenericCAO::processMessage(const std::string &data)
 			}
 		}
 	} else if (cmd == GENERIC_CMD_SET_ANIMATION_SPEED) {
-		m_animation_speed = readF1000(is);
+		m_animation_speed = readF32(is);
 		updateAnimationSpeed();
 	} else if (cmd == GENERIC_CMD_SET_BONE_POSITION) {
 		std::string bone = deSerializeString(is);
-		v3f position = readV3F1000(is);
-		v3f rotation = readV3F1000(is);
+		v3f position = readV3F32(is);
+		v3f rotation = readV3F32(is);
 		m_bone_position[bone] = core::vector2d<v3f>(position, rotation);
 
 		updateBonePosition();
@@ -1482,8 +1476,8 @@ void GenericCAO::processMessage(const std::string &data)
 		}
 
 		m_attachment_bone = deSerializeString(is);
-		m_attachment_position = readV3F1000(is);
-		m_attachment_rotation = readV3F1000(is);
+		m_attachment_position = readV3F32(is);
+		m_attachment_rotation = readV3F32(is);
 
 		// localplayer itself can't be attached to localplayer
 		if (!m_is_local_player) {
@@ -1510,7 +1504,7 @@ void GenericCAO::processMessage(const std::string &data)
 				// As there is no definition, make a smoke puff
 				ClientSimpleObject *simple = createSmokePuff(
 						m_smgr, m_env, m_position,
-						m_prop.visual_size * BS);
+						v2f(m_prop.visual_size.X, m_prop.visual_size.Y) * BS);
 				m_env->addSimpleObject(simple);
 			} else if (m_reset_textures_timer < 0) {
 				// TODO: Execute defined fast response
@@ -1581,7 +1575,7 @@ bool GenericCAO::directReportPunch(v3f dir, const ItemStack *punchitem,
 			// As there is no definition, make a smoke puff
 			ClientSimpleObject *simple = createSmokePuff(
 					m_smgr, m_env, m_position,
-					m_prop.visual_size * BS);
+					v2f(m_prop.visual_size.X, m_prop.visual_size.Y) * BS);
 			m_env->addSimpleObject(simple);
 		}
 		// TODO: Execute defined fast response

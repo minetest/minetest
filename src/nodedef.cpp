@@ -74,7 +74,7 @@ void NodeBox::reset()
 void NodeBox::serialize(std::ostream &os, u16 protocol_version) const
 {
 	// Protocol >= 36
-	int version = 5;
+	const u8 version = 6;
 	writeU8(os, version);
 
 	switch (type) {
@@ -84,19 +84,19 @@ void NodeBox::serialize(std::ostream &os, u16 protocol_version) const
 
 		writeU16(os, fixed.size());
 		for (const aabb3f &nodebox : fixed) {
-			writeV3F1000(os, nodebox.MinEdge);
-			writeV3F1000(os, nodebox.MaxEdge);
+			writeV3F32(os, nodebox.MinEdge);
+			writeV3F32(os, nodebox.MaxEdge);
 		}
 		break;
 	case NODEBOX_WALLMOUNTED:
 		writeU8(os, type);
 
-		writeV3F1000(os, wall_top.MinEdge);
-		writeV3F1000(os, wall_top.MaxEdge);
-		writeV3F1000(os, wall_bottom.MinEdge);
-		writeV3F1000(os, wall_bottom.MaxEdge);
-		writeV3F1000(os, wall_side.MinEdge);
-		writeV3F1000(os, wall_side.MaxEdge);
+		writeV3F32(os, wall_top.MinEdge);
+		writeV3F32(os, wall_top.MaxEdge);
+		writeV3F32(os, wall_bottom.MinEdge);
+		writeV3F32(os, wall_bottom.MaxEdge);
+		writeV3F32(os, wall_side.MinEdge);
+		writeV3F32(os, wall_side.MaxEdge);
 		break;
 	case NODEBOX_CONNECTED:
 		writeU8(os, type);
@@ -104,8 +104,8 @@ void NodeBox::serialize(std::ostream &os, u16 protocol_version) const
 #define WRITEBOX(box) \
 		writeU16(os, (box).size()); \
 		for (const aabb3f &i: (box)) { \
-			writeV3F1000(os, i.MinEdge); \
-			writeV3F1000(os, i.MaxEdge); \
+			writeV3F32(os, i.MinEdge); \
+			writeV3F32(os, i.MaxEdge); \
 		};
 
 		WRITEBOX(fixed);
@@ -133,7 +133,7 @@ void NodeBox::serialize(std::ostream &os, u16 protocol_version) const
 void NodeBox::deSerialize(std::istream &is)
 {
 	int version = readU8(is);
-	if (version < 4)
+	if (version < 6)
 		throw SerializationError("unsupported NodeBox version");
 
 	reset();
@@ -146,19 +146,19 @@ void NodeBox::deSerialize(std::istream &is)
 		while(fixed_count--)
 		{
 			aabb3f box;
-			box.MinEdge = readV3F1000(is);
-			box.MaxEdge = readV3F1000(is);
+			box.MinEdge = readV3F32(is);
+			box.MaxEdge = readV3F32(is);
 			fixed.push_back(box);
 		}
 	}
 	else if(type == NODEBOX_WALLMOUNTED)
 	{
-		wall_top.MinEdge = readV3F1000(is);
-		wall_top.MaxEdge = readV3F1000(is);
-		wall_bottom.MinEdge = readV3F1000(is);
-		wall_bottom.MaxEdge = readV3F1000(is);
-		wall_side.MinEdge = readV3F1000(is);
-		wall_side.MaxEdge = readV3F1000(is);
+		wall_top.MinEdge = readV3F32(is);
+		wall_top.MaxEdge = readV3F32(is);
+		wall_bottom.MinEdge = readV3F32(is);
+		wall_bottom.MaxEdge = readV3F32(is);
+		wall_side.MinEdge = readV3F32(is);
+		wall_side.MaxEdge = readV3F32(is);
 	}
 	else if (type == NODEBOX_CONNECTED)
 	{
@@ -166,8 +166,8 @@ void NodeBox::deSerialize(std::istream &is)
 		count = readU16(is); \
 		(box).reserve(count); \
 		while (count--) { \
-			v3f min = readV3F1000(is); \
-			v3f max = readV3F1000(is); \
+			v3f min = readV3F32(is); \
+			v3f max = readV3F32(is); \
 			(box).emplace_back(min, max); }; }
 
 		u16 count;
@@ -179,16 +179,14 @@ void NodeBox::deSerialize(std::istream &is)
 		READBOXES(connect_left);
 		READBOXES(connect_back);
 		READBOXES(connect_right);
-		if (version >= 5) {
-			READBOXES(disconnected_top);
-			READBOXES(disconnected_bottom);
-			READBOXES(disconnected_front);
-			READBOXES(disconnected_left);
-			READBOXES(disconnected_back);
-			READBOXES(disconnected_right);
-			READBOXES(disconnected);
-			READBOXES(disconnected_sides);
-		}
+		READBOXES(disconnected_top);
+		READBOXES(disconnected_bottom);
+		READBOXES(disconnected_front);
+		READBOXES(disconnected_left);
+		READBOXES(disconnected_back);
+		READBOXES(disconnected_right);
+		READBOXES(disconnected);
+		READBOXES(disconnected_sides);
 	}
 }
 
@@ -262,26 +260,6 @@ void TileDef::deSerialize(std::istream &is, u8 contentfeatures_version,
 		align_style = static_cast<AlignStyle>(readU8(is));
 	else
 		align_style = ALIGN_STYLE_NODE;
-}
-
-
-/*
-	SimpleSoundSpec serialization
-*/
-
-static void serializeSimpleSoundSpec(const SimpleSoundSpec &ss,
-		std::ostream &os, u8 version)
-{
-	os<<serializeString(ss.name);
-	writeF1000(os, ss.gain);
-	writeF1000(os, ss.pitch);
-}
-static void deSerializeSimpleSoundSpec(SimpleSoundSpec &ss,
-		std::istream &is, u8 version)
-{
-	ss.name = deSerializeString(is);
-	ss.gain = readF1000(is);
-	ss.pitch = readF1000(is);
 }
 
 void TextureSettings::readSettings()
@@ -419,8 +397,7 @@ void ContentFeatures::reset()
 
 void ContentFeatures::serialize(std::ostream &os, u16 protocol_version) const
 {
-	// protocol_version >= 36
-	u8 version = 12;
+	const u8 version = CONTENTFEATURES_VERSION;
 	writeU8(os, version);
 
 	// general
@@ -436,7 +413,7 @@ void ContentFeatures::serialize(std::ostream &os, u16 protocol_version) const
 	// visual
 	writeU8(os, drawtype);
 	os << serializeString(mesh);
-	writeF1000(os, visual_scale);
+	writeF32(os, visual_scale);
 	writeU8(os, 6);
 	for (const TileDef &td : tiledef)
 		td.serialize(os, protocol_version);
@@ -456,10 +433,7 @@ void ContentFeatures::serialize(std::ostream &os, u16 protocol_version) const
 	writeU16(os, connects_to_ids.size());
 	for (u16 connects_to_id : connects_to_ids)
 		writeU16(os, connects_to_id);
-	writeU8(os, post_effect_color.getAlpha());
-	writeU8(os, post_effect_color.getRed());
-	writeU8(os, post_effect_color.getGreen());
-	writeU8(os, post_effect_color.getBlue());
+	writeARGB8(os, post_effect_color);
 	writeU8(os, leveled);
 
 	// lighting
@@ -495,9 +469,9 @@ void ContentFeatures::serialize(std::ostream &os, u16 protocol_version) const
 	collision_box.serialize(os, protocol_version);
 
 	// sound
-	serializeSimpleSoundSpec(sound_footstep, os, version);
-	serializeSimpleSoundSpec(sound_dig, os, version);
-	serializeSimpleSoundSpec(sound_dug, os, version);
+	sound_footstep.serialize(os, version);
+	sound_dig.serialize(os, version);
+	sound_dug.serialize(os, version);
 
 	// legacy
 	writeU8(os, legacy_facedir_simple);
@@ -524,8 +498,8 @@ void ContentFeatures::correctAlpha(TileDef *tiles, int length)
 void ContentFeatures::deSerialize(std::istream &is)
 {
 	// version detection
-	int version = readU8(is);
-	if (version < 12)
+	const u8 version = readU8(is);
+	if (version < CONTENTFEATURES_VERSION)
 		throw SerializationError("unsupported ContentFeatures version");
 
 	// general
@@ -543,7 +517,7 @@ void ContentFeatures::deSerialize(std::istream &is)
 	// visual
 	drawtype = (enum NodeDrawType) readU8(is);
 	mesh = deSerializeString(is);
-	visual_scale = readF1000(is);
+	visual_scale = readF32(is);
 	if (readU8(is) != 6)
 		throw SerializationError("unsupported tile count");
 	for (TileDef &td : tiledef)
@@ -565,10 +539,7 @@ void ContentFeatures::deSerialize(std::istream &is)
 	connects_to_ids.clear();
 	for (u16 i = 0; i < connects_to_size; i++)
 		connects_to_ids.push_back(readU16(is));
-	post_effect_color.setAlpha(readU8(is));
-	post_effect_color.setRed(readU8(is));
-	post_effect_color.setGreen(readU8(is));
-	post_effect_color.setBlue(readU8(is));
+	post_effect_color = readARGB8(is);
 	leveled = readU8(is);
 
 	// lighting-related
@@ -605,9 +576,9 @@ void ContentFeatures::deSerialize(std::istream &is)
 	collision_box.deSerialize(is);
 
 	// sounds
-	deSerializeSimpleSoundSpec(sound_footstep, is, version);
-	deSerializeSimpleSoundSpec(sound_dig, is, version);
-	deSerializeSimpleSoundSpec(sound_dug, is, version);
+	sound_footstep.deSerialize(is, version);
+	sound_dig.deSerialize(is, version);
+	sound_dug.deSerialize(is, version);
 
 	// read legacy properties
 	legacy_facedir_simple = readU8(is);

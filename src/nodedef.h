@@ -35,6 +35,9 @@ class Client;
 #include "constants.h" // BS
 #include "tileanimation.h"
 
+// protocol_version >= 37
+#define CONTENTFEATURES_VERSION 13
+
 class IItemDefManager;
 class ITextureSource;
 class IShaderSource;

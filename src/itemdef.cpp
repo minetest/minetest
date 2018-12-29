@@ -128,41 +128,42 @@ void ItemDefinition::reset()
 
 void ItemDefinition::serialize(std::ostream &os, u16 protocol_version) const
 {
-	// protocol_version >= 36
-	u8 version = 5;
+	// protocol_version >= 37
+	u8 version = 6;
 	writeU8(os, version);
 	writeU8(os, type);
 	os << serializeString(name);
 	os << serializeString(description);
 	os << serializeString(inventory_image);
 	os << serializeString(wield_image);
-	writeV3F1000(os, wield_scale);
+	writeV3F32(os, wield_scale);
 	writeS16(os, stack_max);
 	writeU8(os, usable);
 	writeU8(os, liquids_pointable);
+
 	std::string tool_capabilities_s;
-	if(tool_capabilities){
+	if (tool_capabilities) {
 		std::ostringstream tmp_os(std::ios::binary);
 		tool_capabilities->serialize(tmp_os, protocol_version);
 		tool_capabilities_s = tmp_os.str();
 	}
 	os << serializeString(tool_capabilities_s);
+
 	writeU16(os, groups.size());
 	for (const auto &group : groups) {
 		os << serializeString(group.first);
 		writeS16(os, group.second);
 	}
+
 	os << serializeString(node_placement_prediction);
-	os << serializeString(sound_place.name);
-	writeF1000(os, sound_place.gain);
-	writeF1000(os, range);
-	os << serializeString(sound_place_failed.name);
-	writeF1000(os, sound_place_failed.gain);
+
+	// Version from ContentFeatures::serialize to keep in sync
+	sound_place.serialize(os, CONTENTFEATURES_VERSION);
+	sound_place_failed.serialize(os, CONTENTFEATURES_VERSION);
+
+	writeF32(os, range);
 	os << serializeString(palette_image);
 	writeARGB8(os, color);
-
-	writeF1000(os, sound_place.pitch);
-	writeF1000(os, sound_place_failed.pitch);
 	os << serializeString(inventory_overlay);
 	os << serializeString(wield_overlay);
 }
@@ -174,7 +175,7 @@ void ItemDefinition::deSerialize(std::istream &is)
 
 	// Deserialize
 	int version = readU8(is);
-	if (version < 5)
+	if (version < 6)
 		throw SerializationError("unsupported ItemDefinition version");
 
 	type = (enum ItemType)readU8(is);
@@ -182,17 +183,18 @@ void ItemDefinition::deSerialize(std::istream &is)
 	description = deSerializeString(is);
 	inventory_image = deSerializeString(is);
 	wield_image = deSerializeString(is);
-	wield_scale = readV3F1000(is);
+	wield_scale = readV3F32(is);
 	stack_max = readS16(is);
 	usable = readU8(is);
 	liquids_pointable = readU8(is);
+
 	std::string tool_capabilities_s = deSerializeString(is);
-	if(!tool_capabilities_s.empty())
-	{
+	if (!tool_capabilities_s.empty()) {
 		std::istringstream tmp_is(tool_capabilities_s, std::ios::binary);
 		tool_capabilities = new ToolCapabilities;
 		tool_capabilities->deSerialize(tmp_is);
 	}
+
 	groups.clear();
 	u32 groups_size = readU16(is);
 	for(u32 i=0; i<groups_size; i++){
@@ -202,18 +204,14 @@ void ItemDefinition::deSerialize(std::istream &is)
 	}
 
 	node_placement_prediction = deSerializeString(is);
-	//deserializeSimpleSoundSpec(sound_place, is);
-	sound_place.name = deSerializeString(is);
-	sound_place.gain = readF1000(is);
-	range = readF1000(is);
 
-	sound_place_failed.name = deSerializeString(is);
-	sound_place_failed.gain = readF1000(is);
+	// Version from ContentFeatures::serialize to keep in sync
+	sound_place.deSerialize(is, CONTENTFEATURES_VERSION);
+	sound_place_failed.deSerialize(is, CONTENTFEATURES_VERSION);
+
+	range = readF32(is);
 	palette_image = deSerializeString(is);
 	color = readARGB8(is);
-
-	sound_place.pitch = readF1000(is);
-	sound_place_failed.pitch = readF1000(is);
 	inventory_overlay = deSerializeString(is);
 	wield_overlay = deSerializeString(is);
 
@@ -222,6 +220,7 @@ void ItemDefinition::deSerialize(std::istream &is)
 	//try {
 	//} catch(SerializationError &e) {};
 }
+
 
 /*
 	CItemDefManager
