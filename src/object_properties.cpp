@@ -123,7 +123,7 @@ void ObjectProperties::serialize(std::ostream &os) const
 void ObjectProperties::deSerialize(std::istream &is)
 {
 	int version = readU8(is);
-	if (version != 3)
+	if (version != 4)
 		throw SerializationError("unsupported ObjectProperties version");
 
 	hp_max = readS16(is);
