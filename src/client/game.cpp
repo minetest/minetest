@@ -702,7 +702,7 @@ protected:
 	void openConsole(float scale, const wchar_t *line=NULL);
 	void toggleFreeMove();
 	void toggleFreeMoveAlt();
-	void togglePitchFly();
+	void togglePitchMove();
 	void toggleFast();
 	void toggleNoClip();
 	void toggleCinematic();
@@ -1898,8 +1898,8 @@ void Game::processKeyInput()
 		toggleFreeMove();
 	} else if (wasKeyDown(KeyType::JUMP)) {
 		toggleFreeMoveAlt();
-	} else if (wasKeyDown(KeyType::PITCHFLY)) {
-		togglePitchFly();
+	} else if (wasKeyDown(KeyType::PITCHMOVE)) {
+		togglePitchMove();
 	} else if (wasKeyDown(KeyType::FASTMOVE)) {
 		toggleFast();
 	} else if (wasKeyDown(KeyType::NOCLIP)) {
@@ -2109,15 +2109,15 @@ void Game::toggleFreeMoveAlt()
 }
 
 
-void Game::togglePitchFly()
+void Game::togglePitchMove()
 {
-	bool pitch_fly = !g_settings->getBool("pitch_fly");
-	g_settings->set("pitch_fly", bool_to_cstr(pitch_fly));
+	bool pitch_move = !g_settings->getBool("pitch_move");
+	g_settings->set("pitch_move", bool_to_cstr(pitch_move));
 
-	if (pitch_fly) {
-		m_game_ui->showTranslatedStatusText("Pitch fly mode enabled");
+	if (pitch_move) {
+		m_game_ui->showTranslatedStatusText("Pitch move mode enabled");
 	} else {
-		m_game_ui->showTranslatedStatusText("Pitch fly mode disabled");
+		m_game_ui->showTranslatedStatusText("Pitch move mode disabled");
 	}
 }
 

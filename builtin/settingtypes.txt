@@ -72,8 +72,8 @@ enable_build_where_you_stand (Build inside player) bool false
 #    This requires the "fly" privilege on the server.
 free_move (Flying) bool false
 
-#    If enabled together with fly mode, makes move directions relative to the player's pitch.
-pitch_fly (Pitch fly mode) bool false
+#    If enabled, makes move directions relative to the player's pitch when flying or swimming.
+pitch_move (Pitch move mode) bool false
 
 #    Fast movement (via the "special" key).
 #    This requires the "fast" privilege on the server.
@@ -211,9 +211,9 @@ keymap_rangeselect (Range select key) key KEY_KEY_R
 #    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
 keymap_freemove (Fly key) key KEY_KEY_K
 
-#    Key for toggling pitch fly mode.
+#    Key for toggling pitch move mode.
 #    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
-keymap_pitchfly (Pitch fly key) key KEY_KEY_L
+keymap_pitchmove (Pitch move key) key KEY_KEY_L
 
 #    Key for toggling fast mode.
 #    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3

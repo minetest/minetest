@@ -48,7 +48,7 @@ void KeyCache::populate()
 	key[KeyType::CONSOLE] = getKeySetting("keymap_console");
 	key[KeyType::MINIMAP] = getKeySetting("keymap_minimap");
 	key[KeyType::FREEMOVE] = getKeySetting("keymap_freemove");
-	key[KeyType::PITCHFLY] = getKeySetting("keymap_pitchfly");
+	key[KeyType::PITCHMOVE] = getKeySetting("keymap_pitchmove");
 	key[KeyType::FASTMOVE] = getKeySetting("keymap_fastmove");
 	key[KeyType::NOCLIP] = getKeySetting("keymap_noclip");
 	key[KeyType::HOTBAR_PREV] = getKeySetting("keymap_hotbar_previous");
