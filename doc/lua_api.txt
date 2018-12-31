@@ -3989,6 +3989,10 @@ Environment access
         * mode = `"quick"`: Clear objects immediately in loaded mapblocks,
                             clear objects in unloaded mapblocks only when the
                             mapblocks are next activated.
+* `minetest.load_area(pos1[, pos2])`
+    * Load the mapblocks containing the area from `pos1` to `pos2`.
+      `pos2` defaults to `pos1` if not specified.
+    * This function does not trigger map generation.
 * `minetest.emerge_area(pos1, pos2, [callback], [param])`
     * Queue all blocks in the area from `pos1` to `pos2`, inclusive, to be
       asynchronously fetched from memory, loaded from disk, or if inexistent,

@@ -1047,6 +1047,30 @@ int ModApiEnvMod::l_raycast(lua_State *L)
 	return LuaRaycast::create_object(L);
 }
 
+// load_area(p1, [p2])
+// load mapblocks in area p1..p2, but do not generate map
+int ModApiEnvMod::l_load_area(lua_State *L)
+{
+	GET_ENV_PTR;
+	MAP_LOCK_REQUIRED;
+
+	Map *map = &(env->getMap());
+	v3s16 bp1 = getNodeBlockPos(check_v3s16(L, 1));
+	if (!lua_istable(L, 2)) {
+		map->emergeBlock(bp1);
+	} else {
+		v3s16 bp2 = getNodeBlockPos(check_v3s16(L, 2));
+		sortBoxVerticies(bp1, bp2);
+		for (s16 z = bp1.Z; z <= bp2.Z; z++)
+		for (s16 y = bp1.Y; y <= bp2.Y; y++)
+		for (s16 x = bp1.X; x <= bp2.X; x++) {
+			map->emergeBlock(v3s16(x, y, z));
+		}
+	}
+
+	return 0;
+}
+
 // emerge_area(p1, p2, [callback, context])
 // emerge mapblocks in area p1..p2, calls callback with context upon completion
 int ModApiEnvMod::l_emerge_area(lua_State *L)
@@ -1287,6 +1311,7 @@ void ModApiEnvMod::Initialize(lua_State *L, int top)
 	API_FCT(find_nodes_in_area);
 	API_FCT(find_nodes_in_area_under_air);
 	API_FCT(fix_light);
+	API_FCT(load_area);
 	API_FCT(emerge_area);
 	API_FCT(delete_area);
 	API_FCT(get_perlin);
