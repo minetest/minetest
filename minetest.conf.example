@@ -82,7 +82,6 @@
 
 #    Automatically jump up single-node obstacles.
 #    type: bool
-#    type: bool
 # autojump = false
 
 #    Prevent digging and placing from repeating when holding the mouse buttons.
