@@ -365,7 +365,7 @@ void GenericCAO::processInitData(const std::string &data)
 		return;
 	}
 
-	// PROTOCOL_VERSION >= 37 
+	// PROTOCOL_VERSION >= 37
 	m_name = deSerializeString(is);
 	m_is_player = readU8(is);
 	m_id = readU16(is);
@@ -402,7 +402,7 @@ bool GenericCAO::getSelectionBox(aabb3f *toset) const
 
 v3f GenericCAO::getPosition()
 {
-	if (getParent() != NULL) {
+	if (getParent() != nullptr) {
 		if (m_matrixnode)
 			return m_matrixnode->getAbsolutePosition();
 
@@ -625,7 +625,7 @@ void GenericCAO::addToScene(ITextureSource *tsrc)
 		// Set it to use the materials of the meshbuffers directly.
 		// This is needed for changing the texture in the future
 		m_meshnode->setReadOnlyMaterials(true);
-	} else if(m_prop.visual == "cube") {
+	} else if (m_prop.visual == "cube") {
 		infostream<<"GenericCAO::addToScene(): cube"<<std::endl;
 		scene::IMesh *mesh = createCubeMesh(v3f(BS,BS,BS));
 		m_matrixnode = RenderingEngine::get_scene_manager()->
@@ -644,10 +644,10 @@ void GenericCAO::addToScene(ITextureSource *tsrc)
 		m_meshnode->setMaterialFlag(video::EMF_BILINEAR_FILTER, false);
 		m_meshnode->setMaterialType(material_type);
 		m_meshnode->setMaterialFlag(video::EMF_FOG_ENABLE, true);
-	} else if(m_prop.visual == "mesh") {
+	} else if (m_prop.visual == "mesh") {
 		infostream<<"GenericCAO::addToScene(): mesh"<<std::endl;
 		scene::IAnimatedMesh *mesh = m_client->getMesh(m_prop.mesh, true);
-		if(mesh)
+		if (mesh)
 		{
 			m_matrixnode = RenderingEngine::get_scene_manager()->
 				addDummyTransformationSceneNode(nullptr);
@@ -671,8 +671,7 @@ void GenericCAO::addToScene(ITextureSource *tsrc)
 			m_animated_meshnode->setMaterialFlag(video::EMF_FOG_ENABLE, true);
 			m_animated_meshnode->setMaterialFlag(video::EMF_BACK_FACE_CULLING,
 				m_prop.backface_culling);
-		}
-		else
+		} else
 			errorstream<<"GenericCAO::addToScene(): Could not load mesh "<<m_prop.mesh<<std::endl;
 	} else if (m_prop.visual == "wielditem" || m_prop.visual == "item") {
 		ItemStack item;
