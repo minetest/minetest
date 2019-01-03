@@ -436,8 +436,10 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 tool_reload_ratio)
 	// Update offset if too far away from the center of the map
 	{
 		v3s16 d_nodepos_offset = floatToInt(new_camera_pos, BS) - m_camera_offset;
-		m_camera_offset += CAMERA_OFFSET_STEP *
-			(d_nodepos_offset / CAMERA_OFFSET_STEP);
+		// Do not use v3s16 operators. Divisions will result in 0 or 1.
+		m_camera_offset.X += CAMERA_OFFSET_STEP * (d_nodepos_offset.X / CAMERA_OFFSET_STEP);
+		m_camera_offset.Y += CAMERA_OFFSET_STEP * (d_nodepos_offset.Y / CAMERA_OFFSET_STEP);
+		m_camera_offset.Z += CAMERA_OFFSET_STEP * (d_nodepos_offset.Z / CAMERA_OFFSET_STEP);
 	}
 
 	// Set camera node transformation
