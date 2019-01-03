@@ -253,34 +253,34 @@ inline v3s32 readV3S32(const u8 *data)
 inline v2f readV2F1000(const u8 *data)
 {
 	v2f p;
-	p.X = (float)readF1000(&data[0]);
-	p.Y = (float)readF1000(&data[4]);
+	p.X = readF1000(&data[0]);
+	p.Y = readF1000(&data[4]);
 	return p;
 }
 
 inline v3f readV3F1000(const u8 *data)
 {
 	v3f p;
-	p.X = (float)readF1000(&data[0]);
-	p.Y = (float)readF1000(&data[4]);
-	p.Z = (float)readF1000(&data[8]);
+	p.X = readF1000(&data[0]);
+	p.Y = readF1000(&data[4]);
+	p.Z = readF1000(&data[8]);
 	return p;
 }
 
 inline v2f readV2F32(const u8 *data)
 {
 	v2f p;
-	p.X = (float)readF32(&data[0]);
-	p.Y = (float)readF32(&data[4]);
+	p.X = readF32(&data[0]);
+	p.Y = readF32(&data[4]);
 	return p;
 }
 
 inline v3f readV3F32(const u8 *data)
 {
 	v3f p;
-	p.X = (float)readF32(&data[0]);
-	p.Y = (float)readF32(&data[4]);
-	p.Z = (float)readF32(&data[8]);
+	p.X = readF32(&data[0]);
+	p.Y = readF32(&data[4]);
+	p.Z = readF32(&data[8]);
 	return p;
 }
 
