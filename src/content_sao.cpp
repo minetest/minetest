@@ -549,8 +549,8 @@ std::string LuaEntitySAO::getClientInitializationData(u16 protocol_version)
 	os << serializeString(""); // name
 	writeU8(os, 0); // is_player
 	writeS16(os, getId()); //id
-	writeV3F1000(os, m_base_position);
-	writeV3F1000(os, m_rotation);
+	writeV3F32(os, m_base_position);
+	writeV3F32(os, m_rotation);
 	writeS16(os, m_hp);
 
 	std::ostringstream msg_os(std::ios::binary);
@@ -873,7 +873,7 @@ PlayerSAO::PlayerSAO(ServerEnvironment *env_, RemotePlayer *player_, session_t p
 	m_prop.pointable = true;
 	// Start of default appearance, this should be overwritten by Lua
 	m_prop.visual = "upright_sprite";
-	m_prop.visual_size = v2f(1, 2);
+	m_prop.visual_size = v3f(1, 2, 1);
 	m_prop.textures.clear();
 	m_prop.textures.emplace_back("player.png");
 	m_prop.textures.emplace_back("player_back.png");
@@ -947,8 +947,8 @@ std::string PlayerSAO::getClientInitializationData(u16 protocol_version)
 	os << serializeString(m_player->getName()); // name
 	writeU8(os, 1); // is_player
 	writeS16(os, getId()); // id
-	writeV3F1000(os, m_base_position);
-	writeV3F1000(os, m_rotation);
+	writeV3F32(os, m_base_position);
+	writeV3F32(os, m_rotation);
 	writeS16(os, getHP());
 
 	std::ostringstream msg_os(std::ios::binary);

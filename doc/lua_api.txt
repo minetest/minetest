@@ -5482,9 +5482,9 @@ Used by `ObjectRef` methods. Part of an Entity definition.
         --   'inventory_image'.
         -- "item" is similar to "wielditem" but ignores the 'wield_image' parameter.
 
-        visual_size = {x = 1, y = 1},
-        -- `x` multiplies horizontal (X and Z) visual size.
-        -- `y` multiplies vertical (Y) visual size.
+        visual_size = {x = 1, y = 1, z = 1},
+        -- Multipliers for the visual size. If `z` is not specified, `x` will be used
+        -- to scale the entity along both horizontal axes.
 
         mesh = "model",
 

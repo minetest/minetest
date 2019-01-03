@@ -50,7 +50,7 @@ public:
 	std::wstring teststring2_w;
 	std::string teststring2_w_encoded;
 
-	static const u8 test_serialized_data[12 * 13];
+	static const u8 test_serialized_data[12 * 13 - 8];
 };
 
 static TestSerialization g_test_instance;
@@ -316,7 +316,6 @@ void TestSerialization::testStreamRead()
 	UASSERT(readV3S16(is) == v3s16(4207, 604, -30));
 	UASSERT(readV2S32(is) == v2s32(1920, 1080));
 	UASSERT(readV3S32(is) == v3s32(-400, 6400054, 290549855));
-	UASSERT(readV2F1000(is) == v2f(500.656f, 350.345f));
 
 	UASSERT(deSerializeWideString(is) == L"\x02~woof~\x5455");
 
@@ -361,7 +360,6 @@ void TestSerialization::testStreamWrite()
 	writeV3S16(os, v3s16(4207, 604, -30));
 	writeV2S32(os, v2s32(1920, 1080));
 	writeV3S32(os, v3s32(-400, 6400054, 290549855));
-	writeV2F1000(os, v2f(500.65661f, 350.34567f));
 
 	os << serializeWideString(L"\x02~woof~\x5455");
 
@@ -403,7 +401,6 @@ void TestSerialization::testVecPut()
 	putV3S16(&buf, v3s16(4207, 604, -30));
 	putV2S32(&buf, v2s32(1920, 1080));
 	putV3S32(&buf, v3s32(-400, 6400054, 290549855));
-	putV2F1000(&buf, v2f(500.65661f, 350.34567f));
 
 	putWideString(&buf, L"\x02~woof~\x5455");
 
@@ -454,7 +451,6 @@ void TestSerialization::testBufReader()
 	v3s16 v3s16_data;
 	v2s32 v2s32_data;
 	v3s32 v3s32_data;
-	v2f v2f_data;
 	v3f v3f_data;
 	std::string string_data;
 	std::wstring widestring_data;
@@ -481,7 +477,6 @@ void TestSerialization::testBufReader()
 	UASSERT(buf.getV3S16() == v3s16(4207, 604, -30));
 	UASSERT(buf.getV2S32() == v2s32(1920, 1080));
 	UASSERT(buf.getV3S32() == v3s32(-400, 6400054, 290549855));
-	UASSERT(buf.getV2F1000() == v2f(500.656f, 350.345f));
 	UASSERT(buf.getWideString() == L"\x02~woof~\x5455");
 	UASSERT(buf.getV3F1000() == v3f(500, 10024.2f, -192.54f));
 	UASSERT(buf.getARGB8() == video::SColor(255, 128, 50, 128));
@@ -526,7 +521,6 @@ void TestSerialization::testBufReader()
 	EXCEPTION_CHECK(SerializationError, buf.getV3S16());
 	EXCEPTION_CHECK(SerializationError, buf.getV2S32());
 	EXCEPTION_CHECK(SerializationError, buf.getV3S32());
-	EXCEPTION_CHECK(SerializationError, buf.getV2F1000());
 	EXCEPTION_CHECK(SerializationError, buf.getV3F1000());
 
 	EXCEPTION_CHECK(SerializationError, buf.getString());
@@ -568,7 +562,6 @@ void TestSerialization::testBufReader()
 	UASSERT(buf.getV3S16NoEx(&v3s16_data));
 	UASSERT(buf.getV2S32NoEx(&v2s32_data));
 	UASSERT(buf.getV3S32NoEx(&v3s32_data));
-	UASSERT(buf.getV2F1000NoEx(&v2f_data));
 	UASSERT(buf.getWideStringNoEx(&widestring_data));
 	UASSERT(buf.getV3F1000NoEx(&v3f_data));
 	UASSERT(buf.getARGB8NoEx(&scolor_data));
@@ -593,7 +586,6 @@ void TestSerialization::testBufReader()
 	UASSERT(v3s16_data == v3s16(4207, 604, -30));
 	UASSERT(v2s32_data == v2s32(1920, 1080));
 	UASSERT(v3s32_data == v3s32(-400, 6400054, 290549855));
-	UASSERT(v2f_data == v2f(500.656f, 350.345f));
 	UASSERT(widestring_data == L"\x02~woof~\x5455");
 	UASSERT(v3f_data == v3f(500, 10024.2f, -192.54f));
 	UASSERT(scolor_data == video::SColor(255, 128, 50, 128));
@@ -625,7 +617,6 @@ void TestSerialization::testBufReader()
 	UASSERT(!buf.getV3S16NoEx(&v3s16_data));
 	UASSERT(!buf.getV2S32NoEx(&v2s32_data));
 	UASSERT(!buf.getV3S32NoEx(&v3s32_data));
-	UASSERT(!buf.getV2F1000NoEx(&v2f_data));
 	UASSERT(!buf.getV3F1000NoEx(&v3f_data));
 
 	UASSERT(!buf.getStringNoEx(&string_data));
@@ -717,7 +708,7 @@ void TestSerialization::testFloatFormat()
 		UASSERT(test_single(i));
 }
 
-const u8 TestSerialization::test_serialized_data[12 * 13] = {
+const u8 TestSerialization::test_serialized_data[12 * 13 - 8] = {
 	0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88, 0x99, 0xaa, 0xbb, 0xcc,
 	0xdd, 0xee, 0xff, 0x80, 0x75, 0x30, 0xff, 0xff, 0xff, 0xfa, 0xff, 0xff,
 	0xff, 0xff, 0xff, 0xff, 0xff, 0xd5, 0x00, 0x00, 0xd1, 0x1e, 0xee, 0x1e,
@@ -725,8 +716,8 @@ const u8 TestSerialization::test_serialized_data[12 * 13] = {
 	0x66, 0x6f, 0x6f, 0x62, 0x61, 0x72, 0x21, 0x01, 0xf4, 0x01, 0xf4, 0x10,
 	0x6f, 0x02, 0x5c, 0xff, 0xe2, 0x00, 0x00, 0x07, 0x80, 0x00, 0x00, 0x04,
 	0x38, 0xff, 0xff, 0xfe, 0x70, 0x00, 0x61, 0xa8, 0x36, 0x11, 0x51, 0x70,
-	0x5f, 0x00, 0x07, 0xa3, 0xb0, 0x00, 0x05, 0x58, 0x89, 0x00, 0x08, 0x00,
-	0x02, 0x00, 0x7e, 0x00, 0x77, 0x00, 0x6f, 0x00, 0x6f, 0x00, 0x66, 0x00,
+	0x5f, 0x00, 0x08, 0x00,
+	0x02, 0x00, 0x7e, 0x00,  'w', 0x00,  'o', 0x00,  'o', 0x00,  'f', 0x00, // \x02~woof~\x5455
 	0x7e, 0x54, 0x55, 0x00, 0x07, 0xa1, 0x20, 0x00, 0x98, 0xf5, 0x08, 0xff,
 	0xfd, 0x0f, 0xe4, 0xff, 0x80, 0x32, 0x80, 0x00, 0x00, 0x00, 0x17, 0x73,
 	0x6f, 0x6d, 0x65, 0x20, 0x6c, 0x6f, 0x6e, 0x67, 0x65, 0x72, 0x20, 0x73,

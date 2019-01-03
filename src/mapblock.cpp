@@ -446,9 +446,7 @@ void MapBlock::serializeNetworkSpecific(std::ostream &os)
 		throw SerializationError("ERROR: Not writing dummy block.");
 	}
 
-	writeU8(os, 1); // version
-	writeF1000(os, 0); // deprecated heat
-	writeF1000(os, 0); // deprecated humidity
+	writeU8(os, 2); // version
 }
 
 void MapBlock::deSerialize(std::istream &is, u8 version, bool disk)
@@ -559,16 +557,11 @@ void MapBlock::deSerialize(std::istream &is, u8 version, bool disk)
 void MapBlock::deSerializeNetworkSpecific(std::istream &is)
 {
 	try {
-		int version = readU8(is);
+		const u8 version = readU8(is);
 		//if(version != 1)
 		//	throw SerializationError("unsupported MapBlock version");
-		if(version >= 1) {
-			readF1000(is); // deprecated heat
-			readF1000(is); // deprecated humidity
-		}
-	}
-	catch(SerializationError &e)
-	{
+
+	} catch(SerializationError &e) {
 		warningstream<<"MapBlock::deSerializeNetworkSpecific(): Ignoring an error"
 				<<": "<<e.what()<<std::endl;
 	}

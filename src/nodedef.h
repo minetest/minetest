@@ -35,6 +35,9 @@ class Client;
 #include "constants.h" // BS
 #include "tileanimation.h"
 
+// PROTOCOL_VERSION >= 37
+static const u8 CONTENTFEATURES_VERSION = 13;
+
 class IItemDefManager;
 class ITextureSource;
 class IShaderSource;

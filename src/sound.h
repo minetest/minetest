@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include <set>
 #include <string>
+#include "util/serialize.h"
 #include "irrlichttypes_bloated.h"
 
 struct SimpleSoundSpec
@@ -33,6 +34,26 @@ struct SimpleSoundSpec
 	}
 
 	bool exists() const { return !name.empty(); }
+
+	// Take cf_version from ContentFeatures::serialize to
+	// keep in sync with item definitions
+	void serialize(std::ostream &os, u8 cf_version) const
+	{
+		os << serializeString(name);
+		writeF32(os, gain);
+		writeF32(os, pitch);
+		writeF32(os, fade);
+		// if (cf_version < ?)
+		//     return;
+	}
+
+	void deSerialize(std::istream &is, u8 cf_version)
+	{
+		name = deSerializeString(is);
+		gain = readF32(is);
+		pitch = readF32(is);
+		fade = readF32(is);
+	}
 
 	std::string name;
 	float gain = 1.0f;

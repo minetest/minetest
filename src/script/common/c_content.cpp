@@ -218,8 +218,18 @@ void read_object_properties(lua_State *L, int index,
 	getstringfield(L, -1, "mesh", prop->mesh);
 
 	lua_getfield(L, -1, "visual_size");
-	if(lua_istable(L, -1))
-		prop->visual_size = read_v2f(L, -1);
+	if (lua_istable(L, -1)) {
+		// Backwards compatibility: Also accept { x = ?, y = ? }
+		v2f scale_xy = read_v2f(L, -1);
+
+		f32 scale_z = scale_xy.X;
+		lua_getfield(L, -1, "z");
+		if (lua_isnumber(L, -1))
+			scale_z = lua_tonumber(L, -1);
+		lua_pop(L, 1);
+
+		prop->visual_size = v3f(scale_xy.X, scale_xy.Y, scale_z);
+	}
 	lua_pop(L, 1);
 
 	lua_getfield(L, -1, "textures");
@@ -331,7 +341,7 @@ void push_object_properties(lua_State *L, ObjectProperties *prop)
 	lua_setfield(L, -2, "visual");
 	lua_pushlstring(L, prop->mesh.c_str(), prop->mesh.size());
 	lua_setfield(L, -2, "mesh");
-	push_v2f(L, prop->visual_size);
+	push_v3f(L, prop->visual_size);
 	lua_setfield(L, -2, "visual_size");
 
 	lua_newtable(L);
