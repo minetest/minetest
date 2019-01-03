@@ -404,38 +404,48 @@ ServerEnvironment::ServerEnvironment(ServerMap *map,
 
 	// If we open world.mt read the backend configurations.
 	if (succeeded) {
+		// Read those values before setting defaults
+		bool player_backend_exists = conf.exists("player_backend");
+		bool auth_backend_exists = conf.exists("auth_backend");
+
 		// player backend is not set, assume it's legacy file backend.
-		if (!conf.exists("player_backend")) {
+		if (!player_backend_exists) {
 			// fall back to files
 			conf.set("player_backend", "files");
-			warningstream << "/!\\ You are using old player file backend. "
-				<< "This backend is deprecated and will be removed in a future release /!\\"
-				<< std::endl << "Switching to SQLite3 or PostgreSQL is advised, "
-				<< "please read http://wiki.minetest.net/Database_backends." << std::endl;
 
 			if (!conf.updateConfigFile(conf_path.c_str())) {
 				errorstream << "ServerEnvironment::ServerEnvironment(): "
-				<< "Failed to update world.mt!" << std::endl;
+						<< "Failed to update world.mt!" << std::endl;
 			}
 		} else {
 			conf.getNoEx("player_backend", player_backend_name);
 		}
 
 		// auth backend is not set, assume it's legacy file backend.
-		if (!conf.exists("auth_backend")) {
+		if (!auth_backend_exists) {
 			conf.set("auth_backend", "files");
-			warningstream << "/!\\ You are using old auth file backend. "
-				<< "This backend is deprecated and will be removed in a future release /!\\"
-				<< std::endl << "Switching to SQLite3 is advised, "
-				<< "please read http://wiki.minetest.net/Database_backends." << std::endl;
 
 			if (!conf.updateConfigFile(conf_path.c_str())) {
 				errorstream << "ServerEnvironment::ServerEnvironment(): "
-					<< "Failed to update world.mt!" << std::endl;
+						<< "Failed to update world.mt!" << std::endl;
 			}
 		} else {
 			conf.getNoEx("auth_backend", auth_backend_name);
 		}
+	}
+
+	if (player_backend_name == "files") {
+		warningstream << "/!\\ You are using old player file backend. "
+				<< "This backend is deprecated and will be removed in a future release /!\\"
+				<< std::endl << "Switching to SQLite3 or PostgreSQL is advised, "
+				<< "please read http://wiki.minetest.net/Database_backends." << std::endl;
+	}
+
+	if (auth_backend_name == "files") {
+		warningstream << "/!\\ You are using old auth file backend. "
+				<< "This backend is deprecated and will be removed in a future release /!\\"
+				<< std::endl << "Switching to SQLite3 is advised, "
+				<< "please read http://wiki.minetest.net/Database_backends." << std::endl;
 	}
 
 	m_player_database = openPlayerDatabase(player_backend_name, path_world, conf);
