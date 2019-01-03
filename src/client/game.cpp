@@ -1891,7 +1891,7 @@ void Game::processKeyInput()
 		if (client->moddingEnabled())
 			openConsole(0.2, L".");
 		else
-			m_game_ui->showStatusText(wgettext("CSM is disabled"));
+			m_game_ui->showStatusText(wgettext("Client side scripting is disabled"));
 	} else if (wasKeyDown(KeyType::CONSOLE)) {
 		openConsole(core::clamp(g_settings->getFloat("console_height"), 0.1f, 1.0f));
 	} else if (wasKeyDown(KeyType::FREEMOVE)) {
@@ -2554,7 +2554,7 @@ void Game::handleClientEvent_PlayerForceMove(ClientEvent *event, CameraOrientati
 
 void Game::handleClientEvent_Deathscreen(ClientEvent *event, CameraOrientation *cam)
 {
-	// If CSM enabled, deathscreen is handled by CSM code in
+	// If client scripting is enabled, deathscreen is handled by CSM code in
 	// builtin/client/init.lua
 	if (client->moddingEnabled())
 		client->getScript()->on_death();
