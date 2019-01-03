@@ -92,7 +92,6 @@ private:
 	struct RemoteServerStatus {
 		std::string baseurl;
 		s32 active_count;
-		bool request_by_filename;
 	};
 
 	void initialStep(Client *client);
