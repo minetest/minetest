@@ -835,11 +835,6 @@ void GenericCAO::addToScene(scene::ISceneManager *smgr,
 				video::S3DVertex( dx,  dy, 0, 0,0,0, c, 0,0),
 				video::S3DVertex(-dx,  dy, 0, 0,0,0, c, 1,0),
 			};
-			if (m_is_player) {
-				// Move minimal Y position to 0 (feet position)
-				for (size_t i = 0; i < 4; i++)
-					vertices[i].Pos.Y += dy;
-			}
 			u16 indices[] = {0,1,2,2,3,0};
 			buf->append(vertices, 4, indices, 6);
 			// Set material
@@ -859,11 +854,6 @@ void GenericCAO::addToScene(scene::ISceneManager *smgr,
 				video::S3DVertex(-dx, dy, 0, 0,0,0, c, 0,0),
 				video::S3DVertex( dx, dy, 0, 0,0,0, c, 1,0),
 			};
-			if (m_is_player) {
-				// Move minimal Y position to 0 (feet position)
-				for (size_t i = 0; i < 4; i++)
-					vertices[i].Pos.Y += dy;
-			}
 			u16 indices[] = {0,1,2,2,3,0};
 			buf->append(vertices, 4, indices, 6);
 			// Set material
