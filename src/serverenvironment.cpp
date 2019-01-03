@@ -396,36 +396,50 @@ ServerEnvironment::ServerEnvironment(ServerMap *map,
 	// Determine which database backend to use
 	std::string conf_path = path_world + DIR_DELIM + "world.mt";
 	Settings conf;
+
+	std::string player_backend_name = "sqlite3";
+	std::string auth_backend_name = "sqlite3";
+
 	bool succeeded = conf.readConfigFile(conf_path.c_str());
-	if (!succeeded || !conf.exists("player_backend")) {
-		// fall back to files
-		conf.set("player_backend", "files");
-		warningstream << "/!\\ You are using old player file backend. "
-				<< "This backend is deprecated and will be removed in next release /!\\"
+
+	// If we open world.mt read the backend configurations.
+	if (succeeded) {
+		// player backend is not set, assume it's legacy file backend.
+		if (!conf.exists("player_backend")) {
+			// fall back to files
+			conf.set("player_backend", "files");
+			warningstream << "/!\\ You are using old player file backend. "
+				<< "This backend is deprecated and will be removed in a future release /!\\"
 				<< std::endl << "Switching to SQLite3 or PostgreSQL is advised, "
 				<< "please read http://wiki.minetest.net/Database_backends." << std::endl;
 
-		if (!conf.updateConfigFile(conf_path.c_str())) {
-			errorstream << "ServerEnvironment::ServerEnvironment(): "
+			if (!conf.updateConfigFile(conf_path.c_str())) {
+				errorstream << "ServerEnvironment::ServerEnvironment(): "
 				<< "Failed to update world.mt!" << std::endl;
+			}
+		} else {
+			conf.getNoEx("player_backend", player_backend_name);
 		}
-	}
 
-	std::string name;
-	conf.getNoEx("player_backend", name);
-	m_player_database = openPlayerDatabase(name, path_world, conf);
+		// auth backend is not set, assume it's legacy file backend.
+		if (!conf.exists("auth_backend")) {
+			conf.set("auth_backend", "files");
+			warningstream << "/!\\ You are using old auth file backend. "
+				<< "This backend is deprecated and will be removed in a future release /!\\"
+				<< std::endl << "Switching to SQLite3 is advised, "
+				<< "please read http://wiki.minetest.net/Database_backends." << std::endl;
 
-	std::string auth_name = "files";
-	if (conf.exists("auth_backend")) {
-		conf.getNoEx("auth_backend", auth_name);
-	} else {
-		conf.set("auth_backend", "files");
-		if (!conf.updateConfigFile(conf_path.c_str())) {
-			errorstream << "ServerEnvironment::ServerEnvironment(): "
+			if (!conf.updateConfigFile(conf_path.c_str())) {
+				errorstream << "ServerEnvironment::ServerEnvironment(): "
 					<< "Failed to update world.mt!" << std::endl;
+			}
+		} else {
+			conf.getNoEx("auth_backend", auth_backend_name);
 		}
 	}
-	m_auth_database = openAuthDatabase(auth_name, path_world, conf);
+
+	m_player_database = openPlayerDatabase(player_backend_name, path_world, conf);
+	m_auth_database = openAuthDatabase(auth_backend_name, path_world, conf);
 }
 
 ServerEnvironment::~ServerEnvironment()
