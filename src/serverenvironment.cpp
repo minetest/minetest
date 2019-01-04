@@ -396,36 +396,62 @@ ServerEnvironment::ServerEnvironment(ServerMap *map,
 	// Determine which database backend to use
 	std::string conf_path = path_world + DIR_DELIM + "world.mt";
 	Settings conf;
+
+	std::string player_backend_name = "sqlite3";
+	std::string auth_backend_name = "sqlite3";
+
 	bool succeeded = conf.readConfigFile(conf_path.c_str());
-	if (!succeeded || !conf.exists("player_backend")) {
-		// fall back to files
-		conf.set("player_backend", "files");
+
+	// If we open world.mt read the backend configurations.
+	if (succeeded) {
+		// Read those values before setting defaults
+		bool player_backend_exists = conf.exists("player_backend");
+		bool auth_backend_exists = conf.exists("auth_backend");
+
+		// player backend is not set, assume it's legacy file backend.
+		if (!player_backend_exists) {
+			// fall back to files
+			conf.set("player_backend", "files");
+			player_backend_name = "files";
+
+			if (!conf.updateConfigFile(conf_path.c_str())) {
+				errorstream << "ServerEnvironment::ServerEnvironment(): "
+						<< "Failed to update world.mt!" << std::endl;
+			}
+		} else {
+			conf.getNoEx("player_backend", player_backend_name);
+		}
+
+		// auth backend is not set, assume it's legacy file backend.
+		if (!auth_backend_exists) {
+			conf.set("auth_backend", "files");
+			auth_backend_name = "files";
+
+			if (!conf.updateConfigFile(conf_path.c_str())) {
+				errorstream << "ServerEnvironment::ServerEnvironment(): "
+						<< "Failed to update world.mt!" << std::endl;
+			}
+		} else {
+			conf.getNoEx("auth_backend", auth_backend_name);
+		}
+	}
+
+	if (player_backend_name == "files") {
 		warningstream << "/!\\ You are using old player file backend. "
-				<< "This backend is deprecated and will be removed in next release /!\\"
+				<< "This backend is deprecated and will be removed in a future release /!\\"
 				<< std::endl << "Switching to SQLite3 or PostgreSQL is advised, "
 				<< "please read http://wiki.minetest.net/Database_backends." << std::endl;
-
-		if (!conf.updateConfigFile(conf_path.c_str())) {
-			errorstream << "ServerEnvironment::ServerEnvironment(): "
-				<< "Failed to update world.mt!" << std::endl;
-		}
 	}
 
-	std::string name;
-	conf.getNoEx("player_backend", name);
-	m_player_database = openPlayerDatabase(name, path_world, conf);
-
-	std::string auth_name = "files";
-	if (conf.exists("auth_backend")) {
-		conf.getNoEx("auth_backend", auth_name);
-	} else {
-		conf.set("auth_backend", "files");
-		if (!conf.updateConfigFile(conf_path.c_str())) {
-			errorstream << "ServerEnvironment::ServerEnvironment(): "
-					<< "Failed to update world.mt!" << std::endl;
-		}
+	if (auth_backend_name == "files") {
+		warningstream << "/!\\ You are using old auth file backend. "
+				<< "This backend is deprecated and will be removed in a future release /!\\"
+				<< std::endl << "Switching to SQLite3 is advised, "
+				<< "please read http://wiki.minetest.net/Database_backends." << std::endl;
 	}
-	m_auth_database = openAuthDatabase(auth_name, path_world, conf);
+
+	m_player_database = openPlayerDatabase(player_backend_name, path_world, conf);
+	m_auth_database = openAuthDatabase(auth_backend_name, path_world, conf);
 }
 
 ServerEnvironment::~ServerEnvironment()
