@@ -79,8 +79,6 @@ void RemotePlayer::serializeExtraAttributes(std::string &output)
 	}
 
 	output = fastWriteJson(json_root);
-
-	m_sao->getMeta().setModified(false);
 }
 
 
@@ -224,4 +222,11 @@ const RemotePlayerChatResult RemotePlayer::canSendChatMessage()
 
 	m_chat_message_allowance -= 1.0f;
 	return RPLAYER_CHATRESULT_OK;
+}
+
+void RemotePlayer::on_successful_save()
+{
+	setModified(false);
+	if (m_sao)
+		m_sao->getMeta().setModified(false);
 }

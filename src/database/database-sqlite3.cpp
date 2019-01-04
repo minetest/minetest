@@ -528,9 +528,10 @@ void PlayerDatabaseSQLite3::savePlayer(RemotePlayer *player)
 		sqlite3_vrfy(sqlite3_step(m_stmt_player_metadata_add), SQLITE_DONE);
 		sqlite3_reset(m_stmt_player_metadata_add);
 	}
-	sao->getMeta().setModified(false);
 
 	endSave();
+
+	player->on_successful_save();
 }
 
 bool PlayerDatabaseSQLite3::loadPlayer(RemotePlayer *player, PlayerSAO *sao)

@@ -105,7 +105,8 @@ void PlayerDatabaseFiles::savePlayer(RemotePlayer *player)
 	if (!fs::safeWriteToFile(path, ss.str())) {
 		infostream << "Failed to write " << path << std::endl;
 	}
-	player->setModified(false);
+
+	player->on_successful_save();
 }
 
 bool PlayerDatabaseFiles::removePlayer(const std::string &name)
