@@ -16,7 +16,6 @@ allprojects {
 }
 
 def curl_version = "7.60.0"
-def gmp_version = "6.1.2"
 def irrlicht_revision = "5150"
 def openal_version = "1.18.2"
 def openssl_version = "1.0.2n"
@@ -154,14 +153,9 @@ task cleanSQLite3(type: Delete) {
 	delete 'deps/sqlite-amalgamation-' + sqlite3_version + '.zip'
 }
 
-task cleanGMP(type: Delete) {
-	delete 'deps/gmp'
-	delete 'deps/gmp-' + gmp_version
-}
-
 task cleanAll(type: Delete, dependsOn: [clean, cleanAssets, cleanIconv,
 		cleanFreetype, cleanIrrlicht, cleanLevelDB, cleanSQLite3, cleanCURL,
-		cleanOpenSSL, cleanOpenAL, cleanOgg, cleanGMP]) {
+		cleanOpenSSL, cleanOpenAL, cleanOgg]) {
 	delete 'deps'
 	delete 'gen'
 	delete 'libs'
