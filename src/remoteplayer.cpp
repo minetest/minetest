@@ -224,7 +224,7 @@ const RemotePlayerChatResult RemotePlayer::canSendChatMessage()
 	return RPLAYER_CHATRESULT_OK;
 }
 
-void RemotePlayer::on_successful_save()
+void RemotePlayer::onSuccessfulSave()
 {
 	setModified(false);
 	if (m_sao)

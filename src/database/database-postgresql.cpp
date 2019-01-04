@@ -529,7 +529,7 @@ void PlayerDatabasePostgreSQL::savePlayer(RemotePlayer *player)
 	}
 	endSave();
 
-	player->on_successful_save();
+	player->onSuccessfulSave();
 }
 
 bool PlayerDatabasePostgreSQL::loadPlayer(RemotePlayer *player, PlayerSAO *sao)

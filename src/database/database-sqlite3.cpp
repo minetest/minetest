@@ -531,7 +531,7 @@ void PlayerDatabaseSQLite3::savePlayer(RemotePlayer *player)
 
 	endSave();
 
-	player->on_successful_save();
+	player->onSuccessfulSave();
 }
 
 bool PlayerDatabaseSQLite3::loadPlayer(RemotePlayer *player, PlayerSAO *sao)
