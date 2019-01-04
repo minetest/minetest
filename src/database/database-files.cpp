@@ -31,6 +31,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 // This backend is intended to be used on Minetest 0.4.16 only for the transition backend
 // for player files
 
+PlayerDatabaseFiles::PlayerDatabaseFiles(const std::string &savedir) : m_savedir(savedir)
+{
+	fs::CreateDir(m_savedir);
+}
+
 void PlayerDatabaseFiles::serialize(std::ostringstream &os, RemotePlayer *player)
 {
 	// Utilize a Settings object for storing values
@@ -58,6 +63,8 @@ void PlayerDatabaseFiles::serialize(std::ostringstream &os, RemotePlayer *player
 
 void PlayerDatabaseFiles::savePlayer(RemotePlayer *player)
 {
+	fs::CreateDir(m_savedir);
+
 	std::string savedir = m_savedir + DIR_DELIM;
 	std::string path = savedir + player->getName();
 	bool path_found = false;

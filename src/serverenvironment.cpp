@@ -544,9 +544,6 @@ void ServerEnvironment::kickAllPlayers(AccessDeniedCode reason,
 
 void ServerEnvironment::saveLoadedPlayers()
 {
-	std::string players_path = m_path_world + DIR_DELIM + "players";
-	fs::CreateDir(players_path);
-
 	for (RemotePlayer *player : m_players) {
 		if (player->checkModified() || (player->getPlayerSAO() &&
 				player->getPlayerSAO()->getMeta().isModified())) {
