@@ -412,6 +412,7 @@ ServerEnvironment::ServerEnvironment(ServerMap *map,
 		if (!player_backend_exists) {
 			// fall back to files
 			conf.set("player_backend", "files");
+			player_backend_name = "files";
 
 			if (!conf.updateConfigFile(conf_path.c_str())) {
 				errorstream << "ServerEnvironment::ServerEnvironment(): "
@@ -424,6 +425,7 @@ ServerEnvironment::ServerEnvironment(ServerMap *map,
 		// auth backend is not set, assume it's legacy file backend.
 		if (!auth_backend_exists) {
 			conf.set("auth_backend", "files");
+			auth_backend_name = "files";
 
 			if (!conf.updateConfigFile(conf_path.c_str())) {
 				errorstream << "ServerEnvironment::ServerEnvironment(): "
