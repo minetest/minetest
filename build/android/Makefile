@@ -107,13 +107,6 @@ CURL_TIMESTAMP = $(CURL_DIR)/timestamp
 CURL_TIMESTAMP_INT = $(ANDR_ROOT)/deps/curl_timestamp
 CURL_URL_HTTP = https://curl.haxx.se/download/curl-${CURL_VERSION}.tar.bz2
 
-GMP_VERSION = 6.1.2
-GMP_DIR = $(ANDR_ROOT)/deps/gmp-$(GMP_VERSION)
-GMP_LIB = $(GMP_DIR)/usr/lib/libgmp.so
-GMP_TIMESTAMP = $(GMP_DIR)/timestamp
-GMP_TIMESTAMP_INT = $(ANDR_ROOT)/deps/gmp_timestamp
-GMP_URL_HTTP = https://gmplib.org/download/gmp/gmp-$(GMP_VERSION).tar.bz2
-
 FREETYPE_DIR = $(ANDR_ROOT)/deps/freetype2-android/
 FREETYPE_LIB = $(FREETYPE_DIR)/Android/obj/local/$(TARGET_ABI)/libfreetype2-static.a
 FREETYPE_TIMESTAMP = $(FREETYPE_DIR)timestamp
@@ -294,7 +287,7 @@ openssl_download :
 
 openssl : $(OPENSSL_LIB)
 
-$(OPENSSL_LIB): $(OPENSSL_TIMESTAMP) $(GMP_LIB)
+$(OPENSSL_LIB): $(OPENSSL_TIMESTAMP)
 	@REFRESH=0;                                                                \
 	if [ ! -e ${OPENSSL_TIMESTAMP_INT} ] ; then                                \
 		echo "${OPENSSL_TIMESTAMP_INT} doesn't exist";                         \
@@ -313,7 +306,7 @@ $(OPENSSL_LIB): $(OPENSSL_TIMESTAMP) $(GMP_LIB)
 		--platform=${APP_PLATFORM}                                             \
 		--install-dir=$${TOOLCHAIN};                                           \
 	export PATH="$${TOOLCHAIN}/bin:$${PATH}";                                  \
-	CC=${CROSS_PREFIX}gcc ./Configure enable-gmp -DL_ENDIAN -I${GMP_DIR} -L${GMP_DIR}/usr/lib android-${TARGET_ARCH};\
+	CC=${CROSS_PREFIX}gcc ./Configure -DL_ENDIAN android-${TARGET_ARCH};\
 	CC=${CROSS_PREFIX}gcc ANDROID_DEV=/tmp/ndk-${TARGET_HOST} make depend;     \
 	CC=${CROSS_PREFIX}gcc ANDROID_DEV=/tmp/ndk-${TARGET_HOST} make build_libs; \
 	touch ${OPENSSL_TIMESTAMP};                                                \
@@ -602,64 +595,6 @@ clean_curl :
 	$(RM) -rf deps/curl-${CURL_VERSION}                                        \
 	$(RM) -f deps/curl
 
-$(GMP_TIMESTAMP) : gmp_download
-	@LAST_MODIF=$$(find ${GMP_DIR} -type f -printf '%T@ %p\n' | sort -n | tail -1 | cut -f2- -d" "); \
-	if [ $$(basename $$LAST_MODIF) != "timestamp" ] ; then                     \
-		touch ${GMP_TIMESTAMP};                                            \
-	fi
-
-gmp_download :
-	@if [ ! -d "${GMP_DIR}" ] ; then                                           \
-		echo "gmp sources missing, downloading...";                        \
-		mkdir -p ${ANDR_ROOT}/deps;                                        \
-		cd deps;                                                           \
-		wget ${GMP_URL_HTTP} || exit 1;                                    \
-		tar -xjf gmp-${GMP_VERSION}.tar.bz2 || exit 1;                     \
-		rm gmp-${GMP_VERSION}.tar.bz2;                                     \
-		ln -s gmp-${GMP_VERSION} gmp;                                      \
-	fi
-
-gmp : $(GMP_LIB)
-
-$(GMP_LIB): $(GMP_TIMESTAMP)
-	@REFRESH=0;                                                                \
-	if [ ! -e ${GMP_TIMESTAMP_INT} ] ; then                                    \
-		REFRESH=1;                                                         \
-	fi;                                                                        \
-	if [ ! -e ${GMP_LIB} ] ; then                                              \
-		REFRESH=1;                                                         \
-	fi;                                                                        \
-	if [ ${GMP_TIMESTAMP} -nt ${GMP_TIMESTAMP_INT} ] ; then                    \
-		REFRESH=1;                                                         \
-	fi;                                                                        \
-	if [ $$REFRESH -ne 0 ] ; then                                              \
-	mkdir -p ${GMP_DIR};                                                       \
-	echo "changed timestamp for gmp detected building...";                     \
-	cd deps/gmp-${GMP_VERSION};                                                \
-	export CROSS_PREFIX=${CROSS_PREFIX};                                       \
-	export TOOLCHAIN=/tmp/ndk-${TARGET_HOST}-gmp;                              \
-	${ANDROID_NDK}/build/tools/make-standalone-toolchain.sh                    \
-		--toolchain=${TARGET_TOOLCHAIN}${COMPILER_VERSION}                     \
-		--platform=${APP_PLATFORM}                                             \
-		--install-dir=$${TOOLCHAIN};                                           \
-	export PATH="$${TOOLCHAIN}/bin:$${PATH}";                                  \
-	export CC=${CROSS_PREFIX}gcc;                                              \
-	export CXX=${CROSS_PREFIX}g++;                                             \
-	export LIBGMP_LDFLAGS="-avoid-version";                                    \
-	export LIBGMPXX_LDFLAGS="-avoid-version";                                  \
-	./configure --disable-static --host=${TARGET_HOST} --prefix=/usr;          \
-	$(MAKE) install DESTDIR=/${GMP_DIR} || exit 1;                             \
-	touch ${GMP_TIMESTAMP};                                                    \
-	touch ${GMP_TIMESTAMP_INT};                                                \
-	$(RM) -rf $${TOOLCHAIN};                                                   \
-	else                                                                       \
-		echo "nothing to be done for gmp";                                 \
-	fi
-
-clean_gmp:
-	$(RM) -rf deps/gmp-${GMP_VERSION}                                          \
-	$(RM) -f deps/gmp
-
 sqlite3_download: deps/${SQLITE3_FOLDER}/sqlite3.c
 
 deps/${SQLITE3_FOLDER}/sqlite3.c :
@@ -751,7 +686,7 @@ assets : $(ASSETS_TIMESTAMP)
 clean_assets :
 	@$(RM) -r ${APP_ROOT}/assets
 
-apk: local.properties assets $(ICONV_LIB) $(IRRLICHT_LIB) $(CURL_LIB) $(GMP_LIB) $(LEVELDB_TARGET)       \
+apk: local.properties assets $(ICONV_LIB) $(IRRLICHT_LIB) $(CURL_LIB) $(LEVELDB_TARGET)       \
 	$(OPENAL_LIB) $(OGG_LIB) prep_srcdir $(ANDR_ROOT)/jni/src/android_version.h    \
 	$(ANDR_ROOT)/jni/src/android_version_githash.h sqlite3_download
 	+ @export TARGET_LIBDIR=${TARGET_LIBDIR};                                  \
@@ -790,7 +725,7 @@ clean_apk :
 clean_all :
 	@$(MAKE) clean_apk;                                                        \
 	$(MAKE) clean_assets clean_iconv clean_irrlicht clean_leveldb clean_curl   \
-	clean_openssl clean_openal clean_ogg clean_gmp;                            \
+	clean_openssl clean_openal clean_ogg;                                      \
 	sleep 1;                                                                   \
 	$(RM) -r gen libs obj deps bin Debug and_env
 

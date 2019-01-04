@@ -42,7 +42,7 @@
 
 #include <config.h>
 
-#if USE_SYSTEM_GMP || defined (__ANDROID__) || defined (ANDROID)
+#if USE_SYSTEM_GMP
 	#include <gmp.h>
 #else
 	#include <mini-gmp.h>

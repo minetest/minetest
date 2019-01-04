@@ -14,7 +14,6 @@ public class MtNativeActivity extends NativeActivity {
 		System.loadLibrary("openal");
 		System.loadLibrary("ogg");
 		System.loadLibrary("vorbis");
-		System.loadLibrary("gmp");
 		System.loadLibrary("iconv");
 		System.loadLibrary("minetest");
 	}
