@@ -1303,9 +1303,8 @@ void GenericCAO::updateAttachments()
 			LocalPlayer *player = m_env->getLocalPlayer();
 			player->isAttached = true;
 		}
-		
-		if (m_env->getGenericCAO(m_env->attachement_parent_ids[getId()]) 
-			&& m_env->getGenericCAO(m_env->attachement_parent_ids[getId()])->m_is_local_player) {
+		GenericCAO* parentCAO = m_env->getGenericCAO(m_env->attachement_parent_ids[getId()]);
+		if (parentCAO && parentCAO->m_is_local_player) {
 			//Update attachment visibility for the player's children
 			setVisible(m_client->getCamera()->getCameraMode() > CAMERA_MODE_FIRST);
 		}
