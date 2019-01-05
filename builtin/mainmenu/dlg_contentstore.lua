@@ -76,7 +76,7 @@ local function start_install(calling_dialog, package)
 			if not path then
 				gamedata.errormessage = msg
 			else
-				print("Successfully installed to " .. path)
+				core.log("action", "Installed package to " .. path)
 
 				local conf_path
 				local name_is_title = false
