@@ -52,14 +52,14 @@ function get_mods(path,retval,modpack)
 
 			-- Check modpack.txt
 			--  Note: modpack.conf is already checked above
-			local modpackfile = io.open(prefix .. "modpack.txt")
+			local modpackfile = io.open(prefix .. DIR_DELIM .. "modpack.txt")
 			if modpackfile then
 				modpackfile:close()
 				toadd.is_modpack = true
 			end
 
 			-- Deal with modpack contents
-			if modpack ~= nil and modpack ~= "" then
+			if modpack and modpack ~= "" then
 				toadd.modpack = modpack
 			elseif toadd.is_modpack then
 				toadd.type = "modpack"
