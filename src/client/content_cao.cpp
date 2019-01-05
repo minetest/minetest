@@ -1303,11 +1303,6 @@ void GenericCAO::updateAttachments()
 			LocalPlayer *player = m_env->getLocalPlayer();
 			player->isAttached = true;
 		}
-		GenericCAO *parent_obj = m_env->getGenericCAO(m_env->attachement_parent_ids[getId()]);
-		if (parent_obj && parent_obj->m_is_local_player) {
-			// Update attachment visibility for the player's children
-			setVisible(m_client->getCamera()->getCameraMode() > CAMERA_MODE_FIRST);
-		}
 	}
 }
 
@@ -1488,9 +1483,9 @@ void GenericCAO::processMessage(const std::string &data)
 		if (!m_is_local_player) {
 			m_attached_to_local = getParent() != NULL && getParent()->isLocalPlayer();
 			// Objects attached to the local player should be hidden by default
-			m_is_visible = !m_attached_to_local;
+			m_is_visible = (!m_attached_to_local) 
+				|| (m_client->getCamera()->getCameraMode() > CAMERA_MODE_FIRST);
 		}
-
 		updateAttachments();
 	} else if (cmd == GENERIC_CMD_PUNCHED) {
 		/*s16 damage =*/ readS16(is);
