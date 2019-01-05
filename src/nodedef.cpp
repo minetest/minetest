@@ -370,7 +370,9 @@ void ContentFeatures::reset()
 	leveled = 0;
 	liquid_type = LIQUID_NONE;
 	liquid_alternative_flowing = "";
+	liquid_alternative_flowing_id = CONTENT_IGNORE;
 	liquid_alternative_source = "";
+	liquid_alternative_source_id = CONTENT_IGNORE;
 	liquid_viscosity = 0;
 	liquid_renewable = true;
 	liquid_range = LIQUID_LEVEL_MAX+1;
@@ -1498,9 +1500,14 @@ void NodeDefManager::resetNodeResolveState()
 	m_pending_resolve_callbacks.clear();
 }
 
-void NodeDefManager::mapNodeboxConnections()
+void NodeDefManager::resolveCrossrefs()
 {
 	for (ContentFeatures &f : m_content_features) {
+		if (f.liquid_type != LIQUID_NONE) {
+			f.liquid_alternative_flowing_id = getId(f.liquid_alternative_flowing);
+			f.liquid_alternative_source_id = getId(f.liquid_alternative_source);
+			continue;
+		}
 		if (f.drawtype != NDT_NODEBOX || f.node_box.type != NODEBOX_CONNECTED)
 			continue;
 
