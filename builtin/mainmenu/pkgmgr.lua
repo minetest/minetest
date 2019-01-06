@@ -366,6 +366,8 @@ function pkgmgr.get_worldconfig(worldpath)
 		if key == "gameid" then
 			worldconfig.id = value
 		elseif key:sub(0, 9) == "load_mod_" then
+			-- Compatibility: Check against "nil" which was erroneously used
+			-- as value for fresh configured worlds
 			worldconfig.global_mods[key] = value ~= "false" and value ~= "nil"
 				and value
 		else
