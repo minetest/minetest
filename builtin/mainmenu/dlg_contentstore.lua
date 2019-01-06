@@ -76,10 +76,17 @@ local function start_install(calling_dialog, package)
 			if not path then
 				gamedata.errormessage = msg
 			else
+				core.log("action", "Installed package to " .. path)
+
 				local conf_path
 				local name_is_title = false
 				if result.package.type == "mod" then
-					conf_path = path .. DIR_DELIM .. "mod.conf"
+					local actual_type = pkgmgr.get_folder_type(path)
+					if actual_type.type == "modpack" then
+						conf_path = path .. DIR_DELIM .. "modpack.conf"
+					else
+						conf_path = path .. DIR_DELIM .. "mod.conf"
+					end
 				elseif result.package.type == "game" then
 					conf_path = path .. DIR_DELIM .. "game.conf"
 					name_is_title = true

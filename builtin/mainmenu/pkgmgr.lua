@@ -25,27 +25,46 @@ function get_mods(path,retval,modpack)
 			local toadd = {}
 			retval[#retval + 1] = toadd
 
-			local mod_conf = Settings(prefix .. DIR_DELIM .. "mod.conf"):to_table()
-			if mod_conf.name then
-				name = mod_conf.name
+			-- Get config file
+			local mod_conf
+			local modpack_conf = io.open(prefix .. DIR_DELIM .. "modpack.conf")
+			if modpack_conf then
+				toadd.is_modpack = true
+				modpack_conf:close()
+
+				mod_conf = Settings(prefix .. DIR_DELIM .. "modpack.conf"):to_table()
+				if mod_conf.name then
+					name = mod_conf.name
+				end
+			else
+				mod_conf = Settings(prefix .. DIR_DELIM .. "mod.conf"):to_table()
+				if mod_conf.name then
+					name = mod_conf.name
+				end
 			end
 
+			-- Read from config
 			toadd.name = name
 			toadd.author = mod_conf.author
 			toadd.release = tonumber(mod_conf.release or "0")
 			toadd.path = prefix
 			toadd.type = "mod"
 
-			if modpack ~= nil and modpack ~= "" then
+			-- Check modpack.txt
+			--  Note: modpack.conf is already checked above
+			local modpackfile = io.open(prefix .. DIR_DELIM .. "modpack.txt")
+			if modpackfile then
+				modpackfile:close()
+				toadd.is_modpack = true
+			end
+
+			-- Deal with modpack contents
+			if modpack and modpack ~= "" then
 				toadd.modpack = modpack
-			else
-				local modpackfile = io.open(prefix .. DIR_DELIM .. "modpack.txt")
-				if modpackfile then
-					modpackfile:close()
-					toadd.type = "modpack"
-					toadd.is_modpack = true
-					get_mods(prefix, retval, name)
-				end
+			elseif toadd.is_modpack then
+				toadd.type = "modpack"
+				toadd.is_modpack = true
+				get_mods(prefix, retval, name)
 			end
 		end
 	end
@@ -112,6 +131,12 @@ function pkgmgr.get_folder_type(path)
 	if testfile ~= nil then
 		testfile:close()
 		return { type = "mod", path = path }
+	end
+
+	testfile = io.open(path .. DIR_DELIM .. "modpack.conf","r")
+	if testfile ~= nil then
+		testfile:close()
+		return { type = "modpack", path = path }
 	end
 
 	testfile = io.open(path .. DIR_DELIM .. "modpack.txt","r")
@@ -422,7 +447,7 @@ function pkgmgr.install_dir(type, path, basename, targetpath)
 		else
 			local clean_path = nil
 			if basename ~= nil then
-				clean_path = "mp_" .. basename
+				clean_path = basename
 			end
 			if not clean_path then
 				clean_path = get_last_folder(cleanup_path(basefolder.path))
