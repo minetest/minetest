@@ -1,3 +1,19 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2019-01-24 01:05+0200\n"
+"PO-Revision-Date: 2019-01-24 00:05+0000\n"
+"Last-Translator: Nore <nore@mesecons.net>\n"
+"Language-Team: Korean <https://hosted.weblate.org/projects/minetest/minetest/"
+"ko/>\n"
+"Language: ko\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 3.4\n"
+
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "Respawn"
 msgstr "리스폰"
@@ -1724,7 +1740,7 @@ msgstr "들어가기 "
 
 #: src/network/clientpackethandler.cpp
 msgid "LANG_CODE"
-msgstr ""
+msgstr "ko"
 
 #: src/settings_translation_file.cpp
 msgid ""

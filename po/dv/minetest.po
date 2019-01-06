@@ -1,11 +1,26 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2019-01-14 19:20+0200\n"
+"PO-Revision-Date: 2019-01-24 00:05+0000\n"
+"Last-Translator: Nore <nore@mesecons.net>\n"
+"Language-Team: Dhivehi <https://hosted.weblate.org/projects/minetest/"
+"minetest/dv/>\n"
+"Language: dv\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 3.4\n"
+
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "Respawn"
 msgstr "އަލުން ސްޕައުންވޭ"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
-#, fuzzy
 msgid "You died"
-msgstr "މަރުވީ."
+msgstr "މަރުވީ"
 
 #: builtin/fstk/ui.lua
 msgid "An error occured in a Lua script, such as a mod:"
@@ -78,18 +93,16 @@ msgid "Disable all"
 msgstr "ހުރިހާ އެއްޗެއް އޮފްކޮށްލާ"
 
 #: builtin/mainmenu/dlg_config_world.lua
-#, fuzzy
 msgid "Disable modpack"
-msgstr "އޮފްކޮށްފަ"
+msgstr "މޮޑްޕެކް އޮފްކުރޭ"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Enable all"
 msgstr "ހުރިހާއެއްޗެއް ޖައްސާ"
 
 #: builtin/mainmenu/dlg_config_world.lua
-#, fuzzy
 msgid "Enable modpack"
-msgstr "މޮޑްޕެކްގެ ނަން ބަދަލުކުރޭ:"
+msgstr "މޮޑްޕެކްގެ އޮންކުރޭ:"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid ""
@@ -135,19 +148,16 @@ msgid "Back"
 msgstr ""
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Back to Main Menu"
-msgstr "މެއިން މެނޫ"
+msgstr "އެނބުރި މެއިން މެނޫއަށް"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Downloading and installing $1, please wait..."
-msgstr "$1 ޑައުންލޯޑޮކުރަނީ، މަޑުކުރައްވާ..."
+msgstr "$1 ޑައުންލޯޑޮކޮށް އިންސްޓޯލްކުރަނީ، މަޑުކުރައްވާ..."
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Failed to download $1"
-msgstr "$1 $2އަށް ނޭޅުނު"
+msgstr "$1 ނޭޅުނު"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua
@@ -177,9 +187,8 @@ msgid "Texture packs"
 msgstr ""
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Uninstall"
-msgstr "އަޅާ"
+msgstr "ފުހެލާ"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Update"
@@ -198,9 +207,9 @@ msgid "Create"
 msgstr "ހަދާ"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Download a game, such as minetest_game, from minetest.net"
-msgstr "މައިންޓެސްޓް_ގޭމް ފަދަ ސަބްގޭމެއް މައިންޓެސްޓް.ނެޓް އިން ޑައުންލޯޑްކުރައްވާ"
+msgstr ""
+"މައިންޓެސްޓް_ގޭމް ފަދަ ސަބްގޭމެއް މައިންޓެސްޓް.ނެޓް އިން ޑައުންލޯޑްކުރައްވާ"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Download one from minetest.net"
@@ -215,9 +224,8 @@ msgid "Mapgen"
 msgstr "މެޕްޖެން"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "No game selected"
-msgstr "އެއްވެސް ދުނިޔެއެއް އުފެދިފައެއް ނުވަތަ އިހްތިޔާރުވެފައެއް ނެޠް!"
+msgstr "އެއްވެސް ގޭމެއް އިހްތިޔާރުވެފައެއް ނެޠް"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Seed"
@@ -232,7 +240,6 @@ msgid "World name"
 msgstr "ދުނިޔޭގެ ނަން"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "You have no games installed."
 msgstr "އެއްވެސް ސަބްގޭމެއް އެޅިފައެއް ނެތް."
 
@@ -247,14 +254,12 @@ msgid "Delete"
 msgstr "ޑިލީޓްކުރޭ"
 
 #: builtin/mainmenu/dlg_delete_content.lua
-#, fuzzy
 msgid "pkgmgr: failed to delete \"$1\""
 msgstr "މޮޑްއެމް.ޖީ.އާރް: \"1$\" ޑިލީޓެއް ނުކުރެވުނު"
 
 #: builtin/mainmenu/dlg_delete_content.lua
-#, fuzzy
 msgid "pkgmgr: invalid path \"$1\""
-msgstr "މޮޑްއެމް.ޖީ.އާރް: މޮޑްޕާތު \"1$\" ބާތިލް"
+msgstr "މޮޑްއެމް.ޖީ.އާރް: ޕާތު \"1$\" ބާތިލް"
 
 #: builtin/mainmenu/dlg_delete_world.lua
 msgid "Delete World \"$1\"?"
@@ -1659,7 +1664,7 @@ msgstr ""
 
 #: src/network/clientpackethandler.cpp
 msgid "LANG_CODE"
-msgstr ""
+msgstr "dv"
 
 #: src/settings_translation_file.cpp
 msgid ""

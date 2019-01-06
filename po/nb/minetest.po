@@ -1,3 +1,19 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2019-01-12 13:07+0200\n"
+"PO-Revision-Date: 2019-01-24 00:05+0000\n"
+"Last-Translator: Nore <nore@mesecons.net>\n"
+"Language-Team: Norwegian Bokmål <https://hosted.weblate.org/projects/"
+"minetest/minetest/nb_NO/>\n"
+"Language: nb\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 3.4\n"
+
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "Respawn"
 msgstr "Respawn"
@@ -134,7 +150,7 @@ msgstr "aktivert"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "All packages"
-msgstr ""
+msgstr "Alle pakker"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Back"
@@ -171,7 +187,7 @@ msgstr "Modder"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "No results"
-msgstr ""
+msgstr "Resultatløst"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua builtin/mainmenu/tab_online.lua
@@ -190,11 +206,11 @@ msgstr "Installer"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Update"
-msgstr ""
+msgstr "Oppdater"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "View"
-msgstr ""
+msgstr "Vis"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "A world named \"$1\" already exists"
@@ -396,7 +412,7 @@ msgstr "Klarte ikke å installere $1 til $2"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Browse online content"
-msgstr ""
+msgstr "Utforsk nettbasert innhold"
 
 #: builtin/mainmenu/tab_content.lua
 #, fuzzy
@@ -1696,7 +1712,7 @@ msgstr "Enter "
 
 #: src/network/clientpackethandler.cpp
 msgid "LANG_CODE"
-msgstr ""
+msgstr "nb_NO"
 
 #: src/settings_translation_file.cpp
 msgid ""

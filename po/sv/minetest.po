@@ -1,3 +1,19 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2019-01-23 09:24+0200\n"
+"PO-Revision-Date: 2019-01-23 08:24+0000\n"
+"Last-Translator: Nore <nore@mesecons.net>\n"
+"Language-Team: Swedish <https://hosted.weblate.org/projects/minetest/"
+"minetest/sv/>\n"
+"Language: sv\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 3.4\n"
+
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "Respawn"
 msgstr "Återuppstå"
@@ -1751,7 +1767,7 @@ msgstr "Enter "
 
 #: src/network/clientpackethandler.cpp
 msgid "LANG_CODE"
-msgstr ""
+msgstr "sv"
 
 #: src/settings_translation_file.cpp
 msgid ""
