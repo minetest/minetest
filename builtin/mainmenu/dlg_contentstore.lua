@@ -229,6 +229,7 @@ function package_dialog.get_formspec()
 		formspec[#formspec + 1] = fgettext("Install")
 		formspec[#formspec + 1] = "]"
 	elseif package.installed_release < package.release then
+		-- The install_ action also handles updating
 		formspec[#formspec + 1] = "button[7,0;2,1;install;"
 		formspec[#formspec + 1] = fgettext("Update")
 		formspec[#formspec + 1] = "]"
@@ -477,7 +478,8 @@ function store.get_formspec()
 			formspec[#formspec + 1] = fgettext("Install")
 			formspec[#formspec + 1] = "]"
 		elseif package.installed_release < package.release then
-			formspec[#formspec + 1] = "button[8.4,0;1.5,1;update_"
+			-- The install_ action also handles updating
+			formspec[#formspec + 1] = "button[8.4,0;1.5,1;install_"
 			formspec[#formspec + 1] = tostring(i)
 			formspec[#formspec + 1] = ";"
 			formspec[#formspec + 1] = fgettext("Update")
