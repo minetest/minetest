@@ -366,7 +366,8 @@ function pkgmgr.get_worldconfig(worldpath)
 		if key == "gameid" then
 			worldconfig.id = value
 		elseif key:sub(0, 9) == "load_mod_" then
-			worldconfig.global_mods[key] = core.is_yes(value)
+			worldconfig.global_mods[key] = value ~= "false" and value ~= "nil"
+				and value
 		else
 			worldconfig[key] = value
 		end
@@ -566,7 +567,7 @@ function pkgmgr.preparemodlist(data)
 				end
 			end
 			if element ~= nil then
-				element.enabled = core.is_yes(value)
+				element.enabled = value ~= "false" and value ~= "nil" and value
 			else
 				core.log("info", "Mod: " .. key .. " " .. dump(value) .. " but not found")
 			end
