@@ -466,13 +466,17 @@ function store.get_formspec()
 		formspec[#formspec + 1] = "]"
 
 		-- description
-		formspec[#formspec + 1] = "textarea[1.25,0.3;7.5,1;;;"
+		if package.path and  package.installed_release < package.release then
+			formspec[#formspec + 1] = "textarea[1.25,0.3;7.5,1;;;"
+		else
+			formspec[#formspec + 1] = "textarea[1.25,0.3;9,1;;;"
+		end
 		formspec[#formspec + 1] = core.formspec_escape(package.short_description)
 		formspec[#formspec + 1] = "]"
 
 		-- buttons
 		if not package.path then
-			formspec[#formspec + 1] = "button[8.4,0;1.5,1;install_"
+			formspec[#formspec + 1] = "button[9.9,0;1.5,1;install_"
 			formspec[#formspec + 1] = tostring(i)
 			formspec[#formspec + 1] = ";"
 			formspec[#formspec + 1] = fgettext("Install")
@@ -484,18 +488,24 @@ function store.get_formspec()
 			formspec[#formspec + 1] = ";"
 			formspec[#formspec + 1] = fgettext("Update")
 			formspec[#formspec + 1] = "]"
+
+			formspec[#formspec + 1] = "button[9.9,0;1.5,1;uninstall_"
+			formspec[#formspec + 1] = tostring(i)
+			formspec[#formspec + 1] = ";"
+			formspec[#formspec + 1] = fgettext("Uninstall")
+			formspec[#formspec + 1] = "]"
 		else
-			formspec[#formspec + 1] = "button[8.4,0;1.5,1;uninstall_"
+			formspec[#formspec + 1] = "button[9.9,0;1.5,1;uninstall_"
 			formspec[#formspec + 1] = tostring(i)
 			formspec[#formspec + 1] = ";"
 			formspec[#formspec + 1] = fgettext("Uninstall")
 			formspec[#formspec + 1] = "]"
 		end
-		formspec[#formspec + 1] = "button[9.9,0;1.5,1;view_"
-		formspec[#formspec + 1] = tostring(i)
-		formspec[#formspec + 1] = ";"
-		formspec[#formspec + 1] = fgettext("View")
-		formspec[#formspec + 1] = "]"
+		--formspec[#formspec + 1] = "button[9.9,0;1.5,1;view_"
+		--formspec[#formspec + 1] = tostring(i)
+		--formspec[#formspec + 1] = ";"
+		--formspec[#formspec + 1] = fgettext("View")
+		--formspec[#formspec + 1] = "]"
 
 		formspec[#formspec + 1] = "container_end[]"
 	end
