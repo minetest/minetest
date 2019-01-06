@@ -334,7 +334,22 @@ void Server::init()
 	std::vector<ModSpec> unsatisfied_mods = m_modmgr->getUnsatisfiedMods();
 	// complain about mods with unsatisfied dependencies
 	if (!m_modmgr->isConsistent()) {
-		m_modmgr->printUnsatisfiedModsError();
+		std::ostringstream error;
+		error << "Some mods have unsatisfied dependencies:" << std::endl;
+
+		for (const ModSpec &mod : m_modmgr->getUnsatisfiedMods()) {
+			error << " - " << mod.name
+					<< " is missing: ";
+			for (const std::string &unsatisfied_depend : mod.unsatisfied_depends)
+				error << " " << unsatisfied_depend;
+			error << std::endl;
+		}
+
+		error << "Install and enable the required mods, or disable the mods causing errors." << std::endl;
+		error << "Note: this may be caused by a cyclic dependency, "
+			<< " in which case try updating the mods.";
+
+		throw ServerError(error.str());
 	}
 
 	//lock environment
