@@ -2786,7 +2786,7 @@
 
 #    Map generation attributes specific to Mapgen Valleys.
 #    'altitude_chill': Reduces heat with altitude.
-#    'humid_rivers': Increases humidity around rivers and water pools.
+#    'humid_rivers': Increases humidity around rivers.
 #    'vary_river_depth': If enabled, low humidity and high heat causes rivers
 #    to become shallower and occasionally dry.
 #    'altitude_dry': Reduces humidity with altitude.
