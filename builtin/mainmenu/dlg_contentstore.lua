@@ -466,7 +466,7 @@ function store.get_formspec()
 		formspec[#formspec + 1] = "]"
 
 		-- description
-		if package.path and  package.installed_release < package.release then
+		if package.path and package.installed_release < package.release then
 			formspec[#formspec + 1] = "textarea[1.25,0.3;7.5,1;;;"
 		else
 			formspec[#formspec + 1] = "textarea[1.25,0.3;9,1;;;"
