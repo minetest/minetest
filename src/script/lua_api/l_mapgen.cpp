@@ -1042,8 +1042,7 @@ int ModApiMapgen::l_get_gen_notify(lua_State *L)
 	int i = 1;
 	for (u32 gen_notify_on_deco_id : emerge->gen_notify_on_deco_ids) {
 		lua_pushnumber(L, gen_notify_on_deco_id);
-		lua_rawseti(L, -2, i);
-		i++;
+		lua_rawseti(L, -2, i++);
 	}
 	return 2;
 }

@@ -532,8 +532,7 @@ int ModApiMainMenu::l_get_content_info(lua_State *L)
 		int i = 1;
 		for (const auto &dep : spec.depends) {
 			lua_pushstring(L, dep.c_str());
-			lua_rawseti(L, -2, i);
-			i++;
+			lua_rawseti(L, -2, i++);
 		}
 		lua_setfield(L, -2, "depends");
 
@@ -542,8 +541,7 @@ int ModApiMainMenu::l_get_content_info(lua_State *L)
 		i = 1;
 		for (const auto &dep : spec.optdepends) {
 			lua_pushstring(L, dep.c_str());
-			lua_rawseti(L, -2, i);
-			i++;
+			lua_rawseti(L, -2, i++);
 		}
 		lua_setfield(L, -2, "optional_depends");
 	}

@@ -348,7 +348,7 @@ void push_object_properties(lua_State *L, ObjectProperties *prop)
 	u16 i = 1;
 	for (const std::string &texture : prop->textures) {
 		lua_pushlstring(L, texture.c_str(), texture.size());
-		lua_rawseti(L, -2, i);
+		lua_rawseti(L, -2, i++);
 	}
 	lua_setfield(L, -2, "textures");
 
@@ -356,7 +356,7 @@ void push_object_properties(lua_State *L, ObjectProperties *prop)
 	i = 1;
 	for (const video::SColor &color : prop->colors) {
 		push_ARGB8(L, color);
-		lua_rawseti(L, -2, i);
+		lua_rawseti(L, -2, i++);
 	}
 	lua_setfield(L, -2, "colors");
 
@@ -838,7 +838,7 @@ void push_content_features(lua_State *L, const ContentFeatures &c)
 	u16 i = 1;
 	for (const std::string &it : c.connects_to) {
 		lua_pushlstring(L, it.c_str(), it.size());
-		lua_rawseti(L, -2, i);
+		lua_rawseti(L, -2, i++);
 	}
 	lua_setfield(L, -2, "connects_to");
 
@@ -961,7 +961,7 @@ void push_box(lua_State *L, const std::vector<aabb3f> &box)
 	u8 i = 1;
 	for (const aabb3f &it : box) {
 		push_aabb3f(L, it);
-		lua_rawseti(L, -2, i);
+		lua_rawseti(L, -2, i++);
 	}
 }
 

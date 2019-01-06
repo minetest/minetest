@@ -627,7 +627,7 @@ void Server::handleCommand_InventoryAction(NetworkPacket* pkt)
 		// Check for out-of-range interaction
 		if (remote->type == InventoryLocation::NODEMETA) {
 			v3f node_pos   = intToFloat(remote->p, BS);
-			v3f player_pos = player->getPlayerSAO()->getBasePosition();
+			v3f player_pos = player->getPlayerSAO()->getEyePosition();
 			f32 d = player_pos.getDistanceFrom(node_pos);
 			if (!checkInteractDistance(player, d, "inventory"))
 				return;
@@ -969,8 +969,9 @@ bool Server::checkInteractDistance(RemotePlayer *player, const f32 d, const std:
 	else if (max_d < 0)
 		max_d = BS * 4.0f;
 
-	// cube diagonal: sqrt(3) = 1.732
-	if (d > max_d * 1.732) {
+	// Cube diagonal * 1.5 for maximal supported node extents:
+	// sqrt(3) * 1.5 ≅ 2.6
+	if (d > max_d + 2.6f * BS) {
 		actionstream << "Player " << player->getName()
 				<< " tried to access " << what
 				<< " from too far: "
@@ -1109,7 +1110,9 @@ void Server::handleCommand_Interact(NetworkPacket* pkt)
 
 	if ((action == 0 || action == 2 || action == 3 || action == 4) &&
 			enable_anticheat && !isSingleplayer()) {
-		float d = player_pos.getDistanceFrom(pointed_pos_under);
+		float d = playersao->getEyePosition()
+			.getDistanceFrom(pointed_pos_under);
+
 		if (!checkInteractDistance(player, d, pointed.dump())) {
 			// Re-send block to revert change on client-side
 			RemoteClient *client = getClient(pkt->getPeerId());
