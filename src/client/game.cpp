@@ -1483,6 +1483,7 @@ bool Game::connectToServer(const std::string &playername,
 		return false;
 
 	client->m_simple_singleplayer_mode = simple_singleplayer_mode;
+	client->m_enable_register_confirmation = g_settings->getBool("enable_register_confirmation");
 
 	infostream << "Connecting to server at ";
 	connect_address.print(&infostream);

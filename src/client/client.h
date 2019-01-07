@@ -349,6 +349,7 @@ public:
 	void confirmRegistration();
 	bool m_is_registration_confirmation_state = false;
 	bool m_simple_singleplayer_mode;
+	bool m_enable_register_confirmation;
 
 	float mediaReceiveProgress();
 

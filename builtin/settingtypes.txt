@@ -912,6 +912,10 @@ serverlist_file (Serverlist file) string favoriteservers.txt
 #    0 to disable queueing and -1 to make the queue size unlimited.
 max_out_chat_queue_size (Maximum size of the out chat queue) int 20
 
+#    Enable register confirmation when connecting to server.
+#    If disabled, new account will be registered automatically.
+enable_register_confirmation (Enable register confirmation) bool true
+
 [*Advanced]
 
 #    Timeout for client to remove unused map data from memory.
