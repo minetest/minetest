@@ -1012,13 +1012,14 @@ video::IImage * Align2Npot2(video::IImage * image,
 
 	core::dimension2d<u32> dim = image->getDimension();
 
-	std::string extensions = (char*) glGetString(GL_EXTENSIONS);
-
 	// Only GLES2 is trusted to correctly report npot support
-	if (get_GL_major_version() > 1 &&
-			extensions.find("GL_OES_texture_npot") != std::string::npos) {
+	// Note: we cache the boolean result. GL context will never change on Android.
+	static const bool hasNPotSupport = get_GL_major_version() > 1 &&
+		glGetString(GL_EXTENSIONS) && 
+		strstr(glGetString(GL_EXTENSIONS), "GL_OES_texture_npot");
+	
+	if (hasNPotSupport)
 		return image;
-	}
 
 	unsigned int height = npot2(dim.Height);
 	unsigned int width  = npot2(dim.Width);
