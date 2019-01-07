@@ -1012,11 +1012,11 @@ video::IImage * Align2Npot2(video::IImage * image,
 
 	core::dimension2d<u32> dim = image->getDimension();
 
-	std::string extensions = (char*) glGetString(GL_EXTENSIONS);
+	const char *extensions = glGetString(GL_EXTENSIONS);
 
 	// Only GLES2 is trusted to correctly report npot support
-	if (get_GL_major_version() > 1 &&
-			extensions.find("GL_OES_texture_npot") != std::string::npos) {
+	if (get_GL_major_version() > 1 && extensions != NULL &&
+			strstr(extensions, "GL_OES_texture_npot") != NULL) {
 		return image;
 	}
 
