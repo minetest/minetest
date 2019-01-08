@@ -935,8 +935,8 @@ std::string PlayerSAO::getClientInitializationData(u16 protocol_version)
 {
 	std::ostringstream os(std::ios::binary);
 
-	// Protocol >= 36
-	writeU8(os, 2); // version
+	// Protocol >= 15
+	writeU8(os, 1); // version
 	os << serializeString(m_player->getName()); // name
 	writeU8(os, 1); // is_player
 	writeS16(os, getId()); // id
