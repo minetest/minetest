@@ -19,6 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "tile.h"
 
+#include <cstring>
 #include <algorithm>
 #include <ICameraSceneNode.h>
 #include "util/string.h"

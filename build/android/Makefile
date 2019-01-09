@@ -312,7 +312,7 @@ $(OPENSSL_LIB): $(OPENSSL_TIMESTAMP)
 	export PATH="$${TOOLCHAIN}/bin:$${PATH}";                                  \
 	export CFLAGS="$${CFLAGS} ${TARGET_CFLAGS_ADDON}";                         \
 	export LDFLAGS="$${LDFLAGS} ${TARGET_LDFLAGS_ADDON}";                      \
-	CC=${CROSS_CC} ./Configure -DL_ENDIAN android-${TARGET_ARCH}               \
+	CC=${CROSS_CC} ./Configure -DL_ENDIAN no-asm android-${TARGET_ARCH}        \
 		-D__ANDROID_API__=$(API);                                          \
 	CC=${CROSS_CC} ANDROID_DEV=/tmp/ndk-${TARGET_HOST} make depend;            \
 	CC=${CROSS_CC} ANDROID_DEV=/tmp/ndk-${TARGET_HOST} make build_libs;        \
