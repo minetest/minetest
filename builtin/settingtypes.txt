@@ -1923,9 +1923,16 @@ emergequeue_limit_diskonly (Limit of emerge queues on disk) int 64
 emergequeue_limit_generate (Limit of emerge queues to generate) int 64
 
 #    Number of emerge threads to use.
-#    Make this field blank or 0, or increase this number to use multiple threads.
-#    On multiprocessor systems, this will improve mapgen speed greatly at the cost
-#    of slightly buggy caves.
+#    Empty or 0 value:
+#    -    Automatic selection. The number of emerge threads will be
+#    -    'number of processors - 2', with a lower limit of 1.
+#    Any other value:
+#    -    Specifies the number of emerge threads, with a lower limit of 1.
+#    Warning: Increasing the number of emerge threads increases engine mapgen
+#    speed, but this may harm game performance by interfering with other
+#    processes, especially in singleplayer and/or when running Lua code in
+#    'on_generated'.
+#    For many users the optimum setting may be '1'.
 num_emerge_threads (Number of emerge threads) int 0
 
 [Content Store]
