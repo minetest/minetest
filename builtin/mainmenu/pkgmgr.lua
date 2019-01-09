@@ -505,7 +505,11 @@ function pkgmgr.install_dir(type, path, basename, targetpath)
 			fgettext("Failed to install $1 to $2", basename, targetpath)
 	end
 
-	pkgmgr.refresh_globals()
+	if basefolder.type == "game" then
+		pkgmgr.update_gamelist()
+	else
+		pkgmgr.refresh_globals()
+	end
 
 	return targetpath, nil
 end
