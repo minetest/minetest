@@ -307,6 +307,7 @@ bool loadGameConfAndInitWorld(const std::string &path, const SubgameSpec &gamesp
 		conf.set("gameid", gamespec.id);
 		conf.set("backend", "sqlite3");
 		conf.set("player_backend", "sqlite3");
+		conf.set("auth_backend", "sqlite3");
 		conf.setBool("creative_mode", g_settings->getBool("creative_mode"));
 		conf.setBool("enable_damage", g_settings->getBool("enable_damage"));
 
