@@ -522,8 +522,10 @@ local function get_current_np_group_as_string(setting)
 			value.seed .. ", " ..
 			value.octaves .. ", " ..
 			value.persistence .. ", " ..
-			value.lacunarity .. ", " ..
-			value.flags
+			value.lacunarity
+		if value.flags ~= "" then
+			t = t .. ", " .. value.flags
+		end
 	end
 	return t
 end
