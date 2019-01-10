@@ -249,6 +249,9 @@ bool Settings::updateConfigObject(std::istream &is, std::ostream &os,
 			} else if (it == m_settings.end()) {
 				// Remove by skipping
 				was_modified = true;
+				Settings removed_group; // Move 'is' to group end
+				std::stringstream ss;
+				removed_group.updateConfigObject(is, ss, "}", tab_depth + 1);
 				break;
 			} else {
 				printEntry(os, name, it->second, tab_depth);
