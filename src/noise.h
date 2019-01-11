@@ -143,7 +143,7 @@ public:
 	~Noise();
 
 	void setSize(u32 sx, u32 sy, u32 sz=1);
-	void setSpreadFactor(v3f spread);
+	void setSpreadFactor(const v3f &spread);
 	void setOctaves(int octaves);
 
 	void gradientMap2D(
