@@ -73,7 +73,7 @@ class VoxelManipulator;
 class MapBlock
 {
 public:
-	MapBlock(Map *parent, v3s16 pos, IGameDef *gamedef, bool dummy=false);
+	MapBlock(Map *parent, const v3s16 &pos, IGameDef *gamedef, bool dummy=false);
 	~MapBlock();
 
 	/*virtual u16 nodeContainerId() const
@@ -338,7 +338,7 @@ public:
 
 	// These functions consult the parent container if the position
 	// is not valid on this MapBlock.
-	bool isValidPositionParent(v3s16 p);
+	bool isValidPositionParent(const v3s16 &p);
 	MapNode getNodeParent(v3s16 p, bool *is_valid_position = NULL);
 	void setNodeParent(v3s16 p, MapNode & n);
 

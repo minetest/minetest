@@ -40,7 +40,7 @@ class MapSector
 {
 public:
 
-	MapSector(Map *parent, v2s16 pos, IGameDef *gamedef);
+	MapSector(Map *parent, const v2s16 &pos, IGameDef *gamedef);
 	virtual ~MapSector();
 
 	void deleteBlocks();

@@ -22,7 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mapblock.h"
 #include "serialization.h"
 
-MapSector::MapSector(Map *parent, v2s16 pos, IGameDef *gamedef):
+MapSector::MapSector(Map *parent, const v2s16 &pos, IGameDef *gamedef):
 		m_parent(parent),
 		m_pos(pos),
 		m_gamedef(gamedef)

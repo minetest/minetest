@@ -252,7 +252,7 @@ struct MapNode
 	 *
 	 * \param p coordinates of the node
 	 */
-	u8 getNeighbors(v3s16 p, Map *map) const;
+	u8 getNeighbors(const v3s16 &p, Map *map) const;
 
 	/*
 		Gets list of node boxes (used for rendering (NDT_NODEBOX))

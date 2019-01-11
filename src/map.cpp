@@ -96,7 +96,7 @@ void Map::dispatchEvent(MapEditEvent *event)
 	}
 }
 
-MapSector * Map::getSectorNoGenerateNoExNoLock(v2s16 p)
+MapSector * Map::getSectorNoGenerateNoExNoLock(const v2s16 &p)
 {
 	if(m_sector_cache != NULL && p == m_sector_cache_p){
 		MapSector * sector = m_sector_cache;
@@ -117,12 +117,12 @@ MapSector * Map::getSectorNoGenerateNoExNoLock(v2s16 p)
 	return sector;
 }
 
-MapSector * Map::getSectorNoGenerateNoEx(v2s16 p)
+MapSector * Map::getSectorNoGenerateNoEx(const v2s16 &p)
 {
 	return getSectorNoGenerateNoExNoLock(p);
 }
 
-MapSector * Map::getSectorNoGenerate(v2s16 p)
+MapSector * Map::getSectorNoGenerate(const v2s16 &p)
 {
 	MapSector *sector = getSectorNoGenerateNoEx(p);
 	if(sector == NULL)
@@ -141,7 +141,7 @@ MapBlock * Map::getBlockNoCreateNoEx(v3s16 p3d)
 	return block;
 }
 
-MapBlock * Map::getBlockNoCreate(v3s16 p3d)
+MapBlock * Map::getBlockNoCreate(const v3s16 &p3d)
 {
 	MapBlock *block = getBlockNoCreateNoEx(p3d);
 	if(block == NULL)
@@ -149,7 +149,7 @@ MapBlock * Map::getBlockNoCreate(v3s16 p3d)
 	return block;
 }
 
-bool Map::isNodeUnderground(v3s16 p)
+bool Map::isNodeUnderground(const v3s16 &p)
 {
 	v3s16 blockpos = getNodeBlockPos(p);
 	try{
@@ -162,7 +162,7 @@ bool Map::isNodeUnderground(v3s16 p)
 	}
 }
 
-bool Map::isValidPosition(v3s16 p)
+bool Map::isValidPosition(const v3s16 &p)
 {
 	v3s16 blockpos = getNodeBlockPos(p);
 	MapBlock *block = getBlockNoCreateNoEx(blockpos);
@@ -170,7 +170,7 @@ bool Map::isValidPosition(v3s16 p)
 }
 
 // Returns a CONTENT_IGNORE node if not found
-MapNode Map::getNodeNoEx(v3s16 p, bool *is_valid_position)
+MapNode Map::getNodeNoEx(const v3s16 &p, bool *is_valid_position)
 {
 	v3s16 blockpos = getNodeBlockPos(p);
 	MapBlock *block = getBlockNoCreateNoEx(blockpos);
@@ -281,13 +281,13 @@ void Map::addNodeAndUpdate(v3s16 p, MapNode n,
 	}
 }
 
-void Map::removeNodeAndUpdate(v3s16 p,
+void Map::removeNodeAndUpdate(const v3s16 &p,
 		std::map<v3s16, MapBlock*> &modified_blocks)
 {
 	addNodeAndUpdate(p, MapNode(CONTENT_AIR), modified_blocks, true);
 }
 
-bool Map::addNodeWithEvent(v3s16 p, MapNode n, bool remove_metadata)
+bool Map::addNodeWithEvent(const v3s16 &p, MapNode n, bool remove_metadata)
 {
 	MapEditEvent event;
 	event.type = remove_metadata ? MEET_ADDNODE : MEET_SWAPNODE;
@@ -313,7 +313,7 @@ bool Map::addNodeWithEvent(v3s16 p, MapNode n, bool remove_metadata)
 	return succeeded;
 }
 
-bool Map::removeNodeWithEvent(v3s16 p)
+bool Map::removeNodeWithEvent(const v3s16 &p)
 {
 	MapEditEvent event;
 	event.type = MEET_REMOVENODE;
@@ -534,7 +534,7 @@ struct NodeNeighbor {
 	{ }
 };
 
-void Map::transforming_liquid_add(v3s16 p) {
+void Map::transforming_liquid_add(const v3s16 &p) {
         m_transforming_liquid.push_back(p);
 }
 
@@ -960,7 +960,7 @@ std::vector<v3s16> Map::findNodesWithMetadata(v3s16 p1, v3s16 p2)
 	return positions_with_meta;
 }
 
-NodeMetadata *Map::getNodeMetadata(v3s16 p)
+NodeMetadata *Map::getNodeMetadata(const v3s16 &p)
 {
 	v3s16 blockpos = getNodeBlockPos(p);
 	v3s16 p_rel = p - blockpos*MAP_BLOCKSIZE;
@@ -979,7 +979,7 @@ NodeMetadata *Map::getNodeMetadata(v3s16 p)
 	return meta;
 }
 
-bool Map::setNodeMetadata(v3s16 p, NodeMetadata *meta)
+bool Map::setNodeMetadata(const v3s16 &p, NodeMetadata *meta)
 {
 	v3s16 blockpos = getNodeBlockPos(p);
 	v3s16 p_rel = p - blockpos*MAP_BLOCKSIZE;
@@ -998,7 +998,7 @@ bool Map::setNodeMetadata(v3s16 p, NodeMetadata *meta)
 	return true;
 }
 
-void Map::removeNodeMetadata(v3s16 p)
+void Map::removeNodeMetadata(const v3s16 &p)
 {
 	v3s16 blockpos = getNodeBlockPos(p);
 	v3s16 p_rel = p - blockpos*MAP_BLOCKSIZE;
@@ -1012,7 +1012,7 @@ void Map::removeNodeMetadata(v3s16 p)
 	block->m_node_metadata.remove(p_rel);
 }
 
-NodeTimer Map::getNodeTimer(v3s16 p)
+NodeTimer Map::getNodeTimer(const v3s16 &p)
 {
 	v3s16 blockpos = getNodeBlockPos(p);
 	v3s16 p_rel = p - blockpos*MAP_BLOCKSIZE;
@@ -1052,7 +1052,7 @@ void Map::setNodeTimer(const NodeTimer &t)
 	block->m_node_timers.set(nt);
 }
 
-void Map::removeNodeTimer(v3s16 p)
+void Map::removeNodeTimer(const v3s16 &p)
 {
 	v3s16 blockpos = getNodeBlockPos(p);
 	v3s16 p_rel = p - blockpos*MAP_BLOCKSIZE;
@@ -1091,7 +1091,7 @@ bool Map::isOccluded(v3s16 p0, v3s16 p1, float step, float stepfac,
 	return false;
 }
 
-bool Map::isBlockOccluded(MapBlock *block, v3s16 cam_pos_nodes) {
+bool Map::isBlockOccluded(MapBlock *block, const v3s16 &cam_pos_nodes) {
 	v3s16 cpn = block->getPos() * MAP_BLOCKSIZE;
 	cpn += v3s16(MAP_BLOCKSIZE / 2, MAP_BLOCKSIZE / 2, MAP_BLOCKSIZE / 2);
 	float step = BS * 1;
@@ -1279,7 +1279,7 @@ bool ServerMap::blockpos_over_mapgen_limit(v3s16 p)
 		p.Z >  mapgen_limit_bp;
 }
 
-bool ServerMap::initBlockMake(v3s16 blockpos, BlockMakeData *data)
+bool ServerMap::initBlockMake(const v3s16 &blockpos, BlockMakeData *data)
 {
 	s16 csize = getMapgenParams()->chunksize;
 	v3s16 bpmin = EmergeManager::getContainingChunk(blockpos, csize);
@@ -1635,7 +1635,7 @@ MapBlock * ServerMap::emergeBlock(v3s16 p, bool create_blank)
 	return NULL;
 }
 
-MapBlock *ServerMap::getBlockOrEmerge(v3s16 p3d)
+MapBlock *ServerMap::getBlockOrEmerge(const v3s16 &p3d)
 {
 	MapBlock *block = getBlockNoCreateNoEx(p3d);
 	if (block == NULL)
@@ -1646,7 +1646,7 @@ MapBlock *ServerMap::getBlockOrEmerge(v3s16 p3d)
 
 // N.B.  This requires no synchronization, since data will not be modified unless
 // the VoxelManipulator being updated belongs to the same thread.
-void ServerMap::updateVManip(v3s16 pos)
+void ServerMap::updateVManip(const v3s16 &pos)
 {
 	Mapgen *mg = m_emerge->getCurrentMapgen();
 	if (!mg)
@@ -1717,7 +1717,7 @@ bool ServerMap::loadFromFolders() {
 	return false;
 }
 
-void ServerMap::createDirs(std::string path)
+void ServerMap::createDirs(const std::string &path)
 {
 	if (!fs::CreateAllDirs(path)) {
 		m_dout<<"ServerMap: Failed to create directory "
@@ -2196,7 +2196,7 @@ void ServerMap::PrintInfo(std::ostream &out)
 	out<<"ServerMap: ";
 }
 
-bool ServerMap::repairBlockLight(v3s16 blockpos,
+bool ServerMap::repairBlockLight(const v3s16 &blockpos,
 	std::map<v3s16, MapBlock *> *modified_blocks)
 {
 	MapBlock *block = emergeBlock(blockpos, false);
@@ -2212,7 +2212,7 @@ MMVManip::MMVManip(Map *map):
 {
 }
 
-void MMVManip::initialEmerge(v3s16 blockpos_min, v3s16 blockpos_max,
+void MMVManip::initialEmerge(const v3s16 &blockpos_min, const v3s16 &blockpos_max,
 	bool load_if_inexistent)
 {
 	TimeTaker timer1("initialEmerge", &emerge_time);

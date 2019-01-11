@@ -214,7 +214,7 @@ std::vector<v3s16> NodeMetadataList::getAllKeys()
 	return keys;
 }
 
-NodeMetadata *NodeMetadataList::get(v3s16 p)
+NodeMetadata *NodeMetadataList::get(const v3s16 &p)
 {
 	NodeMetadataMap::const_iterator n = m_data.find(p);
 	if (n == m_data.end())
@@ -222,7 +222,7 @@ NodeMetadata *NodeMetadataList::get(v3s16 p)
 	return n->second;
 }
 
-void NodeMetadataList::remove(v3s16 p)
+void NodeMetadataList::remove(const v3s16 &p)
 {
 	NodeMetadata *olddata = get(p);
 	if (olddata) {

@@ -529,7 +529,7 @@ static inline void getNeighborConnectingFace(
 		*neighbors |= bitmask;
 }
 
-u8 MapNode::getNeighbors(v3s16 p, Map *map) const
+u8 MapNode::getNeighbors(const v3s16 &p, Map *map) const
 {
 	const NodeDefManager *nodedef = map->getNodeDefManager();
 	u8 neighbors = 0;

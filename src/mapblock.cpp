@@ -66,7 +66,7 @@ static const char *modified_reason_strings[] = {
 	MapBlock
 */
 
-MapBlock::MapBlock(Map *parent, v3s16 pos, IGameDef *gamedef, bool dummy):
+MapBlock::MapBlock(Map *parent, const v3s16 &pos, IGameDef *gamedef, bool dummy):
 		m_parent(parent),
 		m_pos(pos),
 		m_pos_relative(pos * MAP_BLOCKSIZE),
@@ -88,7 +88,7 @@ MapBlock::~MapBlock()
 	delete[] data;
 }
 
-bool MapBlock::isValidPositionParent(v3s16 p)
+bool MapBlock::isValidPositionParent(const v3s16 &p)
 {
 	if (isValidPosition(p)) {
 		return true;

@@ -89,9 +89,9 @@ public:
 	// Add all keys in this list to the vector keys
 	std::vector<v3s16> getAllKeys();
 	// Get pointer to data
-	NodeMetadata *get(v3s16 p);
+	NodeMetadata *get(const v3s16 &p);
 	// Deletes data
-	void remove(v3s16 p);
+	void remove(const v3s16 &p);
 	// Deletes old data and sets a new one
 	void set(v3s16 p, NodeMetadata *d);
 	// Deletes all
