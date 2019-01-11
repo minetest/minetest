@@ -251,7 +251,7 @@ bool EmergeManager::isRunning()
 
 bool EmergeManager::enqueueBlockEmerge(
 	session_t peer_id,
-	v3s16 blockpos,
+	const v3s16 &blockpos,
 	bool allow_generate,
 	bool ignore_queue_limits)
 {
@@ -266,7 +266,7 @@ bool EmergeManager::enqueueBlockEmerge(
 
 
 bool EmergeManager::enqueueBlockEmergeEx(
-	v3s16 blockpos,
+	const v3s16 &blockpos,
 	session_t peer_id,
 	u16 flags,
 	EmergeCompletionCallback callback,
@@ -301,13 +301,13 @@ bool EmergeManager::enqueueBlockEmergeEx(
 
 
 // TODO(hmmmm): Move this to ServerMap
-v3s16 EmergeManager::getContainingChunk(v3s16 blockpos)
+v3s16 EmergeManager::getContainingChunk(const v3s16 &blockpos)
 {
 	return getContainingChunk(blockpos, mgparams->chunksize);
 }
 
 // TODO(hmmmm): Move this to ServerMap
-v3s16 EmergeManager::getContainingChunk(v3s16 blockpos, s16 chunksize)
+v3s16 EmergeManager::getContainingChunk(const v3s16 &blockpos, s16 chunksize)
 {
 	s16 coff = -chunksize / 2;
 	v3s16 chunk_offset(coff, coff, coff);
@@ -317,7 +317,7 @@ v3s16 EmergeManager::getContainingChunk(v3s16 blockpos, s16 chunksize)
 }
 
 
-int EmergeManager::getSpawnLevelAtPoint(v2s16 p)
+int EmergeManager::getSpawnLevelAtPoint(const v2s16 &p)
 {
 	if (m_mapgens.empty() || !m_mapgens[0]) {
 		errorstream << "EmergeManager: getSpawnLevelAtPoint() called"
@@ -329,7 +329,7 @@ int EmergeManager::getSpawnLevelAtPoint(v2s16 p)
 }
 
 
-int EmergeManager::getGroundLevelAtPoint(v2s16 p)
+int EmergeManager::getGroundLevelAtPoint(const v2s16 &p)
 {
 	if (m_mapgens.empty() || !m_mapgens[0]) {
 		errorstream << "EmergeManager: getGroundLevelAtPoint() called"
@@ -398,7 +398,7 @@ bool EmergeManager::pushBlockEmergeData(
 }
 
 
-bool EmergeManager::popBlockEmergeData(v3s16 pos, BlockEmergeData *bedata)
+bool EmergeManager::popBlockEmergeData(const v3s16 &pos, BlockEmergeData *bedata)
 {
 	std::map<v3s16, BlockEmergeData>::iterator it;
 	std::unordered_map<u16, u16>::iterator it2;

@@ -125,27 +125,27 @@ public:
 
 	bool enqueueBlockEmerge(
 		session_t peer_id,
-		v3s16 blockpos,
+		const v3s16 &blockpos,
 		bool allow_generate,
 		bool ignore_queue_limits=false);
 
 	bool enqueueBlockEmergeEx(
-		v3s16 blockpos,
+		const v3s16 &blockpos,
 		session_t peer_id,
 		u16 flags,
 		EmergeCompletionCallback callback,
 		void *callback_param);
 
-	v3s16 getContainingChunk(v3s16 blockpos);
+	v3s16 getContainingChunk(const v3s16 &blockpos);
 
 	Mapgen *getCurrentMapgen();
 
 	// Mapgen helpers methods
-	int getSpawnLevelAtPoint(v2s16 p);
-	int getGroundLevelAtPoint(v2s16 p);
+	int getSpawnLevelAtPoint(const v2s16 &p);
+	int getGroundLevelAtPoint(const v2s16 &p);
 	bool isBlockUnderground(v3s16 blockpos);
 
-	static v3s16 getContainingChunk(v3s16 blockpos, s16 chunksize);
+	static v3s16 getContainingChunk(const v3s16 &blockpos, s16 chunksize);
 
 private:
 	std::vector<Mapgen *> m_mapgens;
@@ -171,7 +171,7 @@ private:
 		void *callback_param,
 		bool *entry_already_exists);
 
-	bool popBlockEmergeData(v3s16 pos, BlockEmergeData *bedata);
+	bool popBlockEmergeData(const v3s16 &pos, BlockEmergeData *bedata);
 
 	friend class EmergeThread;
 };
