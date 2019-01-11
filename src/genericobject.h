@@ -45,10 +45,10 @@ std::string gob_cmd_set_properties(const ObjectProperties &prop);
 ObjectProperties gob_read_set_properties(std::istream &is);
 
 std::string gob_cmd_update_position(
-	v3f position,
-	v3f velocity,
-	v3f acceleration,
-	v3f rotation,
+	const v3f &position,
+	const v3f &velocity,
+	const v3f &acceleration,
+	const v3f &rotation,
 	bool do_interpolate,
 	bool is_movement_end,
 	f32 update_interval
@@ -57,7 +57,7 @@ std::string gob_cmd_update_position(
 std::string gob_cmd_set_texture_mod(const std::string &mod);
 
 std::string gob_cmd_set_sprite(
-	v2s16 p,
+	const v2s16 &p,
 	u16 num_frames,
 	f32 framelength,
 	bool select_horiz_by_yawpitch
@@ -71,15 +71,15 @@ std::string gob_cmd_update_physics_override(float physics_override_speed,
 		float physics_override_jump, float physics_override_gravity,
 		bool sneak, bool sneak_glitch, bool new_move);
 
-std::string gob_cmd_update_animation(v2f frames, float frame_speed, float frame_blend, bool frame_loop);
+std::string gob_cmd_update_animation(const v2f &frames, float frame_speed, float frame_blend, bool frame_loop);
 
 std::string gob_cmd_update_animation_speed(float frame_speed);
 
-std::string gob_cmd_update_bone_position(const std::string &bone, v3f position,
-		v3f rotation);
+std::string gob_cmd_update_bone_position(const std::string &bone, const v3f &position,
+		const v3f &rotation);
 
 std::string gob_cmd_update_attachment(int parent_id, const std::string &bone,
-		v3f position, v3f rotation);
+		const v3f &position, const v3f &rotation);
 
 std::string gob_cmd_update_nametag_attributes(video::SColor color);
 
