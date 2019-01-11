@@ -20,7 +20,7 @@ function perform_lint() {
 			whitelisted=$(awk '$1 == "'$f'" { print 1 }' "$CLANG_FORMAT_WHITELIST")
 
 			# If file is not whitelisted, mark a failure
-			if [ -z ${whitelisted} ]; then
+			if [ -z "${whitelisted}" ]; then
 				errorcount=$((errorcount+1))
 
 				printf "The file %s is not compliant with the coding style" "$f"
