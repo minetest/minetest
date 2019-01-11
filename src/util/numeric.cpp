@@ -103,7 +103,7 @@ u64 murmur_hash_64_ua(const void *key, int len, unsigned int seed)
 	range: viewing range
 	distance_ptr: return location for distance from the camera
 */
-bool isBlockInSight(v3s16 blockpos_b, v3f camera_pos, v3f camera_dir,
+bool isBlockInSight(const v3s16 &blockpos_b, const v3f &camera_pos, const v3f &camera_dir,
 		f32 camera_fov, f32 range, f32 *distance_ptr)
 {
 	// Maximum radius of a block.  The magic number is
