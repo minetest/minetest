@@ -304,8 +304,8 @@ void fillRadiusBlock(v3s16 p0, s16 r, std::set<v3s16> &list)
 
 void fillViewConeBlock(v3s16 p0,
 	const s16 r,
-	const v3f camera_pos,
-	const v3f camera_dir,
+	const v3f &camera_pos,
+	const v3f &camera_dir,
 	const float camera_fov,
 	std::set<v3s16> &list)
 {
@@ -541,7 +541,7 @@ bool ServerEnvironment::removePlayerFromDatabase(const std::string &name)
 	return m_player_database->removePlayer(name);
 }
 
-bool ServerEnvironment::line_of_sight(v3f pos1, v3f pos2, v3s16 *p)
+bool ServerEnvironment::line_of_sight(const v3f &pos1, const v3f &pos2, v3s16 *p)
 {
 	// Iterate trough nodes on the line
 	voxalgo::VoxelLineIterator iterator(pos1 / BS, (pos2 - pos1) / BS);
@@ -1001,7 +1001,7 @@ void ServerEnvironment::addLoadingBlockModifierDef(LoadingBlockModifierDef *lbm)
 	m_lbm_mgr.addLBMDef(lbm);
 }
 
-bool ServerEnvironment::setNode(v3s16 p, const MapNode &n)
+bool ServerEnvironment::setNode(const v3s16 &p, const MapNode &n)
 {
 	const NodeDefManager *ndef = m_server->ndef();
 	MapNode n_old = m_map->getNodeNoEx(p);
@@ -1034,7 +1034,7 @@ bool ServerEnvironment::setNode(v3s16 p, const MapNode &n)
 	return true;
 }
 
-bool ServerEnvironment::removeNode(v3s16 p)
+bool ServerEnvironment::removeNode(const v3s16 &p)
 {
 	const NodeDefManager *ndef = m_server->ndef();
 	MapNode n_old = m_map->getNodeNoEx(p);
@@ -1561,7 +1561,7 @@ void ServerEnvironment::getRemovedActiveObjects(PlayerSAO *playersao, s16 radius
 }
 
 void ServerEnvironment::setStaticForActiveObjectsInBlock(
-	v3s16 blockpos, bool static_exists, v3s16 static_block)
+	const v3s16 &blockpos, bool static_exists, const v3s16 &static_block)
 {
 	MapBlock *block = m_map->getBlockNoCreateNoEx(blockpos);
 	if (!block)

@@ -1476,7 +1476,7 @@ void Server::SendAccessDenied_Legacy(session_t peer_id,const std::wstring &reaso
 }
 
 void Server::SendDeathscreen(session_t peer_id, bool set_camera_point_target,
-		v3f camera_point_target)
+		const v3f &camera_point_target)
 {
 	NetworkPacket pkt(TOCLIENT_DEATHSCREEN, 1 + sizeof(v3f), peer_id);
 	pkt << set_camera_point_target << camera_point_target;
@@ -1594,7 +1594,7 @@ void Server::SendShowFormspecMessage(session_t peer_id, const std::string &forms
 
 // Spawns a particle on peer with peer_id
 void Server::SendSpawnParticle(session_t peer_id, u16 protocol_version,
-				v3f pos, v3f velocity, v3f acceleration,
+				const v3f &pos, const v3f &velocity, const v3f &acceleration,
 				float expirationtime, float size, bool collisiondetection,
 				bool collision_removal, bool object_collision,
 				bool vertical, const std::string &texture,
@@ -1646,8 +1646,8 @@ void Server::SendSpawnParticle(session_t peer_id, u16 protocol_version,
 
 // Adds a ParticleSpawner on peer with peer_id
 void Server::SendAddParticleSpawner(session_t peer_id, u16 protocol_version,
-	u16 amount, float spawntime, v3f minpos, v3f maxpos,
-	v3f minvel, v3f maxvel, v3f minacc, v3f maxacc, float minexptime, float maxexptime,
+	u16 amount, float spawntime, const v3f &minpos, const v3f &maxpos,
+	const v3f &minvel, const v3f &maxvel, const v3f &minacc, const v3f &maxacc, float minexptime, float maxexptime,
 	float minsize, float maxsize, bool collisiondetection, bool collision_removal,
 	bool object_collision, u16 attached_id, bool vertical, const std::string &texture, u32 id,
 	const struct TileAnimationParams &animation, u8 glow)
@@ -1879,7 +1879,7 @@ void Server::SendLocalPlayerAnimations(session_t peer_id, v2s32 animation_frames
 	Send(&pkt);
 }
 
-void Server::SendEyeOffset(session_t peer_id, v3f first, v3f third)
+void Server::SendEyeOffset(session_t peer_id, const v3f &first, const v3f &third)
 {
 	NetworkPacket pkt(TOCLIENT_EYE_OFFSET, 0, peer_id);
 	pkt << first << third;
@@ -2100,7 +2100,7 @@ void Server::fadeSound(s32 handle, float step, float gain)
 	}
 }
 
-void Server::sendRemoveNode(v3s16 p, std::unordered_set<u16> *far_players,
+void Server::sendRemoveNode(const v3s16 &p, std::unordered_set<u16> *far_players,
 		float far_d_nodes)
 {
 	float maxd = far_d_nodes * BS;
@@ -2138,7 +2138,7 @@ void Server::sendRemoveNode(v3s16 p, std::unordered_set<u16> *far_players,
 	m_clients.unlock();
 }
 
-void Server::sendAddNode(v3s16 p, MapNode n, std::unordered_set<u16> *far_players,
+void Server::sendAddNode(const v3s16 &p, MapNode n, std::unordered_set<u16> *far_players,
 		float far_d_nodes, bool remove_metadata)
 {
 	float maxd = far_d_nodes * BS;
@@ -3249,8 +3249,8 @@ void Server::notifyPlayers(const std::wstring &msg)
 	SendChatMessage(PEER_ID_INEXISTENT, ChatMessage(msg));
 }
 
-void Server::spawnParticle(const std::string &playername, v3f pos,
-	v3f velocity, v3f acceleration,
+void Server::spawnParticle(const std::string &playername, const v3f &pos,
+	const v3f &velocity, const v3f &acceleration,
 	float expirationtime, float size, bool
 	collisiondetection, bool collision_removal, bool object_collision,
 	bool vertical, const std::string &texture,
@@ -3276,7 +3276,7 @@ void Server::spawnParticle(const std::string &playername, v3f pos,
 }
 
 u32 Server::addParticleSpawner(u16 amount, float spawntime,
-	v3f minpos, v3f maxpos, v3f minvel, v3f maxvel, v3f minacc, v3f maxacc,
+	const v3f &minpos, const v3f &maxpos, const v3f &minvel, const v3f &maxvel, const v3f &minacc, const v3f &maxacc,
 	float minexptime, float maxexptime, float minsize, float maxsize,
 	bool collisiondetection, bool collision_removal, bool object_collision,
 	ServerActiveObject *attached, bool vertical, const std::string &texture,

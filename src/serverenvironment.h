@@ -317,8 +317,8 @@ public:
 	*/
 
 	// Script-aware node setters
-	bool setNode(v3s16 p, const MapNode &n);
-	bool removeNode(v3s16 p);
+	bool setNode(const v3s16 &p, const MapNode &n);
+	bool removeNode(const v3s16 &p);
 	bool swapNode(v3s16 p, const MapNode &n);
 
 	// Find all active objects inside a radius around a point
@@ -341,7 +341,7 @@ public:
 	 * \param p output, position of the first non-air node
 	 * the line intersects
 	 */
-	bool line_of_sight(v3f pos1, v3f pos2, v3s16 *p = NULL);
+	bool line_of_sight(const v3f &pos1, const v3f &pos2, v3s16 *p = NULL);
 
 	u32 getGameTime() const { return m_game_time; }
 
@@ -352,8 +352,8 @@ public:
 
 	// Sets the static object status all the active objects in the specified block
 	// This is only really needed for deleting blocks from the map
-	void setStaticForActiveObjectsInBlock(v3s16 blockpos,
-		bool static_exists, v3s16 static_block=v3s16(0,0,0));
+	void setStaticForActiveObjectsInBlock(const v3s16 &blockpos,
+		bool static_exists, const v3s16 &static_block=v3s16(0,0,0));
 
 	RemotePlayer *getPlayer(const session_t peer_id);
 	RemotePlayer *getPlayer(const char* name);

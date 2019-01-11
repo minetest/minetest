@@ -227,16 +227,16 @@ public:
 	void notifyPlayer(const char *name, const std::wstring &msg);
 	void notifyPlayers(const std::wstring &msg);
 	void spawnParticle(const std::string &playername,
-		v3f pos, v3f velocity, v3f acceleration,
+		const v3f &pos, const v3f &velocity, const v3f &acceleration,
 		float expirationtime, float size,
 		bool collisiondetection, bool collision_removal, bool object_collision,
 		bool vertical, const std::string &texture,
 		const struct TileAnimationParams &animation, u8 glow);
 
 	u32 addParticleSpawner(u16 amount, float spawntime,
-		v3f minpos, v3f maxpos,
-		v3f minvel, v3f maxvel,
-		v3f minacc, v3f maxacc,
+		const v3f &minpos, const v3f &maxpos,
+		const v3f &minvel, const v3f &maxvel,
+		const v3f &minacc, const v3f &maxacc,
 		float minexptime, float maxexptime,
 		float minsize, float maxsize,
 		bool collisiondetection, bool collision_removal, bool object_collision,
@@ -378,7 +378,7 @@ private:
 		const std::string &custom_reason, bool reconnect = false);
 	void SendAccessDenied_Legacy(session_t peer_id, const std::wstring &reason);
 	void SendDeathscreen(session_t peer_id, bool set_camera_point_target,
-		v3f camera_point_target);
+		const v3f &camera_point_target);
 	void SendItemDef(session_t peer_id, IItemDefManager *itemdef, u16 protocol_version);
 	void SendNodeDef(session_t peer_id, const NodeDefManager *nodedef,
 		u16 protocol_version);
@@ -393,7 +393,7 @@ private:
 
 	void SendLocalPlayerAnimations(session_t peer_id, v2s32 animation_frames[4],
 		f32 animation_speed);
-	void SendEyeOffset(session_t peer_id, v3f first, v3f third);
+	void SendEyeOffset(session_t peer_id, const v3f &first, const v3f &third);
 	void SendPlayerPrivileges(session_t peer_id);
 	void SendPlayerInventoryFormspec(session_t peer_id);
 	void SendPlayerFormspecPrepend(session_t peer_id);
@@ -418,9 +418,9 @@ private:
 		far_d_nodes are ignored and their peer_ids are added to far_players
 	*/
 	// Envlock and conlock should be locked when calling these
-	void sendRemoveNode(v3s16 p, std::unordered_set<u16> *far_players = nullptr,
+	void sendRemoveNode(const v3s16 &p, std::unordered_set<u16> *far_players = nullptr,
 			float far_d_nodes = 100);
-	void sendAddNode(v3s16 p, MapNode n,
+	void sendAddNode(const v3s16 &p, MapNode n,
 			std::unordered_set<u16> *far_players = nullptr,
 			float far_d_nodes = 100, bool remove_metadata = true);
 
@@ -444,9 +444,9 @@ private:
 	// Adds a ParticleSpawner on peer with peer_id (PEER_ID_INEXISTENT == all)
 	void SendAddParticleSpawner(session_t peer_id, u16 protocol_version,
 		u16 amount, float spawntime,
-		v3f minpos, v3f maxpos,
-		v3f minvel, v3f maxvel,
-		v3f minacc, v3f maxacc,
+		const v3f &minpos, const v3f &maxpos,
+		const v3f &minvel, const v3f &maxvel,
+		const v3f &minacc, const v3f &maxacc,
 		float minexptime, float maxexptime,
 		float minsize, float maxsize,
 		bool collisiondetection, bool collision_removal, bool object_collision,
@@ -458,7 +458,7 @@ private:
 
 	// Spawns particle on peer with peer_id (PEER_ID_INEXISTENT == all)
 	void SendSpawnParticle(session_t peer_id, u16 protocol_version,
-		v3f pos, v3f velocity, v3f acceleration,
+		const v3f &pos, const v3f &velocity, const v3f &acceleration,
 		float expirationtime, float size,
 		bool collisiondetection, bool collision_removal, bool object_collision,
 		bool vertical, const std::string &texture,
