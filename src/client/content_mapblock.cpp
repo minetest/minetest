@@ -95,7 +95,7 @@ void MapblockMeshGenerator::getTile(int index, TileSpec *tile)
 }
 
 // Returns a tile, ready for use, rotated according to the node facedir.
-void MapblockMeshGenerator::getTile(v3s16 direction, TileSpec *tile)
+void MapblockMeshGenerator::getTile(const v3s16 &direction, TileSpec *tile)
 {
 	getNodeTile(n, p, direction, data, *tile);
 }
@@ -1166,7 +1166,7 @@ void MapblockMeshGenerator::drawFencelikeNode()
 	}
 }
 
-bool MapblockMeshGenerator::isSameRail(v3s16 dir)
+bool MapblockMeshGenerator::isSameRail(const v3s16 &dir)
 {
 	MapNode node2 = data->m_vmanip.getNodeNoEx(blockpos_nodes + p + dir);
 	if (node2.getContent() == n.getContent())

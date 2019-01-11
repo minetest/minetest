@@ -81,7 +81,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 struct TextDestNodeMetadata : public TextDest
 {
-	TextDestNodeMetadata(v3s16 p, Client *client)
+	TextDestNodeMetadata(const v3s16 &p, Client *client)
 	{
 		m_p = p;
 		m_client = client;
@@ -196,7 +196,7 @@ struct LocalFormspecHandler : public TextDest
 class NodeMetadataFormSource: public IFormSource
 {
 public:
-	NodeMetadataFormSource(ClientMap *map, v3s16 p):
+	NodeMetadataFormSource(ClientMap *map, const v3s16 &p):
 		m_map(map),
 		m_p(p)
 	{
@@ -249,7 +249,7 @@ public:
 	v3s16 p;
 	MapNode n;
 
-	NodeDugEvent(v3s16 p, MapNode n):
+	NodeDugEvent(const v3s16 &p, MapNode n):
 		p(p),
 		n(n)
 	{}

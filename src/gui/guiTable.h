@@ -89,7 +89,7 @@ public:
 
 	GUITable(gui::IGUIEnvironment *env,
 			gui::IGUIElement *parent, s32 id,
-			core::rect<s32> rectangle,
+			const core::rect<s32> &rectangle,
 			ISimpleTextureSource *tsrc);
 
 	virtual ~GUITable();

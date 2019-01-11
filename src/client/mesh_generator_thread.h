@@ -67,7 +67,7 @@ public:
 
 	// Caches the block at p and its neighbors (if needed) and queues a mesh
 	// update for the block at p
-	void addBlock(Map *map, v3s16 p, bool ack_block_to_server, bool urgent);
+	void addBlock(Map *map, const v3s16 &p, bool ack_block_to_server, bool urgent);
 
 	// Returned pointer must be deleted
 	// Returns NULL if queue is empty
@@ -92,7 +92,7 @@ private:
 	bool m_cache_smooth_lighting;
 	int m_meshgen_block_cache_size;
 
-	CachedMapBlockData *cacheBlock(Map *map, v3s16 p, UpdateMode mode,
+	CachedMapBlockData *cacheBlock(Map *map, const v3s16 &p, UpdateMode mode,
 			size_t *cache_hit_counter = NULL);
 	CachedMapBlockData *getCachedBlock(const v3s16 &p);
 	void fillDataFromMapBlockCache(QueuedMeshUpdate *q);
@@ -115,7 +115,7 @@ public:
 
 	// Caches the block at p and its neighbors (if needed) and queues a mesh
 	// update for the block at p
-	void updateBlock(Map *map, v3s16 p, bool ack_block_to_server, bool urgent);
+	void updateBlock(Map *map, const v3s16 &p, bool ack_block_to_server, bool urgent);
 
 	v3s16 m_camera_offset;
 	MutexedQueue<MeshUpdateResult> m_queue_out;

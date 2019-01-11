@@ -47,9 +47,9 @@ Particle::Particle(
 	IGameDef *gamedef,
 	LocalPlayer *player,
 	ClientEnvironment *env,
-	v3f pos,
-	v3f velocity,
-	v3f acceleration,
+	const v3f &pos,
+	const v3f &velocity,
+	const v3f &acceleration,
 	float expirationtime,
 	float size,
 	bool collisiondetection,
@@ -57,8 +57,8 @@ Particle::Particle(
 	bool object_collision,
 	bool vertical,
 	video::ITexture *texture,
-	v2f texpos,
-	v2f texsize,
+	const v2f &texpos,
+	const v2f &texsize,
 	const struct TileAnimationParams &anim,
 	u8 glow,
 	video::SColor color
@@ -250,9 +250,9 @@ ParticleSpawner::ParticleSpawner(
 	LocalPlayer *player,
 	u16 amount,
 	float time,
-	v3f minpos, v3f maxpos,
-	v3f minvel, v3f maxvel,
-	v3f minacc, v3f maxacc,
+	const v3f &minpos, const v3f &maxpos,
+	const v3f &minvel, const v3f &maxvel,
+	const v3f &minacc, const v3f &maxacc,
 	float minexptime, float maxexptime,
 	float minsize, float maxsize,
 	bool collisiondetection,
@@ -588,7 +588,7 @@ void ParticleManager::handleParticleEvent(ClientEvent *event, Client *client,
 // spawned during the digging of a node.
 
 void ParticleManager::addDiggingParticles(IGameDef* gamedef,
-	LocalPlayer *player, v3s16 pos, const MapNode &n, const ContentFeatures &f)
+	LocalPlayer *player, const v3s16 &pos, const MapNode &n, const ContentFeatures &f)
 {
 	// No particles for "airlike" nodes
 	if (f.drawtype == NDT_AIRLIKE)

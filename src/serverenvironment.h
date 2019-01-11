@@ -319,7 +319,7 @@ public:
 	// Script-aware node setters
 	bool setNode(const v3s16 &p, const MapNode &n);
 	bool removeNode(const v3s16 &p);
-	bool swapNode(v3s16 p, const MapNode &n);
+	bool swapNode(const v3s16 &p, const MapNode &n);
 
 	// Find all active objects inside a radius around a point
 	void getObjectsInsideRadius(std::vector<u16> &objects, const v3f &pos, float radius)

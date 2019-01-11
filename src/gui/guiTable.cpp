@@ -44,7 +44,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 GUITable::GUITable(gui::IGUIEnvironment *env,
 		gui::IGUIElement* parent, s32 id,
-		core::rect<s32> rectangle,
+		const core::rect<s32> &rectangle,
 		ISimpleTextureSource *tsrc
 ):
 	gui::IGUIElement(gui::EGUIET_ELEMENT, env, parent, id, rectangle),

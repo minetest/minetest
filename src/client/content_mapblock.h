@@ -91,7 +91,7 @@ public:
 	void useTile(int index = 0, u8 set_flags = MATERIAL_FLAG_CRACK_OVERLAY,
 		u8 reset_flags = 0, bool special = false);
 	void getTile(int index, TileSpec *tile);
-	void getTile(v3s16 direction, TileSpec *tile);
+	void getTile(const v3s16 &direction, TileSpec *tile);
 	void getSpecialTile(int index, TileSpec *tile, bool apply_crack = false);
 
 // face drawing
@@ -134,7 +134,7 @@ public:
 	// name of the group that enables connecting to raillike nodes of different kind
 	static const std::string raillike_groupname;
 	int raillike_group;
-	bool isSameRail(v3s16 dir);
+	bool isSameRail(const v3s16 &dir);
 
 // plantlike-specific
 	PlantlikeStyle draw_style;

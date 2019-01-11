@@ -61,7 +61,7 @@ void applyFacesShading(video::SColor &color, const v3f &normal)
 		applyShadeFactor(color, 0.670820f * x2 + 1.000000f * y2 + 0.836660f * z2);
 }
 
-scene::IAnimatedMesh* createCubeMesh(v3f scale)
+scene::IAnimatedMesh* createCubeMesh(const v3f &scale)
 {
 	video::SColor c(255,255,255,255);
 	video::S3DVertex vertices[24] =
@@ -120,7 +120,7 @@ scene::IAnimatedMesh* createCubeMesh(v3f scale)
 	return anim_mesh;
 }
 
-void scaleMesh(scene::IMesh *mesh, v3f scale)
+void scaleMesh(scene::IMesh *mesh, const v3f &scale)
 {
 	if (mesh == NULL)
 		return;
@@ -148,7 +148,7 @@ void scaleMesh(scene::IMesh *mesh, v3f scale)
 	mesh->setBoundingBox(bbox);
 }
 
-void translateMesh(scene::IMesh *mesh, v3f vec)
+void translateMesh(scene::IMesh *mesh, const v3f &vec)
 {
 	if (mesh == NULL)
 		return;

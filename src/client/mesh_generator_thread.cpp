@@ -72,7 +72,7 @@ MeshUpdateQueue::~MeshUpdateQueue()
 	}
 }
 
-void MeshUpdateQueue::addBlock(Map *map, v3s16 p, bool ack_block_to_server, bool urgent)
+void MeshUpdateQueue::addBlock(Map *map, const v3s16 &p, bool ack_block_to_server, bool urgent)
 {
 	MutexAutoLock lock(m_mutex);
 
@@ -159,7 +159,7 @@ QueuedMeshUpdate *MeshUpdateQueue::pop()
 	return NULL;
 }
 
-CachedMapBlockData* MeshUpdateQueue::cacheBlock(Map *map, v3s16 p, UpdateMode mode,
+CachedMapBlockData* MeshUpdateQueue::cacheBlock(Map *map, const v3s16 &p, UpdateMode mode,
 			size_t *cache_hit_counter)
 {
 	std::map<v3s16, CachedMapBlockData*>::iterator it =
@@ -278,7 +278,7 @@ MeshUpdateThread::MeshUpdateThread(Client *client):
 	m_generation_interval = rangelim(m_generation_interval, 0, 50);
 }
 
-void MeshUpdateThread::updateBlock(Map *map, v3s16 p, bool ack_block_to_server,
+void MeshUpdateThread::updateBlock(Map *map, const v3s16 &p, bool ack_block_to_server,
 		bool urgent)
 {
 	// Allow the MeshUpdateQueue to do whatever it wants

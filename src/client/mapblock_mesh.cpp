@@ -108,7 +108,7 @@ void MeshMakeData::fillSingleNode(MapNode *node)
 	delete[] data;
 }
 
-void MeshMakeData::setCrack(int crack_level, v3s16 crack_pos)
+void MeshMakeData::setCrack(int crack_level, const v3s16 &crack_pos)
 {
 	if (crack_level >= 0)
 		m_crack_pos_relative = crack_pos - m_blockpos*MAP_BLOCKSIZE;
@@ -152,7 +152,7 @@ u16 getInteriorLight(MapNode n, s32 increment, const NodeDefManager *ndef)
 	Single light bank.
 */
 static u8 getFaceLight(enum LightBank bank, MapNode n, MapNode n2,
-	v3s16 face_dir, const NodeDefManager *ndef)
+	const v3s16 &face_dir, const NodeDefManager *ndef)
 {
 	u8 light;
 	u8 l1 = n.getLight(bank, ndef);
@@ -1019,7 +1019,7 @@ static void applyTileColor(PreMeshBuffer &pmb)
 	MapBlockMesh
 */
 
-MapBlockMesh::MapBlockMesh(MeshMakeData *data, v3s16 camera_offset):
+MapBlockMesh::MapBlockMesh(MeshMakeData *data, const v3s16 &camera_offset):
 	m_minimap_mapblock(NULL),
 	m_tsrc(data->m_client->getTextureSource()),
 	m_shdrsrc(data->m_client->getShaderSource()),
@@ -1347,7 +1347,7 @@ bool MapBlockMesh::animate(bool faraway, float time, int crack,
 	return true;
 }
 
-void MapBlockMesh::updateCameraOffset(v3s16 camera_offset)
+void MapBlockMesh::updateCameraOffset(const v3s16 &camera_offset)
 {
 	if (camera_offset != m_camera_offset) {
 		for (scene::IMesh *layer : m_mesh) {

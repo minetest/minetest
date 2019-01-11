@@ -42,7 +42,7 @@ MinimapUpdateThread::~MinimapUpdateThread()
 	}
 }
 
-bool MinimapUpdateThread::pushBlockUpdate(v3s16 pos, MinimapMapblock *data)
+bool MinimapUpdateThread::pushBlockUpdate(const v3s16 &pos, MinimapMapblock *data)
 {
 	MutexAutoLock lock(m_queue_mutex);
 
@@ -78,7 +78,7 @@ bool MinimapUpdateThread::popBlockUpdate(QueuedMinimapUpdate *update)
 	return true;
 }
 
-void MinimapUpdateThread::enqueueBlock(v3s16 pos, MinimapMapblock *data)
+void MinimapUpdateThread::enqueueBlock(const v3s16 &pos, MinimapMapblock *data)
 {
 	pushBlockUpdate(pos, data);
 	deferUpdate();
@@ -244,7 +244,7 @@ Minimap::~Minimap()
 	delete m_minimap_update_thread;
 }
 
-void Minimap::addBlock(v3s16 pos, MinimapMapblock *data)
+void Minimap::addBlock(const v3s16 &pos, MinimapMapblock *data)
 {
 	m_minimap_update_thread->enqueueBlock(pos, data);
 }
@@ -305,7 +305,7 @@ void Minimap::setMinimapMode(MinimapMode mode)
 	m_minimap_update_thread->deferUpdate();
 }
 
-void Minimap::setPos(v3s16 pos)
+void Minimap::setPos(const v3s16 &pos)
 {
 	bool do_update = false;
 

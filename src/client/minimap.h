@@ -99,8 +99,8 @@ public:
 	virtual ~MinimapUpdateThread();
 
 	void getMap(v3s16 pos, s16 size, s16 height);
-	void enqueueBlock(v3s16 pos, MinimapMapblock *data);
-	bool pushBlockUpdate(v3s16 pos, MinimapMapblock *data);
+	void enqueueBlock(const v3s16 &pos, MinimapMapblock *data);
+	bool pushBlockUpdate(const v3s16 &pos, MinimapMapblock *data);
 	bool popBlockUpdate(QueuedMinimapUpdate *update);
 
 	MinimapData *data = nullptr;
@@ -119,11 +119,11 @@ public:
 	Minimap(Client *client);
 	~Minimap();
 
-	void addBlock(v3s16 pos, MinimapMapblock *data);
+	void addBlock(const v3s16 &pos, MinimapMapblock *data);
 
 	v3f getYawVec();
 
-	void setPos(v3s16 pos);
+	void setPos(const v3s16 &pos);
 	v3s16 getPos() const { return data->pos; }
 	void setAngle(f32 angle);
 	f32 getAngle() const { return m_angle; }

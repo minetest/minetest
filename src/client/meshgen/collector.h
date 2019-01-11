@@ -45,7 +45,7 @@ struct MeshCollector
 	void append(const TileSpec &material,
 			const video::S3DVertex *vertices, u32 numVertices,
 			const u16 *indices, u32 numIndices,
-			v3f pos, video::SColor c, u8 light_source);
+			const v3f &pos, video::SColor c, u8 light_source);
 	// clang-format on
 
 private:
@@ -57,7 +57,7 @@ private:
 	void append(const TileLayer &material,
 			const video::S3DVertex *vertices, u32 numVertices,
 			const u16 *indices, u32 numIndices,
-			v3f pos, video::SColor c, u8 light_source,
+			const v3f &pos, video::SColor c, u8 light_source,
 			u8 layernum, bool use_scale = false);
 	// clang-format on
 

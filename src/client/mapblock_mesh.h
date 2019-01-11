@@ -70,7 +70,7 @@ struct MeshMakeData
 	/*
 		Set the (node) position of a crack
 	*/
-	void setCrack(int crack_level, v3s16 crack_pos);
+	void setCrack(int crack_level, const v3s16 &crack_pos);
 
 	/*
 		Enable or disable smooth lighting
@@ -93,7 +93,7 @@ class MapBlockMesh
 {
 public:
 	// Builds the mesh given
-	MapBlockMesh(MeshMakeData *data, v3s16 camera_offset);
+	MapBlockMesh(MeshMakeData *data, const v3s16 &camera_offset);
 	~MapBlockMesh();
 
 	// Main animation function, parameters:
@@ -132,7 +132,7 @@ public:
 			m_animation_force_timer--;
 	}
 
-	void updateCameraOffset(v3s16 camera_offset);
+	void updateCameraOffset(const v3s16 &camera_offset);
 
 private:
 	scene::IMesh *m_mesh[MAX_TILE_LAYERS];

@@ -195,7 +195,7 @@ void Hud::drawItem(const ItemStack &item, const core::rect<s32>& rect,
 }
 
 //NOTE: selectitem = 0 -> no selected; selectitem 1-based
-void Hud::drawItems(v2s32 upperleftpos, v2s32 screen_offset, s32 itemcount,
+void Hud::drawItems(const v2s32 &upperleftpos, const v2s32 &screen_offset, s32 itemcount,
 		s32 inv_offset, InventoryList *mainlist, u16 selectitem, u16 direction)
 {
 #ifdef HAVE_TOUCHSCREENGUI
@@ -372,7 +372,7 @@ void Hud::drawLuaElements(const v3s16 &camera_offset)
 }
 
 
-void Hud::drawStatbar(v2s32 pos, u16 corner, u16 drawdir, std::string texture,
+void Hud::drawStatbar(const v2s32 &pos, u16 corner, u16 drawdir, std::string texture,
 		s32 count, v2s32 offset, v2s32 size)
 {
 	const video::SColor color(255, 255, 255, 255);

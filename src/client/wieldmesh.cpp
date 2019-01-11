@@ -230,7 +230,7 @@ WieldMeshSceneNode::~WieldMeshSceneNode()
 }
 
 void WieldMeshSceneNode::setCube(const ContentFeatures &f,
-			v3f wield_scale)
+			const v3f &wield_scale)
 {
 	scene::IMesh *cubemesh = g_extrusion_mesh_cache->createCube();
 	scene::SMesh *copy = cloneMesh(cubemesh);

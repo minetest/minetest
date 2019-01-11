@@ -1059,7 +1059,7 @@ bool ServerEnvironment::removeNode(const v3s16 &p)
 	return true;
 }
 
-bool ServerEnvironment::swapNode(v3s16 p, const MapNode &n)
+bool ServerEnvironment::swapNode(const v3s16 &p, const MapNode &n)
 {
 	if (!m_map->addNodeWithEvent(p, n, false))
 		return false;
