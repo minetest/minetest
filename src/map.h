@@ -312,7 +312,7 @@ protected:
 	// This stores the properties of the nodes on the map.
 	const NodeDefManager *m_nodedef;
 
-	bool isOccluded(v3s16 p0, v3s16 p1, float step, float stepfac,
+	bool isOccluded(v3s16 p0, const v3s16 &p1, float step, float stepfac,
 			float start_off, float end_off, u32 needed_count);
 
 private:
@@ -383,7 +383,7 @@ public:
 	MapBlock *getBlockOrEmerge(const v3s16 &p3d);
 
 	// Helper for placing objects on ground level
-	s16 findGroundLevel(v2s16 p2d);
+	s16 findGroundLevel(const v2s16 &p2d);
 
 	/*
 		Misc. helper functions for fiddling with directory and file

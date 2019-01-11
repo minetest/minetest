@@ -1066,7 +1066,7 @@ void Map::removeNodeTimer(const v3s16 &p)
 	block->m_node_timers.remove(p_rel);
 }
 
-bool Map::isOccluded(v3s16 p0, v3s16 p1, float step, float stepfac,
+bool Map::isOccluded(v3s16 p0, const v3s16 &p1, float step, float stepfac,
 		float start_off, float end_off, u32 needed_count)
 {
 	float d0 = (float)BS * p0.getDistanceFrom(p1);
@@ -1666,7 +1666,7 @@ void ServerMap::updateVManip(const v3s16 &pos)
 	vm->m_is_dirty = true;
 }
 
-s16 ServerMap::findGroundLevel(v2s16 p2d)
+s16 ServerMap::findGroundLevel(const v2s16 &p2d)
 {
 #if 0
 	/*
