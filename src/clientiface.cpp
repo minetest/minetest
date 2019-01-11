@@ -63,7 +63,7 @@ RemoteClient::RemoteClient() :
 {
 }
 
-void RemoteClient::ResendBlockIfOnWire(v3s16 p)
+void RemoteClient::ResendBlockIfOnWire(const v3s16 &p)
 {
 	// if this block is on wire, mark it for sending again as soon as possible
 	if (m_blocks_sending.find(p) != m_blocks_sending.end()) {
@@ -405,7 +405,7 @@ queue_full_break:
 		m_nearest_unsent_d = new_nearest_unsent_d;
 }
 
-void RemoteClient::GotBlock(v3s16 p)
+void RemoteClient::GotBlock(const v3s16 &p)
 {
 	if (m_blocks_modified.find(p) == m_blocks_modified.end()) {
 		if (m_blocks_sending.find(p) != m_blocks_sending.end())
@@ -417,7 +417,7 @@ void RemoteClient::GotBlock(v3s16 p)
 	}
 }
 
-void RemoteClient::SentBlock(v3s16 p)
+void RemoteClient::SentBlock(const v3s16 &p)
 {
 	if (m_blocks_modified.find(p) != m_blocks_modified.end())
 		m_blocks_modified.erase(p);
@@ -429,7 +429,7 @@ void RemoteClient::SentBlock(v3s16 p)
 				" already in m_blocks_sending"<<std::endl;
 }
 
-void RemoteClient::SetBlockNotSent(v3s16 p)
+void RemoteClient::SetBlockNotSent(const v3s16 &p)
 {
 	m_nearest_unsent_d = 0;
 	m_nothing_to_send_pause_timer = 0;

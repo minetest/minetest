@@ -234,7 +234,7 @@ public:
 
 	void interact(u8 action, const PointedThing& pointed);
 
-	void sendNodemetaFields(v3s16 p, const std::string &formname,
+	void sendNodemetaFields(const v3s16 &p, const std::string &formname,
 		const StringMap &fields);
 	void sendInventoryFields(const std::string &formname,
 		const StringMap &fields);
@@ -465,7 +465,7 @@ private:
 	void promptConfirmRegistration(AuthMechanism chosen_auth_mechanism);
 	void startAuth(AuthMechanism chosen_auth_mechanism);
 	void sendDeletedBlocks(std::vector<v3s16> &blocks);
-	void sendGotBlocks(v3s16 block);
+	void sendGotBlocks(const v3s16 &block);
 	void sendRemovedSounds(std::vector<s32> &soundList);
 
 	// Helper function

@@ -257,11 +257,11 @@ public:
 	void GetNextBlocks(ServerEnvironment *env, EmergeManager* emerge,
 			float dtime, std::vector<PrioritySortedBlockTransfer> &dest);
 
-	void GotBlock(v3s16 p);
+	void GotBlock(const v3s16 &p);
 
-	void SentBlock(v3s16 p);
+	void SentBlock(const v3s16 &p);
 
-	void SetBlockNotSent(v3s16 p);
+	void SetBlockNotSent(const v3s16 &p);
 	void SetBlocksNotSent(std::map<v3s16, MapBlock*> &blocks);
 
 	/**
@@ -270,7 +270,7 @@ public:
 	 * while modification is processed by server
 	 * @param p position of modified block
 	 */
-	void ResendBlockIfOnWire(v3s16 p);
+	void ResendBlockIfOnWire(const v3s16 &p);
 
 	u32 getSendingCount() const { return m_blocks_sending.size(); }
 

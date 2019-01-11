@@ -1074,7 +1074,7 @@ void Client::sendDeletedBlocks(std::vector<v3s16> &blocks)
 	Send(&pkt);
 }
 
-void Client::sendGotBlocks(v3s16 block)
+void Client::sendGotBlocks(const v3s16 &block)
 {
 	NetworkPacket pkt(TOSERVER_GOTBLOCKS, 1 + 6);
 	pkt << (u8) 1 << block;
@@ -1096,7 +1096,7 @@ void Client::sendRemovedSounds(std::vector<s32> &soundList)
 	Send(&pkt);
 }
 
-void Client::sendNodemetaFields(v3s16 p, const std::string &formname,
+void Client::sendNodemetaFields(const v3s16 &p, const std::string &formname,
 		const StringMap &fields)
 {
 	size_t fields_size = fields.size();
