@@ -45,7 +45,7 @@ public:
 	void on_cheat(ServerActiveObject *player, const std::string &cheat_type);
 	bool on_punchplayer(ServerActiveObject *player, ServerActiveObject *hitter,
 			float time_from_last_punch, const ToolCapabilities *toolcap,
-			v3f dir, s16 damage);
+			const v3f &dir, s16 damage);
 	s16 on_player_hpchange(ServerActiveObject *player, s16 hp_change,
 			const PlayerHPChangeReason &reason);
 	void on_playerReceiveFields(ServerActiveObject *player,

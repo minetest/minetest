@@ -383,7 +383,7 @@ LuaVoxelManip::LuaVoxelManip(Map *map) : vm(new MMVManip(map))
 {
 }
 
-LuaVoxelManip::LuaVoxelManip(Map *map, v3s16 p1, v3s16 p2)
+LuaVoxelManip::LuaVoxelManip(Map *map, const v3s16 &p1, const v3s16 &p2)
 {
 	vm = new MMVManip(map);
 

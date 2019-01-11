@@ -236,7 +236,7 @@ const luaL_Reg LuaRaycast::methods[] =
 	{ 0, 0 }
 };
 
-void LuaEmergeAreaCallback(v3s16 blockpos, EmergeAction action, void *param)
+void LuaEmergeAreaCallback(const v3s16 &blockpos, EmergeAction action, void *param)
 {
 	ScriptCallbackState *state = (ScriptCallbackState *)param;
 	assert(state != NULL);

@@ -36,7 +36,7 @@ class ScriptApiItem
 {
 public:
 	bool item_OnDrop(ItemStack &item,
-			ServerActiveObject *dropper, v3f pos);
+			ServerActiveObject *dropper, const v3f &pos);
 	bool item_OnPlace(ItemStack &item,
 			ServerActiveObject *placer, const PointedThing &pointed);
 	bool item_OnUse(ItemStack &item,

@@ -71,7 +71,7 @@ enum EmergeAction {
 
 // Callback
 typedef void (*EmergeCompletionCallback)(
-	v3s16 blockpos, EmergeAction action, void *param);
+	const v3s16 &blockpos, EmergeAction action, void *param);
 
 typedef std::vector<
 	std::pair<

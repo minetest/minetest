@@ -50,12 +50,12 @@ private:
 	static int l_get_elapsed(lua_State *L);
 
 public:
-	NodeTimerRef(v3s16 p, ServerEnvironment *env);
+	NodeTimerRef(const v3s16 &p, ServerEnvironment *env);
 	~NodeTimerRef() = default;
 
 	// Creates an NodeTimerRef and leaves it on top of stack
 	// Not callable from Lua; all references are created on the C side.
-	static void create(lua_State *L, v3s16 p, ServerEnvironment *env);
+	static void create(lua_State *L, const v3s16 &p, ServerEnvironment *env);
 
 	static void set_null(lua_State *L);
 

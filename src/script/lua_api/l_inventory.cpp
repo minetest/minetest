@@ -426,7 +426,7 @@ void InvRef::createPlayer(lua_State *L, RemotePlayer *player)
 	loc.setPlayer(player->getName());
 	create(L, loc);
 }
-void InvRef::createNodeMeta(lua_State *L, v3s16 p)
+void InvRef::createNodeMeta(lua_State *L, const v3s16 &p)
 {
 	InventoryLocation loc;
 	loc.setNodeMeta(p);

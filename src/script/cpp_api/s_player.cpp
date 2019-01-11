@@ -59,7 +59,7 @@ bool ScriptApiPlayer::on_punchplayer(ServerActiveObject *player,
 		ServerActiveObject *hitter,
 		float time_from_last_punch,
 		const ToolCapabilities *toolcap,
-		v3f dir,
+		const v3f &dir,
 		s16 damage)
 {
 	SCRIPTAPI_PRECHECKHEADER

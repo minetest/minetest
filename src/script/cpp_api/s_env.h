@@ -32,13 +32,13 @@ public:
 	void environment_Step(float dtime);
 
 	// Called after generating a piece of map
-	void environment_OnGenerated(v3s16 minp, v3s16 maxp, u32 blockseed);
+	void environment_OnGenerated(const v3s16 &minp, const v3s16 &maxp, u32 blockseed);
 
 	// Called on player event
 	void player_event(ServerActiveObject *player, const std::string &type);
 
 	// Called after emerge of a block queued from core.emerge_area()
-	void on_emerge_area_completion(v3s16 blockpos, int action,
+	void on_emerge_area_completion(const v3s16 &blockpos, int action,
 		ScriptCallbackState *state);
 
 	void initializeEnvironment(ServerEnvironment *env);

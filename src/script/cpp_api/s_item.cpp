@@ -30,7 +30,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "inventorymanager.h"
 
 bool ScriptApiItem::item_OnDrop(ItemStack &item,
-		ServerActiveObject *dropper, v3f pos)
+		ServerActiveObject *dropper, const v3f &pos)
 {
 	SCRIPTAPI_PRECHECKHEADER
 

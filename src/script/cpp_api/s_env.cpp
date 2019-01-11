@@ -26,7 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "lua_api/l_env.h"
 #include "server.h"
 
-void ScriptApiEnv::environment_OnGenerated(v3s16 minp, v3s16 maxp,
+void ScriptApiEnv::environment_OnGenerated(const v3s16 &minp, const v3s16 &maxp,
 	u32 blockseed)
 {
 	SCRIPTAPI_PRECHECKHEADER
@@ -212,7 +212,7 @@ void ScriptApiEnv::initializeEnvironment(ServerEnvironment *env)
 }
 
 void ScriptApiEnv::on_emerge_area_completion(
-	v3s16 blockpos, int action, ScriptCallbackState *state)
+	const v3s16 &blockpos, int action, ScriptCallbackState *state)
 {
 	Server *server = getServer();
 

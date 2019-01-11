@@ -166,7 +166,7 @@ bool NodeMetaRef::handleFromTable(lua_State *L, int table, Metadata *_meta)
 }
 
 
-NodeMetaRef::NodeMetaRef(v3s16 p, ServerEnvironment *env):
+NodeMetaRef::NodeMetaRef(const v3s16 &p, ServerEnvironment *env):
 	m_p(p),
 	m_env(env)
 {
@@ -180,7 +180,7 @@ NodeMetaRef::NodeMetaRef(Metadata *meta):
 
 // Creates an NodeMetaRef and leaves it on top of stack
 // Not callable from Lua; all references are created on the C side.
-void NodeMetaRef::create(lua_State *L, v3s16 p, ServerEnvironment *env)
+void NodeMetaRef::create(lua_State *L, const v3s16 &p, ServerEnvironment *env)
 {
 	NodeMetaRef *o = new NodeMetaRef(p, env);
 	//infostream<<"NodeMetaRef::create: o="<<o<<std::endl;
