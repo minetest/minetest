@@ -47,7 +47,7 @@ struct RollbackNode
 
 	RollbackNode() = default;
 
-	RollbackNode(Map *map, v3s16 p, IGameDef *gamedef);
+	RollbackNode(Map *map, const v3s16 &p, IGameDef *gamedef);
 };
 
 

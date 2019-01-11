@@ -656,7 +656,7 @@ const std::list<ActionRow> RollbackManager::getRowsSince_range(
 
 
 const std::list<RollbackAction> RollbackManager::getActionsSince_range(
-		time_t start_time, v3s16 p, int range, int limit)
+		time_t start_time, const v3s16 &p, int range, int limit)
 {
 	return rollbackActionsFromActionRows(getRowsSince_range(start_time, p, range, limit));
 }
@@ -794,8 +794,8 @@ void RollbackManager::migrate(const std::string & file_path)
 
 // Get nearness factor for subject's action for this action
 // Return value: 0 = impossible, >0 = factor
-float RollbackManager::getSuspectNearness(bool is_guess, v3s16 suspect_p,
-		time_t suspect_t, v3s16 action_p, time_t action_t)
+float RollbackManager::getSuspectNearness(bool is_guess, const v3s16 &suspect_p,
+		time_t suspect_t, const v3s16 &action_p, time_t action_t)
 {
 	// Suspect cannot cause things in the past
 	if (action_t < suspect_t) {

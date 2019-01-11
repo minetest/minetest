@@ -34,7 +34,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mapblock.h"
 
 
-RollbackNode::RollbackNode(Map *map, v3s16 p, IGameDef *gamedef)
+RollbackNode::RollbackNode(Map *map, const v3s16 &p, IGameDef *gamedef)
 {
 	const NodeDefManager *ndef = gamedef->ndef();
 	MapNode n = map->getNodeNoEx(p);

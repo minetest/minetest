@@ -70,13 +70,13 @@ private:
 			const std::string & actor);
 	const std::list<ActionRow> getRowsSince_range(time_t firstTime, v3s16 p,
 			int range, int limit);
-	const std::list<RollbackAction> getActionsSince_range(time_t firstTime, v3s16 p,
+	const std::list<RollbackAction> getActionsSince_range(time_t firstTime, const v3s16 &p,
 			int range, int limit);
 	const std::list<RollbackAction> getActionsSince(time_t firstTime,
 			const std::string & actor = "");
 	void migrate(const std::string & filepath);
-	static float getSuspectNearness(bool is_guess, v3s16 suspect_p,
-		time_t suspect_t, v3s16 action_p, time_t action_t);
+	static float getSuspectNearness(bool is_guess, const v3s16 &suspect_p,
+		time_t suspect_t, const v3s16 &action_p, time_t action_t);
 
 
 	IGameDef *gamedef = nullptr;
