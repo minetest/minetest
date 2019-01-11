@@ -155,7 +155,7 @@ struct BiomeParamsOriginal : public BiomeParams {
 class BiomeGenOriginal : public BiomeGen {
 public:
 	BiomeGenOriginal(BiomeManager *biomemgr,
-		BiomeParamsOriginal *params, v3s16 chunksize);
+		BiomeParamsOriginal *params, const v3s16 &chunksize);
 	virtual ~BiomeGenOriginal();
 
 	BiomeGenType getType() const { return BIOMEGEN_ORIGINAL; }

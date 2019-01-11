@@ -33,7 +33,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 namespace treegen
 {
 
-void make_tree(MMVManip &vmanip, v3s16 p0, bool is_apple_tree,
+void make_tree(MMVManip &vmanip, const v3s16 &p0, bool is_apple_tree,
 	const NodeDefManager *ndef, s32 seed)
 {
 	/*
@@ -114,7 +114,7 @@ void make_tree(MMVManip &vmanip, v3s16 p0, bool is_apple_tree,
 
 
 // L-System tree LUA spawner
-treegen::error spawn_ltree(ServerEnvironment *env, v3s16 p0,
+treegen::error spawn_ltree(ServerEnvironment *env, const v3s16 &p0,
 	const NodeDefManager *ndef, const TreeDef &tree_definition)
 {
 	ServerMap *map = &env->getServerMap();
@@ -607,7 +607,7 @@ void tree_fruit_placement(MMVManip &vmanip, v3f p0, TreeDef &tree_definition)
 }
 
 
-irr::core::matrix4 setRotationAxisRadians(irr::core::matrix4 M, double angle, v3f axis)
+irr::core::matrix4 setRotationAxisRadians(irr::core::matrix4 M, double angle, const v3f &axis)
 {
 	double c = cos(angle);
 	double s = sin(angle);
@@ -635,7 +635,7 @@ irr::core::matrix4 setRotationAxisRadians(irr::core::matrix4 M, double angle, v3
 }
 
 
-v3f transposeMatrix(irr::core::matrix4 M, v3f v)
+v3f transposeMatrix(irr::core::matrix4 M, const v3f &v)
 {
 	v3f translated;
 	double x = M[0] * v.X + M[4] * v.Y + M[8]  * v.Z +M[12];
@@ -648,7 +648,7 @@ v3f transposeMatrix(irr::core::matrix4 M, v3f v)
 }
 
 
-void make_jungletree(MMVManip &vmanip, v3s16 p0, const NodeDefManager *ndef,
+void make_jungletree(MMVManip &vmanip, const v3s16 &p0, const NodeDefManager *ndef,
 	s32 seed)
 {
 	/*
@@ -748,7 +748,7 @@ void make_jungletree(MMVManip &vmanip, v3s16 p0, const NodeDefManager *ndef,
 }
 
 
-void make_pine_tree(MMVManip &vmanip, v3s16 p0, const NodeDefManager *ndef,
+void make_pine_tree(MMVManip &vmanip, const v3s16 &p0, const NodeDefManager *ndef,
 	s32 seed)
 {
 	/*

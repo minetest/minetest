@@ -60,20 +60,20 @@ namespace treegen {
 	};
 
 	// Add default tree
-	void make_tree(MMVManip &vmanip, v3s16 p0,
+	void make_tree(MMVManip &vmanip, const v3s16 &p0,
 		bool is_apple_tree, const NodeDefManager *ndef, s32 seed);
 	// Add jungle tree
-	void make_jungletree(MMVManip &vmanip, v3s16 p0,
+	void make_jungletree(MMVManip &vmanip, const v3s16 &p0,
 		const NodeDefManager *ndef, s32 seed);
 	// Add pine tree
-	void make_pine_tree(MMVManip &vmanip, v3s16 p0,
+	void make_pine_tree(MMVManip &vmanip, const v3s16 &p0,
 		const NodeDefManager *ndef, s32 seed);
 
 	// Add L-Systems tree (used by engine)
 	treegen::error make_ltree(MMVManip &vmanip, v3s16 p0,
 		const NodeDefManager *ndef, TreeDef tree_definition);
 	// Spawn L-systems tree from LUA
-	treegen::error spawn_ltree (ServerEnvironment *env, v3s16 p0,
+	treegen::error spawn_ltree (ServerEnvironment *env, const v3s16 &p0,
 		const NodeDefManager *ndef, const TreeDef &tree_definition);
 
 	// L-System tree gen helper functions
@@ -87,8 +87,8 @@ namespace treegen {
 		PseudoRandom ps, TreeDef &tree_definition);
 	void tree_fruit_placement(MMVManip &vmanip, v3f p0,
 		TreeDef &tree_definition);
-	irr::core::matrix4 setRotationAxisRadians(irr::core::matrix4 M, double angle, v3f axis);
+	irr::core::matrix4 setRotationAxisRadians(irr::core::matrix4 M, double angle, const v3f &axis);
 
-	v3f transposeMatrix(irr::core::matrix4 M ,v3f v);
+	v3f transposeMatrix(irr::core::matrix4 M ,const v3f &v);
 
 }; // namespace treegen

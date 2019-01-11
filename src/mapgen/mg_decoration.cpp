@@ -51,7 +51,7 @@ DecorationManager::DecorationManager(IGameDef *gamedef) :
 
 
 size_t DecorationManager::placeAllDecos(Mapgen *mg, u32 blockseed,
-	v3s16 nmin, v3s16 nmax)
+	const v3s16 &nmin, const v3s16 &nmax)
 {
 	size_t nplaced = 0;
 
@@ -78,7 +78,7 @@ void Decoration::resolveNodeNames()
 }
 
 
-bool Decoration::canPlaceDecoration(MMVManip *vm, v3s16 p)
+bool Decoration::canPlaceDecoration(MMVManip *vm, const v3s16 &p)
 {
 	// Check if the decoration can be placed on this node
 	u32 vi = vm->m_area.index(p);

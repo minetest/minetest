@@ -45,7 +45,7 @@ OreManager::OreManager(IGameDef *gamedef) :
 }
 
 
-size_t OreManager::placeAllOres(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax)
+size_t OreManager::placeAllOres(Mapgen *mg, u32 blockseed, const v3s16 &nmin, const v3s16 &nmax)
 {
 	size_t nplaced = 0;
 

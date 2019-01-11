@@ -55,7 +55,7 @@ public:
 
 	virtual void resolveNodeNames();
 
-	bool canPlaceDecoration(MMVManip *vm, v3s16 p);
+	bool canPlaceDecoration(MMVManip *vm, const v3s16 &p);
 	size_t placeDeco(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax);
 
 	virtual size_t generate(MMVManip *vm, PcgRandom *pr, v3s16 p, bool ceiling) = 0;
@@ -132,5 +132,5 @@ public:
 		}
 	}
 
-	size_t placeAllDecos(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax);
+	size_t placeAllDecos(Mapgen *mg, u32 blockseed, const v3s16 &nmin, const v3s16 &nmax);
 };

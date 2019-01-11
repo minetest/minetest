@@ -92,7 +92,7 @@ public:
 	void setNotifyOn(u32 notify_on);
 	void setNotifyOnDecoIds(std::set<u32> *notify_on_deco_ids);
 
-	bool addEvent(GenNotifyType type, v3s16 pos, u32 id=0);
+	bool addEvent(GenNotifyType type, const v3s16 &pos, u32 id=0);
 	void getEvents(std::map<std::string, std::vector<v3s16> > &event_map);
 	void clearEvents();
 
@@ -188,12 +188,12 @@ public:
 
 	void updateLiquid(UniqueQueue<v3s16> *trans_liquid, v3s16 nmin, v3s16 nmax);
 
-	void setLighting(u8 light, v3s16 nmin, v3s16 nmax);
-	void lightSpread(VoxelArea &a, v3s16 p, u8 light);
-	void calcLighting(v3s16 nmin, v3s16 nmax, v3s16 full_nmin, v3s16 full_nmax,
+	void setLighting(u8 light, const v3s16 &nmin, const v3s16 &nmax);
+	void lightSpread(VoxelArea &a, const v3s16 &p, u8 light);
+	void calcLighting(const v3s16 &nmin, const v3s16 &nmax, const v3s16 &full_nmin, const v3s16 &full_nmax,
 		bool propagate_shadow = true);
-	void propagateSunlight(v3s16 nmin, v3s16 nmax, bool propagate_shadow);
-	void spreadLight(v3s16 nmin, v3s16 nmax);
+	void propagateSunlight(const v3s16 &nmin, const v3s16 &nmax, bool propagate_shadow);
+	void spreadLight(const v3s16 &nmin, const v3s16 &nmax);
 
 	virtual void makeChunk(BlockMakeData *data) {}
 	virtual int getGroundLevelAtPoint(v2s16 p) { return 0; }
@@ -217,7 +217,7 @@ private:
 	// isLiquidHorizontallyFlowable() is a helper function for updateLiquid()
 	// that checks whether there are floodable nodes without liquid beneath
 	// the node at index vi.
-	inline bool isLiquidHorizontallyFlowable(u32 vi, v3s16 em);
+	inline bool isLiquidHorizontallyFlowable(u32 vi, const v3s16 &em);
 };
 
 /*

@@ -276,7 +276,7 @@ void DungeonGen::makeDungeon(v3s16 start_padding)
 }
 
 
-void DungeonGen::makeRoom(v3s16 roomsize, v3s16 roomplace)
+void DungeonGen::makeRoom(v3s16 roomsize, const v3s16 &roomplace)
 {
 	MapNode n_wall(dp.c_wall);
 	MapNode n_air(CONTENT_AIR);
@@ -364,7 +364,7 @@ void DungeonGen::makeRoom(v3s16 roomsize, v3s16 roomplace)
 }
 
 
-void DungeonGen::makeFill(v3s16 place, v3s16 size,
+void DungeonGen::makeFill(const v3s16 &place, v3s16 size,
 	u8 avoid_flags, MapNode n, u8 or_flags)
 {
 	for (s16 z = 0; z < size.Z; z++)
@@ -382,14 +382,14 @@ void DungeonGen::makeFill(v3s16 place, v3s16 size,
 }
 
 
-void DungeonGen::makeHole(v3s16 place)
+void DungeonGen::makeHole(const v3s16 &place)
 {
 	makeFill(place, dp.holesize, 0, MapNode(CONTENT_AIR),
 		VMANIP_FLAG_DUNGEON_INSIDE);
 }
 
 
-void DungeonGen::makeDoor(v3s16 doorplace, v3s16 doordir)
+void DungeonGen::makeDoor(const v3s16 &doorplace, const v3s16 &doordir)
 {
 	makeHole(doorplace);
 
@@ -400,7 +400,7 @@ void DungeonGen::makeDoor(v3s16 doorplace, v3s16 doordir)
 }
 
 
-void DungeonGen::makeCorridor(v3s16 doorplace, v3s16 doordir,
+void DungeonGen::makeCorridor(const v3s16 &doorplace, const v3s16 &doordir,
 	v3s16 &result_place, v3s16 &result_dir)
 {
 	makeHole(doorplace);

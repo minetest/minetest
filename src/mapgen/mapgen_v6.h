@@ -149,7 +149,7 @@ public:
 
 	s16 find_stone_level(v2s16 p2d);
 	bool block_is_underground(u64 seed, v3s16 blockpos);
-	s16 find_ground_level_from_noise(u64 seed, v2s16 p2d, s16 precision);
+	s16 find_ground_level_from_noise(u64 seed, const v2s16 &p2d, s16 precision);
 
 	float getHumidity(v2s16 p);
 	float getTreeAmount(v2s16 p);
@@ -168,7 +168,7 @@ public:
 	void addMud();
 	void flowMud(s16 &mudflow_minpos, s16 &mudflow_maxpos);
 	void moveMud(u32 remove_index, u32 place_index,
-		u32 above_remove_index, v2s16 pos, v3s16 em);
+		u32 above_remove_index, v2s16 pos, const v3s16 &em);
 	void growGrass();
 	void placeTreesAndJungleGrass();
 	virtual void generateCaves(int max_stone_y);

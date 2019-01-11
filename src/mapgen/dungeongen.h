@@ -86,12 +86,12 @@ public:
 		v3s16 full_node_min, v3s16 full_node_max);
 
 	void makeDungeon(v3s16 start_padding);
-	void makeRoom(v3s16 roomsize, v3s16 roomplace);
-	void makeCorridor(v3s16 doorplace, v3s16 doordir,
+	void makeRoom(v3s16 roomsize, const v3s16 &roomplace);
+	void makeCorridor(const v3s16 &doorplace, const v3s16 &doordir,
 		v3s16 &result_place, v3s16 &result_dir);
-	void makeDoor(v3s16 doorplace, v3s16 doordir);
-	void makeFill(v3s16 place, v3s16 size, u8 avoid_flags, MapNode n, u8 or_flags);
-	void makeHole(v3s16 place);
+	void makeDoor(const v3s16 &doorplace, const v3s16 &doordir);
+	void makeFill(const v3s16 &place, v3s16 size, u8 avoid_flags, MapNode n, u8 or_flags);
+	void makeHole(const v3s16 &place);
 
 	bool findPlaceForDoor(v3s16 &result_place, v3s16 &result_dir);
 	bool findPlaceForRoomDoor(v3s16 roomsize, v3s16 &result_doorplace,

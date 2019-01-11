@@ -328,7 +328,7 @@ void Mapgen::getSurfaces(v2s16 p2d, s16 ymin, s16 ymax,
 }
 
 
-inline bool Mapgen::isLiquidHorizontallyFlowable(u32 vi, v3s16 em)
+inline bool Mapgen::isLiquidHorizontallyFlowable(u32 vi, const v3s16 &em)
 {
 	u32 vi_neg_x = vi;
 	VoxelArea::add_x(em, vi_neg_x, -1);
@@ -413,7 +413,7 @@ void Mapgen::updateLiquid(UniqueQueue<v3s16> *trans_liquid, v3s16 nmin, v3s16 nm
 }
 
 
-void Mapgen::setLighting(u8 light, v3s16 nmin, v3s16 nmax)
+void Mapgen::setLighting(u8 light, const v3s16 &nmin, const v3s16 &nmax)
 {
 	ScopeProfiler sp(g_profiler, "EmergeThread: mapgen lighting update", SPT_AVG);
 	VoxelArea a(nmin, nmax);
@@ -428,7 +428,7 @@ void Mapgen::setLighting(u8 light, v3s16 nmin, v3s16 nmax)
 }
 
 
-void Mapgen::lightSpread(VoxelArea &a, v3s16 p, u8 light)
+void Mapgen::lightSpread(VoxelArea &a, const v3s16 &p, u8 light)
 {
 	if (light <= 1 || !a.contains(p))
 		return;
@@ -469,7 +469,7 @@ void Mapgen::lightSpread(VoxelArea &a, v3s16 p, u8 light)
 }
 
 
-void Mapgen::calcLighting(v3s16 nmin, v3s16 nmax, v3s16 full_nmin, v3s16 full_nmax,
+void Mapgen::calcLighting(const v3s16 &nmin, const v3s16 &nmax, const v3s16 &full_nmin, const v3s16 &full_nmax,
 	bool propagate_shadow)
 {
 	ScopeProfiler sp(g_profiler, "EmergeThread: mapgen lighting update", SPT_AVG);
@@ -482,7 +482,7 @@ void Mapgen::calcLighting(v3s16 nmin, v3s16 nmax, v3s16 full_nmin, v3s16 full_nm
 }
 
 
-void Mapgen::propagateSunlight(v3s16 nmin, v3s16 nmax, bool propagate_shadow)
+void Mapgen::propagateSunlight(const v3s16 &nmin, const v3s16 &nmax, bool propagate_shadow)
 {
 	//TimeTaker t("propagateSunlight");
 	VoxelArea a(nmin, nmax);
@@ -518,7 +518,7 @@ void Mapgen::propagateSunlight(v3s16 nmin, v3s16 nmax, bool propagate_shadow)
 }
 
 
-void Mapgen::spreadLight(v3s16 nmin, v3s16 nmax)
+void Mapgen::spreadLight(const v3s16 &nmin, const v3s16 &nmax)
 {
 	//TimeTaker t("spreadLight");
 	VoxelArea a(nmin, nmax);
@@ -1008,7 +1008,7 @@ void GenerateNotifier::setNotifyOnDecoIds(std::set<u32> *notify_on_deco_ids)
 }
 
 
-bool GenerateNotifier::addEvent(GenNotifyType type, v3s16 pos, u32 id)
+bool GenerateNotifier::addEvent(GenNotifyType type, const v3s16 &pos, u32 id)
 {
 	if (!(m_notify_on & (1 << type)))
 		return false;

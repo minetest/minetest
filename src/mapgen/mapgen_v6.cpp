@@ -315,7 +315,7 @@ float MapgenV6::baseTerrainLevelFromMap(int index)
 }
 
 
-s16 MapgenV6::find_ground_level_from_noise(u64 seed, v2s16 p2d, s16 precision)
+s16 MapgenV6::find_ground_level_from_noise(u64 seed, const v2s16 &p2d, s16 precision)
 {
 	return baseTerrainLevelFromNoise(p2d) + MGV6_AVERAGE_MUD_AMOUNT;
 }
@@ -892,7 +892,7 @@ void MapgenV6::flowMud(s16 &mudflow_minpos, s16 &mudflow_maxpos)
 
 
 void MapgenV6::moveMud(u32 remove_index, u32 place_index,
-	u32 above_remove_index, v2s16 pos, v3s16 em)
+	u32 above_remove_index, v2s16 pos, const v3s16 &em)
 {
 	MapNode n_air(CONTENT_AIR);
 	// Copy mud from old place to new place

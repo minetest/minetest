@@ -175,7 +175,7 @@ void BiomeParamsOriginal::writeParams(Settings *settings) const
 ////////////////////////////////////////////////////////////////////////////////
 
 BiomeGenOriginal::BiomeGenOriginal(BiomeManager *biomemgr,
-	BiomeParamsOriginal *params, v3s16 chunksize)
+	BiomeParamsOriginal *params, const v3s16 &chunksize)
 {
 	m_bmgr   = biomemgr;
 	m_params = params;

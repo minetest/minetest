@@ -182,5 +182,5 @@ public:
 
 	void clear();
 
-	size_t placeAllOres(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax);
+	size_t placeAllOres(Mapgen *mg, u32 blockseed, const v3s16 &nmin, const v3s16 &nmax);
 };
