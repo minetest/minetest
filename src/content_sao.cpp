@@ -41,7 +41,7 @@ std::map<u16, ServerActiveObject::Factory> ServerActiveObject::m_types;
 class TestSAO : public ServerActiveObject
 {
 public:
-	TestSAO(ServerEnvironment *env, v3f pos):
+	TestSAO(ServerEnvironment *env, const v3f &pos):
 		ServerActiveObject(env, pos),
 		m_timer1(0),
 		m_age(0)
@@ -51,7 +51,7 @@ public:
 	ActiveObjectType getType() const
 	{ return ACTIVEOBJECT_TYPE_TEST; }
 
-	static ServerActiveObject* create(ServerEnvironment *env, v3f pos,
+	static ServerActiveObject* create(ServerEnvironment *env, const v3f &pos,
 			const std::string &data)
 	{
 		return new TestSAO(env, pos);
@@ -111,7 +111,7 @@ TestSAO proto_TestSAO(NULL, v3f(0,0,0));
 	UnitSAO
  */
 
-UnitSAO::UnitSAO(ServerEnvironment *env, v3f pos):
+UnitSAO::UnitSAO(ServerEnvironment *env, const v3f &pos):
 	ServerActiveObject(env, pos)
 {
 	// Initialize something to armor groups
@@ -296,7 +296,7 @@ void UnitSAO::notifyObjectPropertiesModified()
 // Prototype (registers item for deserialization)
 LuaEntitySAO proto_LuaEntitySAO(NULL, v3f(0,0,0), "_prototype", "");
 
-LuaEntitySAO::LuaEntitySAO(ServerEnvironment *env, v3f pos,
+LuaEntitySAO::LuaEntitySAO(ServerEnvironment *env, const v3f &pos,
 		const std::string &name, const std::string &state):
 	UnitSAO(env, pos),
 	m_init_name(name),
@@ -342,7 +342,7 @@ void LuaEntitySAO::addedToEnvironment(u32 dtime_s)
 	}
 }
 
-ServerActiveObject* LuaEntitySAO::create(ServerEnvironment *env, v3f pos,
+ServerActiveObject* LuaEntitySAO::create(ServerEnvironment *env, const v3f &pos,
 		const std::string &data)
 {
 	std::string name;
@@ -727,7 +727,7 @@ s16 LuaEntitySAO::getHP() const
 	return m_hp;
 }
 
-void LuaEntitySAO::setVelocity(v3f velocity)
+void LuaEntitySAO::setVelocity(const v3f &velocity)
 {
 	m_velocity = velocity;
 }
@@ -737,7 +737,7 @@ v3f LuaEntitySAO::getVelocity()
 	return m_velocity;
 }
 
-void LuaEntitySAO::setAcceleration(v3f acceleration)
+void LuaEntitySAO::setAcceleration(const v3f &acceleration)
 {
 	m_acceleration = acceleration;
 }
@@ -761,7 +761,7 @@ std::string LuaEntitySAO::getTextureMod() const
 	return m_current_texture_modifier;
 }
 
-void LuaEntitySAO::setSprite(v2s16 p, int num_frames, float framelength,
+void LuaEntitySAO::setSprite(const v2s16 &p, int num_frames, float framelength,
 		bool select_horiz_by_yawpitch)
 {
 	std::string str = gob_cmd_set_sprite(

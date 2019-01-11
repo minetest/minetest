@@ -29,7 +29,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 class UnitSAO: public ServerActiveObject
 {
 public:
-	UnitSAO(ServerEnvironment *env, v3f pos);
+	UnitSAO(ServerEnvironment *env, const v3f &pos);
 	virtual ~UnitSAO() = default;
 
 	void setRotation(v3f rotation) { m_rotation = rotation; }
@@ -103,7 +103,7 @@ private:
 class LuaEntitySAO : public UnitSAO
 {
 public:
-	LuaEntitySAO(ServerEnvironment *env, v3f pos,
+	LuaEntitySAO(ServerEnvironment *env, const v3f &pos,
 	             const std::string &name, const std::string &state);
 	~LuaEntitySAO();
 	ActiveObjectType getType() const
@@ -111,7 +111,7 @@ public:
 	ActiveObjectType getSendType() const
 	{ return ACTIVEOBJECT_TYPE_GENERIC; }
 	virtual void addedToEnvironment(u32 dtime_s);
-	static ServerActiveObject* create(ServerEnvironment *env, v3f pos,
+	static ServerActiveObject* create(ServerEnvironment *env, const v3f &pos,
 			const std::string &data);
 	void step(float dtime, bool send_recommended);
 	std::string getClientInitializationData(u16 protocol_version);
@@ -130,18 +130,18 @@ public:
 	void setHP(s16 hp, const PlayerHPChangeReason &reason);
 	s16 getHP() const;
 	/* LuaEntitySAO-specific */
-	void setVelocity(v3f velocity);
+	void setVelocity(const v3f &velocity);
 	void addVelocity(v3f velocity)
 	{
 		m_velocity += velocity;
 	}
 	v3f getVelocity();
-	void setAcceleration(v3f acceleration);
+	void setAcceleration(const v3f &acceleration);
 	v3f getAcceleration();
 
 	void setTextureMod(const std::string &mod);
 	std::string getTextureMod() const;
-	void setSprite(v2s16 p, int num_frames, float framelength,
+	void setSprite(const v2s16 &p, int num_frames, float framelength,
 			bool select_horiz_by_yawpitch);
 	std::string getName();
 	bool getCollisionBox(aabb3f *toset) const;

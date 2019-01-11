@@ -23,7 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "constants.h" // BS
 #include "log.h"
 
-ServerActiveObject::ServerActiveObject(ServerEnvironment *env, v3f pos):
+ServerActiveObject::ServerActiveObject(ServerEnvironment *env, const v3f &pos):
 	ActiveObject(0),
 	m_env(env),
 	m_base_position(pos)
@@ -31,7 +31,7 @@ ServerActiveObject::ServerActiveObject(ServerEnvironment *env, v3f pos):
 }
 
 ServerActiveObject* ServerActiveObject::create(ActiveObjectType type,
-		ServerEnvironment *env, u16 id, v3f pos,
+		ServerEnvironment *env, u16 id, const v3f &pos,
 		const std::string &data)
 {
 	// Find factory function
