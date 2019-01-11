@@ -97,7 +97,7 @@ struct InventoryLocation
 	std::string dump() const;
 	void serialize(std::ostream &os) const;
 	void deSerialize(std::istream &is);
-	void deSerialize(std::string s);
+	void deSerialize(const std::string &s);
 };
 
 struct InventoryAction;
