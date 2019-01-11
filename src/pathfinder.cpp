@@ -137,7 +137,7 @@ public:
 protected:
 	Pathfinder *m_pathf;
 
-	void initNode(v3s16 ipos, PathGridnode *p_node);
+	void initNode(const v3s16 &ipos, PathGridnode *p_node);
 };
 
 class ArrayGridNodeContainer : public GridNodeContainer {
@@ -201,21 +201,21 @@ private:
 	 * @param ipos a index position
 	 * @return map position
 	 */
-	v3s16          getRealPos(v3s16 ipos);
+	v3s16          getRealPos(const v3s16 &ipos);
 
 	/**
 	 * transform mappos to index pos
 	 * @param pos a real pos
 	 * @return index position
 	 */
-	v3s16          getIndexPos(v3s16 pos);
+	v3s16          getIndexPos(const v3s16 &pos);
 
 	/**
 	 * get gridnode at a specific index position
 	 * @param ipos index position
 	 * @return gridnode for index
 	 */
-	PathGridnode &getIndexElement(v3s16 ipos);
+	PathGridnode &getIndexElement(const v3s16 &ipos);
 
 	/**
 	 * Get gridnode at a specific index position
@@ -228,7 +228,7 @@ private:
 	 * @param pos 3d position
 	 * @return pos *-1
 	 */
-	v3s16          invert(v3s16 pos);
+	v3s16          invert(const v3s16 &pos);
 
 	/**
 	 * check if a index is within current search area
@@ -274,7 +274,7 @@ private:
 	 * @param dir direction to move to
 	 * @return cost information
 	 */
-	PathCost     calcCost(v3s16 pos, v3s16 dir);
+	PathCost     calcCost(const v3s16 &pos, const v3s16 &dir);
 
 	/**
 	 * recursive update whole search areas total cost information
@@ -284,7 +284,7 @@ private:
 	 * @param level current recursion depth
 	 * @return true/false path to destination has been found
 	 */
-	bool          updateAllCosts(v3s16 ipos, v3s16 srcdir, int current_cost, int level);
+	bool          updateAllCosts(const v3s16 &ipos, const v3s16 &srcdir, int current_cost, int level);
 
 	/**
 	 * recursive try to find a patrh to destionation
@@ -294,7 +294,7 @@ private:
 	 * @param level current recursion depth
 	 * @return true/false path to destination has been found
 	 */
-	bool          updateCostHeuristic(v3s16 ipos, v3s16 srcdir, int current_cost, int level);
+	bool          updateCostHeuristic(const v3s16 &ipos, const v3s16 &srcdir, int current_cost, int level);
 
 	/**
 	 * recursive build a vector containing all nodes from source to destination
@@ -302,7 +302,7 @@ private:
 	 * @param pos pos to check next
 	 * @param level recursion depth
 	 */
-	void          buildPath(std::vector<v3s16> &path, v3s16 pos, int level);
+	void          buildPath(std::vector<v3s16> &path, const v3s16 &pos, int level);
 
 	/* variables */
 	int m_max_index_x = 0;            /**< max index of search area in x direction  */
@@ -383,8 +383,8 @@ private:
 /******************************************************************************/
 
 std::vector<v3s16> get_path(ServerEnvironment* env,
-							v3s16 source,
-							v3s16 destination,
+							const v3s16 &source,
+							const v3s16 &destination,
 							unsigned int searchdistance,
 							unsigned int max_jump,
 							unsigned int max_drop,
@@ -491,7 +491,7 @@ void PathGridnode::setCost(v3s16 dir, const PathCost &cost)
 	}
 }
 
-void GridNodeContainer::initNode(v3s16 ipos, PathGridnode *p_node)
+void GridNodeContainer::initNode(const v3s16 &ipos, PathGridnode *p_node)
 {
 	const NodeDefManager *ndef = m_pathf->m_env->getGameDef()->ndef();
 	PathGridnode &elem = *p_node;
@@ -747,13 +747,13 @@ Pathfinder::~Pathfinder()
 	delete m_nodes_container;
 }
 /******************************************************************************/
-v3s16 Pathfinder::getRealPos(v3s16 ipos)
+v3s16 Pathfinder::getRealPos(const v3s16 &ipos)
 {
 	return m_limits.MinEdge + ipos;
 }
 
 /******************************************************************************/
-PathCost Pathfinder::calcCost(v3s16 pos, v3s16 dir)
+PathCost Pathfinder::calcCost(const v3s16 &pos, const v3s16 &dir)
 {
 	const NodeDefManager *ndef = m_env->getGameDef()->ndef();
 	PathCost retval;
@@ -865,13 +865,13 @@ PathCost Pathfinder::calcCost(v3s16 pos, v3s16 dir)
 }
 
 /******************************************************************************/
-v3s16 Pathfinder::getIndexPos(v3s16 pos)
+v3s16 Pathfinder::getIndexPos(const v3s16 &pos)
 {
 	return pos - m_limits.MinEdge;
 }
 
 /******************************************************************************/
-PathGridnode &Pathfinder::getIndexElement(v3s16 ipos)
+PathGridnode &Pathfinder::getIndexElement(const v3s16 &ipos)
 {
 	return m_nodes_container->access(ipos);
 }
@@ -897,7 +897,7 @@ bool Pathfinder::isValidIndex(v3s16 index)
 }
 
 /******************************************************************************/
-v3s16 Pathfinder::invert(v3s16 pos)
+v3s16 Pathfinder::invert(const v3s16 &pos)
 {
 	v3s16 retval = pos;
 
@@ -909,8 +909,8 @@ v3s16 Pathfinder::invert(v3s16 pos)
 }
 
 /******************************************************************************/
-bool Pathfinder::updateAllCosts(v3s16 ipos,
-								v3s16 srcdir,
+bool Pathfinder::updateAllCosts(const v3s16 &ipos,
+								const v3s16 &srcdir,
 								int current_cost,
 								int level)
 {
@@ -1059,8 +1059,8 @@ v3s16 Pathfinder::getDirHeuristic(std::vector<v3s16> &directions, PathGridnode &
 }
 
 /******************************************************************************/
-bool Pathfinder::updateCostHeuristic(	v3s16 ipos,
-										v3s16 srcdir,
+bool Pathfinder::updateCostHeuristic(	const v3s16 &ipos,
+										const v3s16 &srcdir,
 										int current_cost,
 										int level)
 {
@@ -1162,7 +1162,7 @@ bool Pathfinder::updateCostHeuristic(	v3s16 ipos,
 }
 
 /******************************************************************************/
-void Pathfinder::buildPath(std::vector<v3s16> &path, v3s16 pos, int level)
+void Pathfinder::buildPath(std::vector<v3s16> &path, const v3s16 &pos, int level)
 {
 	level ++;
 	if (level > 700) {
