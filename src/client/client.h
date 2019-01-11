@@ -257,7 +257,7 @@ public:
 	const ModSpec* getModSpec(const std::string &modname) const override;
 
 	// Causes urgent mesh updates (unlike Map::add/removeNodeWithEvent)
-	void removeNode(v3s16 p);
+	void removeNode(const v3s16 &p);
 
 	/**
 	 * Helper function for Client Side Modding
@@ -266,8 +266,8 @@ public:
 	 * @param is_valid_position
 	 * @return
 	 */
-	MapNode getNode(v3s16 p, bool *is_valid_position);
-	void addNode(v3s16 p, MapNode n, bool remove_metadata = true);
+	MapNode getNode(const v3s16 &p, bool *is_valid_position);
+	void addNode(const v3s16 &p, MapNode n, bool remove_metadata = true);
 
 	void setPlayerControl(PlayerControl &control);
 
@@ -294,7 +294,7 @@ public:
 
 	int getCrackLevel();
 	v3s16 getCrackPos();
-	void setCrack(int level, v3s16 pos);
+	void setCrack(int level, const v3s16 &pos);
 
 	u16 getHP();
 
@@ -309,9 +309,9 @@ public:
 
 	u64 getMapSeed(){ return m_map_seed; }
 
-	void addUpdateMeshTask(v3s16 blockpos, bool ack_to_server=false, bool urgent=false);
+	void addUpdateMeshTask(const v3s16 &blockpos, bool ack_to_server=false, bool urgent=false);
 	// Including blocks at appropriate edges
-	void addUpdateMeshTaskWithEdge(v3s16 blockpos, bool ack_to_server=false, bool urgent=false);
+	void addUpdateMeshTaskWithEdge(const v3s16 &blockpos, bool ack_to_server=false, bool urgent=false);
 	void addUpdateMeshTaskForNode(v3s16 nodepos, bool ack_to_server=false, bool urgent=false);
 
 	void updateCameraOffset(v3s16 camera_offset)

@@ -1287,7 +1287,7 @@ void Client::sendPlayerItem(u16 item)
 	Send(&pkt);
 }
 
-void Client::removeNode(v3s16 p)
+void Client::removeNode(const v3s16 &p)
 {
 	std::map<v3s16, MapBlock*> modified_blocks;
 
@@ -1309,7 +1309,7 @@ void Client::removeNode(v3s16 p)
  * @param is_valid_position
  * @return
  */
-MapNode Client::getNode(v3s16 p, bool *is_valid_position)
+MapNode Client::getNode(const v3s16 &p, bool *is_valid_position)
 {
 	if (checkCSMRestrictionFlag(CSMRestrictionFlags::CSM_RF_LOOKUP_NODES)) {
 		v3s16 ppos = floatToInt(m_env.getLocalPlayer()->getPosition(), BS);
@@ -1321,7 +1321,7 @@ MapNode Client::getNode(v3s16 p, bool *is_valid_position)
 	return m_env.getMap().getNodeNoEx(p, is_valid_position);
 }
 
-void Client::addNode(v3s16 p, MapNode n, bool remove_metadata)
+void Client::addNode(const v3s16 &p, MapNode n, bool remove_metadata)
 {
 	//TimeTaker timer1("Client::addNode()");
 
@@ -1445,7 +1445,7 @@ v3s16 Client::getCrackPos()
 	return m_crack_pos;
 }
 
-void Client::setCrack(int level, v3s16 pos)
+void Client::setCrack(int level, const v3s16 &pos)
 {
 	int old_crack_level = m_crack_level;
 	v3s16 old_crack_pos = m_crack_pos;
@@ -1528,7 +1528,7 @@ void Client::typeChatMessage(const std::wstring &message)
 	}
 }
 
-void Client::addUpdateMeshTask(v3s16 p, bool ack_to_server, bool urgent)
+void Client::addUpdateMeshTask(const v3s16 &p, bool ack_to_server, bool urgent)
 {
 	// Check if the block exists to begin with. In the case when a non-existing
 	// neighbor is automatically added, it may not. In that case we don't want
@@ -1540,7 +1540,7 @@ void Client::addUpdateMeshTask(v3s16 p, bool ack_to_server, bool urgent)
 	m_mesh_update_thread.updateBlock(&m_env.getMap(), p, ack_to_server, urgent);
 }
 
-void Client::addUpdateMeshTaskWithEdge(v3s16 blockpos, bool ack_to_server, bool urgent)
+void Client::addUpdateMeshTaskWithEdge(const v3s16 &blockpos, bool ack_to_server, bool urgent)
 {
 	try{
 		addUpdateMeshTask(blockpos, ack_to_server, urgent);

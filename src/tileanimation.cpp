@@ -73,7 +73,7 @@ void TileAnimationParams::determineParams(v2u32 texture_size, int *frame_count,
 	// caller should check for TAT_NONE
 }
 
-void TileAnimationParams::getTextureModifer(std::ostream &os, v2u32 texture_size, int frame) const
+void TileAnimationParams::getTextureModifer(std::ostream &os, const v2u32 &texture_size, int frame) const
 {
 	if (type == TAT_NONE)
 		return;
