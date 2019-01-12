@@ -195,6 +195,7 @@ std::vector<SubgameSpec> getAvailableGames()
 {
 	std::vector<SubgameSpec> specs;
 	std::set<std::string> gameids = getAvailableGameIds();
+	specs.reserve(gameids.size());
 	for (const auto &gameid : gameids)
 		specs.push_back(findSubgame(gameid));
 	return specs;
