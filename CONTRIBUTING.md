@@ -20,6 +20,10 @@ Contributions are welcome! Here's how you can help:
     - Check your code works as expected and document any changes to the Lua API.
 
 4. Commit & [push](https://help.github.com/articles/pushing-to-a-remote/) your changes to a new branch (not `master`, one change per branch)
+    - Commits should:
+        - Be short and concise. If your commit grows, consider splitting it to
+          multiple smaller commits.
+        - Focus on one thing only.
     - Commit messages should:
         - Use the present tense.
         - Be descriptive. See the commit messages by core developers for examples.
@@ -34,6 +38,8 @@ Contributions are welcome! Here's how you can help:
 5. Once you are happy with your changes, submit a pull request.
      - Open the [pull-request form](https://github.com/minetest/minetest/pull/new/master).
      - Add a description explaining what you've done (or if it's a work-in-progress - what you need to do).
+     - The commits should be easy to overview. Consider squashing similar
+       commits or splitting unrelated commits to a different pull request.
 
 ### A pull-request is considered merge-able when:
 
