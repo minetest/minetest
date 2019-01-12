@@ -152,7 +152,7 @@ void TestAreaStore::testSerialization()
 			1 + 2 +
 			6 + 6 + 2 + 6 +
 			6 + 6 + 2 + 6);
-	UASSERTEQ(std::string, str, str_wanted);
+	UASSERTEQ(const std::string &, str, str_wanted);
 
 	std::istringstream is(str);
 	store.deserialize(is);
