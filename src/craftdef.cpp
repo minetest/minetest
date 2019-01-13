@@ -112,6 +112,7 @@ static std::vector<std::string> craftGetItemNames(
 		const std::vector<std::string> &itemstrings, IGameDef *gamedef)
 {
 	std::vector<std::string> result;
+	result.reserve(itemstrings.size());
 	for (const auto &itemstring : itemstrings) {
 		result.push_back(craftGetItemName(itemstring, gamedef));
 	}
@@ -123,6 +124,7 @@ static std::vector<std::string> craftGetItemNames(
 		const std::vector<ItemStack> &items, IGameDef *gamedef)
 {
 	std::vector<std::string> result;
+	result.reserve(items.size());
 	for (const auto &item : items) {
 		result.push_back(item.name);
 	}
@@ -134,6 +136,7 @@ static std::vector<ItemStack> craftGetItems(
 		const std::vector<std::string> &items, IGameDef *gamedef)
 {
 	std::vector<ItemStack> result;
+	result.reserve(items.size());
 	for (const auto &item : items) {
 		result.emplace_back(std::string(item), (u16)1,
 			(u16)0, gamedef->getItemDefManager());
