@@ -274,7 +274,8 @@ void ModConfiguration::addModsFromConfig(
 	conf.readConfigFile(settings_path.c_str());
 	std::vector<std::string> names = conf.getNames();
 	for (const std::string &name : names) {
-		if (name.compare(0, 9, "load_mod_") == 0 && conf.getBool(name))
+		if (name.compare(0, 9, "load_mod_") == 0 && conf.get(name) != "false" &&
+				conf.get(name) != "nil")
 			load_mod_names.insert(name.substr(9));
 	}
 
