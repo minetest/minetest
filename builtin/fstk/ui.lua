@@ -92,9 +92,9 @@ function ui.update()
 		formspec = wordwrap_quickhack(gamedata.errormessage)
 		local error_title
 		if string.find(gamedata.errormessage, "ModError") then
-			error_title = fgettext("An error occured in a Lua script, such as a mod:")
+			error_title = fgettext("An error occurred in a Lua script, such as a mod:")
 		else
-			error_title = fgettext("An error occured:")
+			error_title = fgettext("An error occurred:")
 		end
 		formspec = "size[12,5]" ..
 				"label[0.5,0;" .. error_title ..
