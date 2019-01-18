@@ -33,6 +33,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define MGVALLEYS_HUMID_RIVERS     0x02
 #define MGVALLEYS_VARY_RIVER_DEPTH 0x04
 #define MGVALLEYS_ALT_DRY          0x08
+#define MGVALLEYS_CANYONS          0x10
 
 class BiomeManager;
 class BiomeGenOriginal;
@@ -108,4 +109,5 @@ private:
 	Noise *noise_valley_profile;
 
 	virtual int generateTerrain();
+	float getValleyHeight(int index, float valley_d, float valley_profile);
 };
