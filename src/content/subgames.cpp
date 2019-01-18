@@ -67,15 +67,19 @@ SubgameSpec findSubgame(const std::string &id)
 	std::vector<GameFindPath> find_paths;
 	while (!search_paths.at_end()) {
 		std::string path = search_paths.next(PATH_DELIM);
-		find_paths.emplace_back(path + DIR_DELIM + id, false);
-		find_paths.emplace_back(path + DIR_DELIM + id + "_game", false);
+		path.append(DIR_DELIM).append(id);
+		find_paths.emplace_back(path, false);
+		path.append("_game");
+		find_paths.emplace_back(path, false);
 	}
-	find_paths.emplace_back(
-			user + DIR_DELIM + "games" + DIR_DELIM + id + "_game", true);
-	find_paths.emplace_back(user + DIR_DELIM + "games" + DIR_DELIM + id, true);
-	find_paths.emplace_back(
-			share + DIR_DELIM + "games" + DIR_DELIM + id + "_game", false);
-	find_paths.emplace_back(share + DIR_DELIM + "games" + DIR_DELIM + id, false);
+
+	std::string game_base = DIR_DELIM;
+	game_base = game_base.append("games").append(DIR_DELIM).append(id);
+	std::string game_suffixed = game_base + "_game";
+	find_paths.emplace_back(user + game_suffixed, true);
+	find_paths.emplace_back(user + game_base, true);
+	find_paths.emplace_back(share + game_suffixed, false);
+	find_paths.emplace_back(share + game_base, false);
 
 	// Find game directory
 	std::string game_path;
