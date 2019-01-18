@@ -284,12 +284,6 @@ void MapgenValleys::makeChunk(BlockMakeData *data)
 
 int MapgenValleys::getSpawnLevelAtPoint(v2s16 p)
 {
-	// Check if in a river channel
-	float n_rivers = NoisePerlin2D(&noise_rivers->np, p.X, p.Y, seed);
-	if (std::fabs(n_rivers) <= river_size_factor)
-		// Unsuitable spawn point
-		return MAX_MAP_GENERATION_LIMIT;
-
 	float n_slope          = NoisePerlin2D(&noise_inter_valley_slope->np, p.X, p.Y, seed);
 	float n_terrain_height = NoisePerlin2D(&noise_terrain_height->np, p.X, p.Y, seed);
 	float n_valley         = NoisePerlin2D(&noise_valley_depth->np, p.X, p.Y, seed);
@@ -297,12 +291,24 @@ int MapgenValleys::getSpawnLevelAtPoint(v2s16 p)
 
 	float valley_d = n_valley * n_valley;
 	float base = n_terrain_height + valley_d;
-	float river = std::fabs(n_rivers) - river_size_factor;
-	float tv = std::fmax(river / n_valley_profile, 0.0f);
-	float valley_h = valley_d * (1.0f - std::exp(-tv * tv));
-	float surface_y = base + valley_h;
-	float slope = n_slope * valley_h;
+	float surface_y = base;
 	float river_y = base - 1.0f;
+	float slope = 0.0f;
+
+	if (spflags & MGVALLEYS_CANYONS) {
+		float n_rivers = NoisePerlin3D(&noise_rivers->np, p.X, std::floor(base), p.Y, seed);
+		if (std::fabs(n_rivers) <= river_size_factor)
+			return MAX_MAP_GENERATION_LIMIT;
+	} else {
+		float n_rivers = NoisePerlin2D(&noise_rivers->np, p.X, p.Y, seed);
+		if (std::fabs(n_rivers) <= river_size_factor)
+			return MAX_MAP_GENERATION_LIMIT;
+		float river = std::fabs(n_rivers) - river_size_factor;
+		float tv = std::fmax(river / n_valley_profile, 0.0f);
+		float valley_h = valley_d * (1.0f - std::exp(-tv * tv));
+		surface_y = base + valley_h;
+		slope = n_slope * valley_h;
+	}
 
 	// Raising the maximum spawn level above 'water_level + 16' is necessary for custom
 	// parameters that set average terrain level much higher than water_level.
@@ -314,6 +320,15 @@ int MapgenValleys::getSpawnLevelAtPoint(v2s16 p)
 	// Starting spawn search at max_spawn_y + 128 ensures 128 nodes of open
 	// space above spawn position. Avoids spawning in possibly sealed voids.
 	for (s16 y = max_spawn_y + 128; y >= water_level; y--) {
+		if (spflags & MGVALLEYS_CANYONS) {
+			float n_rivers = NoisePerlin3D(&noise_rivers->np, p.X, y, p.Y, seed);
+			float river = std::fabs(n_rivers) - river_size_factor;
+			float tv = std::fmax(river / n_valley_profile, 0.0f);
+			float valley_h = valley_d * (1.0f - std::exp(-tv * tv));
+			surface_y = base + valley_h;
+			slope = n_slope * valley_h;
+		}
+
 		float n_fill = NoisePerlin3D(&noise_inter_valley_fill->np, p.X, y, p.Y, seed);
 		float surface_delta = (float)y - surface_y;
 		float density = slope * n_fill - surface_delta;
@@ -395,8 +410,10 @@ int MapgenValleys::generateTerrain()
 			float valley_h = getValleyHeight(index_2d, valley_d, n_valley_profile);
 			// Approximate height of the terrain
 			surface_y = base + valley_h;
-			if (valley_h < 0.0f && surface_y < (float)(water_level - 3))
-				surface_y = std::fmin(base, (float)(water_level - 3));
+			if (valley_h < 0.0f)
+				surface_y = std::fmin(
+					std::fmax(surface_y, (float)(water_level - 3)),
+					base);
 			slope = n_slope * std::fmax(valley_h, 0.0f);
 		}
 		// River water surface is 1 node below river banks
@@ -430,8 +447,10 @@ int MapgenValleys::generateTerrain()
 					float valley_h = getValleyHeight(index_3d, valley_d, n_valley_profile);
 					// Approximate height of the terrain
 					surface_y = base + valley_h;
-					if (valley_h < 0.0f && surface_y < (float)(water_level - 3))
-						surface_y = std::fmin(base, (float)(water_level - 3));
+					if (valley_h < 0.0f)
+						surface_y = std::fmin(
+							std::fmax(surface_y, (float)(water_level - 3)),
+							base);
 					slope = n_slope * valley_h;
 				}
 				float n_fill = noise_inter_valley_fill->result[index_3d];
