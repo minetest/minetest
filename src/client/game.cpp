@@ -41,7 +41,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "filesys.h"
 #include "gettext.h"
 #include "gui/guiChatConsole.h"
-#include "gui/guiConfirmRegistration.h"
 #include "gui/guiFormSpecMenu.h"
 #include "gui/guiKeyChangeMenu.h"
 #include "gui/guiPasswordChange.h"
@@ -833,7 +832,6 @@ private:
 
 	EventManager *eventmgr = nullptr;
 	QuicktuneShortcutter *quicktune = nullptr;
-	bool registration_confirmation_shown = false;
 
 	std::unique_ptr<GameUI> m_game_ui;
 	GUIChatConsole *gui_chat_console = nullptr; // Free using ->Drop()
@@ -1482,8 +1480,6 @@ bool Game::connectToServer(const std::string &playername,
 	if (!client)
 		return false;
 
-	client->m_simple_singleplayer_mode = simple_singleplayer_mode;
-
 	infostream << "Connecting to server at ";
 	connect_address.print(&infostream);
 	infostream << std::endl;
@@ -1538,27 +1534,16 @@ bool Game::connectToServer(const std::string &playername,
 				break;
 			}
 
-			if (client->m_is_registration_confirmation_state) {
-				if (registration_confirmation_shown) {
-					// Keep drawing the GUI
-					RenderingEngine::draw_menu_scene(guienv, dtime, true);
-				} else {
-					registration_confirmation_shown = true;
-					(new GUIConfirmRegistration(guienv, guienv->getRootGUIElement(), -1,
-						   &g_menumgr, client, playername, password, *address, connection_aborted))->drop();
-				}
-			} else {
-				wait_time += dtime;
-				// Only time out if we aren't waiting for the server we started
-				if (!address->empty() && wait_time > 10) {
-					*error_message = "Connection timed out.";
-					errorstream << *error_message << std::endl;
-					break;
-				}
-
-				// Update status
-				showOverlayMessage(N_("Connecting to server..."), dtime, 20);
+			wait_time += dtime;
+			// Only time out if we aren't waiting for the server we started
+			if (!address->empty() && wait_time > 10) {
+				*error_message = "Connection timed out.";
+				errorstream << *error_message << std::endl;
+				break;
 			}
+
+			// Update status
+			showOverlayMessage(N_("Connecting to server..."), dtime, 20);
 		}
 	} catch (con::PeerNotFoundException &e) {
 		// TODO: Should something be done here? At least an info/error

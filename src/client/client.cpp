@@ -343,10 +343,6 @@ void Client::step(float dtime)
 		initial_step = false;
 	}
 	else if(m_state == LC_Created) {
-		if (m_is_registration_confirmation_state) {
-			// Waiting confirmation
-			return;
-		}
 		float &counter = m_connection_reinit_timer;
 		counter -= dtime;
 		if(counter <= 0.0) {
@@ -998,18 +994,6 @@ void Client::sendInit(const std::string &playerName)
 	pkt << playerName;
 
 	Send(&pkt);
-}
-
-void Client::promptConfirmRegistration(AuthMechanism chosen_auth_mechanism)
-{
-	m_chosen_auth_mech = chosen_auth_mechanism;
-	m_is_registration_confirmation_state = true;
-}
-
-void Client::confirmRegistration()
-{
-	m_is_registration_confirmation_state = false;
-	startAuth(m_chosen_auth_mech);
 }
 
 void Client::startAuth(AuthMechanism chosen_auth_mechanism)
