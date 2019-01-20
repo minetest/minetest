@@ -607,7 +607,8 @@ local function create_change_setting_formspec(dialogdata)
 		if dimension == 3 then
 			add_field(3.6, "te_spready", fgettext("Y spread"), t[4])
 		else
-			fields[#fields + 1] = "label[4," .. height - 0.2 .. ";"..fgettext("2D Noise").."]"
+			fields[#fields + 1] = "label[4," .. height - 0.2 .. ";" ..
+					fgettext("2D Noise") .. "]"
 		end
 		add_field(6.9, "te_spreadz", fgettext("Z spread"), t[5])
 		height = height + 1.1
@@ -632,11 +633,14 @@ local function create_change_setting_formspec(dialogdata)
 		end
 		-- Flags
 		formspec = table.concat(fields)
-				.. "checkbox[0.5," .. height - 0.6 .. ";cb_defaults;"..fgettext("defaults")..";" -- defaults
+				.. "checkbox[0.5," .. height - 0.6 .. ";cb_defaults;"
+				.. fgettext("defaults") .. ";" -- defaults
 				.. tostring(flags["defaults"] == true) .. "]" -- to get false if nil
-				.. "checkbox[5," .. height - 0.6 .. ";cb_eased;"..fgettext("eased")..";" -- eased
+				.. "checkbox[5," .. height - 0.6 .. ";cb_eased;"
+				.. fgettext("eased") .. ";" -- eased
 				.. tostring(flags["eased"] == true) .. "]"
-				.. "checkbox[5," .. height - 0.15 .. ";cb_absvalue;"..fgettext("absvalue")..";" -- absvalue
+				.. "checkbox[5," .. height - 0.15 .. ";cb_absvalue;"
+				.. fgettext("absvalue") .. ";" -- absvalue
 				.. tostring(flags["absvalue"] == true) .. "]"
 		height = height + 1
 
@@ -649,11 +653,14 @@ local function create_change_setting_formspec(dialogdata)
 
 		height = height + 0.3
 		formspec = formspec
-				.. "field[0.3," .. height .. ";3.3,1;te_x;"..fgettext("X")..";" -- X
+				.. "field[0.3," .. height .. ";3.3,1;te_x;"
+				.. fgettext("X") .. ";" -- X
 				.. core.formspec_escape(v3f[1] or "") .. "]"
-				.. "field[3.6," .. height .. ";3.3,1;te_y;"..fgettext("Y")..";" -- Y
+				.. "field[3.6," .. height .. ";3.3,1;te_y;"
+				.. fgettext("Y") .. ";" -- Y
 				.. core.formspec_escape(v3f[2] or "") .. "]"
-				.. "field[6.9," .. height .. ";3.3,1;te_z;"..fgettext("Z")..";" -- Z
+				.. "field[6.9," .. height .. ";3.3,1;te_z;"
+				.. fgettext("Z") .. ";" -- Z
 				.. core.formspec_escape(v3f[3] or "") .. "]"
 		height = height + 1.1
 
