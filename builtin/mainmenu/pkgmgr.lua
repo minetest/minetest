@@ -564,7 +564,7 @@ function pkgmgr.preparemodlist(data)
 		retval[#retval + 1] = {
 			type = "game",
 			is_game_content = true,
-			name = fgettext(gamespec.name .. " mods"),
+			name = fgettext("$1 mods", gamespec.name),
 			path = gamespec.path
 		}
 	end

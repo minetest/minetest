@@ -1307,7 +1307,7 @@ curl_file_download_timeout (cURL file download timeout) int 300000
 high_precision_fpu (High-precision FPU) bool true
 
 #    Changes the main menu UI:
-#    -   Full:  Multple singleplayer worlds, game choice, texture pack chooser, etc.
+#    -   Full:  Multiple singleplayer worlds, game choice, texture pack chooser, etc.
 #    -   Simple: One singleplayer world, no game or texture pack choosers. May be
 #                necessary for smaller screens.
 main_menu_style (Main menu style) enum full full,simple
@@ -1626,13 +1626,13 @@ mgcarpathian_np_height3 (Hilliness3 noise) noise_params_2d 0, 5, (509, 509, 509)
 #    Fourth of 4 2D noises that together define hill/mountain range height.
 mgcarpathian_np_height4 (Hilliness4 noise) noise_params_2d 0, 5, (631, 631, 631), 1583, 5, 0.5, 2.0, eased
 
-#    2D noise that controls the size/occurance of rolling hills.
+#    2D noise that controls the size/occurrence of rolling hills.
 mgcarpathian_np_hills_terrain (Rolling hills spread noise) noise_params_2d 1, 1, (1301, 1301, 1301), 1692, 3, 0.5, 2.0, eased
 
-#    2D noise that controls the size/occurance of ridged mountain ranges.
+#    2D noise that controls the size/occurrence of ridged mountain ranges.
 mgcarpathian_np_ridge_terrain (Ridge mountain spread noise) noise_params_2d 1, 1, (1889, 1889, 1889), 3568, 3, 0.5, 2.0, eased
 
-#    2D noise that controls the size/occurance of step mountain ranges.
+#    2D noise that controls the size/occurrence of step mountain ranges.
 mgcarpathian_np_step_terrain (Step mountain spread noise) noise_params_2d 1, 1, (1889, 1889, 1889), 4157, 3, 0.5, 2.0, eased
 
 #    2D noise that controls the shape/size of rolling hills.
@@ -1825,7 +1825,7 @@ mgfractal_np_cave2 (Cave2 noise) noise_params_3d 0, 12, (67, 67, 67), 10325, 3, 
 
 #    Map generation attributes specific to Mapgen Valleys.
 #    'altitude_chill': Reduces heat with altitude.
-#    'humid_rivers': Increases humidity around rivers and where water pools.
+#    'humid_rivers': Increases humidity around rivers.
 #    'vary_river_depth': If enabled, low humidity and high heat causes rivers
 #    to become shallower and occasionally dry.
 #    'altitude_dry': Reduces humidity with altitude.

@@ -90,7 +90,7 @@ local function create_world_formspec(dialogdata)
 	elseif #pkgmgr.games == 1 and pkgmgr.games[1].id == "minimal" then
 		retval = retval .. "box[1.75,4;8.7,1;#ff8800]label[2,4;" ..
 				fgettext("Warning: The minimal development test is meant for developers.") .. "]label[2,4.4;" ..
-				fgettext("Download a game, such as minetest_game, from minetest.net") .. "]"
+				fgettext("Download a game, such as Minetest Game, from minetest.net") .. "]"
 	end
 
 	return retval

@@ -1602,7 +1602,7 @@
 # high_precision_fpu = true
 
 #    Changes the main menu UI:
-#    -   Full:  Multple singleplayer worlds, game choice, texture pack chooser, etc.
+#    -   Full:  Multiple singleplayer worlds, game choice, texture pack chooser, etc.
 #    -   Simple: One singleplayer world, no game or texture pack choosers. May be
 #    necessary for smaller screens.
 #    -   Auto: Simple on Android, full on everything else.
@@ -2382,7 +2382,7 @@
 #    flags       = eased
 # }
 
-#    2D noise that controls the size/occurance of rolling hills.
+#    2D noise that controls the size/occurrence of rolling hills.
 #    type: noise_params_2d
 # mgcarpathian_np_hills_terrain = {
 #    offset      = 1,
@@ -2395,7 +2395,7 @@
 #    flags       = eased
 # }
 
-#    2D noise that controls the size/occurance of ridged mountain ranges.
+#    2D noise that controls the size/occurrence of ridged mountain ranges.
 #    type: noise_params_2d
 # mgcarpathian_np_ridge_terrain = {
 #    offset      = 1,
@@ -2408,7 +2408,7 @@
 #    flags       = eased
 # }
 
-#    2D noise that controls the size/occurance of step mountain ranges.
+#    2D noise that controls the size/occurrence of step mountain ranges.
 #    type: noise_params_2d
 # mgcarpathian_np_step_terrain = {
 #    offset      = 1,
@@ -2786,7 +2786,7 @@
 
 #    Map generation attributes specific to Mapgen Valleys.
 #    'altitude_chill': Reduces heat with altitude.
-#    'humid_rivers': Increases humidity around rivers and where water pools.
+#    'humid_rivers': Increases humidity around rivers.
 #    'vary_river_depth': If enabled, low humidity and high heat causes rivers
 #    to become shallower and occasionally dry.
 #    'altitude_dry': Reduces humidity with altitude.
