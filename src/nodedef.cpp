@@ -276,6 +276,8 @@ void TextureSettings::readSettings()
 	std::string leaves_style_str   = g_settings->get("leaves_style");
 	std::string world_aligned_mode_str = g_settings->get("world_aligned_mode");
 	std::string autoscale_mode_str = g_settings->get("autoscale_mode");
+	bool fsaa = g_settings->getU16("fsaa") > 1;
+	bool filtering = g_settings->getBool("bilinear_filter") || g_settings->getBool("trilinear_filter");
 
 	// Mesh cache is not supported in combination with smooth lighting
 	if (smooth_lighting)
@@ -306,6 +308,8 @@ void TextureSettings::readSettings()
 		autoscale_mode = AUTOSCALE_FORCE;
 	else
 		autoscale_mode = AUTOSCALE_DISABLE;
+
+	disable_tiling = fsaa && !filtering;
 }
 
 /*
@@ -593,7 +597,7 @@ void ContentFeatures::deSerialize(std::istream &is)
 static void fillTileAttribs(ITextureSource *tsrc, TileLayer *layer,
 		const TileSpec &tile, const TileDef &tiledef, video::SColor color,
 		u8 material_type, u32 shader_id, bool backface_culling,
-		const TextureSettings &tsettings)
+		const TextureSettings &tsettings, bool allow_tiling)
 {
 	layer->shader_id     = shader_id;
 	layer->texture       = tsrc->getTextureForMesh(tiledef.name, &layer->texture_id);
@@ -626,9 +630,9 @@ static void fillTileAttribs(ITextureSource *tsrc, TileLayer *layer,
 		layer->material_flags |= MATERIAL_FLAG_BACKFACE_CULLING;
 	if (tiledef.animation.type != TAT_NONE)
 		layer->material_flags |= MATERIAL_FLAG_ANIMATION;
-	if (tiledef.tileable_horizontal)
+	if (allow_tiling && tiledef.tileable_horizontal)
 		layer->material_flags |= MATERIAL_FLAG_TILEABLE_HORIZONTAL;
-	if (tiledef.tileable_vertical)
+	if (allow_tiling && tiledef.tileable_vertical)
 		layer->material_flags |= MATERIAL_FLAG_TILEABLE_VERTICAL;
 
 	// Color
@@ -674,9 +678,7 @@ static void fillTileAttribs(ITextureSource *tsrc, TileLayer *layer,
 		}
 	}
 }
-#endif
 
-#ifndef SERVER
 bool isWorldAligned(AlignStyle style, WorldAlignMode mode, NodeDrawType drawtype)
 {
 	if (style == ALIGN_STYLE_WORLD)
@@ -810,6 +812,8 @@ void ContentFeatures::updateTextures(ITextureSource *tsrc, IShaderSource *shdsrc
 		break;
 	}
 
+	bool no_tiling = (solidness || visual_solidness) && tsettings.disable_tiling;
+
 	if (is_liquid) {
 		// Vertex alpha is no longer supported, correct if necessary.
 		correctAlpha(tdef, 6);
@@ -835,11 +839,11 @@ void ContentFeatures::updateTextures(ITextureSource *tsrc, IShaderSource *shdsrc
 				tsettings.world_aligned_mode, drawtype);
 		fillTileAttribs(tsrc, &tiles[j].layers[0], tiles[j], tdef[j],
 				color, material_type, tile_shader,
-				tdef[j].backface_culling, tsettings);
+				tdef[j].backface_culling, tsettings, !no_tiling);
 		if (!tdef_overlay[j].name.empty())
 			fillTileAttribs(tsrc, &tiles[j].layers[1], tiles[j], tdef_overlay[j],
 					color, overlay_material, overlay_shader,
-					tdef[j].backface_culling, tsettings);
+					tdef[j].backface_culling, tsettings, !no_tiling);
 	}
 
 	u8 special_material = material_type;
@@ -855,7 +859,7 @@ void ContentFeatures::updateTextures(ITextureSource *tsrc, IShaderSource *shdsrc
 	for (u16 j = 0; j < CF_SPECIAL_COUNT; j++)
 		fillTileAttribs(tsrc, &special_tiles[j].layers[0], special_tiles[j], tdef_spec[j],
 				color, special_material, special_shader,
-				tdef_spec[j].backface_culling, tsettings);
+				tdef_spec[j].backface_culling, tsettings, !no_tiling);
 
 	if (param_type_2 == CPT2_COLOR ||
 			param_type_2 == CPT2_COLORED_FACEDIR ||
