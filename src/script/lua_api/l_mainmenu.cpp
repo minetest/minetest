@@ -838,7 +838,7 @@ int ModApiMainMenu::l_get_mainmenu_path(lua_State *L)
 }
 
 /******************************************************************************/
-bool ModApiMainMenu::mayModifyPath(std::string path)
+bool ModApiMainMenu::mayModifyPath(const std::string &path)
 {
 	if (fs::PathStartsWith(path,fs::TempPath()))
 		return true;
