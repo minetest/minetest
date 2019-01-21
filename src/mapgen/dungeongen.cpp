@@ -51,7 +51,7 @@ DungeonGen::DungeonGen(const NodeDefManager *ndef,
 #endif
 
 	if (dparams) {
-		memcpy(&dp, dparams, sizeof(dp));
+		dp = *dparams;
 	} else {
 		// Default dungeon parameters
 		dp.seed = 0;
