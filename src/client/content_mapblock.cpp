@@ -67,8 +67,12 @@ MapblockMeshGenerator::MapblockMeshGenerator(MeshMakeData *input, MeshCollector 
 	nodedef   = data->m_client->ndef();
 	meshmanip = RenderingEngine::get_scene_manager()->getMeshManipulator();
 
+	bool fsaa = g_settings->getU16("fsaa") > 1;
+	bool filtering = g_settings->getBool("bilinear_filter") || g_settings->getBool("trilinear_filter");
+
 	enable_mesh_cache = g_settings->getBool("enable_mesh_cache") &&
 		!data->m_smooth_lighting; // Mesh cache is not supported with smooth lighting
+	stretch_nodebox_textures = fsaa && !filtering;
 
 	blockpos_nodes = data->m_blockpos * MAP_BLOCKSIZE;
 }
@@ -216,6 +220,8 @@ void MapblockMeshGenerator::drawCuboid(const aabb3f &box,
 		2, 6, 4, 0
 	};
 
+	static const f32 texture_offset = 1.f / 8192.f;
+
 	for (int face = 0; face < 6; face++) {
 		int tileindex = MYMIN(face, tilecount - 1);
 		const TileSpec &tile = tiles[tileindex];
@@ -258,6 +264,20 @@ void MapblockMeshGenerator::drawCuboid(const aabb3f &box,
 				break;
 			default:
 				break;
+			}
+		}
+		if (stretch_nodebox_textures) {
+			for (int j = 0; j < 4; j++) {
+				v2f &tc1 = vertices[face * 4 + j].TCoords;
+				v2f &tc2 = vertices[face * 4 + (j + 2) % 4].TCoords;
+				if (tc1.X < tc2.X) {
+					tc1.X += texture_offset;
+					tc2.X -= texture_offset;
+				}
+				if (tc1.Y < tc2.Y) {
+					tc1.Y += texture_offset;
+					tc2.Y -= texture_offset;
+				}
 			}
 		}
 	}

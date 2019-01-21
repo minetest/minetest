@@ -69,6 +69,7 @@ public:
 
 // options
 	bool enable_mesh_cache;
+	bool stretch_nodebox_textures;
 
 // current node
 	v3s16 blockpos_nodes;
