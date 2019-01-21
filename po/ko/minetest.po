@@ -1724,7 +1724,7 @@ msgstr "들어가기 "
 
 #: src/network/clientpackethandler.cpp
 msgid "LANG_CODE"
-msgstr ""
+msgstr "ko"
 
 #: src/settings_translation_file.cpp
 msgid ""

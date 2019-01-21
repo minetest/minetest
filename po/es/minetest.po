@@ -1725,7 +1725,7 @@ msgstr "Ingresar "
 
 #: src/network/clientpackethandler.cpp
 msgid "LANG_CODE"
-msgstr ""
+msgstr "es"
 
 #: src/settings_translation_file.cpp
 msgid ""

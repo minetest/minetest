@@ -1719,7 +1719,7 @@ msgstr "Belépés "
 
 #: src/network/clientpackethandler.cpp
 msgid "LANG_CODE"
-msgstr ""
+msgstr "hu"
 
 #: src/settings_translation_file.cpp
 msgid ""

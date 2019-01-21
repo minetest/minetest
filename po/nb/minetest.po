@@ -1696,7 +1696,7 @@ msgstr "Enter "
 
 #: src/network/clientpackethandler.cpp
 msgid "LANG_CODE"
-msgstr ""
+msgstr "nb"
 
 #: src/settings_translation_file.cpp
 msgid ""

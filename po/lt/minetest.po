@@ -1749,7 +1749,7 @@ msgstr "Įvesti"
 
 #: src/network/clientpackethandler.cpp
 msgid "LANG_CODE"
-msgstr ""
+msgstr "lt"
 
 #: src/settings_translation_file.cpp
 msgid ""

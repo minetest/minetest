@@ -1718,7 +1718,7 @@ msgstr "Zadejte "
 
 #: src/network/clientpackethandler.cpp
 msgid "LANG_CODE"
-msgstr ""
+msgstr "cs"
 
 #: src/settings_translation_file.cpp
 msgid ""

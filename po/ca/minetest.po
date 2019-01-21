@@ -1737,7 +1737,7 @@ msgstr "Introdueix "
 
 #: src/network/clientpackethandler.cpp
 msgid "LANG_CODE"
-msgstr ""
+msgstr "ca"
 
 #: src/settings_translation_file.cpp
 msgid ""

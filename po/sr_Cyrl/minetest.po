@@ -1720,7 +1720,7 @@ msgstr "Уреду "
 
 #: src/network/clientpackethandler.cpp
 msgid "LANG_CODE"
-msgstr ""
+msgstr "sr_Cyrl"
 
 #: src/settings_translation_file.cpp
 msgid ""

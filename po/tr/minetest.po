@@ -1716,7 +1716,7 @@ msgstr "Gir "
 
 #: src/network/clientpackethandler.cpp
 msgid "LANG_CODE"
-msgstr ""
+msgstr "tr"
 
 #: src/settings_translation_file.cpp
 msgid ""
