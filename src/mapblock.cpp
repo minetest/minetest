@@ -558,8 +558,9 @@ void MapBlock::deSerializeNetworkSpecific(std::istream &is)
 {
 	try {
 		const u8 version = readU8(is);
-		//if(version != 1)
-		//	throw SerializationError("unsupported MapBlock version");
+		if (version != 1) {
+			// throw SerializationError("unsupported MapBlock version");
+		}
 
 	} catch(SerializationError &e) {
 		warningstream<<"MapBlock::deSerializeNetworkSpecific(): Ignoring an error"
