@@ -1717,7 +1717,7 @@ bool ServerMap::loadFromFolders() {
 	return false;
 }
 
-void ServerMap::createDirs(std::string path)
+void ServerMap::createDirs(const std::string &path)
 {
 	if (!fs::CreateAllDirs(path)) {
 		m_dout<<"ServerMap: Failed to create directory "
