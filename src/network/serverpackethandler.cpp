@@ -952,7 +952,7 @@ void Server::handleCommand_Respawn(NetworkPacket* pkt)
 	// the previous addition has been successfully removed
 }
 
-bool Server::checkInteractDistance(RemotePlayer *player, const f32 d, const std::string what)
+bool Server::checkInteractDistance(RemotePlayer *player, const f32 d, const std::string &what)
 {
 	PlayerSAO *playersao = player->getPlayerSAO();
 	const InventoryList *hlist = playersao->getInventory()->getList("hand");
