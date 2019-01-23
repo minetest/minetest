@@ -39,7 +39,7 @@ std::map<io::path, video::ITexture *> g_txrCache;
 /* Manually insert an image into the cache, useful to avoid texture-to-image
  * conversion whenever we can intercept it.
  */
-void guiScalingCache(io::path key, video::IVideoDriver *driver, video::IImage *value)
+void guiScalingCache(const io::path &key, video::IVideoDriver *driver, video::IImage *value)
 {
 	if (!g_settings->getBool("gui_scaling_filter"))
 		return;

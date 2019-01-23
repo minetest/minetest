@@ -23,7 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 /* Manually insert an image into the cache, useful to avoid texture-to-image
  * conversion whenever we can intercept it.
  */
-void guiScalingCache(io::path key, video::IVideoDriver *driver, video::IImage *value);
+void guiScalingCache(const io::path &key, video::IVideoDriver *driver, video::IImage *value);
 
 // Manually clear the cache, e.g. when switching to different worlds.
 void guiScalingCacheClear();
