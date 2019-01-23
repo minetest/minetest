@@ -1128,7 +1128,7 @@ void ServerEnvironment::clearObjects(ClearObjectsMode mode)
 		<< " blocks" << std::endl;
 
 	// Grab a reference on each loaded block to avoid unloading it
-	for (v3s16 p : loaded_blocks) {
+	for (const v3s16 &p : loaded_blocks) {
 		MapBlock *block = m_map->getBlockNoCreateNoEx(p);
 		assert(block != NULL);
 		block->refGrab();
@@ -1181,7 +1181,7 @@ void ServerEnvironment::clearObjects(ClearObjectsMode mode)
 	m_map->unloadUnreferencedBlocks();
 
 	// Drop references that were added above
-	for (v3s16 p : loaded_blocks) {
+	for (const v3s16 &p : loaded_blocks) {
 		MapBlock *block = m_map->getBlockNoCreateNoEx(p);
 		assert(block);
 		block->refDrop();
