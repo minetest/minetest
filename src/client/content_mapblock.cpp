@@ -227,7 +227,7 @@ void MapblockMeshGenerator::drawCuboid(const aabb3f &box,
 		2, 6, 4, 0
 	};
 
-	static const f32 texture_offset = 1.f / 8192.f;
+	static constexpr f32 texture_offset = 1.f / 8192.f;
 
 	for (int face = 0; face < 6; face++) {
 		int tileindex = MYMIN(face, tilecount - 1);
