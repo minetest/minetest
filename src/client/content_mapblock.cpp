@@ -67,12 +67,19 @@ MapblockMeshGenerator::MapblockMeshGenerator(MeshMakeData *input, MeshCollector 
 	nodedef   = data->m_client->ndef();
 	meshmanip = RenderingEngine::get_scene_manager()->getMeshManipulator();
 
-	bool fsaa = g_settings->getU16("fsaa") > 1;
-	bool filtering = g_settings->getBool("bilinear_filter") || g_settings->getBool("trilinear_filter");
+	std::string clean_nodebox_textures = g_settings->get("clean_nodebox_textures");
+	if (clean_nodebox_textures == "enable") {
+		stretch_nodebox_textures = true;
+	} else if (clean_nodebox_textures == "disable") {
+		stretch_nodebox_textures = false;
+	} else {
+		bool fsaa = g_settings->getU16("fsaa") > 1;
+		bool filtering = g_settings->getBool("bilinear_filter") || g_settings->getBool("trilinear_filter");
+		stretch_nodebox_textures = fsaa && !filtering;
+	}
 
 	enable_mesh_cache = g_settings->getBool("enable_mesh_cache") &&
 		!data->m_smooth_lighting; // Mesh cache is not supported with smooth lighting
-	stretch_nodebox_textures = fsaa && !filtering;
 
 	blockpos_nodes = data->m_blockpos * MAP_BLOCKSIZE;
 }

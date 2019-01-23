@@ -160,7 +160,7 @@ public:
 	bool use_normal_texture;
 	bool enable_mesh_cache;
 	bool enable_minimap;
-	bool disable_tiling;
+	bool disable_solid_tiling;
 
 	TextureSettings() = default;
 

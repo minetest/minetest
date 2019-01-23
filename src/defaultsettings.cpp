@@ -154,6 +154,8 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("world_aligned_mode", "enable");
 	settings->setDefault("autoscale_mode", "disable");
 	settings->setDefault("enable_fastface_tiling", "true");
+	settings->setDefault("clean_solid_textures", "auto");
+	settings->setDefault("clean_nodebox_textures", "auto");
 	settings->setDefault("enable_fog", "true");
 	settings->setDefault("fog_start", "0.4");
 	settings->setDefault("3d_mode", "none");

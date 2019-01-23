@@ -383,6 +383,10 @@ fake_function() {
 	gettext("Show entity selection boxes");
 	gettext("Enable FastFaces tiling");
 	gettext("Optimize solid node rendering by merging identical adjacent\nfaces in long strips. May cause visible gaps between nodes.");
+	gettext("Clean solid node edges");
+	gettext("Disable tiling for solid node textures to fix thin wrongly-colored\nstrips that may appear at node edges, esp. with FSAA enabled.\nOnly effective if FastFaces tiling is disabled.\nAuto enables iff FSAA is enabled but neither texture filtering nor\nFastFaces tiling.");
+	gettext("Clean nodebox edges");
+	gettext("Stretch nodebox textures a tiny bit to fix thin wrongly-colored\n(or transparent) strips that may appear at nodebox edges.\nAuto enables iff FSAA is enabled but texture filtering isn’t.");
 	gettext("Menus");
 	gettext("Clouds in menu");
 	gettext("Use a cloud animation for the main menu background.");

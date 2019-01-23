@@ -273,11 +273,14 @@ void TextureSettings::readSettings()
 	enable_mesh_cache              = g_settings->getBool("enable_mesh_cache");
 	enable_minimap                 = g_settings->getBool("enable_minimap");
 	node_texture_size              = g_settings->getU16("texture_min_size");
-	std::string leaves_style_str   = g_settings->get("leaves_style");
-	std::string world_aligned_mode_str = g_settings->get("world_aligned_mode");
-	std::string autoscale_mode_str = g_settings->get("autoscale_mode");
-	bool fsaa = g_settings->getU16("fsaa") > 1;
-	bool filtering = g_settings->getBool("bilinear_filter") || g_settings->getBool("trilinear_filter");
+	bool enable_fastface_tiling    = g_settings->getBool("enable_fastface_tiling");
+	std::string leaves_style_str         = g_settings->get("leaves_style");
+	std::string world_aligned_mode_str   = g_settings->get("world_aligned_mode");
+	std::string autoscale_mode_str       = g_settings->get("autoscale_mode");
+	std::string clean_solid_textures_str = g_settings->get("clean_solid_textures");
+	int fsaa              = g_settings->getU16("fsaa");
+	bool bilinear_filter  = g_settings->getBool("bilinear_filter");
+	bool trilinear_filter = g_settings->getBool("trilinear_filter");
 
 	// Mesh cache is not supported in combination with smooth lighting
 	if (smooth_lighting)
@@ -309,7 +312,15 @@ void TextureSettings::readSettings()
 	else
 		autoscale_mode = AUTOSCALE_DISABLE;
 
-	disable_tiling = fsaa && !filtering;
+	if (clean_solid_textures_str == "disable") {
+		disable_solid_tiling = false;
+	} else if (clean_solid_textures_str == "enable") {
+		disable_solid_tiling = !enable_fastface_tiling;
+		if (enable_fastface_tiling)
+			warningstream << "Both enable_fastface_tiling and clean_solid_textures are enabled, that's not supported" << std::endl;
+	} else {
+		disable_solid_tiling = !enable_fastface_tiling && fsaa > 1 && !bilinear_filter && !trilinear_filter;
+	}
 }
 
 /*
@@ -812,7 +823,7 @@ void ContentFeatures::updateTextures(ITextureSource *tsrc, IShaderSource *shdsrc
 		break;
 	}
 
-	bool no_tiling = (solidness || visual_solidness) && tsettings.disable_tiling;
+	bool no_tiling = (solidness || visual_solidness) && tsettings.disable_solid_tiling;
 
 	if (is_liquid) {
 		// Vertex alpha is no longer supported, correct if necessary.

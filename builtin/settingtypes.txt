@@ -799,6 +799,18 @@ show_entity_selectionbox (Show entity selection boxes) bool true
 #    faces in long strips. May cause visible gaps between nodes.
 enable_fastface_tiling (Enable FastFaces tiling) bool true
 
+#    Disable tiling for solid node textures to fix thin wrongly-colored
+#    strips that may appear at node edges, esp. with FSAA enabled.
+#    Only effective if FastFaces tiling is disabled.
+#    Auto enables iff FSAA is enabled but neither texture filtering nor
+#    FastFaces tiling.
+clean_solid_textures (Clean solid node edges) enum auto disable,enable,auto
+
+#    Stretch nodebox textures a tiny bit to fix thin wrongly-colored
+#    (or transparent) strips that may appear at nodebox edges.
+#    Auto enables iff FSAA is enabled but texture filtering isn’t.
+clean_nodebox_textures (Clean nodebox edges) enum auto disable,enable,auto
+
 [*Menus]
 
 #    Use a cloud animation for the main menu background.
