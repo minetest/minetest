@@ -247,7 +247,7 @@ private:
 	 * @param layer draw layer to specify texture
 	 * @param texturepath full path of texture to load
 	 */
-	bool setTexture(texture_layer layer, std::string texturepath,
+	bool setTexture(texture_layer layer, const std::string &texturepath,
 			bool tile_image, unsigned int minsize);
 
 	/**

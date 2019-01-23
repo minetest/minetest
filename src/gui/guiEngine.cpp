@@ -500,7 +500,7 @@ void GUIEngine::drawFooter(video::IVideoDriver *driver)
 }
 
 /******************************************************************************/
-bool GUIEngine::setTexture(texture_layer layer, std::string texturepath,
+bool GUIEngine::setTexture(texture_layer layer, const std::string &texturepath,
 		bool tile_image, unsigned int minsize)
 {
 	video::IVideoDriver *driver = RenderingEngine::get_video_driver();
