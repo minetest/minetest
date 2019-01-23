@@ -494,7 +494,7 @@ void Map::unloadUnreferencedBlocks(std::vector<v3s16> *unloaded_blocks)
 
 void Map::deleteSectors(std::vector<v2s16> &sectorList)
 {
-	for (v2s16 j : sectorList) {
+	for (const v2s16 &j : sectorList) {
 		MapSector *sector = m_sectors[j];
 		// If sector is in sector cache, remove it from there
 		if(m_sector_cache == sector)
