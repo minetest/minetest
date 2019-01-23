@@ -60,7 +60,7 @@ public:
 	f32 getDesiredHeight() const;
 
 	// Replace actual line when adding the actual to the history (if there is any)
-	void replaceAndAddToHistory(std::wstring line);
+	void replaceAndAddToHistory(const std::wstring &line);
 
 	// Change how the cursor looks
 	void setCursor(
