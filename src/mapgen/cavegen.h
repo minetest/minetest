@@ -167,7 +167,7 @@ public:
 
 private:
 	void makeTunnel(bool dirswitch);
-	void carveRoute(v3f vec, float f, bool randomize_xz);
+	void carveRoute(const v3f &vec, float f, bool randomize_xz);
 
 	inline bool isPosAboveSurface(v3s16 p);
 };
@@ -238,7 +238,7 @@ public:
 
 private:
 	void makeTunnel(bool dirswitch);
-	void carveRoute(v3f vec, float f, bool randomize_xz, bool tunnel_above_ground);
+	void carveRoute(const v3f &vec, float f, bool randomize_xz, bool tunnel_above_ground);
 
 	inline s16 getSurfaceFromHeightmap(v3s16 p);
 };

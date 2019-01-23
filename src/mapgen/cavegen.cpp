@@ -488,7 +488,7 @@ void CavesRandomWalk::makeTunnel(bool dirswitch)
 }
 
 
-void CavesRandomWalk::carveRoute(v3f vec, float f, bool randomize_xz)
+void CavesRandomWalk::carveRoute(const v3f &vec, float f, bool randomize_xz)
 {
 	MapNode airnode(CONTENT_AIR);
 	MapNode waternode(c_water_source);
@@ -820,7 +820,7 @@ void CavesV6::makeTunnel(bool dirswitch)
 }
 
 
-void CavesV6::carveRoute(v3f vec, float f, bool randomize_xz,
+void CavesV6::carveRoute(const v3f &vec, float f, bool randomize_xz,
 	bool tunnel_above_ground)
 {
 	MapNode airnode(CONTENT_AIR);
