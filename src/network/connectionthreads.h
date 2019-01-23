@@ -52,8 +52,8 @@ public:
 private:
 	void runTimeouts(float dtime);
 	void rawSend(const BufferedPacket &packet);
-	bool rawSendAsPacket(session_t peer_id, u8 channelnum, SharedBuffer<u8> data,
-			bool reliable);
+	bool rawSendAsPacket(session_t peer_id, u8 channelnum,
+			const SharedBuffer<u8> &data, bool reliable);
 
 	void processReliableCommand(ConnectionCommand &c);
 	void processNonReliableCommand(ConnectionCommand &c);
@@ -61,14 +61,14 @@ private:
 	void connect(Address address);
 	void disconnect();
 	void disconnect_peer(session_t peer_id);
-	void send(session_t peer_id, u8 channelnum, SharedBuffer<u8> data);
+	void send(session_t peer_id, u8 channelnum, const SharedBuffer<u8> &data);
 	void sendReliable(ConnectionCommand &c);
-	void sendToAll(u8 channelnum, SharedBuffer<u8> data);
+	void sendToAll(u8 channelnum, const SharedBuffer<u8> &data);
 	void sendToAllReliable(ConnectionCommand &c);
 
 	void sendPackets(float dtime);
 
-	void sendAsPacket(session_t peer_id, u8 channelnum, SharedBuffer<u8> data,
+	void sendAsPacket(session_t peer_id, u8 channelnum, const SharedBuffer<u8> &data,
 			bool ack = false);
 
 	void sendAsPacketReliable(BufferedPacket &p, Channel *channel);

@@ -327,7 +327,7 @@ void ConnectionSendThread::sendAsPacketReliable(BufferedPacket &p, Channel *chan
 }
 
 bool ConnectionSendThread::rawSendAsPacket(session_t peer_id, u8 channelnum,
-	SharedBuffer<u8> data, bool reliable)
+	const SharedBuffer<u8> &data, bool reliable)
 {
 	PeerHelper peer = m_connection->getPeerNoEx(peer_id);
 	if (!peer) {
@@ -575,7 +575,7 @@ void ConnectionSendThread::disconnect_peer(session_t peer_id)
 }
 
 void ConnectionSendThread::send(session_t peer_id, u8 channelnum,
-	SharedBuffer<u8> data)
+	const SharedBuffer<u8> &data)
 {
 	assert(channelnum < CHANNEL_COUNT); // Pre-condition
 
@@ -615,7 +615,7 @@ void ConnectionSendThread::sendReliable(ConnectionCommand &c)
 	peer->PutReliableSendCommand(c, m_max_packet_size);
 }
 
-void ConnectionSendThread::sendToAll(u8 channelnum, SharedBuffer<u8> data)
+void ConnectionSendThread::sendToAll(u8 channelnum, const SharedBuffer<u8> &data)
 {
 	std::list<session_t> peerids = m_connection->getPeerIDs();
 
@@ -776,7 +776,7 @@ void ConnectionSendThread::sendPackets(float dtime)
 }
 
 void ConnectionSendThread::sendAsPacket(session_t peer_id, u8 channelnum,
-	SharedBuffer<u8> data, bool ack)
+	const SharedBuffer<u8> &data, bool ack)
 {
 	OutgoingPacket packet(peer_id, channelnum, data, false, ack);
 	m_outgoing_queue.push(packet);
