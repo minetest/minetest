@@ -934,6 +934,11 @@
 #    type: bool
 # show_entity_selectionbox = true
 
+#    Optimize solid node rendering by merging identical adjacent
+#    faces in long strips. May cause visible gaps between nodes.
+#    type: bool
+# enable_fastface_tiling = true
+
 ## Menus
 
 #    Use a cloud animation for the main menu background.

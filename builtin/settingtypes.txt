@@ -795,6 +795,10 @@ autoscale_mode (Autoscaling mode) enum disable disable,enable,force
 #    Show entity selection boxes
 show_entity_selectionbox (Show entity selection boxes) bool true
 
+#    Optimize solid node rendering by merging identical adjacent
+#    faces in long strips. May cause visible gaps between nodes.
+enable_fastface_tiling (Enable FastFaces tiling) bool true
+
 [*Menus]
 
 #    Use a cloud animation for the main menu background.

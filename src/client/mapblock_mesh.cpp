@@ -40,7 +40,9 @@ MeshMakeData::MeshMakeData(Client *client, bool use_shaders,
 	m_client(client),
 	m_use_shaders(use_shaders),
 	m_use_tangent_vertices(use_tangent_vertices)
-{}
+{
+	m_enable_tiling = g_settings->getBool("enable_fastface_tiling");
+}
 
 void MeshMakeData::fillBlockDataBegin(const v3s16 &blockpos)
 {
@@ -912,7 +914,8 @@ static void updateFastFaceRow(
 					next_face_dir_corrected, next_lights,
 					next_tile);
 
-			if (next_makes_face == makes_face
+			if (data->m_enable_tiling
+					&& next_makes_face == makes_face
 					&& next_p_corrected == p_corrected + translate_dir
 					&& next_face_dir_corrected == face_dir_corrected
 					&& memcmp(next_lights, lights, ARRLEN(lights) * sizeof(u16)) == 0

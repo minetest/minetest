@@ -42,6 +42,7 @@ struct MeshMakeData
 	v3s16 m_blockpos = v3s16(-1337,-1337,-1337);
 	v3s16 m_crack_pos_relative = v3s16(-1337,-1337,-1337);
 	bool m_smooth_lighting = false;
+	bool m_enable_tiling;
 
 	Client *m_client;
 	bool m_use_shaders;

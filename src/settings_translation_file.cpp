@@ -381,6 +381,8 @@ fake_function() {
 	gettext("World-aligned textures may be scaled to span several nodes. However,\nthe server may not send the scale you want, especially if you use\na specially-designed texture pack; with this option, the client tries\nto determine the scale automatically basing on the texture size.\nSee also texture_min_size.\nWarning: This option is EXPERIMENTAL!");
 	gettext("Show entity selection boxes");
 	gettext("Show entity selection boxes");
+	gettext("Enable FastFaces tiling");
+	gettext("Optimize solid node rendering by merging identical adjacent\nfaces in long strips. May cause visible gaps between nodes.");
 	gettext("Menus");
 	gettext("Clouds in menu");
 	gettext("Use a cloud animation for the main menu background.");
