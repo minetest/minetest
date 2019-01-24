@@ -274,10 +274,10 @@ void TextureSettings::readSettings()
 	enable_minimap                 = g_settings->getBool("enable_minimap");
 	node_texture_size              = g_settings->getU16("texture_min_size");
 	bool enable_fastface_tiling    = g_settings->getBool("enable_fastface_tiling");
-	std::string leaves_style_str         = g_settings->get("leaves_style");
-	std::string world_aligned_mode_str   = g_settings->get("world_aligned_mode");
-	std::string autoscale_mode_str       = g_settings->get("autoscale_mode");
-	std::string clean_solid_textures_str = g_settings->get("clean_solid_textures");
+	const std::string &leaves_style_str         = g_settings->get("leaves_style");
+	const std::string &world_aligned_mode_str   = g_settings->get("world_aligned_mode");
+	const std::string &autoscale_mode_str       = g_settings->get("autoscale_mode");
+	const std::string &clean_solid_textures_str = g_settings->get("clean_solid_textures");
 	int fsaa              = g_settings->getU16("fsaa");
 	bool bilinear_filter  = g_settings->getBool("bilinear_filter");
 	bool trilinear_filter = g_settings->getBool("trilinear_filter");

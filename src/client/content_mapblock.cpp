@@ -67,7 +67,7 @@ MapblockMeshGenerator::MapblockMeshGenerator(MeshMakeData *input, MeshCollector 
 	nodedef   = data->m_client->ndef();
 	meshmanip = RenderingEngine::get_scene_manager()->getMeshManipulator();
 
-	std::string clean_nodebox_textures = g_settings->get("clean_nodebox_textures");
+	const std::string &clean_nodebox_textures = g_settings->get("clean_nodebox_textures");
 	if (clean_nodebox_textures == "enable") {
 		stretch_nodebox_textures = true;
 	} else if (clean_nodebox_textures == "disable") {
