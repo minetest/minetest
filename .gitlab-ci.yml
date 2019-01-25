@@ -322,3 +322,18 @@ package:docker:
     - docker push ${CONTAINER_IMAGE}/server:$CI_COMMIT_SHA
     - docker push ${CONTAINER_IMAGE}/server:$CI_COMMIT_REF_NAME
     - docker push ${CONTAINER_IMAGE}/server:latest
+
+pages:
+  stage: deploy
+  image: python:3.6
+  before_script:
+    - pip install git+https://github.com/Python-Markdown/markdown.git
+    - pip install git+https://github.com/mkdocs/mkdocs.git
+    - pip install pygments
+  script:
+    - cd mkdocs && ./build.sh
+  artifacts:
+    paths:
+      - public
+  only:
+    - master
