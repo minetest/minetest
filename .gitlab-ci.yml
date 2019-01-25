@@ -331,7 +331,7 @@ pages:
     - pip install git+https://github.com/mkdocs/mkdocs.git
     - pip install pygments
   script:
-    - cd mkdocs && ./build.sh
+    - cd doc/mkdocs && ./build.sh
   artifacts:
     paths:
       - public

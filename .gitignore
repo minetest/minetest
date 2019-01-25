@@ -65,8 +65,8 @@ doc/doxygen_*
 
 ## MkDocs files
 public/
-mkdocs/docs/*.md
-mkdocs/mkdocs.yml
+doc/mkdocs/docs/*.md
+doc/mkdocs/mkdocs.yml
 
 ## Build files
 CMakeFiles

@@ -7,7 +7,7 @@ patch -N -r - $PYGMENTS_FILE code_tag.patch || true
 patch -N -r - $MARKDOWN_FILE lua_highlight.patch || true
 
 # Split lua_api.txt on top level headings
-cat ../doc/lua_api.txt | csplit -sz -f docs/section - '/^=/-1' '{*}'
+cat ../lua_api.txt | csplit -sz -f docs/section - '/^=/-1' '{*}'
 
 cat > mkdocs.yml << EOF
 site_name: Minetest API Documentation
@@ -40,4 +40,4 @@ do
 	echo "- \"$title\": $fname" >> mkdocs.yml
 done
 
-mkdocs build --site-dir ../public
+mkdocs build --site-dir ../../public
