@@ -55,7 +55,7 @@ local function get_formspec(tabview, name, tabdata)
 		"box[7.73,2.25;4.25,2.6;#999999]"..
 
 		-- Connect
-		"button[9.88,4.9;2.3,1;btn_mp_connect;" .. fgettext("Connect") .. "]"
+		"button[7.73,4.9;4.47,1;btn_mp_connect;" .. fgettext("Connect / Register") .. "]"
 
 	if tabdata.fav_selected and fav_selected then
 		if gamedata.fav then
