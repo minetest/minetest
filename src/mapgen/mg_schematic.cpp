@@ -137,8 +137,8 @@ void Schematic::blitToVManip(MMVManip *vm, v3s16 p, Rotation rot, bool force_pla
 		for (s16 z = 0; z != sz; z++) {
 			u32 i = z * i_step_z + y * ystride + i_start;
 			for (s16 x = 0; x != sx; x++, i += i_step_x) {
-				u32 vi = vm->m_area.index(p.X + x, y_map, p.Z + z);
-				if (!vm->m_area.contains(vi))
+				v3s16 pos(p.X + x, y_map, p.Z + z);
+				if (!vm->m_area.contains(pos))
 					continue;
 
 				if (schemdata[i].getContent() == CONTENT_IGNORE)
@@ -150,6 +150,7 @@ void Schematic::blitToVManip(MMVManip *vm, v3s16 p, Rotation rot, bool force_pla
 				if (placement_prob == MTSCHEM_PROB_NEVER)
 					continue;
 
+				u32 vi = vm->m_area.index(pos);
 				if (!force_place && !force_place_node) {
 					content_t c = vm->m_data[vi].getContent();
 					if (c != CONTENT_AIR && c != CONTENT_IGNORE)
