@@ -60,6 +60,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("enable_client_modding", "false");
 	settings->setDefault("max_out_chat_queue_size", "20");
 	settings->setDefault("pause_on_lost_focus", "false");
+	settings->setDefault("enable_register_confirmation", "true");
 
 	// Keymap
 	settings->setDefault("remote_port", "30000");

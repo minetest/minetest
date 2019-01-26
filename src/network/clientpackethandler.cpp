@@ -98,7 +98,8 @@ void Client::handleCommand_Hello(NetworkPacket* pkt)
 	// Authenticate using that method, or abort if there wasn't any method found
 	if (chosen_auth_mechanism != AUTH_MECHANISM_NONE) {
 		if (chosen_auth_mechanism == AUTH_MECHANISM_FIRST_SRP
-				&& !m_simple_singleplayer_mode) {
+				&& !m_simple_singleplayer_mode
+				&& g_settings->getBool("enable_register_confirmation")) {
 			promptConfirmRegistration(chosen_auth_mechanism);
 		} else {
 			startAuth(chosen_auth_mechanism);
