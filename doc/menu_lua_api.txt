@@ -65,6 +65,7 @@ core.get_video_drivers()
 ^ first element of returned list is guaranteed to be the NULL driver
 core.get_mapgen_names([include_hidden=false]) -> table of map generator algorithms
     registered in the core (possible in async calls)
+core.get_cache_path() -> path of cache
 
 Formspec:
 core.update_formspec(formspec)
