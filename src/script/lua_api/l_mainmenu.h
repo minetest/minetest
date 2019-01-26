@@ -53,11 +53,12 @@ private:
 	static int getBoolData(lua_State *L, std::string name,bool& valid);
 
 	/**
-	 * check if a path is within some of minetests folders
+	 * Checks if a path may be modified. Paths in the temp directory or the user
+	 * games, mods, textures, or worlds directories may be modified.
 	 * @param path path to check
-	 * @return true/false
+	 * @return true if the path may be modified
 	 */
-	static bool isMinetestPath(std::string path);
+	static bool mayModifyPath(const std::string &path);
 
 	//api calls
 
