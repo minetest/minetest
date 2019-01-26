@@ -651,17 +651,18 @@ v3s16 turn_xz(v3s16 olddir, int t)
 }
 
 
-void random_turn(PseudoRandom &random, v3s16 &olddir)
+void random_turn(PseudoRandom &random, v3s16 &dir)
 {
 	int turn = random.range(0, 2);
 	if (turn == 0) {
 		// Go straight: nothing to do
+		return;
 	} else if (turn == 1)
 		// Turn right
-		olddir = turn_xz(olddir, 0);
+		dir = turn_xz(olddir, 0);
 	else
 		// Turn left
-		olddir = turn_xz(olddir, 1);
+		dir = turn_xz(olddir, 1);
 }
 
 
