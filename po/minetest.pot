@@ -19,11 +19,11 @@ msgid "Reconnect"
 msgstr ""
 
 #: builtin/fstk/ui.lua
-msgid "An error occured in a Lua script, such as a mod:"
+msgid "An error occurred in a Lua script, such as a mod:"
 msgstr ""
 
 #: builtin/fstk/ui.lua
-msgid "An error occured:"
+msgid "An error occurred:"
 msgstr ""
 
 #: builtin/fstk/ui.lua
@@ -120,7 +120,7 @@ msgstr ""
 #: builtin/mainmenu/dlg_config_world.lua
 msgid ""
 "Failed to enable mod \"$1\" as it contains disallowed characters. Only "
-"chararacters [a-z0-9_] are allowed."
+"characters [a-z0-9_] are allowed."
 msgstr ""
 
 #: builtin/mainmenu/dlg_contentstore.lua
@@ -178,15 +178,12 @@ msgstr ""
 msgid "No results"
 msgstr ""
 
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "View"
-msgstr ""
-
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "World name"
 msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
+#: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Seed"
 msgstr ""
 
@@ -215,7 +212,7 @@ msgid "Warning: The minimal development test is meant for developers."
 msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
-msgid "Download a game, such as minetest_game, from minetest.net"
+msgid "Download a game, such as Minetest Game, from minetest.net"
 msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
@@ -266,6 +263,66 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Browse"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua src/settings_translation_file.cpp
+msgid "Offset"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua src/settings_translation_file.cpp
+msgid "Scale"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "X spread"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "Y spread"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "2D Noise"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "Z spread"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "Octaves"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "Persistance"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "Lacunarity"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "defaults"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "eased"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "absvalue"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "X"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "Y"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "Z"
 msgstr ""
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
@@ -357,7 +414,7 @@ msgid "Install: Unsupported file type \"$1\" or broken archive"
 msgstr ""
 
 #: builtin/mainmenu/pkgmgr.lua
-msgid " mods"
+msgid "$1 mods"
 msgstr ""
 
 #: builtin/mainmenu/tab_content.lua
@@ -495,7 +552,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-01-06 09:32+0100\n"
+"POT-Creation-Date: 2019-01-27 00:47+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -669,7 +726,7 @@ msgid "Change Keys"
 msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
-msgid "Advanced Settings"
+msgid "All Settings"
 msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
@@ -5401,10 +5458,6 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Scale"
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid ""
 "(X,Y,Z) scale of fractal in nodes.\n"
 "Actual fractal size will be 2 to 3 times larger.\n"
@@ -5413,10 +5466,6 @@ msgid ""
 "Increase these to 'zoom' into the detail of the fractal.\n"
 "Default is for a vertically-squashed shape suitable for\n"
 "an island, set all 3 numbers equal for the raw shape."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Offset"
 msgstr ""
 
 #: src/settings_translation_file.cpp
