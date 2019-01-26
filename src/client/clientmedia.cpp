@@ -254,6 +254,16 @@ void ClientMediaDownloader::initialStep(Client *client)
 			fetch_request.post_data = required_hash_set;
 			fetch_request.extra_headers.emplace_back(
 				"Content-Type: application/octet-stream");
+
+			// Encapsulate possible IPv6 plain address in []
+			std::string addr = client->getAddressName();
+			if (addr.find(":", 0) != std::string::npos)
+				addr = '[' + addr + ']';
+			fetch_request.extra_headers.emplace_back(
+				std::string("Referer: minetest://") +
+				addr + ":" +
+				std::to_string(client->getServerAddress().getPort()));
+
 			httpfetch_async(fetch_request);
 
 			m_httpfetch_active++;
