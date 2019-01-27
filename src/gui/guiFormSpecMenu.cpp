@@ -1037,6 +1037,70 @@ void GUIFormSpecMenu::parseButton(parserData* data, const std::string &element,
 	m_fields.push_back(spec);
 }
 
+void GUIFormSpecMenu::parseButtonURL(parserData *data, const std::string &element)
+{
+	const std::string type = "button_url";
+	std::vector<std::string> parts;
+	if (!precheckElement(type, element, 5, 5, parts))
+		return;
+
+	std::vector<std::string> v_pos = split(parts[0], ',');
+	std::vector<std::string> v_geom = split(parts[1], ',');
+	std::string name = parts[2];
+	std::string label = parts[3];
+	std::string url = parts[4];
+
+	MY_CHECKPOS("button",0);
+	MY_CHECKGEOM("button",1);
+
+	v2s32 pos;
+	v2s32 geom;
+	core::rect<s32> rect;
+
+	if (data->real_coordinates) {
+		pos = getRealCoordinateBasePos(v_pos);
+		geom = getRealCoordinateGeometry(v_geom);
+		rect = core::rect<s32>(pos.X, pos.Y, pos.X+geom.X,
+			pos.Y+geom.Y);
+	} else {
+		pos = getElementBasePos(&v_pos);
+		geom.X = (stof(v_geom[0]) * spacing.X) - (spacing.X - imgsize.X);
+		pos.Y += (stof(v_geom[1]) * (float)imgsize.Y)/2;
+
+		rect = core::rect<s32>(pos.X, pos.Y - m_btn_height,
+					pos.X + geom.X, pos.Y + m_btn_height);
+	}
+
+	if(!data->explicit_size)
+		warningstream<<"invalid use of button without a size[] element"<<std::endl;
+
+	std::wstring wlabel = translate_string(utf8_to_wide(unescape_string(label)));
+
+	FieldSpec spec(
+		name,
+		wlabel,
+		L"",
+		258 + m_fields.size()
+	);
+	spec.ftype = f_Button;
+	spec.url = url;
+
+	GUIButton *e = GUIButton::addButton(Environment, rect, m_tsrc,
+			data->current_parent, spec.fid, spec.flabel.c_str());
+
+	auto style = getStyleForElement(type, name, (type != "button") ? "button" : "");
+
+	spec.sound = style[StyleSpec::STATE_DEFAULT].get(StyleSpec::Property::SOUND, "");
+
+	e->setStyles(style);
+
+	if (spec.fname == m_focused_element) {
+		Environment->setFocus(e);
+	}
+
+	m_fields.push_back(spec);
+}
+
 bool GUIFormSpecMenu::parseMiddleRect(const std::string &value, core::rect<s32> *parsed_rect)
 {
 	core::rect<s32> rect;
@@ -2899,6 +2963,11 @@ void GUIFormSpecMenu::parseElement(parserData* data, const std::string &element)
 
 	if (type == "button" || type == "button_exit") {
 		parseButton(data, description, type);
+		return;
+	}
+
+	if (type == "button_url") {
+		parseButtonURL(data, description);
 		return;
 	}
 
@@ -4976,6 +5045,14 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 							m_text_dst->gotText(L"ExitButton");
 						}
 						return true;
+					}
+
+					if (!s.url.empty()) {
+						if (m_client) {
+							g_gamecallback->showOpenURLDialog(s.url);
+						} else {
+							porting::open_url(s.url);
+						}
 					}
 
 					acceptInput(quit_mode_no);

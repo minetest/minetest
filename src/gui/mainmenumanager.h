@@ -34,7 +34,7 @@ public:
 	virtual void disconnect() = 0;
 	virtual void changePassword() = 0;
 	virtual void changeVolume() = 0;
-
+	virtual void showOpenURLDialog(const std::string &url) = 0;
 	virtual void signalKeyConfigChange() = 0;
 };
 
@@ -108,44 +108,47 @@ public:
 	MainGameCallback() = default;
 	virtual ~MainGameCallback() = default;
 
-	virtual void exitToOS()
+	void exitToOS() override
 	{
 		shutdown_requested = true;
 	}
 
-	virtual void disconnect()
+	void disconnect() override
 	{
 		disconnect_requested = true;
 	}
 
-	virtual void changePassword()
+	void changePassword() override
 	{
 		changepassword_requested = true;
 	}
 
-	virtual void changeVolume()
+	void changeVolume() override
 	{
 		changevolume_requested = true;
 	}
 
-	virtual void keyConfig()
+	void keyConfig() override
 	{
 		keyconfig_requested = true;
 	}
 
-	virtual void signalKeyConfigChange()
+	void signalKeyConfigChange() override
 	{
 		keyconfig_changed = true;
 	}
 
+	void showOpenURLDialog(const std::string &url) override {
+		show_open_url_dialog = url;
+	}
 
 	bool disconnect_requested = false;
 	bool changepassword_requested = false;
 	bool changevolume_requested = false;
 	bool keyconfig_requested = false;
 	bool shutdown_requested = false;
-
 	bool keyconfig_changed = false;
+	std::string show_open_url_dialog = "";
 };
 
 extern MainGameCallback *g_gamecallback;
