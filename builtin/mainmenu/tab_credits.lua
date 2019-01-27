@@ -89,7 +89,7 @@ return {
 		local version = core.get_version()
 		return "image[0.5,1;" .. core.formspec_escape(logofile) .. "]" ..
 			"label[0.5,3.2;" .. version.project .. " " .. version.string .. "]" ..
-			"button_url[0.25,3.5;3,2;;minetest.net;http://minetest.net]" ..
+			"button_url[0.25,3.5;3,2;;minetest.net;https://www.minetest.net]" ..
 			"tablecolumns[color;text]" ..
 			"tableoptions[background=#00000000;highlight=#00000000;border=false]" ..
 			"table[3.5,-0.25;8.5,6.05;list_credits;" ..
