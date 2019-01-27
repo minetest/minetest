@@ -214,6 +214,7 @@ class GUIFormSpecMenu : public GUIModalMenu
 		std::string fname;
 		std::wstring flabel;
 		std::wstring fdefault;
+		std::string url;
 		int fid;
 		bool send;
 		FormspecFieldType ftype;
@@ -512,6 +513,7 @@ private:
 	void parsePosition(parserData *data, const std::string &element);
 	bool parseAnchorDirect(parserData *data, const std::string &element);
 	void parseAnchor(parserData *data, const std::string &element);
+	void parseButtonURL(parserData *data, const std::string &element);
 
 	void tryClose();
 

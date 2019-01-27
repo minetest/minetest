@@ -25,6 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "porting.h"
 
+
 #if defined(__FreeBSD__)  || defined(__NetBSD__) || defined(__DragonFly__)
 	#include <sys/types.h>
 	#include <sys/sysctl.h>
@@ -52,6 +53,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <list>
 #include <cstdarg>
 #include <cstdio>
+#include <regex>
 
 namespace porting
 {
@@ -695,6 +697,20 @@ int mt_snprintf(char *buf, const size_t buf_size, const char *fmt, ...)
 #endif // _MSC_VER
 	va_end(args);
 	return c;
+}
+
+bool openURL(std::string url)
+{
+	if (!std::regex_match(url, std::regex("^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$") )) {
+		errorstream << "Invalid url: " << url << std::endl;
+		return false;
+	}
+
+#ifdef _WIN32
+	return system((std::string("open ") + url).c_str()) == 0;
+#else
+	return system((std::string("xdg-open ") + url).c_str()) == 0;
+#endif
 }
 
 // Load performance counter frequency only once at startup
