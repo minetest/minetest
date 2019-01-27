@@ -701,15 +701,16 @@ int mt_snprintf(char *buf, const size_t buf_size, const char *fmt, ...)
 
 bool openURL(std::string url)
 {
-	if (!std::regex_match(url, std::regex("^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$") )) {
+	if (!std::regex_match(url,
+			std::regex(R"(^https?:\/\/([\w\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$)") )) {
 		errorstream << "Invalid url: " << url << std::endl;
 		return false;
 	}
 
 #ifdef _WIN32
-	return system((std::string("open ") + url).c_str()) == 0;
+	return system((std::string("open '") + url + "'").c_str()) == 0;
 #else
-	return system((std::string("xdg-open ") + url).c_str()) == 0;
+	return system((std::string("xdg-open '") + url + "'").c_str()) == 0;
 #endif
 }
 
