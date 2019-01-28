@@ -586,27 +586,6 @@ msgstr "服务器端口"
 msgid "Start Game"
 msgstr "启动游戏"
 
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-#: builtin/mainmenu/tab_online.lua
-msgid ""
-msgstr ""
-"Project-Id-Version: minetest\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-01-27 00:47+0100\n"
-"PO-Revision-Date: 2018-08-23 16:35+0000\n"
-"Last-Translator: SakurabaAmane <tobiichiamane@outlook.com>\n"
-"Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
-"minetest/minetest/zh_Hans/>\n"
-"Language: zh_CN\n"
-"MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 3.2-dev\n"
-
 #: builtin/mainmenu/tab_online.lua
 msgid "Address / Port"
 msgstr "地址/端口"

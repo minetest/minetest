@@ -552,28 +552,6 @@ msgstr "Puerto del servidor"
 msgid "Start Game"
 msgstr "Juego anfitrión"
 
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-#
-#: builtin/mainmenu/tab_online.lua
-msgid ""
-msgstr ""
-"Project-Id-Version: minetest\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-01-06 09:32+0100\n"
-"PO-Revision-Date: 2018-10-22 11:38+0000\n"
-"Last-Translator: runs <runspect@yahoo.es>\n"
-"Language-Team: Spanish <https://hosted.weblate.org/projects/minetest/"
-"minetest/es/>\n"
-"Language: es\n"
-"MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 3.3-dev\n"
-
 #: builtin/mainmenu/tab_online.lua
 msgid "Address / Port"
 msgstr "Dirección / puerto"

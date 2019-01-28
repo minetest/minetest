@@ -544,29 +544,6 @@ msgstr "Порт сервера"
 msgid "Start Game"
 msgstr "Гуляць (сервер)"
 
-# Belarusian translation for Minetest.
-# Copyright (C) 2010 celeron55, Pertu Ahola <celeron55@gmail.com>
-# This file is distributed under the same license as the Minetest package.
-# Selat <LongExampleTestName@gmail.com>, 2014.
-# Viktar Vauchkevich <victorenator@gmail.com>, 2017.
-#: builtin/mainmenu/tab_online.lua
-msgid ""
-msgstr ""
-"Project-Id-Version: minetest\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-01-06 09:32+0100\n"
-"PO-Revision-Date: 2017-05-25 17:22+0000\n"
-"Last-Translator: Viktar Vauchkevich <victorenator@gmail.com>\n"
-"Language-Team: Belarusian <https://hosted.weblate.org/projects/minetest/"
-"minetest/be/>\n"
-"Language: be\n"
-"MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
-"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 2.14.1\n"
-
 #: builtin/mainmenu/tab_online.lua
 msgid "Address / Port"
 msgstr "Адрас / Порт"
