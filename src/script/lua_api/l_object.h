@@ -351,4 +351,6 @@ private:
 	// get_nametag_attributes(self)
 	static int l_get_nametag_attributes(lua_State *L);
 
+	// send_mapblock(pos)
+	static int l_send_mapblock(lua_State *L);
 };
