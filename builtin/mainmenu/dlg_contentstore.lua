@@ -300,6 +300,8 @@ function store.load()
 			package.url = base_url .. "/packages/" ..
 				package.author .. "/" .. package.name ..
 				"/releases/" .. package.release .. "/download/"
+
+			package.id = package.author .. "/" .. package.name
 		end
 
 		store.packages = store.packages_full
@@ -314,7 +316,7 @@ function store.update_paths()
 	pkgmgr.refresh_globals()
 	for _, mod in pairs(pkgmgr.global_mods:get_list()) do
 		if mod.author then
-			mod_hash[mod.name] = mod
+			mod_hash[mod.author .. "/" .. mod.name] = mod
 		end
 	end
 
@@ -322,30 +324,30 @@ function store.update_paths()
 	pkgmgr.update_gamelist()
 	for _, game in pairs(pkgmgr.games) do
 		if game.author then
-			game_hash[game.id] = game
+			game_hash[game.author .. "/" .. game.id] = game
 		end
 	end
 
 	local txp_hash = {}
 	for _, txp in pairs(pkgmgr.get_texture_packs()) do
 		if txp.author then
-			txp_hash[txp.name] = txp
+			txp_hash[txp.author .. "/" .. txp.name] = txp
 		end
 	end
 
 	for _, package in pairs(store.packages_full) do
 		local content
 		if package.type == "mod" then
-			content = mod_hash[package.name]
+			content = mod_hash[package.id]
 		elseif package.type == "game" then
-			content = game_hash[package.name]
+			content = game_hash[package.id]
 		elseif package.type == "txp" then
-			content = txp_hash[package.name]
+			content = txp_hash[package.id]
 		end
 
-		if content and content.author == package.author then
+		if content then
 			package.path = content.path
-			package.installed_release = content.release
+			package.installed_release = content.release or 0
 		else
 			package.path = nil
 		end
