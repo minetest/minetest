@@ -296,8 +296,6 @@ function store.load()
 		end
 	end
 
-	print(url)
-
 	core.download_file(url, target)
 
 	local file = io.open(target, "r")

@@ -1946,7 +1946,7 @@ num_emerge_threads (Number of emerge threads) int 0
 show_nonfree_packages (Show non-free packages) bool false
 
 
-#    Comma separated list of content ratings to hide in the content repository
+#    Comma separated list of content ratings to hide in the content repository.
 #    Content ratings are independent from Minetest versions, and a list can be
 #    found at https://content.minetest.net/help/content_ratings/
 hide_content_ratings (Show non-free packages) string mature
