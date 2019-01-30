@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-01-06 18:12+0200\n"
-"PO-Revision-Date: 2019-01-12 12:07+0000\n"
+"PO-Revision-Date: 2019-02-01 06:10+0000\n"
 "Last-Translator: Wuzzy <almikes@aol.com>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/minetest/minetest/"
 "de/>\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 3.4-dev\n"
+"X-Generator: Weblate 3.5-dev\n"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "Respawn"
@@ -212,7 +212,7 @@ msgstr "Erstellen"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Download a game, such as minetest_game, from minetest.net"
-msgstr "Ein Spiel (wie minetest_game) von minetest.net herunterladen"
+msgstr "Laden Sie sich ein Spiel (wie minetest_game) von minetest.net herunter"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Download one from minetest.net"

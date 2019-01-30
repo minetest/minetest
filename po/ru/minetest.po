@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-01-24 01:05+0200\n"
-"PO-Revision-Date: 2019-01-26 12:39+0000\n"
+"PO-Revision-Date: 2019-02-01 06:10+0000\n"
 "Last-Translator: narrnika <narr13niki@gmail.com>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/minetest/"
 "minetest/ru/>\n"
@@ -1951,13 +1951,13 @@ msgstr "Шум яблонь"
 
 #: src/settings_translation_file.cpp
 msgid "Arm inertia"
-msgstr ""
+msgstr "Инерция руки"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Arm inertia, gives a more realistic movement of\n"
 "the arm when the camera moves."
-msgstr ""
+msgstr "Делает более реалистичным движение руки персонажа при движении камеры."
 
 #: src/settings_translation_file.cpp
 msgid "Ask to reconnect after crash"
@@ -2086,6 +2086,10 @@ msgid ""
 "Increasing can reduce artifacting on weaker GPUs.\n"
 "0.1 = Default, 0.25 = Good value for weaker tablets."
 msgstr ""
+"Расстояние между камерой и плоскостью, от 0 до 0.5 размера узла. Большинству "
+"пользователей не нужно будет изменить этот параметр. Его увеличение может "
+"уменьшить количество артефактов на слабых графических процессорах.\n"
+"По умолчанию = 0.1; 0.25 будет хорошим значением для слабых планшетов."
 
 #: src/settings_translation_file.cpp
 msgid "Camera smoothing"
@@ -2907,9 +2911,8 @@ msgid "Fog"
 msgstr "Туман"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Fog start"
-msgstr "Начало тумана"
+msgstr "Граница тумана"
 
 #: src/settings_translation_file.cpp
 msgid "Fog toggle key"
@@ -5104,7 +5107,7 @@ msgstr "Имя сервера, отображаемое при входе и в 
 
 #: src/settings_translation_file.cpp
 msgid "Near plane"
-msgstr ""
+msgstr "Дистанция до плоскости"
 
 #: src/settings_translation_file.cpp
 msgid "Network"
@@ -5200,6 +5203,8 @@ msgid ""
 "formspec is\n"
 "open."
 msgstr ""
+"Открыть меню паузы при потере окном фокуса. Не срабатывает, если какое-либо "
+"меню уже открыто."
 
 #: src/settings_translation_file.cpp
 msgid "Overall bias of parallax occlusion effect, usually scale/2."
@@ -5257,7 +5262,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Pause on lost window focus"
-msgstr ""
+msgstr "Пауза при потере фокуса"
 
 #: src/settings_translation_file.cpp
 msgid "Physics"
@@ -6040,7 +6045,6 @@ msgstr ""
 "когда зажата комбинация кнопок на джойстике."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "The time in seconds it takes between repeated right clicks when holding the "
 "right\n"

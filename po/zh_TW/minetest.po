@@ -1,3 +1,19 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2019-01-30 23:28+0200\n"
+"PO-Revision-Date: 2019-01-30 22:28+0000\n"
+"Last-Translator: Nore <nore@mesecons.net>\n"
+"Language-Team: Chinese (Traditional) <https://hosted.weblate.org/projects/"
+"minetest/minetest/zh_Hant/>\n"
+"Language: zh_TW\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 3.5-dev\n"
+
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "Respawn"
 msgstr "重生"
@@ -1756,7 +1772,7 @@ msgstr "輸入 "
 
 #: src/network/clientpackethandler.cpp
 msgid "LANG_CODE"
-msgstr ""
+msgstr "zh_TW"
 
 #: src/settings_translation_file.cpp
 msgid ""
