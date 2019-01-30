@@ -289,6 +289,15 @@ function store.load()
 		"&nonfree=" ..
 		(show_nonfree and "true" or "false")
 
+	for _, item in pairs(core.settings:get("hide_content_ratings"):split(",")) do
+		item = item:trim()
+		if item ~= "" then
+			url = url .. "&hide_content_rating=" .. item
+		end
+	end
+
+	print(url)
+
 	core.download_file(url, target)
 
 	local file = io.open(target, "r")
