@@ -340,11 +340,11 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("ask_reconnect_on_crash", "false");
 
 	settings->setDefault("profiler_print_interval", "0");
-	settings->setDefault("active_object_send_range_blocks", "3");
+	settings->setDefault("active_object_send_range_blocks", "4");
 	settings->setDefault("active_block_range", "3");
 	//settings->setDefault("max_simultaneous_block_sends_per_client", "1");
 	// This causes frametime jitter on client side, or does it?
-	settings->setDefault("max_block_send_distance", "9");
+	settings->setDefault("max_block_send_distance", "10");
 	settings->setDefault("block_send_optimize_distance", "4");
 	settings->setDefault("server_side_occlusion_culling", "true");
 	settings->setDefault("csm_restriction_flags", "62");
@@ -401,7 +401,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("chunksize", "5");
 	settings->setDefault("mg_flags", "dungeons");
 	settings->setDefault("fixed_map_seed", "");
-	settings->setDefault("max_block_generate_distance", "7");
+	settings->setDefault("max_block_generate_distance", "8");
 	settings->setDefault("projecting_dungeons", "true");
 	settings->setDefault("enable_mapgen_debug_info", "false");
 

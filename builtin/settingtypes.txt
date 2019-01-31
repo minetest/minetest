@@ -1073,7 +1073,7 @@ ask_reconnect_on_crash (Ask to reconnect after crash) bool false
 #    Setting this larger than active_block_range will also cause the server
 #    to maintain active objects up to this distance in the direction the
 #    player is looking. (This can avoid mobs suddenly disappearing from view)
-active_object_send_range_blocks (Active object send range) int 3
+active_object_send_range_blocks (Active object send range) int 4
 
 #    The radius of the volume of blocks around every player that is subject to the
 #    active block stuff, stated in mapblocks (16 nodes).
@@ -1083,7 +1083,7 @@ active_object_send_range_blocks (Active object send range) int 3
 active_block_range (Active block range) int 3
 
 #    From how far blocks are sent to clients, stated in mapblocks (16 nodes).
-max_block_send_distance (Max block send distance) int 9
+max_block_send_distance (Max block send distance) int 10
 
 #    Maximum number of forceloaded mapblocks.
 max_forceloaded_blocks (Maximum forceloaded blocks) int 16
@@ -1337,7 +1337,7 @@ mg_name (Mapgen name) enum v7 v5,v6,v7,valleys,carpathian,fractal,flat,singlenod
 water_level (Water level) int 1
 
 #    From how far blocks are generated for clients, stated in mapblocks (16 nodes).
-max_block_generate_distance (Max block generate distance) int 6
+max_block_generate_distance (Max block generate distance) int 8
 
 #    Limit of map generation, in nodes, in all 6 directions from (0, 0, 0).
 #    Only mapchunks completely within the mapgen limit are generated.
