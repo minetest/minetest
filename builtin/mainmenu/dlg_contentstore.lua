@@ -19,7 +19,7 @@ local store = {}
 local package_dialog = {}
 
 -- Screenshot
-local screenshot_dir = os.tempfolder()
+local screenshot_dir = core.get_cache_path() .. DIR_DELIM .. "cdb"
 assert(core.create_dir(screenshot_dir))
 local screenshot_downloading = {}
 local screenshot_downloaded = {}
