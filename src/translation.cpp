@@ -41,7 +41,7 @@ const std::wstring &Translations::getTranslation(
 	try {
 		return m_translations.at(key);
 	} catch (const std::out_of_range &) {
-		warningstream << "Translations: can't find translation for string \""
+		verbosestream << "Translations: can't find translation for string \""
 		              << wide_to_utf8(s) << "\" in textdomain \""
 		              << wide_to_utf8(textdomain) << "\"" << std::endl;
 		// Silence that warning in the future
