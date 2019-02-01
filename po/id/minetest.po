@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-01-09 15:35+0200\n"
-"PO-Revision-Date: 2019-01-12 12:07+0000\n"
+"PO-Revision-Date: 2019-02-09 03:04+0000\n"
 "Last-Translator: Muhammad Rifqi Priyo Susanto "
 "<muhammadrifqipriyosusanto@gmail.com>\n"
 "Language-Team: Indonesian <https://hosted.weblate.org/projects/minetest/"
@@ -13,7 +13,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 3.4-dev\n"
+"X-Generator: Weblate 3.5-dev\n"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "Respawn"
@@ -609,7 +609,7 @@ msgstr "Mipmap"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Mipmap + Aniso. Filter"
-msgstr "Mipmap + Filter aniso."
+msgstr "Filter aniso. + Mipmap"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "No"
@@ -2727,7 +2727,7 @@ msgstr "Faktor fall bobbing"
 
 #: src/settings_translation_file.cpp
 msgid "Fallback font"
-msgstr "needs_fallback_font"
+msgstr "Fon cadangan"
 
 #: src/settings_translation_file.cpp
 msgid "Fallback font shadow"
@@ -2792,7 +2792,7 @@ msgstr "Noise kedalaman isian"
 
 #: src/settings_translation_file.cpp
 msgid "Filmic tone mapping"
-msgstr "Pemetaan suasana filmic"
+msgstr "Pemetaan suasana filmis"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6312,11 +6312,11 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Whether dungeons occasionally project from the terrain."
-msgstr "Apakah dungeon terkadang muncul dari medan?"
+msgstr "Apakah dungeon terkadang muncul dari medan."
 
 #: src/settings_translation_file.cpp
 msgid "Whether node texture animations should be desynchronized per mapblock."
-msgstr "Apakah animasi tekstur nodus harus tidak disinkronkan tiap blok peta?"
+msgstr "Apakah animasi tekstur nodus harus tidak disinkronkan tiap blok peta."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6328,7 +6328,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Whether to allow players to damage and kill each other."
-msgstr "Apakah pemain boleh melukai dan membunuh satu sama lain?"
+msgstr "Apakah pemain boleh melukai dan membunuh satu sama lain."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6340,12 +6340,12 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Whether to fog out the end of the visible area."
-msgstr "Apakah harus memberi kabut pada akhir daerah yang terlihat?"
+msgstr "Apakah harus memberi kabut pada akhir daerah yang terlihat."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Whether to show the client debug info (has the same effect as hitting F5)."
-msgstr "Apakah menampilkan informasi awakutu klien (sama dengan menekan F5)?"
+msgstr "Apakah menampilkan informasi awakutu klien (sama dengan menekan F5)."
 
 #: src/settings_translation_file.cpp
 msgid "Width component of the initial window size."

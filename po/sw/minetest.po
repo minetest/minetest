@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-01-24 01:05+0200\n"
-"PO-Revision-Date: 2019-01-24 00:05+0000\n"
-"Last-Translator: Nore <nore@mesecons.net>\n"
+"PO-Revision-Date: 2019-02-13 13:11+0000\n"
+"Last-Translator: tyler71 <sagsdf_github_tyler71@xyzz.work>\n"
 "Language-Team: Swahili <https://hosted.weblate.org/projects/minetest/"
 "minetest/sw/>\n"
 "Language: sw\n"
@@ -12,16 +12,15 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 3.4\n"
+"X-Generator: Weblate 3.5-dev\n"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "Respawn"
 msgstr "Respawn"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
-#, fuzzy
 msgid "You died"
-msgstr "Alikufa."
+msgstr "Umekufa."
 
 #: builtin/fstk/ui.lua
 msgid "An error occured in a Lua script, such as a mod:"
@@ -86,19 +85,16 @@ msgid "Cancel"
 msgstr "Katisha"
 
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/tab_content.lua
-#, fuzzy
 msgid "Dependencies:"
-msgstr "Inategemea:"
+msgstr "Mategemezi:"
 
 #: builtin/mainmenu/dlg_config_world.lua
-#, fuzzy
 msgid "Disable all"
-msgstr "Lemaza MP"
+msgstr "Lemeza yote"
 
 #: builtin/mainmenu/dlg_config_world.lua
-#, fuzzy
 msgid "Disable modpack"
-msgstr "Walemavu"
+msgstr "lemeza modpack"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Enable all"
@@ -114,8 +110,8 @@ msgid ""
 "Failed to enable mod \"$1\" as it contains disallowed characters. Only "
 "chararacters [a-z0-9_] are allowed."
 msgstr ""
-"Ilishindwa kuwezesha Moduli \"$1\" kama lina vibambo ilipopiga. Tu "
-"chararacters [a-z0-9_] wanaruhusiwa."
+"Minetest imeshindwa kuwezesha moduli \"$1\" ila kuna vibambo zilizo "
+"kataliwa. Tu vibambo [a-z0-9_] wanaruhusiwa."
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Mod:"

@@ -3,8 +3,9 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-01-24 01:05+0200\n"
-"PO-Revision-Date: 2019-01-24 00:05+0000\n"
-"Last-Translator: Nore <nore@mesecons.net>\n"
+"PO-Revision-Date: 2019-02-09 05:01+0000\n"
+"Last-Translator: Muhammad Rifqi Priyo Susanto "
+"<muhammadrifqipriyosusanto@gmail.com>\n"
 "Language-Team: Ukrainian <https://hosted.weblate.org/projects/minetest/"
 "minetest/uk/>\n"
 "Language: uk\n"
@@ -13,7 +14,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<="
 "4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 3.4\n"
+"X-Generator: Weblate 3.5-dev\n"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "Respawn"
@@ -836,7 +837,7 @@ msgstr "Вказаний шлях до світу не існує: "
 
 #: src/client/fontengine.cpp
 msgid "needs_fallback_font"
-msgstr "needs_fallback_font"
+msgstr ""
 
 #: src/client/game.cpp
 msgid ""

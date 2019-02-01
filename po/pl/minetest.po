@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-01-12 13:07+0200\n"
-"PO-Revision-Date: 2019-01-26 00:08+0000\n"
+"PO-Revision-Date: 2019-02-12 20:07+0000\n"
 "Last-Translator: Mateusz Mendel <mendelm9@gmail.com>\n"
 "Language-Team: Polish <https://hosted.weblate.org/projects/minetest/minetest/"
 "pl/>\n"
@@ -5437,8 +5437,9 @@ msgid "Pitch fly key"
 msgstr "Klawisz latania"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Pitch fly mode"
-msgstr ""
+msgstr "Tryb pitch fly"
 
 #: src/settings_translation_file.cpp
 #, fuzzy

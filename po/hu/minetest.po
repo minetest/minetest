@@ -3,8 +3,9 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-01-08 17:12+0200\n"
-"PO-Revision-Date: 2019-01-24 00:05+0000\n"
-"Last-Translator: Nore <nore@mesecons.net>\n"
+"PO-Revision-Date: 2019-02-13 13:11+0000\n"
+"Last-Translator: Muhammad Rifqi Priyo Susanto "
+"<muhammadrifqipriyosusanto@gmail.com>\n"
 "Language-Team: Hungarian <https://hosted.weblate.org/projects/minetest/"
 "minetest/hu/>\n"
 "Language: hu\n"
@@ -12,7 +13,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 3.4\n"
+"X-Generator: Weblate 3.5-dev\n"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "Respawn"
@@ -788,7 +789,7 @@ msgstr "A megadott útvonalon nem létezik világ: "
 
 #: src/client/fontengine.cpp
 msgid "needs_fallback_font"
-msgstr "needs_fallback_font"
+msgstr ""
 
 #: src/client/game.cpp
 msgid ""

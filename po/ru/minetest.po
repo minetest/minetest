@@ -3,8 +3,9 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-01-24 01:05+0200\n"
-"PO-Revision-Date: 2019-02-01 06:10+0000\n"
-"Last-Translator: narrnika <narr13niki@gmail.com>\n"
+"PO-Revision-Date: 2019-02-09 11:42+0000\n"
+"Last-Translator: Muhammad Rifqi Priyo Susanto "
+"<muhammadrifqipriyosusanto@gmail.com>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/minetest/"
 "minetest/ru/>\n"
 "Language: ru\n"
@@ -815,7 +816,7 @@ msgstr "По этому пути мира нет: "
 
 #: src/client/fontengine.cpp
 msgid "needs_fallback_font"
-msgstr "needs_fallback_font"
+msgstr ""
 
 #: src/client/game.cpp
 msgid ""

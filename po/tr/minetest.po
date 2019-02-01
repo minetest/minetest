@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-01-12 13:07+0200\n"
-"PO-Revision-Date: 2019-01-24 00:05+0000\n"
+"PO-Revision-Date: 2019-02-13 13:11+0000\n"
 "Last-Translator: monolifed <monolifed@gmail.com>\n"
 "Language-Team: Turkish <https://hosted.weblate.org/projects/minetest/"
 "minetest/tr/>\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 3.4\n"
+"X-Generator: Weblate 3.5-dev\n"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "Respawn"
@@ -598,7 +598,7 @@ msgstr "Şık Yapraklar"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Generate Normal Maps"
-msgstr "Normal Haritalarını Oluştur"
+msgstr "Normal Eşlemeleri Üret"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Mipmap"
@@ -786,7 +786,7 @@ msgstr "Belirtilen dünya konumu yok: "
 
 #: src/client/fontengine.cpp
 msgid "needs_fallback_font"
-msgstr "needs_fallback_font"
+msgstr "no"
 
 #: src/client/game.cpp
 msgid ""
@@ -1457,7 +1457,7 @@ msgid ""
 msgstr ""
 "\"%2$s\" adıyla %1$s adresindeki sunucuya ilk kez bağlanmak üzeresiniz. "
 "Devam ederseniz, bu sunucuda, bilgileriniz kullanılarak yeni bir hesap "
-"oluşturulacak.\n"
+"yaratılacak.\n"
 "Lütfen hesap yaratmayı onaylamak için parolanızı tekrar girin ve Kaydol ve "
 "Katıl'a tıklayın veya vaz geçmek İptal'e tıklayın."
 
@@ -2453,7 +2453,7 @@ msgid ""
 "A higher value results in smoother normal maps."
 msgstr ""
 "Dokuların örnekleme adımını tanımlar.\n"
-"Daha yüksek değer daha yumuşak dikey eşleme verir."
+"Yüksek bir değer daha yumuşak normal eşlemeler verir."
 
 #: src/settings_translation_file.cpp
 msgid "Defines the base ground level."
@@ -2661,7 +2661,7 @@ msgid ""
 "or need to be auto-generated.\n"
 "Requires shaders to be enabled."
 msgstr ""
-"Tümsek eşlemeyi dokular için etkinleştirir. Dikey eşlemelerin doku paketi "
+"Tümsek eşlemeyi dokular için etkinleştirir. Normal eşlemelerin doku paketi "
 "tarafından sağlanması\n"
 "veya kendiliğinden üretilmesi gerekir\n"
 "Gölgelemelerin etkin olmasını gerektirir."
@@ -3014,7 +3014,7 @@ msgstr "Gama"
 
 #: src/settings_translation_file.cpp
 msgid "Generate normalmaps"
-msgstr "Normal eşlemeler üret"
+msgstr "Normal eşlemeleri üret"
 
 #: src/settings_translation_file.cpp
 msgid "Global callbacks"
@@ -3028,7 +3028,7 @@ msgid ""
 "Flags that are not enabled are not modified from the default.\n"
 "Flags starting with 'no' are used to explicitly disable them."
 msgstr ""
-"Global harita üretme özellikleri.\n"
+"Genel harita üretim özellikleri.\n"
 "Mapgen v6'da 'decorations' bayrağı ağaçlar ve cangıl çimi hariç tüm "
 "dekorasyonları\n"
 "denetler, diğer mapgenlerde bu bayrak tüm dekorasyonları denetler.\n"
@@ -4447,7 +4447,7 @@ msgid ""
 "Only mapchunks completely within the mapgen limit are generated.\n"
 "Value is stored per-world."
 msgstr ""
-"Harita üretme sınırı, nodlar cinsinden, (0, 0, 0)'dan tüm 6 doğrultuda.\n"
+"Harita üretim sınırı, nodlar cinsinden, (0, 0, 0)'dan tüm 6 doğrultuda.\n"
 "Yalnızca tamamen mapgen sınırı içindeki harita yığınları üretilir.\n"
 "Değer dünya-başına saklanır."
 
@@ -4550,7 +4550,7 @@ msgid ""
 "Flags that are not enabled are not modified from the default.\n"
 "Flags starting with 'no' are used to explicitly disable them."
 msgstr ""
-"Mapgen Carpathian'a özgü harita üretme değerleri.\n"
+"Mapgen Karpat'a özgü harita üretim değerleri.\n"
 "Etkinleştirilmemiş bayraklar öntanımlıdan değiştirilmez.\n"
 "'no' ile başlayan bayraklar onları devre dışı bırakır."
 
@@ -4563,7 +4563,7 @@ msgid ""
 "to become shallower and occasionally dry.\n"
 "'altitude_dry': Reduces humidity with altitude."
 msgstr ""
-"Mapgen Valleys'e özgü harita üretme değerleri. \n"
+"Mapgen Vadiler'e özgü harita üretim değerleri. \n"
 "'altitude_chill': Isıyı yükseklikle azaltır.\n"
 "'humid_rivers': Nehirlerin ve su birikintilerinin etrafında nemi artırır.\n"
 "'vary_river_depth': Etkinse, düşük nem ve yüksek ısı nehirlerin sığ ve\n"
@@ -4577,7 +4577,7 @@ msgid ""
 "Flags that are not enabled are not modified from the default.\n"
 "Flags starting with 'no' are used to explicitly disable them."
 msgstr ""
-"Mapgen flat'e özgü harita üretme değerleri.\n"
+"Mapgen düz'e özgü harita üretim değerleri.\n"
 "Ara sıra göller ve tepeler düz dünyaya eklenebilir.\n"
 "Etkinleştirilmemiş bayraklar öntanımlıdan değiştirilmez.\n"
 "'no' ile başlayan bayraklar onları devre dışı bırakır."
@@ -4588,7 +4588,7 @@ msgid ""
 "Flags that are not enabled are not modified from the default.\n"
 "Flags starting with 'no' are used to explicitly disable them."
 msgstr ""
-"Mapgen v5'e özgü harita üretme değerleri.\n"
+"Mapgen v5'e özgü harita üretim değerleri.\n"
 "Etkinleştirilmemiş bayraklar öntanımlıdan değiştirilmez.\n"
 "'no' ile başlayan bayraklar onları devre dışı bırakır."
 
@@ -4601,7 +4601,7 @@ msgid ""
 "Flags that are not enabled are not modified from the default.\n"
 "Flags starting with 'no' are used to explicitly disable them."
 msgstr ""
-"Mapgen v6'ya özgü harita üretme değerleri.\n"
+"Mapgen v6'ya özgü harita üretim değerleri.\n"
 "'snowbiomes' bayrağı yeni 5 biyom sistemini etkinleştir.\n"
 "Yeni biyom sistemi etkinken cangıllar kendiliğinden etkinleştirilir ve\n"
 "'jungles' bayrağı yok sayılır.\n"
@@ -4615,14 +4615,14 @@ msgid ""
 "Flags that are not enabled are not modified from the default.\n"
 "Flags starting with 'no' are used to explicitly disable them."
 msgstr ""
-"Mapgen v7'ye özgü harita üretme değerleri.\n"
+"Mapgen v7'ye özgü harita üretim değerleri.\n"
 "'ridges' nehirleri etkinleştirir.\n"
 "Etkinleştirilmemiş bayraklar öntanımlıdan değiştirilmez.\n"
 "'no' ile başlayan bayraklar onları devre dışı bırakır."
 
 #: src/settings_translation_file.cpp
 msgid "Map generation limit"
-msgstr "Harita üretme sınırı"
+msgstr "Harita üretim sınırı"
 
 #: src/settings_translation_file.cpp
 msgid "Map save interval"
@@ -4634,7 +4634,7 @@ msgstr "Harita bloğu sınırı"
 
 #: src/settings_translation_file.cpp
 msgid "Mapblock mesh generation delay"
-msgstr "Harita bloğu ızgara üretme gecikmesi"
+msgstr "Harita bloğu ızgara üretim gecikmesi"
 
 #: src/settings_translation_file.cpp
 msgid "Mapblock mesh generator's MapBlock cache size in MB"
@@ -4646,19 +4646,19 @@ msgstr "Harita bloğu boşaltma zaman aşımı"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen Carpathian"
-msgstr "Mapgen Carpathian"
+msgstr "Mapgen Karpat"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen Carpathian specific flags"
-msgstr "Mapgen Carpathian'a özgü bayraklar"
+msgstr "Mapgen Karpat'a özgü bayraklar"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen Flat"
-msgstr "Mapgen Flat"
+msgstr "Mapgen Düz"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen Flat specific flags"
-msgstr "Mapgen Flat'e özgü bayraklar"
+msgstr "Mapgen Düz'e özgü bayraklar"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen Fractal"
@@ -4694,7 +4694,7 @@ msgstr "Mapgen Vadiler"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen Valleys specific flags"
-msgstr "Mapgen Valleys'e özgü bayraklar"
+msgstr "Mapgen Vadiler'e özgü bayraklar"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen debug"
@@ -4948,7 +4948,6 @@ msgid "Mute sound"
 msgstr "Sesi kapat"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Name of map generator to be used when creating a new world.\n"
 "Creating a world in the main menu will override this.\n"
@@ -4957,9 +4956,13 @@ msgid ""
 "'stable' means the terrain shape in an existing world will not be changed\n"
 "in the future. Note that biomes are defined by games and may still change."
 msgstr ""
-"Yeni bir dünya yaratırken kullanılacak harita üreticinin adı.\n"
+"Yeni bir dünya yaratırken kullanılacak harita üretecinin adı.\n"
 "Ana menüde bir dünya yaratmak bunu etkisiz kılar.\n"
-"Şu anki stabil mapgenler:"
+"Şu anki kararlı harita üreteçleri:\n"
+"v5, v6, v7 (yüzenkaralar hariç), düz, tek-nod.\n"
+"'kararlı', var olan bir dünyada arazi şekli gelecekte değişmeyecek demektir."
+"\n"
+"Biyomların oyun tarafından belirlendiğini ve değişebileceğini unutmayın."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5019,11 +5022,11 @@ msgstr "Gürültüler"
 
 #: src/settings_translation_file.cpp
 msgid "Normalmaps sampling"
-msgstr "Dikey eşleme örnekleme"
+msgstr "Normal eşleme örnekleme"
 
 #: src/settings_translation_file.cpp
 msgid "Normalmaps strength"
-msgstr "Dikey eşleme gücü"
+msgstr "Normal eşleme gücü"
 
 #: src/settings_translation_file.cpp
 msgid "Number of emerge threads"
@@ -5609,6 +5612,12 @@ msgid ""
 "Altering this value is for special usage, leaving it unchanged is\n"
 "recommended."
 msgstr ""
+"Mapgen tarafından üretilen harita yığınlarının boyutu, harita bloğu\n"
+"(16 nod) cinsinden.\n"
+"UYARI! Bu değeri 5'in üstüne çıkarmanın faydası yoktur ve birçok\n"
+"tehlikesi vardır\n"
+"Bu değeri düşürmek mağara ve zindan yoğunluğunu azaltır.\n"
+"Bu değerin, değiştirilmesi özel kullanım içindir, değiştirilmemesi önerilir."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5715,7 +5724,7 @@ msgstr "Step dağ yayılma gürültüsü"
 
 #: src/settings_translation_file.cpp
 msgid "Strength of generated normalmaps."
-msgstr "Üretilen dikey eşlemelerin gücü."
+msgstr "Üretilen normal eşlemelerin gücü."
 
 #: src/settings_translation_file.cpp
 msgid "Strength of light curve mid-boost."
@@ -5798,6 +5807,12 @@ msgid ""
 "this option allows enforcing it for certain node types. Note though that\n"
 "that is considered EXPERIMENTAL and may not work properly."
 msgstr ""
+"Bir nod üstündeki dokular nod'a ya da dünyaya göre hizalanabilir.\n"
+"İlk kip, makineler, mobilyalar v.b. için uygunken ikinci kip medivenlerin\n"
+"ve mikro blokların çevreye daha iyi uymasını sağlar.\n"
+"Ancak, bu seçenek yeni olduğundan, eski sunucularda kullanılamayabilir,\n"
+"bu seçenek onu belirli nod türleri için zorunlu kılmaya izin verir. Bunun\n"
+"DENEYSEL olduğunu ve düzgün çalışmayabileceğini unutmayın."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5849,6 +5864,12 @@ msgid ""
 "maintained.\n"
 "This should be configured together with active_object_range."
 msgstr ""
+"Her oyuncu çevresinde, etkin blok işlemleri uygulanacak, bloklarının "
+"hacminin\n"
+"yarıçapı, harita blokları (16 nod) cinsinden.\n"
+"Etkin bloklarda neseneler yüklenir ve ABMler çalışır.\n"
+"Bu ayrıca etkin nesnelerin (moblar) korunacağı minimum uzaklıktır.\n"
+"Bu active_object_range ile birlikte ayarlanmalıdır."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5859,6 +5880,11 @@ msgid ""
 "On other platforms, OpenGL is recommended, and it’s the only driver with\n"
 "shader support currently."
 msgstr ""
+"Irrlicht için işleme arka ucu.\n"
+"Bunu değiştirdikten sonra tekrar başlatma gerekir.\n"
+"Not: Android'de, emin değilseniz OGLES1 kullanın! Başka türlü, uygulama\n"
+"başlayamayabilir. Diğer platformlarda, OpenGL önerilir ve şu anda gölgeleme\n"
+"desteği olan tek sürücüdür."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5920,6 +5946,8 @@ msgid ""
 "enabled. Also the vertical distance over which humidity drops by 10 if\n"
 "'altitude_dry' is enabled."
 msgstr ""
+"'altitude_chill' etkinse, ısının 20 azalacağı dikey uzaklık.\n"
+"Ayrıca, 'altitude_dry' etkinse, nemin 10 azalacağı dikey uzaklık."
 
 #: src/settings_translation_file.cpp
 msgid "Third of 4 2D noises that together define hill/mountain range height."
@@ -6064,6 +6092,9 @@ msgid ""
 "especially when using a high resolution texture pack.\n"
 "Gamma correct downscaling is not supported."
 msgstr ""
+"Dokuları boyutlandırmak için  mip haritalama kullan. Özellikle yüksek\n"
+"çözünürlüklü bir doku paketi kullanırken, performans biraz artabilir.\n"
+"Gamma doğruluklu küçültme desteklenmez."
 
 #: src/settings_translation_file.cpp
 msgid "Use trilinear filtering when scaling textures."
@@ -6367,6 +6398,11 @@ msgid ""
 "See also texture_min_size.\n"
 "Warning: This option is EXPERIMENTAL!"
 msgstr ""
+"Dünya hizalı dokular birçok noda kapsaması için boyutlandırılabilir.\n"
+"Ancak sunucu istediğiniz boyutu göndermeyebilir, özellikle de özel\n"
+"tasarlanmış bir doku paketi kullanıyorsanız; bu seçenekle, istemci\n"
+"doku boyutunu temel alarak boyutu kendiliğinden belirlemeye çalışır.\n"
+"Uyarı: Bu seçenek DENEYSELdir!"
 
 #: src/settings_translation_file.cpp
 msgid "World-aligned textures mode"

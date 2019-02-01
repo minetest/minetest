@@ -3,8 +3,9 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-01-24 01:05+0200\n"
-"PO-Revision-Date: 2019-01-24 00:05+0000\n"
-"Last-Translator: Nore <nore@mesecons.net>\n"
+"PO-Revision-Date: 2019-02-10 05:48+0000\n"
+"Last-Translator: Muhammad Rifqi Priyo Susanto "
+"<muhammadrifqipriyosusanto@gmail.com>\n"
 "Language-Team: Lithuanian <https://hosted.weblate.org/projects/minetest/"
 "minetest/lt/>\n"
 "Language: lt\n"
@@ -14,7 +15,7 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=(n % 10 == 1 && (n % 100 < 11 || n % 100 > "
 "19)) ? 0 : ((n % 10 >= 2 && n % 10 <= 9 && (n % 100 < 11 || n % 100 > 19)) ? "
 "1 : 2);\n"
-"X-Generator: Weblate 3.4\n"
+"X-Generator: Weblate 3.5-dev\n"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "Respawn"
@@ -855,7 +856,7 @@ msgstr "Pateiktas pasaulio kelias neegzistuoja: "
 
 #: src/client/fontengine.cpp
 msgid "needs_fallback_font"
-msgstr "reikia_atsarginio_šrifto"
+msgstr ""
 
 #: src/client/game.cpp
 msgid ""

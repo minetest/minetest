@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-01-06 18:12+0200\n"
-"PO-Revision-Date: 2019-02-01 06:10+0000\n"
+"PO-Revision-Date: 2019-02-06 14:18+0000\n"
 "Last-Translator: Wuzzy <almikes@aol.com>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/minetest/minetest/"
 "de/>\n"
@@ -1195,7 +1195,7 @@ msgstr "Feststellt."
 
 #: src/client/keycode.cpp
 msgid "Clear"
-msgstr "sauber"
+msgstr "Clear"
 
 #: src/client/keycode.cpp
 msgid "Control"
@@ -1645,7 +1645,7 @@ msgstr "Tonlautstärke: "
 
 #: src/gui/modalMenu.cpp
 msgid "Enter "
-msgstr "Enter "
+msgstr "Eingabe "
 
 #: src/network/clientpackethandler.cpp
 msgid "LANG_CODE"
