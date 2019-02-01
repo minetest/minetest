@@ -399,7 +399,29 @@ function store.get_formspec()
 	end
 
 	local formspec
-	if #store.packages_full > 0 then
+	if #store.packages == 0 then
+		formspec = {
+			"size[12,7;true]",
+			"position[0.5,0.55]",
+			"label[5,3;",
+			fgettext("No results"), "]",
+			"button[-0.1,",
+			num_per_page + 1.5,
+			";3,1;back;",
+			fgettext("Back to Main Menu"), "]",
+		}
+
+		if #store.packages_full > 0 then
+			formspec[#formspec + 1] = "field[0.2,0.1;7.8,1;search_string;;"
+			formspec[#formspec + 1] = core.formspec_escape(search_string) .. "]"
+			formspec[#formspec + 1] = "field_close_on_enter[search_string;false]"
+			formspec[#formspec + 1] = "button[7.7,-0.2;2,1;search;"
+			formspec[#formspec + 1] = fgettext("Search") .. "]"
+			formspec[#formspec + 1] = "dropdown[9.7,-0.1;2.4;type;"
+			formspec[#formspec + 1] = table.concat(filter_types_titles, ",")
+			formspec[#formspec + 1] = ";" .. filter_type .. "]"
+		end
+	else
 		formspec = {
 			"size[12,7;true]",
 			"position[0.5,0.55]",
@@ -428,22 +450,6 @@ function store.get_formspec()
 			"button[11.1,0;1,1;pend;>>]",
 			"container_end[]",
 		}
-	else
-		formspec = {
-			"size[12,7;true]",
-			"position[0.5,0.55]",
-			"label[4,3;No packages could be retrieved]",
-			"button[-0.1,",
-			num_per_page + 1.5,
-			";3,1;back;",
-			fgettext("Back to Main Menu"), "]",
-		}
-	end
-
-	if #store.packages == 0 then
-		formspec[#formspec + 1] = "label[4,3;"
-		formspec[#formspec + 1] = fgettext("No results")
-		formspec[#formspec + 1] = "]"
 	end
 
 	local start_idx = (cur_page - 1) * num_per_page + 1
