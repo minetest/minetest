@@ -270,7 +270,7 @@ bool intlGUIEditBox::OnEvent(const SEvent& event)
 			break;
 		case EET_KEY_INPUT_EVENT:
         {
-#if (defined(__linux__) || defined(__FreeBSD__))
+#if (defined(__linux__) || defined(__FreeBSD__)) || defined(__DragonFly__)
             // ################################################################
 			// ValkaTR:
             // This part is the difference from the original intlGUIEditBox
