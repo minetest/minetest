@@ -22,7 +22,10 @@ function get_mods(path,retval,modpack)
 	for _, name in ipairs(mods) do
 		if name:sub(1, 1) ~= "." then
 			local prefix = path .. DIR_DELIM .. name
-			local toadd = {}
+			local toadd = {
+				dir_name = name,
+				parent_dir = path,
+			}
 			retval[#retval + 1] = toadd
 
 			-- Get config file
@@ -35,11 +38,13 @@ function get_mods(path,retval,modpack)
 				mod_conf = Settings(prefix .. DIR_DELIM .. "modpack.conf"):to_table()
 				if mod_conf.name then
 					name = mod_conf.name
+					toadd.is_name_explicit = true
 				end
 			else
 				mod_conf = Settings(prefix .. DIR_DELIM .. "mod.conf"):to_table()
 				if mod_conf.name then
 					name = mod_conf.name
+					toadd.is_name_explicit = true
 				end
 			end
 
