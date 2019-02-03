@@ -657,7 +657,7 @@ int LuaEntitySAO::punch(v3f dir,
 						<< " hp, health now " << getHP() << " hp" << std::endl;
 			}
 
-			std::string str = gob_cmd_punched(result.damage, getHP());
+			std::string str = gob_cmd_punched(getHP());
 			// create message and add to list
 			ActiveObjectMessage aom(getId(), true, str);
 			m_messages_out.push(aom);
@@ -1272,7 +1272,7 @@ int PlayerSAO::punch(v3f dir,
 	// No effect if PvP disabled
 	if (!g_settings->getBool("enable_pvp")) {
 		if (puncher->getType() == ACTIVEOBJECT_TYPE_PLAYER) {
-			std::string str = gob_cmd_punched(0, getHP());
+			std::string str = gob_cmd_punched(getHP());
 			// create message and add to list
 			ActiveObjectMessage aom(getId(), true, str);
 			m_messages_out.push(aom);
@@ -1299,7 +1299,7 @@ int PlayerSAO::punch(v3f dir,
 				PlayerHPChangeReason(PlayerHPChangeReason::PLAYER_PUNCH, puncher));
 	} else { // override client prediction
 		if (puncher->getType() == ACTIVEOBJECT_TYPE_PLAYER) {
-			std::string str = gob_cmd_punched(0, getHP());
+			std::string str = gob_cmd_punched(getHP());
 			// create message and add to list
 			ActiveObjectMessage aom(getId(), true, str);
 			m_messages_out.push(aom);
@@ -1317,13 +1317,6 @@ int PlayerSAO::punch(v3f dir,
 	actionstream << std::endl;
 
 	return hitparams.wear;
-}
-
-s16 PlayerSAO::readDamage()
-{
-	s16 damage = m_damage;
-	m_damage = 0;
-	return damage;
 }
 
 void PlayerSAO::setHP(s16 hp, const PlayerHPChangeReason &reason)
@@ -1345,9 +1338,6 @@ void PlayerSAO::setHP(s16 hp, const PlayerHPChangeReason &reason)
 	}
 
 	m_hp = hp;
-
-	if (oldhp > hp)
-		m_damage += (oldhp - hp);
 
 	// Update properties on death
 	if ((hp == 0) != (oldhp == 0))

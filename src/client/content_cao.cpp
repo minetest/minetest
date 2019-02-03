@@ -1488,7 +1488,6 @@ void GenericCAO::processMessage(const std::string &data)
 
 		updateAttachments();
 	} else if (cmd == GENERIC_CMD_PUNCHED) {
-		/*s16 damage =*/ readS16(is);
 		s16 result_hp = readS16(is);
 
 		// Use this instead of the send damage to not interfere with prediction

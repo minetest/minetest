@@ -342,7 +342,7 @@ public:
 	bool mediaReceived()
 	{ return !m_media_downloader; }
 
-	u8 getProtoVersion()
+	u16 getProtoVersion()
 	{ return m_proto_ver; }
 
 	bool connectedToServer();
@@ -504,7 +504,7 @@ private:
 	// and aren't accurate. We simply just don't know, because
 	// the server didn't send the version back then.
 	// If 0, server init hasn't been received yet.
-	u8 m_proto_ver = 0;
+	u16 m_proto_ver = 0;
 
 	u16 m_playeritem = 0;
 	bool m_inventory_updated = false;

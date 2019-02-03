@@ -351,7 +351,6 @@ private:
 	RemotePlayer *m_player = nullptr;
 	session_t m_peer_id = 0;
 	Inventory *m_inventory = nullptr;
-	s16 m_damage = 0;
 
 	// Cheat prevention
 	LagPool m_dig_pool;
