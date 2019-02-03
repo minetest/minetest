@@ -41,7 +41,7 @@ local active_contributors = {
 	"Vincent Glize (Dumbeldor) [Cleanups, CSM APIs]",
 	"Ben Deutsch [Rendering, Fixes, SQLite auth]",
 	"Wuzzy [Translation, Slippery]",
-	"ClobberXD/ANAND [Docs, Fixes]",
+	"ANAND (ClobberXD) [Docs, Fixes]",
 	"Shara/Ezhh [Docs, Game API]",
 	"DTA7 [Fixes, mute key]",
 	"Thomas-S [Disconnected, Formspecs]",
