@@ -285,14 +285,12 @@ function store.load()
 	local show_nonfree = core.settings:get_bool("show_nonfree_packages")
 	local url = base_url ..
 		"/api/packages/?type=mod&type=game&type=txp&protocol_version=" ..
-		core.get_max_supp_proto() ..
-		"&nonfree=" ..
-		(show_nonfree and "true" or "false")
+		core.get_max_supp_proto()
 
-	for _, item in pairs(core.settings:get("hide_content_ratings"):split(",")) do
+	for _, item in pairs(core.settings:get("hide_packages"):split(",")) do
 		item = item:trim()
 		if item ~= "" then
-			url = url .. "&hide_content_rating=" .. item
+			url = url .. "&hide=" .. item
 		end
 	end
 

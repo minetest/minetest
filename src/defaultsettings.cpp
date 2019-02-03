@@ -301,11 +301,10 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("mono_font_size", font_size_str);
 	settings->setDefault("contentdb_url", "https://content.minetest.net");
 #ifdef __ANDROID__
-	settings->setDefault("hide_content_ratings", "android_default");
+	settings->setDefault("hide_packages", "nonfree, android_default");
 #else
-	settings->setDefault("hide_content_ratings", "desktop_default");
+	settings->setDefault("hide_packages", "nonfree, desktop_default");
 #endif
-	settings->setDefault("show_nonfree_packages", "false");
 
 
 	// Server
