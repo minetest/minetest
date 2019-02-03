@@ -48,7 +48,7 @@
 #define __BIG_ENDIAN 1
 #elif defined(__MACH__) && defined(__APPLE__)
 #include <machine/endian.h>
-#elif defined(__FreeBSD__)
+#elif defined(__FreeBSD__) || defined(__DragonFly__)
 #include <sys/endian.h>
 #else
 #include <endian.h>
