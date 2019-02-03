@@ -271,3 +271,13 @@ void Address::print(std::ostream *s) const
 	else
 		*s << serializeString() << ":" << m_port;
 }
+
+bool Address::isLocalhost() const {
+	if (isIPv6()) {
+		static const unsigned char localhost_bytes[] =
+				{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 };
+
+		return memcmp(m_address.ipv6.sin6_addr.s6_addr, localhost_bytes, 16) == 0;
+	} else
+		return m_address.ipv4.sin_addr.s_addr == 0x0100007F;
+}
