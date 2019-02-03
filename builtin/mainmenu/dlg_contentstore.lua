@@ -430,22 +430,22 @@ function store.get_formspec()
 			"button[11.1,0;1,1;pend;>>]",
 			"container_end[]",
 		}
+
+		if #store.packages == 0 then
+			formspec[#formspec + 1] = "label[4,3;"
+			formspec[#formspec + 1] = fgettext("No results")
+			formspec[#formspec + 1] = "]"
+		end
 	else
 		formspec = {
 			"size[12,7;true]",
 			"position[0.5,0.55]",
-			"label[4,3;No packages could be retrieved]",
+			"label[4,3;", fgettext("No packages could be retrieved"), "]",
 			"button[-0.1,",
 			num_per_page + 1.5,
 			";3,1;back;",
 			fgettext("Back to Main Menu"), "]",
 		}
-	end
-
-	if #store.packages == 0 then
-		formspec[#formspec + 1] = "label[4,3;"
-		formspec[#formspec + 1] = fgettext("No results")
-		formspec[#formspec + 1] = "]"
 	end
 
 	local start_idx = (cur_page - 1) * num_per_page + 1
