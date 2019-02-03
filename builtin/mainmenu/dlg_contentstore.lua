@@ -285,9 +285,14 @@ function store.load()
 	local show_nonfree = core.settings:get_bool("show_nonfree_packages")
 	local url = base_url ..
 		"/api/packages/?type=mod&type=game&type=txp&protocol_version=" ..
-		core.get_max_supp_proto() ..
-		"&nonfree=" ..
-		(show_nonfree and "true" or "false")
+		core.get_max_supp_proto()
+
+	for _, item in pairs(core.settings:get("contentdb_flag_blacklist"):split(",")) do
+		item = item:trim()
+		if item ~= "" then
+			url = url .. "&hide=" .. item
+		end
+	end
 
 	core.download_file(url, target)
 

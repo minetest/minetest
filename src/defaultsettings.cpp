@@ -300,7 +300,11 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("font_size", font_size_str);
 	settings->setDefault("mono_font_size", font_size_str);
 	settings->setDefault("contentdb_url", "https://content.minetest.net");
-	settings->setDefault("show_nonfree_packages", "false");
+#ifdef __ANDROID__
+	settings->setDefault("contentdb_flag_blacklist", "nonfree, android_default");
+#else
+	settings->setDefault("contentdb_flag_blacklist", "nonfree, desktop_default");
+#endif
 
 
 	// Server
