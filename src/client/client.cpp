@@ -437,7 +437,7 @@ void Client::step(float dtime)
 		ClientEnvEvent envEvent = m_env.getClientEnvEvent();
 
 		if (envEvent.type == CEE_PLAYER_DAMAGE) {
-			u8 damage = envEvent.player_damage.amount;
+			u16 damage = envEvent.player_damage.amount;
 
 			if (envEvent.player_damage.send_to_server)
 				sendDamage(damage);
@@ -1213,9 +1213,9 @@ void Client::sendChangePassword(const std::string &oldpassword,
 }
 
 
-void Client::sendDamage(u8 damage)
+void Client::sendDamage(u16 damage)
 {
-	NetworkPacket pkt(TOSERVER_DAMAGE, sizeof(u8));
+	NetworkPacket pkt(TOSERVER_DAMAGE, sizeof(u16));
 	pkt << damage;
 	Send(&pkt);
 }

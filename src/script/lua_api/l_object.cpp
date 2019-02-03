@@ -183,8 +183,8 @@ int ObjectRef::l_punch(lua_State *L)
 	ToolCapabilities toolcap = read_tool_capabilities(L, 4);
 	dir.normalize();
 
-	s16 src_original_hp = co->getHP();
-	s16 dst_origin_hp = puncher->getHP();
+	u16 src_original_hp = co->getHP();
+	u16 dst_origin_hp = puncher->getHP();
 
 	// Do it
 	co->punch(dir, &toolcap, puncher, time_from_last_punch);

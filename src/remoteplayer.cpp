@@ -98,7 +98,7 @@ void RemotePlayer::deSerialize(std::istream &is, const std::string &playername,
 
 	if (sao) {
 		try {
-			sao->setHPRaw(args.getS32("hp"));
+			sao->setHPRaw(args.getU16("hp"));
 		} catch(SettingNotFoundException &e) {
 			sao->setHPRaw(PLAYER_MAX_HP_DEFAULT);
 		}
@@ -115,7 +115,7 @@ void RemotePlayer::deSerialize(std::istream &is, const std::string &playername,
 		} catch (SettingNotFoundException &e) {}
 
 		try {
-			sao->setBreath(args.getS32("breath"), false);
+			sao->setBreath(args.getU16("breath"), false);
 		} catch (SettingNotFoundException &e) {}
 
 		try {
@@ -168,11 +168,11 @@ void RemotePlayer::serialize(std::ostream &os)
 
 	// This should not happen
 	assert(m_sao);
-	args.setS32("hp", m_sao->getHP());
+	args.setU16("hp", m_sao->getHP());
 	args.setV3F("position", m_sao->getBasePosition());
 	args.setFloat("pitch", m_sao->getLookPitch());
 	args.setFloat("yaw", m_sao->getRotation().Y);
-	args.setS32("breath", m_sao->getBreath());
+	args.setU16("breath", m_sao->getBreath());
 
 	std::string extended_attrs;
 	serializeExtraAttributes(extended_attrs);

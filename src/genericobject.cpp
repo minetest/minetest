@@ -92,13 +92,13 @@ std::string gob_cmd_set_sprite(
 	return os.str();
 }
 
-std::string gob_cmd_punched(s16 result_hp)
+std::string gob_cmd_punched(u16 result_hp)
 {
 	std::ostringstream os(std::ios::binary);
 	// command
 	writeU8(os, GENERIC_CMD_PUNCHED);
 	// result_hp
-	writeS16(os, result_hp);
+	writeU16(os, result_hp);
 	return os.str();
 }
 
