@@ -62,8 +62,8 @@ local active_contributors = {
 	"Tre [Fixes]",
 	"Rob Blanckaert [Fixes]",
 	"Jozef Behran [Fixes]",
-	"Randomgeek [Fixes]",
-	"pedrogimeno [Fixes]",
+	"random_geek [Fixes]",
+	"p_gimeno [Fixes]",
 	"lisacvuk [Fixes]",
 }
 
