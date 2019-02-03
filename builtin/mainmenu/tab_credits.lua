@@ -95,7 +95,6 @@ local previous_contributors = {
 	"matttpt <matttpt@gmail.com> [Fixes]",
 	"Nils Dagsson Moskopp (erlehmann) <nils@dieweltistgarnichtso.net> [Minetest Logo]",
 	"Jeija <jeija@mesecons.net> [HTTP, particles]",
-	"Vincent Glize (Dumbeldor) <vincent.glize@live.fr> [CSM]",
 	"bigfoot547 [CSM]",
 	"Rogier <rogier777@gmail.com> [Fixes]",
 }
