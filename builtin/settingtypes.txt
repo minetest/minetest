@@ -1949,5 +1949,5 @@ contentdb_url (ContentDB URL) string https://content.minetest.net
 #    as defined by the Free Software Foundation.
 #    You can also specify content ratings, which are defined independently
 #    from Minetest versions.
-#    A list can be found at https://content.minetest.net/help/content_ratings/
+#    A list can be found at https://content.minetest.net/help/content_flags/
 hide_content_ratings (Show non-free packages) string nonfree, desktop_default
