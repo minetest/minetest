@@ -1939,7 +1939,7 @@ emergequeue_limit_generate (Limit of emerge queues to generate) int 64
 #    For many users the optimum setting may be '1'.
 num_emerge_threads (Number of emerge threads) int 0
 
-[Content Store]
+[Online Content Repository]
 
 #    The URL for the content repository
 contentdb_url (ContentDB URL) string https://content.minetest.net
