@@ -15,7 +15,7 @@
 --with this program; if not, write to the Free Software Foundation, Inc.,
 --51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-local store = {}
+local store = { packages = {}, packages_full = {} }
 local package_dialog = {}
 
 -- Screenshot
@@ -396,8 +396,6 @@ function store.filter_packages(query)
 end
 
 function store.get_formspec()
-	assert(store.loaded)
-
 	store.update_paths()
 
 	local pages = math.ceil(#store.packages / num_per_page)
