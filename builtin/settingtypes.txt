@@ -1944,10 +1944,10 @@ num_emerge_threads (Number of emerge threads) int 0
 #    The URL for the content repository
 contentdb_url (ContentDB URL) string https://content.minetest.net
 
-#    Comma separated list of flags to hide in the content repository.
+#    Comma-separated list of flags to hide in the content repository.
 #    "nonfree" can be used to hide packages which do not qualify as 'free software',
 #    as defined by the Free Software Foundation.
-#    You can also specify content ratings, which are defined independently
-#    from Minetest versions.
-#    A list can be found at https://content.minetest.net/help/content_flags/
-hide_content_ratings (Show non-free packages) string nonfree, desktop_default
+#    You can also specify content ratings.
+#    These flags are independent from Minetest versions,
+#    so see a full list at https://content.minetest.net/help/content_flags/
+contentdb_flag_blacklist (ContentDB Flag Blacklist) string nonfree, desktop_default
