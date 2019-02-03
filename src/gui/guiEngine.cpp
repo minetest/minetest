@@ -530,7 +530,6 @@ bool GUIEngine::downloadFile(const std::string &url, const std::string &target)
 {
 #if USE_CURL
 	std::ofstream target_file(target.c_str(), std::ios::out | std::ios::binary);
-
 	if (!target_file.good()) {
 		return false;
 	}
@@ -543,6 +542,8 @@ bool GUIEngine::downloadFile(const std::string &url, const std::string &target)
 	httpfetch_sync(fetch_request, fetch_result);
 
 	if (!fetch_result.succeeded) {
+		target_file.close();
+		fs::DeleteSingleFileOrEmptyDirectory(target);
 		return false;
 	}
 	target_file << fetch_result.data;
