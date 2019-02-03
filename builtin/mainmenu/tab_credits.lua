@@ -86,7 +86,6 @@ local previous_contributors = {
 	"Diego Martínez (kaeza) <kaeza@users.sf.net>",
 	"T4im [Profiler]",
 	"TeTpaAka [Hand overriding, nametag colors]",
-	"HybridDog [Fixes]",
 	"Duane Robertson <duane@duanerobertson.com> [MGValleys]",
 	"neoascetic [OS X Fixes]",
 	"TriBlade9 <triblade9@mail.com> [Audiovisuals]",
