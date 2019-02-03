@@ -300,7 +300,11 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("font_size", font_size_str);
 	settings->setDefault("mono_font_size", font_size_str);
 	settings->setDefault("contentdb_url", "https://content.minetest.net");
-	settings->setDefault("hide_content_ratings", "mature");
+#ifdef __ANDROID__
+	settings->setDefault("hide_content_ratings", "android_default");
+#else
+	settings->setDefault("hide_content_ratings", "desktop_default");
+#endif
 	settings->setDefault("show_nonfree_packages", "false");
 
 
