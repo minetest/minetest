@@ -287,7 +287,7 @@ function store.load()
 		"/api/packages/?type=mod&type=game&type=txp&protocol_version=" ..
 		core.get_max_supp_proto()
 
-	for _, item in pairs(core.settings:get("hide_packages"):split(",")) do
+	for _, item in pairs(core.settings:get("contentdb_flag_blacklist"):split(",")) do
 		item = item:trim()
 		if item ~= "" then
 			url = url .. "&hide=" .. item
