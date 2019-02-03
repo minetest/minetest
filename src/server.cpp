@@ -257,6 +257,7 @@ Server::~Server()
 		if (kick_msg.empty()) {
 			kick_msg = g_settings->get("kick_msg_shutdown");
 		}
+		m_env->saveLoadedPlayers(true);
 		m_env->kickAllPlayers(SERVER_ACCESSDENIED_SHUTDOWN,
 			kick_msg, reconnect);
 	}

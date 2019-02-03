@@ -568,10 +568,10 @@ void ServerEnvironment::kickAllPlayers(AccessDeniedCode reason,
 	}
 }
 
-void ServerEnvironment::saveLoadedPlayers()
+void ServerEnvironment::saveLoadedPlayers(bool force)
 {
 	for (RemotePlayer *player : m_players) {
-		if (player->checkModified() || (player->getPlayerSAO() &&
+		if (force || player->checkModified() || (player->getPlayerSAO() &&
 				player->getPlayerSAO()->getMeta().isModified())) {
 			try {
 				m_player_database->savePlayer(player);
