@@ -507,6 +507,7 @@ void GenericCAO::removeFromScene(bool permanent)
 		m_spritenode->drop();
 		m_spritenode = nullptr;
 	}
+
 	if (m_matrixnode) {
 		m_matrixnode->remove();
 		m_matrixnode->drop();
