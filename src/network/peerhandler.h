@@ -30,8 +30,7 @@ typedef enum {
 	AVG_RTT,
 	MIN_JITTER,
 	MAX_JITTER,
-	AVG_JITTER,
-	TIMEOUT_COUNTER
+	AVG_JITTER
 } rtt_stat_type;
 
 class Peer;

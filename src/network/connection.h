@@ -581,15 +581,15 @@ class Peer {
 					return m_rtt.jitter_max;
 				case AVG_JITTER:
 					return m_rtt.jitter_avg;
-				case TIMEOUT_COUNTER:
-					return m_timeout_counter;
 			}
 			return -1;
 		}
 	protected:
 		virtual void reportRTT(float rtt) {};
 
-		void RTTStatistics(float rtt, const std::string &profiler_id = "");
+		void RTTStatistics(float rtt,
+							const std::string &profiler_id = "",
+							unsigned int num_samples = 1000);
 
 		bool IncUseCount();
 		void DecUseCount();
