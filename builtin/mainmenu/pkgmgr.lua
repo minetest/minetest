@@ -603,7 +603,11 @@ function pkgmgr.preparemodlist(data)
 				end
 			end
 			if element ~= nil then
-				element.enabled = value ~= "false" and value ~= "nil" and value
+				if value ~= "false" and value ~= "nil" and value then
+					element.enabled = true
+				else
+					element.enabled = false
+				end
 			else
 				core.log("info", "Mod: " .. key .. " " .. dump(value) .. " but not found")
 			end
