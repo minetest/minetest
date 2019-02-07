@@ -242,7 +242,7 @@ void GUIEngine::run()
 	irr::core::dimension2d<u32> previous_screen_size(g_settings->getU16("screen_w"),
 		g_settings->getU16("screen_h"));
 
-	const video::SColor sky_color(255, 140, 186, 250);
+	static const video::SColor sky_color(255, 140, 186, 250);
 
 	// Reset fog color
 	{
