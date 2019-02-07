@@ -23,7 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <IMeshManipulator.h>
 #include <IAnimatedMeshSceneNode.h>
 #include "content_cao.h"
-#include "util/numeric.h" // For IntervalLimiter
+#include "util/numeric.h" // For IntervalLimiter & setPitchYawRoll
 #include "util/serialize.h"
 #include "util/basic_macros.h"
 #include "client/sound.h"
@@ -365,7 +365,7 @@ void GenericCAO::processInitData(const std::string &data)
 		return;
 	}
 
-	// PROTOCOL_VERSION >= 37 
+	// PROTOCOL_VERSION >= 37
 	m_name = deSerializeString(is);
 	m_is_player = readU8(is);
 	m_id = readU16(is);
@@ -402,10 +402,9 @@ bool GenericCAO::getSelectionBox(aabb3f *toset) const
 
 v3f GenericCAO::getPosition()
 {
-	if (getParent() != NULL) {
-		scene::ISceneNode *node = getSceneNode();
-		if (node)
-			return node->getAbsolutePosition();
+	if (getParent() != nullptr) {
+		if (m_matrixnode)
+			return m_matrixnode->getAbsolutePosition();
 
 		return m_position;
 	}
@@ -486,7 +485,7 @@ void GenericCAO::removeFromScene(bool permanent)
 
 		LocalPlayer* player = m_env->getLocalPlayer();
 		if (this == player->parent) {
-			player->parent = NULL;
+			player->parent = nullptr;
 			player->isAttached = false;
 		}
 	}
@@ -494,24 +493,30 @@ void GenericCAO::removeFromScene(bool permanent)
 	if (m_meshnode) {
 		m_meshnode->remove();
 		m_meshnode->drop();
-		m_meshnode = NULL;
+		m_meshnode = nullptr;
 	} else if (m_animated_meshnode)	{
 		m_animated_meshnode->remove();
 		m_animated_meshnode->drop();
-		m_animated_meshnode = NULL;
+		m_animated_meshnode = nullptr;
 	} else if (m_wield_meshnode) {
 		m_wield_meshnode->remove();
 		m_wield_meshnode->drop();
-		m_wield_meshnode = NULL;
+		m_wield_meshnode = nullptr;
 	} else if (m_spritenode) {
 		m_spritenode->remove();
 		m_spritenode->drop();
-		m_spritenode = NULL;
+		m_spritenode = nullptr;
+	}
+
+	if (m_matrixnode) {
+		m_matrixnode->remove();
+		m_matrixnode->drop();
+		m_matrixnode = nullptr;
 	}
 
 	if (m_nametag) {
 		m_client->getCamera()->removeNametag(m_nametag);
-		m_nametag = NULL;
+		m_nametag = nullptr;
 	}
 }
 
@@ -534,8 +539,11 @@ void GenericCAO::addToScene(ITextureSource *tsrc)
 
 	if (m_prop.visual == "sprite") {
 		infostream<<"GenericCAO::addToScene(): single_sprite"<<std::endl;
+		m_matrixnode = RenderingEngine::get_scene_manager()->
+				addDummyTransformationSceneNode();
+		m_matrixnode->grab();
 		m_spritenode = RenderingEngine::get_scene_manager()->addBillboardSceneNode(
-				NULL, v2f(1, 1), v3f(0,0,0), -1);
+				m_matrixnode, v2f(1, 1), v3f(0,0,0), -1);
 		m_spritenode->grab();
 		m_spritenode->setMaterialTexture(0,
 				tsrc->getTextureForMesh("unknown_node.png"));
@@ -608,17 +616,24 @@ void GenericCAO::addToScene(ITextureSource *tsrc)
 			mesh->addMeshBuffer(buf);
 			buf->drop();
 		}
-		m_meshnode = RenderingEngine::get_scene_manager()->addMeshSceneNode(mesh, NULL);
+		m_matrixnode = RenderingEngine::get_scene_manager()->
+			addDummyTransformationSceneNode();
+		m_matrixnode->grab();
+		m_meshnode = RenderingEngine::get_scene_manager()->
+			addMeshSceneNode(mesh, m_matrixnode);
 		m_meshnode->grab();
 		mesh->drop();
 		// Set it to use the materials of the meshbuffers directly.
 		// This is needed for changing the texture in the future
 		m_meshnode->setReadOnlyMaterials(true);
-	}
-	else if(m_prop.visual == "cube") {
+	} else if (m_prop.visual == "cube") {
 		infostream<<"GenericCAO::addToScene(): cube"<<std::endl;
 		scene::IMesh *mesh = createCubeMesh(v3f(BS,BS,BS));
-		m_meshnode = RenderingEngine::get_scene_manager()->addMeshSceneNode(mesh, NULL);
+		m_matrixnode = RenderingEngine::get_scene_manager()->
+			addDummyTransformationSceneNode(nullptr);
+		m_matrixnode->grab();
+		m_meshnode = RenderingEngine::get_scene_manager()->
+			addMeshSceneNode(mesh, m_matrixnode);
 		m_meshnode->grab();
 		mesh->drop();
 
@@ -630,14 +645,15 @@ void GenericCAO::addToScene(ITextureSource *tsrc)
 		m_meshnode->setMaterialFlag(video::EMF_BILINEAR_FILTER, false);
 		m_meshnode->setMaterialType(material_type);
 		m_meshnode->setMaterialFlag(video::EMF_FOG_ENABLE, true);
-	}
-	else if(m_prop.visual == "mesh") {
+	} else if (m_prop.visual == "mesh") {
 		infostream<<"GenericCAO::addToScene(): mesh"<<std::endl;
 		scene::IAnimatedMesh *mesh = m_client->getMesh(m_prop.mesh, true);
-		if(mesh)
-		{
+		if (mesh) {
+			m_matrixnode = RenderingEngine::get_scene_manager()->
+				addDummyTransformationSceneNode(nullptr);
+			m_matrixnode->grab();
 			m_animated_meshnode = RenderingEngine::get_scene_manager()->
-				addAnimatedMeshSceneNode(mesh, NULL);
+				addAnimatedMeshSceneNode(mesh, m_matrixnode);
 			m_animated_meshnode->grab();
 			mesh->drop(); // The scene node took hold of it
 			m_animated_meshnode->animateJoints(); // Needed for some animations
@@ -655,8 +671,7 @@ void GenericCAO::addToScene(ITextureSource *tsrc)
 			m_animated_meshnode->setMaterialFlag(video::EMF_FOG_ENABLE, true);
 			m_animated_meshnode->setMaterialFlag(video::EMF_BACK_FACE_CULLING,
 				m_prop.backface_culling);
-		}
-		else
+		} else
 			errorstream<<"GenericCAO::addToScene(): Could not load mesh "<<m_prop.mesh<<std::endl;
 	} else if (m_prop.visual == "wielditem" || m_prop.visual == "item") {
 		ItemStack item;
@@ -674,8 +689,12 @@ void GenericCAO::addToScene(ITextureSource *tsrc)
 			infostream << "serialized form: " << m_prop.wield_item << std::endl;
 			item.deSerialize(m_prop.wield_item, m_client->idef());
 		}
+		m_matrixnode = RenderingEngine::get_scene_manager()->
+			addDummyTransformationSceneNode(nullptr);
+		m_matrixnode->grab();
 		m_wield_meshnode = new WieldMeshSceneNode(
 			RenderingEngine::get_scene_manager(), -1);
+		m_wield_meshnode->setParent(m_matrixnode);
 		m_wield_meshnode->setItem(item, m_client,
 			(m_prop.visual == "wielditem"));
 
@@ -763,10 +782,12 @@ void GenericCAO::updateNodePos()
 
 	if (node) {
 		v3s16 camera_offset = m_env->getCameraOffset();
-		node->setPosition(pos_translator.val_current - intToFloat(camera_offset, BS));
+		v3f pos = pos_translator.val_current -
+				intToFloat(camera_offset, BS);
+		getPosRotMatrix().setTranslation(pos);
 		if (node != m_spritenode) { // rotate if not a sprite
 			v3f rot = m_is_local_player ? -m_rotation : -rot_translator.val_current;
-			node->setRotation(rot);
+			setPitchYawRoll(getPosRotMatrix(), rot);
 		}
 	}
 }
@@ -858,8 +879,10 @@ void GenericCAO::step(float dtime, ClientEnvironment *env)
 			ClientActiveObject *obj = m_env->getActiveObject(*ci);
 			if (obj) {
 				scene::ISceneNode *child_node = obj->getSceneNode();
+				// The node's parent is always an IDummyTraformationSceneNode,
+				// so we need to reparent that one instead.
 				if (child_node)
-					child_node->setParent(m_smgr->getRootSceneNode());
+					child_node->getParent()->setParent(m_smgr->getRootSceneNode());
 			}
 			++ci;
 		}
@@ -1266,16 +1289,13 @@ void GenericCAO::updateBonePosition()
 
 void GenericCAO::updateAttachments()
 {
-
-	if (!getParent()) { // Detach or don't attach
-		scene::ISceneNode *node = getSceneNode();
-		if (node) {
-			v3f old_position = node->getAbsolutePosition();
-			v3f old_rotation = node->getRotation();
-			node->setParent(m_smgr->getRootSceneNode());
-			node->setPosition(old_position);
-			node->setRotation(old_rotation);
-			node->updateAbsolutePosition();
+	ClientActiveObject *parent = getParent();
+	if (!parent) { // Detach or don't attach
+		if (m_matrixnode) {
+			v3f old_pos = m_matrixnode->getAbsolutePosition();
+			m_matrixnode->setParent(m_smgr->getRootSceneNode());
+			getPosRotMatrix().setTranslation(old_pos);
+			m_matrixnode->updateAbsolutePosition();
 		}
 		if (m_is_local_player) {
 			LocalPlayer *player = m_env->getLocalPlayer();
@@ -1284,20 +1304,20 @@ void GenericCAO::updateAttachments()
 	}
 	else // Attach
 	{
-		scene::ISceneNode *my_node = getSceneNode();
-
-		scene::ISceneNode *parent_node = getParent()->getSceneNode();
+		scene::ISceneNode *parent_node = parent->getSceneNode();
 		scene::IAnimatedMeshSceneNode *parent_animated_mesh_node =
-				getParent()->getAnimatedMeshSceneNode();
+				parent->getAnimatedMeshSceneNode();
 		if (parent_animated_mesh_node && !m_attachment_bone.empty()) {
 			parent_node = parent_animated_mesh_node->getJointNode(m_attachment_bone.c_str());
 		}
 
-		if (my_node && parent_node) {
-			my_node->setParent(parent_node);
-			my_node->setPosition(m_attachment_position);
-			my_node->setRotation(m_attachment_rotation);
-			my_node->updateAbsolutePosition();
+		if (m_matrixnode && parent_node) {
+			m_matrixnode->setParent(parent_node);
+			getPosRotMatrix().setTranslation(m_attachment_position);
+			//setPitchYawRoll(getPosRotMatrix(), m_attachment_rotation);
+			// use Irrlicht eulers instead
+			getPosRotMatrix().setRotationDegrees(m_attachment_rotation);
+			m_matrixnode->updateAbsolutePosition();
 		}
 		if (m_is_local_player) {
 			LocalPlayer *player = m_env->getLocalPlayer();

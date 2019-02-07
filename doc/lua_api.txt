@@ -5074,9 +5074,10 @@ This is basically a reference to a C++ `ServerActiveObject`
     * `acc` is a vector
 * `get_acceleration()`: returns the acceleration, a vector
 * `set_rotation(rot)`
-    * `rot` is a vector (radians)
-* `get_rotation()` : returns the rotation, a vector (radians)
-* `set_yaw(radians)`
+    * `rot` is a vector (radians). X is pitch (elevation), Y is yaw (heading)
+      and Z is roll (bank).
+* `get_rotation()`: returns the rotation, a vector (radians)
+* `set_yaw(radians)`: sets the yaw (heading).
 * `get_yaw()`: returns number in radians
 * `set_texture_mod(mod)`
 * `get_texture_mod()` returns current texture modifier

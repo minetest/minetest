@@ -24,6 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "irr_v2d.h"
 #include "irr_v3d.h"
 #include "irr_aabb3d.h"
+#include <matrix4.h>
 
 #define rangelim(d, min, max) ((d) < (min) ? (min) : ((d) > (max) ? (max) : (d)))
 #define myfloor(x) ((x) < 0.0 ? (int)(x) - 1 : (int)(x))
@@ -416,4 +417,18 @@ inline void wrappedApproachShortest(T &current, const T target, const T stepsize
 	} else {
 		current = target;
 	}
+}
+
+void setPitchYawRollRad(core::matrix4 &m, const v3f &rot);
+
+inline void setPitchYawRoll(core::matrix4 &m, const v3f &rot)
+{
+	setPitchYawRollRad(m, rot * core::DEGTORAD64);
+}
+
+v3f getPitchYawRollRad(const core::matrix4 &m);
+
+inline v3f getPitchYawRoll(const core::matrix4 &m)
+{
+	return getPitchYawRollRad(m) * core::RADTODEG64;
 }
