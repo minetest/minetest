@@ -201,7 +201,7 @@ v3f getPitchYawRollRad(const core::matrix4 &m)
 	const f32 *M = m.pointer();
 
 	f64 a1 = atan2(M[1], M[5]);
-	f64 c2 = sqrt(M[10]*M[10] + M[8]*M[8]);
+	f32 c2 = std::sqrt((f64)M[10]*M[10] + (f64)M[8]*M[8]);
 	f32 a2 = atan2f(-M[9], c2);
 	f64 c1 = cos(a1);
 	f64 s1 = sin(a1);
