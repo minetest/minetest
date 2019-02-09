@@ -611,6 +611,12 @@ void LocalPlayer::applyControl(float dtime, Environment *env)
 		speedH += v3f(1,0,0) *
 			(control.sidew_move_joystick_axis / 32767.f);
 	}
+	if (m_autojump) {
+		// release autojump after a given time
+		m_autojump_time -= dtime;
+		if (m_autojump_time <= 0.0f)
+			m_autojump = false;
+	}
 	if(control.jump)
 	{
 		if (free_move) {
@@ -1102,13 +1108,8 @@ void LocalPlayer::handleAutojump(f32 dtime, Environment *env,
 	if (!player_settings.autojump)
 		return;
 
-	if (m_autojump) {
-		// release autojump after a given time
-		m_autojump_time -= dtime;
-		if (m_autojump_time <= 0.0f)
-			m_autojump = false;
+	if (m_autojump)
 		return;
-	}
 
 	bool control_forward = control.up ||
 			       (!control.up && !control.down &&
