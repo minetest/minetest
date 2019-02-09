@@ -1111,9 +1111,9 @@ void LocalPlayer::handleAutojump(f32 dtime, Environment *env,
 	if (m_autojump)
 		return;
 
-	bool control_forward = control.up ||
-			       (!control.up && !control.down &&
-					       control.forw_move_joystick_axis < -0.05);
+	bool control_forward = control.up || player_settings.continuous_forward ||
+			(!control.up && !control.down &&
+			control.forw_move_joystick_axis < -0.05);
 	bool could_autojump =
 			m_can_jump && !control.jump && !control.sneak && control_forward;
 	if (!could_autojump)
