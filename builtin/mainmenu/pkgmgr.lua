@@ -305,7 +305,7 @@ function pkgmgr.render_packagelist(render_list)
 
 			for j = 1, #rawlist, 1 do
 				if rawlist[j].modpack == list[i].name and
-						rawlist[j].enabled ~= true then
+						not rawlist[j].enabled then
 					-- Modpack not entirely enabled so showing as grey
 					color = mt_color_grey
 					break
