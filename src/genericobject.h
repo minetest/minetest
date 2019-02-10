@@ -63,7 +63,7 @@ std::string gob_cmd_set_sprite(
 	bool select_horiz_by_yawpitch
 );
 
-std::string gob_cmd_punched(s16 damage, s16 result_hp);
+std::string gob_cmd_punched(u16 result_hp);
 
 std::string gob_cmd_update_armor_groups(const ItemGroupList &armor_groups);
 

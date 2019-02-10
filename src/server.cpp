@@ -1833,7 +1833,7 @@ void Server::SendPlayerHP(session_t peer_id)
 	m_script->player_event(playersao,"health_changed");
 
 	// Send to other clients
-	std::string str = gob_cmd_punched(playersao->readDamage(), playersao->getHP());
+	std::string str = gob_cmd_punched(playersao->getHP());
 	ActiveObjectMessage aom(playersao->getId(), true, str);
 	playersao->m_messages_out.push(aom);
 }

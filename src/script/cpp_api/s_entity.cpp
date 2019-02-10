@@ -169,24 +169,6 @@ void ScriptApiEntity::luaentity_GetProperties(u16 id,
 	// Set default values that differ from ObjectProperties defaults
 	prop->hp_max = 10;
 
-	/* Read stuff */
-
-	prop->hp_max = getintfield_default(L, -1, "hp_max", 10);
-
-	getboolfield(L, -1, "physical", prop->physical);
-	getboolfield(L, -1, "collide_with_objects", prop->collideWithObjects);
-
-	getfloatfield(L, -1, "weight", prop->weight);
-
-	lua_getfield(L, -1, "collisionbox");
-	if (lua_istable(L, -1))
-		prop->collisionbox = read_aabb3f(L, -1, 1.0);
-	lua_pop(L, 1);
-
-	getstringfield(L, -1, "visual", prop->visual);
-
-	getstringfield(L, -1, "mesh", prop->mesh);
-
 	// Deprecated: read object properties directly
 	read_object_properties(L, -1, prop, getServer()->idef());
 

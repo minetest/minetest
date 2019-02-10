@@ -140,9 +140,9 @@ public:
 	{ return 0; }
 	virtual void rightClick(ServerActiveObject *clicker)
 	{}
-	virtual void setHP(s16 hp, const PlayerHPChangeReason &reason)
+	virtual void setHP(s32 hp, const PlayerHPChangeReason &reason)
 	{}
-	virtual s16 getHP() const
+	virtual u16 getHP() const
 	{ return 0; }
 
 	virtual void setArmorGroups(const ItemGroupList &armor_groups)

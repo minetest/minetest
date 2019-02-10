@@ -44,11 +44,11 @@ void PlayerDatabaseFiles::serialize(std::ostringstream &os, RemotePlayer *player
 	args.set("name", player->getName());
 
 	sanity_check(player->getPlayerSAO());
-	args.setS32("hp", player->getPlayerSAO()->getHP());
+	args.setU16("hp", player->getPlayerSAO()->getHP());
 	args.setV3F("position", player->getPlayerSAO()->getBasePosition());
 	args.setFloat("pitch", player->getPlayerSAO()->getLookPitch());
 	args.setFloat("yaw", player->getPlayerSAO()->getRotation().Y);
-	args.setS32("breath", player->getPlayerSAO()->getBreath());
+	args.setU16("breath", player->getPlayerSAO()->getBreath());
 
 	std::string extended_attrs;
 	player->serializeExtraAttributes(extended_attrs);

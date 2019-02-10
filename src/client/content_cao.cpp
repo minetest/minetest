@@ -371,7 +371,7 @@ void GenericCAO::processInitData(const std::string &data)
 	m_id = readU16(is);
 	m_position = readV3F32(is);
 	m_rotation = readV3F32(is);
-	m_hp = readS16(is);
+	m_hp = readU16(is);
 	const u8 num_messages = readU8(is);
 
 	for (int i = 0; i < num_messages; i++) {
@@ -1508,11 +1508,10 @@ void GenericCAO::processMessage(const std::string &data)
 
 		updateAttachments();
 	} else if (cmd == GENERIC_CMD_PUNCHED) {
-		/*s16 damage =*/ readS16(is);
-		s16 result_hp = readS16(is);
+		u16 result_hp = readU16(is);
 
 		// Use this instead of the send damage to not interfere with prediction
-		s16 damage = m_hp - result_hp;
+		s32 damage = (s32)m_hp - (s32)result_hp;
 
 		m_hp = result_hp;
 

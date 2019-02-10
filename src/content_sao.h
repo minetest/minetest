@@ -39,7 +39,7 @@ public:
 	// Deprecated
 	f32 getRadYawDep() const { return (m_rotation.Y + 90.) * core::DEGTORAD; }
 
-	s16 getHP() const { return m_hp; }
+	u16 getHP() const { return m_hp; }
 	// Use a function, if isDead can be defined by other conditions
 	bool isDead() const { return m_hp == 0; }
 
@@ -64,7 +64,7 @@ public:
 	ObjectProperties* accessObjectProperties();
 	void notifyObjectPropertiesModified();
 protected:
-	s16 m_hp = -1;
+	u16 m_hp = 1;
 
 	v3f m_rotation;
 
@@ -127,8 +127,8 @@ public:
 	void moveTo(v3f pos, bool continuous);
 	float getMinimumSavedMovement();
 	std::string getDescription();
-	void setHP(s16 hp, const PlayerHPChangeReason &reason);
-	s16 getHP() const;
+	void setHP(s32 hp, const PlayerHPChangeReason &reason);
+	u16 getHP() const;
 	/* LuaEntitySAO-specific */
 	void setVelocity(v3f velocity);
 	void addVelocity(v3f velocity)
@@ -258,8 +258,8 @@ public:
 		ServerActiveObject *puncher,
 		float time_from_last_punch);
 	void rightClick(ServerActiveObject *clicker) {}
-	void setHP(s16 hp, const PlayerHPChangeReason &reason);
-	void setHPRaw(s16 hp) { m_hp = hp; }
+	void setHP(s32 hp, const PlayerHPChangeReason &reason);
+	void setHPRaw(u16 hp) { m_hp = hp; }
 	s16 readDamage();
 	u16 getBreath() const { return m_breath; }
 	void setBreath(const u16 breath, bool send = true);
@@ -351,7 +351,6 @@ private:
 	RemotePlayer *m_player = nullptr;
 	session_t m_peer_id = 0;
 	Inventory *m_inventory = nullptr;
-	s16 m_damage = 0;
 
 	// Cheat prevention
 	LagPool m_dig_pool;

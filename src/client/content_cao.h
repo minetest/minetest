@@ -88,7 +88,7 @@ private:
 	v3f m_velocity;
 	v3f m_acceleration;
 	v3f m_rotation;
-	s16 m_hp = 1;
+	u16 m_hp = 1;
 	SmoothTranslator<v3f> pos_translator;
 	SmoothTranslatorWrappedv3f rot_translator;
 	// Spritesheet/animation stuff

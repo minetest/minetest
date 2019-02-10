@@ -228,7 +228,7 @@ void ClientEnvironment::step(float dtime)
 		float speed = pre_factor * speed_diff.getLength();
 		if (speed > tolerance && !player_immortal) {
 			f32 damage_f = (speed - tolerance) / BS * post_factor;
-			u8 damage = (u8)MYMIN(damage_f + 0.5, 255);
+			u16 damage = (u16)MYMIN(damage_f + 0.5, U16_MAX);
 			if (damage != 0) {
 				damageLocalPlayer(damage, true);
 				m_client->getEventManager()->put(
@@ -419,7 +419,7 @@ void ClientEnvironment::processActiveObjectMessage(u16 id, const std::string &da
 	Callbacks for activeobjects
 */
 
-void ClientEnvironment::damageLocalPlayer(u8 damage, bool handle_hp)
+void ClientEnvironment::damageLocalPlayer(u16 damage, bool handle_hp)
 {
 	LocalPlayer *lplayer = getLocalPlayer();
 	assert(lplayer);
