@@ -110,7 +110,7 @@ void DungeonGen::generate(MMVManip *vm, u32 bseed, v3s16 nmin, v3s16 nmax)
 					NodeDrawType dtype = ndef->get(c).drawtype;
 					if (dtype == NDT_AIRLIKE || dtype == NDT_LIQUID ||
 							(preserve_ignore && c == CONTENT_IGNORE) ||
-							! ndef->get(c).is_ground_content)
+							!ndef->get(c).is_ground_content)
 						vm->m_flags[i] |= VMANIP_FLAG_DUNGEON_PRESERVE;
 					i++;
 				}
