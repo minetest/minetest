@@ -2,18 +2,17 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-02-14 19:14+0100\n"
-"PO-Revision-Date: 2019-02-09 11:42+0000\n"
-"Last-Translator: Muhammad Rifqi Priyo Susanto "
-"<muhammadrifqipriyosusanto@gmail.com>\n"
+"POT-Creation-Date: 2019-02-14 07:46+0100\n"
+"PO-Revision-Date: 2019-02-14 17:18+0000\n"
+"Last-Translator: narrnika <narr13niki@gmail.com>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/minetest/"
 "minetest/ru/>\n"
 "Language: ru\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
-"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
+"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<="
+"4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
 "X-Generator: Weblate 3.5-dev\n"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
@@ -25,12 +24,10 @@ msgid "You died"
 msgstr "Вы умерли"
 
 #: builtin/fstk/ui.lua
-#, fuzzy
 msgid "An error occurred in a Lua script, such as a mod:"
 msgstr "Ошибка в скрипте Lua (например, в моде):"
 
 #: builtin/fstk/ui.lua
-#, fuzzy
 msgid "An error occurred:"
 msgstr "Произошла ошибка:"
 
@@ -110,7 +107,6 @@ msgid "Enable modpack"
 msgstr "Включить пакет"
 
 #: builtin/mainmenu/dlg_config_world.lua
-#, fuzzy
 msgid ""
 "Failed to enable mod \"$1\" as it contains disallowed characters. Only "
 "characters [a-z0-9_] are allowed."
@@ -164,9 +160,8 @@ msgid "Downloading and installing $1, please wait..."
 msgstr "Загружается и устанавливается $1, пожалуйста, подождите..."
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Failed to download $1"
-msgstr "Невозможно установить $1 в $2"
+msgstr "Не удалось загрузить $1"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua
@@ -216,9 +211,8 @@ msgid "Create"
 msgstr "Создать"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Download a game, such as Minetest Game, from minetest.net"
-msgstr "Скачивайте игры, такие как minetest_game, на minetest.net"
+msgstr "Скачивайте игры, такие как Minetest Game, на minetest.net"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Download one from minetest.net"
@@ -269,9 +263,8 @@ msgid "pkgmgr: failed to delete \"$1\""
 msgstr "pkgmgr: невозможно удалить \"$1\""
 
 #: builtin/mainmenu/dlg_delete_content.lua
-#, fuzzy
 msgid "pkgmgr: invalid path \"$1\""
-msgstr "Modmgr: неправильный путь к \"$1\""
+msgstr "pkgmgr: недопустимый путь \"$1\""
 
 #: builtin/mainmenu/dlg_delete_world.lua
 msgid "Delete World \"$1\"?"
@@ -290,15 +283,16 @@ msgid ""
 "This modpack has an explicit name given in its modpack.conf which will "
 "override any renaming here."
 msgstr ""
+"Этот пакет модов имеет имя, явно указанное в modpack.conf, которое не "
+"изменится от переименования здесь."
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "(No description of setting given)"
 msgstr "(Нет описания)"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
-#, fuzzy
 msgid "2D Noise"
-msgstr "Шумы"
+msgstr "2D шум"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "< Back to Settings page"
@@ -357,14 +351,12 @@ msgid "Scale"
 msgstr "Масштаб"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
-#, fuzzy
 msgid "Select directory"
-msgstr "Каталог сохранения карт"
+msgstr "Выбрать каталог"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
-#, fuzzy
 msgid "Select file"
-msgstr "Выберите файл мода:"
+msgstr "Выбрать файл"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Show technical names"
@@ -429,55 +421,43 @@ msgid "Failed to install $1 to $2"
 msgstr "pkgmgr: невозможно установить $1 в $2"
 
 #: builtin/mainmenu/pkgmgr.lua
-#, fuzzy
 msgid "Install Mod: Unable to find real mod name for: $1"
-msgstr "Установка мода: невозможно определить название мода для $1"
+msgstr "Установка мода: не удаётся определить название мода для $1"
 
 #: builtin/mainmenu/pkgmgr.lua
-#, fuzzy
 msgid "Install Mod: Unable to find suitable folder name for modpack $1"
-msgstr ""
-"Установка мода: невозможно найти подходящее имя директории для набора модов "
-"$1"
+msgstr "Установка мода: не удаётся найти подходящей каталог для пакета модов $1"
 
 #: builtin/mainmenu/pkgmgr.lua
-#, fuzzy
 msgid "Install: Unsupported file type \"$1\" or broken archive"
 msgstr ""
-"\n"
-"Установка мода: неподдерживаемый тип файла \"$1\" или повреждённый архив"
+"Установка мода: неподдерживаемый тип файла или повреждённый архив \"$1\""
 
 #: builtin/mainmenu/pkgmgr.lua
-#, fuzzy
 msgid "Install: file: \"$1\""
 msgstr "Установка мода: файл \"$1\""
 
 #: builtin/mainmenu/pkgmgr.lua
-#, fuzzy
 msgid "Unable to find a valid mod or modpack"
 msgstr ""
-"Установка мода: невозможно найти подходящее имя директории для набора модов "
-"$1"
+"Установка мода: не удаётся найти подходящий каталог для мода или пакета "
+"модов $1"
 
 #: builtin/mainmenu/pkgmgr.lua
-#, fuzzy
 msgid "Unable to install a $1 as a texture pack"
-msgstr "Невозможно установить $1 в $2"
+msgstr "Не удаётся установить $1 как пакет текстур"
 
 #: builtin/mainmenu/pkgmgr.lua
-#, fuzzy
 msgid "Unable to install a game as a $1"
-msgstr "Невозможно установить $1 в $2"
+msgstr "Не удаётся установить игру как $1"
 
 #: builtin/mainmenu/pkgmgr.lua
-#, fuzzy
 msgid "Unable to install a mod as a $1"
-msgstr "Невозможно установить $1 в $2"
+msgstr "Не удаётся установить мод как $1"
 
 #: builtin/mainmenu/pkgmgr.lua
-#, fuzzy
 msgid "Unable to install a modpack as a $1"
-msgstr "Невозможно установить $1 в $2"
+msgstr "Не удаётся установить пакет модов как $1"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Browse online content"
@@ -663,9 +643,8 @@ msgid "8x"
 msgstr "8x"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "All Settings"
-msgstr "Настройки"
+msgstr "Все настройки"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Antialiasing:"
@@ -2069,8 +2048,10 @@ msgid "Automatic forwards key"
 msgstr "Клавиша  вперёд"
 
 #: src/settings_translation_file.cpp
-msgid "Automatically jump up single-node obstacles."
-msgstr ""
+msgid ""
+"Automatically jump up single-node obstacles.\n"
+"type: bool"
+msgstr "Автоматически запрыгивать на препятствия высотой в 1 метр."
 
 #: src/settings_translation_file.cpp
 #, fuzzy

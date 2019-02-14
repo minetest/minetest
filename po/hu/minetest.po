@@ -2,10 +2,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-02-14 19:14+0100\n"
-"PO-Revision-Date: 2019-02-13 13:11+0000\n"
-"Last-Translator: Muhammad Rifqi Priyo Susanto "
-"<muhammadrifqipriyosusanto@gmail.com>\n"
+"POT-Creation-Date: 2019-02-14 07:46+0100\n"
+"PO-Revision-Date: 2019-02-24 14:18+0000\n"
+"Last-Translator: Jatek R <rrjatek@gmail.com>\n"
 "Language-Team: Hungarian <https://hosted.weblate.org/projects/minetest/"
 "minetest/hu/>\n"
 "Language: hu\n"
@@ -24,9 +23,8 @@ msgid "You died"
 msgstr "Meghaltál"
 
 #: builtin/fstk/ui.lua
-#, fuzzy
 msgid "An error occurred in a Lua script, such as a mod:"
-msgstr "Hiba történt egy Lua parancsfájlban (egy modban):"
+msgstr "Hiba történt egy Lua parancsfájlban (egy mod-ban):"
 
 #: builtin/fstk/ui.lua
 #, fuzzy
@@ -183,7 +181,7 @@ msgstr "Modok"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "No packages could be retrieved"
-msgstr ""
+msgstr "A csomagok nem nyerhetők vissza"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "No results"
@@ -288,15 +286,16 @@ msgid ""
 "This modpack has an explicit name given in its modpack.conf which will "
 "override any renaming here."
 msgstr ""
+"Ennek a modpack-nek a neve a a modpack.conf fájlban meghatározott, ami "
+"felülír minden itteni átnevezést."
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "(No description of setting given)"
 msgstr "(Nincs megadva leírás a beállításhoz)"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
-#, fuzzy
 msgid "2D Noise"
-msgstr "2. Barlang zaj"
+msgstr "2D Barlang zaj"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "< Back to Settings page"
@@ -319,13 +318,12 @@ msgid "Enabled"
 msgstr "Engedélyezve"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
-#, fuzzy
 msgid "Lacunarity"
-msgstr "Biztonság"
+msgstr "Hézagosság"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Octaves"
-msgstr ""
+msgstr "Oktávok"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua src/settings_translation_file.cpp
 msgid "Offset"
@@ -333,7 +331,7 @@ msgstr "offszet"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Persistance"
-msgstr ""
+msgstr "Folytonosság"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Please enter a valid integer."
@@ -373,7 +371,7 @@ msgstr "Az érték nem lehet nagyobb mint $1."
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "X"
-msgstr ""
+msgstr "X"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "X spread"
@@ -381,7 +379,7 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Y"
-msgstr ""
+msgstr "Y"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Y spread"
@@ -389,7 +387,7 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Z"
-msgstr ""
+msgstr "Z"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Z spread"
@@ -406,16 +404,15 @@ msgstr "Alapértelmezett játék"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "eased"
-msgstr ""
+msgstr "könyített"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "$1 (Enabled)"
 msgstr "$1 (Engedélyezve)"
 
 #: builtin/mainmenu/pkgmgr.lua
-#, fuzzy
 msgid "$1 mods"
-msgstr " módok"
+msgstr "$1 modok"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Failed to install $1 to $2"
@@ -639,9 +636,8 @@ msgid "8x"
 msgstr "8x"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "All Settings"
-msgstr "Beállítások"
+msgstr "Minden beállítás"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Antialiasing:"
@@ -1737,13 +1733,12 @@ msgstr ""
 "kattintás' pozicióba."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "(Android) Use virtual joystick to trigger \"aux\" button.\n"
 "If enabled, virtual joystick will also tap \"aux\" button when out of main "
 "circle."
 msgstr ""
-"(Android) Használd a virtuális joysticket hogy aktivál az \"aux\" gombot.\n"
+"(Android) Használd a virtuális joystick-ot az \"aux\" gomb kapcsolásához.\n"
 "Ha ez engedélyezve van, akkor a virtuális joystick is aktiválja az aux "
 "gombot ha kint van a fő körből."
 
@@ -1885,7 +1880,7 @@ msgstr "Az összes kliensen megjelenített üzenet a szerver leállításakor."
 #: src/settings_translation_file.cpp
 #, fuzzy
 msgid "ABM interval"
-msgstr "#&@{&@{}@{}<<<<<<<{}<@n"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Absolute limit of emerge queues"

@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-02-14 19:14+0100\n"
-"PO-Revision-Date: 2019-02-13 14:10+0000\n"
+"POT-Creation-Date: 2019-02-14 07:46+0100\n"
+"PO-Revision-Date: 2019-02-23 11:18+0000\n"
 "Last-Translator: BreadW <toshiharu.uno@gmail.com>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/minetest/"
 "minetest/ja/>\n"
@@ -23,12 +23,10 @@ msgid "You died"
 msgstr "あなたは死にました"
 
 #: builtin/fstk/ui.lua
-#, fuzzy
 msgid "An error occurred in a Lua script, such as a mod:"
-msgstr "以下のModのLuaスクリプトでエラーが発生しました:"
+msgstr "Mod などの Lua スクリプトでエラーが発生しました:"
 
 #: builtin/fstk/ui.lua
-#, fuzzy
 msgid "An error occurred:"
 msgstr "エラーが発生しました:"
 
@@ -107,13 +105,10 @@ msgid "Enable modpack"
 msgstr "Modパック有効化"
 
 #: builtin/mainmenu/dlg_config_world.lua
-#, fuzzy
 msgid ""
 "Failed to enable mod \"$1\" as it contains disallowed characters. Only "
 "characters [a-z0-9_] are allowed."
-msgstr ""
-"許可されていない文字が使用されているため、Mod「$1」を有効化できませんでした。"
-"文字は[a-z0-9_]のみ使用できます。"
+msgstr "許可されていない文字が含まれているため、Mod \"$1\" を有効にできませんでした。許可されるのは文字 [a-z0-9_] のみです。"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Mod:"
@@ -180,7 +175,7 @@ msgstr "Mod"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "No packages could be retrieved"
-msgstr ""
+msgstr "パッケージを取得できませんでした"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "No results"
@@ -212,9 +207,8 @@ msgid "Create"
 msgstr "作成"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Download a game, such as Minetest Game, from minetest.net"
-msgstr "minetest_game などのゲームを minetest.net からダウンロードしてください"
+msgstr "Minetest Game などのゲームを minetest.net からダウンロードしてください"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Download one from minetest.net"
@@ -226,7 +220,7 @@ msgstr "ゲーム"
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
 msgid "Mapgen"
-msgstr "マップジェネレータ"
+msgstr "マップジェネレ-タ"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "No game selected"
@@ -283,16 +277,15 @@ msgstr "Modパック名を変更:"
 msgid ""
 "This modpack has an explicit name given in its modpack.conf which will "
 "override any renaming here."
-msgstr ""
+msgstr "このModパックは、modpack.conf に明示的な名前が付けられており、ここでの名前変更をすべて上書きします。"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "(No description of setting given)"
 msgstr "(設定の説明はありません)"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
-#, fuzzy
 msgid "2D Noise"
-msgstr "ノイズ"
+msgstr "2Dノイズ"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "< Back to Settings page"
@@ -315,22 +308,20 @@ msgid "Enabled"
 msgstr "有効"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
-#, fuzzy
 msgid "Lacunarity"
-msgstr "セキュリティ"
+msgstr "空隙性"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Octaves"
-msgstr ""
+msgstr "オクターブ"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua src/settings_translation_file.cpp
 msgid "Offset"
 msgstr "オフセット"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
-#, fuzzy
 msgid "Persistance"
-msgstr "プレイヤー転送距離"
+msgstr "永続性"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Please enter a valid integer."
@@ -370,49 +361,47 @@ msgstr "値は$1より小さくなければなりません。"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "X"
-msgstr ""
+msgstr "X"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "X spread"
-msgstr ""
+msgstr "Xの広がり"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Y"
-msgstr ""
+msgstr "Y"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Y spread"
-msgstr ""
+msgstr "Yの広がり"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Z"
-msgstr ""
+msgstr "Z"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Z spread"
-msgstr ""
+msgstr "Zの広がり"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "absvalue"
-msgstr ""
+msgstr "絶対値"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
-#, fuzzy
 msgid "defaults"
-msgstr "標準ゲーム"
+msgstr "既定値"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "eased"
-msgstr ""
+msgstr "緩和する"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "$1 (Enabled)"
 msgstr "$1 (有効)"
 
 #: builtin/mainmenu/pkgmgr.lua
-#, fuzzy
 msgid "$1 mods"
-msgstr " Mod"
+msgstr "$1 Mod"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Failed to install $1 to $2"
@@ -635,9 +624,8 @@ msgid "8x"
 msgstr "8倍"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "All Settings"
-msgstr "設定"
+msgstr "すべての設定"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Antialiasing:"
@@ -971,7 +959,7 @@ msgstr ""
 "- %s: アイテムを落とす\n"
 "- %s: インベントリ\n"
 "- マウス: 見回す\n"
-"- 左クリック: 破壊/パンチ\n"
+"- 左クリック: 掘削/パンチ\n"
 "- 右クリック: 設置/使用\n"
 "- ホイール: アイテム選択\n"
 "- %s: チャット\n"
@@ -1170,7 +1158,7 @@ msgstr "観測記録グラフ 表示"
 
 #: src/client/game.cpp
 msgid "Remote server"
-msgstr "公開サーバー"
+msgstr "リモートサーバ"
 
 #: src/client/game.cpp
 msgid "Resolving address..."
@@ -1298,7 +1286,6 @@ msgid "Home"
 msgstr "Home"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "IME Accept"
 msgstr "IME Accept"
 
@@ -1311,7 +1298,6 @@ msgid "IME Escape"
 msgstr "Escape"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "IME Mode Change"
 msgstr "IME Mode Change"
 
@@ -1709,7 +1695,6 @@ msgid "Exit"
 msgstr "閉じる"
 
 #: src/gui/guiVolumeChange.cpp
-#, fuzzy
 msgid "Muted"
 msgstr "消音"
 
@@ -1802,9 +1787,8 @@ msgid "2D noise that controls the shape/size of step mountains."
 msgstr "ステップマウンテンの形状/大きさを制御する2Dノイズ。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
-msgid "2D noise that controls the size/occurrence of ridged mountain ranges."
-msgstr "山岳地帯の大きさ/出現を制御する2Dノイズです。"
+msgid "2D noise that controls the size/occurance of ridged mountain ranges."
+msgstr "山岳地帯の大きさ/出現を制御する2Dノイズ。"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -1826,7 +1810,7 @@ msgstr "3Dモード"
 
 #: src/settings_translation_file.cpp
 msgid "3D noise defining giant caverns."
-msgstr "3Dノイズは大の洞窟を定義している。"
+msgstr "巨大な洞窟を定義する3Dノイズ。"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1904,7 +1888,7 @@ msgstr "空中での加速"
 
 #: src/settings_translation_file.cpp
 msgid "Active Block Modifiers"
-msgstr "Active Block Modifiers"
+msgstr "アクティブブロックモディファイヤー（ABM）"
 
 #: src/settings_translation_file.cpp
 msgid "Active block management interval"
@@ -2041,9 +2025,8 @@ msgstr ""
 "マップブロック(16ノード)で表記。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Automatic forwards key"
-msgstr "前キー"
+msgstr "自動前進キー"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -2053,9 +2036,8 @@ msgstr ""
 "型: bool"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Automatically report to the serverlist."
-msgstr "サーバーリストに自動的に報告します。"
+msgstr "サーバ一覧に自動的に報告します。"
 
 #: src/settings_translation_file.cpp
 msgid "Autosave screen size"
@@ -2154,56 +2136,48 @@ msgid "Camera update toggle key"
 msgstr "カメラ更新切り替えキー"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Cave noise"
-msgstr "洞窟ノイズ#1"
+msgstr "洞窟ノイズ"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Cave noise #1"
-msgstr "洞窟ノイズ#1"
+msgstr "洞窟ノイズ #1"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Cave noise #2"
-msgstr "洞窟ノイズ#2"
+msgstr "洞窟ノイズ #2"
 
 #: src/settings_translation_file.cpp
 msgid "Cave width"
 msgstr "洞窟の幅"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Cave1 noise"
-msgstr "洞窟ノイズ#1"
+msgstr "洞窟1ノイズ"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Cave2 noise"
-msgstr "洞窟ノイズ#1"
+msgstr "洞窟2ノイズ"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Cavern limit"
-msgstr "洞窟の幅"
+msgstr "大きな洞窟の制限"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Cavern noise"
-msgstr "洞窟ノイズ#1"
+msgstr "大きな洞窟ノイズ"
 
 #: src/settings_translation_file.cpp
 msgid "Cavern taper"
-msgstr "洞窟の先細り"
+msgstr "大きな洞窟の先細り"
 
 #: src/settings_translation_file.cpp
 msgid "Cavern threshold"
-msgstr "洞窟のしきい値"
+msgstr "大きな洞窟のしきい値"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Cavern upper limit"
-msgstr "洞窟の幅"
+msgstr "大きな洞窟の上限"
 
 #: src/settings_translation_file.cpp
 msgid "Center of light curve mid-boost."
@@ -2248,9 +2222,8 @@ msgid "Chat toggle key"
 msgstr "チャット切替キー"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Chatcommands"
-msgstr "コマンド"
+msgstr "チャットコマンド"
 
 #: src/settings_translation_file.cpp
 msgid "Chunk size"
@@ -2314,34 +2287,19 @@ msgstr "色つきの霧"
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Comma-separated list of flags to hide in the content repository.\n"
-"\"nonfree\" can be used to hide packages which do not qualify as 'free "
-"software',\n"
-"as defined by the Free Software Foundation.\n"
-"You can also specify content ratings.\n"
-"These flags are independent from Minetest versions,\n"
-"so see a full list at https://content.minetest.net/help/content_flags/"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-#, fuzzy
-msgid ""
 "Comma-separated list of mods that are allowed to access HTTP APIs, which\n"
 "allow them to upload and download data to/from the internet."
 msgstr ""
-"HTTP API（彼らがインターネットに出入りするデータをアップロードして、ダウン"
-"ロードするのを許します）にアクセスしてもよいモッズのコンマseperatedされたリス"
-"ト。"
+"HTTP APIへのアクセスが許可され、インターネットとの間でデータをアップロード\n"
+"およびダウンロードできるようにするModのコンマ区切りリスト。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Comma-separated list of trusted mods that are allowed to access insecure\n"
 "functions even when mod security is on (via request_insecure_environment())."
 msgstr ""
-"流行の最先端の安全対策がオンの（request_insecure_environment（）を通して）と"
-"きでも、不安定な機能にアクセスしてもよい信用されたモッズのコンマで区切られた"
-"リスト。"
+"Modのセキュリティが有効の場合でも（request_insecure_environment() を介して）\n"
+"安全でない機能へのアクセスが許可されている信頼できるModのコンマ区切りリスト。"
 
 #: src/settings_translation_file.cpp
 msgid "Command key"
@@ -2356,13 +2314,12 @@ msgid "Connect to external media server"
 msgstr "外部メディアサーバに接続"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Connects glass if supported by node."
-msgstr "ノードが対応している場合は、ガラスを繋ぎます。"
+msgstr "ノードでサポートされている場合はガラスを繋ぎます。"
 
 #: src/settings_translation_file.cpp
 msgid "Console alpha"
-msgstr "コンソールアルファ"
+msgstr "コンソールの透過度"
 
 #: src/settings_translation_file.cpp
 msgid "Console color"
@@ -2382,9 +2339,8 @@ msgid "ContentDB URL"
 msgstr "コンテンツ"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Continuous forward"
-msgstr "オートラン"
+msgstr "自動前進"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2399,19 +2355,18 @@ msgid "Controls"
 msgstr "操作"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Controls length of day/night cycle.\n"
 "Examples:\n"
 "72 = 20min, 360 = 4min, 1 = 24hour, 0 = day/night/whatever stays unchanged."
 msgstr ""
-"昼夜交代の長さを制御します。\n"
-"例: 72 = 20分、360 = 4分、1 = 24時間、0 = 時間は変更されません。"
+"昼夜サイクルの長さを制御します。\n"
+"例:\n"
+"72 = 20分、360 = 4分、1 = 24時間、0 = 昼/夜/変更されません。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Controls steepness/depth of lake depressions."
-msgstr "湖底の険しさ/深さの設定。"
+msgstr "湖の窪みの険しさ/深さを制御します。"
 
 #: src/settings_translation_file.cpp
 msgid "Controls steepness/height of hills."
@@ -2434,27 +2389,24 @@ msgid "Crash message"
 msgstr "クラッシュメッセージ"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Creative"
-msgstr "作成"
+msgstr "クリエイティブ"
 
 #: src/settings_translation_file.cpp
 msgid "Crosshair alpha"
-msgstr "照準の透過度"
+msgstr "照準線の透過度"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Crosshair alpha (opaqueness, between 0 and 255)."
-msgstr "照準線の透過 (不透明性、0から255)"
+msgstr "照準線の透過 (不透明、0～255の間)。"
 
 #: src/settings_translation_file.cpp
 msgid "Crosshair color"
 msgstr "照準線の色"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Crosshair color (R,G,B)."
-msgstr "照準線の色 (R、G、B)。"
+msgstr "照準線の色 (R,G,B)。"
 
 #: src/settings_translation_file.cpp
 msgid "DPI"
@@ -2481,31 +2433,28 @@ msgid "Dec. volume key"
 msgstr "音量を下げるキー"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Dedicated server step"
-msgstr "サーバのステップ"
+msgstr "専用サーバステップ"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Default acceleration"
-msgstr "標準の加速度"
+msgstr "規定の加速度"
 
 #: src/settings_translation_file.cpp
 msgid "Default game"
 msgstr "標準ゲーム"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Default game when creating a new world.\n"
 "This will be overridden when creating a world from the main menu."
 msgstr ""
-"新しいワールドを作成する際の標準のゲームです。\n"
-"メインメニューでワールドを作成する際に上書きされる可能性があります。"
+"新しいワールドを作成する際の規定のゲーム。\n"
+"メインメニューからワールドを作成するときにこれは上書きされます。"
 
 #: src/settings_translation_file.cpp
 msgid "Default password"
-msgstr "既定パスワード"
+msgstr "既定のパスワード"
 
 #: src/settings_translation_file.cpp
 msgid "Default privileges"
@@ -2516,13 +2465,12 @@ msgid "Default report format"
 msgstr "既定のレポート形式"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Default timeout for cURL, stated in milliseconds.\n"
 "Only has an effect if compiled with cURL."
 msgstr ""
-"cURL（ミリ秒に述べられる）のためのデフォルト・タイムアウト。\n"
-"cURLで編集されるならば、影響を持っているだけです。"
+"cURLの既定のタイムアウト、ミリ秒で定めます。\n"
+"cURLでコンパイルされた場合にのみ効果があります。"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2550,7 +2498,7 @@ msgstr "高い地形の分布を定義します。"
 
 #: src/settings_translation_file.cpp
 msgid "Defines full size of caverns, smaller values create larger caverns."
-msgstr "洞窟のフルサイズを定義し、より小さい値は大きな洞窟を作成します。"
+msgstr "大きな洞窟のフルサイズを定義し、より小さい値はさらに大きな洞窟を作成します。"
 
 #: src/settings_translation_file.cpp
 msgid "Defines large-scale river channel structure."
@@ -2597,26 +2545,22 @@ msgid "Delay showing tooltips, stated in milliseconds."
 msgstr "ツールチップを表示するまでの遅延、ミリ秒で定めます。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Deprecated Lua API handling"
 msgstr "廃止予定のLua APIの処理"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Depth below which you'll find giant caverns."
-msgstr "あなたが大きな洞穴を見つける深さ。"
+msgstr "これ以下の深さで巨大な洞窟が見つかります。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Depth below which you'll find large caves."
-msgstr "あなたが大きな洞穴を見つける深さ。"
+msgstr "これ以下の深さで大きな洞窟が見つかります。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Description of server, to be displayed when players join and in the "
 "serverlist."
-msgstr "サーバの説明です。プレイヤーがサーバ一覧から接続する際に表示されます。"
+msgstr "サーバの説明。プレイヤーが参加したときとサーバ一覧に表示されます。"
 
 #: src/settings_translation_file.cpp
 msgid "Desert noise threshold"
@@ -2627,32 +2571,28 @@ msgid ""
 "Deserts occur when np_biome exceeds this value.\n"
 "When the new biome system is enabled, this is ignored."
 msgstr ""
-"砂漠は np_biome がこの値を超えたときに発生します。\n"
+"砂漠は np_biome がこの値を超えたときに出現します。\n"
 "新しいバイオームシステムを有効にすると、これは無視されます。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Desynchronize block animation"
 msgstr "ブロックのアニメーションの非同期化"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Digging particles"
-msgstr "パーティクル"
+msgstr "掘削時パーティクル"
 
 #: src/settings_translation_file.cpp
 msgid "Disable anticheat"
 msgstr "対チート機関無効化"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Disallow empty passwords"
-msgstr "空のパスワードを無効化"
+msgstr "空のパスワードを許可しない"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Domain name of server, to be displayed in the serverlist."
-msgstr "サーバのドメイン名です。サーバ一覧に表示されます。"
+msgstr "サーバ一覧に表示されるサーバのドメイン名。"
 
 #: src/settings_translation_file.cpp
 msgid "Double tap jump for fly"
@@ -2711,38 +2651,22 @@ msgid "Enable mod security"
 msgstr "Modのセキュリティを有効化"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Enable players getting damage and dying."
-msgstr "損害を得ていて、死んでいるプレーヤーを使用可能にしてください。"
+msgstr "プレイヤーがダメージを受けて死亡するのを有効にします。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Enable random user input (only used for testing)."
-msgstr ""
-"入力される（テストのために使われるだけの）ランダムなユーザーに許可を与えてく"
-"ださい。"
+msgstr "ランダムなユーザー入力を有効にします (テストにのみ使用)。"
 
 #: src/settings_translation_file.cpp
-msgid "Enable register confirmation"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Enable register confirmation when connecting to server.\n"
-"If disabled, new account will be registered automatically."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Enable smooth lighting with simple ambient occlusion.\n"
 "Disable for speed or for different looks."
 msgstr ""
-"単純な周囲の閉塞でスムーズな照明を使用可能にしてください。\n"
-"速度のために、または、異なるルックスのために働かなくしてください。"
+"シンプルなアンビエントオクルージョンで滑らかな照明を有効にします。\n"
+"速度や異なる見た目のために無効にしてください。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Enable to disallow old clients from connecting.\n"
 "Older clients are compatible in the sense that they will not crash when "
@@ -2750,10 +2674,9 @@ msgid ""
 "to new servers, but they may not support all new features that you are "
 "expecting."
 msgstr ""
-"つながることから古いクライアントを認めないのを可能にしてください。\n"
-"新しいサーバーに接続するとき彼らが完敗しないという点で、年上の依頼人は互換性"
-"を持ちます、しかし、彼らがあなたが期待しているすべての新機能を支えるというわ"
-"けではないかもしれません。"
+"古いクライアントが接続できないようにします。\n"
+"古いクライアントは新しいサーバに接続してもクラッシュしないという意味で互換性が\n"
+"ありますが、期待しているすべての新機能をサポートしているわけではありません。"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2801,13 +2724,12 @@ msgstr ""
 "シェーダーが有効である必要があります。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Enables caching of facedir rotated meshes."
-msgstr "facedir回転するメッシュのキャッシングを可能にします。"
+msgstr "facedir回転メッシュのキャッシングを有効にします。"
 
 #: src/settings_translation_file.cpp
 msgid "Enables filmic tone mapping"
-msgstr "ミニマップを有効にする"
+msgstr "フィルム調トーンマッピング有効にする"
 
 #: src/settings_translation_file.cpp
 msgid "Enables minimap."
@@ -2838,22 +2760,20 @@ msgid "Entity methods"
 msgstr "エンティティメソッド"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Experimental option, might cause visible spaces between blocks\n"
 "when set to higher number than 0."
 msgstr ""
-"0より高い数に設定されるとき、実験的なオプションはブロックの間の見える隙間を引"
-"き起こすかもしれません。"
+"実験的なオプションで、0 より大きい数値に設定すると、ブロック間に\n"
+"目に見えるスペースが生じる可能性があります。"
 
 #: src/settings_translation_file.cpp
 msgid "FPS in pause menu"
 msgstr "ポーズメニューでのFPS"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "FSAA"
-msgstr "アンチエイリアス"
+msgstr "フルスクリーンアンチエイリアシング"
 
 #: src/settings_translation_file.cpp
 msgid "Factor noise"
@@ -2868,17 +2788,14 @@ msgid "Fallback font"
 msgstr "フォールバックフォント"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Fallback font shadow"
 msgstr "フォールバックフォントの影"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Fallback font shadow alpha"
 msgstr "フォールバックフォントの影の透過"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Fallback font size"
 msgstr "フォールバックフォントの大きさ"
 
@@ -2907,14 +2824,12 @@ msgstr ""
 "これにはサーバ上に \"fast\" 特権が必要です。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Field of view"
-msgstr "視野"
+msgstr "視野角"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Field of view in degrees."
-msgstr "視野角。"
+msgstr "視野角の度数。"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2934,9 +2849,8 @@ msgid "Filler depth noise"
 msgstr "充填深さノイズ"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Filmic tone mapping"
-msgstr "映画トーン・マッピング"
+msgstr "フィルム調トーンマッピング"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2960,7 +2874,7 @@ msgstr "一緒に丘陵/山岳地帯の高さを定義する2Dノイズ4つの�
 
 #: src/settings_translation_file.cpp
 msgid "First of two 3D noises that together define tunnels."
-msgstr "一緒に丘陵/山岳地帯の高さを定義する2Dノイズ4つのうちの2番目です。"
+msgstr "トンネルを定義する2つの3Dノイズのうちの1番目。"
 
 #: src/settings_translation_file.cpp
 msgid "Fixed map seed"
@@ -3117,13 +3031,10 @@ msgid ""
 "to maintain active objects up to this distance in the direction the\n"
 "player is looking. (This can avoid mobs suddenly disappearing from view)"
 msgstr ""
-"クライアントがどれくらいの距離のオブジェクトを知っているか、マップブロック(16"
-"ノード)で定めます。\n"
+"クライアントがどれくらいの距離のオブジェクトを知っているか、マップブロック（16ノード）で定めます。\n"
 "\n"
-"これを active_block_range よりも大きく設定すると、サーバはこの距離までプレー"
-"ヤーが見ている方向に\n"
-"アクティブなオブジェクトを維持します。(これによりモブが突然視野から消えるのを"
-"避けることができます)"
+"これを active_block_range よりも大きく設定すると、サーバはこの距離までプレーヤーが見ている方向に\n"
+"アクティブなオブジェクトを維持します。（これによりモブが突然視野から消えるのを避けることができます）"
 
 #: src/settings_translation_file.cpp
 msgid "Full screen"
@@ -3194,19 +3105,16 @@ msgid "Gravity"
 msgstr "重力"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Ground level"
-msgstr "マップ生成フラグ"
+msgstr "地上レベル"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Ground noise"
-msgstr "マップ生成フラグ"
+msgstr "地上ノイズ"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "HTTP mods"
-msgstr "Mod"
+msgstr "HTTP Mod"
 
 #: src/settings_translation_file.cpp
 msgid "HUD scale factor"
@@ -3248,9 +3156,8 @@ msgid "Heat blend noise"
 msgstr "温度混合ノイズ"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Heat noise"
-msgstr "洞窟ノイズ#1"
+msgstr "熱ノイズ"
 
 #: src/settings_translation_file.cpp
 msgid "Height component of the initial window size."
@@ -3554,8 +3461,8 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "If enabled, new players cannot join with an empty password."
 msgstr ""
-"有効にした場合、新しいプレイヤーは空のパスワードでゲームに参加することはでき"
-"ません。"
+"有効にした場合、新しいプレイヤーは空のパスワードでゲームに参加することは\n"
+"できません。"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3627,14 +3534,12 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid ""
 "Instrument the action function of Active Block Modifiers on registration."
-msgstr ""
-"Active Block Modifiers のアクション関数が登録されるとすぐに計測します。"
+msgstr "アクティブブロックモディファイヤー（ABM）のアクション関数が登録されるとすぐに計測します。"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Instrument the action function of Loading Block Modifiers on registration."
-msgstr ""
-"Loading Block Modifiers のアクション関数が登録されるとすぐに計測します。"
+msgstr "ローディングブロックモディファイヤー（LBM）のアクション関数が登録されるとすぐに計測します。"
 
 #: src/settings_translation_file.cpp
 msgid "Instrument the methods of entities on registration."
@@ -4480,9 +4385,8 @@ msgid "Kick players who sent more than X messages per 10 seconds."
 msgstr "10秒あたりにXメッセージ以上送信したプレイヤーをキックします。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Lake steepness"
-msgstr "視差遮蔽マッピング"
+msgstr "湖の険しさ"
 
 #: src/settings_translation_file.cpp
 msgid "Lake threshold"
@@ -4534,7 +4438,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Length of time between Active Block Modifier (ABM) execution cycles"
-msgstr "Active Block Modifier (ABM) 実行サイクル間の時間の長さ"
+msgstr "アクティブブロックモディファイヤー（ABM）実行サイクル間の時間の長さ"
 
 #: src/settings_translation_file.cpp
 msgid "Length of time between NodeTimer execution cycles"
@@ -4609,9 +4513,8 @@ msgstr ""
 "並列HTTPリクエストの数を制限します。影響:\n"
 "-    サーバが remote_media 設定を使用している場合はメディアの取得。\n"
 "-    サーバ一覧のダウンロードとサーバの公開。\n"
-"-    メインメニューによって実行されたダウンロード (例えば、コンテンツの管"
-"理)。\n"
-"cURL でコンパイルされた場合にのみ効果があります。"
+"-    メインメニューによって実行されたダウンロード（例えば、コンテンツの管理）。\n"
+"cURLでコンパイルされた場合にのみ効果があります。"
 
 #: src/settings_translation_file.cpp
 msgid "Liquid fluidity"
@@ -4656,9 +4559,8 @@ msgstr ""
 "Mod開発者やサーバオペレーターに役立ちます。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Loading Block Modifiers"
-msgstr "アクティブなブロックの範囲"
+msgstr "ローディングブロックモディファイヤー（LBM）"
 
 #: src/settings_translation_file.cpp
 msgid "Lower Y limit of dungeons."
@@ -5059,9 +4961,8 @@ msgid "Mountain variation noise"
 msgstr "山の変動ノイズ"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Mountain zero level"
-msgstr "水位"
+msgstr "山のゼロレベル"
 
 #: src/settings_translation_file.cpp
 msgid "Mouse sensitivity"
@@ -5115,7 +5016,7 @@ msgid ""
 "When running a server, clients connecting with this name are admins.\n"
 "When starting from the main menu, this is overridden."
 msgstr ""
-"プレイヤーの名前\n"
+"プレイヤーの名前。\n"
 "サーバを実行している場合、この名前で接続しているクライアントは管理者です。\n"
 "メインメニューから起動すると、これは上書きされます。"
 
@@ -5327,10 +5228,12 @@ msgid ""
 "Prevent digging and placing from repeating when holding the mouse buttons.\n"
 "Enable this when you dig or place too often by accident."
 msgstr ""
+"マウスボタンを押したままにして、掘り下げたり設置したりするのを防ぎます。\n"
+"思いがけず、あまりにも頻繁に掘ったり置いたりするときにこれを有効にします。"
 
 #: src/settings_translation_file.cpp
 msgid "Prevent mods from doing insecure things like running shell commands."
-msgstr ""
+msgstr "Modがシェルコマンドを実行するような安全でないことをするのを防ぎます。"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5354,11 +5257,11 @@ msgstr "観測記録表示切替キー"
 
 #: src/settings_translation_file.cpp
 msgid "Profiling"
-msgstr ""
+msgstr "プロファイリング"
 
 #: src/settings_translation_file.cpp
 msgid "Projecting dungeons"
-msgstr ""
+msgstr "突出するダンジョン"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5375,7 +5278,7 @@ msgstr "川の周りに谷を作るために地形を上げます。"
 
 #: src/settings_translation_file.cpp
 msgid "Random input"
-msgstr ""
+msgstr "ランダム入力"
 
 #: src/settings_translation_file.cpp
 msgid "Range select key"
@@ -5387,21 +5290,23 @@ msgstr "最近のチャットメッセージ"
 
 #: src/settings_translation_file.cpp
 msgid "Remote media"
-msgstr ""
+msgstr "リモートメディア"
 
 #: src/settings_translation_file.cpp
 msgid "Remote port"
-msgstr ""
+msgstr "リモートポート"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Remove color codes from incoming chat messages\n"
 "Use this to stop players from being able to use color in their messages"
 msgstr ""
+"チャットメッセージから色コードを取り除きます\n"
+"これを使用して、プレイヤーが自分のメッセージに色を使用できないようにします"
 
 #: src/settings_translation_file.cpp
 msgid "Replaces the default main menu with a custom one."
-msgstr ""
+msgstr "既定のメインメニューをカスタム化したものに置き換えます。"
 
 #: src/settings_translation_file.cpp
 msgid "Report path"
@@ -5432,19 +5337,19 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Ridge mountain spread noise"
-msgstr ""
+msgstr "尾根の広がりノイズ"
 
 #: src/settings_translation_file.cpp
 msgid "Ridge noise"
-msgstr ""
+msgstr "尾根ノイズ"
 
 #: src/settings_translation_file.cpp
 msgid "Ridge underwater noise"
-msgstr ""
+msgstr "尾根水中ノイズ"
 
 #: src/settings_translation_file.cpp
 msgid "Ridged mountain size noise"
-msgstr ""
+msgstr "尾根の大きさノイズ"
 
 #: src/settings_translation_file.cpp
 msgid "Right key"
@@ -5459,9 +5364,8 @@ msgid "River depth"
 msgstr "川の深さ"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "River noise"
-msgstr "洞窟ノイズ#1"
+msgstr "川ノイズ"
 
 #: src/settings_translation_file.cpp
 msgid "River size"
@@ -5473,11 +5377,11 @@ msgstr "ロールバックの記録"
 
 #: src/settings_translation_file.cpp
 msgid "Rolling hill size noise"
-msgstr ""
+msgstr "ゆるやかな丘の大きさノイズ"
 
 #: src/settings_translation_file.cpp
 msgid "Rolling hills spread noise"
-msgstr ""
+msgstr "ゆるやかな丘の広がりノイズ"
 
 #: src/settings_translation_file.cpp
 msgid "Round minimap"
@@ -5485,23 +5389,23 @@ msgstr "円形ミニマップ"
 
 #: src/settings_translation_file.cpp
 msgid "Safe digging and placing"
-msgstr ""
+msgstr "安全な掘削と設置"
 
 #: src/settings_translation_file.cpp
 msgid "Sandy beaches occur when np_beach exceeds this value."
-msgstr ""
+msgstr "砂浜は np_beach がこの値を超えたときに出現します。"
 
 #: src/settings_translation_file.cpp
 msgid "Save the map received by the client on disk."
-msgstr ""
+msgstr "クライアントが受信したマップをディスクに保存します。"
 
 #: src/settings_translation_file.cpp
 msgid "Save window size automatically when modified."
-msgstr ""
+msgstr "ウィンドウサイズ変更時に自動的に保存します。"
 
 #: src/settings_translation_file.cpp
 msgid "Saving map received from server"
-msgstr ""
+msgstr "サーバから受信したマップ保存"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5549,9 +5453,8 @@ msgstr ""
 "既定の品質には 0 を使用します。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Seabed noise"
-msgstr "洞窟ノイズ#1"
+msgstr "海底ノイズ"
 
 #: src/settings_translation_file.cpp
 msgid "Second of 4 2D noises that together define hill/mountain range height."
@@ -5559,7 +5462,7 @@ msgstr "一緒に丘陵/山岳地帯の高さを定義する2Dノイズ4つの�
 
 #: src/settings_translation_file.cpp
 msgid "Second of two 3D noises that together define tunnels."
-msgstr ""
+msgstr "トンネルを定義する2つの3Dノイズのうちの2番目。"
 
 #: src/settings_translation_file.cpp
 msgid "Security"
@@ -5567,19 +5470,19 @@ msgstr "セキュリティ"
 
 #: src/settings_translation_file.cpp
 msgid "See https://www.sqlite.org/pragma.html#pragma_synchronous"
-msgstr ""
+msgstr "参照 https://www.sqlite.org/pragma.html#pragma_synchronous"
 
 #: src/settings_translation_file.cpp
 msgid "Selection box border color (R,G,B)."
-msgstr ""
+msgstr "選択ボックスの枠線の色 (R,G,B)。"
 
 #: src/settings_translation_file.cpp
 msgid "Selection box color"
-msgstr "ノード選択線の色"
+msgstr "選択ボックスの色"
 
 #: src/settings_translation_file.cpp
 msgid "Selection box width"
-msgstr "ノード選択線の幅"
+msgstr "選択ボックスの幅"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5664,10 +5567,12 @@ msgid ""
 "Set the language. Leave empty to use the system language.\n"
 "A restart is required after changing this."
 msgstr ""
+"言語を設定してください。システム言語を使用するには空のままにします。\n"
+"変更後は再起動が必要です。"
 
 #: src/settings_translation_file.cpp
 msgid "Set the maximum character length of a chat message sent by clients."
-msgstr ""
+msgstr "クライアントから送信されるチャットメッセージの最大文字数を設定します。"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5704,10 +5609,13 @@ msgid ""
 "cards.\n"
 "This only works with the OpenGL video backend."
 msgstr ""
+"シェーダーは高度な視覚効果を可能にし、ビデオカードによってはパフォーマンスが向上する\n"
+"可能性があります。\n"
+"これはOpenGLビデオバックエンドでのみ機能します。"
 
 #: src/settings_translation_file.cpp
 msgid "Shadow limit"
-msgstr ""
+msgstr "影の制限"
 
 #: src/settings_translation_file.cpp
 msgid "Shape of the minimap. Enabled = round, disabled = square."
@@ -5735,12 +5643,10 @@ msgid ""
 "recommended."
 msgstr ""
 "マップジェネレータによって生成されたマップチャンクのサイズで、\n"
-"マップブロック(16ノード)で表されます。\n"
-"警告！: この値を5より大きくすることには利点がなく、いくつかの危険がありま"
-"す。\n"
+"マップブロック（16ノード）で表されます。\n"
+"警告！: この値を5より大きくすることには利点がなく、いくつかの危険があります。\n"
 "この値を減らすと洞窟とダンジョンの密度が上がります。\n"
-"この値を変更するのは特別な用途のためです。変更しないでおくことをお勧めしま"
-"す。"
+"この値を変更するのは特別な用途のためです。変更しないでおくことをお勧めします。"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5755,7 +5661,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Slice w"
-msgstr ""
+msgstr "スライス w"
 
 #: src/settings_translation_file.cpp
 msgid "Slope and fill work together to modify the heights."
@@ -5803,9 +5709,8 @@ msgid "Sound"
 msgstr "サウンド"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Special key"
-msgstr "スニークキー"
+msgstr "スペシャルキー"
 
 #: src/settings_translation_file.cpp
 msgid "Special key for climbing/descending"
@@ -5818,6 +5723,10 @@ msgid ""
 "(obviously, remote_media should end with a slash).\n"
 "Files that are not present will be fetched the usual way."
 msgstr ""
+"クライアントがUDPを使用せずにメディアを取得するURLを指定します。\n"
+"$filename はcURLを介して $remote_media$filename からアクセス可能で\n"
+"あるべきです (明らかに、remote_media はスラッシュで終わるべきです)。\n"
+"存在しないファイルは通常の方法で取得されます。"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5833,15 +5742,15 @@ msgstr "静的なスポーンポイント"
 
 #: src/settings_translation_file.cpp
 msgid "Steepness noise"
-msgstr ""
+msgstr "険しさノイズ"
 
 #: src/settings_translation_file.cpp
 msgid "Step mountain size noise"
-msgstr ""
+msgstr "ステップマウンテンの大きさノイズ"
 
 #: src/settings_translation_file.cpp
 msgid "Step mountain spread noise"
-msgstr ""
+msgstr "ステップマウンテンの広がりノイズ"
 
 #: src/settings_translation_file.cpp
 msgid "Strength of generated normalmaps."
@@ -5857,15 +5766,15 @@ msgstr "視差の強さです。"
 
 #: src/settings_translation_file.cpp
 msgid "Strict protocol checking"
-msgstr ""
+msgstr "厳密なプロトコルチェック"
 
 #: src/settings_translation_file.cpp
 msgid "Strip color codes"
-msgstr ""
+msgstr "色コードを取り除く"
 
 #: src/settings_translation_file.cpp
 msgid "Synchronous SQLite"
-msgstr ""
+msgstr "SQLite同期"
 
 #: src/settings_translation_file.cpp
 msgid "Temperature variation for biomes."
@@ -5873,11 +5782,11 @@ msgstr "バイオームの温度変動。"
 
 #: src/settings_translation_file.cpp
 msgid "Terrain alternative noise"
-msgstr ""
+msgstr "地形別ノイズ"
 
 #: src/settings_translation_file.cpp
 msgid "Terrain base noise"
-msgstr ""
+msgstr "地形基準ノイズ"
 
 #: src/settings_translation_file.cpp
 msgid "Terrain height"
@@ -5885,11 +5794,11 @@ msgstr "地形の高さ"
 
 #: src/settings_translation_file.cpp
 msgid "Terrain higher noise"
-msgstr ""
+msgstr "地形高いノイズ"
 
 #: src/settings_translation_file.cpp
 msgid "Terrain noise"
-msgstr ""
+msgstr "地形ノイズ"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5913,7 +5822,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Terrain persistence noise"
-msgstr ""
+msgstr "地形持続性ノイズ"
 
 #: src/settings_translation_file.cpp
 msgid "Texture path"
@@ -5928,6 +5837,12 @@ msgid ""
 "this option allows enforcing it for certain node types. Note though that\n"
 "that is considered EXPERIMENTAL and may not work properly."
 msgstr ""
+"ノード上のテクスチャは、ノードまたはワールドに合わせて整列させることができます。\n"
+"前者のモードは、機械、家具などのようなものに適していますが、後者のモードは、\n"
+"階段やマイクロブロックを周囲の環境に合わせやすくします。\n"
+"しかし、この機能は新しく、古いサーバでは使用できない可能性があります。\n"
+"このオプションを使用すると特定のノードタイプに適用できます。ただし、これは実験的な\n"
+"ものであり、正しく機能しない可能性があります。"
 
 #: src/settings_translation_file.cpp
 msgid "The URL for the content repository"
@@ -5956,11 +5871,11 @@ msgstr "使用するジョイスティックの識別子"
 
 #: src/settings_translation_file.cpp
 msgid "The length in pixels it takes for touch screen interaction to start."
-msgstr ""
+msgstr "タッチスクリーンの操作が始まるピクセル単位の距離。"
 
 #: src/settings_translation_file.cpp
 msgid "The network interface that the server listens on."
-msgstr ""
+msgstr "サーバが待機しているネットワークインターフェース。"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5981,6 +5896,11 @@ msgid ""
 "maintained.\n"
 "This should be configured together with active_object_range."
 msgstr ""
+"アクティブブロックの対象となる各プレイヤーの周囲のブロックの量の半径、\n"
+"マップブロック（16ノード）で定めます。\n"
+"アクティブブロックのオブジェクトはロードされ、ABMが実行されます。\n"
+"これは、アクティブオブジェクト（モブ）が維持される最小範囲でもあります。\n"
+"これは active_object_range と一緒に設定する必要があります。"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5991,6 +5911,12 @@ msgid ""
 "On other platforms, OpenGL is recommended, and it’s the only driver with\n"
 "shader support currently."
 msgstr ""
+"Irrlichtのレンダリングバックエンド。\n"
+"変更後は再起動が必要です。\n"
+"メモ: Androidでは、不明な場合は OGLES1 を使用してください！ それ以外の場合アプリは\n"
+"起動に失敗することがあります。\n"
+"他のプラットフォームでは、OpenGL が推奨されており、現在それがシェーダーをサポート\n"
+"する唯一のドライバです。"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6005,6 +5931,9 @@ msgid ""
 "setting is 0.25 to 4.0 inclusive. If the value is out of range it will be\n"
 "set to the nearest valid value."
 msgstr ""
+"ノードのアンビエントオクルージョンシェーディングの強度（暗さ）。\n"
+"低いほど暗く、高いほど明るくなります。この設定の有効範囲は 0.25～4.0 です。\n"
+"値が範囲外の場合は、最も近い有効な値に設定されます。"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6022,14 +5951,14 @@ msgid ""
 "when holding down a joystick button combination."
 msgstr ""
 "ジョイスティックのボタンの組み合わせを押したときに\n"
-"繰り返されるイベント間の時間(秒)。"
+"繰り返されるイベントの秒単位の間隔。"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "The time in seconds it takes between repeated right clicks when holding the "
 "right\n"
 "mouse button."
-msgstr ""
+msgstr "マウスの右ボタンを押したまま右クリックを繰り返す秒単位の間隔。"
 
 #: src/settings_translation_file.cpp
 msgid "The type of joystick"
@@ -6050,7 +5979,7 @@ msgstr "一緒に丘陵/山岳地帯の高さを定義する2Dノイズ4つの�
 
 #: src/settings_translation_file.cpp
 msgid "This font will be used for certain languages."
-msgstr ""
+msgstr "このフォントは特定の言語で使用されます。"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6062,7 +5991,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Time of day when a new world is started, in millihours (0-23999)."
-msgstr ""
+msgstr "新しいワールドが開始される時刻。ミリ時間単位（0〜23999）。"
 
 #: src/settings_translation_file.cpp
 msgid "Time send interval"
@@ -6084,6 +6013,8 @@ msgid ""
 "This determines how long they are slowed down after placing or removing a "
 "node."
 msgstr ""
+"ラグを減らすために、プレーヤーが何かを設置しているときブロック転送は遅くなります。\n"
+"これは、ノードを設置または破壊した後にどれくらい遅くなるかを決定します。"
 
 #: src/settings_translation_file.cpp
 msgid "Toggle camera mode key"
@@ -6099,7 +6030,7 @@ msgstr "タッチスクリーンのしきい値"
 
 #: src/settings_translation_file.cpp
 msgid "Trees noise"
-msgstr ""
+msgstr "木のノイズ"
 
 #: src/settings_translation_file.cpp
 msgid "Trilinear filtering"
@@ -6129,9 +6060,8 @@ msgid "URL to the server list displayed in the Multiplayer Tab."
 msgstr "ゲームに参加タブで表示されるサーバ一覧へのURL。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Undersampling"
-msgstr "レンダリング:"
+msgstr "アンダーサンプリング"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6140,6 +6070,9 @@ msgid ""
 "It should give significant performance boost at the cost of less detailed "
 "image."
 msgstr ""
+"アンダーサンプリングは低い画面解像度を使用するのと似ていますが、\n"
+"GUIをそのままにしてゲームの世界にのみ適用されます。\n"
+"それほど詳細でないイメージを犠牲にしてパフォーマンスをかなり高めるでしょう。"
 
 #: src/settings_translation_file.cpp
 msgid "Unlimited player transfer distance"
@@ -6155,11 +6088,11 @@ msgstr "ダンジョンのY値の上限。"
 
 #: src/settings_translation_file.cpp
 msgid "Use 3D cloud look instead of flat."
-msgstr ""
+msgstr "平らではなく立体な雲を使用します。"
 
 #: src/settings_translation_file.cpp
 msgid "Use a cloud animation for the main menu background."
-msgstr ""
+msgstr "メインメニューの背景には雲のアニメーションを使用します。"
 
 #: src/settings_translation_file.cpp
 msgid "Use anisotropic filtering when viewing at textures from an angle."
@@ -6191,7 +6124,7 @@ msgstr "VBO"
 
 #: src/settings_translation_file.cpp
 msgid "VSync"
-msgstr ""
+msgstr "VSYNC"
 
 #: src/settings_translation_file.cpp
 msgid "Valley depth"
@@ -6235,22 +6168,23 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Varies depth of biome surface nodes."
-msgstr ""
+msgstr "バイオーム表面ノードの深さを変えます。"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Varies roughness of terrain.\n"
 "Defines the 'persistence' value for terrain_base and terrain_alt noises."
 msgstr ""
+"地形の粗さを変えます。\n"
+"terrain_base および terrain_alt ノイズの 'persistence' 値を定義します。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Varies steepness of cliffs."
-msgstr "丘の険しさ/高さの設定。"
+msgstr "崖の険しさが異なります。"
 
 #: src/settings_translation_file.cpp
 msgid "Vertical screen synchronization."
-msgstr ""
+msgstr "垂直スクリーン同期。"
 
 #: src/settings_translation_file.cpp
 msgid "Video driver"
@@ -6296,6 +6230,11 @@ msgid ""
 "Has no effect on 3D fractals.\n"
 "Range roughly -2 to 2."
 msgstr ""
+"4Dフラクタルの生成された3DスライスのW座標。\n"
+"4Dシェイプのどの3Dスライスを生成するかを決定します。\n"
+"フラクタルの形を変えます。\n"
+"3Dフラクタルには何の影響もありません。\n"
+"おおよそ -2～2 の範囲。"
 
 #: src/settings_translation_file.cpp
 msgid "Walking speed"
@@ -6398,8 +6337,8 @@ msgstr "ダンジョンが時折地形から突出するかどうか。"
 #: src/settings_translation_file.cpp
 msgid "Whether node texture animations should be desynchronized per mapblock."
 msgstr ""
-"ノードのテクスチャのアニメーションをマップブロックごとに非同期にするかどうか"
-"の設定です。"
+"ノードのテクスチャのアニメーションをマップブロックごとに非同期にするか\n"
+"どうかの設定です。"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6437,9 +6376,8 @@ msgid "Width component of the initial window size."
 msgstr "ウィンドウ幅の初期値。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Width of the selection box lines around nodes."
-msgstr "ノードを選択した際に表示される線の幅です。"
+msgstr "ノードを囲む選択ボックスの枠線の幅。"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6460,9 +6398,8 @@ msgstr ""
 "メインメニューから開始する場合必要ありません。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "World start time"
-msgstr "ワールド名"
+msgstr "ワールド開始時刻"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6488,20 +6425,18 @@ msgid "World-aligned textures mode"
 msgstr "整列テクスチャモード"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Y of flat ground."
-msgstr "フラットマップの地面の高さ"
+msgstr "平地のY。"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Y of mountain density gradient zero level. Used to shift mountains "
 "vertically."
-msgstr ""
+msgstr "山の密度勾配ゼロのY。山を垂直方向に移動するために使用。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Y of upper limit of large caves."
-msgstr "擬似乱数による大きい洞窟の高さ(Y)の上限。"
+msgstr "大きな洞窟のY高さ上限。"
 
 #: src/settings_translation_file.cpp
 msgid "Y of upper limit of lava in large caves."
@@ -6509,7 +6444,7 @@ msgstr "大きな洞窟内の溶岩のY高さ上限。"
 
 #: src/settings_translation_file.cpp
 msgid "Y-distance over which caverns expand to full size."
-msgstr "洞窟がフルサイズに拡大するYの距離。"
+msgstr "大きな洞窟がフルサイズに拡大するYの距離。"
 
 #: src/settings_translation_file.cpp
 msgid "Y-level of average terrain surface."
@@ -6517,7 +6452,7 @@ msgstr "平均地形面のYレベル。"
 
 #: src/settings_translation_file.cpp
 msgid "Y-level of cavern upper limit."
-msgstr "洞窟上限のYレベル。"
+msgstr "大きな洞窟の上限Yレベル。"
 
 #: src/settings_translation_file.cpp
 msgid "Y-level of floatland midpoint and lake surface."

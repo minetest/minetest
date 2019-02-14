@@ -2,9 +2,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-02-14 19:14+0100\n"
-"PO-Revision-Date: 2019-02-13 13:11+0000\n"
-"Last-Translator: Felipe A. Hernandez <ergoithz@gmail.com>\n"
+"POT-Creation-Date: 2019-02-14 07:46+0100\n"
+"PO-Revision-Date: 2019-02-23 11:18+0000\n"
+"Last-Translator: Diego Martínez <lkaezadl3@gmail.com>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/minetest/"
 "minetest/es/>\n"
 "Language: es\n"
@@ -23,12 +23,10 @@ msgid "You died"
 msgstr "Has muerto"
 
 #: builtin/fstk/ui.lua
-#, fuzzy
 msgid "An error occurred in a Lua script, such as a mod:"
 msgstr "Un error ha ocurrido en un script de Lua, tal como en un mod:"
 
 #: builtin/fstk/ui.lua
-#, fuzzy
 msgid "An error occurred:"
 msgstr "Ha ocurrido un error:"
 
@@ -109,7 +107,6 @@ msgid "Enable modpack"
 msgstr "Activar pack de mods"
 
 #: builtin/mainmenu/dlg_config_world.lua
-#, fuzzy
 msgid ""
 "Failed to enable mod \"$1\" as it contains disallowed characters. Only "
 "characters [a-z0-9_] are allowed."
@@ -182,7 +179,7 @@ msgstr "Mods"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "No packages could be retrieved"
-msgstr ""
+msgstr "No se ha podido obtener ningún paquete"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "No results"
@@ -215,7 +212,6 @@ msgid "Create"
 msgstr "Crear"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Download a game, such as Minetest Game, from minetest.net"
 msgstr "Descarga un subjuego, como minetest_game, desde minetest.net"
 
@@ -289,15 +285,16 @@ msgid ""
 "This modpack has an explicit name given in its modpack.conf which will "
 "override any renaming here."
 msgstr ""
+"Éste paquete de mods tiene un nombre explícito dado en su modpack.conf el "
+"cual sobreescribirá cualquier renombrado desde aquí."
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "(No description of setting given)"
 msgstr "(Ninguna descripción de ajuste dada)"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
-#, fuzzy
 msgid "2D Noise"
-msgstr "Ruido de cueva2"
+msgstr "Ruido 2D"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "< Back to Settings page"
@@ -321,19 +318,19 @@ msgstr "Activado"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Lacunarity"
-msgstr ""
+msgstr "Lagunaridad"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Octaves"
-msgstr ""
+msgstr "Octavas"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua src/settings_translation_file.cpp
 msgid "Offset"
-msgstr ""
+msgstr "Compensado"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Persistance"
-msgstr ""
+msgstr "Persistencia"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Please enter a valid integer."
@@ -349,7 +346,7 @@ msgstr "Restablecer por defecto"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua src/settings_translation_file.cpp
 msgid "Scale"
-msgstr ""
+msgstr "Escala"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Select directory"
@@ -373,40 +370,42 @@ msgstr "El valor no debe ser mayor que $1."
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "X"
-msgstr ""
+msgstr "X"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "X spread"
-msgstr ""
+msgstr "Propagación X"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Y"
-msgstr ""
+msgstr "Y"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Y spread"
-msgstr ""
+msgstr "Propagación Y"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Z"
-msgstr ""
+msgstr "Z"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Z spread"
-msgstr ""
+msgstr "Propagación Z"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
+#, fuzzy
 msgid "absvalue"
-msgstr ""
+msgstr "Valor absoluto"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 #, fuzzy
 msgid "defaults"
-msgstr "Juego por defecto"
+msgstr "Predeterminados"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
+#, fuzzy
 msgid "eased"
-msgstr ""
+msgstr "Aliviado"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "$1 (Enabled)"
@@ -415,7 +414,7 @@ msgstr "$1 (Activado)"
 #: builtin/mainmenu/pkgmgr.lua
 #, fuzzy
 msgid "$1 mods"
-msgstr " mods"
+msgstr "$1 mods"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Failed to install $1 to $2"
@@ -644,7 +643,7 @@ msgstr "8x"
 #: builtin/mainmenu/tab_settings.lua
 #, fuzzy
 msgid "All Settings"
-msgstr "Configuración"
+msgstr "Ver toda la config."
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Antialiasing:"
@@ -1925,7 +1924,6 @@ msgid "Active Block Modifiers"
 msgstr "Modificadores de bloques activos"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Active block management interval"
 msgstr "Intervalo de administración de bloques activos"
 
@@ -2076,7 +2074,6 @@ msgstr ""
 "tipo: booleano"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Automatically report to the serverlist."
 msgstr "Automáticamente informar a la lista del servidor."
 
@@ -2093,21 +2090,18 @@ msgid "Backward key"
 msgstr "Tecla retroceso"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Base ground level"
 msgstr "Nivel del suelo"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Base terrain height."
-msgstr "Altura base del terreno"
+msgstr "Altura base del terreno."
 
 #: src/settings_translation_file.cpp
 msgid "Basic"
 msgstr "Básico"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Basic privileges"
 msgstr "Privilegios básicos"
 
@@ -2143,7 +2137,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Block send optimize distance"
-msgstr ""
+msgstr "Distancia de optimización de envío de bloques"
 
 #: src/settings_translation_file.cpp
 msgid "Build inside player"
@@ -2164,6 +2158,10 @@ msgid ""
 "Increasing can reduce artifacting on weaker GPUs.\n"
 "0.1 = Default, 0.25 = Good value for weaker tablets."
 msgstr ""
+"Distancia del plano cercano de la cámara en nodos, entre 0 y 0.5.\n"
+"La mayoría de los usuarios no necesitarán editar ésto.\n"
+"Incrementarlo puede reducir los artefactos en GPUs débiles.\n"
+"0.1 = Predeterminado, 0.25 = Buen valor para tabletas débiles."
 
 #: src/settings_translation_file.cpp
 msgid "Camera smoothing"
@@ -2223,7 +2221,7 @@ msgstr "Límite superior de caverna"
 
 #: src/settings_translation_file.cpp
 msgid "Center of light curve mid-boost."
-msgstr ""
+msgstr "Aumento medio del centro de la curva de luz."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2234,6 +2232,11 @@ msgid ""
 "be\n"
 "necessary for smaller screens."
 msgstr ""
+"Cambia la UI del menú principal:\n"
+"-\tCompleto:\tMúltiples mundos, elección de juegos y texturas, etc.\n"
+"-\tSimple:\tUn solo mundo, sin elección de juegos o texturas.\n"
+"Puede ser necesario en pantallas pequeñas.\n"
+"-\tAutomático:\tSimple en Android, completo en otras plataformas."
 
 #: src/settings_translation_file.cpp
 msgid "Chat key"
@@ -2244,9 +2247,8 @@ msgid "Chat message count limit"
 msgstr "Límite de mensajes de chat"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Chat message kick threshold"
-msgstr "Umbral de ruido del desierto"
+msgstr "Umbral de expulsión por mensajes"
 
 #: src/settings_translation_file.cpp
 msgid "Chat message max length"
@@ -2293,8 +2295,9 @@ msgid "Client side modding restrictions"
 msgstr "Restricciones para modear del lado del cliente"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Client side node lookup range restriction"
-msgstr ""
+msgstr "Restricción de distancia de búsqueda de nodos del cliente"
 
 #: src/settings_translation_file.cpp
 msgid "Climbing speed"
@@ -2394,13 +2397,14 @@ msgid ""
 "Continuous forward movement, toggled by autoforward key.\n"
 "Press the autoforward key again or the backwards movement to disable."
 msgstr ""
+"Movimiento continuo hacia adelante. Activado por la tecla de auto-avance.\n"
+"Presiona la tecla de auto-avance otra vez o retrocede para desactivar."
 
 #: src/settings_translation_file.cpp
 msgid "Controls"
 msgstr "Controles"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Controls length of day/night cycle.\n"
 "Examples:\n"
@@ -2419,13 +2423,12 @@ msgid "Controls steepness/height of hills."
 msgstr "Controla lo escarpado/alto de las colinas."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Controls the density of mountain-type floatlands.\n"
 "Is a noise offset added to the 'mgv7_np_mountain' noise value."
 msgstr ""
 "Controla la densidad del terreno montañoso flotante.\n"
-"Se agrega un desplazamiento al valor de ruido 'np_mountain'."
+"Se agrega un desplazamiento al valor de ruido 'mgv7_np_mountain'."
 
 #: src/settings_translation_file.cpp
 msgid "Controls width of tunnels, a smaller value creates wider tunnels."
@@ -2467,7 +2470,7 @@ msgstr "Daño"
 #: src/settings_translation_file.cpp
 #, fuzzy
 msgid "Darkness sharpness"
-msgstr "Pendiente del lago"
+msgstr "Agudeza de la obscuridad"
 
 #: src/settings_translation_file.cpp
 msgid "Debug info toggle key"
@@ -2538,16 +2541,14 @@ msgid "Defines areas with sandy beaches."
 msgstr "Define areas con playas arenosas."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Defines distribution of higher terrain and steepness of cliffs."
 msgstr ""
 "Define áreas de terreno más alto (acantilado) y afecta la inclinación de los "
 "acantilados."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Defines distribution of higher terrain."
-msgstr "Define areas de 'terrain_higher' (terreno acantilado)."
+msgstr "Define is distribución del terreno alto."
 
 #: src/settings_translation_file.cpp
 msgid "Defines full size of caverns, smaller values create larger caverns."
@@ -2570,9 +2571,8 @@ msgstr ""
 "Un valor más alto causa mapas de relieve más suaves."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Defines the base ground level."
-msgstr "Define las áreas de árboles y densidad de árboles."
+msgstr "Define el nivel base del terreno."
 
 #: src/settings_translation_file.cpp
 msgid "Defines the maximal player transfer distance in blocks (0 = unlimited)."
@@ -2607,7 +2607,6 @@ msgid "Deprecated Lua API handling"
 msgstr "Manejo de funciones de Lua obsoletas"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Depth below which you'll find giant caverns."
 msgstr "Profundidad en la cual comienzan las grandes cuevas."
 
@@ -2669,7 +2668,6 @@ msgid "Drop item key"
 msgstr "Tecla de \"Soltar objeto\""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Dump the mapgen debug information."
 msgstr "Imprimir información de depuración del generador de mapas."
 
@@ -2706,9 +2704,8 @@ msgid "Enable joysticks"
 msgstr "Activar joysticks"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Enable mod channels support."
-msgstr "Activar seguridad de mods"
+msgstr "Activar soporte para canales de mods."
 
 #: src/settings_translation_file.cpp
 msgid "Enable mod security"
@@ -2773,7 +2770,6 @@ msgstr ""
 "Por ejemplo: 0 para balanceo sin vista; 1.0 para normal; 2.0 para doble."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Enable/disable running an IPv6 server.\n"
 "Ignored if bind_address is set."
@@ -2892,7 +2888,6 @@ msgid "Fast movement"
 msgstr "Movimiento rápido"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Fast movement (via the \"special\" key).\n"
 "This requires the \"fast\" privilege on the server."
@@ -2909,7 +2904,6 @@ msgid "Field of view in degrees."
 msgstr "Campo visual en grados."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "File in client/serverlist/ that contains your favorite servers displayed in "
 "the\n"
@@ -2919,7 +2913,6 @@ msgstr ""
 "mostrarán en la página de Multijugador."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Filler depth"
 msgstr "Profundidad del relleno"
 
@@ -2932,7 +2925,6 @@ msgid "Filmic tone mapping"
 msgstr "Mapa de tonos fílmico"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Filtered textures can blend RGB values with fully-transparent neighbors,\n"
 "which PNG optimizers usually discard, sometimes resulting in a dark or\n"
@@ -2950,12 +2942,10 @@ msgid "Filtering"
 msgstr "Filtrado"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "First of 4 2D noises that together define hill/mountain range height."
-msgstr "Primero de 2 ruidos 3D que juntos definen túneles."
+msgstr "Primero de 2 ruidos 3D que juntos definen la altura de la montañas."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "First of two 3D noises that together define tunnels."
 msgstr "Primero de 2 ruidos 3D que juntos definen túneles."
 
@@ -2965,7 +2955,7 @@ msgstr "Semilla de mapa fija"
 
 #: src/settings_translation_file.cpp
 msgid "Fixed virtual joystick"
-msgstr ""
+msgstr "Joystick virtual fijo"
 
 #: src/settings_translation_file.cpp
 msgid "Floatland base height noise"
@@ -2984,9 +2974,8 @@ msgid "Floatland mountain density"
 msgstr "Densidad de las montañas en tierras flotantes"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Floatland mountain exponent"
-msgstr "Densidad de las montañas en tierras flotantes"
+msgstr "Exponente de las montañas en tierras flotantes"
 
 #: src/settings_translation_file.cpp
 msgid "Floatland mountain height"
@@ -3005,7 +2994,6 @@ msgid "Fog"
 msgstr "Niebla"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Fog start"
 msgstr "Inicio de Niebla"
 
@@ -3043,52 +3031,44 @@ msgstr "Formato de capturas de pantalla."
 
 #: src/settings_translation_file.cpp
 msgid "Formspec Default Background Color"
-msgstr ""
+msgstr "Color de fondo predeterminado para los formularios"
 
 #: src/settings_translation_file.cpp
 msgid "Formspec Default Background Opacity"
-msgstr ""
+msgstr "Opacidad de fondo Predeterminada para formularios"
 
 #: src/settings_translation_file.cpp
 msgid "Formspec Full-Screen Background Color"
-msgstr ""
+msgstr "Color see fondo para formularios en pantalla completa"
 
 #: src/settings_translation_file.cpp
 msgid "Formspec Full-Screen Background Opacity"
-msgstr ""
+msgstr "Opacidad de formularios en pantalla completa"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Formspec default background color (R,G,B)."
-msgstr "Color del fondo de la consola de chat durante el juego (R, G, B)."
+msgstr "Color de fondo predeterminado para formularios (R, G, B)."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Formspec default background opacity (between 0 and 255)."
-msgstr ""
-"Valor alfa del fondo de la consola de chat durante el juego (opacidad, entre "
-"0 y 255)."
+msgstr "Opacidad predeterminada del fondo de formularios (entre 0 y 255)."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Formspec full-screen background color (R,G,B)."
-msgstr "Color del fondo de la consola de chat durante el juego (R, G, B)."
+msgstr "Color de fondo de los formularios en pantalla completa (R, G, B)."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Formspec full-screen background opacity (between 0 and 255)."
 msgstr ""
-"Valor alfa del fondo de la consola de chat durante el juego (opacidad, entre "
-"0 y 255)."
+"Opacidad de fondo de los formularios en pantalla completa (entre 0 y 255)."
 
 #: src/settings_translation_file.cpp
 msgid "Forward key"
 msgstr "Tecla Avanzar"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Fourth of 4 2D noises that together define hill/mountain range height."
-msgstr "Primero de 2 ruidos 3D que juntos definen túneles."
+msgstr "Cuarto de 4 ruidos 2D que juntos definen la altura de las montañas."
 
 #: src/settings_translation_file.cpp
 msgid "Fractal type"
@@ -3100,9 +3080,8 @@ msgstr ""
 "Fracción de la distancia visible en la que la niebla se empieza a renderizar"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "FreeType fonts"
-msgstr "Fuentes Freetype"
+msgstr "Fuentes FreeType"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3120,6 +3099,7 @@ msgstr ""
 "bloques de mapa (mapblocks, 16 nodos)."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "From how far clients know about objects, stated in mapblocks (16 nodes).\n"
 "\n"
@@ -3127,6 +3107,12 @@ msgid ""
 "to maintain active objects up to this distance in the direction the\n"
 "player is looking. (This can avoid mobs suddenly disappearing from view)"
 msgstr ""
+"Desde cuan lejano los clientes saben de los objetos, en bloques (16 nodos).\n"
+"\n"
+"Establecer esto a más de 'active_block_range' tambien causará que\n"
+"el servidor mantenga objetos activos hasta ésta distancia en la dirección\n"
+"que el jugador está mirando. (Ésto puede evitar que los\n"
+"enemigos desaparezcan)"
 
 #: src/settings_translation_file.cpp
 msgid "Full screen"
@@ -3184,12 +3170,14 @@ msgstr ""
 "inhabilitar esas opciones."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Gradient of light curve at maximum light level."
-msgstr ""
+msgstr "Gradiente de la curva de luz al nivel de luz máximo."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Gradient of light curve at minimum light level."
-msgstr ""
+msgstr "Gradiente de la curva de luz al nivel de luz mínimo."
 
 #: src/settings_translation_file.cpp
 msgid "Graphics"
@@ -3204,12 +3192,10 @@ msgid "Ground level"
 msgstr "Nivel del suelo"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Ground noise"
-msgstr "Nivel del suelo"
+msgstr "Ruido del suelo"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "HTTP mods"
 msgstr "Mods HTTP"
 
@@ -3263,7 +3249,7 @@ msgstr "Altura del ruido"
 
 #: src/settings_translation_file.cpp
 msgid "Height select noise"
-msgstr ""
+msgstr "Ruido de elección de altura"
 
 #: src/settings_translation_file.cpp
 msgid "High-precision FPU"
@@ -3278,24 +3264,20 @@ msgid "Hill threshold"
 msgstr "Umbral de la colina"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Hilliness1 noise"
-msgstr "Calor del ruido"
+msgstr "Ruido de las colinas 1"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Hilliness2 noise"
-msgstr "Calor del ruido"
+msgstr "Ruido de las colinas 2"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Hilliness3 noise"
-msgstr "Calor del ruido"
+msgstr "Ruido de las colinas 3"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Hilliness4 noise"
-msgstr "Calor del ruido"
+msgstr "Ruido de las colinas 4"
 
 #: src/settings_translation_file.cpp
 msgid "Homepage of server, to be displayed in the serverlist."
@@ -3303,44 +3285,36 @@ msgstr ""
 "Página de inicio del servidor, que se mostrará en la lista de servidores."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Hotbar next key"
-msgstr "Botón de siguiente Hotbar"
+msgstr "Tecla de siguiente barra rápida"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Hotbar previous key"
-msgstr "Botón de anterior Hotbar"
+msgstr "Tecla de anterior barra rápida"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Hotbar slot 1 key"
-msgstr "Botón de siguiente Hotbar"
+msgstr "Tecla de barra rápida ranura 1"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Hotbar slot 10 key"
-msgstr "Botón de siguiente Hotbar"
+msgstr "Tecla de barra rápida ranura 10"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Hotbar slot 11 key"
-msgstr "Botón de siguiente Hotbar"
+msgstr "Tecla de barra rápida ranura 11"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Hotbar slot 12 key"
-msgstr "Botón de siguiente Hotbar"
+msgstr "Tecla de barra rápida ranura 12"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Hotbar slot 13 key"
-msgstr "Botón de siguiente Hotbar"
+msgstr "Tecla de barra rápida ranura 13"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Hotbar slot 14 key"
-msgstr "Botón de siguiente Hotbar"
+msgstr "Tecla de barra rápida ranura 14"
 
 #: src/settings_translation_file.cpp
 #, fuzzy

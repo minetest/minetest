@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-02-14 19:14+0100\n"
-"PO-Revision-Date: 2019-02-12 20:07+0000\n"
+"POT-Creation-Date: 2019-02-14 07:46+0100\n"
+"PO-Revision-Date: 2019-02-23 11:18+0000\n"
 "Last-Translator: Mateusz Mendel <mendelm9@gmail.com>\n"
 "Language-Team: Polish <https://hosted.weblate.org/projects/minetest/minetest/"
 "pl/>\n"
@@ -324,8 +324,9 @@ msgid "Lacunarity"
 msgstr "Bezpieczeństwo"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
+#, fuzzy
 msgid "Octaves"
-msgstr ""
+msgstr "Oktawy"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua src/settings_translation_file.cpp
 #, fuzzy
@@ -374,32 +375,39 @@ msgid "The value must not be larger than $1."
 msgstr "Wartość nie może być większa niż $1."
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
+#, fuzzy
 msgid "X"
-msgstr ""
+msgstr "X"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
+#, fuzzy
 msgid "X spread"
-msgstr ""
+msgstr "Rozrzut X"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
+#, fuzzy
 msgid "Y"
-msgstr ""
+msgstr "Y"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
+#, fuzzy
 msgid "Y spread"
-msgstr ""
+msgstr "Rozrzut Y"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
+#, fuzzy
 msgid "Z"
-msgstr ""
+msgstr "Z"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
+#, fuzzy
 msgid "Z spread"
-msgstr ""
+msgstr "Rozrzut Z"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
+#, fuzzy
 msgid "absvalue"
-msgstr ""
+msgstr "wartość bezwzględna"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 #, fuzzy
@@ -1572,7 +1580,7 @@ msgid "Register and Join"
 msgstr "Zajestruj się i dołącz"
 
 #: src/gui/guiConfirmRegistration.cpp
-#, c-format
+#, c-format, fuzzy
 msgid ""
 "You are about to join the server at %1$s with the name \"%2$s\" for the "
 "first time. If you proceed, a new account using your credentials will be "
@@ -1580,6 +1588,10 @@ msgid ""
 "Please retype your password and click Register and Join to confirm account "
 "creation or click Cancel to abort."
 msgstr ""
+"Próbujesz po raz pierwszy wejść na serwer %1$s1 o nazwie \"%2$s2\" . Jeśli "
+"kontynuujesz na serwerze zostanie utworzone nowe konto z Twoim danymi.\n"
+"Wpisz ponownie hasło i wciśnij Zarejestruj oraz Dołącz, aby potwierdzić "
+"utworzenie konta lub wciśnij Anuluj, aby przerwać ten proces."
 
 #: src/gui/guiFormSpecMenu.cpp
 msgid "Proceed"
@@ -1861,8 +1873,9 @@ msgstr "Szum 2D, który wpływa na rozmiar/występowanie zaokrąglonych wzgórz.
 
 #: src/settings_translation_file.cpp
 #, fuzzy
-msgid "2D noise that controls the size/occurrence of step mountain ranges."
-msgstr "Szum 2D, który wpływa na rozmiar/występowanie łańcuchów górskich."
+msgid "2D noise that controls the size/occurance of step mountain ranges."
+msgstr ""
+"Szum 2D, który wpływa na rozmiar/ występowanie stepów łańcuchów górskich."
 
 #: src/settings_translation_file.cpp
 msgid "3D clouds"
@@ -5347,8 +5360,9 @@ msgstr ""
 "Nazwa serwera, wyświetlana gdy gracze dołączają oraz na liście serwerów."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Near plane"
-msgstr ""
+msgstr "Najbliższy wymiar"
 
 #: src/settings_translation_file.cpp
 msgid "Network"

@@ -2,9 +2,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-02-14 19:14+0100\n"
-"PO-Revision-Date: 2019-02-10 20:38+0000\n"
-"Last-Translator: dumaosen <dumaosen_main01@outlook.com>\n"
+"POT-Creation-Date: 2019-02-14 07:46+0100\n"
+"PO-Revision-Date: 2019-02-23 11:18+0000\n"
+"Last-Translator: Cool-Pan <ivlioioilvi@gmail.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "minetest/minetest/zh_Hans/>\n"
 "Language: zh_CN\n"
@@ -19,19 +19,16 @@ msgid "Respawn"
 msgstr "重生"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
-#, fuzzy
 msgid "You died"
-msgstr "你死了。"
+msgstr "您已死亡"
 
 #: builtin/fstk/ui.lua
-#, fuzzy
 msgid "An error occurred in a Lua script, such as a mod:"
-msgstr "Lua 脚本发生错误，如一个模组："
+msgstr "Lua 脚本发生错误，如一个 mod："
 
 #: builtin/fstk/ui.lua
-#, fuzzy
 msgid "An error occurred:"
-msgstr "发生了一个错误："
+msgstr "发生了错误："
 
 #: builtin/fstk/ui.lua
 msgid "Main menu"
@@ -47,7 +44,7 @@ msgstr "重新连接"
 
 #: builtin/fstk/ui.lua
 msgid "The server has requested a reconnect:"
-msgstr "服务器已要求重新连接："
+msgstr "服务器已请求重新连接："
 
 #: builtin/mainmenu/common.lua src/client/game.cpp
 msgid "Loading..."
@@ -96,39 +93,34 @@ msgid "Disable all"
 msgstr "全部禁用"
 
 #: builtin/mainmenu/dlg_config_world.lua
-#, fuzzy
 msgid "Disable modpack"
-msgstr "已禁用"
+msgstr "禁用 mod 包"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Enable all"
 msgstr "全部启用"
 
 #: builtin/mainmenu/dlg_config_world.lua
-#, fuzzy
 msgid "Enable modpack"
-msgstr "重命名MOD包："
+msgstr "启用 mod 包"
 
 #: builtin/mainmenu/dlg_config_world.lua
-#, fuzzy
 msgid ""
 "Failed to enable mod \"$1\" as it contains disallowed characters. Only "
 "characters [a-z0-9_] are allowed."
-msgstr "无法启用 MOD \"$1\"：含有不支持的字符。允许的字符为 [a-z0-9_]。"
+msgstr "无法启用 mod \"$1\"：因为包含有不支持的字符。只允许 [a-z0-9_] 字符。"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Mod:"
 msgstr "Mod："
 
 #: builtin/mainmenu/dlg_config_world.lua
-#, fuzzy
 msgid "No game description provided."
-msgstr "无MOD资料可得"
+msgstr "未提供游戏描述。"
 
 #: builtin/mainmenu/dlg_config_world.lua
-#, fuzzy
 msgid "No modpack description provided."
-msgstr "无MOD资料可得"
+msgstr "未提供mod 包描述。"
 
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/tab_content.lua
 msgid "Optional dependencies:"
@@ -149,26 +141,23 @@ msgstr "启用"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "All packages"
-msgstr "全部软件包"
+msgstr "全部包"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Back"
-msgstr "退格"
+msgstr "后退"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Back to Main Menu"
-msgstr "主菜单"
+msgstr "返回主菜单"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Downloading and installing $1, please wait..."
-msgstr "正在下载 $1, 请稍候..."
+msgstr "正在下载和安装 $1，请稍等..."
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Failed to download $1"
-msgstr "无法安装$1到$2"
+msgstr "下载 $1 失败"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua
@@ -186,7 +175,7 @@ msgstr "Mod"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "No packages could be retrieved"
-msgstr ""
+msgstr "无法检索任何包"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "No results"
@@ -203,9 +192,8 @@ msgid "Texture packs"
 msgstr "材质包"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Uninstall"
-msgstr "安装"
+msgstr "卸载"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Update"
@@ -376,7 +364,7 @@ msgstr "显示高级设置"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "The value must be at least $1."
-msgstr "这个值必须大于$1."
+msgstr "这个值必须至少为 $1。"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "The value must not be larger than $1."
@@ -411,9 +399,8 @@ msgid "absvalue"
 msgstr "绝对值"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
-#, fuzzy
 msgid "defaults"
-msgstr "默认游戏"
+msgstr "默认值"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "eased"
@@ -431,7 +418,7 @@ msgstr "3D 模式"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Failed to install $1 to $2"
-msgstr "无法安装$1到$2"
+msgstr "安装 $1 到 $2 失败"
 
 #: builtin/mainmenu/pkgmgr.lua
 #, fuzzy
@@ -867,7 +854,7 @@ msgstr "连接出错（超时？）"
 
 #: src/client/clientlauncher.cpp
 msgid "Could not find or load game \""
-msgstr "无法找到或载入游戏模式"
+msgstr "无法找到或者载入游戏 \""
 
 #: src/client/clientlauncher.cpp
 msgid "Invalid gamespec."
@@ -899,7 +886,7 @@ msgstr "提供的世界路径不存在: "
 
 #: src/client/fontengine.cpp
 msgid "needs_fallback_font"
-msgstr "yes"
+msgstr "需要_fallback_字体"
 
 #: src/client/game.cpp
 msgid ""
@@ -1028,7 +1015,7 @@ msgstr "建立服务器...."
 
 #: src/client/game.cpp
 msgid "Debug info and profiler graph hidden"
-msgstr ""
+msgstr "隐藏的调试信息和 Profiler 图"
 
 #: src/client/game.cpp
 #, fuzzy
@@ -1037,7 +1024,7 @@ msgstr "调试信息切换键"
 
 #: src/client/game.cpp
 msgid "Debug info, profiler graph, and wireframe hidden"
-msgstr ""
+msgstr "隐藏调试信息，Profiler 图，和线框"
 
 #: src/client/game.cpp
 msgid ""
@@ -1069,11 +1056,11 @@ msgstr ""
 
 #: src/client/game.cpp
 msgid "Disabled unlimited viewing range"
-msgstr ""
+msgstr "禁用无限视野"
 
 #: src/client/game.cpp
 msgid "Enabled unlimited viewing range"
-msgstr ""
+msgstr "启用无限视野"
 
 #: src/client/game.cpp
 msgid "Exit to Menu"
@@ -1095,7 +1082,7 @@ msgstr "快速移动模式速度"
 
 #: src/client/game.cpp
 msgid "Fast mode enabled (note: no 'fast' privilege)"
-msgstr ""
+msgstr "快速模式已启用（注：无 'fast' 特权）"
 
 #: src/client/game.cpp
 #, fuzzy
@@ -1151,7 +1138,7 @@ msgstr "MiB/s"
 
 #: src/client/game.cpp
 msgid "Minimap currently disabled by game or mod"
-msgstr ""
+msgstr "小地图被当前游戏或者 mod 禁用"
 
 #: src/client/game.cpp
 #, fuzzy
@@ -1184,7 +1171,7 @@ msgstr ""
 
 #: src/client/game.cpp
 msgid "Noclip mode disabled"
-msgstr ""
+msgstr "Noclip 模式已禁用"
 
 #: src/client/game.cpp
 #, fuzzy
@@ -1271,11 +1258,11 @@ msgstr "音量改到%d1%%2"
 
 #: src/client/game.cpp
 msgid "Wireframe shown"
-msgstr ""
+msgstr "显示线框"
 
 #: src/client/game.cpp
 msgid "Zoom currently disabled by game or mod"
-msgstr ""
+msgstr "缩放被当前游戏或 mod 禁用"
 
 #: src/client/game.cpp src/gui/modalMenu.cpp
 msgid "ok"
@@ -1288,15 +1275,15 @@ msgstr "聊天键"
 
 #: src/client/gameui.cpp
 msgid "Chat shown"
-msgstr ""
+msgstr "显示聊天"
 
 #: src/client/gameui.cpp
 msgid "HUD hidden"
-msgstr ""
+msgstr "隐藏 HUD"
 
 #: src/client/gameui.cpp
 msgid "HUD shown"
-msgstr ""
+msgstr "显示 HUD"
 
 #: src/client/gameui.cpp
 #, fuzzy
@@ -1479,11 +1466,11 @@ msgstr "OEM Clear键"
 
 #: src/client/keycode.cpp
 msgid "Page down"
-msgstr ""
+msgstr "下一页"
 
 #: src/client/keycode.cpp
 msgid "Page up"
-msgstr ""
+msgstr "上一页"
 
 #: src/client/keycode.cpp
 msgid "Pause"
@@ -1495,7 +1482,7 @@ msgstr "开始游戏"
 
 #: src/client/keycode.cpp
 msgid "Print"
-msgstr "Print键"
+msgstr "打印"
 
 #: src/client/keycode.cpp
 msgid "Return"
@@ -1575,7 +1562,7 @@ msgstr "密码不匹配！"
 
 #: src/gui/guiConfirmRegistration.cpp
 msgid "Register and Join"
-msgstr ""
+msgstr "注册并加入"
 
 #: src/gui/guiConfirmRegistration.cpp
 #, c-format
@@ -1603,7 +1590,7 @@ msgstr "向前"
 
 #: src/gui/guiKeyChangeMenu.cpp src/settings_translation_file.cpp
 msgid "Automatic jumping"
-msgstr ""
+msgstr "自动跳 Ping"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Backward"
@@ -2561,7 +2548,7 @@ msgstr "定义大尺寸的河道结构。"
 
 #: src/settings_translation_file.cpp
 msgid "Defines location and terrain of optional hills and lakes."
-msgstr "定义所选的山和湖的位置与地形"
+msgstr "定义所选的山和湖的位置与地形。"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4369,7 +4356,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Makes all liquids opaque"
-msgstr ""
+msgstr "使所有液体不透明"
 
 #: src/settings_translation_file.cpp
 msgid "Map directory"
@@ -6028,9 +6015,8 @@ msgstr ""
 "如果从主菜单开始游戏就不需要。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "World start time"
-msgstr "世界名称"
+msgstr "世界开始时间"
 
 #: src/settings_translation_file.cpp
 msgid ""

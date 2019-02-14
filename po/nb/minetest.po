@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-02-14 19:14+0100\n"
-"PO-Revision-Date: 2019-02-13 13:11+0000\n"
+"POT-Creation-Date: 2019-02-14 07:46+0100\n"
+"PO-Revision-Date: 2019-02-23 00:07+0000\n"
 "Last-Translator: Allan Nordhøy <epost@anotheragency.no>\n"
 "Language-Team: Norwegian Bokmål <https://hosted.weblate.org/projects/"
 "minetest/minetest/nb_NO/>\n"
@@ -23,14 +23,12 @@ msgid "You died"
 msgstr "Du døde"
 
 #: builtin/fstk/ui.lua
-#, fuzzy
 msgid "An error occurred in a Lua script, such as a mod:"
-msgstr "Det skjedde en feil i et Lua-skriptet, f.eks. en mod:"
+msgstr "Det oppstod en feil i et Lua-skriptet, for eksempel i en mod:"
 
 #: builtin/fstk/ui.lua
-#, fuzzy
 msgid "An error occurred:"
-msgstr "Det skjedde en feil:"
+msgstr "Det oppstod en feil:"
 
 #: builtin/fstk/ui.lua
 msgid "Main menu"
@@ -109,13 +107,12 @@ msgid "Enable modpack"
 msgstr "Aktiver modpakken"
 
 #: builtin/mainmenu/dlg_config_world.lua
-#, fuzzy
 msgid ""
 "Failed to enable mod \"$1\" as it contains disallowed characters. Only "
 "characters [a-z0-9_] are allowed."
 msgstr ""
-"Kunne ikke aktivere mod \"$1\" fordi  den inneholder ulovlige tegn. Kun "
-"symbolene [a-z0-9_] er tillatt."
+"Kunne ikke aktivere mod \"$1\" fordi  den inneholder ugyldige tegn. Kun "
+"tegnene [a-z0-9_] er tillatt."
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Mod:"
@@ -126,9 +123,8 @@ msgid "No game description provided."
 msgstr "Mangler spillbeskrivelse."
 
 #: builtin/mainmenu/dlg_config_world.lua
-#, fuzzy
 msgid "No modpack description provided."
-msgstr "Ingen modbeskrivelse tilgjengelig"
+msgstr "Ingen modpakke-beskrivelse tilgjengelig."
 
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/tab_content.lua
 msgid "Optional dependencies:"
@@ -183,7 +179,7 @@ msgstr "Modder"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "No packages could be retrieved"
-msgstr ""
+msgstr "Kunne ikke hente pakker"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "No results"
@@ -6031,7 +6027,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Y-level of lower terrain and seabed."
-msgstr ""
+msgstr "Y-nivå for nedre terreng og sjøbunn."
 
 #: src/settings_translation_file.cpp
 msgid "Y-level of seabed."

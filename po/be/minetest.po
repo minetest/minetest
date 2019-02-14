@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-02-14 19:14+0100\n"
-"PO-Revision-Date: 2019-02-14 06:10+0000\n"
+"POT-Creation-Date: 2019-02-14 07:46+0100\n"
+"PO-Revision-Date: 2019-02-23 11:18+0000\n"
 "Last-Translator: Zmicer Turok <zmicerturok@gmail.com>\n"
 "Language-Team: Belarusian <https://hosted.weblate.org/projects/minetest/"
 "minetest/be/>\n"
@@ -11,8 +11,8 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
-"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
+"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<="
+"4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
 "X-Generator: Weblate 3.5-dev\n"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
@@ -24,12 +24,10 @@ msgid "You died"
 msgstr "Вы загінулі"
 
 #: builtin/fstk/ui.lua
-#, fuzzy
 msgid "An error occurred in a Lua script, such as a mod:"
 msgstr "Памылка ў скрыпце Lua, такая як у мадыфікацыі:"
 
 #: builtin/fstk/ui.lua
-#, fuzzy
 msgid "An error occurred:"
 msgstr "Адбылася памылка:"
 
@@ -1641,7 +1639,7 @@ msgstr "Папярэдні прадмет"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Range select"
-msgstr "Далёкасць бачнасці"
+msgstr "Адлегласць бачнасці"
 
 #: src/gui/guiKeyChangeMenu.cpp src/settings_translation_file.cpp
 msgid "Screenshot"
@@ -1653,7 +1651,7 @@ msgstr "Красціся"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Special"
-msgstr ""
+msgstr "Адмысловая"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Toggle Cinematic"
@@ -1665,7 +1663,7 @@ msgstr "HUD"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Toggle chat log"
-msgstr "Чат"
+msgstr "Размова"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Toggle fast"
@@ -1685,11 +1683,11 @@ msgstr "Мінімапа"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Toggle noclip"
-msgstr "Сутыкненне"
+msgstr "Рух скрозь сцены"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "press key"
-msgstr "націсні кнопку"
+msgstr "націсніце кнопку"
 
 #: src/gui/guiPasswordChange.cpp
 msgid "Change"
@@ -1713,7 +1711,7 @@ msgstr "Выхад"
 
 #: src/gui/guiVolumeChange.cpp
 msgid "Muted"
-msgstr "Прыглушаны"
+msgstr "Сцішаны"
 
 #: src/gui/guiVolumeChange.cpp
 msgid "Sound Volume: "
@@ -1732,6 +1730,9 @@ msgid ""
 "(Android) Fixes the position of virtual joystick.\n"
 "If disabled, virtual joystick will center to first-touch's position."
 msgstr ""
+"(Android) Фіксуе пазіцыю віртуальнага джойсціка.\n"
+"Калі выключана, віртуальны джойсцік будзе з’яўляцца на пазіцыі першага "
+"дотыку."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1739,9 +1740,11 @@ msgid ""
 "If enabled, virtual joystick will also tap \"aux\" button when out of main "
 "circle."
 msgstr ""
+"(Android) Выкарыстоўваць віртуальны джойсцік для актывацыі кнопкі \"aux\".\n"
+"Калі ўключана, віртуальны джойсцік таксама будзе націскаць кнопку \"aux\" "
+"калі будзе знаходзіцца па-за межамі асноўнага кола."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "(X,Y,Z) offset of fractal from world center in units of 'scale'.\n"
 "Can be used to move a desired point to (0, 0) to create a\n"
@@ -1752,13 +1755,13 @@ msgid ""
 "situations.\n"
 "Range roughly -2 to 2. Multiply by 'scale' for offset in nodes."
 msgstr ""
-"(X, Y, Z) зрух фрактала ад цэнтра свету ў адзінках шкалы.\n"
-"Выкарыстоўваецца для перамяшчэння прыдатнай вобласці для стварэння нізкай "
-"зямлі паблізу (0, 0).\n"
-"Агаданае значэнне падыходзіць для мноства Мандэльброта, але павінна быць "
-"зменена для мноства Жулія.\n"
-"Дыяпазон прыкладна ад −2 да 2. Памножанае на адзінку шкалы для зруху ў "
-"вузлах."
+"(X, Y, Z) зрух фрактала ад цэнтру свету ў адзінках шкалы маштабу.\n"
+"Выкарыстоўваецца для перамяшчэння вобласці адраджэння бліжэй да зямлі (0, 0)."
+"\n"
+"Прадвызначанае значэнне падыходзіць для мностваў Мандэльброта, але для "
+"мностваў Жулія яго неабходна падладзіць.\n"
+"Дыяпазон прыкладна ад −2 да 2. Памножце на адзінку шкалы маштабу, каб "
+"атрымаць зрух ў блоках."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1770,6 +1773,13 @@ msgid ""
 "Default is for a vertically-squashed shape suitable for\n"
 "an island, set all 3 numbers equal for the raw shape."
 msgstr ""
+"(Х,Y,Z) шкала фрактала ў блоках.\n"
+"Фактычны фрактальны памер будзе ў 2-3 разы больш.\n"
+"Гэтыя ліку могуць быць вельмі вялікімі, фракталу няма патрэбы запаўняць свет."
+"\n"
+"Павялічце іх, каб павялічыць маштаб дэталі фрактала.\n"
+"Для вертыкальна сціснутай фігуры, што падыходзіць\n"
+"востраву, зрабіце ўсе 3 лікі роўнымі для неапрацаванай формы."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1781,27 +1791,27 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "2D noise that controls the shape/size of ridged mountains."
-msgstr ""
+msgstr "2D-шум, што кіруе формай/памерам горных хрыбтоў."
 
 #: src/settings_translation_file.cpp
 msgid "2D noise that controls the shape/size of rolling hills."
-msgstr ""
+msgstr "2D-шум, што кіруе формай/памерам пагоркаў."
 
 #: src/settings_translation_file.cpp
 msgid "2D noise that controls the shape/size of step mountains."
-msgstr ""
+msgstr "2D-шум, што кіруе формай/памерам сталовых гор."
 
 #: src/settings_translation_file.cpp
-msgid "2D noise that controls the size/occurrence of ridged mountain ranges."
-msgstr ""
+msgid "2D noise that controls the size/occurance of ridged mountain ranges."
+msgstr "2D-шум, што кіруе памерам/месцазнаходжаннем горных ланцугоў."
 
 #: src/settings_translation_file.cpp
-msgid "2D noise that controls the size/occurrence of rolling hills."
-msgstr ""
+msgid "2D noise that controls the size/occurance of rolling hills."
+msgstr "2D-шум, што кіруе памерам/месцазнаходжаннем пагоркаў."
 
 #: src/settings_translation_file.cpp
-msgid "2D noise that controls the size/occurrence of step mountain ranges."
-msgstr ""
+msgid "2D noise that controls the size/occurance of step mountain ranges."
+msgstr "2D-шум, што кіруе памерам/месцазнаходжаннем горных ланцугоў."
 
 #: src/settings_translation_file.cpp
 msgid "3D clouds"
@@ -1813,31 +1823,30 @@ msgstr "3D-рэжым"
 
 #: src/settings_translation_file.cpp
 msgid "3D noise defining giant caverns."
-msgstr "3D-шум вызначэння гіганцкіх гротаў."
+msgstr "3D-шум, што вызначае гіганцкія гроты."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "3D noise defining mountain structure and height.\n"
 "Also defines structure of floatland mountain terrain."
 msgstr ""
-"3D-шум вызначэння структуры і вышыні гор.\n"
-"Таксама вызначае структуру горнага рэльефу выспаў, што ляцяць."
+"3D-шум, што вызначае структуру і вышыню гор.\n"
+"Таксама вызначае структуру горнага рэльефу лятучых астравоў."
 
 #: src/settings_translation_file.cpp
 msgid "3D noise defining structure of river canyon walls."
-msgstr "3D-шум вызначэння структуры сцен рачных каньёнаў."
+msgstr "3D-шум, што вызначае структуру схілаў рачных каньёнаў."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "3D noise defining terrain."
-msgstr "3D-шум вызначэння гіганцкіх гротаў."
+msgstr "3D-шум, што вызначае гіганцкія гроты."
 
 #: src/settings_translation_file.cpp
 msgid "3D noise for mountain overhangs, cliffs, etc. Usually small variations."
 msgstr ""
+"3D-шум, што вызначае горныя выступы, скалы і т. п. Звычайна няшмат варыяцый."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "3D support.\n"
 "Currently supported:\n"
@@ -1853,19 +1862,20 @@ msgstr ""
 "3D-падтрымка.\n"
 "Зараз падтрымліваюцца:\n"
 "-    none: без 3D-вываду.\n"
-"-    anaglyph: вывад на аснове блакітнага/пурпурнага колераў.\n"
-"-    interlaced: вывад на аснове палярызацыі цотных і няцотных радкоў.\n"
-"-    topbottom: падзяліць экран верх/ніз.\n"
-"-    sidebyside: падзяліць экран поплеч.\n"
-"-    pageflip: вывад на аснове квадра-буфера."
+"-    anaglyph: блакітны/пурпурны колеры ў 3D.\n"
+"-    interlaced: цотныя і няцотныя лініі адлюстроўваюць два розных кадра для "
+"экранаў з падтрымкай палярызацыі.\n"
+"-    topbottom: падзел экрана верх/ніз.\n"
+"-    sidebyside: падзел экрана права/лева.\n"
+"-    pageflip: чатырохразовая буферызацыя (квадра-буфер)."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "A chosen map seed for a new map, leave empty for random.\n"
 "Will be overridden when creating a new world in the main menu."
 msgstr ""
-"Абраны лікавы стан для новай мапы, пакіньце пустым для выпадковага.\n"
-"Гэта можна пераазначыць пры стварэнні новага свету ў галоўным меню."
+"Абранае зерне для новай мапы, пакінце пустым для выпадковага.\n"
+"Можна будзе змяніць пры стварэнні новага свету ў галоўным меню."
 
 #: src/settings_translation_file.cpp
 msgid "A message to be displayed to all clients when the server crashes."
@@ -1877,13 +1887,12 @@ msgstr ""
 "Паведамленне, якое будзе паказана ўсім кліентам пры выключэнні сервера."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "ABM interval"
 msgstr "Інтэрвал захавання мапы"
 
 #: src/settings_translation_file.cpp
 msgid "Absolute limit of emerge queues"
-msgstr "Абсалютная граніца чаргі вытворчасці"
+msgstr "Абсалютны ліміт чаргі запытаў"
 
 #: src/settings_translation_file.cpp
 msgid "Acceleration in air"
@@ -1894,17 +1903,16 @@ msgid "Active Block Modifiers"
 msgstr "Мадыфікатары актыўных блокаў"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Active block management interval"
-msgstr "Далёкасць узаемадзеяння з блокамі"
+msgstr "Інтэрвал кіравання актыўнымі блокамі"
 
 #: src/settings_translation_file.cpp
 msgid "Active block range"
-msgstr "Радыус дзеяння блочнай актыўнасці"
+msgstr "Адлегласць узаемадзеяння з блокамі"
 
 #: src/settings_translation_file.cpp
 msgid "Active object send range"
-msgstr "Далёкасць адпраўкі актыўнага аб'екта"
+msgstr "Адлегласць адпраўлення актыўнага аб'екта"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1913,19 +1921,19 @@ msgid ""
 "Note that the address field in the main menu overrides this setting."
 msgstr ""
 "Адрас для злучэння.\n"
-"Пакіньце яго пустым для старту лакальнага сервера.\n"
-"Майце на ўвазе, што поле адраса ў галоўным меню пераазначае гэтую наладу."
+"Пакінце пустым для запуску лакальнага сервера.\n"
+"Майце на ўвазе, што поле адраса ў галоўным меню перавызначае гэты параметр."
 
 #: src/settings_translation_file.cpp
 msgid "Adds particles when digging a node."
-msgstr "Дадаваць часціцы пры капанні вузла."
+msgstr "Дадае часціцы пры капанні блока."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Adjust dpi configuration to your screen (non X11/Android only) e.g. for 4k "
 "screens."
 msgstr ""
-"Рэгуляванне канфігурацыі DPI (кропак на цалю) на экране\n"
+"Наладка DPI (кропак на цалю) на экране\n"
 "(не толькі X11/Android), напрыклад, для 4k-экранаў."
 
 #: src/settings_translation_file.cpp
@@ -1934,7 +1942,7 @@ msgid ""
 "brighter.\n"
 "This setting is for the client only and is ignored by the server."
 msgstr ""
-"Рэгуляванне гама-кадавання для светлавых табліц. Высокія значэнні — больш "
+"Наладка гама-кадавання для светлавых табліц. Высокія значэнні — больш "
 "ярчэйшыя.\n"
 "Гэты параметр прызначаны толькі для кліента і ігнаруецца серверам."
 
@@ -1944,12 +1952,11 @@ msgstr "Пашыраныя"
 
 #: src/settings_translation_file.cpp
 msgid "Alters how mountain-type floatlands taper above and below midpoint."
-msgstr ""
+msgstr "Кіруе звужэннем астравоў горнага тыпу ніжэй сярэдняй кропкі."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Altitude chill"
-msgstr "Вышыня да нівальнага поясу"
+msgstr "Вышыня нівальнага поясу"
 
 #: src/settings_translation_file.cpp
 msgid "Always fly and fast"
@@ -1962,11 +1969,11 @@ msgstr "Гама навакольнай аклюзіі"
 #: src/settings_translation_file.cpp
 msgid "Amount of messages a player may send per 10 seconds."
 msgstr ""
+"Колькасць паведамленняў, што гулец можа адправіць у размову цягам 10 секунд."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Amplifies the valleys."
-msgstr "Узмацненне далін"
+msgstr "Узмацненне далін."
 
 #: src/settings_translation_file.cpp
 msgid "Anisotropic filtering"
@@ -1974,20 +1981,19 @@ msgstr "Анізатропная фільтрацыя"
 
 #: src/settings_translation_file.cpp
 msgid "Announce server"
-msgstr "Анансаваць сервер"
+msgstr "Аб серверы"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Announce to this serverlist."
-msgstr "Анансаваць сервер"
+msgstr "Аб гэтым серверы."
 
 #: src/settings_translation_file.cpp
 msgid "Append item name"
-msgstr ""
+msgstr "Дадаваць назвы прадметаў"
 
 #: src/settings_translation_file.cpp
 msgid "Append item name to tooltip."
-msgstr ""
+msgstr "Дадаваць назвы прадметаў у выплыўных падказках."
 
 #: src/settings_translation_file.cpp
 msgid "Apple trees noise"
@@ -1995,20 +2001,21 @@ msgstr "Шум яблынь"
 
 #: src/settings_translation_file.cpp
 msgid "Arm inertia"
-msgstr ""
+msgstr "Інэрцыя рукі"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Arm inertia, gives a more realistic movement of\n"
 "the arm when the camera moves."
 msgstr ""
+"Робіць больш рэалістычным рух рукі\n"
+"падчас перамяшчэння камеры."
 
 #: src/settings_translation_file.cpp
 msgid "Ask to reconnect after crash"
-msgstr "Прапанаваць перазлучыцца пасля падзення"
+msgstr "Прапанаваць перазлучыцца пасля крушэння"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "At this distance the server will aggressively optimize which blocks are sent "
 "to\n"
@@ -2022,27 +2029,27 @@ msgid ""
 "optimization.\n"
 "Stated in mapblocks (16 nodes)."
 msgstr ""
-"З гэтай дыстанцыі сервер будзе агрэсіўна аптымізаваць якія блокі адсылаць "
-"кліентам.\n"
+"На гэтай дыстанцыі сервер будзе агрэсіўна аптымізаваць блокі, якія будзе "
+"адпраўляць кліентам.\n"
 "Малыя значэнні патэнцыйна палепшаць працаздольнасць за кошт бачных глюкаў "
 "візуалізацыі.\n"
-"(некаторыя блокі не будзець адлюстраваныя пад вадой і ў пячорах, а таксама "
+"(некаторыя блокі не будуць адлюстроўвацца пад вадой і ў пячорах, а таксама "
 "часам на сушы)\n"
-"Устаноўка гэтага значэння больш чым max_block_send_distance адключыць "
+"Прызначэнне гэтага значэння на больш чым max_block_send_distance адключыць "
 "аптымізацыю.\n"
-"Задаецца ў блоках мапы (16 вузлоў)"
+"Прызначаецца ў блоках мапы (16 вузлоў)."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Automatic forwards key"
 msgstr "Клавіша ўперад"
 
 #: src/settings_translation_file.cpp
 msgid "Automatically jump up single-node obstacles."
 msgstr ""
+"Аўтаматычна заскокваць на аднаблокавыя перашкоды. \n"
+"тып: bool"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Automatically report to the serverlist."
 msgstr "Аўтаматычна дадаваць у спіс сервераў."
 
@@ -2052,38 +2059,35 @@ msgstr "Аўтаматычна захоўваць памеры экрана"
 
 #: src/settings_translation_file.cpp
 msgid "Autoscaling mode"
-msgstr ""
+msgstr "Рэжым аўтамаштабавання"
 
 #: src/settings_translation_file.cpp
 msgid "Backward key"
-msgstr "Клавіша ўзад"
+msgstr "Клавіша назад"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Base ground level"
 msgstr "Узровень зямлі"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Base terrain height."
-msgstr "Вышыня асноўнай мясцовасці"
+msgstr "Вышыня асноўнай мясцовасці."
 
 #: src/settings_translation_file.cpp
 msgid "Basic"
 msgstr "Базавыя"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Basic privileges"
-msgstr "Асноўныя прывілеі"
+msgstr "Базавыя прывілеі"
 
 #: src/settings_translation_file.cpp
 msgid "Beach noise"
-msgstr "Шум пляжа"
+msgstr "Шум пляжаў"
 
 #: src/settings_translation_file.cpp
 msgid "Beach noise threshold"
-msgstr "Парог шуму пляжа"
+msgstr "Парог шуму пляжаў"
 
 #: src/settings_translation_file.cpp
 msgid "Bilinear filtering"
@@ -2095,7 +2099,7 @@ msgstr "Адрас прывязкі"
 
 #: src/settings_translation_file.cpp
 msgid "Biome API temperature and humidity noise parameters"
-msgstr "Шум тэмпературы і вільготнасці API біёму"
+msgstr "Параметры шуму тэмпературы і вільготнасці для API-біёму"
 
 #: src/settings_translation_file.cpp
 msgid "Biome noise"
@@ -2106,9 +2110,8 @@ msgid "Bits per pixel (aka color depth) in fullscreen mode."
 msgstr "Біты на піксель (глыбіня колеру) у поўнаэкранным рэжыме."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Block send optimize distance"
-msgstr "аптымальная дыстанцыя адпраўлення блокаў"
+msgstr "Аптымізаваная адлегласць адпраўлення блокаў"
 
 #: src/settings_translation_file.cpp
 msgid "Build inside player"
@@ -2129,6 +2132,10 @@ msgid ""
 "Increasing can reduce artifacting on weaker GPUs.\n"
 "0.1 = Default, 0.25 = Good value for weaker tablets."
 msgstr ""
+"Адлегласць паміж камерай і плоскасцю, ад 0 да 0.5 блока. Большасці "
+"карыстальнікаў няма патрэбы змяняць гэты параметр. Павелічэнне параметра "
+"можа паменшыць колькасць артэфактаў на слабых графічных працэсарах.\n"
+"Прадвызначана - 0.1; 0.25 будзе добра для слабых планшэтаў."
 
 #: src/settings_translation_file.cpp
 msgid "Camera smoothing"
@@ -2168,24 +2175,23 @@ msgstr "Шум пячоры 2"
 
 #: src/settings_translation_file.cpp
 msgid "Cavern limit"
-msgstr "Абмежаванне гротаў"
+msgstr "Абмежаванне пячор"
 
 #: src/settings_translation_file.cpp
 msgid "Cavern noise"
-msgstr "Шум гротаў"
+msgstr "Шум пячор"
 
 #: src/settings_translation_file.cpp
 msgid "Cavern taper"
-msgstr "Конус гротаў"
+msgstr "Конуснасць пячор"
 
 #: src/settings_translation_file.cpp
 msgid "Cavern threshold"
-msgstr "Парог гротаў"
+msgstr "Парог пячор"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Cavern upper limit"
-msgstr "Абмежаванне гротаў"
+msgstr "Абмежаванне пячор"
 
 #: src/settings_translation_file.cpp
 msgid "Center of light curve mid-boost."
@@ -2200,32 +2206,36 @@ msgid ""
 "be\n"
 "necessary for smaller screens."
 msgstr ""
+"Змена інтэрфейсу галоўнага меню:\n"
+"-   full: выбар свету для адзіночнай альбо сеткавай гульні, асобны спіс "
+"чужых сервераў.\n"
+"-   simple: адзін свет для адзіночнай гульні ў меню, дзе спіс чужых сервераў;"
+" можа быць карысна для невелічкіх экранаў.\n"
+"Прадвызначана: simple для Android, full для ўсіх астатніх."
 
 #: src/settings_translation_file.cpp
 msgid "Chat key"
-msgstr "Клавіша чату"
+msgstr "Клавіша размовы"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Chat message count limit"
-msgstr "Паведамленне стану пры злучэнні"
+msgstr "Максімальная колькасць паведамленняў у размове"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Chat message kick threshold"
-msgstr "Парог шума пустынь"
+msgstr "Максімальная колькасць паведамленняў у размове для выключэння"
 
 #: src/settings_translation_file.cpp
 msgid "Chat message max length"
-msgstr ""
+msgstr "Максімальная працягласць паведамлення ў размове"
 
 #: src/settings_translation_file.cpp
 msgid "Chat toggle key"
-msgstr "Клавіша пераключэння чату"
+msgstr "Клавіша пераключэння размовы"
 
 #: src/settings_translation_file.cpp
 msgid "Chatcommands"
-msgstr "Каманды чату"
+msgstr "Загады размовы"
 
 #: src/settings_translation_file.cpp
 msgid "Chunk size"
@@ -2256,13 +2266,12 @@ msgid "Client modding"
 msgstr "Модынг кліента"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Client side modding restrictions"
 msgstr "Модынг кліента"
 
 #: src/settings_translation_file.cpp
 msgid "Client side node lookup range restriction"
-msgstr ""
+msgstr "Абмежаванне дыяпазону пошуку ад кліента"
 
 #: src/settings_translation_file.cpp
 msgid "Climbing speed"
@@ -2305,32 +2314,32 @@ msgid ""
 "allow them to upload and download data to/from the internet."
 msgstr ""
 "Спіс модаў, падзеленых коскамі, якім дазволены доступ да HTTP API, які\n"
-"дазваляе ім адпраўляць і атрымліваць дадзеныя праз Інтэрнэт."
+"дазваляе ім адпраўляць і атрымліваць даныя праз Інтэрнэт."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Comma-separated list of trusted mods that are allowed to access insecure\n"
 "functions even when mod security is on (via request_insecure_environment())."
 msgstr ""
-"Спіс давераных модаў, падзеленых коскамі, якія дазволены доступ да\n"
+"Спіс давераных модаў, падзеленых коскамі, якім дазволены доступ да\n"
 "небяспечных функцый, нават калі мод бяспекі ўключаны\n"
 "(праз request_insecure_environment())."
 
 #: src/settings_translation_file.cpp
 msgid "Command key"
-msgstr "Клавіша каманды"
+msgstr "Клавіша загаду"
 
 #: src/settings_translation_file.cpp
 msgid "Connect glass"
-msgstr "Злучыць шкло"
+msgstr "Суцэльнае шкло"
 
 #: src/settings_translation_file.cpp
 msgid "Connect to external media server"
-msgstr "Злучацца са знешнім серверам медыя"
+msgstr "Злучэнне з вонкавым медыясерверам"
 
 #: src/settings_translation_file.cpp
 msgid "Connects glass if supported by node."
-msgstr "Злучае шкло, калі падтрымліваецца вузлом."
+msgstr "Злучае шкло, калі падтрымліваецца блокам."
 
 #: src/settings_translation_file.cpp
 msgid "Console alpha"
@@ -2345,30 +2354,26 @@ msgid "Console height"
 msgstr "Вышыня кансолі"
 
 #: src/settings_translation_file.cpp
-msgid "ContentDB Flag Blacklist"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-#, fuzzy
-msgid "ContentDB URL"
-msgstr "Змесціва"
+msgid "Content Store"
+msgstr "Крама дадаткаў"
 
 #: src/settings_translation_file.cpp
 msgid "Continuous forward"
-msgstr "Бесперапынна ісці ўперад"
+msgstr "Бесперапынная хада"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Continuous forward movement, toggled by autoforward key.\n"
 "Press the autoforward key again or the backwards movement to disable."
 msgstr ""
+"Бесперапынны рух уперад, што пераключаецца клавішай \"аўтаматычны бег\".\n"
+"Націсніце аўтаматычны бег яшчэ раз альбо рух назад, каб выключыць."
 
 #: src/settings_translation_file.cpp
 msgid "Controls"
 msgstr "Кіраванне"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Controls length of day/night cycle.\n"
 "Examples:\n"
@@ -2383,16 +2388,15 @@ msgstr "Кіруе крутасцю/глыбінёй азёр."
 
 #: src/settings_translation_file.cpp
 msgid "Controls steepness/height of hills."
-msgstr "Кіруе крутасцю/вышынёй узгоркаў."
+msgstr "Кіруе крутасцю/вышынёй пагоркаў."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Controls the density of mountain-type floatlands.\n"
 "Is a noise offset added to the 'mgv7_np_mountain' noise value."
 msgstr ""
-"Кантралюе шчыльнасць горнага рэльефу выспаў, што ляцяць.\n"
-"Гэты зрух дабаўляецца да значэння 'np_mountain'."
+"Кіруе шчыльнасцю горнага рэльефу лятучых астравоў.\n"
+"Гэты зрух дадаецца да значэння 'np_mountain'."
 
 #: src/settings_translation_file.cpp
 msgid "Controls width of tunnels, a smaller value creates wider tunnels."
@@ -2431,60 +2435,59 @@ msgid "Damage"
 msgstr "Пашкоджанні"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Darkness sharpness"
-msgstr "Крутасць азёр"
+msgstr "Рэзкасць цемры"
 
 #: src/settings_translation_file.cpp
 msgid "Debug info toggle key"
-msgstr "Клавіша пераключэння адладачных звестак"
+msgstr "Клавіша пераключэння адладачных даных"
 
 #: src/settings_translation_file.cpp
 msgid "Debug log level"
-msgstr "Узровень журналявання адладкі"
+msgstr "Узровень лога адладкі"
 
 #: src/settings_translation_file.cpp
 msgid "Dec. volume key"
-msgstr "Кнопка змяншэння гучнасці"
+msgstr "Кнопка памяншэння гучнасці"
 
 #: src/settings_translation_file.cpp
 msgid "Dedicated server step"
-msgstr "Крок выдзеленага сервера"
+msgstr "Крок адведзенага сервера"
 
 #: src/settings_translation_file.cpp
 msgid "Default acceleration"
-msgstr "Агаданае паскарэнне"
+msgstr "Прадвызначанае паскарэнне"
 
 #: src/settings_translation_file.cpp
 msgid "Default game"
-msgstr "Агаданая гульня"
+msgstr "Прадвызначаная гульня"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Default game when creating a new world.\n"
 "This will be overridden when creating a world from the main menu."
 msgstr ""
-"Агаданая гульня пры стварэнні новага свету.\n"
-"Гэта можна пераазначыць пры стварэнні свету ў галоўным меню."
+"Прадвызначаная гульня пры стварэнні новага свету.\n"
+"Гэта можна змяніць пры стварэнні свету ў галоўным меню."
 
 #: src/settings_translation_file.cpp
 msgid "Default password"
-msgstr "Агаданы пароль"
+msgstr "Прадвызначаны пароль"
 
 #: src/settings_translation_file.cpp
 msgid "Default privileges"
-msgstr "Агаданыя прывілеі"
+msgstr "Прадвызначаныя прывілеі"
 
 #: src/settings_translation_file.cpp
 msgid "Default report format"
-msgstr "Агаданы фармат справаздачы"
+msgstr "Прадвызначаны фармат справаздачы"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Default timeout for cURL, stated in milliseconds.\n"
 "Only has an effect if compiled with cURL."
 msgstr ""
-"Агаданы таймаут для cURL, зададзены ў мілісекундах.\n"
+"Прадвызначаны таймаўт для cURL, зададзены ў мілісекундах.\n"
 "Уплывае толькі пры кампіляцыі з cURL."
 
 #: src/settings_translation_file.cpp
@@ -2492,7 +2495,7 @@ msgid ""
 "Defines areas of floatland smooth terrain.\n"
 "Smooth floatlands occur when noise > 0."
 msgstr ""
-"Вызначае вобласці гладкага рэльефу выспаў, што ляцяць.\n"
+"Вызначае вобласці гладкага рэльефу лятучых астравоў.\n"
 "Гладкая паверхня з'яўляецца, калі шум больш нуля."
 
 #: src/settings_translation_file.cpp
@@ -2504,18 +2507,17 @@ msgid "Defines areas with sandy beaches."
 msgstr "Вызначае вобласці з пяшчанымі пляжамі."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Defines distribution of higher terrain and steepness of cliffs."
 msgstr "Вызначае вобласці ўзвышэнняў паверхні і ўплывае на крутасць скал."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Defines distribution of higher terrain."
-msgstr "Вызначае вобласці 'terrain_higher' (мясцовасць на вяршынях уцесаў)."
+msgstr "Вызначае размеркаванне паверхні на ўзвышшах."
 
 #: src/settings_translation_file.cpp
 msgid "Defines full size of caverns, smaller values create larger caverns."
-msgstr "Вызначае поўны памер пячор. Малыя значэнні страваюць вялікія пячоры."
+msgstr ""
+"Вызначае поўны памер пячор. Пры малых значэннях ствараюцца вялікія пячоры."
 
 #: src/settings_translation_file.cpp
 msgid "Defines large-scale river channel structure."
@@ -2534,14 +2536,13 @@ msgstr ""
 "Больш высокае значэнне прыводзіць да больш гладкіх мапаў нармаляў."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Defines the base ground level."
-msgstr "Вызначае вобласці і шчыльнасць дрэў."
+msgstr "Вызначае базавы ўзровень зямлі."
 
 #: src/settings_translation_file.cpp
 msgid "Defines the maximal player transfer distance in blocks (0 = unlimited)."
 msgstr ""
-"Вызначае максімальную дыстанцыю перадачы дадзеных гульца ў блоках\n"
+"Вызначае максімальную адлегласць перадачы даных гульца ў блоках\n"
 "(0 — неабмежаваная)."
 
 #: src/settings_translation_file.cpp
@@ -2555,12 +2556,12 @@ msgid ""
 msgstr ""
 "Затрымка паміж абнаўленнямі сетак на кліенце ў мілісекундах. Павелічэнне "
 "гэтага значэння\n"
-"запаволіць тэмп абнаўлення сетак, і такім чынам зменшыць дрыжанне на "
+"запаволіць тэмп абнаўлення сетак, і такім чынам паменшыць дрыжанне на "
 "павольных кліентах."
 
 #: src/settings_translation_file.cpp
 msgid "Delay in sending blocks after building"
-msgstr "Затрымка ў адпраўцы блокаў пасля будаўніцтва"
+msgstr "Затрымка ў адпраўленні блокаў пасля будаўніцтва"
 
 #: src/settings_translation_file.cpp
 msgid "Delay showing tooltips, stated in milliseconds."
@@ -2571,13 +2572,12 @@ msgid "Deprecated Lua API handling"
 msgstr "Апрацоўка састарэлых выклікаў Lua API"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Depth below which you'll find giant caverns."
-msgstr "Глыбіня, ніжэй якой вы знойдзеце вялікія пячоры."
+msgstr "Глыбіня, ніжэй якой трапляюцца вялікія пячоры."
 
 #: src/settings_translation_file.cpp
 msgid "Depth below which you'll find large caves."
-msgstr "Глыбіня, ніжэй якой вы знойдзеце вялікія пячоры."
+msgstr "Глыбіня, ніжэй якой трапляюцца вялікія пячоры."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2588,15 +2588,15 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Desert noise threshold"
-msgstr "Парог шума пустынь"
+msgstr "Парог шуму пустынь"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Deserts occur when np_biome exceeds this value.\n"
 "When the new biome system is enabled, this is ignored."
 msgstr ""
-"Пустыні з'яўляюцца, калі np_biome перавысіць гэта значэнне.\n"
-"Гэта ігнаруецца, калі ўключана новая сістэма біёмаў."
+"Пустыні з'яўляюцца, калі np_biome перавысіць гэтае значэнне.\n"
+"Ігнаруецца, калі ўключаная новая сістэма біёмаў."
 
 #: src/settings_translation_file.cpp
 msgid "Desynchronize block animation"
@@ -2608,7 +2608,7 @@ msgstr "Часціцы пры капанні"
 
 #: src/settings_translation_file.cpp
 msgid "Disable anticheat"
-msgstr "Адключыць анты-чыт"
+msgstr "Выключыць антычыт"
 
 #: src/settings_translation_file.cpp
 msgid "Disallow empty passwords"
@@ -2616,24 +2616,23 @@ msgstr "Забараніць пустыя паролі"
 
 #: src/settings_translation_file.cpp
 msgid "Domain name of server, to be displayed in the serverlist."
-msgstr "Даменнае імя сервера, якое будзе паказвацца ў спісе сервераў."
+msgstr "Даменная назва сервера, што будзе паказвацца ў спісе сервераў."
 
 #: src/settings_translation_file.cpp
 msgid "Double tap jump for fly"
-msgstr "Двайны націск «скачка» пераключае рэжым палёту"
+msgstr "Падвойны націск \"скока\" пераключае рэжым палёту"
 
 #: src/settings_translation_file.cpp
 msgid "Double-tapping the jump key toggles fly mode."
-msgstr "Двайное націсканне клавішы скачка пераключае рэжым палёту."
+msgstr "Палвойны націск клавішы скока пераключае рэжым палёту."
 
 #: src/settings_translation_file.cpp
 msgid "Drop item key"
 msgstr "Клавіша выкідання прадмета"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Dump the mapgen debug information."
-msgstr "Зваліць адладачныя звесткі генератара мапы."
+msgstr "Зводка адладачных даных генератара мапы."
 
 #: src/settings_translation_file.cpp
 msgid "Dungeon maximum Y"
@@ -2648,7 +2647,7 @@ msgid ""
 "Enable Lua modding support on client.\n"
 "This support is experimental and API can change."
 msgstr ""
-"Уключыць падтрымку Lua-модзінга на кліенце.\n"
+"Уключыць падтрымку Lua-модынгу на кліенце.\n"
 "Гэта падтрымка эксперыментальная і API можа змяніцца."
 
 #: src/settings_translation_file.cpp
@@ -2664,22 +2663,20 @@ msgid "Enable creative mode for new created maps."
 msgstr "Уключыць творчы рэжым для новых мап."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Enable joysticks"
 msgstr "Уключыць джойсцікі"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Enable mod channels support."
-msgstr "Уключыць бяспеку модаў"
+msgstr "Уключыць абарону мадыфікацый."
 
 #: src/settings_translation_file.cpp
 msgid "Enable mod security"
-msgstr "Уключыць бяспеку модаў"
+msgstr "Уключыць абарону мадыфікацый"
 
 #: src/settings_translation_file.cpp
 msgid "Enable players getting damage and dying."
-msgstr "Дазволіць гульцам атрымоўваць пашкоджанні і паміраюць."
+msgstr "Дазволіць гульцам атрымоўваць пашкоджанні і паміраць."
 
 #: src/settings_translation_file.cpp
 msgid "Enable random user input (only used for testing)."
@@ -2712,9 +2709,9 @@ msgid ""
 "expecting."
 msgstr ""
 "Забараніць падлучэнне старых кліентаў.\n"
-"Старыя кліенты — сумяшчальныя ў сэнсе, што яны не падаюць пры злучэнні\n"
-"с новымі серверамі, але яны могуць не падтрымліваць усе новыя функцыі,\n"
-"якія вы чакаеце."
+"Старыя кліенты — тыя, што не крушацца пры злучэнні\n"
+"з новымі серверамі, але яны могуць не падтрымліваць усе новыя функцыі, што "
+"чакаюцца."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2723,26 +2720,25 @@ msgid ""
 "textures)\n"
 "when connecting to the server."
 msgstr ""
-"Уключыць выкарыстанне аддаленага медыя-сервера (калі забяспечана серверам).\n"
-"Аддаленыя серверы прапануюць значна больш хуткі спосаб спампоўкі медыя "
-"(напрыклад тэкстур) пры злучэнні з серверам."
+"Уключыць выкарыстанне адлеглага медыясервера (калі забяспечана серверам).\n"
+"Адлеглыя серверы даюць магчымасць хутчэй спампоўваць медыяфайлы (напрыклад "
+"тэкстуры) пры злучэнні з серверам."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Enable view bobbing and amount of view bobbing.\n"
 "For example: 0 for no view bobbing; 1.0 for normal; 2.0 for double."
 msgstr ""
-"Множнік калыхання пры праглядзе.\n"
+"Уключыць калыханне камеры і вызначыць яго значэнне.\n"
 "Напрыклад: 0 — няма, 1.0 — звычайнае, 2.0 — падвойнае."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Enable/disable running an IPv6 server.\n"
 "Ignored if bind_address is set."
 msgstr ""
-"Уключыць/адключыць падтрымку IPv6. Сервер IPv6 можа быць абмежаваны\n"
-"падтрымкай толькі IPv6-кліентаў, у залежнасці ад сістэмнай канфігурацыі.\n"
+"Уключыць/выключыць падтрымку IPv6. Сервер IPv6 можа быць абмежаваны IPv6-"
+"кліентамі ў залежнасці ад сістэмнай канфігурацыі.\n"
 "Ігнаруецца, калі зададзены «bind_address»."
 
 #: src/settings_translation_file.cpp
@@ -2756,13 +2752,13 @@ msgid ""
 "or need to be auto-generated.\n"
 "Requires shaders to be enabled."
 msgstr ""
-"Уключае рэльефнае тэкстураванне. Мапы нармаляў павінны быць прадстаўлены "
-"пакетам тэкстур ці павінны быць аўтаматычна згенераваны.\n"
-"Патрабуе шэйдэры."
+"Уключае рэльефнае тэкстураванне. Мапы нармаляў мусяць быць пакункам тэкстур "
+"ці створанымі аўтаматычна.\n"
+"Патрабуюцца ўключаныя шэйдэры."
 
 #: src/settings_translation_file.cpp
 msgid "Enables caching of facedir rotated meshes."
-msgstr "Уключае кэшаванне вонкава павернутых сетак."
+msgstr "Уключае кэшаванне павернутых вонкі сетак."
 
 #: src/settings_translation_file.cpp
 msgid "Enables filmic tone mapping"
@@ -2778,7 +2774,7 @@ msgid ""
 "Requires bumpmapping to be enabled."
 msgstr ""
 "Уключае генерацыю мапаў нармаляў лётма (эфект Emboss).\n"
-"Патрабуе рэльефнае тэкстураванне."
+"Патрабуецца рэльефнае тэкстураванне."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2786,11 +2782,11 @@ msgid ""
 "Requires shaders to be enabled."
 msgstr ""
 "Уключае паралакснае аклюзіўнае тэкстураванне.\n"
-"Патрабуе шэйдэры."
+"Патрабуюцца ўключаныя шэйдэры."
 
 #: src/settings_translation_file.cpp
 msgid "Engine profiling data print interval"
-msgstr "Інтэрвал друкавання дадзеных прафілявання рухавіка"
+msgstr "Інтэрвал друкавання даных прафілявання рухавіка"
 
 #: src/settings_translation_file.cpp
 msgid "Entity methods"
@@ -2802,7 +2798,7 @@ msgid ""
 "when set to higher number than 0."
 msgstr ""
 "Эксперыментальны параметр, які можа прывесці да візуальных прагалаў\n"
-"паміж блокамі пры значэнні большым чым 0."
+"паміж блокамі пры значэнні большым за 0."
 
 #: src/settings_translation_file.cpp
 msgid "FPS in pause menu"
@@ -2810,7 +2806,7 @@ msgstr "FPS у меню паўзы"
 
 #: src/settings_translation_file.cpp
 msgid "FSAA"
-msgstr "FSAA (паўнасцэннае згладжванне)"
+msgstr "FSAA"
 
 #: src/settings_translation_file.cpp
 msgid "Factor noise"
@@ -2822,19 +2818,19 @@ msgstr "Каэфіцыент калыхання пры падзенні"
 
 #: src/settings_translation_file.cpp
 msgid "Fallback font"
-msgstr "Запасны шрыфт"
+msgstr "Рэзервовы шрыфт"
 
 #: src/settings_translation_file.cpp
 msgid "Fallback font shadow"
-msgstr "Цень запаснога шрыфту"
+msgstr "Цень рэзервовага шрыфту"
 
 #: src/settings_translation_file.cpp
 msgid "Fallback font shadow alpha"
-msgstr "Празрыстасць цені запаснога шрыфту"
+msgstr "Празрыстасць цені рэзервовага шрыфту"
 
 #: src/settings_translation_file.cpp
 msgid "Fallback font size"
-msgstr "Памер запаснога шрыфту"
+msgstr "Памер рэзервовага шрыфту"
 
 #: src/settings_translation_file.cpp
 msgid "Fast key"
@@ -2853,13 +2849,12 @@ msgid "Fast movement"
 msgstr "Шпаркае перамяшчэнне"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Fast movement (via the \"special\" key).\n"
 "This requires the \"fast\" privilege on the server."
 msgstr ""
 "Шпаркае перамяшчэнне (з дапамогай клавішы выкарыстання).\n"
-"Неабходна прывілея «fast» на серверы."
+"Патрабуецца прывілей \"fast\" на серверы."
 
 #: src/settings_translation_file.cpp
 msgid "Field of view"
@@ -2870,17 +2865,16 @@ msgid "Field of view in degrees."
 msgstr "Поле зроку ў градусах."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "File in client/serverlist/ that contains your favorite servers displayed in "
 "the\n"
 "Multiplayer Tab."
 msgstr ""
-"Файл, які змяшчае вашы абраныя серверы, якія паказваюцца\n"
+"Файл у каталозе client/serverlist/, які змяшчае вашыя ўлюбёныя серверы, якія "
+"паказваюцца\n"
 "ва ўкладцы сумеснай гульні."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Filler depth"
 msgstr "Глыбіня запаўняльніка"
 
@@ -2893,7 +2887,6 @@ msgid "Filmic tone mapping"
 msgstr "Кінематаграфічнае танальнае адлюстраванне"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Filtered textures can blend RGB values with fully-transparent neighbors,\n"
 "which PNG optimizers usually discard, sometimes resulting in a dark or\n"
@@ -2901,55 +2894,54 @@ msgid ""
 "at texture load time."
 msgstr ""
 "Адфільтраваныя тэкстуры могуць змешваць значэнні RGB з цалкам празрыстымі "
-"суседзямі, якія PNG-аптымізатары звычайна адкідваюць, што прыводзіць часам "
-"да цёмнага ці светлага краю празрыстых тэкстур."
+"суседнімі, якія PNG-аптымізатары звычайна адкідваюць, што часам прыводзіць "
+"да з’яўлення цёмнага ці светлага краёў празрыстых тэкстур.\n"
+"Выкарыстайце гэты фільтр, каб выправіць тэкстуры падчас загрузкі."
 
 #: src/settings_translation_file.cpp
 msgid "Filtering"
 msgstr "Фільтрацыя"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "First of 4 2D noises that together define hill/mountain range height."
-msgstr "Першы з двух 3D-шумоў, якія разам вызначаюць тунэлі."
+msgstr ""
+"Першы з чатырох 3D-шумоў, якія разам вызначаюць дыяпазон вышыні пагоркаў/гор."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "First of two 3D noises that together define tunnels."
 msgstr "Першы з двух 3D-шумоў, якія разам вызначаюць тунэлі."
 
 #: src/settings_translation_file.cpp
 msgid "Fixed map seed"
-msgstr "Фіксаваны лікавы стан"
+msgstr "Фіксацыя зерня мапы"
 
 #: src/settings_translation_file.cpp
 msgid "Fixed virtual joystick"
-msgstr ""
+msgstr "Фіксацыя віртуальнага джойсціка"
 
 #: src/settings_translation_file.cpp
 msgid "Floatland base height noise"
-msgstr "Шум базавай вышыні выспаў, што ляцяць"
+msgstr "Шум базавай вышыні лятучых астравоў"
 
 #: src/settings_translation_file.cpp
 msgid "Floatland base noise"
-msgstr "Базавы шум выспаў, што ляцяць"
+msgstr "Базавы шум лятучых астравоў"
 
 #: src/settings_translation_file.cpp
 msgid "Floatland level"
-msgstr "Узровень выспаў, што ляцяць"
+msgstr "Узровень лятучых астравоў"
 
 #: src/settings_translation_file.cpp
 msgid "Floatland mountain density"
-msgstr "Шчыльнасць гор на выспах, што ляцяць"
+msgstr "Шчыльнасць гор лятучых астравоў"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Floatland mountain exponent"
-msgstr "Шчыльнасць гор на выспах, што ляцяць"
+msgstr "Шчыльнасць гор лятучых астравоў"
 
 #: src/settings_translation_file.cpp
 msgid "Floatland mountain height"
-msgstr "Вышыня гор на выспах, што ляцяць"
+msgstr "Вышыня гор на лятучых астравоў"
 
 #: src/settings_translation_file.cpp
 msgid "Fly key"
@@ -2964,7 +2956,6 @@ msgid "Fog"
 msgstr "Туман"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Fog start"
 msgstr "Пачатак туману"
 
@@ -2974,7 +2965,7 @@ msgstr "Клавіша пераключэння туману"
 
 #: src/settings_translation_file.cpp
 msgid "Font path"
-msgstr "Шрыфт"
+msgstr "Шлях да шрыфту"
 
 #: src/settings_translation_file.cpp
 msgid "Font shadow"
@@ -2990,7 +2981,7 @@ msgstr "Празрыстасць цені шрыфту (ад 0 да 255)."
 
 #: src/settings_translation_file.cpp
 msgid "Font shadow offset, if 0 then shadow will not be drawn."
-msgstr "Зрух цені шрыфту. Калі 0, то цень не будзе паказана."
+msgstr "Зрух цені шрыфту. Калі 0, то цень не будзе паказвацца."
 
 #: src/settings_translation_file.cpp
 msgid "Font size"
@@ -3002,48 +2993,45 @@ msgstr "Фармат здымкаў экрана."
 
 #: src/settings_translation_file.cpp
 msgid "Formspec Default Background Color"
-msgstr ""
+msgstr "Прадвызначаны колер фону гульнявой кансолі"
 
 #: src/settings_translation_file.cpp
 msgid "Formspec Default Background Opacity"
-msgstr ""
+msgstr "Прадвызначаная непразрыстасць фону гульнявой кансолі"
 
 #: src/settings_translation_file.cpp
 msgid "Formspec Full-Screen Background Color"
-msgstr ""
+msgstr "Колер фону гульнявой кансолі ў поўнаэкранным рэжыме"
 
 #: src/settings_translation_file.cpp
 msgid "Formspec Full-Screen Background Opacity"
-msgstr ""
+msgstr "Непразрыстасць фону гульнявой кансолі ў поўнаэкранным рэжыме"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Formspec default background color (R,G,B)."
-msgstr "Колер фону гульнявой кансолі чату (R,G,B)."
+msgstr "Колер фону гульнявой кансолі (R,G,B)."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Formspec default background opacity (between 0 and 255)."
-msgstr "Празрыстасць фону гульнявой кансолі чату (паміж 0 і 255)."
+msgstr "Непразрыстасць фону гульнявой кансолі (паміж 0 і 255)."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Formspec full-screen background color (R,G,B)."
-msgstr "Колер фону гульнявой кансолі чату (R,G,B)."
+msgstr "Колер фону гульнявой кансолі (R,G,B) у поўнаэкранным рэжыме."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Formspec full-screen background opacity (between 0 and 255)."
-msgstr "Празрыстасць фону гульнявой кансолі чату (паміж 0 і 255)."
+msgstr ""
+"Непразрыстасць фону гульнявой кансолі ў поўнаэкранным рэжыме (паміж 0 і 255)."
 
 #: src/settings_translation_file.cpp
 msgid "Forward key"
 msgstr "Клавіша ўперад"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Fourth of 4 2D noises that together define hill/mountain range height."
-msgstr "Першы з двух 3D-шумоў, якія разам вызначаюць тунэлі."
+msgstr ""
+"Першы з чатырох 2D-шумоў, якія разам вызначаюць дыяпазон вышыні пагоркаў/гор."
 
 #: src/settings_translation_file.cpp
 msgid "Fractal type"
@@ -3051,10 +3039,9 @@ msgstr "Тып фрактала"
 
 #: src/settings_translation_file.cpp
 msgid "Fraction of the visible distance at which fog starts to be rendered"
-msgstr "Частка дыстанцыі бачнасці, на якой пачынае з'яўляцца туман"
+msgstr "Частка бачнай адлегласці, на якой пачынае з'яўляцца туман"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "FreeType fonts"
 msgstr "Шрыфты FreeType"
 
@@ -3063,13 +3050,14 @@ msgid ""
 "From how far blocks are generated for clients, stated in mapblocks (16 "
 "nodes)."
 msgstr ""
-"Як далёка блокі фармуюцца ад кліента. Задаецца ў блоках мапы (16 вузлоў)."
+"Як далёка ад кліентаў ствараюцца блокі. Вызначаецца ў блоках мапы (16 "
+"блокаў)."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "From how far blocks are sent to clients, stated in mapblocks (16 nodes)."
 msgstr ""
-"Як далёка блокі адпраўляюцца кліенту. Задаецца ў блоках мапы (16 вузлоў)."
+"Як далёка блокі адпраўляюцца кліенту. Вызначаецца ў блоках мапы (16 блокаў)."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3079,14 +3067,19 @@ msgid ""
 "to maintain active objects up to this distance in the direction the\n"
 "player is looking. (This can avoid mobs suddenly disappearing from view)"
 msgstr ""
+"Адлегласць у блоках, на якой кліенты распазнаюць аб'екты (16 блокаў).\n"
+"\n"
+"Калі прызначыць значэнне больш за active_block_range, то сервер будзе "
+"запамінаць рухаючыяся аб’екты на гэтай адлегласці ў накірунку погляду "
+"гульца. (Гэта дапаможа пазбегнуць раптоўнага знікнення жывых істот)"
 
 #: src/settings_translation_file.cpp
 msgid "Full screen"
-msgstr "Ва ўвесь экран"
+msgstr "На ўвесь экран"
 
 #: src/settings_translation_file.cpp
 msgid "Full screen BPP"
-msgstr "Поўнаэкранны BPP (бітаў на піксель)"
+msgstr "Глыбіня колеру ў поўнаэкранным рэжыме (бітаў на піксель)"
 
 #: src/settings_translation_file.cpp
 msgid "Fullscreen mode."
@@ -3102,7 +3095,7 @@ msgstr "Фільтр маштабавання графічнага інтэрф�
 
 #: src/settings_translation_file.cpp
 msgid "GUI scaling filter txr2img"
-msgstr "Фільтр txr2img маштабавання графічнага інтэрфейсу"
+msgstr "txr2img-фільтр маштабавання графічнага інтэрфейсу"
 
 #: src/settings_translation_file.cpp
 msgid "Gamma"
@@ -3117,7 +3110,6 @@ msgid "Global callbacks"
 msgstr "Глабальныя зваротныя выклікі"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Global map generation attributes.\n"
 "In Mapgen v6 the 'decorations' flag controls all decorations except trees\n"
@@ -3126,20 +3118,19 @@ msgid ""
 "Flags starting with 'no' are used to explicitly disable them."
 msgstr ""
 "Глабальныя параметры генерацыі мапы.\n"
-"У генератары мапы 6 параметр «decorations» кантралюе ўсе мадыфікатары,\n"
-"акрамя дрэваў і травы джунгляў, а ў астатніх генератарах гэты параметр\n"
-"кантралюе ўсе дэкаратары.\n"
-"Параметры, якія не пазначаны ў радку, не адрозніваюцца ад агаданых "
-"значэнняў.\n"
-"Параметры, якія пачынаюцца з «no», выкарыстоўваюцца для яўнага адключэння."
+"У генератары мапы 6 параметр \"decorations\" кіруе ўсімі дэкарацыямі,\n"
+"апроч дрэў і травы джунгляў, а ў астатніх генератарах гэты параметр\n"
+"кіруе ўсімі дэкарацыямі.\n"
+"Параметры, не вызначаныя ў радку, застаюцца з прадвызначанымі значэннямі.\n"
+"Параметры з \"no\" выключаюцца."
 
 #: src/settings_translation_file.cpp
 msgid "Gradient of light curve at maximum light level."
-msgstr ""
+msgstr "Градыент крывой святла на максімальным узроўні святла."
 
 #: src/settings_translation_file.cpp
 msgid "Gradient of light curve at minimum light level."
-msgstr ""
+msgstr "Градыент крывой святла на мінімальным узроўні святла."
 
 #: src/settings_translation_file.cpp
 msgid "Graphics"
@@ -3154,14 +3145,12 @@ msgid "Ground level"
 msgstr "Узровень зямлі"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Ground noise"
 msgstr "Шум бруду"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "HTTP mods"
-msgstr "HTTP-моды"
+msgstr "HTTP-мадыфікацыі"
 
 #: src/settings_translation_file.cpp
 msgid "HUD scale factor"
@@ -3179,11 +3168,11 @@ msgid ""
 "-    error: abort on usage of deprecated call (suggested for mod developers)."
 msgstr ""
 "Апрацоўка састарэлых выклікаў Lua API:\n"
-"-    legacy: (паспрабаваць) імітаваць старыя паводзіны (агаданае для "
+"-    legacy: (паспрабаваць) імітаваць старыя паводзіны (прадвызначана для "
 "рэлізу).\n"
-"-    log: імітаваць і журналяваць састарэлыя выклікі (агаданае для "
+"-    log: імітаваць і запісваць састарэлыя выклікі (прадвызначана для "
 "адладкі).\n"
-"-    error: прыпыніць пры састарэлым выкліку (пажадана для распрацоўнікаў "
+"-    error: прыпыніць пры састарэлым выкліку (пажадана для распрацоўшчыкаў "
 "модаў)."
 
 #: src/settings_translation_file.cpp
@@ -3194,10 +3183,10 @@ msgid ""
 "call).\n"
 "* Instrument the sampler being used to update the statistics."
 msgstr ""
-"Наяўнасць самога прафілера само па сабе інструментацыя:\n"
-"* Інструментацыя пустой функцыі.\n"
-"Гэта дадае накладныя выдаткі (+1 выклік функцыі).\n"
-"* Інструментацыя сэмплера выкарыстоўваецца для абнаўлення статыстыкі."
+"Прафіляваць самаго прафіліроўшчыка:\n"
+"* Вымяраць пустую функцыю.\n"
+"Вызначыць дадатковыя  выдаткі ад вымярэнняў (+1 выклік функцыі).\n"
+"* Вымяраць сэмплера, што выкарыстоўваецца для абнаўлення статыстыкі."
 
 #: src/settings_translation_file.cpp
 msgid "Heat blend noise"
@@ -3209,15 +3198,15 @@ msgstr "Цеплавы шум"
 
 #: src/settings_translation_file.cpp
 msgid "Height component of the initial window size."
-msgstr "Кампанента вышыні пачатковага памеру вакна."
+msgstr "Вышыня акна падчас запуску."
 
 #: src/settings_translation_file.cpp
 msgid "Height noise"
-msgstr "Высотны шум"
+msgstr "Шум вышыні"
 
 #: src/settings_translation_file.cpp
 msgid "Height select noise"
-msgstr "Высокаселектыўны шум"
+msgstr "Шум выбару вышыні"
 
 #: src/settings_translation_file.cpp
 msgid "High-precision FPU"
@@ -3225,31 +3214,27 @@ msgstr "Высокадакладны FPU"
 
 #: src/settings_translation_file.cpp
 msgid "Hill steepness"
-msgstr "Крутасць узгоркаў"
+msgstr "Крутасць пагоркаў"
 
 #: src/settings_translation_file.cpp
 msgid "Hill threshold"
-msgstr "Парог узгоркаў"
+msgstr "Парог пагоркаў"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Hilliness1 noise"
 msgstr "Шум крутасці"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Hilliness2 noise"
-msgstr "Шум крутасці"
+msgstr "Шум крутасці 2"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Hilliness3 noise"
-msgstr "Шум крутасці"
+msgstr "Шум крутасці 3"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Hilliness4 noise"
-msgstr "Шум крутасці"
+msgstr "Шум крутасці 4"
 
 #: src/settings_translation_file.cpp
 msgid "Homepage of server, to be displayed in the serverlist."
@@ -3257,176 +3242,143 @@ msgstr "Хатняя старонка сервера, якая будзе пак
 
 #: src/settings_translation_file.cpp
 msgid "Hotbar next key"
-msgstr "Наступны прадмет у хуткай панэлі"
+msgstr "Наступны прадмет на хуткай панэлі"
 
 #: src/settings_translation_file.cpp
 msgid "Hotbar previous key"
-msgstr "Папярэдні прадмет у хуткай панэлі"
+msgstr "Папярэдні прадмет на хуткай панэлі"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Hotbar slot 1 key"
-msgstr "Наступны прадмет у хуткай панэлі"
+msgstr "Прадмет 1 хуткай панэлі"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Hotbar slot 10 key"
-msgstr "Наступны прадмет у хуткай панэлі"
+msgstr "Прадмет 10 хуткай панэлі"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Hotbar slot 11 key"
-msgstr "Наступны прадмет у хуткай панэлі"
+msgstr "Прадмет 11 хуткай панэлі"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Hotbar slot 12 key"
-msgstr "Наступны прадмет у хуткай панэлі"
+msgstr "Прадмет 12 хуткай панэлі"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Hotbar slot 13 key"
-msgstr "Наступны прадмет у хуткай панэлі"
+msgstr "Прадмет 13 хуткай панэлі"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Hotbar slot 14 key"
-msgstr "Наступны прадмет у хуткай панэлі"
+msgstr "Прадмет 14 хуткай панэлі"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Hotbar slot 15 key"
-msgstr "Наступны прадмет у хуткай панэлі"
+msgstr "Прадмет 15 хуткай панэлі"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Hotbar slot 16 key"
-msgstr "Наступны прадмет у хуткай панэлі"
+msgstr "Прадмет 16 хуткай панэлі"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Hotbar slot 17 key"
-msgstr "Наступны прадмет у хуткай панэлі"
+msgstr "Прадмет 17 хуткай панэлі"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Hotbar slot 18 key"
-msgstr "Наступны прадмет у хуткай панэлі"
+msgstr "Прадмет 18 хуткай панэлі"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Hotbar slot 19 key"
-msgstr "Наступны прадмет у хуткай панэлі"
+msgstr "Прадмет 19 хуткай панэлі"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Hotbar slot 2 key"
-msgstr "Наступны прадмет у хуткай панэлі"
+msgstr "Прадмет 2 хуткай панэлі"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Hotbar slot 20 key"
-msgstr "Наступны прадмет у хуткай панэлі"
+msgstr "Прадмет 20 хуткай панэлі"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Hotbar slot 21 key"
-msgstr "Наступны прадмет у хуткай панэлі"
+msgstr "Прадмет 21 хуткай панэлі"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Hotbar slot 22 key"
-msgstr "Наступны прадмет у хуткай панэлі"
+msgstr "Прадмет 22 хуткай панэлі"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Hotbar slot 23 key"
-msgstr "Наступны прадмет у хуткай панэлі"
+msgstr "Прадмет 23 хуткай панэлі"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Hotbar slot 24 key"
-msgstr "Наступны прадмет у хуткай панэлі"
+msgstr "Прадмет 24 хуткай панэлі"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Hotbar slot 25 key"
-msgstr "Наступны прадмет у хуткай панэлі"
+msgstr "Прадмет 25 хуткай панэлі"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Hotbar slot 26 key"
-msgstr "Наступны прадмет у хуткай панэлі"
+msgstr "Прадмет 26 хуткай панэлі"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Hotbar slot 27 key"
-msgstr "Наступны прадмет у хуткай панэлі"
+msgstr "Прадмет 27 хуткай панэлі"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Hotbar slot 28 key"
-msgstr "Наступны прадмет у хуткай панэлі"
+msgstr "Прадмет 28 хуткай панэлі"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Hotbar slot 29 key"
-msgstr "Наступны прадмет у хуткай панэлі"
+msgstr "Прадмет 29 хуткай панэлі"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Hotbar slot 3 key"
-msgstr "Наступны прадмет у хуткай панэлі"
+msgstr "Прадмет 3 хуткай панэлі"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Hotbar slot 30 key"
-msgstr "Наступны прадмет у хуткай панэлі"
+msgstr "Прадмет 30 хуткай панэлі"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Hotbar slot 31 key"
-msgstr "Наступны прадмет у хуткай панэлі"
+msgstr "Прадмет 31 хуткай панэлі"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Hotbar slot 32 key"
-msgstr "Наступны прадмет у хуткай панэлі"
+msgstr "Прадмет 32 хуткай панэлі"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Hotbar slot 4 key"
-msgstr "Наступны прадмет у хуткай панэлі"
+msgstr "Прадмет 4 хуткай панэлі"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Hotbar slot 5 key"
-msgstr "Наступны прадмет у хуткай панэлі"
+msgstr "Прадмет 5 хуткай панэлі"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Hotbar slot 6 key"
-msgstr "Наступны прадмет у хуткай панэлі"
+msgstr "Прадмет 6 хуткай панэлі"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Hotbar slot 7 key"
-msgstr "Наступны прадмет у хуткай панэлі"
+msgstr "Прадмет 7 хуткай панэлі"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Hotbar slot 8 key"
-msgstr "Наступны прадмет у хуткай панэлі"
+msgstr "Прадмет 8 хуткай панэлі"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Hotbar slot 9 key"
-msgstr "Наступны прадмет у хуткай панэлі"
+msgstr "Прадмет 9 хуткай панэлі"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "How deep to make rivers."
-msgstr "Глыбіня рэк"
+msgstr "Якой глыбіні рабіць рэкі."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3435,12 +3387,11 @@ msgid ""
 msgstr ""
 "Як доўга сервер будзе чакаць перад выгрузкай блокаў мапы,\n"
 "якія не выкарыстоўваюцца.\n"
-"Больш высокае значэнне прыводзіць да гладкасці, але патрабуе больш памяці."
+"На больш высокіх значэннях адбываецца плаўней, але патрабуецца больш памяці."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "How wide to make rivers."
-msgstr "Шырыня рэк"
+msgstr "Якой шырыні рабіць рэкі."
 
 #: src/settings_translation_file.cpp
 msgid "Humidity blend noise"
@@ -3460,7 +3411,7 @@ msgstr "IPv6"
 
 #: src/settings_translation_file.cpp
 msgid "IPv6 server"
-msgstr "IPv6-сервер"
+msgstr "Сервер IPv6"
 
 #: src/settings_translation_file.cpp
 msgid "IPv6 support."
@@ -3471,18 +3422,17 @@ msgid ""
 "If FPS would go higher than this, limit it by sleeping\n"
 "to not waste CPU power for no benefit."
 msgstr ""
-"Калі FPS перавысіць гэта значэнне, абмежаваць прастоем,\n"
+"Калі FPS перасягне гэтае значэнне, абмежаваць прастоем,\n"
 "каб не марнаваць дарма магутнасць працэсара."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "If disabled, \"special\" key is used to fly fast if both fly and fast mode "
 "are\n"
 "enabled."
 msgstr ""
-"Калі адключаны, то клавіша «use» выкарыстоўваецца для хуткага палёту, калі "
-"палёт і шпаркі рэжым уключаны."
+"Калі выключана, то клавіша \"special\" выкарыстоўваецца для хуткага палёту, "
+"калі палёт і шпаркі рэжым уключаныя."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3492,10 +3442,18 @@ msgid ""
 "invisible\n"
 "so that the utility of noclip mode is reduced."
 msgstr ""
-"Калі ўключаны, то сервер будзе выконваць адсяканне блокаў, заходзячы\n"
-"з размяшчэння вачэй гульца. Гэта можа зменшыць колькасць перасылаемых\n"
-"блокаў на 50–60 %. Кліент не будзе атрымоўваць большую частку небачных\n"
-"блокаў, па-гэтаму рэжым noclip стане менш карысным."
+"Калі ўключаны, то сервер будзе выконваць адсяканне блокаў кіруючыся пазіцыяй "
+"вачэй гульца. Гэта можа паменшыць колькасць адпраўляемых\n"
+"блокаў на 50–60 %. Кліент не будзе атрымоўваць большую частку нябачных\n"
+"блокаў, таму рэжым руху скрозь сцены стане менш карысным."
+
+#: src/settings_translation_file.cpp
+msgid ""
+"If enabled together with fly mode, makes move directions relative to the "
+"player's pitch."
+msgstr ""
+"Калі ўключана адначасова з рэжымам палёту, то вызначае напрамак руху адносна "
+"кроку гульца."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3503,39 +3461,38 @@ msgid ""
 "nodes.\n"
 "This requires the \"noclip\" privilege on the server."
 msgstr ""
-"Калі ўключаны разам з рэжымам палёту, то гулец будзе мець магчымасць лятаць "
-"скрозь цвёрдыя целы.\n"
-"Неабходна прывілея «noclip» на серверы."
+"Калі ўключана адначасова з рэжымам палёту, то гулец будзе мець магчымасць "
+"лятаць скрозь цвёрдыя блокі.\n"
+"На серверы патрабуецца прывілей \"noclip\"."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "If enabled, \"special\" key instead of \"sneak\" key is used for climbing "
 "down and\n"
 "descending."
 msgstr ""
-"Калі ўключаны, то клавіша «use» замест «sneak» выкарыстоўваецца для "
-"спускання і апускання."
+"Калі ўключана, то для спускання і апускання будзе выкарыстоўвацца клавіша \""
+"special\" замест \"sneak\"."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "If enabled, actions are recorded for rollback.\n"
 "This option is only read when server starts."
 msgstr ""
-"Калі ўключаны, то дзеянні запісваюцца для адкату.\n"
-"Гэты параметр чытаецца толькі пры запуску сервера."
+"Калі ўключана, то дзеянні запісваюцца для адраблення.\n"
+"Гэты параметр чытаецца толькі падчас запуску сервера."
 
 #: src/settings_translation_file.cpp
 msgid "If enabled, disable cheat prevention in multiplayer."
-msgstr "Калі ўключаны, то адключае прадухіленне падману ў сумеснай гульне."
+msgstr "Калі ўключана, то выключае абарону ад падману ў сумеснай гульні."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "If enabled, invalid world data won't cause the server to shut down.\n"
 "Only enable this if you know what you are doing."
 msgstr ""
-"Калі ўключаны, то некарэктныя дадзеныя свету не прывядуць сервер ды "
-"адключэння.\n"
+"Калі ўключаны, то з’яўленне хібных даных у свеце не прывядзе да выключэння "
+"сервера.\n"
 "Уключайце гэта толькі, калі ведаеце, што робіце."
 
 #: src/settings_translation_file.cpp
@@ -3546,7 +3503,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "If enabled, new players cannot join with an empty password."
-msgstr "Калі ўключаны, то гульцы не змогуць далучыцца з пустым паролем."
+msgstr "Калі ўключана, то гульцы не змогуць далучыцца з пустым паролем."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3554,9 +3511,9 @@ msgid ""
 "you stand.\n"
 "This is helpful when working with nodeboxes in small areas."
 msgstr ""
-"Калі ўключаны, то вы зможаце паставіць блокі ў месцы (ногі + узровень "
-"вачэй), дзе вы стаіце.\n"
-"Гэта дапамагае працаваць з блокамі ў сціснутых умовах."
+"Калі ўключана, то вы зможаце паставіць блокі на месцы гульца (ногі + "
+"узровень вачэй).\n"
+"Гэта спрашчае працу з блокамі ў вузкіх месцах."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3564,34 +3521,36 @@ msgid ""
 "limited\n"
 "to this distance from the player to the node."
 msgstr ""
+"Калі абмежаванне CSM для дыяпазону блокаў уключана, выклікі get_node "
+"абмяжоўваюцца на гэтую адлегласць ад гульца да блока."
 
 #: src/settings_translation_file.cpp
 msgid "If this is set, players will always (re)spawn at the given position."
-msgstr "Калі гэта зададзена, гульцы заўсёды (ад)нараджаюцца ў дадзеным месцы."
+msgstr "Калі вызначана, гульцы заўсёды адраджаюцца ў абраным месцы."
 
 #: src/settings_translation_file.cpp
 msgid "Ignore world errors"
-msgstr "Ігнараваць памылкі свету"
+msgstr "Не зважаць на памылкі свету"
 
 #: src/settings_translation_file.cpp
 msgid "In-Game"
-msgstr "Гульнявая"
+msgstr "У гульні"
 
 #: src/settings_translation_file.cpp
 msgid "In-game chat console background alpha (opaqueness, between 0 and 255)."
-msgstr "Празрыстасць фону гульнявой кансолі чату (паміж 0 і 255)."
+msgstr "Празрыстасць фону гульнявой кансолі (непразрыстасць, паміж 0 і 255)."
 
 #: src/settings_translation_file.cpp
 msgid "In-game chat console background color (R,G,B)."
-msgstr "Колер фону гульнявой кансолі чату (R,G,B)."
+msgstr "Колер фону гульнявой кансолі (R,G,B)."
 
 #: src/settings_translation_file.cpp
 msgid "In-game chat console height, between 0.1 (10%) and 1.0 (100%)."
-msgstr "Вышыня ўнутрыгульнявой кансолі чату, паміж 0,1 (10 %) і 1,0 (100 %)."
+msgstr "Вышыня гульнявой кансолі, паміж 0,1 (10 %) і 1,0 (100 %)."
 
 #: src/settings_translation_file.cpp
 msgid "Inc. volume key"
-msgstr "Кнопка павелічэння гучнасці"
+msgstr "Клавіша павелічэння гучнасці"
 
 #: src/settings_translation_file.cpp
 msgid ""

@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-02-14 19:14+0100\n"
-"PO-Revision-Date: 2019-02-06 14:18+0000\n"
+"POT-Creation-Date: 2019-02-14 07:46+0100\n"
+"PO-Revision-Date: 2019-02-23 11:18+0000\n"
 "Last-Translator: Wuzzy <almikes@aol.com>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/minetest/minetest/"
 "de/>\n"
@@ -23,14 +23,12 @@ msgid "You died"
 msgstr "Sie sind gestorben"
 
 #: builtin/fstk/ui.lua
-#, fuzzy
 msgid "An error occurred in a Lua script, such as a mod:"
 msgstr "Es ist ein Fehler in einem Lua-Skript aufgetreten, z.B. in einer Mod:"
 
 #: builtin/fstk/ui.lua
-#, fuzzy
 msgid "An error occurred:"
-msgstr "Es ist ein Fehler aufgetreten:"
+msgstr "Ein Fehler ist aufgetreten:"
 
 #: builtin/fstk/ui.lua
 msgid "Main menu"
@@ -109,13 +107,12 @@ msgid "Enable modpack"
 msgstr "Modpack aktivieren"
 
 #: builtin/mainmenu/dlg_config_world.lua
-#, fuzzy
 msgid ""
 "Failed to enable mod \"$1\" as it contains disallowed characters. Only "
 "characters [a-z0-9_] are allowed."
 msgstr ""
-"Fehler beim Aktivieren der Mod „$1“: Ungültiger Name. Nur folgende Zeichen "
-"sind erlaubt: [a-z0-9_]."
+"Fehler beim Aktivieren der Mod „$1“, da sie unerlaubte Zeichen enthält. Nur "
+"die folgenden Zeichen sind erlaubt: [a-z0-9_]."
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Mod:"
@@ -182,7 +179,7 @@ msgstr "Mods"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "No packages could be retrieved"
-msgstr ""
+msgstr "Es konnten keine Pakete empfangen werden"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "No results"
@@ -214,9 +211,8 @@ msgid "Create"
 msgstr "Erstellen"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Download a game, such as Minetest Game, from minetest.net"
-msgstr "Laden Sie sich ein Spiel (wie minetest_game) von minetest.net herunter"
+msgstr "Laden Sie sich ein Spiel (wie Minetest Game) von minetest.net herunter"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Download one from minetest.net"
@@ -286,15 +282,16 @@ msgid ""
 "This modpack has an explicit name given in its modpack.conf which will "
 "override any renaming here."
 msgstr ""
+"Diesem Modpaket wurde in seiner modpack.conf ein expliziter Name vergeben, "
+"der jede Umbennenung hier überschreiben wird."
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "(No description of setting given)"
 msgstr "(Keine Beschreibung vorhanden)"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
-#, fuzzy
 msgid "2D Noise"
-msgstr "Rauschen"
+msgstr "2-D-Rauschen"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "< Back to Settings page"
@@ -317,22 +314,20 @@ msgid "Enabled"
 msgstr "Aktiviert"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
-#, fuzzy
 msgid "Lacunarity"
-msgstr "Sicherheit"
+msgstr "Lückenhaftigkeit"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Octaves"
-msgstr ""
+msgstr "Oktaven"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua src/settings_translation_file.cpp
 msgid "Offset"
 msgstr "Versatz"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
-#, fuzzy
 msgid "Persistance"
-msgstr "Spieler-Übertragungsdistanz"
+msgstr "Persistenz"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Please enter a valid integer."
@@ -372,49 +367,47 @@ msgstr "Der Wert darf nicht größer als $1 sein."
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "X"
-msgstr ""
+msgstr "X"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "X spread"
-msgstr ""
+msgstr "X-Ausbreitung"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Y"
-msgstr ""
+msgstr "Y"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Y spread"
-msgstr ""
+msgstr "Y-Ausbreitung"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Z"
-msgstr ""
+msgstr "Z"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Z spread"
-msgstr ""
+msgstr "Z-Ausbreitung"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "absvalue"
-msgstr ""
+msgstr "Absolutwert"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
-#, fuzzy
 msgid "defaults"
-msgstr "Standardspiel"
+msgstr "Standardwerte"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "eased"
-msgstr ""
+msgstr "weich (eased)"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "$1 (Enabled)"
 msgstr "$1 (Aktiviert)"
 
 #: builtin/mainmenu/pkgmgr.lua
-#, fuzzy
 msgid "$1 mods"
-msgstr " -Mods"
+msgstr "Mods von $1"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Failed to install $1 to $2"
@@ -640,9 +633,8 @@ msgid "8x"
 msgstr "8x"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "All Settings"
-msgstr "Einstellungen"
+msgstr "Alle Einstellungen"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Antialiasing:"
@@ -1348,7 +1340,7 @@ msgstr "Umsch. links"
 
 #: src/client/keycode.cpp
 msgid "Left Windows"
-msgstr "Windows-Logo-Taste Links"
+msgstr "Win. links"
 
 #: src/client/keycode.cpp
 msgid "Menu"
@@ -1472,7 +1464,7 @@ msgstr "Umsch. rechts"
 
 #: src/client/keycode.cpp
 msgid "Right Windows"
-msgstr "Win rechts"
+msgstr "Win. rechts"
 
 #: src/client/keycode.cpp
 msgid "Scroll Lock"
