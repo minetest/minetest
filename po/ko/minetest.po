@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-02-14 07:46+0100\n"
+"POT-Creation-Date: 2019-02-14 19:14+0100\n"
 "PO-Revision-Date: 2019-01-24 00:05+0000\n"
 "Last-Translator: Nore <nore@mesecons.net>\n"
 "Language-Team: Korean <https://hosted.weblate.org/projects/minetest/minetest/"
@@ -1851,15 +1851,15 @@ msgid "2D noise that controls the shape/size of step mountains."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "2D noise that controls the size/occurance of ridged mountain ranges."
+msgid "2D noise that controls the size/occurrence of ridged mountain ranges."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "2D noise that controls the size/occurance of rolling hills."
+msgid "2D noise that controls the size/occurrence of rolling hills."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "2D noise that controls the size/occurance of step mountain ranges."
+msgid "2D noise that controls the size/occurrence of step mountain ranges."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -2076,9 +2076,7 @@ msgid "Automatic forwards key"
 msgstr "앞으로 가는 키"
 
 #: src/settings_translation_file.cpp
-msgid ""
-"Automatically jump up single-node obstacles.\n"
-"type: bool"
+msgid "Automatically jump up single-node obstacles."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -2239,12 +2237,11 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid ""
 "Changes the main menu UI:\n"
-"-   Full:  Multple singleplayer worlds, game choice, texture pack chooser, "
+"-   Full:  Multiple singleplayer worlds, game choice, texture pack chooser, "
 "etc.\n"
 "-   Simple: One singleplayer world, no game or texture pack choosers. May "
 "be\n"
-"necessary for smaller screens.\n"
-"-   Auto: Simple on Android, full on everything else."
+"necessary for smaller screens."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -2335,6 +2332,17 @@ msgid "Colored fog"
 msgstr "색깔있는 안개"
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Comma-separated list of flags to hide in the content repository.\n"
+"\"nonfree\" can be used to hide packages which do not qualify as 'free "
+"software',\n"
+"as defined by the Free Software Foundation.\n"
+"You can also specify content ratings.\n"
+"These flags are independent from Minetest versions,\n"
+"so see a full list at https://content.minetest.net/help/content_flags/"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 #, fuzzy
 msgid ""
 "Comma-separated list of mods that are allowed to access HTTP APIs, which\n"
@@ -2378,9 +2386,13 @@ msgid "Console height"
 msgstr "콘솔 높이"
 
 #: src/settings_translation_file.cpp
+msgid "ContentDB Flag Blacklist"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 #, fuzzy
-msgid "Content Store"
-msgstr "스토어 닫기"
+msgid "ContentDB URL"
+msgstr "계속"
 
 #: src/settings_translation_file.cpp
 msgid "Continuous forward"
@@ -2697,6 +2709,16 @@ msgstr "플레이어는 데미지를 받고 죽을 수 있습니다."
 #: src/settings_translation_file.cpp
 msgid "Enable random user input (only used for testing)."
 msgstr "랜덤 사용자 입력 (테스트에 사용)를 사용 합니다."
+
+#: src/settings_translation_file.cpp
+msgid "Enable register confirmation"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Enable register confirmation when connecting to server.\n"
+"If disabled, new account will be registered automatically."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3428,12 +3450,6 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"If enabled together with fly mode, makes move directions relative to the "
-"player's pitch."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
 "If enabled together with fly mode, player is able to fly through solid "
 "nodes.\n"
 "This requires the \"noclip\" privilege on the server."
@@ -3461,6 +3477,12 @@ msgstr "적용할 경우, 멀티플레이어에서 치트 방지를 해제합니
 msgid ""
 "If enabled, invalid world data won't cause the server to shut down.\n"
 "Only enable this if you know what you are doing."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"If enabled, makes move directions relative to the player's pitch when flying "
+"or swimming."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -4297,7 +4319,7 @@ msgstr ""
 #: src/settings_translation_file.cpp
 #, fuzzy
 msgid ""
-"Key for toggling pitch fly mode.\n"
+"Key for toggling pitch move mode.\n"
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
@@ -4604,7 +4626,7 @@ msgstr ""
 msgid ""
 "Map generation attributes specific to Mapgen Valleys.\n"
 "'altitude_chill': Reduces heat with altitude.\n"
-"'humid_rivers': Increases humidity around rivers and where water pools.\n"
+"'humid_rivers': Increases humidity around rivers.\n"
 "'vary_river_depth': If enabled, low humidity and high heat causes rivers\n"
 "to become shallower and occasionally dry.\n"
 "'altitude_dry': Reduces humidity with altitude."
@@ -5046,11 +5068,16 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid ""
 "Number of emerge threads to use.\n"
-"Make this field blank or 0, or increase this number to use multiple "
-"threads.\n"
-"On multiprocessor systems, this will improve mapgen speed greatly at the "
-"cost\n"
-"of slightly buggy caves."
+"Empty or 0 value:\n"
+"-    Automatic selection. The number of emerge threads will be\n"
+"-    'number of processors - 2', with a lower limit of 1.\n"
+"Any other value:\n"
+"-    Specifies the number of emerge threads, with a lower limit of 1.\n"
+"Warning: Increasing the number of emerge threads increases engine mapgen\n"
+"speed, but this may harm game performance by interfering with other\n"
+"processes, especially in singleplayer and/or when running Lua code in\n"
+"'on_generated'.\n"
+"For many users the optimum setting may be '1'."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5063,6 +5090,10 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Number of parallax occlusion iterations."
 msgstr "시차 교합 반복의 수"
+
+#: src/settings_translation_file.cpp
+msgid "Online Content Repository"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Opaque liquids"
@@ -5140,11 +5171,11 @@ msgstr "물리학"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
-msgid "Pitch fly key"
+msgid "Pitch move key"
 msgstr "비행 키"
 
 #: src/settings_translation_file.cpp
-msgid "Pitch fly mode"
+msgid "Pitch move mode"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5271,14 +5302,16 @@ msgstr "보고서 경로"
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Restricts the access of certain client-side functions on servers\n"
-"Combine these byteflags below to restrict client-side features:\n"
-"LOAD_CLIENT_MODS: 1 (disable client mods loading)\n"
+"Restricts the access of certain client-side functions on servers.\n"
+"Combine the byteflags below to restrict client-side features, or set to 0\n"
+"for no restrictions:\n"
+"LOAD_CLIENT_MODS: 1 (disable loading client-provided mods)\n"
 "CHAT_MESSAGES: 2 (disable send_chat_message call client-side)\n"
 "READ_ITEMDEFS: 4 (disable get_item_def call client-side)\n"
 "READ_NODEDEFS: 8 (disable get_node_def call client-side)\n"
 "LOOKUP_NODES_LIMIT: 16 (limits get_node call client-side to\n"
-"csm_restriction_noderange)"
+"csm_restriction_noderange)\n"
+"READ_PLAYERINFO: 32 (disable get_player_names call client-side)"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5581,16 +5614,6 @@ msgid "Show entity selection boxes"
 msgstr "개체 선택 상자 보기"
 
 #: src/settings_translation_file.cpp
-msgid "Show non-free packages"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Show packages in the content store that do not qualify as 'free software'\n"
-"as defined by the Free Software Foundation."
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid "Shutdown message"
 msgstr "서버닫힘 메시지"
 
@@ -5789,6 +5812,10 @@ msgid ""
 "However, as this possibility is new, thus may not be used by older servers,\n"
 "this option allows enforcing it for certain node types. Note though that\n"
 "that is considered EXPERIMENTAL and may not work properly."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "The URL for the content repository"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -6386,133 +6413,158 @@ msgstr ""
 msgid "cURL timeout"
 msgstr ""
 
-#~ msgid "Disable MP"
-#~ msgstr "MP(모드팩) 비활성화"
-
-#~ msgid "Enable MP"
-#~ msgstr "MP(모드팩) 활성화"
-
-#~ msgid "No worldname given or no game selected"
-#~ msgstr "게임을 선택하지 않았거나 게임 이름이 없습니다"
-
-#~ msgid "\"$1\" is not a valid flag."
-#~ msgstr "\"$1\"은(는) 유효한 플래그가 아닙니다."
-
-#~ msgid "Format is 3 numbers separated by commas and inside brackets."
-#~ msgstr "3개의 수가 쉼표와 묶음표로 구분되는 형식입니다."
+#~ msgid "Advanced Settings"
+#~ msgstr "고급 설정"
 
 #~ msgid ""
-#~ "Format: <offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>), <seed>, "
-#~ "<octaves>, <persistence>"
+#~ "Determines terrain shape.\n"
+#~ "The 3 numbers in brackets control the scale of the\n"
+#~ "terrain, the 3 numbers should be identical."
 #~ msgstr ""
-#~ "형식: <offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>), <seed>, "
-#~ "<octaves>, <persistence>"
+#~ "지형 모양을 결정합니다.\n"
+#~ "괄호안의 3개의 숫자는 지형의 규모를 조정합니다.\n"
+#~ "3개의 숫자는 동일해야 합니다."
 
-#~ msgid "Please enter a comma seperated list of flags."
-#~ msgstr "플래그 목록을 쉼표로 구분하며 입력해주세요."
+#~ msgid ""
+#~ "Controls size of deserts and beaches in Mapgen v6.\n"
+#~ "When snowbiomes are enabled 'mgv6_freq_desert' is ignored."
+#~ msgstr ""
+#~ "Mapgen v6에서 사막과 해변의 크기를 조정합니다.\n"
+#~ "Snowbiomes 사용 하는 경우에 'mgv6_freq_desert'은 무시 됩니다."
 
-#~ msgid "Possible values are: "
-#~ msgstr "가능한 값: "
+#~ msgid "Plus"
+#~ msgstr "플러스"
 
-#~ msgid "Select path"
-#~ msgstr "경로 고르기"
+#~ msgid "Period"
+#~ msgstr "기간"
 
-#~ msgid "Subgame Mods"
-#~ msgstr "서브게임 모드"
+#~ msgid "Minus"
+#~ msgstr "마이너스"
 
-#~ msgid "Page $1 of $2"
-#~ msgstr "$2페이지 중 $1"
+#~ msgid "Final"
+#~ msgstr "최종"
 
-#~ msgid "Rating"
-#~ msgstr "순위"
+#~ msgid "ExSel"
+#~ msgstr "ExSel"
 
-#~ msgid "Shortname:"
-#~ msgstr "짧은 이름:"
+#~ msgid "CrSel"
+#~ msgstr "CrSel"
 
-#~ msgid "Successfully installed:"
-#~ msgstr "설치 완료:"
+#~ msgid "Comma"
+#~ msgstr "쉼표"
 
-#~ msgid "Unsorted"
-#~ msgstr "기타"
+#~ msgid "Capital"
+#~ msgstr "자본"
 
-#~ msgid "re-Install"
-#~ msgstr "재설치"
+#~ msgid "Attn"
+#~ msgstr "담당자"
+
+#~ msgid "Hide mp content"
+#~ msgstr "숨겨진 맵 콘텐츠"
+
+#~ msgid "Water Features"
+#~ msgstr "물 특징"
 
 #, fuzzy
-#~ msgid "Local Game"
-#~ msgstr "게임 시작"
+#~ msgid "Valleys C Flags"
+#~ msgstr "계곡 C 플래그"
 
-#~ msgid "Uninstall selected modpack"
-#~ msgstr "선택한 모드팩 삭제"
+#~ msgid ""
+#~ "Use mip mapping to scale textures. May slightly increase performance."
+#~ msgstr ""
+#~ "텍스쳐를 크게하기 위해 mip mapping을 사용 합니다. 성능이 약간 증가할겁니"
+#~ "다."
 
-#~ msgid "Play Online"
-#~ msgstr "온라인 게임"
+#~ msgid "Use key"
+#~ msgstr "키 사용"
 
-#~ msgid "Normal Mapping"
-#~ msgstr "노멀 매핑"
+#~ msgid "The altitude at which temperature drops by 20C"
+#~ msgstr "기온이 20C로 떨어지는 고도"
 
-#~ msgid "No information available"
-#~ msgstr "정보가 없습니다"
+#~ msgid "Support older servers"
+#~ msgstr "오래된 서버 지원"
 
-#~ msgid "Volume changed to 0%"
-#~ msgstr "볼륨이 0%로 변경되었습니다"
+#~ msgid ""
+#~ "Size of chunks to be generated at once by mapgen, stated in mapblocks (16 "
+#~ "nodes)."
+#~ msgstr "정해진 맵블럭(16 nodes), 맵젠에 의해 한번에 생설되어질 양의 크기."
 
-#~ msgid "Volume changed to 100%"
-#~ msgstr "볼륨이 100%로 변경되었습니다"
-
-#~ msgid "Print stacks"
-#~ msgstr "스택 출력"
-
-#~ msgid "Use"
-#~ msgstr "사용"
-
-#~ msgid "Next"
-#~ msgstr "다음"
-
-#~ msgid "Prior"
-#~ msgstr "이전"
+#~ msgid "River noise -- rivers occur close to zero"
+#~ msgstr "강 소리 -- 강이 0에 가까울 때 발생"
 
 #, fuzzy
 #~ msgid ""
-#~ "Announce to this serverlist.\n"
-#~ "If you want to announce your ipv6 address, use  serverlist_url = v6."
-#~ "servers.minetest.net."
+#~ "Name of map generator to be used when creating a new world.\n"
+#~ "Creating a world in the main menu will override this."
 #~ msgstr ""
-#~ "서버리스트에 발표합니다.\n"
-#~ "만약 당신의 Ipv6 주소를 알리기 원한다면 serverlist_url = v6.servers."
-#~ "minetest.net 을 사용하세요."
+#~ "새로운 월드를 만들때 사용되는 맵 생성기의 이름입니다.\n"
+#~ "주 메뉴에서 새 월드를 만들면 적용될 것입니다."
 
-#~ msgid "Autorun key"
-#~ msgstr "자동 실행 키"
+#~ msgid "Modstore mods list URL"
+#~ msgstr "Modstore 모드 리스트 URL"
 
-#~ msgid "Cloud height"
-#~ msgstr "구름 높이"
+#~ msgid "Modstore download URL"
+#~ msgstr "Modstore 다운로드 URL"
 
-#~ msgid "Console key"
-#~ msgstr "콘솔 높이"
+#~ msgid "Modstore details URL"
+#~ msgstr "Modstore 정보 URL"
+
+#~ msgid "Maximum number of blocks that are simultaneously sent per client."
+#~ msgstr "클라이언트 당 동시에 전송되는 블록의 최대 수입니다."
+
+#~ msgid "Massive cave noise"
+#~ msgstr "거대한 동굴 잡음"
+
+#~ msgid "Massive cave depth"
+#~ msgstr "거대한 동굴 깊이"
+
+#~ msgid "Main menu mod manager"
+#~ msgstr "주 메뉴 모드 관리자"
+
+#~ msgid "Main menu game manager"
+#~ msgstr "주 메뉴 게임 관리자"
 
 #~ msgid ""
-#~ "Creates unpredictable lava features in caves.\n"
-#~ "These can make mining difficult. Zero disables them. (0-10)"
+#~ "Key for printing debug stacks. Used for development.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
 #~ msgstr ""
-#~ "예측할 수 없는 용암을 동굴 안에 만듭니다.\n"
-#~ "이것은 채광을 어렵게 만들 수 있습니다. 0은 나타나지 않습니다. (0-10)"
+#~ "디버그 무더기(stacks) 인쇄 키. 개발을 위해 사용됨.\n"
+#~ "Http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3 참조"
 
 #~ msgid ""
-#~ "Creates unpredictable water features in caves.\n"
-#~ "These can make mining difficult. Zero disables them. (0-10)"
+#~ "Key for opening the chat console.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
 #~ msgstr ""
-#~ "예측할 수 없는 물을 동굴 안에 만듭니다.\n"
-#~ "이것은 채광을 어렵게 만들 수 있습니다. 0은 나타나지 않습니다. (0-10)"
+#~ "채팅 창을 여는 키입니다.\n"
+#~ "Http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3 참조"
 
-#~ msgid "Crouch speed"
-#~ msgstr "쭈그리고 앉기 속도"
+#, fuzzy
+#~ msgid "Inventory image hack"
+#~ msgstr "인벤토리 키"
 
-#~ msgid "Depth below which you'll find massive caves."
-#~ msgstr "거대한 동굴을 발견할 수 있는 깊이."
+#~ msgid "If enabled, show the server status message on player connection."
+#~ msgstr "활성화시, 연결하는 플레이어에게 서버status메시지가 보여집니다."
 
-#~ msgid "Disable escape sequences"
-#~ msgstr "이스케이프 시퀀스 사용 안함"
+#~ msgid "General"
+#~ msgstr "일반"
+
+#~ msgid ""
+#~ "Field of view while zooming in degrees.\n"
+#~ "This requires the \"zoom\" privilege on the server."
+#~ msgstr ""
+#~ "확대/축소에 대한 시야 \n"
+#~ "서버에서 \"확대/축소\" 권한이 필요합니다."
+
+#~ msgid "Field of view for zoom"
+#~ msgstr "확대/축소에 대한 시야"
+
+#, fuzzy
+#~ msgid "Enable view bobbing"
+#~ msgstr "보기 만료"
 
 #~ msgid ""
 #~ "Disable escape sequences, e.g. chat coloring.\n"
@@ -6524,155 +6576,134 @@ msgstr ""
 #~ "만약 당신이 pre-0.4.14클라이언트를 사용하길 원하거나 모드에 의해 생성되는 "
 #~ "이스케이프 시퀀스를 사용하지 않길 원한다면 이것을 사용하세요."
 
-#, fuzzy
-#~ msgid "Enable view bobbing"
-#~ msgstr "보기 만료"
+#~ msgid "Disable escape sequences"
+#~ msgstr "이스케이프 시퀀스 사용 안함"
 
-#~ msgid "Field of view for zoom"
-#~ msgstr "확대/축소에 대한 시야"
+#~ msgid "Depth below which you'll find massive caves."
+#~ msgstr "거대한 동굴을 발견할 수 있는 깊이."
 
-#~ msgid ""
-#~ "Field of view while zooming in degrees.\n"
-#~ "This requires the \"zoom\" privilege on the server."
-#~ msgstr ""
-#~ "확대/축소에 대한 시야 \n"
-#~ "서버에서 \"확대/축소\" 권한이 필요합니다."
-
-#~ msgid "General"
-#~ msgstr "일반"
-
-#~ msgid "If enabled, show the server status message on player connection."
-#~ msgstr "활성화시, 연결하는 플레이어에게 서버status메시지가 보여집니다."
-
-#, fuzzy
-#~ msgid "Inventory image hack"
-#~ msgstr "인벤토리 키"
+#~ msgid "Crouch speed"
+#~ msgstr "쭈그리고 앉기 속도"
 
 #~ msgid ""
-#~ "Key for opening the chat console.\n"
-#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
-#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ "Creates unpredictable water features in caves.\n"
+#~ "These can make mining difficult. Zero disables them. (0-10)"
 #~ msgstr ""
-#~ "채팅 창을 여는 키입니다.\n"
-#~ "Http://irrlicht.sourceforge.net/docu/namespaceirr."
-#~ "html#a54da2a0e231901735e3da1b0edf72eb3 참조"
+#~ "예측할 수 없는 물을 동굴 안에 만듭니다.\n"
+#~ "이것은 채광을 어렵게 만들 수 있습니다. 0은 나타나지 않습니다. (0-10)"
 
 #~ msgid ""
-#~ "Key for printing debug stacks. Used for development.\n"
-#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
-#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ "Creates unpredictable lava features in caves.\n"
+#~ "These can make mining difficult. Zero disables them. (0-10)"
 #~ msgstr ""
-#~ "디버그 무더기(stacks) 인쇄 키. 개발을 위해 사용됨.\n"
-#~ "Http://irrlicht.sourceforge.net/docu/namespaceirr."
-#~ "html#a54da2a0e231901735e3da1b0edf72eb3 참조"
+#~ "예측할 수 없는 용암을 동굴 안에 만듭니다.\n"
+#~ "이것은 채광을 어렵게 만들 수 있습니다. 0은 나타나지 않습니다. (0-10)"
 
-#~ msgid "Main menu game manager"
-#~ msgstr "주 메뉴 게임 관리자"
+#~ msgid "Console key"
+#~ msgstr "콘솔 높이"
 
-#~ msgid "Main menu mod manager"
-#~ msgstr "주 메뉴 모드 관리자"
+#~ msgid "Cloud height"
+#~ msgstr "구름 높이"
 
-#~ msgid "Massive cave depth"
-#~ msgstr "거대한 동굴 깊이"
-
-#~ msgid "Massive cave noise"
-#~ msgstr "거대한 동굴 잡음"
-
-#~ msgid "Maximum number of blocks that are simultaneously sent per client."
-#~ msgstr "클라이언트 당 동시에 전송되는 블록의 최대 수입니다."
-
-#~ msgid "Modstore details URL"
-#~ msgstr "Modstore 정보 URL"
-
-#~ msgid "Modstore download URL"
-#~ msgstr "Modstore 다운로드 URL"
-
-#~ msgid "Modstore mods list URL"
-#~ msgstr "Modstore 모드 리스트 URL"
+#~ msgid "Autorun key"
+#~ msgstr "자동 실행 키"
 
 #, fuzzy
 #~ msgid ""
-#~ "Name of map generator to be used when creating a new world.\n"
-#~ "Creating a world in the main menu will override this."
+#~ "Announce to this serverlist.\n"
+#~ "If you want to announce your ipv6 address, use  serverlist_url = v6."
+#~ "servers.minetest.net."
 #~ msgstr ""
-#~ "새로운 월드를 만들때 사용되는 맵 생성기의 이름입니다.\n"
-#~ "주 메뉴에서 새 월드를 만들면 적용될 것입니다."
+#~ "서버리스트에 발표합니다.\n"
+#~ "만약 당신의 Ipv6 주소를 알리기 원한다면 serverlist_url = v6.servers."
+#~ "minetest.net 을 사용하세요."
 
-#~ msgid "River noise -- rivers occur close to zero"
-#~ msgstr "강 소리 -- 강이 0에 가까울 때 발생"
+#~ msgid "Prior"
+#~ msgstr "이전"
 
-#~ msgid ""
-#~ "Size of chunks to be generated at once by mapgen, stated in mapblocks (16 "
-#~ "nodes)."
-#~ msgstr "정해진 맵블럭(16 nodes), 맵젠에 의해 한번에 생설되어질 양의 크기."
+#~ msgid "Next"
+#~ msgstr "다음"
 
-#~ msgid "Support older servers"
-#~ msgstr "오래된 서버 지원"
+#~ msgid "Use"
+#~ msgstr "사용"
 
-#~ msgid "The altitude at which temperature drops by 20C"
-#~ msgstr "기온이 20C로 떨어지는 고도"
+#~ msgid "Print stacks"
+#~ msgstr "스택 출력"
 
-#~ msgid "Use key"
-#~ msgstr "키 사용"
+#~ msgid "Volume changed to 100%"
+#~ msgstr "볼륨이 100%로 변경되었습니다"
 
-#~ msgid ""
-#~ "Use mip mapping to scale textures. May slightly increase performance."
-#~ msgstr ""
-#~ "텍스쳐를 크게하기 위해 mip mapping을 사용 합니다. 성능이 약간 증가할겁니"
-#~ "다."
+#~ msgid "Volume changed to 0%"
+#~ msgstr "볼륨이 0%로 변경되었습니다"
+
+#~ msgid "No information available"
+#~ msgstr "정보가 없습니다"
+
+#~ msgid "Normal Mapping"
+#~ msgstr "노멀 매핑"
+
+#~ msgid "Play Online"
+#~ msgstr "온라인 게임"
+
+#~ msgid "Uninstall selected modpack"
+#~ msgstr "선택한 모드팩 삭제"
 
 #, fuzzy
-#~ msgid "Valleys C Flags"
-#~ msgstr "계곡 C 플래그"
+#~ msgid "Local Game"
+#~ msgstr "게임 시작"
 
-#~ msgid "Water Features"
-#~ msgstr "물 특징"
+#~ msgid "re-Install"
+#~ msgstr "재설치"
 
-#~ msgid "Hide mp content"
-#~ msgstr "숨겨진 맵 콘텐츠"
+#~ msgid "Unsorted"
+#~ msgstr "기타"
 
-#~ msgid "Attn"
-#~ msgstr "담당자"
+#~ msgid "Successfully installed:"
+#~ msgstr "설치 완료:"
 
-#~ msgid "Capital"
-#~ msgstr "자본"
+#~ msgid "Shortname:"
+#~ msgstr "짧은 이름:"
 
-#~ msgid "Comma"
-#~ msgstr "쉼표"
+#~ msgid "Rating"
+#~ msgstr "순위"
 
-#~ msgid "CrSel"
-#~ msgstr "CrSel"
+#~ msgid "Page $1 of $2"
+#~ msgstr "$2페이지 중 $1"
 
-#~ msgid "ExSel"
-#~ msgstr "ExSel"
+#~ msgid "Subgame Mods"
+#~ msgstr "서브게임 모드"
 
-#~ msgid "Final"
-#~ msgstr "최종"
+#~ msgid "Select path"
+#~ msgstr "경로 고르기"
 
-#~ msgid "Minus"
-#~ msgstr "마이너스"
+#~ msgid "Possible values are: "
+#~ msgstr "가능한 값: "
 
-#~ msgid "Period"
-#~ msgstr "기간"
-
-#~ msgid "Plus"
-#~ msgstr "플러스"
+#~ msgid "Please enter a comma seperated list of flags."
+#~ msgstr "플래그 목록을 쉼표로 구분하며 입력해주세요."
 
 #~ msgid ""
-#~ "Controls size of deserts and beaches in Mapgen v6.\n"
-#~ "When snowbiomes are enabled 'mgv6_freq_desert' is ignored."
+#~ "Format: <offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>), <seed>, "
+#~ "<octaves>, <persistence>"
 #~ msgstr ""
-#~ "Mapgen v6에서 사막과 해변의 크기를 조정합니다.\n"
-#~ "Snowbiomes 사용 하는 경우에 'mgv6_freq_desert'은 무시 됩니다."
+#~ "형식: <offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>), <seed>, "
+#~ "<octaves>, <persistence>"
 
-#~ msgid ""
-#~ "Determines terrain shape.\n"
-#~ "The 3 numbers in brackets control the scale of the\n"
-#~ "terrain, the 3 numbers should be identical."
-#~ msgstr ""
-#~ "지형 모양을 결정합니다.\n"
-#~ "괄호안의 3개의 숫자는 지형의 규모를 조정합니다.\n"
-#~ "3개의 숫자는 동일해야 합니다."
+#~ msgid "Format is 3 numbers separated by commas and inside brackets."
+#~ msgstr "3개의 수가 쉼표와 묶음표로 구분되는 형식입니다."
 
-#~ msgid "Advanced Settings"
-#~ msgstr "고급 설정"
+#~ msgid "\"$1\" is not a valid flag."
+#~ msgstr "\"$1\"은(는) 유효한 플래그가 아닙니다."
+
+#~ msgid "No worldname given or no game selected"
+#~ msgstr "게임을 선택하지 않았거나 게임 이름이 없습니다"
+
+#~ msgid "Enable MP"
+#~ msgstr "MP(모드팩) 활성화"
+
+#~ msgid "Disable MP"
+#~ msgstr "MP(모드팩) 비활성화"
+
+#, fuzzy
+#~ msgid "Content Store"
+#~ msgstr "스토어 닫기"

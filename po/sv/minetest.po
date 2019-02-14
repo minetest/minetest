@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-02-14 07:46+0100\n"
+"POT-Creation-Date: 2019-02-14 19:14+0100\n"
 "PO-Revision-Date: 2019-02-08 13:45+0000\n"
 "Last-Translator: Muhammad Rifqi Priyo Susanto "
 "<muhammadrifqipriyosusanto@gmail.com>\n"
@@ -1885,15 +1885,15 @@ msgid "2D noise that controls the shape/size of step mountains."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "2D noise that controls the size/occurance of ridged mountain ranges."
+msgid "2D noise that controls the size/occurrence of ridged mountain ranges."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "2D noise that controls the size/occurance of rolling hills."
+msgid "2D noise that controls the size/occurrence of rolling hills."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "2D noise that controls the size/occurance of step mountain ranges."
+msgid "2D noise that controls the size/occurrence of step mountain ranges."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -2131,9 +2131,7 @@ msgid "Automatic forwards key"
 msgstr "Tangent för filmiskt länge"
 
 #: src/settings_translation_file.cpp
-msgid ""
-"Automatically jump up single-node obstacles.\n"
-"type: bool"
+msgid "Automatically jump up single-node obstacles."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -2287,12 +2285,11 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid ""
 "Changes the main menu UI:\n"
-"-   Full:  Multple singleplayer worlds, game choice, texture pack chooser, "
+"-   Full:  Multiple singleplayer worlds, game choice, texture pack chooser, "
 "etc.\n"
 "-   Simple: One singleplayer world, no game or texture pack choosers. May "
 "be\n"
-"necessary for smaller screens.\n"
-"-   Auto: Simple on Android, full on everything else."
+"necessary for smaller screens."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -2383,6 +2380,17 @@ msgstr "Färgad dimma"
 
 #: src/settings_translation_file.cpp
 msgid ""
+"Comma-separated list of flags to hide in the content repository.\n"
+"\"nonfree\" can be used to hide packages which do not qualify as 'free "
+"software',\n"
+"as defined by the Free Software Foundation.\n"
+"You can also specify content ratings.\n"
+"These flags are independent from Minetest versions,\n"
+"so see a full list at https://content.minetest.net/help/content_flags/"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
 "Comma-separated list of mods that are allowed to access HTTP APIs, which\n"
 "allow them to upload and download data to/from the internet."
 msgstr ""
@@ -2428,9 +2436,13 @@ msgid "Console height"
 msgstr "Konsolhöjd"
 
 #: src/settings_translation_file.cpp
+msgid "ContentDB Flag Blacklist"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 #, fuzzy
-msgid "Content Store"
-msgstr "Stäng butiken"
+msgid "ContentDB URL"
+msgstr "Fortsätt"
 
 #: src/settings_translation_file.cpp
 msgid "Continuous forward"
@@ -2759,6 +2771,16 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Enable random user input (only used for testing)."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Enable register confirmation"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Enable register confirmation when connecting to server.\n"
+"If disabled, new account will be registered automatically."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3448,12 +3470,6 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"If enabled together with fly mode, makes move directions relative to the "
-"player's pitch."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
 "If enabled together with fly mode, player is able to fly through solid "
 "nodes.\n"
 "This requires the \"noclip\" privilege on the server."
@@ -3480,6 +3496,12 @@ msgstr ""
 msgid ""
 "If enabled, invalid world data won't cause the server to shut down.\n"
 "Only enable this if you know what you are doing."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"If enabled, makes move directions relative to the player's pitch when flying "
+"or swimming."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -4093,7 +4115,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Key for toggling pitch fly mode.\n"
+"Key for toggling pitch move mode.\n"
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
@@ -4361,7 +4383,7 @@ msgstr ""
 msgid ""
 "Map generation attributes specific to Mapgen Valleys.\n"
 "'altitude_chill': Reduces heat with altitude.\n"
-"'humid_rivers': Increases humidity around rivers and where water pools.\n"
+"'humid_rivers': Increases humidity around rivers.\n"
 "'vary_river_depth': If enabled, low humidity and high heat causes rivers\n"
 "to become shallower and occasionally dry.\n"
 "'altitude_dry': Reduces humidity with altitude."
@@ -4786,11 +4808,16 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid ""
 "Number of emerge threads to use.\n"
-"Make this field blank or 0, or increase this number to use multiple "
-"threads.\n"
-"On multiprocessor systems, this will improve mapgen speed greatly at the "
-"cost\n"
-"of slightly buggy caves."
+"Empty or 0 value:\n"
+"-    Automatic selection. The number of emerge threads will be\n"
+"-    'number of processors - 2', with a lower limit of 1.\n"
+"Any other value:\n"
+"-    Specifies the number of emerge threads, with a lower limit of 1.\n"
+"Warning: Increasing the number of emerge threads increases engine mapgen\n"
+"speed, but this may harm game performance by interfering with other\n"
+"processes, especially in singleplayer and/or when running Lua code in\n"
+"'on_generated'.\n"
+"For many users the optimum setting may be '1'."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -4802,6 +4829,10 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Number of parallax occlusion iterations."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Online Content Repository"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -4875,11 +4906,12 @@ msgid "Physics"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Pitch fly key"
-msgstr ""
+#, fuzzy
+msgid "Pitch move key"
+msgstr "Tangent för filmiskt länge"
 
 #: src/settings_translation_file.cpp
-msgid "Pitch fly mode"
+msgid "Pitch move mode"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -4989,14 +5021,16 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Restricts the access of certain client-side functions on servers\n"
-"Combine these byteflags below to restrict client-side features:\n"
-"LOAD_CLIENT_MODS: 1 (disable client mods loading)\n"
+"Restricts the access of certain client-side functions on servers.\n"
+"Combine the byteflags below to restrict client-side features, or set to 0\n"
+"for no restrictions:\n"
+"LOAD_CLIENT_MODS: 1 (disable loading client-provided mods)\n"
 "CHAT_MESSAGES: 2 (disable send_chat_message call client-side)\n"
 "READ_ITEMDEFS: 4 (disable get_item_def call client-side)\n"
 "READ_NODEDEFS: 8 (disable get_node_def call client-side)\n"
 "LOOKUP_NODES_LIMIT: 16 (limits get_node call client-side to\n"
-"csm_restriction_noderange)"
+"csm_restriction_noderange)\n"
+"READ_PLAYERINFO: 32 (disable get_player_names call client-side)"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5277,16 +5311,6 @@ msgid "Show entity selection boxes"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Show non-free packages"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Show packages in the content store that do not qualify as 'free software'\n"
-"as defined by the Free Software Foundation."
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid "Shutdown message"
 msgstr ""
 
@@ -5472,6 +5496,10 @@ msgid ""
 "However, as this possibility is new, thus may not be used by older servers,\n"
 "this option allows enforcing it for certain node types. Note though that\n"
 "that is considered EXPERIMENTAL and may not work properly."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "The URL for the content repository"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -6023,154 +6051,11 @@ msgstr "cURL parallellgräns"
 msgid "cURL timeout"
 msgstr "cURL-timeout"
 
-#~ msgid "Disable MP"
-#~ msgstr "Inaktivera MP"
+#~ msgid "Advanced Settings"
+#~ msgstr "Avancerade Inställningar"
 
-#~ msgid "Enable MP"
-#~ msgstr "Aktivera MP"
-
-#~ msgid "No worldname given or no game selected"
-#~ msgstr "Inget världnamn angett eller inget spel valt"
-
-#~ msgid "\"$1\" is not a valid flag."
-#~ msgstr "\"$1\" är inte en giltig flagga."
-
-#~ msgid "Format is 3 numbers separated by commas and inside brackets."
-#~ msgstr "Formatet är tre nummer separerade med komma och inom paranteser."
-
-#~ msgid ""
-#~ "Format: <offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>), <seed>, "
-#~ "<octaves>, <persistence>"
-#~ msgstr ""
-#~ "Format: <förskjutning>, <skala>, (<spridningX>, <spridningY>, "
-#~ "<spridningZ>), <frö>, <oktaver>, <bestående>"
-
-#~ msgid "Optionally the lacunarity can be appended with a leading comma."
-#~ msgstr ""
-#~ "Takförhållandet kan eventuellt läggas till med ett främre kommatecken."
-
-#~ msgid "Please enter a comma seperated list of flags."
-#~ msgstr "Var vänlig ange ett kommaseparerad lista med flaggor."
-
-#~ msgid "Possible values are: "
-#~ msgstr "Möjliga värden är: "
-
-#~ msgid "Select path"
-#~ msgstr "Välj sökväg"
-
-#~ msgid "Subgame Mods"
-#~ msgstr "Underspelsmoddar"
-
-#~ msgid "Page $1 of $2"
-#~ msgstr "Sida $1 av $2"
-
-#~ msgid "Rating"
-#~ msgstr "Omdöme"
-
-#~ msgid "Shortname:"
-#~ msgstr "Kort namn:"
-
-#~ msgid "Successfully installed:"
-#~ msgstr "Lyckades installera:"
-
-#~ msgid "Unsorted"
-#~ msgstr "Osorterat"
-
-#~ msgid "re-Install"
-#~ msgstr "Ominstallera"
-
-#~ msgid "Local Game"
-#~ msgstr "Lokalt spel"
-
-#~ msgid "Uninstall selected modpack"
-#~ msgstr "Avinstallera valt modpaket"
-
-#~ msgid "Play Online"
-#~ msgstr "Spela online"
-
-#~ msgid "Normal Mapping"
-#~ msgstr "Normal-mapping"
-
-#~ msgid "No information available"
-#~ msgstr "Ingen information tillgänglig"
-
-#~ msgid "Volume changed to 0%"
-#~ msgstr "Volym ändrad till 0%"
-
-#~ msgid "Volume changed to 100%"
-#~ msgstr "Volym ändrad till 100%"
-
-#~ msgid "Print stacks"
-#~ msgstr "Skriv ut travar"
-
-#~ msgid "Use"
-#~ msgstr "Använd"
-
-#~ msgid "Next"
-#~ msgstr "Nästa"
-
-#~ msgid "Prior"
-#~ msgstr "Tidigare"
-
-#~ msgid "Active Block Modifier interval"
-#~ msgstr "Aktivt Blockmodifierarintervall"
-
-#~ msgid ""
-#~ "Android systems only: Tries to create inventory textures from meshes\n"
-#~ "when no supported render was found."
-#~ msgstr ""
-#~ "Endast Androidsystem: Försöker skapa förrådtexturer från meshes\n"
-#~ "när ingen stöttad render hittades."
-
-#~ msgid ""
-#~ "Announce to this serverlist.\n"
-#~ "If you want to announce your ipv6 address, use  serverlist_url = v6."
-#~ "servers.minetest.net."
-#~ msgstr ""
-#~ "Offentliggör till denna serverlista.\n"
-#~ "Om du vill offentliggöra din ipv6 address, använd  serverlist_url = v6."
-#~ "servers.minetest.net."
-
-#~ msgid "Approximate (X,Y,Z) scale of fractal in nodes."
-#~ msgstr "Approximera (X,Y,Z)-skala av fraktaler i noder."
-
-#~ msgid "Autorun key"
-#~ msgstr "Tangent för autospring"
-
-#~ msgid "Caves and tunnels form at the intersection of the two noises"
-#~ msgstr "Grottor och tunnlar bildas vid korsningen av de två oljuden"
-
-#~ msgid "Cloud height"
-#~ msgstr "Molnhöjd"
-
-#~ msgid "Console key"
-#~ msgstr "Konsoltangent"
-
-#~ msgid "Continuous forward movement (only used for testing)."
-#~ msgstr "Fortlöpande rörelse framåt (andvänds enbart för testande)."
-
-#~ msgid ""
-#~ "Creates unpredictable lava features in caves.\n"
-#~ "These can make mining difficult. Zero disables them. (0-10)"
-#~ msgstr ""
-#~ "Skapar oförutsägbara förekomster av lava i grottor.\n"
-#~ "Dessa kan göra gruvgrävande besvärligt. Noll inaktiverar dem. (0-10)"
-
-#~ msgid ""
-#~ "Creates unpredictable water features in caves.\n"
-#~ "These can make mining difficult. Zero disables them. (0-10)"
-#~ msgstr ""
-#~ "Skapar oförutsägbara förekomster av vatten i grottor.\n"
-#~ "Dessa kan göra gruvgrävande besvärligt. Noll inaktiverar dem. (0-10)"
-
-#~ msgid "Crouch speed"
-#~ msgstr "Smyghastighet"
-
-#~ msgid "Depth below which you'll find massive caves."
-#~ msgstr "Djup inunder du kan hitta massiva grottor."
-
-#~ msgid "Disable escape sequences"
-#~ msgstr "Inaktivera escapesekvenser"
+#~ msgid "Hide mp content"
+#~ msgstr "Göm flerspelarinnehåll"
 
 #~ msgid ""
 #~ "Disable escape sequences, e.g. chat coloring.\n"
@@ -6183,8 +6068,155 @@ msgstr "cURL-timeout"
 #~ "vill inaktivera\n"
 #~ "escapesekvenser som genereras av moddar."
 
-#~ msgid "Hide mp content"
-#~ msgstr "Göm flerspelarinnehåll"
+#~ msgid "Disable escape sequences"
+#~ msgstr "Inaktivera escapesekvenser"
 
-#~ msgid "Advanced Settings"
-#~ msgstr "Avancerade Inställningar"
+#~ msgid "Depth below which you'll find massive caves."
+#~ msgstr "Djup inunder du kan hitta massiva grottor."
+
+#~ msgid "Crouch speed"
+#~ msgstr "Smyghastighet"
+
+#~ msgid ""
+#~ "Creates unpredictable water features in caves.\n"
+#~ "These can make mining difficult. Zero disables them. (0-10)"
+#~ msgstr ""
+#~ "Skapar oförutsägbara förekomster av vatten i grottor.\n"
+#~ "Dessa kan göra gruvgrävande besvärligt. Noll inaktiverar dem. (0-10)"
+
+#~ msgid ""
+#~ "Creates unpredictable lava features in caves.\n"
+#~ "These can make mining difficult. Zero disables them. (0-10)"
+#~ msgstr ""
+#~ "Skapar oförutsägbara förekomster av lava i grottor.\n"
+#~ "Dessa kan göra gruvgrävande besvärligt. Noll inaktiverar dem. (0-10)"
+
+#~ msgid "Continuous forward movement (only used for testing)."
+#~ msgstr "Fortlöpande rörelse framåt (andvänds enbart för testande)."
+
+#~ msgid "Console key"
+#~ msgstr "Konsoltangent"
+
+#~ msgid "Cloud height"
+#~ msgstr "Molnhöjd"
+
+#~ msgid "Caves and tunnels form at the intersection of the two noises"
+#~ msgstr "Grottor och tunnlar bildas vid korsningen av de två oljuden"
+
+#~ msgid "Autorun key"
+#~ msgstr "Tangent för autospring"
+
+#~ msgid "Approximate (X,Y,Z) scale of fractal in nodes."
+#~ msgstr "Approximera (X,Y,Z)-skala av fraktaler i noder."
+
+#~ msgid ""
+#~ "Announce to this serverlist.\n"
+#~ "If you want to announce your ipv6 address, use  serverlist_url = v6."
+#~ "servers.minetest.net."
+#~ msgstr ""
+#~ "Offentliggör till denna serverlista.\n"
+#~ "Om du vill offentliggöra din ipv6 address, använd  serverlist_url = v6."
+#~ "servers.minetest.net."
+
+#~ msgid ""
+#~ "Android systems only: Tries to create inventory textures from meshes\n"
+#~ "when no supported render was found."
+#~ msgstr ""
+#~ "Endast Androidsystem: Försöker skapa förrådtexturer från meshes\n"
+#~ "när ingen stöttad render hittades."
+
+#~ msgid "Active Block Modifier interval"
+#~ msgstr "Aktivt Blockmodifierarintervall"
+
+#~ msgid "Prior"
+#~ msgstr "Tidigare"
+
+#~ msgid "Next"
+#~ msgstr "Nästa"
+
+#~ msgid "Use"
+#~ msgstr "Använd"
+
+#~ msgid "Print stacks"
+#~ msgstr "Skriv ut travar"
+
+#~ msgid "Volume changed to 100%"
+#~ msgstr "Volym ändrad till 100%"
+
+#~ msgid "Volume changed to 0%"
+#~ msgstr "Volym ändrad till 0%"
+
+#~ msgid "No information available"
+#~ msgstr "Ingen information tillgänglig"
+
+#~ msgid "Normal Mapping"
+#~ msgstr "Normal-mapping"
+
+#~ msgid "Play Online"
+#~ msgstr "Spela online"
+
+#~ msgid "Uninstall selected modpack"
+#~ msgstr "Avinstallera valt modpaket"
+
+#~ msgid "Local Game"
+#~ msgstr "Lokalt spel"
+
+#~ msgid "re-Install"
+#~ msgstr "Ominstallera"
+
+#~ msgid "Unsorted"
+#~ msgstr "Osorterat"
+
+#~ msgid "Successfully installed:"
+#~ msgstr "Lyckades installera:"
+
+#~ msgid "Shortname:"
+#~ msgstr "Kort namn:"
+
+#~ msgid "Rating"
+#~ msgstr "Omdöme"
+
+#~ msgid "Page $1 of $2"
+#~ msgstr "Sida $1 av $2"
+
+#~ msgid "Subgame Mods"
+#~ msgstr "Underspelsmoddar"
+
+#~ msgid "Select path"
+#~ msgstr "Välj sökväg"
+
+#~ msgid "Possible values are: "
+#~ msgstr "Möjliga värden är: "
+
+#~ msgid "Please enter a comma seperated list of flags."
+#~ msgstr "Var vänlig ange ett kommaseparerad lista med flaggor."
+
+#~ msgid "Optionally the lacunarity can be appended with a leading comma."
+#~ msgstr ""
+#~ "Takförhållandet kan eventuellt läggas till med ett främre kommatecken."
+
+#~ msgid ""
+#~ "Format: <offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>), <seed>, "
+#~ "<octaves>, <persistence>"
+#~ msgstr ""
+#~ "Format: <förskjutning>, <skala>, (<spridningX>, <spridningY>, "
+#~ "<spridningZ>), <frö>, <oktaver>, <bestående>"
+
+#~ msgid "Format is 3 numbers separated by commas and inside brackets."
+#~ msgstr "Formatet är tre nummer separerade med komma och inom paranteser."
+
+#~ msgid "\"$1\" is not a valid flag."
+#~ msgstr "\"$1\" är inte en giltig flagga."
+
+#~ msgid "No worldname given or no game selected"
+#~ msgstr "Inget världnamn angett eller inget spel valt"
+
+#~ msgid "Enable MP"
+#~ msgstr "Aktivera MP"
+
+#~ msgid "Disable MP"
+#~ msgstr "Inaktivera MP"
+
+#, fuzzy
+#~ msgid "Content Store"
+#~ msgstr "Stäng butiken"

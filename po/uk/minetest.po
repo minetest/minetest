@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-02-14 07:46+0100\n"
+"POT-Creation-Date: 2019-02-14 19:14+0100\n"
 "PO-Revision-Date: 2019-02-09 05:01+0000\n"
 "Last-Translator: Muhammad Rifqi Priyo Susanto "
 "<muhammadrifqipriyosusanto@gmail.com>\n"
@@ -1847,15 +1847,15 @@ msgid "2D noise that controls the shape/size of step mountains."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "2D noise that controls the size/occurance of ridged mountain ranges."
+msgid "2D noise that controls the size/occurrence of ridged mountain ranges."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "2D noise that controls the size/occurance of rolling hills."
+msgid "2D noise that controls the size/occurrence of rolling hills."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "2D noise that controls the size/occurance of step mountain ranges."
+msgid "2D noise that controls the size/occurrence of step mountain ranges."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -2057,9 +2057,7 @@ msgid "Automatic forwards key"
 msgstr "Вперед"
 
 #: src/settings_translation_file.cpp
-msgid ""
-"Automatically jump up single-node obstacles.\n"
-"type: bool"
+msgid "Automatically jump up single-node obstacles."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -2211,12 +2209,11 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid ""
 "Changes the main menu UI:\n"
-"-   Full:  Multple singleplayer worlds, game choice, texture pack chooser, "
+"-   Full:  Multiple singleplayer worlds, game choice, texture pack chooser, "
 "etc.\n"
 "-   Simple: One singleplayer world, no game or texture pack choosers. May "
 "be\n"
-"necessary for smaller screens.\n"
-"-   Auto: Simple on Android, full on everything else."
+"necessary for smaller screens."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -2306,6 +2303,17 @@ msgstr "Кольоровий туман"
 
 #: src/settings_translation_file.cpp
 msgid ""
+"Comma-separated list of flags to hide in the content repository.\n"
+"\"nonfree\" can be used to hide packages which do not qualify as 'free "
+"software',\n"
+"as defined by the Free Software Foundation.\n"
+"You can also specify content ratings.\n"
+"These flags are independent from Minetest versions,\n"
+"so see a full list at https://content.minetest.net/help/content_flags/"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
 "Comma-separated list of mods that are allowed to access HTTP APIs, which\n"
 "allow them to upload and download data to/from the internet."
 msgstr ""
@@ -2345,9 +2353,13 @@ msgid "Console height"
 msgstr "Висота консолі"
 
 #: src/settings_translation_file.cpp
+msgid "ContentDB Flag Blacklist"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 #, fuzzy
-msgid "Content Store"
-msgstr "Вийти з крамнички"
+msgid "ContentDB URL"
+msgstr "Продовжити"
 
 #: src/settings_translation_file.cpp
 msgid "Continuous forward"
@@ -2649,6 +2661,16 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Enable random user input (only used for testing)."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Enable register confirmation"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Enable register confirmation when connecting to server.\n"
+"If disabled, new account will be registered automatically."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3338,12 +3360,6 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"If enabled together with fly mode, makes move directions relative to the "
-"player's pitch."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
 "If enabled together with fly mode, player is able to fly through solid "
 "nodes.\n"
 "This requires the \"noclip\" privilege on the server."
@@ -3370,6 +3386,12 @@ msgstr ""
 msgid ""
 "If enabled, invalid world data won't cause the server to shut down.\n"
 "Only enable this if you know what you are doing."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"If enabled, makes move directions relative to the player's pitch when flying "
+"or swimming."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3983,7 +4005,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Key for toggling pitch fly mode.\n"
+"Key for toggling pitch move mode.\n"
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
@@ -4251,7 +4273,7 @@ msgstr ""
 msgid ""
 "Map generation attributes specific to Mapgen Valleys.\n"
 "'altitude_chill': Reduces heat with altitude.\n"
-"'humid_rivers': Increases humidity around rivers and where water pools.\n"
+"'humid_rivers': Increases humidity around rivers.\n"
 "'vary_river_depth': If enabled, low humidity and high heat causes rivers\n"
 "to become shallower and occasionally dry.\n"
 "'altitude_dry': Reduces humidity with altitude."
@@ -4676,11 +4698,16 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid ""
 "Number of emerge threads to use.\n"
-"Make this field blank or 0, or increase this number to use multiple "
-"threads.\n"
-"On multiprocessor systems, this will improve mapgen speed greatly at the "
-"cost\n"
-"of slightly buggy caves."
+"Empty or 0 value:\n"
+"-    Automatic selection. The number of emerge threads will be\n"
+"-    'number of processors - 2', with a lower limit of 1.\n"
+"Any other value:\n"
+"-    Specifies the number of emerge threads, with a lower limit of 1.\n"
+"Warning: Increasing the number of emerge threads increases engine mapgen\n"
+"speed, but this may harm game performance by interfering with other\n"
+"processes, especially in singleplayer and/or when running Lua code in\n"
+"'on_generated'.\n"
+"For many users the optimum setting may be '1'."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -4692,6 +4719,10 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Number of parallax occlusion iterations."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Online Content Repository"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -4766,11 +4797,11 @@ msgstr "Фізика"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
-msgid "Pitch fly key"
+msgid "Pitch move key"
 msgstr "Кнопка для польоту"
 
 #: src/settings_translation_file.cpp
-msgid "Pitch fly mode"
+msgid "Pitch move mode"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -4881,14 +4912,16 @@ msgstr "Шлях для звіту"
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Restricts the access of certain client-side functions on servers\n"
-"Combine these byteflags below to restrict client-side features:\n"
-"LOAD_CLIENT_MODS: 1 (disable client mods loading)\n"
+"Restricts the access of certain client-side functions on servers.\n"
+"Combine the byteflags below to restrict client-side features, or set to 0\n"
+"for no restrictions:\n"
+"LOAD_CLIENT_MODS: 1 (disable loading client-provided mods)\n"
 "CHAT_MESSAGES: 2 (disable send_chat_message call client-side)\n"
 "READ_ITEMDEFS: 4 (disable get_item_def call client-side)\n"
 "READ_NODEDEFS: 8 (disable get_node_def call client-side)\n"
 "LOOKUP_NODES_LIMIT: 16 (limits get_node call client-side to\n"
-"csm_restriction_noderange)"
+"csm_restriction_noderange)\n"
+"READ_PLAYERINFO: 32 (disable get_player_names call client-side)"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5150,16 +5183,6 @@ msgid "Show entity selection boxes"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Show non-free packages"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Show packages in the content store that do not qualify as 'free software'\n"
-"as defined by the Free Software Foundation."
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid "Shutdown message"
 msgstr ""
 
@@ -5345,6 +5368,10 @@ msgid ""
 "However, as this possibility is new, thus may not be used by older servers,\n"
 "this option allows enforcing it for certain node types. Note though that\n"
 "that is considered EXPERIMENTAL and may not work properly."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "The URL for the content repository"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5893,20 +5920,195 @@ msgstr ""
 msgid "cURL timeout"
 msgstr ""
 
-#~ msgid "Disable MP"
-#~ msgstr "Вимкнути модпак"
+#~ msgid "Advanced Settings"
+#~ msgstr "Додаткові налаштування"
 
-#~ msgid "Enable MP"
-#~ msgstr "Увімкнути модпак"
+#, fuzzy
+#~ msgid "Preload inventory textures"
+#~ msgstr "Завантаження текстур..."
 
-#~ msgid "No worldname given or no game selected"
-#~ msgstr "Назву світу не задано або не обрано гру"
+#~ msgid "Scaling factor applied to menu elements: "
+#~ msgstr "Масштабування елементів меню: "
 
-#~ msgid "\"$1\" is not a valid flag."
-#~ msgstr "\"$1\" не є правильним параметром."
+#, fuzzy
+#~ msgid "Downloading"
+#~ msgstr "Вниз"
 
-#~ msgid "Format is 3 numbers separated by commas and inside brackets."
-#~ msgstr "Формат: 3 номера, відокремлених комами і всередині дужок."
+#~ msgid "Left click: Move all items, Right click: Move single item"
+#~ msgstr ""
+#~ "Ліва кнопка миші: Перемістити усі предмети, Права кнопка миші: "
+#~ "Перемістити один предмет"
+
+#~ msgid "is required by:"
+#~ msgstr "необхідний для:"
+
+#~ msgid "Configuration saved.  "
+#~ msgstr "Налаштування Збережено.  "
+
+#~ msgid "Warning: Configuration not consistent.  "
+#~ msgstr "Попередження: Помилкова конфігурація.  "
+
+#~ msgid "Cannot create world: Name contains invalid characters"
+#~ msgstr "Неможливо створити світ: Ім'я містить недопустимі символи"
+
+#~ msgid "Show Public"
+#~ msgstr "Показати Публічні"
+
+#~ msgid "Show Favorites"
+#~ msgstr "Показати Улюблені"
+
+#~ msgid "Leave address blank to start a local server."
+#~ msgstr "Залишіть адресу незаповненою для створення локального серверу."
+
+#~ msgid "Create world"
+#~ msgstr "Створити світ"
+
+#~ msgid "Address required."
+#~ msgstr "Адреса необхідна."
+
+#~ msgid "Cannot delete world: Nothing selected"
+#~ msgstr "Неможливо видалити світ: Нічого не вибрано"
+
+#~ msgid "Files to be deleted"
+#~ msgstr "Файлів, що підлягають видаленню"
+
+#~ msgid "Cannot create world: No games found"
+#~ msgstr "Неможливо створити світ: Не знайдено жодної гри"
+
+#~ msgid "Cannot configure world: Nothing selected"
+#~ msgstr "Неможливо налаштувати світ: Нічого не вибрано"
+
+#~ msgid "Failed to delete all world files"
+#~ msgstr "Помилка при видаленні файлів світу"
+
+#, fuzzy
+#~ msgid "Finite Liquid"
+#~ msgstr "Кінцеві рідини"
+
+#~ msgid "Preload item visuals"
+#~ msgstr "Попереднє завантаження зображень"
+
+#, fuzzy
+#~ msgid "Password"
+#~ msgstr "Старий Пароль"
+
+#, fuzzy
+#~ msgid "If enabled, "
+#~ msgstr "Увімкнено"
+
+#~ msgid "No!!!"
+#~ msgstr "Ні!!!"
+
+#~ msgid "Public Serverlist"
+#~ msgstr "Список публічних серверів"
+
+#~ msgid "No of course not!"
+#~ msgstr "Ні, звісно ні!"
+
+#~ msgid "Plus"
+#~ msgstr "Плюс"
+
+#~ msgid "Period"
+#~ msgstr "Крапка"
+
+#~ msgid "PA1"
+#~ msgstr "PA1"
+
+#~ msgid "Minus"
+#~ msgstr "Мінус"
+
+#~ msgid "Final"
+#~ msgstr "Кінець"
+
+#~ msgid "Comma"
+#~ msgstr "Кома"
+
+#~ msgid "Capital"
+#~ msgstr "Caps Lock"
+
+#~ msgid "Attn"
+#~ msgstr "Увага"
+
+#~ msgid "Hide mp content"
+#~ msgstr "Сховати вміст модпаку"
+
+#~ msgid "Lava Features"
+#~ msgstr "Особливості лави"
+
+#~ msgid "Inventory image hack"
+#~ msgstr "Хак для інвентарних рисунків"
+
+#~ msgid "Console key"
+#~ msgstr "Консоль"
+
+#~ msgid "Cloud height"
+#~ msgstr "Висота хмар"
+
+#~ msgid "Prior"
+#~ msgstr "Page Up"
+
+#~ msgid "Next"
+#~ msgstr "Next"
+
+#~ msgid "Use"
+#~ msgstr "Використати"
+
+#~ msgid "Print stacks"
+#~ msgstr "Надрукувати стак"
+
+#~ msgid "Volume changed to 100%"
+#~ msgstr "Гучність 100%"
+
+#~ msgid "Volume changed to 0%"
+#~ msgstr "Гучність 0%"
+
+#~ msgid "No information available"
+#~ msgstr "Інформація відсутня"
+
+#~ msgid "Normal Mapping"
+#~ msgstr "Текстурування нормалів"
+
+#~ msgid "Play Online"
+#~ msgstr "Мережа"
+
+#~ msgid "Uninstall selected modpack"
+#~ msgstr "Видалити обрану збірку модифікацій"
+
+#~ msgid "Local Game"
+#~ msgstr "Локальна гра"
+
+#~ msgid "re-Install"
+#~ msgstr "Перевстановити"
+
+#~ msgid "Unsorted"
+#~ msgstr "Невідсортоване"
+
+#~ msgid "Successfully installed:"
+#~ msgstr "Успішно встановлено:"
+
+#~ msgid "Shortname:"
+#~ msgstr "Коротка назва:"
+
+#~ msgid "Rating"
+#~ msgstr "Оцінка"
+
+#~ msgid "Page $1 of $2"
+#~ msgstr "Сторінка $1 з $2"
+
+#~ msgid "Subgame Mods"
+#~ msgstr "Вбудовані моди"
+
+#~ msgid "Select path"
+#~ msgstr "Вибрати шлях"
+
+#~ msgid "Possible values are: "
+#~ msgstr "Можливі значення: "
+
+#~ msgid "Please enter a comma seperated list of flags."
+#~ msgstr "Будь-ласка введіть перелік параметрів через кому."
+
+#~ msgid "Optionally the lacunarity can be appended with a leading comma."
+#~ msgstr "За бажанням лакунарність може бути доповнена комою попереду."
 
 #~ msgid ""
 #~ "Format: <offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>), <seed>, "
@@ -5915,192 +6117,21 @@ msgstr ""
 #~ "Формат: <offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>), <seed>, "
 #~ "<octaves>, <persistence>"
 
-#~ msgid "Optionally the lacunarity can be appended with a leading comma."
-#~ msgstr "За бажанням лакунарність може бути доповнена комою попереду."
+#~ msgid "Format is 3 numbers separated by commas and inside brackets."
+#~ msgstr "Формат: 3 номера, відокремлених комами і всередині дужок."
 
-#~ msgid "Please enter a comma seperated list of flags."
-#~ msgstr "Будь-ласка введіть перелік параметрів через кому."
+#~ msgid "\"$1\" is not a valid flag."
+#~ msgstr "\"$1\" не є правильним параметром."
 
-#~ msgid "Possible values are: "
-#~ msgstr "Можливі значення: "
+#~ msgid "No worldname given or no game selected"
+#~ msgstr "Назву світу не задано або не обрано гру"
 
-#~ msgid "Select path"
-#~ msgstr "Вибрати шлях"
+#~ msgid "Enable MP"
+#~ msgstr "Увімкнути модпак"
 
-#~ msgid "Subgame Mods"
-#~ msgstr "Вбудовані моди"
-
-#~ msgid "Page $1 of $2"
-#~ msgstr "Сторінка $1 з $2"
-
-#~ msgid "Rating"
-#~ msgstr "Оцінка"
-
-#~ msgid "Shortname:"
-#~ msgstr "Коротка назва:"
-
-#~ msgid "Successfully installed:"
-#~ msgstr "Успішно встановлено:"
-
-#~ msgid "Unsorted"
-#~ msgstr "Невідсортоване"
-
-#~ msgid "re-Install"
-#~ msgstr "Перевстановити"
-
-#~ msgid "Local Game"
-#~ msgstr "Локальна гра"
-
-#~ msgid "Uninstall selected modpack"
-#~ msgstr "Видалити обрану збірку модифікацій"
-
-#~ msgid "Play Online"
-#~ msgstr "Мережа"
-
-#~ msgid "Normal Mapping"
-#~ msgstr "Текстурування нормалів"
-
-#~ msgid "No information available"
-#~ msgstr "Інформація відсутня"
-
-#~ msgid "Volume changed to 0%"
-#~ msgstr "Гучність 0%"
-
-#~ msgid "Volume changed to 100%"
-#~ msgstr "Гучність 100%"
-
-#~ msgid "Print stacks"
-#~ msgstr "Надрукувати стак"
-
-#~ msgid "Use"
-#~ msgstr "Використати"
-
-#~ msgid "Next"
-#~ msgstr "Next"
-
-#~ msgid "Prior"
-#~ msgstr "Page Up"
-
-#~ msgid "Cloud height"
-#~ msgstr "Висота хмар"
-
-#~ msgid "Console key"
-#~ msgstr "Консоль"
-
-#~ msgid "Inventory image hack"
-#~ msgstr "Хак для інвентарних рисунків"
-
-#~ msgid "Lava Features"
-#~ msgstr "Особливості лави"
-
-#~ msgid "Hide mp content"
-#~ msgstr "Сховати вміст модпаку"
-
-#~ msgid "Attn"
-#~ msgstr "Увага"
-
-#~ msgid "Capital"
-#~ msgstr "Caps Lock"
-
-#~ msgid "Comma"
-#~ msgstr "Кома"
-
-#~ msgid "Final"
-#~ msgstr "Кінець"
-
-#~ msgid "Minus"
-#~ msgstr "Мінус"
-
-#~ msgid "PA1"
-#~ msgstr "PA1"
-
-#~ msgid "Period"
-#~ msgstr "Крапка"
-
-#~ msgid "Plus"
-#~ msgstr "Плюс"
-
-#~ msgid "No of course not!"
-#~ msgstr "Ні, звісно ні!"
-
-#~ msgid "Public Serverlist"
-#~ msgstr "Список публічних серверів"
-
-#~ msgid "No!!!"
-#~ msgstr "Ні!!!"
+#~ msgid "Disable MP"
+#~ msgstr "Вимкнути модпак"
 
 #, fuzzy
-#~ msgid "If enabled, "
-#~ msgstr "Увімкнено"
-
-#, fuzzy
-#~ msgid "Password"
-#~ msgstr "Старий Пароль"
-
-#~ msgid "Preload item visuals"
-#~ msgstr "Попереднє завантаження зображень"
-
-#, fuzzy
-#~ msgid "Finite Liquid"
-#~ msgstr "Кінцеві рідини"
-
-#~ msgid "Failed to delete all world files"
-#~ msgstr "Помилка при видаленні файлів світу"
-
-#~ msgid "Cannot configure world: Nothing selected"
-#~ msgstr "Неможливо налаштувати світ: Нічого не вибрано"
-
-#~ msgid "Cannot create world: No games found"
-#~ msgstr "Неможливо створити світ: Не знайдено жодної гри"
-
-#~ msgid "Files to be deleted"
-#~ msgstr "Файлів, що підлягають видаленню"
-
-#~ msgid "Cannot delete world: Nothing selected"
-#~ msgstr "Неможливо видалити світ: Нічого не вибрано"
-
-#~ msgid "Address required."
-#~ msgstr "Адреса необхідна."
-
-#~ msgid "Create world"
-#~ msgstr "Створити світ"
-
-#~ msgid "Leave address blank to start a local server."
-#~ msgstr "Залишіть адресу незаповненою для створення локального серверу."
-
-#~ msgid "Show Favorites"
-#~ msgstr "Показати Улюблені"
-
-#~ msgid "Show Public"
-#~ msgstr "Показати Публічні"
-
-#~ msgid "Cannot create world: Name contains invalid characters"
-#~ msgstr "Неможливо створити світ: Ім'я містить недопустимі символи"
-
-#~ msgid "Warning: Configuration not consistent.  "
-#~ msgstr "Попередження: Помилкова конфігурація.  "
-
-#~ msgid "Configuration saved.  "
-#~ msgstr "Налаштування Збережено.  "
-
-#~ msgid "is required by:"
-#~ msgstr "необхідний для:"
-
-#~ msgid "Left click: Move all items, Right click: Move single item"
-#~ msgstr ""
-#~ "Ліва кнопка миші: Перемістити усі предмети, Права кнопка миші: "
-#~ "Перемістити один предмет"
-
-#, fuzzy
-#~ msgid "Downloading"
-#~ msgstr "Вниз"
-
-#~ msgid "Scaling factor applied to menu elements: "
-#~ msgstr "Масштабування елементів меню: "
-
-#, fuzzy
-#~ msgid "Preload inventory textures"
-#~ msgstr "Завантаження текстур..."
-
-#~ msgid "Advanced Settings"
-#~ msgstr "Додаткові налаштування"
+#~ msgid "Content Store"
+#~ msgstr "Вийти з крамнички"

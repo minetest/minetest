@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-02-14 07:46+0100\n"
+"POT-Creation-Date: 2019-02-14 19:14+0100\n"
 "PO-Revision-Date: 2019-01-24 00:05+0000\n"
 "Last-Translator: Nore <nore@mesecons.net>\n"
 "Language-Team: Estonian <https://hosted.weblate.org/projects/minetest/"
@@ -1846,15 +1846,15 @@ msgid "2D noise that controls the shape/size of step mountains."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "2D noise that controls the size/occurance of ridged mountain ranges."
+msgid "2D noise that controls the size/occurrence of ridged mountain ranges."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "2D noise that controls the size/occurance of rolling hills."
+msgid "2D noise that controls the size/occurrence of rolling hills."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "2D noise that controls the size/occurance of step mountain ranges."
+msgid "2D noise that controls the size/occurrence of step mountain ranges."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -2056,9 +2056,7 @@ msgid "Automatic forwards key"
 msgstr "Edasi"
 
 #: src/settings_translation_file.cpp
-msgid ""
-"Automatically jump up single-node obstacles.\n"
-"type: bool"
+msgid "Automatically jump up single-node obstacles."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -2214,12 +2212,11 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid ""
 "Changes the main menu UI:\n"
-"-   Full:  Multple singleplayer worlds, game choice, texture pack chooser, "
+"-   Full:  Multiple singleplayer worlds, game choice, texture pack chooser, "
 "etc.\n"
 "-   Simple: One singleplayer world, no game or texture pack choosers. May "
 "be\n"
-"necessary for smaller screens.\n"
-"-   Auto: Simple on Android, full on everything else."
+"necessary for smaller screens."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -2316,6 +2313,17 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
+"Comma-separated list of flags to hide in the content repository.\n"
+"\"nonfree\" can be used to hide packages which do not qualify as 'free "
+"software',\n"
+"as defined by the Free Software Foundation.\n"
+"You can also specify content ratings.\n"
+"These flags are independent from Minetest versions,\n"
+"so see a full list at https://content.minetest.net/help/content_flags/"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
 "Comma-separated list of mods that are allowed to access HTTP APIs, which\n"
 "allow them to upload and download data to/from the internet."
 msgstr ""
@@ -2360,8 +2368,13 @@ msgid "Console height"
 msgstr "Konsool"
 
 #: src/settings_translation_file.cpp
-msgid "Content Store"
+msgid "ContentDB Flag Blacklist"
 msgstr ""
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "ContentDB URL"
+msgstr "Jätka"
 
 #: src/settings_translation_file.cpp
 msgid "Continuous forward"
@@ -2671,6 +2684,16 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Enable random user input (only used for testing)."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Enable register confirmation"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Enable register confirmation when connecting to server.\n"
+"If disabled, new account will be registered automatically."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3368,12 +3391,6 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"If enabled together with fly mode, makes move directions relative to the "
-"player's pitch."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
 "If enabled together with fly mode, player is able to fly through solid "
 "nodes.\n"
 "This requires the \"noclip\" privilege on the server."
@@ -3400,6 +3417,12 @@ msgstr ""
 msgid ""
 "If enabled, invalid world data won't cause the server to shut down.\n"
 "Only enable this if you know what you are doing."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"If enabled, makes move directions relative to the player's pitch when flying "
+"or swimming."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -4017,7 +4040,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Key for toggling pitch fly mode.\n"
+"Key for toggling pitch move mode.\n"
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
@@ -4289,7 +4312,7 @@ msgstr ""
 msgid ""
 "Map generation attributes specific to Mapgen Valleys.\n"
 "'altitude_chill': Reduces heat with altitude.\n"
-"'humid_rivers': Increases humidity around rivers and where water pools.\n"
+"'humid_rivers': Increases humidity around rivers.\n"
 "'vary_river_depth': If enabled, low humidity and high heat causes rivers\n"
 "to become shallower and occasionally dry.\n"
 "'altitude_dry': Reduces humidity with altitude."
@@ -4728,11 +4751,16 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid ""
 "Number of emerge threads to use.\n"
-"Make this field blank or 0, or increase this number to use multiple "
-"threads.\n"
-"On multiprocessor systems, this will improve mapgen speed greatly at the "
-"cost\n"
-"of slightly buggy caves."
+"Empty or 0 value:\n"
+"-    Automatic selection. The number of emerge threads will be\n"
+"-    'number of processors - 2', with a lower limit of 1.\n"
+"Any other value:\n"
+"-    Specifies the number of emerge threads, with a lower limit of 1.\n"
+"Warning: Increasing the number of emerge threads increases engine mapgen\n"
+"speed, but this may harm game performance by interfering with other\n"
+"processes, especially in singleplayer and/or when running Lua code in\n"
+"'on_generated'.\n"
+"For many users the optimum setting may be '1'."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -4744,6 +4772,10 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Number of parallax occlusion iterations."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Online Content Repository"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -4816,11 +4848,12 @@ msgid "Physics"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Pitch fly key"
-msgstr ""
+#, fuzzy
+msgid "Pitch move key"
+msgstr "Kujunduslik mängumood"
 
 #: src/settings_translation_file.cpp
-msgid "Pitch fly mode"
+msgid "Pitch move mode"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -4932,14 +4965,16 @@ msgstr "Vali"
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Restricts the access of certain client-side functions on servers\n"
-"Combine these byteflags below to restrict client-side features:\n"
-"LOAD_CLIENT_MODS: 1 (disable client mods loading)\n"
+"Restricts the access of certain client-side functions on servers.\n"
+"Combine the byteflags below to restrict client-side features, or set to 0\n"
+"for no restrictions:\n"
+"LOAD_CLIENT_MODS: 1 (disable loading client-provided mods)\n"
 "CHAT_MESSAGES: 2 (disable send_chat_message call client-side)\n"
 "READ_ITEMDEFS: 4 (disable get_item_def call client-side)\n"
 "READ_NODEDEFS: 8 (disable get_node_def call client-side)\n"
 "LOOKUP_NODES_LIMIT: 16 (limits get_node call client-side to\n"
-"csm_restriction_noderange)"
+"csm_restriction_noderange)\n"
+"READ_PLAYERINFO: 32 (disable get_player_names call client-side)"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5206,16 +5241,6 @@ msgid "Show entity selection boxes"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Show non-free packages"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Show packages in the content store that do not qualify as 'free software'\n"
-"as defined by the Free Software Foundation."
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid "Shutdown message"
 msgstr ""
 
@@ -5403,6 +5428,10 @@ msgid ""
 "However, as this possibility is new, thus may not be used by older servers,\n"
 "this option allows enforcing it for certain node types. Note though that\n"
 "that is considered EXPERIMENTAL and may not work properly."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "The URL for the content repository"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5954,193 +5983,60 @@ msgstr ""
 msgid "cURL timeout"
 msgstr ""
 
-#~ msgid "Disable MP"
-#~ msgstr "Keela MP"
-
-#~ msgid "Enable MP"
-#~ msgstr "Luba MP"
-
-#~ msgid "No worldname given or no game selected"
-#~ msgstr "No nimi või no mäng valitud"
+#, fuzzy
+#~ msgid "Advanced Settings"
+#~ msgstr "Sätted"
 
 #, fuzzy
-#~ msgid "Select path"
-#~ msgstr "Vali"
+#~ msgid "Downloading"
+#~ msgstr "Alla"
 
-#~ msgid "Shortname:"
-#~ msgstr "Lühike nimi:"
-
-#, fuzzy
-#~ msgid "Local Game"
-#~ msgstr "Alusta mängu"
-
-#, fuzzy
-#~ msgid "Normal Mapping"
-#~ msgstr "Väga hea kvaliteet"
-
-#~ msgid "Print stacks"
-#~ msgstr "Prindi kogused"
-
-#~ msgid "Use"
-#~ msgstr "Tegevus"
-
-#~ msgid "Next"
-#~ msgstr "Järgmine"
-
-#~ msgid "Prior"
-#~ msgstr "Eelnev"
-
-#, fuzzy
-#~ msgid "Console key"
-#~ msgstr "Konsool"
-
-#, fuzzy
-#~ msgid "Inventory image hack"
-#~ msgstr "Seljakott"
-
-#, fuzzy
-#~ msgid "Main menu mod manager"
-#~ msgstr "Menüü"
-
-#, fuzzy
-#~ msgid "Use key"
-#~ msgstr "Vajuta nuppu"
-
-#~ msgid "Hide mp content"
-#~ msgstr "Peida mod. pakkide sisu"
-
-#~ msgid "Attn"
-#~ msgstr "Attn"
-
-#~ msgid "Capital"
-#~ msgstr "Caps Lock"
-
-#~ msgid "Comma"
-#~ msgstr "Koma"
-
-#~ msgid "CrSel"
-#~ msgstr "CrSel"
-
-#~ msgid "ExSel"
-#~ msgstr "ExSel"
-
-#~ msgid "Final"
-#~ msgstr "Viimane"
-
-#~ msgid "Junja"
-#~ msgstr "Junja"
-
-#~ msgid "Kana"
-#~ msgstr "Kana"
-
-#~ msgid "Kanji"
-#~ msgstr "Kanji"
-
-#~ msgid "Minus"
-#~ msgstr "Miinus"
-
-#~ msgid "PA1"
-#~ msgstr "PA1"
-
-#~ msgid "Period"
-#~ msgstr "Punkt"
-
-#~ msgid "Plus"
-#~ msgstr "Pluss"
-
-#, fuzzy
-#~ msgid "Mapgen flat cave width"
-#~ msgstr "Põlvkonna kaardid"
-
-#, fuzzy
-#~ msgid "Mapgen fractal cave width"
-#~ msgstr "Põlvkonna kaardid"
-
-#, fuzzy
-#~ msgid "Mapgen fractal fractal"
-#~ msgstr "Põlvkonna kaardid"
-
-#, fuzzy
-#~ msgid "Mapgen fractal iterations"
-#~ msgstr "Põlvkonna kaardid"
-
-#, fuzzy
-#~ msgid "Mapgen fractal offset"
-#~ msgstr "Põlvkonna kaardid"
-
-#, fuzzy
-#~ msgid "Mapgen fractal scale"
-#~ msgstr "Põlvkonna kaardid"
-
-#, fuzzy
-#~ msgid "Mapgen fractal slice w"
-#~ msgstr "Põlvkonna kaardid"
-
-#, fuzzy
-#~ msgid "Mapgen v5 cave width"
-#~ msgstr "Põlvkonna kaardid"
-
-#, fuzzy
-#~ msgid "Mapgen v7 cave width"
-#~ msgstr "Põlvkonna kaardid"
-
-#, fuzzy
-#~ msgid "Useful for mod developers."
-#~ msgstr "Põhiline arendaja"
-
-#~ msgid "Public Serverlist"
-#~ msgstr "Avalikud serverid"
-
-#, fuzzy
-#~ msgid "If enabled, "
-#~ msgstr "Sisse lülitatud"
-
-#~ msgid "GAMES"
-#~ msgstr "MÄNGUD"
-
-#~ msgid "new game"
-#~ msgstr "uus mängu"
-
-#~ msgid "EDIT GAME"
-#~ msgstr "MUUDA MÄNGU"
-
-#, fuzzy
-#~ msgid "Remove selected mod"
-#~ msgstr "Eemalda valitud muutus"
-
-#, fuzzy
-#~ msgid "<<-- Add mod"
-#~ msgstr "<<-- Lisama muutus"
-
-#~ msgid "Name"
-#~ msgstr "Nimi"
-
-#~ msgid "Password"
-#~ msgstr "Parool"
-
-#~ msgid "SETTINGS"
-#~ msgstr "Seaded"
-
-#~ msgid "Preload item visuals"
-#~ msgstr "Lae asjade visuaale"
-
-#, fuzzy
-#~ msgid "Finite Liquid"
-#~ msgstr "Löppev vedelik"
-
-#~ msgid ""
-#~ "Warning: Some mods are not configured yet.\n"
-#~ "They will be enabled by default when you save the configuration.  "
+#~ msgid "Left click: Move all items, Right click: Move single item"
 #~ msgstr ""
-#~ "Hoiatus: Mõned modifikatsioonid pole sätitud veel.\n"
-#~ "Need lülitatakse sisse kohe pärast sätete salvestamist."
+#~ "Vasak hiireklõps: Liiguta kõiki asju, Parem hiireklõps: Liiguta üksikut "
+#~ "asja"
 
-#~ msgid ""
-#~ "Warning: Some configured mods are missing.\n"
-#~ "Their setting will be removed when you save the configuration.  "
-#~ msgstr ""
-#~ "Hoiatus: Mõned konfigureeritud modifikatsioonid on kaotsi läinud.\n"
-#~ "Nende sätted kustutatakse kui salvestada konfiguratsioon."
+#~ msgid "is required by:"
+#~ msgstr "Seda vajavad:"
+
+#~ msgid "Configuration saved.  "
+#~ msgstr "Konfiguratsioon salvestatud. "
+
+#~ msgid "Warning: Configuration not consistent.  "
+#~ msgstr "Hoiatus: Konfiguratsioon pole kindel."
+
+#~ msgid "Cannot create world: Name contains invalid characters"
+#~ msgstr "Maailma loomine ebaõnnestus: Nimes esineb keelatud tähti"
+
+#~ msgid "Show Public"
+#~ msgstr "Näita avalikke"
+
+#~ msgid "Show Favorites"
+#~ msgstr "Näita lemmikuid"
+
+#~ msgid "Leave address blank to start a local server."
+#~ msgstr "Jäta IP lahter tühjaks et alustada LAN serverit."
+
+#~ msgid "Create world"
+#~ msgstr "Loo maailm"
+
+#~ msgid "Address required."
+#~ msgstr "IP on vajalkik."
+
+#~ msgid "Cannot delete world: Nothing selected"
+#~ msgstr "Maailma kustutamine ebaõnnestus: Maailma pole valitud"
+
+#~ msgid "Files to be deleted"
+#~ msgstr "Failid mida kustutada"
+
+#~ msgid "Cannot create world: No games found"
+#~ msgstr "Maailma loomine ebaõnnestus: Mängu ei leitud"
+
+#~ msgid "Cannot configure world: Nothing selected"
+#~ msgstr "Maailma konfigureerimine ebaõnnestus: Pole midagi valitud"
+
+#~ msgid "Failed to delete all world files"
+#~ msgstr "Kõigi maailma failide kustutamine ebaõnnestus"
 
 #~ msgid ""
 #~ "Default Controls:\n"
@@ -6167,57 +6063,190 @@ msgstr ""
 #~ "- ESC: Menüü\n"
 #~ "- T: Jututupa\n"
 
-#~ msgid "Failed to delete all world files"
-#~ msgstr "Kõigi maailma failide kustutamine ebaõnnestus"
-
-#~ msgid "Cannot configure world: Nothing selected"
-#~ msgstr "Maailma konfigureerimine ebaõnnestus: Pole midagi valitud"
-
-#~ msgid "Cannot create world: No games found"
-#~ msgstr "Maailma loomine ebaõnnestus: Mängu ei leitud"
-
-#~ msgid "Files to be deleted"
-#~ msgstr "Failid mida kustutada"
-
-#~ msgid "Cannot delete world: Nothing selected"
-#~ msgstr "Maailma kustutamine ebaõnnestus: Maailma pole valitud"
-
-#~ msgid "Address required."
-#~ msgstr "IP on vajalkik."
-
-#~ msgid "Create world"
-#~ msgstr "Loo maailm"
-
-#~ msgid "Leave address blank to start a local server."
-#~ msgstr "Jäta IP lahter tühjaks et alustada LAN serverit."
-
-#~ msgid "Show Favorites"
-#~ msgstr "Näita lemmikuid"
-
-#~ msgid "Show Public"
-#~ msgstr "Näita avalikke"
-
-#~ msgid "Cannot create world: Name contains invalid characters"
-#~ msgstr "Maailma loomine ebaõnnestus: Nimes esineb keelatud tähti"
-
-#~ msgid "Warning: Configuration not consistent.  "
-#~ msgstr "Hoiatus: Konfiguratsioon pole kindel."
-
-#~ msgid "Configuration saved.  "
-#~ msgstr "Konfiguratsioon salvestatud. "
-
-#~ msgid "is required by:"
-#~ msgstr "Seda vajavad:"
-
-#~ msgid "Left click: Move all items, Right click: Move single item"
+#~ msgid ""
+#~ "Warning: Some configured mods are missing.\n"
+#~ "Their setting will be removed when you save the configuration.  "
 #~ msgstr ""
-#~ "Vasak hiireklõps: Liiguta kõiki asju, Parem hiireklõps: Liiguta üksikut "
-#~ "asja"
+#~ "Hoiatus: Mõned konfigureeritud modifikatsioonid on kaotsi läinud.\n"
+#~ "Nende sätted kustutatakse kui salvestada konfiguratsioon."
+
+#~ msgid ""
+#~ "Warning: Some mods are not configured yet.\n"
+#~ "They will be enabled by default when you save the configuration.  "
+#~ msgstr ""
+#~ "Hoiatus: Mõned modifikatsioonid pole sätitud veel.\n"
+#~ "Need lülitatakse sisse kohe pärast sätete salvestamist."
 
 #, fuzzy
-#~ msgid "Downloading"
-#~ msgstr "Alla"
+#~ msgid "Finite Liquid"
+#~ msgstr "Löppev vedelik"
+
+#~ msgid "Preload item visuals"
+#~ msgstr "Lae asjade visuaale"
+
+#~ msgid "SETTINGS"
+#~ msgstr "Seaded"
+
+#~ msgid "Password"
+#~ msgstr "Parool"
+
+#~ msgid "Name"
+#~ msgstr "Nimi"
 
 #, fuzzy
-#~ msgid "Advanced Settings"
-#~ msgstr "Sätted"
+#~ msgid "<<-- Add mod"
+#~ msgstr "<<-- Lisama muutus"
+
+#, fuzzy
+#~ msgid "Remove selected mod"
+#~ msgstr "Eemalda valitud muutus"
+
+#~ msgid "EDIT GAME"
+#~ msgstr "MUUDA MÄNGU"
+
+#~ msgid "new game"
+#~ msgstr "uus mängu"
+
+#~ msgid "GAMES"
+#~ msgstr "MÄNGUD"
+
+#, fuzzy
+#~ msgid "If enabled, "
+#~ msgstr "Sisse lülitatud"
+
+#~ msgid "Public Serverlist"
+#~ msgstr "Avalikud serverid"
+
+#, fuzzy
+#~ msgid "Useful for mod developers."
+#~ msgstr "Põhiline arendaja"
+
+#, fuzzy
+#~ msgid "Mapgen v7 cave width"
+#~ msgstr "Põlvkonna kaardid"
+
+#, fuzzy
+#~ msgid "Mapgen v5 cave width"
+#~ msgstr "Põlvkonna kaardid"
+
+#, fuzzy
+#~ msgid "Mapgen fractal slice w"
+#~ msgstr "Põlvkonna kaardid"
+
+#, fuzzy
+#~ msgid "Mapgen fractal scale"
+#~ msgstr "Põlvkonna kaardid"
+
+#, fuzzy
+#~ msgid "Mapgen fractal offset"
+#~ msgstr "Põlvkonna kaardid"
+
+#, fuzzy
+#~ msgid "Mapgen fractal iterations"
+#~ msgstr "Põlvkonna kaardid"
+
+#, fuzzy
+#~ msgid "Mapgen fractal fractal"
+#~ msgstr "Põlvkonna kaardid"
+
+#, fuzzy
+#~ msgid "Mapgen fractal cave width"
+#~ msgstr "Põlvkonna kaardid"
+
+#, fuzzy
+#~ msgid "Mapgen flat cave width"
+#~ msgstr "Põlvkonna kaardid"
+
+#~ msgid "Plus"
+#~ msgstr "Pluss"
+
+#~ msgid "Period"
+#~ msgstr "Punkt"
+
+#~ msgid "PA1"
+#~ msgstr "PA1"
+
+#~ msgid "Minus"
+#~ msgstr "Miinus"
+
+#~ msgid "Kanji"
+#~ msgstr "Kanji"
+
+#~ msgid "Kana"
+#~ msgstr "Kana"
+
+#~ msgid "Junja"
+#~ msgstr "Junja"
+
+#~ msgid "Final"
+#~ msgstr "Viimane"
+
+#~ msgid "ExSel"
+#~ msgstr "ExSel"
+
+#~ msgid "CrSel"
+#~ msgstr "CrSel"
+
+#~ msgid "Comma"
+#~ msgstr "Koma"
+
+#~ msgid "Capital"
+#~ msgstr "Caps Lock"
+
+#~ msgid "Attn"
+#~ msgstr "Attn"
+
+#~ msgid "Hide mp content"
+#~ msgstr "Peida mod. pakkide sisu"
+
+#, fuzzy
+#~ msgid "Use key"
+#~ msgstr "Vajuta nuppu"
+
+#, fuzzy
+#~ msgid "Main menu mod manager"
+#~ msgstr "Menüü"
+
+#, fuzzy
+#~ msgid "Inventory image hack"
+#~ msgstr "Seljakott"
+
+#, fuzzy
+#~ msgid "Console key"
+#~ msgstr "Konsool"
+
+#~ msgid "Prior"
+#~ msgstr "Eelnev"
+
+#~ msgid "Next"
+#~ msgstr "Järgmine"
+
+#~ msgid "Use"
+#~ msgstr "Tegevus"
+
+#~ msgid "Print stacks"
+#~ msgstr "Prindi kogused"
+
+#, fuzzy
+#~ msgid "Normal Mapping"
+#~ msgstr "Väga hea kvaliteet"
+
+#, fuzzy
+#~ msgid "Local Game"
+#~ msgstr "Alusta mängu"
+
+#~ msgid "Shortname:"
+#~ msgstr "Lühike nimi:"
+
+#, fuzzy
+#~ msgid "Select path"
+#~ msgstr "Vali"
+
+#~ msgid "No worldname given or no game selected"
+#~ msgstr "No nimi või no mäng valitud"
+
+#~ msgid "Enable MP"
+#~ msgstr "Luba MP"
+
+#~ msgid "Disable MP"
+#~ msgstr "Keela MP"

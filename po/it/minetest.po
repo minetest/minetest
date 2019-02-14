@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-02-14 07:46+0100\n"
+"POT-Creation-Date: 2019-02-14 19:14+0100\n"
 "PO-Revision-Date: 2019-02-09 17:33+0000\n"
 "Last-Translator: Muhammad Rifqi Priyo Susanto "
 "<muhammadrifqipriyosusanto@gmail.com>\n"
@@ -1860,15 +1860,15 @@ msgid "2D noise that controls the shape/size of step mountains."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "2D noise that controls the size/occurance of ridged mountain ranges."
+msgid "2D noise that controls the size/occurrence of ridged mountain ranges."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "2D noise that controls the size/occurance of rolling hills."
+msgid "2D noise that controls the size/occurrence of rolling hills."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "2D noise that controls the size/occurance of step mountain ranges."
+msgid "2D noise that controls the size/occurrence of step mountain ranges."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -2109,9 +2109,7 @@ msgid "Automatic forwards key"
 msgstr "Tasto avanti"
 
 #: src/settings_translation_file.cpp
-msgid ""
-"Automatically jump up single-node obstacles.\n"
-"type: bool"
+msgid "Automatically jump up single-node obstacles."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -2267,12 +2265,11 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid ""
 "Changes the main menu UI:\n"
-"-   Full:  Multple singleplayer worlds, game choice, texture pack chooser, "
+"-   Full:  Multiple singleplayer worlds, game choice, texture pack chooser, "
 "etc.\n"
 "-   Simple: One singleplayer world, no game or texture pack choosers. May "
 "be\n"
-"necessary for smaller screens.\n"
-"-   Auto: Simple on Android, full on everything else."
+"necessary for smaller screens."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -2364,6 +2361,17 @@ msgstr "Nebbia colorata"
 
 #: src/settings_translation_file.cpp
 msgid ""
+"Comma-separated list of flags to hide in the content repository.\n"
+"\"nonfree\" can be used to hide packages which do not qualify as 'free "
+"software',\n"
+"as defined by the Free Software Foundation.\n"
+"You can also specify content ratings.\n"
+"These flags are independent from Minetest versions,\n"
+"so see a full list at https://content.minetest.net/help/content_flags/"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
 "Comma-separated list of mods that are allowed to access HTTP APIs, which\n"
 "allow them to upload and download data to/from the internet."
 msgstr ""
@@ -2409,9 +2417,13 @@ msgid "Console height"
 msgstr "Altezza della console"
 
 #: src/settings_translation_file.cpp
+msgid "ContentDB Flag Blacklist"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 #, fuzzy
-msgid "Content Store"
-msgstr "Chiudere il magazzino"
+msgid "ContentDB URL"
+msgstr "Proseguire"
 
 #: src/settings_translation_file.cpp
 msgid "Continuous forward"
@@ -2755,6 +2767,16 @@ msgid "Enable random user input (only used for testing)."
 msgstr ""
 "Abilita l'ingresso di dati casuali da parte dell'utente (utilizzato solo per "
 "i test)."
+
+#: src/settings_translation_file.cpp
+msgid "Enable register confirmation"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Enable register confirmation when connecting to server.\n"
+"If disabled, new account will be registered automatically."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3579,12 +3601,6 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"If enabled together with fly mode, makes move directions relative to the "
-"player's pitch."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
 "If enabled together with fly mode, player is able to fly through solid "
 "nodes.\n"
 "This requires the \"noclip\" privilege on the server."
@@ -3623,6 +3639,12 @@ msgstr ""
 "Se attivata, i dati non validi del mondo non provocheranno lo\n"
 "spegnimento del server.\n"
 "Attivatela solo se sapete cosa state facendo."
+
+#: src/settings_translation_file.cpp
+msgid ""
+"If enabled, makes move directions relative to the player's pitch when flying "
+"or swimming."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "If enabled, new players cannot join with an empty password."
@@ -4485,7 +4507,7 @@ msgstr ""
 #: src/settings_translation_file.cpp
 #, fuzzy
 msgid ""
-"Key for toggling pitch fly mode.\n"
+"Key for toggling pitch move mode.\n"
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
@@ -4830,7 +4852,7 @@ msgstr ""
 msgid ""
 "Map generation attributes specific to Mapgen Valleys.\n"
 "'altitude_chill': Reduces heat with altitude.\n"
-"'humid_rivers': Increases humidity around rivers and where water pools.\n"
+"'humid_rivers': Increases humidity around rivers.\n"
 "'vary_river_depth': If enabled, low humidity and high heat causes rivers\n"
 "to become shallower and occasionally dry.\n"
 "'altitude_dry': Reduces humidity with altitude."
@@ -5319,20 +5341,19 @@ msgid "Number of emerge threads"
 msgstr "Numero di thread emerge"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Number of emerge threads to use.\n"
-"Make this field blank or 0, or increase this number to use multiple "
-"threads.\n"
-"On multiprocessor systems, this will improve mapgen speed greatly at the "
-"cost\n"
-"of slightly buggy caves."
+"Empty or 0 value:\n"
+"-    Automatic selection. The number of emerge threads will be\n"
+"-    'number of processors - 2', with a lower limit of 1.\n"
+"Any other value:\n"
+"-    Specifies the number of emerge threads, with a lower limit of 1.\n"
+"Warning: Increasing the number of emerge threads increases engine mapgen\n"
+"speed, but this may harm game performance by interfering with other\n"
+"processes, especially in singleplayer and/or when running Lua code in\n"
+"'on_generated'.\n"
+"For many users the optimum setting may be '1'."
 msgstr ""
-"Numero di thread emerge da usare. Lasciate vuoto questo campo, o aumentate "
-"questo\n"
-"numero per usare thread multipli. Su sistemi multiprocessore, questo "
-"migliorerà molto\n"
-"la velocità del generatore mappa al costo di caverne un po' difettose."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5348,6 +5369,10 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Number of parallax occlusion iterations."
 msgstr "Numero di iterazioni di parallax occlusion."
+
+#: src/settings_translation_file.cpp
+msgid "Online Content Repository"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Opaque liquids"
@@ -5427,11 +5452,11 @@ msgstr "Fisica"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
-msgid "Pitch fly key"
+msgid "Pitch move key"
 msgstr "Tasto volo"
 
 #: src/settings_translation_file.cpp
-msgid "Pitch fly mode"
+msgid "Pitch move mode"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5559,14 +5584,16 @@ msgstr "Percorso di rapporto"
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Restricts the access of certain client-side functions on servers\n"
-"Combine these byteflags below to restrict client-side features:\n"
-"LOAD_CLIENT_MODS: 1 (disable client mods loading)\n"
+"Restricts the access of certain client-side functions on servers.\n"
+"Combine the byteflags below to restrict client-side features, or set to 0\n"
+"for no restrictions:\n"
+"LOAD_CLIENT_MODS: 1 (disable loading client-provided mods)\n"
 "CHAT_MESSAGES: 2 (disable send_chat_message call client-side)\n"
 "READ_ITEMDEFS: 4 (disable get_item_def call client-side)\n"
 "READ_NODEDEFS: 8 (disable get_node_def call client-side)\n"
 "LOOKUP_NODES_LIMIT: 16 (limits get_node call client-side to\n"
-"csm_restriction_noderange)"
+"csm_restriction_noderange)\n"
+"READ_PLAYERINFO: 32 (disable get_player_names call client-side)"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5876,16 +5903,6 @@ msgid "Show entity selection boxes"
 msgstr "Mostrare le aree di selezione delle entità"
 
 #: src/settings_translation_file.cpp
-msgid "Show non-free packages"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Show packages in the content store that do not qualify as 'free software'\n"
-"as defined by the Free Software Foundation."
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid "Shutdown message"
 msgstr "Messaggio di spegnimento"
 
@@ -6098,6 +6115,10 @@ msgid ""
 "However, as this possibility is new, thus may not be used by older servers,\n"
 "this option allows enforcing it for certain node types. Note though that\n"
 "that is considered EXPERIMENTAL and may not work properly."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "The URL for the content repository"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -6757,253 +6778,508 @@ msgstr "Limite parallelo cURL"
 msgid "cURL timeout"
 msgstr "Scadenza cURL"
 
-#~ msgid "Disable MP"
-#~ msgstr "Disattivare p.m."
-
-#~ msgid "Enable MP"
-#~ msgstr "Attivare p.m."
-
-#~ msgid "No worldname given or no game selected"
-#~ msgstr ""
-#~ "Non è stato dato un nome al mondo o\n"
-#~ "non si è scelto nessun gioco"
-
-#~ msgid "\"$1\" is not a valid flag."
-#~ msgstr "\"$1\" non è un valore valido."
-
-#~ msgid "Format is 3 numbers separated by commas and inside brackets."
-#~ msgstr ""
-#~ "Il formato è: tre numeri separati da virgole e racchiusi tra parentesi."
+#~ msgid "Advanced Settings"
+#~ msgstr "Impostazioni avanzate"
 
 #~ msgid ""
-#~ "Format: <offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>), <seed>, "
-#~ "<octaves>, <persistence>"
+#~ "Map generation attributes specific to Mapgen flat.\n"
+#~ "Occasional lakes and hills can be added to the flat world.\n"
+#~ "The default flags set in the engine are: none\n"
+#~ "The flags string modifies the engine defaults.\n"
+#~ "Flags that are not specified in the flag string are not modified from the "
+#~ "default.\n"
+#~ "Flags starting with 'no' are used to explicitly disable them."
 #~ msgstr ""
-#~ "Formato: <spostamento>, <scala>, (<diffusioneX>, <diffusioneY>, "
-#~ "<diffusioneZ>),\n"
-#~ "<seme>, <ottave>, <continuità>"
-
-#~ msgid "Optionally the lacunarity can be appended with a leading comma."
-#~ msgstr ""
-#~ "Facoltativamente è possibile posporre la discontinuità anteponendole una "
-#~ "virgola."
-
-#~ msgid "Please enter a comma seperated list of flags."
-#~ msgstr "Per piacere fornite un elenco di opzioni separate da virgole."
-
-#~ msgid "Possible values are: "
-#~ msgstr "I valori possibili sono: "
-
-#~ msgid "Select path"
-#~ msgstr "Scegliere il percorso"
-
-#~ msgid "Subgame Mods"
-#~ msgstr "Moduli del gioco"
-
-#~ msgid "Page $1 of $2"
-#~ msgstr "Pagina $1 di $2"
-
-#~ msgid "Rating"
-#~ msgstr "Valutazione"
-
-#~ msgid "Shortname:"
-#~ msgstr "Abbreviazione:"
-
-#~ msgid "Successfully installed:"
-#~ msgstr "Installazione avvenuta con successo:"
-
-#~ msgid "Unsorted"
-#~ msgstr "Non ordinato"
-
-#~ msgid "re-Install"
-#~ msgstr "Re-installare"
-
-#~ msgid "Local Game"
-#~ msgstr "Gioco locale"
-
-#~ msgid "Uninstall selected modpack"
-#~ msgstr "Disinstallare il p.m. scelto"
-
-#~ msgid "Play Online"
-#~ msgstr "Gioco in rete"
-
-#~ msgid "Normal Mapping"
-#~ msgstr "Normal Mapping"
-
-#~ msgid "No information available"
-#~ msgstr "Nessuna informazione disponibile"
-
-#~ msgid "Volume changed to 0%"
-#~ msgstr "Volume modificato a 0%"
-
-#~ msgid "Volume changed to 100%"
-#~ msgstr "Volume modificato a 100%"
-
-#~ msgid "Print stacks"
-#~ msgstr "Stampa stack"
-
-#~ msgid "Use"
-#~ msgstr "Usare"
-
-#~ msgid "Next"
-#~ msgstr "Pag. giù"
-
-#~ msgid "Prior"
-#~ msgstr "Pag. su"
-
-#~ msgid "Active Block Modifier interval"
-#~ msgstr "Intervallo del modificatore del blocco attivo (ABM)"
+#~ "Attributi di generazione della mappa specifici per Generatore mappa "
+#~ "piatto.\n"
+#~ "Laghi e colline occasionali possono essere aggiunti al mondo piatto.\n"
+#~ "Le impostazioni predefinite impostate nel motore sono: nessuna\n"
+#~ "La stringa delle impostazioni modifica le impostazioni predefinite del "
+#~ "motore.\n"
+#~ "Le impostazioni che non sono specificate nella stringa mantengono i "
+#~ "valori predefiniti.\n"
+#~ "Le impostazioni che iniziano con \"no\" sono usate per disabilitarle "
+#~ "esplicitamente."
 
 #~ msgid ""
-#~ "Android systems only: Tries to create inventory textures from meshes\n"
-#~ "when no supported render was found."
+#~ "Map generation attributes specific to Mapgen v7.\n"
+#~ "The 'ridges' flag controls the rivers.\n"
+#~ "The default flags set in the engine are: mountains, ridges\n"
+#~ "The flags string modifies the engine defaults.\n"
+#~ "Flags that are not specified in the flag string are not modified from the "
+#~ "default.\n"
+#~ "Flags starting with 'no' are used to explicitly disable them."
 #~ msgstr ""
-#~ "Solo per sistemi Android: tenta di creare le immagini dell'inventario\n"
-#~ "dalle mesh quando non si trova nessun renderer supportato."
+#~ "Attributi di generazione della mappa specifici per Generatore mappa v. "
+#~ "6.\n"
+#~ "L'impostazione 'ridges' controlla i fiumi.\n"
+#~ "Le impostazioni predefinite impostate nel motore sono: mountains, ridges\n"
+#~ "La stringa delle impostazioni modifica le impostazioni predefinite del "
+#~ "motore.\n"
+#~ "Le impostazioni che non sono specificate nella stringa mantengono i "
+#~ "valori predefiniti.\n"
+#~ "Le impostazioni che iniziano con \"no\" sono usate per disabilitarle "
+#~ "esplicitamente."
+
+#~ msgid "Item textures..."
+#~ msgstr "Immagini degli oggetti..."
+
+#~ msgid "Preload inventory textures"
+#~ msgstr "Precaricamento delle textures dell'inventario"
+
+#~ msgid "Wanted FPS"
+#~ msgstr "FPS desiderati"
+
+#~ msgid "Add mod:"
+#~ msgstr "Aggiungere un modulo:"
+
+#~ msgid "MODS"
+#~ msgstr "MODULI"
+
+#~ msgid "TEXTURE PACKS"
+#~ msgstr "PACCH. DI IMM."
+
+#~ msgid "SINGLE PLAYER"
+#~ msgstr "GIOC. SING."
+
+#~ msgid "Finite Liquid"
+#~ msgstr "Liquido limitato"
+
+#~ msgid "Preload item visuals"
+#~ msgstr "Precaricare le immagini"
+
+#~ msgid "SETTINGS"
+#~ msgstr "IMPOSTAZIONI"
+
+#~ msgid "Password"
+#~ msgstr "Password"
+
+#~ msgid "Name"
+#~ msgstr "Nome"
+
+#~ msgid "START SERVER"
+#~ msgstr "AVVIO SERVER"
+
+#~ msgid "CLIENT"
+#~ msgstr "CLIENT"
+
+#~ msgid "<<-- Add mod"
+#~ msgstr "<<-- Aggiungere il modulo"
+
+#~ msgid "Remove selected mod"
+#~ msgstr "Rimuovere il modulo selezionato"
+
+#~ msgid "EDIT GAME"
+#~ msgstr "MODIFICARE IL GIOCO"
+
+#~ msgid "new game"
+#~ msgstr "nuovo gioco"
+
+#~ msgid "Mods:"
+#~ msgstr "Moduli:"
+
+#~ msgid "GAMES"
+#~ msgstr "GIOCHI"
+
+#~ msgid "Gamemgr: Unable to copy mod \"$1\" to game \"$2\""
+#~ msgstr "Gestore del gioco: impossibile il modulo \"$1\" nel gioco \"$2\""
+
+#~ msgid "Restart minetest for driver change to take effect"
+#~ msgstr "Riavviare minetest per rendere effettive le modifiche"
+
+#~ msgid "If enabled, "
+#~ msgstr "attivata"
 
 #~ msgid ""
-#~ "Announce to this serverlist.\n"
-#~ "If you want to announce your ipv6 address, use  serverlist_url = v6."
-#~ "servers.minetest.net."
+#~ "Map generation attributes specific to Mapgen Valleys.\n"
+#~ "Flags that are not specified in the flag string are not modified from the "
+#~ "default.\n"
+#~ "Flags starting with \"no\" are used to explicitly disable them.\n"
+#~ "\"altitude_chill\" makes higher elevations colder, which may cause biome "
+#~ "issues.\n"
+#~ "\"humid_rivers\" modifies the humidity around rivers and in areas where "
+#~ "water would tend to pool. It may interfere with delicately adjusted "
+#~ "biomes."
 #~ msgstr ""
-#~ "Annunciare a questo elenco di server.\n"
-#~ "Se volete annunciare il vostro indirizzo ipv6, usate serverlist_url = v6."
-#~ "servers.minetest.net."
+#~ "Attributi di generazione della mappa specifici per Generatore mappa "
+#~ "valli.\n"
+#~ "Le impostazioni che non sono specificate nella stringa mantengono i "
+#~ "valori predefiniti.\n"
+#~ "Le impostazioni che iniziano con \"no\" sono usate per disabilitarle "
+#~ "esplicitamente.\n"
+#~ "\"altitude_chill\" rende più fredde le elevazioni maggiori, il che "
+#~ "potrebbe causare problemi ai biomi.\n"
+#~ "\"humid_rivers\" modifica l'umidità attorno ai fiumi e nelle aree in cui "
+#~ "l'acqua tenderebbe a stagnare. Potrebbe interferire con biomi"
 
-#~ msgid "Approximate (X,Y,Z) scale of fractal in nodes."
-#~ msgstr "Scala approssimativa (X, Y, Z) del frattale in nodi."
+#~ msgid "No!!!"
+#~ msgstr "No!!!"
 
-#~ msgid "Autorun key"
-#~ msgstr "Tasto corsa automatica"
+#~ msgid "Public Serverlist"
+#~ msgstr "Elenco dei server pubblici"
 
-#~ msgid "Caves and tunnels form at the intersection of the two noises"
-#~ msgstr "Caverne e gallerie si formano all'intersezione dei due rumori"
+#~ msgid "No of course not!"
+#~ msgstr "No, certo che no!"
 
-#~ msgid "Cloud height"
-#~ msgstr "Altitudine delle nuvole"
+#~ msgid "Useful for mod developers."
+#~ msgstr "Utile per gli sviluppatori di mod."
 
-#~ msgid "Console key"
-#~ msgstr "Tasto console"
-
-#~ msgid "Continuous forward movement (only used for testing)."
-#~ msgstr "Avanzamento continuo in avanti (utilizzato solo per i test)."
+#~ msgid "How many blocks are flying in the wire simultaneously per client."
+#~ msgstr "Quanti blocchi volano nel cavo simultaneamente per ogni client."
 
 #~ msgid ""
-#~ "Creates unpredictable lava features in caves.\n"
-#~ "These can make mining difficult. Zero disables them. (0-10)"
+#~ "How many blocks are flying in the wire simultaneously for the whole "
+#~ "server."
+#~ msgstr "Quanti blocchi vengono inviati simultaneamente per l'intero server."
+
+#~ msgid "Detailed mod profiling"
+#~ msgstr "Profilo dettagliato del mod."
+
+#~ msgid "Detailed mod profile data. Useful for mod developers."
 #~ msgstr ""
-#~ "Crea tratti caratteristici di lava imprevedibili nelle caverne.\n"
-#~ "Questi possono rendere difficili gli scavi. Zero li disabilita. (0-10)"
+#~ "Dati di profilo del mod. dettagliati. Utile per gli sviluppatori di mod."
 
 #~ msgid ""
-#~ "Creates unpredictable water features in caves.\n"
-#~ "These can make mining difficult. Zero disables them. (0-10)"
+#~ "Where the map generator stops.\n"
+#~ "Please note:\n"
+#~ "-    Limited to 31000 (setting above has no effect)\n"
+#~ "-    The map generator works in groups of 80x80x80 nodes (5x5x5 "
+#~ "MapBlocks).\n"
+#~ "-    Those groups have an offset of -32, -32 nodes from the origin.\n"
+#~ "-    Only groups which are within the map_generation_limit are generated"
 #~ msgstr ""
-#~ "Crea tratti caratteristici d'acqua imprevedibili nelle caverne.\n"
-#~ "Questi possono rendere difficili gli scavi. Zero li disabilita. (0-10)"
-
-#~ msgid "Crouch speed"
-#~ msgstr "Velocità di strisciamento"
-
-#~ msgid "Depth below which you'll find massive caves."
-#~ msgstr "Profondità sotto cui troverete caverne enormi."
-
-#~ msgid "Descending speed"
-#~ msgstr "Velocità di discesa"
-
-#~ msgid "Disable escape sequences"
-#~ msgstr "Disabilitare le sequenze di escape"
+#~ "Dove si ferma il generatore mappa.\n"
+#~ "Si noti prego:\n"
+#~ "-   Limitato a 31.000 (impostazioni superiori non hanno effetto)\n"
+#~ "-   Il generatore mappa lavora in gruppi di 80x80x80 nodi (5x5x5 nodi "
+#~ "mappa).\n"
+#~ "-   Quei gruppi hanno una compensazione di -32, -32 nodi dall'origine.\n"
+#~ "-   Solo i gruppi che rientrano nel map_generation_limit vengono generati."
 
 #~ msgid ""
-#~ "Disable escape sequences, e.g. chat coloring.\n"
-#~ "Use this if you want to run a server with pre-0.4.14 clients and you want "
-#~ "to disable\n"
-#~ "the escape sequences generated by mods."
+#~ "Noise parameters for biome API temperature, humidity and biome blend."
 #~ msgstr ""
-#~ "Disabilita le sequenze di escape, es. testo colorato.\n"
-#~ "Usatela se volete gestire un server con client anteriori alla v. 0.4.14 e "
-#~ "volete\n"
-#~ "disabilitare le sequenze di escape generate dai mod."
+#~ "Parametri di 'rumore' per l'API di temperatura del bioma, umidità e "
+#~ "fusione di bioma."
 
-#~ msgid "Enable view bobbing"
-#~ msgstr "Abilitare l'ondeggiamento visivo"
+#~ msgid "Mapgen v7 terrain persistation noise parameters"
+#~ msgstr "Gen. mappa v. 7, param. del \"rumore\" di continuità del terreno"
 
-#~ msgid "Enables view bobbing when walking."
-#~ msgstr "Attiva l'ondeggiamento della visuale quando si cammina."
+#~ msgid "Mapgen v7 terrain base noise parameters"
+#~ msgstr "Gen. mappa v. 7, param. del 'rumore' di base del terreno"
 
-#~ msgid "Field of view for zoom"
-#~ msgstr "Campo visivo per lo zoom"
+#~ msgid "Mapgen v7 terrain altitude noise parameters"
+#~ msgstr "Gen. mappa v. 7, param. del 'rumore' di altitudine del terreno"
+
+#~ msgid "Mapgen v7 ridge water noise parameters"
+#~ msgstr "Gen. mappa v. 7, param. del 'rumore' dell'acqua dei fiumi"
+
+#~ msgid "Mapgen v7 ridge noise parameters"
+#~ msgstr "Gen. mappa v. 7, param. del 'rumore' dei fiumi"
+
+#~ msgid "Mapgen v7 mountain noise parameters"
+#~ msgstr "Gen. mappa v. 7, param. del 'rumore' delle montagne"
+
+#~ msgid "Mapgen v7 height select noise parameters"
+#~ msgstr "Gen. mappa v. 7, param. del 'rumore' della selezione di altezza"
+
+#~ msgid "Mapgen v7 filler depth noise parameters"
+#~ msgstr "Gen. mappa v. 7, param. del 'rumore' dello riempitore di profondità"
+
+#~ msgid "Mapgen v7 cave2 noise parameters"
+#~ msgstr "Gen. mappa v. 7, parametri del 2° 'rumore' delle caverne"
+
+#~ msgid "Mapgen v7 cave1 noise parameters"
+#~ msgstr "Gen. mappa v. 7, parametri del 1° 'rumore' delle caverne"
+
+#~ msgid "Mapgen v7 cave width"
+#~ msgstr "Gen. mappa v. 7, larghezza delle caverne"
+
+#~ msgid "Mapgen v6 trees noise parameters"
+#~ msgstr "Gen. mappa v. 6, parametri del 'rumore' degli alberi"
+
+#~ msgid "Mapgen v6 terrain base noise parameters"
+#~ msgstr "Gen. mappa v. 6, parametri del 'rumore' di base del terreno"
+
+#~ msgid "Mapgen v6 terrain altitude noise parameters"
+#~ msgstr "Gen. mappa v. 6, parametri del 'rumore' di altitudine del terreno"
+
+#~ msgid "Mapgen v6 steepness noise parameters"
+#~ msgstr "Gen. mappa v. 6, parametri del 'rumore' della ripidità"
+
+#~ msgid "Mapgen v6 mud noise parameters"
+#~ msgstr "Gen. mappa v. 6, parametri del 'rumore' del fango"
+
+#~ msgid "Mapgen v6 desert frequency"
+#~ msgstr "Gen. mappa v. 6, frequenza del deserto"
+
+#~ msgid "Mapgen v6 cave noise parameters"
+#~ msgstr "Gen. mappa v. 6, parametri del 'rumore' delle caverne"
+
+#~ msgid "Mapgen v6 biome noise parameters"
+#~ msgstr "Gen. mappa v. 6, parametri del 'rumore' del bioma"
+
+#~ msgid "Mapgen v6 beach noise parameters"
+#~ msgstr "Gen. mappa v. 6, parametri del 'rumore' della spiaggia"
+
+#~ msgid "Mapgen v6 beach frequency"
+#~ msgstr "Gen. mappa v. 6, frequenza della spiaggia"
+
+#~ msgid "Mapgen v6 apple trees noise parameters"
+#~ msgstr "Gen. mappa v. 6, parametri del 'rumore' degli alberi"
+
+#~ msgid "Mapgen v5 height noise parameters"
+#~ msgstr "Gen. mappa v. 5, parametri 'rumore' dell'altezza"
+
+#~ msgid "Mapgen v5 filler depth noise parameters"
+#~ msgstr ""
+#~ "Gen. mappa v. 5, parametri del 'rumore' dello riempitore di profondità"
+
+#~ msgid "Mapgen v5 factor noise parameters"
+#~ msgstr "Gen. mappa v. 5, parametri del 'rumore' di fabbrica"
+
+#~ msgid "Mapgen v5 cave2 noise parameters"
+#~ msgstr "Gen. mappa v. 5, parametri del 2° 'rumore' delle caverne"
+
+#~ msgid "Mapgen v5 cave1 noise parameters"
+#~ msgstr "Gen. mappa v. 5, parametri del 1° 'rumore' delle caverne"
+
+#~ msgid "Mapgen v5 cave width"
+#~ msgstr "Gen. mappa v. 5, larghezza caverne"
+
+#~ msgid "Mapgen fractal slice w"
+#~ msgstr "Gen. mappa frattale, fetta w"
+
+#~ msgid "Mapgen fractal seabed noise parameters"
+#~ msgstr "Param. del 'rumore' del fondale marino del Gen. mappa frattale"
+
+#~ msgid "Mapgen fractal scale"
+#~ msgstr "Scala del Generatore mappa frattale"
+
+#~ msgid "Mapgen fractal offset"
+#~ msgstr "Compensazione del Generatore mappa frattale"
+
+#~ msgid "Mapgen fractal julia z"
+#~ msgstr "Gen. mappa frattale, julia z"
+
+#~ msgid "Mapgen fractal julia y"
+#~ msgstr "Gen. mappa frattale, julia y"
+
+#~ msgid "Mapgen fractal julia x"
+#~ msgstr "Gen. mappa frattale, julia x"
+
+#~ msgid "Mapgen fractal julia w"
+#~ msgstr "Gen. mappa frattale, julia w"
+
+#~ msgid "Mapgen fractal iterations"
+#~ msgstr "Iterazioni del Generatore mappa frattale"
+
+#~ msgid "Mapgen fractal fractal"
+#~ msgstr "Frattale del Generatore mappa frattale"
+
+#~ msgid "Mapgen fractal filler depth noise parameters"
+#~ msgstr ""
+#~ "Gen. mappa frattale, parametri del 'rumore' dello riempitore di profondità"
+
+#~ msgid "Mapgen fractal cave2 noise parameters"
+#~ msgstr "Gen. mappa frattale, parametri del 2° 'rumore' delle caverne"
+
+#~ msgid "Mapgen fractal cave1 noise parameters"
+#~ msgstr "Gen. mappa frattale, parametri del 1° 'rumore' delle caverne"
+
+#~ msgid "Mapgen fractal cave width"
+#~ msgstr "Gen. mappa frattale, larghezza caverne"
+
+#~ msgid "Mapgen flat terrain noise parameters"
+#~ msgstr "Parametri del 'rumore' del terreno del Generatore mappa piatto"
+
+#~ msgid "Mapgen flat large cave depth"
+#~ msgstr "Profondità delle caverne grandi del Generatore mappa piatto"
+
+#~ msgid "Mapgen flat filler depth noise parameters"
+#~ msgstr ""
+#~ "Gen. mappa piatto, parametri del 'rumore' dello riempitore di profondità"
+
+#~ msgid "Mapgen flat cave2 noise parameters"
+#~ msgstr "Gen. mappa piatto, parametri del 2° 'rumore' delle caverne"
+
+#~ msgid "Mapgen flat cave1 noise parameters"
+#~ msgstr "Gen. mappa piatto, parametri del 1° 'rumore' delle caverne"
+
+#~ msgid "Mapgen flat cave width"
+#~ msgstr "Larghezza delle caverne del Generatore mappa piatto"
+
+#~ msgid "Mapgen biome humidity noise parameters"
+#~ msgstr "Param. del gen. mappa del 'rumore' dell'umidità del bioma"
+
+#~ msgid "Mapgen biome humidity blend noise parameters"
+#~ msgstr "Param. del gen. mappa di misc. del 'rumore' dell'umidità del bioma"
+
+#~ msgid "Mapgen biome heat noise parameters"
+#~ msgstr "Param. del gen. mappa del 'rumore' del calore del bioma"
 
 #~ msgid ""
-#~ "Field of view while zooming in degrees.\n"
-#~ "This requires the \"zoom\" privilege on the server."
+#~ "Determines terrain shape.\n"
+#~ "The 3 numbers in brackets control the scale of the\n"
+#~ "terrain, the 3 numbers should be identical."
 #~ msgstr ""
-#~ "Campo visivo in gradi durante lo zoom.\n"
-#~ "Richiede il privilegio \"zoom\" sul server."
+#~ "Stabilisce la forma del terreno.\n"
+#~ "I tre numeri tra parentesi controllano la scala del\n"
+#~ "terreno, i tre numeri dovrebbero essere identici."
 
 #~ msgid ""
-#~ "From how far clients know about objects, stated in mapblocks (16 nodes)."
+#~ "Controls size of deserts and beaches in Mapgen v6.\n"
+#~ "When snowbiomes are enabled 'mgv6_freq_desert' is ignored."
 #~ msgstr ""
-#~ "Da che distanza i client sanno degli oggetti, espressa in blocchi mappa "
-#~ "(16 nodi)."
+#~ "Controlla la dimensione di spiagge e deserti nel Generatore mappa v.6.\n"
+#~ "Quando sono attivati i biomi di neve 'mgv6_freq_desert' viene ignorato."
 
-#~ msgid "General"
-#~ msgstr "Generali"
+#~ msgid "Plus"
+#~ msgstr "Più"
 
-#~ msgid "Height on which clouds are appearing."
-#~ msgstr "Altezza alla quale appaiono le nuvole."
+#~ msgid "Period"
+#~ msgstr "Punto"
+
+#~ msgid "PA1"
+#~ msgstr "PA1"
+
+#~ msgid "Minus"
+#~ msgstr "Meno"
+
+#~ msgid "Kanji"
+#~ msgstr "Kanji"
+
+#~ msgid "Kana"
+#~ msgstr "ì"
+
+#~ msgid "Junja"
+#~ msgstr "Junja"
+
+#~ msgid "Final"
+#~ msgstr "Finale"
+
+#~ msgid "ExSel"
+#~ msgstr "ExSel"
+
+#~ msgid "CrSel"
+#~ msgstr "CrSel"
+
+#~ msgid "Comma"
+#~ msgstr "Virgola"
+
+#~ msgid "Capital"
+#~ msgstr "Bloc maiusc"
+
+#~ msgid "Attn"
+#~ msgstr "Attenzione"
+
+#~ msgid "Hide mp content"
+#~ msgstr "Nascondi contenuto dei pacchetti"
+
+#~ msgid "Y-level of higher (cliff-top) terrain."
+#~ msgstr "Livello Y del terreno d'altura (cime dei picchi)."
 
 #~ msgid ""
-#~ "How large area of blocks are subject to the active block stuff, stated in "
-#~ "mapblocks (16 nodes).\n"
-#~ "In active blocks objects are loaded and ABMs run."
+#~ "Whether to support older servers before protocol version 25.\n"
+#~ "Enable if you want to connect to 0.4.12 servers and before.\n"
+#~ "Servers starting with 0.4.13 will work, 0.4.12-dev servers may work.\n"
+#~ "Disabling this option will protect your password better."
 #~ msgstr ""
-#~ "Ampiezza delle aree di blocchi soggette alle dinamiche dei blocchi "
-#~ "attivi, espressa in blocchi\n"
-#~ "mappa (16 nodi). Nei blocchi attivi vengono caricati gli oggetti ed "
-#~ "eseguiti gli ABM."
+#~ "Se supportare o meno i vecchi server antecedenti alla versione\n"
+#~ "25 del protocollo.\n"
+#~ "Abilitatela se volete connettervi a server di versione 0.4.12 e\n"
+#~ "precedenti. I server dalla 0.4.13 funzioneranno, i server 0.4.12-dev\n"
+#~ "potrebbero funzionare.\n"
+#~ "Disattivando questa opzione proteggerete meglio la vostra password."
 
-#~ msgid "If enabled, show the server status message on player connection."
-#~ msgstr ""
-#~ "Se attivata, mostra il messaggio di stato del server alla connessione "
-#~ "delle/gli utenti."
+#~ msgid "Water Features"
+#~ msgstr "Tratti distintivi dell'acqua"
 
-#~ msgid "Inventory image hack"
-#~ msgstr "Scorciatoia dell'immagine dell'inventario"
+#~ msgid "Valleys C Flags"
+#~ msgstr "Valori °C delle valli"
 
 #~ msgid ""
-#~ "Iterations of the recursive function.\n"
-#~ "Controls the amount of fine detail."
+#~ "Use mip mapping to scale textures. May slightly increase performance."
 #~ msgstr ""
-#~ "Iterazioni della funzione ricorsiva.\n"
-#~ "Controlla l'ammontare di dettaglio fine."
+#~ "Utilizzare il mip mapping per ridimensionare le immagini.\n"
+#~ "Potrebbe aumentare leggermente la resa."
+
+#~ msgid "Use key"
+#~ msgstr "Tasto usare"
+
+#~ msgid "The rendering back-end for Irrlicht."
+#~ msgstr "Il supporto di rendering per Irrlicht."
+
+#~ msgid "The altitude at which temperature drops by 20C"
+#~ msgstr "L'altitudine a cui le temperature crollano di 20°C"
+
+#~ msgid "Support older servers"
+#~ msgstr "Supportare i vecchi server"
 
 #~ msgid ""
-#~ "Key for opening the chat console.\n"
-#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
-#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ "Size of chunks to be generated at once by mapgen, stated in mapblocks (16 "
+#~ "nodes)."
 #~ msgstr ""
-#~ "Tasto per aprire la console di messaggistica.\n"
-#~ "Si veda http://irrlicht.sourceforge.net/docu/namespaceirr."
-#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ "Dimensione dei pezzi che il generatore mappa deve generare "
+#~ "immediatamente,\n"
+#~ "espressa in blocchi mappa (16 nodi)."
+
+#~ msgid "River noise -- rivers occur close to zero"
+#~ msgstr "Rumore dei fiumi - i fiumi avvengono vicino a zero"
 
 #~ msgid ""
-#~ "Key for printing debug stacks. Used for development.\n"
-#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
-#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ "Name of map generator to be used when creating a new world.\n"
+#~ "Creating a world in the main menu will override this."
 #~ msgstr ""
-#~ "Tasto per la stampa degli stack di debug. Usato per lo sviluppo.\n"
-#~ "Si veda http://irrlicht.sourceforge.net/docu/namespaceirr."
-#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ "Nome del generatore mappa da usare quando si crea un nuovo mondo.\n"
+#~ "Creando un mondo nel menu principale si scavalcherà questa impostazione."
 
-#~ msgid "Lava Features"
-#~ msgstr "Tratti distintivi della lava"
+#~ msgid "Modstore mods list URL"
+#~ msgstr "URL dell'elenco dei mod. del deposito mod."
 
-#~ msgid "Main menu game manager"
-#~ msgstr "Gestore giochi del menu principale"
+#~ msgid "Modstore download URL"
+#~ msgstr "URL di scaricamento del deposito mod."
 
-#~ msgid "Main menu mod manager"
-#~ msgstr "Gestore moduli del menu principale"
+#~ msgid "Modstore details URL"
+#~ msgstr "URL dei dettagli del deposito mod."
+
+#~ msgid "Maximum simultaneous block sends total"
+#~ msgstr "Totale massimo di invii simultanei di blocchi"
+
+#~ msgid "Maximum number of blocks that are simultaneously sent per client."
+#~ msgstr ""
+#~ "Numero massimo di blocchi che sono inviati simultaneamente a ciascun "
+#~ "client."
+
+#~ msgid "Maximum number of blocks that are simultaneously sent in total."
+#~ msgstr ""
+#~ "Numero massimo di blocchi che sono inviati simultaneamente in totale."
+
+#~ msgid "Massive caves form here."
+#~ msgstr "Caverne enormi da qui."
+
+#~ msgid "Massive cave noise"
+#~ msgstr "Rumore delle caverne enormi"
+
+#~ msgid "Massive cave depth"
+#~ msgstr "Profondità delle caverne enormi"
+
+#~ msgid ""
+#~ "Map generation attributes specific to Mapgen v7.\n"
+#~ "The 'ridges' flag enables the rivers.\n"
+#~ "Floatlands are currently experimental and subject to change.\n"
+#~ "Flags that are not specified in the flag string are not modified from the "
+#~ "default.\n"
+#~ "Flags starting with 'no' are used to explicitly disable them."
+#~ msgstr ""
+#~ "Attributi di generazione della mappa specifici per Mapgen v7.\n"
+#~ "L'opzione 'ridges' (crinali) abilita i fiumi.\n"
+#~ "Le isole fluttuanti sono attualmente sperimentali e soggette a "
+#~ "cambiamento.\n"
+#~ "Le opzioni non specificate nella stringa mantengono l'impostazione "
+#~ "predefinita.\n"
+#~ "Le opzioni che iniziano con 'no' sono usate per disattivarle "
+#~ "espressamente."
 
 #~ msgid ""
 #~ "Map generation attributes specific to Mapgen Valleys.\n"
@@ -7028,505 +7304,269 @@ msgstr "Scadenza cURL"
 #~ "Le opzioni che iniziano con 'no' sono usate per disattivarle "
 #~ "espressamente."
 
-#~ msgid ""
-#~ "Map generation attributes specific to Mapgen v7.\n"
-#~ "The 'ridges' flag enables the rivers.\n"
-#~ "Floatlands are currently experimental and subject to change.\n"
-#~ "Flags that are not specified in the flag string are not modified from the "
-#~ "default.\n"
-#~ "Flags starting with 'no' are used to explicitly disable them."
-#~ msgstr ""
-#~ "Attributi di generazione della mappa specifici per Mapgen v7.\n"
-#~ "L'opzione 'ridges' (crinali) abilita i fiumi.\n"
-#~ "Le isole fluttuanti sono attualmente sperimentali e soggette a "
-#~ "cambiamento.\n"
-#~ "Le opzioni non specificate nella stringa mantengono l'impostazione "
-#~ "predefinita.\n"
-#~ "Le opzioni che iniziano con 'no' sono usate per disattivarle "
-#~ "espressamente."
+#~ msgid "Main menu mod manager"
+#~ msgstr "Gestore moduli del menu principale"
 
-#~ msgid "Massive cave depth"
-#~ msgstr "Profondità delle caverne enormi"
+#~ msgid "Main menu game manager"
+#~ msgstr "Gestore giochi del menu principale"
 
-#~ msgid "Massive cave noise"
-#~ msgstr "Rumore delle caverne enormi"
-
-#~ msgid "Massive caves form here."
-#~ msgstr "Caverne enormi da qui."
-
-#~ msgid "Maximum number of blocks that are simultaneously sent in total."
-#~ msgstr ""
-#~ "Numero massimo di blocchi che sono inviati simultaneamente in totale."
-
-#~ msgid "Maximum number of blocks that are simultaneously sent per client."
-#~ msgstr ""
-#~ "Numero massimo di blocchi che sono inviati simultaneamente a ciascun "
-#~ "client."
-
-#~ msgid "Maximum simultaneous block sends total"
-#~ msgstr "Totale massimo di invii simultanei di blocchi"
-
-#~ msgid "Modstore details URL"
-#~ msgstr "URL dei dettagli del deposito mod."
-
-#~ msgid "Modstore download URL"
-#~ msgstr "URL di scaricamento del deposito mod."
-
-#~ msgid "Modstore mods list URL"
-#~ msgstr "URL dell'elenco dei mod. del deposito mod."
+#~ msgid "Lava Features"
+#~ msgstr "Tratti distintivi della lava"
 
 #~ msgid ""
-#~ "Name of map generator to be used when creating a new world.\n"
-#~ "Creating a world in the main menu will override this."
+#~ "Key for printing debug stacks. Used for development.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
 #~ msgstr ""
-#~ "Nome del generatore mappa da usare quando si crea un nuovo mondo.\n"
-#~ "Creando un mondo nel menu principale si scavalcherà questa impostazione."
-
-#~ msgid "River noise -- rivers occur close to zero"
-#~ msgstr "Rumore dei fiumi - i fiumi avvengono vicino a zero"
+#~ "Tasto per la stampa degli stack di debug. Usato per lo sviluppo.\n"
+#~ "Si veda http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #~ msgid ""
-#~ "Size of chunks to be generated at once by mapgen, stated in mapblocks (16 "
-#~ "nodes)."
+#~ "Key for opening the chat console.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
 #~ msgstr ""
-#~ "Dimensione dei pezzi che il generatore mappa deve generare "
-#~ "immediatamente,\n"
-#~ "espressa in blocchi mappa (16 nodi)."
-
-#~ msgid "Support older servers"
-#~ msgstr "Supportare i vecchi server"
-
-#~ msgid "The altitude at which temperature drops by 20C"
-#~ msgstr "L'altitudine a cui le temperature crollano di 20°C"
-
-#~ msgid "The rendering back-end for Irrlicht."
-#~ msgstr "Il supporto di rendering per Irrlicht."
-
-#~ msgid "Use key"
-#~ msgstr "Tasto usare"
+#~ "Tasto per aprire la console di messaggistica.\n"
+#~ "Si veda http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #~ msgid ""
-#~ "Use mip mapping to scale textures. May slightly increase performance."
+#~ "Iterations of the recursive function.\n"
+#~ "Controls the amount of fine detail."
 #~ msgstr ""
-#~ "Utilizzare il mip mapping per ridimensionare le immagini.\n"
-#~ "Potrebbe aumentare leggermente la resa."
+#~ "Iterazioni della funzione ricorsiva.\n"
+#~ "Controlla l'ammontare di dettaglio fine."
 
-#~ msgid "Valleys C Flags"
-#~ msgstr "Valori °C delle valli"
+#~ msgid "Inventory image hack"
+#~ msgstr "Scorciatoia dell'immagine dell'inventario"
 
-#~ msgid "Water Features"
-#~ msgstr "Tratti distintivi dell'acqua"
+#~ msgid "If enabled, show the server status message on player connection."
+#~ msgstr ""
+#~ "Se attivata, mostra il messaggio di stato del server alla connessione "
+#~ "delle/gli utenti."
 
 #~ msgid ""
-#~ "Whether to support older servers before protocol version 25.\n"
-#~ "Enable if you want to connect to 0.4.12 servers and before.\n"
-#~ "Servers starting with 0.4.13 will work, 0.4.12-dev servers may work.\n"
-#~ "Disabling this option will protect your password better."
+#~ "How large area of blocks are subject to the active block stuff, stated in "
+#~ "mapblocks (16 nodes).\n"
+#~ "In active blocks objects are loaded and ABMs run."
 #~ msgstr ""
-#~ "Se supportare o meno i vecchi server antecedenti alla versione\n"
-#~ "25 del protocollo.\n"
-#~ "Abilitatela se volete connettervi a server di versione 0.4.12 e\n"
-#~ "precedenti. I server dalla 0.4.13 funzioneranno, i server 0.4.12-dev\n"
-#~ "potrebbero funzionare.\n"
-#~ "Disattivando questa opzione proteggerete meglio la vostra password."
+#~ "Ampiezza delle aree di blocchi soggette alle dinamiche dei blocchi "
+#~ "attivi, espressa in blocchi\n"
+#~ "mappa (16 nodi). Nei blocchi attivi vengono caricati gli oggetti ed "
+#~ "eseguiti gli ABM."
 
-#~ msgid "Y-level of higher (cliff-top) terrain."
-#~ msgstr "Livello Y del terreno d'altura (cime dei picchi)."
+#~ msgid "Height on which clouds are appearing."
+#~ msgstr "Altezza alla quale appaiono le nuvole."
 
-#~ msgid "Hide mp content"
-#~ msgstr "Nascondi contenuto dei pacchetti"
-
-#~ msgid "Attn"
-#~ msgstr "Attenzione"
-
-#~ msgid "Capital"
-#~ msgstr "Bloc maiusc"
-
-#~ msgid "Comma"
-#~ msgstr "Virgola"
-
-#~ msgid "CrSel"
-#~ msgstr "CrSel"
-
-#~ msgid "ExSel"
-#~ msgstr "ExSel"
-
-#~ msgid "Final"
-#~ msgstr "Finale"
-
-#~ msgid "Junja"
-#~ msgstr "Junja"
-
-#~ msgid "Kana"
-#~ msgstr "ì"
-
-#~ msgid "Kanji"
-#~ msgstr "Kanji"
-
-#~ msgid "Minus"
-#~ msgstr "Meno"
-
-#~ msgid "PA1"
-#~ msgstr "PA1"
-
-#~ msgid "Period"
-#~ msgstr "Punto"
-
-#~ msgid "Plus"
-#~ msgstr "Più"
+#~ msgid "General"
+#~ msgstr "Generali"
 
 #~ msgid ""
-#~ "Controls size of deserts and beaches in Mapgen v6.\n"
-#~ "When snowbiomes are enabled 'mgv6_freq_desert' is ignored."
+#~ "From how far clients know about objects, stated in mapblocks (16 nodes)."
 #~ msgstr ""
-#~ "Controlla la dimensione di spiagge e deserti nel Generatore mappa v.6.\n"
-#~ "Quando sono attivati i biomi di neve 'mgv6_freq_desert' viene ignorato."
+#~ "Da che distanza i client sanno degli oggetti, espressa in blocchi mappa "
+#~ "(16 nodi)."
 
 #~ msgid ""
-#~ "Determines terrain shape.\n"
-#~ "The 3 numbers in brackets control the scale of the\n"
-#~ "terrain, the 3 numbers should be identical."
+#~ "Field of view while zooming in degrees.\n"
+#~ "This requires the \"zoom\" privilege on the server."
 #~ msgstr ""
-#~ "Stabilisce la forma del terreno.\n"
-#~ "I tre numeri tra parentesi controllano la scala del\n"
-#~ "terreno, i tre numeri dovrebbero essere identici."
+#~ "Campo visivo in gradi durante lo zoom.\n"
+#~ "Richiede il privilegio \"zoom\" sul server."
 
-#~ msgid "Mapgen biome heat noise parameters"
-#~ msgstr "Param. del gen. mappa del 'rumore' del calore del bioma"
+#~ msgid "Field of view for zoom"
+#~ msgstr "Campo visivo per lo zoom"
 
-#~ msgid "Mapgen biome humidity blend noise parameters"
-#~ msgstr "Param. del gen. mappa di misc. del 'rumore' dell'umidità del bioma"
+#~ msgid "Enables view bobbing when walking."
+#~ msgstr "Attiva l'ondeggiamento della visuale quando si cammina."
 
-#~ msgid "Mapgen biome humidity noise parameters"
-#~ msgstr "Param. del gen. mappa del 'rumore' dell'umidità del bioma"
-
-#~ msgid "Mapgen flat cave width"
-#~ msgstr "Larghezza delle caverne del Generatore mappa piatto"
-
-#~ msgid "Mapgen flat cave1 noise parameters"
-#~ msgstr "Gen. mappa piatto, parametri del 1° 'rumore' delle caverne"
-
-#~ msgid "Mapgen flat cave2 noise parameters"
-#~ msgstr "Gen. mappa piatto, parametri del 2° 'rumore' delle caverne"
-
-#~ msgid "Mapgen flat filler depth noise parameters"
-#~ msgstr ""
-#~ "Gen. mappa piatto, parametri del 'rumore' dello riempitore di profondità"
-
-#~ msgid "Mapgen flat large cave depth"
-#~ msgstr "Profondità delle caverne grandi del Generatore mappa piatto"
-
-#~ msgid "Mapgen flat terrain noise parameters"
-#~ msgstr "Parametri del 'rumore' del terreno del Generatore mappa piatto"
-
-#~ msgid "Mapgen fractal cave width"
-#~ msgstr "Gen. mappa frattale, larghezza caverne"
-
-#~ msgid "Mapgen fractal cave1 noise parameters"
-#~ msgstr "Gen. mappa frattale, parametri del 1° 'rumore' delle caverne"
-
-#~ msgid "Mapgen fractal cave2 noise parameters"
-#~ msgstr "Gen. mappa frattale, parametri del 2° 'rumore' delle caverne"
-
-#~ msgid "Mapgen fractal filler depth noise parameters"
-#~ msgstr ""
-#~ "Gen. mappa frattale, parametri del 'rumore' dello riempitore di profondità"
-
-#~ msgid "Mapgen fractal fractal"
-#~ msgstr "Frattale del Generatore mappa frattale"
-
-#~ msgid "Mapgen fractal iterations"
-#~ msgstr "Iterazioni del Generatore mappa frattale"
-
-#~ msgid "Mapgen fractal julia w"
-#~ msgstr "Gen. mappa frattale, julia w"
-
-#~ msgid "Mapgen fractal julia x"
-#~ msgstr "Gen. mappa frattale, julia x"
-
-#~ msgid "Mapgen fractal julia y"
-#~ msgstr "Gen. mappa frattale, julia y"
-
-#~ msgid "Mapgen fractal julia z"
-#~ msgstr "Gen. mappa frattale, julia z"
-
-#~ msgid "Mapgen fractal offset"
-#~ msgstr "Compensazione del Generatore mappa frattale"
-
-#~ msgid "Mapgen fractal scale"
-#~ msgstr "Scala del Generatore mappa frattale"
-
-#~ msgid "Mapgen fractal seabed noise parameters"
-#~ msgstr "Param. del 'rumore' del fondale marino del Gen. mappa frattale"
-
-#~ msgid "Mapgen fractal slice w"
-#~ msgstr "Gen. mappa frattale, fetta w"
-
-#~ msgid "Mapgen v5 cave width"
-#~ msgstr "Gen. mappa v. 5, larghezza caverne"
-
-#~ msgid "Mapgen v5 cave1 noise parameters"
-#~ msgstr "Gen. mappa v. 5, parametri del 1° 'rumore' delle caverne"
-
-#~ msgid "Mapgen v5 cave2 noise parameters"
-#~ msgstr "Gen. mappa v. 5, parametri del 2° 'rumore' delle caverne"
-
-#~ msgid "Mapgen v5 factor noise parameters"
-#~ msgstr "Gen. mappa v. 5, parametri del 'rumore' di fabbrica"
-
-#~ msgid "Mapgen v5 filler depth noise parameters"
-#~ msgstr ""
-#~ "Gen. mappa v. 5, parametri del 'rumore' dello riempitore di profondità"
-
-#~ msgid "Mapgen v5 height noise parameters"
-#~ msgstr "Gen. mappa v. 5, parametri 'rumore' dell'altezza"
-
-#~ msgid "Mapgen v6 apple trees noise parameters"
-#~ msgstr "Gen. mappa v. 6, parametri del 'rumore' degli alberi"
-
-#~ msgid "Mapgen v6 beach frequency"
-#~ msgstr "Gen. mappa v. 6, frequenza della spiaggia"
-
-#~ msgid "Mapgen v6 beach noise parameters"
-#~ msgstr "Gen. mappa v. 6, parametri del 'rumore' della spiaggia"
-
-#~ msgid "Mapgen v6 biome noise parameters"
-#~ msgstr "Gen. mappa v. 6, parametri del 'rumore' del bioma"
-
-#~ msgid "Mapgen v6 cave noise parameters"
-#~ msgstr "Gen. mappa v. 6, parametri del 'rumore' delle caverne"
-
-#~ msgid "Mapgen v6 desert frequency"
-#~ msgstr "Gen. mappa v. 6, frequenza del deserto"
-
-#~ msgid "Mapgen v6 mud noise parameters"
-#~ msgstr "Gen. mappa v. 6, parametri del 'rumore' del fango"
-
-#~ msgid "Mapgen v6 steepness noise parameters"
-#~ msgstr "Gen. mappa v. 6, parametri del 'rumore' della ripidità"
-
-#~ msgid "Mapgen v6 terrain altitude noise parameters"
-#~ msgstr "Gen. mappa v. 6, parametri del 'rumore' di altitudine del terreno"
-
-#~ msgid "Mapgen v6 terrain base noise parameters"
-#~ msgstr "Gen. mappa v. 6, parametri del 'rumore' di base del terreno"
-
-#~ msgid "Mapgen v6 trees noise parameters"
-#~ msgstr "Gen. mappa v. 6, parametri del 'rumore' degli alberi"
-
-#~ msgid "Mapgen v7 cave width"
-#~ msgstr "Gen. mappa v. 7, larghezza delle caverne"
-
-#~ msgid "Mapgen v7 cave1 noise parameters"
-#~ msgstr "Gen. mappa v. 7, parametri del 1° 'rumore' delle caverne"
-
-#~ msgid "Mapgen v7 cave2 noise parameters"
-#~ msgstr "Gen. mappa v. 7, parametri del 2° 'rumore' delle caverne"
-
-#~ msgid "Mapgen v7 filler depth noise parameters"
-#~ msgstr "Gen. mappa v. 7, param. del 'rumore' dello riempitore di profondità"
-
-#~ msgid "Mapgen v7 height select noise parameters"
-#~ msgstr "Gen. mappa v. 7, param. del 'rumore' della selezione di altezza"
-
-#~ msgid "Mapgen v7 mountain noise parameters"
-#~ msgstr "Gen. mappa v. 7, param. del 'rumore' delle montagne"
-
-#~ msgid "Mapgen v7 ridge noise parameters"
-#~ msgstr "Gen. mappa v. 7, param. del 'rumore' dei fiumi"
-
-#~ msgid "Mapgen v7 ridge water noise parameters"
-#~ msgstr "Gen. mappa v. 7, param. del 'rumore' dell'acqua dei fiumi"
-
-#~ msgid "Mapgen v7 terrain altitude noise parameters"
-#~ msgstr "Gen. mappa v. 7, param. del 'rumore' di altitudine del terreno"
-
-#~ msgid "Mapgen v7 terrain base noise parameters"
-#~ msgstr "Gen. mappa v. 7, param. del 'rumore' di base del terreno"
-
-#~ msgid "Mapgen v7 terrain persistation noise parameters"
-#~ msgstr "Gen. mappa v. 7, param. del \"rumore\" di continuità del terreno"
+#~ msgid "Enable view bobbing"
+#~ msgstr "Abilitare l'ondeggiamento visivo"
 
 #~ msgid ""
-#~ "Noise parameters for biome API temperature, humidity and biome blend."
+#~ "Disable escape sequences, e.g. chat coloring.\n"
+#~ "Use this if you want to run a server with pre-0.4.14 clients and you want "
+#~ "to disable\n"
+#~ "the escape sequences generated by mods."
 #~ msgstr ""
-#~ "Parametri di 'rumore' per l'API di temperatura del bioma, umidità e "
-#~ "fusione di bioma."
+#~ "Disabilita le sequenze di escape, es. testo colorato.\n"
+#~ "Usatela se volete gestire un server con client anteriori alla v. 0.4.14 e "
+#~ "volete\n"
+#~ "disabilitare le sequenze di escape generate dai mod."
+
+#~ msgid "Disable escape sequences"
+#~ msgstr "Disabilitare le sequenze di escape"
+
+#~ msgid "Descending speed"
+#~ msgstr "Velocità di discesa"
+
+#~ msgid "Depth below which you'll find massive caves."
+#~ msgstr "Profondità sotto cui troverete caverne enormi."
+
+#~ msgid "Crouch speed"
+#~ msgstr "Velocità di strisciamento"
 
 #~ msgid ""
-#~ "Where the map generator stops.\n"
-#~ "Please note:\n"
-#~ "-    Limited to 31000 (setting above has no effect)\n"
-#~ "-    The map generator works in groups of 80x80x80 nodes (5x5x5 "
-#~ "MapBlocks).\n"
-#~ "-    Those groups have an offset of -32, -32 nodes from the origin.\n"
-#~ "-    Only groups which are within the map_generation_limit are generated"
+#~ "Creates unpredictable water features in caves.\n"
+#~ "These can make mining difficult. Zero disables them. (0-10)"
 #~ msgstr ""
-#~ "Dove si ferma il generatore mappa.\n"
-#~ "Si noti prego:\n"
-#~ "-   Limitato a 31.000 (impostazioni superiori non hanno effetto)\n"
-#~ "-   Il generatore mappa lavora in gruppi di 80x80x80 nodi (5x5x5 nodi "
-#~ "mappa).\n"
-#~ "-   Quei gruppi hanno una compensazione di -32, -32 nodi dall'origine.\n"
-#~ "-   Solo i gruppi che rientrano nel map_generation_limit vengono generati."
-
-#~ msgid "Detailed mod profile data. Useful for mod developers."
-#~ msgstr ""
-#~ "Dati di profilo del mod. dettagliati. Utile per gli sviluppatori di mod."
-
-#~ msgid "Detailed mod profiling"
-#~ msgstr "Profilo dettagliato del mod."
+#~ "Crea tratti caratteristici d'acqua imprevedibili nelle caverne.\n"
+#~ "Questi possono rendere difficili gli scavi. Zero li disabilita. (0-10)"
 
 #~ msgid ""
-#~ "How many blocks are flying in the wire simultaneously for the whole "
-#~ "server."
-#~ msgstr "Quanti blocchi vengono inviati simultaneamente per l'intero server."
+#~ "Creates unpredictable lava features in caves.\n"
+#~ "These can make mining difficult. Zero disables them. (0-10)"
+#~ msgstr ""
+#~ "Crea tratti caratteristici di lava imprevedibili nelle caverne.\n"
+#~ "Questi possono rendere difficili gli scavi. Zero li disabilita. (0-10)"
 
-#~ msgid "How many blocks are flying in the wire simultaneously per client."
-#~ msgstr "Quanti blocchi volano nel cavo simultaneamente per ogni client."
+#~ msgid "Continuous forward movement (only used for testing)."
+#~ msgstr "Avanzamento continuo in avanti (utilizzato solo per i test)."
 
-#~ msgid "Useful for mod developers."
-#~ msgstr "Utile per gli sviluppatori di mod."
+#~ msgid "Console key"
+#~ msgstr "Tasto console"
 
-#~ msgid "No of course not!"
-#~ msgstr "No, certo che no!"
+#~ msgid "Cloud height"
+#~ msgstr "Altitudine delle nuvole"
 
-#~ msgid "Public Serverlist"
-#~ msgstr "Elenco dei server pubblici"
+#~ msgid "Caves and tunnels form at the intersection of the two noises"
+#~ msgstr "Caverne e gallerie si formano all'intersezione dei due rumori"
 
-#~ msgid "No!!!"
-#~ msgstr "No!!!"
+#~ msgid "Autorun key"
+#~ msgstr "Tasto corsa automatica"
+
+#~ msgid "Approximate (X,Y,Z) scale of fractal in nodes."
+#~ msgstr "Scala approssimativa (X, Y, Z) del frattale in nodi."
 
 #~ msgid ""
-#~ "Map generation attributes specific to Mapgen Valleys.\n"
-#~ "Flags that are not specified in the flag string are not modified from the "
-#~ "default.\n"
-#~ "Flags starting with \"no\" are used to explicitly disable them.\n"
-#~ "\"altitude_chill\" makes higher elevations colder, which may cause biome "
-#~ "issues.\n"
-#~ "\"humid_rivers\" modifies the humidity around rivers and in areas where "
-#~ "water would tend to pool. It may interfere with delicately adjusted "
-#~ "biomes."
+#~ "Announce to this serverlist.\n"
+#~ "If you want to announce your ipv6 address, use  serverlist_url = v6."
+#~ "servers.minetest.net."
 #~ msgstr ""
-#~ "Attributi di generazione della mappa specifici per Generatore mappa "
-#~ "valli.\n"
-#~ "Le impostazioni che non sono specificate nella stringa mantengono i "
-#~ "valori predefiniti.\n"
-#~ "Le impostazioni che iniziano con \"no\" sono usate per disabilitarle "
-#~ "esplicitamente.\n"
-#~ "\"altitude_chill\" rende più fredde le elevazioni maggiori, il che "
-#~ "potrebbe causare problemi ai biomi.\n"
-#~ "\"humid_rivers\" modifica l'umidità attorno ai fiumi e nelle aree in cui "
-#~ "l'acqua tenderebbe a stagnare. Potrebbe interferire con biomi"
-
-#~ msgid "If enabled, "
-#~ msgstr "attivata"
-
-#~ msgid "Restart minetest for driver change to take effect"
-#~ msgstr "Riavviare minetest per rendere effettive le modifiche"
-
-#~ msgid "Gamemgr: Unable to copy mod \"$1\" to game \"$2\""
-#~ msgstr "Gestore del gioco: impossibile il modulo \"$1\" nel gioco \"$2\""
-
-#~ msgid "GAMES"
-#~ msgstr "GIOCHI"
-
-#~ msgid "Mods:"
-#~ msgstr "Moduli:"
-
-#~ msgid "new game"
-#~ msgstr "nuovo gioco"
-
-#~ msgid "EDIT GAME"
-#~ msgstr "MODIFICARE IL GIOCO"
-
-#~ msgid "Remove selected mod"
-#~ msgstr "Rimuovere il modulo selezionato"
-
-#~ msgid "<<-- Add mod"
-#~ msgstr "<<-- Aggiungere il modulo"
-
-#~ msgid "CLIENT"
-#~ msgstr "CLIENT"
-
-#~ msgid "START SERVER"
-#~ msgstr "AVVIO SERVER"
-
-#~ msgid "Name"
-#~ msgstr "Nome"
-
-#~ msgid "Password"
-#~ msgstr "Password"
-
-#~ msgid "SETTINGS"
-#~ msgstr "IMPOSTAZIONI"
-
-#~ msgid "Preload item visuals"
-#~ msgstr "Precaricare le immagini"
-
-#~ msgid "Finite Liquid"
-#~ msgstr "Liquido limitato"
-
-#~ msgid "SINGLE PLAYER"
-#~ msgstr "GIOC. SING."
-
-#~ msgid "TEXTURE PACKS"
-#~ msgstr "PACCH. DI IMM."
-
-#~ msgid "MODS"
-#~ msgstr "MODULI"
-
-#~ msgid "Add mod:"
-#~ msgstr "Aggiungere un modulo:"
-
-#~ msgid "Wanted FPS"
-#~ msgstr "FPS desiderati"
-
-#~ msgid "Preload inventory textures"
-#~ msgstr "Precaricamento delle textures dell'inventario"
-
-#~ msgid "Item textures..."
-#~ msgstr "Immagini degli oggetti..."
+#~ "Annunciare a questo elenco di server.\n"
+#~ "Se volete annunciare il vostro indirizzo ipv6, usate serverlist_url = v6."
+#~ "servers.minetest.net."
 
 #~ msgid ""
-#~ "Map generation attributes specific to Mapgen v7.\n"
-#~ "The 'ridges' flag controls the rivers.\n"
-#~ "The default flags set in the engine are: mountains, ridges\n"
-#~ "The flags string modifies the engine defaults.\n"
-#~ "Flags that are not specified in the flag string are not modified from the "
-#~ "default.\n"
-#~ "Flags starting with 'no' are used to explicitly disable them."
+#~ "Android systems only: Tries to create inventory textures from meshes\n"
+#~ "when no supported render was found."
 #~ msgstr ""
-#~ "Attributi di generazione della mappa specifici per Generatore mappa v. "
-#~ "6.\n"
-#~ "L'impostazione 'ridges' controlla i fiumi.\n"
-#~ "Le impostazioni predefinite impostate nel motore sono: mountains, ridges\n"
-#~ "La stringa delle impostazioni modifica le impostazioni predefinite del "
-#~ "motore.\n"
-#~ "Le impostazioni che non sono specificate nella stringa mantengono i "
-#~ "valori predefiniti.\n"
-#~ "Le impostazioni che iniziano con \"no\" sono usate per disabilitarle "
-#~ "esplicitamente."
+#~ "Solo per sistemi Android: tenta di creare le immagini dell'inventario\n"
+#~ "dalle mesh quando non si trova nessun renderer supportato."
+
+#~ msgid "Active Block Modifier interval"
+#~ msgstr "Intervallo del modificatore del blocco attivo (ABM)"
+
+#~ msgid "Prior"
+#~ msgstr "Pag. su"
+
+#~ msgid "Next"
+#~ msgstr "Pag. giù"
+
+#~ msgid "Use"
+#~ msgstr "Usare"
+
+#~ msgid "Print stacks"
+#~ msgstr "Stampa stack"
+
+#~ msgid "Volume changed to 100%"
+#~ msgstr "Volume modificato a 100%"
+
+#~ msgid "Volume changed to 0%"
+#~ msgstr "Volume modificato a 0%"
+
+#~ msgid "No information available"
+#~ msgstr "Nessuna informazione disponibile"
+
+#~ msgid "Normal Mapping"
+#~ msgstr "Normal Mapping"
+
+#~ msgid "Play Online"
+#~ msgstr "Gioco in rete"
+
+#~ msgid "Uninstall selected modpack"
+#~ msgstr "Disinstallare il p.m. scelto"
+
+#~ msgid "Local Game"
+#~ msgstr "Gioco locale"
+
+#~ msgid "re-Install"
+#~ msgstr "Re-installare"
+
+#~ msgid "Unsorted"
+#~ msgstr "Non ordinato"
+
+#~ msgid "Successfully installed:"
+#~ msgstr "Installazione avvenuta con successo:"
+
+#~ msgid "Shortname:"
+#~ msgstr "Abbreviazione:"
+
+#~ msgid "Rating"
+#~ msgstr "Valutazione"
+
+#~ msgid "Page $1 of $2"
+#~ msgstr "Pagina $1 di $2"
+
+#~ msgid "Subgame Mods"
+#~ msgstr "Moduli del gioco"
+
+#~ msgid "Select path"
+#~ msgstr "Scegliere il percorso"
+
+#~ msgid "Possible values are: "
+#~ msgstr "I valori possibili sono: "
+
+#~ msgid "Please enter a comma seperated list of flags."
+#~ msgstr "Per piacere fornite un elenco di opzioni separate da virgole."
+
+#~ msgid "Optionally the lacunarity can be appended with a leading comma."
+#~ msgstr ""
+#~ "Facoltativamente è possibile posporre la discontinuità anteponendole una "
+#~ "virgola."
 
 #~ msgid ""
-#~ "Map generation attributes specific to Mapgen flat.\n"
-#~ "Occasional lakes and hills can be added to the flat world.\n"
-#~ "The default flags set in the engine are: none\n"
-#~ "The flags string modifies the engine defaults.\n"
-#~ "Flags that are not specified in the flag string are not modified from the "
-#~ "default.\n"
-#~ "Flags starting with 'no' are used to explicitly disable them."
+#~ "Format: <offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>), <seed>, "
+#~ "<octaves>, <persistence>"
 #~ msgstr ""
-#~ "Attributi di generazione della mappa specifici per Generatore mappa "
-#~ "piatto.\n"
-#~ "Laghi e colline occasionali possono essere aggiunti al mondo piatto.\n"
-#~ "Le impostazioni predefinite impostate nel motore sono: nessuna\n"
-#~ "La stringa delle impostazioni modifica le impostazioni predefinite del "
-#~ "motore.\n"
-#~ "Le impostazioni che non sono specificate nella stringa mantengono i "
-#~ "valori predefiniti.\n"
-#~ "Le impostazioni che iniziano con \"no\" sono usate per disabilitarle "
-#~ "esplicitamente."
+#~ "Formato: <spostamento>, <scala>, (<diffusioneX>, <diffusioneY>, "
+#~ "<diffusioneZ>),\n"
+#~ "<seme>, <ottave>, <continuità>"
 
-#~ msgid "Advanced Settings"
-#~ msgstr "Impostazioni avanzate"
+#~ msgid "Format is 3 numbers separated by commas and inside brackets."
+#~ msgstr ""
+#~ "Il formato è: tre numeri separati da virgole e racchiusi tra parentesi."
+
+#~ msgid "\"$1\" is not a valid flag."
+#~ msgstr "\"$1\" non è un valore valido."
+
+#~ msgid "No worldname given or no game selected"
+#~ msgstr ""
+#~ "Non è stato dato un nome al mondo o\n"
+#~ "non si è scelto nessun gioco"
+
+#~ msgid "Enable MP"
+#~ msgstr "Attivare p.m."
+
+#~ msgid "Disable MP"
+#~ msgstr "Disattivare p.m."
+
+#, fuzzy
+#~ msgid ""
+#~ "Number of emerge threads to use.\n"
+#~ "Make this field blank or 0, or increase this number to use multiple "
+#~ "threads.\n"
+#~ "On multiprocessor systems, this will improve mapgen speed greatly at the "
+#~ "cost\n"
+#~ "of slightly buggy caves."
+#~ msgstr ""
+#~ "Numero di thread emerge da usare. Lasciate vuoto questo campo, o "
+#~ "aumentate questo\n"
+#~ "numero per usare thread multipli. Su sistemi multiprocessore, questo "
+#~ "migliorerà molto\n"
+#~ "la velocità del generatore mappa al costo di caverne un po' difettose."
+
+#, fuzzy
+#~ msgid "Content Store"
+#~ msgstr "Chiudere il magazzino"

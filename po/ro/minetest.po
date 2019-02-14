@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-02-14 07:46+0100\n"
+"POT-Creation-Date: 2019-02-14 19:14+0100\n"
 "PO-Revision-Date: 2019-01-24 00:05+0000\n"
 "Last-Translator: Nore <nore@mesecons.net>\n"
 "Language-Team: Romanian <https://hosted.weblate.org/projects/minetest/"
@@ -1856,15 +1856,15 @@ msgid "2D noise that controls the shape/size of step mountains."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "2D noise that controls the size/occurance of ridged mountain ranges."
+msgid "2D noise that controls the size/occurrence of ridged mountain ranges."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "2D noise that controls the size/occurance of rolling hills."
+msgid "2D noise that controls the size/occurrence of rolling hills."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "2D noise that controls the size/occurance of step mountain ranges."
+msgid "2D noise that controls the size/occurrence of step mountain ranges."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -2066,9 +2066,7 @@ msgid "Automatic forwards key"
 msgstr "Înainte"
 
 #: src/settings_translation_file.cpp
-msgid ""
-"Automatically jump up single-node obstacles.\n"
-"type: bool"
+msgid "Automatically jump up single-node obstacles."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -2224,12 +2222,11 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid ""
 "Changes the main menu UI:\n"
-"-   Full:  Multple singleplayer worlds, game choice, texture pack chooser, "
+"-   Full:  Multiple singleplayer worlds, game choice, texture pack chooser, "
 "etc.\n"
 "-   Simple: One singleplayer world, no game or texture pack choosers. May "
 "be\n"
-"necessary for smaller screens.\n"
-"-   Auto: Simple on Android, full on everything else."
+"necessary for smaller screens."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -2326,6 +2323,17 @@ msgstr "Ceaţă colorată"
 
 #: src/settings_translation_file.cpp
 msgid ""
+"Comma-separated list of flags to hide in the content repository.\n"
+"\"nonfree\" can be used to hide packages which do not qualify as 'free "
+"software',\n"
+"as defined by the Free Software Foundation.\n"
+"You can also specify content ratings.\n"
+"These flags are independent from Minetest versions,\n"
+"so see a full list at https://content.minetest.net/help/content_flags/"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
 "Comma-separated list of mods that are allowed to access HTTP APIs, which\n"
 "allow them to upload and download data to/from the internet."
 msgstr ""
@@ -2366,8 +2374,13 @@ msgid "Console height"
 msgstr "Înalţime consolă"
 
 #: src/settings_translation_file.cpp
-msgid "Content Store"
+msgid "ContentDB Flag Blacklist"
 msgstr ""
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "ContentDB URL"
+msgstr "Continuă"
 
 #: src/settings_translation_file.cpp
 msgid "Continuous forward"
@@ -2678,6 +2691,16 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Enable random user input (only used for testing)."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Enable register confirmation"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Enable register confirmation when connecting to server.\n"
+"If disabled, new account will be registered automatically."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3377,12 +3400,6 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"If enabled together with fly mode, makes move directions relative to the "
-"player's pitch."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
 "If enabled together with fly mode, player is able to fly through solid "
 "nodes.\n"
 "This requires the \"noclip\" privilege on the server."
@@ -3409,6 +3426,12 @@ msgstr ""
 msgid ""
 "If enabled, invalid world data won't cause the server to shut down.\n"
 "Only enable this if you know what you are doing."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"If enabled, makes move directions relative to the player's pitch when flying "
+"or swimming."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -4026,7 +4049,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Key for toggling pitch fly mode.\n"
+"Key for toggling pitch move mode.\n"
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
@@ -4298,7 +4321,7 @@ msgstr ""
 msgid ""
 "Map generation attributes specific to Mapgen Valleys.\n"
 "'altitude_chill': Reduces heat with altitude.\n"
-"'humid_rivers': Increases humidity around rivers and where water pools.\n"
+"'humid_rivers': Increases humidity around rivers.\n"
 "'vary_river_depth': If enabled, low humidity and high heat causes rivers\n"
 "to become shallower and occasionally dry.\n"
 "'altitude_dry': Reduces humidity with altitude."
@@ -4737,11 +4760,16 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid ""
 "Number of emerge threads to use.\n"
-"Make this field blank or 0, or increase this number to use multiple "
-"threads.\n"
-"On multiprocessor systems, this will improve mapgen speed greatly at the "
-"cost\n"
-"of slightly buggy caves."
+"Empty or 0 value:\n"
+"-    Automatic selection. The number of emerge threads will be\n"
+"-    'number of processors - 2', with a lower limit of 1.\n"
+"Any other value:\n"
+"-    Specifies the number of emerge threads, with a lower limit of 1.\n"
+"Warning: Increasing the number of emerge threads increases engine mapgen\n"
+"speed, but this may harm game performance by interfering with other\n"
+"processes, especially in singleplayer and/or when running Lua code in\n"
+"'on_generated'.\n"
+"For many users the optimum setting may be '1'."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -4753,6 +4781,10 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Number of parallax occlusion iterations."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Online Content Repository"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -4825,11 +4857,12 @@ msgid "Physics"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Pitch fly key"
-msgstr ""
+#, fuzzy
+msgid "Pitch move key"
+msgstr "Modul Creativ"
 
 #: src/settings_translation_file.cpp
-msgid "Pitch fly mode"
+msgid "Pitch move mode"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -4941,14 +4974,16 @@ msgstr "Selectează"
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Restricts the access of certain client-side functions on servers\n"
-"Combine these byteflags below to restrict client-side features:\n"
-"LOAD_CLIENT_MODS: 1 (disable client mods loading)\n"
+"Restricts the access of certain client-side functions on servers.\n"
+"Combine the byteflags below to restrict client-side features, or set to 0\n"
+"for no restrictions:\n"
+"LOAD_CLIENT_MODS: 1 (disable loading client-provided mods)\n"
 "CHAT_MESSAGES: 2 (disable send_chat_message call client-side)\n"
 "READ_ITEMDEFS: 4 (disable get_item_def call client-side)\n"
 "READ_NODEDEFS: 8 (disable get_node_def call client-side)\n"
 "LOOKUP_NODES_LIMIT: 16 (limits get_node call client-side to\n"
-"csm_restriction_noderange)"
+"csm_restriction_noderange)\n"
+"READ_PLAYERINFO: 32 (disable get_player_names call client-side)"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5220,16 +5255,6 @@ msgid "Show entity selection boxes"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Show non-free packages"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Show packages in the content store that do not qualify as 'free software'\n"
-"as defined by the Free Software Foundation."
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid "Shutdown message"
 msgstr ""
 
@@ -5417,6 +5442,10 @@ msgid ""
 "However, as this possibility is new, thus may not be used by older servers,\n"
 "this option allows enforcing it for certain node types. Note though that\n"
 "that is considered EXPERIMENTAL and may not work properly."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "The URL for the content repository"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5968,157 +5997,91 @@ msgstr ""
 msgid "cURL timeout"
 msgstr ""
 
-#~ msgid "Disable MP"
-#~ msgstr "Dezactivează MP"
-
-#~ msgid "Enable MP"
-#~ msgstr "Activează MP"
-
-#~ msgid "No worldname given or no game selected"
-#~ msgstr "Jocul nu are nume, sau nu ai selectat un joc"
+#~ msgid "Advanced Settings"
+#~ msgstr "Setări avansate"
 
 #, fuzzy
-#~ msgid "Select path"
-#~ msgstr "Selectează"
-
-#~ msgid "Page $1 of $2"
-#~ msgstr "Pagina $1 din $2"
-
-#~ msgid "Rating"
-#~ msgstr "Notă"
+#~ msgid "Preload inventory textures"
+#~ msgstr "Se încarcă..."
 
 #, fuzzy
-#~ msgid "Shortname:"
-#~ msgstr "Numele lumii"
+#~ msgid "Downloading"
+#~ msgstr "Descarcă"
 
-#~ msgid "Successfully installed:"
-#~ msgstr "Instalat cu succes:"
+#~ msgid "Left click: Move all items, Right click: Move single item"
+#~ msgstr ""
+#~ "Click stânga: Mută toate obiectele, Click dreapta: Mută un singur obiect"
 
-#~ msgid "re-Install"
-#~ msgstr "Reinstalează"
+#~ msgid "Add mod:"
+#~ msgstr "Adăugaţi mod:"
 
-#, fuzzy
-#~ msgid "Local Game"
-#~ msgstr "Instalare locală"
+#~ msgid "MODS"
+#~ msgstr "MODURI"
 
-#~ msgid "Uninstall selected modpack"
-#~ msgstr "Dezinstalaţi Pachetul de moduri selectat"
+#~ msgid "TEXTURE PACKS"
+#~ msgstr "PACHETE DE TEXTURĂ"
 
-#~ msgid "Play Online"
-#~ msgstr "Joacă online"
+#~ msgid "SINGLE PLAYER"
+#~ msgstr "SINGLE PLAYER"
 
-#, fuzzy
-#~ msgid "Normal Mapping"
-#~ msgstr "Mip Mapping"
+#~ msgid "Finite Liquid"
+#~ msgstr "Lichid finit"
 
-#~ msgid "No information available"
-#~ msgstr "Nici o informație disponibilă"
+#~ msgid "Preload item visuals"
+#~ msgstr "Pre-încarcă imaginile obiectelor"
 
-#~ msgid "Print stacks"
-#~ msgstr "Salvează logurile"
+#~ msgid "SETTINGS"
+#~ msgstr "SETĂRI"
 
-#~ msgid "Use"
-#~ msgstr "Aleargă"
+#~ msgid "Password"
+#~ msgstr "Parolă"
 
-#~ msgid "Next"
-#~ msgstr "Următorul"
+#~ msgid "Name"
+#~ msgstr "Nume"
 
-#~ msgid "Prior"
-#~ msgstr "Anteriorul"
+#~ msgid "START SERVER"
+#~ msgstr "DESCHIDE SERVERUL"
 
-#~ msgid "Cloud height"
-#~ msgstr "înalţime nori"
+#~ msgid "CLIENT"
+#~ msgstr "CLIENT"
 
-#~ msgid "Console key"
-#~ msgstr "Tastă Consolă"
+#~ msgid "<<-- Add mod"
+#~ msgstr "<<-- Adaugă modul"
 
-#~ msgid "Continuous forward movement (only used for testing)."
-#~ msgstr "Mişcare continuă înainte (folosit doar pentru testare)."
+#~ msgid "Remove selected mod"
+#~ msgstr "Șterge modul selectat"
 
-#, fuzzy
-#~ msgid "Inventory image hack"
-#~ msgstr "Inventar"
+#~ msgid "EDIT GAME"
+#~ msgstr "MODIFICĂ JOCUL"
 
-#, fuzzy
-#~ msgid "Main menu mod manager"
-#~ msgstr "Meniul Principal"
+#~ msgid "new game"
+#~ msgstr "joc nou"
 
-#, fuzzy
-#~ msgid "Use key"
-#~ msgstr "apasă o tastă"
+#~ msgid "Mods:"
+#~ msgstr "Moduri:"
 
-#, fuzzy
-#~ msgid "Water Features"
-#~ msgstr "Texturi..."
+#~ msgid "GAMES"
+#~ msgstr "JOCURI"
 
-#~ msgid "Hide mp content"
-#~ msgstr "Ascunde conținutul mp"
-
-#~ msgid "Attn"
-#~ msgstr "Attn"
-
-#~ msgid "Capital"
-#~ msgstr "Capital"
-
-#~ msgid "Comma"
-#~ msgstr "Virgulă"
-
-#~ msgid "CrSel"
-#~ msgstr "CrSel"
-
-#~ msgid "ExSel"
-#~ msgstr "ExSel"
-
-#~ msgid "Final"
-#~ msgstr "Final"
-
-#~ msgid "Junja"
-#~ msgstr "Junja"
-
-#~ msgid "Kana"
-#~ msgstr "Kana"
-
-#~ msgid "Kanji"
-#~ msgstr "Kanji"
-
-#~ msgid "Minus"
-#~ msgstr "Minus"
-
-#~ msgid "PA1"
-#~ msgstr "PA1"
-
-#~ msgid "Period"
-#~ msgstr "Punct"
-
-#~ msgid "Plus"
-#~ msgstr "Plus"
+#~ msgid "Gamemgr: Unable to copy mod \"$1\" to game \"$2\""
+#~ msgstr "Gamemgr: Nu se poate copia modul \"$1\" în jocul \"$2\""
 
 #, fuzzy
-#~ msgid "Mapgen flat cave width"
-#~ msgstr "Mapgen"
+#~ msgid "If enabled, "
+#~ msgstr "activat"
+
+#~ msgid "Public Serverlist"
+#~ msgstr "Listă de servere publică"
+
+#~ msgid "No of course not!"
+#~ msgstr "Nu, sigur că nu!"
 
 #, fuzzy
-#~ msgid "Mapgen fractal cave width"
-#~ msgstr "Mapgen"
+#~ msgid "Useful for mod developers."
+#~ msgstr "Dezvoltatori de bază"
 
 #, fuzzy
-#~ msgid "Mapgen fractal fractal"
-#~ msgstr "Mapgen"
-
-#, fuzzy
-#~ msgid "Mapgen fractal iterations"
-#~ msgstr "Mapgen"
-
-#, fuzzy
-#~ msgid "Mapgen fractal offset"
-#~ msgstr "Mapgen"
-
-#, fuzzy
-#~ msgid "Mapgen fractal scale"
-#~ msgstr "Mapgen"
-
-#, fuzzy
-#~ msgid "Mapgen fractal slice w"
+#~ msgid "Mapgen v7 cave width"
 #~ msgstr "Mapgen"
 
 #, fuzzy
@@ -6126,88 +6089,154 @@ msgstr ""
 #~ msgstr "Mapgen"
 
 #, fuzzy
-#~ msgid "Mapgen v7 cave width"
+#~ msgid "Mapgen fractal slice w"
 #~ msgstr "Mapgen"
 
 #, fuzzy
-#~ msgid "Useful for mod developers."
-#~ msgstr "Dezvoltatori de bază"
-
-#~ msgid "No of course not!"
-#~ msgstr "Nu, sigur că nu!"
-
-#~ msgid "Public Serverlist"
-#~ msgstr "Listă de servere publică"
+#~ msgid "Mapgen fractal scale"
+#~ msgstr "Mapgen"
 
 #, fuzzy
-#~ msgid "If enabled, "
-#~ msgstr "activat"
-
-#~ msgid "Gamemgr: Unable to copy mod \"$1\" to game \"$2\""
-#~ msgstr "Gamemgr: Nu se poate copia modul \"$1\" în jocul \"$2\""
-
-#~ msgid "GAMES"
-#~ msgstr "JOCURI"
-
-#~ msgid "Mods:"
-#~ msgstr "Moduri:"
-
-#~ msgid "new game"
-#~ msgstr "joc nou"
-
-#~ msgid "EDIT GAME"
-#~ msgstr "MODIFICĂ JOCUL"
-
-#~ msgid "Remove selected mod"
-#~ msgstr "Șterge modul selectat"
-
-#~ msgid "<<-- Add mod"
-#~ msgstr "<<-- Adaugă modul"
-
-#~ msgid "CLIENT"
-#~ msgstr "CLIENT"
-
-#~ msgid "START SERVER"
-#~ msgstr "DESCHIDE SERVERUL"
-
-#~ msgid "Name"
-#~ msgstr "Nume"
-
-#~ msgid "Password"
-#~ msgstr "Parolă"
-
-#~ msgid "SETTINGS"
-#~ msgstr "SETĂRI"
-
-#~ msgid "Preload item visuals"
-#~ msgstr "Pre-încarcă imaginile obiectelor"
-
-#~ msgid "Finite Liquid"
-#~ msgstr "Lichid finit"
-
-#~ msgid "SINGLE PLAYER"
-#~ msgstr "SINGLE PLAYER"
-
-#~ msgid "TEXTURE PACKS"
-#~ msgstr "PACHETE DE TEXTURĂ"
-
-#~ msgid "MODS"
-#~ msgstr "MODURI"
-
-#~ msgid "Add mod:"
-#~ msgstr "Adăugaţi mod:"
-
-#~ msgid "Left click: Move all items, Right click: Move single item"
-#~ msgstr ""
-#~ "Click stânga: Mută toate obiectele, Click dreapta: Mută un singur obiect"
+#~ msgid "Mapgen fractal offset"
+#~ msgstr "Mapgen"
 
 #, fuzzy
-#~ msgid "Downloading"
-#~ msgstr "Descarcă"
+#~ msgid "Mapgen fractal iterations"
+#~ msgstr "Mapgen"
 
 #, fuzzy
-#~ msgid "Preload inventory textures"
-#~ msgstr "Se încarcă..."
+#~ msgid "Mapgen fractal fractal"
+#~ msgstr "Mapgen"
 
-#~ msgid "Advanced Settings"
-#~ msgstr "Setări avansate"
+#, fuzzy
+#~ msgid "Mapgen fractal cave width"
+#~ msgstr "Mapgen"
+
+#, fuzzy
+#~ msgid "Mapgen flat cave width"
+#~ msgstr "Mapgen"
+
+#~ msgid "Plus"
+#~ msgstr "Plus"
+
+#~ msgid "Period"
+#~ msgstr "Punct"
+
+#~ msgid "PA1"
+#~ msgstr "PA1"
+
+#~ msgid "Minus"
+#~ msgstr "Minus"
+
+#~ msgid "Kanji"
+#~ msgstr "Kanji"
+
+#~ msgid "Kana"
+#~ msgstr "Kana"
+
+#~ msgid "Junja"
+#~ msgstr "Junja"
+
+#~ msgid "Final"
+#~ msgstr "Final"
+
+#~ msgid "ExSel"
+#~ msgstr "ExSel"
+
+#~ msgid "CrSel"
+#~ msgstr "CrSel"
+
+#~ msgid "Comma"
+#~ msgstr "Virgulă"
+
+#~ msgid "Capital"
+#~ msgstr "Capital"
+
+#~ msgid "Attn"
+#~ msgstr "Attn"
+
+#~ msgid "Hide mp content"
+#~ msgstr "Ascunde conținutul mp"
+
+#, fuzzy
+#~ msgid "Water Features"
+#~ msgstr "Texturi..."
+
+#, fuzzy
+#~ msgid "Use key"
+#~ msgstr "apasă o tastă"
+
+#, fuzzy
+#~ msgid "Main menu mod manager"
+#~ msgstr "Meniul Principal"
+
+#, fuzzy
+#~ msgid "Inventory image hack"
+#~ msgstr "Inventar"
+
+#~ msgid "Continuous forward movement (only used for testing)."
+#~ msgstr "Mişcare continuă înainte (folosit doar pentru testare)."
+
+#~ msgid "Console key"
+#~ msgstr "Tastă Consolă"
+
+#~ msgid "Cloud height"
+#~ msgstr "înalţime nori"
+
+#~ msgid "Prior"
+#~ msgstr "Anteriorul"
+
+#~ msgid "Next"
+#~ msgstr "Următorul"
+
+#~ msgid "Use"
+#~ msgstr "Aleargă"
+
+#~ msgid "Print stacks"
+#~ msgstr "Salvează logurile"
+
+#~ msgid "No information available"
+#~ msgstr "Nici o informație disponibilă"
+
+#, fuzzy
+#~ msgid "Normal Mapping"
+#~ msgstr "Mip Mapping"
+
+#~ msgid "Play Online"
+#~ msgstr "Joacă online"
+
+#~ msgid "Uninstall selected modpack"
+#~ msgstr "Dezinstalaţi Pachetul de moduri selectat"
+
+#, fuzzy
+#~ msgid "Local Game"
+#~ msgstr "Instalare locală"
+
+#~ msgid "re-Install"
+#~ msgstr "Reinstalează"
+
+#~ msgid "Successfully installed:"
+#~ msgstr "Instalat cu succes:"
+
+#, fuzzy
+#~ msgid "Shortname:"
+#~ msgstr "Numele lumii"
+
+#~ msgid "Rating"
+#~ msgstr "Notă"
+
+#~ msgid "Page $1 of $2"
+#~ msgstr "Pagina $1 din $2"
+
+#, fuzzy
+#~ msgid "Select path"
+#~ msgstr "Selectează"
+
+#~ msgid "No worldname given or no game selected"
+#~ msgstr "Jocul nu are nume, sau nu ai selectat un joc"
+
+#~ msgid "Enable MP"
+#~ msgstr "Activează MP"
+
+#~ msgid "Disable MP"
+#~ msgstr "Dezactivează MP"
