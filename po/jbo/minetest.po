@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-01-24 01:05+0200\n"
+"POT-Creation-Date: 2019-02-14 07:46+0100\n"
 "PO-Revision-Date: 2019-01-24 00:05+0000\n"
 "Last-Translator: Nore <nore@mesecons.net>\n"
 "Language-Team: Lojban <https://hosted.weblate.org/projects/minetest/minetest/"
@@ -24,11 +24,12 @@ msgid "You died"
 msgstr ".i do pu morsi"
 
 #: builtin/fstk/ui.lua
-msgid "An error occured in a Lua script, such as a mod:"
+msgid "An error occurred in a Lua script, such as a mod:"
 msgstr ""
 
 #: builtin/fstk/ui.lua
-msgid "An error occured:"
+#, fuzzy
+msgid "An error occurred:"
 msgstr "lo selsrera cu pu fasnu:"
 
 #: builtin/fstk/ui.lua
@@ -114,7 +115,7 @@ msgstr "selpli"
 #: builtin/mainmenu/dlg_config_world.lua
 msgid ""
 "Failed to enable mod \"$1\" as it contains disallowed characters. Only "
-"chararacters [a-z0-9_] are allowed."
+"characters [a-z0-9_] are allowed."
 msgstr ""
 
 #: builtin/mainmenu/dlg_config_world.lua
@@ -182,6 +183,10 @@ msgid "Mods"
 msgstr ""
 
 #: builtin/mainmenu/dlg_contentstore.lua
+msgid "No packages could be retrieved"
+msgstr ""
+
+#: builtin/mainmenu/dlg_contentstore.lua
 msgid "No results"
 msgstr ""
 
@@ -202,10 +207,6 @@ msgstr ""
 msgid "Update"
 msgstr ""
 
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "View"
-msgstr ""
-
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "A world named \"$1\" already exists"
 msgstr ".i lo munje me'e la'o gy.$1.gy. cu zasti"
@@ -215,7 +216,7 @@ msgid "Create"
 msgstr "zbasu"
 
 #: builtin/mainmenu/dlg_create_world.lua
-msgid "Download a game, such as minetest_game, from minetest.net"
+msgid "Download a game, such as Minetest Game, from minetest.net"
 msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
@@ -236,6 +237,7 @@ msgid "No game selected"
 msgstr "mu'e cuxna fi le'i se kuspe"
 
 #: builtin/mainmenu/dlg_create_world.lua
+#: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Seed"
 msgstr "le munje ke cunso namcu"
 
@@ -281,8 +283,18 @@ msgstr "fitytu'i"
 msgid "Rename Modpack:"
 msgstr ""
 
+#: builtin/mainmenu/dlg_rename_modpack.lua
+msgid ""
+"This modpack has an explicit name given in its modpack.conf which will "
+"override any renaming here."
+msgstr ""
+
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "(No description of setting given)"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "2D Noise"
 msgstr ""
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
@@ -308,6 +320,22 @@ msgid "Enabled"
 msgstr "selpli"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "Lacunarity"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "Octaves"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua src/settings_translation_file.cpp
+msgid "Offset"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "Persistance"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Please enter a valid integer."
 msgstr ""
 
@@ -317,6 +345,10 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Restore Default"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua src/settings_translation_file.cpp
+msgid "Scale"
 msgstr ""
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
@@ -341,14 +373,50 @@ msgstr ""
 msgid "The value must not be larger than $1."
 msgstr ""
 
-#: builtin/mainmenu/pkgmgr.lua
-msgid " mods"
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "X"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "X spread"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "Y"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "Y spread"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "Z"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "Z spread"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "absvalue"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "defaults"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "eased"
 msgstr ""
 
 #: builtin/mainmenu/pkgmgr.lua
 #, fuzzy
 msgid "$1 (Enabled)"
 msgstr "selpli"
+
+#: builtin/mainmenu/pkgmgr.lua
+msgid "$1 mods"
+msgstr ""
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Failed to install $1 to $2"
@@ -581,7 +649,7 @@ msgid "8x"
 msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
-msgid "Advanced Settings"
+msgid "All Settings"
 msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
@@ -4590,10 +4658,6 @@ msgid "Number of parallax occlusion iterations."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Offset"
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid "Opaque liquids"
 msgstr ""
 
@@ -4859,10 +4923,6 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Saving map received from server"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Scale"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5804,77 +5864,77 @@ msgstr ""
 msgid "cURL timeout"
 msgstr ""
 
-#, fuzzy
-#~ msgid "Preload inventory textures"
-#~ msgstr ".i ca'o samymo'i le tengu datnyvei"
+#~ msgid "Page $1 of $2"
+#~ msgstr "$1 moi le'i papri poi ke'a $1 mei"
 
 #, fuzzy
-#~ msgid "If enabled, "
-#~ msgstr "selpli"
+#~ msgid "Shortname:"
+#~ msgstr "tordu cmene"
 
-#~ msgid "No!!!"
-#~ msgstr "nasai go'i"
-
-#~ msgid "No of course not!"
-#~ msgstr "nasai go'i"
-
-#~ msgid "Plus"
-#~ msgstr "su'i bu"
-
-#~ msgid "Period"
-#~ msgstr "denpa bu"
-
-#~ msgid "PA1"
-#~ msgstr "la'o gy.PA1.gy."
-
-#~ msgid "Minus"
-#~ msgstr "vu'u bu"
-
-#~ msgid "ExSel"
-#~ msgstr "la'o gy.ExSel.gy."
-
-#~ msgid "CrSel"
-#~ msgstr "la'o gy.CrSel.gy."
-
-#~ msgid "Comma"
-#~ msgstr "slaka bu"
-
-#~ msgid "Attn"
-#~ msgstr "la'o gy.Attn.gy."
+#~ msgid "Unsorted"
+#~ msgstr "kalsa"
 
 #, fuzzy
-#~ msgid "Water Features"
-#~ msgstr ".i ca'o samymo'i le dacti ke tengu datnyvei"
+#~ msgid "Local Game"
+#~ msgstr "cfari fa lo nu kelci"
 
 #, fuzzy
-#~ msgid "Use key"
-#~ msgstr "ko da'ergau le batke"
+#~ msgid "Normal Mapping"
+#~ msgstr "lo puvrmipmepi"
+
+#~ msgid "Use"
+#~ msgstr "mu'e pilno"
+
+#, fuzzy
+#~ msgid "Inventory image hack"
+#~ msgstr "lo dacti uidje"
 
 #, fuzzy
 #~ msgid "Main menu mod manager"
 #~ msgstr "lo ralju"
 
 #, fuzzy
-#~ msgid "Inventory image hack"
-#~ msgstr "lo dacti uidje"
-
-#~ msgid "Use"
-#~ msgstr "mu'e pilno"
+#~ msgid "Use key"
+#~ msgstr "ko da'ergau le batke"
 
 #, fuzzy
-#~ msgid "Normal Mapping"
-#~ msgstr "lo puvrmipmepi"
+#~ msgid "Water Features"
+#~ msgstr ".i ca'o samymo'i le dacti ke tengu datnyvei"
+
+#~ msgid "Attn"
+#~ msgstr "la'o gy.Attn.gy."
+
+#~ msgid "Comma"
+#~ msgstr "slaka bu"
+
+#~ msgid "CrSel"
+#~ msgstr "la'o gy.CrSel.gy."
+
+#~ msgid "ExSel"
+#~ msgstr "la'o gy.ExSel.gy."
+
+#~ msgid "Minus"
+#~ msgstr "vu'u bu"
+
+#~ msgid "PA1"
+#~ msgstr "la'o gy.PA1.gy."
+
+#~ msgid "Period"
+#~ msgstr "denpa bu"
+
+#~ msgid "Plus"
+#~ msgstr "su'i bu"
+
+#~ msgid "No of course not!"
+#~ msgstr "nasai go'i"
+
+#~ msgid "No!!!"
+#~ msgstr "nasai go'i"
 
 #, fuzzy
-#~ msgid "Local Game"
-#~ msgstr "cfari fa lo nu kelci"
-
-#~ msgid "Unsorted"
-#~ msgstr "kalsa"
+#~ msgid "If enabled, "
+#~ msgstr "selpli"
 
 #, fuzzy
-#~ msgid "Shortname:"
-#~ msgstr "tordu cmene"
-
-#~ msgid "Page $1 of $2"
-#~ msgstr "$1 moi le'i papri poi ke'a $1 mei"
+#~ msgid "Preload inventory textures"
+#~ msgstr ".i ca'o samymo'i le tengu datnyvei"

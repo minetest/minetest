@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-01-12 13:07+0200\n"
+"POT-Creation-Date: 2019-02-14 07:46+0100\n"
 "PO-Revision-Date: 2019-02-13 13:11+0000\n"
 "Last-Translator: monolifed <monolifed@gmail.com>\n"
 "Language-Team: Turkish <https://hosted.weblate.org/projects/minetest/"
@@ -23,11 +23,13 @@ msgid "You died"
 msgstr "Öldün"
 
 #: builtin/fstk/ui.lua
-msgid "An error occured in a Lua script, such as a mod:"
+#, fuzzy
+msgid "An error occurred in a Lua script, such as a mod:"
 msgstr "Lua betiğinde, mod gibi, bir hata meydana geldi:"
 
 #: builtin/fstk/ui.lua
-msgid "An error occured:"
+#, fuzzy
+msgid "An error occurred:"
 msgstr "Bir hata oluştu:"
 
 #: builtin/fstk/ui.lua
@@ -107,9 +109,10 @@ msgid "Enable modpack"
 msgstr "Mod paketini etkinleştir"
 
 #: builtin/mainmenu/dlg_config_world.lua
+#, fuzzy
 msgid ""
 "Failed to enable mod \"$1\" as it contains disallowed characters. Only "
-"chararacters [a-z0-9_] are allowed."
+"characters [a-z0-9_] are allowed."
 msgstr ""
 "Geçersiz karakterler içerdiği için \"$1\" modu etkinleştirilemedi. Yalnızca "
 "[a-z0-9_] karakterlerine izin verilir."
@@ -178,6 +181,10 @@ msgid "Mods"
 msgstr "Modlar"
 
 #: builtin/mainmenu/dlg_contentstore.lua
+msgid "No packages could be retrieved"
+msgstr ""
+
+#: builtin/mainmenu/dlg_contentstore.lua
 msgid "No results"
 msgstr "Sonuç yok"
 
@@ -198,10 +205,6 @@ msgstr "Kaldır"
 msgid "Update"
 msgstr "Güncelle"
 
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "View"
-msgstr "Göster"
-
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "A world named \"$1\" already exists"
 msgstr "\"$1\" adlı dünya zaten var"
@@ -211,7 +214,8 @@ msgid "Create"
 msgstr "Yarat"
 
 #: builtin/mainmenu/dlg_create_world.lua
-msgid "Download a game, such as minetest_game, from minetest.net"
+#, fuzzy
+msgid "Download a game, such as Minetest Game, from minetest.net"
 msgstr "minetest.net adresinden , minetest_game gibi, bir oyun indirin"
 
 #: builtin/mainmenu/dlg_create_world.lua
@@ -231,6 +235,7 @@ msgid "No game selected"
 msgstr "Seçilen oyun yok"
 
 #: builtin/mainmenu/dlg_create_world.lua
+#: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Seed"
 msgstr "Tohum"
 
@@ -276,9 +281,20 @@ msgstr "Kabul et"
 msgid "Rename Modpack:"
 msgstr "Mod paketini yeniden adlandır:"
 
+#: builtin/mainmenu/dlg_rename_modpack.lua
+msgid ""
+"This modpack has an explicit name given in its modpack.conf which will "
+"override any renaming here."
+msgstr ""
+
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "(No description of setting given)"
 msgstr "(Ayarın verilen açıklaması yok)"
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+#, fuzzy
+msgid "2D Noise"
+msgstr "Gürültüler"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "< Back to Settings page"
@@ -301,6 +317,24 @@ msgid "Enabled"
 msgstr "Etkin"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
+#, fuzzy
+msgid "Lacunarity"
+msgstr "Güvenlik"
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "Octaves"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua src/settings_translation_file.cpp
+msgid "Offset"
+msgstr "Kaydırma"
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+#, fuzzy
+msgid "Persistance"
+msgstr "Oyuncu transfer uzaklığı"
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Please enter a valid integer."
 msgstr "Lütfen geçerli bir tamsayı girin."
 
@@ -311,6 +345,10 @@ msgstr "Lütfen geçerli bir sayı girin."
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Restore Default"
 msgstr "Öntanımlıyı Geri Yükle"
+
+#: builtin/mainmenu/dlg_settings_advanced.lua src/settings_translation_file.cpp
+msgid "Scale"
+msgstr "Boyut"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Select directory"
@@ -332,13 +370,51 @@ msgstr "Değer en az $1 olmalı."
 msgid "The value must not be larger than $1."
 msgstr "Değer $1'den büyük olmamalı."
 
-#: builtin/mainmenu/pkgmgr.lua
-msgid " mods"
-msgstr " modları"
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "X"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "X spread"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "Y"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "Y spread"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "Z"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "Z spread"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "absvalue"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+#, fuzzy
+msgid "defaults"
+msgstr "Öntanımlı oyun"
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "eased"
+msgstr ""
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "$1 (Enabled)"
 msgstr "$1 (Etkin)"
+
+#: builtin/mainmenu/pkgmgr.lua
+#, fuzzy
+msgid "$1 mods"
+msgstr " modları"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Failed to install $1 to $2"
@@ -561,8 +637,9 @@ msgid "8x"
 msgstr "8x"
 
 #: builtin/mainmenu/tab_settings.lua
-msgid "Advanced Settings"
-msgstr "Gelişmiş Ayarlar"
+#, fuzzy
+msgid "All Settings"
+msgstr "Ayarlar"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Antialiasing:"
@@ -1953,8 +2030,8 @@ msgid ""
 msgstr ""
 "Bu uzaklıkta sunucu istemcilere gönderilecek blokları agresifçe\n"
 "iyileştirecektir.\n"
-"Küçük değerler potansiyel olarak görülebilir işleyici hataları pahasına ("
-"bazı bloklar\n"
+"Küçük değerler potansiyel olarak görülebilir işleyici hataları pahasına "
+"(bazı bloklar\n"
 "su altında, mağaralarda ve de bazen karada işlenmeyecek) performansı "
 "oldukça\n"
 "iyileştirecektir. \n"
@@ -2133,8 +2210,8 @@ msgid ""
 "-   Auto: Simple on Android, full on everything else."
 msgstr ""
 "Ana Menü arayüzünü değiştirir:\n"
-"-   Full:  Çoklu tek oyunculu dünyalar, oyun seçimi, doku paketi seçici, vb."
-"\n"
+"-   Full:  Çoklu tek oyunculu dünyalar, oyun seçimi, doku paketi seçici, "
+"vb.\n"
 "-   Simple: Bir tek oyunculu dünya, oyun ve doku paketi seçiciler yok.\n"
 "Küçük ekranlar için gerekli olabilir\n"
 "-   Auto: Android'de Simple, diğer hepsinde Full."
@@ -3639,8 +3716,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Görüntüleme uzaklığını azaltma tuşu.\n"
-"Bakın: http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Bakın: http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3669,8 +3746,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Görüntüleme uzaklığını artırma tuşu.\n"
-"Bakın: http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Bakın: http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3711,8 +3788,8 @@ msgid ""
 msgstr ""
 "Oyuncuyu geriye hareket ettirme tuşu.\n"
 "Etkinken, kendiliğinden ileriyi de devre dışı kılar\n"
-"Bakın: http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Bakın: http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3801,8 +3878,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "11. hotbar bölmesini seçme tuşu.\n"
-"Bakın: http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Bakın: http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3811,8 +3888,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "12. hotbar bölmesini seçme tuşu.\n"
-"Bakın: http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Bakın: http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3821,8 +3898,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "13. hotbar bölmesini seçme tuşu.\n"
-"Bakın: http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Bakın: http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3831,8 +3908,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "14. hotbar bölmesini seçme tuşu.\n"
-"Bakın: http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Bakın: http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3841,8 +3918,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "15. hotbar bölmesini seçme tuşu.\n"
-"Bakın: http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Bakın: http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3851,8 +3928,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "16. hotbar bölmesini seçme tuşu.\n"
-"Bakın: http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Bakın: http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3861,8 +3938,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "17. hotbar bölmesini seçme tuşu.\n"
-"Bakın: http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Bakın: http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3871,8 +3948,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "18. hotbar bölmesini seçme tuşu.\n"
-"Bakın: http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Bakın: http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3881,8 +3958,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "19. hotbar bölmesini seçme tuşu.\n"
-"Bakın: http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Bakın: http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3891,8 +3968,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "20. hotbar bölmesini seçme tuşu.\n"
-"Bakın: http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Bakın: http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3901,8 +3978,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "21. hotbar bölmesini seçme tuşu.\n"
-"Bakın: http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Bakın: http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3911,8 +3988,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "22. hotbar bölmesini seçme tuşu.\n"
-"Bakın: http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Bakın: http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3921,8 +3998,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "23. hotbar bölmesini seçme tuşu.\n"
-"Bakın: http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Bakın: http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3931,8 +4008,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "24. hotbar bölmesini seçme tuşu.\n"
-"Bakın: http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Bakın: http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3941,8 +4018,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "25. hotbar bölmesini seçme tuşu.\n"
-"Bakın: http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Bakın: http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3951,8 +4028,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "26. hotbar bölmesini seçme tuşu.\n"
-"Bakın: http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Bakın: http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3961,8 +4038,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "27. hotbar bölmesini seçme tuşu.\n"
-"Bakın: http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Bakın: http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3971,8 +4048,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "28. hotbar bölmesini seçme tuşu.\n"
-"Bakın: http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Bakın: http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3981,8 +4058,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "29. hotbar bölmesini seçme tuşu.\n"
-"Bakın: http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Bakın: http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3991,8 +4068,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "30. hotbar bölmesini seçme tuşu.\n"
-"Bakın: http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Bakın: http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4001,8 +4078,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "31. hotbar bölmesini seçme tuşu.\n"
-"Bakın: http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Bakın: http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4011,8 +4088,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "32. hotbar bölmesini seçme tuşu.\n"
-"Bakın: http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Bakın: http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4021,8 +4098,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "8. hotbar bölmesini seçme tuşu.\n"
-"Bakın: http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Bakın: http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4031,8 +4108,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "5. hotbar bölmesini seçme tuşu.\n"
-"Bakın: http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Bakın: http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4041,8 +4118,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "1. hotbar bölmesini seçme tuşu.\n"
-"Bakın: http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Bakın: http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4051,8 +4128,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "4. hotbar bölmesini seçme tuşu.\n"
-"Bakın: http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Bakın: http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4071,8 +4148,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "9. hotbar bölmesini seçme tuşu.\n"
-"Bakın: http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Bakın: http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4091,8 +4168,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "2. hotbar bölmesini seçme tuşu.\n"
-"Bakın: http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Bakın: http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4101,8 +4178,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "7. hotbar bölmesini seçme tuşu.\n"
-"Bakın: http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Bakın: http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4111,8 +4188,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "6. hotbar bölmesini seçme tuşu.\n"
-"Bakın: http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Bakın: http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4121,8 +4198,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "10. hotbar bölmesini seçme tuşu.\n"
-"Bakın: http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Bakın: http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4131,8 +4208,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "3. hotbar bölmesini seçme tuşu.\n"
-"Bakın: http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Bakın: http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4175,8 +4252,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Kendiliğinden ileri açma/kapama tuşu.\n"
-"Bakın: http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Bakın: http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4185,8 +4262,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Sinematik kipi açma/kapama tuşu.\n"
-"Bakın: http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Bakın: http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4205,8 +4282,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Hızlı kipi açma/kapama tuşu.\n"
-"Bakın: http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Bakın: http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4225,8 +4302,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Hayalet kipi açma/kapama tuşu.\n"
-"Bakın: http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Bakın: http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4235,8 +4312,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Eğim uçma kipi açma/kapama tuşu.\n"
-"Bakın: http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Bakın: http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4245,8 +4322,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Kamera güncelleme açma/kapama tuşu. Yalnızca geliştirme için kullanılır.\n"
-"Bakın: http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Bakın: http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4255,8 +4332,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Sohbet gösterme/gizleme tuşu.\n"
-"Bakın: http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Bakın: http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4275,8 +4352,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Sis gösterme/gizleme tuşu.\n"
-"Bakın: http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Bakın: http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4305,8 +4382,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Profilciyi gösterme/gizleme tuşu. Geliştirme için kullanılır.\n"
-"Bakın: http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Bakın: http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4960,8 +5037,8 @@ msgstr ""
 "Ana menüde bir dünya yaratmak bunu etkisiz kılar.\n"
 "Şu anki kararlı harita üreteçleri:\n"
 "v5, v6, v7 (yüzenkaralar hariç), düz, tek-nod.\n"
-"'kararlı', var olan bir dünyada arazi şekli gelecekte değişmeyecek demektir."
-"\n"
+"'kararlı', var olan bir dünyada arazi şekli gelecekte değişmeyecek "
+"demektir.\n"
 "Biyomların oyun tarafından belirlendiğini ve değişebileceğini unutmayın."
 
 #: src/settings_translation_file.cpp
@@ -5059,10 +5136,6 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Number of parallax occlusion iterations."
 msgstr "Paralaks oklüzyon yineleme sayısı."
-
-#: src/settings_translation_file.cpp
-msgid "Offset"
-msgstr "Kaydırma"
 
 #: src/settings_translation_file.cpp
 msgid "Opaque liquids"
@@ -5191,8 +5264,8 @@ msgid ""
 "Print the engine's profiling data in regular intervals (in seconds).\n"
 "0 = disable. Useful for developers."
 msgstr ""
-"Motorun profilleme verilerini düzenli aralıklarla (saniye cinsinden) yazdır."
-"\n"
+"Motorun profilleme verilerini düzenli aralıklarla (saniye cinsinden) "
+"yazdır.\n"
 "0 = devre dışı. Geliştiriciler için yararlıdır."
 
 #: src/settings_translation_file.cpp
@@ -5356,10 +5429,6 @@ msgstr "Değiştiğinde pencere boyutunu kendiliğinden kaydet."
 #: src/settings_translation_file.cpp
 msgid "Saving map received from server"
 msgstr "Sunucudan alınan harita kaydediliyor"
-
-#: src/settings_translation_file.cpp
-msgid "Scale"
-msgstr "Boyut"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6300,8 +6369,8 @@ msgstr ""
 "büyütülmüş dokular için ayarlar; daha yüksek değerler daha net görünür,\n"
 "ama daha fazla bellek gerektirir. 2'nin kuvvetleri tavsiye edilir. 1'den "
 "daha\n"
-"yükseğe ayarlamanın, bilineer/trilineer/anisotropik filtreler etkin değilse,"
-"\n"
+"yükseğe ayarlamanın, bilineer/trilineer/anisotropik filtreler etkin "
+"değilse,\n"
 "görünür bit etkisi olmayabilir.\n"
 "Bu, dünya hizalı doku kendilinden boyutlandırmada taban nod doku boyutu\n"
 "olarak da kullanılır."
@@ -6472,381 +6541,244 @@ msgstr "cURL paralel sınırı"
 msgid "cURL timeout"
 msgstr "cURL zaman aşımı"
 
-#, fuzzy
-#~ msgid "Preload inventory textures"
-#~ msgstr "Dokular yükleniyor..."
+#~ msgid "Disable MP"
+#~ msgstr "Mod paketini kapa"
 
-#~ msgid "Scaling factor applied to menu elements: "
-#~ msgstr "Ölçeklendirme menülere işlendi:"
+#~ msgid "Enable MP"
+#~ msgstr "Mod paketini aç"
 
-#~ msgid "Touch free target"
-#~ msgstr "Touch free target"
+#~ msgid "No worldname given or no game selected"
+#~ msgstr "Dünya adı verilmedi ya da oyun seçilmedi"
 
-#~ msgid "Downloading"
-#~ msgstr "İndiriliyor"
+#~ msgid "\"$1\" is not a valid flag."
+#~ msgstr "\"$1\" geçerli bir bayrak değil."
 
-#~ msgid "please wait..."
-#~ msgstr "lütfen bekleyin..."
-
-#~ msgid " KB/s"
-#~ msgstr " KB/s"
-
-#~ msgid " MB/s"
-#~ msgstr " MB/s"
-
-#~ msgid "Restart minetest for driver change to take effect"
-#~ msgstr "Değişikliklerin etkin olabilmesi için minetesti yeniden başlatın"
-
-#, fuzzy
-#~ msgid "If enabled, "
-#~ msgstr "Etkinleştirildi"
-
-#~ msgid "\""
-#~ msgstr "\""
-
-#~ msgid "No!!!"
-#~ msgstr "Hayır!!!"
-
-#~ msgid "Public Serverlist"
-#~ msgstr "Çevirimiçi Oyun Listesi"
-
-#~ msgid "No of course not!"
-#~ msgstr "Elbette hayır!"
-
-#, fuzzy
-#~ msgid "Useful for mod developers."
-#~ msgstr "Ana geliştiriciler"
+#~ msgid "Format is 3 numbers separated by commas and inside brackets."
+#~ msgstr "Ayraç içinde ve virgülle ayrılmış 3 sayı biçimindedir."
 
 #~ msgid ""
-#~ "Where the map generator stops.\n"
-#~ "Please note:\n"
-#~ "-    Limited to 31000 (setting above has no effect)\n"
-#~ "-    The map generator works in groups of 80x80x80 nodes (5x5x5 "
-#~ "MapBlocks).\n"
-#~ "-    Those groups have an offset of -32, -32 nodes from the origin.\n"
-#~ "-    Only groups which are within the map_generation_limit are generated"
+#~ "Format: <offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>), <seed>, "
+#~ "<octaves>, <persistence>"
 #~ msgstr ""
-#~ "Harita olşturucunun nerede duracağı.\n"
-#~ "Lütfen dikkat:\n"
-#~ "-    31000 sınırdır (yukarıdaki ayar etkisizdir)\n"
-#~ "-    harita oluşturucu grupları 80 x 80 x 80 nod (5 x 5 x 5 harita-bloğu) "
-#~ "ile çalışır.\n"
-#~ "-    Bu grupların merkezden -32, -32 nod kayması vardır.\n"
-#~ "-    Sadece map_generation_limit içinde grupları oluşturulur"
+#~ "Biçim: <kaydırma>, <boyut>, (<yayılmaX>, <yayılmaY>, <yayılmaZ>), "
+#~ "<tohum>, <oktav>, <kalıcılık>"
+
+#~ msgid "Optionally the lacunarity can be appended with a leading comma."
+#~ msgstr "İstenirse lakuraniti öne gelen virgülle eklenebilir."
+
+#~ msgid "Please enter a comma seperated list of flags."
+#~ msgstr "Lütfen virgülle ayrılmış bir bayrak listesi girin."
+
+#~ msgid "Possible values are: "
+#~ msgstr "Olası değerler: "
+
+#~ msgid "Select path"
+#~ msgstr "Konumu seçin"
+
+#~ msgid "Subgame Mods"
+#~ msgstr "Alt Oyun Modları"
+
+#~ msgid "Page $1 of $2"
+#~ msgstr "$2 sayfadan $1"
+
+#~ msgid "Rating"
+#~ msgstr "Rating"
+
+#~ msgid "Shortname:"
+#~ msgstr "Kısa ad:"
+
+#~ msgid "Successfully installed:"
+#~ msgstr "Başarıyla kuruldu:"
+
+#~ msgid "Unsorted"
+#~ msgstr "Sırasız"
+
+#~ msgid "re-Install"
+#~ msgstr "yeniden kur"
+
+#~ msgid "Local Game"
+#~ msgstr "Yerel Oyun"
+
+#~ msgid "Uninstall selected modpack"
+#~ msgstr "Seçili mod paketini kaldır"
+
+#~ msgid "Play Online"
+#~ msgstr "Çevrim İçi Oyna"
+
+#~ msgid "Normal Mapping"
+#~ msgstr "Dikey Eşleme"
+
+#~ msgid "No information available"
+#~ msgstr "Bulunan bilgi yok"
+
+#~ msgid "Volume changed to 0%"
+#~ msgstr "Ses 0/100'e değişti"
+
+#~ msgid "Volume changed to 100%"
+#~ msgstr "Ses 100/100'e değişti"
+
+#~ msgid "Print stacks"
+#~ msgstr "Yığınları yazdır"
+
+#~ msgid "Use"
+#~ msgstr "Kullan"
+
+#~ msgid "Next"
+#~ msgstr "Sonraki"
+
+#~ msgid "Prior"
+#~ msgstr "Önceki"
+
+#~ msgid "Active Block Modifier interval"
+#~ msgstr "Etkin Blok Değiştirici aralığı"
 
 #~ msgid ""
-#~ "Noise parameters for biome API temperature, humidity and biome blend."
+#~ "Android systems only: Tries to create inventory textures from meshes\n"
+#~ "when no supported render was found."
 #~ msgstr ""
-#~ "Biyom API'si sıcaklık, nem ve biyom karıştırma için gürültü parametreleri."
-
-#~ msgid "Mapgen v7 terrain persistation noise parameters"
-#~ msgstr "Mapgen v7 arazi sürdürme gürültü parametreleri"
-
-#~ msgid "Mapgen v7 terrain base noise parameters"
-#~ msgstr "Mapgen v7 arazi taban gürültü parametreleri"
-
-#~ msgid "Mapgen v7 terrain altitude noise parameters"
-#~ msgstr "Mapgen v7 arazi yükseklik gürültü parametreleri"
-
-#~ msgid "Mapgen v7 ridge water noise parameters"
-#~ msgstr "Mapgen v7 sırt su gürültü parametreleri"
-
-#~ msgid "Mapgen v7 ridge noise parameters"
-#~ msgstr "Mapgen v7 sırt gürültü parametreleri"
-
-#~ msgid "Mapgen v7 mountain noise parameters"
-#~ msgstr "Mapgen v7 dağ gürültü parametreleri"
-
-#~ msgid "Mapgen v7 height select noise parameters"
-#~ msgstr "Mapgen v7 yükseklik seçme gürültü parametreleri"
-
-#~ msgid "Mapgen v7 filler depth noise parameters"
-#~ msgstr "Mapgen v7 doldurma derinlik gürültü parametreleri"
-
-#~ msgid "Mapgen v7 cave2 noise parameters"
-#~ msgstr "Mapgen v7 mağara2 gürültü parametreleri"
-
-#~ msgid "Mapgen v7 cave1 noise parameters"
-#~ msgstr "Mapgen v7 mağara1 gürültü parametreleri"
-
-#~ msgid "Mapgen v7 cave width"
-#~ msgstr "Mapgen v7 mağara genişliği"
-
-#~ msgid "Mapgen v6 trees noise parameters"
-#~ msgstr "Mapgen v6 ağaç gürültü parametreleri"
-
-#~ msgid "Mapgen v6 terrain base noise parameters"
-#~ msgstr "Mapgen v6 arazi taban gürültü parametreleri"
-
-#~ msgid "Mapgen v6 terrain altitude noise parameters"
-#~ msgstr "Mapgen v6 arazi yükseklik gürültü parametreleri"
-
-#~ msgid "Mapgen v6 steepness noise parameters"
-#~ msgstr "Mapgen v6 diklik gürültü parametreleri"
-
-#~ msgid "Mapgen v6 mud noise parameters"
-#~ msgstr "Mapgen v6 çamur gürültü parametreleri"
-
-#~ msgid "Mapgen v6 desert frequency"
-#~ msgstr "Mapgen v6 çöl frekansı"
-
-#~ msgid "Mapgen v6 cave noise parameters"
-#~ msgstr "Mapgen v6 mağara gürültü parametreleri"
-
-#~ msgid "Mapgen v6 biome noise parameters"
-#~ msgstr "Mapgen v6 biyom gürültü parametreleri"
-
-#~ msgid "Mapgen v6 beach noise parameters"
-#~ msgstr "Mapgen v6 sahil gürültü parametreleri"
-
-#~ msgid "Mapgen v6 beach frequency"
-#~ msgstr "Mapgen v6 sahil frekansı"
-
-#~ msgid "Mapgen v6 apple trees noise parameters"
-#~ msgstr "Mapgen v6 elma ağaçları gürültü parametreleri"
-
-#~ msgid "Mapgen v5 height noise parameters"
-#~ msgstr "Mapgen v5 yükseklik gürültü parametreleri"
-
-#~ msgid "Mapgen v5 filler depth noise parameters"
-#~ msgstr "Mapgen v5 doldurma derinlik gürültü parametreleri"
-
-#~ msgid "Mapgen v5 factor noise parameters"
-#~ msgstr "Mapgen v5 faktör gürültü parametreleri"
-
-#~ msgid "Mapgen v5 cave2 noise parameters"
-#~ msgstr "Mapgen v5 mağara2 gürültü parametreleri"
-
-#~ msgid "Mapgen v5 cave1 noise parameters"
-#~ msgstr "Mapgen v5 mağara1 gürültü parametreleri"
-
-#~ msgid "Mapgen v5 cave width"
-#~ msgstr "Mapgen v5 mağara genişliği"
-
-#~ msgid "Mapgen fractal slice w"
-#~ msgstr "Mapgen fraktal dilim w"
-
-#~ msgid "Mapgen fractal seabed noise parameters"
-#~ msgstr "Mapgen fraktal deniz dibi gürültü parametreleri"
-
-#~ msgid "Mapgen fractal scale"
-#~ msgstr "Mapgen fraktal boyutu"
-
-#~ msgid "Mapgen fractal offset"
-#~ msgstr "Mapgen fraktal kaydırma"
-
-#~ msgid "Mapgen fractal julia z"
-#~ msgstr "Mapgen fraktal julia z"
-
-#~ msgid "Mapgen fractal julia y"
-#~ msgstr "Mapgen fraktal julia y"
-
-#~ msgid "Mapgen fractal julia x"
-#~ msgstr "Mapgen fraktal julia x"
-
-#~ msgid "Mapgen fractal julia w"
-#~ msgstr "Mapgen fraktal julia w"
-
-#~ msgid "Mapgen fractal iterations"
-#~ msgstr "Mapgen fraktal yinelemesi"
-
-#~ msgid "Mapgen fractal fractal"
-#~ msgstr "Mapgen fraktal fraktal"
-
-#~ msgid "Mapgen fractal filler depth noise parameters"
-#~ msgstr "Mapgen fraktal doldurma derinlik gürültü parametreleri"
-
-#~ msgid "Mapgen fractal cave2 noise parameters"
-#~ msgstr "Mapgen fraktal mağara2 gürültü parametreleri"
-
-#~ msgid "Mapgen fractal cave1 noise parameters"
-#~ msgstr "Mapgen fraktal mağara1 gürültü parametreleri"
-
-#~ msgid "Mapgen fractal cave width"
-#~ msgstr "Mapgen fraktal mağara genişliği"
-
-#~ msgid "Mapgen flat terrain noise parameters"
-#~ msgstr "Mapgen düz arazi gürültü parametreleri"
-
-#~ msgid "Mapgen flat large cave depth"
-#~ msgstr "Mapgen düz büyük mağara derinliği"
-
-#~ msgid "Mapgen flat filler depth noise parameters"
-#~ msgstr "Mapgen düz doldurma derinlik gürültü parametreleri"
-
-#~ msgid "Mapgen flat cave2 noise parameters"
-#~ msgstr "Mapgen düz mağara2 gürültü parametreleri"
-
-#~ msgid "Mapgen flat cave1 noise parameters"
-#~ msgstr "Mapgen düz mağara1 gürültü parametreleri"
-
-#~ msgid "Mapgen flat cave width"
-#~ msgstr "Mapgen düz mağara genişliği"
-
-#~ msgid "Mapgen biome humidity noise parameters"
-#~ msgstr "Mapgen biyom nem gürültü parametreleri"
-
-#~ msgid "Mapgen biome humidity blend noise parameters"
-#~ msgstr "Mapgen biyom nem karıştırma gürültü parametreleri"
-
-#~ msgid "Mapgen biome heat noise parameters"
-#~ msgstr "Mapgen biyom ısı gürültü parametreleri"
+#~ "Sadece android sistemleri: Desteklenen bir işleyici bulunamadığında\n"
+#~ "envanter dokularını ızgaralardan yaratmayı dener."
 
 #~ msgid ""
-#~ "Determines terrain shape.\n"
-#~ "The 3 numbers in brackets control the scale of the\n"
-#~ "terrain, the 3 numbers should be identical."
+#~ "Announce to this serverlist.\n"
+#~ "If you want to announce your ipv6 address, use  serverlist_url = v6."
+#~ "servers.minetest.net."
 #~ msgstr ""
-#~ "Arazi şeklini belirler.\n"
-#~ "Parantez içinde 3 rakam arazi boyutunu kontrol eder,\n"
-#~ "3 rakam aynı olmalıdır."
+#~ "Bu sunucu listesine duyur.\n"
+#~ "Eğer ipv6 adresinizi duyurmak istiyorsanız, serverlist_url = v6.servers."
+#~ "minetest.net kullanın."
+
+#~ msgid "Approximate (X,Y,Z) scale of fractal in nodes."
+#~ msgstr "Fraktalın nod cinsinde yaklaşık (X, Y, Z) boyutu."
+
+#~ msgid "Autorun key"
+#~ msgstr "Kendiliğinden koşma tuşu"
+
+#~ msgid "Caves and tunnels form at the intersection of the two noises"
+#~ msgstr "Mağaralar ve tüneller iki gürültünün kesişiminde oluşur"
+
+#~ msgid "Cloud height"
+#~ msgstr "Bulut yüksekliği"
+
+#~ msgid "Console key"
+#~ msgstr "Konsol tuşu"
+
+#~ msgid "Continuous forward movement (only used for testing)."
+#~ msgstr "Sürekli ileri hareket (sadece test için)."
 
 #~ msgid ""
-#~ "Controls size of deserts and beaches in Mapgen v6.\n"
-#~ "When snowbiomes are enabled 'mgv6_freq_desert' is ignored."
+#~ "Creates unpredictable lava features in caves.\n"
+#~ "These can make mining difficult. Zero disables them. (0-10)"
 #~ msgstr ""
-#~ "Mapgen v6'da çöllerin ve  plajların boyutunu denetler.\n"
-#~ "Kar biyomları etkin ise 'mgv6_freq_desert' yok sayılır."
-
-#~ msgid "Plus"
-#~ msgstr "Artı"
-
-#~ msgid "Period"
-#~ msgstr "Nokta"
-
-#~ msgid "PA1"
-#~ msgstr "PA1"
-
-#~ msgid "Minus"
-#~ msgstr "Eksi"
-
-#~ msgid "Kanji"
-#~ msgstr "Kanji"
-
-#~ msgid "Kana"
-#~ msgstr "Kana"
-
-#~ msgid "Junja"
-#~ msgstr "Junja"
-
-#~ msgid "Final"
-#~ msgstr "Bitiş"
-
-#~ msgid "ExSel"
-#~ msgstr "ExSel"
-
-#~ msgid "CrSel"
-#~ msgstr "CrSel"
-
-#~ msgid "Comma"
-#~ msgstr "Virgül"
-
-#~ msgid "Capital"
-#~ msgstr "Büyük"
-
-#~ msgid "Attn"
-#~ msgstr "Dikkat"
-
-#~ msgid "Hide mp content"
-#~ msgstr "MP içeriğini gizle"
-
-#~ msgid "Y-level of higher (cliff-top) terrain."
-#~ msgstr "Daha yüksek (uçurum-tepesi) arazinin Y-seviyesi."
+#~ "Mağaralarda öngörülemeyen lav özellikleri yaratır.\n"
+#~ "Bu madenciliği zorlaştırabilir. Sıfır devre dışı bırakır. (0-10)"
 
 #~ msgid ""
-#~ "Whether to support older servers before protocol version 25.\n"
-#~ "Enable if you want to connect to 0.4.12 servers and before.\n"
-#~ "Servers starting with 0.4.13 will work, 0.4.12-dev servers may work.\n"
-#~ "Disabling this option will protect your password better."
+#~ "Creates unpredictable water features in caves.\n"
+#~ "These can make mining difficult. Zero disables them. (0-10)"
 #~ msgstr ""
-#~ "Protokol sürümü 25'ten önceki sunucuların desteklenip desteklenmeyeceği.\n"
-#~ "0.4.12 ve önceki sunuculara bağlanmak için etkinleştirin.\n"
-#~ "0.4.13 ile başlayan sunucular çalışır, 0.4.12-dev sunucuları "
-#~ "çalışabilir.\n"
-#~ "Bu seçeneği devre dışı bırakmak şifrenizi daha iyi korur."
+#~ "Mağaralarda öngörülemeyen su özellikleri yaratır.\n"
+#~ "Bu madenciliği zorlaştırabilir. Sıfır devre dışı bırakır. (0-10)"
 
-#~ msgid "Water Features"
-#~ msgstr "Su Özellikleri"
+#~ msgid "Crouch speed"
+#~ msgstr "Eğilme hızı"
 
-#~ msgid "Valleys C Flags"
-#~ msgstr "Vadi C Bayrakları"
+#~ msgid "Depth below which you'll find massive caves."
+#~ msgstr "Aşağısında devasa mağaralar bulabileceğiniz derinlik."
+
+#~ msgid "Descending speed"
+#~ msgstr "Düşme hızı"
+
+#~ msgid "Disable escape sequences"
+#~ msgstr "Çıkış dizilerini devre dışı bırak"
 
 #~ msgid ""
-#~ "Use mip mapping to scale textures. May slightly increase performance."
+#~ "Disable escape sequences, e.g. chat coloring.\n"
+#~ "Use this if you want to run a server with pre-0.4.14 clients and you want "
+#~ "to disable\n"
+#~ "the escape sequences generated by mods."
 #~ msgstr ""
-#~ "Dokuları boyutlandırırken mip eşleme kullan. Performansı biraz "
-#~ "artırabilir."
+#~ "Çıkış dizilerini devre dışı bırak, ör: sohbet renkleri.\n"
+#~ "Bu 0.4.14 öncesi istemciler ile bir sunucu çalıştırmak ve modlar "
+#~ "tarafından üretilen çıkış dizilerini devre dışı bırakmak istiyorsanız "
+#~ "bunu kullanın."
 
-#~ msgid "Use key"
-#~ msgstr "Kullan tuşu"
+#~ msgid "Enable view bobbing"
+#~ msgstr "Görünüm sallanmasını etkinleştir"
 
-#~ msgid "The rendering back-end for Irrlicht."
-#~ msgstr "Irrlicht için işleme arka ucu."
+#~ msgid "Enables view bobbing when walking."
+#~ msgstr "Yürürken görünüm sallanmasını etkinleştirir."
 
-#~ msgid "The altitude at which temperature drops by 20C"
-#~ msgstr "Sıcaklığın 20C birden düşeceği yükseklik"
-
-#~ msgid "Support older servers"
-#~ msgstr "Eski sunucuları destekle"
+#~ msgid "Field of view for zoom"
+#~ msgstr "Yakınlaştırma için görüş alanı"
 
 #~ msgid ""
-#~ "Size of chunks to be generated at once by mapgen, stated in mapblocks (16 "
-#~ "nodes)."
+#~ "Field of view while zooming in degrees.\n"
+#~ "This requires the \"zoom\" privilege on the server."
 #~ msgstr ""
-#~ "Harita blokları (16 nod) cinsinden bir kerede mapgen tarafından üretilen "
-#~ "yığınların boyutu."
-
-#~ msgid "River noise -- rivers occur close to zero"
-#~ msgstr "Nehir gürültüsü -- nehirler sıfıra yakın oluşur"
+#~ "Yakınlaştırırken derece olarak görüş alanı.\n"
+#~ "Bu sunucu üzerinde \"zoom\" ayrıcalığı gerektirir."
 
 #~ msgid ""
-#~ "Name of map generator to be used when creating a new world.\n"
-#~ "Creating a world in the main menu will override this."
+#~ "From how far clients know about objects, stated in mapblocks (16 nodes)."
 #~ msgstr ""
-#~ "Yeni bir dünya yaratılırken kullanılacak harita üreteci adı.\n"
-#~ "Ana menüde bir dünya yaratmak bunu geçersiz kılar."
+#~ "Harita blokları (16 nod) cinsinden istemcilerin ne kadar uzaklıktan "
+#~ "nesneleri bilecekleri."
 
-#~ msgid "Modstore mods list URL"
-#~ msgstr "Modstore mod liste URL'si"
+#~ msgid "General"
+#~ msgstr "Genel"
 
-#~ msgid "Modstore download URL"
-#~ msgstr "Modstore indirme URL'si"
-
-#~ msgid "Modstore details URL"
-#~ msgstr "Modstore ayrıntı URL'si"
-
-#~ msgid "Maximum simultaneous block sends total"
-#~ msgstr "Maksimum toplam eşzamanlı blok gönderimi"
-
-#~ msgid "Maximum number of blocks that are simultaneously sent per client."
-#~ msgstr "Aynı anda istemci başına gönderilen maksimum blok sayısı."
-
-#~ msgid "Maximum number of blocks that are simultaneously sent in total."
-#~ msgstr "Aynı anda toplamda gönderilen maksimum blok sayısı ."
-
-#~ msgid "Massive caves form here."
-#~ msgstr "Devasa mağaralar burada oluşuyor."
-
-#~ msgid "Massive cave noise"
-#~ msgstr "Devasa mağara gürültüsü"
-
-#~ msgid "Massive cave depth"
-#~ msgstr "Devasa mağara derinliği"
+#~ msgid "Height on which clouds are appearing."
+#~ msgstr "Bulutların ortaya çıkacağı yükseklik."
 
 #~ msgid ""
-#~ "Map generation attributes specific to Mapgen v7.\n"
-#~ "The 'ridges' flag enables the rivers.\n"
-#~ "Floatlands are currently experimental and subject to change.\n"
-#~ "Flags that are not specified in the flag string are not modified from the "
-#~ "default.\n"
-#~ "Flags starting with 'no' are used to explicitly disable them."
+#~ "How large area of blocks are subject to the active block stuff, stated in "
+#~ "mapblocks (16 nodes).\n"
+#~ "In active blocks objects are loaded and ABMs run."
 #~ msgstr ""
-#~ "Mapgen v7'ye özgü harita üretme değerleri.\n"
-#~ "'ridges' bayrağı nehirleri etkinleştirir.\n"
-#~ "Yüzenkaralar henüz deneyseldir ve değişebilirler.\n"
-#~ "Bayrak karakter dizisinde belirtilmeyen bayraklar varsayılandan "
-#~ "değiştirilmez.\n"
-#~ "'no' ile başlayan bayraklar onları devre dışı bırakır."
+#~ "Harita blokları (16 nod) cinsinden etkin blok durumuna gelen blok "
+#~ "alanının genişliği\n"
+#~ "Etkin bloklardaki nesneler yüklenir ve ABM çalışır."
+
+#~ msgid "If enabled, show the server status message on player connection."
+#~ msgstr "Etkinse, sunucu durum mesajını oyuncu bağlanınca göster."
+
+#~ msgid "Inventory image hack"
+#~ msgstr "Envanter resim hack'i"
+
+#~ msgid ""
+#~ "Iterations of the recursive function.\n"
+#~ "Controls the amount of fine detail."
+#~ msgstr ""
+#~ "Özyinelemeli fonksiyon yinelemelerini.\n"
+#~ "İnce detay miktarını denetler."
+
+#~ msgid ""
+#~ "Key for opening the chat console.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Sohbet konsolunu açma tuşu.\n"
+#~ "Bakın: http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for printing debug stacks. Used for development.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Hata ayıklama yığınlarını yazdırma tuşu. Geliştirme için kullanılır.\n"
+#~ "Bakın: http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid "Lava Features"
+#~ msgstr "Lav Özellikleri"
+
+#~ msgid "Main menu game manager"
+#~ msgstr "Ana menü oyun yöneticisi"
+
+#~ msgid "Main menu mod manager"
+#~ msgstr "Ana menü mod yöneticisi"
 
 #~ msgid ""
 #~ "Map generation attributes specific to Mapgen Valleys.\n"
@@ -6868,241 +6800,384 @@ msgstr "cURL zaman aşımı"
 #~ "değiştirilmez.\n"
 #~ "'no' ile başlayan bayraklar onları devre dışı bırakır."
 
-#~ msgid "Main menu mod manager"
-#~ msgstr "Ana menü mod yöneticisi"
+#~ msgid ""
+#~ "Map generation attributes specific to Mapgen v7.\n"
+#~ "The 'ridges' flag enables the rivers.\n"
+#~ "Floatlands are currently experimental and subject to change.\n"
+#~ "Flags that are not specified in the flag string are not modified from the "
+#~ "default.\n"
+#~ "Flags starting with 'no' are used to explicitly disable them."
+#~ msgstr ""
+#~ "Mapgen v7'ye özgü harita üretme değerleri.\n"
+#~ "'ridges' bayrağı nehirleri etkinleştirir.\n"
+#~ "Yüzenkaralar henüz deneyseldir ve değişebilirler.\n"
+#~ "Bayrak karakter dizisinde belirtilmeyen bayraklar varsayılandan "
+#~ "değiştirilmez.\n"
+#~ "'no' ile başlayan bayraklar onları devre dışı bırakır."
 
-#~ msgid "Main menu game manager"
-#~ msgstr "Ana menü oyun yöneticisi"
+#~ msgid "Massive cave depth"
+#~ msgstr "Devasa mağara derinliği"
 
-#~ msgid "Lava Features"
-#~ msgstr "Lav Özellikleri"
+#~ msgid "Massive cave noise"
+#~ msgstr "Devasa mağara gürültüsü"
+
+#~ msgid "Massive caves form here."
+#~ msgstr "Devasa mağaralar burada oluşuyor."
+
+#~ msgid "Maximum number of blocks that are simultaneously sent in total."
+#~ msgstr "Aynı anda toplamda gönderilen maksimum blok sayısı ."
+
+#~ msgid "Maximum number of blocks that are simultaneously sent per client."
+#~ msgstr "Aynı anda istemci başına gönderilen maksimum blok sayısı."
+
+#~ msgid "Maximum simultaneous block sends total"
+#~ msgstr "Maksimum toplam eşzamanlı blok gönderimi"
+
+#~ msgid "Modstore details URL"
+#~ msgstr "Modstore ayrıntı URL'si"
+
+#~ msgid "Modstore download URL"
+#~ msgstr "Modstore indirme URL'si"
+
+#~ msgid "Modstore mods list URL"
+#~ msgstr "Modstore mod liste URL'si"
 
 #~ msgid ""
-#~ "Key for printing debug stacks. Used for development.\n"
-#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
-#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ "Name of map generator to be used when creating a new world.\n"
+#~ "Creating a world in the main menu will override this."
 #~ msgstr ""
-#~ "Hata ayıklama yığınlarını yazdırma tuşu. Geliştirme için kullanılır.\n"
-#~ "Bakın: http://irrlicht.sourceforge.net/docu/namespaceirr."
-#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ "Yeni bir dünya yaratılırken kullanılacak harita üreteci adı.\n"
+#~ "Ana menüde bir dünya yaratmak bunu geçersiz kılar."
+
+#~ msgid "River noise -- rivers occur close to zero"
+#~ msgstr "Nehir gürültüsü -- nehirler sıfıra yakın oluşur"
 
 #~ msgid ""
-#~ "Key for opening the chat console.\n"
-#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
-#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ "Size of chunks to be generated at once by mapgen, stated in mapblocks (16 "
+#~ "nodes)."
 #~ msgstr ""
-#~ "Sohbet konsolunu açma tuşu.\n"
-#~ "Bakın: http://irrlicht.sourceforge.net/docu/namespaceirr."
-#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ "Harita blokları (16 nod) cinsinden bir kerede mapgen tarafından üretilen "
+#~ "yığınların boyutu."
+
+#~ msgid "Support older servers"
+#~ msgstr "Eski sunucuları destekle"
+
+#~ msgid "The altitude at which temperature drops by 20C"
+#~ msgstr "Sıcaklığın 20C birden düşeceği yükseklik"
+
+#~ msgid "The rendering back-end for Irrlicht."
+#~ msgstr "Irrlicht için işleme arka ucu."
+
+#~ msgid "Use key"
+#~ msgstr "Kullan tuşu"
 
 #~ msgid ""
-#~ "Iterations of the recursive function.\n"
-#~ "Controls the amount of fine detail."
+#~ "Use mip mapping to scale textures. May slightly increase performance."
 #~ msgstr ""
-#~ "Özyinelemeli fonksiyon yinelemelerini.\n"
-#~ "İnce detay miktarını denetler."
+#~ "Dokuları boyutlandırırken mip eşleme kullan. Performansı biraz "
+#~ "artırabilir."
 
-#~ msgid "Inventory image hack"
-#~ msgstr "Envanter resim hack'i"
+#~ msgid "Valleys C Flags"
+#~ msgstr "Vadi C Bayrakları"
 
-#~ msgid "If enabled, show the server status message on player connection."
-#~ msgstr "Etkinse, sunucu durum mesajını oyuncu bağlanınca göster."
+#~ msgid "Water Features"
+#~ msgstr "Su Özellikleri"
 
 #~ msgid ""
-#~ "How large area of blocks are subject to the active block stuff, stated in "
-#~ "mapblocks (16 nodes).\n"
-#~ "In active blocks objects are loaded and ABMs run."
+#~ "Whether to support older servers before protocol version 25.\n"
+#~ "Enable if you want to connect to 0.4.12 servers and before.\n"
+#~ "Servers starting with 0.4.13 will work, 0.4.12-dev servers may work.\n"
+#~ "Disabling this option will protect your password better."
 #~ msgstr ""
-#~ "Harita blokları (16 nod) cinsinden etkin blok durumuna gelen blok "
-#~ "alanının genişliği\n"
-#~ "Etkin bloklardaki nesneler yüklenir ve ABM çalışır."
+#~ "Protokol sürümü 25'ten önceki sunucuların desteklenip desteklenmeyeceği.\n"
+#~ "0.4.12 ve önceki sunuculara bağlanmak için etkinleştirin.\n"
+#~ "0.4.13 ile başlayan sunucular çalışır, 0.4.12-dev sunucuları "
+#~ "çalışabilir.\n"
+#~ "Bu seçeneği devre dışı bırakmak şifrenizi daha iyi korur."
 
-#~ msgid "Height on which clouds are appearing."
-#~ msgstr "Bulutların ortaya çıkacağı yükseklik."
+#~ msgid "Y-level of higher (cliff-top) terrain."
+#~ msgstr "Daha yüksek (uçurum-tepesi) arazinin Y-seviyesi."
 
-#~ msgid "General"
-#~ msgstr "Genel"
+#~ msgid "Hide mp content"
+#~ msgstr "MP içeriğini gizle"
+
+#~ msgid "Attn"
+#~ msgstr "Dikkat"
+
+#~ msgid "Capital"
+#~ msgstr "Büyük"
+
+#~ msgid "Comma"
+#~ msgstr "Virgül"
+
+#~ msgid "CrSel"
+#~ msgstr "CrSel"
+
+#~ msgid "ExSel"
+#~ msgstr "ExSel"
+
+#~ msgid "Final"
+#~ msgstr "Bitiş"
+
+#~ msgid "Junja"
+#~ msgstr "Junja"
+
+#~ msgid "Kana"
+#~ msgstr "Kana"
+
+#~ msgid "Kanji"
+#~ msgstr "Kanji"
+
+#~ msgid "Minus"
+#~ msgstr "Eksi"
+
+#~ msgid "PA1"
+#~ msgstr "PA1"
+
+#~ msgid "Period"
+#~ msgstr "Nokta"
+
+#~ msgid "Plus"
+#~ msgstr "Artı"
 
 #~ msgid ""
-#~ "From how far clients know about objects, stated in mapblocks (16 nodes)."
+#~ "Controls size of deserts and beaches in Mapgen v6.\n"
+#~ "When snowbiomes are enabled 'mgv6_freq_desert' is ignored."
 #~ msgstr ""
-#~ "Harita blokları (16 nod) cinsinden istemcilerin ne kadar uzaklıktan "
-#~ "nesneleri bilecekleri."
+#~ "Mapgen v6'da çöllerin ve  plajların boyutunu denetler.\n"
+#~ "Kar biyomları etkin ise 'mgv6_freq_desert' yok sayılır."
 
 #~ msgid ""
-#~ "Field of view while zooming in degrees.\n"
-#~ "This requires the \"zoom\" privilege on the server."
+#~ "Determines terrain shape.\n"
+#~ "The 3 numbers in brackets control the scale of the\n"
+#~ "terrain, the 3 numbers should be identical."
 #~ msgstr ""
-#~ "Yakınlaştırırken derece olarak görüş alanı.\n"
-#~ "Bu sunucu üzerinde \"zoom\" ayrıcalığı gerektirir."
+#~ "Arazi şeklini belirler.\n"
+#~ "Parantez içinde 3 rakam arazi boyutunu kontrol eder,\n"
+#~ "3 rakam aynı olmalıdır."
 
-#~ msgid "Field of view for zoom"
-#~ msgstr "Yakınlaştırma için görüş alanı"
+#~ msgid "Mapgen biome heat noise parameters"
+#~ msgstr "Mapgen biyom ısı gürültü parametreleri"
 
-#~ msgid "Enables view bobbing when walking."
-#~ msgstr "Yürürken görünüm sallanmasını etkinleştirir."
+#~ msgid "Mapgen biome humidity blend noise parameters"
+#~ msgstr "Mapgen biyom nem karıştırma gürültü parametreleri"
 
-#~ msgid "Enable view bobbing"
-#~ msgstr "Görünüm sallanmasını etkinleştir"
+#~ msgid "Mapgen biome humidity noise parameters"
+#~ msgstr "Mapgen biyom nem gürültü parametreleri"
+
+#~ msgid "Mapgen flat cave width"
+#~ msgstr "Mapgen düz mağara genişliği"
+
+#~ msgid "Mapgen flat cave1 noise parameters"
+#~ msgstr "Mapgen düz mağara1 gürültü parametreleri"
+
+#~ msgid "Mapgen flat cave2 noise parameters"
+#~ msgstr "Mapgen düz mağara2 gürültü parametreleri"
+
+#~ msgid "Mapgen flat filler depth noise parameters"
+#~ msgstr "Mapgen düz doldurma derinlik gürültü parametreleri"
+
+#~ msgid "Mapgen flat large cave depth"
+#~ msgstr "Mapgen düz büyük mağara derinliği"
+
+#~ msgid "Mapgen flat terrain noise parameters"
+#~ msgstr "Mapgen düz arazi gürültü parametreleri"
+
+#~ msgid "Mapgen fractal cave width"
+#~ msgstr "Mapgen fraktal mağara genişliği"
+
+#~ msgid "Mapgen fractal cave1 noise parameters"
+#~ msgstr "Mapgen fraktal mağara1 gürültü parametreleri"
+
+#~ msgid "Mapgen fractal cave2 noise parameters"
+#~ msgstr "Mapgen fraktal mağara2 gürültü parametreleri"
+
+#~ msgid "Mapgen fractal filler depth noise parameters"
+#~ msgstr "Mapgen fraktal doldurma derinlik gürültü parametreleri"
+
+#~ msgid "Mapgen fractal fractal"
+#~ msgstr "Mapgen fraktal fraktal"
+
+#~ msgid "Mapgen fractal iterations"
+#~ msgstr "Mapgen fraktal yinelemesi"
+
+#~ msgid "Mapgen fractal julia w"
+#~ msgstr "Mapgen fraktal julia w"
+
+#~ msgid "Mapgen fractal julia x"
+#~ msgstr "Mapgen fraktal julia x"
+
+#~ msgid "Mapgen fractal julia y"
+#~ msgstr "Mapgen fraktal julia y"
+
+#~ msgid "Mapgen fractal julia z"
+#~ msgstr "Mapgen fraktal julia z"
+
+#~ msgid "Mapgen fractal offset"
+#~ msgstr "Mapgen fraktal kaydırma"
+
+#~ msgid "Mapgen fractal scale"
+#~ msgstr "Mapgen fraktal boyutu"
+
+#~ msgid "Mapgen fractal seabed noise parameters"
+#~ msgstr "Mapgen fraktal deniz dibi gürültü parametreleri"
+
+#~ msgid "Mapgen fractal slice w"
+#~ msgstr "Mapgen fraktal dilim w"
+
+#~ msgid "Mapgen v5 cave width"
+#~ msgstr "Mapgen v5 mağara genişliği"
+
+#~ msgid "Mapgen v5 cave1 noise parameters"
+#~ msgstr "Mapgen v5 mağara1 gürültü parametreleri"
+
+#~ msgid "Mapgen v5 cave2 noise parameters"
+#~ msgstr "Mapgen v5 mağara2 gürültü parametreleri"
+
+#~ msgid "Mapgen v5 factor noise parameters"
+#~ msgstr "Mapgen v5 faktör gürültü parametreleri"
+
+#~ msgid "Mapgen v5 filler depth noise parameters"
+#~ msgstr "Mapgen v5 doldurma derinlik gürültü parametreleri"
+
+#~ msgid "Mapgen v5 height noise parameters"
+#~ msgstr "Mapgen v5 yükseklik gürültü parametreleri"
+
+#~ msgid "Mapgen v6 apple trees noise parameters"
+#~ msgstr "Mapgen v6 elma ağaçları gürültü parametreleri"
+
+#~ msgid "Mapgen v6 beach frequency"
+#~ msgstr "Mapgen v6 sahil frekansı"
+
+#~ msgid "Mapgen v6 beach noise parameters"
+#~ msgstr "Mapgen v6 sahil gürültü parametreleri"
+
+#~ msgid "Mapgen v6 biome noise parameters"
+#~ msgstr "Mapgen v6 biyom gürültü parametreleri"
+
+#~ msgid "Mapgen v6 cave noise parameters"
+#~ msgstr "Mapgen v6 mağara gürültü parametreleri"
+
+#~ msgid "Mapgen v6 desert frequency"
+#~ msgstr "Mapgen v6 çöl frekansı"
+
+#~ msgid "Mapgen v6 mud noise parameters"
+#~ msgstr "Mapgen v6 çamur gürültü parametreleri"
+
+#~ msgid "Mapgen v6 steepness noise parameters"
+#~ msgstr "Mapgen v6 diklik gürültü parametreleri"
+
+#~ msgid "Mapgen v6 terrain altitude noise parameters"
+#~ msgstr "Mapgen v6 arazi yükseklik gürültü parametreleri"
+
+#~ msgid "Mapgen v6 terrain base noise parameters"
+#~ msgstr "Mapgen v6 arazi taban gürültü parametreleri"
+
+#~ msgid "Mapgen v6 trees noise parameters"
+#~ msgstr "Mapgen v6 ağaç gürültü parametreleri"
+
+#~ msgid "Mapgen v7 cave width"
+#~ msgstr "Mapgen v7 mağara genişliği"
+
+#~ msgid "Mapgen v7 cave1 noise parameters"
+#~ msgstr "Mapgen v7 mağara1 gürültü parametreleri"
+
+#~ msgid "Mapgen v7 cave2 noise parameters"
+#~ msgstr "Mapgen v7 mağara2 gürültü parametreleri"
+
+#~ msgid "Mapgen v7 filler depth noise parameters"
+#~ msgstr "Mapgen v7 doldurma derinlik gürültü parametreleri"
+
+#~ msgid "Mapgen v7 height select noise parameters"
+#~ msgstr "Mapgen v7 yükseklik seçme gürültü parametreleri"
+
+#~ msgid "Mapgen v7 mountain noise parameters"
+#~ msgstr "Mapgen v7 dağ gürültü parametreleri"
+
+#~ msgid "Mapgen v7 ridge noise parameters"
+#~ msgstr "Mapgen v7 sırt gürültü parametreleri"
+
+#~ msgid "Mapgen v7 ridge water noise parameters"
+#~ msgstr "Mapgen v7 sırt su gürültü parametreleri"
+
+#~ msgid "Mapgen v7 terrain altitude noise parameters"
+#~ msgstr "Mapgen v7 arazi yükseklik gürültü parametreleri"
+
+#~ msgid "Mapgen v7 terrain base noise parameters"
+#~ msgstr "Mapgen v7 arazi taban gürültü parametreleri"
+
+#~ msgid "Mapgen v7 terrain persistation noise parameters"
+#~ msgstr "Mapgen v7 arazi sürdürme gürültü parametreleri"
 
 #~ msgid ""
-#~ "Disable escape sequences, e.g. chat coloring.\n"
-#~ "Use this if you want to run a server with pre-0.4.14 clients and you want "
-#~ "to disable\n"
-#~ "the escape sequences generated by mods."
+#~ "Noise parameters for biome API temperature, humidity and biome blend."
 #~ msgstr ""
-#~ "Çıkış dizilerini devre dışı bırak, ör: sohbet renkleri.\n"
-#~ "Bu 0.4.14 öncesi istemciler ile bir sunucu çalıştırmak ve modlar "
-#~ "tarafından üretilen çıkış dizilerini devre dışı bırakmak istiyorsanız "
-#~ "bunu kullanın."
-
-#~ msgid "Disable escape sequences"
-#~ msgstr "Çıkış dizilerini devre dışı bırak"
-
-#~ msgid "Descending speed"
-#~ msgstr "Düşme hızı"
-
-#~ msgid "Depth below which you'll find massive caves."
-#~ msgstr "Aşağısında devasa mağaralar bulabileceğiniz derinlik."
-
-#~ msgid "Crouch speed"
-#~ msgstr "Eğilme hızı"
+#~ "Biyom API'si sıcaklık, nem ve biyom karıştırma için gürültü parametreleri."
 
 #~ msgid ""
-#~ "Creates unpredictable water features in caves.\n"
-#~ "These can make mining difficult. Zero disables them. (0-10)"
+#~ "Where the map generator stops.\n"
+#~ "Please note:\n"
+#~ "-    Limited to 31000 (setting above has no effect)\n"
+#~ "-    The map generator works in groups of 80x80x80 nodes (5x5x5 "
+#~ "MapBlocks).\n"
+#~ "-    Those groups have an offset of -32, -32 nodes from the origin.\n"
+#~ "-    Only groups which are within the map_generation_limit are generated"
 #~ msgstr ""
-#~ "Mağaralarda öngörülemeyen su özellikleri yaratır.\n"
-#~ "Bu madenciliği zorlaştırabilir. Sıfır devre dışı bırakır. (0-10)"
+#~ "Harita olşturucunun nerede duracağı.\n"
+#~ "Lütfen dikkat:\n"
+#~ "-    31000 sınırdır (yukarıdaki ayar etkisizdir)\n"
+#~ "-    harita oluşturucu grupları 80 x 80 x 80 nod (5 x 5 x 5 harita-bloğu) "
+#~ "ile çalışır.\n"
+#~ "-    Bu grupların merkezden -32, -32 nod kayması vardır.\n"
+#~ "-    Sadece map_generation_limit içinde grupları oluşturulur"
 
-#~ msgid ""
-#~ "Creates unpredictable lava features in caves.\n"
-#~ "These can make mining difficult. Zero disables them. (0-10)"
-#~ msgstr ""
-#~ "Mağaralarda öngörülemeyen lav özellikleri yaratır.\n"
-#~ "Bu madenciliği zorlaştırabilir. Sıfır devre dışı bırakır. (0-10)"
+#, fuzzy
+#~ msgid "Useful for mod developers."
+#~ msgstr "Ana geliştiriciler"
 
-#~ msgid "Continuous forward movement (only used for testing)."
-#~ msgstr "Sürekli ileri hareket (sadece test için)."
+#~ msgid "No of course not!"
+#~ msgstr "Elbette hayır!"
 
-#~ msgid "Console key"
-#~ msgstr "Konsol tuşu"
+#~ msgid "Public Serverlist"
+#~ msgstr "Çevirimiçi Oyun Listesi"
 
-#~ msgid "Cloud height"
-#~ msgstr "Bulut yüksekliği"
+#~ msgid "No!!!"
+#~ msgstr "Hayır!!!"
 
-#~ msgid "Caves and tunnels form at the intersection of the two noises"
-#~ msgstr "Mağaralar ve tüneller iki gürültünün kesişiminde oluşur"
+#~ msgid "\""
+#~ msgstr "\""
 
-#~ msgid "Autorun key"
-#~ msgstr "Kendiliğinden koşma tuşu"
+#, fuzzy
+#~ msgid "If enabled, "
+#~ msgstr "Etkinleştirildi"
 
-#~ msgid "Approximate (X,Y,Z) scale of fractal in nodes."
-#~ msgstr "Fraktalın nod cinsinde yaklaşık (X, Y, Z) boyutu."
+#~ msgid "Restart minetest for driver change to take effect"
+#~ msgstr "Değişikliklerin etkin olabilmesi için minetesti yeniden başlatın"
 
-#~ msgid ""
-#~ "Announce to this serverlist.\n"
-#~ "If you want to announce your ipv6 address, use  serverlist_url = v6."
-#~ "servers.minetest.net."
-#~ msgstr ""
-#~ "Bu sunucu listesine duyur.\n"
-#~ "Eğer ipv6 adresinizi duyurmak istiyorsanız, serverlist_url = v6.servers."
-#~ "minetest.net kullanın."
+#~ msgid " MB/s"
+#~ msgstr " MB/s"
 
-#~ msgid ""
-#~ "Android systems only: Tries to create inventory textures from meshes\n"
-#~ "when no supported render was found."
-#~ msgstr ""
-#~ "Sadece android sistemleri: Desteklenen bir işleyici bulunamadığında\n"
-#~ "envanter dokularını ızgaralardan yaratmayı dener."
+#~ msgid " KB/s"
+#~ msgstr " KB/s"
 
-#~ msgid "Active Block Modifier interval"
-#~ msgstr "Etkin Blok Değiştirici aralığı"
+#~ msgid "please wait..."
+#~ msgstr "lütfen bekleyin..."
 
-#~ msgid "Prior"
-#~ msgstr "Önceki"
+#~ msgid "Downloading"
+#~ msgstr "İndiriliyor"
 
-#~ msgid "Next"
-#~ msgstr "Sonraki"
+#~ msgid "Touch free target"
+#~ msgstr "Touch free target"
 
-#~ msgid "Use"
-#~ msgstr "Kullan"
+#~ msgid "Scaling factor applied to menu elements: "
+#~ msgstr "Ölçeklendirme menülere işlendi:"
 
-#~ msgid "Print stacks"
-#~ msgstr "Yığınları yazdır"
+#, fuzzy
+#~ msgid "Preload inventory textures"
+#~ msgstr "Dokular yükleniyor..."
 
-#~ msgid "Volume changed to 100%"
-#~ msgstr "Ses 100/100'e değişti"
+#~ msgid "Advanced Settings"
+#~ msgstr "Gelişmiş Ayarlar"
 
-#~ msgid "Volume changed to 0%"
-#~ msgstr "Ses 0/100'e değişti"
-
-#~ msgid "No information available"
-#~ msgstr "Bulunan bilgi yok"
-
-#~ msgid "Normal Mapping"
-#~ msgstr "Dikey Eşleme"
-
-#~ msgid "Play Online"
-#~ msgstr "Çevrim İçi Oyna"
-
-#~ msgid "Uninstall selected modpack"
-#~ msgstr "Seçili mod paketini kaldır"
-
-#~ msgid "Local Game"
-#~ msgstr "Yerel Oyun"
-
-#~ msgid "re-Install"
-#~ msgstr "yeniden kur"
-
-#~ msgid "Unsorted"
-#~ msgstr "Sırasız"
-
-#~ msgid "Successfully installed:"
-#~ msgstr "Başarıyla kuruldu:"
-
-#~ msgid "Shortname:"
-#~ msgstr "Kısa ad:"
-
-#~ msgid "Rating"
-#~ msgstr "Rating"
-
-#~ msgid "Page $1 of $2"
-#~ msgstr "$2 sayfadan $1"
-
-#~ msgid "Subgame Mods"
-#~ msgstr "Alt Oyun Modları"
-
-#~ msgid "Select path"
-#~ msgstr "Konumu seçin"
-
-#~ msgid "Possible values are: "
-#~ msgstr "Olası değerler: "
-
-#~ msgid "Please enter a comma seperated list of flags."
-#~ msgstr "Lütfen virgülle ayrılmış bir bayrak listesi girin."
-
-#~ msgid "Optionally the lacunarity can be appended with a leading comma."
-#~ msgstr "İstenirse lakuraniti öne gelen virgülle eklenebilir."
-
-#~ msgid ""
-#~ "Format: <offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>), <seed>, "
-#~ "<octaves>, <persistence>"
-#~ msgstr ""
-#~ "Biçim: <kaydırma>, <boyut>, (<yayılmaX>, <yayılmaY>, <yayılmaZ>), "
-#~ "<tohum>, <oktav>, <kalıcılık>"
-
-#~ msgid "Format is 3 numbers separated by commas and inside brackets."
-#~ msgstr "Ayraç içinde ve virgülle ayrılmış 3 sayı biçimindedir."
-
-#~ msgid "\"$1\" is not a valid flag."
-#~ msgstr "\"$1\" geçerli bir bayrak değil."
-
-#~ msgid "No worldname given or no game selected"
-#~ msgstr "Dünya adı verilmedi ya da oyun seçilmedi"
-
-#~ msgid "Enable MP"
-#~ msgstr "Mod paketini aç"
-
-#~ msgid "Disable MP"
-#~ msgstr "Mod paketini kapa"
+#~ msgid "View"
+#~ msgstr "Göster"

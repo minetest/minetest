@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-01-24 01:05+0200\n"
+"POT-Creation-Date: 2019-02-14 07:46+0100\n"
 "PO-Revision-Date: 2019-02-13 13:11+0000\n"
 "Last-Translator: Muhammad Rifqi Priyo Susanto "
 "<muhammadrifqipriyosusanto@gmail.com>\n"
@@ -12,8 +12,8 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<="
-"4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
+"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
+"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
 "X-Generator: Weblate 3.5-dev\n"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
@@ -26,11 +26,13 @@ msgid "You died"
 msgstr "Умро/ла си."
 
 #: builtin/fstk/ui.lua
-msgid "An error occured in a Lua script, such as a mod:"
+#, fuzzy
+msgid "An error occurred in a Lua script, such as a mod:"
 msgstr "Догодила се грешка у Lua скрипти, у моду:"
 
 #: builtin/fstk/ui.lua
-msgid "An error occured:"
+#, fuzzy
+msgid "An error occurred:"
 msgstr "Догодила се грешка:"
 
 #: builtin/fstk/ui.lua
@@ -113,9 +115,10 @@ msgid "Enable modpack"
 msgstr "Преименуј мод-паковање:"
 
 #: builtin/mainmenu/dlg_config_world.lua
+#, fuzzy
 msgid ""
 "Failed to enable mod \"$1\" as it contains disallowed characters. Only "
-"chararacters [a-z0-9_] are allowed."
+"characters [a-z0-9_] are allowed."
 msgstr ""
 "Неуспело укључивање мода \"$1\" зато што садржи неподржане симболе.Само "
 "симболи [a-z0-9_] су дозвољени."
@@ -189,6 +192,10 @@ msgid "Mods"
 msgstr "Модови"
 
 #: builtin/mainmenu/dlg_contentstore.lua
+msgid "No packages could be retrieved"
+msgstr ""
+
+#: builtin/mainmenu/dlg_contentstore.lua
 msgid "No results"
 msgstr ""
 
@@ -211,10 +218,6 @@ msgstr "Инсталирај"
 msgid "Update"
 msgstr ""
 
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "View"
-msgstr ""
-
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "A world named \"$1\" already exists"
 msgstr "Свет \"$1\" већ постоји"
@@ -225,7 +228,7 @@ msgstr "Направи"
 
 #: builtin/mainmenu/dlg_create_world.lua
 #, fuzzy
-msgid "Download a game, such as minetest_game, from minetest.net"
+msgid "Download a game, such as Minetest Game, from minetest.net"
 msgstr "Преузми подигру, као што је minetest_game, са minetest.net"
 
 #: builtin/mainmenu/dlg_create_world.lua
@@ -246,6 +249,7 @@ msgid "No game selected"
 msgstr "Одабир домета"
 
 #: builtin/mainmenu/dlg_create_world.lua
+#: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Seed"
 msgstr "Семе"
 
@@ -294,9 +298,20 @@ msgstr "Прихвати"
 msgid "Rename Modpack:"
 msgstr "Преименуј мод-паковање:"
 
+#: builtin/mainmenu/dlg_rename_modpack.lua
+msgid ""
+"This modpack has an explicit name given in its modpack.conf which will "
+"override any renaming here."
+msgstr ""
+
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "(No description of setting given)"
 msgstr "(Није дат опис поставке)"
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+#, fuzzy
+msgid "2D Noise"
+msgstr "Cave2 семе"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "< Back to Settings page"
@@ -319,6 +334,22 @@ msgid "Enabled"
 msgstr "Омогућено"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "Lacunarity"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "Octaves"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua src/settings_translation_file.cpp
+msgid "Offset"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "Persistance"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Please enter a valid integer."
 msgstr "Молим вас унесите валидан број."
 
@@ -329,6 +360,10 @@ msgstr "Молим вас унесите валидан број."
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Restore Default"
 msgstr "Поврати уобичајено"
+
+#: builtin/mainmenu/dlg_settings_advanced.lua src/settings_translation_file.cpp
+msgid "Scale"
+msgstr ""
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 #, fuzzy
@@ -352,15 +387,52 @@ msgstr "Вредност мора бити најмање $1."
 msgid "The value must not be larger than $1."
 msgstr "Вредност не сме бити већа од $1."
 
-#: builtin/mainmenu/pkgmgr.lua
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "X"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "X spread"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "Y"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "Y spread"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "Z"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "Z spread"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "absvalue"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
 #, fuzzy
-msgid " mods"
-msgstr "Тродимензионални мод"
+msgid "defaults"
+msgstr "Уобичајена игра"
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "eased"
+msgstr ""
 
 #: builtin/mainmenu/pkgmgr.lua
 #, fuzzy
 msgid "$1 (Enabled)"
 msgstr "Омогућено"
+
+#: builtin/mainmenu/pkgmgr.lua
+#, fuzzy
+msgid "$1 mods"
+msgstr "Тродимензионални мод"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Failed to install $1 to $2"
@@ -609,8 +681,9 @@ msgid "8x"
 msgstr "8x"
 
 #: builtin/mainmenu/tab_settings.lua
-msgid "Advanced Settings"
-msgstr "Напредне поставке"
+#, fuzzy
+msgid "All Settings"
+msgstr "Поставке"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Antialiasing:"
@@ -4678,10 +4751,6 @@ msgid "Number of parallax occlusion iterations."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Offset"
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid "Opaque liquids"
 msgstr ""
 
@@ -4949,10 +5018,6 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Saving map received from server"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Scale"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5903,74 +5968,104 @@ msgstr ""
 msgid "cURL timeout"
 msgstr ""
 
-#~ msgid "Plus"
-#~ msgstr "Плус"
+#~ msgid "Disable MP"
+#~ msgstr "Онемогући мод-паковање"
 
-#~ msgid "Period"
-#~ msgstr "Тачка"
+#~ msgid "Enable MP"
+#~ msgstr "Омогући мод-паковање"
 
-#~ msgid "Minus"
-#~ msgstr "Минус"
+#~ msgid "No worldname given or no game selected"
+#~ msgstr "Име није дато или ниједна игра није изабрана"
 
-#~ msgid "Final"
-#~ msgstr "Крајњи"
+#~ msgid "\"$1\" is not a valid flag."
+#~ msgstr "\"$1\" није валидна ознака."
 
-#~ msgid "ExSel"
-#~ msgstr "ЕхСел"
-
-#~ msgid "CrSel"
-#~ msgstr "ЦрСел"
-
-#~ msgid "Comma"
-#~ msgstr "Зарез"
-
-#~ msgid "Capital"
-#~ msgstr "Главно"
-
-#~ msgid "Attn"
-#~ msgstr "Аттн"
-
-#~ msgid "Hide mp content"
-#~ msgstr "Сакриј садржину мод-паковања"
-
-#, fuzzy
-#~ msgid "Inventory image hack"
-#~ msgstr "Инвентар"
-
-#~ msgid "Crouch speed"
-#~ msgstr "Брзина при чучању"
+#~ msgid "Format is 3 numbers separated by commas and inside brackets."
+#~ msgstr "Формат су три броја унутар заграда раздвојени зарезима."
 
 #~ msgid ""
-#~ "Creates unpredictable water features in caves.\n"
-#~ "These can make mining difficult. Zero disables them. (0-10)"
+#~ "Format: <offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>), <seed>, "
+#~ "<octaves>, <persistence>"
 #~ msgstr ""
-#~ "Ствара непредвидиве шеме воде у пећинама.\n"
-#~ "Ове могу чинити копање тежим. Нула их онемогућава. (0-10)"
+#~ "Формат:  <офсет>, <скала>, (<распонX>, <распонY>, <распонZ>), <семе>, "
+#~ "<октаве>, <упорност>"
+
+#~ msgid "Optionally the lacunarity can be appended with a leading comma."
+#~ msgstr "Опоцијоно, лацунарност се може додати са зарезом."
+
+#~ msgid "Please enter a comma seperated list of flags."
+#~ msgstr "Молим вас унесите листу ознака раздвојену зарезима."
+
+#~ msgid "Possible values are: "
+#~ msgstr "Могуће вредности су: "
+
+#~ msgid "Select path"
+#~ msgstr "Одабери локацију"
+
+#~ msgid "Subgame Mods"
+#~ msgstr "Модови под-игре"
+
+#~ msgid "Page $1 of $2"
+#~ msgstr "Страна $1 од $2"
+
+#~ msgid "Rating"
+#~ msgstr "Оцена"
+
+#~ msgid "Shortname:"
+#~ msgstr "Краће име:"
+
+#~ msgid "Successfully installed:"
+#~ msgstr "Успешно инсталиран:"
+
+#~ msgid "Unsorted"
+#~ msgstr "Нераспоређено"
+
+#~ msgid "re-Install"
+#~ msgstr "поново инсталирај"
+
+#~ msgid "Local Game"
+#~ msgstr "Локална игра"
+
+#~ msgid "Uninstall selected modpack"
+#~ msgstr "Уклони одабрано мод-паковање"
+
+#~ msgid "Play Online"
+#~ msgstr "Играј онлине"
+
+#~ msgid "Normal Mapping"
+#~ msgstr "Нормал-мапирање"
+
+#~ msgid "No information available"
+#~ msgstr "Нема доступних информација"
+
+#~ msgid "Volume changed to 0%"
+#~ msgstr "Јачина звука промењена на 0%"
+
+#~ msgid "Volume changed to 100%"
+#~ msgstr "Јачина звука промењена на 100%"
+
+#~ msgid "Print stacks"
+#~ msgstr "Прикажи stack-ове"
+
+#~ msgid "Use"
+#~ msgstr "Коришћење"
+
+#~ msgid "Next"
+#~ msgstr "Следеће"
+
+#~ msgid "Prior"
+#~ msgstr "Пре"
+
+#~ msgid "Active Block Modifier interval"
+#~ msgstr "Интервал модификатора активног блока"
 
 #~ msgid ""
-#~ "Creates unpredictable lava features in caves.\n"
-#~ "These can make mining difficult. Zero disables them. (0-10)"
+#~ "Android systems only: Tries to create inventory textures from meshes\n"
+#~ "when no supported render was found."
 #~ msgstr ""
-#~ "Ствара непредвидиве шеме лаве у пећинама.\n"
-#~ "Ове могу чинити копање тежим. Нула их онемогућава. (0-10)"
-
-#~ msgid "Continuous forward movement (only used for testing)."
-#~ msgstr "Непрекидно кретање унапред (користи се само за тестирање)."
-
-#~ msgid "Console key"
-#~ msgstr "Кључ за конзолу"
-
-#~ msgid "Cloud height"
-#~ msgstr "Висина облака"
-
-#~ msgid "Caves and tunnels form at the intersection of the two noises"
-#~ msgstr "Пећине и тунели се формирају при укрштању два семена"
-
-#~ msgid "Autorun key"
-#~ msgstr "Кључ за аутоматско трчање"
-
-#~ msgid "Approximate (X,Y,Z) scale of fractal in nodes."
-#~ msgstr "Приближна величина (X,Y,Z) фрактала у блоковима."
+#~ "Само за Андроид системе: Покушава да направи текстуру у инвентару из "
+#~ "модела\n"
+#~ "када није пронађен ниједан подржани драјвер."
 
 #~ msgid ""
 #~ "Announce to this serverlist.\n"
@@ -5981,101 +6076,74 @@ msgstr ""
 #~ "Ако желите да пријавите вашу ipv6 адресу, користите serverlist_url = v6."
 #~ "servers.minetest.net."
 
-#~ msgid ""
-#~ "Android systems only: Tries to create inventory textures from meshes\n"
-#~ "when no supported render was found."
-#~ msgstr ""
-#~ "Само за Андроид системе: Покушава да направи текстуру у инвентару из "
-#~ "модела\n"
-#~ "када није пронађен ниједан подржани драјвер."
+#~ msgid "Approximate (X,Y,Z) scale of fractal in nodes."
+#~ msgstr "Приближна величина (X,Y,Z) фрактала у блоковима."
 
-#~ msgid "Active Block Modifier interval"
-#~ msgstr "Интервал модификатора активног блока"
+#~ msgid "Autorun key"
+#~ msgstr "Кључ за аутоматско трчање"
 
-#~ msgid "Prior"
-#~ msgstr "Пре"
+#~ msgid "Caves and tunnels form at the intersection of the two noises"
+#~ msgstr "Пећине и тунели се формирају при укрштању два семена"
 
-#~ msgid "Next"
-#~ msgstr "Следеће"
+#~ msgid "Cloud height"
+#~ msgstr "Висина облака"
 
-#~ msgid "Use"
-#~ msgstr "Коришћење"
+#~ msgid "Console key"
+#~ msgstr "Кључ за конзолу"
 
-#~ msgid "Print stacks"
-#~ msgstr "Прикажи stack-ове"
-
-#~ msgid "Volume changed to 100%"
-#~ msgstr "Јачина звука промењена на 100%"
-
-#~ msgid "Volume changed to 0%"
-#~ msgstr "Јачина звука промењена на 0%"
-
-#~ msgid "No information available"
-#~ msgstr "Нема доступних информација"
-
-#~ msgid "Normal Mapping"
-#~ msgstr "Нормал-мапирање"
-
-#~ msgid "Play Online"
-#~ msgstr "Играј онлине"
-
-#~ msgid "Uninstall selected modpack"
-#~ msgstr "Уклони одабрано мод-паковање"
-
-#~ msgid "Local Game"
-#~ msgstr "Локална игра"
-
-#~ msgid "re-Install"
-#~ msgstr "поново инсталирај"
-
-#~ msgid "Unsorted"
-#~ msgstr "Нераспоређено"
-
-#~ msgid "Successfully installed:"
-#~ msgstr "Успешно инсталиран:"
-
-#~ msgid "Shortname:"
-#~ msgstr "Краће име:"
-
-#~ msgid "Rating"
-#~ msgstr "Оцена"
-
-#~ msgid "Page $1 of $2"
-#~ msgstr "Страна $1 од $2"
-
-#~ msgid "Subgame Mods"
-#~ msgstr "Модови под-игре"
-
-#~ msgid "Select path"
-#~ msgstr "Одабери локацију"
-
-#~ msgid "Possible values are: "
-#~ msgstr "Могуће вредности су: "
-
-#~ msgid "Please enter a comma seperated list of flags."
-#~ msgstr "Молим вас унесите листу ознака раздвојену зарезима."
-
-#~ msgid "Optionally the lacunarity can be appended with a leading comma."
-#~ msgstr "Опоцијоно, лацунарност се може додати са зарезом."
+#~ msgid "Continuous forward movement (only used for testing)."
+#~ msgstr "Непрекидно кретање унапред (користи се само за тестирање)."
 
 #~ msgid ""
-#~ "Format: <offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>), <seed>, "
-#~ "<octaves>, <persistence>"
+#~ "Creates unpredictable lava features in caves.\n"
+#~ "These can make mining difficult. Zero disables them. (0-10)"
 #~ msgstr ""
-#~ "Формат:  <офсет>, <скала>, (<распонX>, <распонY>, <распонZ>), <семе>, "
-#~ "<октаве>, <упорност>"
+#~ "Ствара непредвидиве шеме лаве у пећинама.\n"
+#~ "Ове могу чинити копање тежим. Нула их онемогућава. (0-10)"
 
-#~ msgid "Format is 3 numbers separated by commas and inside brackets."
-#~ msgstr "Формат су три броја унутар заграда раздвојени зарезима."
+#~ msgid ""
+#~ "Creates unpredictable water features in caves.\n"
+#~ "These can make mining difficult. Zero disables them. (0-10)"
+#~ msgstr ""
+#~ "Ствара непредвидиве шеме воде у пећинама.\n"
+#~ "Ове могу чинити копање тежим. Нула их онемогућава. (0-10)"
 
-#~ msgid "\"$1\" is not a valid flag."
-#~ msgstr "\"$1\" није валидна ознака."
+#~ msgid "Crouch speed"
+#~ msgstr "Брзина при чучању"
 
-#~ msgid "No worldname given or no game selected"
-#~ msgstr "Име није дато или ниједна игра није изабрана"
+#, fuzzy
+#~ msgid "Inventory image hack"
+#~ msgstr "Инвентар"
 
-#~ msgid "Enable MP"
-#~ msgstr "Омогући мод-паковање"
+#~ msgid "Hide mp content"
+#~ msgstr "Сакриј садржину мод-паковања"
 
-#~ msgid "Disable MP"
-#~ msgstr "Онемогући мод-паковање"
+#~ msgid "Attn"
+#~ msgstr "Аттн"
+
+#~ msgid "Capital"
+#~ msgstr "Главно"
+
+#~ msgid "Comma"
+#~ msgstr "Зарез"
+
+#~ msgid "CrSel"
+#~ msgstr "ЦрСел"
+
+#~ msgid "ExSel"
+#~ msgstr "ЕхСел"
+
+#~ msgid "Final"
+#~ msgstr "Крајњи"
+
+#~ msgid "Minus"
+#~ msgstr "Минус"
+
+#~ msgid "Period"
+#~ msgstr "Тачка"
+
+#~ msgid "Plus"
+#~ msgstr "Плус"
+
+#~ msgid "Advanced Settings"
+#~ msgstr "Напредне поставке"

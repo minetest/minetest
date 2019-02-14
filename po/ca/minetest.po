@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-01-24 01:05+0200\n"
+"POT-Creation-Date: 2019-02-14 07:46+0100\n"
 "PO-Revision-Date: 2019-01-24 00:05+0000\n"
 "Last-Translator: Nore <nore@mesecons.net>\n"
 "Language-Team: Catalan <https://hosted.weblate.org/projects/minetest/"
@@ -24,11 +24,13 @@ msgid "You died"
 msgstr "Has mort."
 
 #: builtin/fstk/ui.lua
-msgid "An error occured in a Lua script, such as a mod:"
+#, fuzzy
+msgid "An error occurred in a Lua script, such as a mod:"
 msgstr "S'ha produït un error en un script Lua, com per exemple un mod."
 
 #: builtin/fstk/ui.lua
-msgid "An error occured:"
+#, fuzzy
+msgid "An error occurred:"
 msgstr "Ha ocorregut un error:"
 
 #: builtin/fstk/ui.lua
@@ -111,9 +113,10 @@ msgid "Enable modpack"
 msgstr "Reanomenar el paquet de mods:"
 
 #: builtin/mainmenu/dlg_config_world.lua
+#, fuzzy
 msgid ""
 "Failed to enable mod \"$1\" as it contains disallowed characters. Only "
-"chararacters [a-z0-9_] are allowed."
+"characters [a-z0-9_] are allowed."
 msgstr ""
 "Error al habilitar el mod \"$1\" perquè conté caràcters no permesos. Només "
 "estan permesos els caràcters [a-z0-9_]."
@@ -187,6 +190,10 @@ msgid "Mods"
 msgstr "Mods"
 
 #: builtin/mainmenu/dlg_contentstore.lua
+msgid "No packages could be retrieved"
+msgstr ""
+
+#: builtin/mainmenu/dlg_contentstore.lua
 msgid "No results"
 msgstr ""
 
@@ -209,10 +216,6 @@ msgstr "Instal·lar"
 msgid "Update"
 msgstr ""
 
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "View"
-msgstr ""
-
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "A world named \"$1\" already exists"
 msgstr "Ja existeix un món anomenat \"$1\""
@@ -223,7 +226,7 @@ msgstr "Crear"
 
 #: builtin/mainmenu/dlg_create_world.lua
 #, fuzzy
-msgid "Download a game, such as minetest_game, from minetest.net"
+msgid "Download a game, such as Minetest Game, from minetest.net"
 msgstr ""
 "Descarrega un subjoc, com per exemple minetest_game, des de minetest.net"
 
@@ -245,6 +248,7 @@ msgid "No game selected"
 msgstr "Seleccionar distancia"
 
 #: builtin/mainmenu/dlg_create_world.lua
+#: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Seed"
 msgstr "Llavor"
 
@@ -295,9 +299,20 @@ msgstr "Acceptar"
 msgid "Rename Modpack:"
 msgstr "Reanomenar el paquet de mods:"
 
+#: builtin/mainmenu/dlg_rename_modpack.lua
+msgid ""
+"This modpack has an explicit name given in its modpack.conf which will "
+"override any renaming here."
+msgstr ""
+
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "(No description of setting given)"
 msgstr "(Cap descripció d'ajustament donada)"
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+#, fuzzy
+msgid "2D Noise"
+msgstr "Soroll de cova #1"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "< Back to Settings page"
@@ -320,6 +335,22 @@ msgid "Enabled"
 msgstr "Activat"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "Lacunarity"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "Octaves"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua src/settings_translation_file.cpp
+msgid "Offset"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "Persistance"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Please enter a valid integer."
 msgstr "Si us plau, introduïu un enter vàlid."
 
@@ -330,6 +361,10 @@ msgstr "Si us plau, introduïu un nombre vàlid."
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Restore Default"
 msgstr "Restablir per defecte"
+
+#: builtin/mainmenu/dlg_settings_advanced.lua src/settings_translation_file.cpp
+msgid "Scale"
+msgstr ""
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 #, fuzzy
@@ -353,15 +388,52 @@ msgstr "El valor ha de ser major que $1."
 msgid "The value must not be larger than $1."
 msgstr "El valor ha de ser menor que $1."
 
-#: builtin/mainmenu/pkgmgr.lua
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "X"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "X spread"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "Y"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "Y spread"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "Z"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "Z spread"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "absvalue"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
 #, fuzzy
-msgid " mods"
-msgstr "Mode 3D"
+msgid "defaults"
+msgstr "Joc per defecte"
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "eased"
+msgstr ""
 
 #: builtin/mainmenu/pkgmgr.lua
 #, fuzzy
 msgid "$1 (Enabled)"
 msgstr "Activat"
+
+#: builtin/mainmenu/pkgmgr.lua
+#, fuzzy
+msgid "$1 mods"
+msgstr "Mode 3D"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Failed to install $1 to $2"
@@ -611,8 +683,9 @@ msgid "8x"
 msgstr "8x"
 
 #: builtin/mainmenu/tab_settings.lua
-msgid "Advanced Settings"
-msgstr "Configuració avançada"
+#, fuzzy
+msgid "All Settings"
+msgstr "Configuració"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Antialiasing:"
@@ -4924,10 +4997,6 @@ msgid "Number of parallax occlusion iterations."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Offset"
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid "Opaque liquids"
 msgstr ""
 
@@ -5194,10 +5263,6 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Saving map received from server"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Scale"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -6163,130 +6228,94 @@ msgstr ""
 msgid "cURL timeout"
 msgstr ""
 
-#~ msgid "No!!!"
-#~ msgstr "No!!!"
+#~ msgid "Disable MP"
+#~ msgstr "Desactivar MP"
 
-#~ msgid "Public Serverlist"
-#~ msgstr "Llista de servidors públics"
+#~ msgid "Enable MP"
+#~ msgstr "Activar MP"
 
-#~ msgid "No of course not!"
-#~ msgstr "No, per descomptat que no!"
+#~ msgid "No worldname given or no game selected"
+#~ msgstr "No s'ha donat un nom al món o no s'ha seleccionat ningun"
 
-#, fuzzy
-#~ msgid "Mapgen fractal cave width"
-#~ msgstr "Generador de mapes"
+#~ msgid "\"$1\" is not a valid flag."
+#~ msgstr "\"$1\" no és un indicador vàlid."
 
-#~ msgid "Mapgen flat cave width"
-#~ msgstr "Amplada de les coves del generador de mapes plans"
+#~ msgid "Format is 3 numbers separated by commas and inside brackets."
+#~ msgstr ""
+#~ "El format és 3 números separats per comes i aquests dins de parèntesis."
 
 #~ msgid ""
-#~ "Controls size of deserts and beaches in Mapgen v6.\n"
-#~ "When snowbiomes are enabled 'mgv6_freq_desert' is ignored."
+#~ "Format: <offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>), <seed>, "
+#~ "<octaves>, <persistence>"
 #~ msgstr ""
-#~ "Controla la mida dels deserts i platges a Mapgen v6.\n"
-#~ "Quan \"snowbiomes\" estan activats 'mgv6_freq_desert' és ignorat."
+#~ "Format:  <offset> <escala> (<extensió X>, <extensió Y> , <extensión Z>), "
+#~ "<llavor>, <octaves>, <persistència>"
 
-#~ msgid "Plus"
-#~ msgstr "Més"
-
-#~ msgid "Period"
-#~ msgstr "Període"
-
-#, fuzzy
-#~ msgid "PA1"
-#~ msgstr "PA1"
-
-#~ msgid "Minus"
-#~ msgstr "Menys"
-
-#, fuzzy
-#~ msgid "Kanji"
-#~ msgstr "Kanji"
-
-#, fuzzy
-#~ msgid "Kana"
-#~ msgstr "Kana"
-
-#, fuzzy
-#~ msgid "Junja"
-#~ msgstr "Junja"
-
-#~ msgid "Final"
-#~ msgstr "Fi"
-
-#~ msgid "ExSel"
-#~ msgstr "ExSel"
-
-#, fuzzy
-#~ msgid "CrSel"
-#~ msgstr "CrSel"
-
-#~ msgid "Comma"
-#~ msgstr "Coma"
-
-#~ msgid "Capital"
-#~ msgstr "Bloq Maj"
-
-#~ msgid "Attn"
-#~ msgstr "Atentament"
-
-#~ msgid "Hide mp content"
-#~ msgstr "Ocultar contingut MP"
-
-#~ msgid "Water Features"
-#~ msgstr "Característiques de l'aigua"
-
-#~ msgid "Use key"
-#~ msgstr "Utilitza la tecla"
-
-#~ msgid "Main menu mod manager"
-#~ msgstr "Menú principal del gestor de mods"
-
-#, fuzzy
-#~ msgid "Inventory image hack"
-#~ msgstr "Tecla Inventari"
-
-#~ msgid ""
-#~ "Field of view while zooming in degrees.\n"
-#~ "This requires the \"zoom\" privilege on the server."
+#~ msgid "Optionally the lacunarity can be appended with a leading comma."
 #~ msgstr ""
-#~ "Camp de visió mentre s'usa el zoom (en graus)\n"
-#~ "Això requereix el privilegi \"zoom\" en el servidor."
+#~ "Opcionalment, el paràmetre \"lacunarity\" pot ser annexat separant "
+#~ "mitjançant una coma."
 
-#~ msgid "Depth below which you'll find massive caves."
-#~ msgstr "Profunditat davall la qual podràs trobar coves gegants."
+#~ msgid "Please enter a comma seperated list of flags."
+#~ msgstr "Si us plau, introduïu una llista d'indicadors separada per comes."
 
-#~ msgid "Crouch speed"
-#~ msgstr "Velocitat al ajupir-se"
+#~ msgid "Possible values are: "
+#~ msgstr "Els possibles valors són: "
 
-#~ msgid ""
-#~ "Creates unpredictable water features in caves.\n"
-#~ "These can make mining difficult. Zero disables them. (0-10)"
-#~ msgstr ""
-#~ "Crea característiques imprevisibles de l'aigua en coves.\n"
-#~ "Aquestes poden fer difícil minar. Zero els inhabilita (0-10)"
+#~ msgid "Select path"
+#~ msgstr "Seleccioneu la ruta"
 
-#~ msgid ""
-#~ "Creates unpredictable lava features in caves.\n"
-#~ "These can make mining difficult. Zero disables them. (0-10)"
-#~ msgstr ""
-#~ "Crea característiques imprevisibles de la lava en coves.\n"
-#~ "Aquestes poden fer difícil minar. Zero els inhabilita (0-10)"
+#~ msgid "Subgame Mods"
+#~ msgstr "Mods del subjoc"
 
-#~ msgid "Continuous forward movement (only used for testing)."
-#~ msgstr "Avanç continu (sols utilitzat per a testing)."
+#~ msgid "Page $1 of $2"
+#~ msgstr "Pàgina $1 de $2"
 
-#~ msgid "Console key"
-#~ msgstr "Tecla de la consola"
+#~ msgid "Rating"
+#~ msgstr "Classificació"
 
-#~ msgid "Cloud height"
-#~ msgstr "Alçada del núvol"
+#~ msgid "Shortname:"
+#~ msgstr "Nom curt:"
 
-#~ msgid "Caves and tunnels form at the intersection of the two noises"
-#~ msgstr "Coves i túnels es formen en la intersecció dels dos sorolls"
+#~ msgid "Successfully installed:"
+#~ msgstr "Instal·lat amb èxit:"
 
-#~ msgid "Approximate (X,Y,Z) scale of fractal in nodes."
-#~ msgstr "Aproximar (X, Y, Z) escala del fractal en els nodes."
+#~ msgid "Unsorted"
+#~ msgstr "Sense ordenar"
+
+#~ msgid "re-Install"
+#~ msgstr "Reinstal·lar"
+
+#~ msgid "Local Game"
+#~ msgstr "Joc local"
+
+#~ msgid "Uninstall selected modpack"
+#~ msgstr "Desinstal·lar el paquet de mods seleccionat"
+
+#~ msgid "Play Online"
+#~ msgstr "Jugar en línia"
+
+#~ msgid "Normal Mapping"
+#~ msgstr "Mapping normal."
+
+#~ msgid "No information available"
+#~ msgstr "Sense informació disponible"
+
+#~ msgid "Print stacks"
+#~ msgstr "Imprimir piles"
+
+#~ msgid "Use"
+#~ msgstr "Utilitzar"
+
+#~ msgid "Next"
+#~ msgstr "Següent"
+
+#~ msgid "Prior"
+#~ msgstr "Anterior"
+
+#, fuzzy
+#~ msgid "Active Block Modifier interval"
+#~ msgstr "Rang del bloc actiu"
 
 #~ msgid ""
 #~ "Announce to this serverlist.\n"
@@ -6297,91 +6326,130 @@ msgstr ""
 #~ "Si vols anunciar el teu direcció ipv6, fes servir serverlist_url = v6."
 #~ "servers.minetest.net."
 
-#, fuzzy
-#~ msgid "Active Block Modifier interval"
-#~ msgstr "Rang del bloc actiu"
+#~ msgid "Approximate (X,Y,Z) scale of fractal in nodes."
+#~ msgstr "Aproximar (X, Y, Z) escala del fractal en els nodes."
 
-#~ msgid "Prior"
-#~ msgstr "Anterior"
+#~ msgid "Caves and tunnels form at the intersection of the two noises"
+#~ msgstr "Coves i túnels es formen en la intersecció dels dos sorolls"
 
-#~ msgid "Next"
-#~ msgstr "Següent"
+#~ msgid "Cloud height"
+#~ msgstr "Alçada del núvol"
 
-#~ msgid "Use"
-#~ msgstr "Utilitzar"
+#~ msgid "Console key"
+#~ msgstr "Tecla de la consola"
 
-#~ msgid "Print stacks"
-#~ msgstr "Imprimir piles"
-
-#~ msgid "No information available"
-#~ msgstr "Sense informació disponible"
-
-#~ msgid "Normal Mapping"
-#~ msgstr "Mapping normal."
-
-#~ msgid "Play Online"
-#~ msgstr "Jugar en línia"
-
-#~ msgid "Uninstall selected modpack"
-#~ msgstr "Desinstal·lar el paquet de mods seleccionat"
-
-#~ msgid "Local Game"
-#~ msgstr "Joc local"
-
-#~ msgid "re-Install"
-#~ msgstr "Reinstal·lar"
-
-#~ msgid "Unsorted"
-#~ msgstr "Sense ordenar"
-
-#~ msgid "Successfully installed:"
-#~ msgstr "Instal·lat amb èxit:"
-
-#~ msgid "Shortname:"
-#~ msgstr "Nom curt:"
-
-#~ msgid "Rating"
-#~ msgstr "Classificació"
-
-#~ msgid "Page $1 of $2"
-#~ msgstr "Pàgina $1 de $2"
-
-#~ msgid "Subgame Mods"
-#~ msgstr "Mods del subjoc"
-
-#~ msgid "Select path"
-#~ msgstr "Seleccioneu la ruta"
-
-#~ msgid "Possible values are: "
-#~ msgstr "Els possibles valors són: "
-
-#~ msgid "Please enter a comma seperated list of flags."
-#~ msgstr "Si us plau, introduïu una llista d'indicadors separada per comes."
-
-#~ msgid "Optionally the lacunarity can be appended with a leading comma."
-#~ msgstr ""
-#~ "Opcionalment, el paràmetre \"lacunarity\" pot ser annexat separant "
-#~ "mitjançant una coma."
+#~ msgid "Continuous forward movement (only used for testing)."
+#~ msgstr "Avanç continu (sols utilitzat per a testing)."
 
 #~ msgid ""
-#~ "Format: <offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>), <seed>, "
-#~ "<octaves>, <persistence>"
+#~ "Creates unpredictable lava features in caves.\n"
+#~ "These can make mining difficult. Zero disables them. (0-10)"
 #~ msgstr ""
-#~ "Format:  <offset> <escala> (<extensió X>, <extensió Y> , <extensión Z>), "
-#~ "<llavor>, <octaves>, <persistència>"
+#~ "Crea característiques imprevisibles de la lava en coves.\n"
+#~ "Aquestes poden fer difícil minar. Zero els inhabilita (0-10)"
 
-#~ msgid "Format is 3 numbers separated by commas and inside brackets."
+#~ msgid ""
+#~ "Creates unpredictable water features in caves.\n"
+#~ "These can make mining difficult. Zero disables them. (0-10)"
 #~ msgstr ""
-#~ "El format és 3 números separats per comes i aquests dins de parèntesis."
+#~ "Crea característiques imprevisibles de l'aigua en coves.\n"
+#~ "Aquestes poden fer difícil minar. Zero els inhabilita (0-10)"
 
-#~ msgid "\"$1\" is not a valid flag."
-#~ msgstr "\"$1\" no és un indicador vàlid."
+#~ msgid "Crouch speed"
+#~ msgstr "Velocitat al ajupir-se"
 
-#~ msgid "No worldname given or no game selected"
-#~ msgstr "No s'ha donat un nom al món o no s'ha seleccionat ningun"
+#~ msgid "Depth below which you'll find massive caves."
+#~ msgstr "Profunditat davall la qual podràs trobar coves gegants."
 
-#~ msgid "Enable MP"
-#~ msgstr "Activar MP"
+#~ msgid ""
+#~ "Field of view while zooming in degrees.\n"
+#~ "This requires the \"zoom\" privilege on the server."
+#~ msgstr ""
+#~ "Camp de visió mentre s'usa el zoom (en graus)\n"
+#~ "Això requereix el privilegi \"zoom\" en el servidor."
 
-#~ msgid "Disable MP"
-#~ msgstr "Desactivar MP"
+#, fuzzy
+#~ msgid "Inventory image hack"
+#~ msgstr "Tecla Inventari"
+
+#~ msgid "Main menu mod manager"
+#~ msgstr "Menú principal del gestor de mods"
+
+#~ msgid "Use key"
+#~ msgstr "Utilitza la tecla"
+
+#~ msgid "Water Features"
+#~ msgstr "Característiques de l'aigua"
+
+#~ msgid "Hide mp content"
+#~ msgstr "Ocultar contingut MP"
+
+#~ msgid "Attn"
+#~ msgstr "Atentament"
+
+#~ msgid "Capital"
+#~ msgstr "Bloq Maj"
+
+#~ msgid "Comma"
+#~ msgstr "Coma"
+
+#, fuzzy
+#~ msgid "CrSel"
+#~ msgstr "CrSel"
+
+#~ msgid "ExSel"
+#~ msgstr "ExSel"
+
+#~ msgid "Final"
+#~ msgstr "Fi"
+
+#, fuzzy
+#~ msgid "Junja"
+#~ msgstr "Junja"
+
+#, fuzzy
+#~ msgid "Kana"
+#~ msgstr "Kana"
+
+#, fuzzy
+#~ msgid "Kanji"
+#~ msgstr "Kanji"
+
+#~ msgid "Minus"
+#~ msgstr "Menys"
+
+#, fuzzy
+#~ msgid "PA1"
+#~ msgstr "PA1"
+
+#~ msgid "Period"
+#~ msgstr "Període"
+
+#~ msgid "Plus"
+#~ msgstr "Més"
+
+#~ msgid ""
+#~ "Controls size of deserts and beaches in Mapgen v6.\n"
+#~ "When snowbiomes are enabled 'mgv6_freq_desert' is ignored."
+#~ msgstr ""
+#~ "Controla la mida dels deserts i platges a Mapgen v6.\n"
+#~ "Quan \"snowbiomes\" estan activats 'mgv6_freq_desert' és ignorat."
+
+#~ msgid "Mapgen flat cave width"
+#~ msgstr "Amplada de les coves del generador de mapes plans"
+
+#, fuzzy
+#~ msgid "Mapgen fractal cave width"
+#~ msgstr "Generador de mapes"
+
+#~ msgid "No of course not!"
+#~ msgstr "No, per descomptat que no!"
+
+#~ msgid "Public Serverlist"
+#~ msgstr "Llista de servidors públics"
+
+#~ msgid "No!!!"
+#~ msgstr "No!!!"
+
+#~ msgid "Advanced Settings"
+#~ msgstr "Configuració avançada"

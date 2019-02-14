@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-01-14 19:20+0200\n"
+"POT-Creation-Date: 2019-02-14 07:46+0100\n"
 "PO-Revision-Date: 2019-01-24 00:05+0000\n"
 "Last-Translator: Nore <nore@mesecons.net>\n"
 "Language-Team: Dhivehi <https://hosted.weblate.org/projects/minetest/"
@@ -23,11 +23,13 @@ msgid "You died"
 msgstr "މަރުވީ"
 
 #: builtin/fstk/ui.lua
-msgid "An error occured in a Lua script, such as a mod:"
+#, fuzzy
+msgid "An error occurred in a Lua script, such as a mod:"
 msgstr "މޮޑެއްފަދަ ލުއޭ ސްކްރިޕްޓެއްގައި މައްސަލައެއް ޖެހިއްޖެ:"
 
 #: builtin/fstk/ui.lua
-msgid "An error occured:"
+#, fuzzy
+msgid "An error occurred:"
 msgstr "މޮޑެއްފަދަ ލުއޭ ސްކްރިޕްޓެއްގައި މައްސަލައެއް ދިމާވެއްޖެ:"
 
 #: builtin/fstk/ui.lua
@@ -105,9 +107,10 @@ msgid "Enable modpack"
 msgstr "މޮޑްޕެކްގެ އޮންކުރޭ:"
 
 #: builtin/mainmenu/dlg_config_world.lua
+#, fuzzy
 msgid ""
 "Failed to enable mod \"$1\" as it contains disallowed characters. Only "
-"chararacters [a-z0-9_] are allowed."
+"characters [a-z0-9_] are allowed."
 msgstr "މަނާ އަކުރުތަށް ހިމެނޭތީ މޮޑް '1$' ނުޖެއްސުނު. ހަމައެކަނި ހުއްދައީ [Z-A0-9] މި އަކުރުތައް."
 
 #: builtin/mainmenu/dlg_config_world.lua
@@ -174,6 +177,10 @@ msgid "Mods"
 msgstr "މޮޑްތައް"
 
 #: builtin/mainmenu/dlg_contentstore.lua
+msgid "No packages could be retrieved"
+msgstr ""
+
+#: builtin/mainmenu/dlg_contentstore.lua
 msgid "No results"
 msgstr ""
 
@@ -194,10 +201,6 @@ msgstr "ފުހެލާ"
 msgid "Update"
 msgstr ""
 
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "View"
-msgstr ""
-
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "A world named \"$1\" already exists"
 msgstr "\"$1\" ކޔާ ދިުނިޔެއެއް އެބައިން"
@@ -207,9 +210,9 @@ msgid "Create"
 msgstr "ހަދާ"
 
 #: builtin/mainmenu/dlg_create_world.lua
-msgid "Download a game, such as minetest_game, from minetest.net"
-msgstr ""
-"މައިންޓެސްޓް_ގޭމް ފަދަ ސަބްގޭމެއް މައިންޓެސްޓް.ނެޓް އިން ޑައުންލޯޑްކުރައްވާ"
+#, fuzzy
+msgid "Download a game, such as Minetest Game, from minetest.net"
+msgstr "މައިންޓެސްޓް_ގޭމް ފަދަ ސަބްގޭމެއް މައިންޓެސްޓް.ނެޓް އިން ޑައުންލޯޑްކުރައްވާ"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Download one from minetest.net"
@@ -228,6 +231,7 @@ msgid "No game selected"
 msgstr "އެއްވެސް ގޭމެއް އިހްތިޔާރުވެފައެއް ނެޠް"
 
 #: builtin/mainmenu/dlg_create_world.lua
+#: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Seed"
 msgstr "ސީޑް"
 
@@ -273,9 +277,19 @@ msgstr "ގަބޫލުކުރޭ"
 msgid "Rename Modpack:"
 msgstr "މޮޑްޕެކްގެ ނަން ބަދަލުކުރޭ:"
 
+#: builtin/mainmenu/dlg_rename_modpack.lua
+msgid ""
+"This modpack has an explicit name given in its modpack.conf which will "
+"override any renaming here."
+msgstr ""
+
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "(No description of setting given)"
 msgstr "(ސެޓިންގްގެ ތައާރަފެއް ދީފައެއް ނެތް)"
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "2D Noise"
+msgstr ""
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "< Back to Settings page"
@@ -298,6 +312,22 @@ msgid "Enabled"
 msgstr "ޖައްސާފަ"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "Lacunarity"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "Octaves"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua src/settings_translation_file.cpp
+msgid "Offset"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "Persistance"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Please enter a valid integer."
 msgstr "ސައްހަ އިންޓީޖަރއެއް ލިޔުއްވާ."
 
@@ -308,6 +338,10 @@ msgstr "ސައްހަ އަދަދެއް ލިޔުއްވާ."
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Restore Default"
 msgstr "ޑިފޯލްޓައަށް ރައްދުކުރޭ"
+
+#: builtin/mainmenu/dlg_settings_advanced.lua src/settings_translation_file.cpp
+msgid "Scale"
+msgstr ""
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 #, fuzzy
@@ -331,14 +365,50 @@ msgstr "އަދަދު އެންމެ ކުޑަވެގެން 1$އަށް ވާން ޖެ�
 msgid "The value must not be larger than $1."
 msgstr "އަދަދު 1$އަށްވުރެއް ބޮޑުވާންޖެހޭ."
 
-#: builtin/mainmenu/pkgmgr.lua
-msgid " mods"
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "X"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "X spread"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "Y"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "Y spread"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "Z"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "Z spread"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "absvalue"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "defaults"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "eased"
 msgstr ""
 
 #: builtin/mainmenu/pkgmgr.lua
 #, fuzzy
 msgid "$1 (Enabled)"
 msgstr "ޖައްސާފަ"
+
+#: builtin/mainmenu/pkgmgr.lua
+msgid "$1 mods"
+msgstr ""
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Failed to install $1 to $2"
@@ -573,7 +643,7 @@ msgid "8x"
 msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
-msgid "Advanced Settings"
+msgid "All Settings"
 msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
@@ -4545,10 +4615,6 @@ msgid "Number of parallax occlusion iterations."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Offset"
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid "Opaque liquids"
 msgstr ""
 
@@ -4812,10 +4878,6 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Saving map received from server"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Scale"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5741,8 +5803,59 @@ msgstr ""
 msgid "cURL timeout"
 msgstr ""
 
-#~ msgid "Hide mp content"
-#~ msgstr "mp ge thakethi foruvaa"
+#~ msgid "Enable MP"
+#~ msgstr "އެމް.ޕީ ޖައްސާ"
+
+#~ msgid "No worldname given or no game selected"
+#~ msgstr "ދުނިޔެއެއްގެ ނަމެއް ދެއްވިފައެއް ނެތް ނުވަތަ ގޭމެއް އިހްތިޔާރުކުރެއްވިފައެއް ނެތް"
+
+#~ msgid "\"$1\" is not a valid flag."
+#~ msgstr "\"$1\" އަކީ ސައްހަ ދިދައެއް ނޫން."
+
+#~ msgid "Format is 3 numbers separated by commas and inside brackets."
+#~ msgstr "ފޯމެޓަކީ ބްރެކެޓްތެރޭގައި، ކޮމާއިން ވަކިކުރެވިފައިވާ 3 އަދަދު."
+
+#~ msgid "Please enter a comma seperated list of flags."
+#~ msgstr "ކޮމާއިން ވަކިކުރެވިފައިވާ ދިދަތަކުގެ ލިސްޓެއް ލިޔުއްވާ."
+
+#~ msgid "Possible values are: "
+#~ msgstr "ވެދާނެ އަދަދުތަކަކީ: "
+
+#~ msgid "Select path"
+#~ msgstr "މަގު އިހްތިޔާރުކުރޭ"
+
+#~ msgid "Subgame Mods"
+#~ msgstr "ސަބްގޭމް މޮޑްތައް"
+
+#~ msgid "Page $1 of $2"
+#~ msgstr "$2ގެ ސަފްހާ 1$"
+
+#~ msgid "Rating"
+#~ msgstr "ވަނަވަރު"
+
+#~ msgid "Successfully installed:"
+#~ msgstr "ކާމިޔާބުކޮށް އަޅާފައި:"
+
+#~ msgid "Unsorted"
+#~ msgstr "ތަރުތީބުނުކޮށް"
+
+#~ msgid "re-Install"
+#~ msgstr "އަލުން އަޅާ"
+
+#~ msgid "Local Game"
+#~ msgstr "ލޯކަލް ގޭމެއަ"
+
+#~ msgid "Uninstall selected modpack"
+#~ msgstr "އިހްތިޔާރުކުރެވިފައިވާ މޮޑްޕެކް ޑިލީޓްކުރޭ"
+
+#~ msgid "Play Online"
+#~ msgstr "އޮންލައިންކޮށް ކުޚޭ"
+
+#~ msgid "Main menu game manager"
+#~ msgstr "މެއިން މެނޫ ގޭމް މެނޭޖަރެ"
+
+#~ msgid "Main menu mod manager"
+#~ msgstr "މެއިން މެނޫ މޮޑް މެނޭޖަރު"
 
 #~ msgid ""
 #~ "Name of map generator to be used when creating a new world.\n"
@@ -5751,56 +5864,5 @@ msgstr ""
 #~ "އާ ދުނިޔެއެއް ހަދާއިރު ބޭނުންކުރަންވީ މެޕް ޖެނެރޭޓަރ،\n"
 #~ "މެއިން މެނޫ އިން ދުނިޔެއެއް އުފައްދާއިރު މީގެ މައްޗަށް ބާރު ހިނގާނެ."
 
-#~ msgid "Main menu mod manager"
-#~ msgstr "މެއިން މެނޫ މޮޑް މެނޭޖަރު"
-
-#~ msgid "Main menu game manager"
-#~ msgstr "މެއިން މެނޫ ގޭމް މެނޭޖަރެ"
-
-#~ msgid "Play Online"
-#~ msgstr "އޮންލައިންކޮށް ކުޚޭ"
-
-#~ msgid "Uninstall selected modpack"
-#~ msgstr "އިހްތިޔާރުކުރެވިފައިވާ މޮޑްޕެކް ޑިލީޓްކުރޭ"
-
-#~ msgid "Local Game"
-#~ msgstr "ލޯކަލް ގޭމެއަ"
-
-#~ msgid "re-Install"
-#~ msgstr "އަލުން އަޅާ"
-
-#~ msgid "Unsorted"
-#~ msgstr "ތަރުތީބުނުކޮށް"
-
-#~ msgid "Successfully installed:"
-#~ msgstr "ކާމިޔާބުކޮށް އަޅާފައި:"
-
-#~ msgid "Rating"
-#~ msgstr "ވަނަވަރު"
-
-#~ msgid "Page $1 of $2"
-#~ msgstr "$2ގެ ސަފްހާ 1$"
-
-#~ msgid "Subgame Mods"
-#~ msgstr "ސަބްގޭމް މޮޑްތައް"
-
-#~ msgid "Select path"
-#~ msgstr "މަގު އިހްތިޔާރުކުރޭ"
-
-#~ msgid "Possible values are: "
-#~ msgstr "ވެދާނެ އަދަދުތަކަކީ: "
-
-#~ msgid "Please enter a comma seperated list of flags."
-#~ msgstr "ކޮމާއިން ވަކިކުރެވިފައިވާ ދިދަތަކުގެ ލިސްޓެއް ލިޔުއްވާ."
-
-#~ msgid "Format is 3 numbers separated by commas and inside brackets."
-#~ msgstr "ފޯމެޓަކީ ބްރެކެޓްތެރޭގައި، ކޮމާއިން ވަކިކުރެވިފައިވާ 3 އަދަދު."
-
-#~ msgid "\"$1\" is not a valid flag."
-#~ msgstr "\"$1\" އަކީ ސައްހަ ދިދައެއް ނޫން."
-
-#~ msgid "No worldname given or no game selected"
-#~ msgstr "ދުނިޔެއެއްގެ ނަމެއް ދެއްވިފައެއް ނެތް ނުވަތަ ގޭމެއް އިހްތިޔާރުކުރެއްވިފައެއް ނެތް"
-
-#~ msgid "Enable MP"
-#~ msgstr "އެމް.ޕީ ޖައްސާ"
+#~ msgid "Hide mp content"
+#~ msgstr "mp ge thakethi foruvaa"

@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-01-24 01:05+0200\n"
+"POT-Creation-Date: 2019-02-14 07:46+0100\n"
 "PO-Revision-Date: 2019-02-09 05:01+0000\n"
 "Last-Translator: Muhammad Rifqi Priyo Susanto "
 "<muhammadrifqipriyosusanto@gmail.com>\n"
@@ -12,8 +12,8 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<="
-"4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
+"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
+"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
 "X-Generator: Weblate 3.5-dev\n"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
@@ -26,11 +26,13 @@ msgid "You died"
 msgstr "Ви загинули."
 
 #: builtin/fstk/ui.lua
-msgid "An error occured in a Lua script, such as a mod:"
+#, fuzzy
+msgid "An error occurred in a Lua script, such as a mod:"
 msgstr "Трапилася помилка у Lua-скрипті модифікації:"
 
 #: builtin/fstk/ui.lua
-msgid "An error occured:"
+#, fuzzy
+msgid "An error occurred:"
 msgstr "Трапилася помилка:"
 
 #: builtin/fstk/ui.lua
@@ -112,9 +114,10 @@ msgid "Enable modpack"
 msgstr "Перейменувати збірку модифікацій:"
 
 #: builtin/mainmenu/dlg_config_world.lua
+#, fuzzy
 msgid ""
 "Failed to enable mod \"$1\" as it contains disallowed characters. Only "
-"chararacters [a-z0-9_] are allowed."
+"characters [a-z0-9_] are allowed."
 msgstr ""
 "Не вдалося ввімкнути модифікацію \"$1\", тому що вона містить заборонені "
 "символи. Дозволяється використання таких символів: [a-z0-9_]."
@@ -188,6 +191,10 @@ msgid "Mods"
 msgstr "Модифікації"
 
 #: builtin/mainmenu/dlg_contentstore.lua
+msgid "No packages could be retrieved"
+msgstr ""
+
+#: builtin/mainmenu/dlg_contentstore.lua
 msgid "No results"
 msgstr ""
 
@@ -210,10 +217,6 @@ msgstr "Встановити"
 msgid "Update"
 msgstr ""
 
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "View"
-msgstr ""
-
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "A world named \"$1\" already exists"
 msgstr "Світ з такою назвою  \"$1\" вже існує"
@@ -224,7 +227,7 @@ msgstr "Створити"
 
 #: builtin/mainmenu/dlg_create_world.lua
 #, fuzzy
-msgid "Download a game, such as minetest_game, from minetest.net"
+msgid "Download a game, such as Minetest Game, from minetest.net"
 msgstr "Завантажте гру, наприклад, minetest_game з minetest.net"
 
 #: builtin/mainmenu/dlg_create_world.lua
@@ -245,6 +248,7 @@ msgid "No game selected"
 msgstr "Вибір діапазону"
 
 #: builtin/mainmenu/dlg_create_world.lua
+#: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Seed"
 msgstr "Зерно"
 
@@ -293,9 +297,19 @@ msgstr "Прийняти"
 msgid "Rename Modpack:"
 msgstr "Перейменувати збірку модифікацій:"
 
+#: builtin/mainmenu/dlg_rename_modpack.lua
+msgid ""
+"This modpack has an explicit name given in its modpack.conf which will "
+"override any renaming here."
+msgstr ""
+
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "(No description of setting given)"
 msgstr "(пояснення відсутнє)"
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "2D Noise"
+msgstr ""
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "< Back to Settings page"
@@ -318,6 +332,23 @@ msgid "Enabled"
 msgstr "Увімкнено"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
+#, fuzzy
+msgid "Lacunarity"
+msgstr "Безпека"
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "Octaves"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua src/settings_translation_file.cpp
+msgid "Offset"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "Persistance"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Please enter a valid integer."
 msgstr "Будь-ласка введіть дійсне ціле число."
 
@@ -328,6 +359,10 @@ msgstr "Будь-ласка введіть дійсне число."
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Restore Default"
 msgstr "Відновити як було"
+
+#: builtin/mainmenu/dlg_settings_advanced.lua src/settings_translation_file.cpp
+msgid "Scale"
+msgstr ""
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 #, fuzzy
@@ -351,15 +386,52 @@ msgstr "Значення має бути як мінімум $1."
 msgid "The value must not be larger than $1."
 msgstr "Значення має бути не більше $1."
 
-#: builtin/mainmenu/pkgmgr.lua
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "X"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "X spread"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "Y"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "Y spread"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "Z"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "Z spread"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "absvalue"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
 #, fuzzy
-msgid " mods"
-msgstr "3D режим"
+msgid "defaults"
+msgstr "Стандартна гра"
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "eased"
+msgstr ""
 
 #: builtin/mainmenu/pkgmgr.lua
 #, fuzzy
 msgid "$1 (Enabled)"
 msgstr "Увімкнено"
+
+#: builtin/mainmenu/pkgmgr.lua
+#, fuzzy
+msgid "$1 mods"
+msgstr "3D режим"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Failed to install $1 to $2"
@@ -609,8 +681,9 @@ msgid "8x"
 msgstr "8x"
 
 #: builtin/mainmenu/tab_settings.lua
-msgid "Advanced Settings"
-msgstr "Додаткові налаштування"
+#, fuzzy
+msgid "All Settings"
+msgstr "Налаштування"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Antialiasing:"
@@ -4622,10 +4695,6 @@ msgid "Number of parallax occlusion iterations."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Offset"
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid "Opaque liquids"
 msgstr ""
 
@@ -4893,10 +4962,6 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Saving map received from server"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Scale"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5828,192 +5893,20 @@ msgstr ""
 msgid "cURL timeout"
 msgstr ""
 
-#, fuzzy
-#~ msgid "Preload inventory textures"
-#~ msgstr "Завантаження текстур..."
+#~ msgid "Disable MP"
+#~ msgstr "Вимкнути модпак"
 
-#~ msgid "Scaling factor applied to menu elements: "
-#~ msgstr "Масштабування елементів меню: "
+#~ msgid "Enable MP"
+#~ msgstr "Увімкнути модпак"
 
-#, fuzzy
-#~ msgid "Downloading"
-#~ msgstr "Вниз"
+#~ msgid "No worldname given or no game selected"
+#~ msgstr "Назву світу не задано або не обрано гру"
 
-#~ msgid "Left click: Move all items, Right click: Move single item"
-#~ msgstr ""
-#~ "Ліва кнопка миші: Перемістити усі предмети, Права кнопка миші: "
-#~ "Перемістити один предмет"
+#~ msgid "\"$1\" is not a valid flag."
+#~ msgstr "\"$1\" не є правильним параметром."
 
-#~ msgid "is required by:"
-#~ msgstr "необхідний для:"
-
-#~ msgid "Configuration saved.  "
-#~ msgstr "Налаштування Збережено.  "
-
-#~ msgid "Warning: Configuration not consistent.  "
-#~ msgstr "Попередження: Помилкова конфігурація.  "
-
-#~ msgid "Cannot create world: Name contains invalid characters"
-#~ msgstr "Неможливо створити світ: Ім'я містить недопустимі символи"
-
-#~ msgid "Show Public"
-#~ msgstr "Показати Публічні"
-
-#~ msgid "Show Favorites"
-#~ msgstr "Показати Улюблені"
-
-#~ msgid "Leave address blank to start a local server."
-#~ msgstr "Залишіть адресу незаповненою для створення локального серверу."
-
-#~ msgid "Create world"
-#~ msgstr "Створити світ"
-
-#~ msgid "Address required."
-#~ msgstr "Адреса необхідна."
-
-#~ msgid "Cannot delete world: Nothing selected"
-#~ msgstr "Неможливо видалити світ: Нічого не вибрано"
-
-#~ msgid "Files to be deleted"
-#~ msgstr "Файлів, що підлягають видаленню"
-
-#~ msgid "Cannot create world: No games found"
-#~ msgstr "Неможливо створити світ: Не знайдено жодної гри"
-
-#~ msgid "Cannot configure world: Nothing selected"
-#~ msgstr "Неможливо налаштувати світ: Нічого не вибрано"
-
-#~ msgid "Failed to delete all world files"
-#~ msgstr "Помилка при видаленні файлів світу"
-
-#, fuzzy
-#~ msgid "Finite Liquid"
-#~ msgstr "Кінцеві рідини"
-
-#~ msgid "Preload item visuals"
-#~ msgstr "Попереднє завантаження зображень"
-
-#, fuzzy
-#~ msgid "Password"
-#~ msgstr "Старий Пароль"
-
-#, fuzzy
-#~ msgid "If enabled, "
-#~ msgstr "Увімкнено"
-
-#~ msgid "No!!!"
-#~ msgstr "Ні!!!"
-
-#~ msgid "Public Serverlist"
-#~ msgstr "Список публічних серверів"
-
-#~ msgid "No of course not!"
-#~ msgstr "Ні, звісно ні!"
-
-#~ msgid "Plus"
-#~ msgstr "Плюс"
-
-#~ msgid "Period"
-#~ msgstr "Крапка"
-
-#~ msgid "PA1"
-#~ msgstr "PA1"
-
-#~ msgid "Minus"
-#~ msgstr "Мінус"
-
-#~ msgid "Final"
-#~ msgstr "Кінець"
-
-#~ msgid "Comma"
-#~ msgstr "Кома"
-
-#~ msgid "Capital"
-#~ msgstr "Caps Lock"
-
-#~ msgid "Attn"
-#~ msgstr "Увага"
-
-#~ msgid "Hide mp content"
-#~ msgstr "Сховати вміст модпаку"
-
-#~ msgid "Lava Features"
-#~ msgstr "Особливості лави"
-
-#~ msgid "Inventory image hack"
-#~ msgstr "Хак для інвентарних рисунків"
-
-#~ msgid "Console key"
-#~ msgstr "Консоль"
-
-#~ msgid "Cloud height"
-#~ msgstr "Висота хмар"
-
-#~ msgid "Prior"
-#~ msgstr "Page Up"
-
-#~ msgid "Next"
-#~ msgstr "Next"
-
-#~ msgid "Use"
-#~ msgstr "Використати"
-
-#~ msgid "Print stacks"
-#~ msgstr "Надрукувати стак"
-
-#~ msgid "Volume changed to 100%"
-#~ msgstr "Гучність 100%"
-
-#~ msgid "Volume changed to 0%"
-#~ msgstr "Гучність 0%"
-
-#~ msgid "No information available"
-#~ msgstr "Інформація відсутня"
-
-#~ msgid "Normal Mapping"
-#~ msgstr "Текстурування нормалів"
-
-#~ msgid "Play Online"
-#~ msgstr "Мережа"
-
-#~ msgid "Uninstall selected modpack"
-#~ msgstr "Видалити обрану збірку модифікацій"
-
-#~ msgid "Local Game"
-#~ msgstr "Локальна гра"
-
-#~ msgid "re-Install"
-#~ msgstr "Перевстановити"
-
-#~ msgid "Unsorted"
-#~ msgstr "Невідсортоване"
-
-#~ msgid "Successfully installed:"
-#~ msgstr "Успішно встановлено:"
-
-#~ msgid "Shortname:"
-#~ msgstr "Коротка назва:"
-
-#~ msgid "Rating"
-#~ msgstr "Оцінка"
-
-#~ msgid "Page $1 of $2"
-#~ msgstr "Сторінка $1 з $2"
-
-#~ msgid "Subgame Mods"
-#~ msgstr "Вбудовані моди"
-
-#~ msgid "Select path"
-#~ msgstr "Вибрати шлях"
-
-#~ msgid "Possible values are: "
-#~ msgstr "Можливі значення: "
-
-#~ msgid "Please enter a comma seperated list of flags."
-#~ msgstr "Будь-ласка введіть перелік параметрів через кому."
-
-#~ msgid "Optionally the lacunarity can be appended with a leading comma."
-#~ msgstr "За бажанням лакунарність може бути доповнена комою попереду."
+#~ msgid "Format is 3 numbers separated by commas and inside brackets."
+#~ msgstr "Формат: 3 номера, відокремлених комами і всередині дужок."
 
 #~ msgid ""
 #~ "Format: <offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>), <seed>, "
@@ -6022,17 +5915,192 @@ msgstr ""
 #~ "Формат: <offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>), <seed>, "
 #~ "<octaves>, <persistence>"
 
-#~ msgid "Format is 3 numbers separated by commas and inside brackets."
-#~ msgstr "Формат: 3 номера, відокремлених комами і всередині дужок."
+#~ msgid "Optionally the lacunarity can be appended with a leading comma."
+#~ msgstr "За бажанням лакунарність може бути доповнена комою попереду."
 
-#~ msgid "\"$1\" is not a valid flag."
-#~ msgstr "\"$1\" не є правильним параметром."
+#~ msgid "Please enter a comma seperated list of flags."
+#~ msgstr "Будь-ласка введіть перелік параметрів через кому."
 
-#~ msgid "No worldname given or no game selected"
-#~ msgstr "Назву світу не задано або не обрано гру"
+#~ msgid "Possible values are: "
+#~ msgstr "Можливі значення: "
 
-#~ msgid "Enable MP"
-#~ msgstr "Увімкнути модпак"
+#~ msgid "Select path"
+#~ msgstr "Вибрати шлях"
 
-#~ msgid "Disable MP"
-#~ msgstr "Вимкнути модпак"
+#~ msgid "Subgame Mods"
+#~ msgstr "Вбудовані моди"
+
+#~ msgid "Page $1 of $2"
+#~ msgstr "Сторінка $1 з $2"
+
+#~ msgid "Rating"
+#~ msgstr "Оцінка"
+
+#~ msgid "Shortname:"
+#~ msgstr "Коротка назва:"
+
+#~ msgid "Successfully installed:"
+#~ msgstr "Успішно встановлено:"
+
+#~ msgid "Unsorted"
+#~ msgstr "Невідсортоване"
+
+#~ msgid "re-Install"
+#~ msgstr "Перевстановити"
+
+#~ msgid "Local Game"
+#~ msgstr "Локальна гра"
+
+#~ msgid "Uninstall selected modpack"
+#~ msgstr "Видалити обрану збірку модифікацій"
+
+#~ msgid "Play Online"
+#~ msgstr "Мережа"
+
+#~ msgid "Normal Mapping"
+#~ msgstr "Текстурування нормалів"
+
+#~ msgid "No information available"
+#~ msgstr "Інформація відсутня"
+
+#~ msgid "Volume changed to 0%"
+#~ msgstr "Гучність 0%"
+
+#~ msgid "Volume changed to 100%"
+#~ msgstr "Гучність 100%"
+
+#~ msgid "Print stacks"
+#~ msgstr "Надрукувати стак"
+
+#~ msgid "Use"
+#~ msgstr "Використати"
+
+#~ msgid "Next"
+#~ msgstr "Next"
+
+#~ msgid "Prior"
+#~ msgstr "Page Up"
+
+#~ msgid "Cloud height"
+#~ msgstr "Висота хмар"
+
+#~ msgid "Console key"
+#~ msgstr "Консоль"
+
+#~ msgid "Inventory image hack"
+#~ msgstr "Хак для інвентарних рисунків"
+
+#~ msgid "Lava Features"
+#~ msgstr "Особливості лави"
+
+#~ msgid "Hide mp content"
+#~ msgstr "Сховати вміст модпаку"
+
+#~ msgid "Attn"
+#~ msgstr "Увага"
+
+#~ msgid "Capital"
+#~ msgstr "Caps Lock"
+
+#~ msgid "Comma"
+#~ msgstr "Кома"
+
+#~ msgid "Final"
+#~ msgstr "Кінець"
+
+#~ msgid "Minus"
+#~ msgstr "Мінус"
+
+#~ msgid "PA1"
+#~ msgstr "PA1"
+
+#~ msgid "Period"
+#~ msgstr "Крапка"
+
+#~ msgid "Plus"
+#~ msgstr "Плюс"
+
+#~ msgid "No of course not!"
+#~ msgstr "Ні, звісно ні!"
+
+#~ msgid "Public Serverlist"
+#~ msgstr "Список публічних серверів"
+
+#~ msgid "No!!!"
+#~ msgstr "Ні!!!"
+
+#, fuzzy
+#~ msgid "If enabled, "
+#~ msgstr "Увімкнено"
+
+#, fuzzy
+#~ msgid "Password"
+#~ msgstr "Старий Пароль"
+
+#~ msgid "Preload item visuals"
+#~ msgstr "Попереднє завантаження зображень"
+
+#, fuzzy
+#~ msgid "Finite Liquid"
+#~ msgstr "Кінцеві рідини"
+
+#~ msgid "Failed to delete all world files"
+#~ msgstr "Помилка при видаленні файлів світу"
+
+#~ msgid "Cannot configure world: Nothing selected"
+#~ msgstr "Неможливо налаштувати світ: Нічого не вибрано"
+
+#~ msgid "Cannot create world: No games found"
+#~ msgstr "Неможливо створити світ: Не знайдено жодної гри"
+
+#~ msgid "Files to be deleted"
+#~ msgstr "Файлів, що підлягають видаленню"
+
+#~ msgid "Cannot delete world: Nothing selected"
+#~ msgstr "Неможливо видалити світ: Нічого не вибрано"
+
+#~ msgid "Address required."
+#~ msgstr "Адреса необхідна."
+
+#~ msgid "Create world"
+#~ msgstr "Створити світ"
+
+#~ msgid "Leave address blank to start a local server."
+#~ msgstr "Залишіть адресу незаповненою для створення локального серверу."
+
+#~ msgid "Show Favorites"
+#~ msgstr "Показати Улюблені"
+
+#~ msgid "Show Public"
+#~ msgstr "Показати Публічні"
+
+#~ msgid "Cannot create world: Name contains invalid characters"
+#~ msgstr "Неможливо створити світ: Ім'я містить недопустимі символи"
+
+#~ msgid "Warning: Configuration not consistent.  "
+#~ msgstr "Попередження: Помилкова конфігурація.  "
+
+#~ msgid "Configuration saved.  "
+#~ msgstr "Налаштування Збережено.  "
+
+#~ msgid "is required by:"
+#~ msgstr "необхідний для:"
+
+#~ msgid "Left click: Move all items, Right click: Move single item"
+#~ msgstr ""
+#~ "Ліва кнопка миші: Перемістити усі предмети, Права кнопка миші: "
+#~ "Перемістити один предмет"
+
+#, fuzzy
+#~ msgid "Downloading"
+#~ msgstr "Вниз"
+
+#~ msgid "Scaling factor applied to menu elements: "
+#~ msgstr "Масштабування елементів меню: "
+
+#, fuzzy
+#~ msgid "Preload inventory textures"
+#~ msgstr "Завантаження текстур..."
+
+#~ msgid "Advanced Settings"
+#~ msgstr "Додаткові налаштування"

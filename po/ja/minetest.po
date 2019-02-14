@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-01-06 10:37+0200\n"
+"POT-Creation-Date: 2019-02-14 07:46+0100\n"
 "PO-Revision-Date: 2019-02-13 14:10+0000\n"
 "Last-Translator: BreadW <toshiharu.uno@gmail.com>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/minetest/"
@@ -23,11 +23,13 @@ msgid "You died"
 msgstr "あなたは死にました"
 
 #: builtin/fstk/ui.lua
-msgid "An error occured in a Lua script, such as a mod:"
+#, fuzzy
+msgid "An error occurred in a Lua script, such as a mod:"
 msgstr "以下のModのLuaスクリプトでエラーが発生しました:"
 
 #: builtin/fstk/ui.lua
-msgid "An error occured:"
+#, fuzzy
+msgid "An error occurred:"
 msgstr "エラーが発生しました:"
 
 #: builtin/fstk/ui.lua
@@ -105,9 +107,10 @@ msgid "Enable modpack"
 msgstr "Modパック有効化"
 
 #: builtin/mainmenu/dlg_config_world.lua
+#, fuzzy
 msgid ""
 "Failed to enable mod \"$1\" as it contains disallowed characters. Only "
-"chararacters [a-z0-9_] are allowed."
+"characters [a-z0-9_] are allowed."
 msgstr ""
 "許可されていない文字が使用されているため、Mod「$1」を有効化できませんでした。"
 "文字は[a-z0-9_]のみ使用できます。"
@@ -176,6 +179,10 @@ msgid "Mods"
 msgstr "Mod"
 
 #: builtin/mainmenu/dlg_contentstore.lua
+msgid "No packages could be retrieved"
+msgstr ""
+
+#: builtin/mainmenu/dlg_contentstore.lua
 msgid "No results"
 msgstr "何も見つかりませんでした"
 
@@ -196,10 +203,6 @@ msgstr "削除"
 msgid "Update"
 msgstr "更新"
 
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "View"
-msgstr "見る"
-
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "A world named \"$1\" already exists"
 msgstr "ワールド名「$1」は既に存在します"
@@ -209,7 +212,8 @@ msgid "Create"
 msgstr "作成"
 
 #: builtin/mainmenu/dlg_create_world.lua
-msgid "Download a game, such as minetest_game, from minetest.net"
+#, fuzzy
+msgid "Download a game, such as Minetest Game, from minetest.net"
 msgstr "minetest_game などのゲームを minetest.net からダウンロードしてください"
 
 #: builtin/mainmenu/dlg_create_world.lua
@@ -229,6 +233,7 @@ msgid "No game selected"
 msgstr "ゲームが選択されていません"
 
 #: builtin/mainmenu/dlg_create_world.lua
+#: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Seed"
 msgstr "Seed値"
 
@@ -274,9 +279,20 @@ msgstr "決定"
 msgid "Rename Modpack:"
 msgstr "Modパック名を変更:"
 
+#: builtin/mainmenu/dlg_rename_modpack.lua
+msgid ""
+"This modpack has an explicit name given in its modpack.conf which will "
+"override any renaming here."
+msgstr ""
+
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "(No description of setting given)"
 msgstr "(設定の説明はありません)"
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+#, fuzzy
+msgid "2D Noise"
+msgstr "ノイズ"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "< Back to Settings page"
@@ -299,6 +315,24 @@ msgid "Enabled"
 msgstr "有効"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
+#, fuzzy
+msgid "Lacunarity"
+msgstr "セキュリティ"
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "Octaves"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua src/settings_translation_file.cpp
+msgid "Offset"
+msgstr "オフセット"
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+#, fuzzy
+msgid "Persistance"
+msgstr "プレイヤー転送距離"
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Please enter a valid integer."
 msgstr "有効な整数を入力してください。"
 
@@ -309,6 +343,10 @@ msgstr "有効な数字を入力してください。"
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Restore Default"
 msgstr "初期設定に戻す"
+
+#: builtin/mainmenu/dlg_settings_advanced.lua src/settings_translation_file.cpp
+msgid "Scale"
+msgstr "スケール"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Select directory"
@@ -330,13 +368,51 @@ msgstr "値は$1より大きくなければなりません。"
 msgid "The value must not be larger than $1."
 msgstr "値は$1より小さくなければなりません。"
 
-#: builtin/mainmenu/pkgmgr.lua
-msgid " mods"
-msgstr " Mod"
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "X"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "X spread"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "Y"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "Y spread"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "Z"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "Z spread"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "absvalue"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+#, fuzzy
+msgid "defaults"
+msgstr "標準ゲーム"
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "eased"
+msgstr ""
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "$1 (Enabled)"
 msgstr "$1 (有効)"
+
+#: builtin/mainmenu/pkgmgr.lua
+#, fuzzy
+msgid "$1 mods"
+msgstr " Mod"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Failed to install $1 to $2"
@@ -559,8 +635,9 @@ msgid "8x"
 msgstr "8倍"
 
 #: builtin/mainmenu/tab_settings.lua
-msgid "Advanced Settings"
-msgstr "詳細設定"
+#, fuzzy
+msgid "All Settings"
+msgstr "設定"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Antialiasing:"
@@ -1455,7 +1532,8 @@ msgid ""
 "Please retype your password and click Register and Join to confirm account "
 "creation or click Cancel to abort."
 msgstr ""
-"あなたはサーバ %1$s に名前 \"%2$s\" で初めて参加しようとしています。続行する場合、\n"
+"あなたはサーバ %1$s に名前 \"%2$s\" で初めて参加しようとしています。続行する"
+"場合、\n"
 "あなたの名前とパスワードが新しいアカウントとしてこのサーバに作成されます。\n"
 "あなたのパスワードを再入力し参加登録をクリックしてアカウント作成するか、\n"
 "キャンセルをクリックして中断してください。"
@@ -1678,8 +1756,10 @@ msgid ""
 msgstr ""
 "(X,Y,Z)'スケール'単位でのワールドの中心からのフラクタルのオフセット。\n"
 "望みの点を (0,0) に移動して適切なスポーンポイントを作成したり、\n"
-"'スケール'を増やして望みの点に'ズームイン'できるようにするために使用できます。\n"
-"規定では規定のパラメータを持つマンデルブロー集合のための適切なスポーンポイントに\n"
+"'スケール'を増やして望みの点に'ズームイン'できるようにするために使用できま"
+"す。\n"
+"規定では規定のパラメータを持つマンデルブロー集合のための適切なスポーンポイン"
+"トに\n"
 "合わせて調整されます、他の状況で変更を必要とするかもしれません。\n"
 "範囲はおよそ -2 ～ 2 です。ノードのオフセットに 'scale' を掛けます。"
 
@@ -1782,7 +1862,8 @@ msgstr ""
 "現在のサポート:\n"
 "-    none: 3D出力を行いません。\n"
 "-    anaglyph: シアン/マゼンタ色による3Dです。\n"
-"-    interlaced: 奇数/偶数のラインをベースで偏光式スクリーンに対応しています。\n"
+"-    interlaced: 奇数/偶数のラインをベースで偏光式スクリーンに対応していま"
+"す。\n"
 "-    topbottom: 画面を上下で分割します。\n"
 "-    sidebyside: 画面を左右で分割します。\n"
 "-    crossview: 交差法による3Dです。\n"
@@ -1946,11 +2027,14 @@ msgid ""
 "optimization.\n"
 "Stated in mapblocks (16 nodes)."
 msgstr ""
-"この距離でサーバはどのブロックをクライアントへ送信するかを積極的に最適化します。\n"
+"この距離でサーバはどのブロックをクライアントへ送信するかを積極的に最適化しま"
+"す。\n"
 "小さい値に設定すると、レンダリングの視覚的な不具合を犠牲にして、\n"
-"パフォーマンスが大幅に向上する可能性があります(いくつかのブロックは水中や洞窟、\n"
+"パフォーマンスが大幅に向上する可能性があります(いくつかのブロックは水中や洞"
+"窟、\n"
 "時には陸の上でもレンダリングされません)。\n"
-"max_block_send_distance より大きい値に設定すると、この最適化は無効になります。 \n"
+"max_block_send_distance より大きい値に設定すると、この最適化は無効になりま"
+"す。 \n"
 "マップブロック(16ノード)で表記。"
 
 #: src/settings_translation_file.cpp
@@ -2134,8 +2218,10 @@ msgid ""
 "-   Auto: Simple on Android, full on everything else."
 msgstr ""
 "メインメニューUIを変更:\n"
-"-   Full:  複数のシングルプレイヤーのワールド、ゲームの選択、テクスチャパックの選択、その他。\n"
-"-   Simple: 1つのシングルプレイヤーのワールド、ゲームやテクスチャパックの選択はありません。\n"
+"-   Full:  複数のシングルプレイヤーのワールド、ゲームの選択、テクスチャパック"
+"の選択、その他。\n"
+"-   Simple: 1つのシングルプレイヤーのワールド、ゲームやテクスチャパックの選択"
+"はありません。\n"
 "小さい画面には必要かもしれません。\n"
 "-   Auto: Androidは Simple、その他はすべて full です。"
 
@@ -2648,8 +2734,10 @@ msgid ""
 "textures)\n"
 "when connecting to the server."
 msgstr ""
-"リモートメディアサーバの使用を有効にします (サーバによって提供されている場合)。\n"
-"リモートサーバは、サーバに接続するときにメディア (例えば、テクスチャ) をダウンロード\n"
+"リモートメディアサーバの使用を有効にします (サーバによって提供されている場"
+"合)。\n"
+"リモートサーバは、サーバに接続するときにメディア (例えば、テクスチャ) をダウ"
+"ンロード\n"
 "するための非常に高速な方法を提供します。"
 
 #: src/settings_translation_file.cpp
@@ -2679,7 +2767,8 @@ msgid ""
 "or need to be auto-generated.\n"
 "Requires shaders to be enabled."
 msgstr ""
-"テクスチャのバンプマッピングを有効にします。法線マップはテクスチャパックによって提供されるか、\n"
+"テクスチャのバンプマッピングを有効にします。法線マップはテクスチャパックに"
+"よって提供されるか、\n"
 "または自動生成される必要があります。\n"
 "シェーダーが有効である必要があります。"
 
@@ -2981,12 +3070,16 @@ msgstr "フリータイプフォント"
 msgid ""
 "From how far blocks are generated for clients, stated in mapblocks (16 "
 "nodes)."
-msgstr "どれくらいの距離のブロックからクライアントで生成するか、マップブロック(16ノード)で定めます。"
+msgstr ""
+"どれくらいの距離のブロックからクライアントで生成するか、マップブロック(16ノー"
+"ド)で定めます。"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "From how far blocks are sent to clients, stated in mapblocks (16 nodes)."
-msgstr "どれくらいの距離のブロックからクライアントへ送信するか、マップブロック(16ノード)で定めます。"
+msgstr ""
+"どれくらいの距離のブロックからクライアントへ送信するか、マップブロック(16ノー"
+"ド)で定めます。"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2996,10 +3089,13 @@ msgid ""
 "to maintain active objects up to this distance in the direction the\n"
 "player is looking. (This can avoid mobs suddenly disappearing from view)"
 msgstr ""
-"クライアントがどれくらいの距離のオブジェクトを知っているか、マップブロック(16ノード)で定めます。\n"
+"クライアントがどれくらいの距離のオブジェクトを知っているか、マップブロック(16"
+"ノード)で定めます。\n"
 "\n"
-"これを active_block_range よりも大きく設定すると、サーバはこの距離までプレーヤーが見ている方向に\n"
-"アクティブなオブジェクトを維持します。(これによりモブが突然視野から消えるのを避けることができます)"
+"これを active_block_range よりも大きく設定すると、サーバはこの距離までプレー"
+"ヤーが見ている方向に\n"
+"アクティブなオブジェクトを維持します。(これによりモブが突然視野から消えるのを"
+"避けることができます)"
 
 #: src/settings_translation_file.cpp
 msgid "Full screen"
@@ -3046,8 +3142,10 @@ msgid ""
 "Flags starting with 'no' are used to explicitly disable them."
 msgstr ""
 "グローバルマップ生成属性。\n"
-"マップジェネレータv6では、'decorations' フラグは木とジャングルの草を除くすべての装飾を\n"
-"制御しますが、他のすべてのマップジェネレータではこのフラグがすべての装飾を制御します。\n"
+"マップジェネレータv6では、'decorations' フラグは木とジャングルの草を除くすべ"
+"ての装飾を\n"
+"制御しますが、他のすべてのマップジェネレータではこのフラグがすべての装飾を制"
+"御します。\n"
 "有効にされていないフラグは規定から変更されません。\n"
 "'no' で始まるフラグは明示的に無効にするために使用されます。"
 
@@ -3099,7 +3197,8 @@ msgid ""
 msgstr ""
 "非推奨の Lua API 呼び出しの処理:\n"
 "-    legacy: 古い振る舞いを模倣する(試みる) (リリースの規定値)。\n"
-"-    log: 非推奨の呼び出しを模倣してバックトレースをログに記録します (デバッグの規定値)。\n"
+"-    log: 非推奨の呼び出しを模倣してバックトレースをログに記録します (デバッ"
+"グの規定値)。\n"
 "-    error: 非推奨の呼び出しの使用を中止します (Mod開発者に推奨)。"
 
 #: src/settings_translation_file.cpp
@@ -3112,7 +3211,8 @@ msgid ""
 msgstr ""
 "観測記録計測器自体を持ちます: \n"
 "*空の関数を計測します。\n"
-"これによりオーバーヘッドが見積もられ、計測器は (+1関数呼び出し) を追加します。\n"
+"これによりオーバーヘッドが見積もられ、計測器は (+1関数呼び出し) を追加しま"
+"す。\n"
 "*統計を更新するために使用されているサンプラを計測します。"
 
 #: src/settings_translation_file.cpp
@@ -3358,7 +3458,8 @@ msgid ""
 "are\n"
 "enabled."
 msgstr ""
-"無効になっている場合、飛行モードと高速移動モードの両方が有効になっていると、\n"
+"無効になっている場合、飛行モードと高速移動モードの両方が有効になっている"
+"と、\n"
 "\"スペシャル\"キーを使用して高速で飛行することができます。"
 
 #: src/settings_translation_file.cpp
@@ -3378,7 +3479,8 @@ msgstr ""
 msgid ""
 "If enabled together with fly mode, makes move directions relative to the "
 "player's pitch."
-msgstr "飛行モードと一緒に有効にされている場合、プレーヤーのピッチ方向に移動します。"
+msgstr ""
+"飛行モードと一緒に有効にされている場合、プレーヤーのピッチ方向に移動します。"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3386,7 +3488,8 @@ msgid ""
 "nodes.\n"
 "This requires the \"noclip\" privilege on the server."
 msgstr ""
-"飛行モードと一緒に有効にされている場合、プレイヤーは個体ノードをすり抜けて飛ぶことができます。\n"
+"飛行モードと一緒に有効にされている場合、プレイヤーは個体ノードをすり抜けて飛"
+"ぶことができます。\n"
 "これにはサーバー上に \"noclip\" 特権が必要です。"
 
 #: src/settings_translation_file.cpp
@@ -3415,12 +3518,15 @@ msgid ""
 "If enabled, invalid world data won't cause the server to shut down.\n"
 "Only enable this if you know what you are doing."
 msgstr ""
-"有効にした場合、無効なワールドデータによってサーバがシャットダウンすることはありません。\n"
+"有効にした場合、無効なワールドデータによってサーバがシャットダウンすることは"
+"ありません。\n"
 "自分がしていることがわかっている場合のみこれを有効にします。"
 
 #: src/settings_translation_file.cpp
 msgid "If enabled, new players cannot join with an empty password."
-msgstr "有効にした場合、新しいプレイヤーは空のパスワードでゲームに参加することはできません。"
+msgstr ""
+"有効にした場合、新しいプレイヤーは空のパスワードでゲームに参加することはでき"
+"ません。"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3428,7 +3534,8 @@ msgid ""
 "you stand.\n"
 "This is helpful when working with nodeboxes in small areas."
 msgstr ""
-"有効になっている場合は、立っている位置 (足と目の高さ) にブロックを配置できます。\n"
+"有効になっている場合は、立っている位置 (足と目の高さ) にブロックを配置できま"
+"す。\n"
 "狭い領域でノードボックスを操作するときに役立ちます。"
 
 #: src/settings_translation_file.cpp
@@ -3491,12 +3598,14 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid ""
 "Instrument the action function of Active Block Modifiers on registration."
-msgstr "Active Block Modifiers のアクション関数が登録されるとすぐに計測します。"
+msgstr ""
+"Active Block Modifiers のアクション関数が登録されるとすぐに計測します。"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Instrument the action function of Loading Block Modifiers on registration."
-msgstr "Loading Block Modifiers のアクション関数が登録されるとすぐに計測します。"
+msgstr ""
+"Loading Block Modifiers のアクション関数が登録されるとすぐに計測します。"
 
 #: src/settings_translation_file.cpp
 msgid "Instrument the methods of entities on registration."
@@ -3547,7 +3656,8 @@ msgid ""
 msgstr ""
 "再帰関数の繰り返し。\n"
 "これを大きくすると細部の量が増えますが、処理負荷も増えます。\n"
-"繰り返し = 20では、このマップジェネレータはマップジェネレータ V7 と同じように負荷をかけます。"
+"繰り返し = 20では、このマップジェネレータはマップジェネレータ V7 と同じように"
+"負荷をかけます。"
 
 #: src/settings_translation_file.cpp
 msgid "Joystick ID"
@@ -3646,8 +3756,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "視野を縮小するキーです。\n"
-"参照 http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"参照 http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3656,8 +3766,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "音量を下げるキーです。\n"
-"参照 http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"参照 http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3666,8 +3776,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "現在選択されているアイテムを落とすキーです。\n"
-"参照 http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"参照 http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3676,8 +3786,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "視野を拡大するキーです。\n"
-"参照 http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"参照 http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3686,8 +3796,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "音量を上げるキーです。\n"
-"参照 http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"参照 http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3696,8 +3806,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "ジャンプするキーです。\n"
-"参照 http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"参照 http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3706,8 +3816,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "高速移動モード中に高速移動するキーです。\n"
-"参照 http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"参照 http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3718,8 +3828,8 @@ msgid ""
 msgstr ""
 "プレイヤーを後方へ移動するキーです。\n"
 "自動前進中に押すと自動前進を停止します。\n"
-"参照 http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"参照 http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3728,8 +3838,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "プレイヤーを前進するキーです。\n"
-"See http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"See http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3738,8 +3848,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "プレイヤーを左方向へ移動させるキーです。\n"
-"参照 http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"参照 http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3748,8 +3858,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "プレイヤーを右方向へ移動させるキーです。\n"
-"参照 http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"参照 http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3758,8 +3868,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "ゲームを消音にするキーです。\n"
-"参照 http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"参照 http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3768,8 +3878,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "コマンドを入力するためのチャットウィンドウを開くキーです。\n"
-"参照 http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"参照 http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3778,8 +3888,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "ローカルコマンドを入力するためのチャットウィンドウを開くキーです。\n"
-"参照 http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"参照 http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3788,8 +3898,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "チャットウィンドウを開くキーです。\n"
-"参照 http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"参照 http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3798,8 +3908,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "インベントリを開くキーです。\n"
-"参照 http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"参照 http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3808,8 +3918,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "11番目のホットバースロットを選択するキーです。\n"
-"参照 http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"参照 http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3818,8 +3928,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "12番目のホットバースロットを選択するキーです。\n"
-"参照 http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"参照 http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3828,8 +3938,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "13番目のホットバースロットを選択するキーです。\n"
-"参照 http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"参照 http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3838,8 +3948,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "14番目のホットバースロットを選択するキーです。\n"
-"参照 http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"参照 http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3848,8 +3958,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "15番目のホットバースロットを選択するキーです。\n"
-"参照 http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"参照 http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3858,8 +3968,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "16番目のホットバースロットを選択するキーです。\n"
-"参照 http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"参照 http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3868,8 +3978,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "17番目のホットバースロットを選択するキーです。\n"
-"参照 http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"参照 http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3878,8 +3988,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "18番目のホットバースロットを選択するキーです。\n"
-"参照 http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"参照 http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3888,8 +3998,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "19番目のホットバースロットを選択するキーです。\n"
-"参照 http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"参照 http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3898,8 +4008,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "20番目のホットバースロットを選択するキーです。\n"
-"参照 http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"参照 http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3908,8 +4018,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "21番目のホットバースロットを選択するキーです。\n"
-"参照 http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"参照 http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3918,8 +4028,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "22番目のホットバースロットを選択するキーです。\n"
-"参照 http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"参照 http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3928,8 +4038,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "23番目のホットバースロットを選択するキーです。\n"
-"参照 http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"参照 http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3938,8 +4048,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "24番目のホットバースロットを選択するキーです。\n"
-"参照 http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"参照 http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3948,8 +4058,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "25番目のホットバースロットを選択するキーです。\n"
-"参照 http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"参照 http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3958,8 +4068,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "26番目のホットバースロットを選択するキーです。\n"
-"参照 http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"参照 http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3968,8 +4078,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "27番目のホットバースロットを選択するキーです。\n"
-"参照 http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"参照 http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3978,8 +4088,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "28番目のホットバースロットを選択するキーです。\n"
-"参照 http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"参照 http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3988,8 +4098,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "29番目のホットバースロットを選択するキーです。\n"
-"参照 http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"参照 http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3998,8 +4108,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "30番目のホットバースロットを選択するキーです。\n"
-"参照 http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"参照 http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4008,8 +4118,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "31番目のホットバースロットを選択するキーです。\n"
-"参照 http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"参照 http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4018,8 +4128,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "32番目のホットバースロットを選択するキーです。\n"
-"参照 http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"参照 http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4028,8 +4138,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "8番目のホットバースロットを選択するキーです。\n"
-"参照 http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"参照 http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4038,8 +4148,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "5番目のホットバースロットを選択するキーです。\n"
-"参照 http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"参照 http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4048,8 +4158,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "1番目のホットバースロットを選択するキーです。\n"
-"参照 http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"参照 http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4058,8 +4168,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "4番目のホットバースロットを選択するキーです。\n"
-"参照 http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"参照 http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4068,8 +4178,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "ホットバーから次のアイテムを選択するキーです。\n"
-"参照 http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"参照 http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4078,8 +4188,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "9番目のホットバースロットを選択するキーです。\n"
-"See http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"See http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4088,8 +4198,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "ホットバーから前のアイテムを選択するキーです。\n"
-"参照 http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"参照 http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4098,8 +4208,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "2番目のホットバースロットを選択するキーです。\n"
-"参照 http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"参照 http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4108,8 +4218,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "7番目のホットバースロットを選択するキーです。\n"
-"参照 http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"参照 http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4118,8 +4228,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "6番目のホットバースロットを選択するキーです。\n"
-"参照 http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"参照 http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4128,8 +4238,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "10番目のホットバースロットを選択するキーです。\n"
-"参照 http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"参照 http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4138,8 +4248,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "3番目のホットバースロットを選択するキーです。\n"
-"参照 http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"参照 http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4150,9 +4260,10 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "スニークするキーです。\n"
-"aux1_descends が無効になっている場合は、降りるときや水中を潜るためにも使用されます。\n"
-"参照 http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"aux1_descends が無効になっている場合は、降りるときや水中を潜るためにも使用さ"
+"れます。\n"
+"参照 http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4161,8 +4272,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "一人称から三人称の間でカメラを切り替えるキーです。\n"
-"参照 http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"参照 http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4171,8 +4282,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "スクリーンショットを撮るキーです。\n"
-"参照 http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"参照 http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4181,8 +4292,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "自動前進を切り替えるキーです。\n"
-"参照 http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"参照 http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4191,8 +4302,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "映画風モードを切り替えるキーです。\n"
-"参照 http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"参照 http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4201,8 +4312,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "ミニマップ表示を切り替えるキーです。\n"
-"参照 http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"参照 http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4211,8 +4322,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "高速移動モードを切り替えるキーです。\n"
-"参照 http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"参照 http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4221,8 +4332,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "飛行モードを切り替えるキーです。\n"
-"参照 http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"参照 http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4231,8 +4342,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "すり抜けモードを切り替えるキーです。\n"
-"参照 http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"参照 http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4241,8 +4352,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "ピッチ飛行モードを切り替えるキーです。\n"
-"参照 http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"参照 http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4251,8 +4362,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "カメラ更新を切り替えるキーです。開発にのみ使用される\n"
-"参照 http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"参照 http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4261,8 +4372,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "チャット表示を切り替えるキーです。\n"
-"参照 http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"参照 http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4271,8 +4382,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "デバッグ情報の表示を切り替えるキーです。\n"
-"参照 http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"参照 http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4281,8 +4392,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "霧の表示を切り替えるキーです。\n"
-"参照 http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"参照 http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4291,8 +4402,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "HUDの表示を切り替えるキーです。\n"
-"参照 http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"参照 http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4301,8 +4412,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "大型チャットコンソール表示を切り替えるキーです。\n"
-"参照 http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"参照 http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4311,8 +4422,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "観測記録の表示を切り替えるキーです。開発に使用されます。\n"
-"参照 http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"参照 http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4321,8 +4432,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "無制限の視野を切り替えるキーです。\n"
-"参照 http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"参照 http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4331,8 +4442,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "ズーム可能なときに使用するキーです。\n"
-"参照 http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"参照 http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid "Kick players who sent more than X messages per 10 seconds."
@@ -4388,7 +4499,8 @@ msgid ""
 "Length of a server tick and the interval at which objects are generally "
 "updated over\n"
 "network."
-msgstr "サーバの間隔の長さと、オブジェクトが通常ネットワーク上で更新される間隔。"
+msgstr ""
+"サーバの間隔の長さと、オブジェクトが通常ネットワーク上で更新される間隔。"
 
 #: src/settings_translation_file.cpp
 msgid "Length of time between Active Block Modifier (ABM) execution cycles"
@@ -4467,7 +4579,8 @@ msgstr ""
 "並列HTTPリクエストの数を制限します。影響:\n"
 "-    サーバが remote_media 設定を使用している場合はメディアの取得。\n"
 "-    サーバ一覧のダウンロードとサーバの公開。\n"
-"-    メインメニューによって実行されたダウンロード (例えば、コンテンツの管理)。\n"
+"-    メインメニューによって実行されたダウンロード (例えば、コンテンツの管"
+"理)。\n"
 "cURL でコンパイルされた場合にのみ効果があります。"
 
 #: src/settings_translation_file.cpp
@@ -4794,7 +4907,8 @@ msgid ""
 "try reducing it, but don't reduce it to a number below double of targeted\n"
 "client number."
 msgstr ""
-"接続速度が遅い場合は、送信ステップごとに送信される最大パケット数を減らしてみてください。\n"
+"接続速度が遅い場合は、送信ステップごとに送信される最大パケット数を減らしてみ"
+"てください。\n"
 "ただし、対象のクライアント数の2倍未満に減らさないでください。"
 
 #: src/settings_translation_file.cpp
@@ -4959,8 +5073,10 @@ msgstr ""
 "メインメニューでワールドを作成すると、これが上書きされます。\n"
 "現在安定しているマップジェネレータ：\n"
 "v5、v6、v7(浮遊大陸を除く)、flat、singlenode。\n"
-"'安定している'とは、既存のワールドの地形が将来変更されないことを意味します。\n"
-"バイオームはゲームによって定義され、それでも変更される可能性があることに注意してください。"
+"'安定している'とは、既存のワールドの地形が将来変更されないことを意味しま"
+"す。\n"
+"バイオームはゲームによって定義され、それでも変更される可能性があることに注意"
+"してください。"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5039,8 +5155,10 @@ msgid ""
 "of slightly buggy caves."
 msgstr ""
 "使用する出現するスレッドの数。\n"
-"このフィールドを空白または0にするか、この数を増やしてマルチスレッドを使用します。\n"
-"マルチプロセッサシステムでは、少しバグの多い洞窟を犠牲にしてマップジェネレータの\n"
+"このフィールドを空白または0にするか、この数を増やしてマルチスレッドを使用しま"
+"す。\n"
+"マルチプロセッサシステムでは、少しバグの多い洞窟を犠牲にしてマップジェネレー"
+"タの\n"
 "速度を大幅に改善します。"
 
 #: src/settings_translation_file.cpp
@@ -5056,10 +5174,6 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Number of parallax occlusion iterations."
 msgstr "視差遮蔽反復の回数です。"
-
-#: src/settings_translation_file.cpp
-msgid "Offset"
-msgstr "オフセット"
 
 #: src/settings_translation_file.cpp
 msgid "Opaque liquids"
@@ -5118,11 +5232,15 @@ msgstr "スクリーンショットを保存するパス。"
 msgid ""
 "Path to shader directory. If no path is defined, default location will be "
 "used."
-msgstr "シェーダーディレクトリへのパス。パスが定義されていない場合は、規定の場所が使用されます。"
+msgstr ""
+"シェーダーディレクトリへのパス。パスが定義されていない場合は、規定の場所が使"
+"用されます。"
 
 #: src/settings_translation_file.cpp
 msgid "Path to texture directory. All textures are first searched from here."
-msgstr "テクスチャディレクトリへのパス。すべてのテクスチャは最初にここから検索されます。"
+msgstr ""
+"テクスチャディレクトリへのパス。すべてのテクスチャは最初にここから検索されま"
+"す。"
 
 #: src/settings_translation_file.cpp
 msgid "Pause on lost window focus"
@@ -5347,10 +5465,6 @@ msgid "Saving map received from server"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Scale"
-msgstr "スケール"
-
-#: src/settings_translation_file.cpp
 msgid ""
 "Scale GUI by a user specified value.\n"
 "Use a nearest-neighbor-anti-alias filter to scale the GUI.\n"
@@ -5360,8 +5474,10 @@ msgid ""
 msgstr ""
 "ユーザー指定の値でGUIを拡大縮小します。\n"
 "GUIを拡大縮小するには、最近傍補間アンチエイリアスフィルタを使用します。\n"
-"これは、画像が整数以外のサイズで拡大縮小されるときにいくつかのエッジピクセルを\n"
-"ぼかすことを犠牲にして、粗いエッジの一部を滑らかにし、縮小するときにピクセルを混合します。"
+"これは、画像が整数以外のサイズで拡大縮小されるときにいくつかのエッジピクセル"
+"を\n"
+"ぼかすことを犠牲にして、粗いエッジの一部を滑らかにし、縮小するときにピクセル"
+"を混合します。"
 
 #: src/settings_translation_file.cpp
 msgid "Screen height"
@@ -5593,9 +5709,11 @@ msgid ""
 msgstr ""
 "マップジェネレータによって生成されたマップチャンクのサイズで、\n"
 "マップブロック(16ノード)で表されます。\n"
-"警告！: この値を5より大きくすることには利点がなく、いくつかの危険があります。\n"
+"警告！: この値を5より大きくすることには利点がなく、いくつかの危険がありま"
+"す。\n"
 "この値を減らすと洞窟とダンジョンの密度が上がります。\n"
-"この値を変更するのは特別な用途のためです。変更しないでおくことをお勧めします。"
+"この値を変更するのは特別な用途のためです。変更しないでおくことをお勧めしま"
+"す。"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5604,7 +5722,8 @@ msgid ""
 "thread, thus reducing jitter."
 msgstr ""
 "メッシュ生成のマップブロックキャッシュサイズ。これを大きくすると、\n"
-"キャッシュヒット率が上がり、メインスレッドからコピーされるデータが減るため、\n"
+"キャッシュヒット率が上がり、メインスレッドからコピーされるデータが減るた"
+"め、\n"
 "ジッタが減少します。"
 
 #: src/settings_translation_file.cpp
@@ -5632,7 +5751,8 @@ msgid ""
 "Smooths camera when looking around. Also called look or mouse smoothing.\n"
 "Useful for recording videos."
 msgstr ""
-"周りを見ているときにカメラを滑らかにします。マウススムージングとも呼ばれます。\n"
+"周りを見ているときにカメラを滑らかにします。マウススムージングとも呼ばれま"
+"す。\n"
 "ビデオを録画するときに便利です。"
 
 #: src/settings_translation_file.cpp
@@ -5817,7 +5937,8 @@ msgid ""
 "See /privs in game for a full list on your server and mod configuration."
 msgstr ""
 "新規ユーザーが自動的に取得する特権。\n"
-"サーバとModの構成の完全なリストについては、ゲーム内の /privs を参照してください。"
+"サーバとModの構成の完全なリストについては、ゲーム内の /privs を参照してくださ"
+"い。"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5860,7 +5981,8 @@ msgid ""
 "capacity until an attempt is made to decrease its size by dumping old queue\n"
 "items.  A value of 0 disables the functionality."
 msgstr ""
-"古いキューアイテムを出力してサイズを減らそうとするまでに、液体キューが処理能力を\n"
+"古いキューアイテムを出力してサイズを減らそうとするまでに、液体キューが処理能"
+"力を\n"
 "超えて拡張できる時間(秒単位)。値 0 は機能を無効にします。"
 
 #: src/settings_translation_file.cpp
@@ -5921,7 +6043,8 @@ msgstr "時間の速さ"
 
 #: src/settings_translation_file.cpp
 msgid "Timeout for client to remove unused map data from memory."
-msgstr "クライアントがメモリから未使用のマップデータを削除するためのタイムアウト。"
+msgstr ""
+"クライアントがメモリから未使用のマップデータを削除するためのタイムアウト。"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6021,13 +6144,15 @@ msgid ""
 "especially when using a high resolution texture pack.\n"
 "Gamma correct downscaling is not supported."
 msgstr ""
-"ミップマッピングを使用してテクスチャを拡大縮小します。特に高解像度のテクスチャパックを\n"
+"ミップマッピングを使用してテクスチャを拡大縮小します。特に高解像度のテクス"
+"チャパックを\n"
 "使用する場合は、パフォーマンスがわずかに向上する可能性があります。\n"
 "ガンマ補正縮小はサポートされていません。"
 
 #: src/settings_translation_file.cpp
 msgid "Use trilinear filtering when scaling textures."
-msgstr "テクスチャを拡大縮小する場合は、トライリニアフィルタリングを使用します。"
+msgstr ""
+"テクスチャを拡大縮小する場合は、トライリニアフィルタリングを使用します。"
 
 #: src/settings_translation_file.cpp
 msgid "VBO"
@@ -6200,8 +6325,10 @@ msgid ""
 "properly support downloading textures back from hardware."
 msgstr ""
 "gui_scaling_filter_txr2img が有効な場合、拡大縮小のためにそれらのイメージを\n"
-"ハードウェアからソフトウェアにコピーします。 無効な場合、ハードウェアからのテクスチャの\n"
-"ダウンロードを適切にサポートしていないビデオドライバのときは、古い拡大縮小方法に戻ります。"
+"ハードウェアからソフトウェアにコピーします。 無効な場合、ハードウェアからのテ"
+"クスチャの\n"
+"ダウンロードを適切にサポートしていないビデオドライバのときは、古い拡大縮小方"
+"法に戻ります。"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6289,7 +6416,8 @@ msgid ""
 "background.\n"
 "Contains the same information as the file debug.txt (default name)."
 msgstr ""
-"Windowsのみ: Minetestと一緒にバックグランドでコマンドプロンプトを起動します。\n"
+"Windowsのみ: Minetestと一緒にバックグランドでコマンドプロンプトを起動しま"
+"す。\n"
 "debug.txt (既定の名前) と同じ情報を含んでいます。"
 
 #: src/settings_translation_file.cpp
@@ -6314,10 +6442,12 @@ msgid ""
 "See also texture_min_size.\n"
 "Warning: This option is EXPERIMENTAL!"
 msgstr ""
-"整列テクスチャは、いくつかのノードにまたがるように拡大縮小することができます。\n"
+"整列テクスチャは、いくつかのノードにまたがるように拡大縮小することができま"
+"す。\n"
 "ただし、特別に設計されたテクスチャパックを使用している場合は特に、\n"
 "サーバーから必要なスケールが送信されないことがあります。\n"
-"このオプションでは、クライアントはテクスチャサイズに基づいて自動的にスケールを\n"
+"このオプションでは、クライアントはテクスチャサイズに基づいて自動的にスケール"
+"を\n"
 "決定しようとします。\n"
 "texture_min_size も参照してください。\n"
 "警告: このオプションは実験的なものです！"
@@ -6390,47 +6520,277 @@ msgstr "cURL並行処理制限"
 msgid "cURL timeout"
 msgstr "cURLタイムアウト"
 
-#, fuzzy
-#~ msgid "Preload inventory textures"
-#~ msgstr "テクスチャ読み込み中..."
+#~ msgid "Disable MP"
+#~ msgstr "Modパック無効化"
 
-#~ msgid "Scaling factor applied to menu elements: "
-#~ msgstr "メニューの大きさとして設定されている数値: "
+#~ msgid "Enable MP"
+#~ msgstr "Modパックを有効化"
 
-#~ msgid "Touch free target"
-#~ msgstr "タッチ位置を自由にする"
+#~ msgid "No worldname given or no game selected"
+#~ msgstr "ワールド名が入力されていないか、ゲームが選択されていません"
 
-#~ msgid " KB/s"
-#~ msgstr " KB/秒"
+#~ msgid "\"$1\" is not a valid flag."
+#~ msgstr "「$1」は有効なフラグではありません。"
 
-#~ msgid " MB/s"
-#~ msgstr " MB/秒"
+#~ msgid "Format is 3 numbers separated by commas and inside brackets."
+#~ msgstr "括弧内に3つの数字をカンマで区切って入力してください。"
 
-#~ msgid "Restart minetest for driver change to take effect"
-#~ msgstr "ドライバーを変更するためMinetestを再起動します"
-
-#~ msgid "If enabled, "
-#~ msgstr "有効化の場合 "
-
-#~ msgid "No!!!"
-#~ msgstr "いいえ！！！"
-
-#~ msgid "Public Serverlist"
-#~ msgstr "公開サーバ一覧"
-
-#~ msgid "No of course not!"
-#~ msgstr "いいえ！"
-
-#~ msgid "Useful for mod developers."
-#~ msgstr "Mod開発に便利。"
+#~ msgid ""
+#~ "Format: <offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>), <seed>, "
+#~ "<octaves>, <persistence>"
+#~ msgstr ""
+#~ "書式: <offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>), <seed>, "
+#~ "<octaves>, <persistence>"
 
 #, fuzzy
-#~ msgid "Detailed mod profiling"
-#~ msgstr "詳細なModのプロファイル化"
+#~ msgid "Optionally the lacunarity can be appended with a leading comma."
+#~ msgstr "空隙性の値は、必要に応じ読みやすくカンマを付けることができます。"
+
+#~ msgid "Please enter a comma seperated list of flags."
+#~ msgstr "フラグはカンマ区切りのリスト形式で入力してください。"
+
+#~ msgid "Possible values are: "
+#~ msgstr "可能な値: "
+
+#~ msgid "Select path"
+#~ msgstr "場所を選択"
+
+#~ msgid "Subgame Mods"
+#~ msgstr "サブゲームのMod"
+
+#~ msgid "Page $1 of $2"
+#~ msgstr "ページ $1 / $2"
+
+#~ msgid "Rating"
+#~ msgstr "評価"
+
+#~ msgid "Shortname:"
+#~ msgstr "省略名:"
+
+#~ msgid "Successfully installed:"
+#~ msgstr "インストールが完了しました:"
+
+#~ msgid "Unsorted"
+#~ msgstr "未分類"
+
+#~ msgid "re-Install"
+#~ msgstr "再インストール"
+
+#~ msgid "Local Game"
+#~ msgstr "ローカルゲーム"
+
+#~ msgid "Uninstall selected modpack"
+#~ msgstr "選択したModパックを削除"
+
+#~ msgid "Play Online"
+#~ msgstr "オンラインプレイ"
+
+#~ msgid "Normal Mapping"
+#~ msgstr "法線マッピング"
+
+#~ msgid "No information available"
+#~ msgstr "情報がありません"
+
+#~ msgid "Volume changed to 0%"
+#~ msgstr "音量を 0% に変更"
+
+#~ msgid "Volume changed to 100%"
+#~ msgstr "音量を 100% に変更"
+
+#~ msgid "Print stacks"
+#~ msgstr "スタックの出力"
+
+#~ msgid "Use"
+#~ msgstr "使用"
+
+#~ msgid "Next"
+#~ msgstr "PageDown"
+
+#~ msgid "Prior"
+#~ msgstr "Page Up"
 
 #, fuzzy
-#~ msgid "Detailed mod profile data. Useful for mod developers."
-#~ msgstr "詳細なModのプロファイルデータです。Mod開発者に便利です。"
+#~ msgid ""
+#~ "Announce to this serverlist.\n"
+#~ "If you want to announce your ipv6 address, use  serverlist_url = v6."
+#~ "servers.minetest.net."
+#~ msgstr ""
+#~ "公開サーバの通知先のサーバ一覧です。\n"
+#~ "IPv6アドレスを通知したい場合は、serverlist_url = v6.servers.minetest.netを"
+#~ "使用してください。"
+
+#, fuzzy
+#~ msgid "Approximate (X,Y,Z) scale of fractal in nodes."
+#~ msgstr "ノードにおけるフラクタルのおおよその(X,Y,Z)の大きさ。"
+
+#~ msgid "Autorun key"
+#~ msgstr "オートランキー"
+
+#, fuzzy
+#~ msgid "Caves and tunnels form at the intersection of the two noises"
+#~ msgstr "洞窟やトンネルは2つのノイズの交差部分に形成されます"
+
+#~ msgid "Cloud height"
+#~ msgstr "雲の高さ"
+
+#~ msgid "Console key"
+#~ msgstr "コンソールキー"
+
+#, fuzzy
+#~ msgid "Continuous forward movement (only used for testing)."
+#~ msgstr "オートラン (テスト用)。"
+
+#, fuzzy
+#~ msgid ""
+#~ "Creates unpredictable lava features in caves.\n"
+#~ "These can make mining difficult. Zero disables them. (0-10)"
+#~ msgstr ""
+#~ "洞窟に予測不可能な溶岩を生成します。\n"
+#~ "これによって採掘を難しくできます。ゼロを指定すると無効になります。(0-10)"
+
+#, fuzzy
+#~ msgid ""
+#~ "Creates unpredictable water features in caves.\n"
+#~ "These can make mining difficult. Zero disables them. (0-10)"
+#~ msgstr ""
+#~ "洞窟に予測不可能な水を生成します。\n"
+#~ "これによって採掘を難しくできます。ゼロを指定すると無効になります。(0-10)"
+
+#, fuzzy
+#~ msgid "Crouch speed"
+#~ msgstr "しゃがみ状態の速度"
+
+#, fuzzy
+#~ msgid "Depth below which you'll find massive caves."
+#~ msgstr "あなたが大きい洞穴を見つける深さ。"
+
+#, fuzzy
+#~ msgid "Enable view bobbing"
+#~ msgstr "落下による上下の揺れ"
+
+#, fuzzy
+#~ msgid "Field of view for zoom"
+#~ msgstr "視野"
+
+#, fuzzy
+#~ msgid ""
+#~ "Field of view while zooming in degrees.\n"
+#~ "This requires the \"zoom\" privilege on the server."
+#~ msgstr ""
+#~ "高速移動 (使用キー)。\n"
+#~ "サーバによる「fast」権限が必要です。"
+
+#~ msgid ""
+#~ "How large area of blocks are subject to the active block stuff, stated in "
+#~ "mapblocks (16 nodes).\n"
+#~ "In active blocks objects are loaded and ABMs run."
+#~ msgstr ""
+#~ "Mapblock (16ノード) 数でオブジェクトのロードやABMの実効等の有効エリアを指"
+#~ "定。"
+
+#, fuzzy
+#~ msgid "Inventory image hack"
+#~ msgstr "インベントリキー"
+
+#~ msgid "Main menu mod manager"
+#~ msgstr "メインメニューMod管理"
+
+#~ msgid "Use key"
+#~ msgstr "使用キー"
+
+#~ msgid "Water Features"
+#~ msgstr "テクスチャを設定中"
+
+#~ msgid "Hide mp content"
+#~ msgstr "Modパックの内容を非表示"
+
+#~ msgid "Attn"
+#~ msgstr "Attn"
+
+#~ msgid "Capital"
+#~ msgstr "Capital"
+
+#~ msgid "Comma"
+#~ msgstr "カンマ"
+
+#~ msgid "CrSel"
+#~ msgstr "CrSel"
+
+#~ msgid "ExSel"
+#~ msgstr "ExSel"
+
+#~ msgid "Final"
+#~ msgstr "Final"
+
+#~ msgid "Junja"
+#~ msgstr "Junja"
+
+#~ msgid "Kana"
+#~ msgstr "かな"
+
+#~ msgid "Kanji"
+#~ msgstr "漢字"
+
+#~ msgid "Minus"
+#~ msgstr "マイナス"
+
+#~ msgid "PA1"
+#~ msgstr "PA1"
+
+#~ msgid "Period"
+#~ msgstr "ピリオド"
+
+#~ msgid "Plus"
+#~ msgstr "プラス"
+
+#, fuzzy
+#~ msgid ""
+#~ "Controls size of deserts and beaches in Mapgen v6.\n"
+#~ "When snowbiomes are enabled 'mgv6_freq_desert' is ignored."
+#~ msgstr ""
+#~ "砂漠の規制サイズとMapgen v6のビーチ。\n"
+#~ "snowbiomesが許可されるとき、『mgv6_freq_desert』は無視されます。"
+
+#, fuzzy
+#~ msgid ""
+#~ "Determines terrain shape.\n"
+#~ "The 3 numbers in brackets control the scale of the\n"
+#~ "terrain, the 3 numbers should be identical."
+#~ msgstr ""
+#~ "地形形を決定します。\n"
+#~ "ブラケットの3番号は地形の目盛りを制御します、\n"
+#~ "3番号は同一でなければなりません。"
+
+#, fuzzy
+#~ msgid "Mapgen flat cave width"
+#~ msgstr "マップ生成フラグ"
+
+#, fuzzy
+#~ msgid "Mapgen fractal cave width"
+#~ msgstr "マップ生成フラグ"
+
+#~ msgid "Mapgen fractal fractal"
+#~ msgstr "マップ生成フラグ"
+
+#~ msgid "Mapgen fractal iterations"
+#~ msgstr "視差遮蔽マッピング"
+
+#~ msgid "Mapgen fractal offset"
+#~ msgstr "マップ生成フラグ"
+
+#~ msgid "Mapgen fractal scale"
+#~ msgstr "マップ生成フラグ"
+
+#~ msgid "Mapgen fractal slice w"
+#~ msgstr "マップ生成フラグ"
+
+#, fuzzy
+#~ msgid "Mapgen v5 cave width"
+#~ msgstr "ワールドタイプ"
+
+#, fuzzy
+#~ msgid "Mapgen v7 cave width"
+#~ msgstr "ワールドタイプ"
 
 #~ msgid ""
 #~ "Where the map generator stops.\n"
@@ -6450,273 +6810,49 @@ msgstr "cURLタイムアウト"
 #~ "-    グループはmap_generation_limit内で生成されたものに限ります。"
 
 #, fuzzy
-#~ msgid "Mapgen v7 cave width"
-#~ msgstr "ワールドタイプ"
+#~ msgid "Detailed mod profile data. Useful for mod developers."
+#~ msgstr "詳細なModのプロファイルデータです。Mod開発者に便利です。"
 
 #, fuzzy
-#~ msgid "Mapgen v5 cave width"
-#~ msgstr "ワールドタイプ"
+#~ msgid "Detailed mod profiling"
+#~ msgstr "詳細なModのプロファイル化"
 
-#~ msgid "Mapgen fractal slice w"
-#~ msgstr "マップ生成フラグ"
+#~ msgid "Useful for mod developers."
+#~ msgstr "Mod開発に便利。"
 
-#~ msgid "Mapgen fractal scale"
-#~ msgstr "マップ生成フラグ"
+#~ msgid "No of course not!"
+#~ msgstr "いいえ！"
 
-#~ msgid "Mapgen fractal offset"
-#~ msgstr "マップ生成フラグ"
+#~ msgid "Public Serverlist"
+#~ msgstr "公開サーバ一覧"
 
-#~ msgid "Mapgen fractal iterations"
-#~ msgstr "視差遮蔽マッピング"
+#~ msgid "No!!!"
+#~ msgstr "いいえ！！！"
 
-#~ msgid "Mapgen fractal fractal"
-#~ msgstr "マップ生成フラグ"
+#~ msgid "If enabled, "
+#~ msgstr "有効化の場合 "
 
-#, fuzzy
-#~ msgid "Mapgen fractal cave width"
-#~ msgstr "マップ生成フラグ"
+#~ msgid "Restart minetest for driver change to take effect"
+#~ msgstr "ドライバーを変更するためMinetestを再起動します"
 
-#, fuzzy
-#~ msgid "Mapgen flat cave width"
-#~ msgstr "マップ生成フラグ"
+#~ msgid " MB/s"
+#~ msgstr " MB/秒"
 
-#, fuzzy
-#~ msgid ""
-#~ "Determines terrain shape.\n"
-#~ "The 3 numbers in brackets control the scale of the\n"
-#~ "terrain, the 3 numbers should be identical."
-#~ msgstr ""
-#~ "地形形を決定します。\n"
-#~ "ブラケットの3番号は地形の目盛りを制御します、\n"
-#~ "3番号は同一でなければなりません。"
+#~ msgid " KB/s"
+#~ msgstr " KB/秒"
+
+#~ msgid "Touch free target"
+#~ msgstr "タッチ位置を自由にする"
+
+#~ msgid "Scaling factor applied to menu elements: "
+#~ msgstr "メニューの大きさとして設定されている数値: "
 
 #, fuzzy
-#~ msgid ""
-#~ "Controls size of deserts and beaches in Mapgen v6.\n"
-#~ "When snowbiomes are enabled 'mgv6_freq_desert' is ignored."
-#~ msgstr ""
-#~ "砂漠の規制サイズとMapgen v6のビーチ。\n"
-#~ "snowbiomesが許可されるとき、『mgv6_freq_desert』は無視されます。"
+#~ msgid "Preload inventory textures"
+#~ msgstr "テクスチャ読み込み中..."
 
-#~ msgid "Plus"
-#~ msgstr "プラス"
+#~ msgid "Advanced Settings"
+#~ msgstr "詳細設定"
 
-#~ msgid "Period"
-#~ msgstr "ピリオド"
-
-#~ msgid "PA1"
-#~ msgstr "PA1"
-
-#~ msgid "Minus"
-#~ msgstr "マイナス"
-
-#~ msgid "Kanji"
-#~ msgstr "漢字"
-
-#~ msgid "Kana"
-#~ msgstr "かな"
-
-#~ msgid "Junja"
-#~ msgstr "Junja"
-
-#~ msgid "Final"
-#~ msgstr "Final"
-
-#~ msgid "ExSel"
-#~ msgstr "ExSel"
-
-#~ msgid "CrSel"
-#~ msgstr "CrSel"
-
-#~ msgid "Comma"
-#~ msgstr "カンマ"
-
-#~ msgid "Capital"
-#~ msgstr "Capital"
-
-#~ msgid "Attn"
-#~ msgstr "Attn"
-
-#~ msgid "Hide mp content"
-#~ msgstr "Modパックの内容を非表示"
-
-#~ msgid "Water Features"
-#~ msgstr "テクスチャを設定中"
-
-#~ msgid "Use key"
-#~ msgstr "使用キー"
-
-#~ msgid "Main menu mod manager"
-#~ msgstr "メインメニューMod管理"
-
-#, fuzzy
-#~ msgid "Inventory image hack"
-#~ msgstr "インベントリキー"
-
-#~ msgid ""
-#~ "How large area of blocks are subject to the active block stuff, stated in "
-#~ "mapblocks (16 nodes).\n"
-#~ "In active blocks objects are loaded and ABMs run."
-#~ msgstr ""
-#~ "Mapblock (16ノード) 数でオブジェクトのロードやABMの実効等の有効エリアを指"
-#~ "定。"
-
-#, fuzzy
-#~ msgid ""
-#~ "Field of view while zooming in degrees.\n"
-#~ "This requires the \"zoom\" privilege on the server."
-#~ msgstr ""
-#~ "高速移動 (使用キー)。\n"
-#~ "サーバによる「fast」権限が必要です。"
-
-#, fuzzy
-#~ msgid "Field of view for zoom"
-#~ msgstr "視野"
-
-#, fuzzy
-#~ msgid "Enable view bobbing"
-#~ msgstr "落下による上下の揺れ"
-
-#, fuzzy
-#~ msgid "Depth below which you'll find massive caves."
-#~ msgstr "あなたが大きい洞穴を見つける深さ。"
-
-#, fuzzy
-#~ msgid "Crouch speed"
-#~ msgstr "しゃがみ状態の速度"
-
-#, fuzzy
-#~ msgid ""
-#~ "Creates unpredictable water features in caves.\n"
-#~ "These can make mining difficult. Zero disables them. (0-10)"
-#~ msgstr ""
-#~ "洞窟に予測不可能な水を生成します。\n"
-#~ "これによって採掘を難しくできます。ゼロを指定すると無効になります。(0-10)"
-
-#, fuzzy
-#~ msgid ""
-#~ "Creates unpredictable lava features in caves.\n"
-#~ "These can make mining difficult. Zero disables them. (0-10)"
-#~ msgstr ""
-#~ "洞窟に予測不可能な溶岩を生成します。\n"
-#~ "これによって採掘を難しくできます。ゼロを指定すると無効になります。(0-10)"
-
-#, fuzzy
-#~ msgid "Continuous forward movement (only used for testing)."
-#~ msgstr "オートラン (テスト用)。"
-
-#~ msgid "Console key"
-#~ msgstr "コンソールキー"
-
-#~ msgid "Cloud height"
-#~ msgstr "雲の高さ"
-
-#, fuzzy
-#~ msgid "Caves and tunnels form at the intersection of the two noises"
-#~ msgstr "洞窟やトンネルは2つのノイズの交差部分に形成されます"
-
-#~ msgid "Autorun key"
-#~ msgstr "オートランキー"
-
-#, fuzzy
-#~ msgid "Approximate (X,Y,Z) scale of fractal in nodes."
-#~ msgstr "ノードにおけるフラクタルのおおよその(X,Y,Z)の大きさ。"
-
-#, fuzzy
-#~ msgid ""
-#~ "Announce to this serverlist.\n"
-#~ "If you want to announce your ipv6 address, use  serverlist_url = v6."
-#~ "servers.minetest.net."
-#~ msgstr ""
-#~ "公開サーバの通知先のサーバ一覧です。\n"
-#~ "IPv6アドレスを通知したい場合は、serverlist_url = v6.servers.minetest.netを"
-#~ "使用してください。"
-
-#~ msgid "Prior"
-#~ msgstr "Page Up"
-
-#~ msgid "Next"
-#~ msgstr "PageDown"
-
-#~ msgid "Use"
-#~ msgstr "使用"
-
-#~ msgid "Print stacks"
-#~ msgstr "スタックの出力"
-
-#~ msgid "Volume changed to 100%"
-#~ msgstr "音量を 100% に変更"
-
-#~ msgid "Volume changed to 0%"
-#~ msgstr "音量を 0% に変更"
-
-#~ msgid "No information available"
-#~ msgstr "情報がありません"
-
-#~ msgid "Normal Mapping"
-#~ msgstr "法線マッピング"
-
-#~ msgid "Play Online"
-#~ msgstr "オンラインプレイ"
-
-#~ msgid "Uninstall selected modpack"
-#~ msgstr "選択したModパックを削除"
-
-#~ msgid "Local Game"
-#~ msgstr "ローカルゲーム"
-
-#~ msgid "re-Install"
-#~ msgstr "再インストール"
-
-#~ msgid "Unsorted"
-#~ msgstr "未分類"
-
-#~ msgid "Successfully installed:"
-#~ msgstr "インストールが完了しました:"
-
-#~ msgid "Shortname:"
-#~ msgstr "省略名:"
-
-#~ msgid "Rating"
-#~ msgstr "評価"
-
-#~ msgid "Page $1 of $2"
-#~ msgstr "ページ $1 / $2"
-
-#~ msgid "Subgame Mods"
-#~ msgstr "サブゲームのMod"
-
-#~ msgid "Select path"
-#~ msgstr "場所を選択"
-
-#~ msgid "Possible values are: "
-#~ msgstr "可能な値: "
-
-#~ msgid "Please enter a comma seperated list of flags."
-#~ msgstr "フラグはカンマ区切りのリスト形式で入力してください。"
-
-#, fuzzy
-#~ msgid "Optionally the lacunarity can be appended with a leading comma."
-#~ msgstr "空隙性の値は、必要に応じ読みやすくカンマを付けることができます。"
-
-#~ msgid ""
-#~ "Format: <offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>), <seed>, "
-#~ "<octaves>, <persistence>"
-#~ msgstr ""
-#~ "書式: <offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>), <seed>, "
-#~ "<octaves>, <persistence>"
-
-#~ msgid "Format is 3 numbers separated by commas and inside brackets."
-#~ msgstr "括弧内に3つの数字をカンマで区切って入力してください。"
-
-#~ msgid "\"$1\" is not a valid flag."
-#~ msgstr "「$1」は有効なフラグではありません。"
-
-#~ msgid "No worldname given or no game selected"
-#~ msgstr "ワールド名が入力されていないか、ゲームが選択されていません"
-
-#~ msgid "Enable MP"
-#~ msgstr "Modパックを有効化"
-
-#~ msgid "Disable MP"
-#~ msgstr "Modパック無効化"
+#~ msgid "View"
+#~ msgstr "見る"

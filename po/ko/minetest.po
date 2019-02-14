@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-01-24 01:05+0200\n"
+"POT-Creation-Date: 2019-02-14 07:46+0100\n"
 "PO-Revision-Date: 2019-01-24 00:05+0000\n"
 "Last-Translator: Nore <nore@mesecons.net>\n"
 "Language-Team: Korean <https://hosted.weblate.org/projects/minetest/minetest/"
@@ -24,11 +24,13 @@ msgid "You died"
 msgstr "사망했습니다."
 
 #: builtin/fstk/ui.lua
-msgid "An error occured in a Lua script, such as a mod:"
+#, fuzzy
+msgid "An error occurred in a Lua script, such as a mod:"
 msgstr "Lua 스크립트에서 오류가 발생했습니다. 해당 모드:"
 
 #: builtin/fstk/ui.lua
-msgid "An error occured:"
+#, fuzzy
+msgid "An error occurred:"
 msgstr "오류가 발생했습니다:"
 
 #: builtin/fstk/ui.lua
@@ -108,9 +110,10 @@ msgid "Enable modpack"
 msgstr "모드 팩 이름 바꾸기:"
 
 #: builtin/mainmenu/dlg_config_world.lua
+#, fuzzy
 msgid ""
 "Failed to enable mod \"$1\" as it contains disallowed characters. Only "
-"chararacters [a-z0-9_] are allowed."
+"characters [a-z0-9_] are allowed."
 msgstr ""
 "\"$1\"은(는) 사용할 수 없는 문자이기에 모드를 활성화하지 못 했습니다. 이름에"
 "는 [a-z0-9_]만 사용할 수 있습니다."
@@ -184,6 +187,10 @@ msgid "Mods"
 msgstr "모드"
 
 #: builtin/mainmenu/dlg_contentstore.lua
+msgid "No packages could be retrieved"
+msgstr ""
+
+#: builtin/mainmenu/dlg_contentstore.lua
 msgid "No results"
 msgstr ""
 
@@ -206,10 +213,6 @@ msgstr "설치"
 msgid "Update"
 msgstr ""
 
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "View"
-msgstr ""
-
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "A world named \"$1\" already exists"
 msgstr "\"$1\" 이름의 세계가 이미 존재합니다"
@@ -220,7 +223,7 @@ msgstr "만들기"
 
 #: builtin/mainmenu/dlg_create_world.lua
 #, fuzzy
-msgid "Download a game, such as minetest_game, from minetest.net"
+msgid "Download a game, such as Minetest Game, from minetest.net"
 msgstr "minetest.net에서 minetest_game 같은 서브 게임을 다운로드하세요."
 
 #: builtin/mainmenu/dlg_create_world.lua
@@ -241,6 +244,7 @@ msgid "No game selected"
 msgstr "범위 선택"
 
 #: builtin/mainmenu/dlg_create_world.lua
+#: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Seed"
 msgstr "시드"
 
@@ -289,9 +293,20 @@ msgstr "수락"
 msgid "Rename Modpack:"
 msgstr "모드 팩 이름 바꾸기:"
 
+#: builtin/mainmenu/dlg_rename_modpack.lua
+msgid ""
+"This modpack has an explicit name given in its modpack.conf which will "
+"override any renaming here."
+msgstr ""
+
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "(No description of setting given)"
 msgstr "(설정에 대한 설명이 없습니다)"
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+#, fuzzy
+msgid "2D Noise"
+msgstr "소리"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "< Back to Settings page"
@@ -314,6 +329,24 @@ msgid "Enabled"
 msgstr "활성화됨"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
+#, fuzzy
+msgid "Lacunarity"
+msgstr "보안"
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "Octaves"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua src/settings_translation_file.cpp
+msgid "Offset"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+#, fuzzy
+msgid "Persistance"
+msgstr "플레이어 전송 거리"
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Please enter a valid integer."
 msgstr "유효한 정수를 입력해주세요."
 
@@ -324,6 +357,10 @@ msgstr "유효한 숫자를 입력해주세요."
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Restore Default"
 msgstr "기본값 복원"
+
+#: builtin/mainmenu/dlg_settings_advanced.lua src/settings_translation_file.cpp
+msgid "Scale"
+msgstr ""
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 #, fuzzy
@@ -347,15 +384,52 @@ msgstr "값은 $1 이상이어야 합니다."
 msgid "The value must not be larger than $1."
 msgstr "값이 $1을 초과하면 안 됩니다."
 
-#: builtin/mainmenu/pkgmgr.lua
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "X"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "X spread"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "Y"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "Y spread"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "Z"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "Z spread"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "absvalue"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
 #, fuzzy
-msgid " mods"
-msgstr "3D 모드"
+msgid "defaults"
+msgstr "기본 게임"
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "eased"
+msgstr ""
 
 #: builtin/mainmenu/pkgmgr.lua
 #, fuzzy
 msgid "$1 (Enabled)"
 msgstr "활성화됨"
+
+#: builtin/mainmenu/pkgmgr.lua
+#, fuzzy
+msgid "$1 mods"
+msgstr "3D 모드"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Failed to install $1 to $2"
@@ -602,8 +676,9 @@ msgid "8x"
 msgstr "8 배속"
 
 #: builtin/mainmenu/tab_settings.lua
-msgid "Advanced Settings"
-msgstr "고급 설정"
+#, fuzzy
+msgid "All Settings"
+msgstr "설정"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Antialiasing:"
@@ -4990,10 +5065,6 @@ msgid "Number of parallax occlusion iterations."
 msgstr "시차 교합 반복의 수"
 
 #: src/settings_translation_file.cpp
-msgid "Offset"
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid "Opaque liquids"
 msgstr "불투명한 액체"
 
@@ -5287,10 +5358,6 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Saving map received from server"
 msgstr "서버로부터 받은 맵을 저장"
-
-#: src/settings_translation_file.cpp
-msgid "Scale"
-msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6319,197 +6386,91 @@ msgstr ""
 msgid "cURL timeout"
 msgstr ""
 
-#~ msgid ""
-#~ "Determines terrain shape.\n"
-#~ "The 3 numbers in brackets control the scale of the\n"
-#~ "terrain, the 3 numbers should be identical."
-#~ msgstr ""
-#~ "지형 모양을 결정합니다.\n"
-#~ "괄호안의 3개의 숫자는 지형의 규모를 조정합니다.\n"
-#~ "3개의 숫자는 동일해야 합니다."
+#~ msgid "Disable MP"
+#~ msgstr "MP(모드팩) 비활성화"
+
+#~ msgid "Enable MP"
+#~ msgstr "MP(모드팩) 활성화"
+
+#~ msgid "No worldname given or no game selected"
+#~ msgstr "게임을 선택하지 않았거나 게임 이름이 없습니다"
+
+#~ msgid "\"$1\" is not a valid flag."
+#~ msgstr "\"$1\"은(는) 유효한 플래그가 아닙니다."
+
+#~ msgid "Format is 3 numbers separated by commas and inside brackets."
+#~ msgstr "3개의 수가 쉼표와 묶음표로 구분되는 형식입니다."
 
 #~ msgid ""
-#~ "Controls size of deserts and beaches in Mapgen v6.\n"
-#~ "When snowbiomes are enabled 'mgv6_freq_desert' is ignored."
+#~ "Format: <offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>), <seed>, "
+#~ "<octaves>, <persistence>"
 #~ msgstr ""
-#~ "Mapgen v6에서 사막과 해변의 크기를 조정합니다.\n"
-#~ "Snowbiomes 사용 하는 경우에 'mgv6_freq_desert'은 무시 됩니다."
+#~ "형식: <offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>), <seed>, "
+#~ "<octaves>, <persistence>"
 
-#~ msgid "Plus"
-#~ msgstr "플러스"
+#~ msgid "Please enter a comma seperated list of flags."
+#~ msgstr "플래그 목록을 쉼표로 구분하며 입력해주세요."
 
-#~ msgid "Period"
-#~ msgstr "기간"
+#~ msgid "Possible values are: "
+#~ msgstr "가능한 값: "
 
-#~ msgid "Minus"
-#~ msgstr "마이너스"
+#~ msgid "Select path"
+#~ msgstr "경로 고르기"
 
-#~ msgid "Final"
-#~ msgstr "최종"
+#~ msgid "Subgame Mods"
+#~ msgstr "서브게임 모드"
 
-#~ msgid "ExSel"
-#~ msgstr "ExSel"
+#~ msgid "Page $1 of $2"
+#~ msgstr "$2페이지 중 $1"
 
-#~ msgid "CrSel"
-#~ msgstr "CrSel"
+#~ msgid "Rating"
+#~ msgstr "순위"
 
-#~ msgid "Comma"
-#~ msgstr "쉼표"
+#~ msgid "Shortname:"
+#~ msgstr "짧은 이름:"
 
-#~ msgid "Capital"
-#~ msgstr "자본"
+#~ msgid "Successfully installed:"
+#~ msgstr "설치 완료:"
 
-#~ msgid "Attn"
-#~ msgstr "담당자"
+#~ msgid "Unsorted"
+#~ msgstr "기타"
 
-#~ msgid "Hide mp content"
-#~ msgstr "숨겨진 맵 콘텐츠"
-
-#~ msgid "Water Features"
-#~ msgstr "물 특징"
+#~ msgid "re-Install"
+#~ msgstr "재설치"
 
 #, fuzzy
-#~ msgid "Valleys C Flags"
-#~ msgstr "계곡 C 플래그"
+#~ msgid "Local Game"
+#~ msgstr "게임 시작"
 
-#~ msgid ""
-#~ "Use mip mapping to scale textures. May slightly increase performance."
-#~ msgstr ""
-#~ "텍스쳐를 크게하기 위해 mip mapping을 사용 합니다. 성능이 약간 증가할겁니"
-#~ "다."
+#~ msgid "Uninstall selected modpack"
+#~ msgstr "선택한 모드팩 삭제"
 
-#~ msgid "Use key"
-#~ msgstr "키 사용"
+#~ msgid "Play Online"
+#~ msgstr "온라인 게임"
 
-#~ msgid "The altitude at which temperature drops by 20C"
-#~ msgstr "기온이 20C로 떨어지는 고도"
+#~ msgid "Normal Mapping"
+#~ msgstr "노멀 매핑"
 
-#~ msgid "Support older servers"
-#~ msgstr "오래된 서버 지원"
+#~ msgid "No information available"
+#~ msgstr "정보가 없습니다"
 
-#~ msgid ""
-#~ "Size of chunks to be generated at once by mapgen, stated in mapblocks (16 "
-#~ "nodes)."
-#~ msgstr "정해진 맵블럭(16 nodes), 맵젠에 의해 한번에 생설되어질 양의 크기."
+#~ msgid "Volume changed to 0%"
+#~ msgstr "볼륨이 0%로 변경되었습니다"
 
-#~ msgid "River noise -- rivers occur close to zero"
-#~ msgstr "강 소리 -- 강이 0에 가까울 때 발생"
+#~ msgid "Volume changed to 100%"
+#~ msgstr "볼륨이 100%로 변경되었습니다"
 
-#, fuzzy
-#~ msgid ""
-#~ "Name of map generator to be used when creating a new world.\n"
-#~ "Creating a world in the main menu will override this."
-#~ msgstr ""
-#~ "새로운 월드를 만들때 사용되는 맵 생성기의 이름입니다.\n"
-#~ "주 메뉴에서 새 월드를 만들면 적용될 것입니다."
+#~ msgid "Print stacks"
+#~ msgstr "스택 출력"
 
-#~ msgid "Modstore mods list URL"
-#~ msgstr "Modstore 모드 리스트 URL"
+#~ msgid "Use"
+#~ msgstr "사용"
 
-#~ msgid "Modstore download URL"
-#~ msgstr "Modstore 다운로드 URL"
+#~ msgid "Next"
+#~ msgstr "다음"
 
-#~ msgid "Modstore details URL"
-#~ msgstr "Modstore 정보 URL"
-
-#~ msgid "Maximum number of blocks that are simultaneously sent per client."
-#~ msgstr "클라이언트 당 동시에 전송되는 블록의 최대 수입니다."
-
-#~ msgid "Massive cave noise"
-#~ msgstr "거대한 동굴 잡음"
-
-#~ msgid "Massive cave depth"
-#~ msgstr "거대한 동굴 깊이"
-
-#~ msgid "Main menu mod manager"
-#~ msgstr "주 메뉴 모드 관리자"
-
-#~ msgid "Main menu game manager"
-#~ msgstr "주 메뉴 게임 관리자"
-
-#~ msgid ""
-#~ "Key for printing debug stacks. Used for development.\n"
-#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
-#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
-#~ msgstr ""
-#~ "디버그 무더기(stacks) 인쇄 키. 개발을 위해 사용됨.\n"
-#~ "Http://irrlicht.sourceforge.net/docu/namespaceirr."
-#~ "html#a54da2a0e231901735e3da1b0edf72eb3 참조"
-
-#~ msgid ""
-#~ "Key for opening the chat console.\n"
-#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
-#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
-#~ msgstr ""
-#~ "채팅 창을 여는 키입니다.\n"
-#~ "Http://irrlicht.sourceforge.net/docu/namespaceirr."
-#~ "html#a54da2a0e231901735e3da1b0edf72eb3 참조"
-
-#, fuzzy
-#~ msgid "Inventory image hack"
-#~ msgstr "인벤토리 키"
-
-#~ msgid "If enabled, show the server status message on player connection."
-#~ msgstr "활성화시, 연결하는 플레이어에게 서버status메시지가 보여집니다."
-
-#~ msgid "General"
-#~ msgstr "일반"
-
-#~ msgid ""
-#~ "Field of view while zooming in degrees.\n"
-#~ "This requires the \"zoom\" privilege on the server."
-#~ msgstr ""
-#~ "확대/축소에 대한 시야 \n"
-#~ "서버에서 \"확대/축소\" 권한이 필요합니다."
-
-#~ msgid "Field of view for zoom"
-#~ msgstr "확대/축소에 대한 시야"
-
-#, fuzzy
-#~ msgid "Enable view bobbing"
-#~ msgstr "보기 만료"
-
-#~ msgid ""
-#~ "Disable escape sequences, e.g. chat coloring.\n"
-#~ "Use this if you want to run a server with pre-0.4.14 clients and you want "
-#~ "to disable\n"
-#~ "the escape sequences generated by mods."
-#~ msgstr ""
-#~ "이스케이프 시퀀스 사용 안함, 예: 채팅 채색.\n"
-#~ "만약 당신이 pre-0.4.14클라이언트를 사용하길 원하거나 모드에 의해 생성되는 "
-#~ "이스케이프 시퀀스를 사용하지 않길 원한다면 이것을 사용하세요."
-
-#~ msgid "Disable escape sequences"
-#~ msgstr "이스케이프 시퀀스 사용 안함"
-
-#~ msgid "Depth below which you'll find massive caves."
-#~ msgstr "거대한 동굴을 발견할 수 있는 깊이."
-
-#~ msgid "Crouch speed"
-#~ msgstr "쭈그리고 앉기 속도"
-
-#~ msgid ""
-#~ "Creates unpredictable water features in caves.\n"
-#~ "These can make mining difficult. Zero disables them. (0-10)"
-#~ msgstr ""
-#~ "예측할 수 없는 물을 동굴 안에 만듭니다.\n"
-#~ "이것은 채광을 어렵게 만들 수 있습니다. 0은 나타나지 않습니다. (0-10)"
-
-#~ msgid ""
-#~ "Creates unpredictable lava features in caves.\n"
-#~ "These can make mining difficult. Zero disables them. (0-10)"
-#~ msgstr ""
-#~ "예측할 수 없는 용암을 동굴 안에 만듭니다.\n"
-#~ "이것은 채광을 어렵게 만들 수 있습니다. 0은 나타나지 않습니다. (0-10)"
-
-#~ msgid "Console key"
-#~ msgstr "콘솔 높이"
-
-#~ msgid "Cloud height"
-#~ msgstr "구름 높이"
-
-#~ msgid "Autorun key"
-#~ msgstr "자동 실행 키"
+#~ msgid "Prior"
+#~ msgstr "이전"
 
 #, fuzzy
 #~ msgid ""
@@ -6521,88 +6482,197 @@ msgstr ""
 #~ "만약 당신의 Ipv6 주소를 알리기 원한다면 serverlist_url = v6.servers."
 #~ "minetest.net 을 사용하세요."
 
-#~ msgid "Prior"
-#~ msgstr "이전"
+#~ msgid "Autorun key"
+#~ msgstr "자동 실행 키"
 
-#~ msgid "Next"
-#~ msgstr "다음"
+#~ msgid "Cloud height"
+#~ msgstr "구름 높이"
 
-#~ msgid "Use"
-#~ msgstr "사용"
-
-#~ msgid "Print stacks"
-#~ msgstr "스택 출력"
-
-#~ msgid "Volume changed to 100%"
-#~ msgstr "볼륨이 100%로 변경되었습니다"
-
-#~ msgid "Volume changed to 0%"
-#~ msgstr "볼륨이 0%로 변경되었습니다"
-
-#~ msgid "No information available"
-#~ msgstr "정보가 없습니다"
-
-#~ msgid "Normal Mapping"
-#~ msgstr "노멀 매핑"
-
-#~ msgid "Play Online"
-#~ msgstr "온라인 게임"
-
-#~ msgid "Uninstall selected modpack"
-#~ msgstr "선택한 모드팩 삭제"
-
-#, fuzzy
-#~ msgid "Local Game"
-#~ msgstr "게임 시작"
-
-#~ msgid "re-Install"
-#~ msgstr "재설치"
-
-#~ msgid "Unsorted"
-#~ msgstr "기타"
-
-#~ msgid "Successfully installed:"
-#~ msgstr "설치 완료:"
-
-#~ msgid "Shortname:"
-#~ msgstr "짧은 이름:"
-
-#~ msgid "Rating"
-#~ msgstr "순위"
-
-#~ msgid "Page $1 of $2"
-#~ msgstr "$2페이지 중 $1"
-
-#~ msgid "Subgame Mods"
-#~ msgstr "서브게임 모드"
-
-#~ msgid "Select path"
-#~ msgstr "경로 고르기"
-
-#~ msgid "Possible values are: "
-#~ msgstr "가능한 값: "
-
-#~ msgid "Please enter a comma seperated list of flags."
-#~ msgstr "플래그 목록을 쉼표로 구분하며 입력해주세요."
+#~ msgid "Console key"
+#~ msgstr "콘솔 높이"
 
 #~ msgid ""
-#~ "Format: <offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>), <seed>, "
-#~ "<octaves>, <persistence>"
+#~ "Creates unpredictable lava features in caves.\n"
+#~ "These can make mining difficult. Zero disables them. (0-10)"
 #~ msgstr ""
-#~ "형식: <offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>), <seed>, "
-#~ "<octaves>, <persistence>"
+#~ "예측할 수 없는 용암을 동굴 안에 만듭니다.\n"
+#~ "이것은 채광을 어렵게 만들 수 있습니다. 0은 나타나지 않습니다. (0-10)"
 
-#~ msgid "Format is 3 numbers separated by commas and inside brackets."
-#~ msgstr "3개의 수가 쉼표와 묶음표로 구분되는 형식입니다."
+#~ msgid ""
+#~ "Creates unpredictable water features in caves.\n"
+#~ "These can make mining difficult. Zero disables them. (0-10)"
+#~ msgstr ""
+#~ "예측할 수 없는 물을 동굴 안에 만듭니다.\n"
+#~ "이것은 채광을 어렵게 만들 수 있습니다. 0은 나타나지 않습니다. (0-10)"
 
-#~ msgid "\"$1\" is not a valid flag."
-#~ msgstr "\"$1\"은(는) 유효한 플래그가 아닙니다."
+#~ msgid "Crouch speed"
+#~ msgstr "쭈그리고 앉기 속도"
 
-#~ msgid "No worldname given or no game selected"
-#~ msgstr "게임을 선택하지 않았거나 게임 이름이 없습니다"
+#~ msgid "Depth below which you'll find massive caves."
+#~ msgstr "거대한 동굴을 발견할 수 있는 깊이."
 
-#~ msgid "Enable MP"
-#~ msgstr "MP(모드팩) 활성화"
+#~ msgid "Disable escape sequences"
+#~ msgstr "이스케이프 시퀀스 사용 안함"
 
-#~ msgid "Disable MP"
-#~ msgstr "MP(모드팩) 비활성화"
+#~ msgid ""
+#~ "Disable escape sequences, e.g. chat coloring.\n"
+#~ "Use this if you want to run a server with pre-0.4.14 clients and you want "
+#~ "to disable\n"
+#~ "the escape sequences generated by mods."
+#~ msgstr ""
+#~ "이스케이프 시퀀스 사용 안함, 예: 채팅 채색.\n"
+#~ "만약 당신이 pre-0.4.14클라이언트를 사용하길 원하거나 모드에 의해 생성되는 "
+#~ "이스케이프 시퀀스를 사용하지 않길 원한다면 이것을 사용하세요."
+
+#, fuzzy
+#~ msgid "Enable view bobbing"
+#~ msgstr "보기 만료"
+
+#~ msgid "Field of view for zoom"
+#~ msgstr "확대/축소에 대한 시야"
+
+#~ msgid ""
+#~ "Field of view while zooming in degrees.\n"
+#~ "This requires the \"zoom\" privilege on the server."
+#~ msgstr ""
+#~ "확대/축소에 대한 시야 \n"
+#~ "서버에서 \"확대/축소\" 권한이 필요합니다."
+
+#~ msgid "General"
+#~ msgstr "일반"
+
+#~ msgid "If enabled, show the server status message on player connection."
+#~ msgstr "활성화시, 연결하는 플레이어에게 서버status메시지가 보여집니다."
+
+#, fuzzy
+#~ msgid "Inventory image hack"
+#~ msgstr "인벤토리 키"
+
+#~ msgid ""
+#~ "Key for opening the chat console.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "채팅 창을 여는 키입니다.\n"
+#~ "Http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3 참조"
+
+#~ msgid ""
+#~ "Key for printing debug stacks. Used for development.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "디버그 무더기(stacks) 인쇄 키. 개발을 위해 사용됨.\n"
+#~ "Http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3 참조"
+
+#~ msgid "Main menu game manager"
+#~ msgstr "주 메뉴 게임 관리자"
+
+#~ msgid "Main menu mod manager"
+#~ msgstr "주 메뉴 모드 관리자"
+
+#~ msgid "Massive cave depth"
+#~ msgstr "거대한 동굴 깊이"
+
+#~ msgid "Massive cave noise"
+#~ msgstr "거대한 동굴 잡음"
+
+#~ msgid "Maximum number of blocks that are simultaneously sent per client."
+#~ msgstr "클라이언트 당 동시에 전송되는 블록의 최대 수입니다."
+
+#~ msgid "Modstore details URL"
+#~ msgstr "Modstore 정보 URL"
+
+#~ msgid "Modstore download URL"
+#~ msgstr "Modstore 다운로드 URL"
+
+#~ msgid "Modstore mods list URL"
+#~ msgstr "Modstore 모드 리스트 URL"
+
+#, fuzzy
+#~ msgid ""
+#~ "Name of map generator to be used when creating a new world.\n"
+#~ "Creating a world in the main menu will override this."
+#~ msgstr ""
+#~ "새로운 월드를 만들때 사용되는 맵 생성기의 이름입니다.\n"
+#~ "주 메뉴에서 새 월드를 만들면 적용될 것입니다."
+
+#~ msgid "River noise -- rivers occur close to zero"
+#~ msgstr "강 소리 -- 강이 0에 가까울 때 발생"
+
+#~ msgid ""
+#~ "Size of chunks to be generated at once by mapgen, stated in mapblocks (16 "
+#~ "nodes)."
+#~ msgstr "정해진 맵블럭(16 nodes), 맵젠에 의해 한번에 생설되어질 양의 크기."
+
+#~ msgid "Support older servers"
+#~ msgstr "오래된 서버 지원"
+
+#~ msgid "The altitude at which temperature drops by 20C"
+#~ msgstr "기온이 20C로 떨어지는 고도"
+
+#~ msgid "Use key"
+#~ msgstr "키 사용"
+
+#~ msgid ""
+#~ "Use mip mapping to scale textures. May slightly increase performance."
+#~ msgstr ""
+#~ "텍스쳐를 크게하기 위해 mip mapping을 사용 합니다. 성능이 약간 증가할겁니"
+#~ "다."
+
+#, fuzzy
+#~ msgid "Valleys C Flags"
+#~ msgstr "계곡 C 플래그"
+
+#~ msgid "Water Features"
+#~ msgstr "물 특징"
+
+#~ msgid "Hide mp content"
+#~ msgstr "숨겨진 맵 콘텐츠"
+
+#~ msgid "Attn"
+#~ msgstr "담당자"
+
+#~ msgid "Capital"
+#~ msgstr "자본"
+
+#~ msgid "Comma"
+#~ msgstr "쉼표"
+
+#~ msgid "CrSel"
+#~ msgstr "CrSel"
+
+#~ msgid "ExSel"
+#~ msgstr "ExSel"
+
+#~ msgid "Final"
+#~ msgstr "최종"
+
+#~ msgid "Minus"
+#~ msgstr "마이너스"
+
+#~ msgid "Period"
+#~ msgstr "기간"
+
+#~ msgid "Plus"
+#~ msgstr "플러스"
+
+#~ msgid ""
+#~ "Controls size of deserts and beaches in Mapgen v6.\n"
+#~ "When snowbiomes are enabled 'mgv6_freq_desert' is ignored."
+#~ msgstr ""
+#~ "Mapgen v6에서 사막과 해변의 크기를 조정합니다.\n"
+#~ "Snowbiomes 사용 하는 경우에 'mgv6_freq_desert'은 무시 됩니다."
+
+#~ msgid ""
+#~ "Determines terrain shape.\n"
+#~ "The 3 numbers in brackets control the scale of the\n"
+#~ "terrain, the 3 numbers should be identical."
+#~ msgstr ""
+#~ "지형 모양을 결정합니다.\n"
+#~ "괄호안의 3개의 숫자는 지형의 규모를 조정합니다.\n"
+#~ "3개의 숫자는 동일해야 합니다."
+
+#~ msgid "Advanced Settings"
+#~ msgstr "고급 설정"

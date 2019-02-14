@@ -1,3 +1,22 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the minetest package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: minetest\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2019-02-14 07:46+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "You died"
 msgstr ""
@@ -178,6 +197,10 @@ msgstr ""
 msgid "No results"
 msgstr ""
 
+#: builtin/mainmenu/dlg_contentstore.lua
+msgid "No packages could be retrieved"
+msgstr ""
+
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "World name"
 msgstr ""
@@ -246,11 +269,17 @@ msgid "Delete World \"$1\"?"
 msgstr ""
 
 #: builtin/mainmenu/dlg_rename_modpack.lua
-msgid "Rename Modpack:"
+msgid "Accept"
 msgstr ""
 
 #: builtin/mainmenu/dlg_rename_modpack.lua
-msgid "Accept"
+msgid ""
+"This modpack has an explicit name given in its modpack.conf which will "
+"override any renaming here."
+msgstr ""
+
+#: builtin/mainmenu/dlg_rename_modpack.lua
+msgid "Rename Modpack:"
 msgstr ""
 
 #: builtin/mainmenu/dlg_settings_advanced.lua

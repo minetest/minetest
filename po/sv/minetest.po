@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-01-23 09:24+0200\n"
+"POT-Creation-Date: 2019-02-14 07:46+0100\n"
 "PO-Revision-Date: 2019-02-08 13:45+0000\n"
 "Last-Translator: Muhammad Rifqi Priyo Susanto "
 "<muhammadrifqipriyosusanto@gmail.com>\n"
@@ -25,11 +25,13 @@ msgid "You died"
 msgstr "Du dog."
 
 #: builtin/fstk/ui.lua
-msgid "An error occured in a Lua script, such as a mod:"
+#, fuzzy
+msgid "An error occurred in a Lua script, such as a mod:"
 msgstr "Ett fel uppstod i ett Lua-skript, såsom en mod:"
 
 #: builtin/fstk/ui.lua
-msgid "An error occured:"
+#, fuzzy
+msgid "An error occurred:"
 msgstr "Ett fel uppstod:"
 
 #: builtin/fstk/ui.lua
@@ -112,9 +114,10 @@ msgid "Enable modpack"
 msgstr "Döp om modpaket:"
 
 #: builtin/mainmenu/dlg_config_world.lua
+#, fuzzy
 msgid ""
 "Failed to enable mod \"$1\" as it contains disallowed characters. Only "
-"chararacters [a-z0-9_] are allowed."
+"characters [a-z0-9_] are allowed."
 msgstr ""
 "Misslyckades aktivera mod \"$1\" eftersom det innehåller otillåtna tecken. "
 "Endast tecknen [a-z0-9_] är tillåtna."
@@ -188,6 +191,10 @@ msgid "Mods"
 msgstr "Moddar"
 
 #: builtin/mainmenu/dlg_contentstore.lua
+msgid "No packages could be retrieved"
+msgstr ""
+
+#: builtin/mainmenu/dlg_contentstore.lua
 msgid "No results"
 msgstr ""
 
@@ -210,10 +217,6 @@ msgstr "Installera"
 msgid "Update"
 msgstr ""
 
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "View"
-msgstr ""
-
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "A world named \"$1\" already exists"
 msgstr "En värld med namnet \"$1\" finns redan"
@@ -224,7 +227,7 @@ msgstr "Skapa"
 
 #: builtin/mainmenu/dlg_create_world.lua
 #, fuzzy
-msgid "Download a game, such as minetest_game, from minetest.net"
+msgid "Download a game, such as Minetest Game, from minetest.net"
 msgstr "Ladda ner ett underspel, såsom minetest_game, från minetest.net"
 
 #: builtin/mainmenu/dlg_create_world.lua
@@ -245,6 +248,7 @@ msgid "No game selected"
 msgstr "Välj räckvidd"
 
 #: builtin/mainmenu/dlg_create_world.lua
+#: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Seed"
 msgstr "Frö"
 
@@ -293,9 +297,20 @@ msgstr "Acceptera"
 msgid "Rename Modpack:"
 msgstr "Döp om modpaket:"
 
+#: builtin/mainmenu/dlg_rename_modpack.lua
+msgid ""
+"This modpack has an explicit name given in its modpack.conf which will "
+"override any renaming here."
+msgstr ""
+
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "(No description of setting given)"
 msgstr "(Ingen beskrivning av inställning angiven)"
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+#, fuzzy
+msgid "2D Noise"
+msgstr "Grotta2 oljud"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "< Back to Settings page"
@@ -318,6 +333,22 @@ msgid "Enabled"
 msgstr "Aktiverad"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "Lacunarity"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "Octaves"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua src/settings_translation_file.cpp
+msgid "Offset"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "Persistance"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Please enter a valid integer."
 msgstr "Var vänligen ange ett giltigt heltal."
 
@@ -328,6 +359,10 @@ msgstr "Var vänligen ange ett giltigt nummer."
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Restore Default"
 msgstr "Återställ till Ursprungsvärden"
+
+#: builtin/mainmenu/dlg_settings_advanced.lua src/settings_translation_file.cpp
+msgid "Scale"
+msgstr ""
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 #, fuzzy
@@ -351,15 +386,52 @@ msgstr "Värdet måste minst $1."
 msgid "The value must not be larger than $1."
 msgstr "Värdet får vara högst $1."
 
-#: builtin/mainmenu/pkgmgr.lua
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "X"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "X spread"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "Y"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "Y spread"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "Z"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "Z spread"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "absvalue"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
 #, fuzzy
-msgid " mods"
-msgstr "3D-läge"
+msgid "defaults"
+msgstr "Standardspel"
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "eased"
+msgstr ""
 
 #: builtin/mainmenu/pkgmgr.lua
 #, fuzzy
 msgid "$1 (Enabled)"
 msgstr "Aktiverad"
+
+#: builtin/mainmenu/pkgmgr.lua
+#, fuzzy
+msgid "$1 mods"
+msgstr "3D-läge"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Failed to install $1 to $2"
@@ -604,8 +676,9 @@ msgid "8x"
 msgstr "8x"
 
 #: builtin/mainmenu/tab_settings.lua
-msgid "Advanced Settings"
-msgstr "Avancerade Inställningar"
+#, fuzzy
+msgid "All Settings"
+msgstr "Inställningar"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Antialiasing:"
@@ -4732,10 +4805,6 @@ msgid "Number of parallax occlusion iterations."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Offset"
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid "Opaque liquids"
 msgstr ""
 
@@ -5001,10 +5070,6 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Saving map received from server"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Scale"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5958,8 +6023,154 @@ msgstr "cURL parallellgräns"
 msgid "cURL timeout"
 msgstr "cURL-timeout"
 
-#~ msgid "Hide mp content"
-#~ msgstr "Göm flerspelarinnehåll"
+#~ msgid "Disable MP"
+#~ msgstr "Inaktivera MP"
+
+#~ msgid "Enable MP"
+#~ msgstr "Aktivera MP"
+
+#~ msgid "No worldname given or no game selected"
+#~ msgstr "Inget världnamn angett eller inget spel valt"
+
+#~ msgid "\"$1\" is not a valid flag."
+#~ msgstr "\"$1\" är inte en giltig flagga."
+
+#~ msgid "Format is 3 numbers separated by commas and inside brackets."
+#~ msgstr "Formatet är tre nummer separerade med komma och inom paranteser."
+
+#~ msgid ""
+#~ "Format: <offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>), <seed>, "
+#~ "<octaves>, <persistence>"
+#~ msgstr ""
+#~ "Format: <förskjutning>, <skala>, (<spridningX>, <spridningY>, "
+#~ "<spridningZ>), <frö>, <oktaver>, <bestående>"
+
+#~ msgid "Optionally the lacunarity can be appended with a leading comma."
+#~ msgstr ""
+#~ "Takförhållandet kan eventuellt läggas till med ett främre kommatecken."
+
+#~ msgid "Please enter a comma seperated list of flags."
+#~ msgstr "Var vänlig ange ett kommaseparerad lista med flaggor."
+
+#~ msgid "Possible values are: "
+#~ msgstr "Möjliga värden är: "
+
+#~ msgid "Select path"
+#~ msgstr "Välj sökväg"
+
+#~ msgid "Subgame Mods"
+#~ msgstr "Underspelsmoddar"
+
+#~ msgid "Page $1 of $2"
+#~ msgstr "Sida $1 av $2"
+
+#~ msgid "Rating"
+#~ msgstr "Omdöme"
+
+#~ msgid "Shortname:"
+#~ msgstr "Kort namn:"
+
+#~ msgid "Successfully installed:"
+#~ msgstr "Lyckades installera:"
+
+#~ msgid "Unsorted"
+#~ msgstr "Osorterat"
+
+#~ msgid "re-Install"
+#~ msgstr "Ominstallera"
+
+#~ msgid "Local Game"
+#~ msgstr "Lokalt spel"
+
+#~ msgid "Uninstall selected modpack"
+#~ msgstr "Avinstallera valt modpaket"
+
+#~ msgid "Play Online"
+#~ msgstr "Spela online"
+
+#~ msgid "Normal Mapping"
+#~ msgstr "Normal-mapping"
+
+#~ msgid "No information available"
+#~ msgstr "Ingen information tillgänglig"
+
+#~ msgid "Volume changed to 0%"
+#~ msgstr "Volym ändrad till 0%"
+
+#~ msgid "Volume changed to 100%"
+#~ msgstr "Volym ändrad till 100%"
+
+#~ msgid "Print stacks"
+#~ msgstr "Skriv ut travar"
+
+#~ msgid "Use"
+#~ msgstr "Använd"
+
+#~ msgid "Next"
+#~ msgstr "Nästa"
+
+#~ msgid "Prior"
+#~ msgstr "Tidigare"
+
+#~ msgid "Active Block Modifier interval"
+#~ msgstr "Aktivt Blockmodifierarintervall"
+
+#~ msgid ""
+#~ "Android systems only: Tries to create inventory textures from meshes\n"
+#~ "when no supported render was found."
+#~ msgstr ""
+#~ "Endast Androidsystem: Försöker skapa förrådtexturer från meshes\n"
+#~ "när ingen stöttad render hittades."
+
+#~ msgid ""
+#~ "Announce to this serverlist.\n"
+#~ "If you want to announce your ipv6 address, use  serverlist_url = v6."
+#~ "servers.minetest.net."
+#~ msgstr ""
+#~ "Offentliggör till denna serverlista.\n"
+#~ "Om du vill offentliggöra din ipv6 address, använd  serverlist_url = v6."
+#~ "servers.minetest.net."
+
+#~ msgid "Approximate (X,Y,Z) scale of fractal in nodes."
+#~ msgstr "Approximera (X,Y,Z)-skala av fraktaler i noder."
+
+#~ msgid "Autorun key"
+#~ msgstr "Tangent för autospring"
+
+#~ msgid "Caves and tunnels form at the intersection of the two noises"
+#~ msgstr "Grottor och tunnlar bildas vid korsningen av de två oljuden"
+
+#~ msgid "Cloud height"
+#~ msgstr "Molnhöjd"
+
+#~ msgid "Console key"
+#~ msgstr "Konsoltangent"
+
+#~ msgid "Continuous forward movement (only used for testing)."
+#~ msgstr "Fortlöpande rörelse framåt (andvänds enbart för testande)."
+
+#~ msgid ""
+#~ "Creates unpredictable lava features in caves.\n"
+#~ "These can make mining difficult. Zero disables them. (0-10)"
+#~ msgstr ""
+#~ "Skapar oförutsägbara förekomster av lava i grottor.\n"
+#~ "Dessa kan göra gruvgrävande besvärligt. Noll inaktiverar dem. (0-10)"
+
+#~ msgid ""
+#~ "Creates unpredictable water features in caves.\n"
+#~ "These can make mining difficult. Zero disables them. (0-10)"
+#~ msgstr ""
+#~ "Skapar oförutsägbara förekomster av vatten i grottor.\n"
+#~ "Dessa kan göra gruvgrävande besvärligt. Noll inaktiverar dem. (0-10)"
+
+#~ msgid "Crouch speed"
+#~ msgstr "Smyghastighet"
+
+#~ msgid "Depth below which you'll find massive caves."
+#~ msgstr "Djup inunder du kan hitta massiva grottor."
+
+#~ msgid "Disable escape sequences"
+#~ msgstr "Inaktivera escapesekvenser"
 
 #~ msgid ""
 #~ "Disable escape sequences, e.g. chat coloring.\n"
@@ -5972,151 +6183,8 @@ msgstr "cURL-timeout"
 #~ "vill inaktivera\n"
 #~ "escapesekvenser som genereras av moddar."
 
-#~ msgid "Disable escape sequences"
-#~ msgstr "Inaktivera escapesekvenser"
+#~ msgid "Hide mp content"
+#~ msgstr "Göm flerspelarinnehåll"
 
-#~ msgid "Depth below which you'll find massive caves."
-#~ msgstr "Djup inunder du kan hitta massiva grottor."
-
-#~ msgid "Crouch speed"
-#~ msgstr "Smyghastighet"
-
-#~ msgid ""
-#~ "Creates unpredictable water features in caves.\n"
-#~ "These can make mining difficult. Zero disables them. (0-10)"
-#~ msgstr ""
-#~ "Skapar oförutsägbara förekomster av vatten i grottor.\n"
-#~ "Dessa kan göra gruvgrävande besvärligt. Noll inaktiverar dem. (0-10)"
-
-#~ msgid ""
-#~ "Creates unpredictable lava features in caves.\n"
-#~ "These can make mining difficult. Zero disables them. (0-10)"
-#~ msgstr ""
-#~ "Skapar oförutsägbara förekomster av lava i grottor.\n"
-#~ "Dessa kan göra gruvgrävande besvärligt. Noll inaktiverar dem. (0-10)"
-
-#~ msgid "Continuous forward movement (only used for testing)."
-#~ msgstr "Fortlöpande rörelse framåt (andvänds enbart för testande)."
-
-#~ msgid "Console key"
-#~ msgstr "Konsoltangent"
-
-#~ msgid "Cloud height"
-#~ msgstr "Molnhöjd"
-
-#~ msgid "Caves and tunnels form at the intersection of the two noises"
-#~ msgstr "Grottor och tunnlar bildas vid korsningen av de två oljuden"
-
-#~ msgid "Autorun key"
-#~ msgstr "Tangent för autospring"
-
-#~ msgid "Approximate (X,Y,Z) scale of fractal in nodes."
-#~ msgstr "Approximera (X,Y,Z)-skala av fraktaler i noder."
-
-#~ msgid ""
-#~ "Announce to this serverlist.\n"
-#~ "If you want to announce your ipv6 address, use  serverlist_url = v6."
-#~ "servers.minetest.net."
-#~ msgstr ""
-#~ "Offentliggör till denna serverlista.\n"
-#~ "Om du vill offentliggöra din ipv6 address, använd  serverlist_url = v6."
-#~ "servers.minetest.net."
-
-#~ msgid ""
-#~ "Android systems only: Tries to create inventory textures from meshes\n"
-#~ "when no supported render was found."
-#~ msgstr ""
-#~ "Endast Androidsystem: Försöker skapa förrådtexturer från meshes\n"
-#~ "när ingen stöttad render hittades."
-
-#~ msgid "Active Block Modifier interval"
-#~ msgstr "Aktivt Blockmodifierarintervall"
-
-#~ msgid "Prior"
-#~ msgstr "Tidigare"
-
-#~ msgid "Next"
-#~ msgstr "Nästa"
-
-#~ msgid "Use"
-#~ msgstr "Använd"
-
-#~ msgid "Print stacks"
-#~ msgstr "Skriv ut travar"
-
-#~ msgid "Volume changed to 100%"
-#~ msgstr "Volym ändrad till 100%"
-
-#~ msgid "Volume changed to 0%"
-#~ msgstr "Volym ändrad till 0%"
-
-#~ msgid "No information available"
-#~ msgstr "Ingen information tillgänglig"
-
-#~ msgid "Normal Mapping"
-#~ msgstr "Normal-mapping"
-
-#~ msgid "Play Online"
-#~ msgstr "Spela online"
-
-#~ msgid "Uninstall selected modpack"
-#~ msgstr "Avinstallera valt modpaket"
-
-#~ msgid "Local Game"
-#~ msgstr "Lokalt spel"
-
-#~ msgid "re-Install"
-#~ msgstr "Ominstallera"
-
-#~ msgid "Unsorted"
-#~ msgstr "Osorterat"
-
-#~ msgid "Successfully installed:"
-#~ msgstr "Lyckades installera:"
-
-#~ msgid "Shortname:"
-#~ msgstr "Kort namn:"
-
-#~ msgid "Rating"
-#~ msgstr "Omdöme"
-
-#~ msgid "Page $1 of $2"
-#~ msgstr "Sida $1 av $2"
-
-#~ msgid "Subgame Mods"
-#~ msgstr "Underspelsmoddar"
-
-#~ msgid "Select path"
-#~ msgstr "Välj sökväg"
-
-#~ msgid "Possible values are: "
-#~ msgstr "Möjliga värden är: "
-
-#~ msgid "Please enter a comma seperated list of flags."
-#~ msgstr "Var vänlig ange ett kommaseparerad lista med flaggor."
-
-#~ msgid "Optionally the lacunarity can be appended with a leading comma."
-#~ msgstr ""
-#~ "Takförhållandet kan eventuellt läggas till med ett främre kommatecken."
-
-#~ msgid ""
-#~ "Format: <offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>), <seed>, "
-#~ "<octaves>, <persistence>"
-#~ msgstr ""
-#~ "Format: <förskjutning>, <skala>, (<spridningX>, <spridningY>, "
-#~ "<spridningZ>), <frö>, <oktaver>, <bestående>"
-
-#~ msgid "Format is 3 numbers separated by commas and inside brackets."
-#~ msgstr "Formatet är tre nummer separerade med komma och inom paranteser."
-
-#~ msgid "\"$1\" is not a valid flag."
-#~ msgstr "\"$1\" är inte en giltig flagga."
-
-#~ msgid "No worldname given or no game selected"
-#~ msgstr "Inget världnamn angett eller inget spel valt"
-
-#~ msgid "Enable MP"
-#~ msgstr "Aktivera MP"
-
-#~ msgid "Disable MP"
-#~ msgstr "Inaktivera MP"
+#~ msgid "Advanced Settings"
+#~ msgstr "Avancerade Inställningar"

@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-01-18 10:21+0200\n"
+"POT-Creation-Date: 2019-02-14 07:46+0100\n"
 "PO-Revision-Date: 2019-01-18 09:21+0000\n"
 "Last-Translator: Muhammad Nur Hidayat Yasuyoshi <mnh48mail@gmail.com>\n"
 "Language-Team: Malay <https://hosted.weblate.org/projects/minetest/minetest/"
@@ -23,11 +23,13 @@ msgid "You died"
 msgstr "Anda telah meninggal"
 
 #: builtin/fstk/ui.lua
-msgid "An error occured in a Lua script, such as a mod:"
+#, fuzzy
+msgid "An error occurred in a Lua script, such as a mod:"
 msgstr "Terdapat ralat dalam skrip Lua, contohnya mods:"
 
 #: builtin/fstk/ui.lua
-msgid "An error occured:"
+#, fuzzy
+msgid "An error occurred:"
 msgstr "Telah berlakunya ralat:"
 
 #: builtin/fstk/ui.lua
@@ -107,9 +109,10 @@ msgid "Enable modpack"
 msgstr "Bolehkan pek mods"
 
 #: builtin/mainmenu/dlg_config_world.lua
+#, fuzzy
 msgid ""
 "Failed to enable mod \"$1\" as it contains disallowed characters. Only "
-"chararacters [a-z0-9_] are allowed."
+"characters [a-z0-9_] are allowed."
 msgstr ""
 "Gagal untuk membolehkan mods \"$1\" kerana ia mengandungi aksara yang tidak "
 "dibenarkan. Hanya aksara [a-z0-9_] sahaja yang dibenarkan."
@@ -178,6 +181,10 @@ msgid "Mods"
 msgstr "Mods"
 
 #: builtin/mainmenu/dlg_contentstore.lua
+msgid "No packages could be retrieved"
+msgstr ""
+
+#: builtin/mainmenu/dlg_contentstore.lua
 msgid "No results"
 msgstr "Tiada hasil"
 
@@ -198,10 +205,6 @@ msgstr "Nyahpasang"
 msgid "Update"
 msgstr "Kemas kini"
 
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "View"
-msgstr "Lihat"
-
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "A world named \"$1\" already exists"
 msgstr "Dunia bernama \"$1\" telah wujud"
@@ -211,7 +214,8 @@ msgid "Create"
 msgstr "Cipta"
 
 #: builtin/mainmenu/dlg_create_world.lua
-msgid "Download a game, such as minetest_game, from minetest.net"
+#, fuzzy
+msgid "Download a game, such as Minetest Game, from minetest.net"
 msgstr "Muat turun permainan, contohnya minetest_game, dari minetest.net"
 
 #: builtin/mainmenu/dlg_create_world.lua
@@ -231,6 +235,7 @@ msgid "No game selected"
 msgstr "Tiada permainan dipilih"
 
 #: builtin/mainmenu/dlg_create_world.lua
+#: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Seed"
 msgstr "Benih"
 
@@ -277,9 +282,20 @@ msgstr "Terima"
 msgid "Rename Modpack:"
 msgstr "Menamakan semula pek mods:"
 
+#: builtin/mainmenu/dlg_rename_modpack.lua
+msgid ""
+"This modpack has an explicit name given in its modpack.conf which will "
+"override any renaming here."
+msgstr ""
+
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "(No description of setting given)"
 msgstr "(Tiada perihal untuk tetapan yang diberi)"
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+#, fuzzy
+msgid "2D Noise"
+msgstr "Hingar"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "< Back to Settings page"
@@ -302,6 +318,24 @@ msgid "Enabled"
 msgstr "Dibolehkan"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
+#, fuzzy
+msgid "Lacunarity"
+msgstr "Keselamatan"
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "Octaves"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua src/settings_translation_file.cpp
+msgid "Offset"
+msgstr "Ofset"
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+#, fuzzy
+msgid "Persistance"
+msgstr "Jarak pemindahan pemain"
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Please enter a valid integer."
 msgstr "Sila masukkan integer yang sah."
 
@@ -312,6 +346,10 @@ msgstr "Sila masukkan nombor yang sah."
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Restore Default"
 msgstr "Pulihkan Tetapan Asal"
+
+#: builtin/mainmenu/dlg_settings_advanced.lua src/settings_translation_file.cpp
+msgid "Scale"
+msgstr "Skala"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Select directory"
@@ -333,13 +371,51 @@ msgstr "Nilai mestilah sekurang-kurangnya $1."
 msgid "The value must not be larger than $1."
 msgstr "Nilai mestilah tidak lebih daripada $1."
 
-#: builtin/mainmenu/pkgmgr.lua
-msgid " mods"
-msgstr " mods"
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "X"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "X spread"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "Y"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "Y spread"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "Z"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "Z spread"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "absvalue"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+#, fuzzy
+msgid "defaults"
+msgstr "Permainan lalai"
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "eased"
+msgstr ""
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "$1 (Enabled)"
 msgstr "$1 (Dibolehkan)"
+
+#: builtin/mainmenu/pkgmgr.lua
+#, fuzzy
+msgid "$1 mods"
+msgstr " mods"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Failed to install $1 to $2"
@@ -562,8 +638,9 @@ msgid "8x"
 msgstr "8x"
 
 #: builtin/mainmenu/tab_settings.lua
-msgid "Advanced Settings"
-msgstr "Tetapan Mendalam"
+#, fuzzy
+msgid "All Settings"
+msgstr "Tetapan"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Antialiasing:"
@@ -3044,8 +3121,8 @@ msgstr ""
 "Atribut penjanaan peta sejagat.\n"
 "Dalam janapeta v6, bendera 'decorations' mengawal semua hiasan kecuali "
 "pokok\n"
-"dan rumput hutan, dalam janapeta lain pula bendera ini mengawal semua hiasan."
-"\n"
+"dan rumput hutan, dalam janapeta lain pula bendera ini mengawal semua "
+"hiasan.\n"
 "Bendera yang tidak dibolehkan tidak diubah daripada nilai lalai.\n"
 "Bendera bermula dengan 'no' digunakan untuk betul-betul melumpuhkan mereka."
 
@@ -3738,8 +3815,8 @@ msgid ""
 msgstr ""
 "Kekunci untuk menggerakkan pemain ke belakang.\n"
 "Juga akan melumpuhkan autopergerakan, apabila aktif.\n"
-"Lihat http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3828,8 +3905,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Kekunci untuk memilih slot ke-11 dalam hotbar.\n"
-"Lihat http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3838,8 +3915,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Kekunci untuk memilih slot ke-12 dalam hotbar.\n"
-"Lihat http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3848,8 +3925,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Kekunci untuk memilih slot ke-13 dalam hotbar.\n"
-"Lihat http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3858,8 +3935,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Kekunci untuk memilih slot ke-14 dalam hotbar.\n"
-"Lihat http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3868,8 +3945,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Kekunci untuk memilih slot ke-15 dalam hotbar.\n"
-"Lihat http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3878,8 +3955,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Kekunci untuk memilih slot ke-16 dalam hotbar.\n"
-"Lihat http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3888,8 +3965,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Kekunci untuk memilih slot ke-17 dalam hotbar.\n"
-"Lihat http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3898,8 +3975,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Kekunci untuk memilih slot ke-18 dalam hotbar.\n"
-"Lihat http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3908,8 +3985,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Kekunci untuk memilih slot ke-19 dalam hotbar.\n"
-"Lihat http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3918,8 +3995,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Kekunci untuk memilih slot ke-20 dalam hotbar.\n"
-"Lihat http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3928,8 +4005,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Kekunci untuk memilih slot ke-21 dalam hotbar.\n"
-"Lihat http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3938,8 +4015,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Kekunci untuk memilih slot ke-22 dalam hotbar.\n"
-"Lihat http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3948,8 +4025,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Kekunci untuk memilih slot ke-23 dalam hotbar.\n"
-"Lihat http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3958,8 +4035,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Kekunci untuk memilih slot ke-24 dalam hotbar.\n"
-"Lihat http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3968,8 +4045,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Kekunci untuk memilih slot ke-25 dalam hotbar.\n"
-"Lihat http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3978,8 +4055,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Kekunci untuk memilih slot ke-26 dalam hotbar.\n"
-"Lihat http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3988,8 +4065,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Kekunci untuk memilih slot ke-27 dalam hotbar.\n"
-"Lihat http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3998,8 +4075,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Kekunci untuk memilih slot ke-28 dalam hotbar.\n"
-"Lihat http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4008,8 +4085,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Kekunci untuk memilih slot ke-29 dalam hotbar.\n"
-"Lihat http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4018,8 +4095,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Kekunci untuk memilih slot ke-30 dalam hotbar.\n"
-"Lihat http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4028,8 +4105,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Kekunci untuk memilih slot ke-31 dalam hotbar.\n"
-"Lihat http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4038,8 +4115,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Kekunci untuk memilih slot ke-32 dalam hotbar.\n"
-"Lihat http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4048,8 +4125,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Kekunci untuk memilih slot ke-8 dalam hotbar.\n"
-"Lihat http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4058,8 +4135,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Kekunci untuk memilih slot ke-5 dalam hotbar.\n"
-"Lihat http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4068,8 +4145,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Kekunci untuk memilih slot pertama dalam hotbar.\n"
-"Lihat http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4078,8 +4155,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Kekunci untuk memilih slot ke-4 dalam hotbar.\n"
-"Lihat http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4098,8 +4175,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Kekunci untuk memilih slot ke-9 dalam hotbar.\n"
-"Lihat http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4118,8 +4195,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Kekunci untuk memilih slot ke-2 dalam hotbar.\n"
-"Lihat http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4128,8 +4205,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Kekunci untuk memilih slot ke-7 dalam hotbar.\n"
-"Lihat http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4138,8 +4215,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Kekunci untuk memilih slot ke-6 dalam hotbar.\n"
-"Lihat http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4148,8 +4225,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Kekunci untuk memilih slot ke-10 dalam hotbar.\n"
-"Lihat http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4158,8 +4235,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Kekunci untuk memilih slot ke-3 dalam hotbar.\n"
-"Lihat http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4200,8 +4277,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Kekunci untuk menogol autopergerakan.\n"
-"Lihat http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4260,8 +4337,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Kekunci untuk menogol mod terbang pic.\n"
-"Lihat http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4281,8 +4358,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Kekunci untuk menogol paparan sembang.\n"
-"Lihat http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4301,8 +4378,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Kekunci untuk menogol paparan kabut.\n"
-"Lihat http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5096,10 +5173,6 @@ msgid "Number of parallax occlusion iterations."
 msgstr "Jumlah lelaran oklusi paralaks."
 
 #: src/settings_translation_file.cpp
-msgid "Offset"
-msgstr "Ofset"
-
-#: src/settings_translation_file.cpp
 msgid "Opaque liquids"
 msgstr "Cecair legap"
 
@@ -5318,8 +5391,8 @@ msgid ""
 "csm_restriction_noderange)"
 msgstr ""
 "Hadkan akses sesetengah fungsi pihak klien di pelayan\n"
-"Gabungkan bendera bait di bawah ini untuk mengehadkan ciri-ciri pihak klien:"
-"\n"
+"Gabungkan bendera bait di bawah ini untuk mengehadkan ciri-ciri pihak "
+"klien:\n"
 "LOAD_CLIENT_MODS: 1 (melumpuhkan pemuatan mods klien)\n"
 "CHAT_MESSAGES: 2 (melumpuhkan panggilan send_chat_message pihak klien)\n"
 "READ_ITEMDEFS: 4 (melumpuhkan panggilan get_item_def pihak klien)\n"
@@ -5398,10 +5471,6 @@ msgstr "Simpan saiz tetingkap secara automatik ketika diubah."
 #: src/settings_translation_file.cpp
 msgid "Saving map received from server"
 msgstr "Simpan peta diterima dari pelayan permainan"
-
-#: src/settings_translation_file.cpp
-msgid "Scale"
-msgstr "Skala"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5654,12 +5723,12 @@ msgid ""
 "Altering this value is for special usage, leaving it unchanged is\n"
 "recommended."
 msgstr ""
-"Saiz potongan peta dijana oleh janapeta, dinyatakan dalam blokpeta (16 nod)."
-"\n"
+"Saiz potongan peta dijana oleh janapeta, dinyatakan dalam blokpeta (16 "
+"nod).\n"
 "AMARAN!: Tiada manfaat, dan terdapatnya bahaya, jika menaikkan nilai ini di "
 "atas 5.\n"
-"Mengurangkan nilai ini meningkatkan ketumpatan gua dan kurungan bawah tanah."
-"\n"
+"Mengurangkan nilai ini meningkatkan ketumpatan gua dan kurungan bawah "
+"tanah.\n"
 "Mengubah nilai ini untuk kegunaan istimewa, lebih baik biarkan ia tidak "
 "berubah."
 
@@ -6022,7 +6091,8 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Time of day when a new world is started, in millihours (0-23999)."
-msgstr "Waktu dalam hari apabila dunia baru dimulakan, dalam milijam (0-23999)."
+msgstr ""
+"Waktu dalam hari apabila dunia baru dimulakan, dalam milijam (0-23999)."
 
 #: src/settings_translation_file.cpp
 msgid "Time send interval"
@@ -6361,8 +6431,8 @@ msgstr ""
 "tampak\n"
 "lebih tajam, tetapi memerlukan memori yang lebih banyak.  Nilai kuasa 2\n"
 "disyorkan.  Menetapkan nilai ini lebih tinggi dari 1 tidak akan menampakkan\n"
-"kesan yang nyata melainkan tapisan bilinear/trilinear/anisotropik dibolehkan."
-"\n"
+"kesan yang nyata melainkan tapisan bilinear/trilinear/anisotropik "
+"dibolehkan.\n"
 "Ini juga digunakan sebagai saiz tekstur nod asas untuk autopenyesuaian\n"
 "tekstur jajaran dunia."
 
@@ -6375,7 +6445,8 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Whether dungeons occasionally project from the terrain."
-msgstr "Sama ada kurungan bawah tanah kadang-kala terlunjur daripada rupa bumi."
+msgstr ""
+"Sama ada kurungan bawah tanah kadang-kala terlunjur daripada rupa bumi."
 
 #: src/settings_translation_file.cpp
 msgid "Whether node texture animations should be desynchronized per mapblock."
@@ -6531,154 +6602,247 @@ msgstr "Had cURL selari"
 msgid "cURL timeout"
 msgstr "Had masa cURL"
 
-#~ msgid "PA1"
-#~ msgstr "Butang PA1"
+#~ msgid "Disable MP"
+#~ msgstr "Melumpuhkan MP"
 
-#~ msgid "ExSel"
-#~ msgstr "Butang ExSel"
+#~ msgid "Enable MP"
+#~ msgstr "Membolehkan MP"
 
-#~ msgid "CrSel"
-#~ msgstr "Butang CrSel"
+#~ msgid "No worldname given or no game selected"
+#~ msgstr "Nama dunia tidak diberi atau tiada permainan dipilih"
 
-#~ msgid "Attn"
-#~ msgstr "Butang Attn"
+#~ msgid "\"$1\" is not a valid flag."
+#~ msgstr "\"$1\" bukanlah bendera yang sah."
 
-#~ msgid "Plus"
-#~ msgstr "Plus"
-
-#~ msgid "Period"
-#~ msgstr "Noktah"
-
-#~ msgid "Minus"
-#~ msgstr "Minus"
-
-#~ msgid "Comma"
-#~ msgstr "Koma"
-
-#~ msgid "Kanji"
-#~ msgstr "Butang Kanji"
-
-#~ msgid "Junja"
-#~ msgstr "Butang Junja"
-
-#~ msgid "Final"
-#~ msgstr "Butang Final"
-
-#~ msgid "Kana"
-#~ msgstr "Butang Kana"
-
-#~ msgid "Capital"
-#~ msgstr "Butang Caps Lock"
-
-#~ msgid "Hide mp content"
-#~ msgstr ""
-#~ "Sembunyikan\n"
-#~ "Kandungan MP"
-
-#~ msgid "Y-level of higher (cliff-top) terrain."
-#~ msgstr "Aras Y untuk rupa bumi (atas cenuram) yang lebih tinggi."
+#~ msgid "Format is 3 numbers separated by commas and inside brackets."
+#~ msgstr "Formatnya ialah 3 nombor dalam kurungan dipisahkan dengan koma."
 
 #~ msgid ""
-#~ "Whether to support older servers before protocol version 25.\n"
-#~ "Enable if you want to connect to 0.4.12 servers and before.\n"
-#~ "Servers starting with 0.4.13 will work, 0.4.12-dev servers may work.\n"
-#~ "Disabling this option will protect your password better."
+#~ "Format: <offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>), <seed>, "
+#~ "<octaves>, <persistence>"
 #~ msgstr ""
-#~ "Pilihan untuk menyokong pelayan permainan lama sebelum protokol versi "
-#~ "25.\n"
-#~ "Bolehkan pilihan jika anda ingin sambung ke pelayan permainan 0.4.12 dan "
-#~ "sebelumnya.\n"
-#~ "Pelayan 0.4.13 ke atas akan berjaya sambung, pelayan 0.4.12-dev mungkin "
-#~ "boleh sambung.\n"
-#~ "Lumpuhkan pilihan ini akan melindungi kata laluan anda dengan lebih baik."
+#~ "Format: <ofset>, <skala>, (<sebarX>, <sebarY>, <sebarZ>), <benih>, "
+#~ "<oktaf>, <penerusan>"
 
-#~ msgid "Water Features"
-#~ msgstr "Ciri-ciri Air"
+#~ msgid "Optionally the lacunarity can be appended with a leading comma."
+#~ msgstr "Anda juga boleh tambah lakunariti dengan koma pelopor."
 
-#~ msgid "Valleys C Flags"
-#~ msgstr "Bendera C Lembah"
+#~ msgid "Please enter a comma seperated list of flags."
+#~ msgstr "Sila masukkan senarai bendera dipisahkan dengan koma."
+
+#~ msgid "Possible values are: "
+#~ msgstr "Nilai yang boleh digunakan: "
+
+#~ msgid "Select path"
+#~ msgstr "Pilih laluan"
+
+#~ msgid "Subgame Mods"
+#~ msgstr "Mods Subpermainan"
+
+#~ msgid "Page $1 of $2"
+#~ msgstr "Ms. $1 drpd $2"
+
+#~ msgid "Rating"
+#~ msgstr "Rating"
+
+#~ msgid "Shortname:"
+#~ msgstr "Nama Singkat:"
+
+#~ msgid "Successfully installed:"
+#~ msgstr "Berjaya dipasang:"
+
+#~ msgid "Unsorted"
+#~ msgstr "Tidak bersusun"
+
+#~ msgid "re-Install"
+#~ msgstr "Pasang Semula"
+
+#~ msgid "Local Game"
+#~ msgstr "Permainan Tempatan"
+
+#~ msgid "Uninstall selected modpack"
+#~ msgstr "Nyahpasangkan pek mods yang dipilih"
+
+#~ msgid "Play Online"
+#~ msgstr "Main Dalam Talian"
+
+#~ msgid "Normal Mapping"
+#~ msgstr "Pemetaan Biasa"
+
+#~ msgid "No information available"
+#~ msgstr "Tiada maklumat tersedia"
+
+#~ msgid "Volume changed to 0%"
+#~ msgstr "Kekuatan bunyi diubah kepada 0%"
+
+#~ msgid "Volume changed to 100%"
+#~ msgstr "Kekuatan bunyi diubah kepada 100%"
+
+#~ msgid "Print stacks"
+#~ msgstr "Tindanan Cetak"
+
+#~ msgid "Use"
+#~ msgstr "Guna"
+
+#~ msgid "Next"
+#~ msgstr "Bawah Halaman (PgDn)"
+
+#~ msgid "Prior"
+#~ msgstr "Atas Halaman (PgUp)"
+
+#~ msgid "Active Block Modifier interval"
+#~ msgstr "Selang masa pengubah blok aktif"
 
 #~ msgid ""
-#~ "Use mip mapping to scale textures. May slightly increase performance."
+#~ "Android systems only: Tries to create inventory textures from meshes\n"
+#~ "when no supported render was found."
 #~ msgstr ""
-#~ "Gunakan pemetaan Mip untuk menyesuaikan tekstur. Mungkin boleh "
-#~ "meningkatkan prestasi sedikit."
-
-#~ msgid "Use key"
-#~ msgstr "Kekunci guna"
-
-#~ msgid "The rendering back-end for Irrlicht."
-#~ msgstr "Penerjemahan bahagian belakang untuk Irrlicht."
-
-#~ msgid "The altitude at which temperature drops by 20C"
-#~ msgstr "Ketinggian di mana suhu jatuh sebanyak 20C"
-
-#~ msgid "Support older servers"
-#~ msgstr "Sokong pelayan permainan lama"
+#~ "Sistem Android sahaja: Cuba untuk mencipta tekstur inventori daripada\n"
+#~ "jejaring apabila tiada penerjemahan yang disokong dijumpai."
 
 #~ msgid ""
-#~ "Size of chunks to be generated at once by mapgen, stated in mapblocks (16 "
-#~ "nodes)."
+#~ "Announce to this serverlist.\n"
+#~ "If you want to announce your ipv6 address, use  serverlist_url = v6."
+#~ "servers.minetest.net."
 #~ msgstr ""
-#~ "Saiz ketulan untuk dijana serentak oleh janapeta, dinyatakan dalam unit "
+#~ "Umumkan ke senarai pelayan ini.\n"
+#~ "Jika anda ingin umumkan alamat IPv6 anda, gunakan serverlist_url = v6."
+#~ "servers.minetest.net."
+
+#~ msgid "Approximate (X,Y,Z) scale of fractal in nodes."
+#~ msgstr "Skala anggaran (X,Y,Z) fraktal dalam nod."
+
+#~ msgid "Autorun key"
+#~ msgstr "Kekunci berlari auto"
+
+#~ msgid "Caves and tunnels form at the intersection of the two noises"
+#~ msgstr "Gua dan terowong yang terbentuk di persimpangan dua hingar"
+
+#~ msgid "Cloud height"
+#~ msgstr "Tinggi awan"
+
+#~ msgid "Console key"
+#~ msgstr "Kekunci konsol"
+
+#~ msgid "Continuous forward movement (only used for testing)."
+#~ msgstr "Sentiasa bergerak ke depan tanpa henti (hanya untuk percubaan)."
+
+#~ msgid ""
+#~ "Creates unpredictable lava features in caves.\n"
+#~ "These can make mining difficult. Zero disables them. (0-10)"
+#~ msgstr ""
+#~ "Mencipta ciri lava yang tidak dapat diramal di dalam gua.\n"
+#~ "Ini boleh menyukarkan penggalian. Kosong melumpuhkan tetapan ini. (0-10)"
+
+#~ msgid ""
+#~ "Creates unpredictable water features in caves.\n"
+#~ "These can make mining difficult. Zero disables them. (0-10)"
+#~ msgstr ""
+#~ "Mencipta ciri air yang tidak dapat diramal di dalam gua.\n"
+#~ "Ini boleh menyukarkan penggalian. Kosong melumpuhkan tetapan ini. (0-10)"
+
+#~ msgid "Crouch speed"
+#~ msgstr "Kelajuan mendekam"
+
+#~ msgid "Depth below which you'll find massive caves."
+#~ msgstr "Kedalaman di mana anda akan mula jumpa banyak gua."
+
+#~ msgid "Descending speed"
+#~ msgstr "Kelajuan turun"
+
+#~ msgid "Disable escape sequences"
+#~ msgstr "Melumpuhkan jujukan lepas"
+
+#~ msgid ""
+#~ "Disable escape sequences, e.g. chat coloring.\n"
+#~ "Use this if you want to run a server with pre-0.4.14 clients and you want "
+#~ "to disable\n"
+#~ "the escape sequences generated by mods."
+#~ msgstr ""
+#~ "Melumpuhkan jujukan lepas (escape sequences), cth: pewarnaan sembang.\n"
+#~ "Gunakan ini jika anda ingin menjalankan pelayan dengan klien sebelum "
+#~ "0.4.14 dan\n"
+#~ "anda ingin melumpuhkan jujukan lepas yang dijana oleh mods."
+
+#~ msgid "Enable view bobbing"
+#~ msgstr "Membolehkan apungan pandang"
+
+#~ msgid "Enables view bobbing when walking."
+#~ msgstr "Membolehkan apungan pandang ketika berjalan."
+
+#~ msgid "Field of view for zoom"
+#~ msgstr "Medan pandang untuk zum"
+
+#~ msgid ""
+#~ "Field of view while zooming in degrees.\n"
+#~ "This requires the \"zoom\" privilege on the server."
+#~ msgstr ""
+#~ "Medan pandang apabila mengezum, dalam darjah sudut.\n"
+#~ "Ini memerlukan keistimewaan \"zum\" dalam pelayan."
+
+#~ msgid ""
+#~ "From how far clients know about objects, stated in mapblocks (16 nodes)."
+#~ msgstr ""
+#~ "Sejauh manakah klien dapat tahu mengenai objek, dinyatakan dalam unit "
 #~ "blokpeta (16 nod)."
 
-#~ msgid "River noise -- rivers occur close to zero"
-#~ msgstr "Hingar sungai -- sungai terjadi dekat dengan nilai kosong"
+#~ msgid "General"
+#~ msgstr "Umum"
+
+#~ msgid "Height on which clouds are appearing."
+#~ msgstr "Ketinggian di mana awan muncul."
 
 #~ msgid ""
-#~ "Name of map generator to be used when creating a new world.\n"
-#~ "Creating a world in the main menu will override this."
+#~ "How large area of blocks are subject to the active block stuff, stated in "
+#~ "mapblocks (16 nodes).\n"
+#~ "In active blocks objects are loaded and ABMs run."
 #~ msgstr ""
-#~ "Nama penjana peta yang akan digunakan apabila mencipta dunia baru.\n"
-#~ "Mencipta dunia baru melalui menu utama akan mengatasi tetapan ini."
+#~ "Berapa luas kawasan blok-blok yang tertakluk kepada barangan blok aktif, "
+#~ "dinyatakan dalam unit blokpeta (16 nod).\n"
+#~ "Dalam blok aktif, objek akan dimuatkan dan ABM akan berjalan."
 
-#~ msgid "Modstore mods list URL"
-#~ msgstr "Kedai Mods: URL senarai mods"
-
-#~ msgid "Modstore download URL"
-#~ msgstr "Kedai Mods: URL muat turun"
-
-#~ msgid "Modstore details URL"
-#~ msgstr "Kedai Mods: URL perincian"
-
-#~ msgid "Maximum simultaneous block sends total"
-#~ msgstr "Jumlah maksimum kesemua blok yang dihantar serentak"
-
-#~ msgid "Maximum number of blocks that are simultaneously sent per client."
+#~ msgid "If enabled, show the server status message on player connection."
 #~ msgstr ""
-#~ "Jumlah maksimum untuk blok-blok yang dihantar serentak kepada setiap "
-#~ "klien."
+#~ "Jika dibolehkan, tunjukkan mesej status pelayan ketika pemain berjaya "
+#~ "menyambung."
 
-#~ msgid "Maximum number of blocks that are simultaneously sent in total."
-#~ msgstr ""
-#~ "Jumlah maksimum kesemua blok-blok yang boleh dihantar serentak dari "
-#~ "pelayan."
-
-#~ msgid "Massive caves form here."
-#~ msgstr "Banyak gua terbentuk di sini."
-
-#~ msgid "Massive cave noise"
-#~ msgstr "Hingar gua raksasa"
-
-#~ msgid "Massive cave depth"
-#~ msgstr "Kedalaman gua raksasa"
+#~ msgid "Inventory image hack"
+#~ msgstr "Godaman imej inventori"
 
 #~ msgid ""
-#~ "Map generation attributes specific to Mapgen v7.\n"
-#~ "The 'ridges' flag enables the rivers.\n"
-#~ "Floatlands are currently experimental and subject to change.\n"
-#~ "Flags that are not specified in the flag string are not modified from the "
-#~ "default.\n"
-#~ "Flags starting with 'no' are used to explicitly disable them."
+#~ "Iterations of the recursive function.\n"
+#~ "Controls the amount of fine detail."
 #~ msgstr ""
-#~ "Atribut penjanaan peta khusus untuk janapeta v7.\n"
-#~ "Bendera 'ridges' membolehkan sungai-sungai dijana.\n"
-#~ "Tanah terapung masih dalam ujikaji ketika ini dan mungkin berubah.\n"
-#~ "Bendera yang tidak dinyatakan dalam rentetan bendera tidak diubah "
-#~ "daripada nilai lalai.\n"
-#~ "Bendera bermula dengan 'no' digunakan untuk betul-betul melumpuhkan "
-#~ "mereka."
+#~ "Lelaran fungsi rekursif.\n"
+#~ "Mengawal jumlah perincian halus."
+
+#~ msgid ""
+#~ "Key for opening the chat console.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Kekunci untuk membuka konsol sembang.\n"
+#~ "Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for printing debug stacks. Used for development.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Kekunci untuk mencetak tindanan nyahpepijat. Digunakan untuk "
+#~ "pembangunan.\n"
+#~ "Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid "Lava Features"
+#~ msgstr "Ciri-Ciri Lava"
+
+#~ msgid "Main menu game manager"
+#~ msgstr "Pengurus permainan menu utama"
+
+#~ msgid "Main menu mod manager"
+#~ msgstr "Pengurus mods menu utama"
 
 #~ msgid ""
 #~ "Map generation attributes specific to Mapgen Valleys.\n"
@@ -6702,244 +6866,157 @@ msgstr "Had masa cURL"
 #~ "Bendera bermula dengan 'no' digunakan untuk betul-betul melumpuhkan "
 #~ "mereka."
 
-#~ msgid "Main menu mod manager"
-#~ msgstr "Pengurus mods menu utama"
+#~ msgid ""
+#~ "Map generation attributes specific to Mapgen v7.\n"
+#~ "The 'ridges' flag enables the rivers.\n"
+#~ "Floatlands are currently experimental and subject to change.\n"
+#~ "Flags that are not specified in the flag string are not modified from the "
+#~ "default.\n"
+#~ "Flags starting with 'no' are used to explicitly disable them."
+#~ msgstr ""
+#~ "Atribut penjanaan peta khusus untuk janapeta v7.\n"
+#~ "Bendera 'ridges' membolehkan sungai-sungai dijana.\n"
+#~ "Tanah terapung masih dalam ujikaji ketika ini dan mungkin berubah.\n"
+#~ "Bendera yang tidak dinyatakan dalam rentetan bendera tidak diubah "
+#~ "daripada nilai lalai.\n"
+#~ "Bendera bermula dengan 'no' digunakan untuk betul-betul melumpuhkan "
+#~ "mereka."
 
-#~ msgid "Main menu game manager"
-#~ msgstr "Pengurus permainan menu utama"
+#~ msgid "Massive cave depth"
+#~ msgstr "Kedalaman gua raksasa"
 
-#~ msgid "Lava Features"
-#~ msgstr "Ciri-Ciri Lava"
+#~ msgid "Massive cave noise"
+#~ msgstr "Hingar gua raksasa"
+
+#~ msgid "Massive caves form here."
+#~ msgstr "Banyak gua terbentuk di sini."
+
+#~ msgid "Maximum number of blocks that are simultaneously sent in total."
+#~ msgstr ""
+#~ "Jumlah maksimum kesemua blok-blok yang boleh dihantar serentak dari "
+#~ "pelayan."
+
+#~ msgid "Maximum number of blocks that are simultaneously sent per client."
+#~ msgstr ""
+#~ "Jumlah maksimum untuk blok-blok yang dihantar serentak kepada setiap "
+#~ "klien."
+
+#~ msgid "Maximum simultaneous block sends total"
+#~ msgstr "Jumlah maksimum kesemua blok yang dihantar serentak"
+
+#~ msgid "Modstore details URL"
+#~ msgstr "Kedai Mods: URL perincian"
+
+#~ msgid "Modstore download URL"
+#~ msgstr "Kedai Mods: URL muat turun"
+
+#~ msgid "Modstore mods list URL"
+#~ msgstr "Kedai Mods: URL senarai mods"
 
 #~ msgid ""
-#~ "Key for printing debug stacks. Used for development.\n"
-#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
-#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ "Name of map generator to be used when creating a new world.\n"
+#~ "Creating a world in the main menu will override this."
 #~ msgstr ""
-#~ "Kekunci untuk mencetak tindanan nyahpepijat. Digunakan untuk "
-#~ "pembangunan.\n"
-#~ "Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
-#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ "Nama penjana peta yang akan digunakan apabila mencipta dunia baru.\n"
+#~ "Mencipta dunia baru melalui menu utama akan mengatasi tetapan ini."
+
+#~ msgid "River noise -- rivers occur close to zero"
+#~ msgstr "Hingar sungai -- sungai terjadi dekat dengan nilai kosong"
 
 #~ msgid ""
-#~ "Key for opening the chat console.\n"
-#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
-#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ "Size of chunks to be generated at once by mapgen, stated in mapblocks (16 "
+#~ "nodes)."
 #~ msgstr ""
-#~ "Kekunci untuk membuka konsol sembang.\n"
-#~ "Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
-#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#~ msgid ""
-#~ "Iterations of the recursive function.\n"
-#~ "Controls the amount of fine detail."
-#~ msgstr ""
-#~ "Lelaran fungsi rekursif.\n"
-#~ "Mengawal jumlah perincian halus."
-
-#~ msgid "Inventory image hack"
-#~ msgstr "Godaman imej inventori"
-
-#~ msgid "If enabled, show the server status message on player connection."
-#~ msgstr ""
-#~ "Jika dibolehkan, tunjukkan mesej status pelayan ketika pemain berjaya "
-#~ "menyambung."
-
-#~ msgid ""
-#~ "How large area of blocks are subject to the active block stuff, stated in "
-#~ "mapblocks (16 nodes).\n"
-#~ "In active blocks objects are loaded and ABMs run."
-#~ msgstr ""
-#~ "Berapa luas kawasan blok-blok yang tertakluk kepada barangan blok aktif, "
-#~ "dinyatakan dalam unit blokpeta (16 nod).\n"
-#~ "Dalam blok aktif, objek akan dimuatkan dan ABM akan berjalan."
-
-#~ msgid "Height on which clouds are appearing."
-#~ msgstr "Ketinggian di mana awan muncul."
-
-#~ msgid "General"
-#~ msgstr "Umum"
-
-#~ msgid ""
-#~ "From how far clients know about objects, stated in mapblocks (16 nodes)."
-#~ msgstr ""
-#~ "Sejauh manakah klien dapat tahu mengenai objek, dinyatakan dalam unit "
+#~ "Saiz ketulan untuk dijana serentak oleh janapeta, dinyatakan dalam unit "
 #~ "blokpeta (16 nod)."
 
-#~ msgid ""
-#~ "Field of view while zooming in degrees.\n"
-#~ "This requires the \"zoom\" privilege on the server."
-#~ msgstr ""
-#~ "Medan pandang apabila mengezum, dalam darjah sudut.\n"
-#~ "Ini memerlukan keistimewaan \"zum\" dalam pelayan."
+#~ msgid "Support older servers"
+#~ msgstr "Sokong pelayan permainan lama"
 
-#~ msgid "Field of view for zoom"
-#~ msgstr "Medan pandang untuk zum"
+#~ msgid "The altitude at which temperature drops by 20C"
+#~ msgstr "Ketinggian di mana suhu jatuh sebanyak 20C"
 
-#~ msgid "Enables view bobbing when walking."
-#~ msgstr "Membolehkan apungan pandang ketika berjalan."
+#~ msgid "The rendering back-end for Irrlicht."
+#~ msgstr "Penerjemahan bahagian belakang untuk Irrlicht."
 
-#~ msgid "Enable view bobbing"
-#~ msgstr "Membolehkan apungan pandang"
+#~ msgid "Use key"
+#~ msgstr "Kekunci guna"
 
 #~ msgid ""
-#~ "Disable escape sequences, e.g. chat coloring.\n"
-#~ "Use this if you want to run a server with pre-0.4.14 clients and you want "
-#~ "to disable\n"
-#~ "the escape sequences generated by mods."
+#~ "Use mip mapping to scale textures. May slightly increase performance."
 #~ msgstr ""
-#~ "Melumpuhkan jujukan lepas (escape sequences), cth: pewarnaan sembang.\n"
-#~ "Gunakan ini jika anda ingin menjalankan pelayan dengan klien sebelum "
-#~ "0.4.14 dan\n"
-#~ "anda ingin melumpuhkan jujukan lepas yang dijana oleh mods."
+#~ "Gunakan pemetaan Mip untuk menyesuaikan tekstur. Mungkin boleh "
+#~ "meningkatkan prestasi sedikit."
 
-#~ msgid "Disable escape sequences"
-#~ msgstr "Melumpuhkan jujukan lepas"
+#~ msgid "Valleys C Flags"
+#~ msgstr "Bendera C Lembah"
 
-#~ msgid "Descending speed"
-#~ msgstr "Kelajuan turun"
-
-#~ msgid "Depth below which you'll find massive caves."
-#~ msgstr "Kedalaman di mana anda akan mula jumpa banyak gua."
-
-#~ msgid "Crouch speed"
-#~ msgstr "Kelajuan mendekam"
+#~ msgid "Water Features"
+#~ msgstr "Ciri-ciri Air"
 
 #~ msgid ""
-#~ "Creates unpredictable water features in caves.\n"
-#~ "These can make mining difficult. Zero disables them. (0-10)"
+#~ "Whether to support older servers before protocol version 25.\n"
+#~ "Enable if you want to connect to 0.4.12 servers and before.\n"
+#~ "Servers starting with 0.4.13 will work, 0.4.12-dev servers may work.\n"
+#~ "Disabling this option will protect your password better."
 #~ msgstr ""
-#~ "Mencipta ciri air yang tidak dapat diramal di dalam gua.\n"
-#~ "Ini boleh menyukarkan penggalian. Kosong melumpuhkan tetapan ini. (0-10)"
+#~ "Pilihan untuk menyokong pelayan permainan lama sebelum protokol versi "
+#~ "25.\n"
+#~ "Bolehkan pilihan jika anda ingin sambung ke pelayan permainan 0.4.12 dan "
+#~ "sebelumnya.\n"
+#~ "Pelayan 0.4.13 ke atas akan berjaya sambung, pelayan 0.4.12-dev mungkin "
+#~ "boleh sambung.\n"
+#~ "Lumpuhkan pilihan ini akan melindungi kata laluan anda dengan lebih baik."
 
-#~ msgid ""
-#~ "Creates unpredictable lava features in caves.\n"
-#~ "These can make mining difficult. Zero disables them. (0-10)"
+#~ msgid "Y-level of higher (cliff-top) terrain."
+#~ msgstr "Aras Y untuk rupa bumi (atas cenuram) yang lebih tinggi."
+
+#~ msgid "Hide mp content"
 #~ msgstr ""
-#~ "Mencipta ciri lava yang tidak dapat diramal di dalam gua.\n"
-#~ "Ini boleh menyukarkan penggalian. Kosong melumpuhkan tetapan ini. (0-10)"
+#~ "Sembunyikan\n"
+#~ "Kandungan MP"
 
-#~ msgid "Continuous forward movement (only used for testing)."
-#~ msgstr "Sentiasa bergerak ke depan tanpa henti (hanya untuk percubaan)."
+#~ msgid "Capital"
+#~ msgstr "Butang Caps Lock"
 
-#~ msgid "Console key"
-#~ msgstr "Kekunci konsol"
+#~ msgid "Kana"
+#~ msgstr "Butang Kana"
 
-#~ msgid "Cloud height"
-#~ msgstr "Tinggi awan"
+#~ msgid "Final"
+#~ msgstr "Butang Final"
 
-#~ msgid "Caves and tunnels form at the intersection of the two noises"
-#~ msgstr "Gua dan terowong yang terbentuk di persimpangan dua hingar"
+#~ msgid "Junja"
+#~ msgstr "Butang Junja"
 
-#~ msgid "Autorun key"
-#~ msgstr "Kekunci berlari auto"
+#~ msgid "Kanji"
+#~ msgstr "Butang Kanji"
 
-#~ msgid "Approximate (X,Y,Z) scale of fractal in nodes."
-#~ msgstr "Skala anggaran (X,Y,Z) fraktal dalam nod."
+#~ msgid "Comma"
+#~ msgstr "Koma"
 
-#~ msgid ""
-#~ "Announce to this serverlist.\n"
-#~ "If you want to announce your ipv6 address, use  serverlist_url = v6."
-#~ "servers.minetest.net."
-#~ msgstr ""
-#~ "Umumkan ke senarai pelayan ini.\n"
-#~ "Jika anda ingin umumkan alamat IPv6 anda, gunakan serverlist_url = v6."
-#~ "servers.minetest.net."
+#~ msgid "Minus"
+#~ msgstr "Minus"
 
-#~ msgid ""
-#~ "Android systems only: Tries to create inventory textures from meshes\n"
-#~ "when no supported render was found."
-#~ msgstr ""
-#~ "Sistem Android sahaja: Cuba untuk mencipta tekstur inventori daripada\n"
-#~ "jejaring apabila tiada penerjemahan yang disokong dijumpai."
+#~ msgid "Period"
+#~ msgstr "Noktah"
 
-#~ msgid "Active Block Modifier interval"
-#~ msgstr "Selang masa pengubah blok aktif"
+#~ msgid "Plus"
+#~ msgstr "Plus"
 
-#~ msgid "Prior"
-#~ msgstr "Atas Halaman (PgUp)"
+#~ msgid "Attn"
+#~ msgstr "Butang Attn"
 
-#~ msgid "Next"
-#~ msgstr "Bawah Halaman (PgDn)"
+#~ msgid "CrSel"
+#~ msgstr "Butang CrSel"
 
-#~ msgid "Use"
-#~ msgstr "Guna"
+#~ msgid "ExSel"
+#~ msgstr "Butang ExSel"
 
-#~ msgid "Print stacks"
-#~ msgstr "Tindanan Cetak"
+#~ msgid "PA1"
+#~ msgstr "Butang PA1"
 
-#~ msgid "Volume changed to 100%"
-#~ msgstr "Kekuatan bunyi diubah kepada 100%"
+#~ msgid "Advanced Settings"
+#~ msgstr "Tetapan Mendalam"
 
-#~ msgid "Volume changed to 0%"
-#~ msgstr "Kekuatan bunyi diubah kepada 0%"
-
-#~ msgid "No information available"
-#~ msgstr "Tiada maklumat tersedia"
-
-#~ msgid "Normal Mapping"
-#~ msgstr "Pemetaan Biasa"
-
-#~ msgid "Play Online"
-#~ msgstr "Main Dalam Talian"
-
-#~ msgid "Uninstall selected modpack"
-#~ msgstr "Nyahpasangkan pek mods yang dipilih"
-
-#~ msgid "Local Game"
-#~ msgstr "Permainan Tempatan"
-
-#~ msgid "re-Install"
-#~ msgstr "Pasang Semula"
-
-#~ msgid "Unsorted"
-#~ msgstr "Tidak bersusun"
-
-#~ msgid "Successfully installed:"
-#~ msgstr "Berjaya dipasang:"
-
-#~ msgid "Shortname:"
-#~ msgstr "Nama Singkat:"
-
-#~ msgid "Rating"
-#~ msgstr "Rating"
-
-#~ msgid "Page $1 of $2"
-#~ msgstr "Ms. $1 drpd $2"
-
-#~ msgid "Subgame Mods"
-#~ msgstr "Mods Subpermainan"
-
-#~ msgid "Select path"
-#~ msgstr "Pilih laluan"
-
-#~ msgid "Possible values are: "
-#~ msgstr "Nilai yang boleh digunakan: "
-
-#~ msgid "Please enter a comma seperated list of flags."
-#~ msgstr "Sila masukkan senarai bendera dipisahkan dengan koma."
-
-#~ msgid "Optionally the lacunarity can be appended with a leading comma."
-#~ msgstr "Anda juga boleh tambah lakunariti dengan koma pelopor."
-
-#~ msgid ""
-#~ "Format: <offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>), <seed>, "
-#~ "<octaves>, <persistence>"
-#~ msgstr ""
-#~ "Format: <ofset>, <skala>, (<sebarX>, <sebarY>, <sebarZ>), <benih>, "
-#~ "<oktaf>, <penerusan>"
-
-#~ msgid "Format is 3 numbers separated by commas and inside brackets."
-#~ msgstr "Formatnya ialah 3 nombor dalam kurungan dipisahkan dengan koma."
-
-#~ msgid "\"$1\" is not a valid flag."
-#~ msgstr "\"$1\" bukanlah bendera yang sah."
-
-#~ msgid "No worldname given or no game selected"
-#~ msgstr "Nama dunia tidak diberi atau tiada permainan dipilih"
-
-#~ msgid "Enable MP"
-#~ msgstr "Membolehkan MP"
-
-#~ msgid "Disable MP"
-#~ msgstr "Melumpuhkan MP"
+#~ msgid "View"
+#~ msgstr "Lihat"

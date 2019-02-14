@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-01-12 13:07+0200\n"
+"POT-Creation-Date: 2019-02-14 07:46+0100\n"
 "PO-Revision-Date: 2019-02-13 13:11+0000\n"
 "Last-Translator: Allan Nordhøy <epost@anotheragency.no>\n"
 "Language-Team: Norwegian Bokmål <https://hosted.weblate.org/projects/"
@@ -23,11 +23,13 @@ msgid "You died"
 msgstr "Du døde"
 
 #: builtin/fstk/ui.lua
-msgid "An error occured in a Lua script, such as a mod:"
+#, fuzzy
+msgid "An error occurred in a Lua script, such as a mod:"
 msgstr "Det skjedde en feil i et Lua-skriptet, f.eks. en mod:"
 
 #: builtin/fstk/ui.lua
-msgid "An error occured:"
+#, fuzzy
+msgid "An error occurred:"
 msgstr "Det skjedde en feil:"
 
 #: builtin/fstk/ui.lua
@@ -107,9 +109,10 @@ msgid "Enable modpack"
 msgstr "Aktiver modpakken"
 
 #: builtin/mainmenu/dlg_config_world.lua
+#, fuzzy
 msgid ""
 "Failed to enable mod \"$1\" as it contains disallowed characters. Only "
-"chararacters [a-z0-9_] are allowed."
+"characters [a-z0-9_] are allowed."
 msgstr ""
 "Kunne ikke aktivere mod \"$1\" fordi  den inneholder ulovlige tegn. Kun "
 "symbolene [a-z0-9_] er tillatt."
@@ -179,6 +182,10 @@ msgid "Mods"
 msgstr "Modder"
 
 #: builtin/mainmenu/dlg_contentstore.lua
+msgid "No packages could be retrieved"
+msgstr ""
+
+#: builtin/mainmenu/dlg_contentstore.lua
 msgid "No results"
 msgstr "Resultatløst"
 
@@ -199,10 +206,6 @@ msgstr "Avinstaller"
 msgid "Update"
 msgstr "Oppdater"
 
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "View"
-msgstr "Vis"
-
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "A world named \"$1\" already exists"
 msgstr "En verden med navn \"$1\" eksisterer allerede"
@@ -212,7 +215,8 @@ msgid "Create"
 msgstr "Opprett"
 
 #: builtin/mainmenu/dlg_create_world.lua
-msgid "Download a game, such as minetest_game, from minetest.net"
+#, fuzzy
+msgid "Download a game, such as Minetest Game, from minetest.net"
 msgstr "Last ned et spill, for eksempel minetest_game, fra minetest.net"
 
 #: builtin/mainmenu/dlg_create_world.lua
@@ -232,6 +236,7 @@ msgid "No game selected"
 msgstr "Intet spill valgt"
 
 #: builtin/mainmenu/dlg_create_world.lua
+#: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Seed"
 msgstr "Seed"
 
@@ -277,9 +282,20 @@ msgstr "Godta"
 msgid "Rename Modpack:"
 msgstr "Gi et nytt navn til modpaken:"
 
+#: builtin/mainmenu/dlg_rename_modpack.lua
+msgid ""
+"This modpack has an explicit name given in its modpack.conf which will "
+"override any renaming here."
+msgstr ""
+
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "(No description of setting given)"
 msgstr "(Ingen beskrivelse av gitt)"
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+#, fuzzy
+msgid "2D Noise"
+msgstr "Grotte2-lyd"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "< Back to Settings page"
@@ -302,6 +318,22 @@ msgid "Enabled"
 msgstr "Aktivert"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "Lacunarity"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "Octaves"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua src/settings_translation_file.cpp
+msgid "Offset"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "Persistance"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Please enter a valid integer."
 msgstr "Vennligst angi et gyldig heltall."
 
@@ -312,6 +344,10 @@ msgstr "Vennligst angi et gydlig tall."
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Restore Default"
 msgstr "Gjenopprette standard"
+
+#: builtin/mainmenu/dlg_settings_advanced.lua src/settings_translation_file.cpp
+msgid "Scale"
+msgstr "Skala"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Select directory"
@@ -333,14 +369,51 @@ msgstr "Verdien må vøre minst $1."
 msgid "The value must not be larger than $1."
 msgstr "Verdien må ikke være større enn $1."
 
-#: builtin/mainmenu/pkgmgr.lua
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "X"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "X spread"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "Y"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "Y spread"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "Z"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "Z spread"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "absvalue"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
 #, fuzzy
-msgid " mods"
-msgstr "3D-modus"
+msgid "defaults"
+msgstr "Forvalgt spill"
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "eased"
+msgstr ""
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "$1 (Enabled)"
 msgstr "$1 (Aktivert)"
+
+#: builtin/mainmenu/pkgmgr.lua
+#, fuzzy
+msgid "$1 mods"
+msgstr "3D-modus"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Failed to install $1 to $2"
@@ -582,8 +655,9 @@ msgid "8x"
 msgstr "8x"
 
 #: builtin/mainmenu/tab_settings.lua
-msgid "Advanced Settings"
-msgstr "Avanserte innstillinger"
+#, fuzzy
+msgid "All Settings"
+msgstr "Innstillinger"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Antialiasing:"
@@ -4756,10 +4830,6 @@ msgid "Number of parallax occlusion iterations."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Offset"
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid "Opaque liquids"
 msgstr ""
 
@@ -5028,10 +5098,6 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Saving map received from server"
 msgstr "Lagre kart mottatt av tjener"
-
-#: src/settings_translation_file.cpp
-msgid "Scale"
-msgstr "Skala"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5960,107 +6026,20 @@ msgstr "Maksimal parallellisering i cURL"
 msgid "cURL timeout"
 msgstr "cURL-tidsgrense"
 
-#~ msgid "is required by:"
-#~ msgstr "trengs av:"
+#~ msgid "Disable MP"
+#~ msgstr "Fjern MP"
 
-#~ msgid "Configuration saved.  "
-#~ msgstr "Konfigurasjon lagret. "
+#~ msgid "Enable MP"
+#~ msgstr "Aktiver MP"
 
-#~ msgid ""
-#~ "Warning: Some configured mods are missing.\n"
-#~ "Their setting will be removed when you save the configuration.  "
-#~ msgstr ""
-#~ "Advarsel: Noen konfigurerte modifikasjoner mangler. \n"
-#~ "Instillingene deres vil bli fjernet når du lagrer konfigurasjonen."
+#~ msgid "No worldname given or no game selected"
+#~ msgstr "Mangler verdensnavn eller intet spill valgt"
 
-#~ msgid ""
-#~ "Warning: Some mods are not configured yet.\n"
-#~ "They will be enabled by default when you save the configuration.  "
-#~ msgstr ""
-#~ "Advarsel: Noen modifikasjoner er ikke konfigurert enda. \n"
-#~ "De vil bli aktivert som standard når du lagrer konfigurasjonen."
+#~ msgid "\"$1\" is not a valid flag."
+#~ msgstr "\"$1\" er ikke en gyldig flagge."
 
-#, fuzzy
-#~ msgid "If enabled, "
-#~ msgstr "aktivert"
-
-#~ msgid "Hide mp content"
-#~ msgstr "Skjul mp-innhold"
-
-#~ msgid "River noise -- rivers occur close to zero"
-#~ msgstr "Elvestøy -- elver dukker opp for verdier nær null"
-
-#~ msgid "General"
-#~ msgstr "Generelt"
-
-#~ msgid "Crouch speed"
-#~ msgstr "Smygehastighet"
-
-#~ msgid "Console key"
-#~ msgstr "Konsolltast"
-
-#~ msgid "Cloud height"
-#~ msgstr "Skyhøyde"
-
-#~ msgid "Prior"
-#~ msgstr "Foregående"
-
-#~ msgid "Next"
-#~ msgstr "Neste"
-
-#~ msgid "Use"
-#~ msgstr "Bruk"
-
-#~ msgid "Volume changed to 100%"
-#~ msgstr "Lydstyrke endret til 100%"
-
-#~ msgid "Volume changed to 0%"
-#~ msgstr "Lydstyrke endret til 0%"
-
-#~ msgid "No information available"
-#~ msgstr "Ingen informasjon tilgjengelig"
-
-#~ msgid "Normal Mapping"
-#~ msgstr "Normal tilknytning"
-
-#~ msgid "Play Online"
-#~ msgstr "Spill på nett"
-
-#~ msgid "Uninstall selected modpack"
-#~ msgstr "Avinstaller valgt modpakke"
-
-#~ msgid "Local Game"
-#~ msgstr "Lokalt spill"
-
-#~ msgid "re-Install"
-#~ msgstr "Reinstaller"
-
-#~ msgid "Unsorted"
-#~ msgstr "Usortert"
-
-#~ msgid "Successfully installed:"
-#~ msgstr "Installasjonen lyktes:"
-
-#~ msgid "Shortname:"
-#~ msgstr "Kortnavnet:"
-
-#~ msgid "Rating"
-#~ msgstr "Vurdering"
-
-#~ msgid "Page $1 of $2"
-#~ msgstr "Side $1 av $2"
-
-#~ msgid "Select path"
-#~ msgstr "Vis sti"
-
-#~ msgid "Possible values are: "
-#~ msgstr "Mulige verdier er: "
-
-#~ msgid "Please enter a comma seperated list of flags."
-#~ msgstr "Vennligst angi et komma separert liste av flagg."
-
-#~ msgid "Optionally the lacunarity can be appended with a leading comma."
-#~ msgstr "Lacunarity kan eventuelt legges med ledende komma."
+#~ msgid "Format is 3 numbers separated by commas and inside brackets."
+#~ msgstr "Formatet er 3 tall atskilt med komma og innenfor hakeparentesene."
 
 #~ msgid ""
 #~ "Format: <offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>), <seed>, "
@@ -6069,17 +6048,110 @@ msgstr "cURL-tidsgrense"
 #~ "Formattet: <forskyvning>, <skala>, (<spreX>, <spreY>, <spreZ>), <seed>, "
 #~ "<oktaver>, <utholdenhet>"
 
-#~ msgid "Format is 3 numbers separated by commas and inside brackets."
-#~ msgstr "Formatet er 3 tall atskilt med komma og innenfor hakeparentesene."
+#~ msgid "Optionally the lacunarity can be appended with a leading comma."
+#~ msgstr "Lacunarity kan eventuelt legges med ledende komma."
 
-#~ msgid "\"$1\" is not a valid flag."
-#~ msgstr "\"$1\" er ikke en gyldig flagge."
+#~ msgid "Please enter a comma seperated list of flags."
+#~ msgstr "Vennligst angi et komma separert liste av flagg."
 
-#~ msgid "No worldname given or no game selected"
-#~ msgstr "Mangler verdensnavn eller intet spill valgt"
+#~ msgid "Possible values are: "
+#~ msgstr "Mulige verdier er: "
 
-#~ msgid "Enable MP"
-#~ msgstr "Aktiver MP"
+#~ msgid "Select path"
+#~ msgstr "Vis sti"
 
-#~ msgid "Disable MP"
-#~ msgstr "Fjern MP"
+#~ msgid "Page $1 of $2"
+#~ msgstr "Side $1 av $2"
+
+#~ msgid "Rating"
+#~ msgstr "Vurdering"
+
+#~ msgid "Shortname:"
+#~ msgstr "Kortnavnet:"
+
+#~ msgid "Successfully installed:"
+#~ msgstr "Installasjonen lyktes:"
+
+#~ msgid "Unsorted"
+#~ msgstr "Usortert"
+
+#~ msgid "re-Install"
+#~ msgstr "Reinstaller"
+
+#~ msgid "Local Game"
+#~ msgstr "Lokalt spill"
+
+#~ msgid "Uninstall selected modpack"
+#~ msgstr "Avinstaller valgt modpakke"
+
+#~ msgid "Play Online"
+#~ msgstr "Spill på nett"
+
+#~ msgid "Normal Mapping"
+#~ msgstr "Normal tilknytning"
+
+#~ msgid "No information available"
+#~ msgstr "Ingen informasjon tilgjengelig"
+
+#~ msgid "Volume changed to 0%"
+#~ msgstr "Lydstyrke endret til 0%"
+
+#~ msgid "Volume changed to 100%"
+#~ msgstr "Lydstyrke endret til 100%"
+
+#~ msgid "Use"
+#~ msgstr "Bruk"
+
+#~ msgid "Next"
+#~ msgstr "Neste"
+
+#~ msgid "Prior"
+#~ msgstr "Foregående"
+
+#~ msgid "Cloud height"
+#~ msgstr "Skyhøyde"
+
+#~ msgid "Console key"
+#~ msgstr "Konsolltast"
+
+#~ msgid "Crouch speed"
+#~ msgstr "Smygehastighet"
+
+#~ msgid "General"
+#~ msgstr "Generelt"
+
+#~ msgid "River noise -- rivers occur close to zero"
+#~ msgstr "Elvestøy -- elver dukker opp for verdier nær null"
+
+#~ msgid "Hide mp content"
+#~ msgstr "Skjul mp-innhold"
+
+#, fuzzy
+#~ msgid "If enabled, "
+#~ msgstr "aktivert"
+
+#~ msgid ""
+#~ "Warning: Some mods are not configured yet.\n"
+#~ "They will be enabled by default when you save the configuration.  "
+#~ msgstr ""
+#~ "Advarsel: Noen modifikasjoner er ikke konfigurert enda. \n"
+#~ "De vil bli aktivert som standard når du lagrer konfigurasjonen."
+
+#~ msgid ""
+#~ "Warning: Some configured mods are missing.\n"
+#~ "Their setting will be removed when you save the configuration.  "
+#~ msgstr ""
+#~ "Advarsel: Noen konfigurerte modifikasjoner mangler. \n"
+#~ "Instillingene deres vil bli fjernet når du lagrer konfigurasjonen."
+
+#~ msgid "Configuration saved.  "
+#~ msgstr "Konfigurasjon lagret. "
+
+#~ msgid "is required by:"
+#~ msgstr "trengs av:"
+
+#~ msgid "Advanced Settings"
+#~ msgstr "Avanserte innstillinger"
+
+#~ msgid "View"
+#~ msgstr "Vis"

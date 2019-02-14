@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-01-23 14:16+0200\n"
+"POT-Creation-Date: 2019-02-14 07:46+0100\n"
 "PO-Revision-Date: 2019-01-23 13:16+0000\n"
 "Last-Translator: Nore <nore@mesecons.net>\n"
 "Language-Team: Hebrew <https://hosted.weblate.org/projects/minetest/minetest/"
@@ -24,11 +24,13 @@ msgid "You died"
 msgstr ""
 
 #: builtin/fstk/ui.lua
-msgid "An error occured in a Lua script, such as a mod:"
+#, fuzzy
+msgid "An error occurred in a Lua script, such as a mod:"
 msgstr "אירעה שגיאה בקוד לואה (Lua), כנראה באחד המודים:"
 
 #: builtin/fstk/ui.lua
-msgid "An error occured:"
+#, fuzzy
+msgid "An error occurred:"
 msgstr "התרחשה שגיאה:"
 
 #: builtin/fstk/ui.lua
@@ -110,9 +112,10 @@ msgid "Enable modpack"
 msgstr "אפשר הכל"
 
 #: builtin/mainmenu/dlg_config_world.lua
+#, fuzzy
 msgid ""
 "Failed to enable mod \"$1\" as it contains disallowed characters. Only "
-"chararacters [a-z0-9_] are allowed."
+"characters [a-z0-9_] are allowed."
 msgstr ""
 "טעינת המוד \"1$\" נכשלה מכיוון שהוא מכיל תווים לא חוקיים. רק התווים [a-"
 "z0-9_] מותרים."
@@ -182,6 +185,10 @@ msgid "Mods"
 msgstr "מודים"
 
 #: builtin/mainmenu/dlg_contentstore.lua
+msgid "No packages could be retrieved"
+msgstr ""
+
+#: builtin/mainmenu/dlg_contentstore.lua
 msgid "No results"
 msgstr ""
 
@@ -204,10 +211,6 @@ msgstr "החקן"
 msgid "Update"
 msgstr ""
 
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "View"
-msgstr ""
-
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "A world named \"$1\" already exists"
 msgstr "עולם בשם \"1$\" כבר קיים"
@@ -218,7 +221,7 @@ msgstr "ליצור"
 
 #: builtin/mainmenu/dlg_create_world.lua
 #, fuzzy
-msgid "Download a game, such as minetest_game, from minetest.net"
+msgid "Download a game, such as Minetest Game, from minetest.net"
 msgstr "הורד מפעיל משחק, למשל \"minetest_game\", מהאתר: minetest.net"
 
 #: builtin/mainmenu/dlg_create_world.lua
@@ -239,6 +242,7 @@ msgid "No game selected"
 msgstr "אין עולם נוצר או נבחר!"
 
 #: builtin/mainmenu/dlg_create_world.lua
+#: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Seed"
 msgstr ""
 
@@ -285,8 +289,18 @@ msgstr "קבל"
 msgid "Rename Modpack:"
 msgstr ""
 
+#: builtin/mainmenu/dlg_rename_modpack.lua
+msgid ""
+"This modpack has an explicit name given in its modpack.conf which will "
+"override any renaming here."
+msgstr ""
+
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "(No description of setting given)"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "2D Noise"
 msgstr ""
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
@@ -310,6 +324,22 @@ msgid "Enabled"
 msgstr ""
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "Lacunarity"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "Octaves"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua src/settings_translation_file.cpp
+msgid "Offset"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "Persistance"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Please enter a valid integer."
 msgstr ""
 
@@ -319,6 +349,10 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Restore Default"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua src/settings_translation_file.cpp
+msgid "Scale"
 msgstr ""
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
@@ -343,14 +377,51 @@ msgstr ""
 msgid "The value must not be larger than $1."
 msgstr ""
 
-#: builtin/mainmenu/pkgmgr.lua
-msgid " mods"
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "X"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "X spread"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "Y"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "Y spread"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "Z"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "Z spread"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "absvalue"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "defaults"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "eased"
 msgstr ""
 
 #: builtin/mainmenu/pkgmgr.lua
 #, fuzzy
 msgid "$1 (Enabled)"
 msgstr "מופעל"
+
+#: builtin/mainmenu/pkgmgr.lua
+#, fuzzy
+msgid "$1 mods"
+msgstr "מודים"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Failed to install $1 to $2"
@@ -580,8 +651,9 @@ msgid "8x"
 msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
-msgid "Advanced Settings"
-msgstr "הגדרות מתקדמות"
+#, fuzzy
+msgid "All Settings"
+msgstr "הגדרות"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Antialiasing:"
@@ -4539,10 +4611,6 @@ msgid "Number of parallax occlusion iterations."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Offset"
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid "Opaque liquids"
 msgstr ""
 
@@ -4806,10 +4874,6 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Saving map received from server"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Scale"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5735,27 +5799,30 @@ msgstr ""
 msgid "cURL timeout"
 msgstr ""
 
-#~ msgid "Public Serverlist"
-#~ msgstr "רשימת שרתים פומבי"
+#~ msgid "No worldname given or no game selected"
+#~ msgstr "לא נבחר שם לעולם או שאף מפעיל משחק לא נבחר"
 
-#~ msgid "No of course not!"
-#~ msgstr "לא ברור שלא!"
+#~ msgid "Rating"
+#~ msgstr "דירוג"
+
+#~ msgid "Shortname:"
+#~ msgstr "שם קצר:"
+
+#~ msgid "Successfully installed:"
+#~ msgstr "הותקן בהצלחה:"
+
+#~ msgid "re-Install"
+#~ msgstr "התקן מחדש"
 
 #, fuzzy
 #~ msgid "Local Game"
 #~ msgstr "התחל משחק"
 
-#~ msgid "re-Install"
-#~ msgstr "התקן מחדש"
+#~ msgid "No of course not!"
+#~ msgstr "לא ברור שלא!"
 
-#~ msgid "Successfully installed:"
-#~ msgstr "הותקן בהצלחה:"
+#~ msgid "Public Serverlist"
+#~ msgstr "רשימת שרתים פומבי"
 
-#~ msgid "Shortname:"
-#~ msgstr "שם קצר:"
-
-#~ msgid "Rating"
-#~ msgstr "דירוג"
-
-#~ msgid "No worldname given or no game selected"
-#~ msgstr "לא נבחר שם לעולם או שאף מפעיל משחק לא נבחר"
+#~ msgid "Advanced Settings"
+#~ msgstr "הגדרות מתקדמות"

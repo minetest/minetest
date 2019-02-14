@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-01-24 01:05+0200\n"
+"POT-Creation-Date: 2019-02-14 07:46+0100\n"
 "PO-Revision-Date: 2019-02-10 05:48+0000\n"
 "Last-Translator: Muhammad Rifqi Priyo Susanto "
 "<muhammadrifqipriyosusanto@gmail.com>\n"
@@ -27,11 +27,13 @@ msgid "You died"
 msgstr "Jūs numirėte."
 
 #: builtin/fstk/ui.lua
-msgid "An error occured in a Lua script, such as a mod:"
+#, fuzzy
+msgid "An error occurred in a Lua script, such as a mod:"
 msgstr "Klaida įvyko Lua scenarijuje, tokiame kaip papildinys:"
 
 #: builtin/fstk/ui.lua
-msgid "An error occured:"
+#, fuzzy
+msgid "An error occurred:"
 msgstr "Įvyko klaida:"
 
 #: builtin/fstk/ui.lua
@@ -115,9 +117,10 @@ msgid "Enable modpack"
 msgstr "Pervadinti papildinių paką:"
 
 #: builtin/mainmenu/dlg_config_world.lua
+#, fuzzy
 msgid ""
 "Failed to enable mod \"$1\" as it contains disallowed characters. Only "
-"chararacters [a-z0-9_] are allowed."
+"characters [a-z0-9_] are allowed."
 msgstr ""
 "Nepavyko įjungti papildinio „$1“, nes jis turi neleistų rašmenų. Tik "
 "rašmenys [a-z0-9_] yra leidžiami."
@@ -191,6 +194,10 @@ msgid "Mods"
 msgstr "Papildiniai"
 
 #: builtin/mainmenu/dlg_contentstore.lua
+msgid "No packages could be retrieved"
+msgstr ""
+
+#: builtin/mainmenu/dlg_contentstore.lua
 msgid "No results"
 msgstr ""
 
@@ -213,10 +220,6 @@ msgstr "Įdiegti"
 msgid "Update"
 msgstr ""
 
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "View"
-msgstr ""
-
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "A world named \"$1\" already exists"
 msgstr "Pasaulis, pavadintas „$1“ jau yra"
@@ -227,7 +230,7 @@ msgstr "Sukurti"
 
 #: builtin/mainmenu/dlg_create_world.lua
 #, fuzzy
-msgid "Download a game, such as minetest_game, from minetest.net"
+msgid "Download a game, such as Minetest Game, from minetest.net"
 msgstr "Atsisiųskite sub žaidimą, tokį kaip minetest_game, iš minetest.net"
 
 #: builtin/mainmenu/dlg_create_world.lua
@@ -248,6 +251,7 @@ msgid "No game selected"
 msgstr "Intervalo pasirinkimas"
 
 #: builtin/mainmenu/dlg_create_world.lua
+#: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Seed"
 msgstr "Sėkla"
 
@@ -296,9 +300,19 @@ msgstr "Priimti"
 msgid "Rename Modpack:"
 msgstr "Pervadinti papildinių paką:"
 
+#: builtin/mainmenu/dlg_rename_modpack.lua
+msgid ""
+"This modpack has an explicit name given in its modpack.conf which will "
+"override any renaming here."
+msgstr ""
+
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "(No description of setting given)"
 msgstr "(Nėra nustatymo aprašymo)"
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "2D Noise"
+msgstr ""
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "< Back to Settings page"
@@ -323,6 +337,22 @@ msgid "Enabled"
 msgstr "įjungtas"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "Lacunarity"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "Octaves"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua src/settings_translation_file.cpp
+msgid "Offset"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "Persistance"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Please enter a valid integer."
 msgstr "Prašome įvesti sveikąjį skaičių."
 
@@ -332,6 +362,10 @@ msgstr "Prašome įvesti skaičių."
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Restore Default"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua src/settings_translation_file.cpp
+msgid "Scale"
 msgstr ""
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
@@ -356,15 +390,52 @@ msgstr ""
 msgid "The value must not be larger than $1."
 msgstr ""
 
-#: builtin/mainmenu/pkgmgr.lua
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "X"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "X spread"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "Y"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "Y spread"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "Z"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "Z spread"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "absvalue"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
 #, fuzzy
-msgid " mods"
-msgstr "Konfigūruoti papildinius"
+msgid "defaults"
+msgstr "keisti žaidimą"
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "eased"
+msgstr ""
 
 #: builtin/mainmenu/pkgmgr.lua
 #, fuzzy
 msgid "$1 (Enabled)"
 msgstr "įjungtas"
+
+#: builtin/mainmenu/pkgmgr.lua
+#, fuzzy
+msgid "$1 mods"
+msgstr "Konfigūruoti papildinius"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Failed to install $1 to $2"
@@ -620,7 +691,7 @@ msgstr "8x"
 
 #: builtin/mainmenu/tab_settings.lua
 #, fuzzy
-msgid "Advanced Settings"
+msgid "All Settings"
 msgstr "Nustatymai"
 
 #: builtin/mainmenu/tab_settings.lua
@@ -4682,10 +4753,6 @@ msgid "Number of parallax occlusion iterations."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Offset"
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid "Opaque liquids"
 msgstr ""
 
@@ -4952,10 +5019,6 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Saving map received from server"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Scale"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5894,170 +5957,14 @@ msgstr ""
 msgid "cURL timeout"
 msgstr ""
 
-#, fuzzy
-#~ msgid "Preload inventory textures"
-#~ msgstr "Įkeliama..."
+#~ msgid "Disable MP"
+#~ msgstr "Išjungti papildinį"
 
-#~ msgid "Add mod:"
-#~ msgstr "Pridėti papildinį:"
+#~ msgid "Enable MP"
+#~ msgstr "Įjungti papildinį"
 
-#~ msgid "MODS"
-#~ msgstr "PAPILDINIAI"
-
-#~ msgid "SINGLE PLAYER"
-#~ msgstr "VIENAS ŽAIDĖJAS"
-
-#~ msgid "SETTINGS"
-#~ msgstr "NUSTATYMAI"
-
-#~ msgid "Password"
-#~ msgstr "Slaptažodis"
-
-#~ msgid "Name"
-#~ msgstr "Vardas"
-
-#~ msgid "START SERVER"
-#~ msgstr "PALEISTI SERVERĮ"
-
-#~ msgid "CLIENT"
-#~ msgstr "ŽAISTI TINKLE"
-
-#~ msgid "<<-- Add mod"
-#~ msgstr "<<-- Pridėti papildinį"
-
-#~ msgid "Remove selected mod"
-#~ msgstr "Pašalinti pasirinktą papildinį"
-
-#, fuzzy
-#~ msgid "EDIT GAME"
-#~ msgstr "KEISTI ŽAIDIMĄ"
-
-#~ msgid "new game"
-#~ msgstr "naujas žaidimas"
-
-#~ msgid "Mods:"
-#~ msgstr "Papildiniai:"
-
-#~ msgid "GAMES"
-#~ msgstr "ŽAIDIMAI"
-
-#, fuzzy
-#~ msgid "If enabled, "
-#~ msgstr "įjungtas"
-
-#~ msgid "Public Serverlist"
-#~ msgstr "Viešų serverių sąrašas"
-
-#~ msgid "No of course not!"
-#~ msgstr "Ne, tikrai ne!"
-
-#, fuzzy
-#~ msgid "Useful for mod developers."
-#~ msgstr "Pagrindiniai kūrėjai"
-
-#, fuzzy
-#~ msgid "Mapgen fractal cave width"
-#~ msgstr "Žemėlapių generavimas"
-
-#, fuzzy
-#~ msgid "Mapgen flat cave width"
-#~ msgstr "Žemėlapių generavimas"
-
-#~ msgid "Plus"
-#~ msgstr "Plius"
-
-#~ msgid "Period"
-#~ msgstr "Periodas"
-
-#~ msgid "Minus"
-#~ msgstr "Minus"
-
-#~ msgid "Kanji"
-#~ msgstr "Kanji"
-
-#~ msgid "Kana"
-#~ msgstr "Kana"
-
-#~ msgid "Junja"
-#~ msgstr "Junja"
-
-#~ msgid "Final"
-#~ msgstr "Galutinis"
-
-#~ msgid "Comma"
-#~ msgstr "Kablelis"
-
-#~ msgid "Capital"
-#~ msgstr "Sostinė"
-
-#~ msgid "Hide mp content"
-#~ msgstr "Slėpti papild. pakų turinį"
-
-#, fuzzy
-#~ msgid "Water Features"
-#~ msgstr "Elemento tekstūros..."
-
-#, fuzzy
-#~ msgid "Use key"
-#~ msgstr "paspauskite klavišą"
-
-#, fuzzy
-#~ msgid "Main menu mod manager"
-#~ msgstr "Pagrindinis meniu"
-
-#, fuzzy
-#~ msgid "Inventory image hack"
-#~ msgstr "Inventorius"
-
-#, fuzzy
-#~ msgid "Console key"
-#~ msgstr "Nustatyti klavišus"
-
-#~ msgid "Prior"
-#~ msgstr "Ankstesnis"
-
-#~ msgid "Next"
-#~ msgstr "Kitas"
-
-#~ msgid "Use"
-#~ msgstr "Naudoti"
-
-#~ msgid "Print stacks"
-#~ msgstr "Spausdinti rietuves"
-
-#~ msgid "No information available"
-#~ msgstr "Nėra pasiekiamos informacijos"
-
-#~ msgid "Play Online"
-#~ msgstr "Žaisti Internete"
-
-#~ msgid "Uninstall selected modpack"
-#~ msgstr "Pašalinti pasirinktą papildinį"
-
-#, fuzzy
-#~ msgid "Local Game"
-#~ msgstr "Pradėti žaidimą"
-
-#~ msgid "re-Install"
-#~ msgstr "Įdiegti iš naujo"
-
-#~ msgid "Unsorted"
-#~ msgstr "Nerikiuota"
-
-#~ msgid "Successfully installed:"
-#~ msgstr "Sėkmingai įdiegta:"
-
-#~ msgid "Shortname:"
-#~ msgstr "Trumpas pavadinimas:"
-
-#~ msgid "Rating"
-#~ msgstr "Įvertinimas"
-
-#~ msgid "Page $1 of $2"
-#~ msgstr "Puslapis $1 iš $2"
-
-#~ msgid "Possible values are: "
-#~ msgstr "Tinkamos reikšmės yra: "
+#~ msgid "No worldname given or no game selected"
+#~ msgstr "Nepateiktas joks pasaulio pavadinimas, arba nepasirinktas žaidimas"
 
 #~ msgid ""
 #~ "Format: <offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>), <seed>, "
@@ -6066,11 +5973,171 @@ msgstr ""
 #~ "Formatas: <offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>), <seed>, "
 #~ "<octaves>, <persistence>"
 
-#~ msgid "No worldname given or no game selected"
-#~ msgstr "Nepateiktas joks pasaulio pavadinimas, arba nepasirinktas žaidimas"
+#~ msgid "Possible values are: "
+#~ msgstr "Tinkamos reikšmės yra: "
 
-#~ msgid "Enable MP"
-#~ msgstr "Įjungti papildinį"
+#~ msgid "Page $1 of $2"
+#~ msgstr "Puslapis $1 iš $2"
 
-#~ msgid "Disable MP"
-#~ msgstr "Išjungti papildinį"
+#~ msgid "Rating"
+#~ msgstr "Įvertinimas"
+
+#~ msgid "Shortname:"
+#~ msgstr "Trumpas pavadinimas:"
+
+#~ msgid "Successfully installed:"
+#~ msgstr "Sėkmingai įdiegta:"
+
+#~ msgid "Unsorted"
+#~ msgstr "Nerikiuota"
+
+#~ msgid "re-Install"
+#~ msgstr "Įdiegti iš naujo"
+
+#, fuzzy
+#~ msgid "Local Game"
+#~ msgstr "Pradėti žaidimą"
+
+#~ msgid "Uninstall selected modpack"
+#~ msgstr "Pašalinti pasirinktą papildinį"
+
+#~ msgid "Play Online"
+#~ msgstr "Žaisti Internete"
+
+#~ msgid "No information available"
+#~ msgstr "Nėra pasiekiamos informacijos"
+
+#~ msgid "Print stacks"
+#~ msgstr "Spausdinti rietuves"
+
+#~ msgid "Use"
+#~ msgstr "Naudoti"
+
+#~ msgid "Next"
+#~ msgstr "Kitas"
+
+#~ msgid "Prior"
+#~ msgstr "Ankstesnis"
+
+#, fuzzy
+#~ msgid "Console key"
+#~ msgstr "Nustatyti klavišus"
+
+#, fuzzy
+#~ msgid "Inventory image hack"
+#~ msgstr "Inventorius"
+
+#, fuzzy
+#~ msgid "Main menu mod manager"
+#~ msgstr "Pagrindinis meniu"
+
+#, fuzzy
+#~ msgid "Use key"
+#~ msgstr "paspauskite klavišą"
+
+#, fuzzy
+#~ msgid "Water Features"
+#~ msgstr "Elemento tekstūros..."
+
+#~ msgid "Hide mp content"
+#~ msgstr "Slėpti papild. pakų turinį"
+
+#~ msgid "Capital"
+#~ msgstr "Sostinė"
+
+#~ msgid "Comma"
+#~ msgstr "Kablelis"
+
+#~ msgid "Final"
+#~ msgstr "Galutinis"
+
+#~ msgid "Junja"
+#~ msgstr "Junja"
+
+#~ msgid "Kana"
+#~ msgstr "Kana"
+
+#~ msgid "Kanji"
+#~ msgstr "Kanji"
+
+#~ msgid "Minus"
+#~ msgstr "Minus"
+
+#~ msgid "Period"
+#~ msgstr "Periodas"
+
+#~ msgid "Plus"
+#~ msgstr "Plius"
+
+#, fuzzy
+#~ msgid "Mapgen flat cave width"
+#~ msgstr "Žemėlapių generavimas"
+
+#, fuzzy
+#~ msgid "Mapgen fractal cave width"
+#~ msgstr "Žemėlapių generavimas"
+
+#, fuzzy
+#~ msgid "Useful for mod developers."
+#~ msgstr "Pagrindiniai kūrėjai"
+
+#~ msgid "No of course not!"
+#~ msgstr "Ne, tikrai ne!"
+
+#~ msgid "Public Serverlist"
+#~ msgstr "Viešų serverių sąrašas"
+
+#, fuzzy
+#~ msgid "If enabled, "
+#~ msgstr "įjungtas"
+
+#~ msgid "GAMES"
+#~ msgstr "ŽAIDIMAI"
+
+#~ msgid "Mods:"
+#~ msgstr "Papildiniai:"
+
+#~ msgid "new game"
+#~ msgstr "naujas žaidimas"
+
+#, fuzzy
+#~ msgid "EDIT GAME"
+#~ msgstr "KEISTI ŽAIDIMĄ"
+
+#~ msgid "Remove selected mod"
+#~ msgstr "Pašalinti pasirinktą papildinį"
+
+#~ msgid "<<-- Add mod"
+#~ msgstr "<<-- Pridėti papildinį"
+
+#~ msgid "CLIENT"
+#~ msgstr "ŽAISTI TINKLE"
+
+#~ msgid "START SERVER"
+#~ msgstr "PALEISTI SERVERĮ"
+
+#~ msgid "Name"
+#~ msgstr "Vardas"
+
+#~ msgid "Password"
+#~ msgstr "Slaptažodis"
+
+#~ msgid "SETTINGS"
+#~ msgstr "NUSTATYMAI"
+
+#~ msgid "SINGLE PLAYER"
+#~ msgstr "VIENAS ŽAIDĖJAS"
+
+#~ msgid "MODS"
+#~ msgstr "PAPILDINIAI"
+
+#~ msgid "Add mod:"
+#~ msgstr "Pridėti papildinį:"
+
+#, fuzzy
+#~ msgid "Preload inventory textures"
+#~ msgstr "Įkeliama..."
+
+#, fuzzy
+#~ msgid "Advanced Settings"
+#~ msgstr "Nustatymai"

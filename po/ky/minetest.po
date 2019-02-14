@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-01-24 01:05+0200\n"
+"POT-Creation-Date: 2019-02-14 07:46+0100\n"
 "PO-Revision-Date: 2019-01-24 00:05+0000\n"
 "Last-Translator: Nore <nore@mesecons.net>\n"
 "Language-Team: Kyrgyz <https://hosted.weblate.org/projects/minetest/minetest/"
@@ -24,11 +24,11 @@ msgid "You died"
 msgstr "Сиз өлдүңүз."
 
 #: builtin/fstk/ui.lua
-msgid "An error occured in a Lua script, such as a mod:"
+msgid "An error occurred in a Lua script, such as a mod:"
 msgstr ""
 
 #: builtin/fstk/ui.lua
-msgid "An error occured:"
+msgid "An error occurred:"
 msgstr ""
 
 #: builtin/fstk/ui.lua
@@ -115,7 +115,7 @@ msgstr "Баарын күйгүзүү"
 #: builtin/mainmenu/dlg_config_world.lua
 msgid ""
 "Failed to enable mod \"$1\" as it contains disallowed characters. Only "
-"chararacters [a-z0-9_] are allowed."
+"characters [a-z0-9_] are allowed."
 msgstr ""
 
 #: builtin/mainmenu/dlg_config_world.lua
@@ -186,6 +186,10 @@ msgid "Mods"
 msgstr ""
 
 #: builtin/mainmenu/dlg_contentstore.lua
+msgid "No packages could be retrieved"
+msgstr ""
+
+#: builtin/mainmenu/dlg_contentstore.lua
 msgid "No results"
 msgstr ""
 
@@ -206,10 +210,6 @@ msgstr ""
 msgid "Update"
 msgstr ""
 
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "View"
-msgstr ""
-
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "A world named \"$1\" already exists"
 msgstr ""
@@ -219,7 +219,7 @@ msgid "Create"
 msgstr "Жаратуу"
 
 #: builtin/mainmenu/dlg_create_world.lua
-msgid "Download a game, such as minetest_game, from minetest.net"
+msgid "Download a game, such as Minetest Game, from minetest.net"
 msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
@@ -239,6 +239,7 @@ msgid "No game selected"
 msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
+#: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Seed"
 msgstr ""
 
@@ -285,8 +286,18 @@ msgstr "Кабыл алуу"
 msgid "Rename Modpack:"
 msgstr ""
 
+#: builtin/mainmenu/dlg_rename_modpack.lua
+msgid ""
+"This modpack has an explicit name given in its modpack.conf which will "
+"override any renaming here."
+msgstr ""
+
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "(No description of setting given)"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "2D Noise"
 msgstr ""
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
@@ -312,6 +323,22 @@ msgid "Enabled"
 msgstr "күйгүзүлгөн"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "Lacunarity"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "Octaves"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua src/settings_translation_file.cpp
+msgid "Offset"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "Persistance"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Please enter a valid integer."
 msgstr ""
 
@@ -321,6 +348,10 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Restore Default"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua src/settings_translation_file.cpp
+msgid "Scale"
 msgstr ""
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
@@ -345,15 +376,51 @@ msgstr ""
 msgid "The value must not be larger than $1."
 msgstr ""
 
-#: builtin/mainmenu/pkgmgr.lua
-#, fuzzy
-msgid " mods"
-msgstr "Ырастоо"
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "X"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "X spread"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "Y"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "Y spread"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "Z"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "Z spread"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "absvalue"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "defaults"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "eased"
+msgstr ""
 
 #: builtin/mainmenu/pkgmgr.lua
 #, fuzzy
 msgid "$1 (Enabled)"
 msgstr "күйгүзүлгөн"
+
+#: builtin/mainmenu/pkgmgr.lua
+#, fuzzy
+msgid "$1 mods"
+msgstr "Ырастоо"
 
 #: builtin/mainmenu/pkgmgr.lua
 #, fuzzy
@@ -597,7 +664,7 @@ msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
 #, fuzzy
-msgid "Advanced Settings"
+msgid "All Settings"
 msgstr "Ырастоолор"
 
 #: builtin/mainmenu/tab_settings.lua
@@ -4658,10 +4725,6 @@ msgid "Number of parallax occlusion iterations."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Offset"
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid "Opaque liquids"
 msgstr ""
 
@@ -4928,10 +4991,6 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Saving map received from server"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Scale"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5871,54 +5930,90 @@ msgid "cURL timeout"
 msgstr ""
 
 #, fuzzy
-#~ msgid "Preload inventory textures"
-#~ msgstr "Жүктөлүүдө..."
+#~ msgid "Enable MP"
+#~ msgstr "Баарын күйгүзүү"
 
 #, fuzzy
-#~ msgid "Downloading"
-#~ msgstr "Ылдый"
+#~ msgid "Select path"
+#~ msgstr "Тандоо"
 
-#~ msgid "Left click: Move all items, Right click: Move single item"
-#~ msgstr "Сол баскычы: Бардык буюмдарды ташуу, Оң баскычы: Бир буюмду ташуу"
+#, fuzzy
+#~ msgid "Shortname:"
+#~ msgstr "Дүйнө аты"
 
-#~ msgid "is required by:"
-#~ msgstr "талап кылынганы:"
+#, fuzzy
+#~ msgid "Local Game"
+#~ msgstr "Оюнду баштоо/туташуу"
 
-#~ msgid "Configuration saved.  "
-#~ msgstr "Конфигурация сакталды.  "
+#, fuzzy
+#~ msgid "Normal Mapping"
+#~ msgstr "Mip-текстуралоо"
 
-#~ msgid "Warning: Configuration not consistent.  "
-#~ msgstr "Эскертүү: Туура эмес конфигурация.  "
+#~ msgid "Use"
+#~ msgstr "Колдонуу"
 
-#~ msgid "Show Public"
-#~ msgstr "Жалпылыкты көрсөтүү"
+#~ msgid "Next"
+#~ msgstr "Кийинки"
 
-#~ msgid "Show Favorites"
-#~ msgstr "Тандалмаларды көрсөтүү"
+#, fuzzy
+#~ msgid "Console key"
+#~ msgstr "Консоль"
 
-#~ msgid "Leave address blank to start a local server."
-#~ msgstr "Жергиликтүү серверди жүргүзүү үчүн даректи бош калтырыңыз."
+#, fuzzy
+#~ msgid "Inventory image hack"
+#~ msgstr "Мүлк-шайман"
 
-#~ msgid "Create world"
-#~ msgstr "Дүйнөнү жаратуу"
+#, fuzzy
+#~ msgid "Main menu mod manager"
+#~ msgstr "Башкы меню"
 
-#~ msgid "Address required."
-#~ msgstr "Дареги талап кылынат."
+#, fuzzy
+#~ msgid "Use key"
+#~ msgstr "баскычты басыңыз"
 
-#~ msgid "Cannot delete world: Nothing selected"
-#~ msgstr "Дүнөнү жаратуу мүмкүн эмес: Эч нерсе тандалган жок"
+#, fuzzy
+#~ msgid "Water Features"
+#~ msgstr "Буюм текстуралары..."
 
-#~ msgid "Files to be deleted"
-#~ msgstr "Өчүрүлө турган файлдар"
+#~ msgid "Capital"
+#~ msgstr "Caps Lock"
 
-#~ msgid "Cannot create world: No games found"
-#~ msgstr "Дүйнөнү жаратуу мүмкүн эмес: Оюндар табылган жок"
+#~ msgid "Comma"
+#~ msgstr "Үтүр"
 
-#~ msgid "Cannot configure world: Nothing selected"
-#~ msgstr "Дүйнөнү ырастоо мүмкүн эмес: Эч нерсе тандалган жок"
+#~ msgid "Junja"
+#~ msgstr "Junja"
 
-#~ msgid "Failed to delete all world files"
-#~ msgstr "Бардык дүйнө файлдарын өчүрүү оңунан чыккан жок"
+#~ msgid "Kana"
+#~ msgstr "Кана"
+
+#~ msgid "Kanji"
+#~ msgstr "Кандзи"
+
+#~ msgid "Minus"
+#~ msgstr "Кемитүү белгиси"
+
+#~ msgid "Period"
+#~ msgstr "Айланма сан"
+
+#~ msgid "Plus"
+#~ msgstr "Кошуу белгиси"
+
+#, fuzzy
+#~ msgid "Public Serverlist"
+#~ msgstr "Жалпылык серверлердин тизмеси:"
+
+#, fuzzy
+#~ msgid "If enabled, "
+#~ msgstr "күйгүзүлгөн"
+
+#, fuzzy
+#~ msgid "Password"
+#~ msgstr "Эски сырсөз"
+
+#, fuzzy
+#~ msgid "Finite Liquid"
+#~ msgstr "Чектүү суюктук"
 
 #~ msgid ""
 #~ "Default Controls:\n"
@@ -5945,88 +6040,56 @@ msgstr ""
 #~ "- ESC: бул меню\n"
 #~ "- T: маек\n"
 
-#, fuzzy
-#~ msgid "Finite Liquid"
-#~ msgstr "Чектүү суюктук"
+#~ msgid "Failed to delete all world files"
+#~ msgstr "Бардык дүйнө файлдарын өчүрүү оңунан чыккан жок"
+
+#~ msgid "Cannot configure world: Nothing selected"
+#~ msgstr "Дүйнөнү ырастоо мүмкүн эмес: Эч нерсе тандалган жок"
+
+#~ msgid "Cannot create world: No games found"
+#~ msgstr "Дүйнөнү жаратуу мүмкүн эмес: Оюндар табылган жок"
+
+#~ msgid "Files to be deleted"
+#~ msgstr "Өчүрүлө турган файлдар"
+
+#~ msgid "Cannot delete world: Nothing selected"
+#~ msgstr "Дүнөнү жаратуу мүмкүн эмес: Эч нерсе тандалган жок"
+
+#~ msgid "Address required."
+#~ msgstr "Дареги талап кылынат."
+
+#~ msgid "Create world"
+#~ msgstr "Дүйнөнү жаратуу"
+
+#~ msgid "Leave address blank to start a local server."
+#~ msgstr "Жергиликтүү серверди жүргүзүү үчүн даректи бош калтырыңыз."
+
+#~ msgid "Show Favorites"
+#~ msgstr "Тандалмаларды көрсөтүү"
+
+#~ msgid "Show Public"
+#~ msgstr "Жалпылыкты көрсөтүү"
+
+#~ msgid "Warning: Configuration not consistent.  "
+#~ msgstr "Эскертүү: Туура эмес конфигурация.  "
+
+#~ msgid "Configuration saved.  "
+#~ msgstr "Конфигурация сакталды.  "
+
+#~ msgid "is required by:"
+#~ msgstr "талап кылынганы:"
+
+#~ msgid "Left click: Move all items, Right click: Move single item"
+#~ msgstr "Сол баскычы: Бардык буюмдарды ташуу, Оң баскычы: Бир буюмду ташуу"
 
 #, fuzzy
-#~ msgid "Password"
-#~ msgstr "Эски сырсөз"
+#~ msgid "Downloading"
+#~ msgstr "Ылдый"
 
 #, fuzzy
-#~ msgid "If enabled, "
-#~ msgstr "күйгүзүлгөн"
+#~ msgid "Preload inventory textures"
+#~ msgstr "Жүктөлүүдө..."
 
 #, fuzzy
-#~ msgid "Public Serverlist"
-#~ msgstr "Жалпылык серверлердин тизмеси:"
-
-#~ msgid "Plus"
-#~ msgstr "Кошуу белгиси"
-
-#~ msgid "Period"
-#~ msgstr "Айланма сан"
-
-#~ msgid "Minus"
-#~ msgstr "Кемитүү белгиси"
-
-#~ msgid "Kanji"
-#~ msgstr "Кандзи"
-
-#~ msgid "Kana"
-#~ msgstr "Кана"
-
-#~ msgid "Junja"
-#~ msgstr "Junja"
-
-#~ msgid "Comma"
-#~ msgstr "Үтүр"
-
-#~ msgid "Capital"
-#~ msgstr "Caps Lock"
-
-#, fuzzy
-#~ msgid "Water Features"
-#~ msgstr "Буюм текстуралары..."
-
-#, fuzzy
-#~ msgid "Use key"
-#~ msgstr "баскычты басыңыз"
-
-#, fuzzy
-#~ msgid "Main menu mod manager"
-#~ msgstr "Башкы меню"
-
-#, fuzzy
-#~ msgid "Inventory image hack"
-#~ msgstr "Мүлк-шайман"
-
-#, fuzzy
-#~ msgid "Console key"
-#~ msgstr "Консоль"
-
-#~ msgid "Next"
-#~ msgstr "Кийинки"
-
-#~ msgid "Use"
-#~ msgstr "Колдонуу"
-
-#, fuzzy
-#~ msgid "Normal Mapping"
-#~ msgstr "Mip-текстуралоо"
-
-#, fuzzy
-#~ msgid "Local Game"
-#~ msgstr "Оюнду баштоо/туташуу"
-
-#, fuzzy
-#~ msgid "Shortname:"
-#~ msgstr "Дүйнө аты"
-
-#, fuzzy
-#~ msgid "Select path"
-#~ msgstr "Тандоо"
-
-#, fuzzy
-#~ msgid "Enable MP"
-#~ msgstr "Баарын күйгүзүү"
+#~ msgid "Advanced Settings"
+#~ msgstr "Ырастоолор"

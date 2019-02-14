@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-01-24 01:05+0200\n"
+"POT-Creation-Date: 2019-02-14 07:46+0100\n"
 "PO-Revision-Date: 2019-02-08 11:13+0000\n"
 "Last-Translator: Muhammad Rifqi Priyo Susanto "
 "<muhammadrifqipriyosusanto@gmail.com>\n"
@@ -25,11 +25,13 @@ msgid "You died"
 msgstr "Vi mortis."
 
 #: builtin/fstk/ui.lua
-msgid "An error occured in a Lua script, such as a mod:"
+#, fuzzy
+msgid "An error occurred in a Lua script, such as a mod:"
 msgstr "Eraro okazis en Lua skripto, kiel modifo:"
 
 #: builtin/fstk/ui.lua
-msgid "An error occured:"
+#, fuzzy
+msgid "An error occurred:"
 msgstr "Eraro okazis:"
 
 #: builtin/fstk/ui.lua
@@ -110,9 +112,10 @@ msgid "Enable modpack"
 msgstr "Alinomi modifaron:"
 
 #: builtin/mainmenu/dlg_config_world.lua
+#, fuzzy
 msgid ""
 "Failed to enable mod \"$1\" as it contains disallowed characters. Only "
-"chararacters [a-z0-9_] are allowed."
+"characters [a-z0-9_] are allowed."
 msgstr ""
 "Malsukcesis aktivigi modifaĵon \"$1\", ĉar ĝi enhavas malpermesatajn "
 "signojn. Nur signoj a-z kaj 0-9 estas permesataj."
@@ -186,6 +189,10 @@ msgid "Mods"
 msgstr "Modifoj"
 
 #: builtin/mainmenu/dlg_contentstore.lua
+msgid "No packages could be retrieved"
+msgstr ""
+
+#: builtin/mainmenu/dlg_contentstore.lua
 msgid "No results"
 msgstr ""
 
@@ -208,10 +215,6 @@ msgstr "Instali"
 msgid "Update"
 msgstr ""
 
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "View"
-msgstr ""
-
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "A world named \"$1\" already exists"
 msgstr "Mondo kun nomo «$1» jam ekzistas"
@@ -222,7 +225,7 @@ msgstr "Krei"
 
 #: builtin/mainmenu/dlg_create_world.lua
 #, fuzzy
-msgid "Download a game, such as minetest_game, from minetest.net"
+msgid "Download a game, such as Minetest Game, from minetest.net"
 msgstr "Elŝutu subludon, ekzemple minetest_game, el minetest.net"
 
 #: builtin/mainmenu/dlg_create_world.lua
@@ -243,6 +246,7 @@ msgid "No game selected"
 msgstr "Ŝanĝi vidodistancon"
 
 #: builtin/mainmenu/dlg_create_world.lua
+#: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Seed"
 msgstr "Fontnombro"
 
@@ -292,9 +296,20 @@ msgstr "Akcepti"
 msgid "Rename Modpack:"
 msgstr "Alinomi modifaron:"
 
+#: builtin/mainmenu/dlg_rename_modpack.lua
+msgid ""
+"This modpack has an explicit name given in its modpack.conf which will "
+"override any renaming here."
+msgstr ""
+
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "(No description of setting given)"
 msgstr "(sen priskribo)"
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+#, fuzzy
+msgid "2D Noise"
+msgstr "Bruo"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "< Back to Settings page"
@@ -317,6 +332,23 @@ msgid "Enabled"
 msgstr "Ŝaltita"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
+#, fuzzy
+msgid "Lacunarity"
+msgstr "Sekureco"
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "Octaves"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua src/settings_translation_file.cpp
+msgid "Offset"
+msgstr "Deŝovo"
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "Persistance"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Please enter a valid integer."
 msgstr "Bonvolu enigi validan entjeron."
 
@@ -327,6 +359,10 @@ msgstr "Bonvolu enigi validan nombron."
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Restore Default"
 msgstr "Restaŭri implicitan"
+
+#: builtin/mainmenu/dlg_settings_advanced.lua src/settings_translation_file.cpp
+msgid "Scale"
+msgstr "Skalo"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 #, fuzzy
@@ -350,15 +386,52 @@ msgstr "La valoro devas esti almenaŭ $1."
 msgid "The value must not be larger than $1."
 msgstr "La valoro devas esti pli ol $1."
 
-#: builtin/mainmenu/pkgmgr.lua
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "X"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "X spread"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "Y"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "Y spread"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "Z"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "Z spread"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "absvalue"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
 #, fuzzy
-msgid " mods"
-msgstr "3D reĝimo"
+msgid "defaults"
+msgstr "Implicita ludo"
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "eased"
+msgstr ""
 
 #: builtin/mainmenu/pkgmgr.lua
 #, fuzzy
 msgid "$1 (Enabled)"
 msgstr "Ŝaltita"
+
+#: builtin/mainmenu/pkgmgr.lua
+#, fuzzy
+msgid "$1 mods"
+msgstr "3D reĝimo"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Failed to install $1 to $2"
@@ -604,8 +677,9 @@ msgid "8x"
 msgstr "8x"
 
 #: builtin/mainmenu/tab_settings.lua
-msgid "Advanced Settings"
-msgstr "Pliaj Agordoj"
+#, fuzzy
+msgid "All Settings"
+msgstr "Agordoj"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Antialiasing:"
@@ -5099,10 +5173,6 @@ msgid "Number of parallax occlusion iterations."
 msgstr "Nombro da iteracioj de paralaksa ombrigo."
 
 #: src/settings_translation_file.cpp
-msgid "Offset"
-msgstr "Deŝovo"
-
-#: src/settings_translation_file.cpp
 msgid "Opaque liquids"
 msgstr "Netralumeblaj fluidoj"
 
@@ -5378,10 +5448,6 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Saving map received from server"
 msgstr "Konservanta mapon ricevitan de la servilo"
-
-#: src/settings_translation_file.cpp
-msgid "Scale"
-msgstr "Skalo"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -6355,223 +6421,104 @@ msgstr ""
 msgid "cURL timeout"
 msgstr "cURL tempolimo"
 
-#, fuzzy
-#~ msgid "Preload inventory textures"
-#~ msgstr "Ŝargi teksturojn…"
+#~ msgid "Disable MP"
+#~ msgstr "Malŝaltu modifaron"
 
-#~ msgid "Scaling factor applied to menu elements: "
-#~ msgstr "Skala faktoro por menuoj "
+#~ msgid "Enable MP"
+#~ msgstr "Ŝaltu modifaron"
 
-#~ msgid "Touch free target"
-#~ msgstr "Sentuŝa celo"
+#~ msgid "No worldname given or no game selected"
+#~ msgstr "Neniu mondnomo donitis aŭ neniu ludon elektitis"
 
-#~ msgid "Restart minetest for driver change to take effect"
-#~ msgstr "Restartigu Minetest-on por efikigi pelilan ŝanĝon"
+#~ msgid "\"$1\" is not a valid flag."
+#~ msgstr "\"$1\" ne estas valida parametro."
 
-#, fuzzy
-#~ msgid "If enabled, "
-#~ msgstr "ŝaltita"
-
-#~ msgid "No!!!"
-#~ msgstr "Ne!!!"
-
-#~ msgid "Public Serverlist"
-#~ msgstr "Publika servilolisto"
-
-#~ msgid "No of course not!"
-#~ msgstr "Ne, memkompreneble!"
-
-#, fuzzy
-#~ msgid "Useful for mod developers."
-#~ msgstr "Eksaj kernprogramistoj"
-
-#, fuzzy
-#~ msgid "Mapgen v7 cave width"
-#~ msgstr "Mondogenerilo"
-
-#, fuzzy
-#~ msgid "Mapgen v5 cave width"
-#~ msgstr "Mondogenerilo"
-
-#, fuzzy
-#~ msgid "Mapgen fractal slice w"
-#~ msgstr "Mondogenerilo"
-
-#, fuzzy
-#~ msgid "Mapgen fractal scale"
-#~ msgstr "Mondogenerilo"
-
-#, fuzzy
-#~ msgid "Mapgen fractal offset"
-#~ msgstr "Mondogenerilo"
-
-#, fuzzy
-#~ msgid "Mapgen fractal iterations"
-#~ msgstr "Paralaksa Okludo"
-
-#, fuzzy
-#~ msgid "Mapgen fractal fractal"
-#~ msgstr "Mondogenerilo"
-
-#, fuzzy
-#~ msgid "Mapgen fractal cave width"
-#~ msgstr "Mondogenerilo"
-
-#, fuzzy
-#~ msgid "Mapgen flat cave width"
-#~ msgstr "Mondogenerilo"
-
-#~ msgid "Plus"
-#~ msgstr "Pluso"
-
-#~ msgid "Period"
-#~ msgstr "Punkto"
-
-#~ msgid "PA1"
-#~ msgstr "PA1"
-
-#~ msgid "Minus"
-#~ msgstr "Minuso"
-
-#~ msgid "Kanji"
-#~ msgstr "Kanji"
-
-#~ msgid "Kana"
-#~ msgstr "Kana"
-
-#~ msgid "Junja"
-#~ msgstr "Junja"
-
-#~ msgid "Final"
-#~ msgstr "Finalo"
-
-#~ msgid "ExSel"
-#~ msgstr "ExSel"
-
-#~ msgid "CrSel"
-#~ msgstr "CrSel"
-
-#~ msgid "Comma"
-#~ msgstr "Komo"
-
-#~ msgid "Capital"
-#~ msgstr "Fiksiĝema klavo"
-
-#~ msgid "Attn"
-#~ msgstr "Attn"
-
-#~ msgid "Hide mp content"
-#~ msgstr "Kaŝu modifarojn"
-
-#, fuzzy
-#~ msgid "Water Features"
-#~ msgstr "Aĵaj teksturoj…"
-
-#, fuzzy
-#~ msgid "Use key"
-#~ msgstr "premi klavon"
-
-#~ msgid "Support older servers"
-#~ msgstr "Subteno por malnovaj serviloj"
-
-#~ msgid "River noise -- rivers occur close to zero"
-#~ msgstr "Rivera bruo -- riveroj okazas preskaŭ neniam"
+#~ msgid "Format is 3 numbers separated by commas and inside brackets."
+#~ msgstr "Formato estas 3 diskomaj nombroj inter krampoj."
 
 #~ msgid ""
-#~ "Name of map generator to be used when creating a new world.\n"
-#~ "Creating a world in the main menu will override this."
+#~ "Format: <offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>), <seed>, "
+#~ "<octaves>, <persistence>"
 #~ msgstr ""
-#~ "Nomo de map-estigilo uzota kreante novan mondon.\n"
-#~ "Kreante mondon de ĉefmenuo oni transpasos ĉi tion."
+#~ "Formato: <deŝovo>, <skalo>, (<sternoX>, <sternoY>, <sternoZ>), "
+#~ "<mondfonto>, <oktavoj>, <daŭreco>"
 
-#~ msgid "Maximum simultaneous block sends total"
-#~ msgstr "Maksimumaj samtempaj sendoj de mondopecoj entute"
+#~ msgid "Optionally the lacunarity can be appended with a leading comma."
+#~ msgstr "Mankopleneco aldoneblas kun antaŭa komo."
 
-#~ msgid "Maximum number of blocks that are simultaneously sent per client."
-#~ msgstr "Maksimuma nombro da mondopecoj sendataj po unu kliento."
+#~ msgid "Please enter a comma seperated list of flags."
+#~ msgstr "Bonvolu enigi diskoman liston de parametroj."
+
+#~ msgid "Possible values are: "
+#~ msgstr "Eblaj valoroj estas: "
+
+#~ msgid "Select path"
+#~ msgstr "Elektu indikon"
+
+#~ msgid "Subgame Mods"
+#~ msgstr "Subludaj modifoj"
+
+#~ msgid "Page $1 of $2"
+#~ msgstr "Paĝo $1 de $2"
+
+#~ msgid "Rating"
+#~ msgstr "Takso"
+
+#~ msgid "Shortname:"
+#~ msgstr "Konciza nomo:"
+
+#~ msgid "Successfully installed:"
+#~ msgstr "Instalis sukcese:"
+
+#~ msgid "Unsorted"
+#~ msgstr "Neordigita"
+
+#~ msgid "re-Install"
+#~ msgstr "Instali denove"
+
+#~ msgid "Local Game"
+#~ msgstr "Loka ludo"
+
+#~ msgid "Uninstall selected modpack"
+#~ msgstr "Malinstali selektan modifaron"
+
+#~ msgid "Play Online"
+#~ msgstr "Ludi enrete"
+
+#~ msgid "Normal Mapping"
+#~ msgstr "Normalmapado"
+
+#~ msgid "No information available"
+#~ msgstr "Neniu informoj disponeblas"
+
+#~ msgid "Volume changed to 0%"
+#~ msgstr "Laŭteco agorditas al 0%"
+
+#~ msgid "Volume changed to 100%"
+#~ msgstr "Laŭteco agorditas al 100%"
+
+#~ msgid "Print stacks"
+#~ msgstr "Presi stakojn"
+
+#~ msgid "Use"
+#~ msgstr "Uzi"
+
+#~ msgid "Next"
+#~ msgstr "Sekvanto"
+
+#~ msgid "Prior"
+#~ msgstr "Antaŭe"
 
 #, fuzzy
-#~ msgid "Main menu mod manager"
-#~ msgstr "Ĉefmenuo"
-
-#~ msgid "Lava Features"
-#~ msgstr "Atributoj de lafo"
+#~ msgid "Active Block Modifier interval"
+#~ msgstr "Aktivblokmodifila Intervalo"
 
 #~ msgid ""
-#~ "Key for opening the chat console.\n"
-#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
-#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ "Android systems only: Tries to create inventory textures from meshes\n"
+#~ "when no supported render was found."
 #~ msgstr ""
-#~ "Klavo por malfermi la babilan konzolon.\n"
-#~ "Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
-#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#~ msgid ""
-#~ "Iterations of the recursive function.\n"
-#~ "Controls the amount of fine detail."
-#~ msgstr ""
-#~ "Ripetoj de la rikura funkcio.\n"
-#~ "Regas la kvanton da detaletoj."
-
-#, fuzzy
-#~ msgid "Inventory image hack"
-#~ msgstr "Inventaro"
-
-#~ msgid "If enabled, show the server status message on player connection."
-#~ msgstr "Montras al ludantoj konektitaj mesaĝon pri stato de la servilo."
-
-#~ msgid "General"
-#~ msgstr "Ĝenerala"
-
-#~ msgid ""
-#~ "From how far clients know about objects, stated in mapblocks (16 nodes)."
-#~ msgstr ""
-#~ "De kiu distanco klientoj scias pri objektoj, mapbloke (po 16 monderoj)."
-
-#~ msgid ""
-#~ "Field of view while zooming in degrees.\n"
-#~ "This requires the \"zoom\" privilege on the server."
-#~ msgstr ""
-#~ "Vidokampo zomante en gradoj.\n"
-#~ "Ĉi tio postulas la rajton «zomi» en la servilo."
-
-#~ msgid "Field of view for zoom"
-#~ msgstr "Vidokampo zome"
-
-#~ msgid "Enables view bobbing when walking."
-#~ msgstr "Ŝaltas balanciĝon dum irado."
-
-#~ msgid "Enable view bobbing"
-#~ msgstr "Ŝalti vidan balancadon"
-
-#~ msgid "Depth below which you'll find massive caves."
-#~ msgstr "Profundo sub kiu troveblos grandegaj kavernoj."
-
-#~ msgid "Crouch speed"
-#~ msgstr "Singardira rapido"
-
-#~ msgid ""
-#~ "Creates unpredictable water features in caves.\n"
-#~ "These can make mining difficult. Zero disables them. (0-10)"
-#~ msgstr ""
-#~ "Kreas neantaŭvideblaj akvejoj en kavernoj.\n"
-#~ "Tiuj povas malfaciligi fosadon. Nulo ilin malpermesas. (0-10)"
-
-#~ msgid ""
-#~ "Creates unpredictable lava features in caves.\n"
-#~ "These can make mining difficult. Zero disables them. (0-10)"
-#~ msgstr ""
-#~ "Kreas neantaŭvideblaj lafejoj en kavernoj.\n"
-#~ "Tiuj povas malfaciligi fosadon. Nulo ilin malpermesas. (0-10)"
-
-#~ msgid "Continuous forward movement (only used for testing)."
-#~ msgstr "Senĉesa moviĝo antaŭen (nur por testado)."
-
-#~ msgid "Console key"
-#~ msgstr "Konzola klavo"
-
-#~ msgid "Cloud height"
-#~ msgstr "Alteco de nuboj"
+#~ "Nur por Android: Provos krei objektujajn teksturojn de maŝaro,\n"
+#~ "ne trovinte alian kongruan bildon."
 
 #~ msgid ""
 #~ "Announce to this serverlist.\n"
@@ -6582,101 +6529,223 @@ msgstr "cURL tempolimo"
 #~ "Se vi volas enlistigi vian IPv6 adreson, uzu  serverlist_url = v6.servers."
 #~ "minetest.net."
 
+#~ msgid "Cloud height"
+#~ msgstr "Alteco de nuboj"
+
+#~ msgid "Console key"
+#~ msgstr "Konzola klavo"
+
+#~ msgid "Continuous forward movement (only used for testing)."
+#~ msgstr "Senĉesa moviĝo antaŭen (nur por testado)."
+
 #~ msgid ""
-#~ "Android systems only: Tries to create inventory textures from meshes\n"
-#~ "when no supported render was found."
+#~ "Creates unpredictable lava features in caves.\n"
+#~ "These can make mining difficult. Zero disables them. (0-10)"
 #~ msgstr ""
-#~ "Nur por Android: Provos krei objektujajn teksturojn de maŝaro,\n"
-#~ "ne trovinte alian kongruan bildon."
+#~ "Kreas neantaŭvideblaj lafejoj en kavernoj.\n"
+#~ "Tiuj povas malfaciligi fosadon. Nulo ilin malpermesas. (0-10)"
+
+#~ msgid ""
+#~ "Creates unpredictable water features in caves.\n"
+#~ "These can make mining difficult. Zero disables them. (0-10)"
+#~ msgstr ""
+#~ "Kreas neantaŭvideblaj akvejoj en kavernoj.\n"
+#~ "Tiuj povas malfaciligi fosadon. Nulo ilin malpermesas. (0-10)"
+
+#~ msgid "Crouch speed"
+#~ msgstr "Singardira rapido"
+
+#~ msgid "Depth below which you'll find massive caves."
+#~ msgstr "Profundo sub kiu troveblos grandegaj kavernoj."
+
+#~ msgid "Enable view bobbing"
+#~ msgstr "Ŝalti vidan balancadon"
+
+#~ msgid "Enables view bobbing when walking."
+#~ msgstr "Ŝaltas balanciĝon dum irado."
+
+#~ msgid "Field of view for zoom"
+#~ msgstr "Vidokampo zome"
+
+#~ msgid ""
+#~ "Field of view while zooming in degrees.\n"
+#~ "This requires the \"zoom\" privilege on the server."
+#~ msgstr ""
+#~ "Vidokampo zomante en gradoj.\n"
+#~ "Ĉi tio postulas la rajton «zomi» en la servilo."
+
+#~ msgid ""
+#~ "From how far clients know about objects, stated in mapblocks (16 nodes)."
+#~ msgstr ""
+#~ "De kiu distanco klientoj scias pri objektoj, mapbloke (po 16 monderoj)."
+
+#~ msgid "General"
+#~ msgstr "Ĝenerala"
+
+#~ msgid "If enabled, show the server status message on player connection."
+#~ msgstr "Montras al ludantoj konektitaj mesaĝon pri stato de la servilo."
 
 #, fuzzy
-#~ msgid "Active Block Modifier interval"
-#~ msgstr "Aktivblokmodifila Intervalo"
-
-#~ msgid "Prior"
-#~ msgstr "Antaŭe"
-
-#~ msgid "Next"
-#~ msgstr "Sekvanto"
-
-#~ msgid "Use"
-#~ msgstr "Uzi"
-
-#~ msgid "Print stacks"
-#~ msgstr "Presi stakojn"
-
-#~ msgid "Volume changed to 100%"
-#~ msgstr "Laŭteco agorditas al 100%"
-
-#~ msgid "Volume changed to 0%"
-#~ msgstr "Laŭteco agorditas al 0%"
-
-#~ msgid "No information available"
-#~ msgstr "Neniu informoj disponeblas"
-
-#~ msgid "Normal Mapping"
-#~ msgstr "Normalmapado"
-
-#~ msgid "Play Online"
-#~ msgstr "Ludi enrete"
-
-#~ msgid "Uninstall selected modpack"
-#~ msgstr "Malinstali selektan modifaron"
-
-#~ msgid "Local Game"
-#~ msgstr "Loka ludo"
-
-#~ msgid "re-Install"
-#~ msgstr "Instali denove"
-
-#~ msgid "Unsorted"
-#~ msgstr "Neordigita"
-
-#~ msgid "Successfully installed:"
-#~ msgstr "Instalis sukcese:"
-
-#~ msgid "Shortname:"
-#~ msgstr "Konciza nomo:"
-
-#~ msgid "Rating"
-#~ msgstr "Takso"
-
-#~ msgid "Page $1 of $2"
-#~ msgstr "Paĝo $1 de $2"
-
-#~ msgid "Subgame Mods"
-#~ msgstr "Subludaj modifoj"
-
-#~ msgid "Select path"
-#~ msgstr "Elektu indikon"
-
-#~ msgid "Possible values are: "
-#~ msgstr "Eblaj valoroj estas: "
-
-#~ msgid "Please enter a comma seperated list of flags."
-#~ msgstr "Bonvolu enigi diskoman liston de parametroj."
-
-#~ msgid "Optionally the lacunarity can be appended with a leading comma."
-#~ msgstr "Mankopleneco aldoneblas kun antaŭa komo."
+#~ msgid "Inventory image hack"
+#~ msgstr "Inventaro"
 
 #~ msgid ""
-#~ "Format: <offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>), <seed>, "
-#~ "<octaves>, <persistence>"
+#~ "Iterations of the recursive function.\n"
+#~ "Controls the amount of fine detail."
 #~ msgstr ""
-#~ "Formato: <deŝovo>, <skalo>, (<sternoX>, <sternoY>, <sternoZ>), "
-#~ "<mondfonto>, <oktavoj>, <daŭreco>"
+#~ "Ripetoj de la rikura funkcio.\n"
+#~ "Regas la kvanton da detaletoj."
 
-#~ msgid "Format is 3 numbers separated by commas and inside brackets."
-#~ msgstr "Formato estas 3 diskomaj nombroj inter krampoj."
+#~ msgid ""
+#~ "Key for opening the chat console.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Klavo por malfermi la babilan konzolon.\n"
+#~ "Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
 
-#~ msgid "\"$1\" is not a valid flag."
-#~ msgstr "\"$1\" ne estas valida parametro."
+#~ msgid "Lava Features"
+#~ msgstr "Atributoj de lafo"
 
-#~ msgid "No worldname given or no game selected"
-#~ msgstr "Neniu mondnomo donitis aŭ neniu ludon elektitis"
+#, fuzzy
+#~ msgid "Main menu mod manager"
+#~ msgstr "Ĉefmenuo"
 
-#~ msgid "Enable MP"
-#~ msgstr "Ŝaltu modifaron"
+#~ msgid "Maximum number of blocks that are simultaneously sent per client."
+#~ msgstr "Maksimuma nombro da mondopecoj sendataj po unu kliento."
 
-#~ msgid "Disable MP"
-#~ msgstr "Malŝaltu modifaron"
+#~ msgid "Maximum simultaneous block sends total"
+#~ msgstr "Maksimumaj samtempaj sendoj de mondopecoj entute"
+
+#~ msgid ""
+#~ "Name of map generator to be used when creating a new world.\n"
+#~ "Creating a world in the main menu will override this."
+#~ msgstr ""
+#~ "Nomo de map-estigilo uzota kreante novan mondon.\n"
+#~ "Kreante mondon de ĉefmenuo oni transpasos ĉi tion."
+
+#~ msgid "River noise -- rivers occur close to zero"
+#~ msgstr "Rivera bruo -- riveroj okazas preskaŭ neniam"
+
+#~ msgid "Support older servers"
+#~ msgstr "Subteno por malnovaj serviloj"
+
+#, fuzzy
+#~ msgid "Use key"
+#~ msgstr "premi klavon"
+
+#, fuzzy
+#~ msgid "Water Features"
+#~ msgstr "Aĵaj teksturoj…"
+
+#~ msgid "Hide mp content"
+#~ msgstr "Kaŝu modifarojn"
+
+#~ msgid "Attn"
+#~ msgstr "Attn"
+
+#~ msgid "Capital"
+#~ msgstr "Fiksiĝema klavo"
+
+#~ msgid "Comma"
+#~ msgstr "Komo"
+
+#~ msgid "CrSel"
+#~ msgstr "CrSel"
+
+#~ msgid "ExSel"
+#~ msgstr "ExSel"
+
+#~ msgid "Final"
+#~ msgstr "Finalo"
+
+#~ msgid "Junja"
+#~ msgstr "Junja"
+
+#~ msgid "Kana"
+#~ msgstr "Kana"
+
+#~ msgid "Kanji"
+#~ msgstr "Kanji"
+
+#~ msgid "Minus"
+#~ msgstr "Minuso"
+
+#~ msgid "PA1"
+#~ msgstr "PA1"
+
+#~ msgid "Period"
+#~ msgstr "Punkto"
+
+#~ msgid "Plus"
+#~ msgstr "Pluso"
+
+#, fuzzy
+#~ msgid "Mapgen flat cave width"
+#~ msgstr "Mondogenerilo"
+
+#, fuzzy
+#~ msgid "Mapgen fractal cave width"
+#~ msgstr "Mondogenerilo"
+
+#, fuzzy
+#~ msgid "Mapgen fractal fractal"
+#~ msgstr "Mondogenerilo"
+
+#, fuzzy
+#~ msgid "Mapgen fractal iterations"
+#~ msgstr "Paralaksa Okludo"
+
+#, fuzzy
+#~ msgid "Mapgen fractal offset"
+#~ msgstr "Mondogenerilo"
+
+#, fuzzy
+#~ msgid "Mapgen fractal scale"
+#~ msgstr "Mondogenerilo"
+
+#, fuzzy
+#~ msgid "Mapgen fractal slice w"
+#~ msgstr "Mondogenerilo"
+
+#, fuzzy
+#~ msgid "Mapgen v5 cave width"
+#~ msgstr "Mondogenerilo"
+
+#, fuzzy
+#~ msgid "Mapgen v7 cave width"
+#~ msgstr "Mondogenerilo"
+
+#, fuzzy
+#~ msgid "Useful for mod developers."
+#~ msgstr "Eksaj kernprogramistoj"
+
+#~ msgid "No of course not!"
+#~ msgstr "Ne, memkompreneble!"
+
+#~ msgid "Public Serverlist"
+#~ msgstr "Publika servilolisto"
+
+#~ msgid "No!!!"
+#~ msgstr "Ne!!!"
+
+#, fuzzy
+#~ msgid "If enabled, "
+#~ msgstr "ŝaltita"
+
+#~ msgid "Restart minetest for driver change to take effect"
+#~ msgstr "Restartigu Minetest-on por efikigi pelilan ŝanĝon"
+
+#~ msgid "Touch free target"
+#~ msgstr "Sentuŝa celo"
+
+#~ msgid "Scaling factor applied to menu elements: "
+#~ msgstr "Skala faktoro por menuoj "
+
+#, fuzzy
+#~ msgid "Preload inventory textures"
+#~ msgstr "Ŝargi teksturojn…"
+
+#~ msgid "Advanced Settings"
+#~ msgstr "Pliaj Agordoj"

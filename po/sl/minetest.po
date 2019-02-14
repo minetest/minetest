@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-01-24 01:05+0200\n"
+"POT-Creation-Date: 2019-02-14 07:46+0100\n"
 "PO-Revision-Date: 2019-01-24 00:05+0000\n"
 "Last-Translator: Nore <nore@mesecons.net>\n"
 "Language-Team: Slovenian <https://hosted.weblate.org/projects/minetest/"
@@ -11,8 +11,8 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=4; plural=n%100==1 ? 0 : n%100==2 ? 1 : n%100==3 || "
-"n%100==4 ? 2 : 3;\n"
+"Plural-Forms: nplurals=4; plural=n%100==1 ? 0 : n%100==2 ? 1 : n%100==3 || n"
+"%100==4 ? 2 : 3;\n"
 "X-Generator: Weblate 3.4\n"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
@@ -25,11 +25,13 @@ msgid "You died"
 msgstr "Mrtev si."
 
 #: builtin/fstk/ui.lua
-msgid "An error occured in a Lua script, such as a mod:"
+#, fuzzy
+msgid "An error occurred in a Lua script, such as a mod:"
 msgstr "Prišlo je do napake v kodi Lua kodi:"
 
 #: builtin/fstk/ui.lua
-msgid "An error occured:"
+#, fuzzy
+msgid "An error occurred:"
 msgstr "Prišlo je do napake:"
 
 #: builtin/fstk/ui.lua
@@ -111,9 +113,10 @@ msgid "Enable modpack"
 msgstr "Preimenuj Modpack:"
 
 #: builtin/mainmenu/dlg_config_world.lua
+#, fuzzy
 msgid ""
 "Failed to enable mod \"$1\" as it contains disallowed characters. Only "
-"chararacters [a-z0-9_] are allowed."
+"characters [a-z0-9_] are allowed."
 msgstr ""
 "Zagon prilagoditve »$1« je spodletel zaradi uporabljenih nedovoljenih "
 "znakov. Dovoljeni so le znaki [a-z0-9_]."
@@ -187,6 +190,10 @@ msgid "Mods"
 msgstr "Prilagoditve"
 
 #: builtin/mainmenu/dlg_contentstore.lua
+msgid "No packages could be retrieved"
+msgstr ""
+
+#: builtin/mainmenu/dlg_contentstore.lua
 msgid "No results"
 msgstr ""
 
@@ -209,10 +216,6 @@ msgstr "Namesti"
 msgid "Update"
 msgstr ""
 
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "View"
-msgstr ""
-
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "A world named \"$1\" already exists"
 msgstr "Svet z imenom »$1« že obstaja"
@@ -223,7 +226,7 @@ msgstr "Ustvari"
 
 #: builtin/mainmenu/dlg_create_world.lua
 #, fuzzy
-msgid "Download a game, such as minetest_game, from minetest.net"
+msgid "Download a game, such as Minetest Game, from minetest.net"
 msgstr "Prejmi igro, kot je minetest_game, s spletišča minetest.net."
 
 #: builtin/mainmenu/dlg_create_world.lua
@@ -244,6 +247,7 @@ msgid "No game selected"
 msgstr "Izberi obseg"
 
 #: builtin/mainmenu/dlg_create_world.lua
+#: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Seed"
 msgstr "Seme"
 
@@ -292,9 +296,19 @@ msgstr "Sprejmi"
 msgid "Rename Modpack:"
 msgstr "Preimenuj Modpack:"
 
+#: builtin/mainmenu/dlg_rename_modpack.lua
+msgid ""
+"This modpack has an explicit name given in its modpack.conf which will "
+"override any renaming here."
+msgstr ""
+
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "(No description of setting given)"
 msgstr "(ni podanega opisa nastavitve)"
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "2D Noise"
+msgstr ""
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "< Back to Settings page"
@@ -317,6 +331,22 @@ msgid "Enabled"
 msgstr "Omogočeno"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "Lacunarity"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "Octaves"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua src/settings_translation_file.cpp
+msgid "Offset"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "Persistance"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Please enter a valid integer."
 msgstr "Vpisati je treba veljavno celo število."
 
@@ -327,6 +357,10 @@ msgstr "Vpisati je treba veljavno številko."
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Restore Default"
 msgstr "Obnovi privzeto"
+
+#: builtin/mainmenu/dlg_settings_advanced.lua src/settings_translation_file.cpp
+msgid "Scale"
+msgstr ""
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 #, fuzzy
@@ -350,15 +384,51 @@ msgstr "Vrednost mora biti vsaj $1."
 msgid "The value must not be larger than $1."
 msgstr "Vrednost ne sme biti večja od $1."
 
-#: builtin/mainmenu/pkgmgr.lua
-#, fuzzy
-msgid " mods"
-msgstr "Nastavitve prilagoditev"
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "X"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "X spread"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "Y"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "Y spread"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "Z"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "Z spread"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "absvalue"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "defaults"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "eased"
+msgstr ""
 
 #: builtin/mainmenu/pkgmgr.lua
 #, fuzzy
 msgid "$1 (Enabled)"
 msgstr "Omogočeno"
+
+#: builtin/mainmenu/pkgmgr.lua
+#, fuzzy
+msgid "$1 mods"
+msgstr "Nastavitve prilagoditev"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Failed to install $1 to $2"
@@ -606,8 +676,9 @@ msgid "8x"
 msgstr "8x"
 
 #: builtin/mainmenu/tab_settings.lua
-msgid "Advanced Settings"
-msgstr "Napredne nastavitve"
+#, fuzzy
+msgid "All Settings"
+msgstr "Nastavitve"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Antialiasing:"
@@ -4607,10 +4678,6 @@ msgid "Number of parallax occlusion iterations."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Offset"
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid "Opaque liquids"
 msgstr ""
 
@@ -4877,10 +4944,6 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Saving map received from server"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Scale"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5814,65 +5877,20 @@ msgstr ""
 msgid "cURL timeout"
 msgstr ""
 
-#~ msgid "Next"
-#~ msgstr "Naprej"
+#~ msgid "Disable MP"
+#~ msgstr "Onemogoči MP"
 
-#~ msgid "Prior"
-#~ msgstr "Pred"
+#~ msgid "Enable MP"
+#~ msgstr "Omogoči MP"
 
-#~ msgid "Use"
-#~ msgstr "Uporabi"
+#~ msgid "No worldname given or no game selected"
+#~ msgstr "Ni podanega imena sveta ali pa svet ni izbran"
 
-#~ msgid "Volume changed to 0%"
-#~ msgstr "Glasnost zvoka je nastavljena na 0 %"
+#~ msgid "Please enter a comma seperated list of flags."
+#~ msgstr "Vpisati je treba z vejico ločen seznam zastavic."
 
-#~ msgid "Volume changed to 100%"
-#~ msgstr "Glasnost zvok je nastavljena na 100 %"
-
-#~ msgid "No information available"
-#~ msgstr "Podrobnosti niso na voljo"
-
-#~ msgid "Normal Mapping"
-#~ msgstr "Običajno preslikavanje"
-
-#~ msgid "Play Online"
-#~ msgstr "Spletna igra"
-
-#~ msgid "Uninstall selected modpack"
-#~ msgstr "Odstrani izbrani paket modpack"
-
-#~ msgid "Local Game"
-#~ msgstr "Samostojna igra"
-
-#~ msgid "Page $1 of $2"
-#~ msgstr "Stran $1 od $2"
-
-#~ msgid "re-Install"
-#~ msgstr "Ponovna namestitev"
-
-#~ msgid "Rating"
-#~ msgstr "Ocena"
-
-#~ msgid "Shortname:"
-#~ msgstr "Kratko ime:"
-
-#~ msgid "Successfully installed:"
-#~ msgstr "Namestitev uspešno končana:"
-
-#~ msgid "Unsorted"
-#~ msgstr "Nerazvrščeno"
-
-#~ msgid "Subgame Mods"
-#~ msgstr "Prilagoditve podiger"
-
-#~ msgid "Select path"
-#~ msgstr "Izbor poti"
-
-#~ msgid "\"$1\" is not a valid flag."
-#~ msgstr "»$1« ni veljavna zastavica."
-
-#~ msgid "Format is 3 numbers separated by commas and inside brackets."
-#~ msgstr "Zapis je določen s tremi števili v oklepaju, ločenimi z vejicami."
+#~ msgid "Possible values are: "
+#~ msgstr "Dovoljene vrednosti so: "
 
 #~ msgid ""
 #~ "Format: <offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>), <seed>, "
@@ -5881,17 +5899,65 @@ msgstr ""
 #~ "Format <odmik>, <velikost>, (<pomnožiX>, <pomnožiY>, <pomnožiZ>), <seme>, "
 #~ "<oktave>, <vztrajnost>"
 
-#~ msgid "Possible values are: "
-#~ msgstr "Dovoljene vrednosti so: "
+#~ msgid "Format is 3 numbers separated by commas and inside brackets."
+#~ msgstr "Zapis je določen s tremi števili v oklepaju, ločenimi z vejicami."
 
-#~ msgid "Please enter a comma seperated list of flags."
-#~ msgstr "Vpisati je treba z vejico ločen seznam zastavic."
+#~ msgid "\"$1\" is not a valid flag."
+#~ msgstr "»$1« ni veljavna zastavica."
 
-#~ msgid "No worldname given or no game selected"
-#~ msgstr "Ni podanega imena sveta ali pa svet ni izbran"
+#~ msgid "Select path"
+#~ msgstr "Izbor poti"
 
-#~ msgid "Enable MP"
-#~ msgstr "Omogoči MP"
+#~ msgid "Subgame Mods"
+#~ msgstr "Prilagoditve podiger"
 
-#~ msgid "Disable MP"
-#~ msgstr "Onemogoči MP"
+#~ msgid "Unsorted"
+#~ msgstr "Nerazvrščeno"
+
+#~ msgid "Successfully installed:"
+#~ msgstr "Namestitev uspešno končana:"
+
+#~ msgid "Shortname:"
+#~ msgstr "Kratko ime:"
+
+#~ msgid "Rating"
+#~ msgstr "Ocena"
+
+#~ msgid "re-Install"
+#~ msgstr "Ponovna namestitev"
+
+#~ msgid "Page $1 of $2"
+#~ msgstr "Stran $1 od $2"
+
+#~ msgid "Local Game"
+#~ msgstr "Samostojna igra"
+
+#~ msgid "Uninstall selected modpack"
+#~ msgstr "Odstrani izbrani paket modpack"
+
+#~ msgid "Play Online"
+#~ msgstr "Spletna igra"
+
+#~ msgid "Normal Mapping"
+#~ msgstr "Običajno preslikavanje"
+
+#~ msgid "No information available"
+#~ msgstr "Podrobnosti niso na voljo"
+
+#~ msgid "Volume changed to 100%"
+#~ msgstr "Glasnost zvok je nastavljena na 100 %"
+
+#~ msgid "Volume changed to 0%"
+#~ msgstr "Glasnost zvoka je nastavljena na 0 %"
+
+#~ msgid "Use"
+#~ msgstr "Uporabi"
+
+#~ msgid "Prior"
+#~ msgstr "Pred"
+
+#~ msgid "Next"
+#~ msgstr "Naprej"
+
+#~ msgid "Advanced Settings"
+#~ msgstr "Napredne nastavitve"
