@@ -8,8 +8,8 @@ fake_function() {
 	gettext("If enabled, you can place blocks at the position (feet + eye level) where you stand.\nThis is helpful when working with nodeboxes in small areas.");
 	gettext("Flying");
 	gettext("Player is able to fly without being affected by gravity.\nThis requires the \"fly\" privilege on the server.");
-	gettext("Pitch fly mode");
-	gettext("If enabled together with fly mode, makes move directions relative to the player's pitch.");
+	gettext("Pitch move mode");
+	gettext("If enabled, makes move directions relative to the player's pitch when flying or swimming.");
 	gettext("Fast movement");
 	gettext("Fast movement (via the \"special\" key).\nThis requires the \"fast\" privilege on the server.");
 	gettext("Noclip");
@@ -33,7 +33,7 @@ fake_function() {
 	gettext("Rightclick repetition interval");
 	gettext("The time in seconds it takes between repeated right clicks when holding the right\nmouse button.");
 	gettext("Automatic jumping");
-	gettext("Automatically jump up single-node obstacles.\ntype: bool");
+	gettext("Automatically jump up single-node obstacles.");
 	gettext("Safe digging and placing");
 	gettext("Prevent digging and placing from repeating when holding the mouse buttons.\nEnable this when you dig or place too often by accident.");
 	gettext("Random input");
@@ -82,8 +82,8 @@ fake_function() {
 	gettext("Key for toggling unlimited view range.\nSee http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3");
 	gettext("Fly key");
 	gettext("Key for toggling flying.\nSee http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3");
-	gettext("Pitch fly key");
-	gettext("Key for toggling pitch fly mode.\nSee http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3");
+	gettext("Pitch move key");
+	gettext("Key for toggling pitch move mode.\nSee http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3");
 	gettext("Fast key");
 	gettext("Key for toggling fast mode.\nSee http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3");
 	gettext("Noclip key");
@@ -443,6 +443,8 @@ fake_function() {
 	gettext("File in client/serverlist/ that contains your favorite servers displayed in the\nMultiplayer Tab.");
 	gettext("Maximum size of the out chat queue");
 	gettext("Maximum size of the out chat queue.\n0 to disable queueing and -1 to make the queue size unlimited.");
+	gettext("Enable register confirmation");
+	gettext("Enable register confirmation when connecting to server.\nIf disabled, new account will be registered automatically.");
 	gettext("Advanced");
 	gettext("Mapblock unload timeout");
 	gettext("Timeout for client to remove unused map data from memory.");
@@ -595,7 +597,7 @@ fake_function() {
 	gettext("Server side occlusion culling");
 	gettext("If enabled the server will perform map block occlusion culling based on\non the eye position of the player. This can reduce the number of blocks\nsent to the client 50-80%. The client will not longer receive most invisible\nso that the utility of noclip mode is reduced.");
 	gettext("Client side modding restrictions");
-	gettext("Restricts the access of certain client-side functions on servers\nCombine these byteflags below to restrict client-side features:\nLOAD_CLIENT_MODS: 1 (disable client mods loading)\nCHAT_MESSAGES: 2 (disable send_chat_message call client-side)\nREAD_ITEMDEFS: 4 (disable get_item_def call client-side)\nREAD_NODEDEFS: 8 (disable get_node_def call client-side)\nLOOKUP_NODES_LIMIT: 16 (limits get_node call client-side to\ncsm_restriction_noderange)");
+	gettext("Restricts the access of certain client-side functions on servers.\nCombine the byteflags below to restrict client-side features, or set to 0\nfor no restrictions:\nLOAD_CLIENT_MODS: 1 (disable loading client-provided mods)\nCHAT_MESSAGES: 2 (disable send_chat_message call client-side)\nREAD_ITEMDEFS: 4 (disable get_item_def call client-side)\nREAD_NODEDEFS: 8 (disable get_node_def call client-side)\nLOOKUP_NODES_LIMIT: 16 (limits get_node call client-side to\ncsm_restriction_noderange)\nREAD_PLAYERINFO: 32 (disable get_player_names call client-side)");
 	gettext("Client side node lookup range restriction");
 	gettext("If the CSM restriction for node range is enabled, get_node calls are limited\nto this distance from the player to the node.");
 	gettext("Security");
@@ -648,7 +650,7 @@ fake_function() {
 	gettext("High-precision FPU");
 	gettext("Makes DirectX work with LuaJIT. Disable if it causes troubles.");
 	gettext("Main menu style");
-	gettext("Changes the main menu UI:\n-   Full:  Multple singleplayer worlds, game choice, texture pack chooser, etc.\n-   Simple: One singleplayer world, no game or texture pack choosers. May be\nnecessary for smaller screens.\n-   Auto: Simple on Android, full on everything else.");
+	gettext("Changes the main menu UI:\n-   Full:  Multiple singleplayer worlds, game choice, texture pack chooser, etc.\n-   Simple: One singleplayer world, no game or texture pack choosers. May be\nnecessary for smaller screens.");
 	gettext("Main menu script");
 	gettext("Replaces the default main menu with a custom one.");
 	gettext("Engine profiling data print interval");
@@ -836,11 +838,11 @@ fake_function() {
 	gettext("Hilliness4 noise");
 	gettext("Fourth of 4 2D noises that together define hill/mountain range height.");
 	gettext("Rolling hills spread noise");
-	gettext("2D noise that controls the size/occurance of rolling hills.");
+	gettext("2D noise that controls the size/occurrence of rolling hills.");
 	gettext("Ridge mountain spread noise");
-	gettext("2D noise that controls the size/occurance of ridged mountain ranges.");
+	gettext("2D noise that controls the size/occurrence of ridged mountain ranges.");
 	gettext("Step mountain spread noise");
-	gettext("2D noise that controls the size/occurance of step mountain ranges.");
+	gettext("2D noise that controls the size/occurrence of step mountain ranges.");
 	gettext("Rolling hill size noise");
 	gettext("2D noise that controls the shape/size of rolling hills.");
 	gettext("Ridged mountain size noise");
@@ -927,7 +929,7 @@ fake_function() {
 	gettext("Second of two 3D noises that together define tunnels.");
 	gettext("Mapgen Valleys");
 	gettext("Mapgen Valleys specific flags");
-	gettext("Map generation attributes specific to Mapgen Valleys.\n'altitude_chill': Reduces heat with altitude.\n'humid_rivers': Increases humidity around rivers and where water pools.\n'vary_river_depth': If enabled, low humidity and high heat causes rivers\nto become shallower and occasionally dry.\n'altitude_dry': Reduces humidity with altitude.");
+	gettext("Map generation attributes specific to Mapgen Valleys.\n'altitude_chill': Reduces heat with altitude.\n'humid_rivers': Increases humidity around rivers.\n'vary_river_depth': If enabled, low humidity and high heat causes rivers\nto become shallower and occasionally dry.\n'altitude_dry': Reduces humidity with altitude.");
 	gettext("Altitude chill");
 	gettext("The vertical distance over which heat drops by 20 if 'altitude_chill' is\nenabled. Also the vertical distance over which humidity drops by 10 if\n'altitude_dry' is enabled.");
 	gettext("Large cave depth");
@@ -983,8 +985,10 @@ fake_function() {
 	gettext("Limit of emerge queues to generate");
 	gettext("Maximum number of blocks to be queued that are to be generated.\nSet to blank for an appropriate amount to be chosen automatically.");
 	gettext("Number of emerge threads");
-	gettext("Number of emerge threads to use.\nMake this field blank or 0, or increase this number to use multiple threads.\nOn multiprocessor systems, this will improve mapgen speed greatly at the cost\nof slightly buggy caves.");
-	gettext("Content Store");
-	gettext("Show non-free packages");
-	gettext("Show packages in the content store that do not qualify as 'free software'\nas defined by the Free Software Foundation.");
+	gettext("Number of emerge threads to use.\nEmpty or 0 value:\n-    Automatic selection. The number of emerge threads will be\n-    'number of processors - 2', with a lower limit of 1.\nAny other value:\n-    Specifies the number of emerge threads, with a lower limit of 1.\nWarning: Increasing the number of emerge threads increases engine mapgen\nspeed, but this may harm game performance by interfering with other\nprocesses, especially in singleplayer and/or when running Lua code in\n'on_generated'.\nFor many users the optimum setting may be '1'.");
+	gettext("Online Content Repository");
+	gettext("ContentDB URL");
+	gettext("The URL for the content repository");
+	gettext("ContentDB Flag Blacklist");
+	gettext("Comma-separated list of flags to hide in the content repository.\n\"nonfree\" can be used to hide packages which do not qualify as 'free software',\nas defined by the Free Software Foundation.\nYou can also specify content ratings.\nThese flags are independent from Minetest versions,\nso see a full list at https://content.minetest.net/help/content_flags/");
 }
