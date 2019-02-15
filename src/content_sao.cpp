@@ -1014,8 +1014,9 @@ void PlayerSAO::step(float dtime, bool send_recommended)
 		v3s16 p = floatToInt(getEyePosition(), BS);
 		MapNode n = m_env->getMap().getNodeNoEx(p);
 		const ContentFeatures &c = m_env->getGameDef()->ndef()->get(n);
-		// If player is alive & no drowning, breathe
-		if (m_hp > 0 && m_breath < m_prop.breath_max && c.drowning == 0)
+		// If player is alive & no drowning & not in ignore, breathe
+		if (m_breath < m_prop.breath_max &&
+				c.drowning == 0 && n.getContent() != CONTENT_IGNORE && m_hp > 0)
 			setBreath(m_breath + 1);
 	}
 
