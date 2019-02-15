@@ -23,12 +23,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "settings.h"
 #include "network/socket.h"
 
-class TestAddress : public TestBase {
+class TestAddress : public TestBase
+{
 public:
-	TestAddress()
-	{
-		TestManager::registerTestModule(this);
-	}
+	TestAddress() { TestManager::registerTestModule(this); }
 
 	const char *getName() { return "TestAddress"; }
 

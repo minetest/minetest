@@ -272,7 +272,8 @@ void Address::print(std::ostream *s) const
 		*s << serializeString() << ":" << m_port;
 }
 
-bool Address::isLocalhost() const {
+bool Address::isLocalhost() const
+{
 	if (isIPv6()) {
 		static const unsigned char localhost_bytes[] = {
 				0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1};
@@ -281,8 +282,10 @@ bool Address::isLocalhost() const {
 
 		auto addr = m_address.ipv6.sin6_addr.s6_addr;
 
+// clang-format off
 		return memcmp(addr, localhost_bytes, 16) == 0 ||
 			memcmp(addr, mapped_ipv4_localhost, 13) == 0;
+// clang-format on
 	}
 
 	return (m_address.ipv4.sin_addr.s_addr & 0xFF) == 0x7f;
