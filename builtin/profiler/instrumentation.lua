@@ -88,7 +88,7 @@ local function instrument(def)
 	if not def or not def.func then
 		return
 	end
-	def.mod = def.mod or get_current_modname()
+	def.mod = def.mod or get_current_modname() or "??"
 	local modname = def.mod
 	local instrument_name = generate_name(def)
 	local func = def.func
