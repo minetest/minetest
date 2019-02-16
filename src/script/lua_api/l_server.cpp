@@ -493,11 +493,9 @@ int ModApiServer::l_get_last_run_mod(lua_State *L)
 int ModApiServer::l_set_last_run_mod(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
-#ifdef SCRIPTAPI_DEBUG
-	const char *mod = lua_tostring(L, 1);
+
+	const char *mod = lua_tostring(L, 1); // `nil` (nullptr) to reset
 	getScriptApiBase(L)->setOriginDirect(mod);
-	//printf(">>>> last mod set from Lua: %s\n", mod);
-#endif
 	return 0;
 }
 

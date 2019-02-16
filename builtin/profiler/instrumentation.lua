@@ -17,6 +17,7 @@
 
 local format, pairs, type = string.format, pairs, type
 local core, get_current_modname = core, core.get_current_modname
+local get_last_run_mod = core.get_last_run_mod
 local profiler, sampler, get_bool_default = ...
 
 local instrument_builtin = get_bool_default("instrument.builtin", false)
@@ -88,7 +89,7 @@ local function instrument(def)
 	if not def or not def.func then
 		return
 	end
-	def.mod = def.mod or get_current_modname() or "??"
+	def.mod = def.mod or get_last_run_mod() or "??"
 	local modname = def.mod
 	local instrument_name = generate_name(def)
 	local func = def.func

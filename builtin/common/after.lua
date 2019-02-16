@@ -18,6 +18,8 @@ core.register_globalstep(function(dtime)
 		if time >= job.expire then
 			core.set_last_run_mod(job.mod_origin)
 			job.func(unpack(job.arg))
+			core.set_last_run_mod(nil)
+
 			local jobs_l = #jobs
 			jobs[i] = jobs[jobs_l]
 			jobs[jobs_l] = nil

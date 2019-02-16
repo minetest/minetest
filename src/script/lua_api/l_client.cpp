@@ -57,13 +57,9 @@ int ModApiClient::l_get_last_run_mod(lua_State *L)
 // set_last_run_mod(modname)
 int ModApiClient::l_set_last_run_mod(lua_State *L)
 {
-	if (!lua_isstring(L, 1))
-		return 0;
-
-	const char *mod = lua_tostring(L, 1);
+	const char *mod = lua_tostring(L, 1); // `nil` (nullptr) to reset
 	getScriptApiBase(L)->setOriginDirect(mod);
-	lua_pushboolean(L, true);
-	return 1;
+	return 0;
 }
 
 // print(text)

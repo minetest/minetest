@@ -415,6 +415,7 @@ function core.run_callbacks(callbacks, mode, ...)
 			core.set_last_run_mod(origin.mod)
 		end
 		local cb_ret = callbacks[i](...)
+		core.set_last_run_mod(nil)
 
 		if mode == 0 and i == 1 then
 			ret = cb_ret

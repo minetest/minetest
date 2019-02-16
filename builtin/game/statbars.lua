@@ -164,7 +164,9 @@ end
 -- Append "update_builtin_statbars" as late as possible
 -- This ensures that the HUD is hidden when the flags are updated in this callback
 core.register_on_mods_loaded(function()
+	core.set_last_run_mod("*builtin*")
 	core.register_on_joinplayer(update_builtin_statbars)
+	core.set_last_run_mod(nil)
 end)
 core.register_on_leaveplayer(cleanup_builtin_statbars)
 core.register_playerevent(player_event_handler)

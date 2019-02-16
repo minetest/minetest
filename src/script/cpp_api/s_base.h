@@ -39,7 +39,6 @@ extern "C" {
 #include "config.h"
 
 #define SCRIPTAPI_LOCK_DEBUG
-#define SCRIPTAPI_DEBUG
 
 // MUST be an invalid mod name so that mods can't
 // use that name to bypass security!
@@ -144,7 +143,7 @@ protected:
 	void pushPlayerHPChangeReason(lua_State *L, const PlayerHPChangeReason& reason);
 
 	std::recursive_mutex m_luastackmutex;
-	std::string     m_last_run_mod;
+	std::string     m_last_run_mod = BUILTIN_MOD_NAME;
 	bool            m_secure = false;
 #ifdef SCRIPTAPI_LOCK_DEBUG
 	int             m_lock_recursion_count{};

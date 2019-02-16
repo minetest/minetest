@@ -56,6 +56,7 @@ core.register_on_chat_message(function(name, message)
 		if result then
 			core.chat_send_player(name, result)
 		end
+		core.set_last_run_mod(nil)
 	else
 		core.chat_send_player(name, "You don't have permission"
 				.. " to run this command (missing privileges: "

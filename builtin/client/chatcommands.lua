@@ -30,6 +30,7 @@ core.register_on_sending_chat_message(function(message)
 		if result then
 			core.display_chat_message(result)
 		end
+		core.set_last_run_mod(nil)
 	else
 		core.display_chat_message(core.gettext("-!- Invalid command: ") .. cmd)
 	end

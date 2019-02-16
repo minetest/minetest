@@ -623,6 +623,7 @@ function core.node_dig(pos, node, digger)
 		local pos_copy = {x=pos.x, y=pos.y, z=pos.z}
 		local node_copy = {name=node.name, param1=node.param1, param2=node.param2}
 		callback(pos_copy, node_copy, digger)
+		core.set_last_run_mod(nil)
 	end
 end
 
