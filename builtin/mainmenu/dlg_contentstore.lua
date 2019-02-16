@@ -185,16 +185,7 @@ local function get_screenshot(package)
 		if not success then
 			core.log("warning", "Screenshot download failed for some reason")
 		end
-
-		local ele = ui.childlist.store
-		if ele and not ele.hidden then
-			core.update_formspec(ele:formspec())
-		else
-			ele = ui.childlist.package_view
-			if ele and not ele.hidden then
-				core.update_formspec(ele:formspec())
-			end
-		end
+		ui.update()
 	end
 	if core.handle_async(download_screenshot,
 			{ dest = filepath, url = package.thumbnail }, callback) then
@@ -245,7 +236,7 @@ function package_dialog.get_formspec()
 	return table.concat(formspec, "")
 end
 
-function package_dialog.handle_submit(this, fields, tabname, tabdata)
+function package_dialog.handle_submit(this, fields)
 	if fields.back then
 		this:delete()
 		return true
@@ -395,11 +386,11 @@ function store.filter_packages(query)
 
 end
 
-function store.get_formspec()
+function store.get_formspec(dlgdata)
 	store.update_paths()
 
-	local pages = math.ceil(#store.packages / num_per_page)
-	if cur_page > pages then
+	dlgdata.pagemax = math.max(math.ceil(#store.packages / num_per_page), 1)
+	if cur_page > dlgdata.pagemax then
 		cur_page = 1
 	end
 
@@ -428,7 +419,7 @@ function store.get_formspec()
 			"button[8.1,0;1,1;pback;<]",
 			"label[9.2,0.2;",
 			tonumber(cur_page), " / ",
-			tonumber(pages), "]",
+			tonumber(dlgdata.pagemax), "]",
 			"button[10.1,0;1,1;pnext;>]",
 			"button[11.1,0;1,1;pend;>>]",
 			"container_end[]",
@@ -515,12 +506,11 @@ function store.get_formspec()
 	return table.concat(formspec, "")
 end
 
-function store.handle_submit(this, fields, tabname, tabdata)
+function store.handle_submit(this, fields)
 	if fields.search or fields.key_enter_field == "search_string" then
 		search_string = fields.search_string:trim()
 		cur_page = 1
 		store.filter_packages(search_string)
-		core.update_formspec(store.get_formspec())
 		return true
 	end
 
@@ -531,34 +521,28 @@ function store.handle_submit(this, fields, tabname, tabdata)
 
 	if fields.pstart then
 		cur_page = 1
-		core.update_formspec(store.get_formspec())
 		return true
 	end
 
 	if fields.pend then
-		cur_page = math.ceil(#store.packages / num_per_page)
-		core.update_formspec(store.get_formspec())
+		cur_page = this.data.pagemax
 		return true
 	end
 
 	if fields.pnext then
 		cur_page = cur_page + 1
-		local pages = math.ceil(#store.packages / num_per_page)
-		if cur_page > pages then
+		if cur_page > this.data.pagemax then
 			cur_page = 1
 		end
-		core.update_formspec(store.get_formspec())
 		return true
 	end
 
 	if fields.pback then
 		if cur_page == 1 then
-			local pages = math.ceil(#store.packages / num_per_page)
-			cur_page = pages
+			cur_page = this.data.pagemax
 		else
 			cur_page = cur_page - 1
 		end
-		core.update_formspec(store.get_formspec())
 		return true
 	end
 
