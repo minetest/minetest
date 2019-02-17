@@ -847,7 +847,10 @@ Examples of sound parameter tables:
     }
 
 Looped sounds must either be connected to an object or played locationless to
-one player using `to_player = name,`
+one player using `to_player = name,`.
+
+A positional sound will only be heard by players that are within
+`max_hear_distance` of the sound position, at the start of the sound.
 
 `SimpleSoundSpec`
 -----------------
@@ -1184,9 +1187,10 @@ is drawn.
 `0` draws from left to right, `1` draws from right to left, `2` draws from
 top to bottom, and `3` draws from bottom to top.
 
-The `alignment` field specifies how the item will be aligned. It ranges from
-`-1` to `1`, with `0` being the center. `-1` is moved to the left/up, and `1`
-is to the right/down. Fractional values can be used.
+The `alignment` field specifies how the item will be aligned. It is a table
+where `x` and `y` range from `-1` to `1`, with `0` being central. `-1` is
+moved to the left/up, and `1` is to the right/down. Fractional values can be
+used.
 
 The `offset` field specifies a pixel offset from the position. Contrary to
 position, the offset is not scaled to screen size. This allows for some
@@ -3145,6 +3149,9 @@ Methods
       `minetest.get_mapgen_object`.
     * (`p1`, `p2`) is the area in which lighting is set, defaults to the whole
       area if left out or nil.
+    * Setting `p1`, `p2` to `emin`, `emax` of the mapgen object voxelmanip (the
+      entire volume of the voxelmanip: the mapchunk plus a 1 mapblock thick
+      shell around it) will cause an error.
     * `propagate_shadow` is an optional boolean deciding whether shadows in a
       generated mapchunk above are propagated down into the mapchunk, defaults
       to `true` if left out.
@@ -3517,6 +3524,7 @@ Call these functions only at load time!
 * `minetest.register_alias_force(name, convert_to)`
 * `minetest.register_ore(ore definition)`
     * Returns an integer uniquely identifying the registered ore on success.
+    * The order of ore registrations determines the order of ore generation.
 * `minetest.register_biome(biome definition)`
     * Returns an integer uniquely identifying the registered biome on success.
 * `minetest.unregister_biome(name)`
@@ -3525,6 +3533,8 @@ Call these functions only at load time!
 * `minetest.register_decoration(decoration definition)`
     * Returns an integer uniquely identifying the registered decoration on
       success.
+    * The order of decoration registrations determines the order of decoration
+      generation.
 * `minetest.register_schematic(schematic definition)`
     * Returns an integer uniquely identifying the registered schematic on
       success.
@@ -5498,7 +5508,7 @@ Used by `ObjectRef` methods. Part of an Entity definition.
 
         textures = {},
         -- Number of required textures depends on visual.
-        -- "cube" uses 6 textures in the way a node does.
+        -- "cube" uses 6 textures just like a node, but all 6 must be defined.
         -- "sprite" uses 1 texture.
         -- "upright_sprite" uses 2 textures: {front, back}.
         -- "wielditem" expects 'textures = {itemname}' (see 'visual' above).
