@@ -2957,10 +2957,15 @@ void Game::processPlayerInteraction(f32 dtime, bool show_hud, bool show_debug)
 		hlist ? hlist->getItem(0).getDefinition(itemdef_manager) : itemdef_manager->get("");
 
 	v3f player_position  = player->getPosition();
+	v3f player_eye_position = player_position + player->getEyeOffset();
 	v3f camera_position  = camera->getPosition();
 	v3f camera_direction = camera->getDirection();
 	v3s16 camera_offset  = camera->getOffset();
 
+	if (camera->getCameraMode() == CAMERA_MODE_FIRST)
+		player_eye_position += player->eye_offset_first;
+	else
+		player_eye_position += player->eye_offset_third;
 
 	/*
 		Calculate what block is the crosshair pointing to
@@ -2977,11 +2982,11 @@ void Game::processPlayerInteraction(f32 dtime, bool show_hud, bool show_debug)
 	core::line3d<f32> shootline;
 
 	if (camera->getCameraMode() != CAMERA_MODE_THIRD_FRONT) {
-		shootline = core::line3d<f32>(camera_position,
-			camera_position + camera_direction * BS * d);
+		shootline = core::line3d<f32>(player_eye_position,
+			player_eye_position + camera_direction * BS * d);
 	} else {
 	    // prevent player pointing anything in front-view
-		shootline = core::line3d<f32>(camera_position,camera_position);
+		shootline = core::line3d<f32>(camera_position, camera_position);
 	}
 
 #ifdef HAVE_TOUCHSCREENGUI
@@ -2989,10 +2994,9 @@ void Game::processPlayerInteraction(f32 dtime, bool show_hud, bool show_debug)
 	if ((g_settings->getBool("touchtarget")) && (g_touchscreengui)) {
 		shootline = g_touchscreengui->getShootline();
 		// Scale shootline to the acual distance the player can reach
-		shootline.end = shootline.start
-			+ shootline.getVector().normalize() * BS * d;
-		shootline.start += intToFloat(camera_offset, BS);
-		shootline.end += intToFloat(camera_offset, BS);
+		shootline.end = player_eye_position +
+			shootline.getVector().normalize() * BS * d;
+		shootline.start = player_eye_position;
 	}
 
 #endif
