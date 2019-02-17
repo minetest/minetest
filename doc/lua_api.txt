@@ -258,13 +258,15 @@ dependency.
 Aliases
 =======
 
-Aliases can be added by using `minetest.register_alias(name, convert_to)` or
-`minetest.register_alias_force(name, convert_to)`.
+Aliases of itemnames can be added by using
+`minetest.register_alias(alias, original_name)` or
+`minetest.register_alias_force(alias, original_name)`.
 
-This converts anything called `name` to `convert_to`.
+This adds an alias `alias` for the item called `original_name`.
+From now on, you can use `alias` to refer to the item `original_name`.
 
 The only difference between `minetest.register_alias` and
-`minetest.register_alias_force` is that if an item called `name` exists,
+`minetest.register_alias_force` is that if an item named `alias` already exists,
 `minetest.register_alias` will do nothing while
 `minetest.register_alias_force` will unregister it.
 
@@ -1801,8 +1803,16 @@ Example:
 Formspec
 ========
 
-Formspec defines a menu. Currently not much else than inventories are
-supported. It is a string, with a somewhat strange format.
+Formspec defines a menu. This supports inventories and some of the
+typical widgets like buttons, checkboxes, text input fields, etc.
+It is a string, with a somewhat strange format.
+
+A formspec is made out of formspec elements, which includes widgets
+like buttons but also can be used to set stuff like background color.
+
+Many formspec elements have a `name`, which is a unique identifier which
+is used when the server receives user input. You must not use the name
+"quit" for formspec elements.
 
 Spaces and newlines can be inserted between the blocks, as is used in the
 examples.
@@ -2295,6 +2305,12 @@ The following functions provide escape sequences:
 
 Spatial Vectors
 ===============
+A spatial vector is similar to a position, but instead using
+absolute world coordinates, it uses *relative* coordinates, relative to
+no particular point.
+
+Internally, it is implemented as a table with the 3 fields
+`x`, `y` and `z`. Example: `{x = 0, y = 1, z = 0}`.
 
 For the following functions, `v`, `v1`, `v2` are vectors,
 `p1`, `p2` are positions:
@@ -2329,8 +2345,12 @@ For the following functions `x` can be either a vector or a number:
 
 * `vector.add(v, x)`:
     * Returns a vector.
+    * If `x` is a vector: Returns the sum of `v` and `x`.
+    * If `x` is a number: Adds `x` to each component of `v`.
 * `vector.subtract(v, x)`:
     * Returns a vector.
+    * If `x` is a vector: Returns the difference of `v` subtracted by `x`.
+    * If `x` is a number: Subtracts `x` from each component of `v`.
 * `vector.multiply(v, x)`:
     * Returns a scaled vector or Schur product.
 * `vector.divide(v, x)`:
@@ -2397,12 +2417,35 @@ Helper functions
     * returns time with microsecond precision. May not return wall time.
 * `table.copy(table)`: returns a table
     * returns a deep copy of `table`
+* `table.indexof(list, val)`: returns the smallest numerical index containing
+      the value `val` in the table `list`. Non-numerical indices are ignored.
+      If `val` could not be found, `-1` is returned. `list` must not have
+      negative indices.
 * `table.insert_all(table, other_table)`:
     * Appends all values in `other_table` to `table` - uses `#table + 1` to
       find new indices.
 * `minetest.pointed_thing_to_face_pos(placer, pointed_thing)`: returns a
   position.
     * returns the exact position on the surface of a pointed node
+* `minetest.get_dig_params(groups, tool_capabilities)`: Simulates a tool
+    that digs a node.
+    Returns a table with the following fields:
+    * `diggable`: `true` if node can be dug, `false` otherwise.
+    * `time`: Time it would take to dig the node.
+    * `wear`: How much wear would be added to the tool.
+    `time` and `wear` are meaningless if node's not diggable
+    Parameters:
+    * `groups`: Table of the node groups of the node that would be dug
+    * `tool_capabilities`: Tool capabilities table of the tool
+* `minetest.get_hit_params(groups, tool_capabilities [, time_from_last_punch])`:
+    Simulates an item that punches an object.
+    Returns a table with the following fields:
+    * `hp`: How much damage the punch would cause.
+    * `wear`: How much wear would be added to the tool.
+    Parameters:
+    * `groups`: Damage groups of the object
+    * `tool_capabilities`: Tool capabilities table of the item
+    * `time_from_last_punch`: time in seconds since last punch action
 
 
 
@@ -3518,10 +3561,10 @@ Call these functions only at load time!
 * `minetest.register_entity(name, entity definition)`
 * `minetest.register_abm(abm definition)`
 * `minetest.register_lbm(lbm definition)`
-* `minetest.register_alias(name, convert_to)`
+* `minetest.register_alias(alias, original_name)`
     * Also use this to set the 'mapgen aliases' needed in a game for the core
       mapgens. See [Mapgen aliases] section above.
-* `minetest.register_alias_force(name, convert_to)`
+* `minetest.register_alias_force(alias, original_name)`
 * `minetest.register_ore(ore definition)`
     * Returns an integer uniquely identifying the registered ore on success.
     * The order of ore registrations determines the order of ore generation.
@@ -3679,11 +3722,39 @@ Call these functions only at load time!
     * Return `true` to mark the message as handled, which means that it will
       not be sent to other players.
 * `minetest.register_on_player_receive_fields(function(player, formname, fields))`
-    * Called when a button is pressed in player's inventory form, when form
-      values are submitted or when the form is actively closed by the player.
-    * Fields are sent for formspec elements which define a field, and the "quit"
-      field is sent when actively closing the form by mouse click, keypress or
-      through a button_exit[] element.
+    * Called when the server received input from `player` in a formspec with
+      the given `formname`. Specifically, this is called on any of the
+      following events:
+          * a button was pressed,
+          * Enter was pressed while the focus was on a text field
+          * a checkbox was toggled,
+          * something was selecteed in a drop-down list,
+          * a different tab was selected,
+          * selection was changed in a textlist or table,
+          * an entry was double-clicked in a textlist or table,
+          * a scrollbar was moved, or
+          * the form was actively closed by the player.
+    * Fields are sent for formspec elements which define a field. `fields`
+      is a table containing each formspecs element value (as string), with
+      the `name` parameter as index for each. The value depends on the
+      formspec element type:
+        * `button` and variants: If pressed, contains the user-facing button
+          text as value. If not pressed, is `nil`
+        * `field`, `textarea` and variants: Text in the field
+        * `dropdown`: Text of selected item
+        * `tabheader`: Tab index, starting with `"1"` (only if tab changed)
+        * `checkbox`: `"true"` if checked, `"false"` if unchecked
+        * `textlist`: See `minetest.explode_textlist_event`
+        * `table`: See `minetest.explode_table_event`
+        * `scrollbar`: See `minetest.explode_scrollbar_event`
+        * Special case: `["quit"]="true"` is sent when the user actively
+          closed the form by mouse click, keypress or through a button_exit[]
+          element.
+        * Special case: `["key_enter"]="true"` is sent when the user pressed
+          the Enter key and the focus was either nowhere (causing the formspec
+          to be closed) or on a button. If the focus was on a text field,
+          additionally, the index `key_enter_field` contains the name of the
+          text field. See also: `field_close_on_enter`.
     * Newest functions are called first
     * If function returns `true`, remaining functions are not called
 * `minetest.register_on_craft(function(itemstack, player, old_craft_grid, craft_inv))`
@@ -6109,6 +6180,7 @@ Used by `minetest.register_node`.
         on_receive_fields = function(pos, formname, fields, sender),
         -- fields = {name1 = value1, name2 = value2, ...}
         -- Called when an UI form (e.g. sign text input) returns data.
+        -- See minetest.register_on_player_receive_fields for more info.
         -- default: nil
 
         allow_metadata_inventory_move = function(pos, from_list, from_index, to_list, to_index, count, player),
