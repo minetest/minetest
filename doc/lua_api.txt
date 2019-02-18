@@ -3967,7 +3967,7 @@ Environment access
     * Return value: Table with all node positions with a node air above
     * Area volume is limited to 4,096,000 nodes
 * `minetest.get_perlin(noiseparams)`
-* `minetest.get_perlin(seeddiff, octaves, persistence, scale)`
+* `minetest.get_perlin(seeddiff, octaves, persistence, spread)`
     * Return world-specific perlin noise (`int(worldseed)+seeddiff`)
 * `minetest.get_voxel_manip([pos1, pos2])`
     * Return voxel manipulator object.
@@ -5347,9 +5347,9 @@ It can be created via `PcgRandom(seed)` or `PcgRandom(seed, sequence)`.
 -------------
 
 A perlin noise generator.
-It can be created via `PerlinNoise(seed, octaves, persistence, scale)`
+It can be created via `PerlinNoise(seed, octaves, persistence, spread)`
 or `PerlinNoise(noiseparams)`.
-Alternatively with `minetest.get_perlin(seeddiff, octaves, persistence, scale)`
+Alternatively with `minetest.get_perlin(seeddiff, octaves, persistence, spread)`
 or `minetest.get_perlin(noiseparams)`.
 
 ### Methods
