@@ -89,23 +89,18 @@ void GUIConfirmRegistration::regenerateGui(v2u32 screensize)
 	*/
 	s32 ypos = 30 * s;
 	{
-		std::string address = m_address;
-		if (address.empty())
-			address = "localhost";
 		core::rect<s32> rect2(0, 0, 540 * s, 180 * s);
 		rect2 += topleft_client + v2s32(30 * s, ypos);
 		static const std::string info_text_template = strgettext(
-				"You are about to join the server at %1$s with the "
-				"name \"%2$s\" for the first time. If you proceed, a "
-				"new account using your credentials will be created "
-				"on this server.\n"
-				"Please retype your password and click Register and "
-				"Join to confirm account creation or click Cancel to "
-				"abort.");
+				"You are about to join this server with the name \"%s\" for the "
+				"first time.\n"
+				"If you proceed, a new account using your credentials will be "
+				"created on this server.\n"
+				"Please retype your password and click 'Register and Join' to "
+				"confirm account creation, or click 'Cancel' to abort.");
 		char info_text_buf[1024];
 		porting::mt_snprintf(info_text_buf, sizeof(info_text_buf),
-				info_text_template.c_str(), address.c_str(),
-				m_playername.c_str());
+				info_text_template.c_str(), m_playername.c_str());
 
 		wchar_t *info_text_buf_wide = utf8_to_wide_c(info_text_buf);
 		gui::IGUIEditBox *e = new gui::intlGUIEditBox(info_text_buf_wide, true,
