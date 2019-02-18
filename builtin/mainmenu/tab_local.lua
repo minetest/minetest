@@ -294,13 +294,6 @@ end
 local on_change
 if enable_gamebar then
 	function on_change(type, old_tab, new_tab)
-		local buttonbar = ui.find_by_name("game_button_bar")
-
-		if ( buttonbar == nil ) then
-			singleplayer_refresh_gamebar()
-			buttonbar = ui.find_by_name("game_button_bar")
-		end
-
 		if (type == "ENTER") then
 			local game = current_game()
 
@@ -309,10 +302,15 @@ if enable_gamebar then
 				core.set_topleft_text(game.name)
 				mm_texture.update("singleplayer",game)
 			end
-			buttonbar:show()
+
+			singleplayer_refresh_gamebar()
+			ui.find_by_name("game_button_bar"):show()
 		else
 			menudata.worldlist:set_filtercriteria(nil)
-			buttonbar:hide()
+			local gamebar = ui.find_by_name("game_button_bar")
+			if gamebar then
+				gamebar:hide()
+			end
 			core.set_topleft_text("")
 			mm_texture.update(new_tab,nil)
 		end
