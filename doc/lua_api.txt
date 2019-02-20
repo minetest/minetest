@@ -1485,7 +1485,8 @@ Another example: Make red wool from white wool and red dye:
 Special groups
 --------------
 
-* `immortal`: Disables the group damage system for an entity
+* `immortal`: Disables the group damage system for an entity.
+  Disables all damage for a player.
 * `punch_operable`: For entities; disables the regular damage mechanism for
   players punching it by hand or a non-tool item, so that it can do something
   else than take damage.
