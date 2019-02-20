@@ -1533,7 +1533,9 @@ Another example: Make red wool from white wool and red dye:
 Special groups
 --------------
 
-* `immortal`: Disables the group damage system for an entity
+* `immortal`: Skips all damage and breath handling for an object. This group
+  will also hide the integrated HUD status bars for players, and is
+  automatically set to all players when damage is disabled on the server.
 * `punch_operable`: For entities; disables the regular damage mechanism for
   players punching it by hand or a non-tool item, so that it can do something
   else than take damage.

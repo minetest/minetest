@@ -50,7 +50,8 @@ local function update_builtin_statbars(player)
 	end
 	local hud = hud_ids[name]
 
-	if flags.healthbar and enable_damage then
+	local immortal = player:get_armor_groups().immortal == 1
+	if flags.healthbar and enable_damage and not immortal then
 		local number = scaleToDefault(player, "hp")
  		if hud.id_healthbar == nil then
  			local hud_def = table.copy(health_bar_definition)
@@ -65,7 +66,7 @@ local function update_builtin_statbars(player)
 	end
 
 	local breath_max = player:get_properties().breath_max
-	if flags.breathbar and enable_damage and
+	if flags.breathbar and enable_damage and not immortal and
 			player:get_breath() < breath_max then
 		local number = 2 * scaleToDefault(player, "breath")
 		if hud.id_breathbar == nil then
@@ -116,7 +117,7 @@ local function player_event_handler(player,eventname)
 		end
 	end
 
-	if eventname == "hud_changed" then
+	if eventname == "hud_changed" or eventname == "properties_changed" then
 		update_builtin_statbars(player)
 		return true
 	end

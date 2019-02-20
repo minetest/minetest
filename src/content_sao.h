@@ -45,11 +45,12 @@ public:
 
 	inline bool isAttached() const
 	{ return getParent(); }
+
 	inline bool isImmortal() const
-	{ return itemgroup_get(m_armor_groups, "immortal"); }
+	{ return itemgroup_get(getArmorGroups(), "immortal"); }
 
 	void setArmorGroups(const ItemGroupList &armor_groups);
-	const ItemGroupList &getArmorGroups();
+	const ItemGroupList &getArmorGroups() const;
 	void setAnimation(v2f frame_range, float frame_speed, float frame_blend, bool frame_loop);
 	void getAnimation(v2f *frame_range, float *frame_speed, float *frame_blend, bool *frame_loop);
 	void setAnimationSpeed(float frame_speed);
@@ -107,7 +108,7 @@ class LuaEntitySAO : public UnitSAO
 {
 public:
 	LuaEntitySAO(ServerEnvironment *env, v3f pos,
-	             const std::string &name, const std::string &state);
+		const std::string &name, const std::string &state);
 	~LuaEntitySAO();
 	ActiveObjectType getType() const
 	{ return ACTIVEOBJECT_TYPE_LUAENTITY; }
@@ -115,16 +116,16 @@ public:
 	{ return ACTIVEOBJECT_TYPE_GENERIC; }
 	virtual void addedToEnvironment(u32 dtime_s);
 	static ServerActiveObject* create(ServerEnvironment *env, v3f pos,
-			const std::string &data);
+		const std::string &data);
 	void step(float dtime, bool send_recommended);
 	std::string getClientInitializationData(u16 protocol_version);
 	bool isStaticAllowed() const
 	{ return m_prop.static_save; }
 	void getStaticData(std::string *result) const;
 	int punch(v3f dir,
-			const ToolCapabilities *toolcap=NULL,
-			ServerActiveObject *puncher=NULL,
-			float time_from_last_punch=1000000);
+		const ToolCapabilities *toolcap = nullptr,
+		ServerActiveObject *puncher = nullptr,
+		float time_from_last_punch = 1000000);
 	void rightClick(ServerActiveObject *clicker);
 	void setPos(const v3f &pos);
 	void moveTo(v3f pos, bool continuous);
@@ -132,6 +133,7 @@ public:
 	std::string getDescription();
 	void setHP(s32 hp, const PlayerHPChangeReason &reason);
 	u16 getHP() const;
+
 	/* LuaEntitySAO-specific */
 	void setVelocity(v3f velocity);
 	void addVelocity(v3f velocity)

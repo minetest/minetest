@@ -134,7 +134,7 @@ void UnitSAO::setArmorGroups(const ItemGroupList &armor_groups)
 	m_armor_groups_sent = false;
 }
 
-const ItemGroupList &UnitSAO::getArmorGroups()
+const ItemGroupList &UnitSAO::getArmorGroups() const
 {
 	return m_armor_groups;
 }
@@ -1015,14 +1015,14 @@ void PlayerSAO::step(float dtime, bool send_recommended)
 		}
 	}
 
-	if (m_breathing_interval.step(dtime, 0.5f)) {
+	if (m_breathing_interval.step(dtime, 0.5f) && !isImmortal()) {
 		// Get nose/mouth position, approximate with eye position
 		v3s16 p = floatToInt(getEyePosition(), BS);
 		MapNode n = m_env->getMap().getNodeNoEx(p);
 		const ContentFeatures &c = m_env->getGameDef()->ndef()->get(n);
-		// If player is alive & no drowning & not in ignore, breathe
-		if (m_breath < m_prop.breath_max &&
-				c.drowning == 0 && n.getContent() != CONTENT_IGNORE && m_hp > 0)
+		// If player is alive & not drowning & not in ignore & not immortal, breathe
+		if (m_breath < m_prop.breath_max && c.drowning == 0 &&
+				n.getContent() != CONTENT_IGNORE && m_hp > 0)
 			setBreath(m_breath + 1);
 	}
 
@@ -1069,6 +1069,7 @@ void PlayerSAO::step(float dtime, bool send_recommended)
 		// create message and add to list
 		ActiveObjectMessage aom(getId(), true, str);
 		m_messages_out.push(aom);
+		m_env->getScriptIface()->player_event(this, "properties_changed");
 	}
 
 	// If attached, check that our parent is still there. If it isn't, detach.
@@ -1287,8 +1288,8 @@ int PlayerSAO::punch(v3f dir,
 
 	FATAL_ERROR_IF(!puncher, "Punch action called without SAO");
 
-	// No effect if PvP disabled
-	if (!g_settings->getBool("enable_pvp")) {
+	// No effect if PvP disabled or if immortal
+	if (isImmortal() || !g_settings->getBool("enable_pvp")) {
 		if (puncher->getType() == ACTIVEOBJECT_TYPE_PLAYER) {
 			std::string str = gob_cmd_punched(getHP());
 			// create message and add to list
