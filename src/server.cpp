@@ -1429,7 +1429,7 @@ void Server::SendPlayerHPOrDie(PlayerSAO *playersao, const PlayerHPChangeReason 
 	if (playersao->isImmortal())
 		return;
 
-	session_t peer_id   = playersao->getPeerID();
+	session_t peer_id = playersao->getPeerID();
 	bool is_alive = playersao->getHP() > 0;
 
 	if (is_alive)
