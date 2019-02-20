@@ -990,7 +990,8 @@ void PlayerSAO::getStaticData(std::string * result) const
 
 void PlayerSAO::step(float dtime, bool send_recommended)
 {
-	if (m_drowning_interval.step(dtime, 2.0f)) {
+	bool immortal = itemgroup_get(m_armor_groups, "immortal") == 1;
+	if (m_drowning_interval.step(dtime, 2.0f) && (!immortal)) {
 		// Get nose/mouth position, approximate with eye position
 		v3s16 p = floatToInt(getEyePosition(), BS);
 		MapNode n = m_env->getMap().getNodeNoEx(p);
@@ -1016,11 +1017,11 @@ void PlayerSAO::step(float dtime, bool send_recommended)
 		const ContentFeatures &c = m_env->getGameDef()->ndef()->get(n);
 		// If player is alive & no drowning & not in ignore, breathe
 		if (m_breath < m_prop.breath_max &&
-				c.drowning == 0 && n.getContent() != CONTENT_IGNORE && m_hp > 0)
+				(immortal || c.drowning == 0) && n.getContent() != CONTENT_IGNORE && m_hp > 0)
 			setBreath(m_breath + 1);
 	}
 
-	if (m_node_hurt_interval.step(dtime, 1.0f)) {
+	if (m_node_hurt_interval.step(dtime, 1.0f) && (!immortal)) {
 		u32 damage_per_second = 0;
 		// Lowest and highest damage points are 0.1 within collisionbox
 		float dam_top = m_prop.collisionbox.MaxEdge.Y - 0.1f;
@@ -1268,13 +1269,16 @@ int PlayerSAO::punch(v3f dir,
 	if (!toolcap)
 		return 0;
 
-	// No effect if PvP disabled
-	if (!g_settings->getBool("enable_pvp")) {
+	// No effect if PvP disabled or immortal
+	bool immortal = itemgroup_get(m_armor_groups, "immortal") == 1;
+	if ((!g_settings->getBool("enable_pvp")) || immortal) {
 		if (puncher->getType() == ACTIVEOBJECT_TYPE_PLAYER) {
 			std::string str = gob_cmd_punched(getHP());
 			// create message and add to list
 			ActiveObjectMessage aom(getId(), true, str);
 			m_messages_out.push(aom);
+			return 0;
+		} else if (immortal) {
 			return 0;
 		}
 	}

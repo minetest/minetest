@@ -234,7 +234,13 @@ int ObjectRef::l_set_hp(lua_State *L)
 		return 0;
 
 	// Get HP
+	int old_hp = co->getHP();
 	int hp = lua_tonumber(L, 2);
+
+	// Protect from damage if immortal
+	if ((itemgroup_get(co->getArmorGroups(), "immortal") == 1) && (hp < old_hp)) {
+		return 0;
+	}
 
 	// Get Reason
 	PlayerHPChangeReason reason(PlayerHPChangeReason::SET_HP);

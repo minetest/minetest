@@ -799,7 +799,8 @@ void Server::handleCommand_Damage(NetworkPacket* pkt)
 		return;
 	}
 
-	if (g_settings->getBool("enable_damage")) {
+	if (g_settings->getBool("enable_damage") &&
+			(itemgroup_get(playersao->getArmorGroups(), "immortal") == 0)) {
 		if (playersao->isDead()) {
 			verbosestream << "Server::ProcessData(): Info: "
 				"Ignoring damage as player " << player->getName()
