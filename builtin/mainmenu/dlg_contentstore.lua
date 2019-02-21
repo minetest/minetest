@@ -297,7 +297,12 @@ function store.load()
 				package.author .. "/" .. package.name ..
 				"/releases/" .. package.release .. "/download/"
 
-			package.id = package.author .. "/" .. package.name
+			local name_len = #package.name
+			if package.type == "game" and name_len > 5 and package.name:sub(name_len - 4) == "_game" then
+				package.id = package.author .. "/" .. package.name:sub(1, name_len - 5)
+			else
+				package.id = package.author .. "/" .. package.name
+			end
 		end
 
 		store.packages = store.packages_full
