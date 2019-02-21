@@ -1057,6 +1057,7 @@ void PlayerSAO::step(float dtime, bool send_recommended)
 		// create message and add to list
 		ActiveObjectMessage aom(getId(), true, str);
 		m_messages_out.push(aom);
+		m_env->getScriptIface()->player_event(this, "properties_changed");
 	}
 
 	// If attached, check that our parent is still there. If it isn't, detach.
