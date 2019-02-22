@@ -2178,9 +2178,9 @@ void Game::toggleAutoforward()
 	g_settings->set("continuous_forward", bool_to_cstr(autorun_enabled));
 
 	if (autorun_enabled)
-		m_game_ui->showTranslatedStatusText("Automatic forwards enabled");
+		m_game_ui->showTranslatedStatusText("Automatic forward enabled");
 	else
-		m_game_ui->showTranslatedStatusText("Automatic forwards disabled");
+		m_game_ui->showTranslatedStatusText("Automatic forward disabled");
 }
 
 void Game::toggleMinimap(bool shift_pressed)

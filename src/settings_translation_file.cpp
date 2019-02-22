@@ -98,7 +98,7 @@ fake_function() {
 	gettext("Key for increasing the volume.\nSee http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3");
 	gettext("Dec. volume key");
 	gettext("Key for decreasing the volume.\nSee http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3");
-	gettext("Automatic forwards key");
+	gettext("Automatic forward key");
 	gettext("Key for toggling autoforward.\nSee http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3");
 	gettext("Cinematic mode key");
 	gettext("Key for toggling cinematic mode.\nSee http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3");
