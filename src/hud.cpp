@@ -48,11 +48,12 @@ const struct EnumString es_HudElementStat[] =
 
 const struct EnumString es_HudBuiltinElement[] =
 {
-	{HUD_FLAG_HOTBAR_VISIBLE,    "hotbar"},
-	{HUD_FLAG_HEALTHBAR_VISIBLE, "healthbar"},
-	{HUD_FLAG_CROSSHAIR_VISIBLE, "crosshair"},
-	{HUD_FLAG_WIELDITEM_VISIBLE, "wielditem"},
-	{HUD_FLAG_BREATHBAR_VISIBLE, "breathbar"},
-	{HUD_FLAG_MINIMAP_VISIBLE,   "minimap"},
+	{HUD_FLAG_HOTBAR_VISIBLE,        "hotbar"},
+	{HUD_FLAG_HEALTHBAR_VISIBLE,     "healthbar"},
+	{HUD_FLAG_CROSSHAIR_VISIBLE,     "crosshair"},
+	{HUD_FLAG_WIELDITEM_VISIBLE,     "wielditem"},
+	{HUD_FLAG_BREATHBAR_VISIBLE,     "breathbar"},
+	{HUD_FLAG_MINIMAP_VISIBLE,       "minimap"},
+	{HUD_FLAG_MINIMAP_RADAR_VISIBLE, "minimap_radar"},
 	{0, NULL},
 };
