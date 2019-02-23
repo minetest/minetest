@@ -297,6 +297,10 @@ bool GUIKeyChangeMenu::OnEvent(const SEvent& event)
 		bool prefer_character = shift_down;
 		KeyPress kp(event.KeyInput, prefer_character);
 
+		if (event.KeyInput.Key == irr::KEY_BACK ||
+				event.KeyInput.Key == irr::KEY_DELETE)
+			kp = KeyPress(""); // To erase key settings
+
 		bool shift_went_down = false;
 		if(!shift_down &&
 				(event.KeyInput.Key == irr::KEY_SHIFT ||
@@ -304,22 +308,21 @@ bool GUIKeyChangeMenu::OnEvent(const SEvent& event)
 				event.KeyInput.Key == irr::KEY_RSHIFT))
 			shift_went_down = true;
 
-		// Remove Key already in use message
-		if(this->key_used_text)
-		{
-			this->key_used_text->remove();
-			this->key_used_text = NULL;
-		}
 		// Display Key already in use message
-		if (std::find(this->key_used.begin(), this->key_used.end(), kp) != this->key_used.end())
-		{
-			core::rect < s32 > rect(0, 0, 600, 40);
+		bool key_in_use = strcmp(kp.sym(), "") != 0 &&
+				std::find(this->key_used.begin(), this->key_used.end(), kp) !=
+				this->key_used.end();
+
+		if (key_in_use && !this->key_used_text) {
+			core::rect<s32> rect(0, 0, 600, 40);
 			rect += v2s32(0, 0) + v2s32(25, 30);
 			const wchar_t *text = wgettext("Key already in use");
 			this->key_used_text = Environment->addStaticText(text,
 					rect, false, true, this, -1);
 			delete[] text;
-			//infostream << "Key already in use" << std::endl;
+		} else if (!key_in_use && this->key_used_text) {
+			this->key_used_text->remove();
+			this->key_used_text = nullptr;
 		}
 
 		// But go on
