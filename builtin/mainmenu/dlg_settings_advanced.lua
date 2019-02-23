@@ -1072,7 +1072,8 @@ function create_adv_settings_dlg()
 				return dlg
 end
 
--- Uncomment to generate minetest.conf.example and settings_translation_file.cpp
--- For RUN_IN_PLACE the generated files may appear in the bin folder
+-- Uncomment to generate 'minetest.conf.example' and 'settings_translation_file.cpp'.
+-- For RUN_IN_PLACE the generated files may appear in the 'bin' folder.
+-- See comment and alternative line at the end of 'generate_from_settingtypes.lua'.
 
 --assert(loadfile(core.get_builtin_path().."mainmenu"..DIR_DELIM.."generate_from_settingtypes.lua"))(parse_config_file(true, false))

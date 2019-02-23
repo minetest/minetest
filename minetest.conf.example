@@ -1630,7 +1630,7 @@
 #    Name of map generator to be used when creating a new world.
 #    Creating a world in the main menu will override this.
 #    Current stable mapgens:
-#    v5, v6, v7 (except floatlands), flat, singlenode.
+#    v5, v6, v7 (except floatlands), singlenode.
 #    'stable' means the terrain shape in an existing world will not be changed
 #    in the future. Note that biomes are defined by games and may still change.
 #    type: enum values: v5, v6, v7, valleys, carpathian, fractal, flat, singlenode
@@ -1653,8 +1653,6 @@
 #    Global map generation attributes.
 #    In Mapgen v6 the 'decorations' flag controls all decorations except trees
 #    and junglegrass, in all other mapgens this flag controls all decorations.
-#    Flags that are not enabled are not modified from the default.
-#    Flags starting with 'no' are used to explicitly disable them.
 #    type: flags possible values: caves, dungeons, light, decorations, biomes, nocaves, nodungeons, nolight, nodecorations, nobiomes
 # mg_flags = caves,dungeons,light,decorations,biomes
 
@@ -1719,8 +1717,6 @@
 ## Mapgen V5
 
 #    Map generation attributes specific to Mapgen v5.
-#    Flags that are not enabled are not modified from the default.
-#    Flags starting with 'no' are used to explicitly disable them.
 #    type: flags possible values: caverns, nocaverns
 # mgv5_spflags = caverns
 
@@ -1856,8 +1852,6 @@
 #    The 'snowbiomes' flag enables the new 5 biome system.
 #    When the new biome system is enabled jungles are automatically enabled and
 #    the 'jungles' flag is ignored.
-#    Flags that are not enabled are not modified from the default.
-#    Flags starting with 'no' are used to explicitly disable them.
 #    type: flags possible values: jungles, biomeblend, mudflow, snowbiomes, flat, trees, nojungles, nobiomeblend, nomudflow, nosnowbiomes, noflat, notrees
 # mgv6_spflags = jungles,biomeblend,mudflow,snowbiomes,trees
 
@@ -2027,8 +2021,6 @@
 
 #    Map generation attributes specific to Mapgen v7.
 #    'ridges' enables the rivers.
-#    Flags that are not enabled are not modified from the default.
-#    Flags starting with 'no' are used to explicitly disable them.
 #    type: flags possible values: mountains, ridges, floatlands, caverns, nomountains, noridges, nofloatlands, nocaverns
 # mgv7_spflags = mountains,ridges,nofloatlands,caverns
 
@@ -2279,8 +2271,6 @@
 ## Mapgen Carpathian
 
 #    Map generation attributes specific to Mapgen Carpathian.
-#    Flags that are not enabled are not modified from the default.
-#    Flags starting with 'no' are used to explicitly disable them.
 #    type: flags possible values: caverns, nocaverns
 # mgcarpathian_spflags = caverns
 
@@ -2521,8 +2511,6 @@
 
 #    Map generation attributes specific to Mapgen flat.
 #    Occasional lakes and hills can be added to the flat world.
-#    Flags that are not enabled are not modified from the default.
-#    Flags starting with 'no' are used to explicitly disable them.
 #    type: flags possible values: lakes, hills, nolakes, nohills
 # mgflat_spflags = nolakes,nohills
 
