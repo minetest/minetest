@@ -657,7 +657,7 @@ fake_function() {
 	gettext("Print the engine's profiling data in regular intervals (in seconds).\n0 = disable. Useful for developers.");
 	gettext("Mapgen");
 	gettext("Mapgen name");
-	gettext("Name of map generator to be used when creating a new world.\nCreating a world in the main menu will override this.\nCurrent stable mapgens:\nv5, v6, v7 (except floatlands), flat, singlenode.\n'stable' means the terrain shape in an existing world will not be changed\nin the future. Note that biomes are defined by games and may still change.");
+	gettext("Name of map generator to be used when creating a new world.\nCreating a world in the main menu will override this.\nCurrent stable mapgens:\nv5, v6, v7 (except floatlands), singlenode.\n'stable' means the terrain shape in an existing world will not be changed\nin the future. Note that biomes are defined by games and may still change.");
 	gettext("Water level");
 	gettext("Water surface level of the world.");
 	gettext("Max block generate distance");
@@ -665,7 +665,7 @@ fake_function() {
 	gettext("Map generation limit");
 	gettext("Limit of map generation, in nodes, in all 6 directions from (0, 0, 0).\nOnly mapchunks completely within the mapgen limit are generated.\nValue is stored per-world.");
 	gettext("Mapgen flags");
-	gettext("Global map generation attributes.\nIn Mapgen v6 the 'decorations' flag controls all decorations except trees\nand junglegrass, in all other mapgens this flag controls all decorations.\nFlags that are not enabled are not modified from the default.\nFlags starting with 'no' are used to explicitly disable them.");
+	gettext("Global map generation attributes.\nIn Mapgen v6 the 'decorations' flag controls all decorations except trees\nand junglegrass, in all other mapgens this flag controls all decorations.");
 	gettext("Projecting dungeons");
 	gettext("Whether dungeons occasionally project from the terrain.");
 	gettext("Biome API temperature and humidity noise parameters");
@@ -679,7 +679,7 @@ fake_function() {
 	gettext("Small-scale humidity variation for blending biomes on borders.");
 	gettext("Mapgen V5");
 	gettext("Mapgen V5 specific flags");
-	gettext("Map generation attributes specific to Mapgen v5.\nFlags that are not enabled are not modified from the default.\nFlags starting with 'no' are used to explicitly disable them.");
+	gettext("Map generation attributes specific to Mapgen v5.");
 	gettext("Cave width");
 	gettext("Controls width of tunnels, a smaller value creates wider tunnels.");
 	gettext("Large cave depth");
@@ -713,7 +713,7 @@ fake_function() {
 	gettext("3D noise defining terrain.");
 	gettext("Mapgen V6");
 	gettext("Mapgen V6 specific flags");
-	gettext("Map generation attributes specific to Mapgen v6.\nThe 'snowbiomes' flag enables the new 5 biome system.\nWhen the new biome system is enabled jungles are automatically enabled and\nthe 'jungles' flag is ignored.\nFlags that are not enabled are not modified from the default.\nFlags starting with 'no' are used to explicitly disable them.");
+	gettext("Map generation attributes specific to Mapgen v6.\nThe 'snowbiomes' flag enables the new 5 biome system.\nWhen the new biome system is enabled jungles are automatically enabled and\nthe 'jungles' flag is ignored.");
 	gettext("Desert noise threshold");
 	gettext("Deserts occur when np_biome exceeds this value.\nWhen the new biome system is enabled, this is ignored.");
 	gettext("Beach noise threshold");
@@ -747,7 +747,7 @@ fake_function() {
 	gettext("Defines areas where trees have apples.");
 	gettext("Mapgen V7");
 	gettext("Mapgen V7 specific flags");
-	gettext("Map generation attributes specific to Mapgen v7.\n'ridges' enables the rivers.\nFlags that are not enabled are not modified from the default.\nFlags starting with 'no' are used to explicitly disable them.");
+	gettext("Map generation attributes specific to Mapgen v7.\n'ridges' enables the rivers.");
 	gettext("Mountain zero level");
 	gettext("Y of mountain density gradient zero level. Used to shift mountains vertically.");
 	gettext("Cave width");
@@ -807,7 +807,7 @@ fake_function() {
 	gettext("Second of two 3D noises that together define tunnels.");
 	gettext("Mapgen Carpathian");
 	gettext("Mapgen Carpathian specific flags");
-	gettext("Map generation attributes specific to Mapgen Carpathian.\nFlags that are not enabled are not modified from the default.\nFlags starting with 'no' are used to explicitly disable them.");
+	gettext("Map generation attributes specific to Mapgen Carpathian.");
 	gettext("Base ground level");
 	gettext("Defines the base ground level.");
 	gettext("Cave width");
@@ -859,7 +859,7 @@ fake_function() {
 	gettext("3D noise defining giant caverns.");
 	gettext("Mapgen Flat");
 	gettext("Mapgen Flat specific flags");
-	gettext("Map generation attributes specific to Mapgen flat.\nOccasional lakes and hills can be added to the flat world.\nFlags that are not enabled are not modified from the default.\nFlags starting with 'no' are used to explicitly disable them.");
+	gettext("Map generation attributes specific to Mapgen flat.\nOccasional lakes and hills can be added to the flat world.");
 	gettext("Ground level");
 	gettext("Y of flat ground.");
 	gettext("Large cave depth");
