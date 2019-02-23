@@ -282,10 +282,8 @@ bool Address::isLocalhost() const
 
 		auto addr = m_address.ipv6.sin6_addr.s6_addr;
 
-// clang-format off
 		return memcmp(addr, localhost_bytes, 16) == 0 ||
 			memcmp(addr, mapped_ipv4_localhost, 13) == 0;
-// clang-format on
 	}
 
 	return (m_address.ipv4.sin_addr.s_addr & 0xFF) == 0x7f;
