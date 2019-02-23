@@ -58,6 +58,10 @@ void Translations::loadTranslation(const std::string &data)
 
 	while (is.good()) {
 		std::getline(is, line);
+		// Trim last character if file was using a \r\n line ending
+		if (line.length () > 0 && line[line.length() - 1] == '\r')
+			line.resize(line.length() - 1);
+
 		if (str_starts_with(line, "# textdomain:")) {
 			textdomain = utf8_to_wide(trim(str_split(line, ':')[1]));
 		}
