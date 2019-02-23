@@ -244,7 +244,7 @@ keymap_decrease_volume (Dec. volume key) key
 
 #    Key for toggling autoforward.
 #    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
-keymap_autoforward (Automatic forwards key) key
+keymap_autoforward (Automatic forward key) key
 
 #    Key for toggling cinematic mode.
 #    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
