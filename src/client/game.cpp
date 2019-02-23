@@ -2480,14 +2480,15 @@ void Game::updatePlayerControl(const CameraOrientation &cam)
 	}
 
 	// autoforward if set: simulate "up" key
-	if (g_settings->getBool("continuous_forward")) {
-		// also simulate "aux1" key if "up" key is already set
-		if (control.up) {
+	if (player->getPlayerSettings().continuous_forward) {
+		// simulate "aux1" key if "up" key is already set
+		if (!control.up) {
+			control.up = true;
+			keypress_bits |= 1U << 0;
+		} else {
 			control.aux1 = true;
 			keypress_bits |= 1U << 5;
 		}
-		control.up = true;
-		keypress_bits |= 1U << 0;
 	}
 
 	client->setPlayerControl(control);
