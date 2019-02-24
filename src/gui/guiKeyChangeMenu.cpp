@@ -246,7 +246,13 @@ void GUIKeyChangeMenu::drawMenu()
 bool GUIKeyChangeMenu::acceptInput()
 {
 	for (key_setting *k : key_settings) {
-		g_settings->set(k->setting_name, k->key.sym());
+		std::string default_key;
+		g_settings->getDefaultNoEx(k->setting_name, default_key);
+
+		if (k->key.sym() != default_key)
+			g_settings->set(k->setting_name, k->key.sym());
+		else
+			g_settings->remove(k->setting_name);
 	}
 
 	{
