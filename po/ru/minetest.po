@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-02-14 07:46+0100\n"
+"POT-Creation-Date: 2019-02-24 18:43+0100\n"
 "PO-Revision-Date: 2019-02-14 17:18+0000\n"
 "Last-Translator: narrnika <narr13niki@gmail.com>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/minetest/"
@@ -11,8 +11,8 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<="
-"4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
+"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
+"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
 "X-Generator: Weblate 3.5-dev\n"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
@@ -426,7 +426,8 @@ msgstr "Установка мода: не удаётся определить н
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Install Mod: Unable to find suitable folder name for modpack $1"
-msgstr "Установка мода: не удаётся найти подходящей каталог для пакета модов $1"
+msgstr ""
+"Установка мода: не удаётся найти подходящей каталог для пакета модов $1"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Install: Unsupported file type \"$1\" or broken archive"
@@ -912,11 +913,13 @@ msgid "- Server Name: "
 msgstr "- Имя сервера: "
 
 #: src/client/game.cpp
-msgid "Automatic forwards disabled"
+#, fuzzy
+msgid "Automatic forward disabled"
 msgstr "Автобег отключён"
 
 #: src/client/game.cpp
-msgid "Automatic forwards enabled"
+#, fuzzy
+msgid "Automatic forward enabled"
 msgstr "Автобег включён"
 
 #: src/client/game.cpp
@@ -2044,13 +2047,12 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 #, fuzzy
-msgid "Automatic forwards key"
+msgid "Automatic forward key"
 msgstr "Клавиша  вперёд"
 
 #: src/settings_translation_file.cpp
-msgid ""
-"Automatically jump up single-node obstacles.\n"
-"type: bool"
+#, fuzzy
+msgid "Automatically jump up single-node obstacles."
 msgstr "Автоматически запрыгивать на препятствия высотой в 1 метр."
 
 #: src/settings_translation_file.cpp
@@ -3144,12 +3146,11 @@ msgid "Global callbacks"
 msgstr "Глобальные обратные вызовы"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Global map generation attributes.\n"
 "In Mapgen v6 the 'decorations' flag controls all decorations except trees\n"
-"and junglegrass, in all other mapgens this flag controls all decorations.\n"
-"Flags that are not enabled are not modified from the default.\n"
-"Flags starting with 'no' are used to explicitly disable them."
+"and junglegrass, in all other mapgens this flag controls all decorations."
 msgstr ""
 "Глобальные атрибуты генерации карт.\n"
 "В генераторе карты v6 флаг 'decorations' не влияет на деревья и траву в "
@@ -4737,15 +4738,8 @@ msgid "Map directory"
 msgstr "Каталог сохранения карт"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
-msgid ""
-"Map generation attributes specific to Mapgen Carpathian.\n"
-"Flags that are not enabled are not modified from the default.\n"
-"Flags starting with 'no' are used to explicitly disable them."
+msgid "Map generation attributes specific to Mapgen Carpathian."
 msgstr ""
-"Атрибуты генерации карты, относящиеся к генератору карты версии 5.\n"
-"Флаги, не указанные в строке флагов, остаются в значении по умолчанию.\n"
-"Флаги с приставкой 'no' явно отключают их."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4761,9 +4755,7 @@ msgstr ""
 #, fuzzy
 msgid ""
 "Map generation attributes specific to Mapgen flat.\n"
-"Occasional lakes and hills can be added to the flat world.\n"
-"Flags that are not enabled are not modified from the default.\n"
-"Flags starting with 'no' are used to explicitly disable them."
+"Occasional lakes and hills can be added to the flat world."
 msgstr ""
 "Атрибуты генерации карты, относящиеся к генератору плоской карты.\n"
 "Случайные озёра и холмы могут быть добавлены в плоский мир.\n"
@@ -4771,15 +4763,8 @@ msgstr ""
 "Флаги с приставкой 'no' явно отключают их."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
-msgid ""
-"Map generation attributes specific to Mapgen v5.\n"
-"Flags that are not enabled are not modified from the default.\n"
-"Flags starting with 'no' are used to explicitly disable them."
+msgid "Map generation attributes specific to Mapgen v5."
 msgstr ""
-"Атрибуты генерации карты, относящиеся к генератору карты версии 5.\n"
-"Флаги, не указанные в строке флагов, остаются в значении по умолчанию.\n"
-"Флаги с приставкой 'no' явно отключают их."
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -4787,9 +4772,7 @@ msgid ""
 "Map generation attributes specific to Mapgen v6.\n"
 "The 'snowbiomes' flag enables the new 5 biome system.\n"
 "When the new biome system is enabled jungles are automatically enabled and\n"
-"the 'jungles' flag is ignored.\n"
-"Flags that are not enabled are not modified from the default.\n"
-"Flags starting with 'no' are used to explicitly disable them."
+"the 'jungles' flag is ignored."
 msgstr ""
 "Атрибуты генерации карты, относящиеся к генератору карты версии 6.\n"
 "Флаг 'snowbiomes' включает новую систему биомов.\n"
@@ -4799,16 +4782,10 @@ msgstr ""
 "Флаги с приставкой 'no' явно отключают их."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Map generation attributes specific to Mapgen v7.\n"
-"'ridges' enables the rivers.\n"
-"Flags that are not enabled are not modified from the default.\n"
-"Flags starting with 'no' are used to explicitly disable them."
+"'ridges' enables the rivers."
 msgstr ""
-"Атрибуты генерации карты, относящиеся к генератору карты версии 5.\n"
-"Флаги, не указанные в строке флагов, остаются в значении по умолчанию.\n"
-"Флаги с приставкой 'no' явно отключают их."
 
 #: src/settings_translation_file.cpp
 msgid "Map generation limit"
@@ -5153,11 +5130,12 @@ msgid "Mute sound"
 msgstr "Заглушить звук"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Name of map generator to be used when creating a new world.\n"
 "Creating a world in the main menu will override this.\n"
 "Current stable mapgens:\n"
-"v5, v6, v7 (except floatlands), flat, singlenode.\n"
+"v5, v6, v7 (except floatlands), singlenode.\n"
 "'stable' means the terrain shape in an existing world will not be changed\n"
 "in the future. Note that biomes are defined by games and may still change."
 msgstr ""
@@ -6651,110 +6629,574 @@ msgstr "Лимит одновременных соединений cURL"
 msgid "cURL timeout"
 msgstr "cURL тайм-аут"
 
+#~ msgid "Content Store"
+#~ msgstr "Хранилище дополнений"
+
 #, fuzzy
-#~ msgid "View"
-#~ msgstr "Просмотр"
-
-#~ msgid "Advanced Settings"
-#~ msgstr "Расширенные настройки"
-
 #~ msgid ""
-#~ "Enable a bit lower water surface, so it doesn't \"fill\" the node "
-#~ "completely.\n"
-#~ "Note that this is not quite optimized and that smooth lighting on the\n"
-#~ "water surface doesn't work with this."
+#~ "Number of emerge threads to use.\n"
+#~ "Make this field blank or 0, or increase this number to use multiple "
+#~ "threads.\n"
+#~ "On multiprocessor systems, this will improve mapgen speed greatly at the "
+#~ "cost\n"
+#~ "of slightly buggy caves."
 #~ msgstr ""
-#~ "Включите немного более низкую поверхность воды, чтобы она\n"
-#~ "не заполняла блок полностью. Учтите, что это не совсем оптимизировано,\n"
-#~ "и мягкое освещение на поверхности воды не работает с этим."
+#~ "Количество используемых emerge-потоков. Оставьте это поле пустым, или "
+#~ "увеличьте число,\n"
+#~ "чтобы использовать множество потоков. На многопроцессорных системах это "
+#~ "значительно увеличит скорость генерации карты\n"
+#~ "за счёт немного худшей генерации шахт."
+
+#~ msgid "Show non-free packages"
+#~ msgstr "Отображать несвободные дополнения"
 
 #~ msgid ""
-#~ "Key for decreasing the viewing range. Modifies the minimum viewing "
-#~ "range.\n"
+#~ "Show packages in the content store that do not qualify as 'free "
+#~ "software'\n"
+#~ "as defined by the Free Software Foundation."
+#~ msgstr ""
+#~ "Отображать в хранилище дополнения, которые не являются свободным "
+#~ "программным обеспечением по определению Free Software Foundation."
+
+#~ msgid "Disable MP"
+#~ msgstr "Отключить набор"
+
+#~ msgid "Enable MP"
+#~ msgstr "Включить набор"
+
+#~ msgid "No worldname given or no game selected"
+#~ msgstr "Не указано название мира или не выбрана игра"
+
+#~ msgid "\"$1\" is not a valid flag."
+#~ msgstr "\"$1\" не является действительным флагом."
+
+#~ msgid "Format is 3 numbers separated by commas and inside brackets."
+#~ msgstr "Формат 3 цифры через запятую в скобках."
+
+#~ msgid ""
+#~ "Format: <offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>), <seed>, "
+#~ "<octaves>, <persistence>"
+#~ msgstr ""
+#~ "Формат: <Смещение>,<Масштаб>, (<По оси X>,<По оси Y>,<По оси Z>), "
+#~ "<Зерно>, <Октавы>,<Постоянство>"
+
+#~ msgid "Optionally the lacunarity can be appended with a leading comma."
+#~ msgstr ""
+#~ "При необходимости лакунарность может быть добавлена с запятой в начале."
+
+#~ msgid "Please enter a comma seperated list of flags."
+#~ msgstr "Пожалуйста, вводите запятые для разделения списка флагов."
+
+#~ msgid "Possible values are: "
+#~ msgstr "Возможные значения: "
+
+#~ msgid "Select path"
+#~ msgstr "Выбрать путь"
+
+#~ msgid "Subgame Mods"
+#~ msgstr "Моды игры"
+
+#~ msgid "Page $1 of $2"
+#~ msgstr "Страница $1 из $2"
+
+#~ msgid "Rating"
+#~ msgstr "Рейтинг"
+
+#~ msgid "Shortname:"
+#~ msgstr "Краткое имя:"
+
+#~ msgid "Successfully installed:"
+#~ msgstr "Успешно установлено:"
+
+#~ msgid "Unsorted"
+#~ msgstr "Не сортировано"
+
+#~ msgid "re-Install"
+#~ msgstr "Переустановить"
+
+#~ msgid "Local Game"
+#~ msgstr "Локальная игра"
+
+#~ msgid "Uninstall selected modpack"
+#~ msgstr "Удалить выбранный набор модов"
+
+#~ msgid "Play Online"
+#~ msgstr "Играть онлайн"
+
+#~ msgid "Normal Mapping"
+#~ msgstr "Карты нормалей"
+
+#~ msgid "No information available"
+#~ msgstr "Описание отсутствует"
+
+#~ msgid "Volume changed to 0%"
+#~ msgstr "Громкость изменена на 0%"
+
+#~ msgid "Volume changed to 100%"
+#~ msgstr "Громкость изменена на 100%"
+
+#~ msgid "Print stacks"
+#~ msgstr "Печать стеков"
+
+#~ msgid "Use"
+#~ msgstr "Использовать"
+
+#~ msgid "Next"
+#~ msgstr "Next"
+
+#~ msgid "Prior"
+#~ msgstr "Prior"
+
+#~ msgid "Active Block Modifier interval"
+#~ msgstr "Интервал изменения активного блока"
+
+#~ msgid ""
+#~ "Android systems only: Tries to create inventory textures from meshes\n"
+#~ "when no supported render was found."
+#~ msgstr ""
+#~ "Только Android-системы: Пытаться создать текстуры инвентаря из мешей,\n"
+#~ "когда поддерживаемый рендер не найден."
+
+#~ msgid ""
+#~ "Announce to this serverlist.\n"
+#~ "If you want to announce your ipv6 address, use  serverlist_url = v6."
+#~ "servers.minetest.net."
+#~ msgstr ""
+#~ "Объявить в списке серверов.\n"
+#~ "Если вы желаете анонсировать адрес ipv6, используйте serverlist_url = v6."
+#~ "servers.minetest.net."
+
+#~ msgid "Approximate (X,Y,Z) scale of fractal in nodes."
+#~ msgstr "Приблизительный (X,Y,Z) масштаб фрактала в блоках."
+
+#~ msgid "Autorun key"
+#~ msgstr "Кнопка автобега"
+
+#~ msgid "Caves and tunnels form at the intersection of the two noises"
+#~ msgstr "Пещеры и тоннели формируются на перекрёстке этих двух шумов"
+
+#~ msgid "Cloud height"
+#~ msgstr "Высота облаков"
+
+#~ msgid "Console key"
+#~ msgstr "Кнопка вызова консоли"
+
+#~ msgid "Continuous forward movement (only used for testing)."
+#~ msgstr "Постоянное движение вперёд (используется только для тестирования)."
+
+#~ msgid ""
+#~ "Creates unpredictable lava features in caves.\n"
+#~ "These can make mining difficult. Zero disables them. (0-10)"
+#~ msgstr ""
+#~ "Создаёт непредсказуемую лаву в пещерах.\n"
+#~ "Она может затруднить добычу. Ноль отключает это. (0-10)"
+
+#~ msgid ""
+#~ "Creates unpredictable water features in caves.\n"
+#~ "These can make mining difficult. Zero disables them. (0-10)"
+#~ msgstr ""
+#~ "Создаёт непредсказуемую воду в пещерах.\n"
+#~ "Она может затруднить добычу. Ноль отключает это. (0-10)"
+
+#~ msgid "Crouch speed"
+#~ msgstr "Скорость спуска"
+
+#~ msgid "Depth below which you'll find massive caves."
+#~ msgstr "Глубина, ниже которой встречаются огромные пещеры."
+
+#~ msgid "Descending speed"
+#~ msgstr "Скорость снижения"
+
+#~ msgid "Disable escape sequences"
+#~ msgstr "Отключить escape-последовательности"
+
+#~ msgid ""
+#~ "Disable escape sequences, e.g. chat coloring.\n"
+#~ "Use this if you want to run a server with pre-0.4.14 clients and you want "
+#~ "to disable\n"
+#~ "the escape sequences generated by mods."
+#~ msgstr ""
+#~ "Отключить escape-последовательности, например, цвет в чате.\n"
+#~ "Используйте это, если хотите запустить сервер с клиентами версии ниже "
+#~ "0.4.14\n"
+#~ "и отключить escape-последовательности, генерируемые модами."
+
+#~ msgid "Enable view bobbing"
+#~ msgstr "Включить покачивание камеры"
+
+#~ msgid "Enables view bobbing when walking."
+#~ msgstr "Включает покачивание камеры при ходьбе."
+
+#~ msgid "Field of view for zoom"
+#~ msgstr "Поле зрения в режиме увеличения"
+
+#~ msgid ""
+#~ "Field of view while zooming in degrees.\n"
+#~ "This requires the \"zoom\" privilege on the server."
+#~ msgstr ""
+#~ "Поле зрения в режиме увеличения в градусах.\n"
+#~ "Требует привилегию «zoom» на сервере."
+
+#~ msgid ""
+#~ "From how far clients know about objects, stated in mapblocks (16 nodes)."
+#~ msgstr ""
+#~ "С какого расстояния клиенты узнают об объектах, в фрагментах (16 блоков)."
+
+#~ msgid "General"
+#~ msgstr "Общие"
+
+#~ msgid "Height on which clouds are appearing."
+#~ msgstr "Высота, на которой появляются облака."
+
+#~ msgid ""
+#~ "How large area of blocks are subject to the active block stuff, stated in "
+#~ "mapblocks (16 nodes).\n"
+#~ "In active blocks objects are loaded and ABMs run."
+#~ msgstr ""
+#~ "Насколько большая область подлежит обработке активных фрагментов; "
+#~ "задаётся в фрагментах (16 блоков).↵\n"
+#~ "В активных фрагментах загружаются объекты и работают модификаторы "
+#~ "фрагментов (ABM)."
+
+#~ msgid "If enabled, show the server status message on player connection."
+#~ msgstr ""
+#~ "Если включено, то показывать сообщение о статусе сервера при подключении."
+
+#~ msgid "Inventory image hack"
+#~ msgstr "Хак с изображениями в инвентаре"
+
+#~ msgid ""
+#~ "Iterations of the recursive function.\n"
+#~ "Controls the amount of fine detail."
+#~ msgstr ""
+#~ "Количество итераций рекурсивной функции.\n"
+#~ "Контролирует количество мелких деталей."
+
+#~ msgid ""
+#~ "Key for opening the chat console.\n"
 #~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 #~ "html#a54da2a0e231901735e3da1b0edf72eb3"
 #~ msgstr ""
-#~ "Клавиша уменьшения видимого диапазона. Изменяет минимальную дальность "
-#~ "отображения.\n"
+#~ "Клавиша открытия чат-консоли.\n"
 #~ "Смотрите http://irrlicht.sourceforge.net/docu/namespaceirr."
 #~ "html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #~ msgid ""
-#~ "Key for increasing the viewing range. Modifies the minimum viewing "
-#~ "range.\n"
+#~ "Key for printing debug stacks. Used for development.\n"
 #~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 #~ "html#a54da2a0e231901735e3da1b0edf72eb3"
 #~ msgstr ""
-#~ "Клавиша Увеличения видимого диапазона. Изменяет минимальную дальность "
-#~ "отображения.\n"
-#~ "Смотрите http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "Клавиша для печати отладочных стеков. Используется для разработки.\n"
+#~ "См. http://irrlicht.sourceforge.net/docu/namespaceirr."
 #~ "html#a54da2a0e231901735e3da1b0edf72eb3"
 
+#~ msgid "Lava Features"
+#~ msgstr "Лава"
+
+#~ msgid "Main menu game manager"
+#~ msgstr "Менеджер игр в главном меню"
+
+#~ msgid "Main menu mod manager"
+#~ msgstr "Мод менеджер главного меню"
+
+#~ msgid ""
+#~ "Map generation attributes specific to Mapgen Valleys.\n"
+#~ "'altitude_chill' makes higher elevations colder, which may cause biome "
+#~ "issues.\n"
+#~ "'humid_rivers' modifies the humidity around rivers and in areas where "
+#~ "water would tend to pool,\n"
+#~ "it may interfere with delicately adjusted biomes.\n"
+#~ "Flags that are not specified in the flag string are not modified from the "
+#~ "default.\n"
+#~ "Flags starting with 'no' are used to explicitly disable them."
+#~ msgstr ""
+#~ "Атрибуты генерации карты, относящиеся к Valleys.\n"
+#~ "'altitude_chill' делает высоты холоднее, что может привести к проблемам с "
+#~ "биомами.\n"
+#~ "'humid_rivers' изменяет влажность вокруг рек, и в областях, где "
+#~ "скапливается вода,\n"
+#~ "он может вмешиваться в тонко настроенные биомы.\n"
+#~ "Флаги, не указанные в строке флагов, остаются в значении по умолчанию.\n"
+#~ "Флаги с приставкой 'no' явно отключают их."
+
+#~ msgid ""
+#~ "Map generation attributes specific to Mapgen v7.\n"
+#~ "The 'ridges' flag enables the rivers.\n"
+#~ "Floatlands are currently experimental and subject to change.\n"
+#~ "Flags that are not specified in the flag string are not modified from the "
+#~ "default.\n"
+#~ "Flags starting with 'no' are used to explicitly disable them."
+#~ msgstr ""
+#~ "Атрибуты генерации карты, относящиеся к генератору карты версии 7.\n"
+#~ "Флаг 'ridges' включает реки.\n"
+#~ "Парящие острова являются экспериментальными и могут изменяться.\n"
+#~ "Флаги, не указанные в строке флагов, остаются в значении по умолчанию.\n"
+#~ "Флаги с приставкой 'no' явно отключают их."
+
+#~ msgid "Massive cave depth"
+#~ msgstr "Глубина огромных пещер"
+
+#~ msgid "Massive cave noise"
+#~ msgstr "Шум огромных пещер"
+
+#~ msgid "Massive caves form here."
+#~ msgstr "Огромные пещеры образуются здесь."
+
+#~ msgid "Maximum number of blocks that are simultaneously sent in total."
+#~ msgstr "Максимальное количество одновременно отправляемых блоков."
+
+#~ msgid "Maximum number of blocks that are simultaneously sent per client."
+#~ msgstr "Количество блоков, передаваемых одновременно для каждого клиента."
+
+#~ msgid "Maximum simultaneous block sends total"
+#~ msgstr "Максимальное количество одновременных отправлений блоков в общем"
+
+#~ msgid "Modstore details URL"
+#~ msgstr "URL информации о модах"
+
+#~ msgid "Modstore download URL"
+#~ msgstr "URL для скачивания модов"
+
+#~ msgid "Modstore mods list URL"
+#~ msgstr "URL списка модов"
+
+#~ msgid ""
+#~ "Name of map generator to be used when creating a new world.\n"
+#~ "Creating a world in the main menu will override this."
+#~ msgstr ""
+#~ "Название генератора карты, используемого при создании мира.\n"
+#~ "Создание мира из главного меню переопределит это."
+
+#~ msgid "River noise -- rivers occur close to zero"
+#~ msgstr "Шум рек; реки встречаются ближе к нулю"
+
+#~ msgid ""
+#~ "Size of chunks to be generated at once by mapgen, stated in mapblocks (16 "
+#~ "nodes)."
+#~ msgstr ""
+#~ "Размер чанка, генерируемого за один раз, указанный в фрагментах (16 "
+#~ "блоков)."
+
+#~ msgid "Support older servers"
+#~ msgstr "Поддержка старых серверов"
+
+#~ msgid "The altitude at which temperature drops by 20C"
+#~ msgstr "Высота, на которой температура падает на 20 °C"
+
+#~ msgid "The rendering back-end for Irrlicht."
+#~ msgstr "Бэкенд Irrlicht для рендеринга."
+
+#~ msgid "Use key"
+#~ msgstr "Клавиша Использовать"
+
+#~ msgid ""
+#~ "Use mip mapping to scale textures. May slightly increase performance."
+#~ msgstr ""
+#~ "Использовать мипмаппинг для масштабирования текстур. Может немного "
+#~ "увеличить производительность."
+
+#~ msgid "Valleys C Flags"
+#~ msgstr "Флаги C Долины"
+
+#~ msgid "Water Features"
+#~ msgstr "Особенности воды"
+
+#~ msgid ""
+#~ "Whether to support older servers before protocol version 25.\n"
+#~ "Enable if you want to connect to 0.4.12 servers and before.\n"
+#~ "Servers starting with 0.4.13 will work, 0.4.12-dev servers may work.\n"
+#~ "Disabling this option will protect your password better."
+#~ msgstr ""
+#~ "Поддерживать ли старые сервера до версии протокола 25.\n"
+#~ "Включите, если вы хотите подключиться к серверам 0.4.12 и более старым.\n"
+#~ "Сервера, начиная с 0.4.13, будут работать, сервера 0.4.12-dev могут "
+#~ "работать.\n"
+#~ "Отключение этой опции лучше защитит ваш пароль."
+
+#~ msgid "Y-level of higher (cliff-top) terrain."
+#~ msgstr "Y-уровень более высокого (скалистого) ландшафта."
+
+#~ msgid "Hide mp content"
+#~ msgstr "Скрыть содержимое модпака"
+
+#~ msgid "Attn"
+#~ msgstr "Внимание"
+
+#~ msgid "Capital"
+#~ msgstr "Caps Lock"
+
+#~ msgid "Comma"
+#~ msgstr "Запятая"
+
+#~ msgid "CrSel"
+#~ msgstr "CrSel"
+
+#~ msgid "ExSel"
+#~ msgstr "ExSel"
+
+#~ msgid "Final"
+#~ msgstr "Конец"
+
+#~ msgid "Junja"
+#~ msgstr "Junja"
+
+#~ msgid "Kana"
+#~ msgstr "Кана"
+
+#~ msgid "Kanji"
+#~ msgstr "Кандзи"
+
+#~ msgid "Minus"
+#~ msgstr "Минус"
+
+#~ msgid "PA1"
+#~ msgstr "PA1"
+
+#~ msgid "Period"
+#~ msgstr "Период"
+
+#~ msgid "Plus"
+#~ msgstr "Плюс"
+
+#~ msgid ""
+#~ "Controls size of deserts and beaches in Mapgen v6.\n"
+#~ "When snowbiomes are enabled 'mgv6_freq_desert' is ignored."
+#~ msgstr ""
+#~ "Задает размеры пустыней и пляжей.\n"
+#~ "Когда включены снежные биомы, 'mgv6_freq_desert' игнорируется."
+
 #, fuzzy
-#~ msgid "New style water"
-#~ msgstr "Новый стиль воды"
-
-#~ msgid "Preload inventory textures"
-#~ msgstr "Предзагрузка текстур..."
+#~ msgid "Mapgen flat cave width"
+#~ msgstr "Флаги генератора карты"
 
 #, fuzzy
-#~ msgid "Wanted FPS"
-#~ msgstr "Ожидаемый FPS"
-
-#~ msgid "Scaling factor applied to menu elements: "
-#~ msgstr "Коэффициент масштаба интерфейса: "
-
-#~ msgid "Touch free target"
-#~ msgstr "Свободный выбор цели"
+#~ msgid "Mapgen fractal cave width"
+#~ msgstr "Флаги генератора карты"
 
 #, fuzzy
-#~ msgid "Downloading"
-#~ msgstr "Загрузить"
+#~ msgid "Mapgen fractal fractal"
+#~ msgstr "Флаги генератора карты"
 
-#~ msgid "Left click: Move all items, Right click: Move single item"
-#~ msgstr "ЛКМ: Переместить все предметы, ПКМ: Переместить один предмет"
+#, fuzzy
+#~ msgid "Mapgen fractal iterations"
+#~ msgstr "Повторение параллакса"
 
-#~ msgid "is required by:"
-#~ msgstr "требуется для:"
+#, fuzzy
+#~ msgid "Mapgen fractal offset"
+#~ msgstr "Флаги генератора карты"
 
-#~ msgid "Configuration saved.  "
-#~ msgstr "Настройки сохранены.  "
+#, fuzzy
+#~ msgid "Mapgen fractal scale"
+#~ msgstr "Флаги генератора карты"
 
-#~ msgid "Warning: Configuration not consistent.  "
-#~ msgstr "Предупреждение: Неверная конфигурация.  "
+#, fuzzy
+#~ msgid "Mapgen fractal slice w"
+#~ msgstr "Флаги генератора карты"
 
-#~ msgid "Cannot create world: Name contains invalid characters"
-#~ msgstr "Невозможно создать мир: Имя содержит недопустимые символы"
+#, fuzzy
+#~ msgid "Mapgen v5 cave width"
+#~ msgstr "Генератор карты версии 5"
 
-#~ msgid "Show Public"
-#~ msgstr "Публичные"
+#, fuzzy
+#~ msgid "Mapgen v7 cave width"
+#~ msgstr "Генератор карты версии 7"
 
-#~ msgid "Show Favorites"
-#~ msgstr "Избранные"
+#, fuzzy
+#~ msgid ""
+#~ "How many blocks are flying in the wire simultaneously for the whole "
+#~ "server."
+#~ msgstr "Количество блоков, передаваемых одновременно для всего сервера."
 
-#~ msgid "Leave address blank to start a local server."
-#~ msgstr "Оставьте адрес пустым для запуска локального сервера."
+#, fuzzy
+#~ msgid "Useful for mod developers."
+#~ msgstr "Разработчики в отставке"
 
-#~ msgid "Create world"
-#~ msgstr "Создать мир"
+#~ msgid "No of course not!"
+#~ msgstr "Нет, конечно нет!"
 
-#~ msgid "Address required."
-#~ msgstr "Нужно ввести адрес."
+#~ msgid "Public Serverlist"
+#~ msgstr "Список публичных серверов"
 
-#~ msgid "Cannot delete world: Nothing selected"
-#~ msgstr "Невозможно удалить мир: Ничего не выбрано"
+#~ msgid "No!!!"
+#~ msgstr "Нет!"
 
-#~ msgid "Files to be deleted"
-#~ msgstr "Следующие файлы будут удалены"
+#~ msgid "\""
+#~ msgstr "\""
 
-#~ msgid "Cannot create world: No games found"
-#~ msgstr "Невозможно создать мир: Ни одной игры не найдено"
+#~ msgid "If enabled, "
+#~ msgstr "Если включено "
 
-#~ msgid "Cannot configure world: Nothing selected"
-#~ msgstr "Невозможно настроить мир: ничего не выбрано"
+#~ msgid "Restart minetest for driver change to take effect"
+#~ msgstr "Перезапустите Minetest для принятия изменений"
 
-#~ msgid "Failed to delete all world files"
-#~ msgstr "Ошибка при удалении файлов мира"
+#~ msgid "Gamemgr: Unable to copy mod \"$1\" to game \"$2\""
+#~ msgstr "Gamemgr: Не могу скопировать мод \"$1\" в игру \"$2\""
+
+#~ msgid "GAMES"
+#~ msgstr "ИГРЫ"
+
+#~ msgid "Mods:"
+#~ msgstr "Моды:"
+
+#~ msgid "new game"
+#~ msgstr "Создать игру"
+
+#~ msgid "EDIT GAME"
+#~ msgstr "РЕДАКТИРОВАНИЕ"
+
+#~ msgid "Remove selected mod"
+#~ msgstr "Удалить мод"
+
+#~ msgid "<<-- Add mod"
+#~ msgstr "<<-- Добавить мод"
+
+#~ msgid "CLIENT"
+#~ msgstr "КЛИЕНТ"
+
+#~ msgid "START SERVER"
+#~ msgstr "СЕРВЕР"
+
+#~ msgid "Name"
+#~ msgstr "Имя"
+
+#~ msgid "Password"
+#~ msgstr "Пароль"
+
+#~ msgid "SETTINGS"
+#~ msgstr "НАСТРОЙКИ"
+
+#~ msgid "Preload item visuals"
+#~ msgstr "Предзагрузка изображений"
+
+#~ msgid "Finite Liquid"
+#~ msgstr "Конечные жидкости"
+
+#~ msgid "SINGLE PLAYER"
+#~ msgstr "ОДИНОЧНАЯ ИГРА"
+
+#~ msgid "TEXTURE PACKS"
+#~ msgstr "ПАКЕТЫ ТЕКСТУР"
+
+#~ msgid "MODS"
+#~ msgstr "МОДЫ"
+
+#~ msgid "Add mod:"
+#~ msgstr "Добавить мод:"
+
+#~ msgid ""
+#~ "Warning: Some mods are not configured yet.\n"
+#~ "They will be enabled by default when you save the configuration.  "
+#~ msgstr ""
+#~ "Предупреждение: Некоторые моды еще не настроены.\n"
+#~ "Их стандартные настройки будут установлены, когда вы сохраните "
+#~ "конфигурацию.  "
+
+#~ msgid ""
+#~ "Warning: Some configured mods are missing.\n"
+#~ "Their setting will be removed when you save the configuration.  "
+#~ msgstr ""
+#~ "Предупреждение: Некоторые моды не найдены.\n"
+#~ "Их настройки будут удалены, когда вы сохраните конфигурацию.  "
 
 #~ msgid ""
 #~ "Default Controls:\n"
@@ -6781,571 +7223,138 @@ msgstr "cURL тайм-аут"
 #~ "- ESC: это меню\n"
 #~ "- T: чат\n"
 
-#~ msgid ""
-#~ "Warning: Some configured mods are missing.\n"
-#~ "Their setting will be removed when you save the configuration.  "
-#~ msgstr ""
-#~ "Предупреждение: Некоторые моды не найдены.\n"
-#~ "Их настройки будут удалены, когда вы сохраните конфигурацию.  "
+#~ msgid "Failed to delete all world files"
+#~ msgstr "Ошибка при удалении файлов мира"
 
-#~ msgid ""
-#~ "Warning: Some mods are not configured yet.\n"
-#~ "They will be enabled by default when you save the configuration.  "
-#~ msgstr ""
-#~ "Предупреждение: Некоторые моды еще не настроены.\n"
-#~ "Их стандартные настройки будут установлены, когда вы сохраните "
-#~ "конфигурацию.  "
+#~ msgid "Cannot configure world: Nothing selected"
+#~ msgstr "Невозможно настроить мир: ничего не выбрано"
 
-#~ msgid "Add mod:"
-#~ msgstr "Добавить мод:"
+#~ msgid "Cannot create world: No games found"
+#~ msgstr "Невозможно создать мир: Ни одной игры не найдено"
 
-#~ msgid "MODS"
-#~ msgstr "МОДЫ"
+#~ msgid "Files to be deleted"
+#~ msgstr "Следующие файлы будут удалены"
 
-#~ msgid "TEXTURE PACKS"
-#~ msgstr "ПАКЕТЫ ТЕКСТУР"
+#~ msgid "Cannot delete world: Nothing selected"
+#~ msgstr "Невозможно удалить мир: Ничего не выбрано"
 
-#~ msgid "SINGLE PLAYER"
-#~ msgstr "ОДИНОЧНАЯ ИГРА"
+#~ msgid "Address required."
+#~ msgstr "Нужно ввести адрес."
 
-#~ msgid "Finite Liquid"
-#~ msgstr "Конечные жидкости"
+#~ msgid "Create world"
+#~ msgstr "Создать мир"
 
-#~ msgid "Preload item visuals"
-#~ msgstr "Предзагрузка изображений"
+#~ msgid "Leave address blank to start a local server."
+#~ msgstr "Оставьте адрес пустым для запуска локального сервера."
 
-#~ msgid "SETTINGS"
-#~ msgstr "НАСТРОЙКИ"
+#~ msgid "Show Favorites"
+#~ msgstr "Избранные"
 
-#~ msgid "Password"
-#~ msgstr "Пароль"
+#~ msgid "Show Public"
+#~ msgstr "Публичные"
 
-#~ msgid "Name"
-#~ msgstr "Имя"
+#~ msgid "Cannot create world: Name contains invalid characters"
+#~ msgstr "Невозможно создать мир: Имя содержит недопустимые символы"
 
-#~ msgid "START SERVER"
-#~ msgstr "СЕРВЕР"
+#~ msgid "Warning: Configuration not consistent.  "
+#~ msgstr "Предупреждение: Неверная конфигурация.  "
 
-#~ msgid "CLIENT"
-#~ msgstr "КЛИЕНТ"
+#~ msgid "Configuration saved.  "
+#~ msgstr "Настройки сохранены.  "
 
-#~ msgid "<<-- Add mod"
-#~ msgstr "<<-- Добавить мод"
+#~ msgid "is required by:"
+#~ msgstr "требуется для:"
 
-#~ msgid "Remove selected mod"
-#~ msgstr "Удалить мод"
-
-#~ msgid "EDIT GAME"
-#~ msgstr "РЕДАКТИРОВАНИЕ"
-
-#~ msgid "new game"
-#~ msgstr "Создать игру"
-
-#~ msgid "Mods:"
-#~ msgstr "Моды:"
-
-#~ msgid "GAMES"
-#~ msgstr "ИГРЫ"
-
-#~ msgid "Gamemgr: Unable to copy mod \"$1\" to game \"$2\""
-#~ msgstr "Gamemgr: Не могу скопировать мод \"$1\" в игру \"$2\""
-
-#~ msgid "Restart minetest for driver change to take effect"
-#~ msgstr "Перезапустите Minetest для принятия изменений"
-
-#~ msgid "If enabled, "
-#~ msgstr "Если включено "
-
-#~ msgid "\""
-#~ msgstr "\""
-
-#~ msgid "No!!!"
-#~ msgstr "Нет!"
-
-#~ msgid "Public Serverlist"
-#~ msgstr "Список публичных серверов"
-
-#~ msgid "No of course not!"
-#~ msgstr "Нет, конечно нет!"
+#~ msgid "Left click: Move all items, Right click: Move single item"
+#~ msgstr "ЛКМ: Переместить все предметы, ПКМ: Переместить один предмет"
 
 #, fuzzy
-#~ msgid "Useful for mod developers."
-#~ msgstr "Разработчики в отставке"
+#~ msgid "Downloading"
+#~ msgstr "Загрузить"
+
+#~ msgid "Touch free target"
+#~ msgstr "Свободный выбор цели"
+
+#~ msgid "Scaling factor applied to menu elements: "
+#~ msgstr "Коэффициент масштаба интерфейса: "
 
 #, fuzzy
-#~ msgid ""
-#~ "How many blocks are flying in the wire simultaneously for the whole "
-#~ "server."
-#~ msgstr "Количество блоков, передаваемых одновременно для всего сервера."
+#~ msgid "Wanted FPS"
+#~ msgstr "Ожидаемый FPS"
+
+#~ msgid "Preload inventory textures"
+#~ msgstr "Предзагрузка текстур..."
 
 #, fuzzy
-#~ msgid "Mapgen v7 cave width"
-#~ msgstr "Генератор карты версии 7"
-
-#, fuzzy
-#~ msgid "Mapgen v5 cave width"
-#~ msgstr "Генератор карты версии 5"
-
-#, fuzzy
-#~ msgid "Mapgen fractal slice w"
-#~ msgstr "Флаги генератора карты"
-
-#, fuzzy
-#~ msgid "Mapgen fractal scale"
-#~ msgstr "Флаги генератора карты"
-
-#, fuzzy
-#~ msgid "Mapgen fractal offset"
-#~ msgstr "Флаги генератора карты"
-
-#, fuzzy
-#~ msgid "Mapgen fractal iterations"
-#~ msgstr "Повторение параллакса"
-
-#, fuzzy
-#~ msgid "Mapgen fractal fractal"
-#~ msgstr "Флаги генератора карты"
-
-#, fuzzy
-#~ msgid "Mapgen fractal cave width"
-#~ msgstr "Флаги генератора карты"
-
-#, fuzzy
-#~ msgid "Mapgen flat cave width"
-#~ msgstr "Флаги генератора карты"
+#~ msgid "New style water"
+#~ msgstr "Новый стиль воды"
 
 #~ msgid ""
-#~ "Controls size of deserts and beaches in Mapgen v6.\n"
-#~ "When snowbiomes are enabled 'mgv6_freq_desert' is ignored."
-#~ msgstr ""
-#~ "Задает размеры пустыней и пляжей.\n"
-#~ "Когда включены снежные биомы, 'mgv6_freq_desert' игнорируется."
-
-#~ msgid "Plus"
-#~ msgstr "Плюс"
-
-#~ msgid "Period"
-#~ msgstr "Период"
-
-#~ msgid "PA1"
-#~ msgstr "PA1"
-
-#~ msgid "Minus"
-#~ msgstr "Минус"
-
-#~ msgid "Kanji"
-#~ msgstr "Кандзи"
-
-#~ msgid "Kana"
-#~ msgstr "Кана"
-
-#~ msgid "Junja"
-#~ msgstr "Junja"
-
-#~ msgid "Final"
-#~ msgstr "Конец"
-
-#~ msgid "ExSel"
-#~ msgstr "ExSel"
-
-#~ msgid "CrSel"
-#~ msgstr "CrSel"
-
-#~ msgid "Comma"
-#~ msgstr "Запятая"
-
-#~ msgid "Capital"
-#~ msgstr "Caps Lock"
-
-#~ msgid "Attn"
-#~ msgstr "Внимание"
-
-#~ msgid "Hide mp content"
-#~ msgstr "Скрыть содержимое модпака"
-
-#~ msgid "Y-level of higher (cliff-top) terrain."
-#~ msgstr "Y-уровень более высокого (скалистого) ландшафта."
-
-#~ msgid ""
-#~ "Whether to support older servers before protocol version 25.\n"
-#~ "Enable if you want to connect to 0.4.12 servers and before.\n"
-#~ "Servers starting with 0.4.13 will work, 0.4.12-dev servers may work.\n"
-#~ "Disabling this option will protect your password better."
-#~ msgstr ""
-#~ "Поддерживать ли старые сервера до версии протокола 25.\n"
-#~ "Включите, если вы хотите подключиться к серверам 0.4.12 и более старым.\n"
-#~ "Сервера, начиная с 0.4.13, будут работать, сервера 0.4.12-dev могут "
-#~ "работать.\n"
-#~ "Отключение этой опции лучше защитит ваш пароль."
-
-#~ msgid "Water Features"
-#~ msgstr "Особенности воды"
-
-#~ msgid "Valleys C Flags"
-#~ msgstr "Флаги C Долины"
-
-#~ msgid ""
-#~ "Use mip mapping to scale textures. May slightly increase performance."
-#~ msgstr ""
-#~ "Использовать мипмаппинг для масштабирования текстур. Может немного "
-#~ "увеличить производительность."
-
-#~ msgid "Use key"
-#~ msgstr "Клавиша Использовать"
-
-#~ msgid "The rendering back-end for Irrlicht."
-#~ msgstr "Бэкенд Irrlicht для рендеринга."
-
-#~ msgid "The altitude at which temperature drops by 20C"
-#~ msgstr "Высота, на которой температура падает на 20 °C"
-
-#~ msgid "Support older servers"
-#~ msgstr "Поддержка старых серверов"
-
-#~ msgid ""
-#~ "Size of chunks to be generated at once by mapgen, stated in mapblocks (16 "
-#~ "nodes)."
-#~ msgstr ""
-#~ "Размер чанка, генерируемого за один раз, указанный в фрагментах (16 "
-#~ "блоков)."
-
-#~ msgid "River noise -- rivers occur close to zero"
-#~ msgstr "Шум рек; реки встречаются ближе к нулю"
-
-#~ msgid ""
-#~ "Name of map generator to be used when creating a new world.\n"
-#~ "Creating a world in the main menu will override this."
-#~ msgstr ""
-#~ "Название генератора карты, используемого при создании мира.\n"
-#~ "Создание мира из главного меню переопределит это."
-
-#~ msgid "Modstore mods list URL"
-#~ msgstr "URL списка модов"
-
-#~ msgid "Modstore download URL"
-#~ msgstr "URL для скачивания модов"
-
-#~ msgid "Modstore details URL"
-#~ msgstr "URL информации о модах"
-
-#~ msgid "Maximum simultaneous block sends total"
-#~ msgstr "Максимальное количество одновременных отправлений блоков в общем"
-
-#~ msgid "Maximum number of blocks that are simultaneously sent per client."
-#~ msgstr "Количество блоков, передаваемых одновременно для каждого клиента."
-
-#~ msgid "Maximum number of blocks that are simultaneously sent in total."
-#~ msgstr "Максимальное количество одновременно отправляемых блоков."
-
-#~ msgid "Massive caves form here."
-#~ msgstr "Огромные пещеры образуются здесь."
-
-#~ msgid "Massive cave noise"
-#~ msgstr "Шум огромных пещер"
-
-#~ msgid "Massive cave depth"
-#~ msgstr "Глубина огромных пещер"
-
-#~ msgid ""
-#~ "Map generation attributes specific to Mapgen v7.\n"
-#~ "The 'ridges' flag enables the rivers.\n"
-#~ "Floatlands are currently experimental and subject to change.\n"
-#~ "Flags that are not specified in the flag string are not modified from the "
-#~ "default.\n"
-#~ "Flags starting with 'no' are used to explicitly disable them."
-#~ msgstr ""
-#~ "Атрибуты генерации карты, относящиеся к генератору карты версии 7.\n"
-#~ "Флаг 'ridges' включает реки.\n"
-#~ "Парящие острова являются экспериментальными и могут изменяться.\n"
-#~ "Флаги, не указанные в строке флагов, остаются в значении по умолчанию.\n"
-#~ "Флаги с приставкой 'no' явно отключают их."
-
-#~ msgid ""
-#~ "Map generation attributes specific to Mapgen Valleys.\n"
-#~ "'altitude_chill' makes higher elevations colder, which may cause biome "
-#~ "issues.\n"
-#~ "'humid_rivers' modifies the humidity around rivers and in areas where "
-#~ "water would tend to pool,\n"
-#~ "it may interfere with delicately adjusted biomes.\n"
-#~ "Flags that are not specified in the flag string are not modified from the "
-#~ "default.\n"
-#~ "Flags starting with 'no' are used to explicitly disable them."
-#~ msgstr ""
-#~ "Атрибуты генерации карты, относящиеся к Valleys.\n"
-#~ "'altitude_chill' делает высоты холоднее, что может привести к проблемам с "
-#~ "биомами.\n"
-#~ "'humid_rivers' изменяет влажность вокруг рек, и в областях, где "
-#~ "скапливается вода,\n"
-#~ "он может вмешиваться в тонко настроенные биомы.\n"
-#~ "Флаги, не указанные в строке флагов, остаются в значении по умолчанию.\n"
-#~ "Флаги с приставкой 'no' явно отключают их."
-
-#~ msgid "Main menu mod manager"
-#~ msgstr "Мод менеджер главного меню"
-
-#~ msgid "Main menu game manager"
-#~ msgstr "Менеджер игр в главном меню"
-
-#~ msgid "Lava Features"
-#~ msgstr "Лава"
-
-#~ msgid ""
-#~ "Key for printing debug stacks. Used for development.\n"
+#~ "Key for increasing the viewing range. Modifies the minimum viewing "
+#~ "range.\n"
 #~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 #~ "html#a54da2a0e231901735e3da1b0edf72eb3"
 #~ msgstr ""
-#~ "Клавиша для печати отладочных стеков. Используется для разработки.\n"
-#~ "См. http://irrlicht.sourceforge.net/docu/namespaceirr."
-#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#~ msgid ""
-#~ "Key for opening the chat console.\n"
-#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
-#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
-#~ msgstr ""
-#~ "Клавиша открытия чат-консоли.\n"
+#~ "Клавиша Увеличения видимого диапазона. Изменяет минимальную дальность "
+#~ "отображения.\n"
 #~ "Смотрите http://irrlicht.sourceforge.net/docu/namespaceirr."
 #~ "html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #~ msgid ""
-#~ "Iterations of the recursive function.\n"
-#~ "Controls the amount of fine detail."
+#~ "Key for decreasing the viewing range. Modifies the minimum viewing "
+#~ "range.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
 #~ msgstr ""
-#~ "Количество итераций рекурсивной функции.\n"
-#~ "Контролирует количество мелких деталей."
-
-#~ msgid "Inventory image hack"
-#~ msgstr "Хак с изображениями в инвентаре"
-
-#~ msgid "If enabled, show the server status message on player connection."
-#~ msgstr ""
-#~ "Если включено, то показывать сообщение о статусе сервера при подключении."
+#~ "Клавиша уменьшения видимого диапазона. Изменяет минимальную дальность "
+#~ "отображения.\n"
+#~ "Смотрите http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #~ msgid ""
-#~ "How large area of blocks are subject to the active block stuff, stated in "
-#~ "mapblocks (16 nodes).\n"
-#~ "In active blocks objects are loaded and ABMs run."
+#~ "Enable a bit lower water surface, so it doesn't \"fill\" the node "
+#~ "completely.\n"
+#~ "Note that this is not quite optimized and that smooth lighting on the\n"
+#~ "water surface doesn't work with this."
 #~ msgstr ""
-#~ "Насколько большая область подлежит обработке активных фрагментов; "
-#~ "задаётся в фрагментах (16 блоков).↵\n"
-#~ "В активных фрагментах загружаются объекты и работают модификаторы "
-#~ "фрагментов (ABM)."
+#~ "Включите немного более низкую поверхность воды, чтобы она\n"
+#~ "не заполняла блок полностью. Учтите, что это не совсем оптимизировано,\n"
+#~ "и мягкое освещение на поверхности воды не работает с этим."
 
-#~ msgid "Height on which clouds are appearing."
-#~ msgstr "Высота, на которой появляются облака."
+#~ msgid "Advanced Settings"
+#~ msgstr "Расширенные настройки"
 
-#~ msgid "General"
-#~ msgstr "Общие"
-
-#~ msgid ""
-#~ "From how far clients know about objects, stated in mapblocks (16 nodes)."
-#~ msgstr ""
-#~ "С какого расстояния клиенты узнают об объектах, в фрагментах (16 блоков)."
-
-#~ msgid ""
-#~ "Field of view while zooming in degrees.\n"
-#~ "This requires the \"zoom\" privilege on the server."
-#~ msgstr ""
-#~ "Поле зрения в режиме увеличения в градусах.\n"
-#~ "Требует привилегию «zoom» на сервере."
-
-#~ msgid "Field of view for zoom"
-#~ msgstr "Поле зрения в режиме увеличения"
-
-#~ msgid "Enables view bobbing when walking."
-#~ msgstr "Включает покачивание камеры при ходьбе."
-
-#~ msgid "Enable view bobbing"
-#~ msgstr "Включить покачивание камеры"
-
-#~ msgid ""
-#~ "Disable escape sequences, e.g. chat coloring.\n"
-#~ "Use this if you want to run a server with pre-0.4.14 clients and you want "
-#~ "to disable\n"
-#~ "the escape sequences generated by mods."
-#~ msgstr ""
-#~ "Отключить escape-последовательности, например, цвет в чате.\n"
-#~ "Используйте это, если хотите запустить сервер с клиентами версии ниже "
-#~ "0.4.14\n"
-#~ "и отключить escape-последовательности, генерируемые модами."
-
-#~ msgid "Disable escape sequences"
-#~ msgstr "Отключить escape-последовательности"
-
-#~ msgid "Descending speed"
-#~ msgstr "Скорость снижения"
-
-#~ msgid "Depth below which you'll find massive caves."
-#~ msgstr "Глубина, ниже которой встречаются огромные пещеры."
-
-#~ msgid "Crouch speed"
-#~ msgstr "Скорость спуска"
-
-#~ msgid ""
-#~ "Creates unpredictable water features in caves.\n"
-#~ "These can make mining difficult. Zero disables them. (0-10)"
-#~ msgstr ""
-#~ "Создаёт непредсказуемую воду в пещерах.\n"
-#~ "Она может затруднить добычу. Ноль отключает это. (0-10)"
-
-#~ msgid ""
-#~ "Creates unpredictable lava features in caves.\n"
-#~ "These can make mining difficult. Zero disables them. (0-10)"
-#~ msgstr ""
-#~ "Создаёт непредсказуемую лаву в пещерах.\n"
-#~ "Она может затруднить добычу. Ноль отключает это. (0-10)"
-
-#~ msgid "Continuous forward movement (only used for testing)."
-#~ msgstr "Постоянное движение вперёд (используется только для тестирования)."
-
-#~ msgid "Console key"
-#~ msgstr "Кнопка вызова консоли"
-
-#~ msgid "Cloud height"
-#~ msgstr "Высота облаков"
-
-#~ msgid "Caves and tunnels form at the intersection of the two noises"
-#~ msgstr "Пещеры и тоннели формируются на перекрёстке этих двух шумов"
-
-#~ msgid "Autorun key"
-#~ msgstr "Кнопка автобега"
-
-#~ msgid "Approximate (X,Y,Z) scale of fractal in nodes."
-#~ msgstr "Приблизительный (X,Y,Z) масштаб фрактала в блоках."
-
-#~ msgid ""
-#~ "Announce to this serverlist.\n"
-#~ "If you want to announce your ipv6 address, use  serverlist_url = v6."
-#~ "servers.minetest.net."
-#~ msgstr ""
-#~ "Объявить в списке серверов.\n"
-#~ "Если вы желаете анонсировать адрес ipv6, используйте serverlist_url = v6."
-#~ "servers.minetest.net."
-
-#~ msgid ""
-#~ "Android systems only: Tries to create inventory textures from meshes\n"
-#~ "when no supported render was found."
-#~ msgstr ""
-#~ "Только Android-системы: Пытаться создать текстуры инвентаря из мешей,\n"
-#~ "когда поддерживаемый рендер не найден."
-
-#~ msgid "Active Block Modifier interval"
-#~ msgstr "Интервал изменения активного блока"
-
-#~ msgid "Prior"
-#~ msgstr "Prior"
-
-#~ msgid "Next"
-#~ msgstr "Next"
-
-#~ msgid "Use"
-#~ msgstr "Использовать"
-
-#~ msgid "Print stacks"
-#~ msgstr "Печать стеков"
-
-#~ msgid "Volume changed to 100%"
-#~ msgstr "Громкость изменена на 100%"
-
-#~ msgid "Volume changed to 0%"
-#~ msgstr "Громкость изменена на 0%"
-
-#~ msgid "No information available"
-#~ msgstr "Описание отсутствует"
-
-#~ msgid "Normal Mapping"
-#~ msgstr "Карты нормалей"
-
-#~ msgid "Play Online"
-#~ msgstr "Играть онлайн"
-
-#~ msgid "Uninstall selected modpack"
-#~ msgstr "Удалить выбранный набор модов"
-
-#~ msgid "Local Game"
-#~ msgstr "Локальная игра"
-
-#~ msgid "re-Install"
-#~ msgstr "Переустановить"
-
-#~ msgid "Unsorted"
-#~ msgstr "Не сортировано"
-
-#~ msgid "Successfully installed:"
-#~ msgstr "Успешно установлено:"
-
-#~ msgid "Shortname:"
-#~ msgstr "Краткое имя:"
-
-#~ msgid "Rating"
-#~ msgstr "Рейтинг"
-
-#~ msgid "Page $1 of $2"
-#~ msgstr "Страница $1 из $2"
-
-#~ msgid "Subgame Mods"
-#~ msgstr "Моды игры"
-
-#~ msgid "Select path"
-#~ msgstr "Выбрать путь"
-
-#~ msgid "Possible values are: "
-#~ msgstr "Возможные значения: "
-
-#~ msgid "Please enter a comma seperated list of flags."
-#~ msgstr "Пожалуйста, вводите запятые для разделения списка флагов."
-
-#~ msgid "Optionally the lacunarity can be appended with a leading comma."
-#~ msgstr ""
-#~ "При необходимости лакунарность может быть добавлена с запятой в начале."
-
-#~ msgid ""
-#~ "Format: <offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>), <seed>, "
-#~ "<octaves>, <persistence>"
-#~ msgstr ""
-#~ "Формат: <Смещение>,<Масштаб>, (<По оси X>,<По оси Y>,<По оси Z>), "
-#~ "<Зерно>, <Октавы>,<Постоянство>"
-
-#~ msgid "Format is 3 numbers separated by commas and inside brackets."
-#~ msgstr "Формат 3 цифры через запятую в скобках."
-
-#~ msgid "\"$1\" is not a valid flag."
-#~ msgstr "\"$1\" не является действительным флагом."
-
-#~ msgid "No worldname given or no game selected"
-#~ msgstr "Не указано название мира или не выбрана игра"
-
-#~ msgid "Enable MP"
-#~ msgstr "Включить набор"
-
-#~ msgid "Disable MP"
-#~ msgstr "Отключить набор"
-
-#~ msgid ""
-#~ "Show packages in the content store that do not qualify as 'free "
-#~ "software'\n"
-#~ "as defined by the Free Software Foundation."
-#~ msgstr ""
-#~ "Отображать в хранилище дополнения, которые не являются свободным "
-#~ "программным обеспечением по определению Free Software Foundation."
-
-#~ msgid "Show non-free packages"
-#~ msgstr "Отображать несвободные дополнения"
+#, fuzzy
+#~ msgid "View"
+#~ msgstr "Просмотр"
 
 #, fuzzy
 #~ msgid ""
-#~ "Number of emerge threads to use.\n"
-#~ "Make this field blank or 0, or increase this number to use multiple "
-#~ "threads.\n"
-#~ "On multiprocessor systems, this will improve mapgen speed greatly at the "
-#~ "cost\n"
-#~ "of slightly buggy caves."
+#~ "Map generation attributes specific to Mapgen v7.\n"
+#~ "'ridges' enables the rivers.\n"
+#~ "Flags that are not enabled are not modified from the default.\n"
+#~ "Flags starting with 'no' are used to explicitly disable them."
 #~ msgstr ""
-#~ "Количество используемых emerge-потоков. Оставьте это поле пустым, или "
-#~ "увеличьте число,\n"
-#~ "чтобы использовать множество потоков. На многопроцессорных системах это "
-#~ "значительно увеличит скорость генерации карты\n"
-#~ "за счёт немного худшей генерации шахт."
+#~ "Атрибуты генерации карты, относящиеся к генератору карты версии 5.\n"
+#~ "Флаги, не указанные в строке флагов, остаются в значении по умолчанию.\n"
+#~ "Флаги с приставкой 'no' явно отключают их."
 
-#~ msgid "Content Store"
-#~ msgstr "Хранилище дополнений"
+#, fuzzy
+#~ msgid ""
+#~ "Map generation attributes specific to Mapgen v5.\n"
+#~ "Flags that are not enabled are not modified from the default.\n"
+#~ "Flags starting with 'no' are used to explicitly disable them."
+#~ msgstr ""
+#~ "Атрибуты генерации карты, относящиеся к генератору карты версии 5.\n"
+#~ "Флаги, не указанные в строке флагов, остаются в значении по умолчанию.\n"
+#~ "Флаги с приставкой 'no' явно отключают их."
+
+#, fuzzy
+#~ msgid ""
+#~ "Map generation attributes specific to Mapgen Carpathian.\n"
+#~ "Flags that are not enabled are not modified from the default.\n"
+#~ "Flags starting with 'no' are used to explicitly disable them."
+#~ msgstr ""
+#~ "Атрибуты генерации карты, относящиеся к генератору карты версии 5.\n"
+#~ "Флаги, не указанные в строке флагов, остаются в значении по умолчанию.\n"
+#~ "Флаги с приставкой 'no' явно отключают их."

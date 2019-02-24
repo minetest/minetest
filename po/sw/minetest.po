@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-02-14 19:14+0100\n"
+"POT-Creation-Date: 2019-02-24 18:43+0100\n"
 "PO-Revision-Date: 2019-02-13 13:11+0000\n"
 "Last-Translator: tyler71 <sagsdf_github_tyler71@xyzz.work>\n"
 "Language-Team: Swahili <https://hosted.weblate.org/projects/minetest/"
@@ -958,12 +958,14 @@ msgid "- Server Name: "
 msgstr "Jina la seva"
 
 #: src/client/game.cpp
-msgid "Automatic forwards disabled"
-msgstr ""
+#, fuzzy
+msgid "Automatic forward disabled"
+msgstr "Ufunguo wa mbele"
 
 #: src/client/game.cpp
-msgid "Automatic forwards enabled"
-msgstr ""
+#, fuzzy
+msgid "Automatic forward enabled"
+msgstr "Ufunguo wa mbele"
 
 #: src/client/game.cpp
 #, fuzzy
@@ -2098,7 +2100,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 #, fuzzy
-msgid "Automatic forwards key"
+msgid "Automatic forward key"
 msgstr "Ufunguo wa mbele"
 
 #: src/settings_translation_file.cpp
@@ -3190,9 +3192,7 @@ msgstr "Callbacks ya kimataifa"
 msgid ""
 "Global map generation attributes.\n"
 "In Mapgen v6 the 'decorations' flag controls all decorations except trees\n"
-"and junglegrass, in all other mapgens this flag controls all decorations.\n"
-"Flags that are not enabled are not modified from the default.\n"
-"Flags starting with 'no' are used to explicitly disable them."
+"and junglegrass, in all other mapgens this flag controls all decorations."
 msgstr ""
 "Ramani ya kimataifa kizazi sifa.\n"
 "Katika Mwandishi ramani v6 bendera ya 'kienyeji' udhibiti mapambo yote "
@@ -4757,17 +4757,8 @@ msgid "Map directory"
 msgstr "Orodha ya ramani"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
-msgid ""
-"Map generation attributes specific to Mapgen Carpathian.\n"
-"Flags that are not enabled are not modified from the default.\n"
-"Flags starting with 'no' are used to explicitly disable them."
+msgid "Map generation attributes specific to Mapgen Carpathian."
 msgstr ""
-"Ramani kizazi sifa maalum kwa Mwandishi ramani v7.\n"
-"Bendera ya 'matuta' udhibiti mito.\n"
-"Bendera ambayo haijabainishwa katika Tungo ya bendera ni hayakubadilishwa "
-"kutoka chaguo-msingi.\n"
-"Bendera kuanzia na 'hapana' hutumiwa kidhahiri Lemaza yao."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4783,9 +4774,7 @@ msgstr ""
 #, fuzzy
 msgid ""
 "Map generation attributes specific to Mapgen flat.\n"
-"Occasional lakes and hills can be added to the flat world.\n"
-"Flags that are not enabled are not modified from the default.\n"
-"Flags starting with 'no' are used to explicitly disable them."
+"Occasional lakes and hills can be added to the flat world."
 msgstr ""
 "Ramani kizazi sifa maalum kwa Mwandishi ramani gorofa.\n"
 "Maziwa mara kwa mara na vilima vinaweza kuongezwa kwa ulimwengu gorofa.\n"
@@ -4794,17 +4783,8 @@ msgstr ""
 "Bendera kuanzia na 'hapana' hutumiwa kidhahiri Lemaza yao."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
-msgid ""
-"Map generation attributes specific to Mapgen v5.\n"
-"Flags that are not enabled are not modified from the default.\n"
-"Flags starting with 'no' are used to explicitly disable them."
+msgid "Map generation attributes specific to Mapgen v5."
 msgstr ""
-"Ramani kizazi sifa maalum kwa Mwandishi ramani v7.\n"
-"Bendera ya 'matuta' udhibiti mito.\n"
-"Bendera ambayo haijabainishwa katika Tungo ya bendera ni hayakubadilishwa "
-"kutoka chaguo-msingi.\n"
-"Bendera kuanzia na 'hapana' hutumiwa kidhahiri Lemaza yao."
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -4812,9 +4792,7 @@ msgid ""
 "Map generation attributes specific to Mapgen v6.\n"
 "The 'snowbiomes' flag enables the new 5 biome system.\n"
 "When the new biome system is enabled jungles are automatically enabled and\n"
-"the 'jungles' flag is ignored.\n"
-"Flags that are not enabled are not modified from the default.\n"
-"Flags starting with 'no' are used to explicitly disable them."
+"the 'jungles' flag is ignored."
 msgstr ""
 "Ramani kizazi sifa maalum ya Mwandishi ramani v6.\n"
 "Wakati snowbiomes vimewezeshwa misitu otomatiki imewezeshwa, bendera ya "
@@ -4824,18 +4802,10 @@ msgstr ""
 "Bendera kuanzia na 'hapana' hutumiwa kidhahiri Lemaza yao."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Map generation attributes specific to Mapgen v7.\n"
-"'ridges' enables the rivers.\n"
-"Flags that are not enabled are not modified from the default.\n"
-"Flags starting with 'no' are used to explicitly disable them."
+"'ridges' enables the rivers."
 msgstr ""
-"Ramani kizazi sifa maalum kwa Mwandishi ramani v7.\n"
-"Bendera ya 'matuta' udhibiti mito.\n"
-"Bendera ambayo haijabainishwa katika Tungo ya bendera ni hayakubadilishwa "
-"kutoka chaguo-msingi.\n"
-"Bendera kuanzia na 'hapana' hutumiwa kidhahiri Lemaza yao."
 
 #: src/settings_translation_file.cpp
 msgid "Map generation limit"
@@ -5187,7 +5157,7 @@ msgid ""
 "Name of map generator to be used when creating a new world.\n"
 "Creating a world in the main menu will override this.\n"
 "Current stable mapgens:\n"
-"v5, v6, v7 (except floatlands), flat, singlenode.\n"
+"v5, v6, v7 (except floatlands), singlenode.\n"
 "'stable' means the terrain shape in an existing world will not be changed\n"
 "in the future. Note that biomes are defined by games and may still change."
 msgstr ""
@@ -6642,333 +6612,240 @@ msgstr "cURL kikomo sambamba"
 msgid "cURL timeout"
 msgstr "muda wa kuisha wa cURL"
 
-#~ msgid "Advanced Settings"
-#~ msgstr "Vipimo pevu"
-
-#~ msgid ""
-#~ "Where the map generator stops.\n"
-#~ "Please note:\n"
-#~ "-    Limited to 31000 (setting above has no effect)\n"
-#~ "-    The map generator works in groups of 80x80x80 nodes (5x5x5 "
-#~ "MapBlocks).\n"
-#~ "-    Those groups have an offset of -32, -32 nodes from the origin.\n"
-#~ "-    Only groups which are within the map_generation_limit are generated"
-#~ msgstr ""
-#~ "Ambapo jenereta ramani hukomesha.\n"
-#~ "Tafadhali kumbuka: - mdogo kwa 31000 (kipimo hapo juu ina athari) - "
-#~ "jenereta ramani kazi katika makundi ya 80 x 80 x 80 fundo (5 x 5 x 5 "
-#~ "MapBlocks).\n"
-#~ "-Vikundi hivyo kuwa nje ya uwekaji wa-32,-32 fundo kutoka asili.\n"
-#~ "-Tu vikundi vilivyo ndani ya map_generation_limit ni yanayotokana"
-
-#~ msgid ""
-#~ "Noise parameters for biome API temperature, humidity and biome blend."
-#~ msgstr "Kelele vigezo vya biome API joto, unyevu na biome mchanganyiko."
-
-#~ msgid "Mapgen v7 terrain persistation noise parameters"
-#~ msgstr "Mwandishi ramani v7 ardhi persistation kelele vigezo"
-
-#~ msgid "Mapgen v7 terrain base noise parameters"
-#~ msgstr "Mwandishi ramani v7 ardhi kelele msingi vigezo"
-
-#~ msgid "Mapgen v7 terrain altitude noise parameters"
-#~ msgstr "Mwandishi ramani v7 ardhi mwinuko kelele vigezo"
-
-#~ msgid "Mapgen v7 ridge water noise parameters"
-#~ msgstr "Mwandishi ramani v7 tuta maji kelele vigezo"
-
-#~ msgid "Mapgen v7 ridge noise parameters"
-#~ msgstr "Mwandishi ramani v7 tuta kelele vigezo"
-
-#~ msgid "Mapgen v7 mountain noise parameters"
-#~ msgstr "Mwandishi ramani v7 mlima kelele vigezo"
-
-#~ msgid "Mapgen v7 height select noise parameters"
-#~ msgstr "Mwandishi ramani v7 urefu Teua vigezo kelele"
-
-#~ msgid "Mapgen v7 filler depth noise parameters"
-#~ msgstr "Mwandishi ramani v7 filler kina kelele vigezo"
-
-#~ msgid "Mapgen v7 cave2 noise parameters"
-#~ msgstr "Mwandishi ramani v7 cave2 kelele vigezo"
-
-#~ msgid "Mapgen v7 cave1 noise parameters"
-#~ msgstr "Mwandishi ramani v7 cave1 kelele vigezo"
-
-#~ msgid "Mapgen v7 cave width"
-#~ msgstr "Mwandishi ramani v7 pango upana"
-
-#~ msgid "Mapgen v6 trees noise parameters"
-#~ msgstr "Mwandishi ramani v6 miti kelele vigezo"
-
-#~ msgid "Mapgen v6 terrain base noise parameters"
-#~ msgstr "Mwandishi ramani v6 ardhi kelele msingi vigezo"
-
-#~ msgid "Mapgen v6 terrain altitude noise parameters"
-#~ msgstr "Mwinuko wa ardhi ya Mwandishi ramani v6 kelele vigezo"
-
-#~ msgid "Mapgen v6 steepness noise parameters"
-#~ msgstr "Mwandishi ramani v6 mwinuko kelele vigezo"
-
-#~ msgid "Mapgen v6 mud noise parameters"
-#~ msgstr "Mwandishi ramani v6 matope kelele vigezo"
-
-#~ msgid "Mapgen v6 desert frequency"
-#~ msgstr "Mwandishi ramani v6 jangwa marudio"
-
-#~ msgid "Mapgen v6 cave noise parameters"
-#~ msgstr "Mwandishi ramani v6 pango kelele vigezo"
-
-#~ msgid "Mapgen v6 biome noise parameters"
-#~ msgstr "Mwandishi ramani v6 biome kelele vigezo"
-
-#~ msgid "Mapgen v6 beach noise parameters"
-#~ msgstr "Mwandishi ramani v6 pwani kelele vigezo"
-
-#~ msgid "Mapgen v6 beach frequency"
-#~ msgstr "Mwandishi ramani v6 pwani marudio"
-
-#~ msgid "Mapgen v6 apple trees noise parameters"
-#~ msgstr "Mwandishi ramani v6 apple miti kelele vigezo"
-
-#~ msgid "Mapgen v5 height noise parameters"
-#~ msgstr "Mwandishi ramani v5 urefu kelele vigezo"
-
-#~ msgid "Mapgen v5 filler depth noise parameters"
-#~ msgstr "Mwandishi ramani v5 filler kina kelele vigezo"
-
-#~ msgid "Mapgen v5 factor noise parameters"
-#~ msgstr "Mwandishi ramani v5 sababu kelele vigezo"
-
-#~ msgid "Mapgen v5 cave2 noise parameters"
-#~ msgstr "Mwandishi ramani v5 cave2 kelele vigezo"
-
-#~ msgid "Mapgen v5 cave1 noise parameters"
-#~ msgstr "Mwandishi ramani v5 cave1 kelele vigezo"
-
-#~ msgid "Mapgen v5 cave width"
-#~ msgstr "Mwandishi ramani v5 pango upana"
-
-#~ msgid "Mapgen fractal slice w"
-#~ msgstr "Mwandishi ramani fractal kisu w"
-
-#~ msgid "Mapgen fractal seabed noise parameters"
-#~ msgstr "Mwandishi ramani fractal seabed kelele vigezo"
-
-#~ msgid "Mapgen fractal scale"
-#~ msgstr "Mwandishi ramani fractal kipimo"
-
-#~ msgid "Mapgen fractal offset"
-#~ msgstr "Mwandishi ramani fractal Sawazisha"
-
-#~ msgid "Mapgen fractal julia z"
-#~ msgstr "Mwandishi ramani fractal julia z"
-
-#~ msgid "Mapgen fractal julia y"
-#~ msgstr "Mwandishi ramani fractal julia y"
-
-#~ msgid "Mapgen fractal julia x"
-#~ msgstr "Mwandishi ramani fractal julia x"
-
-#~ msgid "Mapgen fractal julia w"
-#~ msgstr "Mwandishi ramani fractal julia w"
-
-#~ msgid "Mapgen fractal iterations"
-#~ msgstr "Mwandishi ramani fractal Marudiorudio"
-
-#~ msgid "Mapgen fractal fractal"
-#~ msgstr "Mwandishi ramani fractal fractal"
-
-#~ msgid "Mapgen fractal filler depth noise parameters"
-#~ msgstr "Mwandishi ramani fractal filler kina kelele vigezo"
-
-#~ msgid "Mapgen fractal cave2 noise parameters"
-#~ msgstr "Mwandishi ramani fractal cave2 kelele vigezo"
-
-#~ msgid "Mapgen fractal cave1 noise parameters"
-#~ msgstr "Mwandishi ramani fractal cave1 kelele vigezo"
-
-#~ msgid "Mapgen fractal cave width"
-#~ msgstr "Mwandishi ramani fractal pango upana"
-
-#~ msgid "Mapgen flat terrain noise parameters"
-#~ msgstr "Mwandishi ramani ardhi tambarare kelele vigezo"
-
-#~ msgid "Mapgen flat large cave depth"
-#~ msgstr "Mwandishi ramani pango kubwa gorofa kina"
-
-#~ msgid "Mapgen flat filler depth noise parameters"
-#~ msgstr "Filler wa gorofa ya Mwandishi ramani kina kelele vigezo"
-
-#~ msgid "Mapgen flat cave2 noise parameters"
-#~ msgstr "Mwandishi ramani cave2 za gorofa kelele vigezo"
-
-#~ msgid "Mapgen flat cave1 noise parameters"
-#~ msgstr "Mwandishi ramani cave1 za gorofa kelele vigezo"
-
-#~ msgid "Mapgen flat cave width"
-#~ msgstr "Mwandishi ramani pango gorofa upana"
-
-#~ msgid "Mapgen biome humidity noise parameters"
-#~ msgstr "Mwandishi ramani biome unyevu kelele vigezo"
-
-#~ msgid "Mapgen biome humidity blend noise parameters"
-#~ msgstr "Mwandishi ramani biome unyevu mchanganyiko kelele vigezo"
-
-#~ msgid "Mapgen biome heat noise parameters"
-#~ msgstr "Mwandishi ramani biome joto kelele vigezo"
-
-#~ msgid ""
-#~ "Determines terrain shape.\n"
-#~ "The 3 numbers in brackets control the scale of the\n"
-#~ "terrain, the 3 numbers should be identical."
-#~ msgstr ""
-#~ "Huamua umbo wa ardhi.\n"
-#~ "Namba 3 katika mabano kudhibiti ukubwa wa ardhi, namba 3 lazima kufanana."
-
-#~ msgid ""
-#~ "Controls size of deserts and beaches in Mapgen v6.\n"
-#~ "When snowbiomes are enabled 'mgv6_freq_desert' is ignored."
-#~ msgstr ""
-#~ "Vidhibiti ukubwa wa majangwa na fukwe katika Mwandishi ramani v6.\n"
-#~ "Wakati snowbiomes vimewezeshwa 'mgv6_freq_desert' ni kupuuzwa."
-
-#~ msgid "Plus"
-#~ msgstr "Plus"
-
-#~ msgid "Period"
-#~ msgstr "Kipindi cha"
-
-#~ msgid "PA1"
-#~ msgstr "PA1"
-
-#~ msgid "Minus"
-#~ msgstr "Alama ya kutoa"
-
-#~ msgid "Kanji"
-#~ msgstr "KanJi"
-
-#~ msgid "Kana"
-#~ msgstr "Kana"
-
-#~ msgid "Junja"
-#~ msgstr "Junja"
-
-#~ msgid "Final"
-#~ msgstr "Mwisho"
-
-#~ msgid "ExSel"
-#~ msgstr "ExSel"
-
-#~ msgid "CrSel"
-#~ msgstr "CrSel"
-
-#~ msgid "Comma"
-#~ msgstr "Mkato"
-
-#~ msgid "Capital"
-#~ msgstr "Mji mkuu"
-
-#~ msgid "Attn"
-#~ msgstr "Attn"
-
-#~ msgid "Hide mp content"
-#~ msgstr "Ficha maudhui ya mbunge"
-
-#~ msgid ""
-#~ "Whether to support older servers before protocol version 25.\n"
-#~ "Enable if you want to connect to 0.4.12 servers and before.\n"
-#~ "Servers starting with 0.4.13 will work, 0.4.12-dev servers may work.\n"
-#~ "Disabling this option will protect your password better."
-#~ msgstr ""
-#~ "Kama kusaidia seva za zamani kabla ya Itifaki ya toleo la 25.\n"
-#~ "Wezesha kama unataka kuunganishwa 0.4.12 seva na kabla.\n"
-#~ "Seva kuanzia na 0.4.13 kazi, 0.4.12-dev seva huenda kazi.\n"
-#~ "Mlemavu chaguo hili kulinda nywila yako bora."
-
-#~ msgid "Water Features"
-#~ msgstr "Vipengele vya maji"
-
-#~ msgid "Valleys C Flags"
-#~ msgstr "Bendera ya mabonde C"
-
-#~ msgid ""
-#~ "Use mip mapping to scale textures. May slightly increase performance."
-#~ msgstr ""
-#~ "Tumia ramani ya malaria kwa kipimo cha unamu. Huenda kidogo kuongeza "
-#~ "utendaji."
-
-#~ msgid "Use key"
-#~ msgstr "Ufunguo wa matumizi"
-
-#~ msgid "The rendering back-end for Irrlicht."
-#~ msgstr "Utungulizaji nyuma-mwisho wa Irrlicht."
-
-#~ msgid "The altitude at which temperature drops by 20C"
-#~ msgstr "Mwinuko katika matone ambayo joto na 20C"
-
-#~ msgid "Support older servers"
-#~ msgstr "Msaada mkubwa seva"
-
-#~ msgid ""
-#~ "Size of chunks to be generated at once by mapgen, stated in mapblocks (16 "
-#~ "nodes)."
-#~ msgstr ""
-#~ "Ukubwa wa kikidondoka kutengenezwa mara kwa mwandishi ramani, katika "
-#~ "mapblocks (fundo 16)."
-
-#~ msgid "River noise -- rivers occur close to zero"
-#~ msgstr "Kelele za mto - mito kutokea karibu na sifuri"
-
-#~ msgid ""
-#~ "Name of map generator to be used when creating a new world.\n"
-#~ "Creating a world in the main menu will override this."
-#~ msgstr ""
-#~ "Jina la ramani jenereta kutumika wakati wa kuunda dunia mpya.\n"
-#~ "Kujenga ulimwengu katika Menyu kuu itakuwa vinabatilisha hii."
-
-#~ msgid "Modstore mods list URL"
-#~ msgstr "Modstore mods orodha ya URL"
-
-#~ msgid "Modstore download URL"
-#~ msgstr "Modstore kupakua URL"
-
-#~ msgid "Modstore details URL"
-#~ msgstr "Modstore maelezo URL"
-
-#~ msgid "Maximum simultaneous block sends total"
-#~ msgstr "Fungu juu ya samtidiga hutuma jumla"
-
-#~ msgid "Maximum number of blocks that are simultaneously sent per client."
-#~ msgstr ""
-#~ "Namba ya juu ya vitalu kwamba ni wakati huo huo uliotumwa kwa mteja."
-
-#~ msgid "Maximum number of blocks that are simultaneously sent in total."
-#~ msgstr "Namba ya juu ya vitalu kwamba wakati huo huo hutumwa kwa jumla."
-
-#~ msgid "Massive caves form here."
-#~ msgstr "Fomu ya mapango mkubwa hapa."
-
-#~ msgid "Massive cave noise"
-#~ msgstr "Kelele ya pango mkubwa"
-
-#~ msgid "Massive cave depth"
-#~ msgstr "Kina ya pango mkubwa"
+#, fuzzy
+#~ msgid "Content Store"
+#~ msgstr "Duka la karibu"
 
 #, fuzzy
 #~ msgid ""
-#~ "Map generation attributes specific to Mapgen v7.\n"
-#~ "The 'ridges' flag enables the rivers.\n"
-#~ "Floatlands are currently experimental and subject to change.\n"
-#~ "Flags that are not specified in the flag string are not modified from the "
-#~ "default.\n"
-#~ "Flags starting with 'no' are used to explicitly disable them."
+#~ "Number of emerge threads to use.\n"
+#~ "Make this field blank or 0, or increase this number to use multiple "
+#~ "threads.\n"
+#~ "On multiprocessor systems, this will improve mapgen speed greatly at the "
+#~ "cost\n"
+#~ "of slightly buggy caves."
 #~ msgstr ""
-#~ "Ramani kizazi sifa maalum kwa Mwandishi ramani v7.\n"
-#~ "Bendera ya 'matuta' udhibiti mito.\n"
-#~ "Bendera ambayo haijabainishwa katika Tungo ya bendera ni hayakubadilishwa "
-#~ "kutoka chaguo-msingi.\n"
-#~ "Bendera kuanzia na 'hapana' hutumiwa kidhahiri Lemaza yao."
+#~ "Idadi ya nyuzi emerge kutumia. Kufanya hii shamba tupu, au kuongeza idadi "
+#~ "hii kutumia nyuzi nyingi. Kwenye mifumo ya multiprocessor, hii itasaidia "
+#~ "kuongeza kasi ya mwandishi ramani sana wanatengeneza mapango buggy kidogo."
+
+#~ msgid "Disable MP"
+#~ msgstr "Lemaza MP"
+
+#~ msgid "Enable MP"
+#~ msgstr "Wezesha MP"
+
+#~ msgid "No worldname given or no game selected"
+#~ msgstr "Hakuna worldname kupewa au mchezo hakuna iliyoteuliwa"
+
+#~ msgid "\"$1\" is not a valid flag."
+#~ msgstr "\"$1\" si bendera halali."
+
+#~ msgid "Format is 3 numbers separated by commas and inside brackets."
+#~ msgstr "Umbizo ni namba 3 limegawanywa na mikato na ndani ya mabano."
+
+#~ msgid "Optionally the lacunarity can be appended with a leading comma."
+#~ msgstr "Hiari ya lacunarity unaweza umeongezewa na mkato kuongoza."
+
+#~ msgid "Please enter a comma seperated list of flags."
+#~ msgstr "Tafadhali ingiza mkato seperated orodha ya bendera."
+
+#~ msgid "Possible values are: "
+#~ msgstr "Thamani inayofaa ni:"
+
+#~ msgid "Select path"
+#~ msgstr "Teua njia"
+
+#~ msgid "Page $1 of $2"
+#~ msgstr "Ukurasa $1 ya $2"
+
+#~ msgid "Rating"
+#~ msgstr "Makadirio"
+
+#~ msgid "Shortname:"
+#~ msgstr "Shortname:"
+
+#~ msgid "Successfully installed:"
+#~ msgstr "Imefanikiwa kusakinisha:"
+
+#~ msgid "Unsorted"
+#~ msgstr "Zisizochambuliwa"
+
+#~ msgid "re-Install"
+#~ msgstr "Sakinisha upya"
+
+#, fuzzy
+#~ msgid "Local Game"
+#~ msgstr "Anzisha mchezo"
+
+#~ msgid "Uninstall selected modpack"
+#~ msgstr "Sakinusha modpack teuliwa"
+
+#, fuzzy
+#~ msgid "Play Online"
+#~ msgstr "Jina la mchezaji"
+
+#~ msgid "Normal Mapping"
+#~ msgstr "Ramani ya kawaida"
+
+#~ msgid "No information available"
+#~ msgstr "Hakuna taarifa zilizopo"
+
+#~ msgid "Print stacks"
+#~ msgstr "Chapisha mipororo"
+
+#~ msgid "Use"
+#~ msgstr "Matumizi"
+
+#~ msgid "Next"
+#~ msgstr "Ijayo"
+
+#~ msgid "Prior"
+#~ msgstr "Awali"
+
+#~ msgid "Active Block Modifier interval"
+#~ msgstr "Amilifu fungu Kigeuza nafasi"
+
+#~ msgid ""
+#~ "Announce to this serverlist.\n"
+#~ "If you want to announce your ipv6 address, use  serverlist_url = v6."
+#~ "servers.minetest.net."
+#~ msgstr ""
+#~ "Kutangaza kwa serverlist hii.\n"
+#~ "Kama unataka kutangaza anwani yako ya ipv6, kutumia serverlist_url = v6."
+#~ "servers.minetest.net."
+
+#~ msgid "Approximate (X,Y,Z) scale of fractal in nodes."
+#~ msgstr "Kukadiria (X, Y, Z) kipimo cha fractal katika fundo."
+
+#~ msgid "Autorun key"
+#~ msgstr "Autorun ufunguo"
+
+#~ msgid "Caves and tunnels form at the intersection of the two noises"
+#~ msgstr "Fomu ya mapango na vichuguu katika makutano ya kila mbili"
+
+#~ msgid "Cloud height"
+#~ msgstr "Urefu wa wingu"
+
+#~ msgid "Console key"
+#~ msgstr "Muhimu ya Kiweko"
+
+#~ msgid "Continuous forward movement (only used for testing)."
+#~ msgstr "Harakati endelevu mbele (kutumika tu kwa ajili ya kupima)."
+
+#~ msgid ""
+#~ "Creates unpredictable lava features in caves.\n"
+#~ "These can make mining difficult. Zero disables them. (0-10)"
+#~ msgstr ""
+#~ "Huunda lava haitabiriki sifa katika mapango.\n"
+#~ "Haya kufanya madini vigumu. Sifuri Hulemaza yao. (0-10)"
+
+#~ msgid ""
+#~ "Creates unpredictable water features in caves.\n"
+#~ "These can make mining difficult. Zero disables them. (0-10)"
+#~ msgstr ""
+#~ "Huunda maji haitabiriki sifa katika mapango.\n"
+#~ "Haya kufanya madini vigumu. Sifuri Hulemaza yao. (0-10)"
+
+#~ msgid "Crouch speed"
+#~ msgstr "Ingia kasi"
+
+#~ msgid "Depth below which you'll find massive caves."
+#~ msgstr "Kina chini ambayo utapata mapango mkubwa."
+
+#~ msgid "Descending speed"
+#~ msgstr "Kushuka kasi"
+
+#~ msgid "Disable escape sequences"
+#~ msgstr "Lemaza kutoroka mwandamano"
+
+#~ msgid ""
+#~ "Disable escape sequences, e.g. chat coloring.\n"
+#~ "Use this if you want to run a server with pre-0.4.14 clients and you want "
+#~ "to disable\n"
+#~ "the escape sequences generated by mods."
+#~ msgstr ""
+#~ "Lemaza mwandamano wa kutoroka, k.m kuzungumza kuchorea.\n"
+#~ "Tumia hii kama unataka kuendesha seva na wateja wa awali-0.4.14 na "
+#~ "unataka kulemaza mwandamano kutoroka yanayotokana na mods."
+
+#, fuzzy
+#~ msgid "Enable view bobbing"
+#~ msgstr "Mwoneko kando"
+
+#~ msgid "Field of view for zoom"
+#~ msgstr "Uga wa Mwoneko kwa ajili ya Kuza"
+
+#~ msgid ""
+#~ "Field of view while zooming in degrees.\n"
+#~ "This requires the \"zoom\" privilege on the server."
+#~ msgstr ""
+#~ "Uga wa Mwoneko ukikuza katika nyuzi.\n"
+#~ "Hii inahitaji nafasi \"Kuza\" kwenye seva."
+
+#~ msgid ""
+#~ "From how far clients know about objects, stated in mapblocks (16 nodes)."
+#~ msgstr ""
+#~ "Kutoka wateja mbali kiasi gani kujua kuhusu vitu, alisema katika "
+#~ "mapblocks (fundo 16)."
+
+#~ msgid "General"
+#~ msgstr "Mkuu"
+
+#~ msgid "Height on which clouds are appearing."
+#~ msgstr "Urefu ambayo mawingu ni kuonekana."
+
+#~ msgid ""
+#~ "How large area of blocks are subject to the active block stuff, stated in "
+#~ "mapblocks (16 nodes).\n"
+#~ "In active blocks objects are loaded and ABMs run."
+#~ msgstr ""
+#~ "Jinsi ya eneo kubwa la vitalu ni chini ya fungu amilifu mambo, alisema "
+#~ "katika mapblocks (fundo 16).\n"
+#~ "Katika vitalu amilifu vitu ni kupakiwa na ABMs kukimbia."
+
+#, fuzzy
+#~ msgid "If enabled, show the server status message on player connection."
+#~ msgstr "Ujumbe wa siku ya kuonyeshwa kwa wachezaji kuunganisha."
+
+#, fuzzy
+#~ msgid "Inventory image hack"
+#~ msgstr "Ufunguo wa hesabu"
+
+#~ msgid ""
+#~ "Iterations of the recursive function.\n"
+#~ "Controls the amount of fine detail."
+#~ msgstr ""
+#~ "Marudiorudio ya kazi recursive.\n"
+#~ "Udhibiti kiasi cha undani faini."
+
+#~ msgid ""
+#~ "Key for opening the chat console.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Muhimu kwa ajili ya kufungua muano wa mazungumzo.\n"
+#~ "Ona http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for printing debug stacks. Used for development.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Muhimu kwa ajili ya uchapishaji mipororo rekebishi. Kutumika kwa ajili ya "
+#~ "maendeleo.\n"
+#~ "Ona http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid "Lava Features"
+#~ msgstr "Lava vipengele"
+
+#~ msgid "Main menu game manager"
+#~ msgstr "Meneja wa mchezo wa Menyu kuu"
+
+#~ msgid "Main menu mod manager"
+#~ msgstr "Menyu kuu Moduli Meneja"
 
 #~ msgid ""
 #~ "Map generation attributes specific to Mapgen Valleys.\n"
@@ -6991,237 +6868,367 @@ msgstr "muda wa kuisha wa cURL"
 #~ "kutoka chaguo-msingi.\n"
 #~ "Bendera kuanzia na 'hapana' hutumiwa kidhahiri Lemaza yao."
 
-#~ msgid "Main menu mod manager"
-#~ msgstr "Menyu kuu Moduli Meneja"
-
-#~ msgid "Main menu game manager"
-#~ msgstr "Meneja wa mchezo wa Menyu kuu"
-
-#~ msgid "Lava Features"
-#~ msgstr "Lava vipengele"
-
-#~ msgid ""
-#~ "Key for printing debug stacks. Used for development.\n"
-#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
-#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
-#~ msgstr ""
-#~ "Muhimu kwa ajili ya uchapishaji mipororo rekebishi. Kutumika kwa ajili ya "
-#~ "maendeleo.\n"
-#~ "Ona http://irrlicht.sourceforge.net/docu/namespaceirr."
-#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#~ msgid ""
-#~ "Key for opening the chat console.\n"
-#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
-#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
-#~ msgstr ""
-#~ "Muhimu kwa ajili ya kufungua muano wa mazungumzo.\n"
-#~ "Ona http://irrlicht.sourceforge.net/docu/namespaceirr."
-#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#~ msgid ""
-#~ "Iterations of the recursive function.\n"
-#~ "Controls the amount of fine detail."
-#~ msgstr ""
-#~ "Marudiorudio ya kazi recursive.\n"
-#~ "Udhibiti kiasi cha undani faini."
-
 #, fuzzy
-#~ msgid "Inventory image hack"
-#~ msgstr "Ufunguo wa hesabu"
+#~ msgid ""
+#~ "Map generation attributes specific to Mapgen v7.\n"
+#~ "The 'ridges' flag enables the rivers.\n"
+#~ "Floatlands are currently experimental and subject to change.\n"
+#~ "Flags that are not specified in the flag string are not modified from the "
+#~ "default.\n"
+#~ "Flags starting with 'no' are used to explicitly disable them."
+#~ msgstr ""
+#~ "Ramani kizazi sifa maalum kwa Mwandishi ramani v7.\n"
+#~ "Bendera ya 'matuta' udhibiti mito.\n"
+#~ "Bendera ambayo haijabainishwa katika Tungo ya bendera ni hayakubadilishwa "
+#~ "kutoka chaguo-msingi.\n"
+#~ "Bendera kuanzia na 'hapana' hutumiwa kidhahiri Lemaza yao."
 
-#, fuzzy
-#~ msgid "If enabled, show the server status message on player connection."
-#~ msgstr "Ujumbe wa siku ya kuonyeshwa kwa wachezaji kuunganisha."
+#~ msgid "Massive cave depth"
+#~ msgstr "Kina ya pango mkubwa"
+
+#~ msgid "Massive cave noise"
+#~ msgstr "Kelele ya pango mkubwa"
+
+#~ msgid "Massive caves form here."
+#~ msgstr "Fomu ya mapango mkubwa hapa."
+
+#~ msgid "Maximum number of blocks that are simultaneously sent in total."
+#~ msgstr "Namba ya juu ya vitalu kwamba wakati huo huo hutumwa kwa jumla."
+
+#~ msgid "Maximum number of blocks that are simultaneously sent per client."
+#~ msgstr ""
+#~ "Namba ya juu ya vitalu kwamba ni wakati huo huo uliotumwa kwa mteja."
+
+#~ msgid "Maximum simultaneous block sends total"
+#~ msgstr "Fungu juu ya samtidiga hutuma jumla"
+
+#~ msgid "Modstore details URL"
+#~ msgstr "Modstore maelezo URL"
+
+#~ msgid "Modstore download URL"
+#~ msgstr "Modstore kupakua URL"
+
+#~ msgid "Modstore mods list URL"
+#~ msgstr "Modstore mods orodha ya URL"
 
 #~ msgid ""
-#~ "How large area of blocks are subject to the active block stuff, stated in "
-#~ "mapblocks (16 nodes).\n"
-#~ "In active blocks objects are loaded and ABMs run."
+#~ "Name of map generator to be used when creating a new world.\n"
+#~ "Creating a world in the main menu will override this."
 #~ msgstr ""
-#~ "Jinsi ya eneo kubwa la vitalu ni chini ya fungu amilifu mambo, alisema "
-#~ "katika mapblocks (fundo 16).\n"
-#~ "Katika vitalu amilifu vitu ni kupakiwa na ABMs kukimbia."
+#~ "Jina la ramani jenereta kutumika wakati wa kuunda dunia mpya.\n"
+#~ "Kujenga ulimwengu katika Menyu kuu itakuwa vinabatilisha hii."
 
-#~ msgid "Height on which clouds are appearing."
-#~ msgstr "Urefu ambayo mawingu ni kuonekana."
-
-#~ msgid "General"
-#~ msgstr "Mkuu"
+#~ msgid "River noise -- rivers occur close to zero"
+#~ msgstr "Kelele za mto - mito kutokea karibu na sifuri"
 
 #~ msgid ""
-#~ "From how far clients know about objects, stated in mapblocks (16 nodes)."
+#~ "Size of chunks to be generated at once by mapgen, stated in mapblocks (16 "
+#~ "nodes)."
 #~ msgstr ""
-#~ "Kutoka wateja mbali kiasi gani kujua kuhusu vitu, alisema katika "
+#~ "Ukubwa wa kikidondoka kutengenezwa mara kwa mwandishi ramani, katika "
 #~ "mapblocks (fundo 16)."
 
-#~ msgid ""
-#~ "Field of view while zooming in degrees.\n"
-#~ "This requires the \"zoom\" privilege on the server."
-#~ msgstr ""
-#~ "Uga wa Mwoneko ukikuza katika nyuzi.\n"
-#~ "Hii inahitaji nafasi \"Kuza\" kwenye seva."
+#~ msgid "Support older servers"
+#~ msgstr "Msaada mkubwa seva"
 
-#~ msgid "Field of view for zoom"
-#~ msgstr "Uga wa Mwoneko kwa ajili ya Kuza"
+#~ msgid "The altitude at which temperature drops by 20C"
+#~ msgstr "Mwinuko katika matone ambayo joto na 20C"
+
+#~ msgid "The rendering back-end for Irrlicht."
+#~ msgstr "Utungulizaji nyuma-mwisho wa Irrlicht."
+
+#~ msgid "Use key"
+#~ msgstr "Ufunguo wa matumizi"
+
+#~ msgid ""
+#~ "Use mip mapping to scale textures. May slightly increase performance."
+#~ msgstr ""
+#~ "Tumia ramani ya malaria kwa kipimo cha unamu. Huenda kidogo kuongeza "
+#~ "utendaji."
+
+#~ msgid "Valleys C Flags"
+#~ msgstr "Bendera ya mabonde C"
+
+#~ msgid "Water Features"
+#~ msgstr "Vipengele vya maji"
+
+#~ msgid ""
+#~ "Whether to support older servers before protocol version 25.\n"
+#~ "Enable if you want to connect to 0.4.12 servers and before.\n"
+#~ "Servers starting with 0.4.13 will work, 0.4.12-dev servers may work.\n"
+#~ "Disabling this option will protect your password better."
+#~ msgstr ""
+#~ "Kama kusaidia seva za zamani kabla ya Itifaki ya toleo la 25.\n"
+#~ "Wezesha kama unataka kuunganishwa 0.4.12 seva na kabla.\n"
+#~ "Seva kuanzia na 0.4.13 kazi, 0.4.12-dev seva huenda kazi.\n"
+#~ "Mlemavu chaguo hili kulinda nywila yako bora."
+
+#~ msgid "Hide mp content"
+#~ msgstr "Ficha maudhui ya mbunge"
+
+#~ msgid "Attn"
+#~ msgstr "Attn"
+
+#~ msgid "Capital"
+#~ msgstr "Mji mkuu"
+
+#~ msgid "Comma"
+#~ msgstr "Mkato"
+
+#~ msgid "CrSel"
+#~ msgstr "CrSel"
+
+#~ msgid "ExSel"
+#~ msgstr "ExSel"
+
+#~ msgid "Final"
+#~ msgstr "Mwisho"
+
+#~ msgid "Junja"
+#~ msgstr "Junja"
+
+#~ msgid "Kana"
+#~ msgstr "Kana"
+
+#~ msgid "Kanji"
+#~ msgstr "KanJi"
+
+#~ msgid "Minus"
+#~ msgstr "Alama ya kutoa"
+
+#~ msgid "PA1"
+#~ msgstr "PA1"
+
+#~ msgid "Period"
+#~ msgstr "Kipindi cha"
+
+#~ msgid "Plus"
+#~ msgstr "Plus"
+
+#~ msgid ""
+#~ "Controls size of deserts and beaches in Mapgen v6.\n"
+#~ "When snowbiomes are enabled 'mgv6_freq_desert' is ignored."
+#~ msgstr ""
+#~ "Vidhibiti ukubwa wa majangwa na fukwe katika Mwandishi ramani v6.\n"
+#~ "Wakati snowbiomes vimewezeshwa 'mgv6_freq_desert' ni kupuuzwa."
+
+#~ msgid ""
+#~ "Determines terrain shape.\n"
+#~ "The 3 numbers in brackets control the scale of the\n"
+#~ "terrain, the 3 numbers should be identical."
+#~ msgstr ""
+#~ "Huamua umbo wa ardhi.\n"
+#~ "Namba 3 katika mabano kudhibiti ukubwa wa ardhi, namba 3 lazima kufanana."
+
+#~ msgid "Mapgen biome heat noise parameters"
+#~ msgstr "Mwandishi ramani biome joto kelele vigezo"
+
+#~ msgid "Mapgen biome humidity blend noise parameters"
+#~ msgstr "Mwandishi ramani biome unyevu mchanganyiko kelele vigezo"
+
+#~ msgid "Mapgen biome humidity noise parameters"
+#~ msgstr "Mwandishi ramani biome unyevu kelele vigezo"
+
+#~ msgid "Mapgen flat cave width"
+#~ msgstr "Mwandishi ramani pango gorofa upana"
+
+#~ msgid "Mapgen flat cave1 noise parameters"
+#~ msgstr "Mwandishi ramani cave1 za gorofa kelele vigezo"
+
+#~ msgid "Mapgen flat cave2 noise parameters"
+#~ msgstr "Mwandishi ramani cave2 za gorofa kelele vigezo"
+
+#~ msgid "Mapgen flat filler depth noise parameters"
+#~ msgstr "Filler wa gorofa ya Mwandishi ramani kina kelele vigezo"
+
+#~ msgid "Mapgen flat large cave depth"
+#~ msgstr "Mwandishi ramani pango kubwa gorofa kina"
+
+#~ msgid "Mapgen flat terrain noise parameters"
+#~ msgstr "Mwandishi ramani ardhi tambarare kelele vigezo"
+
+#~ msgid "Mapgen fractal cave width"
+#~ msgstr "Mwandishi ramani fractal pango upana"
+
+#~ msgid "Mapgen fractal cave1 noise parameters"
+#~ msgstr "Mwandishi ramani fractal cave1 kelele vigezo"
+
+#~ msgid "Mapgen fractal cave2 noise parameters"
+#~ msgstr "Mwandishi ramani fractal cave2 kelele vigezo"
+
+#~ msgid "Mapgen fractal filler depth noise parameters"
+#~ msgstr "Mwandishi ramani fractal filler kina kelele vigezo"
+
+#~ msgid "Mapgen fractal fractal"
+#~ msgstr "Mwandishi ramani fractal fractal"
+
+#~ msgid "Mapgen fractal iterations"
+#~ msgstr "Mwandishi ramani fractal Marudiorudio"
+
+#~ msgid "Mapgen fractal julia w"
+#~ msgstr "Mwandishi ramani fractal julia w"
+
+#~ msgid "Mapgen fractal julia x"
+#~ msgstr "Mwandishi ramani fractal julia x"
+
+#~ msgid "Mapgen fractal julia y"
+#~ msgstr "Mwandishi ramani fractal julia y"
+
+#~ msgid "Mapgen fractal julia z"
+#~ msgstr "Mwandishi ramani fractal julia z"
+
+#~ msgid "Mapgen fractal offset"
+#~ msgstr "Mwandishi ramani fractal Sawazisha"
+
+#~ msgid "Mapgen fractal scale"
+#~ msgstr "Mwandishi ramani fractal kipimo"
+
+#~ msgid "Mapgen fractal seabed noise parameters"
+#~ msgstr "Mwandishi ramani fractal seabed kelele vigezo"
+
+#~ msgid "Mapgen fractal slice w"
+#~ msgstr "Mwandishi ramani fractal kisu w"
+
+#~ msgid "Mapgen v5 cave width"
+#~ msgstr "Mwandishi ramani v5 pango upana"
+
+#~ msgid "Mapgen v5 cave1 noise parameters"
+#~ msgstr "Mwandishi ramani v5 cave1 kelele vigezo"
+
+#~ msgid "Mapgen v5 cave2 noise parameters"
+#~ msgstr "Mwandishi ramani v5 cave2 kelele vigezo"
+
+#~ msgid "Mapgen v5 factor noise parameters"
+#~ msgstr "Mwandishi ramani v5 sababu kelele vigezo"
+
+#~ msgid "Mapgen v5 filler depth noise parameters"
+#~ msgstr "Mwandishi ramani v5 filler kina kelele vigezo"
+
+#~ msgid "Mapgen v5 height noise parameters"
+#~ msgstr "Mwandishi ramani v5 urefu kelele vigezo"
+
+#~ msgid "Mapgen v6 apple trees noise parameters"
+#~ msgstr "Mwandishi ramani v6 apple miti kelele vigezo"
+
+#~ msgid "Mapgen v6 beach frequency"
+#~ msgstr "Mwandishi ramani v6 pwani marudio"
+
+#~ msgid "Mapgen v6 beach noise parameters"
+#~ msgstr "Mwandishi ramani v6 pwani kelele vigezo"
+
+#~ msgid "Mapgen v6 biome noise parameters"
+#~ msgstr "Mwandishi ramani v6 biome kelele vigezo"
+
+#~ msgid "Mapgen v6 cave noise parameters"
+#~ msgstr "Mwandishi ramani v6 pango kelele vigezo"
+
+#~ msgid "Mapgen v6 desert frequency"
+#~ msgstr "Mwandishi ramani v6 jangwa marudio"
+
+#~ msgid "Mapgen v6 mud noise parameters"
+#~ msgstr "Mwandishi ramani v6 matope kelele vigezo"
+
+#~ msgid "Mapgen v6 steepness noise parameters"
+#~ msgstr "Mwandishi ramani v6 mwinuko kelele vigezo"
+
+#~ msgid "Mapgen v6 terrain altitude noise parameters"
+#~ msgstr "Mwinuko wa ardhi ya Mwandishi ramani v6 kelele vigezo"
+
+#~ msgid "Mapgen v6 terrain base noise parameters"
+#~ msgstr "Mwandishi ramani v6 ardhi kelele msingi vigezo"
+
+#~ msgid "Mapgen v6 trees noise parameters"
+#~ msgstr "Mwandishi ramani v6 miti kelele vigezo"
+
+#~ msgid "Mapgen v7 cave width"
+#~ msgstr "Mwandishi ramani v7 pango upana"
+
+#~ msgid "Mapgen v7 cave1 noise parameters"
+#~ msgstr "Mwandishi ramani v7 cave1 kelele vigezo"
+
+#~ msgid "Mapgen v7 cave2 noise parameters"
+#~ msgstr "Mwandishi ramani v7 cave2 kelele vigezo"
+
+#~ msgid "Mapgen v7 filler depth noise parameters"
+#~ msgstr "Mwandishi ramani v7 filler kina kelele vigezo"
+
+#~ msgid "Mapgen v7 height select noise parameters"
+#~ msgstr "Mwandishi ramani v7 urefu Teua vigezo kelele"
+
+#~ msgid "Mapgen v7 mountain noise parameters"
+#~ msgstr "Mwandishi ramani v7 mlima kelele vigezo"
+
+#~ msgid "Mapgen v7 ridge noise parameters"
+#~ msgstr "Mwandishi ramani v7 tuta kelele vigezo"
+
+#~ msgid "Mapgen v7 ridge water noise parameters"
+#~ msgstr "Mwandishi ramani v7 tuta maji kelele vigezo"
+
+#~ msgid "Mapgen v7 terrain altitude noise parameters"
+#~ msgstr "Mwandishi ramani v7 ardhi mwinuko kelele vigezo"
+
+#~ msgid "Mapgen v7 terrain base noise parameters"
+#~ msgstr "Mwandishi ramani v7 ardhi kelele msingi vigezo"
+
+#~ msgid "Mapgen v7 terrain persistation noise parameters"
+#~ msgstr "Mwandishi ramani v7 ardhi persistation kelele vigezo"
+
+#~ msgid ""
+#~ "Noise parameters for biome API temperature, humidity and biome blend."
+#~ msgstr "Kelele vigezo vya biome API joto, unyevu na biome mchanganyiko."
+
+#~ msgid ""
+#~ "Where the map generator stops.\n"
+#~ "Please note:\n"
+#~ "-    Limited to 31000 (setting above has no effect)\n"
+#~ "-    The map generator works in groups of 80x80x80 nodes (5x5x5 "
+#~ "MapBlocks).\n"
+#~ "-    Those groups have an offset of -32, -32 nodes from the origin.\n"
+#~ "-    Only groups which are within the map_generation_limit are generated"
+#~ msgstr ""
+#~ "Ambapo jenereta ramani hukomesha.\n"
+#~ "Tafadhali kumbuka: - mdogo kwa 31000 (kipimo hapo juu ina athari) - "
+#~ "jenereta ramani kazi katika makundi ya 80 x 80 x 80 fundo (5 x 5 x 5 "
+#~ "MapBlocks).\n"
+#~ "-Vikundi hivyo kuwa nje ya uwekaji wa-32,-32 fundo kutoka asili.\n"
+#~ "-Tu vikundi vilivyo ndani ya map_generation_limit ni yanayotokana"
+
+#~ msgid "Advanced Settings"
+#~ msgstr "Vipimo pevu"
 
 #, fuzzy
-#~ msgid "Enable view bobbing"
-#~ msgstr "Mwoneko kando"
-
 #~ msgid ""
-#~ "Disable escape sequences, e.g. chat coloring.\n"
-#~ "Use this if you want to run a server with pre-0.4.14 clients and you want "
-#~ "to disable\n"
-#~ "the escape sequences generated by mods."
+#~ "Map generation attributes specific to Mapgen v7.\n"
+#~ "'ridges' enables the rivers.\n"
+#~ "Flags that are not enabled are not modified from the default.\n"
+#~ "Flags starting with 'no' are used to explicitly disable them."
 #~ msgstr ""
-#~ "Lemaza mwandamano wa kutoroka, k.m kuzungumza kuchorea.\n"
-#~ "Tumia hii kama unataka kuendesha seva na wateja wa awali-0.4.14 na "
-#~ "unataka kulemaza mwandamano kutoroka yanayotokana na mods."
-
-#~ msgid "Disable escape sequences"
-#~ msgstr "Lemaza kutoroka mwandamano"
-
-#~ msgid "Descending speed"
-#~ msgstr "Kushuka kasi"
-
-#~ msgid "Depth below which you'll find massive caves."
-#~ msgstr "Kina chini ambayo utapata mapango mkubwa."
-
-#~ msgid "Crouch speed"
-#~ msgstr "Ingia kasi"
-
-#~ msgid ""
-#~ "Creates unpredictable water features in caves.\n"
-#~ "These can make mining difficult. Zero disables them. (0-10)"
-#~ msgstr ""
-#~ "Huunda maji haitabiriki sifa katika mapango.\n"
-#~ "Haya kufanya madini vigumu. Sifuri Hulemaza yao. (0-10)"
-
-#~ msgid ""
-#~ "Creates unpredictable lava features in caves.\n"
-#~ "These can make mining difficult. Zero disables them. (0-10)"
-#~ msgstr ""
-#~ "Huunda lava haitabiriki sifa katika mapango.\n"
-#~ "Haya kufanya madini vigumu. Sifuri Hulemaza yao. (0-10)"
-
-#~ msgid "Continuous forward movement (only used for testing)."
-#~ msgstr "Harakati endelevu mbele (kutumika tu kwa ajili ya kupima)."
-
-#~ msgid "Console key"
-#~ msgstr "Muhimu ya Kiweko"
-
-#~ msgid "Cloud height"
-#~ msgstr "Urefu wa wingu"
-
-#~ msgid "Caves and tunnels form at the intersection of the two noises"
-#~ msgstr "Fomu ya mapango na vichuguu katika makutano ya kila mbili"
-
-#~ msgid "Autorun key"
-#~ msgstr "Autorun ufunguo"
-
-#~ msgid "Approximate (X,Y,Z) scale of fractal in nodes."
-#~ msgstr "Kukadiria (X, Y, Z) kipimo cha fractal katika fundo."
-
-#~ msgid ""
-#~ "Announce to this serverlist.\n"
-#~ "If you want to announce your ipv6 address, use  serverlist_url = v6."
-#~ "servers.minetest.net."
-#~ msgstr ""
-#~ "Kutangaza kwa serverlist hii.\n"
-#~ "Kama unataka kutangaza anwani yako ya ipv6, kutumia serverlist_url = v6."
-#~ "servers.minetest.net."
-
-#~ msgid "Active Block Modifier interval"
-#~ msgstr "Amilifu fungu Kigeuza nafasi"
-
-#~ msgid "Prior"
-#~ msgstr "Awali"
-
-#~ msgid "Next"
-#~ msgstr "Ijayo"
-
-#~ msgid "Use"
-#~ msgstr "Matumizi"
-
-#~ msgid "Print stacks"
-#~ msgstr "Chapisha mipororo"
-
-#~ msgid "No information available"
-#~ msgstr "Hakuna taarifa zilizopo"
-
-#~ msgid "Normal Mapping"
-#~ msgstr "Ramani ya kawaida"
-
-#, fuzzy
-#~ msgid "Play Online"
-#~ msgstr "Jina la mchezaji"
-
-#~ msgid "Uninstall selected modpack"
-#~ msgstr "Sakinusha modpack teuliwa"
-
-#, fuzzy
-#~ msgid "Local Game"
-#~ msgstr "Anzisha mchezo"
-
-#~ msgid "re-Install"
-#~ msgstr "Sakinisha upya"
-
-#~ msgid "Unsorted"
-#~ msgstr "Zisizochambuliwa"
-
-#~ msgid "Successfully installed:"
-#~ msgstr "Imefanikiwa kusakinisha:"
-
-#~ msgid "Shortname:"
-#~ msgstr "Shortname:"
-
-#~ msgid "Rating"
-#~ msgstr "Makadirio"
-
-#~ msgid "Page $1 of $2"
-#~ msgstr "Ukurasa $1 ya $2"
-
-#~ msgid "Select path"
-#~ msgstr "Teua njia"
-
-#~ msgid "Possible values are: "
-#~ msgstr "Thamani inayofaa ni:"
-
-#~ msgid "Please enter a comma seperated list of flags."
-#~ msgstr "Tafadhali ingiza mkato seperated orodha ya bendera."
-
-#~ msgid "Optionally the lacunarity can be appended with a leading comma."
-#~ msgstr "Hiari ya lacunarity unaweza umeongezewa na mkato kuongoza."
-
-#~ msgid "Format is 3 numbers separated by commas and inside brackets."
-#~ msgstr "Umbizo ni namba 3 limegawanywa na mikato na ndani ya mabano."
-
-#~ msgid "\"$1\" is not a valid flag."
-#~ msgstr "\"$1\" si bendera halali."
-
-#~ msgid "No worldname given or no game selected"
-#~ msgstr "Hakuna worldname kupewa au mchezo hakuna iliyoteuliwa"
-
-#~ msgid "Enable MP"
-#~ msgstr "Wezesha MP"
-
-#~ msgid "Disable MP"
-#~ msgstr "Lemaza MP"
+#~ "Ramani kizazi sifa maalum kwa Mwandishi ramani v7.\n"
+#~ "Bendera ya 'matuta' udhibiti mito.\n"
+#~ "Bendera ambayo haijabainishwa katika Tungo ya bendera ni hayakubadilishwa "
+#~ "kutoka chaguo-msingi.\n"
+#~ "Bendera kuanzia na 'hapana' hutumiwa kidhahiri Lemaza yao."
 
 #, fuzzy
 #~ msgid ""
-#~ "Number of emerge threads to use.\n"
-#~ "Make this field blank or 0, or increase this number to use multiple "
-#~ "threads.\n"
-#~ "On multiprocessor systems, this will improve mapgen speed greatly at the "
-#~ "cost\n"
-#~ "of slightly buggy caves."
+#~ "Map generation attributes specific to Mapgen v5.\n"
+#~ "Flags that are not enabled are not modified from the default.\n"
+#~ "Flags starting with 'no' are used to explicitly disable them."
 #~ msgstr ""
-#~ "Idadi ya nyuzi emerge kutumia. Kufanya hii shamba tupu, au kuongeza idadi "
-#~ "hii kutumia nyuzi nyingi. Kwenye mifumo ya multiprocessor, hii itasaidia "
-#~ "kuongeza kasi ya mwandishi ramani sana wanatengeneza mapango buggy kidogo."
+#~ "Ramani kizazi sifa maalum kwa Mwandishi ramani v7.\n"
+#~ "Bendera ya 'matuta' udhibiti mito.\n"
+#~ "Bendera ambayo haijabainishwa katika Tungo ya bendera ni hayakubadilishwa "
+#~ "kutoka chaguo-msingi.\n"
+#~ "Bendera kuanzia na 'hapana' hutumiwa kidhahiri Lemaza yao."
 
 #, fuzzy
-#~ msgid "Content Store"
-#~ msgstr "Duka la karibu"
+#~ msgid ""
+#~ "Map generation attributes specific to Mapgen Carpathian.\n"
+#~ "Flags that are not enabled are not modified from the default.\n"
+#~ "Flags starting with 'no' are used to explicitly disable them."
+#~ msgstr ""
+#~ "Ramani kizazi sifa maalum kwa Mwandishi ramani v7.\n"
+#~ "Bendera ya 'matuta' udhibiti mito.\n"
+#~ "Bendera ambayo haijabainishwa katika Tungo ya bendera ni hayakubadilishwa "
+#~ "kutoka chaguo-msingi.\n"
+#~ "Bendera kuanzia na 'hapana' hutumiwa kidhahiri Lemaza yao."

@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-02-14 19:14+0100\n"
+"POT-Creation-Date: 2019-02-24 18:43+0100\n"
 "PO-Revision-Date: 2019-01-24 00:05+0000\n"
 "Last-Translator: Nore <nore@mesecons.net>\n"
 "Language-Team: Romanian <https://hosted.weblate.org/projects/minetest/"
@@ -966,12 +966,14 @@ msgid "- Server Name: "
 msgstr "Server"
 
 #: src/client/game.cpp
-msgid "Automatic forwards disabled"
-msgstr ""
+#, fuzzy
+msgid "Automatic forward disabled"
+msgstr "Înainte"
 
 #: src/client/game.cpp
-msgid "Automatic forwards enabled"
-msgstr ""
+#, fuzzy
+msgid "Automatic forward enabled"
+msgstr "Înainte"
 
 #: src/client/game.cpp
 msgid "Camera update disabled"
@@ -2062,7 +2064,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 #, fuzzy
-msgid "Automatic forwards key"
+msgid "Automatic forward key"
 msgstr "Înainte"
 
 #: src/settings_translation_file.cpp
@@ -3086,9 +3088,7 @@ msgstr ""
 msgid ""
 "Global map generation attributes.\n"
 "In Mapgen v6 the 'decorations' flag controls all decorations except trees\n"
-"and junglegrass, in all other mapgens this flag controls all decorations.\n"
-"Flags that are not enabled are not modified from the default.\n"
-"Flags starting with 'no' are used to explicitly disable them."
+"and junglegrass, in all other mapgens this flag controls all decorations."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -4311,10 +4311,7 @@ msgid "Map directory"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid ""
-"Map generation attributes specific to Mapgen Carpathian.\n"
-"Flags that are not enabled are not modified from the default.\n"
-"Flags starting with 'no' are used to explicitly disable them."
+msgid "Map generation attributes specific to Mapgen Carpathian."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -4330,16 +4327,11 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid ""
 "Map generation attributes specific to Mapgen flat.\n"
-"Occasional lakes and hills can be added to the flat world.\n"
-"Flags that are not enabled are not modified from the default.\n"
-"Flags starting with 'no' are used to explicitly disable them."
+"Occasional lakes and hills can be added to the flat world."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid ""
-"Map generation attributes specific to Mapgen v5.\n"
-"Flags that are not enabled are not modified from the default.\n"
-"Flags starting with 'no' are used to explicitly disable them."
+msgid "Map generation attributes specific to Mapgen v5."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -4347,17 +4339,13 @@ msgid ""
 "Map generation attributes specific to Mapgen v6.\n"
 "The 'snowbiomes' flag enables the new 5 biome system.\n"
 "When the new biome system is enabled jungles are automatically enabled and\n"
-"the 'jungles' flag is ignored.\n"
-"Flags that are not enabled are not modified from the default.\n"
-"Flags starting with 'no' are used to explicitly disable them."
+"the 'jungles' flag is ignored."
 msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Map generation attributes specific to Mapgen v7.\n"
-"'ridges' enables the rivers.\n"
-"Flags that are not enabled are not modified from the default.\n"
-"Flags starting with 'no' are used to explicitly disable them."
+"'ridges' enables the rivers."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -4690,7 +4678,7 @@ msgid ""
 "Name of map generator to be used when creating a new world.\n"
 "Creating a world in the main menu will override this.\n"
 "Current stable mapgens:\n"
-"v5, v6, v7 (except floatlands), flat, singlenode.\n"
+"v5, v6, v7 (except floatlands), singlenode.\n"
 "'stable' means the terrain shape in an existing world will not be changed\n"
 "in the future. Note that biomes are defined by games and may still change."
 msgstr ""
@@ -5997,115 +5985,133 @@ msgstr ""
 msgid "cURL timeout"
 msgstr ""
 
-#~ msgid "Advanced Settings"
-#~ msgstr "Setări avansate"
+#~ msgid "Disable MP"
+#~ msgstr "Dezactivează MP"
+
+#~ msgid "Enable MP"
+#~ msgstr "Activează MP"
+
+#~ msgid "No worldname given or no game selected"
+#~ msgstr "Jocul nu are nume, sau nu ai selectat un joc"
 
 #, fuzzy
-#~ msgid "Preload inventory textures"
-#~ msgstr "Se încarcă..."
+#~ msgid "Select path"
+#~ msgstr "Selectează"
+
+#~ msgid "Page $1 of $2"
+#~ msgstr "Pagina $1 din $2"
+
+#~ msgid "Rating"
+#~ msgstr "Notă"
 
 #, fuzzy
-#~ msgid "Downloading"
-#~ msgstr "Descarcă"
+#~ msgid "Shortname:"
+#~ msgstr "Numele lumii"
 
-#~ msgid "Left click: Move all items, Right click: Move single item"
-#~ msgstr ""
-#~ "Click stânga: Mută toate obiectele, Click dreapta: Mută un singur obiect"
+#~ msgid "Successfully installed:"
+#~ msgstr "Instalat cu succes:"
 
-#~ msgid "Add mod:"
-#~ msgstr "Adăugaţi mod:"
-
-#~ msgid "MODS"
-#~ msgstr "MODURI"
-
-#~ msgid "TEXTURE PACKS"
-#~ msgstr "PACHETE DE TEXTURĂ"
-
-#~ msgid "SINGLE PLAYER"
-#~ msgstr "SINGLE PLAYER"
-
-#~ msgid "Finite Liquid"
-#~ msgstr "Lichid finit"
-
-#~ msgid "Preload item visuals"
-#~ msgstr "Pre-încarcă imaginile obiectelor"
-
-#~ msgid "SETTINGS"
-#~ msgstr "SETĂRI"
-
-#~ msgid "Password"
-#~ msgstr "Parolă"
-
-#~ msgid "Name"
-#~ msgstr "Nume"
-
-#~ msgid "START SERVER"
-#~ msgstr "DESCHIDE SERVERUL"
-
-#~ msgid "CLIENT"
-#~ msgstr "CLIENT"
-
-#~ msgid "<<-- Add mod"
-#~ msgstr "<<-- Adaugă modul"
-
-#~ msgid "Remove selected mod"
-#~ msgstr "Șterge modul selectat"
-
-#~ msgid "EDIT GAME"
-#~ msgstr "MODIFICĂ JOCUL"
-
-#~ msgid "new game"
-#~ msgstr "joc nou"
-
-#~ msgid "Mods:"
-#~ msgstr "Moduri:"
-
-#~ msgid "GAMES"
-#~ msgstr "JOCURI"
-
-#~ msgid "Gamemgr: Unable to copy mod \"$1\" to game \"$2\""
-#~ msgstr "Gamemgr: Nu se poate copia modul \"$1\" în jocul \"$2\""
+#~ msgid "re-Install"
+#~ msgstr "Reinstalează"
 
 #, fuzzy
-#~ msgid "If enabled, "
-#~ msgstr "activat"
+#~ msgid "Local Game"
+#~ msgstr "Instalare locală"
 
-#~ msgid "Public Serverlist"
-#~ msgstr "Listă de servere publică"
+#~ msgid "Uninstall selected modpack"
+#~ msgstr "Dezinstalaţi Pachetul de moduri selectat"
 
-#~ msgid "No of course not!"
-#~ msgstr "Nu, sigur că nu!"
-
-#, fuzzy
-#~ msgid "Useful for mod developers."
-#~ msgstr "Dezvoltatori de bază"
+#~ msgid "Play Online"
+#~ msgstr "Joacă online"
 
 #, fuzzy
-#~ msgid "Mapgen v7 cave width"
-#~ msgstr "Mapgen"
+#~ msgid "Normal Mapping"
+#~ msgstr "Mip Mapping"
+
+#~ msgid "No information available"
+#~ msgstr "Nici o informație disponibilă"
+
+#~ msgid "Print stacks"
+#~ msgstr "Salvează logurile"
+
+#~ msgid "Use"
+#~ msgstr "Aleargă"
+
+#~ msgid "Next"
+#~ msgstr "Următorul"
+
+#~ msgid "Prior"
+#~ msgstr "Anteriorul"
+
+#~ msgid "Cloud height"
+#~ msgstr "înalţime nori"
+
+#~ msgid "Console key"
+#~ msgstr "Tastă Consolă"
+
+#~ msgid "Continuous forward movement (only used for testing)."
+#~ msgstr "Mişcare continuă înainte (folosit doar pentru testare)."
 
 #, fuzzy
-#~ msgid "Mapgen v5 cave width"
-#~ msgstr "Mapgen"
+#~ msgid "Inventory image hack"
+#~ msgstr "Inventar"
 
 #, fuzzy
-#~ msgid "Mapgen fractal slice w"
-#~ msgstr "Mapgen"
+#~ msgid "Main menu mod manager"
+#~ msgstr "Meniul Principal"
 
 #, fuzzy
-#~ msgid "Mapgen fractal scale"
-#~ msgstr "Mapgen"
+#~ msgid "Use key"
+#~ msgstr "apasă o tastă"
 
 #, fuzzy
-#~ msgid "Mapgen fractal offset"
-#~ msgstr "Mapgen"
+#~ msgid "Water Features"
+#~ msgstr "Texturi..."
+
+#~ msgid "Hide mp content"
+#~ msgstr "Ascunde conținutul mp"
+
+#~ msgid "Attn"
+#~ msgstr "Attn"
+
+#~ msgid "Capital"
+#~ msgstr "Capital"
+
+#~ msgid "Comma"
+#~ msgstr "Virgulă"
+
+#~ msgid "CrSel"
+#~ msgstr "CrSel"
+
+#~ msgid "ExSel"
+#~ msgstr "ExSel"
+
+#~ msgid "Final"
+#~ msgstr "Final"
+
+#~ msgid "Junja"
+#~ msgstr "Junja"
+
+#~ msgid "Kana"
+#~ msgstr "Kana"
+
+#~ msgid "Kanji"
+#~ msgstr "Kanji"
+
+#~ msgid "Minus"
+#~ msgstr "Minus"
+
+#~ msgid "PA1"
+#~ msgstr "PA1"
+
+#~ msgid "Period"
+#~ msgstr "Punct"
+
+#~ msgid "Plus"
+#~ msgstr "Plus"
 
 #, fuzzy
-#~ msgid "Mapgen fractal iterations"
-#~ msgstr "Mapgen"
-
-#, fuzzy
-#~ msgid "Mapgen fractal fractal"
+#~ msgid "Mapgen flat cave width"
 #~ msgstr "Mapgen"
 
 #, fuzzy
@@ -6113,130 +6119,112 @@ msgstr ""
 #~ msgstr "Mapgen"
 
 #, fuzzy
-#~ msgid "Mapgen flat cave width"
+#~ msgid "Mapgen fractal fractal"
 #~ msgstr "Mapgen"
 
-#~ msgid "Plus"
-#~ msgstr "Plus"
-
-#~ msgid "Period"
-#~ msgstr "Punct"
-
-#~ msgid "PA1"
-#~ msgstr "PA1"
-
-#~ msgid "Minus"
-#~ msgstr "Minus"
-
-#~ msgid "Kanji"
-#~ msgstr "Kanji"
-
-#~ msgid "Kana"
-#~ msgstr "Kana"
-
-#~ msgid "Junja"
-#~ msgstr "Junja"
-
-#~ msgid "Final"
-#~ msgstr "Final"
-
-#~ msgid "ExSel"
-#~ msgstr "ExSel"
-
-#~ msgid "CrSel"
-#~ msgstr "CrSel"
-
-#~ msgid "Comma"
-#~ msgstr "Virgulă"
-
-#~ msgid "Capital"
-#~ msgstr "Capital"
-
-#~ msgid "Attn"
-#~ msgstr "Attn"
-
-#~ msgid "Hide mp content"
-#~ msgstr "Ascunde conținutul mp"
+#, fuzzy
+#~ msgid "Mapgen fractal iterations"
+#~ msgstr "Mapgen"
 
 #, fuzzy
-#~ msgid "Water Features"
-#~ msgstr "Texturi..."
+#~ msgid "Mapgen fractal offset"
+#~ msgstr "Mapgen"
 
 #, fuzzy
-#~ msgid "Use key"
-#~ msgstr "apasă o tastă"
+#~ msgid "Mapgen fractal scale"
+#~ msgstr "Mapgen"
 
 #, fuzzy
-#~ msgid "Main menu mod manager"
-#~ msgstr "Meniul Principal"
+#~ msgid "Mapgen fractal slice w"
+#~ msgstr "Mapgen"
 
 #, fuzzy
-#~ msgid "Inventory image hack"
-#~ msgstr "Inventar"
-
-#~ msgid "Continuous forward movement (only used for testing)."
-#~ msgstr "Mişcare continuă înainte (folosit doar pentru testare)."
-
-#~ msgid "Console key"
-#~ msgstr "Tastă Consolă"
-
-#~ msgid "Cloud height"
-#~ msgstr "înalţime nori"
-
-#~ msgid "Prior"
-#~ msgstr "Anteriorul"
-
-#~ msgid "Next"
-#~ msgstr "Următorul"
-
-#~ msgid "Use"
-#~ msgstr "Aleargă"
-
-#~ msgid "Print stacks"
-#~ msgstr "Salvează logurile"
-
-#~ msgid "No information available"
-#~ msgstr "Nici o informație disponibilă"
+#~ msgid "Mapgen v5 cave width"
+#~ msgstr "Mapgen"
 
 #, fuzzy
-#~ msgid "Normal Mapping"
-#~ msgstr "Mip Mapping"
-
-#~ msgid "Play Online"
-#~ msgstr "Joacă online"
-
-#~ msgid "Uninstall selected modpack"
-#~ msgstr "Dezinstalaţi Pachetul de moduri selectat"
+#~ msgid "Mapgen v7 cave width"
+#~ msgstr "Mapgen"
 
 #, fuzzy
-#~ msgid "Local Game"
-#~ msgstr "Instalare locală"
+#~ msgid "Useful for mod developers."
+#~ msgstr "Dezvoltatori de bază"
 
-#~ msgid "re-Install"
-#~ msgstr "Reinstalează"
+#~ msgid "No of course not!"
+#~ msgstr "Nu, sigur că nu!"
 
-#~ msgid "Successfully installed:"
-#~ msgstr "Instalat cu succes:"
-
-#, fuzzy
-#~ msgid "Shortname:"
-#~ msgstr "Numele lumii"
-
-#~ msgid "Rating"
-#~ msgstr "Notă"
-
-#~ msgid "Page $1 of $2"
-#~ msgstr "Pagina $1 din $2"
+#~ msgid "Public Serverlist"
+#~ msgstr "Listă de servere publică"
 
 #, fuzzy
-#~ msgid "Select path"
-#~ msgstr "Selectează"
+#~ msgid "If enabled, "
+#~ msgstr "activat"
 
-#~ msgid "No worldname given or no game selected"
-#~ msgstr "Jocul nu are nume, sau nu ai selectat un joc"
+#~ msgid "Gamemgr: Unable to copy mod \"$1\" to game \"$2\""
+#~ msgstr "Gamemgr: Nu se poate copia modul \"$1\" în jocul \"$2\""
 
-#~ msgid "Enable MP"
-#~ msgstr "Activează MP"
+#~ msgid "GAMES"
+#~ msgstr "JOCURI"
 
-#~ msgid "Disable MP"
-#~ msgstr "Dezactivează MP"
+#~ msgid "Mods:"
+#~ msgstr "Moduri:"
+
+#~ msgid "new game"
+#~ msgstr "joc nou"
+
+#~ msgid "EDIT GAME"
+#~ msgstr "MODIFICĂ JOCUL"
+
+#~ msgid "Remove selected mod"
+#~ msgstr "Șterge modul selectat"
+
+#~ msgid "<<-- Add mod"
+#~ msgstr "<<-- Adaugă modul"
+
+#~ msgid "CLIENT"
+#~ msgstr "CLIENT"
+
+#~ msgid "START SERVER"
+#~ msgstr "DESCHIDE SERVERUL"
+
+#~ msgid "Name"
+#~ msgstr "Nume"
+
+#~ msgid "Password"
+#~ msgstr "Parolă"
+
+#~ msgid "SETTINGS"
+#~ msgstr "SETĂRI"
+
+#~ msgid "Preload item visuals"
+#~ msgstr "Pre-încarcă imaginile obiectelor"
+
+#~ msgid "Finite Liquid"
+#~ msgstr "Lichid finit"
+
+#~ msgid "SINGLE PLAYER"
+#~ msgstr "SINGLE PLAYER"
+
+#~ msgid "TEXTURE PACKS"
+#~ msgstr "PACHETE DE TEXTURĂ"
+
+#~ msgid "MODS"
+#~ msgstr "MODURI"
+
+#~ msgid "Add mod:"
+#~ msgstr "Adăugaţi mod:"
+
+#~ msgid "Left click: Move all items, Right click: Move single item"
+#~ msgstr ""
+#~ "Click stânga: Mută toate obiectele, Click dreapta: Mută un singur obiect"
+
+#, fuzzy
+#~ msgid "Downloading"
+#~ msgstr "Descarcă"
+
+#, fuzzy
+#~ msgid "Preload inventory textures"
+#~ msgstr "Se încarcă..."
+
+#~ msgid "Advanced Settings"
+#~ msgstr "Setări avansate"

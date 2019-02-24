@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-02-14 19:14+0100\n"
+"POT-Creation-Date: 2019-02-24 18:43+0100\n"
 "PO-Revision-Date: 2019-02-08 13:45+0000\n"
 "Last-Translator: Muhammad Rifqi Priyo Susanto "
 "<muhammadrifqipriyosusanto@gmail.com>\n"
@@ -954,12 +954,14 @@ msgid "- Server Name: "
 msgstr "- Servernamn: "
 
 #: src/client/game.cpp
-msgid "Automatic forwards disabled"
-msgstr ""
+#, fuzzy
+msgid "Automatic forward disabled"
+msgstr "Tangent för filmiskt länge"
 
 #: src/client/game.cpp
-msgid "Automatic forwards enabled"
-msgstr ""
+#, fuzzy
+msgid "Automatic forward enabled"
+msgstr "Tangent för filmiskt länge"
 
 #: src/client/game.cpp
 #, fuzzy
@@ -2127,7 +2129,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 #, fuzzy
-msgid "Automatic forwards key"
+msgid "Automatic forward key"
 msgstr "Tangent för filmiskt länge"
 
 #: src/settings_translation_file.cpp
@@ -3161,9 +3163,7 @@ msgstr ""
 msgid ""
 "Global map generation attributes.\n"
 "In Mapgen v6 the 'decorations' flag controls all decorations except trees\n"
-"and junglegrass, in all other mapgens this flag controls all decorations.\n"
-"Flags that are not enabled are not modified from the default.\n"
-"Flags starting with 'no' are used to explicitly disable them."
+"and junglegrass, in all other mapgens this flag controls all decorations."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -4373,10 +4373,7 @@ msgid "Map directory"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid ""
-"Map generation attributes specific to Mapgen Carpathian.\n"
-"Flags that are not enabled are not modified from the default.\n"
-"Flags starting with 'no' are used to explicitly disable them."
+msgid "Map generation attributes specific to Mapgen Carpathian."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -4392,16 +4389,11 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid ""
 "Map generation attributes specific to Mapgen flat.\n"
-"Occasional lakes and hills can be added to the flat world.\n"
-"Flags that are not enabled are not modified from the default.\n"
-"Flags starting with 'no' are used to explicitly disable them."
+"Occasional lakes and hills can be added to the flat world."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid ""
-"Map generation attributes specific to Mapgen v5.\n"
-"Flags that are not enabled are not modified from the default.\n"
-"Flags starting with 'no' are used to explicitly disable them."
+msgid "Map generation attributes specific to Mapgen v5."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -4409,17 +4401,13 @@ msgid ""
 "Map generation attributes specific to Mapgen v6.\n"
 "The 'snowbiomes' flag enables the new 5 biome system.\n"
 "When the new biome system is enabled jungles are automatically enabled and\n"
-"the 'jungles' flag is ignored.\n"
-"Flags that are not enabled are not modified from the default.\n"
-"Flags starting with 'no' are used to explicitly disable them."
+"the 'jungles' flag is ignored."
 msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Map generation attributes specific to Mapgen v7.\n"
-"'ridges' enables the rivers.\n"
-"Flags that are not enabled are not modified from the default.\n"
-"Flags starting with 'no' are used to explicitly disable them."
+"'ridges' enables the rivers."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -4738,7 +4726,7 @@ msgid ""
 "Name of map generator to be used when creating a new world.\n"
 "Creating a world in the main menu will override this.\n"
 "Current stable mapgens:\n"
-"v5, v6, v7 (except floatlands), flat, singlenode.\n"
+"v5, v6, v7 (except floatlands), singlenode.\n"
 "'stable' means the terrain shape in an existing world will not be changed\n"
 "in the future. Note that biomes are defined by games and may still change."
 msgstr ""
@@ -6051,11 +6039,158 @@ msgstr "cURL parallellgräns"
 msgid "cURL timeout"
 msgstr "cURL-timeout"
 
-#~ msgid "Advanced Settings"
-#~ msgstr "Avancerade Inställningar"
+#, fuzzy
+#~ msgid "Content Store"
+#~ msgstr "Stäng butiken"
 
-#~ msgid "Hide mp content"
-#~ msgstr "Göm flerspelarinnehåll"
+#~ msgid "Disable MP"
+#~ msgstr "Inaktivera MP"
+
+#~ msgid "Enable MP"
+#~ msgstr "Aktivera MP"
+
+#~ msgid "No worldname given or no game selected"
+#~ msgstr "Inget världnamn angett eller inget spel valt"
+
+#~ msgid "\"$1\" is not a valid flag."
+#~ msgstr "\"$1\" är inte en giltig flagga."
+
+#~ msgid "Format is 3 numbers separated by commas and inside brackets."
+#~ msgstr "Formatet är tre nummer separerade med komma och inom paranteser."
+
+#~ msgid ""
+#~ "Format: <offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>), <seed>, "
+#~ "<octaves>, <persistence>"
+#~ msgstr ""
+#~ "Format: <förskjutning>, <skala>, (<spridningX>, <spridningY>, "
+#~ "<spridningZ>), <frö>, <oktaver>, <bestående>"
+
+#~ msgid "Optionally the lacunarity can be appended with a leading comma."
+#~ msgstr ""
+#~ "Takförhållandet kan eventuellt läggas till med ett främre kommatecken."
+
+#~ msgid "Please enter a comma seperated list of flags."
+#~ msgstr "Var vänlig ange ett kommaseparerad lista med flaggor."
+
+#~ msgid "Possible values are: "
+#~ msgstr "Möjliga värden är: "
+
+#~ msgid "Select path"
+#~ msgstr "Välj sökväg"
+
+#~ msgid "Subgame Mods"
+#~ msgstr "Underspelsmoddar"
+
+#~ msgid "Page $1 of $2"
+#~ msgstr "Sida $1 av $2"
+
+#~ msgid "Rating"
+#~ msgstr "Omdöme"
+
+#~ msgid "Shortname:"
+#~ msgstr "Kort namn:"
+
+#~ msgid "Successfully installed:"
+#~ msgstr "Lyckades installera:"
+
+#~ msgid "Unsorted"
+#~ msgstr "Osorterat"
+
+#~ msgid "re-Install"
+#~ msgstr "Ominstallera"
+
+#~ msgid "Local Game"
+#~ msgstr "Lokalt spel"
+
+#~ msgid "Uninstall selected modpack"
+#~ msgstr "Avinstallera valt modpaket"
+
+#~ msgid "Play Online"
+#~ msgstr "Spela online"
+
+#~ msgid "Normal Mapping"
+#~ msgstr "Normal-mapping"
+
+#~ msgid "No information available"
+#~ msgstr "Ingen information tillgänglig"
+
+#~ msgid "Volume changed to 0%"
+#~ msgstr "Volym ändrad till 0%"
+
+#~ msgid "Volume changed to 100%"
+#~ msgstr "Volym ändrad till 100%"
+
+#~ msgid "Print stacks"
+#~ msgstr "Skriv ut travar"
+
+#~ msgid "Use"
+#~ msgstr "Använd"
+
+#~ msgid "Next"
+#~ msgstr "Nästa"
+
+#~ msgid "Prior"
+#~ msgstr "Tidigare"
+
+#~ msgid "Active Block Modifier interval"
+#~ msgstr "Aktivt Blockmodifierarintervall"
+
+#~ msgid ""
+#~ "Android systems only: Tries to create inventory textures from meshes\n"
+#~ "when no supported render was found."
+#~ msgstr ""
+#~ "Endast Androidsystem: Försöker skapa förrådtexturer från meshes\n"
+#~ "när ingen stöttad render hittades."
+
+#~ msgid ""
+#~ "Announce to this serverlist.\n"
+#~ "If you want to announce your ipv6 address, use  serverlist_url = v6."
+#~ "servers.minetest.net."
+#~ msgstr ""
+#~ "Offentliggör till denna serverlista.\n"
+#~ "Om du vill offentliggöra din ipv6 address, använd  serverlist_url = v6."
+#~ "servers.minetest.net."
+
+#~ msgid "Approximate (X,Y,Z) scale of fractal in nodes."
+#~ msgstr "Approximera (X,Y,Z)-skala av fraktaler i noder."
+
+#~ msgid "Autorun key"
+#~ msgstr "Tangent för autospring"
+
+#~ msgid "Caves and tunnels form at the intersection of the two noises"
+#~ msgstr "Grottor och tunnlar bildas vid korsningen av de två oljuden"
+
+#~ msgid "Cloud height"
+#~ msgstr "Molnhöjd"
+
+#~ msgid "Console key"
+#~ msgstr "Konsoltangent"
+
+#~ msgid "Continuous forward movement (only used for testing)."
+#~ msgstr "Fortlöpande rörelse framåt (andvänds enbart för testande)."
+
+#~ msgid ""
+#~ "Creates unpredictable lava features in caves.\n"
+#~ "These can make mining difficult. Zero disables them. (0-10)"
+#~ msgstr ""
+#~ "Skapar oförutsägbara förekomster av lava i grottor.\n"
+#~ "Dessa kan göra gruvgrävande besvärligt. Noll inaktiverar dem. (0-10)"
+
+#~ msgid ""
+#~ "Creates unpredictable water features in caves.\n"
+#~ "These can make mining difficult. Zero disables them. (0-10)"
+#~ msgstr ""
+#~ "Skapar oförutsägbara förekomster av vatten i grottor.\n"
+#~ "Dessa kan göra gruvgrävande besvärligt. Noll inaktiverar dem. (0-10)"
+
+#~ msgid "Crouch speed"
+#~ msgstr "Smyghastighet"
+
+#~ msgid "Depth below which you'll find massive caves."
+#~ msgstr "Djup inunder du kan hitta massiva grottor."
+
+#~ msgid "Disable escape sequences"
+#~ msgstr "Inaktivera escapesekvenser"
 
 #~ msgid ""
 #~ "Disable escape sequences, e.g. chat coloring.\n"
@@ -6068,155 +6203,8 @@ msgstr "cURL-timeout"
 #~ "vill inaktivera\n"
 #~ "escapesekvenser som genereras av moddar."
 
-#~ msgid "Disable escape sequences"
-#~ msgstr "Inaktivera escapesekvenser"
+#~ msgid "Hide mp content"
+#~ msgstr "Göm flerspelarinnehåll"
 
-#~ msgid "Depth below which you'll find massive caves."
-#~ msgstr "Djup inunder du kan hitta massiva grottor."
-
-#~ msgid "Crouch speed"
-#~ msgstr "Smyghastighet"
-
-#~ msgid ""
-#~ "Creates unpredictable water features in caves.\n"
-#~ "These can make mining difficult. Zero disables them. (0-10)"
-#~ msgstr ""
-#~ "Skapar oförutsägbara förekomster av vatten i grottor.\n"
-#~ "Dessa kan göra gruvgrävande besvärligt. Noll inaktiverar dem. (0-10)"
-
-#~ msgid ""
-#~ "Creates unpredictable lava features in caves.\n"
-#~ "These can make mining difficult. Zero disables them. (0-10)"
-#~ msgstr ""
-#~ "Skapar oförutsägbara förekomster av lava i grottor.\n"
-#~ "Dessa kan göra gruvgrävande besvärligt. Noll inaktiverar dem. (0-10)"
-
-#~ msgid "Continuous forward movement (only used for testing)."
-#~ msgstr "Fortlöpande rörelse framåt (andvänds enbart för testande)."
-
-#~ msgid "Console key"
-#~ msgstr "Konsoltangent"
-
-#~ msgid "Cloud height"
-#~ msgstr "Molnhöjd"
-
-#~ msgid "Caves and tunnels form at the intersection of the two noises"
-#~ msgstr "Grottor och tunnlar bildas vid korsningen av de två oljuden"
-
-#~ msgid "Autorun key"
-#~ msgstr "Tangent för autospring"
-
-#~ msgid "Approximate (X,Y,Z) scale of fractal in nodes."
-#~ msgstr "Approximera (X,Y,Z)-skala av fraktaler i noder."
-
-#~ msgid ""
-#~ "Announce to this serverlist.\n"
-#~ "If you want to announce your ipv6 address, use  serverlist_url = v6."
-#~ "servers.minetest.net."
-#~ msgstr ""
-#~ "Offentliggör till denna serverlista.\n"
-#~ "Om du vill offentliggöra din ipv6 address, använd  serverlist_url = v6."
-#~ "servers.minetest.net."
-
-#~ msgid ""
-#~ "Android systems only: Tries to create inventory textures from meshes\n"
-#~ "when no supported render was found."
-#~ msgstr ""
-#~ "Endast Androidsystem: Försöker skapa förrådtexturer från meshes\n"
-#~ "när ingen stöttad render hittades."
-
-#~ msgid "Active Block Modifier interval"
-#~ msgstr "Aktivt Blockmodifierarintervall"
-
-#~ msgid "Prior"
-#~ msgstr "Tidigare"
-
-#~ msgid "Next"
-#~ msgstr "Nästa"
-
-#~ msgid "Use"
-#~ msgstr "Använd"
-
-#~ msgid "Print stacks"
-#~ msgstr "Skriv ut travar"
-
-#~ msgid "Volume changed to 100%"
-#~ msgstr "Volym ändrad till 100%"
-
-#~ msgid "Volume changed to 0%"
-#~ msgstr "Volym ändrad till 0%"
-
-#~ msgid "No information available"
-#~ msgstr "Ingen information tillgänglig"
-
-#~ msgid "Normal Mapping"
-#~ msgstr "Normal-mapping"
-
-#~ msgid "Play Online"
-#~ msgstr "Spela online"
-
-#~ msgid "Uninstall selected modpack"
-#~ msgstr "Avinstallera valt modpaket"
-
-#~ msgid "Local Game"
-#~ msgstr "Lokalt spel"
-
-#~ msgid "re-Install"
-#~ msgstr "Ominstallera"
-
-#~ msgid "Unsorted"
-#~ msgstr "Osorterat"
-
-#~ msgid "Successfully installed:"
-#~ msgstr "Lyckades installera:"
-
-#~ msgid "Shortname:"
-#~ msgstr "Kort namn:"
-
-#~ msgid "Rating"
-#~ msgstr "Omdöme"
-
-#~ msgid "Page $1 of $2"
-#~ msgstr "Sida $1 av $2"
-
-#~ msgid "Subgame Mods"
-#~ msgstr "Underspelsmoddar"
-
-#~ msgid "Select path"
-#~ msgstr "Välj sökväg"
-
-#~ msgid "Possible values are: "
-#~ msgstr "Möjliga värden är: "
-
-#~ msgid "Please enter a comma seperated list of flags."
-#~ msgstr "Var vänlig ange ett kommaseparerad lista med flaggor."
-
-#~ msgid "Optionally the lacunarity can be appended with a leading comma."
-#~ msgstr ""
-#~ "Takförhållandet kan eventuellt läggas till med ett främre kommatecken."
-
-#~ msgid ""
-#~ "Format: <offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>), <seed>, "
-#~ "<octaves>, <persistence>"
-#~ msgstr ""
-#~ "Format: <förskjutning>, <skala>, (<spridningX>, <spridningY>, "
-#~ "<spridningZ>), <frö>, <oktaver>, <bestående>"
-
-#~ msgid "Format is 3 numbers separated by commas and inside brackets."
-#~ msgstr "Formatet är tre nummer separerade med komma och inom paranteser."
-
-#~ msgid "\"$1\" is not a valid flag."
-#~ msgstr "\"$1\" är inte en giltig flagga."
-
-#~ msgid "No worldname given or no game selected"
-#~ msgstr "Inget världnamn angett eller inget spel valt"
-
-#~ msgid "Enable MP"
-#~ msgstr "Aktivera MP"
-
-#~ msgid "Disable MP"
-#~ msgstr "Inaktivera MP"
-
-#, fuzzy
-#~ msgid "Content Store"
-#~ msgstr "Stäng butiken"
+#~ msgid "Advanced Settings"
+#~ msgstr "Avancerade Inställningar"

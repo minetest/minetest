@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-02-14 19:14+0100\n"
+"POT-Creation-Date: 2019-02-24 18:43+0100\n"
 "PO-Revision-Date: 2019-02-13 13:11+0000\n"
 "Last-Translator: Muhammad Rifqi Priyo Susanto "
 "<muhammadrifqipriyosusanto@gmail.com>\n"
@@ -953,12 +953,14 @@ msgid "- Server Name: "
 msgstr "- Име сервера: "
 
 #: src/client/game.cpp
-msgid "Automatic forwards disabled"
-msgstr ""
+#, fuzzy
+msgid "Automatic forward disabled"
+msgstr "Кључ за синематски мод"
 
 #: src/client/game.cpp
-msgid "Automatic forwards enabled"
-msgstr ""
+#, fuzzy
+msgid "Automatic forward enabled"
+msgstr "Кључ за синематски мод"
 
 #: src/client/game.cpp
 #, fuzzy
@@ -2088,7 +2090,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 #, fuzzy
-msgid "Automatic forwards key"
+msgid "Automatic forward key"
 msgstr "Кључ за синематски мод"
 
 #: src/settings_translation_file.cpp
@@ -3105,9 +3107,7 @@ msgstr ""
 msgid ""
 "Global map generation attributes.\n"
 "In Mapgen v6 the 'decorations' flag controls all decorations except trees\n"
-"and junglegrass, in all other mapgens this flag controls all decorations.\n"
-"Flags that are not enabled are not modified from the default.\n"
-"Flags starting with 'no' are used to explicitly disable them."
+"and junglegrass, in all other mapgens this flag controls all decorations."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -4319,10 +4319,7 @@ msgid "Map directory"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid ""
-"Map generation attributes specific to Mapgen Carpathian.\n"
-"Flags that are not enabled are not modified from the default.\n"
-"Flags starting with 'no' are used to explicitly disable them."
+msgid "Map generation attributes specific to Mapgen Carpathian."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -4338,16 +4335,11 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid ""
 "Map generation attributes specific to Mapgen flat.\n"
-"Occasional lakes and hills can be added to the flat world.\n"
-"Flags that are not enabled are not modified from the default.\n"
-"Flags starting with 'no' are used to explicitly disable them."
+"Occasional lakes and hills can be added to the flat world."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid ""
-"Map generation attributes specific to Mapgen v5.\n"
-"Flags that are not enabled are not modified from the default.\n"
-"Flags starting with 'no' are used to explicitly disable them."
+msgid "Map generation attributes specific to Mapgen v5."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -4355,17 +4347,13 @@ msgid ""
 "Map generation attributes specific to Mapgen v6.\n"
 "The 'snowbiomes' flag enables the new 5 biome system.\n"
 "When the new biome system is enabled jungles are automatically enabled and\n"
-"the 'jungles' flag is ignored.\n"
-"Flags that are not enabled are not modified from the default.\n"
-"Flags starting with 'no' are used to explicitly disable them."
+"the 'jungles' flag is ignored."
 msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Map generation attributes specific to Mapgen v7.\n"
-"'ridges' enables the rivers.\n"
-"Flags that are not enabled are not modified from the default.\n"
-"Flags starting with 'no' are used to explicitly disable them."
+"'ridges' enables the rivers."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -4684,7 +4672,7 @@ msgid ""
 "Name of map generator to be used when creating a new world.\n"
 "Creating a world in the main menu will override this.\n"
 "Current stable mapgens:\n"
-"v5, v6, v7 (except floatlands), flat, singlenode.\n"
+"v5, v6, v7 (except floatlands), singlenode.\n"
 "'stable' means the terrain shape in an existing world will not be changed\n"
 "in the future. Note that biomes are defined by games and may still change."
 msgstr ""
@@ -5996,77 +5984,108 @@ msgstr ""
 msgid "cURL timeout"
 msgstr ""
 
-#~ msgid "Advanced Settings"
-#~ msgstr "Напредне поставке"
-
-#~ msgid "Plus"
-#~ msgstr "Плус"
-
-#~ msgid "Period"
-#~ msgstr "Тачка"
-
-#~ msgid "Minus"
-#~ msgstr "Минус"
-
-#~ msgid "Final"
-#~ msgstr "Крајњи"
-
-#~ msgid "ExSel"
-#~ msgstr "ЕхСел"
-
-#~ msgid "CrSel"
-#~ msgstr "ЦрСел"
-
-#~ msgid "Comma"
-#~ msgstr "Зарез"
-
-#~ msgid "Capital"
-#~ msgstr "Главно"
-
-#~ msgid "Attn"
-#~ msgstr "Аттн"
-
-#~ msgid "Hide mp content"
-#~ msgstr "Сакриј садржину мод-паковања"
-
 #, fuzzy
-#~ msgid "Inventory image hack"
-#~ msgstr "Инвентар"
+#~ msgid "Content Store"
+#~ msgstr "Затвори складиште"
 
-#~ msgid "Crouch speed"
-#~ msgstr "Брзина при чучању"
+#~ msgid "Disable MP"
+#~ msgstr "Онемогући мод-паковање"
+
+#~ msgid "Enable MP"
+#~ msgstr "Омогући мод-паковање"
+
+#~ msgid "No worldname given or no game selected"
+#~ msgstr "Име није дато или ниједна игра није изабрана"
+
+#~ msgid "\"$1\" is not a valid flag."
+#~ msgstr "\"$1\" није валидна ознака."
+
+#~ msgid "Format is 3 numbers separated by commas and inside brackets."
+#~ msgstr "Формат су три броја унутар заграда раздвојени зарезима."
 
 #~ msgid ""
-#~ "Creates unpredictable water features in caves.\n"
-#~ "These can make mining difficult. Zero disables them. (0-10)"
+#~ "Format: <offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>), <seed>, "
+#~ "<octaves>, <persistence>"
 #~ msgstr ""
-#~ "Ствара непредвидиве шеме воде у пећинама.\n"
-#~ "Ове могу чинити копање тежим. Нула их онемогућава. (0-10)"
+#~ "Формат:  <офсет>, <скала>, (<распонX>, <распонY>, <распонZ>), <семе>, "
+#~ "<октаве>, <упорност>"
+
+#~ msgid "Optionally the lacunarity can be appended with a leading comma."
+#~ msgstr "Опоцијоно, лацунарност се може додати са зарезом."
+
+#~ msgid "Please enter a comma seperated list of flags."
+#~ msgstr "Молим вас унесите листу ознака раздвојену зарезима."
+
+#~ msgid "Possible values are: "
+#~ msgstr "Могуће вредности су: "
+
+#~ msgid "Select path"
+#~ msgstr "Одабери локацију"
+
+#~ msgid "Subgame Mods"
+#~ msgstr "Модови под-игре"
+
+#~ msgid "Page $1 of $2"
+#~ msgstr "Страна $1 од $2"
+
+#~ msgid "Rating"
+#~ msgstr "Оцена"
+
+#~ msgid "Shortname:"
+#~ msgstr "Краће име:"
+
+#~ msgid "Successfully installed:"
+#~ msgstr "Успешно инсталиран:"
+
+#~ msgid "Unsorted"
+#~ msgstr "Нераспоређено"
+
+#~ msgid "re-Install"
+#~ msgstr "поново инсталирај"
+
+#~ msgid "Local Game"
+#~ msgstr "Локална игра"
+
+#~ msgid "Uninstall selected modpack"
+#~ msgstr "Уклони одабрано мод-паковање"
+
+#~ msgid "Play Online"
+#~ msgstr "Играј онлине"
+
+#~ msgid "Normal Mapping"
+#~ msgstr "Нормал-мапирање"
+
+#~ msgid "No information available"
+#~ msgstr "Нема доступних информација"
+
+#~ msgid "Volume changed to 0%"
+#~ msgstr "Јачина звука промењена на 0%"
+
+#~ msgid "Volume changed to 100%"
+#~ msgstr "Јачина звука промењена на 100%"
+
+#~ msgid "Print stacks"
+#~ msgstr "Прикажи stack-ове"
+
+#~ msgid "Use"
+#~ msgstr "Коришћење"
+
+#~ msgid "Next"
+#~ msgstr "Следеће"
+
+#~ msgid "Prior"
+#~ msgstr "Пре"
+
+#~ msgid "Active Block Modifier interval"
+#~ msgstr "Интервал модификатора активног блока"
 
 #~ msgid ""
-#~ "Creates unpredictable lava features in caves.\n"
-#~ "These can make mining difficult. Zero disables them. (0-10)"
+#~ "Android systems only: Tries to create inventory textures from meshes\n"
+#~ "when no supported render was found."
 #~ msgstr ""
-#~ "Ствара непредвидиве шеме лаве у пећинама.\n"
-#~ "Ове могу чинити копање тежим. Нула их онемогућава. (0-10)"
-
-#~ msgid "Continuous forward movement (only used for testing)."
-#~ msgstr "Непрекидно кретање унапред (користи се само за тестирање)."
-
-#~ msgid "Console key"
-#~ msgstr "Кључ за конзолу"
-
-#~ msgid "Cloud height"
-#~ msgstr "Висина облака"
-
-#~ msgid "Caves and tunnels form at the intersection of the two noises"
-#~ msgstr "Пећине и тунели се формирају при укрштању два семена"
-
-#~ msgid "Autorun key"
-#~ msgstr "Кључ за аутоматско трчање"
-
-#~ msgid "Approximate (X,Y,Z) scale of fractal in nodes."
-#~ msgstr "Приближна величина (X,Y,Z) фрактала у блоковима."
+#~ "Само за Андроид системе: Покушава да направи текстуру у инвентару из "
+#~ "модела\n"
+#~ "када није пронађен ниједан подржани драјвер."
 
 #~ msgid ""
 #~ "Announce to this serverlist.\n"
@@ -6077,105 +6096,74 @@ msgstr ""
 #~ "Ако желите да пријавите вашу ipv6 адресу, користите serverlist_url = v6."
 #~ "servers.minetest.net."
 
-#~ msgid ""
-#~ "Android systems only: Tries to create inventory textures from meshes\n"
-#~ "when no supported render was found."
-#~ msgstr ""
-#~ "Само за Андроид системе: Покушава да направи текстуру у инвентару из "
-#~ "модела\n"
-#~ "када није пронађен ниједан подржани драјвер."
+#~ msgid "Approximate (X,Y,Z) scale of fractal in nodes."
+#~ msgstr "Приближна величина (X,Y,Z) фрактала у блоковима."
 
-#~ msgid "Active Block Modifier interval"
-#~ msgstr "Интервал модификатора активног блока"
+#~ msgid "Autorun key"
+#~ msgstr "Кључ за аутоматско трчање"
 
-#~ msgid "Prior"
-#~ msgstr "Пре"
+#~ msgid "Caves and tunnels form at the intersection of the two noises"
+#~ msgstr "Пећине и тунели се формирају при укрштању два семена"
 
-#~ msgid "Next"
-#~ msgstr "Следеће"
+#~ msgid "Cloud height"
+#~ msgstr "Висина облака"
 
-#~ msgid "Use"
-#~ msgstr "Коришћење"
+#~ msgid "Console key"
+#~ msgstr "Кључ за конзолу"
 
-#~ msgid "Print stacks"
-#~ msgstr "Прикажи stack-ове"
-
-#~ msgid "Volume changed to 100%"
-#~ msgstr "Јачина звука промењена на 100%"
-
-#~ msgid "Volume changed to 0%"
-#~ msgstr "Јачина звука промењена на 0%"
-
-#~ msgid "No information available"
-#~ msgstr "Нема доступних информација"
-
-#~ msgid "Normal Mapping"
-#~ msgstr "Нормал-мапирање"
-
-#~ msgid "Play Online"
-#~ msgstr "Играј онлине"
-
-#~ msgid "Uninstall selected modpack"
-#~ msgstr "Уклони одабрано мод-паковање"
-
-#~ msgid "Local Game"
-#~ msgstr "Локална игра"
-
-#~ msgid "re-Install"
-#~ msgstr "поново инсталирај"
-
-#~ msgid "Unsorted"
-#~ msgstr "Нераспоређено"
-
-#~ msgid "Successfully installed:"
-#~ msgstr "Успешно инсталиран:"
-
-#~ msgid "Shortname:"
-#~ msgstr "Краће име:"
-
-#~ msgid "Rating"
-#~ msgstr "Оцена"
-
-#~ msgid "Page $1 of $2"
-#~ msgstr "Страна $1 од $2"
-
-#~ msgid "Subgame Mods"
-#~ msgstr "Модови под-игре"
-
-#~ msgid "Select path"
-#~ msgstr "Одабери локацију"
-
-#~ msgid "Possible values are: "
-#~ msgstr "Могуће вредности су: "
-
-#~ msgid "Please enter a comma seperated list of flags."
-#~ msgstr "Молим вас унесите листу ознака раздвојену зарезима."
-
-#~ msgid "Optionally the lacunarity can be appended with a leading comma."
-#~ msgstr "Опоцијоно, лацунарност се може додати са зарезом."
+#~ msgid "Continuous forward movement (only used for testing)."
+#~ msgstr "Непрекидно кретање унапред (користи се само за тестирање)."
 
 #~ msgid ""
-#~ "Format: <offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>), <seed>, "
-#~ "<octaves>, <persistence>"
+#~ "Creates unpredictable lava features in caves.\n"
+#~ "These can make mining difficult. Zero disables them. (0-10)"
 #~ msgstr ""
-#~ "Формат:  <офсет>, <скала>, (<распонX>, <распонY>, <распонZ>), <семе>, "
-#~ "<октаве>, <упорност>"
+#~ "Ствара непредвидиве шеме лаве у пећинама.\n"
+#~ "Ове могу чинити копање тежим. Нула их онемогућава. (0-10)"
 
-#~ msgid "Format is 3 numbers separated by commas and inside brackets."
-#~ msgstr "Формат су три броја унутар заграда раздвојени зарезима."
+#~ msgid ""
+#~ "Creates unpredictable water features in caves.\n"
+#~ "These can make mining difficult. Zero disables them. (0-10)"
+#~ msgstr ""
+#~ "Ствара непредвидиве шеме воде у пећинама.\n"
+#~ "Ове могу чинити копање тежим. Нула их онемогућава. (0-10)"
 
-#~ msgid "\"$1\" is not a valid flag."
-#~ msgstr "\"$1\" није валидна ознака."
-
-#~ msgid "No worldname given or no game selected"
-#~ msgstr "Име није дато или ниједна игра није изабрана"
-
-#~ msgid "Enable MP"
-#~ msgstr "Омогући мод-паковање"
-
-#~ msgid "Disable MP"
-#~ msgstr "Онемогући мод-паковање"
+#~ msgid "Crouch speed"
+#~ msgstr "Брзина при чучању"
 
 #, fuzzy
-#~ msgid "Content Store"
-#~ msgstr "Затвори складиште"
+#~ msgid "Inventory image hack"
+#~ msgstr "Инвентар"
+
+#~ msgid "Hide mp content"
+#~ msgstr "Сакриј садржину мод-паковања"
+
+#~ msgid "Attn"
+#~ msgstr "Аттн"
+
+#~ msgid "Capital"
+#~ msgstr "Главно"
+
+#~ msgid "Comma"
+#~ msgstr "Зарез"
+
+#~ msgid "CrSel"
+#~ msgstr "ЦрСел"
+
+#~ msgid "ExSel"
+#~ msgstr "ЕхСел"
+
+#~ msgid "Final"
+#~ msgstr "Крајњи"
+
+#~ msgid "Minus"
+#~ msgstr "Минус"
+
+#~ msgid "Period"
+#~ msgstr "Тачка"
+
+#~ msgid "Plus"
+#~ msgstr "Плус"
+
+#~ msgid "Advanced Settings"
+#~ msgstr "Напредне поставке"

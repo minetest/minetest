@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-02-14 19:14+0100\n"
+"POT-Creation-Date: 2019-02-24 18:43+0100\n"
 "PO-Revision-Date: 2019-01-24 00:05+0000\n"
 "Last-Translator: Nore <nore@mesecons.net>\n"
 "Language-Team: Dhivehi <https://hosted.weblate.org/projects/minetest/"
@@ -909,12 +909,13 @@ msgid "- Server Name: "
 msgstr ""
 
 #: src/client/game.cpp
-msgid "Automatic forwards disabled"
+msgid "Automatic forward disabled"
 msgstr ""
 
 #: src/client/game.cpp
-msgid "Automatic forwards enabled"
-msgstr ""
+#, fuzzy
+msgid "Automatic forward enabled"
+msgstr "އަނިޔާވުން ޖައްސާފައި"
 
 #: src/client/game.cpp
 msgid "Camera update disabled"
@@ -1976,7 +1977,7 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Automatic forwards key"
+msgid "Automatic forward key"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -2970,9 +2971,7 @@ msgstr ""
 msgid ""
 "Global map generation attributes.\n"
 "In Mapgen v6 the 'decorations' flag controls all decorations except trees\n"
-"and junglegrass, in all other mapgens this flag controls all decorations.\n"
-"Flags that are not enabled are not modified from the default.\n"
-"Flags starting with 'no' are used to explicitly disable them."
+"and junglegrass, in all other mapgens this flag controls all decorations."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -4180,10 +4179,7 @@ msgid "Map directory"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid ""
-"Map generation attributes specific to Mapgen Carpathian.\n"
-"Flags that are not enabled are not modified from the default.\n"
-"Flags starting with 'no' are used to explicitly disable them."
+msgid "Map generation attributes specific to Mapgen Carpathian."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -4199,16 +4195,11 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid ""
 "Map generation attributes specific to Mapgen flat.\n"
-"Occasional lakes and hills can be added to the flat world.\n"
-"Flags that are not enabled are not modified from the default.\n"
-"Flags starting with 'no' are used to explicitly disable them."
+"Occasional lakes and hills can be added to the flat world."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid ""
-"Map generation attributes specific to Mapgen v5.\n"
-"Flags that are not enabled are not modified from the default.\n"
-"Flags starting with 'no' are used to explicitly disable them."
+msgid "Map generation attributes specific to Mapgen v5."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -4216,17 +4207,13 @@ msgid ""
 "Map generation attributes specific to Mapgen v6.\n"
 "The 'snowbiomes' flag enables the new 5 biome system.\n"
 "When the new biome system is enabled jungles are automatically enabled and\n"
-"the 'jungles' flag is ignored.\n"
-"Flags that are not enabled are not modified from the default.\n"
-"Flags starting with 'no' are used to explicitly disable them."
+"the 'jungles' flag is ignored."
 msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Map generation attributes specific to Mapgen v7.\n"
-"'ridges' enables the rivers.\n"
-"Flags that are not enabled are not modified from the default.\n"
-"Flags starting with 'no' are used to explicitly disable them."
+"'ridges' enables the rivers."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -4545,7 +4532,7 @@ msgid ""
 "Name of map generator to be used when creating a new world.\n"
 "Creating a world in the main menu will override this.\n"
 "Current stable mapgens:\n"
-"v5, v6, v7 (except floatlands), flat, singlenode.\n"
+"v5, v6, v7 (except floatlands), singlenode.\n"
 "'stable' means the terrain shape in an existing world will not be changed\n"
 "in the future. Note that biomes are defined by games and may still change."
 msgstr ""
@@ -5830,8 +5817,59 @@ msgstr ""
 msgid "cURL timeout"
 msgstr ""
 
-#~ msgid "Hide mp content"
-#~ msgstr "mp ge thakethi foruvaa"
+#~ msgid "Enable MP"
+#~ msgstr "އެމް.ޕީ ޖައްސާ"
+
+#~ msgid "No worldname given or no game selected"
+#~ msgstr "ދުނިޔެއެއްގެ ނަމެއް ދެއްވިފައެއް ނެތް ނުވަތަ ގޭމެއް އިހްތިޔާރުކުރެއްވިފައެއް ނެތް"
+
+#~ msgid "\"$1\" is not a valid flag."
+#~ msgstr "\"$1\" އަކީ ސައްހަ ދިދައެއް ނޫން."
+
+#~ msgid "Format is 3 numbers separated by commas and inside brackets."
+#~ msgstr "ފޯމެޓަކީ ބްރެކެޓްތެރޭގައި، ކޮމާއިން ވަކިކުރެވިފައިވާ 3 އަދަދު."
+
+#~ msgid "Please enter a comma seperated list of flags."
+#~ msgstr "ކޮމާއިން ވަކިކުރެވިފައިވާ ދިދަތަކުގެ ލިސްޓެއް ލިޔުއްވާ."
+
+#~ msgid "Possible values are: "
+#~ msgstr "ވެދާނެ އަދަދުތަކަކީ: "
+
+#~ msgid "Select path"
+#~ msgstr "މަގު އިހްތިޔާރުކުރޭ"
+
+#~ msgid "Subgame Mods"
+#~ msgstr "ސަބްގޭމް މޮޑްތައް"
+
+#~ msgid "Page $1 of $2"
+#~ msgstr "$2ގެ ސަފްހާ 1$"
+
+#~ msgid "Rating"
+#~ msgstr "ވަނަވަރު"
+
+#~ msgid "Successfully installed:"
+#~ msgstr "ކާމިޔާބުކޮށް އަޅާފައި:"
+
+#~ msgid "Unsorted"
+#~ msgstr "ތަރުތީބުނުކޮށް"
+
+#~ msgid "re-Install"
+#~ msgstr "އަލުން އަޅާ"
+
+#~ msgid "Local Game"
+#~ msgstr "ލޯކަލް ގޭމެއަ"
+
+#~ msgid "Uninstall selected modpack"
+#~ msgstr "އިހްތިޔާރުކުރެވިފައިވާ މޮޑްޕެކް ޑިލީޓްކުރޭ"
+
+#~ msgid "Play Online"
+#~ msgstr "އޮންލައިންކޮށް ކުޚޭ"
+
+#~ msgid "Main menu game manager"
+#~ msgstr "މެއިން މެނޫ ގޭމް މެނޭޖަރެ"
+
+#~ msgid "Main menu mod manager"
+#~ msgstr "މެއިން މެނޫ މޮޑް މެނޭޖަރު"
 
 #~ msgid ""
 #~ "Name of map generator to be used when creating a new world.\n"
@@ -5840,56 +5878,5 @@ msgstr ""
 #~ "އާ ދުނިޔެއެއް ހަދާއިރު ބޭނުންކުރަންވީ މެޕް ޖެނެރޭޓަރ،\n"
 #~ "މެއިން މެނޫ އިން ދުނިޔެއެއް އުފައްދާއިރު މީގެ މައްޗަށް ބާރު ހިނގާނެ."
 
-#~ msgid "Main menu mod manager"
-#~ msgstr "މެއިން މެނޫ މޮޑް މެނޭޖަރު"
-
-#~ msgid "Main menu game manager"
-#~ msgstr "މެއިން މެނޫ ގޭމް މެނޭޖަރެ"
-
-#~ msgid "Play Online"
-#~ msgstr "އޮންލައިންކޮށް ކުޚޭ"
-
-#~ msgid "Uninstall selected modpack"
-#~ msgstr "އިހްތިޔާރުކުރެވިފައިވާ މޮޑްޕެކް ޑިލީޓްކުރޭ"
-
-#~ msgid "Local Game"
-#~ msgstr "ލޯކަލް ގޭމެއަ"
-
-#~ msgid "re-Install"
-#~ msgstr "އަލުން އަޅާ"
-
-#~ msgid "Unsorted"
-#~ msgstr "ތަރުތީބުނުކޮށް"
-
-#~ msgid "Successfully installed:"
-#~ msgstr "ކާމިޔާބުކޮށް އަޅާފައި:"
-
-#~ msgid "Rating"
-#~ msgstr "ވަނަވަރު"
-
-#~ msgid "Page $1 of $2"
-#~ msgstr "$2ގެ ސަފްހާ 1$"
-
-#~ msgid "Subgame Mods"
-#~ msgstr "ސަބްގޭމް މޮޑްތައް"
-
-#~ msgid "Select path"
-#~ msgstr "މަގު އިހްތިޔާރުކުރޭ"
-
-#~ msgid "Possible values are: "
-#~ msgstr "ވެދާނެ އަދަދުތަކަކީ: "
-
-#~ msgid "Please enter a comma seperated list of flags."
-#~ msgstr "ކޮމާއިން ވަކިކުރެވިފައިވާ ދިދަތަކުގެ ލިސްޓެއް ލިޔުއްވާ."
-
-#~ msgid "Format is 3 numbers separated by commas and inside brackets."
-#~ msgstr "ފޯމެޓަކީ ބްރެކެޓްތެރޭގައި، ކޮމާއިން ވަކިކުރެވިފައިވާ 3 އަދަދު."
-
-#~ msgid "\"$1\" is not a valid flag."
-#~ msgstr "\"$1\" އަކީ ސައްހަ ދިދައެއް ނޫން."
-
-#~ msgid "No worldname given or no game selected"
-#~ msgstr "ދުނިޔެއެއްގެ ނަމެއް ދެއްވިފައެއް ނެތް ނުވަތަ ގޭމެއް އިހްތިޔާރުކުރެއްވިފައެއް ނެތް"
-
-#~ msgid "Enable MP"
-#~ msgstr "އެމް.ޕީ ޖައްސާ"
+#~ msgid "Hide mp content"
+#~ msgstr "mp ge thakethi foruvaa"

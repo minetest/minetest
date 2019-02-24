@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-02-14 07:46+0100\n"
+"POT-Creation-Date: 2019-02-24 18:43+0100\n"
 "PO-Revision-Date: 2019-02-23 11:18+0000\n"
 "Last-Translator: Diego Martínez <lkaezadl3@gmail.com>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/minetest/"
@@ -912,11 +912,13 @@ msgid "- Server Name: "
 msgstr "- Nombre del servidor: "
 
 #: src/client/game.cpp
-msgid "Automatic forwards disabled"
+#, fuzzy
+msgid "Automatic forward disabled"
 msgstr "Avance automático descativado"
 
 #: src/client/game.cpp
-msgid "Automatic forwards enabled"
+#, fuzzy
+msgid "Automatic forward enabled"
 msgstr "Avance automático activado"
 
 #: src/client/game.cpp
@@ -2063,7 +2065,8 @@ msgstr ""
 "Fijado en bloques de mapa (16 nodos)."
 
 #: src/settings_translation_file.cpp
-msgid "Automatic forwards key"
+#, fuzzy
+msgid "Automatic forward key"
 msgstr "Tecla de avance automático"
 
 #: src/settings_translation_file.cpp
@@ -3155,9 +3158,7 @@ msgstr "Devolución de llamadas globales"
 msgid ""
 "Global map generation attributes.\n"
 "In Mapgen v6 the 'decorations' flag controls all decorations except trees\n"
-"and junglegrass, in all other mapgens this flag controls all decorations.\n"
-"Flags that are not enabled are not modified from the default.\n"
-"Flags starting with 'no' are used to explicitly disable them."
+"and junglegrass, in all other mapgens this flag controls all decorations."
 msgstr ""
 "Atributos del generador de mapas globales.\n"
 "En el generador de mapas V6 la opción (o marcador) \"decorations\" controla "
@@ -4680,21 +4681,8 @@ msgid "Map directory"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
-msgid ""
-"Map generation attributes specific to Mapgen Carpathian.\n"
-"Flags that are not enabled are not modified from the default.\n"
-"Flags starting with 'no' are used to explicitly disable them."
+msgid "Map generation attributes specific to Mapgen Carpathian."
 msgstr ""
-"Atributos del generador de mapas globales.\n"
-"En el generador de mapas V6 la opción (o marcador) \"decorations\" controla "
-"todos los elementos decorativos excepto los árboles y la hierba de la "
-"jungla, en todos los otros generadores de mapas esta opción controla todas "
-"las decoraciones.\n"
-"Las opciones que no son incluidas en el texto con la cadena de opciones no "
-"serán modificadas y mantendrán su valor por defecto.\n"
-"Las opciones que comienzan con el prefijo \"no\" son utilizadas para "
-"inhabilitar esas opciones."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4710,9 +4698,7 @@ msgstr ""
 #, fuzzy
 msgid ""
 "Map generation attributes specific to Mapgen flat.\n"
-"Occasional lakes and hills can be added to the flat world.\n"
-"Flags that are not enabled are not modified from the default.\n"
-"Flags starting with 'no' are used to explicitly disable them."
+"Occasional lakes and hills can be added to the flat world."
 msgstr ""
 "Atributos del generador de mapas globales.\n"
 "En el generador de mapas V6 la opción (o marcador) \"decorations\" controla "
@@ -4725,21 +4711,8 @@ msgstr ""
 "inhabilitar esas opciones."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
-msgid ""
-"Map generation attributes specific to Mapgen v5.\n"
-"Flags that are not enabled are not modified from the default.\n"
-"Flags starting with 'no' are used to explicitly disable them."
+msgid "Map generation attributes specific to Mapgen v5."
 msgstr ""
-"Atributos del generador de mapas globales.\n"
-"En el generador de mapas V6 la opción (o marcador) \"decorations\" controla "
-"todos los elementos decorativos excepto los árboles y la hierba de la "
-"jungla, en todos los otros generadores de mapas esta opción controla todas "
-"las decoraciones.\n"
-"Las opciones que no son incluidas en el texto con la cadena de opciones no "
-"serán modificadas y mantendrán su valor por defecto.\n"
-"Las opciones que comienzan con el prefijo \"no\" son utilizadas para "
-"inhabilitar esas opciones."
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -4747,9 +4720,7 @@ msgid ""
 "Map generation attributes specific to Mapgen v6.\n"
 "The 'snowbiomes' flag enables the new 5 biome system.\n"
 "When the new biome system is enabled jungles are automatically enabled and\n"
-"the 'jungles' flag is ignored.\n"
-"Flags that are not enabled are not modified from the default.\n"
-"Flags starting with 'no' are used to explicitly disable them."
+"the 'jungles' flag is ignored."
 msgstr ""
 "Atributos del generador de mapas globales.\n"
 "En el generador de mapas V6 la opción (o marcador) \"decorations\" controla "
@@ -4762,22 +4733,10 @@ msgstr ""
 "inhabilitar esas opciones."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Map generation attributes specific to Mapgen v7.\n"
-"'ridges' enables the rivers.\n"
-"Flags that are not enabled are not modified from the default.\n"
-"Flags starting with 'no' are used to explicitly disable them."
+"'ridges' enables the rivers."
 msgstr ""
-"Atributos del generador de mapas globales.\n"
-"En el generador de mapas V6 la opción (o marcador) \"decorations\" controla "
-"todos los elementos decorativos excepto los árboles y la hierba de la "
-"jungla, en todos los otros generadores de mapas esta opción controla todas "
-"las decoraciones.\n"
-"Las opciones que no son incluidas en el texto con la cadena de opciones no "
-"serán modificadas y mantendrán su valor por defecto.\n"
-"Las opciones que comienzan con el prefijo \"no\" son utilizadas para "
-"inhabilitar esas opciones."
 
 #: src/settings_translation_file.cpp
 msgid "Map generation limit"
@@ -5106,7 +5065,7 @@ msgid ""
 "Name of map generator to be used when creating a new world.\n"
 "Creating a world in the main menu will override this.\n"
 "Current stable mapgens:\n"
-"v5, v6, v7 (except floatlands), flat, singlenode.\n"
+"v5, v6, v7 (except floatlands), singlenode.\n"
 "'stable' means the terrain shape in an existing world will not be changed\n"
 "in the future. Note that biomes are defined by games and may still change."
 msgstr ""
@@ -6438,232 +6397,161 @@ msgstr ""
 msgid "cURL timeout"
 msgstr "Tiempo de espera de cURL"
 
-#~ msgid "View"
-#~ msgstr "Ver"
+# En el menú principal de mods pone repositorio no tienda.
+#~ msgid "Content Store"
+#~ msgstr "Tienda de contenidos"
 
-#~ msgid "Advanced Settings"
-#~ msgstr "Configuración Avanzada"
+#~ msgid "Disable MP"
+#~ msgstr "Desactivar paquete"
 
-#~ msgid "Preload inventory textures"
-#~ msgstr "Precarga de las texturas del inventario"
+#~ msgid "Enable MP"
+#~ msgstr "Activar paquete"
 
-#~ msgid "Scaling factor applied to menu elements: "
-#~ msgstr "Factor de escala aplicado a los elementos del menú: "
+#~ msgid "No worldname given or no game selected"
+#~ msgstr "No se ha dado un nombre al mundo o no se ha seleccionado uno."
 
-#~ msgid "Touch free target"
-#~ msgstr "Tocar para interactuar"
+#~ msgid "\"$1\" is not a valid flag."
+#~ msgstr "\"$1\" no es un indicador válido."
 
-#~ msgid " KB/s"
-#~ msgstr " KB/s"
-
-#~ msgid " MB/s"
-#~ msgstr " MB/s"
-
-#~ msgid "Restart minetest for driver change to take effect"
+#~ msgid "Format is 3 numbers separated by commas and inside brackets."
 #~ msgstr ""
-#~ "Reinicia minetest para que los cambios en el controlador tengan efecto"
-
-#, fuzzy
-#~ msgid "If enabled, "
-#~ msgstr "Activado"
-
-#~ msgid "No!!!"
-#~ msgstr "¡¡¡No!!!"
-
-#~ msgid "Public Serverlist"
-#~ msgstr "Lista de servidores públicos"
-
-#~ msgid "No of course not!"
-#~ msgstr "¡No, claro que no!"
-
-#~ msgid "Useful for mod developers."
-#~ msgstr "Útil para los desarrolladores de mods."
+#~ "El formato es 3 números separados por comas y éstos dentro de paréntesis."
 
 #~ msgid ""
-#~ "How many blocks are flying in the wire simultaneously for the whole "
-#~ "server."
-#~ msgstr "Cantidad de bloques que flotan simultáneamente en todo el servidor."
-
-#~ msgid "Detailed mod profiling"
-#~ msgstr "Perfilador detallado de los mods"
-
-#~ msgid "Detailed mod profile data. Useful for mod developers."
+#~ "Format: <offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>), <seed>, "
+#~ "<octaves>, <persistence>"
 #~ msgstr ""
-#~ "Datos detallados de perfilación de mod. Útil para desarrolladores de mods."
+#~ "Formato: <offset> <escala> (<extensión X>, <extensión Y> , <extensión "
+#~ "Z>), <semilla>, <octavas>, <persistencia>"
 
-#, fuzzy
-#~ msgid "Mapgen v7 cave width"
-#~ msgstr "Generador de mapas"
+#~ msgid "Optionally the lacunarity can be appended with a leading comma."
+#~ msgstr ""
+#~ "Opcionalmente, el parámetro \"lacunarity\" puede ser anexado separándolo "
+#~ "mediante una coma."
 
-#, fuzzy
-#~ msgid "Mapgen v5 cave width"
-#~ msgstr "Generador de mapas"
+#~ msgid "Please enter a comma seperated list of flags."
+#~ msgstr "Por favor, introduzca una lista de indicadores separados por comas."
 
-#, fuzzy
-#~ msgid "Mapgen fractal slice w"
-#~ msgstr "Generador de mapas"
+#~ msgid "Possible values are: "
+#~ msgstr "Los valores posibles son: "
 
-#, fuzzy
-#~ msgid "Mapgen fractal scale"
-#~ msgstr "Generador de mapas"
+#~ msgid "Select path"
+#~ msgstr "Seleccionar ruta"
 
-#, fuzzy
-#~ msgid "Mapgen fractal offset"
-#~ msgstr "Generador de mapas"
+#~ msgid "Subgame Mods"
+#~ msgstr "Mods de subjuego"
 
-#, fuzzy
-#~ msgid "Mapgen fractal iterations"
-#~ msgstr "Oclusión de paralaje"
+#~ msgid "Page $1 of $2"
+#~ msgstr "Página $1 de $2"
 
-#, fuzzy
-#~ msgid "Mapgen fractal fractal"
-#~ msgstr "Generador de mapas"
+#~ msgid "Rating"
+#~ msgstr "Clasificación"
 
-#, fuzzy
-#~ msgid "Mapgen fractal cave width"
-#~ msgstr "Generador de mapas"
+#~ msgid "Shortname:"
+#~ msgstr "Nombre corto:"
 
-#~ msgid "Mapgen flat cave width"
-#~ msgstr "Anchura de cuevas planas de Mapgen"
+#~ msgid "Successfully installed:"
+#~ msgstr "Instalado con éxito:"
+
+#~ msgid "Unsorted"
+#~ msgstr "Sin ordenar"
+
+#~ msgid "re-Install"
+#~ msgstr "Reinstalar"
+
+#~ msgid "Local Game"
+#~ msgstr "Juego local"
+
+# El nombre completo no cabe.
+#~ msgid "Uninstall selected modpack"
+#~ msgstr "Desinstalar el paquete seleccionado"
+
+#~ msgid "Play Online"
+#~ msgstr "Jugar en línea"
+
+#~ msgid "Normal Mapping"
+#~ msgstr "Mapeado de relieve"
+
+#~ msgid "No information available"
+#~ msgstr "Sin información disponible"
+
+#~ msgid "Volume changed to 0%"
+#~ msgstr "Volumen cambiado al 0%"
+
+#~ msgid "Volume changed to 100%"
+#~ msgstr "Volumen cambiado al 100%"
+
+#~ msgid "Print stacks"
+#~ msgstr "Imprimir pilas"
+
+#~ msgid "Use"
+#~ msgstr "Usar"
+
+#~ msgid "Next"
+#~ msgstr "Siguiente"
+
+#~ msgid "Prior"
+#~ msgstr "Anterior"
+
+#~ msgid "Active Block Modifier interval"
+#~ msgstr "Intervalo de modificador de bloques activos"
 
 #~ msgid ""
-#~ "Determines terrain shape.\n"
-#~ "The 3 numbers in brackets control the scale of the\n"
-#~ "terrain, the 3 numbers should be identical."
+#~ "Android systems only: Tries to create inventory textures from meshes\n"
+#~ "when no supported render was found."
 #~ msgstr ""
-#~ "Determina la forma del terreno.\n"
-#~ "Los tres números entre paréntesis controlan la escala\n"
-#~ "del terreno, y deben ser iguales."
+#~ "Solo sistemas Android: Intenta crear una textura desde malla\n"
+#~ "cuando no se ha encontrado un render soportado."
 
 #~ msgid ""
-#~ "Controls size of deserts and beaches in Mapgen v6.\n"
-#~ "When snowbiomes are enabled 'mgv6_freq_desert' is ignored."
+#~ "Announce to this serverlist.\n"
+#~ "If you want to announce your ipv6 address, use  serverlist_url = v6."
+#~ "servers.minetest.net."
 #~ msgstr ""
-#~ "Controla el tamaño de desiertos y playas en Mapgen v6.\n"
-#~ "Cuando snowbiomes están activados 'mgv6_freq_desert' se ignora."
+#~ "Anunciar a esta lista de servidores.\n"
+#~ "Si deseas anunciar tu dirección ipv6, usa serverlist_url = v6.servers."
+#~ "minetest.net."
 
-#~ msgid "Plus"
-#~ msgstr "Más"
+#~ msgid "Approximate (X,Y,Z) scale of fractal in nodes."
+#~ msgstr "Escala aproximada (X,Y,Z) del fractal en nodos."
 
-#~ msgid "Period"
-#~ msgstr "Punto"
+#~ msgid "Autorun key"
+#~ msgstr "Tecla de Auto Ejecutar"
 
-#~ msgid "PA1"
-#~ msgstr "PA1"
+#~ msgid "Caves and tunnels form at the intersection of the two noises"
+#~ msgstr "Formar cuevas y túneles en la intersección de dos ruidos"
 
-#~ msgid "Minus"
-#~ msgstr "Menos"
+#~ msgid "Cloud height"
+#~ msgstr "Altura de la nube"
 
-#~ msgid "Kanji"
-#~ msgstr "Kanji"
+#~ msgid "Console key"
+#~ msgstr "Tecla de la consola"
 
-#~ msgid "Kana"
-#~ msgstr "Kana"
-
-#~ msgid "Junja"
-#~ msgstr "Junja"
-
-#~ msgid "Final"
-#~ msgstr "Final"
-
-#~ msgid "ExSel"
-#~ msgstr "ExSel"
-
-#~ msgid "CrSel"
-#~ msgstr "CrSel"
-
-#~ msgid "Comma"
-#~ msgstr "Coma"
-
-#~ msgid "Capital"
-#~ msgstr "Bloq Mayús"
-
-#~ msgid "Attn"
-#~ msgstr "Atentamente"
-
-#~ msgid "Hide mp content"
-#~ msgstr "Ocultar contenido"
-
-#, fuzzy
-#~ msgid "Water Features"
-#~ msgstr "Texturas de objetos..."
-
-#~ msgid "Use key"
-#~ msgstr "Usa la tecla"
-
-#~ msgid "Main menu mod manager"
-#~ msgstr "Menú principal del gestor de mods"
+#~ msgid "Continuous forward movement (only used for testing)."
+#~ msgstr "Avance continuo (sólo utilizado para la testing)."
 
 #~ msgid ""
-#~ "Key for printing debug stacks. Used for development.\n"
-#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
-#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ "Creates unpredictable lava features in caves.\n"
+#~ "These can make mining difficult. Zero disables them. (0-10)"
 #~ msgstr ""
-#~ "Tecla para imprimir pilas de depuración. Utilizada para desarrollo.\n"
-#~ "Véase http://irrlicht.sourceforge.net/docu/namespaceirr."
-#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ "Crea características de lava impredecibles en cuevas.\n"
+#~ "Pueden hacer la minería más difícil. Cero lo deshabilita. (0-10)"
 
 #~ msgid ""
-#~ "Key for opening the chat console.\n"
-#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
-#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ "Creates unpredictable water features in caves.\n"
+#~ "These can make mining difficult. Zero disables them. (0-10)"
 #~ msgstr ""
-#~ "Tecla para abrir la consola de chat.\n"
-#~ "Véase http://irrlicht.sourceforge.net/docu/namespaceirr."
-#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ "Crea características de agua impredecibles en cuevas.\n"
+#~ "Pueden hacer la minería más difícil. Cero lo deshabilita. (0-10)"
 
-#~ msgid ""
-#~ "Iterations of the recursive function.\n"
-#~ "Controls the amount of fine detail."
-#~ msgstr ""
-#~ "Iteraciones de la función recursiva.\n"
-#~ "Controla la cantidad de detalles finos."
+#~ msgid "Crouch speed"
+#~ msgstr "Velocidad al agacharse"
 
-#, fuzzy
-#~ msgid "Inventory image hack"
-#~ msgstr "Tecla Inventario"
+#~ msgid "Depth below which you'll find massive caves."
+#~ msgstr "Profundidad en la cual comienzan cuevas enormes."
 
-#~ msgid "If enabled, show the server status message on player connection."
-#~ msgstr ""
-#~ "Si está habilitado, muestra el mensaje de estado del servidor en la "
-#~ "conexión del jugador."
-
-#~ msgid ""
-#~ "How large area of blocks are subject to the active block stuff, stated in "
-#~ "mapblocks (16 nodes).\n"
-#~ "In active blocks objects are loaded and ABMs run."
-#~ msgstr ""
-#~ "Tamaño de área de bloques que está sujeto al bloque activo, indicado en "
-#~ "mapblocks (16 nodos).\n"
-#~ "En los bloques activos, los objetos se cargan y se ejecutan los ABMs."
-
-#~ msgid "Height on which clouds are appearing."
-#~ msgstr "Altura sobre la cual están apareciendo las nubes."
-
-#~ msgid "General"
-#~ msgstr "General"
-
-#~ msgid ""
-#~ "From how far clients know about objects, stated in mapblocks (16 nodes)."
-#~ msgstr ""
-#~ "Desde cuán lejos los clientes saben acerca de otros objetos,\n"
-#~ "especificado en bloques de mapa (mapblocks, 16 nodos)."
-
-#~ msgid ""
-#~ "Field of view while zooming in degrees.\n"
-#~ "This requires the \"zoom\" privilege on the server."
-#~ msgstr ""
-#~ "Campo de vision mientras se usa el Zoom en grados.\n"
-#~ "Esto requiere el privilegio \"zoom\" en el servidor."
-
-#~ msgid "Field of view for zoom"
-#~ msgstr "Campo visual del zoom"
-
-#~ msgid "Enables view bobbing when walking."
-#~ msgstr "Habilita la vista balanceada al caminar."
-
-#~ msgid "Enable view bobbing"
-#~ msgstr "Movimiento de cámara en movimiento"
+#~ msgid "Disable escape sequences"
+#~ msgstr "Desactivar secuencias de escape"
 
 #~ msgid ""
 #~ "Disable escape sequences, e.g. chat coloring.\n"
@@ -6676,158 +6564,278 @@ msgstr "Tiempo de espera de cURL"
 #~ "quieres deshabilitar\n"
 #~ "las secuencias de escape generadas por los mods."
 
-#~ msgid "Disable escape sequences"
-#~ msgstr "Desactivar secuencias de escape"
+#~ msgid "Enable view bobbing"
+#~ msgstr "Movimiento de cámara en movimiento"
 
-#~ msgid "Depth below which you'll find massive caves."
-#~ msgstr "Profundidad en la cual comienzan cuevas enormes."
+#~ msgid "Enables view bobbing when walking."
+#~ msgstr "Habilita la vista balanceada al caminar."
 
-#~ msgid "Crouch speed"
-#~ msgstr "Velocidad al agacharse"
-
-#~ msgid ""
-#~ "Creates unpredictable water features in caves.\n"
-#~ "These can make mining difficult. Zero disables them. (0-10)"
-#~ msgstr ""
-#~ "Crea características de agua impredecibles en cuevas.\n"
-#~ "Pueden hacer la minería más difícil. Cero lo deshabilita. (0-10)"
+#~ msgid "Field of view for zoom"
+#~ msgstr "Campo visual del zoom"
 
 #~ msgid ""
-#~ "Creates unpredictable lava features in caves.\n"
-#~ "These can make mining difficult. Zero disables them. (0-10)"
+#~ "Field of view while zooming in degrees.\n"
+#~ "This requires the \"zoom\" privilege on the server."
 #~ msgstr ""
-#~ "Crea características de lava impredecibles en cuevas.\n"
-#~ "Pueden hacer la minería más difícil. Cero lo deshabilita. (0-10)"
-
-#~ msgid "Continuous forward movement (only used for testing)."
-#~ msgstr "Avance continuo (sólo utilizado para la testing)."
-
-#~ msgid "Console key"
-#~ msgstr "Tecla de la consola"
-
-#~ msgid "Cloud height"
-#~ msgstr "Altura de la nube"
-
-#~ msgid "Caves and tunnels form at the intersection of the two noises"
-#~ msgstr "Formar cuevas y túneles en la intersección de dos ruidos"
-
-#~ msgid "Autorun key"
-#~ msgstr "Tecla de Auto Ejecutar"
-
-#~ msgid "Approximate (X,Y,Z) scale of fractal in nodes."
-#~ msgstr "Escala aproximada (X,Y,Z) del fractal en nodos."
+#~ "Campo de vision mientras se usa el Zoom en grados.\n"
+#~ "Esto requiere el privilegio \"zoom\" en el servidor."
 
 #~ msgid ""
-#~ "Announce to this serverlist.\n"
-#~ "If you want to announce your ipv6 address, use  serverlist_url = v6."
-#~ "servers.minetest.net."
+#~ "From how far clients know about objects, stated in mapblocks (16 nodes)."
 #~ msgstr ""
-#~ "Anunciar a esta lista de servidores.\n"
-#~ "Si deseas anunciar tu dirección ipv6, usa serverlist_url = v6.servers."
-#~ "minetest.net."
+#~ "Desde cuán lejos los clientes saben acerca de otros objetos,\n"
+#~ "especificado en bloques de mapa (mapblocks, 16 nodos)."
+
+#~ msgid "General"
+#~ msgstr "General"
+
+#~ msgid "Height on which clouds are appearing."
+#~ msgstr "Altura sobre la cual están apareciendo las nubes."
 
 #~ msgid ""
-#~ "Android systems only: Tries to create inventory textures from meshes\n"
-#~ "when no supported render was found."
+#~ "How large area of blocks are subject to the active block stuff, stated in "
+#~ "mapblocks (16 nodes).\n"
+#~ "In active blocks objects are loaded and ABMs run."
 #~ msgstr ""
-#~ "Solo sistemas Android: Intenta crear una textura desde malla\n"
-#~ "cuando no se ha encontrado un render soportado."
+#~ "Tamaño de área de bloques que está sujeto al bloque activo, indicado en "
+#~ "mapblocks (16 nodos).\n"
+#~ "En los bloques activos, los objetos se cargan y se ejecutan los ABMs."
 
-#~ msgid "Active Block Modifier interval"
-#~ msgstr "Intervalo de modificador de bloques activos"
-
-#~ msgid "Prior"
-#~ msgstr "Anterior"
-
-#~ msgid "Next"
-#~ msgstr "Siguiente"
-
-#~ msgid "Use"
-#~ msgstr "Usar"
-
-#~ msgid "Print stacks"
-#~ msgstr "Imprimir pilas"
-
-#~ msgid "Volume changed to 100%"
-#~ msgstr "Volumen cambiado al 100%"
-
-#~ msgid "Volume changed to 0%"
-#~ msgstr "Volumen cambiado al 0%"
-
-#~ msgid "No information available"
-#~ msgstr "Sin información disponible"
-
-#~ msgid "Normal Mapping"
-#~ msgstr "Mapeado de relieve"
-
-#~ msgid "Play Online"
-#~ msgstr "Jugar en línea"
-
-# El nombre completo no cabe.
-#~ msgid "Uninstall selected modpack"
-#~ msgstr "Desinstalar el paquete seleccionado"
-
-#~ msgid "Local Game"
-#~ msgstr "Juego local"
-
-#~ msgid "re-Install"
-#~ msgstr "Reinstalar"
-
-#~ msgid "Unsorted"
-#~ msgstr "Sin ordenar"
-
-#~ msgid "Successfully installed:"
-#~ msgstr "Instalado con éxito:"
-
-#~ msgid "Shortname:"
-#~ msgstr "Nombre corto:"
-
-#~ msgid "Rating"
-#~ msgstr "Clasificación"
-
-#~ msgid "Page $1 of $2"
-#~ msgstr "Página $1 de $2"
-
-#~ msgid "Subgame Mods"
-#~ msgstr "Mods de subjuego"
-
-#~ msgid "Select path"
-#~ msgstr "Seleccionar ruta"
-
-#~ msgid "Possible values are: "
-#~ msgstr "Los valores posibles son: "
-
-#~ msgid "Please enter a comma seperated list of flags."
-#~ msgstr "Por favor, introduzca una lista de indicadores separados por comas."
-
-#~ msgid "Optionally the lacunarity can be appended with a leading comma."
+#~ msgid "If enabled, show the server status message on player connection."
 #~ msgstr ""
-#~ "Opcionalmente, el parámetro \"lacunarity\" puede ser anexado separándolo "
-#~ "mediante una coma."
+#~ "Si está habilitado, muestra el mensaje de estado del servidor en la "
+#~ "conexión del jugador."
+
+#, fuzzy
+#~ msgid "Inventory image hack"
+#~ msgstr "Tecla Inventario"
 
 #~ msgid ""
-#~ "Format: <offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>), <seed>, "
-#~ "<octaves>, <persistence>"
+#~ "Iterations of the recursive function.\n"
+#~ "Controls the amount of fine detail."
 #~ msgstr ""
-#~ "Formato: <offset> <escala> (<extensión X>, <extensión Y> , <extensión "
-#~ "Z>), <semilla>, <octavas>, <persistencia>"
+#~ "Iteraciones de la función recursiva.\n"
+#~ "Controla la cantidad de detalles finos."
 
-#~ msgid "Format is 3 numbers separated by commas and inside brackets."
+#~ msgid ""
+#~ "Key for opening the chat console.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
 #~ msgstr ""
-#~ "El formato es 3 números separados por comas y éstos dentro de paréntesis."
+#~ "Tecla para abrir la consola de chat.\n"
+#~ "Véase http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
 
-#~ msgid "\"$1\" is not a valid flag."
-#~ msgstr "\"$1\" no es un indicador válido."
+#~ msgid ""
+#~ "Key for printing debug stacks. Used for development.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Tecla para imprimir pilas de depuración. Utilizada para desarrollo.\n"
+#~ "Véase http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
 
-#~ msgid "No worldname given or no game selected"
-#~ msgstr "No se ha dado un nombre al mundo o no se ha seleccionado uno."
+#~ msgid "Main menu mod manager"
+#~ msgstr "Menú principal del gestor de mods"
 
-#~ msgid "Enable MP"
-#~ msgstr "Activar paquete"
+#~ msgid "Use key"
+#~ msgstr "Usa la tecla"
 
-#~ msgid "Disable MP"
-#~ msgstr "Desactivar paquete"
+#, fuzzy
+#~ msgid "Water Features"
+#~ msgstr "Texturas de objetos..."
 
-# En el menú principal de mods pone repositorio no tienda.
-#~ msgid "Content Store"
-#~ msgstr "Tienda de contenidos"
+#~ msgid "Hide mp content"
+#~ msgstr "Ocultar contenido"
+
+#~ msgid "Attn"
+#~ msgstr "Atentamente"
+
+#~ msgid "Capital"
+#~ msgstr "Bloq Mayús"
+
+#~ msgid "Comma"
+#~ msgstr "Coma"
+
+#~ msgid "CrSel"
+#~ msgstr "CrSel"
+
+#~ msgid "ExSel"
+#~ msgstr "ExSel"
+
+#~ msgid "Final"
+#~ msgstr "Final"
+
+#~ msgid "Junja"
+#~ msgstr "Junja"
+
+#~ msgid "Kana"
+#~ msgstr "Kana"
+
+#~ msgid "Kanji"
+#~ msgstr "Kanji"
+
+#~ msgid "Minus"
+#~ msgstr "Menos"
+
+#~ msgid "PA1"
+#~ msgstr "PA1"
+
+#~ msgid "Period"
+#~ msgstr "Punto"
+
+#~ msgid "Plus"
+#~ msgstr "Más"
+
+#~ msgid ""
+#~ "Controls size of deserts and beaches in Mapgen v6.\n"
+#~ "When snowbiomes are enabled 'mgv6_freq_desert' is ignored."
+#~ msgstr ""
+#~ "Controla el tamaño de desiertos y playas en Mapgen v6.\n"
+#~ "Cuando snowbiomes están activados 'mgv6_freq_desert' se ignora."
+
+#~ msgid ""
+#~ "Determines terrain shape.\n"
+#~ "The 3 numbers in brackets control the scale of the\n"
+#~ "terrain, the 3 numbers should be identical."
+#~ msgstr ""
+#~ "Determina la forma del terreno.\n"
+#~ "Los tres números entre paréntesis controlan la escala\n"
+#~ "del terreno, y deben ser iguales."
+
+#~ msgid "Mapgen flat cave width"
+#~ msgstr "Anchura de cuevas planas de Mapgen"
+
+#, fuzzy
+#~ msgid "Mapgen fractal cave width"
+#~ msgstr "Generador de mapas"
+
+#, fuzzy
+#~ msgid "Mapgen fractal fractal"
+#~ msgstr "Generador de mapas"
+
+#, fuzzy
+#~ msgid "Mapgen fractal iterations"
+#~ msgstr "Oclusión de paralaje"
+
+#, fuzzy
+#~ msgid "Mapgen fractal offset"
+#~ msgstr "Generador de mapas"
+
+#, fuzzy
+#~ msgid "Mapgen fractal scale"
+#~ msgstr "Generador de mapas"
+
+#, fuzzy
+#~ msgid "Mapgen fractal slice w"
+#~ msgstr "Generador de mapas"
+
+#, fuzzy
+#~ msgid "Mapgen v5 cave width"
+#~ msgstr "Generador de mapas"
+
+#, fuzzy
+#~ msgid "Mapgen v7 cave width"
+#~ msgstr "Generador de mapas"
+
+#~ msgid "Detailed mod profile data. Useful for mod developers."
+#~ msgstr ""
+#~ "Datos detallados de perfilación de mod. Útil para desarrolladores de mods."
+
+#~ msgid "Detailed mod profiling"
+#~ msgstr "Perfilador detallado de los mods"
+
+#~ msgid ""
+#~ "How many blocks are flying in the wire simultaneously for the whole "
+#~ "server."
+#~ msgstr "Cantidad de bloques que flotan simultáneamente en todo el servidor."
+
+#~ msgid "Useful for mod developers."
+#~ msgstr "Útil para los desarrolladores de mods."
+
+#~ msgid "No of course not!"
+#~ msgstr "¡No, claro que no!"
+
+#~ msgid "Public Serverlist"
+#~ msgstr "Lista de servidores públicos"
+
+#~ msgid "No!!!"
+#~ msgstr "¡¡¡No!!!"
+
+#, fuzzy
+#~ msgid "If enabled, "
+#~ msgstr "Activado"
+
+#~ msgid "Restart minetest for driver change to take effect"
+#~ msgstr ""
+#~ "Reinicia minetest para que los cambios en el controlador tengan efecto"
+
+#~ msgid " MB/s"
+#~ msgstr " MB/s"
+
+#~ msgid " KB/s"
+#~ msgstr " KB/s"
+
+#~ msgid "Touch free target"
+#~ msgstr "Tocar para interactuar"
+
+#~ msgid "Scaling factor applied to menu elements: "
+#~ msgstr "Factor de escala aplicado a los elementos del menú: "
+
+#~ msgid "Preload inventory textures"
+#~ msgstr "Precarga de las texturas del inventario"
+
+#~ msgid "Advanced Settings"
+#~ msgstr "Configuración Avanzada"
+
+#~ msgid "View"
+#~ msgstr "Ver"
+
+#, fuzzy
+#~ msgid ""
+#~ "Map generation attributes specific to Mapgen v7.\n"
+#~ "'ridges' enables the rivers.\n"
+#~ "Flags that are not enabled are not modified from the default.\n"
+#~ "Flags starting with 'no' are used to explicitly disable them."
+#~ msgstr ""
+#~ "Atributos del generador de mapas globales.\n"
+#~ "En el generador de mapas V6 la opción (o marcador) \"decorations\" "
+#~ "controla todos los elementos decorativos excepto los árboles y la hierba "
+#~ "de la jungla, en todos los otros generadores de mapas esta opción "
+#~ "controla todas las decoraciones.\n"
+#~ "Las opciones que no son incluidas en el texto con la cadena de opciones "
+#~ "no serán modificadas y mantendrán su valor por defecto.\n"
+#~ "Las opciones que comienzan con el prefijo \"no\" son utilizadas para "
+#~ "inhabilitar esas opciones."
+
+#, fuzzy
+#~ msgid ""
+#~ "Map generation attributes specific to Mapgen v5.\n"
+#~ "Flags that are not enabled are not modified from the default.\n"
+#~ "Flags starting with 'no' are used to explicitly disable them."
+#~ msgstr ""
+#~ "Atributos del generador de mapas globales.\n"
+#~ "En el generador de mapas V6 la opción (o marcador) \"decorations\" "
+#~ "controla todos los elementos decorativos excepto los árboles y la hierba "
+#~ "de la jungla, en todos los otros generadores de mapas esta opción "
+#~ "controla todas las decoraciones.\n"
+#~ "Las opciones que no son incluidas en el texto con la cadena de opciones "
+#~ "no serán modificadas y mantendrán su valor por defecto.\n"
+#~ "Las opciones que comienzan con el prefijo \"no\" son utilizadas para "
+#~ "inhabilitar esas opciones."
+
+#, fuzzy
+#~ msgid ""
+#~ "Map generation attributes specific to Mapgen Carpathian.\n"
+#~ "Flags that are not enabled are not modified from the default.\n"
+#~ "Flags starting with 'no' are used to explicitly disable them."
+#~ msgstr ""
+#~ "Atributos del generador de mapas globales.\n"
+#~ "En el generador de mapas V6 la opción (o marcador) \"decorations\" "
+#~ "controla todos los elementos decorativos excepto los árboles y la hierba "
+#~ "de la jungla, en todos los otros generadores de mapas esta opción "
+#~ "controla todas las decoraciones.\n"
+#~ "Las opciones que no son incluidas en el texto con la cadena de opciones "
+#~ "no serán modificadas y mantendrán su valor por defecto.\n"
+#~ "Las opciones que comienzan con el prefijo \"no\" son utilizadas para "
+#~ "inhabilitar esas opciones."

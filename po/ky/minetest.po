@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-02-14 19:14+0100\n"
+"POT-Creation-Date: 2019-02-24 18:43+0100\n"
 "PO-Revision-Date: 2019-01-24 00:05+0000\n"
 "Last-Translator: Nore <nore@mesecons.net>\n"
 "Language-Team: Kyrgyz <https://hosted.weblate.org/projects/minetest/minetest/"
@@ -965,12 +965,14 @@ msgid "- Server Name: "
 msgstr ""
 
 #: src/client/game.cpp
-msgid "Automatic forwards disabled"
-msgstr ""
+#, fuzzy
+msgid "Automatic forward disabled"
+msgstr "Алга"
 
 #: src/client/game.cpp
-msgid "Automatic forwards enabled"
-msgstr ""
+#, fuzzy
+msgid "Automatic forward enabled"
+msgstr "Алга"
 
 #: src/client/game.cpp
 msgid "Camera update disabled"
@@ -2057,7 +2059,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 #, fuzzy
-msgid "Automatic forwards key"
+msgid "Automatic forward key"
 msgstr "Алга"
 
 #: src/settings_translation_file.cpp
@@ -3078,9 +3080,7 @@ msgstr ""
 msgid ""
 "Global map generation attributes.\n"
 "In Mapgen v6 the 'decorations' flag controls all decorations except trees\n"
-"and junglegrass, in all other mapgens this flag controls all decorations.\n"
-"Flags that are not enabled are not modified from the default.\n"
-"Flags starting with 'no' are used to explicitly disable them."
+"and junglegrass, in all other mapgens this flag controls all decorations."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -4296,10 +4296,7 @@ msgid "Map directory"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid ""
-"Map generation attributes specific to Mapgen Carpathian.\n"
-"Flags that are not enabled are not modified from the default.\n"
-"Flags starting with 'no' are used to explicitly disable them."
+msgid "Map generation attributes specific to Mapgen Carpathian."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -4315,16 +4312,11 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid ""
 "Map generation attributes specific to Mapgen flat.\n"
-"Occasional lakes and hills can be added to the flat world.\n"
-"Flags that are not enabled are not modified from the default.\n"
-"Flags starting with 'no' are used to explicitly disable them."
+"Occasional lakes and hills can be added to the flat world."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid ""
-"Map generation attributes specific to Mapgen v5.\n"
-"Flags that are not enabled are not modified from the default.\n"
-"Flags starting with 'no' are used to explicitly disable them."
+msgid "Map generation attributes specific to Mapgen v5."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -4332,17 +4324,13 @@ msgid ""
 "Map generation attributes specific to Mapgen v6.\n"
 "The 'snowbiomes' flag enables the new 5 biome system.\n"
 "When the new biome system is enabled jungles are automatically enabled and\n"
-"the 'jungles' flag is ignored.\n"
-"Flags that are not enabled are not modified from the default.\n"
-"Flags starting with 'no' are used to explicitly disable them."
+"the 'jungles' flag is ignored."
 msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Map generation attributes specific to Mapgen v7.\n"
-"'ridges' enables the rivers.\n"
-"Flags that are not enabled are not modified from the default.\n"
-"Flags starting with 'no' are used to explicitly disable them."
+"'ridges' enables the rivers."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -4659,7 +4647,7 @@ msgid ""
 "Name of map generator to be used when creating a new world.\n"
 "Creating a world in the main menu will override this.\n"
 "Current stable mapgens:\n"
-"v5, v6, v7 (except floatlands), flat, singlenode.\n"
+"v5, v6, v7 (except floatlands), singlenode.\n"
 "'stable' means the terrain shape in an existing world will not be changed\n"
 "in the future. Note that biomes are defined by games and may still change."
 msgstr ""
@@ -5959,58 +5947,90 @@ msgid "cURL timeout"
 msgstr ""
 
 #, fuzzy
-#~ msgid "Advanced Settings"
-#~ msgstr "Ырастоолор"
+#~ msgid "Enable MP"
+#~ msgstr "Баарын күйгүзүү"
 
 #, fuzzy
-#~ msgid "Preload inventory textures"
-#~ msgstr "Жүктөлүүдө..."
+#~ msgid "Select path"
+#~ msgstr "Тандоо"
 
 #, fuzzy
-#~ msgid "Downloading"
-#~ msgstr "Ылдый"
+#~ msgid "Shortname:"
+#~ msgstr "Дүйнө аты"
 
-#~ msgid "Left click: Move all items, Right click: Move single item"
-#~ msgstr "Сол баскычы: Бардык буюмдарды ташуу, Оң баскычы: Бир буюмду ташуу"
+#, fuzzy
+#~ msgid "Local Game"
+#~ msgstr "Оюнду баштоо/туташуу"
 
-#~ msgid "is required by:"
-#~ msgstr "талап кылынганы:"
+#, fuzzy
+#~ msgid "Normal Mapping"
+#~ msgstr "Mip-текстуралоо"
 
-#~ msgid "Configuration saved.  "
-#~ msgstr "Конфигурация сакталды.  "
+#~ msgid "Use"
+#~ msgstr "Колдонуу"
 
-#~ msgid "Warning: Configuration not consistent.  "
-#~ msgstr "Эскертүү: Туура эмес конфигурация.  "
+#~ msgid "Next"
+#~ msgstr "Кийинки"
 
-#~ msgid "Show Public"
-#~ msgstr "Жалпылыкты көрсөтүү"
+#, fuzzy
+#~ msgid "Console key"
+#~ msgstr "Консоль"
 
-#~ msgid "Show Favorites"
-#~ msgstr "Тандалмаларды көрсөтүү"
+#, fuzzy
+#~ msgid "Inventory image hack"
+#~ msgstr "Мүлк-шайман"
 
-#~ msgid "Leave address blank to start a local server."
-#~ msgstr "Жергиликтүү серверди жүргүзүү үчүн даректи бош калтырыңыз."
+#, fuzzy
+#~ msgid "Main menu mod manager"
+#~ msgstr "Башкы меню"
 
-#~ msgid "Create world"
-#~ msgstr "Дүйнөнү жаратуу"
+#, fuzzy
+#~ msgid "Use key"
+#~ msgstr "баскычты басыңыз"
 
-#~ msgid "Address required."
-#~ msgstr "Дареги талап кылынат."
+#, fuzzy
+#~ msgid "Water Features"
+#~ msgstr "Буюм текстуралары..."
 
-#~ msgid "Cannot delete world: Nothing selected"
-#~ msgstr "Дүнөнү жаратуу мүмкүн эмес: Эч нерсе тандалган жок"
+#~ msgid "Capital"
+#~ msgstr "Caps Lock"
 
-#~ msgid "Files to be deleted"
-#~ msgstr "Өчүрүлө турган файлдар"
+#~ msgid "Comma"
+#~ msgstr "Үтүр"
 
-#~ msgid "Cannot create world: No games found"
-#~ msgstr "Дүйнөнү жаратуу мүмкүн эмес: Оюндар табылган жок"
+#~ msgid "Junja"
+#~ msgstr "Junja"
 
-#~ msgid "Cannot configure world: Nothing selected"
-#~ msgstr "Дүйнөнү ырастоо мүмкүн эмес: Эч нерсе тандалган жок"
+#~ msgid "Kana"
+#~ msgstr "Кана"
 
-#~ msgid "Failed to delete all world files"
-#~ msgstr "Бардык дүйнө файлдарын өчүрүү оңунан чыккан жок"
+#~ msgid "Kanji"
+#~ msgstr "Кандзи"
+
+#~ msgid "Minus"
+#~ msgstr "Кемитүү белгиси"
+
+#~ msgid "Period"
+#~ msgstr "Айланма сан"
+
+#~ msgid "Plus"
+#~ msgstr "Кошуу белгиси"
+
+#, fuzzy
+#~ msgid "Public Serverlist"
+#~ msgstr "Жалпылык серверлердин тизмеси:"
+
+#, fuzzy
+#~ msgid "If enabled, "
+#~ msgstr "күйгүзүлгөн"
+
+#, fuzzy
+#~ msgid "Password"
+#~ msgstr "Эски сырсөз"
+
+#, fuzzy
+#~ msgid "Finite Liquid"
+#~ msgstr "Чектүү суюктук"
 
 #~ msgid ""
 #~ "Default Controls:\n"
@@ -6037,88 +6057,56 @@ msgstr ""
 #~ "- ESC: бул меню\n"
 #~ "- T: маек\n"
 
-#, fuzzy
-#~ msgid "Finite Liquid"
-#~ msgstr "Чектүү суюктук"
+#~ msgid "Failed to delete all world files"
+#~ msgstr "Бардык дүйнө файлдарын өчүрүү оңунан чыккан жок"
+
+#~ msgid "Cannot configure world: Nothing selected"
+#~ msgstr "Дүйнөнү ырастоо мүмкүн эмес: Эч нерсе тандалган жок"
+
+#~ msgid "Cannot create world: No games found"
+#~ msgstr "Дүйнөнү жаратуу мүмкүн эмес: Оюндар табылган жок"
+
+#~ msgid "Files to be deleted"
+#~ msgstr "Өчүрүлө турган файлдар"
+
+#~ msgid "Cannot delete world: Nothing selected"
+#~ msgstr "Дүнөнү жаратуу мүмкүн эмес: Эч нерсе тандалган жок"
+
+#~ msgid "Address required."
+#~ msgstr "Дареги талап кылынат."
+
+#~ msgid "Create world"
+#~ msgstr "Дүйнөнү жаратуу"
+
+#~ msgid "Leave address blank to start a local server."
+#~ msgstr "Жергиликтүү серверди жүргүзүү үчүн даректи бош калтырыңыз."
+
+#~ msgid "Show Favorites"
+#~ msgstr "Тандалмаларды көрсөтүү"
+
+#~ msgid "Show Public"
+#~ msgstr "Жалпылыкты көрсөтүү"
+
+#~ msgid "Warning: Configuration not consistent.  "
+#~ msgstr "Эскертүү: Туура эмес конфигурация.  "
+
+#~ msgid "Configuration saved.  "
+#~ msgstr "Конфигурация сакталды.  "
+
+#~ msgid "is required by:"
+#~ msgstr "талап кылынганы:"
+
+#~ msgid "Left click: Move all items, Right click: Move single item"
+#~ msgstr "Сол баскычы: Бардык буюмдарды ташуу, Оң баскычы: Бир буюмду ташуу"
 
 #, fuzzy
-#~ msgid "Password"
-#~ msgstr "Эски сырсөз"
+#~ msgid "Downloading"
+#~ msgstr "Ылдый"
 
 #, fuzzy
-#~ msgid "If enabled, "
-#~ msgstr "күйгүзүлгөн"
+#~ msgid "Preload inventory textures"
+#~ msgstr "Жүктөлүүдө..."
 
 #, fuzzy
-#~ msgid "Public Serverlist"
-#~ msgstr "Жалпылык серверлердин тизмеси:"
-
-#~ msgid "Plus"
-#~ msgstr "Кошуу белгиси"
-
-#~ msgid "Period"
-#~ msgstr "Айланма сан"
-
-#~ msgid "Minus"
-#~ msgstr "Кемитүү белгиси"
-
-#~ msgid "Kanji"
-#~ msgstr "Кандзи"
-
-#~ msgid "Kana"
-#~ msgstr "Кана"
-
-#~ msgid "Junja"
-#~ msgstr "Junja"
-
-#~ msgid "Comma"
-#~ msgstr "Үтүр"
-
-#~ msgid "Capital"
-#~ msgstr "Caps Lock"
-
-#, fuzzy
-#~ msgid "Water Features"
-#~ msgstr "Буюм текстуралары..."
-
-#, fuzzy
-#~ msgid "Use key"
-#~ msgstr "баскычты басыңыз"
-
-#, fuzzy
-#~ msgid "Main menu mod manager"
-#~ msgstr "Башкы меню"
-
-#, fuzzy
-#~ msgid "Inventory image hack"
-#~ msgstr "Мүлк-шайман"
-
-#, fuzzy
-#~ msgid "Console key"
-#~ msgstr "Консоль"
-
-#~ msgid "Next"
-#~ msgstr "Кийинки"
-
-#~ msgid "Use"
-#~ msgstr "Колдонуу"
-
-#, fuzzy
-#~ msgid "Normal Mapping"
-#~ msgstr "Mip-текстуралоо"
-
-#, fuzzy
-#~ msgid "Local Game"
-#~ msgstr "Оюнду баштоо/туташуу"
-
-#, fuzzy
-#~ msgid "Shortname:"
-#~ msgstr "Дүйнө аты"
-
-#, fuzzy
-#~ msgid "Select path"
-#~ msgstr "Тандоо"
-
-#, fuzzy
-#~ msgid "Enable MP"
-#~ msgstr "Баарын күйгүзүү"
+#~ msgid "Advanced Settings"
+#~ msgstr "Ырастоолор"
