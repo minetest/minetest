@@ -2378,6 +2378,7 @@ Helper functions
     * tolerance: number, default: `0.0`
     * If the absolute value of `x` is within the `tolerance` or `x` is NaN,
       `0` is returned.
+* `math.factorial(x)`: returns the factorial of `x`
 * `string.split(str, separator, include_empty, max_splits, sep_is_pattern)`
     * `separator`: string, default: `","`
     * `include_empty`: boolean, default: `false`
