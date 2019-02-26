@@ -196,14 +196,6 @@ public:
 	void addNodeParticle(IGameDef *gamedef, LocalPlayer *player, v3s16 pos,
 		const MapNode &n, const ContentFeatures &f);
 
-	u32 getSpawnerId() const
-	{
-		for (u32 id = 0;; ++id) { // look for unused particlespawner id
-	 		if (m_particle_spawners.find(id) == m_particle_spawners.end())
-	 			return id;
-	 	}
-	}
-
 protected:
 	void addParticle(Particle* toadd);
 
