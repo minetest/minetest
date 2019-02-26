@@ -132,7 +132,6 @@ public:
 		u16 attached_id,
 		bool vertical,
 		video::ITexture *texture,
-		u32 id,
 		const struct TileAnimationParams &anim, u8 glow,
 		ParticleManager* p_manager);
 
@@ -196,12 +195,16 @@ public:
 	void addNodeParticle(IGameDef *gamedef, LocalPlayer *player, v3s16 pos,
 		const MapNode &n, const ContentFeatures &f);
 
-	u32 getSpawnerId() const
+	/**
+	 * This function is only used by client particle spawners
+	 *
+	 * We don't need to check the particle spawner list because client ID will n
+	 * ever overlap (u64)
+	 * @return new id
+	 */
+	u64 generateSpawnerId()
 	{
-		for (u32 id = 0;; ++id) { // look for unused particlespawner id
-	 		if (m_particle_spawners.find(id) == m_particle_spawners.end())
-	 			return id;
-	 	}
+		return m_next_particle_spawner_id++;
 	}
 
 protected:
@@ -209,13 +212,16 @@ protected:
 
 private:
 
-	void stepParticles (float dtime);
-	void stepSpawners (float dtime);
+	void stepParticles(float dtime);
+	void stepSpawners(float dtime);
 
-	void clearAll ();
+	void clearAll();
 
 	std::vector<Particle*> m_particles;
-	std::map<u32, ParticleSpawner*> m_particle_spawners;
+	std::unordered_map<u64, ParticleSpawner*> m_particle_spawners;
+	// Start the particle spawner ids generated from here after u32_max. lower values are
+	// for server sent spawners.
+	u64 m_next_particle_spawner_id = U32_MAX + 1;
 
 	ClientEnvironment* m_env;
 	std::mutex m_particle_list_lock;
