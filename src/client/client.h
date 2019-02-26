@@ -565,10 +565,8 @@ private:
 	// And relations to objects
 	std::unordered_map<int, u16> m_sounds_to_objects;
 
-	// CSM/client IDs to SSM/server IDs Mapping
-	// Map server particle spawner IDs to client IDs
-	std::unordered_map<u32, u32> m_particles_server_to_client;
-	// Map server hud ids to client hud ids
+	// HUD
+	// Mapping from server hud ids to internal hud ids
 	std::unordered_map<u32, u32> m_hud_server_to_client;
 
 	// Privileges
