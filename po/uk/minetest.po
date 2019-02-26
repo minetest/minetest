@@ -6032,6 +6032,3 @@ msgstr ""
 #~ msgid "Disable MP"
 #~ msgstr "Вимкнути модпак"
 
-#, fuzzy
-#~ msgid "Content Store"
-#~ msgstr "Вийти з крамнички"
