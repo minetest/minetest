@@ -367,6 +367,7 @@ src/script/lua_api/l_object.cpp
 src/script/lua_api/l_object.h
 src/script/lua_api/l_particles.cpp
 src/script/lua_api/l_particles.h
+src/script/lua_api/l_particles_local.cpp
 src/script/lua_api/l_rollback.cpp
 src/script/lua_api/l_rollback.h
 src/script/lua_api/l_server.cpp

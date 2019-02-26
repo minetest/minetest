@@ -23,8 +23,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "cpp_api/s_internal.h"
 #include "lua_api/l_client.h"
 #include "lua_api/l_env.h"
+#include "lua_api/l_item.h"
 #include "lua_api/l_minimap.h"
 #include "lua_api/l_modchannels.h"
+#include "lua_api/l_particles_local.h"
 #include "lua_api/l_storage.h"
 #include "lua_api/l_sound.h"
 #include "lua_api/l_util.h"
@@ -77,6 +79,7 @@ void ClientScripting::InitializeModApi(lua_State *L, int top)
 	ModApiStorage::Initialize(L, top);
 	ModApiEnvMod::InitializeClient(L, top);
 	ModApiChannels::Initialize(L, top);
+	ModApiParticlesLocal::Initialize(L, top);
 }
 
 void ClientScripting::on_client_ready(LocalPlayer *localplayer)
