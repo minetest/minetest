@@ -160,12 +160,14 @@ int InvRef::l_set_width(lua_State *L)
 	int newwidth = luaL_checknumber(L, 3);
 	Inventory *inv = getinv(L, ref);
 	if(inv == NULL){
+		errorstream << "Can't set width of list \"" << listname << "\" in non-existent inventory at " << ref->m_loc.dump() << std::endl;
 		return 0;
 	}
 	InventoryList *list = inv->getList(listname);
 	if(list){
 		list->setWidth(newwidth);
 	} else {
+		errorstream << "Can't set width of non-existing list \"" << listname << "\" in inventory at " << ref->m_loc.dump() << std::endl;
 		return 0;
 	}
 	reportInventoryChange(L, ref);
@@ -229,6 +231,7 @@ int InvRef::l_set_list(lua_State *L)
 	const char *listname = luaL_checkstring(L, 2);
 	Inventory *inv = getinv(L, ref);
 	if(inv == NULL){
+		errorstream << "Can't set list \"" << listname << "\" in non-existent inventory at " << ref->m_loc.dump() << std::endl;
 		return 0;
 	}
 	InventoryList *list = inv->getList(listname);
@@ -269,6 +272,7 @@ int InvRef::l_set_lists(lua_State *L)
 	InvRef *ref = checkobject(L, 1);
 	Inventory *inv = getinv(L, ref);
 	if (!inv) {
+		errorstream << "Can't set lists in non-existent inventory at " << ref->m_loc.dump() << std::endl;
 		return 0;
 	}
 

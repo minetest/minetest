@@ -1211,19 +1211,25 @@ Inventory* Server::getInventory(const InventoryLocation &loc)
 	case InventoryLocation::PLAYER:
 	{
 		RemotePlayer *player = m_env->getPlayer(loc.name.c_str());
-		if(!player)
+		if(!player) {
+			warningstream << "Can't get inventory of player " << loc.name << ": player not connected" << std::endl;
 			return NULL;
+		}
 		PlayerSAO *playersao = player->getPlayerSAO();
-		if(!playersao)
+		if(!playersao) {
+			errorstream << "Can't get inventory of player " << loc.name << ": PlayerSAO is absent" << std::endl;
 			return NULL;
+		}
 		return playersao->getInventory();
 	}
 		break;
 	case InventoryLocation::NODEMETA:
 	{
 		NodeMetadata *meta = m_env->getMap().getNodeMetadata(loc.p);
-		if(!meta)
+		if(!meta) {
+			errorstream << "Can't get node inventory at " << PP(loc.p) << ": meta doesn't exist" << std::endl;
 			return NULL;
+		}
 		return meta->getInventory();
 	}
 		break;
