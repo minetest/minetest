@@ -36,6 +36,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "serverenvironment.h"
 #include "clientiface.h"
 #include "chatmessage.h"
+#include "monitoring.h"
 #include <string>
 #include <list>
 #include <map>
@@ -661,6 +662,12 @@ private:
 
 	// ModChannel manager
 	std::unique_ptr<ModChannelMgr> m_modchannel_mgr;
+
+	/*
+	Metrics
+	*/
+	Counter* m_tick_count_metric;
+	Counter* m_async_run_count_metric;
 };
 
 /*

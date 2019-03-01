@@ -405,6 +405,17 @@ void Server::init()
 	m_max_chatmessage_length = g_settings->getU16("chat_message_max_size");
 	m_csm_restriction_flags = g_settings->getU64("csm_restriction_flags");
 	m_csm_restriction_noderange = g_settings->getU32("csm_restriction_noderange");
+
+	// Register metrics
+	m_tick_count_metric = g_monitoring->createCounter(
+		"minetest_engine_tick_count",
+		"The server tick count"
+	);
+
+	m_async_run_count_metric = g_monitoring->createCounter(
+		"minetest_engine_async_run_count",
+		"The async step run count"
+	);
 }
 
 void Server::start()
@@ -451,6 +462,8 @@ void Server::stop()
 
 void Server::step(float dtime)
 {
+	m_tick_count_metric->increment(1);
+
 	// Limit a bit
 	if (dtime > 2.0)
 		dtime = 2.0;
@@ -468,11 +481,14 @@ void Server::step(float dtime)
 		}
 		throw ServerError("AsyncErr: " + async_err);
 	}
+
 }
 
 void Server::AsyncRunStep(bool initial_step)
 {
 	g_profiler->add("Server::AsyncRunStep (num)", 1);
+	m_async_run_count_metric->increment(1);
+
 
 	float dtime;
 	{

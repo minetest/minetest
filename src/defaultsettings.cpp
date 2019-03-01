@@ -333,6 +333,13 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("disallow_empty_password", "false");
 	settings->setDefault("disable_anticheat", "false");
 	settings->setDefault("enable_rollback_recording", "false");
+
+#if ENABLE_PROMETHEUS
+	//Monitoring
+	settings->setDefault("prometheus_enable", "true");
+	settings->setDefault("prometheus_bind_address", "127.0.0.1:8080");
+#endif
+
 #ifdef NDEBUG
 	settings->setDefault("deprecated_lua_api_handling", "legacy");
 #else

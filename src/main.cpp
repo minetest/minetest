@@ -51,6 +51,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	#include "gui/touchscreengui.h"
 #endif
 
+#if ENABLE_PROMETHEUS
+	#include "monitoring.h"
+#endif
+
 #if !defined(SERVER) && \
 	(IRRLICHT_VERSION_MAJOR == 1) && \
 	(IRRLICHT_VERSION_MINOR == 8) && \
@@ -843,6 +847,15 @@ static bool run_dedicated_server(const GameParams &game_params, const Settings &
 
 	if (cmd_args.exists("migrate-auth"))
 		return ServerEnvironment::migrateAuthDatabase(game_params, cmd_args);
+
+
+#if ENABLE_PROMETHEUS
+	if (g_settings->getBool("prometheus_enable")) {
+		infostream << "Exposing prometheus metrics on "
+							 << g_settings->get("prometheus_bind_address") << std::endl;
+		g_monitoring->start();
+	}
+#endif
 
 	if (cmd_args.exists("terminal")) {
 #if USE_CURSES

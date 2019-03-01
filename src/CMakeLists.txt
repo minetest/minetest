@@ -235,6 +235,15 @@ if(ENABLE_SPATIAL)
 endif(ENABLE_SPATIAL)
 
 
+# prometheus monitoring
+find_package(prometheus-cpp QUIET)
+if(prometheus-cpp_FOUND)
+	set(USE_PROMETHEUS TRUE)
+	add_compile_definitions(ENABLE_PROMETHEUS TRUE)
+	message(STATUS "prometheus-cpp enabled")
+endif()
+
+
 if(NOT MSVC)
 	set(USE_GPROF FALSE CACHE BOOL "Use -pg flag for g++")
 endif()
@@ -412,6 +421,7 @@ set(common_SRCS
 	mapsector.cpp
 	metadata.cpp
 	modchannels.cpp
+	monitoring.cpp
 	nameidmapping.cpp
 	nodedef.cpp
 	nodemetadata.cpp
@@ -554,6 +564,12 @@ if(BUILD_CLIENT)
 		${PLATFORM_LIBS}
 		${CLIENT_PLATFORM_LIBS}
 	)
+
+	# prometheus monitoring
+	if(USE_PROMETHEUS)
+		target_link_libraries(${PROJECT_NAME} prometheus-cpp::core prometheus-cpp::pull)
+	endif()
+
 	if(APPLE)
 		target_link_libraries(
 			${client_LIBS}
@@ -613,6 +629,12 @@ if(BUILD_SERVER)
 		${GMP_LIBRARY}
 		${PLATFORM_LIBS}
 	)
+
+	# prometheus monitoring
+	if(USE_PROMETHEUS)
+		target_link_libraries(${PROJECT_NAME}server prometheus-cpp::core prometheus-cpp::pull)
+	endif()
+
 	set_target_properties(${PROJECT_NAME}server PROPERTIES
 			COMPILE_DEFINITIONS "SERVER")
 	if (USE_CURSES)
