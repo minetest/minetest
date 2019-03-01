@@ -254,9 +254,6 @@ if(WIN32)
 	find_path(ZLIB_INCLUDE_DIR "zlib.h" DOC "Zlib include directory")
 	find_library(ZLIB_LIBRARIES "zlib" DOC "Path to zlib library")
 
-	set(IRRLICHT_SOURCE_DIR "${PROJECT_SOURCE_DIR}/../../irrlicht-1.7.2"
-			CACHE PATH "irrlicht dir")
-
 	# Dll's are automatically copied to the output directory by vcpkg when VCPKG_APPLOCAL_DEPS=ON
 	if(NOT VCPKG_APPLOCAL_DEPS)
 		find_file(ZLIB_DLL NAMES "zlib.dll" "zlib1.dll" DOC "Path to zlib.dll for installation (optional)")
