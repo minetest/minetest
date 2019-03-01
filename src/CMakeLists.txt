@@ -260,14 +260,7 @@ if(WIN32)
 	set(ZLIBWAPI_DLL "" CACHE FILEPATH "Path to zlibwapi DLL")
 	set(IRRLICHT_SOURCE_DIR "${PROJECT_SOURCE_DIR}/../../irrlicht-1.7.2"
 			CACHE PATH "irrlicht dir")
-	if(USE_FREETYPE)
-		set(FREETYPE_INCLUDE_DIR_ft2build "${PROJECT_SOURCE_DIR}/../../freetype2/include/"
-				CACHE PATH "freetype include dir")
-		set(FREETYPE_INCLUDE_DIR_freetype2 "${PROJECT_SOURCE_DIR}/../../freetype2/include/freetype"
-				CACHE PATH "freetype include dir")
-		set(FREETYPE_LIBRARY "${PROJECT_SOURCE_DIR}/../../freetype2/objs/win32/vc2005/freetype247.lib"
-				CACHE FILEPATH "Path to freetype247.lib")
-	endif()
+
 	if(ENABLE_SOUND)
 		set(OPENAL_DLL "" CACHE FILEPATH "Path to OpenAL32.dll for installation (optional)")
 		set(OGG_DLL "" CACHE FILEPATH "Path to libogg.dll for installation (optional)")
