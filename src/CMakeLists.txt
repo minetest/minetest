@@ -251,13 +251,9 @@ if(WIN32)
 	set(PLATFORM_LIBS ws2_32.lib version.lib shlwapi.lib ${PLATFORM_LIBS})
 
 	# Zlib stuff
-	set(ZLIB_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/../../zlib/zlib-1.2.5"
-			CACHE PATH "Zlib include directory")
-	set(ZLIB_LIBRARIES "${PROJECT_SOURCE_DIR}/../../zlib125dll/dll32/zlibwapi.lib"
-			CACHE FILEPATH "Path to zlib library (usually zlibwapi.lib)")
-	set(ZLIB_DLL "${PROJECT_SOURCE_DIR}/../../zlib125dll/dll32/zlibwapi.dll"
-			CACHE FILEPATH "Path to zlib DLL (for installation)")
-	set(ZLIBWAPI_DLL "" CACHE FILEPATH "Path to zlibwapi DLL")
+	find_path(ZLIB_INCLUDE_DIR "zlib.h" DOC "Zlib include directory")
+	find_library(ZLIB_LIBRARIES "zlib" DOC "Path to zlib library")
+
 	set(IRRLICHT_SOURCE_DIR "${PROJECT_SOURCE_DIR}/../../irrlicht-1.7.2"
 			CACHE PATH "irrlicht dir")
 
