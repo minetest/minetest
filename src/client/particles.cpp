@@ -261,7 +261,6 @@ ParticleSpawner::ParticleSpawner(
 	u16 attached_id,
 	bool vertical,
 	video::ITexture *texture,
-	u32 id,
 	const struct TileAnimationParams &anim,
 	u8 glow,
 	ParticleManager *p_manager
@@ -423,17 +422,11 @@ void ParticleManager::step(float dtime)
 void ParticleManager::stepSpawners (float dtime)
 {
 	MutexAutoLock lock(m_spawner_list_lock);
-	for (std::map<u32, ParticleSpawner*>::iterator i =
-			m_particle_spawners.begin();
-			i != m_particle_spawners.end();)
-	{
-		if (i->second->get_expired())
-		{
+	for (auto i = m_particle_spawners.begin(); i != m_particle_spawners.end();) {
+		if (i->second->get_expired()) {
 			delete i->second;
 			m_particle_spawners.erase(i++);
-		}
-		else
-		{
+		} else {
 			i->second->step(dtime, m_env);
 			++i;
 		}
@@ -443,17 +436,12 @@ void ParticleManager::stepSpawners (float dtime)
 void ParticleManager::stepParticles (float dtime)
 {
 	MutexAutoLock lock(m_particle_list_lock);
-	for(std::vector<Particle*>::iterator i = m_particles.begin();
-			i != m_particles.end();)
-	{
-		if ((*i)->get_expired())
-		{
+	for (auto i = m_particles.begin(); i != m_particles.end();) {
+		if ((*i)->get_expired()) {
 			(*i)->remove();
 			delete *i;
 			i = m_particles.erase(i);
-		}
-		else
-		{
+		} else {
 			(*i)->step(dtime);
 			++i;
 		}
@@ -464,10 +452,7 @@ void ParticleManager::clearAll ()
 {
 	MutexAutoLock lock(m_spawner_list_lock);
 	MutexAutoLock lock2(m_particle_list_lock);
-	for(std::map<u32, ParticleSpawner*>::iterator i =
-			m_particle_spawners.begin();
-			i != m_particle_spawners.end();)
-	{
+	for (auto i = m_particle_spawners.begin(); i != m_particle_spawners.end();) {
 		delete i->second;
 		m_particle_spawners.erase(i++);
 	}
@@ -509,7 +494,7 @@ void ParticleManager::handleParticleEvent(ClientEvent *event, Client *client,
 			video::ITexture *texture =
 				client->tsrc()->getTextureForMesh(*(event->add_particlespawner.texture));
 
-			ParticleSpawner *toadd = new ParticleSpawner(client, player,
+			auto toadd = new ParticleSpawner(client, player,
 					event->add_particlespawner.amount,
 					event->add_particlespawner.spawntime,
 					*event->add_particlespawner.minpos,
@@ -528,7 +513,6 @@ void ParticleManager::handleParticleEvent(ClientEvent *event, Client *client,
 					event->add_particlespawner.attached_id,
 					event->add_particlespawner.vertical,
 					texture,
-					event->add_particlespawner.id,
 					event->add_particlespawner.animation,
 					event->add_particlespawner.glow,
 					this);
@@ -544,10 +528,7 @@ void ParticleManager::handleParticleEvent(ClientEvent *event, Client *client,
 
 			{
 				MutexAutoLock lock(m_spawner_list_lock);
-				m_particle_spawners.insert(
-						std::pair<u32, ParticleSpawner*>(
-								event->add_particlespawner.id,
-								toadd));
+				m_particle_spawners[event->add_particlespawner.id] = toadd;
 			}
 			break;
 		}
