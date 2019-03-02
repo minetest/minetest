@@ -509,7 +509,6 @@ include_directories(
 	${ZLIB_INCLUDE_DIR}
 	${CMAKE_BUILD_TYPE}
 	${PNG_INCLUDE_DIR}
-	${GETTEXT_INCLUDE_DIR}
 	${SOUND_INCLUDE_DIRS}
 	${SQLITE3_INCLUDE_DIR}
 	${LUA_INCLUDE_DIR}
@@ -519,6 +518,9 @@ include_directories(
 	${PROJECT_SOURCE_DIR}/script
 )
 
+if(USE_GETTEXT)
+	include_directories(${GETTEXT_INCLUDE_DIR})
+endif()
 
 if(USE_FREETYPE)
 	include_directories(${FREETYPE_INCLUDE_DIRS})
@@ -544,7 +546,6 @@ if(BUILD_CLIENT)
 		${BZIP2_LIBRARIES}
 		${PNG_LIBRARIES}
 		${X11_LIBRARIES}
-		${GETTEXT_LIBRARY}
 		${SOUND_LIBRARIES}
 		${SQLITE3_LIBRARY}
 		${LUA_LIBRARY}
@@ -562,6 +563,12 @@ if(BUILD_CLIENT)
 	else()
 		target_link_libraries(
 			${client_LIBS}
+		)
+	endif()
+	if(USE_GETTEXT)
+		target_link_libraries(
+			${PROJECT_NAME}
+			${GETTEXT_LIBRARY}
 		)
 	endif()
 	if(USE_CURL)
@@ -608,13 +615,15 @@ if(BUILD_SERVER)
 		${ZLIB_LIBRARIES}
 		${SQLITE3_LIBRARY}
 		${JSON_LIBRARY}
-		${GETTEXT_LIBRARY}
 		${LUA_LIBRARY}
 		${GMP_LIBRARY}
 		${PLATFORM_LIBS}
 	)
 	set_target_properties(${PROJECT_NAME}server PROPERTIES
 			COMPILE_DEFINITIONS "SERVER")
+	if (USE_GETTEXT)
+		target_link_libraries(${PROJECT_NAME}server ${GETTEXT_LIBRARY})
+	endif()
 	if (USE_CURSES)
 		target_link_libraries(${PROJECT_NAME}server ${CURSES_LIBRARIES})
 	endif()
