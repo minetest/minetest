@@ -3005,7 +3005,7 @@
 #    'on_generated'.
 #    For many users the optimum setting may be '1'.
 #    type: int
-# num_emerge_threads = 0
+# num_emerge_threads = 1
 
 #
 # Online Content Repository
