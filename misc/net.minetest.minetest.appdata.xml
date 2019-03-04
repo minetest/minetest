@@ -56,6 +56,6 @@
 	<translation type="gettext">minetest</translation>
 	<update_contact>sfan5@live.de</update_contact>
 	<releases>
-		<release date="2018-06-10" version="0.4.17.1"/>
+		<release date="2019-03-04" version="5.0.0"/>
 	</releases>
 </component>
