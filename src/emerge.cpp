@@ -130,11 +130,13 @@ EmergeManager::EmergeManager(Server *server)
 
 	// If unspecified, leave a proc for the main thread and one for
 	// some other misc thread
-	s16 nthreads = 0;
-	if (!g_settings->getS16NoEx("num_emerge_threads", nthreads))
+	s16 nthreads;
+	g_settings->getS16NoEx("num_emerge_threads", nthreads);
+	if (nthreads == 0)
 		nthreads = Thread::getNumberOfProcessors() - 2;
 	if (nthreads < 1)
 		nthreads = 1;
+	verbosestream << "Using " << nthreads << " emerge threads." << std::endl;
 
 	m_qlimit_total = g_settings->getU16("emergequeue_limit_total");
 	if (!g_settings->getU16NoEx("emergequeue_limit_diskonly", m_qlimit_diskonly))
