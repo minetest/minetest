@@ -244,6 +244,20 @@ function math.sign(x, tolerance)
 end
 
 --------------------------------------------------------------------------------
+function math.factorial(x)
+	assert(x % 1 == 0 and x >= 0, "factorial expects a non-negative integer")
+	if x >= 171 then
+		-- 171! is greater than the biggest double, no need to calculate
+		return math.huge
+	end
+	local v = 1
+	for k = 2, x do
+		v = v * k
+	end
+	return v
+end
+
+--------------------------------------------------------------------------------
 function get_last_folder(text,count)
 	local parts = text:split(DIR_DELIM)
 
