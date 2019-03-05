@@ -6084,6 +6084,7 @@ Used by `minetest.register_node`.
             dug = <SimpleSoundSpec>,
             place = <SimpleSoundSpec>,
             place_failed = <SimpleSoundSpec>,
+            fall = <SimpleSoundSpec>,
         },
 
         drop = "",
