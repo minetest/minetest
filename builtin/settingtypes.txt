@@ -1925,7 +1925,7 @@ emergequeue_limit_generate (Limit of emerge queues to generate) int 64
 #    processes, especially in singleplayer and/or when running Lua code in
 #    'on_generated'.
 #    For many users the optimum setting may be '1'.
-num_emerge_threads (Number of emerge threads) int 0
+num_emerge_threads (Number of emerge threads) int 1
 
 [Online Content Repository]
 
