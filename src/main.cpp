@@ -407,14 +407,25 @@ static void setup_log_params(const Settings &cmd_args)
 	}
 
 	// Coloured log messages (see log.h)
+	std::string color_mode;
 	if (cmd_args.exists("color")) {
-		std::string mode = cmd_args.get("color");
-		if (mode == "auto")
+		color_mode = cmd_args.get("color");
+#if !defined(_WIN32)
+	} else {
+		char *color_mode_env = getenv("MT_LOGCOLOR");
+		if (color_mode_env)
+			color_mode = color_mode_env;
+#endif
+	}
+	if (color_mode != "") {
+		if (color_mode == "auto")
 			Logger::color_mode = LOG_COLOR_AUTO;
-		else if (mode == "always")
+		else if (color_mode == "always")
 			Logger::color_mode = LOG_COLOR_ALWAYS;
-		else
+		else if (color_mode == "never")
 			Logger::color_mode = LOG_COLOR_NEVER;
+		else
+			errorstream << "Invalid color mode: " << color_mode << std::endl;
 	}
 
 	// If trace is enabled, enable logging of certain things
