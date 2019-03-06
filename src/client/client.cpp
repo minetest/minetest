@@ -1230,9 +1230,8 @@ void Client::sendReady()
 			1 + 1 + 1 + 1 + 2 + sizeof(char) * strlen(g_version_hash));
 
 	pkt << (u8) VERSION_MAJOR << (u8) VERSION_MINOR << (u8) VERSION_PATCH
-		<< (u8) 0 << (u16) strlen(g_version_hash);
+		<< (u8) 0 << std::string(g_version_hash);
 
-	pkt.putRawString(g_version_hash, (u16) strlen(g_version_hash));
 	Send(&pkt);
 }
 

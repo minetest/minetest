@@ -1433,7 +1433,8 @@ void Server::handleCommand_NodeMetaFields(NetworkPacket* pkt)
 	StringMap fields;
 	for (u16 k = 0; k < num; k++) {
 		std::string fieldname;
-		*pkt >> fieldname >> fields[fieldname];
+		*pkt >> fieldname;
+		*pkt >> fields[fieldname];
 	}
 
 	RemotePlayer *player = m_env->getPlayer(pkt->getPeerId());
@@ -1483,7 +1484,8 @@ void Server::handleCommand_InventoryFields(NetworkPacket* pkt)
 	StringMap fields;
 	for (u16 k = 0; k < num; k++) {
 		std::string fieldname;
-		*pkt >> fieldname >> fields[fieldname];
+		*pkt >> fieldname;
+		*pkt >> fields[fieldname];
 	}
 
 	RemotePlayer *player = m_env->getPlayer(pkt->getPeerId());

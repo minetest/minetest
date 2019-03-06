@@ -45,7 +45,8 @@ void NetworkPacket::checkReadOffset(u32 from_offset, u32 field_size)
 	if (from_offset + field_size > m_datasize) {
 		std::stringstream ss;
 		ss << "Reading outside packet (offset: " <<
-				from_offset << ", packet size: " << getSize() << ")";
+				from_offset << ", field_size: " << field_size <<
+				"packet size: " << m_datasize << ")";
 		throw PacketError(ss.str());
 	}
 }
@@ -89,9 +90,9 @@ void NetworkPacket::putRawString(const char* src, u32 len)
 
 NetworkPacket& NetworkPacket::operator>>(std::string& dst)
 {
-	checkReadOffset(m_read_offset, sizeof(u32));
+	checkReadOffset(m_read_offset, 4);
 	u32 strLen = readU32(&m_data[m_read_offset]);
-	m_read_offset += sizeof(u32);
+	m_read_offset += 4;
 
 	dst.clear();
 
@@ -124,9 +125,9 @@ NetworkPacket& NetworkPacket::operator<<(const std::string &src)
 
 NetworkPacket& NetworkPacket::operator>>(std::wstring& dst)
 {
-	checkReadOffset(m_read_offset, sizeof(u32));
+	checkReadOffset(m_read_offset, 4);
 	u32 strLen = readU32(&m_data[m_read_offset]);
-	m_read_offset += sizeof(u32);
+	m_read_offset += 4;
 
 	dst.clear();
 

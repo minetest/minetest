@@ -1583,7 +1583,7 @@ void Server::SendShowFormspecMessage(session_t peer_id, const std::string &forms
 		if (it != m_formspec_state_data.end() && it->second == formname) {
 			m_formspec_state_data.erase(peer_id);
 		}
-		pkt << std::string();
+		pkt << "";
 	} else {
 		m_formspec_state_data[peer_id] = formname;
 		pkt << std::string(FORMSPEC_VERSION_STRING + formspec);
