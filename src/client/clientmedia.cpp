@@ -257,7 +257,7 @@ void ClientMediaDownloader::initialStep(Client *client)
 
 			// Encapsulate possible IPv6 plain address in []
 			std::string addr = client->getAddressName();
-			if (addr.find(":", 0) != std::string::npos)
+			if (addr.find(':', 0) != std::string::npos)
 				addr = '[' + addr + ']';
 			fetch_request.extra_headers.emplace_back(
 				std::string("Referer: minetest://") +
