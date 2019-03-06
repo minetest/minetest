@@ -1003,9 +1003,10 @@ void Server::handleCommand_Interact(NetworkPacket* pkt)
 	*/
 	u8 action;
 	u16 item_i;
-	*pkt >> action;
-	*pkt >> item_i;
-	std::istringstream tmp_is(pkt->readLongString(), std::ios::binary);
+	std::string data;
+	*pkt >> action >> item_i >> data;
+
+	std::istringstream tmp_is(data, std::ios::binary);
 	PointedThing pointed;
 	pointed.deSerialize(tmp_is);
 
@@ -1432,8 +1433,7 @@ void Server::handleCommand_NodeMetaFields(NetworkPacket* pkt)
 	StringMap fields;
 	for (u16 k = 0; k < num; k++) {
 		std::string fieldname;
-		*pkt >> fieldname;
-		fields[fieldname] = pkt->readLongString();
+		*pkt >> fieldname >> fields[fieldname];
 	}
 
 	RemotePlayer *player = m_env->getPlayer(pkt->getPeerId());
@@ -1483,8 +1483,7 @@ void Server::handleCommand_InventoryFields(NetworkPacket* pkt)
 	StringMap fields;
 	for (u16 k = 0; k < num; k++) {
 		std::string fieldname;
-		*pkt >> fieldname;
-		fields[fieldname] = pkt->readLongString();
+		*pkt >> fieldname >> fields[fieldname];
 	}
 
 	RemotePlayer *player = m_env->getPlayer(pkt->getPeerId());

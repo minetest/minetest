@@ -89,9 +89,9 @@ void NetworkPacket::putRawString(const char* src, u32 len)
 
 NetworkPacket& NetworkPacket::operator>>(std::string& dst)
 {
-	checkReadOffset(m_read_offset, 2);
-	u16 strLen = readU16(&m_data[m_read_offset]);
-	m_read_offset += 2;
+	checkReadOffset(m_read_offset, sizeof(u32));
+	u32 strLen = readU32(&m_data[m_read_offset]);
+	m_read_offset += sizeof(u32);
 
 	dst.clear();
 
@@ -110,35 +110,23 @@ NetworkPacket& NetworkPacket::operator>>(std::string& dst)
 
 NetworkPacket& NetworkPacket::operator<<(const std::string &src)
 {
-	u16 msgsize = src.size();
+	u32 msgsize = src.size();
 	if (msgsize > STRING_MAX_LEN) {
 		throw PacketError("String too long");
 	}
 
 	*this << msgsize;
 
-	putRawString(src.c_str(), (u32)msgsize);
+	putRawString(src.c_str(), msgsize);
 
 	return *this;
 }
 
-void NetworkPacket::putLongString(const std::string &src)
-{
-	u32 msgsize = src.size();
-	if (msgsize > LONG_STRING_MAX_LEN) {
-		throw PacketError("String too long");
-	}
-
-	*this << msgsize;
-
-	putRawString(src.c_str(), msgsize);
-}
-
 NetworkPacket& NetworkPacket::operator>>(std::wstring& dst)
 {
-	checkReadOffset(m_read_offset, 2);
-	u16 strLen = readU16(&m_data[m_read_offset]);
-	m_read_offset += 2;
+	checkReadOffset(m_read_offset, sizeof(u32));
+	u32 strLen = readU32(&m_data[m_read_offset]);
+	m_read_offset += sizeof(u32);
 
 	dst.clear();
 
@@ -149,7 +137,7 @@ NetworkPacket& NetworkPacket::operator>>(std::wstring& dst)
 	checkReadOffset(m_read_offset, strLen * 2);
 
 	dst.reserve(strLen);
-	for(u16 i=0; i<strLen; i++) {
+	for(u16 i = 0; i < strLen; i++) {
 		wchar_t c16 = readU16(&m_data[m_read_offset]);
 		dst.append(&c16, 1);
 		m_read_offset += sizeof(u16);
@@ -160,7 +148,7 @@ NetworkPacket& NetworkPacket::operator>>(std::wstring& dst)
 
 NetworkPacket& NetworkPacket::operator<<(const std::wstring &src)
 {
-	u16 msgsize = src.size();
+	u32 msgsize = src.size();
 	if (msgsize > WIDE_STRING_MAX_LEN) {
 		throw PacketError("String too long");
 	}
@@ -168,37 +156,11 @@ NetworkPacket& NetworkPacket::operator<<(const std::wstring &src)
 	*this << msgsize;
 
 	// Write string
-	for (u16 i=0; i<msgsize; i++) {
+	for (u16 i = 0; i < msgsize; i++) {
 		*this << (u16) src[i];
 	}
 
 	return *this;
-}
-
-std::string NetworkPacket::readLongString()
-{
-	checkReadOffset(m_read_offset, 4);
-	u32 strLen = readU32(&m_data[m_read_offset]);
-	m_read_offset += 4;
-
-	if (strLen == 0) {
-		return "";
-	}
-
-	if (strLen > LONG_STRING_MAX_LEN) {
-		throw PacketError("String too long");
-	}
-
-	checkReadOffset(m_read_offset, strLen);
-
-	std::string dst;
-
-	dst.reserve(strLen);
-	dst.append((char*)&m_data[m_read_offset], strLen);
-
-	m_read_offset += strLen;
-
-	return dst;
 }
 
 NetworkPacket& NetworkPacket::operator>>(char& dst)

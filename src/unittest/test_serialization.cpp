@@ -50,7 +50,7 @@ public:
 	std::wstring teststring2_w;
 	std::string teststring2_w_encoded;
 
-	static const u8 test_serialized_data[12 * 13 - 8];
+	static const u8 test_serialized_data[12 * 13 - 4];
 };
 
 static TestSerialization g_test_instance;
@@ -103,13 +103,13 @@ void TestSerialization::buildTestStrings()
 void TestSerialization::testSerializeString()
 {
 	// Test blank string
-	UASSERT(serializeString("") == mkstr("\0\0"));
+	UASSERT(serializeString("") == mkstr("\0\0\0\0"));
 
 	// Test basic string
-	UASSERT(serializeString("Hello world!") == mkstr("\0\14Hello world!"));
+	UASSERT(serializeString("Hello world!") == mkstr("\0\0\0\14Hello world!"));
 
 	// Test character range
-	UASSERT(serializeString(teststring2) == mkstr("\1\0") + teststring2);
+	UASSERT(serializeString(teststring2) == mkstr("\0\0\1\0") + teststring2);
 }
 
 void TestSerialization::testDeSerializeString()
@@ -139,15 +139,15 @@ void TestSerialization::testDeSerializeString()
 void TestSerialization::testSerializeWideString()
 {
 	// Test blank string
-	UASSERT(serializeWideString(L"") == mkstr("\0\0"));
+	UASSERT(serializeWideString(L"") == mkstr("\0\0\0\0"));
 
 	// Test basic string
 	UASSERT(serializeWideString(utf8_to_wide("Hello world!")) ==
-		mkstr("\0\14\0H\0e\0l\0l\0o\0 \0w\0o\0r\0l\0d\0!"));
+		mkstr("\0\0\0\14\0H\0e\0l\0l\0o\0 \0w\0o\0r\0l\0d\0!"));
 
 	// Test character range
 	UASSERT(serializeWideString(teststring2_w) ==
-		mkstr("\1\0") + teststring2_w_encoded);
+		mkstr("\0\0\1\0") + teststring2_w_encoded);
 }
 
 void TestSerialization::testDeSerializeWideString()
@@ -329,7 +329,6 @@ void TestSerialization::testStreamRead()
 	UASSERT(is.rdbuf()->in_avail() == 0);
 }
 
-
 void TestSerialization::testStreamWrite()
 {
 	std::ostringstream os(std::ios_base::binary);
@@ -407,7 +406,7 @@ void TestSerialization::testVecPut()
 	putV3F1000(&buf, v3f(500, 10024.2f, -192.54f));
 	putARGB8(&buf, video::SColor(255, 128, 50, 128));
 
-	putLongString(&buf, "some longer string here");
+	putString(&buf, "some longer string here");
 
 	putU16(&buf, 0xF00D);
 
@@ -420,12 +419,10 @@ void TestSerialization::testStringLengthLimits()
 {
 	std::vector<u8> buf;
 	std::string too_long(STRING_MAX_LEN + 1, 'A');
-	std::string way_too_large(LONG_STRING_MAX_LEN + 1, 'B');
 	std::wstring too_long_wide(WIDE_STRING_MAX_LEN + 1, L'C');
 
 	EXCEPTION_CHECK(SerializationError, putString(&buf, too_long));
 
-	putLongString(&buf, too_long);
 	too_long.resize(too_long.size() - 1);
 	putString(&buf, too_long);
 
@@ -708,15 +705,15 @@ void TestSerialization::testFloatFormat()
 		UASSERT(test_single(i));
 }
 
-const u8 TestSerialization::test_serialized_data[12 * 13 - 8] = {
+const u8 TestSerialization::test_serialized_data[12 * 13 - 4] = {
 	0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88, 0x99, 0xaa, 0xbb, 0xcc,
 	0xdd, 0xee, 0xff, 0x80, 0x75, 0x30, 0xff, 0xff, 0xff, 0xfa, 0xff, 0xff,
 	0xff, 0xff, 0xff, 0xff, 0xff, 0xd5, 0x00, 0x00, 0xd1, 0x1e, 0xee, 0x1e,
-	0x5b, 0xc0, 0x80, 0x00, 0x02, 0x80, 0x7F, 0xFF, 0xFD, 0x80, 0x00, 0x07,
-	0x66, 0x6f, 0x6f, 0x62, 0x61, 0x72, 0x21, 0x01, 0xf4, 0x01, 0xf4, 0x10,
-	0x6f, 0x02, 0x5c, 0xff, 0xe2, 0x00, 0x00, 0x07, 0x80, 0x00, 0x00, 0x04,
-	0x38, 0xff, 0xff, 0xfe, 0x70, 0x00, 0x61, 0xa8, 0x36, 0x11, 0x51, 0x70,
-	0x5f, 0x00, 0x08, 0x00,
+	0x5b, 0xc0, 0x80, 0x00, 0x02, 0x80, 0x7F, 0xFF, 0xFD, 0x80, 0x00, 0x00,
+	0x00, 0x07, 0x66, 0x6f, 0x6f, 0x62, 0x61, 0x72, 0x21, // first test stop here
+	0x01, 0xf4, 0x01, 0xf4, 0x10, 0x6f, 0x02, 0x5c, 0xff, 0xe2, 0x00, 0x00,
+	0x07, 0x80, 0x00, 0x00, 0x04, 0x38, 0xff, 0xff, 0xfe, 0x70, 0x00, 0x61,
+	0xa8, 0x36, 0x11, 0x51, 0x70, 0x5f, 0x00, 0x00, 0x00, 0x08, 0x00,
 	0x02, 0x00, 0x7e, 0x00,  'w', 0x00,  'o', 0x00,  'o', 0x00,  'f', 0x00, // \x02~woof~\x5455
 	0x7e, 0x54, 0x55, 0x00, 0x07, 0xa1, 0x20, 0x00, 0x98, 0xf5, 0x08, 0xff,
 	0xfd, 0x0f, 0xe4, 0xff, 0x80, 0x32, 0x80, 0x00, 0x00, 0x00, 0x17, 0x73,

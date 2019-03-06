@@ -945,7 +945,7 @@ void Client::interact(u8 action, const PointedThing& pointed)
 	std::ostringstream tmp_os(std::ios::binary);
 	pointed.serialize(tmp_os);
 
-	pkt.putLongString(tmp_os.str());
+	pkt << tmp_os.str();
 
 	writePlayerPos(myplayer, &m_env.getClientMap(), &pkt);
 
@@ -1111,8 +1111,7 @@ void Client::sendNodemetaFields(v3s16 p, const std::string &formname,
 	for (it = fields.begin(); it != fields.end(); ++it) {
 		const std::string &name = it->first;
 		const std::string &value = it->second;
-		pkt << name;
-		pkt.putLongString(value);
+		pkt << name << value;
 	}
 
 	Send(&pkt);
@@ -1131,8 +1130,7 @@ void Client::sendInventoryFields(const std::string &formname,
 	for (it = fields.begin(); it != fields.end(); ++it) {
 		const std::string &name  = it->first;
 		const std::string &value = it->second;
-		pkt << name;
-		pkt.putLongString(value);
+		pkt << name << value;
 	}
 
 	Send(&pkt);

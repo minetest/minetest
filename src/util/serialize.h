@@ -55,11 +55,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define F1000_MIN ((float)(s32)((-0x7FFFFFFF - 1) / FIXEDPOINT_FACTOR))
 #define F1000_MAX ((float)(s32)((0x7FFFFFFF) / FIXEDPOINT_FACTOR))
 
-#define STRING_MAX_LEN 0xFFFF
-#define WIDE_STRING_MAX_LEN 0xFFFF
-// 64 MB ought to be enough for anybody - Billy G.
-#define LONG_STRING_MAX_LEN (64 * 1024 * 1024)
-
+#define STRING_MAX_LEN (64 * 1024 * 1024)
+#define WIDE_STRING_MAX_LEN (64 * 1024 * 1024)
 
 extern FloatType g_serialize_f32_type;
 
@@ -290,7 +287,7 @@ inline void writeS8(u8 *data, s8 i)
 
 inline void writeS16(u8 *data, s16 i)
 {
-	writeU16(data, (u16)i); 
+	writeU16(data, (u16)i);
 }
 
 inline void writeS32(u8 *data, s32 i)
@@ -678,7 +675,7 @@ inline void putString(std::vector<u8> *dest, const std::string &val)
 	if (val.size() > STRING_MAX_LEN)
 		throw SerializationError("String too long");
 
-	putU16(dest, val.size());
+	putU32(dest, val.size());
 	dest->insert(dest->end(), val.begin(), val.end());
 }
 
@@ -687,21 +684,8 @@ inline void putWideString(std::vector<u8> *dest, const std::wstring &val)
 	if (val.size() > WIDE_STRING_MAX_LEN)
 		throw SerializationError("String too long");
 
-	putU16(dest, val.size());
+	putU32(dest, val.size());
 	for (size_t i = 0; i != val.size(); i++)
 		putU16(dest, val[i]);
 }
 
-inline void putLongString(std::vector<u8> *dest, const std::string &val)
-{
-	if (val.size() > LONG_STRING_MAX_LEN)
-		throw SerializationError("String too long");
-
-	putU32(dest, val.size());
-	dest->insert(dest->end(), val.begin(), val.end());
-}
-
-inline void putRawData(std::vector<u8> *dest, const void *src, size_t len)
-{
-	dest->insert(dest->end(), (u8 *)src, (u8 *)src + len);
-}

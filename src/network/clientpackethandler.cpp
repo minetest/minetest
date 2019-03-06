@@ -251,7 +251,9 @@ void Client::handleCommand_NodemetaChanged(NetworkPacket *pkt)
 	if (pkt->getSize() < 1)
 		return;
 
-	std::istringstream is(pkt->readLongString(), std::ios::binary);
+	std::string data;
+	*pkt >> data;
+	std::istringstream is(data, std::ios::binary);
 	std::stringstream sstr;
 	decompressZlib(is, sstr);
 
@@ -454,8 +456,9 @@ void Client::handleCommand_ActiveObjectRemoveAdd(NetworkPacket* pkt)
 		*pkt >> added_count;
 
 		for (u16 i = 0; i < added_count; i++) {
-			*pkt >> id >> type;
-			m_env.addActiveObject(id, type, pkt->readLongString());
+			std::string ao_data;
+			*pkt >> id >> type >> ao_data;
+			m_env.addActiveObject(id, type, ao_data);
 		}
 	} catch (PacketError &e) {
 		infostream << "handleCommand_ActiveObjectRemoveAdd: " << e.what()
@@ -700,14 +703,11 @@ void Client::handleCommand_Media(NetworkPacket* pkt)
 	sanity_check(!m_mesh_update_thread.isRunning());
 
 	for (u32 i=0; i < num_files; i++) {
-		std::string name;
+		std::string name, data;
 
-		*pkt >> name;
+		*pkt >> name >> data;
 
-		std::string data = pkt->readLongString();
-
-		m_media_downloader->conventionalTransferDone(
-				name, data, this);
+		m_media_downloader->conventionalTransferDone(name, data, this);
 	}
 }
 
@@ -721,7 +721,9 @@ void Client::handleCommand_NodeDef(NetworkPacket* pkt)
 	sanity_check(!m_mesh_update_thread.isRunning());
 
 	// Decompress node definitions
-	std::istringstream tmp_is(pkt->readLongString(), std::ios::binary);
+	std::string data;
+	*pkt >> data;
+	std::istringstream tmp_is(data, std::ios::binary);
 	std::ostringstream tmp_os;
 	decompressZlib(tmp_is, tmp_os);
 
@@ -741,7 +743,9 @@ void Client::handleCommand_ItemDef(NetworkPacket* pkt)
 	sanity_check(!m_mesh_update_thread.isRunning());
 
 	// Decompress item definitions
-	std::istringstream tmp_is(pkt->readLongString(), std::ios::binary);
+	std::string data;
+	*pkt >> data;
+	std::istringstream tmp_is(data, std::ios::binary);
 	std::ostringstream tmp_os;
 	decompressZlib(tmp_is, tmp_os);
 
@@ -867,7 +871,7 @@ void Client::handleCommand_InventoryFormSpec(NetworkPacket* pkt)
 	assert(player != NULL);
 
 	// Store formspec in LocalPlayer
-	player->inventory_formspec = pkt->readLongString();
+	*pkt >> player->inventory_formspec;
 }
 
 void Client::handleCommand_DetachedInventory(NetworkPacket* pkt)
@@ -903,10 +907,10 @@ void Client::handleCommand_DetachedInventory(NetworkPacket* pkt)
 
 void Client::handleCommand_ShowFormSpec(NetworkPacket* pkt)
 {
-	std::string formspec = pkt->readLongString();
+	std::string formspec;
 	std::string formname;
 
-	*pkt >> formname;
+	*pkt >> formspec >> formname;
 
 	ClientEvent *event = new ClientEvent();
 	event->type = CE_SHOW_FORMSPEC;
@@ -978,14 +982,11 @@ void Client::handleCommand_AddParticleSpawner(NetworkPacket* pkt)
 	float maxsize;
 	bool collisiondetection;
 	u32 server_id;
+	std::string texture;
 
 	*pkt >> amount >> spawntime >> minpos >> maxpos >> minvel >> maxvel
 		>> minacc >> maxacc >> minexptime >> maxexptime >> minsize
-		>> maxsize >> collisiondetection;
-
-	std::string texture = pkt->readLongString();
-
-	*pkt >> server_id;
+		>> maxsize >> collisiondetection >> texture >> server_id;
 
 	bool vertical          = false;
 	bool collision_removal = false;

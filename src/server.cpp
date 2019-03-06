@@ -1498,7 +1498,7 @@ void Server::SendItemDef(session_t peer_id,
 	itemdef->serialize(tmp_os, protocol_version);
 	std::ostringstream tmp_os2(std::ios::binary);
 	compressZlib(tmp_os.str(), tmp_os2);
-	pkt.putLongString(tmp_os2.str());
+	pkt << tmp_os2.str();
 
 	// Make data buffer
 	verbosestream << "Server: Sending item definitions to id(" << peer_id
@@ -1522,7 +1522,7 @@ void Server::SendNodeDef(session_t peer_id,
 	std::ostringstream tmp_os2(std::ios::binary);
 	compressZlib(tmp_os.str(), tmp_os2);
 
-	pkt.putLongString(tmp_os2.str());
+	pkt << tmp_os2.str();
 
 	// Make data buffer
 	verbosestream << "Server: Sending node definitions to id(" << peer_id
@@ -1583,10 +1583,10 @@ void Server::SendShowFormspecMessage(session_t peer_id, const std::string &forms
 		if (it != m_formspec_state_data.end() && it->second == formname) {
 			m_formspec_state_data.erase(peer_id);
 		}
-		pkt.putLongString("");
+		pkt << std::string();
 	} else {
 		m_formspec_state_data[peer_id] = formname;
-		pkt.putLongString(FORMSPEC_VERSION_STRING + formspec);
+		pkt << std::string(FORMSPEC_VERSION_STRING + formspec);
 	}
 	pkt << formname;
 
@@ -1631,8 +1631,7 @@ void Server::SendSpawnParticle(session_t peer_id, u16 protocol_version,
 	NetworkPacket pkt(TOCLIENT_SPAWN_PARTICLE, 0, peer_id);
 
 	pkt << pos << velocity << acceleration << expirationtime
-			<< size << collisiondetection;
-	pkt.putLongString(texture);
+			<< size << collisiondetection << texture;
 	pkt << vertical;
 	pkt << collision_removal;
 	// This is horrible but required (why are there two ways to serialize pkts?)
@@ -1676,9 +1675,7 @@ void Server::SendAddParticleSpawner(session_t peer_id, u16 protocol_version,
 			<< minacc << maxacc << minexptime << maxexptime << minsize
 			<< maxsize << collisiondetection;
 
-	pkt.putLongString(texture);
-
-	pkt << id << vertical;
+	pkt << texture << id << vertical;
 	pkt << collision_removal;
 	pkt << attached_id;
 	// This is horrible but required
@@ -1915,7 +1912,7 @@ void Server::SendPlayerInventoryFormspec(session_t peer_id)
 		return;
 
 	NetworkPacket pkt(TOCLIENT_INVENTORY_FORMSPEC, 0, peer_id);
-	pkt.putLongString(FORMSPEC_VERSION_STRING + player->inventory_formspec);
+	pkt << std::string(FORMSPEC_VERSION_STRING + player->inventory_formspec);
 	Send(&pkt);
 }
 
@@ -2220,7 +2217,7 @@ void Server::sendMetadataChanged(const std::list<v3s16> &meta_updates, float far
 		compressZlib(os.str(), oss);
 
 		NetworkPacket pkt(TOCLIENT_NODEMETA_CHANGED, 0);
-		pkt.putLongString(oss.str());
+		pkt << oss.str();
 		m_clients.send(i, 0, &pkt, true);
 
 		meta_updates_list.clear();
@@ -2534,8 +2531,7 @@ void Server::sendRequestedMedia(session_t peer_id,
 		pkt << num_bunches << i << (u32) file_bunches[i].size();
 
 		for (const SendableMedia &j : file_bunches[i]) {
-			pkt << j.name;
-			pkt.putLongString(j.data);
+			pkt << j.name << j.data;
 		}
 
 		verbosestream << "Server::sendRequestedMedia(): bunch "

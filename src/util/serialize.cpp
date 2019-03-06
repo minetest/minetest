@@ -36,8 +36,8 @@ FloatType g_serialize_f32_type = FLOATTYPE_UNKNOWN;
 
 bool BufReader::getStringNoEx(std::string *val)
 {
-	u16 num_chars;
-	if (!getU16NoEx(&num_chars))
+	u32 num_chars;
+	if (!getU32NoEx(&num_chars))
 		return false;
 
 	if (pos + num_chars > size) {
@@ -53,8 +53,8 @@ bool BufReader::getStringNoEx(std::string *val)
 
 bool BufReader::getWideStringNoEx(std::wstring *val)
 {
-	u16 num_chars;
-	if (!getU16NoEx(&num_chars))
+	u32 num_chars;
+	if (!getU32NoEx(&num_chars))
 		return false;
 
 	if (pos + num_chars * 2 > size) {
@@ -106,13 +106,13 @@ bool BufReader::getRawDataNoEx(void *val, size_t len)
 std::string serializeString(const std::string &plain)
 {
 	std::string s;
-	char buf[2];
+	char buf[4];
 
 	if (plain.size() > STRING_MAX_LEN)
 		throw SerializationError("String too long for serializeString");
 
-	writeU16((u8 *)&buf[0], plain.size());
-	s.append(buf, 2);
+	writeU32((u8 *)&buf[0], plain.size());
+	s.append(buf, sizeof(u32));
 
 	s.append(plain);
 	return s;
@@ -121,13 +121,13 @@ std::string serializeString(const std::string &plain)
 std::string deSerializeString(std::istream &is)
 {
 	std::string s;
-	char buf[2];
+	char buf[4];
 
-	is.read(buf, 2);
-	if (is.gcount() != 2)
+	is.read(buf, sizeof(u32));
+	if (is.gcount() != sizeof(u32))
 		throw SerializationError("deSerializeString: size not read");
 
-	u16 s_size = readU16((u8 *)buf);
+	u32 s_size = readU32((u8 *)buf);
 	if (s_size == 0)
 		return s;
 
@@ -148,13 +148,13 @@ std::string deSerializeString(std::istream &is)
 std::string serializeWideString(const std::wstring &plain)
 {
 	std::string s;
-	char buf[2];
+	char buf[4];
 
 	if (plain.size() > WIDE_STRING_MAX_LEN)
 		throw SerializationError("String too long for serializeWideString");
 
-	writeU16((u8 *)buf, plain.size());
-	s.append(buf, 2);
+	writeU32((u8 *)buf, plain.size());
+	s.append(buf, 4);
 
 	for (wchar_t i : plain) {
 		writeU16((u8 *)buf, i);
@@ -166,13 +166,13 @@ std::string serializeWideString(const std::wstring &plain)
 std::wstring deSerializeWideString(std::istream &is)
 {
 	std::wstring s;
-	char buf[2];
+	char buf[4];
 
-	is.read(buf, 2);
-	if (is.gcount() != 2)
+	is.read(buf, sizeof(u32));
+	if (is.gcount() != sizeof(u32))
 		throw SerializationError("deSerializeWideString: size not read");
 
-	u16 s_size = readU16((u8 *)buf);
+	u32 s_size = readU32((u8 *)buf);
 	if (s_size == 0)
 		return s;
 
@@ -198,7 +198,7 @@ std::string serializeLongString(const std::string &plain)
 {
 	char buf[4];
 
-	if (plain.size() > LONG_STRING_MAX_LEN)
+	if (plain.size() > STRING_MAX_LEN)
 		throw SerializationError("String too long for serializeLongString");
 
 	writeU32((u8*)&buf[0], plain.size());
@@ -222,7 +222,7 @@ std::string deSerializeLongString(std::istream &is)
 		return s;
 
 	// We don't really want a remote attacker to force us to allocate 4GB...
-	if (s_size > LONG_STRING_MAX_LEN) {
+	if (s_size > STRING_MAX_LEN) {
 		throw SerializationError("deSerializeLongString: "
 			"string too long: " + itos(s_size) + " bytes");
 	}
