@@ -895,8 +895,10 @@ void Client::handleCommand_DetachedInventory(NetworkPacket* pkt)
 		inv = inv_it->second;
 	}
 
-	std::string contents;
-	*pkt >> contents;
+	u16 ignore;
+	*pkt >> ignore; // this used to be the length of the following string, ignore it
+
+	std::string contents = pkt->getRemainingString();
 	std::istringstream is(contents, std::ios::binary);
 	inv->deSerialize(is);
 }
