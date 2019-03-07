@@ -332,11 +332,11 @@ end
 --------------------------------------------------------------------------------
 function pkgmgr.get_dependencies(path)
 	if path == nil then
-		return "", ""
+		return {}, {}
 	end
 
 	local info = core.get_content_info(path)
-	return table.concat(info.depends or {}, ","), table.concat(info.optional_depends or {}, ",")
+	return info.depends or {}, info.optional_depends or {}
 end
 
 ----------- tests whether all of the mods in the modpack are enabled -----------
