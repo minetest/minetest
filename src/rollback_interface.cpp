@@ -139,7 +139,12 @@ bool RollbackAction::applyRevert(Map *map, InventoryManager *imgr, IGameDef *gam
 				return false;
 			}
 			// Create rollback node
-			MapNode n(ndef, n_old.name, n_old.param1, n_old.param2);
+			content_t id = CONTENT_IGNORE;
+			if (!ndef->getId(n_old.name, id)) {
+				// The old node is not registered
+				return false;
+			}
+			MapNode n(id, n_old.param1, n_old.param2);
 			// Set rollback node
 			try {
 				if (!map->addNodeWithEvent(p, n)) {
@@ -203,7 +208,7 @@ bool RollbackAction::applyRevert(Map *map, InventoryManager *imgr, IGameDef *gam
 					<< inventory_location << std::endl;
 				return false;
 			}
-			
+
 			// If item was added, take away item, otherwise add removed item
 			if (inventory_add) {
 				// Silently ignore different current item

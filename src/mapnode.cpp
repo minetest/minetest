@@ -44,18 +44,6 @@ static const u8 rot_to_wallmounted[] = {
 	MapNode
 */
 
-// Create directly from a nodename
-// If name is unknown, sets CONTENT_IGNORE
-MapNode::MapNode(const NodeDefManager *ndef, const std::string &name,
-		u8 a_param1, u8 a_param2)
-{
-	content_t id = CONTENT_IGNORE;
-	ndef->getId(name, id);
-	param0 = id;
-	param1 = a_param1;
-	param2 = a_param2;
-}
-
 void MapNode::getColor(const ContentFeatures &f, video::SColor *color) const
 {
 	if (f.palette) {
