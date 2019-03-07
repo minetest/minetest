@@ -2576,7 +2576,10 @@ void Server::sendDetachedInventory(const std::string &name, session_t peer_id)
 		// Serialization & NetworkPacket isn't a love story
 		std::ostringstream os(std::ios_base::binary);
 		inv_it->second->serialize(os);
-		pkt << os.str();
+
+		std::string os_str = os.str();
+		pkt << static_cast<u16>(os_str.size()); // HACK: to keep compatibility with 5.0.0 clients
+		pkt.putRawString(os_str);
 	}
 
 	if (peer_id == PEER_ID_INEXISTENT)
