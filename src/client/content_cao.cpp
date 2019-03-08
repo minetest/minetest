@@ -1531,8 +1531,11 @@ void GenericCAO::processMessage(const std::string &data)
 		setAttachment(parent_id, bone, position, rotation);
 
 		// localplayer itself can't be attached to localplayer
-		if (!m_is_local_player)
-			m_is_visible = !m_attached_to_local;
+		if (!m_is_local_player) {
+			// Objects attached to the local player should be hidden in first person
+			m_is_visible = (!m_attached_to_local) ||
+					(m_client->getCamera()->getCameraMode() != CAMERA_MODE_FIRST);
+		}
 	} else if (cmd == GENERIC_CMD_PUNCHED) {
 		u16 result_hp = readU16(is);
 
