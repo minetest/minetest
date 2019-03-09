@@ -141,7 +141,7 @@ protected:
 
 	void objectrefGetOrCreate(lua_State *L, ServerActiveObject *cobj);
 
-	void pushPlayerHPChangeReason(lua_State *L, const PlayerHPChangeReason& reason);
+	void pushPlayerHPChangeReason(lua_State *L, PlayerHPChangeReason& reason);
 
 	std::recursive_mutex m_luastackmutex;
 	std::string     m_last_run_mod;

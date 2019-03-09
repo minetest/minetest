@@ -382,11 +382,12 @@ void ScriptApiBase::objectrefGetOrCreate(lua_State *L,
 	}
 }
 
-void ScriptApiBase::pushPlayerHPChangeReason(lua_State *L, const PlayerHPChangeReason &reason)
+void ScriptApiBase::pushPlayerHPChangeReason(lua_State *L, PlayerHPChangeReason &reason)
 {
 	if (reason.lua_reference >= 0) {
 		lua_rawgeti(L, LUA_REGISTRYINDEX, reason.lua_reference);
 		luaL_unref(L, LUA_REGISTRYINDEX, reason.lua_reference);
+		reason.lua_reference = -1;
 	} else
 		lua_newtable(L);
 

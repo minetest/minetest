@@ -646,8 +646,8 @@ int LuaEntitySAO::punch(v3f dir,
 
 	if (!damage_handled) {
 		if (result.did_punch) {
-			setHP((s32)getHP() - result.damage,
-				PlayerHPChangeReason(PlayerHPChangeReason::SET_HP));
+			PlayerHPChangeReason reason(PlayerHPChangeReason::SET_HP);
+			setHP((s32)getHP() - result.damage, reason);
 
 			if (result.damage > 0) {
 				std::string punchername = puncher ? puncher->getDescription() : "nil";
@@ -715,7 +715,7 @@ std::string LuaEntitySAO::getDescription()
 	return os.str();
 }
 
-void LuaEntitySAO::setHP(s32 hp, const PlayerHPChangeReason &reason)
+void LuaEntitySAO::setHP(s32 hp, PlayerHPChangeReason &reason)
 {
 	m_hp = rangelim(hp, 0, U16_MAX);
 }
@@ -1294,8 +1294,8 @@ int PlayerSAO::punch(v3f dir,
 				hitparams.hp);
 
 	if (!damage_handled) {
-		setHP((s32)getHP() - (s32)hitparams.hp,
-				PlayerHPChangeReason(PlayerHPChangeReason::PLAYER_PUNCH, puncher));
+		PlayerHPChangeReason reason(PlayerHPChangeReason::PLAYER_PUNCH, puncher);
+		setHP((s32)getHP() - (s32)hitparams.hp, reason);
 	} else { // override client prediction
 		if (puncher->getType() == ACTIVEOBJECT_TYPE_PLAYER) {
 			std::string str = gob_cmd_punched(getHP());
@@ -1318,7 +1318,7 @@ int PlayerSAO::punch(v3f dir,
 	return hitparams.wear;
 }
 
-void PlayerSAO::setHP(s32 hp, const PlayerHPChangeReason &reason)
+void PlayerSAO::setHP(s32 hp, PlayerHPChangeReason &reason)
 {
 	s32 oldhp = m_hp;
 

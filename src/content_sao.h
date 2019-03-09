@@ -127,7 +127,7 @@ public:
 	void moveTo(v3f pos, bool continuous);
 	float getMinimumSavedMovement();
 	std::string getDescription();
-	void setHP(s32 hp, const PlayerHPChangeReason &reason);
+	void setHP(s32 hp, PlayerHPChangeReason &reason);
 	u16 getHP() const;
 	/* LuaEntitySAO-specific */
 	void setVelocity(v3f velocity);
@@ -258,7 +258,7 @@ public:
 		ServerActiveObject *puncher,
 		float time_from_last_punch);
 	void rightClick(ServerActiveObject *clicker) {}
-	void setHP(s32 hp, const PlayerHPChangeReason &reason);
+	void setHP(s32 hp, PlayerHPChangeReason &reason);
 	void setHPRaw(u16 hp) { m_hp = hp; }
 	s16 readDamage();
 	u16 getBreath() const { return m_breath; }

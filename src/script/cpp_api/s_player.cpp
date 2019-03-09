@@ -39,7 +39,7 @@ void ScriptApiPlayer::on_newplayer(ServerActiveObject *player)
 	runCallbacks(1, RUN_CALLBACKS_MODE_FIRST);
 }
 
-void ScriptApiPlayer::on_dieplayer(ServerActiveObject *player, const PlayerHPChangeReason &reason)
+void ScriptApiPlayer::on_dieplayer(ServerActiveObject *player, PlayerHPChangeReason &reason)
 {
 	SCRIPTAPI_PRECHECKHEADER
 
@@ -78,7 +78,7 @@ bool ScriptApiPlayer::on_punchplayer(ServerActiveObject *player,
 }
 
 s32 ScriptApiPlayer::on_player_hpchange(ServerActiveObject *player,
-	s32 hp_change, const PlayerHPChangeReason &reason)
+	s32 hp_change, PlayerHPChangeReason &reason)
 {
 	SCRIPTAPI_PRECHECKHEADER
 

@@ -331,7 +331,7 @@ public:
 
 	void printToConsoleOnly(const std::string &text);
 
-	void SendPlayerHPOrDie(PlayerSAO *player, const PlayerHPChangeReason &reason);
+	void SendPlayerHPOrDie(PlayerSAO *player, PlayerHPChangeReason &reason);
 	void SendPlayerBreath(PlayerSAO *sao);
 	void SendInventory(PlayerSAO* playerSAO);
 	void SendMovePlayer(session_t peer_id);
@@ -473,7 +473,7 @@ private:
 		Something random
 	*/
 
-	void DiePlayer(session_t peer_id, const PlayerHPChangeReason &reason);
+	void DiePlayer(session_t peer_id, PlayerHPChangeReason &reason);
 	void RespawnPlayer(session_t peer_id);
 	void DeleteClient(session_t peer_id, ClientDeletionReason reason);
 	void UpdateCrafting(RemotePlayer *player);

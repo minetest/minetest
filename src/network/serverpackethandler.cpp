@@ -1178,14 +1178,15 @@ void Server::handleCommand_Interact(NetworkPacket* pkt)
 			// If the object is a player and its HP changed
 			if (src_original_hp != pointed_object->getHP() &&
 					pointed_object->getType() == ACTIVEOBJECT_TYPE_PLAYER) {
-				SendPlayerHPOrDie((PlayerSAO *)pointed_object,
-						PlayerHPChangeReason(PlayerHPChangeReason::PLAYER_PUNCH, playersao));
+				PlayerHPChangeReason reason(PlayerHPChangeReason::PLAYER_PUNCH, playersao);
+				SendPlayerHPOrDie((PlayerSAO *)pointed_object, reason);
 			}
 
 			// If the puncher is a player and its HP changed
-			if (dst_origin_hp != playersao->getHP())
-				SendPlayerHPOrDie(playersao,
-						PlayerHPChangeReason(PlayerHPChangeReason::PLAYER_PUNCH, pointed_object));
+			if (dst_origin_hp != playersao->getHP()) {
+				PlayerHPChangeReason reason(PlayerHPChangeReason::PLAYER_PUNCH, pointed_object);
+				SendPlayerHPOrDie(playersao, reason);
+			}
 		}
 
 	} // action == 0

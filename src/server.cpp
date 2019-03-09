@@ -1068,11 +1068,12 @@ PlayerSAO* Server::StageTwoClientInit(session_t peer_id)
 	SendInventory(playersao);
 
 	// Send HP or death screen
-	if (playersao->isDead())
+	if (playersao->isDead()) {
 		SendDeathscreen(peer_id, false, v3f(0,0,0));
-	else
-		SendPlayerHPOrDie(playersao,
-				PlayerHPChangeReason(PlayerHPChangeReason::SET_HP));
+	} else {
+		PlayerHPChangeReason reason(PlayerHPChangeReason::SET_HP);
+		SendPlayerHPOrDie(playersao, reason);
+	}
 
 	// Send Breath
 	SendPlayerBreath(playersao);
@@ -1426,7 +1427,7 @@ void Server::SendMovement(session_t peer_id)
 	Send(&pkt);
 }
 
-void Server::SendPlayerHPOrDie(PlayerSAO *playersao, const PlayerHPChangeReason &reason)
+void Server::SendPlayerHPOrDie(PlayerSAO *playersao, PlayerHPChangeReason &reason)
 {
 	if (!g_settings->getBool("enable_damage"))
 		return;
@@ -2601,7 +2602,7 @@ void Server::sendDetachedInventories(session_t peer_id)
 	Something random
 */
 
-void Server::DiePlayer(session_t peer_id, const PlayerHPChangeReason &reason)
+void Server::DiePlayer(session_t peer_id, PlayerHPChangeReason &reason)
 {
 	PlayerSAO *playersao = getPlayerSAO(peer_id);
 	// In some rare cases this can be NULL -- if the player is disconnected
@@ -2632,8 +2633,9 @@ void Server::RespawnPlayer(session_t peer_id)
 			<< playersao->getPlayer()->getName()
 			<< " respawns" << std::endl;
 
-	playersao->setHP(playersao->accessObjectProperties()->hp_max,
-			PlayerHPChangeReason(PlayerHPChangeReason::RESPAWN));
+	PlayerHPChangeReason reason(PlayerHPChangeReason::RESPAWN);
+	playersao->setHP(playersao->accessObjectProperties()->hp_max, reason);
+
 	playersao->setBreath(playersao->accessObjectProperties()->breath_max);
 
 	bool repositioned = m_script->on_respawnplayer(playersao);

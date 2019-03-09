@@ -35,7 +35,7 @@ public:
 	virtual ~ScriptApiPlayer() = default;
 
 	void on_newplayer(ServerActiveObject *player);
-	void on_dieplayer(ServerActiveObject *player, const PlayerHPChangeReason &reason);
+	void on_dieplayer(ServerActiveObject *player, PlayerHPChangeReason &reason);
 	bool on_respawnplayer(ServerActiveObject *player);
 	bool on_prejoinplayer(const std::string &name, const std::string &ip,
 			std::string *reason);
@@ -47,7 +47,7 @@ public:
 			float time_from_last_punch, const ToolCapabilities *toolcap,
 			v3f dir, s16 damage);
 	s32 on_player_hpchange(ServerActiveObject *player, s32 hp_change,
-			const PlayerHPChangeReason &reason);
+			PlayerHPChangeReason &reason);
 	void on_playerReceiveFields(ServerActiveObject *player,
 			const std::string &formname, const StringMap &fields);
 	void on_auth_failure(const std::string &name, const std::string &ip);
