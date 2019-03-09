@@ -301,3 +301,15 @@ void GameUI::toggleProfiler()
 		showTranslatedStatusText("Profiler hidden");
 	}
 }
+
+
+void GameUI::deleteFormspec()
+{
+	if (m_formspec)
+		m_formspec->quitMenu();
+
+	delete m_formspec;
+	m_formspec = nullptr;
+
+	m_formname.clear();
+}

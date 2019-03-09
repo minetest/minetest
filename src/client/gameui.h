@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #pragma once
 
 #include <IGUIEnvironment.h>
+#include "gui/guiFormSpecMenu.h"
 #include "util/enriched_string.h"
 #include "util/pointedthing.h"
 #include "game.h"
@@ -88,6 +89,16 @@ public:
 	void toggleHud();
 	void toggleProfiler();
 
+	GUIFormSpecMenu *&updateFormspec(const std::string &formname)
+	{
+		m_formname = formname;
+		return m_formspec;
+	}
+
+	const std::string &getFormspecName() { return m_formname; }
+	GUIFormSpecMenu *&getFormspecGUI() { return m_formspec; }
+	void deleteFormspec();
+
 private:
 	Flags m_flags;
 
@@ -107,4 +118,9 @@ private:
 	gui::IGUIStaticText *m_guitext_profiler = nullptr; // Profiler text
 	u8 m_profiler_current_page = 0;
 	const u8 m_profiler_max_page = 3;
+
+	// Default: "". If other than "": Empty show_formspec packets will only
+	// close the formspec when the formname matches
+	std::string m_formname;
+	GUIFormSpecMenu *m_formspec = nullptr;
 };

@@ -827,10 +827,6 @@ private:
 
 	ChatBackend *chat_backend = nullptr;
 
-	GUIFormSpecMenu *current_formspec = nullptr;
-	//default: "". If other than "", empty show_formspec packets will only close the formspec when the formname matches
-	std::string cur_formname;
-
 	EventManager *eventmgr = nullptr;
 	QuicktuneShortcutter *quicktune = nullptr;
 	bool registration_confirmation_shown = false;
@@ -1143,8 +1139,9 @@ void Game::shutdown()
 		driver->setRenderTarget(irr::video::ERT_STEREO_BOTH_BUFFERS);
 	}
 #endif
-	if (current_formspec)
-		current_formspec->quitMenu();
+	auto formspec = m_game_ui->getFormspecGUI();
+	if (formspec)
+		formspec->quitMenu();
 
 	showOverlayMessage(N_("Shutting down..."), 0, 0, false);
 
@@ -1163,10 +1160,7 @@ void Game::shutdown()
 		g_menumgr.deletingMenu(g_menumgr.m_stack.front());
 	}
 
-	if (current_formspec) {
-		current_formspec->drop();
-		current_formspec = NULL;
-	}
+	m_game_ui->deleteFormspec();
 
 	chat_backend->addMessage(L"", L"# Disconnected.");
 	chat_backend->addMessage(L"", L"");
@@ -1853,8 +1847,9 @@ void Game::processUserInput(f32 dtime)
 	input->step(dtime);
 
 #ifdef __ANDROID__
-	if (current_formspec != NULL)
-		current_formspec->getAndroidUIInput();
+	auto formspec = m_game_ui->getFormspecGUI();
+	if (formspec)
+		formspec->getAndroidUIInput();
 	else
 		handleAndroidChatInput();
 #endif
@@ -2047,10 +2042,11 @@ void Game::openInventory()
 	if (!client->moddingEnabled()
 			|| !client->getScript()->on_inventory_open(fs_src->m_client->getInventory(inventoryloc))) {
 		TextDest *txt_dst = new TextDestPlayerInventory(client);
-		GUIFormSpecMenu::create(current_formspec, client, &input->joystick, fs_src,
+		auto *&formspec = m_game_ui->updateFormspec("");
+		GUIFormSpecMenu::create(formspec, client, &input->joystick, fs_src,
 			txt_dst, client->getFormspecPrepend());
-		cur_formname = "";
-		current_formspec->setFormSpec(fs_src->getForm(), inventoryloc);
+
+		formspec->setFormSpec(fs_src->getForm(), inventoryloc);
 	}
 }
 
@@ -2571,9 +2567,10 @@ void Game::handleClientEvent_Deathscreen(ClientEvent *event, CameraOrientation *
 void Game::handleClientEvent_ShowFormSpec(ClientEvent *event, CameraOrientation *cam)
 {
 	if (event->show_formspec.formspec->empty()) {
-		if (current_formspec && (event->show_formspec.formname->empty()
-			|| *(event->show_formspec.formname) == cur_formname)) {
-			current_formspec->quitMenu();
+		auto formspec = m_game_ui->getFormspecGUI();
+		if (formspec && (event->show_formspec.formname->empty()
+				|| *(event->show_formspec.formname) == m_game_ui->getFormspecName())) {
+			formspec->quitMenu();
 		}
 	} else {
 		FormspecFormSource *fs_src =
@@ -2581,9 +2578,9 @@ void Game::handleClientEvent_ShowFormSpec(ClientEvent *event, CameraOrientation 
 		TextDestPlayerInventory *txt_dst =
 			new TextDestPlayerInventory(client, *(event->show_formspec.formname));
 
-		GUIFormSpecMenu::create(current_formspec, client, &input->joystick,
+		auto *&formspec = m_game_ui->updateFormspec(*(event->show_formspec.formname));
+		GUIFormSpecMenu::create(formspec, client, &input->joystick,
 			fs_src, txt_dst, client->getFormspecPrepend());
-		cur_formname = *(event->show_formspec.formname);
 	}
 
 	delete event->show_formspec.formspec;
@@ -2595,7 +2592,7 @@ void Game::handleClientEvent_ShowLocalFormSpec(ClientEvent *event, CameraOrienta
 	FormspecFormSource *fs_src = new FormspecFormSource(*event->show_formspec.formspec);
 	LocalFormspecHandler *txt_dst =
 		new LocalFormspecHandler(*event->show_formspec.formname, client);
-	GUIFormSpecMenu::create(current_formspec, client, &input->joystick,
+	GUIFormSpecMenu::create(m_game_ui->getFormspecGUI(), client, &input->joystick,
 			fs_src, txt_dst, client->getFormspecPrepend());
 
 	delete event->show_formspec.formspec;
@@ -3257,11 +3254,11 @@ void Game::handlePointingAtNode(const PointedThing &pointed,
 				&client->getEnv().getClientMap(), nodepos);
 			TextDest *txt_dst = new TextDestNodeMetadata(nodepos, client);
 
-			GUIFormSpecMenu::create(current_formspec, client, &input->joystick, fs_src,
+			auto *&formspec = m_game_ui->updateFormspec("");
+			GUIFormSpecMenu::create(formspec, client, &input->joystick, fs_src,
 				txt_dst, client->getFormspecPrepend());
-			cur_formname.clear();
 
-			current_formspec->setFormSpec(meta->getString("formspec"), inventoryloc);
+			formspec->setFormSpec(meta->getString("formspec"), inventoryloc);
 		} else {
 			// Report right click to server
 
@@ -3829,13 +3826,26 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 	   1. Delete formspec menu reference if menu was removed
 	   2. Else, make sure formspec menu is on top
 	*/
-	if (current_formspec) {
-		if (current_formspec->getReferenceCount() == 1) {
-			current_formspec->drop();
-			current_formspec = NULL;
-		} else if (isMenuActive()) {
-			guiroot->bringToFront(current_formspec);
+	auto formspec = m_game_ui->getFormspecGUI();
+	while (formspec) { // breakable. only runs for one iteration
+		if (formspec->getReferenceCount() == 1) {
+			m_game_ui->deleteFormspec();
+			break;
 		}
+
+		auto &loc = formspec->getFormspecLocation();
+		if (loc.type == InventoryLocation::NODEMETA) {
+			NodeMetadata *meta = client->getEnv().getClientMap().getNodeMetadata(loc.p);
+			if (!meta || meta->getString("formspec").empty()) {
+				formspec->quitMenu();
+				break;
+			}
+		}
+
+		if (isMenuActive())
+			guiroot->bringToFront(formspec);
+
+		break;
 	}
 
 	/*
@@ -4033,7 +4043,7 @@ void Game::extendedResourceCleanup()
 
 void Game::showDeathFormspec()
 {
-	static std::string formspec =
+	static std::string formspec_str =
 		std::string(FORMSPEC_VERSION_STRING) +
 		SIZE_TAG
 		"bgcolor[#320000b4;true]"
@@ -4044,12 +4054,13 @@ void Game::showDeathFormspec()
 	/* Create menu */
 	/* Note: FormspecFormSource and LocalFormspecHandler  *
 	 * are deleted by guiFormSpecMenu                     */
-	FormspecFormSource *fs_src = new FormspecFormSource(formspec);
+	FormspecFormSource *fs_src = new FormspecFormSource(formspec_str);
 	LocalFormspecHandler *txt_dst = new LocalFormspecHandler("MT_DEATH_SCREEN", client);
 
-	GUIFormSpecMenu::create(current_formspec, client, &input->joystick, fs_src,
-		txt_dst, client->getFormspecPrepend());
-	current_formspec->setFocus("btn_respawn");
+	auto *&formspec = m_game_ui->getFormspecGUI();
+	GUIFormSpecMenu::create(formspec, client, &input->joystick,
+		fs_src, txt_dst, client->getFormspecPrepend());
+	formspec->setFocus("btn_respawn");
 }
 
 #define GET_KEY_NAME(KEY) gettext(getKeySetting(#KEY).name())
@@ -4173,10 +4184,11 @@ void Game::showPauseMenu()
 	FormspecFormSource *fs_src = new FormspecFormSource(os.str());
 	LocalFormspecHandler *txt_dst = new LocalFormspecHandler("MT_PAUSE_MENU");
 
-	GUIFormSpecMenu::create(current_formspec, client, &input->joystick,
+	auto *&formspec = m_game_ui->getFormspecGUI();
+	GUIFormSpecMenu::create(formspec, client, &input->joystick,
 			fs_src, txt_dst, client->getFormspecPrepend());
-	current_formspec->setFocus("btn_continue");
-	current_formspec->doPause = true;
+	formspec->setFocus("btn_continue");
+	formspec->doPause = true;
 }
 
 /****************************************************************************/

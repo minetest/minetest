@@ -304,6 +304,11 @@ public:
 		regenerateGui(m_screensize_old);
 	}
 
+	const InventoryLocation &getFormspecLocation()
+	{
+		return m_current_inventory_location;
+	}
+
 	void setFormspecPrepend(const std::string &formspecPrepend)
 	{
 		m_formspec_prepend = formspecPrepend;
