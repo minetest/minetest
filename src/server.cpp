@@ -1559,7 +1559,7 @@ void Server::SendChatMessage(session_t peer_id, const ChatMessage &message)
 	NetworkPacket pkt(TOCLIENT_CHAT_MESSAGE, 0, peer_id);
 	u8 version = 1;
 	u8 type = message.type;
-	pkt << version << type << std::wstring(L"") << message.message << message.timestamp;
+	pkt << version << type << std::wstring(L"") << message.message << (u64)message.timestamp;
 
 	if (peer_id != PEER_ID_INEXISTENT) {
 		RemotePlayer *player = m_env->getPlayer(peer_id);

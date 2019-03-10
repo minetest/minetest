@@ -408,7 +408,9 @@ void Client::handleCommand_ChatMessage(NetworkPacket *pkt)
 		return;
 	}
 
-	*pkt >> chatMessage->sender >> chatMessage->message >> chatMessage->timestamp;
+	u64 timestamp;
+	*pkt >> chatMessage->sender >> chatMessage->message >> timestamp;
+	chatMessage->timestamp = static_cast<std::time_t>(timestamp);
 
 	chatMessage->type = (ChatMessageType) message_type;
 
