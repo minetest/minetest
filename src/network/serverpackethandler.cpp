@@ -799,7 +799,7 @@ void Server::handleCommand_Damage(NetworkPacket* pkt)
 		return;
 	}
 
-	if (g_settings->getBool("enable_damage")) {
+	if (!playersao->isImmortal()) {
 		if (playersao->isDead()) {
 			verbosestream << "Server::ProcessData(): Info: "
 				"Ignoring damage as player " << player->getName()
@@ -1155,10 +1155,6 @@ void Server::handleCommand_Interact(NetworkPacket* pkt)
 			// Skip if object can't be interacted with anymore
 			if (pointed_object->isGone())
 				return;
-
-			actionstream<<player->getName()<<" punches object "
-					<<pointed.object_id<<": "
-					<<pointed_object->getDescription()<<std::endl;
 
 			ItemStack punchitem = playersao->getWieldedItemOrHand();
 			ToolCapabilities toolcap =

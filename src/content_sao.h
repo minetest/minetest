@@ -45,6 +45,8 @@ public:
 
 	inline bool isAttached() const
 	{ return getParent(); }
+	inline bool isImmortal() const
+	{ return itemgroup_get(m_armor_groups, "immortal"); }
 
 	void setArmorGroups(const ItemGroupList &armor_groups);
 	const ItemGroupList &getArmorGroups();
