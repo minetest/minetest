@@ -284,9 +284,8 @@ Library specific options:
     VORBIS_LIBRARY                  - Only if building with sound; path to libvorbis.a/libvorbis.so/libvorbis.dll.a
     XXF86VM_LIBRARY                 - Only on Linux; path to libXXf86vm.a/libXXf86vm.so
     ZLIB_DLL                        - Only on Windows; path to zlib1.dll
-    ZLIBWAPI_DLL                    - Only on Windows; path to zlibwapi.dll
     ZLIB_INCLUDE_DIR                - Directory that contains zlib.h
-    ZLIB_LIBRARY                    - Path to libz.a/libz.so/zlibwapi.lib
+    ZLIB_LIBRARY                    - Path to libz.a/libz.so/zlib.lib
 
 ### Compiling on Windows
 
