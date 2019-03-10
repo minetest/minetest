@@ -19,7 +19,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #pragma once
 
-#include <ctime>
 #include "util/pointer.h"
 #include "util/numeric.h"
 #include "networkprotocol.h"
@@ -87,9 +86,6 @@ public:
 
 	NetworkPacket &operator>>(u64 &dst);
 	NetworkPacket &operator<<(u64 src);
-
-	NetworkPacket &operator>>(std::time_t &dst);
-	NetworkPacket &operator<<(std::time_t src);
 
 	NetworkPacket &operator>>(float &dst);
 	NetworkPacket &operator<<(float src);
