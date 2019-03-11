@@ -2994,16 +2994,18 @@
 # emergequeue_limit_generate = 64
 
 #    Number of emerge threads to use.
+#    WARNING: Currently there are multiple bugs that may cause crashes when
+#    'num_emerge_threads' is larger than 1. Until this warning is removed it is
+#    strongly recommended this value is set to the default '1'.
 #    Empty or 0 value:
 #    -    Automatic selection. The number of emerge threads will be
 #    -    'number of processors - 2', with a lower limit of 1.
 #    Any other value:
 #    -    Specifies the number of emerge threads, with a lower limit of 1.
-#    Warning: Increasing the number of emerge threads increases engine mapgen
+#    WARNING: Increasing the number of emerge threads increases engine mapgen
 #    speed, but this may harm game performance by interfering with other
 #    processes, especially in singleplayer and/or when running Lua code in
-#    'on_generated'.
-#    For many users the optimum setting may be '1'.
+#    'on_generated'. For many users the optimum setting may be '1'.
 #    type: int
 # num_emerge_threads = 1
 
