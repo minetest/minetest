@@ -405,6 +405,11 @@ struct PlayerHPChangeReason {
 	bool from_mod = false;
 	int lua_reference = -1;
 
+	inline bool hasLuaReference() const
+	{
+		return lua_reference >= 0;
+	}
+
 	bool setTypeFromString(const std::string &typestr)
 	{
 		if (typestr == "set_hp")

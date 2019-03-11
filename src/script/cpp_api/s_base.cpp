@@ -384,7 +384,7 @@ void ScriptApiBase::objectrefGetOrCreate(lua_State *L,
 
 void ScriptApiBase::pushPlayerHPChangeReason(lua_State *L, const PlayerHPChangeReason &reason)
 {
-	if (reason.lua_reference >= 0)
+	if (reason.hasLuaReference())
 		lua_rawgeti(L, LUA_REGISTRYINDEX, reason.lua_reference);
 	else
 		lua_newtable(L);

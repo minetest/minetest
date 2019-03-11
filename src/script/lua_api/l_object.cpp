@@ -257,7 +257,7 @@ int ObjectRef::l_set_hp(lua_State *L)
 	if (co->getType() == ACTIVEOBJECT_TYPE_PLAYER)
 		getServer(L)->SendPlayerHPOrDie((PlayerSAO *)co, reason);
 
-	if (reason.lua_reference != -1)
+	if (reason.hasLuaReference())
 		luaL_unref(L, LUA_REGISTRYINDEX, reason.lua_reference);
 
 	// Return
