@@ -384,14 +384,18 @@ void ScriptApiBase::objectrefGetOrCreate(lua_State *L,
 
 void ScriptApiBase::pushPlayerHPChangeReason(lua_State *L, const PlayerHPChangeReason &reason)
 {
-	if (reason.lua_reference >= 0) {
+	if (reason.hasLuaReference())
 		lua_rawgeti(L, LUA_REGISTRYINDEX, reason.lua_reference);
-		luaL_unref(L, LUA_REGISTRYINDEX, reason.lua_reference);
-	} else
+	else
 		lua_newtable(L);
 
-	lua_pushstring(L, reason.getTypeAsString().c_str());
-	lua_setfield(L, -2, "type");
+	lua_getfield(L, -1, "type");
+	bool has_type = (bool)lua_isstring(L, -1);
+	lua_pop(L, 1);
+	if (!has_type) {
+		lua_pushstring(L, reason.getTypeAsString().c_str());
+		lua_setfield(L, -2, "type");
+	}
 
 	lua_pushstring(L, reason.from_mod ? "mod" : "engine");
 	lua_setfield(L, -2, "from");
