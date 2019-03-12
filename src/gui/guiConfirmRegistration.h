@@ -32,7 +32,7 @@ public:
 	GUIConfirmRegistration(gui::IGUIEnvironment *env, gui::IGUIElement *parent,
 			s32 id, IMenuManager *menumgr, Client *client,
 			const std::string &playername, const std::string &password,
-			const std::string &address, bool *aborted);
+			bool *aborted);
 	~GUIConfirmRegistration();
 
 	void removeChildren();
@@ -61,7 +61,6 @@ private:
 	Client *m_client = nullptr;
 	const std::string &m_playername;
 	const std::string &m_password;
-	const std::string &m_address;
 	bool *m_aborted = nullptr;
 	std::wstring m_pass_confirm = L"";
 };
