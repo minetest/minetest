@@ -2957,7 +2957,7 @@ void Game::processPlayerInteraction(f32 dtime, bool show_hud, bool show_debug)
 		hlist ? hlist->getItem(0).getDefinition(itemdef_manager) : itemdef_manager->get("");
 
 	v3f player_position  = player->getPosition();
-	v3f player_eye_position = player_position + player->getEyeOffset();
+	v3f player_eye_position = player->getEyePosition();
 	v3f camera_position  = camera->getPosition();
 	v3f camera_direction = camera->getDirection();
 	v3s16 camera_offset  = camera->getOffset();
