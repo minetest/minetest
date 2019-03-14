@@ -248,13 +248,30 @@ int MapgenV7::getSpawnLevelAtPoint(v2s16 p)
 			return MAX_MAP_GENERATION_LIMIT; // Unsuitable spawn point
 	}
 
+	// In cliff areas only spawn on higher terrain to avoid spawning trapped
+	// in deep holes.
+	float persist = NoisePerlin2D(&noise_terrain_persist->np, p.X, p.Y, seed);
+	noise_terrain_base->np.persist = persist;
+	noise_terrain_alt->np.persist = persist;
+	float height_base = NoisePerlin2D(&noise_terrain_base->np, p.X, p.Y, seed);
+	float height_alt = NoisePerlin2D(&noise_terrain_alt->np, p.X, p.Y, seed);
+
+	if (height_base > height_alt) {
+		// Cliff area
+		float hselect = NoisePerlin2D(&noise_height_select->np, p.X, p.Y, seed);
+		hselect = rangelim(hselect, 0.0f, 1.0f);
+		if (hselect < 1.0f)
+			// Cliff face or lower terrain
+			return MAX_MAP_GENERATION_LIMIT; // Unsuitable spawn point
+	}
+
 	// Terrain noise 'offset' is the average level of that terrain.
 	// At least 50% of terrain will be below the higher of base and alt terrain
 	// 'offset's.
 	// Raising the maximum spawn level above 'water_level + 16' is necessary
 	// for when terrain 'offset's are set much higher than water_level.
-	s16 max_spawn_y = std::fmax(std::fmax(noise_terrain_alt->np.offset,
-			noise_terrain_base->np.offset),
+	s16 max_spawn_y = std::fmax(std::fmax(noise_terrain_alt->np.offset + 1.0f,
+			noise_terrain_base->np.offset + 1.0f),
 			water_level + 16);
 	// Base terrain calculation
 	s16 y = baseTerrainLevelAtPoint(p.X, p.Y);
