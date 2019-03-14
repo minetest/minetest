@@ -1,11 +1,11 @@
 /*
 Minetest
-Copyright (C) 2016-2018 Duane Robertson <duane@duanerobertson.com>
-Copyright (C) 2016-2018 paramat
+Copyright (C) 2016-2019 Duane Robertson <duane@duanerobertson.com>
+Copyright (C) 2016-2019 paramat
 
 Based on Valleys Mapgen by Gael de Sailly
 (https://forum.minetest.net/viewtopic.php?f=9&t=11430)
-and mapgen_v7 by kwolekr and paramat.
+and mapgen_v7, mapgen_flat by kwolekr and paramat.
 
 Licensing changed by permission of Gael de Sailly.
 
@@ -24,19 +24,15 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
+
 #pragma once
 
 #include "mapgen.h"
 
-/////////////////// Mapgen Valleys flags
 #define MGVALLEYS_ALT_CHILL        0x01
 #define MGVALLEYS_HUMID_RIVERS     0x02
 #define MGVALLEYS_VARY_RIVER_DEPTH 0x04
 #define MGVALLEYS_ALT_DRY          0x08
-
-// Feed only one variable into these
-#define MYSQUARE(x) (x) * (x)
-#define MYCUBE(x) (x) * (x) * (x)
 
 class BiomeManager;
 class BiomeGenOriginal;
@@ -79,16 +75,6 @@ struct MapgenValleysParams : public MapgenParams {
 	void writeParams(Settings *settings) const;
 };
 
-struct TerrainNoise {
-	s16 x;
-	s16 z;
-	float terrain_height;
-	float *rivers;
-	float *valley;
-	float valley_profile;
-	float *slope;
-	float inter_valley_fill;
-};
 
 class MapgenValleys : public MapgenBasic {
 public:
@@ -106,7 +92,6 @@ private:
 	BiomeGenOriginal *m_bgen;
 
 	float altitude_chill;
-	float humidity_adjust;
 	float river_depth_bed;
 	float river_size_factor;
 
@@ -121,9 +106,5 @@ private:
 	Noise *noise_valley_depth;
 	Noise *noise_valley_profile;
 
-	float terrainLevelAtPoint(s16 x, s16 z);
-	void calculateNoise();
 	virtual int generateTerrain();
-	float terrainLevelFromNoise(TerrainNoise *tn);
-	float adjustedTerrainLevelFromNoise(TerrainNoise *tn);
 };
