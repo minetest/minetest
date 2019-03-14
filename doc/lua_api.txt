@@ -1188,9 +1188,8 @@ clients and handled by many parts of the engine.
 
 A 'mapchunk' (sometimes abbreviated to 'chunk') is usually 5x5x5 mapblocks
 (80x80x80 nodes) and is the volume of world generated in one operation by
-map generation.
-The size in mapblocks is chosen to optimise map generation, generating
-individual mapblocks is an inefficient use of map generation.
+the map generator.
+The size in mapblocks has been chosen to optimise map generation.
 
 Coordinates
 -----------
@@ -1201,27 +1200,31 @@ For node and mapblock coordinates, +X is East, +Y is up, +Z is North.
 
 ### Node coordinates
 
-Almost all positions used in the API are node coordinates that specify a
-particular node.
+Almost all positions used in the API use node coordinates.
 
 ### Mapblock coordinates
 
 Occasionally the API uses 'blockpos' which refers to mapblock coordinates that
 specify a particular mapblock.
 For example blockpos (0,0,0) specifies the mapblock that extends from
-nodepos (0,0,0) to nodepos (15,15,15).
+node position (0,0,0) to node position (15,15,15).
 
-#### Converting nodepos to blockpos
+#### Converting node position to the containing blockpos
 
-For each coordinate:
-blockpos = math.floor(nodepos / 16)
+To calculate the blockpos of the mapblock that contains the node at 'nodepos',
+for each axis:
 
-#### Converting blockpos to nodepos
+* blockpos = math.floor(nodepos / 16)
 
-For each coordinate the mapblock extends from
-nodepos = blockpos * 16
-to
-nodepos = blockpos * 16 + 15
+#### Converting blockpos to min/max node positions
+
+To calculate the min/max node positions contained in the mapblock at 'blockpos',
+for each axis:
+
+* Minimum:
+  nodepos = blockpos * 16
+* Maximum:
+  nodepos = blockpos * 16 + 15
 
 
 
