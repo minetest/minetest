@@ -24,7 +24,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 namespace con
 {
 
-typedef enum {
+typedef enum
+{
 	MIN_RTT,
 	MAX_RTT,
 	AVG_RTT,

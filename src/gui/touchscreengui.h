@@ -33,7 +33,8 @@ using namespace irr;
 using namespace irr::core;
 using namespace irr::gui;
 
-typedef enum {
+typedef enum
+{
 	jump_id = 0,
 	crunch_id,
 	zoom_id,
@@ -61,7 +62,8 @@ typedef enum {
 	joystick_center_id
 } touch_gui_button_id;
 
-typedef enum {
+typedef enum
+{
 	j_forward = 0,
 	j_backward,
 	j_left,
@@ -69,7 +71,8 @@ typedef enum {
 	j_special1
 } touch_gui_joystick_move_id;
 
-typedef enum {
+typedef enum
+{
 	AHBB_Dir_Top_Bottom,
 	AHBB_Dir_Bottom_Top,
 	AHBB_Dir_Left_Right,

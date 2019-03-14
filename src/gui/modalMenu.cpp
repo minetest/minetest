@@ -260,7 +260,7 @@ bool GUIModalMenu::preprocessEvent(const SEvent &event)
 			return retval;
 		}
 	}
-		// clang-format on
+	// clang-format on
 #endif
 	return false;
 }
