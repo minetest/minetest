@@ -3248,10 +3248,8 @@ Methods
     * To be used only by a `VoxelManip` object from
       `minetest.get_mapgen_object`.
     * (`p1`, `p2`) is the area in which lighting is set, defaults to the whole
-      area if left out or nil.
-    * Setting `p1`, `p2` to `emin`, `emax` of the mapgen object voxelmanip (the
-      entire volume of the voxelmanip: the mapchunk plus a 1 mapblock thick
-      shell around it) will cause an error.
+      area if left out or nil. For almost all uses these should be left out
+      or nil to use the default.
     * `propagate_shadow` is an optional boolean deciding whether shadows in a
       generated mapchunk above are propagated down into the mapchunk, defaults
       to `true` if left out.
