@@ -1171,6 +1171,61 @@ A box of a regular node would look like:
 
 
 
+Map terminology and coordinates
+===============================
+
+Nodes, mapblocks, mapchunks
+---------------------------
+
+A 'node' is the fundamental cubic unit of a world and appears to a player as
+roughly 1x1x1 meters in size.
+
+A 'mapblock' (often abbreviated to 'block') is 16x16x16 nodes and is the
+fundamental region of a world that is stored in the world database, sent to
+clients and handled by many parts of the engine.
+'mapblock' is preferred terminology to 'block' to help avoid confusion with
+'node', however 'block' often appears in the API.
+
+A 'mapchunk' (sometimes abbreviated to 'chunk') is usually 5x5x5 mapblocks
+(80x80x80 nodes) and is the volume of world generated in one operation by
+map generation.
+The size in mapblocks is chosen to optimise map generation, generating
+individual mapblocks is an inefficient use of map generation.
+
+Coordinates
+-----------
+
+### Orientation of axes
+
+For node and mapblock coordinates, +X is East, +Y is up, +Z is North.
+
+### Node coordinates
+
+Almost all positions used in the API are node coordinates that specify a
+particular node.
+
+### Mapblock coordinates
+
+Occasionally the API uses 'blockpos' which refers to mapblock coordinates that
+specify a particular mapblock.
+For example blockpos (0,0,0) specifies the mapblock that extends from
+nodepos (0,0,0) to nodepos (15,15,15).
+
+#### Converting nodepos to blockpos
+
+For each coordinate:
+blockpos = math.floor(nodepos / 16)
+
+#### Converting blockpos to nodepos
+
+For each coordinate the mapblock extends from
+nodepos = blockpos * 16
+to
+nodepos = blockpos * 16 + 15
+
+
+
+
 HUD
 ===
 
