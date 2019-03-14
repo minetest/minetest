@@ -401,9 +401,13 @@ struct PlayerHPChangeReason {
 	};
 
 	Type type = SET_HP;
-	ServerActiveObject *object;
 	bool from_mod = false;
 	int lua_reference = -1;
+
+	// For PLAYER_PUNCH
+	ServerActiveObject *object = nullptr;
+	// For NODE_DAMAGE
+	std::string node;
 
 	inline bool hasLuaReference() const
 	{
@@ -450,7 +454,15 @@ struct PlayerHPChangeReason {
 		}
 	}
 
-	PlayerHPChangeReason(Type type, ServerActiveObject *object=NULL):
+	PlayerHPChangeReason(Type type):
+			type(type)
+	{}
+
+	PlayerHPChangeReason(Type type, ServerActiveObject *object):
 			type(type), object(object)
+	{}
+
+	PlayerHPChangeReason(Type type, std::string node):
+			type(type), node(node)
 	{}
 };

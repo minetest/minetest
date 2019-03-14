@@ -404,6 +404,10 @@ void ScriptApiBase::pushPlayerHPChangeReason(lua_State *L, const PlayerHPChangeR
 		objectrefGetOrCreate(L, reason.object);
 		lua_setfield(L, -2, "object");
 	}
+	if (!reason.node.empty()) {
+		lua_pushstring(L, reason.node.c_str());
+		lua_setfield(L, -2, "node");
+	}
 }
 
 Server* ScriptApiBase::getServer()
