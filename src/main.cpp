@@ -577,9 +577,7 @@ static void init_log_streams(const Settings &cmd_args)
 			"using maximum." << std::endl;
 	}
 
-	verbosestream << "log_filename = " << log_filename << std::endl;
-
-	file_log_output.open(log_filename);
+	file_log_output.setFile(log_filename);
 	g_logger.addOutputMaxLevel(&file_log_output, log_level);
 }
 

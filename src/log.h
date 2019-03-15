@@ -165,7 +165,7 @@ private:
 
 class FileLogOutput : public ICombinedLogOutput {
 public:
-	void open(const std::string &filename);
+	void setFile(const std::string &filename);
 
 	void logRaw(LogLevel lev, const std::string &line)
 	{

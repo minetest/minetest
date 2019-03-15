@@ -34,6 +34,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <cerrno>
 #include <cstring>
 
+// A Megabyte should suffice for the previous debug file deletion threshold
+#define DEBUGFILE_SIZE_MAX 1000000
+
 const int BUFFER_LENGTH = 256;
 
 class StringBuffer : public std::streambuf {
@@ -310,16 +313,29 @@ void Logger::logToOutputs(LogLevel lev, const std::string &combined,
 //// *LogOutput methods
 ////
 
-void FileLogOutput::open(const std::string &filename)
+void FileLogOutput::setFile(const std::string &filename)
 {
-	m_stream.open(filename.c_str(), std::ios::app | std::ios::ate);
+	actionstream << "Log messages are saved to " << filename << std::endl;
+
+	std::ifstream ifile(filename.c_str(), std::ios::binary | std::ios::ate);
+	bool truncate = ifile.tellg() > DEBUGFILE_SIZE_MAX;
+	ifile.close();
+
+	if (!truncate) {
+		m_stream.open(filename.c_str(), std::ios::app | std::ios::ate);
+	} else {
+		actionstream << "The log file grew too big. "
+			"I will remove the old log messages. " << std::endl;
+		m_stream.open(filename.c_str(), std::ios::trunc);
+	}
+
 	if (!m_stream.good())
 		throw FileNotGoodException("Failed to open log file " +
 			filename + ": " + strerror(errno));
 	m_stream << "\n\n"
-		   "-------------" << std::endl
-		<< "  Separator" << std::endl
-		<< "-------------\n" << std::endl;
+		"-------------" << std::endl <<
+		"  Separator" << std::endl <<
+		"-------------\n" << std::endl;
 }
 
 
