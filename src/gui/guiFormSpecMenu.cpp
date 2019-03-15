@@ -23,6 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <iterator>
 #include <sstream>
 #include <limits>
+#include "guiButton.h"
 #include "guiFormSpecMenu.h"
 #include "guiTable.h"
 #include "constants.h"
@@ -698,9 +699,8 @@ void GUIFormSpecMenu::parseButton(parserData* data, const std::string &element,
 		spec.ftype = f_Button;
 		if(type == "button_exit")
 			spec.is_exit = true;
-		gui::IGUIButton* e = Environment->addButton(rect, this, spec.fid,
-				spec.flabel.c_str());
 
+		GUIButton *e = GUIButton::addButton(Environment, rect, this, spec.fid, spec.flabel.c_str());
 		if (spec.fname == data->focused_fieldname) {
 			Environment->setFocus(e);
 		}
