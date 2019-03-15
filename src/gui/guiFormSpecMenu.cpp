@@ -701,6 +701,17 @@ void GUIFormSpecMenu::parseButton(parserData* data, const std::string &element,
 			spec.is_exit = true;
 
 		GUIButton *e = GUIButton::addButton(Environment, rect, this, spec.fid, spec.flabel.c_str());
+
+		auto style = getThemeForElement(type, name);
+		if (style.hasProperty(StyleSpec::BGCOLOR)) {
+			e->setColor(style.getColor(StyleSpec::BGCOLOR));
+		}
+		if (style.hasProperty(StyleSpec::TEXTCOLOR)) {
+			e->setOverrideColor(style.getColor(StyleSpec::TEXTCOLOR));
+		}
+
+//		e->setSprite();
+
 		if (spec.fname == data->focused_fieldname) {
 			Environment->setFocus(e);
 		}
@@ -1645,7 +1656,7 @@ void GUIFormSpecMenu::parseTabHeader(parserData* data, const std::string &elemen
 				pos.Y+geom.Y);
 
 		gui::IGUITabControl *e = Environment->addTabControl(rect, this,
-				show_background, show_border, spec.fid);
+				false, show_border, spec.fid);
 		e->setAlignment(irr::gui::EGUIA_UPPERLEFT, irr::gui::EGUIA_UPPERLEFT,
 				irr::gui::EGUIA_UPPERLEFT, irr::gui::EGUIA_LOWERRIGHT);
 		e->setTabHeight(geom.Y);
@@ -1656,9 +1667,17 @@ void GUIFormSpecMenu::parseTabHeader(parserData* data, const std::string &elemen
 
 		e->setNotClipped(true);
 
+		auto style = getThemeForElement("tabheader", name);
+
 		for (const std::string &button : buttons) {
-			e->addTab(unescape_translate(unescape_string(
+			auto tab = e->addTab(unescape_translate(unescape_string(
 				utf8_to_wide(button))).c_str(), -1);
+			tab->setDrawBackground(false);
+			tab->setBackgroundColor(video::SColor(0xFFFF0000));
+			if (style.hasProperty(StyleSpec::BGCOLOR))
+				tab->setBackgroundColor(style.getColor(StyleSpec::BGCOLOR));
+
+			tab->setTextColor(style.getColor(StyleSpec::TEXTCOLOR, video::SColor(0xFFFFFFFF)));
 		}
 
 		if ((tab_index >= 0) &&
@@ -2020,6 +2039,45 @@ void GUIFormSpecMenu::parseAnchor(parserData *data, const std::string &element)
 			<< "'" << std::endl;
 }
 
+bool GUIFormSpecMenu::parseStyle(parserData *data, const std::string &element, bool style_type)
+{
+	std::vector<std::string> parts = split(element, ';');
+
+	if (parts.size() != 3) {
+		errorstream << "Invalid style element (" << parts.size() << "): '" << element
+					<< "'" << std::endl;
+		return false;
+	}
+
+	std::string selector = trim(parts[0]);
+	std::string propname = trim(parts[1]);
+	std::string value    = trim(parts[2]);
+
+	StyleSpec::Property prop = StyleSpec::GetPropertyByName(propname);
+	if (prop == StyleSpec::NONE) {
+		errorstream << "Invalid style element (Unknown property " << prop << "): '" << element
+					<< "'" << std::endl;
+		return false;
+	}
+
+	StyleSpec spec;
+	spec.set(prop, value);
+
+	if (selector.empty()) {
+		errorstream << "Invalid style element (Selector required): '" << element
+					<< "'" << std::endl;
+		return false;
+	}
+
+	if (style_type) {
+		theme_by_type[selector] |= spec;
+	} else {
+		theme_by_name[selector] |= spec;
+	}
+
+	return true;
+}
+
 void GUIFormSpecMenu::parseElement(parserData* data, const std::string &element)
 {
 	//some prechecks
@@ -2185,6 +2243,16 @@ void GUIFormSpecMenu::parseElement(parserData* data, const std::string &element)
 		return;
 	}
 
+	if (type == "style") {
+		parseStyle(data, description, false);
+		return;
+	}
+
+	if (type == "style_type") {
+		parseStyle(data, description, true);
+		return;
+	}
+
 	// Ignore others
 	infostream << "Unknown DrawSpec: type=" << type << ", data=\"" << description << "\""
 			<< std::endl;
@@ -2255,6 +2323,8 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 	m_inventory_rings.clear();
 	m_static_texts.clear();
 	m_dropdowns.clear();
+	theme_by_name.clear();
+	theme_by_type.clear();
 
 	m_bgfullscreen = false;
 
@@ -4043,4 +4113,20 @@ std::wstring GUIFormSpecMenu::getLabelByID(s32 id)
 		}
 	}
 	return L"";
+}
+
+StyleSpec GUIFormSpecMenu::getThemeForElement(const std::string &type, const std::string &name) {
+	StyleSpec ret;
+
+	auto it = theme_by_type.find(type);
+	if (it != theme_by_type.end()) {
+		ret |= it->second;
+	}
+
+	it = theme_by_name.find(name);
+	if (it != theme_by_name.end()) {
+		ret |= it->second;
+	}
+
+	return ret;
 }

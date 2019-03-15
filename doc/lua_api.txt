@@ -1886,7 +1886,8 @@ For coloured text you can use `minetest.colorize`.
 
 WARNING: Minetest allows you to add elements to every single formspec instance
 using `player:set_formspec_prepend()`, which may be the reason backgrounds are
-appearing when you don't expect them to. See [`no_prepend[]`].
+appearing when you don't expect them to, or why things are styled differently
+to normal. See [`no_prepend[]`] and [Styling Formspecs].
 
 Examples
 --------
@@ -2353,6 +2354,20 @@ Elements
 **Note**: do _not_ use a element name starting with `key_`; those names are
 reserved to pass key press events to formspec!
 
+### `style[<name>;<propery>;<value]`
+
+Set the style for the named element `name`.
+Note: this **must** be before the element's tag.
+
+See [Styling Formspecs].
+
+
+### `style_type[<type>;<propery>;<value>]`
+
+Sets the style for all elements of type `type` which appear after this tag.
+
+See [Styling Formspecs].
+
 Migrating to Real Coordinates
 -----------------------------
 
@@ -2388,6 +2403,28 @@ offsets when migrating:
 | list    |            |         | Spacing is now 0.25 for both directions, meaning lists will be taller in height
 | label   | 0, +0.3    |         | The first line of text is now positioned centered exactly at the position specified
 
+Styling Formspecs
+-----------------
+
+Formspec elements can be themed using the style tags:
+
+	style[ELEMENT_NAME;PROPERTY;VALUE]
+	style_type[ELEMENT_TYPE;PROPERTY;VALUE]
+
+For example:
+
+	style_type[button;bgcolor;#006699]
+	style[world_delete;bgcolor;#ff0000]
+	button[4,3.95;2.6,1;world_delete;Delete]
+
+### Valid Properties
+
+* button and button_exit
+	* bgcolor - sets button tint
+	* textcolor
+* tabheader
+	* bgcolor - tab background
+	* textcolor
 
 
 

@@ -30,6 +30,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client/joystick_controller.h"
 #include "util/string.h"
 #include "util/enriched_string.h"
+#include "StyleSpec.h"
 
 class InventoryManager;
 class ISimpleTextureSource;
@@ -401,6 +402,11 @@ protected:
 			const std::vector<std::string> &v_pos);
 	v2s32 getRealCoordinateGeometry(const std::vector<std::string> &v_geom);
 
+	std::unordered_map<std::string, StyleSpec> theme_by_type;
+	std::unordered_map<std::string, StyleSpec> theme_by_name;
+
+	StyleSpec getThemeForElement(const std::string &type, const std::string &name);
+
 	v2s32 padding;
 	v2f32 spacing;
 	v2s32 imgsize;
@@ -537,6 +543,7 @@ private:
 	void parsePosition(parserData *data, const std::string &element);
 	bool parseAnchorDirect(parserData *data, const std::string &element);
 	void parseAnchor(parserData *data, const std::string &element);
+	bool parseStyle(parserData *data, const std::string &element, bool style_type);
 
 	void tryClose();
 
