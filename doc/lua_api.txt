@@ -2048,11 +2048,13 @@ Elements
 * Textual label drawn vertically
 * `label` is the text on the label
 
-### `button[<X>,<Y>;<W>,<H>;<name>;<label>]`
+### `button[<X>,<Y>;<W>,<H>;<name>;<label>;<noclip>]`
 
 * Clickable button. When clicked, fields will be sent.
-* Fixed button height. It will be vertically centred on `H`
-* `label` is the text on the button
+* The button height is fixed; it will be vertically centred on `H`.
+* `label` is the text on the button.
+* `noclip` (optional): If true the button will not be clipped if outside of the
+  specified form dimensions.
 
 ### `image_button[<X>,<Y>;<W>,<H>;<texture name>;<name>;<label>]`
 

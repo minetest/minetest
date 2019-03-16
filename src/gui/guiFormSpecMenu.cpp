@@ -598,28 +598,29 @@ void GUIFormSpecMenu::parseButton(parserData* data, const std::string &element,
 {
 	std::vector<std::string> parts = split(element,';');
 
-	if ((parts.size() == 4) ||
-		((parts.size() > 4) && (m_formspec_version > FORMSPEC_API_VERSION)))
+	if (parts.size() == 4 || parts.size() == 5 ||
+			parts.size() > 5 && m_formspec_version > FORMSPEC_API_VERSION)
 	{
-		std::vector<std::string> v_pos = split(parts[0],',');
-		std::vector<std::string> v_geom = split(parts[1],',');
+		std::vector<std::string> v_pos = split(parts[0], ',');
+		std::vector<std::string> v_geom = split(parts[1], ',');
 		std::string name = parts[2];
 		std::string label = parts[3];
 
-		MY_CHECKPOS("button",0);
-		MY_CHECKGEOM("button",1);
+		MY_CHECKPOS("button", 0);
+		MY_CHECKGEOM("button", 1);
 
 		v2s32 pos = getElementBasePos(false, &v_pos);
 		v2s32 geom;
 		geom.X = (stof(v_geom[0]) * spacing.X) - (spacing.X - imgsize.X);
-		pos.Y += (stof(v_geom[1]) * (float)imgsize.Y)/2;
+		pos.Y += (stof(v_geom[1]) * (float)imgsize.Y) / 2;
 
-		core::rect<s32> rect =
-				core::rect<s32>(pos.X, pos.Y - m_btn_height,
-						pos.X + geom.X, pos.Y + m_btn_height);
+		bool noclip = parts.size() > 4 && parts[5] == "true" ? true : false;
+
+		core::rect<s32> rect(pos.X, pos.Y - m_btn_height, pos.X + geom.X,
+				pos.Y + m_btn_height);
 
 		if(!data->explicit_size)
-			warningstream<<"invalid use of button without a size[] element"<<std::endl;
+			warningstream << "invalid use of button without a size[] element" << std::endl;
 
 		std::wstring wlabel = translate_string(utf8_to_wide(unescape_string(label)));
 
@@ -627,17 +628,19 @@ void GUIFormSpecMenu::parseButton(parserData* data, const std::string &element,
 			name,
 			wlabel,
 			L"",
-			258+m_fields.size()
+			258 + m_fields.size()
 		);
 		spec.ftype = f_Button;
 		if(type == "button_exit")
 			spec.is_exit = true;
+
 		gui::IGUIButton* e = Environment->addButton(rect, this, spec.fid,
 				spec.flabel.c_str());
 
 		if (spec.fname == data->focused_fieldname) {
 			Environment->setFocus(e);
 		}
+		e->setNotClipped(noclip);
 
 		m_fields.push_back(spec);
 		return;
