@@ -325,7 +325,7 @@ void FileLogOutput::setFile(const std::string &filename)
 		m_stream.open(filename.c_str(), std::ios::app | std::ios::ate);
 	} else {
 		actionstream << "The log file grew too big. "
-			"I will remove the old log messages. " << std::endl;
+			"The older log messages will be removed." << std::endl;
 		m_stream.open(filename.c_str(), std::ios::trunc);
 	}
 
