@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include <utility>
 #include <stack>
+#include <unordered_set>
 
 #include "irrlichttypes_extrabloated.h"
 #include "inventorymanager.h"
@@ -404,8 +405,10 @@ protected:
 
 	std::unordered_map<std::string, StyleSpec> theme_by_type;
 	std::unordered_map<std::string, StyleSpec> theme_by_name;
+	std::unordered_set<std::string> property_warned;
 
-	StyleSpec getThemeForElement(const std::string &type, const std::string &name);
+	StyleSpec getStyleForElement(const std::string &type,
+			const std::string &name="", const std::string &parent_type="");
 
 	v2s32 padding;
 	v2f32 spacing;
@@ -574,7 +577,6 @@ private:
 	 * and the default value for the setting is true.
 	 */
 	bool m_remap_dbl_click;
-
 };
 
 class FormspecFormSource: public IFormSource

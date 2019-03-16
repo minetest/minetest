@@ -55,17 +55,17 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 RenderingEngine *RenderingEngine::s_singleton = nullptr;
 
 
-static gui::GUISkin* createSkin(gui::IGUIEnvironment *environment,
-								gui::EGUI_SKIN_TYPE type, video::IVideoDriver *driver)
+static gui::GUISkin *createSkin(gui::IGUIEnvironment *environment,
+		gui::EGUI_SKIN_TYPE type, video::IVideoDriver *driver)
 {
-	gui::GUISkin* skin = new gui::GUISkin(type, driver);
+	gui::GUISkin *skin = new gui::GUISkin(type, driver);
 
-	gui::IGUIFont* builtinfont = environment->getBuiltInFont();
-	gui::IGUIFontBitmap* bitfont = 0;
+	gui::IGUIFont *builtinfont = environment->getBuiltInFont();
+	gui::IGUIFontBitmap *bitfont = nullptr;
 	if (builtinfont && builtinfont->getType() == gui::EGFT_BITMAP)
 		bitfont = (gui::IGUIFontBitmap*)builtinfont;
 
-	gui::IGUISpriteBank* bank = 0;
+	gui::IGUISpriteBank *bank = 0;
 	skin->setFont(builtinfont);
 
 	if (bitfont)
@@ -102,7 +102,7 @@ RenderingEngine::RenderingEngine(IEventReceiver *receiver)
 	u32 i;
 	for (i = 0; i != drivers.size(); i++) {
 		if (!strcasecmp(driverstring.c_str(),
-				    RenderingEngine::getVideoDriverName(drivers[i]))) {
+				RenderingEngine::getVideoDriverName(drivers[i]))) {
 			driverType = drivers[i];
 			break;
 		}
@@ -139,7 +139,7 @@ RenderingEngine::RenderingEngine(IEventReceiver *receiver)
 	s_singleton = this;
 
 	auto skin = createSkin(m_device->getGUIEnvironment(),
-						   gui::EGST_WINDOWS_METALLIC, driver);
+			gui::EGST_WINDOWS_METALLIC, driver);
 	m_device->getGUIEnvironment()->setSkin(skin);
 	skin->drop();
 }
