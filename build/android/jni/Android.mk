@@ -177,6 +177,7 @@ LOCAL_SRC_FILES := \
 		jni/src/filesys.cpp                       \
 		jni/src/genericobject.cpp                 \
 		jni/src/gettext.cpp                       \
+		jni/src/gui/guiButton.cpp                 \
 		jni/src/gui/guiChatConsole.cpp            \
 		jni/src/gui/guiConfirmRegistration.cpp    \
 		jni/src/gui/guiEditBoxWithScrollbar.cpp   \

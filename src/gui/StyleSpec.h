@@ -18,85 +18,118 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "irrlichttypes_extrabloated.h"
+#include <array>
 
 #pragma once
-
 
 class StyleSpec
 {
 public:
-	enum Property {
-		NONE = 0,
+	enum Property
+	{
 		TEXTCOLOR,
 		BGCOLOR,
-		NUM_PROPERTIES
+		NOCLIP,
+		BORDER,
+		BGIMG,
+		BGIMG_PRESSED,
+		ALPHA,
+		NUM_PROPERTIES,
+		NONE
 	};
 
 private:
-	std::unordered_map<Property, std::string> properties;
+	std::array<bool, NUM_PROPERTIES> property_set;
+	std::array<std::string, NUM_PROPERTIES> properties;
 
 public:
-	static Property GetPropertyByName(const std::string &name) {
+	static Property GetPropertyByName(const std::string &name)
+	{
 		if (name == "textcolor") {
 			return TEXTCOLOR;
 		} else if (name == "bgcolor") {
 			return BGCOLOR;
+		} else if (name == "noclip") {
+			return NOCLIP;
+		} else if (name == "border") {
+			return BORDER;
+		} else if (name == "bgimg") {
+			return BGIMG;
+		} else if (name == "bgimg_pressed") {
+			return BGIMG_PRESSED;
+		} else if (name == "alpha") {
+			return ALPHA;
 		} else {
 			return NONE;
 		}
 	}
 
-	std::string get(Property prop, std::string def) const {
-		auto it = properties.find(prop);
-		if (it == properties.end()) {
+	std::string get(Property prop, std::string def) const
+	{
+		const auto &val = properties[prop];
+		return val.empty() ? def : val;
+	}
+
+	void set(Property prop, const std::string &value)
+	{
+		properties[prop] = value;
+		property_set[prop] = true;
+	}
+
+	video::SColor getColor(Property prop, video::SColor def) const
+	{
+		const auto &val = properties[prop];
+		if (val.empty()) {
 			return def;
 		}
 
-		return it->second;
-	}
-
-	void set(Property prop, std::string value) {
-		properties[prop] = std::move(value);
-	}
-
-	video::SColor getColor(Property prop, video::SColor def) const {
-		auto it = properties.find(prop);
-		if (it == properties.end()) {
-			return def;
-		}
-
-		parseColorString(it->second, def, false, 0xFF);
+		parseColorString(val, def, false, 0xFF);
 		return def;
 	}
 
-	video::SColor getColor(Property prop) const {
-		auto it = properties.find(prop);
-		FATAL_ERROR_IF(it == properties.end(), "Unexpected missing property");
+	video::SColor getColor(Property prop) const
+	{
+		const auto &val = properties[prop];
+		FATAL_ERROR_IF(val.empty(), "Unexpected missing property");
 
 		video::SColor color;
-		parseColorString(it->second, color, false, 0xFF);
+		parseColorString(val, color, false, 0xFF);
 		return color;
 	}
 
-	bool hasProperty(Property prop) const {
-		return properties.find(prop) != properties.end();
+	bool getBool(Property prop, bool def) const
+	{
+		const auto &val = properties[prop];
+		if (val.empty()) {
+			return def;
+		}
+
+		return is_yes(val);
 	}
 
-	StyleSpec &operator|=(const StyleSpec &other) {
-		for (size_t i = 1; i < NUM_PROPERTIES; i++) {
+	inline bool isNotDefault(Property prop) const
+	{
+		return !properties[prop].empty();
+	}
+
+	inline bool hasProperty(Property prop) const { return property_set[prop]; }
+
+	StyleSpec &operator|=(const StyleSpec &other)
+	{
+		for (size_t i = 0; i < NUM_PROPERTIES; i++) {
 			auto prop = (Property)i;
 			if (other.hasProperty(prop)) {
-				properties[prop] = other.get(prop, "");
+				set(prop, other.get(prop, ""));
 			}
 		}
 
 		return *this;
 	}
 
-	StyleSpec operator|(const StyleSpec &other) const {
+	StyleSpec operator|(const StyleSpec &other) const
+	{
 		StyleSpec newspec = *this;
 		newspec |= other;
 		return newspec;
 	}
 };
-

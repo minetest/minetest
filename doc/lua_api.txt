@@ -1884,7 +1884,10 @@ When displaying text which can contain formspec code, e.g. text set by a player,
 use `minetest.formspec_escape`.
 For coloured text you can use `minetest.colorize`.
 
-WARNING: Minetest allows you to add elements to every single formspec instance
+**WARNING**: do _not_ use a element name starting with `key_`; those names are
+reserved to pass key press events to formspec!
+
+**WARNING**: Minetest allows you to add elements to every single formspec instance
 using `player:set_formspec_prepend()`, which may be the reason backgrounds are
 appearing when you don't expect them to, or why things are styled differently
 to normal. See [`no_prepend[]`] and [Styling Formspecs].
@@ -2351,22 +2354,17 @@ Elements
         * `span=<value>`: number of following columns to affect
           (default: infinite).
 
-**Note**: do _not_ use a element name starting with `key_`; those names are
-reserved to pass key press events to formspec!
+### `style[<name>;<prop1>;<prop2>;...]`
 
-### `style[<name>;<propery>;<value]`
-
-Set the style for the named element `name`.
-Note: this **must** be before the element's tag.
-
-See [Styling Formspecs].
+* Set the style for the named element `name`.
+* Note: this **must** be before the element is defined.
+* See [Styling Formspecs].
 
 
-### `style_type[<type>;<propery>;<value>]`
+### `style_type[<type>;<prop1>;<prop2>;...]`
 
-Sets the style for all elements of type `type` which appear after this tag.
-
-See [Styling Formspecs].
+* Sets the style for all elements of type `type` which appear after this element.
+* See [Styling Formspecs].
 
 Migrating to Real Coordinates
 -----------------------------
@@ -2406,27 +2404,82 @@ offsets when migrating:
 Styling Formspecs
 -----------------
 
-Formspec elements can be themed using the style tags:
+Formspec elements can be themed using the style elements:
 
-	style[ELEMENT_NAME;PROPERTY;VALUE]
-	style_type[ELEMENT_TYPE;PROPERTY;VALUE]
+    style[<name>;<prop1>;<prop2>;...]
+    style_type[<type>;<prop1>;<prop2>;...]
+
+Where a prop is:
+
+    property_name=property_value
 
 For example:
 
-	style_type[button;bgcolor;#006699]
-	style[world_delete;bgcolor;#ff0000]
-	button[4,3.95;2.6,1;world_delete;Delete]
+    style_type[button;bgcolor=#006699]
+    style[world_delete;bgcolor=red;textcolor=yellow]
+    button[4,3.95;2.6,1;world_delete;Delete]
+
+Setting a property to nothing will reset it to the default value. For example:
+
+    style_type[button;bgimg=button.png;bgimg_pressed=button_pressed.png;border=false]
+    style[btn_exit;bgimg=;bgimg_pressed=;border=;bgcolor=red]
+
+
+### Supported Element Types
+
+Some types may inherit styles from parent types.
+
+* button
+* button_exit, inherits from button
+* checkbox
+* scrollbar
+* table
+* textlist
+* dropdown
+* field
+* pwdfield, inherits from field
+* textarea
+* label
+* vertlabel, inherits from field
+* image_button
+* item_image_button, inherits from image_button
+* tabheader
+
 
 ### Valid Properties
 
-* button and button_exit
-	* bgcolor - sets button tint
-	* textcolor
+* button, button_exit
+    * bgcolor - color, sets button tint
+    * textcolor - color, default white
+    * border - boolean, draw border. Set to false to hide the bevelled button pane.  Default true.
+    * noclip - boolean, set to true to allow the element to exceed formspec bounds.
+    * bgimg - standard image. Defaults to none.
+    * bgimg_pressed - image when pressed. Defaults to bgimg when not provided.
+    * alpha - boolean, whether to draw alpha in bgimg. Default true.
+* checkbox
+    * noclip - boolean, set to true to allow the element to exceed formspec bounds.
+* scrollbar
+    * noclip - boolean, set to true to allow the element to exceed formspec bounds.
+* table, textlist
+    * noclip - boolean, set to true to allow the element to exceed formspec bounds.
+* dropdown
+    * noclip - boolean, set to true to allow the element to exceed formspec bounds.
+* field, pwdfield, textarea
+    * noclip - boolean, set to true to allow the element to exceed formspec bounds.
+    * border - set to false to hide the textbox background and border. Default true.
+    * textcolor - color. Default white.
+* label, vertlabel
+    * bgcolor - color. Default unset.
+    * textcolor - color. Default white.
+    * noclip - boolean, set to true to allow the element to exceed formspec bounds.
+    * border - boolean, set to true to get a border. Default true.
+* image_button, item_image_button
+    * noclip - boolean, set to true to allow the element to exceed formspec bounds.
+    * border - boolean, draw border. Set to false to hide the bevelled button pane. Default false.
+    * alpha - boolean, whether to draw alpha in bgimg. Default true.
 * tabheader
-	* bgcolor - tab background
-	* textcolor
-
-
+    * noclip - boolean, set to true to allow the element to exceed formspec bounds.
+    * textcolor - color. Default white.
 
 Inventory
 =========
