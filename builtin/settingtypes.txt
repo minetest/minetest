@@ -1918,7 +1918,7 @@ emergequeue_limit_generate (Limit of emerge queues to generate) int 64
 #    WARNING: Currently there are multiple bugs that may cause crashes when
 #    'num_emerge_threads' is larger than 1. Until this warning is removed it is
 #    strongly recommended this value is set to the default '1'.
-#    Empty or 0 value:
+#    Value 0:
 #    -    Automatic selection. The number of emerge threads will be
 #    -    'number of processors - 2', with a lower limit of 1.
 #    Any other value:
