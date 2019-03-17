@@ -628,10 +628,10 @@ int LuaEntitySAO::punch(v3f dir,
 		return 0;
 	}
 
+	assert(puncher);
+
 	s32 old_hp = getHP();
-	ItemStack punchitem;
-	if (puncher)
-		punchitem = puncher->getWieldedItem();
+	const ItemStack &punchitem = puncher->getWieldedItem();
 
 	PunchDamageResult result = getPunchDamage(
 			m_armor_groups,
@@ -662,14 +662,14 @@ int LuaEntitySAO::punch(v3f dir,
 	}
 
 	char log[256];
-	std::string desc_puncher = puncher->getDescription(),
-			desc_self = getDescription();
+	const std::string &desc_puncher = puncher->getDescription(),
+			&desc_self = getDescription();
 	porting::mt_snprintf(log, sizeof(log),
 			"%s (id=%i, hp=%i) punched %s (id=%i, hp=%i), damage=%i",
 			desc_puncher.c_str(), puncher->getId(), puncher->getHP(),
 			desc_self.c_str(), m_id, m_hp, (old_hp - (s32)getHP()),
 			damage_handled ? " (handled by Lua)" : "");
-	actionstream << log << std::endl;
+	infostream << log << std::endl;
 
 	return result.wear;
 }
@@ -1271,6 +1271,8 @@ int PlayerSAO::punch(v3f dir,
 	if (!toolcap)
 		return 0;
 
+	assert(puncher);
+
 	// No effect if PvP disabled
 	if (!g_settings->getBool("enable_pvp")) {
 		if (puncher->getType() == ACTIVEOBJECT_TYPE_PLAYER) {
@@ -1305,8 +1307,8 @@ int PlayerSAO::punch(v3f dir,
 	}
 
 	char log[256];
-	std::string desc_puncher = puncher->getDescription(),
-			desc_self = getDescription();
+	const std::string &desc_puncher = puncher->getDescription(),
+			&desc_self = getDescription();
 	porting::mt_snprintf(log, sizeof(log),
 			"%s (id=%i, hp=%i) punched %s (id=%i, hp=%i), damage=%i%s",
 			desc_puncher.c_str(), puncher->getId(), puncher->getHP(),
