@@ -23,7 +23,7 @@ end)
 
 function core.after(after, func, ...)
 	assert(tonumber(after) and type(func) == "function",
-		"Invalid core.after invocation")
+		"Invalid minetest.after invocation")
 	jobs[#jobs + 1] = {
 		func = func,
 		expire = time + after,
