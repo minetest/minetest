@@ -2399,6 +2399,8 @@ For the following functions, `v`, `v1`, `v2` are vectors,
     * Returns a boolean, `true` if the vectors are identical.
 * `vector.sort(v1, v2)`:
     * Returns in order minp, maxp vectors of the cuboid defined by `v1`, `v2`.
+* `vector.angle(v1, v2)`:
+    * Returns the angle between `v1` and `v2` in radians.
 
 For the following functions `x` can be either a vector or a number:
 
