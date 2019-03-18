@@ -6868,6 +6868,7 @@ Used by `minetest.add_particlespawner`.
         maxvel = {x=0, y=0, z=0},
         minacc = {x=0, y=0, z=0},
         maxacc = {x=0, y=0, z=0},
+		-- ^ Is cut off to 0 if the lengths of both minacc and maxacc are smaller than 0.001
         minexptime = 1,
         maxexptime = 1,
         minsize = 1,

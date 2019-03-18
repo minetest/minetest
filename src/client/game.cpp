@@ -3737,10 +3737,6 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 		}
 	}
 
-	/*
-		Update particles
-	*/
-	client->getParticleManager()->step(dtime);
 
 	/*
 		Fog
