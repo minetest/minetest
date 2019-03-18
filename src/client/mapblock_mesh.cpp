@@ -744,7 +744,7 @@ void getNodeTile(MapNode mn, const v3s16 &p, const v3s16 &dir, MeshMakeData *dat
 	u8 dir_i = ((dir.X + 2 * dir.Y + 3 * dir.Z) & 7) * 2;
 
 	// Get rotation for things like chests
-	u8 facedir = mn.getFaceDir(ndef);
+	u8 facedir = mn.getFaceDir(ndef, true);
 
 	static const u16 dir_to_tile[24 * 16] =
 	{
