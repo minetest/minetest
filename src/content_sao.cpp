@@ -1059,7 +1059,7 @@ void PlayerSAO::step(float dtime, bool send_recommended)
 		}
 	}
 
-	if (!m_properties_sent && !m_hidden) {
+	if (!m_properties_sent) {
 		m_properties_sent = true;
 		std::string str = getPropertyPacket();
 		// create message and add to list
@@ -1104,7 +1104,7 @@ void PlayerSAO::step(float dtime, bool send_recommended)
 		setBasePosition(pos);
 	}
 
-	if (!send_recommended || m_hidden)
+	if (!send_recommended)
 		return;
 
 	// If the object is attached client-side, don't waste bandwidth sending its
