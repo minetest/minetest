@@ -577,7 +577,8 @@ static void init_log_streams(const Settings &cmd_args)
 			"using maximum." << std::endl;
 	}
 
-	file_log_output.setFile(log_filename);
+	file_log_output.setFile(log_filename,
+		g_settings->getU64("debug_log_size_max"));
 	g_logger.addOutputMaxLevel(&file_log_output, log_level);
 }
 

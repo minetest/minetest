@@ -34,9 +34,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <cerrno>
 #include <cstring>
 
-// A Megabyte should suffice for the previous debug file deletion threshold
-#define DEBUGFILE_SIZE_MAX 1000000
-
 const int BUFFER_LENGTH = 256;
 
 class StringBuffer : public std::streambuf {
@@ -313,12 +310,12 @@ void Logger::logToOutputs(LogLevel lev, const std::string &combined,
 //// *LogOutput methods
 ////
 
-void FileLogOutput::setFile(const std::string &filename)
+void FileLogOutput::setFile(const std::string &filename, u64 file_size_max)
 {
 	actionstream << "Log messages are saved to " << filename << std::endl;
 
 	std::ifstream ifile(filename.c_str(), std::ios::binary | std::ios::ate);
-	bool truncate = ifile.tellg() > DEBUGFILE_SIZE_MAX;
+	bool truncate = ifile.tellg() > static_cast<std::streamoff>(file_size_max);
 	ifile.close();
 
 	if (!truncate) {
