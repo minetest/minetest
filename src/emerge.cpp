@@ -128,10 +128,10 @@ EmergeManager::EmergeManager(Server *server)
 
 	enable_mapgen_debug_info = g_settings->getBool("enable_mapgen_debug_info");
 
-	// If unspecified, leave a proc for the main thread and one for
-	// some other misc thread
-	s16 nthreads;
+	s16 nthreads = 1;
 	g_settings->getS16NoEx("num_emerge_threads", nthreads);
+	// If automatic, leave a proc for the main thread and one for
+	// some other misc thread
 	if (nthreads == 0)
 		nthreads = Thread::getNumberOfProcessors() - 2;
 	if (nthreads < 1)
