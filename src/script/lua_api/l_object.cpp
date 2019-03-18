@@ -761,6 +761,53 @@ int ObjectRef::l_get_properties(lua_State *L)
 	return 1;
 }
 
+// hide(self)
+int ObjectRef::l_hide(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	ObjectRef *ref = checkobject(L, 1);
+	ServerActiveObject *co = getobject(ref);
+
+	if (co == NULL)
+		return 0;
+
+	co->hide();
+	lua_pushboolean(L, true);
+
+	return 1;
+}
+
+// unhide(self)
+int ObjectRef::l_unhide(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	ObjectRef *ref = checkobject(L, 1);
+	ServerActiveObject *co = getobject(ref);
+
+	if (co == NULL)
+		return 0;
+
+	co->unhide();
+	lua_pushboolean(L, true);
+
+	return 1;
+}
+
+// is_hidden(self)
+int ObjectRef::l_is_hidden(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	ObjectRef *ref = checkobject(L, 1);
+	ServerActiveObject *co = getobject(ref);
+
+	if (co == NULL)
+		return 0;
+
+	lua_pushboolean(L, co->isHidden());
+
+	return 1;
+}
+
 // is_player(self)
 int ObjectRef::l_is_player(lua_State *L)
 {
@@ -1886,6 +1933,9 @@ luaL_Reg ObjectRef::methods[] = {
 	luamethod(ObjectRef, set_detach),
 	luamethod(ObjectRef, set_properties),
 	luamethod(ObjectRef, get_properties),
+	luamethod(ObjectRef, hide),
+	luamethod(ObjectRef, unhide),
+	luamethod(ObjectRef, is_hidden),
 	luamethod(ObjectRef, set_nametag_attributes),
 	luamethod(ObjectRef, get_nametag_attributes),
 	// LuaEntitySAO-only

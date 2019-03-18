@@ -396,8 +396,7 @@ ServerActiveObject* LuaEntitySAO::create(ServerEnvironment *env, v3f pos,
 
 void LuaEntitySAO::step(float dtime, bool send_recommended)
 {
-	if(!m_properties_sent)
-	{
+	if (!m_properties_sent && !m_hidden) {
 		m_properties_sent = true;
 		std::string str = getPropertyPacket();
 		// create message and add to list
@@ -406,8 +405,7 @@ void LuaEntitySAO::step(float dtime, bool send_recommended)
 	}
 
 	// If attached, check that our parent is still there. If it isn't, detach.
-	if(m_attachment_parent_id && !isAttached())
-	{
+	if (m_attachment_parent_id && !isAttached()) {
 		m_attachment_parent_id = 0;
 		m_attachment_bone = "";
 		m_attachment_position = v3f(0,0,0);
@@ -419,16 +417,13 @@ void LuaEntitySAO::step(float dtime, bool send_recommended)
 
 	// Each frame, parent position is copied if the object is attached, otherwise it's calculated normally
 	// If the object gets detached this comes into effect automatically from the last known origin
-	if(isAttached())
-	{
+	if (isAttached()) {
 		v3f pos = m_env->getActiveObject(m_attachment_parent_id)->getBasePosition();
 		m_base_position = pos;
 		m_velocity = v3f(0,0,0);
 		m_acceleration = v3f(0,0,0);
-	}
-	else
-	{
-		if(m_prop.physical){
+	} else {
+		if (m_prop.physical) {
 			aabb3f box = m_prop.collisionbox;
 			box.MinEdge *= BS;
 			box.MaxEdge *= BS;
@@ -465,20 +460,19 @@ void LuaEntitySAO::step(float dtime, bool send_recommended)
 		}
 	}
 
-	if(m_registered){
+	if (m_registered) {
 		m_env->getScriptIface()->luaentity_Step(m_id, dtime);
 	}
 
-	if (!send_recommended)
+	if (!send_recommended || m_hidden)
 		return;
 
-	if(!isAttached())
-	{
+	if (!isAttached()) {
 		// TODO: force send when acceleration changes enough?
 		float minchange = 0.2*BS;
-		if(m_last_sent_position_timer > 1.0){
+		if (m_last_sent_position_timer > 1.0) {
 			minchange = 0.01*BS;
-		} else if(m_last_sent_position_timer > 0.2){
+		} else if (m_last_sent_position_timer > 0.2) {
 			minchange = 0.05*BS;
 		}
 		float move_d = m_base_position.getDistanceFrom(m_last_sent_position);
@@ -542,6 +536,9 @@ void LuaEntitySAO::step(float dtime, bool send_recommended)
 
 std::string LuaEntitySAO::getClientInitializationData(u16 protocol_version)
 {
+	if (m_hidden)
+		return "";
+
 	std::ostringstream os(std::ios::binary);
 
 	// PROTOCOL_VERSION >= 37
@@ -723,6 +720,21 @@ void LuaEntitySAO::setHP(s32 hp, const PlayerHPChangeReason &reason)
 u16 LuaEntitySAO::getHP() const
 {
 	return m_hp;
+}
+
+void LuaEntitySAO::hide()
+{
+	m_hidden = true;
+}
+
+void LuaEntitySAO::unhide()
+{
+	m_hidden = false;
+}
+
+bool LuaEntitySAO::isHidden() const
+{
+	return m_hidden;
 }
 
 void LuaEntitySAO::setVelocity(v3f velocity)
@@ -938,6 +950,9 @@ void PlayerSAO::removingFromEnvironment()
 
 std::string PlayerSAO::getClientInitializationData(u16 protocol_version)
 {
+	if (m_hidden)
+		return "";
+
 	std::ostringstream os(std::ios::binary);
 
 	// Protocol >= 15
@@ -1050,7 +1065,7 @@ void PlayerSAO::step(float dtime, bool send_recommended)
 		}
 	}
 
-	if (!m_properties_sent) {
+	if (!m_properties_sent && !m_hidden) {
 		m_properties_sent = true;
 		std::string str = getPropertyPacket();
 		// create message and add to list
@@ -1095,7 +1110,7 @@ void PlayerSAO::step(float dtime, bool send_recommended)
 		setBasePosition(pos);
 	}
 
-	if (!send_recommended)
+	if (!send_recommended || m_hidden)
 		return;
 
 	// If the object is attached client-side, don't waste bandwidth sending its

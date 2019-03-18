@@ -1543,7 +1543,7 @@ void ServerEnvironment::getRemovedActiveObjects(PlayerSAO *playersao, s16 radius
 			continue;
 		}
 
-		if (object->isGone()) {
+		if (object->isGone() || (object->isHidden() && playersao != object)) {
 			removed_objects.push(id);
 			continue;
 		}

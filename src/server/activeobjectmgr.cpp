@@ -144,7 +144,7 @@ void ActiveObjectMgr::getAddedActiveObjectsAroundPos(const v3f &player_pos, f32 
 		if (!object)
 			continue;
 
-		if (object->isGone())
+		if (object->isGone() || object->isHidden())
 			continue;
 
 		f32 distance_f = object->getBasePosition().getDistanceFrom(player_pos);

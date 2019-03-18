@@ -129,6 +129,9 @@ public:
 	std::string getDescription();
 	void setHP(s32 hp, const PlayerHPChangeReason &reason);
 	u16 getHP() const;
+	void hide();
+	void unhide();
+	bool isHidden() const;
 	/* LuaEntitySAO-specific */
 	void setVelocity(v3f velocity);
 	void addVelocity(v3f velocity)

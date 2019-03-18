@@ -145,6 +145,10 @@ public:
 	virtual u16 getHP() const
 	{ return 0; }
 
+	virtual void hide() { m_hidden = true; }
+	virtual void unhide() { m_hidden = false; }
+	virtual bool isHidden() { return m_hidden; }
+
 	virtual void setArmorGroups(const ItemGroupList &armor_groups)
 	{}
 	virtual const ItemGroupList &getArmorGroups()
@@ -255,6 +259,8 @@ public:
 protected:
 	virtual void onAttach(int parent_id) {}
 	virtual void onDetach(int parent_id) {}
+
+	bool m_hidden = false;
 
 	// Used for creating objects based on type
 	typedef ServerActiveObject* (*Factory)
