@@ -315,10 +315,10 @@ void FileLogOutput::setFile(const std::string &filename, u64 file_size_max)
 	actionstream << "Log messages are saved to " << filename << std::endl;
 
 	std::ifstream ifile(filename.c_str(), std::ios::binary | std::ios::ate);
-	bool truncate = ifile.tellg() > static_cast<std::streamoff>(file_size_max);
+	bool is_too_large = ifile.tellg() > static_cast<std::streamoff>(file_size_max);
 	ifile.close();
 
-	if (!truncate) {
+	if (!is_too_large) {
 		m_stream.open(filename.c_str(), std::ios::app | std::ios::ate);
 	} else {
 		actionstream << "The log file grew too big. "
