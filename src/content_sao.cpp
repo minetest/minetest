@@ -536,9 +536,6 @@ void LuaEntitySAO::step(float dtime, bool send_recommended)
 
 std::string LuaEntitySAO::getClientInitializationData(u16 protocol_version)
 {
-	if (m_hidden)
-		return "";
-
 	std::ostringstream os(std::ios::binary);
 
 	// PROTOCOL_VERSION >= 37
@@ -950,9 +947,6 @@ void PlayerSAO::removingFromEnvironment()
 
 std::string PlayerSAO::getClientInitializationData(u16 protocol_version)
 {
-	if (m_hidden)
-		return "";
-
 	std::ostringstream os(std::ios::binary);
 
 	// Protocol >= 15
