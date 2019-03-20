@@ -22,6 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "irrlichttypes_bloated.h"
 #include "inventory.h"
 #include "constants.h"
+#include "script/common/c_types.h"
 #include "network/networkprotocol.h"
 #include "util/basic_macros.h"
 #include <list>
@@ -114,6 +115,18 @@ struct PlayerSettings
 	void readGlobalSettings();
 };
 
+enum CameraMode {
+	CAMERA_MODE_NULL = -1, CAMERA_MODE_FIRST, CAMERA_MODE_THIRD, CAMERA_MODE_FRONT
+};
+
+const EnumString es_CameraModes[] = {
+	{ CAMERA_MODE_FIRST,       "first" },
+	{ CAMERA_MODE_THIRD,       "third" },
+	{ CAMERA_MODE_FRONT,       "front" },
+	{ CAMERA_MODE_NULL,        "" }
+	// FIXME: A class or struct with member functions might probably be a better solution
+};
+
 class Map;
 struct CollisionInfo;
 struct HudElement;
@@ -200,11 +213,14 @@ public:
 		return m_fov_override_spec;
 	}
 
+	void setCameraModes(std::set<CameraMode> &modes) { m_camera_modes = modes; }
+	const std::set<CameraMode> &getCameraModes() const { return m_camera_modes; }
+
 	u32 keyPressed = 0;
 
-	HudElement* getHud(u32 id);
+	HudElement *getHud(u32 id);
 	u32         addHud(HudElement* hud);
-	HudElement* removeHud(u32 id);
+	HudElement *removeHud(u32 id);
 	void        clearHud();
 
 	u32 hud_flags;
@@ -217,6 +233,7 @@ protected:
 	PlayerFovSpec m_fov_override_spec = { 0.0f, false, 0.0f };
 
 	std::vector<HudElement *> hud;
+	std::set<CameraMode> m_camera_modes;
 private:
 	// Protect some critical areas
 	// hud for example can be modified by EmergeThread

@@ -1615,3 +1615,24 @@ void Client::handleCommand_ModChannelSignal(NetworkPacket *pkt)
 	if (valid_signal)
 		m_script->on_modchannel_signal(channel, signal);
 }
+
+void Client::handleCommand_CameraModes(NetworkPacket *pkt)
+{
+	u16 serialized_modes;
+	*pkt >> serialized_modes;
+	std::set<CameraMode> modes;
+
+	errorstream << "\thandleCommand_CameraModes | " << serialized_modes << std::endl;
+
+	LocalPlayer *player = m_env.getLocalPlayer();
+	if (!player)
+		return;
+
+	// De-serialise bit flags
+	for (u16 i = 0; es_CameraModes[i].num != CAMERA_MODE_NULL; ++i) {
+		if (serialized_modes & (1 << es_CameraModes[i].num))
+			modes.emplace(static_cast<CameraMode>(es_CameraModes[i].num));
+	}
+
+	player->setCameraModes(modes);
+}

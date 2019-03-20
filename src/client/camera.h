@@ -22,6 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "irrlichttypes_extrabloated.h"
 #include "inventory.h"
 #include "client/tile.h"
+#include "player.h"
 #include <ICameraSceneNode.h>
 #include <ISceneNode.h>
 #include <list>
@@ -47,8 +48,6 @@ struct Nametag {
 	video::SColor nametag_color;
 	v3f nametag_pos;
 };
-
-enum CameraMode {CAMERA_MODE_FIRST, CAMERA_MODE_THIRD, CAMERA_MODE_THIRD_FRONT};
 
 /*
 	Client camera class, manages the player and camera scene nodes, the viewing distance
@@ -142,14 +141,7 @@ public:
 	void drawWieldedTool(irr::core::matrix4* translation=NULL);
 
 	// Toggle the current camera mode
-	void toggleCameraMode() {
-		if (m_camera_mode == CAMERA_MODE_FIRST)
-			m_camera_mode = CAMERA_MODE_THIRD;
-		else if (m_camera_mode == CAMERA_MODE_THIRD)
-			m_camera_mode = CAMERA_MODE_THIRD_FRONT;
-		else
-			m_camera_mode = CAMERA_MODE_FIRST;
-	}
+	void toggleCameraMode();
 
 	// Set the current camera mode
 	inline void setCameraMode(CameraMode mode)
@@ -185,7 +177,7 @@ private:
 	WieldMeshSceneNode *m_wieldnode = nullptr;
 
 	// draw control
-	MapDrawControl& m_draw_control;
+	MapDrawControl &m_draw_control;
 
 	Client *m_client;
 
@@ -241,6 +233,11 @@ private:
 	ItemStack m_wield_item_next;
 
 	CameraMode m_camera_mode = CAMERA_MODE_FIRST;
+	const std::set<CameraMode> m_default_camera_modes = {
+		CAMERA_MODE_FIRST,
+		CAMERA_MODE_FIRST,
+		CAMERA_MODE_THIRD
+	};
 
 	f32 m_cache_fall_bobbing_amount;
 	f32 m_cache_view_bobbing_amount;

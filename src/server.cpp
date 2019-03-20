@@ -1900,6 +1900,32 @@ void Server::SendPlayerFov(session_t peer_id)
 	Send(&pkt);
 }
 
+void Server::SendCameraModes(RemotePlayer *player, std::set<CameraMode> modes)
+{
+	errorstream << "\tSendCameraModes" << std::endl;
+	session_t peer_id = player->getPeerId();
+	if (peer_id == PEER_ID_INEXISTENT)
+		return;
+	errorstream<<"\tBreakpoint 1"<<std::endl;
+	NetworkPacket pkt(TOCLIENT_CAMERA_MODES, 0, peer_id);
+	errorstream<<"\tBreakpoint 2"<<std::endl;
+
+	// Serialize camera modes for sending over the network
+	u16 serialized_modes = 0;
+	for (u16 i = 0; es_CameraModes[i].num != CAMERA_MODE_NULL; i++) {
+		if (modes.find((CameraMode) es_CameraModes[i].num) != modes.end())
+			serialized_modes |= (1 << i);
+	}
+
+	errorstream<<"\tBreakpoint 3"<<std::endl;
+
+	errorstream << serialized_modes << std::endl;
+
+	pkt << serialized_modes;
+	Send(&pkt);
+	errorstream<<"\tBreakpoint 4"<<std::endl;
+}
+
 void Server::SendLocalPlayerAnimations(session_t peer_id, v2s32 animation_frames[4],
 		f32 animation_speed)
 {

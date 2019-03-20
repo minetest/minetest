@@ -383,4 +383,11 @@ private:
 
 	// send_mapblock(pos)
 	static int l_send_mapblock(lua_State *L);
+
+	// set_camera_mode_restriction_flags(self, {first = , third = , third_front = })
+	static int l_set_camera_modes(lua_State *L);
+
+	// get_camera_mode_restriction_flags(self)
+	static int l_get_camera_modes(lua_State *L);
+
 };

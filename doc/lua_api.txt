@@ -6224,6 +6224,19 @@ object you are working with still exists.
     * Returns `false` if failed.
     * Resource intensive - use sparsely
     * To get blockpos, integer divide pos by 16
+* `set_camera_modes(modes)`: Sets the allowed camera modes for the player.
+    * `modes` is a table containing the following fields:
+      ```lua
+      {
+          "first" = true,
+          "third" = true,
+          "third_front" = true
+      }
+      ```
+    * Calling `set_camera_modes` without any table is shorthand for enabling
+      all camera modes (default).
+* `get_camera_modes()`: Returns a table of camera modes usable by the player
+  as in `set_camera_modes`.
 
 `PcgRandom`
 -----------

@@ -170,6 +170,10 @@ bool               string_to_enum            (const EnumString *spec,
                                               int &result,
                                               const std::string &str);
 
+bool               enum_to_string            (const EnumString *spec,
+                                              int &num,
+                                              std::string &result);
+
 bool               read_noiseparams          (lua_State *L, int index,
                                               NoiseParams *np);
 void               push_noiseparams          (lua_State *L, NoiseParams *np);

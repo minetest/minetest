@@ -23,6 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "map.h"
 #include "hud.h"
 #include "gamedef.h"
+#include "player.h"
 #include "serialization.h" // For SER_FMT_VER_INVALID
 #include "content/mods.h"
 #include "inventorymanager.h"
@@ -347,6 +348,8 @@ public:
 	void SendPlayerFov(session_t peer_id);
 
 	void sendDetachedInventories(session_t peer_id, bool incremental);
+
+	void SendCameraModes(RemotePlayer *player, std::set<CameraMode> modes);
 
 	virtual bool registerModStorage(ModMetadata *storage);
 	virtual void unregisterModStorage(const std::string &name);

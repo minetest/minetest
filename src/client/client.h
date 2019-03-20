@@ -221,6 +221,7 @@ public:
 	void handleCommand_FormspecPrepend(NetworkPacket *pkt);
 	void handleCommand_CSMRestrictionFlags(NetworkPacket *pkt);
 	void handleCommand_PlayerSpeed(NetworkPacket *pkt);
+	void handleCommand_CameraModes(NetworkPacket *pkt);
 
 	void ProcessData(NetworkPacket *pkt);
 

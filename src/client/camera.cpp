@@ -454,7 +454,7 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 busytime, f32 tool_r
 	// Reposition the camera for third person view
 	if (m_camera_mode > CAMERA_MODE_FIRST)
 	{
-		if (m_camera_mode == CAMERA_MODE_THIRD_FRONT)
+		if (m_camera_mode == CAMERA_MODE_FRONT)
 			m_camera_direction *= -1;
 
 		my_cp.Y += 2;
@@ -667,7 +667,7 @@ void Camera::drawWieldedTool(irr::core::matrix4* translation)
 	// Draw the wielded node (in a separate scene manager)
 	scene::ICameraSceneNode* cam = m_wieldmgr->getActiveCamera();
 	cam->setAspectRatio(m_cameranode->getAspectRatio());
-	cam->setFOV(72.0*M_PI/180.0);
+	cam->setFOV(72.0*M_PI / 180.0);
 	cam->setNearValue(10);
 	cam->setFarValue(1000);
 	if (translation != NULL)
@@ -683,6 +683,34 @@ void Camera::drawWieldedTool(irr::core::matrix4* translation)
 		cam->setTarget(focusPoint);
 	}
 	m_wieldmgr->drawAll();
+}
+
+void Camera::toggleCameraMode()
+{
+	LocalPlayer *player = m_client->getEnv().getLocalPlayer();
+	std::set<CameraMode> modes = player->getCameraModes();
+	std::set<CameraMode>::iterator it;
+
+	// If server sends no camera modes, revert to default set of camera modes
+	if (modes.empty()) {
+		warningstream << "Camera::toggleCameraMode() | No server-sent camera modes. Reverting to default..." << std::endl;
+
+		// Use first available camera mode if current camera
+		// mode isn't available in m_default_camera_modes
+		it = m_default_camera_modes.find(m_camera_mode);
+		if (it == m_default_camera_modes.end())
+			it = m_default_camera_modes.begin();
+	} else {
+		warningstream << "Camera::toggleCameraMode() | Server-sent camera modes available. Cycling to next available mode..." << std::endl;
+
+		// If current camera mode not found, or is the last
+		// camera mode, set to first available camera mode
+		auto it = modes.find(m_camera_mode);
+		if (it == modes.end() || ++it == modes.end())
+			it = modes.begin();
+	}
+
+	m_camera_mode = *it;
 }
 
 void Camera::drawNametags()

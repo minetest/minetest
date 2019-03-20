@@ -1168,13 +1168,26 @@ int getenumfield(lua_State *L, int table,
 }
 
 /******************************************************************************/
-bool string_to_enum(const EnumString *spec, int &result,
-		const std::string &str)
+bool string_to_enum(const EnumString *spec, int &result, const std::string &str)
 {
 	const EnumString *esp = spec;
-	while(esp->str){
+	while(esp->str) {
 		if (!strcmp(str.c_str(), esp->str)) {
 			result = esp->num;
+			return true;
+		}
+		esp++;
+	}
+	return false;
+}
+
+/******************************************************************************/
+bool enum_to_string(const EnumString *spec, int &num, std::string &result)
+{
+	const EnumString *esp = spec;
+	while (esp->num) {
+		if (num == esp->num) {
+			result = std::string(esp->str);
 			return true;
 		}
 		esp++;

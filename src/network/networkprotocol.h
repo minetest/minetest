@@ -204,6 +204,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	PROTOCOL VERSION 39:
 		Updated set_sky packet
 		Adds new sun, moon and stars packets
+		Add TOCLIENT_CAMERA_MODES
 */
 
 #define LATEST_PROTOCOL_VERSION 39
@@ -323,7 +324,10 @@ enum ToClientCommand
 		v3f added_vel
 	 */
 
-	// (oops, there is some gap here)
+	TOCLIENT_CAMERA_MODES = 0x2C,
+	/*
+		u16 serialized_camera_modes
+	 */
 
 	TOCLIENT_CHAT_MESSAGE = 0x2F,
 	/*
