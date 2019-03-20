@@ -1097,7 +1097,7 @@ time_send_interval (Time send interval) int 5
 time_speed (Time speed) int 72
 
 #    Time of day when a new world is started, in millihours (0-23999).
-world_start_time (World start time) int 5250 0 23999
+world_start_time (World start time) int 6125 0 23999
 
 #    Interval of saving important changes in the world, stated in seconds.
 server_map_save_interval (Map save interval) float 5.3
