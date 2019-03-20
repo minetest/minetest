@@ -7,15 +7,15 @@ set_linux_compiler_env() {
 	elif [[ "${COMPILER}" == "gcc-6" ]]; then
 		export CC=gcc-6
 		export CXX=g++-6
-	elif [[ "${COMPILER}" == "gcc-7" ]]; then
-		export CC=gcc-7
-		export CXX=g++-7
+	elif [[ "${COMPILER}" == "gcc-8" ]]; then
+		export CC=gcc-8
+		export CXX=g++-8
 	elif [[ "${COMPILER}" == "clang-3.6" ]]; then
 		export CC=clang-3.6
 		export CXX=clang++-3.6
-	elif [[ "${COMPILER}" == "clang-5.0" ]]; then
-		export CC=clang-5.0
-		export CXX=clang++-5.0
+	elif [[ "${COMPILER}" == "clang-7" ]]; then
+		export CC=clang-7
+		export CXX=clang++-7
 	fi
 }
 

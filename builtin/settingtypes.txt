@@ -1327,10 +1327,8 @@ profiler_print_interval (Engine profiling data print interval) int 0
 
 #    Name of map generator to be used when creating a new world.
 #    Creating a world in the main menu will override this.
-#    Current stable mapgens:
-#    v5, v6, v7 (except floatlands), singlenode.
-#    'stable' means the terrain shape in an existing world will not be changed
-#    in the future. Note that biomes are defined by games and may still change.
+#    Current mapgens in a highly unstable state:
+#    -    The optional floatlands of v7 (disabled by default).
 mg_name (Mapgen name) enum v7 v5,v6,v7,valleys,carpathian,fractal,flat,singlenode
 
 #    Water surface level of the world.
@@ -1915,16 +1913,18 @@ emergequeue_limit_diskonly (Limit of emerge queues on disk) int 64
 emergequeue_limit_generate (Limit of emerge queues to generate) int 64
 
 #    Number of emerge threads to use.
-#    Empty or 0 value:
+#    WARNING: Currently there are multiple bugs that may cause crashes when
+#    'num_emerge_threads' is larger than 1. Until this warning is removed it is
+#    strongly recommended this value is set to the default '1'.
+#    Value 0:
 #    -    Automatic selection. The number of emerge threads will be
 #    -    'number of processors - 2', with a lower limit of 1.
 #    Any other value:
 #    -    Specifies the number of emerge threads, with a lower limit of 1.
-#    Warning: Increasing the number of emerge threads increases engine mapgen
+#    WARNING: Increasing the number of emerge threads increases engine mapgen
 #    speed, but this may harm game performance by interfering with other
 #    processes, especially in singleplayer and/or when running Lua code in
-#    'on_generated'.
-#    For many users the optimum setting may be '1'.
+#    'on_generated'. For many users the optimum setting may be '1'.
 num_emerge_threads (Number of emerge threads) int 1
 
 [Online Content Repository]

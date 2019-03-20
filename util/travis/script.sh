@@ -4,7 +4,7 @@
 
 needs_compile || exit 0
 
-if [[ "$LINT" == "1" ]]; then
+if [[ ! -z "${CLANG_FORMAT}" ]]; then
 	# Lint and exit CI
 	perform_lint
 	exit 0

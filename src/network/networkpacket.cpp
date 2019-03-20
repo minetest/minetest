@@ -281,12 +281,6 @@ NetworkPacket& NetworkPacket::operator<<(u64 src)
 	return *this;
 }
 
-NetworkPacket& NetworkPacket::operator<<(std::time_t src)
-{
-	*this << (u64) src;
-	return *this;
-}
-
 NetworkPacket& NetworkPacket::operator<<(float src)
 {
 	checkDataSize(4);
@@ -363,16 +357,6 @@ NetworkPacket& NetworkPacket::operator>>(u32& dst)
 }
 
 NetworkPacket& NetworkPacket::operator>>(u64& dst)
-{
-	checkReadOffset(m_read_offset, 8);
-
-	dst = readU64(&m_data[m_read_offset]);
-
-	m_read_offset += 8;
-	return *this;
-}
-
-NetworkPacket& NetworkPacket::operator>>(std::time_t& dst)
 {
 	checkReadOffset(m_read_offset, 8);
 

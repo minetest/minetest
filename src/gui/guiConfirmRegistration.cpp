@@ -38,10 +38,10 @@ const int ID_cancel = 265;
 GUIConfirmRegistration::GUIConfirmRegistration(gui::IGUIEnvironment *env,
 		gui::IGUIElement *parent, s32 id, IMenuManager *menumgr, Client *client,
 		const std::string &playername, const std::string &password,
-		const std::string &address, bool *aborted) :
+		bool *aborted) :
 		GUIModalMenu(env, parent, id, menumgr),
 		m_client(client), m_playername(playername), m_password(password),
-		m_address(address), m_aborted(aborted)
+		m_aborted(aborted)
 {
 #ifdef __ANDROID__
 	m_touchscreen_visible = false;

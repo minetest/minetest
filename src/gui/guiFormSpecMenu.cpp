@@ -2425,7 +2425,7 @@ void GUIFormSpecMenu::drawList(const ListDrawSpec &s, int layer,
 					if (tooltip_text.empty())
 						tooltip_text = utf8_to_wide(item.name);
 					else if (m_tooltip_append_itemname)
-						tooltip_text += utf8_to_wide(" [" + item.name + "]");
+						tooltip_text += utf8_to_wide("\n[" + item.name + "]");
 				}
 			}
 			if (!tooltip_text.empty()) {
