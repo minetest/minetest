@@ -3,6 +3,8 @@
 *.swp
 *.bak*
 *.orig
+# VSCode
+.vscode/*
 # Vim
 *.vim
 # Kate
@@ -66,10 +68,6 @@ doc/doxygen_*
 ## Build files
 CMakeFiles
 Makefile
-!build/android/Makefile
-build/android/path.cfg
-build/android/*.apk
-build/android/.externalNativeBuild
 cmake_install.cmake
 CMakeCache.txt
 CPackConfig.cmake
@@ -100,6 +98,10 @@ CMakeDoxy*
 compile_commands.json
 
 ## Android build files
+!build/android/Makefile
+build/android/path.cfg
+build/android/*.apk
+build/android/.externalNativeBuild
 build/android/src/main/assets
 build/android/build
 build/android/deps
