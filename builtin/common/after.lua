@@ -21,8 +21,8 @@ core.register_globalstep(function(dtime)
 			job.func(unpack(job.arg))
 			jobs[i] = jobs[#jobs]
 			jobs[#jobs] = nil
-		else
-			time_next = math.min(time_next, job.expire)
+		elseif job.expire < time_next then
+			time_next = job.expire
 		end
 	end
 end)
