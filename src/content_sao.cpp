@@ -628,7 +628,7 @@ int LuaEntitySAO::punch(v3f dir,
 		return 0;
 	}
 
-	assert(puncher);
+	FATAL_ERROR_IF(!puncher, "Punch action called without SAO");
 
 	s32 old_hp = getHP();
 	const ItemStack &punchitem = puncher->getWieldedItem();
@@ -661,15 +661,11 @@ int LuaEntitySAO::punch(v3f dir,
 		m_env->getScriptIface()->luaentity_on_death(m_id, puncher);
 	}
 
-	char log[256];
-	const std::string &desc_puncher = puncher->getDescription(),
-			&desc_self = getDescription();
-	porting::mt_snprintf(log, sizeof(log),
-			"%s (id=%i, hp=%i) punched %s (id=%i, hp=%i), damage=%i",
-			desc_puncher.c_str(), puncher->getId(), puncher->getHP(),
-			desc_self.c_str(), m_id, m_hp, (old_hp - (s32)getHP()),
-			damage_handled ? " (handled by Lua)" : "");
-	infostream << log << std::endl;
+	actionstream << puncher->getDescription() << " (id=" << puncher->getId() <<
+			", hp=" << puncher->getHP() << ") punched " <<
+			getDescription() << " (id=" << m_id << ", hp=" << m_hp <<
+			"), damage=" << (old_hp - (s32)getHP()) <<
+			(damage_handled ? " (handled by Lua)" : "") << std::endl;
 
 	return result.wear;
 }
@@ -1271,7 +1267,7 @@ int PlayerSAO::punch(v3f dir,
 	if (!toolcap)
 		return 0;
 
-	assert(puncher);
+	FATAL_ERROR_IF(!puncher, "Punch action called without SAO");
 
 	// No effect if PvP disabled
 	if (!g_settings->getBool("enable_pvp")) {
@@ -1306,15 +1302,11 @@ int PlayerSAO::punch(v3f dir,
 		}
 	}
 
-	char log[256];
-	const std::string &desc_puncher = puncher->getDescription(),
-			&desc_self = getDescription();
-	porting::mt_snprintf(log, sizeof(log),
-			"%s (id=%i, hp=%i) punched %s (id=%i, hp=%i), damage=%i%s",
-			desc_puncher.c_str(), puncher->getId(), puncher->getHP(),
-			desc_self.c_str(), m_id, m_hp, (old_hp - (s32)getHP()),
-			damage_handled ? " (handled by Lua)" : "");
-	actionstream << log << std::endl;
+	actionstream << puncher->getDescription() << " (id=" << puncher->getId() <<
+		", hp=" << puncher->getHP() << ") punched " <<
+		getDescription() << " (id=" << m_id << ", hp=" << m_hp <<
+		"), damage=" << (old_hp - (s32)getHP()) <<
+		(damage_handled ? " (handled by Lua)" : "") << std::endl;
 
 	return hitparams.wear;
 }
