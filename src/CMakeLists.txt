@@ -57,6 +57,19 @@ if(NOT USE_CURL)
 endif()
 
 
+option(ENABLE_LIBSECRET "Enable libsecret support for storing passwords securely" TRUE)
+set(USE_LIBSECRET FALSE)
+if(BUILD_CLIENT AND ENABLE_LIBSECRET)
+	include(FindPkgConfig)
+	pkg_check_modules(LIBSECRET glib-2.0 libsecret-1)
+	if(LIBSECRET_FOUND)
+		message(STATUS "libsecret support enabled")
+		set(USE_LIBSECRET TRUE)
+		include_directories(${LIBSECRET_INCLUDE_DIRS})
+	endif()
+endif()
+
+
 option(ENABLE_GETTEXT "Use GetText for internationalization" TRUE)
 set(USE_GETTEXT FALSE)
 
@@ -603,6 +616,9 @@ if(BUILD_CLIENT)
 	endif()
 	if (USE_SPATIAL)
 		target_link_libraries(${PROJECT_NAME} ${SPATIAL_LIBRARY})
+	endif()
+	if (USE_LIBSECRET)
+		target_link_libraries(${PROJECT_NAME} ${LIBSECRET_LIBRARIES})
 	endif()
 endif(BUILD_CLIENT)
 
