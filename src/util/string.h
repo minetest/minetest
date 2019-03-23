@@ -301,6 +301,25 @@ inline std::string trim(const std::string &str)
 {
 	size_t front = 0;
 
+	while (std::iswspace(str[front]))
+		++front;
+
+	size_t back = str.size();
+	while (back > front && std::iswspace(str[back - 1]))
+		--back;
+
+	return str.substr(front, back - front);
+}
+
+
+/**
+ * @param str
+ * @return A copy of \p str with leading and trailing whitespace removed.
+ */
+inline std::wstring trim(const std::wstring &str)
+{
+	size_t front = 0;
+
 	while (std::isspace(str[front]))
 		++front;
 
@@ -310,7 +329,6 @@ inline std::string trim(const std::string &str)
 
 	return str.substr(front, back - front);
 }
-
 
 /**
  * Returns whether \p str should be regarded as (bool) true.  Case and leading

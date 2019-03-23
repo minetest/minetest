@@ -2868,6 +2868,11 @@ std::wstring Server::handleChat(const std::string &name, const std::wstring &wna
 		}
 	}
 
+	auto first = wmessage.find_first_of(L"\n\r");
+	if (first != std::wstring::npos && !trim(wmessage.substr(first)).empty()) {
+		return L"New lines are not permitted in chat messages";
+	}
+
 	if (m_max_chatmessage_length > 0
 			&& wmessage.length() > m_max_chatmessage_length) {
 		return L"Your message exceed the maximum chat message limit set on the server. "
