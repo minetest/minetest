@@ -31,6 +31,12 @@ local function get_formspec(tabview, name, tabdata)
 		tabdata.search_for = ""
 	end
 
+	local address  = core.settings:get("address")
+	local port     = core.settings:get("remote_port")
+	local username = core.settings:get("name")
+	local password = core.formspec_escape(core.get_password(address, port, username)) or ""
+core.log("error", "Received password=\"" .. password .. "\" from LIBSECRET")
+
 	local retval =
 		-- Search
 		"field[0.15,0.075;5.91,1;te_search;;" .. core.formspec_escape(tabdata.search_for) .. "]" ..
@@ -41,15 +47,15 @@ local function get_formspec(tabview, name, tabdata)
 		-- Address / Port
 		"label[7.75,-0.25;" .. fgettext("Address / Port") .. "]" ..
 		"field[8,0.65;3.25,0.5;te_address;;" ..
-			core.formspec_escape(core.settings:get("address")) .. "]" ..
+			core.formspec_escape(address) .. "]" ..
 		"field[11.1,0.65;1.4,0.5;te_port;;" ..
-			core.formspec_escape(core.settings:get("remote_port")) .. "]" ..
+			core.formspec_escape(port) .. "]" ..
 
 		-- Name / Password
 		"label[7.75,0.95;" .. fgettext("Name / Password") .. "]" ..
 		"field[8,1.85;2.9,0.5;te_name;;" ..
-			core.formspec_escape(core.settings:get("name")) .. "]" ..
-		"pwdfield[10.73,1.85;1.77,0.5;te_pwd;]" ..
+			core.formspec_escape(username) .. "]" ..
+		"pwdfield[10.73,1.85;1.77,0.5;te_pwd;;" .. password .. "]" ..
 
 		-- Description Background
 		"box[7.73,2.25;4.25,2.6;#999999]"..

@@ -143,6 +143,10 @@ private:
 
 	static int l_get_max_supp_proto(lua_State *L);
 
+	static int l_get_password(lua_State *L);
+
+	static int l_store_password(lua_State *L);
+
 
 	// async
 	static int l_do_async_callback(lua_State *L);

@@ -930,6 +930,10 @@ void GUIFormSpecMenu::parsePwdField(parserData* data, const std::string &element
 		std::vector<std::string> v_geom = split(parts[1],',');
 		std::string name = parts[2];
 		std::string label = parts[3];
+		std::string default_val;
+		if (parts.size() >= 5) {
+			default_val = parts[4];
+		}
 
 		MY_CHECKPOS("pwdfield",0);
 		MY_CHECKGEOM("pwdfield",1);
@@ -955,8 +959,12 @@ void GUIFormSpecMenu::parsePwdField(parserData* data, const std::string &element
 			258+m_fields.size()
 			);
 
+		if (m_form_src)
+			default_val = m_form_src->resolveText(default_val);
+
+		spec.fdefault = utf8_to_wide(unescape_string(default_val));
 		spec.send = true;
-		gui::IGUIEditBox * e = Environment->addEditBox(0, rect, true, this, spec.fid);
+		gui::IGUIEditBox * e = Environment->addEditBox(spec.fdefault.c_str(), rect, true, this, spec.fid);
 
 		if (spec.fname == data->focused_fieldname) {
 			Environment->setFocus(e);
@@ -980,14 +988,6 @@ void GUIFormSpecMenu::parsePwdField(parserData* data, const std::string &element
 		evt.KeyInput.Shift       = false;
 		evt.KeyInput.PressedDown = true;
 		e->OnEvent(evt);
-
-		if (parts.size() >= 5) {
-			// TODO: remove after 2016-11-03
-			warningstream << "pwdfield: use field_close_on_enter[name, enabled]" <<
-					" instead of the 5th param" << std::endl;
-			field_close_on_enter[name] = is_yes(parts[4]);
-		}
-
 		m_fields.push_back(spec);
 		return;
 	}

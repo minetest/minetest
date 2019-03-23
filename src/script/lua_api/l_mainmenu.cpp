@@ -40,6 +40,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <IFileSystem.h>
 #include "client/renderingengine.h"
 #include "network/networkprotocol.h"
+#include "client/PasswordManager.h"
 
 
 /******************************************************************************/
@@ -1038,6 +1039,38 @@ int ModApiMainMenu::l_do_async_callback(lua_State *L)
 }
 
 /******************************************************************************/
+int ModApiMainMenu::l_get_password(lua_State *L)
+{
+	std::string server = luaL_checkstring(L, 1);
+	u16 port = luaL_checknumber(L, 2);
+	std::string username = luaL_checkstring(L, 3);
+
+	PasswordManager pwd;
+
+	std::string password;
+	if (!pwd.get(server, port, username, password)) {
+		return 0;
+	}
+
+	lua_pushstring(L, password.c_str());
+	return 1;
+}
+
+/******************************************************************************/
+int ModApiMainMenu::l_store_password(lua_State *L)
+{
+	std::string server = luaL_checkstring(L, 1);
+	u16 port = luaL_checknumber(L, 2);
+	std::string username = luaL_checkstring(L, 3);
+	std::string password = luaL_checkstring(L, 4);
+
+	PasswordManager pwd;
+	bool ret = pwd.store(server, port, username, password);
+	lua_pushboolean(L, ret);
+	return 1;
+}
+
+/******************************************************************************/
 void ModApiMainMenu::Initialize(lua_State *L, int top)
 {
 	API_FCT(update_formspec);
@@ -1078,6 +1111,8 @@ void ModApiMainMenu::Initialize(lua_State *L, int top)
 	API_FCT(get_min_supp_proto);
 	API_FCT(get_max_supp_proto);
 	API_FCT(do_async_callback);
+	API_FCT(get_password);
+	API_FCT(store_password);
 }
 
 /******************************************************************************/
