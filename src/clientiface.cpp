@@ -699,10 +699,14 @@ void ClientInterface::UpdatePlayerList()
 		for (session_t i : clients) {
 			RemotePlayer *player = m_env->getPlayer(i);
 
-			if (player == NULL)
+			if (player == nullptr)
 				continue;
 
 			infostream << "* " << player->getName() << "\t";
+
+			PlayerSAO *sao = player->getPlayerSAO();
+			if (sao != nullptr && sao->isHidden())
+				continue;
 
 			{
 				MutexAutoLock clientslock(m_clients_mutex);
