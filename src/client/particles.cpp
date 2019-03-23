@@ -81,37 +81,13 @@ private:
 	v3f position;
 };
 
-static video::SColor getParticleLightColor(ClientEnvironment *env, const v3f &position,
-	IGameDef *gamedef, u8 glow, const video::SColor &base_color)
-{
-	u8 light = 0;
-	bool pos_ok = true;
-
-	v3s16 p = v3s16(
-		floor(position.X+0.5),
-		floor(position.Y+0.5),
-		floor(position.Z+0.5));
-
-	MapNode map_node = env->getClientMap().getNodeNoEx(p, &pos_ok);
-
-	if (pos_ok)
-		light = map_node.getLightBlend(env->getDayNightRatio(), gamedef->ndef());
-	else
-		light = blend_light(env->getDayNightRatio(), LIGHT_SUN, 0);
-
-	u8 m_light = decode_light(light + glow);
-	return video::SColor (255,
-		m_light * base_color.getRed() / 255,
-		m_light * base_color.getGreen() / 255,
-		m_light * base_color.getBlue() / 255);
-}
 
 class LightingAffector : public irr::scene::IParticleAffector
 {
 public:
 	LightingAffector(ClientEnvironment *env, IGameDef *gamedef,
 		u8 glow, const video::SColor &base_color = video::SColor(0xFFFFFFFF))
-		:env(env), gamedef(gamedef), glow(glow),
+		: env(env), gamedef(gamedef), glow(glow),
 		base_color(base_color)
 	{
 	}
@@ -121,8 +97,7 @@ public:
 		for (u32 i = 0; i < count; ++i) {
 			v3f pos = particlearray[i].pos +
 				intToFloat(env->getCameraOffset(), BS);
-			color = getParticleLightColor(env, pos / BS,
-				gamedef, glow, base_color);
+			color = getParticleLightColor(pos / BS);
 			particlearray[i].color = color;
 		}
 	}
@@ -138,6 +113,30 @@ private:
 	video::SColor base_color;
 
 	video::SColor color;
+
+	video::SColor getParticleLightColor(const v3f &position)
+	{
+		u8 light = 0;
+		bool pos_ok = true;
+
+		v3s16 p = v3s16(
+			floor(position.X+0.5),
+			floor(position.Y+0.5),
+			floor(position.Z+0.5));
+
+		MapNode map_node = env->getClientMap().getNodeNoEx(p, &pos_ok);
+
+		if (pos_ok)
+			light = map_node.getLightBlend(env->getDayNightRatio(), gamedef->ndef());
+		else
+			light = blend_light(env->getDayNightRatio(), LIGHT_SUN, 0);
+
+		u8 m_light = decode_light(light + glow);
+		return video::SColor (255,
+			m_light * base_color.getRed() / 255,
+			m_light * base_color.getGreen() / 255,
+			m_light * base_color.getBlue() / 255);
+	}
 };
 
 class AnimationAffector : public irr::scene::IParticleAffector
@@ -338,7 +337,7 @@ public:
 		irr::scene::IParticleSystemSceneNode *ps, const video::SColor &color,
 		f32 expirationtime, f32 size, const v3f &vel):
 		smgr(smgr), ps(ps), number(1), deletion_time(0), color(color),
-		expirationtime((u32) expirationtime * 1e3f), size(size), pos(0), vel(vel),
+		expirationtime((u32) (expirationtime * 1e3f)), size(size), pos(0), vel(vel),
 		random_properties(false)
 	{
 		++single_particles_count;
@@ -516,14 +515,13 @@ void ParticleManager::handleParticleEvent(ClientEvent *event, Client *client, Lo
 {
 	switch (event->type) {
 	case CE_DELETE_PARTICLESPAWNER: {
-		//scene::ISceneNode *node = m_particle_spawners.
 		MutexAutoLock lock(m_spawner_list_lock);
 		auto node_it = m_particle_spawners.find(event->delete_particlespawner.id);
 		if (node_it != m_particle_spawners.end()) {
 			m_smgr->addToDeletionQueue(node_it->second);
 			m_particle_spawners.erase(node_it);
 		}
-		
+
 		// No allocated memory in delete event
 		break;
 	}
