@@ -2881,7 +2881,7 @@ std::wstring Server::handleChat(const std::string &name, const std::wstring &wna
 	}
 
 	// Run script hook, exit if script ate the chat message
-	if (m_script->on_chat_message(name, ))
+	if (m_script->on_chat_message(name, message))
 		return L"";
 
 	// Line to send
