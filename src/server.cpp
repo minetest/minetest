@@ -2868,19 +2868,20 @@ std::wstring Server::handleChat(const std::string &name, const std::wstring &wna
 		}
 	}
 
-	auto first = wmessage.find_first_of(L"\n\r");
-	if (first != std::wstring::npos && !trim(wmessage.substr(first)).empty()) {
-		return L"New lines are not permitted in chat messages";
-	}
-
 	if (m_max_chatmessage_length > 0
 			&& wmessage.length() > m_max_chatmessage_length) {
 		return L"Your message exceed the maximum chat message limit set on the server. "
 				L"It was refused. Send a shorter message";
 	}
 
+	auto message = wide_to_utf8(wmessage);
+	auto first = message.find_first_of("\n\r");
+	if (first != std::wstring::npos && !trim(message.substr(first)).empty()) {
+		return L"New lines are not permitted in chat messages";
+	}
+
 	// Run script hook, exit if script ate the chat message
-	if (m_script->on_chat_message(name, wide_to_utf8(wmessage)))
+	if (m_script->on_chat_message(name, ))
 		return L"";
 
 	// Line to send
