@@ -5187,7 +5187,7 @@ This is basically a reference to a C++ `ServerActiveObject`
 * `get_bone_position(bone)`: returns position and rotation of the bone
 * `set_properties(object property table)`
 * `get_properties()`: returns object property table
-* `hide()`: Hides the object. *Hidden objects cannot be seen by players.*
+* `hide()`: Hides the object. *Hidden objects are not sent to clients.*
 * `unhide()` Unhides the object.
 * `is_hidden()`: Returns true if the object is hidden.
 * `is_player()`: returns true for players, false otherwise
