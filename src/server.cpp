@@ -2874,9 +2874,8 @@ std::wstring Server::handleChat(const std::string &name, const std::wstring &wna
 				L"It was refused. Send a shorter message";
 	}
 
-	auto message = wide_to_utf8(wmessage);
-	auto first = message.find_first_of("\n\r");
-	if (first != std::wstring::npos && !trim(message.substr(first)).empty()) {
+	auto message = trim(wide_to_utf8(wmessage));
+	if (message.find_first_of("\n\r") != std::wstring::npos) {
 		return L"New lines are not permitted in chat messages";
 	}
 
