@@ -699,7 +699,7 @@ void ClientInterface::UpdatePlayerList()
 		for (session_t i : clients) {
 			RemotePlayer *player = m_env->getPlayer(i);
 
-			if (player == nullptr)
+			if (!player)
 				continue;
 
 			infostream << "* " << player->getName() << "\t";
