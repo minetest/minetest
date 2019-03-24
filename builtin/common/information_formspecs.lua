@@ -1,4 +1,4 @@
-local COLOR_BLUE = "#47F"
+local COLOR_BLUE = "#7AF"
 local COLOR_GREEN = "#7F7"
 local COLOR_GRAY = "#BBB"
 
@@ -6,8 +6,18 @@ local LIST_FORMSPEC = [[
 		size[13,6.5]
 		label[0,-0.1;%s]
 		tablecolumns[color;tree;text;text]
-		table[0,0.5;12.8,5.5;_cmds;%s;0]
-		button_exit[5.5,6;2,1;quit;%s]
+		table[0,0.5;12.8,5.5;list;%s;0]
+		button_exit[5,6;3,1;quit;%s]
+	]]
+
+local LIST_FORMSPEC_DESCRIPTION = [[
+		size[13,7.5]
+		label[0,-0.1;%s]
+		tablecolumns[color;tree;text;text]
+		table[0,0.5;12.8,4.8;list;%s;%i]
+		box[0,5.5;12.8,1.5;#000]
+		textarea[0.3,5.5;13.05,1.9;;;%s]
+		button_exit[5,7;3,1;quit;%s]
 	]]
 
 local formspec_escape = core.formspec_escape
@@ -40,9 +50,12 @@ end
 
 core.after(0, load_mod_command_tree)
 
-local function build_chatcommands_formspec(name)
+local function build_chatcommands_formspec(name, sel, copy)
 	local rows = {}
 	rows[1] = "#FFF,0,Command,Parameters"
+
+	local description = "For more information, click on any entry in the list.\n" ..
+		"Double-click to copy the entry to the chat history."
 
 	for i, data in ipairs(mod_cmds) do
 		rows[#rows + 1] = COLOR_BLUE .. ",0," .. formspec_escape(data[1]) .. ","
@@ -51,13 +64,20 @@ local function build_chatcommands_formspec(name)
 			rows[#rows + 1] = ("%s,1,%s,%s"):format(
 				has_priv and COLOR_GREEN or COLOR_GRAY,
 				cmds[1], formspec_escape(cmds[2].params))
+			if sel == #rows then
+				description = cmds[2].description
+				if copy then
+					core.chat_send_player(name, ("Command: %s %s"):format(
+						core.colorize("#0FF", "/" .. cmds[1]), cmds[2].params))
+				end
+			end
 		end
 	end
 
-	return LIST_FORMSPEC:format(
+	return LIST_FORMSPEC_DESCRIPTION:format(
 			"Available commands: (see also: /help <cmd>)",
-			table.concat(rows, ","),
-			"Close"
+			table.concat(rows, ","), sel or 0,
+			description, "Close"
 		)
 end
 
@@ -87,6 +107,23 @@ local function build_privs_formspec(name)
 			"Close"
 		)
 end
+
+
+-- DETAILED CHAT COMMAND INFORMATION
+
+core.register_on_player_receive_fields(function(player, formname, fields)
+	if formname ~= "__builtin:help_cmds" or fields.quit then
+		return
+	end
+
+	local event = minetest.explode_table_event(fields.list)
+	if event.type ~= "INV" then
+		local name = player:get_player_name()
+		core.show_formspec(name, "__builtin:help_cmds",
+			build_chatcommands_formspec(name, event.row, event.type == "DCL"))
+	end
+end)
+
 
 local help_command = core.registered_chatcommands["help"]
 local old_help_func = help_command.func
