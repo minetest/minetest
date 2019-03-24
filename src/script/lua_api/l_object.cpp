@@ -768,7 +768,7 @@ int ObjectRef::l_hide(lua_State *L)
 	ObjectRef *ref = checkobject(L, 1);
 	ServerActiveObject *co = getobject(ref);
 
-	if (co == NULL)
+	if (!co)
 		return 0;
 
 	co->hide();
@@ -784,7 +784,7 @@ int ObjectRef::l_unhide(lua_State *L)
 	ObjectRef *ref = checkobject(L, 1);
 	ServerActiveObject *co = getobject(ref);
 
-	if (co == NULL)
+	if (!co)
 		return 0;
 
 	co->unhide();
@@ -800,7 +800,7 @@ int ObjectRef::l_is_hidden(lua_State *L)
 	ObjectRef *ref = checkobject(L, 1);
 	ServerActiveObject *co = getobject(ref);
 
-	if (co == NULL)
+	if (!co)
 		return 0;
 
 	lua_pushboolean(L, co->isHidden());

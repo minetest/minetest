@@ -705,7 +705,7 @@ void ClientInterface::UpdatePlayerList()
 			infostream << "* " << player->getName() << "\t";
 
 			PlayerSAO *sao = player->getPlayerSAO();
-			if (sao != nullptr && sao->isHidden())
+			if (sao && sao->isHidden())
 				continue;
 
 			{

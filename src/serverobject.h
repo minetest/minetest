@@ -147,7 +147,7 @@ public:
 
 	virtual void hide() { m_hidden = true; }
 	virtual void unhide() { m_hidden = false; }
-	virtual bool isHidden() { return m_hidden; }
+	virtual const bool isHidden() { return m_hidden; }
 
 	virtual void setArmorGroups(const ItemGroupList &armor_groups)
 	{}
