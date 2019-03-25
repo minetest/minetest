@@ -77,7 +77,7 @@ struct MapgenV7Params : public MapgenParams {
 
 class MapgenV7 : public MapgenBasic {
 public:
-	MapgenV7(int mapgenid, MapgenV7Params *params, EmergeManager *emerge);
+	MapgenV7(MapgenV7Params *params, EmergeManager *emerge);
 	~MapgenV7();
 
 	virtual MapgenType getType() const { return MAPGEN_V7; }

@@ -48,8 +48,8 @@ FlagDesc flagdesc_mapgen_flat[] = {
 ///////////////////////////////////////////////////////////////////////////////////////
 
 
-MapgenFlat::MapgenFlat(int mapgenid, MapgenFlatParams *params, EmergeManager *emerge)
-	: MapgenBasic(mapgenid, params, emerge)
+MapgenFlat::MapgenFlat(MapgenFlatParams *params, EmergeManager *emerge)
+	: MapgenBasic(MAPGEN_FLAT, params, emerge)
 {
 	spflags          = params->spflags;
 	ground_level     = params->ground_level;

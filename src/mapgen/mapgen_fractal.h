@@ -62,7 +62,7 @@ struct MapgenFractalParams : public MapgenParams
 class MapgenFractal : public MapgenBasic
 {
 public:
-	MapgenFractal(int mapgenid, MapgenFractalParams *params, EmergeManager *emerge);
+	MapgenFractal(MapgenFractalParams *params, EmergeManager *emerge);
 	~MapgenFractal();
 
 	virtual MapgenType getType() const { return MAPGEN_FRACTAL; }

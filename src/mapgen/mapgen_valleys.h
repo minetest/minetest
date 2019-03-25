@@ -79,7 +79,7 @@ struct MapgenValleysParams : public MapgenParams {
 class MapgenValleys : public MapgenBasic {
 public:
 
-	MapgenValleys(int mapgenid, MapgenValleysParams *params,
+	MapgenValleys(MapgenValleysParams *params,
 		EmergeManager *emerge);
 	~MapgenValleys();
 

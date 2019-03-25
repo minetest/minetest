@@ -55,8 +55,8 @@ FlagDesc flagdesc_mapgen_v6[] = {
 /////////////////////////////////////////////////////////////////////////////
 
 
-MapgenV6::MapgenV6(int mapgenid, MapgenV6Params *params, EmergeManager *emerge)
-	: Mapgen(mapgenid, params, emerge)
+MapgenV6::MapgenV6(MapgenV6Params *params, EmergeManager *emerge)
+	: Mapgen(MAPGEN_V6, params, emerge)
 {
 	m_emerge = emerge;
 	ystride = csize.X; //////fix this

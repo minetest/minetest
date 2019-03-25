@@ -38,7 +38,7 @@ public:
 	content_t c_node;
 	u8 set_light;
 
-	MapgenSinglenode(int mapgenid, MapgenParams *params, EmergeManager *emerge);
+	MapgenSinglenode(MapgenParams *params, EmergeManager *emerge);
 	~MapgenSinglenode() = default;
 
 	virtual MapgenType getType() const { return MAPGEN_SINGLENODE; }
