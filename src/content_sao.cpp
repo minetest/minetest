@@ -729,7 +729,7 @@ void LuaEntitySAO::unhide()
 	m_hidden = false;
 }
 
-bool LuaEntitySAO::isHidden() const
+const bool LuaEntitySAO::isHidden() const
 {
 	return m_hidden;
 }
