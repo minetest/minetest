@@ -50,9 +50,8 @@ FlagDesc flagdesc_mapgen_carpathian[] = {
 ///////////////////////////////////////////////////////////////////////////////
 
 
-MapgenCarpathian::MapgenCarpathian(
-		int mapgenid, MapgenCarpathianParams *params, EmergeManager *emerge)
-	: MapgenBasic(mapgenid, params, emerge)
+MapgenCarpathian::MapgenCarpathian(MapgenCarpathianParams *params, EmergeManager *emerge)
+	: MapgenBasic(MAPGEN_CARPATHIAN, params, emerge)
 {
 	base_level       = params->base_level;
 

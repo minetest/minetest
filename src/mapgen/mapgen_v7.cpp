@@ -52,8 +52,8 @@ FlagDesc flagdesc_mapgen_v7[] = {
 ////////////////////////////////////////////////////////////////////////////////
 
 
-MapgenV7::MapgenV7(int mapgenid, MapgenV7Params *params, EmergeManager *emerge)
-	: MapgenBasic(mapgenid, params, emerge)
+MapgenV7::MapgenV7(MapgenV7Params *params, EmergeManager *emerge)
+	: MapgenBasic(MAPGEN_V7, params, emerge)
 {
 	spflags              = params->spflags;
 	mount_zero_level     = params->mount_zero_level;

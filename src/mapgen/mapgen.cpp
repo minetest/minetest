@@ -153,23 +153,23 @@ Mapgen *Mapgen::createMapgen(MapgenType mgtype, int mgid,
 {
 	switch (mgtype) {
 	case MAPGEN_CARPATHIAN:
-		return new MapgenCarpathian(mgid, (MapgenCarpathianParams *)params, emerge);
+		return new MapgenCarpathian((MapgenCarpathianParams *)params, emerge);
 	case MAPGEN_FLAT:
-		return new MapgenFlat(mgid, (MapgenFlatParams *)params, emerge);
+		return new MapgenFlat((MapgenFlatParams *)params, emerge);
 	case MAPGEN_FRACTAL:
-		return new MapgenFractal(mgid, (MapgenFractalParams *)params, emerge);
+		return new MapgenFractal((MapgenFractalParams *)params, emerge);
 	case MAPGEN_SINGLENODE:
-		return new MapgenSinglenode(mgid, (MapgenSinglenodeParams *)params, emerge);
+		return new MapgenSinglenode((MapgenSinglenodeParams *)params, emerge);
 	case MAPGEN_V5:
-		return new MapgenV5(mgid, (MapgenV5Params *)params, emerge);
+		return new MapgenV5((MapgenV5Params *)params, emerge);
 	case MAPGEN_V6:
-		return new MapgenV6(mgid, (MapgenV6Params *)params, emerge);
+		return new MapgenV6((MapgenV6Params *)params, emerge);
 	case MAPGEN_V7:
-		return new MapgenV7(mgid, (MapgenV7Params *)params, emerge);
+		return new MapgenV7((MapgenV7Params *)params, emerge);
 	case MAPGEN_VALLEYS:
-		return new MapgenValleys(mgid, (MapgenValleysParams *)params, emerge);
+		return new MapgenValleys((MapgenValleysParams *)params, emerge);
 	default:
-		return NULL;
+		return nullptr;
 	}
 }
 
@@ -194,7 +194,7 @@ MapgenParams *Mapgen::createMapgenParams(MapgenType mgtype)
 	case MAPGEN_VALLEYS:
 		return new MapgenValleysParams;
 	default:
-		return NULL;
+		return nullptr;
 	}
 }
 

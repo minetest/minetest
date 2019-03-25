@@ -59,7 +59,7 @@ struct MapgenV5Params : public MapgenParams
 class MapgenV5 : public MapgenBasic
 {
 public:
-	MapgenV5(int mapgenid, MapgenV5Params *params, EmergeManager *emerge);
+	MapgenV5(MapgenV5Params *params, EmergeManager *emerge);
 	~MapgenV5();
 
 	virtual MapgenType getType() const { return MAPGEN_V5; }

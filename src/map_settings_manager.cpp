@@ -174,8 +174,8 @@ MapgenParams *MapSettingsManager::makeMapgenParams()
 
 	// Create our MapgenParams
 	MapgenParams *params = Mapgen::createMapgenParams(mgtype);
-	if (params == NULL)
-		return NULL;
+	if (!params)
+		return nullptr;
 
 	params->mgtype = mgtype;
 
