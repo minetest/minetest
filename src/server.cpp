@@ -220,6 +220,7 @@ Server::Server(
 	m_itemdef(createItemDefManager()),
 	m_nodedef(createNodeDefManager()),
 	m_craftdef(createCraftDefManager()),
+	m_thread(new ServerThread(this)),
 	m_uptime(0),
 	m_clients(m_con),
 	m_admin_chat(iface),
@@ -320,9 +321,6 @@ void Server::init()
 	// Create world if it doesn't exist
 	if (!loadGameConfAndInitWorld(m_path_world, m_gamespec))
 		throw ServerError("Failed to initialize world");
-
-	// Create server thread
-	m_thread = new ServerThread(this);
 
 	// Create emerge manager
 	m_emerge = new EmergeManager(this);
