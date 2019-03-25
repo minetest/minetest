@@ -6040,7 +6040,11 @@ Used by `minetest.register_node`.
         place_param2 = nil,  -- Force value for param2 when player places node
 
         is_ground_content = true,
-        -- If false, the cave generator will not carve through this node
+        -- If false, the cave generator and dungeon generator will not carve
+        -- through this node.
+        -- Specifically, this stops mod-added nodes being removed by caves and
+        -- dungeons when those generate in a neighbor mapchunk and extend out
+        -- beyond the edge of that mapchunk.
 
         sunlight_propagates = false,
         -- If true, sunlight will go infinitely through this node
