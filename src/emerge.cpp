@@ -184,33 +184,28 @@ EmergeManager::~EmergeManager()
 }
 
 
-bool EmergeManager::initMapgens(MapgenParams *params)
+void EmergeManager::initMapgens(MapgenParams *params)
 {
-	if (!m_mapgens.empty())
-		return false;
+	FATAL_ERROR_IF(!m_mapgens.empty(), "mapgen already inited.");
 
-	this->mgparams = params;
+	mgparams = params;
 
-	for (u32 i = 0; i != m_threads.size(); i++) {
-		Mapgen *mg = Mapgen::createMapgen(params->mgtype, i, params, this);
-		m_mapgens.push_back(mg);
-	}
-
-	return true;
+	for (u32 i = 0; i != m_threads.size(); i++)
+		m_mapgens.push_back(Mapgen::createMapgen(params->mgtype, i, params, this));
 }
 
 
 Mapgen *EmergeManager::getCurrentMapgen()
 {
 	if (!m_threads_active)
-		return NULL;
+		return nullptr;
 
 	for (u32 i = 0; i != m_threads.size(); i++) {
 		if (m_threads[i]->isCurrentThread())
 			return m_threads[i]->m_mapgen;
 	}
 
-	return NULL;
+	return nullptr;
 }
 
 
