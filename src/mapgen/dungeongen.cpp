@@ -100,8 +100,11 @@ void DungeonGen::generate(MMVManip *vm, u32 bseed, v3s16 nmin, v3s16 nmax)
 
 	if (dp.only_in_ground) {
 		// Set all air and liquid drawtypes to be untouchable to make dungeons
-		// open to air and liquids. Optionally set ignore to be untouchable to
-		// prevent projecting dungeons.
+		// open to air and liquids.
+		// Optionally set ignore to be untouchable to prevent projecting dungeons.
+		// Like randomwalk caves, preserve nodes that have 'is_ground_content = false',
+		// to avoid dungeons that generate out beyond the edge of a mapchunk destroying
+		// nodes added by mods in 'register_on_generated()'.
 		for (s16 z = nmin.Z; z <= nmax.Z; z++) {
 			for (s16 y = nmin.Y; y <= nmax.Y; y++) {
 				u32 i = vm->m_area.index(nmin.X, y, z);
@@ -109,7 +112,8 @@ void DungeonGen::generate(MMVManip *vm, u32 bseed, v3s16 nmin, v3s16 nmax)
 					content_t c = vm->m_data[i].getContent();
 					NodeDrawType dtype = ndef->get(c).drawtype;
 					if (dtype == NDT_AIRLIKE || dtype == NDT_LIQUID ||
-							(preserve_ignore && c == CONTENT_IGNORE))
+							(preserve_ignore && c == CONTENT_IGNORE) ||
+							!ndef->get(c).is_ground_content)
 						vm->m_flags[i] |= VMANIP_FLAG_DUNGEON_PRESERVE;
 					i++;
 				}
