@@ -6135,12 +6135,15 @@ Used by `minetest.register_node`.
         legacy_wallmounted = false,
 
         waving = 0,
-        -- Valid for mesh, nodebox, plantlike, allfaces_optional nodes.
-        -- 1 - wave node like plants (top of node moves, bottom is fixed)
+        -- Valid for drawtypes:
+        -- mesh, nodebox, plantlike, allfaces_optional, liquid, flowingliquid.
+        -- 1 - wave node like plants (node top moves side-to-side, bottom is fixed)
         -- 2 - wave node like leaves (whole node moves side-to-side)
-        -- caveats: not all models will properly wave.
-        -- plantlike drawtype nodes can only wave like plants.
-        -- allfaces_optional drawtype nodes can only wave like leaves.
+        -- 3 - wave node like liquids (whole node moves up and down)
+        -- Not all models will properly wave.
+        -- plantlike drawtype can only wave like plants.
+        -- allfaces_optional drawtype can only wave like leaves.
+        -- liquid, flowingliquid drawtypes can only wave like liquids.
 
         sounds = {
             footstep = <SimpleSoundSpec>,

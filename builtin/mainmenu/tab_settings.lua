@@ -254,7 +254,7 @@ local function formspec(tabview, name, tabdata)
 					.. dump(core.settings:get_bool("generate_normalmaps")) .. "]" ..
 			"checkbox[8.25,2;cb_parallax;" .. fgettext("Parallax Occlusion") .. ";"
 					.. dump(core.settings:get_bool("enable_parallax_occlusion")) .. "]" ..
-			"checkbox[8.25,2.5;cb_waving_water;" .. fgettext("Waving Water") .. ";"
+			"checkbox[8.25,2.5;cb_waving_water;" .. fgettext("Waving Liquids") .. ";"
 					.. dump(core.settings:get_bool("enable_waving_water")) .. "]" ..
 			"checkbox[8.25,3;cb_waving_leaves;" .. fgettext("Waving Leaves") .. ";"
 					.. dump(core.settings:get_bool("enable_waving_leaves")) .. "]" ..
@@ -271,7 +271,7 @@ local function formspec(tabview, name, tabdata)
 			"label[8.38,2.2;" .. core.colorize("#888888",
 					fgettext("Parallax Occlusion")) .. "]" ..
 			"label[8.38,2.7;" .. core.colorize("#888888",
-					fgettext("Waving Water")) .. "]" ..
+					fgettext("Waving Liquids")) .. "]" ..
 			"label[8.38,3.2;" .. core.colorize("#888888",
 					fgettext("Waving Leaves")) .. "]" ..
 			"label[8.38,3.7;" .. core.colorize("#888888",
