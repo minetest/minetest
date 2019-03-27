@@ -12,15 +12,15 @@ core.register_globalstep(function(dtime)
 	time_next = math.huge
 
 	-- Iterate backwards so that we miss any new timers added by
-	-- a timer callback, and so that we don't skip the next timer
-	-- in the list if we remove one.
+	-- a timer callback.
 	for i = #jobs, 1, -1 do
 		local job = jobs[i]
 		if time >= job.expire then
 			core.set_last_run_mod(job.mod_origin)
 			job.func(unpack(job.arg))
-			jobs[i] = jobs[#jobs]
-			jobs[#jobs] = nil
+			local jobs_l = #jobs
+			jobs[i] = jobs[jobs_l]
+			jobs[jobs_l] = nil
 		elseif job.expire < time_next then
 			time_next = job.expire
 		end
