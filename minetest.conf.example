@@ -1569,6 +1569,9 @@
 #    type: enum values: , be, ca, cs, da, de, dv, en, eo, es, et, fr, he, hu, id, it, ja, jbo, ko, ky, lt, ms, nb, nl, pl, pt, pt_BR, ro, ru, sl, sr_Cyrl, sv, sw, tr, uk, zh_CN, zh_TW
 # language =
 
+#    Set name of logfile
+logfile_name (Name of logfile) filepath minetest.log
+
 #    Level of logging to be written to debug.txt:
 #    -    <nothing> (no logging)
 #    -    none (messages with no level)

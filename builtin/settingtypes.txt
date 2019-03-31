@@ -865,7 +865,7 @@ screenshot_quality (Screenshot quality) int 0 0 100
 screen_dpi (DPI) int 72
 
 #    Windows systems only: Start Minetest with the command line window in the background.
-#    Contains the same information as the file debug.txt (default name).
+#    Contains the same information as the logfile.
 enable_console (Enable console window) bool false
 
 [Sound]
@@ -1277,8 +1277,10 @@ name (Player name) string
 #    A restart is required after changing this.
 language (Language) enum   ,be,ca,cs,da,de,dv,en,eo,es,et,fr,he,hu,id,it,ja,jbo,ko,ky,lt,ms,nb,nl,pl,pt,pt_BR,ro,ru,sl,sr_Cyrl,sv,sw,tr,uk,zh_CN,zh_TW
 
+#    Set name of logfile
+logfile_name (Name of logfile) filepath minetest.log
 
-#    Level of logging to be written to debug.txt:
+#    Level of logging to be written to the logfile:
 #    -    <nothing> (no logging)
 #    -    none (messages with no level)
 #    -    error

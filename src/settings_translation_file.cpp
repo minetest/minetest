@@ -420,7 +420,7 @@ fake_function() {
 	gettext("DPI");
 	gettext("Adjust dpi configuration to your screen (non X11/Android only) e.g. for 4k screens.");
 	gettext("Enable console window");
-	gettext("Windows systems only: Start Minetest with the command line window in the background.\nContains the same information as the file debug.txt (default name).");
+	gettext("Windows systems only: Start Minetest with the command line window in the background.\nContains the same information as the logfile.");
 	gettext("Sound");
 	gettext("Sound");
 	gettext("Volume");
@@ -637,7 +637,7 @@ fake_function() {
 	gettext("Language");
 	gettext("Set the language. Leave empty to use the system language.\nA restart is required after changing this.");
 	gettext("Debug log level");
-	gettext("Level of logging to be written to debug.txt:\n-    <nothing> (no logging)\n-    none (messages with no level)\n-    error\n-    warning\n-    action\n-    info\n-    verbose");
+	gettext("Level of logging to be written to the logfile:\n-    <nothing> (no logging)\n-    none (messages with no level)\n-    error\n-    warning\n-    action\n-    info\n-    verbose");
 	gettext("IPv6");
 	gettext("IPv6 support.");
 	gettext("Advanced");

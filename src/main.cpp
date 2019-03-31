@@ -58,7 +58,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	#error "Irrlicht 1.8.2 is known to be broken - please update Irrlicht to version >= 1.8.3"
 #endif
 
-#define DEBUGFILE "debug.txt"
 #define DEFAULT_SERVER_PORT 30000
 
 typedef std::map<std::string, ValueSpec> OptionList;
@@ -548,7 +547,9 @@ static bool read_config_file(const Settings &cmd_args)
 
 static void init_log_streams(const Settings &cmd_args)
 {
-	std::string log_filename = porting::path_user + DIR_DELIM + DEBUGFILE;
+	std::string logfile_name = g_settings->get("logfile_name");
+	std::string log_filename = porting::path_user + DIR_DELIM + logfile_name;
+	std::cout << "Logging to file: " << log_filename.c_str() << std::endl;
 
 	if (cmd_args.exists("logfile"))
 		log_filename = cmd_args.get("logfile");

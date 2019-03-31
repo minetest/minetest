@@ -32,6 +32,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("name", "");
 	settings->setDefault("bind_address", "");
 	settings->setDefault("serverlist_url", "servers.minetest.net");
+	settings->setDefault("logfile_name", "minetest.log")
 
 	// Client
 	settings->setDefault("address", "");

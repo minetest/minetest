@@ -33,7 +33,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 class ILogOutput;
 
 enum LogLevel {
-	LL_NONE, // Special level that is always printed
+	LL_NONE,  // Special level that is always printed
 	LL_ERROR,
 	LL_WARNING,
 	LL_ACTION,  // In-game actions

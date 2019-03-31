@@ -50,7 +50,7 @@ If you experience an issue, we would like to know the details - especially when 
 1. Do a quick search on GitHub to check if the issue has already been reported.
 2. Is it an issue with the Minetest *engine*? If not, report it [elsewhere](http://www.minetest.net/development/#reporting-issues).
 3. [Open an issue](https://github.com/minetest/minetest/issues/new) and describe the issue you are having - you could include:
-     - Error logs (check the bottom of the `debug.txt` file).
+     - Error logs (check the bottom of the logfile).
      - Screenshots.
      - Ways you have tried to solve the issue, and whether they worked or not.
      - Your Minetest version and the content (games, mods or texture packs) you have installed.

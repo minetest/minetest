@@ -4255,7 +4255,8 @@ void the_game(bool *kill,
 		error_message = e.what();
 		errorstream << "ServerError: " << error_message << std::endl;
 	} catch (ModError &e) {
-		error_message = e.what() + strgettext("\nCheck debug.txt for details.");
+		std::string logfile_name = g_settings->get("logfile_name");
+		error_message = e.what() + strgettext("\nCheck " + logfile_name + " for details.");
 		errorstream << "ModError: " << error_message << std::endl;
 	}
 }
