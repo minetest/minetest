@@ -186,12 +186,12 @@ EmergeManager::~EmergeManager()
 
 void EmergeManager::initMapgens(MapgenParams *params)
 {
-	FATAL_ERROR_IF(!m_mapgens.empty(), "mapgen already inited.");
+	FATAL_ERROR_IF(!m_mapgens.empty(), "Mapgen already initialised.");
 
 	mgparams = params;
 
 	for (u32 i = 0; i != m_threads.size(); i++)
-		m_mapgens.push_back(Mapgen::createMapgen(params->mgtype, i, params, this));
+		m_mapgens.push_back(Mapgen::createMapgen(params->mgtype, params, this));
 }
 
 

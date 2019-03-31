@@ -148,8 +148,8 @@ const char *Mapgen::getMapgenName(MapgenType mgtype)
 }
 
 
-Mapgen *Mapgen::createMapgen(MapgenType mgtype, int mgid,
-	MapgenParams *params, EmergeManager *emerge)
+Mapgen *Mapgen::createMapgen(MapgenType mgtype, MapgenParams *params,
+	EmergeManager *emerge)
 {
 	switch (mgtype) {
 	case MAPGEN_CARPATHIAN:
