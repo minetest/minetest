@@ -922,7 +922,7 @@ public:
 
 					// Get output, then decrement input (if requested)
 					output = out;
-                    
+
 					if (decrementInput)
 						def->decrementInput(input, output_replacement, gamedef);
 					/*errorstream << "Check RETURNS TRUE" << std::endl;*/
@@ -1099,9 +1099,10 @@ public:
 		unhashed.clear();
 	}
 private:
-	//TODO: change both maps to unordered_map when c++11 can be used
-	std::vector<std::map<u64, std::vector<CraftDefinition*> > > m_craft_defs;
-	std::map<std::string, std::vector<CraftDefinition*> > m_output_craft_definitions;
+	std::vector<std::unordered_map<u64, std::vector<CraftDefinition*> > >
+		m_craft_defs;
+	std::unordered_map<std::string, std::vector<CraftDefinition*> >
+		m_output_craft_definitions;
 };
 
 IWritableCraftDefManager* createCraftDefManager()
