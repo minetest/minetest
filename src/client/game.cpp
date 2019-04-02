@@ -2195,43 +2195,49 @@ void Game::toggleMinimap(bool shift_pressed)
 
 	u32 hud_flags = client->getEnv().getLocalPlayer()->hud_flags;
 
-	MinimapMode mode = MINIMAP_MODE_OFF;
-	if (hud_flags & HUD_FLAG_MINIMAP_VISIBLE) {
-		mode = mapper->getMinimapMode();
-		mode = (MinimapMode)((int)mode + 1);
-		// If radar is disabled and in, or switching to, radar mode
-		if (!(hud_flags & HUD_FLAG_MINIMAP_RADAR_VISIBLE) && mode > 3)
-			mode = MINIMAP_MODE_OFF;
-	}
+	MinimapMode mode = mapper->getMinimapMode();
+	mode = static_cast<MinimapMode>(++static_cast<int>(mode));
 
-	m_game_ui->m_flags.show_minimap = true;
+	// If radar is disabled and in or while switching to radar mode, set to OFF
+	if (!(hud_flags & HUD_FLAG_MINIMAP_RADAR_VISIBLE) &&
+			mode > MINIMAP_MODE_SURFACEx4)
+		mode = MINIMAP_MODE_OFF;
+
+	const wchar_t *wchar_status = nullptr;
 	switch (mode) {
 		case MINIMAP_MODE_SURFACEx1:
-			m_game_ui->showTranslatedStatusText("Minimap in surface mode, Zoom x1");
+			wchar_status = wgettext("Minimap in surface mode, Zoom x1");
 			break;
 		case MINIMAP_MODE_SURFACEx2:
-			m_game_ui->showTranslatedStatusText("Minimap in surface mode, Zoom x2");
+			wchar_status = wgettext("Minimap in surface mode, Zoom x2");
 			break;
 		case MINIMAP_MODE_SURFACEx4:
-			m_game_ui->showTranslatedStatusText("Minimap in surface mode, Zoom x4");
+			wchar_status = wgettext("Minimap in surface mode, Zoom x4");
 			break;
 		case MINIMAP_MODE_RADARx1:
-			m_game_ui->showTranslatedStatusText("Minimap in radar mode, Zoom x1");
+			wchar_status = wgettext("Minimap in radar mode, Zoom x1");
 			break;
 		case MINIMAP_MODE_RADARx2:
-			m_game_ui->showTranslatedStatusText("Minimap in radar mode, Zoom x2");
+			wchar_status = wgettext("Minimap in radar mode, Zoom x2");
 			break;
 		case MINIMAP_MODE_RADARx4:
-			m_game_ui->showTranslatedStatusText("Minimap in radar mode, Zoom x4");
+			wchar_status = wgettext("Minimap in radar mode, Zoom x4");
 			break;
 		default:
 			mode = MINIMAP_MODE_OFF;
-			m_game_ui->m_flags.show_minimap = false;
-			if (hud_flags & HUD_FLAG_MINIMAP_VISIBLE)
-				m_game_ui->showTranslatedStatusText("Minimap hidden");
-			else
-				m_game_ui->showTranslatedStatusText("Minimap currently disabled by game or mod");
+			wchar_status = wgettext("Minimap hidden");
+			break;
 	}
+
+	std::wstring wstr_status = wchar_status;
+	if (mapper->isDisabled())
+		wstr_status += L" (" +
+				std::wstring(wgettext("Minimap currently disabled by game or mod")) +
+				L")";
+
+	m_game_ui->showStatusText(wstr_status.c_str());
+
+	delete[] wchar_status;
 
 	mapper->setMinimapMode(mode);
 }

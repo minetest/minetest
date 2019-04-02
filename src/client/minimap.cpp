@@ -93,7 +93,7 @@ void MinimapUpdateThread::doUpdate()
 		if (update.data) {
 			// Swap two values in the map using single lookup
 			std::pair<std::map<v3s16, MinimapMapblock*>::iterator, bool>
-			    result = m_blocks_cache.insert(std::make_pair(update.pos, update.data));
+				result = m_blocks_cache.insert(std::make_pair(update.pos, update.data));
 			if (!result.second) {
 				delete result.first->second;
 				result.first->second = update.data;
@@ -108,7 +108,8 @@ void MinimapUpdateThread::doUpdate()
 		}
 	}
 
-	if (data->map_invalidated && data->mode != MINIMAP_MODE_OFF) {
+	if (data->map_invalidated && !data->parent->isDisabled() &&
+			data->mode != MINIMAP_MODE_OFF) {
 		getMap(data->pos, data->map_size, data->scan_height);
 		data->map_invalidated = false;
 	}
@@ -189,6 +190,7 @@ Minimap::Minimap(Client *client)
 
 	// Initialize minimap data
 	data = new MinimapData;
+	data->parent            = this;
 	data->mode              = MINIMAP_MODE_OFF;
 	data->is_radar          = false;
 	data->map_invalidated   = true;
@@ -280,6 +282,13 @@ MinimapShape Minimap::getMinimapShape()
 	return MINIMAP_SHAPE_SQUARE;
 }
 
+void Minimap::setDisabled(const bool state)
+{
+	m_disabled_by_server = state;
+	if (getMinimapMode() != MINIMAP_MODE_OFF)
+		client->showMinimap(!state);
+}
+
 void Minimap::setMinimapMode(MinimapMode mode)
 {
 	static const MinimapModeDef modedefs[MINIMAP_MODE_COUNT] = {
@@ -294,6 +303,8 @@ void Minimap::setMinimapMode(MinimapMode mode)
 
 	if (mode >= MINIMAP_MODE_COUNT)
 		return;
+
+	client->showMinimap(mode != MINIMAP_MODE_OFF);
 
 	MutexAutoLock lock(m_mutex);
 

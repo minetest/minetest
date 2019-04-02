@@ -68,6 +68,8 @@ struct MinimapMapblock {
 	MinimapPixel data[MAP_BLOCKSIZE * MAP_BLOCKSIZE];
 };
 
+class Minimap;
+
 struct MinimapData {
 	bool is_radar;
 	MinimapMode mode;
@@ -78,6 +80,7 @@ struct MinimapData {
 	MinimapPixel minimap_scan[MINIMAP_MAX_SX * MINIMAP_MAX_SY];
 	bool map_invalidated;
 	bool minimap_shape_round;
+	Minimap *parent = nullptr;
 	video::IImage *minimap_mask_round = nullptr;
 	video::IImage *minimap_mask_square = nullptr;
 	video::ITexture *texture = nullptr;
@@ -133,6 +136,9 @@ public:
 	void setMinimapShape(MinimapShape shape);
 	MinimapShape getMinimapShape();
 
+	void setDisabled(const bool state);
+	const bool isDisabled() const { return m_disabled_by_server; };
+
 
 	video::ITexture *getMinimapTexture();
 
@@ -150,6 +156,7 @@ public:
 	MinimapData *data;
 
 private:
+	bool m_disabled_by_server = false;
 	ITextureSource *m_tsrc;
 	IShaderSource *m_shdrsrc;
 	const NodeDefManager *m_ndef;

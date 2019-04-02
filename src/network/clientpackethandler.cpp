@@ -1165,24 +1165,22 @@ void Client::handleCommand_HudSetFlags(NetworkPacket* pkt)
 	LocalPlayer *player = m_env.getLocalPlayer();
 	assert(player != NULL);
 
-	bool was_minimap_visible = player->hud_flags & HUD_FLAG_MINIMAP_VISIBLE;
-	bool was_minimap_radar_visible = player->hud_flags & HUD_FLAG_MINIMAP_RADAR_VISIBLE;
+	bool was_radar_visible = player->hud_flags & HUD_FLAG_MINIMAP_RADAR_VISIBLE;
 
 	player->hud_flags &= ~mask;
 	player->hud_flags |= flags;
 
-	m_minimap_disabled_by_server = !(player->hud_flags & HUD_FLAG_MINIMAP_VISIBLE);
-	bool m_minimap_radar_disabled_by_server = !(player->hud_flags & HUD_FLAG_MINIMAP_RADAR_VISIBLE);
+	// Enable/Disable minimap according to state of corresponding flag
+	if (m_minimap) {
+		bool is_disabled = !(player->hud_flags & HUD_FLAG_MINIMAP_VISIBLE);
+		bool is_radar_disabled = !(player->hud_flags & HUD_FLAG_MINIMAP_RADAR_VISIBLE);
 
-	// Hide minimap if it has been disabled by the server
-	if (m_minimap && m_minimap_disabled_by_server && was_minimap_visible)
-		// defers a minimap update, therefore only call it if really
-		// needed, by checking that minimap was visible before
-		m_minimap->setMinimapMode(MINIMAP_MODE_OFF);
+		m_minimap->setDisabled(is_disabled);
 
-	// Switch to surface mode if radar disabled by server
-	if (m_minimap && m_minimap_radar_disabled_by_server && was_minimap_radar_visible)
-		m_minimap->setMinimapMode(MINIMAP_MODE_SURFACEx1);
+		// Switch to surface mode if radar disabled by server
+		if (is_radar_disabled && was_radar_visible)
+			m_minimap->setMinimapMode(MINIMAP_MODE_SURFACEx1);
+	}
 }
 
 void Client::handleCommand_HudSetParam(NetworkPacket* pkt)
