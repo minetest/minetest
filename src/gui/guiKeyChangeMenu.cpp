@@ -430,9 +430,9 @@ void GUIKeyChangeMenu::init_keys()
 	this->add_key(GUI_ID_KEY_HOTBAR_NEXT_BUTTON,wgettext("Next item"),       "keymap_hotbar_next");
 	this->add_key(GUI_ID_KEY_ZOOM_BUTTON,      wgettext("Zoom"),             "keymap_zoom");
 	this->add_key(GUI_ID_KEY_CAMERA_BUTTON,    wgettext("Change camera"),    "keymap_camera_mode");
-	this->add_key(GUI_ID_KEY_PITCH_MOVE,       wgettext("Toggle pitchmove"), "keymap_pitchmove");
 	this->add_key(GUI_ID_KEY_MINIMAP_BUTTON,   wgettext("Toggle minimap"),   "keymap_minimap");
 	this->add_key(GUI_ID_KEY_FLY_BUTTON,       wgettext("Toggle fly"),       "keymap_freemove");
+	this->add_key(GUI_ID_KEY_PITCH_MOVE,       wgettext("Toggle pitchmove"), "keymap_pitchmove");
 	this->add_key(GUI_ID_KEY_FAST_BUTTON,      wgettext("Toggle fast"),      "keymap_fastmove");
 	this->add_key(GUI_ID_KEY_NOCLIP_BUTTON,    wgettext("Toggle noclip"),    "keymap_noclip");
 	this->add_key(GUI_ID_KEY_MUTE_BUTTON,      wgettext("Mute"),             "keymap_mute");
