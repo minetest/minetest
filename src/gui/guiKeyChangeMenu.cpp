@@ -119,9 +119,9 @@ void GUIKeyChangeMenu::regenerateGui(v2u32 screensize)
 
 	const float s = m_gui_scale;
 	DesiredRect = core::rect<s32>(
-		screensize.X / 2 - 745 * s / 2,
+		screensize.X / 2 - 835 * s / 2,
 		screensize.Y / 2 - 430 * s / 2,
-		screensize.X / 2 + 745 * s / 2,
+		screensize.X / 2 + 835 * s / 2,
 		screensize.Y / 2 + 430 * s / 2
 	);
 	recalculateAbsolutePosition(false);
@@ -155,13 +155,13 @@ void GUIKeyChangeMenu::regenerateGui(v2u32 screensize)
 
 		{
 			core::rect<s32> rect(0, 0, 100 * s, 30 * s);
-			rect += topleft + v2s32(offset.X + 120 * s, offset.Y - 5 * s);
+			rect += topleft + v2s32(offset.X + 150 * s, offset.Y - 5 * s);
 			const wchar_t *text = wgettext(k->key.name());
 			k->button = Environment->addButton(rect, this, k->id, text);
 			delete[] text;
 		}
 		if ((i + 1) % KMaxButtonPerColumns == 0) {
-			offset.X += 230 * s;
+			offset.X += 260 * s;
 			offset.Y = 60 * s;
 		} else {
 			offset += v2s32(0, 25 * s);
