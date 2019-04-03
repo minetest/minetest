@@ -212,7 +212,7 @@ keymap_freemove (Fly key) key KEY_KEY_K
 
 #    Key for toggling pitch move mode.
 #    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
-keymap_pitchmove (Pitch move key) key KEY_KEY_L
+keymap_pitchmove (Pitch move key) key KEY_KEY_P
 
 #    Key for toggling fast mode.
 #    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3

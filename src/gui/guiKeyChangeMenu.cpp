@@ -50,7 +50,7 @@ enum
 	GUI_ID_KEY_FAST_BUTTON,
 	GUI_ID_KEY_JUMP_BUTTON,
 	GUI_ID_KEY_NOCLIP_BUTTON,
-	GUI_ID_KEY_CINEMATIC_BUTTON,
+	GUI_ID_KEY_PITCH_MOVE,
 	GUI_ID_KEY_CHAT_BUTTON,
 	GUI_ID_KEY_CMD_BUTTON,
 	GUI_ID_KEY_CMD_LOCAL_BUTTON,
@@ -119,9 +119,9 @@ void GUIKeyChangeMenu::regenerateGui(v2u32 screensize)
 
 	const float s = m_gui_scale;
 	DesiredRect = core::rect<s32>(
-		screensize.X / 2 - 745 * s / 2,
+		screensize.X / 2 - 835 * s / 2,
 		screensize.Y / 2 - 430 * s / 2,
-		screensize.X / 2 + 745 * s / 2,
+		screensize.X / 2 + 835 * s / 2,
 		screensize.Y / 2 + 430 * s / 2
 	);
 	recalculateAbsolutePosition(false);
@@ -155,13 +155,13 @@ void GUIKeyChangeMenu::regenerateGui(v2u32 screensize)
 
 		{
 			core::rect<s32> rect(0, 0, 100 * s, 30 * s);
-			rect += topleft + v2s32(offset.X + 120 * s, offset.Y - 5 * s);
+			rect += topleft + v2s32(offset.X + 150 * s, offset.Y - 5 * s);
 			const wchar_t *text = wgettext(k->key.name());
 			k->button = Environment->addButton(rect, this, k->id, text);
 			delete[] text;
 		}
 		if ((i + 1) % KMaxButtonPerColumns == 0) {
-			offset.X += 230 * s;
+			offset.X += 260 * s;
 			offset.Y = 60 * s;
 		} else {
 			offset += v2s32(0, 25 * s);
@@ -430,9 +430,9 @@ void GUIKeyChangeMenu::init_keys()
 	this->add_key(GUI_ID_KEY_HOTBAR_NEXT_BUTTON,wgettext("Next item"),       "keymap_hotbar_next");
 	this->add_key(GUI_ID_KEY_ZOOM_BUTTON,      wgettext("Zoom"),             "keymap_zoom");
 	this->add_key(GUI_ID_KEY_CAMERA_BUTTON,    wgettext("Change camera"),    "keymap_camera_mode");
-	this->add_key(GUI_ID_KEY_CINEMATIC_BUTTON, wgettext("Toggle Cinematic"), "keymap_cinematic");
 	this->add_key(GUI_ID_KEY_MINIMAP_BUTTON,   wgettext("Toggle minimap"),   "keymap_minimap");
 	this->add_key(GUI_ID_KEY_FLY_BUTTON,       wgettext("Toggle fly"),       "keymap_freemove");
+	this->add_key(GUI_ID_KEY_PITCH_MOVE,       wgettext("Toggle pitchmove"), "keymap_pitchmove");
 	this->add_key(GUI_ID_KEY_FAST_BUTTON,      wgettext("Toggle fast"),      "keymap_fastmove");
 	this->add_key(GUI_ID_KEY_NOCLIP_BUTTON,    wgettext("Toggle noclip"),    "keymap_noclip");
 	this->add_key(GUI_ID_KEY_MUTE_BUTTON,      wgettext("Mute"),             "keymap_mute");
@@ -451,4 +451,3 @@ void GUIKeyChangeMenu::init_keys()
 	this->add_key(GUI_ID_KEY_CHATLOG_BUTTON,   wgettext("Toggle chat log"),  "keymap_toggle_chat");
 	this->add_key(GUI_ID_KEY_FOG_BUTTON,       wgettext("Toggle fog"),       "keymap_toggle_fog");
 }
-
