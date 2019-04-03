@@ -394,7 +394,7 @@ function pkgmgr.enable_mod(this, toset)
 	if not toset then
 		-- Mod(s) were disabled, so no dependencies need to be enabled
 		table.sort(toggled_mods)
-		minetest.log("action", "Following mods were disabled: " ..
+		minetest.log("info", "Following mods were disabled: " ..
 			table.concat(toggled_mods, ", "))
 		return
 	end
@@ -452,7 +452,7 @@ function pkgmgr.enable_mod(this, toset)
 
 	-- Log the list of enabled mods
 	table.sort(toggled_mods)
-	minetest.log("action", "Following mods were enabled: " ..
+	minetest.log("info", "Following mods were enabled: " ..
 		table.concat(toggled_mods, ", "))
 end
 
