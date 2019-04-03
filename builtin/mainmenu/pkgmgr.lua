@@ -415,10 +415,10 @@ function pkgmgr.enable_mod(this, toset)
 	for name in pairs(enabled_mods) do
 		local depends = pkgmgr.get_dependencies(list[mod_ids[name]].path)
 		for i = 1, #depends do
-			local name = depends[i]
-			if not enabled_mods[name] then
+			local dependency_name = depends[i]
+			if not enabled_mods[dependency_name] then
 				sp = sp+1
-				to_enable[sp] = name
+				to_enable[sp] = dependency_name
 			end
 		end
 	end
@@ -438,11 +438,13 @@ function pkgmgr.enable_mod(this, toset)
 					mod.enabled = true
 					toggled_mods[#toggled_mods+1] = mod.name
 				end
-				-- push the dependencies of the dependency onto the stack
+				-- Push the dependencies of the dependency onto the stack
 				local depends = pkgmgr.get_dependencies(mod.path)
 				for i = 1, #depends do
-					sp = sp+1
-					to_enable[sp] = depends[i]
+					if not enabled_mods[name] then
+						sp = sp+1
+						to_enable[sp] = depends[i]
+					end
 				end
 			end
 		end
