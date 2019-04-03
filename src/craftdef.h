@@ -149,13 +149,19 @@ public:
 	virtual void decrementInput(CraftInput &input,
 		std::vector<ItemStack> &output_replacements, IGameDef *gamedef) const=0;
 
-	virtual CraftHashType getHashType() const = 0;
+	CraftHashType getHashType() const
+	{
+		return hash_type;
+	}
 	virtual u64 getHash(CraftHashType type) const = 0;
 
 	// to be called after all mods are loaded, so that we catch all aliases
 	virtual void initHash(IGameDef *gamedef) = 0;
 
 	virtual std::string dump() const=0;
+
+protected:
+	CraftHashType hash_type;
 };
 
 /*
@@ -186,7 +192,6 @@ public:
 	virtual void decrementInput(CraftInput &input,
 		std::vector<ItemStack> &output_replacements, IGameDef *gamedef) const;
 
-	virtual CraftHashType getHashType() const;
 	virtual u64 getHash(CraftHashType type) const;
 
 	virtual void initHash(IGameDef *gamedef);
@@ -232,7 +237,6 @@ public:
 	virtual void decrementInput(CraftInput &input,
 		std::vector<ItemStack> &output_replacements, IGameDef *gamedef) const;
 
-	virtual CraftHashType getHashType() const;
 	virtual u64 getHash(CraftHashType type) const;
 
 	virtual void initHash(IGameDef *gamedef);
@@ -274,10 +278,12 @@ public:
 	virtual void decrementInput(CraftInput &input,
 		std::vector<ItemStack> &output_replacements, IGameDef *gamedef) const;
 
-	virtual CraftHashType getHashType() const { return CRAFT_HASH_TYPE_COUNT; }
 	virtual u64 getHash(CraftHashType type) const { return 2; }
 
-	virtual void initHash(IGameDef *gamedef) {}
+	virtual void initHash(IGameDef *gamedef)
+	{
+		hash_type = CRAFT_HASH_TYPE_COUNT;
+	}
 
 	virtual std::string dump() const;
 
@@ -314,7 +320,6 @@ public:
 	virtual void decrementInput(CraftInput &input,
 		std::vector<ItemStack> &output_replacements, IGameDef *gamedef) const;
 
-	virtual CraftHashType getHashType() const;
 	virtual u64 getHash(CraftHashType type) const;
 
 	virtual void initHash(IGameDef *gamedef);
@@ -358,7 +363,6 @@ public:
 	virtual void decrementInput(CraftInput &input,
 		std::vector<ItemStack> &output_replacements, IGameDef *gamedef) const;
 
-	virtual CraftHashType getHashType() const;
 	virtual u64 getHash(CraftHashType type) const;
 
 	virtual void initHash(IGameDef *gamedef);
