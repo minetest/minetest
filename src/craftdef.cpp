@@ -407,22 +407,6 @@ void CraftDefinitionShaped::decrementInput(CraftInput &input, std::vector<ItemSt
 	craftDecrementOrReplaceInput(input, output_replacements, replacements, gamedef);
 }
 
-CraftHashType CraftDefinitionShaped::getHashType() const
-{
-	assert(hash_inited); // Pre-condition
-	bool has_group = false;
-	for (const auto &recipe_name : recipe_names) {
-		if (isGroupRecipeStr(recipe_name)) {
-			has_group = true;
-			break;
-		}
-	}
-	if (has_group)
-		return CRAFT_HASH_TYPE_COUNT;
-
-	return CRAFT_HASH_TYPE_ITEM_NAMES;
-}
-
 u64 CraftDefinitionShaped::getHash(CraftHashType type) const
 {
 	assert(hash_inited); // Pre-condition
@@ -440,6 +424,15 @@ void CraftDefinitionShaped::initHash(IGameDef *gamedef)
 		return;
 	hash_inited = true;
 	recipe_names = craftGetItemNames(recipe, gamedef);
+
+	bool has_group = false;
+	for (const auto &recipe_name : recipe_names) {
+		if (isGroupRecipeStr(recipe_name)) {
+			has_group = true;
+			break;
+		}
+	}
+	hash_type = has_group ? CRAFT_HASH_TYPE_COUNT : CRAFT_HASH_TYPE_ITEM_NAMES;
 }
 
 std::string CraftDefinitionShaped::dump() const
@@ -527,22 +520,6 @@ void CraftDefinitionShapeless::decrementInput(CraftInput &input, std::vector<Ite
 	craftDecrementOrReplaceInput(input, output_replacements, replacements, gamedef);
 }
 
-CraftHashType CraftDefinitionShapeless::getHashType() const
-{
-	assert(hash_inited); // Pre-condition
-	bool has_group = false;
-	for (const auto &recipe_name : recipe_names) {
-		if (isGroupRecipeStr(recipe_name)) {
-			has_group = true;
-			break;
-		}
-	}
-	if (has_group)
-		return CRAFT_HASH_TYPE_COUNT;
-
-	return CRAFT_HASH_TYPE_ITEM_NAMES;
-}
-
 u64 CraftDefinitionShapeless::getHash(CraftHashType type) const
 {
 	assert(hash_inited); // Pre-condition
@@ -558,6 +535,15 @@ void CraftDefinitionShapeless::initHash(IGameDef *gamedef)
 	hash_inited = true;
 	recipe_names = craftGetItemNames(recipe, gamedef);
 	std::sort(recipe_names.begin(), recipe_names.end());
+
+	bool has_group = false;
+	for (const auto &recipe_name : recipe_names) {
+		if (isGroupRecipeStr(recipe_name)) {
+			has_group = true;
+			break;
+		}
+	}
+	hash_type = has_group ? CRAFT_HASH_TYPE_COUNT : CRAFT_HASH_TYPE_ITEM_NAMES;
 }
 
 std::string CraftDefinitionShapeless::dump() const
@@ -715,14 +701,6 @@ void CraftDefinitionCooking::decrementInput(CraftInput &input, std::vector<ItemS
 	craftDecrementOrReplaceInput(input, output_replacements, replacements, gamedef);
 }
 
-CraftHashType CraftDefinitionCooking::getHashType() const
-{
-	if (isGroupRecipeStr(recipe_name))
-		return CRAFT_HASH_TYPE_COUNT;
-
-	return CRAFT_HASH_TYPE_ITEM_NAMES;
-}
-
 u64 CraftDefinitionCooking::getHash(CraftHashType type) const
 {
 	if (type == CRAFT_HASH_TYPE_ITEM_NAMES) {
@@ -744,6 +722,11 @@ void CraftDefinitionCooking::initHash(IGameDef *gamedef)
 		return;
 	hash_inited = true;
 	recipe_name = craftGetItemName(recipe, gamedef);
+
+	if (isGroupRecipeStr(recipe_name))
+		hash_type = CRAFT_HASH_TYPE_COUNT;
+	else
+		hash_type = CRAFT_HASH_TYPE_ITEM_NAMES;
 }
 
 std::string CraftDefinitionCooking::dump() const
@@ -808,14 +791,6 @@ void CraftDefinitionFuel::decrementInput(CraftInput &input, std::vector<ItemStac
 	craftDecrementOrReplaceInput(input, output_replacements, replacements, gamedef);
 }
 
-CraftHashType CraftDefinitionFuel::getHashType() const
-{
-	if (isGroupRecipeStr(recipe_name))
-		return CRAFT_HASH_TYPE_COUNT;
-
-	return CRAFT_HASH_TYPE_ITEM_NAMES;
-}
-
 u64 CraftDefinitionFuel::getHash(CraftHashType type) const
 {
 	if (type == CRAFT_HASH_TYPE_ITEM_NAMES) {
@@ -837,7 +812,13 @@ void CraftDefinitionFuel::initHash(IGameDef *gamedef)
 		return;
 	hash_inited = true;
 	recipe_name = craftGetItemName(recipe, gamedef);
+
+	if (isGroupRecipeStr(recipe_name))
+		hash_type = CRAFT_HASH_TYPE_COUNT;
+	else
+		hash_type = CRAFT_HASH_TYPE_ITEM_NAMES;
 }
+
 std::string CraftDefinitionFuel::dump() const
 {
 	std::ostringstream os(std::ios::binary);
