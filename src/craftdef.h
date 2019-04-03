@@ -132,6 +132,23 @@ struct CraftReplacements
 class CraftDefinition
 {
 public:
+	/*
+		Craft recipe priorities, from low to high
+
+		Recipes are searched from latest to first.
+		If a recipe with higher priority than a previous found one is
+		encountered, it is selected instead.
+	*/
+	enum RecipePriority
+	{
+		NO_RECIPE,
+		TOOLREPAIR,
+		SHAPELESS_AND_GROUPS,
+		SHAPELESS,
+		SHAPED_AND_GROUPS,
+		SHAPED,
+	};
+
 	CraftDefinition() = default;
 	virtual ~CraftDefinition() = default;
 
@@ -140,6 +157,10 @@ public:
 
 	// Checks whether the recipe is applicable
 	virtual bool check(const CraftInput &input, IGameDef *gamedef) const=0;
+	RecipePriority getPriority() const
+	{
+		return priority;
+	}
 	// Returns the output structure, meaning depends on crafting method
 	// The implementation can assume that check(input) returns true
 	virtual CraftOutput getOutput(const CraftInput &input, IGameDef *gamedef) const=0;
@@ -162,6 +183,7 @@ public:
 
 protected:
 	CraftHashType hash_type;
+	RecipePriority priority;
 };
 
 /*
@@ -283,6 +305,7 @@ public:
 	virtual void initHash(IGameDef *gamedef)
 	{
 		hash_type = CRAFT_HASH_TYPE_COUNT;
+		priority = TOOLREPAIR;
 	}
 
 	virtual std::string dump() const;

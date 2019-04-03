@@ -432,7 +432,13 @@ void CraftDefinitionShaped::initHash(IGameDef *gamedef)
 			break;
 		}
 	}
-	hash_type = has_group ? CRAFT_HASH_TYPE_COUNT : CRAFT_HASH_TYPE_ITEM_NAMES;
+	if (has_group) {
+		hash_type = CRAFT_HASH_TYPE_COUNT;
+		priority = SHAPED_AND_GROUPS;
+	} else {
+		hash_type = CRAFT_HASH_TYPE_ITEM_NAMES;
+		priority = SHAPED;
+	}
 }
 
 std::string CraftDefinitionShaped::dump() const
@@ -543,7 +549,13 @@ void CraftDefinitionShapeless::initHash(IGameDef *gamedef)
 			break;
 		}
 	}
-	hash_type = has_group ? CRAFT_HASH_TYPE_COUNT : CRAFT_HASH_TYPE_ITEM_NAMES;
+	if (has_group) {
+		hash_type = CRAFT_HASH_TYPE_COUNT;
+		priority = SHAPELESS_AND_GROUPS;
+	} else {
+		hash_type = CRAFT_HASH_TYPE_ITEM_NAMES;
+		priority = SHAPELESS;
+	}
 }
 
 std::string CraftDefinitionShapeless::dump() const
@@ -723,10 +735,13 @@ void CraftDefinitionCooking::initHash(IGameDef *gamedef)
 	hash_inited = true;
 	recipe_name = craftGetItemName(recipe, gamedef);
 
-	if (isGroupRecipeStr(recipe_name))
+	if (isGroupRecipeStr(recipe_name)) {
 		hash_type = CRAFT_HASH_TYPE_COUNT;
-	else
+		priority = SHAPELESS_AND_GROUPS;
+	} else {
 		hash_type = CRAFT_HASH_TYPE_ITEM_NAMES;
+		priority = SHAPELESS;
+	}
 }
 
 std::string CraftDefinitionCooking::dump() const
@@ -813,10 +828,13 @@ void CraftDefinitionFuel::initHash(IGameDef *gamedef)
 	hash_inited = true;
 	recipe_name = craftGetItemName(recipe, gamedef);
 
-	if (isGroupRecipeStr(recipe_name))
+	if (isGroupRecipeStr(recipe_name)) {
 		hash_type = CRAFT_HASH_TYPE_COUNT;
-	else
+		priority = SHAPELESS_AND_GROUPS;
+	} else {
 		hash_type = CRAFT_HASH_TYPE_ITEM_NAMES;
+		priority = SHAPELESS;
+	}
 }
 
 std::string CraftDefinitionFuel::dump() const
@@ -867,7 +885,11 @@ public:
 		input_names = craftGetItemNames(input.items, gamedef);
 		std::sort(input_names.begin(), input_names.end());
 
-		// Try hash types with increasing collision rate, and return if found.
+		// Try hash types with increasing collision rate
+		// while remembering the latest, highest priority recipe.
+		CraftDefinition::RecipePriority priority_best =
+			CraftDefinition::NO_RECIPE;
+		CraftDefinition *def_best = nullptr;
 		for (int type = 0; type <= craft_hash_type_max; type++) {
 			u64 hash = getHashForGrid((CraftHashType) type, input_names);
 
@@ -890,7 +912,9 @@ public:
 				/*errorstream << "Checking " << input.dump() << std::endl
 					<< " against " << def->dump() << std::endl;*/
 
-				if (def->check(input, gamedef)) {
+				CraftDefinition::RecipePriority priority = def->getPriority();
+				if (priority > priority_best
+						&& def->check(input, gamedef)) {
 					// Check if the crafted node/item exists
 					CraftOutput out = def->getOutput(input, gamedef);
 					ItemStack is;
@@ -901,17 +925,17 @@ public:
 						continue;
 					}
 
-					// Get output, then decrement input (if requested)
 					output = out;
-
-					if (decrementInput)
-						def->decrementInput(input, output_replacement, gamedef);
-					/*errorstream << "Check RETURNS TRUE" << std::endl;*/
-					return true;
+					priority_best = priority;
+					def_best = def;
 				}
 			}
 		}
-		return false;
+		if (priority_best == CraftDefinition::NO_RECIPE)
+			return false;
+		if (decrementInput)
+			def_best->decrementInput(input, output_replacement, gamedef);
+		return true;
 	}
 
 	virtual std::vector<CraftDefinition*> getCraftRecipes(CraftOutput &output,
