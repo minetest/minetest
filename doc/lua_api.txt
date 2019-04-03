@@ -1849,6 +1849,7 @@ Some of the values in the key-value store are handled specially:
 * `color`: A `ColorString`, which sets the stack's color.
 * `palette_index`: If the item has a palette, this is used to get the
   current color from the palette.
+* `wear_bar`: A float number, which is used to display a wear bar.
 
 Example:
 

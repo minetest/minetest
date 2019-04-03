@@ -695,7 +695,8 @@ void drawItemStack(video::IVideoDriver *driver,
 		driver->setViewPort(oldViewPort);
 	}
 
-	if(def.type == ITEM_TOOL && item.wear != 0)
+	const std::string &meta_bar = item.metadata.getString("wear_bar", 0);
+	if((def.type == ITEM_TOOL && item.wear != 0) || !meta_bar.empty())
 	{
 		// Draw a progressbar
 		float barheight = rect.getHeight()/16;
@@ -707,8 +708,14 @@ void drawItemStack(video::IVideoDriver *driver,
 			rect.LowerRightCorner.X - barpad_x,
 			rect.LowerRightCorner.Y - barpad_y);
 
-		// Shrink progressrect by amount of tool damage
-		float wear = item.wear / 65535.0;
+		float wear;
+		if (meta_bar.empty()) {
+			// Shrink progressrect by amount of tool damage
+			wear = item.wear / 65535.0;
+		} else {
+			// Set the bar amount to the value in item meta
+			wear = core::min_(core::max_(stof(meta_bar), 0.0f), 1.0f);
+		}
 		int progressmid =
 			wear * progressrect.UpperLeftCorner.X +
 			(1-wear) * progressrect.LowerRightCorner.X;
