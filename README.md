@@ -194,13 +194,13 @@ Run it:
 
     ./bin/minetest
 
-- Use `cmake . -LH` to see all CMake options and their current state
+- Use `cmake . -LH` to see all CMake options and their current state.
 - If you want to install it system-wide (or are making a distribution package),
-  you will want to use `-DRUN_IN_PLACE=FALSE`
+  omit the `-DRUN_IN_PLACE=TRUE` option.
 - You can build a bare server by specifying `-DBUILD_SERVER=TRUE`
 - You can disable the client build by specifying `-DBUILD_CLIENT=FALSE`
 - You can select between Release and Debug build by `-DCMAKE_BUILD_TYPE=<Debug or Release>`
-  - Debug build is slower, but gives much more useful output in a debugger
+  - Debug build is slower, but gives much more useful output in a debugger.
 - If you build a bare server, you don't need to have Irrlicht installed.
   - In that case use `-DIRRLICHT_SOURCE_DIR=/the/irrlicht/source`
 
