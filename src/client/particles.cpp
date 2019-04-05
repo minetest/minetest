@@ -193,9 +193,11 @@ private:
 class CollisionAffector : public irr::scene::IParticleAffector
 {
 public:
-	CollisionAffector(ClientEnvironment *env, bool collision_removal, bool object_collision)
+	CollisionAffector(ClientEnvironment *env, bool collision_removal, bool object_collision,
+			f32 bounce_fraction, f32 bounce_threshold)
 		: env(env), last_time(0), collision_removal(collision_removal),
-		object_collision(object_collision)
+		object_collision(object_collision), bounce_fraction(bounce_fraction),
+		bounce_threshold(bounce_threshold)
 	{
 	}
 
@@ -211,16 +213,22 @@ public:
 		for (u32 i = 0; i < count; ++i) {
 			irr::scene::SParticle &p = particlearray[i];
 			float half_width = p.size.Width / 2;
-			aabb3f box {-half_width,-half_width,-half_width,half_width,half_width,half_width};
 			v3f camera_offset = intToFloat(env->getCameraOffset(),BS);
 
 			// Undo Irrlicht position step
 			v3f position = p.pos + camera_offset - dtime * p.vector * 1e3;;
 			v3f velocity = p.vector * 1e3f;
 
-			collisionMoveResult r = collisionMoveSimple(env, env->getGameDef(),
+			/*
+			aabb3f box {-half_width,-half_width,-half_width,half_width,half_width,half_width};
+			collisionMoveResult r_old = collisionMoveSimple(env, env->getGameDef(),
 					BS * 0.5, box, 0, dtime, &position, &velocity,
 					v3f {0.f, 0.f, 0.f}, nullptr, object_collision);
+			*/
+
+			collisionMoveResult r = collisionMovePoint(env, env->getGameDef(),
+					half_width, dtime, &position, &velocity, v3f {0.f, 0.f, 0.f},
+					nullptr, bounce_fraction, bounce_threshold, object_collision);
 
 			if (r.collides) {
 				if (collision_removal) {
@@ -242,6 +250,8 @@ private:
 	u32 last_time;
 	const bool collision_removal;
 	const bool object_collision;
+	const f32 bounce_fraction;
+	const f32 bounce_threshold;
 };
 
 class AccelerationAffector : public irr::scene::IParticleAffector
@@ -381,6 +391,7 @@ public:
 			p.startVector = p.vector = vel * BS * 1e-3f;
 
 			p.startTime = now;
+			//TEST
 			if (random_properties)
 				p.endTime = now + (u32) (rand() % 100 * 10.f);
 			else
@@ -420,7 +431,7 @@ public:
 		spawntime(spawntime), minrelpos(minrelpos), maxrelpos(maxrelpos),
 		minvel(minvel), maxvel(maxvel), minexptime(minexptime),
 		maxexptime(maxexptime), minsize(minsize), maxsize(maxsize),
-		attached_id(attached_id), expired_time(0), emitting_time(0.f)
+		attached_id(attached_id), expired_time(0), stopped(false), emitting_time(0.f)
 	{
 		time_for_particle = spawntime == 0 ? 1.f / (float) amount :
 			spawntime / (float) amount;
@@ -435,13 +446,23 @@ public:
 	virtual s32 emitt(u32 now, u32 timeSinceLastCall, irr::scene::SParticle *&outArray)
 	{
 		if (spawntime != 0) {
+			if (stopped && expired_time * 1e-3f < spawntime)
+				expired_time = spawntime;
 			expired_time += timeSinceLastCall;
 			if (expired_time * 1e-3f >= maxexptime + spawntime)
 				smgr->addToDeletionQueue(ps);
 
 			// Don't delete yet because of the existing particles
-			if (remaining_amount == 0)
+			if (stopped || remaining_amount == 0)
 				return 0;
+		} else {
+			if (stopped) {
+				expired_time += timeSinceLastCall;
+				if (expired_time * 1e-3f >= maxexptime)
+					smgr->addToDeletionQueue(ps);
+				return 0;
+
+			}
 		}
 
 		emitting_time += timeSinceLastCall * 1e-3f;
@@ -482,6 +503,11 @@ public:
 		}
 		return 0;
 	}
+
+	void stop()
+	{
+		stopped = true;
+	}
 private:
 	irr::scene::ISceneManager *smgr;
 	ClientEnvironment *env;
@@ -494,10 +520,12 @@ private:
 	const u16 attached_id;
 
 	u32 expired_time;
+	bool stopped;
 	float emitting_time;
 	float time_for_particle;
 
 	irr::scene::SParticle p;
+
 
 };
 
@@ -518,7 +546,8 @@ void ParticleManager::handleParticleEvent(ClientEvent *event, Client *client, Lo
 		MutexAutoLock lock(m_spawner_list_lock);
 		auto node_it = m_particle_spawners.find(event->delete_particlespawner.id);
 		if (node_it != m_particle_spawners.end()) {
-			m_smgr->addToDeletionQueue(node_it->second);
+			auto *em = static_cast<ContinuousEmitter*>(node_it->second->getEmitter());
+			em->stop();
 			m_particle_spawners.erase(node_it);
 		}
 
@@ -596,7 +625,7 @@ void ParticleManager::handleParticleEvent(ClientEvent *event, Client *client, Lo
 			scene::IParticleAffector *collision_affector =
 				new CollisionAffector(m_env,
 					event->add_particlespawner.collision_removal,
-					event->add_particlespawner.object_collision);
+					event->add_particlespawner.object_collision, 1.0f, 0.0f);
 			ps->addAffector(collision_affector);
 			collision_affector->drop();
 		}
@@ -667,7 +696,7 @@ void ParticleManager::handleParticleEvent(ClientEvent *event, Client *client, Lo
 			scene::IParticleAffector *collision_affector =
 				new CollisionAffector(m_env,
 				event->spawn_particle.collision_removal,
-				event->spawn_particle.object_collision);
+				event->spawn_particle.object_collision, 1.0f, 0.0f);
 			ps->addAffector(collision_affector);
 			collision_affector->drop();
 		}
@@ -763,7 +792,7 @@ void ParticleManager::addNodeParticle(IGameDef *gamedef, LocalPlayer *player, v3
 	);
 
 	scene::IParticleAffector *collision_affector =
-		new CollisionAffector(m_env, false, true);
+		new CollisionAffector(m_env, false, true, 0.3f, 0.2f);
 	ps->addAffector(collision_affector);
 	collision_affector->drop();
 
