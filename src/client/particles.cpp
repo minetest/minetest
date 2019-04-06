@@ -625,7 +625,7 @@ void ParticleManager::handleParticleEvent(ClientEvent *event, Client *client, Lo
 			scene::IParticleAffector *collision_affector =
 				new CollisionAffector(m_env,
 					event->add_particlespawner.collision_removal,
-					event->add_particlespawner.object_collision, 1.0f, 0.0f);
+					event->add_particlespawner.object_collision, 0.1f, 0.3f);
 			ps->addAffector(collision_affector);
 			collision_affector->drop();
 		}

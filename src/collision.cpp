@@ -65,7 +65,7 @@ int axisAlignedCollision(
 {
 	//TimeTaker tt("axisAlignedCollision");
 
-	f32 xsize = (staticbox.MaxEdge.X - staticbox.MinEdge.X) - COLL_ZERO;     // reduce box size for solve collision stuck (flying sand)
+	f32 xsize = (staticbox.MaxEdge.X - staticbox.MinEdge.X) - COLL_ZERO; // reduce box size for solve collision stuck (flying sand)
 	f32 ysize = (staticbox.MaxEdge.Y - staticbox.MinEdge.Y); // - COLL_ZERO; // Y - no sense for falling, but maybe try later
 	f32 zsize = (staticbox.MaxEdge.Z - staticbox.MinEdge.Z) - COLL_ZERO;
 
@@ -179,36 +179,12 @@ int axisAlignedCollision(
 }
 
 std::tuple<int, f32, bool> pointBoxCollision(
-		const aabb3f &staticbox_orig, const v3f &pos, const v3f &speed,
+		aabb3f staticbox, const v3f &pos, const v3f &speed,
 		f32 surface_dist)
 {
 	f32 dtime = 0.f;
 
-	aabb3f staticbox = staticbox_orig;
-	/*
-	v3f staticbox_rel = staticbox.MaxEdge - staticbox.MinEdge;
-	if (staticbox_rel.X >= 0) {
-		staticbox.MinEdge.X -= surface_dist;
-		staticbox.MaxEdge.X += surface_dist;
-	} else {
-		staticbox.MinEdge.X += surface_dist;
-		staticbox.MaxEdge.X -= surface_dist;
-	}
-	if (staticbox_rel.Y >= 0) {
-		staticbox.MinEdge.Y -= surface_dist;
-		staticbox.MaxEdge.Y += surface_dist;
-	} else {
-		staticbox.MinEdge.Y += surface_dist;
-		staticbox.MaxEdge.Y -= surface_dist;
-	}
-	if (staticbox_rel.Z >= 0) {
-		staticbox.MinEdge.Z -= surface_dist;
-		staticbox.MaxEdge.Z += surface_dist;
-	} else {
-		staticbox.MinEdge.Z += surface_dist;
-		staticbox.MaxEdge.Z -= surface_dist;
-	}
-	*/
+	// Keep distance from collision box
 	staticbox.MinEdge.X -= surface_dist;
 	staticbox.MinEdge.Y -= surface_dist;
 	staticbox.MinEdge.Z -= surface_dist;
@@ -224,6 +200,7 @@ std::tuple<int, f32, bool> pointBoxCollision(
 		&& pos.Y > staticbox.MinEdge.Y && pos.Y < staticbox.MaxEdge.Y
 		&& pos.Z > staticbox.MinEdge.Z && pos.Z < staticbox.MaxEdge.Z;
 
+	// Possible to move backwards in time if inside collision box
 	v3f d;
 	if (inside)
 		d = {0.5f * xsize, 0.5f * ysize, 0.5f * zsize};
@@ -309,10 +286,10 @@ std::tuple<int, f32, bool> pointBoxCollision(
 					(relpos.Y + speed.Y * (dtime) > 0))
 				return {2, dtime, inside};
 		}
-		//else if(relpos.Z > zsize)
-		//{
-		//	return -1;
-		//}
+		else if(relpos.Z > zsize)
+		{
+			return {-1, dtime, inside};
+		}
 	}
 	else if(speed.Z < 0) // Check for collision with Z+ plane
 	{
@@ -324,10 +301,10 @@ std::tuple<int, f32, bool> pointBoxCollision(
 					(relpos.Y + speed.Y * (dtime) > 0))
 				return {2, dtime, inside};
 		}
-		//else if(relpos.Z < 0)
-		//{
-		//	return -1;
-		//}
+		else if(relpos.Z < 0)
+		{
+			return {-1, dtime, inside};
+		}
 	}
 
 	return {-1, dtime, inside};
@@ -506,7 +483,7 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 
 	if(collideWithObjects)
 	{
-		//ScopeProfiler sp2(g_profiler, "collisionMoveSimple objects avg", SPT_AVG);
+		ScopeProfiler sp2(g_profiler, "collisionMoveSimple objects avg", SPT_AVG);
 		//TimeTaker tt3("collisionMoveSimple collect object boxes");
 
 		/* add object boxes to cinfo */
@@ -584,7 +561,7 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 
 	while(dtime > BS * 1e-10f) {
 		//TimeTaker tt3("collisionMoveSimple dtime loop");
-        	//ScopeProfiler sp2(g_profiler, "collisionMoveSimple dtime loop avg", SPT_AVG);
+		ScopeProfiler sp2(g_profiler, "collisionMoveSimple dtime loop avg", SPT_AVG);
 
 		// Avoid infinite loop
 		loopcount++;
@@ -626,7 +603,7 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 		if (nearest_collided == -1) {
 			// No collision with any collision box.
 			*pos_f += *speed_f * dtime;
-			dtime = 0;  // Set to 0 to avoid "infinite" loop due to small FP numbers
+			dtime = 0; // Set to 0 to avoid "infinite" loop due to small FP numbers
 		} else {
 			// Otherwise, a collision occurred.
 			NearbyCollisionInfo &nearest_info = cinfo[nearest_boxindex];
@@ -755,7 +732,6 @@ collisionMoveResult collisionMovePoint(Environment *env, IGameDef *gamedef,
 {
 	static bool time_notification_done = false;
 	Map *map = &env->getMap();
-	//TimeTaker tt("collisionMovePoint");
 	ScopeProfiler sp(g_profiler, "collisionMovePoint avg", SPT_AVG);
 
 	collisionMoveResult result;
@@ -788,8 +764,7 @@ collisionMoveResult collisionMovePoint(Environment *env, IGameDef *gamedef,
 	std::vector<NearbyCollisionInfo> cinfo_objects;
 	if(collideWithObjects)
 	{
-		//ScopeProfiler sp2(g_profiler, "collisionMovePoint objects avg", SPT_AVG);
-		//TimeTaker tt3("collisionMovePoint collect object boxes");
+		ScopeProfiler sp2(g_profiler, "collisionMovePoint objects avg", SPT_AVG);
 
 		/* add object boxes to cinfo_objects */
 
@@ -843,9 +818,9 @@ collisionMoveResult collisionMovePoint(Environment *env, IGameDef *gamedef,
 				}
 			}
 		}
-	} //tt3
+	}
 
-	/*collisionMovePoint " << "\n";
+	/*
 		Collision detection
 	*/
 
@@ -854,7 +829,7 @@ collisionMoveResult collisionMovePoint(Environment *env, IGameDef *gamedef,
 	bool previously_inside = false;
 
 	while(dtime > BS * 1e-10f) {
-		//TimeTaker tt3("collisionMovePoint dtime loop");
+		ScopeProfiler sp2(g_profiler, "collisionMovePoint dtime loop avg", SPT_AVG);
 
 		// Avoid infinite loop
 		loopcount++;
@@ -868,14 +843,13 @@ collisionMoveResult collisionMovePoint(Environment *env, IGameDef *gamedef,
 		int nearest_boxindex = -1;
 
 		/*
-			Go through every nodebox, find nearest collision
+			Go through every nodebox in path, find nearest collision
 		*/
 		/*
 			Collect node boxes in movement range
 		*/
 		std::vector<NearbyCollisionInfo> cinfo = cinfo_objects;
 		{
-		//TimeTaker tt2("collisionMovePoint collect boxes");
 
 		bool any_position_valid = false;
 
@@ -883,12 +857,9 @@ collisionMoveResult collisionMovePoint(Environment *env, IGameDef *gamedef,
 		f32 dtime_collect = 0.f;
 		v3f pos_test = *pos_f;
 		bool finished = false;
-		//std::cout << "Collect\n";
 		while (true) {
 			bool is_position_valid;
 			MapNode n = map->getNodeNoEx(p, &is_position_valid);
-
-			//std::cout << "\tp = (" << p.X << ", " << p.Y << ", " << p.Z << ")\n";
 
 			if (is_position_valid && n.getContent() != CONTENT_IGNORE) {
 				// Object collides into walkable nodes
@@ -896,8 +867,6 @@ collisionMoveResult collisionMovePoint(Environment *env, IGameDef *gamedef,
 				any_position_valid = true;
 				const NodeDefManager *nodedef = gamedef->getNodeDefManager();
 				const ContentFeatures &f = nodedef->get(n);
-
-				//std::cout << "\twalkable = " << f.walkable << "\n";
 
 				if (f.walkable) {
 					int neighbors = 0;
@@ -949,6 +918,8 @@ collisionMoveResult collisionMovePoint(Environment *env, IGameDef *gamedef,
 			if (finished)
 				break;
 
+			// Find the next node to add
+
 			using nl = std::numeric_limits<f32>;
 			f32 max_value = nl::has_infinity ? nl::infinity() : nl::max();
 			f32 dtime_X, dtime_Y, dtime_Z;
@@ -957,14 +928,10 @@ collisionMoveResult collisionMovePoint(Environment *env, IGameDef *gamedef,
 
 			v3f pos_node_center = intToFloat(floatToInt(pos_test, BS), BS);
 
-			//std::cout << "pos_node_center = (" << pos_node_center.X
-				//<< ", " << pos_node_center.Y << ", " << pos_node_center.Z << ")\n";
-
-			// TODO
-			
 			const auto calc_dtime = [&] (f32 pc, f32 pt, f32 speed)
 			{
 				f32 dtime = (pc - pt + (speed > 0 ? BS / 2.f : -BS / 2.f)) / speed;
+				// Prevent infinite loop by floating point errors
 				if (pt + speed*dtime == pt) {
 					if (speed > 0)
 						dtime = BS / speed;
@@ -983,26 +950,22 @@ collisionMoveResult collisionMovePoint(Environment *env, IGameDef *gamedef,
 			if(speed_f->Z != 0) {
 				dtime_Z = calc_dtime(pos_node_center.Z, pos_test.Z, speed_f->Z);
 			}
-
 			f32 dtime_min = MYMIN(dtime_X, MYMIN(dtime_Y, dtime_Z));
-			// speed = 0
+
 			if (dtime_min == max_value)
 				break;
 
 			if (dtime_min == dtime_X) {
-				//std::cout << "\tX!\n";
 				if (speed_f->X > 0)
 					++p.X;
 				else
 					--p.X;
 			} else if (dtime_min == dtime_Y) {
-				//std::cout << "\tY!\n";
 				if (speed_f->Y > 0)
 					++p.Y;
 				else
 					--p.Y;
 			} else if (dtime_min == dtime_Z) {
-				//std::cout << "\tZ!\n";
 				if (speed_f->Z > 0)
 					++p.Z;
 				else
@@ -1010,28 +973,27 @@ collisionMoveResult collisionMovePoint(Environment *env, IGameDef *gamedef,
 			}
 			pos_test += dtime_min * (*speed_f);
 			dtime_collect += dtime_min;
+
+			// Add next node anyway to keep a minimal distance of surface_dist
 			if (dtime_collect > dtime)
 				finished = true;
 		}
 
 
-		// Do not move if world has not loaded yet, since custom node boxes
+		// Do not collide if world has not loaded yet, since custom node boxes
 		// are not available for collision detection.
 		// This also intentionally occurs in the case of the object being positioned
 		// solely on loaded CONTENT_IGNORE nodes, no matter where they come from.
+		// The behavior is different from collisionMoveSimple.
 		if (!any_position_valid) {
-			//*speed_f = v3f(0, 0, 0);
 			return result;
 		}
 
-		} // tt2
+		}
 
 		{
 
 		bool any_inside = false;
-
-		//std::cout << "Num boxes: " << cinfo.size() << "\n";
-
 		for (u32 boxindex = 0; boxindex < cinfo.size(); boxindex++) {
 			const NearbyCollisionInfo &box_info = cinfo[boxindex];
 
@@ -1052,16 +1014,10 @@ collisionMoveResult collisionMovePoint(Environment *env, IGameDef *gamedef,
 			nearest_boxindex = boxindex;
 		}
 
-		//std::cout << "nearest_collided = " << nearest_collided << "\n";
-		//std::cout << "previously_inside = " << previously_inside << "\n";
-		//std::cout << "any_inside = " << any_inside << "\n";
-		//std::cout << "dtime = " << dtime << "\n";
-		//std::cout << "nearest_dtime = " << nearest_dtime << "\n";
-
 		if ((any_inside && previously_inside) || nearest_collided == -1) {
 			// No collision with any collision box.
 			*pos_f += *speed_f * dtime;
-			dtime = 0;  // Set to 0 to avoid "infinite" loop due to small FP numbers
+			dtime = 0; // Set to 0 to avoid "infinite" loop due to small FP numbers
 		} else {
 			// Otherwise, a collision occurred.
 			NearbyCollisionInfo &nearest_info = cinfo[nearest_boxindex];
@@ -1086,7 +1042,7 @@ collisionMoveResult collisionMovePoint(Environment *env, IGameDef *gamedef,
 
 
 			bool below_threshold = false;
-			// Set the speed component that caused the collision to zero
+			// Bounce the particle with the speed component that caused the collision
 			if (nearest_collided == 0) { // X
 				speed_f->X *= -bounce_fraction;
 				f32 speed_absSQ = speed_f->getLengthSQ();
@@ -1104,8 +1060,6 @@ collisionMoveResult collisionMovePoint(Environment *env, IGameDef *gamedef,
 					below_threshold = true;
 			}
 			result.collides = true;
-
-			//if (below_threshold && speed_f->getLengthSQ() < stop_threshold*stop_threshold)
 			if (below_threshold)
 				*speed_f = {0.f, 0.f, 0.f};
 
