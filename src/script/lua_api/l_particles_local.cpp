@@ -34,7 +34,8 @@ int ModApiParticlesLocal::l_add_particle(lua_State *L)
 	// Get parameters
 	v3f pos, vel, acc;
 	float expirationtime, size;
-	bool collisiondetection, vertical, collision_removal;
+	bool collisiondetection, collision_removal;
+	f32 bounce_fraction, bounce_threshold;
 
 	struct TileAnimationParams animation;
 	animation.type = TAT_NONE;
@@ -59,7 +60,8 @@ int ModApiParticlesLocal::l_add_particle(lua_State *L)
 	size = getfloatfield_default(L, 1, "size", 1);
 	collisiondetection = getboolfield_default(L, 1, "collisiondetection", false);
 	collision_removal = getboolfield_default(L, 1, "collision_removal", false);
-	vertical = getboolfield_default(L, 1, "vertical", false);
+	bounce_fraction = getfloatfield_default(L, 1, "bounce_fraction", 1.f);
+	bounce_threshold = getfloatfield_default(L, 1, "bounce_threshold", 0.f);
 
 	lua_getfield(L, 1, "animation");
 	animation = read_animation_definition(L, -1);
@@ -78,7 +80,8 @@ int ModApiParticlesLocal::l_add_particle(lua_State *L)
 	event->spawn_particle.size               = size;
 	event->spawn_particle.collisiondetection = collisiondetection;
 	event->spawn_particle.collision_removal  = collision_removal;
-	event->spawn_particle.vertical           = vertical;
+	event->spawn_particle.bounce_fraction    = bounce_fraction;
+	event->spawn_particle.bounce_threshold   = bounce_threshold;
 	event->spawn_particle.texture            = new std::string(texture);
 	event->spawn_particle.animation          = animation;
 	event->spawn_particle.glow               = glow;
@@ -94,7 +97,8 @@ int ModApiParticlesLocal::l_add_particlespawner(lua_State *L)
 	u16 amount;
 	v3f minpos, maxpos, minvel, maxvel, minacc, maxacc;
 	float time, minexptime, maxexptime, minsize, maxsize;
-	bool collisiondetection, vertical, collision_removal;
+	bool collisiondetection, collision_removal;
+	f32 bounce_fraction, bounce_threshold;
 
 	struct TileAnimationParams animation;
 	animation.type = TAT_NONE;
@@ -137,7 +141,8 @@ int ModApiParticlesLocal::l_add_particlespawner(lua_State *L)
 
 	collisiondetection = getboolfield_default(L, 1, "collisiondetection", false);
 	collision_removal = getboolfield_default(L, 1, "collision_removal", false);
-	vertical = getboolfield_default(L, 1, "vertical", false);
+	bounce_fraction = getfloatfield_default(L, 1, "bounce_fraction", 1.f);
+	bounce_threshold = getfloatfield_default(L, 1, "bounce_threshold", 0.f);
 
 	lua_getfield(L, 1, "animation");
 	animation = read_animation_definition(L, -1);
@@ -172,8 +177,9 @@ int ModApiParticlesLocal::l_add_particlespawner(lua_State *L)
 	event->add_particlespawner.maxsize            = maxsize;
 	event->add_particlespawner.collisiondetection = collisiondetection;
 	event->add_particlespawner.collision_removal  = collision_removal;
+	event->add_particlespawner.bounce_fraction    = bounce_fraction;
+	event->add_particlespawner.bounce_threshold   = bounce_threshold;
 	event->add_particlespawner.attached_id        = 0;
-	event->add_particlespawner.vertical           = vertical;
 	event->add_particlespawner.texture            = new std::string(texture);
 	event->add_particlespawner.id                 = id;
 	event->add_particlespawner.animation          = animation;

@@ -83,7 +83,8 @@ struct ClientEvent
 			bool collisiondetection;
 			bool collision_removal;
 			bool object_collision;
-			bool vertical;
+			f32 bounce_fraction;
+			f32 bounce_threshold;
 			std::string *texture;
 			struct TileAnimationParams animation;
 			u8 glow;
@@ -105,8 +106,9 @@ struct ClientEvent
 			bool collisiondetection;
 			bool collision_removal;
 			bool object_collision;
+			f32 bounce_fraction;
+			f32 bounce_threshold;
 			u16 attached_id;
-			bool vertical;
 			std::string *texture;
 			u64 id;
 			struct TileAnimationParams animation;

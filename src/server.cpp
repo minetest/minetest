@@ -1596,7 +1596,7 @@ void Server::SendSpawnParticle(session_t peer_id, u16 protocol_version,
 				v3f pos, v3f velocity, v3f acceleration,
 				float expirationtime, float size, bool collisiondetection,
 				bool collision_removal, bool object_collision,
-				bool vertical, const std::string &texture,
+				f32 bounce_fraction, f32 bounce_threshold, const std::string &texture,
 				const struct TileAnimationParams &animation, u8 glow)
 {
 	static thread_local const float radius =
@@ -1621,7 +1621,7 @@ void Server::SendSpawnParticle(session_t peer_id, u16 protocol_version,
 			SendSpawnParticle(client_id, player->protocol_version,
 					pos, velocity, acceleration,
 					expirationtime, size, collisiondetection, collision_removal,
-					object_collision, vertical, texture, animation, glow);
+					object_collision, bounce_fraction, bounce_threshold, texture, animation, glow);
 		}
 		return;
 	}
@@ -1631,7 +1631,6 @@ void Server::SendSpawnParticle(session_t peer_id, u16 protocol_version,
 	pkt << pos << velocity << acceleration << expirationtime
 			<< size << collisiondetection;
 	pkt.putLongString(texture);
-	pkt << vertical;
 	pkt << collision_removal;
 	// This is horrible but required (why are there two ways to serialize pkts?)
 	std::ostringstream os(std::ios_base::binary);
@@ -1639,6 +1638,8 @@ void Server::SendSpawnParticle(session_t peer_id, u16 protocol_version,
 	pkt.putRawString(os.str());
 	pkt << glow;
 	pkt << object_collision;
+	pkt << bounce_fraction;
+	pkt << bounce_threshold;
 
 	Send(&pkt);
 }
@@ -1648,7 +1649,7 @@ void Server::SendAddParticleSpawner(session_t peer_id, u16 protocol_version,
 	u16 amount, float spawntime, v3f minpos, v3f maxpos,
 	v3f minvel, v3f maxvel, v3f minacc, v3f maxacc, float minexptime, float maxexptime,
 	float minsize, float maxsize, bool collisiondetection, bool collision_removal,
-	bool object_collision, u16 attached_id, bool vertical, const std::string &texture, u32 id,
+	bool object_collision, f32 bounce_fraction, f32 bounce_threshold, u16 attached_id, const std::string &texture, u32 id,
 	const struct TileAnimationParams &animation, u8 glow)
 {
 	if (peer_id == PEER_ID_INEXISTENT) {
@@ -1662,8 +1663,8 @@ void Server::SendAddParticleSpawner(session_t peer_id, u16 protocol_version,
 					amount, spawntime, minpos, maxpos,
 					minvel, maxvel, minacc, maxacc, minexptime, maxexptime,
 					minsize, maxsize, collisiondetection, collision_removal,
-					object_collision, attached_id, vertical, texture, id,
-					animation, glow);
+					object_collision, bounce_fraction, bounce_threshold, attached_id,
+					texture, id, animation, glow);
 		}
 		return;
 	}
@@ -1676,7 +1677,7 @@ void Server::SendAddParticleSpawner(session_t peer_id, u16 protocol_version,
 
 	pkt.putLongString(texture);
 
-	pkt << id << vertical;
+	pkt << id;
 	pkt << collision_removal;
 	pkt << attached_id;
 	// This is horrible but required
@@ -1685,6 +1686,8 @@ void Server::SendAddParticleSpawner(session_t peer_id, u16 protocol_version,
 	pkt.putRawString(os.str());
 	pkt << glow;
 	pkt << object_collision;
+	pkt << bounce_fraction;
+	pkt << bounce_threshold;
 
 	Send(&pkt);
 }
@@ -3260,7 +3263,7 @@ void Server::spawnParticle(const std::string &playername, v3f pos,
 	v3f velocity, v3f acceleration,
 	float expirationtime, float size, bool
 	collisiondetection, bool collision_removal, bool object_collision,
-	bool vertical, const std::string &texture,
+	f32 bounce_fraction, f32 bounce_threshold, const std::string &texture,
 	const struct TileAnimationParams &animation, u8 glow)
 {
 	// m_env will be NULL if the server is initializing
@@ -3279,16 +3282,16 @@ void Server::spawnParticle(const std::string &playername, v3f pos,
 
 	SendSpawnParticle(peer_id, proto_ver, pos, velocity, acceleration,
 			expirationtime, size, collisiondetection, collision_removal,
-			object_collision, vertical, texture, animation, glow);
+			object_collision, bounce_fraction, bounce_threshold, texture, animation, glow);
 }
 
 u32 Server::addParticleSpawner(u16 amount, float spawntime,
 	v3f minpos, v3f maxpos, v3f minvel, v3f maxvel, v3f minacc, v3f maxacc,
 	float minexptime, float maxexptime, float minsize, float maxsize,
 	bool collisiondetection, bool collision_removal, bool object_collision,
-	ServerActiveObject *attached, bool vertical, const std::string &texture,
-	const std::string &playername, const struct TileAnimationParams &animation,
-	u8 glow)
+	f32 bounce_fraction, f32 bounce_threshold, ServerActiveObject *attached,
+	const std::string &texture, const std::string &playername,
+	const struct TileAnimationParams &animation, u8 glow)
 {
 	// m_env will be NULL if the server is initializing
 	if (!m_env)
@@ -3315,7 +3318,7 @@ u32 Server::addParticleSpawner(u16 amount, float spawntime,
 	SendAddParticleSpawner(peer_id, proto_ver, amount, spawntime,
 		minpos, maxpos, minvel, maxvel, minacc, maxacc,
 		minexptime, maxexptime, minsize, maxsize, collisiondetection,
-		collision_removal, object_collision, attached_id, vertical,
+		collision_removal, object_collision, bounce_fraction, bounce_threshold, attached_id,
 		texture, id, animation, glow);
 
 	return id;

@@ -6831,8 +6831,14 @@ Used by `minetest.add_particle`.
         -- `physical = true,` and `collide_with_objects = true,`.
         -- Requires collisiondetection = true to have any effect.
 
-        vertical = false,
-        -- If true faces player using y axis only
+		bounce_fraction = 1,
+		-- Fraction of the velocity component that is kept after bouncing
+		-- in the corresponding direction.
+
+		bounce_threshold = 0,
+		-- If the absolute value of the velocity component in the direction
+		-- of a bounce is smaller than bounce_threshold * speed,
+		-- the velocity is set to, i.e. prevents "gliding".
 
         texture = "image.png",
 
@@ -6890,12 +6896,18 @@ Used by `minetest.add_particlespawner`.
         -- `physical = true,` and `collide_with_objects = true,`.
         -- Requires collisiondetection = true to have any effect.
 
+		bounce_fraction = 1,
+		-- Fraction of the velocity component that is kept after bouncing
+		-- in the corresponding direction.
+
+		bounce_threshold = 0,
+		-- If the absolute value of the velocity component in the direction
+		-- of a bounce is smaller than bounce_threshold * speed,
+		-- the velocity is set to, i.e. prevents "gliding".
+
         attached = ObjectRef,
         -- If defined, particle positions, velocities and accelerations are
         -- relative to this object's position and yaw
-
-        vertical = false,
-        -- If true face player using y axis only
 
         texture = "image.png",
 

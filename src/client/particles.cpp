@@ -625,7 +625,9 @@ void ParticleManager::handleParticleEvent(ClientEvent *event, Client *client, Lo
 			scene::IParticleAffector *collision_affector =
 				new CollisionAffector(m_env,
 					event->add_particlespawner.collision_removal,
-					event->add_particlespawner.object_collision, 0.1f, 0.3f);
+					event->add_particlespawner.object_collision,
+					event->add_particlespawner.bounce_fraction,
+					event->add_particlespawner.bounce_threshold);
 			ps->addAffector(collision_affector);
 			collision_affector->drop();
 		}
@@ -696,7 +698,9 @@ void ParticleManager::handleParticleEvent(ClientEvent *event, Client *client, Lo
 			scene::IParticleAffector *collision_affector =
 				new CollisionAffector(m_env,
 				event->spawn_particle.collision_removal,
-				event->spawn_particle.object_collision, 1.0f, 0.0f);
+				event->spawn_particle.object_collision,
+				event->spawn_particle.bounce_fraction,
+				event->spawn_particle.bounce_threshold);
 			ps->addAffector(collision_affector);
 			collision_affector->drop();
 		}

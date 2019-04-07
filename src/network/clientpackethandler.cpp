@@ -934,18 +934,20 @@ void Client::handleCommand_SpawnParticle(NetworkPacket* pkt)
 	bool collisiondetection = readU8(is);
 	std::string texture     = deSerializeLongString(is);
 
-	bool vertical          = false;
 	bool collision_removal = false;
 	TileAnimationParams animation;
 	animation.type         = TAT_NONE;
 	u8 glow                = 0;
 	bool object_collision  = false;
+	f32 bounce_fraction = 1.f;
+	f32 bounce_threshold = 0.f;
 	try {
-		vertical = readU8(is);
 		collision_removal = readU8(is);
 		animation.deSerialize(is, m_proto_ver);
 		glow = readU8(is);
 		object_collision = readU8(is);
+		bounce_fraction = readF32(is);
+		bounce_threshold = readF32(is);
 	} catch (...) {}
 
 	ClientEvent *event = new ClientEvent();
@@ -958,7 +960,8 @@ void Client::handleCommand_SpawnParticle(NetworkPacket* pkt)
 	event->spawn_particle.collisiondetection = collisiondetection;
 	event->spawn_particle.collision_removal  = collision_removal;
 	event->spawn_particle.object_collision   = object_collision;
-	event->spawn_particle.vertical           = vertical;
+	event->spawn_particle.bounce_fraction    = bounce_fraction;
+	event->spawn_particle.bounce_threshold   = bounce_threshold;
 	event->spawn_particle.texture            = new std::string(texture);
 	event->spawn_particle.animation          = animation;
 	event->spawn_particle.glow               = glow;
@@ -991,15 +994,15 @@ void Client::handleCommand_AddParticleSpawner(NetworkPacket* pkt)
 
 	*pkt >> server_id;
 
-	bool vertical          = false;
 	bool collision_removal = false;
 	u16 attached_id        = 0;
 	TileAnimationParams animation;
 	animation.type         = TAT_NONE;
 	u8 glow                = 0;
 	bool object_collision  = false;
+	f32 bounce_fraction = 1.f;
+	f32 bounce_threshold = 0.f;
 	try {
-		*pkt >> vertical;
 		*pkt >> collision_removal;
 		*pkt >> attached_id;
 
@@ -1009,6 +1012,8 @@ void Client::handleCommand_AddParticleSpawner(NetworkPacket* pkt)
 		animation.deSerialize(is, m_proto_ver);
 		glow = readU8(is);
 		object_collision = readU8(is);
+		bounce_fraction = readF32(is);
+		bounce_threshold = readF32(is);
 	} catch (...) {}
 
 	auto event = new ClientEvent();
@@ -1028,8 +1033,9 @@ void Client::handleCommand_AddParticleSpawner(NetworkPacket* pkt)
 	event->add_particlespawner.collisiondetection = collisiondetection;
 	event->add_particlespawner.collision_removal  = collision_removal;
 	event->add_particlespawner.object_collision   = object_collision;
+	event->add_particlespawner.bounce_fraction    = bounce_fraction;
+	event->add_particlespawner.bounce_threshold   = bounce_threshold;
 	event->add_particlespawner.attached_id        = attached_id;
-	event->add_particlespawner.vertical           = vertical;
 	event->add_particlespawner.texture            = new std::string(texture);
 	event->add_particlespawner.id                 = server_id;
 	event->add_particlespawner.animation          = animation;
