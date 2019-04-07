@@ -259,7 +259,7 @@ Library specific options:
     LEVELDB_LIBRARY                 - Only when building with LevelDB; path to libleveldb.a/libleveldb.so/libleveldb.dll.a
     LEVELDB_DLL                     - Only when building with LevelDB on Windows; path to libleveldb.dll
     PostgreSQL_INCLUDE_DIR          - Only when building with PostgreSQL; directory that contains libpq-fe.h
-    POSTGRESQL_LIBRARY              - Only when building with PostgreSQL; path to libpq.a/libpq.so
+    PostgreSQL_LIBRARY              - Only when building with PostgreSQL; path to libpq.a/libpq.so/libpq.lib
     REDIS_INCLUDE_DIR               - Only when building with Redis; directory that contains hiredis.h
     REDIS_LIBRARY                   - Only when building with Redis; path to libhiredis.a/libhiredis.so
     SPATIAL_INCLUDE_DIR             - Only when building with LibSpatial; directory that contains spatialindex/SpatialIndex.h
