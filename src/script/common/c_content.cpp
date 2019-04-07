@@ -278,6 +278,10 @@ void read_object_properties(lua_State *L, int index,
 	getfloatfield(L, -1, "eye_height", prop->eye_height);
 
 	getfloatfield(L, -1, "automatic_rotate", prop->automatic_rotate);
+	lua_getfield(L, -1, "automatic_rotate_3d");
+	if (lua_istable(L, -1))
+		prop->automatic_rotate_3d = read_v3f(L, -1);
+	lua_pop(L, 1);
 	lua_getfield(L, -1, "automatic_face_movement_dir");
 	if (lua_isnumber(L, -1)) {
 		prop->automatic_face_movement_dir = true;
@@ -374,6 +378,8 @@ void push_object_properties(lua_State *L, ObjectProperties *prop)
 	lua_setfield(L, -2, "eye_height");
 	lua_pushnumber(L, prop->automatic_rotate);
 	lua_setfield(L, -2, "automatic_rotate");
+	push_v3f(L, prop->automatic_rotate_3d);
+	lua_setfield(L, -2, "automatic_rotate_3d");
 	if (prop->automatic_face_movement_dir)
 		lua_pushnumber(L, prop->automatic_face_movement_dir_offset);
 	else

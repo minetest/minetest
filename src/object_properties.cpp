@@ -58,6 +58,7 @@ std::string ObjectProperties::dump()
 	os << ", is_visible=" << is_visible;
 	os << ", makes_footstep_sound=" << makes_footstep_sound;
 	os << ", automatic_rotate="<< automatic_rotate;
+	os << ", automatic_rotate_3d="<< PP(automatic_rotate_3d);
 	os << ", backface_culling="<< backface_culling;
 	os << ", glow=" << glow;
 	os << ", nametag=" << nametag;
@@ -115,6 +116,7 @@ void ObjectProperties::serialize(std::ostream &os) const
 	writeF32(os, eye_height);
 	writeF32(os, zoom_fov);
 	writeU8(os, use_texture_alpha);
+	writeV3F32(os, automatic_rotate_3d);
 
 	// Add stuff only at the bottom.
 	// Never remove anything, because we don't want new versions of this
@@ -167,4 +169,5 @@ void ObjectProperties::deSerialize(std::istream &is)
 	eye_height = readF32(is);
 	zoom_fov = readF32(is);
 	use_texture_alpha = readU8(is);
+	automatic_rotate_3d = readV3F32(is);
 }

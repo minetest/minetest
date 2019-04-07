@@ -5671,6 +5671,10 @@ Used by `ObjectRef` methods. Part of an Entity definition.
         automatic_rotate = 0,
         -- Set constant rotation in radians per second, positive or negative.
         -- Set to 0 to disable constant rotation.
+        -- This rotaion is only around y-axis.
+
+        automatic_rotate_3d = {x = 0, y = 0, z = 0},
+        -- Set constant rotation in radians per second in any direction.
 
         stepheight = 0,
 

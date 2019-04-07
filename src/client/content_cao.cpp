@@ -994,6 +994,11 @@ void GenericCAO::step(float dtime, ClientEnvironment *env)
 		rot_translator.val_current = m_rotation;
 		updateNodePos();
 	}
+	if (!getParent() && m_prop.automatic_rotate_3d.getLengthSQ() > 0.000001f) {
+		m_rotation += dtime * m_prop.automatic_rotate_3d * 180 / M_PI;
+		rot_translator.val_current = m_rotation;
+		updateNodePos();
+	}
 
 	if (!getParent() && m_prop.automatic_face_movement_dir &&
 			(fabs(m_velocity.Z) > 0.001 || fabs(m_velocity.X) > 0.001)) {
@@ -1368,7 +1373,8 @@ void GenericCAO::processMessage(const std::string &data)
 		m_velocity = readV3F32(is);
 		m_acceleration = readV3F32(is);
 
-		if (std::fabs(m_prop.automatic_rotate) < 0.001f)
+		if (std::fabs(m_prop.automatic_rotate) < 0.001f &&
+				m_prop.automatic_rotate_3d.getLengthSQ() < 0.000001f)
 			m_rotation = readV3F32(is);
 		else
 			readV3F32(is);

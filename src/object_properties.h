@@ -47,6 +47,7 @@ struct ObjectProperties
 	bool makes_footstep_sound = false;
 	f32 stepheight = 0.0f;
 	float automatic_rotate = 0.0f;
+	v3f automatic_rotate_3d = v3f(0.0f, 0.0f, 0.0f);
 	bool automatic_face_movement_dir = false;
 	f32 automatic_face_movement_dir_offset = 0.0f;
 	bool backface_culling = true;
