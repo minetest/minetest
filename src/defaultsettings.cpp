@@ -450,8 +450,8 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("server_map_save_interval", "15");
 	settings->setDefault("client_mapblock_limit", "1000");
 	settings->setDefault("active_block_range", "2");
-	settings->setDefault("chunksize", "5");
 	settings->setDefault("viewing_range", "50");
+	settings->setDefault("leaves_style", "simple");
 	settings->setDefault("curl_verify_cert","false");
 
 	// Apply settings according to screen size
