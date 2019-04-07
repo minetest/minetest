@@ -1239,6 +1239,9 @@ int ObjectRef::l_get_breath(lua_State *L)
 // set_attribute(self, attribute, value)
 int ObjectRef::l_set_attribute(lua_State *L)
 {
+	log_deprecated(L,
+		"Deprecated call to set_attribute, use MetaDataRef methods instead.");
+
 	ObjectRef *ref = checkobject(L, 1);
 	PlayerSAO* co = getplayersao(ref);
 	if (co == NULL)
@@ -1257,6 +1260,9 @@ int ObjectRef::l_set_attribute(lua_State *L)
 // get_attribute(self, attribute)
 int ObjectRef::l_get_attribute(lua_State *L)
 {
+	log_deprecated(L,
+		"Deprecated call to get_attribute, use MetaDataRef methods instead.");
+
 	ObjectRef *ref = checkobject(L, 1);
 	PlayerSAO* co = getplayersao(ref);
 	if (co == NULL)
