@@ -494,7 +494,7 @@ void DungeonGen::makeCorridor(v3s16 doorplace, v3s16 doordir,
 		if (partcount >= partlength) {
 			partcount = 0;
 
-			dir = random_turn(random, dir);
+			random_turn(random, dir);
 
 			partlength = random.range(1, length);
 
@@ -655,20 +655,19 @@ v3s16 turn_xz(v3s16 olddir, int t)
 }
 
 
-v3s16 random_turn(PseudoRandom &random, v3s16 olddir)
+void random_turn(PseudoRandom &random, v3s16 &dir)
 {
 	int turn = random.range(0, 2);
-	v3s16 dir;
-	if (turn == 0)
-		// Go straight
-		dir = olddir;
-	else if (turn == 1)
+	if (turn == 0) {
+		// Go straight: nothing to do
+		return;
+	} else if (turn == 1) {
 		// Turn right
-		dir = turn_xz(olddir, 0);
-	else
+		dir = turn_xz(dir, 0);
+	} else {
 		// Turn left
-		dir = turn_xz(olddir, 1);
-	return dir;
+		dir = turn_xz(dir, 1);
+	}
 }
 
 

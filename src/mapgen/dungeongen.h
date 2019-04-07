@@ -34,7 +34,7 @@ class NodeDefManager;
 
 v3s16 rand_ortho_dir(PseudoRandom &random, bool diagonal_dirs);
 v3s16 turn_xz(v3s16 olddir, int t);
-v3s16 random_turn(PseudoRandom &random, v3s16 olddir);
+void random_turn(PseudoRandom &random, v3s16 &dir);
 int dir_to_facedir(v3s16 d);
 
 
