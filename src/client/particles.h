@@ -38,8 +38,6 @@ public:
 	ParticleManager(ClientEnvironment* env);
 	~ParticleManager();
 
-	//void step (float dtime);
-
 	void handleParticleEvent(ClientEvent *event, Client *client,
 			LocalPlayer *player);
 
@@ -63,6 +61,7 @@ public:
 
 	u64 getSingleParticleNumber();
 	u64 getParticleSpawnerNumber();
+	void removeParticleSpawner(u64 id);
 
 private:
 	ClientEnvironment* m_env;
