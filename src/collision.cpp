@@ -756,9 +756,9 @@ collisionMoveResult collisionMovePoint(Environment *env, IGameDef *gamedef,
 		return result;
 
 	// Limit speed for avoiding hangs
-	speed_f->Y = rangelim(speed_f->Y, -5000, 5000);
-	speed_f->X = rangelim(speed_f->X, -5000, 5000);
-	speed_f->Z = rangelim(speed_f->Z, -5000, 5000);
+	speed_f->Y = rangelim(speed_f->Y, -50*BS, 50*BS);
+	speed_f->X = rangelim(speed_f->X, -50*BS, 50*BS);
+	speed_f->Z = rangelim(speed_f->Z, -50*BS, 50*BS);
 
 
 	std::vector<NearbyCollisionInfo> cinfo_objects;
@@ -853,11 +853,19 @@ collisionMoveResult collisionMovePoint(Environment *env, IGameDef *gamedef,
 
 		bool any_position_valid = false;
 
+		int loopcount_collect = 0;
 		v3s16 p = floatToInt(*pos_f, BS);
 		f32 dtime_collect = 0.f;
 		v3f pos_test = *pos_f;
 		bool finished = false;
 		while (true) {
+			++loopcount_collect;
+			if (loopcount_collect >= 100) {
+				warningstream << "collisionMovePoint collection Loop count exceeded, "
+					"aborting to avoid infinite loop" << std::endl;
+				break;
+			}
+
 			bool is_position_valid;
 			MapNode n = map->getNodeNoEx(p, &is_position_valid);
 
