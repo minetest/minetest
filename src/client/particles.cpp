@@ -415,12 +415,12 @@ private:
 class ContinuousEmitter : public CustomEmitter
 {
 public:
-	ContinuousEmitter(ParticleManager *pmgr, u64 id,
+	ContinuousEmitter(irr::scene::ISceneManager *smgr, ParticleManager *pmgr, u64 id,
 		ClientEnvironment *env, irr::scene::IParticleSystemSceneNode *ps,
 		u16 amount, f32 spawntime, const v3f &minrelpos, const v3f &maxrelpos,
 		const v3f &minvel, const v3f &maxvel, f32 minexptime,
 		f32 maxexptime, f32 minsize, f32 maxsize, u16 attached_id)
-		: pmgr(pmgr), id(id), env(env), ps(ps), remaining_amount(amount),
+		: smgr(smgr), pmgr(pmgr), id(id), env(env), ps(ps), remaining_amount(amount),
 		spawntime(spawntime), minrelpos(minrelpos), maxrelpos(maxrelpos),
 		minvel(minvel), maxvel(maxvel), minexptime(minexptime),
 		maxexptime(maxexptime), minsize(minsize), maxsize(maxsize),
@@ -442,8 +442,11 @@ public:
 			if (stopped && expired_time * 1e-3f < spawntime)
 				expired_time = spawntime;
 			expired_time += timeSinceLastCall;
-			if (expired_time * 1e-3f >= maxexptime + spawntime)
-				pmgr->removeParticleSpawner(id);
+			if (expired_time * 1e-3f >= maxexptime + spawntime) {
+				if (!stopped)
+					pmgr->removeParticleSpawner(id, false);
+				smgr->addToDeletionQueue(ps);
+			}
 
 			// Don't delete yet because of the existing particles
 			if (stopped || remaining_amount == 0)
@@ -452,9 +455,8 @@ public:
 			if (stopped) {
 				expired_time += timeSinceLastCall;
 				if (expired_time * 1e-3f >= maxexptime)
-					pmgr->removeParticleSpawner(id);
+					smgr->addToDeletionQueue(ps);
 				return 0;
-
 			}
 		}
 
@@ -502,6 +504,7 @@ public:
 		stopped = true;
 	}
 private:
+	irr::scene::ISceneManager *smgr;
 	ParticleManager *pmgr;
 	u64 id;
 	ClientEnvironment *env;
@@ -537,19 +540,13 @@ void ParticleManager::handleParticleEvent(ClientEvent *event, Client *client, Lo
 {
 	switch (event->type) {
 	case CE_DELETE_PARTICLESPAWNER: {
-		MutexAutoLock lock(m_spawner_list_lock);
-		auto node_it = m_particle_spawners.find(event->delete_particlespawner.id);
-		if (node_it != m_particle_spawners.end()) {
-			auto *em = static_cast<ContinuousEmitter*>(node_it->second->getEmitter());
-			em->stop();
-			m_particle_spawners.erase(node_it);
-		}
+		removeParticleSpawner(event->delete_particlespawner.id, true);
 
 		// No allocated memory in delete event
 		break;
 	}
 	case CE_ADD_PARTICLESPAWNER: {
-		removeParticleSpawner(event->add_particlespawner.id);
+		removeParticleSpawner(event->add_particlespawner.id, true);
 
 		scene::IParticleSystemSceneNode *ps =
 			m_smgr->addParticleSystemSceneNode(false,
@@ -568,7 +565,7 @@ void ParticleManager::handleParticleEvent(ClientEvent *event, Client *client, Lo
 		ps->setPosition(meanpos);
 
 		scene::IParticlePointEmitter *continous_emitter =
-			new ContinuousEmitter(this,
+			new ContinuousEmitter(m_smgr, this,
 			event->add_particlespawner.id,
 			m_env, ps,
 			event->add_particlespawner.amount,
@@ -825,12 +822,15 @@ u64 ParticleManager::getParticleSpawnerNumber()
 	return particle_spawners_count.load();
 }
 
-void ParticleManager::removeParticleSpawner(u64 id)
+void ParticleManager::removeParticleSpawner(u64 id, bool stop)
 {
 	MutexAutoLock lock(m_spawner_list_lock);
 	auto node_it = m_particle_spawners.find(id);
 	if (node_it != m_particle_spawners.end()) {
-		m_smgr->addToDeletionQueue(node_it->second);
+		if (stop) {
+			auto *em = static_cast<ContinuousEmitter*>(node_it->second->getEmitter());
+			em->stop();
+		}
 		m_particle_spawners.erase(node_it);
 	}
 }

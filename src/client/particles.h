@@ -61,7 +61,7 @@ public:
 
 	u64 getSingleParticleNumber();
 	u64 getParticleSpawnerNumber();
-	void removeParticleSpawner(u64 id);
+	void removeParticleSpawner(u64 id, bool stop);
 
 private:
 	ClientEnvironment* m_env;
