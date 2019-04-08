@@ -219,13 +219,6 @@ public:
 			v3f position = p.pos + camera_offset - dtime * p.vector * 1e3;;
 			v3f velocity = p.vector * 1e3f;
 
-			/*
-			aabb3f box {-half_width,-half_width,-half_width,half_width,half_width,half_width};
-			collisionMoveResult r_old = collisionMoveSimple(env, env->getGameDef(),
-					BS * 0.5, box, 0, dtime, &position, &velocity,
-					v3f {0.f, 0.f, 0.f}, nullptr, object_collision);
-			*/
-
 			collisionMoveResult r = collisionMovePoint(env, env->getGameDef(),
 					half_width, dtime, &position, &velocity, v3f {0.f, 0.f, 0.f},
 					nullptr, bounce_fraction, bounce_threshold, object_collision);
@@ -644,8 +637,6 @@ void ParticleManager::handleParticleEvent(ClientEvent *event, Client *client, Lo
 		ps->addAffector(lighting_affector);
 		lighting_affector->drop();
 
-		ps->setDebugDataVisible(irr::scene::EDS_BBOX);
-
 		// Delete allocated content of event
 		delete event->add_particlespawner.minpos;
 		delete event->add_particlespawner.maxpos;
@@ -714,7 +705,6 @@ void ParticleManager::handleParticleEvent(ClientEvent *event, Client *client, Lo
 			new LightingAffector(m_env, client, 0);
 		ps->addAffector(lighting_affector);
 		lighting_affector->drop();
-
 
 		ps->setMaterialFlag(video::EMF_LIGHTING, false);
 		ps->setMaterialFlag(video::EMF_BACK_FACE_CULLING, false);
