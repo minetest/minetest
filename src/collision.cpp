@@ -217,12 +217,12 @@ std::tuple<int, f32, bool> pointBoxCollision(
 					(relpos.Y + speed.Y * (dtime) > 0) &&
 					(relpos.Z + speed.Z * (dtime) < zsize) &&
 					(relpos.Z + speed.Z * (dtime) > 0)) {
-				return {0, dtime, inside};
+				return std::make_tuple(0, dtime, inside);
 			}
 		}
 		else if(relpos.X > xsize)
 		{
-			return {-1, dtime, inside};
+			return std::make_tuple(-1, dtime, inside);
 		}
 	}
 	else if(speed.X < 0) // Check for collision with X+ plane
@@ -233,11 +233,11 @@ std::tuple<int, f32, bool> pointBoxCollision(
 					(relpos.Y + speed.Y * (dtime) > 0) &&
 					(relpos.Z + speed.Z * (dtime) < zsize) &&
 					(relpos.Z + speed.Z * (dtime) > 0))
-				return {0, dtime, inside};
+				return std::make_tuple(0, dtime, inside);
 		}
 		else if(relpos.X < 0)
 		{
-			return {-1, dtime, inside};
+			return std::make_tuple(-1, dtime, inside);
 		}
 	}
 
@@ -251,11 +251,11 @@ std::tuple<int, f32, bool> pointBoxCollision(
 					(relpos.X + speed.X * (dtime) > 0) &&
 					(relpos.Z + speed.Z * (dtime) < zsize) &&
 					(relpos.Z + speed.Z * (dtime) > 0))
-				return {1, dtime, inside};
+				return std::make_tuple(1, dtime, inside);
 		}
 		else if(relpos.Y > ysize)
 		{
-			return {-1, dtime, inside};
+			return std::make_tuple(-1, dtime, inside);
 		}
 	}
 	else if(speed.Y < 0) // Check for collision with Y+ plane
@@ -266,11 +266,11 @@ std::tuple<int, f32, bool> pointBoxCollision(
 					(relpos.X + speed.X * (dtime) > 0) &&
 					(relpos.Z + speed.Z * (dtime) < zsize) &&
 					(relpos.Z + speed.Z * (dtime) > 0))
-				return {1, dtime, inside};
+				return std::make_tuple(1, dtime, inside);
 		}
 		else if(relpos.Y < 0)
 		{
-			return {-1, dtime, inside};
+			return std::make_tuple(-1, dtime, inside);
 		}
 	}
 
@@ -284,11 +284,11 @@ std::tuple<int, f32, bool> pointBoxCollision(
 					(relpos.X + speed.X * (dtime) > 0) &&
 					(relpos.Y + speed.Y * (dtime) < ysize) &&
 					(relpos.Y + speed.Y * (dtime) > 0))
-				return {2, dtime, inside};
+				return std::make_tuple(2, dtime, inside);
 		}
 		else if(relpos.Z > zsize)
 		{
-			return {-1, dtime, inside};
+			return std::make_tuple(-1, dtime, inside);
 		}
 	}
 	else if(speed.Z < 0) // Check for collision with Z+ plane
@@ -299,15 +299,15 @@ std::tuple<int, f32, bool> pointBoxCollision(
 					(relpos.X + speed.X * (dtime) > 0) &&
 					(relpos.Y + speed.Y * (dtime) < ysize) &&
 					(relpos.Y + speed.Y * (dtime) > 0))
-				return {2, dtime, inside};
+				return std::make_tuple(2, dtime, inside);
 		}
 		else if(relpos.Z < 0)
 		{
-			return {-1, dtime, inside};
+			return std::make_tuple(-1, dtime, inside);
 		}
 	}
 
-	return {-1, dtime, inside};
+	return std::make_tuple(-1, dtime, inside);
 }
 
 // Helper function:
