@@ -479,7 +479,7 @@ public:
 				if (attached) {
 					vel.rotateXZBy(attached->getYaw());
 					p.pos.rotateXZBy(attached->getYaw());
-					ps->setPosition(attached->getPosition());
+					p.pos += attached->getPosition();
 				} else {
 					return 0;
 				}
