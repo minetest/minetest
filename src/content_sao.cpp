@@ -1279,6 +1279,10 @@ int PlayerSAO::punch(v3f dir,
 		}
 	}
 
+	// Abort if player is already dead
+	if (getHP() == 0)
+		return 0;
+
 	HitParams hitparams = getHitParams(m_armor_groups, toolcap,
 			time_from_last_punch);
 
@@ -1308,11 +1312,11 @@ int PlayerSAO::punch(v3f dir,
 
 	actionstream << "Player " << m_player->getName() << " punched by "
 			<< punchername;
-	if (!damage_handled) {
+	if (!damage_handled)
 		actionstream << ", damage " << hitparams.hp << " HP";
-	} else {
-		actionstream << ", damage handled by lua";
-	}
+	else
+		actionstream << ", damage handled by Lua";
+
 	actionstream << std::endl;
 
 	return hitparams.wear;
