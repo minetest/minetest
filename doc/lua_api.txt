@@ -6155,17 +6155,44 @@ Used by `minetest.register_node`.
         },
 
         drop = "",
-        -- Name of dropped node when dug. Default is the node itself.
-        -- Alternatively:
+        -- Name of dropped item when dug.
+        -- Default dropped item is the node itself.
+        -- Using a table allows multiple items, drop chances and tool filtering:
         drop = {
-            -- Maximum number of items to drop
             max_items = 1,
-            -- Choose max_items randomly from this list
+            -- Maximum number of item lists to drop.
+            -- The entries in 'items' are processed in order. For each:
+            -- Tool filtering is applied, chance of drop is applied, if both are
+            -- successful the entire item list is dropped.
+            -- Entry processing continues until the number of dropped item lists
+            -- equals 'max_items'.
+            -- Therefore, entries should progress from low to high drop chance.
             items = {
+                -- Entry examples.
                 {
-                    items = {"foo:bar", "baz:frob"},  -- Items to drop
-                    rarity = 1,  -- Probability of dropping is 1 / rarity
-                    inherit_color = true, -- Inherit palette color from the node
+                    -- 1 in 1000 chance of dropping a diamond.
+                    -- Default rarity is '1'.
+                    rarity = 1000,
+                    items = {"default:diamond"},
+                },
+                {
+                    -- Only drop if using a tool whose name is identical to one
+                    -- of these.
+                    tools = {"default:shovel_mese", "default:shovel_diamond"},
+                    rarity = 5,
+                    items = {"default:dirt"},
+                    -- Whether all items in the dropped item list inherit the
+                    -- hardware coloring palette color from the dug node.
+                    -- Default is 'false'.
+                    inherit_color = true,
+                },
+                {
+                    -- Only drop if using a tool whose name contains
+                    -- "default:shovel_".
+                    tools = {"~default:shovel_"},
+                    rarity = 2,
+                    -- The item list dropped.
+                    items = {"default:sand", "default:desert_sand"},
                 },
             },
         },
