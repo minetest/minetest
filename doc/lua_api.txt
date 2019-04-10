@@ -5680,7 +5680,7 @@ Used by `ObjectRef` methods. Part of an Entity definition.
 
         automatic_face_movement_max_rotation_per_sec = -1,
         -- Limit automatic rotation to this value in degrees per second.
-        -- No limit if value < 0.
+        -- No limit if value <= 0.
 
         backface_culling = true,
         -- Set to false to disable backface_culling for model
