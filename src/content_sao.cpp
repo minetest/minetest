@@ -1022,6 +1022,7 @@ void PlayerSAO::step(float dtime, bool send_recommended)
 
 	if (m_node_hurt_interval.step(dtime, 1.0f)) {
 		u32 damage_per_second = 0;
+		std::string nodename;
 		// Lowest and highest damage points are 0.1 within collisionbox
 		float dam_top = m_prop.collisionbox.MaxEdge.Y - 0.1f;
 
@@ -1031,20 +1032,26 @@ void PlayerSAO::step(float dtime, bool send_recommended)
 			v3s16 p = floatToInt(m_base_position +
 				v3f(0.0f, dam_height * BS, 0.0f), BS);
 			MapNode n = m_env->getMap().getNodeNoEx(p);
-			damage_per_second = std::max(damage_per_second,
-				m_env->getGameDef()->ndef()->get(n).damage_per_second);
+			const ContentFeatures &c = m_env->getGameDef()->ndef()->get(n);
+			if (c.damage_per_second > damage_per_second) {
+				damage_per_second = c.damage_per_second;
+				nodename = c.name;
+			}
 		}
 
 		// Top damage point
 		v3s16 ptop = floatToInt(m_base_position +
 			v3f(0.0f, dam_top * BS, 0.0f), BS);
 		MapNode ntop = m_env->getMap().getNodeNoEx(ptop);
-		damage_per_second = std::max(damage_per_second,
-			m_env->getGameDef()->ndef()->get(ntop).damage_per_second);
+		const ContentFeatures &c = m_env->getGameDef()->ndef()->get(ntop);
+		if (c.damage_per_second > damage_per_second) {
+			damage_per_second = c.damage_per_second;
+			nodename = c.name;
+		}
 
 		if (damage_per_second != 0 && m_hp > 0) {
 			s32 newhp = (s32)m_hp - (s32)damage_per_second;
-			PlayerHPChangeReason reason(PlayerHPChangeReason::NODE_DAMAGE);
+			PlayerHPChangeReason reason(PlayerHPChangeReason::NODE_DAMAGE, nodename);
 			setHP(newhp, reason);
 			m_env->getGameDef()->SendPlayerHPOrDie(this, reason);
 		}

@@ -3738,15 +3738,16 @@ Call these functions only at load time!
                         giving a type - use this for custom damage types.
             * `punch`: Was punched. `reason.object` will hold the puncher, or nil if none.
             * `fall`
-            * `node_damage`: damage_per_second from a neighbouring node.
+            * `node_damage`: `damage_per_second` from a neighbouring node.
+                             `reason.node` will hold the node name or nil.
             * `drown`
             * `respawn`
         * Any of the above types may have additional fields from mods.
         * `reason.from` will be `mod` or `engine`.
     * `modifier`: when true, the function should return the actual `hp_change`.
-       Note: modifiers only get a temporary hp_change that can be modified by later modifiers.
-       modifiers can return true as a second argument to stop the execution of further functions.
-       Non-modifiers receive the final hp change calculated by the modifiers.
+       Note: modifiers only get a temporary `hp_change` that can be modified by later modifiers.
+       Modifiers can return true as a second argument to stop the execution of further functions.
+       Non-modifiers receive the final HP change calculated by the modifiers.
 * `minetest.register_on_dieplayer(function(ObjectRef, reason))`
     * Called when a player dies
     * `reason`: a PlayerHPChangeReason table, see register_on_player_hpchange

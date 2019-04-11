@@ -170,8 +170,8 @@ int ObjectRef::l_punch(lua_State *L)
 	ObjectRef *puncher_ref = checkobject(L, 2);
 	ServerActiveObject *co = getobject(ref);
 	ServerActiveObject *puncher = getobject(puncher_ref);
-	if (co == NULL) return 0;
-	if (puncher == NULL) return 0;
+	if (!co || !puncher)
+		return 0;
 	v3f dir;
 	if (lua_type(L, 5) != LUA_TTABLE)
 		dir = co->getBasePosition() - puncher->getBasePosition();
@@ -192,7 +192,8 @@ int ObjectRef::l_punch(lua_State *L)
 	// If the punched is a player, and its HP changed
 	if (src_original_hp != co->getHP() &&
 			co->getType() == ACTIVEOBJECT_TYPE_PLAYER) {
-		getServer(L)->SendPlayerHPOrDie((PlayerSAO *)co, PlayerHPChangeReason(PlayerHPChangeReason::PLAYER_PUNCH, puncher));
+		getServer(L)->SendPlayerHPOrDie((PlayerSAO *)co,
+				PlayerHPChangeReason(PlayerHPChangeReason::PLAYER_PUNCH, puncher));
 	}
 
 	// If the puncher is a player, and its HP changed
