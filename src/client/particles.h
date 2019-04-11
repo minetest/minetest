@@ -29,6 +29,7 @@ struct ClientEvent;
 class ClientEnvironment;
 struct MapNode;
 struct ContentFeatures;
+
 /**
  * Class doing handling of single particles and particle spawners
  */
@@ -66,7 +67,6 @@ public:
 private:
 	ClientEnvironment* m_env;
 	irr::scene::ISceneManager *m_smgr;
-
 	u64 m_next_particle_spawner_id = U32_MAX + 1;
 	std::unordered_map<u64, scene::IParticleSystemSceneNode*> m_particle_spawners;
 	std::mutex m_spawner_list_lock;

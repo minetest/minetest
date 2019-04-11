@@ -65,13 +65,13 @@ public:
 	{
 	}
 
-	virtual void affect(u32 now, irr::scene::SParticle *particlearray, u32 count)
+	void affect(u32 now, irr::scene::SParticle *particlearray, u32 count) override
 	{
 		v3s16 camera_offset = env.getCameraOffset();
 		ps->setPosition(position - intToFloat(camera_offset, BS));
 	}
 
-	virtual irr::scene::E_PARTICLE_AFFECTOR_TYPE getType() const
+	irr::scene::E_PARTICLE_AFFECTOR_TYPE getType() const override
 	{
 		return irr::scene::EPAT_NONE;
 	}
@@ -80,7 +80,6 @@ private:
 	irr::scene::IParticleSystemSceneNode *const ps;
 	v3f position;
 };
-
 
 class LightingAffector : public irr::scene::IParticleAffector
 {
@@ -92,7 +91,7 @@ public:
 	{
 	}
 
-	virtual void affect(u32 now, irr::scene::SParticle *particlearray, u32 count)
+	void affect(u32 now, irr::scene::SParticle *particlearray, u32 count) override
 	{
 		for (u32 i = 0; i < count; ++i) {
 			v3f pos = particlearray[i].pos +
@@ -102,7 +101,7 @@ public:
 		}
 	}
 
-	virtual irr::scene::E_PARTICLE_AFFECTOR_TYPE getType() const
+	irr::scene::E_PARTICLE_AFFECTOR_TYPE getType() const override
 	{
 		return irr::scene::EPAT_NONE;
 	}
@@ -154,7 +153,7 @@ public:
 			framesize.Y / (float) texsize.Y);
 	}
 
-	virtual void affect(u32 now, irr::scene::SParticle *particlearray, u32 count)
+	void affect(u32 now, irr::scene::SParticle *particlearray, u32 count) override
 	{
 		if (last_time == 0) {
 			last_time = now;
@@ -173,7 +172,7 @@ public:
 		*texture_matrix = bottomUpTextureMatrix(framesize_ratio.X, framesize_ratio.Y, texcoord.X, texcoord.Y);
 	}
 
-	virtual irr::scene::E_PARTICLE_AFFECTOR_TYPE getType() const
+	irr::scene::E_PARTICLE_AFFECTOR_TYPE getType() const override
 	{
 		return irr::scene::EPAT_NONE;
 	}
@@ -201,7 +200,7 @@ public:
 	{
 	}
 
-	virtual void affect(u32 now, irr::scene::SParticle *particlearray, u32 count)
+	void affect(u32 now, irr::scene::SParticle *particlearray, u32 count) override
 	{
 		if (last_time == 0) {
 			last_time = now;
@@ -234,7 +233,7 @@ public:
 		}
 	}
 
-	virtual irr::scene::E_PARTICLE_AFFECTOR_TYPE getType() const
+	irr::scene::E_PARTICLE_AFFECTOR_TYPE getType() const override
 	{
 		return irr::scene::EPAT_NONE;
 	}
@@ -261,7 +260,7 @@ public:
 	{
 	}
 
-	virtual void affect(u32 now, irr::scene::SParticle *particlearray, u32 count)
+	void affect(u32 now, irr::scene::SParticle *particlearray, u32 count) override
 	{
 		if (last_time == 0) {
 			last_time = now;
@@ -274,7 +273,7 @@ public:
 		}
 	}
 
-	virtual irr::scene::E_PARTICLE_AFFECTOR_TYPE getType() const
+	irr::scene::E_PARTICLE_AFFECTOR_TYPE getType() const override
 	{
 		return irr::scene::EPAT_NONE;
 	}
@@ -283,35 +282,35 @@ private:
 	bool disabled;
 	u32 last_time;
 };
+
+
 class CustomEmitter : public irr::scene::IParticleEmitter
 {
 public:
 	// unused pure virtual methods
-	virtual void setDirection(const core::vector3df& /* newDirection */) {}
-	virtual void setMinParticlesPerSecond(u32 /* minPPS */) {}
-	virtual void setMaxParticlesPerSecond(u32 /* maxPPS */) {}
-	virtual void setMinStartColor(const video::SColor& /* color */) {}
-	virtual void setMaxStartColor(const video::SColor& /* color */) {}
-	virtual void setMaxLifeTime(const u32 /* t */) {}
-	virtual void setMinLifeTime(const u32 /* t */) {}
-	virtual u32 getMaxLifeTime() const {return 1;}
-	virtual u32 getMinLifeTime() const {return 1;}
-	virtual void setMaxAngleDegrees(const s32 /* t */) {}
-	virtual s32 getMaxAngleDegrees() const {return 0;}
-	virtual void setMaxStartSize(const core::dimension2df& /* size */) {}
-	virtual void setMinStartSize(const core::dimension2df& /* size */) {}
-	virtual void setCenter(const core::vector3df& /* center */) {}
-	virtual void setRadius(f32 /* radius */) {}
-	virtual const core::vector3df& getDirection() const {return direction;}
-	virtual u32 getMinParticlesPerSecond() const {return 1;}
-	virtual u32 getMaxParticlesPerSecond() const {return 1;}
-	virtual const video::SColor& getMinStartColor() const {return minStartColor;}
-	virtual const video::SColor& getMaxStartColor() const {return maxStartColor;}
-	virtual const core::dimension2df& getMaxStartSize() const {return max_size;}
-	virtual const core::dimension2df& getMinStartSize() const {return min_size;}
-	virtual const core::vector3df& getCenter() const {return center;}
-	virtual f32 getRadius() const {return 1.f;}
-	virtual irr::scene::E_PARTICLE_EMITTER_TYPE getType() const
+	void setDirection(const core::vector3df& /* newDirection */) override {}
+	void setMinParticlesPerSecond(u32 /* minPPS */) override {}
+	void setMaxParticlesPerSecond(u32 /* maxPPS */) override {}
+	void setMinStartColor(const video::SColor& /* color */) override {}
+	void setMaxStartColor(const video::SColor& /* color */) override {}
+	void setMaxLifeTime(const u32 /* t */) override {}
+	void setMinLifeTime(const u32 /* t */) override {}
+	u32 getMaxLifeTime() const override {return 1;}
+	u32 getMinLifeTime() const override {return 1;}
+	void setMaxAngleDegrees(const s32 /* t */) override {}
+	s32 getMaxAngleDegrees() const override {return 0;}
+	void setMaxStartSize(const core::dimension2df& /* size */) override {}
+	void setMinStartSize(const core::dimension2df& /* size */) override {}
+	//void setCenter(const core::vector3df& /* center */) override {}
+	//void setRadius(f32 /* radius */) override {}
+	const core::vector3df& getDirection() const override {return direction;}
+	u32 getMinParticlesPerSecond() const override {return 1;}
+	u32 getMaxParticlesPerSecond() const override {return 1;}
+	const video::SColor& getMinStartColor() const override {return minStartColor;}
+	const video::SColor& getMaxStartColor() const override {return maxStartColor;}
+	const core::dimension2df& getMaxStartSize() const override {return max_size;}
+	const core::dimension2df& getMinStartSize() const override {return min_size;}
+	irr::scene::E_PARTICLE_EMITTER_TYPE getType() const override
 	{
 		return irr::scene::EPET_COUNT;
 	}
@@ -351,7 +350,7 @@ public:
 		--single_particles_count;
 	}
 
-	virtual s32 emitt(u32 now, u32 timeSinceLastCall, irr::scene::SParticle *&outArray)
+	s32 emitt(u32 now, u32 timeSinceLastCall, irr::scene::SParticle *&outArray) override
 	{
 		if (number == 0) {
 			if (now > deletion_time)
@@ -384,7 +383,6 @@ public:
 			p.startVector = p.vector = vel * BS * 1e-3f;
 
 			p.startTime = now;
-			//TEST
 			if (random_properties)
 				p.endTime = now + (u32) (rand() % 100 * 10.f);
 			else
@@ -436,7 +434,7 @@ public:
 		--particle_spawners_count;
 	}
 
-	virtual s32 emitt(u32 now, u32 timeSinceLastCall, irr::scene::SParticle *&outArray)
+	s32 emitt(u32 now, u32 timeSinceLastCall, irr::scene::SParticle *&outArray) override
 	{
 		if (spawntime != 0) {
 			if (stopped && expired_time * 1e-3f < spawntime)
@@ -522,9 +520,8 @@ private:
 	float time_for_particle;
 
 	irr::scene::SParticle p;
-
-
 };
+
 
 ParticleManager::ParticleManager(ClientEnvironment *env)
 	:m_env(env)
@@ -624,7 +621,6 @@ void ParticleManager::handleParticleEvent(ClientEvent *event, Client *client, Lo
 		ps->addAffector(acceleration_affector);
 		acceleration_affector->drop();
 
-
 		scene::IParticleAffector *lighting_affector =
 			new LightingAffector(m_env, client, 0);
 		ps->addAffector(lighting_affector);
@@ -720,7 +716,6 @@ void ParticleManager::handleParticleEvent(ClientEvent *event, Client *client, Lo
 
 // The final burst of particles when a node is finally dug, *not* particles
 // spawned during the digging of a node.
-
 void ParticleManager::addDiggingParticles(IGameDef *gamedef, LocalPlayer *player, v3s16 pos,
 	const MapNode &n, const ContentFeatures &f)
 {
@@ -733,7 +728,6 @@ void ParticleManager::addDiggingParticles(IGameDef *gamedef, LocalPlayer *player
 
 // During the digging of a node particles are spawned individually by this
 // function, called from Game::handleDigging() in game.cpp.
-
 void ParticleManager::addNodeParticle(IGameDef *gamedef, LocalPlayer *player, v3s16 pos,
 	const MapNode &n, const ContentFeatures &f, u32 number)
 {
@@ -764,7 +758,6 @@ void ParticleManager::addNodeParticle(IGameDef *gamedef, LocalPlayer *player, v3
 		color = tile.color;
 	else
 		n.getColor(f, &color);
-
 
 	// Deletes ps after the particles have vanished
 	scene::IParticleEmitter *em = new SingleEmitter(m_smgr,ps,color,number);
