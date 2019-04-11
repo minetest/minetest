@@ -78,6 +78,9 @@ private:
 	// set_list(self, listname, list)
 	static int l_set_list(lua_State *L);
 
+	// add_list(self, listname, list)
+	static int l_add_list(lua_State *L);
+
 	// get_lists(self) -> list of InventoryLists
 	static int l_get_lists(lua_State *L);
 

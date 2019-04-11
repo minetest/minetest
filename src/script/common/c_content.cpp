@@ -1276,17 +1276,23 @@ void push_tool_capabilities(lua_State *L,
 }
 
 /******************************************************************************/
+void push_inventory_list_raw(lua_State *L, InventoryList *invlist)
+{
+	std::vector<ItemStack> items;
+	for (u32 i = 0; i < invlist->getSize(); i++)
+		items.push_back(invlist->getItem(i));
+
+	push_items(L, items);
+}
+
+/******************************************************************************/
 void push_inventory_list(lua_State *L, Inventory *inv, const char *name)
 {
 	InventoryList *invlist = inv->getList(name);
-	if(invlist == NULL){
+	if (!invlist)
 		lua_pushnil(L);
-		return;
-	}
-	std::vector<ItemStack> items;
-	for(u32 i=0; i<invlist->getSize(); i++)
-		items.push_back(invlist->getItem(i));
-	push_items(L, items);
+	else
+		push_inventory_list_raw(L, invlist);
 }
 
 /******************************************************************************/

@@ -241,6 +241,36 @@ int InvRef::l_set_list(lua_State *L)
 	return 0;
 }
 
+// add_list(self, listname, list)
+int InvRef::l_add_list(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	InvRef *ref = checkobject(L, 1);
+	Inventory *inv = getinv(L, ref);
+	if (!inv)
+		return 0;
+
+	const char *dst_listname = luaL_checkstring(L, 2);
+	const char *src_listname = luaL_checkstring(L, 3);
+
+	InventoryList *dst_list = inv->getList(dst_listname);
+	InventoryList *src_list = inv->getList(src_listname);
+
+	// Create new list to store leftovers
+	InventoryList *leftover_list = new InventoryList("leftover",
+			src_list->getSize(), getServer(L)->getItemDefManager());
+
+	for (u32 i = 0; i < src_list->getSize(); i++) {
+		ItemStack leftover = dst_list->addItem(src_list->getItem(i));
+		if (!leftover.empty())
+			leftover_list->addItem(leftover);
+	}
+
+	push_inventory_list_raw(L, leftover_list);
+	delete leftover_list;
+	return 1;
+}
+
 // get_lists(self) -> list of InventoryLists
 int InvRef::l_get_lists(lua_State *L)
 {
@@ -472,6 +502,7 @@ const luaL_Reg InvRef::methods[] = {
 	luamethod(InvRef, set_stack),
 	luamethod(InvRef, get_list),
 	luamethod(InvRef, set_list),
+	luamethod(InvRef, add_list),
 	luamethod(InvRef, get_lists),
 	luamethod(InvRef, set_lists),
 	luamethod(InvRef, add_item),
