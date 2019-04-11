@@ -46,9 +46,10 @@ void TestIrrPtr::runTests(IGameDef *gamedef)
 
 ////////////////////////////////////////////////////////////////////////////////
 
-#define UASSERT_REFERENCE_COUNT(object, value, info) \
-	UTEST((object)->getReferenceCount() == value, \
-		info "Reference count is %d instead of " #value, (object)->getReferenceCount())
+#define UASSERT_REFERENCE_COUNT(object, value, info)                                     \
+	UTEST((object)->getReferenceCount() == value,                                    \
+			info "Reference count is %d instead of " #value,                 \
+			(object)->getReferenceCount())
 
 void TestIrrPtr::testRefCounting()
 {
@@ -86,7 +87,8 @@ void TestIrrPtr::testRefCounting()
 	}
 	UASSERT_REFERENCE_COUNT(obj, 2, );
 	obj->drop();
-	UTEST(obj->drop(), "Dropping failed: reference count is %d", obj->getReferenceCount());
+	UTEST(obj->drop(), "Dropping failed: reference count is %d",
+			obj->getReferenceCount());
 }
 
 void TestIrrPtr::testSelfAssignment()
