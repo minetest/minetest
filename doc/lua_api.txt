@@ -4,9 +4,8 @@ Minetest Lua Modding API Reference
 * More information at <http://www.minetest.net/>
 * Developer Wiki: <http://dev.minetest.net/>
 
-
 Introduction
-============
+------------
 
 Content and functionality can be added to Minetest using Lua scripting
 in run-time loaded mods.

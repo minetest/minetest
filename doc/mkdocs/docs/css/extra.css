@@ -1,0 +1,15 @@
+/* Fix partly obscured last TOC element */
+.wy-menu {
+  padding-bottom: 20px;
+}
+
+/* Use Minetest green instead of blue */
+.wy-nav-content a {
+  color: hsl(100, 40%, 40%);
+}
+.wy-nav-content a:hover {
+  color: hsl(100, 30%, 30%);
+}
+.wy-side-nav-search, .wy-nav-top, .wy-menu-vertical a:active {
+  background: hsl(100, 40%, 40%);
+}

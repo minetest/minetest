@@ -1,0 +1,31 @@
+@@ -691,7 +691,7 @@
+             yield tup
+         yield 0, '</div>\n'
+ 
+-    def _wrap_pre(self, inner):
++    def _wrap_pre_code(self, inner):
+         style = []
+         if self.prestyles:
+             style.append(self.prestyles)
+@@ -704,10 +704,10 @@
+ 
+         # the empty span here is to keep leading empty lines from being
+         # ignored by HTML parsers
+-        yield 0, ('<pre' + (style and ' style="%s"' % style) + '><span></span>')
++        yield 0, ('<pre' + (style and ' style="%s"' % style) + '><code><span></span>')
+         for tup in inner:
+             yield tup
+-        yield 0, '</pre>'
++        yield 0, '</code></pre>'
+ 
+     def _format_lines(self, tokensource):
+         """
+@@ -815,7 +815,7 @@
+         individual lines, in custom generators. See docstring
+         for `format`. Can be overridden.
+         """
+-        return self._wrap_div(self._wrap_pre(source))
++        return self._wrap_div(self._wrap_pre_code(source))
+ 
+     def format_unencoded(self, tokensource, outfile):
+         """
