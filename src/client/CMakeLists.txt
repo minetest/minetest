@@ -26,6 +26,7 @@ set(client_SRCS
 	${CMAKE_CURRENT_SOURCE_DIR}/render/sidebyside.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/render/stereo.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/render/cubemap.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/render/equirectangular.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/activeobjectmgr.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/camera.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/client.cpp

@@ -30,12 +30,7 @@ RenderingCoreCubeMap::RenderingCoreCubeMap(
 
 void RenderingCoreCubeMap::initTextures()
 {
-	if (screensize.X / screensize.Y > 4 / 3)
-		screensize.X = screensize.Y * 4 / 3;
-	else if (screensize.X / screensize.Y < 4 / 3)
-		screensize.Y = screensize.X * 3 / 4;
-
-	image_size = {screensize.X / 4, screensize.Y / 3};
+	image_size = {screensize.X / 4, screensize.Y / 2};
 	virtual_size = image_size;
 
 	for (int i = 0; i < 6; i ++)
@@ -54,6 +49,12 @@ void RenderingCoreCubeMap::beforeDraw()
 	cam = camera->getCameraNode();
 }
 
+// Structure of cube's faces
+//  Layout      Axis
+//    2          Y+
+//  1 4 0 5   X- Z+ X+ Z-
+//    3          Y-
+//
 // See https://www.nvidia.com/object/cube_map_ogl_tutorial.html for more info.
 
 void RenderingCoreCubeMap::useFace(int face)
@@ -128,9 +129,4 @@ void RenderingCoreCubeMap::drawAll()
 	}
 
 	driver->setRenderTarget(nullptr, false, false, skycolor);
-
-	for (int i = 5; i >= 0; i --)
-		drawFace(i);
-
-	// drawHUD();
 }
