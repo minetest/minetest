@@ -3827,25 +3827,25 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 	   2. Else, make sure formspec menu is on top
 	*/
 	auto formspec = m_game_ui->getFormspecGUI();
-	while (formspec) { // breakable. only runs for one iteration
-		if (formspec->getReferenceCount() == 1) {
-			m_game_ui->deleteFormspec();
-			break;
-		}
-
-		auto &loc = formspec->getFormspecLocation();
-		if (loc.type == InventoryLocation::NODEMETA) {
-			NodeMetadata *meta = client->getEnv().getClientMap().getNodeMetadata(loc.p);
-			if (!meta || meta->getString("formspec").empty()) {
-				formspec->quitMenu();
+	if (formspec) {
+		do { // breakable. only runs for one iteration
+			if (formspec->getReferenceCount() == 1) {
+				m_game_ui->deleteFormspec();
 				break;
 			}
-		}
 
-		if (isMenuActive())
-			guiroot->bringToFront(formspec);
+			auto &loc = formspec->getFormspecLocation();
+			if (loc.type == InventoryLocation::NODEMETA) {
+				NodeMetadata *meta = client->getEnv().getClientMap().getNodeMetadata(loc.p);
+				if (!meta || meta->getString("formspec").empty()) {
+					formspec->quitMenu();
+					break;
+				}
+			}
 
-		break;
+			if (isMenuActive())
+				guiroot->bringToFront(formspec);
+		} while (false);
 	}
 
 	/*
