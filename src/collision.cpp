@@ -179,9 +179,9 @@ std::tuple<int, f32, bool> pointBoxCollision(aabb3f staticbox, const v3f &pos,
 	f32 ysize = (staticbox.MaxEdge.Y - staticbox.MinEdge.Y);
 	f32 zsize = (staticbox.MaxEdge.Z - staticbox.MinEdge.Z);
 
-	bool inside = pos.X > staticbox.MinEdge.X && pos.X < staticbox.MaxEdge.X
-		&& pos.Y > staticbox.MinEdge.Y && pos.Y < staticbox.MaxEdge.Y
-		&& pos.Z > staticbox.MinEdge.Z && pos.Z < staticbox.MaxEdge.Z;
+	bool inside = relpos.X > 0 && relpos.X < xsize &&
+		relpos.Y > 0 && relpos.Y < ysize &&
+		relpos.Z > 0 && relpos.Z < zsize;
 
 	// Possible to move backwards in time if inside collision box
 	v3f d;
@@ -895,11 +895,11 @@ collisionMoveResult collisionMovePoint(Environment *env, IGameDef *gamedef,
 				return dtime;
 			};
 
-			if(speed_f->X != 0)
+			if (speed_f->X != 0)
 				dtime_X = calc_dtime(pos_node_center.X, pos_test.X, speed_f->X);
-			if(speed_f->Y != 0)
+			if (speed_f->Y != 0)
 				dtime_Y = calc_dtime(pos_node_center.Y, pos_test.Y, speed_f->Y);
-			if(speed_f->Z != 0)
+			if (speed_f->Z != 0)
 				dtime_Z = calc_dtime(pos_node_center.Z, pos_test.Z, speed_f->Z);
 
 			f32 dtime_min = MYMIN(dtime_X, MYMIN(dtime_Y, dtime_Z));
@@ -907,24 +907,76 @@ collisionMoveResult collisionMovePoint(Environment *env, IGameDef *gamedef,
 			if (dtime_min == max_value)
 				break;
 
+			dtime_collect += dtime_min;
+
 			if (dtime_min == dtime_X) {
+				f32 border_dist = std::fabs(std::fmod(pos_test.X, BS));
+				bool near_border;
+				if (speed_f->X > 0) {
+					near_border = (dtime_collect > dtime &&
+						border_dist > 0.5*BS+surface_dist) ||
+						(dtime_collect - dtime) *
+							fabs(speed_f->X) > surface_dist;
+				} else {
+					near_border = (dtime_collect > dtime &&
+						border_dist < 0.5*BS-surface_dist) ||
+						(dtime_collect - dtime) *
+						fabs(speed_f->X) > surface_dist;
+				}
+				if (dtime_collect > dtime && near_border)
+						break;
+
 				if (speed_f->X > 0)
 					++p.X;
 				else
 					--p.X;
+
 			} else if (dtime_min == dtime_Y) {
+				f32 border_dist = std::fabs(std::fmod(pos_test.Y, BS));
+				bool near_border;
+				if (speed_f->Y > 0) {
+					near_border = (dtime_collect > dtime &&
+						border_dist > 0.5*BS+surface_dist) ||
+						(dtime_collect - dtime) *
+							fabs(speed_f->Y) > surface_dist;
+				} else {
+					near_border = (dtime_collect > dtime &&
+						border_dist < 0.5*BS-surface_dist) ||
+						(dtime_collect - dtime) *
+						fabs(speed_f->Y) > surface_dist;
+				}
+				if (dtime_collect > dtime && near_border)
+						break;
+
 				if (speed_f->Y > 0)
 					++p.Y;
 				else
 					--p.Y;
 			} else if (dtime_min == dtime_Z) {
+				f32 border_dist = std::fabs(std::fmod(pos_test.Z, BS));
+				bool near_border;
+				if (speed_f->Z > 0) {
+					near_border = (dtime_collect > dtime &&
+						border_dist > 0.5*BS+surface_dist) ||
+						(dtime_collect - dtime) *
+							fabs(speed_f->Z) > surface_dist;
+				} else {
+					near_border = (dtime_collect > dtime &&
+						border_dist < 0.5*BS-surface_dist) ||
+						(dtime_collect - dtime) *
+						fabs(speed_f->Z) > surface_dist;
+				}
+				if (dtime_collect > dtime && near_border)
+						break;
+
 				if (speed_f->Z > 0)
 					++p.Z;
 				else
 					--p.Z;
 			}
+
 			pos_test += dtime_min * (*speed_f);
-			dtime_collect += dtime_min;
+
 
 			// Add next node anyway to keep a minimal distance of surface_dist
 			if (dtime_collect > dtime)
