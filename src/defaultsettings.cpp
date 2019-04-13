@@ -355,7 +355,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("csm_restriction_noderange", "0");
 	settings->setDefault("max_clearobjects_extra_loaded_blocks", "4096");
 	settings->setDefault("time_speed", "72");
-	settings->setDefault("world_start_time", "5250");
+	settings->setDefault("world_start_time", "6125");
 	settings->setDefault("server_unload_unused_data_timeout", "29");
 	settings->setDefault("max_objects_per_block", "64");
 	settings->setDefault("server_map_save_interval", "5.3");
