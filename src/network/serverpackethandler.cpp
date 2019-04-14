@@ -1102,11 +1102,38 @@ void Server::handleCommand_Interact(NetworkPacket* pkt)
 	}
 
 	/*
-		Check that target is reasonably close
-		(only when digging or placing things)
+		Check if pointed thing is in line of sight
 	*/
 	static thread_local const bool enable_anticheat =
 			!g_settings->getBool("disable_anticheat");
+
+	if (!m_env->line_of_sight(playersao->getEyePosition(),
+			pointed.intersection_point) && enable_anticheat &&
+			!isSingleplayer()) {
+		actionstream << "Server: NoCheat: " << player->getName() <<
+				" tried to interact without line of sight; ignoring." << std::endl;
+
+		// Re-send block to revert change on client-side
+		RemoteClient *client = getClient(pkt->getPeerId());
+		// Digging completed -> under
+		if (action == 2) {
+			v3s16 blockpos = getNodeBlockPos(floatToInt(pointed_pos_under, BS));
+			client->SetBlockNotSent(blockpos);
+		}
+		// Placement -> above
+		else if (action == 3) {
+			v3s16 blockpos = getNodeBlockPos(floatToInt(pointed_pos_above, BS));
+			client->SetBlockNotSent(blockpos);
+		}
+
+		m_script->on_cheat(playersao, "interacted_without_line_of_sight");
+		return;
+	}
+
+	/*
+		Check that target is reasonably close
+		(only when digging or placing things)
+	*/
 
 	if ((action == 0 || action == 2 || action == 3 || action == 4) &&
 			enable_anticheat && !isSingleplayer()) {

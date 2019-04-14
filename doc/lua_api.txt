@@ -3774,6 +3774,7 @@ Call these functions only at load time!
         * `moved_too_fast`
         * `interacted_too_far`
         * `interacted_while_dead`
+        * `interacted_without_line_of_sight`
         * `finished_unknown_dig`
         * `dug_unbreakable`
         * `dug_too_fast`
