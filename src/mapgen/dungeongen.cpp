@@ -31,9 +31,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 //#define DGEN_USE_TORCHES
 
-NoiseParams nparams_dungeon_density(0.9, 0.5, v3f(500.0, 500.0, 500.0), 0, 2, 0.8, 2.0);
-NoiseParams nparams_dungeon_alt_wall(-0.4, 1.0, v3f(40.0, 40.0, 40.0), 32474, 6, 1.1, 2.0);
-
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -73,21 +70,21 @@ DungeonGen::DungeonGen(const NodeDefManager *ndef,
 		dp.rooms_max           = 16;
 		dp.notifytype          = GENNOTIFY_DUNGEON;
 
-		dp.np_density  = nparams_dungeon_density;
-		dp.np_alt_wall = nparams_dungeon_alt_wall;
+		dp.np_alt_wall = 
+			NoiseParams(-0.4, 1.0, v3f(40.0, 40.0, 40.0), 32474, 6, 1.1, 2.0);
 	}
 }
 
 
-void DungeonGen::generate(MMVManip *vm, u32 bseed, v3s16 nmin, v3s16 nmax)
+void DungeonGen::generate(MMVManip *vm, u32 bseed, v3s16 nmin, v3s16 nmax,
+	u16 num_dungeons)
 {
+	if (num_dungeons == 0)
+		return;
+
 	assert(vm);
 
 	//TimeTaker t("gen dungeons");
-
-	float nval_density = NoisePerlin3D(&dp.np_density, nmin.X, nmin.Y, nmin.Z, dp.seed);
-	if (nval_density < 1.0f)
-		return;
 
 	static const bool preserve_ignore = !g_settings->getBool("projecting_dungeons");
 
@@ -122,7 +119,7 @@ void DungeonGen::generate(MMVManip *vm, u32 bseed, v3s16 nmin, v3s16 nmax)
 	}
 
 	// Add them
-	for (u32 i = 0; i < std::floor(nval_density); i++)
+	for (u32 i = 0; i < num_dungeons; i++)
 		makeDungeon(v3s16(1, 1, 1) * MAP_BLOCKSIZE);
 
 	// Optionally convert some structure to alternative structure

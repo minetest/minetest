@@ -48,6 +48,7 @@ struct MapgenV5Params : public MapgenParams
 	NoiseParams np_cave1;
 	NoiseParams np_cave2;
 	NoiseParams np_cavern;
+	NoiseParams np_dungeons;
 
 	MapgenV5Params();
 	~MapgenV5Params() = default;

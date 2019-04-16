@@ -1417,6 +1417,9 @@ mgv5_np_cavern (Cavern noise) noise_params_3d 0, 1, (384, 128, 384), 723, 5, 0.6
 #    3D noise defining terrain.
 mgv5_np_ground (Ground noise) noise_params_3d 0, 40, (80, 80, 80), 983240, 4, 0.55, 2.0, eased
 
+#    3D noise that determines number of dungeons per mapchunk.
+mgv5_np_dungeons (Dungeon noise) noise_params_3d 0.9, 0.5, (500, 500, 500), 0, 2, 0.8, 2.0
+
 [*Mapgen V6]
 
 #    Map generation attributes specific to Mapgen v6.
@@ -1569,6 +1572,9 @@ mgv7_np_cave1 (Cave1 noise) noise_params_3d 0, 12, (61, 61, 61), 52534, 3, 0.5, 
 #    Second of two 3D noises that together define tunnels.
 mgv7_np_cave2 (Cave2 noise) noise_params_3d 0, 12, (67, 67, 67), 10325, 3, 0.5, 2.0
 
+#    3D noise that determines number of dungeons per mapchunk.
+mgv7_np_dungeons (Dungeon noise) noise_params_3d 0.9, 0.5, (500, 500, 500), 0, 2, 0.8, 2.0
+
 [*Mapgen Carpathian]
 
 #    Map generation attributes specific to Mapgen Carpathian.
@@ -1648,6 +1654,9 @@ mgcarpathian_np_cave2 (Cave2 noise) noise_params_3d 0, 12, (67, 67, 67), 10325, 
 #    3D noise defining giant caverns.
 mgcarpathian_np_cavern (Cavern noise) noise_params_3d 0, 1, (384, 128, 384), 723, 5, 0.63, 2.0
 
+#    3D noise that determines number of dungeons per mapchunk.
+mgcarpathian_np_dungeons (Dungeon noise) noise_params_3d 0.9, 0.5, (500, 500, 500), 0, 2, 0.8, 2.0
+
 [*Mapgen Flat]
 
 #    Map generation attributes specific to Mapgen flat.
@@ -1701,6 +1710,9 @@ mgflat_np_cave1 (Cave1 noise) noise_params_3d 0, 12, (61, 61, 61), 52534, 3, 0.5
 
 #    Second of two 3D noises that together define tunnels.
 mgflat_np_cave2 (Cave2 noise) noise_params_3d 0, 12, (67, 67, 67), 10325, 3, 0.5, 2.0
+
+#    3D noise that determines number of dungeons per mapchunk.
+mgflat_np_dungeons (Dungeon noise) noise_params_3d 0.9, 0.5, (500, 500, 500), 0, 2, 0.8, 2.0
 
 [*Mapgen Fractal]
 
@@ -1811,6 +1823,9 @@ mgfractal_np_cave1 (Cave1 noise) noise_params_3d 0, 12, (61, 61, 61), 52534, 3, 
 #    Second of two 3D noises that together define tunnels.
 mgfractal_np_cave2 (Cave2 noise) noise_params_3d 0, 12, (67, 67, 67), 10325, 3, 0.5, 2.0
 
+#    3D noise that determines number of dungeons per mapchunk.
+mgfractal_np_dungeons (Dungeon noise) noise_params_3d 0.9, 0.5, (500, 500, 500), 0, 2, 0.8, 2.0
+
 [*Mapgen Valleys]
 
 #    Map generation attributes specific to Mapgen Valleys.
@@ -1887,6 +1902,9 @@ mgvalleys_np_valley_profile (Valley profile) noise_params_2d 0.6, 0.5, (512, 512
 
 #    Slope and fill work together to modify the heights.
 mgvalleys_np_inter_valley_slope (Valley slope) noise_params_2d 0.5, 0.5, (128, 128, 128), 746, 1, 1.0, 2.0, eased
+
+#    3D noise that determines number of dungeons per mapchunk.
+mgvalleys_np_dungeons (Dungeon noise) noise_params_3d 0.9, 0.5, (500, 500, 500), 0, 2, 0.8, 2.0
 
 [*Advanced]
 

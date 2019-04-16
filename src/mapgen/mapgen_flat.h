@@ -48,6 +48,7 @@ struct MapgenFlatParams : public MapgenParams
 	NoiseParams np_filler_depth;
 	NoiseParams np_cave1;
 	NoiseParams np_cave2;
+	NoiseParams np_dungeons;
 
 	MapgenFlatParams();
 	~MapgenFlatParams() = default;

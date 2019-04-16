@@ -66,6 +66,7 @@ struct MapgenV7Params : public MapgenParams {
 	NoiseParams np_cavern;
 	NoiseParams np_cave1;
 	NoiseParams np_cave2;
+	NoiseParams np_dungeons;
 
 	MapgenV7Params();
 	~MapgenV7Params() = default;
