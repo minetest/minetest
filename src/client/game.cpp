@@ -1880,6 +1880,9 @@ void Game::processKeyInput()
 	} else if (wasKeyDown(KeyType::INVENTORY)) {
 		openInventory();
 	} else if (input->cancelPressed()) {
+#ifdef __ANDROID__
+		m_android_chat_open = false;
+#endif
 		if (!gui_chat_console->isOpenInhibited()) {
 			showPauseMenu();
 		}
@@ -2079,6 +2082,7 @@ void Game::handleAndroidChatInput()
 	if (m_android_chat_open && porting::getInputDialogState() == 0) {
 		std::string text = porting::getInputDialogValue();
 		client->typeChatMessage(utf8_to_wide(text));
+		m_android_chat_open = false;
 	}
 }
 #endif
