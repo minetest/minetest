@@ -298,9 +298,7 @@ Library specific options:
 
 ### Compiling and Installing the dependencies
 
-Minetest relays on varios libaries. some are optional and only provide different database backends, and some are mandatory.
-
-It is highly recommended to use vcpkg as package manager. Of course you can compile the dependencies on your own, but you have to use different buildsystems, solve the dependencies of the dependencies, and may just end up with some linker errors. 
+It is highly recommended to use vcpkg as package manager.
 
 #### a) Using vcpkg to install dependencies
 
