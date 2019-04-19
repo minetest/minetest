@@ -331,7 +331,7 @@ This is outdated and not recommended. Follow the instructions on https://dev.min
 2. Select "Browse Source..." and select DIR/minetest
 3. Select "Browse Build..." and select DIR/minetest-build
 4. Select "Configure"
-5. Choose the right visual Studio version and target platform. It have to fit to the target of the installed dependencies
+5. Choose the right visual Studio version and target platform. It has to match the version of the installed dependencies
 6. Choose "Specify toolchain file for cross-compiling" 
 7. Click "Next"
 8. Select the vcpkg toolchain file e.g. `D:/vcpkg/scripts/buildsystems/vcpkg.cmake`
@@ -344,17 +344,19 @@ This is outdated and not recommended. Follow the instructions on https://dev.min
 
 #### b) Using the vcpkg toolchain and the commandline
 
-Its probably the best, to just create a bat or ps1 file. But you can just paste this two lines inside the powershell window too.
+Run the following script in Powershell:
 
 ```powershell
 cmake . -G"Visual Studio 15 2017 Win64" -DCMAKE_TOOLCHAIN_FILE=D:/vcpkg/scripts/buildsystems/vcpkg.cmake -DCMAKE_BUILD_TYPE=Release -DENABLE_GETTEXT=0 -DENABLE_CURSES=0
 cmake --build . --config Release
 ```
-Make shure that the right Compiler is selected and the path to the vcpkg toolchain file is correct.
+Make sure that the right compiler is selected and the path to the vcpkg toolchain is correct.
 
 #### c) Using your own compiled libaries
 
-This is outdated and not recommended. Follow the instructions on https://dev.minetest.net/Build_Win32_Minetest_including_all_required_libraries#VS2012_Build
+**This is outdated and not recommended**
+
+Follow the instructions on https://dev.minetest.net/Build_Win32_Minetest_including_all_required_libraries#VS2012_Build
 
 ### Windows Installer using WIX Toolset
 
