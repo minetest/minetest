@@ -211,7 +211,7 @@ public:
 		for (u32 i = 0; i < count; ++i) {
 			irr::scene::SParticle &p = particlearray[i];
 			float half_width = p.size.Width / 2;
-			v3f camera_offset = intToFloat(m_env->getCameraOffset(),BS);
+			v3f camera_offset = intToFloat(m_env->getCameraOffset(), BS);
 
 			// Undo Irrlicht position step
 			v3f position = p.pos + camera_offset - dtime * p.vector * 1e3;;
@@ -378,7 +378,7 @@ public:
 				};
 				size = rand() % 8 / 64.f * BS;
 			}
-			p.pos.set(pos);
+			p.pos = pos * BS;
 			p.startVector = p.vector = vel * BS * 1e-3f;
 
 			p.startTime = now;
