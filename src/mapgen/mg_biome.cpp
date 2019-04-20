@@ -63,6 +63,7 @@ BiomeManager::BiomeManager(Server *server) :
 	b->m_nodenames.emplace_back("mapgen_stone");
 	b->m_nodenames.emplace_back("ignore");
 	b->m_nodenames.emplace_back("ignore");
+	b->m_nnlistsizes.push_back(1);
 	b->m_nodenames.emplace_back("ignore");
 	b->m_nodenames.emplace_back("ignore");
 	b->m_nodenames.emplace_back("ignore");
@@ -330,7 +331,7 @@ void Biome::resolveNodeNames()
 	getIdFromNrBacklog(&c_river_water,   "mapgen_river_water_source", CONTENT_AIR,    false);
 	getIdFromNrBacklog(&c_riverbed,      "mapgen_stone",              CONTENT_AIR,    false);
 	getIdFromNrBacklog(&c_dust,          "ignore",                    CONTENT_IGNORE, false);
-	getIdFromNrBacklog(&c_cave_liquid,   "ignore",                    CONTENT_IGNORE, false);
+	getIdsFromNrBacklog(&c_cave_liquid);
 	getIdFromNrBacklog(&c_dungeon,       "ignore",                    CONTENT_IGNORE, false);
 	getIdFromNrBacklog(&c_dungeon_alt,   "ignore",                    CONTENT_IGNORE, false);
 	getIdFromNrBacklog(&c_dungeon_stair, "ignore",                    CONTENT_IGNORE, false);
