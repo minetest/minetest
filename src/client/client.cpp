@@ -121,15 +121,10 @@ Client::Client(
 
 void Client::loadMods()
 {
-	// Don't load mods twice
-	if (m_mods_loaded) {
-		return;
-	}
-
+	// Don't load mods twice.
 	// If client scripting is disabled by the client, don't load builtin or
 	// client-provided mods.
-	if (!m_modding_enabled) {
-		warningstream << "Client side scripting is disabled by client." << std::endl;
+	if (m_mods_loaded || !m_modding_enabled) {
 		return;
 	}
 
