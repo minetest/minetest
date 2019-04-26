@@ -438,12 +438,16 @@ void GUIFormSpecMenu::parseCheckbox(parserData* data, const std::string &element
 			fselected = true;
 
 		std::wstring wlabel = translate_string(utf8_to_wide(unescape_string(label)));
-		s32 spacing = Environment->getSkin()->getSize(gui::EGDS_CHECK_BOX_WIDTH) + 7;
+		const core::dimension2d<u32> label_size = m_font->getDimension(wlabel.c_str());
+		s32 cb_size = Environment->getSkin()->getSize(gui::EGDS_CHECK_BOX_WIDTH);
+		s32 y_center = (std::max(label_size.Height, (u32)cb_size) + 1) / 2;
 
 		core::rect<s32> rect = core::rect<s32>(
-				pos.X, pos.Y + ((imgsize.Y / 2) - m_btn_height),
-				pos.X + m_font->getDimension(wlabel.c_str()).Width + spacing,
-				pos.Y + ((imgsize.Y / 2) + m_btn_height));
+				pos.X,
+				pos.Y + imgsize.Y / 2 - y_center,
+				pos.X + label_size.Width + cb_size + 7,
+				pos.Y + imgsize.Y / 2 + y_center
+			);
 
 		FieldSpec spec(
 				name,
