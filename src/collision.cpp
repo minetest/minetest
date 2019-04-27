@@ -356,9 +356,9 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 
 		/* add object boxes to cinfo */
 
-		std::vector<ActiveObject*> objects;
+		std::vector<ActiveObject *> objects;
 #ifndef SERVER
-		ClientEnvironment *c_env = dynamic_cast<ClientEnvironment*>(env);
+		ClientEnvironment *c_env = dynamic_cast<ClientEnvironment *>(env);
 		if (c_env != 0) {
 			// Calculate distance by speed, add own extent and 1.5m of tolerance
 			f32 distance = speed_f->getLength() * dtime +
@@ -370,14 +370,14 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 				// Do collide with everything but itself and the parent CAO
 				if (!self || (self != clientobject.obj &&
 						self != clientobject.obj->getParent())) {
-					objects.push_back((ActiveObject*) clientobject.obj);
+					objects.push_back((ActiveObject *) clientobject.obj);
 				}
 			}
 		}
 		else
 #endif
 		{
-			ServerEnvironment *s_env = dynamic_cast<ServerEnvironment*>(env);
+			ServerEnvironment *s_env = dynamic_cast<ServerEnvironment *>(env);
 			if (s_env != NULL) {
 				// Calculate distance by speed, add own extent and 1.5m of tolerance
 				f32 distance = speed_f->getLength() * dtime +
@@ -390,13 +390,13 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 
 					if (!self || (self != current &&
 							self != current->getParent())) {
-						objects.push_back((ActiveObject*)current);
+						objects.push_back((ActiveObject *)current);
 					}
 				}
 			}
 		}
 
-		for (std::vector<ActiveObject*>::const_iterator iter = objects.begin();
+		for (std::vector<ActiveObject *>::const_iterator iter = objects.begin();
 				iter != objects.end(); ++iter) {
 			ActiveObject *object = *iter;
 
@@ -475,7 +475,7 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 		} else {
 			// Otherwise, a collision occurred.
 			NearbyCollisionInfo &nearest_info = cinfo[nearest_boxindex];
-			const aabb3f& cbox = nearest_info.box;
+			const aabb3f &cbox = nearest_info.box;
 			// Check for stairs.
 			bool step_up = (nearest_collided != 1) && // must not be Y direction
 					(movingbox.MinEdge.Y < cbox.MaxEdge.Y) &&

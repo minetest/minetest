@@ -447,7 +447,7 @@ bool PlayerDatabasePostgreSQL::playerDataExists(const std::string &playername)
 
 void PlayerDatabasePostgreSQL::savePlayer(RemotePlayer *player)
 {
-	PlayerSAO* sao = player->getPlayerSAO();
+	PlayerSAO *sao = player->getPlayerSAO();
 	if (!sao)
 		return;
 
@@ -470,7 +470,7 @@ void PlayerDatabasePostgreSQL::savePlayer(RemotePlayer *player)
 		breath.c_str()
 	};
 
-	const char* rmvalues[] = { player->getName() };
+	const char *rmvalues[] = { player->getName() };
 	beginSave();
 
 	if (getPGVersion() < 90500) {
@@ -486,14 +486,14 @@ void PlayerDatabasePostgreSQL::savePlayer(RemotePlayer *player)
 	execPrepared("remove_player_inventories", 1, rmvalues);
 	execPrepared("remove_player_inventory_items", 1, rmvalues);
 
-	std::vector<const InventoryList*> inventory_lists = sao->getInventory()->getLists();
+	std::vector<const InventoryList *> inventory_lists = sao->getInventory()->getLists();
 	for (u16 i = 0; i < inventory_lists.size(); i++) {
-		const InventoryList* list = inventory_lists[i];
+		const InventoryList *list = inventory_lists[i];
 		const std::string &name = list->getName();
 		std::string width = itos(list->getWidth()),
 			inv_id = itos(i), lsize = itos(list->getSize());
 
-		const char* inv_values[] = {
+		const char *inv_values[] = {
 			player->getName(),
 			inv_id.c_str(),
 			width.c_str(),
@@ -507,7 +507,7 @@ void PlayerDatabasePostgreSQL::savePlayer(RemotePlayer *player)
 			list->getItem(j).serialize(os);
 			std::string itemStr = os.str(), slotId = itos(j);
 
-			const char* invitem_values[] = {
+			const char *invitem_values[] = {
 				player->getName(),
 				inv_id.c_str(),
 				slotId.c_str(),
@@ -564,14 +564,14 @@ bool PlayerDatabasePostgreSQL::loadPlayer(RemotePlayer *player, PlayerSAO *sao)
 	int resultCount = PQntuples(results);
 
 	for (int row = 0; row < resultCount; ++row) {
-		InventoryList* invList = player->inventory.
+		InventoryList *invList = player->inventory.
 			addList(PQgetvalue(results, row, 2), pg_to_uint(results, row, 3));
 		invList->setWidth(pg_to_uint(results, row, 1));
 
 		u32 invId = pg_to_uint(results, row, 0);
 		std::string invIdStr = itos(invId);
 
-		const char* values2[] = {
+		const char *values2[] = {
 			player->getName(),
 			invIdStr.c_str()
 		};

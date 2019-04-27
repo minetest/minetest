@@ -341,7 +341,7 @@ bool AutoHideButtonBar::isButton(const SEvent &event)
 			m_active = true;
 			m_timeout = 0;
 
-			std::vector<button_info*>::iterator iter = m_buttons.begin();
+			std::vector<button_info *>::iterator iter = m_buttons.begin();
 
 			while (iter != m_buttons.end()) {
 				(*iter)->guibutton->setVisible(true);

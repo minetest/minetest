@@ -38,7 +38,7 @@ ClientActiveObject::~ClientActiveObject()
 	removeFromScene(true);
 }
 
-ClientActiveObject* ClientActiveObject::create(ActiveObjectType type,
+ClientActiveObject *ClientActiveObject::create(ActiveObjectType type,
 		Client *client, ClientEnvironment *env)
 {
 	// Find factory function
@@ -62,5 +62,3 @@ void ClientActiveObject::registerType(u16 type, Factory f)
 		return;
 	m_types[type] = f;
 }
-
-

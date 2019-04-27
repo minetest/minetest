@@ -61,7 +61,7 @@ public:
 	void removeAttachmentChild(int child_id);
 	const std::unordered_set<int> &getAttachmentChildIds();
 	ServerActiveObject *getParent() const;
-	ObjectProperties* accessObjectProperties();
+	ObjectProperties *accessObjectProperties();
 	void notifyObjectPropertiesModified();
 protected:
 	u16 m_hp = 1;
@@ -111,7 +111,7 @@ public:
 	ActiveObjectType getSendType() const
 	{ return ACTIVEOBJECT_TYPE_GENERIC; }
 	virtual void addedToEnvironment(u32 dtime_s);
-	static ServerActiveObject* create(ServerEnvironment *env, v3f pos,
+	static ServerActiveObject *create(ServerEnvironment *env, v3f pos,
 			const std::string &data);
 	void step(float dtime, bool send_recommended);
 	std::string getClientInitializationData(u16 protocol_version);
@@ -268,8 +268,8 @@ public:
 		Inventory interface
 	*/
 
-	Inventory* getInventory();
-	const Inventory* getInventory() const;
+	Inventory *getInventory();
+	const Inventory *getInventory() const;
 	InventoryLocation getInventoryLocation() const;
 	std::string getWieldList() const;
 	ItemStack getWieldedItem() const;
@@ -316,7 +316,7 @@ public:
 	{
 		m_nocheat_dig_pos = v3s16(32767, 32767, 32767);
 	}
-	LagPool& getDigPool()
+	LagPool &getDigPool()
 	{
 		return m_dig_pool;
 	}

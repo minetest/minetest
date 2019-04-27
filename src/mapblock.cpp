@@ -640,7 +640,7 @@ void MapBlock::deSerialize_pre22(std::istream &is, u8 version, bool disk)
 		}
 	} else { // All other versions (10 to 21)
 		u8 flags;
-		is.read((char*)&flags, 1);
+		is.read((char *)&flags, 1);
 		is_underground = (flags & 0x01) != 0;
 		m_day_night_differs = (flags & 0x02) != 0;
 		if(version >= 18)

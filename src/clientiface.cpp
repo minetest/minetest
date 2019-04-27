@@ -441,7 +441,7 @@ void RemoteClient::SetBlockNotSent(v3s16 p)
 	m_blocks_modified.insert(p);
 }
 
-void RemoteClient::SetBlocksNotSent(std::map<v3s16, MapBlock*> &blocks)
+void RemoteClient::SetBlocksNotSent(std::map<v3s16, MapBlock *> &blocks)
 {
 	m_nearest_unsent_d = 0;
 	m_nothing_to_send_pause_timer = 0;
@@ -706,7 +706,7 @@ void ClientInterface::UpdatePlayerList()
 
 			{
 				MutexAutoLock clientslock(m_clients_mutex);
-				RemoteClient* client = lockedGetClientNoEx(i);
+				RemoteClient *client = lockedGetClientNoEx(i);
 				if (client)
 					client->PrintInfo(infostream);
 			}
@@ -761,7 +761,7 @@ void ClientInterface::sendToAllCompat(NetworkPacket *pkt, NetworkPacket *legacyp
 	}
 }
 
-RemoteClient* ClientInterface::getClientNoEx(session_t peer_id, ClientState state_min)
+RemoteClient *ClientInterface::getClientNoEx(session_t peer_id, ClientState state_min)
 {
 	MutexAutoLock clientslock(m_clients_mutex);
 	RemoteClientMap::const_iterator n = m_clients.find(peer_id);
@@ -776,7 +776,7 @@ RemoteClient* ClientInterface::getClientNoEx(session_t peer_id, ClientState stat
 	return NULL;
 }
 
-RemoteClient* ClientInterface::lockedGetClientNoEx(session_t peer_id, ClientState state_min)
+RemoteClient *ClientInterface::lockedGetClientNoEx(session_t peer_id, ClientState state_min)
 {
 	RemoteClientMap::const_iterator n = m_clients.find(peer_id);
 	// The client may not exist; clients are immediately removed if their
@@ -831,7 +831,7 @@ void ClientInterface::DeleteClient(session_t peer_id)
 	// Handle objects
 	for (u16 id : client->m_known_objects) {
 		// Get object
-		ServerActiveObject* obj = m_env->getActiveObject(id);
+		ServerActiveObject *obj = m_env->getActiveObject(id);
 
 		if(obj && obj->m_known_by_count > 0)
 			obj->m_known_by_count--;

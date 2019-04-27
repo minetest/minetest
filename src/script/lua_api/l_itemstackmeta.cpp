@@ -26,7 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 /*
 	NodeMetaRef
 */
-ItemStackMetaRef* ItemStackMetaRef::checkobject(lua_State *L, int narg)
+ItemStackMetaRef *ItemStackMetaRef::checkobject(lua_State *L, int narg)
 {
 	luaL_checktype(L, narg, LUA_TUSERDATA);
 	void *ud = luaL_checkudata(L, narg, className);

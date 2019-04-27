@@ -243,7 +243,7 @@ void TestConnection::testConnectSendReceive()
 	*/
 	{
 		NetworkPacket pkt;
-		pkt.putRawPacket((u8*) "Hello World !", 14, 0);
+		pkt.putRawPacket((u8 *) "Hello World !", 14, 0);
 
 		SharedBuffer<u8> sentdata = pkt.oldForgePacket();
 
@@ -257,7 +257,7 @@ void TestConnection::testConnectSendReceive()
 		server.Receive(&recvpacket);
 		infostream << "** Server received: peer_id=" << pkt.getPeerId()
 				<< ", size=" << pkt.getSize()
-				<< ", data=" << (const char*)pkt.getU8Ptr(0)
+				<< ", data=" << (const char *)pkt.getU8Ptr(0)
 				<< std::endl;
 
 		SharedBuffer<u8> recvdata = pkt.oldForgePacket();

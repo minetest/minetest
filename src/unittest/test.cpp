@@ -67,7 +67,7 @@ public:
 		static std::vector<ModSpec> testmodspec;
 		return testmodspec;
 	}
-	virtual const ModSpec* getModSpec(const std::string &modname) const { return NULL; }
+	virtual const ModSpec *getModSpec(const std::string &modname) const { return NULL; }
 	virtual std::string getModStoragePath() const { return "."; }
 	virtual bool registerModStorage(ModMetadata *meta) { return true; }
 	virtual void unregisterModStorage(const std::string &name) {}

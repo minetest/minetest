@@ -739,7 +739,7 @@ void MapNode::serializeBulk(std::ostream &os, int version,
 	if (compressed)
 		compressZlib(databuf, databuf_size, os);
 	else
-		os.write((const char*) &databuf[0], databuf_size);
+		os.write((const char *) &databuf[0], databuf_size);
 
 	delete [] databuf;
 }
@@ -772,7 +772,7 @@ void MapNode::deSerializeBulk(std::istream &is, int version,
 	}
 	else
 	{
-		is.read((char*) &databuf[0], len);
+		is.read((char *) &databuf[0], len);
 		if(is.eof() || is.fail())
 			throw SerializationError("deSerializeBulkNodes: "
 					"failed to read bulk node data");

@@ -169,15 +169,15 @@ public:
 	std::string formspec_prepend;
 
 	PlayerControl control;
-	const PlayerControl& getPlayerControl() { return control; }
+	const PlayerControl &getPlayerControl() { return control; }
 	PlayerSettings &getPlayerSettings() { return m_player_settings; }
 	static void settingsChangedCallback(const std::string &name, void *data);
 
 	u32 keyPressed = 0;
 
-	HudElement* getHud(u32 id);
-	u32         addHud(HudElement* hud);
-	HudElement* removeHud(u32 id);
+	HudElement *getHud(u32 id);
+	u32         addHud(HudElement *hud);
+	HudElement *removeHud(u32 id);
 	void        clearHud();
 
 	u32 hud_flags;

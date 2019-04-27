@@ -61,8 +61,8 @@ void copyAssets();
  * @param editType type of texfield
  * (1==multiline text input; 2==single line text input; 3=password field)
  */
-void showInputDialog(const std::string& acceptButton,
-		const  std::string& hint, const std::string& current, int editType);
+void showInputDialog(const std::string &acceptButton,
+		const  std::string &hint, const std::string &current, int editType);
 
 /**
  * WORKAROUND for not working callbacks from java -> c++

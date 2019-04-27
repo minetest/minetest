@@ -67,7 +67,7 @@ public:
 	 * default constructor
 	 * @param engine the engine data is transmitted for further processing
 	 */
-	TextDestGuiEngine(GUIEngine* engine) : m_engine(engine) {};
+	TextDestGuiEngine(GUIEngine *engine) : m_engine(engine) {};
 
 	/**
 	 * receive fields transmitted by guiFormSpecMenu

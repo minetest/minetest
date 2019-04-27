@@ -58,9 +58,9 @@ public:
 	// Get an arbitrary subclass of ScriptApiBase
 	// by using dynamic_cast<> on getScriptApiBase()
 	template<typename T>
-	static T* getScriptApi(lua_State *L) {
+	static T *getScriptApi(lua_State *L) {
 		ScriptApiBase *scriptIface = getScriptApiBase(L);
-		T *scriptIfaceDowncast = dynamic_cast<T*>(scriptIface);
+		T *scriptIfaceDowncast = dynamic_cast<T *>(scriptIface);
 		if (!scriptIfaceDowncast) {
 			throw LuaError("Requested unavailable ScriptApi - core engine bug!");
 		}
@@ -68,7 +68,7 @@ public:
 	}
 
 	static bool registerFunction(lua_State *L,
-			const char* name,
+			const char *name,
 			lua_CFunction func,
 			int top);
 

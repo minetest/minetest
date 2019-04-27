@@ -146,7 +146,7 @@ public:
 	void drawMinimap();
 
 	video::IVideoDriver *driver;
-	Client* client;
+	Client *client;
 	MinimapData *data;
 
 private:

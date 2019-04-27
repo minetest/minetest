@@ -45,7 +45,7 @@ struct EnumString es_TileAnimationType[] =
 };
 
 /******************************************************************************/
-void read_item_definition(lua_State* L, int index,
+void read_item_definition(lua_State *L, int index,
 		const ItemDefinition &default_def, ItemDefinition &def)
 {
 	if (index < 0)
@@ -1166,7 +1166,7 @@ bool string_to_enum(const EnumString *spec, int &result,
 }
 
 /******************************************************************************/
-ItemStack read_item(lua_State* L, int index, IItemDefManager *idef)
+ItemStack read_item(lua_State *L, int index, IItemDefManager *idef)
 {
 	if(index < 0)
 		index = lua_gettop(L) + 1 + index;
@@ -1291,7 +1291,7 @@ void push_inventory_list(lua_State *L, Inventory *inv, const char *name)
 
 /******************************************************************************/
 void read_inventory_list(lua_State *L, int tableindex,
-		Inventory *inv, const char *name, Server* srv, int forcesize)
+		Inventory *inv, const char *name, Server *srv, int forcesize)
 {
 	if(tableindex < 0)
 		tableindex = lua_gettop(L) + 1 + tableindex;

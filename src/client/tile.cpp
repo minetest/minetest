@@ -198,14 +198,14 @@ public:
 	{
 		assert(img); // Pre-condition
 		// Remove old image
-		std::map<std::string, video::IImage*>::iterator n;
+		std::map<std::string, video::IImage *>::iterator n;
 		n = m_images.find(name);
 		if (n != m_images.end()){
 			if (n->second)
 				n->second->drop();
 		}
 
-		video::IImage* toadd = img;
+		video::IImage *toadd = img;
 		bool need_to_grab = true;
 
 		// Try to use local texture instead if asked to
@@ -225,9 +225,9 @@ public:
 			toadd->grab();
 		m_images[name] = toadd;
 	}
-	video::IImage* get(const std::string &name)
+	video::IImage *get(const std::string &name)
 	{
-		std::map<std::string, video::IImage*>::iterator n;
+		std::map<std::string, video::IImage *>::iterator n;
 		n = m_images.find(name);
 		if (n != m_images.end())
 			return n->second;
@@ -236,7 +236,7 @@ public:
 	// Primarily fetches from cache, secondarily tries to read from filesystem
 	video::IImage *getOrLoad(const std::string &name)
 	{
-		std::map<std::string, video::IImage*>::iterator n;
+		std::map<std::string, video::IImage *>::iterator n;
 		n = m_images.find(name);
 		if (n != m_images.end()){
 			n->second->grab(); // Grab for caller
@@ -260,7 +260,7 @@ public:
 		return img;
 	}
 private:
-	std::map<std::string, video::IImage*> m_images;
+	std::map<std::string, video::IImage *> m_images;
 };
 
 /*
@@ -325,9 +325,9 @@ public:
 		and not found in cache, the call is queued to the main thread
 		for processing.
 	*/
-	video::ITexture* getTexture(u32 id);
+	video::ITexture *getTexture(u32 id);
 
-	video::ITexture* getTexture(const std::string &name, u32 *id = NULL);
+	video::ITexture *getTexture(const std::string &name, u32 *id = NULL);
 
 	/*
 		Get a texture specifically intended for mesh
@@ -335,9 +335,9 @@ public:
 		use.  This texture may be a different size and may
 		have had additional filters applied.
 	*/
-	video::ITexture* getTextureForMesh(const std::string &name, u32 *id);
+	video::ITexture *getTextureForMesh(const std::string &name, u32 *id);
 
-	virtual Palette* getPalette(const std::string &name);
+	virtual Palette *getPalette(const std::string &name);
 
 	bool isKnownSourceImage(const std::string &name)
 	{
@@ -363,7 +363,7 @@ public:
 	// Shall be called from the main thread.
 	void rebuildImagesAndTextures();
 
-	video::ITexture* getNormalTexture(const std::string &name);
+	video::ITexture *getNormalTexture(const std::string &name);
 	video::SColor getTextureAverageColor(const std::string &name);
 	video::ITexture *getShaderFlagsTexture(bool normamap_present);
 
@@ -388,7 +388,7 @@ private:
 	 * Shall be called from the main thread.
 	 * The returned Image should be dropped.
 	 */
-	video::IImage* generateImage(const std::string &name);
+	video::IImage *generateImage(const std::string &name);
 
 	// Thread-safe cache of what source images are known (true = known)
 	MutexedMap<std::string, bool> m_source_image_existence;
@@ -405,8 +405,8 @@ private:
 	RequestQueue<std::string, u32, u8, u8> m_get_texture_queue;
 
 	// Textures that have been overwritten with other ones
-	// but can't be deleted because the ITexture* might still be used
-	std::vector<video::ITexture*> m_texture_trash;
+	// but can't be deleted because the ITexture * might still be used
+	std::vector<video::ITexture *> m_texture_trash;
 
 	// Maps image file names to loaded palettes.
 	std::unordered_map<std::string, Palette> m_palettes;
@@ -546,7 +546,7 @@ static void draw_crack(video::IImage *crack, video::IImage *dst,
 // Brighten image
 void brighten(video::IImage *image);
 // Parse a transform name
-u32 parseImageTransform(const std::string& s);
+u32 parseImageTransform(const std::string &s);
 // Apply transform to image dimension
 core::dimension2d<u32> imageTransformDimension(u32 transform, core::dimension2d<u32> dim);
 // Apply transform to image data
@@ -632,7 +632,7 @@ std::string TextureSource::getTextureName(u32 id)
 	return m_textureinfo_cache[id].name;
 }
 
-video::ITexture* TextureSource::getTexture(u32 id)
+video::ITexture *TextureSource::getTexture(u32 id)
 {
 	MutexAutoLock lock(m_textureinfo_cache_mutex);
 
@@ -642,7 +642,7 @@ video::ITexture* TextureSource::getTexture(u32 id)
 	return m_textureinfo_cache[id].texture;
 }
 
-video::ITexture* TextureSource::getTexture(const std::string &name, u32 *id)
+video::ITexture *TextureSource::getTexture(const std::string &name, u32 *id)
 {
 	u32 actual_id = getTextureId(name);
 	if (id){
@@ -651,12 +651,12 @@ video::ITexture* TextureSource::getTexture(const std::string &name, u32 *id)
 	return getTexture(actual_id);
 }
 
-video::ITexture* TextureSource::getTextureForMesh(const std::string &name, u32 *id)
+video::ITexture *TextureSource::getTextureForMesh(const std::string &name, u32 *id)
 {
 	return getTexture(name + "^[applyfiltersformesh", id);
 }
 
-Palette* TextureSource::getPalette(const std::string &name)
+Palette *TextureSource::getPalette(const std::string &name)
 {
 	// Only the main thread may load images
 	sanity_check(std::this_thread::get_id() == m_main_thread);
@@ -887,7 +887,7 @@ static video::IImage *createInventoryCubeImage(
 	return result;
 }
 
-video::IImage* TextureSource::generateImage(const std::string &name)
+video::IImage *TextureSource::generateImage(const std::string &name)
 {
 	// Get the base image
 
@@ -1004,7 +1004,7 @@ inline u16 get_GL_major_version()
 }
 
 video::IImage * Align2Npot2(video::IImage * image,
-		video::IVideoDriver* driver)
+		video::IVideoDriver *driver)
 {
 	if (image == NULL) {
 		return image;
@@ -2044,7 +2044,7 @@ void brighten(video::IImage *image)
 	}
 }
 
-u32 parseImageTransform(const std::string& s)
+u32 parseImageTransform(const std::string &s)
 {
 	int total_transform = 0;
 
@@ -2147,7 +2147,7 @@ void imageTransform(u32 transform, video::IImage *src, video::IImage *dst)
 	}
 }
 
-video::ITexture* TextureSource::getNormalTexture(const std::string &name)
+video::ITexture *TextureSource::getNormalTexture(const std::string &name)
 {
 	if (isKnownSourceImage("override_normal.png"))
 		return getTexture("override_normal.png");

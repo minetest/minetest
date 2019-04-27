@@ -89,7 +89,7 @@ ScriptApiBase::ScriptApiBase(ScriptingType type):
 	else
 		luaL_openlibs(m_luastack);
 
-	// Make the ScriptApiBase* accessible to ModApiBase
+	// Make the ScriptApiBase * accessible to ModApiBase
 	lua_pushlightuserdata(m_luastack, this);
 	lua_rawseti(m_luastack, LUA_REGISTRYINDEX, CUSTOM_RIDX_SCRIPTAPI);
 
@@ -102,7 +102,7 @@ ScriptApiBase::ScriptApiBase(ScriptingType type):
 	// If we are using LuaJIT add a C++ wrapper function to catch
 	// exceptions thrown in Lua -> C++ calls
 #if USE_LUAJIT
-	lua_pushlightuserdata(m_luastack, (void*) script_exception_wrapper);
+	lua_pushlightuserdata(m_luastack, (void *) script_exception_wrapper);
 	luaJIT_setmode(m_luastack, -1, LUAJIT_MODE_WRAPCFUNC | LUAJIT_MODE_ON);
 	lua_pop(m_luastack, 1);
 #endif
@@ -410,12 +410,12 @@ void ScriptApiBase::pushPlayerHPChangeReason(lua_State *L, const PlayerHPChangeR
 	}
 }
 
-Server* ScriptApiBase::getServer()
+Server *ScriptApiBase::getServer()
 {
 	return dynamic_cast<Server *>(m_gamedef);
 }
 #ifndef SERVER
-Client* ScriptApiBase::getClient()
+Client *ScriptApiBase::getClient()
 {
 	return dynamic_cast<Client *>(m_gamedef);
 }

@@ -114,7 +114,7 @@ void StorageRef::Register(lua_State *L)
 	lua_pop(L, 1);  // drop methodtable
 }
 
-StorageRef* StorageRef::checkobject(lua_State *L, int narg)
+StorageRef *StorageRef::checkobject(lua_State *L, int narg)
 {
 	luaL_checktype(L, narg, LUA_TUSERDATA);
 	void *ud = luaL_checkudata(L, narg, className);
@@ -122,13 +122,13 @@ StorageRef* StorageRef::checkobject(lua_State *L, int narg)
 	return *(StorageRef**)ud;  // unbox pointer
 }
 
-ModMetadata* StorageRef::getobject(StorageRef *ref)
+ModMetadata *StorageRef::getobject(StorageRef *ref)
 {
 	ModMetadata *co = ref->m_object;
 	return co;
 }
 
-Metadata* StorageRef::getmeta(bool auto_create)
+Metadata *StorageRef::getmeta(bool auto_create)
 {
 	return m_object;
 }

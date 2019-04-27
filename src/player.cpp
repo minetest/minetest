@@ -104,7 +104,7 @@ u32 Player::addHud(HudElement *toadd)
 	return id;
 }
 
-HudElement* Player::getHud(u32 id)
+HudElement *Player::getHud(u32 id)
 {
 	MutexAutoLock lock(m_mutex);
 
@@ -114,11 +114,11 @@ HudElement* Player::getHud(u32 id)
 	return NULL;
 }
 
-HudElement* Player::removeHud(u32 id)
+HudElement *Player::removeHud(u32 id)
 {
 	MutexAutoLock lock(m_mutex);
 
-	HudElement* retval = NULL;
+	HudElement *retval = NULL;
 	if (id < hud.size()) {
 		retval = hud[id];
 		hud[id] = NULL;

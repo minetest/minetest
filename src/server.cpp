@@ -581,7 +581,7 @@ void Server::AsyncRunStep(bool initial_step)
 
 		ScopeProfiler sp(g_profiler, "Server: liquid transform");
 
-		std::map<v3s16, MapBlock*> modified_blocks;
+		std::map<v3s16, MapBlock *> modified_blocks;
 		m_env->getMap().transformLiquids(modified_blocks, m_env);
 
 		/*
@@ -681,15 +681,15 @@ void Server::AsyncRunStep(bool initial_step)
 			char buf[4];
 
 			// Handle removed objects
-			writeU16((u8*)buf, removed_objects.size());
+			writeU16((u8 *)buf, removed_objects.size());
 			data_buffer.append(buf, 2);
 			while (!removed_objects.empty()) {
 				// Get object
 				u16 id = removed_objects.front();
-				ServerActiveObject* obj = m_env->getActiveObject(id);
+				ServerActiveObject *obj = m_env->getActiveObject(id);
 
 				// Add to data buffer for sending
-				writeU16((u8*)buf, id);
+				writeU16((u8 *)buf, id);
 				data_buffer.append(buf, 2);
 
 				// Remove from known objects
@@ -701,12 +701,12 @@ void Server::AsyncRunStep(bool initial_step)
 			}
 
 			// Handle added objects
-			writeU16((u8*)buf, added_objects.size());
+			writeU16((u8 *)buf, added_objects.size());
 			data_buffer.append(buf, 2);
 			while (!added_objects.empty()) {
 				// Get object
 				u16 id = added_objects.front();
-				ServerActiveObject* obj = m_env->getActiveObject(id);
+				ServerActiveObject *obj = m_env->getActiveObject(id);
 
 				// Get object type
 				u8 type = ACTIVEOBJECT_TYPE_INVALID;
@@ -716,9 +716,9 @@ void Server::AsyncRunStep(bool initial_step)
 					type = obj->getSendType();
 
 				// Add to data buffer for sending
-				writeU16((u8*)buf, id);
+				writeU16((u8 *)buf, id);
 				data_buffer.append(buf, 2);
-				writeU8((u8*)buf, type);
+				writeU8((u8 *)buf, type);
 				data_buffer.append(buf, 1);
 
 				if(obj)
@@ -809,7 +809,7 @@ void Server::AsyncRunStep(bool initial_step)
 					std::string new_data;
 					// Add object id
 					char buf[2];
-					writeU16((u8*)&buf[0], aom.id);
+					writeU16((u8 *)&buf[0], aom.id);
 					new_data.append(buf, 2);
 					// Add data
 					new_data += serializeString(aom.datastring);
@@ -863,7 +863,7 @@ void Server::AsyncRunStep(bool initial_step)
 		std::list<v3s16> node_meta_updates;
 
 		while (!m_unsent_map_edit_queue.empty()) {
-			MapEditEvent* event = m_unsent_map_edit_queue.front();
+			MapEditEvent *event = m_unsent_map_edit_queue.front();
 			m_unsent_map_edit_queue.pop();
 
 			// Players far away from the change are stored here.
@@ -919,7 +919,7 @@ void Server::AsyncRunStep(bool initial_step)
 			*/
 			if (!far_players.empty()) {
 				// Convert list format to that wanted by SetBlocksNotSent
-				std::map<v3s16, MapBlock*> modified_blocks2;
+				std::map<v3s16, MapBlock *> modified_blocks2;
 				for (const v3s16 &modified_block : event->modified_blocks) {
 					modified_blocks2[modified_block] =
 							m_env->getMap().getBlockNoCreateNoEx(modified_block);
@@ -1016,13 +1016,13 @@ void Server::Receive()
 	}
 }
 
-PlayerSAO* Server::StageTwoClientInit(session_t peer_id)
+PlayerSAO *Server::StageTwoClientInit(session_t peer_id)
 {
 	std::string playername;
 	PlayerSAO *playersao = NULL;
 	m_clients.lock();
 	try {
-		RemoteClient* client = m_clients.lockedGetClientNoEx(peer_id, CS_InitDone);
+		RemoteClient *client = m_clients.lockedGetClientNoEx(peer_id, CS_InitDone);
 		if (client) {
 			playername = client->getName();
 			playersao = emergePlayer(playername.c_str(), peer_id, client->net_proto_version);
@@ -1095,9 +1095,9 @@ PlayerSAO* Server::StageTwoClientInit(session_t peer_id)
 	return playersao;
 }
 
-inline void Server::handleCommand(NetworkPacket* pkt)
+inline void Server::handleCommand(NetworkPacket *pkt)
 {
-	const ToServerCommandHandler& opHandle = toServerCommandTable[pkt->getCommand()];
+	const ToServerCommandHandler &opHandle = toServerCommandTable[pkt->getCommand()];
 	(this->*opHandle.handler)(pkt);
 }
 
@@ -1201,7 +1201,7 @@ void Server::onMapEditEvent(MapEditEvent *event)
 	m_unsent_map_edit_queue.push(e);
 }
 
-Inventory* Server::getInventory(const InventoryLocation &loc)
+Inventory *Server::getInventory(const InventoryLocation &loc)
 {
 	switch (loc.type) {
 	case InventoryLocation::UNDEFINED:
@@ -1310,7 +1310,7 @@ void Server::deletingPeer(con::Peer *peer, bool timeout)
 	m_peer_change_queue.push(con::PeerChange(con::PEER_REMOVED, peer->id, timeout));
 }
 
-bool Server::getClientConInfo(session_t peer_id, con::rtt_stat_type type, float* retval)
+bool Server::getClientConInfo(session_t peer_id, con::rtt_stat_type type, float *retval)
 {
 	*retval = m_con->getPeerStat(peer_id,type);
 	return *retval != -1;
@@ -1318,19 +1318,19 @@ bool Server::getClientConInfo(session_t peer_id, con::rtt_stat_type type, float*
 
 bool Server::getClientInfo(
 		session_t    peer_id,
-		ClientState* state,
+		ClientState *state,
 		u32*         uptime,
 		u8*          ser_vers,
 		u16*         prot_vers,
 		u8*          major,
 		u8*          minor,
 		u8*          patch,
-		std::string* vers_string
+		std::string *vers_string
 	)
 {
 	*state = m_clients.getClientState(peer_id);
 	m_clients.lock();
-	RemoteClient* client = m_clients.lockedGetClientNoEx(peer_id, CS_Invalid);
+	RemoteClient *client = m_clients.lockedGetClientNoEx(peer_id, CS_Invalid);
 
 	if (!client) {
 		m_clients.unlock();
@@ -1533,7 +1533,7 @@ void Server::SendNodeDef(session_t peer_id,
 	Non-static send methods
 */
 
-void Server::SendInventory(PlayerSAO* playerSAO)
+void Server::SendInventory(PlayerSAO *playerSAO)
 {
 	UpdateCrafting(playerSAO->getPlayer());
 
@@ -2391,7 +2391,7 @@ void Server::fillMediaCache()
 
 			unsigned char *digest = sha1.getDigest();
 			std::string sha1_base64 = base64_encode(digest, 20);
-			std::string sha1_hex = hex_encode((char*)digest, 20);
+			std::string sha1_hex = hex_encode((char *)digest, 20);
 			free(digest);
 
 			// Put in list
@@ -2687,7 +2687,7 @@ void Server::DisconnectPeer(session_t peer_id)
 void Server::acceptAuth(session_t peer_id, bool forSudoMode)
 {
 	if (!forSudoMode) {
-		RemoteClient* client = getClient(peer_id, CS_Invalid);
+		RemoteClient *client = getClient(peer_id, CS_Invalid);
 
 		NetworkPacket resp_pkt(TOCLIENT_AUTH_ACCEPT, 1 + 6 + 8 + 4, peer_id);
 
@@ -3005,7 +3005,7 @@ std::wstring Server::getStatusString()
 	}
 	os << L"}";
 
-	if (m_env && !((ServerMap*)(&m_env->getMap()))->isSavingEnabled())
+	if (m_env && !((ServerMap *)(&m_env->getMap()))->isSavingEnabled())
 		os << std::endl << L"# Server: " << " WARNING: Map saving is disabled.";
 
 	if (!g_settings->get("motd").empty())
@@ -3132,7 +3132,7 @@ bool Server::hudRemove(RemotePlayer *player, u32 id) {
 	if (!player)
 		return false;
 
-	HudElement* todel = player->removeHud(id);
+	HudElement *todel = player->removeHud(id);
 
 	if (!todel)
 		return false;
@@ -3161,7 +3161,7 @@ bool Server::hudSetFlags(RemotePlayer *player, u32 flags, u32 mask)
 	player->hud_flags &= ~mask;
 	player->hud_flags |= flags;
 
-	PlayerSAO* playersao = player->getPlayerSAO();
+	PlayerSAO *playersao = player->getPlayerSAO();
 
 	if (!playersao)
 		return false;
@@ -3339,7 +3339,7 @@ void Server::deleteParticleSpawner(const std::string &playername, u32 id)
 	SendDeleteParticleSpawner(peer_id, id);
 }
 
-Inventory* Server::createDetachedInventory(const std::string &name, const std::string &player)
+Inventory *Server::createDetachedInventory(const std::string &name, const std::string &player)
 {
 	if(m_detached_inventories.count(name) > 0){
 		infostream<<"Server clearing detached inventory \""<<name<<"\""<<std::endl;
@@ -3386,7 +3386,7 @@ bool Server::rollbackRevertActions(const std::list<RollbackAction> &actions,
 		std::list<std::string> *log)
 {
 	infostream<<"Server::rollbackRevertActions(len="<<actions.size()<<")"<<std::endl;
-	ServerMap *map = (ServerMap*)(&m_env->getMap());
+	ServerMap *map = (ServerMap *)(&m_env->getMap());
 
 	// Fail if no actions to handle
 	if (actions.empty()) {
@@ -3572,7 +3572,7 @@ void Server::requestShutdown(const std::string &msg, bool reconnect, float delay
 	m_shutdown_state.trigger(delay, msg, reconnect);
 }
 
-PlayerSAO* Server::emergePlayer(const char *name, session_t peer_id, u16 proto_version)
+PlayerSAO *Server::emergePlayer(const char *name, session_t peer_id, u16 proto_version)
 {
 	/*
 		Try to get an existing player
@@ -3706,7 +3706,7 @@ bool Server::sendModChannelMessage(const std::string &channel, const std::string
 	return true;
 }
 
-ModChannel* Server::getModChannel(const std::string &channel)
+ModChannel *Server::getModChannel(const std::string &channel)
 {
 	return m_modchannel_mgr->getModChannel(channel);
 }

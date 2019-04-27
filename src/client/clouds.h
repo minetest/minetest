@@ -35,7 +35,7 @@ extern irr::scene::ISceneManager *g_menucloudsmgr;
 class Clouds : public scene::ISceneNode
 {
 public:
-	Clouds(scene::ISceneManager* mgr,
+	Clouds(scene::ISceneManager *mgr,
 			s32 id,
 			u32 seed
 	);
@@ -60,7 +60,7 @@ public:
 		return 1;
 	}
 
-	virtual video::SMaterial& getMaterial(u32 i)
+	virtual video::SMaterial &getMaterial(u32 i)
 	{
 		return m_material;
 	}

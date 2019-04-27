@@ -40,7 +40,7 @@ static void cloud_3d_setting_changed(const std::string &settingname, void *data)
 	((Clouds *)data)->readSettings();
 }
 
-Clouds::Clouds(scene::ISceneManager* mgr,
+Clouds::Clouds(scene::ISceneManager *mgr,
 		s32 id,
 		u32 seed
 ):
@@ -93,7 +93,7 @@ void Clouds::render()
 	if (m_params.density <= 0.0f)
 		return; // no need to do anything
 
-	video::IVideoDriver* driver = SceneManager->getVideoDriver();
+	video::IVideoDriver *driver = SceneManager->getVideoDriver();
 
 	if(SceneManager->getSceneNodeRenderPass() != scene::ESNRP_TRANSPARENT)
 	//if(SceneManager->getSceneNodeRenderPass() != scene::ESNRP_SOLID)

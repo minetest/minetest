@@ -71,7 +71,7 @@ protected:
 
 	inline std::string sqlite_to_string(sqlite3_stmt *s, int iCol)
 	{
-		const char* text = reinterpret_cast<const char*>(sqlite3_column_text(s, iCol));
+		const char *text = reinterpret_cast<const char *>(sqlite3_column_text(s, iCol));
 		return std::string(text ? text : "");
 	}
 

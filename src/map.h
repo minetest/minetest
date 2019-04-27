@@ -197,10 +197,10 @@ public:
 		These handle lighting but not faces.
 	*/
 	void addNodeAndUpdate(v3s16 p, MapNode n,
-			std::map<v3s16, MapBlock*> &modified_blocks,
+			std::map<v3s16, MapBlock *> &modified_blocks,
 			bool remove_metadata = true);
 	void removeNodeAndUpdate(v3s16 p,
-			std::map<v3s16, MapBlock*> &modified_blocks);
+			std::map<v3s16, MapBlock *> &modified_blocks);
 
 	/*
 		Wrappers for the latter ones.
@@ -242,7 +242,7 @@ public:
 	// For debug printing. Prints "Map: ", "ServerMap: " or "ClientMap: "
 	virtual void PrintInfo(std::ostream &out);
 
-	void transformLiquids(std::map<v3s16, MapBlock*> & modified_blocks,
+	void transformLiquids(std::map<v3s16, MapBlock *> & modified_blocks,
 			ServerEnvironment *env);
 
 	/*
@@ -282,7 +282,7 @@ public:
 	/*
 		Misc.
 	*/
-	std::map<v2s16, MapSector*> *getSectorsPtr(){return &m_sectors;}
+	std::map<v2s16, MapSector *> *getSectorsPtr(){return &m_sectors;}
 
 	/*
 		Variables
@@ -298,9 +298,9 @@ protected:
 
 	IGameDef *m_gamedef;
 
-	std::set<MapEventReceiver*> m_event_receivers;
+	std::set<MapEventReceiver *> m_event_receivers;
 
-	std::map<v2s16, MapSector*> m_sectors;
+	std::map<v2s16, MapSector *> m_sectors;
 
 	// Be sure to set this to NULL when the cached sector is deleted
 	MapSector *m_sector_cache = nullptr;
@@ -356,7 +356,7 @@ public:
 	bool blockpos_over_mapgen_limit(v3s16 p);
 	bool initBlockMake(v3s16 blockpos, BlockMakeData *data);
 	void finishBlockMake(BlockMakeData *data,
-		std::map<v3s16, MapBlock*> *changed_blocks);
+		std::map<v3s16, MapBlock *> *changed_blocks);
 
 	/*
 		Get a block from somewhere.
@@ -420,7 +420,7 @@ public:
 	// This will generate a sector with getSector if not found.
 	void loadBlock(const std::string &sectordir, const std::string &blockfile,
 			MapSector *sector, bool save_after_load=false);
-	MapBlock* loadBlock(v3s16 p);
+	MapBlock *loadBlock(v3s16 p);
 	// Database version
 	void loadBlock(std::string *blob, v3s16 p3d, MapSector *sector, bool save_after_load=false);
 
@@ -460,7 +460,7 @@ private:
 	// If 0, chunks are disabled.
 	s16 m_chunksize;
 	// Chunks
-	core::map<v2s16, MapChunk*> m_chunks;
+	core::map<v2s16, MapChunk *> m_chunks;
 #endif
 
 	/*
@@ -492,7 +492,7 @@ public:
 		bool load_if_inexistent = true);
 
 	// This is much faster with big chunks of generated data
-	void blitBackAll(std::map<v3s16, MapBlock*> * modified_blocks,
+	void blitBackAll(std::map<v3s16, MapBlock *> *modified_blocks,
 		bool overwrite_generated = true);
 
 	bool m_is_dirty = false;

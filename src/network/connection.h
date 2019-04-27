@@ -236,7 +236,7 @@ class ReliablePacketBuffer
 public:
 	ReliablePacketBuffer() = default;
 
-	bool getFirstSeqnum(u16& result);
+	bool getFirstSeqnum(u16 &result);
 
 	BufferedPacket popFirst();
 	BufferedPacket popSeqnum(u16 seqnum);
@@ -282,7 +282,7 @@ public:
 
 private:
 	// Key is seqnum
-	std::map<u16, IncomingSplitPacket*> m_buf;
+	std::map<u16, IncomingSplitPacket *> m_buf;
 
 	std::mutex m_map_mutex;
 };
@@ -399,7 +399,7 @@ public:
 	u16 readNextIncomingSeqNum();
 	u16 incNextIncomingSeqNum();
 
-	u16 getOutgoingSequenceNumber(bool& successfull);
+	u16 getOutgoingSequenceNumber(bool &successfull);
 	u16 readOutgoingSequenceNumber();
 	bool putBackSequenceNumber(u16);
 
@@ -494,14 +494,14 @@ class PeerHelper
 {
 public:
 	PeerHelper() = default;
-	PeerHelper(Peer* peer);
+	PeerHelper(Peer *peer);
 	~PeerHelper();
 
-	PeerHelper&   operator=(Peer* peer);
+	PeerHelper&   operator=(Peer *peer);
 	Peer*         operator->() const;
 	bool          operator!();
 	Peer*         operator&() const;
-	bool          operator!=(void* ptr);
+	bool          operator!=(void *ptr);
 
 private:
 	Peer *m_peer = nullptr;
@@ -522,7 +522,7 @@ class Peer {
 	public:
 		friend class PeerHelper;
 
-		Peer(Address address_,u16 id_,Connection* connection) :
+		Peer(Address address_,u16 id_,Connection *connection) :
 			id(id_),
 			m_connection(connection),
 			address(address_),
@@ -543,7 +543,7 @@ class Peer {
 		virtual void PutReliableSendCommand(ConnectionCommand &c,
 						unsigned int max_packet_size) {};
 
-		virtual bool getAddress(MTProtocols type, Address& toset) = 0;
+		virtual bool getAddress(MTProtocols type, Address &toset) = 0;
 
 		bool isPendingDeletion()
 		{ MutexAutoLock lock(m_exclusive_access_mutex); return m_pending_deletion; };
@@ -598,7 +598,7 @@ class Peer {
 
 		bool m_pending_deletion = false;
 
-		Connection* m_connection;
+		Connection *m_connection;
 
 		// Address of the peer
 		Address address;
@@ -639,13 +639,13 @@ public:
 	friend class ConnectionSendThread;
 	friend class Connection;
 
-	UDPPeer(u16 a_id, Address a_address, Connection* connection);
+	UDPPeer(u16 a_id, Address a_address, Connection *connection);
 	virtual ~UDPPeer() = default;
 
 	void PutReliableSendCommand(ConnectionCommand &c,
 							unsigned int max_packet_size);
 
-	bool getAddress(MTProtocols type, Address& toset);
+	bool getAddress(MTProtocols type, Address &toset);
 
 	u16 getNextSplitSequenceNumber(u8 channel);
 	void setNextSplitSequenceNumber(u8 channel, u16 seqnum);
@@ -768,7 +768,7 @@ public:
 	void Connect(Address address);
 	bool Connected();
 	void Disconnect();
-	void Receive(NetworkPacket* pkt);
+	void Receive(NetworkPacket *pkt);
 	void Send(session_t peer_id, u8 channelnum, NetworkPacket *pkt, bool reliable);
 	session_t GetPeerID() const { return m_peer_id; }
 	Address GetPeerAddress(session_t peer_id);
@@ -780,10 +780,10 @@ public:
 
 protected:
 	PeerHelper getPeerNoEx(session_t peer_id);
-	u16   lookupPeer(Address& sender);
+	u16   lookupPeer(Address &sender);
 
-	u16 createPeer(Address& sender, MTProtocols protocol, int fd);
-	UDPPeer*  createServerPeer(Address& sender);
+	u16 createPeer(Address &sender, MTProtocols protocol, int fd);
+	UDPPeer*  createServerPeer(Address &sender);
 	bool deletePeer(session_t peer_id, bool timeout);
 
 	void SetPeerID(session_t id) { m_peer_id = id; }

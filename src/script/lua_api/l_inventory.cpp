@@ -28,7 +28,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 /*
 	InvRef
 */
-InvRef* InvRef::checkobject(lua_State *L, int narg)
+InvRef *InvRef::checkobject(lua_State *L, int narg)
 {
 	luaL_checktype(L, narg, LUA_TUSERDATA);
 	void *ud = luaL_checkudata(L, narg, className);
@@ -36,12 +36,12 @@ InvRef* InvRef::checkobject(lua_State *L, int narg)
 	return *(InvRef**)ud;  // unbox pointer
 }
 
-Inventory* InvRef::getinv(lua_State *L, InvRef *ref)
+Inventory *InvRef::getinv(lua_State *L, InvRef *ref)
 {
 	return getServer(L)->getInventory(ref->m_loc);
 }
 
-InventoryList* InvRef::getlist(lua_State *L, InvRef *ref,
+InventoryList *InvRef::getlist(lua_State *L, InvRef *ref,
 		const char *listname)
 {
 	NO_MAP_LOCK_REQUIRED;
@@ -250,11 +250,11 @@ int InvRef::l_get_lists(lua_State *L)
 	if (!inv) {
 		return 0;
 	}
-	std::vector<const InventoryList*> lists = inv->getLists();
-	std::vector<const InventoryList*>::iterator iter = lists.begin();
+	std::vector<const InventoryList *> lists = inv->getLists();
+	std::vector<const InventoryList *>::iterator iter = lists.begin();
 	lua_createtable(L, 0, lists.size());
 	for (; iter != lists.end(); iter++) {
-		const char* name = (*iter)->getName().c_str();
+		const char *name = (*iter)->getName().c_str();
 		lua_pushstring(L, name);
 		push_inventory_list(L, inv, name);
 		lua_rawset(L, -3);

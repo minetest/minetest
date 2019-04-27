@@ -42,12 +42,12 @@ inline u32 clamp_u8(s32 value)
 
 
 GUIChatConsole::GUIChatConsole(
-		gui::IGUIEnvironment* env,
-		gui::IGUIElement* parent,
+		gui::IGUIEnvironment *env,
+		gui::IGUIElement *parent,
 		s32 id,
-		ChatBackend* backend,
-		Client* client,
-		IMenuManager* menumgr
+		ChatBackend *backend,
+		Client *client,
+		IMenuManager *menumgr
 ):
 	IGUIElement(gui::EGUIET_ELEMENT, env, parent, id,
 			core::rect<s32>(0,0,100,100)),
@@ -141,7 +141,7 @@ f32 GUIChatConsole::getDesiredHeight() const
 
 void GUIChatConsole::replaceAndAddToHistory(std::wstring line)
 {
-	ChatPrompt& prompt = m_chat_backend->getPrompt();
+	ChatPrompt &prompt = m_chat_backend->getPrompt();
 	prompt.addToHistory(prompt.getLine());
 	prompt.replace(line);
 }
@@ -176,7 +176,7 @@ void GUIChatConsole::draw()
 	if(!IsVisible)
 		return;
 
-	video::IVideoDriver* driver = Environment->getVideoDriver();
+	video::IVideoDriver *driver = Environment->getVideoDriver();
 
 	// Check screen size
 	v2u32 screensize = driver->getScreenSize();
@@ -279,7 +279,7 @@ void GUIChatConsole::animate(u32 msec)
 
 void GUIChatConsole::drawBackground()
 {
-	video::IVideoDriver* driver = Environment->getVideoDriver();
+	video::IVideoDriver *driver = Environment->getVideoDriver();
 	if (m_background != NULL)
 	{
 		core::rect<s32> sourcerect(0, -m_height, m_screensize.X, 0);
@@ -305,10 +305,10 @@ void GUIChatConsole::drawText()
 	if (m_font == NULL)
 		return;
 
-	ChatBuffer& buf = m_chat_backend->getConsoleBuffer();
+	ChatBuffer &buf = m_chat_backend->getConsoleBuffer();
 	for (u32 row = 0; row < buf.getRows(); ++row)
 	{
-		const ChatFormattedLine& line = buf.getFormattedLine(row);
+		const ChatFormattedLine &line = buf.getFormattedLine(row);
 		if (line.fragments.empty())
 			continue;
 
@@ -356,7 +356,7 @@ void GUIChatConsole::drawPrompt()
 	s32 line_height = m_fontsize.Y;
 	s32 y = row * line_height + m_height - m_desired_height;
 
-	ChatPrompt& prompt = m_chat_backend->getPrompt();
+	ChatPrompt &prompt = m_chat_backend->getPrompt();
 	std::wstring prompt_text = prompt.getVisiblePortion();
 
 	// FIXME Draw string at once, not character by character
@@ -383,7 +383,7 @@ void GUIChatConsole::drawPrompt()
 		if (cursor_pos >= 0)
 		{
 			s32 cursor_len = prompt.getCursorLength();
-			video::IVideoDriver* driver = Environment->getVideoDriver();
+			video::IVideoDriver *driver = Environment->getVideoDriver();
 			s32 x = (1 + cursor_pos) * m_fontsize.X;
 			core::rect<s32> destrect(
 				x,
@@ -401,7 +401,7 @@ void GUIChatConsole::drawPrompt()
 
 }
 
-bool GUIChatConsole::OnEvent(const SEvent& event)
+bool GUIChatConsole::OnEvent(const SEvent &event)
 {
 
 	ChatPrompt &prompt = m_chat_backend->getPrompt();
@@ -560,7 +560,7 @@ bool GUIChatConsole::OnEvent(const SEvent& event)
 			const c8 *text = os_operator->getTextFromClipboard();
 			if (!text)
 				return true;
-			std::basic_string<unsigned char> str((const unsigned char*)text);
+			std::basic_string<unsigned char> str((const unsigned char *)text);
 			prompt.input(std::wstring(str.begin(), str.end()));
 			return true;
 		}
@@ -639,4 +639,3 @@ void GUIChatConsole::setVisible(bool visible)
 		recalculateConsolePosition();
 	}
 }
-

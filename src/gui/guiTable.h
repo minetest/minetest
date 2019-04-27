@@ -129,7 +129,7 @@ public:
 	void setDynamicData(const DynamicData &dyndata);
 
 	/* Returns "GUITable" */
-	virtual const c8* getTypeName() const;
+	virtual const c8 *getTypeName() const;
 
 	/* Must be called when position or size changes */
 	virtual void updateAbsolutePosition();
@@ -202,7 +202,7 @@ protected:
 
 	// Allocated strings and images
 	std::vector<core::stringw> m_strings;
-	std::vector<video::ITexture*> m_images;
+	std::vector<video::ITexture *> m_images;
 	std::map<std::string, s32> m_alloc_strings;
 	std::map<std::string, s32> m_alloc_images;
 

@@ -279,7 +279,7 @@ void Camera::addArmInertia(f32 player_yaw)
 	}
 }
 
-void Camera::update(LocalPlayer* player, f32 frametime, f32 busytime, f32 tool_reload_ratio)
+void Camera::update(LocalPlayer *player, f32 frametime, f32 busytime, f32 tool_reload_ratio)
 {
 	// Get player position
 	// Smooth the movement when walking up stairs
@@ -414,7 +414,7 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 busytime, f32 tool_r
 			MapNode n = m_client->getEnv().getClientMap()
 				.getNodeNoEx(floatToInt(my_cp, BS));
 
-			const ContentFeatures& features = nodemgr->get(n);
+			const ContentFeatures &features = nodemgr->get(n);
 			if (features.walkable) {
 				my_cp.X += m_camera_direction.X*-1*-BS/2;
 				my_cp.Z += m_camera_direction.Z*-1*-BS/2;
@@ -576,13 +576,13 @@ void Camera::wield(const ItemStack &item)
 	}
 }
 
-void Camera::drawWieldedTool(irr::core::matrix4* translation)
+void Camera::drawWieldedTool(irr::core::matrix4 *translation)
 {
 	// Clear Z buffer so that the wielded tool stay in front of world geometry
 	m_wieldmgr->getVideoDriver()->clearZBuffer();
 
 	// Draw the wielded node (in a separate scene manager)
-	scene::ICameraSceneNode* cam = m_wieldmgr->getActiveCamera();
+	scene::ICameraSceneNode *cam = m_wieldmgr->getActiveCamera();
 	cam->setAspectRatio(m_cameranode->getAspectRatio());
 	cam->setFOV(72.0*M_PI/180.0);
 	cam->setNearValue(10);

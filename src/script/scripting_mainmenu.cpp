@@ -34,7 +34,7 @@ extern "C" {
 #define MAINMENU_NUM_ASYNC_THREADS 4
 
 
-MainMenuScripting::MainMenuScripting(GUIEngine* guiengine):
+MainMenuScripting::MainMenuScripting(GUIEngine *guiengine):
 		ScriptApiBase(ScriptingType::MainMenu)
 {
 	setGuiEngine(guiengine);
@@ -95,4 +95,3 @@ unsigned int MainMenuScripting::queueAsync(const std::string &serialized_func,
 {
 	return asyncEngine.queueAsyncJob(serialized_func, serialized_param);
 }
-

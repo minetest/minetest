@@ -174,54 +174,54 @@ public:
 	 * Command Handlers
 	 */
 
-	void handleCommand(NetworkPacket* pkt);
+	void handleCommand(NetworkPacket *pkt);
 
-	void handleCommand_Null(NetworkPacket* pkt) {};
-	void handleCommand_Deprecated(NetworkPacket* pkt);
-	void handleCommand_Hello(NetworkPacket* pkt);
-	void handleCommand_AuthAccept(NetworkPacket* pkt);
-	void handleCommand_AcceptSudoMode(NetworkPacket* pkt);
-	void handleCommand_DenySudoMode(NetworkPacket* pkt);
-	void handleCommand_AccessDenied(NetworkPacket* pkt);
-	void handleCommand_RemoveNode(NetworkPacket* pkt);
-	void handleCommand_AddNode(NetworkPacket* pkt);
+	void handleCommand_Null(NetworkPacket *pkt) {};
+	void handleCommand_Deprecated(NetworkPacket *pkt);
+	void handleCommand_Hello(NetworkPacket *pkt);
+	void handleCommand_AuthAccept(NetworkPacket *pkt);
+	void handleCommand_AcceptSudoMode(NetworkPacket *pkt);
+	void handleCommand_DenySudoMode(NetworkPacket *pkt);
+	void handleCommand_AccessDenied(NetworkPacket *pkt);
+	void handleCommand_RemoveNode(NetworkPacket *pkt);
+	void handleCommand_AddNode(NetworkPacket *pkt);
 	void handleCommand_NodemetaChanged(NetworkPacket *pkt);
-	void handleCommand_BlockData(NetworkPacket* pkt);
-	void handleCommand_Inventory(NetworkPacket* pkt);
-	void handleCommand_TimeOfDay(NetworkPacket* pkt);
+	void handleCommand_BlockData(NetworkPacket *pkt);
+	void handleCommand_Inventory(NetworkPacket *pkt);
+	void handleCommand_TimeOfDay(NetworkPacket *pkt);
 	void handleCommand_ChatMessage(NetworkPacket *pkt);
-	void handleCommand_ActiveObjectRemoveAdd(NetworkPacket* pkt);
-	void handleCommand_ActiveObjectMessages(NetworkPacket* pkt);
-	void handleCommand_Movement(NetworkPacket* pkt);
-	void handleCommand_HP(NetworkPacket* pkt);
-	void handleCommand_Breath(NetworkPacket* pkt);
-	void handleCommand_MovePlayer(NetworkPacket* pkt);
-	void handleCommand_DeathScreen(NetworkPacket* pkt);
-	void handleCommand_AnnounceMedia(NetworkPacket* pkt);
-	void handleCommand_Media(NetworkPacket* pkt);
-	void handleCommand_NodeDef(NetworkPacket* pkt);
-	void handleCommand_ItemDef(NetworkPacket* pkt);
-	void handleCommand_PlaySound(NetworkPacket* pkt);
-	void handleCommand_StopSound(NetworkPacket* pkt);
+	void handleCommand_ActiveObjectRemoveAdd(NetworkPacket *pkt);
+	void handleCommand_ActiveObjectMessages(NetworkPacket *pkt);
+	void handleCommand_Movement(NetworkPacket *pkt);
+	void handleCommand_HP(NetworkPacket *pkt);
+	void handleCommand_Breath(NetworkPacket *pkt);
+	void handleCommand_MovePlayer(NetworkPacket *pkt);
+	void handleCommand_DeathScreen(NetworkPacket *pkt);
+	void handleCommand_AnnounceMedia(NetworkPacket *pkt);
+	void handleCommand_Media(NetworkPacket *pkt);
+	void handleCommand_NodeDef(NetworkPacket *pkt);
+	void handleCommand_ItemDef(NetworkPacket *pkt);
+	void handleCommand_PlaySound(NetworkPacket *pkt);
+	void handleCommand_StopSound(NetworkPacket *pkt);
 	void handleCommand_FadeSound(NetworkPacket *pkt);
-	void handleCommand_Privileges(NetworkPacket* pkt);
-	void handleCommand_InventoryFormSpec(NetworkPacket* pkt);
-	void handleCommand_DetachedInventory(NetworkPacket* pkt);
-	void handleCommand_ShowFormSpec(NetworkPacket* pkt);
-	void handleCommand_SpawnParticle(NetworkPacket* pkt);
-	void handleCommand_AddParticleSpawner(NetworkPacket* pkt);
-	void handleCommand_DeleteParticleSpawner(NetworkPacket* pkt);
-	void handleCommand_HudAdd(NetworkPacket* pkt);
-	void handleCommand_HudRemove(NetworkPacket* pkt);
-	void handleCommand_HudChange(NetworkPacket* pkt);
-	void handleCommand_HudSetFlags(NetworkPacket* pkt);
-	void handleCommand_HudSetParam(NetworkPacket* pkt);
-	void handleCommand_HudSetSky(NetworkPacket* pkt);
-	void handleCommand_CloudParams(NetworkPacket* pkt);
-	void handleCommand_OverrideDayNightRatio(NetworkPacket* pkt);
-	void handleCommand_LocalPlayerAnimations(NetworkPacket* pkt);
-	void handleCommand_EyeOffset(NetworkPacket* pkt);
-	void handleCommand_UpdatePlayerList(NetworkPacket* pkt);
+	void handleCommand_Privileges(NetworkPacket *pkt);
+	void handleCommand_InventoryFormSpec(NetworkPacket *pkt);
+	void handleCommand_DetachedInventory(NetworkPacket *pkt);
+	void handleCommand_ShowFormSpec(NetworkPacket *pkt);
+	void handleCommand_SpawnParticle(NetworkPacket *pkt);
+	void handleCommand_AddParticleSpawner(NetworkPacket *pkt);
+	void handleCommand_DeleteParticleSpawner(NetworkPacket *pkt);
+	void handleCommand_HudAdd(NetworkPacket *pkt);
+	void handleCommand_HudRemove(NetworkPacket *pkt);
+	void handleCommand_HudChange(NetworkPacket *pkt);
+	void handleCommand_HudSetFlags(NetworkPacket *pkt);
+	void handleCommand_HudSetParam(NetworkPacket *pkt);
+	void handleCommand_HudSetSky(NetworkPacket *pkt);
+	void handleCommand_CloudParams(NetworkPacket *pkt);
+	void handleCommand_OverrideDayNightRatio(NetworkPacket *pkt);
+	void handleCommand_LocalPlayerAnimations(NetworkPacket *pkt);
+	void handleCommand_EyeOffset(NetworkPacket *pkt);
+	void handleCommand_UpdatePlayerList(NetworkPacket *pkt);
 	void handleCommand_ModChannelMsg(NetworkPacket *pkt);
 	void handleCommand_ModChannelSignal(NetworkPacket *pkt);
 	void handleCommand_SrpBytesSandB(NetworkPacket *pkt);
@@ -230,9 +230,9 @@ public:
 
 	void ProcessData(NetworkPacket *pkt);
 
-	void Send(NetworkPacket* pkt);
+	void Send(NetworkPacket *pkt);
 
-	void interact(u8 action, const PointedThing& pointed);
+	void interact(u8 action, const PointedThing &pointed);
 
 	void sendNodemetaFields(v3s16 p, const std::string &formname,
 		const StringMap &fields);
@@ -247,14 +247,14 @@ public:
 	void sendRespawn();
 	void sendReady();
 
-	ClientEnvironment& getEnv() { return m_env; }
+	ClientEnvironment &getEnv() { return m_env; }
 	ITextureSource *tsrc() { return getTextureSource(); }
 	ISoundManager *sound() { return getSoundManager(); }
 	static const std::string &getBuiltinLuaPath();
 	static const std::string &getClientModsLuaPath();
 
 	const std::vector<ModSpec> &getMods() const override;
-	const ModSpec* getModSpec(const std::string &modname) const override;
+	const ModSpec *getModSpec(const std::string &modname) const override;
 
 	// Causes urgent mesh updates (unlike Map::add/removeNodeWithEvent)
 	void removeNode(v3s16 p);
@@ -282,7 +282,7 @@ public:
 	void getLocalInventory(Inventory &dst);
 
 	/* InventoryManager interface */
-	Inventory* getInventory(const InventoryLocation &loc) override;
+	Inventory *getInventory(const InventoryLocation &loc) override;
 	void inventoryAction(InventoryAction *a) override;
 
 	const std::list<std::string> &getConnectedPlayerNames()
@@ -305,7 +305,7 @@ public:
 	{ return m_privileges; }
 
 	bool getChatMessage(std::wstring &message);
-	void typeChatMessage(const std::wstring& message);
+	void typeChatMessage(const std::wstring &message);
 
 	u64 getMapSeed(){ return m_map_seed; }
 
@@ -357,27 +357,27 @@ public:
 	float getRTT();
 	float getCurRate();
 
-	Minimap* getMinimap() { return m_minimap; }
-	void setCamera(Camera* camera) { m_camera = camera; }
+	Minimap *getMinimap() { return m_minimap; }
+	void setCamera(Camera *camera) { m_camera = camera; }
 
-	Camera* getCamera () { return m_camera; }
+	Camera *getCamera () { return m_camera; }
 
 	bool shouldShowMinimap() const;
 
 	// IGameDef interface
-	IItemDefManager* getItemDefManager() override;
-	const NodeDefManager* getNodeDefManager() override;
-	ICraftDefManager* getCraftDefManager() override;
-	ITextureSource* getTextureSource();
-	virtual IShaderSource* getShaderSource();
+	IItemDefManager *getItemDefManager() override;
+	const NodeDefManager *getNodeDefManager() override;
+	ICraftDefManager *getCraftDefManager() override;
+	ITextureSource *getTextureSource();
+	virtual IShaderSource *getShaderSource();
 	u16 allocateUnknownNodeId(const std::string &name) override;
-	virtual ISoundManager* getSoundManager();
-	MtEventManager* getEventManager();
-	virtual ParticleManager* getParticleManager();
+	virtual ISoundManager *getSoundManager();
+	MtEventManager *getEventManager();
+	virtual ParticleManager *getParticleManager();
 	bool checkLocalPrivilege(const std::string &priv)
 	{ return checkPrivilege(priv); }
-	virtual scene::IAnimatedMesh* getMesh(const std::string &filename, bool cache = false);
-	const std::string* getModFile(const std::string &filename);
+	virtual scene::IAnimatedMesh *getMesh(const std::string &filename, bool cache = false);
+	const std::string *getModFile(const std::string &filename);
 
 	std::string getModStoragePath() const override;
 	bool registerModStorage(ModMetadata *meta) override;
@@ -573,7 +573,7 @@ private:
 
 	// Detached inventories
 	// key = name
-	std::unordered_map<std::string, Inventory*> m_detached_inventories;
+	std::unordered_map<std::string, Inventory *> m_detached_inventories;
 
 	// Storage for mesh data for creating multiple instances of the same mesh
 	StringMap m_mesh_data;

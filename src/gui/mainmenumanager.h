@@ -64,7 +64,7 @@ public:
 		// Remove all entries if there are duplicates
 		m_stack.remove(menu);
 
-		/*core::list<GUIModalMenu*>::Iterator i = m_stack.getLast();
+		/*core::list<GUIModalMenu *>::Iterator i = m_stack.getLast();
 		assert(*i == menu);
 		m_stack.erase(i);*/
 
@@ -73,11 +73,11 @@ public:
 	}
 
 	// Returns true to prevent further processing
-	virtual bool preprocessEvent(const SEvent& event)
+	virtual bool preprocessEvent(const SEvent &event)
 	{
 		if (m_stack.empty())
 			return false;
-		GUIModalMenu *mm = dynamic_cast<GUIModalMenu*>(m_stack.back());
+		GUIModalMenu *mm = dynamic_cast<GUIModalMenu *>(m_stack.back());
 		return mm && mm->preprocessEvent(event);
 	}
 
@@ -89,14 +89,14 @@ public:
 	bool pausesGame()
 	{
 		for (gui::IGUIElement *i : m_stack) {
-			GUIModalMenu *mm = dynamic_cast<GUIModalMenu*>(i);
+			GUIModalMenu *mm = dynamic_cast<GUIModalMenu *>(i);
 			if (mm && mm->pausesGame())
 				return true;
 		}
 		return false;
 	}
 
-	std::list<gui::IGUIElement*> m_stack;
+	std::list<gui::IGUIElement *> m_stack;
 };
 
 extern MainMenuManager g_menumgr;

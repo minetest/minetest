@@ -382,7 +382,7 @@ private:
 /* implementation                                                             */
 /******************************************************************************/
 
-std::vector<v3s16> get_path(ServerEnvironment* env,
+std::vector<v3s16> get_path(ServerEnvironment *env,
 							v3s16 source,
 							v3s16 destination,
 							unsigned int searchdistance,

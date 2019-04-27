@@ -29,7 +29,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #endif
 
 // clang-format off
-GUIModalMenu::GUIModalMenu(gui::IGUIEnvironment* env, gui::IGUIElement* parent, s32 id,
+GUIModalMenu::GUIModalMenu(gui::IGUIEnvironment *env, gui::IGUIElement *parent, s32 id,
 		IMenuManager *menumgr) :
 		IGUIElement(gui::EGUIET_ELEMENT, env, parent, id,
 				core::rect<s32>(0, 0, 100, 100)),

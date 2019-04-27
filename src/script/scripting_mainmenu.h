@@ -32,7 +32,7 @@ class MainMenuScripting
 		  public ScriptApiMainMenu
 {
 public:
-	MainMenuScripting(GUIEngine* guiengine);
+	MainMenuScripting(GUIEngine *guiengine);
 
 	// Global step handler to pass back async events
 	void step();

@@ -29,7 +29,7 @@ int NodeTimerRef::gc_object(lua_State *L) {
 	return 0;
 }
 
-NodeTimerRef* NodeTimerRef::checkobject(lua_State *L, int narg)
+NodeTimerRef *NodeTimerRef::checkobject(lua_State *L, int narg)
 {
 	luaL_checktype(L, narg, LUA_TUSERDATA);
 	void *ud = luaL_checkudata(L, narg, className);

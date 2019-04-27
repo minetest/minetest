@@ -44,7 +44,7 @@ class ServerScripting:
 		public ScriptApiSecurity
 {
 public:
-	ServerScripting(Server* server);
+	ServerScripting(Server *server);
 
 	// use ScriptApiBase::loadMod() to load mods
 

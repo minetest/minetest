@@ -829,7 +829,7 @@ static bool run_dedicated_server(const GameParams &game_params, const Settings &
 	Address bind_addr(0, 0, 0, 0, game_params.socket_port);
 
 	if (g_settings->getBool("ipv6_server")) {
-		bind_addr.setAddress((IPv6AddressBytes*) NULL);
+		bind_addr.setAddress((IPv6AddressBytes *) NULL);
 	}
 	try {
 		bind_addr.Resolve(bind_str.c_str());

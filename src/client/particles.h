@@ -35,7 +35,7 @@ class Particle : public scene::ISceneNode
 {
 	public:
 	Particle(
-		IGameDef* gamedef,
+		IGameDef *gamedef,
 		LocalPlayer *player,
 		ClientEnvironment *env,
 		v3f pos,
@@ -66,7 +66,7 @@ class Particle : public scene::ISceneNode
 		return 1;
 	}
 
-	virtual video::SMaterial& getMaterial(u32 i)
+	virtual video::SMaterial &getMaterial(u32 i)
 	{
 		return m_material;
 	}
@@ -117,7 +117,7 @@ private:
 class ParticleSpawner
 {
 public:
-	ParticleSpawner(IGameDef* gamedef,
+	ParticleSpawner(IGameDef *gamedef,
 		LocalPlayer *player,
 		u16 amount,
 		float time,
@@ -133,7 +133,7 @@ public:
 		bool vertical,
 		video::ITexture *texture,
 		const struct TileAnimationParams &anim, u8 glow,
-		ParticleManager* p_manager);
+		ParticleManager *p_manager);
 
 	~ParticleSpawner() = default;
 
@@ -181,7 +181,7 @@ class ParticleManager
 {
 friend class ParticleSpawner;
 public:
-	ParticleManager(ClientEnvironment* env);
+	ParticleManager(ClientEnvironment *env);
 	~ParticleManager();
 
 	void step (float dtime);
@@ -208,7 +208,7 @@ public:
 	}
 
 protected:
-	void addParticle(Particle* toadd);
+	void addParticle(Particle *toadd);
 
 private:
 
@@ -217,13 +217,13 @@ private:
 
 	void clearAll();
 
-	std::vector<Particle*> m_particles;
-	std::unordered_map<u64, ParticleSpawner*> m_particle_spawners;
+	std::vector<Particle *> m_particles;
+	std::unordered_map<u64, ParticleSpawner *> m_particle_spawners;
 	// Start the particle spawner ids generated from here after u32_max. lower values are
 	// for server sent spawners.
 	u64 m_next_particle_spawner_id = U32_MAX + 1;
 
-	ClientEnvironment* m_env;
+	ClientEnvironment *m_env;
 	std::mutex m_particle_list_lock;
 	std::mutex m_spawner_list_lock;
 };

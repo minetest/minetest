@@ -281,12 +281,12 @@ class GUIFormSpecMenu : public GUIModalMenu
 
 public:
 	GUIFormSpecMenu(JoystickController *joystick,
-			gui::IGUIElement* parent, s32 id,
+			gui::IGUIElement *parent, s32 id,
 			IMenuManager *menumgr,
 			Client *client,
 			ISimpleTextureSource *tsrc,
-			IFormSource* fs_src,
-			TextDest* txt_dst,
+			IFormSource *fs_src,
+			TextDest *txt_dst,
 			std::string formspecPrepend,
 			bool remap_dbl_click = true);
 
@@ -355,12 +355,12 @@ public:
 	ItemStack verifySelectedItem();
 
 	void acceptInput(FormspecQuitMode quitmode);
-	bool preprocessEvent(const SEvent& event);
-	bool OnEvent(const SEvent& event);
+	bool preprocessEvent(const SEvent &event);
+	bool OnEvent(const SEvent &event);
 	bool doPause;
 	bool pausesGame() { return doPause; }
 
-	GUITable* getTable(const std::string &tablename);
+	GUITable *getTable(const std::string &tablename);
 	std::vector<std::string>* getDropDownValues(const std::string &name);
 
 #ifdef __ANDROID__
@@ -401,11 +401,11 @@ protected:
 	std::unordered_map<std::string, bool> field_close_on_enter;
 	std::vector<FieldSpec> m_fields;
 	std::vector<StaticTextSpec> m_static_texts;
-	std::vector<std::pair<FieldSpec,GUITable*> > m_tables;
-	std::vector<std::pair<FieldSpec,gui::IGUICheckBox*> > m_checkboxes;
+	std::vector<std::pair<FieldSpec,GUITable *> > m_tables;
+	std::vector<std::pair<FieldSpec,gui::IGUICheckBox *> > m_checkboxes;
 	std::map<std::string, TooltipSpec> m_tooltips;
 	std::vector<std::pair<irr::core::rect<s32>, TooltipSpec>> m_tooltip_rects;
-	std::vector<std::pair<FieldSpec,gui::IGUIScrollBar*> > m_scrollbars;
+	std::vector<std::pair<FieldSpec,gui::IGUIScrollBar *> > m_scrollbars;
 	std::vector<std::pair<FieldSpec, std::vector<std::string> > > m_dropdowns;
 
 	ItemSpec *m_selected_item = nullptr;
@@ -469,45 +469,45 @@ private:
 	fs_key_pendig current_keys_pending;
 	std::string current_field_enter_pending = "";
 
-	void parseElement(parserData* data, const std::string &element);
+	void parseElement(parserData *data, const std::string &element);
 
-	void parseSize(parserData* data, const std::string &element);
-	void parseContainer(parserData* data, const std::string &element);
-	void parseContainerEnd(parserData* data);
-	void parseList(parserData* data, const std::string &element);
-	void parseListRing(parserData* data, const std::string &element);
-	void parseCheckbox(parserData* data, const std::string &element);
-	void parseImage(parserData* data, const std::string &element);
-	void parseItemImage(parserData* data, const std::string &element);
-	void parseButton(parserData* data, const std::string &element,
+	void parseSize(parserData *data, const std::string &element);
+	void parseContainer(parserData *data, const std::string &element);
+	void parseContainerEnd(parserData *data);
+	void parseList(parserData *data, const std::string &element);
+	void parseListRing(parserData *data, const std::string &element);
+	void parseCheckbox(parserData *data, const std::string &element);
+	void parseImage(parserData *data, const std::string &element);
+	void parseItemImage(parserData *data, const std::string &element);
+	void parseButton(parserData *data, const std::string &element,
 			const std::string &typ);
-	void parseBackground(parserData* data, const std::string &element);
-	void parseTableOptions(parserData* data, const std::string &element);
-	void parseTableColumns(parserData* data, const std::string &element);
-	void parseTable(parserData* data, const std::string &element);
-	void parseTextList(parserData* data, const std::string &element);
-	void parseDropDown(parserData* data, const std::string &element);
+	void parseBackground(parserData *data, const std::string &element);
+	void parseTableOptions(parserData *data, const std::string &element);
+	void parseTableColumns(parserData *data, const std::string &element);
+	void parseTable(parserData *data, const std::string &element);
+	void parseTextList(parserData *data, const std::string &element);
+	void parseDropDown(parserData *data, const std::string &element);
 	void parseFieldCloseOnEnter(parserData *data, const std::string &element);
-	void parsePwdField(parserData* data, const std::string &element);
-	void parseField(parserData* data, const std::string &element, const std::string &type);
+	void parsePwdField(parserData *data, const std::string &element);
+	void parseField(parserData *data, const std::string &element, const std::string &type);
 	void createTextField(parserData *data, FieldSpec &spec,
 		core::rect<s32> &rect, bool is_multiline);
-	void parseSimpleField(parserData* data,std::vector<std::string> &parts);
-	void parseTextArea(parserData* data,std::vector<std::string>& parts,
+	void parseSimpleField(parserData *data,std::vector<std::string> &parts);
+	void parseTextArea(parserData *data,std::vector<std::string>& parts,
 			const std::string &type);
-	void parseLabel(parserData* data, const std::string &element);
-	void parseVertLabel(parserData* data, const std::string &element);
-	void parseImageButton(parserData* data, const std::string &element,
+	void parseLabel(parserData *data, const std::string &element);
+	void parseVertLabel(parserData *data, const std::string &element);
+	void parseImageButton(parserData *data, const std::string &element,
 			const std::string &type);
-	void parseItemImageButton(parserData* data, const std::string &element);
-	void parseTabHeader(parserData* data, const std::string &element);
-	void parseBox(parserData* data, const std::string &element);
-	void parseBackgroundColor(parserData* data, const std::string &element);
-	void parseListColors(parserData* data, const std::string &element);
-	void parseTooltip(parserData* data, const std::string &element);
+	void parseItemImageButton(parserData *data, const std::string &element);
+	void parseTabHeader(parserData *data, const std::string &element);
+	void parseBox(parserData *data, const std::string &element);
+	void parseBackgroundColor(parserData *data, const std::string &element);
+	void parseListColors(parserData *data, const std::string &element);
+	void parseTooltip(parserData *data, const std::string &element);
 	bool parseVersionDirect(const std::string &data);
-	bool parseSizeDirect(parserData* data, const std::string &element);
-	void parseScrollBar(parserData* data, const std::string &element);
+	bool parseSizeDirect(parserData *data, const std::string &element);
+	void parseScrollBar(parserData *data, const std::string &element);
 	bool parsePositionDirect(parserData *data, const std::string &element);
 	void parsePosition(parserData *data, const std::string &element);
 	bool parseAnchorDirect(parserData *data, const std::string &element);

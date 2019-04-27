@@ -202,7 +202,7 @@ RPBSearchResult ReliablePacketBuffer::notFound()
 {
 	return m_list.end();
 }
-bool ReliablePacketBuffer::getFirstSeqnum(u16& result)
+bool ReliablePacketBuffer::getFirstSeqnum(u16 &result)
 {
 	MutexAutoLock listlock(m_list_mutex);
 	if (m_list.empty())
@@ -541,7 +541,7 @@ void Channel::setNextSplitSeqNum(u16 seqnum)
 	next_outgoing_split_seqnum = seqnum;
 }
 
-u16 Channel::getOutgoingSequenceNumber(bool& successful)
+u16 Channel::getOutgoingSequenceNumber(bool &successful)
 {
 	MutexAutoLock internal(m_internal_mutex);
 	u16 retval = next_outgoing_seqnum;
@@ -741,7 +741,7 @@ void Channel::UpdateTimers(float dtime)
 	Peer
 */
 
-PeerHelper::PeerHelper(Peer* peer) :
+PeerHelper::PeerHelper(Peer *peer) :
 	m_peer(peer)
 {
 	if (peer && !peer->IncUseCount())
@@ -756,7 +756,7 @@ PeerHelper::~PeerHelper()
 	m_peer = nullptr;
 }
 
-PeerHelper& PeerHelper::operator=(Peer* peer)
+PeerHelper &PeerHelper::operator=(Peer *peer)
 {
 	m_peer = peer;
 	if (peer && !peer->IncUseCount())
@@ -764,12 +764,12 @@ PeerHelper& PeerHelper::operator=(Peer* peer)
 	return *this;
 }
 
-Peer* PeerHelper::operator->() const
+Peer *PeerHelper::operator->() const
 {
 	return m_peer;
 }
 
-Peer* PeerHelper::operator&() const
+Peer *PeerHelper::operator&() const
 {
 	return m_peer;
 }
@@ -779,9 +779,9 @@ bool PeerHelper::operator!()
 	return ! m_peer;
 }
 
-bool PeerHelper::operator!=(void* ptr)
+bool PeerHelper::operator!=(void *ptr)
 {
-	return ((void*) m_peer != ptr);
+	return ((void *) m_peer != ptr);
 }
 
 bool Peer::IncUseCount()
@@ -891,14 +891,14 @@ void Peer::Drop()
 	delete this;
 }
 
-UDPPeer::UDPPeer(u16 a_id, Address a_address, Connection* connection) :
+UDPPeer::UDPPeer(u16 a_id, Address a_address, Connection *connection) :
 	Peer(a_address,a_id,connection)
 {
 	for (Channel &channel : channels)
 		channel.setWindowSize(g_settings->getU16("max_packets_per_iteration"));
 }
 
-bool UDPPeer::getAddress(MTProtocols type,Address& toset)
+bool UDPPeer::getAddress(MTProtocols type,Address &toset)
 {
 	if ((type == MTP_UDP) || (type == MTP_MINETEST_RELIABLE_UDP) || (type == MTP_PRIMARY))
 	{
@@ -1191,10 +1191,10 @@ PeerHelper Connection::getPeerNoEx(session_t peer_id)
 }
 
 /* find peer_id for address */
-u16 Connection::lookupPeer(Address& sender)
+u16 Connection::lookupPeer(Address &sender)
 {
 	MutexAutoLock peerlock(m_peers_mutex);
-	std::map<u16, Peer*>::iterator j;
+	std::map<u16, Peer *>::iterator j;
 	j = m_peers.begin();
 	for(; j != m_peers.end(); ++j)
 	{
@@ -1300,7 +1300,7 @@ void Connection::Disconnect()
 	putCommand(c);
 }
 
-void Connection::Receive(NetworkPacket* pkt)
+void Connection::Receive(NetworkPacket *pkt)
 {
 	for(;;) {
 		ConnectionEvent e = waitEvent(m_bc_receive_timeout);
@@ -1402,7 +1402,7 @@ float Connection::getLocalStat(rate_stat_type type)
 	return retval;
 }
 
-u16 Connection::createPeer(Address& sender, MTProtocols protocol, int fd)
+u16 Connection::createPeer(Address &sender, MTProtocols protocol, int fd)
 {
 	// Somebody wants to make a new connection
 
@@ -1502,7 +1502,7 @@ void Connection::sendAck(session_t peer_id, u8 channelnum, u16 seqnum)
 	m_sendThread->Trigger();
 }
 
-UDPPeer* Connection::createServerPeer(Address& address)
+UDPPeer *Connection::createServerPeer(Address &address)
 {
 	if (getPeerNoEx(PEER_ID_SERVER) != 0)
 	{

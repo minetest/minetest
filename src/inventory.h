@@ -101,14 +101,14 @@ struct ItemStack
 
 	// Returns a pointer to the item definition struct,
 	// or a fallback one (name="unknown") if the item is unknown.
-	const ItemDefinition& getDefinition(
+	const ItemDefinition &getDefinition(
 			IItemDefManager *itemdef) const
 	{
 		return itemdef->get(name);
 	}
 
 	// Get tool digging properties, or those of the hand if not a tool
-	const ToolCapabilities& getToolCapabilities(
+	const ToolCapabilities &getToolCapabilities(
 			IItemDefManager *itemdef) const
 	{
 		const ToolCapabilities *item_cap =
@@ -198,8 +198,8 @@ public:
 	u32 getFreeSlots() const;
 
 	// Get reference to item
-	const ItemStack& getItem(u32 i) const;
-	ItemStack& getItem(u32 i);
+	const ItemStack &getItem(u32 i) const;
+	ItemStack &getItem(u32 i);
 	// Returns old item. Parameter can be an empty item.
 	ItemStack changeItem(u32 i, const ItemStack &newitem);
 	// Delete item
@@ -281,7 +281,7 @@ public:
 	InventoryList * addList(const std::string &name, u32 size);
 	InventoryList * getList(const std::string &name);
 	const InventoryList * getList(const std::string &name) const;
-	std::vector<const InventoryList*> getLists();
+	std::vector<const InventoryList *> getLists();
 	bool deleteList(const std::string &name);
 	// A shorthand for adding items. Returns leftover item (possibly empty).
 	ItemStack addItem(const std::string &listname, const ItemStack &newitem)
@@ -307,7 +307,7 @@ private:
 	// -1 if not found
 	const s32 getListIndex(const std::string &name) const;
 
-	std::vector<InventoryList*> m_lists;
+	std::vector<InventoryList *> m_lists;
 	IItemDefManager *m_itemdef;
 	bool m_dirty = false;
 };

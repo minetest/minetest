@@ -259,7 +259,7 @@ void ClientMap::updateDrawList()
 struct MeshBufList
 {
 	video::SMaterial m;
-	std::vector<scene::IMeshBuffer*> bufs;
+	std::vector<scene::IMeshBuffer *> bufs;
 };
 
 struct MeshBufListList
@@ -300,7 +300,7 @@ struct MeshBufListList
 	}
 };
 
-void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
+void ClientMap::renderMap(video::IVideoDriver *driver, s32 pass)
 {
 	bool is_transparent_pass = pass == scene::ESNRP_TRANSPARENT;
 
@@ -412,8 +412,8 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 				for (u32 i = 0; i < c; i++) {
 					scene::IMeshBuffer *buf = mesh->getMeshBuffer(i);
 
-					video::SMaterial& material = buf->getMaterial();
-					video::IMaterialRenderer* rnd =
+					video::SMaterial &material = buf->getMaterial();
+					video::IMaterialRenderer *rnd =
 						driver->getMaterialRenderer(material.MaterialType);
 					bool transparent = (rnd && rnd->isTransparent());
 					if (transparent == is_transparent_pass) {
@@ -645,7 +645,7 @@ void ClientMap::renderPostFx(CameraMode cam_mode)
 	// - If the player is in a solid node, make everything black.
 	// - If the player is in liquid, draw a semi-transparent overlay.
 	// - Do not if player is in third person mode
-	const ContentFeatures& features = m_nodedef->get(n);
+	const ContentFeatures &features = m_nodedef->get(n);
 	video::SColor post_effect_color = features.post_effect_color;
 	if(features.solidness == 2 && !(g_settings->getBool("noclip") &&
 			m_client->checkLocalPrivilege("noclip")) &&
@@ -656,7 +656,7 @@ void ClientMap::renderPostFx(CameraMode cam_mode)
 	if (post_effect_color.getAlpha() != 0)
 	{
 		// Draw a full-screen rectangle
-		video::IVideoDriver* driver = SceneManager->getVideoDriver();
+		video::IVideoDriver *driver = SceneManager->getVideoDriver();
 		v2u32 ss = driver->getScreenSize();
 		core::rect<s32> rect(0,0, ss.X, ss.Y);
 		driver->draw2DRectangle(post_effect_color, rect);
@@ -667,5 +667,3 @@ void ClientMap::PrintInfo(std::ostream &out)
 {
 	out<<"ClientMap: ";
 }
-
-

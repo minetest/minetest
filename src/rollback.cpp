@@ -471,7 +471,7 @@ bool RollbackManager::registerRow(const ActionRow & row)
 }
 
 
-const std::list<ActionRow> RollbackManager::actionRowsFromSelect(sqlite3_stmt* stmt)
+const std::list<ActionRow> RollbackManager::actionRowsFromSelect(sqlite3_stmt *stmt)
 {
 	std::list<ActionRow> rows;
 	const unsigned char * text;
@@ -487,7 +487,7 @@ const std::list<ActionRow> RollbackManager::actionRowsFromSelect(sqlite3_stmt* s
 		if (row.type == RollbackAction::TYPE_MODIFY_INVENTORY_STACK) {
 			text = sqlite3_column_text (stmt, 3);
 			size = sqlite3_column_bytes(stmt, 3);
-			row.list        = std::string(reinterpret_cast<const char*>(text), size);
+			row.list        = std::string(reinterpret_cast<const char *>(text), size);
 			row.index       = sqlite3_column_int(stmt, 4);
 			row.add         = sqlite3_column_int(stmt, 5);
 			row.stack.id    = sqlite3_column_int(stmt, 6);
@@ -507,13 +507,13 @@ const std::list<ActionRow> RollbackManager::actionRowsFromSelect(sqlite3_stmt* s
 			row.oldParam2 = sqlite3_column_int(stmt, 14);
 			text = sqlite3_column_text (stmt, 15);
 			size = sqlite3_column_bytes(stmt, 15);
-			row.oldMeta   = std::string(reinterpret_cast<const char*>(text), size);
+			row.oldMeta   = std::string(reinterpret_cast<const char *>(text), size);
 			row.newNode   = sqlite3_column_int(stmt, 16);
 			row.newParam1 = sqlite3_column_int(stmt, 17);
 			row.newParam2 = sqlite3_column_int(stmt, 18);
 			text = sqlite3_column_text(stmt, 19);
 			size = sqlite3_column_bytes(stmt, 19);
-			row.newMeta   = std::string(reinterpret_cast<const char*>(text), size);
+			row.newMeta   = std::string(reinterpret_cast<const char *>(text), size);
 			row.guessed   = sqlite3_column_int(stmt, 20);
 		}
 
@@ -968,4 +968,3 @@ std::list<RollbackAction> RollbackManager::getRevertActions(
 
 	return getActionsSince(first_time, actor_filter);
 }
-

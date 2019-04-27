@@ -274,7 +274,7 @@ struct table_key lookup_keychar(wchar_t Char)
 	}
 
 	std::ostringstream os;
-	os << "<Char " << hex_encode((char*) &Char, sizeof(wchar_t)) << ">";
+	os << "<Char " << hex_encode((char *) &Char, sizeof(wchar_t)) << ">";
 	throw UnknownKeycode(os.str().c_str());
 }
 

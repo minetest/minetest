@@ -395,7 +395,7 @@ void GUIEngine::drawBackground(video::IVideoDriver *driver)
 {
 	v2u32 screensize = driver->getScreenSize();
 
-	video::ITexture* texture = m_textures[TEX_LAYER_BACKGROUND].texture;
+	video::ITexture *texture = m_textures[TEX_LAYER_BACKGROUND].texture;
 
 	/* If no texture, draw background of solid color */
 	if(!texture){
@@ -437,7 +437,7 @@ void GUIEngine::drawOverlay(video::IVideoDriver *driver)
 {
 	v2u32 screensize = driver->getScreenSize();
 
-	video::ITexture* texture = m_textures[TEX_LAYER_OVERLAY].texture;
+	video::ITexture *texture = m_textures[TEX_LAYER_OVERLAY].texture;
 
 	/* If no texture, draw nothing */
 	if(!texture)
@@ -456,7 +456,7 @@ void GUIEngine::drawHeader(video::IVideoDriver *driver)
 {
 	core::dimension2d<u32> screensize = driver->getScreenSize();
 
-	video::ITexture* texture = m_textures[TEX_LAYER_HEADER].texture;
+	video::ITexture *texture = m_textures[TEX_LAYER_HEADER].texture;
 
 	/* If no texture, draw nothing */
 	if(!texture)
@@ -490,7 +490,7 @@ void GUIEngine::drawFooter(video::IVideoDriver *driver)
 {
 	core::dimension2d<u32> screensize = driver->getScreenSize();
 
-	video::ITexture* texture = m_textures[TEX_LAYER_FOOTER].texture;
+	video::ITexture *texture = m_textures[TEX_LAYER_FOOTER].texture;
 
 	/* If no texture, draw nothing */
 	if(!texture)
@@ -611,4 +611,3 @@ unsigned int GUIEngine::queueAsync(const std::string &serialized_func,
 {
 	return m_script->queueAsync(serialized_func, serialized_params);
 }
-

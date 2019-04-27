@@ -70,12 +70,12 @@ void compressZlib(const u8 *data, size_t data_size, std::ostream &os, int level)
 		throw SerializationError("compressZlib: deflateInit failed");
 
 	// Point zlib to our input buffer
-	z.next_in = (Bytef*)&data[0];
+	z.next_in = (Bytef *)&data[0];
 	z.avail_in = data_size;
 	// And get all output
 	for(;;)
 	{
-		z.next_out = (Bytef*)output_buffer;
+		z.next_out = (Bytef *)output_buffer;
 		z.avail_out = bufsize;
 
 		status = deflate(&z, Z_FINISH);
@@ -98,7 +98,7 @@ void compressZlib(const u8 *data, size_t data_size, std::ostream &os, int level)
 
 void compressZlib(const std::string &data, std::ostream &os, int level)
 {
-	compressZlib((u8*)data.c_str(), data.size(), os, level);
+	compressZlib((u8 *)data.c_str(), data.size(), os, level);
 }
 
 void decompressZlib(std::istream &is, std::ostream &os)
@@ -126,12 +126,12 @@ void decompressZlib(std::istream &is, std::ostream &os)
 
 	for(;;)
 	{
-		z.next_out = (Bytef*)output_buffer;
+		z.next_out = (Bytef *)output_buffer;
 		z.avail_out = bufsize;
 
 		if(z.avail_in == 0)
 		{
-			z.next_in = (Bytef*)input_buffer;
+			z.next_in = (Bytef *)input_buffer;
 			is.read(input_buffer, bufsize);
 			input_buffer_len = is.gcount();
 			z.avail_in = input_buffer_len;
@@ -200,7 +200,7 @@ void compress(const SharedBuffer<u8> &data, std::ostream &os, u8 version)
 
 	u8 tmp[4];
 	writeU32(tmp, data.getSize());
-	os.write((char*)tmp, 4);
+	os.write((char *)tmp, 4);
 
 	// We will be writing 8-bit pairs of more_count and byte
 	u8 more_count = 0;
@@ -213,8 +213,8 @@ void compress(const SharedBuffer<u8> &data, std::ostream &os, u8 version)
 		)
 		{
 			// write count and byte
-			os.write((char*)&more_count, 1);
-			os.write((char*)&current_byte, 1);
+			os.write((char *)&more_count, 1);
+			os.write((char *)&current_byte, 1);
 			more_count = 0;
 			current_byte = data[i];
 		}
@@ -224,8 +224,8 @@ void compress(const SharedBuffer<u8> &data, std::ostream &os, u8 version)
 		}
 	}
 	// write count and byte
-	os.write((char*)&more_count, 1);
-	os.write((char*)&current_byte, 1);
+	os.write((char *)&more_count, 1);
+	os.write((char *)&current_byte, 1);
 }
 
 void decompress(std::istream &is, std::ostream &os, u8 version)
@@ -239,7 +239,7 @@ void decompress(std::istream &is, std::ostream &os, u8 version)
 	// Read length (u32)
 
 	u8 tmp[4];
-	is.read((char*)tmp, 4);
+	is.read((char *)tmp, 4);
 	u32 len = readU32(tmp);
 
 	// We will be reading 8-bit pairs of more_count and byte
@@ -249,15 +249,15 @@ void decompress(std::istream &is, std::ostream &os, u8 version)
 		u8 more_count=0;
 		u8 byte=0;
 
-		is.read((char*)&more_count, 1);
+		is.read((char *)&more_count, 1);
 
-		is.read((char*)&byte, 1);
+		is.read((char *)&byte, 1);
 
 		if(is.eof())
 			throw SerializationError("decompress: stream ended halfway");
 
 		for(s32 i=0; i<(u16)more_count+1; i++)
-			os.write((char*)&byte, 1);
+			os.write((char *)&byte, 1);
 
 		count += (u16)more_count+1;
 
@@ -265,5 +265,3 @@ void decompress(std::istream &is, std::ostream &os, u8 version)
 			break;
 	}
 }
-
-

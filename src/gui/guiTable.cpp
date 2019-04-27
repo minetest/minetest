@@ -43,7 +43,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 GUITable::GUITable(gui::IGUIEnvironment *env,
-		gui::IGUIElement* parent, s32 id,
+		gui::IGUIElement *parent, s32 id,
 		core::rect<s32> rectangle,
 		ISimpleTextureSource *tsrc
 ):
@@ -52,7 +52,7 @@ GUITable::GUITable(gui::IGUIEnvironment *env,
 {
 	assert(tsrc != NULL);
 
-	gui::IGUISkin* skin = Environment->getSkin();
+	gui::IGUISkin *skin = Environment->getSkin();
 
 	m_font = skin->getFont();
 	if (m_font) {
@@ -446,7 +446,7 @@ void GUITable::setTable(const TableOptions &options,
 			Row *row = &m_rows[i];
 			row->cellcount = rows[i].cells.size();
 			row->cells = new Cell[row->cellcount];
-			memcpy((void*) row->cells, (void*) &rows[i].cells[0],
+			memcpy((void *) row->cells, (void *) &rows[i].cells[0],
 					row->cellcount * sizeof(Cell));
 			row->indent = rows[i].indent;
 			row->visible_index = i;
@@ -613,7 +613,7 @@ void GUITable::setDynamicData(const DynamicData &dyndata)
 	m_scrollbar->setPos(dyndata.scrollpos);
 }
 
-const c8* GUITable::getTypeName() const
+const c8 *GUITable::getTypeName() const
 {
 	return "GUITable";
 }
@@ -975,7 +975,7 @@ void GUITable::allocationComplete()
 	m_alloc_images.clear();
 }
 
-const GUITable::Row* GUITable::getRow(s32 i) const
+const GUITable::Row *GUITable::getRow(s32 i) const
 {
 	if (i >= 0 && i < (s32) m_visible_rows.size())
 		return &m_rows[m_visible_rows[i]];

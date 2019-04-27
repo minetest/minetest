@@ -254,7 +254,7 @@ public:
 		Environment should be locked when this is called.
 		dtime is used for resetting send radius at slow interval
 	*/
-	void GetNextBlocks(ServerEnvironment *env, EmergeManager* emerge,
+	void GetNextBlocks(ServerEnvironment *env, EmergeManager *emerge,
 			float dtime, std::vector<PrioritySortedBlockTransfer> &dest);
 
 	void GotBlock(v3s16 p);
@@ -262,7 +262,7 @@ public:
 	void SentBlock(v3s16 p);
 
 	void SetBlockNotSent(v3s16 p);
-	void SetBlocksNotSent(std::map<v3s16, MapBlock*> &blocks);
+	void SetBlocksNotSent(std::map<v3s16, MapBlock *> &blocks);
 
 	/**
 	 * tell client about this block being modified right now.
@@ -420,7 +420,7 @@ private:
 	const u64 m_connection_time = porting::getTimeS();
 };
 
-typedef std::unordered_map<u16, RemoteClient*> RemoteClientMap;
+typedef std::unordered_map<u16, RemoteClient *> RemoteClientMap;
 
 class ClientInterface {
 public:
@@ -493,7 +493,7 @@ protected:
 	void lock() { m_clients_mutex.lock(); }
 	void unlock() { m_clients_mutex.unlock(); }
 
-	RemoteClientMap& getClientList() { return m_clients; }
+	RemoteClientMap &getClientList() { return m_clients; }
 
 private:
 	/* update internal player list */

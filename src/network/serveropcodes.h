@@ -35,12 +35,12 @@ struct ToServerCommandHandler
 {
     const std::string name;
     ToServerConnectionState state;
-    void (Server::*handler)(NetworkPacket* pkt);
+    void (Server::*handler)(NetworkPacket *pkt);
 };
 
 struct ClientCommandFactory
 {
-	const char* name;
+	const char *name;
 	u8 channel;
 	bool reliable;
 };

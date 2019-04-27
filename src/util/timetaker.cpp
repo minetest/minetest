@@ -39,7 +39,7 @@ u64 TimeTaker::stop(bool quiet)
 			(*m_result) += dtime;
 		} else {
 			if (!quiet) {
-				static const char* const units[] = {
+				static const char *const units[] = {
 					"s"  /* PRECISION_SECONDS */,
 					"ms" /* PRECISION_MILLI */,
 					"us" /* PRECISION_MICRO */,
@@ -60,4 +60,3 @@ u64 TimeTaker::getTimerTime()
 {
 	return porting::getTime(m_precision) - m_time1;
 }
-

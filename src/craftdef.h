@@ -391,7 +391,7 @@ public:
 	virtual bool getCraftResult(CraftInput &input, CraftOutput &output,
 			std::vector<ItemStack> &output_replacements,
 			bool decrementInput, IGameDef *gamedef) const=0;
-	virtual std::vector<CraftDefinition*> getCraftRecipes(CraftOutput &output,
+	virtual std::vector<CraftDefinition *> getCraftRecipes(CraftOutput &output,
 			IGameDef *gamedef, unsigned limit=0) const=0;
 
 	// Print crafting recipes for debugging
@@ -408,7 +408,7 @@ public:
 	virtual bool getCraftResult(CraftInput &input, CraftOutput &output,
 			std::vector<ItemStack> &output_replacements,
 			bool decrementInput, IGameDef *gamedef) const=0;
-	virtual std::vector<CraftDefinition*> getCraftRecipes(CraftOutput &output,
+	virtual std::vector<CraftDefinition *> getCraftRecipes(CraftOutput &output,
 			IGameDef *gamedef, unsigned limit=0) const=0;
 
 	virtual bool clearCraftRecipesByOutput(const CraftOutput &output, IGameDef *gamedef) = 0;
@@ -429,4 +429,4 @@ public:
 	virtual void initHashes(IGameDef *gamedef) = 0;
 };
 
-IWritableCraftDefManager* createCraftDefManager();
+IWritableCraftDefManager *createCraftDefManager();

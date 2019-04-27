@@ -68,7 +68,7 @@ u32 ChatBuffer::getLineCount() const
 	return m_unformatted.size();
 }
 
-const ChatLine& ChatBuffer::getLine(u32 index) const
+const ChatLine &ChatBuffer::getLine(u32 index) const
 {
 	assert(index < getLineCount());	// pre-condition
 	return m_unformatted[index];
@@ -189,7 +189,7 @@ void ChatBuffer::reformat(u32 cols, u32 rows)
 	}
 }
 
-const ChatFormattedLine& ChatBuffer::getFormattedLine(u32 row) const
+const ChatFormattedLine &ChatBuffer::getFormattedLine(u32 row) const
 {
 	s32 index = m_scroll + (s32) row;
 	if (index >= 0 && index < (s32) m_formatted.size())
@@ -225,7 +225,7 @@ void ChatBuffer::scrollTop()
 	m_scroll = getTopScrollPos();
 }
 
-u32 ChatBuffer::formatChatLine(const ChatLine& line, u32 cols,
+u32 ChatBuffer::formatChatLine(const ChatLine &line, u32 cols,
 		std::vector<ChatFormattedLine>& destination) const
 {
 	u32 num_added = 0;
@@ -276,7 +276,7 @@ u32 ChatBuffer::formatChatLine(const ChatLine& line, u32 cols,
 		// Layout fragments into lines
 		while (!next_frags.empty())
 		{
-			ChatFormattedFragment& frag = next_frags[0];
+			ChatFormattedFragment &frag = next_frags[0];
 			if (frag.text.size() <= cols - out_column)
 			{
 				// Fragment fits into current line
@@ -696,12 +696,12 @@ void ChatBackend::addUnparsedMessage(std::wstring message)
 	addMessage(L"", message);
 }
 
-ChatBuffer& ChatBackend::getConsoleBuffer()
+ChatBuffer &ChatBackend::getConsoleBuffer()
 {
 	return m_console_buffer;
 }
 
-ChatBuffer& ChatBackend::getRecentBuffer()
+ChatBuffer &ChatBackend::getRecentBuffer()
 {
 	return m_recent_buffer;
 }
@@ -710,7 +710,7 @@ EnrichedString ChatBackend::getRecentChat() const
 {
 	EnrichedString result;
 	for (u32 i = 0; i < m_recent_buffer.getLineCount(); ++i) {
-		const ChatLine& line = m_recent_buffer.getLine(i);
+		const ChatLine &line = m_recent_buffer.getLine(i);
 		if (i != 0)
 			result += L"\n";
 		if (!line.name.empty()) {
@@ -723,7 +723,7 @@ EnrichedString ChatBackend::getRecentChat() const
 	return result;
 }
 
-ChatPrompt& ChatBackend::getPrompt()
+ChatPrompt &ChatBackend::getPrompt()
 {
 	return m_prompt;
 }

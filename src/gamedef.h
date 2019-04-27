@@ -50,16 +50,16 @@ class IGameDef
 public:
 	// These are thread-safe IF they are not edited while running threads.
 	// Thus, first they are set up and then they are only read.
-	virtual IItemDefManager* getItemDefManager()=0;
-	virtual const NodeDefManager* getNodeDefManager()=0;
-	virtual ICraftDefManager* getCraftDefManager()=0;
+	virtual IItemDefManager *getItemDefManager()=0;
+	virtual const NodeDefManager *getNodeDefManager()=0;
+	virtual ICraftDefManager *getCraftDefManager()=0;
 
 	// Used for keeping track of names/ids of unknown nodes
 	virtual u16 allocateUnknownNodeId(const std::string &name)=0;
 
 	// Only usable on the server, and NOT thread-safe. It is usable from the
 	// environment thread.
-	virtual IRollbackManager* getRollbackManager() { return NULL; }
+	virtual IRollbackManager *getRollbackManager() { return NULL; }
 
 	// Shorthands
 	IItemDefManager  *idef()     { return getItemDefManager(); }

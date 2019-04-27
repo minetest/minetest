@@ -27,7 +27,7 @@ namespace gui
 {
 //! constructor
 StaticText::StaticText(const EnrichedString &text, bool border,
-			IGUIEnvironment* environment, IGUIElement* parent,
+			IGUIEnvironment *environment, IGUIElement *parent,
 			s32 id, const core::rect<s32>& rectangle,
 			bool background)
 : IGUIStaticText(environment, parent, id, rectangle),
@@ -63,10 +63,10 @@ void StaticText::draw()
 	if (!IsVisible)
 		return;
 
-	IGUISkin* skin = Environment->getSkin();
+	IGUISkin *skin = Environment->getSkin();
 	if (!skin)
 		return;
-	video::IVideoDriver* driver = Environment->getVideoDriver();
+	video::IVideoDriver *driver = Environment->getVideoDriver();
 
 	core::rect<s32> frameRect(AbsoluteRect);
 
@@ -91,7 +91,7 @@ void StaticText::draw()
 	// draw the text
 	if (cText.size())
 	{
-		IGUIFont* font = getActiveFont();
+		IGUIFont *font = getActiveFont();
 
 		if (font)
 		{
@@ -109,7 +109,7 @@ void StaticText::draw()
 						font->getDimension(cText.c_str()).Width;
 				}
 
-				irr::gui::CGUITTFont *tmp = static_cast<irr::gui::CGUITTFont*>(font);
+				irr::gui::CGUITTFont *tmp = static_cast<irr::gui::CGUITTFont *>(font);
 				tmp->draw(cText, frameRect,
 					OverrideColorEnabled ? OverrideColor : skin->getColor(isEnabled() ? EGDC_BUTTON_TEXT : EGDC_GRAY_TEXT),
 					HAlign == EGUIA_CENTER, VAlign == EGUIA_CENTER, (RestrainTextInside ? &AbsoluteClippingRect : NULL));
@@ -148,7 +148,7 @@ void StaticText::draw()
 					//if (!colors.empty())
 					//	previous_color = colors[colors.size() - 1];
 
-					irr::gui::CGUITTFont *tmp = static_cast<irr::gui::CGUITTFont*>(font);
+					irr::gui::CGUITTFont *tmp = static_cast<irr::gui::CGUITTFont *>(font);
 					tmp->draw(str, r,
 						previous_color, // FIXME
 						HAlign == EGUIA_CENTER, false, (RestrainTextInside ? &AbsoluteClippingRect : NULL));
@@ -165,7 +165,7 @@ void StaticText::draw()
 
 
 //! Sets another skin independent font.
-void StaticText::setOverrideFont(IGUIFont* font)
+void StaticText::setOverrideFont(IGUIFont *font)
 {
 	if (OverrideFont == font)
 		return;
@@ -188,11 +188,11 @@ IGUIFont * StaticText::getOverrideFont() const
 }
 
 //! Get the font which is used right now for drawing
-IGUIFont* StaticText::getActiveFont() const
+IGUIFont *StaticText::getActiveFont() const
 {
 	if ( OverrideFont )
 		return OverrideFont;
-	IGUISkin* skin = Environment->getSkin();
+	IGUISkin *skin = Environment->getSkin();
 	if (skin)
 		return skin->getFont();
 	return 0;
@@ -270,7 +270,7 @@ void StaticText::setTextAlignment(EGUI_ALIGNMENT horizontal, EGUI_ALIGNMENT vert
 
 
 #if IRRLICHT_VERSION_MAJOR == 1 && IRRLICHT_VERSION_MINOR <= 7
-const video::SColor& StaticText::getOverrideColor() const
+const video::SColor &StaticText::getOverrideColor() const
 #else
 video::SColor StaticText::getOverrideColor() const
 #endif
@@ -332,8 +332,8 @@ void StaticText::breakText()
 
 	BrokenText.clear();
 
-	IGUISkin* skin = Environment->getSkin();
-	IGUIFont* font = getActiveFont();
+	IGUISkin *skin = Environment->getSkin();
+	IGUIFont *font = getActiveFont();
 	if (!font)
 		return;
 
@@ -549,7 +549,7 @@ void StaticText::breakText()
 
 
 //! Sets the new caption of this element.
-void StaticText::setText(const wchar_t* text)
+void StaticText::setText(const wchar_t *text)
 {
 	setText(EnrichedString(text));
 }
@@ -576,7 +576,7 @@ void StaticText::updateAbsolutePosition()
 //! Returns the height of the text in pixels when it is drawn.
 s32 StaticText::getTextHeight() const
 {
-	IGUIFont* font = getActiveFont();
+	IGUIFont *font = getActiveFont();
 	if (!font)
 		return 0;
 
@@ -619,7 +619,7 @@ s32 StaticText::getTextWidth() const
 //! Writes attributes of the element.
 //! Implement this to expose the attributes of your element for
 //! scripting languages, editors, debuggers or xml serialization purposes.
-void StaticText::serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options=0) const
+void StaticText::serializeAttributes(io::IAttributes *out, io::SAttributeReadWriteOptions *options = 0) const
 {
 	IGUIStaticText::serializeAttributes(out,options);
 
@@ -640,7 +640,7 @@ void StaticText::serializeAttributes(io::IAttributes* out, io::SAttributeReadWri
 
 
 //! Reads attributes of the element
-void StaticText::deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options=0)
+void StaticText::deserializeAttributes(io::IAttributes *in, io::SAttributeReadWriteOptions *options = 0)
 {
 	IGUIStaticText::deserializeAttributes(in,options);
 

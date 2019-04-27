@@ -129,7 +129,7 @@ public:
 
 	~GenericCAO();
 
-	static ClientActiveObject* create(Client *client, ClientEnvironment *env)
+	static ClientActiveObject *create(Client *client, ClientEnvironment *env)
 	{
 		return new GenericCAO(client, env);
 	}

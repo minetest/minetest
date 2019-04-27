@@ -308,11 +308,11 @@ void ClientEnvironment::addSimpleObject(ClientSimpleObject *simple)
 	m_simple_objects.push_back(simple);
 }
 
-GenericCAO* ClientEnvironment::getGenericCAO(u16 id)
+GenericCAO *ClientEnvironment::getGenericCAO(u16 id)
 {
 	ClientActiveObject *obj = getActiveObject(id);
 	if (obj && obj->getType() == ACTIVEOBJECT_TYPE_GENERIC)
-		return (GenericCAO*) obj;
+		return (GenericCAO *) obj;
 
 	return NULL;
 }
@@ -366,7 +366,7 @@ u16 ClientEnvironment::addActiveObject(ClientActiveObject *object)
 void ClientEnvironment::addActiveObject(u16 id, u8 type,
 	const std::string &init_data)
 {
-	ClientActiveObject* obj =
+	ClientActiveObject *obj =
 		ClientActiveObject::create((ActiveObjectType) type, m_client, this);
 	if(obj == NULL)
 	{

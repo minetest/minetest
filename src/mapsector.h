@@ -65,7 +65,7 @@ public:
 protected:
 
 	// The pile of MapBlocks
-	std::unordered_map<s16, MapBlock*> m_blocks;
+	std::unordered_map<s16, MapBlock *> m_blocks;
 
 	Map *m_parent;
 	// Position on parent (in MapBlock widths)

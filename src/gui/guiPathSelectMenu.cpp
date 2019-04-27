@@ -19,8 +19,8 @@
 
 #include "guiPathSelectMenu.h"
 
-GUIFileSelectMenu::GUIFileSelectMenu(gui::IGUIEnvironment* env,
-		gui::IGUIElement* parent, s32 id, IMenuManager *menumgr,
+GUIFileSelectMenu::GUIFileSelectMenu(gui::IGUIEnvironment *env,
+		gui::IGUIElement *parent, s32 id, IMenuManager *menumgr,
 		const std::string &title, const std::string &formname,
 		bool is_file_select) :
 	GUIModalMenu(env, parent, id, menumgr),

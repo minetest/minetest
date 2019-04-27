@@ -39,7 +39,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 
-ObjectRef* ObjectRef::checkobject(lua_State *L, int narg)
+ObjectRef *ObjectRef::checkobject(lua_State *L, int narg)
 {
 	luaL_checktype(L, narg, LUA_TUSERDATA);
 	void *ud = luaL_checkudata(L, narg, className);
@@ -47,30 +47,30 @@ ObjectRef* ObjectRef::checkobject(lua_State *L, int narg)
 	return *(ObjectRef**)ud;  // unbox pointer
 }
 
-ServerActiveObject* ObjectRef::getobject(ObjectRef *ref)
+ServerActiveObject *ObjectRef::getobject(ObjectRef *ref)
 {
 	ServerActiveObject *co = ref->m_object;
 	return co;
 }
 
-LuaEntitySAO* ObjectRef::getluaobject(ObjectRef *ref)
+LuaEntitySAO *ObjectRef::getluaobject(ObjectRef *ref)
 {
 	ServerActiveObject *obj = getobject(ref);
 	if (obj == NULL)
 		return NULL;
 	if (obj->getType() != ACTIVEOBJECT_TYPE_LUAENTITY)
 		return NULL;
-	return (LuaEntitySAO*)obj;
+	return (LuaEntitySAO *)obj;
 }
 
-PlayerSAO* ObjectRef::getplayersao(ObjectRef *ref)
+PlayerSAO *ObjectRef::getplayersao(ObjectRef *ref)
 {
 	ServerActiveObject *obj = getobject(ref);
 	if (obj == NULL)
 		return NULL;
 	if (obj->getType() != ACTIVEOBJECT_TYPE_PLAYER)
 		return NULL;
-	return (PlayerSAO*)obj;
+	return (PlayerSAO *)obj;
 }
 
 RemotePlayer *ObjectRef::getplayer(ObjectRef *ref)
@@ -353,7 +353,7 @@ int ObjectRef::l_set_wielded_item(lua_State *L)
 	ItemStack item = read_item(L, 2, getServer(L)->idef());
 	bool success = co->setWieldedItem(item);
 	if (success && co->getType() == ACTIVEOBJECT_TYPE_PLAYER) {
-		getServer(L)->SendInventory(((PlayerSAO*)co));
+		getServer(L)->SendInventory(((PlayerSAO *)co));
 	}
 	lua_pushboolean(L, success);
 	return 1;
@@ -1080,7 +1080,7 @@ int ObjectRef::l_get_look_dir(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
-	PlayerSAO* co = getplayersao(ref);
+	PlayerSAO *co = getplayersao(ref);
 	if (co == NULL) return 0;
 	// Do it
 	float pitch = co->getRadLookPitchDep();
@@ -1101,7 +1101,7 @@ int ObjectRef::l_get_look_pitch(lua_State *L)
 		"Deprecated call to get_look_pitch, use get_look_vertical instead");
 
 	ObjectRef *ref = checkobject(L, 1);
-	PlayerSAO* co = getplayersao(ref);
+	PlayerSAO *co = getplayersao(ref);
 	if (co == NULL) return 0;
 	// Do it
 	lua_pushnumber(L, co->getRadLookPitchDep());
@@ -1118,7 +1118,7 @@ int ObjectRef::l_get_look_yaw(lua_State *L)
 		"Deprecated call to get_look_yaw, use get_look_horizontal instead");
 
 	ObjectRef *ref = checkobject(L, 1);
-	PlayerSAO* co = getplayersao(ref);
+	PlayerSAO *co = getplayersao(ref);
 	if (co == NULL) return 0;
 	// Do it
 	lua_pushnumber(L, co->getRadYawDep());
@@ -1130,7 +1130,7 @@ int ObjectRef::l_get_look_vertical(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
-	PlayerSAO* co = getplayersao(ref);
+	PlayerSAO *co = getplayersao(ref);
 	if (co == NULL) return 0;
 	// Do it
 	lua_pushnumber(L, co->getRadLookPitch());
@@ -1142,7 +1142,7 @@ int ObjectRef::l_get_look_horizontal(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
-	PlayerSAO* co = getplayersao(ref);
+	PlayerSAO *co = getplayersao(ref);
 	if (co == NULL) return 0;
 	// Do it
 	lua_pushnumber(L, co->getRadRotation().Y);
@@ -1154,7 +1154,7 @@ int ObjectRef::l_set_look_vertical(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
-	PlayerSAO* co = getplayersao(ref);
+	PlayerSAO *co = getplayersao(ref);
 	if (co == NULL) return 0;
 	float pitch = readParam<float>(L, 2) * core::RADTODEG;
 	// Do it
@@ -1167,7 +1167,7 @@ int ObjectRef::l_set_look_horizontal(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
-	PlayerSAO* co = getplayersao(ref);
+	PlayerSAO *co = getplayersao(ref);
 	if (co == NULL) return 0;
 	float yaw = readParam<float>(L, 2) * core::RADTODEG;
 	// Do it
@@ -1185,7 +1185,7 @@ int ObjectRef::l_set_look_pitch(lua_State *L)
 		"Deprecated call to set_look_pitch, use set_look_vertical instead.");
 
 	ObjectRef *ref = checkobject(L, 1);
-	PlayerSAO* co = getplayersao(ref);
+	PlayerSAO *co = getplayersao(ref);
 	if (co == NULL) return 0;
 	float pitch = readParam<float>(L, 2) * core::RADTODEG;
 	// Do it
@@ -1203,7 +1203,7 @@ int ObjectRef::l_set_look_yaw(lua_State *L)
 		"Deprecated call to set_look_yaw, use set_look_horizontal instead.");
 
 	ObjectRef *ref = checkobject(L, 1);
-	PlayerSAO* co = getplayersao(ref);
+	PlayerSAO *co = getplayersao(ref);
 	if (co == NULL) return 0;
 	float yaw = readParam<float>(L, 2) * core::RADTODEG;
 	// Do it
@@ -1216,7 +1216,7 @@ int ObjectRef::l_set_breath(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
-	PlayerSAO* co = getplayersao(ref);
+	PlayerSAO *co = getplayersao(ref);
 	if (co == NULL) return 0;
 	u16 breath = luaL_checknumber(L, 2);
 	co->setBreath(breath);
@@ -1229,7 +1229,7 @@ int ObjectRef::l_get_breath(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
-	PlayerSAO* co = getplayersao(ref);
+	PlayerSAO *co = getplayersao(ref);
 	if (co == NULL) return 0;
 	// Do it
 	u16 breath = co->getBreath();
@@ -1244,7 +1244,7 @@ int ObjectRef::l_set_attribute(lua_State *L)
 		"Deprecated call to set_attribute, use MetaDataRef methods instead.");
 
 	ObjectRef *ref = checkobject(L, 1);
-	PlayerSAO* co = getplayersao(ref);
+	PlayerSAO *co = getplayersao(ref);
 	if (co == NULL)
 		return 0;
 
@@ -1265,7 +1265,7 @@ int ObjectRef::l_get_attribute(lua_State *L)
 		"Deprecated call to get_attribute, use MetaDataRef methods instead.");
 
 	ObjectRef *ref = checkobject(L, 1);
-	PlayerSAO* co = getplayersao(ref);
+	PlayerSAO *co = getplayersao(ref);
 	if (co == NULL)
 		return 0;
 

@@ -157,7 +157,7 @@ void               push_items                (lua_State *L,
 
 std::vector<ItemStack> read_items            (lua_State *L,
                                               int index,
-                                              Server* srv);
+                                              Server *srv);
 
 void               push_soundspec            (lua_State *L,
                                               const SimpleSoundSpec &spec);

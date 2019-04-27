@@ -46,7 +46,7 @@ namespace voxalgo
 void update_lighting_nodes(
 	Map *map,
 	std::vector<std::pair<v3s16, MapNode> > &oldnodes,
-	std::map<v3s16, MapBlock*> &modified_blocks);
+	std::map<v3s16, MapBlock *> &modified_blocks);
 
 /*!
  * Updates borders of the given mapblock.
@@ -58,7 +58,7 @@ void update_lighting_nodes(
  * the function modified
  */
 void update_block_border_lighting(Map *map, MapBlock *block,
-	std::map<v3s16, MapBlock*> &modified_blocks);
+	std::map<v3s16, MapBlock *> &modified_blocks);
 
 /*!
  * Copies back nodes from a voxel manipulator
@@ -69,7 +69,7 @@ void update_block_border_lighting(Map *map, MapBlock *block,
  * the function modified
  */
 void blit_back_with_light(ServerMap *map, MMVManip *vm,
-	std::map<v3s16, MapBlock*> *modified_blocks);
+	std::map<v3s16, MapBlock *> *modified_blocks);
 
 /*!
  * Corrects the light in a map block.
@@ -78,7 +78,7 @@ void blit_back_with_light(ServerMap *map, MMVManip *vm,
  * \param block the block to update
  */
 void repair_block_light(ServerMap *map, MapBlock *block,
-	std::map<v3s16, MapBlock*> *modified_blocks);
+	std::map<v3s16, MapBlock *> *modified_blocks);
 
 /*!
  * This class iterates trough voxels that intersect with

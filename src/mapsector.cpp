@@ -57,7 +57,7 @@ MapBlock * MapSector::getBlockBuffered(s16 y)
 	}
 
 	// If block doesn't exist, return NULL
-	std::unordered_map<s16, MapBlock*>::const_iterator n = m_blocks.find(y);
+	std::unordered_map<s16, MapBlock *>::const_iterator n = m_blocks.find(y);
 	block = (n != m_blocks.end() ? n->second : nullptr);
 
 	// Cache the last result

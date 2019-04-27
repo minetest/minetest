@@ -63,7 +63,7 @@ public:
 
 	// Get camera scene node.
 	// It has the eye transformation, pitch and view bobbing applied.
-	inline scene::ICameraSceneNode* getCameraNode() const
+	inline scene::ICameraSceneNode *getCameraNode() const
 	{
 		return m_cameranode;
 	}
@@ -114,7 +114,7 @@ public:
 
 	// Update the camera from the local player's position.
 	// busytime is used to adjust the viewing range.
-	void update(LocalPlayer* player, f32 frametime, f32 busytime,
+	void update(LocalPlayer *player, f32 frametime, f32 busytime,
 			f32 tool_reload_ratio);
 
 	// Update render distance
@@ -130,7 +130,7 @@ public:
 	// Draw the wielded tool.
 	// This has to happen *after* the main scene is drawn.
 	// Warning: This clears the Z buffer.
-	void drawWieldedTool(irr::core::matrix4* translation=NULL);
+	void drawWieldedTool(irr::core::matrix4 *translation = NULL);
 
 	// Toggle the current camera mode
 	void toggleCameraMode() {
@@ -176,7 +176,7 @@ private:
 	WieldMeshSceneNode *m_wieldnode = nullptr;
 
 	// draw control
-	MapDrawControl& m_draw_control;
+	MapDrawControl &m_draw_control;
 
 	Client *m_client;
 

@@ -899,10 +899,10 @@ public:
 			if (col_iter == (m_craft_defs[type]).end())
 				continue;
 
-			const std::vector<CraftDefinition*> &hash_collisions = col_iter->second;
+			const std::vector<CraftDefinition *> &hash_collisions = col_iter->second;
 			// Walk crafting definitions from back to front, so that later
 			// definitions can override earlier ones.
-			for (std::vector<CraftDefinition*>::size_type
+			for (std::vector<CraftDefinition *>::size_type
 					i = hash_collisions.size(); i > 0; i--) {
 				CraftDefinition *def = hash_collisions[i - 1];
 
@@ -933,21 +933,21 @@ public:
 		return false;
 	}
 
-	virtual std::vector<CraftDefinition*> getCraftRecipes(CraftOutput &output,
+	virtual std::vector<CraftDefinition *> getCraftRecipes(CraftOutput &output,
 			IGameDef *gamedef, unsigned limit=0) const
 	{
-		std::vector<CraftDefinition*> recipes;
+		std::vector<CraftDefinition *> recipes;
 
 		auto vec_iter = m_output_craft_definitions.find(output.item);
 
 		if (vec_iter == m_output_craft_definitions.end())
 			return recipes;
 
-		const std::vector<CraftDefinition*> &vec = vec_iter->second;
+		const std::vector<CraftDefinition *> &vec = vec_iter->second;
 
 		recipes.reserve(limit ? MYMIN(limit, vec.size()) : vec.size());
 
-		for (std::vector<CraftDefinition*>::size_type i = vec.size();
+		for (std::vector<CraftDefinition *>::size_type i = vec.size();
 				i > 0; i--) {
 			CraftDefinition *def = vec[i - 1];
 			if (limit && recipes.size() >= limit)
@@ -965,11 +965,11 @@ public:
 		if (vec_iter == m_output_craft_definitions.end())
 			return false;
 
-		std::vector<CraftDefinition*> &vec = vec_iter->second;
+		std::vector<CraftDefinition *> &vec = vec_iter->second;
 		for (auto def : vec) {
 			// Recipes are not yet hashed at this point
-			std::vector<CraftDefinition*> &unhashed_inputs_vec = m_craft_defs[(int) CRAFT_HASH_TYPE_UNHASHED][0];
-			std::vector<CraftDefinition*> new_vec_by_input;
+			std::vector<CraftDefinition *> &unhashed_inputs_vec = m_craft_defs[(int) CRAFT_HASH_TYPE_UNHASHED][0];
+			std::vector<CraftDefinition *> new_vec_by_input;
 			/* We will preallocate necessary memory addresses, so we don't need to reallocate them later.
 				This would save us some performance. */
 			new_vec_by_input.reserve(unhashed_inputs_vec.size());
@@ -999,10 +999,10 @@ public:
 
 		CraftInput input(craft_method, craft_grid_width, craftGetItems(recipe, gamedef));
 		// Recipes are not yet hashed at this point
-		std::vector<CraftDefinition*> &unhashed_inputs_vec = m_craft_defs[(int) CRAFT_HASH_TYPE_UNHASHED][0];
-		std::vector<CraftDefinition*> new_vec_by_input;
+		std::vector<CraftDefinition *> &unhashed_inputs_vec = m_craft_defs[(int) CRAFT_HASH_TYPE_UNHASHED][0];
+		std::vector<CraftDefinition *> new_vec_by_input;
 		bool got_hit = false;
-		for (std::vector<CraftDefinition*>::size_type
+		for (std::vector<CraftDefinition *>::size_type
 				i = unhashed_inputs_vec.size(); i > 0; i--) {
 			CraftDefinition *def = unhashed_inputs_vec[i - 1];
 			/* If the input doesn't match the recipe definition, this recipe definition later
@@ -1016,8 +1016,8 @@ public:
 			auto vec_iter = m_output_craft_definitions.find(output.item);
 			if (vec_iter == m_output_craft_definitions.end())
 				continue;
-			std::vector<CraftDefinition*> &vec = vec_iter->second;
-			std::vector<CraftDefinition*> new_vec_by_output;
+			std::vector<CraftDefinition *> &vec = vec_iter->second;
+			std::vector<CraftDefinition *> new_vec_by_output;
 			/* We will preallocate necessary memory addresses, so we don't need
 				to reallocate them later. This would save us some performance. */
 			new_vec_by_output.reserve(vec.size());
@@ -1047,7 +1047,7 @@ public:
 		for (int type = 0; type <= craft_hash_type_max; ++type) {
 			for (auto it = m_craft_defs[type].begin();
 					it != m_craft_defs[type].end(); ++it) {
-				for (std::vector<CraftDefinition*>::size_type i = 0;
+				for (std::vector<CraftDefinition *>::size_type i = 0;
 						i < it->second.size(); i++) {
 					os << "type " << type
 						<< " hash " << it->first
@@ -1099,13 +1099,13 @@ public:
 		unhashed.clear();
 	}
 private:
-	std::vector<std::unordered_map<u64, std::vector<CraftDefinition*> > >
+	std::vector<std::unordered_map<u64, std::vector<CraftDefinition *> > >
 		m_craft_defs;
-	std::unordered_map<std::string, std::vector<CraftDefinition*> >
+	std::unordered_map<std::string, std::vector<CraftDefinition *> >
 		m_output_craft_definitions;
 };
 
-IWritableCraftDefManager* createCraftDefManager()
+IWritableCraftDefManager *createCraftDefManager()
 {
 	return new CCraftDefManager();
 }

@@ -73,7 +73,7 @@ public:
 class IShaderConstantSetterFactory {
 public:
 	virtual ~IShaderConstantSetterFactory() = default;
-	virtual IShaderConstantSetter* create() = 0;
+	virtual IShaderConstantSetter *create() = 0;
 };
 
 

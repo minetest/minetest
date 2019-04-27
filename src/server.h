@@ -137,39 +137,39 @@ public:
 	// This is run by ServerThread and does the actual processing
 	void AsyncRunStep(bool initial_step=false);
 	void Receive();
-	PlayerSAO* StageTwoClientInit(session_t peer_id);
+	PlayerSAO *StageTwoClientInit(session_t peer_id);
 
 	/*
 	 * Command Handlers
 	 */
 
-	void handleCommand(NetworkPacket* pkt);
+	void handleCommand(NetworkPacket *pkt);
 
-	void handleCommand_Null(NetworkPacket* pkt) {};
-	void handleCommand_Deprecated(NetworkPacket* pkt);
-	void handleCommand_Init(NetworkPacket* pkt);
-	void handleCommand_Init2(NetworkPacket* pkt);
+	void handleCommand_Null(NetworkPacket *pkt) {};
+	void handleCommand_Deprecated(NetworkPacket *pkt);
+	void handleCommand_Init(NetworkPacket *pkt);
+	void handleCommand_Init2(NetworkPacket *pkt);
 	void handleCommand_ModChannelJoin(NetworkPacket *pkt);
 	void handleCommand_ModChannelLeave(NetworkPacket *pkt);
 	void handleCommand_ModChannelMsg(NetworkPacket *pkt);
-	void handleCommand_RequestMedia(NetworkPacket* pkt);
-	void handleCommand_ClientReady(NetworkPacket* pkt);
-	void handleCommand_GotBlocks(NetworkPacket* pkt);
-	void handleCommand_PlayerPos(NetworkPacket* pkt);
-	void handleCommand_DeletedBlocks(NetworkPacket* pkt);
-	void handleCommand_InventoryAction(NetworkPacket* pkt);
-	void handleCommand_ChatMessage(NetworkPacket* pkt);
-	void handleCommand_Damage(NetworkPacket* pkt);
-	void handleCommand_Password(NetworkPacket* pkt);
-	void handleCommand_PlayerItem(NetworkPacket* pkt);
-	void handleCommand_Respawn(NetworkPacket* pkt);
-	void handleCommand_Interact(NetworkPacket* pkt);
-	void handleCommand_RemovedSounds(NetworkPacket* pkt);
-	void handleCommand_NodeMetaFields(NetworkPacket* pkt);
-	void handleCommand_InventoryFields(NetworkPacket* pkt);
-	void handleCommand_FirstSrp(NetworkPacket* pkt);
-	void handleCommand_SrpBytesA(NetworkPacket* pkt);
-	void handleCommand_SrpBytesM(NetworkPacket* pkt);
+	void handleCommand_RequestMedia(NetworkPacket *pkt);
+	void handleCommand_ClientReady(NetworkPacket *pkt);
+	void handleCommand_GotBlocks(NetworkPacket *pkt);
+	void handleCommand_PlayerPos(NetworkPacket *pkt);
+	void handleCommand_DeletedBlocks(NetworkPacket *pkt);
+	void handleCommand_InventoryAction(NetworkPacket *pkt);
+	void handleCommand_ChatMessage(NetworkPacket *pkt);
+	void handleCommand_Damage(NetworkPacket *pkt);
+	void handleCommand_Password(NetworkPacket *pkt);
+	void handleCommand_PlayerItem(NetworkPacket *pkt);
+	void handleCommand_Respawn(NetworkPacket *pkt);
+	void handleCommand_Interact(NetworkPacket *pkt);
+	void handleCommand_RemovedSounds(NetworkPacket *pkt);
+	void handleCommand_NodeMetaFields(NetworkPacket *pkt);
+	void handleCommand_InventoryFields(NetworkPacket *pkt);
+	void handleCommand_FirstSrp(NetworkPacket *pkt);
+	void handleCommand_SrpBytesA(NetworkPacket *pkt);
+	void handleCommand_SrpBytesM(NetworkPacket *pkt);
 
 	void ProcessData(NetworkPacket *pkt);
 
@@ -194,7 +194,7 @@ public:
 	/*
 		Shall be called with the environment and the connection locked.
 	*/
-	Inventory* getInventory(const InventoryLocation &loc);
+	Inventory *getInventory(const InventoryLocation &loc);
 	void setInventoryModified(const InventoryLocation &loc, bool playerSend = true);
 
 	// Connection must be locked when called
@@ -262,19 +262,19 @@ public:
 
 	// IGameDef interface
 	// Under envlock
-	virtual IItemDefManager* getItemDefManager();
-	virtual const NodeDefManager* getNodeDefManager();
-	virtual ICraftDefManager* getCraftDefManager();
+	virtual IItemDefManager *getItemDefManager();
+	virtual const NodeDefManager *getNodeDefManager();
+	virtual ICraftDefManager *getCraftDefManager();
 	virtual u16 allocateUnknownNodeId(const std::string &name);
 	IRollbackManager *getRollbackManager() { return m_rollback; }
 	virtual EmergeManager *getEmergeManager() { return m_emerge; }
 
-	IWritableItemDefManager* getWritableItemDefManager();
-	NodeDefManager* getWritableNodeDefManager();
-	IWritableCraftDefManager* getWritableCraftDefManager();
+	IWritableItemDefManager *getWritableItemDefManager();
+	NodeDefManager *getWritableNodeDefManager();
+	IWritableCraftDefManager *getWritableCraftDefManager();
 
 	virtual const std::vector<ModSpec> &getMods() const;
-	virtual const ModSpec* getModSpec(const std::string &modname) const;
+	virtual const ModSpec *getModSpec(const std::string &modname) const;
 	void getModNames(std::vector<std::string> &modlist);
 	std::string getBuiltinLuaPath();
 	virtual std::string getWorldPath() const { return m_path_world; }
@@ -326,14 +326,14 @@ public:
 	void DisconnectPeer(session_t peer_id);
 	bool getClientConInfo(session_t peer_id, con::rtt_stat_type type, float *retval);
 	bool getClientInfo(session_t peer_id, ClientState *state, u32 *uptime,
-			u8* ser_vers, u16* prot_vers, u8* major, u8* minor, u8* patch,
-			std::string* vers_string);
+			u8 *ser_vers, u16 *prot_vers, u8 *major, u8 *minor, u8 *patch,
+			std::string *vers_string);
 
 	void printToConsoleOnly(const std::string &text);
 
 	void SendPlayerHPOrDie(PlayerSAO *player, const PlayerHPChangeReason &reason);
 	void SendPlayerBreath(PlayerSAO *sao);
-	void SendInventory(PlayerSAO* playerSAO);
+	void SendInventory(PlayerSAO *playerSAO);
 	void SendMovePlayer(session_t peer_id);
 
 	virtual bool registerModStorage(ModMetadata *storage);
@@ -489,8 +489,8 @@ private:
 	void handleAdminChat(const ChatEventChat *evt);
 
 	// When called, connection mutex should be locked
-	RemoteClient* getClient(session_t peer_id, ClientState state_min = CS_Active);
-	RemoteClient* getClientNoEx(session_t peer_id, ClientState state_min = CS_Active);
+	RemoteClient *getClient(session_t peer_id, ClientState state_min = CS_Active);
+	RemoteClient *getClientNoEx(session_t peer_id, ClientState state_min = CS_Active);
 
 	// When called, environment mutex should be locked
 	std::string getPlayerName(session_t peer_id);
@@ -626,7 +626,7 @@ private:
 		Queue of map edits from the environment for sending to the clients
 		This is behind m_env_mutex
 	*/
-	std::queue<MapEditEvent*> m_unsent_map_edit_queue;
+	std::queue<MapEditEvent *> m_unsent_map_edit_queue;
 	/*
 		If a non-empty area, map edit events contained within are left
 		unsent. Done at map generation time to speed up editing of the
@@ -648,7 +648,7 @@ private:
 		Detached inventories (behind m_env_mutex)
 	*/
 	// key = name
-	std::map<std::string, Inventory*> m_detached_inventories;
+	std::map<std::string, Inventory *> m_detached_inventories;
 	// value = "" (visible to all players) or player name
 	std::map<std::string, std::string> m_detached_inventories_player;
 

@@ -156,7 +156,7 @@ private:
 class ActiveBlockList
 {
 public:
-	void update(std::vector<PlayerSAO*> &active_players,
+	void update(std::vector<PlayerSAO *> &active_players,
 		s16 active_block_range,
 		s16 active_object_range,
 		std::set<v3s16> &blocks_removed,
@@ -209,7 +209,7 @@ public:
 	ServerMap & getServerMap();
 
 	//TODO find way to remove this fct!
-	ServerScripting* getScriptIface()
+	ServerScripting *getScriptIface()
 	{ return m_script; }
 
 	Server *getGameDef()
@@ -244,7 +244,7 @@ public:
 		-------------------------------------------
 	*/
 
-	ServerActiveObject* getActiveObject(u16 id)
+	ServerActiveObject *getActiveObject(u16 id)
 	{
 		return m_ao_manager.getActiveObject(id);
 	}
@@ -356,7 +356,7 @@ public:
 		bool static_exists, v3s16 static_block=v3s16(0,0,0));
 
 	RemotePlayer *getPlayer(const session_t peer_id);
-	RemotePlayer *getPlayer(const char* name);
+	RemotePlayer *getPlayer(const char *name);
 	u32 getPlayerCount() const { return m_players.size(); }
 
 	static bool migratePlayersDatabase(const GameParams &game_params,
@@ -429,7 +429,7 @@ private:
 	// The map
 	ServerMap *m_map;
 	// Lua state
-	ServerScripting* m_script;
+	ServerScripting *m_script;
 	// Server definition
 	Server *m_server;
 	// Active Object Manager
@@ -465,7 +465,7 @@ private:
 	float m_max_lag_estimate = 0.1f;
 
 	// peer_ids in here should be unique, except that there may be many 0s
-	std::vector<RemotePlayer*> m_players;
+	std::vector<RemotePlayer *> m_players;
 
 	PlayerDatabase *m_player_database = nullptr;
 	AuthDatabase *m_auth_database = nullptr;

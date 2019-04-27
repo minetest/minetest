@@ -302,7 +302,7 @@ public:
 
 	static void playerJump(MtEvent *e, void *data)
 	{
-		//SoundMaker *sm = (SoundMaker*)data;
+		//SoundMaker *sm = (SoundMaker *)data;
 	}
 
 	static void cameraPunchLeft(MtEvent *e, void *data)
@@ -427,7 +427,7 @@ public:
 
 	static void settingsCallback(const std::string &name, void *userdata)
 	{
-		reinterpret_cast<GameGlobalShaderConstantSetter*>(userdata)->onSettingsChange(name);
+		reinterpret_cast<GameGlobalShaderConstantSetter *>(userdata)->onSettingsChange(name);
 	}
 
 	void setSky(Sky *sky) { m_sky = sky; }
@@ -557,7 +557,7 @@ public:
 		created_nosky.clear();
 	}
 
-	virtual IShaderConstantSetter* create()
+	virtual IShaderConstantSetter *create()
 	{
 		GameGlobalShaderConstantSetter *scs = new GameGlobalShaderConstantSetter(
 				m_sky, m_force_fog_off, m_fog_range, m_client);
@@ -2798,7 +2798,7 @@ void Game::processClientEvents(CameraOrientation *cam)
 	while (client->hasClientEvents()) {
 		std::unique_ptr<ClientEvent> event(client->getClientEvent());
 		FATAL_ERROR_IF(event->type >= CLIENTEVENT_MAX, "Invalid clientevent type");
-		const ClientEventHandler& evHandler = clientEventHandler[event->type];
+		const ClientEventHandler &evHandler = clientEventHandler[event->type];
 		(this->*evHandler.handler)(event.get(), cam);
 	}
 }

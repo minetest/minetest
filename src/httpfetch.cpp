@@ -153,7 +153,7 @@ bool httpfetch_async_get(unsigned long caller, HTTPFetchResult &fetch_result)
 static size_t httpfetch_writefunction(
 		char *ptr, size_t size, size_t nmemb, void *userdata)
 {
-	std::ostringstream *stream = (std::ostringstream*)userdata;
+	std::ostringstream *stream = (std::ostringstream *)userdata;
 	size_t count = size * nmemb;
 	stream->write(ptr, count);
 	return count;
@@ -167,14 +167,14 @@ static size_t httpfetch_discardfunction(
 
 class CurlHandlePool
 {
-	std::list<CURL*> handles;
+	std::list<CURL *> handles;
 
 public:
 	CurlHandlePool() = default;
 
 	~CurlHandlePool()
 	{
-		for (std::list<CURL*>::iterator it = handles.begin();
+		for (std::list<CURL *>::iterator it = handles.begin();
 				it != handles.end(); ++it) {
 			curl_easy_cleanup(*it);
 		}
@@ -441,7 +441,7 @@ protected:
 	size_t m_parallel_limit;
 
 	// Variables exclusively used within thread
-	std::vector<HTTPFetchOngoing*> m_all_ongoing;
+	std::vector<HTTPFetchOngoing *> m_all_ongoing;
 	std::list<HTTPFetchRequest> m_queued_fetches;
 
 public:
@@ -497,7 +497,7 @@ protected:
 			unsigned long caller = req.fetch_request.caller;
 
 			// Abort all ongoing fetches for the caller
-			for (std::vector<HTTPFetchOngoing*>::iterator
+			for (std::vector<HTTPFetchOngoing *>::iterator
 					it = m_all_ongoing.begin();
 					it != m_all_ongoing.end();) {
 				if ((*it)->getRequest().caller == caller) {

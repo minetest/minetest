@@ -118,7 +118,7 @@ treegen::error spawn_ltree(ServerEnvironment *env, v3s16 p0,
 	const NodeDefManager *ndef, const TreeDef &tree_definition)
 {
 	ServerMap *map = &env->getServerMap();
-	std::map<v3s16, MapBlock*> modified_blocks;
+	std::map<v3s16, MapBlock *> modified_blocks;
 	MMVManip vmanip(map);
 	v3s16 tree_blockp = getNodeBlockPos(p0);
 	treegen::error e;

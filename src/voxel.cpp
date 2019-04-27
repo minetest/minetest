@@ -203,7 +203,7 @@ void VoxelManipulator::addArea(const VoxelArea &area)
 	//dstream<<"addArea done"<<std::endl;
 }
 
-void VoxelManipulator::copyFrom(MapNode *src, const VoxelArea& src_area,
+void VoxelManipulator::copyFrom(MapNode *src, const VoxelArea &src_area,
 		v3s16 from_pos, v3s16 to_pos, const v3s16 &size)
 {
 	/* The reason for this optimised code is that we're a member function
@@ -251,7 +251,7 @@ void VoxelManipulator::copyFrom(MapNode *src, const VoxelArea& src_area,
 	}
 }
 
-void VoxelManipulator::copyTo(MapNode *dst, const VoxelArea& dst_area,
+void VoxelManipulator::copyTo(MapNode *dst, const VoxelArea &dst_area,
 		v3s16 dst_pos, v3s16 from_pos, const v3s16 &size)
 {
 	for(s16 z=0; z<size.Z; z++)

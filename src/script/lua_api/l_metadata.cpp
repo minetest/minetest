@@ -39,7 +39,7 @@ void *luaL_checkudata_is_metadataref(lua_State *L, int ud) {
 	return NULL;
 }
 
-MetaDataRef* MetaDataRef::checkobject(lua_State *L, int narg)
+MetaDataRef *MetaDataRef::checkobject(lua_State *L, int narg)
 {
 	luaL_checktype(L, narg, LUA_TUSERDATA);
 	void *ud = luaL_checkudata_is_metadataref(L, narg);

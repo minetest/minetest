@@ -158,7 +158,7 @@ void AsyncEngine::step(lua_State *L)
 }
 
 /******************************************************************************/
-void AsyncEngine::pushFinishedJobs(lua_State* L) {
+void AsyncEngine::pushFinishedJobs(lua_State *L) {
 	// Result Table
 	MutexAutoLock l(resultQueueMutex);
 
@@ -187,7 +187,7 @@ void AsyncEngine::pushFinishedJobs(lua_State* L) {
 }
 
 /******************************************************************************/
-void AsyncEngine::prepareEnvironment(lua_State* L, int top)
+void AsyncEngine::prepareEnvironment(lua_State *L, int top)
 {
 	for (StateInitializer &stateInitializer : stateInitializers) {
 		stateInitializer(L, top);
@@ -195,7 +195,7 @@ void AsyncEngine::prepareEnvironment(lua_State* L, int top)
 }
 
 /******************************************************************************/
-AsyncWorkerThread::AsyncWorkerThread(AsyncEngine* jobDispatcher,
+AsyncWorkerThread::AsyncWorkerThread(AsyncEngine *jobDispatcher,
 		const std::string &name) :
 	Thread(name),
 	ScriptApiBase(ScriptingType::Async),
@@ -221,7 +221,7 @@ AsyncWorkerThread::~AsyncWorkerThread()
 }
 
 /******************************************************************************/
-void* AsyncWorkerThread::run()
+void *AsyncWorkerThread::run()
 {
 	lua_State *L = getStack();
 
@@ -286,4 +286,3 @@ void* AsyncWorkerThread::run()
 
 	return 0;
 }
-

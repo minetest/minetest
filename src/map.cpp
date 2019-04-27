@@ -103,7 +103,7 @@ MapSector * Map::getSectorNoGenerateNoExNoLock(v2s16 p)
 		return sector;
 	}
 
-	std::map<v2s16, MapSector*>::iterator n = m_sectors.find(p);
+	std::map<v2s16, MapSector *>::iterator n = m_sectors.find(p);
 
 	if (n == m_sectors.end())
 		return NULL;
@@ -226,7 +226,7 @@ void Map::setNode(v3s16 p, MapNode & n)
 }
 
 void Map::addNodeAndUpdate(v3s16 p, MapNode n,
-		std::map<v3s16, MapBlock*> &modified_blocks,
+		std::map<v3s16, MapBlock *> &modified_blocks,
 		bool remove_metadata)
 {
 	// Collect old node for rollback
@@ -282,7 +282,7 @@ void Map::addNodeAndUpdate(v3s16 p, MapNode n,
 }
 
 void Map::removeNodeAndUpdate(v3s16 p,
-		std::map<v3s16, MapBlock*> &modified_blocks)
+		std::map<v3s16, MapBlock *> &modified_blocks)
 {
 	addNodeAndUpdate(p, MapNode(CONTENT_AIR), modified_blocks, true);
 }
@@ -296,7 +296,7 @@ bool Map::addNodeWithEvent(v3s16 p, MapNode n, bool remove_metadata)
 
 	bool succeeded = true;
 	try{
-		std::map<v3s16, MapBlock*> modified_blocks;
+		std::map<v3s16, MapBlock *> modified_blocks;
 		addNodeAndUpdate(p, n, modified_blocks, remove_metadata);
 
 		// Copy modified_blocks to event
@@ -321,7 +321,7 @@ bool Map::removeNodeWithEvent(v3s16 p)
 
 	bool succeeded = true;
 	try{
-		std::map<v3s16, MapBlock*> modified_blocks;
+		std::map<v3s16, MapBlock *> modified_blocks;
 		removeNodeAndUpdate(p, modified_blocks);
 
 		// Copy modified_blocks to event
@@ -538,7 +538,7 @@ void Map::transforming_liquid_add(v3s16 p) {
         m_transforming_liquid.push_back(p);
 }
 
-void Map::transformLiquids(std::map<v3s16, MapBlock*> &modified_blocks,
+void Map::transformLiquids(std::map<v3s16, MapBlock *> &modified_blocks,
 		ServerEnvironment *env)
 {
 	u32 loopcount = 0;
@@ -1240,7 +1240,7 @@ ServerMap::~ServerMap()
 	/*
 		Free all MapChunks
 	*/
-	core::map<v2s16, MapChunk*>::Iterator i = m_chunks.getIterator();
+	core::map<v2s16, MapChunk *>::Iterator i = m_chunks.getIterator();
 	for(; i.atEnd() == false; i++)
 	{
 		MapChunk *chunk = i.getNode()->getValue();
@@ -1362,7 +1362,7 @@ bool ServerMap::initBlockMake(v3s16 blockpos, BlockMakeData *data)
 }
 
 void ServerMap::finishBlockMake(BlockMakeData *data,
-	std::map<v3s16, MapBlock*> *changed_blocks)
+	std::map<v3s16, MapBlock *> *changed_blocks)
 {
 	v3s16 bpmin = data->blockpos_min;
 	v3s16 bpmax = data->blockpos_max;
@@ -1466,7 +1466,7 @@ MapSector *ServerMap::createSector(v2s16 p2d)
 */
 MapBlock * ServerMap::generateBlock(
 		v3s16 p,
-		std::map<v3s16, MapBlock*> &modified_blocks
+		std::map<v3s16, MapBlock *> &modified_blocks
 )
 {
 	bool enable_mapgen_debug_info = g_settings->getBool("enable_mapgen_debug_info");
@@ -1955,7 +1955,7 @@ bool ServerMap::saveBlock(MapBlock *block, MapDatabase *db)
 		[1] data
 	*/
 	std::ostringstream o(std::ios_base::binary);
-	o.write((char*) &version, 1);
+	o.write((char *) &version, 1);
 	block->serialize(o, version, true);
 
 	bool ret = db->saveBlock(p3d, o.str());
@@ -1981,7 +1981,7 @@ void ServerMap::loadBlock(const std::string &sectordir, const std::string &block
 		assert(sector->getPos() == p2d);
 
 		u8 version = SER_FMT_VER_INVALID;
-		is.read((char*)&version, 1);
+		is.read((char *)&version, 1);
 
 		if(is.fail())
 			throw SerializationError("ServerMap::loadBlock(): Failed"
@@ -1989,7 +1989,7 @@ void ServerMap::loadBlock(const std::string &sectordir, const std::string &block
 
 		/*u32 block_size = MapBlock::serializedLength(version);
 		SharedBuffer<u8> data(block_size);
-		is.read((char*)*data, block_size);*/
+		is.read((char *)*data, block_size);*/
 
 		// This will always return a sector because we're the server
 		//MapSector *sector = emergeSector(p2d);
@@ -2049,7 +2049,7 @@ void ServerMap::loadBlock(std::string *blob, v3s16 p3d, MapSector *sector, bool 
 		std::istringstream is(*blob, std::ios_base::binary);
 
 		u8 version = SER_FMT_VER_INVALID;
-		is.read((char*)&version, 1);
+		is.read((char *)&version, 1);
 
 		if(is.fail())
 			throw SerializationError("ServerMap::loadBlock(): Failed"
@@ -2104,7 +2104,7 @@ void ServerMap::loadBlock(std::string *blob, v3s16 p3d, MapSector *sector, bool 
 	}
 }
 
-MapBlock* ServerMap::loadBlock(v3s16 blockpos)
+MapBlock *ServerMap::loadBlock(v3s16 blockpos)
 {
 	bool created_new = (getBlockNoCreateNoEx(blockpos) == NULL);
 
@@ -2157,7 +2157,7 @@ MapBlock* ServerMap::loadBlock(v3s16 blockpos)
 
 	MapBlock *block = getBlockNoCreateNoEx(blockpos);
 	if (created_new && (block != NULL)) {
-		std::map<v3s16, MapBlock*> modified_blocks;
+		std::map<v3s16, MapBlock *> modified_blocks;
 		// Fix lighting if necessary
 		voxalgo::update_block_border_lighting(this, block, modified_blocks);
 		if (!modified_blocks.empty()) {
@@ -2300,7 +2300,7 @@ void MMVManip::initialEmerge(v3s16 blockpos_min, v3s16 blockpos_max,
 	m_is_dirty = false;
 }
 
-void MMVManip::blitBackAll(std::map<v3s16, MapBlock*> *modified_blocks,
+void MMVManip::blitBackAll(std::map<v3s16, MapBlock *> *modified_blocks,
 	bool overwrite_generated)
 {
 	if(m_area.getExtent() == v3s16(0,0,0))

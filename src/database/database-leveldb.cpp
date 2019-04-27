@@ -89,7 +89,7 @@ bool Database_LevelDB::deleteBlock(const v3s16 &pos)
 
 void Database_LevelDB::listAllLoadableBlocks(std::vector<v3s16> &dst)
 {
-	leveldb::Iterator* it = m_database->NewIterator(leveldb::ReadOptions());
+	leveldb::Iterator *it = m_database->NewIterator(leveldb::ReadOptions());
 	for (it->SeekToFirst(); it->Valid(); it->Next()) {
 		dst.push_back(getIntegerAsBlock(stoi64(it->key().ToString())));
 	}
@@ -98,4 +98,3 @@ void Database_LevelDB::listAllLoadableBlocks(std::vector<v3s16> &dst)
 }
 
 #endif // USE_LEVELDB
-

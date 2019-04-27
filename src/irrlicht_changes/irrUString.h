@@ -118,14 +118,14 @@ inline uchar32_t toUTF32(uchar16_t high, uchar16_t low)
 
 //! Swaps the endianness of a 16-bit value.
 //! \return The new value.
-inline uchar16_t swapEndian16(const uchar16_t& c)
+inline uchar16_t swapEndian16(const uchar16_t &c)
 {
 	return ((c >> 8) & 0x00FF) | ((c << 8) & 0xFF00);
 }
 
 //! Swaps the endianness of a 32-bit value.
 //! \return The new value.
-inline uchar32_t swapEndian32(const uchar32_t& c)
+inline uchar32_t swapEndian32(const uchar32_t &c)
 {
 	return  ((c >> 24) & 0x000000FF) |
 			((c >> 8)  & 0x0000FF00) |
@@ -230,7 +230,7 @@ inline core::array<u8> getUnicodeBOM(EUTF_ENCODE mode)
 //! Detects if the given data stream starts with a unicode BOM.
 //! \param data The data stream to check.
 //! \return The unicode BOM associated with the data stream, or EUTFE_NONE if none was found.
-inline EUTF_ENCODE determineUnicodeBOM(const char* data)
+inline EUTF_ENCODE determineUnicodeBOM(const char *data)
 {
 	if (memcmp(data, BOM_ENCODE_UTF8, 3) == 0) return EUTFE_UTF8;
 	if (memcmp(data, BOM_ENCODE_UTF16_BE, 2) == 0) return EUTFE_UTF16_BE;
@@ -268,7 +268,7 @@ public:
 			//! Allow one to change the character in the unicode string.
 			//! \param c The new character to use.
 			//! \return Myself.
-			_ustring16_iterator_access& operator=(const uchar32_t c)
+			_ustring16_iterator_access &operator=(const uchar32_t c)
 			{
 				_set(c);
 				return *this;
@@ -276,7 +276,7 @@ public:
 
 			//! Increments the value by 1.
 			//! \return Myself.
-			_ustring16_iterator_access& operator++()
+			_ustring16_iterator_access &operator++()
 			{
 				_set(_get() + 1);
 				return *this;
@@ -293,7 +293,7 @@ public:
 
 			//! Decrements the value by 1.
 			//! \return Myself.
-			_ustring16_iterator_access& operator--()
+			_ustring16_iterator_access &operator--()
 			{
 				_set(_get() - 1);
 				return *this;
@@ -311,7 +311,7 @@ public:
 			//! Adds to the value by a specified amount.
 			//! \param val The amount to add to this character.
 			//! \return Myself.
-			_ustring16_iterator_access& operator+=(int val)
+			_ustring16_iterator_access &operator+=(int val)
 			{
 				_set(_get() + val);
 				return *this;
@@ -320,7 +320,7 @@ public:
 			//! Subtracts from the value by a specified amount.
 			//! \param val The amount to subtract from this character.
 			//! \return Myself.
-			_ustring16_iterator_access& operator-=(int val)
+			_ustring16_iterator_access &operator-=(int val)
 			{
 				_set(_get() - val);
 				return *this;
@@ -329,7 +329,7 @@ public:
 			//! Multiples the value by a specified amount.
 			//! \param val The amount to multiply this character by.
 			//! \return Myself.
-			_ustring16_iterator_access& operator*=(int val)
+			_ustring16_iterator_access &operator*=(int val)
 			{
 				_set(_get() * val);
 				return *this;
@@ -338,7 +338,7 @@ public:
 			//! Divides the value by a specified amount.
 			//! \param val The amount to divide this character by.
 			//! \return Myself.
-			_ustring16_iterator_access& operator/=(int val)
+			_ustring16_iterator_access &operator/=(int val)
 			{
 				_set(_get() / val);
 				return *this;
@@ -347,7 +347,7 @@ public:
 			//! Modulos the value by a specified amount.
 			//! \param val The amount to modulo this character by.
 			//! \return Myself.
-			_ustring16_iterator_access& operator%=(int val)
+			_ustring16_iterator_access &operator%=(int val)
 			{
 				_set(_get() % val);
 				return *this;
@@ -397,7 +397,7 @@ public:
 			//! Gets a uchar32_t from our current position.
 			uchar32_t _get() const
 			{
-				const uchar16_t* a = ref->c_str();
+				const uchar16_t *a = ref->c_str();
 				if (!UTF16_IS_SURROGATE(a[pos]))
 					return static_cast<uchar32_t>(a[pos]);
 				else
@@ -413,7 +413,7 @@ public:
 			void _set(uchar32_t c)
 			{
 				ustring16<TAlloc>* ref2 = const_cast<ustring16<TAlloc>*>(ref);
-				const uchar16_t* a = ref2->c_str();
+				const uchar16_t *a = ref2->c_str();
 				if (c > 0xFFFF)
 				{
 					// c will be multibyte, so split it up into the high and low surrogate pairs.
@@ -481,7 +481,7 @@ public:
 #endif
 
 			//! Constructors.
-			_ustring16_const_iterator(const _Iter& i) : ref(i.ref), pos(i.pos) {}
+			_ustring16_const_iterator(const _Iter &i) : ref(i.ref), pos(i.pos) {}
 			_ustring16_const_iterator(const ustring16<TAlloc>& s) : ref(&s), pos(0) {}
 			_ustring16_const_iterator(const ustring16<TAlloc>& s, const u32 p) : ref(&s), pos(0)
 			{
@@ -491,7 +491,7 @@ public:
 				// Go to the appropriate position.
 				u32 i = p;
 				u32 sr = ref->size_raw();
-				const uchar16_t* a = ref->c_str();
+				const uchar16_t *a = ref->c_str();
 				while (i != 0 && pos < sr)
 				{
 					if (UTF16_IS_SURROGATE_HI(a[pos]))
@@ -502,7 +502,7 @@ public:
 			}
 
 			//! Test for equalness.
-			bool operator==(const _Iter& iter) const
+			bool operator==(const _Iter &iter) const
 			{
 				if (ref == iter.ref && pos == iter.pos)
 					return true;
@@ -510,7 +510,7 @@ public:
 			}
 
 			//! Test for unequalness.
-			bool operator!=(const _Iter& iter) const
+			bool operator!=(const _Iter &iter) const
 			{
 				if (ref != iter.ref || pos != iter.pos)
 					return true;
@@ -518,10 +518,10 @@ public:
 			}
 
 			//! Switch to the next full character in the string.
-			_Iter& operator++()
+			_Iter &operator++()
 			{	// ++iterator
 				if (pos == ref->size_raw()) return *this;
-				const uchar16_t* a = ref->c_str();
+				const uchar16_t *a = ref->c_str();
 				if (UTF16_IS_SURROGATE_HI(a[pos]))
 					pos += 2;			// TODO: check for valid low surrogate?
 				else ++pos;
@@ -538,10 +538,10 @@ public:
 			}
 
 			//! Switch to the previous full character in the string.
-			_Iter& operator--()
+			_Iter &operator--()
 			{	// --iterator
 				if (pos == 0) return *this;
-				const uchar16_t* a = ref->c_str();
+				const uchar16_t *a = ref->c_str();
 				--pos;
 				if (UTF16_IS_SURROGATE_LO(a[pos]) && pos != 0)	// low surrogate, go back one more.
 					--pos;
@@ -558,7 +558,7 @@ public:
 
 			//! Advance a specified number of full characters in the string.
 			//! \return Myself.
-			_Iter& operator+=(const difference_type v)
+			_Iter &operator+=(const difference_type v)
 			{
 				if (v == 0) return *this;
 				if (v < 0) return operator-=(v * -1);
@@ -570,7 +570,7 @@ public:
 				// TODO: Don't force u32 on an x64 OS.  Make it agnostic.
 				u32 i = (u32)v;
 				u32 sr = ref->size_raw();
-				const uchar16_t* a = ref->c_str();
+				const uchar16_t *a = ref->c_str();
 				while (i != 0 && pos < sr)
 				{
 					if (UTF16_IS_SURROGATE_HI(a[pos]))
@@ -586,7 +586,7 @@ public:
 
 			//! Go back a specified number of full characters in the string.
 			//! \return Myself.
-			_Iter& operator-=(const difference_type v)
+			_Iter &operator-=(const difference_type v)
 			{
 				if (v == 0) return *this;
 				if (v > 0) return operator+=(v * -1);
@@ -597,7 +597,7 @@ public:
 				// Go to the appropriate position.
 				// TODO: Don't force u32 on an x64 OS.  Make it agnostic.
 				u32 i = (u32)v;
-				const uchar16_t* a = ref->c_str();
+				const uchar16_t *a = ref->c_str();
 				while (i != 0 && pos != 0)
 				{
 					--pos;
@@ -626,7 +626,7 @@ public:
 			}
 
 			//! Returns the distance between two iterators.
-			difference_type operator-(const _Iter& iter) const
+			difference_type operator-(const _Iter &iter) const
 			{
 				// Make sure we reference the same object!
 				if (ref != iter.ref)
@@ -660,7 +660,7 @@ public:
 			{
 				if (pos >= ref->size_raw())
 				{
-					const uchar16_t* a = ref->c_str();
+					const uchar16_t *a = ref->c_str();
 					u32 p = ref->size_raw();
 					if (UTF16_IS_SURROGATE_LO(a[p]))
 						--p;
@@ -676,7 +676,7 @@ public:
 			{
 				if (pos >= ref->size_raw())
 				{
-					const uchar16_t* a = ref->c_str();
+					const uchar16_t *a = ref->c_str();
 					u32 p = ref->size_raw();
 					if (UTF16_IS_SURROGATE_LO(a[p]))
 						--p;
@@ -708,7 +708,7 @@ public:
 			//! Is the iterator at the end of the string?
 			bool atEnd() const
 			{
-				const uchar16_t* a = ref->c_str();
+				const uchar16_t *a = ref->c_str();
 				if (UTF16_IS_SURROGATE(a[pos]))
 					return (pos + 1) >= ref->size_raw();
 				else return pos >= ref->size_raw();
@@ -758,7 +758,7 @@ public:
 			using _Base::ref;
 
 			//! Constructors.
-			_ustring16_iterator(const _Iter& i) : _ustring16_const_iterator(i) {}
+			_ustring16_iterator(const _Iter &i) : _ustring16_const_iterator(i) {}
 			_ustring16_iterator(const ustring16<TAlloc>& s) : _ustring16_const_iterator(s) {}
 			_ustring16_iterator(const ustring16<TAlloc>& s, const u32 p) : _ustring16_const_iterator(s, p) {}
 
@@ -767,7 +767,7 @@ public:
 			{
 				if (pos >= ref->size_raw())
 				{
-					const uchar16_t* a = ref->c_str();
+					const uchar16_t *a = ref->c_str();
 					u32 p = ref->size_raw();
 					if (UTF16_IS_SURROGATE_LO(a[p]))
 						--p;
@@ -783,7 +783,7 @@ public:
 			{
 				if (pos >= ref->size_raw())
 				{
-					const uchar16_t* a = ref->c_str();
+					const uchar16_t *a = ref->c_str();
 					u32 p = ref->size_raw();
 					if (UTF16_IS_SURROGATE_LO(a[p]))
 						--p;
@@ -891,7 +891,7 @@ public:
 
 #ifndef USTRING_CPP0X_NEWLITERALS
 	//! Constructor for copying a character string from a pointer.
-	ustring16(const char* const c)
+	ustring16(const char *const c)
 	: array(0), allocated(0), used(0)
 	{
 #if __BYTE_ORDER == __BIG_ENDIAN
@@ -901,12 +901,12 @@ public:
 #endif
 
 		loadDataStream(c, strlen(c));
-		//append((uchar8_t*)c);
+		//append((uchar8_t *)c);
 	}
 
 
 	//! Constructor for copying a character string from a pointer with a given length.
-	ustring16(const char* const c, u32 length)
+	ustring16(const char *const c, u32 length)
 	: array(0), allocated(0), used(0)
 	{
 #if __BYTE_ORDER == __BIG_ENDIAN
@@ -921,7 +921,7 @@ public:
 
 
 	//! Constructor for copying a UTF-8 string from a pointer.
-	ustring16(const uchar8_t* const c)
+	ustring16(const uchar8_t *const c)
 	: array(0), allocated(0), used(0)
 	{
 #if __BYTE_ORDER == __BIG_ENDIAN
@@ -949,7 +949,7 @@ public:
 
 
 	//! Constructor for copying a UTF-8 string from a pointer with a given length.
-	ustring16(const uchar8_t* const c, u32 length)
+	ustring16(const uchar8_t *const c, u32 length)
 	: array(0), allocated(0), used(0)
 	{
 #if __BYTE_ORDER == __BIG_ENDIAN
@@ -963,7 +963,7 @@ public:
 
 
 	//! Constructor for copying a UTF-16 string from a pointer.
-	ustring16(const uchar16_t* const c)
+	ustring16(const uchar16_t *const c)
 	: array(0), allocated(0), used(0)
 	{
 #if __BYTE_ORDER == __BIG_ENDIAN
@@ -977,7 +977,7 @@ public:
 
 
 	//! Constructor for copying a UTF-16 string from a pointer with a given length
-	ustring16(const uchar16_t* const c, u32 length)
+	ustring16(const uchar16_t *const c, u32 length)
 	: array(0), allocated(0), used(0)
 	{
 #if __BYTE_ORDER == __BIG_ENDIAN
@@ -991,7 +991,7 @@ public:
 
 
 	//! Constructor for copying a UTF-32 string from a pointer.
-	ustring16(const uchar32_t* const c)
+	ustring16(const uchar32_t *const c)
 	: array(0), allocated(0), used(0)
 	{
 #if __BYTE_ORDER == __BIG_ENDIAN
@@ -1005,7 +1005,7 @@ public:
 
 
 	//! Constructor for copying a UTF-32 from a pointer with a given length.
-	ustring16(const uchar32_t* const c, u32 length)
+	ustring16(const uchar32_t *const c, u32 length)
 	: array(0), allocated(0), used(0)
 	{
 #if __BYTE_ORDER == __BIG_ENDIAN
@@ -1019,7 +1019,7 @@ public:
 
 
 	//! Constructor for copying a wchar_t string from a pointer.
-	ustring16(const wchar_t* const c)
+	ustring16(const wchar_t *const c)
 	: array(0), allocated(0), used(0)
 	{
 #if __BYTE_ORDER == __BIG_ENDIAN
@@ -1029,16 +1029,16 @@ public:
 #endif
 
 		if (sizeof(wchar_t) == 4)
-			append(reinterpret_cast<const uchar32_t* const>(c));
+			append(reinterpret_cast<const uchar32_t *const>(c));
 		else if (sizeof(wchar_t) == 2)
-			append(reinterpret_cast<const uchar16_t* const>(c));
+			append(reinterpret_cast<const uchar16_t *const>(c));
 		else if (sizeof(wchar_t) == 1)
-			append(reinterpret_cast<const uchar8_t* const>(c));
+			append(reinterpret_cast<const uchar8_t *const>(c));
 	}
 
 
 	//! Constructor for copying a wchar_t string from a pointer with a given length.
-	ustring16(const wchar_t* const c, u32 length)
+	ustring16(const wchar_t *const c, u32 length)
 	: array(0), allocated(0), used(0)
 	{
 #if __BYTE_ORDER == __BIG_ENDIAN
@@ -1048,11 +1048,11 @@ public:
 #endif
 
 		if (sizeof(wchar_t) == 4)
-			append(reinterpret_cast<const uchar32_t* const>(c), length);
+			append(reinterpret_cast<const uchar32_t *const>(c), length);
 		else if (sizeof(wchar_t) == 2)
-			append(reinterpret_cast<const uchar16_t* const>(c), length);
+			append(reinterpret_cast<const uchar16_t *const>(c), length);
 		else if (sizeof(wchar_t) == 1)
-			append(reinterpret_cast<const uchar8_t* const>(c), length);
+			append(reinterpret_cast<const uchar8_t *const>(c), length);
 	}
 
 
@@ -1077,7 +1077,7 @@ public:
 
 
 	//! Assignment operator
-	ustring16& operator=(const ustring16<TAlloc>& other)
+	ustring16 &operator=(const ustring16<TAlloc>& other)
 	{
 		if (this == &other)
 			return *this;
@@ -1090,7 +1090,7 @@ public:
 			array = allocator.allocate(used + 1); //new u16[used];
 		}
 
-		const uchar16_t* p = other.c_str();
+		const uchar16_t *p = other.c_str();
 		for (u32 i=0; i<=used; ++i, ++p)
 			array[i] = *p;
 
@@ -1105,7 +1105,7 @@ public:
 
 #ifdef USTRING_CPP0X
 	//! Move assignment operator
-	ustring16& operator=(ustring16<TAlloc>&& other)
+	ustring16 &operator=(ustring16<TAlloc>&& other)
 	{
 		if (this != &other)
 		{
@@ -1134,7 +1134,7 @@ public:
 
 
 	//! Assignment operator for UTF-8 strings
-	ustring16<TAlloc>& operator=(const uchar8_t* const c)
+	ustring16<TAlloc>& operator=(const uchar8_t *const c)
 	{
 		if (!array)
 		{
@@ -1152,7 +1152,7 @@ public:
 
 
 	//! Assignment operator for UTF-16 strings
-	ustring16<TAlloc>& operator=(const uchar16_t* const c)
+	ustring16<TAlloc>& operator=(const uchar16_t *const c)
 	{
 		if (!array)
 		{
@@ -1170,7 +1170,7 @@ public:
 
 
 	//! Assignment operator for UTF-32 strings
-	ustring16<TAlloc>& operator=(const uchar32_t* const c)
+	ustring16<TAlloc>& operator=(const uchar32_t *const c)
 	{
 		if (!array)
 		{
@@ -1191,14 +1191,14 @@ public:
 	/** Note that this assumes that a correct unicode string is stored in the wchar_t string.
 		Since wchar_t changes depending on its platform, it could either be a UTF-8, -16, or -32 string.
 		This function assumes you are storing the correct unicode encoding inside the wchar_t string. **/
-	ustring16<TAlloc>& operator=(const wchar_t* const c)
+	ustring16<TAlloc>& operator=(const wchar_t *const c)
 	{
 		if (sizeof(wchar_t) == 4)
-			*this = reinterpret_cast<const uchar32_t* const>(c);
+			*this = reinterpret_cast<const uchar32_t *const>(c);
 		else if (sizeof(wchar_t) == 2)
-			*this = reinterpret_cast<const uchar16_t* const>(c);
+			*this = reinterpret_cast<const uchar16_t *const>(c);
 		else if (sizeof(wchar_t) == 1)
-			*this = reinterpret_cast<const uchar8_t* const>(c);
+			*this = reinterpret_cast<const uchar8_t *const>(c);
 
 		return *this;
 	}
@@ -1207,14 +1207,14 @@ public:
 	//! Assignment operator for other strings.
 	/** Note that this assumes that a correct unicode string is stored in the string. **/
 	template <class B>
-	ustring16<TAlloc>& operator=(const B* const c)
+	ustring16<TAlloc>& operator=(const B *const c)
 	{
 		if (sizeof(B) == 4)
-			*this = reinterpret_cast<const uchar32_t* const>(c);
+			*this = reinterpret_cast<const uchar32_t *const>(c);
 		else if (sizeof(B) == 2)
-			*this = reinterpret_cast<const uchar16_t* const>(c);
+			*this = reinterpret_cast<const uchar16_t *const>(c);
 		else if (sizeof(B) == 1)
-			*this = reinterpret_cast<const uchar8_t* const>(c);
+			*this = reinterpret_cast<const uchar8_t *const>(c);
 
 		return *this;
 	}
@@ -1239,7 +1239,7 @@ public:
 
 
 	//! Equality operator
-	bool operator ==(const uchar16_t* const str) const
+	bool operator ==(const uchar16_t *const str) const
 	{
 		if (!str)
 			return false;
@@ -1279,7 +1279,7 @@ public:
 
 
 	//! Inequality operator
-	bool operator !=(const uchar16_t* const str) const
+	bool operator !=(const uchar16_t *const str) const
 	{
 		return !(*this == str);
 	}
@@ -1317,7 +1317,7 @@ public:
 
 	//! Returns a pointer to the raw UTF-16 string data.
 	//! \return pointer to C-style NUL terminated array of UTF-16 code points.
-	const uchar16_t* c_str() const
+	const uchar16_t *c_str() const
 	{
 		return array;
 	}
@@ -1330,7 +1330,7 @@ public:
 	bool equalsn(const ustring16<TAlloc>& other, u32 n) const
 	{
 		u32 i;
-		const uchar16_t* oa = other.c_str();
+		const uchar16_t *oa = other.c_str();
 		for(i=0; array[i] && oa[i] && i < n; ++i)
 			if (array[i] != oa[i])
 				return false;
@@ -1345,7 +1345,7 @@ public:
 	//! \param str Other string to compare to.
 	//! \param n Number of characters to compare.
 	//! \return True if the n first characters of both strings are equal.
-	bool equalsn(const uchar16_t* const str, u32 n) const
+	bool equalsn(const uchar16_t *const str, u32 n) const
 	{
 		if (!str)
 			return false;
@@ -1394,14 +1394,14 @@ public:
 	//! \param other The UTF-8 string to append.
 	//! \param length The length of the string to append.
 	//! \return A reference to our current string.
-	ustring16<TAlloc>& append(const uchar8_t* const other, u32 length=0xffffffff)
+	ustring16<TAlloc>& append(const uchar8_t *const other, u32 length = 0xffffffff)
 	{
 		if (!other)
 			return *this;
 
 		// Determine if the string is long enough for a BOM.
 		u32 len = 0;
-		const uchar8_t* p = other;
+		const uchar8_t *p = other;
 		do
 		{
 			++len;
@@ -1416,7 +1416,7 @@ public:
 		}
 
 		// If a BOM was found, don't include it in the string.
-		const uchar8_t* c2 = other;
+		const uchar8_t *c2 = other;
 		if (c_bom != unicode::EUTFE_NONE)
 		{
 			c2 = other + unicode::BOM_UTF8_LEN;
@@ -1570,14 +1570,14 @@ public:
 	//! \param other The UTF-16 string to append.
 	//! \param length The length of the string to append.
 	//! \return A reference to our current string.
-	ustring16<TAlloc>& append(const uchar16_t* const other, u32 length=0xffffffff)
+	ustring16<TAlloc>& append(const uchar16_t *const other, u32 length=0xffffffff)
 	{
 		if (!other)
 			return *this;
 
 		// Determine if the string is long enough for a BOM.
 		u32 len = 0;
-		const uchar16_t* p = other;
+		const uchar16_t *p = other;
 		do
 		{
 			++len;
@@ -1591,7 +1591,7 @@ public:
 			c_end = unicode::EUTFEE_BIG;
 
 		// If a BOM was found, don't include it in the string.
-		const uchar16_t* c2 = other;
+		const uchar16_t *c2 = other;
 		if (c_end != unicode::EUTFEE_NATIVE)
 		{
 			c2 = other + unicode::BOM_UTF16_LEN;
@@ -1635,7 +1635,7 @@ public:
 	//! \param other The UTF-32 string to append.
 	//! \param length The length of the string to append.
 	//! \return A reference to our current string.
-	ustring16<TAlloc>& append(const uchar32_t* const other, u32 length=0xffffffff)
+	ustring16<TAlloc>& append(const uchar32_t *const other, u32 length=0xffffffff)
 	{
 		if (!other)
 			return *this;
@@ -1648,7 +1648,7 @@ public:
 			c_end = unicode::EUTFEE_BIG;
 
 		// If a BOM was found, don't include it in the string.
-		const uchar32_t* c2 = other;
+		const uchar32_t *c2 = other;
 		if (c_end != unicode::EUTFEE_NATIVE)
 		{
 			c2 = other + unicode::BOM_UTF32_LEN;
@@ -1657,7 +1657,7 @@ public:
 
 		// Calculate the size of the string to read in.
 		u32 len = 0;
-		const uchar32_t* p = c2;
+		const uchar32_t *p = c2;
 		do
 		{
 			++len;
@@ -1713,7 +1713,7 @@ public:
 	//! \return A reference to our current string.
 	ustring16<TAlloc>& append(const ustring16<TAlloc>& other)
 	{
-		const uchar16_t* oa = other.c_str();
+		const uchar16_t *oa = other.c_str();
 
 		u32 len = other.size_raw();
 
@@ -1797,7 +1797,7 @@ public:
 	//! \param c A list of characters to find. For example if the method should find the first occurrence of 'a' or 'b', this parameter should be "ab".
 	//! \param count The amount of characters in the list. Usually, this should be strlen(c).
 	//! \return Position where one of the characters has been found, or -1 if not found.
-	s32 findFirstChar(const uchar32_t* const c, u32 count=1) const
+	s32 findFirstChar(const uchar32_t *const c, u32 count=1) const
 	{
 		if (!c || !count)
 			return -1;
@@ -1823,7 +1823,7 @@ public:
 	//! \param c A list of characters to NOT find. For example if the method should find the first occurrence of a character not 'a' or 'b', this parameter should be "ab".
 	//! \param count The amount of characters in the list. Usually, this should be strlen(c).
 	//! \return Position where the character has been found, or -1 if not found.
-	s32 findFirstCharNotInList(const uchar32_t* const c, u32 count=1) const
+	s32 findFirstCharNotInList(const uchar32_t *const c, u32 count=1) const
 	{
 		if (!c || !count)
 			return -1;
@@ -1852,7 +1852,7 @@ public:
 	//! \param c A list of characters to NOT find. For example if the method should find the first occurrence of a character not 'a' or 'b', this parameter should be "ab".
 	//! \param count The amount of characters in the list. Usually, this should be strlen(c).
 	//! \return Position where the character has been found, or -1 if not found.
-	s32 findLastCharNotInList(const uchar32_t* const c, u32 count=1) const
+	s32 findLastCharNotInList(const uchar32_t *const c, u32 count=1) const
 	{
 		if (!c || !count)
 			return -1;
@@ -1927,7 +1927,7 @@ public:
 	//! \param c A list of strings to find. For example if the method should find the last occurrence of 'a' or 'b', this parameter should be "ab".
 	//! \param count The amount of characters in the list. Usually, this should be strlen(c).
 	//! \return Position where one of the characters has been found, or -1 if not found.
-	s32 findLastChar(const uchar32_t* const c, u32 count=1) const
+	s32 findLastChar(const uchar32_t *const c, u32 count=1) const
 	{
 		if (!c || !count)
 			return -1;
@@ -1994,7 +1994,7 @@ public:
 	//! \return Positions where the string has been found, or -1 if not found.
 	s32 find_raw(const ustring16<TAlloc>& str, const u32 start = 0) const
 	{
-		const uchar16_t* data = str.c_str();
+		const uchar16_t *data = str.c_str();
 		if (data && *data)
 		{
 			u32 len = 0;
@@ -2146,7 +2146,7 @@ public:
 	//! Appends a char ustring16 to this ustring16.
 	//! \param c Char ustring16 to append.
 	//! \return A reference to our current string.
-	ustring16<TAlloc>& operator += (const uchar16_t* const c)
+	ustring16<TAlloc>& operator += (const uchar16_t *const c)
 	{
 		append(c);
 		return *this;
@@ -2190,8 +2190,8 @@ public:
 		if (toReplace.size() == 0)
 			return *this;
 
-		const uchar16_t* other = toReplace.c_str();
-		const uchar16_t* replace = replaceWith.c_str();
+		const uchar16_t *other = toReplace.c_str();
+		const uchar16_t *replace = replaceWith.c_str();
 		const u32 other_size = toReplace.size_raw();
 		const u32 replace_size = replaceWith.size_raw();
 
@@ -2267,9 +2267,9 @@ public:
 		pos = 0;
 		while ((pos = find_raw(other, pos)) != -1)
 		{
-			uchar16_t* start = array + pos + other_size - 1;
-			uchar16_t* ptr   = array + used;
-			uchar16_t* end   = array + used + delta;
+			uchar16_t *start = array + pos + other_size - 1;
+			uchar16_t *ptr   = array + used;
+			uchar16_t *end   = array + used + delta;
 
 			// Shift characters to make room for the string.
 			while (ptr != start)
@@ -2337,7 +2337,7 @@ public:
 		u32 size = toRemove.size_raw();
 		if (size == 0) return *this;
 
-		const uchar16_t* tra = toRemove.c_str();
+		const uchar16_t *tra = toRemove.c_str();
 		u32 pos = 0;
 		u32 found = 0;
 		for (u32 i=0; i<=used; ++i)
@@ -2537,7 +2537,7 @@ public:
 	\return The number of resulting substrings
 	*/
 	template<class container>
-	u32 split(container& ret, const uchar32_t* const c, u32 count=1, bool ignoreEmptyTokens=true, bool keepSeparators=false) const
+	u32 split(container &ret, const uchar32_t *const c, u32 count=1, bool ignoreEmptyTokens=true, bool keepSeparators=false) const
 	{
 		if (!c)
 			return 0;
@@ -2594,7 +2594,7 @@ public:
 	\return The number of resulting substrings
 	*/
 	template<class container>
-	u32 split(container& ret, const ustring16<TAlloc>& c, bool ignoreEmptyTokens=true, bool keepSeparators=false) const
+	u32 split(container &ret, const ustring16<TAlloc>& c, bool ignoreEmptyTokens=true, bool keepSeparators=false) const
 	{
 		core::array<uchar32_t> v = c.toUTF32();
 		return split(ret, v.pointer(), v.size(), ignoreEmptyTokens, keepSeparators);
@@ -2670,7 +2670,7 @@ public:
 		for (u32 i = used - 2; i > iter.getPos() + len; --i)
 			array[i] = array[i - len];
 
-		const uchar16_t* s = c.c_str();
+		const uchar16_t *s = c.c_str();
 		for (u32 i = 0; i < len; ++i)
 		{
 			array[pos++] = *s;
@@ -2916,13 +2916,13 @@ public:
 				ret[0] = unicode::BOM;
 			else if (endian == unicode::EUTFEE_LITTLE)
 			{
-				uchar8_t* ptr8 = reinterpret_cast<uchar8_t*>(&ret[0]);
+				uchar8_t *ptr8 = reinterpret_cast<uchar8_t *>(&ret[0]);
 				*ptr8++ = unicode::BOM_ENCODE_UTF16_LE[0];
 				*ptr8 = unicode::BOM_ENCODE_UTF16_LE[1];
 			}
 			else
 			{
-				uchar8_t* ptr8 = reinterpret_cast<uchar8_t*>(&ret[0]);
+				uchar8_t *ptr8 = reinterpret_cast<uchar8_t *>(&ret[0]);
 				*ptr8++ = unicode::BOM_ENCODE_UTF16_BE[0];
 				*ptr8 = unicode::BOM_ENCODE_UTF16_BE[1];
 			}
@@ -2931,7 +2931,7 @@ public:
 		ret.append(array);
 		if (endian != unicode::EUTFEE_NATIVE && getEndianness() != endian)
 		{
-			char16_t* ptr = ret.c_str();
+			char16_t *ptr = ret.c_str();
 			for (u32 i = 0; i < ret.size(); ++i)
 				*ptr++ = unicode::swapEndian16(*ptr);
 		}
@@ -2948,7 +2948,7 @@ public:
 	core::array<uchar16_t> toUTF16(const unicode::EUTF_ENDIAN endian = unicode::EUTFEE_NATIVE, const bool addBOM = false) const
 	{
 		core::array<uchar16_t> ret(used + (addBOM ? unicode::BOM_UTF16_LEN : 0) + 1);
-		uchar16_t* ptr = ret.pointer();
+		uchar16_t *ptr = ret.pointer();
 
 		// Add the BOM if specified.
 		if (addBOM)
@@ -2957,20 +2957,20 @@ public:
 				*ptr = unicode::BOM;
 			else if (endian == unicode::EUTFEE_LITTLE)
 			{
-				uchar8_t* ptr8 = reinterpret_cast<uchar8_t*>(ptr);
+				uchar8_t *ptr8 = reinterpret_cast<uchar8_t *>(ptr);
 				*ptr8++ = unicode::BOM_ENCODE_UTF16_LE[0];
 				*ptr8 = unicode::BOM_ENCODE_UTF16_LE[1];
 			}
 			else
 			{
-				uchar8_t* ptr8 = reinterpret_cast<uchar8_t*>(ptr);
+				uchar8_t *ptr8 = reinterpret_cast<uchar8_t *>(ptr);
 				*ptr8++ = unicode::BOM_ENCODE_UTF16_BE[0];
 				*ptr8 = unicode::BOM_ENCODE_UTF16_BE[1];
 			}
 			++ptr;
 		}
 
-		memcpy((void*)ptr, (void*)array, used * sizeof(uchar16_t));
+		memcpy((void *)ptr, (void *)array, used * sizeof(uchar16_t));
 		if (endian != unicode::EUTFEE_NATIVE && getEndianness() != endian)
 		{
 			for (u32 i = 0; i <= used; ++i)
@@ -3144,7 +3144,7 @@ public:
 			core::array<uchar32_t> a(toUTF32(endian, addBOM));
 			core::array<wchar_t> ret(a.size());
 			ret.set_used(a.size());
-			memcpy((void*)ret.pointer(), (void*)a.pointer(), a.size() * sizeof(uchar32_t));
+			memcpy((void *)ret.pointer(), (void *)a.pointer(), a.size() * sizeof(uchar32_t));
 			return ret;
 		}
 		if (sizeof(wchar_t) == 2)
@@ -3153,7 +3153,7 @@ public:
 			{
 				core::array<wchar_t> ret(used);
 				ret.set_used(used);
-				memcpy((void*)ret.pointer(), (void*)array, used * sizeof(uchar16_t));
+				memcpy((void *)ret.pointer(), (void *)array, used * sizeof(uchar16_t));
 				return ret;
 			}
 			else
@@ -3161,7 +3161,7 @@ public:
 				core::array<uchar16_t> a(toUTF16(endian, addBOM));
 				core::array<wchar_t> ret(a.size());
 				ret.set_used(a.size());
-				memcpy((void*)ret.pointer(), (void*)a.pointer(), a.size() * sizeof(uchar16_t));
+				memcpy((void *)ret.pointer(), (void *)a.pointer(), a.size() * sizeof(uchar16_t));
 				return ret;
 			}
 		}
@@ -3170,7 +3170,7 @@ public:
 			core::array<uchar8_t> a(toUTF8(addBOM));
 			core::array<wchar_t> ret(a.size());
 			ret.set_used(a.size());
-			memcpy((void*)ret.pointer(), (void*)a.pointer(), a.size() * sizeof(uchar8_t));
+			memcpy((void *)ret.pointer(), (void *)a.pointer(), a.size() * sizeof(uchar8_t));
 			return ret;
 		}
 
@@ -3196,7 +3196,7 @@ public:
 	//! \param data The data stream to load from.
 	//! \param data_size The length of the data string.
 	//! \return A reference to our current string.
-	ustring16<TAlloc>& loadDataStream(const char* data, size_t data_size)
+	ustring16<TAlloc>& loadDataStream(const char *data, size_t data_size)
 	{
 		// Clear our string.
 		*this = "";
@@ -3208,19 +3208,19 @@ public:
 		{
 			default:
 			case unicode::EUTFE_UTF8:
-				append((uchar8_t*)data, data_size);
+				append((uchar8_t *)data, data_size);
 				break;
 
 			case unicode::EUTFE_UTF16:
 			case unicode::EUTFE_UTF16_BE:
 			case unicode::EUTFE_UTF16_LE:
-				append((uchar16_t*)data, data_size / 2);
+				append((uchar16_t *)data, data_size / 2);
 				break;
 
 			case unicode::EUTFE_UTF32:
 			case unicode::EUTFE_UTF32_BE:
 			case unicode::EUTFE_UTF32_LE:
-				append((uchar32_t*)data, data_size / 4);
+				append((uchar32_t *)data, data_size / 4);
 				break;
 		}
 
@@ -3250,7 +3250,7 @@ private:
 	//! \param new_size The new size of the string.
 	void reallocate(u32 new_size)
 	{
-		uchar16_t* old_array = array;
+		uchar16_t *old_array = array;
 
 		array = allocator.allocate(new_size + 1); //new u16[new_size];
 		allocated = new_size + 1;
@@ -3270,7 +3270,7 @@ private:
 
 	//--- member variables
 
-	uchar16_t* array;
+	uchar16_t *array;
 	unicode::EUTF_ENCODE encoding;
 	u32 allocated;
 	u32 used;
@@ -3293,7 +3293,7 @@ inline ustring16<TAlloc> operator+(const ustring16<TAlloc>& left, const ustring1
 
 //! Appends a ustring16 and a null-terminated unicode string.
 template <typename TAlloc, class B>
-inline ustring16<TAlloc> operator+(const ustring16<TAlloc>& left, const B* const right)
+inline ustring16<TAlloc> operator+(const ustring16<TAlloc>& left, const B *const right)
 {
 	ustring16<TAlloc> ret(left);
 	ret += right;
@@ -3303,7 +3303,7 @@ inline ustring16<TAlloc> operator+(const ustring16<TAlloc>& left, const B* const
 
 //! Appends a ustring16 and a null-terminated unicode string.
 template <class B, typename TAlloc>
-inline ustring16<TAlloc> operator+(const B* const left, const ustring16<TAlloc>& right)
+inline ustring16<TAlloc> operator+(const B *const left, const ustring16<TAlloc>& right)
 {
 	ustring16<TAlloc> ret(left);
 	ret += right;
@@ -3595,9 +3595,9 @@ inline ustring16<TAlloc>&& operator+(ustring16<TAlloc>&& left, ustring16<TAlloc>
 
 //! Appends a ustring16 and a null-terminated unicode string.
 template <typename TAlloc, class B>
-inline ustring16<TAlloc>&& operator+(ustring16<TAlloc>&& left, const B* const right)
+inline ustring16<TAlloc>&& operator+(ustring16<TAlloc>&& left, const B * const right)
 {
-	//std::cout << "MOVE operator+(&&, B*)" << std::endl;
+	//std::cout << "MOVE operator+(&&, B *)" << std::endl;
 	left.append(right);
 	return std::move(left);
 }
@@ -3605,7 +3605,7 @@ inline ustring16<TAlloc>&& operator+(ustring16<TAlloc>&& left, const B* const ri
 
 //! Appends a ustring16 and a null-terminated unicode string.
 template <class B, typename TAlloc>
-inline ustring16<TAlloc>&& operator+(const B* const left, ustring16<TAlloc>&& right)
+inline ustring16<TAlloc>&& operator+(const B *const left, ustring16<TAlloc>&& right)
 {
 	//std::cout << "MOVE operator+(B*, &&)" << std::endl;
 	right.insert(left, 0);
@@ -3839,7 +3839,7 @@ inline ustring16<TAlloc> operator+(const double left, ustring16<TAlloc>&& right)
 #ifndef USTRING_NO_STL
 //! Writes a ustring16 to an ostream.
 template <typename TAlloc>
-inline std::ostream& operator<<(std::ostream& out, const ustring16<TAlloc>& in)
+inline std::ostream &operator<<(std::ostream &out, const ustring16<TAlloc>& in)
 {
 	out << in.toUTF8_s().c_str();
 	return out;
@@ -3847,7 +3847,7 @@ inline std::ostream& operator<<(std::ostream& out, const ustring16<TAlloc>& in)
 
 //! Writes a ustring16 to a wostream.
 template <typename TAlloc>
-inline std::wostream& operator<<(std::wostream& out, const ustring16<TAlloc>& in)
+inline std::wostream &operator<<(std::wostream &out, const ustring16<TAlloc>& in)
 {
 	out << in.toWCHAR_s().c_str();
 	return out;
@@ -3865,7 +3865,7 @@ namespace unicode
 class hash : public std::unary_function<core::ustring, size_t>
 {
 	public:
-		size_t operator()(const core::ustring& s) const
+		size_t operator()(const core::ustring &s) const
 		{
 			size_t ret = 2166136261U;
 			size_t index = 0;

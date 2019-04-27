@@ -1048,7 +1048,7 @@ bool NodeDefManager::getIds(const std::string &name,
 }
 
 
-const ContentFeatures& NodeDefManager::get(const std::string &name) const
+const ContentFeatures &NodeDefManager::get(const std::string &name) const
 {
 	content_t id = CONTENT_UNKNOWN;
 	getId(name, id);

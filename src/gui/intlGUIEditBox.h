@@ -21,24 +21,24 @@ namespace gui
 	public:
 
 		//! constructor
-		intlGUIEditBox(const wchar_t* text, bool border, IGUIEnvironment* environment,
-			IGUIElement* parent, s32 id, const core::rect<s32>& rectangle,
+		intlGUIEditBox(const wchar_t *text, bool border, IGUIEnvironment *environment,
+			IGUIElement *parent, s32 id, const core::rect<s32>& rectangle,
 			bool writable = true, bool has_vscrollbar = false);
 
 		//! destructor
 		virtual ~intlGUIEditBox();
 
 		//! Sets another skin independent font.
-		virtual void setOverrideFont(IGUIFont* font=0);
+		virtual void setOverrideFont(IGUIFont *font=0);
 
 		//! Gets the override font (if any)
 		/** \return The override font (may be 0) */
-		virtual IGUIFont* getOverrideFont() const;
+		virtual IGUIFont *getOverrideFont() const;
 
 		//! Get the font which is used right now for drawing
 		/** Currently this is the override font when one is set and the
 		font of the active skin otherwise */
-		virtual IGUIFont* getActiveFont() const;
+		virtual IGUIFont *getActiveFont() const;
 
 		//! Sets another color for the text.
 		virtual void setOverrideColor(video::SColor color);
@@ -96,13 +96,13 @@ namespace gui
 		virtual void setTextAlignment(EGUI_ALIGNMENT horizontal, EGUI_ALIGNMENT vertical);
 
 		//! called if an event happened.
-		virtual bool OnEvent(const SEvent& event);
+		virtual bool OnEvent(const SEvent &event);
 
 		//! draws the element and its children
 		virtual void draw();
 
 		//! Sets the new caption of this element.
-		virtual void setText(const wchar_t* text);
+		virtual void setText(const wchar_t *text);
 
 		//! Sets the maximum amount of characters which may be entered in the box.
 		//! \param max: Maximum amount of characters. If 0, the character amount is
@@ -128,10 +128,10 @@ namespace gui
 		virtual void setWritable(bool can_write_text);
 
 		//! Writes attributes of the element.
-		virtual void serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options) const;
+		virtual void serializeAttributes(io::IAttributes *out, io::SAttributeReadWriteOptions *options) const;
 
 		//! Reads attributes of the element
-		virtual void deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options);
+		virtual void deserializeAttributes(io::IAttributes *in, io::SAttributeReadWriteOptions *options);
 
 		virtual void setCursorChar(const wchar_t cursorChar) {}
 
@@ -157,8 +157,8 @@ namespace gui
 		//! set text markers
 		void setTextMarkers(s32 begin, s32 end);
 
-		bool processKey(const SEvent& event);
-		bool processMouse(const SEvent& event);
+		bool processKey(const SEvent &event);
+		bool processMouse(const SEvent &event);
 		s32 getCursorPos(s32 x, s32 y);
 
 		//! Create a vertical scrollbar

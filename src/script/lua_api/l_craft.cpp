@@ -456,7 +456,7 @@ static void push_craft_recipe(lua_State *L, IGameDef *gdef,
 }
 
 static void push_craft_recipes(lua_State *L, IGameDef *gdef,
-		const std::vector<CraftDefinition*> &recipes,
+		const std::vector<CraftDefinition *> &recipes,
 		const CraftOutput &output)
 {
 	lua_createtable(L, recipes.size(), 0);
@@ -466,7 +466,7 @@ static void push_craft_recipes(lua_State *L, IGameDef *gdef,
 		return;
 	}
 
-	std::vector<CraftDefinition*>::const_iterator it = recipes.begin();
+	std::vector<CraftDefinition *>::const_iterator it = recipes.begin();
 	for (unsigned i = 0; it != recipes.end(); ++it) {
 		lua_newtable(L);
 		push_craft_recipe(L, gdef, *it, output);
@@ -483,7 +483,7 @@ int ModApiCraft::l_get_craft_recipe(lua_State *L)
 	std::string item = luaL_checkstring(L, 1);
 	Server *server = getServer(L);
 	CraftOutput output(item, 0);
-	std::vector<CraftDefinition*> recipes = server->cdef()
+	std::vector<CraftDefinition *> recipes = server->cdef()
 			->getCraftRecipes(output, server, 1);
 
 	lua_createtable(L, 1, 0);
@@ -506,7 +506,7 @@ int ModApiCraft::l_get_all_craft_recipes(lua_State *L)
 	std::string item = luaL_checkstring(L, 1);
 	Server *server = getServer(L);
 	CraftOutput output(item, 0);
-	std::vector<CraftDefinition*> recipes = server->cdef()
+	std::vector<CraftDefinition *> recipes = server->cdef()
 			->getCraftRecipes(output, server);
 
 	push_craft_recipes(L, server, recipes, output);

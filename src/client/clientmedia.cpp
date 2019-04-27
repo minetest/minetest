@@ -294,7 +294,7 @@ void ClientMediaDownloader::remoteHashSetReceived(
 			// available on this server, add this server
 			// to the available_remotes array
 
-			for(std::map<std::string, FileStatus*>::iterator
+			for(std::map<std::string, FileStatus *>::iterator
 					it = m_files.upper_bound(m_name_bound);
 					it != m_files.end(); ++it) {
 				FileStatus *f = it->second;
@@ -391,7 +391,7 @@ void ClientMediaDownloader::startRemoteMediaTransfers()
 {
 	bool changing_name_bound = true;
 
-	for (std::map<std::string, FileStatus*>::iterator
+	for (std::map<std::string, FileStatus *>::iterator
 			files_iter = m_files.upper_bound(m_name_bound);
 			files_iter != m_files.end(); ++files_iter) {
 
@@ -477,7 +477,7 @@ void ClientMediaDownloader::conventionalTransferDone(
 		Client *client)
 {
 	// Check that file was announced
-	std::map<std::string, FileStatus*>::iterator
+	std::map<std::string, FileStatus *>::iterator
 		file_iter = m_files.find(name);
 	if (file_iter == m_files.end()) {
 		errorstream << "Client: server sent media file that was"
@@ -522,7 +522,7 @@ bool ClientMediaDownloader::checkAndLoad(
 		SHA1 data_sha1_calculator;
 		data_sha1_calculator.addBytes(data.c_str(), data.size());
 		unsigned char *data_tmpdigest = data_sha1_calculator.getDigest();
-		data_sha1.assign((char*) data_tmpdigest, 20);
+		data_sha1.assign((char *) data_tmpdigest, 20);
 		free(data_tmpdigest);
 	}
 
@@ -582,7 +582,7 @@ std::string ClientMediaDownloader::serializeRequiredHashSet()
 
 	// Write list of hashes of files that have not been
 	// received (found in cache) yet
-	for (std::map<std::string, FileStatus*>::iterator
+	for (std::map<std::string, FileStatus *>::iterator
 			it = m_files.begin();
 			it != m_files.end(); ++it) {
 		if (!it->second->received) {
@@ -603,7 +603,7 @@ void ClientMediaDownloader::deSerializeHashSet(const std::string &data,
 				"invalid hash set file size");
 	}
 
-	const u8 *data_cstr = (const u8*) data.c_str();
+	const u8 *data_cstr = (const u8 *) data.c_str();
 
 	u32 signature = readU32(&data_cstr[0]);
 	if (signature != MTHASHSET_FILE_SIGNATURE) {

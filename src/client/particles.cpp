@@ -120,7 +120,7 @@ void Particle::OnRegisterSceneNode()
 
 void Particle::render()
 {
-	video::IVideoDriver* driver = SceneManager->getVideoDriver();
+	video::IVideoDriver *driver = SceneManager->getVideoDriver();
 	driver->setMaterial(m_material);
 	driver->setTransform(video::ETS_WORLD, AbsoluteTransformation);
 
@@ -351,7 +351,7 @@ void ParticleSpawner::spawnParticle(ClientEnvironment *env, float radius,
 	));
 }
 
-void ParticleSpawner::step(float dtime, ClientEnvironment* env)
+void ParticleSpawner::step(float dtime, ClientEnvironment *env)
 {
 	m_time += dtime;
 
@@ -404,7 +404,7 @@ void ParticleSpawner::step(float dtime, ClientEnvironment* env)
 }
 
 
-ParticleManager::ParticleManager(ClientEnvironment* env) :
+ParticleManager::ParticleManager(ClientEnvironment *env) :
 	m_env(env)
 {}
 
@@ -568,7 +568,7 @@ void ParticleManager::handleParticleEvent(ClientEvent *event, Client *client,
 // The final burst of particles when a node is finally dug, *not* particles
 // spawned during the digging of a node.
 
-void ParticleManager::addDiggingParticles(IGameDef* gamedef,
+void ParticleManager::addDiggingParticles(IGameDef *gamedef,
 	LocalPlayer *player, v3s16 pos, const MapNode &n, const ContentFeatures &f)
 {
 	// No particles for "airlike" nodes
@@ -583,7 +583,7 @@ void ParticleManager::addDiggingParticles(IGameDef* gamedef,
 // During the digging of a node particles are spawned individually by this
 // function, called from Game::handleDigging() in game.cpp.
 
-void ParticleManager::addNodeParticle(IGameDef* gamedef,
+void ParticleManager::addNodeParticle(IGameDef *gamedef,
 	LocalPlayer *player, v3s16 pos, const MapNode &n, const ContentFeatures &f)
 {
 	// No particles for "airlike" nodes
@@ -635,7 +635,7 @@ void ParticleManager::addNodeParticle(IGameDef* gamedef,
 	else
 		n.getColor(f, &color);
 
-	Particle* toadd = new Particle(
+	Particle *toadd = new Particle(
 		gamedef,
 		player,
 		m_env,
@@ -658,7 +658,7 @@ void ParticleManager::addNodeParticle(IGameDef* gamedef,
 	addParticle(toadd);
 }
 
-void ParticleManager::addParticle(Particle* toadd)
+void ParticleManager::addParticle(Particle *toadd)
 {
 	MutexAutoLock lock(m_particle_list_lock);
 	m_particles.push_back(toadd);

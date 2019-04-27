@@ -26,8 +26,8 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 class GUIVolumeChange : public GUIModalMenu
 {
 public:
-	GUIVolumeChange(gui::IGUIEnvironment* env,
-			gui::IGUIElement* parent, s32 id,
+	GUIVolumeChange(gui::IGUIEnvironment *env,
+			gui::IGUIElement *parent, s32 id,
 			IMenuManager *menumgr);
 	~GUIVolumeChange();
 
@@ -39,7 +39,7 @@ public:
 
 	void drawMenu();
 
-	bool OnEvent(const SEvent& event);
+	bool OnEvent(const SEvent &event);
 
 	bool pausesGame() { return true; }
 

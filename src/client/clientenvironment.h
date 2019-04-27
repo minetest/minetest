@@ -59,7 +59,7 @@ struct ClientEnvEvent
 	};
 };
 
-typedef std::unordered_map<u16, ClientActiveObject*> ClientActiveObjectMap;
+typedef std::unordered_map<u16, ClientActiveObject *> ClientActiveObjectMap;
 class ClientEnvironment : public Environment
 {
 public:
@@ -87,8 +87,8 @@ public:
 		ActiveObjects
 	*/
 
-	GenericCAO* getGenericCAO(u16 id);
-	ClientActiveObject* getActiveObject(u16 id)
+	GenericCAO *getGenericCAO(u16 id);
+	ClientActiveObject *getActiveObject(u16 id)
 	{
 		return m_ao_manager.getActiveObject(id);
 	}
@@ -153,7 +153,7 @@ private:
 	Client *m_client;
 	ClientScripting *m_script = nullptr;
 	client::ActiveObjectMgr m_ao_manager;
-	std::vector<ClientSimpleObject*> m_simple_objects;
+	std::vector<ClientSimpleObject *> m_simple_objects;
 	std::queue<ClientEnvEvent> m_client_event_queue;
 	IntervalLimiter m_active_object_light_update_interval;
 	std::list<std::string> m_player_names;

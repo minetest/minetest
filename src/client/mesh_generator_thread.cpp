@@ -82,7 +82,7 @@ void MeshUpdateQueue::addBlock(Map *map, v3s16 p, bool ack_block_to_server, bool
 		Cache the block data (force-update the center block, don't update the
 		neighbors but get them if they aren't already cached)
 	*/
-	std::vector<CachedMapBlockData*> cached_blocks;
+	std::vector<CachedMapBlockData *> cached_blocks;
 	size_t cache_hit_counter = 0;
 	cached_blocks.reserve(3*3*3);
 	v3s16 dp;
@@ -146,7 +146,7 @@ QueuedMeshUpdate *MeshUpdateQueue::pop()
 	MutexAutoLock lock(m_mutex);
 
 	bool must_be_urgent = !m_urgents.empty();
-	for (std::vector<QueuedMeshUpdate*>::iterator i = m_queue.begin();
+	for (std::vector<QueuedMeshUpdate *>::iterator i = m_queue.begin();
 			i != m_queue.end(); ++i) {
 		QueuedMeshUpdate *q = *i;
 		if(must_be_urgent && m_urgents.count(q->p) == 0)
@@ -159,10 +159,10 @@ QueuedMeshUpdate *MeshUpdateQueue::pop()
 	return NULL;
 }
 
-CachedMapBlockData* MeshUpdateQueue::cacheBlock(Map *map, v3s16 p, UpdateMode mode,
+CachedMapBlockData *MeshUpdateQueue::cacheBlock(Map *map, v3s16 p, UpdateMode mode,
 			size_t *cache_hit_counter)
 {
-	std::map<v3s16, CachedMapBlockData*>::iterator it =
+	std::map<v3s16, CachedMapBlockData *>::iterator it =
 			m_cache.find(p);
 	if (it != m_cache.end()) {
 		// Already in cache
@@ -199,9 +199,9 @@ CachedMapBlockData* MeshUpdateQueue::cacheBlock(Map *map, v3s16 p, UpdateMode mo
 	return cached_block;
 }
 
-CachedMapBlockData* MeshUpdateQueue::getCachedBlock(const v3s16 &p)
+CachedMapBlockData *MeshUpdateQueue::getCachedBlock(const v3s16 &p)
 {
-	std::map<v3s16, CachedMapBlockData*>::iterator it = m_cache.find(p);
+	std::map<v3s16, CachedMapBlockData *>::iterator it = m_cache.find(p);
 	if (it != m_cache.end()) {
 		return it->second;
 	}
@@ -253,7 +253,7 @@ void MeshUpdateQueue::cleanupCache()
 
 	int t_now = time(0);
 
-	for (std::map<v3s16, CachedMapBlockData*>::iterator it = m_cache.begin();
+	for (std::map<v3s16, CachedMapBlockData *>::iterator it = m_cache.begin();
 			it != m_cache.end(); ) {
 		CachedMapBlockData *cached_block = it->second;
 		if (cached_block->refcount_from_queue == 0 &&

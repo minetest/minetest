@@ -90,7 +90,7 @@ struct ItemDefinition
 	*/
 	ItemDefinition();
 	ItemDefinition(const ItemDefinition &def);
-	ItemDefinition& operator=(const ItemDefinition &def);
+	ItemDefinition &operator=(const ItemDefinition &def);
 	~ItemDefinition();
 	void reset();
 	void serialize(std::ostream &os, u16 protocol_version) const;
@@ -107,7 +107,7 @@ public:
 	virtual ~IItemDefManager() = default;
 
 	// Get item definition
-	virtual const ItemDefinition& get(const std::string &name) const=0;
+	virtual const ItemDefinition &get(const std::string &name) const=0;
 	// Get alias definition
 	virtual const std::string &getAlias(const std::string &name) const=0;
 	// Get set of all defined item names and aliases
@@ -116,13 +116,13 @@ public:
 	virtual bool isKnown(const std::string &name) const=0;
 #ifndef SERVER
 	// Get item inventory texture
-	virtual video::ITexture* getInventoryTexture(const std::string &name,
+	virtual video::ITexture *getInventoryTexture(const std::string &name,
 			Client *client) const=0;
 	// Get item wield mesh
-	virtual ItemMesh* getWieldMesh(const std::string &name,
+	virtual ItemMesh *getWieldMesh(const std::string &name,
 		Client *client) const=0;
 	// Get item palette
-	virtual Palette* getPalette(const std::string &name,
+	virtual Palette *getPalette(const std::string &name,
 		Client *client) const = 0;
 	// Returns the base color of an item stack: the color of all
 	// tiles that do not define their own color.
@@ -141,7 +141,7 @@ public:
 	virtual ~IWritableItemDefManager() = default;
 
 	// Get item definition
-	virtual const ItemDefinition& get(const std::string &name) const=0;
+	virtual const ItemDefinition &get(const std::string &name) const=0;
 	// Get alias definition
 	virtual const std::string &getAlias(const std::string &name) const=0;
 	// Get set of all defined item names and aliases
@@ -150,10 +150,10 @@ public:
 	virtual bool isKnown(const std::string &name) const=0;
 #ifndef SERVER
 	// Get item inventory texture
-	virtual video::ITexture* getInventoryTexture(const std::string &name,
+	virtual video::ITexture *getInventoryTexture(const std::string &name,
 			Client *client) const=0;
 	// Get item wield mesh
-	virtual ItemMesh* getWieldMesh(const std::string &name,
+	virtual ItemMesh *getWieldMesh(const std::string &name,
 		Client *client) const=0;
 #endif
 
@@ -176,4 +176,4 @@ public:
 	virtual void processQueue(IGameDef *gamedef)=0;
 };
 
-IWritableItemDefManager* createItemDefManager();
+IWritableItemDefManager *createItemDefManager();

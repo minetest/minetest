@@ -40,19 +40,19 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/serialize.h"
 #include "util/srp.h"
 
-void Server::handleCommand_Deprecated(NetworkPacket* pkt)
+void Server::handleCommand_Deprecated(NetworkPacket *pkt)
 {
 	infostream << "Server: " << toServerCommandTable[pkt->getCommand()].name
 		<< " not supported anymore" << std::endl;
 }
 
-void Server::handleCommand_Init(NetworkPacket* pkt)
+void Server::handleCommand_Init(NetworkPacket *pkt)
 {
 
 	if(pkt->getSize() < 1)
 		return;
 
-	RemoteClient* client = getClient(pkt->getPeerId(), CS_Created);
+	RemoteClient *client = getClient(pkt->getPeerId(), CS_Created);
 
 	std::string addr_s;
 	try {
@@ -155,7 +155,7 @@ void Server::handleCommand_Init(NetworkPacket* pkt)
 	/*
 		Validate player name
 	*/
-	const char* playername = playerName.c_str();
+	const char *playername = playerName.c_str();
 
 	size_t pns = playerName.size();
 	if (pns == 0 || pns > PLAYERNAME_SIZE) {
@@ -279,7 +279,7 @@ void Server::handleCommand_Init(NetworkPacket* pkt)
 	m_clients.event(pkt->getPeerId(), CSE_Hello);
 }
 
-void Server::handleCommand_Init2(NetworkPacket* pkt)
+void Server::handleCommand_Init2(NetworkPacket *pkt)
 {
 	verbosestream << "Server: Got TOSERVER_INIT2 from "
 			<< pkt->getPeerId() << std::endl;
@@ -331,7 +331,7 @@ void Server::handleCommand_Init2(NetworkPacket* pkt)
 	}
 }
 
-void Server::handleCommand_RequestMedia(NetworkPacket* pkt)
+void Server::handleCommand_RequestMedia(NetworkPacket *pkt)
 {
 	std::vector<std::string> tosend;
 	u16 numfiles;
@@ -355,11 +355,11 @@ void Server::handleCommand_RequestMedia(NetworkPacket* pkt)
 	sendRequestedMedia(pkt->getPeerId(), tosend);
 }
 
-void Server::handleCommand_ClientReady(NetworkPacket* pkt)
+void Server::handleCommand_ClientReady(NetworkPacket *pkt)
 {
 	session_t peer_id = pkt->getPeerId();
 
-	PlayerSAO* playersao = StageTwoClientInit(peer_id);
+	PlayerSAO *playersao = StageTwoClientInit(peer_id);
 
 	if (playersao == NULL) {
 		actionstream
@@ -407,7 +407,7 @@ void Server::handleCommand_ClientReady(NetworkPacket* pkt)
 	}
 }
 
-void Server::handleCommand_GotBlocks(NetworkPacket* pkt)
+void Server::handleCommand_GotBlocks(NetworkPacket *pkt)
 {
 	if (pkt->getSize() < 1)
 		return;
@@ -495,7 +495,7 @@ void Server::process_PlayerPos(RemotePlayer *player, PlayerSAO *playersao,
 	}
 }
 
-void Server::handleCommand_PlayerPos(NetworkPacket* pkt)
+void Server::handleCommand_PlayerPos(NetworkPacket *pkt)
 {
 	RemotePlayer *player = m_env->getPlayer(pkt->getPeerId());
 	if (player == NULL) {
@@ -525,7 +525,7 @@ void Server::handleCommand_PlayerPos(NetworkPacket* pkt)
 	process_PlayerPos(player, playersao, pkt);
 }
 
-void Server::handleCommand_DeletedBlocks(NetworkPacket* pkt)
+void Server::handleCommand_DeletedBlocks(NetworkPacket *pkt)
 {
 	if (pkt->getSize() < 1)
 		return;
@@ -555,7 +555,7 @@ void Server::handleCommand_DeletedBlocks(NetworkPacket* pkt)
 	}
 }
 
-void Server::handleCommand_InventoryAction(NetworkPacket* pkt)
+void Server::handleCommand_InventoryAction(NetworkPacket *pkt)
 {
 	RemotePlayer *player = m_env->getPlayer(pkt->getPeerId());
 
@@ -603,7 +603,7 @@ void Server::handleCommand_InventoryAction(NetworkPacket* pkt)
 		Handle restrictions and special cases of the move action
 	*/
 	if (a->getType() == IAction::Move) {
-		IMoveAction *ma = (IMoveAction*)a;
+		IMoveAction *ma = (IMoveAction *)a;
 
 		ma->from_inv.applyCurrentPlayer(player->getName());
 		ma->to_inv.applyCurrentPlayer(player->getName());
@@ -672,7 +672,7 @@ void Server::handleCommand_InventoryAction(NetworkPacket* pkt)
 		Handle restrictions and special cases of the drop action
 	*/
 	else if (a->getType() == IAction::Drop) {
-		IDropAction *da = (IDropAction*)a;
+		IDropAction *da = (IDropAction *)a;
 
 		da->from_inv.applyCurrentPlayer(player->getName());
 
@@ -708,7 +708,7 @@ void Server::handleCommand_InventoryAction(NetworkPacket* pkt)
 		Handle restrictions and special cases of the craft action
 	*/
 	else if (a->getType() == IAction::Craft) {
-		ICraftAction *ca = (ICraftAction*)a;
+		ICraftAction *ca = (ICraftAction *)a;
 
 		ca->craft_inv.applyCurrentPlayer(player->getName());
 
@@ -735,7 +735,7 @@ void Server::handleCommand_InventoryAction(NetworkPacket* pkt)
 	SendInventory(playersao);
 }
 
-void Server::handleCommand_ChatMessage(NetworkPacket* pkt)
+void Server::handleCommand_ChatMessage(NetworkPacket *pkt)
 {
 	/*
 		u16 command
@@ -774,7 +774,7 @@ void Server::handleCommand_ChatMessage(NetworkPacket* pkt)
 	}
 }
 
-void Server::handleCommand_Damage(NetworkPacket* pkt)
+void Server::handleCommand_Damage(NetworkPacket *pkt)
 {
 	u16 damage;
 
@@ -817,7 +817,7 @@ void Server::handleCommand_Damage(NetworkPacket* pkt)
 	}
 }
 
-void Server::handleCommand_Password(NetworkPacket* pkt)
+void Server::handleCommand_Password(NetworkPacket *pkt)
 {
 	if (pkt->getSize() != PASSWORD_SIZE * 2)
 		return;
@@ -826,7 +826,7 @@ void Server::handleCommand_Password(NetworkPacket* pkt)
 	std::string newpwd;
 
 	// Deny for clients using the new protocol
-	RemoteClient* client = getClient(pkt->getPeerId(), CS_Created);
+	RemoteClient *client = getClient(pkt->getPeerId(), CS_Created);
 	if (client->net_proto_version >= 25) {
 		infostream << "Server::handleCommand_Password(): Denying change: "
 			<< " Client protocol version for peer_id=" << pkt->getPeerId()
@@ -895,7 +895,7 @@ void Server::handleCommand_Password(NetworkPacket* pkt)
 	}
 }
 
-void Server::handleCommand_PlayerItem(NetworkPacket* pkt)
+void Server::handleCommand_PlayerItem(NetworkPacket *pkt)
 {
 	if (pkt->getSize() < 2)
 		return;
@@ -926,7 +926,7 @@ void Server::handleCommand_PlayerItem(NetworkPacket* pkt)
 	playersao->setWieldIndex(item);
 }
 
-void Server::handleCommand_Respawn(NetworkPacket* pkt)
+void Server::handleCommand_Respawn(NetworkPacket *pkt)
 {
 	RemotePlayer *player = m_env->getPlayer(pkt->getPeerId());
 	if (player == NULL) {
@@ -984,7 +984,7 @@ bool Server::checkInteractDistance(RemotePlayer *player, const f32 d, const std:
 	return true;
 }
 
-void Server::handleCommand_Interact(NetworkPacket* pkt)
+void Server::handleCommand_Interact(NetworkPacket *pkt)
 {
 	/*
 		[0] u16 command
@@ -1400,7 +1400,7 @@ void Server::handleCommand_Interact(NetworkPacket* pkt)
 	}
 }
 
-void Server::handleCommand_RemovedSounds(NetworkPacket* pkt)
+void Server::handleCommand_RemovedSounds(NetworkPacket *pkt)
 {
 	u16 num;
 	*pkt >> num;
@@ -1421,7 +1421,7 @@ void Server::handleCommand_RemovedSounds(NetworkPacket* pkt)
 	}
 }
 
-void Server::handleCommand_NodeMetaFields(NetworkPacket* pkt)
+void Server::handleCommand_NodeMetaFields(NetworkPacket *pkt)
 {
 	v3s16 p;
 	std::string formname;
@@ -1473,7 +1473,7 @@ void Server::handleCommand_NodeMetaFields(NetworkPacket* pkt)
 	}
 }
 
-void Server::handleCommand_InventoryFields(NetworkPacket* pkt)
+void Server::handleCommand_InventoryFields(NetworkPacket *pkt)
 {
 	std::string client_formspec_name;
 	u16 num;
@@ -1536,9 +1536,9 @@ void Server::handleCommand_InventoryFields(NetworkPacket* pkt)
 	actionstream << ", possible exploitation attempt" << std::endl;
 }
 
-void Server::handleCommand_FirstSrp(NetworkPacket* pkt)
+void Server::handleCommand_FirstSrp(NetworkPacket *pkt)
 {
-	RemoteClient* client = getClient(pkt->getPeerId(), CS_Invalid);
+	RemoteClient *client = getClient(pkt->getPeerId(), CS_Invalid);
 	ClientState cstate = client->getState();
 
 	std::string playername = client->getName();
@@ -1602,9 +1602,9 @@ void Server::handleCommand_FirstSrp(NetworkPacket* pkt)
 	}
 }
 
-void Server::handleCommand_SrpBytesA(NetworkPacket* pkt)
+void Server::handleCommand_SrpBytesA(NetworkPacket *pkt)
 {
-	RemoteClient* client = getClient(pkt->getPeerId(), CS_Invalid);
+	RemoteClient *client = getClient(pkt->getPeerId(), CS_Invalid);
 	ClientState cstate = client->getState();
 
 	bool wantSudo = (cstate == CS_Active);
@@ -1708,9 +1708,9 @@ void Server::handleCommand_SrpBytesA(NetworkPacket* pkt)
 	Send(&resp_pkt);
 }
 
-void Server::handleCommand_SrpBytesM(NetworkPacket* pkt)
+void Server::handleCommand_SrpBytesM(NetworkPacket *pkt)
 {
-	RemoteClient* client = getClient(pkt->getPeerId(), CS_Invalid);
+	RemoteClient *client = getClient(pkt->getPeerId(), CS_Invalid);
 	ClientState cstate = client->getState();
 
 	bool wantSudo = (cstate == CS_Active);

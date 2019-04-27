@@ -58,7 +58,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "chatmessage.h"
 #include "translation.h"
 
-extern gui::IGUIEnvironment* guienv;
+extern gui::IGUIEnvironment *guienv;
 
 /*
 	Client
@@ -236,7 +236,7 @@ const std::vector<ModSpec>& Client::getMods() const
 	return client_modspec_temp;
 }
 
-const ModSpec* Client::getModSpec(const std::string &modname) const
+const ModSpec *Client::getModSpec(const std::string &modname) const
 {
 	return NULL;
 }
@@ -811,9 +811,9 @@ void Client::Receive()
 	ProcessData(&pkt);
 }
 
-inline void Client::handleCommand(NetworkPacket* pkt)
+inline void Client::handleCommand(NetworkPacket *pkt)
 {
-	const ToClientCommandHandler& opHandle = toClientCommandTable[pkt->getCommand()];
+	const ToClientCommandHandler &opHandle = toClientCommandTable[pkt->getCommand()];
 	(this->*opHandle.handler)(pkt);
 }
 
@@ -870,7 +870,7 @@ void Client::ProcessData(NetworkPacket *pkt)
 	handleCommand(pkt);
 }
 
-void Client::Send(NetworkPacket* pkt)
+void Client::Send(NetworkPacket *pkt)
 {
 	m_con->Send(PEER_ID_SERVER,
 		serverCommandFactoryTable[pkt->getCommand()].channel,
@@ -908,7 +908,7 @@ void writePlayerPos(LocalPlayer *myplayer, ClientMap *clientMap, NetworkPacket *
 	*pkt << fov << wanted_range;
 }
 
-void Client::interact(u8 action, const PointedThing& pointed)
+void Client::interact(u8 action, const PointedThing &pointed)
 {
 	if(m_state != LC_Ready) {
 		errorstream << "Client::interact() "
@@ -1289,7 +1289,7 @@ void Client::sendPlayerItem(u16 item)
 
 void Client::removeNode(v3s16 p)
 {
-	std::map<v3s16, MapBlock*> modified_blocks;
+	std::map<v3s16, MapBlock *> modified_blocks;
 
 	try {
 		m_env.getMap().removeNodeAndUpdate(p, modified_blocks);
@@ -1370,7 +1370,7 @@ void Client::getLocalInventory(Inventory &dst)
 	dst = player->inventory;
 }
 
-Inventory* Client::getInventory(const InventoryLocation &loc)
+Inventory *Client::getInventory(const InventoryLocation &loc)
 {
 	switch(loc.type){
 	case InventoryLocation::UNDEFINED:
@@ -1622,13 +1622,13 @@ typedef struct TextureUpdateArgs {
 	gui::IGUIEnvironment *guienv;
 	u64 last_time_ms;
 	u16 last_percent;
-	const wchar_t* text_base;
+	const wchar_t *text_base;
 	ITextureSource *tsrc;
 } TextureUpdateArgs;
 
 void texture_update_progress(void *args, u32 progress, u32 max_progress)
 {
-		TextureUpdateArgs* targs = (TextureUpdateArgs*) args;
+		TextureUpdateArgs *targs = (TextureUpdateArgs*) args;
 		u16 cur_percent = ceil(progress / (double) max_progress * 100.);
 
 		// update the loading menu -- if neccessary
@@ -1657,7 +1657,7 @@ void Client::afterContentReceived()
 	assert(m_nodedef_received); // pre-condition
 	assert(mediaReceived()); // pre-condition
 
-	const wchar_t* text = wgettext("Loading textures...");
+	const wchar_t *text = wgettext("Loading textures...");
 
 	// Clear cached pre-scaled 2D GUI images, as this cache
 	// might have images with the same name but different
@@ -1730,7 +1730,7 @@ float Client::getCurRate()
 void Client::makeScreenshot()
 {
 	irr::video::IVideoDriver *driver = RenderingEngine::get_video_driver();
-	irr::video::IImage* const raw_image = driver->createScreenShot();
+	irr::video::IImage *const raw_image = driver->createScreenShot();
 
 	if (!raw_image)
 		return;
@@ -1765,7 +1765,7 @@ void Client::makeScreenshot()
 	if (serial == SCREENSHOT_MAX_SERIAL_TRIES) {
 		infostream << "Could not find suitable filename for screenshot" << std::endl;
 	} else {
-		irr::video::IImage* const image =
+		irr::video::IImage *const image =
 				driver->createImage(video::ECF_R8G8B8, raw_image->getDimension());
 
 		if (image) {
@@ -1804,24 +1804,24 @@ void Client::showMinimap(const bool show)
 
 // IGameDef interface
 // Under envlock
-IItemDefManager* Client::getItemDefManager()
+IItemDefManager *Client::getItemDefManager()
 {
 	return m_itemdef;
 }
-const NodeDefManager* Client::getNodeDefManager()
+const NodeDefManager *Client::getNodeDefManager()
 {
 	return m_nodedef;
 }
-ICraftDefManager* Client::getCraftDefManager()
+ICraftDefManager *Client::getCraftDefManager()
 {
 	return NULL;
 	//return m_craftdef;
 }
-ITextureSource* Client::getTextureSource()
+ITextureSource *Client::getTextureSource()
 {
 	return m_tsrc;
 }
-IShaderSource* Client::getShaderSource()
+IShaderSource *Client::getShaderSource()
 {
 	return m_shsrc;
 }
@@ -1834,21 +1834,21 @@ u16 Client::allocateUnknownNodeId(const std::string &name)
 
 	return CONTENT_IGNORE;
 }
-ISoundManager* Client::getSoundManager()
+ISoundManager *Client::getSoundManager()
 {
 	return m_sound;
 }
-MtEventManager* Client::getEventManager()
+MtEventManager *Client::getEventManager()
 {
 	return m_event;
 }
 
-ParticleManager* Client::getParticleManager()
+ParticleManager *Client::getParticleManager()
 {
 	return &m_particle_manager;
 }
 
-scene::IAnimatedMesh* Client::getMesh(const std::string &filename, bool cache)
+scene::IAnimatedMesh *Client::getMesh(const std::string &filename, bool cache)
 {
 	StringMap::const_iterator it = m_mesh_data.find(filename);
 	if (it == m_mesh_data.end()) {
@@ -1873,7 +1873,7 @@ scene::IAnimatedMesh* Client::getMesh(const std::string &filename, bool cache)
 	return mesh;
 }
 
-const std::string* Client::getModFile(const std::string &filename)
+const std::string *Client::getModFile(const std::string &filename)
 {
 	StringMap::const_iterator it = m_mod_files.find(filename);
 	if (it == m_mod_files.end()) {
@@ -1961,7 +1961,7 @@ bool Client::sendModChannelMessage(const std::string &channel, const std::string
 	return true;
 }
 
-ModChannel* Client::getModChannel(const std::string &channel)
+ModChannel *Client::getModChannel(const std::string &channel)
 {
 	return m_modchannel_mgr->getModChannel(channel);
 }

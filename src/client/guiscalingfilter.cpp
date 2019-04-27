@@ -96,7 +96,7 @@ video::ITexture *guiScalingResizeCached(video::IVideoDriver *driver,
 
 	// Try to find the texture converted to an image in the cache.
 	// If the image was not found, try to extract it from the texture.
-	video::IImage* srcimg = g_imgCache[origname];
+	video::IImage *srcimg = g_imgCache[origname];
 	if (srcimg == NULL) {
 		if (!g_settings->getBool("gui_scaling_filter_txr2img"))
 			return src;

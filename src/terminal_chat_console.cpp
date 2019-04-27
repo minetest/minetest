@@ -408,7 +408,7 @@ void TerminalChatConsole::step(int ch)
 	// draw prompt
 	if (!m_esc_mode) {
 		// normal prompt
-		ChatPrompt& prompt = m_chat_backend.getPrompt();
+		ChatPrompt &prompt = m_chat_backend.getPrompt();
 		std::string prompt_text = wide_to_utf8(prompt.getVisiblePortion());
 		move(m_rows - 1, 0);
 		clrtoeol();
@@ -433,11 +433,11 @@ void TerminalChatConsole::step(int ch)
 
 void TerminalChatConsole::draw_text()
 {
-	ChatBuffer& buf = m_chat_backend.getConsoleBuffer();
+	ChatBuffer &buf = m_chat_backend.getConsoleBuffer();
 	for (u32 row = 0; row < buf.getRows(); row++) {
 		move_for_backend(row, 0);
 		clrtoeol();
-		const ChatFormattedLine& line = buf.getFormattedLine(row);
+		const ChatFormattedLine &line = buf.getFormattedLine(row);
 		if (line.fragments.empty())
 			continue;
 		for (const ChatFormattedFragment &fragment : line.fragments) {

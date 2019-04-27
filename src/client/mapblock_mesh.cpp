@@ -631,7 +631,7 @@ static void makeFastFace(const TileSpec &tile, u16 li0, u16 li1, u16 li2, u16 li
 
 	// equivalent to dest.push_back(FastFace()) but faster
 	dest.emplace_back();
-	FastFace& face = *dest.rbegin();
+	FastFace &face = *dest.rbegin();
 
 	for (u8 i = 0; i < 4; i++) {
 		video::SColor c = encode_light(li[i], tile.emissive_light);
@@ -1216,7 +1216,7 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data, v3s16 camera_offset):
 			intToFloat(data->m_blockpos * MAP_BLOCKSIZE - camera_offset, BS));
 
 		if (m_use_tangent_vertices) {
-			scene::IMeshManipulator* meshmanip =
+			scene::IMeshManipulator *meshmanip =
 				RenderingEngine::get_scene_manager()->getMeshManipulator();
 			meshmanip->recalculateTangents(m_mesh[layer], true, false, false);
 		}

@@ -25,8 +25,8 @@ numerical
 
 
 //! constructor
-GUIEditBoxWithScrollBar::GUIEditBoxWithScrollBar(const wchar_t* text, bool border,
-	IGUIEnvironment* environment, IGUIElement* parent, s32 id,
+GUIEditBoxWithScrollBar::GUIEditBoxWithScrollBar(const wchar_t *text, bool border,
+	IGUIEnvironment *environment, IGUIElement *parent, s32 id,
 	const core::rect<s32>& rectangle, bool writable, bool has_vscrollbar)
 	: IGUIEditBox(environment, parent, id, rectangle), m_mouse_marking(false),
 	m_border(border), m_background(true), m_override_color_enabled(false), m_mark_begin(0), m_mark_end(0),
@@ -81,7 +81,7 @@ GUIEditBoxWithScrollBar::~GUIEditBoxWithScrollBar()
 
 
 //! Sets another skin independent font.
-void GUIEditBoxWithScrollBar::setOverrideFont(IGUIFont* font)
+void GUIEditBoxWithScrollBar::setOverrideFont(IGUIFont *font)
 {
 	if (m_override_font == font)
 		return;
@@ -98,17 +98,17 @@ void GUIEditBoxWithScrollBar::setOverrideFont(IGUIFont* font)
 }
 
 //! Gets the override font (if any)
-IGUIFont * GUIEditBoxWithScrollBar::getOverrideFont() const
+IGUIFont *GUIEditBoxWithScrollBar::getOverrideFont() const
 {
 	return m_override_font;
 }
 
 //! Get the font which is used right now for drawing
-IGUIFont* GUIEditBoxWithScrollBar::getActiveFont() const
+IGUIFont *GUIEditBoxWithScrollBar::getActiveFont() const
 {
 	if (m_override_font)
 		return m_override_font;
-	IGUISkin* skin = Environment->getSkin();
+	IGUISkin *skin = Environment->getSkin();
 	if (skin)
 		return skin->getFont();
 	return 0;
@@ -218,7 +218,7 @@ void GUIEditBoxWithScrollBar::setTextAlignment(EGUI_ALIGNMENT horizontal, EGUI_A
 
 
 //! called if an event happened.
-bool GUIEditBoxWithScrollBar::OnEvent(const SEvent& event)
+bool GUIEditBoxWithScrollBar::OnEvent(const SEvent &event)
 {
 	if (isEnabled()) {
 		switch (event.EventType)
@@ -248,7 +248,7 @@ bool GUIEditBoxWithScrollBar::OnEvent(const SEvent& event)
 }
 
 
-bool GUIEditBoxWithScrollBar::processKey(const SEvent& event)
+bool GUIEditBoxWithScrollBar::processKey(const SEvent &event)
 {
 	if (!m_writable) {
 		return false;
@@ -325,7 +325,7 @@ bool GUIEditBoxWithScrollBar::processKey(const SEvent& event)
 				const s32 realmend = m_mark_begin < m_mark_end ? m_mark_end : m_mark_begin;
 
 				// add new character
-				const c8* p = m_operator->getTextFromClipboard();
+				const c8 *p = m_operator->getTextFromClipboard();
 				if (p) {
 					if (m_mark_begin == m_mark_end) {
 						// insert text
@@ -659,7 +659,7 @@ void GUIEditBoxWithScrollBar::draw()
 
 	const bool focus = Environment->hasFocus(this);
 
-	IGUISkin* skin = Environment->getSkin();
+	IGUISkin *skin = Environment->getSkin();
 	if (!skin)
 		return;
 
@@ -690,7 +690,7 @@ void GUIEditBoxWithScrollBar::draw()
 
 	// draw the text
 
-	IGUIFont* font = getActiveFont();
+	IGUIFont *font = getActiveFont();
 
 	s32 cursor_line = 0;
 	s32 charcursorpos = 0;
@@ -840,7 +840,7 @@ void GUIEditBoxWithScrollBar::draw()
 
 
 //! Sets the new caption of this element.
-void GUIEditBoxWithScrollBar::setText(const wchar_t* text)
+void GUIEditBoxWithScrollBar::setText(const wchar_t *text)
 {
 	Text = text;
 	if (u32(m_cursor_pos) > Text.size())
@@ -904,7 +904,7 @@ u32 GUIEditBoxWithScrollBar::getMax() const
 }
 
 
-bool GUIEditBoxWithScrollBar::processMouse(const SEvent& event)
+bool GUIEditBoxWithScrollBar::processMouse(const SEvent &event)
 {
 	switch (event.MouseInput.Event)
 	{
@@ -966,7 +966,7 @@ bool GUIEditBoxWithScrollBar::processMouse(const SEvent& event)
 
 s32 GUIEditBoxWithScrollBar::getCursorPos(s32 x, s32 y)
 {
-	IGUIFont* font = getActiveFont();
+	IGUIFont *font = getActiveFont();
 
 	const u32 line_count = (m_word_wrap || m_multiline) ? m_broken_text.size() : 1;
 
@@ -1016,7 +1016,7 @@ void GUIEditBoxWithScrollBar::breakText()
 	m_broken_text.clear(); // need to reallocate :/
 	m_broken_text_positions.clear();
 
-	IGUIFont* font = getActiveFont();
+	IGUIFont *font = getActiveFont();
 	if (!font)
 		return;
 
@@ -1118,7 +1118,7 @@ void GUIEditBoxWithScrollBar::setTextRect(s32 line)
 	if (line < 0)
 		return;
 
-	IGUIFont* font = getActiveFont();
+	IGUIFont *font = getActiveFont();
 	if (!font)
 		return;
 
@@ -1237,10 +1237,10 @@ void GUIEditBoxWithScrollBar::calculateScrollPos()
 	if (!m_autoscroll)
 		return;
 
-	IGUISkin* skin = Environment->getSkin();
+	IGUISkin *skin = Environment->getSkin();
 	if (!skin)
 		return;
-	IGUIFont* font = m_override_font ? m_override_font : skin->getFont();
+	IGUIFont *font = m_override_font ? m_override_font : skin->getFont();
 	if (!font)
 		return;
 
@@ -1254,7 +1254,7 @@ void GUIEditBoxWithScrollBar::calculateScrollPos()
 	// NOTE: Calculations different to vertical scrolling because setTextRect interprets VAlign relative to line but HAlign not relative to row
 	{
 		// get cursor position
-		IGUIFont* font = getActiveFont();
+		IGUIFont *font = getActiveFont();
 		if (!font)
 			return;
 
@@ -1468,7 +1468,7 @@ void GUIEditBoxWithScrollBar::setBackgroundColor(const video::SColor &bg_color)
 }
 
 //! Writes attributes of the element.
-void GUIEditBoxWithScrollBar::serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options = 0) const
+void GUIEditBoxWithScrollBar::serializeAttributes(io::IAttributes *out, io::SAttributeReadWriteOptions *options = 0) const
 {
 	// IGUIEditBox::serializeAttributes(out,options);
 
@@ -1494,7 +1494,7 @@ void GUIEditBoxWithScrollBar::serializeAttributes(io::IAttributes* out, io::SAtt
 
 
 //! Reads attributes of the element
-void GUIEditBoxWithScrollBar::deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options = 0)
+void GUIEditBoxWithScrollBar::deserializeAttributes(io::IAttributes *in, io::SAttributeReadWriteOptions *options = 0)
 {
 	IGUIEditBox::deserializeAttributes(in, options);
 

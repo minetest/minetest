@@ -248,7 +248,7 @@ bool step_rel_block_pos(direction dir, relative_v3 &rel_pos,
  */
 void unspread_light(Map *map, const NodeDefManager *nodemgr, LightBank bank,
 	UnlightQueue &from_nodes, ReLightQueue &light_sources,
-	std::map<v3s16, MapBlock*> &modified_blocks)
+	std::map<v3s16, MapBlock *> &modified_blocks)
 {
 	// Stores data popped from from_nodes
 	u8 current_light;
@@ -352,7 +352,7 @@ void unspread_light(Map *map, const NodeDefManager *nodemgr, LightBank bank,
  */
 void spread_light(Map *map, const NodeDefManager *nodemgr, LightBank bank,
 	LightQueue &light_sources,
-	std::map<v3s16, MapBlock*> &modified_blocks)
+	std::map<v3s16, MapBlock *> &modified_blocks)
 {
 	// The light the current node can provide to its neighbors.
 	u8 spreading_light;
@@ -468,7 +468,7 @@ static const LightBank banks[] = { LIGHTBANK_DAY, LIGHTBANK_NIGHT };
 
 void update_lighting_nodes(Map *map,
 	std::vector<std::pair<v3s16, MapNode> > &oldnodes,
-	std::map<v3s16, MapBlock*> &modified_blocks)
+	std::map<v3s16, MapBlock *> &modified_blocks)
 {
 	const NodeDefManager *ndef = map->getNodeDefManager();
 	// For node getter functions
@@ -689,7 +689,7 @@ bool is_light_locally_correct(Map *map, const NodeDefManager *ndef,
 }
 
 void update_block_border_lighting(Map *map, MapBlock *block,
-	std::map<v3s16, MapBlock*> &modified_blocks)
+	std::map<v3s16, MapBlock *> &modified_blocks)
 {
 	const NodeDefManager *ndef = map->getNodeDefManager();
 	bool is_valid_position;
@@ -978,7 +978,7 @@ const VoxelArea block_pad[] = {
  */
 void finish_bulk_light_update(Map *map, mapblock_v3 minblock,
 	mapblock_v3 maxblock, UnlightQueue unlight[2], ReLightQueue relight[2],
-	std::map<v3s16, MapBlock*> *modified_blocks)
+	std::map<v3s16, MapBlock *> *modified_blocks)
 {
 	const NodeDefManager *ndef = map->getNodeDefManager();
 	// dummy boolean
@@ -1047,7 +1047,7 @@ void finish_bulk_light_update(Map *map, mapblock_v3 minblock,
 }
 
 void blit_back_with_light(ServerMap *map, MMVManip *vm,
-	std::map<v3s16, MapBlock*> *modified_blocks)
+	std::map<v3s16, MapBlock *> *modified_blocks)
 {
 	const NodeDefManager *ndef = map->getNodeDefManager();
 	mapblock_v3 minblock = getNodeBlockPos(vm->m_area.MinEdge);
@@ -1190,7 +1190,7 @@ void fill_with_sunlight(MapBlock *block, const NodeDefManager *ndef,
 }
 
 void repair_block_light(ServerMap *map, MapBlock *block,
-	std::map<v3s16, MapBlock*> *modified_blocks)
+	std::map<v3s16, MapBlock *> *modified_blocks)
 {
 	if (!block || block->isDummy())
 		return;
@@ -1331,4 +1331,3 @@ s16 VoxelLineIterator::getIndex(v3s16 voxel){
 }
 
 } // namespace voxalgo
-

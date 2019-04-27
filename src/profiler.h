@@ -163,7 +163,7 @@ public:
 		m_graphvalues.clear();
 	}
 
-	void remove(const std::string& name)
+	void remove(const std::string &name)
 	{
 		MutexAutoLock lock(m_mutex);
 		m_avgcounts.erase(name);

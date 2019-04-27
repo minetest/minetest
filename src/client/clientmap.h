@@ -90,7 +90,7 @@ public:
 
 	virtual void render()
 	{
-		video::IVideoDriver* driver = SceneManager->getVideoDriver();
+		video::IVideoDriver *driver = SceneManager->getVideoDriver();
 		driver->setTransform(video::ETS_WORLD, AbsoluteTransformation);
 		renderMap(driver, SceneManager->getSceneNodeRenderPass());
 	}
@@ -103,7 +103,7 @@ public:
 	void getBlocksInViewRange(v3s16 cam_pos_nodes,
 		v3s16 *p_blocks_min, v3s16 *p_blocks_max);
 	void updateDrawList();
-	void renderMap(video::IVideoDriver* driver, s32 pass);
+	void renderMap(video::IVideoDriver *driver, s32 pass);
 
 	int getBackgroundBrightness(float max_d, u32 daylight_factor,
 			int oldvalue, bool *sunlight_seen_result);
@@ -128,7 +128,7 @@ private:
 	f32 m_camera_fov = M_PI;
 	v3s16 m_camera_offset;
 
-	std::map<v3s16, MapBlock*> m_drawlist;
+	std::map<v3s16, MapBlock *> m_drawlist;
 
 	std::set<v2s16> m_last_drawn_sectors;
 

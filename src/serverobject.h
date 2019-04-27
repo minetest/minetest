@@ -71,7 +71,7 @@ public:
 	{ return true; }
 
 	// Create a certain type of ServerActiveObject
-	static ServerActiveObject* create(ActiveObjectType type,
+	static ServerActiveObject *create(ActiveObjectType type,
 			ServerEnvironment *env, u16 id, v3f pos,
 			const std::string &data);
 
@@ -80,7 +80,7 @@ public:
 	*/
 	v3f getBasePosition() const { return m_base_position; }
 	void setBasePosition(v3f pos){ m_base_position = pos; }
-	ServerEnvironment* getEnv(){ return m_env; }
+	ServerEnvironment *getEnv(){ return m_env; }
 
 	/*
 		Some more dynamic interface
@@ -174,15 +174,15 @@ public:
 	virtual const std::unordered_set<int> &getAttachmentChildIds()
 	{ static std::unordered_set<int> rv; return rv; }
 	virtual ServerActiveObject *getParent() const { return nullptr; }
-	virtual ObjectProperties* accessObjectProperties()
+	virtual ObjectProperties *accessObjectProperties()
 	{ return NULL; }
 	virtual void notifyObjectPropertiesModified()
 	{}
 
 	// Inventory and wielded item
-	virtual Inventory* getInventory()
+	virtual Inventory *getInventory()
 	{ return NULL; }
-	virtual const Inventory* getInventory() const
+	virtual const Inventory *getInventory() const
 	{ return NULL; }
 	virtual InventoryLocation getInventoryLocation() const
 	{ return InventoryLocation(); }

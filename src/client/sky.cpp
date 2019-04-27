@@ -118,8 +118,8 @@ void Sky::render()
 	if (!m_visible)
 		return;
 
-	video::IVideoDriver* driver = SceneManager->getVideoDriver();
-	scene::ICameraSceneNode* camera = SceneManager->getActiveCamera();
+	video::IVideoDriver *driver = SceneManager->getVideoDriver();
+	scene::ICameraSceneNode *camera = SceneManager->getActiveCamera();
 
 	if (!camera || !driver)
 		return;
@@ -179,7 +179,7 @@ void Sky::render()
 
 		if (m_sun_tonemap) {
 			u8 * texels = (u8 *)m_sun_tonemap->lock();
-			video::SColor* texel = (video::SColor *)(texels + (u32)offset * 4);
+			video::SColor *texel = (video::SColor *)(texels + (u32)offset * 4);
 			video::SColor texel_color (255, texel->getRed(),
 				texel->getGreen(), texel->getBlue());
 			m_sun_tonemap->unlock();
@@ -188,7 +188,7 @@ void Sky::render()
 
 		if (m_moon_tonemap) {
 			u8 * texels = (u8 *)m_moon_tonemap->lock();
-			video::SColor* texel = (video::SColor *)(texels + (u32)offset * 4);
+			video::SColor *texel = (video::SColor *)(texels + (u32)offset * 4);
 			video::SColor texel_color (255, texel->getRed(),
 				texel->getGreen(), texel->getBlue());
 			m_moon_tonemap->unlock();
@@ -260,9 +260,9 @@ void Sky::render()
 		do {
 			driver->setMaterial(m_materials[1]);
 			// Tune values so that stars first appear just after the sun
-			// disappears over the horizon, and disappear just before the sun 
+			// disappears over the horizon, and disappear just before the sun
 			// appears over the horizon.
-			// Also tune so that stars are at full brightness from time 20000 to 
+			// Also tune so that stars are at full brightness from time 20000 to
 			// time 4000.
 			float starbrightness = MYMAX(0, MYMIN(1,
 				(0.25 - fabs(wicked_time_of_day < 0.5 ?

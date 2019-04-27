@@ -34,7 +34,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define MY_ETLM_READ_ONLY video::ETLM_READ_ONLY
 #endif
 
-inline static void applyShadeFactor(video::SColor& color, float factor)
+inline static void applyShadeFactor(video::SColor &color, float factor)
 {
 	color.setRed(core::clamp(core::round32(color.getRed()*factor), 0, 255));
 	color.setGreen(core::clamp(core::round32(color.getGreen()*factor), 0, 255));
@@ -61,7 +61,7 @@ void applyFacesShading(video::SColor &color, const v3f &normal)
 		applyShadeFactor(color, 0.670820f * x2 + 1.000000f * y2 + 0.836660f * z2);
 }
 
-scene::IAnimatedMesh* createCubeMesh(v3f scale)
+scene::IAnimatedMesh *createCubeMesh(v3f scale)
 {
 	video::SColor c(255,255,255,255);
 	video::S3DVertex vertices[24] =
@@ -395,7 +395,7 @@ void recalculateBoundingBox(scene::IMesh *src_mesh)
 	src_mesh->setBoundingBox(bbox);
 }
 
-scene::IMeshBuffer* cloneMeshBuffer(scene::IMeshBuffer *mesh_buffer)
+scene::IMeshBuffer *cloneMeshBuffer(scene::IMeshBuffer *mesh_buffer)
 {
 	switch (mesh_buffer->getVertexType()) {
 	case video::EVT_STANDARD: {
@@ -432,9 +432,9 @@ scene::IMeshBuffer* cloneMeshBuffer(scene::IMeshBuffer *mesh_buffer)
 	return NULL;
 }
 
-scene::SMesh* cloneMesh(scene::IMesh *src_mesh)
+scene::SMesh *cloneMesh(scene::IMesh *src_mesh)
 {
-	scene::SMesh* dst_mesh = new scene::SMesh();
+	scene::SMesh *dst_mesh = new scene::SMesh();
 	for (u16 j = 0; j < src_mesh->getMeshBufferCount(); j++) {
 		scene::IMeshBuffer *temp_buf = cloneMeshBuffer(
 			src_mesh->getMeshBuffer(j));
@@ -445,10 +445,10 @@ scene::SMesh* cloneMesh(scene::IMesh *src_mesh)
 	return dst_mesh;
 }
 
-scene::IMesh* convertNodeboxesToMesh(const std::vector<aabb3f> &boxes,
+scene::IMesh *convertNodeboxesToMesh(const std::vector<aabb3f> &boxes,
 		const f32 *uv_coords, float expand)
 {
-	scene::SMesh* dst_mesh = new scene::SMesh();
+	scene::SMesh *dst_mesh = new scene::SMesh();
 
 	for (u16 j = 0; j < 6; j++)
 	{
@@ -713,7 +713,7 @@ http://home.comcast.net/~tom_forsyth/papers/fast_vert_cache_opt.html
 The function is thread-safe (read: you can optimize several meshes in different threads)
 
 \param mesh Source mesh for the operation.  */
-scene::IMesh* createForsythOptimizedMesh(const scene::IMesh *mesh)
+scene::IMesh *createForsythOptimizedMesh(const scene::IMesh *mesh)
 {
 	if (!mesh)
 		return 0;

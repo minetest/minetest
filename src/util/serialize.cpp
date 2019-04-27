@@ -201,7 +201,7 @@ std::string serializeLongString(const std::string &plain)
 	if (plain.size() > LONG_STRING_MAX_LEN)
 		throw SerializationError("String too long for serializeLongString");
 
-	writeU32((u8*)&buf[0], plain.size());
+	writeU32((u8 *)&buf[0], plain.size());
 	std::string s;
 	s.append(buf, 4);
 	s.append(plain);

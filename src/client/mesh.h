@@ -35,7 +35,7 @@ void applyFacesShading(video::SColor &color, const v3f &normal);
 	The resulting mesh has 6 materials (up, down, right, left, back, front)
 	which must be defined by the caller.
 */
-scene::IAnimatedMesh* createCubeMesh(v3f scale);
+scene::IAnimatedMesh *createCubeMesh(v3f scale);
 
 /*
 	Multiplies each vertex coordinate by the specified scaling factors
@@ -100,12 +100,12 @@ void rotateMeshYZby (scene::IMesh *mesh, f64 degrees);
  *  Clone the mesh buffer.
  *  The returned pointer should be dropped.
  */
-scene::IMeshBuffer* cloneMeshBuffer(scene::IMeshBuffer *mesh_buffer);
+scene::IMeshBuffer *cloneMeshBuffer(scene::IMeshBuffer *mesh_buffer);
 
 /*
 	Clone the mesh.
 */
-scene::SMesh* cloneMesh(scene::IMesh *src_mesh);
+scene::SMesh *cloneMesh(scene::IMesh *src_mesh);
 
 /*
 	Convert nodeboxes to mesh. Each tile goes into a different buffer.
@@ -113,7 +113,7 @@ scene::SMesh* cloneMesh(scene::IMesh *src_mesh);
 	uv_coords[24] - table of texture uv coords for each cuboid face
 	expand - factor by which cuboids will be resized
 */
-scene::IMesh* convertNodeboxesToMesh(const std::vector<aabb3f> &boxes,
+scene::IMesh *convertNodeboxesToMesh(const std::vector<aabb3f> &boxes,
 		const f32 *uv_coords = NULL, float expand = 0);
 
 /*
@@ -126,4 +126,4 @@ void recalculateBoundingBox(scene::IMesh *src_mesh);
 	http://home.comcast.net/~tom_forsyth/papers/fast_vert_cache_opt.html
 	Ported from irrlicht 1.8
 */
-scene::IMesh* createForsythOptimizedMesh(const scene::IMesh *mesh);
+scene::IMesh *createForsythOptimizedMesh(const scene::IMesh *mesh);

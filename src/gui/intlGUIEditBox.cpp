@@ -56,8 +56,8 @@ namespace gui
 {
 
 //! constructor
-intlGUIEditBox::intlGUIEditBox(const wchar_t* text, bool border,
-		IGUIEnvironment* environment, IGUIElement* parent, s32 id,
+intlGUIEditBox::intlGUIEditBox(const wchar_t *text, bool border,
+		IGUIEnvironment *environment, IGUIElement *parent, s32 id,
 		const core::rect<s32>& rectangle, bool writable, bool has_vscrollbar)
 	: IGUIEditBox(environment, parent, id, rectangle),
 	Border(border), FrameRect(rectangle),
@@ -117,7 +117,7 @@ intlGUIEditBox::~intlGUIEditBox()
 
 
 //! Sets another skin independent font.
-void intlGUIEditBox::setOverrideFont(IGUIFont* font)
+void intlGUIEditBox::setOverrideFont(IGUIFont *font)
 {
 	if (OverrideFont == font)
 		return;
@@ -139,11 +139,11 @@ IGUIFont * intlGUIEditBox::getOverrideFont() const
 }
 
 //! Get the font which is used right now for drawing
-IGUIFont* intlGUIEditBox::getActiveFont() const
+IGUIFont *intlGUIEditBox::getActiveFont() const
 {
 	if ( OverrideFont )
 		return OverrideFont;
-	IGUISkin* skin = Environment->getSkin();
+	IGUISkin *skin = Environment->getSkin();
 	if (skin)
 		return skin->getFont();
 	return 0;
@@ -251,7 +251,7 @@ void intlGUIEditBox::setTextAlignment(EGUI_ALIGNMENT horizontal, EGUI_ALIGNMENT 
 
 
 //! called if an event happened.
-bool intlGUIEditBox::OnEvent(const SEvent& event)
+bool intlGUIEditBox::OnEvent(const SEvent &event)
 {
 	if (IsEnabled)
 	{
@@ -306,7 +306,7 @@ bool intlGUIEditBox::OnEvent(const SEvent& event)
 }
 
 
-bool intlGUIEditBox::processKey(const SEvent& event)
+bool intlGUIEditBox::processKey(const SEvent &event)
 {
 	if (!event.KeyInput.PressedDown)
 		return false;
@@ -381,7 +381,7 @@ bool intlGUIEditBox::processKey(const SEvent& event)
 				const s32 realmend = MarkBegin < MarkEnd ? MarkEnd : MarkBegin;
 
 				// add new character
-				const c8* p = Operator->getTextFromClipboard();
+				const c8 *p = Operator->getTextFromClipboard();
 				if (p)
 				{
 					if (MarkBegin == MarkEnd)
@@ -761,7 +761,7 @@ void intlGUIEditBox::draw()
 
 	const bool focus = Environment->hasFocus(this);
 
-	IGUISkin* skin = Environment->getSkin();
+	IGUISkin *skin = Environment->getSkin();
 	if (!skin)
 		return;
 
@@ -788,7 +788,7 @@ void intlGUIEditBox::draw()
 
 	// draw the text
 
-	IGUIFont* font = OverrideFont;
+	IGUIFont *font = OverrideFont;
 	if (!OverrideFont)
 		font = skin->getFont();
 
@@ -952,7 +952,7 @@ void intlGUIEditBox::draw()
 
 
 //! Sets the new caption of this element.
-void intlGUIEditBox::setText(const wchar_t* text)
+void intlGUIEditBox::setText(const wchar_t *text)
 {
 	Text = text;
 	if (u32(CursorPos) > Text.size())
@@ -1017,7 +1017,7 @@ u32 intlGUIEditBox::getMax() const
 }
 
 
-bool intlGUIEditBox::processMouse(const SEvent& event)
+bool intlGUIEditBox::processMouse(const SEvent &event)
 {
 	switch(event.MouseInput.Event)
 	{
@@ -1093,8 +1093,8 @@ bool intlGUIEditBox::processMouse(const SEvent& event)
 
 s32 intlGUIEditBox::getCursorPos(s32 x, s32 y)
 {
-	IGUIFont* font = OverrideFont;
-	IGUISkin* skin = Environment->getSkin();
+	IGUIFont *font = OverrideFont;
+	IGUISkin *skin = Environment->getSkin();
 	if (!OverrideFont)
 		font = skin->getFont();
 
@@ -1139,7 +1139,7 @@ s32 intlGUIEditBox::getCursorPos(s32 x, s32 y)
 //! Breaks the single text line.
 void intlGUIEditBox::breakText()
 {
-	IGUISkin* skin = Environment->getSkin();
+	IGUISkin *skin = Environment->getSkin();
 
 	if ((!WordWrap && !MultiLine) || !skin)
 		return;
@@ -1147,7 +1147,7 @@ void intlGUIEditBox::breakText()
 	BrokenText.clear(); // need to reallocate :/
 	BrokenTextPositions.set_used(0);
 
-	IGUIFont* font = OverrideFont;
+	IGUIFont *font = OverrideFont;
 	if (!OverrideFont)
 		font = skin->getFont();
 
@@ -1253,11 +1253,11 @@ void intlGUIEditBox::setTextRect(s32 line)
 {
 	core::dimension2du d;
 
-	IGUISkin* skin = Environment->getSkin();
+	IGUISkin *skin = Environment->getSkin();
 	if (!skin)
 		return;
 
-	IGUIFont* font = OverrideFont ? OverrideFont : skin->getFont();
+	IGUIFont *font = OverrideFont ? OverrideFont : skin->getFont();
 
 	if (!font)
 		return;
@@ -1395,10 +1395,10 @@ void intlGUIEditBox::calculateScrollPos()
 	if (!WordWrap)
 	{
 		// get cursor position
-		IGUISkin* skin = Environment->getSkin();
+		IGUISkin *skin = Environment->getSkin();
 		if (!skin)
 			return;
-		IGUIFont* font = OverrideFont ? OverrideFont : skin->getFont();
+		IGUIFont *font = OverrideFont ? OverrideFont : skin->getFont();
 		if (!font)
 			return;
 
@@ -1468,8 +1468,8 @@ void intlGUIEditBox::createVScrollBar()
 	if (OverrideFont) {
 		fontHeight = OverrideFont->getDimension(L"").Height;
 	} else {
-		if (IGUISkin* skin = Environment->getSkin()) {
-			if (IGUIFont* font = skin->getFont()) {
+		if (IGUISkin *skin = Environment->getSkin()) {
+			if (IGUIFont *font = skin->getFont()) {
 				fontHeight = font->getDimension(L"").Height;
 			}
 		}
@@ -1538,7 +1538,7 @@ void intlGUIEditBox::setWritable(bool can_write_text)
 }
 
 //! Writes attributes of the element.
-void intlGUIEditBox::serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options=0) const
+void intlGUIEditBox::serializeAttributes(io::IAttributes *out, io::SAttributeReadWriteOptions *options = 0) const
 {
 	// IGUIEditBox::serializeAttributes(out,options);
 
@@ -1562,7 +1562,7 @@ void intlGUIEditBox::serializeAttributes(io::IAttributes* out, io::SAttributeRea
 
 
 //! Reads attributes of the element
-void intlGUIEditBox::deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options=0)
+void intlGUIEditBox::deserializeAttributes(io::IAttributes *in, io::SAttributeReadWriteOptions *options = 0)
 {
 	IGUIEditBox::deserializeAttributes(in,options);
 

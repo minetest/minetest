@@ -320,7 +320,7 @@ void fillViewConeBlock(v3s16 p0,
 	}
 }
 
-void ActiveBlockList::update(std::vector<PlayerSAO*> &active_players,
+void ActiveBlockList::update(std::vector<PlayerSAO *> &active_players,
 	s16 active_block_range,
 	s16 active_object_range,
 	std::set<v3s16> &blocks_removed,
@@ -499,7 +499,7 @@ RemotePlayer *ServerEnvironment::getPlayer(const session_t peer_id)
 	return NULL;
 }
 
-RemotePlayer *ServerEnvironment::getPlayer(const char* name)
+RemotePlayer *ServerEnvironment::getPlayer(const char *name)
 {
 	for (RemotePlayer *player : m_players) {
 		if (strcmp(player->getName(), name) == 0)
@@ -1239,7 +1239,7 @@ void ServerEnvironment::step(float dtime)
 		/*
 			Get player block positions
 		*/
-		std::vector<PlayerSAO*> players;
+		std::vector<PlayerSAO *> players;
 		for (RemotePlayer *player: m_players) {
 			// Ignore disconnected players
 			if (player->getPeerId() == PEER_ID_INEXISTENT)
@@ -1603,7 +1603,7 @@ void ServerEnvironment::getSelectedActiveObjects(
 	const v3f line_vector = shootline_on_map.getVector();
 
 	for (u16 objectId : objectIds) {
-		ServerActiveObject* obj = getActiveObject(objectId);
+		ServerActiveObject *obj = getActiveObject(objectId);
 
 		aabb3f selection_box;
 		if (!obj->getSelectionBox(&selection_box))

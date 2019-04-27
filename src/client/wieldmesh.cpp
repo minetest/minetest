@@ -155,7 +155,7 @@ public:
 	}
 	// Get closest extrusion mesh for given image dimensions
 	// Caller must drop the returned pointer
-	scene::IMesh* create(core::dimension2d<u32> dim)
+	scene::IMesh *create(core::dimension2d<u32> dim)
 	{
 		// handle non-power of two textures inefficiently without cache
 		if (!is_power_of_two(dim.Width) || !is_power_of_two(dim.Height)) {
@@ -179,7 +179,7 @@ public:
 	}
 	// Returns a 1x1x1 cube mesh with one meshbuffer (material) per face
 	// Caller must drop the returned pointer
-	scene::IMesh* createCube()
+	scene::IMesh *createCube()
 	{
 		m_cube->grab();
 		return m_cube;
@@ -504,7 +504,7 @@ void getItemMesh(Client *client, const ItemStack &item, ItemMesh *result)
 	content_t id = ndef->getId(def.name);
 
 	FATAL_ERROR_IF(!g_extrusion_mesh_cache, "Extrusion mesh cache is not yet initialized");
-	
+
 	scene::SMesh *mesh = nullptr;
 
 	// Shading is on by default

@@ -51,7 +51,7 @@ public:
 	ActiveObjectType getType() const
 	{ return ACTIVEOBJECT_TYPE_TEST; }
 
-	static ServerActiveObject* create(ServerEnvironment *env, v3f pos,
+	static ServerActiveObject *create(ServerEnvironment *env, v3f pos,
 			const std::string &data)
 	{
 		return new TestSAO(env, pos);
@@ -279,7 +279,7 @@ void UnitSAO::onDetach(int parent_id)
 		m_env->getScriptIface()->luaentity_on_detach_child(parent_id, this);
 }
 
-ObjectProperties* UnitSAO::accessObjectProperties()
+ObjectProperties *UnitSAO::accessObjectProperties()
 {
 	return &m_prop;
 }
@@ -342,7 +342,7 @@ void LuaEntitySAO::addedToEnvironment(u32 dtime_s)
 	}
 }
 
-ServerActiveObject* LuaEntitySAO::create(ServerEnvironment *env, v3f pos,
+ServerActiveObject *LuaEntitySAO::create(ServerEnvironment *env, v3f pos,
 		const std::string &data)
 {
 	std::string name;
@@ -1363,11 +1363,11 @@ void PlayerSAO::setBreath(const u16 breath, bool send)
 		m_env->getGameDef()->SendPlayerBreath(this);
 }
 
-Inventory* PlayerSAO::getInventory()
+Inventory *PlayerSAO::getInventory()
 {
 	return m_inventory;
 }
-const Inventory* PlayerSAO::getInventory() const
+const Inventory *PlayerSAO::getInventory() const
 {
 	return m_inventory;
 }

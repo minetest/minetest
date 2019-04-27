@@ -121,14 +121,14 @@ SRP_Result srp_create_salted_verification_key(SRP_HashAlgorithm alg,
  *
  * Returns pointer to SRPVerifier on success, and NULL on error.
  */
-struct SRPVerifier* srp_verifier_new(SRP_HashAlgorithm alg, SRP_NGType ng_type,
+struct SRPVerifier *srp_verifier_new(SRP_HashAlgorithm alg, SRP_NGType ng_type,
 	const char *username,
 	const unsigned char *bytes_s, size_t len_s,
 	const unsigned char *bytes_v, size_t len_v,
 	const unsigned char *bytes_A, size_t len_A,
 	const unsigned char *bytes_b, size_t len_b,
 	unsigned char** bytes_B, size_t *len_B,
-	const char* n_hex, const char* g_hex);
+	const char *n_hex, const char *g_hex);
 
 // clang-format on
 
@@ -175,9 +175,9 @@ size_t srp_user_get_session_key_length(struct SRPUser *usr);
 /* Output: username, bytes_A, len_A.
  * If you don't want it get written, set username to NULL.
  * If bytes_a == NULL, random data is used for a. */
-SRP_Result srp_user_start_authentication(struct SRPUser* usr, char **username,
+SRP_Result srp_user_start_authentication(struct SRPUser *usr, char **username,
 	const unsigned char *bytes_a, size_t len_a,
-	unsigned char **bytes_A, size_t* len_A);
+	unsigned char **bytes_A, size_t *len_A);
 
 /* Output: bytes_M, len_M  (len_M may be null and will always be
  *                          srp_user_get_session_key_length() bytes in size) */

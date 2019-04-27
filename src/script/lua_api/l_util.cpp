@@ -459,7 +459,7 @@ int ModApiUtil::l_sha1(lua_State *L)
 		SHA1 ctx;
 		ctx.addBytes(data, size);
 		unsigned char *data_tmpdigest = ctx.getDigest();
-		data_sha1.assign((char*) data_tmpdigest, 20);
+		data_sha1.assign((char *) data_tmpdigest, 20);
 		free(data_tmpdigest);
 	}
 
@@ -562,4 +562,3 @@ void ModApiUtil::InitializeAsync(lua_State *L, int top)
 	LuaSettings::create(L, g_settings, g_settings_path);
 	lua_setfield(L, top, "settings");
 }
-

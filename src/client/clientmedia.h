@@ -111,10 +111,10 @@ private:
 			std::set<std::string> &result);
 
 	// Maps filename to file status
-	std::map<std::string, FileStatus*> m_files;
+	std::map<std::string, FileStatus *> m_files;
 
 	// Array of remote media servers
-	std::vector<RemoteServerStatus*> m_remotes;
+	std::vector<RemoteServerStatus *> m_remotes;
 
 	// Filesystem-based media cache
 	FileCache m_media_cache;

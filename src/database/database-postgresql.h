@@ -70,7 +70,7 @@ protected:
 		bool clear = true, bool nobinary = true)
 	{
 		return checkResults(PQexecPrepared(m_conn, stmtName, paramsNumber,
-			(const char* const*) params, paramsLengths, paramsFormats,
+			(const char * const *) params, paramsLengths, paramsFormats,
 			nobinary ? 1 : 0), clear);
 	}
 

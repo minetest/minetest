@@ -39,7 +39,7 @@ static std::map<std::wstring, std::wstring> glb_supported_locales;
 /******************************************************************************/
 BOOL CALLBACK UpdateLocaleCallback(LPTSTR pStr)
 {
-	char* endptr = 0;
+	char *endptr = 0;
 	int LOCALEID = strtol(pStr, &endptr,16);
 
 	wchar_t buffer[LOCALE_NAME_MAX_LENGTH];
@@ -78,7 +78,7 @@ BOOL CALLBACK UpdateLocaleCallback(LPTSTR pStr)
 }
 
 /******************************************************************************/
-const char* MSVC_LocaleLookup(const char* raw_shortname) {
+const char *MSVC_LocaleLookup(const char *raw_shortname) {
 
 	/* NULL is used to read locale only so we need to return it too */
 	if (raw_shortname == NULL) return NULL;

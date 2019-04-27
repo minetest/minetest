@@ -173,7 +173,7 @@ private:
 
 class ShaderCallback : public video::IShaderConstantSetCallBack
 {
-	std::vector<IShaderConstantSetter*> m_setters;
+	std::vector<IShaderConstantSetter *> m_setters;
 
 public:
 	ShaderCallback(const std::vector<IShaderConstantSetterFactory *> &factories)
@@ -247,7 +247,7 @@ public:
 class MainShaderConstantSetterFactory : public IShaderConstantSetterFactory
 {
 public:
-	virtual IShaderConstantSetter* create()
+	virtual IShaderConstantSetter *create()
 		{ return new MainShaderConstantSetter(); }
 };
 
@@ -599,7 +599,7 @@ ShaderInfo generate_shader(const std::string &name, u8 material_type, u8 drawtyp
 	// Create shaders header
 	std::string shaders_header = "#version 120\n";
 
-	static const char* drawTypes[] = {
+	static const char *drawTypes[] = {
 		"NDT_NORMAL",
 		"NDT_AIRLIKE",
 		"NDT_LIQUID",
@@ -627,7 +627,7 @@ ShaderInfo generate_shader(const std::string &name, u8 material_type, u8 drawtyp
 		shaders_header += "\n";
 	}
 
-	static const char* materialTypes[] = {
+	static const char *materialTypes[] = {
 		"TILE_MATERIAL_BASIC",
 		"TILE_MATERIAL_ALPHA",
 		"TILE_MATERIAL_LIQUID_TRANSPARENT",
@@ -747,9 +747,9 @@ ShaderInfo generate_shader(const std::string &name, u8 material_type, u8 drawtyp
 	shaders_header += "\n";
 
 	// Call addHighLevelShaderMaterial() or addShaderMaterial()
-	const c8* vertex_program_ptr = 0;
-	const c8* pixel_program_ptr = 0;
-	const c8* geometry_program_ptr = 0;
+	const c8 *vertex_program_ptr = 0;
+	const c8 *pixel_program_ptr = 0;
+	const c8 *geometry_program_ptr = 0;
 	if (!vertex_program.empty()) {
 		vertex_program = shaders_header + vertex_program;
 		vertex_program_ptr = vertex_program.c_str();

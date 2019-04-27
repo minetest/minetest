@@ -85,7 +85,7 @@ public:
 	// Get number of lines currently in buffer.
 	u32 getLineCount() const;
 	// Get reference to i-th chat line.
-	const ChatLine& getLine(u32 index) const;
+	const ChatLine &getLine(u32 index) const;
 
 	// Increase each chat line's age by dtime.
 	void step(f32 dtime);
@@ -102,7 +102,7 @@ public:
 	void reformat(u32 cols, u32 rows);
 	// Get formatted line for a given row (0 is top of screen).
 	// Only valid after reformat has been called at least once
-	const ChatFormattedLine& getFormattedLine(u32 row) const;
+	const ChatFormattedLine &getFormattedLine(u32 row) const;
 	// Scrolling in formatted buffer (relative)
 	// positive rows == scroll up, negative rows == scroll down
 	void scroll(s32 rows);
@@ -116,7 +116,7 @@ public:
 	// Format a chat line for the given number of columns.
 	// Appends the formatted lines to the destination array and
 	// returns the number of formatted lines.
-	u32 formatChatLine(const ChatLine& line, u32 cols,
+	u32 formatChatLine(const ChatLine &line, u32 cols,
 			std::vector<ChatFormattedLine>& destination) const;
 
 	void resize(u32 scrollback);
@@ -261,13 +261,13 @@ public:
 	void addUnparsedMessage(std::wstring line);
 
 	// Get the console buffer
-	ChatBuffer& getConsoleBuffer();
+	ChatBuffer &getConsoleBuffer();
 	// Get the recent messages buffer
-	ChatBuffer& getRecentBuffer();
+	ChatBuffer &getRecentBuffer();
 	// Concatenate all recent messages
 	EnrichedString getRecentChat() const;
 	// Get the console prompt
-	ChatPrompt& getPrompt();
+	ChatPrompt &getPrompt();
 
 	// Reformat all buffers
 	void reformat(u32 cols, u32 rows);

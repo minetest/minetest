@@ -175,7 +175,7 @@ LuaMinimap *LuaMinimap::checkobject(lua_State *L, int narg)
 	return *(LuaMinimap **)ud;  // unbox pointer
 }
 
-Minimap* LuaMinimap::getobject(LuaMinimap *ref)
+Minimap *LuaMinimap::getobject(LuaMinimap *ref)
 {
 	return ref->m_minimap;
 }

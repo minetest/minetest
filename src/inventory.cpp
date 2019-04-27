@@ -550,13 +550,13 @@ u32 InventoryList::getFreeSlots() const
 	return getSize() - getUsedSlots();
 }
 
-const ItemStack& InventoryList::getItem(u32 i) const
+const ItemStack &InventoryList::getItem(u32 i) const
 {
 	assert(i < m_size); // Pre-condition
 	return m_items[i];
 }
 
-ItemStack& InventoryList::getItem(u32 i)
+ItemStack &InventoryList::getItem(u32 i)
 {
 	assert(i < m_size); // Pre-condition
 	return m_items[i];
@@ -937,9 +937,9 @@ InventoryList * Inventory::getList(const std::string &name)
 	return m_lists[i];
 }
 
-std::vector<const InventoryList*> Inventory::getLists()
+std::vector<const InventoryList *> Inventory::getLists()
 {
-	std::vector<const InventoryList*> lists;
+	std::vector<const InventoryList *> lists;
 	for (auto list : m_lists) {
 		lists.push_back(list);
 	}

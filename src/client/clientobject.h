@@ -71,7 +71,7 @@ public:
 	virtual void initialize(const std::string &data){}
 
 	// Create a certain type of ClientActiveObject
-	static ClientActiveObject* create(ActiveObjectType type, Client *client,
+	static ClientActiveObject *create(ActiveObjectType type, Client *client,
 			ClientEnvironment *env);
 
 	// If returns true, punch will not be sent to the server

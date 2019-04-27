@@ -80,8 +80,8 @@ enum
 	GUI_ID_CB_AUTOJUMP,
 };
 
-GUIKeyChangeMenu::GUIKeyChangeMenu(gui::IGUIEnvironment* env,
-				gui::IGUIElement* parent, s32 id, IMenuManager *menumgr) :
+GUIKeyChangeMenu::GUIKeyChangeMenu(gui::IGUIEnvironment *env,
+				gui::IGUIElement *parent, s32 id, IMenuManager *menumgr) :
 GUIModalMenu(env, parent, id, menumgr)
 {
 	init_keys();
@@ -102,8 +102,8 @@ GUIKeyChangeMenu::~GUIKeyChangeMenu()
 
 void GUIKeyChangeMenu::removeChildren()
 {
-	const core::list<gui::IGUIElement*> &children = getChildren();
-	core::list<gui::IGUIElement*> children_copy;
+	const core::list<gui::IGUIElement *> &children = getChildren();
+	core::list<gui::IGUIElement *> children_copy;
 	for (gui::IGUIElement*i : children) {
 		children_copy.push_back(i);
 	}
@@ -233,10 +233,10 @@ void GUIKeyChangeMenu::regenerateGui(v2u32 screensize)
 
 void GUIKeyChangeMenu::drawMenu()
 {
-	gui::IGUISkin* skin = Environment->getSkin();
+	gui::IGUISkin *skin = Environment->getSkin();
 	if (!skin)
 		return;
-	video::IVideoDriver* driver = Environment->getVideoDriver();
+	video::IVideoDriver *driver = Environment->getVideoDriver();
 
 	video::SColor bgcolor(140, 0, 0, 0);
 	driver->draw2DRectangle(bgcolor, AbsoluteRect, &AbsoluteClippingRect);
@@ -253,17 +253,17 @@ bool GUIKeyChangeMenu::acceptInput()
 	{
 		gui::IGUIElement *e = getElementFromId(GUI_ID_CB_AUX1_DESCENDS);
 		if(e && e->getType() == gui::EGUIET_CHECK_BOX)
-			g_settings->setBool("aux1_descends", ((gui::IGUICheckBox*)e)->isChecked());
+			g_settings->setBool("aux1_descends", ((gui::IGUICheckBox *)e)->isChecked());
 	}
 	{
 		gui::IGUIElement *e = getElementFromId(GUI_ID_CB_DOUBLETAP_JUMP);
 		if(e && e->getType() == gui::EGUIET_CHECK_BOX)
-			g_settings->setBool("doubletap_jump", ((gui::IGUICheckBox*)e)->isChecked());
+			g_settings->setBool("doubletap_jump", ((gui::IGUICheckBox *)e)->isChecked());
 	}
 	{
 		gui::IGUIElement *e = getElementFromId(GUI_ID_CB_AUTOJUMP);
 		if(e && e->getType() == gui::EGUIET_CHECK_BOX)
-			g_settings->setBool("autojump", ((gui::IGUICheckBox*)e)->isChecked());
+			g_settings->setBool("autojump", ((gui::IGUICheckBox *)e)->isChecked());
 	}
 
 	clearKeyCache();
@@ -290,7 +290,7 @@ bool GUIKeyChangeMenu::resetMenu()
 	}
 	return true;
 }
-bool GUIKeyChangeMenu::OnEvent(const SEvent& event)
+bool GUIKeyChangeMenu::OnEvent(const SEvent &event)
 {
 	if (event.EventType == EET_KEY_INPUT_EVENT && activeKey >= 0
 			&& event.KeyInput.PressedDown) {

@@ -1309,8 +1309,8 @@ SharedBuffer<u8> ConnectionReceiveThread::handlePacketType_Reliable(Channel *cha
 			// we already have this packet so this one was on wire at least
 			// the current timeout
 			// we don't know how long this packet was on wire don't do silly guessing
-			// dynamic_cast<UDPPeer*>(&peer)->
-			//     reportRTT(dynamic_cast<UDPPeer*>(&peer)->getResendTimeout());
+			// dynamic_cast<UDPPeer *>(&peer)->
+			//     reportRTT(dynamic_cast<UDPPeer *>(&peer)->getResendTimeout());
 
 			throw ProcessedSilentlyException("Retransmitting ack for old packet");
 		}

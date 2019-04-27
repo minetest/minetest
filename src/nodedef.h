@@ -466,7 +466,7 @@ public:
 	 * @return properties of the given content type, or \ref CONTENT_UNKNOWN
 	 * if the given content type is not registered.
 	 */
-	inline const ContentFeatures& get(content_t c) const {
+	inline const ContentFeatures &get(content_t c) const {
 		return
 			c < m_content_features.size() ?
 				m_content_features[c] : m_content_features[CONTENT_UNKNOWN];
@@ -478,7 +478,7 @@ public:
 	 * @return properties of the given node or @ref CONTENT_UNKNOWN if the
 	 * given content type is not registered.
 	 */
-	inline const ContentFeatures& get(const MapNode &n) const {
+	inline const ContentFeatures &get(const MapNode &n) const {
 		return get(n.getContent());
 	}
 
@@ -488,7 +488,7 @@ public:
 	 * @return properties of the given node or @ref CONTENT_UNKNOWN if
 	 * not found
 	 */
-	const ContentFeatures& get(const std::string &name) const;
+	const ContentFeatures &get(const std::string &name) const;
 
 	/*!
 	 * Returns the content ID for the given name.

@@ -390,11 +390,11 @@ LuaItemStack::LuaItemStack(const ItemStack &item):
 {
 }
 
-const ItemStack& LuaItemStack::getItem() const
+const ItemStack &LuaItemStack::getItem() const
 {
 	return m_stack;
 }
-ItemStack& LuaItemStack::getItem()
+ItemStack &LuaItemStack::getItem()
 {
 	return m_stack;
 }
@@ -422,7 +422,7 @@ int LuaItemStack::create(lua_State *L, const ItemStack &item)
 	return 1;
 }
 
-LuaItemStack* LuaItemStack::checkobject(lua_State *L, int narg)
+LuaItemStack *LuaItemStack::checkobject(lua_State *L, int narg)
 {
 	luaL_checktype(L, narg, LUA_TUSERDATA);
 	void *ud = luaL_checkudata(L, narg, className);

@@ -102,10 +102,10 @@ public:
 	void removeObjectReference(ServerActiveObject *cobj);
 
 	IGameDef *getGameDef() { return m_gamedef; }
-	Server* getServer();
+	Server *getServer();
 	ScriptingType getType() { return m_type; }
 #ifndef SERVER
-	Client* getClient();
+	Client *getClient();
 #endif
 
 	std::string getOrigin() { return m_last_run_mod; }
@@ -124,24 +124,24 @@ protected:
 	friend class ModApiEnvMod;
 	friend class LuaVoxelManip;
 
-	lua_State* getStack()
+	lua_State *getStack()
 		{ return m_luastack; }
 
 	void realityCheck();
 	void scriptError(int result, const char *fxn);
 	void stackDump(std::ostream &o);
 
-	void setGameDef(IGameDef* gamedef) { m_gamedef = gamedef; }
+	void setGameDef(IGameDef *gamedef) { m_gamedef = gamedef; }
 
-	Environment* getEnv() { return m_environment; }
-	void setEnv(Environment* env) { m_environment = env; }
+	Environment *getEnv() { return m_environment; }
+	void setEnv(Environment *env) { m_environment = env; }
 
-	GUIEngine* getGuiEngine() { return m_guiengine; }
-	void setGuiEngine(GUIEngine* guiengine) { m_guiengine = guiengine; }
+	GUIEngine *getGuiEngine() { return m_guiengine; }
+	void setGuiEngine(GUIEngine *guiengine) { m_guiengine = guiengine; }
 
 	void objectrefGetOrCreate(lua_State *L, ServerActiveObject *cobj);
 
-	void pushPlayerHPChangeReason(lua_State *L, const PlayerHPChangeReason& reason);
+	void pushPlayerHPChangeReason(lua_State *L, const PlayerHPChangeReason &reason);
 
 	std::recursive_mutex m_luastackmutex;
 	std::string     m_last_run_mod;

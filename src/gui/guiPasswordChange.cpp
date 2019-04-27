@@ -34,10 +34,10 @@ const int ID_change = 259;
 const int ID_message = 260;
 const int ID_cancel = 261;
 
-GUIPasswordChange::GUIPasswordChange(gui::IGUIEnvironment* env,
-		gui::IGUIElement* parent, s32 id,
+GUIPasswordChange::GUIPasswordChange(gui::IGUIEnvironment *env,
+		gui::IGUIElement *parent, s32 id,
 		IMenuManager *menumgr,
-		Client* client
+		Client *client
 ):
 	GUIModalMenu(env, parent, id, menumgr),
 	m_client(client)

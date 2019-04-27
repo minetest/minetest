@@ -32,7 +32,7 @@ SOFTWARE.
 #include "sha1.h"
 
 // print out memory in hexadecimal
-void SHA1::hexPrinter( unsigned char* c, int l )
+void SHA1::hexPrinter( unsigned char *c, int l )
 {
 	assert( c );
 	assert( l > 0 );
@@ -51,7 +51,7 @@ Uint32 SHA1::lrot( Uint32 x, int bits )
 };
 
 // Save a 32-bit unsigned integer to memory, in big-endian order
-void SHA1::storeBigEndianUint32( unsigned char* byte, Uint32 num )
+void SHA1::storeBigEndianUint32( unsigned char *byte, Uint32 num )
 {
 	assert( byte );
 	byte[0] = (unsigned char)(num>>24);
@@ -134,7 +134,7 @@ void SHA1::process()
 }
 
 // addBytes **********************************************************
-void SHA1::addBytes( const char* data, int num )
+void SHA1::addBytes( const char *data, int num )
 {
 	assert( data );
 	assert( num >= 0 );
@@ -161,7 +161,7 @@ void SHA1::addBytes( const char* data, int num )
 }
 
 // digest ************************************************************
-unsigned char* SHA1::getDigest()
+unsigned char *SHA1::getDigest()
 {
 	// save the message size
 	Uint32 totalBitsL = size << 3;
@@ -176,7 +176,7 @@ unsigned char* SHA1::getDigest()
 		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 	// block has no room for 8-byte filesize, so finish it
 	if( unprocessedBytes > 56 )
-		addBytes( (char*)footer, 64 - unprocessedBytes);
+		addBytes( (char *)footer, 64 - unprocessedBytes);
 	assert( unprocessedBytes <= 56 );
 	// how many zeros do we need
 	int neededZeros = 56 - unprocessedBytes;
@@ -184,9 +184,9 @@ unsigned char* SHA1::getDigest()
 	storeBigEndianUint32( footer + neededZeros    , totalBitsH );
 	storeBigEndianUint32( footer + neededZeros + 4, totalBitsL );
 	// finish the final block
-	addBytes( (char*)footer, neededZeros + 8 );
+	addBytes( (char *)footer, neededZeros + 8 );
 	// allocate memory for the digest bytes
-	unsigned char* digest = (unsigned char*)malloc( 20 );
+	unsigned char *digest = (unsigned char *)malloc( 20 );
 	// copy the digest bytes
 	storeBigEndianUint32( digest, H0 );
 	storeBigEndianUint32( digest + 4, H1 );

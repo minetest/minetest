@@ -66,7 +66,7 @@ public:
 	{
 		drop();
 	}
-	Buffer& operator=(const Buffer &buffer)
+	Buffer &operator=(const Buffer &buffer)
 	{
 		if(this == &buffer)
 			return *this;

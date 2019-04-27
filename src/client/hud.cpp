@@ -282,7 +282,7 @@ void Hud::drawItems(v2s32 upperleftpos, v2s32 screen_offset, s32 itemcount,
 void Hud::drawLuaElements(const v3s16 &camera_offset)
 {
 	u32 text_height = g_fontengine->getTextHeight();
-	irr::gui::IGUIFont* font = g_fontengine->getFont();
+	irr::gui::IGUIFont *font = g_fontengine->getFont();
 	for (size_t i = 0; i != player->maxHudId(); i++) {
 		HudElement *e = player->getHud(i);
 		if (!e)
@@ -339,7 +339,7 @@ void Hud::drawLuaElements(const v3s16 &camera_offset)
 				v3f w_pos = e->world_pos * BS;
 				float distance = std::floor(10 * p_pos.getDistanceFrom(e->world_pos)) /
 					10.0f;
-				scene::ICameraSceneNode* camera =
+				scene::ICameraSceneNode *camera =
 					RenderingEngine::get_scene_manager()->getActiveCamera();
 				w_pos -= intToFloat(camera_offset, BS);
 				core::matrix4 trans = camera->getProjectionMatrix();
@@ -536,7 +536,7 @@ void Hud::drawSelectionMesh()
 			MYMIN(255, m_selection_mesh_color.getBlue() * 1.5));
 		setMeshColorByNormal(m_selection_mesh, m_selected_face_normal,
 			face_color);
-		scene::IMesh* mesh = cloneMesh(m_selection_mesh);
+		scene::IMesh *mesh = cloneMesh(m_selection_mesh);
 		translateMesh(mesh, m_selection_pos_with_offset);
 		u32 mc = m_selection_mesh->getMeshBufferCount();
 		for (u32 i = 0; i < mc; i++) {

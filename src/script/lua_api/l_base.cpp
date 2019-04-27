@@ -30,7 +30,7 @@ ScriptApiBase *ModApiBase::getScriptApiBase(lua_State *L)
 {
 	// Get server from registry
 	lua_rawgeti(L, LUA_REGISTRYINDEX, CUSTOM_RIDX_SCRIPTAPI);
-	ScriptApiBase *sapi_ptr = (ScriptApiBase*) lua_touserdata(L, -1);
+	ScriptApiBase *sapi_ptr = (ScriptApiBase *) lua_touserdata(L, -1);
 	lua_pop(L, 1);
 	return sapi_ptr;
 }

@@ -64,19 +64,19 @@ void LuaSettings::create(lua_State *L, Settings *settings,
 
 
 // garbage collector
-int LuaSettings::gc_object(lua_State* L)
+int LuaSettings::gc_object(lua_State *L)
 {
-	LuaSettings* o = *(LuaSettings **)(lua_touserdata(L, 1));
+	LuaSettings *o = *(LuaSettings **)(lua_touserdata(L, 1));
 	delete o;
 	return 0;
 }
 
 
 // get(self, key) -> value
-int LuaSettings::l_get(lua_State* L)
+int LuaSettings::l_get(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	LuaSettings* o = checkobject(L, 1);
+	LuaSettings *o = checkobject(L, 1);
 
 	std::string key = std::string(luaL_checkstring(L, 2));
 	if (o->m_settings->exists(key)) {
@@ -90,10 +90,10 @@ int LuaSettings::l_get(lua_State* L)
 }
 
 // get_bool(self, key) -> boolean
-int LuaSettings::l_get_bool(lua_State* L)
+int LuaSettings::l_get_bool(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	LuaSettings* o = checkobject(L, 1);
+	LuaSettings *o = checkobject(L, 1);
 
 	std::string key = std::string(luaL_checkstring(L, 2));
 	if (o->m_settings->exists(key)) {
@@ -129,13 +129,13 @@ int LuaSettings::l_get_np_group(lua_State *L)
 }
 
 // set(self, key, value)
-int LuaSettings::l_set(lua_State* L)
+int LuaSettings::l_set(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	LuaSettings* o = checkobject(L, 1);
+	LuaSettings *o = checkobject(L, 1);
 
 	std::string key = std::string(luaL_checkstring(L, 2));
-	const char* value = luaL_checkstring(L, 3);
+	const char *value = luaL_checkstring(L, 3);
 
 	SET_SECURITY_CHECK(L, key);
 
@@ -146,10 +146,10 @@ int LuaSettings::l_set(lua_State* L)
 }
 
 // set_bool(self, key, value)
-int LuaSettings::l_set_bool(lua_State* L)
+int LuaSettings::l_set_bool(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	LuaSettings* o = checkobject(L, 1);
+	LuaSettings *o = checkobject(L, 1);
 
 	std::string key = std::string(luaL_checkstring(L, 2));
 	bool value = readParam<bool>(L, 3);
@@ -179,10 +179,10 @@ int LuaSettings::l_set_np_group(lua_State *L)
 }
 
 // remove(self, key) -> success
-int LuaSettings::l_remove(lua_State* L)
+int LuaSettings::l_remove(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	LuaSettings* o = checkobject(L, 1);
+	LuaSettings *o = checkobject(L, 1);
 
 	std::string key = std::string(luaL_checkstring(L, 2));
 
@@ -195,10 +195,10 @@ int LuaSettings::l_remove(lua_State* L)
 }
 
 // get_names(self) -> {key1, ...}
-int LuaSettings::l_get_names(lua_State* L)
+int LuaSettings::l_get_names(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	LuaSettings* o = checkobject(L, 1);
+	LuaSettings *o = checkobject(L, 1);
 
 	std::vector<std::string> keys = o->m_settings->getNames();
 
@@ -213,10 +213,10 @@ int LuaSettings::l_get_names(lua_State* L)
 }
 
 // write(self) -> success
-int LuaSettings::l_write(lua_State* L)
+int LuaSettings::l_write(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	LuaSettings* o = checkobject(L, 1);
+	LuaSettings *o = checkobject(L, 1);
 
 	if (!o->m_write_allowed) {
 		throw LuaError("Settings: writing " + o->m_filename +
@@ -230,10 +230,10 @@ int LuaSettings::l_write(lua_State* L)
 }
 
 // to_table(self) -> {[key1]=value1,...}
-int LuaSettings::l_to_table(lua_State* L)
+int LuaSettings::l_to_table(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	LuaSettings* o = checkobject(L, 1);
+	LuaSettings *o = checkobject(L, 1);
 
 	std::vector<std::string> keys = o->m_settings->getNames();
 
@@ -247,7 +247,7 @@ int LuaSettings::l_to_table(lua_State* L)
 }
 
 
-void LuaSettings::Register(lua_State* L)
+void LuaSettings::Register(lua_State *L)
 {
 	lua_newtable(L);
 	int methodtable = lua_gettop(L);
@@ -277,20 +277,20 @@ void LuaSettings::Register(lua_State* L)
 
 // LuaSettings(filename)
 // Creates a LuaSettings and leaves it on top of the stack
-int LuaSettings::create_object(lua_State* L)
+int LuaSettings::create_object(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 	bool write_allowed = true;
-	const char* filename = luaL_checkstring(L, 1);
+	const char *filename = luaL_checkstring(L, 1);
 	CHECK_SECURE_PATH_POSSIBLE_WRITE(L, filename, &write_allowed);
-	LuaSettings* o = new LuaSettings(filename, write_allowed);
+	LuaSettings *o = new LuaSettings(filename, write_allowed);
 	*(void **)(lua_newuserdata(L, sizeof(void *))) = o;
 	luaL_getmetatable(L, className);
 	lua_setmetatable(L, -2);
 	return 1;
 }
 
-LuaSettings* LuaSettings::checkobject(lua_State* L, int narg)
+LuaSettings *LuaSettings::checkobject(lua_State *L, int narg)
 {
 	NO_MAP_LOCK_REQUIRED;
 	luaL_checktype(L, narg, LUA_TUSERDATA);

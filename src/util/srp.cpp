@@ -575,7 +575,7 @@ static SRP_Result init_random()
 /*void srp_dbg_num(mpz_t num, char * prevtext)
 {
 	int len_num = mpz_num_bytes(num);
-	char *bytes_num = (char*) srp_alloc(len_num);
+	char *bytes_num = (char *) srp_alloc(len_num);
 	mpz_to_bin(num, (unsigned char *) bytes_num);
 	srp_dbg_data(bytes_num, len_num, prevtext);
 	srp_free(bytes_num);

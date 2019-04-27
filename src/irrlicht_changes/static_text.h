@@ -35,8 +35,8 @@ namespace gui
 	public:
 
 		//! constructor
-		StaticText(const EnrichedString &text, bool border, IGUIEnvironment* environment,
-			IGUIElement* parent, s32 id, const core::rect<s32>& rectangle,
+		StaticText(const EnrichedString &text, bool border, IGUIEnvironment *environment,
+			IGUIElement *parent, s32 id, const core::rect<s32>& rectangle,
 			bool background = false);
 
 		//! destructor
@@ -100,13 +100,13 @@ namespace gui
 		virtual void draw();
 
 		//! Sets another skin independent font.
-		virtual void setOverrideFont(IGUIFont* font=0);
+		virtual void setOverrideFont(IGUIFont *font = 0);
 
 		//! Gets the override font (if any)
-		virtual IGUIFont* getOverrideFont() const;
+		virtual IGUIFont *getOverrideFont() const;
 
 		//! Get the font which is used right now for drawing
-		virtual IGUIFont* getActiveFont() const;
+		virtual IGUIFont *getActiveFont() const;
 
 		//! Sets another color for the text.
 		virtual void setOverrideColor(video::SColor color);
@@ -134,7 +134,7 @@ namespace gui
 
 		//! Gets the override color
 		#if IRRLICHT_VERSION_MAJOR == 1 && IRRLICHT_VERSION_MINOR <= 7
-		virtual const video::SColor& getOverrideColor() const;
+		virtual const video::SColor &getOverrideColor() const;
 		#else
 		virtual video::SColor getOverrideColor() const;
 		#endif
@@ -160,7 +160,7 @@ namespace gui
 		virtual bool isWordWrapEnabled() const;
 
 		//! Sets the new caption of this element.
-		virtual void setText(const wchar_t* text);
+		virtual void setText(const wchar_t *text);
 
 		//! Returns the height of the text in pixels when it is drawn.
 		virtual s32 getTextHeight() const;
@@ -183,10 +183,10 @@ namespace gui
 		virtual bool isRightToLeft() const;
 
 		//! Writes attributes of the element.
-		virtual void serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options) const;
+		virtual void serializeAttributes(io::IAttributes *out, io::SAttributeReadWriteOptions *options) const;
 
 		//! Reads attributes of the element
-		virtual void deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options);
+		virtual void deserializeAttributes(io::IAttributes *in, io::SAttributeReadWriteOptions *options);
 
 		virtual bool hasType(EGUI_ELEMENT_TYPE t) const {
 			return (t == EGUIET_ENRICHED_STATIC_TEXT) || (t == EGUIET_STATIC_TEXT);
@@ -213,8 +213,8 @@ namespace gui
 		bool RightToLeft;
 
 		video::SColor OverrideColor, BGColor;
-		gui::IGUIFont* OverrideFont;
-		gui::IGUIFont* LastBreakFont; // stored because: if skin changes, line break must be recalculated.
+		gui::IGUIFont *OverrideFont;
+		gui::IGUIFont *LastBreakFont; // stored because: if skin changes, line break must be recalculated.
 
 		EnrichedString cText;
 		core::array< EnrichedString > BrokenText;
@@ -230,7 +230,7 @@ inline void setStaticText(irr::gui::IGUIStaticText *static_text, const EnrichedS
 	// dynamic_cast not possible due to some distributions shipped
 	// without rtti support in irrlicht
 	if (static_text->hasType(irr::gui::EGUIET_ENRICHED_STATIC_TEXT)) {
-		irr::gui::StaticText* stext = static_cast<irr::gui::StaticText*>(static_text);
+		irr::gui::StaticText *stext = static_cast<irr::gui::StaticText *>(static_text);
 		stext->setText(text);
 	} else {
 		static_text->setText(text.c_str());

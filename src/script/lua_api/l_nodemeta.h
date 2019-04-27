@@ -57,7 +57,7 @@ private:
 	 * @param auto_create when true, try to create metadata information for the node if it has none.
 	 * @return pointer to a @c NodeMetadata object or @c NULL in case of error.
 	 */
-	virtual Metadata* getmeta(bool auto_create);
+	virtual Metadata *getmeta(bool auto_create);
 	virtual void clearMeta();
 
 	virtual void reportMetadataChange(const std::string *name = nullptr);

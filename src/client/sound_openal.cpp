@@ -309,8 +309,8 @@ private:
 	ALCdevice *m_device;
 	ALCcontext *m_context;
 	int m_next_id;
-	std::unordered_map<std::string, std::vector<SoundBuffer*>> m_buffers;
-	std::unordered_map<int, PlayingSound*> m_sounds_playing;
+	std::unordered_map<std::string, std::vector<SoundBuffer *>> m_buffers;
+	std::unordered_map<int, PlayingSound *> m_sounds_playing;
 	struct FadeState {
 		FadeState() = default;
 
@@ -366,29 +366,29 @@ public:
 
 	void addBuffer(const std::string &name, SoundBuffer *buf)
 	{
-		std::unordered_map<std::string, std::vector<SoundBuffer*>>::iterator i =
+		std::unordered_map<std::string, std::vector<SoundBuffer *>>::iterator i =
 				m_buffers.find(name);
 		if(i != m_buffers.end()){
 			i->second.push_back(buf);
 			return;
 		}
-		std::vector<SoundBuffer*> bufs;
+		std::vector<SoundBuffer *> bufs;
 		bufs.push_back(buf);
 		m_buffers[name] = bufs;
 	}
 
-	SoundBuffer* getBuffer(const std::string &name)
+	SoundBuffer *getBuffer(const std::string &name)
 	{
-		std::unordered_map<std::string, std::vector<SoundBuffer*>>::iterator i =
+		std::unordered_map<std::string, std::vector<SoundBuffer *>>::iterator i =
 				m_buffers.find(name);
 		if(i == m_buffers.end())
 			return nullptr;
-		std::vector<SoundBuffer*> &bufs = i->second;
+		std::vector<SoundBuffer *> &bufs = i->second;
 		int j = myrand() % bufs.size();
 		return bufs[j];
 	}
 
-	PlayingSound* createPlayingSound(SoundBuffer *buf, bool loop,
+	PlayingSound *createPlayingSound(SoundBuffer *buf, bool loop,
 			float volume, float pitch)
 	{
 		infostream << "OpenALSoundManager: Creating playing sound" << std::endl;
@@ -410,7 +410,7 @@ public:
 		return sound;
 	}
 
-	PlayingSound* createPlayingSoundAt(SoundBuffer *buf, bool loop,
+	PlayingSound *createPlayingSoundAt(SoundBuffer *buf, bool loop,
 			float volume, v3f pos, float pitch)
 	{
 		infostream << "OpenALSoundManager: Creating positional playing sound"
@@ -464,7 +464,7 @@ public:
 
 	void deleteSound(int id)
 	{
-		std::unordered_map<int, PlayingSound*>::iterator i = m_sounds_playing.find(id);
+		std::unordered_map<int, PlayingSound *>::iterator i = m_sounds_playing.find(id);
 		if(i == m_sounds_playing.end())
 			return;
 		PlayingSound *sound = i->second;
@@ -476,7 +476,7 @@ public:
 	}
 
 	/* If buffer does not exist, consult the fetcher */
-	SoundBuffer* getFetchBuffer(const std::string &name)
+	SoundBuffer *getFetchBuffer(const std::string &name)
 	{
 		SoundBuffer *buf = getBuffer(name);
 		if(buf)

@@ -78,7 +78,7 @@ public:
 
 	virtual ~ISimpleTextureSource() = default;
 
-	virtual video::ITexture* getTexture(
+	virtual video::ITexture *getTexture(
 			const std::string &name, u32 *id = nullptr) = 0;
 };
 
@@ -91,10 +91,10 @@ public:
 
 	virtual u32 getTextureId(const std::string &name)=0;
 	virtual std::string getTextureName(u32 id)=0;
-	virtual video::ITexture* getTexture(u32 id)=0;
-	virtual video::ITexture* getTexture(
+	virtual video::ITexture *getTexture(u32 id)=0;
+	virtual video::ITexture *getTexture(
 			const std::string &name, u32 *id = nullptr)=0;
-	virtual video::ITexture* getTextureForMesh(
+	virtual video::ITexture *getTextureForMesh(
 			const std::string &name, u32 *id = nullptr) = 0;
 	/*!
 	 * Returns a palette from the given texture name.
@@ -102,9 +102,9 @@ public:
 	 * destructed.
 	 * Should be called from the main thread.
 	 */
-	virtual Palette* getPalette(const std::string &name) = 0;
+	virtual Palette *getPalette(const std::string &name) = 0;
 	virtual bool isKnownSourceImage(const std::string &name)=0;
-	virtual video::ITexture* getNormalTexture(const std::string &name)=0;
+	virtual video::ITexture *getNormalTexture(const std::string &name)=0;
 	virtual video::SColor getTextureAverageColor(const std::string &name)=0;
 	virtual video::ITexture *getShaderFlagsTexture(bool normalmap_present)=0;
 };
@@ -118,15 +118,15 @@ public:
 
 	virtual u32 getTextureId(const std::string &name)=0;
 	virtual std::string getTextureName(u32 id)=0;
-	virtual video::ITexture* getTexture(u32 id)=0;
-	virtual video::ITexture* getTexture(
+	virtual video::ITexture *getTexture(u32 id)=0;
+	virtual video::ITexture *getTexture(
 			const std::string &name, u32 *id = nullptr)=0;
 	virtual bool isKnownSourceImage(const std::string &name)=0;
 
 	virtual void processQueue()=0;
 	virtual void insertSourceImage(const std::string &name, video::IImage *img)=0;
 	virtual void rebuildImagesAndTextures()=0;
-	virtual video::ITexture* getNormalTexture(const std::string &name)=0;
+	virtual video::ITexture *getNormalTexture(const std::string &name)=0;
 	virtual video::SColor getTextureAverageColor(const std::string &name)=0;
 	virtual video::ITexture *getShaderFlagsTexture(bool normalmap_present)=0;
 };
@@ -134,7 +134,7 @@ public:
 IWritableTextureSource *createTextureSource();
 
 #ifdef __ANDROID__
-video::IImage * Align2Npot2(video::IImage * image, irr::video::IVideoDriver* driver);
+video::IImage * Align2Npot2(video::IImage * image, irr::video::IVideoDriver *driver);
 #endif
 
 enum MaterialType{

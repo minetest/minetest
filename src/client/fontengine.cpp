@@ -33,7 +33,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define MAX_FONT_SIZE_OFFSET 10
 
 /** reference to access font engine, has to be initialized by main */
-FontEngine* g_fontengine = NULL;
+FontEngine *g_fontengine = NULL;
 
 /** callback to be used on change of font size setting */
 static void font_setting_changed(const std::string &name, void *userdata)
@@ -42,7 +42,7 @@ static void font_setting_changed(const std::string &name, void *userdata)
 }
 
 /******************************************************************************/
-FontEngine::FontEngine(Settings* main_settings, gui::IGUIEnvironment* env) :
+FontEngine::FontEngine(Settings *main_settings, gui::IGUIEnvironment *env) :
 	m_settings(main_settings),
 	m_env(env)
 {
@@ -125,7 +125,7 @@ void FontEngine::cleanCache()
 }
 
 /******************************************************************************/
-irr::gui::IGUIFont* FontEngine::getFont(unsigned int font_size, FontMode mode)
+irr::gui::IGUIFont *FontEngine::getFont(unsigned int font_size, FontMode mode)
 {
 	if (mode == FM_Unspecified) {
 		mode = m_currentMode;
@@ -160,7 +160,7 @@ irr::gui::IGUIFont* FontEngine::getFont(unsigned int font_size, FontMode mode)
 /******************************************************************************/
 unsigned int FontEngine::getTextHeight(unsigned int font_size, FontMode mode)
 {
-	irr::gui::IGUIFont* font = getFont(font_size, mode);
+	irr::gui::IGUIFont *font = getFont(font_size, mode);
 
 	// use current skin font as fallback
 	if (font == NULL) {
@@ -172,10 +172,10 @@ unsigned int FontEngine::getTextHeight(unsigned int font_size, FontMode mode)
 }
 
 /******************************************************************************/
-unsigned int FontEngine::getTextWidth(const std::wstring& text,
+unsigned int FontEngine::getTextWidth(const std::wstring &text,
 		unsigned int font_size, FontMode mode)
 {
-	irr::gui::IGUIFont* font = getFont(font_size, mode);
+	irr::gui::IGUIFont *font = getFont(font_size, mode);
 
 	// use current skin font as fallback
 	if (font == NULL) {
@@ -190,7 +190,7 @@ unsigned int FontEngine::getTextWidth(const std::wstring& text,
 /** get line height for a specific font (including empty room between lines) */
 unsigned int FontEngine::getLineHeight(unsigned int font_size, FontMode mode)
 {
-	irr::gui::IGUIFont* font = getFont(font_size, mode);
+	irr::gui::IGUIFont *font = getFont(font_size, mode);
 
 	// use current skin font as fallback
 	if (font == NULL) {
@@ -326,15 +326,15 @@ void FontEngine::initFont(unsigned int basesize, FontMode mode)
 		try {
 			font_shadow =
 					g_settings->getU16(font_config_prefix + "font_shadow");
-		} catch (SettingNotFoundException&) {}
+		} catch (SettingNotFoundException &) {}
 		try {
 			font_shadow_alpha =
 					g_settings->getU16(font_config_prefix + "font_shadow_alpha");
-		} catch (SettingNotFoundException&) {}
+		} catch (SettingNotFoundException &) {}
 
 		std::string font_path = g_settings->get(font_config_prefix + "font_path");
 
-		irr::gui::IGUIFont* font = gui::CGUITTFont::createTTFont(m_env,
+		irr::gui::IGUIFont *font = gui::CGUITTFont::createTTFont(m_env,
 				font_path.c_str(), size, true, true, font_shadow,
 				font_shadow_alpha);
 
@@ -439,7 +439,7 @@ void FontEngine::initSimpleFont(unsigned int basesize, FontMode mode)
 			m_settings->getFloat("gui_scaling") *
 			basesize);
 
-	irr::gui::IGUIFont* font = NULL;
+	irr::gui::IGUIFont *font = NULL;
 
 	for(unsigned int offset = 0; offset < MAX_FONT_SIZE_OFFSET; offset++) {
 

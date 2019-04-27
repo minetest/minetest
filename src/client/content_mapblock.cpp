@@ -1307,7 +1307,7 @@ void MapblockMeshGenerator::drawNodeboxNode()
 void MapblockMeshGenerator::drawMeshNode()
 {
 	u8 facedir = 0;
-	scene::IMesh* mesh;
+	scene::IMesh *mesh;
 	bool private_mesh; // as a grab/drop pair is not thread-safe
 
 	if (f->param_type_2 == CPT2_FACEDIR ||

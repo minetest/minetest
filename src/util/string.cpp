@@ -207,7 +207,7 @@ wchar_t *narrow_to_wide_c(const char *str)
 
 #ifdef __ANDROID__
 
-const wchar_t* wide_chars =
+const wchar_t *wide_chars =
 	L" !\"#$%&'()*+,-./0123456789:;<=>?@"
 	L"ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`"
 	L"abcdefghijklmnopqrstuvwxyz{|}~";

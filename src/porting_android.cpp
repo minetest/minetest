@@ -73,7 +73,7 @@ extern "C" {
 			JNIEnv * env, jclass thiz, jstring text)
 	{
 		errorstream << "Java_net_minetest_MtNativeActivity_putMessageBoxResult got: "
-				<< std::string((const char*)env->GetStringChars(text,0))
+				<< std::string((const char *)env->GetStringChars(text,0))
 				<< std::endl;
 	}
 }
@@ -82,7 +82,7 @@ namespace porting {
 
 std::string path_storage = DIR_DELIM "sdcard" DIR_DELIM;
 
-android_app* app_global;
+android_app *app_global;
 JNIEnv*      jnienv;
 jclass       nativeActivity;
 
@@ -223,8 +223,8 @@ void initializePathsAndroid()
 	migrateCachePath();
 }
 
-void showInputDialog(const std::string& acceptButton, const  std::string& hint,
-		const std::string& current, int editType)
+void showInputDialog(const std::string &acceptButton, const std::string &hint,
+		const std::string &current, int editType)
 {
 	jmethodID showdialog = jnienv->GetMethodID(nativeActivity,"showDialog",
 		"(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;I)V");
@@ -266,7 +266,7 @@ std::string getInputDialogValue()
 	jobject result = jnienv->CallObjectMethod(app_global->activity->clazz,
 			dialogvalue);
 
-	const char* javachars = jnienv->GetStringUTFChars((jstring) result,0);
+	const char *javachars = jnienv->GetStringUTFChars((jstring) result,0);
 	std::string text(javachars);
 	jnienv->ReleaseStringUTFChars((jstring) result, javachars);
 

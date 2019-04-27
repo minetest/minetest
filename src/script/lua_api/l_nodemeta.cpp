@@ -62,7 +62,7 @@ void NodeMetaRef::reportMetadataChange(const std::string *name)
 {
 	// NOTE: This same code is in rollback_interface.cpp
 	// Inform other things that the metadata has changed
-	NodeMetadata *meta = dynamic_cast<NodeMetadata*>(m_meta);
+	NodeMetadata *meta = dynamic_cast<NodeMetadata *>(m_meta);
 
 	MapEditEvent event;
 	event.type = MEET_BLOCK_NODE_METADATA_CHANGED;
@@ -97,7 +97,7 @@ int NodeMetaRef::l_mark_as_private(lua_State *L)
 	MAP_LOCK_REQUIRED;
 
 	NodeMetaRef *ref = checkobject(L, 1);
-	NodeMetadata *meta = dynamic_cast<NodeMetadata*>(ref->getmeta(true));
+	NodeMetadata *meta = dynamic_cast<NodeMetadata *>(ref->getmeta(true));
 	assert(meta);
 
 	if (lua_istable(L, 2)) {
@@ -122,7 +122,7 @@ void NodeMetaRef::handleToTable(lua_State *L, Metadata *_meta)
 	// fields
 	MetaDataRef::handleToTable(L, _meta);
 
-	NodeMetadata *meta = (NodeMetadata*) _meta;
+	NodeMetadata *meta = (NodeMetadata *) _meta;
 
 	// inventory
 	lua_newtable(L);
@@ -145,7 +145,7 @@ bool NodeMetaRef::handleFromTable(lua_State *L, int table, Metadata *_meta)
 	if (!MetaDataRef::handleFromTable(L, table, _meta))
 		return false;
 
-	NodeMetadata *meta = (NodeMetadata*) _meta;
+	NodeMetadata *meta = (NodeMetadata *) _meta;
 
 	// inventory
 	Inventory *inv = meta->getInventory();

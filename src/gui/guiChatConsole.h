@@ -29,12 +29,12 @@ class Client;
 class GUIChatConsole : public gui::IGUIElement
 {
 public:
-	GUIChatConsole(gui::IGUIEnvironment* env,
-			gui::IGUIElement* parent,
+	GUIChatConsole(gui::IGUIEnvironment *env,
+			gui::IGUIElement *parent,
 			s32 id,
-			ChatBackend* backend,
-			Client* client,
-			IMenuManager* menumgr);
+			ChatBackend *backend,
+			Client *client,
+			IMenuManager *menumgr);
 	virtual ~GUIChatConsole();
 
 	// Open the console (height = desired fraction of screen size)
@@ -72,9 +72,9 @@ public:
 	// Irrlicht draw method
 	virtual void draw();
 
-	bool canTakeFocus(gui::IGUIElement* element) { return false; }
+	bool canTakeFocus(gui::IGUIElement *element) { return false; }
 
-	virtual bool OnEvent(const SEvent& event);
+	virtual bool OnEvent(const SEvent &event);
 
 	virtual void setVisible(bool visible);
 
@@ -89,9 +89,9 @@ private:
 	void drawPrompt();
 
 private:
-	ChatBackend* m_chat_backend;
-	Client* m_client;
-	IMenuManager* m_menumgr;
+	ChatBackend *m_chat_backend;
+	Client *m_client;
+	IMenuManager *m_menumgr;
 
 	// current screen size
 	v2u32 m_screensize;

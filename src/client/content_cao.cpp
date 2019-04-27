@@ -156,8 +156,8 @@ void SmoothTranslatorWrappedv3f::translate(f32 dtime)
 static void setBillboardTextureMatrix(scene::IBillboardSceneNode *bill,
 		float txs, float tys, int col, int row)
 {
-	video::SMaterial& material = bill->getMaterial(0);
-	core::matrix4& matrix = material.getTextureMatrix(0);
+	video::SMaterial &material = bill->getMaterial(0);
+	core::matrix4 &matrix = material.getTextureMatrix(0);
 	matrix.setTextureTranslate(txs*col, tys*row);
 	matrix.setTextureScale(txs, tys);
 }
@@ -177,7 +177,7 @@ public:
 		return ACTIVEOBJECT_TYPE_TEST;
 	}
 
-	static ClientActiveObject* create(Client *client, ClientEnvironment *env);
+	static ClientActiveObject *create(Client *client, ClientEnvironment *env);
 
 	void addToScene(ITextureSource *tsrc);
 	void removeFromScene(bool permanent);
@@ -206,7 +206,7 @@ TestCAO::TestCAO(Client *client, ClientEnvironment *env):
 	ClientActiveObject::registerType(getType(), create);
 }
 
-ClientActiveObject* TestCAO::create(Client *client, ClientEnvironment *env)
+ClientActiveObject *TestCAO::create(Client *client, ClientEnvironment *env)
 {
 	return new TestCAO(client, env);
 }
@@ -216,7 +216,7 @@ void TestCAO::addToScene(ITextureSource *tsrc)
 	if(m_node != NULL)
 		return;
 
-	//video::IVideoDriver* driver = smgr->getVideoDriver();
+	//video::IVideoDriver *driver = smgr->getVideoDriver();
 
 	scene::SMesh *mesh = new scene::SMesh();
 	scene::IMeshBuffer *buf = new scene::SMeshBuffer();
@@ -416,7 +416,7 @@ const bool GenericCAO::isImmortal()
 	return itemgroup_get(getGroups(), "immortal");
 }
 
-scene::ISceneNode* GenericCAO::getSceneNode()
+scene::ISceneNode *GenericCAO::getSceneNode()
 {
 	if (m_meshnode) {
 		return m_meshnode;
@@ -436,7 +436,7 @@ scene::ISceneNode* GenericCAO::getSceneNode()
 	return NULL;
 }
 
-scene::IAnimatedMeshSceneNode* GenericCAO::getAnimatedMeshSceneNode()
+scene::IAnimatedMeshSceneNode *GenericCAO::getAnimatedMeshSceneNode()
 {
 	return m_animated_meshnode;
 }
@@ -456,7 +456,7 @@ void GenericCAO::setAttachments()
 	updateAttachments();
 }
 
-ClientActiveObject* GenericCAO::getParent() const
+ClientActiveObject *GenericCAO::getParent() const
 {
 	ClientActiveObject *obj = NULL;
 
@@ -483,7 +483,7 @@ void GenericCAO::removeFromScene(bool permanent)
 
 		m_env->attachement_parent_ids[getId()] = 0;
 
-		LocalPlayer* player = m_env->getLocalPlayer();
+		LocalPlayer *player = m_env->getLocalPlayer();
 		if (this == player->parent) {
 			player->parent = nullptr;
 			player->isAttached = false;
@@ -1019,7 +1019,7 @@ void GenericCAO::updateTexturePos()
 {
 	if(m_spritenode)
 	{
-		scene::ICameraSceneNode* camera =
+		scene::ICameraSceneNode *camera =
 				m_spritenode->getSceneManager()->getActiveCamera();
 		if(!camera)
 			return;
@@ -1111,14 +1111,14 @@ void GenericCAO::updateTextures(std::string mod)
 				if (texturestring.empty())
 					continue; // Empty texture string means don't modify that material
 				texturestring += mod;
-				video::ITexture* texture = tsrc->getTextureForMesh(texturestring);
+				video::ITexture *texture = tsrc->getTextureForMesh(texturestring);
 				if (!texture) {
 					errorstream<<"GenericCAO::updateTextures(): Could not load texture "<<texturestring<<std::endl;
 					continue;
 				}
 
 				// Set material flags and texture
-				video::SMaterial& material = m_animated_meshnode->getMaterial(i);
+				video::SMaterial &material = m_animated_meshnode->getMaterial(i);
 				material.MaterialType = material_type;
 				material.MaterialTypeParam = 0.5f;
 				material.TextureLayer[0].Texture = texture;
@@ -1165,7 +1165,7 @@ void GenericCAO::updateTextures(std::string mod)
 
 
 				// Set material flags and texture
-				video::SMaterial& material = m_meshnode->getMaterial(i);
+				video::SMaterial &material = m_meshnode->getMaterial(i);
 				material.MaterialType = material_type;
 				material.MaterialTypeParam = 0.5f;
 				material.setFlag(video::EMF_LIGHTING, false);
@@ -1283,7 +1283,7 @@ void GenericCAO::updateBonePosition()
 		std::string bone_name = (*ii).first;
 		v3f bone_pos = (*ii).second.X;
 		v3f bone_rot = (*ii).second.Y;
-		irr::scene::IBoneSceneNode* bone = m_animated_meshnode->getJointNode(bone_name.c_str());
+		irr::scene::IBoneSceneNode *bone = m_animated_meshnode->getJointNode(bone_name.c_str());
 		if(bone)
 		{
 			bone->setPosition(bone_pos);
