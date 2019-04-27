@@ -1340,11 +1340,13 @@ void PlayerSAO::setHP(s32 hp, const PlayerHPChangeReason &reason)
 
 	hp = rangelim(hp, 0, m_prop.hp_max);
 
-	s32 hp_change = m_env->getScriptIface()->on_player_hpchange(this, hp - oldhp, reason);
-	if (hp_change == 0)
-		return;
+	if (oldhp != hp) {
+		s32 hp_change = m_env->getScriptIface()->on_player_hpchange(this, hp - oldhp, reason);
+		if (hp_change == 0)
+			return;
 
-	hp = rangelim(oldhp + hp_change, 0, m_prop.hp_max);
+		hp = rangelim(oldhp + hp_change, 0, m_prop.hp_max);
+	}
 
 	if (hp < oldhp && !g_settings->getBool("enable_damage"))
 		return;
