@@ -1205,6 +1205,10 @@ void PlayerSAO::setPos(const v3f &pos)
 	if(isAttached())
 		return;
 
+	// Send mapblock of target location
+	v3s16 blockpos = v3s16(pos.X / MAP_BLOCKSIZE, pos.Y / MAP_BLOCKSIZE, pos.Z / MAP_BLOCKSIZE);
+	m_env->getGameDef()->SendBlock(m_peer_id, blockpos);
+
 	setBasePosition(pos);
 	// Movement caused by this command is always valid
 	m_last_good_position = pos;

@@ -5382,6 +5382,11 @@ This is basically a reference to a C++ `ServerActiveObject`
     * in first person view
     * in third person view (max. values `{x=-10/10,y=-10,15,z=-5/5}`)
 * `get_eye_offset()`: returns `offset_first` and `offset_third`
+* `send_mapblock(blockpos)`:
+    * Sends a server-side loaded mapblock to the player.
+    * Returns `false` if failed.
+    * Resource intensive - use sparsely
+    * To get blockpos, integer divide pos by 16
 
 `PcgRandom`
 -----------

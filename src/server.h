@@ -344,6 +344,9 @@ public:
 	bool sendModChannelMessage(const std::string &channel, const std::string &message);
 	ModChannel *getModChannel(const std::string &channel);
 
+	// Send block to specific player only
+	bool SendBlock(session_t peer_id, const v3s16 &blockpos);
+
 	// Bind address
 	Address m_bind_addr;
 

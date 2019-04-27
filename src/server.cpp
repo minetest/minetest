@@ -2312,6 +2312,28 @@ void Server::SendBlocks(float dtime)
 	m_clients.unlock();
 }
 
+bool Server::SendBlock(session_t peer_id, const v3s16 &blockpos)
+{
+	MapBlock *block = nullptr;
+	try {
+		block = m_env->getMap().getBlockNoCreate(blockpos);
+	} catch (InvalidPositionException &e) {};
+	if (!block)
+		return false;
+
+	m_clients.lock();
+	RemoteClient *client = m_clients.lockedGetClientNoEx(peer_id, CS_Active);
+	if (!client || client->isBlockSent(blockpos)) {
+		m_clients.unlock();
+		return false;
+	}
+	SendBlockNoLock(peer_id, block, client->serialization_version,
+			client->net_proto_version);
+	m_clients.unlock();
+
+	return true;
+}
+
 void Server::fillMediaCache()
 {
 	infostream<<"Server: Calculating media file checksums"<<std::endl;
