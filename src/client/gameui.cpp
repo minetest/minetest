@@ -97,17 +97,17 @@ void GameUI::update(const RunStats &stats, Client *client, MapDrawControl *draw_
 		std::ostringstream os(std::ios_base::binary);
 		os << std::fixed
 			<< PROJECT_NAME_C " " << g_version_hash
-			<< ", FPS: " << fps
+			<< " | FPS: " << fps
 			<< std::setprecision(0)
-			<< ", drawtime: " << drawtime_avg << "ms"
+			<< " | drawtime: " << drawtime_avg << "ms"
 			<< std::setprecision(1)
-			<< ", dtime jitter: "
+			<< " | dtime jitter: "
 			<< (stats.dtime_jitter.max_fraction * 100.0) << "%"
 			<< std::setprecision(1)
-			<< ", view range: "
+			<< " | view range: "
 			<< (draw_control->range_all ? "All" : itos(draw_control->wanted_range))
 			<< std::setprecision(3)
-			<< ", RTT: " << client->getRTT() << "s";
+			<< " | RTT: " << client->getRTT() << "s";
 		setStaticText(m_guitext, utf8_to_wide(os.str()).c_str());
 
 		m_guitext->setRelativePosition(core::rect<s32>(5, 5, screensize.X,
@@ -126,10 +126,10 @@ void GameUI::update(const RunStats &stats, Client *client, MapDrawControl *draw_
 			<< "pos: (" << (player_position.X / BS)
 			<< ", " << (player_position.Y / BS)
 			<< ", " << (player_position.Z / BS)
-			<< "), yaw: " << (wrapDegrees_0_360(cam.camera_yaw)) << "° "
+			<< ") | yaw: " << (wrapDegrees_0_360(cam.camera_yaw)) << "° "
 			<< yawToDirectionString(cam.camera_yaw)
-			<< ", pitch: " << (-wrapDegrees_180(cam.camera_pitch)) << "°"
-			<< ", seed: " << ((u64)client->getMapSeed());
+			<< " | pitch: " << (-wrapDegrees_180(cam.camera_pitch)) << "°"
+			<< " | seed: " << ((u64)client->getMapSeed());
 
 		if (pointed_old.type == POINTEDTHING_NODE) {
 			ClientMap &map = client->getEnv().getClientMap();
