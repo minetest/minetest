@@ -1334,6 +1334,8 @@ void PlayerSAO::setHP(s32 hp, const PlayerHPChangeReason &reason)
 {
 	s32 oldhp = m_hp;
 
+	hp = rangelim(hp, 0, m_prop.hp_max);
+
 	s32 hp_change = m_env->getScriptIface()->on_player_hpchange(this, hp - oldhp, reason);
 	if (hp_change == 0)
 		return;
@@ -1355,7 +1357,7 @@ void PlayerSAO::setBreath(const u16 breath, bool send)
 	if (m_player && breath != m_breath)
 		m_player->setDirty(true);
 
-	m_breath = MYMIN(breath, m_prop.breath_max);
+	m_breath = rangelim(breath, 0, m_prop.breath_max);
 
 	if (send)
 		m_env->getGameDef()->SendPlayerBreath(this);
