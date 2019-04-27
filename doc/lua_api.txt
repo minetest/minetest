@@ -3718,6 +3718,7 @@ Call these functions only at load time!
     * Called after a new player has been created
 * `minetest.register_on_punchplayer(function(player, hitter, time_from_last_punch, tool_capabilities, dir, damage))`
     * Called when a player is punched
+    * Note: This callback is invoked even if the punched player is dead.
     * `player`: ObjectRef - Player that was punched
     * `hitter`: ObjectRef - Player that hit
     * `time_from_last_punch`: Meant for disallowing spamming of clicks
