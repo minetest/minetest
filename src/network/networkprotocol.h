@@ -485,6 +485,7 @@ enum ToClientCommand
 		u8 bool collisiondetection
 		u32 len
 		u8[len] texture
+		u8 bool vertical_dummy
 		u8 collision_removal
 		TileAnimation animation
 		u8 glow
@@ -510,6 +511,7 @@ enum ToClientCommand
 		u8 bool collisiondetection
 		u32 len
 		u8[len] texture
+		u8 bool vertical_dummy
 		u8 collision_removal
 		u32 id
 		TileAnimation animation

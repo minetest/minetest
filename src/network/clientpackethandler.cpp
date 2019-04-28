@@ -942,12 +942,15 @@ void Client::handleCommand_SpawnParticle(NetworkPacket* pkt)
 	f32 bounce_fraction = 1.f;
 	f32 bounce_threshold = 0.f;
 	try {
+		readU8(is); // Dummy value for vertical
 		collision_removal = readU8(is);
 		animation.deSerialize(is, m_proto_ver);
 		glow = readU8(is);
 		object_collision = readU8(is);
-		bounce_fraction = readF32(is);
-		bounce_threshold = readF32(is);
+		if (is.rdbuf()->in_avail() >= 4)
+			bounce_fraction = readF32(is);
+		if (is.rdbuf()->in_avail() >= 4)
+			bounce_threshold = readF32(is);
 	} catch (...) {}
 
 	ClientEvent *event = new ClientEvent();
@@ -1003,6 +1006,8 @@ void Client::handleCommand_AddParticleSpawner(NetworkPacket* pkt)
 	f32 bounce_fraction = 1.f;
 	f32 bounce_threshold = 0.f;
 	try {
+		bool vertical_dummy;
+		*pkt >> vertical_dummy;
 		*pkt >> collision_removal;
 		*pkt >> attached_id;
 
@@ -1012,8 +1017,10 @@ void Client::handleCommand_AddParticleSpawner(NetworkPacket* pkt)
 		animation.deSerialize(is, m_proto_ver);
 		glow = readU8(is);
 		object_collision = readU8(is);
-		bounce_fraction = readF32(is);
-		bounce_threshold = readF32(is);
+		if (is.rdbuf()->in_avail() >= 4)
+			bounce_fraction = readF32(is);
+		if (is.rdbuf()->in_avail() >= 4)
+			bounce_threshold = readF32(is);
 	} catch (...) {}
 
 	auto event = new ClientEvent();
