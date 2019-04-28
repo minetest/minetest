@@ -86,8 +86,9 @@ RenderingEngine::RenderingEngine(IEventReceiver *receiver)
 
 	// Resolution selection
 	bool fullscreen = g_settings->getBool("fullscreen");
-	u16 screen_w = g_settings->getU16("screen_w");
 	u16 screen_h = g_settings->getU16("screen_h");
+	u16 screen_w = g_settings->get("3d_mode") == "equirectangular" ?
+			g_settings->getU16("screen_h") * 2 : g_settings->getU16("screen_w");
 
 	// bpp, fsaa, vsync
 	bool vsync = g_settings->getBool("vsync");
