@@ -1631,7 +1631,7 @@ void Server::SendSpawnParticle(session_t peer_id, u16 protocol_version,
 	pkt << pos << velocity << acceleration << expirationtime
 			<< size << collisiondetection;
 	pkt.putLongString(texture);
-	pkt << true; // Dummy value for vertical
+	pkt << false; // Dummy value for vertical
 	pkt << collision_removal;
 	// This is horrible but required (why are there two ways to serialize pkts?)
 	std::ostringstream os(std::ios_base::binary);
@@ -1679,7 +1679,7 @@ void Server::SendAddParticleSpawner(session_t peer_id, u16 protocol_version,
 	pkt.putLongString(texture);
 
 	pkt << id;
-	pkt << true; // Dummy value for vertical
+	pkt << false; // Dummy value for vertical
 	pkt << collision_removal;
 	pkt << attached_id;
 	// This is horrible but required
