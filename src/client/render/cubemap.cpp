@@ -62,35 +62,29 @@ void RenderingCoreCubeMap::useFace(int face)
 	driver->setRenderTarget(faces[face], true, true, skycolor);
 
 	cam->setUpVector(core::vector3df(0.0f, 1.0f, 0.0f));
-	cam->setRotation(core::vector3df());
+	cam->setRotation(core::vector3df()); // case 4
 	cam->setAspectRatio(1 / 1); // square
 	cam->setFOV(core::PI / 2);
 
-	v3f cam_pos = camera->getPosition();
-	core::vector3df target(cam_pos.X, cam_pos.Y, cam_pos.Z);
 	switch (face) {
 		case 0:
-			target.X += 100;
+			cam->setRotation(core::vector3df(0.0f, 90.0f, 0.0f));
 			break;
 		case 1:
-			target.X -= 100;
+			cam->setRotation(core::vector3df(0.0f, -90.0f, 0.0f));
 			break;
 		case 2:
-			target.Y += 100;
+			cam->setRotation(core::vector3df(-90.0f, 0.0f, 0.0f));
 			break;
 		case 3:
-			target.Y -= 100;
-			break;
-		case 4:
-			target.Z += 100;
+			cam->setRotation(core::vector3df(90.0f, 0.0f, 0.0f));
 			break;
 		case 5:
-			target.Z -= 100;
+			cam->setRotation(core::vector3df(0.0f, 180.0f, 0.0f));
 			break;
 		default:
 			break;
 	}
-	cam->setTarget(target);
 }
 
 void RenderingCoreCubeMap::drawFace(int face)
