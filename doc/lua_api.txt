@@ -6831,8 +6831,8 @@ Used by `minetest.add_particle`.
         -- `physical = true,` and `collide_with_objects = true,`.
         -- Requires collisiondetection = true to have any effect.
 
-	-- deprecated: `vertical = false`
-	-- Particles now always face player.
+        -- deprecated: `vertical = false`
+        -- Particles now always face player.
 
         bounce_fraction = 1,
         -- Fraction of the velocity component that is kept after bouncing
@@ -6912,8 +6912,8 @@ Used by `minetest.add_particlespawner`.
         -- If defined, particle positions, velocities and accelerations are
         -- relative to this object's position and yaw
 
-	-- deprecated: `vertical = false`
-	-- Particles now always face player.
+        -- deprecated: `vertical = false`
+        -- Particles now always face player.
 
         texture = "image.png",
 
