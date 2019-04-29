@@ -939,8 +939,8 @@ void Client::handleCommand_SpawnParticle(NetworkPacket* pkt)
 	animation.type         = TAT_NONE;
 	u8 glow                = 0;
 	bool object_collision  = false;
-	f32 bounce_fraction = 1.f;
-	f32 bounce_threshold = 0.f;
+	f32 bounce_fraction    = 1.f;
+	f32 bounce_threshold   = 0.f;
 	try {
 		readU8(is); // Dummy value for vertical
 		collision_removal = readU8(is);
@@ -1003,8 +1003,8 @@ void Client::handleCommand_AddParticleSpawner(NetworkPacket* pkt)
 	animation.type         = TAT_NONE;
 	u8 glow                = 0;
 	bool object_collision  = false;
-	f32 bounce_fraction = 1.f;
-	f32 bounce_threshold = 0.f;
+	f32 bounce_fraction    = 1.f;
+	f32 bounce_threshold   = 0.f;
 	try {
 		bool vertical_dummy;
 		*pkt >> vertical_dummy;

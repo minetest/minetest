@@ -54,7 +54,7 @@ public:
 	* We don't need to check the particle spawner list because client ID will n
 	* ever overlap (u64)
 	* @return new id
-	 */
+	*/
 	u64 generateSpawnerId()
 	{
 			return m_next_particle_spawner_id++;
