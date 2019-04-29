@@ -184,6 +184,22 @@ private:
 	// stops forceloading a position
 	static int l_forceload_free_block(lua_State *L);
 
+	// map_create_backup(backup_name)
+	// Create a new map backup
+	static int l_map_create_backup(lua_State *L);
+
+	// map_list_backups()
+	// Return a list of available map backups
+	static int l_map_list_backups(lua_State *L);
+
+	// map_restore_backup(backup_name)
+	// Restore the given map backup (beware current map state lost)
+	static int l_map_restore_backup(lua_State *L);
+
+	// map_delete_backup(backup_name)
+	// Delete a map backup
+	static int l_map_delete_backup(lua_State *L);
+
 public:
 	static void Initialize(lua_State *L, int top);
 	static void InitializeClient(lua_State *L, int top);

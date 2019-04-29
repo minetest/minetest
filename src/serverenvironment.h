@@ -187,6 +187,10 @@ enum ClearObjectsMode {
 	// Clear objects immediately in loaded mapblocks;
 	// clear objects in unloaded mapblocks only when the mapblocks are next activated.
 		CLEAR_OBJECTS_MODE_QUICK,
+
+ 	// Special mode that clears loaded objects but does not clear objects on further mapblock activation
+		CLEAR_OBJECTS_MODE_LOADED_ONLY,
+
 };
 
 /*
@@ -365,6 +369,10 @@ public:
 	AuthDatabase *getAuthDatabase() { return m_auth_database; }
 	static bool migrateAuthDatabase(const GameParams &game_params,
 			const Settings &cmd_args);
+
+ 	// Clear active blocks list
+ 	void clearActiveBlocks();
+
 private:
 
 	/**

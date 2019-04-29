@@ -46,6 +46,11 @@ public:
 	static s64 getBlockAsInteger(const v3s16 &pos);
 	static v3s16 getIntegerAsBlock(s64 i);
 
+	virtual void listBackups(std::vector<std::string> &dst) {};
+	virtual bool createBackup(const std::string &name) { return false; };
+	virtual void restoreBackup(const std::string &name) {};
+	virtual void deleteBackup(const std::string &name) {};
+
 	virtual void listAllLoadableBlocks(std::vector<v3s16> &dst) = 0;
 };
 

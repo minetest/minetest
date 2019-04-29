@@ -1187,7 +1187,8 @@ void ServerEnvironment::clearObjects(ClearObjectsMode mode)
 		block->refDrop();
 	}
 
-	m_last_clear_objects_time = m_game_time;
+	if (mode != CLEAR_OBJECTS_MODE_LOADED_ONLY)
+		m_last_clear_objects_time = m_game_time;
 
 	actionstream << "ServerEnvironment::clearObjects(): "
 		<< "Finished: Cleared " << num_objs_cleared << " objects"
@@ -2241,4 +2242,9 @@ bool ServerEnvironment::migrateAuthDatabase(
 		return false;
 	}
 	return true;
+}
+
+// Clear active blocks list
+void ServerEnvironment::clearActiveBlocks() {
+	m_active_blocks.clear();
 }

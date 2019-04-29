@@ -2206,6 +2206,60 @@ bool ServerMap::repairBlockLight(v3s16 blockpos,
 	return true;
 }
 
+void ServerMap::createBackup(const std::string &backup_name)
+{
+	// TODO: Return if backup has been saved
+	dbase->createBackup(backup_name);
+}
+
+void ServerMap::restoreBackup(const std::string &backup_name)
+{
+	// Prepare a map event to tell to client that blocks have changed
+	MapEditEvent event;
+	event.type = MEET_OTHER;
+
+	// Delete all map block from memory
+	for (auto &sector_it : m_sectors)
+	{
+		MapSector *sector = sector_it.second;
+		MapBlockVect blocks;
+		sector->getBlocks(blocks);
+
+		for (MapBlock *block : blocks)
+		{
+			if (block->refGet() != 0) continue; // ??
+
+			// Insert block pos into event blocks list
+			event.modified_blocks.insert(block->getPos());
+
+			// Delete from memory
+			sector->deleteBlock(block);
+		}
+
+		// If sector is in sector cache, remove it from there
+		if(m_sector_cache == sector)
+			m_sector_cache = NULL;
+		delete sector;
+	}
+	m_sectors.clear();
+
+	// Restore map table to wanted savepoint state
+	dbase->restoreBackup(backup_name);
+
+	// Send map event to client
+	dispatchEvent(&event);
+}
+
+void ServerMap::deleteBackup(const std::string &backup_name)
+{
+	dbase->deleteBackup(backup_name);
+}
+
+void ServerMap::listBackups(std::vector<std::string> &dst)
+{
+	dbase->listBackups(dst);
+}
+
 MMVManip::MMVManip(Map *map):
 		VoxelManipulator(),
 		m_map(map)

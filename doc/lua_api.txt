@@ -4589,6 +4589,22 @@ Storage API
     * returns reference to mod private `StorageRef`
     * must be called during mod load time
 
+Database Backups
+----------------
+
+* `minetest.map_list_backups()`:
+    * returns a list of existing backups names
+
+* `minetest.map_create_backup(backup_name)`:
+    * Creates a backup of the map
+
+* `minetest.map_restore_backup(backup_name)`:
+    * Restores an existing backup of the map. Warning: this may destroy a lot of
+      players's work
+
+* `minetest.map_delete_backup(backup_name)`:
+	* Deletes an existing backup of the map
+
 Misc.
 -----
 
