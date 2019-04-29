@@ -31,6 +31,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "settings.h"
 #include <array>
 #include <atomic>
+#include <cmath>
 
 static std::atomic<u64> single_particles_count(0);
 static std::atomic<u64> particle_spawners_count(0);
