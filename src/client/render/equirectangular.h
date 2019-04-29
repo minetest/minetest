@@ -24,8 +24,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 class RenderingCoreEquirectangular : public RenderingCoreCubeMap
 {
 protected:
+	Client *client;
 	core::dimension2du image_size;
 	video::ITexture *renderOutput;
+	bool saveAsImage;
 
 	void initTextures() override;
 	void clearTextures() override;

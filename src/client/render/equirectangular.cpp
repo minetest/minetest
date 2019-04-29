@@ -19,14 +19,20 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "equirectangular.h"
+#include <time.h>
 #include <ICameraSceneNode.h>
+#include "client/client.h"
 #include "client/camera.h"
 #include "client/hud.h"
+#include "filesys.h"
+#include "settings.h"
 
 RenderingCoreEquirectangular::RenderingCoreEquirectangular(
 	IrrlichtDevice *_device, Client *_client, Hud *_hud)
-	: RenderingCoreCubeMap(_device, _client, _hud)
-{}
+	: RenderingCoreCubeMap(_device, _client, _hud), client(_client)
+{
+	saveAsImage = g_settings->getBool("360video_save");
+}
 
 void RenderingCoreEquirectangular::initTextures()
 {
@@ -133,4 +139,59 @@ void RenderingCoreEquirectangular::drawAll()
 	processImages();
 
 	driver->draw2DImage(renderOutput, v2s32(0, 0));
+
+	if (saveAsImage) {
+		video::IImage *const raw_image = driver->createScreenShot();
+
+		if (!raw_image)
+			return;
+
+		time_t t = time(NULL);
+		struct tm *tm = localtime(&t);
+
+		char timetstamp_c[32];
+		strftime(timetstamp_c, sizeof(timetstamp_c), "%Y%m%d_%H%M%S", tm);
+
+		std::string filename_base = g_settings->get("screenshot_path")
+				+ DIR_DELIM
+				+ std::string("360shot_")
+				+ std::string(timetstamp_c);
+		std::string filename_ext = "." + g_settings->get("screenshot_format");
+		std::string filename;
+
+		u32 quality = (u32)g_settings->getS32("screenshot_quality");
+		quality = MYMIN(MYMAX(quality, 0), 100) / 100.0 * 255;
+
+		// Try to find a unique filename
+		unsigned serial = 0;
+
+		while (serial < SCREENSHOT_MAX_SERIAL_TRIES) {
+			filename = filename_base + (serial > 0 ? ("_" + itos(serial)) : "") + filename_ext;
+			std::ifstream tmp(filename.c_str());
+			if (!tmp.good())
+				break; // File did not apparently exist, we'll go with it.
+			serial ++;
+		}
+
+		if (serial == SCREENSHOT_MAX_SERIAL_TRIES) {
+			infostream << "Could not find suitable filename for 360 shot." << std::endl;
+		} else {
+			irr::video::IImage *const image =
+					driver->createImage(video::ECF_R8G8B8, raw_image->getDimension());
+
+			if (image) {
+				raw_image->copyTo(image);
+
+				std::ostringstream sstr;
+				if (driver->writeImageToFile(image, filename.c_str(), quality)) {
+					sstr << "Saved 360 shot to '" << filename << "'.";
+				} else {
+					sstr << "Failed to save 360 shot '" << filename << "'.";
+				}
+				infostream << sstr.str() << std::endl;
+				image->drop();
+			}
+		}
+		raw_image->drop();
+	}
 }
