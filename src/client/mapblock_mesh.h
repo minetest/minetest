@@ -32,23 +32,21 @@ class IShaderSource;
 	Mesh making stuff
 */
 
-
 class MapBlock;
 struct MinimapMapblock;
 
 struct MeshMakeData
 {
 	VoxelManipulator m_vmanip;
-	v3s16 m_blockpos = v3s16(-1337,-1337,-1337);
-	v3s16 m_crack_pos_relative = v3s16(-1337,-1337,-1337);
+	v3s16 m_blockpos = v3s16(-1337, -1337, -1337);
+	v3s16 m_crack_pos_relative = v3s16(-1337, -1337, -1337);
 	bool m_smooth_lighting = false;
 
 	Client *m_client;
 	bool m_use_shaders;
 	bool m_use_tangent_vertices;
 
-	MeshMakeData(Client *client, bool use_shaders,
-			bool use_tangent_vertices = false);
+	MeshMakeData(Client *client, bool use_shaders, bool use_tangent_vertices = false);
 
 	/*
 		Copy block data manually (to allow optimizations by the caller)
@@ -104,15 +102,9 @@ public:
 	// Returns true if anything has been changed.
 	bool animate(bool faraway, float time, int crack, u32 daynight_ratio);
 
-	scene::IMesh *getMesh()
-	{
-		return m_mesh[0];
-	}
+	scene::IMesh *getMesh() { return m_mesh[0]; }
 
-	scene::IMesh *getMesh(u8 layer)
-	{
-		return m_mesh[layer];
-	}
+	scene::IMesh *getMesh(u8 layer) { return m_mesh[layer]; }
 
 	MinimapMapblock *moveMinimapMapblock()
 	{
@@ -121,14 +113,11 @@ public:
 		return p;
 	}
 
-	bool isAnimationForced() const
-	{
-		return m_animation_force_timer == 0;
-	}
+	bool isAnimationForced() const { return m_animation_force_timer == 0; }
 
 	void decreaseAnimationForceTimer()
 	{
-		if(m_animation_force_timer > 0)
+		if (m_animation_force_timer > 0)
 			m_animation_force_timer--;
 	}
 
@@ -167,7 +156,7 @@ private:
 	// For each mesh and mesh buffer, stores pre-baked colors
 	// of sunlit vertices
 	// Keys are pairs of (mesh index, buffer index in the mesh)
-	std::map<std::pair<u8, u32>, std::map<u32, video::SColor > > m_daynight_diffs;
+	std::map<std::pair<u8, u32>, std::map<u32, video::SColor>> m_daynight_diffs;
 
 	// Camera offset info -> do we have to translate the mesh?
 	v3s16 m_camera_offset;
@@ -189,9 +178,10 @@ video::SColor encode_light(u16 light, u8 emissive_light);
 
 // Compute light at node
 u16 getInteriorLight(MapNode n, s32 increment, const NodeDefManager *ndef);
-u16 getFaceLight(MapNode n, MapNode n2, const v3s16 &face_dir,
-	const NodeDefManager *ndef);
-u16 getSmoothLightSolid(const v3s16 &p, const v3s16 &face_dir, const v3s16 &corner, MeshMakeData *data);
+u16 getFaceLight(
+		MapNode n, MapNode n2, const v3s16 &face_dir, const NodeDefManager *ndef);
+u16 getSmoothLightSolid(const v3s16 &p, const v3s16 &face_dir, const v3s16 &corner,
+		MeshMakeData *data);
 u16 getSmoothLightTransparent(const v3s16 &p, const v3s16 &corner, MeshMakeData *data);
 
 /*!
@@ -207,8 +197,7 @@ void get_sunlight_color(video::SColorf *sunlight, u32 daynight_ratio);
  * \param light first 8 bits are day light, second 8 bits are
  * night light
  */
-void final_color_blend(video::SColor *result,
-		u16 light, u32 daynight_ratio);
+void final_color_blend(video::SColor *result, u16 light, u32 daynight_ratio);
 
 /*!
  * Gives the final  SColor shown on screen.
@@ -217,12 +206,14 @@ void final_color_blend(video::SColor *result,
  * \param data the half-baked vertex color
  * \param dayLight color of the sunlight
  */
-void final_color_blend(video::SColor *result,
-		const video::SColor &data, const video::SColorf &dayLight);
+void final_color_blend(video::SColor *result, const video::SColor &data,
+		const video::SColorf &dayLight);
 
 // Retrieves the TileSpec of a face of a node
 // Adds MATERIAL_FLAG_CRACK if the node is cracked
 // TileSpec should be passed as reference due to the underlying TileFrame and its vector
 // TileFrame vector copy cost very much to client
-void getNodeTileN(MapNode mn, const v3s16 &p, u8 tileindex, MeshMakeData *data, TileSpec &tile);
-void getNodeTile(MapNode mn, const v3s16 &p, const v3s16 &dir, MeshMakeData *data, TileSpec &tile);
+void getNodeTileN(MapNode mn, const v3s16 &p, u8 tileindex, MeshMakeData *data,
+		TileSpec &tile);
+void getNodeTile(MapNode mn, const v3s16 &p, const v3s16 &dir, MeshMakeData *data,
+		TileSpec &tile);

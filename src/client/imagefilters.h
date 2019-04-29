@@ -40,4 +40,5 @@ void imageCleanTransparent(video::IImage *src, u32 threshold);
  * filter is designed to produce the most accurate results for both upscaling
  * and downscaling.
  */
-void imageScaleNNAA(video::IImage *src, const core::rect<s32> &srcrect, video::IImage *dest);
+void imageScaleNNAA(
+		video::IImage *src, const core::rect<s32> &srcrect, video::IImage *dest);

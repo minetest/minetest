@@ -94,7 +94,8 @@ private:
 	v3s16 m_camera_offset;
 	v2u32 m_screensize;
 	v2s32 m_displaycenter;
-	s32 m_hotbar_imagesize; // Takes hud_scaling into account, updated by resizeHotbar()
+	s32 m_hotbar_imagesize; // Takes hud_scaling into account, updated by
+				// resizeHotbar()
 	s32 m_padding; // Takes hud_scaling into account, updated by resizeHotbar()
 	video::SColor hbar_colors[4];
 
@@ -125,12 +126,9 @@ enum ItemRotationKind
 	IT_ROT_NONE, // Must be last, also serves as number
 };
 
-void drawItemStack(video::IVideoDriver *driver,
-		gui::IGUIFont *font,
-		const ItemStack &item,
-		const core::rect<s32> &rect,
-		const core::rect<s32> *clip,
-		Client *client,
+void drawItemStack(video::IVideoDriver *driver, gui::IGUIFont *font,
+		const ItemStack &item, const core::rect<s32> &rect,
+		const core::rect<s32> *clip, Client *client,
 		ItemRotationKind rotation_kind);
 
 #endif

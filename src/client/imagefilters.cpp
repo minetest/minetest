@@ -38,44 +38,45 @@ void imageCleanTransparent(video::IImage *src, u32 threshold)
 	// Walk each pixel looking for fully transparent ones.
 	// Note: loop y around x for better cache locality.
 	for (u32 ctry = 0; ctry < dim.Height; ctry++)
-	for (u32 ctrx = 0; ctrx < dim.Width; ctrx++) {
+		for (u32 ctrx = 0; ctrx < dim.Width; ctrx++) {
 
-		// Ignore opaque pixels.
-		irr::video::SColor c = src->getPixel(ctrx, ctry);
-		if (c.getAlpha() > threshold)
-			continue;
-
-		// Sample size and total weighted r, g, b values.
-		u32 ss = 0, sr = 0, sg = 0, sb = 0;
-
-		// Walk each neighbor pixel (clipped to image bounds).
-		for (u32 sy = (ctry < 1) ? 0 : (ctry - 1);
-				sy <= (ctry + 1) && sy < dim.Height; sy++)
-		for (u32 sx = (ctrx < 1) ? 0 : (ctrx - 1);
-				sx <= (ctrx + 1) && sx < dim.Width; sx++) {
-
-			// Ignore transparent pixels.
-			irr::video::SColor d = src->getPixel(sx, sy);
-			if (d.getAlpha() <= threshold)
+			// Ignore opaque pixels.
+			irr::video::SColor c = src->getPixel(ctrx, ctry);
+			if (c.getAlpha() > threshold)
 				continue;
 
-			// Add RGB values weighted by alpha.
-			u32 a = d.getAlpha();
-			ss += a;
-			sr += a * d.getRed();
-			sg += a * d.getGreen();
-			sb += a * d.getBlue();
-		}
+			// Sample size and total weighted r, g, b values.
+			u32 ss = 0, sr = 0, sg = 0, sb = 0;
 
-		// If we found any neighbor RGB data, set pixel to average
-		// weighted by alpha.
-		if (ss > 0) {
-			c.setRed(sr / ss);
-			c.setGreen(sg / ss);
-			c.setBlue(sb / ss);
-			src->setPixel(ctrx, ctry, c);
+			// Walk each neighbor pixel (clipped to image bounds).
+			for (u32 sy = (ctry < 1) ? 0 : (ctry - 1);
+					sy <= (ctry + 1) && sy < dim.Height; sy++)
+				for (u32 sx = (ctrx < 1) ? 0 : (ctrx - 1);
+						sx <= (ctrx + 1) && sx < dim.Width;
+						sx++) {
+
+					// Ignore transparent pixels.
+					irr::video::SColor d = src->getPixel(sx, sy);
+					if (d.getAlpha() <= threshold)
+						continue;
+
+					// Add RGB values weighted by alpha.
+					u32 a = d.getAlpha();
+					ss += a;
+					sr += a * d.getRed();
+					sg += a * d.getGreen();
+					sb += a * d.getBlue();
+				}
+
+			// If we found any neighbor RGB data, set pixel to average
+			// weighted by alpha.
+			if (ss > 0) {
+				c.setRed(sr / ss);
+				c.setGreen(sg / ss);
+				c.setBlue(sb / ss);
+				src->setPixel(ctrx, ctry, c);
+			}
 		}
-	}
 }
 
 /* Scale a region of an image into another image, using nearest-neighbor with
@@ -85,7 +86,8 @@ void imageCleanTransparent(video::IImage *src, u32 threshold)
  * filter is designed to produce the most accurate results for both upscaling
  * and downscaling.
  */
-void imageScaleNNAA(video::IImage *src, const core::rect<s32> &srcrect, video::IImage *dest)
+void imageScaleNNAA(
+		video::IImage *src, const core::rect<s32> &srcrect, video::IImage *dest)
 {
 	double sx, sy, minsx, maxsx, minsy, maxsy, area, ra, ga, ba, aa, pw, ph, pa;
 	u32 dy, dx;
@@ -101,72 +103,73 @@ void imageScaleNNAA(video::IImage *src, const core::rect<s32> &srcrect, video::I
 	// Note: loop y around x for better cache locality.
 	core::dimension2d<u32> dim = dest->getDimension();
 	for (dy = 0; dy < dim.Height; dy++)
-	for (dx = 0; dx < dim.Width; dx++) {
+		for (dx = 0; dx < dim.Width; dx++) {
 
-		// Calculate floating-point source rectangle bounds.
-		// Do some basic clipping, and for mirrored/flipped rects,
-		// make sure min/max are in the right order.
-		minsx = sox + (dx * sw / dim.Width);
-		minsx = rangelim(minsx, 0, sw);
-		maxsx = minsx + sw / dim.Width;
-		maxsx = rangelim(maxsx, 0, sw);
-		if (minsx > maxsx)
-			SWAP(double, minsx, maxsx);
-		minsy = soy + (dy * sh / dim.Height);
-		minsy = rangelim(minsy, 0, sh);
-		maxsy = minsy + sh / dim.Height;
-		maxsy = rangelim(maxsy, 0, sh);
-		if (minsy > maxsy)
-			SWAP(double, minsy, maxsy);
+			// Calculate floating-point source rectangle bounds.
+			// Do some basic clipping, and for mirrored/flipped rects,
+			// make sure min/max are in the right order.
+			minsx = sox + (dx * sw / dim.Width);
+			minsx = rangelim(minsx, 0, sw);
+			maxsx = minsx + sw / dim.Width;
+			maxsx = rangelim(maxsx, 0, sw);
+			if (minsx > maxsx)
+				SWAP(double, minsx, maxsx);
+			minsy = soy + (dy * sh / dim.Height);
+			minsy = rangelim(minsy, 0, sh);
+			maxsy = minsy + sh / dim.Height;
+			maxsy = rangelim(maxsy, 0, sh);
+			if (minsy > maxsy)
+				SWAP(double, minsy, maxsy);
 
-		// Total area, and integral of r, g, b values over that area,
-		// initialized to zero, to be summed up in next loops.
-		area = 0;
-		ra = 0;
-		ga = 0;
-		ba = 0;
-		aa = 0;
+			// Total area, and integral of r, g, b values over that area,
+			// initialized to zero, to be summed up in next loops.
+			area = 0;
+			ra = 0;
+			ga = 0;
+			ba = 0;
+			aa = 0;
 
-		// Loop over the integral pixel positions described by those bounds.
-		for (sy = floor(minsy); sy < maxsy; sy++)
-		for (sx = floor(minsx); sx < maxsx; sx++) {
+			// Loop over the integral pixel positions described by those
+			// bounds.
+			for (sy = floor(minsy); sy < maxsy; sy++)
+				for (sx = floor(minsx); sx < maxsx; sx++) {
 
-			// Calculate width, height, then area of dest pixel
-			// that's covered by this source pixel.
-			pw = 1;
-			if (minsx > sx)
-				pw += sx - minsx;
-			if (maxsx < (sx + 1))
-				pw += maxsx - sx - 1;
-			ph = 1;
-			if (minsy > sy)
-				ph += sy - minsy;
-			if (maxsy < (sy + 1))
-				ph += maxsy - sy - 1;
-			pa = pw * ph;
+					// Calculate width, height, then area of dest
+					// pixel that's covered by this source pixel.
+					pw = 1;
+					if (minsx > sx)
+						pw += sx - minsx;
+					if (maxsx < (sx + 1))
+						pw += maxsx - sx - 1;
+					ph = 1;
+					if (minsy > sy)
+						ph += sy - minsy;
+					if (maxsy < (sy + 1))
+						ph += maxsy - sy - 1;
+					pa = pw * ph;
 
-			// Get source pixel and add it to totals, weighted
-			// by covered area and alpha.
-			pxl = src->getPixel((u32)sx, (u32)sy);
-			area += pa;
-			ra += pa * pxl.getRed();
-			ga += pa * pxl.getGreen();
-			ba += pa * pxl.getBlue();
-			aa += pa * pxl.getAlpha();
+					// Get source pixel and add it to totals, weighted
+					// by covered area and alpha.
+					pxl = src->getPixel((u32)sx, (u32)sy);
+					area += pa;
+					ra += pa * pxl.getRed();
+					ga += pa * pxl.getGreen();
+					ba += pa * pxl.getBlue();
+					aa += pa * pxl.getAlpha();
+				}
+
+			// Set the destination image pixel to the average color.
+			if (area > 0) {
+				pxl.setRed(ra / area + 0.5);
+				pxl.setGreen(ga / area + 0.5);
+				pxl.setBlue(ba / area + 0.5);
+				pxl.setAlpha(aa / area + 0.5);
+			} else {
+				pxl.setRed(0);
+				pxl.setGreen(0);
+				pxl.setBlue(0);
+				pxl.setAlpha(0);
+			}
+			dest->setPixel(dx, dy, pxl);
 		}
-
-		// Set the destination image pixel to the average color.
-		if (area > 0) {
-			pxl.setRed(ra / area + 0.5);
-			pxl.setGreen(ga / area + 0.5);
-			pxl.setBlue(ba / area + 0.5);
-			pxl.setAlpha(aa / area + 0.5);
-		} else {
-			pxl.setRed(0);
-			pxl.setGreen(0);
-			pxl.setBlue(0);
-			pxl.setAlpha(0);
-		}
-		dest->setPixel(dx, dy, pxl);
-	}
 }

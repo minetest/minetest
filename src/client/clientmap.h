@@ -49,23 +49,13 @@ class ITextureSource;
 class ClientMap : public Map, public scene::ISceneNode
 {
 public:
-	ClientMap(
-			Client *client,
-			MapDrawControl &control,
-			s32 id
-	);
+	ClientMap(Client *client, MapDrawControl &control, s32 id);
 
 	virtual ~ClientMap() = default;
 
-	s32 mapType() const
-	{
-		return MAPTYPE_CLIENT;
-	}
+	s32 mapType() const { return MAPTYPE_CLIENT; }
 
-	void drop()
-	{
-		ISceneNode::drop();
-	}
+	void drop() { ISceneNode::drop(); }
 
 	void updateCamera(const v3f &pos, const v3f &dir, f32 fov, const v3s16 &offset)
 	{
@@ -78,9 +68,9 @@ public:
 	/*
 		Forcefully get a sector from somewhere
 	*/
-	MapSector * emergeSector(v2s16 p);
+	MapSector *emergeSector(v2s16 p);
 
-	//void deSerializeSector(v2s16 p2d, std::istream &is);
+	// void deSerializeSector(v2s16 p2d, std::istream &is);
 
 	/*
 		ISceneNode methods
@@ -90,45 +80,43 @@ public:
 
 	virtual void render()
 	{
-		video::IVideoDriver* driver = SceneManager->getVideoDriver();
+		video::IVideoDriver *driver = SceneManager->getVideoDriver();
 		driver->setTransform(video::ETS_WORLD, AbsoluteTransformation);
 		renderMap(driver, SceneManager->getSceneNodeRenderPass());
 	}
 
-	virtual const aabb3f &getBoundingBox() const
-	{
-		return m_box;
-	}
+	virtual const aabb3f &getBoundingBox() const { return m_box; }
 
-	void getBlocksInViewRange(v3s16 cam_pos_nodes,
-		v3s16 *p_blocks_min, v3s16 *p_blocks_max);
+	void getBlocksInViewRange(
+			v3s16 cam_pos_nodes, v3s16 *p_blocks_min, v3s16 *p_blocks_max);
 	void updateDrawList();
-	void renderMap(video::IVideoDriver* driver, s32 pass);
+	void renderMap(video::IVideoDriver *driver, s32 pass);
 
-	int getBackgroundBrightness(float max_d, u32 daylight_factor,
-			int oldvalue, bool *sunlight_seen_result);
+	int getBackgroundBrightness(float max_d, u32 daylight_factor, int oldvalue,
+			bool *sunlight_seen_result);
 
 	void renderPostFx(CameraMode cam_mode);
 
 	// For debug printing
 	virtual void PrintInfo(std::ostream &out);
 
-	const MapDrawControl & getControl() const { return m_control; }
+	const MapDrawControl &getControl() const { return m_control; }
 	f32 getCameraFov() const { return m_camera_fov; }
+
 private:
 	Client *m_client;
 
-	aabb3f m_box = aabb3f(-BS * 1000000, -BS * 1000000, -BS * 1000000,
-		BS * 1000000, BS * 1000000, BS * 1000000);
+	aabb3f m_box = aabb3f(-BS * 1000000, -BS * 1000000, -BS * 1000000, BS * 1000000,
+			BS * 1000000, BS * 1000000);
 
 	MapDrawControl &m_control;
 
-	v3f m_camera_position = v3f(0,0,0);
-	v3f m_camera_direction = v3f(0,0,1);
+	v3f m_camera_position = v3f(0, 0, 0);
+	v3f m_camera_direction = v3f(0, 0, 1);
 	f32 m_camera_fov = M_PI;
 	v3s16 m_camera_offset;
 
-	std::map<v3s16, MapBlock*> m_drawlist;
+	std::map<v3s16, MapBlock *> m_drawlist;
 
 	std::set<v2s16> m_last_drawn_sectors;
 

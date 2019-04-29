@@ -39,22 +39,21 @@ public:
 	ClientMediaDownloader();
 	~ClientMediaDownloader();
 
-	float getProgress() const {
+	float getProgress() const
+	{
 		if (m_uncached_count >= 1)
-			return 1.0f * m_uncached_received_count /
-				m_uncached_count;
+			return 1.0f * m_uncached_received_count / m_uncached_count;
 
 		return 0.0f;
 	}
 
-	bool isStarted() const {
-		return m_initial_step_done;
-	}
+	bool isStarted() const { return m_initial_step_done; }
 
 	// If this returns true, the downloader is done and can be deleted
-	bool isDone() const {
+	bool isDone() const
+	{
 		return m_initial_step_done &&
-			m_uncached_received_count == m_uncached_count;
+		       m_uncached_received_count == m_uncached_count;
 	}
 
 	// Add a file to the list of required file (but don't fetch it yet)
@@ -77,44 +76,42 @@ public:
 
 	// Must be called for each file received through TOCLIENT_MEDIA
 	void conventionalTransferDone(
-			const std::string &name,
-			const std::string &data,
-			Client *client);
+			const std::string &name, const std::string &data, Client *client);
 
 private:
-	struct FileStatus {
+	struct FileStatus
+	{
 		bool received;
 		std::string sha1;
 		s32 current_remote;
 		std::vector<s32> available_remotes;
 	};
 
-	struct RemoteServerStatus {
+	struct RemoteServerStatus
+	{
 		std::string baseurl;
 		s32 active_count;
 	};
 
 	void initialStep(Client *client);
 	void remoteHashSetReceived(const HTTPFetchResult &fetch_result);
-	void remoteMediaReceived(const HTTPFetchResult &fetch_result,
-			Client *client);
+	void remoteMediaReceived(const HTTPFetchResult &fetch_result, Client *client);
 	s32 selectRemoteServer(FileStatus *filestatus);
 	void startRemoteMediaTransfers();
 	void startConventionalTransfers(Client *client);
 
 	bool checkAndLoad(const std::string &name, const std::string &sha1,
-			const std::string &data, bool is_from_cache,
-			Client *client);
+			const std::string &data, bool is_from_cache, Client *client);
 
 	std::string serializeRequiredHashSet();
-	static void deSerializeHashSet(const std::string &data,
-			std::set<std::string> &result);
+	static void deSerializeHashSet(
+			const std::string &data, std::set<std::string> &result);
 
 	// Maps filename to file status
-	std::map<std::string, FileStatus*> m_files;
+	std::map<std::string, FileStatus *> m_files;
 
 	// Array of remote media servers
-	std::vector<RemoteServerStatus*> m_remotes;
+	std::vector<RemoteServerStatus *> m_remotes;
 
 	// Filesystem-based media cache
 	FileCache m_media_cache;
@@ -143,5 +140,4 @@ private:
 	// don't need to be looked at again
 	// (use m_files.upper_bound(m_name_bound) to get an iterator)
 	std::string m_name_bound = "";
-
 };

@@ -27,8 +27,8 @@ inline u32 scaledown(u32 coef, u32 size)
 }
 
 RenderingCorePlain::RenderingCorePlain(
-	IrrlichtDevice *_device, Client *_client, Hud *_hud)
-	: RenderingCore(_device, _client, _hud)
+		IrrlichtDevice *_device, Client *_client, Hud *_hud) :
+		RenderingCore(_device, _client, _hud)
 {
 	scale = g_settings->getU16("undersampling");
 }

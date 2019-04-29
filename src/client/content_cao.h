@@ -35,8 +35,7 @@ struct Nametag;
 	SmoothTranslator
 */
 
-template<typename T>
-struct SmoothTranslator
+template <typename T> struct SmoothTranslator
 {
 	T val_old;
 	T val_current;
@@ -50,7 +49,7 @@ struct SmoothTranslator
 	void init(T current);
 
 	void update(T new_target, bool is_end_position = false,
-		float update_interval = -1);
+			float update_interval = -1);
 
 	void translate(f32 dtime);
 };
@@ -77,7 +76,8 @@ private:
 	//
 	scene::ISceneManager *m_smgr = nullptr;
 	Client *m_client = nullptr;
-	aabb3f m_selection_box = aabb3f(-BS/3.,-BS/3.,-BS/3., BS/3.,BS/3.,BS/3.);
+	aabb3f m_selection_box =
+			aabb3f(-BS / 3., -BS / 3., -BS / 3., BS / 3., BS / 3., BS / 3.);
 	scene::IMeshSceneNode *m_meshnode = nullptr;
 	scene::IAnimatedMeshSceneNode *m_animated_meshnode = nullptr;
 	WieldMeshSceneNode *m_wield_meshnode = nullptr;
@@ -92,7 +92,7 @@ private:
 	SmoothTranslator<v3f> pos_translator;
 	SmoothTranslatorWrappedv3f rot_translator;
 	// Spritesheet/animation stuff
-	v2f m_tx_size = v2f(1,1);
+	v2f m_tx_size = v2f(1, 1);
 	v2s16 m_tx_basepos;
 	bool m_initial_tx_basepos_set = false;
 	bool m_tx_select_horiz_by_yawpitch = false;
@@ -129,19 +129,13 @@ public:
 
 	~GenericCAO();
 
-	static ClientActiveObject* create(Client *client, ClientEnvironment *env)
+	static ClientActiveObject *create(Client *client, ClientEnvironment *env)
 	{
 		return new GenericCAO(client, env);
 	}
 
-	inline ActiveObjectType getType() const
-	{
-		return ACTIVEOBJECT_TYPE_GENERIC;
-	}
-	inline const ItemGroupList &getGroups() const
-	{
-		return m_armor_groups;
-	}
+	inline ActiveObjectType getType() const { return ACTIVEOBJECT_TYPE_GENERIC; }
+	inline const ItemGroupList &getGroups() const { return m_armor_groups; }
 	void initialize(const std::string &data);
 
 	void processInitData(const std::string &data);
@@ -154,10 +148,7 @@ public:
 
 	v3f getPosition();
 
-	inline const v3f &getRotation()
-	{
-		return m_rotation;
-	}
+	inline const v3f &getRotation() { return m_rotation; }
 
 	const bool isImmortal();
 
@@ -178,25 +169,13 @@ public:
 		return m_matrixnode->getRelativeTransformationMatrix();
 	}
 
-	inline f32 getStepHeight() const
-	{
-		return m_prop.stepheight;
-	}
+	inline f32 getStepHeight() const { return m_prop.stepheight; }
 
-	inline bool isLocalPlayer() const
-	{
-		return m_is_local_player;
-	}
+	inline bool isLocalPlayer() const { return m_is_local_player; }
 
-	inline bool isVisible() const
-	{
-		return m_is_visible;
-	}
+	inline bool isVisible() const { return m_is_visible; }
 
-	inline void setVisible(bool toset)
-	{
-		m_is_visible = toset;
-	}
+	inline void setVisible(bool toset) { m_is_visible = toset; }
 
 	void setChildrenVisible(bool toset);
 
@@ -208,10 +187,7 @@ public:
 
 	void addToScene(ITextureSource *tsrc);
 
-	inline void expireVisuals()
-	{
-		m_visuals_expired = true;
-	}
+	inline void expireVisuals() { m_visuals_expired = true; }
 
 	void updateLight(u8 light_at_pos);
 
@@ -239,13 +215,10 @@ public:
 
 	void processMessage(const std::string &data);
 
-	bool directReportPunch(v3f dir, const ItemStack *punchitem=NULL,
-			float time_from_last_punch=1000000);
+	bool directReportPunch(v3f dir, const ItemStack *punchitem = NULL,
+			float time_from_last_punch = 1000000);
 
 	std::string debugInfoText();
 
-	std::string infoText()
-	{
-		return m_prop.infotext;
-	}
+	std::string infoText() { return m_prop.infotext; }
 };

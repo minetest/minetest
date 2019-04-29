@@ -33,51 +33,27 @@ struct ContentFeatures;
 
 class Particle : public scene::ISceneNode
 {
-	public:
-	Particle(
-		IGameDef* gamedef,
-		LocalPlayer *player,
-		ClientEnvironment *env,
-		v3f pos,
-		v3f velocity,
-		v3f acceleration,
-		float expirationtime,
-		float size,
-		bool collisiondetection,
-		bool collision_removal,
-		bool object_collision,
-		bool vertical,
-		video::ITexture *texture,
-		v2f texpos,
-		v2f texsize,
-		const struct TileAnimationParams &anim,
-		u8 glow,
-		video::SColor color = video::SColor(0xFFFFFFFF)
-	);
+public:
+	Particle(IGameDef *gamedef, LocalPlayer *player, ClientEnvironment *env, v3f pos,
+			v3f velocity, v3f acceleration, float expirationtime, float size,
+			bool collisiondetection, bool collision_removal,
+			bool object_collision, bool vertical, video::ITexture *texture,
+			v2f texpos, v2f texsize, const struct TileAnimationParams &anim,
+			u8 glow, video::SColor color = video::SColor(0xFFFFFFFF));
 	~Particle() = default;
 
-	virtual const aabb3f &getBoundingBox() const
-	{
-		return m_box;
-	}
+	virtual const aabb3f &getBoundingBox() const { return m_box; }
 
-	virtual u32 getMaterialCount() const
-	{
-		return 1;
-	}
+	virtual u32 getMaterialCount() const { return 1; }
 
-	virtual video::SMaterial& getMaterial(u32 i)
-	{
-		return m_material;
-	}
+	virtual video::SMaterial &getMaterial(u32 i) { return m_material; }
 
 	virtual void OnRegisterSceneNode();
 	virtual void render();
 
 	void step(float dtime);
 
-	bool get_expired ()
-	{ return m_expiration < m_time; }
+	bool get_expired() { return m_expiration < m_time; }
 
 private:
 	void updateLight();
@@ -117,35 +93,23 @@ private:
 class ParticleSpawner
 {
 public:
-	ParticleSpawner(IGameDef* gamedef,
-		LocalPlayer *player,
-		u16 amount,
-		float time,
-		v3f minp, v3f maxp,
-		v3f minvel, v3f maxvel,
-		v3f minacc, v3f maxacc,
-		float minexptime, float maxexptime,
-		float minsize, float maxsize,
-		bool collisiondetection,
-		bool collision_removal,
-		bool object_collision,
-		u16 attached_id,
-		bool vertical,
-		video::ITexture *texture,
-		const struct TileAnimationParams &anim, u8 glow,
-		ParticleManager* p_manager);
+	ParticleSpawner(IGameDef *gamedef, LocalPlayer *player, u16 amount, float time,
+			v3f minp, v3f maxp, v3f minvel, v3f maxvel, v3f minacc,
+			v3f maxacc, float minexptime, float maxexptime, float minsize,
+			float maxsize, bool collisiondetection, bool collision_removal,
+			bool object_collision, u16 attached_id, bool vertical,
+			video::ITexture *texture, const struct TileAnimationParams &anim,
+			u8 glow, ParticleManager *p_manager);
 
 	~ParticleSpawner() = default;
 
 	void step(float dtime, ClientEnvironment *env);
 
-	bool get_expired ()
-	{ return (m_amount <= 0) && m_spawntime != 0; }
+	bool get_expired() { return (m_amount <= 0) && m_spawntime != 0; }
 
 private:
-	void spawnParticle(ClientEnvironment *env, float radius,
-			bool is_attached, const v3f &attached_pos,
-			float attached_yaw);
+	void spawnParticle(ClientEnvironment *env, float radius, bool is_attached,
+			const v3f &attached_pos, float attached_yaw);
 
 	ParticleManager *m_particlemanager;
 	float m_time;
@@ -179,21 +143,21 @@ private:
  */
 class ParticleManager
 {
-friend class ParticleSpawner;
+	friend class ParticleSpawner;
+
 public:
-	ParticleManager(ClientEnvironment* env);
+	ParticleManager(ClientEnvironment *env);
 	~ParticleManager();
 
-	void step (float dtime);
+	void step(float dtime);
 
-	void handleParticleEvent(ClientEvent *event, Client *client,
-			LocalPlayer *player);
+	void handleParticleEvent(ClientEvent *event, Client *client, LocalPlayer *player);
 
 	void addDiggingParticles(IGameDef *gamedef, LocalPlayer *player, v3s16 pos,
-		const MapNode &n, const ContentFeatures &f);
+			const MapNode &n, const ContentFeatures &f);
 
 	void addNodeParticle(IGameDef *gamedef, LocalPlayer *player, v3s16 pos,
-		const MapNode &n, const ContentFeatures &f);
+			const MapNode &n, const ContentFeatures &f);
 
 	/**
 	 * This function is only used by client particle spawners
@@ -202,28 +166,24 @@ public:
 	 * ever overlap (u64)
 	 * @return new id
 	 */
-	u64 generateSpawnerId()
-	{
-		return m_next_particle_spawner_id++;
-	}
+	u64 generateSpawnerId() { return m_next_particle_spawner_id++; }
 
 protected:
-	void addParticle(Particle* toadd);
+	void addParticle(Particle *toadd);
 
 private:
-
 	void stepParticles(float dtime);
 	void stepSpawners(float dtime);
 
 	void clearAll();
 
-	std::vector<Particle*> m_particles;
-	std::unordered_map<u64, ParticleSpawner*> m_particle_spawners;
-	// Start the particle spawner ids generated from here after u32_max. lower values are
-	// for server sent spawners.
+	std::vector<Particle *> m_particles;
+	std::unordered_map<u64, ParticleSpawner *> m_particle_spawners;
+	// Start the particle spawner ids generated from here after u32_max. lower values
+	// are for server sent spawners.
 	u64 m_next_particle_spawner_id = U32_MAX + 1;
 
-	ClientEnvironment* m_env;
+	ClientEnvironment *m_env;
 	std::mutex m_particle_list_lock;
 	std::mutex m_spawner_list_lock;
 };

@@ -39,9 +39,8 @@ static std::string getMediaCacheDir()
 	ClientMediaDownloader
 */
 
-ClientMediaDownloader::ClientMediaDownloader():
-	m_media_cache(getMediaCacheDir()),
-	m_httpfetch_caller(HTTPFETCH_DISCARD)
+ClientMediaDownloader::ClientMediaDownloader() :
+		m_media_cache(getMediaCacheDir()), m_httpfetch_caller(HTTPFETCH_DISCARD)
 {
 }
 
@@ -64,24 +63,21 @@ void ClientMediaDownloader::addFile(const std::string &name, const std::string &
 	// if name was already announced, ignore the new announcement
 	if (m_files.count(name) != 0) {
 		errorstream << "Client: ignoring duplicate media announcement "
-				<< "sent by server: \"" << name << "\""
-				<< std::endl;
+			    << "sent by server: \"" << name << "\"" << std::endl;
 		return;
 	}
 
 	// if name is empty or contains illegal characters, ignore the file
 	if (name.empty() || !string_allowed(name, TEXTURENAME_ALLOWED_CHARS)) {
 		errorstream << "Client: ignoring illegal file name "
-				<< "sent by server: \"" << name << "\""
-				<< std::endl;
+			    << "sent by server: \"" << name << "\"" << std::endl;
 		return;
 	}
 
 	// length of sha1 must be exactly 20 (160 bits), else ignore the file
 	if (sha1.size() != 20) {
 		errorstream << "Client: ignoring illegal SHA1 sent by server: "
-				<< hex_encode(sha1) << " \"" << name << "\""
-				<< std::endl;
+			    << hex_encode(sha1) << " \"" << name << "\"" << std::endl;
 		return;
 	}
 
@@ -94,13 +90,13 @@ void ClientMediaDownloader::addFile(const std::string &name, const std::string &
 
 void ClientMediaDownloader::addRemoteServer(const std::string &baseurl)
 {
-	assert(!m_initial_step_done);	// pre-condition
+	assert(!m_initial_step_done); // pre-condition
 
-	#ifdef USE_CURL
+#ifdef USE_CURL
 
 	if (g_settings->getBool("enable_remote_media_server")) {
-		infostream << "Client: Adding remote server \""
-			<< baseurl << "\" for media download" << std::endl;
+		infostream << "Client: Adding remote server \"" << baseurl
+			   << "\" for media download" << std::endl;
 
 		RemoteServerStatus *remote = new RemoteServerStatus();
 		remote->baseurl = baseurl;
@@ -108,13 +104,12 @@ void ClientMediaDownloader::addRemoteServer(const std::string &baseurl)
 		m_remotes.push_back(remote);
 	}
 
-	#else
+#else
 
-	infostream << "Client: Ignoring remote server \""
-		<< baseurl << "\" because cURL support is not compiled in"
-		<< std::endl;
+	infostream << "Client: Ignoring remote server \"" << baseurl
+		   << "\" because cURL support is not compiled in" << std::endl;
 
-	#endif
+#endif
 }
 
 void ClientMediaDownloader::step(Client *client)
@@ -149,9 +144,10 @@ void ClientMediaDownloader::step(Client *client)
 		if (m_httpfetch_active == 0) {
 			if (m_uncached_received_count < m_uncached_count) {
 				infostream << "Client: Failed to remote-fetch "
-					<< (m_uncached_count-m_uncached_received_count)
-					<< " files. Requesting them"
-					<< " the usual way." << std::endl;
+					   << (m_uncached_count -
+							      m_uncached_received_count)
+					   << " files. Requesting them"
+					   << " the usual way." << std::endl;
 			}
 			startConventionalTransfers(client);
 		}
@@ -172,8 +168,8 @@ void ClientMediaDownloader::initialStep(Client *client)
 
 		// If found in cache, try to load it from there
 		if (found_in_cache) {
-			bool success = checkAndLoad(name, sha1,
-					tmp_os.str(), true, client);
+			bool success = checkAndLoad(
+					name, sha1, tmp_os.str(), true, client);
 			if (success) {
 				filestatus->received = true;
 				m_uncached_count--;
@@ -188,9 +184,8 @@ void ClientMediaDownloader::initialStep(Client *client)
 		bool did = fs::CreateAllDirs(getMediaCacheDir());
 		if (!did) {
 			errorstream << "Client: "
-				<< "Could not create media cache directory: "
-				<< getMediaCacheDir()
-				<< std::endl;
+				    << "Could not create media cache directory: "
+				    << getMediaCacheDir() << std::endl;
 		}
 	}
 
@@ -201,8 +196,7 @@ void ClientMediaDownloader::initialStep(Client *client)
 	// reduce the size of the compiled code
 	if (!USE_CURL || m_uncached_count == 0 || m_remotes.empty()) {
 		startConventionalTransfers(client);
-	}
-	else {
+	} else {
 		// Otherwise start off by requesting each server's sha1 set
 
 		// This is the first time we use httpfetch, so alloc a caller ID
@@ -242,27 +236,26 @@ void ClientMediaDownloader::initialStep(Client *client)
 
 			RemoteServerStatus *remote = m_remotes[i];
 			actionstream << "Client: Contacting remote server \""
-				<< remote->baseurl << "\"" << std::endl;
+				     << remote->baseurl << "\"" << std::endl;
 
 			HTTPFetchRequest fetch_request;
-			fetch_request.url =
-				remote->baseurl + MTHASHSET_FILE_NAME;
+			fetch_request.url = remote->baseurl + MTHASHSET_FILE_NAME;
 			fetch_request.caller = m_httpfetch_caller;
 			fetch_request.request_id = m_httpfetch_next_id; // == i
 			fetch_request.timeout = m_httpfetch_timeout;
 			fetch_request.connect_timeout = m_httpfetch_timeout;
 			fetch_request.post_data = required_hash_set;
 			fetch_request.extra_headers.emplace_back(
-				"Content-Type: application/octet-stream");
+					"Content-Type: application/octet-stream");
 
 			// Encapsulate possible IPv6 plain address in []
 			std::string addr = client->getAddressName();
 			if (addr.find(':', 0) != std::string::npos)
 				addr = '[' + addr + ']';
 			fetch_request.extra_headers.emplace_back(
-				std::string("Referer: minetest://") +
-				addr + ":" +
-				std::to_string(client->getServerAddress().getPort()));
+					std::string("Referer: minetest://") + addr + ":" +
+					std::to_string(client->getServerAddress()
+									.getPort()));
 
 			httpfetch_async(fetch_request);
 
@@ -273,8 +266,7 @@ void ClientMediaDownloader::initialStep(Client *client)
 	}
 }
 
-void ClientMediaDownloader::remoteHashSetReceived(
-		const HTTPFetchResult &fetch_result)
+void ClientMediaDownloader::remoteHashSetReceived(const HTTPFetchResult &fetch_result)
 {
 	u32 remote_id = fetch_result.request_id;
 	assert(remote_id < m_remotes.size());
@@ -294,25 +286,23 @@ void ClientMediaDownloader::remoteHashSetReceived(
 			// available on this server, add this server
 			// to the available_remotes array
 
-			for(std::map<std::string, FileStatus*>::iterator
-					it = m_files.upper_bound(m_name_bound);
+			for (std::map<std::string, FileStatus *>::iterator it =
+							m_files.upper_bound(m_name_bound);
 					it != m_files.end(); ++it) {
 				FileStatus *f = it->second;
 				if (!f->received && sha1_set.count(f->sha1))
 					f->available_remotes.push_back(remote_id);
 			}
-		}
-		catch (SerializationError &e) {
-			infostream << "Client: Remote server \""
-				<< remote->baseurl << "\" sent invalid hash set: "
-				<< e.what() << std::endl;
+		} catch (SerializationError &e) {
+			infostream << "Client: Remote server \"" << remote->baseurl
+				   << "\" sent invalid hash set: " << e.what()
+				   << std::endl;
 		}
 	}
 }
 
 void ClientMediaDownloader::remoteMediaReceived(
-		const HTTPFetchResult &fetch_result,
-		Client *client)
+		const HTTPFetchResult &fetch_result, Client *client)
 {
 	// Some remote server sent us a file.
 	// -> decrement number of active fetches
@@ -322,7 +312,7 @@ void ClientMediaDownloader::remoteMediaReceived(
 	std::string name;
 	{
 		std::unordered_map<unsigned long, std::string>::iterator it =
-			m_remote_file_transfers.find(fetch_result.request_id);
+				m_remote_file_transfers.find(fetch_result.request_id);
 		assert(it != m_remote_file_transfers.end());
 		name = it->second;
 		m_remote_file_transfers.erase(it);
@@ -342,8 +332,8 @@ void ClientMediaDownloader::remoteMediaReceived(
 	// If fetch succeeded, try to load media file
 
 	if (fetch_result.succeeded) {
-		bool success = checkAndLoad(name, filestatus->sha1,
-				fetch_result.data, false, client);
+		bool success = checkAndLoad(
+				name, filestatus->sha1, fetch_result.data, false, client);
 		if (success) {
 			filestatus->received = true;
 			assert(m_uncached_received_count < m_uncached_count);
@@ -380,19 +370,17 @@ s32 ClientMediaDownloader::selectRemoteServer(FileStatus *filestatus)
 		}
 	}
 
-	filestatus->available_remotes.erase(
-			filestatus->available_remotes.begin() + best);
+	filestatus->available_remotes.erase(filestatus->available_remotes.begin() + best);
 
 	return best_remote_id;
-
 }
 
 void ClientMediaDownloader::startRemoteMediaTransfers()
 {
 	bool changing_name_bound = true;
 
-	for (std::map<std::string, FileStatus*>::iterator
-			files_iter = m_files.upper_bound(m_name_bound);
+	for (std::map<std::string, FileStatus *>::iterator files_iter =
+					m_files.upper_bound(m_name_bound);
 			files_iter != m_files.end(); ++files_iter) {
 
 		// Abort if active fetch limit is exceeded
@@ -408,28 +396,25 @@ void ClientMediaDownloader::startRemoteMediaTransfers()
 			s32 remote_id = selectRemoteServer(filestatus);
 			if (remote_id >= 0) {
 				// Found a server, so start fetching
-				RemoteServerStatus *remote =
-					m_remotes[remote_id];
+				RemoteServerStatus *remote = m_remotes[remote_id];
 
 				std::string url = remote->baseurl +
-					hex_encode(filestatus->sha1);
+						  hex_encode(filestatus->sha1);
 				verbosestream << "Client: "
-					<< "Requesting remote media file "
-					<< "\"" << name << "\" "
-					<< "\"" << url << "\"" << std::endl;
+					      << "Requesting remote media file "
+					      << "\"" << name << "\" "
+					      << "\"" << url << "\"" << std::endl;
 
 				HTTPFetchRequest fetch_request;
 				fetch_request.url = url;
 				fetch_request.caller = m_httpfetch_caller;
 				fetch_request.request_id = m_httpfetch_next_id;
 				fetch_request.timeout = 0; // no data timeout!
-				fetch_request.connect_timeout =
-					m_httpfetch_timeout;
+				fetch_request.connect_timeout = m_httpfetch_timeout;
 				httpfetch_async(fetch_request);
 
 				m_remote_file_transfers.insert(std::make_pair(
-							m_httpfetch_next_id,
-							name));
+						m_httpfetch_next_id, name));
 
 				filestatus->current_remote = remote_id;
 				remote->active_count++;
@@ -438,24 +423,21 @@ void ClientMediaDownloader::startRemoteMediaTransfers()
 			}
 		}
 
-		if (filestatus->received ||
-				(filestatus->current_remote < 0 &&
-				 !m_outstanding_hash_sets)) {
+		if (filestatus->received || (filestatus->current_remote < 0 &&
+							    !m_outstanding_hash_sets)) {
 			// If we arrive here, we conclusively know that we
 			// won't fetch this file from a remote server in the
 			// future. So update the name bound if possible.
 			if (changing_name_bound)
 				m_name_bound = name;
-		}
-		else
+		} else
 			changing_name_bound = false;
 	}
-
 }
 
 void ClientMediaDownloader::startConventionalTransfers(Client *client)
 {
-	assert(m_httpfetch_active == 0);	// pre-condition
+	assert(m_httpfetch_active == 0); // pre-condition
 
 	if (m_uncached_received_count != m_uncached_count) {
 		// Some media files have not been received yet, use the
@@ -465,24 +447,21 @@ void ClientMediaDownloader::startConventionalTransfers(Client *client)
 			if (!file.second->received)
 				file_requests.push_back(file.first);
 		}
-		assert((s32) file_requests.size() ==
+		assert((s32)file_requests.size() ==
 				m_uncached_count - m_uncached_received_count);
 		client->request_media(file_requests);
 	}
 }
 
 void ClientMediaDownloader::conventionalTransferDone(
-		const std::string &name,
-		const std::string &data,
-		Client *client)
+		const std::string &name, const std::string &data, Client *client)
 {
 	// Check that file was announced
-	std::map<std::string, FileStatus*>::iterator
-		file_iter = m_files.find(name);
+	std::map<std::string, FileStatus *>::iterator file_iter = m_files.find(name);
 	if (file_iter == m_files.end()) {
 		errorstream << "Client: server sent media file that was"
-			<< "not announced, ignoring it: \"" << name << "\""
-			<< std::endl;
+			    << "not announced, ignoring it: \"" << name << "\""
+			    << std::endl;
 		return;
 	}
 	FileStatus *filestatus = file_iter->second;
@@ -491,8 +470,7 @@ void ClientMediaDownloader::conventionalTransferDone(
 	// Check that file hasn't already been received
 	if (filestatus->received) {
 		errorstream << "Client: server sent media file that we already"
-			<< "received, ignoring it: \"" << name << "\""
-			<< std::endl;
+			    << "received, ignoring it: \"" << name << "\"" << std::endl;
 		return;
 	}
 
@@ -508,8 +486,7 @@ void ClientMediaDownloader::conventionalTransferDone(
 	checkAndLoad(name, filestatus->sha1, data, false, client);
 }
 
-bool ClientMediaDownloader::checkAndLoad(
-		const std::string &name, const std::string &sha1,
+bool ClientMediaDownloader::checkAndLoad(const std::string &name, const std::string &sha1,
 		const std::string &data, bool is_from_cache, Client *client)
 {
 	const char *cached_or_received = is_from_cache ? "cached" : "received";
@@ -522,18 +499,16 @@ bool ClientMediaDownloader::checkAndLoad(
 		SHA1 data_sha1_calculator;
 		data_sha1_calculator.addBytes(data.c_str(), data.size());
 		unsigned char *data_tmpdigest = data_sha1_calculator.getDigest();
-		data_sha1.assign((char*) data_tmpdigest, 20);
+		data_sha1.assign((char *)data_tmpdigest, 20);
 		free(data_tmpdigest);
 	}
 
 	// Check that received file matches announced checksum
 	if (data_sha1 != sha1) {
 		std::string data_sha1_hex = hex_encode(data_sha1);
-		infostream << "Client: "
-			<< cached_or_received_uc << " media file "
-			<< sha1_hex << " \"" << name << "\" "
-			<< "mismatches actual checksum " << data_sha1_hex
-			<< std::endl;
+		infostream << "Client: " << cached_or_received_uc << " media file "
+			   << sha1_hex << " \"" << name << "\" "
+			   << "mismatches actual checksum " << data_sha1_hex << std::endl;
 		return false;
 	}
 
@@ -541,16 +516,15 @@ bool ClientMediaDownloader::checkAndLoad(
 	bool success = client->loadMedia(data, name);
 	if (!success) {
 		infostream << "Client: "
-			<< "Failed to load " << cached_or_received << " media: "
-			<< sha1_hex << " \"" << name << "\""
-			<< std::endl;
+			   << "Failed to load " << cached_or_received
+			   << " media: " << sha1_hex << " \"" << name << "\""
+			   << std::endl;
 		return false;
 	}
 
 	verbosestream << "Client: "
-		<< "Loaded " << cached_or_received << " media: "
-		<< sha1_hex << " \"" << name << "\""
-		<< std::endl;
+		      << "Loaded " << cached_or_received << " media: " << sha1_hex
+		      << " \"" << name << "\"" << std::endl;
 
 	// Update cache (unless we just loaded the file from the cache)
 	if (!is_from_cache)
@@ -558,7 +532,6 @@ bool ClientMediaDownloader::checkAndLoad(
 
 	return true;
 }
-
 
 /*
 	Minetest Hashset File Format
@@ -578,15 +551,15 @@ std::string ClientMediaDownloader::serializeRequiredHashSet()
 	std::ostringstream os(std::ios::binary);
 
 	writeU32(os, MTHASHSET_FILE_SIGNATURE); // signature
-	writeU16(os, 1);                        // version
+	writeU16(os, 1);			// version
 
 	// Write list of hashes of files that have not been
 	// received (found in cache) yet
-	for (std::map<std::string, FileStatus*>::iterator
-			it = m_files.begin();
+	for (std::map<std::string, FileStatus *>::iterator it = m_files.begin();
 			it != m_files.end(); ++it) {
 		if (!it->second->received) {
-			FATAL_ERROR_IF(it->second->sha1.size() != 20, "Invalid SHA1 size");
+			FATAL_ERROR_IF(it->second->sha1.size() != 20,
+					"Invalid SHA1 size");
 			os << it->second->sha1;
 		}
 	}
@@ -594,29 +567,26 @@ std::string ClientMediaDownloader::serializeRequiredHashSet()
 	return os.str();
 }
 
-void ClientMediaDownloader::deSerializeHashSet(const std::string &data,
-		std::set<std::string> &result)
+void ClientMediaDownloader::deSerializeHashSet(
+		const std::string &data, std::set<std::string> &result)
 {
 	if (data.size() < 6 || data.size() % 20 != 6) {
-		throw SerializationError(
-				"ClientMediaDownloader::deSerializeHashSet: "
-				"invalid hash set file size");
+		throw SerializationError("ClientMediaDownloader::deSerializeHashSet: "
+					 "invalid hash set file size");
 	}
 
-	const u8 *data_cstr = (const u8*) data.c_str();
+	const u8 *data_cstr = (const u8 *)data.c_str();
 
 	u32 signature = readU32(&data_cstr[0]);
 	if (signature != MTHASHSET_FILE_SIGNATURE) {
-		throw SerializationError(
-				"ClientMediaDownloader::deSerializeHashSet: "
-				"invalid hash set file signature");
+		throw SerializationError("ClientMediaDownloader::deSerializeHashSet: "
+					 "invalid hash set file signature");
 	}
 
 	u16 version = readU16(&data_cstr[4]);
 	if (version != 1) {
-		throw SerializationError(
-				"ClientMediaDownloader::deSerializeHashSet: "
-				"unsupported hash set file version");
+		throw SerializationError("ClientMediaDownloader::deSerializeHashSet: "
+					 "unsupported hash set file version");
 	}
 
 	for (u32 pos = 6; pos < data.size(); pos += 20) {

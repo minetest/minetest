@@ -24,25 +24,26 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client.h"
 #include "map.h"
 
-class SmokePuffCSO: public ClientSimpleObject
+class SmokePuffCSO : public ClientSimpleObject
 {
 	float m_age = 0.0f;
 	scene::IBillboardSceneNode *m_spritenode = nullptr;
+
 public:
-	SmokePuffCSO(scene::ISceneManager *smgr,
-			ClientEnvironment *env, const v3f &pos, const v2f &size)
+	SmokePuffCSO(scene::ISceneManager *smgr, ClientEnvironment *env, const v3f &pos,
+			const v2f &size)
 	{
-		infostream<<"SmokePuffCSO: constructing"<<std::endl;
-		m_spritenode = smgr->addBillboardSceneNode(
-				NULL, v2f(1,1), pos, -1);
-		m_spritenode->setMaterialTexture(0,
-				env->getGameDef()->tsrc()->getTextureForMesh("smoke_puff.png"));
+		infostream << "SmokePuffCSO: constructing" << std::endl;
+		m_spritenode = smgr->addBillboardSceneNode(NULL, v2f(1, 1), pos, -1);
+		m_spritenode->setMaterialTexture(
+				0, env->getGameDef()->tsrc()->getTextureForMesh(
+						   "smoke_puff.png"));
 		m_spritenode->setMaterialFlag(video::EMF_LIGHTING, false);
 		m_spritenode->setMaterialFlag(video::EMF_BILINEAR_FILTER, false);
-		//m_spritenode->setMaterialType(video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF);
+		// m_spritenode->setMaterialType(video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF);
 		m_spritenode->setMaterialType(video::EMT_TRANSPARENT_ALPHA_CHANNEL);
 		m_spritenode->setMaterialFlag(video::EMF_FOG_ENABLE, true);
-		m_spritenode->setColor(video::SColor(255,0,0,0));
+		m_spritenode->setColor(video::SColor(255, 0, 0, 0));
 		m_spritenode->setVisible(true);
 		m_spritenode->setSize(size);
 		/* Update brightness */
@@ -50,28 +51,27 @@ public:
 		bool pos_ok;
 		MapNode n = env->getMap().getNodeNoEx(floatToInt(pos, BS), &pos_ok);
 		light = pos_ok ? decode_light(n.getLightBlend(env->getDayNightRatio(),
-							env->getGameDef()->ndef()))
-		               : 64;
-		video::SColor color(255,light,light,light);
+						 env->getGameDef()->ndef()))
+			       : 64;
+		video::SColor color(255, light, light, light);
 		m_spritenode->setColor(color);
 	}
 	virtual ~SmokePuffCSO()
 	{
-		infostream<<"SmokePuffCSO: destructing"<<std::endl;
+		infostream << "SmokePuffCSO: destructing" << std::endl;
 		m_spritenode->remove();
 	}
 	void step(float dtime)
 	{
 		m_age += dtime;
-		if(m_age > 1.0){
+		if (m_age > 1.0) {
 			m_to_be_removed = true;
 		}
 	}
 };
 
-ClientSimpleObject* createSmokePuff(scene::ISceneManager *smgr,
-		ClientEnvironment *env, v3f pos, v2f size)
+ClientSimpleObject *createSmokePuff(
+		scene::ISceneManager *smgr, ClientEnvironment *env, v3f pos, v2f size)
 {
 	return new SmokePuffCSO(smgr, env, pos, size);
 }
-

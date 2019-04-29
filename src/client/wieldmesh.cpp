@@ -45,29 +45,29 @@ static scene::IMesh *createExtrusionMesh(int resolution_x, int resolution_y)
 	const f32 r = 0.5;
 
 	scene::IMeshBuffer *buf = new scene::SMeshBuffer();
-	video::SColor c(255,255,255,255);
+	video::SColor c(255, 255, 255, 255);
 	v3f scale(1.0, 1.0, 0.1);
 
 	// Front and back
 	{
 		video::S3DVertex vertices[8] = {
-			// z-
-			video::S3DVertex(-r,+r,-r, 0,0,-1, c, 0,0),
-			video::S3DVertex(+r,+r,-r, 0,0,-1, c, 1,0),
-			video::S3DVertex(+r,-r,-r, 0,0,-1, c, 1,1),
-			video::S3DVertex(-r,-r,-r, 0,0,-1, c, 0,1),
-			// z+
-			video::S3DVertex(-r,+r,+r, 0,0,+1, c, 0,0),
-			video::S3DVertex(-r,-r,+r, 0,0,+1, c, 0,1),
-			video::S3DVertex(+r,-r,+r, 0,0,+1, c, 1,1),
-			video::S3DVertex(+r,+r,+r, 0,0,+1, c, 1,0),
+				// z-
+				video::S3DVertex(-r, +r, -r, 0, 0, -1, c, 0, 0),
+				video::S3DVertex(+r, +r, -r, 0, 0, -1, c, 1, 0),
+				video::S3DVertex(+r, -r, -r, 0, 0, -1, c, 1, 1),
+				video::S3DVertex(-r, -r, -r, 0, 0, -1, c, 0, 1),
+				// z+
+				video::S3DVertex(-r, +r, +r, 0, 0, +1, c, 0, 0),
+				video::S3DVertex(-r, -r, +r, 0, 0, +1, c, 0, 1),
+				video::S3DVertex(+r, -r, +r, 0, 0, +1, c, 1, 1),
+				video::S3DVertex(+r, +r, +r, 0, 0, +1, c, 1, 0),
 		};
-		u16 indices[12] = {0,1,2,2,3,0,4,5,6,6,7,4};
+		u16 indices[12] = {0, 1, 2, 2, 3, 0, 4, 5, 6, 6, 7, 4};
 		buf->append(vertices, 8, indices, 12);
 	}
 
-	f32 pixelsize_x = 1 / (f32) resolution_x;
-	f32 pixelsize_y = 1 / (f32) resolution_y;
+	f32 pixelsize_x = 1 / (f32)resolution_x;
+	f32 pixelsize_y = 1 / (f32)resolution_y;
 
 	for (int i = 0; i < resolution_x; ++i) {
 		f32 pixelpos_x = i * pixelsize_x - 0.5;
@@ -76,18 +76,18 @@ static scene::IMesh *createExtrusionMesh(int resolution_x, int resolution_y)
 		f32 tex0 = (i + 0.1) * pixelsize_x;
 		f32 tex1 = (i + 0.9) * pixelsize_x;
 		video::S3DVertex vertices[8] = {
-			// x-
-			video::S3DVertex(x0,-r,-r, -1,0,0, c, tex0,1),
-			video::S3DVertex(x0,-r,+r, -1,0,0, c, tex1,1),
-			video::S3DVertex(x0,+r,+r, -1,0,0, c, tex1,0),
-			video::S3DVertex(x0,+r,-r, -1,0,0, c, tex0,0),
-			// x+
-			video::S3DVertex(x1,-r,-r, +1,0,0, c, tex0,1),
-			video::S3DVertex(x1,+r,-r, +1,0,0, c, tex0,0),
-			video::S3DVertex(x1,+r,+r, +1,0,0, c, tex1,0),
-			video::S3DVertex(x1,-r,+r, +1,0,0, c, tex1,1),
+				// x-
+				video::S3DVertex(x0, -r, -r, -1, 0, 0, c, tex0, 1),
+				video::S3DVertex(x0, -r, +r, -1, 0, 0, c, tex1, 1),
+				video::S3DVertex(x0, +r, +r, -1, 0, 0, c, tex1, 0),
+				video::S3DVertex(x0, +r, -r, -1, 0, 0, c, tex0, 0),
+				// x+
+				video::S3DVertex(x1, -r, -r, +1, 0, 0, c, tex0, 1),
+				video::S3DVertex(x1, +r, -r, +1, 0, 0, c, tex0, 0),
+				video::S3DVertex(x1, +r, +r, +1, 0, 0, c, tex1, 0),
+				video::S3DVertex(x1, -r, +r, +1, 0, 0, c, tex1, 1),
 		};
-		u16 indices[12] = {0,1,2,2,3,0,4,5,6,6,7,4};
+		u16 indices[12] = {0, 1, 2, 2, 3, 0, 4, 5, 6, 6, 7, 4};
 		buf->append(vertices, 8, indices, 12);
 	}
 	for (int i = 0; i < resolution_y; ++i) {
@@ -97,18 +97,18 @@ static scene::IMesh *createExtrusionMesh(int resolution_x, int resolution_y)
 		f32 tex0 = (i + 0.1) * pixelsize_y;
 		f32 tex1 = (i + 0.9) * pixelsize_y;
 		video::S3DVertex vertices[8] = {
-			// y-
-			video::S3DVertex(-r,y0,-r, 0,-1,0, c, 0,tex0),
-			video::S3DVertex(+r,y0,-r, 0,-1,0, c, 1,tex0),
-			video::S3DVertex(+r,y0,+r, 0,-1,0, c, 1,tex1),
-			video::S3DVertex(-r,y0,+r, 0,-1,0, c, 0,tex1),
-			// y+
-			video::S3DVertex(-r,y1,-r, 0,+1,0, c, 0,tex0),
-			video::S3DVertex(-r,y1,+r, 0,+1,0, c, 0,tex1),
-			video::S3DVertex(+r,y1,+r, 0,+1,0, c, 1,tex1),
-			video::S3DVertex(+r,y1,-r, 0,+1,0, c, 1,tex0),
+				// y-
+				video::S3DVertex(-r, y0, -r, 0, -1, 0, c, 0, tex0),
+				video::S3DVertex(+r, y0, -r, 0, -1, 0, c, 1, tex0),
+				video::S3DVertex(+r, y0, +r, 0, -1, 0, c, 1, tex1),
+				video::S3DVertex(-r, y0, +r, 0, -1, 0, c, 0, tex1),
+				// y+
+				video::S3DVertex(-r, y1, -r, 0, +1, 0, c, 0, tex0),
+				video::S3DVertex(-r, y1, +r, 0, +1, 0, c, 0, tex1),
+				video::S3DVertex(+r, y1, +r, 0, +1, 0, c, 1, tex1),
+				video::S3DVertex(+r, y1, -r, 0, +1, 0, c, 1, tex0),
 		};
-		u16 indices[12] = {0,1,2,2,3,0,4,5,6,6,7,4};
+		u16 indices[12] = {0, 1, 2, 2, 3, 0, 4, 5, 6, 6, 7, 4};
 		buf->append(vertices, 8, indices, 12);
 	}
 
@@ -116,7 +116,7 @@ static scene::IMesh *createExtrusionMesh(int resolution_x, int resolution_y)
 	scene::SMesh *mesh = new scene::SMesh();
 	mesh->addMeshBuffer(buf);
 	buf->drop();
-	scaleMesh(mesh, scale);  // also recalculates bounding box
+	scaleMesh(mesh, scale); // also recalculates bounding box
 	return mesh;
 }
 
@@ -131,7 +131,7 @@ static scene::IMesh *createExtrusionMesh(int resolution_x, int resolution_y)
 	rendering related classes (such as WieldMeshSceneNode) will be
 	used from the rendering thread only.
 */
-class ExtrusionMeshCache: public IReferenceCounted
+class ExtrusionMeshCache : public IReferenceCounted
 {
 public:
 	// Constructor
@@ -141,7 +141,7 @@ public:
 				resolution <= MAX_EXTRUSION_MESH_RESOLUTION;
 				resolution *= 2) {
 			m_extrusion_meshes[resolution] =
-				createExtrusionMesh(resolution, resolution);
+					createExtrusionMesh(resolution, resolution);
 		}
 		m_cube = createCubeMesh(v3f(1.0, 1.0, 1.0));
 	}
@@ -155,7 +155,7 @@ public:
 	}
 	// Get closest extrusion mesh for given image dimensions
 	// Caller must drop the returned pointer
-	scene::IMesh* create(core::dimension2d<u32> dim)
+	scene::IMesh *create(core::dimension2d<u32> dim)
 	{
 		// handle non-power of two textures inefficiently without cache
 		if (!is_power_of_two(dim.Width) || !is_power_of_two(dim.Height)) {
@@ -164,8 +164,8 @@ public:
 
 		int maxdim = MYMAX(dim.Width, dim.Height);
 
-		std::map<int, scene::IMesh*>::iterator
-			it = m_extrusion_meshes.lower_bound(maxdim);
+		std::map<int, scene::IMesh *>::iterator it =
+				m_extrusion_meshes.lower_bound(maxdim);
 
 		if (it == m_extrusion_meshes.end()) {
 			// no viable resolution found; use largest one
@@ -179,24 +179,23 @@ public:
 	}
 	// Returns a 1x1x1 cube mesh with one meshbuffer (material) per face
 	// Caller must drop the returned pointer
-	scene::IMesh* createCube()
+	scene::IMesh *createCube()
 	{
 		m_cube->grab();
 		return m_cube;
 	}
 
 private:
-	std::map<int, scene::IMesh*> m_extrusion_meshes;
+	std::map<int, scene::IMesh *> m_extrusion_meshes;
 	scene::IMesh *m_cube;
 };
 
 ExtrusionMeshCache *g_extrusion_mesh_cache = NULL;
 
-
-WieldMeshSceneNode::WieldMeshSceneNode(scene::ISceneManager *mgr, s32 id, bool lighting):
-	scene::ISceneNode(mgr->getRootSceneNode(), mgr, id),
-	m_material_type(video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF),
-	m_lighting(lighting)
+WieldMeshSceneNode::WieldMeshSceneNode(scene::ISceneManager *mgr, s32 id, bool lighting) :
+		scene::ISceneNode(mgr->getRootSceneNode(), mgr, id),
+		m_material_type(video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF),
+		m_lighting(lighting)
 {
 	m_enable_shaders = g_settings->getBool("enable_shaders");
 	m_anisotropic_filter = g_settings->getBool("anisotropic_filter");
@@ -229,8 +228,7 @@ WieldMeshSceneNode::~WieldMeshSceneNode()
 		g_extrusion_mesh_cache = nullptr;
 }
 
-void WieldMeshSceneNode::setCube(const ContentFeatures &f,
-			v3f wield_scale)
+void WieldMeshSceneNode::setCube(const ContentFeatures &f, v3f wield_scale)
 {
 	scene::IMesh *cubemesh = g_extrusion_mesh_cache->createCube();
 	scene::SMesh *copy = cloneMesh(cubemesh);
@@ -242,8 +240,8 @@ void WieldMeshSceneNode::setCube(const ContentFeatures &f,
 }
 
 void WieldMeshSceneNode::setExtruded(const std::string &imagename,
-	const std::string &overlay_name, v3f wield_scale, ITextureSource *tsrc,
-	u8 num_frames)
+		const std::string &overlay_name, v3f wield_scale, ITextureSource *tsrc,
+		u8 num_frames)
 {
 	video::ITexture *texture = tsrc->getTexture(imagename);
 	if (!texture) {
@@ -251,7 +249,7 @@ void WieldMeshSceneNode::setExtruded(const std::string &imagename,
 		return;
 	}
 	video::ITexture *overlay_texture =
-		overlay_name.empty() ? NULL : tsrc->getTexture(overlay_name);
+			overlay_name.empty() ? NULL : tsrc->getTexture(overlay_name);
 
 	core::dimension2d<u32> dim = texture->getSize();
 	// Detect animation texture and pull off top frame instead of using entire thing
@@ -262,9 +260,8 @@ void WieldMeshSceneNode::setExtruded(const std::string &imagename,
 	scene::IMesh *original = g_extrusion_mesh_cache->create(dim);
 	scene::SMesh *mesh = cloneMesh(original);
 	original->drop();
-	//set texture
-	mesh->getMeshBuffer(0)->getMaterial().setTexture(0,
-		tsrc->getTexture(imagename));
+	// set texture
+	mesh->getMeshBuffer(0)->getMaterial().setTexture(0, tsrc->getTexture(imagename));
 	if (overlay_texture) {
 		scene::IMeshBuffer *copy = cloneMeshBuffer(mesh->getMeshBuffer(0));
 		copy->getMaterial().setTexture(0, overlay_texture);
@@ -294,7 +291,8 @@ void WieldMeshSceneNode::setExtruded(const std::string &imagename,
 		}
 		material.setFlag(video::EMF_ANISOTROPIC_FILTER, m_anisotropic_filter);
 		// mipmaps cause "thin black line" artifacts
-#if (IRRLICHT_VERSION_MAJOR >= 1 && IRRLICHT_VERSION_MINOR >= 8) || IRRLICHT_VERSION_MAJOR >= 2
+#if (IRRLICHT_VERSION_MAJOR >= 1 && IRRLICHT_VERSION_MINOR >= 8) ||                      \
+		IRRLICHT_VERSION_MAJOR >= 2
 		material.setFlag(video::EMF_USE_MIP_MAPS, false);
 #endif
 		if (m_enable_shaders) {
@@ -303,7 +301,8 @@ void WieldMeshSceneNode::setExtruded(const std::string &imagename,
 	}
 }
 
-scene::SMesh *createSpecialNodeMesh(Client *client, content_t id, std::vector<ItemPartColor> *colors)
+scene::SMesh *createSpecialNodeMesh(
+		Client *client, content_t id, std::vector<ItemPartColor> *colors)
 {
 	MeshMakeData mesh_make_data(client, false, false);
 	MeshCollector collector;
@@ -325,16 +324,17 @@ scene::SMesh *createSpecialNodeMesh(Client *client, content_t id, std::vector<It
 			buf->Material.setTexture(0, p.layer.texture);
 			p.layer.applyMaterialOptions(buf->Material);
 			mesh->addMeshBuffer(buf);
-			buf->append(&p.vertices[0], p.vertices.size(),
-					&p.indices[0], p.indices.size());
+			buf->append(&p.vertices[0], p.vertices.size(), &p.indices[0],
+					p.indices.size());
 			buf->drop();
 			colors->push_back(
-				ItemPartColor(p.layer.has_color, p.layer.color));
+					ItemPartColor(p.layer.has_color, p.layer.color));
 		}
 	return mesh;
 }
 
-void WieldMeshSceneNode::setItem(const ItemStack &item, Client *client, bool check_wield_image)
+void WieldMeshSceneNode::setItem(
+		const ItemStack &item, Client *client, bool check_wield_image)
 {
 	ITextureSource *tsrc = client->getTextureSource();
 	IItemDefManager *idef = client->getItemDefManager();
@@ -347,7 +347,8 @@ void WieldMeshSceneNode::setItem(const ItemStack &item, Client *client, bool che
 	scene::SMesh *mesh = nullptr;
 
 	if (m_enable_shaders) {
-		u32 shader_id = shdrsrc->getShader("wielded_shader", TILE_MATERIAL_BASIC, NDT_NORMAL);
+		u32 shader_id = shdrsrc->getShader(
+				"wielded_shader", TILE_MATERIAL_BASIC, NDT_NORMAL);
 		m_material_type = shdrsrc->getShaderInfo(shader_id).material;
 	}
 
@@ -357,8 +358,7 @@ void WieldMeshSceneNode::setItem(const ItemStack &item, Client *client, bool che
 
 	// If wield_image needs to be checked and is defined, it overrides everything else
 	if (!def.wield_image.empty() && check_wield_image) {
-		setExtruded(def.wield_image, def.wield_overlay, def.wield_scale, tsrc,
-			1);
+		setExtruded(def.wield_image, def.wield_overlay, def.wield_scale, tsrc, 1);
 		m_colors.emplace_back();
 		// overlay is white, if present
 		m_colors.emplace_back(true, video::SColor(0xFFFFFFFF));
@@ -372,55 +372,64 @@ void WieldMeshSceneNode::setItem(const ItemStack &item, Client *client, bool che
 			// e.g. mesh nodes and nodeboxes
 			mesh = cloneMesh(f.mesh_ptr[0]);
 			postProcessNodeMesh(mesh, f, m_enable_shaders, true,
-				&m_material_type, &m_colors);
+					&m_material_type, &m_colors);
 			changeToMesh(mesh);
 			mesh->drop();
 			// mesh is pre-scaled by BS * f->visual_scale
-			m_meshnode->setScale(
-					def.wield_scale * WIELD_SCALE_FACTOR
-					/ (BS * f.visual_scale));
+			m_meshnode->setScale(def.wield_scale * WIELD_SCALE_FACTOR /
+					     (BS * f.visual_scale));
 		} else {
 			switch (f.drawtype) {
-				case NDT_AIRLIKE: {
-					changeToMesh(nullptr);
-					break;
-				}
-				case NDT_PLANTLIKE: {
-					setExtruded(tsrc->getTextureName(f.tiles[0].layers[0].texture_id),
-						tsrc->getTextureName(f.tiles[0].layers[1].texture_id),
+			case NDT_AIRLIKE: {
+				changeToMesh(nullptr);
+				break;
+			}
+			case NDT_PLANTLIKE: {
+				setExtruded(tsrc->getTextureName(
+							    f.tiles[0].layers[0]
+									    .texture_id),
+						tsrc->getTextureName(
+								f.tiles[0].layers[1]
+										.texture_id),
 						def.wield_scale, tsrc,
-						f.tiles[0].layers[0].animation_frame_count);
-					// Add color
-					const TileLayer &l0 = f.tiles[0].layers[0];
-					m_colors.emplace_back(l0.has_color, l0.color);
-					const TileLayer &l1 = f.tiles[0].layers[1];
-					m_colors.emplace_back(l1.has_color, l1.color);
-					break;
-				}
-				case NDT_PLANTLIKE_ROOTED: {
-					setExtruded(tsrc->getTextureName(f.special_tiles[0].layers[0].texture_id),
+						f.tiles[0].layers[0]
+								.animation_frame_count);
+				// Add color
+				const TileLayer &l0 = f.tiles[0].layers[0];
+				m_colors.emplace_back(l0.has_color, l0.color);
+				const TileLayer &l1 = f.tiles[0].layers[1];
+				m_colors.emplace_back(l1.has_color, l1.color);
+				break;
+			}
+			case NDT_PLANTLIKE_ROOTED: {
+				setExtruded(tsrc->getTextureName(
+							    f.special_tiles[0]
+									    .layers[0]
+									    .texture_id),
 						"", def.wield_scale, tsrc,
-						f.special_tiles[0].layers[0].animation_frame_count);
-					// Add color
-					const TileLayer &l0 = f.special_tiles[0].layers[0];
-					m_colors.emplace_back(l0.has_color, l0.color);
-					break;
-				}
-				case NDT_NORMAL:
-				case NDT_ALLFACES:
-				case NDT_LIQUID:
-				case NDT_FLOWINGLIQUID: {
-					setCube(f, def.wield_scale);
-					break;
-				}
-				default: {
-					mesh = createSpecialNodeMesh(client, id, &m_colors);
-					changeToMesh(mesh);
-					mesh->drop();
-					m_meshnode->setScale(
-							def.wield_scale * WIELD_SCALE_FACTOR
-							/ (BS * f.visual_scale));
-				}
+						f.special_tiles[0]
+								.layers[0]
+								.animation_frame_count);
+				// Add color
+				const TileLayer &l0 = f.special_tiles[0].layers[0];
+				m_colors.emplace_back(l0.has_color, l0.color);
+				break;
+			}
+			case NDT_NORMAL:
+			case NDT_ALLFACES:
+			case NDT_LIQUID:
+			case NDT_FLOWINGLIQUID: {
+				setCube(f, def.wield_scale);
+				break;
+			}
+			default: {
+				mesh = createSpecialNodeMesh(client, id, &m_colors);
+				changeToMesh(mesh);
+				mesh->drop();
+				m_meshnode->setScale(def.wield_scale *
+						     WIELD_SCALE_FACTOR /
+						     (BS * f.visual_scale));
+			}
 			}
 		}
 		u32 material_count = m_meshnode->getMaterialCount();
@@ -433,10 +442,9 @@ void WieldMeshSceneNode::setItem(const ItemStack &item, Client *client, bool che
 			material.setFlag(video::EMF_TRILINEAR_FILTER, m_trilinear_filter);
 		}
 		return;
-	}
-	else if (!def.inventory_image.empty()) {
+	} else if (!def.inventory_image.empty()) {
 		setExtruded(def.inventory_image, def.inventory_overlay, def.wield_scale,
-			tsrc, 1);
+				tsrc, 1);
 		m_colors.emplace_back();
 		// overlay is white, if present
 		m_colors.emplace_back(true, video::SColor(0xFFFFFFFF));
@@ -462,10 +470,8 @@ void WieldMeshSceneNode::setColor(video::SColor c)
 		video::SColor bc(m_base_color);
 		if ((m_colors.size() > j) && (m_colors[j].override_base))
 			bc = m_colors[j].color;
-		video::SColor buffercolor(255,
-			bc.getRed() * red / 255,
-			bc.getGreen() * green / 255,
-			bc.getBlue() * blue / 255);
+		video::SColor buffercolor(255, bc.getRed() * red / 255,
+				bc.getGreen() * green / 255, bc.getBlue() * blue / 255);
 		scene::IMeshBuffer *buf = mesh->getMeshBuffer(j);
 		colorizeMeshBuffer(buf, &buffercolor);
 	}
@@ -483,7 +489,7 @@ void WieldMeshSceneNode::changeToMesh(scene::IMesh *mesh)
 		scene::IMesh *dummymesh = g_extrusion_mesh_cache->createCube();
 		m_meshnode->setVisible(false);
 		m_meshnode->setMesh(dummymesh);
-		dummymesh->drop();  // m_meshnode grabbed it
+		dummymesh->drop(); // m_meshnode grabbed it
 	} else {
 		m_meshnode->setMesh(mesh);
 	}
@@ -503,8 +509,9 @@ void getItemMesh(Client *client, const ItemStack &item, ItemMesh *result)
 	const ContentFeatures &f = ndef->get(def.name);
 	content_t id = ndef->getId(def.name);
 
-	FATAL_ERROR_IF(!g_extrusion_mesh_cache, "Extrusion mesh cache is not yet initialized");
-	
+	FATAL_ERROR_IF(!g_extrusion_mesh_cache,
+			"Extrusion mesh cache is not yet initialized");
+
 	scene::SMesh *mesh = nullptr;
 
 	// Shading is on by default
@@ -512,8 +519,7 @@ void getItemMesh(Client *client, const ItemStack &item, ItemMesh *result)
 
 	// If inventory_image is defined, it overrides everything else
 	if (!def.inventory_image.empty()) {
-		mesh = getExtrudedMesh(tsrc, def.inventory_image,
-			def.inventory_overlay);
+		mesh = getExtrudedMesh(tsrc, def.inventory_image, def.inventory_overlay);
 		result->buffer_colors.emplace_back();
 		// overlay is white, if present
 		result->buffer_colors.emplace_back(true, video::SColor(0xFFFFFFFF));
@@ -524,45 +530,57 @@ void getItemMesh(Client *client, const ItemStack &item, ItemMesh *result)
 			mesh = cloneMesh(f.mesh_ptr[0]);
 			scaleMesh(mesh, v3f(0.12, 0.12, 0.12));
 			postProcessNodeMesh(mesh, f, false, false, nullptr,
-				&result->buffer_colors);
+					&result->buffer_colors);
 		} else {
 			switch (f.drawtype) {
-				case NDT_PLANTLIKE: {
-					mesh = getExtrudedMesh(tsrc,
-						tsrc->getTextureName(f.tiles[0].layers[0].texture_id),
-						tsrc->getTextureName(f.tiles[0].layers[1].texture_id));
-					// Add color
-					const TileLayer &l0 = f.tiles[0].layers[0];
-					result->buffer_colors.emplace_back(l0.has_color, l0.color);
-					const TileLayer &l1 = f.tiles[0].layers[1];
-					result->buffer_colors.emplace_back(l1.has_color, l1.color);
-					break;
-				}
-				case NDT_PLANTLIKE_ROOTED: {
-					mesh = getExtrudedMesh(tsrc,
-						tsrc->getTextureName(f.special_tiles[0].layers[0].texture_id), "");
-					// Add color
-					const TileLayer &l0 = f.special_tiles[0].layers[0];
-					result->buffer_colors.emplace_back(l0.has_color, l0.color);
-					break;
-				}
-				case NDT_NORMAL:
-				case NDT_ALLFACES:
-				case NDT_LIQUID:
-				case NDT_FLOWINGLIQUID: {
-					scene::IMesh *cube = g_extrusion_mesh_cache->createCube();
-					mesh = cloneMesh(cube);
-					cube->drop();
-					scaleMesh(mesh, v3f(1.2, 1.2, 1.2));
-					// add overlays
-					postProcessNodeMesh(mesh, f, false, false, nullptr,
+			case NDT_PLANTLIKE: {
+				mesh = getExtrudedMesh(tsrc,
+						tsrc->getTextureName(
+								f.tiles[0].layers[0]
+										.texture_id),
+						tsrc->getTextureName(
+								f.tiles[0].layers[1]
+										.texture_id));
+				// Add color
+				const TileLayer &l0 = f.tiles[0].layers[0];
+				result->buffer_colors.emplace_back(
+						l0.has_color, l0.color);
+				const TileLayer &l1 = f.tiles[0].layers[1];
+				result->buffer_colors.emplace_back(
+						l1.has_color, l1.color);
+				break;
+			}
+			case NDT_PLANTLIKE_ROOTED: {
+				mesh = getExtrudedMesh(tsrc,
+						tsrc->getTextureName(
+								f.special_tiles[0]
+										.layers[0]
+										.texture_id),
+						"");
+				// Add color
+				const TileLayer &l0 = f.special_tiles[0].layers[0];
+				result->buffer_colors.emplace_back(
+						l0.has_color, l0.color);
+				break;
+			}
+			case NDT_NORMAL:
+			case NDT_ALLFACES:
+			case NDT_LIQUID:
+			case NDT_FLOWINGLIQUID: {
+				scene::IMesh *cube = g_extrusion_mesh_cache->createCube();
+				mesh = cloneMesh(cube);
+				cube->drop();
+				scaleMesh(mesh, v3f(1.2, 1.2, 1.2));
+				// add overlays
+				postProcessNodeMesh(mesh, f, false, false, nullptr,
 						&result->buffer_colors);
-					break;
-				}
-				default: {
-					mesh = createSpecialNodeMesh(client, id, &result->buffer_colors);
-					scaleMesh(mesh, v3f(0.12, 0.12, 0.12));
-				}
+				break;
+			}
+			default: {
+				mesh = createSpecialNodeMesh(
+						client, id, &result->buffer_colors);
+				scaleMesh(mesh, v3f(0.12, 0.12, 0.12));
+			}
 			}
 		}
 
@@ -584,10 +602,8 @@ void getItemMesh(Client *client, const ItemStack &item, ItemMesh *result)
 	result->mesh = mesh;
 }
 
-
-
-scene::SMesh *getExtrudedMesh(ITextureSource *tsrc,
-	const std::string &imagename, const std::string &overlay_name)
+scene::SMesh *getExtrudedMesh(ITextureSource *tsrc, const std::string &imagename,
+		const std::string &overlay_name)
 {
 	// check textures
 	video::ITexture *texture = tsrc->getTextureForMesh(imagename);
@@ -595,7 +611,7 @@ scene::SMesh *getExtrudedMesh(ITextureSource *tsrc,
 		return NULL;
 	}
 	video::ITexture *overlay_texture =
-		(overlay_name.empty()) ? NULL : tsrc->getTexture(overlay_name);
+			(overlay_name.empty()) ? NULL : tsrc->getTexture(overlay_name);
 
 	// get mesh
 	core::dimension2d<u32> dim = texture->getSize();
@@ -603,9 +619,8 @@ scene::SMesh *getExtrudedMesh(ITextureSource *tsrc,
 	scene::SMesh *mesh = cloneMesh(original);
 	original->drop();
 
-	//set texture
-	mesh->getMeshBuffer(0)->getMaterial().setTexture(0,
-		tsrc->getTexture(imagename));
+	// set texture
+	mesh->getMeshBuffer(0)->getMaterial().setTexture(0, tsrc->getTexture(imagename));
 	if (overlay_texture) {
 		scene::IMeshBuffer *copy = cloneMeshBuffer(mesh->getMeshBuffer(0));
 		copy->getMaterial().setTexture(0, overlay_texture);
@@ -629,9 +644,9 @@ scene::SMesh *getExtrudedMesh(ITextureSource *tsrc,
 	return mesh;
 }
 
-void postProcessNodeMesh(scene::SMesh *mesh, const ContentFeatures &f,
-	bool use_shaders, bool set_material, const video::E_MATERIAL_TYPE *mattype,
-	std::vector<ItemPartColor> *colors, bool apply_scale)
+void postProcessNodeMesh(scene::SMesh *mesh, const ContentFeatures &f, bool use_shaders,
+		bool set_material, const video::E_MATERIAL_TYPE *mattype,
+		std::vector<ItemPartColor> *colors, bool apply_scale)
 {
 	u32 mc = mesh->getMeshBufferCount();
 	// Allocate colors for existing buffers
@@ -652,10 +667,11 @@ void postProcessNodeMesh(scene::SMesh *mesh, const ContentFeatures &f,
 				mesh->addMeshBuffer(copy);
 				copy->drop();
 				buf = copy;
-				colors->push_back(
-					ItemPartColor(layer->has_color, layer->color));
+				colors->push_back(ItemPartColor(
+						layer->has_color, layer->color));
 			} else {
-				(*colors)[i] = ItemPartColor(layer->has_color, layer->color);
+				(*colors)[i] = ItemPartColor(
+						layer->has_color, layer->color);
 			}
 			video::SMaterial &material = buf->getMaterial();
 			if (set_material)
@@ -672,10 +688,13 @@ void postProcessNodeMesh(scene::SMesh *mesh, const ContentFeatures &f,
 			if (use_shaders) {
 				if (layer->normal_texture) {
 					if (layer->animation_frame_count > 1) {
-						const FrameSpec &animation_frame = (*layer->frames)[0];
-						material.setTexture(1, animation_frame.normal_texture);
+						const FrameSpec &animation_frame =
+								(*layer->frames)[0];
+						material.setTexture(1,
+								animation_frame.normal_texture);
 					} else
-						material.setTexture(1, layer->normal_texture);
+						material.setTexture(
+								1, layer->normal_texture);
 				}
 				material.setTexture(2, layer->flags_texture);
 			}

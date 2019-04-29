@@ -36,7 +36,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "inputhandler.h"
 #include "gettext.h"
 
-#if !defined(_WIN32) && !defined(__APPLE__) && !defined(__ANDROID__) && \
+#if !defined(_WIN32) && !defined(__APPLE__) && !defined(__ANDROID__) &&                  \
 		!defined(SERVER) && !defined(__HAIKU__)
 #define XORG_USED
 #endif
@@ -193,25 +193,23 @@ bool RenderingEngine::setupTopLevelWindow(const std::string &name)
 	// sort here that would call the correct toplevel setup methods for
 	// the environment Minetest is running in but for now not deviating
 	// from the original pattern.
-	
+
 	/* Setting Xorg properties for the top level window */
 	setupTopLevelXorgWindow(name);
 	/* Done with Xorg properties */
 
 	/* Setting general properties for the top level window */
 	verbosestream << "Client: Configuring general top level"
-		<< " window properties"
-		<< std::endl;
+		      << " window properties" << std::endl;
 
 	bool result = setWindowIcon();
 
 	verbosestream << "Client: Finished configuring general top level"
-		<< " window properties"
-		<< std::endl;
+		      << " window properties" << std::endl;
 	/* Done with general properties */
 
 	// FIXME: setWindowIcon returns a bool result but it is unused.
-	// For now continue to return this result. 
+	// For now continue to return this result.
 	return result;
 }
 
@@ -220,17 +218,16 @@ void RenderingEngine::setupTopLevelXorgWindow(const std::string &name)
 #ifdef XORG_USED
 	const video::SExposedVideoData exposedData = driver->getExposedVideoData();
 
-	Display *x11_dpl = reinterpret_cast<Display *>(exposedData.OpenGLLinux.X11Display);
+	Display *x11_dpl =
+			reinterpret_cast<Display *>(exposedData.OpenGLLinux.X11Display);
 	if (x11_dpl == NULL) {
 		warningstream << "Client: Could not find X11 Display in ExposedVideoData"
-			<< std::endl; 
+			      << std::endl;
 		return;
 	}
 
 	verbosestream << "Client: Configuring Xorg specific top level"
-		<< " window properties"
-		<< std::endl;
-
+		      << " window properties" << std::endl;
 
 	Window x11_win = reinterpret_cast<Window>(exposedData.OpenGLLinux.X11Window);
 
@@ -244,61 +241,55 @@ void RenderingEngine::setupTopLevelXorgWindow(const std::string &name)
 
 	// FIXME: In the future WMNormalHints should be set ... e.g see the
 	// gtk/gdk code (gdk/x11/gdksurface-x11.c) for the setup_top_level
-	// method. But for now (as it would require some significant changes) 
-	// leave the code as is. 
-	
+	// method. But for now (as it would require some significant changes)
+	// leave the code as is.
+
 	// The following is borrowed from the above gdk source for setting top
 	// level windows. The source indicates and the Xlib docs suggest that
-	// this will set the WM_CLIENT_MACHINE and WM_LOCAL_NAME. This will not 
-	// set the WM_CLIENT_MACHINE to a Fully Qualified Domain Name (FQDN) which is 
+	// this will set the WM_CLIENT_MACHINE and WM_LOCAL_NAME. This will not
+	// set the WM_CLIENT_MACHINE to a Fully Qualified Domain Name (FQDN) which is
 	// required by the Extended Window Manager Hints (EWMH) spec when setting
 	// the _NET_WM_PID (see further down) but running Minetest in an env
 	// where the window manager is on another machine from Minetest (therefore
 	// making the PID useless) is not expected to be a problem. Further
 	// more, using gtk/gdk as the model it would seem that not using a FQDN is
 	// not an issue for modern Xorg window managers.
-	
-	verbosestream << "Client: Setting Xorg window manager Properties"
-		<< std::endl;
 
-	XSetWMProperties (x11_dpl, x11_win, NULL, NULL, NULL, 0, NULL, NULL, NULL);
+	verbosestream << "Client: Setting Xorg window manager Properties" << std::endl;
 
-	// Set the _NET_WM_PID window property according to the EWMH spec. _NET_WM_PID 
-	// (in conjunction with WM_CLIENT_MACHINE) can be used by window managers to 
-	// force a shutdown of an application if it doesn't respond to the destroy 
-	// window message. 
-    
-	verbosestream << "Client: Setting Xorg _NET_WM_PID extened window manager property"
-		<< std::endl;
+	XSetWMProperties(x11_dpl, x11_win, NULL, NULL, NULL, 0, NULL, NULL, NULL);
+
+	// Set the _NET_WM_PID window property according to the EWMH spec. _NET_WM_PID
+	// (in conjunction with WM_CLIENT_MACHINE) can be used by window managers to
+	// force a shutdown of an application if it doesn't respond to the destroy
+	// window message.
+
+	verbosestream << "Client: Setting Xorg _NET_WM_PID extened window manager "
+			 "property"
+		      << std::endl;
 
 	Atom NET_WM_PID = XInternAtom(x11_dpl, "_NET_WM_PID", false);
 
 	pid_t pid = getpid();
-	infostream << "Client: PID is '" << static_cast<long>(pid) << "'"
-		<< std::endl;
+	infostream << "Client: PID is '" << static_cast<long>(pid) << "'" << std::endl;
 
-	XChangeProperty(x11_dpl, x11_win, NET_WM_PID, 
-			XA_CARDINAL, 32, PropModeReplace, 
-			reinterpret_cast<unsigned char *>(&pid),1);
+	XChangeProperty(x11_dpl, x11_win, NET_WM_PID, XA_CARDINAL, 32, PropModeReplace,
+			reinterpret_cast<unsigned char *>(&pid), 1);
 
 	// Set the WM_CLIENT_LEADER window property here. Minetest has only one
-	// window and that window will always be the leader. 
+	// window and that window will always be the leader.
 
-	verbosestream << "Client: Setting Xorg WM_CLIENT_LEADER property"
-		<< std::endl;
+	verbosestream << "Client: Setting Xorg WM_CLIENT_LEADER property" << std::endl;
 
 	Atom WM_CLIENT_LEADER = XInternAtom(x11_dpl, "WM_CLIENT_LEADER", false);
 
-	XChangeProperty (x11_dpl, x11_win, WM_CLIENT_LEADER,
-		XA_WINDOW, 32, PropModeReplace,
-		reinterpret_cast<unsigned char *>(&x11_win), 1);
+	XChangeProperty(x11_dpl, x11_win, WM_CLIENT_LEADER, XA_WINDOW, 32,
+			PropModeReplace, reinterpret_cast<unsigned char *>(&x11_win), 1);
 
 	verbosestream << "Client: Finished configuring Xorg specific top level"
-		<< " window properties"
-		<< std::endl;
+		      << " window properties" << std::endl;
 #endif
 }
-
 
 bool RenderingEngine::setWindowIcon()
 {
@@ -514,8 +505,8 @@ void RenderingEngine::_draw_load_screen(const std::wstring &text,
 /*
 	Draws the menu scene including (optional) cloud background.
 */
-void RenderingEngine::_draw_menu_scene(gui::IGUIEnvironment *guienv,
-		float dtime, bool clouds)
+void RenderingEngine::_draw_menu_scene(
+		gui::IGUIEnvironment *guienv, float dtime, bool clouds)
 {
 	bool cloud_menu_background = clouds && g_settings->getBool("menu_clouds");
 	if (cloud_menu_background) {
@@ -666,7 +657,7 @@ v2u32 RenderingEngine::getDisplaySize()
 	return deskres;
 }
 
-#else // __ANDROID__
+#else  // __ANDROID__
 float RenderingEngine::getDisplayDensity()
 {
 	return porting::getDisplayDensity();

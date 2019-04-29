@@ -24,8 +24,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "settings.h"
 
 RenderingCoreStereo::RenderingCoreStereo(
-	IrrlichtDevice *_device, Client *_client, Hud *_hud)
-	: RenderingCore(_device, _client, _hud)
+		IrrlichtDevice *_device, Client *_client, Hud *_hud) :
+		RenderingCore(_device, _client, _hud)
 {
 	eye_offset = BS * g_settings->getFloat("3d_paralax_strength");
 }

@@ -39,10 +39,10 @@ class IGameDef;
 
 	Utilizes a thread-safe cache.
 */
-std::string getShaderPath(const std::string &name_of_shader,
-		const std::string &filename);
+std::string getShaderPath(const std::string &name_of_shader, const std::string &filename);
 
-struct ShaderInfo {
+struct ShaderInfo
+{
 	std::string name = "";
 	video::E_MATERIAL_TYPE base_material = video::EMT_SOLID;
 	video::E_MATERIAL_TYPE material = video::EMT_SOLID;
@@ -57,36 +57,42 @@ struct ShaderInfo {
 	Setter of constants for shaders
 */
 
-namespace irr { namespace video {
-	class IMaterialRendererServices;
-} }
+namespace irr
+{
+namespace video
+{
+class IMaterialRendererServices;
+}
+}
 
-
-class IShaderConstantSetter {
+class IShaderConstantSetter
+{
 public:
 	virtual ~IShaderConstantSetter() = default;
 	virtual void onSetConstants(video::IMaterialRendererServices *services,
 			bool is_highlevel) = 0;
 };
 
-
-class IShaderConstantSetterFactory {
+class IShaderConstantSetterFactory
+{
 public:
 	virtual ~IShaderConstantSetterFactory() = default;
-	virtual IShaderConstantSetter* create() = 0;
+	virtual IShaderConstantSetter *create() = 0;
 };
 
-
-template <typename T, std::size_t count=1>
-class CachedShaderSetting {
+template <typename T, std::size_t count = 1> class CachedShaderSetting
+{
 	const char *m_name;
 	T m_sent[count];
 	bool has_been_set = false;
 	bool is_pixel;
+
 protected:
 	CachedShaderSetting(const char *name, bool is_pixel) :
-		m_name(name), is_pixel(is_pixel)
-	{}
+			m_name(name), is_pixel(is_pixel)
+	{
+	}
+
 public:
 	void set(const T value[count], video::IMaterialRendererServices *services)
 	{
@@ -102,55 +108,75 @@ public:
 };
 
 template <typename T, std::size_t count = 1>
-class CachedPixelShaderSetting : public CachedShaderSetting<T, count> {
+class CachedPixelShaderSetting : public CachedShaderSetting<T, count>
+{
 public:
 	CachedPixelShaderSetting(const char *name) :
-		CachedShaderSetting<T, count>(name, true){}
+			CachedShaderSetting<T, count>(name, true)
+	{
+	}
 };
 
 template <typename T, std::size_t count = 1>
-class CachedVertexShaderSetting : public CachedShaderSetting<T, count> {
+class CachedVertexShaderSetting : public CachedShaderSetting<T, count>
+{
 public:
 	CachedVertexShaderSetting(const char *name) :
-		CachedShaderSetting<T, count>(name, false){}
+			CachedShaderSetting<T, count>(name, false)
+	{
+	}
 };
-
 
 /*
 	ShaderSource creates and caches shaders.
 */
 
-class IShaderSource {
+class IShaderSource
+{
 public:
 	IShaderSource() = default;
 	virtual ~IShaderSource() = default;
 
-	virtual u32 getShaderIdDirect(const std::string &name,
-		const u8 material_type, const u8 drawtype){return 0;}
-	virtual ShaderInfo getShaderInfo(u32 id){return ShaderInfo();}
-	virtual u32 getShader(const std::string &name,
-		const u8 material_type, const u8 drawtype){return 0;}
+	virtual u32 getShaderIdDirect(const std::string &name, const u8 material_type,
+			const u8 drawtype)
+	{
+		return 0;
+	}
+	virtual ShaderInfo getShaderInfo(u32 id) { return ShaderInfo(); }
+	virtual u32 getShader(const std::string &name, const u8 material_type,
+			const u8 drawtype)
+	{
+		return 0;
+	}
 };
 
-class IWritableShaderSource : public IShaderSource {
+class IWritableShaderSource : public IShaderSource
+{
 public:
 	IWritableShaderSource() = default;
 	virtual ~IWritableShaderSource() = default;
 
-	virtual u32 getShaderIdDirect(const std::string &name,
-		const u8 material_type, const u8 drawtype){return 0;}
-	virtual ShaderInfo getShaderInfo(u32 id){return ShaderInfo();}
-	virtual u32 getShader(const std::string &name,
-		const u8 material_type, const u8 drawtype){return 0;}
+	virtual u32 getShaderIdDirect(const std::string &name, const u8 material_type,
+			const u8 drawtype)
+	{
+		return 0;
+	}
+	virtual ShaderInfo getShaderInfo(u32 id) { return ShaderInfo(); }
+	virtual u32 getShader(const std::string &name, const u8 material_type,
+			const u8 drawtype)
+	{
+		return 0;
+	}
 
-	virtual void processQueue()=0;
+	virtual void processQueue() = 0;
 	virtual void insertSourceShader(const std::string &name_of_shader,
-		const std::string &filename, const std::string &program)=0;
-	virtual void rebuildShaders()=0;
-	virtual void addShaderConstantSetterFactory(IShaderConstantSetterFactory *setter) = 0;
+			const std::string &filename, const std::string &program) = 0;
+	virtual void rebuildShaders() = 0;
+	virtual void addShaderConstantSetterFactory(
+			IShaderConstantSetterFactory *setter) = 0;
 };
 
 IWritableShaderSource *createShaderSource();
 
-void dumpShaderProgram(std::ostream &output_stream,
-	const std::string &program_type, const std::string &program);
+void dumpShaderProgram(std::ostream &output_stream, const std::string &program_type,
+		const std::string &program);

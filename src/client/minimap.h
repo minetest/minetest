@@ -33,7 +33,8 @@ class IShaderSource;
 #define MINIMAP_MAX_SX 512
 #define MINIMAP_MAX_SY 512
 
-enum MinimapMode {
+enum MinimapMode
+{
 	MINIMAP_MODE_OFF,
 	MINIMAP_MODE_SURFACEx1,
 	MINIMAP_MODE_SURFACEx2,
@@ -44,31 +45,36 @@ enum MinimapMode {
 	MINIMAP_MODE_COUNT,
 };
 
-enum MinimapShape {
+enum MinimapShape
+{
 	MINIMAP_SHAPE_SQUARE,
 	MINIMAP_SHAPE_ROUND,
 };
 
-struct MinimapModeDef {
+struct MinimapModeDef
+{
 	bool is_radar;
 	u16 scan_height;
 	u16 map_size;
 };
 
-struct MinimapPixel {
+struct MinimapPixel
+{
 	//! The topmost node that the minimap displays.
 	MapNode n;
 	u16 height;
 	u16 air_count;
 };
 
-struct MinimapMapblock {
+struct MinimapMapblock
+{
 	void getMinimapNodes(VoxelManipulator *vmanip, const v3s16 &pos);
 
 	MinimapPixel data[MAP_BLOCKSIZE * MAP_BLOCKSIZE];
 };
 
-struct MinimapData {
+struct MinimapData
+{
 	bool is_radar;
 	MinimapMode mode;
 	v3s16 pos;
@@ -88,12 +94,14 @@ struct MinimapData {
 	video::ITexture *object_marker_red = nullptr;
 };
 
-struct QueuedMinimapUpdate {
+struct QueuedMinimapUpdate
+{
 	v3s16 pos;
 	MinimapMapblock *data = nullptr;
 };
 
-class MinimapUpdateThread : public UpdateThread {
+class MinimapUpdateThread : public UpdateThread
+{
 public:
 	MinimapUpdateThread() : UpdateThread("Minimap") {}
 	virtual ~MinimapUpdateThread();
@@ -114,7 +122,8 @@ private:
 	std::map<v3s16, MinimapMapblock *> m_blocks_cache;
 };
 
-class Minimap {
+class Minimap
+{
 public:
 	Minimap(Client *client);
 	~Minimap();
@@ -133,12 +142,11 @@ public:
 	void setMinimapShape(MinimapShape shape);
 	MinimapShape getMinimapShape();
 
-
 	video::ITexture *getMinimapTexture();
 
 	void blitMinimapPixelsToImageRadar(video::IImage *map_image);
-	void blitMinimapPixelsToImageSurface(video::IImage *map_image,
-		video::IImage *heightmap_image);
+	void blitMinimapPixelsToImageSurface(
+			video::IImage *map_image, video::IImage *heightmap_image);
 
 	scene::SMeshBuffer *getMinimapMeshBuffer();
 
@@ -146,7 +154,7 @@ public:
 	void drawMinimap();
 
 	video::IVideoDriver *driver;
-	Client* client;
+	Client *client;
 	MinimapData *data;
 
 private:

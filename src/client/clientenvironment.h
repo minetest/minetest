@@ -49,25 +49,27 @@ enum ClientEnvEventType
 struct ClientEnvEvent
 {
 	ClientEnvEventType type;
-	union {
-		//struct{
+	union
+	{
+		// struct{
 		//} none;
-		struct{
+		struct
+		{
 			u16 amount;
 			bool send_to_server;
 		} player_damage;
 	};
 };
 
-typedef std::unordered_map<u16, ClientActiveObject*> ClientActiveObjectMap;
+typedef std::unordered_map<u16, ClientActiveObject *> ClientActiveObjectMap;
 class ClientEnvironment : public Environment
 {
 public:
 	ClientEnvironment(ClientMap *map, ITextureSource *texturesource, Client *client);
 	~ClientEnvironment();
 
-	Map & getMap();
-	ClientMap & getClientMap();
+	Map &getMap();
+	ClientMap &getClientMap();
 
 	Client *getGameDef() { return m_client; }
 	void setScript(ClientScripting *script) { m_script = script; }
@@ -87,8 +89,8 @@ public:
 		ActiveObjects
 	*/
 
-	GenericCAO* getGenericCAO(u16 id);
-	ClientActiveObject* getActiveObject(u16 id)
+	GenericCAO *getGenericCAO(u16 id);
+	ClientActiveObject *getActiveObject(u16 id)
 	{
 		return m_ao_manager.getActiveObject(id);
 	}
@@ -104,10 +106,7 @@ public:
 	u16 addActiveObject(ClientActiveObject *object);
 
 	void addActiveObject(u16 id, u8 type, const std::string &init_data);
-	void removeActiveObject(u16 id)
-	{
-		m_ao_manager.removeObject(id);
-	}
+	void removeActiveObject(u16 id) { m_ao_manager.removeObject(id); }
 
 	void processActiveObjectMessage(u16 id, const std::string &data);
 
@@ -115,7 +114,7 @@ public:
 		Callbacks for activeobjects
 	*/
 
-	void damageLocalPlayer(u16 damage, bool handle_hp=true);
+	void damageLocalPlayer(u16 damage, bool handle_hp = true);
 
 	/*
 		Client likes to call these
@@ -123,7 +122,7 @@ public:
 
 	// Get all nearby objects
 	void getActiveObjects(const v3f &origin, f32 max_d,
-		std::vector<DistanceSortedActiveObject> &dest)
+			std::vector<DistanceSortedActiveObject> &dest)
 	{
 		return m_ao_manager.getActiveObjects(origin, max_d, dest);
 	}
@@ -133,10 +132,8 @@ public:
 	// Get event from queue. If queue is empty, it triggers an assertion failure.
 	ClientEnvEvent getClientEnvEvent();
 
-	virtual void getSelectedActiveObjects(
-		const core::line3d<f32> &shootline_on_map,
-		std::vector<PointedThing> &objects
-	);
+	virtual void getSelectedActiveObjects(const core::line3d<f32> &shootline_on_map,
+			std::vector<PointedThing> &objects);
 
 	u16 attachement_parent_ids[USHRT_MAX + 1];
 
@@ -144,8 +141,11 @@ public:
 	void addPlayerName(const std::string &name) { m_player_names.push_back(name); }
 	void removePlayerName(const std::string &name) { m_player_names.remove(name); }
 	void updateCameraOffset(const v3s16 &camera_offset)
-	{ m_camera_offset = camera_offset; }
+	{
+		m_camera_offset = camera_offset;
+	}
 	v3s16 getCameraOffset() const { return m_camera_offset; }
+
 private:
 	ClientMap *m_map;
 	LocalPlayer *m_local_player = nullptr;
@@ -153,7 +153,7 @@ private:
 	Client *m_client;
 	ClientScripting *m_script = nullptr;
 	client::ActiveObjectMgr m_ao_manager;
-	std::vector<ClientSimpleObject*> m_simple_objects;
+	std::vector<ClientSimpleObject *> m_simple_objects;
 	std::queue<ClientEnvEvent> m_client_event_queue;
 	IntervalLimiter m_active_object_light_update_interval;
 	std::list<std::string> m_player_names;

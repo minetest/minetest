@@ -32,28 +32,28 @@ bool FileCache::loadByPath(const std::string &path, std::ostream &os)
 {
 	std::ifstream fis(path.c_str(), std::ios_base::binary);
 
-	if(!fis.good()){
-		verbosestream<<"FileCache: File not found in cache: "
-				<<path<<std::endl;
+	if (!fis.good()) {
+		verbosestream << "FileCache: File not found in cache: " << path
+			      << std::endl;
 		return false;
 	}
 
 	bool bad = false;
-	for(;;){
+	for (;;) {
 		char buf[1024];
 		fis.read(buf, 1024);
 		std::streamsize len = fis.gcount();
 		os.write(buf, len);
-		if(fis.eof())
+		if (fis.eof())
 			break;
-		if(!fis.good()){
+		if (!fis.good()) {
 			bad = true;
 			break;
 		}
 	}
-	if(bad){
-		errorstream<<"FileCache: Failed to read file from cache: \""
-				<<path<<"\""<<std::endl;
+	if (bad) {
+		errorstream << "FileCache: Failed to read file from cache: \"" << path
+			    << "\"" << std::endl;
 	}
 
 	return !bad;
@@ -61,13 +61,10 @@ bool FileCache::loadByPath(const std::string &path, std::ostream &os)
 
 bool FileCache::updateByPath(const std::string &path, const std::string &data)
 {
-	std::ofstream file(path.c_str(), std::ios_base::binary |
-			std::ios_base::trunc);
+	std::ofstream file(path.c_str(), std::ios_base::binary | std::ios_base::trunc);
 
-	if(!file.good())
-	{
-		errorstream<<"FileCache: Can't write to file at "
-				<<path<<std::endl;
+	if (!file.good()) {
+		errorstream << "FileCache: Can't write to file at " << path << std::endl;
 		return false;
 	}
 

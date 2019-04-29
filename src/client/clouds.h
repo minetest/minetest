@@ -29,16 +29,19 @@ class Clouds;
 extern Clouds *g_menuclouds;
 
 // Scene manager used for menu clouds
-namespace irr{namespace scene{class ISceneManager;}}
+namespace irr
+{
+namespace scene
+{
+class ISceneManager;
+}
+}
 extern irr::scene::ISceneManager *g_menucloudsmgr;
 
 class Clouds : public scene::ISceneNode
 {
 public:
-	Clouds(scene::ISceneManager* mgr,
-			s32 id,
-			u32 seed
-	);
+	Clouds(scene::ISceneManager *mgr, s32 id, u32 seed);
 
 	~Clouds();
 
@@ -50,20 +53,11 @@ public:
 
 	virtual void render();
 
-	virtual const aabb3f &getBoundingBox() const
-	{
-		return m_box;
-	}
+	virtual const aabb3f &getBoundingBox() const { return m_box; }
 
-	virtual u32 getMaterialCount() const
-	{
-		return 1;
-	}
+	virtual u32 getMaterialCount() const { return 1; }
 
-	virtual video::SMaterial& getMaterial(u32 i)
-	{
-		return m_material;
-	}
+	virtual video::SMaterial &getMaterial(u32 i) { return m_material; }
 
 	/*
 		Other stuff
@@ -103,10 +97,7 @@ public:
 		updateBox();
 	}
 
-	void setSpeed(v2f speed)
-	{
-		m_params.speed = speed;
-	}
+	void setSpeed(v2f speed) { m_params.speed = speed; }
 
 	void setThickness(float thickness)
 	{
@@ -121,10 +112,12 @@ public:
 private:
 	void updateBox()
 	{
-		float height_bs    = m_params.height    * BS;
+		float height_bs = m_params.height * BS;
 		float thickness_bs = m_params.thickness * BS;
-		m_box = aabb3f(-BS * 1000000.0f, height_bs - BS * m_camera_offset.Y, -BS * 1000000.0f,
-				BS * 1000000.0f, height_bs + thickness_bs - BS * m_camera_offset.Y, BS * 1000000.0f);
+		m_box = aabb3f(-BS * 1000000.0f, height_bs - BS * m_camera_offset.Y,
+				-BS * 1000000.0f, BS * 1000000.0f,
+				height_bs + thickness_bs - BS * m_camera_offset.Y,
+				BS * 1000000.0f);
 	}
 
 	bool gridFilled(int x, int y) const;
@@ -140,5 +133,4 @@ private:
 	video::SColorf m_color = video::SColorf(1.0f, 1.0f, 1.0f, 1.0f);
 	CloudParams m_params;
 	bool m_camera_inside_cloud = false;
-
 };
