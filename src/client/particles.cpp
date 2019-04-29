@@ -118,9 +118,9 @@ private:
 		bool pos_ok = true;
 
 		v3s16 p = v3s16(
-			floor(position.X + 0.5f),
-			floor(position.Y + 0.5f),
-			floor(position.Z + 0.5f));
+			std::floor(position.X + 0.5f),
+			std::floor(position.Y + 0.5f),
+			std::floor(position.Z + 0.5f));
 
 		MapNode map_node = m_env->getClientMap().getNodeNoEx(p, &pos_ok);
 
