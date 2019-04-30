@@ -129,7 +129,12 @@ void RenderingCoreEquirectangular::processImages()
 
 void RenderingCoreEquirectangular::drawAll()
 {
-	for (int i = 5; i >= 0; i --) {
+	// These two steps are required to remove any camera settings
+	// applied before. TODO Find other ways to fix this problem.
+	useFace(0);
+	draw3D();
+
+	for (int i = 0; i < 6; i ++) {
 		useFace(i);
 		draw3D();
 	}
