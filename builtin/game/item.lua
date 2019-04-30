@@ -112,6 +112,51 @@ function core.facedir_to_dir(facedir)
 	return facedir_to_dir[facedir_to_dir_map[facedir % 32]]
 end
 
+function core.facedir_to_matrix(facedir)
+	--todo
+	--[[
+	from lua_api.txt:
+	* Values range 0 - 23
+	* facedir / 4 = axis direction:
+	  0 = y+,   1 = z+,   2 = z-,   3 = x+,   4 = x-,   5 = y-
+	* facedir modulo 4 = rotation around that axis
+	]]
+
+	-- get the parts from facedir
+	local dir = math.floor(facedir / 4)
+	local rot = facedir - dir
+
+	-- the following is taken from rotateMeshBy6dFacedir in mesh.cpp
+	-- the signs of the angles probably have to be swapped because minetest has
+	-- a left-handed coordinate system
+
+	-- make the axis direction rotation matrix
+	local m_dir
+	if dir == 0 then
+		m_rot = {1, 1, 1, 0, 0, 0, 0, 0, 0}
+	elseif dir == 1 then
+		m_rot = matrix.rotation_around_x(math.pi / 2)
+	elseif dir == 2 then
+		m_rot = matrix.rotation_around_x(-math.pi / 2)
+	elseif dir == 3 then
+		m_rot = matrix.rotation_around_z(-math.pi / 2)
+	elseif dir == 4 then
+		m_rot = matrix.rotation_around_z(math.pi / 2)
+	else
+		m_rot = matrix.rotation_around_z(-math.pi)
+	end
+
+	-- make the rotation around axis rotation matrix
+	local m_rot = matrix.rotation_around_z(math.pi * rot / 2)
+
+	-- return the combined rotation matrix
+	return matrix.multiply(m_dir, m_rot) -- the order might be wrong here; todo
+end
+
+function core.matrix_to_facedir(m)
+	--todo
+end
+
 function core.dir_to_wallmounted(dir)
 	if math.abs(dir.y) > math.max(math.abs(dir.x), math.abs(dir.z)) then
 		if dir.y < 0 then
@@ -145,6 +190,33 @@ local wallmounted_to_dir = {
 }
 function core.wallmounted_to_dir(wallmounted)
 	return wallmounted_to_dir[wallmounted % 8]
+end
+
+-- taken from src/util/directiontables.cpp
+local wallmounted_to_facedir = {
+	20,
+	0,
+	16 + 1,
+	12 + 3,
+	8,
+	4 + 2
+}
+
+function core.wallmounted_to_matrix(wallmounted)
+	return core.facedir_to_matrix(wallmounted_to_facedir[wallmounted])
+end
+
+function core.matrix_to_wallmounted(m)
+	local f = core.matrix_to_facedir(m)
+	if not f then
+		return nil -- no suitable facedir value found
+	end
+	for i = 1, 6 do
+		if wallmounted_to_facedir[i] == f then
+			return i
+		end
+	end
+	return nil -- matrix was not from wallmounted but from facedir
 end
 
 function core.dir_to_yaw(dir)

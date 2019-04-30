@@ -8,6 +8,7 @@ local gamepath = scriptpath.."game"..DIR_DELIM
 local builtin_shared = {}
 
 dofile(commonpath.."vector.lua")
+dofile(commonpath.."matrix.lua")
 
 dofile(gamepath.."constants.lua")
 assert(loadfile(gamepath.."item.lua"))(builtin_shared)

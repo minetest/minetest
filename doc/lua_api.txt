@@ -2484,6 +2484,8 @@ A spatial vector is similar to a position, but instead using
 absolute world coordinates, it uses *relative* coordinates, relative to
 no particular point.
 
+A vector is a 3x1 matrix (see Matrices).
+
 Internally, it is implemented as a table with the 3 fields
 `x`, `y` and `z`. Example: `{x = 0, y = 1, z = 0}`.
 
@@ -2515,6 +2517,9 @@ For the following functions, `v`, `v1`, `v2` are vectors,
     * Returns a boolean, `true` if the vectors are identical.
 * `vector.sort(v1, v2)`:
     * Returns in order minp, maxp vectors of the cuboid defined by `v1`, `v2`.
+* `vector.dot(v1, v2)`:
+    * Returns the dot product of `v1` and `v2`.
+    * Returns the matrix product of the transposed of `v1` and `v2`.
 * `vector.angle(v1, v2)`:
     * Returns the angle between `v1` and `v2` in radians.
 * `vector.dot(v1, v2)`
@@ -2536,6 +2541,55 @@ For the following functions `x` can be either a vector or a number:
     * Returns a scaled vector or Schur product.
 * `vector.divide(v, x)`:
     * Returns a scaled vector or Schur quotient.
+
+
+
+
+Matrices
+========
+Minetest has helpers for 3x3 matrices.
+Matrices can be used for rotation.
+
+* `matrix.new()`:
+    * returns a matrix filled with zeros
+* `matrix.new(m_11, m_12, m_13, m_21, m_22, m_23, m_31, m_32, m_33)`:
+    * returns a matrix
+      M = {m_11, m_12, m_13,
+           m_21, m_22, m_23,
+           m_31, m_32, m_33}
+* `matrix.new(m)`:
+    * A copy of the matrix `m` is returned.
+* `matrix.index(m, l, c)`:
+    * Returns `m[(l - 1) * 3 + c]`.
+* `matrix.add(m1, m2)`:
+    * Returns a new matrix where all components are added each.
+* `matrix.multiply(m, a)`:
+    * Returns the scalar product of the matrix `m` and the scalar `a`.
+* `matrix.multiply(m1, m2)`:
+    * Returns the matrix product of the matrices `m1` and `m2`.
+* `matrix.multiply(m, v)`:
+    * Returns the matrix product of the matrix `m` and the vector `v` as vector.
+* `matrix.tensor_multiply(v1, v2)`:
+    * `v1` and `v2` are vectors.
+    * Returns the matrix product of `v1` and the transposed of `v2`.
+* `matrix.transpose(m)`:
+    * Returns the transposed martix of `m`.
+* `matrix.rotation_around_x(angle)`:
+    * `angle` is given in radians.
+    * Returns a rotation matrix around the x-axis.
+* `matrix.rotation_around_y(angle)`:
+    * `angle` is given in radians.
+    * Returns a rotation matrix around the y-axis.
+* `matrix.rotation_around_z(angle)`:
+    * `angle` is given in radians.
+    * Returns a rotation matrix around the z-axis.
+* `matrix.rotation_around_vector(v, angle)`:
+    * `angle` is given in radians.
+    * Returns a rotation matrix around an axis in the direction of `v`.
+* `matrix.to_yaw_pitch_roll(m)`:
+    * Returns a vector `{x = pitch, y = yaw, z = roll}`.
+* `matrix.from_yaw_pitch_roll(v)`:
+    * bla
 
 
 
@@ -4449,12 +4503,22 @@ Item handling
 * `minetest.facedir_to_dir(facedir)`
     * Convert a facedir back into a vector aimed directly out the "back" of a
       node.
+* `minetest.facedir_to_matrix(facedir)`
+    * Convert a facedir into a rotation matrix. Also see Matrices.
+* `minetest.matrix_to_facedir(matrix)`
+    * Convert a matrix back to a facedir.
+    * Returns `nil` if there is no suitable value.
 * `minetest.dir_to_wallmounted(dir)`
     * Convert a vector to a wallmounted value, used for
       `paramtype2="wallmounted"`.
 * `minetest.wallmounted_to_dir(wallmounted)`
     * Convert a wallmounted value back into a vector aimed directly out the
       "back" of a node.
+* `minetest.wallmounted_to_matrix(wallmounted)`
+    * Convert a wallmounted into a rotation matrix. Also see Matrices.
+* `minetest.matrix_to_wallmounted(matrix)`
+    * Convert a matrix back to a wallmounted.
+    * Returns `nil` if there is no suitable value.
 * `minetest.dir_to_yaw(dir)`
     * Convert a vector into a yaw (angle)
 * `minetest.yaw_to_dir(yaw)`
