@@ -2859,7 +2859,7 @@ void Server::handleChatInterfaceEvent(ChatEvent *evt)
 }
 
 std::wstring Server::handleChat(const std::string &name, const std::wstring &wname,
-	std::wstring wmessage, bool check_shout_priv, RemotePlayer *player)
+	std::wstring &wmessage, bool check_shout_priv, RemotePlayer *player)
 {
 	// If something goes wrong, this player is to blame
 	RollbackScopeActor rollback_scope(m_rollback,

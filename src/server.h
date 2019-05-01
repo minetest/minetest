@@ -486,9 +486,10 @@ private:
 
 	// This returns the answer to the sender of wmessage, or "" if there is none
 	std::wstring handleChat(const std::string &name, const std::wstring &wname,
-		std::wstring wmessage_input,
-		bool check_shout_priv = false,
-		RemotePlayer *player = NULL);
+			std::wstring &wmessage,
+			bool check_shout_priv = false,
+			RemotePlayer *player = NULL);
+
 	void handleAdminChat(const ChatEventChat *evt);
 
 	// When called, connection mutex should be locked
