@@ -11,6 +11,8 @@ function matrix.new(a, ...)
 	end
 end
 
+matrix.identity = {1, 0, 0, 0, 1, 0, 0, 0, 1}
+
 function matrix.equals(m1, m2)
 	for i = 1, 9 do
 		if m1[i] ~= m2[i] then
@@ -61,7 +63,7 @@ function matrix.multiply(m1, m2)
 			local i = (l - 1) * 3 + c
 			m3[i] = 0
 			for k = 1, 3 do
-				m3[i] = m3[i] + m1[(l - 1) * 3 + k] + m3[(k - 1) * 3 + c]
+				m3[i] = m3[i] + m1[(l - 1) * 3 + k] + m2[(k - 1) * 3 + c]
 			end
 		end
 	end
@@ -116,12 +118,15 @@ end
 
 function matrix.rotation_around_vector(v, angle)
 	--todo
+	return matrix.new(matrix.identity)
 end
 
 function matrix.to_yaw_pitch_roll(m)
 	--todo
+	return vector.new()
 end
 
 function matrix.from_yaw_pitch_roll(v)
 	--todo
+	return matrix.new(matrix.identity)
 end

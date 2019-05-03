@@ -130,7 +130,7 @@ do
 	}
 	for facedir = 0, 23 do
 		local dir = math.floor(facedir / 4)
-		local rot = facedir - dir
+		local rot = facedir % 4
 		facedir_matrices[facedir] = matrix.multiply(m_dirs[dir], m_rots[rot]) -- the order might be wrong here; todo
 	end
 end
@@ -147,7 +147,7 @@ function core.facedir_to_matrix(facedir, nocopy)
 
 	--~ -- get the parts from facedir
 	--~ local dir = math.floor(facedir / 4)
-	--~ local rot = facedir - dir
+	--~ local rot = facedir % 4
 
 	--~ -- the following is taken from rotateMeshBy6dFacedir in mesh.cpp
 	--~ -- the signs of the angles probably have to be swapped because minetest has
@@ -156,7 +156,7 @@ function core.facedir_to_matrix(facedir, nocopy)
 	--~ -- make the axis direction rotation matrix
 	--~ local m_dir
 	--~ if dir == 0 then
-		--~ m_dir = {1, 0, 0, 0, 1, 0, 0, 0, 1}
+		--~ m_dir = matrix.identity
 	--~ elseif dir == 1 then
 		--~ m_dir = matrix.rotation_around_x(math.pi / 2)
 	--~ elseif dir == 2 then
