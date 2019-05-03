@@ -117,16 +117,27 @@ function matrix.rotation_around_z(angle)
 end
 
 function matrix.rotation_around_vector(v, angle)
-	--todo
-	return matrix.new(matrix.identity)
+	local length_v = vector.length(v)
+	v = vector.divide(v, length_v)
+	angle = angle or length_v
+
+	local s = math.sin(angle)
+	local c = math.cos(angle)
+	local omc = 1 - c
+	return {
+		v.x * v.x * omc + c,       v.x * v.y * omc - v.z * s, v.x * v.z * omc + v.y * s,
+		v.y * v.x * omc + v.z * s, v.y * v.y * omc + c,       v.y * v.z * omc - v.x * s,
+		v.z * v.x * omc - v.y * s, v.z * v.y * omc + v.x * s, v.z * v.z * omc + c
+	}
 end
 
 function matrix.to_yaw_pitch_roll(m)
 	--todo
+	-- I do not know how to do this yet.
 	return vector.new()
 end
 
 function matrix.from_yaw_pitch_roll(v)
-	--todo
-	return matrix.new(matrix.identity)
+	return matrix.multiply(matrix.rotation_around_y(v.y),
+			matrix.rotation_around_x(v.x),matrix.rotation_around_z(v.z)) -- the order might be wrong
 end
