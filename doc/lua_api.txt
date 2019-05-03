@@ -2559,6 +2559,8 @@ Matrices can be used for rotation.
            m_31, m_32, m_33}
 * `matrix.new(m)`:
     * A copy of the matrix `m` is returned.
+* `matrix.equals(m1, m2)`:
+    * Returns a boolean, `true` if the matrices are identical.
 * `matrix.index(m, l, c)`:
     * Returns `m[(l - 1) * 3 + c]`.
 * `matrix.add(m1, m2)`:

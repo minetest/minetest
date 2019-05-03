@@ -11,6 +11,15 @@ function matrix.new(a, ...)
 	end
 end
 
+function matrix.equals(m1, m2)
+	for i = 1, 9 do
+		if m1[i] ~= m2[i] then
+			return false
+		end
+	end
+	return true
+end
+
 function matrix.index(m, l, c)
 	return m[(l - 1) * 3 + c]
 end

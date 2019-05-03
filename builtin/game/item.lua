@@ -112,49 +112,97 @@ function core.facedir_to_dir(facedir)
 	return facedir_to_dir[facedir_to_dir_map[facedir % 32]]
 end
 
-function core.facedir_to_matrix(facedir)
-	--todo
-	--[[
-	from lua_api.txt:
-	* Values range 0 - 23
-	* facedir / 4 = axis direction:
-	  0 = y+,   1 = z+,   2 = z-,   3 = x+,   4 = x-,   5 = y-
-	* facedir modulo 4 = rotation around that axis
-	]]
-
-	-- get the parts from facedir
-	local dir = math.floor(facedir / 4)
-	local rot = facedir - dir
-
-	-- the following is taken from rotateMeshBy6dFacedir in mesh.cpp
-	-- the signs of the angles probably have to be swapped because minetest has
-	-- a left-handed coordinate system
-
-	-- make the axis direction rotation matrix
-	local m_dir
-	if dir == 0 then
-		m_rot = {1, 1, 1, 0, 0, 0, 0, 0, 0}
-	elseif dir == 1 then
-		m_rot = matrix.rotation_around_x(math.pi / 2)
-	elseif dir == 2 then
-		m_rot = matrix.rotation_around_x(-math.pi / 2)
-	elseif dir == 3 then
-		m_rot = matrix.rotation_around_z(-math.pi / 2)
-	elseif dir == 4 then
-		m_rot = matrix.rotation_around_z(math.pi / 2)
-	else
-		m_rot = matrix.rotation_around_z(-math.pi)
+local facedir_matrices = {}
+do
+	local m_dirs = {
+		[0] = {1, 0, 0, 0, 1, 0, 0, 0, 1},
+		matrix.rotation_around_x(math.pi / 2),
+		matrix.rotation_around_x(-math.pi / 2),
+		matrix.rotation_around_z(-math.pi / 2),
+		matrix.rotation_around_z(math.pi / 2),
+		matrix.rotation_around_z(-math.pi)
+	}
+	local m_rots = {
+		[0] = {1, 0, 0, 0, 1, 0, 0, 0, 1},
+		matrix.rotation_around_z(math.pi / 2),
+		matrix.rotation_around_z(math.pi),
+		matrix.rotation_around_z(math.pi * 3 / 2)
+	}
+	for facedir = 0, 23 do
+		local dir = math.floor(facedir / 4)
+		local rot = facedir - dir
+		facedir_matrices[facedir] = matrix.multiply(m_dirs[dir], m_rots[rot]) -- the order might be wrong here; todo
 	end
+end
 
-	-- make the rotation around axis rotation matrix
-	local m_rot = matrix.rotation_around_z(math.pi * rot / 2)
+function core.facedir_to_matrix(facedir)
+	--~ --todo
+	--~ --[[
+	--~ from lua_api.txt:
+	--~ * Values range 0 - 23
+	--~ * facedir / 4 = axis direction:
+	  --~ 0 = y+,   1 = z+,   2 = z-,   3 = x+,   4 = x-,   5 = y-
+	--~ * facedir modulo 4 = rotation around that axis
+	--~ ]]
 
-	-- return the combined rotation matrix
-	return matrix.multiply(m_dir, m_rot) -- the order might be wrong here; todo
+	--~ -- get the parts from facedir
+	--~ local dir = math.floor(facedir / 4)
+	--~ local rot = facedir - dir
+
+	--~ -- the following is taken from rotateMeshBy6dFacedir in mesh.cpp
+	--~ -- the signs of the angles probably have to be swapped because minetest has
+	--~ -- a left-handed coordinate system
+
+	--~ -- make the axis direction rotation matrix
+	--~ local m_dir
+	--~ if dir == 0 then
+		--~ m_dir = {1, 0, 0, 0, 1, 0, 0, 0, 1}
+	--~ elseif dir == 1 then
+		--~ m_dir = matrix.rotation_around_x(math.pi / 2)
+	--~ elseif dir == 2 then
+		--~ m_dir = matrix.rotation_around_x(-math.pi / 2)
+	--~ elseif dir == 3 then
+		--~ m_dir = matrix.rotation_around_z(-math.pi / 2)
+	--~ elseif dir == 4 then
+		--~ m_dir = matrix.rotation_around_z(math.pi / 2)
+	--~ else
+		--~ m_rot = matrix.rotation_around_z(-math.pi)
+	--~ end
+
+	--~ -- make the rotation around axis rotation matrix
+	--~ local m_rot = matrix.rotation_around_z(math.pi * rot / 2)
+
+	--~ -- return the combined rotation matrix
+	--~ return matrix.multiply(m_dir, m_rot) -- the order might be wrong here; todo
+
+	return matrix.new(facedir_matrices[facedir])
+end
+
+local matrix_facedirs = {}
+
+local function matrix_1p_1n_0_hash(m)
+	local r = 0
+	for i = 1, 9 do
+		--~ r = r + (m[i] + 1) * 3^(i-1)
+		if m[i] == 1 then
+			r = r + 1 * 3^(i-1)
+		elseif m[i] == -1 then
+			r = r + 2 * 3^(i-1)
+		elseif m[i] ~= 0 then
+			return -1
+		end
+	end
+	return r
+end
+
+do
+	for i = 0, 23 do
+		matrix_facedirs[matrix_1p_1n_0_hash(facedir_matrices[i])] = i
+	end
 end
 
 function core.matrix_to_facedir(m)
-	--todo
+	return matrix_facedirs[matrix_1p_1n_0_hash(m)]
 end
 
 function core.dir_to_wallmounted(dir)
