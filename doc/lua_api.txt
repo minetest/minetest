@@ -2559,6 +2559,8 @@ Matrices can be used for rotation.
            m_31, m_32, m_33}
 * `matrix.new(m)`:
     * A copy of the matrix `m` is returned.
+* `matrix.identity`:
+    * This is the identity matrix. Do not modify it.
 * `matrix.equals(m1, m2)`:
     * Returns a boolean, `true` if the matrices are identical.
 * `matrix.index(m, l, c)`:
@@ -4505,8 +4507,11 @@ Item handling
 * `minetest.facedir_to_dir(facedir)`
     * Convert a facedir back into a vector aimed directly out the "back" of a
       node.
-* `minetest.facedir_to_matrix(facedir)`
+* `minetest.facedir_to_matrix(facedir[, nocopy])`
     * Convert a facedir into a rotation matrix. Also see Matrices.
+    * `nocopy` is `false` by default. If you set it to `true`, a reference is
+      returned that must not be edited. However, this is faster as it does not
+      involve copying.
 * `minetest.matrix_to_facedir(matrix)`
     * Convert a matrix back to a facedir.
     * Returns `nil` if there is no suitable value.
@@ -4516,8 +4521,11 @@ Item handling
 * `minetest.wallmounted_to_dir(wallmounted)`
     * Convert a wallmounted value back into a vector aimed directly out the
       "back" of a node.
-* `minetest.wallmounted_to_matrix(wallmounted)`
+* `minetest.wallmounted_to_matrix(wallmounted[, nocopy])`
     * Convert a wallmounted into a rotation matrix. Also see Matrices.
+    * `nocopy` is `false` by default. If you set it to `true`, a reference is
+      returned that must not be edited. However, this is faster as it does not
+      involve copying.
 * `minetest.matrix_to_wallmounted(matrix)`
     * Convert a matrix back to a wallmounted.
     * Returns `nil` if there is no suitable value.

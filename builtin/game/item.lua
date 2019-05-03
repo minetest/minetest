@@ -115,7 +115,7 @@ end
 local facedir_matrices = {}
 do
 	local m_dirs = {
-		[0] = {1, 0, 0, 0, 1, 0, 0, 0, 1},
+		[0] = matrix.identity,
 		matrix.rotation_around_x(math.pi / 2),
 		matrix.rotation_around_x(-math.pi / 2),
 		matrix.rotation_around_z(-math.pi / 2),
@@ -123,7 +123,7 @@ do
 		matrix.rotation_around_z(-math.pi)
 	}
 	local m_rots = {
-		[0] = {1, 0, 0, 0, 1, 0, 0, 0, 1},
+		[0] = matrix.identity,
 		matrix.rotation_around_z(math.pi / 2),
 		matrix.rotation_around_z(math.pi),
 		matrix.rotation_around_z(math.pi * 3 / 2)
@@ -135,7 +135,7 @@ do
 	end
 end
 
-function core.facedir_to_matrix(facedir)
+function core.facedir_to_matrix(facedir, nocopy)
 	--~ --todo
 	--~ --[[
 	--~ from lua_api.txt:
@@ -175,7 +175,7 @@ function core.facedir_to_matrix(facedir)
 	--~ -- return the combined rotation matrix
 	--~ return matrix.multiply(m_dir, m_rot) -- the order might be wrong here; todo
 
-	return matrix.new(facedir_matrices[facedir])
+	return nocopy and facedir_matrices[facedir] or matrix.new(facedir_matrices[facedir])
 end
 
 local matrix_facedirs = {}
@@ -195,10 +195,8 @@ local function matrix_1p_1n_0_hash(m)
 	return r
 end
 
-do
-	for i = 0, 23 do
-		matrix_facedirs[matrix_1p_1n_0_hash(facedir_matrices[i])] = i
-	end
+for i = 0, 23 do
+	matrix_facedirs[matrix_1p_1n_0_hash(facedir_matrices[i])] = i
 end
 
 function core.matrix_to_facedir(m)
@@ -250,8 +248,8 @@ local wallmounted_to_facedir = {
 	4 + 2
 }
 
-function core.wallmounted_to_matrix(wallmounted)
-	return core.facedir_to_matrix(wallmounted_to_facedir[wallmounted])
+function core.wallmounted_to_matrix(wallmounted, nocopy)
+	return core.facedir_to_matrix(wallmounted_to_facedir[wallmounted], nocopy)
 end
 
 function core.matrix_to_wallmounted(m)
