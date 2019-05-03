@@ -26,7 +26,7 @@ local function run_hpchangereason_tests(player)
 	player:set_hp(10, { type = "fall", df = 3458973454 })
 	assert(expect == nil)
 end
-minetest.register_on_player_hpchange(function(_, _, reason)
+minetest.register_on_player_hpchange(function(player, hp, reason)
 	if not expect then
 		return
 	end
