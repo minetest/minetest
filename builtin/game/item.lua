@@ -114,7 +114,7 @@ end
 
 local facedir_matrices = {}
 do
-	-- the following is taken from rotateMeshBy6dFacedir in src/client/mesh.cpp
+	-- the following rotations are taken from rotateMeshBy6dFacedir in src/client/mesh.cpp
 	local m_dirs = {
 		[0] = matrix.identity,
 		matrix.rotation_around_x(math.pi / 2),
@@ -137,61 +137,24 @@ do
 end
 
 function core.facedir_to_matrix(facedir, nocopy)
-	--~ --todo
-	--~ --[[
-	--~ from lua_api.txt:
-	--~ * Values range 0 - 23
-	--~ * facedir / 4 = axis direction:
-	  --~ 0 = y+,   1 = z+,   2 = z-,   3 = x+,   4 = x-,   5 = y-
-	--~ * facedir modulo 4 = rotation around that axis
-	--~ ]]
-
-	--~ -- get the parts from facedir
-	--~ local dir = math.floor(facedir / 4)
-	--~ local rot = facedir % 4
-
-	--~ -- the following is taken from rotateMeshBy6dFacedir in src/client/mesh.cpp
-	--~ -- the signs of the angles probably have to be swapped because minetest has
-	--~ -- a left-handed coordinate system
-
-	--~ -- make the axis direction rotation matrix
-	--~ local m_dir
-	--~ if dir == 0 then
-		--~ m_dir = matrix.identity
-	--~ elseif dir == 1 then
-		--~ m_dir = matrix.rotation_around_x(math.pi / 2)
-	--~ elseif dir == 2 then
-		--~ m_dir = matrix.rotation_around_x(-math.pi / 2)
-	--~ elseif dir == 3 then
-		--~ m_dir = matrix.rotation_around_z(-math.pi / 2)
-	--~ elseif dir == 4 then
-		--~ m_dir = matrix.rotation_around_z(math.pi / 2)
-	--~ else
-		--~ m_rot = matrix.rotation_around_z(-math.pi)
-	--~ end
-
-	--~ -- make the rotation around axis rotation matrix
-	--~ local m_rot = matrix.rotation_around_y(math.pi * rot / 2)
-
-	--~ -- return the combined rotation matrix
-	--~ return matrix.multiply(m_dir, m_rot) -- the order might be wrong here; todo
-
 	return nocopy and facedir_matrices[facedir] or matrix.new(facedir_matrices[facedir])
 end
 
 local matrix_facedirs = {}
 
+-- returns a number asuming that the matrix has only -1, 0 and 1
 local function matrix_1p_1n_0_hash(m)
 	local r = 0
 	for i = 1, 9 do
-		--~ r = r + (m[i] + 1) * 3^(i-1)
-		if m[i] == 1 then
-			r = r + 1 * 3^(i-1)
-		elseif m[i] == -1 then
-			r = r + 2 * 3^(i-1)
-		elseif m[i] ~= 0 then
-			return -1
-		end
+		r = r + (m[i] + 1) * 3^(i-1)
+		-- wrong values are possible, eg. m[i] could be 2. the following would fix that:
+		--~ if m[i] == 0 then
+			--~ r = r + 1 * 3^(i-1)
+		--~ elseif m[i] == 1 then
+			--~ r = r + 2 * 3^(i-1)
+		--~ elseif m[i] ~= -1 then
+			--~ return -1
+		--~ end
 	end
 	return r
 end

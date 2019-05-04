@@ -43,12 +43,6 @@ local function multiply_scalar(m, a)
 end
 
 local function vector_matrix_multiply(m1, v)
-	--~ local m2 = matrix.new()
-	--~ m2[1] = v.x
-	--~ m2[4] = v.y
-	--~ m2[7] = v.z
-	--~ local m3 = matrix.multiply(m1, m2)
-	--~ return vector.new(m3[1], m3[4], m3[7])
 	return {
 		x = m1[1] * v.x + m1[2] * v.y + m1[3] * v.z,
 		y = m1[4] * v.x + m1[5] * v.y + m1[6] * v.z,
@@ -126,7 +120,7 @@ function matrix.rotation_around_z(angle)
 	        0,  0, 1}
 end
 
-function matrix.rotation_around_vector(v, angle)
+function matrix.rotation_around_vector(v, angle) --todo: test this and correct it if necessary
 	local length_v = vector.length(v)
 	v = vector.divide(v, length_v)
 	angle = angle or length_v
@@ -149,5 +143,5 @@ end
 
 function matrix.from_yaw_pitch_roll(v)
 	return matrix.multiply(matrix.rotation_around_y(v.y),
-			matrix.rotation_around_x(v.x),matrix.rotation_around_z(v.z)) -- the order might be wrong
+			matrix.rotation_around_x(v.x), matrix.rotation_around_z(v.z)) -- the order might be wrong; todo:test
 end
