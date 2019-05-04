@@ -43,12 +43,17 @@ local function multiply_scalar(m, a)
 end
 
 local function vector_matrix_multiply(m1, v)
-	local m2 = matrix.new()
-	m2[1] = v.x
-	m2[2] = v.y
-	m2[3] = v.z
-	local m3 = matrix.multiply(m1, m2)
-	return vector.new(m3[1], m3[4], m3[7])
+	--~ local m2 = matrix.new()
+	--~ m2[1] = v.x
+	--~ m2[4] = v.y
+	--~ m2[7] = v.z
+	--~ local m3 = matrix.multiply(m1, m2)
+	--~ return vector.new(m3[1], m3[4], m3[7])
+	return {
+		x = m1[1] * v.x + m1[2] * v.y + m1[3] * v.z,
+		y = m1[4] * v.x + m1[5] * v.y + m1[6] * v.z,
+		z = m1[7] * v.x + m1[8] * v.y + m1[9] * v.z,
+	}
 end
 
 function matrix.multiply(m1, m2)
@@ -63,7 +68,7 @@ function matrix.multiply(m1, m2)
 			local i = (l - 1) * 3 + c
 			m3[i] = 0
 			for k = 1, 3 do
-				m3[i] = m3[i] + m1[(l - 1) * 3 + k] + m2[(k - 1) * 3 + c]
+				m3[i] = m3[i] + m1[(l - 1) * 3 + k] * m2[(k - 1) * 3 + c]
 			end
 		end
 	end
