@@ -100,7 +100,7 @@ public:
 	bool makes_footstep_sound = true;
 
 	int last_animation = NO_ANIM;
-	float last_animation_speed;
+	float last_animation_speed = 0.0f;
 
 	std::string hotbar_image = "";
 	std::string hotbar_selected_image = "";
@@ -148,6 +148,8 @@ public:
 	void setZoomFOV(float zoom_fov) { m_zoom_fov = zoom_fov; }
 
 	bool getAutojump() const { return m_autojump; }
+
+	bool isDead() const { return hp <= 0; }
 
 	inline void addVelocity(const v3f &vel)
 	{

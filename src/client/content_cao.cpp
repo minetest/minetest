@@ -1541,6 +1541,9 @@ void GenericCAO::processMessage(const std::string &data)
 
 		m_hp = result_hp;
 
+		if (m_is_local_player)
+			m_env->getLocalPlayer()->hp = m_hp;
+
 		if (damage > 0)
 		{
 			if (m_hp <= 0)

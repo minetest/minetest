@@ -259,7 +259,7 @@ void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d,
 	}
 
 	/*
-	        Check if player is climbing
+			Check if player is climbing
 	*/
 
 
@@ -489,7 +489,7 @@ void LocalPlayer::applyControl(float dtime, Environment *env)
 	PlayerSettings &player_settings = getPlayerSettings();
 
 	// All vectors are relative to the player's yaw,
-	// (and pitch if pitch fly mode enabled),
+	// (and pitch if pitch move mode enabled),
 	// and will be rotated at the end
 	v3f speedH = v3f(0,0,0); // Horizontal (X, Z)
 	v3f speedV = v3f(0,0,0); // Vertical (Y)
@@ -930,11 +930,11 @@ void LocalPlayer::old_move(f32 dtime, Environment *env, f32 pos_max_d,
 	bool touching_ground_was = touching_ground;
 	touching_ground = result.touching_ground;
 
-    //bool standing_on_unloaded = result.standing_on_unloaded;
+	//bool standing_on_unloaded = result.standing_on_unloaded;
 
 	/*
 		Check the nodes under the player to see from which node the
-		player is sneaking from, if any.  If the node from under
+		player is sneaking from, if any. If the node from under
 		the player has been removed, the player falls.
 	*/
 	f32 position_y_mod = 0.05 * BS;
