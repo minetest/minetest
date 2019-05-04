@@ -2466,7 +2466,7 @@ void Game::updatePlayerControl(const CameraOrientation &cam)
 	}
 
 	// autoforward if set: simulate "up" key
-	if (player->getPlayerSettings().continuous_forward) {
+	if (player->getPlayerSettings().continuous_forward && !player->isDead()) {
 		control.up = true;
 		keypress_bits |= 1U << 0;
 	}
@@ -2483,7 +2483,7 @@ inline void Game::step(f32 *dtime)
 	bool can_be_and_is_paused =
 			(simple_singleplayer_mode && g_menumgr.pausesGame());
 
-	if (can_be_and_is_paused) {	// This is for a singleplayer server
+	if (can_be_and_is_paused) { // This is for a singleplayer server
 		*dtime = 0;             // No time passes
 	} else {
 		if (server)
