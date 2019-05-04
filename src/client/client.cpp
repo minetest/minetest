@@ -1244,8 +1244,12 @@ void Client::sendPlayerPos()
 	u8 camera_fov    = map.getCameraFov();
 	u8 wanted_range  = map.getControl().wanted_range;
 
-	// Save bandwidth by only updating position when something changed
-	if(myplayer->last_position        == myplayer->getPosition() &&
+	// Save bandwidth by only updating position when
+	// player is not dead and something changed
+	if (myplayer->isDead())
+		return;
+
+	if (myplayer->last_position == myplayer->getPosition() &&
 			myplayer->last_speed        == myplayer->getSpeed()    &&
 			myplayer->last_pitch        == myplayer->getPitch()    &&
 			myplayer->last_yaw          == myplayer->getYaw()      &&
