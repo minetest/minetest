@@ -144,7 +144,7 @@ function matrix.rotation_around_z(angle)
 	        0,  0, 1}
 end
 
-function matrix.rotation_around_vector(v, angle) --todo: test this and correct it if necessary
+function matrix.rotation_around_vector(v, angle)
 	local length_v = vector.length(v)
 	v = vector.divide(v, length_v)
 	angle = angle or length_v
