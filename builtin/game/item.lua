@@ -114,6 +114,7 @@ end
 
 local facedir_matrices = {}
 do
+	-- the following is taken from rotateMeshBy6dFacedir in src/client/mesh.cpp
 	local m_dirs = {
 		[0] = matrix.identity,
 		matrix.rotation_around_x(math.pi / 2),
@@ -124,14 +125,14 @@ do
 	}
 	local m_rots = {
 		[0] = matrix.identity,
-		matrix.rotation_around_z(math.pi / 2),
-		matrix.rotation_around_z(math.pi),
-		matrix.rotation_around_z(math.pi * 3 / 2)
+		matrix.rotation_around_y(math.pi / 2),
+		matrix.rotation_around_y(math.pi),
+		matrix.rotation_around_y(math.pi * 3 / 2)
 	}
 	for facedir = 0, 23 do
 		local dir = math.floor(facedir / 4)
 		local rot = facedir % 4
-		facedir_matrices[facedir] = matrix.multiply(m_dirs[dir], m_rots[rot]) -- the order might be wrong here; todo
+		facedir_matrices[facedir] = matrix.multiply(m_dirs[dir], m_rots[rot])
 	end
 end
 
@@ -149,7 +150,7 @@ function core.facedir_to_matrix(facedir, nocopy)
 	--~ local dir = math.floor(facedir / 4)
 	--~ local rot = facedir % 4
 
-	--~ -- the following is taken from rotateMeshBy6dFacedir in mesh.cpp
+	--~ -- the following is taken from rotateMeshBy6dFacedir in src/client/mesh.cpp
 	--~ -- the signs of the angles probably have to be swapped because minetest has
 	--~ -- a left-handed coordinate system
 
@@ -170,7 +171,7 @@ function core.facedir_to_matrix(facedir, nocopy)
 	--~ end
 
 	--~ -- make the rotation around axis rotation matrix
-	--~ local m_rot = matrix.rotation_around_z(math.pi * rot / 2)
+	--~ local m_rot = matrix.rotation_around_y(math.pi * rot / 2)
 
 	--~ -- return the combined rotation matrix
 	--~ return matrix.multiply(m_dir, m_rot) -- the order might be wrong here; todo

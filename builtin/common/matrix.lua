@@ -97,25 +97,30 @@ end
 -- ergo the rotation will be clockwise
 -- (see wikipedia for details)
 
+local round_exactness = 100000
+local function round(a)
+	return math.floor(a * round_exactness + 0.5) / round_exactness
+end
+
 function matrix.rotation_around_x(angle)
-	local s = math.sin(angle)
-	local c = math.cos(angle)
+	local s = round(math.sin(angle))
+	local c = round(math.cos(angle))
 	return {1, 0,  0,
             0, c, -s,
 	        0, s,  c}
 end
 
 function matrix.rotation_around_y(angle)
-	local s = math.sin(angle)
-	local c = math.cos(angle)
+	local s = round(math.sin(angle))
+	local c = round(math.cos(angle))
 	return { c, 0, s,
              0, 1, 0,
 	        -s, 0, c}
 end
 
 function matrix.rotation_around_z(angle)
-	local s = math.sin(angle)
-	local c = math.cos(angle)
+	local s = round(math.sin(angle))
+	local c = round(math.cos(angle))
 	return {c, -s, 0,
             s,  c, 0,
 	        0,  0, 1}
@@ -126,8 +131,8 @@ function matrix.rotation_around_vector(v, angle)
 	v = vector.divide(v, length_v)
 	angle = angle or length_v
 
-	local s = math.sin(angle)
-	local c = math.cos(angle)
+	local s = round(math.sin(angle))
+	local c = round(math.cos(angle))
 	local omc = 1 - c
 	return {
 		v.x * v.x * omc + c,       v.x * v.y * omc - v.z * s, v.x * v.z * omc + v.y * s,
