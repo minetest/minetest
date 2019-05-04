@@ -13,6 +13,30 @@ end
 
 matrix.identity = {1, 0, 0, 0, 1, 0, 0, 0, 1}
 
+function matrix.floor(m)
+	local mr = {}
+	for i = 1, 9 do
+		mr[i] = math.floor(m[i])
+	end
+	return mr
+end
+
+function matrix.round(m)
+	local mr = {}
+	for i = 1, 9 do
+		mr[i] = math.floor(m[i] + 0.5)
+	end
+	return mr
+end
+
+function matrix.apply(m, func)
+	local mr = {}
+	for i = 1, 9 do
+		mr[i] = func(m[i])
+	end
+	return mr
+end
+
 function matrix.equals(m1, m2)
 	for i = 1, 9 do
 		if m1[i] ~= m2[i] then
@@ -142,6 +166,6 @@ function matrix.to_yaw_pitch_roll(m)
 end
 
 function matrix.from_yaw_pitch_roll(v)
-	return matrix.multiply(matrix.rotation_around_y(v.y),
-			matrix.rotation_around_x(v.x), matrix.rotation_around_z(v.z)) -- the order might be wrong; todo:test
+	return matrix.multiply(matrix.multiply(matrix.rotation_around_y(-v.y),
+			matrix.rotation_around_x(-v.x)), matrix.rotation_around_z(-v.z))
 end
