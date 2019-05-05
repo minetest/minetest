@@ -115,7 +115,7 @@ end
 -- ergo the rotation will be clockwise
 -- (see wikipedia for details)
 
-local round_exactness = 100000
+local round_exactness = 1000000
 local function round(a)
 	return math.floor(a * round_exactness + 0.5) / round_exactness
 end
@@ -159,10 +159,44 @@ function matrix.rotation_around_vector(v, angle)
 	}
 end
 
+--~ function matrix.to_yaw_pitch_roll(m)
+	--~ local r = vector.new()
+	--~ if round(math.abs(m[6])) ~= 1 then
+		--~ r.x = -math.asin(m[6])
+		--~ local cosx = math.cos(r.x)
+		--~ r.y = math.atan2(m[3] / cosx, m[9] / cosx)
+		--~ r.z = math.atan2(m[4] / cosx, m[5] / cosx)
+	--~ elseif m[6] < 0 then -- gimbal lock
+		--~ r.x = math.pi / 2
+		--~ r.z = 0
+		--~ r.y = math.atan2(m[2], m[1])
+	--~ else
+		--~ r.x = -math.pi / 2
+		--~ r.z = 0
+		--~ r.y = math.atan2(-m[2], m[1])
+	--~ end
+	--~ r.x = -r.x
+	--~ r.y = -r.y
+	--~ r.z = -r.z
+	--~ return r
+--~ end
 function matrix.to_yaw_pitch_roll(m)
-	--todo
-	-- I do not know how to do this yet.
-	return vector.new()
+	local r = vector.new()
+	if round(math.abs(m[6])) ~= 1 then
+		r.x = math.asin(m[6])
+		local cosx = math.cos(r.x)
+		r.y = math.atan2(-m[3] / cosx, m[9] / cosx)
+		r.z = math.atan2(-m[4] / cosx, m[5] / cosx)
+	elseif m[6] > 0 then -- gimbal lock
+		r.x = math.pi / 2
+		r.z = 0
+		r.y = math.atan2(m[2], m[1])
+	else
+		r.x = -math.pi / 2
+		r.z = 0
+		r.y = math.atan2(m[7], m[8])
+	end
+	return r
 end
 
 function matrix.from_yaw_pitch_roll(v)
