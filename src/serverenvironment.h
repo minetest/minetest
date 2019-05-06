@@ -373,6 +373,17 @@ public:
  	// Clear active blocks list
  	void clearActiveBlocks();
 
+	/*
+		Convert objects that are not in active blocks to static.
+
+		If m_known_by_count != 0, active object is not deleted, but static
+		data is still updated.
+
+		If force_delete is set, active object is deleted nevertheless. It
+		shall only be set so in the destructor of the environment.
+	*/
+	void deactivateFarObjects(bool force_delete);
+
 private:
 
 	/**
@@ -410,17 +421,6 @@ private:
 		Convert stored objects from block to active
 	*/
 	void activateObjects(MapBlock *block, u32 dtime_s);
-
-	/*
-		Convert objects that are not in active blocks to static.
-
-		If m_known_by_count != 0, active object is not deleted, but static
-		data is still updated.
-
-		If force_delete is set, active object is deleted nevertheless. It
-		shall only be set so in the destructor of the environment.
-	*/
-	void deactivateFarObjects(bool force_delete);
 
 	/*
 		A few helpers used by the three above methods

@@ -1284,7 +1284,12 @@ int ModApiEnvMod::l_map_create_backup(lua_State *L)
 	GET_ENV_PTR;
 	const char *backup_name = luaL_checkstring(L, 1);
 	ServerMap &map = env->getServerMap();
+
+	// Force loaded entities to hibernate
 	env->clearActiveBlocks();
+	env->deactivateFarObjects(false);
+	map.unloadUnreferencedBlocks(NULL);
+
 	map.createBackup(backup_name);
 	return 0;
 }
@@ -1375,7 +1380,7 @@ void ModApiEnvMod::Initialize(lua_State *L, int top)
 	API_FCT(map_create_backup);
 	API_FCT(map_list_backups);
 	API_FCT(map_restore_backup);
-	API_FCT(map_delete_backup);	
+	API_FCT(map_delete_backup);
 }
 
 void ModApiEnvMod::InitializeClient(lua_State *L, int top)
