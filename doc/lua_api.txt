@@ -2551,12 +2551,14 @@ Minetest has helpers for 3x3 matrices.
 Matrices can be used for rotation.
 
 * `matrix.new()`:
-    * returns a matrix filled with zeros
+    * Returns a matrix filled with zeros.
 * `matrix.new(m_11, m_12, m_13, m_21, m_22, m_23, m_31, m_32, m_33)`:
-    * returns a matrix
+    * Returns a matrix:
+      ```
       M = {m_11, m_12, m_13,
            m_21, m_22, m_23,
            m_31, m_32, m_33}
+      ```
 * `matrix.new(m)`:
     * A copy of the matrix `m` is returned.
 * `matrix.identity`:
@@ -2598,9 +2600,9 @@ Matrices can be used for rotation.
     * `angle` is given in radians.
     * Returns a rotation matrix around an axis in the direction of `v`.
 * `matrix.to_yaw_pitch_roll(m)`:
-    * Returns a vector `{x = pitch, y = yaw, z = roll}`.
+    * Returns a vector filled with euler angles `{x = pitch, y = yaw, z = roll}`.
 * `matrix.from_yaw_pitch_roll(v)`:
-    * bla
+    * Returns a matrix where the euler angles given in `v` were applied.
 
 
 
