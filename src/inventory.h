@@ -41,7 +41,7 @@ struct ItemStack
 
 	// Serialization
 	void serialize(std::ostream &os) const;
-	// Deserialization.  Pass itemdef unless you don't want aliases resolved.
+	// Deserialization. Pass itemdef unless you don't want aliases resolved.
 	void deSerialize(std::istream &is, IItemDefManager *itemdef = NULL);
 	void deSerialize(const std::string &s, IItemDefManager *itemdef = NULL);
 
@@ -160,6 +160,19 @@ struct ItemStack
 
 	// Similar to takeItem, but keeps this ItemStack intact.
 	ItemStack peekItem(u32 peekcount) const;
+
+	bool operator ==(const ItemStack &s) const
+	{
+		return (this->name     == s.name &&
+				this->count    == s.count &&
+				this->wear     == s.wear &&
+				this->metadata == s.metadata);
+	}
+
+	bool operator !=(const ItemStack &s) const
+	{
+		return !(*this == s);
+	}
 
 	/*
 		Properties
