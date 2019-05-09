@@ -115,9 +115,9 @@ end
 -- ergo the rotation will be clockwise
 -- (see wikipedia for details)
 
-local round_exactness = 1000000
+local rounding_precision = 1000000
 local function round(a)
-	return math.floor(a * round_exactness + 0.5) / round_exactness
+	return math.floor(a * rounding_precision + 0.5) / rounding_precision
 end
 
 function matrix.rotation_around_x(angle)
