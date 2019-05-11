@@ -508,11 +508,9 @@ bool InventoryList::operator == (const InventoryList &other) const
 		return false;
 	if(m_name != other.m_name)
 		return false;
-	for(u32 i = 0; i < m_items.size(); i++)
-	{
-		if(m_items[i] != other.m_items[i])
+	for (u32 i = 0; i < m_items.size(); i++)
+		if (m_items[i] != other.m_items[i])
 			return false;
-	}
 
 	return true;
 }
