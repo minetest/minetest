@@ -311,7 +311,6 @@ bool ItemStack::itemFits(ItemStack newitem,
 		newitem.clear();
 	}
 	// Else the item does not fit fully. Return the rest.
-	// the rest.
 	else
 	{
 		u16 freespace = freeSpace(itemdef);
