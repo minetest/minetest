@@ -2563,10 +2563,6 @@ Matrices can be used for rotation.
     * A copy of the matrix `m` is returned.
 * `matrix.identity`:
     * This is the identity matrix. Do not modify it.
-* `matrix.floor(m)`:
-    * Returns a matrix, each component rounded down.
-* `matrix.round(m)`:
-    * Returns a matrix, each component rounded to nearest integer.
 * `matrix.apply(m, func)`:
     * Returns a matrix where the function `func` has been applied to each
       component.

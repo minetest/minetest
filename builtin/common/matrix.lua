@@ -13,22 +13,6 @@ end
 
 matrix.identity = {1, 0, 0, 0, 1, 0, 0, 0, 1}
 
-function matrix.floor(m)
-	local mr = {}
-	for i = 1, 9 do
-		mr[i] = math.floor(m[i])
-	end
-	return mr
-end
-
-function matrix.round(m)
-	local mr = {}
-	for i = 1, 9 do
-		mr[i] = math.floor(m[i] + 0.5)
-	end
-	return mr
-end
-
 function matrix.apply(m, func)
 	local mr = {}
 	for i = 1, 9 do
