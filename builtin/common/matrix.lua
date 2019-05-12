@@ -1,7 +1,7 @@
 
-matrix = {}
+matrix3 = {}
 
-function matrix.new(a, ...)
+function matrix3.new(a, ...)
 	if not a then
 		return {0, 0, 0, 0, 0, 0, 0, 0, 0}
 	elseif type(a) ~= "table" then
@@ -11,9 +11,9 @@ function matrix.new(a, ...)
 	end
 end
 
-matrix.identity = {1, 0, 0, 0, 1, 0, 0, 0, 1}
+matrix3.identity = {1, 0, 0, 0, 1, 0, 0, 0, 1}
 
-function matrix.apply(m, func)
+function matrix3.apply(m, func)
 	local mr = {}
 	for i = 1, 9 do
 		mr[i] = func(m[i])
@@ -21,7 +21,7 @@ function matrix.apply(m, func)
 	return mr
 end
 
-function matrix.equals(m1, m2)
+function matrix3.equals(m1, m2)
 	for i = 1, 9 do
 		if m1[i] ~= m2[i] then
 			return false
@@ -30,11 +30,11 @@ function matrix.equals(m1, m2)
 	return true
 end
 
-function matrix.index(m, l, c)
+function matrix3.index(m, l, c)
 	return m[(l - 1) * 3 + c]
 end
 
-function matrix.add(m1, m2)
+function matrix3.add(m1, m2)
 	local m3 = {}
 	for i = 1, 9 do
 		m3[i] = m1[i] + m2[i]
@@ -50,7 +50,7 @@ local function multiply_scalar(m, a)
 	return mr
 end
 
-local function vector_matrix_multiply(m1, v)
+local function vector_matrix3_multiply(m1, v)
 	return {
 		x = m1[1] * v.x + m1[2] * v.y + m1[3] * v.z,
 		y = m1[4] * v.x + m1[5] * v.y + m1[6] * v.z,
@@ -58,11 +58,11 @@ local function vector_matrix_multiply(m1, v)
 	}
 end
 
-function matrix.multiply(m1, m2)
+function matrix3.multiply(m1, m2)
 	if type(m2) ~= "table" then
 		return multiply_scalar(m1, m2)
 	elseif m2.x then
-		return vector_matrix_multiply(m1, m2)
+		return vector_matrix3_multiply(m1, m2)
 	end
 	local m3 = {}
 	for l = 1, 3 do
@@ -77,19 +77,19 @@ function matrix.multiply(m1, m2)
 	return m3
 end
 
-function matrix.tensor_multiply(a, b)
-	local m1 = matrix.new()
+function matrix3.tensor_multiply(a, b)
+	local m1 = matrix3.new()
 	m1[1] = a.x
 	m1[4] = a.y
 	m1[7] = a.z
-	local m2 = matrix.new()
+	local m2 = matrix3.new()
 	m2[1] = a.x
 	m2[2] = a.y
 	m2[3] = a.z
-	return matrix.multiply(m1, m2)
+	return matrix3.multiply(m1, m2)
 end
 
-function matrix.transpose(m)
+function matrix3.transpose(m)
 	return {m[1], m[4], m[7],
 	        m[2], m[5], m[8],
 	        m[3], m[6], m[9]}
@@ -120,7 +120,7 @@ local function cos(x)
 	end
 end
 
-function matrix.rotation_around_x(angle)
+function matrix3.rotation_around_x(angle)
 	local s = sin(angle)
 	local c = cos(angle)
 	return {1, 0,  0,
@@ -128,7 +128,7 @@ function matrix.rotation_around_x(angle)
 	        0, s,  c}
 end
 
-function matrix.rotation_around_y(angle)
+function matrix3.rotation_around_y(angle)
 	local s = sin(angle)
 	local c = cos(angle)
 	return { c, 0, s,
@@ -136,7 +136,7 @@ function matrix.rotation_around_y(angle)
 	        -s, 0, c}
 end
 
-function matrix.rotation_around_z(angle)
+function matrix3.rotation_around_z(angle)
 	local s = sin(angle)
 	local c = cos(angle)
 	return {c, -s, 0,
@@ -144,7 +144,7 @@ function matrix.rotation_around_z(angle)
 	        0,  0, 1}
 end
 
-function matrix.rotation_around_vector(v, angle)
+function matrix3.rotation_around_vector(v, angle)
 	local length_v = vector.length(v)
 	v = vector.divide(v, length_v)
 	angle = angle or length_v
@@ -159,7 +159,7 @@ function matrix.rotation_around_vector(v, angle)
 	}
 end
 
---~ function matrix.to_yaw_pitch_roll(m)
+--~ function matrix3.to_yaw_pitch_roll(m)
 	--~ local r = vector.new()
 	--~ if round(math.abs(m[6])) ~= 1 then
 		--~ r.x = -math.asin(m[6])
@@ -180,7 +180,7 @@ end
 	--~ r.z = -r.z
 	--~ return r
 --~ end
---~ function matrix.to_yaw_pitch_roll(m)
+--~ function matrix3.to_yaw_pitch_roll(m)
 	--~ local r = vector.new()
 	--~ if round(math.abs(m[6])) ~= 1 then
 		--~ r.x = math.asin(m[6])
@@ -198,7 +198,7 @@ end
 	--~ end
 	--~ return r
 --~ end
-function matrix.to_yaw_pitch_roll(m)
+function matrix3.to_yaw_pitch_roll(m)
 	local r = vector.new()
 	r.y = math.atan2(-m[3], m[9])
 	local c2 = math.sqrt(m[4]^2 + m[5]^2)
@@ -209,7 +209,7 @@ function matrix.to_yaw_pitch_roll(m)
 	return r
 end
 
-function matrix.from_yaw_pitch_roll(v)
-	return matrix.multiply(matrix.multiply(matrix.rotation_around_y(-v.y),
-			matrix.rotation_around_x(-v.x)), matrix.rotation_around_z(-v.z))
+function matrix3.from_yaw_pitch_roll(v)
+	return matrix3.multiply(matrix3.multiply(matrix3.rotation_around_y(-v.y),
+			matrix3.rotation_around_x(-v.x)), matrix3.rotation_around_z(-v.z))
 end

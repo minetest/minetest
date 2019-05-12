@@ -116,34 +116,34 @@ local facedir_matrices = {}
 do
 	-- the following rotations are taken from rotateMeshBy6dFacedir in src/client/mesh.cpp
 	local m_dirs = {
-		[0] = matrix.identity,
-		matrix.rotation_around_x(math.pi / 2),
-		matrix.rotation_around_x(-math.pi / 2),
-		matrix.rotation_around_z(-math.pi / 2),
-		matrix.rotation_around_z(math.pi / 2),
-		matrix.rotation_around_z(-math.pi)
+		[0] = matrix3.identity,
+		matrix3.rotation_around_x(math.pi / 2),
+		matrix3.rotation_around_x(-math.pi / 2),
+		matrix3.rotation_around_z(-math.pi / 2),
+		matrix3.rotation_around_z(math.pi / 2),
+		matrix3.rotation_around_z(-math.pi)
 	}
 	local m_rots = {
-		[0] = matrix.identity,
-		matrix.rotation_around_y(math.pi / 2),
-		matrix.rotation_around_y(math.pi),
-		matrix.rotation_around_y(math.pi * 3 / 2)
+		[0] = matrix3.identity,
+		matrix3.rotation_around_y(math.pi / 2),
+		matrix3.rotation_around_y(math.pi),
+		matrix3.rotation_around_y(math.pi * 3 / 2)
 	}
 	for facedir = 0, 23 do
 		local dir = math.floor(facedir / 4)
 		local rot = facedir % 4
-		facedir_matrices[facedir] = matrix.multiply(m_dirs[dir], m_rots[rot])
+		facedir_matrices[facedir] = matrix3.multiply(m_dirs[dir], m_rots[rot])
 	end
 end
 
-function core.facedir_to_matrix(facedir, nocopy)
-	return nocopy and facedir_matrices[facedir] or matrix.new(facedir_matrices[facedir])
+function core.facedir_to_matrix3(facedir, nocopy)
+	return nocopy and facedir_matrices[facedir] or matrix3.new(facedir_matrices[facedir])
 end
 
-local matrix_facedirs = {}
+local matrix3_facedirs = {}
 
--- returns a number asuming that the matrix has only -1, 0 and 1
-local function matrix_1p_1n_0_hash(m)
+-- returns a number asuming that the matrix3 has only -1, 0 and 1
+local function matrix3_1p_1n_0_hash(m)
 	local r = 0
 	for i = 1, 9 do
 		r = r + (m[i] + 1) * 3^(i-1)
@@ -160,11 +160,11 @@ local function matrix_1p_1n_0_hash(m)
 end
 
 for i = 0, 23 do
-	matrix_facedirs[matrix_1p_1n_0_hash(facedir_matrices[i])] = i
+	matrix3_facedirs[matrix3_1p_1n_0_hash(facedir_matrices[i])] = i
 end
 
-function core.matrix_to_facedir(m)
-	return matrix_facedirs[matrix_1p_1n_0_hash(m)]
+function core.matrix3_to_facedir(m)
+	return matrix3_facedirs[matrix3_1p_1n_0_hash(m)]
 end
 
 function core.dir_to_wallmounted(dir)
@@ -212,12 +212,12 @@ local wallmounted_to_facedir = {
 	4 + 2
 }
 
-function core.wallmounted_to_matrix(wallmounted, nocopy)
-	return core.facedir_to_matrix(wallmounted_to_facedir[wallmounted], nocopy)
+function core.wallmounted_to_matrix3(wallmounted, nocopy)
+	return core.facedir_to_matrix3(wallmounted_to_facedir[wallmounted], nocopy)
 end
 
-function core.matrix_to_wallmounted(m)
-	local f = core.matrix_to_facedir(m)
+function core.matrix3_to_wallmounted(m)
+	local f = core.matrix3_to_facedir(m)
 	if not f then
 		return nil -- no suitable facedir value found
 	end
@@ -226,7 +226,7 @@ function core.matrix_to_wallmounted(m)
 			return i
 		end
 	end
-	return nil -- matrix was not from wallmounted but from facedir
+	return nil -- matrix3 was not from wallmounted but from facedir
 end
 
 function core.dir_to_yaw(dir)
