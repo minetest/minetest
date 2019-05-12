@@ -94,7 +94,7 @@ int ModApiHttp::l_http_fetch_async(lua_State *L)
 	HTTPFetchRequest req;
 	read_http_fetch_request(L, req);
 
-	actionstream << "Mod performs HTTP request with URL " << req.url << std::endl;
+	infostream << "Mod performs HTTP request with URL " << req.url << std::endl;
 	httpfetch_async(req);
 
 	// Convert handle to hex string since lua can't handle 64-bit integers
