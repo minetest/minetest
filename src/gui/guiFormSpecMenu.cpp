@@ -2280,15 +2280,13 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 
 	/* Copy of the "real_coordinates" element for before the form size. */
 	mydata.real_coordinates = false;
-	for (; i< elements.size(); i++) {
-		if (!elements[i].empty()) {
-			std::vector<std::string> parts = split(elements[i], '[');
-			std::string name = trim(parts[0]);
-			if (name == "real_coordinates")
-				mydata.real_coordinates = is_yes(trim(parts[1]));
-			if (name == "size" || name == "invsize")
-				break;
-		}
+	for (; i < elements.size(); i++) {
+		std::vector<std::string> parts = split(elements[i], '[');
+		std::string name = trim(parts[0]);
+		if (name != "real_coordinates" || parts.size() != 2)
+			break; // Invalid format
+
+		mydata.real_coordinates = is_yes(trim(parts[1]));
 	}
 
 	/* we need size first in order to calculate image scale */
