@@ -2484,7 +2484,7 @@ A spatial vector is similar to a position, but instead using
 absolute world coordinates, it uses *relative* coordinates, relative to
 no particular point.
 
-A vector is a 3x1 matrix3 (see Matrices).
+A vector is a 3x1 matrix (see Matrices).
 
 Internally, it is implemented as a table with the 3 fields
 `x`, `y` and `z`. Example: `{x = 0, y = 1, z = 0}`.
@@ -2519,7 +2519,7 @@ For the following functions, `v`, `v1`, `v2` are vectors,
     * Returns in order minp, maxp vectors of the cuboid defined by `v1`, `v2`.
 * `vector.dot(v1, v2)`:
     * Returns the dot product of `v1` and `v2`.
-    * Returns the matrix3 product of the transposed of `v1` and `v2`.
+    * Returns the matrix product of the transposed of `v1` and `v2`.
 * `vector.cross(v1, v2)`:
     * Returns the cross product of `v1` and `v2`.
 * `vector.angle(v1, v2)`:
@@ -2553,7 +2553,7 @@ Minetest has helpers for 3x3 matrices.
 Matrices can be used for rotation.
 
 * `matrix3.new()`:
-    * Returns a matrix3 filled with zeros.
+    * Returns a 3x3 matrix filled with zeros.
 * `matrix3.new(m_11, m_12, m_13, m_21, m_22, m_23, m_31, m_32, m_33)`:
     * Returns a matrix3:
       ```
@@ -2577,12 +2577,12 @@ Matrices can be used for rotation.
 * `matrix3.multiply(m, a)`:
     * Returns the scalar product of the matrix3 `m` and the scalar `a`.
 * `matrix3.multiply(m1, m2)`:
-    * Returns the matrix3 product of the matrices `m1` and `m2`.
+    * Returns the matrix product of the matrices `m1` and `m2`.
 * `matrix3.multiply(m, v)`:
-    * Returns the matrix3 product of the matrix3 `m` and the vector `v` as vector.
+    * Returns the matrix product of the matrix3 `m` and the vector `v` as vector.
 * `matrix3.tensor_multiply(v1, v2)`:
     * `v1` and `v2` are vectors.
-    * Returns the matrix3 product of `v1` and the transposed of `v2`.
+    * Returns the matrix product of `v1` and the transposed of `v2`.
 * `matrix3.transpose(m)`:
     * Returns the transposed martix of `m`.
 * `matrix3.rotation_around_x(angle)`:
