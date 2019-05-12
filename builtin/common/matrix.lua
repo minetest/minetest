@@ -107,8 +107,8 @@ end
 
 function matrix.transpose(m)
 	return {m[1], m[4], m[7],
-			m[2], m[5], m[8],
-			m[3], m[6], m[9]}
+	        m[2], m[5], m[8],
+	        m[3], m[6], m[9]}
 end
 
 -- note that minetest has a left-handed coordinate system.
@@ -120,27 +120,51 @@ local function round(a)
 	return math.floor(a * rounding_precision + 0.5) / rounding_precision
 end
 
+local function sin(x)
+	if x % math.pi == 0 then
+		return 0
+	elseif x % (2 * math.pi) == math.pi / 2 then
+		return 1
+	elseif x % (2 * math.pi) == math.pi * 3 / 2 then
+		return -1
+	else
+		return math.sin(x)
+	end
+end
+
+local function cos(x)
+	if x % math.pi == math.pi / 2 then
+		return 0
+	elseif x % (2 * math.pi) == 0 then
+		return 1
+	elseif x % (2 * math.pi) == math.pi then
+		return -1
+	else
+		return math.cos(x)
+	end
+end
+
 function matrix.rotation_around_x(angle)
-	local s = round(math.sin(angle))
-	local c = round(math.cos(angle))
+	local s = sin(angle)
+	local c = cos(angle)
 	return {1, 0,  0,
-            0, c, -s,
+	        0, c, -s,
 	        0, s,  c}
 end
 
 function matrix.rotation_around_y(angle)
-	local s = round(math.sin(angle))
-	local c = round(math.cos(angle))
+	local s = sin(angle)
+	local c = cos(angle)
 	return { c, 0, s,
-             0, 1, 0,
+	         0, 1, 0,
 	        -s, 0, c}
 end
 
 function matrix.rotation_around_z(angle)
-	local s = round(math.sin(angle))
-	local c = round(math.cos(angle))
+	local s = sin(angle)
+	local c = cos(angle)
 	return {c, -s, 0,
-            s,  c, 0,
+	        s,  c, 0,
 	        0,  0, 1}
 end
 
@@ -149,8 +173,8 @@ function matrix.rotation_around_vector(v, angle)
 	v = vector.divide(v, length_v)
 	angle = angle or length_v
 
-	local s = round(math.sin(angle))
-	local c = round(math.cos(angle))
+	local s = sin(angle)
+	local c = cos(angle)
 	local omc = 1 - c
 	return {
 		v.x * v.x * omc + c,       v.x * v.y * omc - v.z * s, v.x * v.z * omc + v.y * s,
