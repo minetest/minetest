@@ -123,10 +123,6 @@ end
 local function sin(x)
 	if x % math.pi == 0 then
 		return 0
-	elseif x % (2 * math.pi) == math.pi / 2 then
-		return 1
-	elseif x % (2 * math.pi) == math.pi * 3 / 2 then
-		return -1
 	else
 		return math.sin(x)
 	end
@@ -135,10 +131,6 @@ end
 local function cos(x)
 	if x % math.pi == math.pi / 2 then
 		return 0
-	elseif x % (2 * math.pi) == 0 then
-		return 1
-	elseif x % (2 * math.pi) == math.pi then
-		return -1
 	else
 		return math.cos(x)
 	end
