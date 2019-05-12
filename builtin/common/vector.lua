@@ -78,7 +78,7 @@ function vector.cross(a, b)
 	return {
 		x = a.z * b.y - a.y * b.z,
 		y = a.x * b.z - a.z * b.x,
-		y = a.y * b.x - a.x * b.y,
+		z = a.y * b.x - a.x * b.y,
 	}
 end
 

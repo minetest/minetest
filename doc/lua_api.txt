@@ -2519,7 +2519,7 @@ For the following functions, `v`, `v1`, `v2` are vectors,
     * Returns in order minp, maxp vectors of the cuboid defined by `v1`, `v2`.
 * `vector.dot(v1, v2)`:
     * Returns the dot product of `v1` and `v2`.
-    * Returns the matrix product of the transposed of `v1` and `v2`.
+    * Returns the matrix product of the transpose of `v1` and `v2`.
 * `vector.cross(v1, v2)`:
     * Returns the cross product of `v1` and `v2`.
 * `vector.angle(v1, v2)`:
@@ -2582,9 +2582,9 @@ Matrices can be used for rotation.
     * Returns the matrix product of the matrix3 `m` and the vector `v` as vector.
 * `matrix3.tensor_multiply(v1, v2)`:
     * `v1` and `v2` are vectors.
-    * Returns the matrix product of `v1` and the transposed of `v2`.
+    * Returns the matrix product of `v1` and the transpose of `v2`.
 * `matrix3.transpose(m)`:
-    * Returns the transposed martix of `m`.
+    * Returns the transpose martix of `m`.
 * `matrix3.rotation_around_x(angle)`:
     * `angle` is given in radians.
     * Returns a rotation matrix3 around the x-axis.
