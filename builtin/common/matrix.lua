@@ -204,22 +204,32 @@ end
 	--~ r.z = -r.z
 	--~ return r
 --~ end
+--~ function matrix.to_yaw_pitch_roll(m)
+	--~ local r = vector.new()
+	--~ if round(math.abs(m[6])) ~= 1 then
+		--~ r.x = math.asin(m[6])
+		--~ local cosx = math.cos(r.x)
+		--~ r.y = math.atan2(-m[3] / cosx, m[9] / cosx)
+		--~ r.z = math.atan2(-m[4] / cosx, m[5] / cosx)
+	--~ elseif m[6] > 0 then -- gimbal lock
+		--~ r.x = math.pi / 2
+		--~ r.z = 0
+		--~ r.y = math.atan2(m[2], m[1])
+	--~ else
+		--~ r.x = -math.pi / 2
+		--~ r.z = 0
+		--~ r.y = math.atan2(m[7], m[8])
+	--~ end
+	--~ return r
+--~ end
 function matrix.to_yaw_pitch_roll(m)
 	local r = vector.new()
-	if round(math.abs(m[6])) ~= 1 then
-		r.x = math.asin(m[6])
-		local cosx = math.cos(r.x)
-		r.y = math.atan2(-m[3] / cosx, m[9] / cosx)
-		r.z = math.atan2(-m[4] / cosx, m[5] / cosx)
-	elseif m[6] > 0 then -- gimbal lock
-		r.x = math.pi / 2
-		r.z = 0
-		r.y = math.atan2(m[2], m[1])
-	else
-		r.x = -math.pi / 2
-		r.z = 0
-		r.y = math.atan2(m[7], m[8])
-	end
+	r.y = math.atan2(-m[3], m[9])
+	local c2 = math.sqrt(m[4]^2 + m[5]^2)
+	r.x = math.atan2(m[6], c2)
+	local s1 = sin(r.y)
+	local c1 = cos(r.y)
+	r.z = math.atan2(s1 * m[8] + c1 * m[2], s1 * m[7] + c1 * m[1])
 	return r
 end
 
