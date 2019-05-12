@@ -159,7 +159,7 @@ function matrix3.rotation_around_vector(v, angle)
 	}
 end
 
---~ function matrix3.to_yaw_pitch_roll(m)
+--~ function matrix3.to_pitch_yaw_roll(m)
 	--~ local r = vector.new()
 	--~ if round(math.abs(m[6])) ~= 1 then
 		--~ r.x = -math.asin(m[6])
@@ -180,7 +180,7 @@ end
 	--~ r.z = -r.z
 	--~ return r
 --~ end
---~ function matrix3.to_yaw_pitch_roll(m)
+--~ function matrix3.to_pitch_yaw_roll(m)
 	--~ local r = vector.new()
 	--~ if round(math.abs(m[6])) ~= 1 then
 		--~ r.x = math.asin(m[6])
@@ -198,7 +198,7 @@ end
 	--~ end
 	--~ return r
 --~ end
-function matrix3.to_yaw_pitch_roll(m)
+function matrix3.to_pitch_yaw_roll(m)
 	local r = vector.new()
 	r.y = math.atan2(-m[3], m[9])
 	local c2 = math.sqrt(m[4]^2 + m[5]^2)
@@ -209,7 +209,7 @@ function matrix3.to_yaw_pitch_roll(m)
 	return r
 end
 
-function matrix3.from_yaw_pitch_roll(v)
+function matrix3.from_pitch_yaw_roll(v)
 	return matrix3.multiply(matrix3.multiply(matrix3.rotation_around_y(-v.y),
 			matrix3.rotation_around_x(-v.x)), matrix3.rotation_around_z(-v.z))
 end
