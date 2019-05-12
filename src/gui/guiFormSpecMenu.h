@@ -394,6 +394,9 @@ protected:
 	std::string getNameByID(s32 id);
 	v2s32 getElementBasePos(bool absolute,
 			const std::vector<std::string> *v_pos);
+	v2s32 getRealCoordinateBasePos(bool absolute,
+			const std::vector<std::string> *v_pos);
+	v2s32 getRealCoordinateGeometry(const std::vector<std::string> *v_geom);
 
 	v2s32 padding;
 	v2f32 spacing;
@@ -463,6 +466,7 @@ private:
 
 	typedef struct {
 		bool explicit_size;
+		bool real_coordinates;
 		v2f invsize;
 		v2s32 size;
 		v2f32 offset;
@@ -530,6 +534,7 @@ private:
 	void parsePosition(parserData *data, const std::string &element);
 	bool parseAnchorDirect(parserData *data, const std::string &element);
 	void parseAnchor(parserData *data, const std::string &element);
+	void parseRealCoordinates(parserData *data, const std::string &element);
 
 	void tryClose();
 
