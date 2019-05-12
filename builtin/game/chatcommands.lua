@@ -704,7 +704,7 @@ core.register_chatcommand("placenode", {
 				return false, "Invalid parameters ('" .. param .. "')"
 			end
 		end
-		core.add_node(p, {name=nodename})
+		core.add_node(p, { name = nodename })
 		return true, ("%q placed."):format(nodename)
 	end,
 })
