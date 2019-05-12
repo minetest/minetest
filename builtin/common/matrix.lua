@@ -123,10 +123,10 @@ end
 -- ergo the rotation will be clockwise
 -- (see wikipedia for details)
 
-local rounding_precision = 1000000
-local function round(a)
-	return math.floor(a * rounding_precision + 0.5) / rounding_precision
-end
+--~ local rounding_precision = 1000000
+--~ local function round(a)
+	--~ return math.floor(a * rounding_precision + 0.5) / rounding_precision
+--~ end
 
 local function sin(x)
 	if x % math.pi == 0 then
