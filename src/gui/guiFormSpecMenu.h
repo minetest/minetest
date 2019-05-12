@@ -534,7 +534,6 @@ private:
 	void parsePosition(parserData *data, const std::string &element);
 	bool parseAnchorDirect(parserData *data, const std::string &element);
 	void parseAnchor(parserData *data, const std::string &element);
-	void parseRealCoordinates(parserData *data, const std::string &element);
 
 	void tryClose();
 

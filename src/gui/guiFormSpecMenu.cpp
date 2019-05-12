@@ -1984,11 +1984,6 @@ void GUIFormSpecMenu::parseAnchor(parserData *data, const std::string &element)
 			<< "'" << std::endl;
 }
 
-void GUIFormSpecMenu::parseRealCoordinates(parserData* data, const std::string
-	&element) {
-	data->real_coordinates = is_yes(element);
-}
-
 void GUIFormSpecMenu::parseElement(parserData* data, const std::string &element)
 {
 	//some prechecks
@@ -2150,7 +2145,7 @@ void GUIFormSpecMenu::parseElement(parserData* data, const std::string &element)
 	}
 
 	if (type == "real_coordinates") {
-		parseRealCoordinates(data, description);
+		data->real_coordinates = is_yes(description);
 		return;
 	}
 
@@ -2290,7 +2285,7 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 			std::vector<std::string> parts = split(elements[i], '[');
 			std::string name = trim(parts[0]);
 			if (name == "real_coordinates")
-				parseRealCoordinates(&mydata, trim(parts[1]));
+				mydata.real_coordinates = is_yes(trim(parts[1]));
 			if (name == "size" || name == "invsize")
 				break;
 		}
