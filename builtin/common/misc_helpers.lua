@@ -258,6 +258,11 @@ function math.factorial(x)
 end
 
 --------------------------------------------------------------------------------
+function math.round(x)
+	return math.floor(x + 0.5)
+end
+
+--------------------------------------------------------------------------------
 function get_last_folder(text,count)
 	local parts = text:split(DIR_DELIM)
 
