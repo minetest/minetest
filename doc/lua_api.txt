@@ -2520,6 +2520,8 @@ For the following functions, `v`, `v1`, `v2` are vectors,
 * `vector.dot(v1, v2)`:
     * Returns the dot product of `v1` and `v2`.
     * Returns the matrix product of the transposed of `v1` and `v2`.
+* `vector.cross(v1, v2)`:
+    * Returns the cross product of `v1` and `v2`.
 * `vector.angle(v1, v2)`:
     * Returns the angle between `v1` and `v2` in radians.
 * `vector.dot(v1, v2)`

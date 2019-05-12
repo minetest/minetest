@@ -74,6 +74,14 @@ function vector.dot(a, b)
 	return a.x * b.x + a.y * b.y + a.z * b.z
 end
 
+function vector.cross(a, b)
+	return {
+		x = a.y * b.z - a.z * b.y,
+		y = a.z * b.x - a.x * b.z,
+		y = a.x * b.y - a.y * b.x,
+	}
+end
+
 function vector.angle(a, b)
 	local dotp = vector.dot(a, b)
 	local cp = vector.cross(a, b)
