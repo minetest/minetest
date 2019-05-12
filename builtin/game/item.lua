@@ -209,16 +209,9 @@ function core.wallmounted_to_matrix3(wallmounted, nocopy)
 end
 
 function core.matrix3_to_wallmounted(m)
-	local f = core.matrix3_to_facedir(m)
-	if not f then
-		return nil -- no suitable facedir value found
-	end
-	for i = 1, 6 do
-		if wallmounted_to_facedir[i] == f then
-			return i
-		end
-	end
-	return nil -- matrix3 was not from wallmounted but from facedir
+	local w = table.indexof(wallmounted_to_facedir, core.matrix3_to_facedir(m))
+	w = w ~= -1 and w or nil
+	return w
 end
 
 function core.dir_to_yaw(dir)
