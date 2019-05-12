@@ -145,16 +145,8 @@ local matrix3_facedirs = {}
 -- returns a number asuming that the matrix3 has only -1, 0 and 1
 local function matrix3_1p_1n_0_hash(m)
 	local r = 0
-	for i = 1, 9 do
+	for i = 1, 6 do
 		r = r + (m[i] + 1) * 3^(i-1)
-		-- wrong values are possible, eg. m[i] could be 2. the following would fix that:
-		--~ if m[i] == 0 then
-			--~ r = r + 1 * 3^(i-1)
-		--~ elseif m[i] == 1 then
-			--~ r = r + 2 * 3^(i-1)
-		--~ elseif m[i] ~= -1 then
-			--~ return -1
-		--~ end
 	end
 	return r
 end
