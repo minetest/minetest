@@ -95,6 +95,30 @@ function matrix3.transpose(m)
 	        m[3], m[6], m[9]}
 end
 
+function matrix3.determinant(m)
+	return m[1] * (m[5] * m[9] - m[6] * m[8])
+	     + m[2] * (m[6] * m[7] - m[4] * m[9])
+	     + m[3] * (m[4] * m[8] - m[5] * m[7])
+end
+
+function matrix3.invert(a)
+	local t11 = a[5] * a[9] - a[6] * a[8]
+	local t12 = a[6] * a[7] - a[4] * a[9]
+	local t13 = a[4] * a[8] - a[5] * a[7]
+
+	local det = a[1] * t11 + a[2] * t12 + a[3] * t13
+
+	if det == 0 then
+		return false -- there is no inverted
+	end
+	local b = {
+		t11 / det, (a[3]*a[8] - a[2]*a[9]) / det, (a[2]*a[6] - a[3]*a[5]) / det,
+		t12 / det, (a[1]*a[9] - a[3]*a[7]) / det, (a[3]*a[4] - a[1]*a[6]) / det,
+		t13 / det, (a[2]*a[7] - a[1]*a[8]) / det, (a[1]*a[5] - a[2]*a[4]) / det
+	}
+	return b
+end
+
 -- note that minetest has a left-handed coordinate system.
 -- ergo the rotation will be clockwise
 -- (see wikipedia for details)

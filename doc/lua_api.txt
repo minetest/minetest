@@ -2585,6 +2585,10 @@ Matrices can be used for rotation.
     * Returns the matrix product of `v1` and the transpose of `v2`.
 * `matrix3.transpose(m)`:
     * Returns the transpose martix of `m`.
+* `matrix3.determinant(m)`:
+    * Returns the determinant martix of `m`.
+* `matrix3.invert(m)`:
+    * Returns the inverted martix of `m` or `false` if there is no inverted matrix.
 * `matrix3.rotation_around_x(angle)`:
     * `angle` is given in radians.
     * Returns a rotation matrix3 around the x-axis.
