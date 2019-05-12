@@ -684,7 +684,7 @@ core.register_chatcommand("placenode", {
 	func = function(name, param)
 		local nodename, p = string.match(param, "^([^ ]+) *(.*)$")
 		if not nodename then
-			return false, "NodeName required"
+			return false, "Node name required"
 		end
 		core.log("action", ("%s invokes /placenode, nodename=%q")
 				:format(name, nodename))
