@@ -677,6 +677,38 @@ core.register_chatcommand("spawnentity", {
 	end,
 })
 
+core.register_chatcommand("placenode", {
+	params = "<NodeName> [<X>,<Y>,<Z>]",
+	description = "Places node at given (or your) position",
+	privs = {give=true, interact=true},
+	func = function(name, param)
+		local nodename, p = string.match(param, "^([^ ]+) *(.*)$")
+		if not nodename then
+			return false, "NodeName required"
+		end
+		core.log("action", ("%s invokes /placenode, nodename=%q")
+				:format(name, nodename))
+		local player = core.get_player_by_name(name)
+		if player == nil then
+			core.log("error", "Unable to spawn node, player is nil")
+			return false, "Unable to spawn node, player is nil"
+		end
+		if not core.registered_nodes[nodename] then
+			return false, "Cannot place an unknown node"
+		end
+		if p == "" then
+			p = player:get_pos()
+		else
+			p = core.string_to_pos(p)
+			if p == nil then
+				return false, "Invalid parameters ('" .. param .. "')"
+			end
+		end
+		core.add_node(p, {name=nodename})
+		return true, ("%q placed."):format(nodename)
+	end,
+})
+
 core.register_chatcommand("pulverize", {
 	params = "",
 	description = "Destroy item in hand",
