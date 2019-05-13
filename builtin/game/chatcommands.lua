@@ -680,7 +680,7 @@ core.register_chatcommand("spawnentity", {
 core.register_chatcommand("placenode", {
 	params = "<NodeName> [<X>,<Y>,<Z>]",
 	description = "Places node at given (or your) position",
-	privs = { give = true, interact = true, protection_bypass, server },
+	privs = {interact = true, server = true},
 	func = function(name, param)
 		local nodename, p = string.match(param, "^([^ ]+) *(.*)$")
 		if not nodename then
