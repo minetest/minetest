@@ -689,7 +689,7 @@ core.register_chatcommand("placenode", {
 		core.log("action", ("%s invokes /placenode, nodename=%q")
 				:format(name, nodename))
 		local player = core.get_player_by_name(name)
-		if player == nil then
+		if not player then
 			core.log("error", "Unable to spawn node, player is nil")
 			return false, "Unable to spawn node, player is nil"
 		end
