@@ -1875,9 +1875,14 @@ is used when the server receives user input. You must not use the name
 Spaces and newlines can be inserted between the blocks, as is used in the
 examples.
 
-Position and size units are inventory slots, `X` and `Y` position the formspec
-element relative to the top left of the menu or container. `W` and `H` are its
-width and height values.
+Position and size units are inventory slots unless the new coordinating system
+is enabled. `X` and `Y` position the formspec element relative to the top left
+of the menu or container. `W` and `H` are its width and height values.
+
+If the new system is enabled, all elements have unified cooridinates for all
+elements with no padding or spacing in between. This is highly recommended
+for new forms. See `real_coordinates[<bool>]`.
+
 Inventories with a `player:<name>` inventory location are only sent to the
 player named `<name>`.
 
@@ -1951,6 +1956,14 @@ Elements
 * Must be used after the `size`, `position`, and `anchor` elements (if present).
 * Disables player:set_formspec_prepend() from applying to this formspec.
 
+### `real_coordinates[<bool>]`
+
+* Must be used either before or anywhere after `size`, `position`, `anchor`, and
+  `no_prepend` (if present) elements.
+* When set to true, all following formspec elements will use the new coordinate system.
+* **Note**: Formspec prepends are not affected by the coordinates in the main form.
+  They must enable it explicitly.
+
 ### `container[<X>,<Y>]`
 
 * Start of a container block, moves all physical elements in the container by
@@ -1968,11 +1981,15 @@ Elements
 
 * Show an inventory list if it has been sent to the client. Nothing will
   be shown if the inventory list is of size 0.
+* **Note**: The spacing between inventory places is not affected by the
+  new coordinate system.
 
 ### `list[<inventory location>;<list name>;<X>,<Y>;<W>,<H>;<starting item index>]`
 
 * Show an inventory list if it has been sent to the client. Nothing will
   be shown if the inventory list is of size 0.
+* **Note**: The spacing between inventory places is not affected by the
+  new coordinate system.
 
 ### `listring[<inventory location>;<list name>]`
 
@@ -2064,7 +2081,8 @@ Elements
 * Textual password style field; will be sent to server when a button is clicked
 * When enter is pressed in field, fields.key_enter_field will be sent with the
   name of this field.
-* Fields are a set height, but will be vertically centred on `H`
+* Fields are a set height, but will be vertically centred on `H` with the old
+  system.  With the new coordinate system, `H` will modify the height.
 * `name` is the name of the field as returned in fields to `on_receive_fields`
 * `label`, if not blank, will be text printed on the top left above the field
 * See `field_close_on_enter` to stop enter closing the formspec
@@ -2074,7 +2092,8 @@ Elements
 * Textual field; will be sent to server when a button is clicked
 * When enter is pressed in field, `fields.key_enter_field` will be sent with
   the name of this field.
-* Fields are a set height, but will be vertically centred on `H`
+* Fields are a set height, but will be vertically centred on `H` with the old
+  system.  With the new coordinate system, `H` will modify the height.
 * `name` is the name of the field as returned in fields to `on_receive_fields`
 * `label`, if not blank, will be text printed on the top left above the field
 * `default` is the default value of the field
@@ -2112,7 +2131,8 @@ Elements
 * The label formspec element displays the text set in `label`
   at the specified position.
 * The text is displayed directly without automatic line breaking,
-  so label should not be used for big text chunks.
+  so label should not be used for big text chunks.  Newlines can be
+  used to make labels multiline, but `textarea` is preferred.
 
 ### `vertlabel[<X>,<Y>;<label>]`
 
@@ -2122,12 +2142,14 @@ Elements
 ### `button[<X>,<Y>;<W>,<H>;<name>;<label>]`
 
 * Clickable button. When clicked, fields will be sent.
-* Fixed button height. It will be vertically centred on `H`
+* Fixed button height. It will be vertically centred on `H` with the old system.
+  With the new coordinate system, `H` will modify the height.
 * `label` is the text on the button
 
 ### `image_button[<X>,<Y>;<W>,<H>;<texture name>;<name>;<label>]`
 
 * `texture name` is the filename of an image
+* **Note**: Height can be modified on image buttons.
 
 ### `image_button[<X>,<Y>;<W>,<H>;<texture name>;<name>;<label>;<noclip>;<drawborder>;<pressed texture name>]`
 
@@ -2146,10 +2168,12 @@ Elements
 ### `button_exit[<X>,<Y>;<W>,<H>;<name>;<label>]`
 
 * When clicked, fields will be sent and the form will quit.
+* Same as `button` in all other respects.
 
 ### `image_button_exit[<X>,<Y>;<W>,<H>;<texture name>;<name>;<label>]`
 
 * When clicked, fields will be sent and the form will quit.
+* Same as `button` in all other respects.
 
 ### `textlist[<X>,<Y>;<W>,<H>;<name>;<listelem 1>,<listelem 2>,...,<listelem n>]`
 
@@ -2175,6 +2199,22 @@ Elements
 ### `tabheader[<X>,<Y>;<name>;<caption 1>,<caption 2>,...,<caption n>;<current_tab>;<transparent>;<draw_border>]`
 
 * Show a tab**header** at specific position (ignores formsize)
+* `x` and `y`: position of the tabheader
+* `name` fieldname data is transferred to Lua
+* `caption 1`...: name shown on top of tab
+* `current_tab`: index of selected tab 1...
+* `transparent` (optional): show transparent
+* `draw_border` (optional): draw border
+
+### `tabheader[<X>,<Y>;<H>;<name>;<caption 1>,<caption 2>,...,<caption n>;<current_tab>;<transparent>;<draw_border>]`
+
+* Show a tab**header** at specific position (ignores formsize)
+* **Important note**: This syntax for tabheaders can only be used if the new
+  coordinate system is enabled.
+* `x` and `y`: position of the tabheader
+* `h`: height of the tabheader
+* **Important Note**: The tabheader height can only be modified if the new
+  coordinate system is enabled.
 * `name` fieldname data is transferred to Lua
 * `caption 1`...: name shown on top of tab
 * `current_tab`: index of selected tab 1...
@@ -2193,8 +2233,22 @@ Elements
 * **Important note**: There are two different operation modes:
     1. handle directly on change (only changed dropdown is submitted)
     2. read the value on pressing a button (all dropdown values are available)
-* `x` and `y` position of dropdown
-* Width of dropdown
+* `x` and `y`: position of the dropdown
+* `w`: width of the dropdown
+* Fieldname data is transferred to Lua
+* Items to be shown in dropdown
+* Index of currently selected dropdown item
+
+### `dropdown[<X>,<Y>;<W>,<H>;<name>;<item 1>,<item 2>, ...,<item n>;<selected idx>]`
+
+* Show a dropdown field
+* **Important note**: This syntax for dropdowns can only be used if the new
+  coordinate system is enabled.
+* **Important note**: There are two different operation modes:
+    1. handle directly on change (only changed dropdown is submitted)
+    2. read the value on pressing a button (all dropdown values are available)
+* `x` and `y`: position of the dropdown
+* `w` and `h`: width and height of the dropdown
 * Fieldname data is transferred to Lua
 * Items to be shown in dropdown
 * Index of currently selected dropdown item
@@ -3734,7 +3788,6 @@ Call these functions only at load time!
     * Called after a new player has been created
 * `minetest.register_on_punchplayer(function(player, hitter, time_from_last_punch, tool_capabilities, dir, damage))`
     * Called when a player is punched
-    * Note: This callback is invoked even if the punched player is dead.
     * `player`: ObjectRef - Player that was punched
     * `hitter`: ObjectRef - Player that hit
     * `time_from_last_punch`: Meant for disallowing spamming of clicks
@@ -5399,11 +5452,6 @@ This is basically a reference to a C++ `ServerActiveObject`
     * in first person view
     * in third person view (max. values `{x=-10/10,y=-10,15,z=-5/5}`)
 * `get_eye_offset()`: returns `offset_first` and `offset_third`
-* `send_mapblock(blockpos)`:
-    * Sends a server-side loaded mapblock to the player.
-    * Returns `false` if failed.
-    * Resource intensive - use sparsely
-    * To get blockpos, integer divide pos by 16
 
 `PcgRandom`
 -----------
