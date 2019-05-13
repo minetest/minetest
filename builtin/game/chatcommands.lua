@@ -700,7 +700,7 @@ core.register_chatcommand("placenode", {
 			p = player:get_pos()
 		else
 			p = core.string_to_pos(p)
-			if p == nil then
+			if not p then
 				return false, "Invalid parameters ('" .. param .. "')"
 			end
 		end
