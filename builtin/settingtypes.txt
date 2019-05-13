@@ -1058,6 +1058,10 @@ disable_anticheat (Disable anticheat) bool false
 #    This option is only read when server starts.
 enable_rollback_recording (Rollback recording) bool false
 
+#    Format of player chat messages. The following strings are valid placeholders:
+#    @name, @message, @timestamp (optional)
+chat_message_format (Chat message format) string <@name> @message
+
 #    A message to be displayed to all clients when the server shuts down.
 kick_msg_shutdown (Shutdown message) string Server shutting down.
 
