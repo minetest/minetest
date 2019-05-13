@@ -2173,7 +2173,7 @@ Elements
 ### `image_button_exit[<X>,<Y>;<W>,<H>;<texture name>;<name>;<label>]`
 
 * When clicked, fields will be sent and the form will quit.
-* Same as `button` in all other respects.
+* Same as `image_button` in all other respects.
 
 ### `textlist[<X>,<Y>;<W>,<H>;<name>;<listelem 1>,<listelem 2>,...,<listelem n>]`
 
@@ -2199,7 +2199,7 @@ Elements
 ### `tabheader[<X>,<Y>;<name>;<caption 1>,<caption 2>,...,<caption n>;<current_tab>;<transparent>;<draw_border>]`
 
 * Show a tab**header** at specific position (ignores formsize)
-* `x` and `y`: position of the tabheader
+* `X` and `Y`: position of the tabheader
 * `name` fieldname data is transferred to Lua
 * `caption 1`...: name shown on top of tab
 * `current_tab`: index of selected tab 1...
@@ -2211,8 +2211,8 @@ Elements
 * Show a tab**header** at specific position (ignores formsize)
 * **Important note**: This syntax for tabheaders can only be used if the new
   coordinate system is enabled.
-* `x` and `y`: position of the tabheader
-* `h`: height of the tabheader
+* `X` and `Y`: position of the tabheader
+* `W`: height of the tabheader
 * **Important Note**: The tabheader height can only be modified if the new
   coordinate system is enabled.
 * `name` fieldname data is transferred to Lua
@@ -2233,8 +2233,8 @@ Elements
 * **Important note**: There are two different operation modes:
     1. handle directly on change (only changed dropdown is submitted)
     2. read the value on pressing a button (all dropdown values are available)
-* `x` and `y`: position of the dropdown
-* `w`: width of the dropdown
+* `X` and `Y`: position of the dropdown
+* `W`: width of the dropdown
 * Fieldname data is transferred to Lua
 * Items to be shown in dropdown
 * Index of currently selected dropdown item
@@ -2247,8 +2247,8 @@ Elements
 * **Important note**: There are two different operation modes:
     1. handle directly on change (only changed dropdown is submitted)
     2. read the value on pressing a button (all dropdown values are available)
-* `x` and `y`: position of the dropdown
-* `w` and `h`: width and height of the dropdown
+* `X` and `Y`: position of the dropdown
+* `W` and `H`: width and height of the dropdown
 * Fieldname data is transferred to Lua
 * Items to be shown in dropdown
 * Index of currently selected dropdown item
@@ -3788,6 +3788,7 @@ Call these functions only at load time!
     * Called after a new player has been created
 * `minetest.register_on_punchplayer(function(player, hitter, time_from_last_punch, tool_capabilities, dir, damage))`
     * Called when a player is punched
+	* Note: This callback is invoked even if the punched player is dead.
     * `player`: ObjectRef - Player that was punched
     * `hitter`: ObjectRef - Player that hit
     * `time_from_last_punch`: Meant for disallowing spamming of clicks
@@ -5452,6 +5453,11 @@ This is basically a reference to a C++ `ServerActiveObject`
     * in first person view
     * in third person view (max. values `{x=-10/10,y=-10,15,z=-5/5}`)
 * `get_eye_offset()`: returns `offset_first` and `offset_third`
+* `send_mapblock(blockpos)`:
+    * Sends a server-side loaded mapblock to the player.
+    * Returns `false` if failed.
+    * Resource intensive - use sparsely
+    * To get blockpos, integer divide pos by 16
 
 `PcgRandom`
 -----------
