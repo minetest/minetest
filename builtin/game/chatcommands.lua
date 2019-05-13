@@ -705,7 +705,7 @@ core.register_chatcommand("placenode", {
 			end
 		end
 		core.add_node(p, { name = nodename })
-		return true, ("%q placed."):format(nodename)
+		return true, ("%q placed at %s"):format(nodename, core.pos_to_string(p))
 	end,
 })
 
