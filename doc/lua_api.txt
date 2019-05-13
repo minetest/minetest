@@ -2212,7 +2212,7 @@ Elements
 * **Important note**: This syntax for tabheaders can only be used if the new
   coordinate system is enabled.
 * `X` and `Y`: position of the tabheader
-* `W`: height of the tabheader
+* `H`: height of the tabheader
 * **Important Note**: The tabheader height can only be modified if the new
   coordinate system is enabled.
 * `name` fieldname data is transferred to Lua
