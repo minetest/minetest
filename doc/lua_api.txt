@@ -6517,6 +6517,7 @@ Used by `minetest.register_biome`.
         -- chosen node from the list.
         -- If this field is left out or 'nil', cave liquids fall back to
         -- classic behaviour of lava and water distributed using 3D noise.
+        -- For no cave liquid, specify "air".
 
         node_dungeon = "default:cobble",
         -- Node used for primary dungeon structure.

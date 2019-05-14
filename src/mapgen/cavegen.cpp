@@ -325,6 +325,7 @@ void CavesRandomWalk::makeCave(MMVManip *vm, v3s16 nmin, v3s16 nmax,
 
 	// If flooded:
 	// Get biome at mapchunk midpoint. If cave liquid defined for biome, use it.
+	// If defined liquid is "air", disable 'flooded' to avoid placing "air".
 	use_biome_liquid = false;
 	if (flooded && bmgn) {
 		v3s16 midp = node_min + (node_max - node_min) / v3s16(2, 2, 2);
@@ -333,6 +334,8 @@ void CavesRandomWalk::makeCave(MMVManip *vm, v3s16 nmin, v3s16 nmax,
 			use_biome_liquid = true;
 			c_biome_liquid =
 				biome->c_cave_liquid[ps->range(0, biome->c_cave_liquid.size() - 1)];
+			if (c_biome_liquid == CONTENT_AIR)
+				flooded = false;
 		}
 	}
 
