@@ -398,6 +398,14 @@ private:
 		std::string focused_fieldname;
 		GUITable::TableOptions table_options;
 		GUITable::TableColumns table_columns;
+
+		struct {
+			int max = 1000;
+			int min = 0;
+			int smallStep = 10;
+			int largeStep = 100;
+		} scrollBarOptions;
+
 		// used to restore table selection/scroll/treeview state
 		std::unordered_map<std::string, GUITable::DynamicData> table_dyndata;
 	} parserData;
@@ -452,6 +460,7 @@ private:
 	bool parseVersionDirect(const std::string &data);
 	bool parseSizeDirect(parserData* data, const std::string &element);
 	void parseScrollBar(parserData* data, const std::string &element);
+	void parseScrollBarOptions(parserData* data, const std::string &element);
 	bool parsePositionDirect(parserData *data, const std::string &element);
 	void parsePosition(parserData *data, const std::string &element);
 	bool parseAnchorDirect(parserData *data, const std::string &element);

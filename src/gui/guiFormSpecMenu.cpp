@@ -618,17 +618,62 @@ void GUIFormSpecMenu::parseScrollBar(parserData* data, const std::string &elemen
 		auto style = getStyleForElement("scrollbar", name);
 		e->setNotClipped(style.getBool(StyleSpec::NOCLIP, false));
 
-		e->setMax(1000);
-		e->setMin(0);
+		e->setMax(data->scrollBarOptions.max);
+		e->setMin(data->scrollBarOptions.min);
+
 		e->setPos(stoi(parts[4]));
-		e->setSmallStep(10);
-		e->setLargeStep(100);
+		e->setSmallStep(data->scrollBarOptions.smallStep);
+		e->setLargeStep(data->scrollBarOptions.largeStep);
 
 		m_scrollbars.emplace_back(spec,e);
 		m_fields.push_back(spec);
 		return;
 	}
 	errorstream<< "Invalid scrollbar element(" << parts.size() << "): '" << element << "'"  << std::endl;
+}
+
+void GUIFormSpecMenu::parseScrollBarOptions(parserData* data, const std::string &element)
+{
+	std::vector<std::string> parts = split(element, ';');
+
+	if (parts.size() > 0) {
+		for (unsigned int i = 0; i < parts.size(); i++) {
+
+			std::vector<std::string> options = split(parts[i], '=');
+
+			if (options.size() != 2) {
+				errorstream << "Invalid scrollbaroptions option syntax: '" <<
+					element << "'" << std::endl;
+				continue; // Go to next option
+			}
+
+			int value = stoi(options[1]);
+
+			if (options[0] == "max") {
+				data->scrollBarOptions.max = value;
+				continue;
+			}
+			if (options[0] == "min") {
+				data->scrollBarOptions.min = value;
+				continue;
+			}
+			if (options[0] == "smallstep") {
+				data->scrollBarOptions.smallStep = value;
+				continue;
+			}
+			if (options[0] == "largestep") {
+				data->scrollBarOptions.largeStep = value;
+				continue;
+			}
+
+			errorstream << "Invalid scrollbaroptions option(" << options[0] <<
+				"): '" << element << "'" << std::endl;
+		}
+		return;
+	}
+
+	errorstream << "Invalid scrollbaroptions element(" << parts.size() << "): '" <<
+		element << "'"  << std::endl;
 }
 
 void GUIFormSpecMenu::parseImage(parserData* data, const std::string &element)
@@ -2581,6 +2626,12 @@ void GUIFormSpecMenu::parseElement(parserData* data, const std::string &element)
 
 	if (type == "style_type") {
 		parseStyle(data, description, true);
+		return;
+	}
+
+	if (type == "scrollbaroptions") {
+		parseScrollBarOptions(data, description);
+
 		return;
 	}
 
