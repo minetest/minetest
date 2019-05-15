@@ -42,7 +42,7 @@ function matrix3.add(m1, m2)
 	return m3
 end
 
-local function multiply_scalar(m, a)
+local function multiply_matrix3_scalar(m, a)
 	local mr = {}
 	for i = 1, 9 do
 		mr[i] = m[i] * a
@@ -50,7 +50,7 @@ local function multiply_scalar(m, a)
 	return mr
 end
 
-local function vector_matrix3_multiply(m1, v)
+local function multiply_matrix3_vector(m1, v)
 	return {
 		x = m1[1] * v.x + m1[2] * v.y + m1[3] * v.z,
 		y = m1[4] * v.x + m1[5] * v.y + m1[6] * v.z,
@@ -60,9 +60,9 @@ end
 
 function matrix3.multiply(m1, m2)
 	if type(m2) ~= "table" then
-		return multiply_scalar(m1, m2)
+		return multiply_matrix3_scalar(m1, m2)
 	elseif m2.x then
-		return vector_matrix3_multiply(m1, m2)
+		return multiply_matrix3_vector(m1, m2)
 	end
 	local m3 = {}
 	for l = 1, 3 do
