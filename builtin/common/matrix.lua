@@ -234,6 +234,14 @@ function matrix3.to_pitch_yaw_roll(m)
 end
 
 function matrix3.from_pitch_yaw_roll(v)
-	return matrix3.multiply(matrix3.multiply(matrix3.rotation_around_y(-v.y),
-			matrix3.rotation_around_x(-v.x)), matrix3.rotation_around_z(-v.z))
+	--~ return matrix3.multiply(matrix3.multiply(matrix3.rotation_around_y(-v.y),
+			--~ matrix3.rotation_around_x(-v.x)), matrix3.rotation_around_z(-v.z))
+	local sx, cx = sin(v.x), cos(v.x)
+	local sy, cy = sin(v.y), cos(v.y)
+	local sz, cz = sin(v.z), cos(v.z)
+	return {
+		-sy * sx * sz + cy * cz, cz * sy * sx + cy * sz,  -cx * sy,
+		-cx * sz,                cx * cz,                 sx,
+		cy * sx * sz + cz * sy,  -cy * cz * sx + sy * sz, cy * cx
+	}
 end
