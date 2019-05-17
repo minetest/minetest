@@ -156,6 +156,7 @@ public:
 	// This has to happen *after* the main scene is drawn.
 	// Warning: This clears the Z buffer.
 	void drawWieldedTool(irr::core::matrix4* translation=NULL);
+	bool m_enable_draw_wielded_tool = true;
 
 	// Toggle the current camera mode
 	void toggleCameraMode() {

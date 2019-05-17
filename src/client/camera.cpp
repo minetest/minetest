@@ -623,6 +623,9 @@ void Camera::wield(const ItemStack &item)
 
 void Camera::drawWieldedTool(irr::core::matrix4* translation)
 {
+	if (!m_enable_draw_wielded_tool)
+		return;
+
 	// Clear Z buffer so that the wielded tool stays in front of world geometry
 	m_wieldmgr->getVideoDriver()->clearBuffers(video::ECBF_DEPTH);
 
