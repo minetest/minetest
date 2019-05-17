@@ -27,17 +27,15 @@ protected:
 	scene::ICameraSceneNode *cam;
 	video::ITexture *faces[6];
 	core::dimension2du image_size;
+	core::dimension2du render_size;
 
 	void initTextures() override;
+	void initTextures(core::dimension2du size);
 	void clearTextures() override;
 
-	virtual void useFace(int face);
-	virtual void drawFace(int face);
+	void useFace(int face);
 
 	void beforeDraw() override;
-	void drawAll() override;
-
-	void renderAllImages();
 
 public:
 	RenderingCoreCubeMap(IrrlichtDevice *_device, Client *_client, Hud *_hud);

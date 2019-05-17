@@ -30,12 +30,19 @@ RenderingCoreCubeMap::RenderingCoreCubeMap(
 
 void RenderingCoreCubeMap::initTextures()
 {
-	image_size = {screensize.X / 4, screensize.Y / 2};
-	virtual_size = image_size;
+	u32 size = screensize.Y / 3;
+	core::dimension2du sz = {size, size};
+	initTextures(sz);
+}
+
+void RenderingCoreCubeMap::initTextures(core::dimension2du size)
+{
+	image_size = {screensize.X, screensize.Y};
+	render_size = size;
 
 	for (int i = 0; i < 6; i ++)
 		faces[i] = driver->addRenderTargetTexture(
-				image_size, "3d_render_f" + i, video::ECF_A8R8G8B8);
+				render_size, "3d_render_f" + i, video::ECF_A8R8G8B8);
 }
 
 void RenderingCoreCubeMap::clearTextures()
@@ -85,47 +92,4 @@ void RenderingCoreCubeMap::useFace(int face)
 		default:
 			break;
 	}
-}
-
-void RenderingCoreCubeMap::drawFace(int face)
-{
-	v2s32 pos;
-	switch (face) {
-		case 0:
-			pos = v2s32(image_size.Width * 2, image_size.Height * 1);
-			break;
-		case 1:
-			pos = v2s32(image_size.Width * 0, image_size.Height * 1);
-			break;
-		case 2:
-			pos = v2s32(image_size.Width * 1, image_size.Height * 0);
-			break;
-		case 3:
-			pos = v2s32(image_size.Width * 1, image_size.Height * 2);
-			break;
-		case 4:
-			pos = v2s32(image_size.Width * 1, image_size.Height * 1);
-			break;
-		case 5:
-			pos = v2s32(image_size.Width * 3, image_size.Height * 1);
-			break;
-		default:
-			break;
-	}
-	driver->draw2DImage(faces[face], pos);
-}
-
-void RenderingCoreCubeMap::drawAll()
-{
-	// These two steps are required to remove any camera settings
-	// applied before. TODO Find other ways to fix this problem.
-	useFace(0);
-	draw3D();
-
-	for (int i = 0; i < 6; i ++) {
-		useFace(i);
-		draw3D();
-	}
-
-	driver->setRenderTarget(nullptr, false, false, skycolor);
 }
