@@ -137,7 +137,7 @@ public:
 	// This is run by ServerThread and does the actual processing
 	void AsyncRunStep(bool initial_step=false);
 	void Receive();
-	PlayerSAO* StageTwoClientInit(session_t peer_id);
+	PlayerSAO *StageTwoClientInit(session_t peer_id, bool &ghost_kick);
 
 	/*
 	 * Command Handlers
@@ -406,7 +406,7 @@ private:
 	void SendPlayerFormspecPrepend(session_t peer_id);
 	void SendShowFormspecMessage(session_t peer_id, const std::string &formspec,
 		const std::string &formname);
-	void SendHUDAdd(session_t peer_id, u32 id, HudElement *form);
+	void SendHUDAdd(session_t peer_id, u32 id, const HudElement *form);
 	void SendHUDRemove(session_t peer_id, u32 id);
 	void SendHUDChange(session_t peer_id, u32 id, HudElementStat stat, void *value);
 	void SendHUDSetFlags(session_t peer_id, u32 flags, u32 mask);

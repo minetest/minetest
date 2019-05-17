@@ -1398,6 +1398,11 @@ void PlayerSAO::disconnected()
 	m_pending_removal = true;
 }
 
+void PlayerSAO::updatePeerId()
+{
+	m_peer_id = m_player ? m_player->getPeerId() : PEER_ID_INEXISTENT;
+}
+
 void PlayerSAO::unlinkPlayerSessionAndSave()
 {
 	assert(m_player->getPlayerSAO() == this);

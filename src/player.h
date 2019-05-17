@@ -200,6 +200,7 @@ public:
 	u32         addHud(HudElement* hud);
 	HudElement* removeHud(u32 id);
 	void        clearHud();
+	const std::vector<HudElement *> &getHudList() const { return hud; };
 
 	u32 hud_flags;
 	s32 hud_hotbar_itemcount;

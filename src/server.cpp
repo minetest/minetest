@@ -959,7 +959,7 @@ void Server::Receive()
 	}
 }
 
-PlayerSAO* Server::StageTwoClientInit(session_t peer_id)
+PlayerSAO* Server::StageTwoClientInit(session_t peer_id, bool &ghost_kick)
 {
 	std::string playername;
 	PlayerSAO *playersao = NULL;
@@ -980,18 +980,27 @@ PlayerSAO* Server::StageTwoClientInit(session_t peer_id)
 
 	// If failed, cancel
 	if (!playersao || !player) {
-		if (player && player->getPeerId() != PEER_ID_INEXISTENT) {
-			actionstream << "Server: Failed to emerge player \"" << playername
-					<< "\" (player allocated to an another client)" << std::endl;
-			DenyAccess_Legacy(peer_id, L"Another client is connected with this "
-					L"name. If your client closed unexpectedly, try again in "
-					L"a minute.");
+		if (player) {
+			actionstream << "Server: Cannot ghost-kick \"" << playername <<
+					"\" from another address." << std::endl;
+			DenyAccess(peer_id, SERVER_ACCESSDENIED_ALREADY_CONNECTED);
 		} else {
 			errorstream << "Server: " << playername << ": Failed to emerge player"
 					<< std::endl;
-			DenyAccess_Legacy(peer_id, L"Could not allocate player.");
+			DenyAccess_Legacy(peer_id, L"Server error: Could not allocate player.");
 		}
 		return NULL;
+	}
+
+	// Player already joined: Redirect the peer ID
+	if (player->getPeerId() != peer_id) {
+		session_t ghost_peer = player->getPeerId();
+		player->setPeerId(peer_id);
+		playersao->updatePeerId();
+		DenyAccess(ghost_peer, SERVER_ACCESSDENIED_GHOST_KICK);
+		actionstream << "Ghosted player '" << playername << "'. old_peer=" <<
+				ghost_peer << ", new_peer=" << peer_id << std::endl;
+		ghost_kick = true;
 	}
 
 	/*
@@ -1004,6 +1013,9 @@ PlayerSAO* Server::StageTwoClientInit(session_t peer_id)
 
 	// Send inventory formspec
 	SendPlayerInventoryFormspec(peer_id);
+
+	// Send formspec prepends
+	SendPlayerFormspecPrepend(peer_id);
 
 	// Send inventory
 	SendInventory(playersao, false);
@@ -1368,7 +1380,7 @@ void Server::SendPlayerHPOrDie(PlayerSAO *playersao, const PlayerHPChangeReason 
 	if (playersao->isImmortal())
 		return;
 
-	session_t peer_id = playersao->getPeerID();
+	session_t peer_id = playersao->getPeerId();
 	bool is_alive = playersao->getHP() > 0;
 
 	if (is_alive)
@@ -1485,7 +1497,7 @@ void Server::SendInventory(PlayerSAO *sao, bool incremental)
 		Serialize it
 	*/
 
-	NetworkPacket pkt(TOCLIENT_INVENTORY, 0, sao->getPeerID());
+	NetworkPacket pkt(TOCLIENT_INVENTORY, 0, sao->getPeerId());
 
 	std::ostringstream os(std::ios::binary);
 	sao->getInventory()->serialize(os, incremental);
@@ -1648,7 +1660,7 @@ void Server::SendDeleteParticleSpawner(session_t peer_id, u32 id)
 
 }
 
-void Server::SendHUDAdd(session_t peer_id, u32 id, HudElement *form)
+void Server::SendHUDAdd(session_t peer_id, u32 id, const HudElement *form)
 {
 	NetworkPacket pkt(TOCLIENT_HUDADD, 0 , peer_id);
 
@@ -1786,7 +1798,7 @@ void Server::SendPlayerBreath(PlayerSAO *sao)
 	assert(sao);
 
 	m_script->player_event(sao, "breath_changed");
-	SendBreath(sao->getPeerID(), sao->getBreath());
+	SendBreath(sao->getPeerId(), sao->getBreath());
 }
 
 void Server::SendMovePlayer(session_t peer_id)
@@ -3686,10 +3698,17 @@ PlayerSAO* Server::emergePlayer(const char *name, session_t peer_id, u16 proto_v
 	*/
 	RemotePlayer *player = m_env->getPlayer(name);
 
-	// If player is already connected, cancel
 	if (player && player->getPeerId() != PEER_ID_INEXISTENT) {
-		infostream<<"emergePlayer(): Player already connected"<<std::endl;
-		return NULL;
+		if (!m_dedicated && player->getPeerId() == PEER_ID_SERVER + 1)
+			return nullptr; // First peer also runs the server
+
+		Address new_address = getPeerAddress(peer_id);
+		Address old_address = getPeerAddress(player->getPeerId());
+		if (new_address != old_address)
+			return nullptr; // Must be same IP to replace peer
+
+		// Player already ingame? Replace old peer
+		return player->getPlayerSAO();
 	}
 
 	/*

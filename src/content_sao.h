@@ -287,7 +287,8 @@ public:
 	void disconnected();
 
 	RemotePlayer *getPlayer() { return m_player; }
-	session_t getPeerID() const { return m_peer_id; }
+	session_t getPeerId() const { return m_peer_id; }
+	void updatePeerId();
 
 	// Cheat prevention
 
@@ -352,7 +353,7 @@ private:
 	void unlinkPlayerSessionAndSave();
 
 	RemotePlayer *m_player = nullptr;
-	session_t m_peer_id = 0;
+	session_t m_peer_id = PEER_ID_INEXISTENT;
 
 	// Cheat prevention
 	LagPool m_dig_pool;
