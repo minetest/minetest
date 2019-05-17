@@ -96,19 +96,16 @@ local function start_install(calling_dialog, package)
 
 				if conf_path then
 					local conf = Settings(conf_path)
-					local function set_def(key, value)
-						if conf:get(key) == nil then
-							conf:set(key, value)
-						end
-					end
 					if name_is_title then
-						set_def("name",    result.package.title)
+						conf:set("name",   result.package.title)
 					else
-						set_def("title",   result.package.title)
-						set_def("name",    result.package.name)
+						conf:set("title",  result.package.title)
+						conf:set("name",   result.package.name)
 					end
-					set_def("description", result.package.short_description)
-					set_def("author",      result.package.author)
+					if not conf:get("description") then
+						conf:set("description", result.package.short_description)
+					end
+					conf:set("author",     result.package.author)
 					conf:set("release",    result.package.release)
 					conf:write()
 				end
