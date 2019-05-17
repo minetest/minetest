@@ -2209,12 +2209,10 @@ Elements
 ### `tabheader[<X>,<Y>;<H>;<name>;<caption 1>,<caption 2>,...,<caption n>;<current_tab>;<transparent>;<draw_border>]`
 
 * Show a tab**header** at specific position (ignores formsize)
-* **Important note**: This syntax for tabheaders can only be used if the new
+* **Important Note**: The tabheader height can only be modified if the new
   coordinate system is enabled.
 * `X` and `Y`: position of the tabheader
 * `H`: height of the tabheader
-* **Important Note**: The tabheader height can only be modified if the new
-  coordinate system is enabled.
 * `name` fieldname data is transferred to Lua
 * `caption 1`...: name shown on top of tab
 * `current_tab`: index of selected tab 1...
