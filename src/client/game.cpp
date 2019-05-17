@@ -1966,6 +1966,8 @@ void Game::processKeyInput()
 		client->makeScreenshot();
 	} else if (wasKeyDown(KeyType::TOGGLE_BLOCK_BOUNDS)) {
 		toggleBlockBounds();
+	} else if (wasKeyDown(KeyType::TOGGLE_360_VIDEO)) {
+		client->toggle360Video();
 	} else if (wasKeyDown(KeyType::TOGGLE_HUD)) {
 		m_game_ui->toggleHud();
 	} else if (wasKeyDown(KeyType::MINIMAP)) {

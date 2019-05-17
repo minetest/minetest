@@ -26,6 +26,8 @@ class RenderingCoreEquirectangular : public RenderingCoreCubeMap
 protected:
 	Client *client;
 	core::dimension2du image_size;
+	core::dimension2du output_size;
+	core::dimension2du cubemap_size;
 	video::ITexture *renderOutput;
 	bool saveAsImage;
 

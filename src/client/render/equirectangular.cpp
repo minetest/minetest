@@ -31,17 +31,21 @@ RenderingCoreEquirectangular::RenderingCoreEquirectangular(
 	IrrlichtDevice *_device, Client *_client, Hud *_hud)
 	: RenderingCoreCubeMap(_device, _client, _hud), client(_client)
 {
+	image_size = {screensize.X, screensize.Y};
+
 	saveAsImage = g_settings->getBool("360video_save");
+	u32 sz = saveAsImage ?
+			g_settings->getU32("360video_size") : screensize.Y;
+	output_size = {sz * 2, sz};
+	cubemap_size = {sz / 2, sz / 2};
 }
 
 void RenderingCoreEquirectangular::initTextures()
 {
-	RenderingCoreCubeMap::initTextures();
-
-	image_size = {screensize.X, screensize.Y};
+	RenderingCoreCubeMap::initTextures(cubemap_size);
 
 	renderOutput = driver->addRenderTargetTexture(
-				image_size, "3d_render_eq", video::ECF_A8R8G8B8);
+			output_size, "3d_render_eq", video::ECF_A8R8G8B8);
 }
 
 void RenderingCoreEquirectangular::clearTextures()
@@ -59,7 +63,7 @@ void RenderingCoreEquirectangular::processImages()
 	for (int i = 0; i < 6; i ++)
 		pixelf[i] = (u32 *) faces[i]->lock();
 
-	u32 dims = image_size.Width / 4;
+	u32 dims = output_size.Width / 4;
 	for (u32 j = 0; j < dims * 2; j ++) {
 		double v = 1.0 - (double) j / (dims * 2);
 		double phi = v * core::PI;
@@ -129,24 +133,26 @@ void RenderingCoreEquirectangular::processImages()
 
 void RenderingCoreEquirectangular::drawAll()
 {
-	// These two steps are required to remove any camera settings
-	// applied before. TODO Find other ways to fix this problem.
-	useFace(0);
+	driver->setRenderTarget(nullptr, false, false, skycolor);
 	draw3D();
+	drawHUD();
 
+	if (!client->is360VideoMode())
+		return;
+
+	camera->m_enable_draw_wielded_tool = false;
 	for (int i = 0; i < 6; i ++) {
 		useFace(i);
 		draw3D();
 	}
-
-	driver->setRenderTarget(nullptr, false, false, skycolor);
+	camera->m_enable_draw_wielded_tool = true;
 
 	processImages();
 
-	driver->draw2DImage(renderOutput, v2s32(0, 0));
-
 	if (saveAsImage) {
-		video::IImage *const raw_image = driver->createScreenShot();
+		video::IImage *const raw_image = driver->createImageFromData(
+				renderOutput->getColorFormat(), renderOutput->getSize(),
+				renderOutput->lock());
 
 		if (!raw_image)
 			return;
@@ -157,14 +163,14 @@ void RenderingCoreEquirectangular::drawAll()
 		char timetstamp_c[32];
 		strftime(timetstamp_c, sizeof(timetstamp_c), "%Y%m%d_%H%M%S", tm);
 
-		std::string filename_base = g_settings->get("screenshot_path")
+		std::string filename_base = g_settings->get("360video_path")
 				+ DIR_DELIM
 				+ std::string("360shot_")
 				+ std::string(timetstamp_c);
-		std::string filename_ext = "." + g_settings->get("screenshot_format");
+		std::string filename_ext = "." + g_settings->get("360video_format");
 		std::string filename;
 
-		u32 quality = (u32)g_settings->getS32("screenshot_quality");
+		u32 quality = (u32)g_settings->getS32("360video_quality");
 		quality = MYMIN(MYMAX(quality, 0), 100) / 100.0 * 255;
 
 		// Try to find a unique filename
@@ -198,5 +204,9 @@ void RenderingCoreEquirectangular::drawAll()
 			}
 		}
 		raw_image->drop();
+		renderOutput->unlock();
+	} else {
+		driver->setRenderTarget(nullptr, false, false, skycolor);
+		driver->draw2DImage(renderOutput, v2s32(0, 0));
 	}
 }

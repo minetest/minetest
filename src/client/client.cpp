@@ -1874,6 +1874,24 @@ void Client::makeScreenshot()
 	raw_image->drop();
 }
 
+void Client::toggle360Video()
+{
+	std::ostringstream sstr;
+	if (g_settings->get("3d_mode") != "equirectangular") {
+		sstr << "360 video mode failed: 3D mode is not equirectangular!";
+	} else {
+		m_is_360_video_mode = !m_is_360_video_mode;
+		if (m_is_360_video_mode)
+			sstr << "Entering 360 video mode";
+		else
+			sstr << "Leaving 360 video mode";
+		if (g_settings->getBool("360video_save"))
+			sstr << " (save to file)";
+	}
+	pushToChatQueue(new ChatMessage(CHATMESSAGE_TYPE_SYSTEM,
+			narrow_to_wide(sstr.str())));
+}
+
 bool Client::shouldShowMinimap() const
 {
 	return !m_minimap_disabled_by_server;

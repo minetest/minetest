@@ -53,6 +53,10 @@ void set_default_settings()
 	settings->setDefault("screenshot_path", "screenshots");
 	settings->setDefault("screenshot_format", "png");
 	settings->setDefault("screenshot_quality", "0");
+	settings->setDefault("360video_path", ".");
+	settings->setDefault("360video_format", "png");
+	settings->setDefault("360video_quality", "0");
+	settings->setDefault("360video_size", "1080");
 	settings->setDefault("360video_save", "false");
 	settings->setDefault("client_unload_unused_data_timeout", "600");
 	settings->setDefault("client_mapblock_limit", "7500");
@@ -112,6 +116,7 @@ void set_default_settings()
 	settings->setDefault("keymap_toggle_profiler", "KEY_F6");
 	settings->setDefault("keymap_camera_mode", "KEY_KEY_C");
 	settings->setDefault("keymap_screenshot", "KEY_F12");
+	settings->setDefault("keymap_toggle_360_video", "KEY_F8");
 	settings->setDefault("keymap_increase_viewing_range_min", "+");
 	settings->setDefault("keymap_decrease_viewing_range_min", "-");
 	settings->setDefault("keymap_slot1", "KEY_KEY_1");

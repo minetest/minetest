@@ -269,6 +269,10 @@ keymap_minimap (Minimap key) key KEY_KEY_V
 #    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
 keymap_screenshot (Screenshot) key KEY_F12
 
+#    Key for toggling 360 video mode.
+#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+keymap_toggle_360_video (360 video mode key) key KEY_F8
+
 #    Key for dropping the currently selected item.
 #    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
 keymap_drop (Drop item key) key KEY_KEY_Q
@@ -958,9 +962,23 @@ screenshot_format (Screenshot format) enum png png,jpg
 #    Use 0 for default quality.
 screenshot_quality (Screenshot quality) int 0 0 100
 
+#    Path to save 360 video image at.
+360video_path (360 video image folder) path
+
+#    Format of 360 video image.
+360video_format (360 video image format) enum png png,jpg,bmp,pcx,ppm,tga
+
+#    360 video image quality. Only used for JPEG
+#    format. 1 means worst quality; 100 means best
+#    quality. Use 0 for default quality.
+360video_quality (360 video image quality) int 0 0 100
+
+#    360 video image size. The output will be
+#    <size> px in width and 2 * <size> px in height.
+360video_size (360 video image size) int 1080
+
 #    Save equirectangular projection (360 video
-#    output) as series of images. Make sure you
-#    check other screenshot settings.
+#    image output) as series of images.
 360video_save (360 video save shots) bool false
 
 [*Advanced]
