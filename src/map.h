@@ -389,7 +389,7 @@ public:
 		Misc. helper functions for fiddling with directory and file
 		names when saving
 	*/
-	void createDirs(std::string path);
+	void createDirs(const std::string &path);
 	// returns something like "map/sectors/xxxxxxxx"
 	std::string getSectorDir(v2s16 pos, int layout = 2);
 	// dirname: final directory name

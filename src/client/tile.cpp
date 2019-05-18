@@ -131,7 +131,8 @@ std::string getTexturePath(const std::string &filename)
 		Check from texture_path
 	*/
 	for (const auto &path : getTextureDirs()) {
-		std::string testpath = path + DIR_DELIM + filename;
+		std::string testpath = path + DIR_DELIM;
+		testpath.append(filename);
 		// Check all filename extensions. Returns "" if not found.
 		fullpath = getImagePath(testpath);
 		if (!fullpath.empty())

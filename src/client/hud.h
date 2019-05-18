@@ -81,7 +81,7 @@ public:
 	void drawLuaElements(const v3s16 &camera_offset);
 
 private:
-	void drawStatbar(v2s32 pos, u16 corner, u16 drawdir, std::string texture,
+	void drawStatbar(v2s32 pos, u16 corner, u16 drawdir, const std::string &texture,
 			s32 count, v2s32 offset, v2s32 size = v2s32());
 
 	void drawItems(v2s32 upperleftpos, v2s32 screen_offset, s32 itemcount,

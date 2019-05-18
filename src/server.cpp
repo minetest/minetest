@@ -3207,7 +3207,7 @@ bool Server::hudSetHotbarItemcount(RemotePlayer *player, s32 hotbar_itemcount)
 	return true;
 }
 
-void Server::hudSetHotbarImage(RemotePlayer *player, std::string name)
+void Server::hudSetHotbarImage(RemotePlayer *player, const std::string &name)
 {
 	if (!player)
 		return;
@@ -3216,7 +3216,7 @@ void Server::hudSetHotbarImage(RemotePlayer *player, std::string name)
 	SendHUDSetParam(player->getPeerId(), HUD_PARAM_HOTBAR_IMAGE, name);
 }
 
-void Server::hudSetHotbarSelectedImage(RemotePlayer *player, std::string name)
+void Server::hudSetHotbarSelectedImage(RemotePlayer *player, const std::string &name)
 {
 	if (!player)
 		return;

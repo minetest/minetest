@@ -296,8 +296,8 @@ public:
 	bool hudChange(RemotePlayer *player, u32 id, HudElementStat stat, void *value);
 	bool hudSetFlags(RemotePlayer *player, u32 flags, u32 mask);
 	bool hudSetHotbarItemcount(RemotePlayer *player, s32 hotbar_itemcount);
-	void hudSetHotbarImage(RemotePlayer *player, std::string name);
-	void hudSetHotbarSelectedImage(RemotePlayer *player, std::string name);
+	void hudSetHotbarImage(RemotePlayer *player, const std::string &name);
+	void hudSetHotbarSelectedImage(RemotePlayer *player, const std::string &name);
 
 	Address getPeerAddress(session_t peer_id);
 

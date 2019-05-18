@@ -518,7 +518,7 @@ void GUIEngine::drawFooter(video::IVideoDriver *driver)
 }
 
 /******************************************************************************/
-bool GUIEngine::setTexture(texture_layer layer, std::string texturepath,
+bool GUIEngine::setTexture(texture_layer layer, const std::string &texturepath,
 		bool tile_image, unsigned int minsize)
 {
 	video::IVideoDriver *driver = RenderingEngine::get_video_driver();
@@ -593,7 +593,7 @@ void GUIEngine::updateTopLeftTextSize()
 }
 
 /******************************************************************************/
-s32 GUIEngine::playSound(SimpleSoundSpec spec, bool looped)
+s32 GUIEngine::playSound(const SimpleSoundSpec &spec, bool looped)
 {
 	s32 handle = m_sound_manager->playSound(spec, looped);
 	return handle;
