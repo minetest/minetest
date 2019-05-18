@@ -271,9 +271,11 @@ void ClientMap::updateDrawList()
 			v3s16 block_coord = block->getPos();
 			v3s16 block_position = block->getPosRelative() + MAP_BLOCKSIZE / 2;
 
-			// First, perform a simple distance check, with a padding of one extra block.
+			// First, perform a simple distance check, with a padding of one extra block,
+			// except when in 360 video mode.
 			if (!m_control.range_all &&
-					block_position.getDistanceFrom(cam_pos_nodes) > range + MAP_BLOCKSIZE)
+					block_position.getDistanceFrom(cam_pos_nodes) > range + MAP_BLOCKSIZE &&
+					!m_client->is360VideoMode())
 				continue; // Out of range, skip.
 
 			// Keep the block alive as long as it is in range.
