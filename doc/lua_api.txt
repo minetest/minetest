@@ -6510,10 +6510,14 @@ Used by `minetest.register_biome`.
         depth_riverbed = 2,
         -- Node placed under river water and thickness of this layer
 
-        node_cave_liquid = "default:water_source",
-        -- Nodes placed as a blob of liquid in 50% of large caves.
-        -- If absent, cave liquids fall back to classic behaviour of lava or
-        -- water distributed according to a hardcoded 3D noise.
+        node_cave_liquid = "default:lava_source",
+        node_cave_liquid = {"default:water_source", "default:lava_source"},
+        -- Nodes placed inside 50% of the medium size caves.
+        -- Multiple nodes can be specified, each cave will use a randomly
+        -- chosen node from the list.
+        -- If this field is left out or 'nil', cave liquids fall back to
+        -- classic behaviour of lava and water distributed using 3D noise.
+        -- For no cave liquid, specify "air".
 
         node_dungeon = "default:cobble",
         -- Node used for primary dungeon structure.

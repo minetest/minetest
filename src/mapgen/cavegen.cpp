@@ -321,9 +321,26 @@ void CavesRandomWalk::makeCave(MMVManip *vm, v3s16 nmin, v3s16 nmax,
 
 	this->ystride = nmax.X - nmin.X + 1;
 
+	flooded = ps->range(1, 2) == 2;
+
+	// If flooded:
+	// Get biome at mapchunk midpoint. If cave liquid defined for biome, use it.
+	// If defined liquid is "air", disable 'flooded' to avoid placing "air".
+	use_biome_liquid = false;
+	if (flooded && bmgn) {
+		v3s16 midp = node_min + (node_max - node_min) / v3s16(2, 2, 2);
+		Biome *biome = (Biome *)bmgn->getBiomeAtPoint(midp);
+		if (biome->c_cave_liquid[0] != CONTENT_IGNORE) {
+			use_biome_liquid = true;
+			c_biome_liquid =
+				biome->c_cave_liquid[ps->range(0, biome->c_cave_liquid.size() - 1)];
+			if (c_biome_liquid == CONTENT_AIR)
+				flooded = false;
+		}
+	}
+
 	// Set initial parameters from randomness
 	int dswitchint = ps->range(1, 14);
-	flooded = ps->range(1, 2) == 2;
 
 	if (large_cave) {
 		part_max_length_rs = ps->range(2, 4);
@@ -502,31 +519,19 @@ void CavesRandomWalk::carveRoute(v3f vec, float f, bool randomize_xz)
 	fp.Z += 0.1f * ps->range(-10, 10);
 	v3s16 cp(fp.X, fp.Y, fp.Z);
 
-	// Get biome at 'cp + of', the absolute centre point of this route
-	v3s16 cpabs = cp + of;
+	// Choose cave liquid
 	MapNode liquidnode = CONTENT_IGNORE;
 
-	if (bmgn) {
-		Biome *biome = nullptr;
-		if (cpabs.X < node_min.X || cpabs.X > node_max.X ||
-				cpabs.Z < node_min.Z || cpabs.Z > node_max.Z)
-			// Point is outside heat and humidity noise maps so use point noise
-			// calculations.
-			biome = (Biome *)bmgn->calcBiomeAtPoint(cpabs);
-		else
-			// Point is inside heat and humidity noise maps so use them
-			biome = (Biome *)bmgn->getBiomeAtPoint(cpabs);
-
-		if (biome->c_cave_liquid != CONTENT_IGNORE)
-			liquidnode = biome->c_cave_liquid;
-	}
-
-	if (liquidnode == CONTENT_IGNORE) {
-		// Fallback to classic behaviour using point 'startp'
-		float nval = NoisePerlin3D(np_caveliquids, startp.X,
-			startp.Y, startp.Z, seed);
-		liquidnode = (nval < 0.40f && node_max.Y < lava_depth) ?
-			lavanode : waternode;
+	if (flooded) {
+		if (use_biome_liquid) {
+			liquidnode = c_biome_liquid;
+		} else {
+			// If cave liquid not defined by biome, fallback to old hardcoded behaviour
+			float nval = NoisePerlin3D(np_caveliquids, startp.X,
+				startp.Y, startp.Z, seed);
+			liquidnode = (nval < 0.40f && node_max.Y < lava_depth) ?
+				lavanode : waternode;
+		}
 	}
 
 	s16 d0 = -rs / 2;
