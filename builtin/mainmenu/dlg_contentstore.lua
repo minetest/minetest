@@ -296,9 +296,9 @@ function store.load()
 
 			local name_len = #package.name
 			if package.type == "game" and name_len > 5 and package.name:sub(name_len - 4) == "_game" then
-				package.id = package.author .. "/" .. package.name:sub(1, name_len - 5)
+				package.id = package.author:lower() .. "/" .. package.name:sub(1, name_len - 5)
 			else
-				package.id = package.author .. "/" .. package.name
+				package.id = package.author:lower() .. "/" .. package.name
 			end
 		end
 
@@ -314,22 +314,22 @@ function store.update_paths()
 	pkgmgr.refresh_globals()
 	for _, mod in pairs(pkgmgr.global_mods:get_list()) do
 		if mod.author then
-			mod_hash[mod.author .. "/" .. mod.name] = mod
+			mod_hash[mod.author:lower() .. "/" .. mod.name] = mod
 		end
 	end
 
 	local game_hash = {}
 	pkgmgr.update_gamelist()
 	for _, game in pairs(pkgmgr.games) do
-		if game.author then
-			game_hash[game.author .. "/" .. game.id] = game
+		if game.author ~= "" then
+			game_hash[game.author:lower() .. "/" .. game.id] = game
 		end
 	end
 
 	local txp_hash = {}
 	for _, txp in pairs(pkgmgr.get_texture_packs()) do
 		if txp.author then
-			txp_hash[txp.author .. "/" .. txp.name] = txp
+			txp_hash[txp.author:lower() .. "/" .. txp.name] = txp
 		end
 	end
 
