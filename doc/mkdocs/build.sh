@@ -1,9 +1,7 @@
 #!/bin/sh -e
 
-# Patch Pygments and Python-Markdown
-PYGMENTS_FILE=$(pip show pygments | awk '/Location/ { print $2 }')/pygments/formatters/html.py
+# Patch Python-Markdown
 MARKDOWN_FILE=$(pip show markdown | awk '/Location/ { print $2 }')/markdown/extensions/codehilite.py
-patch -N -r - $PYGMENTS_FILE code_tag.patch || true
 patch -N -r - $MARKDOWN_FILE lua_highlight.patch || true
 
 # Split lua_api.txt on top level headings
