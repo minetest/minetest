@@ -889,7 +889,7 @@ public:
 		// while remembering the latest, highest priority recipe.
 		CraftDefinition::RecipePriority priority_best =
 			CraftDefinition::NO_RECIPE;
-		CraftDefinition *def_best;
+		CraftDefinition *def_best = nullptr;
 		for (int type = 0; type <= craft_hash_type_max; type++) {
 			u64 hash = getHashForGrid((CraftHashType) type, input_names);
 
