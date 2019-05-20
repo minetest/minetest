@@ -19,7 +19,7 @@ builddir="$( cd "$builddir" && pwd )"
 packagedir=$builddir/packages
 libdir=$builddir/libs
 
-toolchain_file=$dir/toolchain_mingw64.cmake
+toolchain_file=$dir/toolchain_x86_64-w64-mingw32.cmake
 irrlicht_version=1.8.4
 ogg_version=1.3.2
 vorbis_version=1.3.5
