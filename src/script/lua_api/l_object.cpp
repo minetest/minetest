@@ -750,17 +750,26 @@ int ObjectRef::l_set_properties(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
 	ServerActiveObject *co = getobject(ref);
-	if (co == NULL) return 0;
+	if (!co)
+		return 0;
+
 	ObjectProperties *prop = co->accessObjectProperties();
 	if (!prop)
 		return 0;
+
 	read_object_properties(L, 2, prop, getServer(L)->idef());
+
 	if (prop->hp_max < co->getHP()) {
 		PlayerHPChangeReason reason(PlayerHPChangeReason::SET_HP);
 		co->setHP(prop->hp_max, reason);
 		if (co->getType() == ACTIVEOBJECT_TYPE_PLAYER)
 			getServer(L)->SendPlayerHPOrDie((PlayerSAO *)co, reason);
 	}
+
+	if (co->getType() == ACTIVEOBJECT_TYPE_PLAYER &&
+			prop->breath_max < co->getBreath())
+		co->setBreath(prop->breath_max);
+
 	co->notifyObjectPropertiesModified();
 	return 0;
 }
