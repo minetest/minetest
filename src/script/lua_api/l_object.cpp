@@ -759,16 +759,17 @@ int ObjectRef::l_set_properties(lua_State *L)
 
 	read_object_properties(L, 2, prop, getServer(L)->idef());
 
+	PlayerSAO *player = getplayersao(ref);
+
 	if (prop->hp_max < co->getHP()) {
 		PlayerHPChangeReason reason(PlayerHPChangeReason::SET_HP);
 		co->setHP(prop->hp_max, reason);
-		if (co->getType() == ACTIVEOBJECT_TYPE_PLAYER)
-			getServer(L)->SendPlayerHPOrDie((PlayerSAO *)co, reason);
+		if (player)
+			getServer(L)->SendPlayerHPOrDie(player, reason);
 	}
 
-	if (co->getType() == ACTIVEOBJECT_TYPE_PLAYER &&
-			prop->breath_max < co->getBreath())
-		co->setBreath(prop->breath_max);
+	if (player && prop->breath_max < player->getBreath())
+		player->setBreath(prop->breath_max);
 
 	co->notifyObjectPropertiesModified();
 	return 0;
