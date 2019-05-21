@@ -410,7 +410,7 @@ Biome *read_biome_def(lua_State *L, int index, const NodeDefManager *ndef)
 	// If no cave liquids defined, set list to "ignore" to trigger old hardcoded
 	// cave liquid behaviour.
 	if (nnames == 0) {
-		nn.push_back("ignore");
+		nn.emplace_back("ignore");
 		nnames = 1;
 	}
 	b->m_nnlistsizes.push_back(nnames);
