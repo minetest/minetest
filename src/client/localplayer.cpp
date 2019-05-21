@@ -496,7 +496,6 @@ void LocalPlayer::applyControl(float dtime, Environment *env)
 	bool pitch_move = (free_move || in_liquid) && player_settings.pitch_move;
 	// When aux1_descends is enabled the fast key is used to go down, so fast isn't possible
 	bool fast_climb = fast_move && control.aux1 && !player_settings.aux1_descends;
-	bool continuous_forward = player_settings.continuous_forward;
 	bool always_fly_fast = player_settings.always_fly_fast;
 
 	// Whether superspeed mode is used or not
@@ -583,16 +582,8 @@ void LocalPlayer::applyControl(float dtime, Environment *env)
 		}
 	}
 
-	if (continuous_forward)
-		speedH += v3f(0,0,1);
-
 	if (control.up) {
-		if (continuous_forward) {
-			if (fast_move)
-				superspeed = true;
-		} else {
-			speedH += v3f(0,0,1);
-		}
+		speedH += v3f(0,0,1);
 	}
 	if (control.down) {
 		speedH -= v3f(0,0,1);
@@ -1111,7 +1102,7 @@ void LocalPlayer::handleAutojump(f32 dtime, Environment *env,
 	if (m_autojump)
 		return;
 
-	bool control_forward = control.up || player_settings.continuous_forward ||
+	bool control_forward = control.up ||
 			(!control.up && !control.down &&
 			control.forw_move_joystick_axis < -0.05);
 	bool could_autojump =

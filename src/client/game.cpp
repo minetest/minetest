@@ -2483,6 +2483,12 @@ void Game::updatePlayerControl(const CameraOrientation &cam)
 		keypress_bits |= 1U << 4;
 	}
 
+	// autoforward if set: simulate "up" key
+	if (player->getPlayerSettings().continuous_forward) {
+		control.up = true;
+		keypress_bits |= 1U << 0;
+	}
+
 	client->setPlayerControl(control);
 	player->keyPressed = keypress_bits;
 
