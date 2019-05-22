@@ -1981,14 +1981,14 @@ Elements
 
 * Show an inventory list if it has been sent to the client. Nothing will
   be shown if the inventory list is of size 0.
-* **Note**: The spacing between inventory places is not affected by the
+* **Note**: The spacing between inventory slots is not affected by the
   new coordinate system.
 
 ### `list[<inventory location>;<list name>;<X>,<Y>;<W>,<H>;<starting item index>]`
 
 * Show an inventory list if it has been sent to the client. Nothing will
   be shown if the inventory list is of size 0.
-* **Note**: The spacing between inventory places is not affected by the
+* **Note**: The spacing between inventory slots is not affected by the
   new coordinate system.
 
 ### `listring[<inventory location>;<list name>]`
@@ -2092,8 +2092,8 @@ Elements
 * Textual field; will be sent to server when a button is clicked
 * When enter is pressed in field, `fields.key_enter_field` will be sent with
   the name of this field.
-* Fields are a set height, but will be vertically centred on `H` with the old
-  system.  With the new coordinate system, `H` will modify the height.
+* With the old coordinate system, fields are a set height, but will be vertically
+  centred on `H`. With the new coordinate system, `H` will modify the height.
 * `name` is the name of the field as returned in fields to `on_receive_fields`
 * `label`, if not blank, will be text printed on the top left above the field
 * `default` is the default value of the field
@@ -2142,8 +2142,8 @@ Elements
 ### `button[<X>,<Y>;<W>,<H>;<name>;<label>]`
 
 * Clickable button. When clicked, fields will be sent.
-* Fixed button height. It will be vertically centred on `H` with the old system.
-  With the new coordinate system, `H` will modify the height.
+* With the old coordinate system, buttons are a set height, but will be vertically
+  centred on `H`. With the new coordinate system, `H` will modify the height.
 * `label` is the text on the button
 
 ### `image_button[<X>,<Y>;<W>,<H>;<texture name>;<name>;<label>]`
