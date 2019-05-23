@@ -20,13 +20,15 @@ packagedir=$builddir/packages
 libdir=$builddir/libs
 
 # Test which win32 compiler is present
-which i686-w64-mingw32-windres &&	toolchain_file=$dir/toolchain_i646-w64-mingw32.cmake
-which i586-mingw32msvc-windres &&	toolchain_file=$dir/toolchain_i586-mingw32msvc.cmake
+which i686-w64-mingw32-windres > /dev/null 2>&1 && toolchain_file=$dir/toolchain_i646-w64-mingw32.cmake
+which i586-mingw32msvc-windres > /dev/null 2>&1 && toolchain_file=$dir/toolchain_i586-mingw32msvc.cmake
 
-if [ ! $toolchain_file ]
+if [ -z "$toolchain_file" ]
 then
 	echo "Unable to determine which mingw32 compiler to use"
 	exit 1
+else
+	echo "Using $toolchain_file"
 fi
 
 irrlicht_version=1.8.4
