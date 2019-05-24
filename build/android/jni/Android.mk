@@ -185,6 +185,7 @@ LOCAL_SRC_FILES := \
 		jni/src/gui/guiKeyChangeMenu.cpp          \
 		jni/src/gui/guiPasswordChange.cpp         \
 		jni/src/gui/guiPathSelectMenu.cpp         \
+		jni/src/gui/guiScrollBar.cpp              \
 		jni/src/gui/guiTable.cpp                  \
 		jni/src/gui/guiVolumeChange.cpp           \
 		jni/src/gui/intlGUIEditBox.cpp            \
