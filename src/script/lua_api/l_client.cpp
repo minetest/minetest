@@ -366,6 +366,33 @@ int ModApiClient::l_get_builtin_path(lua_State *L)
 	return 1;
 }
 
+// get_player_modes()
+int ModApiClient::l_get_player_modes(lua_State *L)
+{
+	lua_newtable(L);
+	lua_pushboolean(L, g_settings->getBool("free_move"));
+	lua_setfield(L, -2, "free_move");
+	lua_pushboolean(L, g_settings->getBool("fast_move"));
+	lua_setfield(L, -2, "fast_move");
+	lua_pushboolean(L, g_settings->getBool("noclip"));
+	lua_setfield(L, -2, "noclip");
+	return 1;
+}
+
+// set_player_modes()
+int ModApiClient::l_set_player_modes(lua_State *L)
+{
+	if (lua_istable(L, 1)) {
+		g_settings->setBool("free_move", getboolfield_default(
+			L, 1, "free_move", g_settings->getBool("free_move")));
+		g_settings->setBool("fast_move", getboolfield_default(
+			L, 1, "fast_move", g_settings->getBool("fast_move")));
+		g_settings->setBool("noclip", getboolfield_default(
+			L, 1, "noclip", g_settings->getBool("noclip")));
+	}
+	return 0;
+}
+
 void ModApiClient::Initialize(lua_State *L, int top)
 {
 	API_FCT(get_current_modname);
@@ -391,4 +418,6 @@ void ModApiClient::Initialize(lua_State *L, int top)
 	API_FCT(get_privilege_list);
 	API_FCT(get_builtin_path);
 	API_FCT(get_language);
+	API_FCT(get_player_modes);
+	API_FCT(set_player_modes);
 }

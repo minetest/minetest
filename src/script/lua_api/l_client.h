@@ -93,6 +93,12 @@ private:
 	// get_builtin_path()
 	static int l_get_builtin_path(lua_State *L);
 
+	// get_player_modes()
+	static int l_get_player_modes(lua_State *L);
+
+	// set_player_modes()
+	static int l_set_player_modes(lua_State *L);
+
 public:
 	static void Initialize(lua_State *L, int top);
 };

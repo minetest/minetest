@@ -757,6 +757,10 @@ Call these functions only at load time!
     * Clears the out chat queue
 * `minetest.localplayer`
     * Reference to the LocalPlayer object. See [`LocalPlayer`](#localplayer) class reference for methods.
+* `minetest.get_player_modes()`
+    * Returns a list of current player free_move, fast_move and noclip modes as boolean values indexed by mode name.
+* `minetest.set_player_modes(modes)`
+    * Sets current player modes. `modes` is a table of boolean indexed by mode name.
 
 ### Privileges
 * `minetest.get_privilege_list()`
