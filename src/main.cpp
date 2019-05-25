@@ -79,7 +79,7 @@ static void print_modified_quicktune_values();
 
 static void list_game_ids();
 static void list_worlds(bool print_name, bool print_path);
-static void setup_log_params(const Settings &cmd_args);
+static bool setup_log_params(const Settings &cmd_args);
 static bool create_userdata_path();
 static bool init_common(const Settings &cmd_args, int argc, char *argv[]);
 static void startup_message();
@@ -135,7 +135,8 @@ int main(int argc, char *argv[])
 		return 0;
 	}
 
-	setup_log_params(cmd_args);
+	if (!setup_log_params(cmd_args))
+		return 1;
 
 	porting::signal_handler_init();
 
@@ -166,8 +167,12 @@ int main(int argc, char *argv[])
 			list_worlds(true, false);
 		} else if (cmd_args.get("worldlist") == "path") {
 			list_worlds(false, true);
-		} else {
+		} else if (cmd_args.get("worldlist") == "both") {
 			list_worlds(true, true);
+		} else {
+			errorstream << "Invalid --worldlist value: "
+				<< cmd_args.get("worldlist") << std::endl;
+			return 1; 
 		}
 		return 0;
 	}
@@ -258,23 +263,17 @@ static void set_allowed_options(OptionList *allowed_options)
 	allowed_options->insert(std::make_pair("map-dir", ValueSpec(VALUETYPE_STRING,
 			_("Same as --world (deprecated)"))));
 	allowed_options->insert(std::make_pair("world", ValueSpec(VALUETYPE_STRING,
-			_("Set world path (implies local game)"))));
+			_("Set world path (implies local game if used with option --go)"))));
 	allowed_options->insert(std::make_pair("worldname", ValueSpec(VALUETYPE_STRING,
-			_("Set world by name (implies local game)"))));
+			_("Set world by name (implies local game if used with option --go)"))));
 	allowed_options->insert(std::make_pair("worldlist", ValueSpec(VALUETYPE_STRING,
-			_("Get list of worlds (implies local game) ('path' lists paths, "
+			_("Get list of worlds ('path' lists paths, "
 			"'name' lists names, 'both' lists both)"))));
 	allowed_options->insert(std::make_pair("quiet", ValueSpec(VALUETYPE_FLAG,
 			_("Print to console errors only"))));
-#if !defined(_WIN32)
 	allowed_options->insert(std::make_pair("color", ValueSpec(VALUETYPE_STRING,
 			_("Coloured logs ('always', 'never' or 'auto'), defaults to 'auto'"
 			))));
-#else
-	allowed_options->insert(std::make_pair("color", ValueSpec(VALUETYPE_STRING,
-			_("Coloured logs ('always' or 'never'), defaults to 'never'"
-			))));
-#endif
 	allowed_options->insert(std::make_pair("info", ValueSpec(VALUETYPE_FLAG,
 			_("Print more information to console"))));
 	allowed_options->insert(std::make_pair("verbose",  ValueSpec(VALUETYPE_FLAG,
@@ -398,7 +397,7 @@ static void print_modified_quicktune_values()
 	}
 }
 
-static void setup_log_params(const Settings &cmd_args)
+static bool setup_log_params(const Settings &cmd_args)
 {
 	// Quiet mode, print errors only
 	if (cmd_args.getFlag("quiet")) {
@@ -418,14 +417,16 @@ static void setup_log_params(const Settings &cmd_args)
 #endif
 	}
 	if (color_mode != "") {
-		if (color_mode == "auto")
+		if (color_mode == "auto") {
 			Logger::color_mode = LOG_COLOR_AUTO;
-		else if (color_mode == "always")
+		} else if (color_mode == "always") {
 			Logger::color_mode = LOG_COLOR_ALWAYS;
-		else if (color_mode == "never")
+		} else if (color_mode == "never") {
 			Logger::color_mode = LOG_COLOR_NEVER;
-		else
+		} else {
 			errorstream << "Invalid color mode: " << color_mode << std::endl;
+			return false;
+		}			
 	}
 
 	// If trace is enabled, enable logging of certain things
@@ -444,6 +445,8 @@ static void setup_log_params(const Settings &cmd_args)
 	// In certain cases, output verbose level on stderr
 	if (cmd_args.getFlag("verbose") || cmd_args.getFlag("trace"))
 		g_logger.addOutput(&stderr_output, LL_VERBOSE);
+
+	return true;
 }
 
 static bool create_userdata_path()
