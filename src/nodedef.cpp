@@ -1300,8 +1300,11 @@ void NodeDefManager::applyTextureOverrides(const std::string &override_filepath)
 	int line_c = 0;
 	while (std::getline(infile, line)) {
 		line_c++;
-		if (trim(line).empty())
+		// Also trim '\r' on DOS-style files
+		line = trim(line);
+		if (line.empty())
 			continue;
+
 		std::vector<std::string> splitted = str_split(line, ' ');
 		if (splitted.size() != 3) {
 			errorstream << override_filepath
