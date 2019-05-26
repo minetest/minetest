@@ -225,7 +225,9 @@ public:
 
 	void updateTexturePos();
 
-	void updateTextures(const std::string &modref);
+	// ffs this HAS TO BE a string copy! See #5739 if you think otherwise
+	// Reason: updateTextures(m_previous_texture_modifier);
+	void updateTextures(std::string mod);
 
 	void updateAnimation();
 

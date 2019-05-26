@@ -1062,7 +1062,8 @@ void GenericCAO::updateTexturePos()
 	}
 }
 
-void GenericCAO::updateTextures(const std::string &modref)
+// Do not pass by reference, see header.
+void GenericCAO::updateTextures(std::string mod)
 {
 	ITextureSource *tsrc = m_client->tsrc();
 
@@ -1071,20 +1072,8 @@ void GenericCAO::updateTextures(const std::string &modref)
 	bool use_anisotropic_filter = g_settings->getBool("anisotropic_filter");
 
 	m_previous_texture_modifier = m_current_texture_modifier;
-	m_current_texture_modifier = modref;
+	m_current_texture_modifier = mod;
 	m_glow = m_prop.glow;
-
-	// Create a reference to the copy of "modref" just created. The
-	// following code will then use this reference instead of the
-	// original parameter which was passed by reference. This is
-	// necessary as "modref" can be a class member and there is a swap on
-	// those class members which can get triggered by the rest of the
-	// code of this method. This is faster than passing the "mod" by
-	// value because it reuses the copy made by the assignment to
-	// m_current_texture_modifier for the "mod" instead of having two
-	// copies, one for "mod" and another one (created from "mod") for
-	// the m_current_texture_modifier class member.
-	const std::string &mod = m_current_texture_modifier;
 
 	video::E_MATERIAL_TYPE material_type = (m_prop.use_texture_alpha) ?
 		video::EMT_TRANSPARENT_ALPHA_CHANNEL : video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
