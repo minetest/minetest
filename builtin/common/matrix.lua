@@ -119,15 +119,6 @@ function matrix3.invert(a)
 	return b
 end
 
--- note that minetest has a left-handed coordinate system.
--- ergo the rotation will be clockwise
--- (see wikipedia for details)
-
---~ local rounding_precision = 1000000
---~ local function round(a)
-	--~ return math.floor(a * rounding_precision + 0.5) / rounding_precision
---~ end
-
 local function sin(x)
 	if x % math.pi == 0 then
 		return 0
@@ -183,45 +174,6 @@ function matrix3.rotation_around_vector(v, angle)
 	}
 end
 
---~ function matrix3.to_pitch_yaw_roll(m)
-	--~ local r = vector.new()
-	--~ if round(math.abs(m[6])) ~= 1 then
-		--~ r.x = -math.asin(m[6])
-		--~ local cosx = math.cos(r.x)
-		--~ r.y = math.atan2(m[3] / cosx, m[9] / cosx)
-		--~ r.z = math.atan2(m[4] / cosx, m[5] / cosx)
-	--~ elseif m[6] < 0 then -- gimbal lock
-		--~ r.x = math.pi / 2
-		--~ r.z = 0
-		--~ r.y = math.atan2(m[2], m[1])
-	--~ else
-		--~ r.x = -math.pi / 2
-		--~ r.z = 0
-		--~ r.y = math.atan2(-m[2], m[1])
-	--~ end
-	--~ r.x = -r.x
-	--~ r.y = -r.y
-	--~ r.z = -r.z
-	--~ return r
---~ end
---~ function matrix3.to_pitch_yaw_roll(m)
-	--~ local r = vector.new()
-	--~ if round(math.abs(m[6])) ~= 1 then
-		--~ r.x = math.asin(m[6])
-		--~ local cosx = math.cos(r.x)
-		--~ r.y = math.atan2(-m[3] / cosx, m[9] / cosx)
-		--~ r.z = math.atan2(-m[4] / cosx, m[5] / cosx)
-	--~ elseif m[6] > 0 then -- gimbal lock
-		--~ r.x = math.pi / 2
-		--~ r.z = 0
-		--~ r.y = math.atan2(m[2], m[1])
-	--~ else
-		--~ r.x = -math.pi / 2
-		--~ r.z = 0
-		--~ r.y = math.atan2(m[7], m[8])
-	--~ end
-	--~ return r
---~ end
 function matrix3.to_pitch_yaw_roll(m)
 	local r = vector.new()
 	r.y = math.atan2(-m[3], m[9])
@@ -234,8 +186,6 @@ function matrix3.to_pitch_yaw_roll(m)
 end
 
 function matrix3.from_pitch_yaw_roll(v)
-	--~ return matrix3.multiply(matrix3.multiply(matrix3.rotation_around_y(-v.y),
-			--~ matrix3.rotation_around_x(-v.x)), matrix3.rotation_around_z(-v.z))
 	local sx, cx = sin(v.x), cos(v.x)
 	local sy, cy = sin(v.y), cos(v.y)
 	local sz, cz = sin(v.z), cos(v.z)
