@@ -702,11 +702,11 @@ void ClientInterface::UpdatePlayerList()
 			if (!player)
 				continue;
 
-			infostream << "* " << player->getName() << "\t";
-
 			PlayerSAO *sao = player->getPlayerSAO();
 			if (sao && sao->isHidden())
 				continue;
+
+			infostream << "* " << player->getName() << "\t";
 
 			{
 				MutexAutoLock clientslock(m_clients_mutex);
