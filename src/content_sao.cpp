@@ -1358,6 +1358,31 @@ void PlayerSAO::setBreath(const u16 breath, bool send)
 		m_env->getGameDef()->SendPlayerBreath(this);
 }
 
+void PlayerSAO::hide()
+{
+	if (! m_hidden && m_player) {
+		Server *server = m_env->getGameDef();
+		if (! server)
+			return;
+
+		server->sendFakeJoinLeaveMessage(m_player->getName(), false);
+}
+
+	m_hidden = true;
+}
+
+void PlayerSAO::unhide()
+{
+	if (m_hidden && m_player) {
+		Server *server = m_env->getGameDef();
+		if (! server)
+			return;
+
+		server->sendFakeJoinLeaveMessage(m_player->getName(), true);
+	}
+	m_hidden = false;
+}
+
 Inventory* PlayerSAO::getInventory()
 {
 	return m_inventory;
