@@ -806,6 +806,26 @@ ClientState ClientInterface::getClientState(session_t peer_id)
 	return n->second->getState();
 }
 
+void ClientInterface::sendFakeJoinLeaveMessage(std::string player_name,
+		bool in_game)
+{
+	if (in_game) {
+		NetworkPacket notice(TOCLIENT_UPDATE_PLAYER_LIST, 0,
+			PEER_ID_INEXISTENT);
+		notice << (u8) PLAYER_LIST_ADD << (u16) 1 << player_name;
+		sendToAll(&notice);
+	} else {
+		// Inform connected clients.
+		NetworkPacket notice(TOCLIENT_UPDATE_PLAYER_LIST, 0,
+			PEER_ID_INEXISTENT);
+
+		notice << (u8) PLAYER_LIST_REMOVE << (u16) 1 << player_name;
+		sendToAll(&notice);
+	}
+
+	UpdatePlayerList();
+}
+
 void ClientInterface::setPlayerName(session_t peer_id, const std::string &name)
 {
 	MutexAutoLock clientslock(m_clients_mutex);

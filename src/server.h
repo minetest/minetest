@@ -213,6 +213,11 @@ public:
 	void stopSound(s32 handle);
 	void fadeSound(s32 handle, float step, float gain);
 
+	inline void sendFakeJoinLeaveMessage(std::string player_name, bool in_game)
+	{
+		return m_clients.sendFakeJoinLeaveMessage(player_name, in_game);
+	}
+
 	// Envlock
 	std::set<std::string> getPlayerEffectivePrivs(const std::string &name);
 	bool checkPriv(const std::string &name, const std::string &priv);
