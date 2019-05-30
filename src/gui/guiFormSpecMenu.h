@@ -395,8 +395,8 @@ protected:
 	v2s32 getElementBasePos(bool absolute,
 			const std::vector<std::string> *v_pos);
 	v2s32 getRealCoordinateBasePos(bool absolute,
-			const std::vector<std::string> *v_pos);
-	v2s32 getRealCoordinateGeometry(const std::vector<std::string> *v_geom);
+			const std::vector<std::string> &v_pos);
+	v2s32 getRealCoordinateGeometry(const std::vector<std::string> &v_geom);
 
 	v2s32 padding;
 	v2f32 spacing;
