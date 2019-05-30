@@ -2081,8 +2081,8 @@ Elements
 * Textual password style field; will be sent to server when a button is clicked
 * When enter is pressed in field, fields.key_enter_field will be sent with the
   name of this field.
-* Fields are a set height, but will be vertically centred on `H` with the old
-  system.  With the new coordinate system, `H` will modify the height.
+* With the old coordinate system, fields are a set height, but will be vertically
+  centred on `H`. With the new coordinate system, `H` will modify the height.
 * `name` is the name of the field as returned in fields to `on_receive_fields`
 * `label`, if not blank, will be text printed on the top left above the field
 * See `field_close_on_enter` to stop enter closing the formspec
@@ -2199,6 +2199,8 @@ Elements
 ### `tabheader[<X>,<Y>;<name>;<caption 1>,<caption 2>,...,<caption n>;<current_tab>;<transparent>;<draw_border>]`
 
 * Show a tab**header** at specific position (ignores formsize)
+* **Important note**: This syntax for tabheaders can only be used with the
+  old coordinate system.
 * `X` and `Y`: position of the tabheader
 * `name` fieldname data is transferred to Lua
 * `caption 1`...: name shown on top of tab
@@ -2209,8 +2211,8 @@ Elements
 ### `tabheader[<X>,<Y>;<H>;<name>;<caption 1>,<caption 2>,...,<caption n>;<current_tab>;<transparent>;<draw_border>]`
 
 * Show a tab**header** at specific position (ignores formsize)
-* **Important Note**: The tabheader height can only be modified if the new
-  coordinate system is enabled.
+* **Important note**: This syntax for tabheaders can only be used with the
+  new coordinate system.
 * `X` and `Y`: position of the tabheader
 * `H`: height of the tabheader
 * `name` fieldname data is transferred to Lua
@@ -2228,6 +2230,8 @@ Elements
 ### `dropdown[<X>,<Y>;<W>;<name>;<item 1>,<item 2>, ...,<item n>;<selected idx>]`
 
 * Show a dropdown field
+* **Important note**: This syntax for dropdowns can only be used with the
+  old coordinate system.
 * **Important note**: There are two different operation modes:
     1. handle directly on change (only changed dropdown is submitted)
     2. read the value on pressing a button (all dropdown values are available)
@@ -2240,8 +2244,8 @@ Elements
 ### `dropdown[<X>,<Y>;<W>,<H>;<name>;<item 1>,<item 2>, ...,<item n>;<selected idx>]`
 
 * Show a dropdown field
-* **Important note**: This syntax for dropdowns can only be used if the new
-  coordinate system is enabled.
+* **Important note**: This syntax for dropdowns can only be used with the
+  new coordinate system.
 * **Important note**: There are two different operation modes:
     1. handle directly on change (only changed dropdown is submitted)
     2. read the value on pressing a button (all dropdown values are available)
@@ -3786,7 +3790,7 @@ Call these functions only at load time!
     * Called after a new player has been created
 * `minetest.register_on_punchplayer(function(player, hitter, time_from_last_punch, tool_capabilities, dir, damage))`
     * Called when a player is punched
-	* Note: This callback is invoked even if the punched player is dead.
+    * Note: This callback is invoked even if the punched player is dead.
     * `player`: ObjectRef - Player that was punched
     * `hitter`: ObjectRef - Player that hit
     * `time_from_last_punch`: Meant for disallowing spamming of clicks
