@@ -271,12 +271,12 @@ v2s32 GUIFormSpecMenu::getElementBasePos(bool absolute,
 }
 
 v2s32 GUIFormSpecMenu::getRealCoordinateBasePos(bool absolute,
-		const std::vector<std::string> *v_pos)
+		const std::vector<std::string> &v_pos)
 {
 	v2f32 pos_f = v2f32(0.0f, 0.0f);
 
-	pos_f.X += stof((*v_pos)[0]) + pos_offset.X;
-	pos_f.Y += stof((*v_pos)[1]) + pos_offset.Y;
+	pos_f.X += stof(v_pos[0]) + pos_offset.X;
+	pos_f.Y += stof(v_pos[1]) + pos_offset.Y;
 
 	if (absolute)
 		return v2s32(pos_f.X * imgsize.X + AbsoluteRect.UpperLeftCorner.X,
@@ -284,9 +284,9 @@ v2s32 GUIFormSpecMenu::getRealCoordinateBasePos(bool absolute,
 	return v2s32(pos_f.X * imgsize.X, pos_f.Y * imgsize.Y);
 }
 
-v2s32 GUIFormSpecMenu::getRealCoordinateGeometry(const std::vector<std::string> *v_geom)
+v2s32 GUIFormSpecMenu::getRealCoordinateGeometry(const std::vector<std::string> &v_geom)
 {
-	return v2s32(stof((*v_geom)[0]) * imgsize.X, stof((*v_geom)[1]) * imgsize.Y);
+	return v2s32(stof(v_geom[0]) * imgsize.X, stof(v_geom[1]) * imgsize.Y);
 }
 
 void GUIFormSpecMenu::parseSize(parserData* data, const std::string &element)
@@ -376,7 +376,7 @@ void GUIFormSpecMenu::parseList(parserData* data, const std::string &element)
 		v2s32 geom;
 
 		if (data->real_coordinates)
-			pos = getRealCoordinateBasePos(true, &v_pos);
+			pos = getRealCoordinateBasePos(true, v_pos);
 		else
 			pos = getElementBasePos(true, &v_pos);
 
@@ -468,7 +468,7 @@ void GUIFormSpecMenu::parseCheckbox(parserData* data, const std::string &element
 		v2s32 pos;
 
 		if (data->real_coordinates)
-			pos = getRealCoordinateBasePos(false, &v_pos);
+			pos = getRealCoordinateBasePos(false, v_pos);
 		else
 			pos = getElementBasePos(false, &v_pos);
 
@@ -519,8 +519,8 @@ void GUIFormSpecMenu::parseScrollBar(parserData* data, const std::string &elemen
 		v2s32 dim;
 
 		if (data->real_coordinates) {
-			pos = getRealCoordinateBasePos(false, &v_pos);
-			dim = getRealCoordinateGeometry(&v_geom);
+			pos = getRealCoordinateBasePos(false, v_pos);
+			dim = getRealCoordinateGeometry(v_geom);
 		} else {
 			pos = getElementBasePos(false, &v_pos);
 			dim.X = stof(v_geom[0]) * spacing.X;
@@ -578,8 +578,8 @@ void GUIFormSpecMenu::parseImage(parserData* data, const std::string &element)
 		v2s32 geom;
 
 		if (data->real_coordinates) {
-			pos = getRealCoordinateBasePos(true, &v_pos);
-			geom = getRealCoordinateGeometry(&v_geom);
+			pos = getRealCoordinateBasePos(true, v_pos);
+			geom = getRealCoordinateGeometry(v_geom);
 		} else {
 			pos = getElementBasePos(true, &v_pos);
 			geom.X = stof(v_geom[0]) * (float)imgsize.X;
@@ -626,8 +626,8 @@ void GUIFormSpecMenu::parseItemImage(parserData* data, const std::string &elemen
 		v2s32 geom;
 
 		if (data->real_coordinates) {
-			pos = getRealCoordinateBasePos(true, &v_pos);
-			geom = getRealCoordinateGeometry(&v_geom);
+			pos = getRealCoordinateBasePos(true, v_pos);
+			geom = getRealCoordinateGeometry(v_geom);
 		} else {
 			pos = getElementBasePos(true, &v_pos);
 			geom.X = stof(v_geom[0]) * (float)imgsize.X;
@@ -663,8 +663,8 @@ void GUIFormSpecMenu::parseButton(parserData* data, const std::string &element,
 		core::rect<s32> rect;
 
 		if (data->real_coordinates) {
-			pos = getRealCoordinateBasePos(false, &v_pos);
-			geom = getRealCoordinateGeometry(&v_geom);
+			pos = getRealCoordinateBasePos(false, v_pos);
+			geom = getRealCoordinateGeometry(v_geom);
 			rect = core::rect<s32>(pos.X, pos.Y, pos.X+geom.X,
 				pos.Y+geom.Y);
 		} else {
@@ -720,8 +720,8 @@ void GUIFormSpecMenu::parseBackground(parserData* data, const std::string &eleme
 		v2s32 geom;
 
 		if (data->real_coordinates) {
-			pos = getRealCoordinateBasePos(true, &v_pos);
-			geom = getRealCoordinateGeometry(&v_geom);
+			pos = getRealCoordinateBasePos(true, v_pos);
+			geom = getRealCoordinateGeometry(v_geom);
 		} else {
 			pos = getElementBasePos(true, &v_pos);
 			pos.X -= (spacing.X - (float)imgsize.X) / 2;
@@ -734,7 +734,7 @@ void GUIFormSpecMenu::parseBackground(parserData* data, const std::string &eleme
 		bool clip = false;
 		if (parts.size() >= 4 && is_yes(parts[3])) {
 			if (data->real_coordinates) {
-				pos = getRealCoordinateBasePos(false, &v_pos) * -1;
+				pos = getRealCoordinateBasePos(false, v_pos) * -1;
 				geom = v2s32(0, 0);
 			} else {
 				pos.X = stoi(v_pos[0]); //acts as offset
@@ -830,8 +830,8 @@ void GUIFormSpecMenu::parseTable(parserData* data, const std::string &element)
 		v2s32 geom;
 
 		if (data->real_coordinates) {
-			pos = getRealCoordinateBasePos(false, &v_pos);
-			geom = getRealCoordinateGeometry(&v_geom);
+			pos = getRealCoordinateBasePos(false, v_pos);
+			geom = getRealCoordinateGeometry(v_geom);
 		} else {
 			pos = getElementBasePos(false, &v_pos);
 			geom.X = stof(v_geom[0]) * spacing.X;
@@ -904,8 +904,8 @@ void GUIFormSpecMenu::parseTextList(parserData* data, const std::string &element
 		v2s32 geom;
 
 		if (data->real_coordinates) {
-			pos = getRealCoordinateBasePos(false, &v_pos);
-			geom = getRealCoordinateGeometry(&v_geom);
+			pos = getRealCoordinateBasePos(false, v_pos);
+			geom = getRealCoordinateGeometry(v_geom);
 		} else {
 			pos = getElementBasePos(false, &v_pos);
 			geom.X = stof(v_geom[0]) * spacing.X;
@@ -972,12 +972,11 @@ void GUIFormSpecMenu::parseDropDown(parserData* data, const std::string &element
 		core::rect<s32> rect;
 
 		if (data->real_coordinates) {
-
 			std::vector<std::string> v_geom = split(parts[1],',');
 			MY_CHECKGEOM("dropdown",1);
 
-			pos = getRealCoordinateBasePos(false, &v_pos);
-			geom = getRealCoordinateGeometry(&v_geom);
+			pos = getRealCoordinateBasePos(false, v_pos);
+			geom = getRealCoordinateGeometry(v_geom);
 			rect = core::rect<s32>(pos.X, pos.Y, pos.X+geom.X, pos.Y+geom.Y);
 		} else {
 			pos = getElementBasePos(false, &v_pos);
@@ -1055,8 +1054,8 @@ void GUIFormSpecMenu::parsePwdField(parserData* data, const std::string &element
 		v2s32 geom;
 
 		if (data->real_coordinates) {
-			pos = getRealCoordinateBasePos(false, &v_pos);
-			geom = getRealCoordinateGeometry(&v_geom);
+			pos = getRealCoordinateBasePos(false, v_pos);
+			geom = getRealCoordinateGeometry(v_geom);
 		} else {
 			pos = getElementBasePos(false, &v_pos);
 			pos -= padding;
@@ -1245,8 +1244,8 @@ void GUIFormSpecMenu::parseTextArea(parserData* data, std::vector<std::string>& 
 	v2s32 geom;
 
 	if (data->real_coordinates) {
-		pos = getRealCoordinateBasePos(false, &v_pos);
-		geom = getRealCoordinateGeometry(&v_geom);
+		pos = getRealCoordinateBasePos(false, v_pos);
+		geom = getRealCoordinateGeometry(v_geom);
 	} else {
 		pos = getElementBasePos(false, &v_pos);
 		pos -= padding;
@@ -1333,24 +1332,20 @@ void GUIFormSpecMenu::parseLabel(parserData* data, const std::string &element)
 		std::vector<std::string> lines = split(text, '\n');
 
 		for (unsigned int i = 0; i != lines.size(); i++) {
-			// Lines are spaced at the nominal distance of
-			// 2/5 inventory slot, even if the font doesn't
-			// quite match that.  This provides consistent
-			// form layout, at the expense of sometimes
-			// having sub-optimal spacing for the font.
-			// We multiply by 2 and then divide by 5, rather
-			// than multiply by 0.4, to get exact results
-			// in the integer cases: 0.4 is not exactly
-			// representable in binary floating point.
 			std::wstring wlabel = utf8_to_wide(unescape_string(lines[i]));
 
 			core::rect<s32> rect;
 
 			if (data->real_coordinates) {
-				v2s32 pos = getRealCoordinateBasePos(false, &v_pos);
+				// Lines are spaced at the distance of 1/2 imgsize.
+				// This alows lines that line up with the new elements
+				// easily without sacrificing good line distance.  If
+				// it was one whole imgsize, it would have too much
+				// spacing.
+				v2s32 pos = getRealCoordinateBasePos(false, v_pos);
 
 				// Add offset for smaller rect.
-				pos.Y += (imgsize.Y / 4) + ( ((float)imgsize.Y) * i / 2);
+				pos.Y += (imgsize.Y / 4) + (((float) imgsize.Y) * i / 2);
 
 				rect = core::rect<s32>(
 					pos.X, pos.Y,
@@ -1358,16 +1353,26 @@ void GUIFormSpecMenu::parseLabel(parserData* data, const std::string &element)
 					pos.Y + imgsize.Y / 2);
 
 			} else {
+				// Lines are spaced at the nominal distance of
+				// 2/5 inventory slot, even if the font doesn't
+				// quite match that.  This provides consistent
+				// form layout, at the expense of sometimes
+				// having sub-optimal spacing for the font.
+				// We multiply by 2 and then divide by 5, rather
+				// than multiply by 0.4, to get exact results
+				// in the integer cases: 0.4 is not exactly
+				// representable in binary floating point.
+
 				v2s32 pos = getElementBasePos(false, nullptr);
 				pos.X += stof(v_pos[0]) * spacing.X;
 				pos.Y += (stof(v_pos[1]) + 7.0f / 30.0f) * spacing.Y;
 
-				s32 posy = pos.Y + ((float)i) * spacing.Y * 2.0 / 5.0;
+				pos.Y += ((float) i) * spacing.Y * 2.0 / 5.0;
 
 				rect = core::rect<s32>(
-					pos.X, posy - m_btn_height,
+					pos.X, pos.Y - m_btn_height,
 					pos.X + m_font->getDimension(wlabel.c_str()).Width,
-					posy + m_btn_height);
+					pos.Y + m_btn_height);
 			}
 
 			FieldSpec spec(
@@ -1405,11 +1410,13 @@ void GUIFormSpecMenu::parseVertLabel(parserData* data, const std::string &elemen
 		core::rect<s32> rect;
 
 		if (data->real_coordinates) {
-			pos = getRealCoordinateBasePos(false, &v_pos);
+			pos = getRealCoordinateBasePos(false, v_pos);
 
 			// Add offset for smaller rect.
 			pos.X += (imgsize.X / 4);
 
+			// We use text.length + 1 because without it, the rect
+			// isn't quite tall enough and cuts off the text.
 			rect = core::rect<s32>(pos.X, pos.Y,
 				pos.X + imgsize.Y / 2,
 				pos.Y + font_line_height(m_font) *
@@ -1418,15 +1425,15 @@ void GUIFormSpecMenu::parseVertLabel(parserData* data, const std::string &elemen
 		} else {
 			pos = getElementBasePos(false, &v_pos);
 
+			// As above, the length must be one longer. The width of
+			// the rect (15 pixels) seems rather arbitrary, but
+			// changing it might break something.
 			rect = core::rect<s32>(
 				pos.X, pos.Y+((imgsize.Y/2) - m_btn_height),
 				pos.X+15, pos.Y +
 					font_line_height(m_font) *
 					(text.length() + 1) +
 					((imgsize.Y/2) - m_btn_height));
-
-			// Actually text.length() would be correct but adding +1 avoids
-			// breaking mods.
 		}
 
 		if(!data->explicit_size)
@@ -1490,8 +1497,8 @@ void GUIFormSpecMenu::parseImageButton(parserData* data, const std::string &elem
 		v2s32 geom;
 
 		if (data->real_coordinates) {
-			pos = getRealCoordinateBasePos(false, &v_pos);
-			geom = getRealCoordinateGeometry(&v_geom);
+			pos = getRealCoordinateBasePos(false, v_pos);
+			geom = getRealCoordinateGeometry(v_geom);
 		} else {
 			pos = getElementBasePos(false, &v_pos);
 			geom.X = (stof(v_geom[0]) * spacing.X) - (spacing.X - imgsize.X);
@@ -1574,11 +1581,11 @@ void GUIFormSpecMenu::parseTabHeader(parserData* data, const std::string &elemen
 		std::string str_index = parts[i+3];
 		bool show_background = true;
 		bool show_border = true;
-		int tab_index = stoi(str_index) -1;
+		int tab_index = stoi(str_index) - 1;
 
 		MY_CHECKPOS("tabheader",0);
 
-		if (parts.size() >= 6) {
+		if (parts.size() == 6 + i) {
 			if (parts[4+i] == "true")
 				show_background = false;
 			if (parts[5+i] == "false")
@@ -1598,17 +1605,18 @@ void GUIFormSpecMenu::parseTabHeader(parserData* data, const std::string &elemen
 		v2s32 geom;
 
 		if (data->real_coordinates) {
-			pos = getRealCoordinateBasePos(false, &v_pos);
+			pos = getRealCoordinateBasePos(false, v_pos);
 			std::vector<std::string> v_geom = {"1", h_geom}; // Dummy value
-			geom = getRealCoordinateGeometry(&v_geom);
+			geom = getRealCoordinateGeometry(v_geom);
 			pos.Y -= geom.Y; // TabHeader base pos is the bottom, not the top.
+			MY_CHECKPOS("tabheader",0);
 		} else {
 			v2f32 pos_f = pos_offset * spacing;
 			pos_f.X += stof(v_pos[0]) * spacing.X;
 			pos_f.Y += stof(v_pos[1]) * spacing.Y - m_btn_height * 2;
 			pos = v2s32(pos_f.X, pos_f.Y);
 
-			geom.Y = m_btn_height*2;
+			geom.Y = m_btn_height * 2;
 		}
 		geom.X = DesiredRect.getWidth();
 
@@ -1674,8 +1682,8 @@ void GUIFormSpecMenu::parseItemImageButton(parserData* data, const std::string &
 		v2s32 geom;
 
 		if (data->real_coordinates) {
-			pos = getRealCoordinateBasePos(false, &v_pos);
-			geom = getRealCoordinateGeometry(&v_geom);
+			pos = getRealCoordinateBasePos(false, v_pos);
+			geom = getRealCoordinateGeometry(v_geom);
 		} else {
 			pos = getElementBasePos(false, &v_pos);
 			geom.X = (stof(v_geom[0]) * spacing.X) - (spacing.X - imgsize.X);
@@ -1715,7 +1723,7 @@ void GUIFormSpecMenu::parseItemImageButton(parserData* data, const std::string &
 		m_fields.push_back(spec);
 
 		if (data->real_coordinates)
-			pos = getRealCoordinateBasePos(true, &v_pos);
+			pos = getRealCoordinateBasePos(true, v_pos);
 		else
 			pos = getElementBasePos(true, &v_pos);
 
@@ -1743,8 +1751,8 @@ void GUIFormSpecMenu::parseBox(parserData* data, const std::string &element)
 		v2s32 geom;
 
 		if (data->real_coordinates) {
-			pos = getRealCoordinateBasePos(true, &v_pos);
-			geom = getRealCoordinateGeometry(&v_geom);
+			pos = getRealCoordinateBasePos(true, v_pos);
+			geom = getRealCoordinateGeometry(v_geom);
 		} else {
 			pos = getElementBasePos(true, &v_pos);
 			geom.X = stof(v_geom[0]) * spacing.X;
