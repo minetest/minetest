@@ -1569,7 +1569,7 @@ void GUIFormSpecMenu::parseTabHeader(parserData* data, const std::string &elemen
 		// If we're using real coordinates, add an extra field for height.
 		// Width is not here because tabs are the width of the text, and
 		// there's no reason to change that.
-		int i = 0;
+		unsigned int i = 0;
 		std::string h_geom;
 		if (data->real_coordinates) {
 			i++;
