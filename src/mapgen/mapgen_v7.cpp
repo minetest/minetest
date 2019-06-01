@@ -113,9 +113,10 @@ MapgenV7::MapgenV7(MapgenV7Params *params, EmergeManager *emerge)
 			new Noise(&params->np_mountain, seed, csize.X, csize.Y + 2, csize.Z);
 
 	// 3D noise, 1 down overgeneration
-	MapgenBasic::np_cave1  = params->np_cave1;
-	MapgenBasic::np_cave2  = params->np_cave2;
-	MapgenBasic::np_cavern = params->np_cavern;
+	MapgenBasic::np_cave1    = params->np_cave1;
+	MapgenBasic::np_cave2    = params->np_cave2;
+	MapgenBasic::np_cavern   = params->np_cavern;
+	MapgenBasic::np_dungeons = params->np_dungeons;
 }
 
 
@@ -159,7 +160,8 @@ MapgenV7Params::MapgenV7Params():
 	np_ridge             (0.0,   1.0,   v3f(100,  100,  100),  6467,  4, 0.75, 2.0),
 	np_cavern            (0.0,   1.0,   v3f(384,  128,  384),  723,   5, 0.63, 2.0),
 	np_cave1             (0.0,   12.0,  v3f(61,   61,   61),   52534, 3, 0.5,  2.0),
-	np_cave2             (0.0,   12.0,  v3f(67,   67,   67),   10325, 3, 0.5,  2.0)
+	np_cave2             (0.0,   12.0,  v3f(67,   67,   67),   10325, 3, 0.5,  2.0),
+	np_dungeons          (0.9,   0.5,   v3f(500,  500,  500),  0,     2, 0.8,  2.0)
 {
 }
 
@@ -196,6 +198,7 @@ void MapgenV7Params::readParams(const Settings *settings)
 	settings->getNoiseParams("mgv7_np_cavern",            np_cavern);
 	settings->getNoiseParams("mgv7_np_cave1",             np_cave1);
 	settings->getNoiseParams("mgv7_np_cave2",             np_cave2);
+	settings->getNoiseParams("mgv7_np_dungeons",          np_dungeons);
 }
 
 
@@ -231,6 +234,7 @@ void MapgenV7Params::writeParams(Settings *settings) const
 	settings->setNoiseParams("mgv7_np_cavern",            np_cavern);
 	settings->setNoiseParams("mgv7_np_cave1",             np_cave1);
 	settings->setNoiseParams("mgv7_np_cave2",             np_cave2);
+	settings->setNoiseParams("mgv7_np_dungeons",          np_dungeons);
 }
 
 

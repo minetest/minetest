@@ -19,6 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
+#include <cmath>
 #include "mapgen.h"
 #include "voxel.h"
 #include "noise.h"
@@ -889,6 +890,11 @@ void MapgenBasic::generateDungeons(s16 max_stone_y)
 	if (max_stone_y < node_min.Y)
 		return;
 
+	u16 num_dungeons = std::fmax(std::floor(
+		NoisePerlin3D(&np_dungeons, node_min.X, node_min.Y, node_min.Z, seed)), 0.0f);
+	if (num_dungeons == 0)
+		return;
+
 	// Get biome at mapchunk midpoint
 	v3s16 chunk_mid = node_min + (node_max - node_min) / v3s16(2, 2, 2);
 	Biome *biome = (Biome *)biomegen->getBiomeAtPoint(chunk_mid);
@@ -902,8 +908,8 @@ void MapgenBasic::generateDungeons(s16 max_stone_y)
 	dp.rooms_min        = 2;
 	dp.rooms_max        = 16;
 
-	dp.np_density       = nparams_dungeon_density;
-	dp.np_alt_wall      = nparams_dungeon_alt_wall;
+	dp.np_alt_wall = 
+		NoiseParams(-0.4, 1.0, v3f(40.0, 40.0, 40.0), 32474, 6, 1.1, 2.0);
 
 	// Biome-defined dungeon nodes
 	if (biome->c_dungeon != CONTENT_IGNORE) {
@@ -980,7 +986,7 @@ void MapgenBasic::generateDungeons(s16 max_stone_y)
 	}
 
 	DungeonGen dgen(ndef, &gennotify, &dp);
-	dgen.generate(vm, blockseed, full_node_min, full_node_max);
+	dgen.generate(vm, blockseed, full_node_min, full_node_max, num_dungeons);
 }
 
 

@@ -70,8 +70,9 @@ MapgenFractal::MapgenFractal(MapgenFractalParams *params, EmergeManager *emerge)
 	noise_seabed       = new Noise(&params->np_seabed, seed, csize.X, csize.Z);
 	noise_filler_depth = new Noise(&params->np_filler_depth, seed, csize.X, csize.Z);
 
-	MapgenBasic::np_cave1 = params->np_cave1;
-	MapgenBasic::np_cave2 = params->np_cave2;
+	MapgenBasic::np_cave1    = params->np_cave1;
+	MapgenBasic::np_cave2    = params->np_cave2;
+	MapgenBasic::np_dungeons = params->np_dungeons;
 
 	formula = fractal / 2 + fractal % 2;
 	julia   = fractal % 2 == 0;
@@ -89,7 +90,8 @@ MapgenFractalParams::MapgenFractalParams():
 	np_seabed       (-14, 9,   v3f(600, 600, 600), 41900, 5, 0.6, 2.0),
 	np_filler_depth (0,   1.2, v3f(150, 150, 150), 261,   3, 0.7, 2.0),
 	np_cave1        (0,   12,  v3f(61,  61,  61),  52534, 3, 0.5, 2.0),
-	np_cave2        (0,   12,  v3f(67,  67,  67),  10325, 3, 0.5, 2.0)
+	np_cave2        (0,   12,  v3f(67,  67,  67),  10325, 3, 0.5, 2.0),
+	np_dungeons     (0.9, 0.5, v3f(500, 500, 500), 0,     2, 0.8, 2.0)
 {
 }
 
@@ -116,6 +118,7 @@ void MapgenFractalParams::readParams(const Settings *settings)
 	settings->getNoiseParams("mgfractal_np_filler_depth", np_filler_depth);
 	settings->getNoiseParams("mgfractal_np_cave1",        np_cave1);
 	settings->getNoiseParams("mgfractal_np_cave2",        np_cave2);
+	settings->getNoiseParams("mgfractal_np_dungeons",     np_dungeons);
 }
 
 
@@ -141,6 +144,7 @@ void MapgenFractalParams::writeParams(Settings *settings) const
 	settings->setNoiseParams("mgfractal_np_filler_depth", np_filler_depth);
 	settings->setNoiseParams("mgfractal_np_cave1",        np_cave1);
 	settings->setNoiseParams("mgfractal_np_cave2",        np_cave2);
+	settings->setNoiseParams("mgfractal_np_dungeons",     np_dungeons);
 }
 
 

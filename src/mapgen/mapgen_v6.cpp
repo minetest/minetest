@@ -20,6 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 
+#include <cmath>
 #include "mapgen.h"
 #include "voxel.h"
 #include "noise.h"
@@ -59,7 +60,7 @@ MapgenV6::MapgenV6(MapgenV6Params *params, EmergeManager *emerge)
 	: Mapgen(MAPGEN_V6, params, emerge)
 {
 	m_emerge = emerge;
-	ystride = csize.X; //////fix this
+	ystride = csize.X;
 
 	heightmap = new s16[csize.X * csize.Z];
 
@@ -73,6 +74,8 @@ MapgenV6::MapgenV6(MapgenV6Params *params, EmergeManager *emerge)
 	np_humidity    = &params->np_humidity;
 	np_trees       = &params->np_trees;
 	np_apple_trees = &params->np_apple_trees;
+
+	np_dungeons = NoiseParams(0.9, 0.5, v3f(500.0, 500.0, 500.0), 0, 2, 0.8, 2.0);
 
 	//// Create noise objects
 	noise_terrain_base   = new Noise(&params->np_terrain_base,   seed, csize.X, csize.Y);
@@ -561,48 +564,51 @@ void MapgenV6::makeChunk(BlockMakeData *data)
 	// Add dungeons
 	if ((flags & MG_DUNGEONS) && stone_surface_max_y >= node_min.Y &&
 			full_node_min.Y >= dungeon_ymin && full_node_max.Y <= dungeon_ymax) {
-		DungeonParams dp;
+		u16 num_dungeons = std::fmax(std::floor(
+			NoisePerlin3D(&np_dungeons, node_min.X, node_min.Y, node_min.Z, seed)), 0.0f);
 
-		dp.seed             = seed;
-		dp.only_in_ground   = true;
-		dp.corridor_len_min = 1;
-		dp.corridor_len_max = 13;
-		dp.rooms_min        = 2;
-		dp.rooms_max        = 16;
+		if (num_dungeons >= 1) {
+			DungeonParams dp;
 
-		dp.np_density
-			= NoiseParams(0.9, 0.5, v3f(500.0, 500.0, 500.0), 0, 2, 0.8, 2.0);
-		dp.np_alt_wall
-			= NoiseParams(-0.4, 1.0, v3f(40.0, 40.0, 40.0), 32474, 6, 1.1, 2.0);
+			dp.seed             = seed;
+			dp.only_in_ground   = true;
+			dp.corridor_len_min = 1;
+			dp.corridor_len_max = 13;
+			dp.rooms_min        = 2;
+			dp.rooms_max        = 16;
 
-		if (getBiome(0, v2s16(node_min.X, node_min.Z)) == BT_DESERT) {
-			dp.c_wall              = c_desert_stone;
-			dp.c_alt_wall          = CONTENT_IGNORE;
-			dp.c_stair             = c_stair_desert_stone;
+			dp.np_alt_wall
+				= NoiseParams(-0.4, 1.0, v3f(40.0, 40.0, 40.0), 32474, 6, 1.1, 2.0);
 
-			dp.diagonal_dirs       = true;
-			dp.holesize            = v3s16(2, 3, 2);
-			dp.room_size_min       = v3s16(6, 9, 6);
-			dp.room_size_max       = v3s16(10, 11, 10);
-			dp.room_size_large_min = v3s16(10, 13, 10);
-			dp.room_size_large_max = v3s16(18, 21, 18);
-			dp.notifytype          = GENNOTIFY_TEMPLE;
-		} else {
-			dp.c_wall              = c_cobble;
-			dp.c_alt_wall          = c_mossycobble;
-			dp.c_stair             = c_stair_cobble;
+			if (getBiome(0, v2s16(node_min.X, node_min.Z)) == BT_DESERT) {
+				dp.c_wall              = c_desert_stone;
+				dp.c_alt_wall          = CONTENT_IGNORE;
+				dp.c_stair             = c_stair_desert_stone;
 
-			dp.diagonal_dirs       = false;
-			dp.holesize            = v3s16(1, 2, 1);
-			dp.room_size_min       = v3s16(4, 4, 4);
-			dp.room_size_max       = v3s16(8, 6, 8);
-			dp.room_size_large_min = v3s16(8, 8, 8);
-			dp.room_size_large_max = v3s16(16, 16, 16);
-			dp.notifytype          = GENNOTIFY_DUNGEON;
+				dp.diagonal_dirs       = true;
+				dp.holesize            = v3s16(2, 3, 2);
+				dp.room_size_min       = v3s16(6, 9, 6);
+				dp.room_size_max       = v3s16(10, 11, 10);
+				dp.room_size_large_min = v3s16(10, 13, 10);
+				dp.room_size_large_max = v3s16(18, 21, 18);
+				dp.notifytype          = GENNOTIFY_TEMPLE;
+			} else {
+				dp.c_wall              = c_cobble;
+				dp.c_alt_wall          = c_mossycobble;
+				dp.c_stair             = c_stair_cobble;
+
+				dp.diagonal_dirs       = false;
+				dp.holesize            = v3s16(1, 2, 1);
+				dp.room_size_min       = v3s16(4, 4, 4);
+				dp.room_size_max       = v3s16(8, 6, 8);
+				dp.room_size_large_min = v3s16(8, 8, 8);
+				dp.room_size_large_max = v3s16(16, 16, 16);
+				dp.notifytype          = GENNOTIFY_DUNGEON;
+			}
+
+			DungeonGen dgen(ndef, &gennotify, &dp);
+			dgen.generate(vm, blockseed, full_node_min, full_node_max, num_dungeons);
 		}
-
-		DungeonGen dgen(ndef, &gennotify, &dp);
-		dgen.generate(vm, blockseed, full_node_min, full_node_max);
 	}
 
 	// Add top and bottom side of water to transforming_liquid queue

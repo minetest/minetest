@@ -87,9 +87,10 @@ MapgenValleys::MapgenValleys(MapgenValleysParams *params, EmergeManager *emerge)
 	noise_inter_valley_fill = new Noise(&params->np_inter_valley_fill,
 		seed, csize.X, csize.Y + 2, csize.Z);
 	// 1-down overgeneraion
-	MapgenBasic::np_cave1   = params->np_cave1;
-	MapgenBasic::np_cave2   = params->np_cave2;
-	MapgenBasic::np_cavern  = params->np_cavern;
+	MapgenBasic::np_cave1    = params->np_cave1;
+	MapgenBasic::np_cave2    = params->np_cave2;
+	MapgenBasic::np_cavern   = params->np_cavern;
+	MapgenBasic::np_dungeons = params->np_dungeons;
 }
 
 
@@ -115,7 +116,8 @@ MapgenValleysParams::MapgenValleysParams():
 	np_valley_profile     (0.6,   0.50, v3f(512,  512,  512),  777,   1, 1.0,  2.0),
 	np_cave1              (0.0,   12.0, v3f(61,   61,   61),   52534, 3, 0.5,  2.0),
 	np_cave2              (0.0,   12.0, v3f(67,   67,   67),   10325, 3, 0.5,  2.0),
-	np_cavern             (0.0,   1.0,  v3f(768,  256,  768),  59033, 6, 0.63, 2.0)
+	np_cavern             (0.0,   1.0,  v3f(768,  256,  768),  59033, 6, 0.63, 2.0),
+	np_dungeons           (0.9,   0.5,  v3f(500,  500,  500),  0,     2, 0.8,  2.0)
 {
 }
 
@@ -146,6 +148,7 @@ void MapgenValleysParams::readParams(const Settings *settings)
 	settings->getNoiseParams("mgvalleys_np_cave1",              np_cave1);
 	settings->getNoiseParams("mgvalleys_np_cave2",              np_cave2);
 	settings->getNoiseParams("mgvalleys_np_cavern",             np_cavern);
+	settings->getNoiseParams("mgvalleys_np_dungeons",           np_dungeons);
 }
 
 
@@ -175,6 +178,7 @@ void MapgenValleysParams::writeParams(Settings *settings) const
 	settings->setNoiseParams("mgvalleys_np_cave1",              np_cave1);
 	settings->setNoiseParams("mgvalleys_np_cave2",              np_cave2);
 	settings->setNoiseParams("mgvalleys_np_cavern",             np_cavern);
+	settings->setNoiseParams("mgvalleys_np_dungeons",           np_dungeons);
 }
 
 

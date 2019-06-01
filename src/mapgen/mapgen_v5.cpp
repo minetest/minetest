@@ -67,9 +67,10 @@ MapgenV5::MapgenV5(MapgenV5Params *params, EmergeManager *emerge)
 	// 1-up 1-down overgeneration
 	noise_ground = new Noise(&params->np_ground, seed, csize.X, csize.Y + 2, csize.Z);
 	// 1 down overgeneration
-	MapgenBasic::np_cave1  = params->np_cave1;
-	MapgenBasic::np_cave2  = params->np_cave2;
-	MapgenBasic::np_cavern = params->np_cavern;
+	MapgenBasic::np_cave1    = params->np_cave1;
+	MapgenBasic::np_cave2    = params->np_cave2;
+	MapgenBasic::np_cavern   = params->np_cavern;
+	MapgenBasic::np_dungeons = params->np_dungeons;
 }
 
 
@@ -83,13 +84,14 @@ MapgenV5::~MapgenV5()
 
 
 MapgenV5Params::MapgenV5Params():
-	np_filler_depth (0, 1,  v3f(150, 150, 150), 261,    4, 0.7,  2.0),
-	np_factor       (0, 1,  v3f(250, 250, 250), 920381, 3, 0.45, 2.0),
-	np_height       (0, 10, v3f(250, 250, 250), 84174,  4, 0.5,  2.0),
-	np_ground       (0, 40, v3f(80,  80,  80),  983240, 4, 0.55, 2.0, NOISE_FLAG_EASED),
-	np_cave1        (0, 12, v3f(61,  61,  61),  52534,  3, 0.5,  2.0),
-	np_cave2        (0, 12, v3f(67,  67,  67),  10325,  3, 0.5,  2.0),
-	np_cavern       (0, 1,  v3f(384, 128, 384), 723,    5, 0.63, 2.0)
+	np_filler_depth (0,   1,   v3f(150, 150, 150), 261,    4, 0.7,  2.0),
+	np_factor       (0,   1,   v3f(250, 250, 250), 920381, 3, 0.45, 2.0),
+	np_height       (0,   10,  v3f(250, 250, 250), 84174,  4, 0.5,  2.0),
+	np_ground       (0,   40,  v3f(80,  80,  80),  983240, 4, 0.55, 2.0, NOISE_FLAG_EASED),
+	np_cave1        (0,   12,  v3f(61,  61,  61),  52534,  3, 0.5,  2.0),
+	np_cave2        (0,   12,  v3f(67,  67,  67),  10325,  3, 0.5,  2.0),
+	np_cavern       (0,   1,   v3f(384, 128, 384), 723,    5, 0.63, 2.0),
+	np_dungeons     (0.9, 0.5, v3f(500, 500, 500), 0,      2, 0.8,  2.0)
 {
 }
 
@@ -113,6 +115,7 @@ void MapgenV5Params::readParams(const Settings *settings)
 	settings->getNoiseParams("mgv5_np_cave1",        np_cave1);
 	settings->getNoiseParams("mgv5_np_cave2",        np_cave2);
 	settings->getNoiseParams("mgv5_np_cavern",       np_cavern);
+	settings->getNoiseParams("mgv5_np_dungeons",     np_dungeons);
 }
 
 
@@ -135,6 +138,7 @@ void MapgenV5Params::writeParams(Settings *settings) const
 	settings->setNoiseParams("mgv5_np_cave1",        np_cave1);
 	settings->setNoiseParams("mgv5_np_cave2",        np_cave2);
 	settings->setNoiseParams("mgv5_np_cavern",       np_cavern);
+	settings->setNoiseParams("mgv5_np_dungeons",     np_dungeons);
 }
 
 

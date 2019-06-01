@@ -69,8 +69,9 @@ MapgenFlat::MapgenFlat(MapgenFlatParams *params, EmergeManager *emerge)
 	if ((spflags & MGFLAT_LAKES) || (spflags & MGFLAT_HILLS))
 		noise_terrain = new Noise(&params->np_terrain, seed, csize.X, csize.Z);
 	// 3D noise
-	MapgenBasic::np_cave1 = params->np_cave1;
-	MapgenBasic::np_cave2 = params->np_cave2;
+	MapgenBasic::np_cave1    = params->np_cave1;
+	MapgenBasic::np_cave2    = params->np_cave2;
+	MapgenBasic::np_dungeons = params->np_dungeons;
 }
 
 
@@ -84,10 +85,11 @@ MapgenFlat::~MapgenFlat()
 
 
 MapgenFlatParams::MapgenFlatParams():
-	np_terrain      (0, 1,   v3f(600, 600, 600), 7244,  5, 0.6, 2.0),
-	np_filler_depth (0, 1.2, v3f(150, 150, 150), 261,   3, 0.7, 2.0),
-	np_cave1        (0, 12,  v3f(61,  61,  61),  52534, 3, 0.5, 2.0),
-	np_cave2        (0, 12,  v3f(67,  67,  67),  10325, 3, 0.5, 2.0)
+	np_terrain      (0,   1,   v3f(600, 600, 600), 7244,  5, 0.6, 2.0),
+	np_filler_depth (0,   1.2, v3f(150, 150, 150), 261,   3, 0.7, 2.0),
+	np_cave1        (0,   12,  v3f(61,  61,  61),  52534, 3, 0.5, 2.0),
+	np_cave2        (0,   12,  v3f(67,  67,  67),  10325, 3, 0.5, 2.0),
+	np_dungeons     (0.9, 0.5, v3f(500, 500, 500), 0,     2, 0.8, 2.0)
 {
 }
 
@@ -110,6 +112,7 @@ void MapgenFlatParams::readParams(const Settings *settings)
 	settings->getNoiseParams("mgflat_np_filler_depth", np_filler_depth);
 	settings->getNoiseParams("mgflat_np_cave1",        np_cave1);
 	settings->getNoiseParams("mgflat_np_cave2",        np_cave2);
+	settings->getNoiseParams("mgflat_np_dungeons",     np_dungeons);
 }
 
 
@@ -131,6 +134,7 @@ void MapgenFlatParams::writeParams(Settings *settings) const
 	settings->setNoiseParams("mgflat_np_filler_depth", np_filler_depth);
 	settings->setNoiseParams("mgflat_np_cave1",        np_cave1);
 	settings->setNoiseParams("mgflat_np_cave2",        np_cave2);
+	settings->setNoiseParams("mgflat_np_dungeons",     np_dungeons);
 }
 
 

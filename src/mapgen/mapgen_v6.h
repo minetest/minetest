@@ -108,6 +108,8 @@ public:
 	NoiseParams *np_trees;
 	NoiseParams *np_apple_trees;
 
+	NoiseParams np_dungeons;
+
 	float freq_desert;
 	float freq_beach;
 	s16 dungeon_ymin;

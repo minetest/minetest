@@ -283,6 +283,7 @@ protected:
 	NoiseParams np_cave1;
 	NoiseParams np_cave2;
 	NoiseParams np_cavern;
+	NoiseParams np_dungeons;
 	float cave_width;
 	float cavern_limit;
 	float cavern_taper;
