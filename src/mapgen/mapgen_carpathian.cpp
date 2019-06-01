@@ -88,7 +88,7 @@ MapgenCarpathian::MapgenCarpathian(MapgenCarpathianParams *params, EmergeManager
 	MapgenBasic::np_cave1  = params->np_cave1;
 	MapgenBasic::np_cave2  = params->np_cave2;
 	MapgenBasic::np_cavern = params->np_cavern;
-	MapgenBasic::np_dungeons = &params->np_dungeons;
+	MapgenBasic::np_dungeons = params->np_dungeons;
 }
 
 

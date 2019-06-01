@@ -891,7 +891,7 @@ void MapgenBasic::generateDungeons(s16 max_stone_y)
 		return;
 
 	u16 num_dungeons = std::fmax(std::floor(
-		NoisePerlin3D(np_dungeons, node_min.X, node_min.Y, node_min.Z, seed)), 0.0f);
+		NoisePerlin3D(&np_dungeons, node_min.X, node_min.Y, node_min.Z, seed)), 0.0f);
 	if (num_dungeons == 0)
 		return;
 
