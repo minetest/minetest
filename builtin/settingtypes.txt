@@ -1834,7 +1834,7 @@ mgfractal_np_dungeons (Dungeon noise) noise_params_3d 0.9, 0.5, (500, 500, 500),
 #    'vary_river_depth': If enabled, low humidity and high heat causes rivers
 #    to become shallower and occasionally dry.
 #    'altitude_dry': Reduces humidity with altitude.
-mgvalleys_spflags (Mapgen Valleys specific flags) flags altitude_chill,humid_rivers,vary_river_depth,altitude_dry altitude_chill,noaltitude_chill,humid_rivers,nohumid_rivers,vary_river_depth,novary_river_depth,altitude_dry,noaltitude_dry
+mgvalleys_spflags (Mapgen Valleys specific flags) flags altitude_chill,humid_rivers,vary_river_depth,altitude_dry,canyons altitude_chill,noaltitude_chill,humid_rivers,nohumid_rivers,vary_river_depth,novary_river_depth,altitude_dry,noaltitude_dry,canyons,nocanyons
 
 #    The vertical distance over which heat drops by 20 if 'altitude_chill' is
 #    enabled. Also the vertical distance over which humidity drops by 10 if
@@ -1886,7 +1886,9 @@ mgvalleys_np_filler_depth (Filler depth) noise_params_2d 0, 1.2, (256, 256, 256)
 mgvalleys_np_cavern (Cavern noise) noise_params_3d 0, 1, (768, 256, 768), 59033, 6, 0.63, 2.0
 
 #    Defines large-scale river channel structure.
-mgvalleys_np_rivers (River noise) noise_params_2d 0, 1, (256, 256, 256), -6050, 5, 0.6, 2.0, eased
+#    Used as 3D noise if 'canyons' spflag is enabled,
+#    otherwise used as 2D noise with Y spread ignored.
+mgvalleys_np_rivers (River noise) noise_params_3d 0, 1, (256, 256, 256), -6050, 5, 0.6, 2.0, eased
 
 #    Base terrain height.
 mgvalleys_np_terrain_height (Terrain height) noise_params_2d -10, 50, (1024, 1024, 1024), 5202, 6, 0.4, 2.0, eased
