@@ -154,7 +154,7 @@ local function handle_buttons(tabview, fields, tabname, tabdata)
 	end
 
 	if fields["btn_mod_mgr_install_local"] ~= nil then
-		core.show_file_open_dialog("mod_mgt_open_dlg", fgettext("Select Package File:"))
+		core.show_path_select_dialog("mod_mgt_open_dlg", fgettext("Select Package File:"), true)
 		return true
 	end
 
