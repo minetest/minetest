@@ -1882,6 +1882,11 @@ When displaying text which can contain formspec code, e.g. text set by a player,
 use `minetest.formspec_escape`.
 For coloured text you can use `minetest.colorize`.
 
+Elements drawn in the order they are defined. All background elements are drawn
+before all other elements.
+`list` elements are an exception here. They are drawn last. This, however, might
+be changed at any time.
+
 WARNING: Minetest allows you to add elements to every single formspec instance
 using `player:set_formspec_prepend()`, which may be the reason backgrounds are
 appearing when you don't expect them to. See [`no_prepend[]`].
@@ -1971,6 +1976,23 @@ Elements
 * End of a container, following elements are no longer relative to this
   container.
 
+### `scroll_container[<X>,<Y>;<W>,<H>;<scrollbar name>;<direction>;<multiplier>]`
+
+* Start of a scroll_container block, all elements in a scroll_container block will
+  * take the block's coordinate as position origin,
+  * be additionally moved by the current value of the scrollbar with the name
+    `scrollbar name` times `multiplier` in the direction `direction` and
+  * be clipped to the rectangle defined by `X`, `Y`, `W` and `H`.
+* Possible values for `direction` are `down` and `right`.
+* `multiplier` is optional and defaults to `0.1`.
+* Nesting is possible.
+* Some elements might work a little different if they are in a scroll_container.
+
+### `scroll_container_end[]`
+
+* End of a scroll_container, following elements are no longer bound to this
+  container.
+
 ### `list[<inventory location>;<list name>;<X>,<Y>;<W>,<H>;]`
 
 * Show an inventory list if it has been sent to the client. Nothing will
@@ -2037,11 +2059,15 @@ Elements
 
 * Show an inventory image of registered item/node
 
-### `bgcolor[<color>;<fullscreen>]`
+### `bgcolor[<color>]`
 
 * Sets background color of formspec as `ColorString`
-* If `true`, the background color is drawn fullscreen (does not affect the size
-  of the formspec).
+
+### `bgcolor[<color>;<fullscreen>]`
+
+* If `color` is a valid `ColorString`, the fullscreen background color
+  is set to `color`.
+* If `fullscreen` is a true value, the fullscreen background color is drawn.
 
 ### `background[<X>,<Y>;<W>,<H>;<texture name>]`
 
