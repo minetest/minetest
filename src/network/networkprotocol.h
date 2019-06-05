@@ -228,9 +228,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		(too much)
 	FORMSPEC VERSION 2:
 		Forced real coordinates
-		background[]: 9-slice scaling parameters
+		background9[]: 9-slice scaling parameters
+	FORMSPEC VERSION 3:
+		Formspec elements are drawn in the order of definition
 */
-#define FORMSPEC_API_VERSION 2
+#define FORMSPEC_API_VERSION 3
 
 #define TEXTURENAME_ALLOWED_CHARS "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_.-"
 

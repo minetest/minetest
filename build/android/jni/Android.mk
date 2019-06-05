@@ -178,12 +178,15 @@ LOCAL_SRC_FILES := \
 		jni/src/filesys.cpp                       \
 		jni/src/genericobject.cpp                 \
 		jni/src/gettext.cpp                       \
+		jni/src/gui/guiBackgroundImage.cpp        \
+		jni/src/gui/guiBox.cpp                    \
 		jni/src/gui/guiButton.cpp                 \
 		jni/src/gui/guiChatConsole.cpp            \
 		jni/src/gui/guiConfirmRegistration.cpp    \
 		jni/src/gui/guiEditBoxWithScrollbar.cpp   \
 		jni/src/gui/guiEngine.cpp                 \
 		jni/src/gui/guiFormSpecMenu.cpp           \
+		jni/src/gui/guiItemImage.cpp              \
 		jni/src/gui/guiKeyChangeMenu.cpp          \
 		jni/src/gui/guiPasswordChange.cpp         \
 		jni/src/gui/guiPathSelectMenu.cpp         \
