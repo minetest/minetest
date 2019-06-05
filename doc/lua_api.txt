@@ -2364,7 +2364,8 @@ Elements
     * Sets scrollbar maximum value, defaults to `1000`
     * If the max is equal to the min, the scrollbar will be disabled
 * `smallstep=<int>`
-    * Sets scrollbar step value when the arrows are clicked, defaults to `10`
+    * Sets scrollbar step value when the arrows are clicked or the mouse wheel is
+    * scrolled, defaults to `10`
 * `largestep=<int>`
     * Sets scrollbar step value when the bar itself is clicked, defaults to `100`
 
