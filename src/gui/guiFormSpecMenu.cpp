@@ -625,7 +625,7 @@ void GUIFormSpecMenu::parseScrollBar(parserData* data, const std::string &elemen
 		e->setSmallStep(data->scrollBarOptions.smallStep);
 		e->setLargeStep(data->scrollBarOptions.largeStep);
 
-		if (scrollBarOptions.pageSize < 0) {
+		if (data->scrollBarOptions.pageSize < 0) {
 			if (is_horizontal) {
 				e->setPageSize(dim.X);
 			} else {
@@ -658,17 +658,16 @@ void GUIFormSpecMenu::parseScrollBarOptions(parserData* data, const std::string 
 			}
 
 			int value = stoi(options[1]);
-			int option = options[0];
 
-			if (option == "max") {
+			if (options[0] == "max") {
 				data->scrollBarOptions.max = value;
 				continue;
 			}
-			if (option == "min") {
+			if (options[0] == "min") {
 				data->scrollBarOptions.min = value;
 				continue;
 			}
-			if (option == "smallstep") {
+			if (options[0] == "smallstep") {
 				if (value < 0) {
 					data->scrollBarOptions.smallStep = 10;
 				} else {
@@ -676,7 +675,7 @@ void GUIFormSpecMenu::parseScrollBarOptions(parserData* data, const std::string 
 				}
 				continue;
 			}
-			if (option == "largestep") {
+			if (options[0] == "largestep") {
 				if (value < 0) {
 					data->scrollBarOptions.largeStep = 100;
 				} else {
@@ -684,12 +683,12 @@ void GUIFormSpecMenu::parseScrollBarOptions(parserData* data, const std::string 
 				}
 				continue;
 			}
-			if (option == "pagesize") {
+			if (options[0] == "pagesize") {
 				data->scrollBarOptions.pageSize = value;
 				continue;
 			}
 
-			errorstream << "Invalid scrollbaroptions option(" << option <<
+			errorstream << "Invalid scrollbaroptions option(" << options[0] <<
 				"): '" << element << "'" << std::endl;
 		}
 		return;
