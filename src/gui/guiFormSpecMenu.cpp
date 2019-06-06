@@ -2604,8 +2604,18 @@ void GUIFormSpecMenu::drawList(const ListDrawSpec &s, int layer,
 		if (item_i >= (s32)ilist->getSize())
 			break;
 
-		s32 x = (i%s.geom.X) * spacing.X;
-		s32 y = (i/s.geom.X) * spacing.Y;
+		s32 x;
+		s32 y;
+		if (data->real_coordinates) {
+			// Space inventory slots 1/2 imgsize apart, which
+			// is a good default, easily changeable, and can
+			// be aligned to with real coordinates well.
+			x = (i%s.geom.X) * (imgsize.X / 2)
+			y = (i/s.geom.X) * (imgsize.Y / 2)
+		} else {
+			x = (i%s.geom.X) * spacing.X;
+			y = (i/s.geom.X) * spacing.Y;
+		}
 		v2s32 p(x,y);
 		core::rect<s32> rect = imgrect + s.pos + p;
 		ItemStack item = ilist->getItem(item_i);
