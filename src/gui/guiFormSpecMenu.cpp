@@ -2565,8 +2565,8 @@ GUIFormSpecMenu::ItemSpec GUIFormSpecMenu::getItemAtPos(v2s32 p) const
 			s32 x;
 			s32 y;
 			if (s.real_coordinates) {
-				x = (i%s.geom.X) * (imgsize.X * 1.5);
-				y = (i/s.geom.X) * (imgsize.Y * 1.5);
+				x = (i%s.geom.X) * (imgsize.X * 1.25);
+				y = (i/s.geom.X) * (imgsize.Y * 1.25);
 			} else {
 				x = (i%s.geom.X) * spacing.X;
 				y = (i/s.geom.X) * spacing.Y;
@@ -2615,8 +2615,8 @@ void GUIFormSpecMenu::drawList(const ListDrawSpec &s, int layer,
 		s32 x;
 		s32 y;
 		if (s.real_coordinates) {
-			x = (i%s.geom.X) * (imgsize.X * 1.5);
-			y = (i/s.geom.X) * (imgsize.Y * 1.5);
+			x = (i%s.geom.X) * (imgsize.X * 1.25);
+			y = (i/s.geom.X) * (imgsize.Y * 1.25);
 		} else {
 			x = (i%s.geom.X) * spacing.X;
 			y = (i/s.geom.X) * spacing.Y;
