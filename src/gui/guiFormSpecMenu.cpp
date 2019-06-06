@@ -394,7 +394,7 @@ void GUIFormSpecMenu::parseList(parserData* data, const std::string &element)
 
 		if(!data->explicit_size)
 			warningstream<<"invalid use of list without a size[] element"<<std::endl;
-		m_inventorylists.emplace_back(loc, listname, pos, geom, start_i);
+		m_inventorylists.emplace_back(loc, listname, pos, geom, start_i, data->real_coordinates);
 		return;
 	}
 	errorstream<< "Invalid list element(" << parts.size() << "): '" << element << "'"  << std::endl;
@@ -2561,8 +2561,16 @@ GUIFormSpecMenu::ItemSpec GUIFormSpecMenu::getItemAtPos(v2s32 p) const
 	for (const GUIFormSpecMenu::ListDrawSpec &s : m_inventorylists) {
 		for(s32 i=0; i<s.geom.X*s.geom.Y; i++) {
 			s32 item_i = i + s.start_item_i;
-			s32 x = (i%s.geom.X) * spacing.X;
-			s32 y = (i/s.geom.X) * spacing.Y;
+
+			s32 x;
+			s32 y;
+			if (s.real_coordinates) {
+				x = (i%s.geom.X) * (imgsize.X / 2);
+				y = (i/s.geom.X) * (imgsize.Y / 2);
+			} else {
+				x = (i%s.geom.X) * spacing.X;
+				y = (i/s.geom.X) * spacing.Y;
+			}
 			v2s32 p0(x,y);
 			core::rect<s32> rect = imgrect + s.pos + p0;
 			if(rect.isPointInside(p))
@@ -2604,8 +2612,15 @@ void GUIFormSpecMenu::drawList(const ListDrawSpec &s, int layer,
 		if (item_i >= (s32)ilist->getSize())
 			break;
 
-		s32 x = (i%s.geom.X) * spacing.X;
-		s32 y = (i/s.geom.X) * spacing.Y;
+		s32 x;
+		s32 y;
+		if (s.real_coordinates) {
+			x = (i%s.geom.X) * (imgsize.X / 2);
+			y = (i/s.geom.X) * (imgsize.Y / 2);
+		} else {
+			x = (i%s.geom.X) * spacing.X;
+			y = (i/s.geom.X) * spacing.Y;
+		}
 		v2s32 p(x,y);
 		core::rect<s32> rect = imgrect + s.pos + p;
 		ItemStack item = ilist->getItem(item_i);
