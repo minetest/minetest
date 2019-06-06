@@ -91,7 +91,7 @@ std::string        checkstringfield(lua_State *L, int table,
                              const char *fieldname);
 
 void               setstringfield(lua_State *L, int table,
-                             const char *fieldname, const char *value);
+                             const char *fieldname, const std::string &value);
 void               setintfield(lua_State *L, int table,
                              const char *fieldname, int value);
 void               setfloatfield(lua_State *L, int table,

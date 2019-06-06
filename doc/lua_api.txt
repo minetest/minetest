@@ -3527,11 +3527,14 @@ Utilities
           -- Chat messages are no longer predicted (0.4.16)
           no_chat_message_prediction = true,
           -- The transparency channel of textures can optionally be used on
-          -- objects (ie: players and lua entities) (5.0)
+          -- objects (ie: players and lua entities) (5.0.0)
           object_use_texture_alpha = true,
           -- Object selectionbox is settable independently from collisionbox
-          -- (5.0)
+          -- (5.0.0)
           object_independent_selectionbox = true,
+          -- Specifies whether binary data can be uploaded or downloaded using
+          -- the HTTP API (5.1.0)
+          httpfetch_binary_data = true,
       }
 
 * `minetest.has_feature(arg)`: returns `boolean, missing_features`

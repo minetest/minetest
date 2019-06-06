@@ -540,9 +540,9 @@ v3s16 getv3s16field_default(lua_State *L, int table,
 }
 
 void setstringfield(lua_State *L, int table,
-		const char *fieldname, const char *value)
+		const char *fieldname, const std::string &value)
 {
-	lua_pushstring(L, value);
+	lua_pushlstring(L, value.c_str(), value.length());
 	if(table < 0)
 		table -= 1;
 	lua_setfield(L, table, fieldname);
