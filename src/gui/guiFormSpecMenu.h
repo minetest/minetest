@@ -100,7 +100,7 @@ class GUIFormSpecMenu : public GUIModalMenu
 		ListDrawSpec(const InventoryLocation &a_inventoryloc,
 				const std::string &a_listname,
 				v2s32 a_pos, v2s32 a_geom, s32 a_start_item_i,
-				a_real_coordinates):
+				bool a_real_coordinates):
 			inventoryloc(a_inventoryloc),
 			listname(a_listname),
 			pos(a_pos),
