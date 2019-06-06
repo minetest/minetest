@@ -1879,7 +1879,7 @@ Position and size units are inventory slots unless the new coordinating system
 is enabled. `X` and `Y` position the formspec element relative to the top left
 of the menu or container. `W` and `H` are its width and height values.
 
-If the new system is enabled, all elements have unified cooridinates for all
+If the new system is enabled, all elements have unified coordinates for all
 elements with no padding or spacing in between. This is highly recommended
 for new forms. See `real_coordinates[<bool>]`.
 
@@ -1981,15 +1981,15 @@ Elements
 
 * Show an inventory list if it has been sent to the client. Nothing will
   be shown if the inventory list is of size 0.
-* **Note**: The spacing between inventory slots is not affected by the
-  new coordinate system.
+* **Note**: With the new coordinate system, the spacing between inventory
+  slots is one-fourth the size of an inventory slot.
 
 ### `list[<inventory location>;<list name>;<X>,<Y>;<W>,<H>;<starting item index>]`
 
 * Show an inventory list if it has been sent to the client. Nothing will
   be shown if the inventory list is of size 0.
-* **Note**: The spacing between inventory slots is not affected by the
-  new coordinate system.
+* **Note**: With the new coordinate system, the spacing between inventory
+  slots is one-fourth the size of an inventory slot.
 
 ### `listring[<inventory location>;<list name>]`
 
