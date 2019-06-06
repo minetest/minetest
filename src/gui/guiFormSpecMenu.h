@@ -404,6 +404,7 @@ private:
 			int min = 0;
 			int smallStep = 10;
 			int largeStep = 100;
+			int pageSize = -1;
 		} scrollBarOptions;
 
 		// used to restore table selection/scroll/treeview state

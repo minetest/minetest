@@ -2368,6 +2368,9 @@ Elements
     * scrolled, defaults to `10`
 * `largestep=<int>`
     * Sets scrollbar step value when the bar itself is clicked, defaults to `100`
+* `pagesize=<int>`
+    * Sets size of a single screen for the scrollbar. Setting this to -1 lets the
+    * scrollbar calculate this automatically.
 
 ### `table[<X>,<Y>;<W>,<H>;<name>;<cell 1>,<cell 2>,...,<cell n>;<selected idx>]`
 
