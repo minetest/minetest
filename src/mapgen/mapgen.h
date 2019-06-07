@@ -286,6 +286,7 @@ protected:
 	NoiseParams np_dungeons;
 	float cave_width;
 	float cavern_limit;
+	float cavern_ymin;
 	float cavern_taper;
 	float cavern_threshold;
 	int lava_depth;

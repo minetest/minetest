@@ -66,6 +66,7 @@ MapgenV7::MapgenV7(MapgenV7Params *params, EmergeManager *emerge)
 	large_cave_depth     = params->large_cave_depth;
 	lava_depth           = params->lava_depth;
 	cavern_limit         = params->cavern_limit;
+	cavern_ymin          = params->cavern_ymin;
 	cavern_taper         = params->cavern_taper;
 	cavern_threshold     = params->cavern_threshold;
 	dungeon_ymin         = params->dungeon_ymin;
@@ -179,6 +180,7 @@ void MapgenV7Params::readParams(const Settings *settings)
 	settings->getS16NoEx("mgv7_floatland_level",        floatland_level);
 	settings->getS16NoEx("mgv7_shadow_limit",           shadow_limit);
 	settings->getS16NoEx("mgv7_cavern_limit",           cavern_limit);
+	settings->getS16NoEx("mgv7_cavern_ymin",            cavern_ymin);
 	settings->getS16NoEx("mgv7_cavern_taper",           cavern_taper);
 	settings->getFloatNoEx("mgv7_cavern_threshold",     cavern_threshold);
 	settings->getS16NoEx("mgv7_dungeon_ymin",           dungeon_ymin);
@@ -215,6 +217,7 @@ void MapgenV7Params::writeParams(Settings *settings) const
 	settings->setS16("mgv7_floatland_level",        floatland_level);
 	settings->setS16("mgv7_shadow_limit",           shadow_limit);
 	settings->setS16("mgv7_cavern_limit",           cavern_limit);
+	settings->setS16("mgv7_cavern_ymin",            cavern_ymin);
 	settings->setS16("mgv7_cavern_taper",           cavern_taper);
 	settings->setFloat("mgv7_cavern_threshold",     cavern_threshold);
 	settings->setS16("mgv7_dungeon_ymin",           dungeon_ymin);

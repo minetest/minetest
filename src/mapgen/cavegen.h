@@ -68,9 +68,9 @@ private:
 class CavernsNoise
 {
 public:
-	CavernsNoise(const NodeDefManager *nodedef, v3s16 chunksize,
-		NoiseParams *np_cavern, s32 seed, float cavern_limit,
-		float cavern_taper, float cavern_threshold);
+	CavernsNoise(const NodeDefManager *nodedef, v3s16 chunksize, NoiseParams *np_cavern,
+		s32 seed, float cavern_limit, float cavern_ymin, float cavern_taper,
+		float cavern_threshold);
 	~CavernsNoise();
 
 	bool generateCaverns(MMVManip *vm, v3s16 nmin, v3s16 nmax);
@@ -81,6 +81,7 @@ private:
 	// configurable parameters
 	v3s16 m_csize;
 	float m_cavern_limit;
+	float m_cavern_ymin;
 	float m_cavern_taper;
 	float m_cavern_threshold;
 

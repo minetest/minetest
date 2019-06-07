@@ -875,11 +875,12 @@ void MapgenBasic::generateCavesRandomWalk(s16 max_stone_y, s16 large_cave_depth)
 
 bool MapgenBasic::generateCavernsNoise(s16 max_stone_y)
 {
-	if (node_min.Y > max_stone_y || node_min.Y > cavern_limit)
+	if (node_min.Y > max_stone_y || node_min.Y > cavern_limit ||
+			node_max.Y < cavern_ymin)
 		return false;
 
-	CavernsNoise caverns_noise(ndef, csize, &np_cavern,
-		seed, cavern_limit, cavern_taper, cavern_threshold);
+	CavernsNoise caverns_noise(ndef, csize, &np_cavern, seed,
+		cavern_limit, cavern_ymin, cavern_taper, cavern_threshold);
 
 	return caverns_noise.generateCaverns(vm, node_min, node_max);
 }

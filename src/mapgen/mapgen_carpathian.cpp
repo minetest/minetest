@@ -60,6 +60,7 @@ MapgenCarpathian::MapgenCarpathian(MapgenCarpathianParams *params, EmergeManager
 	large_cave_depth = params->large_cave_depth;
 	lava_depth       = params->lava_depth;
 	cavern_limit     = params->cavern_limit;
+	cavern_ymin      = params->cavern_ymin;
 	cavern_taper     = params->cavern_taper;
 	cavern_threshold = params->cavern_threshold;
 	dungeon_ymin     = params->dungeon_ymin;
@@ -138,6 +139,7 @@ void MapgenCarpathianParams::readParams(const Settings *settings)
 	settings->getS16NoEx("mgcarpathian_large_cave_depth",   large_cave_depth);
 	settings->getS16NoEx("mgcarpathian_lava_depth",         lava_depth);
 	settings->getS16NoEx("mgcarpathian_cavern_limit",       cavern_limit);
+	settings->getS16NoEx("mgcarpathian_cavern_ymin",        cavern_ymin);
 	settings->getS16NoEx("mgcarpathian_cavern_taper",       cavern_taper);
 	settings->getFloatNoEx("mgcarpathian_cavern_threshold", cavern_threshold);
 	settings->getS16NoEx("mgcarpathian_dungeon_ymin",       dungeon_ymin);
@@ -170,6 +172,7 @@ void MapgenCarpathianParams::writeParams(Settings *settings) const
 	settings->setS16("mgcarpathian_large_cave_depth",   large_cave_depth);
 	settings->setS16("mgcarpathian_lava_depth",         lava_depth);
 	settings->setS16("mgcarpathian_cavern_limit",       cavern_limit);
+	settings->setS16("mgcarpathian_cavern_ymin",        cavern_ymin);
 	settings->setS16("mgcarpathian_cavern_taper",       cavern_taper);
 	settings->setFloat("mgcarpathian_cavern_threshold", cavern_threshold);
 	settings->setS16("mgcarpathian_dungeon_ymin",       dungeon_ymin);

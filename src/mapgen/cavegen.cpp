@@ -175,8 +175,8 @@ void CavesNoiseIntersection::generateCaves(MMVManip *vm,
 ////
 
 CavernsNoise::CavernsNoise(
-	const NodeDefManager *nodedef, v3s16 chunksize, NoiseParams *np_cavern,
-	s32 seed, float cavern_limit, float cavern_taper, float cavern_threshold)
+	const NodeDefManager *nodedef, v3s16 chunksize, NoiseParams *np_cavern, s32 seed,
+	float cavern_limit, float cavern_ymin, float cavern_taper, float cavern_threshold)
 {
 	assert(nodedef);
 
@@ -184,6 +184,7 @@ CavernsNoise::CavernsNoise(
 
 	m_csize            = chunksize;
 	m_cavern_limit     = cavern_limit;
+	m_cavern_ymin      = cavern_ymin;
 	m_cavern_taper     = cavern_taper;
 	m_cavern_threshold = cavern_threshold;
 
@@ -218,12 +219,27 @@ bool CavernsNoise::generateCaverns(MMVManip *vm, v3s16 nmin, v3s16 nmax)
 	// Calculate noise
 	noise_cavern->perlinMap3D(nmin.X, nmin.Y - 1, nmin.Z);
 
-	// Cache cavern_amp values
-	float *cavern_amp = new float[m_csize.Y + 1];
-	u8 cavern_amp_index = 0;  // Index zero at column top
-	for (s16 y = nmax.Y; y >= nmin.Y - 1; y--, cavern_amp_index++) {
-		cavern_amp[cavern_amp_index] =
-			MYMIN((m_cavern_limit - y) / (float)m_cavern_taper, 1.0f);
+	// Cache cavern_offset values
+	float taper_start_max = m_cavern_limit - m_cavern_taper;
+	float taper_start_min = m_cavern_ymin + m_cavern_taper;
+
+	float *cavern_offset = new float[m_csize.Y + 1];
+	u8 cavern_offset_index = 0;  // Index zero at column top
+	for (s16 y = nmax.Y; y >= nmin.Y - 1; y--, cavern_offset_index++) {
+		if (y < taper_start_max && y > taper_start_min) {
+			// Full cavern size
+			cavern_offset[cavern_offset_index] = 0.0f;
+		} else if (y <= m_cavern_limit && y >= taper_start_max) {
+			// Upper taper
+			cavern_offset[cavern_offset_index] =
+				-3.0f * (y - taper_start_max) / m_cavern_taper;
+		} else if (y >= m_cavern_ymin && y <= taper_start_min) {
+			// Lower taper
+			cavern_offset[cavern_offset_index] =
+				-3.0f * (taper_start_min - y) / m_cavern_taper;
+		} else {
+			cavern_offset[cavern_offset_index] = -3.0f;
+		}
 	}
 
 	//// Place nodes
@@ -234,7 +250,7 @@ bool CavernsNoise::generateCaverns(MMVManip *vm, v3s16 nmin, v3s16 nmax)
 	for (s16 z = nmin.Z; z <= nmax.Z; z++)
 	for (s16 x = nmin.X; x <= nmax.X; x++, index2d++) {
 		// Reset cave_amp index to column top
-		cavern_amp_index = 0;
+		cavern_offset_index = 0;
 		// Initial voxelmanip index at column top
 		u32 vi = vm->m_area.index(x, nmax.Y, z);
 		// Initial 3D noise index at column top
@@ -247,22 +263,22 @@ bool CavernsNoise::generateCaverns(MMVManip *vm, v3s16 nmin, v3s16 nmax)
 		for (s16 y = nmax.Y; y >= nmin.Y - 1; y--,
 				index3d -= m_ystride,
 				VoxelArea::add_y(em, vi, -1),
-				cavern_amp_index++) {
+				cavern_offset_index++) {
 			content_t c = vm->m_data[vi].getContent();
-			float n_absamp_cavern = std::fabs(noise_cavern->result[index3d]) *
-				cavern_amp[cavern_amp_index];
+			float n_absoff_cavern = std::fabs(noise_cavern->result[index3d]) +
+				cavern_offset[cavern_offset_index];
 			// Disable CavesRandomWalk at a safe distance from caverns
 			// to avoid excessively spreading liquids in caverns.
-			if (n_absamp_cavern > m_cavern_threshold - 0.1f) {
+			if (n_absoff_cavern > m_cavern_threshold - 0.1f) {
 				near_cavern = true;
-				if (n_absamp_cavern > m_cavern_threshold &&
+				if (n_absoff_cavern > m_cavern_threshold &&
 						m_ndef->get(c).is_ground_content)
 					vm->m_data[vi] = MapNode(CONTENT_AIR);
 			}
 		}
 	}
 
-	delete[] cavern_amp;
+	delete[] cavern_offset;
 
 	return near_cavern;
 }

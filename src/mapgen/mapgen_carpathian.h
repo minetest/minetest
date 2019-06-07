@@ -40,6 +40,7 @@ struct MapgenCarpathianParams : public MapgenParams
 	s16 large_cave_depth   = -33;
 	s16 lava_depth         = -256;
 	s16 cavern_limit       = -256;
+	s16 cavern_ymin        = -32000;
 	s16 cavern_taper       = 256;
 	float cavern_threshold = 0.7f;
 	s16 dungeon_ymin       = -31000;

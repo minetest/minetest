@@ -1379,7 +1379,10 @@ mgv5_large_cave_depth (Large cave depth) int -256
 mgv5_lava_depth (Lava depth) int -256
 
 #    Y-level of cavern upper limit.
-mgv5_cavern_limit (Cavern limit) int -256
+mgv5_cavern_limit (Cavern maximum y) int -256
+
+#    Y-level of cavern lower limit.
+mgv5_cavern_ymin (Cavern minimum y) int -32000
 
 #    Y-distance over which caverns expand to full size.
 mgv5_cavern_taper (Cavern taper) int 256
@@ -1511,7 +1514,10 @@ mgv7_floatland_level (Floatland level) int 1280
 mgv7_shadow_limit (Shadow limit) int 1024
 
 #    Y-level of cavern upper limit.
-mgv7_cavern_limit (Cavern limit) int -256
+mgv7_cavern_limit (Cavern maximum y) int -256
+
+#    Y-level of cavern lower limit.
+mgv7_cavern_ymin (Cavern minimum y) int -32000
 
 #    Y-distance over which caverns expand to full size.
 mgv7_cavern_taper (Cavern taper) int 256
@@ -1593,7 +1599,10 @@ mgcarpathian_large_cave_depth (Large cave depth) int -33
 mgcarpathian_lava_depth (Lava depth) int -256
 
 #    Y-level of cavern upper limit.
-mgcarpathian_cavern_limit (Cavern limit) int -256
+mgcarpathian_cavern_limit (Cavern maximum y) int -256
+
+#    Y-level of cavern lower limit.
+mgcarpathian_cavern_ymin (Cavern minimum y) int -32000
 
 #    Y-distance over which caverns expand to full size.
 mgcarpathian_cavern_taper (Cavern taper) int 256
@@ -1847,8 +1856,11 @@ mgvalleys_large_cave_depth (Large cave depth) int -33
 #    Y of upper limit of lava in large caves.
 mgvalleys_lava_depth (Lava depth) int 1
 
-#    Depth below which you'll find giant caverns.
-mgvalleys_cavern_limit (Cavern upper limit) int -256
+#    Y-level of cavern upper limit.
+mgvalleys_cavern_limit (Cavern maximum y) int -256
+
+#    Y-level of cavern lower limit.
+mgvalleys_cavern_ymin (Cavern minimum y) int -32000
 
 #    Y-distance over which caverns expand to full size.
 mgvalleys_cavern_taper (Cavern taper) int 192

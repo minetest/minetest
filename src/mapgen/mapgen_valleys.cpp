@@ -69,6 +69,7 @@ MapgenValleys::MapgenValleys(MapgenValleysParams *params, EmergeManager *emerge)
 	large_cave_depth   = params->large_cave_depth;
 	lava_depth         = params->lava_depth;
 	cavern_limit       = params->cavern_limit;
+	cavern_ymin        = params->cavern_ymin;
 	cavern_taper       = params->cavern_taper;
 	cavern_threshold   = params->cavern_threshold;
 	dungeon_ymin       = params->dungeon_ymin;
@@ -132,6 +133,7 @@ void MapgenValleysParams::readParams(const Settings *settings)
 	settings->getU16NoEx("mgvalleys_river_size",         river_size);
 	settings->getFloatNoEx("mgvalleys_cave_width",       cave_width);
 	settings->getS16NoEx("mgvalleys_cavern_limit",       cavern_limit);
+	settings->getS16NoEx("mgvalleys_cavern_ymin",        cavern_ymin);
 	settings->getS16NoEx("mgvalleys_cavern_taper",       cavern_taper);
 	settings->getFloatNoEx("mgvalleys_cavern_threshold", cavern_threshold);
 	settings->getS16NoEx("mgvalleys_dungeon_ymin",       dungeon_ymin);
@@ -162,6 +164,7 @@ void MapgenValleysParams::writeParams(Settings *settings) const
 	settings->setU16("mgvalleys_river_size",         river_size);
 	settings->setFloat("mgvalleys_cave_width",       cave_width);
 	settings->setS16("mgvalleys_cavern_limit",       cavern_limit);
+	settings->setS16("mgvalleys_cavern_ymin",        cavern_ymin);
 	settings->setS16("mgvalleys_cavern_taper",       cavern_taper);
 	settings->setFloat("mgvalleys_cavern_threshold", cavern_threshold);
 	settings->setS16("mgvalleys_dungeon_ymin",       dungeon_ymin);

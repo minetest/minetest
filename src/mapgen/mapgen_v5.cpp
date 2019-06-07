@@ -53,6 +53,7 @@ MapgenV5::MapgenV5(MapgenV5Params *params, EmergeManager *emerge)
 	large_cave_depth = params->large_cave_depth;
 	lava_depth       = params->lava_depth;
 	cavern_limit     = params->cavern_limit;
+	cavern_ymin      = params->cavern_ymin;
 	cavern_taper     = params->cavern_taper;
 	cavern_threshold = params->cavern_threshold;
 	dungeon_ymin     = params->dungeon_ymin;
@@ -103,6 +104,7 @@ void MapgenV5Params::readParams(const Settings *settings)
 	settings->getS16NoEx("mgv5_large_cave_depth",   large_cave_depth);
 	settings->getS16NoEx("mgv5_lava_depth",         lava_depth);
 	settings->getS16NoEx("mgv5_cavern_limit",       cavern_limit);
+	settings->getS16NoEx("mgv5_cavern_ymin",        cavern_ymin);
 	settings->getS16NoEx("mgv5_cavern_taper",       cavern_taper);
 	settings->getFloatNoEx("mgv5_cavern_threshold", cavern_threshold);
 	settings->getS16NoEx("mgv5_dungeon_ymin",       dungeon_ymin);
@@ -126,6 +128,7 @@ void MapgenV5Params::writeParams(Settings *settings) const
 	settings->setS16("mgv5_large_cave_depth",   large_cave_depth);
 	settings->setS16("mgv5_lava_depth",         lava_depth);
 	settings->setS16("mgv5_cavern_limit",       cavern_limit);
+	settings->setS16("mgv5_cavern_ymin",        cavern_ymin);
 	settings->setS16("mgv5_cavern_taper",       cavern_taper);
 	settings->setFloat("mgv5_cavern_threshold", cavern_threshold);
 	settings->setS16("mgv5_dungeon_ymin",       dungeon_ymin);
