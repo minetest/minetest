@@ -83,10 +83,10 @@ MapgenValleys::MapgenValleys(MapgenValleysParams *params, EmergeManager *emerge)
 	noise_valley_profile     = new Noise(&params->np_valley_profile,     seed, csize.X, csize.Z);
 
 	//// River noise, 2D or 3D
-	if (spflags & MGVALLEYS_CANYONS)
+	if (spflags & MGVALLEYS_CANYONS) {
 		noise_rivers     = new Noise(&params->np_rivers, seed,
 				csize.X, csize.Y + 2, csize.Z);
-	else {
+	} else {
 		v3f *spread = &params->np_rivers.spread;
 		spread->Y = spread->Z;
 		noise_rivers     = new Noise(&params->np_rivers,             seed, csize.X, csize.Z);
