@@ -376,7 +376,7 @@ protected:
 	video::SColor m_default_tooltip_bgcolor;
 	video::SColor m_default_tooltip_color;
 
-	
+
 private:
 	IFormSource        *m_form_src;
 	TextDest           *m_text_dst;
@@ -404,7 +404,7 @@ private:
 			int min = 0;
 			int smallStep = 10;
 			int largeStep = 100;
-			int pageSize = -1;
+			int thumbSize = 1;
 		} scrollBarOptions;
 
 		// used to restore table selection/scroll/treeview state

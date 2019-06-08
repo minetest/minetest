@@ -35,6 +35,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <IGUIStaticText.h>
 #include <IGUIFont.h>
 #include <IGUITabControl.h>
+#include "guiScrollBar.h"
 #include "client/renderingengine.h"
 #include "log.h"
 #include "client/tile.h" // ITextureSource
@@ -618,22 +619,24 @@ void GUIFormSpecMenu::parseScrollBar(parserData* data, const std::string &elemen
 		auto style = getStyleForElement("scrollbar", name);
 		e->setNotClipped(style.getBool(StyleSpec::NOCLIP, false));
 
-		e->setMax(data->scrollBarOptions.max);
-		e->setMin(data->scrollBarOptions.min);
+		s32 max = data->scrollBarOptions.max;
+		s32 min = data->scrollBarOptions.min;
+
+		e->setMax(max);
+		e->setMin(min);
 
 		e->setPos(stoi(parts[4]));
+
 		e->setSmallStep(data->scrollBarOptions.smallStep);
 		e->setLargeStep(data->scrollBarOptions.largeStep);
 
-		if (data->scrollBarOptions.pageSize < 0) {
-			if (is_horizontal) {
-				e->setPageSize(dim.X);
-			} else {
-				e->setPageSize(dim.Y);
-			}
-		} else {
-			e->setPageSize(data->scrollBarOptions.pageSize);
-		}
+		s32 scrollbar_size;
+		if (is_horizontal)
+			scrollbar_size = dim.X;
+		else
+			scrollbar_size = dim.Y;
+
+		e->setPageSize(scrollbar_size * (max-min+1) / data->scrollBarOptions.thumbSize);
 
 		m_scrollbars.emplace_back(spec,e);
 		m_fields.push_back(spec);
@@ -652,7 +655,7 @@ void GUIFormSpecMenu::parseScrollBarOptions(parserData* data, const std::string 
 			std::vector<std::string> options = split(parts[i], '=');
 
 			if (options.size() != 2) {
-				errorstream << "Invalid scrollbaroptions option syntax: '" <<
+				warningstream << "Invalid scrollbaroptions option syntax: '" <<
 					element << "'" << std::endl;
 				continue; // Go to next option
 			}
@@ -668,33 +671,34 @@ void GUIFormSpecMenu::parseScrollBarOptions(parserData* data, const std::string 
 				continue;
 			}
 			if (options[0] == "smallstep") {
-				if (value < 0) {
+				if (value < 0)
 					data->scrollBarOptions.smallStep = 10;
-				} else {
+				else
 					data->scrollBarOptions.smallStep = value;
-				}
 				continue;
 			}
 			if (options[0] == "largestep") {
-				if (value < 0) {
+				if (value < 0)
 					data->scrollBarOptions.largeStep = 100;
-				} else {
+				else
 					data->scrollBarOptions.largeStep = value;
-				}
 				continue;
 			}
-			if (options[0] == "pagesize") {
-				data->scrollBarOptions.pageSize = value;
+			if (options[0] == "thumbsize") {
+				if (value < 0)
+					data->scrollBarOptions.thumbSize = 1;
+				else
+					data->scrollBarOptions.thumbSize = value;
 				continue;
 			}
 
-			errorstream << "Invalid scrollbaroptions option(" << options[0] <<
+			warningstream << "Invalid scrollbaroptions option(" << options[0] <<
 				"): '" << element << "'" << std::endl;
 		}
 		return;
 	}
 
-	errorstream << "Invalid scrollbaroptions element(" << parts.size() << "): '" <<
+	warningstream << "Invalid scrollbaroptions element(" << parts.size() << "): '" <<
 		element << "'"  << std::endl;
 }
 

@@ -2359,18 +2359,20 @@ Elements
 ### `scrollbaroptions[opt1;opt2;...]`
 * Sets options for all following `scrollbar[]` elements
 * `min=<int>`
-    * Sets scrollbar minimum value, defaults to `0`
+    * Sets scrollbar minimum value, defaults to `0`.
 * `max=<int>`
-    * Sets scrollbar maximum value, defaults to `1000`
-    * If the max is equal to the min, the scrollbar will be disabled
+    * Sets scrollbar maximum value, defaults to `1000`.
+      If the max is equal to the min, the scrollbar will be disabled.
 * `smallstep=<int>`
     * Sets scrollbar step value when the arrows are clicked or the mouse wheel is
-    * scrolled, defaults to `10`
+      scrolled, defaults to `10`.
 * `largestep=<int>`
-    * Sets scrollbar step value when the bar itself is clicked, defaults to `100`
-* `pagesize=<int>`
-    * Sets size of a single screen for the scrollbar. Setting this to -1 lets the
-    * scrollbar calculate this automatically.
+    * Sets scrollbar step value when the bar itself is clicked, defaults to `100`.
+* `thumbsize=<int>`
+    * Sets size of the thumb on the scrollbar. Size is calculated in the number of
+      units the scrollbar spans out of the range of the scrollbar values.
+      Example: If a scrollbar has a min of 1 and a max of 1000, a thumbsize of 10
+      would span a tenth of the scrollbar space.
 
 ### `table[<X>,<Y>;<W>,<H>;<name>;<cell 1>,<cell 2>,...,<cell n>;<selected idx>]`
 
