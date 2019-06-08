@@ -109,5 +109,6 @@ private:
 	Noise *noise_valley_profile;
 
 	virtual int generateTerrain();
+	float getRiverDepth(float n_rivers);
 	float getValleyHeight(int index, float valley_d, float valley_profile);
 };

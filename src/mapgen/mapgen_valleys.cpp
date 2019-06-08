@@ -349,12 +349,27 @@ int MapgenValleys::getSpawnLevelAtPoint(v2s16 p)
 }
 
 
+float MapgenValleys::getRiverDepth(float n_rivers)
+{
+	float river = std::fabs(n_rivers) - river_size_factor;
+	if (river > 0) {
+		return 0.0f;
+	} else {
+		// Rivers are placed where 'river' is negative
+		// Use the the function -sqrt(1-x^2) which models a circle
+		float tr = rangelim(river / river_size_factor + 1.0f, 0.0f, 1.0f);
+		return -(river_depth_bed *
+			std::sqrt(1.0f - tr * tr));
+	}
+}
+
+
 float MapgenValleys::getValleyHeight(int index, float valley_d, float valley_profile)
 {
 	float n_rivers = noise_rivers->result[index];
 
-	// 'river' represents the distance from the river edge
 	float river = std::fabs(n_rivers) - river_size_factor;
+	// 'river' represents the distance from the river edge
 	if (river > 0) {
 		// Use the curve of the function 1-exp(-(x/a)^2) to model valleys.
 		// 'valley_h' represents the height of the terrain, from the rivers.
@@ -363,7 +378,7 @@ float MapgenValleys::getValleyHeight(int index, float valley_d, float valley_pro
 	} else {
 		// Rivers are placed where 'river' is negative
 		// Use the the function -sqrt(1-x^2) which models a circle
-		float tr = rangelim(river / river_size_factor + 1.0f, -1.0f, 1.0f);
+		float tr = rangelim(river / river_size_factor + 1.0f, 0.0f, 1.0f);
 		return -(river_depth_bed *
 			std::sqrt(1.0f - tr * tr));
 	}
@@ -406,16 +421,21 @@ int MapgenValleys::generateTerrain()
 		// Set default values for surface_y and base (they will change)
 		float surface_y = base;
 		float slope = 0;
-		if (!(spflags & MGVALLEYS_CANYONS)) {
+		if (spflags & MGVALLEYS_CANYONS) {
+			float n_rivers = NoisePerlin3D(&noise_rivers->np, x, base, z, seed);
+			float river_d = getRiverDepth(n_rivers);
+			surface_y = base + river_d;
+		} else {
 			float valley_h = getValleyHeight(index_2d, valley_d, n_valley_profile);
+			slope = n_slope * std::fmax(valley_h, 0.0f);
 			// Approximate height of the terrain
 			surface_y = base + valley_h;
-			if (valley_h < 0.0f)
-				surface_y = std::fmin(
-					std::fmax(surface_y, (float)(water_level - 3)),
-					base);
-			slope = n_slope * std::fmax(valley_h, 0.0f);
 		}
+
+		if (surface_y < base)
+			surface_y = std::fmin(
+				std::fmax(surface_y, (float)(water_level - 3)),
+				base);
 		// River water surface is 1 node below river banks
 		float river_y = base - 1.0f;
 
@@ -443,15 +463,11 @@ int MapgenValleys::generateTerrain()
 
 		for (s16 y = node_min.Y - 1; y <= node_max.Y + 1; y++) {
 			if (vm->m_data[index_data].getContent() == CONTENT_IGNORE) {
-				if (spflags & MGVALLEYS_CANYONS) {
+				if (spflags & MGVALLEYS_CANYONS && y > base) {
 					float valley_h = getValleyHeight(index_3d, valley_d, n_valley_profile);
+					slope = n_slope * std::fmax(valley_h, 0.0f);
 					// Approximate height of the terrain
 					surface_y = base + valley_h;
-					if (valley_h < 0.0f)
-						surface_y = std::fmin(
-							std::fmax(surface_y, (float)(water_level - 3)),
-							base);
-					slope = n_slope * valley_h;
 				}
 				float n_fill = noise_inter_valley_fill->result[index_3d];
 				float surface_delta = (float)y - surface_y;
