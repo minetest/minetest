@@ -633,17 +633,15 @@ int LuaEntitySAO::punch(v3f dir,
 		return 0;
 	}
 
-	ItemStack *punchitem = NULL;
-	ItemStack punchitem_static;
-	if (puncher) {
-		punchitem_static = puncher->getWieldedItem();
-		punchitem = &punchitem_static;
-	}
+	FATAL_ERROR_IF(!puncher, "Punch action called without SAO");
+
+	s32 old_hp = getHP();
+	const ItemStack &punchitem = puncher->getWieldedItem();
 
 	PunchDamageResult result = getPunchDamage(
 			m_armor_groups,
 			toolcap,
-			punchitem,
+			&punchitem,
 			time_from_last_punch);
 
 	bool damage_handled = m_env->getScriptIface()->luaentity_Punch(m_id, puncher,
@@ -653,14 +651,6 @@ int LuaEntitySAO::punch(v3f dir,
 		if (result.did_punch) {
 			setHP((s32)getHP() - result.damage,
 				PlayerHPChangeReason(PlayerHPChangeReason::SET_HP));
-
-			if (result.damage > 0) {
-				std::string punchername = puncher ? puncher->getDescription() : "nil";
-
-				actionstream << getDescription() << " punched by "
-						<< punchername << ", damage " << result.damage
-						<< " hp, health now " << getHP() << " hp" << std::endl;
-			}
 
 			std::string str = gob_cmd_punched(getHP());
 			// create message and add to list
@@ -675,6 +665,12 @@ int LuaEntitySAO::punch(v3f dir,
 		clearChildAttachments();
 		m_env->getScriptIface()->luaentity_on_death(m_id, puncher);
 	}
+
+	actionstream << puncher->getDescription() << " (id=" << puncher->getId() <<
+			", hp=" << puncher->getHP() << ") punched " <<
+			getDescription() << " (id=" << m_id << ", hp=" << m_hp <<
+			"), damage=" << (old_hp - (s32)getHP()) <<
+			(damage_handled ? " (handled by Lua)" : "") << std::endl;
 
 	return result.wear;
 }
@@ -893,6 +889,9 @@ PlayerSAO::PlayerSAO(ServerEnvironment *env_, RemotePlayer *player_, session_t p
 	m_breath = m_prop.breath_max;
 	// Disable zoom in survival mode using a value of 0
 	m_prop.zoom_fov = g_settings->getBool("creative_mode") ? 15.0f : 0.0f;
+
+	if (!g_settings->getBool("enable_damage"))
+		m_armor_groups["immortal"] = 1;
 }
 
 PlayerSAO::~PlayerSAO()
@@ -995,7 +994,7 @@ void PlayerSAO::getStaticData(std::string * result) const
 
 void PlayerSAO::step(float dtime, bool send_recommended)
 {
-	if (m_drowning_interval.step(dtime, 2.0f)) {
+	if (!isImmortal() && m_drowning_interval.step(dtime, 2.0f)) {
 		// Get nose/mouth position, approximate with eye position
 		v3s16 p = floatToInt(getEyePosition(), BS);
 		MapNode n = m_env->getMap().getNodeNoEx(p);
@@ -1025,7 +1024,7 @@ void PlayerSAO::step(float dtime, bool send_recommended)
 			setBreath(m_breath + 1);
 	}
 
-	if (m_node_hurt_interval.step(dtime, 1.0f)) {
+	if (!isImmortal() && m_node_hurt_interval.step(dtime, 1.0f)) {
 		u32 damage_per_second = 0;
 		std::string nodename;
 		// Lowest and highest damage points are 0.1 within collisionbox
@@ -1284,6 +1283,8 @@ int PlayerSAO::punch(v3f dir,
 	if (!toolcap)
 		return 0;
 
+	FATAL_ERROR_IF(!puncher, "Punch action called without SAO");
+
 	// No effect if PvP disabled
 	if (!g_settings->getBool("enable_pvp")) {
 		if (puncher->getType() == ACTIVEOBJECT_TYPE_PLAYER) {
@@ -1295,13 +1296,9 @@ int PlayerSAO::punch(v3f dir,
 		}
 	}
 
+	s32 old_hp = getHP();
 	HitParams hitparams = getHitParams(m_armor_groups, toolcap,
 			time_from_last_punch);
-
-	std::string punchername = "nil";
-
-	if (puncher != 0)
-		punchername = puncher->getDescription();
 
 	PlayerSAO *playersao = m_player->getPlayerSAO();
 
@@ -1321,15 +1318,11 @@ int PlayerSAO::punch(v3f dir,
 		}
 	}
 
-
-	actionstream << "Player " << m_player->getName() << " punched by "
-			<< punchername;
-	if (!damage_handled) {
-		actionstream << ", damage " << hitparams.hp << " HP";
-	} else {
-		actionstream << ", damage handled by lua";
-	}
-	actionstream << std::endl;
+	actionstream << puncher->getDescription() << " (id=" << puncher->getId() <<
+		", hp=" << puncher->getHP() << ") punched " <<
+		getDescription() << " (id=" << m_id << ", hp=" << m_hp <<
+		"), damage=" << (old_hp - (s32)getHP()) <<
+		(damage_handled ? " (handled by Lua)" : "") << std::endl;
 
 	return hitparams.wear;
 }
@@ -1348,7 +1341,7 @@ void PlayerSAO::setHP(s32 hp, const PlayerHPChangeReason &reason)
 		hp = rangelim(oldhp + hp_change, 0, m_prop.hp_max);
 	}
 
-	if (hp < oldhp && !g_settings->getBool("enable_damage"))
+	if (hp < oldhp && isImmortal())
 		return;
 
 	m_hp = hp;

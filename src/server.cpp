@@ -1426,7 +1426,7 @@ void Server::SendMovement(session_t peer_id)
 
 void Server::SendPlayerHPOrDie(PlayerSAO *playersao, const PlayerHPChangeReason &reason)
 {
-	if (!g_settings->getBool("enable_damage"))
+	if (playersao->isImmortal())
 		return;
 
 	session_t peer_id   = playersao->getPeerID();
