@@ -111,10 +111,10 @@ local function create_world_buttonhandler(this, fields)
 				local random_world_name = "Unnamed" .. random_number
 				worldname = random_world_name
 			end
-			local message = nil
 
 			core.settings:set("fixed_map_seed", fields["te_seed"])
 
+			local message
 			if not menudata.worldlist:uid_exists_raw(worldname) then
 				core.settings:set("mg_name",fields["dd_mapgen"])
 				message = core.create_world(worldname,gameindex)

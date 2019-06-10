@@ -23,11 +23,13 @@ read_globals = {
 	string = {fields = {"split"}},
 	table  = {fields = {"copy", "getn", "indexof", "insert_all"}},
 	math   = {fields = {"hypot"}},
-	os     = {fields = {"tempfolder"}},
 }
 
 globals = {
 	"core",
+	"gamedata",
+	os = { fields = { "tempfolder" } },
+	"_",
 }
 
 files["builtin/client/register.lua"] = {

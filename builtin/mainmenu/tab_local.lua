@@ -21,7 +21,7 @@ local current_game, singleplayer_refresh_gamebar
 if enable_gamebar then
 	function current_game()
 		local last_game_id = core.settings:get("menu_last_game")
-		local game, index = pkgmgr.find_by_gameid(last_game_id)
+		local game = pkgmgr.find_by_gameid(last_game_id)
 
 		return game
 	end
