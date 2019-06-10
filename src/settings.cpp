@@ -69,7 +69,9 @@ Settings & Settings::operator = (const Settings &other)
 bool Settings::checkNameValid(const std::string &name)
 {
 	bool valid = name.find_first_of("=\"{}#") == std::string::npos;
-	if (valid) valid = trim(name) == name;
+	if (valid)
+		valid = std::find_if(name.begin(), name.end(), ::isspace) == name.end();
+
 	if (!valid) {
 		errorstream << "Invalid setting name \"" << name << "\""
 			<< std::endl;
