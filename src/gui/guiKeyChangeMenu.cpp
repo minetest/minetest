@@ -285,11 +285,8 @@ bool GUIKeyChangeMenu::acceptInput()
 
 bool GUIKeyChangeMenu::resetInput()
 {
-	int i = 0;
 	for (key_setting *k : key_settings) {
-		char keys[33][50] = {"W", "S", "A", "D", "E", "KEY_SPACE", "KEY_LSHIFT", "Q", "I", "B", "N", "Z", "KEY_F7", "KEY_F9", "K", "P", "J", "H", "M", "", "", "", "T", "KEY_F12", "R", "-", "+", "KEY_F10", "/", ".", "KEY_F1", "KEY_F2", "KEY_F3"};
-		g_settings->set(k->setting_name, keys[i]);
-		i = i + 1;
+		g_settings->remove(k->setting_name);
 	}
 
 	{
