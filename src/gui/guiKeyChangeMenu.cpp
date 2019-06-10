@@ -40,6 +40,7 @@ extern MainGameCallback *g_gamecallback;
 enum
 {
 	GUI_ID_BACK_BUTTON = 101, GUI_ID_ABORT_BUTTON, GUI_ID_SCROLL_BAR,
+	GUI_ID_RESET_BUTTON,
 	// buttons
 	GUI_ID_KEY_FORWARD_BUTTON,
 	GUI_ID_KEY_BACKWARD_BUTTON,
@@ -229,6 +230,15 @@ void GUIKeyChangeMenu::regenerateGui(v2u32 screensize)
 				text);
 		delete[] text;
 	}
+
+	{
+		core::rect<s32> rect(0, 0, 100 * s, 30 * s);
+		rect += topleft + v2s32(10 * s, size.Y - 40 * s);
+		const wchar_t *text =  wgettext("Reset keys");
+		Environment->addButton(rect, this, GUI_ID_RESET_BUTTON,
+				 text);
+		delete[] text;
+	}
 }
 
 void GUIKeyChangeMenu::drawMenu()
@@ -248,6 +258,38 @@ bool GUIKeyChangeMenu::acceptInput()
 {
 	for (key_setting *k : key_settings) {
 		g_settings->set(k->setting_name, k->key.sym());
+	}
+
+	{
+		gui::IGUIElement *e = getElementFromId(GUI_ID_CB_AUX1_DESCENDS);
+		if(e && e->getType() == gui::EGUIET_CHECK_BOX)
+			g_settings->setBool("aux1_descends", ((gui::IGUICheckBox*)e)->isChecked());
+	}
+	{
+		gui::IGUIElement *e = getElementFromId(GUI_ID_CB_DOUBLETAP_JUMP);
+		if(e && e->getType() == gui::EGUIET_CHECK_BOX)
+			g_settings->setBool("doubletap_jump", ((gui::IGUICheckBox*)e)->isChecked());
+	}
+	{
+		gui::IGUIElement *e = getElementFromId(GUI_ID_CB_AUTOJUMP);
+		if(e && e->getType() == gui::EGUIET_CHECK_BOX)
+			g_settings->setBool("autojump", ((gui::IGUICheckBox*)e)->isChecked());
+	}
+
+	clearKeyCache();
+
+	g_gamecallback->signalKeyConfigChange();
+
+	return true;
+}
+
+bool GUIKeyChangeMenu::resetInput()
+{
+	int i = 0;
+	for (key_setting *k : key_settings) {
+		char keys[33][50] = {"W", "S", "A", "D", "E", "KEY_SPACE", "KEY_LSHIFT", "Q", "I", "B", "N", "Z", "KEY_F7", "KEY_F9", "K", "P", "J", "H", "M", "", "", "", "T", "KEY_F12", "R", "-", "+", "KEY_F10", "/", ".", "KEY_F1", "KEY_F2", "KEY_F3"};
+		g_settings->set(k->setting_name, keys[i]);
+		i = i + 1;
 	}
 
 	{
@@ -375,6 +417,10 @@ bool GUIKeyChangeMenu::OnEvent(const SEvent& event)
 					quitMenu();
 					return true;
 				case GUI_ID_ABORT_BUTTON: //abort
+					quitMenu();
+					return true;
+				case GUI_ID_RESET_BUTTON: //reset
+					resetInput();
 					quitMenu();
 					return true;
 				default:

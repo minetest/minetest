@@ -54,6 +54,8 @@ public:
 
 	bool acceptInput();
 
+	bool resetInput();
+
 	bool OnEvent(const SEvent &event);
 
 	bool pausesGame() { return true; }
