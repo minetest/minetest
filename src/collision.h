@@ -33,11 +33,20 @@ enum CollisionType
 	COLLISION_OBJECT,
 };
 
+enum CollisionAxis
+{
+	COLLISION_AXIS_NONE = -1,
+	COLLISION_AXIS_X,
+	COLLISION_AXIS_Y,
+	COLLISION_AXIS_Z,
+};
+
 struct CollisionInfo
 {
 	CollisionInfo() = default;
 
 	CollisionType type = COLLISION_NODE;
+	CollisionAxis axis = COLLISION_AXIS_NONE;
 	v3s16 node_p = v3s16(-32768,-32768,-32768); // COLLISION_NODE
 	v3f old_speed;
 	v3f new_speed;
@@ -66,7 +75,7 @@ collisionMoveResult collisionMoveSimple(Environment *env,IGameDef *gamedef,
 // Checks for collision of a moving aabbox with a static aabbox
 // Returns -1 if no collision, 0 if X collision, 1 if Y collision, 2 if Z collision
 // dtime receives time until first collision, invalid if -1 is returned
-int axisAlignedCollision(
+CollisionAxis axisAlignedCollision(
 		const aabb3f &staticbox, const aabb3f &movingbox,
 		const v3f &speed, f32 d, f32 *dtime);
 
