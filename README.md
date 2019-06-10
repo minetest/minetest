@@ -284,165 +284,77 @@ Library specific options:
     VORBIS_LIBRARY                  - Only if building with sound; path to libvorbis.a/libvorbis.so/libvorbis.dll.a
     XXF86VM_LIBRARY                 - Only on Linux; path to libXXf86vm.a/libXXf86vm.so
     ZLIB_DLL                        - Only on Windows; path to zlib1.dll
-    ZLIBWAPI_DLL                    - Only on Windows; path to zlibwapi.dll
     ZLIB_INCLUDE_DIR                - Directory that contains zlib.h
-    ZLIB_LIBRARY                    - Path to libz.a/libz.so/zlibwapi.lib
+    ZLIB_LIBRARY                    - Path to libz.a/libz.so/zlib.lib
 
 ### Compiling on Windows
 
-* This section is outdated. In addition to what is described here:
-  * In addition to minetest, you need to download [minetest_game](https://github.com/minetest/minetest_game).
-  * If you wish to have sound support, you need libogg, libvorbis and libopenal
+### Requirements
 
-* You need:
-	* CMake:
-		http://www.cmake.org/cmake/resources/software.html
-	* A compiler
-		* MinGW: http://www.mingw.org/
-		* or Visual Studio: http://msdn.microsoft.com/en-us/vstudio/default
-	* Irrlicht SDK 1.7:
-		http://irrlicht.sourceforge.net/downloads.html
-	* Zlib headers (zlib125.zip)
-		http://www.winimage.com/zLibDll/index.html
-	* Zlib library (zlibwapi.lib and zlibwapi.dll from zlib125dll.zip):
-		http://www.winimage.com/zLibDll/index.html
-	* SQLite3 headers and library
-		https://www.sqlite.org/download.html
-	* Optional: gettext library and tools:
-		http://gnuwin32.sourceforge.net/downlinks/gettext.php
-		* This is used for other UI languages. Feel free to leave it out.
-	* And, of course, Minetest:
-		http://minetest.net/download
-* Steps:
-	* Select a directory called DIR hereafter in which you will operate.
-	* Make sure you have CMake and a compiler installed.
-	* Download all the other stuff to DIR and extract them into there.
-	  ("extract here", not "extract to packagename/")
-	    * NOTE: zlib125dll.zip needs to be extracted into zlib125dll
-	    * NOTE: You need to extract sqlite3.h & sqlite3ext.h from the SQLite 3
-	      source and sqlite3.dll & sqlite3.def from the SQLite 3 precompiled
-	      binaries into "sqlite3" directory, and generate sqlite3.lib using
-	      command "LIB /DEF:sqlite3.def /OUT:sqlite3.lib"
-	* All those packages contain a nice base directory in them, which
-	  should end up being the direct subdirectories of DIR.
-	* You will end up with a directory structure like this (+=dir, -=file):
-	-----------------
-	+ DIR
-		* zlib-1.2.5.tar.gz
-		* zlib125dll.zip
-		* irrlicht-1.8.3.zip
-		* sqlite-amalgamation-3130000.zip (SQLite3 headers)
-		* sqlite-dll-win32-x86-3130000.zip (SQLite3 library for 32bit system)
-		* 110214175330.zip (or whatever, this is the minetest source)
-		+ zlib-1.2.5
-			* zlib.h
-			+ win32
-			...
-		+ zlib125dll
-			* readme.txt
-			+ dll32
-			...
-		+ irrlicht-1.8.3
-			+ lib
-			+ include
-			...
-		+ sqlite3
-			sqlite3.h
-			sqlite3ext.h
-			sqlite3.lib
-			sqlite3.dll
-		+ gettext (optional)
-			+bin
-			+include
-			+lib
-		+ minetest
-			+ src
-			+ doc
-			* CMakeLists.txt
-			...
-	-----------------
-	* Start up the CMake GUI
-	* Select "Browse Source..." and select DIR/minetest
-	* Now, if using MSVC:
-		* Select "Browse Build..." and select DIR/minetest-build
-	* Else if using MinGW:
-		* Select "Browse Build..." and select DIR/minetest
-	* Select "Configure"
-	* Select your compiler
-	* It will warn about missing stuff, ignore that at this point. (later don't)
-	* Make sure the configuration is as follows
-	  (note that the versions may differ for you):
+* Visual Studio 2015 or newer https://visualstudio.microsoft.com
+* CMake https://cmake.org/download/
+* vcpkg https://github.com/Microsoft/vcpkg
+* git https://git-scm.com/downloads
 
-                BUILD_CLIENT             [X]
-                BUILD_SERVER             [ ]
-                CMAKE_BUILD_TYPE         Release
-                CMAKE_INSTALL_PREFIX     DIR/minetest-install
-                IRRLICHT_SOURCE_DIR      DIR/irrlicht-1.8.3
-                RUN_IN_PLACE             [X]
-                WARN_ALL                 [ ]
-                ZLIB_DLL                 DIR/zlib125dll/dll32/zlibwapi.dll
-                ZLIB_INCLUDE_DIR         DIR/zlib-1.2.5
-                ZLIB_LIBRARIES           DIR/zlib125dll/dll32/zlibwapi.lib
-                GETTEXT_BIN_DIR          DIR/gettext/bin
-                GETTEXT_INCLUDE_DIR      DIR/gettext/include
-                GETTEXT_LIBRARIES        DIR/gettext/lib/intl.lib
-                GETTEXT_MSGFMT           DIR/gettext/bin/msgfmt
+### Compiling and Installing the dependencies
 
-	* If CMake complains it couldn't find SQLITE3, choose "Advanced" box on the
-	  right top corner, then specify the location of SQLITE3_INCLUDE_DIR and
-	  SQLITE3_LIBRARY manually.
-	* If you want to build 64-bit minetest, you will need to build 64-bit version
-	  of irrlicht engine manually, as only 32-bit pre-built library is provided.
-	* Hit "Configure"
-	* Hit "Configure" once again 8)
-	* If something is still coloured red, you have a problem.
-	* Hit "Generate"
-	If using MSVC:
-		* Open the generated minetest.sln
-		* The project defaults to the "Debug" configuration. Make very sure to
-		  select "Release", unless you want to debug some stuff (it's slower
-		  and might not even work at all)
-		* Build the ALL_BUILD project
-		* Build the INSTALL project
-		* You should now have a working game with the executable in
-			DIR/minetest-install/bin/minetest.exe
-		* Additionally you may create a zip package by building the PACKAGE
-		  project.
-	If using MinGW:
-		* Using the command line, browse to the build directory and run 'make'
-		  (or mingw32-make or whatever it happens to be)
-		* You may need to copy some of the downloaded DLLs into bin/, see what
-		  running the produced executable tells you it doesn't have.
-		* You should now have a working game with the executable in
-			DIR/minetest/bin/minetest.exe
+It is highly recommended to use vcpkg as package manager.
 
-### Bat script to build Windows releases of Minetest
+#### a) Using vcpkg to install dependencies
 
-This is how we build Windows releases.
+After you successfully built vcpkg you can easily install the required libaries.
+```powershell
+vcpkg install irrlicht zlib curl[winssl] openal-soft libvorbis libogg sqlite3 freetype luajit --triplet x64-windows
+```
+`curl` is optional, but required to read the serverlist, `curl[winssl]` is required to use the content store.
 
-    set sourcedir=%CD%
-    set installpath="C:\tmp\minetest_install"
-    set irrlichtpath="C:\tmp\irrlicht-1.7.2"
+`openal-soft`, `libvorbis` and `libogg` are optional, but required to use sound.
 
-    set builddir=%sourcedir%\bvc10
-    mkdir %builddir%
-    pushd %builddir%
-    cmake %sourcedir% -G "Visual Studio 10" -DIRRLICHT_SOURCE_DIR=%irrlichtpath% -DRUN_IN_PLACE=TRUE -DCMAKE_INSTALL_PREFIX=%installpath%
-    if %errorlevel% neq 0 goto fail
-    "C:\WINDOWS\Microsoft.NET\Framework\v4.0.30319\MSBuild.exe" ALL_BUILD.vcxproj /p:Configuration=Release
-    if %errorlevel% neq 0 goto fail
-    "C:\WINDOWS\Microsoft.NET\Framework\v4.0.30319\MSBuild.exe" INSTALL.vcxproj /p:Configuration=Release
-    if %errorlevel% neq 0 goto fail
-    "C:\WINDOWS\Microsoft.NET\Framework\v4.0.30319\MSBuild.exe" PACKAGE.vcxproj /p:Configuration=Release
-    if %errorlevel% neq 0 goto fail
-    popd
-    echo Finished.
-    exit /b 0
+`freetype` is optional, it allows true-type font rendering.
 
-    :fail
-    popd
-    echo Failed.
-    exit /b 1
+`luajit` is optional and replaces the integrated lua interpreter with a faster just in time interpreter
+
+There are other libaries that are optional, but are not tested if they can build and linked correctly.
+
+`--triplet` specify the target triplet e.g. x64-windows x86-windows
+
+#### b) Compile the dependencies on your own
+
+This is outdated and not recommended. Follow the instructions on https://dev.minetest.net/Build_Win32_Minetest_including_all_required_libraries#VS2012_Build
+
+### Compile Minetest
+
+#### a) Using the vcpkg toolchain and CMakeGUI
+1. Start up the CMake GUI
+2. Select "Browse Source..." and select DIR/minetest
+3. Select "Browse Build..." and select DIR/minetest-build
+4. Select "Configure"
+5. Choose the right visual Studio version and target platform. It has to match the version of the installed dependencies
+6. Choose "Specify toolchain file for cross-compiling" 
+7. Click "Next"
+8. Select the vcpkg toolchain file e.g. `D:/vcpkg/scripts/buildsystems/vcpkg.cmake`
+9. Click Finish
+10. Wait until cmake have generated the cash file
+11. If there are any errors, solve them and hit "Configure"
+12. Click "Generate"
+13. Click "Open Project"
+14. Compile Minetest inside Visual studio.
+
+#### b) Using the vcpkg toolchain and the commandline
+
+Run the following script in Powershell:
+
+```powershell
+cmake . -G"Visual Studio 15 2017 Win64" -DCMAKE_TOOLCHAIN_FILE=D:/vcpkg/scripts/buildsystems/vcpkg.cmake -DCMAKE_BUILD_TYPE=Release -DENABLE_GETTEXT=0 -DENABLE_CURSES=0
+cmake --build . --config Release
+```
+Make sure that the right compiler is selected and the path to the vcpkg toolchain is correct.
+
+#### c) Using your own compiled libaries
+
+**This is outdated and not recommended**
+
+Follow the instructions on https://dev.minetest.net/Build_Win32_Minetest_including_all_required_libraries#VS2012_Build
 
 ### Windows Installer using WIX Toolset
 
