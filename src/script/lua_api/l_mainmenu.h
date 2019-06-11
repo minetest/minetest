@@ -145,6 +145,9 @@ private:
 
 	static int l_get_max_supp_proto(lua_State *L);
 
+	// other
+	static int l_open_url(lua_State *L);
+
 
 	// async
 	static int l_do_async_callback(lua_State *L);

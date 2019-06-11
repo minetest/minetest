@@ -33,14 +33,21 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	#include <wincrypt.h>
 	#include <algorithm>
 	#include <shlwapi.h>
+	#include <shellapi.h>
 #endif
 #if !defined(_WIN32)
 	#include <unistd.h>
 	#include <sys/utsname.h>
+	#if !defined(__ANDROID__)
+		#include <spawn.h>
+	#endif
 #endif
 #if defined(__hpux)
 	#define _PSTAT64
 	#include <sys/pstat.h>
+#endif
+#if defined(__ANDROID__)
+	#include "porting_android.h"
 #endif
 
 #include "config.h"
@@ -52,6 +59,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <list>
 #include <cstdarg>
 #include <cstdio>
+#include <regex>
 
 namespace porting
 {
@@ -695,6 +703,28 @@ int mt_snprintf(char *buf, const size_t buf_size, const char *fmt, ...)
 #endif // _MSC_VER
 	va_end(args);
 	return c;
+}
+
+bool openURL(std::string url)
+{
+	if (!std::regex_match(url,
+			std::regex(R"(^https?:\/\/[\w\.-\/\?=\%\+\#\&]+$)") )) {
+		errorstream << "Invalid url: " << url << std::endl;
+		return false;
+	}
+
+#if defined(_WIN32)
+	return ShellExecuteA(NULL, NULL, url.c_str(), NULL, NULL, SW_SHOWNORMAL) > 32;
+#elif defined(__ANDROID__)
+	openURLAndroid(url);
+	return true;
+#elif defined(__APPLE__)
+	const char *argv[] = {"open", url.c_str(), NULL};
+	return posix_spawnp(NULL, "open", NULL, NULL, (char**)argv, environ) == 0;
+#else
+	const char *argv[] = {"xdg-open", url.c_str(), NULL};
+	return posix_spawnp(NULL, "xdg-open", NULL, NULL, (char**)argv, environ) == 0;
+#endif
 }
 
 // Load performance counter frequency only once at startup

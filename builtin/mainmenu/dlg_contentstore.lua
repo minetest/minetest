@@ -16,7 +16,6 @@
 --51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 local store = { packages = {}, packages_full = {} }
-local package_dialog = {}
 
 -- Screenshot
 local screenshot_dir = core.get_cache_path() .. DIR_DELIM .. "cdb"
@@ -42,8 +41,6 @@ local filter_types_type = {
 	"mod",
 	"txp",
 }
-
-
 
 
 local function download_package(param)
@@ -193,74 +190,6 @@ local function get_screenshot(package)
 	end
 
 	return defaulttexturedir .. "loading_screenshot.png"
-end
-
-
-
-function package_dialog.get_formspec()
-	local package = package_dialog.package
-
-	store.update_paths()
-
-	local formspec = {
-		"size[9,4;true]",
-		"image[0,1;4.5,3;", core.formspec_escape(get_screenshot(package)), ']',
-		"label[3.8,1;",
-		minetest.colorize(mt_color_green, core.formspec_escape(package.title)), "\n",
-		minetest.colorize('#BFBFBF', "by " .. core.formspec_escape(package.author)), "]",
-		"textarea[4,2;5.3,2;;;", core.formspec_escape(package.short_description), "]",
-		"button[0,0;2,1;back;", fgettext("Back"), "]",
-	}
-
-	if not package.path then
-		formspec[#formspec + 1] = "button[7,0;2,1;install;"
-		formspec[#formspec + 1] = fgettext("Install")
-		formspec[#formspec + 1] = "]"
-	elseif package.installed_release < package.release then
-		-- The install_ action also handles updating
-		formspec[#formspec + 1] = "button[7,0;2,1;install;"
-		formspec[#formspec + 1] = fgettext("Update")
-		formspec[#formspec + 1] = "]"
-		formspec[#formspec + 1] = "button[5,0;2,1;uninstall;"
-		formspec[#formspec + 1] = fgettext("Uninstall")
-		formspec[#formspec + 1] = "]"
-	else
-		formspec[#formspec + 1] = "button[7,0;2,1;uninstall;"
-		formspec[#formspec + 1] = fgettext("Uninstall")
-		formspec[#formspec + 1] = "]"
-	end
-
-	return table.concat(formspec, "")
-end
-
-function package_dialog.handle_submit(this, fields)
-	if fields.back then
-		this:delete()
-		return true
-	end
-
-	if fields.install then
-		start_install(this, package_dialog.package)
-		return true
-	end
-
-	if fields.uninstall then
-		local dlg_delmod = create_delete_content_dlg(package_dialog.package)
-		dlg_delmod:set_parent(this)
-		this:hide()
-		dlg_delmod:show()
-		return true
-	end
-
-	return false
-end
-
-function package_dialog.create(package)
-	package_dialog.package = package
-	return dialog_create("package_view",
-		package_dialog.get_formspec,
-		package_dialog.handle_submit,
-		nil)
 end
 
 function store.load()
@@ -462,44 +391,45 @@ function store.get_formspec(dlgdata)
 				minetest.colorize("#BFBFBF", " by " .. package.author))
 		formspec[#formspec + 1] = "]"
 
-		-- description
-		if package.path and package.installed_release < package.release then
-			formspec[#formspec + 1] = "textarea[1.25,0.3;7.5,1;;;"
-		else
-			formspec[#formspec + 1] = "textarea[1.25,0.3;9,1;;;"
-		end
-		formspec[#formspec + 1] = core.formspec_escape(package.short_description)
-		formspec[#formspec + 1] = "]"
-
 		-- buttons
+		local description_width = 7.5
 		if not package.path then
-			formspec[#formspec + 1] = "button[9.9,0;1.5,1;install_"
+			formspec[#formspec + 1] = "button[8.4,0;1.5,1;install_"
 			formspec[#formspec + 1] = tostring(i)
 			formspec[#formspec + 1] = ";"
 			formspec[#formspec + 1] = fgettext("Install")
 			formspec[#formspec + 1] = "]"
 		else
 			if package.installed_release < package.release then
+				description_width = 6
+
 				-- The install_ action also handles updating
-				formspec[#formspec + 1] = "button[8.4,0;1.5,1;install_"
+				formspec[#formspec + 1] = "button[6.9,0;1.5,1;install_"
 				formspec[#formspec + 1] = tostring(i)
 				formspec[#formspec + 1] = ";"
 				formspec[#formspec + 1] = fgettext("Update")
 				formspec[#formspec + 1] = "]"
 			end
 
-			formspec[#formspec + 1] = "button[9.9,0;1.5,1;uninstall_"
+			formspec[#formspec + 1] = "button[8.4,0;1.5,1;uninstall_"
 			formspec[#formspec + 1] = tostring(i)
 			formspec[#formspec + 1] = ";"
 			formspec[#formspec + 1] = fgettext("Uninstall")
 			formspec[#formspec + 1] = "]"
 		end
 
-		--formspec[#formspec + 1] = "button[9.9,0;1.5,1;view_"
-		--formspec[#formspec + 1] = tostring(i)
-		--formspec[#formspec + 1] = ";"
-		--formspec[#formspec + 1] = fgettext("View")
-		--formspec[#formspec + 1] = "]"
+		formspec[#formspec + 1] = "button[9.9,0;1.5,1;view_"
+		formspec[#formspec + 1] = tostring(i)
+		formspec[#formspec + 1] = ";"
+		formspec[#formspec + 1] = fgettext("View")
+		formspec[#formspec + 1] = "]"
+
+		-- description
+		formspec[#formspec + 1] = "textarea[1.25,0.3;"
+		formspec[#formspec + 1] = tostring(description_width)
+		formspec[#formspec + 1] = ",1;;;"
+		formspec[#formspec + 1] = core.formspec_escape(package.short_description)
+		formspec[#formspec + 1] = "]"
 
 		formspec[#formspec + 1] = "container_end[]"
 	end
@@ -576,10 +506,9 @@ function store.handle_submit(this, fields)
 		end
 
 		if fields["view_" .. i] then
-			local dlg = package_dialog.create(package)
-			dlg:set_parent(this)
-			this:hide()
-			dlg:show()
+			local url = ("%s/packages/%s?protocol_version=%d"):format(
+					core.settings:get("contentdb_url"), package.id, core.get_max_supp_proto())
+			core.open_url(url)
 			return true
 		end
 	end
