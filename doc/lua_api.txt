@@ -282,36 +282,26 @@ Mapgen aliases
 --------------
 
 In a game, a certain number of these must be set to tell core mapgens which
-of the game's nodes are to be used by the core mapgens. For example:
+of the game's nodes are to be used for core mapgen generation. For example:
 
     minetest.register_alias("mapgen_stone", "default:stone")
 
 ### Aliases needed for all mapgens except Mapgen V6
 
-#### Base terrain
-
 * mapgen_stone
 * mapgen_water_source
 * mapgen_river_water_source
 
-#### Caves
+`mapgen_river_water_source` is required for mapgens with sloping rivers where
+it is necessary to have a river liquid node with a short `liquid_range` and
+`liquid_renewable = false` to avoid flooding.
 
-Not required if cave liquid nodes are set in biome definitions.
+#### Deprecated aliases
 
 * mapgen_lava_source
-
-#### Dungeons
-
-Not required if dungeon nodes are set in biome definitions.
-
 * mapgen_cobble
-* mapgen_stair_cobble
-* mapgen_mossycobble
-* mapgen_desert_stone
-* mapgen_stair_desert_stone
-* mapgen_sandstone
-* mapgen_sandstonebrick
-* mapgen_stair_sandstone_block
+
+Use biome-defined cave liquids and dungeon nodes instead.
 
 ### Aliases needed for Mapgen V6
 
