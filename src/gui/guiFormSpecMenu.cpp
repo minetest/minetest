@@ -1574,17 +1574,16 @@ void GUIFormSpecMenu::parseTabHeader(parserData* data, const std::string &elemen
 		// Width is not here because tabs are the width of the text, and
 		// there's no reason to change that.
 		unsigned int i = 0;
-		std::vector<std::string> v_geom;
-		bool auto_width = false;
+		std::vector<std::string> v_geom = {"1", "1"}; // Default width and dummy height
+		bool auto_width = true;
 		if (parts.size() == 7) {
 			i++;
 
 			v_geom = split(parts[1], ',');
-
-			if (v_geom.size() == 1) {
-				auto_width = true;
-				v_geom.emplace_back("1"); // Dummy value
-			}
+			if (v_geom.size() == 1)
+				v_geom.insert(v_geom.begin(), "1"); // Dummy value
+			else
+				auto_width = false;
 		}
 
 		std::string name = parts[i+1];
