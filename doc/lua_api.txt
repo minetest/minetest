@@ -2201,6 +2201,7 @@ Elements
 
 * Show a tab**header** at specific position (ignores formsize)
 * `X` and `Y`: position of the tabheader
+* *Note*: Width and height are automatically chosen with this syntax
 * `name` fieldname data is transferred to Lua
 * `caption 1`...: name shown on top of tab
 * `current_tab`: index of selected tab 1...
@@ -2213,7 +2214,20 @@ Elements
 * **Important note**: This syntax for tabheaders can only be used with the
   new coordinate system.
 * `X` and `Y`: position of the tabheader
-* `H`: height of the tabheader
+* `H`: height of the tabheader. Width is automatically determined with this syntax.
+* `name` fieldname data is transferred to Lua
+* `caption 1`...: name shown on top of tab
+* `current_tab`: index of selected tab 1...
+* `transparent` (optional): show transparent
+* `draw_border` (optional): draw border
+
+### `tabheader[<X>,<Y>;<W>,<H>;<name>;<caption 1>,<caption 2>,...,<caption n>;<current_tab>;<transparent>;<draw_border>]`
+
+* Show a tab**header** at specific position (ignores formsize)
+* **Important note**: This syntax for tabheaders can only be used with the
+  new coordinate system.
+* `X` and `Y`: position of the tabheader
+* `W` and `H`: width and height of the tabheader
 * `name` fieldname data is transferred to Lua
 * `caption 1`...: name shown on top of tab
 * `current_tab`: index of selected tab 1...
@@ -2233,7 +2247,7 @@ Elements
     1. handle directly on change (only changed dropdown is submitted)
     2. read the value on pressing a button (all dropdown values are available)
 * `X` and `Y`: position of the dropdown
-* `W`: width of the dropdown
+* `W`: width of the dropdown. Height is automatically chosen with this syntax.
 * Fieldname data is transferred to Lua
 * Items to be shown in dropdown
 * Index of currently selected dropdown item

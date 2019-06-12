@@ -975,7 +975,7 @@ void GUIFormSpecMenu::parseDropDown(parserData* data, const std::string &element
 			std::vector<std::string> v_geom = split(parts[1],',');
 
 			if (v_geom.size() == 1)
-				v_geom.push_back("1");
+				v_geom.emplace_back("1");
 
 			MY_CHECKGEOM("dropdown",1);
 
@@ -1562,7 +1562,7 @@ void GUIFormSpecMenu::parseImageButton(parserData* data, const std::string &elem
 
 void GUIFormSpecMenu::parseTabHeader(parserData* data, const std::string &element)
 {
-	std::vector<std::string> parts = split(element,';');
+	std::vector<std::string> parts = split(element, ';');
 
 	if (((parts.size() == 4) || (parts.size() == 6)) || (parts.size() == 7 &&
 		data->real_coordinates) || ((parts.size() > 6) &&
@@ -1574,20 +1574,27 @@ void GUIFormSpecMenu::parseTabHeader(parserData* data, const std::string &elemen
 		// Width is not here because tabs are the width of the text, and
 		// there's no reason to change that.
 		unsigned int i = 0;
-		std::string h_geom = "1"; // Default height
+		std::vector<std::string> v_geom;
+		bool auto_width = false;
 		if (parts.size() == 7) {
 			i++;
-			h_geom = parts[1];
+
+			v_geom = split(parts[1], ',');
+
+			if (v_geom.size() == 1) {
+				auto_width = true;
+				v_geom.emplace_back("1"); // Dummy value
+			}
 		}
 
 		std::string name = parts[i+1];
-		std::vector<std::string> buttons = split(parts[i+2],',');
+		std::vector<std::string> buttons = split(parts[i+2], ',');
 		std::string str_index = parts[i+3];
 		bool show_background = true;
 		bool show_border = true;
 		int tab_index = stoi(str_index) - 1;
 
-		MY_CHECKPOS("tabheader",0);
+		MY_CHECKPOS("tabheader", 0);
 
 		if (parts.size() == 6 + i) {
 			if (parts[4+i] == "true")
@@ -1610,10 +1617,13 @@ void GUIFormSpecMenu::parseTabHeader(parserData* data, const std::string &elemen
 
 		if (data->real_coordinates) {
 			pos = getRealCoordinateBasePos(false, v_pos);
-			std::vector<std::string> v_geom = {"1", h_geom}; // Dummy value
+
 			geom = getRealCoordinateGeometry(v_geom);
 			pos.Y -= geom.Y; // TabHeader base pos is the bottom, not the top.
-			MY_CHECKPOS("tabheader",0);
+			if (auto_width)
+				geom.X = DesiredRect.getWidth(); // Set automatic width
+
+			MY_CHECKGEOM("tabheader", 1);
 		} else {
 			v2f32 pos_f = pos_offset * spacing;
 			pos_f.X += stof(v_pos[0]) * spacing.X;
@@ -1621,8 +1631,8 @@ void GUIFormSpecMenu::parseTabHeader(parserData* data, const std::string &elemen
 			pos = v2s32(pos_f.X, pos_f.Y);
 
 			geom.Y = m_btn_height * 2;
+			geom.X = DesiredRect.getWidth();
 		}
-		geom.X = DesiredRect.getWidth();
 
 		core::rect<s32> rect = core::rect<s32>(pos.X, pos.Y, pos.X+geom.X,
 				pos.Y+geom.Y);
