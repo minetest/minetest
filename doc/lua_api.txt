@@ -2149,7 +2149,8 @@ Elements
 ### `image_button[<X>,<Y>;<W>,<H>;<texture name>;<name>;<label>]`
 
 * `texture name` is the filename of an image
-* **Note**: Height can be modified on image buttons.
+* **Note**: Height is supported on both the old and new coordinate systems
+  for image_buttons.
 
 ### `image_button[<X>,<Y>;<W>,<H>;<texture name>;<name>;<label>;<noclip>;<drawborder>;<pressed texture name>]`
 
@@ -2199,8 +2200,6 @@ Elements
 ### `tabheader[<X>,<Y>;<name>;<caption 1>,<caption 2>,...,<caption n>;<current_tab>;<transparent>;<draw_border>]`
 
 * Show a tab**header** at specific position (ignores formsize)
-* **Important note**: This syntax for tabheaders can only be used with the
-  old coordinate system.
 * `X` and `Y`: position of the tabheader
 * `name` fieldname data is transferred to Lua
 * `caption 1`...: name shown on top of tab
@@ -2230,8 +2229,6 @@ Elements
 ### `dropdown[<X>,<Y>;<W>;<name>;<item 1>,<item 2>, ...,<item n>;<selected idx>]`
 
 * Show a dropdown field
-* **Important note**: This syntax for dropdowns can only be used with the
-  old coordinate system.
 * **Important note**: There are two different operation modes:
     1. handle directly on change (only changed dropdown is submitted)
     2. read the value on pressing a button (all dropdown values are available)

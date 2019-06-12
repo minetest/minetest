@@ -973,6 +973,10 @@ void GUIFormSpecMenu::parseDropDown(parserData* data, const std::string &element
 
 		if (data->real_coordinates) {
 			std::vector<std::string> v_geom = split(parts[1],',');
+
+			if (v_geom.size() == 1)
+				v_geom.push_back("1");
+
 			MY_CHECKGEOM("dropdown",1);
 
 			pos = getRealCoordinateBasePos(false, v_pos);
@@ -1570,8 +1574,8 @@ void GUIFormSpecMenu::parseTabHeader(parserData* data, const std::string &elemen
 		// Width is not here because tabs are the width of the text, and
 		// there's no reason to change that.
 		unsigned int i = 0;
-		std::string h_geom;
-		if (data->real_coordinates) {
+		std::string h_geom = "1"; // Default height
+		if (parts.size() == 7) {
 			i++;
 			h_geom = parts[1];
 		}
