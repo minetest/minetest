@@ -1875,7 +1875,7 @@ is used when the server receives user input. You must not use the name
 Spaces and newlines can be inserted between the blocks, as is used in the
 examples.
 
-Position and size units are inventory slots unless the new coordinating system
+Position and size units are inventory slots unless the new coordinate system
 is enabled. `X` and `Y` position the formspec element relative to the top left
 of the menu or container. `W` and `H` are its width and height values.
 
@@ -1958,9 +1958,9 @@ Elements
 
 ### `real_coordinates[<bool>]`
 
-* Must be used either before or anywhere after `size`, `position`, `anchor`, and
-  `no_prepend` (if present) elements.
 * When set to true, all following formspec elements will use the new coordinate system.
+* If used immediately after `size`, `position`, `anchor`, and `no_prepend` elements
+  (if present), the form size will use the new coordinate system.
 * **Note**: Formspec prepends are not affected by the coordinates in the main form.
   They must enable it explicitly.
 

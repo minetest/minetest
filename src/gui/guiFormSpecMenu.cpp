@@ -1873,13 +1873,20 @@ void GUIFormSpecMenu::parseTooltip(parserData* data, const std::string &element)
 		std::vector<std::string> v_pos  = split(parts[0], ',');
 		std::vector<std::string> v_geom = split(parts[1], ',');
 
-		MY_CHECKPOS("tooltip",  0);
+		MY_CHECKPOS("tooltip", 0);
 		MY_CHECKGEOM("tooltip", 1);
 
-		v2s32 pos = getElementBasePos(true, &v_pos);
+		v2s32 pos;
 		v2s32 geom;
-		geom.X = stof(v_geom[0]) * spacing.X;
-		geom.Y = stof(v_geom[1]) * spacing.Y;
+
+		if (data->real_coordinates) {
+			pos = getRealCoordinateBasePos(true, v_pos);
+			geom = getRealCoordinateGeometry(v_geom);
+		} else {
+			pos = getElementBasePos(true, &v_pos);
+			geom.X = stof(v_geom[0]) * spacing.X;
+			geom.Y = stof(v_geom[1]) * spacing.Y;
+		}
 
 		irr::core::rect<s32> rect(pos, pos + geom);
 		m_tooltip_rects.emplace_back(rect, spec);
@@ -2299,17 +2306,6 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 		}
 	}
 
-	/* Copy of the "real_coordinates" element for before the form size. */
-	mydata.real_coordinates = false;
-	for (; i < elements.size(); i++) {
-		std::vector<std::string> parts = split(elements[i], '[');
-		std::string name = trim(parts[0]);
-		if (name != "real_coordinates" || parts.size() != 2)
-			break; // Invalid format
-
-		mydata.real_coordinates = is_yes(trim(parts[1]));
-	}
-
 	/* we need size first in order to calculate image scale */
 	mydata.explicit_size = false;
 	for (; i< elements.size(); i++) {
@@ -2343,6 +2339,17 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 			enable_prepends = false;
 		else
 			break;
+	}
+
+	/* Copy of the "real_coordinates" element for after the form size. */
+	mydata.real_coordinates = false;
+	for (; i < elements.size(); i++) {
+		std::vector<std::string> parts = split(elements[i], '[');
+		std::string name = trim(parts[0]);
+		if (name != "real_coordinates" || parts.size() != 2)
+			break; // Invalid format
+
+		mydata.real_coordinates = is_yes(trim(parts[1]));
 	}
 
 	if (mydata.explicit_size) {
