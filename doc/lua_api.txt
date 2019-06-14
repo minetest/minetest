@@ -2048,8 +2048,8 @@ Elements
 
 ### `background[<X>,<Y>;<W>,<H>;<texture name>;<auto_clip>;<middle>]`
 
-* 9-sliced background. Middle is a rect which defined the middle of the 9-slice.
-* Middle can be:
+* 9-sliced background. See https://en.wikipedia.org/wiki/9-slice_scaling
+* Middle is a rect which defines the middle of the 9-slice.
 	* `x` - The middle will be x pixels from all sides.
 	* `x,y` - The middle will be x pixels from the horizontal and y from the vertical.
 	* `x,y,x2,y2` - The middle will start at x,y, and end at x2, y2. Negative x2 and y2 values
