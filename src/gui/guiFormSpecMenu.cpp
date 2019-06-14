@@ -681,7 +681,7 @@ void GUIFormSpecMenu::parseBackground(parserData* data, const std::string &eleme
 		core::rect<s32> middle;
 		if (parts.size() >= 5) {
 			std::vector<std::string> v_middle = split(parts[4], ',');
-			if (v_middle.size() == 2) {
+			if (v_middle.size() == 1) {
 				s32 x = stoi(v_middle[0]);
 				middle.UpperLeftCorner = core::vector2di(x, x);
 				middle.LowerRightCorner = core::vector2di(-x, -x);

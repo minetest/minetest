@@ -181,30 +181,43 @@ void draw2DImage9Splice(video::IVideoDriver *driver, video::ITexture *texture,
 		for (int x = 0; x < 3; ++x) {
 			core::rect<s32> src({0, 0}, originalSize);
 			core::rect<s32> dest = rect;
-			if (x == 0) {
+
+			switch (x) {
+			case 0:
 				dest.LowerRightCorner.X = rect.UpperLeftCorner.X + middle.UpperLeftCorner.X;
 				src.LowerRightCorner.X = middle.UpperLeftCorner.X;
-			} else if (x == 1) {
+				break;
+
+			case 1:
 				dest.UpperLeftCorner.X += middle.UpperLeftCorner.X;
 				dest.LowerRightCorner.X -= lowerRightOffset.X;
 				src.UpperLeftCorner.X = middle.UpperLeftCorner.X;
 				src.LowerRightCorner.X = middle.LowerRightCorner.X;
-			} else if (x == 2) {
+				break;
+
+			case 2:
 				dest.UpperLeftCorner.X = rect.LowerRightCorner.X - lowerRightOffset.X;
 				src.UpperLeftCorner.X = middle.LowerRightCorner.X;
+				break;
 			}
 
-			if (y == 0) {
+			switch (y) {
+			case 0:
 				dest.LowerRightCorner.Y = rect.UpperLeftCorner.Y + middle.UpperLeftCorner.Y;
 				src.LowerRightCorner.Y = middle.UpperLeftCorner.Y;
-			} else if (y == 1) {
+				break;
+
+			case 1:
 				dest.UpperLeftCorner.Y += middle.UpperLeftCorner.Y;
 				dest.LowerRightCorner.Y -= lowerRightOffset.Y;
 				src.UpperLeftCorner.Y = middle.UpperLeftCorner.Y;
 				src.LowerRightCorner.Y = middle.LowerRightCorner.Y;
-			} else if (y == 2) {
+				break;
+
+			case 2:
 				dest.UpperLeftCorner.Y = rect.LowerRightCorner.Y - lowerRightOffset.Y;
 				src.UpperLeftCorner.Y = middle.LowerRightCorner.Y;
+				break;
 			}
 
 			draw2DImageFilterScaled(driver, texture, dest,
