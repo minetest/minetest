@@ -433,7 +433,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("fullscreen", "true");
 	settings->setDefault("video_driver", "ogles1");
 	settings->setDefault("touchtarget", "true");
-	settings->setDefault("TMPFolder","/sdcard/" PROJECT_NAME_C "/tmp/");
+	settings->setDefault("TMPFolder", porting::getDataPath("tmp" DIR_DELIM));
 	settings->setDefault("touchscreen_threshold","20");
 	settings->setDefault("fixed_virtual_joystick", "false");
 	settings->setDefault("virtual_joystick_triggers_aux", "false");
