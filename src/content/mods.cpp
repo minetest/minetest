@@ -360,51 +360,119 @@ void ModConfiguration::checkConflictsAndDeps()
 	resolveDependencies();
 }
 
+struct PrioritySortedMod
+{
+	PrioritySortedMod(ModSpec *mod) : spec(mod) {}
+
+	static bool sorter(const PrioritySortedMod *a, const PrioritySortedMod *b)
+	{
+		// Return true means: move 'a' towards begin() in std::sort
+		return a->deps_chain.size() > b->deps_chain.size();
+	}
+
+	void addDependingMod(const std::string &modname,
+			std::unordered_map<std::string, PrioritySortedMod> &mods_by_name);
+
+	std::unordered_set<std::string> deps_chain;
+	ModSpec *spec;
+};
+
+void PrioritySortedMod::addDependingMod(const std::string &modname,
+		std::unordered_map<std::string, PrioritySortedMod> &mods_by_name)
+{
+	if (deps_chain.find(modname) != deps_chain.end()) {
+		// clang-format off
+		if (modname == spec->name)
+			warningstream << "PrioritySortedMod::addDependingMod(): Detected" <<
+					" circular dependencies in mod '" << modname << "'" << std::endl;
+		// clang-format on
+		return;
+	}
+
+	deps_chain.emplace(modname);
+
+	for (const std::string &dependency : spec->depends) {
+		auto &mod = mods_by_name.find(dependency)->second;
+		mod.addDependingMod(modname, mods_by_name);
+	}
+
+	for (const std::string &dependency : spec->optdepends) {
+		auto &mod = mods_by_name.find(dependency)->second;
+		mod.addDependingMod(modname, mods_by_name);
+	}
+}
+
 void ModConfiguration::resolveDependencies()
 {
-	// Step 1: Compile a list of the mod names we're working with
-	std::set<std::string> modnames;
-	for (const ModSpec &mod : m_unsatisfied_mods) {
-		modnames.insert(mod.name);
+	std::unordered_map<std::string, PrioritySortedMod> mods_by_name;
+	for (ModSpec &mod : m_unsatisfied_mods) {
+		// Reduce memory copy time by passing 'mod' as pointer
+		// 'm_unsatisfied_mods' owns the value!
+		mods_by_name.emplace(std::pair<std::string, PrioritySortedMod>(
+				mod.name, &mod));
 	}
 
-	// Step 2: get dependencies (including optional dependencies)
-	// of each mod, split mods into satisfied and unsatisfied
-	std::list<ModSpec> satisfied;
-	std::list<ModSpec> unsatisfied;
-	for (ModSpec mod : m_unsatisfied_mods) {
-		mod.unsatisfied_depends = mod.depends;
-		// check which optional dependencies actually exist
-		for (const std::string &optdep : mod.optdepends) {
-			if (modnames.count(optdep) != 0)
-				mod.unsatisfied_depends.insert(optdep);
-		}
-		// if a mod has no depends it is initially satisfied
-		if (mod.unsatisfied_depends.empty())
-			satisfied.push_back(mod);
-		else
-			unsatisfied.push_back(mod);
-	}
+	std::vector<ModSpec> unsatisfied;
 
-	// Step 3: mods without unmet dependencies can be appended to
-	// the sorted list.
-	while (!satisfied.empty()) {
-		ModSpec mod = satisfied.back();
-		m_sorted_mods.push_back(mod);
-		satisfied.pop_back();
-		for (auto it = unsatisfied.begin(); it != unsatisfied.end();) {
-			ModSpec &mod2 = *it;
-			mod2.unsatisfied_depends.erase(mod.name);
-			if (mod2.unsatisfied_depends.empty()) {
-				satisfied.push_back(mod2);
-				it = unsatisfied.erase(it);
+	// Step 1: Cleanup missing mods
+	size_t old_list_size;
+	do {
+		old_list_size = mods_by_name.size();
+
+		for (auto mod_it = mods_by_name.begin(); mod_it != mods_by_name.end();) {
+			ModSpec &mod = *mod_it->second.spec;
+
+			for (auto it = mod.optdepends.begin();
+					it != mod.optdepends.end();) {
+				// Remove what cannot be satisfied anyway
+				if (mods_by_name.find(*it) == mods_by_name.end())
+					mod.optdepends.erase(it++);
+				else
+					++it;
+			}
+
+			bool ok = true;
+			for (const std::string &dependency : mod.depends) {
+				if (mods_by_name.find(dependency) == mods_by_name.end()) {
+					mod.unsatisfied_depends.emplace(dependency);
+					ok = false;
+				}
+			}
+
+			if (ok) {
+				++mod_it;
 			} else {
-				++it;
+				unsatisfied.push_back(mod);
+				mods_by_name.erase(mod_it++);
 			}
 		}
+	} while (mods_by_name.size() != old_list_size);
+
+	// Step 2: Recursively add the current mod to the dependency lists
+	// of its depending mods.
+	for (auto &mod : mods_by_name)
+		mod.second.addDependingMod(mod.first, mods_by_name);
+
+	// Step 3: Sort it according to the new priorities
+	// The mod with the most hard dependencies must be loaded first
+	std::vector<const PrioritySortedMod *> mods;
+	for (const auto &mod : mods_by_name)
+		mods.push_back(&mod.second);
+
+	std::sort(mods.begin(), mods.end(), PrioritySortedMod::sorter);
+	for (auto &mod : mods) {
+		m_sorted_mods.push_back(*mod->spec);
+		// clang-format off
+		verbosestream << "Sorted mod: " << mod->spec->name <<
+				"   hard_deps=" << mod->deps_chain.size() << ", soft_deps=" <<
+				mod->deps_chain.size() << std::endl;
+		// clang-format on
 	}
 
-	// Step 4: write back list of unsatisfied mods
+	// Step 4: Update the list of unsatisfied mods
+	mods.clear();
+	mods_by_name.clear();
+	// Don't even try to dereference ModSpec now
 	m_unsatisfied_mods.assign(unsatisfied.begin(), unsatisfied.end());
 }
 
