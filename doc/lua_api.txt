@@ -2130,14 +2130,21 @@ Elements
 
 * The label formspec element displays the text set in `label`
   at the specified position.
+* **Note**: If the new coordinate system is enabled, labels are
+  positioned from the center of the text, not the top.
 * The text is displayed directly without automatic line breaking,
   so label should not be used for big text chunks.  Newlines can be
-  used to make labels multiline, but `textarea` is preferred.
+  used to make labels multiline.
+* **Note**: With the new coordinate system, newlines are spaced with
+  half a coordinate.  With the old system, newlines are spaced 2/5 of
+  an inventory slot.
 
 ### `vertlabel[<X>,<Y>;<label>]`
 
 * Textual label drawn vertically
 * `label` is the text on the label
+* **Note**: If the new coordinate system is enabled, vertlabels are
+  positioned from the center of the text, not the left.
 
 ### `button[<X>,<Y>;<W>,<H>;<name>;<label>]`
 
@@ -2272,6 +2279,8 @@ Elements
 * `name` fieldname data is transferred to Lua
 * `label` to be shown left of checkbox
 * `selected` (optional): `true`/`false`
+* **Note**: If the new coordinate system is enabled, checkboxes are
+  positioned from the center of the checkbox, not the top.
 
 ### `scrollbar[<X>,<Y>;<W>,<H>;<orientation>;<name>;<value>]`
 

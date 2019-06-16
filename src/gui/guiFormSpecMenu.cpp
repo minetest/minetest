@@ -466,18 +466,29 @@ void GUIFormSpecMenu::parseCheckbox(parserData* data, const std::string &element
 		s32 y_center = (std::max(label_size.Height, (u32)cb_size) + 1) / 2;
 
 		v2s32 pos;
+		core::rect<s32> rect;
 
-		if (data->real_coordinates)
+		if (data->real_coordinates) {
 			pos = getRealCoordinateBasePos(false, v_pos);
-		else
-			pos = getElementBasePos(false, &v_pos);
 
-		core::rect<s32> rect = core::rect<s32>(
-				pos.X,
-				pos.Y + imgsize.Y / 2 - y_center,
-				pos.X + label_size.Width + cb_size + 7,
-				pos.Y + imgsize.Y / 2 + y_center
-			);
+			// Position from center, not top
+			pos.Y -= imgsize.Y / 2;
+
+			rect = core::rect<s32>(
+					pos.X,
+					pos.Y - y_center,
+					pos.X + label_size.Width + cb_size + 7,
+					pos.Y + y_center
+				);
+		} else {
+			pos = getElementBasePos(false, &v_pos);
+			rect = core::rect<s32>(
+					pos.X,
+					pos.Y + imgsize.Y / 2 - y_center,
+					pos.X + label_size.Width + cb_size + 7,
+					pos.Y + imgsize.Y / 2 + y_center
+				);
+		}
 
 		FieldSpec spec(
 				name,
@@ -1348,13 +1359,13 @@ void GUIFormSpecMenu::parseLabel(parserData* data, const std::string &element)
 				// spacing.
 				v2s32 pos = getRealCoordinateBasePos(false, v_pos);
 
-				// Add offset for smaller rect.
-				pos.Y += (imgsize.Y / 4) + (((float) imgsize.Y) * i / 2);
+				// Labels are positioned by their center, not their top.
+				pos.Y += (((float) imgsize.Y) / -2) + (((float) imgsize.Y) * i / 2);
 
 				rect = core::rect<s32>(
 					pos.X, pos.Y,
 					pos.X + m_font->getDimension(wlabel.c_str()).Width,
-					pos.Y + imgsize.Y / 2);
+					pos.Y + imgsize.Y);
 
 			} else {
 				// Lines are spaced at the nominal distance of
@@ -1416,13 +1427,13 @@ void GUIFormSpecMenu::parseVertLabel(parserData* data, const std::string &elemen
 		if (data->real_coordinates) {
 			pos = getRealCoordinateBasePos(false, v_pos);
 
-			// Add offset for smaller rect.
-			pos.X += (imgsize.X / 4);
+			// Vertlabels are positioned by center, not left.
+			pos.X -= imgsize.X / 2;
 
 			// We use text.length + 1 because without it, the rect
 			// isn't quite tall enough and cuts off the text.
 			rect = core::rect<s32>(pos.X, pos.Y,
-				pos.X + imgsize.Y / 2,
+				pos.X + imgsize.X,
 				pos.Y + font_line_height(m_font) *
 				(text.length() + 1));
 
