@@ -130,17 +130,6 @@ void GUIKeyChangeMenu::regenerateGui(v2u32 screensize)
 	v2s32 size = DesiredRect.getSize();
 	v2s32 topleft(0, 0);
 
-	{
-		core::rect<s32> rect(0, 0, 600 * s, 40 * s);
-		rect += topleft + v2s32(25 * s, 3 * s);
-		//gui::IGUIStaticText *t =
-		const wchar_t *text = wgettext("Keybindings. (If this menu screws up, remove stuff from minetest.conf)");
-		Environment->addStaticText(text,
-								   rect, false, true, this, -1);
-		delete[] text;
-		//t->setTextAlignment(gui::EGUIA_CENTER, gui::EGUIA_UPPERLEFT);
-	}
-
 	// Build buttons
 
 	v2s32 offset(25 * s, 60 * s);
@@ -418,7 +407,10 @@ bool GUIKeyChangeMenu::OnEvent(const SEvent& event)
 					return true;
 				case GUI_ID_RESET_BUTTON: //reset
 					resetInput();
-					quitMenu();
+                    regenerateGui(m_screensize_old);
+                    key_settings.clear();
+                    init_keys();
+					//quitMenu();
 					return true;
 				default:
 					key_setting *k = NULL;
