@@ -471,9 +471,6 @@ void GUIFormSpecMenu::parseCheckbox(parserData* data, const std::string &element
 		if (data->real_coordinates) {
 			pos = getRealCoordinateBasePos(false, v_pos);
 
-			// Position from center, not top
-			pos.Y -= imgsize.Y / 2;
-
 			rect = core::rect<s32>(
 					pos.X,
 					pos.Y - y_center,
