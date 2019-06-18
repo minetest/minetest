@@ -407,9 +407,9 @@ bool GUIKeyChangeMenu::OnEvent(const SEvent& event)
 					return true;
 				case GUI_ID_RESET_BUTTON: //reset
 					resetInput();
-                    regenerateGui(m_screensize_old);
-                    key_settings.clear();
-                    init_keys();
+					regenerateGui(m_screensize_old);
+					key_settings.clear();
+					init_keys();
 					//quitMenu();
 					return true;
 				default:
