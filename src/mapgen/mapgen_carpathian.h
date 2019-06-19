@@ -1,8 +1,7 @@
 /*
 Minetest
-Copyright (C) 2017-2018 vlapsley, Vaughan Lapsley <vlapsley@gmail.com>
-Copyright (C) 2010-2018 paramat
-Copyright (C) 2010-2018 kwolekr, Ryan Kwolek <kwolekr@minetest.net>
+Copyright (C) 2017-2019 vlapsley, Vaughan Lapsley <vlapsley@gmail.com>
+Copyright (C) 2017-2019 paramat
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -23,8 +22,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "mapgen.h"
 
-///////// Mapgen Carpathian flags
 #define MGCARPATHIAN_CAVERNS 0x01
+#define MGCARPATHIAN_RIVERS  0x02
 
 class BiomeManager;
 
@@ -34,6 +33,9 @@ extern FlagDesc flagdesc_mapgen_carpathian[];
 struct MapgenCarpathianParams : public MapgenParams
 {
 	float base_level       = 12.0f;
+	float river_width      = 0.05f;
+	float river_depth      = 24.0f;
+	float valley_width     = 0.25f;
 
 	u32 spflags            = MGCARPATHIAN_CAVERNS;
 	float cave_width       = 0.09f;
@@ -56,6 +58,7 @@ struct MapgenCarpathianParams : public MapgenParams
 	NoiseParams np_hills;
 	NoiseParams np_ridge_mnt;
 	NoiseParams np_step_mnt;
+	NoiseParams np_rivers;
 	NoiseParams np_mnt_var;
 	NoiseParams np_cave1;
 	NoiseParams np_cave2;
@@ -77,15 +80,14 @@ public:
 
 	virtual MapgenType getType() const { return MAPGEN_CARPATHIAN; }
 
-	float getSteps(float noise);
-	inline float getLerp(float noise1, float noise2, float mod);
-
 	virtual void makeChunk(BlockMakeData *data);
 	int getSpawnLevelAtPoint(v2s16 p);
 
 private:
 	float base_level;
-	s32 grad_wl;
+	float river_width;
+	float river_depth;
+	float valley_width;
 
 	s16 large_cave_depth;
 	s16 dungeon_ymin;
@@ -101,8 +103,12 @@ private:
 	Noise *noise_hills;
 	Noise *noise_ridge_mnt;
 	Noise *noise_step_mnt;
+	Noise *noise_rivers = nullptr;
 	Noise *noise_mnt_var;
 
-	float terrainLevelAtPoint(s16 x, s16 z);
+	s32 grad_wl;
+
+	float getSteps(float noise);
+	inline float getLerp(float noise1, float noise2, float mod);
 	int generateTerrain();
 };

@@ -1,8 +1,7 @@
 /*
 Minetest
-Copyright (C) 2017-2018 vlapsley, Vaughan Lapsley <vlapsley@gmail.com>
-Copyright (C) 2010-2018 paramat
-Copyright (C) 2010-2018 kwolekr, Ryan Kwolek <kwolekr@minetest.net>
+Copyright (C) 2017-2019 vlapsley, Vaughan Lapsley <vlapsley@gmail.com>
+Copyright (C) 2017-2019 paramat
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -43,6 +42,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 FlagDesc flagdesc_mapgen_carpathian[] = {
 	{"caverns", MGCARPATHIAN_CAVERNS},
+	{"rivers",  MGCARPATHIAN_RIVERS},
 	{NULL,      0}
 };
 
@@ -54,6 +54,9 @@ MapgenCarpathian::MapgenCarpathian(MapgenCarpathianParams *params, EmergeManager
 	: MapgenBasic(MAPGEN_CARPATHIAN, params, emerge)
 {
 	base_level       = params->base_level;
+	river_width      = params->river_width;
+	river_depth      = params->river_depth;
+	valley_width     = params->valley_width;
 
 	spflags          = params->spflags;
 	cave_width       = params->cave_width;
@@ -79,6 +82,8 @@ MapgenCarpathian::MapgenCarpathian(MapgenCarpathianParams *params, EmergeManager
 	noise_hills         = new Noise(&params->np_hills,         seed, csize.X, csize.Z);
 	noise_ridge_mnt     = new Noise(&params->np_ridge_mnt,     seed, csize.X, csize.Z);
 	noise_step_mnt      = new Noise(&params->np_step_mnt,      seed, csize.X, csize.Z);
+	if (spflags & MGCARPATHIAN_RIVERS)
+		noise_rivers    = new Noise(&params->np_rivers,        seed, csize.X, csize.Z);
 
 	//// 3D terrain noise
 	// 1 up 1 down overgeneration
@@ -105,6 +110,9 @@ MapgenCarpathian::~MapgenCarpathian()
 	delete noise_hills;
 	delete noise_ridge_mnt;
 	delete noise_step_mnt;
+	if (spflags & MGCARPATHIAN_RIVERS)
+		delete noise_rivers;
+
 	delete noise_mnt_var;
 }
 
@@ -121,6 +129,7 @@ MapgenCarpathianParams::MapgenCarpathianParams():
 	np_hills         (0,   3,   v3f(257,  257,  257),  6604,  6, 0.5,  2.0),
 	np_ridge_mnt     (0,   12,  v3f(743,  743,  743),  5520,  6, 0.7,  2.0),
 	np_step_mnt      (0,   8,   v3f(509,  509,  509),  2590,  6, 0.6,  2.0),
+	np_rivers        (0,   1,   v3f(1000, 1000, 1000), 85039, 5, 0.6,  2.0),
 	np_mnt_var       (0,   1,   v3f(499,  499,  499),  2490,  5, 0.55, 2.0),
 	np_cave1         (0,   12,  v3f(61,   61,   61),   52534, 3, 0.5,  2.0),
 	np_cave2         (0,   12,  v3f(67,   67,   67),   10325, 3, 0.5,  2.0),
@@ -133,7 +142,12 @@ MapgenCarpathianParams::MapgenCarpathianParams():
 void MapgenCarpathianParams::readParams(const Settings *settings)
 {
 	settings->getFlagStrNoEx("mgcarpathian_spflags", spflags, flagdesc_mapgen_carpathian);
-	settings->getFloatNoEx("mgcarpathian_base_level",       base_level);
+
+	settings->getFloatNoEx("mgcarpathian_base_level",   base_level);
+	settings->getFloatNoEx("mgcarpathian_river_width",  river_width);
+	settings->getFloatNoEx("mgcarpathian_river_depth",  river_depth);
+	settings->getFloatNoEx("mgcarpathian_valley_width", valley_width);
+
 	settings->getFloatNoEx("mgcarpathian_cave_width",       cave_width);
 	settings->getS16NoEx("mgcarpathian_large_cave_depth",   large_cave_depth);
 	settings->getS16NoEx("mgcarpathian_lava_depth",         lava_depth);
@@ -154,6 +168,7 @@ void MapgenCarpathianParams::readParams(const Settings *settings)
 	settings->getNoiseParams("mgcarpathian_np_hills",         np_hills);
 	settings->getNoiseParams("mgcarpathian_np_ridge_mnt",     np_ridge_mnt);
 	settings->getNoiseParams("mgcarpathian_np_step_mnt",      np_step_mnt);
+	settings->getNoiseParams("mgcarpathian_np_rivers",        np_rivers);
 	settings->getNoiseParams("mgcarpathian_np_mnt_var",       np_mnt_var);
 	settings->getNoiseParams("mgcarpathian_np_cave1",         np_cave1);
 	settings->getNoiseParams("mgcarpathian_np_cave2",         np_cave2);
@@ -165,7 +180,12 @@ void MapgenCarpathianParams::readParams(const Settings *settings)
 void MapgenCarpathianParams::writeParams(Settings *settings) const
 {
 	settings->setFlagStr("mgcarpathian_spflags", spflags, flagdesc_mapgen_carpathian, U32_MAX);
-	settings->setFloat("mgcarpathian_base_level",       base_level);
+
+	settings->setFloat("mgcarpathian_base_level",   base_level);
+	settings->setFloat("mgcarpathian_river_width",  river_width);
+	settings->setFloat("mgcarpathian_river_depth",  river_depth);
+	settings->setFloat("mgcarpathian_valley_width", valley_width);
+
 	settings->setFloat("mgcarpathian_cave_width",       cave_width);
 	settings->setS16("mgcarpathian_large_cave_depth",   large_cave_depth);
 	settings->setS16("mgcarpathian_lava_depth",         lava_depth);
@@ -186,6 +206,7 @@ void MapgenCarpathianParams::writeParams(Settings *settings) const
 	settings->setNoiseParams("mgcarpathian_np_hills",         np_hills);
 	settings->setNoiseParams("mgcarpathian_np_ridge_mnt",     np_ridge_mnt);
 	settings->setNoiseParams("mgcarpathian_np_step_mnt",      np_step_mnt);
+	settings->setNoiseParams("mgcarpathian_np_rivers",        np_rivers);
 	settings->setNoiseParams("mgcarpathian_np_mnt_var",       np_mnt_var);
 	settings->setNoiseParams("mgcarpathian_np_cave1",         np_cave1);
 	settings->setNoiseParams("mgcarpathian_np_cave2",         np_cave2);
@@ -310,64 +331,95 @@ void MapgenCarpathian::makeChunk(BlockMakeData *data)
 
 int MapgenCarpathian::getSpawnLevelAtPoint(v2s16 p)
 {
-	s16 level_at_point = terrainLevelAtPoint(p.X, p.Y);
-	if (level_at_point <= water_level || level_at_point > water_level + 32)
-		return MAX_MAP_GENERATION_LIMIT; // Unsuitable spawn point
+	// If rivers are enabled, first check if in a river channel
+	if (spflags & MGCARPATHIAN_RIVERS) {
+		float river = std::fabs(NoisePerlin2D(&noise_rivers->np, p.X, p.Y, seed)) -
+			river_width;
+		if (river < 0.0f)
+			return MAX_MAP_GENERATION_LIMIT; // Unsuitable spawn point
+	}
 
-	return level_at_point;
-}
+	float height1 = NoisePerlin2D(&noise_height1->np, p.X, p.Y, seed);
+	float height2 = NoisePerlin2D(&noise_height2->np, p.X, p.Y, seed);
+	float height3 = NoisePerlin2D(&noise_height3->np, p.X, p.Y, seed);
+	float height4 = NoisePerlin2D(&noise_height4->np, p.X, p.Y, seed);
 
+	float hterabs = std::fabs(NoisePerlin2D(&noise_hills_terrain->np, p.X, p.Y, seed));
+	float n_hills = NoisePerlin2D(&noise_hills->np, p.X, p.Y, seed);
+	float hill_mnt = hterabs * hterabs * hterabs * n_hills * n_hills;
 
-float MapgenCarpathian::terrainLevelAtPoint(s16 x, s16 z)
-{
-	float height1 = NoisePerlin2D(&noise_height1->np, x, z, seed);
-	float height2 = NoisePerlin2D(&noise_height2->np, x, z, seed);
-	float height3 = NoisePerlin2D(&noise_height3->np, x, z, seed);
-	float height4 = NoisePerlin2D(&noise_height4->np, x, z, seed);
-	float hter = NoisePerlin2D(&noise_hills_terrain->np, x, z, seed);
-	float rter = NoisePerlin2D(&noise_ridge_terrain->np, x, z, seed);
-	float ster = NoisePerlin2D(&noise_step_terrain->np, x, z, seed);
-	float n_hills = NoisePerlin2D(&noise_hills->np, x, z, seed);
-	float n_ridge_mnt = NoisePerlin2D(&noise_ridge_mnt->np, x, z, seed);
-	float n_step_mnt = NoisePerlin2D(&noise_step_mnt->np, x, z, seed);
+	float rterabs = std::fabs(NoisePerlin2D(&noise_ridge_terrain->np, p.X, p.Y, seed));
+	float n_ridge_mnt = NoisePerlin2D(&noise_ridge_mnt->np, p.X, p.Y, seed);
+	float ridge_mnt = rterabs * rterabs * rterabs * (1.0f - std::fabs(n_ridge_mnt));
 
-	int height = -MAX_MAP_GENERATION_LIMIT;
+	float sterabs = std::fabs(NoisePerlin2D(&noise_step_terrain->np, p.X, p.Y, seed));
+	float n_step_mnt = NoisePerlin2D(&noise_step_mnt->np, p.X, p.Y, seed);
+	float step_mnt = sterabs * sterabs * sterabs * getSteps(n_step_mnt);
 
-	for (s16 y = 1; y <= 30; y++) {
-		float mnt_var = NoisePerlin3D(&noise_mnt_var->np, x, y, z, seed);
+	float valley = 1.0f;
+	float river = 0.0f;
 
-		// Gradient & shallow seabed
-		s32 grad = (y < water_level) ? grad_wl + (water_level - y) * 3 : 1 - y;
+	if ((spflags & MGCARPATHIAN_RIVERS) && node_max.Y >= water_level - 16) {
+		river = std::fabs(NoisePerlin2D(&noise_rivers->np, p.X, p.Y, seed)) - river_width;
+		if (river <= valley_width) {
+			// Within river valley
+			if (river < 0.0f) {
+				// River channel
+				valley = river;
+			} else {
+				// Valley slopes.
+				// 0 at river edge, 1 at valley edge.
+				float riversc = river / valley_width;
+				// Smoothstep
+				valley = riversc * riversc * (3.0f - 2.0f * riversc);
+			}
+		}
+	}
 
-		// Hill/Mountain height (hilliness)
+	bool solid_below = false;
+	u8 cons_non_solid = 0; // consecutive non-solid nodes
+
+	for (s16 y = water_level; y <= water_level + 32; y++) {
+		float mnt_var = NoisePerlin3D(&noise_mnt_var->np, p.X, y, p.Y, seed);
 		float hill1 = getLerp(height1, height2, mnt_var);
 		float hill2 = getLerp(height3, height4, mnt_var);
 		float hill3 = getLerp(height3, height2, mnt_var);
 		float hill4 = getLerp(height1, height4, mnt_var);
-		float hilliness =
-			std::fmax(std::fmin(hill1, hill2), std::fmin(hill3, hill4));
 
-		// Rolling hills
-		float hill_mnt = hilliness * std::pow(n_hills, 2.f);
-		float hills = std::pow(std::fabs(hter), 3.f) * hill_mnt;
+		float hilliness = std::fmax(std::fmin(hill1, hill2), std::fmin(hill3, hill4));
+		float hills = hill_mnt * hilliness;
+		float ridged_mountains = ridge_mnt * hilliness;
+		float step_mountains = step_mnt * hilliness;
 
-		// Ridged mountains
-		float ridge_mnt = hilliness * (1.f - std::fabs(n_ridge_mnt));
-		float ridged_mountains = std::pow(std::fabs(rter), 3.f) * ridge_mnt;
+		s32 grad = 1 - y;
 
-		// Step (terraced) mountains
-		float step_mnt = hilliness * getSteps(n_step_mnt);
-		float step_mountains = std::pow(std::fabs(ster), 3.f) * step_mnt;
-
-		// Final terrain level
 		float mountains = hills + ridged_mountains + step_mountains;
 		float surface_level = base_level + mountains + grad;
 
-		if (y > surface_level && height < 0)
-			height = y;
+		if ((spflags & MGCARPATHIAN_RIVERS) && river <= valley_width) {
+			if (valley < 0.0f) {
+				// River channel
+				surface_level = std::fmin(surface_level,
+					water_level - std::sqrt(-valley) * river_depth);
+			} else if (surface_level > water_level) {
+				// Valley slopes
+				surface_level = water_level + (surface_level - water_level) * valley;
+			}
+		}
+
+		if (y < surface_level) { //TODO '<=' fix from generateTerrain()
+			// solid node
+			solid_below = true;
+			cons_non_solid = 0;
+		} else {
+			// non-solid node
+			cons_non_solid++;
+			if (cons_non_solid == 3 && solid_below)
+				return y - 1;
+		}
 	}
 
-	return height;
+	return MAX_MAP_GENERATION_LIMIT; // No suitable spawn point found
 }
 
 
@@ -393,6 +445,9 @@ int MapgenCarpathian::generateTerrain()
 	noise_step_mnt->perlinMap2D(node_min.X, node_min.Z);
 	noise_mnt_var->perlinMap3D(node_min.X, node_min.Y - 1, node_min.Z);
 
+	if (spflags & MGCARPATHIAN_RIVERS)
+		noise_rivers->perlinMap2D(node_min.X, node_min.Z);
+
 	//// Place nodes
 	const v3s16 &em = vm->m_area.getExtent();
 	s16 stone_surface_max_y = -MAX_MAP_GENERATION_LIMIT;
@@ -415,12 +470,33 @@ int MapgenCarpathian::generateTerrain()
 		float rterabs = std::fabs(noise_ridge_terrain->result[index2d]);
 		float n_ridge_mnt = noise_ridge_mnt->result[index2d];
 		float ridge_mnt = rterabs * rterabs * rterabs *
-			(1.f - std::fabs(n_ridge_mnt));
+			(1.0f - std::fabs(n_ridge_mnt));
 
 		// Step (terraced) mountains
 		float sterabs = std::fabs(noise_step_terrain->result[index2d]);
 		float n_step_mnt = noise_step_mnt->result[index2d];
 		float step_mnt = sterabs * sterabs * sterabs * getSteps(n_step_mnt);
+
+		// Rivers
+		float valley = 1.0f;
+		float river = 0.0f;
+
+		if ((spflags & MGCARPATHIAN_RIVERS) && node_max.Y >= water_level - 16) {
+			river = std::fabs(noise_rivers->result[index2d]) - river_width;
+			if (river <= valley_width) {
+				// Within river valley
+				if (river < 0.0f) {
+					// River channel
+					valley = river;
+				} else {
+					// Valley slopes.
+					// 0 at river edge, 1 at valley edge.
+					float riversc = river / valley_width;
+					// Smoothstep
+					valley = riversc * riversc * (3.0f - 2.0f * riversc);
+				}
+			}
+		}
 
 		// Initialise 3D noise index and voxelmanip index to column base
 		u32 index3d = (z - node_min.Z) * zstride_1u1d + (x - node_min.X);
@@ -456,7 +532,20 @@ int MapgenCarpathian::generateTerrain()
 			float mountains = hills + ridged_mountains + step_mountains;
 			float surface_level = base_level + mountains + grad;
 
-			if (y < surface_level) {
+			// Rivers
+			if ((spflags & MGCARPATHIAN_RIVERS) && node_max.Y >= water_level - 16 &&
+					river <= valley_width) {
+				if (valley < 0.0f) {
+					// River channel
+					surface_level = std::fmin(surface_level,
+						water_level - std::sqrt(-valley) * river_depth);
+				} else if (surface_level > water_level) {
+					// Valley slopes
+					surface_level = water_level + (surface_level - water_level) * valley;
+				}
+			}
+
+			if (y < surface_level) { //TODO '<='
 				vm->m_data[vi] = mn_stone; // Stone
 				if (y > stone_surface_max_y)
 					stone_surface_max_y = y;
