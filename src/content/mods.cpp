@@ -370,36 +370,55 @@ struct PrioritySortedMod
 		return a->deps_chain.size() > b->deps_chain.size();
 	}
 
-	void addDependingMod(const std::string &modname,
+	bool addDependingMod(const std::string &modname,
 			std::unordered_map<std::string, PrioritySortedMod> &mods_by_name);
 
 	std::unordered_set<std::string> deps_chain;
+	bool is_circular = false;
 	ModSpec *spec;
 };
 
-void PrioritySortedMod::addDependingMod(const std::string &modname,
+bool PrioritySortedMod::addDependingMod(const std::string &modname,
 		std::unordered_map<std::string, PrioritySortedMod> &mods_by_name)
 {
 	if (deps_chain.find(modname) != deps_chain.end()) {
-		// clang-format off
-		if (modname == spec->name)
-			warningstream << "PrioritySortedMod::addDependingMod(): Detected" <<
-					" circular dependencies in mod '" << modname << "'" << std::endl;
-		// clang-format on
-		return;
+		if (modname == spec->name) {
+			// Step 4: Reached the very same mod again.
+			// Stop the circular dependencies
+
+			// clang-format off
+			warningstream << "Detected circular dependencies in mod '" <<
+					modname << "'" << std::endl;
+			// clang-format on
+			is_circular = true;
+			return false;
+		}
+		return true; // The dependency trees merge. Nothing unusual
 	}
 
 	deps_chain.emplace(modname);
 
+	const auto &map_end = mods_by_name.end();
+
+	// Step 3: Follow the dependeny path and "push up" each
+	// mod which is required by 'modname'
 	for (const std::string &dependency : spec->depends) {
-		auto &mod = mods_by_name.find(dependency)->second;
-		mod.addDependingMod(modname, mods_by_name);
+		const auto &mod = mods_by_name.find(dependency);
+		if (mod != map_end) {
+			mod->second.addDependingMod(modname, mods_by_name);
+		} else if (modname == spec->name) {
+			// Missing hard dependency
+			spec->unsatisfied_depends.emplace(dependency);
+			return false;
+		}
 	}
 
 	for (const std::string &dependency : spec->optdepends) {
-		auto &mod = mods_by_name.find(dependency)->second;
-		mod.addDependingMod(modname, mods_by_name);
+		const auto &mod = mods_by_name.find(dependency);
+		if (mod != map_end)
+			mod->second.addDependingMod(modname, mods_by_name);
 	}
+	return !is_circular;
 }
 
 void ModConfiguration::resolveDependencies()
@@ -414,62 +433,54 @@ void ModConfiguration::resolveDependencies()
 
 	std::vector<ModSpec> unsatisfied;
 
-	// Step 1: Cleanup missing mods
 	size_t old_list_size;
 	do {
 		old_list_size = mods_by_name.size();
 
+		// Step 0: Clean up old data for new weighting calculation
+		for (auto &mod : mods_by_name)
+			mod.second.deps_chain.clear();
+
 		for (auto mod_it = mods_by_name.begin(); mod_it != mods_by_name.end();) {
 			ModSpec &mod = *mod_it->second.spec;
 
-			for (auto it = mod.optdepends.begin();
-					it != mod.optdepends.end();) {
-				// Remove what cannot be satisfied anyway
-				if (mods_by_name.find(*it) == mods_by_name.end())
-					mod.optdepends.erase(it++);
-				else
-					++it;
-			}
-
-			bool ok = true;
-			for (const std::string &dependency : mod.depends) {
-				if (mods_by_name.find(dependency) == mods_by_name.end()) {
-					mod.unsatisfied_depends.emplace(dependency);
-					ok = false;
-				}
-			}
-
-			if (ok) {
+			// If the dependencies are given:
+			// Step 1: Recursively add the name to its dependency mods
+			if (!mod_it->second.is_circular &&
+					mod_it->second.addDependingMod(
+							mod.name, mods_by_name)) {
+				// Steps 3-4: See 'addDependingMod()'
 				++mod_it;
 			} else {
+				// One of the following cases occured:
+				// 1) Hard-dependency is missing
+				// 2) Recursive dependencies were detected
+
+				// Mod cannot be satisfied: Add to the "error list"
+				// also skip it in the next loop
 				unsatisfied.push_back(mod);
 				mods_by_name.erase(mod_it++);
 			}
 		}
 	} while (mods_by_name.size() != old_list_size);
 
-	// Step 2: Recursively add the current mod to the dependency lists
-	// of its depending mods.
-	for (auto &mod : mods_by_name)
-		mod.second.addDependingMod(mod.first, mods_by_name);
-
-	// Step 3: Sort it according to the new priorities
+	// Step 5: Sort the mods by the count of mods which depend on it
 	// The mod with the most hard dependencies must be loaded first
 	std::vector<const PrioritySortedMod *> mods;
 	for (const auto &mod : mods_by_name)
 		mods.push_back(&mod.second);
 
 	std::sort(mods.begin(), mods.end(), PrioritySortedMod::sorter);
+
 	for (auto &mod : mods) {
 		m_sorted_mods.push_back(*mod->spec);
 		// clang-format off
 		verbosestream << "Sorted mod: " << mod->spec->name <<
-				"   hard_deps=" << mod->deps_chain.size() << ", soft_deps=" <<
-				mod->deps_chain.size() << std::endl;
+				"\t depending=" << mod->deps_chain.size() << std::endl;
 		// clang-format on
 	}
 
-	// Step 4: Update the list of unsatisfied mods
+	// Step 6: Update the list of unsatisfied mods
 	mods.clear();
 	mods_by_name.clear();
 	// Don't even try to dereference ModSpec now
