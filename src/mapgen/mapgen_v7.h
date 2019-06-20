@@ -1,7 +1,7 @@
 /*
 Minetest
-Copyright (C) 2013-2018 kwolekr, Ryan Kwolek <kwolekr@minetest.net>
-Copyright (C) 2014-2018 paramat
+Copyright (C) 2013-2016 kwolekr, Ryan Kwolek <kwolekr@minetest.net>
+Copyright (C) 2014-2019 paramat
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -37,11 +37,10 @@ extern FlagDesc flagdesc_mapgen_v7[];
 struct MapgenV7Params : public MapgenParams {
 	u32 spflags = MGV7_MOUNTAINS | MGV7_RIDGES | MGV7_CAVERNS;
 	s16 mount_zero_level = 0;
-	float float_mount_density = 0.6f;
-	float float_mount_height = 128.0f;
-	float float_mount_exponent = 0.75f;
 	s16 floatland_level = 1280;
 	s16 shadow_limit = 1024;
+	float float_lake_thresh = 0.8f;
+	float float_mount_thresh = 0.9f;
 
 	float cave_width = 0.09f;
 	s16 large_cave_depth = -33;
@@ -60,7 +59,7 @@ struct MapgenV7Params : public MapgenParams {
 	NoiseParams np_mount_height;
 	NoiseParams np_ridge_uwater;
 	NoiseParams np_floatland_base;
-	NoiseParams np_float_base_height;
+	NoiseParams np_float_base_amp;
 	NoiseParams np_mountain;
 	NoiseParams np_ridge;
 	NoiseParams np_cavern;
@@ -90,7 +89,6 @@ public:
 	float baseTerrainLevelFromMap(int index);
 	bool getMountainTerrainAtPoint(s16 x, s16 y, s16 z);
 	bool getMountainTerrainFromMap(int idx_xyz, int idx_xz, s16 y);
-	bool getFloatlandMountainFromMap(int idx_xyz, int idx_xz, s16 y);
 	void floatBaseExtentFromMap(s16 *float_base_min, s16 *float_base_max, int idx_xz);
 
 	int generateTerrain();
@@ -98,11 +96,10 @@ public:
 
 private:
 	s16 mount_zero_level;
-	float float_mount_density;
-	float float_mount_height;
-	float float_mount_exponent;
 	s16 floatland_level;
 	s16 shadow_limit;
+	float float_lake_thresh;
+	float float_mount_thresh;
 
 	s16 large_cave_depth;
 	s16 dungeon_ymin;
@@ -115,7 +112,7 @@ private:
 	Noise *noise_mount_height;
 	Noise *noise_ridge_uwater;
 	Noise *noise_floatland_base;
-	Noise *noise_float_base_height;
+	Noise *noise_float_base_amp;
 	Noise *noise_mountain;
 	Noise *noise_ridge;
 };

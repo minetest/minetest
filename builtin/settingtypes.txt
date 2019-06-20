@@ -1531,21 +1531,19 @@ mgv7_large_cave_depth (Large cave depth) int -33
 #    Y of upper limit of lava in large caves.
 mgv7_lava_depth (Lava depth) int -256
 
-#    Controls the density of mountain-type floatlands.
-#    Is a noise offset added to the 'mgv7_np_mountain' noise value.
-mgv7_float_mount_density (Floatland mountain density) float 0.6
-
-#    Typical maximum height, above and below midpoint, of floatland mountains.
-mgv7_float_mount_height (Floatland mountain height) float 128.0
-
-#    Alters how mountain-type floatlands taper above and below midpoint.
-mgv7_float_mount_exponent (Floatland mountain exponent) float 0.75
-
-#    Y-level of floatland midpoint and lake surface.
+#    Y-level of floatland midpoint.
 mgv7_floatland_level (Floatland level) int 1280
 
 #    Y-level to which floatland shadows extend.
 mgv7_shadow_limit (Shadow limit) int 1024
+
+#    Controls the proportion of floatland area covered by lakes.
+#    Lakes occur where 'floatland_base' noise value > this value.
+mgv7_float_lake_thresh (Floatland lake threshold) float 0.8
+
+#    Controls the proportion of floatland land area covered by mountains.
+#    Mountains occur where 'float_base_height' noise value > this value.
+mgv7_float_mount_thresh (Floatland mountain threshold) float 0.9
 
 #    Y-level of cavern upper limit.
 mgv7_cavern_limit (Cavern limit) int -256
@@ -1586,12 +1584,13 @@ mgv7_np_mount_height (Mountain height noise) noise_params_2d 256, 112, (1000, 10
 #    Defines large-scale river channel structure.
 mgv7_np_ridge_uwater (Ridge underwater noise) noise_params_2d 0, 1, (1000, 1000, 1000), 85039, 5, 0.6, 2.0, eased
 
-#    Defines areas of floatland smooth terrain.
-#    Smooth floatlands occur when noise > 0.
-mgv7_np_floatland_base (Floatland base noise) noise_params_2d -0.6, 1.5, (600, 600, 600), 114, 5, 0.6, 2.0, eased
+#    Determines floatland areas and floatland lake areas.
+#    Floatlands occur where noise value > 0.
+mgv7_np_floatland_base (Floatland base noise) noise_params_2d -0.1, 1.0, (600, 600, 600), 114, 5, 0.6, 2.0, eased
 
-#    Variation of hill height and lake depth on floatland smooth terrain.
-mgv7_np_float_base_height (Floatland base height noise) noise_params_2d 48, 24, (300, 300, 300), 907, 4, 0.7, 2.0, eased
+#    Controls floatland hill and mountain height.
+#    Determines proportion of floatland land area covered by flat terrain.
+mgv7_np_float_base_height (Floatland base height noise) noise_params_2d 1.0, 0.8, (600, 600, 600), 907, 5, 0.6, 2.0, eased
 
 #    3D noise defining mountain structure and height.
 #    Also defines structure of floatland mountain terrain.
