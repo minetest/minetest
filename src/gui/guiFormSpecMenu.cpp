@@ -2545,7 +2545,7 @@ void GUIFormSpecMenu::drawMenu()
 									AbsoluteRect.UpperLeftCorner.Y + absrec_size.Height + spec.pos.Y);
 			}
 
-			if (middle.getSize() == core::vector2di(0, 0)) {
+			if (middle.getArea() == 0) {
 				const video::SColor color(255, 255, 255, 255);
 				const video::SColor colors[] = {color, color, color, color};
 				draw2DImageFilterScaled(driver, texture, rect,
