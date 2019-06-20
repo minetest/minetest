@@ -6,7 +6,7 @@ local function load_tests(path)
 	local list = core.get_dir_list(path, false)
 	for _, filename in ipairs(list) do
 		if filename:sub(-4) == ".txt" then
-			local name = filename:sub(1, #filename - 4)
+			local name = filename:sub(1, -5)
 
 			local f = io.open(path .. DIR_DELIM .. filename)
 			local formspec = f:read("*all")
