@@ -168,7 +168,7 @@ void draw2DImageFilterScaled(video::IVideoDriver *driver, video::ITexture *txr,
 	driver->draw2DImage(scaled, destrect, mysrcrect, cliprect, colors, usealpha);
 }
 
-void draw2DImage9Splice(video::IVideoDriver *driver, video::ITexture *texture,
+void draw2DImage9Slice(video::IVideoDriver *driver, video::ITexture *texture,
 		const core::rect<s32> &rect, const core::rect<s32> &middle)
 {
 	const video::SColor color(255,255,255,255);

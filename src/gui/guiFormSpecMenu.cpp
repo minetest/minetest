@@ -653,9 +653,8 @@ void GUIFormSpecMenu::parseBackground(parserData* data, const std::string &eleme
 {
 	std::vector<std::string> parts = split(element,';');
 
-	if (((parts.size() >= 3) || (parts.size() <= 5)) ||
-		((parts.size() > 4) && (m_formspec_version > FORMSPEC_API_VERSION)))
-	{
+	if ((parts.size() >= 3 && parts.size() <= 5) ||
+			(parts.size() > 5 && m_formspec_version > FORMSPEC_API_VERSION)) {
 		std::vector<std::string> v_pos = split(parts[0],',');
 		std::vector<std::string> v_geom = split(parts[1],',');
 		std::string name = unescape_string(parts[2]);
@@ -2561,7 +2560,7 @@ void GUIFormSpecMenu::drawMenu()
 				if (middle.LowerRightCorner.Y < 0) {
 					middle.LowerRightCorner.Y += texture->getOriginalSize().Height;
 				}
-				draw2DImage9Splice(driver, texture, rect, middle);
+				draw2DImage9Slice(driver, texture, rect, middle);
 			}
 		} else {
 			errorstream << "GUIFormSpecMenu::drawMenu() Draw backgrounds unable to load texture:" << std::endl;
