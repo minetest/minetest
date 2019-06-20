@@ -677,8 +677,15 @@ void LocalPlayer::applyControl(float dtime, Environment *env)
 		incH = incV = movement_acceleration_default * BS * dtime;
 
 	float slip_factor = 1.0f;
-	if (!free_move && !in_liquid && !in_liquid_stable)
+	float speed_factor = 1.0f;
+	if (!free_move && !in_liquid && !in_liquid_stable) {
 		slip_factor = getSlipFactor(env, speedH);
+		speed_factor = getSpeedFactor(env);
+	}
+
+	// Apply speed factor
+	speedH *= speed_factor;
+	speedV *= speed_factor;
 
 	// Don't sink when swimming in pitch mode
 	if (pitch_move && in_liquid) {
@@ -1092,6 +1099,22 @@ float LocalPlayer::getSlipFactor(Environment *env, const v3f &speedH)
 			slippery = slippery * 2;
 		}
 		return core::clamp(1.0f / (slippery + 1), 0.001f, 1.0f);
+	}
+	return 1.0f;
+}
+
+float LocalPlayer::getSpeedFactor(Environment *env)
+{
+	const NodeDefManager *nodemgr = env->getGameDef()->ndef();
+	Map *map = &env->getMap();
+	const ContentFeatures &f = nodemgr->get(map->getNodeNoEx(
+			getStandingNodePos()));
+	int speed = 0;
+	if (f.walkable)
+		speed = itemgroup_get(f.groups, "speed");
+
+	if (speed != 0) {
+		return core::clamp(1.0f + (float)speed / 10.0f, 0.1f, 10.0f);
 	}
 	return 1.0f;
 }

@@ -1569,6 +1569,9 @@ Special groups
   Slipperiness rises steadily with `slippery` value, starting at 1.
 * `disable_repair`: If set to 1 for a tool, it cannot be repaired using the
   `"toolrepair"` crafting recipe
+* `speed`: Changes movement speed for players and items will moving on the node.
+   * `speed = -1`: to slow down  the movement (min. `-9`, -90%)
+   * `speed =  1`: to speed up the movement (max. `100` +1000%)
 
 Known damage and digging time defining groups
 ---------------------------------------------
