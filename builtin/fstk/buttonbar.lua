@@ -22,8 +22,10 @@ local function buttonbar_formspec(self)
 		return ""
 	end
 
-	local formspec = string.format("box[%f,%f;%f,%f;%s]",
-			self.pos.x,self.pos.y ,self.size.x,self.size.y,self.bgcolor)
+	local formspec = string.format("background[%f,%f;%f,%f;%s;false]",
+			self.pos.x, self.pos.y ,self.size.x, self.size.y + 0.2, defaulttexturedir .. "gui_formbg.png")
+
+	print(formspec)
 
 	for i=self.startbutton,#self.buttons,1 do
 		local btn_name = self.buttons[i].name

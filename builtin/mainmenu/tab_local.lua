@@ -61,7 +61,7 @@ if enable_gamebar then
 
 		local btnbar = buttonbar_create("game_button_bar",
 			game_buttonbar_button_handler,
-			{x=-0.3,y=5.9}, "horizontal", {x=12.4,y=1.15})
+			{x=-0.25,y=6}, "horizontal", {x=12.5,y=1.2})
 
 		for i=1,#pkgmgr.games,1 do
 			local btn_name = "game_btnbar_" .. pkgmgr.games[i].id
