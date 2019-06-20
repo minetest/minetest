@@ -1837,6 +1837,9 @@ to games.
 
 * `disable_repair`: If set to 1 for a tool, it cannot be repaired using the
   `"toolrepair"` crafting recipe
+* `speed`: Changes movement speed for players and items will moving on the node.
+	Only a decrease in speed is possible.
+   * `speed = -1`: to slow down the movement (min. `-100`, unable to walk)
 
 
 ### `ObjectRef` armor groups
