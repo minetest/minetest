@@ -109,7 +109,7 @@ int ModApiMainMenu::l_update_formspec(lua_State *L)
 /******************************************************************************/
 int ModApiMainMenu::l_set_formspec_prepend(lua_State *L)
 {
-	GUIEngine* engine = getGuiEngine(L);
+	GUIEngine *engine = getGuiEngine(L);
 	sanity_check(engine != NULL);
 
 	if (engine->m_startgame)
