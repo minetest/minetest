@@ -3,6 +3,7 @@
 *.swp
 *.bak*
 *.orig
+*.out.png
 # Vim
 *.vim
 # Kate
