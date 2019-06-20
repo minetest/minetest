@@ -42,4 +42,11 @@ public:
 	 * @param fields data in field format
 	 */
 	void handleMainMenuButtons(const StringMap &fields);
+
+
+	/**
+	 * Called after rendering
+	 * @param delta delta time
+	 */
+	void onStep();
 };

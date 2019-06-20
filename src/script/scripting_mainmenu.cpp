@@ -45,6 +45,9 @@ MainMenuScripting::MainMenuScripting(GUIEngine* guiengine):
 	int top = lua_gettop(L);
 
 	lua_newtable(L);
+	lua_setfield(L, top, "registered_steps");
+
+	lua_newtable(L);
 	lua_setglobal(L, "gamedata");
 
 	// Initialize our lua_api modules
@@ -87,6 +90,7 @@ void MainMenuScripting::registerLuaClasses(lua_State *L, int top)
 void MainMenuScripting::step()
 {
 	asyncEngine.step(getStack());
+	onStep();
 }
 
 /******************************************************************************/

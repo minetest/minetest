@@ -612,3 +612,34 @@ unsigned int GUIEngine::queueAsync(const std::string &serialized_func,
 	return m_script->queueAsync(serialized_func, serialized_params);
 }
 
+
+bool GUIEngine::takeScreenshot(const std::string &path)
+{
+	irr::video::IVideoDriver *driver = RenderingEngine::get_video_driver();
+	irr::video::IImage* const raw_image = driver->createScreenShot();
+
+	if (!raw_image)
+		return false;
+
+	irr::video::IImage* const image =
+			driver->createImage(video::ECF_R8G8B8, raw_image->getDimension());
+
+	bool suc = false;
+	if (image) {
+		raw_image->copyTo(image);
+
+		std::ostringstream sstr;
+		if (driver->writeImageToFile(image, path.c_str())) {
+			sstr << "Saved screenshot to '" << path << "'";
+			suc = true;
+		} else {
+			sstr << "Failed to save screenshot '" << path << "'";
+		}
+		infostream << sstr.str() << std::endl;
+		image->drop();
+	}
+
+	raw_image->drop();
+	return suc;
+}
+

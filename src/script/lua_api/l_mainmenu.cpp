@@ -1004,6 +1004,15 @@ int ModApiMainMenu::l_get_screen_info(lua_State *L)
 }
 
 /******************************************************************************/
+int ModApiMainMenu::l_take_screenshot(lua_State *L)
+{
+	std::string path = luaL_checkstring(L, 1);
+	bool suc = getGuiEngine(L)->takeScreenshot(path);
+	lua_pushboolean(L, suc);
+	return 1;
+}
+
+/******************************************************************************/
 int ModApiMainMenu::l_get_min_supp_proto(lua_State *L)
 {
 	lua_pushinteger(L, CLIENT_PROTOCOL_VERSION_MIN);
@@ -1075,6 +1084,7 @@ void ModApiMainMenu::Initialize(lua_State *L, int top)
 	API_FCT(get_video_drivers);
 	API_FCT(get_video_modes);
 	API_FCT(get_screen_info);
+	API_FCT(take_screenshot);
 	API_FCT(get_min_supp_proto);
 	API_FCT(get_max_supp_proto);
 	API_FCT(do_async_callback);

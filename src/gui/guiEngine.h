@@ -300,5 +300,5 @@ private:
 	/** stop playing a sound started with playSound() */
 	void stopSound(s32 handle);
 
-
+	bool takeScreenshot(const std::string &path);
 };

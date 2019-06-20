@@ -106,6 +106,8 @@ core.get_screen_info()
 	window_width    = <current window width>,
 	window_height   = <current window height>
 	}
+core.take_screenshot(path)
+^ returns bool, true on success
 
 ### Content and Packages
 
