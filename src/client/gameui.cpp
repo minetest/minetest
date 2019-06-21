@@ -306,11 +306,10 @@ void GameUI::toggleProfiler()
 
 void GameUI::deleteFormspec()
 {
-	if (m_formspec)
-		m_formspec->quitMenu();
-
-	delete m_formspec;
-	m_formspec = nullptr;
+	if (m_formspec) {
+		m_formspec->drop();
+		m_formspec = nullptr;
+	}
 
 	m_formname.clear();
 }
