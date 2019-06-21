@@ -20,9 +20,7 @@ elif [[ $PLATFORM == "Win32" ]]; then
 	sudo apt-get update
 	sudo apt-get install p7zip-full
 	wget http://minetest.kitsunemimi.pw/mingw-w64-i686_7.1.1_ubuntu14.04.7z -O mingw.7z
-	sed -e "s|%PREFIX%|i686-w64-mingw32|" \
-		-e "s|%ROOTPATH%|/usr/i686-w64-mingw32|" \
-		< util/travis/toolchain_mingw.cmake.in > util/buildbot/toolchain_mingw.cmake
+	# buildwin32.sh detects the installed toolchain automatically
 	sudo 7z x -y -o/usr mingw.7z
 elif [[ $PLATFORM == "Win64" ]]; then
 	sudo apt-get update
