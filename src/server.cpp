@@ -1344,7 +1344,7 @@ bool Server::getClientInfo(
 	*major = client->getMajor();
 	*minor = client->getMinor();
 	*patch = client->getPatch();
-	*vers_string = client->getPatch();
+	*vers_string = client->getFull();
 
 	m_clients.unlock();
 
