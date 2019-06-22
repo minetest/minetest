@@ -167,3 +167,62 @@ void draw2DImageFilterScaled(video::IVideoDriver *driver, video::ITexture *txr,
 
 	driver->draw2DImage(scaled, destrect, mysrcrect, cliprect, colors, usealpha);
 }
+
+void draw2DImage9Slice(video::IVideoDriver *driver, video::ITexture *texture,
+		const core::rect<s32> &rect, const core::rect<s32> &middle)
+{
+	const video::SColor color(255,255,255,255);
+	const video::SColor colors[] = {color,color,color,color};
+
+	auto originalSize = texture->getOriginalSize();
+	core::vector2di lowerRightOffset = core::vector2di(originalSize.Width, originalSize.Height) - middle.LowerRightCorner;
+
+	for (int y = 0; y < 3; ++y) {
+		for (int x = 0; x < 3; ++x) {
+			core::rect<s32> src({0, 0}, originalSize);
+			core::rect<s32> dest = rect;
+
+			switch (x) {
+			case 0:
+				dest.LowerRightCorner.X = rect.UpperLeftCorner.X + middle.UpperLeftCorner.X;
+				src.LowerRightCorner.X = middle.UpperLeftCorner.X;
+				break;
+
+			case 1:
+				dest.UpperLeftCorner.X += middle.UpperLeftCorner.X;
+				dest.LowerRightCorner.X -= lowerRightOffset.X;
+				src.UpperLeftCorner.X = middle.UpperLeftCorner.X;
+				src.LowerRightCorner.X = middle.LowerRightCorner.X;
+				break;
+
+			case 2:
+				dest.UpperLeftCorner.X = rect.LowerRightCorner.X - lowerRightOffset.X;
+				src.UpperLeftCorner.X = middle.LowerRightCorner.X;
+				break;
+			}
+
+			switch (y) {
+			case 0:
+				dest.LowerRightCorner.Y = rect.UpperLeftCorner.Y + middle.UpperLeftCorner.Y;
+				src.LowerRightCorner.Y = middle.UpperLeftCorner.Y;
+				break;
+
+			case 1:
+				dest.UpperLeftCorner.Y += middle.UpperLeftCorner.Y;
+				dest.LowerRightCorner.Y -= lowerRightOffset.Y;
+				src.UpperLeftCorner.Y = middle.UpperLeftCorner.Y;
+				src.LowerRightCorner.Y = middle.LowerRightCorner.Y;
+				break;
+
+			case 2:
+				dest.UpperLeftCorner.Y = rect.LowerRightCorner.Y - lowerRightOffset.Y;
+				src.UpperLeftCorner.Y = middle.LowerRightCorner.Y;
+				break;
+			}
+
+			draw2DImageFilterScaled(driver, texture, dest,
+					src,
+					NULL/*&AbsoluteClippingRect*/, colors, true);
+		}
+	}
+}

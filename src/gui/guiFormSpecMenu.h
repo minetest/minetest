@@ -177,6 +177,18 @@ class GUIFormSpecMenu : public GUIModalMenu
 		}
 
 		ImageDrawSpec(const std::string &a_name,
+				const v2s32 &a_pos, const v2s32 &a_geom, const core::rect<s32> &middle, bool clip=false):
+				name(a_name),
+				parent_button(NULL),
+				pos(a_pos),
+				geom(a_geom),
+				middle(middle),
+				scale(true),
+				clip(clip)
+		{
+		}
+
+		ImageDrawSpec(const std::string &a_name,
 				const v2s32 &a_pos):
 			name(a_name),
 			parent_button(NULL),
@@ -191,6 +203,7 @@ class GUIFormSpecMenu : public GUIModalMenu
 		gui::IGUIButton *parent_button;
 		v2s32 pos;
 		v2s32 geom;
+		core::rect<s32> middle;
 		bool scale;
 		bool clip;
 	};

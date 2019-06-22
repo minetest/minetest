@@ -653,9 +653,8 @@ void GUIFormSpecMenu::parseBackground(parserData* data, const std::string &eleme
 {
 	std::vector<std::string> parts = split(element,';');
 
-	if (((parts.size() == 3) || (parts.size() == 4)) ||
-		((parts.size() > 4) && (m_formspec_version > FORMSPEC_API_VERSION)))
-	{
+	if ((parts.size() >= 3 && parts.size() <= 5) ||
+			(parts.size() > 5 && m_formspec_version > FORMSPEC_API_VERSION)) {
 		std::vector<std::string> v_pos = split(parts[0],',');
 		std::vector<std::string> v_geom = split(parts[1],',');
 		std::string name = unescape_string(parts[2]);
@@ -672,16 +671,37 @@ void GUIFormSpecMenu::parseBackground(parserData* data, const std::string &eleme
 		geom.Y = stof(v_geom[1]) * spacing.Y;
 
 		bool clip = false;
-		if (parts.size() == 4 && is_yes(parts[3])) {
+		if (parts.size() >= 4 && is_yes(parts[3])) {
 			pos.X = stoi(v_pos[0]); //acts as offset
 			pos.Y = stoi(v_pos[1]); //acts as offset
 			clip = true;
 		}
 
+		core::rect<s32> middle;
+		if (parts.size() >= 5) {
+			std::vector<std::string> v_middle = split(parts[4], ',');
+			if (v_middle.size() == 1) {
+				s32 x = stoi(v_middle[0]);
+				middle.UpperLeftCorner = core::vector2di(x, x);
+				middle.LowerRightCorner = core::vector2di(-x, -x);
+			} else if (v_middle.size() == 2) {
+				s32 x = stoi(v_middle[0]);
+				s32 y =	stoi(v_middle[1]);
+				middle.UpperLeftCorner = core::vector2di(x, y);
+				middle.LowerRightCorner = core::vector2di(-x, -y);
+				// `-x` is interpreted as `w - x`
+			} else if (v_middle.size() == 4) {
+				middle.UpperLeftCorner = core::vector2di(stoi(v_middle[0]), stoi(v_middle[1]));
+				middle.LowerRightCorner = core::vector2di(stoi(v_middle[2]), stoi(v_middle[3]));
+			} else {
+				warningstream << "Invalid rectangle given to middle param of background[] element" << std::endl;
+			}
+		}
+
 		if (!data->explicit_size && !clip)
 			warningstream << "invalid use of unclipped background without a size[] element" << std::endl;
 
-		m_backgrounds.emplace_back(name, pos, geom, clip);
+		m_backgrounds.emplace_back(name, pos, geom, middle, clip);
 
 		return;
 	}
@@ -2514,6 +2534,8 @@ void GUIFormSpecMenu::drawMenu()
 			core::rect<s32> imgrect(0, 0, spec.geom.X, spec.geom.Y);
 			// Image rectangle on screen
 			core::rect<s32> rect = imgrect + spec.pos;
+			// Middle rect for 9-slicing
+			core::rect<s32> middle = spec.middle;
 
 			if (spec.clip) {
 				core::dimension2d<s32> absrec_size = AbsoluteRect.getSize();
@@ -2523,12 +2545,23 @@ void GUIFormSpecMenu::drawMenu()
 									AbsoluteRect.UpperLeftCorner.Y + absrec_size.Height + spec.pos.Y);
 			}
 
-			const video::SColor color(255,255,255,255);
-			const video::SColor colors[] = {color,color,color,color};
-			draw2DImageFilterScaled(driver, texture, rect,
-				core::rect<s32>(core::position2d<s32>(0,0),
-						core::dimension2di(texture->getOriginalSize())),
-				NULL/*&AbsoluteClippingRect*/, colors, true);
+			if (middle.getArea() == 0) {
+				const video::SColor color(255, 255, 255, 255);
+				const video::SColor colors[] = {color, color, color, color};
+				draw2DImageFilterScaled(driver, texture, rect,
+						core::rect<s32>(core::position2d<s32>(0, 0),
+								core::dimension2di(texture->getOriginalSize())),
+						NULL/*&AbsoluteClippingRect*/, colors, true);
+			} else {
+				// `-x` is interpreted as `w - x`
+				if (middle.LowerRightCorner.X < 0) {
+					middle.LowerRightCorner.X += texture->getOriginalSize().Width;
+				}
+				if (middle.LowerRightCorner.Y < 0) {
+					middle.LowerRightCorner.Y += texture->getOriginalSize().Height;
+				}
+				draw2DImage9Slice(driver, texture, rect, middle);
+			}
 		} else {
 			errorstream << "GUIFormSpecMenu::drawMenu() Draw backgrounds unable to load texture:" << std::endl;
 			errorstream << "\t" << spec.name << std::endl;

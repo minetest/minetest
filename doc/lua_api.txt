@@ -2034,13 +2034,26 @@ Elements
 
 ### `background[<X>,<Y>;<W>,<H>;<texture name>]`
 
-* Use a background. Inventory rectangles are not drawn then.
 * Example for formspec 8x4 in 16x resolution: image shall be sized
   8 times 16px  times  4 times 16px.
 
 ### `background[<X>,<Y>;<W>,<H>;<texture name>;<auto_clip>]`
 
-* Use a background. Inventory rectangles are not drawn then.
+* Example for formspec 8x4 in 16x resolution:
+  image shall be sized 8 times 16px  times  4 times 16px
+* If `auto_clip` is `true`, the background is clipped to the formspec size
+  (`x` and `y` are used as offset values, `w` and `h` are ignored)
+
+### `background[<X>,<Y>;<W>,<H>;<texture name>;<auto_clip>;<middle>]`
+
+* 9-sliced background. See https://en.wikipedia.org/wiki/9-slice_scaling
+* Middle is a rect which defines the middle of the 9-slice.
+	* `x` - The middle will be x pixels from all sides.
+	* `x,y` - The middle will be x pixels from the horizontal and y from the vertical.
+	* `x,y,x2,y2` - The middle will start at x,y, and end at x2, y2. Negative x2 and y2 values
+		will be added to the width and height of the texture, allowing it to be used as the
+		distance from the far end.
+	* All numbers in middle are integers.
 * Example for formspec 8x4 in 16x resolution:
   image shall be sized 8 times 16px  times  4 times 16px
 * If `auto_clip` is `true`, the background is clipped to the formspec size
