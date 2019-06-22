@@ -17,6 +17,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
+#include "../../content_sao.h"
+#include "../../remoteplayer.h"
 #include "cpp_api/s_player.h"
 #include "cpp_api/s_internal.h"
 #include "common/c_converter.h"
@@ -213,7 +215,19 @@ void ScriptApiPlayer::on_playerReceiveFields(ServerActiveObject *player,
 		lua_pushlstring(L, value.c_str(), value.size());
 		lua_settable(L, -3);
 	}
-	runCallbacks(3, RUN_CALLBACKS_MODE_OR_SC);
+	// param 4
+	if (formname.empty()) {
+		lua_pushnil(L);
+	} else {
+		lua_getglobal(L, "core");
+		int tmp = lua_gettop(L);
+		lua_getfield(L, -1, "fs_contexts");
+		lua_getfield(L, -1, ((PlayerSAO*)player)->getPlayer()->getName());
+		lua_replace(L, -3);
+		lua_settop(L, -2);
+	}
+
+	runCallbacks(4, RUN_CALLBACKS_MODE_OR_SC);
 }
 
 void ScriptApiPlayer::on_auth_failure(const std::string &name, const std::string &ip)

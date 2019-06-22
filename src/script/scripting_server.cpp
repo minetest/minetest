@@ -73,6 +73,9 @@ ServerScripting::ServerScripting(Server* server):
 	lua_newtable(L);
 	lua_setfield(L, -2, "luaentities");
 
+	lua_newtable(L);
+	lua_setfield(L, -2, "fs_contexts");
+
 	// Initialize our lua_api modules
 	InitializeModApi(L, top);
 	lua_pop(L, 1);

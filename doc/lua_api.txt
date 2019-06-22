@@ -3785,7 +3785,7 @@ Call these functions only at load time!
     * Called always when a player says something
     * Return `true` to mark the message as handled, which means that it will
       not be sent to other players.
-* `minetest.register_on_player_receive_fields(function(player, formname, fields))`
+* `minetest.register_on_player_receive_fields(function(player, formname, fields, context))`
     * Called when the server received input from `player` in a formspec with
       the given `formname`. Specifically, this is called on any of the
       following events:
@@ -3820,6 +3820,7 @@ Call these functions only at load time!
           additionally, the index `key_enter_field` contains the name of the
           text field. See also: `field_close_on_enter`.
     * Newest functions are called first
+    * `context` is custom information passed from show_formspec, and stored on the server.
     * If function returns `true`, remaining functions are not called
 * `minetest.register_on_craft(function(itemstack, player, old_craft_grid, craft_inv))`
     * Called when `player` crafts something
@@ -4277,11 +4278,13 @@ Inventory
 Formspec
 --------
 
-* `minetest.show_formspec(playername, formname, formspec)`
+* `minetest.show_formspec(playername, formname, formspec, context)`
     * `playername`: name of player to show formspec
     * `formname`: name passed to `on_player_receive_fields` callbacks.
       It should follow the `"modname:<whatever>"` naming convention
     * `formspec`: formspec to display
+    * `context`: passed to `on_player_receive_fields` callbacks.
+         Can be nil, never sent to the client.
 * `minetest.close_formspec(playername, formname)`
     * `playername`: name of player to close formspec
     * `formname`: has to exactly match the one given in `show_formspec`, or the

@@ -360,12 +360,16 @@ int ModApiServer::l_show_formspec(lua_State *L)
 	const char *formname = luaL_checkstring(L, 2);
 	const char *formspec = luaL_checkstring(L, 3);
 
-	if(getServer(L)->showFormspec(playername,formspec,formname))
-	{
-		lua_pushboolean(L, true);
-	}else{
-		lua_pushboolean(L, false);
-	}
+	lua_getglobal(L, "core");
+	lua_getfield(L, -1, "fs_contexts");
+	if (lua_isnil(L, 4))
+		lua_pushnil(L);
+	else
+		lua_pushvalue(L, 4);
+	lua_setfield(L, -2, playername);
+
+	bool suc = getServer(L)->showFormspec(playername, formspec, formname);
+	lua_pushboolean(L, suc);
 	return 1;
 }
 
