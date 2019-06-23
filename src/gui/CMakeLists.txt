@@ -4,6 +4,7 @@ set(gui_SRCS
 	${CMAKE_CURRENT_SOURCE_DIR}/guiEditBoxWithScrollbar.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/guiEngine.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/guiFormSpecMenu.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/guiImageTabControl.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/guiKeyChangeMenu.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/guiPasswordChange.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/guiPathSelectMenu.cpp

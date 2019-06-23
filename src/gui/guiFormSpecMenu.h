@@ -518,6 +518,7 @@ private:
 	void parseImageButton(parserData* data, const std::string &element,
 			const std::string &type);
 	void parseItemImageButton(parserData* data, const std::string &element);
+	void parseImageTab(parserData* data, const std::string &element);
 	void parseTabHeader(parserData* data, const std::string &element);
 	void parseBox(parserData* data, const std::string &element);
 	void parseBackgroundColor(parserData* data, const std::string &element);

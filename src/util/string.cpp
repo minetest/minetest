@@ -467,6 +467,27 @@ u64 read_seed(const char *str)
 	return num;
 }
 
+void parseTextString(const std::string &value, std::string &text, std::string &params, 
+		     const char sep, const char esc)
+{
+	u32 i;
+	for (i = 0; i < value.length(); ++i) {
+		char c = value[i];
+		
+		if (c == esc)
+			++i;
+		else if (c == sep)
+			break;
+	}
+	
+	if (i + 1 < value.length())
+		params = value.substr(i + 1);
+	else
+		params = "";
+		
+	text = value.substr(0, i);
+}
+
 bool parseColorString(const std::string &value, video::SColor &color, bool quiet,
 		unsigned char default_alpha)
 {
