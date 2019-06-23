@@ -16,6 +16,7 @@
 --51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 local FILENAME = "settingtypes.txt"
+local csettings = core.get_secure_settings()
 
 local CHAR_CLASSES = {
 	SPACE = "[%s]",
@@ -484,7 +485,7 @@ local settings = full_settings
 local selected_setting = 1
 
 local function get_current_value(setting)
-	local value = core.settings:get(setting.name)
+	local value = csettings:get(setting.name)
 	if value == nil then
 		value = setting.default
 	end
@@ -492,7 +493,7 @@ local function get_current_value(setting)
 end
 
 local function get_current_np_group(setting)
-	local value = core.settings:get_np_group(setting.name)
+	local value = csettings:get_np_group(setting.name)
 	local t = {}
 	if value == nil then
 		t = setting.values
@@ -512,7 +513,7 @@ local function get_current_np_group(setting)
 end
 
 local function get_current_np_group_as_string(setting)
-	local value = core.settings:get_np_group(setting.name)
+	local value = csettings:get_np_group(setting.name)
 	local t
 	if value == nil then
 		t = setting.default
@@ -788,11 +789,11 @@ local function handle_change_setting_buttons(this, fields)
 		if setting.type == "bool" then
 			local new_value = fields["dd_setting_value"]
 			-- Note: new_value is the actual (translated) value shown in the dropdown
-			core.settings:set_bool(setting.name, new_value == fgettext("Enabled"))
+			csettings:set_bool(setting.name, new_value == fgettext("Enabled"))
 
 		elseif setting.type == "enum" then
 			local new_value = fields["dd_setting_value"]
-			core.settings:set(setting.name, new_value)
+			csettings:set(setting.name, new_value)
 
 		elseif setting.type == "int" then
 			local new_value = tonumber(fields["te_setting_value"])
@@ -814,7 +815,7 @@ local function handle_change_setting_buttons(this, fields)
 				core.update_formspec(this:get_formspec())
 				return true
 			end
-			core.settings:set(setting.name, new_value)
+			csettings:set(setting.name, new_value)
 
 		elseif setting.type == "float" then
 			local new_value = tonumber(fields["te_setting_value"])
@@ -836,7 +837,7 @@ local function handle_change_setting_buttons(this, fields)
 				core.update_formspec(this:get_formspec())
 				return true
 			end
-			core.settings:set(setting.name, new_value)
+			csettings:set(setting.name, new_value)
 
 		elseif setting.type == "flags" then
 			local values = {}
@@ -853,7 +854,7 @@ local function handle_change_setting_buttons(this, fields)
 			checkboxes = {}
 
 			local new_value = table.concat(values, ", ")
-			core.settings:set(setting.name, new_value)
+			csettings:set(setting.name, new_value)
 
 		elseif setting.type == "noise_params_2d" or setting.type == "noise_params_3d" then
 			local np_flags = {}
@@ -882,20 +883,20 @@ local function handle_change_setting_buttons(this, fields)
 				lacunarity = fields["te_lacun"],
 				flags = table.concat(np_flags, ", ")
 			}
-			core.settings:set_np_group(setting.name, new_value)
+			csettings:set_np_group(setting.name, new_value)
 
 		elseif setting.type == "v3f" then
 			local new_value = "("
 					.. fields["te_x"] .. ", "
 					.. fields["te_y"] .. ", "
 					.. fields["te_z"] .. ")"
-			core.settings:set(setting.name, new_value)
+			csettings:set(setting.name, new_value)
 
 		else
 			local new_value = fields["te_setting_value"]
-			core.settings:set(setting.name, new_value)
+			csettings:set(setting.name, new_value)
 		end
-		core.settings:write()
+		csettings:write()
 		this:delete()
 		return true
 	end
@@ -945,7 +946,7 @@ local function create_settings_formspec(tabview, _, tabdata)
 	local current_level = 0
 	for _, entry in ipairs(settings) do
 		local name
-		if not core.settings:get_bool("main_menu_technical_settings") and entry.readable_name then
+		if not csettings:get_bool("main_menu_technical_settings") and entry.readable_name then
 			name = fgettext_ne(entry.readable_name)
 		else
 			name = entry.name
@@ -986,7 +987,7 @@ local function create_settings_formspec(tabview, _, tabdata)
 			"button[10,4.9;2,1;btn_edit;" .. fgettext("Edit") .. "]" ..
 			"button[7,4.9;3,1;btn_restore;" .. fgettext("Restore Default") .. "]" ..
 			"checkbox[0,4.3;cb_tech_settings;" .. fgettext("Show technical names") .. ";"
-					.. dump(core.settings:get_bool("main_menu_technical_settings")) .. "]"
+					.. dump(csettings:get_bool("main_menu_technical_settings")) .. "]"
 
 	return formspec
 end
@@ -1000,8 +1001,8 @@ local function handle_settings_buttons(this, fields, tabname, tabdata)
 			local setting = settings[selected_setting]
 			if setting and setting.type == "bool" then
 				local current_value = get_current_value(setting)
-				core.settings:set_bool(setting.name, not core.is_yes(current_value))
-				core.settings:write()
+				csettings:set_bool(setting.name, not core.is_yes(current_value))
+				csettings:write()
 				return true
 			else
 				list_enter = true
@@ -1056,8 +1057,8 @@ local function handle_settings_buttons(this, fields, tabname, tabdata)
 	if fields["btn_restore"] then
 		local setting = settings[selected_setting]
 		if setting and setting.type ~= "category" then
-			core.settings:remove(setting.name)
-			core.settings:write()
+			csettings:remove(setting.name)
+			csettings:write()
 			core.update_formspec(this:get_formspec())
 		end
 		return true
@@ -1069,8 +1070,8 @@ local function handle_settings_buttons(this, fields, tabname, tabdata)
 	end
 
 	if fields["cb_tech_settings"] then
-		core.settings:set("main_menu_technical_settings", fields["cb_tech_settings"])
-		core.settings:write()
+		csettings:set("main_menu_technical_settings", fields["cb_tech_settings"])
+		csettings:write()
 		core.update_formspec(this:get_formspec())
 		return true
 	end

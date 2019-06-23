@@ -72,6 +72,8 @@ private:
 
 	static int l_gettext(lua_State *L);
 
+	static int l_get_secure_settings(lua_State *L);
+
 	//packages
 
 	static int l_get_games(lua_State *L);

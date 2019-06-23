@@ -26,14 +26,15 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 
 #define SET_SECURITY_CHECK(L, name) \
-	if (o->m_settings == g_settings && ScriptApiSecurity::isSecure(L) && \
+	if (o->m_security_enabled && o->m_settings == g_settings && ScriptApiSecurity::isSecure(L) && \
 			name.compare(0, 7, "secure.") == 0) { \
 		throw LuaError("Attempt to set secure setting."); \
 	}
 
-LuaSettings::LuaSettings(Settings *settings, const std::string &filename) :
+LuaSettings::LuaSettings(Settings *settings, const std::string &filename, bool security_enabled) :
 	m_settings(settings),
-	m_filename(filename)
+	m_filename(filename),
+	m_security_enabled(security_enabled)
 {
 }
 
@@ -54,9 +55,9 @@ LuaSettings::~LuaSettings()
 
 
 void LuaSettings::create(lua_State *L, Settings *settings,
-		const std::string &filename)
+		const std::string &filename, bool security_enabled)
 {
-	LuaSettings *o = new LuaSettings(settings, filename);
+	LuaSettings *o = new LuaSettings(settings, filename, security_enabled);
 	*(void **)(lua_newuserdata(L, sizeof(void *))) = o;
 	luaL_getmetatable(L, className);
 	lua_setmetatable(L, -2);

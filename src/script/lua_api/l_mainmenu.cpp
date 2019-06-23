@@ -20,6 +20,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "lua_api/l_mainmenu.h"
 #include "lua_api/l_internal.h"
+#include "lua_api/l_settings.h"
+#include "cpp_api/s_security.h"
 #include "common/c_content.h"
 #include "cpp_api/s_async.h"
 #include "gui/guiEngine.h"
@@ -991,6 +993,50 @@ int ModApiMainMenu::l_gettext(lua_State *L)
 }
 
 /******************************************************************************/
+int ModApiMainMenu::l_get_secure_settings(lua_State *L)
+{
+	if (ScriptApiSecurity::isSecure(L)) {
+		// We have to make sure that this function is being called directly by
+		// a mod, otherwise a malicious mod could override this function and
+		// steal its return value.
+		lua_Debug info;
+		// Make sure there's only one item below this function on the stack...
+		if (lua_getstack(L, 6, &info)) {
+			return 0;
+		}
+
+		auto menuDir = fs::AbsolutePath(getGuiEngine(L)->getScriptDir());
+		std::string expect[] = {
+			menuDir + DIR_DELIM "dlg_settings_advanced.lua",
+			menuDir + DIR_DELIM "init.lua",
+			fs::AbsolutePath(menuDir + DIR_DELIM "../init.lua")
+		};
+
+		for (int i = 1; i < 6; i++) {
+			FATAL_ERROR_IF(!lua_getstack(L, i, &info), "lua_getstack() failed");
+			FATAL_ERROR_IF(!lua_getinfo(L, "S", &info), "lua_getinfo() failed");
+
+			// ...and that that item is the main file scope.
+			if (i % 2 == 1) {
+				if (strcmp(info.what, "main") != 0)
+					return 0;
+
+				FATAL_ERROR_IF(info.source[0] != '@', "Doesn't begin with @");
+				auto path = fs::AbsolutePath(&info.source[1]);
+				if (path != expect[i / 2])
+					return 0;
+
+			} else if (strcmp(info.what, "C") != 0) {
+				return 0;
+			}
+		}
+	}
+
+	LuaSettings::create(L, g_settings, g_settings_path, false);
+	return 1;
+}
+
+/******************************************************************************/
 int ModApiMainMenu::l_get_screen_info(lua_State *L)
 {
 	lua_newtable(L);
@@ -1070,6 +1116,7 @@ void ModApiMainMenu::Initialize(lua_State *L, int top)
 	API_FCT(create_world);
 	API_FCT(delete_world);
 	API_FCT(delete_favorite);
+	API_FCT(get_secure_settings);
 	API_FCT(set_background);
 	API_FCT(set_topleft_text);
 	API_FCT(get_mapgen_names);
