@@ -70,11 +70,13 @@ private:
 	bool m_security_enabled = true;
 
 public:
-	LuaSettings(Settings *settings, const std::string &filename, bool security_enabled);
+	LuaSettings(Settings *settings, const std::string &filename,
+			bool security_enabled);
 	LuaSettings(const std::string &filename, bool write_allowed);
 	~LuaSettings();
 
-	static void create(lua_State *L, Settings *settings, const std::string &filename, bool security_enabled=true);
+	static void create(lua_State *L, Settings *settings, const std::string &filename,
+			bool security_enabled=true);
 
 	// LuaSettings(filename)
 	// Creates a LuaSettings and leaves it on top of the stack
