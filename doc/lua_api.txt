@@ -2360,11 +2360,8 @@ Elements
 **Note**: do _not_ use a element name starting with `key_`; those names are
 reserved to pass key press events to formspec!
 
-
-
-
 Migrating to Real Coordinates
-=============================
+-----------------------------
 
 In the old system, positions included padding and spacing. Padding is a gap between
 the formspec window edges and content, and spacing is the gaps between items. For
