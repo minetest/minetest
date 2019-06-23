@@ -72,6 +72,8 @@ end
 
 --------------------------------------------------------------------------------
 local function init_globals()
+	core.set_formspec_prepend("background9[5,5;1,1;" .. defaulttexturedir .. "gui_formbg.png;true;10]")
+
 	-- Init gamedata
 	gamedata.worldindex = 0
 
