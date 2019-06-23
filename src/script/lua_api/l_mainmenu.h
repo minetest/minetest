@@ -52,14 +52,6 @@ private:
 	 */
 	static int getBoolData(lua_State *L, std::string name,bool& valid);
 
-	/**
-	 * Checks if a path may be modified. Paths in the temp directory or the user
-	 * games, mods, textures, or worlds directories may be modified.
-	 * @param path path to check
-	 * @return true if the path may be modified
-	 */
-	static bool mayModifyPath(const std::string &path);
-
 	//api calls
 
 	static int l_start(lua_State *L);

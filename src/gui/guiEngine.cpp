@@ -619,3 +619,44 @@ unsigned int GUIEngine::queueAsync(const std::string &serialized_func,
 {
 	return m_script->queueAsync(serialized_func, serialized_params);
 }
+
+/******************************************************************************/
+bool GUIEngine::CheckAbsPath(const std::string &path, bool *write_allowed)
+{
+	if (path.empty())
+		return false;
+
+	if (fs::PathStartsWith(path, fs::TempPath()) ||
+			fs::PathStartsWith(path, fs::RemoveRelativePathComponents(porting::path_user + DIR_DELIM "games")) ||
+			fs::PathStartsWith(path, fs::RemoveRelativePathComponents(porting::path_user + DIR_DELIM "mods")) ||
+			fs::PathStartsWith(path, fs::RemoveRelativePathComponents(porting::path_user + DIR_DELIM "textures")) ||
+			fs::PathStartsWith(path, fs::RemoveRelativePathComponents(porting::path_user + DIR_DELIM "worlds")) ||
+			fs::PathStartsWith(path, fs::RemoveRelativePathComponents(porting::path_cache))) {
+		if (write_allowed)
+			*write_allowed = true;
+		return true;
+	}
+
+	if (fs::PathStartsWith(path, fs::RemoveRelativePathComponents(porting::path_share)) ||
+			fs::PathStartsWith(path, fs::RemoveRelativePathComponents(porting::path_user))) {
+		if (write_allowed)
+			*write_allowed = false;
+		return true;
+	}
+
+	return false;
+}
+
+/******************************************************************************/
+bool GUIEngine::MayModifyPath(const std::string &path)
+{
+	bool ret = false;
+	CheckAbsPath(fs::AbsolutePath(path), &ret);
+	return ret;
+}
+
+/******************************************************************************/
+bool GUIEngine::MayReadPath(const std::string &path)
+{
+	return CheckAbsPath(fs::AbsolutePath(path));
+}

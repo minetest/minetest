@@ -1,6 +1,7 @@
 /*
 Minetest
 Copyright (C) 2013 sapier
+Copyright (C) 2019 rubenwardy <rw@rubenwardy.com>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -168,6 +169,11 @@ int ModApiMainMenu::l_set_background(lua_State *L)
 
 	std::string backgroundlevel(luaL_checkstring(L, 1));
 	std::string texturename(luaL_checkstring(L, 2));
+
+	if (!GUIEngine::MayReadPath(texturename)) {
+		lua_pushboolean(L, false);
+		return 1;
+	}
 
 	bool tile_image = false;
 	bool retval     = false;
@@ -512,6 +518,9 @@ int ModApiMainMenu::l_get_games(lua_State *L)
 int ModApiMainMenu::l_get_content_info(lua_State *L)
 {
 	std::string path = luaL_checkstring(L, 1);
+	if (!GUIEngine::MayReadPath(path)) {
+		return 0;
+	}
 
 	ContentSpec spec;
 	spec.path = path;
@@ -588,6 +597,11 @@ int ModApiMainMenu::l_create_world(lua_State *L)
 			"worlds" + DIR_DELIM
 			+ name;
 
+	if (!GUIEngine::MayModifyPath(path)) {
+		lua_pushstring(L, "Failed to write to world directory: blocked by Lua sandbox");
+		return 1;
+	}
+
 	std::vector<SubgameSpec> games = getAvailableGames();
 
 	if ((gameidx >= 0) &&
@@ -615,6 +629,10 @@ int ModApiMainMenu::l_delete_world(lua_State *L)
 		return 1;
 	}
 	const WorldSpec &spec = worlds[world_id];
+	if (!GUIEngine::MayModifyPath(spec.path)) {
+		lua_pushstring(L, "Failed to delete world: blocked by Lua sandbox");
+		return 1;
+	}
 	if (!fs::RecursiveDelete(spec.path)) {
 		lua_pushstring(L, "Failed to delete world");
 		return 1;
@@ -652,7 +670,6 @@ int ModApiMainMenu::l_get_mapgen_names(lua_State *L)
 
 	return 1;
 }
-
 
 /******************************************************************************/
 int ModApiMainMenu::l_get_modpath(lua_State *L)
@@ -708,7 +725,7 @@ int ModApiMainMenu::l_get_cache_path(lua_State *L)
 int ModApiMainMenu::l_create_dir(lua_State *L) {
 	const char *path = luaL_checkstring(L, 1);
 
-	if (ModApiMainMenu::mayModifyPath(path)) {
+	if (GUIEngine::MayModifyPath(path)) {
 		lua_pushboolean(L, fs::CreateAllDirs(path));
 		return 1;
 	}
@@ -724,7 +741,7 @@ int ModApiMainMenu::l_delete_dir(lua_State *L)
 
 	std::string absolute_path = fs::RemoveRelativePathComponents(path);
 
-	if (ModApiMainMenu::mayModifyPath(absolute_path)) {
+	if (GUIEngine::MayModifyPath(absolute_path)) {
 		lua_pushboolean(L, fs::RecursiveDelete(absolute_path));
 		return 1;
 	}
@@ -746,17 +763,21 @@ int ModApiMainMenu::l_copy_dir(lua_State *L)
 		keep_source = readParam<bool>(L,3);
 	}
 
+	if (!GUIEngine::MayReadPath(source)) {
+		lua_pushboolean(L, false);
+		return 1;
+	}
+
 	std::string absolute_destination = fs::RemoveRelativePathComponents(destination);
 	std::string absolute_source = fs::RemoveRelativePathComponents(source);
 
-	if ((ModApiMainMenu::mayModifyPath(absolute_destination))) {
+	if (GUIEngine::MayModifyPath(absolute_destination)) {
 		bool retval = fs::CopyDir(absolute_source,absolute_destination);
 
-		if (retval && (!keep_source)) {
-
+		if (retval && !keep_source && GUIEngine::MayModifyPath(source)) {
 			retval &= fs::RecursiveDelete(absolute_source);
 		}
-		lua_pushboolean(L,retval);
+		lua_pushboolean(L, retval);
 		return 1;
 	}
 	lua_pushboolean(L,false);
@@ -767,11 +788,15 @@ int ModApiMainMenu::l_copy_dir(lua_State *L)
 int ModApiMainMenu::l_extract_zip(lua_State *L)
 {
 	const char *zipfile	= luaL_checkstring(L, 1);
-	const char *destination	= luaL_checkstring(L, 2);
+	if (!GUIEngine::MayReadPath(zipfile)) {
+		lua_pushboolean(L, false);
+		return 1;
+	}
 
+	const char *destination	= luaL_checkstring(L, 2);
 	std::string absolute_destination = fs::RemoveRelativePathComponents(destination);
 
-	if (ModApiMainMenu::mayModifyPath(absolute_destination)) {
+	if (GUIEngine::MayModifyPath(absolute_destination)) {
 		fs::CreateAllDirs(absolute_destination);
 
 		io::IFileSystem *fs = RenderingEngine::get_filesystem();
@@ -859,36 +884,11 @@ int ModApiMainMenu::l_get_mainmenu_path(lua_State *L)
 }
 
 /******************************************************************************/
-bool ModApiMainMenu::mayModifyPath(const std::string &path)
-{
-	if (fs::PathStartsWith(path, fs::TempPath()))
-		return true;
-
-	if (fs::PathStartsWith(path, fs::RemoveRelativePathComponents(porting::path_user + DIR_DELIM "games")))
-		return true;
-
-	if (fs::PathStartsWith(path, fs::RemoveRelativePathComponents(porting::path_user + DIR_DELIM "mods")))
-		return true;
-
-	if (fs::PathStartsWith(path, fs::RemoveRelativePathComponents(porting::path_user + DIR_DELIM "textures")))
-		return true;
-
-	if (fs::PathStartsWith(path, fs::RemoveRelativePathComponents(porting::path_user + DIR_DELIM "worlds")))
-		return true;
-
-	if (fs::PathStartsWith(path, fs::RemoveRelativePathComponents(porting::path_cache)))
-		return true;
-
-	return false;
-}
-
-
-/******************************************************************************/
 int ModApiMainMenu::l_may_modify_path(lua_State *L)
 {
 	const char *target = luaL_checkstring(L, 1);
 	std::string absolute_destination = fs::RemoveRelativePathComponents(target);
-	lua_pushboolean(L, ModApiMainMenu::mayModifyPath(absolute_destination));
+	lua_pushboolean(L, GUIEngine::MayModifyPath(absolute_destination));
 	return 1;
 }
 
@@ -924,7 +924,7 @@ int ModApiMainMenu::l_download_file(lua_State *L)
 	//check path
 	std::string absolute_destination = fs::RemoveRelativePathComponents(target);
 
-	if (ModApiMainMenu::mayModifyPath(absolute_destination)) {
+	if (GUIEngine::MayModifyPath(absolute_destination)) {
 		if (GUIEngine::downloadFile(url,absolute_destination)) {
 			lua_pushboolean(L,true);
 			return 1;

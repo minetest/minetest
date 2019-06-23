@@ -26,6 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "lua_api/l_util.h"
 #include "lua_api/l_settings.h"
 #include "log.h"
+#include "gui/guiEngine.h"
 
 extern "C" {
 #include "lualib.h"
@@ -40,6 +41,8 @@ MainMenuScripting::MainMenuScripting(GUIEngine* guiengine):
 	setGuiEngine(guiengine);
 
 	SCRIPTAPI_PRECHECKHEADER
+
+	initializeSecurity();
 
 	lua_getglobal(L, "core");
 	int top = lua_gettop(L);
@@ -95,4 +98,3 @@ unsigned int MainMenuScripting::queueAsync(const std::string &serialized_func,
 {
 	return asyncEngine.queueAsyncJob(serialized_func, serialized_param);
 }
-

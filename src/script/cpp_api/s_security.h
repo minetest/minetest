@@ -56,7 +56,7 @@ public:
 	static bool safeLoadFile(lua_State *L, const char *path, const char *display_name = NULL);
 	// Checks if mods are allowed to read (and optionally write) to the path
 	static bool checkPath(lua_State *L, const char *path, bool write_required,
-			bool *write_allowed=NULL);
+			bool *write_allowed=nullptr);
 
 private:
 	// Syntax: "sl_" <Library name or 'g' (global)> '_' <Function name>

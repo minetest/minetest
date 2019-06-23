@@ -24,6 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "server.h"
 #include "client/client.h"
 #include "settings.h"
+#include "gui/guiEngine.h"
 
 #include <cerrno>
 #include <string>
@@ -501,6 +502,12 @@ bool ScriptApiSecurity::checkPath(lua_State *L, const char *path,
 	lua_rawgeti(L, LUA_REGISTRYINDEX, CUSTOM_RIDX_SCRIPTAPI);
 	ScriptApiBase *script = (ScriptApiBase *) lua_touserdata(L, -1);
 	lua_pop(L, 1);
+
+	// Mainmenu has read access to all of Minetest's files, but writing is restricted.
+	if (script->getType() == ScriptingType::MainMenu) {
+		return GUIEngine::CheckAbsPath(abs_path, write_allowed);
+	}
+
 	const IGameDef *gamedef = script->getGameDef();
 	if (!gamedef)
 		return false;

@@ -22,6 +22,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "cpp_api/s_base.h"
 #include "cpp_api/s_mainmenu.h"
 #include "cpp_api/s_async.h"
+#include "cpp_api/s_security.h"
+
 
 /*****************************************************************************/
 /* Scripting <-> Main Menu Interface                                         */
@@ -29,7 +31,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 class MainMenuScripting
 		: virtual public ScriptApiBase,
-		  public ScriptApiMainMenu
+		  public ScriptApiMainMenu,
+		  public ScriptApiSecurity
+
 {
 public:
 	MainMenuScripting(GUIEngine* guiengine);

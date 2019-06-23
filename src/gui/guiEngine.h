@@ -178,6 +178,36 @@ public:
 	unsigned int queueAsync(const std::string &serialized_fct,
 			const std::string &serialized_params);
 
+	/**
+	 * Checks if a path may be read or modified.
+	 * Paths in the temp directory or the user
+	 * games, mods, textures, or worlds directories may be modified.
+	 *
+	 * Path **must** be an absolute path with no relative components
+	 *
+	 * @param path path to check
+	 * @param write_allowed pointer to return write status
+	 * @return true if the path may be read
+	 */
+	static bool CheckAbsPath(const std::string &path, bool *write_allowed=nullptr);
+
+	/**
+	 * Checks if a (relative or absolute) path may be modified.
+	 * Paths in the temp directory or the user
+	 * games, mods, textures, or worlds directories may be modified.
+	 * @param path path to check
+	 * @return true if the path may be modified
+	 */
+	static bool MayModifyPath(const std::string &path);
+
+	/**
+	 * Checks if a (relative or absolute) path may be read.
+	 * Paths in the temp directory or the user directories may be read
+	 * @param path path to check
+	 * @return true if the path may be read
+	 */
+	static bool MayReadPath(const std::string &path);
+
 private:
 
 	/** find and run the main menu script */
