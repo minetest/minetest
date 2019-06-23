@@ -503,10 +503,12 @@ bool ScriptApiSecurity::checkPath(lua_State *L, const char *path,
 	ScriptApiBase *script = (ScriptApiBase *) lua_touserdata(L, -1);
 	lua_pop(L, 1);
 
+#ifndef SERVER
 	// Mainmenu has read access to all of Minetest's files, but writing is restricted.
 	if (script->getType() == ScriptingType::MainMenu) {
 		return GUIEngine::CheckAbsPath(abs_path, write_allowed);
 	}
+#endif
 
 	const IGameDef *gamedef = script->getGameDef();
 	if (!gamedef)
