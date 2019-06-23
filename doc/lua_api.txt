@@ -1881,7 +1881,8 @@ of the menu or container. `W` and `H` are its width and height values.
 
 If the new system is enabled, all elements have unified coordinates for all
 elements with no padding or spacing in between. This is highly recommended
-for new forms. See `real_coordinates[<bool>]`.
+for new forms. See `real_coordinates[<bool>]` and `Migrating to Real
+Coordinates`.
 
 Inventories with a `player:<name>` inventory location are only sent to the
 player named `<name>`.
@@ -1963,6 +1964,8 @@ Elements
   (if present), the form size will use the new coordinate system.
 * **Note**: Formspec prepends are not affected by the coordinates in the main form.
   They must enable it explicitly.
+* For information on converting forms to the new coordinate system, see `Migrating
+  to Real Coordinates`.
 
 ### `container[<X>,<Y>]`
 
@@ -2356,6 +2359,44 @@ Elements
 
 **Note**: do _not_ use a element name starting with `key_`; those names are
 reserved to pass key press events to formspec!
+
+
+
+
+Migrating to Real Coordinates
+=============================
+
+In the old system, positions included padding and spacing. Padding is a gap between
+the formspec window edges and content, and spacing is the gaps between items. For
+example, two `1x1` elements at `0,0` and `1,1` would have a spacing of `5/4` between them,
+and a padding of `3/8` from the formspec edge. It may be easiest to recreate old layouts
+in the new coordinate system from scratch.
+
+To recreate an old layout with padding, you'll need to pass the positions and sizes
+through the following formula to re-introduce padding:
+
+```
+pos = (oldpos + 1)*spacing + padding
+where
+    padding = 3/8
+    spacing = 5/4
+```
+
+You'll need to change the `size[]` tag like this:
+
+```
+size = (oldsize-1)*spacing + padding*2 + 1
+```
+
+A few elements had random offsets in the old system. Here is a table which shows these
+offsets when migrating:
+
+| Element |  Position  |  Size   | Notes
+|---------|------------|---------|-------
+| box     | +0.3, +0.1 | 0, -0.4 |
+| button  |            |         | Buttons now support height, so you will need to set h=1 and reposition if h!=1 before
+| list    |            |         | Note: spacing is now 0.25 for both directions, meaning lists will be taller in height
+| label   |            |  +0.3   | The first line of text is now positioned centered exactly at the position specified
 
 
 
