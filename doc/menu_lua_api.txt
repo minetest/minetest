@@ -66,6 +66,10 @@ core.get_video_drivers()
 core.get_mapgen_names([include_hidden=false]) -> table of map generator algorithms
     registered in the core (possible in async calls)
 core.get_cache_path() -> path of cache
+core.get_secure_settings()
+^ Settings() object which can write to `secure.` settings
+^ Will return `nil` if file is not permitted access.
+  Can only be requested in `<mainmenudir>/dlg_settings_advanced.lua`
 
 Formspec:
 core.update_formspec(formspec)
