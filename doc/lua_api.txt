@@ -2392,7 +2392,7 @@ offsets when migrating:
 |---------|------------|---------|-------
 | box     | +0.3, +0.1 | 0, -0.4 |
 | button  |            |         | Buttons now support height, so you will need to set h=1 and reposition if h!=1 before
-| list    |            |         | Note: spacing is now 0.25 for both directions, meaning lists will be taller in height
+| list    |            |         | Spacing is now 0.25 for both directions, meaning lists will be taller in height
 | label   |            |  +0.3   | The first line of text is now positioned centered exactly at the position specified
 
 
