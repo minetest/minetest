@@ -1,6 +1,7 @@
 if (BUILD_CLIENT)
 	set(client_irrlicht_changes_SRCS
 		${CMAKE_CURRENT_SOURCE_DIR}/static_text.cpp
+		${CMAKE_CURRENT_SOURCE_DIR}/CTextSpriteSceneNode.cpp
 	)
 
 	if (ENABLE_FREETYPE)

@@ -25,6 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "object_properties.h"
 #include "itemgroup.h"
 #include "constants.h"
+#include "irrlicht_changes/CTextSpriteSceneNode.h"
 #include <cassert>
 
 class Camera;
@@ -82,6 +83,7 @@ private:
 	scene::IAnimatedMeshSceneNode *m_animated_meshnode = nullptr;
 	WieldMeshSceneNode *m_wield_meshnode = nullptr;
 	scene::IBillboardSceneNode *m_spritenode = nullptr;
+	scene::CTextSpriteSceneNode *m_textspritenode = nullptr;
 	scene::IDummyTransformationSceneNode *m_matrixnode = nullptr;
 	Nametag *m_nametag = nullptr;
 	v3f m_position = v3f(0.0f, 10.0f * BS, 0);
