@@ -2365,14 +2365,17 @@ Elements
       If the max is equal to the min, the scrollbar will be disabled.
 * `smallstep=<int>`
     * Sets scrollbar step value when the arrows are clicked or the mouse wheel is
-      scrolled, defaults to `10`.
+      scrolled.
+    * If this is set to a negative number, the value will be reset to `10`.
 * `largestep=<int>`
-    * Sets scrollbar step value when the bar itself is clicked, defaults to `100`.
+    * Sets scrollbar step value when the bar itself is clicked.
+    * If this is set to a negative number, the value will be reset to `100`.
 * `thumbsize=<int>`
     * Sets size of the thumb on the scrollbar. Size is calculated in the number of
-      units the scrollbar spans out of the range of the scrollbar values.
-      Example: If a scrollbar has a min of 1 and a max of 1000, a thumbsize of 10
+      units the thumb spans out of the range of the scrollbar values.
+    * Example: If a scrollbar has a `min` of 1 and a `max` of 100, a thumbsize of 10
       would span a tenth of the scrollbar space.
+    * If this is set to zero or less, the value will be reset to `1`.
 
 ### `table[<X>,<Y>;<W>,<H>;<name>;<cell 1>,<cell 2>,...,<cell n>;<selected idx>]`
 

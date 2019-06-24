@@ -27,6 +27,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "inventorymanager.h"
 #include "modalMenu.h"
 #include "guiTable.h"
+#include "guiScrollBar.h"
 #include "network/networkprotocol.h"
 #include "client/joystick_controller.h"
 #include "util/string.h"
@@ -400,11 +401,11 @@ private:
 		GUITable::TableColumns table_columns;
 
 		struct {
-			int max = 1000;
-			int min = 0;
-			int smallStep = 10;
-			int largeStep = 100;
-			int thumbSize = 1;
+			s32 max = 1000;
+			s32 min = 0;
+			s32 smallStep = 10;
+			s32 largeStep = 100;
+			s32 thumbSize = 1;
 		} scrollBarOptions;
 
 		// used to restore table selection/scroll/treeview state
@@ -461,7 +462,7 @@ private:
 	bool parseVersionDirect(const std::string &data);
 	bool parseSizeDirect(parserData* data, const std::string &element);
 	void parseScrollBar(parserData* data, const std::string &element);
-	void parseScrollBarOptions(parserData* data, const std::string &element);
+	void parseScrollBarOptions(parserData * data, const std::string &element);
 	bool parsePositionDirect(parserData *data, const std::string &element);
 	void parsePosition(parserData *data, const std::string &element);
 	bool parseAnchorDirect(parserData *data, const std::string &element);

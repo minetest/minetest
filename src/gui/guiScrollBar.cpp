@@ -272,7 +272,7 @@ void GUIScrollBar::setPos(const s32 &pos)
 
 	f32 f = core::isnotzero(range()) ? (f32(thumb_area) - f32(thumb_size)) / range()
 					 : 1.0f;
-	draw_center = s32((f32(scroll_pos) * f) + (f32(thumb_size) * 0.5f)) + border_size;
+	draw_center = s32((f32(scroll_pos - min) * f) + (f32(thumb_size) * 0.5f)) + border_size;
 }
 
 void GUIScrollBar::setSmallStep(const s32 &step)

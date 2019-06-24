@@ -143,6 +143,10 @@ GUIFormSpecMenu::~GUIFormSpecMenu()
 		tooltip_rect_it.first->drop();
 	}
 
+	for (auto &scrollbar_it : m_scrollbars) {
+		scrollbar_it.second->drop();
+	}
+
 	delete m_selected_item;
 	delete m_form_src;
 	delete m_text_dst;
@@ -649,57 +653,47 @@ void GUIFormSpecMenu::parseScrollBarOptions(parserData* data, const std::string 
 {
 	std::vector<std::string> parts = split(element, ';');
 
-	if (parts.size() > 0) {
-		for (unsigned int i = 0; i < parts.size(); i++) {
-
-			std::vector<std::string> options = split(parts[i], '=');
-
-			if (options.size() != 2) {
-				warningstream << "Invalid scrollbaroptions option syntax: '" <<
-					element << "'" << std::endl;
-				continue; // Go to next option
-			}
-
-			int value = stoi(options[1]);
-
-			if (options[0] == "max") {
-				data->scrollBarOptions.max = value;
-				continue;
-			}
-			if (options[0] == "min") {
-				data->scrollBarOptions.min = value;
-				continue;
-			}
-			if (options[0] == "smallstep") {
-				if (value < 0)
-					data->scrollBarOptions.smallStep = 10;
-				else
-					data->scrollBarOptions.smallStep = value;
-				continue;
-			}
-			if (options[0] == "largestep") {
-				if (value < 0)
-					data->scrollBarOptions.largeStep = 100;
-				else
-					data->scrollBarOptions.largeStep = value;
-				continue;
-			}
-			if (options[0] == "thumbsize") {
-				if (value < 0)
-					data->scrollBarOptions.thumbSize = 1;
-				else
-					data->scrollBarOptions.thumbSize = value;
-				continue;
-			}
-
-			warningstream << "Invalid scrollbaroptions option(" << options[0] <<
-				"): '" << element << "'" << std::endl;
-		}
+	if (parts.size() == 0) {
+		warningstream << "Invalid scrollbaroptions element(" << parts.size() << "): '" <<
+			element << "'"  << std::endl;
 		return;
 	}
 
-	warningstream << "Invalid scrollbaroptions element(" << parts.size() << "): '" <<
-		element << "'"  << std::endl;
+	for (const std::string &i : parts) {
+		std::vector<std::string> options = split(i, '=');
+
+		if (options.size() != 2) {
+			warningstream << "Invalid scrollbaroptions option syntax: '" <<
+				element << "'" << std::endl;
+			continue; // Go to next option
+		}
+
+		int value = stoi(options[1]);
+
+		if (options[0] == "max") {
+			data->scrollBarOptions.max = value;
+			continue;
+		}
+		if (options[0] == "min") {
+			data->scrollBarOptions.min = value;
+			continue;
+		}
+		if (options[0] == "smallstep") {
+			data->scrollBarOptions.smallStep = value < 0 ? 10 : value;
+			continue;
+		}
+		if (options[0] == "largestep") {
+			data->scrollBarOptions.largeStep = value < 0 ? 100 : value;
+			continue;
+		}
+		if (options[0] == "thumbsize") {
+			data->scrollBarOptions.thumbSize = value <= 0 ? 1 : value;
+			continue;
+		}
+
+		warningstream << "Invalid scrollbaroptions option(" << options[0] <<
+			"): '" << element << "'" << std::endl;
+	}
 }
 
 void GUIFormSpecMenu::parseImage(parserData* data, const std::string &element)
