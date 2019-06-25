@@ -84,11 +84,19 @@ void ClientScripting::InitializeModApi(lua_State *L, int top)
 
 void ClientScripting::on_client_ready(LocalPlayer *localplayer)
 {
-	lua_State *L = getStack();
-	LuaLocalPlayer::create(L, localplayer);
+	static thread_local bool created = false;
+	if (!created) {
+		lua_State *L = getStack();
+		LuaLocalPlayer::create(L, localplayer);
+		created = true;
+	}
 }
 
 void ClientScripting::on_camera_ready(Camera *camera)
 {
-	LuaCamera::create(getStack(), camera);
+	static thread_local bool created = false;
+	if (!created) {
+		LuaCamera::create(getStack(), camera);
+		created = true;
+	}
 }

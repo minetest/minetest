@@ -415,7 +415,7 @@ void Client::handleCommand_ChatMessage(NetworkPacket *pkt)
 	chatMessage->type = (ChatMessageType) message_type;
 
 	// @TODO send this to CSM using ChatMessage object
-	if (moddingEnabled() && m_script->on_receiving_message(
+	if (modsLoaded() && m_script->on_receiving_message(
 			wide_to_utf8(chatMessage->message))) {
 		// Message was consumed by CSM and should not be handled by client
 		delete chatMessage;
@@ -532,9 +532,8 @@ void Client::handleCommand_HP(NetworkPacket* pkt)
 
 	player->hp = hp;
 
-	if (moddingEnabled()) {
+	if (modsLoaded())
 		m_script->on_hp_modification(hp);
-	}
 
 	if (hp < oldhp) {
 		// Add to ClientEvent queue

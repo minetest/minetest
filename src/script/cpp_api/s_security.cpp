@@ -264,6 +264,7 @@ void ScriptApiSecurity::initializeSecurityClient()
 	};
 	static const char *debug_whitelist[] = {
 		"getinfo",
+		"traceback"
 	};
 
 #if USE_LUAJIT

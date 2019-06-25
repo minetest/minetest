@@ -99,9 +99,9 @@ bool Camera::successfullyCreated(std::string &error_message)
 		error_message.clear();
 	}
 
-	if (g_settings->getBool("enable_client_modding")) {
+	if (m_client->modsLoaded())
 		m_client->getScript()->on_camera_ready(this);
-	}
+
 	return error_message.empty();
 }
 
