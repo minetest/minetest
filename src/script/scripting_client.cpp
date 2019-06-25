@@ -84,8 +84,7 @@ void ClientScripting::InitializeModApi(lua_State *L, int top)
 
 void ClientScripting::on_client_ready(LocalPlayer *localplayer)
 {
-	lua_State *L = getStack();
-	LuaLocalPlayer::create(L, localplayer);
+	LuaLocalPlayer::create(getStack(), localplayer);
 }
 
 void ClientScripting::on_camera_ready(Camera *camera)

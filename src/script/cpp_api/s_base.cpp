@@ -232,6 +232,13 @@ void ScriptApiBase::loadModFromMemory(const std::string &mod_name)
 void ScriptApiBase::runCallbacksRaw(int nargs,
 		RunCallbacksMode mode, const char *fxn)
 {
+#ifndef SERVER
+	// Hard fail for bad guarded callbacks
+	// Only run callbacks when the scripting enviroment is loaded
+	FATAL_ERROR_IF(m_type == ScriptingType::Client &&
+			!getClient()->modsLoaded(), fxn);
+#endif
+
 #ifdef SCRIPTAPI_LOCK_DEBUG
 	assert(m_lock_recursion_count > 0);
 #endif

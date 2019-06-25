@@ -108,15 +108,6 @@ Client::Client(
 		m_minimap = new Minimap(this);
 	}
 	m_cache_save_interval = g_settings->getU16("server_map_save_interval");
-
-	m_modding_enabled = g_settings->getBool("enable_client_modding");
-	// Only create the client script environment if client scripting is enabled by the
-	// client.
-	if (m_modding_enabled) {
-		m_script = new ClientScripting(this);
-		m_env.setScript(m_script);
-		m_script->setEnv(&m_env);
-	}
 }
 
 void Client::loadMods()
@@ -124,9 +115,8 @@ void Client::loadMods()
 	// Don't load mods twice.
 	// If client scripting is disabled by the client, don't load builtin or
 	// client-provided mods.
-	if (m_mods_loaded || !m_modding_enabled) {
+	if (m_mods_loaded || !g_settings->getBool("enable_client_modding"))
 		return;
-	}
 
 	// If client scripting is disabled by the server, don't load builtin or
 	// client-provided mods.
@@ -135,10 +125,12 @@ void Client::loadMods()
 	if (checkCSMRestrictionFlag(CSMRestrictionFlags::CSM_RF_LOAD_CLIENT_MODS)) {
 		warningstream << "Client-provided mod loading is disabled by server." <<
 			std::endl;
-		// This line is needed because builtin is not loaded
-		m_modding_enabled = false;
 		return;
 	}
+
+	m_script = new ClientScripting(this);
+	m_env.setScript(m_script);
+	m_script->setEnv(&m_env);
 
 	// Load builtin
 	scanModIntoMemory(BUILTIN_MOD_NAME, getBuiltinLuaPath());
@@ -185,9 +177,15 @@ void Client::loadMods()
 	for (const ModSpec &mod : m_mods)
 		m_script->loadModFromMemory(mod.name);
 
+	// Mods are done loading. Unlock callbacks
+	m_mods_loaded = true;
+
 	// Run a callback when mods are loaded
 	m_script->on_mods_loaded();
-	m_mods_loaded = true;
+	if (m_state == LC_Ready)
+		m_script->on_client_ready(m_env.getLocalPlayer());
+	if (m_camera)
+		m_script->on_camera_ready(m_camera);
 }
 
 bool Client::checkBuiltinIntegrity()
@@ -239,7 +237,7 @@ const ModSpec* Client::getModSpec(const std::string &modname) const
 void Client::Stop()
 {
 	m_shutdown = true;
-	if (m_modding_enabled)
+	if (m_mods_loaded)
 		m_script->on_shutdown();
 	//request all client managed threads to stop
 	m_mesh_update_thread.stop();
@@ -249,7 +247,7 @@ void Client::Stop()
 		m_localdb->endSave();
 	}
 
-	if (m_modding_enabled)
+	if (m_mods_loaded)
 		delete m_script;
 }
 
@@ -1497,7 +1495,7 @@ void Client::typeChatMessage(const std::wstring &message)
 		return;
 
 	// If message was consumed by script API, don't send it to server
-	if (m_modding_enabled && m_script->on_sending_message(wide_to_utf8(message)))
+	if (m_mods_loaded && m_script->on_sending_message(wide_to_utf8(message)))
 		return;
 
 	// Send to others
@@ -1693,9 +1691,8 @@ void Client::afterContentReceived()
 	m_state = LC_Ready;
 	sendReady();
 
-	if (g_settings->getBool("enable_client_modding")) {
+	if (m_mods_loaded)
 		m_script->on_client_ready(m_env.getLocalPlayer());
-	}
 
 	text = wgettext("Done!");
 	RenderingEngine::draw_load_screen(text, guienv, m_tsrc, 0, 100);

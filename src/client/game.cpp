@@ -184,7 +184,7 @@ struct LocalFormspecHandler : public TextDest
 			return;
 		}
 
-		if (m_client && m_client->moddingEnabled())
+		if (m_client && m_client->modsLoaded())
 			m_client->getScript()->on_formspec_input(m_formname, fields);
 	}
 
@@ -1870,7 +1870,7 @@ void Game::processKeyInput()
 	} else if (wasKeyDown(KeyType::CMD)) {
 		openConsole(0.2, L"/");
 	} else if (wasKeyDown(KeyType::CMD_LOCAL)) {
-		if (client->moddingEnabled())
+		if (client->modsLoaded())
 			openConsole(0.2, L".");
 		else
 			m_game_ui->showStatusText(wgettext("Client side scripting is disabled"));
@@ -2026,7 +2026,7 @@ void Game::openInventory()
 	InventoryLocation inventoryloc;
 	inventoryloc.setCurrentPlayer();
 
-	if (!client->moddingEnabled()
+	if (!client->modsLoaded()
 			|| !client->getScript()->on_inventory_open(fs_src->m_client->getInventory(inventoryloc))) {
 		TextDest *txt_dst = new TextDestPlayerInventory(client);
 		auto *&formspec = m_game_ui->updateFormspec("");
@@ -2516,9 +2516,8 @@ void Game::handleClientEvent_None(ClientEvent *event, CameraOrientation *cam)
 
 void Game::handleClientEvent_PlayerDamage(ClientEvent *event, CameraOrientation *cam)
 {
-	if (client->moddingEnabled()) {
+	if (client->modsLoaded())
 		client->getScript()->on_damage_taken(event->player_damage.amount);
-	}
 
 	// Damage flash and hurt tilt are not used at death
 	if (client->getHP() > 0) {
@@ -2546,7 +2545,7 @@ void Game::handleClientEvent_Deathscreen(ClientEvent *event, CameraOrientation *
 {
 	// If client scripting is enabled, deathscreen is handled by CSM code in
 	// builtin/client/init.lua
-	if (client->moddingEnabled())
+	if (client->modsLoaded())
 		client->getScript()->on_death();
 	else
 		showDeathFormspec();
@@ -3033,9 +3032,8 @@ void Game::processPlayerInteraction(f32 dtime, bool show_hud, bool show_debug)
 	else
 		runData.repeat_rightclick_timer = 0;
 
-
 	if (selected_def.usable && input->getLeftState()) {
-		if (input->getLeftClicked() && (!client->moddingEnabled()
+		if (input->getLeftClicked() && (!client->modsLoaded()
 				|| !client->getScript()->on_item_use(selected_item, pointed)))
 			client->interact(INTERACT_USE, pointed);
 	} else if (pointed.type == POINTEDTHING_NODE) {
@@ -3240,7 +3238,7 @@ void Game::handlePointingAtNode(const PointedThing &pointed,
 				soundmaker->m_player_rightpunch_sound =
 						def.sound_place;
 
-				if (client->moddingEnabled())
+				if (client->modsLoaded())
 					client->getScript()->on_placenode(pointed, def);
 			} else {
 				soundmaker->m_player_rightpunch_sound =
@@ -3496,7 +3494,7 @@ void Game::handleDigging(const PointedThing &pointed, const v3s16 &nodepos,
 	if (!runData.digging) {
 		infostream << "Started digging" << std::endl;
 		runData.dig_instantly = runData.dig_time_complete == 0;
-		if (client->moddingEnabled() && client->getScript()->on_punchnode(nodepos, n))
+		if (client->modsLoaded() && client->getScript()->on_punchnode(nodepos, n))
 			return;
 		client->interact(INTERACT_START_DIGGING, pointed);
 		runData.digging = true;
@@ -3556,7 +3554,7 @@ void Game::handleDigging(const PointedThing &pointed, const v3s16 &nodepos,
 		bool is_valid_position;
 		MapNode wasnode = map.getNode(nodepos, &is_valid_position);
 		if (is_valid_position) {
-			if (client->moddingEnabled() &&
+			if (client->modsLoaded() &&
 					client->getScript()->on_dignode(nodepos, wasnode)) {
 				return;
 			}
