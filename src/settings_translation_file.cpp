@@ -350,7 +350,7 @@ fake_function() {
 	gettext("Desynchronize block animation");
 	gettext("Whether node texture animations should be desynchronized per mapblock.");
 	gettext("Maximum hotbar width");
-	gettext("Maximum proportion of current window to be used for hotbar.\nUseful if there's something to be displayed right or left of hotbar.");
+	gettext("Maximum proportion of current window to be used for hotbar.\nUseful if there's something to be displayed right or left of the hotbar.");
 	gettext("HUD scale factor");
 	gettext("Modifies the size of the hudbar elements.");
 	gettext("Mesh cache");
