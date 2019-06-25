@@ -7,8 +7,6 @@ ignore = {
 	"432", -- Shadowing an upvalue argument
 }
 
-unused_args = false
-
 read_globals = {
 	"ItemStack",
 	"INIT",

@@ -371,10 +371,10 @@ core.register_chatcommand("teleport", {
 
 		local p = {}
 		p.x, p.y, p.z = string.match(param, "^([%d.-]+)[, ] *([%d.-]+)[, ] *([%d.-]+)$")
+		p.x = tonumber(p.x)
+		p.y = tonumber(p.y)
+		p.z = tonumber(p.z)
 		if p.x and p.y and p.z then
-			p.x = tonumber(p.x)
-			p.y = tonumber(p.y)
-			p.z = tonumber(p.z)
 
 			local lm = 31000
 			if p.x < -lm or p.x > lm or p.y < -lm or p.y > lm or p.z < -lm or p.z > lm then
