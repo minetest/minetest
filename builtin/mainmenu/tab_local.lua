@@ -34,31 +34,8 @@ local function get_formspec(tabview, name, tabdata)
 		"box[11,-0.375;4.125,9;#ACACAC33]",
 		--"field[1.75,0;5.125,0.8;query;;", query, "]",
 		--"button[6.875,0;1.5,0.8;search;", fgettext("Search"), "]",
-		"textlist[0,0;10.625,7.2;sp_worlds;", menu_render_worldlist(), ";", index, "]",
+		"textlist[0,0;10.625,8.25;sp_worlds;", menu_render_worldlist(), ";", index, "]",
 	}
-
-	if index > 0 then
-		retval[#retval + 1] = "container[0,7.45]"
-		retval[#retval + 1] = "button[0,0;3.375,0.8;world_delete;"
-		retval[#retval + 1] = fgettext("Delete")
-		retval[#retval + 1] = "]"
-		retval[#retval + 1] = "button[3.625,0;3.375,0.8;world_configure;"
-		retval[#retval + 1] = fgettext("Configure")
-		retval[#retval + 1] = "]"
-		retval[#retval + 1] = "style[play;bgcolor=#53AC56]"
-		retval[#retval + 1] = "button[7.25,0;3.375,0.8;play;"
-		retval[#retval + 1] = fgettext("Play World")
-		retval[#retval + 1] = "]"
-	--	"button[4,3.95;2.6,1;world_delete;", fgettext("Delete"), "]",
-	--"button[6.5,3.95;2.8,1;world_configure;", fgettext("Configure"), "]",
-		retval[#retval + 1] = "container_end[]"
-	else
-		retval[#retval + 1] = "container[0,7.45]"
-		retval[#retval + 1] = "box[0,0;2.625,0.8;#333]"
-		retval[#retval + 1] = "box[2.875,0;2.625,0.8;#333]"
-		retval[#retval + 1] = "box[5.75,0;2.625,0.8;#333]"
-		retval[#retval + 1] = "container_end[]"
-	end
 
 	do
 		retval[#retval + 1] = "container[11.375,0.2]"
@@ -105,7 +82,7 @@ local function get_formspec(tabview, name, tabdata)
 			if bind_addr ~= nil and bind_addr ~= "" then
 				retval[#retval + 1] = "field[0,2.2;2.25,0.5;te_serveraddr;" .. fgettext("Bind Address")
 				retval[#retval + 1] = ";"
-				retval[#retval + 1] = ore.formspec_escape(core.settings:get("bind_address"))
+				retval[#retval + 1] = core.formspec_escape(core.settings:get("bind_address"))
 				retval[#retval + 1] = "]"
 				retval[#retval + 1] = "field[2.3,2.2;1.25,0.5;te_serverport;"
 				retval[#retval + 1] = fgettext("Port")
@@ -121,6 +98,31 @@ local function get_formspec(tabview, name, tabdata)
 			end
 			retval[#retval + 1] = "container_end[]"
 		end
+
+		if index > 0 then
+			retval[#retval + 1] = "container[0,5.15]"
+			retval[#retval + 1] = "button[0,0;3.375,0.8;world_delete;"
+			retval[#retval + 1] = fgettext("Delete")
+			retval[#retval + 1] = "]"
+			retval[#retval + 1] = "button[0,1.05;3.375,0.8;world_configure;"
+			retval[#retval + 1] = fgettext("Configure")
+			retval[#retval + 1] = "]"
+			retval[#retval + 1] = "style[play;bgcolor=#53AC56]"
+			retval[#retval + 1] = "button[0,2.1;3.375,0.8;play;"
+			retval[#retval + 1] = fgettext("Play Game")
+			retval[#retval + 1] = "]"
+			--	"button[4,3.95;2.6,1;world_delete;", fgettext("Delete"), "]",
+			--"button[6.5,3.95;2.8,1;world_configure;", fgettext("Configure"), "]",
+			retval[#retval + 1] = "container_end[]"
+		else
+			retval[#retval + 1] = "container[0,5.15]"
+			retval[#retval + 1] = "box[0,0;2.625,0.8;#333]"
+			retval[#retval + 1] = "box[0,1.05;2.625,0.8;#333]"
+			retval[#retval + 1] = "box[0,2.1;2.625,0.8;#333]"
+			retval[#retval + 1] = "container_end[]"
+		end
+
+
 		retval[#retval + 1] = "container_end[]"
 	end
 
@@ -283,7 +285,7 @@ end
 --------------------------------------------------------------------------------
 return {
 	name = "local",
-	caption = fgettext("Load World"),
+	caption = fgettext("Load Game"),
 	cbf_formspec = get_formspec,
 	cbf_button_handler = main_button_handler,
 	on_change = on_change

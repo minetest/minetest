@@ -61,7 +61,7 @@ else
 
 	tabs.new_game = {
 		name = "new",
-		caption = fgettext("New World"),
+		caption = fgettext("New Game"),
 		show = function(_, _, this)
 			local create_world_dlg = create_create_world_dlg(true)
 			create_world_dlg:set_parent(this)
@@ -138,7 +138,7 @@ local function init_globals()
 	end
 
 	-- Create main tabview
-	local tv_main = tabview_create("maintab", {x = 15.5, y = 9}, {x = 0, y = 0}, tabview_layouts.mainmenu))
+	local tv_main = tabview_create("maintab", {x = 15.5, y = 9}, {x = 0, y = 0}, tabview_layouts.mainmenu)
 	tv_main.icon = "/home/ruben/dev/minetest/games/minetest_game/menu/icon.png"
 
 	if menustyle == "simple" then
