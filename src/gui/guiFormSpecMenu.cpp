@@ -303,13 +303,25 @@ void GUIFormSpecMenu::parseSize(parserData* data, const std::string &element)
 		data->invsize.Y = MYMAX(0, stof(parts[1]));
 
 		lockSize(false);
-#ifndef __ANDROID__
+		data->stretch_size = false;
+
 		if (parts.size() == 3) {
-			if (parts[2] == "true") {
-				lockSize(true,v2u32(800,600));
+			std::string size_type = trim(parts[2]);
+#ifndef __ANDROID__
+			if (size_type == "true") {
+				lockSize(true, v2u32(800, 600));
+			}
+#endif
+			if (size_type == "stretch") {
+				if (invsize.X == 0 || invsize.Y == 0) {
+					warningstream << "Invalid use of 'stretch' with a form size of 0." <<
+						std::endl;
+				} else {
+					data->stretch_size = true;
+				}
 			}
 		}
-#endif
+
 		data->explicit_size = true;
 		return;
 	}
@@ -2451,6 +2463,10 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 		m_font = g_fontengine->getFont();
 
 		if (mydata.real_coordinates) {
+			if (mydata.stretch_size) {
+				imgsize.X = data->screensize.X / invsize.X;
+				imgsize.Y = data->screensize.Y / invsize.Y;
+			}
 			mydata.size = v2s32(
 				mydata.invsize.X*imgsize.X,
 				mydata.invsize.Y*imgsize.Y

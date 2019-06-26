@@ -1923,10 +1923,14 @@ Examples
 Elements
 --------
 
-### `size[<W>,<H>,<fixed_size>]`
+### `size[<W>,<H>,<size type>]`
 
 * Define the size of the menu in inventory slots
-* `fixed_size`: `true`/`false` (optional)
+* `size type`: `false`/`true`/`stretch` (optional)
+    * `false`: Scaled form size.  This is default.
+    * `true`: Fixed 800x600 pixel form size.  Acts like `false` on Android.
+    * `stretch`: Fills entire screen. Coordinates are stretched accordingly. This
+      only works with the new coordinate system.
 * deprecated: `invsize[<W>,<H>;]`
 
 ### `position[<X>,<Y>]`
