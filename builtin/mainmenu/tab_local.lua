@@ -27,52 +27,103 @@ local function get_formspec(tabview, name, tabdata)
 	local retval = ""
 
 	local index = filterlist.get_current_index(menudata.worldlist,
-				tonumber(core.settings:get("mainmenu_last_selected_world"))
-				)
+			tonumber(core.settings:get("mainmenu_last_selected_world")))
 
-	retval = retval ..
-			"button[4,3.95;2.6,1;world_delete;".. fgettext("Delete") .. "]" ..
-			"button[6.5,3.95;2.8,1;world_configure;".. fgettext("Configure") .. "]" ..
-			"button[9.2,3.95;2.5,1;world_create;".. fgettext("New") .. "]" ..
-			"label[4,-0.25;".. fgettext("Select World:") .. "]"..
-			"checkbox[0.25,0.25;cb_creative_mode;".. fgettext("Creative Mode") .. ";" ..
-			dump(core.settings:get_bool("creative_mode")) .. "]"..
-			"checkbox[0.25,0.7;cb_enable_damage;".. fgettext("Enable Damage") .. ";" ..
-			dump(core.settings:get_bool("enable_damage")) .. "]"..
-			"checkbox[0.25,1.15;cb_server;".. fgettext("Host Server") ..";" ..
-			dump(core.settings:get_bool("enable_server")) .. "]" ..
-			"textlist[4,0.25;7.5,3.7;sp_worlds;" ..
-			menu_render_worldlist() ..
-			";" .. index .. "]"
+	retval = {
+		"container[0.375,0.375]",
+		--"field[1.75,0;5.125,0.8;query;;", query, "]",
+		--"button[6.875,0;1.5,0.8;search;", fgettext("Search"), "]",
+		"textlist[0,0;8.375,7.2;sp_worlds;", menu_render_worldlist(), ";", index, "]",
+	}
 
-	if core.settings:get_bool("enable_server") then
-		retval = retval ..
-				"button[8.5,4.8;3.2,1;play;".. fgettext("Host Game") .. "]" ..
-				"checkbox[0.25,1.6;cb_server_announce;" .. fgettext("Announce Server") .. ";" ..
-				dump(core.settings:get_bool("server_announce")) .. "]" ..
-				"label[0.25,2.2;" .. fgettext("Name/Password") .. "]" ..
-				"field[0.55,3.2;3.5,0.5;te_playername;;" ..
-				core.formspec_escape(core.settings:get("name")) .. "]" ..
-				"pwdfield[0.55,4;3.5,0.5;te_passwd;]"
-
-		local bind_addr = core.settings:get("bind_address")
-		if bind_addr ~= nil and bind_addr ~= "" then
-			retval = retval ..
-				"field[0.55,5.2;2.25,0.5;te_serveraddr;" .. fgettext("Bind Address") .. ";" ..
-				core.formspec_escape(core.settings:get("bind_address")) .. "]" ..
-				"field[2.8,5.2;1.25,0.5;te_serverport;" .. fgettext("Port") .. ";" ..
-				core.formspec_escape(core.settings:get("port")) .. "]"
-		else
-			retval = retval ..
-				"field[0.55,5.2;3.5,0.5;te_serverport;" .. fgettext("Server Port") .. ";" ..
-				core.formspec_escape(core.settings:get("port")) .. "]"
-		end
+	if index > 0 then
+		retval[#retval + 1] = "container[0,7.45]"
+		retval[#retval + 1] = "button[0,0;2.625,0.8;world_delete;"
+		retval[#retval + 1] = fgettext("Delete")
+		retval[#retval + 1] = "]"
+		retval[#retval + 1] = "button[2.875,0;2.625,0.8;world_configure;"
+		retval[#retval + 1] = fgettext("Configure")
+		retval[#retval + 1] = "]"
+		retval[#retval + 1] = "style[play;bgcolor=#53AC56]"
+		retval[#retval + 1] = "button[5.75,0;2.625,0.8;play;"
+		retval[#retval + 1] = fgettext("Play World")
+		retval[#retval + 1] = "]"
+	--	"button[4,3.95;2.6,1;world_delete;", fgettext("Delete"), "]",
+	--"button[6.5,3.95;2.8,1;world_configure;", fgettext("Configure"), "]",
+		retval[#retval + 1] = "container_end[]"
 	else
-		retval = retval ..
-				"button[8.5,4.8;3.2,1;play;".. fgettext("Play Game") .. "]"
+		retval[#retval + 1] = "container[0,7.45]"
+		retval[#retval + 1] = "box[0,0;2.625,0.8;#333]"
+		retval[#retval + 1] = "box[2.875,0;2.625,0.8;#333]"
+		retval[#retval + 1] = "box[5.75,0;2.625,0.8;#333]"
+		retval[#retval + 1] = "container_end[]"
 	end
 
-	return retval
+	do
+		retval[#retval + 1] = "container[8.75,1.15]"
+		local enable_server = core.settings:get_bool("enable_server")
+		local options = {
+			{ name = "creative_mode", text = fgettext("Creative Mode") },
+			{ name = "enable_damage", text = fgettext("Enable Damage") },
+			{ name = "enable_server", text = fgettext("Host Server") },
+		}
+
+		if enable_server then
+			options[#options + 1] = { name = "server_announce", text = fgettext("Announce Server") }
+		end
+
+		local y = 0
+		for _, opt in pairs(options) do
+			retval[#retval + 1] = "checkbox[0,"
+			retval[#retval + 1] = y
+			retval[#retval + 1] =";cb_"
+			retval[#retval + 1] = opt.name
+			retval[#retval + 1] = ";"
+			retval[#retval + 1] = opt.text
+			retval[#retval + 1] = ";"
+			retval[#retval + 1] = dump(core.settings:get_bool(opt.name))
+			retval[#retval + 1] = "]"
+
+			y = y + 0.5
+		end
+
+		y = y + 0.25
+
+		if enable_server then
+			retval[#retval + 1] = "container[0,"
+			retval[#retval + 1] = y
+			retval[#retval + 1] = "]label[0,0;"
+			retval[#retval + 1] = fgettext("Name/Password")
+			retval[#retval + 1] = "]"
+			retval[#retval + 1] = "field[0,0.3;3.5,0.5;te_playername;;"
+			retval[#retval + 1] = core.formspec_escape(core.settings:get("name"))
+			retval[#retval + 1] = "]"
+			retval[#retval + 1] = "pwdfield[0,1;3.5,0.5;te_passwd;]"
+
+			local bind_addr = core.settings:get("bind_address")
+			if bind_addr ~= nil and bind_addr ~= "" then
+				retval[#retval + 1] = "field[0,2.2;2.25,0.5;te_serveraddr;" .. fgettext("Bind Address")
+				retval[#retval + 1] = ";"
+				retval[#retval + 1] = ore.formspec_escape(core.settings:get("bind_address"))
+				retval[#retval + 1] = "]"
+				retval[#retval + 1] = "field[2.3,2.2;1.25,0.5;te_serverport;"
+				retval[#retval + 1] = fgettext("Port")
+				retval[#retval + 1] = ";"
+				retval[#retval + 1] = core.formspec_escape(core.settings:get("port"))
+				retval[#retval + 1] = "]"
+			else
+				retval[#retval + 1] = "field[0,2.2;3.5,0.5;te_serverport;"
+				retval[#retval + 1] = fgettext("Server Port")
+				retval[#retval + 1] = ";"
+				retval[#retval + 1] = core.formspec_escape(core.settings:get("port"))
+				retval[#retval + 1] = "]"
+			end
+			retval[#retval + 1] = "container_end[]"
+		end
+		retval[#retval + 1] = "container_end[]"
+	end
+
+	return table.concat(retval, "") .. "container_end[]"
 end
 
 local function main_button_handler(this, fields, name, tabdata)
@@ -118,8 +169,8 @@ local function main_button_handler(this, fields, name, tabdata)
 		return true
 	end
 
-	if fields["cb_server"] then
-		core.settings:set("enable_server", fields["cb_server"])
+	if fields["cb_enable_server"] then
+		core.settings:set("enable_server", fields["cb_enable_server"])
 
 		return true
 	end
@@ -132,7 +183,7 @@ local function main_button_handler(this, fields, name, tabdata)
 		return true
 	end
 
-	if fields["play"] ~= nil or world_doubleclick or fields["key_enter"] then
+	if fields["play"] ~= nil or world_doubleclick then
 		local selected = core.get_textlist_index("sp_worlds")
 		gamedata.selected_world = menudata.worldlist:get_raw_index(selected)
 
@@ -172,14 +223,6 @@ local function main_button_handler(this, fields, name, tabdata)
 		end
 	end
 
-	if fields["world_create"] ~= nil then
-		local create_world_dlg = create_create_world_dlg(true)
-		create_world_dlg:set_parent(this)
-		this:hide()
-		create_world_dlg:show()
-		mm_texture.update("singleplayer", current_game())
-		return true
-	end
 
 	if fields["world_delete"] ~= nil then
 		local selected = core.get_textlist_index("sp_worlds")
@@ -239,7 +282,7 @@ end
 --------------------------------------------------------------------------------
 return {
 	name = "local",
-	caption = fgettext("Start Game"),
+	caption = fgettext("Load World"),
 	cbf_formspec = get_formspec,
 	cbf_button_handler = main_button_handler,
 	on_change = on_change

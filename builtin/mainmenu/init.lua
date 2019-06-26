@@ -30,7 +30,6 @@ defaulttexturedir = core.get_texturepath_share() .. DIR_DELIM .. "base" ..
 
 dofile(basepath .. "common" .. DIR_DELIM .. "async_event.lua")
 dofile(basepath .. "common" .. DIR_DELIM .. "filterlist.lua")
-dofile(basepath .. "fstk" .. DIR_DELIM .. "buttonbar.lua")
 dofile(basepath .. "fstk" .. DIR_DELIM .. "dialog.lua")
 dofile(basepath .. "fstk" .. DIR_DELIM .. "tabview.lua")
 dofile(basepath .. "fstk" .. DIR_DELIM .. "tabview_layouts.lua")
@@ -59,6 +58,18 @@ if menustyle == "simple" then
 else
 	tabs.local_game = dofile(menupath .. DIR_DELIM .. "tab_local.lua")
 	tabs.play_online = dofile(menupath .. DIR_DELIM .. "tab_online.lua")
+
+	tabs.new_game = {
+		name = "new",
+		caption = fgettext("New World"),
+		show = function(_, _, this)
+			local create_world_dlg = create_create_world_dlg(true)
+			create_world_dlg:set_parent(this)
+			this:hide()
+			create_world_dlg:show()
+			return true
+		end
+	}
 end
 
 --------------------------------------------------------------------------------
@@ -127,16 +138,17 @@ local function init_globals()
 	end
 
 	-- Create main tabview
-	local tv_main = tabview_create("maintab", {x = 12, y = 5.4}, {x = 0, y = 0}, tabview_layouts.mainmenu)
+	local tv_main = tabview_create("maintab", {x = 13, y = 9}, {x = 0, y = 0}, tabview_layouts.mainmenu)
+	tv_main.icon = "/home/ruben/dev/minetest/games/minetest_game/menu/icon.png"
 
 	if menustyle == "simple" then
 		tv_main:add(tabs.simple_main)
 	else
 		tv_main:set_autosave_tab(true)
+		tv_main:add(tabs.new_game)
 		tv_main:add(tabs.local_game)
 		tv_main:add(tabs.play_online)
 	end
-
 	tv_main:add(tabs.content)
 	tv_main:add(tabs.settings)
 	tv_main:add(tabs.credits)
@@ -144,12 +156,13 @@ local function init_globals()
 	tv_main:set_global_event_handler(main_event_handler)
 	tv_main:set_fixed_size(false)
 
-	if menustyle ~= "simple" then
-		local last_tab = core.settings:get("maintab_LAST")
-		if last_tab and tv_main.current_tab ~= last_tab then
-			tv_main:set_tab(last_tab)
-		end
+	local last_tab = core.settings:get("maintab_LAST")
+	if menustyle ~= "simple" and last_tab and tv_main.current_tab ~= last_tab then
+		tv_main:set_tab(last_tab)
+	else
+		tv_main:set_tab("local")
 	end
+
 	ui.set_default("maintab")
 	tv_main:show()
 

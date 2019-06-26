@@ -27,7 +27,7 @@ local function create_world_formspec(dialogdata)
 	local game, gameidx = nil , 0
 	if gameid ~= nil then
 		game, gameidx = pkgmgr.find_by_gameid(gameid)
-		
+
 		if gameidx == nil then
 			gameidx = 0
 		end
@@ -82,7 +82,7 @@ local function create_world_formspec(dialogdata)
 
 		"button[3.25,6;2.5,0.5;world_create_confirm;" .. fgettext("Create") .. "]" ..
 		"button[5.75,6;2.5,0.5;world_create_cancel;" .. fgettext("Cancel") .. "]"
-		
+
 	if #pkgmgr.games == 0 then
 		retval = retval .. "box[2,4;8,1;#ff8800]label[2.25,4;" ..
 				fgettext("You have no games installed.") .. "]label[2.25,4.4;" ..
@@ -165,6 +165,6 @@ function create_create_world_dlg(update_worldlistfilter)
 					create_world_buttonhandler,
 					nil)
 	retval.update_worldlist_filter = update_worldlistfilter
-	
+
 	return retval
 end
