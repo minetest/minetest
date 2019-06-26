@@ -31,57 +31,56 @@ local function get_formspec(tabview, name, tabdata)
 		tabdata.search_for = ""
 	end
 
-	local retval =
+	local retval = {
+		"container[0.375,0.375]",
+
 		-- Search
-		"field[0.15,0.075;5.91,1;te_search;;" .. core.formspec_escape(tabdata.search_for) .. "]" ..
-		"button[5.62,-0.25;1.5,1;btn_mp_search;" .. fgettext("Search") .. "]" ..
-		"image_button[6.97,-.165;.83,.83;" .. core.formspec_escape(defaulttexturedir .. "refresh.png")
-			.. ";btn_mp_refresh;]" ..
+		"field[0,0;8.045,0.8;te_search;;" , core.formspec_escape(tabdata.search_for) , "]" ,
+		"button[8.045,0;1.5,0.8;btn_mp_search;" , fgettext("Search") , "]" ,
+		"image_button[9.795,0;0.83,0.83;", core.formspec_escape(defaulttexturedir .. "refresh.png"),
+		";btn_mp_refresh;]",
+
+		"container[11,0.2]",
 
 		-- Address / Port
-		"label[7.75,-0.25;" .. fgettext("Address / Port") .. "]" ..
-		"field[8,0.65;3.25,0.5;te_address;;" ..
-			core.formspec_escape(core.settings:get("address")) .. "]" ..
-		"field[11.1,0.65;1.4,0.5;te_port;;" ..
-			core.formspec_escape(core.settings:get("remote_port")) .. "]" ..
-
-		-- Name / Password
-		"label[7.75,0.95;" .. fgettext("Name / Password") .. "]" ..
-		"field[8,1.85;2.9,0.5;te_name;;" ..
-			core.formspec_escape(core.settings:get("name")) .. "]" ..
-		"pwdfield[10.73,1.85;1.77,0.5;te_pwd;]" ..
+		"label[0,0;" , fgettext("Address / Port") , "]" ,
+		"field[0,0.25;3.5,0.5;te_address;;" ,
+		core.formspec_escape(core.settings:get("address")) , "]" ,
+		"field[0,1;3.5,0.5;te_port;;" ,
+		core.formspec_escape(core.settings:get("remote_port")) , "]" ,
 
 		-- Description Background
-		"box[7.73,2.25;4.25,2.6;#999999]"..
+		"label[0,1.75;" , fgettext("Server Description") , "]" ,
+		"box[0,2;3.5,3.15;#333]",
+
+		-- Name / Password
+		"label[0,5.5;" , fgettext("Name / Password") , "]" ,
+		"field[0,5.75;3.5,0.5;te_name;;" ,
+		core.formspec_escape(core.settings:get("name")) , "]" ,
+		"pwdfield[0,6.5;3.5,0.5;te_pwd;]" ,
+
 
 		-- Connect
-		"button[9.88,4.9;2.3,1;btn_mp_connect;" .. fgettext("Connect") .. "]"
+		"style[btn_mp_connect;bgcolor=#53AC56]",
+		"button[0,7.25;3.5,0.8;btn_mp_connect;" , fgettext("Connect") , "]",
 
-	if tabdata.fav_selected and fav_selected then
-		if gamedata.fav then
-			retval = retval .. "button[7.73,4.9;2.3,1;btn_delete_favorite;" ..
-				fgettext("Del. Favorite") .. "]"
-		end
-		if fav_selected.description then
-			retval = retval .. "textarea[8.1,2.3;4.23,2.9;;;" ..
-				core.formspec_escape((gamedata.serverdescription or ""), true) .. "]"
-		end
-	end
+		"container_end[]",
 
-	--favourites
-	retval = retval .. "tablecolumns[" ..
-		image_column(fgettext("Favorite"), "favorite") .. ";" ..
-		image_column(fgettext("Ping")) .. ",padding=0.25;" ..
-		"color,span=3;" ..
-		"text,align=right;" ..                -- clients
-		"text,align=center,padding=0.25;" ..  -- "/"
-		"text,align=right,padding=0.25;" ..   -- clients_max
-		image_column(fgettext("Creative mode"), "creative") .. ",padding=1;" ..
-		image_column(fgettext("Damage enabled"), "damage") .. ",padding=0.25;" ..
-		image_column(fgettext("PvP enabled"), "pvp") .. ",padding=0.25;" ..
-		"color,span=1;" ..
-		"text,padding=1]" ..
-		"table[-0.15,0.6;7.75,5.15;favourites;"
+		-- Columns
+		"tablecolumns[" ,
+		image_column(fgettext("Favorite"), "favorite") , ";" ,
+		image_column(fgettext("Ping")) , ",padding=0.25;" ,
+		"color,span=3;" ,
+		"text,align=right;" ,                -- clients
+		"text,align=center,padding=0.25;" ,  -- "/"
+		"text,align=right,padding=0.25;" ,   -- clients_max
+		image_column(fgettext("Creative mode"), "creative") , ",padding=1;" ,
+		image_column(fgettext("Damage enabled"), "damage") , ",padding=0.25;" ,
+		image_column(fgettext("PvP enabled"), "pvp") , ",padding=0.25;" ,
+		"color,span=1;" ,
+		"text,padding=1]" ,
+		"table[0,1.05;10.625,7.2;favourites;"
+	}
 
 	if menudata.search_result then
 		for i = 1, #menudata.search_result do
@@ -96,39 +95,57 @@ local function get_formspec(tabview, name, tabdata)
 			end
 
 			if i ~= 1 then
-				retval = retval .. ","
+				retval[#retval + 1] = ","
 			end
 
-			retval = retval .. render_serverlist_row(server, server.is_favorite)
+			retval[#retval + 1] = render_serverlist_row(server, server.is_favorite)
 		end
 	elseif #menudata.favorites > 0 then
 		local favs = core.get_favorites("local")
 		if #favs > 0 then
 			for i = 1, #favs do
-			for j = 1, #menudata.favorites do
-				if menudata.favorites[j].address == favs[i].address and
-						menudata.favorites[j].port == favs[i].port then
-					table.insert(menudata.favorites, i, table.remove(menudata.favorites, j))
+				for j = 1, #menudata.favorites do
+					if menudata.favorites[j].address == favs[i].address and
+							menudata.favorites[j].port == favs[i].port then
+						table.insert(menudata.favorites, i, table.remove(menudata.favorites, j))
+					end
 				end
-			end
 				if favs[i].address ~= menudata.favorites[i].address then
 					table.insert(menudata.favorites, i, favs[i])
 				end
 			end
 		end
-		retval = retval .. render_serverlist_row(menudata.favorites[1], (#favs > 0))
+		retval[#retval + 1] = render_serverlist_row(menudata.favorites[1], (#favs > 0))
 		for i = 2, #menudata.favorites do
-			retval = retval .. "," .. render_serverlist_row(menudata.favorites[i], (i <= #favs))
+			retval[#retval + 1] = ","
+			retval[#retval + 1] = render_serverlist_row(menudata.favorites[i], (i <= #favs))
 		end
 	end
 
 	if tabdata.fav_selected then
-		retval = retval .. ";" .. tabdata.fav_selected .. "]"
+		retval[#retval + 1] =  ";"
+		retval[#retval + 1] = tonumber(tabdata.fav_selected)
+		retval[#retval + 1] = "]"
 	else
-		retval = retval .. ";0]"
+		retval[#retval + 1] =  ";0]"
 	end
 
-	return retval
+	if tabdata.fav_selected and fav_selected then
+		if gamedata.fav then
+			retval[#retval + 1] = "image_button[14.1,1.75;0.4,0.4;"
+			retval[#retval + 1] = defaulttexturedir
+			retval[#retval + 1] = "server_flags_favorite.png;btn_delete_favorite;;false;false;]"
+		end
+		if fav_selected.description then
+			retval[#retval + 1] = "textarea[11,2.2;3.5,3.15;;;"
+			retval[#retval + 1] = core.formspec_escape((gamedata.serverdescription or ""), true)
+			retval[#retval + 1] = "]"
+		end
+	end
+
+	retval[#retval + 1] = "container_end[]"
+
+	return table.concat(retval, "")
 end
 
 --------------------------------------------------------------------------------

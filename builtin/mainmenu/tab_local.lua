@@ -33,7 +33,7 @@ local function get_formspec(tabview, name, tabdata)
 		"container[0.375,0.375]",
 		--"field[1.75,0;5.125,0.8;query;;", query, "]",
 		--"button[6.875,0;1.5,0.8;search;", fgettext("Search"), "]",
-		"textlist[0,0;8.375,7.2;sp_worlds;", menu_render_worldlist(), ";", index, "]",
+		"textlist[0,0;10.625,7.2;sp_worlds;", menu_render_worldlist(), ";", index, "]",
 	}
 
 	if index > 0 then
@@ -60,7 +60,7 @@ local function get_formspec(tabview, name, tabdata)
 	end
 
 	do
-		retval[#retval + 1] = "container[8.75,1.15]"
+		retval[#retval + 1] = "container[11,0.2]"
 		local enable_server = core.settings:get_bool("enable_server")
 		local options = {
 			{ name = "creative_mode", text = fgettext("Creative Mode") },
