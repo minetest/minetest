@@ -31,6 +31,7 @@ local function get_formspec(tabview, name, tabdata)
 
 	retval = {
 		"container[0.375,0.375]",
+		"box[11,-0.375;4.125,9;#ACACAC33]",
 		--"field[1.75,0;5.125,0.8;query;;", query, "]",
 		--"button[6.875,0;1.5,0.8;search;", fgettext("Search"), "]",
 		"textlist[0,0;10.625,7.2;sp_worlds;", menu_render_worldlist(), ";", index, "]",
@@ -38,14 +39,14 @@ local function get_formspec(tabview, name, tabdata)
 
 	if index > 0 then
 		retval[#retval + 1] = "container[0,7.45]"
-		retval[#retval + 1] = "button[0,0;2.625,0.8;world_delete;"
+		retval[#retval + 1] = "button[0,0;3.375,0.8;world_delete;"
 		retval[#retval + 1] = fgettext("Delete")
 		retval[#retval + 1] = "]"
-		retval[#retval + 1] = "button[2.875,0;2.625,0.8;world_configure;"
+		retval[#retval + 1] = "button[3.625,0;3.375,0.8;world_configure;"
 		retval[#retval + 1] = fgettext("Configure")
 		retval[#retval + 1] = "]"
 		retval[#retval + 1] = "style[play;bgcolor=#53AC56]"
-		retval[#retval + 1] = "button[5.75,0;2.625,0.8;play;"
+		retval[#retval + 1] = "button[7.25,0;3.375,0.8;play;"
 		retval[#retval + 1] = fgettext("Play World")
 		retval[#retval + 1] = "]"
 	--	"button[4,3.95;2.6,1;world_delete;", fgettext("Delete"), "]",
@@ -60,7 +61,7 @@ local function get_formspec(tabview, name, tabdata)
 	end
 
 	do
-		retval[#retval + 1] = "container[11,0.2]"
+		retval[#retval + 1] = "container[11.375,0.2]"
 		local enable_server = core.settings:get_bool("enable_server")
 		local options = {
 			{ name = "creative_mode", text = fgettext("Creative Mode") },
@@ -95,10 +96,10 @@ local function get_formspec(tabview, name, tabdata)
 			retval[#retval + 1] = "]label[0,0;"
 			retval[#retval + 1] = fgettext("Name/Password")
 			retval[#retval + 1] = "]"
-			retval[#retval + 1] = "field[0,0.3;3.5,0.5;te_playername;;"
+			retval[#retval + 1] = "field[0,0.3;3.375,0.5;te_playername;;"
 			retval[#retval + 1] = core.formspec_escape(core.settings:get("name"))
 			retval[#retval + 1] = "]"
-			retval[#retval + 1] = "pwdfield[0,1;3.5,0.5;te_passwd;]"
+			retval[#retval + 1] = "pwdfield[0,1;3.375,0.5;te_passwd;]"
 
 			local bind_addr = core.settings:get("bind_address")
 			if bind_addr ~= nil and bind_addr ~= "" then
@@ -112,7 +113,7 @@ local function get_formspec(tabview, name, tabdata)
 				retval[#retval + 1] = core.formspec_escape(core.settings:get("port"))
 				retval[#retval + 1] = "]"
 			else
-				retval[#retval + 1] = "field[0,2.2;3.5,0.5;te_serverport;"
+				retval[#retval + 1] = "field[0,2.2;3.375,0.5;te_serverport;"
 				retval[#retval + 1] = fgettext("Server Port")
 				retval[#retval + 1] = ";"
 				retval[#retval + 1] = core.formspec_escape(core.settings:get("port"))

@@ -33,6 +33,7 @@ local function get_formspec(tabview, name, tabdata)
 
 	local retval = {
 		"container[0.375,0.375]",
+		"box[11,-0.375;4.125,9;#ACACAC33]",
 
 		-- Search
 		"field[0,0;8.045,0.8;te_search;;" , core.formspec_escape(tabdata.search_for) , "]" ,
@@ -40,29 +41,29 @@ local function get_formspec(tabview, name, tabdata)
 		"image_button[9.795,0;0.83,0.83;", core.formspec_escape(defaulttexturedir .. "refresh.png"),
 		";btn_mp_refresh;]",
 
-		"container[11,0.2]",
+		"container[11.375,0.2]",
 
 		-- Address / Port
 		"label[0,0;" , fgettext("Address / Port") , "]" ,
-		"field[0,0.25;3.5,0.5;te_address;;" ,
+		"field[0,0.25;3.375,0.5;te_address;;" ,
 		core.formspec_escape(core.settings:get("address")) , "]" ,
-		"field[0,1;3.5,0.5;te_port;;" ,
+		"field[0,1;3.375,0.5;te_port;;" ,
 		core.formspec_escape(core.settings:get("remote_port")) , "]" ,
 
 		-- Description Background
 		"label[0,1.75;" , fgettext("Server Description") , "]" ,
-		"box[0,2;3.5,3.15;#333]",
+		"box[0,2;3.375,3.15;#333]",
 
 		-- Name / Password
 		"label[0,5.5;" , fgettext("Name / Password") , "]" ,
-		"field[0,5.75;3.5,0.5;te_name;;" ,
+		"field[0,5.75;3.375,0.5;te_name;;" ,
 		core.formspec_escape(core.settings:get("name")) , "]" ,
-		"pwdfield[0,6.5;3.5,0.5;te_pwd;]" ,
+		"pwdfield[0,6.5;3.375,0.5;te_pwd;]" ,
 
 
 		-- Connect
 		"style[btn_mp_connect;bgcolor=#53AC56]",
-		"button[0,7.25;3.5,0.8;btn_mp_connect;" , fgettext("Connect") , "]",
+		"button[0,7.25;3.375,0.8;btn_mp_connect;" , fgettext("Connect") , "]",
 
 		"container_end[]",
 
