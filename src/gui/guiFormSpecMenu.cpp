@@ -313,7 +313,7 @@ void GUIFormSpecMenu::parseSize(parserData* data, const std::string &element)
 			}
 #endif
 			if (size_type == "stretch") {
-				if (invsize.X == 0 || invsize.Y == 0) {
+				if (data->invsize.X == 0 || data->invsize.Y == 0) {
 					warningstream << "Invalid use of 'stretch' with a form size of 0." <<
 						std::endl;
 				} else {
@@ -2464,8 +2464,8 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 
 		if (mydata.real_coordinates) {
 			if (mydata.stretch_size) {
-				imgsize.X = data->screensize.X / invsize.X;
-				imgsize.Y = data->screensize.Y / invsize.Y;
+				imgsize.X = mydata.screensize.X / mydata.invsize.X;
+				imgsize.Y = mydata.screensize.Y / mydata.invsize.Y;
 			}
 			mydata.size = v2s32(
 				mydata.invsize.X*imgsize.X,
