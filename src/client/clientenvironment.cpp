@@ -172,7 +172,8 @@ void ClientEnvironment::step(float dtime)
 				// Liquid floating / sinking
 				if (lplayer->in_liquid && !lplayer->swimming_vertical &&
 						!lplayer->swimming_pitch)
-					speed.Y -= lplayer->movement_liquid_sink * dtime_part * 2.0f;
+					speed.Y -= lplayer->movement_liquid_sink *
+						lplayer->physics_override_gravity * dtime_part * 2.0f;
 
 				// Liquid resistance
 				if (lplayer->in_liquid_stable || lplayer->in_liquid) {
