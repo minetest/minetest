@@ -637,7 +637,7 @@ fov (Field of view) int 72 45 160
 
 #    Adjust the gamma encoding for the light tables. Higher numbers are brighter.
 #    This setting is for the client only and is ignored by the server.
-display_gamma (Gamma) float 1.0 0.5 3.0
+display_gamma (Gamma) float 1.0 0.5 10.0
 
 #    Gradient of light curve at minimum light level.
 lighting_alpha (Darkness sharpness) float 0.0 0.0 4.0

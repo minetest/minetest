@@ -66,7 +66,7 @@ void set_light_table(float gamma)
 	params.center = g_settings->getFloat("lighting_boost_center");
 	params.sigma = g_settings->getFloat("lighting_boost_spread");
 // Gamma correction
-	params.gamma = rangelim(gamma, 0.5f, 3.0f);
+	params.gamma = rangelim(gamma, 0.5f, 10.0f);
 
 // Boundary values should be fixed
 	light_LUT[0] = 0;
