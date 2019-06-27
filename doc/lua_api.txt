@@ -1570,8 +1570,9 @@ Special groups
 * `disable_repair`: If set to 1 for a tool, it cannot be repaired using the
   `"toolrepair"` crafting recipe
 * `speed`: Changes movement speed for players and items will moving on the node.
+	Excessive use of increased speed may trigger anti-cheat on the server. Make sure you do.
    * `speed = -1`: to slow down  the movement (min. `-9`, -90%)
-   * `speed =  1`: to speed up the movement (max. `100` +1000%)
+   * `speed =  1`: to speed up the movement (max. `15` +150%)
 
 Known damage and digging time defining groups
 ---------------------------------------------

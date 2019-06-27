@@ -1105,16 +1105,27 @@ float LocalPlayer::getSlipFactor(Environment *env, const v3f &speedH)
 
 float LocalPlayer::getSpeedFactor(Environment *env)
 {
-	const NodeDefManager *nodemgr = env->getGameDef()->ndef();
+	int speed_below = 0, speed_above = 0;
+	v3s16 pos = getStandingNodePos();
+	const INodeDefManager *nodemgr = env->getGameDef()->ndef();
 	Map *map = &env->getMap();
-	const ContentFeatures &f = nodemgr->get(map->getNodeNoEx(
-			getStandingNodePos()));
-	int speed = 0;
-	if (f.walkable)
-		speed = itemgroup_get(f.groups, "speed");
 
+	const ContentFeatures &f = nodemgr->get(map->getNodeNoEx(pos));
+	if (f.walkable)
+		speed_below = itemgroup_get(f.groups, "speed");
+
+	const ContentFeatures &f2 = nodemgr->get(map->getNodeNoEx(
+		pos + v3s16(0, 1, 0)));
+	speed_above = itemgroup_get(f2.groups, "speed");
+
+	if (speed_above == 0) {
+		const ContentFeatures &f3 = nodemgr->get(map->getNodeNoEx(
+			pos + v3s16(0, 2, 0)));
+		speed_above = itemgroup_get(f3.groups, "speed");
+	}
+	int speed = speed_below + speed_above;
 	if (speed != 0) {
-		return core::clamp(1.0f + (float)speed / 10.0f, 0.1f, 10.0f);
+		return core::clamp(1.0f + f32(speed) / 10.f, 0.1f, 1.5f);
 	}
 	return 1.0f;
 }
