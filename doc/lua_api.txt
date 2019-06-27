@@ -4240,7 +4240,7 @@ Environment access
     * The spawn level is intentionally above terrain level to cope with
       full-node biome 'dust' nodes.
 * `minetest.is_valid_pos(pos)`
-    * Returns `true` if the position lies within the range -32000 to 32000
+    * Returns `true` if the position lies within the mapgen_limit range.
 
 
 Mod channels
