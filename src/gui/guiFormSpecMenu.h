@@ -99,12 +99,14 @@ class GUIFormSpecMenu : public GUIModalMenu
 
 		ListDrawSpec(const InventoryLocation &a_inventoryloc,
 				const std::string &a_listname,
-				v2s32 a_pos, v2s32 a_geom, s32 a_start_item_i):
+				v2s32 a_pos, v2s32 a_geom, s32 a_start_item_i,
+				bool a_real_coordinates):
 			inventoryloc(a_inventoryloc),
 			listname(a_listname),
 			pos(a_pos),
 			geom(a_geom),
-			start_item_i(a_start_item_i)
+			start_item_i(a_start_item_i),
+			real_coordinates(a_real_coordinates)
 		{
 		}
 
@@ -113,6 +115,7 @@ class GUIFormSpecMenu : public GUIModalMenu
 		v2s32 pos;
 		v2s32 geom;
 		s32 start_item_i;
+		bool real_coordinates;
 	};
 
 	struct ListRingSpec
@@ -394,6 +397,9 @@ protected:
 	std::string getNameByID(s32 id);
 	v2s32 getElementBasePos(bool absolute,
 			const std::vector<std::string> *v_pos);
+	v2s32 getRealCoordinateBasePos(bool absolute,
+			const std::vector<std::string> &v_pos);
+	v2s32 getRealCoordinateGeometry(const std::vector<std::string> &v_geom);
 
 	v2s32 padding;
 	v2f32 spacing;
@@ -463,6 +469,7 @@ private:
 
 	typedef struct {
 		bool explicit_size;
+		bool real_coordinates;
 		v2f invsize;
 		v2s32 size;
 		v2f32 offset;

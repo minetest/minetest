@@ -1875,9 +1875,15 @@ is used when the server receives user input. You must not use the name
 Spaces and newlines can be inserted between the blocks, as is used in the
 examples.
 
-Position and size units are inventory slots, `X` and `Y` position the formspec
-element relative to the top left of the menu or container. `W` and `H` are its
-width and height values.
+Position and size units are inventory slots unless the new coordinate system
+is enabled. `X` and `Y` position the formspec element relative to the top left
+of the menu or container. `W` and `H` are its width and height values.
+
+If the new system is enabled, all elements have unified coordinates for all
+elements with no padding or spacing in between. This is highly recommended
+for new forms. See `real_coordinates[<bool>]` and `Migrating to Real
+Coordinates`.
+
 Inventories with a `player:<name>` inventory location are only sent to the
 player named `<name>`.
 
@@ -1951,6 +1957,16 @@ Elements
 * Must be used after the `size`, `position`, and `anchor` elements (if present).
 * Disables player:set_formspec_prepend() from applying to this formspec.
 
+### `real_coordinates[<bool>]`
+
+* When set to true, all following formspec elements will use the new coordinate system.
+* If used immediately after `size`, `position`, `anchor`, and `no_prepend` elements
+  (if present), the form size will use the new coordinate system.
+* **Note**: Formspec prepends are not affected by the coordinates in the main form.
+  They must enable it explicitly.
+* For information on converting forms to the new coordinate system, see `Migrating
+  to Real Coordinates`.
+
 ### `container[<X>,<Y>]`
 
 * Start of a container block, moves all physical elements in the container by
@@ -1968,11 +1984,15 @@ Elements
 
 * Show an inventory list if it has been sent to the client. Nothing will
   be shown if the inventory list is of size 0.
+* **Note**: With the new coordinate system, the spacing between inventory
+  slots is one-fourth the size of an inventory slot.
 
 ### `list[<inventory location>;<list name>;<X>,<Y>;<W>,<H>;<starting item index>]`
 
 * Show an inventory list if it has been sent to the client. Nothing will
   be shown if the inventory list is of size 0.
+* **Note**: With the new coordinate system, the spacing between inventory
+  slots is one-fourth the size of an inventory slot.
 
 ### `listring[<inventory location>;<list name>]`
 
@@ -2064,7 +2084,8 @@ Elements
 * Textual password style field; will be sent to server when a button is clicked
 * When enter is pressed in field, fields.key_enter_field will be sent with the
   name of this field.
-* Fields are a set height, but will be vertically centred on `H`
+* With the old coordinate system, fields are a set height, but will be vertically
+  centred on `H`. With the new coordinate system, `H` will modify the height.
 * `name` is the name of the field as returned in fields to `on_receive_fields`
 * `label`, if not blank, will be text printed on the top left above the field
 * See `field_close_on_enter` to stop enter closing the formspec
@@ -2074,7 +2095,8 @@ Elements
 * Textual field; will be sent to server when a button is clicked
 * When enter is pressed in field, `fields.key_enter_field` will be sent with
   the name of this field.
-* Fields are a set height, but will be vertically centred on `H`
+* With the old coordinate system, fields are a set height, but will be vertically
+  centred on `H`. With the new coordinate system, `H` will modify the height.
 * `name` is the name of the field as returned in fields to `on_receive_fields`
 * `label`, if not blank, will be text printed on the top left above the field
 * `default` is the default value of the field
@@ -2111,23 +2133,34 @@ Elements
 
 * The label formspec element displays the text set in `label`
   at the specified position.
+* **Note**: If the new coordinate system is enabled, labels are
+  positioned from the center of the text, not the top.
 * The text is displayed directly without automatic line breaking,
-  so label should not be used for big text chunks.
+  so label should not be used for big text chunks.  Newlines can be
+  used to make labels multiline.
+* **Note**: With the new coordinate system, newlines are spaced with
+  half a coordinate.  With the old system, newlines are spaced 2/5 of
+  an inventory slot.
 
 ### `vertlabel[<X>,<Y>;<label>]`
 
 * Textual label drawn vertically
 * `label` is the text on the label
+* **Note**: If the new coordinate system is enabled, vertlabels are
+  positioned from the center of the text, not the left.
 
 ### `button[<X>,<Y>;<W>,<H>;<name>;<label>]`
 
 * Clickable button. When clicked, fields will be sent.
-* Fixed button height. It will be vertically centred on `H`
+* With the old coordinate system, buttons are a set height, but will be vertically
+  centred on `H`. With the new coordinate system, `H` will modify the height.
 * `label` is the text on the button
 
 ### `image_button[<X>,<Y>;<W>,<H>;<texture name>;<name>;<label>]`
 
 * `texture name` is the filename of an image
+* **Note**: Height is supported on both the old and new coordinate systems
+  for image_buttons.
 
 ### `image_button[<X>,<Y>;<W>,<H>;<texture name>;<name>;<label>;<noclip>;<drawborder>;<pressed texture name>]`
 
@@ -2146,10 +2179,12 @@ Elements
 ### `button_exit[<X>,<Y>;<W>,<H>;<name>;<label>]`
 
 * When clicked, fields will be sent and the form will quit.
+* Same as `button` in all other respects.
 
 ### `image_button_exit[<X>,<Y>;<W>,<H>;<texture name>;<name>;<label>]`
 
 * When clicked, fields will be sent and the form will quit.
+* Same as `image_button` in all other respects.
 
 ### `textlist[<X>,<Y>;<W>,<H>;<name>;<listelem 1>,<listelem 2>,...,<listelem n>]`
 
@@ -2175,6 +2210,34 @@ Elements
 ### `tabheader[<X>,<Y>;<name>;<caption 1>,<caption 2>,...,<caption n>;<current_tab>;<transparent>;<draw_border>]`
 
 * Show a tab**header** at specific position (ignores formsize)
+* `X` and `Y`: position of the tabheader
+* *Note*: Width and height are automatically chosen with this syntax
+* `name` fieldname data is transferred to Lua
+* `caption 1`...: name shown on top of tab
+* `current_tab`: index of selected tab 1...
+* `transparent` (optional): show transparent
+* `draw_border` (optional): draw border
+
+### `tabheader[<X>,<Y>;<H>;<name>;<caption 1>,<caption 2>,...,<caption n>;<current_tab>;<transparent>;<draw_border>]`
+
+* Show a tab**header** at specific position (ignores formsize)
+* **Important note**: This syntax for tabheaders can only be used with the
+  new coordinate system.
+* `X` and `Y`: position of the tabheader
+* `H`: height of the tabheader. Width is automatically determined with this syntax.
+* `name` fieldname data is transferred to Lua
+* `caption 1`...: name shown on top of tab
+* `current_tab`: index of selected tab 1...
+* `transparent` (optional): show transparent
+* `draw_border` (optional): draw border
+
+### `tabheader[<X>,<Y>;<W>,<H>;<name>;<caption 1>,<caption 2>,...,<caption n>;<current_tab>;<transparent>;<draw_border>]`
+
+* Show a tab**header** at specific position (ignores formsize)
+* **Important note**: This syntax for tabheaders can only be used with the
+  new coordinate system.
+* `X` and `Y`: position of the tabheader
+* `W` and `H`: width and height of the tabheader
 * `name` fieldname data is transferred to Lua
 * `caption 1`...: name shown on top of tab
 * `current_tab`: index of selected tab 1...
@@ -2193,8 +2256,22 @@ Elements
 * **Important note**: There are two different operation modes:
     1. handle directly on change (only changed dropdown is submitted)
     2. read the value on pressing a button (all dropdown values are available)
-* `x` and `y` position of dropdown
-* Width of dropdown
+* `X` and `Y`: position of the dropdown
+* `W`: width of the dropdown. Height is automatically chosen with this syntax.
+* Fieldname data is transferred to Lua
+* Items to be shown in dropdown
+* Index of currently selected dropdown item
+
+### `dropdown[<X>,<Y>;<W>,<H>;<name>;<item 1>,<item 2>, ...,<item n>;<selected idx>]`
+
+* Show a dropdown field
+* **Important note**: This syntax for dropdowns can only be used with the
+  new coordinate system.
+* **Important note**: There are two different operation modes:
+    1. handle directly on change (only changed dropdown is submitted)
+    2. read the value on pressing a button (all dropdown values are available)
+* `X` and `Y`: position of the dropdown
+* `W` and `H`: width and height of the dropdown
 * Fieldname data is transferred to Lua
 * Items to be shown in dropdown
 * Index of currently selected dropdown item
@@ -2205,6 +2282,8 @@ Elements
 * `name` fieldname data is transferred to Lua
 * `label` to be shown left of checkbox
 * `selected` (optional): `true`/`false`
+* **Note**: If the new coordinate system is enabled, checkboxes are
+  positioned from the center of the checkbox, not the top.
 
 ### `scrollbar[<X>,<Y>;<W>,<H>;<orientation>;<name>;<value>]`
 
@@ -2280,6 +2359,41 @@ Elements
 
 **Note**: do _not_ use a element name starting with `key_`; those names are
 reserved to pass key press events to formspec!
+
+Migrating to Real Coordinates
+-----------------------------
+
+In the old system, positions included padding and spacing. Padding is a gap between
+the formspec window edges and content, and spacing is the gaps between items. For
+example, two `1x1` elements at `0,0` and `1,1` would have a spacing of `5/4` between them,
+and a padding of `3/8` from the formspec edge. It may be easiest to recreate old layouts
+in the new coordinate system from scratch.
+
+To recreate an old layout with padding, you'll need to pass the positions and sizes
+through the following formula to re-introduce padding:
+
+```
+pos = (oldpos + 1)*spacing + padding
+where
+    padding = 3/8
+    spacing = 5/4
+```
+
+You'll need to change the `size[]` tag like this:
+
+```
+size = (oldsize-1)*spacing + padding*2 + 1
+```
+
+A few elements had random offsets in the old system. Here is a table which shows these
+offsets when migrating:
+
+| Element |  Position  |  Size   | Notes
+|---------|------------|---------|-------
+| box     | +0.3, +0.1 | 0, -0.4 |
+| button  |            |         | Buttons now support height, so set h = 2 * 15/13 * 0.35, and reposition if h ~= 15/13 * 0.35 before
+| list    |            |         | Spacing is now 0.25 for both directions, meaning lists will be taller in height
+| label   | 0, +0.3    |         | The first line of text is now positioned centered exactly at the position specified
 
 
 
