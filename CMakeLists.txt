@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 2.6)
 
+include(cmake/add_pch.cmake)
+
 if(${CMAKE_VERSION} STREQUAL "2.8.2")
 	# Bug http://vtk.org/Bug/view.php?id=11020
 	message(WARNING "CMake/CPack version 2.8.2 will not create working .deb packages!")
@@ -325,4 +327,3 @@ if(DOXYGEN_FOUND)
 		COMMENT "Generating API documentation with Doxygen" VERBATIM
 	)
 endif()
-

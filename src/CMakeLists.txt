@@ -717,6 +717,18 @@ else()
 	endif()
 endif()
 
+# Precompiled headers
+
+option(USE_PCH "Use precompiled headers (experimental!)" FALSE)
+if(USE_PCH)
+	if(BUILD_CLIENT)
+		add_precompiled_header(${PROJECT_NAME} pch/pch.h)
+	endif()
+
+	if(BUILD_SERVER)
+		add_precompiled_header(${PROJECT_NAME}server pch/pch.h)
+	endif()
+endif()
 
 # Installation
 
