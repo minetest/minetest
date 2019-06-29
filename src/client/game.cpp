@@ -801,8 +801,8 @@ private:
 
 	void updateChat(f32 dtime, const v2u32 &screensize);
 
-	bool nodePlacementPrediction(const ItemDefinition &selected_def,
-		const ItemStack &selected_item, const v3s16 &nodepos, const v3s16 &neighbourpos);
+	bool nodePlacement(const ItemDefinition &selected_def, const ItemStack &selected_item,
+		const v3s16 &nodepos, const v3s16 &neighbourpos, const PointedThing &pointed);
 	static const ClientEventHandler clientEventHandler[CLIENTEVENT_MAX];
 
 	InputHandler *input = nullptr;
@@ -1083,7 +1083,7 @@ void Game::run()
 		//    RenderingEngine::run() from this iteration
 		//  + Sleep time until the wanted FPS are reached
 		limitFps(&draw_times, &dtime);
-		
+
 		// Prepare render data for next iteration
 
 		updateStats(&stats, draw_times, dtime);
@@ -3225,39 +3225,24 @@ void Game::handlePointingAtNode(const PointedThing &pointed,
 
 			camera->setDigging(1);  // right click animation (always shown for feedback)
 
+			soundmaker->m_player_rightpunch_sound = SimpleSoundSpec();
+
 			// If the wielded item has node placement prediction,
 			// make that happen
+			// And also set the sound and send the interact
 			auto &def = selected_item.getDefinition(itemdef_manager);
-			bool placed = nodePlacementPrediction(def, selected_item, nodepos,
-				neighbourpos);
+			bool placed = nodePlacement(def, selected_item, nodepos, neighbourpos,
+				pointed);
 
-			if (placed) {
-				// Report to server
-				client->interact(INTERACT_PLACE, pointed);
-				// Read the sound
-				soundmaker->m_player_rightpunch_sound =
-						def.sound_place;
-
-				if (client->modsLoaded())
-					client->getScript()->on_placenode(pointed, def);
-			} else {
-				soundmaker->m_player_rightpunch_sound =
-						SimpleSoundSpec();
-
-				if (def.node_placement_prediction.empty() ||
-						nodedef_manager->get(map.getNode(nodepos)).rightclickable) {
-					client->interact(INTERACT_PLACE, pointed); // Report to server
-				} else {
-					soundmaker->m_player_rightpunch_sound =
-						def.sound_place_failed;
-				}
-			}
+			if (placed && client->modsLoaded())
+				client->getScript()->on_placenode(pointed, def);
 		}
 	}
 }
 
-bool Game::nodePlacementPrediction(const ItemDefinition &selected_def,
-	const ItemStack &selected_item, const v3s16 &nodepos, const v3s16 &neighbourpos)
+bool Game::nodePlacement(const ItemDefinition &selected_def,
+	const ItemStack &selected_item, const v3s16 &nodepos, const v3s16 &neighbourpos,
+	const PointedThing &pointed)
 {
 	std::string prediction = selected_def.node_placement_prediction;
 	const NodeDefManager *nodedef = client->ndef();
@@ -3266,144 +3251,162 @@ bool Game::nodePlacementPrediction(const ItemDefinition &selected_def,
 	bool is_valid_position;
 
 	node = map.getNode(nodepos, &is_valid_position);
-	if (!is_valid_position)
+	if (!is_valid_position) {
+		soundmaker->m_player_rightpunch_sound = selected_def.sound_place_failed;
 		return false;
+	}
 
-	if (!prediction.empty() && !(nodedef->get(node).rightclickable &&
+	if (prediction.empty() || (nodedef->get(node).rightclickable &&
 			!isKeyDown(KeyType::SNEAK))) {
-		verbosestream << "Node placement prediction for "
-			<< selected_item.name << " is "
-			<< prediction << std::endl;
-		v3s16 p = neighbourpos;
+		// Report to server
+		client->interact(INTERACT_PLACE, pointed);
+		return false;
+	}
 
-		// Place inside node itself if buildable_to
-		MapNode n_under = map.getNode(nodepos, &is_valid_position);
-		if (is_valid_position)
-		{
-			if (nodedef->get(n_under).buildable_to)
-				p = nodepos;
-			else {
-				node = map.getNode(p, &is_valid_position);
-				if (is_valid_position &&!nodedef->get(node).buildable_to)
-					return false;
+	verbosestream << "Node placement prediction for "
+		<< selected_def.name << " is "
+		<< prediction << std::endl;
+	v3s16 p = neighbourpos;
+
+	// Place inside node itself if buildable_to
+	MapNode n_under = map.getNode(nodepos, &is_valid_position);
+	if (is_valid_position) {
+		if (nodedef->get(n_under).buildable_to) {
+			p = nodepos;
+		} else {
+			node = map.getNode(p, &is_valid_position);
+			if (is_valid_position && !nodedef->get(node).buildable_to) {
+				// Report to server
+				client->interact(INTERACT_PLACE, pointed);
+				return false;
 			}
 		}
+	}
 
-		// Find id of predicted node
-		content_t id;
-		bool found = nodedef->getId(prediction, id);
+	// Find id of predicted node
+	content_t id;
+	bool found = nodedef->getId(prediction, id);
 
-		if (!found) {
-			errorstream << "Node placement prediction failed for "
-				<< selected_item.name << " (places "
-				<< prediction
-				<< ") - Name not known" << std::endl;
-			return false;
+	if (!found) {
+		errorstream << "Node placement prediction failed for "
+			<< selected_def.name << " (places "
+			<< prediction
+			<< ") - Name not known" << std::endl;
+		// Handle this as if prediction was empty
+		// Report to server
+		client->interact(INTERACT_PLACE, pointed);
+		return false;
+	}
+
+	const ContentFeatures &predicted_f = nodedef->get(id);
+
+	// Predict param2 for facedir and wallmounted nodes
+	u8 param2 = 0;
+
+	if (predicted_f.param_type_2 == CPT2_WALLMOUNTED ||
+			predicted_f.param_type_2 == CPT2_COLORED_WALLMOUNTED) {
+		v3s16 dir = nodepos - neighbourpos;
+
+		if (abs(dir.Y) > MYMAX(abs(dir.X), abs(dir.Z))) {
+			param2 = dir.Y < 0 ? 1 : 0;
+		} else if (abs(dir.X) > abs(dir.Z)) {
+			param2 = dir.X < 0 ? 3 : 2;
+		} else {
+			param2 = dir.Z < 0 ? 5 : 4;
 		}
+	}
 
-		const ContentFeatures &predicted_f = nodedef->get(id);
+	if (predicted_f.param_type_2 == CPT2_FACEDIR ||
+			predicted_f.param_type_2 == CPT2_COLORED_FACEDIR) {
+		v3s16 dir = nodepos - floatToInt(client->getEnv().getLocalPlayer()->getPosition(), BS);
 
-		// Predict param2 for facedir and wallmounted nodes
-		u8 param2 = 0;
+		if (abs(dir.X) > abs(dir.Z)) {
+			param2 = dir.X < 0 ? 3 : 1;
+		} else {
+			param2 = dir.Z < 0 ? 2 : 0;
+		}
+	}
+
+	assert(param2 <= 5);
+
+	//Check attachment if node is in group attached_node
+	if (((ItemGroupList) predicted_f.groups)["attached_node"] != 0) {
+		static v3s16 wallmounted_dirs[8] = {
+			v3s16(0, 1, 0),
+			v3s16(0, -1, 0),
+			v3s16(1, 0, 0),
+			v3s16(-1, 0, 0),
+			v3s16(0, 0, 1),
+			v3s16(0, 0, -1),
+		};
+		v3s16 pp;
 
 		if (predicted_f.param_type_2 == CPT2_WALLMOUNTED ||
-			predicted_f.param_type_2 == CPT2_COLORED_WALLMOUNTED) {
-			v3s16 dir = nodepos - neighbourpos;
-
-			if (abs(dir.Y) > MYMAX(abs(dir.X), abs(dir.Z))) {
-				param2 = dir.Y < 0 ? 1 : 0;
-			} else if (abs(dir.X) > abs(dir.Z)) {
-				param2 = dir.X < 0 ? 3 : 2;
-			} else {
-				param2 = dir.Z < 0 ? 5 : 4;
-			}
-		}
-
-		if (predicted_f.param_type_2 == CPT2_FACEDIR ||
-			predicted_f.param_type_2 == CPT2_COLORED_FACEDIR) {
-			v3s16 dir = nodepos - floatToInt(client->getEnv().getLocalPlayer()->getPosition(), BS);
-
-			if (abs(dir.X) > abs(dir.Z)) {
-				param2 = dir.X < 0 ? 3 : 1;
-			} else {
-				param2 = dir.Z < 0 ? 2 : 0;
-			}
-		}
-
-		assert(param2 <= 5);
-
-		//Check attachment if node is in group attached_node
-		if (((ItemGroupList) predicted_f.groups)["attached_node"] != 0) {
-			static v3s16 wallmounted_dirs[8] = {
-				v3s16(0, 1, 0),
-				v3s16(0, -1, 0),
-				v3s16(1, 0, 0),
-				v3s16(-1, 0, 0),
-				v3s16(0, 0, 1),
-				v3s16(0, 0, -1),
-			};
-			v3s16 pp;
-
-			if (predicted_f.param_type_2 == CPT2_WALLMOUNTED ||
 				predicted_f.param_type_2 == CPT2_COLORED_WALLMOUNTED)
-				pp = p + wallmounted_dirs[param2];
-			else
-				pp = p + v3s16(0, -1, 0);
+			pp = p + wallmounted_dirs[param2];
+		else
+			pp = p + v3s16(0, -1, 0);
 
-			if (!nodedef->get(map.getNode(pp)).walkable)
-				return false;
+		if (!nodedef->get(map.getNode(pp)).walkable) {
+			// Report to server
+			client->interact(INTERACT_PLACE, pointed);
+			return false;
 		}
+	}
 
-		// Apply color
-		if ((predicted_f.param_type_2 == CPT2_COLOR
+	// Apply color
+	if ((predicted_f.param_type_2 == CPT2_COLOR
 			|| predicted_f.param_type_2 == CPT2_COLORED_FACEDIR
 			|| predicted_f.param_type_2 == CPT2_COLORED_WALLMOUNTED)) {
-			const std::string &indexstr = selected_item.metadata.getString(
-				"palette_index", 0);
-			if (!indexstr.empty()) {
-				s32 index = mystoi(indexstr);
-				if (predicted_f.param_type_2 == CPT2_COLOR) {
-					param2 = index;
-				} else if (predicted_f.param_type_2
-					== CPT2_COLORED_WALLMOUNTED) {
-					// param2 = pure palette index + other
-					param2 = (index & 0xf8) | (param2 & 0x07);
-				} else if (predicted_f.param_type_2
-					== CPT2_COLORED_FACEDIR) {
-					// param2 = pure palette index + other
-					param2 = (index & 0xe0) | (param2 & 0x1f);
-				}
+		const std::string &indexstr = selected_item.metadata.getString(
+			"palette_index", 0);
+		if (!indexstr.empty()) {
+			s32 index = mystoi(indexstr);
+			if (predicted_f.param_type_2 == CPT2_COLOR) {
+				param2 = index;
+			} else if (predicted_f.param_type_2 == CPT2_COLORED_WALLMOUNTED) {
+				// param2 = pure palette index + other
+				param2 = (index & 0xf8) | (param2 & 0x07);
+			} else if (predicted_f.param_type_2 == CPT2_COLORED_FACEDIR) {
+				// param2 = pure palette index + other
+				param2 = (index & 0xe0) | (param2 & 0x1f);
 			}
 		}
+	}
 
-		// Add node to client map
-		MapNode n(id, 0, param2);
+	// Add node to client map
+	MapNode n(id, 0, param2);
 
-		try {
-			LocalPlayer *player = client->getEnv().getLocalPlayer();
+	try {
+		LocalPlayer *player = client->getEnv().getLocalPlayer();
 
-			// Dont place node when player would be inside new node
-			// NOTE: This is to be eventually implemented by a mod as client-side Lua
-			if (!nodedef->get(n).walkable ||
+		// Dont place node when player would be inside new node
+		// NOTE: This is to be eventually implemented by a mod as client-side Lua
+		if (!nodedef->get(n).walkable ||
 				g_settings->getBool("enable_build_where_you_stand") ||
 				(client->checkPrivilege("noclip") && g_settings->getBool("noclip")) ||
 				(nodedef->get(n).walkable &&
 					neighbourpos != player->getStandingNodePos() + v3s16(0, 1, 0) &&
 					neighbourpos != player->getStandingNodePos() + v3s16(0, 2, 0))) {
-
-				// This triggers the required mesh update too
-				client->addNode(p, n);
-				return true;
-			}
-		} catch (InvalidPositionException &e) {
-			errorstream << "Node placement prediction failed for "
-				<< selected_item.name << " (places "
-				<< prediction
-				<< ") - Position not loaded" << std::endl;
+			// This triggers the required mesh update too
+			client->addNode(p, n);
+			// Report to server
+			client->interact(INTERACT_PLACE, pointed);
+			// A node is predicted, also play a sound
+			soundmaker->m_player_rightpunch_sound = selected_def.sound_place;
+			return true;
+		} else {
+			soundmaker->m_player_rightpunch_sound = selected_def.sound_place_failed;
+			return false;
 		}
+	} catch (InvalidPositionException &e) {
+		errorstream << "Node placement prediction failed for "
+			<< selected_def.name << " (places "
+			<< prediction
+			<< ") - Position not loaded" << std::endl;
+		soundmaker->m_player_rightpunch_sound = selected_def.sound_place_failed;
+		return false;
 	}
-
-	return false;
 }
 
 void Game::handlePointingAtObject(const PointedThing &pointed,
