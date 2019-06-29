@@ -3322,7 +3322,8 @@ bool Game::nodePlacementPrediction(const ItemDefinition &playeritem_def,
 	if (!is_valid_position)
 		return false;
 
-	if (!prediction.empty() && !nodedef->get(node).rightclickable) {
+	if (!prediction.empty() && !(nodedef->get(node).rightclickable &&
+			!isKeyDown(KeyType::SNEAK))) {
 		verbosestream << "Node placement prediction for "
 			<< playeritem_def.name << " is "
 			<< prediction << std::endl;
