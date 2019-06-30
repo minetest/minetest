@@ -1340,11 +1340,6 @@ void ServerEnvironment::step(float dtime)
 
 	if (m_active_block_modifier_interval.step(dtime, m_cache_abm_interval))
 		do { // breakable
-			if (m_active_block_interval_overload_skip > 0) {
-				ScopeProfiler sp(g_profiler, "SEnv: ABM overload skips");
-				m_active_block_interval_overload_skip--;
-				break;
-			}
 			ScopeProfiler sp(g_profiler, "SEnv: modify in blocks avg per interval", SPT_AVG);
 			TimeTaker timer("modify in active blocks per interval");
 
@@ -1354,30 +1349,41 @@ void ServerEnvironment::step(float dtime)
 			int blocks_scanned = 0;
 			int abms_run = 0;
 			int blocks_cached = 0;
-			for (const v3s16 &p : m_active_blocks.m_abm_list) {
+
+			std::vector<v3s16> output(m_active_blocks.m_abm_list.size());
+			std::copy(m_active_blocks.m_abm_list.begin(), m_active_blocks.m_abm_list.end(), output.begin());
+			std::random_shuffle(output.begin(), output.end());
+
+			int i = 0;
+			u32 max_time_ms = 200;
+			for (const v3s16 &p : output) {
 				MapBlock *block = m_map->getBlockNoCreateNoEx(p);
 				if (!block)
 					continue;
+
+				i++;
 
 				// Set current time as timestamp
 				block->setTimestampNoChangedFlag(m_game_time);
 
 				/* Handle ActiveBlockModifiers */
 				abmhandler.apply(block, blocks_scanned, abms_run, blocks_cached);
+
+				u32 time_ms = timer.getTimerTime();
+
+				if (time_ms > max_time_ms) {
+					warningstream<<"active block modifiers took "
+								 <<time_ms<<"ms (processed " << i << " of "
+								 <<output.size()<<" active blocks)"<<std::endl;
+					break;
+				}
 			}
 			g_profiler->avg("SEnv: active blocks", m_active_blocks.m_abm_list.size());
 			g_profiler->avg("SEnv: active blocks cached", blocks_cached);
 			g_profiler->avg("SEnv: active blocks scanned for ABMs", blocks_scanned);
 			g_profiler->avg("SEnv: ABMs run", abms_run);
 
-			u32 time_ms = timer.stop(true);
-			u32 max_time_ms = 200;
-			if (time_ms > max_time_ms) {
-				warningstream<<"active block modifiers took "
-					<<time_ms<<"ms (longer than "
-					<<max_time_ms<<"ms)"<<std::endl;
-				m_active_block_interval_overload_skip = (time_ms / max_time_ms) + 1;
-			}
+			timer.stop(true);
 		}while(0);
 
 	/*
