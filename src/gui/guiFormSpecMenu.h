@@ -469,6 +469,7 @@ private:
 
 	typedef struct {
 		bool explicit_size;
+		std::string size_type;
 		bool real_coordinates;
 		v2f invsize;
 		v2s32 size;

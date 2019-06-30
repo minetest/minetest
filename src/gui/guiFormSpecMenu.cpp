@@ -291,29 +291,38 @@ v2s32 GUIFormSpecMenu::getRealCoordinateGeometry(const std::vector<std::string> 
 
 void GUIFormSpecMenu::parseSize(parserData* data, const std::string &element)
 {
-	std::vector<std::string> parts = split(element,',');
+	std::vector<std::string> parts = split(element, ',');
 
 	if (((parts.size() == 2) || parts.size() == 3) ||
 		((parts.size() > 3) && (m_formspec_version > FORMSPEC_API_VERSION)))
 	{
 		if (parts[1].find(';') != std::string::npos)
-			parts[1] = parts[1].substr(0,parts[1].find(';'));
+			parts[1] = parts[1].substr(0, parts[1].find(';'));
 
 		data->invsize.X = MYMAX(0, stof(parts[0]));
 		data->invsize.Y = MYMAX(0, stof(parts[1]));
 
 		lockSize(false);
-#ifndef __ANDROID__
+		data->size_type = "";
+
 		if (parts.size() == 3) {
-			if (parts[2] == "true") {
-				lockSize(true,v2u32(800,600));
+			std::string type = trim(parts[2]);
+#ifndef __ANDROID__
+			if (type == "true") {
+				lockSize(true, v2u32(800, 600));
+			}
+			if (type == "stretch" || type == "fit" || type == "fill" ||
+				 type == "mini")
+			{
+				data->size_type = size;
 			}
 		}
 #endif
 		data->explicit_size = true;
 		return;
 	}
-	errorstream<< "Invalid size element (" << parts.size() << "): '" << element << "'"  << std::endl;
+	errorstream << "Invalid size element (" << parts.size() << "): '" << element <<
+		"'" << std::endl;
 }
 
 void GUIFormSpecMenu::parseContainer(parserData* data, const std::string &element)
@@ -2451,6 +2460,21 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 		m_font = g_fontengine->getFont();
 
 		if (mydata.real_coordinates) {
+			if (mydata.size_type == "stretch") {
+				imgsize.X = mydata.screensize.X / mydata.invsize.X;
+				imgsize.Y = mydata.screensize.Y / mydata.invsize.Y;
+			} else if (mydata.size_type == "fit") {
+				imgsize.X = MYMIN(mydata.screensize.X / mydata.invsize.X,
+					mydata.screensize.Y / mydata.invsize.Y);
+				imgsize.Y = imgsize.X;
+			} else if (mydata.size_type == "fill") {
+				imgsize.X = MYMAX(mydata.screensize.X / mydata.invsize.X,
+					mydata.screensize.Y / mydata.invsize.Y);
+				imgsize.Y = imgsize.X;
+			} else if (mydata.size_type == "mini") {
+				imgsize.X = 1;
+				imgsize.Y = 1;
+			}
 			mydata.size = v2s32(
 				mydata.invsize.X*imgsize.X,
 				mydata.invsize.Y*imgsize.Y
