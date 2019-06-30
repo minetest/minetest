@@ -420,6 +420,7 @@ private:
 			const std::string &type);
 	void parseHyperText(parserData *data, const std::string &element);
 	void parseLabel(parserData* data, const std::string &element);
+	void parseLabelOptions(parserData* data, const std::string &element);
 	void parseVertLabel(parserData* data, const std::string &element);
 	void parseImageButton(parserData* data, const std::string &element,
 			const std::string &type);

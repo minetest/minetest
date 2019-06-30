@@ -1756,14 +1756,51 @@ void GUIFormSpecMenu::parseHyperText(parserData *data, const std::string &elemen
 	m_fields.push_back(spec);
 }
 
+void GUIFormSpecMenu::parseLabelOptions(parserData* data, const std::string &element)
+{
+	std::vector<std::string> parts = split(element, ';');
+
+	if ((parts.size() == 3) ||
+		((parts.size() > 3) && (m_formspec_version > FORMSPEC_API_VERSION)))
+	{
+		std::string x_align = trim(parts[0]);
+		std::string y_align = trim(parts[1]);
+		f32 spacing = stof(parts[2]);
+
+		auto x = gui::EGUIA_UPPERLEFT;
+		auto y = gui::EGUIA_CENTER;
+
+		if (x_align == "right")
+			x = gui::EGUIA_LOWEERRIGHT;
+		if (x_align == "center")
+			x = gui::EGUIA_CENTER;
+
+		if (y_align == "top")
+			y = gui::EGUIA_UPPERLEFT;
+		if (y_align == "bottom")
+			y = gui::EGUIA_LOWEERRIGHT;
+
+		if (spacing > 0)
+			data->labelOptions.spacing = spacing;
+		else
+			warningstream << "Invalid labeloptions spacing(" << spacing << "): '" <<
+				element << "'" << std::endl;
+
+		data->labelOptions.X = x;
+		data->labelOptions.Y = y;
+	}
+	warningstream << "Invalid labeloptions element(" << parts.size() << "): '" << element
+		<< "'" << std::endl;
+}
+
 void GUIFormSpecMenu::parseLabel(parserData* data, const std::string &element)
 {
-	std::vector<std::string> parts = split(element,';');
+	std::vector<std::string> parts = split(element, ';');
 
 	if ((parts.size() == 2) ||
 		((parts.size() > 2) && (m_formspec_version > FORMSPEC_API_VERSION)))
 	{
-		std::vector<std::string> v_pos = split(parts[0],',');
+		std::vector<std::string> v_pos = split(parts[0], ',');
 		std::string text = parts[1];
 
 		MY_CHECKPOS("label",0);
@@ -1783,18 +1820,31 @@ void GUIFormSpecMenu::parseLabel(parserData* data, const std::string &element)
 
 			if (data->real_coordinates) {
 				// Lines are spaced at the distance of 1/2 imgsize.
-				// This alows lines that line up with the new elements
-				// easily without sacrificing good line distance.  If
+				// This allows lines that line up with the new elements
+				// easily without sacrificing good line distance. If
 				// it was one whole imgsize, it would have too much
 				// spacing.
 				v2s32 pos = getRealCoordinateBasePos(v_pos);
 
-				// Labels are positioned by their center, not their top.
-				pos.Y += (((float) imgsize.Y) / -2) + (((float) imgsize.Y) * i / 2);
+				// Add newline spacing
+				pos.Y += (((float) imgsize.Y) * data->labelOptions.spacing)
+
+				f32 font_width = m_font->getDimension(wlabel.c_str()).Width;
+				f32 font_height = font_line_height(m_font);
+
+				if (data->labelOptions.X == gui::EGUIA_CENTER)
+					pos.X -= font_width / 2;
+				if (data->labelOptions.X == gui::EGUIA_LOWEERRIGHT)
+					pos.X -= font_width;
+
+				if (data->labelOptions.Y == gui::EGUIA_UPPERLEFT)
+					pos.X -= font_height;
+				if (data->labelOptions.Y == gui::EGUIA_CENTER)
+					pos.X -= font_height / 2;
 
 				rect = core::rect<s32>(
 					pos.X, pos.Y,
-					pos.X + m_font->getDimension(wlabel_plain.c_str()).Width,
+					pos.X + font_width,
 					pos.Y + imgsize.Y);
 
 			} else {
@@ -1846,7 +1896,7 @@ void GUIFormSpecMenu::parseLabel(parserData* data, const std::string &element)
 		return;
 	}
 	errorstream << "Invalid label element(" << parts.size() << "): '" << element
-		<< "'"  << std::endl;
+		<< "'" << std::endl;
 }
 
 void GUIFormSpecMenu::parseVertLabel(parserData* data, const std::string &element)
@@ -2773,7 +2823,12 @@ void GUIFormSpecMenu::parseElement(parserData* data, const std::string &element)
 	}
 
 	if (type == "label") {
-		parseLabel(data,description);
+		parseLabel(data, description);
+		return;
+	}
+
+	if (type == "labeloptions") {
+		parseLabelOptions(data, description);
 		return;
 	}
 
