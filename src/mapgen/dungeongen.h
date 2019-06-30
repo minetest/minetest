@@ -42,22 +42,35 @@ struct DungeonParams {
 	s32 seed;
 
 	content_t c_wall;
+	// Randomly scattered alternative wall nodes
 	content_t c_alt_wall;
 	content_t c_stair;
 
+	// Diagonal corridors are possible
 	bool diagonal_dirs;
+	// Dungeon only generates in ground
 	bool only_in_ground;
+	// Dimensions of 3D 'brush' that creates corridors.
+	// Dimensions are of the empty space, not including walls / floor / ceilng.
 	v3s16 holesize;
+	// Corridor length
 	u16 corridor_len_min;
 	u16 corridor_len_max;
+	// Room size includes walls / floor / ceilng
 	v3s16 room_size_min;
 	v3s16 room_size_max;
+	// The 1st room generated has a 1 in 4 chance of being 'large', all other
+	// rooms are not 'large'.
 	v3s16 room_size_large_min;
 	v3s16 room_size_large_max;
+	// Number of rooms
 	u16 rooms_min;
 	u16 rooms_max;
+	// Usually 'GENNOTIFY_DUNGEON', but mapgen v6 uses 'GENNOTIFY_TEMPLE' for
+	// desert dungeons.
 	GenNotifyType notifytype;
 
+	// 3D noise that determines which c_wall nodes are converted to c_alt_wall
 	NoiseParams np_alt_wall;
 };
 
