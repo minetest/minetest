@@ -1936,6 +1936,10 @@ Elements
           coordinates or leaving the screen.
         * `fill`: The formspec is made as big as the larger dimension of the
           screen, cutting off on the other dimension if necessary.
+        * `wide`: The formspec is as wide as the screen. The height may or may not
+          be cut off depending on the height of the screen.
+        * `tall`: The formspec is as tall as the screen. The width may or may not
+          be cut off depending on the width of the screen.
         * `mini`: Each single coordinate is made a single pixel. This is *not*
           for normal forms; only use it for special uses.
 * deprecated: `invsize[<W>,<H>;]`

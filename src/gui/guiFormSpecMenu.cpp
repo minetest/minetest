@@ -311,13 +311,9 @@ void GUIFormSpecMenu::parseSize(parserData* data, const std::string &element)
 			if (type == "true") {
 				lockSize(true, v2u32(800, 600));
 			}
-			if (type == "stretch" || type == "fit" || type == "fill" ||
-				 type == "mini")
-			{
-				data->size_type = type;
-			}
-		}
 #endif
+			data->size_type = type;
+		}
 		data->explicit_size = true;
 		return;
 	}
@@ -2463,18 +2459,25 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 			if (mydata.size_type == "stretch") {
 				imgsize.X = mydata.screensize.X / mydata.invsize.X;
 				imgsize.Y = mydata.screensize.Y / mydata.invsize.Y;
-			} else if (mydata.size_type == "fit") {
-				imgsize.X = MYMIN(mydata.screensize.X / mydata.invsize.X,
-					mydata.screensize.Y / mydata.invsize.Y);
-				imgsize.Y = imgsize.X;
-			} else if (mydata.size_type == "fill") {
-				imgsize.X = MYMAX(mydata.screensize.X / mydata.invsize.X,
-					mydata.screensize.Y / mydata.invsize.Y);
-				imgsize.Y = imgsize.X;
-			} else if (mydata.size_type == "mini") {
-				imgsize.X = 1;
-				imgsize.Y = 1;
 			}
+
+			if (mydata.size_type == "fit")
+				imgsize = MYMIN(mydata.screensize.X / mydata.invsize.X,
+					mydata.screensize.Y / mydata.invsize.Y);
+
+			if (mydata.size_type == "fill")
+				imgsize = MYMAX(mydata.screensize.X / mydata.invsize.X,
+					mydata.screensize.Y / mydata.invsize.Y);
+
+			if (mydata.size_type == "wide")
+				imgsize = mydata.screensize.X / mydata.invsize.X;
+
+			if (mydata.size_type == "tall")
+				imgsize = mydata.screensize.Y / mydata.invsize.Y;
+
+			if (mydata.size_type == "mini")
+				imgsize = 1;
+
 			mydata.size = v2s32(
 				mydata.invsize.X*imgsize.X,
 				mydata.invsize.Y*imgsize.Y
