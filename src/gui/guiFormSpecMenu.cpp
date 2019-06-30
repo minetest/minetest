@@ -2461,22 +2461,32 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 				imgsize.Y = mydata.screensize.Y / mydata.invsize.Y;
 			}
 
-			if (mydata.size_type == "fit")
-				imgsize = MYMIN(mydata.screensize.X / mydata.invsize.X,
+			if (mydata.size_type == "fit") {
+				imgsize.X = MYMIN(mydata.screensize.X / mydata.invsize.X,
 					mydata.screensize.Y / mydata.invsize.Y);
+				imgsize.Y = imgsize.X;
+			}
 
-			if (mydata.size_type == "fill")
-				imgsize = MYMAX(mydata.screensize.X / mydata.invsize.X,
+			if (mydata.size_type == "fill") {
+				imgsize.X = MYMAX(mydata.screensize.X / mydata.invsize.X,
 					mydata.screensize.Y / mydata.invsize.Y);
+				imgsize.Y = imgsize.X;
+			}
 
-			if (mydata.size_type == "wide")
-				imgsize = mydata.screensize.X / mydata.invsize.X;
+			if (mydata.size_type == "wide") {
+				imgsize.X = mydata.screensize.X / mydata.invsize.X;
+				imgsize.Y = imgsize.X;
+			}
 
-			if (mydata.size_type == "tall")
-				imgsize = mydata.screensize.Y / mydata.invsize.Y;
+			if (mydata.size_type == "tall") {
+				imgsize.Y = mydata.screensize.Y / mydata.invsize.Y;
+				imgsize.X = imgsize.Y;
+			}
 
-			if (mydata.size_type == "mini")
-				imgsize = 1;
+			if (mydata.size_type == "mini") {
+				imgsize.X = 1;
+				imgsize.Y = 1;
+			}
 
 			mydata.size = v2s32(
 				mydata.invsize.X*imgsize.X,
