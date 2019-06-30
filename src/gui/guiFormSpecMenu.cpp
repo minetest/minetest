@@ -314,7 +314,7 @@ void GUIFormSpecMenu::parseSize(parserData* data, const std::string &element)
 			if (type == "stretch" || type == "fit" || type == "fill" ||
 				 type == "mini")
 			{
-				data->size_type = size;
+				data->size_type = type;
 			}
 		}
 #endif
