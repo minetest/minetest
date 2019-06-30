@@ -1339,53 +1339,50 @@ void ServerEnvironment::step(float dtime)
 	}
 
 	if (m_active_block_modifier_interval.step(dtime, m_cache_abm_interval))
-		do { // breakable
-			ScopeProfiler sp(g_profiler, "SEnv: modify in blocks avg per interval", SPT_AVG);
-			TimeTaker timer("modify in active blocks per interval");
+		ScopeProfiler sp(g_profiler, "SEnv: modify in blocks avg per interval", SPT_AVG);
+		TimeTaker timer("modify in active blocks per interval");
 
-			// Initialize handling of ActiveBlockModifiers
-			ABMHandler abmhandler(m_abms, m_cache_abm_interval, this, true);
+		// Initialize handling of ActiveBlockModifiers
+		ABMHandler abmhandler(m_abms, m_cache_abm_interval, this, true);
 
-			int blocks_scanned = 0;
-			int abms_run = 0;
-			int blocks_cached = 0;
+		int blocks_scanned = 0;
+		int abms_run = 0;
+		int blocks_cached = 0;
 
-			std::vector<v3s16> output(m_active_blocks.m_abm_list.size());
-			std::copy(m_active_blocks.m_abm_list.begin(), m_active_blocks.m_abm_list.end(), output.begin());
-			std::random_shuffle(output.begin(), output.end());
+		std::vector<v3s16> output(m_active_blocks.m_abm_list.size());
+		std::copy(m_active_blocks.m_abm_list.begin(), m_active_blocks.m_abm_list.end(), output.begin());
+		std::random_shuffle(output.begin(), output.end());
 
-			int i = 0;
-			u32 max_time_ms = 200;
-			for (const v3s16 &p : output) {
-				MapBlock *block = m_map->getBlockNoCreateNoEx(p);
-				if (!block)
-					continue;
+		int i = 0;
+		u32 max_time_ms = 200;
+		for (const v3s16 &p : output) {
+			MapBlock *block = m_map->getBlockNoCreateNoEx(p);
+			if (!block)
+				continue;
 
-				i++;
+			i++;
 
-				// Set current time as timestamp
-				block->setTimestampNoChangedFlag(m_game_time);
+			// Set current time as timestamp
+			block->setTimestampNoChangedFlag(m_game_time);
 
-				/* Handle ActiveBlockModifiers */
-				abmhandler.apply(block, blocks_scanned, abms_run, blocks_cached);
+			/* Handle ActiveBlockModifiers */
+			abmhandler.apply(block, blocks_scanned, abms_run, blocks_cached);
 
-				u32 time_ms = timer.getTimerTime();
+			u32 time_ms = timer.getTimerTime();
 
-				if (time_ms > max_time_ms) {
-					warningstream<<"active block modifiers took "
-								 <<time_ms<<"ms (processed " << i << " of "
-								 <<output.size()<<" active blocks)"<<std::endl;
-					break;
-				}
+			if (time_ms > max_time_ms) {
+				warningstream << "active block modifiers took "
+					  << time_ms << "ms (processed " << i << " of "
+					  << output.size() << " active blocks)" << std::endl;
+				break;
 			}
-			g_profiler->avg("SEnv: active blocks", m_active_blocks.m_abm_list.size());
-			g_profiler->avg("SEnv: active blocks cached", blocks_cached);
-			g_profiler->avg("SEnv: active blocks scanned for ABMs", blocks_scanned);
-			g_profiler->avg("SEnv: ABMs run", abms_run);
+		}
+		g_profiler->avg("SEnv: active blocks", m_active_blocks.m_abm_list.size());
+		g_profiler->avg("SEnv: active blocks cached", blocks_cached);
+		g_profiler->avg("SEnv: active blocks scanned for ABMs", blocks_scanned);
+		g_profiler->avg("SEnv: ABMs run", abms_run);
 
-			timer.stop(true);
-		}while(0);
-
+		timer.stop(true);
 	/*
 		Step script environment (run global on_step())
 	*/
