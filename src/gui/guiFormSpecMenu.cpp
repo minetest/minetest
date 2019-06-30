@@ -1771,14 +1771,14 @@ void GUIFormSpecMenu::parseLabelOptions(parserData* data, const std::string &ele
 		EGUI_ALIGNMENT y = gui::EGUIA_CENTER;
 
 		if (x_align == "right")
-			x = gui::EGUIA_LOWEERRIGHT;
+			x = gui::EGUIA_LOWERRIGHT;
 		if (x_align == "center")
 			x = gui::EGUIA_CENTER;
 
 		if (y_align == "top")
 			y = gui::EGUIA_UPPERLEFT;
 		if (y_align == "bottom")
-			y = gui::EGUIA_LOWEERRIGHT;
+			y = gui::EGUIA_LOWERRIGHT;
 
 		if (spacing > 0)
 			data->labelOptions.spacing = spacing;
@@ -1827,14 +1827,14 @@ void GUIFormSpecMenu::parseLabel(parserData* data, const std::string &element)
 				v2s32 pos = getRealCoordinateBasePos(v_pos);
 
 				// Add newline spacing
-				pos.Y += (((float) imgsize.Y) * data->labelOptions.spacing)
+				pos.Y += (((float) imgsize.Y) * data->labelOptions.spacing);
 
 				f32 font_width = m_font->getDimension(wlabel.c_str()).Width;
 				f32 font_height = font_line_height(m_font);
 
 				if (data->labelOptions.X == gui::EGUIA_CENTER)
 					pos.X -= font_width / 2;
-				if (data->labelOptions.X == gui::EGUIA_LOWEERRIGHT)
+				if (data->labelOptions.X == gui::EGUIA_LOWERRIGHT)
 					pos.X -= font_width;
 
 				if (data->labelOptions.Y == gui::EGUIA_UPPERLEFT)
