@@ -1767,8 +1767,8 @@ void GUIFormSpecMenu::parseLabelOptions(parserData* data, const std::string &ele
 		std::string y_align = trim(parts[1]);
 		f32 spacing = stof(parts[2]);
 
-		auto x = gui::EGUIA_UPPERLEFT;
-		auto y = gui::EGUIA_CENTER;
+		EGUI_ALIGNMENT x = gui::EGUIA_UPPERLEFT;
+		EGUI_ALIGNMENT y = gui::EGUIA_CENTER;
 
 		if (x_align == "right")
 			x = gui::EGUIA_LOWEERRIGHT;
