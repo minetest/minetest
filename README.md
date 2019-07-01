@@ -10,8 +10,8 @@ Minetest is a free open-source voxel game engine with easy modding and game crea
 Copyright (C) 2010-2019 Perttu Ahola <celeron55@gmail.com>
 and contributors (see source file comments and the version control log)
 
-In case you downloaded the source code:
----------------------------------------
+In case you downloaded the source code
+--------------------------------------
 If you downloaded the Minetest Engine source code in which this file is
 contained, you probably want to download the [Minetest Game](https://github.com/minetest/minetest_game/)
 project too. See its README.txt for more information.
@@ -65,7 +65,7 @@ Some can be changed in the key config dialog in the settings tab.
 | +                             | Increase view range                                            |
 | -                             | Decrease view range                                            |
 | K                             | Enable/disable fly mode (needs fly privilege)                  |
-| L                             | Enable/disable pitch move mode                                 |
+| P                             | Enable/disable pitch move mode                                 |
 | J                             | Enable/disable fast mode (needs fast privilege)                |
 | H                             | Enable/disable noclip mode (needs noclip privilege)            |
 | E                             | Move fast in fast mode                                         |
@@ -98,7 +98,7 @@ Where each location is on each platform:
 * Windows installed:
     * $bin   = `C:\Program Files\Minetest\bin (Depends on the install location)`
     * $share = `C:\Program Files\Minetest (Depends on the install location)`
-    * $user  = `%Appdata%\Minetest`
+    * $user  = `%APPDATA%\Minetest`
 * Linux installed:
     * `bin`   = `/usr/bin`
     * `share` = `/usr/share/minetest`
@@ -110,18 +110,18 @@ Where each location is on each platform:
 
 Worlds can be found as separate folders in: `user/worlds/`
 
-Configuration file:
--------------------
+Configuration file
+------------------
 - Default location:
     `user/minetest.conf`
-- It is created by Minetest when it is ran the first time.
+- This file is created by closing Minetest for the first time.
 - A specific file can be specified on the command line:
     `--config <path-to-file>`
 - A run-in-place build will look for the configuration file in
     `location_of_exe/../minetest.conf` and also `location_of_exe/../../minetest.conf`
 
-Command-line options:
----------------------
+Command-line options
+--------------------
 - Use `--help`
 
 Compiling
@@ -140,7 +140,7 @@ Compiling
 | GMP        | 5.0.0+  | Bundled mini-GMP is used if not present |
 | JsonCPP    | 1.0.0+  | Bundled JsonCPP is used if not present |
 
-For Debian/Ubuntu:
+For Debian/Ubuntu users:
 
     sudo apt install build-essential libirrlicht-dev cmake libbz2-dev libpng-dev libjpeg-dev libxxf86vm-dev libgl1-mesa-dev libsqlite3-dev libogg-dev libvorbis-dev libopenal-dev libcurl4-gnutls-dev libfreetype6-dev zlib1g-dev libgmp-dev libjsoncpp-dev
 
@@ -194,15 +194,15 @@ Run it:
 
     ./bin/minetest
 
-- Use `cmake . -LH` to see all CMake options and their current state
+- Use `cmake . -LH` to see all CMake options and their current state.
 - If you want to install it system-wide (or are making a distribution package),
-  you will want to use `-DRUN_IN_PLACE=FALSE`
-- You can build a bare server by specifying `-DBUILD_SERVER=TRUE`
-- You can disable the client build by specifying `-DBUILD_CLIENT=FALSE`
-- You can select between Release and Debug build by `-DCMAKE_BUILD_TYPE=<Debug or Release>`
-  - Debug build is slower, but gives much more useful output in a debugger
-- If you build a bare server, you don't need to have Irrlicht installed.
-  - In that case use `-DIRRLICHT_SOURCE_DIR=/the/irrlicht/source`
+  you will want to use `-DRUN_IN_PLACE=FALSE`.
+- You can build a bare server by specifying `-DBUILD_SERVER=TRUE`.
+- You can disable the client build by specifying `-DBUILD_CLIENT=FALSE`.
+- You can select between Release and Debug build by `-DCMAKE_BUILD_TYPE=<Debug or Release>`.
+  - Debug build is slower, but gives much more useful output in a debugger.
+- If you build a bare server you don't need to have Irrlicht installed.
+  - In that case use `-DIRRLICHT_SOURCE_DIR=/the/irrlicht/source`.
 
 ### CMake options
 
@@ -291,32 +291,30 @@ Library specific options:
 
 ### Requirements
 
-* Visual Studio 2015 or newer https://visualstudio.microsoft.com
-* CMake https://cmake.org/download/
-* vcpkg https://github.com/Microsoft/vcpkg
-* git https://git-scm.com/downloads
+- [Visual Studio 2015 or newer](https://visualstudio.microsoft.com)
+- [CMake](https://cmake.org/download/)
+- [vcpkg](https://github.com/Microsoft/vcpkg)
+- [Git](https://git-scm.com/downloads)
 
-### Compiling and Installing the dependencies
+### Compiling and installing the dependencies
 
 It is highly recommended to use vcpkg as package manager.
 
 #### a) Using vcpkg to install dependencies
 
-After you successfully built vcpkg you can easily install the required libaries.
+After you successfully built vcpkg you can easily install the required libraries:
 ```powershell
 vcpkg install irrlicht zlib curl[winssl] openal-soft libvorbis libogg sqlite3 freetype luajit --triplet x64-windows
 ```
-`curl` is optional, but required to read the serverlist, `curl[winssl]` is required to use the content store.
 
-`openal-soft`, `libvorbis` and `libogg` are optional, but required to use sound.
+- `curl` is optional, but required to read the serverlist, `curl[winssl]` is required to use the content store.
+- `openal-soft`, `libvorbis` and `libogg` are optional, but required to use sound.
+- `freetype` is optional, it allows true-type font rendering.
+- `luajit` is optional, it replaces the integrated Lua interpreter with a faster just-in-time interpreter.
 
-`freetype` is optional, it allows true-type font rendering.
+There are other optional libraries, but they are not tested if they can build and link correctly.
 
-`luajit` is optional and replaces the integrated lua interpreter with a faster just in time interpreter
-
-There are other libaries that are optional, but are not tested if they can build and linked correctly.
-
-`--triplet` specify the target triplet e.g. x64-windows x86-windows
+Use `--triplet` to specify the target triplet, e.g. `x64-windows` or `x86-windows`.
 
 #### b) Compile the dependencies on your own
 
@@ -324,25 +322,25 @@ This is outdated and not recommended. Follow the instructions on https://dev.min
 
 ### Compile Minetest
 
-#### a) Using the vcpkg toolchain and CMakeGUI
+#### a) Using the vcpkg toolchain and CMake GUI
 1. Start up the CMake GUI
-2. Select "Browse Source..." and select DIR/minetest
-3. Select "Browse Build..." and select DIR/minetest-build
-4. Select "Configure"
+2. Select **Browse Source...** and select DIR/minetest
+3. Select **Browse Build...** and select DIR/minetest-build
+4. Select **Configure**
 5. Choose the right visual Studio version and target platform. It has to match the version of the installed dependencies
-6. Choose "Specify toolchain file for cross-compiling" 
-7. Click "Next"
+6. Choose **Specify toolchain file for cross-compiling**
+7. Click **Next**
 8. Select the vcpkg toolchain file e.g. `D:/vcpkg/scripts/buildsystems/vcpkg.cmake`
 9. Click Finish
 10. Wait until cmake have generated the cash file
-11. If there are any errors, solve them and hit "Configure"
-12. Click "Generate"
-13. Click "Open Project"
+11. If there are any errors, solve them and hit **Configure**
+12. Click **Generate**
+13. Click **Open Project**
 14. Compile Minetest inside Visual studio.
 
 #### b) Using the vcpkg toolchain and the commandline
 
-Run the following script in Powershell:
+Run the following script in PowerShell:
 
 ```powershell
 cmake . -G"Visual Studio 15 2017 Win64" -DCMAKE_TOOLCHAIN_FILE=D:/vcpkg/scripts/buildsystems/vcpkg.cmake -DCMAKE_BUILD_TYPE=Release -DENABLE_GETTEXT=0 -DENABLE_CURSES=0
@@ -350,29 +348,29 @@ cmake --build . --config Release
 ```
 Make sure that the right compiler is selected and the path to the vcpkg toolchain is correct.
 
-#### c) Using your own compiled libaries
+#### c) Using your own compiled libraries
 
 **This is outdated and not recommended**
 
 Follow the instructions on https://dev.minetest.net/Build_Win32_Minetest_including_all_required_libraries#VS2012_Build
 
-### Windows Installer using WIX Toolset
+### Windows Installer using WiX Toolset
 
 Requirements:
-* Visual Studio 2017
-* Wix Toolset
+* [Visual Studio 2017](https://visualstudio.microsoft.com/)
+* [WiX Toolset](https://wixtoolset.org/)
 
-In Visual Studio 2017 Installer select "Optional Features" -> "Wix Toolset"
+In the Visual Studio 2017 Installer select **Optional Features -> WiX Toolset**.
 
-Build the binaries like described above, but make sure you unselect "RUN_IN_PLACE".
+Build the binaries as described above, but make sure you unselect `RUN_IN_PLACE`.
 
-Open the generated Project file with VS. Right click "PACKAGE" and choose "Generate".
+Open the generated project file with Visual Studio. Right-click **Package** and choose **Generate**.
 It may take some minutes to generate the installer.
 
 
 Docker
 ------
-We provide Minetest server docker images using the Gitlab mirror registry.
+We provide Minetest server Docker images using the GitLab mirror registry.
 
 Images are built on each commit and available using the following tag scheme:
 
@@ -380,20 +378,20 @@ Images are built on each commit and available using the following tag scheme:
 * `registry.gitlab.com/minetest/minetest/server:<branch/tag>` (current branch or current tag)
 * `registry.gitlab.com/minetest/minetest/server:<commit-id>` (current commit id)
 
-If you want to test it on a docker server, you can easily run:
+If you want to test it on a Docker server you can easily run:
 
 	sudo docker run registry.gitlab.com/minetest/minetest/server:<docker tag>
 
-If you want to use it in a production environment you should use volumes bound to the docker host
+If you want to use it in a production environment you should use volumes bound to the Docker host
 to persist data and modify the configuration:
 
 	sudo docker create -v /home/minetest/data/:/var/lib/minetest/ -v /home/minetest/conf/:/etc/minetest/ registry.gitlab.com/minetest/minetest/server:master
 
 Data will be written to `/home/minetest/data` on the host, and configuration will be read from `/home/minetest/conf/minetest.conf`.
 
-Note: If you don't understand the previous commands, please read the official Docker documentation before use.
+**Note:** If you don't understand the previous commands please read the official Docker documentation before use.
 
-You can also host your minetest server inside a Kubernetes cluster. See our example implementation in `misc/kubernetes.yml`.
+You can also host your Minetest server inside a Kubernetes cluster. See our example implementation in [`misc/kubernetes.yml`](misc/kubernetes.yml).
 
 
 Version scheme
