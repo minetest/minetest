@@ -45,6 +45,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "database/database-postgresql.h"
 #endif
 #include <algorithm>
+#include <random>
 
 #define LBM_NAME_ALLOWED_CHARS "abcdefghijklmnopqrstuvwxyz0123456789_:"
 
@@ -1351,7 +1352,10 @@ void ServerEnvironment::step(float dtime)
 
 		std::vector<v3s16> output(m_active_blocks.m_abm_list.size());
 		std::copy(m_active_blocks.m_abm_list.begin(), m_active_blocks.m_abm_list.end(), output.begin());
-		std::random_shuffle(output.begin(), output.end());
+
+		std::random_device rd;
+		std::mt19937 g(rd());
+		std::shuffle(output.begin(), output.end(), g);
 
 		int i = 0;
 		u32 max_time_ms = 200;
