@@ -1339,7 +1339,7 @@ void ServerEnvironment::step(float dtime)
 		}
 	}
 
-	if (m_active_block_modifier_interval.step(dtime, m_cache_abm_interval))
+	if (m_active_block_modifier_interval.step(dtime, m_cache_abm_interval)) {
 		ScopeProfiler sp(g_profiler, "SEnv: modify in blocks avg per interval", SPT_AVG);
 		TimeTaker timer("modify in active blocks per interval");
 
@@ -1387,6 +1387,8 @@ void ServerEnvironment::step(float dtime)
 		g_profiler->avg("SEnv: ABMs run", abms_run);
 
 		timer.stop(true);
+	}
+
 	/*
 		Step script environment (run global on_step())
 	*/
