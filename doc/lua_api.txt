@@ -6641,7 +6641,9 @@ Used by `minetest.register_biome`.
 
         node_dungeon = "default:cobble",
         -- Node used for primary dungeon structure.
-        -- If absent, dungeon materials fall back to classic behaviour.
+        -- If absent, dungeon nodes fall back to the 'mapgen_cobble' mapgen
+        -- alias, if that is also absent, dungeon nodes fall back to the biome
+        -- 'node_stone'.
         -- If present, the following two nodes are also used.
 
         node_dungeon_alt = "default:mossycobble",
