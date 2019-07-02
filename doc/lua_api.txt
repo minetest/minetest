@@ -2449,13 +2449,13 @@ Some types may inherit styles from parent types.
 ### Valid Properties
 
 * button, button_exit
-    * bgcolor - color, sets button tint
-    * textcolor - color, default white
-    * border - boolean, draw border. Set to false to hide the bevelled button pane.  Default true.
-    * noclip - boolean, set to true to allow the element to exceed formspec bounds.
+    * alpha - boolean, whether to draw alpha in bgimg. Default true.
+    * bgcolor - color, sets button tint.
     * bgimg - standard image. Defaults to none.
     * bgimg_pressed - image when pressed. Defaults to bgimg when not provided.
-    * alpha - boolean, whether to draw alpha in bgimg. Default true.
+    * border - boolean, draw border. Set to false to hide the bevelled button pane. Default true.
+    * noclip - boolean, set to true to allow the element to exceed formspec bounds.
+    * textcolor - color, default white.
 * checkbox
     * noclip - boolean, set to true to allow the element to exceed formspec bounds.
 * scrollbar
@@ -2465,18 +2465,18 @@ Some types may inherit styles from parent types.
 * dropdown
     * noclip - boolean, set to true to allow the element to exceed formspec bounds.
 * field, pwdfield, textarea
-    * noclip - boolean, set to true to allow the element to exceed formspec bounds.
     * border - set to false to hide the textbox background and border. Default true.
+    * noclip - boolean, set to true to allow the element to exceed formspec bounds.
     * textcolor - color. Default white.
 * label, vertlabel
-    * bgcolor - color. Default unset.
-    * textcolor - color. Default white.
     * noclip - boolean, set to true to allow the element to exceed formspec bounds.
-    * border - boolean, set to true to get a border. Default true.
-* image_button, item_image_button
-    * noclip - boolean, set to true to allow the element to exceed formspec bounds.
-    * border - boolean, draw border. Set to false to hide the bevelled button pane. Default false.
+* image_button
     * alpha - boolean, whether to draw alpha in bgimg. Default true.
+    * border - boolean, draw border. Set to false to hide the bevelled button pane. Default false.
+    * noclip - boolean, set to true to allow the element to exceed formspec bounds.
+* item_image_button
+    * border - boolean, draw border. Set to false to hide the bevelled button pane. Default false.
+    * noclip - boolean, set to true to allow the element to exceed formspec bounds.
 * tabheader
     * noclip - boolean, set to true to allow the element to exceed formspec bounds.
     * textcolor - color. Default white.
