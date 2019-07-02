@@ -568,14 +568,17 @@ void MapgenV6::makeChunk(BlockMakeData *data)
 			NoisePerlin3D(&np_dungeons, node_min.X, node_min.Y, node_min.Z, seed)), 0.0f);
 
 		if (num_dungeons >= 1) {
+			PseudoRandom ps(blockseed + 4713);
+
 			DungeonParams dp;
 
 			dp.seed             = seed;
+			dp.num_dungeons     = num_dungeons;
 			dp.only_in_ground   = true;
 			dp.corridor_len_min = 1;
 			dp.corridor_len_max = 13;
-			dp.rooms_min        = 2;
-			dp.rooms_max        = 16;
+			dp.num_rooms        = ps.range(2, 16);
+			dp.first_room_large = ps.range(1, 4) == 1;
 
 			dp.np_alt_wall
 				= NoiseParams(-0.4, 1.0, v3f(40.0, 40.0, 40.0), 32474, 6, 1.1, 2.0);
@@ -589,8 +592,8 @@ void MapgenV6::makeChunk(BlockMakeData *data)
 				dp.holesize            = v3s16(2, 3, 2);
 				dp.room_size_min       = v3s16(6, 9, 6);
 				dp.room_size_max       = v3s16(10, 11, 10);
-				dp.room_size_large_min = v3s16(10, 13, 10);
-				dp.room_size_large_max = v3s16(18, 21, 18);
+				dp.room_size_large     = v3s16(
+					ps.range(10, 18), ps.range(13, 21), ps.range(10, 18));
 				dp.notifytype          = GENNOTIFY_TEMPLE;
 			} else {
 				dp.c_wall              = c_cobble;
@@ -601,13 +604,13 @@ void MapgenV6::makeChunk(BlockMakeData *data)
 				dp.holesize            = v3s16(1, 2, 1);
 				dp.room_size_min       = v3s16(4, 4, 4);
 				dp.room_size_max       = v3s16(8, 6, 8);
-				dp.room_size_large_min = v3s16(8, 8, 8);
-				dp.room_size_large_max = v3s16(16, 16, 16);
+				dp.room_size_large     = v3s16(
+					ps.range(8, 16), ps.range(8, 16), ps.range(8, 16));
 				dp.notifytype          = GENNOTIFY_DUNGEON;
 			}
 
 			DungeonGen dgen(ndef, &gennotify, &dp);
-			dgen.generate(vm, blockseed, full_node_min, full_node_max, num_dungeons);
+			dgen.generate(vm, blockseed, full_node_min, full_node_max);
 		}
 	}
 

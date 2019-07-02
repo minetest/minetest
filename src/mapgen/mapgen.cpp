@@ -870,29 +870,31 @@ void MapgenBasic::generateDungeons(s16 max_stone_y)
 	if (num_dungeons == 0)
 		return;
 
+	PseudoRandom ps(blockseed + 70033);
+	
+	DungeonParams dp;
+
+	dp.np_alt_wall =
+		NoiseParams(-0.4, 1.0, v3f(40.0, 40.0, 40.0), 32474, 6, 1.1, 2.0);
+
+	dp.seed             = seed;
+	dp.num_dungeons     = num_dungeons;
+	dp.only_in_ground   = true;
+	dp.num_rooms        = ps.range(2, 16);
+	dp.room_size_min    = v3s16(6, 5, 6);
+	dp.room_size_max    = v3s16(10, 6, 10);
+	dp.room_size_large  = v3s16(
+		ps.range(10, 18), ps.range(8, 16), ps.range(10, 18));
+	dp.first_room_large = ps.range(1, 4) == 1;
+	dp.holesize         = v3s16(2, 3, 2);
+	dp.corridor_len_min = 1;
+	dp.corridor_len_max = 13;
+	dp.diagonal_dirs    = ps.range(1, 12) == 1;
+	dp.notifytype       = GENNOTIFY_DUNGEON;
+
 	// Get biome at mapchunk midpoint
 	v3s16 chunk_mid = node_min + (node_max - node_min) / v3s16(2, 2, 2);
 	Biome *biome = (Biome *)biomegen->getBiomeAtPoint(chunk_mid);
-
-	DungeonParams dp;
-
-	dp.seed             = seed;
-	dp.only_in_ground   = true;
-	dp.corridor_len_min = 1;
-	dp.corridor_len_max = 13;
-	dp.rooms_min        = 2;
-	dp.rooms_max        = 16;
-
-	dp.np_alt_wall = 
-		NoiseParams(-0.4, 1.0, v3f(40.0, 40.0, 40.0), 32474, 6, 1.1, 2.0);
-
-	dp.diagonal_dirs       = false;
-	dp.holesize            = v3s16(2, 3, 2);
-	dp.room_size_min       = v3s16(6, 5, 6);
-	dp.room_size_max       = v3s16(10, 6, 10);
-	dp.room_size_large_min = v3s16(10, 8, 10);
-	dp.room_size_large_max = v3s16(18, 16, 18);
-	dp.notifytype          = GENNOTIFY_DUNGEON;
 
 	// Use biome-defined dungeon nodes if defined
 	if (biome->c_dungeon != CONTENT_IGNORE) {
@@ -917,7 +919,7 @@ void MapgenBasic::generateDungeons(s16 max_stone_y)
 	}
 
 	DungeonGen dgen(ndef, &gennotify, &dp);
-	dgen.generate(vm, blockseed, full_node_min, full_node_max, num_dungeons);
+	dgen.generate(vm, blockseed, full_node_min, full_node_max);
 }
 
 

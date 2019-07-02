@@ -46,32 +46,33 @@ struct DungeonParams {
 	content_t c_alt_wall;
 	content_t c_stair;
 
-	// Diagonal corridors are possible
-	bool diagonal_dirs;
-	// Dungeon only generates in ground
+	// 3D noise that determines which c_wall nodes are converted to c_alt_wall
+	NoiseParams np_alt_wall;
+
+	// Number of dungeons generated in mapchunk
+	u16 num_dungeons;
+	// Dungeons only generate in ground
 	bool only_in_ground;
+	// Number of rooms
+	u16 num_rooms;
+	// Room size random range. Includes walls / floor / ceilng
+	v3s16 room_size_min;
+	v3s16 room_size_max;
+	// Large room size
+	v3s16 room_size_large;
+	// First generated room is large
+	bool first_room_large;
 	// Dimensions of 3D 'brush' that creates corridors.
 	// Dimensions are of the empty space, not including walls / floor / ceilng.
 	v3s16 holesize;
-	// Corridor length
+	// Corridor length random range
 	u16 corridor_len_min;
 	u16 corridor_len_max;
-	// Room size includes walls / floor / ceilng
-	v3s16 room_size_min;
-	v3s16 room_size_max;
-	// The 1st room generated has a 1 in 4 chance of being 'large', all other
-	// rooms are not 'large'.
-	v3s16 room_size_large_min;
-	v3s16 room_size_large_max;
-	// Number of rooms
-	u16 rooms_min;
-	u16 rooms_max;
+	// Diagonal corridors are possible
+	bool diagonal_dirs;
 	// Usually 'GENNOTIFY_DUNGEON', but mapgen v6 uses 'GENNOTIFY_TEMPLE' for
 	// desert dungeons.
 	GenNotifyType notifytype;
-
-	// 3D noise that determines which c_wall nodes are converted to c_alt_wall
-	NoiseParams np_alt_wall;
 };
 
 class DungeonGen {
@@ -94,8 +95,7 @@ public:
 	DungeonGen(const NodeDefManager *ndef,
 		GenerateNotifier *gennotify, DungeonParams *dparams);
 
-	void generate(MMVManip *vm, u32 bseed,
-		v3s16 full_node_min, v3s16 full_node_max, u16 num_dungeons);
+	void generate(MMVManip *vm, u32 bseed, v3s16 full_node_min, v3s16 full_node_max);
 
 	void makeDungeon(v3s16 start_padding);
 	void makeRoom(v3s16 roomsize, v3s16 roomplace);
