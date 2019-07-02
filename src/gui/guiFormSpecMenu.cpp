@@ -1458,11 +1458,7 @@ void GUIFormSpecMenu::parseLabel(parserData* data, const std::string &element)
 
 			auto style = getStyleForElement("label", spec.fname);
 			e->setNotClipped(style.getBool(StyleSpec::NOCLIP, false));
-			e->setDrawBorder(style.getBool(StyleSpec::BORDER, false));
 			e->setOverrideColor(style.getColor(StyleSpec::TEXTCOLOR, video::SColor(0xFFFFFFFF)));
-			if (style.isNotDefault(StyleSpec::BGCOLOR)) {
-				e->setBackgroundColor(style.getColor(StyleSpec::BGCOLOR));
-			}
 
 			m_fields.push_back(spec);
 		}
@@ -1538,11 +1534,7 @@ void GUIFormSpecMenu::parseVertLabel(parserData* data, const std::string &elemen
 
 		auto style = getStyleForElement("vertlabel", spec.fname, "label");
 		e->setNotClipped(style.getBool(StyleSpec::NOCLIP, false));
-		e->setDrawBorder(style.getBool(StyleSpec::BORDER, false));
 		e->setOverrideColor(style.getColor(StyleSpec::TEXTCOLOR, video::SColor(0xFFFFFFFF)));
-		if (style.isNotDefault(StyleSpec::BGCOLOR)) {
-			e->setBackgroundColor(style.getColor(StyleSpec::BGCOLOR));
-		}
 
 		m_fields.push_back(spec);
 		return;
