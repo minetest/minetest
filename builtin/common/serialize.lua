@@ -147,6 +147,8 @@ function core.serialize(x)
 				end
 			end
 			return "{"..table.concat(vals, ", ").."}"
+		elseif tp == "userdata" and x.to_string then
+			return string.format("%q", x:to_string())
 		else
 			error("Can't serialize data of type "..tp)
 		end
