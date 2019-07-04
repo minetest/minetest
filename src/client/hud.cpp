@@ -650,18 +650,19 @@ void drawItemStack(video::IVideoDriver *driver,
 		core::matrix4 oldProjMat = driver->getTransform(video::ETS_PROJECTION);
 		core::matrix4 oldViewMat = driver->getTransform(video::ETS_VIEW);
 		core::rect<s32> viewrect = rect;
-		if (clip) viewrect.clipAgainst(*clip);
+		if (clip)
+			viewrect.clipAgainst(*clip);
 		core::matrix4 ProjMatrix;
 		core::matrix4 ViewMatrix;
 		ViewMatrix.buildProjectionMatrixOrthoLH(
-			2.0 * viewrect.getWidth() / rect.getWidth(),
-			2.0 * viewrect.getHeight() / rect.getHeight(),
+			2.0f * viewrect.getWidth() / rect.getWidth(),
+			2.0f * viewrect.getHeight() / rect.getHeight(),
 			-1, 100);
 		ViewMatrix.setTranslation(core::vector3df(
-			1.0 * (rect.LowerRightCorner.X + rect.UpperLeftCorner.X -
+			1.0f * (rect.LowerRightCorner.X + rect.UpperLeftCorner.X -
 					viewrect.LowerRightCorner.X - viewrect.UpperLeftCorner.X) /
 					viewrect.getWidth(),
-			1.0 * (viewrect.LowerRightCorner.Y + viewrect.UpperLeftCorner.Y -
+			1.0f * (viewrect.LowerRightCorner.Y + viewrect.UpperLeftCorner.Y -
 					rect.LowerRightCorner.Y - rect.UpperLeftCorner.Y) /
 					viewrect.getHeight(), 0));
 
