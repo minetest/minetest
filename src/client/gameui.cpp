@@ -22,6 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <irrlicht_changes/static_text.h>
 #include <gettext.h>
 #include "gui/mainmenumanager.h"
+#include "gui/guiChatConsole.h"
 #include "util/pointedthing.h"
 #include "client.h"
 #include "clientmap.h"
@@ -85,7 +86,8 @@ void GameUI::init()
 }
 
 void GameUI::update(const RunStats &stats, Client *client, MapDrawControl *draw_control,
-	const CameraOrientation &cam, const PointedThing &pointed_old, float dtime)
+	const CameraOrientation &cam, const PointedThing &pointed_old,
+	const GUIChatConsole *chat_console, float dtime)
 {
 	v2u32 screensize = RenderingEngine::get_instance()->getWindowSize();
 
@@ -186,6 +188,9 @@ void GameUI::update(const RunStats &stats, Client *client, MapDrawControl *draw_
 		m_guitext_status->setOverrideColor(fade_color);
 		m_guitext_status->enableOverrideColor(true);
 	}
+
+	// Hide chat when console is visible
+	m_guitext_chat->setVisible(isChatVisible() && !chat_console->isVisible());
 }
 
 void GameUI::initFlags()
@@ -227,9 +232,7 @@ void GameUI::setChatText(const EnrichedString &chat_text, u32 recent_chat_count)
 	m_guitext_chat->setRelativePosition(core::rect<s32>(10, chat_y, width,
 		chat_y + m_guitext_chat->getTextHeight()));
 
-	// Don't show chat if disabled or empty or profiler is enabled
-	m_guitext_chat->setVisible(m_flags.show_chat &&
-		recent_chat_count != 0 && m_profiler_current_page == 0);
+	m_recent_chat_count = recent_chat_count;
 }
 
 void GameUI::updateProfiler()
