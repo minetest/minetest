@@ -26,6 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "server/activeobjectmgr.h"
 #include "util/numeric.h"
 #include <set>
+#include <random>
 
 class IGameDef;
 class ServerMap;
@@ -468,6 +469,9 @@ private:
 
 	PlayerDatabase *m_player_database = nullptr;
 	AuthDatabase *m_auth_database = nullptr;
+
+	// Pseudo random generator for shuffling, etc.
+	std::mt19937 m_rgen;
 
 	// Particles
 	IntervalLimiter m_particle_management_interval;

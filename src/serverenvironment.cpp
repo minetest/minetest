@@ -45,7 +45,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "database/database-postgresql.h"
 #endif
 #include <algorithm>
-#include <random>
 
 #define LBM_NAME_ALLOWED_CHARS "abcdefghijklmnopqrstuvwxyz0123456789_:"
 
@@ -385,6 +384,9 @@ void ActiveBlockList::update(std::vector<PlayerSAO*> &active_players,
 	ServerEnvironment
 */
 
+// Random device to seed pseudo random generators.
+static std::random_device seed;
+
 ServerEnvironment::ServerEnvironment(ServerMap *map,
 	ServerScripting *scriptIface, Server *server,
 	const std::string &path_world):
@@ -392,7 +394,8 @@ ServerEnvironment::ServerEnvironment(ServerMap *map,
 	m_map(map),
 	m_script(scriptIface),
 	m_server(server),
-	m_path_world(path_world)
+	m_path_world(path_world),
+	m_rgen(seed())
 {
 	// Determine which database backend to use
 	std::string conf_path = path_world + DIR_DELIM + "world.mt";
@@ -1353,9 +1356,7 @@ void ServerEnvironment::step(float dtime)
 		std::vector<v3s16> output(m_active_blocks.m_abm_list.size());
 		std::copy(m_active_blocks.m_abm_list.begin(), m_active_blocks.m_abm_list.end(), output.begin());
 
-		std::random_device rd;
-		std::mt19937 g(rd());
-		std::shuffle(output.begin(), output.end(), g);
+		std::shuffle(output.begin(), output.end(), m_rgen);
 
 		int i = 0;
 		u32 max_time_ms = 200;
