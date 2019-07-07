@@ -1354,12 +1354,15 @@ void ServerEnvironment::step(float dtime)
 		int blocks_cached = 0;
 
 		std::vector<v3s16> output(m_active_blocks.m_abm_list.size());
-		std::copy(m_active_blocks.m_abm_list.begin(), m_active_blocks.m_abm_list.end(), output.begin());
 
+		// Shuffle the active blocks so that each block gets an equal chance
+		// of having its ABMs run.
+		std::copy(m_active_blocks.m_abm_list.begin(), m_active_blocks.m_abm_list.end(), output.begin());
 		std::shuffle(output.begin(), output.end(), m_rgen);
 
 		int i = 0;
-		u32 max_time_ms = 200;
+		// The time budget for ABMs is 20%.
+		u32 max_time_ms = m_cache_abm_interval * 1000 / 5;
 		for (const v3s16 &p : output) {
 			MapBlock *block = m_map->getBlockNoCreateNoEx(p);
 			if (!block)
