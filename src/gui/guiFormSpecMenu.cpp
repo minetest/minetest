@@ -1827,7 +1827,7 @@ void GUIFormSpecMenu::parseLabel(parserData* data, const std::string &element)
 				v2s32 pos = getRealCoordinateBasePos(v_pos);
 
 				// Add newline spacing
-				pos.Y += (((float) imgsize.Y) * data->labelOptions.spacing);
+				pos.Y += (((float) imgsize.Y) * data->labelOptions.spacing * i);
 
 				f32 font_width = m_font->getDimension(wlabel.c_str()).Width;
 				f32 font_height = font_line_height(m_font);
@@ -1845,7 +1845,7 @@ void GUIFormSpecMenu::parseLabel(parserData* data, const std::string &element)
 				rect = core::rect<s32>(
 					pos.X, pos.Y,
 					pos.X + font_width,
-					pos.Y + imgsize.Y);
+					pos.Y + font_height);
 
 			} else {
 				// Lines are spaced at the nominal distance of
