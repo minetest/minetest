@@ -1783,11 +1783,13 @@ void GUIFormSpecMenu::parseLabelOptions(parserData* data, const std::string &ele
 		if (spacing > 0)
 			data->labelOptions.spacing = spacing;
 		else
-			warningstream << "Invalid labeloptions spacing(" << spacing << "): '" <<
-				element << "'" << std::endl;
+			if (trim(parts[2]) == "")
+				warningstream << "Invalid labeloptions spacing(" << spacing << "): '" <<
+					element << "'" << std::endl;
 
 		data->labelOptions.X = x;
 		data->labelOptions.Y = y;
+		return;
 	}
 	warningstream << "Invalid labeloptions element(" << parts.size() << "): '" << element
 		<< "'" << std::endl;
@@ -1838,9 +1840,9 @@ void GUIFormSpecMenu::parseLabel(parserData* data, const std::string &element)
 					pos.X -= font_width;
 
 				if (data->labelOptions.Y == gui::EGUIA_UPPERLEFT)
-					pos.X -= font_height;
+					pos.Y -= font_height;
 				if (data->labelOptions.Y == gui::EGUIA_CENTER)
-					pos.X -= font_height / 2;
+					pos.Y -= font_height / 2;
 
 				rect = core::rect<s32>(
 					pos.X, pos.Y,
