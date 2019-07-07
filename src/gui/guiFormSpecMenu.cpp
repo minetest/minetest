@@ -1780,12 +1780,7 @@ void GUIFormSpecMenu::parseLabelOptions(parserData* data, const std::string &ele
 		if (y_align == "bottom")
 			y = gui::EGUIA_LOWERRIGHT;
 
-		if (spacing > 0)
-			data->labelOptions.spacing = spacing;
-		else
-			if (trim(parts[2]) == "")
-				warningstream << "Invalid labeloptions spacing(" << spacing << "): '" <<
-					element << "'" << std::endl;
+		data->labelOptions.spacing = spacing;
 
 		data->labelOptions.X = x;
 		data->labelOptions.Y = y;
