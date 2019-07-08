@@ -5263,8 +5263,6 @@ This is basically a reference to a C++ `ServerActiveObject`
 
 ### Methods
 
-* `remove()`: remove object (after returning from Lua)
-    * Note: Doesn't work on players, use `minetest.kick_player` instead
 * `get_pos()`: returns `{x=num, y=num, z=num}`
 * `set_pos(pos)`: `pos`=`{x=num, y=num, z=num}`
 * `move_to(pos, continuous=false)`: interpolated move
@@ -5323,8 +5321,9 @@ This is basically a reference to a C++ `ServerActiveObject`
         text = "My Nametag",
       }
 
-#### LuaEntitySAO-only (no-op for other objects)
+#### Lua entity only (no-op for other objects)
 
+* `remove()`: remove object (after returning from Lua)
 * `set_velocity(vel)`
     * `vel` is a vector, e.g. `{x=0.0, y=2.3, z=1.0}`
 * `add_velocity(vel)`
@@ -5355,7 +5354,7 @@ This is basically a reference to a C++ `ServerActiveObject`
 * `get_entity_name()` (**Deprecated**: Will be removed in a future version)
 * `get_luaentity()`
 
-#### Player-only (no-op for other objects)
+#### Player only (no-op for other objects)
 
 * `get_player_name()`: returns `""` if is not a player
 * `get_player_velocity()`: returns `nil` if is not a player, otherwise a
