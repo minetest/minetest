@@ -467,6 +467,8 @@ void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d)
 
 void LocalPlayer::applyControl(float dtime, Environment *env)
 {
+	speed_before_control_Y = m_speed.Y;
+
 	// Clear stuff
 	swimming_vertical = false;
 	swimming_pitch = false;

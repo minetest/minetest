@@ -170,10 +170,34 @@ void ClientEnvironment::step(float dtime)
 						lplayer->physics_override_gravity * dtime_part * 2.0f;
 
 				// Liquid floating / sinking
-				if (lplayer->in_liquid && !lplayer->swimming_vertical &&
-						!lplayer->swimming_pitch)
-					speed.Y -= lplayer->movement_liquid_sink *
+				//~ if (lplayer->in_liquid && !lplayer->swimming_vertical &&
+						//~ !lplayer->swimming_pitch)
+					//~ speed.Y -= lplayer->movement_liquid_sink *
+						//~ lplayer->physics_override_gravity * dtime_part * 2.0f;
+				if (lplayer->in_liquid && !lplayer->swimming_pitch) {
+					f32 liquid_falling = -lplayer->movement_liquid_sink *
 						lplayer->physics_override_gravity * dtime_part * 2.0f;
+					if (!lplayer->swimming_vertical) {
+						speed.Y += liquid_falling;
+					} else {
+						//~ f32 mov_acc = m_client->checkLocalPrivilege("fast") &&
+								//~ lplayer->getPlayerSettings().fast_move &&
+								//~ lplayer->control.aux1 &&
+								//~ !lplayer->getPlayerSettings().aux1_descends ?
+								//~ lplayer->movement_acceleration_fast :
+								//~ lplayer->movement_acceleration_default;
+						if (lplayer->control.jump) { //player swims up
+							//~ liquid_falling = speed.Y + liquid_falling - mov_acc * BS;
+							speed.Y = MYMAX(speed.Y, liquid_falling + lplayer->speed_before_control_Y);
+						} else { //player swims down
+							//~ liquid_falling = speed.Y + liquid_falling + mov_acc * BS;
+							speed.Y = MYMIN(speed.Y, liquid_falling + lplayer->speed_before_control_Y);
+						}
+					}
+					//~ else if (speed.Y < 0.0f && liquid_falling < speed.Y ||
+							//~ speed.Y > 0.0f && liquid_falling > speed.Y)
+						//~ speed.Y = liquid_falling;
+				}
 
 				// Liquid resistance
 				if (lplayer->in_liquid_stable || lplayer->in_liquid) {

@@ -83,6 +83,8 @@ public:
 
 	void applyControl(float dtime, Environment *env);
 
+	f32 speed_before_control_Y = 0.0f;
+
 	v3s16 getStandingNodePos();
 	v3s16 getFootstepNodePos();
 
