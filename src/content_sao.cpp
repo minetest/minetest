@@ -1364,11 +1364,11 @@ void PlayerSAO::hide()
 		return;
 
 	m_hidden = true;
-	if (! m_player)
+	if (!m_player)
 		return;
 
 	Server *server = m_env->getGameDef();
-	if (! server)
+	if (!server)
 		return;
 
 	server->sendFakeJoinLeaveMessage(m_player->getName(), false);
@@ -1376,15 +1376,15 @@ void PlayerSAO::hide()
 
 void PlayerSAO::unhide()
 {
-	if (! m_hidden)
+	if (!m_hidden)
 		return;
 
 	m_hidden = false;
-	if (! m_player)
+	if (!m_player)
 		return;
 
 	Server *server = m_env->getGameDef();
-	if (! server)
+	if (!server)
 		return;
 
 	server->sendFakeJoinLeaveMessage(m_player->getName(), true);
