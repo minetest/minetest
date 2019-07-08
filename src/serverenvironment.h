@@ -26,6 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "server/activeobjectmgr.h"
 #include "util/numeric.h"
 #include <set>
+#include <random>
 
 class IGameDef;
 class ServerMap;
@@ -446,7 +447,6 @@ private:
 	IntervalLimiter m_active_blocks_management_interval;
 	IntervalLimiter m_active_block_modifier_interval;
 	IntervalLimiter m_active_blocks_nodemetadata_interval;
-	int m_active_block_interval_overload_skip = 0;
 	// Time from the beginning of the game in seconds.
 	// Incremented in step().
 	u32 m_game_time = 0;
@@ -469,6 +469,9 @@ private:
 
 	PlayerDatabase *m_player_database = nullptr;
 	AuthDatabase *m_auth_database = nullptr;
+
+	// Pseudo random generator for shuffling, etc.
+	std::mt19937 m_rgen;
 
 	// Particles
 	IntervalLimiter m_particle_management_interval;
