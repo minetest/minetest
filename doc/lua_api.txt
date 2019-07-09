@@ -1007,13 +1007,22 @@ The function of `param2` is determined by `paramtype2` in node definition.
       0 = y+,   1 = z+,   2 = z-,   3 = x+,   4 = x-,   5 = y-
     * facedir modulo 4 = rotation around that axis
 * `paramtype2 = "leveled"`
-    * Only valid for "nodebox" with 'type = "leveled"', and "plantlike_rooted".
+    * Only valid for "nodebox" with 'type = "leveled"' or 'type = "leveled_with_offset"',
+      and "plantlike_rooted".
         * Leveled nodebox:
             * The level of the top face of the nodebox is stored in `param2`.
             * The other faces are defined by 'fixed = {}' like 'type = "fixed"'
               nodeboxes.
             * The nodebox height is (`param2` / 64) nodes.
-            * The maximum accepted value of `param2` is 127.
+            * The maximum accepted value of `param2` is `leveled_max`. (See Node
+              definition.)
+        * Leveled nodebox with offset:
+            * It is basically the same as leveled nodebox, but the height of each
+              box is (`given_height` + `param2` / 64) nodes, where `given_height`
+              is the value of the y-coordinate of the upper corner of the box.
+            * Note that you can not define a box with an upper corner than is lower
+              than the lower corner. Do not try to get negative offsets, instead add
+              a positive offset to the box that should be higher.
         * Rooted plantlike:
             * The height of the 'plantlike' section is stored in `param2`.
             * The height is (`param2` / 16) nodes.
@@ -1177,6 +1186,16 @@ A nodebox is defined as any of:
         -- by param2.
         -- Other faces are defined by 'fixed = {}' as with 'type = "fixed"'.
         type = "leveled",
+        fixed = box OR {box1, box2, ...}
+    }
+    {
+        -- A variable height box (or boxes) with the top face position moved
+        -- by the node parameter 'leveled = ', or if 'paramtype2 == "leveled"'
+        -- by param2.
+        -- Other faces are defined by 'fixed = {}' as with 'type = "fixed"'.
+        -- Using this with a top face position of `-0.5` is the same as using
+        -- `type = "leveled"`.
+        type = "leveled_with_offset",
         fixed = box OR {box1, box2, ...}
     }
     {
@@ -7119,10 +7138,11 @@ Used by `minetest.register_node`.
         -- sources nearby
 
         leveled = 0,
-        -- Only valid for "nodebox" drawtype with 'type = "leveled"'.
+        -- Only valid for "nodebox" drawtype with 'type = "leveled"' or
+        -- 'type = "leveled_with_offset"'.
         -- Allows defining the nodebox height without using param2.
-        -- The nodebox height is 'leveled' / 64 nodes.
-        -- The maximum value of 'leveled' is `leveled_max`.
+        -- The height of the boxes is the same as with `paramtype2 = "leveled"`
+        -- and `param2 = leveled`. (See `paramtype2 = "leveled"`.)
 
         leveled_max = 127,
         -- Maximum value for `leveled` (0-127), enforced in

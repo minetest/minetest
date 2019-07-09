@@ -78,6 +78,7 @@ void NodeBox::serialize(std::ostream &os, u16 protocol_version) const
 	writeU8(os, version);
 
 	switch (type) {
+	case NODEBOX_LEVELED_OFFSET:
 	case NODEBOX_LEVELED:
 	case NODEBOX_FIXED:
 		writeU8(os, type);
@@ -140,7 +141,8 @@ void NodeBox::deSerialize(std::istream &is)
 
 	type = (enum NodeBoxType)readU8(is);
 
-	if(type == NODEBOX_FIXED || type == NODEBOX_LEVELED)
+	if (type == NODEBOX_FIXED || type == NODEBOX_LEVELED ||
+			type == NODEBOX_LEVELED_OFFSET)
 	{
 		u16 fixed_count = readU16(is);
 		while(fixed_count--)
@@ -1125,12 +1127,14 @@ void getNodeBoxUnion(const NodeBox &nodebox, const ContentFeatures &features,
 {
 	switch(nodebox.type) {
 		case NODEBOX_FIXED:
-		case NODEBOX_LEVELED: {
+		case NODEBOX_LEVELED:
+		case NODEBOX_LEVELED_OFFSET: {
 			// Raw union
 			aabb3f half_processed(0, 0, 0, 0, 0, 0);
 			boxVectorUnion(nodebox.fixed, &half_processed);
 			// Set leveled boxes to maximal
-			if (nodebox.type == NODEBOX_LEVELED) {
+			if (nodebox.type == NODEBOX_LEVELED ||
+					nodebox.type == NODEBOX_LEVELED_OFFSET) {
 				half_processed.MaxEdge.Y = +BS / 2;
 			}
 			if (features.param_type_2 == CPT2_FACEDIR ||

@@ -90,6 +90,7 @@ struct EnumString ScriptApiNode::es_NodeBoxType[] =
 		{NODEBOX_WALLMOUNTED, "wallmounted"},
 		{NODEBOX_LEVELED, "leveled"},
 		{NODEBOX_CONNECTED, "connected"},
+		{NODEBOX_LEVELED_OFFSET, "leveled_with_offset"},
 		{0, NULL},
 	};
 

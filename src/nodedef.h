@@ -92,6 +92,7 @@ enum NodeBoxType
 	NODEBOX_WALLMOUNTED, // Box for wall mounted nodes; (top, bottom, side)
 	NODEBOX_LEVELED, // Same as fixed, but with dynamic height from param2. for snow, ...
 	NODEBOX_CONNECTED, // optionally draws nodeboxes if a neighbor node attaches
+	NODEBOX_LEVELED_OFFSET, // Same as leveled, but the height of the box is used as offset
 };
 
 struct NodeBox

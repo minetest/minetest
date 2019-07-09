@@ -239,7 +239,8 @@ void transformNodeBox(const MapNode &n, const NodeBox &nodebox,
 {
 	std::vector<aabb3f> &boxes = *p_boxes;
 
-	if (nodebox.type == NODEBOX_FIXED || nodebox.type == NODEBOX_LEVELED) {
+	if (nodebox.type == NODEBOX_FIXED || nodebox.type == NODEBOX_LEVELED ||
+			nodebox.type == NODEBOX_LEVELED_OFFSET) {
 		const std::vector<aabb3f> &fixed = nodebox.fixed;
 		int facedir = n.getFaceDir(nodemgr, true);
 		u8 axisdir = facedir>>2;
@@ -247,6 +248,9 @@ void transformNodeBox(const MapNode &n, const NodeBox &nodebox,
 		for (aabb3f box : fixed) {
 			if (nodebox.type == NODEBOX_LEVELED)
 				box.MaxEdge.Y = (-0.5f + n.getLevel(nodemgr) / 64.0f) * BS;
+			else if (nodebox.type == NODEBOX_LEVELED_OFFSET) {
+				box.MaxEdge.Y += n.getLevel(nodemgr) / 64.0f * BS;
+			}
 
 			switch (axisdir) {
 			case 0:
