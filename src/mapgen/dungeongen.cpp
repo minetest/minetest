@@ -64,10 +64,10 @@ DungeonGen::DungeonGen(const NodeDefManager *ndef,
 		dp.corridor_len_max    = 13;
 		dp.room_size_min       = v3s16(4, 4, 4);
 		dp.room_size_max       = v3s16(8, 6, 8);
-		dp.room_size_large_min = v3s16(8, 8, 8);
-		dp.room_size_large_max = v3s16(16, 16, 16);
-		dp.rooms_min           = 2;
-		dp.rooms_max           = 16;
+		dp.room_size_large     = v3s16(16, 16, 16);
+		dp.first_room_large    = true;
+		dp.num_rooms           = 16;
+		dp.num_dungeons        = 1;
 		dp.notifytype          = GENNOTIFY_DUNGEON;
 
 		dp.np_alt_wall = 
@@ -76,10 +76,9 @@ DungeonGen::DungeonGen(const NodeDefManager *ndef,
 }
 
 
-void DungeonGen::generate(MMVManip *vm, u32 bseed, v3s16 nmin, v3s16 nmax,
-	u16 num_dungeons)
+void DungeonGen::generate(MMVManip *vm, u32 bseed, v3s16 nmin, v3s16 nmax)
 {
-	if (num_dungeons == 0)
+	if (dp.num_dungeons == 0)
 		return;
 
 	assert(vm);
@@ -119,7 +118,7 @@ void DungeonGen::generate(MMVManip *vm, u32 bseed, v3s16 nmin, v3s16 nmax,
 	}
 
 	// Add them
-	for (u32 i = 0; i < num_dungeons; i++)
+	for (u32 i = 0; i < dp.num_dungeons; i++)
 		makeDungeon(v3s16(1, 1, 1) * MAP_BLOCKSIZE);
 
 	// Optionally convert some structure to alternative structure
@@ -150,19 +149,14 @@ void DungeonGen::makeDungeon(v3s16 start_padding)
 
 	/*
 		Find place for first room.
-		There is a 1 in 4 chance of the first room being 'large',
-		all other rooms are not 'large'.
 	*/
 	bool fits = false;
 	for (u32 i = 0; i < 100 && !fits; i++) {
-		bool is_large_room = ((random.next() & 3) == 1);
-		if (is_large_room) {
-			roomsize.Z = random.range(
-				dp.room_size_large_min.Z, dp.room_size_large_max.Z);
-			roomsize.Y = random.range(
-				dp.room_size_large_min.Y, dp.room_size_large_max.Y);
-			roomsize.X = random.range(
-				dp.room_size_large_min.X, dp.room_size_large_max.X);
+		// Only the first room can be 'large'
+		if (dp.first_room_large) {
+			roomsize.Z = dp.room_size_large.Z;
+			roomsize.Y = dp.room_size_large.Y;
+			roomsize.X = dp.room_size_large.X;
 		} else {
 			roomsize.Z = random.range(dp.room_size_min.Z, dp.room_size_max.Z);
 			roomsize.Y = random.range(dp.room_size_min.Y, dp.room_size_max.Y);
@@ -204,8 +198,7 @@ void DungeonGen::makeDungeon(v3s16 start_padding)
 	*/
 	v3s16 last_room_center = roomplace + v3s16(roomsize.X / 2, 1, roomsize.Z / 2);
 
-	u32 room_count = random.range(dp.rooms_min, dp.rooms_max);
-	for (u32 i = 0; i < room_count; i++) {
+	for (u32 i = 0; i < dp.num_rooms; i++) {
 		// Make a room to the determined place
 		makeRoom(roomsize, roomplace);
 
@@ -219,7 +212,7 @@ void DungeonGen::makeDungeon(v3s16 start_padding)
 #endif
 
 		// Quit if last room
-		if (i == room_count - 1)
+		if (i + 1 == dp.num_rooms)
 			break;
 
 		// Determine walker start position
