@@ -536,6 +536,9 @@ void LuaEntitySAO::step(float dtime, bool send_recommended)
 
 std::string LuaEntitySAO::getClientInitializationData(u16 protocol_version)
 {
+	if (m_hidden)
+		return "";
+
 	std::ostringstream os(std::ios::binary);
 
 	// PROTOCOL_VERSION >= 37
@@ -932,6 +935,9 @@ void PlayerSAO::removingFromEnvironment()
 
 std::string PlayerSAO::getClientInitializationData(u16 protocol_version)
 {
+	if (m_hidden)
+		return "";
+
 	std::ostringstream os(std::ios::binary);
 
 	// Protocol >= 15
@@ -963,9 +969,11 @@ std::string PlayerSAO::getClientInitializationData(u16 protocol_version)
 	int message_count = 6 + m_bone_position.size();
 	for (std::unordered_set<int>::const_iterator ii = m_attachment_child_ids.begin();
 			ii != m_attachment_child_ids.end(); ++ii) {
-		if (ServerActiveObject *obj = m_env->getActiveObject(*ii)) {
+		ServerActiveObject *obj = m_env->getActiveObject(*ii);
+		if (obj && !obj->isHidden()) {
 			message_count++;
-			msg_os << serializeLongString(gob_cmd_update_infant(*ii, obj->getSendType(),
+			msg_os << serializeLongString(gob_cmd_update_infant(*ii,
+				obj->getSendType(),
 				obj->getClientInitializationData(protocol_version)));
 		}
 	}
