@@ -771,7 +771,7 @@ int ObjectRef::l_hide(lua_State *L)
 	if (!co)
 		return 0;
 
-	co->hide();
+	co->hide(true);
 	lua_pushboolean(L, true);
 
 	return 1;
@@ -787,7 +787,7 @@ int ObjectRef::l_unhide(lua_State *L)
 	if (!co)
 		return 0;
 
-	co->unhide();
+	co->hide(false);
 	lua_pushboolean(L, true);
 
 	return 1;

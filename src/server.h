@@ -213,8 +213,8 @@ public:
 	void stopSound(s32 handle);
 	void fadeSound(s32 handle, float step, float gain);
 
-	inline void sendFakeJoinLeaveMessage(std::string player_name, bool in_game)
-	{
+	inline void sendFakeJoinLeaveMessage(const std::string &player_name,
+			bool in_game) {
 		return m_clients.sendFakeJoinLeaveMessage(player_name, in_game);
 	}
 

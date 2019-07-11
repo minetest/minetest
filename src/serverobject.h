@@ -145,8 +145,7 @@ public:
 	virtual u16 getHP() const
 	{ return 0; }
 
-	virtual void hide() { m_hidden = true; }
-	virtual void unhide() { m_hidden = false; }
+	virtual void hide(bool hidden) { m_hidden = hidden; }
 	virtual const bool isHidden() { return m_hidden; }
 
 	virtual void setArmorGroups(const ItemGroupList &armor_groups)

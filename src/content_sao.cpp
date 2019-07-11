@@ -719,21 +719,6 @@ u16 LuaEntitySAO::getHP() const
 	return m_hp;
 }
 
-void LuaEntitySAO::hide()
-{
-	m_hidden = true;
-}
-
-void LuaEntitySAO::unhide()
-{
-	m_hidden = false;
-}
-
-const bool LuaEntitySAO::isHidden() const
-{
-	return m_hidden;
-}
-
 void LuaEntitySAO::setVelocity(v3f velocity)
 {
 	m_velocity = velocity;
@@ -1358,12 +1343,12 @@ void PlayerSAO::setBreath(const u16 breath, bool send)
 		m_env->getGameDef()->SendPlayerBreath(this);
 }
 
-void PlayerSAO::hide()
+void PlayerSAO::hide(bool hidden)
 {
-	if (m_hidden)
+	if (m_hidden == hidden)
 		return;
 
-	m_hidden = true;
+	m_hidden = hidden;
 	if (!m_player)
 		return;
 
@@ -1371,23 +1356,7 @@ void PlayerSAO::hide()
 	if (!server)
 		return;
 
-	server->sendFakeJoinLeaveMessage(m_player->getName(), false);
-}
-
-void PlayerSAO::unhide()
-{
-	if (!m_hidden)
-		return;
-
-	m_hidden = false;
-	if (!m_player)
-		return;
-
-	Server *server = m_env->getGameDef();
-	if (!server)
-		return;
-
-	server->sendFakeJoinLeaveMessage(m_player->getName(), true);
+	server->sendFakeJoinLeaveMessage(m_player->getName(), !hidden);
 }
 
 Inventory* PlayerSAO::getInventory()

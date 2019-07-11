@@ -806,7 +806,7 @@ ClientState ClientInterface::getClientState(session_t peer_id)
 	return n->second->getState();
 }
 
-void ClientInterface::sendFakeJoinLeaveMessage(std::string player_name,
+void ClientInterface::sendFakeJoinLeaveMessage(const std::string &player_name,
 		bool in_game)
 {
 	if (in_game) {

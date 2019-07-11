@@ -129,9 +129,8 @@ public:
 	std::string getDescription();
 	void setHP(s32 hp, const PlayerHPChangeReason &reason);
 	u16 getHP() const;
-	void hide();
-	void unhide();
-	const bool isHidden() const;
+	inline void hide(bool hidden) { m_hidden = hidden; };
+	inline const bool isHidden() const { return m_hidden; };
 	/* LuaEntitySAO-specific */
 	void setVelocity(v3f velocity);
 	void addVelocity(v3f velocity)
@@ -263,8 +262,7 @@ public:
 	void rightClick(ServerActiveObject *clicker) {}
 	void setHP(s32 hp, const PlayerHPChangeReason &reason);
 	void setHPRaw(u16 hp) { m_hp = hp; }
-	void hide();
-	void unhide();
+	void hide(bool hidden);
 	s16 readDamage();
 	u16 getBreath() const { return m_breath; }
 	void setBreath(const u16 breath, bool send = true);

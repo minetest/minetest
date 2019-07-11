@@ -467,7 +467,7 @@ public:
 	/* get state of client by id*/
 	ClientState getClientState(session_t peer_id);
 
-	void sendFakeJoinLeaveMessage(std::string player_name, bool in_game);
+	void sendFakeJoinLeaveMessage(const std::string &player_name, bool in_game);
 
 	/* set client playername */
 	void setPlayerName(session_t peer_id, const std::string &name);
