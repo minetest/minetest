@@ -145,4 +145,5 @@ private:
 	video::ITexture *m_moon_texture;
 	video::ITexture *m_sun_tonemap;
 	video::ITexture *m_moon_tonemap;
+	void draw_sun(video::IVideoDriver *driver, float sunsize, video::SColor suncolor, video::SColor suncolor2, float wicked_time_of_day);
 };
