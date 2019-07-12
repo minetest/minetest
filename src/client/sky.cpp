@@ -707,25 +707,17 @@ void Sky::draw_sun(video::IVideoDriver *driver, float sunsize, video::SColor sun
 	if (!m_sun_texture) {
 		std::cout << "New code is called" << std::endl;
 		driver->setMaterial(m_materials[1]);
-		float d = sunsize * 1.7;
-		video::SColor c = suncolor;
-		c.setAlpha(0.05 * 255);
-		vertices2 = draw_aster(wicked_time_of_day, d, c, t, o);
-		driver->drawIndexedTriangleFan(&vertices2[0], 4, indices, 2);
+		const std::array<float, 4> sunsizes = {sunsize * 1.7, sunsize * 1.2, sunsize, sunsize * 0.7};
+		video::SColor c1 = suncolor;
+		video::SColor c2 = suncolor;
+		c1.setAlpha(0.05 * 255);
+		c2.setAlpha(0.15 * 255);
+		const std::array<video::SColor, 4> colors = {c1, c2, suncolor, suncolor2};
+		for (int i = 0; i<4; i++) {
 
-		d = sunsize * 1.2;
-		c = suncolor;
-		c.setAlpha(0.15 * 255);
-		vertices2 = draw_aster(wicked_time_of_day, d, c, t, o);
-		driver->drawIndexedTriangleFan(&vertices2[0], 4, indices, 2);
-
-		d = sunsize;
-		vertices2 = draw_aster(wicked_time_of_day, d, suncolor, t, o);
-		driver->drawIndexedTriangleFan(&vertices2[0], 4, indices, 2);
-
-		d = sunsize * 0.7;
-		vertices2 = draw_aster(wicked_time_of_day, d, suncolor2, t, o);
-		driver->drawIndexedTriangleFan(&vertices2[0], 4, indices, 2);
+			vertices2 = draw_aster(wicked_time_of_day, sunsizes[i], colors[i], t, o);
+			driver->drawIndexedTriangleFan(&vertices2[0], 4, indices, 2);
+		}
 	} else {
 		driver->setMaterial(m_materials[3]);
 		float d = sunsize * 1.7;
