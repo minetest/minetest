@@ -129,6 +129,12 @@ core.register_entity(":__builtin:falling_node", {
 			local npos = self.object:get_pos()
 			self.object:set_pos(vector.round(npos))
 		end
+		-- Drop node if does not fall within 5 seconds
+		self.timer = self.timer + dtime
+		if self.timer > 5 then
+			core.add_item(pos, self.node)
+			self.object:remove()
+		end
 	end
 })
 

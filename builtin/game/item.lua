@@ -446,12 +446,19 @@ function core.item_drop(itemstack, dropper, pos)
 	local obj = core.add_item(p, item)
 	if obj then
 		if dropper_is_player then
+			local vel = dropper:get_player_velocity()
 			local dir = dropper:get_look_dir()
-			dir.x = dir.x * 2.9
-			dir.y = dir.y * 2.9 + 2
-			dir.z = dir.z * 2.9
+			dir.x = vel.x + dir.x * 4
+			dir.y = vel.y + dir.y * 4 + 2
+			dir.z = vel.z + dir.z * 4
 			obj:set_velocity(dir)
 			obj:get_luaentity().dropped_by = dropper:get_player_name()
+		else
+			obj:set_velocity({
+				x = math.random(-2.5, 2.5),
+				y = math.random(1, 4),
+				z = math.random(-2.5, 2.5)
+			})
 		end
 		return itemstack
 	end
@@ -530,12 +537,7 @@ function core.handle_node_drops(pos, drops, digger)
 	for _, dropped_item in pairs(drops) do
 		local left = give_item(dropped_item)
 		if not left:is_empty() then
-			local p = {
-				x = pos.x + math.random()/2-0.25,
-				y = pos.y + math.random()/2-0.25,
-				z = pos.z + math.random()/2-0.25,
-			}
-			core.add_item(p, left)
+			core.item_drop(left, nil, pos)
 		end
 	end
 end

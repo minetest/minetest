@@ -4439,6 +4439,7 @@ These functions return the leftover itemstack.
     * returns `itemstack, success`
 * `minetest.item_drop(itemstack, dropper, pos)`
     * Drop the item
+    * If dropper is `nil` items will be dropped near the pos
 * `minetest.item_eat(hp_change, replace_with_item)`
     * Eat the item.
     * `replace_with_item` is the itemstring which is added to the inventory.

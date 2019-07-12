@@ -50,7 +50,7 @@ local function update_builtin_statbars(player)
 	end
 	local hud = hud_ids[name]
 
-	if flags.healthbar and enable_damage then
+	if flags.healthbar then
 		local number = scaleToDefault(player, "hp")
  		if hud.id_healthbar == nil then
  			local hud_def = table.copy(health_bar_definition)
@@ -65,7 +65,7 @@ local function update_builtin_statbars(player)
 	end
 
 	local breath_max = player:get_properties().breath_max
-	if flags.breathbar and enable_damage and
+	if flags.breathbar and
 			player:get_breath() < breath_max then
 		local number = 2 * scaleToDefault(player, "breath")
 		if hud.id_breathbar == nil then
@@ -162,10 +162,12 @@ function core.hud_replace_builtin(name, definition)
 	return false
 end
 
--- Append "update_builtin_statbars" as late as possible
--- This ensures that the HUD is hidden when the flags are updated in this callback
-core.register_on_mods_loaded(function()
-	core.register_on_joinplayer(update_builtin_statbars)
-end)
-core.register_on_leaveplayer(cleanup_builtin_statbars)
-core.register_playerevent(player_event_handler)
+if enable_damage then
+	-- Append "update_builtin_statbars" as late as possible
+	-- This ensures that the HUD is hidden when the flags are updated in this callback
+	core.register_on_mods_loaded(function()
+		core.register_on_joinplayer(update_builtin_statbars)
+	end)
+	core.register_on_leaveplayer(cleanup_builtin_statbars)
+	core.register_playerevent(player_event_handler)
+end
