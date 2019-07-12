@@ -31,6 +31,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "settings.h"
 #include "camera.h"  // CameraModes
 
+#include <typeinfo>
+
 
 Sky::Sky(s32 id, ITextureSource *tsrc):
 		scene::ISceneNode(RenderingEngine::get_scene_manager()->getRootSceneNode(),
@@ -701,59 +703,29 @@ void Sky::draw_sun(video::IVideoDriver *driver, float sunsize, video::SColor sun
 	video::S3DVertex vertices[4];
 	const f32 t = 1.0f;
 	const f32 o = 0.0f;
+	std::array<video::S3DVertex, 4> vertices2;
 	if (!m_sun_texture) {
+		std::cout << "New code is called" << std::endl;
 		driver->setMaterial(m_materials[1]);
 		float d = sunsize * 1.7;
 		video::SColor c = suncolor;
 		c.setAlpha(0.05 * 255);
-		vertices[0] = video::S3DVertex(-d, -d, -1, 0, 0, 1, c, t, t);
-		vertices[1] = video::S3DVertex( d, -d, -1, 0, 0, 1, c, o, t);
-		vertices[2] = video::S3DVertex( d,  d, -1, 0, 0, 1, c, o, o);
-		vertices[3] = video::S3DVertex(-d,  d, -1, 0, 0, 1, c, t, o);
-		for (video::S3DVertex &vertex : vertices) {
-			// Switch from -Z (south) to +X (east)
-			vertex.Pos.rotateXZBy(90);
-			vertex.Pos.rotateXYBy(wicked_time_of_day * 360 - 90);
-		}
-		driver->drawIndexedTriangleFan(&vertices[0], 4, indices, 2);
+		vertices2 = draw_aster(wicked_time_of_day, d, c, t, o);
+		driver->drawIndexedTriangleFan(&vertices2[0], 4, indices, 2);
 
 		d = sunsize * 1.2;
 		c = suncolor;
 		c.setAlpha(0.15 * 255);
-		vertices[0] = video::S3DVertex(-d, -d, -1, 0, 0, 1, c, t, t);
-		vertices[1] = video::S3DVertex( d, -d, -1, 0, 0, 1, c, o, t);
-		vertices[2] = video::S3DVertex( d,  d, -1, 0, 0, 1, c, o, o);
-		vertices[3] = video::S3DVertex(-d,  d, -1, 0, 0, 1, c, t, o);
-		for (video::S3DVertex &vertex : vertices) {
-			// Switch from -Z (south) to +X (east)
-			vertex.Pos.rotateXZBy(90);
-			vertex.Pos.rotateXYBy(wicked_time_of_day * 360 - 90);
-		}
-		driver->drawIndexedTriangleFan(&vertices[0], 4, indices, 2);
+		vertices2 = draw_aster(wicked_time_of_day, d, c, t, o);
+		driver->drawIndexedTriangleFan(&vertices2[0], 4, indices, 2);
 
 		d = sunsize;
-		vertices[0] = video::S3DVertex(-d, -d, -1, 0, 0, 1, suncolor, t, t);
-		vertices[1] = video::S3DVertex( d, -d, -1, 0, 0, 1, suncolor, o, t);
-		vertices[2] = video::S3DVertex( d,  d, -1, 0, 0, 1, suncolor, o, o);
-		vertices[3] = video::S3DVertex(-d,  d, -1, 0, 0, 1, suncolor, t, o);
-		for (video::S3DVertex &vertex : vertices) {
-			// Switch from -Z (south) to +X (east)
-			vertex.Pos.rotateXZBy(90);
-			vertex.Pos.rotateXYBy(wicked_time_of_day * 360 - 90);
-		}
-		driver->drawIndexedTriangleFan(&vertices[0], 4, indices, 2);
+		vertices2 = draw_aster(wicked_time_of_day, d, suncolor, t, o);
+		driver->drawIndexedTriangleFan(&vertices2[0], 4, indices, 2);
 
 		d = sunsize * 0.7;
-		vertices[0] = video::S3DVertex(-d, -d, -1, 0, 0, 1, suncolor2, t, t);
-		vertices[1] = video::S3DVertex( d, -d, -1, 0, 0, 1, suncolor2, o, t);
-		vertices[2] = video::S3DVertex( d,  d, -1, 0, 0, 1, suncolor2, o, o);
-		vertices[3] = video::S3DVertex(-d,  d, -1, 0, 0, 1, suncolor2, t, o);
-		for (video::S3DVertex &vertex : vertices) {
-			// Switch from -Z (south) to +X (east)
-			vertex.Pos.rotateXZBy(90);
-			vertex.Pos.rotateXYBy(wicked_time_of_day * 360 - 90);
-		}
-		driver->drawIndexedTriangleFan(&vertices[0], 4, indices, 2);
+		vertices2 = draw_aster(wicked_time_of_day, d, suncolor2, t, o);
+		driver->drawIndexedTriangleFan(&vertices2[0], 4, indices, 2);
 	} else {
 		driver->setMaterial(m_materials[3]);
 		float d = sunsize * 1.7;
@@ -773,4 +745,18 @@ void Sky::draw_sun(video::IVideoDriver *driver, float sunsize, video::SColor sun
 		}
 		driver->drawIndexedTriangleFan(&vertices[0], 4, indices, 2);
 	}
+}
+
+std::array<video::S3DVertex, 4> Sky::draw_aster(float wicked_time_of_day, float d, video::SColor c, const f32 t, const f32 o) {
+	std::array<video::S3DVertex, 4> vertices;
+	vertices[0] = video::S3DVertex(-d, -d, -1, 0, 0, 1, c, t, t);
+	vertices[1] = video::S3DVertex( d, -d, -1, 0, 0, 1, c, o, t);
+	vertices[2] = video::S3DVertex( d,  d, -1, 0, 0, 1, c, o, o);
+	vertices[3] = video::S3DVertex(-d,  d, -1, 0, 0, 1, c, t, o);
+	for (video::S3DVertex &vertex : vertices) {
+		// Switch from -Z (south) to +X (east)
+		vertex.Pos.rotateXZBy(90);
+		vertex.Pos.rotateXYBy(wicked_time_of_day * 360 - 90);
+	}
+	return vertices;
 }
