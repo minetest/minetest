@@ -90,10 +90,10 @@ private:
 	static std::unordered_map<u16, Factory> m_types;
 };
 
-struct DistanceSortedActiveObject
+class DistanceSortedActiveObject
 {
+public:
 	ClientActiveObject *obj;
-	f32 d;
 
 	DistanceSortedActiveObject(ClientActiveObject *a_obj, f32 a_d)
 	{
@@ -105,4 +105,7 @@ struct DistanceSortedActiveObject
 	{
 		return d < other.d;
 	}
+
+private:
+	f32 d;
 };
