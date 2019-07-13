@@ -379,6 +379,12 @@ private:
 			GUIScrollBar::ArrowVisibility arrow_visiblity = GUIScrollBar::DEFAULT;
 		} scrollbar_options;
 
+		struct {
+			std::vector<irr::video::SColor> colors;
+			std::vector<irr::video::SColor> bordercolors;
+			std::vector<s32> borders;
+		} boxOptions;
+
 		// used to restore table selection/scroll/treeview state
 		std::unordered_map<std::string, GUITable::DynamicData> table_dyndata;
 	} parserData;
@@ -431,6 +437,7 @@ private:
 	void parseItemImageButton(parserData* data, const std::string &element);
 	void parseTabHeader(parserData* data, const std::string &element);
 	void parseBox(parserData* data, const std::string &element);
+	void parseBoxOptions(parserData* data, const std::string &element);
 	void parseBackgroundColor(parserData* data, const std::string &element);
 	void parseListColors(parserData* data, const std::string &element);
 	void parseTooltip(parserData* data, const std::string &element);
