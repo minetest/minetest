@@ -79,6 +79,18 @@ function vector.angle(a, b)
 	return math.atan2(crossplen, dotp)
 end
 
+function vector.dot(a, b)
+	return a.x * b.x + a.y * b.y + a.z * b.z
+end
+
+function vector.cross(a, b)
+	return {
+		x = a.y * b.z - a.z * b.y,
+		y = a.z * b.x - a.x * b.z,
+		z = a.x * b.y - a.y * b.x
+	}
+end
+
 function vector.add(a, b)
 	if type(b) == "table" then
 		return {x = a.x + b.x,
