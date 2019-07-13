@@ -354,7 +354,7 @@ public:
 
 	void afterContentReceived();
 
-	float getRTT();
+	float getRTT(con::rtt_stat_type type = con::AVG_RTT);
 	float getCurRate();
 
 	Minimap* getMinimap() { return m_minimap; }
@@ -476,7 +476,6 @@ private:
 
 	float m_packetcounter_timer = 0.0f;
 	float m_connection_reinit_timer = 0.1f;
-	float m_avg_rtt_timer = 0.0f;
 	float m_playerpos_send_timer = 0.0f;
 	IntervalLimiter m_map_timer_and_unload_interval;
 

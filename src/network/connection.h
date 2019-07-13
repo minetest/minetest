@@ -569,18 +569,10 @@ class Peer {
 
 		virtual float getStat(rtt_stat_type type) const {
 			switch (type) {
-				case MIN_RTT:
-					return m_rtt.min_rtt;
-				case MAX_RTT:
-					return m_rtt.max_rtt;
 				case AVG_RTT:
 					return m_rtt.avg_rtt;
-				case MIN_JITTER:
-					return m_rtt.jitter_min;
-				case MAX_JITTER:
-					return m_rtt.jitter_max;
 				case AVG_JITTER:
-					return m_rtt.jitter_avg;
+					return m_rtt.avg_jitter;
 			}
 			return -1;
 		}
@@ -608,18 +600,13 @@ class Peer {
 	private:
 
 		struct rttstats {
-			float jitter_min = FLT_MAX;
-			float jitter_max = 0.0f;
-			float jitter_avg = -1.0f;
-			float min_rtt = FLT_MAX;
-			float max_rtt = 0.0f;
+			float avg_jitter = -1.0f;
 			float avg_rtt = -1.0f;
 
 			rttstats() = default;
 		};
 
 		rttstats m_rtt;
-		float m_last_rtt = -1.0f;
 
 		// current usage count
 		unsigned int m_usage = 0;

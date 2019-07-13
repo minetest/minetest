@@ -26,11 +26,7 @@ namespace con
 
 typedef enum
 {
-	MIN_RTT,
-	MAX_RTT,
 	AVG_RTT,
-	MIN_JITTER,
-	MAX_JITTER,
 	AVG_JITTER
 } rtt_stat_type;
 

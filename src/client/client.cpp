@@ -446,18 +446,6 @@ void Client::step(float dtime)
 	}
 
 	/*
-		Print some info
-	*/
-	float &counter = m_avg_rtt_timer;
-	counter += dtime;
-	if(counter >= 10) {
-		counter = 0.0;
-		// connectedAndInitialized() is true, peer exists.
-		float avg_rtt = getRTT();
-		infostream << "Client: avg_rtt=" << avg_rtt << std::endl;
-	}
-
-	/*
 		Send player position to server
 	*/
 	{
@@ -1711,9 +1699,9 @@ void Client::afterContentReceived()
 	delete[] text;
 }
 
-float Client::getRTT()
+float Client::getRTT(con::rtt_stat_type type)
 {
-	return m_con->getPeerStat(PEER_ID_SERVER,con::AVG_RTT);
+	return m_con->getPeerStat(PEER_ID_SERVER, type);
 }
 
 float Client::getCurRate()

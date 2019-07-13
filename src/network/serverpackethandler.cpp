@@ -471,7 +471,9 @@ void Server::process_PlayerPos(RemotePlayer *player, PlayerSAO *playersao,
 	pitch = modulo360f(pitch);
 	yaw = wrapDegrees_0_360(yaw);
 
-	playersao->setBasePosition(position);
+	f32 dtime = std::min(0.15f, m_con->getPeerStat(player->getPeerId(), con::AVG_RTT));
+
+	playersao->setBasePosition(position + speed * dtime);
 	player->setSpeed(speed);
 	playersao->setLookPitch(pitch);
 	playersao->setPlayerYaw(yaw);

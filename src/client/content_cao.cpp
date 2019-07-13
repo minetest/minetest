@@ -1370,9 +1370,18 @@ void GenericCAO::processMessage(const std::string &data)
 	} else if (cmd == GENERIC_CMD_UPDATE_POSITION) {
 		// Not sent by the server if this object is an attachment.
 		// We might however get here if the server notices the object being detached before the client.
-		m_position = readV3F32(is);
+		v3f new_pos = readV3F32(is);
 		m_velocity = readV3F32(is);
 		m_acceleration = readV3F32(is);
+
+		f32 rtt = std::min(0.15f, m_client->getRTT(con::AVG_RTT));
+		// Prediction: Allow maximal 4x the jitter time
+		f32 jitter = m_client->getRTT(con::AVG_JITTER) * 4.0f;
+		v3f diff = (m_acceleration * 0.5f * jitter + m_velocity) * jitter;
+		new_pos += (m_acceleration * 0.5f * rtt + m_velocity) * rtt;
+
+		if ((m_position - new_pos).getLengthSQ() > diff.getLengthSQ())
+			m_position = new_pos;
 
 		if (std::fabs(m_prop.automatic_rotate) < 0.001f)
 			m_rotation = readV3F32(is);

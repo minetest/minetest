@@ -810,51 +810,28 @@ void Peer::DecUseCount()
 }
 
 void Peer::RTTStatistics(float rtt, const std::string &profiler_id,
-		unsigned int num_samples) {
+		unsigned int num_samples)
+{
+	/* set min max values */
 
-	if (m_last_rtt > 0) {
-		/* set min max values */
-		if (rtt < m_rtt.min_rtt)
-			m_rtt.min_rtt = rtt;
-		if (rtt >= m_rtt.max_rtt)
-			m_rtt.max_rtt = rtt;
+	/* do average calculation */
+	if (m_rtt.avg_rtt < 0.0)
+		m_rtt.avg_rtt = rtt;
+	else
+		m_rtt.avg_rtt += (rtt - m_rtt.avg_rtt) / (num_samples - 1);
 
-		/* do average calculation */
-		if (m_rtt.avg_rtt < 0.0)
-			m_rtt.avg_rtt  = rtt;
-		else
-			m_rtt.avg_rtt  = m_rtt.avg_rtt * (num_samples/(num_samples-1)) +
-								rtt * (1/num_samples);
+	/* do jitter calculation */
+	float jitter = std::abs(rtt - m_rtt.avg_rtt);
 
-		/* do jitter calculation */
+	if (m_rtt.avg_jitter < 0.0f)
+		m_rtt.avg_jitter = jitter;
+	else if (jitter > 0.005f)
+		m_rtt.avg_jitter += (jitter - m_rtt.avg_jitter) / (num_samples - 1);
 
-		//just use some neutral value at beginning
-		float jitter = m_rtt.jitter_min;
-
-		if (rtt > m_last_rtt)
-			jitter = rtt-m_last_rtt;
-
-		if (rtt <= m_last_rtt)
-			jitter = m_last_rtt - rtt;
-
-		if (jitter < m_rtt.jitter_min)
-			m_rtt.jitter_min = jitter;
-		if (jitter >= m_rtt.jitter_max)
-			m_rtt.jitter_max = jitter;
-
-		if (m_rtt.jitter_avg < 0.0)
-			m_rtt.jitter_avg  = jitter;
-		else
-			m_rtt.jitter_avg  = m_rtt.jitter_avg * (num_samples/(num_samples-1)) +
-								jitter * (1/num_samples);
-
-		if (!profiler_id.empty()) {
-			g_profiler->graphAdd(profiler_id + "_rtt", rtt);
-			g_profiler->graphAdd(profiler_id + "_jitter", jitter);
-		}
+	if (!profiler_id.empty()) {
+		g_profiler->graphAdd(profiler_id + "_rtt", rtt);
+		g_profiler->graphAdd(profiler_id + "_jitter", jitter);
 	}
-	/* save values required for next loop */
-	m_last_rtt = rtt;
 }
 
 bool Peer::isTimedOut(float timeout)
@@ -911,10 +888,10 @@ bool UDPPeer::getAddress(MTProtocols type,Address& toset)
 
 void UDPPeer::reportRTT(float rtt)
 {
-	if (rtt < 0.0) {
+	if (rtt < 0.0)
 		return;
-	}
-	RTTStatistics(rtt,"rudp",MAX_RELIABLE_WINDOW_SIZE*10);
+
+	RTTStatistics(rtt, "rudp", 100);
 
 	float timeout = getStat(AVG_RTT) * RESEND_TIMEOUT_FACTOR;
 	if (timeout < RESEND_TIMEOUT_MIN)
