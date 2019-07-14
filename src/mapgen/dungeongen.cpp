@@ -64,9 +64,10 @@ DungeonGen::DungeonGen(const NodeDefManager *ndef,
 		dp.corridor_len_max    = 13;
 		dp.room_size_min       = v3s16(4, 4, 4);
 		dp.room_size_max       = v3s16(8, 6, 8);
-		dp.room_size_large     = v3s16(16, 16, 16);
-		dp.first_room_large    = true;
-		dp.num_rooms           = 16;
+		dp.room_size_large_min = v3s16(8, 8, 8);
+		dp.room_size_large_max = v3s16(16, 16, 16);
+		dp.large_room_chance   = 1;
+		dp.num_rooms           = 8;
 		dp.num_dungeons        = 1;
 		dp.notifytype          = GENNOTIFY_DUNGEON;
 
@@ -152,11 +153,10 @@ void DungeonGen::makeDungeon(v3s16 start_padding)
 	*/
 	bool fits = false;
 	for (u32 i = 0; i < 100 && !fits; i++) {
-		// Only the first room can be 'large'
-		if (dp.first_room_large) {
-			roomsize.Z = dp.room_size_large.Z;
-			roomsize.Y = dp.room_size_large.Y;
-			roomsize.X = dp.room_size_large.X;
+		if (dp.large_room_chance >= 1) {
+			roomsize.Z = random.range(dp.room_size_large_min.Z, dp.room_size_large_max.Z);
+			roomsize.Y = random.range(dp.room_size_large_min.Y, dp.room_size_large_max.Y);
+			roomsize.X = random.range(dp.room_size_large_min.X, dp.room_size_large_max.X);
 		} else {
 			roomsize.Z = random.range(dp.room_size_min.Z, dp.room_size_max.Z);
 			roomsize.Y = random.range(dp.room_size_min.Y, dp.room_size_max.Y);
@@ -250,9 +250,16 @@ void DungeonGen::makeDungeon(v3s16 start_padding)
 		makeCorridor(doorplace, doordir, corridor_end, corridor_end_dir);
 
 		// Find a place for a random sized room
-		roomsize.Z = random.range(dp.room_size_min.Z, dp.room_size_max.Z);
-		roomsize.Y = random.range(dp.room_size_min.Y, dp.room_size_max.Y);
-		roomsize.X = random.range(dp.room_size_min.X, dp.room_size_max.X);
+		if (dp.large_room_chance > 1 && random.range(1, dp.large_room_chance) == 1) {
+			// Large room
+			roomsize.Z = random.range(dp.room_size_large_min.Z, dp.room_size_large_max.Z);
+			roomsize.Y = random.range(dp.room_size_large_min.Y, dp.room_size_large_max.Y);
+			roomsize.X = random.range(dp.room_size_large_min.X, dp.room_size_large_max.X);
+		} else {
+			roomsize.Z = random.range(dp.room_size_min.Z, dp.room_size_max.Z);
+			roomsize.Y = random.range(dp.room_size_min.Y, dp.room_size_max.Y);
+			roomsize.X = random.range(dp.room_size_min.X, dp.room_size_max.X);
+		}
 
 		m_pos = corridor_end;
 		m_dir = corridor_end_dir;
@@ -265,7 +272,6 @@ void DungeonGen::makeDungeon(v3s16 start_padding)
 		else
 			// Don't actually make a door
 			roomplace -= doordir;
-
 	}
 }
 

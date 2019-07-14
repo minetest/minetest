@@ -572,13 +572,13 @@ void MapgenV6::makeChunk(BlockMakeData *data)
 
 			DungeonParams dp;
 
-			dp.seed             = seed;
-			dp.num_dungeons     = num_dungeons;
-			dp.only_in_ground   = true;
-			dp.corridor_len_min = 1;
-			dp.corridor_len_max = 13;
-			dp.num_rooms        = ps.range(2, 16);
-			dp.first_room_large = ps.range(1, 4) == 1;
+			dp.seed              = seed;
+			dp.num_dungeons      = num_dungeons;
+			dp.only_in_ground    = true;
+			dp.corridor_len_min  = 1;
+			dp.corridor_len_max  = 13;
+			dp.num_rooms         = ps.range(2, 16);
+			dp.large_room_chance = (ps.range(1, 4) == 1) ? 1 : 0;
 
 			dp.np_alt_wall
 				= NoiseParams(-0.4, 1.0, v3f(40.0, 40.0, 40.0), 32474, 6, 1.1, 2.0);
@@ -592,8 +592,8 @@ void MapgenV6::makeChunk(BlockMakeData *data)
 				dp.holesize            = v3s16(2, 3, 2);
 				dp.room_size_min       = v3s16(6, 9, 6);
 				dp.room_size_max       = v3s16(10, 11, 10);
-				dp.room_size_large     = v3s16(
-					ps.range(10, 18), ps.range(13, 21), ps.range(10, 18));
+				dp.room_size_large_min = v3s16(10, 13, 10);
+				dp.room_size_large_max = v3s16(18, 21, 18);
 				dp.notifytype          = GENNOTIFY_TEMPLE;
 			} else {
 				dp.c_wall              = c_cobble;
@@ -604,8 +604,8 @@ void MapgenV6::makeChunk(BlockMakeData *data)
 				dp.holesize            = v3s16(1, 2, 1);
 				dp.room_size_min       = v3s16(4, 4, 4);
 				dp.room_size_max       = v3s16(8, 6, 8);
-				dp.room_size_large     = v3s16(
-					ps.range(8, 16), ps.range(8, 16), ps.range(8, 16));
+				dp.room_size_large_min = v3s16(8, 8, 8);
+				dp.room_size_large_max = v3s16(16, 16, 16);
 				dp.notifytype          = GENNOTIFY_DUNGEON;
 			}
 
