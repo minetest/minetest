@@ -290,17 +290,16 @@ void LBMManager::applyLBMs(ServerEnvironment *env, MapBlock *block, u32 stamp)
 void fillRadiusBlock(v3s16 p0, s16 r, std::set<v3s16> &list)
 {
 	v3s16 p;
-	s32 r2 = r * r;
 	for(p.X=p0.X-r; p.X<=p0.X+r; p.X++)
-	for(p.Y=p0.Y-r; p.Y<=p0.Y+r; p.Y++)
-	for(p.Z=p0.Z-r; p.Z<=p0.Z+r; p.Z++)
-	{
-		// limit to a sphere
-		if (p.getDistanceFromSQ(p0) <= r2) {
-			// Set in list
-			list.insert(p);
-		}
-	}
+		for(p.Y=p0.Y-r; p.Y<=p0.Y+r; p.Y++)
+			for(p.Z=p0.Z-r; p.Z<=p0.Z+r; p.Z++)
+			{
+				// limit to a sphere
+				if (p.getDistanceFrom(p0) <= r) {
+					// Set in list
+					list.insert(p);
+				}
+			}
 }
 
 void fillViewConeBlock(v3s16 p0,
