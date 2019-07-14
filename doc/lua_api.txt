@@ -4856,15 +4856,13 @@ Misc.
 * `minetest.decode_base64(string)`: returns string
     * Decodes a string encoded in base64.
 * `minetest.is_protected(pos, name)`: returns boolean
-    * Returns true, if player `name` shouldn't be able to dig at `pos` or do
-      other actions, definable by mods, due to some mod-defined ownership-like
-      concept.
-    * Returns false or nil, if the player is allowed to do such actions.
-    * `name` will be "" for non-players or unknown players.
-    * This function should be overridden by protection mods and should be used
-      to check if a player can interact at a position.
-    * This function should call the old version of itself if the position is
-      not protected by the mod.
+    * Returning `true` restricts the player `name` from modifying (i.e. digging,
+       placing) the node at position `pos`.
+    * `name` will be `""` for non-players or unknown players.
+    * This function should be overridden by protection mods. It is highly
+      recommended to grant access to players with the `protection_bypass` privilege.
+    * Cache and call the old version of this function if the position is
+      not protected by the mod. This will allow using multiple protection mods.
     * Example:
 
           local old_is_protected = minetest.is_protected
