@@ -2651,7 +2651,6 @@ void GUIFormSpecMenu::parseElement(parserData* data, const std::string &element)
 
 	if (type == "scrollbaroptions") {
 		parseScrollBarOptions(data, description);
-
 		return;
 	}
 
