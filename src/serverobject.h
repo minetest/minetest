@@ -180,9 +180,7 @@ public:
 	{}
 
 	// Inventory and wielded item
-	virtual Inventory* getInventory()
-	{ return NULL; }
-	virtual const Inventory* getInventory() const
+	virtual Inventory *getInventory() const
 	{ return NULL; }
 	virtual InventoryLocation getInventoryLocation() const
 	{ return InventoryLocation(); }

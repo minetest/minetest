@@ -90,6 +90,29 @@ Player::~Player()
 	clearHud();
 }
 
+void Player::setWieldIndex(u16 index)
+{
+	const InventoryList *mlist = inventory.getList("main");
+	m_wield_index = MYMIN(index, mlist ? mlist->getSize() : 0);
+}
+
+ItemStack &Player::getWieldedItem(ItemStack *selected, ItemStack *hand) const
+{
+	assert(selected);
+
+	const InventoryList *mlist = inventory.getList("main"); // TODO: Make this generic
+	const InventoryList *hlist = inventory.getList("hand");
+
+	if (mlist && m_wield_index < mlist->getSize())
+		*selected = mlist->getItem(m_wield_index);
+
+	if (hand && hlist)
+		*hand = hlist->getItem(0);
+
+	// Return effective tool item
+	return (hand && selected->name.empty()) ? *hand : *selected;
+}
+
 u32 Player::addHud(HudElement *toadd)
 {
 	MutexAutoLock lock(m_mutex);
