@@ -31,8 +31,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "settings.h"
 #include "camera.h"  // CameraModes
 
-#include <typeinfo>
-
 
 Sky::Sky(s32 id, ITextureSource *tsrc):
 		scene::ISceneNode(RenderingEngine::get_scene_manager()->getRootSceneNode(),
