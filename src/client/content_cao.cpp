@@ -17,36 +17,35 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
+#include "content_cao.h"
+#include <IBillboardSceneNode.h>
 #include <ICameraSceneNode.h>
 #include <ITextSceneNode.h>
-#include <IBillboardSceneNode.h>
 #include <IMeshManipulator.h>
 #include <IAnimatedMeshSceneNode.h>
-#include "content_cao.h"
-#include "util/numeric.h" // For IntervalLimiter & setPitchYawRoll
-#include "util/serialize.h"
-#include "util/basic_macros.h"
+#include "client/client.h"
+#include "client/renderingengine.h"
 #include "client/sound.h"
 #include "client/tile.h"
-#include "environment.h"
+#include "util/basic_macros.h"
+#include "util/numeric.h" // For IntervalLimiter & setPitchYawRoll
+#include "util/serialize.h"
+#include "camera.h" // CameraModes
 #include "collision.h"
-#include "settings.h"
-#include "serialization.h" // For decompressZlib
-#include "clientobject.h"
-#include "mesh.h"
-#include "itemdef.h"
-#include "tool.h"
 #include "content_cso.h"
-#include "sound.h"
-#include "nodedef.h"
+#include "environment.h"
+#include "itemdef.h"
 #include "localplayer.h"
 #include "map.h"
-#include "camera.h" // CameraModes
-#include "client.h"
+#include "mesh.h"
+#include "nodedef.h"
+#include "serialization.h" // For decompressZlib
+#include "settings.h"
+#include "sound.h"
+#include "tool.h"
 #include "wieldmesh.h"
 #include <algorithm>
 #include <cmath>
-#include "client/renderingengine.h"
 
 class Settings;
 struct ToolCapabilities;
@@ -305,6 +304,7 @@ void TestCAO::processMessage(const std::string &data)
 */
 
 #include "genericobject.h"
+#include "clientobject.h"
 
 GenericCAO::GenericCAO(Client *client, ClientEnvironment *env):
 		ClientActiveObject(0, client, env)
@@ -372,6 +372,8 @@ void GenericCAO::processInitData(const std::string &data)
 	m_position = readV3F32(is);
 	m_rotation = readV3F32(is);
 	m_hp = readU16(is);
+
+	std::cout << "initData() id=" << m_id << ", name=" << m_name << std::endl;
 	const u8 num_messages = readU8(is);
 
 	for (int i = 0; i < num_messages; i++) {
@@ -443,7 +445,7 @@ scene::IAnimatedMeshSceneNode* GenericCAO::getAnimatedMeshSceneNode()
 
 void GenericCAO::setChildrenVisible(bool toset)
 {
-	for (u16 cao_id : m_children) {
+	for (u16 cao_id : m_attachment_child_ids) {
 		GenericCAO *obj = m_env->getGenericCAO(cao_id);
 		if (obj) {
 			obj->setVisible(toset);
@@ -451,39 +453,93 @@ void GenericCAO::setChildrenVisible(bool toset)
 	}
 }
 
-void GenericCAO::setAttachments()
+void GenericCAO::setAttachment(int parent_id, const std::string &bone, v3f position, v3f rotation)
 {
+	int old_parent = m_attachment_parent_id;
+	m_attachment_parent_id = parent_id;
+	m_attachment_bone = bone;
+	m_attachment_position = position;
+	m_attachment_rotation = rotation;
+
+	ClientActiveObject *parent = m_env->getActiveObject(parent_id);
+
+	// localplayer itself can't be attached to localplayer
+	if (!m_is_local_player) {
+		// Objects attached to the local player should be hidden by default
+		m_attached_to_local = parent && parent->isLocalPlayer();
+		m_is_visible = !m_attached_to_local;
+	}
+
+	if (parent_id != old_parent) {
+		if (auto *o = m_env->getActiveObject(old_parent))
+			o->removeAttachmentChild(m_id);
+		if (parent)
+			parent->addAttachmentChild(m_id);
+	}
+
+	std::cout << " setAttachment() id=" << m_id << ", parent=" << (u64)parent << ", name=" << m_name << std::endl;
 	updateAttachments();
+}
+
+void GenericCAO::getAttachment(int *parent_id, std::string *bone, v3f *position,
+	v3f *rotation)
+{
+	*parent_id = m_attachment_parent_id;
+	*bone = m_attachment_bone;
+	*position = m_attachment_position;
+	*rotation = m_attachment_rotation;
+}
+
+void GenericCAO::clearChildAttachments()
+{
+	// Cannot use for-loop here: setAttachment() modifies 'm_attachment_child_ids'!
+	while (!m_attachment_child_ids.empty()) {
+		int child_id = *m_attachment_child_ids.begin();
+
+		if (ClientActiveObject *child = m_env->getActiveObject(child_id))
+			child->setAttachment(0, "", v3f(0, 0, 0), v3f(0, 0, 0));
+
+		removeAttachmentChild(child_id);
+	}
+}
+
+void GenericCAO::clearParentAttachment()
+{
+	if (m_attachment_parent_id)
+		setAttachment(0, "", m_attachment_position, m_attachment_rotation);
+	else
+		setAttachment(0, "", v3f(0, 0, 0), v3f(0, 0, 0));
+}
+
+void GenericCAO::addAttachmentChild(int child_id)
+{
+	m_attachment_child_ids.insert(child_id);
+}
+
+void GenericCAO::removeAttachmentChild(int child_id)
+{
+	m_attachment_child_ids.erase(child_id);
 }
 
 ClientActiveObject* GenericCAO::getParent() const
 {
 	ClientActiveObject *obj = NULL;
 
-	u16 attached_id = m_env->attachement_parent_ids[getId()];
+	if (m_attachment_parent_id)
+		obj = m_env->getActiveObject(m_attachment_parent_id);
 
-	if ((attached_id != 0) &&
-			(attached_id != getId())) {
-		obj = m_env->getActiveObject(attached_id);
-	}
 	return obj;
 }
 
 void GenericCAO::removeFromScene(bool permanent)
 {
-	// Should be true when removing the object permanently and false when refreshing (eg: updating visuals)
-	if((m_env != NULL) && (permanent))
-	{
-		for (u16 ci : m_children) {
-			if (m_env->attachement_parent_ids[ci] == getId()) {
-				m_env->attachement_parent_ids[ci] = 0;
-			}
-		}
-		m_children.clear();
+	// Should be true when removing the object permanently
+	// and false when refreshing (eg: updating visuals)
+	if (m_env && permanent) {
+		clearChildAttachments();
+		clearParentAttachment();
 
-		m_env->attachement_parent_ids[getId()] = 0;
-
-		LocalPlayer* player = m_env->getLocalPlayer();
+		LocalPlayer *player = m_env->getLocalPlayer();
 		if (this == player->parent) {
 			player->parent = nullptr;
 			player->isAttached = false;
@@ -723,7 +779,6 @@ void GenericCAO::addToScene(ITextureSource *tsrc)
 	updateNodePos();
 	updateAnimation();
 	updateBonePosition();
-	updateAttachments();
 }
 
 void GenericCAO::updateLight(u8 light_at_pos)
@@ -736,7 +791,7 @@ void GenericCAO::updateLight(u8 light_at_pos)
 	updateLightNoCheck(light_at_pos);
 
 	// Update light of all children
-	for (u16 i : m_children) {
+	for (u16 i : m_attachment_child_ids) {
 		ClientActiveObject *obj = m_env->getActiveObject(i);
 		if (obj) {
 			obj->updateLightNoCheck(light_at_pos);
@@ -871,12 +926,8 @@ void GenericCAO::step(float dtime, ClientEnvironment *env)
 
 		// Attachments, part 1: All attached objects must be unparented first,
 		// or Irrlicht causes a segmentation fault
-		for (auto ci = m_children.begin(); ci != m_children.end();) {
-			if (m_env->attachement_parent_ids[*ci] != getId()) {
-				ci = m_children.erase(ci);
-				continue;
-			}
-			ClientActiveObject *obj = m_env->getActiveObject(*ci);
+		for (u16 cao_id : m_attachment_child_ids) {
+			ClientActiveObject *obj = m_env->getActiveObject(cao_id);
 			if (obj) {
 				scene::ISceneNode *child_node = obj->getSceneNode();
 				// The node's parent is always an IDummyTraformationSceneNode,
@@ -884,18 +935,16 @@ void GenericCAO::step(float dtime, ClientEnvironment *env)
 				if (child_node)
 					child_node->getParent()->setParent(m_smgr->getRootSceneNode());
 			}
-			++ci;
 		}
 
 		removeFromScene(false);
 		addToScene(m_client->tsrc());
 
 		// Attachments, part 2: Now that the parent has been refreshed, put its attachments back
-		for (u16 cao_id : m_children) {
-			// Get the object of the child
+		for (u16 cao_id : m_attachment_child_ids) {
 			ClientActiveObject *obj = m_env->getActiveObject(cao_id);
 			if (obj)
-				obj->setAttachments();
+				obj->updateAttachments();
 		}
 	}
 
@@ -1296,6 +1345,14 @@ void GenericCAO::updateBonePosition()
 void GenericCAO::updateAttachments()
 {
 	ClientActiveObject *parent = getParent();
+	if (!parent && m_attachment_parent_id) {
+		// m_is_visible = false; but needs proper handling (future use)
+		return; 
+	}
+
+	std::cout << "   update(): id=" << m_id << ", attach_id="
+		<< m_attachment_parent_id << ", obj=" << (u64)parent << std::endl;
+
 	if (!parent) { // Detach or don't attach
 		if (m_matrixnode) {
 			v3f old_pos = m_matrixnode->getAbsolutePosition();
@@ -1317,6 +1374,8 @@ void GenericCAO::updateAttachments()
 			parent_node = parent_animated_mesh_node->getJointNode(m_attachment_bone.c_str());
 		}
 
+		std::cout << "\t"  <<  " matrix: " << (u64)m_matrixnode
+				<< " parent: " << (u64)parent_node << std::endl;
 		if (m_matrixnode && parent_node) {
 			m_matrixnode->setParent(parent_node);
 			getPosRotMatrix().setTranslation(m_attachment_position);
@@ -1488,31 +1547,10 @@ void GenericCAO::processMessage(const std::string &data)
 		updateBonePosition();
 	} else if (cmd == GENERIC_CMD_ATTACH_TO) {
 		u16 parent_id = readS16(is);
-		u16 &old_parent_id = m_env->attachement_parent_ids[getId()];
-		if (parent_id != old_parent_id) {
-			if (GenericCAO *old_parent = m_env->getGenericCAO(old_parent_id)) {
-				old_parent->m_children.erase(std::remove(
-					m_children.begin(), m_children.end(),
-					getId()), m_children.end());
-			}
-			if (GenericCAO *new_parent = m_env->getGenericCAO(parent_id))
-				new_parent->m_children.push_back(getId());
-
-			old_parent_id = parent_id;
-		}
-
-		m_attachment_bone = deSerializeString(is);
-		m_attachment_position = readV3F32(is);
-		m_attachment_rotation = readV3F32(is);
-
-		// localplayer itself can't be attached to localplayer
-		if (!m_is_local_player) {
-			m_attached_to_local = getParent() != NULL && getParent()->isLocalPlayer();
-			// Objects attached to the local player should be hidden by default
-			m_is_visible = !m_attached_to_local;
-		}
-
-		updateAttachments();
+		std::string bone = deSerializeString(is);
+		v3f position = readV3F32(is);
+		v3f rotation = readV3F32(is);	
+		setAttachment(parent_id, bone, position, rotation);
 	} else if (cmd == GENERIC_CMD_PUNCHED) {
 		u16 result_hp = readU16(is);
 
@@ -1561,13 +1599,9 @@ void GenericCAO::processMessage(const std::string &data)
 		}
 	} else if (cmd == GENERIC_CMD_SPAWN_INFANT) {
 		u16 child_id = readU16(is);
-		u8 type = readU8(is);
+		//u8 type = readU8(is); maybe this will be useful later
 
-		if (GenericCAO *childobj = m_env->getGenericCAO(child_id)) {
-			childobj->processInitData(deSerializeLongString(is));
-		} else {
-			m_env->addActiveObject(child_id, type, deSerializeLongString(is));
-		}
+		addAttachmentChild(child_id);
 	} else {
 		warningstream << FUNCTION_NAME
 			<< ": unknown command or outdated client \""

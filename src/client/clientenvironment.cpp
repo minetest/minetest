@@ -47,8 +47,6 @@ ClientEnvironment::ClientEnvironment(ClientMap *map,
 	m_texturesource(texturesource),
 	m_client(client)
 {
-	char zero = 0;
-	memset(attachement_parent_ids, zero, sizeof(attachement_parent_ids));
 }
 
 ClientEnvironment::~ClientEnvironment()
@@ -392,7 +390,17 @@ void ClientEnvironment::addActiveObject(u16 id, u8 type,
 			<<std::endl;
 	}
 
-	addActiveObject(obj);
+	u16 new_id = addActiveObject(obj);
+
+	std::cout << "Added " << new_id << " - was: " << id << std::endl;
+	if ((obj = getActiveObject(new_id))) {
+		const auto &children = obj->getAttachmentChildIds();
+		for (auto c_id : children) {
+			if (auto *o = getActiveObject(c_id))
+				o->updateAttachments();
+		}
+		obj->updateAttachments();
+	}
 }
 
 void ClientEnvironment::processActiveObjectMessage(u16 id, const std::string &data)
