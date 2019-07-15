@@ -323,7 +323,7 @@ local pages = {
 	]],
 	-- Style
 
-		"formspec_version[3]size[12,13]" ..
+		"formspec_version[3]size[12,13]options[key_event=true;mouse_event=all]" ..
 		("label[0.375,0.375;Styled - %s %s]"):format(
 			color("#F00", "red text"),
 			color("#77FF00CC", "green text")) ..
@@ -514,6 +514,9 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 	if fields.submit_window then
 		show_test_formspec(player:get_player_name())
 	end
+
+	print("key_event: " .. tostring(fields.key_event))
+	print("mouse_event: " .. tostring(fields.mouse_event))
 end)
 
 minetest.register_chatcommand("test_formspec", {

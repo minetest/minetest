@@ -174,6 +174,8 @@ public:
 
 	// return all keys used in this object
 	std::vector<std::string> getNames() const;
+	std::vector<std::string> getKeymapNames() const;
+
 	// check if setting exists anywhere in the hierarchy
 	bool exists(const std::string &name) const;
 	// check if setting exists in this object ("locally")

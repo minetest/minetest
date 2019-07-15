@@ -684,9 +684,35 @@ std::vector<std::string> Settings::getNames() const
 	for (const auto &settings_it : m_settings) {
 		names.push_back(settings_it.first);
 	}
+
+	if (auto parent = getParent()) {
+		std::vector<std::string> other = parent->getNames();
+		for (size_t i = 0; i < other.size(); i++)
+			names.push_back(other[i]);
+	}
+
 	return names;
 }
 
+
+std::vector<std::string> Settings::getKeymapNames() const
+{
+	MutexAutoLock lock(m_mutex);
+
+	std::vector<std::string> names;
+	for (const auto &settings_it : m_settings) {
+		if (settings_it.first.substr(0, 7) == "keymap_")
+			names.push_back(settings_it.first);
+	}
+
+	if (auto parent = getParent()) {
+		std::vector<std::string> other = parent->getKeymapNames();
+		for (size_t i = 0; i < other.size(); i++)
+			names.push_back(other[i]);
+	}
+
+	return names;
+}
 
 
 /***************************************

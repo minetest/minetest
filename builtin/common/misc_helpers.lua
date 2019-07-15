@@ -401,6 +401,76 @@ function core.explode_scrollbar_event(evt)
 end
 
 --------------------------------------------------------------------------------
+function core.explode_key_event(evt)
+	if evt == nil then
+		return nil
+	end
+
+	local parts = evt:split(";", true)
+	if #parts < 3 then
+		return nil
+	end
+
+	local ret = {
+		name = parts[1],
+		pressed = parts[3] == "true"
+	}
+
+	if parts[2] ~= "" then
+		ret.mapped = parts[2]
+	end
+
+	return ret
+end
+
+--------------------------------------------------------------------------------
+function core.explode_mouse_event(evt)
+	if evt == nil then
+		return nil
+	end
+
+	local parts = evt:split(";", true)
+	if #parts < 9 then
+		return nil
+	end
+
+	local ret = {
+		type = parts[1],
+		form_pos = {
+			x = tonumber(parts[4]) or 0,
+			y = tonumber(parts[5]) or 0
+		},
+		wheel = tonumber(parts[9]) or 0
+	}
+
+	if ret.type == "click" or ret.type == "release" then
+		ret.button = parts[2]
+	end
+
+	if ret.type == "click" then
+		ret.clicks = tonumber(parts[3]) or 0
+		if ret.clicks < 1 or ret.clicks > 3 or math.floor(ret.clicks) ~= ret.clicks then
+			ret.clicks = 1
+		end
+	end
+
+	if parts[6] ~= "" then
+		ret.elem = parts[6]
+		ret.elem_pos = {
+			x = tonumber(parts[7]) or 0,
+			y = tonumber(parts[8]) or 0
+		}
+	else
+		ret.elem_pos = {
+			x = ret.form_pos.x,
+			y = ret.form_pos.y
+		}
+	end
+
+	return ret
+end
+
+--------------------------------------------------------------------------------
 function core.rgba(r, g, b, a)
 	return a and string.format("#%02X%02X%02X%02X", r, g, b, a) or
 			string.format("#%02X%02X%02X", r, g, b)

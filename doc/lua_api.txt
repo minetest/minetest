@@ -2347,12 +2347,27 @@ Elements
   (if present).
 * Disables player:set_formspec_prepend() from applying to this formspec.
 
+### `options[<opt 1>=<val 1>;<opt 2>=<val 2>;...]`
+
+* Sets global options affecting the entire formspec
+* Must be used after the `size`, `position`, `anchor`, and `no_prepend` elements (if present).
+* Possible options:
+    * key_event - boolean: Sets whether to have key events in the field `key_event`.
+      Default false. See [Special Input Events] for more information.
+    * mouse_event: Sets whether to have mouse events in the field `mouse_event`.
+      Possible values:
+        * `none` (default): Mouse events will not be sent.
+        * `all`: Sends all mouse events.
+        * `no_move`: All mouse events will be registered except for `move`; this drastically
+          reduces the amount of mouse events sent, improving performance.
+      See [Special Input Events] for more information.
+
 ### `real_coordinates[<bool>]`
 
 * INFORMATION: Enable it automatically using `formspec_version` version 2 or newer.
 * When set to true, all following formspec elements will use the new coordinate system.
-* If used immediately after `size`, `position`, `anchor`, and `no_prepend` elements
-  (if present), the form size will use the new coordinate system.
+* If used immediately after `size`, `position`, `anchor`, `no_prepend`, and `options`
+  elements (if present), the form size will use the new coordinate system.
 * **Note**: Formspec prepends are not affected by the coordinates in the main form.
   They must enable it explicitly.
 * For information on converting forms to the new coordinate system, see `Migrating
@@ -2520,8 +2535,8 @@ Elements
     * `x` - The middle will be x pixels from all sides.
     * `x,y` - The middle will be x pixels from the horizontal and y from the vertical.
     * `x,y,x2,y2` - The middle will start at x,y, and end at x2, y2. Negative x2 and y2 values
-        will be added to the width and height of the texture, allowing it to be used as the
-        distance from the far end.
+      will be added to the width and height of the texture, allowing it to be used as the
+      distance from the far end.
     * All numbers in middle are integers.
 * Example for formspec 8x4 in 16x resolution:
   image shall be sized 8 times 16px  times  4 times 16px
@@ -2859,7 +2874,6 @@ Elements
 * Note: this **must** be before the element is defined.
 * See [Styling Formspecs].
 
-
 ### `style_type[<selector 1>,<selector 2>,...;<prop1>;<prop2>;...]`
 
 * Set the style for the element(s) matching `selector` by type.
@@ -2892,6 +2906,57 @@ Elements
     * pwdfield
     * textarea
     * scrollbar
+
+**Note**: do _not_ use a element name starting with `key_` or ending with `_event`; these names
+are reserved for input events.
+
+Special Input Events
+--------------------
+
+Formspecs can return two different special events not originating from any element, `key_event`
+and `mouse_event`, after they have been enabled explicitly in the `options[]` element. Both
+events are a string that can be translated into a table using `minetest.explode_mouse_event`
+and `minetest.explode_key_event`.  If the event is malformed (e.g. a client sending incorrect
+values), both exploders will return nil.
+
+The tables returned by each event exploder are as follows:
+
+### `key_event`
+```
+{
+    name = "KEY_KEY_W", -- Key name. A list can be found in `keycodes.txt`
+    mapped = "forward", -- If the key is also an ingame key, this value returns the `minetest.conf`
+                        -- name minus `keymap_`, otherwise it's nil.
+    pressed = <bool>,   -- `true` if the key was pressed, `false` if released.
+}
+```
+
+`key_event` will not fire if focus is in an element that handles all keys itself, e.g. `field[]`.
+
+### `mouse_event`
+```
+{
+    type = "press",           -- Event type. One of "press", "release", "move", or "wheel".
+    button = "left",          -- If `type` is "press" or "release", this is the mouse button that
+                              -- was pressed or released. One of "left", "middle", or "right".
+                              -- `nil` if a different event.
+    clicks = 1                -- If `type` is "press" or "release", this is how many times the
+                              -- mouse button was pressed in quick succession (i.e. 1 for single
+                              -- click, 2 for double click, 3 for triple click). Wraps back to 1
+                              -- after 3. `nil` if a different event.
+    form_pos = {x = #, y = #} -- Mouse position in fractions of coordinates from the top-left
+                              -- corner of the formspec.
+    elem = <string>           -- Name of the hovered element. `nil` if not hovering over an element
+                              -- or the element has no name.
+    elem_pos = {x = #, y = #} -- Mouse position in fractions of coordinates from the top-left corner
+                              -- of the hovered element. Same as `form_pos` if `elem` is `nil`.
+    wheel = <number>          -- Amount of change in the mouse wheel. It is >1 if the mouse wheel
+                              -- was scrolled up, <1 if down, and 0 for non-wheel events. May be a
+                              -- decimal, e.g. in touchpad scrolling.
+}
+```
+
+The "move" event will not occur if the mouse event is set to `no_move`.
 
 Migrating to Real Coordinates
 -----------------------------
@@ -5015,7 +5080,9 @@ Call these functions only at load time!
           * a different tab was selected,
           * selection was changed in a textlist or table,
           * an entry was double-clicked in a textlist or table,
-          * a scrollbar was moved, or
+          * a scrollbar was moved,
+          * a key was pressed,
+          * the mouse was moved, or
           * the form was actively closed by the player.
     * Fields are sent for formspec elements which define a field. `fields`
       is a table containing each formspecs element value (as string), with
@@ -5032,6 +5099,12 @@ Call these functions only at load time!
         * `textlist`: See `minetest.explode_textlist_event`
         * `table`: See `minetest.explode_table_event`
         * `scrollbar`: See `minetest.explode_scrollbar_event`
+        * Special case: `["key_event"]`: Returns a key that is pressed while
+          inside the form. This will not return any keys if focus is inside
+          an element that receives key input. See [Special Input Events]
+          and `keycodes.txt`.
+        * Special case: `["mouse_event"]`: Returns mouse actions that occur
+          while the form is open. See [Special Input Events].
         * Special case: `["quit"]="true"` is sent when the user actively
           closed the form by mouse click, keypress or through a button_exit[]
           element.
@@ -5583,6 +5656,8 @@ Formspec
         * `"INV"`: something failed
         * `"CHG"`: has been changed
         * `"VAL"`: not changed
+* `minetest.explode_key_event(string)`: See [Special Input Events]
+* `minetest.explode_mouse_event(string)`: See [Special Input Events]
 
 Item handling
 -------------

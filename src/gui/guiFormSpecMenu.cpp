@@ -27,7 +27,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "guiFormSpecMenu.h"
 #include "constants.h"
 #include "gamedef.h"
-#include "client/keycode.h"
 #include "util/strfnd.h"
 #include <IGUIButton.h>
 #include <IGUICheckBox.h>
@@ -120,6 +119,8 @@ GUIFormSpecMenu::GUIFormSpecMenu(JoystickController *joystick,
 	current_keys_pending.key_up = false;
 	current_keys_pending.key_enter = false;
 	current_keys_pending.key_escape = false;
+	current_keys_pending.pending_key_event = false;
+	current_keys_pending.pending_mouse_event = false;
 
 	m_tooltip_show_delay = (u32)g_settings->getS32("tooltip_show_delay");
 	m_tooltip_append_itemname = g_settings->getBool("tooltip_append_itemname");
@@ -2802,6 +2803,48 @@ void GUIFormSpecMenu::parseModel(parserData *data, const std::string &element)
 	m_fields.push_back(spec);
 }
 
+bool GUIFormSpecMenu::parseOptionsDirect(parserData *data, const std::string &element)
+{
+	if (element.empty())
+		return false;
+
+	size_t pos = element.find('[');
+	if (pos == std::string::npos)
+		return false;
+
+	if (trim(element.substr(0, pos)) != "options")
+		return false;
+
+	std::string description = element.substr(pos + 1);
+	std::vector<std::string> parts = split(description, ';');
+
+	for (size_t i = 0; i < parts.size(); i++) {
+		size_t equal_pos = parts[i].find('=');
+		if (equal_pos == std::string::npos) {
+			errorstream << "Invalid options element (option missing value): \"" <<
+					description << "\"" << std::endl;
+			continue;
+		}
+
+		std::string prop  = trim(parts[i].substr(0, equal_pos));
+		std::string value = unescape_string(parts[i].substr(equal_pos + 1));
+
+		if (prop == "key_event") {
+			m_use_key_event = is_yes(value);
+		} else if (prop == "mouse_event") {
+			if (value == "all")
+				m_use_mouse_event = MouseEvent::ALL;
+			else if (value == "no_move")
+				m_use_mouse_event = MouseEvent::NO_MOVE;
+		} else {
+			warningstream << "Invalid options element (unknown option \"" <<
+					prop << "\"): \"" << description << "\"" << std::endl;
+		}
+	}
+
+	return true;
+}
+
 void GUIFormSpecMenu::parseElement(parserData* data, const std::string &element)
 {
 	//some prechecks
@@ -3094,6 +3137,9 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 	m_bgnonfullscreen = true;
 	m_bgfullscreen = false;
 
+	m_use_key_event = false;
+	m_use_mouse_event = MouseEvent::NONE;
+
 	m_formspec_version = 1;
 
 	{
@@ -3161,7 +3207,7 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 		}
 	}
 
-	/* "anchor" element is always after "position" (or  "size" element) if it used */
+	/* "anchor" element always comes next if it used */
 	for (; i< elements.size(); i++) {
 		if (!parseAnchorDirect(&mydata, elements[i])) {
 			break;
@@ -3185,6 +3231,12 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 		if (trim(parts[0]) == "no_prepend")
 			enable_prepends = false;
 		else
+			break;
+	}
+
+	/* "options" element always comes next if it used */
+	for (; i < elements.size(); i++) {
+		if (!parseOptionsDirect(&mydata, elements[i]))
 			break;
 	}
 
@@ -3840,6 +3892,89 @@ void GUIFormSpecMenu::acceptInput(FormspecQuitMode quitmode)
 			fields["quit"] = "true";
 		}
 
+		if (m_use_mouse_event != MouseEvent::NONE && current_keys_pending.pending_mouse_event) {
+			SEvent::SMouseInput &event = current_keys_pending.mouse_event;
+
+			struct UnpackMouseEvent {
+				const char *type;
+				const char *button;
+				int clicks;
+			};
+
+			// This array is in the same order as EMOUSE_INPUT_EVENT
+			UnpackMouseEvent unpacker[EMIE_COUNT] = {
+				{"click", "left",   1},   // EMIE_LMOUSE_PRESSED_DOWN
+				{"click", "right",  1},   // EMIE_RMOUSE_PRESSED_DOWN
+				{"click", "middle", 1},   // EMIE_MMOUSE_PRESSED_DOWN
+				{"release", "left",   0}, // EMIE_LMOUSE_LEFT_UP
+				{"release", "right",  0}, // EMIE_RMOUSE_LEFT_UP
+				{"release", "middle", 0}, // EMIE_MMOUSE_LEFT_UP
+				{"move",  "", 0},         // EMIE_MOUSE_MOVED
+				{"wheel", "", 0},         // EMIE_MOUSE_WHEEL
+				{"click", "left",   2},   // EMIE_LMOUSE_DOUBLE_CLICK
+				{"click", "right",  2},   // EMIE_RMOUSE_DOUBLE_CLICK
+				{"click", "middle", 2},   // EMIE_MMOUSE_DOUBLE_CLICK
+				{"click", "left",   3},   // EMIE_LMOUSE_TRIPLE_CLICK
+				{"click", "right",  3},   // EMIE_RMOUSE_TRIPLE_CLICK
+				{"click", "middle", 3},   // EMIE_MMOUSE_TRIPLE_CLICK
+			};
+
+			UnpackMouseEvent unpacked = unpacker[event.Event];
+
+			f32 wheel = event.Event == EMIE_MOUSE_WHEEL ? event.Wheel : 0.0f;
+
+			v2f32 form_pos(
+				(f32)(event.X - DesiredRect.UpperLeftCorner.X) / imgsize.X,
+				(f32)(event.Y - DesiredRect.UpperLeftCorner.Y) / imgsize.Y
+			);
+
+			gui::IGUIElement *hovered =
+					Environment->getRootGUIElement()->getElementFromPoint(
+					core::vector2di(event.X, event.Y));
+
+			std::string elem_name = "";
+			v2f32 elem_pos(0, 0);
+
+			if (hovered != nullptr) {
+				elem_name = getNameByID(hovered->getID());
+
+				core::vector2di pos = hovered->getAbsolutePosition().UpperLeftCorner;
+				elem_pos.X = (f32)(event.X - pos.X) / imgsize.X;
+				elem_pos.Y = (f32)(event.Y - pos.Y) / imgsize.Y;
+			}
+
+			fields["mouse_event"] =
+				std::string(unpacked.type)      + ";" +
+				unpacked.button                 + ";" +
+				std::to_string(unpacked.clicks) + ";" +
+				std::to_string(form_pos.X)      + ";" +
+				std::to_string(form_pos.Y)      + ";" +
+				elem_name                       + ";" +
+				std::to_string(elem_pos.X)      + ";" +
+				std::to_string(elem_pos.Y)      + ";" +
+				std::to_string(wheel);
+
+			current_keys_pending.pending_mouse_event = false;
+		}
+
+		if (current_keys_pending.pending_key_event) {
+			std::string name = current_keys_pending.key_press.sym();
+			std::string mapped = "";
+
+			std::vector<std::string> keymaps = g_settings->getKeymapNames();
+			for (size_t i = 0; i < keymaps.size(); i++) {
+				if (getKeySetting(keymaps[i].c_str()) == current_keys_pending.key_press) {
+					mapped = keymaps[i].substr(7);
+					break;
+				}
+			}
+
+			fields["key_event"] = name + ";" + mapped + ";" +
+				(current_keys_pending.key_event.PressedDown ? "true" : "false");
+
+			current_keys_pending.pending_key_event = false;
+		}
+
 		if (quitmode == quit_mode_cancel) {
 			fields["quit"] = "true";
 			m_text_dst->gotText(fields);
@@ -4076,28 +4211,28 @@ enum ButtonEventType : u8
 
 bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 {
-	if (event.EventType==EET_KEY_INPUT_EVENT) {
+	if (event.EventType == EET_KEY_INPUT_EVENT) {
 		KeyPress kp(event.KeyInput);
-		if (event.KeyInput.PressedDown && (
-				(kp == EscapeKey) || (kp == CancelKey) ||
-				((m_client != NULL) && (kp == getKeySetting("keymap_inventory"))))) {
-			tryClose();
-			return true;
+
+		if (m_use_key_event) {
+			current_keys_pending.pending_key_event = true;
+			current_keys_pending.key_press = kp;
+			current_keys_pending.key_event = event.KeyInput;
 		}
 
-		if (m_client != NULL && event.KeyInput.PressedDown &&
-				(kp == getKeySetting("keymap_screenshot"))) {
-			m_client->makeScreenshot();
-		}
+		if (event.KeyInput.PressedDown) {
+			if (kp == EscapeKey || kp == CancelKey ||
+					(m_client && kp == getKeySetting("keymap_inventory"))) {
+				tryClose();
+				return true;
+			}
 
-		if (event.KeyInput.PressedDown && kp == getKeySetting("keymap_toggle_debug"))
-			m_show_debug = !m_show_debug;
+			if (kp == getKeySetting("keymap_toggle_debug"))
+				m_show_debug = !m_show_debug;
 
-		if (event.KeyInput.PressedDown &&
-			(event.KeyInput.Key==KEY_RETURN ||
-			 event.KeyInput.Key==KEY_UP ||
-			 event.KeyInput.Key==KEY_DOWN)
-			) {
+			if (m_client != nullptr && kp == getKeySetting("keymap_screenshot"))
+				m_client->makeScreenshot();
+
 			switch (event.KeyInput.Key) {
 				case KEY_RETURN:
 					current_keys_pending.key_enter = true;
@@ -4108,21 +4243,30 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 				case KEY_DOWN:
 					current_keys_pending.key_down = true;
 					break;
-				break;
 				default:
-					//can't happen at all!
-					FATAL_ERROR("Reached a source line that can't ever been reached");
 					break;
 			}
+		}
+
+		if (m_use_key_event || current_keys_pending.key_up ||
+				current_keys_pending.key_down || current_keys_pending.key_enter) {
 			if (current_keys_pending.key_enter && m_allowclose) {
 				acceptInput(quit_mode_accept);
 				quitMenu();
 			} else {
 				acceptInput();
 			}
-			return true;
 		}
 
+		return true;
+	}
+
+	if (event.EventType == EET_MOUSE_INPUT_EVENT && (m_use_mouse_event == MouseEvent::ALL ||
+			(m_use_mouse_event == MouseEvent::NO_MOVE &&
+			event.MouseInput.Event != EMIE_MOUSE_MOVED))) {
+		current_keys_pending.pending_mouse_event = true;
+		current_keys_pending.mouse_event = event.MouseInput;
+		acceptInput();
 	}
 
 	/* Mouse event other than movement, or crossing the border of inventory

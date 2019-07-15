@@ -32,6 +32,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "guiTable.h"
 #include "network/networkprotocol.h"
 #include "client/joystick_controller.h"
+#include "client/keycode.h"
 #include "util/string.h"
 #include "util/enriched_string.h"
 #include "StyleSpec.h"
@@ -392,14 +393,29 @@ private:
 		std::unordered_map<std::string, GUITable::DynamicData> table_dyndata;
 	};
 
+	enum class MouseEvent {
+		NONE,
+		ALL,
+		NO_MOVE
+	};
+
 	struct fs_key_pending {
 		bool key_up;
 		bool key_down;
 		bool key_enter;
 		bool key_escape;
+		bool pending_key_event;
+		KeyPress key_press;
+		SEvent::SKeyInput key_event;
+		bool pending_mouse_event;
+		SEvent::SMouseInput mouse_event;
 	};
 
 	fs_key_pending current_keys_pending;
+
+	bool m_use_key_event;
+	MouseEvent m_use_mouse_event;
+
 	std::string current_field_enter_pending = "";
 	std::vector<std::string> m_hovered_item_tooltips;
 
@@ -456,6 +472,7 @@ private:
 	bool parseStyle(parserData *data, const std::string &element, bool style_type);
 	void parseSetFocus(const std::string &element);
 	void parseModel(parserData *data, const std::string &element);
+	bool parseOptionsDirect(parserData *data, const std::string &element);
 
 	void tryClose();
 
