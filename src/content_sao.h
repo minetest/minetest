@@ -322,6 +322,7 @@ public:
 	{
 		return m_dig_pool;
 	}
+	void setMaxSpeedOverride(const v3f &vel);
 	// Returns true if cheated
 	bool checkMovementCheat();
 
@@ -361,6 +362,8 @@ private:
 	float m_time_from_last_punch = 0.0f;
 	v3s16 m_nocheat_dig_pos = v3s16(32767, 32767, 32767);
 	float m_nocheat_dig_time = 0.0f;
+	float m_max_speed_override_time = 0.0f;
+	v3f m_max_speed_override = v3f(0.0f, 0.0f, 0.0f);
 
 	// Timers
 	IntervalLimiter m_breathing_interval;

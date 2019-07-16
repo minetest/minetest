@@ -1091,6 +1091,7 @@ void PlayerSAO::step(float dtime, bool send_recommended)
 	m_time_from_last_teleport += dtime;
 	m_time_from_last_punch += dtime;
 	m_nocheat_dig_time += dtime;
+	m_max_speed_override_time = MYMAX(m_max_speed_override_time - dtime, 0.0f);
 
 	// Each frame, parent position is copied if the object is attached,
 	// otherwise it's calculated normally.
@@ -1412,6 +1413,19 @@ std::string PlayerSAO::getPropertyPacket()
 	return gob_cmd_set_properties(m_prop);
 }
 
+void PlayerSAO::setMaxSpeedOverride(const v3f &vel)
+{
+	if (m_max_speed_override_time == 0.0f)
+		m_max_speed_override = vel;
+	else
+		m_max_speed_override += vel;
+	if (m_player) {
+		float accel = MYMIN(m_player->movement_acceleration_default,
+				m_player->movement_acceleration_air);
+		m_max_speed_override_time = m_max_speed_override.getLength() / accel / BS;
+	}
+}
+
 bool PlayerSAO::checkMovementCheat()
 {
 	if (isAttached() || m_is_singleplayer ||
@@ -1431,6 +1445,14 @@ bool PlayerSAO::checkMovementCheat()
 		too, and much more lightweight.
 	*/
 
+	float override_max_H, override_max_V;
+	if (m_max_speed_override_time > 0.0f) {
+		override_max_H = MYMAX(fabs(m_max_speed_override.X), fabs(m_max_speed_override.Z));
+		override_max_V = fabs(m_max_speed_override.Y);
+	} else {
+		override_max_H = override_max_V = 0.0f;
+	}
+
 	float player_max_walk = 0; // horizontal movement
 	float player_max_jump = 0; // vertical upwards movement
 
@@ -1439,10 +1461,13 @@ bool PlayerSAO::checkMovementCheat()
 	else
 		player_max_walk = m_player->movement_speed_walk; // Normal speed
 	player_max_walk *= m_physics_override_speed;
+	player_max_walk = MYMAX(player_max_walk, override_max_H);
+
 	player_max_jump = m_player->movement_speed_jump * m_physics_override_jump;
 	// FIXME: Bouncy nodes cause practically unbound increase in Y speed,
 	//        until this can be verified correctly, tolerate higher jumping speeds
 	player_max_jump *= 2.0;
+	player_max_jump = MYMAX(player_max_jump, override_max_V);
 
 	// Don't divide by zero!
 	if (player_max_walk < 0.0001f)

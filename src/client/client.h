@@ -227,6 +227,7 @@ public:
 	void handleCommand_SrpBytesSandB(NetworkPacket *pkt);
 	void handleCommand_FormspecPrepend(NetworkPacket *pkt);
 	void handleCommand_CSMRestrictionFlags(NetworkPacket *pkt);
+	void handleCommand_PlayerSpeed(NetworkPacket *pkt);
 
 	void ProcessData(NetworkPacket *pkt);
 

@@ -5465,6 +5465,14 @@ This is basically a reference to a C++ `ServerActiveObject`
 * `get_player_name()`: returns `""` if is not a player
 * `get_player_velocity()`: returns `nil` if is not a player, otherwise a
   table {x, y, z} representing the player's instantaneous velocity in nodes/s
+* `add_player_velocity(vel)`
+    * Adds to player velocity, this happens client-side and only once.
+    * Does not apply during free_move.
+    * Note that since the player speed is normalized at each move step,
+      increasing e.g. Y velocity beyond what would usually be achieved
+      (see: physics overrides) will cause existing X/Z velocity to be reduced.
+    * Example: `add_player_velocity({x=0, y=6.5, z=0})` is equivalent to
+      pressing the jump key (assuming default settings)
 * `get_look_dir()`: get camera direction as a unit vector
 * `get_look_vertical()`: pitch in radians
     * Angle ranges between -pi/2 and pi/2, which are straight up and down
