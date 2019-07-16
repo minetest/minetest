@@ -713,14 +713,13 @@ void Sky::draw_moon(video::IVideoDriver *driver, float moonsize, video::SColor m
 		driver->setMaterial(m_materials[1]);
 		const float moonsizes_1[4] = {
 				-moonsize * 1.9f, -moonsize * 1.3f, -moonsize, -moonsize};
-		const float moonsizes_2[4] = {moonsize * 1.9f,
-				moonsize * 1.3f, moonsize, moonsize * 0.6f};
+		const float moonsizes_2[4] = {moonsize * 1.9f, moonsize * 1.3f, moonsize,
+				moonsize * 0.6f};
 		video::SColor c1 = mooncolor;
 		video::SColor c2 = mooncolor;
 		c1.setAlpha(0.05 * 255);
 		c2.setAlpha(0.15 * 255);
-		const video::SColor colors[4] = {
-				c1, c2, mooncolor, mooncolor2};
+		const video::SColor colors[4] = {c1, c2, mooncolor, mooncolor2};
 		for (int i = 0; i < 4; i++) {
 			vertices = draw_sky_body(
 					moonsizes_1[i], moonsizes_2[i], colors[i]);
