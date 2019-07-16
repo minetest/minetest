@@ -684,7 +684,6 @@ void Sky::draw_moon(video::IVideoDriver *driver, float moonsize, video::SColor m
 		vertices = draw_sky_body(-d, d, c);
 		vertices = place_sky_body(vertices, -90, wicked_time_of_day * 360 - 90);
 		driver->drawIndexedTriangleFan(&vertices[0], 4, indices, 2);
-
 	}
 }
 
