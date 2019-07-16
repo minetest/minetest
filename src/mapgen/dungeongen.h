@@ -58,10 +58,14 @@ struct DungeonParams {
 	// Room size random range. Includes walls / floor / ceilng
 	v3s16 room_size_min;
 	v3s16 room_size_max;
-	// Large room size
-	v3s16 room_size_large;
-	// First generated room is large
-	bool first_room_large;
+	// Large room size random range. Includes walls / floor / ceilng
+	v3s16 room_size_large_min;
+	v3s16 room_size_large_max;
+	// Value 0 disables large rooms.
+	// Value 1 results in 1 large room, the first generated room.
+	// Value > 1 makes the first generated room large, all other rooms have a
+	// '1 in value' chance of being large.
+	u16 large_room_chance;
 	// Dimensions of 3D 'brush' that creates corridors.
 	// Dimensions are of the empty space, not including walls / floor / ceilng.
 	v3s16 holesize;
