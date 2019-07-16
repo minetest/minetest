@@ -23,6 +23,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <libpq-fe.h>
 #include "database.h"
 #include "util/basic_macros.h"
+#include "postgres/mapsavequeue.h"
+#include "postgres/playersavequeue.h"
+#include "postgres/pgutil.h"
 
 class Settings;
 
@@ -39,47 +42,6 @@ public:
 
 
 protected:
-	// Conversion helpers
-	inline int pg_to_int(PGresult *res, int row, int col)
-	{
-		return atoi(PQgetvalue(res, row, col));
-	}
-
-	inline u32 pg_to_uint(PGresult *res, int row, int col)
-	{
-		return (u32) atoi(PQgetvalue(res, row, col));
-	}
-
-	inline float pg_to_float(PGresult *res, int row, int col)
-	{
-		return (float) atof(PQgetvalue(res, row, col));
-	}
-
-	inline v3s16 pg_to_v3s16(PGresult *res, int row, int col)
-	{
-		return v3s16(
-			pg_to_int(res, row, col),
-			pg_to_int(res, row, col + 1),
-			pg_to_int(res, row, col + 2)
-		);
-	}
-
-	inline PGresult *execPrepared(const char *stmtName, const int paramsNumber,
-		const void **params,
-		const int *paramsLengths = NULL, const int *paramsFormats = NULL,
-		bool clear = true, bool nobinary = true)
-	{
-		return checkResults(PQexecPrepared(m_conn, stmtName, paramsNumber,
-			(const char* const*) params, paramsLengths, paramsFormats,
-			nobinary ? 1 : 0), clear);
-	}
-
-	inline PGresult *execPrepared(const char *stmtName, const int paramsNumber,
-		const char **params, bool clear = true, bool nobinary = true)
-	{
-		return execPrepared(stmtName, paramsNumber,
-			(const void **)params, NULL, NULL, clear, nobinary);
-	}
 
 	void createTableIfNotExists(const std::string &table_name, const std::string &definition);
 	void verifyDatabase();
@@ -88,22 +50,18 @@ protected:
 	void connectToDatabase();
 	virtual void createDatabase() = 0;
 	virtual void initStatements() = 0;
-	inline void prepareStatement(const std::string &name, const std::string &sql)
-	{
-		checkResults(PQprepare(m_conn, name.c_str(), sql.c_str(), 0, NULL));
-	}
 
 	const int getPGVersion() const { return m_pgversion; }
+
+	PGconn *m_async_conn = nullptr;
+	PGconn *m_conn = nullptr;
+
 private:
 	// Database connectivity checks
 	void ping();
 
-	// Database usage
-	PGresult *checkResults(PGresult *res, bool clear = true);
-
 	// Attributes
 	std::string m_connect_string;
-	PGconn *m_conn = nullptr;
 	int m_pgversion = 0;
 };
 
@@ -111,31 +69,39 @@ class MapDatabasePostgreSQL : private Database_PostgreSQL, public MapDatabase
 {
 public:
 	MapDatabasePostgreSQL(const std::string &connect_string);
-	virtual ~MapDatabasePostgreSQL() = default;
+	~MapDatabasePostgreSQL();
 
 	bool saveBlock(const v3s16 &pos, const std::string &data);
 	void loadBlock(const v3s16 &pos, std::string *block);
 	bool deleteBlock(const v3s16 &pos);
 	void listAllLoadableBlocks(std::vector<v3s16> &dst);
 
-	void beginSave() { Database_PostgreSQL::beginSave(); }
-	void endSave() { Database_PostgreSQL::endSave(); }
+	// nothing to see here, move along...
+	void beginSave() {}
+	void endSave() {}
 
 protected:
 	virtual void createDatabase();
 	virtual void initStatements();
+
+private:
+	MapSaveQueue *save_queue;
 };
 
 class PlayerDatabasePostgreSQL : private Database_PostgreSQL, public PlayerDatabase
 {
 public:
 	PlayerDatabasePostgreSQL(const std::string &connect_string);
-	virtual ~PlayerDatabasePostgreSQL() = default;
+	~PlayerDatabasePostgreSQL();
 
 	void savePlayer(RemotePlayer *player);
 	bool loadPlayer(RemotePlayer *player, PlayerSAO *sao);
 	bool removePlayer(const std::string &name);
 	void listPlayers(std::vector<std::string> &res);
+
+	// nothing to see here, move along...
+	void beginSave() {}
+	void endSave() {}
 
 protected:
 	virtual void createDatabase();
@@ -143,4 +109,5 @@ protected:
 
 private:
 	bool playerDataExists(const std::string &playername);
+	PlayerSaveQueue* save_queue;
 };

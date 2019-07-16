@@ -58,7 +58,8 @@ Database_PostgreSQL::Database_PostgreSQL(const std::string &connect_string) :
 
 Database_PostgreSQL::~Database_PostgreSQL()
 {
-	PQfinish(m_conn);
+  PQfinish(m_conn);
+  PQfinish(m_async_conn);
 }
 
 void Database_PostgreSQL::connectToDatabase()
@@ -69,6 +70,14 @@ void Database_PostgreSQL::connectToDatabase()
 		throw DatabaseException(std::string(
 			"PostgreSQL database error: ") +
 			PQerrorMessage(m_conn));
+	}
+
+	m_async_conn = PQconnectdb(m_connect_string.c_str());
+
+	if (PQstatus(m_async_conn) != CONNECTION_OK) {
+		throw DatabaseException(std::string(
+			"PostgreSQL async database error: ") +
+			PQerrorMessage(m_async_conn));
 	}
 
 	m_pgversion = PQserverVersion(m_conn);
@@ -113,37 +122,16 @@ bool Database_PostgreSQL::initialized() const
 	return (PQstatus(m_conn) == CONNECTION_OK);
 }
 
-PGresult *Database_PostgreSQL::checkResults(PGresult *result, bool clear)
-{
-	ExecStatusType statusType = PQresultStatus(result);
-
-	switch (statusType) {
-	case PGRES_COMMAND_OK:
-	case PGRES_TUPLES_OK:
-		break;
-	case PGRES_FATAL_ERROR:
-	default:
-		throw DatabaseException(
-			std::string("PostgreSQL database error: ") +
-			PQresultErrorMessage(result));
-	}
-
-	if (clear)
-		PQclear(result);
-
-	return result;
-}
-
 void Database_PostgreSQL::createTableIfNotExists(const std::string &table_name,
 		const std::string &definition)
 {
 	std::string sql_check_table = "SELECT relname FROM pg_class WHERE relname='" +
 		table_name + "';";
-	PGresult *result = checkResults(PQexec(m_conn, sql_check_table.c_str()), false);
+	PGresult *result = PGUtil::checkResults(PQexec(m_conn, sql_check_table.c_str()), false);
 
 	// If table doesn't exist, create it
 	if (!PQntuples(result)) {
-		checkResults(PQexec(m_conn, definition.c_str()));
+		PGUtil::checkResults(PQexec(m_conn, definition.c_str()));
 	}
 
 	PQclear(result);
@@ -152,12 +140,12 @@ void Database_PostgreSQL::createTableIfNotExists(const std::string &table_name,
 void Database_PostgreSQL::beginSave()
 {
 	verifyDatabase();
-	checkResults(PQexec(m_conn, "BEGIN;"));
+	PGUtil::checkResults(PQexec(m_conn, "BEGIN;"));
 }
 
 void Database_PostgreSQL::endSave()
 {
-	checkResults(PQexec(m_conn, "COMMIT;"));
+	PGUtil::checkResults(PQexec(m_conn, "COMMIT;"));
 }
 
 MapDatabasePostgreSQL::MapDatabasePostgreSQL(const std::string &connect_string):
@@ -165,8 +153,17 @@ MapDatabasePostgreSQL::MapDatabasePostgreSQL(const std::string &connect_string):
 	MapDatabase()
 {
 	connectToDatabase();
+
+	save_queue = new MapSaveQueue(m_async_conn);
+	save_queue->start();
 }
 
+MapDatabasePostgreSQL::~MapDatabasePostgreSQL(){
+	save_queue->stop();
+	save_queue->wait();
+
+	delete save_queue;
+}
 
 void MapDatabasePostgreSQL::createDatabase()
 {
@@ -185,67 +182,21 @@ void MapDatabasePostgreSQL::createDatabase()
 
 void MapDatabasePostgreSQL::initStatements()
 {
-	prepareStatement("read_block",
+	PGUtil::prepareStatement(m_conn, "read_block",
 		"SELECT data FROM blocks "
 			"WHERE posX = $1::int4 AND posY = $2::int4 AND "
 			"posZ = $3::int4");
 
-	if (getPGVersion() < 90500) {
-		prepareStatement("write_block_insert",
-			"INSERT INTO blocks (posX, posY, posZ, data) SELECT "
-				"$1::int4, $2::int4, $3::int4, $4::bytea "
-				"WHERE NOT EXISTS (SELECT true FROM blocks "
-				"WHERE posX = $1::int4 AND posY = $2::int4 AND "
-				"posZ = $3::int4)");
-
-		prepareStatement("write_block_update",
-			"UPDATE blocks SET data = $4::bytea "
-				"WHERE posX = $1::int4 AND posY = $2::int4 AND "
-				"posZ = $3::int4");
-	} else {
-		prepareStatement("write_block",
-			"INSERT INTO blocks (posX, posY, posZ, data) VALUES "
-				"($1::int4, $2::int4, $3::int4, $4::bytea) "
-				"ON CONFLICT ON CONSTRAINT blocks_pkey DO "
-				"UPDATE SET data = $4::bytea");
-	}
-
-	prepareStatement("delete_block", "DELETE FROM blocks WHERE "
+	PGUtil::prepareStatement(m_conn, "delete_block", "DELETE FROM blocks WHERE "
 		"posX = $1::int4 AND posY = $2::int4 AND posZ = $3::int4");
 
-	prepareStatement("list_all_loadable_blocks",
+	PGUtil::prepareStatement(m_conn, "list_all_loadable_blocks",
 		"SELECT posX, posY, posZ FROM blocks");
 }
 
 bool MapDatabasePostgreSQL::saveBlock(const v3s16 &pos, const std::string &data)
 {
-	// Verify if we don't overflow the platform integer with the mapblock size
-	if (data.size() > INT_MAX) {
-		errorstream << "Database_PostgreSQL::saveBlock: Data truncation! "
-			<< "data.size() over 0xFFFFFFFF (== " << data.size()
-			<< ")" << std::endl;
-		return false;
-	}
-
-	verifyDatabase();
-
-	s32 x, y, z;
-	x = htonl(pos.X);
-	y = htonl(pos.Y);
-	z = htonl(pos.Z);
-
-	const void *args[] = { &x, &y, &z, data.c_str() };
-	const int argLen[] = {
-		sizeof(x), sizeof(y), sizeof(z), (int)data.size()
-	};
-	const int argFmt[] = { 1, 1, 1, 1 };
-
-	if (getPGVersion() < 90500) {
-		execPrepared("write_block_update", ARRLEN(args), args, argLen, argFmt);
-		execPrepared("write_block_insert", ARRLEN(args), args, argLen, argFmt);
-	} else {
-		execPrepared("write_block", ARRLEN(args), args, argLen, argFmt);
-	}
+	save_queue->enqueue(pos, data);
 	return true;
 }
 
@@ -262,7 +213,7 @@ void MapDatabasePostgreSQL::loadBlock(const v3s16 &pos, std::string *block)
 	const int argLen[] = { sizeof(x), sizeof(y), sizeof(z) };
 	const int argFmt[] = { 1, 1, 1 };
 
-	PGresult *results = execPrepared("read_block", ARRLEN(args), args,
+	PGresult *results = PGUtil::execPrepared(m_conn, "read_block", ARRLEN(args), args,
 		argLen, argFmt, false);
 
 	*block = "";
@@ -286,7 +237,7 @@ bool MapDatabasePostgreSQL::deleteBlock(const v3s16 &pos)
 	const int argLen[] = { sizeof(x), sizeof(y), sizeof(z) };
 	const int argFmt[] = { 1, 1, 1 };
 
-	execPrepared("delete_block", ARRLEN(args), args, argLen, argFmt);
+	PGUtil::execPrepared(m_conn, "delete_block", ARRLEN(args), args, argLen, argFmt);
 
 	return true;
 }
@@ -295,13 +246,13 @@ void MapDatabasePostgreSQL::listAllLoadableBlocks(std::vector<v3s16> &dst)
 {
 	verifyDatabase();
 
-	PGresult *results = execPrepared("list_all_loadable_blocks", 0,
+	PGresult *results = PGUtil::execPrepared(m_conn, "list_all_loadable_blocks", 0,
 		NULL, NULL, NULL, false, false);
 
 	int numrows = PQntuples(results);
 
 	for (int row = 0; row < numrows; ++row)
-		dst.push_back(pg_to_v3s16(results, 0, 0));
+		dst.push_back(PGUtil::pg_to_v3s16(results, 0, 0));
 
 	PQclear(results);
 }
@@ -314,8 +265,12 @@ PlayerDatabasePostgreSQL::PlayerDatabasePostgreSQL(const std::string &connect_st
 	PlayerDatabase()
 {
 	connectToDatabase();
+	save_queue = new PlayerSaveQueue(m_async_conn);
+	save_queue->start();
 }
 
+PlayerDatabasePostgreSQL::~PlayerDatabasePostgreSQL(){
+}
 
 void PlayerDatabasePostgreSQL::createDatabase()
 {
@@ -376,60 +331,24 @@ void PlayerDatabasePostgreSQL::createDatabase()
 
 void PlayerDatabasePostgreSQL::initStatements()
 {
-	if (getPGVersion() < 90500) {
-		prepareStatement("create_player",
-			"INSERT INTO player(name, pitch, yaw, posX, posY, posZ, hp, breath) VALUES "
-				"($1, $2, $3, $4, $5, $6, $7::int, $8::int)");
+	PGUtil::prepareStatement(m_conn, "remove_player", "DELETE FROM player WHERE name = $1");
 
-		prepareStatement("update_player",
-			"UPDATE SET pitch = $2, yaw = $3, posX = $4, posY = $5, posZ = $6, hp = $7::int, "
-				"breath = $8::int, modification_date = NOW() WHERE name = $1");
-	} else {
-		prepareStatement("save_player",
-			"INSERT INTO player(name, pitch, yaw, posX, posY, posZ, hp, breath) VALUES "
-				"($1, $2, $3, $4, $5, $6, $7::int, $8::int)"
-				"ON CONFLICT ON CONSTRAINT player_pkey DO UPDATE SET pitch = $2, yaw = $3, "
-				"posX = $4, posY = $5, posZ = $6, hp = $7::int, breath = $8::int, "
-				"modification_date = NOW()");
-	}
+	PGUtil::prepareStatement(m_conn, "load_player_list", "SELECT name FROM player");
 
-	prepareStatement("remove_player", "DELETE FROM player WHERE name = $1");
-
-	prepareStatement("load_player_list", "SELECT name FROM player");
-
-	prepareStatement("remove_player_inventories",
-		"DELETE FROM player_inventories WHERE player = $1");
-
-	prepareStatement("remove_player_inventory_items",
-		"DELETE FROM player_inventory_items WHERE player = $1");
-
-	prepareStatement("add_player_inventory",
-		"INSERT INTO player_inventories (player, inv_id, inv_width, inv_name, inv_size) VALUES "
-			"($1, $2::int, $3::int, $4, $5::int)");
-
-	prepareStatement("add_player_inventory_item",
-		"INSERT INTO player_inventory_items (player, inv_id, slot_id, item) VALUES "
-			"($1, $2::int, $3::int, $4)");
-
-	prepareStatement("load_player_inventories",
+	PGUtil::prepareStatement(m_conn, "load_player_inventories",
 		"SELECT inv_id, inv_width, inv_name, inv_size FROM player_inventories "
 			"WHERE player = $1 ORDER BY inv_id");
 
-	prepareStatement("load_player_inventory_items",
+	PGUtil::prepareStatement(m_conn, "load_player_inventory_items",
 		"SELECT slot_id, item FROM player_inventory_items WHERE "
 			"player = $1 AND inv_id = $2::int");
 
-	prepareStatement("load_player",
+	PGUtil::prepareStatement(m_conn, "load_player",
 		"SELECT pitch, yaw, posX, posY, posZ, hp, breath FROM player WHERE name = $1");
 
-	prepareStatement("remove_player_metadata",
-		"DELETE FROM player_metadata WHERE player = $1");
-
-	prepareStatement("save_player_metadata",
-		"INSERT INTO player_metadata (player, attr, value) VALUES ($1, $2, $3)");
-
-	prepareStatement("load_player_metadata",
+	PGUtil::prepareStatement(m_conn, "load_player_metadata",
 		"SELECT attr, value FROM player_metadata WHERE player = $1");
+
 
 }
 
@@ -438,96 +357,20 @@ bool PlayerDatabasePostgreSQL::playerDataExists(const std::string &playername)
 	verifyDatabase();
 
 	const char *values[] = { playername.c_str() };
-	PGresult *results = execPrepared("load_player", 1, values, false);
+	PGresult *results = PGUtil::execPrepared(m_conn, "load_player", 1, values, false);
 
 	bool res = (PQntuples(results) > 0);
 	PQclear(results);
 	return res;
 }
 
-void PlayerDatabasePostgreSQL::savePlayer(RemotePlayer *player)
-{
+void PlayerDatabasePostgreSQL::savePlayer(RemotePlayer *player) {
+
 	PlayerSAO* sao = player->getPlayerSAO();
 	if (!sao)
 		return;
 
-	verifyDatabase();
-
-	v3f pos = sao->getBasePosition();
-	std::string pitch = ftos(sao->getLookPitch());
-	std::string yaw = ftos(sao->getRotation().Y);
-	std::string posx = ftos(pos.X);
-	std::string posy = ftos(pos.Y);
-	std::string posz = ftos(pos.Z);
-	std::string hp = itos(sao->getHP());
-	std::string breath = itos(sao->getBreath());
-	const char *values[] = {
-		player->getName(),
-		pitch.c_str(),
-		yaw.c_str(),
-		posx.c_str(), posy.c_str(), posz.c_str(),
-		hp.c_str(),
-		breath.c_str()
-	};
-
-	const char* rmvalues[] = { player->getName() };
-	beginSave();
-
-	if (getPGVersion() < 90500) {
-		if (!playerDataExists(player->getName()))
-			execPrepared("create_player", 8, values, true, false);
-		else
-			execPrepared("update_player", 8, values, true, false);
-	}
-	else
-		execPrepared("save_player", 8, values, true, false);
-
-	// Write player inventories
-	execPrepared("remove_player_inventories", 1, rmvalues);
-	execPrepared("remove_player_inventory_items", 1, rmvalues);
-
-	std::vector<const InventoryList*> inventory_lists = sao->getInventory()->getLists();
-	for (u16 i = 0; i < inventory_lists.size(); i++) {
-		const InventoryList* list = inventory_lists[i];
-		const std::string &name = list->getName();
-		std::string width = itos(list->getWidth()),
-			inv_id = itos(i), lsize = itos(list->getSize());
-
-		const char* inv_values[] = {
-			player->getName(),
-			inv_id.c_str(),
-			width.c_str(),
-			name.c_str(),
-			lsize.c_str()
-		};
-		execPrepared("add_player_inventory", 5, inv_values);
-
-		for (u32 j = 0; j < list->getSize(); j++) {
-			std::ostringstream os;
-			list->getItem(j).serialize(os);
-			std::string itemStr = os.str(), slotId = itos(j);
-
-			const char* invitem_values[] = {
-				player->getName(),
-				inv_id.c_str(),
-				slotId.c_str(),
-				itemStr.c_str()
-			};
-			execPrepared("add_player_inventory_item", 4, invitem_values);
-		}
-	}
-
-	execPrepared("remove_player_metadata", 1, rmvalues);
-	const StringMap &attrs = sao->getMeta().getStrings();
-	for (const auto &attr : attrs) {
-		const char *meta_values[] = {
-			player->getName(),
-			attr.first.c_str(),
-			attr.second.c_str()
-		};
-		execPrepared("save_player_metadata", 3, meta_values);
-	}
-	endSave();
+	save_queue->enqueue(player);
 
 	player->onSuccessfulSave();
 }
@@ -538,7 +381,7 @@ bool PlayerDatabasePostgreSQL::loadPlayer(RemotePlayer *player, PlayerSAO *sao)
 	verifyDatabase();
 
 	const char *values[] = { player->getName() };
-	PGresult *results = execPrepared("load_player", 1, values, false, false);
+	PGresult *results = PGUtil::execPrepared(m_conn, "load_player", 1, values, false, false);
 
 	// Player not found, return not found
 	if (!PQntuples(results)) {
@@ -546,36 +389,36 @@ bool PlayerDatabasePostgreSQL::loadPlayer(RemotePlayer *player, PlayerSAO *sao)
 		return false;
 	}
 
-	sao->setLookPitch(pg_to_float(results, 0, 0));
-	sao->setRotation(v3f(0, pg_to_float(results, 0, 1), 0));
+	sao->setLookPitch(PGUtil::pg_to_float(results, 0, 0));
+	sao->setRotation(v3f(0, PGUtil::pg_to_float(results, 0, 1), 0));
 	sao->setBasePosition(v3f(
-		pg_to_float(results, 0, 2),
-		pg_to_float(results, 0, 3),
-		pg_to_float(results, 0, 4))
+		PGUtil::pg_to_float(results, 0, 2),
+		PGUtil::pg_to_float(results, 0, 3),
+		PGUtil::pg_to_float(results, 0, 4))
 	);
-	sao->setHPRaw((u16) pg_to_int(results, 0, 5));
-	sao->setBreath((u16) pg_to_int(results, 0, 6), false);
+	sao->setHPRaw((u16) PGUtil::pg_to_int(results, 0, 5));
+	sao->setBreath((u16) PGUtil::pg_to_int(results, 0, 6), false);
 
 	PQclear(results);
 
 	// Load inventory
-	results = execPrepared("load_player_inventories", 1, values, false, false);
+	results = PGUtil::execPrepared(m_conn, "load_player_inventories", 1, values, false, false);
 
 	int resultCount = PQntuples(results);
 
 	for (int row = 0; row < resultCount; ++row) {
 		InventoryList* invList = player->inventory.
-			addList(PQgetvalue(results, row, 2), pg_to_uint(results, row, 3));
-		invList->setWidth(pg_to_uint(results, row, 1));
+			addList(PQgetvalue(results, row, 2), PGUtil::pg_to_uint(results, row, 3));
+		invList->setWidth(PGUtil::pg_to_uint(results, row, 1));
 
-		u32 invId = pg_to_uint(results, row, 0);
+		u32 invId = PGUtil::pg_to_uint(results, row, 0);
 		std::string invIdStr = itos(invId);
 
 		const char* values2[] = {
 			player->getName(),
 			invIdStr.c_str()
 		};
-		PGresult *results2 = execPrepared("load_player_inventory_items", 2,
+		PGresult *results2 = PGUtil::execPrepared(m_conn, "load_player_inventory_items", 2,
 			values2, false, false);
 
 		int resultCount2 = PQntuples(results2);
@@ -584,7 +427,7 @@ bool PlayerDatabasePostgreSQL::loadPlayer(RemotePlayer *player, PlayerSAO *sao)
 			if (itemStr.length() > 0) {
 				ItemStack stack;
 				stack.deSerialize(itemStr);
-				invList->changeItem(pg_to_uint(results2, row2, 0), stack);
+				invList->changeItem(PGUtil::pg_to_uint(results2, row2, 0), stack);
 			}
 		}
 		PQclear(results2);
@@ -592,7 +435,7 @@ bool PlayerDatabasePostgreSQL::loadPlayer(RemotePlayer *player, PlayerSAO *sao)
 
 	PQclear(results);
 
-	results = execPrepared("load_player_metadata", 1, values, false);
+	results = PGUtil::execPrepared(m_conn, "load_player_metadata", 1, values, false);
 
 	int numrows = PQntuples(results);
 	for (int row = 0; row < numrows; row++) {
@@ -613,7 +456,7 @@ bool PlayerDatabasePostgreSQL::removePlayer(const std::string &name)
 	verifyDatabase();
 
 	const char *values[] = { name.c_str() };
-	execPrepared("remove_player", 1, values);
+	PGUtil::execPrepared(m_conn, "remove_player", 1, values);
 
 	return true;
 }
@@ -622,7 +465,7 @@ void PlayerDatabasePostgreSQL::listPlayers(std::vector<std::string> &res)
 {
 	verifyDatabase();
 
-	PGresult *results = execPrepared("load_player_list", 0, NULL, false);
+	PGresult *results = PGUtil::execPrepared(m_conn, "load_player_list", 0, NULL, false);
 
 	int numrows = PQntuples(results);
 	for (int row = 0; row < numrows; row++)

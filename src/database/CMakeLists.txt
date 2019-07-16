@@ -4,6 +4,8 @@ set(database_SRCS
 	${CMAKE_CURRENT_SOURCE_DIR}/database-files.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/database-leveldb.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/database-postgresql.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/postgres/mapsavequeue.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/postgres/playersavequeue.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/database-redis.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/database-sqlite3.cpp
 	PARENT_SCOPE
