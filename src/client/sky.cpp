@@ -627,8 +627,6 @@ void Sky::update(float time_of_day, float time_brightness,
 
 void Sky::draw_sun(video::IVideoDriver *driver, float sunsize, video::SColor suncolor, video::SColor suncolor2, float wicked_time_of_day) {
 	static const u16 indices[4] = {0, 1, 2, 3};
-	const f32 t = 1.0f;
-	const f32 o = 0.0f;
 	std::array<video::S3DVertex, 4> vertices;
 	if (!m_sun_texture) {
 		driver->setMaterial(m_materials[1]);
@@ -639,8 +637,8 @@ void Sky::draw_sun(video::IVideoDriver *driver, float sunsize, video::SColor sun
 		c2.setAlpha(0.15 * 255);
 		const std::array<video::SColor, 4> colors = {c1, c2, suncolor, suncolor2};
 		for (int i = 0; i<4; i++) {
-
-			vertices = draw_aster(wicked_time_of_day, sunsizes[i], colors[i], t, o);
+			vertices = draw_aster(sunsizes[i], colors[i]);
+			vertices = place_aster(vertices, 90, wicked_time_of_day * 360 - 90);
 			driver->drawIndexedTriangleFan(&vertices[0], 4, indices, 2);
 		}
 	} else {
@@ -651,7 +649,8 @@ void Sky::draw_sun(video::IVideoDriver *driver, float sunsize, video::SColor sun
 			c = video::SColor (0, 0, 0, 0);
 		else
 			c = video::SColor (255, 255, 255, 255);
-		vertices = draw_aster(wicked_time_of_day, d, c, t, o);
+		vertices = draw_aster(d, c);
+		vertices = place_aster(vertices, 90, wicked_time_of_day * 360 - 90);
 		driver->drawIndexedTriangleFan(&vertices[0], 4, indices, 2);
 	}
 }
@@ -660,48 +659,22 @@ void Sky::draw_moon(video::IVideoDriver *driver, float moonsize, video::SColor m
 	video::S3DVertex vertices[4];
 	const f32 t = 1.0f;
 	const f32 o = 0.0f;
+	std::array<video::S3DVertex, 4> vertices2;
 	if (!m_moon_texture) {
 		driver->setMaterial(m_materials[1]);
-		float d = moonsize * 1.9;
-		video::SColor c = mooncolor;
-		c.setAlpha(0.05 * 255);
-		vertices[0] = video::S3DVertex(-d, -d, -1, 0, 0, 1, c, t, t);
-		vertices[1] = video::S3DVertex( d, -d, -1, 0, 0, 1, c, o, t);
-		vertices[2] = video::S3DVertex( d,  d, -1, 0, 0, 1, c, o, o);
-		vertices[3] = video::S3DVertex(-d,  d, -1, 0, 0, 1, c, t, o);
-		for (video::S3DVertex &vertex : vertices) {
-			// Switch from -Z (south) to -X (west)
-			vertex.Pos.rotateXZBy(-90);
-			vertex.Pos.rotateXYBy(wicked_time_of_day * 360 - 90);
+		const std::array<float, 3> moonsizes = {moonsize * 1.9f, moonsize * 1.3f, moonsize};
+		video::SColor c1 = mooncolor;
+		video::SColor c2 = mooncolor;
+		c1.setAlpha(0.05 * 255);
+		c2.setAlpha(0.15 * 255);
+		const std::array<video::SColor, 3> colors = {c1, c2, mooncolor};
+		for (int i = 0; i<3; i++) {
+			vertices2 = draw_aster(moonsizes[i], colors[i]);
+			vertices2 = place_aster(vertices2, -90, wicked_time_of_day * 360 - 90);
+			driver->drawIndexedTriangleFan(&vertices2[0], 4, indices, 2);
 		}
-		driver->drawIndexedTriangleFan(&vertices[0], 4, indices, 2);
 
-		d = moonsize * 1.3;
-		c = mooncolor;
-		c.setAlpha(0.15 * 255);
-		vertices[0] = video::S3DVertex(-d, -d, -1, 0, 0, 1, c, t, t);
-		vertices[1] = video::S3DVertex( d, -d, -1, 0, 0, 1, c, o, t);
-		vertices[2] = video::S3DVertex( d,  d, -1, 0, 0, 1, c, o, o);
-		vertices[3] = video::S3DVertex(-d,  d, -1, 0, 0, 1, c, t, o);
-		for (video::S3DVertex &vertex : vertices) {
-			// Switch from -Z (south) to -X (west)
-			vertex.Pos.rotateXZBy(-90);
-			vertex.Pos.rotateXYBy(wicked_time_of_day * 360 - 90);
-		}
-		driver->drawIndexedTriangleFan(&vertices[0], 4, indices, 2);
-
-		d = moonsize;
-		vertices[0] = video::S3DVertex(-d, -d, -1, 0, 0, 1, mooncolor, t, t);
-		vertices[1] = video::S3DVertex( d, -d, -1, 0, 0, 1, mooncolor, o, t);
-		vertices[2] = video::S3DVertex( d,  d, -1, 0, 0, 1, mooncolor, o, o);
-		vertices[3] = video::S3DVertex(-d,  d, -1, 0, 0, 1, mooncolor, t, o);
-		for (video::S3DVertex &vertex : vertices) {
-			// Switch from -Z (south) to -X (west)
-			vertex.Pos.rotateXZBy(-90);
-			vertex.Pos.rotateXYBy(wicked_time_of_day * 360 - 90);
-		}
-		driver->drawIndexedTriangleFan(&vertices[0], 4, indices, 2);
-
+		float d = moonsize;
 		float d2 = moonsize * 0.6;
 		vertices[0] = video::S3DVertex(-d, -d,  -1, 0, 0, 1, mooncolor2, t, t);
 		vertices[1] = video::S3DVertex( d2,-d,  -1, 0, 0, 1, mooncolor2, o, t);
@@ -721,31 +694,31 @@ void Sky::draw_moon(video::IVideoDriver *driver, float moonsize, video::SColor m
 			c = video::SColor (0, 0, 0, 0);
 		else
 			c = video::SColor (255, 255, 255, 255);
-		vertices[0] = video::S3DVertex(-d, -d, -1, 0, 0, 1, c, t, t);
-		vertices[1] = video::S3DVertex( d, -d, -1, 0, 0, 1, c, o, t);
-		vertices[2] = video::S3DVertex( d,  d, -1, 0, 0, 1, c, o, o);
-		vertices[3] = video::S3DVertex(-d,  d, -1, 0, 0, 1, c, t, o);
-		for (video::S3DVertex &vertex : vertices) {
-			// Switch from -Z (south) to -X (west)
-			vertex.Pos.rotateXZBy(-90);
-			vertex.Pos.rotateXYBy(wicked_time_of_day * 360 - 90);
-		}
-		driver->drawIndexedTriangleFan(&vertices[0], 4, indices, 2);
+		vertices2 = draw_aster(d, c);
+		vertices2 = place_aster(vertices2, -90, wicked_time_of_day * 360 - 90);
+		driver->drawIndexedTriangleFan(&vertices2[0], 4, indices, 2);
+
 	}
 }
 
 
 
-std::array<video::S3DVertex, 4> Sky::draw_aster(float wicked_time_of_day, float d, video::SColor c, const f32 t, const f32 o) {
+std::array<video::S3DVertex, 4> Sky::draw_aster(float d, video::SColor c) {
+	const f32 t = 1.0f;
+	const f32 o = 0.0f;
 	std::array<video::S3DVertex, 4> vertices;
 	vertices[0] = video::S3DVertex(-d, -d, -1, 0, 0, 1, c, t, t);
 	vertices[1] = video::S3DVertex( d, -d, -1, 0, 0, 1, c, o, t);
 	vertices[2] = video::S3DVertex( d,  d, -1, 0, 0, 1, c, o, o);
 	vertices[3] = video::S3DVertex(-d,  d, -1, 0, 0, 1, c, t, o);
+	return vertices;
+}
+
+std::array<video::S3DVertex, 4> Sky::place_aster(std::array<video::S3DVertex, 4> vertices, float horizon_position, float day_position) {
 	for (video::S3DVertex &vertex : vertices) {
-		// Switch from -Z (south) to +X (east)
-		vertex.Pos.rotateXZBy(90);
-		vertex.Pos.rotateXYBy(wicked_time_of_day * 360 - 90);
+		// Switch from -Z (south) to -X (west)
+		vertex.Pos.rotateXZBy(horizon_position);
+		vertex.Pos.rotateXYBy(day_position);
 	}
 	return vertices;
 }
