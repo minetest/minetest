@@ -637,8 +637,8 @@ void Sky::draw_sun(video::IVideoDriver *driver, float sunsize, video::SColor sun
 		c2.setAlpha(0.15 * 255);
 		const std::array<video::SColor, 4> colors = {c1, c2, suncolor, suncolor2};
 		for (int i = 0; i<4; i++) {
-			vertices = draw_aster(-sunsizes[i], sunsizes[i], colors[i]);
-			vertices = place_aster(vertices, 90, wicked_time_of_day * 360 - 90);
+			vertices = draw_sky_body(-sunsizes[i], sunsizes[i], colors[i]);
+			vertices = place_sky_body(vertices, 90, wicked_time_of_day * 360 - 90);
 			driver->drawIndexedTriangleFan(&vertices[0], 4, indices, 2);
 		}
 	} else {
@@ -649,8 +649,8 @@ void Sky::draw_sun(video::IVideoDriver *driver, float sunsize, video::SColor sun
 			c = video::SColor (0, 0, 0, 0);
 		else
 			c = video::SColor (255, 255, 255, 255);
-		vertices = draw_aster(-d, d, c);
-		vertices = place_aster(vertices, 90, wicked_time_of_day * 360 - 90);
+		vertices = draw_sky_body(-d, d, c);
+		vertices = place_sky_body(vertices, 90, wicked_time_of_day * 360 - 90);
 		driver->drawIndexedTriangleFan(&vertices[0], 4, indices, 2);
 	}
 }
@@ -669,8 +669,8 @@ void Sky::draw_moon(video::IVideoDriver *driver, float moonsize, video::SColor m
 		c2.setAlpha(0.15 * 255);
 		const std::array<video::SColor, 4> colors = {c1, c2, mooncolor, mooncolor2};
 		for (int i = 0; i<4; i++) {
-			vertices = draw_aster(moonsizes_1[i], moonsizes_2[i], colors[i]);
-			vertices = place_aster(vertices, -90, wicked_time_of_day * 360 - 90);
+			vertices = draw_sky_body(moonsizes_1[i], moonsizes_2[i], colors[i]);
+			vertices = place_sky_body(vertices, -90, wicked_time_of_day * 360 - 90);
 			driver->drawIndexedTriangleFan(&vertices[0], 4, indices, 2);
 		}
 	} else {
@@ -681,15 +681,15 @@ void Sky::draw_moon(video::IVideoDriver *driver, float moonsize, video::SColor m
 			c = video::SColor (0, 0, 0, 0);
 		else
 			c = video::SColor (255, 255, 255, 255);
-		vertices = draw_aster(-d, d, c);
-		vertices = place_aster(vertices, -90, wicked_time_of_day * 360 - 90);
+		vertices = draw_sky_body(-d, d, c);
+		vertices = place_sky_body(vertices, -90, wicked_time_of_day * 360 - 90);
 		driver->drawIndexedTriangleFan(&vertices[0], 4, indices, 2);
 
 	}
 }
 
 
-std::array<video::S3DVertex, 4> Sky::draw_aster(float pos_1, float pos_2, video::SColor c) {
+std::array<video::S3DVertex, 4> Sky::draw_sky_body(float pos_1, float pos_2, video::SColor c) {
 	const f32 t = 1.0f;
 	const f32 o = 0.0f;
 	std::array<video::S3DVertex, 4> vertices;
@@ -701,7 +701,7 @@ std::array<video::S3DVertex, 4> Sky::draw_aster(float pos_1, float pos_2, video:
 }
 
 
-std::array<video::S3DVertex, 4> Sky::place_aster(std::array<video::S3DVertex, 4> vertices, float horizon_position, float day_position) {
+std::array<video::S3DVertex, 4> Sky::place_sky_body(std::array<video::S3DVertex, 4> vertices, float horizon_position, float day_position) {
 	for (video::S3DVertex &vertex : vertices) {
 		// Switch from -Z (south) to -X (west)
 		vertex.Pos.rotateXZBy(horizon_position);

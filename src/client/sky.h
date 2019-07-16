@@ -147,6 +147,6 @@ private:
 	video::ITexture *m_moon_tonemap;
 	void draw_sun(video::IVideoDriver *driver, float sunsize, video::SColor suncolor, video::SColor suncolor2, float wicked_time_of_day);
 	void draw_moon(video::IVideoDriver *driver, float moonsize, video::SColor mooncolor, video::SColor mooncolor2, float wicked_time_of_day);
-	std::array<video::S3DVertex, 4> draw_aster(float pos_1, float pos_2, video::SColor c);
-	std::array<video::S3DVertex, 4> place_aster(std::array<video::S3DVertex, 4> vertices, float horizon_position, float day_position);
+	std::array<video::S3DVertex, 4> draw_sky_body(float pos_1, float pos_2, video::SColor c);
+	std::array<video::S3DVertex, 4> place_sky_body(std::array<video::S3DVertex, 4> vertices, float horizon_position, float day_position);
 };
