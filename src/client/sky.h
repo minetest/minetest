@@ -18,6 +18,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include <ISceneNode.h>
+#include <array>
 #include "camera.h"
 #include "irrlichttypes_extrabloated.h"
 
