@@ -394,6 +394,16 @@ function core.override_item(name, redefinition)
 end
 
 
+function core.add_group(name, adding)
+	local addgroup = {}
+	addgroup = table.copy(core.registered_items[name].groups)
+	for k, v in pairs(adding) do
+		addgroup[k] = v
+	end
+	core.override_item(name, {groups = addgroup})
+end
+
+
 core.callback_origins = {}
 
 function core.run_callbacks(callbacks, mode, ...)
