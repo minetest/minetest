@@ -70,18 +70,6 @@ function vector.direction(pos1, pos2)
 	})
 end
 
-function vector.dot(a, b)
-	return a.x * b.x + a.y * b.y + a.z * b.z
-end
-
-function vector.cross(a, b)
-	return {
-		x = a.z * b.y - a.y * b.z,
-		y = a.x * b.z - a.z * b.x,
-		z = a.y * b.x - a.x * b.y,
-	}
-end
-
 function vector.angle(a, b)
 	local dotp = vector.dot(a, b)
 	local cp = vector.cross(a, b)
