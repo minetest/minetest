@@ -677,13 +677,13 @@ void Sky::draw_sun(video::IVideoDriver *driver, float sunsize, video::SColor sun
 	std::array<video::S3DVertex, 4> vertices;
 	if (!m_sun_texture) {
 		driver->setMaterial(m_materials[1]);
-		const std::array<float, 4> sunsizes = {
+		const float sunsizes[4] = {
 				sunsize * 1.7f, sunsize * 1.2f, sunsize, sunsize * 0.7f};
 		video::SColor c1 = suncolor;
 		video::SColor c2 = suncolor;
 		c1.setAlpha(0.05 * 255);
 		c2.setAlpha(0.15 * 255);
-		const std::array<video::SColor, 4> colors = {c1, c2, suncolor, suncolor2};
+		const video::SColor colors[4] = {c1, c2, suncolor, suncolor2};
 		for (int i = 0; i < 4; i++) {
 			vertices = draw_sky_body(-sunsizes[i], sunsizes[i], colors[i]);
 			vertices = place_sky_body(
@@ -711,15 +711,15 @@ void Sky::draw_moon(video::IVideoDriver *driver, float moonsize, video::SColor m
 	std::array<video::S3DVertex, 4> vertices;
 	if (!m_moon_texture) {
 		driver->setMaterial(m_materials[1]);
-		const std::array<float, 4> moonsizes_1 = {
+		const float moonsizes_1[4] = {
 				-moonsize * 1.9f, -moonsize * 1.3f, -moonsize, -moonsize};
-		const std::array<float, 4> moonsizes_2 = {moonsize * 1.9f,
+		const float moonsizes_2[4] = {moonsize * 1.9f,
 				moonsize * 1.3f, moonsize, moonsize * 0.6f};
 		video::SColor c1 = mooncolor;
 		video::SColor c2 = mooncolor;
 		c1.setAlpha(0.05 * 255);
 		c2.setAlpha(0.15 * 255);
-		const std::array<video::SColor, 4> colors = {
+		const video::SColor colors[4] = {
 				c1, c2, mooncolor, mooncolor2};
 		for (int i = 0; i < 4; i++) {
 			vertices = draw_sky_body(
