@@ -149,6 +149,11 @@ public:
 
 	bool getAutojump() const { return m_autojump; }
 
+	inline void addVelocity(const v3f &vel)
+	{
+		added_velocity += vel;
+	}
+
 private:
 	void accelerate(const v3f &target_speed, const f32 max_increase_H,
 			const f32 max_increase_V, const bool use_pitch);
@@ -194,6 +199,7 @@ private:
 	float m_zoom_fov = 0.0f;
 	bool m_autojump = false;
 	float m_autojump_time = 0.0f;
+	v3f added_velocity = v3f(0.0f, 0.0f, 0.0f); // cleared on each move()
 
 	GenericCAO *m_cao = nullptr;
 	Client *m_client;

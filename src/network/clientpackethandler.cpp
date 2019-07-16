@@ -1383,6 +1383,17 @@ void Client::handleCommand_CSMRestrictionFlags(NetworkPacket *pkt)
 	loadMods();
 }
 
+void Client::handleCommand_PlayerSpeed(NetworkPacket *pkt)
+{
+	v3f added_vel;
+
+	*pkt >> added_vel;
+
+	LocalPlayer *player = m_env.getLocalPlayer();
+	assert(player != NULL);
+	player->addVelocity(added_vel);
+}
+
 /*
  * Mod channels
  */

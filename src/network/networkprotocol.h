@@ -194,6 +194,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		New network float format
 		ContentFeatures version 13
 		Add full Euler rotations instead of just yaw
+		Add TOCLIENT_PLAYER_SPEED
 */
 
 #define LATEST_PROTOCOL_VERSION 37
@@ -293,6 +294,11 @@ enum ToClientCommand
 	TOCLIENT_CSM_RESTRICTION_FLAGS = 0x2A,
 	/*
 		u32 CSMRestrictionFlags byteflag
+	 */
+
+	TOCLIENT_PLAYER_SPEED = 0x2B,
+	/*
+		v3f added_vel
 	 */
 
 	// (oops, there is some gap here)

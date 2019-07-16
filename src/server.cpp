@@ -1958,6 +1958,13 @@ void Server::SendCSMRestrictionFlags(session_t peer_id)
 	Send(&pkt);
 }
 
+void Server::SendPlayerSpeed(session_t peer_id, const v3f &added_vel)
+{
+	NetworkPacket pkt(TOCLIENT_PLAYER_SPEED, 0, peer_id);
+	pkt << added_vel;
+	Send(&pkt);
+}
+
 s32 Server::playSound(const SimpleSoundSpec &spec,
 		const ServerSoundParams &params)
 {

@@ -1092,6 +1092,27 @@ int ObjectRef::l_get_player_velocity(lua_State *L)
 	return 1;
 }
 
+// add_player_velocity(self, {x=num, y=num, z=num})
+int ObjectRef::l_add_player_velocity(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	ObjectRef *ref = checkobject(L, 1);
+	v3f vel = checkFloatPos(L, 2);
+
+	RemotePlayer *player = getplayer(ref);
+	PlayerSAO *co = getplayersao(ref);
+	if (!player || !co)
+		return 0;
+
+	session_t peer_id = player->getPeerId();
+	if (peer_id == PEER_ID_INEXISTENT)
+		return 0;
+	// Do it
+	co->setMaxSpeedOverride(vel);
+	getServer(L)->SendPlayerSpeed(peer_id, vel);
+	return 0;
+}
+
 // get_look_dir(self)
 int ObjectRef::l_get_look_dir(lua_State *L)
 {
@@ -1931,6 +1952,7 @@ luaL_Reg ObjectRef::methods[] = {
 	luamethod(ObjectRef, is_player_connected),
 	luamethod(ObjectRef, get_player_name),
 	luamethod(ObjectRef, get_player_velocity),
+	luamethod(ObjectRef, add_player_velocity),
 	luamethod(ObjectRef, get_look_dir),
 	luamethod(ObjectRef, get_look_pitch),
 	luamethod(ObjectRef, get_look_yaw),

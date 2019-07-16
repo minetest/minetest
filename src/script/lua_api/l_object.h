@@ -212,6 +212,9 @@ private:
 	// get_player_velocity(self)
 	static int l_get_player_velocity(lua_State *L);
 
+	// add_player_velocity(self, {x=num, y=num, z=num})
+	static int l_add_player_velocity(lua_State *L);
+
 	// get_look_dir(self)
 	static int l_get_look_dir(lua_State *L);
 
