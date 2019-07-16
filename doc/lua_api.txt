@@ -5019,6 +5019,15 @@ Misc.
       of the creative mode setting, checks for "sneak" to set the `invert_wall`
       parameter and `prevent_after_place` set to `true`.
 
+* `minetest.calculate_knockback(player, hitter, time_from_last_punch,
+  tool_capabilities, dir, distance, damage)`
+    * Returns the amount of knockback applied on the punched player.
+    * Arguments are equivalent to `register_on_punchplayer`, except the following:
+        * `distance`: distance between puncher and punched player
+    * This function can be overriden by mods that wish to modify this behaviour.
+    * You may want to cache and call the old function to allow multiple mods to
+      change knockback behaviour.
+
 * `minetest.forceload_block(pos[, transient])`
     * forceloads the position `pos`.
     * returns `true` if area could be forceloaded
