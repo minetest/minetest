@@ -35,7 +35,7 @@ public:
 	void luaentity_Remove(u16 id);
 	std::string luaentity_GetStaticdata(u16 id);
 	void luaentity_GetProperties(u16 id,
-			ObjectProperties *prop);
+			ServerActiveObject *self, ObjectProperties *prop);
 	void luaentity_Step(u16 id, float dtime);
 	bool luaentity_Punch(u16 id,
 			ServerActiveObject *puncher, float time_from_last_punch,
