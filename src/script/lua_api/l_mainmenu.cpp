@@ -391,6 +391,13 @@ int ModApiMainMenu::l_get_favorites(lua_State *L)
 			lua_settable(L, top_lvl2);
 		}
 
+		if (server.isMember("geo_continent")) {
+			lua_pushstring(L,"geo_continent");
+			std::string topush = server["geo_continent"].asString();
+			lua_pushstring(L,topush.c_str());
+			lua_settable(L, top_lvl2);
+		}
+
 		lua_settable(L, top);
 		index++;
 	}

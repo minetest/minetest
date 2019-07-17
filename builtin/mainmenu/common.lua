@@ -63,20 +63,61 @@ function image_column(tooltip, flagname)
 end
 
 --------------------------------------------------------------------------------
-function order_favorite_list(list)
-	local res = {}
-	--orders the favorite list after support
-	for i = 1, #list do
-		local fav = list[i]
-		if is_server_protocol_compat(fav.proto_min, fav.proto_max) then
-			res[#res + 1] = fav
-		end
+local OWN_CONTINENT = "EU" -- TODO
+local latency_matrix = {
+	["AF"] = { ["AS"]=420, ["EU"]=160, ["NA"]=280, ["OC"]=450, ["SA"]=360, },
+	["AS"] = { ["EU"]=190, ["NA"]=170, ["OC"]=120, ["SA"]=300, },
+	["EU"] = { ["NA"]=120, ["OC"]=380, ["SA"]=200, },
+	["NA"] = { ["OC"]=200, ["SA"]=130, },
+	["OC"] = { ["SA"]=330, },
+}
+
+function estimate_favorite_latency(fav)
+	if OWN_CONTINENT == nil then return nil end
+	local here, there = OWN_CONTINENT, fav.geo_continent
+	if here == there then
+		return 0
 	end
+	return here > there and latency_matrix[there][here] or latency_matrix[here][there]
+end
+
+--------------------------------------------------------------------------------
+local function favorite_list_sort_key(fav)
+	local k = ""
+	-- protocol support
+	if is_server_protocol_compat(fav.proto_min, fav.proto_max) then
+		k = k .. "0"
+	else
+		k = k .. "1"
+	end
+	-- estimated latency (geographic)
+	if fav.geo_continent ~= nil then
+		local ms = estimate_favorite_latency(fav) or 999
+		k = k .. string.format("%03d", ms)
+	else
+		k = k .. "999"
+	end
+	return k
+end
+
+function order_favorite_list(list)
+	-- sort list of indexes first
+	local idx = {}
 	for i = 1, #list do
-		local fav = list[i]
-		if not is_server_protocol_compat(fav.proto_min, fav.proto_max) then
-			res[#res + 1] = fav
+		idx[#idx + 1] = i
+	end
+	table.sort(idx, function(a, b)
+		local key1 = favorite_list_sort_key(list[a])
+		local key2 = favorite_list_sort_key(list[b])
+		if key1 == key2 then
+			return a < b -- preserve original order
 		end
+		return key1 < key2
+	end)
+	-- assemble result table
+	local res = {}
+	for _, i in ipairs(idx) do
+		res[#res + 1] = list[i]
 	end
 	return res
 end
@@ -104,6 +145,11 @@ function render_serverlist_row(spec, is_favorite)
 
 	if spec.ping then
 		local ping = spec.ping * 1000
+		if spec.geo_continent ~= nil and ping < 400 then
+			-- with a ping over 400ms, the server obviously has latency problems
+			-- no matter which latency we estimate
+			ping = estimate_favorite_latency(spec) or ping
+		end
 		if ping <= 50 then
 			details = details .. "2,"
 		elseif ping <= 100 then
