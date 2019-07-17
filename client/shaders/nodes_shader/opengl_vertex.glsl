@@ -52,6 +52,17 @@ float smoothTriangleWave(float x)
 	return smoothCurve(triangleWave(x)) * 2.0 - 1.0;
 }
 
+// These methods apply a gamma value to approximately convert a value from/to
+// sRGB colourspace
+float from_sRGB(float x)
+{
+	return pow(x, 2.2);
+}
+float to_sRGB(float x)
+{
+	return pow(x, 1.0 / 2.2);
+}
+
 #if (MATERIAL_TYPE == TILE_MATERIAL_WAVING_LIQUID_TRANSPARENT || \
 	MATERIAL_TYPE == TILE_MATERIAL_WAVING_LIQUID_OPAQUE || \
 	MATERIAL_TYPE == TILE_MATERIAL_WAVING_LIQUID_BASIC) && ENABLE_WAVING_WATER
@@ -205,9 +216,16 @@ float disp_z;
 	vec3 resultLightColor = ((lightColor.rgb * gl_Color.a) + nightRatio);
 
 	// ((resultLightColor * ((max(dot(normal, lightDirection), -0.2) + 0.2) / 1.2)* 0.6)) + 0.4;
-	resultLightColor = (resultLightColor * ((max(dot(alwaysNormal, lightDirection), -0.2) + 0.2) * 0.5)) + 0.4;
+	float ambient_light = to_sRGB(0.15);
+	float directional_light = dot(alwaysNormal, lightDirection);
+	directional_light = max(directional_light + 0.2, 0.0);
+	directional_light *= 0.5;
+	resultLightColor = resultLightColor * to_sRGB(directional_light) + ambient_light;
 
-	float artificialLightShading = ((dot(alwaysNormal, artificialLightDirection) + 1.0) * 0.25) + 0.5;
+	directional_light = dot(alwaysNormal, artificialLightDirection);
+	directional_light = max(directional_light + 0.5, 0.0);
+	directional_light *= 0.47;
+	float artificialLightShading = to_sRGB(directional_light + 0.3);
 
 	color.rgb *= mix(resultLightColor, artificialLight * artificialLightShading, nightRatio);
 #endif
