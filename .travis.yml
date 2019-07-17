@@ -39,10 +39,10 @@ matrix:
       compiler: gcc
       os: linux
 
-    - env: PLATFORM=Unix
-      compiler: clang
-      os: osx
-      osx_image: xcode8
+#    - env: PLATFORM=Unix
+#      compiler: clang
+#      os: osx
+#      osx_image: xcode8
 
     - env: PLATFORM=Unix COMPILER=gcc-6
       compiler: gcc
