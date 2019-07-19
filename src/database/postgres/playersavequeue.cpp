@@ -262,14 +262,14 @@ void *PlayerSaveQueue::run(){
 
 void PlayerSaveQueue::save(std::vector<QueuedPlayerData*> *queue){
 	try {
-		PGUtil::checkResults(PQexec(m_conn, "BEGIN;"));
 
 		for (QueuedPlayerData* item: *queue){
+			PGUtil::checkResults(PQexec(m_conn, "BEGIN;"));
 			savePlayer(item);
+			PGUtil::checkResults(PQexec(m_conn, "COMMIT;"));
 			delete item;
 		}
 
-		PGUtil::checkResults(PQexec(m_conn, "COMMIT;"));
 
 	} catch (std::exception &e) {
 		MutexAutoLock lock(m_exception_mutex);
