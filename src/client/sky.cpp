@@ -413,8 +413,8 @@ void Sky::render()
 
 
 void Sky::update(float time_of_day, float time_brightness,
-		float direct_brightness, bool sunlight_seen,
-		CameraMode cam_mode, float yaw, float pitch)
+	float direct_brightness, bool sunlight_seen,
+	CameraMode cam_mode, float yaw, float pitch)
 {
 	// Stabilize initial brightness and color values by flooding updates
 	if (m_first_update) {
@@ -626,7 +626,7 @@ void Sky::update(float time_of_day, float time_brightness,
 }
 
 void Sky::draw_sun(video::IVideoDriver *driver, float sunsize, video::SColor suncolor,
-		video::SColor suncolor2, float wicked_time_of_day)
+	video::SColor suncolor2, float wicked_time_of_day)
 {
 	static const u16 indices[4] = {0, 1, 2, 3};
 	std::array<video::S3DVertex, 4> vertices;
@@ -659,7 +659,7 @@ void Sky::draw_sun(video::IVideoDriver *driver, float sunsize, video::SColor sun
 
 
 void Sky::draw_moon(video::IVideoDriver *driver, float moonsize, video::SColor mooncolor,
-		video::SColor mooncolor2, float wicked_time_of_day)
+	video::SColor mooncolor2, float wicked_time_of_day)
 {
 	static const u16 indices[4] = {0, 1, 2, 3};
 	std::array<video::S3DVertex, 4> vertices;
@@ -702,8 +702,7 @@ void Sky::draw_moon(video::IVideoDriver *driver, float moonsize, video::SColor m
 }
 
 
-std::array<video::S3DVertex, 4> Sky::draw_sky_body(
-		float pos_1, float pos_2, video::SColor c)
+std::array<video::S3DVertex, 4> Sky::draw_sky_body(float pos_1, float pos_2, video::SColor c)
 {
 	const f32 t = 1.0f;
 	const f32 o = 0.0f;
@@ -717,10 +716,10 @@ std::array<video::S3DVertex, 4> Sky::draw_sky_body(
 
 
 std::array<video::S3DVertex, 4> Sky::place_sky_body(
-		std::array<video::S3DVertex, 4> vertices, float horizon_position, float day_position)
+	std::array<video::S3DVertex, 4> vertices, float horizon_position, float day_position)
 {
 	for (video::S3DVertex &vertex : vertices) {
-		// Switch from -Z (south) to -X (west)
+		// Body is directed to -Z (south) by default
 		vertex.Pos.rotateXZBy(horizon_position);
 		vertex.Pos.rotateXYBy(day_position);
 	}
