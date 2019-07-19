@@ -284,7 +284,6 @@ void PlayerSaveQueue::savePlayer(QueuedPlayerData *item){
 	const char* rmvalues[] = { item->serialized_player->getName().c_str() };
 
 	item->serialized_player->persist(m_conn, m_pgversion);
-	delete item->serialized_player;
 
 	// Write player inventories
 	PGUtil::execPrepared(m_conn, "remove_player_inventories", 1, rmvalues);
@@ -305,5 +304,7 @@ void PlayerSaveQueue::savePlayer(QueuedPlayerData *item){
 		metadata->persist(m_conn);
 		delete metadata;
 	}
+
+	delete item->serialized_player;
 }
 
