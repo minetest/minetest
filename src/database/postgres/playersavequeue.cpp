@@ -286,7 +286,8 @@ void PlayerSaveQueue::save(std::vector<QueuedPlayerData*> *queue){
 
 void PlayerSaveQueue::savePlayer(QueuedPlayerData *item){
 
-	const char* rmvalues[] = { item->serialized_player->getName().c_str() };
+	std::string playername = item->serialized_player->getName();
+	const char* rmvalues[] = { playername.c_str() };
 
 	item->serialized_player->persist(m_conn, m_pgversion);
 
