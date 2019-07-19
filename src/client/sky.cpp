@@ -648,9 +648,9 @@ void Sky::draw_sun(video::IVideoDriver *driver, float sunsize, video::SColor sun
 		float d = sunsize * 1.7;
 		video::SColor c;
 		if (m_sun_tonemap)
-			c = video::SColor (0, 0, 0, 0);
+			c = video::SColor(0, 0, 0, 0);
 		else
-			c = video::SColor (255, 255, 255, 255);
+			c = video::SColor(255, 255, 255, 255);
 		vertices = draw_sky_body(-d, d, c);
 		vertices = place_sky_body(vertices, 90, wicked_time_of_day * 360 - 90);
 		driver->drawIndexedTriangleFan(&vertices[0], 4, indices, 2);
