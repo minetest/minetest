@@ -165,6 +165,8 @@ core.get_favorites(location) -> list of favorites (possible in async calls)
 	name          = <server name/nil>,
 	address       = <address of server/nil>,
 	port          = <port>
+	clients_list  = <array of clients>
+	mods          = <array of mods>
 	},
 }
 core.delete_favorite(id, location) -> success
