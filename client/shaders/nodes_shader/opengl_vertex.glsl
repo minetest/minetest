@@ -56,11 +56,23 @@ float smoothTriangleWave(float x)
 // sRGB colourspace
 float from_sRGB(float x)
 {
+	if (x < 0.0 || x > 1.0)
+		return x;
 	return pow(x, 2.2);
 }
 float to_sRGB(float x)
 {
+	if (x < 0.0 || x > 1.0)
+		return x;
 	return pow(x, 1.0 / 2.2);
+}
+vec3 from_sRGB_vec(vec3 v)
+{
+	return vec3(from_sRGB(v.r), from_sRGB(v.g), from_sRGB(v.b));
+}
+vec3 to_sRGB_vec(vec3 v)
+{
+	return vec3(to_sRGB(v.r), to_sRGB(v.g), to_sRGB(v.b));
 }
 
 #if (MATERIAL_TYPE == TILE_MATERIAL_WAVING_LIQUID_TRANSPARENT || \
@@ -214,20 +226,22 @@ float disp_z;
 #if defined(ENABLE_DIRECTIONAL_SHADING) && !LIGHT_EMISSIVE
 	// Lighting color
 	vec3 resultLightColor = ((lightColor.rgb * gl_Color.a) + nightRatio);
+	resultLightColor = from_sRGB_vec(resultLightColor);
 
 	// ((resultLightColor * ((max(dot(normal, lightDirection), -0.2) + 0.2) / 1.2)* 0.6)) + 0.4;
-	float ambient_light = to_sRGB(0.15);
+	float ambient_light = 0.3;
 	float directional_light = dot(alwaysNormal, lightDirection);
 	directional_light = max(directional_light + 0.2, 0.0);
-	directional_light *= 0.5;
-	resultLightColor = resultLightColor * to_sRGB(directional_light) + ambient_light;
+	directional_light *= (1.0 - ambient_light) / 1.2;
+	resultLightColor = resultLightColor * directional_light + ambient_light;
 
 	directional_light = dot(alwaysNormal, artificialLightDirection);
 	directional_light = max(directional_light + 0.5, 0.0);
-	directional_light *= 0.47;
-	float artificialLightShading = to_sRGB(directional_light + 0.3);
+	directional_light *= (1.0 - 0.3) / 1.5;
+	float artificialLightShading = directional_light + 0.3;
 
-	color.rgb *= mix(resultLightColor, artificialLight * artificialLightShading, nightRatio);
+	color.rgb *= to_sRGB_vec(mix(resultLightColor,
+		from_sRGB_vec(artificialLight.rgb) * artificialLightShading, nightRatio));
 #endif
 
 	// Emphase blue a bit in darker places
