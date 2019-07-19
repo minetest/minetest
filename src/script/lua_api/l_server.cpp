@@ -148,9 +148,10 @@ int ModApiServer::l_get_player_information(lua_State *L)
 	}
 
 	Address addr;
+	Server *server = getServer(L);
 	try
 	{
-		addr = getServer(L)->getPeerAddress(player->getPeerId());
+		addr = server->getPeerAddress(player->getPeerId());
 	} catch(const con::PeerNotFoundException &) {
 		dstream << FUNCTION_NAME << ": peer was not found" << std::endl;
 		lua_pushnil(L); // error
@@ -171,11 +172,10 @@ int ModApiServer::l_get_player_information(lua_State *L)
 		return 1;                                                              \
 	}
 
-	ERET(getServer(L)->getClientConInfo(player->getPeerId(), con::AVG_RTT, &avg_rtt))
-	ERET(getServer(L)->getClientConInfo(player->getPeerId(), con::AVG_JITTER,
-		&avg_jitter))
+	ERET(server->getClientConInfo(player->getPeerId(), con::AVG_RTT, &avg_rtt))
+	ERET(server->getClientConInfo(player->getPeerId(), con::AVG_JITTER, &avg_jitter))
 
-	ERET(getServer(L)->getClientInfo(player->getPeerId(), &state, &uptime, &ser_vers,
+	ERET(server->getClientInfo(player->getPeerId(), &state, &uptime, &ser_vers,
 		&prot_vers, &major, &minor, &patch, &vers_string))
 
 	lua_newtable(L);
@@ -202,6 +202,22 @@ int ModApiServer::l_get_player_information(lua_State *L)
 	lua_pushstring(L,"avg_jitter");
 	lua_pushnumber(L, avg_jitter);
 	lua_settable(L, table);
+
+	struct DeprecatedField {
+		const char *name;
+		double value;
+	} deprecated[] = {
+		{ "min_rtt", avg_rtt - avg_jitter },
+		{ "max_rtt", avg_rtt + avg_jitter },
+		{ "min_jitter", 0.01 },
+		{ "max_jitter", 0.5 }
+	};
+
+	for (const auto &field : deprecated) {
+		lua_pushstring(L, field.name);
+		lua_pushnumber(L, field.value);
+		lua_settable(L, table);
+	}
 
 	lua_pushstring(L,"connection_uptime");
 	lua_pushnumber(L, uptime);

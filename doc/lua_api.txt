@@ -3665,6 +3665,10 @@ Utilities
           ip_version = 4,            -- IPv4 / IPv6
           avg_rtt = 0.02,            -- average round trip time
           avg_jitter = 0.03,         -- average packet time jitter
+          min_rtt = 0.01,            -- DEPRECATED: equals to (avg_rtt - avg_jitter)
+          max_rtt = 0.2,             -- DEPRECATED: equals to (avg_rtt + avg_jitter)
+          min_jitter = 0.01,         -- DEPRECATED: constant (0.01)
+          max_jitter = 0.5,          -- DEPRECATED: constant (0.5)
           connection_uptime = 200,   -- seconds since client connected
           protocol_version = 32,     -- protocol version used by client
           -- following information is available on debug build only!!!
