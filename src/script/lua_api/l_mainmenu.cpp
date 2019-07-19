@@ -391,6 +391,37 @@ int ModApiMainMenu::l_get_favorites(lua_State *L)
 			lua_settable(L, top_lvl2);
 		}
 
+		if (server["clients_list"].isArray()) {
+			unsigned int index_lvl2 = 1;
+			lua_pushstring(L,"clients_list");
+			lua_newtable(L);
+			int top_lvl3 = lua_gettop(L);
+			for (const Json::Value &client : server["clients_list"]) {
+				lua_pushnumber(L,index_lvl2);
+				std::string topush = client.asString();
+				lua_pushstring(L,topush.c_str());
+				lua_settable(L, top_lvl3);
+				index_lvl2++;
+			}
+			lua_settable(L, top_lvl2);
+		}
+
+		if (server["mods"].isArray()) {
+			unsigned int index_lvl2 = 1;
+			lua_pushstring(L,"mods");
+			lua_newtable(L);
+			int top_lvl3 = lua_gettop(L);
+			for (const Json::Value &mod : server["mods"]) {
+
+				lua_pushnumber(L,index_lvl2);
+				std::string topush = mod.asString();
+				lua_pushstring(L,topush.c_str());
+				lua_settable(L, top_lvl3);
+				index_lvl2++;
+			}
+			lua_settable(L, top_lvl2);
+		}
+
 		lua_settable(L, top);
 		index++;
 	}
