@@ -1,3 +1,5 @@
+#ifdef USE_POSTGRESQL
+
 #include "mapsavequeue.h"
 
 #include "log.h"
@@ -144,3 +146,5 @@ void MapSaveQueue::enqueue(const v3s16 &pos, const std::string &data){
 
 	queue.push_back(item);
 }
+
+#endif //USE_POSTGRESQL

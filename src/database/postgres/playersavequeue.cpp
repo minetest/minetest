@@ -1,3 +1,6 @@
+
+#if USE_POSTGRESQL
+
 #include "playersavequeue.h"
 
 #include "log.h"
@@ -308,3 +311,4 @@ void PlayerSaveQueue::savePlayer(QueuedPlayerData *item){
 	delete item->serialized_player;
 }
 
+#endif //USE_POSTGRESQL
