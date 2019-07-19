@@ -1375,6 +1375,7 @@ mgv5_cave_width (Cave width) float 0.09
 #    Y of upper limit of large caves.
 mgv5_large_cave_depth (Large cave depth) int -256
 
+#    Deprecated, define and locate cave liquids using biome definitions instead.
 #    Y of upper limit of lava in large caves.
 mgv5_lava_depth (Lava depth) int -256
 
@@ -1491,6 +1492,7 @@ mgv7_cave_width (Cave width) float 0.09
 #    Y of upper limit of large caves.
 mgv7_large_cave_depth (Large cave depth) int -33
 
+#    Deprecated, define and locate cave liquids using biome definitions instead.
 #    Y of upper limit of lava in large caves.
 mgv7_lava_depth (Lava depth) int -256
 
@@ -1598,6 +1600,7 @@ mgcarpathian_cave_width (Cave width) float 0.09
 #    Y of upper limit of large caves.
 mgcarpathian_large_cave_depth (Large cave depth) int -33
 
+#    Deprecated, define and locate cave liquids using biome definitions instead.
 #    Y of upper limit of lava in large caves.
 mgcarpathian_lava_depth (Lava depth) int -256
 
@@ -1681,6 +1684,7 @@ mgflat_ground_level (Ground level) int 8
 #    Y of upper limit of large caves.
 mgflat_large_cave_depth (Large cave depth) int -33
 
+#    Deprecated, define and locate cave liquids using biome definitions instead.
 #    Y of upper limit of lava in large caves.
 mgflat_lava_depth (Lava depth) int -256
 
@@ -1734,6 +1738,7 @@ mgfractal_cave_width (Cave width) float 0.09
 #    Y of upper limit of large caves.
 mgfractal_large_cave_depth (Large cave depth) int -33
 
+#    Deprecated, define and locate cave liquids using biome definitions instead.
 #    Y of upper limit of lava in large caves.
 mgfractal_lava_depth (Lava depth) int -256
 
@@ -1856,6 +1861,7 @@ mgvalleys_altitude_chill (Altitude chill) int 90
 #    Depth below which you'll find large caves.
 mgvalleys_large_cave_depth (Large cave depth) int -33
 
+#    Deprecated, define and locate cave liquids using biome definitions instead.
 #    Y of upper limit of lava in large caves.
 mgvalleys_lava_depth (Lava depth) int 1
 

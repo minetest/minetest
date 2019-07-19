@@ -119,6 +119,8 @@ public:
 	// configurable parameters
 	s32 seed;
 	int water_level;
+	// TODO 'lava_depth' and 'np_caveliquids' are deprecated and should be removed.
+	// Cave liquids are now defined and located using biome definitions.
 	int lava_depth;
 	NoiseParams *np_caveliquids;
 
