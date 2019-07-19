@@ -1,3 +1,6 @@
+
+#include "config.h"
+
 #ifdef USE_POSTGRESQL
 
 #include "mapsavequeue.h"

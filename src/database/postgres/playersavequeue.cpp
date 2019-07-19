@@ -1,4 +1,6 @@
 
+#include "config.h"
+
 #if USE_POSTGRESQL
 
 #include "playersavequeue.h"
