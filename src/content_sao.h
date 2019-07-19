@@ -273,7 +273,7 @@ public:
 	InventoryLocation getInventoryLocation() const;
 	void setInventoryModified() {}
 	std::string getWieldList() const { return "main"; }
-	int getWieldIndex() const;
+	u16 getWieldIndex() const;
 	ItemStack getWieldedItem() const;
 	bool setWieldedItem(const ItemStack &item);
 

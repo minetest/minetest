@@ -935,7 +935,7 @@ void Client::interact(u8 action, const PointedThing& pointed)
 	NetworkPacket pkt(TOSERVER_INTERACT, 1 + 2 + 0);
 
 	pkt << action;
-	pkt << (u16)myplayer->getWieldIndex();
+	pkt << myplayer->getWieldIndex();
 
 	std::ostringstream tmp_os(std::ios::binary);
 	pointed.serialize(tmp_os);
