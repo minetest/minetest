@@ -92,13 +92,13 @@ Locations:
 Where each location is on each platform:
 
 * Windows .zip / RUN_IN_PLACE source:
-    * bin   = `bin`
-    * share = `.`
-    * user  = `.`
+    * `bin`   = `bin`
+    * `share` = `.`
+    * `user`  = `.`
 * Windows installed:
-    * $bin   = `C:\Program Files\Minetest\bin (Depends on the install location)`
-    * $share = `C:\Program Files\Minetest (Depends on the install location)`
-    * $user  = `%APPDATA%\Minetest`
+    * `bin`   = `C:\Program Files\Minetest\bin (Depends on the install location)`
+    * `share` = `C:\Program Files\Minetest (Depends on the install location)`
+    * `user`  = `%APPDATA%\Minetest`
 * Linux installed:
     * `bin`   = `/usr/bin`
     * `share` = `/usr/share/minetest`
