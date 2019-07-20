@@ -15,7 +15,7 @@ RUN	mkdir -p /usr/src/minetest/cmakebuild && cd /usr/src/minetest/cmakebuild && 
 		-DBUILD_CLIENT=FALSE \
 		-DENABLE_SYSTEM_JSONCPP=1 \
 		.. && \
-		make -j4 && \
+		make -j$(nproc) && \
 		rm -Rf ../games/minetest_game && git clone --depth 1 https://github.com/minetest/minetest_game ../games/minetest_game && \
 		make install
 
