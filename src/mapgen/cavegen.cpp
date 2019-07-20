@@ -29,6 +29,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mg_biome.h"
 #include "cavegen.h"
 
+// TODO Remove this. Cave liquids are now defined and located using biome definitions
 static NoiseParams nparams_caveliquids(0, 1, v3f(150.0, 150.0, 150.0), 776, 3, 0.6, 2.0);
 
 
@@ -526,7 +527,9 @@ void CavesRandomWalk::carveRoute(v3f vec, float f, bool randomize_xz)
 		if (use_biome_liquid) {
 			liquidnode = c_biome_liquid;
 		} else {
-			// If cave liquid not defined by biome, fallback to old hardcoded behaviour
+			// TODO remove this. Cave liquids are now defined and located using biome
+			// definitions.
+			// If cave liquid not defined by biome, fallback to old hardcoded behaviour.
 			float nval = NoisePerlin3D(np_caveliquids, startp.X,
 				startp.Y, startp.Z, seed);
 			liquidnode = (nval < 0.40f && node_max.Y < lava_depth) ?
