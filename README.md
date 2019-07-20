@@ -188,7 +188,7 @@ Download minetest_game, without using Git:
 Build a version that runs directly from the source directory:
 
     cmake . -DRUN_IN_PLACE=TRUE
-    make -j <number of processors>
+    make -j$(nproc)
 
 Run it:
 
