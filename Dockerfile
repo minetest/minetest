@@ -15,8 +15,8 @@ RUN	mkdir -p /usr/src/minetest/cmakebuild && cd /usr/src/minetest/cmakebuild && 
 		-DBUILD_CLIENT=FALSE \
 		-DENABLE_SYSTEM_JSONCPP=1 \
 		.. && \
-		make -j2 && \
-		rm -Rf ../games/minetest_game && git clone https://github.com/minetest/minetest_game ../games/minetest_game && \
+		make -j4 && \
+		rm -Rf ../games/minetest_game && git clone --depth 1 https://github.com/minetest/minetest_game ../games/minetest_game && \
 		make install
 
 FROM debian:stretch
