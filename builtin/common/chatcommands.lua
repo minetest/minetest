@@ -77,13 +77,6 @@ local function do_help_cmd(name, param)
 		end
 		table.sort(cmds)
 		return true, gettext("Available commands:").."\n"..table.concat(cmds, "\n")
-	elseif INIT == "game" and param == "privs" then
-		local privs = {}
-		for priv, def in pairs(core.registered_privileges) do
-			privs[#privs + 1] = priv .. ": " .. def.description
-		end
-		table.sort(privs)
-		return true, "Available privileges:\n"..table.concat(privs, "\n")
 	else
 		local cmd = param
 		local def = core.registered_chatcommands[cmd]
