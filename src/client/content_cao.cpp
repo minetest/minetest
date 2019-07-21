@@ -495,7 +495,7 @@ void GenericCAO::clearChildAttachments()
 		int child_id = *m_attachment_child_ids.begin();
 
 		if (ClientActiveObject *child = m_env->getActiveObject(child_id))
-			child->setAttachment(0, "", v3f(0, 0, 0), v3f(0, 0, 0));
+			child->setAttachment(0, "", v3f(), v3f());
 
 		removeAttachmentChild(child_id);
 	}
@@ -506,7 +506,7 @@ void GenericCAO::clearParentAttachment()
 	if (m_attachment_parent_id)
 		setAttachment(0, "", m_attachment_position, m_attachment_rotation);
 	else
-		setAttachment(0, "", v3f(0, 0, 0), v3f(0, 0, 0));
+		setAttachment(0, "", v3f(), v3f());
 }
 
 void GenericCAO::addAttachmentChild(int child_id)
@@ -521,12 +521,8 @@ void GenericCAO::removeAttachmentChild(int child_id)
 
 ClientActiveObject* GenericCAO::getParent() const
 {
-	ClientActiveObject *obj = NULL;
-
-	if (m_attachment_parent_id)
-		obj = m_env->getActiveObject(m_attachment_parent_id);
-
-	return obj;
+	return m_attachment_parent_id ? m_env->getActiveObject(m_attachment_parent_id) :
+			nullptr;
 }
 
 void GenericCAO::removeFromScene(bool permanent)
