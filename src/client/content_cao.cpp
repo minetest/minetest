@@ -1570,6 +1570,12 @@ void GenericCAO::processMessage(const std::string &data)
 					m_reset_textures_timer += 0.05 * damage;
 				updateTextures(m_current_texture_modifier + "^[brighten");
 			}
+		} else {
+			// Same as 'Server::DiePlayer'
+			clearParentAttachment();
+			// Same as 'ObjectRef::l_remove'
+			if (!m_is_player)
+				clearChildAttachments();
 		}
 	} else if (cmd == GENERIC_CMD_UPDATE_ARMOR_GROUPS) {
 		m_armor_groups.clear();
