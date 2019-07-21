@@ -575,6 +575,8 @@ std::string LuaEntitySAO::getClientInitializationData(u16 protocol_version)
 			(ii != m_attachment_child_ids.end()); ++ii) {
 		if (ServerActiveObject *obj = m_env->getActiveObject(*ii)) {
 			message_count++;
+			// TODO after a protocol bump: only send the object initialization data
+			// to older clients (superfluous since this message exists)
 			msg_os << serializeLongString(gob_cmd_update_infant(*ii, obj->getSendType(),
 				obj->getClientInitializationData(protocol_version)));
 		}

@@ -373,7 +373,6 @@ void GenericCAO::processInitData(const std::string &data)
 	m_rotation = readV3F32(is);
 	m_hp = readU16(is);
 
-	std::cout << "initData() id=" << m_id << ", name=" << m_name << std::endl;
 	const u8 num_messages = readU8(is);
 
 	for (int i = 0; i < num_messages; i++) {
@@ -477,7 +476,6 @@ void GenericCAO::setAttachment(int parent_id, const std::string &bone, v3f posit
 			parent->addAttachmentChild(m_id);
 	}
 
-	std::cout << " setAttachment() id=" << m_id << ", parent=" << (u64)parent << ", name=" << m_name << std::endl;
 	updateAttachments();
 }
 
@@ -1347,11 +1345,8 @@ void GenericCAO::updateAttachments()
 	ClientActiveObject *parent = getParent();
 	if (!parent && m_attachment_parent_id) {
 		// m_is_visible = false; but needs proper handling (future use)
-		return; 
+		return;
 	}
-
-	std::cout << "   update(): id=" << m_id << ", attach_id="
-		<< m_attachment_parent_id << ", obj=" << (u64)parent << std::endl;
 
 	if (!parent) { // Detach or don't attach
 		if (m_matrixnode) {
@@ -1374,8 +1369,6 @@ void GenericCAO::updateAttachments()
 			parent_node = parent_animated_mesh_node->getJointNode(m_attachment_bone.c_str());
 		}
 
-		std::cout << "\t"  <<  " matrix: " << (u64)m_matrixnode
-				<< " parent: " << (u64)parent_node << std::endl;
 		if (m_matrixnode && parent_node) {
 			m_matrixnode->setParent(parent_node);
 			getPosRotMatrix().setTranslation(m_attachment_position);
@@ -1549,7 +1542,7 @@ void GenericCAO::processMessage(const std::string &data)
 		u16 parent_id = readS16(is);
 		std::string bone = deSerializeString(is);
 		v3f position = readV3F32(is);
-		v3f rotation = readV3F32(is);	
+		v3f rotation = readV3F32(is);
 		setAttachment(parent_id, bone, position, rotation);
 	} else if (cmd == GENERIC_CMD_PUNCHED) {
 		u16 result_hp = readU16(is);

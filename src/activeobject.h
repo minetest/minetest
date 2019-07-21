@@ -101,7 +101,7 @@ public:
 
 	virtual bool collideWithObjects() const = 0;
 
-	
+
 	virtual void setAttachment(int parent_id, const std::string &bone, v3f position,
 			v3f rotation) {}
 	virtual void getAttachment(int *parent_id, std::string *bone, v3f *position,

@@ -392,13 +392,16 @@ void ClientEnvironment::addActiveObject(u16 id, u8 type,
 
 	u16 new_id = addActiveObject(obj);
 
-	std::cout << "Added " << new_id << " - was: " << id << std::endl;
+	// Object initialized:
 	if ((obj = getActiveObject(new_id))) {
+		// Final step is to update all children which are already known
+		// Data provided by GENERIC_CMD_SPAWN_INFANT
 		const auto &children = obj->getAttachmentChildIds();
 		for (auto c_id : children) {
 			if (auto *o = getActiveObject(c_id))
 				o->updateAttachments();
 		}
+		// All other children will attach themselves (later on)
 		obj->updateAttachments();
 	}
 }
