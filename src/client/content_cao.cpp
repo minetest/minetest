@@ -469,7 +469,6 @@ void GenericCAO::setAttachment(int parent_id, const std::string &bone, v3f posit
 			parent->addAttachmentChild(m_id);
 	}
 
-	std::cout << " setAttachment() id=" << m_id << ", parent=" << (u64)parent << ", name=" << m_name << std::endl;
 	updateAttachments();
 }
 
@@ -1342,9 +1341,6 @@ void GenericCAO::updateAttachments()
 		return;
 	}
 
-	std::cout << "   updateAttachments(): id=" << m_id << ", attach_id="
-		<< m_attachment_parent_id << ", obj=" << (u64)parent << std::endl;
-
 	if (!parent) { // Detach or don't attach
 		if (m_matrixnode) {
 			v3f old_pos = m_matrixnode->getAbsolutePosition();
@@ -1373,8 +1369,6 @@ void GenericCAO::updateAttachments()
 			// use Irrlicht eulers instead
 			getPosRotMatrix().setRotationDegrees(m_attachment_rotation);
 			m_matrixnode->updateAbsolutePosition();
-		} else {
-			std::cout << "     matrix=" << (u64)m_matrixnode << ", node=" << (u64)parent_node << std::endl;
 		}
 		if (m_is_local_player) {
 			LocalPlayer *player = m_env->getLocalPlayer();
