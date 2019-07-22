@@ -196,15 +196,12 @@ class CraftDefinitionShaped: public CraftDefinition
 {
 public:
 	CraftDefinitionShaped() = delete;
-
 	CraftDefinitionShaped(
-			const std::string &output_,
-			unsigned int width_,
-			const std::vector<std::string> &recipe_,
-			const CraftReplacements &replacements_):
-		output(output_), width(width_), recipe(recipe_),
-		replacements(replacements_)
-	{}
+		const std::string &output_,
+		unsigned int width_,
+		const std::vector<std::string> &recipe_,
+		const CraftReplacements &replacements_);
+
 	virtual ~CraftDefinitionShaped() = default;
 
 	virtual std::string getName() const;
@@ -245,11 +242,10 @@ class CraftDefinitionShapeless: public CraftDefinition
 public:
 	CraftDefinitionShapeless() = delete;
 	CraftDefinitionShapeless(
-			const std::string &output_,
-			const std::vector<std::string> &recipe_,
-			const CraftReplacements &replacements_):
-		output(output_), recipe(recipe_), replacements(replacements_)
-	{}
+		const std::string &output_,
+		const std::vector<std::string> &recipe_,
+		const CraftReplacements &replacements_);
+
 	virtual ~CraftDefinitionShapeless() = default;
 
 	virtual std::string getName() const;
@@ -288,9 +284,8 @@ class CraftDefinitionToolRepair: public CraftDefinition
 {
 public:
 	CraftDefinitionToolRepair() = delete;
-	CraftDefinitionToolRepair(float additional_wear_):
-		additional_wear(additional_wear_)
-	{}
+	CraftDefinitionToolRepair(float additional_wear_);
+
 	virtual ~CraftDefinitionToolRepair() = default;
 
 	virtual std::string getName() const;
@@ -305,7 +300,6 @@ public:
 	virtual void initHash(IGameDef *gamedef)
 	{
 		hash_type = CRAFT_HASH_TYPE_COUNT;
-		priority = TOOLREPAIR;
 	}
 
 	virtual std::string dump() const;
@@ -328,12 +322,11 @@ class CraftDefinitionCooking: public CraftDefinition
 public:
 	CraftDefinitionCooking() = delete;
 	CraftDefinitionCooking(
-			const std::string &output_,
-			const std::string &recipe_,
-			float cooktime_,
-			const CraftReplacements &replacements_):
-		output(output_), recipe(recipe_), cooktime(cooktime_), replacements(replacements_)
-	{}
+		const std::string &output_,
+		const std::string &recipe_,
+		float cooktime_,
+		const CraftReplacements &replacements_);
+
 	virtual ~CraftDefinitionCooking() = default;
 
 	virtual std::string getName() const;
@@ -372,11 +365,11 @@ class CraftDefinitionFuel: public CraftDefinition
 {
 public:
 	CraftDefinitionFuel() = delete;
-	CraftDefinitionFuel(const std::string &recipe_,
-			float burntime_,
-			const CraftReplacements &replacements_):
-		recipe(recipe_), burntime(burntime_), replacements(replacements_)
-	{}
+	CraftDefinitionFuel(
+		const std::string &recipe_,
+		float burntime_,
+		const CraftReplacements &replacements_);
+
 	virtual ~CraftDefinitionFuel() = default;
 
 	virtual std::string getName() const;
