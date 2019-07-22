@@ -525,12 +525,6 @@ void GenericCAO::removeFromScene(bool permanent)
 	if (m_env && permanent) {
 		clearChildAttachments();
 		clearParentAttachment();
-
-		LocalPlayer *player = m_env->getLocalPlayer();
-		if (this == player->parent) {
-			player->parent = nullptr;
-			player->isAttached = false;
-		}
 	}
 
 	if (m_meshnode) {
@@ -754,8 +748,6 @@ void GenericCAO::addToScene(ITextureSource *tsrc)
 		updateTextures(m_current_texture_modifier);
 
 	scene::ISceneNode *node = getSceneNode();
-	if (node)
-		node->setVisible(m_is_visible);
 
 	if (node && !m_prop.nametag.empty() && !m_is_local_player) {
 		// Add nametag
@@ -956,7 +948,6 @@ void GenericCAO::step(float dtime, ClientEnvironment *env)
 		{
 			LocalPlayer *player = m_env->getLocalPlayer();
 			player->overridePosition = getParent()->getPosition();
-			m_env->getLocalPlayer()->parent = getParent();
 		}
 	} else {
 		rot_translator.translate(dtime);
@@ -1336,8 +1327,11 @@ void GenericCAO::updateBonePosition()
 void GenericCAO::updateAttachments()
 {
 	ClientActiveObject *parent = getParent();
+
+	m_attached_to_local = parent && parent->isLocalPlayer();
+
 	if (!parent && m_attachment_parent_id) {
-		m_is_visible = false;
+		//m_is_visible = false; maybe later. needs better handling
 		return;
 	}
 
@@ -1347,10 +1341,6 @@ void GenericCAO::updateAttachments()
 			m_matrixnode->setParent(m_smgr->getRootSceneNode());
 			getPosRotMatrix().setTranslation(old_pos);
 			m_matrixnode->updateAbsolutePosition();
-		}
-		if (m_is_local_player) {
-			LocalPlayer *player = m_env->getLocalPlayer();
-			player->isAttached = false;
 		}
 	}
 	else // Attach
@@ -1370,15 +1360,12 @@ void GenericCAO::updateAttachments()
 			getPosRotMatrix().setRotationDegrees(m_attachment_rotation);
 			m_matrixnode->updateAbsolutePosition();
 		}
-		if (m_is_local_player) {
-			LocalPlayer *player = m_env->getLocalPlayer();
-			player->isAttached = true;
-		}
 	}
-
-	// Objects attached to the local player should be hidden by default
-	m_attached_to_local = parent && parent->isLocalPlayer();
-	m_is_visible = !m_is_local_player;
+	if (m_is_local_player) {
+		LocalPlayer *player = m_env->getLocalPlayer();
+		player->isAttached = parent;
+		player->parent = parent;
+	}
 }
 
 void GenericCAO::processMessage(const std::string &data)
@@ -1540,7 +1527,12 @@ void GenericCAO::processMessage(const std::string &data)
 		std::string bone = deSerializeString(is);
 		v3f position = readV3F32(is);
 		v3f rotation = readV3F32(is);
+
 		setAttachment(parent_id, bone, position, rotation);
+
+		// localplayer itself can't be attached to localplayer
+		if (!m_is_local_player)
+			m_is_visible = !m_attached_to_local;
 	} else if (cmd == GENERIC_CMD_PUNCHED) {
 		u16 result_hp = readU16(is);
 
