@@ -37,6 +37,15 @@ inline bool isGroupRecipeStr(const std::string &rec_name)
 	return str_starts_with(rec_name, std::string("group:"));
 }
 
+static bool hasGroupItem(const std::vector<std::string> &recipe)
+{
+	for (const auto &item : recipe) {
+		if (isGroupRecipeStr(item))
+			return true;
+	}
+	return false;
+}
+
 inline u64 getHashForString(const std::string &recipe_str)
 {
 	/*errorstream << "Hashing craft string  \"" << recipe_str << '"';*/
@@ -320,6 +329,19 @@ std::string CraftReplacements::dump() const
 	CraftDefinitionShaped
 */
 
+CraftDefinitionShaped::CraftDefinitionShaped(
+		const std::string &output_,
+		unsigned int width_,
+		const std::vector<std::string> &recipe_,
+		const CraftReplacements &replacements_):
+	output(output_), width(width_), recipe(recipe_), replacements(replacements_)
+{
+	if (hasGroupItem(recipe))
+		priority = SHAPED_AND_GROUPS;
+	else
+		priority = SHAPED;
+}
+
 std::string CraftDefinitionShaped::getName() const
 {
 	return "shaped";
@@ -425,20 +447,10 @@ void CraftDefinitionShaped::initHash(IGameDef *gamedef)
 	hash_inited = true;
 	recipe_names = craftGetItemNames(recipe, gamedef);
 
-	bool has_group = false;
-	for (const auto &recipe_name : recipe_names) {
-		if (isGroupRecipeStr(recipe_name)) {
-			has_group = true;
-			break;
-		}
-	}
-	if (has_group) {
+	if (hasGroupItem(recipe_names))
 		hash_type = CRAFT_HASH_TYPE_COUNT;
-		priority = SHAPED_AND_GROUPS;
-	} else {
+	else
 		hash_type = CRAFT_HASH_TYPE_ITEM_NAMES;
-		priority = SHAPED;
-	}
 }
 
 std::string CraftDefinitionShaped::dump() const
@@ -453,6 +465,18 @@ std::string CraftDefinitionShaped::dump() const
 /*
 	CraftDefinitionShapeless
 */
+
+CraftDefinitionShapeless::CraftDefinitionShapeless(
+		const std::string &output_,
+		const std::vector<std::string> &recipe_,
+		const CraftReplacements &replacements_):
+	output(output_), recipe(recipe_), replacements(replacements_)
+{
+	if (hasGroupItem(recipe))
+		priority = SHAPELESS_AND_GROUPS;
+	else
+		priority = SHAPELESS;
+}
 
 std::string CraftDefinitionShapeless::getName() const
 {
@@ -542,20 +566,10 @@ void CraftDefinitionShapeless::initHash(IGameDef *gamedef)
 	recipe_names = craftGetItemNames(recipe, gamedef);
 	std::sort(recipe_names.begin(), recipe_names.end());
 
-	bool has_group = false;
-	for (const auto &recipe_name : recipe_names) {
-		if (isGroupRecipeStr(recipe_name)) {
-			has_group = true;
-			break;
-		}
-	}
-	if (has_group) {
+	if (hasGroupItem(recipe_names))
 		hash_type = CRAFT_HASH_TYPE_COUNT;
-		priority = SHAPELESS_AND_GROUPS;
-	} else {
+	else
 		hash_type = CRAFT_HASH_TYPE_ITEM_NAMES;
-		priority = SHAPELESS;
-	}
 }
 
 std::string CraftDefinitionShapeless::dump() const
@@ -570,6 +584,12 @@ std::string CraftDefinitionShapeless::dump() const
 /*
 	CraftDefinitionToolRepair
 */
+
+CraftDefinitionToolRepair::CraftDefinitionToolRepair(float additional_wear_):
+	additional_wear(additional_wear_)
+{
+	priority = TOOLREPAIR;
+}
 
 static ItemStack craftToolRepair(
 		const ItemStack &item1,
@@ -665,6 +685,19 @@ std::string CraftDefinitionToolRepair::dump() const
 	CraftDefinitionCooking
 */
 
+CraftDefinitionCooking::CraftDefinitionCooking(
+		const std::string &output_,
+		const std::string &recipe_,
+		float cooktime_,
+		const CraftReplacements &replacements_):
+	output(output_), recipe(recipe_), cooktime(cooktime_), replacements(replacements_)
+{
+	if (isGroupRecipeStr(recipe))
+		priority = SHAPELESS_AND_GROUPS;
+	else
+		priority = SHAPELESS;
+}
+
 std::string CraftDefinitionCooking::getName() const
 {
 	return "cooking";
@@ -735,13 +768,10 @@ void CraftDefinitionCooking::initHash(IGameDef *gamedef)
 	hash_inited = true;
 	recipe_name = craftGetItemName(recipe, gamedef);
 
-	if (isGroupRecipeStr(recipe_name)) {
+	if (isGroupRecipeStr(recipe_name))
 		hash_type = CRAFT_HASH_TYPE_COUNT;
-		priority = SHAPELESS_AND_GROUPS;
-	} else {
+	else
 		hash_type = CRAFT_HASH_TYPE_ITEM_NAMES;
-		priority = SHAPELESS;
-	}
 }
 
 std::string CraftDefinitionCooking::dump() const
@@ -757,6 +787,18 @@ std::string CraftDefinitionCooking::dump() const
 /*
 	CraftDefinitionFuel
 */
+
+CraftDefinitionFuel::CraftDefinitionFuel(
+		const std::string &recipe_,
+		float burntime_,
+		const CraftReplacements &replacements_):
+	recipe(recipe_), burntime(burntime_), replacements(replacements_)
+{
+	if (isGroupRecipeStr(recipe_name))
+		priority = SHAPELESS_AND_GROUPS;
+	else
+		priority = SHAPELESS;
+}
 
 std::string CraftDefinitionFuel::getName() const
 {
@@ -828,13 +870,10 @@ void CraftDefinitionFuel::initHash(IGameDef *gamedef)
 	hash_inited = true;
 	recipe_name = craftGetItemName(recipe, gamedef);
 
-	if (isGroupRecipeStr(recipe_name)) {
+	if (isGroupRecipeStr(recipe_name))
 		hash_type = CRAFT_HASH_TYPE_COUNT;
-		priority = SHAPELESS_AND_GROUPS;
-	} else {
+	else
 		hash_type = CRAFT_HASH_TYPE_ITEM_NAMES;
-		priority = SHAPELESS;
-	}
 }
 
 std::string CraftDefinitionFuel::dump() const
