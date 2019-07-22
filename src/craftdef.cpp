@@ -337,9 +337,9 @@ CraftDefinitionShaped::CraftDefinitionShaped(
 	output(output_), width(width_), recipe(recipe_), replacements(replacements_)
 {
 	if (hasGroupItem(recipe))
-		priority = SHAPED_AND_GROUPS;
+		priority = PRIORITY_SHAPED_AND_GROUPS;
 	else
-		priority = SHAPED;
+		priority = PRIORITY_SHAPED;
 }
 
 std::string CraftDefinitionShaped::getName() const
@@ -473,9 +473,9 @@ CraftDefinitionShapeless::CraftDefinitionShapeless(
 	output(output_), recipe(recipe_), replacements(replacements_)
 {
 	if (hasGroupItem(recipe))
-		priority = SHAPELESS_AND_GROUPS;
+		priority = PRIORITY_SHAPELESS_AND_GROUPS;
 	else
-		priority = SHAPELESS;
+		priority = PRIORITY_SHAPELESS;
 }
 
 std::string CraftDefinitionShapeless::getName() const
@@ -588,7 +588,7 @@ std::string CraftDefinitionShapeless::dump() const
 CraftDefinitionToolRepair::CraftDefinitionToolRepair(float additional_wear_):
 	additional_wear(additional_wear_)
 {
-	priority = TOOLREPAIR;
+	priority = PRIORITY_TOOLREPAIR;
 }
 
 static ItemStack craftToolRepair(
@@ -693,9 +693,9 @@ CraftDefinitionCooking::CraftDefinitionCooking(
 	output(output_), recipe(recipe_), cooktime(cooktime_), replacements(replacements_)
 {
 	if (isGroupRecipeStr(recipe))
-		priority = SHAPELESS_AND_GROUPS;
+		priority = PRIORITY_SHAPELESS_AND_GROUPS;
 	else
-		priority = SHAPELESS;
+		priority = PRIORITY_SHAPELESS;
 }
 
 std::string CraftDefinitionCooking::getName() const
@@ -795,9 +795,9 @@ CraftDefinitionFuel::CraftDefinitionFuel(
 	recipe(recipe_), burntime(burntime_), replacements(replacements_)
 {
 	if (isGroupRecipeStr(recipe_name))
-		priority = SHAPELESS_AND_GROUPS;
+		priority = PRIORITY_SHAPELESS_AND_GROUPS;
 	else
-		priority = SHAPELESS;
+		priority = PRIORITY_SHAPELESS;
 }
 
 std::string CraftDefinitionFuel::getName() const
@@ -927,7 +927,7 @@ public:
 		// Try hash types with increasing collision rate
 		// while remembering the latest, highest priority recipe.
 		CraftDefinition::RecipePriority priority_best =
-			CraftDefinition::NO_RECIPE;
+			CraftDefinition::PRIORITY_NO_RECIPE;
 		CraftDefinition *def_best = nullptr;
 		for (int type = 0; type <= craft_hash_type_max; type++) {
 			u64 hash = getHashForGrid((CraftHashType) type, input_names);
@@ -970,7 +970,7 @@ public:
 				}
 			}
 		}
-		if (priority_best == CraftDefinition::NO_RECIPE)
+		if (priority_best == CraftDefinition::PRIORITY_NO_RECIPE)
 			return false;
 		if (decrementInput)
 			def_best->decrementInput(input, output_replacement, gamedef);
