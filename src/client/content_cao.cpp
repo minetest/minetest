@@ -462,13 +462,6 @@ void GenericCAO::setAttachment(int parent_id, const std::string &bone, v3f posit
 
 	ClientActiveObject *parent = m_env->getActiveObject(parent_id);
 
-	// localplayer itself can't be attached to localplayer
-	if (!m_is_local_player) {
-		// Objects attached to the local player should be hidden by default
-		m_attached_to_local = parent && parent->isLocalPlayer();
-		m_is_visible = !m_attached_to_local;
-	}
-
 	if (parent_id != old_parent) {
 		if (auto *o = m_env->getActiveObject(old_parent))
 			o->removeAttachmentChild(m_id);
@@ -476,6 +469,7 @@ void GenericCAO::setAttachment(int parent_id, const std::string &bone, v3f posit
 			parent->addAttachmentChild(m_id);
 	}
 
+	std::cout << " setAttachment() id=" << m_id << ", parent=" << (u64)parent << ", name=" << m_name << std::endl;
 	updateAttachments();
 }
 
@@ -761,6 +755,9 @@ void GenericCAO::addToScene(ITextureSource *tsrc)
 		updateTextures(m_current_texture_modifier);
 
 	scene::ISceneNode *node = getSceneNode();
+	if (node)
+		node->setVisible(m_is_visible);
+
 	if (node && !m_prop.nametag.empty() && !m_is_local_player) {
 		// Add nametag
 		v3f pos;
@@ -773,6 +770,7 @@ void GenericCAO::addToScene(ITextureSource *tsrc)
 	updateNodePos();
 	updateAnimation();
 	updateBonePosition();
+	updateAttachments();
 }
 
 void GenericCAO::updateLight(u8 light_at_pos)
@@ -1340,9 +1338,12 @@ void GenericCAO::updateAttachments()
 {
 	ClientActiveObject *parent = getParent();
 	if (!parent && m_attachment_parent_id) {
-		// m_is_visible = false; but needs proper handling (future use)
+		m_is_visible = false;
 		return;
 	}
+
+	std::cout << "   updateAttachments(): id=" << m_id << ", attach_id="
+		<< m_attachment_parent_id << ", obj=" << (u64)parent << std::endl;
 
 	if (!parent) { // Detach or don't attach
 		if (m_matrixnode) {
@@ -1372,12 +1373,18 @@ void GenericCAO::updateAttachments()
 			// use Irrlicht eulers instead
 			getPosRotMatrix().setRotationDegrees(m_attachment_rotation);
 			m_matrixnode->updateAbsolutePosition();
+		} else {
+			std::cout << "     matrix=" << (u64)m_matrixnode << ", node=" << (u64)parent_node << std::endl;
 		}
 		if (m_is_local_player) {
 			LocalPlayer *player = m_env->getLocalPlayer();
 			player->isAttached = true;
 		}
 	}
+
+	// Objects attached to the local player should be hidden by default
+	m_attached_to_local = parent && parent->isLocalPlayer();
+	m_is_visible = !m_is_local_player;
 }
 
 void GenericCAO::processMessage(const std::string &data)
