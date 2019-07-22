@@ -1329,7 +1329,7 @@ profiler_print_interval (Engine profiling data print interval) int 0
 #    Creating a world in the main menu will override this.
 #    Current mapgens in a highly unstable state:
 #    -    The optional floatlands of v7 (disabled by default).
-mg_name (Mapgen name) enum v7 v5,v6,v7,valleys,carpathian,fractal,flat,singlenode
+mg_name (Mapgen name) enum v7 v7,valleys,carpathian,v5,flat,fractal,singlenode,v6
 
 #    Water surface level of the world.
 water_level (Water level) int 1

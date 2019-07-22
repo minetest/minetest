@@ -102,15 +102,16 @@ private:
 	std::list<GenNotifyEvent> m_notify_events;
 };
 
+// Order must match the order of 'static MapgenDesc g_reg_mapgens[]' in mapgen.cpp
 enum MapgenType {
-	MAPGEN_V5,
-	MAPGEN_V6,
 	MAPGEN_V7,
+	MAPGEN_VALLEYS,
+	MAPGEN_CARPATHIAN,
+	MAPGEN_V5,
 	MAPGEN_FLAT,
 	MAPGEN_FRACTAL,
-	MAPGEN_VALLEYS,
 	MAPGEN_SINGLENODE,
-	MAPGEN_CARPATHIAN,
+	MAPGEN_V6,
 	MAPGEN_INVALID,
 };
 
