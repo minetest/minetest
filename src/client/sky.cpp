@@ -627,6 +627,13 @@ void Sky::update(float time_of_day, float time_brightness,
 
 void Sky::draw_sun(video::IVideoDriver *driver, float sunsize, video::SColor suncolor,
 	video::SColor suncolor2, float wicked_time_of_day)
+	/* Draw sun in the sky.
+	 * driver: Video driver object used to draw
+	 * sunsize: the default size of the sun
+	 * suncolor: main sun color
+	 * suncolor2: second sun color
+	 * wicked_time_of_day: current time of day, to know where should be the sun in the sky
+	 */
 {
 	static const u16 indices[4] = {0, 1, 2, 3};
 	std::array<video::S3DVertex, 4> vertices;
@@ -660,6 +667,14 @@ void Sky::draw_sun(video::IVideoDriver *driver, float sunsize, video::SColor sun
 
 void Sky::draw_moon(video::IVideoDriver *driver, float moonsize, video::SColor mooncolor,
 	video::SColor mooncolor2, float wicked_time_of_day)
+	/*
+	 * Draw moon in the sky.
+	 * driver: Video driver object used to draw
+	 * moonsize: the default size of the moon
+	 * mooncolor: main moon color
+	 * mooncolor2: second moon color
+	 * wicked_time_of_day: current time of day, to know where should be the moon in the sky
+	 */
 {
 	static const u16 indices[4] = {0, 1, 2, 3};
 	std::array<video::S3DVertex, 4> vertices;
@@ -704,6 +719,10 @@ void Sky::draw_moon(video::IVideoDriver *driver, float moonsize, video::SColor m
 
 std::array<video::S3DVertex, 4> Sky::draw_sky_body(float pos_1, float pos_2, video::SColor c)
 {
+	/*
+	 * Create an array of vertices with the dimensions specified.
+	 * pos_1, pos_2: position of the body's vertices
+	 * c: color of the body
 	const f32 t = 1.0f;
 	const f32 o = 0.0f;
 	std::array<video::S3DVertex, 4> vertices;
@@ -717,6 +736,12 @@ std::array<video::S3DVertex, 4> Sky::draw_sky_body(float pos_1, float pos_2, vid
 
 std::array<video::S3DVertex, 4> Sky::place_sky_body(
 	std::array<video::S3DVertex, 4> vertices, float horizon_position, float day_position)
+	/*
+	 * Place body in the sky.
+	 * vertices: The body as a rectangle of 4 vertices
+	 * horizon_position: turn the body around the Y axis
+	 * day_position: turn the body around the Z axis, to place it depending of the time of the day
+	 */
 {
 	for (video::S3DVertex &vertex : vertices) {
 		// Body is directed to -Z (south) by default
