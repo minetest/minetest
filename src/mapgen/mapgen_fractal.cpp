@@ -86,7 +86,7 @@ MapgenFractal::MapgenFractal(MapgenFractalParams *params, EmergeManager *emerge)
 
 MapgenFractal::~MapgenFractal()
 {
-	if (spflags & MGFRACTAL_TERRAIN)
+	if (noise_seabed)
 		delete noise_seabed;
 
 	delete noise_filler_depth;
@@ -165,7 +165,7 @@ int MapgenFractal::getSpawnLevelAtPoint(v2s16 p)
 	s16 search_start = 0; // No terrain search start
 
 	// If terrain present, don't start search below terrain or water level
-	if (spflags & MGFRACTAL_TERRAIN) {
+	if (noise_seabed) {
 		s16 seabed_level = NoisePerlin2D(&noise_seabed->np, p.X, p.Y, seed);
 		search_start = MYMAX(search_start, MYMAX(seabed_level, water_level));
 	}
@@ -403,7 +403,7 @@ s16 MapgenFractal::generateTerrain()
 	s16 stone_surface_max_y = -MAX_MAP_GENERATION_LIMIT;
 	u32 index2d = 0;
 
-	if (spflags & MGFRACTAL_TERRAIN)
+	if (noise_seabed)
 		noise_seabed->perlinMap2D(node_min.X, node_min.Z);
 
 	for (s16 z = node_min.Z; z <= node_max.Z; z++) {
@@ -414,7 +414,7 @@ s16 MapgenFractal::generateTerrain()
 					continue;
 
 				s16 seabed_height;
-				if (spflags & MGFRACTAL_TERRAIN)
+				if (noise_seabed)
 					seabed_height = noise_seabed->result[index2d];
 
 				if (((spflags & MGFRACTAL_TERRAIN) && y <= seabed_height) ||

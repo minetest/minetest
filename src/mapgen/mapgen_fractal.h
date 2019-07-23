@@ -94,5 +94,5 @@ private:
 	float julia_y;
 	float julia_z;
 	float julia_w;
-	Noise *noise_seabed;
+	Noise *noise_seabed = nullptr;
 };
