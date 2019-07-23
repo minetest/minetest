@@ -113,7 +113,6 @@ void ScriptApiSecurity::initializeSecurity()
 		"setupvalue",
 		"setmetatable",
 		"upvalueid",
-		"upvaluejoin",
 		"sethook",
 		"debug",
 		"setlocal",
