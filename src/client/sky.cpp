@@ -723,6 +723,8 @@ std::array<video::S3DVertex, 4> Sky::draw_sky_body(float pos_1, float pos_2, vid
 	 * Create an array of vertices with the dimensions specified.
 	 * pos_1, pos_2: position of the body's vertices
 	 * c: color of the body
+	 */
+
 	const f32 t = 1.0f;
 	const f32 o = 0.0f;
 	std::array<video::S3DVertex, 4> vertices;
