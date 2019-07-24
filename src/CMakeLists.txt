@@ -102,10 +102,18 @@ if(BUILD_CLIENT AND ENABLE_SOUND)
 endif()
 
 
-option(ENABLE_GLES "Enable OpenGL ES support" FALSE)
+option(ENABLE_GLES "Use OpenGL ES instead of OpenGL" FALSE)
 mark_as_advanced(ENABLE_GLES)
 if(ENABLE_GLES)
-	find_package(OpenGLES2)
+	find_package(OpenGLES2 REQUIRED)
+elseif()
+	if(NOT WIN32) # Unix probably
+		set(OPENGL_GL_PREFERENCE "LEGACY" CACHE STRING
+			"See CMake Policy CMP0072 for reference. GLVND is broken on some nvidia setups")
+		set(OpenGL_GL_PREFERENCE ${OPENGL_GL_PREFERENCE})
+
+		find_package(OpenGL REQUIRED)
+	endif()
 endif()
 
 
@@ -275,11 +283,6 @@ else()
 			find_package(X11 REQUIRED)
 		endif(NOT HAIKU)
 
-		set(OPENGL_GL_PREFERENCE "LEGACY" CACHE STRING
-			"See CMake Policy CMP0072 for reference. GLVND is broken on some nvidia setups")
-		set(OpenGL_GL_PREFERENCE ${OPENGL_GL_PREFERENCE})
-
-		find_package(OpenGL REQUIRED)
 		find_package(JPEG REQUIRED)
 		find_package(BZip2 REQUIRED)
 		find_package(PNG REQUIRED)
@@ -519,7 +522,6 @@ if(BUILD_CLIENT)
 		${PROJECT_NAME}
 		${ZLIB_LIBRARIES}
 		${IRRLICHT_LIBRARY}
-		${OPENGL_LIBRARIES}
 		${JPEG_LIBRARIES}
 		${BZIP2_LIBRARIES}
 		${PNG_LIBRARIES}
@@ -529,7 +531,6 @@ if(BUILD_CLIENT)
 		${LUA_LIBRARY}
 		${GMP_LIBRARY}
 		${JSON_LIBRARY}
-		${OPENGLES2_LIBRARIES}
 		${PLATFORM_LIBS}
 		${CLIENT_PLATFORM_LIBS}
 	)
@@ -541,6 +542,18 @@ if(BUILD_CLIENT)
 	else()
 		target_link_libraries(
 			${client_LIBS}
+		)
+	endif()
+	if(ENABLE_GLES)
+		target_link_libraries(
+			${PROJECT_NAME}
+			${OPENGLES2_LIBRARIES}
+			${EGL_LIBRARIES}
+		)
+	else()
+		target_link_libraries(
+			${PROJECT_NAME}
+			${OPENGL_LIBRARIES}
 		)
 	endif()
 	if(USE_GETTEXT)
