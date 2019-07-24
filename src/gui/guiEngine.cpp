@@ -39,9 +39,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client/guiscalingfilter.h"
 #include "irrlicht_changes/static_text.h"
 
-#ifdef __ANDROID__
+#if ENABLE_GLES
 #include "client/tile.h"
-#include <GLES/gl.h>
 #endif
 
 
@@ -78,7 +77,7 @@ video::ITexture *MenuTextureSource::getTexture(const std::string &name, u32 *id)
 
 	m_to_delete.insert(name);
 
-#ifdef __ANDROID__
+#if ENABLE_GLES
 	video::ITexture *retval = m_driver->findTexture(name.c_str());
 	if (retval)
 		return retval;

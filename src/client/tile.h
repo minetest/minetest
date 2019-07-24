@@ -27,8 +27,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <SMaterial.h>
 #include <memory>
 #include "util/numeric.h"
+#include "config.h"
 
-#if __ANDROID__
+#if ENABLE_GLES
 #include <IVideoDriver.h>
 #endif
 
@@ -133,7 +134,7 @@ public:
 
 IWritableTextureSource *createTextureSource();
 
-#ifdef __ANDROID__
+#if ENABLE_GLES
 video::IImage * Align2Npot2(video::IImage * image, irr::video::IVideoDriver* driver);
 #endif
 

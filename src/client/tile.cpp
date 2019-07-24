@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include <algorithm>
 #include <ICameraSceneNode.h>
+#include <IrrCompileConfig.h>
 #include "util/string.h"
 #include "util/container.h"
 #include "util/thread.h"
@@ -34,8 +35,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "renderingengine.h"
 
 
-#ifdef __ANDROID__
+#if ENABLE_GLES
+#ifdef _IRR_COMPILE_WITH_OGLES1_
 #include <GLES/gl.h>
+#else
+#include <GLES2/gl2.h>
+#endif
 #endif
 
 /*
@@ -595,7 +600,7 @@ u32 TextureSource::generateTexture(const std::string &name)
 	video::ITexture *tex = NULL;
 
 	if (img != NULL) {
-#ifdef __ANDROID__
+#if ENABLE_GLES
 		img = Align2Npot2(img, driver);
 #endif
 		// Create texture from resulting image
@@ -752,7 +757,7 @@ void TextureSource::rebuildImagesAndTextures()
 	// Recreate textures
 	for (TextureInfo &ti : m_textureinfo_cache) {
 		video::IImage *img = generateImage(ti.name);
-#ifdef __ANDROID__
+#if ENABLE_GLES
 		img = Align2Npot2(img, driver);
 #endif
 		// Create texture from resulting image
@@ -989,8 +994,7 @@ video::IImage* TextureSource::generateImage(const std::string &name)
 	return baseimg;
 }
 
-#ifdef __ANDROID__
-#include <GLES/gl.h>
+#if ENABLE_GLES
 /**
  * Check and align image to npot2 if required by hardware
  * @param image image to check for npot2 alignment
@@ -998,7 +1002,7 @@ video::IImage* TextureSource::generateImage(const std::string &name)
  * @return image or copy of image aligned to npot2
  */
 
-inline u16 get_GL_major_version()
+static inline u16 get_GL_major_version()
 {
 	const GLubyte *gl_version = glGetString(GL_VERSION);
 	return (u16) (gl_version[0] - '0');
@@ -1078,7 +1082,7 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 	// Stuff starting with [ are special commands
 	if (part_of_name.empty() || part_of_name[0] != '[') {
 		video::IImage *image = m_sourcecache.getOrLoad(part_of_name);
-#ifdef __ANDROID__
+#if ENABLE_GLES
 		image = Align2Npot2(image, driver);
 #endif
 		if (image == NULL) {
