@@ -65,6 +65,7 @@ endif
 
 LOCAL_CFLAGS := -D_IRR_ANDROID_PLATFORM_      \
 		-DHAVE_TOUCHSCREENGUI         \
+		-DENABLE_GLES=1               \
 		-DUSE_CURL=1                  \
 		-DUSE_SOUND=1                 \
 		-DUSE_FREETYPE=1              \

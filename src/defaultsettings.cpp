@@ -17,6 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
+#include <IrrCompileConfig.h>
 #include "settings.h"
 #include "porting.h"
 #include "filesys.h"
@@ -182,7 +183,15 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("lighting_boost_spread", "0.2");
 	settings->setDefault("texture_path", "");
 	settings->setDefault("shader_path", "");
+#if ENABLE_GLES
+#ifdef _IRR_COMPILE_WITH_OGLES1_
+	settings->setDefault("video_driver", "ogles1");
+#else
+	settings->setDefault("video_driver", "ogles2");
+#endif
+#else
 	settings->setDefault("video_driver", "opengl");
+#endif
 	settings->setDefault("cinematic", "false");
 	settings->setDefault("camera_smoothing", "0");
 	settings->setDefault("cinematic_camera_smoothing", "0.7");
@@ -217,7 +226,11 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("texture_clean_transparent", "false");
 	settings->setDefault("texture_min_size", "64");
 	settings->setDefault("ambient_occlusion_gamma", "2.2");
+#if ENABLE_GLES
+	settings->setDefault("enable_shaders", "false");
+#else
 	settings->setDefault("enable_shaders", "true");
+#endif
 	settings->setDefault("enable_particles", "true");
 	settings->setDefault("arm_inertia", "true");
 
@@ -429,9 +442,7 @@ void set_default_settings(Settings *settings)
 #ifdef __ANDROID__
 	settings->setDefault("screen_w", "0");
 	settings->setDefault("screen_h", "0");
-	settings->setDefault("enable_shaders", "false");
 	settings->setDefault("fullscreen", "true");
-	settings->setDefault("video_driver", "ogles1");
 	settings->setDefault("touchtarget", "true");
 	settings->setDefault("TMPFolder", porting::getDataPath("tmp" DIR_DELIM));
 	settings->setDefault("touchscreen_threshold","20");
