@@ -135,6 +135,7 @@ public:
 IWritableTextureSource *createTextureSource();
 
 #if ENABLE_GLES
+bool hasNPotSupport();
 video::IImage * Align2Npot2(video::IImage * image, irr::video::IVideoDriver* driver);
 #endif
 

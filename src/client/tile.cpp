@@ -995,12 +995,7 @@ video::IImage* TextureSource::generateImage(const std::string &name)
 }
 
 #if ENABLE_GLES
-/**
- * Check and align image to npot2 if required by hardware
- * @param image image to check for npot2 alignment
- * @param driver driver to use for image operations
- * @return image or copy of image aligned to npot2
- */
+
 
 static inline u16 get_GL_major_version()
 {
@@ -1008,47 +1003,55 @@ static inline u16 get_GL_major_version()
 	return (u16) (gl_version[0] - '0');
 }
 
+/**
+ * Check if hardware requires npot2 aligned textures
+ * @return true if alignment NOT(!) requires, false otherwise
+ */
+
+bool hasNPotSupport()
+{
+	// Only GLES2 is trusted to correctly report npot support
+	// Note: we cache the boolean result, the GL context will never change.
+	static const bool supported = get_GL_major_version() > 1 &&
+		glGetString(GL_EXTENSIONS) &&
+		strstr((char *)glGetString(GL_EXTENSIONS), "GL_OES_texture_npot");
+	return supported;
+}
+
+/**
+ * Check and align image to npot2 if required by hardware
+ * @param image image to check for npot2 alignment
+ * @param driver driver to use for image operations
+ * @return image or copy of image aligned to npot2
+ */
+
 video::IImage * Align2Npot2(video::IImage * image,
 		video::IVideoDriver* driver)
 {
-	if (image == NULL) {
+	if (image == NULL)
 		return image;
-	}
+
+	if (hasNPotSupport())
+		return image;
 
 	core::dimension2d<u32> dim = image->getDimension();
-
-	// Only GLES2 is trusted to correctly report npot support
-	// Note: we cache the boolean result. GL context will never change on Android.
-	static const bool hasNPotSupport = get_GL_major_version() > 1 &&
-		glGetString(GL_EXTENSIONS) &&
-		strstr((char *)glGetString(GL_EXTENSIONS), "GL_OES_texture_npot");
-
-	if (hasNPotSupport)
-		return image;
-
 	unsigned int height = npot2(dim.Height);
 	unsigned int width  = npot2(dim.Width);
 
-	if ((dim.Height == height) &&
-			(dim.Width == width)) {
+	if (dim.Height == height && dim.Width == width)
 		return image;
-	}
 
-	if (dim.Height > height) {
+	if (dim.Height > height)
 		height *= 2;
-	}
-
-	if (dim.Width > width) {
+	if (dim.Width > width)
 		width *= 2;
-	}
 
 	video::IImage *targetimage =
 			driver->createImage(video::ECF_A8R8G8B8,
 					core::dimension2d<u32>(width, height));
 
-	if (targetimage != NULL) {
+	if (targetimage != NULL)
 		image->copyToScaling(targetimage);
-	}
 	image->drop();
 	return targetimage;
 }
