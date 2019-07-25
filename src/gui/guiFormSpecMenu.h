@@ -469,7 +469,6 @@ private:
 
 	typedef struct {
 		bool explicit_size;
-		std::string size_type;
 		bool real_coordinates;
 		v2f invsize;
 		v2s32 size;
@@ -496,6 +495,8 @@ private:
 	std::string current_field_enter_pending = "";
 
 	void parseElement(parserData* data, const std::string &element);
+
+	void setSizeType(parserData *data, const std::string &size_type);
 
 	void parseSize(parserData* data, const std::string &element);
 	void parseContainer(parserData* data, const std::string &element);

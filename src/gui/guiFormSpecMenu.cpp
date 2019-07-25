@@ -289,6 +289,36 @@ v2s32 GUIFormSpecMenu::getRealCoordinateGeometry(const std::vector<std::string> 
 	return v2s32(stof(v_geom[0]) * imgsize.X, stof(v_geom[1]) * imgsize.Y);
 }
 
+void GUIFormSpecMenu::setSizeType(parserData *data, const std::string &size_type)
+{
+	if (size_type == "stretch") {
+		imgsize.X = data->screensize.X / data->invsize.X;
+		imgsize.Y = data->screensize.Y / data->invsize.Y;
+	}
+	else if (size_type == "fit") {
+		imgsize.X = MYMIN(data->screensize.X / data->invsize.X,
+			data->screensize.Y / data->invsize.Y);
+		imgsize.Y = imgsize.X;
+	}
+	else if (size_type == "fill") {
+		imgsize.X = MYMAX(data->screensize.X / data->invsize.X,
+			data->screensize.Y / data->invsize.Y);
+		imgsize.Y = imgsize.X;
+	}
+	else if (size_type == "wide") {
+		imgsize.X = data->screensize.X / data->invsize.X;
+		imgsize.Y = imgsize.X;
+	}
+	else if (size_type == "tall") {
+		imgsize.Y = data->screensize.Y / data->invsize.Y;
+		imgsize.X = imgsize.Y;
+	}
+	else if (size_type == "mini") {
+		imgsize.X = 1;
+		imgsize.Y = 1;
+	}
+}
+
 void GUIFormSpecMenu::parseSize(parserData* data, const std::string &element)
 {
 	std::vector<std::string> parts = split(element, ',');
@@ -303,16 +333,19 @@ void GUIFormSpecMenu::parseSize(parserData* data, const std::string &element)
 		data->invsize.Y = MYMAX(0, stof(parts[1]));
 
 		lockSize(false);
-		data->size_type = "";
 
 		if (parts.size() == 3) {
-			std::string type = trim(parts[2]);
+			const std::string size_type = trim(parts[2]);
 #ifndef __ANDROID__
-			if (type == "true") {
+			if (size_type == "true") {
 				lockSize(true, v2u32(800, 600));
 			}
+			else {
+				setSizeType(data, size_type);
+			}
+#else
+			setSizeType(data, size_type);
 #endif
-			data->size_type = type;
 		}
 		data->explicit_size = true;
 		return;
@@ -332,6 +365,10 @@ void GUIFormSpecMenu::parseContainer(parserData* data, const std::string &elemen
 		container_stack.push(pos_offset);
 		pos_offset.X += MYMAX(0, stof(parts[0]));
 		pos_offset.Y += MYMAX(0, stof(parts[1]));
+
+		if (parts.size() == 3) {
+			setSizeType(data, trim(parts[2]));
+		}
 		return;
 	}
 	errorstream<< "Invalid container start element (" << parts.size() << "): '" << element << "'"  << std::endl;
@@ -2456,38 +2493,6 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 		m_font = g_fontengine->getFont();
 
 		if (mydata.real_coordinates) {
-			if (mydata.size_type == "stretch") {
-				imgsize.X = mydata.screensize.X / mydata.invsize.X;
-				imgsize.Y = mydata.screensize.Y / mydata.invsize.Y;
-			}
-
-			if (mydata.size_type == "fit") {
-				imgsize.X = MYMIN(mydata.screensize.X / mydata.invsize.X,
-					mydata.screensize.Y / mydata.invsize.Y);
-				imgsize.Y = imgsize.X;
-			}
-
-			if (mydata.size_type == "fill") {
-				imgsize.X = MYMAX(mydata.screensize.X / mydata.invsize.X,
-					mydata.screensize.Y / mydata.invsize.Y);
-				imgsize.Y = imgsize.X;
-			}
-
-			if (mydata.size_type == "wide") {
-				imgsize.X = mydata.screensize.X / mydata.invsize.X;
-				imgsize.Y = imgsize.X;
-			}
-
-			if (mydata.size_type == "tall") {
-				imgsize.Y = mydata.screensize.Y / mydata.invsize.Y;
-				imgsize.X = imgsize.Y;
-			}
-
-			if (mydata.size_type == "mini") {
-				imgsize.X = 1;
-				imgsize.Y = 1;
-			}
-
 			mydata.size = v2s32(
 				mydata.invsize.X*imgsize.X,
 				mydata.invsize.Y*imgsize.Y
