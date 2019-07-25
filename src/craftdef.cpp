@@ -287,6 +287,15 @@ std::string craftDumpMatrix(const std::vector<ItemStack> &items,
 	CraftInput
 */
 
+bool CraftInput::empty() const
+{
+	for (const auto &item : items) {
+		if (!item.empty())
+			return false;
+	}
+	return true;
+}
+
 std::string CraftInput::dump() const
 {
 	std::ostringstream os(std::ios::binary);
@@ -906,18 +915,7 @@ public:
 			std::vector<ItemStack> &output_replacement, bool decrementInput,
 			IGameDef *gamedef) const
 	{
-		output.item = "";
-		output.time = 0;
-
-		// If all input items are empty, abort.
-		bool all_empty = true;
-		for (const auto &item : input.items) {
-			if (!item.empty()) {
-				all_empty = false;
-				break;
-			}
-		}
-		if (all_empty)
+		if (input.empty())
 			return false;
 
 		std::vector<std::string> input_names;
@@ -1021,14 +1019,7 @@ public:
 
 	virtual bool clearCraftsByInput(const CraftInput &input, IGameDef *gamedef)
 	{
-		bool all_empty = true;
-		for (const auto &i : recipe) {
-			if (!i.empty()) {
-				all_empty = false;
-				break;
-			}
-		}
-		if (all_empty)
+		if (input.empty())
 			return false;
 
 		// Recipes are not yet hashed at this point

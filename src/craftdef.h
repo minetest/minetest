@@ -80,6 +80,9 @@ struct CraftInput
 		method(method_), width(width_), items(items_)
 	{}
 
+	// Returns true if all items are empty.
+	bool empty() const;
+
 	std::string dump() const;
 };
 
