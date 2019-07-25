@@ -21,8 +21,7 @@ guiScrollBar::guiScrollBar(IGUIEnvironment *environment, IGUIElement *parent, s3
 		is_horizontal(horizontal), is_auto_scaling(auto_scale),
 		dragged_by_slider(false), tray_clicked(false), scroll_pos(0),
 		draw_center(0), thumb_size(0), min_pos(0), max_pos(100), small_step(10),
-		large_step(50), desired_pos(0), last_change(0), drag_offset(0),
-		page_size(100), border_size(0)
+		large_step(50), last_change(0), drag_offset(0), page_size(100), border_size(0)
 {
 	refreshControls();
 	setNotClipped(false);
@@ -116,12 +115,25 @@ bool guiScrollBar::OnEvent(const SEvent &event)
 				if (is_inside) {
 					is_dragging = true;
 					dragged_by_slider = slider_rect.isPointInside(p);
-					core::vector2di corner =
-							slider_rect.UpperLeftCorner;
-					drag_offset = is_horizontal ? p.X - corner.X
-								    : p.Y - corner.Y;
+					core::vector2di corner = slider_rect.UpperLeftCorner;
+					drag_offset = is_horizontal ? p.X - corner.X : p.Y - corner.Y;
 					tray_clicked = !dragged_by_slider;
-					desired_pos = getPosFromMousePos(p);
+					if (tray_clicked) {
+						const s32 new_pos = getPosFromMousePos(p);
+						const s32 old_pos = scroll_pos;
+						setPos(new_pos);
+						// drag in the middle
+						drag_offset = thumb_size / 2;
+						// report the scroll event
+						if (scroll_pos != old_pos && Parent) {
+							SEvent e;
+							e.EventType = EET_GUI_EVENT;
+							e.GUIEvent.Caller = this;
+							e.GUIEvent.Element = nullptr;
+							e.GUIEvent.EventType = EGET_SCROLL_BAR_CHANGED;
+							Parent->OnEvent(e);
+						}
+					}
 					Environment->setFocus(this);
 					return true;
 				}
@@ -158,10 +170,7 @@ bool guiScrollBar::OnEvent(const SEvent &event)
 				const s32 new_pos = getPosFromMousePos(p);
 				const s32 old_pos = scroll_pos;
 
-				if (dragged_by_slider)
-					setPos(new_pos);
-				else
-					desired_pos = new_pos;
+				setPos(new_pos);
 
 				if (scroll_pos != old_pos && Parent) {
 					SEvent e;
@@ -182,32 +191,6 @@ bool guiScrollBar::OnEvent(const SEvent &event)
 		}
 	}
 	return IGUIElement::OnEvent(event);
-}
-
-void guiScrollBar::OnPostRender(u32 timeMs)
-{
-	if (is_dragging && !dragged_by_slider && tray_clicked &&
-			timeMs > last_change + 200) {
-		last_change = timeMs;
-		const s32 old_pos = scroll_pos;
-
-		if (desired_pos >= scroll_pos + large_step)
-			setPos(scroll_pos + large_step);
-		else if (desired_pos <= scroll_pos - large_step)
-			setPos(scroll_pos - large_step);
-		else if (desired_pos >= scroll_pos - large_step &&
-				desired_pos <= scroll_pos + large_step)
-			setPos(desired_pos);
-
-		if (scroll_pos != old_pos && Parent) {
-			SEvent e;
-			e.EventType = EET_GUI_EVENT;
-			e.GUIEvent.Caller = this;
-			e.GUIEvent.Element = nullptr;
-			e.GUIEvent.EventType = EGET_SCROLL_BAR_CHANGED;
-			Parent->OnEvent(e);
-		}
-	}
 }
 
 void guiScrollBar::draw()
