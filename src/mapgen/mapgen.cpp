@@ -81,15 +81,21 @@ struct MapgenDesc {
 //// Built-in mapgens
 ////
 
+// Order used here defines the order of appearence in mainmenu.
+// v6 always last to discourage selection.
+// Special mapgens flat, fractal, singlenode, next to last. Of these, singlenode
+// last to discourage selection.
+// Of the remaining, v5 last due to age, v7 first due to being the default.
+// The order of 'enum MapgenType' in mapgen.h must match this order.
 static MapgenDesc g_reg_mapgens[] = {
-	{"v5",         true},
-	{"v6",         true},
 	{"v7",         true},
+	{"valleys",    true},
+	{"carpathian", true},
+	{"v5",         true},
 	{"flat",       true},
 	{"fractal",    true},
-	{"valleys",    true},
 	{"singlenode", true},
-	{"carpathian", true},
+	{"v6",         true},
 };
 
 STATIC_ASSERT(
