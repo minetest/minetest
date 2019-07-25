@@ -1,7 +1,7 @@
 /*
 Minetest
-Copyright (C) 2015-2018 paramat
-Copyright (C) 2015-2018 kwolekr, Ryan Kwolek <kwolekr@minetest.net>
+Copyright (C) 2015-2019 paramat
+Copyright (C) 2015-2016 kwolekr, Ryan Kwolek
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -41,7 +41,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 
 FlagDesc flagdesc_mapgen_fractal[] = {
-	{NULL,    0}
+	{"terrain", MGFRACTAL_TERRAIN},
+	{NULL,      0}
 };
 
 ///////////////////////////////////////////////////////////////////////////////////////
@@ -66,13 +67,17 @@ MapgenFractal::MapgenFractal(MapgenFractalParams *params, EmergeManager *emerge)
 	julia_z          = params->julia_z;
 	julia_w          = params->julia_w;
 
-	//// 2D terrain noise
-	noise_seabed       = new Noise(&params->np_seabed, seed, csize.X, csize.Z);
+	//// 2D noise
+	if (spflags & MGFRACTAL_TERRAIN)
+		noise_seabed = new Noise(&params->np_seabed, seed, csize.X, csize.Z);
+
 	noise_filler_depth = new Noise(&params->np_filler_depth, seed, csize.X, csize.Z);
 
+	//// 3D noise
+	MapgenBasic::np_dungeons = params->np_dungeons;
+	// Overgeneration to node_min.Y - 1
 	MapgenBasic::np_cave1    = params->np_cave1;
 	MapgenBasic::np_cave2    = params->np_cave2;
-	MapgenBasic::np_dungeons = params->np_dungeons;
 
 	formula = fractal / 2 + fractal % 2;
 	julia   = fractal % 2 == 0;
@@ -81,7 +86,9 @@ MapgenFractal::MapgenFractal(MapgenFractalParams *params, EmergeManager *emerge)
 
 MapgenFractal::~MapgenFractal()
 {
-	delete noise_seabed;
+	if (noise_seabed)
+		delete noise_seabed;
+
 	delete noise_filler_depth;
 }
 
@@ -153,21 +160,25 @@ void MapgenFractalParams::writeParams(Settings *settings) const
 
 int MapgenFractal::getSpawnLevelAtPoint(v2s16 p)
 {
-	bool solid_below = false;  // Dry solid node is present below to spawn on
-	u8 air_count = 0;  // Consecutive air nodes above the dry solid node
-	s16 seabed_level = NoisePerlin2D(&noise_seabed->np, p.X, p.Y, seed);
-	// Seabed can rise above water_level or might be raised to create dry land
-	s16 search_start = MYMAX(seabed_level, water_level + 1);
-	if (seabed_level > water_level)
-		solid_below = true;
+	bool solid_below = false; // Fractal node is present below to spawn on
+	u8 air_count = 0; // Consecutive air nodes above a fractal node
+	s16 search_start = 0; // No terrain search start
 
-	for (s16 y = search_start; y <= search_start + 128; y++) {
-		if (getFractalAtPoint(p.X, y, p.Y)) {  // Fractal node
+	// If terrain present, don't start search below terrain or water level
+	if (noise_seabed) {
+		s16 seabed_level = NoisePerlin2D(&noise_seabed->np, p.X, p.Y, seed);
+		search_start = MYMAX(search_start, MYMAX(seabed_level, water_level));
+	}
+
+	for (s16 y = search_start; y <= search_start + 4096; y++) {
+		if (getFractalAtPoint(p.X, y, p.Y)) {
+			// Fractal node
 			solid_below = true;
 			air_count = 0;
-		} else if (solid_below) {  // Air above solid node
+		} else if (solid_below) {
+			// Air above fractal node
 			air_count++;
-			// 3 to account for snowblock dust
+			// 3 and -2 to account for biome dust nodes
 			if (air_count == 3)
 				return y - 2;
 		}
@@ -189,10 +200,11 @@ void MapgenFractal::makeChunk(BlockMakeData *data)
 		data->blockpos_requested.Y <= data->blockpos_max.Y &&
 		data->blockpos_requested.Z <= data->blockpos_max.Z);
 
-	this->generating = true;
-	this->vm   = data->vmanip;
-	this->ndef = data->nodedef;
 	//TimeTaker t("makeChunk");
+
+	this->generating = true;
+	this->vm = data->vmanip;
+	this->ndef = data->nodedef;
 
 	v3s16 blockpos_min = data->blockpos_min;
 	v3s16 blockpos_max = data->blockpos_max;
@@ -203,7 +215,7 @@ void MapgenFractal::makeChunk(BlockMakeData *data)
 
 	blockseed = getBlockSeed2(full_node_min, seed);
 
-	// Generate base terrain, mountains, and ridges with initial heightmaps
+	// Generate fractal and optional terrain
 	s16 stone_surface_max_y = generateTerrain();
 
 	// Create heightmap
@@ -215,16 +227,16 @@ void MapgenFractal::makeChunk(BlockMakeData *data)
 		generateBiomes();
 	}
 
+	// Generate tunnels and randomwalk caves
 	if (flags & MG_CAVES) {
-		// Generate tunnels
 		generateCavesNoiseIntersection(stone_surface_max_y);
-		// Generate large randomwalk caves
 		generateCavesRandomWalk(stone_surface_max_y, large_cave_depth);
 	}
 
 	// Generate the registered ores
 	m_emerge->oremgr->placeAllOres(this, blockseed, node_min, node_max);
 
+	// Generate dungeons
 	if ((flags & MG_DUNGEONS) && full_node_min.Y >= dungeon_ymin &&
 			full_node_max.Y <= dungeon_ymax)
 		generateDungeons(stone_surface_max_y);
@@ -237,18 +249,18 @@ void MapgenFractal::makeChunk(BlockMakeData *data)
 	if (flags & MG_BIOMES)
 		dustTopNodes();
 
-	//printf("makeChunk: %dms\n", t.stop());
+	// Update liquids
+	if (spflags & MGFRACTAL_TERRAIN)
+		updateLiquid(&data->transforming_liquid, full_node_min, full_node_max);
 
-	updateLiquid(&data->transforming_liquid, full_node_min, full_node_max);
-
+	// Calculate lighting
 	if (flags & MG_LIGHT)
 		calcLighting(node_min - v3s16(0, 1, 0), node_max + v3s16(0, 1, 0),
 			full_node_min, full_node_max);
 
-	//setLighting(node_min - v3s16(1, 0, 1) * MAP_BLOCKSIZE,
-	//			node_max + v3s16(1, 0, 1) * MAP_BLOCKSIZE, 0xFF);
-
 	this->generating = false;
+
+	//printf("makeChunk: %lums\n", t.stop());
 }
 
 
@@ -391,24 +403,29 @@ s16 MapgenFractal::generateTerrain()
 	s16 stone_surface_max_y = -MAX_MAP_GENERATION_LIMIT;
 	u32 index2d = 0;
 
-	noise_seabed->perlinMap2D(node_min.X, node_min.Z);
+	if (noise_seabed)
+		noise_seabed->perlinMap2D(node_min.X, node_min.Z);
 
 	for (s16 z = node_min.Z; z <= node_max.Z; z++) {
 		for (s16 y = node_min.Y - 1; y <= node_max.Y + 1; y++) {
 			u32 vi = vm->m_area.index(node_min.X, y, z);
 			for (s16 x = node_min.X; x <= node_max.X; x++, vi++, index2d++) {
-				if (vm->m_data[vi].getContent() == CONTENT_IGNORE) {
-					s16 seabed_height = noise_seabed->result[index2d];
+				if (vm->m_data[vi].getContent() != CONTENT_IGNORE)
+					continue;
 
-					if (y <= seabed_height || getFractalAtPoint(x, y, z)) {
-						vm->m_data[vi] = n_stone;
-						if (y > stone_surface_max_y)
-							stone_surface_max_y = y;
-					} else if (y <= water_level) {
-						vm->m_data[vi] = n_water;
-					} else {
-						vm->m_data[vi] = n_air;
-					}
+				s16 seabed_height;
+				if (noise_seabed)
+					seabed_height = noise_seabed->result[index2d];
+
+				if (((spflags & MGFRACTAL_TERRAIN) && y <= seabed_height) ||
+						getFractalAtPoint(x, y, z)) {
+					vm->m_data[vi] = n_stone;
+					if (y > stone_surface_max_y)
+						stone_surface_max_y = y;
+				} else if ((spflags & MGFRACTAL_TERRAIN) && y <= water_level) {
+					vm->m_data[vi] = n_water;
+				} else {
+					vm->m_data[vi] = n_air;
 				}
 			}
 			index2d -= ystride;
