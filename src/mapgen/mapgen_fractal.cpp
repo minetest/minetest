@@ -413,7 +413,7 @@ s16 MapgenFractal::generateTerrain()
 				if (vm->m_data[vi].getContent() != CONTENT_IGNORE)
 					continue;
 
-				s16 seabed_height;
+				s16 seabed_height = -MAX_MAP_GENERATION_LIMIT;
 				if (noise_seabed)
 					seabed_height = noise_seabed->result[index2d];
 
