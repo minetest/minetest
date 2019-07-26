@@ -5748,7 +5748,7 @@ Used by `ObjectRef` methods. Part of an Entity definition.
         -- "mesh" uses the defined mesh model.
         -- "wielditem" is used for dropped items.
         --   (see builtin/game/item_entity.lua).
-        --   For this use 'textures = {itemname}'.
+        --   For this use 'wield_item = itemname' (Deprecated: 'textures = {itemname}').
         --   If the item has a 'wield_image' the object will be an extrusion of
         --   that, otherwise:
         --   If 'itemname' is a cubic node or nodebox the object will appear
@@ -5757,6 +5757,8 @@ Used by `ObjectRef` methods. Part of an Entity definition.
         --   of its texture.
         --   Otherwise for non-node items, the object will be an extrusion of
         --   'inventory_image'.
+        --   If 'itemname' contains a ColorString or palette index (e.g. from
+        --   `minetest.itemstring_with_palette()`), the entity will inherit the color.
         -- "item" is similar to "wielditem" but ignores the 'wield_image' parameter.
 
         visual_size = {x = 1, y = 1, z = 1},
