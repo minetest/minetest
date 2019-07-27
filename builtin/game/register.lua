@@ -79,6 +79,7 @@ end
 
 function core.register_abm(spec)
 	-- Add to core.registered_abms
+	assert(type(spec.action) == "function", "Required field 'action' of type function")
 	core.registered_abms[#core.registered_abms + 1] = spec
 	spec.mod_origin = core.get_current_modname() or "??"
 end
@@ -86,6 +87,7 @@ end
 function core.register_lbm(spec)
 	-- Add to core.registered_lbms
 	check_modname_prefix(spec.name)
+	assert(type(spec.action) == "function", "Required field 'action' of type function")
 	core.registered_lbms[#core.registered_lbms + 1] = spec
 	spec.mod_origin = core.get_current_modname() or "??"
 end
