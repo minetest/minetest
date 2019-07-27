@@ -17,10 +17,10 @@ the arrow buttons where there is insufficient space.
 using namespace irr;
 using namespace gui;
 
-class guiScrollBar : public IGUIElement
+class GUIScrollBar : public IGUIElement
 {
 public:
-	guiScrollBar(IGUIEnvironment *environment, IGUIElement *parent, s32 id,
+	GUIScrollBar(IGUIEnvironment *environment, IGUIElement *parent, s32 id,
 			core::rect<s32> rectangle, bool horizontal, bool auto_scale);
 
 	virtual void draw();
