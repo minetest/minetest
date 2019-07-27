@@ -61,7 +61,7 @@ GUITable::GUITable(gui::IGUIEnvironment *env,
 	}
 
 	const s32 s = skin->getSize(gui::EGDS_SCROLLBAR_SIZE);
-	m_scrollbar = new guiScrollBar(Environment, this, -1,
+	m_scrollbar = new GUIScrollBar(Environment, this, -1,
 			core::rect<s32>(RelativeRect.getWidth() - s,
 					0,
 					RelativeRect.getWidth(),

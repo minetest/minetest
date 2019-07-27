@@ -14,7 +14,7 @@ the arrow buttons where there is insufficient space.
 #include <IGUIButton.h>
 #include <IGUISkin.h>
 
-guiScrollBar::guiScrollBar(IGUIEnvironment *environment, IGUIElement *parent, s32 id,
+GUIScrollBar::GUIScrollBar(IGUIEnvironment *environment, IGUIElement *parent, s32 id,
 		core::rect<s32> rectangle, bool horizontal, bool auto_scale) :
 		IGUIElement(EGUIET_ELEMENT, environment, parent, id, rectangle),
 		up_button(nullptr), down_button(nullptr), is_dragging(false),
@@ -30,7 +30,7 @@ guiScrollBar::guiScrollBar(IGUIEnvironment *environment, IGUIElement *parent, s3
 	setPos(0);
 }
 
-bool guiScrollBar::OnEvent(const SEvent &event)
+bool GUIScrollBar::OnEvent(const SEvent &event)
 {
 	if (isEnabled()) {
 		switch (event.EventType) {
@@ -193,7 +193,7 @@ bool guiScrollBar::OnEvent(const SEvent &event)
 	return IGUIElement::OnEvent(event);
 }
 
-void guiScrollBar::draw()
+void GUIScrollBar::draw()
 {
 	if (!IsVisible)
 		return;
@@ -228,14 +228,14 @@ void guiScrollBar::draw()
 	IGUIElement::draw();
 }
 
-void guiScrollBar::updateAbsolutePosition()
+void GUIScrollBar::updateAbsolutePosition()
 {
 	IGUIElement::updateAbsolutePosition();
 	refreshControls();
 	setPos(scroll_pos);
 }
 
-s32 guiScrollBar::getPosFromMousePos(const core::position2di &pos) const
+s32 GUIScrollBar::getPosFromMousePos(const core::position2di &pos) const
 {
 	s32 w, p;
 	s32 offset = dragged_by_slider ? drag_offset : thumb_size / 2;
@@ -250,7 +250,7 @@ s32 guiScrollBar::getPosFromMousePos(const core::position2di &pos) const
 	return core::isnotzero(range()) ? s32(f32(p) / f32(w) * range()) + min_pos : 0;
 }
 
-void guiScrollBar::setPos(const s32 &pos)
+void GUIScrollBar::setPos(const s32 &pos)
 {
 	s32 thumb_area = 0;
 	s32 thumb_min = 0;
@@ -275,17 +275,17 @@ void guiScrollBar::setPos(const s32 &pos)
 	draw_center = s32((f32(scroll_pos) * f) + (f32(thumb_size) * 0.5f)) + border_size;
 }
 
-void guiScrollBar::setSmallStep(const s32 &step)
+void GUIScrollBar::setSmallStep(const s32 &step)
 {
 	small_step = step > 0 ? step : 10;
 }
 
-void guiScrollBar::setLargeStep(const s32 &step)
+void GUIScrollBar::setLargeStep(const s32 &step)
 {
 	large_step = step > 0 ? step : 50;
 }
 
-void guiScrollBar::setMax(const s32 &max)
+void GUIScrollBar::setMax(const s32 &max)
 {
 	max_pos = max;
 	if (min_pos > max_pos)
@@ -297,7 +297,7 @@ void guiScrollBar::setMax(const s32 &max)
 	setPos(scroll_pos);
 }
 
-void guiScrollBar::setMin(const s32 &min)
+void GUIScrollBar::setMin(const s32 &min)
 {
 	min_pos = min;
 	if (max_pos < min_pos)
@@ -309,18 +309,18 @@ void guiScrollBar::setMin(const s32 &min)
 	setPos(scroll_pos);
 }
 
-void guiScrollBar::setPageSize(const s32 &size)
+void GUIScrollBar::setPageSize(const s32 &size)
 {
 	page_size = size;
 	setPos(scroll_pos);
 }
 
-s32 guiScrollBar::getPos() const
+s32 GUIScrollBar::getPos() const
 {
 	return scroll_pos;
 }
 
-void guiScrollBar::refreshControls()
+void GUIScrollBar::refreshControls()
 {
 	IGUISkin *skin = Environment->getSkin();
 	IGUISpriteBank *sprites = nullptr;
