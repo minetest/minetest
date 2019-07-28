@@ -275,13 +275,18 @@ v2s32 GUIFormSpecMenu::getRealCoordinateBasePos(bool absolute,
 {
 	v2f32 pos_f = v2f32(0.0f, 0.0f);
 
-	pos_f.X += stof(v_pos[0]) + pos_offset.X;
-	pos_f.Y += stof(v_pos[1]) + pos_offset.Y;
+	// Add offsets from containers.
+	for (unsigned int cont = 0; cont < real_cont.size(); cont++) {
+		pos_f.X += real_cont[cont].X * real_cont_imgsize[cont].X;
+		pos_f.Y += real_cont[cont].Y * real_cont_imgsize[cont].Y;
+	}
+
+	v2s32 pos = v2s32(stof(v_pos[0]) * imgsize.X + pos_f.X,
+		stof(v_pos[1]) * imgsize.Y + pos_f.Y);
 
 	if (absolute)
-		return v2s32(pos_f.X * imgsize.X + AbsoluteRect.UpperLeftCorner.X,
-				pos_f.Y * imgsize.Y + AbsoluteRect.UpperLeftCorner.Y);
-	return v2s32(pos_f.X * imgsize.X, pos_f.Y * imgsize.Y);
+		return pos + AbsoluteRect.UpperLeftCorner;
+	return pos;
 }
 
 v2s32 GUIFormSpecMenu::getRealCoordinateGeometry(const std::vector<std::string> &v_geom)
@@ -316,6 +321,9 @@ void GUIFormSpecMenu::setSizeType(parserData *data, const std::string &size_type
 	else if (size_type == "mini") {
 		imgsize.X = 1;
 		imgsize.Y = 1;
+	}
+	else {
+		imgsize = v2s32(use_imgsize, use_imgsize);
 	}
 }
 
@@ -366,6 +374,11 @@ void GUIFormSpecMenu::parseContainer(parserData* data, const std::string &elemen
 		pos_offset.X += MYMAX(0, stof(parts[0]));
 		pos_offset.Y += MYMAX(0, stof(parts[1]));
 
+		// Handle real coordinate containers. We save both the offset
+		// number and imgsize because coordinate sizes may change mid-form.
+		real_cont.push_back(v2f32(stof(parts[0]), stof(parts[1])));
+		real_cont_imgsize.push_back(imgsize);
+
 		if (parts.size() == 3) {
 			setSizeType(data, trim(parts[2]));
 		}
@@ -381,6 +394,10 @@ void GUIFormSpecMenu::parseContainerEnd(parserData* data)
 	} else {
 		pos_offset = container_stack.top();
 		container_stack.pop();
+
+		real_cont.pop_back();
+		imgsize = real_cont_imgsize.back();
+		real_cont_imgsize.pop_back();
 	}
 }
 
@@ -2428,7 +2445,6 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 		double gui_scaling = g_settings->getFloat("gui_scaling");
 		double screen_dpi = RenderingEngine::getDisplayDensity() * 96;
 
-		double use_imgsize;
 		if (m_lock) {
 			// In fixed-size mode, inventory image size
 			// is 0.53 inch multiplied by the gui_scaling

@@ -1928,9 +1928,9 @@ Elements
 * Define the size of the menu in inventory slots
 * `size type` (optional): One of the below options:
     * These work on either the new or old coordinate system:
-        * `false`: Scaled form size.  This is default.
-        * `true`: Fixed 800x600 pixel form size.  Acts like `false` on Android.
-    * These only work on the new coordinate system:
+        * `false`: Scaled form size. This is default.
+        * `true`: Fixed 800x600 pixel form size. Acts like `false` on Android.
+    * These will not work properly on the old system:
         * `stretch`: Fills entire screen. Coordinates are stretched accordingly.
 	    * `fit`: The formspec is made as big as possible without stretching
           coordinates or leaving the screen.
@@ -1982,13 +1982,18 @@ Elements
 * For information on converting forms to the new coordinate system, see `Migrating
   to Real Coordinates`.
 
-### `container[<X>,<Y>]`
+### `container[<X>,<Y>,<size type>]`
 
 * Start of a container block, moves all physical elements in the container by
   (X, Y).
 * Must have matching `container_end`
 * Containers can be nested, in which case the offsets are added
   (child containers are relative to parent containers)
+* `size type` (optional): Changes the coordinate size, imitating the respective
+  coordinate sizes of the `size type` options of the `size` element.
+* **Note**: If the `size` element specifies `true` as the size type, then both
+  `true` and `false` will act like `true` in this element. Otherwise, both will
+  act like `false`.
 
 ### `container_end[]`
 

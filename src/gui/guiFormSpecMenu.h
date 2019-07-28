@@ -401,12 +401,15 @@ protected:
 			const std::vector<std::string> &v_pos);
 	v2s32 getRealCoordinateGeometry(const std::vector<std::string> &v_geom);
 
+	double use_imgsize;
 	v2s32 padding;
 	v2f32 spacing;
 	v2s32 imgsize;
 	v2s32 offset;
 	v2f32 pos_offset;
 	std::stack<v2f32> container_stack;
+	std::vector<v2f32> real_cont;
+	std::vector<v2s32> real_cont_imgsize;
 
 	InventoryManager *m_invmgr;
 	ISimpleTextureSource *m_tsrc;
