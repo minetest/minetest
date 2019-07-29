@@ -3481,7 +3481,7 @@ Possible fields of the table returned are:
 * `decoration`
 
 Decorations have a key in the format of `"decoration#id"`, where `id` is the
-numeric unique decoration ID.
+numeric unique decoration ID as returned by `minetest.get_decoration_id`.
 
 
 
@@ -3750,21 +3750,24 @@ Call these functions only at load time!
       mapgens. See [Mapgen aliases] section above.
 * `minetest.register_alias_force(alias, original_name)`
 * `minetest.register_ore(ore definition)`
-    * Returns an integer uniquely identifying the registered ore on success.
+    * Returns an integer object handle uniquely identifying the registered
+      ore on success.
     * The order of ore registrations determines the order of ore generation.
 * `minetest.register_biome(biome definition)`
-    * Returns an integer uniquely identifying the registered biome on success.
+    * Returns an integer object handle uniquely identifying the registered
+      biome on success. To get the biome ID, use `minetest.get_biome_id`.
 * `minetest.unregister_biome(name)`
     * Unregisters the biome from the engine, and deletes the entry with key
       `name` from `minetest.registered_biomes`.
 * `minetest.register_decoration(decoration definition)`
-    * Returns an integer uniquely identifying the registered decoration on
-      success.
+    * Returns an integer object handle uniquely identifying the registered
+      decoration on success. To get the decoration ID, use
+      `minetest.get_decoration_id`.
     * The order of decoration registrations determines the order of decoration
       generation.
 * `minetest.register_schematic(schematic definition)`
-    * Returns an integer uniquely identifying the registered schematic on
-      success.
+    * Returns an integer object handle uniquely identifying the registered
+      schematic on success.
     * If the schematic is loaded from a file, the `name` field is set to the
       filename.
     * If the function is called when loading the mod, and `name` is a relative
@@ -4978,17 +4981,19 @@ Global tables
     * Map of registered aliases, indexed by name
 * `minetest.registered_ores`
     * Map of registered ore definitions, indexed by the `name` field.
-    * If `name` is nil, the key is the ID returned by `minetest.register_ore`.
+    * If `name` is nil, the key is the object handle returned by
+      `minetest.register_ore`.
 * `minetest.registered_biomes`
     * Map of registered biome definitions, indexed by the `name` field.
-    * If `name` is nil, the key is the ID returned by `minetest.register_biome`.
+    * If `name` is nil, the key is the object handle returned by
+      `minetest.register_biome`.
 * `minetest.registered_decorations`
     * Map of registered decoration definitions, indexed by the `name` field.
-    * If `name` is nil, the key is the ID returned by
+    * If `name` is nil, the key is the object handle returned by
       `minetest.register_decoration`.
 * `minetest.registered_schematics`
     * Map of registered schematic definitions, indexed by the `name` field.
-    * If `name` is nil, the key is the ID returned by
+    * If `name` is nil, the key is the object handle returned by
       `minetest.register_schematic`.
 * `minetest.registered_chatcommands`
     * Map of registered chat command definitions, indexed by name
