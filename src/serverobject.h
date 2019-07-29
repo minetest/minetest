@@ -161,7 +161,7 @@ public:
 	{}
 	virtual void getBonePosition(const std::string &bone, v3f *position, v3f *lotation)
 	{}
-	virtual const std::unordered_set<int> &getAttachmentChildIds()
+	virtual const std::unordered_set<int> &getAttachmentChildIds() const
 	{ static std::unordered_set<int> rv; return rv; }
 	virtual ServerActiveObject *getParent() const { return nullptr; }
 	virtual ObjectProperties* accessObjectProperties()

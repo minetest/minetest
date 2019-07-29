@@ -105,7 +105,7 @@ public:
 	virtual void setAttachment(int parent_id, const std::string &bone, v3f position,
 			v3f rotation) {}
 	virtual void getAttachment(int *parent_id, std::string *bone, v3f *position,
-			v3f *rotation) {}
+			v3f *rotation) const {}
 	virtual void clearChildAttachments() {}
 	virtual void clearParentAttachment() {}
 	virtual void addAttachmentChild(int child_id) {}

@@ -55,7 +55,7 @@ public:
 	virtual bool isLocalPlayer() const {return false;}
 
 	virtual ClientActiveObject *getParent() const { return nullptr; };
-	virtual const std::unordered_set<int> &getAttachmentChildIds()
+	virtual const std::unordered_set<int> &getAttachmentChildIds() const
 	{ static std::unordered_set<int> rv; return rv; }
 	virtual void updateAttachments() {};
 

@@ -200,7 +200,7 @@ void UnitSAO::setAttachment(int parent_id, const std::string &bone, v3f position
 }
 
 void UnitSAO::getAttachment(int *parent_id, std::string *bone, v3f *position,
-	v3f *rotation)
+	v3f *rotation) const
 {
 	*parent_id = m_attachment_parent_id;
 	*bone = m_attachment_bone;
@@ -242,7 +242,7 @@ void UnitSAO::removeAttachmentChild(int child_id)
 	m_attachment_child_ids.erase(child_id);
 }
 
-const std::unordered_set<int> &UnitSAO::getAttachmentChildIds()
+const std::unordered_set<int> &UnitSAO::getAttachmentChildIds() const
 {
 	return m_attachment_child_ids;
 }

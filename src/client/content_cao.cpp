@@ -473,7 +473,7 @@ void GenericCAO::setAttachment(int parent_id, const std::string &bone, v3f posit
 }
 
 void GenericCAO::getAttachment(int *parent_id, std::string *bone, v3f *position,
-	v3f *rotation)
+	v3f *rotation) const
 {
 	*parent_id = m_attachment_parent_id;
 	*bone = m_attachment_bone;
@@ -1587,7 +1587,8 @@ void GenericCAO::processMessage(const std::string &data)
 		}
 	} else if (cmd == GENERIC_CMD_SPAWN_INFANT) {
 		u16 child_id = readU16(is);
-		//u8 type = readU8(is); maybe this will be useful later
+		u8 type = readU8(is); // maybe this will be useful later
+		(void)type;
 
 		addAttachmentChild(child_id);
 	} else {
