@@ -22,6 +22,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "irrlichttypes_extrabloated.h"
 #include "activeobject.h"
 #include <unordered_map>
+#include <unordered_set>
+
 
 class ClientEnvironment;
 class ITextureSource;
@@ -51,8 +53,12 @@ public:
 	virtual scene::ISceneNode *getSceneNode() { return NULL; }
 	virtual scene::IAnimatedMeshSceneNode *getAnimatedMeshSceneNode() { return NULL; }
 	virtual bool isLocalPlayer() const {return false;}
+
 	virtual ClientActiveObject *getParent() const { return nullptr; };
-	virtual void setAttachments() {}
+	virtual const std::unordered_set<int> &getAttachmentChildIds() const
+	{ static std::unordered_set<int> rv; return rv; }
+	virtual void updateAttachments() {};
+
 	virtual bool doShowSelectionBox(){return true;}
 
 	// Step object in time

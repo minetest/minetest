@@ -161,17 +161,7 @@ public:
 	{}
 	virtual void getBonePosition(const std::string &bone, v3f *position, v3f *lotation)
 	{}
-	virtual void setAttachment(int parent_id, const std::string &bone, v3f position, v3f rotation)
-	{}
-	virtual void getAttachment(int *parent_id, std::string *bone, v3f *position, v3f *rotation)
-	{}
-	virtual void clearChildAttachments() {}
-	virtual void clearParentAttachment() {}
-	virtual void addAttachmentChild(int child_id)
-	{}
-	virtual void removeAttachmentChild(int child_id)
-	{}
-	virtual const std::unordered_set<int> &getAttachmentChildIds()
+	virtual const std::unordered_set<int> &getAttachmentChildIds() const
 	{ static std::unordered_set<int> rv; return rv; }
 	virtual ServerActiveObject *getParent() const { return nullptr; }
 	virtual ObjectProperties* accessObjectProperties()

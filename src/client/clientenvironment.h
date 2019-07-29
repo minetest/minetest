@@ -138,8 +138,6 @@ public:
 		std::vector<PointedThing> &objects
 	);
 
-	u16 attachement_parent_ids[USHRT_MAX + 1];
-
 	const std::list<std::string> &getPlayerNames() { return m_player_names; }
 	void addPlayerName(const std::string &name) { m_player_names.push_back(name); }
 	void removePlayerName(const std::string &name) { m_player_names.remove(name); }

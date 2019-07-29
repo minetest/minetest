@@ -20,7 +20,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #pragma once
 
 #include "irr_aabb3d.h"
+#include "irr_v3d.h"
 #include <string>
+
 
 enum ActiveObjectType {
 	ACTIVEOBJECT_TYPE_INVALID = 0,
@@ -98,6 +100,16 @@ public:
 
 
 	virtual bool collideWithObjects() const = 0;
+
+
+	virtual void setAttachment(int parent_id, const std::string &bone, v3f position,
+			v3f rotation) {}
+	virtual void getAttachment(int *parent_id, std::string *bone, v3f *position,
+			v3f *rotation) const {}
+	virtual void clearChildAttachments() {}
+	virtual void clearParentAttachment() {}
+	virtual void addAttachmentChild(int child_id) {}
+	virtual void removeAttachmentChild(int child_id) {}
 protected:
 	u16 m_id; // 0 is invalid, "no id"
 };
