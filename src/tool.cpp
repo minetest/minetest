@@ -172,14 +172,16 @@ void ToolCapabilities::deserializeJson(std::istream &is)
 DigParams getDigParams(const ItemGroupList &groups,
 		const ToolCapabilities *tp)
 {
-	// Group dig_immediate has fixed time and no wear
-	switch (itemgroup_get(groups, "dig_immediate")) {
-	case 2:
-		return DigParams(true, 0.5, 0, "dig_immediate");
-	case 3:
-		return DigParams(true, 0, 0, "dig_immediate");
-	default:
-		break;
+	// Group dig_immediate defaults to fixed time and no wear
+	if (tp->groupcaps.find("dig_immediate") == tp->groupcaps.cend()) {
+		switch (itemgroup_get(groups, "dig_immediate")) {
+		case 2:
+			return DigParams(true, 0.5, 0, "dig_immediate");
+		case 3:
+			return DigParams(true, 0, 0, "dig_immediate");
+		default:
+			break;
+		}
 	}
 
 	// Values to be returned (with a bit of conversion)
