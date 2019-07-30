@@ -366,12 +366,12 @@ void Sky::render()
 
 		// Draw sun
 		if (wicked_time_of_day > 0.15 && wicked_time_of_day < 0.85) {
-			draw_sun(driver, sunsize, &suncolor, &suncolor2, wicked_time_of_day);
+			draw_sun(driver, sunsize, suncolor, suncolor2, wicked_time_of_day);
 		}
 
 		// Draw moon
 		if (wicked_time_of_day < 0.3 || wicked_time_of_day > 0.7) {
-			draw_moon(driver, moonsize, &mooncolor, &mooncolor2, wicked_time_of_day);
+			draw_moon(driver, moonsize, mooncolor, mooncolor2, wicked_time_of_day);
 		}
 
 		// Draw far cloudy fog thing below all horizons in front of sun, moon
@@ -625,8 +625,8 @@ void Sky::update(float time_of_day, float time_brightness,
 	}
 }
 
-void Sky::draw_sun(video::IVideoDriver *driver, float sunsize, const video::SColor *suncolor,
-	const video::SColor *suncolor2, float wicked_time_of_day)
+void Sky::draw_sun(video::IVideoDriver *driver, float sunsize, const video::SColor &suncolor,
+	const video::SColor &suncolor2, float wicked_time_of_day)
 	/* Draw sun in the sky.
 	 * driver: Video driver object used to draw
 	 * sunsize: the default size of the sun
@@ -640,13 +640,13 @@ void Sky::draw_sun(video::IVideoDriver *driver, float sunsize, const video::SCol
 	if (!m_sun_texture) {
 		driver->setMaterial(m_materials[1]);
 		const float sunsizes[4] = {sunsize * 1.7f, sunsize * 1.2f, sunsize, sunsize * 0.7f};
-		video::SColor c1 = *suncolor;
-		video::SColor c2 = *suncolor;
+		video::SColor c1 = suncolor;
+		video::SColor c2 = suncolor;
 		c1.setAlpha(0.05 * 255);
 		c2.setAlpha(0.15 * 255);
-		const video::SColor colors[4] = {c1, c2, *suncolor, *suncolor2};
+		const video::SColor colors[4] = {c1, c2, suncolor, suncolor2};
 		for (int i = 0; i < 4; i++) {
-			draw_sky_body(vertices, -sunsizes[i], sunsizes[i], &colors[i]);
+			draw_sky_body(vertices, -sunsizes[i], sunsizes[i], colors[i]);
 			place_sky_body(vertices, 90, wicked_time_of_day * 360 - 90);
 			driver->drawIndexedTriangleFan(&vertices[0], 4, indices, 2);
 		}
@@ -658,15 +658,15 @@ void Sky::draw_sun(video::IVideoDriver *driver, float sunsize, const video::SCol
 			c = video::SColor(0, 0, 0, 0);
 		else
 			c = video::SColor(255, 255, 255, 255);
-		draw_sky_body(vertices, -d, d, &c);
+		draw_sky_body(vertices, -d, d, c);
 		place_sky_body(vertices, 90, wicked_time_of_day * 360 - 90);
 		driver->drawIndexedTriangleFan(&vertices[0], 4, indices, 2);
 	}
 }
 
 
-void Sky::draw_moon(video::IVideoDriver *driver, float moonsize, const video::SColor *mooncolor,
-	const video::SColor *mooncolor2, float wicked_time_of_day)
+void Sky::draw_moon(video::IVideoDriver *driver, float moonsize, const video::SColor &mooncolor,
+	const video::SColor &mooncolor2, float wicked_time_of_day)
 	/*
 	 * Draw moon in the sky.
 	 * driver: Video driver object used to draw
@@ -692,13 +692,13 @@ void Sky::draw_moon(video::IVideoDriver *driver, float moonsize, const video::SC
 				moonsize,
 				moonsize * 0.6f
 			};
-		video::SColor c1 = *mooncolor;
-		video::SColor c2 = *mooncolor;
+		video::SColor c1 = mooncolor;
+		video::SColor c2 = mooncolor;
 		c1.setAlpha(0.05 * 255);
 		c2.setAlpha(0.15 * 255);
-		const video::SColor colors[4] = {c1, c2, *mooncolor, *mooncolor2};
+		const video::SColor colors[4] = {c1, c2, mooncolor, mooncolor2};
 		for (int i = 0; i < 4; i++) {
-			draw_sky_body(vertices, moonsizes_1[i], moonsizes_2[i], &colors[i]);
+			draw_sky_body(vertices, moonsizes_1[i], moonsizes_2[i], colors[i]);
 			place_sky_body(vertices, -90, wicked_time_of_day * 360 - 90);
 			driver->drawIndexedTriangleFan(&vertices[0], 4, indices, 2);
 		}
@@ -710,14 +710,14 @@ void Sky::draw_moon(video::IVideoDriver *driver, float moonsize, const video::SC
 			c = video::SColor(0, 0, 0, 0);
 		else
 			c = video::SColor(255, 255, 255, 255);
-		draw_sky_body(vertices, -d, d, &c);
+		draw_sky_body(vertices, -d, d, c);
 		place_sky_body(vertices, -90, wicked_time_of_day * 360 - 90);
 		driver->drawIndexedTriangleFan(&vertices[0], 4, indices, 2);
 	}
 }
 
 
-void Sky::draw_sky_body(std::array<video::S3DVertex, 4> &vertices, float pos_1, float pos_2, const video::SColor *c)
+void Sky::draw_sky_body(std::array<video::S3DVertex, 4> &vertices, float pos_1, float pos_2, const video::SColor &c)
 {
 	/*
 	 * Create an array of vertices with the dimensions specified.
@@ -727,10 +727,10 @@ void Sky::draw_sky_body(std::array<video::S3DVertex, 4> &vertices, float pos_1, 
 
 	const f32 t = 1.0f;
 	const f32 o = 0.0f;
-	vertices[0] = video::S3DVertex(pos_1, pos_1, -1, 0, 0, 1, *c, t, t);
-	vertices[1] = video::S3DVertex(pos_2, pos_1, -1, 0, 0, 1, *c, o, t);
-	vertices[2] = video::S3DVertex(pos_2, pos_2, -1, 0, 0, 1, *c, o, o);
-	vertices[3] = video::S3DVertex(pos_1, pos_2, -1, 0, 0, 1, *c, t, o);
+	vertices[0] = video::S3DVertex(pos_1, pos_1, -1, 0, 0, 1, c, t, t);
+	vertices[1] = video::S3DVertex(pos_2, pos_1, -1, 0, 0, 1, c, o, t);
+	vertices[2] = video::S3DVertex(pos_2, pos_2, -1, 0, 0, 1, c, o, o);
+	vertices[3] = video::S3DVertex(pos_1, pos_2, -1, 0, 0, 1, c, t, o);
 }
 
 
