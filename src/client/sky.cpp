@@ -625,8 +625,8 @@ void Sky::update(float time_of_day, float time_brightness,
 	}
 }
 
-void Sky::draw_sun(video::IVideoDriver *driver, float sunsize, video::SColor suncolor,
-	video::SColor suncolor2, float wicked_time_of_day)
+void Sky::draw_sun(video::IVideoDriver *driver, float sunsize, const video::SColor suncolor,
+	const video::SColor suncolor2, float wicked_time_of_day)
 	/* Draw sun in the sky.
 	 * driver: Video driver object used to draw
 	 * sunsize: the default size of the sun
@@ -665,8 +665,8 @@ void Sky::draw_sun(video::IVideoDriver *driver, float sunsize, video::SColor sun
 }
 
 
-void Sky::draw_moon(video::IVideoDriver *driver, float moonsize, video::SColor mooncolor,
-	video::SColor mooncolor2, float wicked_time_of_day)
+void Sky::draw_moon(video::IVideoDriver *driver, float moonsize, const video::SColor mooncolor,
+	const video::SColor mooncolor2, float wicked_time_of_day)
 	/*
 	 * Draw moon in the sky.
 	 * driver: Video driver object used to draw
@@ -717,7 +717,7 @@ void Sky::draw_moon(video::IVideoDriver *driver, float moonsize, video::SColor m
 }
 
 
-std::array<video::S3DVertex, 4> Sky::draw_sky_body(float pos_1, float pos_2, video::SColor c)
+std::array<video::S3DVertex, 4> Sky::draw_sky_body(float pos_1, float pos_2, const video::SColor c)
 {
 	/*
 	 * Create an array of vertices with the dimensions specified.
