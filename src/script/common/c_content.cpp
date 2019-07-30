@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "common/c_types.h"
 #include "nodedef.h"
 #include "object_properties.h"
+#include "content_sao.h"
 #include "cpp_api/s_node.h"
 #include "lua_api/l_object.h"
 #include "lua_api/l_item.h"
@@ -182,7 +183,7 @@ void push_item_definition_full(lua_State *L, const ItemDefinition &i)
 
 /******************************************************************************/
 void read_object_properties(lua_State *L, int index,
-		ObjectProperties *prop, IItemDefManager *idef)
+		ServerActiveObject *sao, ObjectProperties *prop, IItemDefManager *idef)
 {
 	if(index < 0)
 		index = lua_gettop(L) + 1 + index;
@@ -190,10 +191,24 @@ void read_object_properties(lua_State *L, int index,
 		return;
 
 	int hp_max = 0;
-	if (getintfield(L, -1, "hp_max", hp_max))
+	if (getintfield(L, -1, "hp_max", hp_max)) {
 		prop->hp_max = (u16)rangelim(hp_max, 0, U16_MAX);
 
-	getintfield(L, -1, "breath_max", prop->breath_max);
+		if (prop->hp_max < sao->getHP()) {
+			PlayerHPChangeReason reason(PlayerHPChangeReason::SET_HP);
+			sao->setHP(prop->hp_max, reason);
+			if (sao->getType() == ACTIVEOBJECT_TYPE_PLAYER)
+				sao->getEnv()->getGameDef()->SendPlayerHPOrDie((PlayerSAO *)sao, reason);
+		}
+	}
+
+	if (getintfield(L, -1, "breath_max", prop->breath_max)) {
+		if (sao->getType() == ACTIVEOBJECT_TYPE_PLAYER) {
+			PlayerSAO *player = (PlayerSAO *)sao;
+			if (prop->breath_max < player->getBreath())
+				player->setBreath(prop->breath_max);
+		}
+	}
 	getboolfield(L, -1, "physical", prop->physical);
 	getboolfield(L, -1, "collide_with_objects", prop->collideWithObjects);
 

@@ -62,6 +62,7 @@ struct HitParams;
 struct EnumString;
 struct NoiseParams;
 class Schematic;
+class ServerActiveObject;
 
 
 ContentFeatures    read_content_features     (lua_State *L, int index);
@@ -107,6 +108,7 @@ void               push_item_definition_full (lua_State *L,
                                               const ItemDefinition &i);
 
 void               read_object_properties    (lua_State *L, int index,
+                                              ServerActiveObject *sao,
                                               ObjectProperties *prop,
                                               IItemDefManager *idef);
 void               push_object_properties    (lua_State *L,

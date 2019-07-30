@@ -331,7 +331,7 @@ void LuaEntitySAO::addedToEnvironment(u32 dtime_s)
 	if(m_registered){
 		// Get properties
 		m_env->getScriptIface()->
-			luaentity_GetProperties(m_id, &m_prop);
+			luaentity_GetProperties(m_id, this, &m_prop);
 		// Initialize HP from properties
 		m_hp = m_prop.hp_max;
 		// Activate entity, supplying serialized state
