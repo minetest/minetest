@@ -646,8 +646,8 @@ void Sky::draw_sun(video::IVideoDriver *driver, float sunsize, const video::SCol
 		c2.setAlpha(0.15 * 255);
 		const video::SColor colors[4] = {c1, c2, suncolor, suncolor2};
 		for (int i = 0; i < 4; i++) {
-			vertices = draw_sky_body(-sunsizes[i], sunsizes[i], colors[i]);
-			vertices = place_sky_body(vertices, 90, wicked_time_of_day * 360 - 90);
+			draw_sky_body(vertices, -sunsizes[i], sunsizes[i], colors[i]);
+			place_sky_body(vertices, 90, wicked_time_of_day * 360 - 90);
 			driver->drawIndexedTriangleFan(&vertices[0], 4, indices, 2);
 		}
 	} else {
@@ -658,8 +658,8 @@ void Sky::draw_sun(video::IVideoDriver *driver, float sunsize, const video::SCol
 			c = video::SColor(0, 0, 0, 0);
 		else
 			c = video::SColor(255, 255, 255, 255);
-		vertices = draw_sky_body(-d, d, c);
-		vertices = place_sky_body(vertices, 90, wicked_time_of_day * 360 - 90);
+		draw_sky_body(vertices, -d, d, c);
+		place_sky_body(vertices, 90, wicked_time_of_day * 360 - 90);
 		driver->drawIndexedTriangleFan(&vertices[0], 4, indices, 2);
 	}
 }
@@ -698,8 +698,8 @@ void Sky::draw_moon(video::IVideoDriver *driver, float moonsize, const video::SC
 		c2.setAlpha(0.15 * 255);
 		const video::SColor colors[4] = {c1, c2, mooncolor, mooncolor2};
 		for (int i = 0; i < 4; i++) {
-			vertices = draw_sky_body(moonsizes_1[i], moonsizes_2[i], colors[i]);
-			vertices = place_sky_body(vertices, -90, wicked_time_of_day * 360 - 90);
+			draw_sky_body(vertices, moonsizes_1[i], moonsizes_2[i], colors[i]);
+			place_sky_body(vertices, -90, wicked_time_of_day * 360 - 90);
 			driver->drawIndexedTriangleFan(&vertices[0], 4, indices, 2);
 		}
 	} else {
@@ -710,14 +710,14 @@ void Sky::draw_moon(video::IVideoDriver *driver, float moonsize, const video::SC
 			c = video::SColor(0, 0, 0, 0);
 		else
 			c = video::SColor(255, 255, 255, 255);
-		vertices = draw_sky_body(-d, d, c);
-		vertices = place_sky_body(vertices, -90, wicked_time_of_day * 360 - 90);
+		draw_sky_body(vertices, -d, d, c);
+		place_sky_body(vertices, -90, wicked_time_of_day * 360 - 90);
 		driver->drawIndexedTriangleFan(&vertices[0], 4, indices, 2);
 	}
 }
 
 
-std::array<video::S3DVertex, 4> Sky::draw_sky_body(float pos_1, float pos_2, const video::SColor c)
+void Sky::draw_sky_body(std::array<video::S3DVertex, 4> &vertices, float pos_1, float pos_2, const video::SColor c)
 {
 	/*
 	 * Create an array of vertices with the dimensions specified.
@@ -727,17 +727,15 @@ std::array<video::S3DVertex, 4> Sky::draw_sky_body(float pos_1, float pos_2, con
 
 	const f32 t = 1.0f;
 	const f32 o = 0.0f;
-	std::array<video::S3DVertex, 4> vertices;
 	vertices[0] = video::S3DVertex(pos_1, pos_1, -1, 0, 0, 1, c, t, t);
 	vertices[1] = video::S3DVertex(pos_2, pos_1, -1, 0, 0, 1, c, o, t);
 	vertices[2] = video::S3DVertex(pos_2, pos_2, -1, 0, 0, 1, c, o, o);
 	vertices[3] = video::S3DVertex(pos_1, pos_2, -1, 0, 0, 1, c, t, o);
-	return vertices;
 }
 
 
-std::array<video::S3DVertex, 4> Sky::place_sky_body(
-	std::array<video::S3DVertex, 4> vertices, float horizon_position, float day_position)
+void Sky::place_sky_body(
+	std::array<video::S3DVertex, 4> &vertices, float horizon_position, float day_position)
 	/*
 	 * Place body in the sky.
 	 * vertices: The body as a rectangle of 4 vertices
@@ -750,5 +748,4 @@ std::array<video::S3DVertex, 4> Sky::place_sky_body(
 		vertex.Pos.rotateXZBy(horizon_position);
 		vertex.Pos.rotateXYBy(day_position);
 	}
-	return vertices;
 }
