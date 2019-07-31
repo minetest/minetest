@@ -678,7 +678,7 @@ local function create_change_setting_formspec(dialogdata)
 			end
 		end
 		local flags_count = #setting.possible / 2
-		local max_height = flags_count / 4
+		local max_height = math.ceil(flags_count / 2) / 2
 
 		-- More space for flags
 		description_height = description_height - 1
@@ -836,10 +836,12 @@ local function handle_change_setting_buttons(this, fields)
 		elseif setting.type == "flags" then
 			local values = {}
 			for _, name in ipairs(setting.possible) do
-				if checkboxes["cb_" .. name] then
-					table.insert(values, name)
-				else
-					table.insert(values, "no" .. name)
+				if name:sub(1, 2) ~= "no" then
+					if checkboxes["cb_" .. name] then
+						table.insert(values, name)
+					else
+						table.insert(values, "no" .. name)
+					end
 				end
 			end
 
