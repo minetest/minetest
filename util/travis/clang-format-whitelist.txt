@@ -169,6 +169,7 @@ src/gui/guiMainMenu.h
 src/gui/guiPasswordChange.cpp
 src/gui/guiPathSelectMenu.cpp
 src/gui/guiPathSelectMenu.h
+src/gui/guiScrollBar.cpp
 src/gui/guiTable.cpp
 src/gui/guiTable.h
 src/gui/guiVolumeChange.cpp
@@ -213,14 +214,14 @@ src/mapgen/cavegen.cpp
 src/mapgen/cavegen.h
 src/mapgen/dungeongen.cpp
 src/mapgen/dungeongen.h
+src/mapgen/mapgen.cpp
+src/mapgen/mapgen.h
 src/mapgen/mapgen_carpathian.cpp
 src/mapgen/mapgen_carpathian.h
-src/mapgen/mapgen.cpp
 src/mapgen/mapgen_flat.cpp
 src/mapgen/mapgen_flat.h
 src/mapgen/mapgen_fractal.cpp
 src/mapgen/mapgen_fractal.h
-src/mapgen/mapgen.h
 src/mapgen/mapgen_singlenode.cpp
 src/mapgen/mapgen_singlenode.h
 src/mapgen/mapgen_v5.cpp
