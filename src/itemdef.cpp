@@ -135,7 +135,9 @@ void ItemDefinition::serialize(std::ostream &os, u16 protocol_version) const
 	os << serializeString(name);
 	os << serializeString(description);
 	os << serializeString(inventory_image);
+	os << serializeString(inventory_overlay);
 	os << serializeString(wield_image);
+	os << serializeString(wield_overlay);
 	writeV3F32(os, wield_scale);
 	writeS16(os, stack_max);
 	writeU8(os, usable);
@@ -182,7 +184,9 @@ void ItemDefinition::deSerialize(std::istream &is)
 	name = deSerializeString(is);
 	description = deSerializeString(is);
 	inventory_image = deSerializeString(is);
+	inventory_overlay = deSerializeString(is);
 	wield_image = deSerializeString(is);
+	wield_overlay = deSerializeString(is);
 	wield_scale = readV3F32(is);
 	stack_max = readS16(is);
 	usable = readU8(is);
