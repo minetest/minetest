@@ -55,11 +55,30 @@ void read_item_definition(lua_State* L, int index,
 			es_ItemType, ITEM_NONE);
 	getstringfield(L, index, "name", def.name);
 	getstringfield(L, index, "description", def.description);
+	getstringfield(L, index, "mesh", def.mesh);
 	getstringfield(L, index, "inventory_image", def.inventory_image);
 	getstringfield(L, index, "inventory_overlay", def.inventory_overlay);
 	getstringfield(L, index, "wield_image", def.wield_image);
 	getstringfield(L, index, "wield_overlay", def.wield_overlay);
 	getstringfield(L, index, "palette", def.palette_image);
+
+	// Textures for mesh
+	lua_getfield(L, index, "textures");
+	if (lua_istable(L, -1)) {
+		def.textures.clear();
+		int table = lua_gettop(L);
+		lua_pushnil(L);
+		while (lua_next(L, table) != 0) {
+			// key at index -2 and value at index -1
+			if(lua_isstring(L, -1))
+				def.textures.emplace_back(lua_tostring(L, -1));
+			else
+				def.textures.emplace_back("");
+			// removes value, keeps key for next iteration
+			lua_pop(L, 1);
+		}
+	}
+	lua_pop(L, 1);
 
 	// Read item color.
 	lua_getfield(L, index, "color");
@@ -142,6 +161,8 @@ void push_item_definition_full(lua_State *L, const ItemDefinition &i)
 	lua_setfield(L, -2, "description");
 	lua_pushstring(L, type.c_str());
 	lua_setfield(L, -2, "type");
+	lua_pushstring(L, i.mesh.c_str());
+	lua_setfield(L, -2, "mesh");
 	lua_pushstring(L, i.inventory_image.c_str());
 	lua_setfield(L, -2, "inventory_image");
 	lua_pushstring(L, i.inventory_overlay.c_str());
@@ -152,6 +173,15 @@ void push_item_definition_full(lua_State *L, const ItemDefinition &i)
 	lua_setfield(L, -2, "wield_overlay");
 	lua_pushstring(L, i.palette_image.c_str());
 	lua_setfield(L, -2, "palette_image");
+
+	lua_newtable(L);
+	u16 idx = 1;
+	for (const std::string &texture : i.textures) {
+		lua_pushlstring(L, texture.c_str(), texture.size());
+		lua_rawseti(L, -2, idx++);
+	}
+	lua_setfield(L, -2, "textures");
+
 	push_ARGB8(L, i.color);
 	lua_setfield(L, -2, "color");
 	push_v3f(L, i.wield_scale);

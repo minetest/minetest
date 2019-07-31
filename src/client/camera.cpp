@@ -56,8 +56,8 @@ Camera::Camera(MapDrawControl &draw_control, Client *client):
 	// all other 3D scene nodes and before the GUI.
 	m_wieldmgr = smgr->createNewSceneManager();
 	m_wieldmgr->addCameraSceneNode();
-	m_wieldnode = new WieldMeshSceneNode(m_wieldmgr, -1, false);
-	m_wieldnode->setItem(ItemStack(), m_client);
+	m_wieldnode = new WieldMeshSceneNode(m_wieldmgr, m_client, -1, false);
+	m_wieldnode->setItem(ItemStack());
 	m_wieldnode->drop(); // m_wieldmgr grabbed it
 
 	/* TODO: Add a callback function so these can be updated when a setting
@@ -125,7 +125,7 @@ void Camera::step(f32 dtime)
 	m_wield_change_timer = MYMIN(m_wield_change_timer + dtime, 0.125);
 
 	if (m_wield_change_timer >= 0 && was_under_zero)
-		m_wieldnode->setItem(m_wield_item_next, m_client);
+		m_wieldnode->setItem(m_wield_item_next);
 
 	if (m_view_bobbing_state != 0)
 	{

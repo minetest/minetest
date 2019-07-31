@@ -59,9 +59,11 @@ struct ItemDefinition
 	/*
 		Visual properties
 	*/
+	std::string mesh; // Optional, used instead of inventory_image and wield_image
+	std::vector<std::string> textures; // Required, if mesh is defined
 	std::string inventory_image; // Optional for nodes, mandatory for tools/craftitems
 	std::string inventory_overlay; // Overlay of inventory_image.
-	std::string wield_image; // If empty, inventory_image or mesh (only nodes) is used
+	std::string wield_image; // If empty, mesh or inventory_image is used
 	std::string wield_overlay; // Overlay of wield_image.
 	std::string palette_image; // If specified, the item will be colorized based on this
 	video::SColor color; // The fallback color of the node.
@@ -107,20 +109,20 @@ public:
 	virtual ~IItemDefManager() = default;
 
 	// Get item definition
-	virtual const ItemDefinition& get(const std::string &name) const=0;
+	virtual const ItemDefinition& get(const std::string &name) const = 0;
 	// Get alias definition
-	virtual const std::string &getAlias(const std::string &name) const=0;
+	virtual const std::string &getAlias(const std::string &name) const = 0;
 	// Get set of all defined item names and aliases
-	virtual void getAll(std::set<std::string> &result) const=0;
+	virtual void getAll(std::set<std::string> &result) const = 0;
 	// Check if item is known
-	virtual bool isKnown(const std::string &name) const=0;
+	virtual bool isKnown(const std::string &name) const = 0;
 #ifndef SERVER
 	// Get item inventory texture
 	virtual video::ITexture* getInventoryTexture(const std::string &name,
-			Client *client) const=0;
+		Client *client) const = 0;
 	// Get item wield mesh
 	virtual ItemMesh* getWieldMesh(const std::string &name,
-		Client *client) const=0;
+		Client *client) const = 0;
 	// Get item palette
 	virtual Palette* getPalette(const std::string &name,
 		Client *client) const = 0;
@@ -130,7 +132,7 @@ public:
 		Client *client) const = 0;
 #endif
 
-	virtual void serialize(std::ostream &os, u16 protocol_version)=0;
+	virtual void serialize(std::ostream &os, u16 protocol_version) = 0;
 };
 
 class IWritableItemDefManager : public IItemDefManager
@@ -141,39 +143,39 @@ public:
 	virtual ~IWritableItemDefManager() = default;
 
 	// Get item definition
-	virtual const ItemDefinition& get(const std::string &name) const=0;
+	virtual const ItemDefinition& get(const std::string &name) const = 0;
 	// Get alias definition
-	virtual const std::string &getAlias(const std::string &name) const=0;
+	virtual const std::string &getAlias(const std::string &name) const = 0;
 	// Get set of all defined item names and aliases
-	virtual void getAll(std::set<std::string> &result) const=0;
+	virtual void getAll(std::set<std::string> &result) const = 0;
 	// Check if item is known
-	virtual bool isKnown(const std::string &name) const=0;
+	virtual bool isKnown(const std::string &name) const = 0;
 #ifndef SERVER
 	// Get item inventory texture
 	virtual video::ITexture* getInventoryTexture(const std::string &name,
-			Client *client) const=0;
+			Client *client) const = 0;
 	// Get item wield mesh
 	virtual ItemMesh* getWieldMesh(const std::string &name,
-		Client *client) const=0;
+		Client *client) const = 0;
 #endif
 
 	// Remove all registered item and node definitions and aliases
 	// Then re-add the builtin item definitions
-	virtual void clear()=0;
+	virtual void clear() = 0;
 	// Register item definition
-	virtual void registerItem(const ItemDefinition &def)=0;
-	virtual void unregisterItem(const std::string &name)=0;
+	virtual void registerItem(const ItemDefinition &def) = 0;
+	virtual void unregisterItem(const std::string &name) = 0;
 	// Set an alias so that items named <name> will load as <convert_to>.
 	// Alias is not set if <name> has already been defined.
 	// Alias will be removed if <name> is defined at a later point of time.
 	virtual void registerAlias(const std::string &name,
-			const std::string &convert_to)=0;
+			const std::string &convert_to) = 0;
 
-	virtual void serialize(std::ostream &os, u16 protocol_version)=0;
-	virtual void deSerialize(std::istream &is)=0;
+	virtual void serialize(std::ostream &os, u16 protocol_version) = 0;
+	virtual void deSerialize(std::istream &is) = 0;
 
 	// Do stuff asked by threads that can only be done in the main thread
-	virtual void processQueue(IGameDef *gamedef)=0;
+	virtual void processQueue(IGameDef *gamedef) = 0;
 };
 
 IWritableItemDefManager* createItemDefManager();

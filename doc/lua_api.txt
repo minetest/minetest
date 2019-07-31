@@ -3657,6 +3657,7 @@ Utilities
           -- Specifies whether binary data can be uploaded or downloaded using
           -- the HTTP API (5.1.0)
           httpfetch_binary_data = true,
+          mesh_items = true,
       }
 
 * `minetest.has_feature(arg)`: returns `boolean, missing_features`
@@ -6015,6 +6016,11 @@ Used by `minetest.register_node`, `minetest.register_craftitem`, and
         --      {soil = 2, outerspace = 1, crumbly = 1}
         --      {bendy = 2, snappy = 1},
         --      {hard = 1, metal = 1, spikes = 1}
+
+        mesh = "",
+        -- Requires `textures` to be defined.
+
+        textures = {},
 
         inventory_image = "default_tool_steelaxe.png",
 

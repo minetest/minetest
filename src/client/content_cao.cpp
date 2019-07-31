@@ -730,10 +730,9 @@ void GenericCAO::addToScene(ITextureSource *tsrc)
 			addDummyTransformationSceneNode(nullptr);
 		m_matrixnode->grab();
 		m_wield_meshnode = new WieldMeshSceneNode(
-			RenderingEngine::get_scene_manager(), -1);
+			RenderingEngine::get_scene_manager(), m_client, -1);
 		m_wield_meshnode->setParent(m_matrixnode);
-		m_wield_meshnode->setItem(item, m_client,
-			(m_prop.visual == "wielditem"));
+		m_wield_meshnode->setItem(item, (m_prop.visual == "wielditem"));
 
 		m_wield_meshnode->setScale(m_prop.visual_size / 2.0f);
 		u8 li = m_last_light;

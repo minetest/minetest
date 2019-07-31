@@ -24,6 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "irrlichttypes_extrabloated.h"
 
 struct ItemStack;
+struct ItemDefinition;
 class Client;
 class ITextureSource;
 struct ContentFeatures;
@@ -74,14 +75,17 @@ struct ItemMesh
 class WieldMeshSceneNode : public scene::ISceneNode
 {
 public:
-	WieldMeshSceneNode(scene::ISceneManager *mgr, s32 id = -1, bool lighting = false);
+	WieldMeshSceneNode(scene::ISceneManager *mgr, Client *client, s32 id = -1, bool lighting = false);
 	virtual ~WieldMeshSceneNode();
 
+	// Helper function to setup material flags for the mesh texture
+	void setupMaterial();
+
+	void setMeshItem(const std::string &item_name);
 	void setCube(const ContentFeatures &f, v3f wield_scale);
 	void setExtruded(const std::string &imagename, const std::string &overlay_image,
-			v3f wield_scale, ITextureSource *tsrc, u8 num_frames);
-	void setItem(const ItemStack &item, Client *client,
-			bool check_wield_image = true);
+		v3f wield_scale, u8 num_frames);
+	void setItem(const ItemStack &item, bool check_wield_prop = true);
 
 	// Sets the vertex color of the wield mesh.
 	// Must only be used if the constructor was called with lighting = false
@@ -96,9 +100,11 @@ public:
 private:
 	void changeToMesh(scene::IMesh *mesh);
 
-	// Child scene node with the current wield mesh
+	// Child scene node of the current wield mesh
 	scene::IMeshSceneNode *m_meshnode = nullptr;
 	video::E_MATERIAL_TYPE m_material_type;
+
+	Client *m_client = nullptr;
 
 	// True if EMF_LIGHTING should be enabled.
 	bool m_lighting;
@@ -123,6 +129,8 @@ private:
 	// getBoundingBox() and is set to an empty box.
 	aabb3f m_bounding_box;
 };
+
+scene::SMesh *createMeshItem(Client *client, const ItemDefinition &def);
 
 void getItemMesh(Client *client, const ItemStack &item, ItemMesh *result);
 

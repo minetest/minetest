@@ -56,7 +56,7 @@ ItemDefinition::ItemDefinition(const ItemDefinition &def)
 	*this = def;
 }
 
-ItemDefinition& ItemDefinition::operator=(const ItemDefinition &def)
+ItemDefinition &ItemDefinition::operator=(const ItemDefinition &def)
 {
 	if(this == &def)
 		return *this;
@@ -66,19 +66,20 @@ ItemDefinition& ItemDefinition::operator=(const ItemDefinition &def)
 	type = def.type;
 	name = def.name;
 	description = def.description;
+	mesh = def.mesh;
 	inventory_image = def.inventory_image;
 	inventory_overlay = def.inventory_overlay;
 	wield_image = def.wield_image;
 	wield_overlay = def.wield_overlay;
+	textures = def.textures;
 	wield_scale = def.wield_scale;
 	stack_max = def.stack_max;
 	usable = def.usable;
 	liquids_pointable = def.liquids_pointable;
-	if(def.tool_capabilities)
-	{
-		tool_capabilities = new ToolCapabilities(
-				*def.tool_capabilities);
-	}
+
+	if (def.tool_capabilities)
+		tool_capabilities = new ToolCapabilities(*def.tool_capabilities);
+
 	groups = def.groups;
 	node_placement_prediction = def.node_placement_prediction;
 	sound_place = def.sound_place;
@@ -86,6 +87,7 @@ ItemDefinition& ItemDefinition::operator=(const ItemDefinition &def)
 	range = def.range;
 	palette_image = def.palette_image;
 	color = def.color;
+
 	return *this;
 }
 
@@ -106,11 +108,13 @@ void ItemDefinition::reset()
 	type = ITEM_NONE;
 	name = "";
 	description = "";
+	mesh = "";
 	inventory_image = "";
 	inventory_overlay = "";
 	wield_image = "";
 	wield_overlay = "";
 	palette_image = "";
+	textures.clear();
 	color = video::SColor(0xFFFFFFFF);
 	wield_scale = v3f(1.0, 1.0, 1.0);
 	stack_max = 99;
@@ -166,6 +170,14 @@ void ItemDefinition::serialize(std::ostream &os, u16 protocol_version) const
 	writeARGB8(os, color);
 	os << serializeString(inventory_overlay);
 	os << serializeString(wield_overlay);
+
+	os << serializeString(mesh);
+
+	u16 count = textures.size();
+	writeU16(os, count);
+	for (u16 i = 0; i < count; ++i) {
+		os << serializeString(textures.at(i));
+	}
 }
 
 void ItemDefinition::deSerialize(std::istream &is)
@@ -217,8 +229,15 @@ void ItemDefinition::deSerialize(std::istream &is)
 
 	// If you add anything here, insert it primarily inside the try-catch
 	// block to not need to increase the version.
-	//try {
-	//} catch(SerializationError &e) {};
+	try {
+		mesh = deSerializeString(is);
+
+		u16 count = readU16(is);
+		textures.reserve(count);
+		for (u16 i = 0; i < count; ++i) {
+			textures.emplace_back(deSerializeString(is));
+		}
+	} catch(SerializationError &e) {}
 }
 
 
@@ -269,14 +288,14 @@ public:
 		}
 		m_item_definitions.clear();
 	}
-	virtual const ItemDefinition& get(const std::string &name_) const
+	virtual const ItemDefinition &get(const std::string &name_) const
 	{
 		// Convert name according to possible alias
 		std::string name = getAlias(name_);
 		// Get the definition
-		std::map<std::string, ItemDefinition*>::const_iterator i;
+		std::map<std::string, ItemDefinition *>::const_iterator i;
 		i = m_item_definitions.find(name);
-		if(i == m_item_definitions.end())
+		if (i == m_item_definitions.end())
 			i = m_item_definitions.find("unknown");
 		assert(i != m_item_definitions.end());
 		return *(i->second);
@@ -309,7 +328,7 @@ public:
 	}
 #ifndef SERVER
 public:
-	ClientCached* createClientCachedDirect(const std::string &name,
+	ClientCached *createClientCachedDirect(const std::string &name,
 			Client *client) const
 	{
 		infostream<<"Lazily creating item texture and mesh for \""
@@ -347,7 +366,7 @@ public:
 
 		return cc;
 	}
-	ClientCached* getClientCached(const std::string &name,
+	ClientCached *getClientCached(const std::string &name,
 			Client *client) const
 	{
 		ClientCached *cc = NULL;
@@ -381,7 +400,7 @@ public:
 		}
 	}
 	// Get item inventory texture
-	virtual video::ITexture* getInventoryTexture(const std::string &name,
+	virtual video::ITexture *getInventoryTexture(const std::string &name,
 			Client *client) const
 	{
 		ClientCached *cc = getClientCached(name, client);
@@ -390,7 +409,7 @@ public:
 		return cc->inventory_texture;
 	}
 	// Get item wield mesh
-	virtual ItemMesh* getWieldMesh(const std::string &name,
+	virtual ItemMesh *getWieldMesh(const std::string &name,
 			Client *client) const
 	{
 		ClientCached *cc = getClientCached(name, client);
@@ -400,7 +419,7 @@ public:
 	}
 
 	// Get item palette
-	virtual Palette* getPalette(const std::string &name,
+	virtual Palette *getPalette(const std::string &name,
 			Client *client) const
 	{
 		ClientCached *cc = getClientCached(name, client);
@@ -444,23 +463,23 @@ public:
 		//   "air" is the air node
 		//   "ignore" is the ignore node
 
-		ItemDefinition* hand_def = new ItemDefinition;
+		ItemDefinition *hand_def = new ItemDefinition;
 		hand_def->name = "";
 		hand_def->wield_image = "wieldhand.png";
 		hand_def->tool_capabilities = new ToolCapabilities;
 		m_item_definitions.insert(std::make_pair("", hand_def));
 
-		ItemDefinition* unknown_def = new ItemDefinition;
+		ItemDefinition *unknown_def = new ItemDefinition;
 		unknown_def->type = ITEM_NODE;
 		unknown_def->name = "unknown";
 		m_item_definitions.insert(std::make_pair("unknown", unknown_def));
 
-		ItemDefinition* air_def = new ItemDefinition;
+		ItemDefinition *air_def = new ItemDefinition;
 		air_def->type = ITEM_NODE;
 		air_def->name = "air";
 		m_item_definitions.insert(std::make_pair("air", air_def));
 
-		ItemDefinition* ignore_def = new ItemDefinition;
+		ItemDefinition *ignore_def = new ItemDefinition;
 		ignore_def->type = ITEM_NODE;
 		ignore_def->name = "ignore";
 		m_item_definitions.insert(std::make_pair("ignore", ignore_def));
@@ -553,7 +572,7 @@ public:
 	void processQueue(IGameDef *gamedef)
 	{
 #ifndef SERVER
-		//NOTE this is only thread safe for ONE consumer thread!
+		// NOTE this is only thread safe for ONE consumer thread!
 		while(!m_get_clientcached_queue.empty())
 		{
 			GetRequest<std::string, ClientCached*, u8, u8>
@@ -581,7 +600,7 @@ private:
 #endif
 };
 
-IWritableItemDefManager* createItemDefManager()
+IWritableItemDefManager *createItemDefManager()
 {
 	return new CItemDefManager();
 }
