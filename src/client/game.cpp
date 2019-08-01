@@ -4258,6 +4258,6 @@ void the_game(bool *kill,
 	} catch (ModError &e) {
 		error_message = std::string("ModError: ") + e.what() +
 				strgettext("\nCheck debug.txt for details.");
-		errorstream << "ModError: " << error_message << std::endl;
+		errorstream << error_message << std::endl;
 	}
 }
