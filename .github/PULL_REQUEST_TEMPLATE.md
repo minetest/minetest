@@ -4,7 +4,7 @@
 <!-- Elaborate on the changes, if applicable, or delete this heading -->
 
 ### Use-cases
-<!-- Which use cases does this PR serve? Delete this heading if the PR does not implement new features -->
+<!-- What use cases does this PR serve? Delete this heading if the PR does not implement new features -->
 
 ****
 
