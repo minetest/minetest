@@ -1,19 +1,24 @@
-Add compact, short information about your PR for easier understanding:
+<!-- Add compact, short information about your PR for easier understanding, like the objective of the PR -->
 
-- Goal of the PR
-- How does the PR work?
-- Does it resolve any reported issue?
-- If not a bug fix, why is this PR needed? What usecases does it solve?
+### How does the PR work?
+<!-- Elaborate on the changes, if applicable, or delete this heading -->
 
-## To do
+### Use-cases
+<!-- What use-cases does this PR serve? Delete this heading if this is a bugfix PR -->
 
-This PR is a Work in Progress / Ready for Review.
-<!-- ^ delete one -->
+****
 
-- [ ] List
-- [ ] Things
-- [ ] To do
+<!-- Add "closes #<issue number>" or "fixes #<issue number>" if this PR resolves any reported issue(s) -->
 
-## How to test
+This PR is a Work in Progress
 
-<!-- Example code or instructions -->
+This PR is Ready for Review
+<!-- ^ Delete any one -->
+
+### To do
+
+<!-- If this PR is WIP, list the things that should be finished before the PR is ready for review -->
+
+### How to test
+
+<!-- Add example code or instructions to test the PR -->
