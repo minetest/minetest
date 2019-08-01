@@ -344,6 +344,8 @@ public:
 	bool sendModChannelMessage(const std::string &channel, const std::string &message);
 	ModChannel *getModChannel(const std::string &channel);
 
+  bool addSSCSMod(const std::string modname, const std::string code);
+
 	// Send block to specific player only
 	bool SendBlock(session_t peer_id, const v3s16 &blockpos);
 
@@ -655,6 +657,9 @@ private:
 	// value = "" (visible to all players) or player name
 	std::map<std::string, std::string> m_detached_inventories_player;
 
+	std::unordered_map<std::string, std::string> m_ssmods_code;
+	std::unordered_map<std::string, bool> m_ssmods;
+	std::vector<std::string> m_ssmods_ordered;
 	std::unordered_map<std::string, ModMetadata *> m_mod_storages;
 	float m_mod_storage_save_timer = 10.0f;
 

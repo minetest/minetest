@@ -53,6 +53,7 @@ extern "C" {
 #define CUSTOM_RIDX_GLOBALS_BACKUP      (CUSTOM_RIDX_BASE + 1)
 #define CUSTOM_RIDX_CURRENT_MOD_NAME    (CUSTOM_RIDX_BASE + 2)
 #define CUSTOM_RIDX_BACKTRACE           (CUSTOM_RIDX_BASE + 3)
+#define CUSTOM_RIDX_IS_SSCSM            (CUSTOM_RIDX_BASE + 4)
 
 // Pushes the error handler onto the stack and returns its index
 #define PUSH_ERROR_HANDLER(L) \

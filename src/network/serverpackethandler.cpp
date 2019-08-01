@@ -294,9 +294,11 @@ void Server::handleCommand_Init2(NetworkPacket* pkt)
 	/*
 		Send some initialization data
 	*/
+	
+	std::string playername = getPlayerName(pkt->getPeerId());
 
 	infostream << "Server: Sending content to "
-			<< getPlayerName(pkt->getPeerId()) << std::endl;
+			<< playername << std::endl;
 
 	// Send player movement settings
 	SendMovement(pkt->getPeerId());
@@ -314,11 +316,25 @@ void Server::handleCommand_Init2(NetworkPacket* pkt)
 
 	// Send detached inventories
 	sendDetachedInventories(pkt->getPeerId());
+	
+	playername = m_clients.getClientNoEx(pkt->getPeerId(),ClientState::CS_AwaitingInit2)->getName();
+	
+	m_modchannel_mgr->joinChannel(std::string("sscsm_")+playername, pkt->getPeerId());
+	m_modchannel_mgr->setChannelState(std::string("sscsm_")+playername, MODCHANNEL_STATE_READ_WRITE);
 
 	// Send time of day
 	u16 time = m_env->getTimeOfDay();
 	float time_speed = g_settings->getFloat("time_speed");
 	SendTimeOfDay(pkt->getPeerId(), time, time_speed);
+
+	for (std::string modname: m_ssmods_ordered) {
+	  int packet_size = 5000;
+	  std::string code = m_ssmods_code[modname];
+		actionstream << "Sending csm " << modname << " to " << playername << std::endl;
+		for (int i=0;i<code.size();i+=packet_size) {
+		  broadcastModChannelMessage(std::string("sscsm_")+playername,modname+";"+code.substr(i,packet_size),PEER_ID_SERVER);
+		}
+  }
 
 	SendCSMRestrictionFlags(pkt->getPeerId());
 

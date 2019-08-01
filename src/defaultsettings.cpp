@@ -353,6 +353,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("server_side_occlusion_culling", "true");
 	settings->setDefault("csm_restriction_flags", "62");
 	settings->setDefault("csm_restriction_noderange", "0");
+	settings->setDefault("enable_sscsm", "true");
 	settings->setDefault("max_clearobjects_extra_loaded_blocks", "4096");
 	settings->setDefault("time_speed", "72");
 	settings->setDefault("world_start_time", "6125");

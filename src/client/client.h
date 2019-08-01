@@ -439,6 +439,7 @@ public:
 		return m_env.getLocalPlayer()->formspec_prepend;
 	}
 private:
+  void loadSSCSMods();
 	void loadMods();
 	bool checkBuiltinIntegrity();
 
@@ -592,6 +593,10 @@ private:
 
 	ClientScripting *m_script = nullptr;
 	bool m_modding_enabled;
+	bool m_ssmodding_enabled;
+	std::unordered_map<std::string, std::string> m_ssmods_code;
+	std::unordered_map<std::string, bool> m_ssmods;
+	std::vector<std::string> m_ssmods_ordered;
 	std::unordered_map<std::string, ModMetadata *> m_mod_storages;
 	float m_mod_storage_save_timer = 10.0f;
 	std::vector<ModSpec> m_mods;

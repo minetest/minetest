@@ -3733,10 +3733,21 @@ ModChannel* Server::getModChannel(const std::string &channel)
 	return m_modchannel_mgr->getModChannel(channel);
 }
 
+bool Server::addSSCSMod(const std::string modname, const std::string code)
+{
+  if (m_ssmods[modname]){
+    return false;
+  }
+  m_ssmods[modname] = true;
+  m_ssmods_ordered.push_back(modname);
+  m_ssmods_code[modname] = code;
+  return true;
+}
+
 void Server::broadcastModChannelMessage(const std::string &channel,
 		const std::string &message, session_t from_peer)
 {
-	const std::vector<u16> &peers = m_modchannel_mgr->getChannelPeers(channel);
+	std::vector<u16> peers = m_modchannel_mgr->getChannelPeers(channel);
 	if (peers.empty())
 		return;
 
@@ -3759,7 +3770,7 @@ void Server::broadcastModChannelMessage(const std::string &channel,
 		// Ignore sender
 		if (peer_id == from_peer)
 			continue;
-
+    infostream << "Sent modchannel message on channel " << channel << " to " << peer_id << " from " << sender << std::endl;
 		Send(peer_id, &resp_pkt);
 	}
 

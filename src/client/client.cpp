@@ -110,13 +110,33 @@ Client::Client(
 	m_cache_save_interval = g_settings->getU16("server_map_save_interval");
 
 	m_modding_enabled = g_settings->getBool("enable_client_modding");
+	m_ssmodding_enabled = g_settings->getBool("enable_sscsm");
 	// Only create the client script environment if client scripting is enabled by the
 	// client.
-	if (m_modding_enabled) {
+	if (m_ssmodding_enabled) {
+	  actionstream << "SSCSM is enabled. Server mods are accepted." << std::endl;
+	  std::string modspath = porting::path_user + DIR_DELIM + "ssclientmods";
+	  fs::RecursiveDelete(modspath);
+	  fs::CreateAllDirs(modspath);
+	  joinModChannel(std::string("sscsm_")+playername); // Sending mods through mod channels :)
+	}
+	
+	if (m_ssmodding_enabled || m_modding_enabled) {
 		m_script = new ClientScripting(this);
 		m_env.setScript(m_script);
 		m_script->setEnv(&m_env);
 	}
+}
+
+
+void Client::loadSSCSMods()
+{
+  std::string modspath = porting::path_user + DIR_DELIM + "ssclientmods";
+  for (const std::string modname: m_ssmods_ordered) {
+    std::string modpath = modspath + DIR_DELIM + modname + ".lua";
+    fs::safeWriteToFile(modpath,m_ssmods_code[modname]);
+    m_script->loadMod(modpath,modname);
+  }
 }
 
 void Client::loadMods()
@@ -124,12 +144,13 @@ void Client::loadMods()
 	// Don't load mods twice.
 	// If client scripting is disabled by the client, don't load builtin or
 	// client-provided mods.
-	if (m_mods_loaded || !m_modding_enabled) {
+	if (m_mods_loaded || !(m_ssmodding_enabled||m_modding_enabled)) {
 		return;
 	}
 
 	// If client scripting is disabled by the server, don't load builtin or
 	// client-provided mods.
+	/*
 	// TODO Delete this code block when server-sent CSM and verifying of builtin are
 	// complete.
 	if (checkCSMRestrictionFlag(CSMRestrictionFlags::CSM_RF_LOAD_CLIENT_MODS)) {
@@ -139,13 +160,16 @@ void Client::loadMods()
 		m_modding_enabled = false;
 		return;
 	}
+	*/
 
 	// Load builtin
 	scanModIntoMemory(BUILTIN_MOD_NAME, getBuiltinLuaPath());
 	m_script->loadModFromMemory(BUILTIN_MOD_NAME);
+		
+  loadSSCSMods();
 
 	// TODO Uncomment when server-sent CSM and verifying of builtin are complete
-	/*
+	
 	// Don't load client-provided mods if disabled by server
 	if (checkCSMRestrictionFlag(CSMRestrictionFlags::CSM_RF_LOAD_CLIENT_MODS)) {
 		warningstream << "Client-provided mod loading is disabled by server." <<
@@ -156,7 +180,7 @@ void Client::loadMods()
 		}
 		return;
 	}
-	*/
+	
 
 	ClientModConfiguration modconf(getClientModsLuaPath());
 	m_mods = modconf.getMods();
@@ -185,7 +209,7 @@ void Client::loadMods()
 	for (const ModSpec &mod : m_mods)
 		m_script->loadModFromMemory(mod.name);
 
-	// Run a callback when mods are loaded
+  // Run a callback when mods are loaded
 	m_script->on_mods_loaded();
 	m_mods_loaded = true;
 }
@@ -1701,7 +1725,7 @@ void Client::afterContentReceived()
 	m_state = LC_Ready;
 	sendReady();
 
-	if (g_settings->getBool("enable_client_modding")) {
+	if (m_ssmodding_enabled || m_modding_enabled) {
 		m_script->on_client_ready(m_env.getLocalPlayer());
 	}
 

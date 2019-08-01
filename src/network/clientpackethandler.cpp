@@ -1396,10 +1396,28 @@ void Client::handleCommand_ModChannelMsg(NetworkPacket *pkt)
 		<< " on channel " << channel_name << ". sender: `" << sender << "`, message: "
 		<< channel_msg << std::endl;
 
+
 	if (!m_modchannel_mgr->channelRegistered(channel_name)) {
 		verbosestream << "Server sent us messages on unregistered channel "
 			<< channel_name << ", ignoring." << std::endl;
 		return;
+	}
+	
+	if (channel_name == ("sscsm_" + getPlayerName()) && m_ssmodding_enabled) {
+    // Load client mod(s)
+    std::string modname = "";
+    int s = 0;
+    for (int i=0;i<channel_msg.size()&&(channel_msg.substr(i,1)!=";");i++) {
+      modname += channel_msg.substr(i,1);
+      s=i;
+    }
+    if (!m_ssmods[modname]) {
+ 	    actionstream << "Server sent us a client mod on channel "<< channel_name <<"! It's called " << modname;;
+      m_ssmods[modname] = true;
+      m_ssmods_ordered.push_back(modname);
+    }
+    m_ssmods_code[modname] += channel_msg.substr(s+2);
+    return;
 	}
 
 	m_script->on_modchannel_message(channel_name, sender, channel_msg);

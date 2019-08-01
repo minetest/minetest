@@ -39,6 +39,17 @@ int ModApiServer::l_request_shutdown(lua_State *L)
 	return 0;
 }
 
+// register_csm(name,code)
+int ModApiServer::l_register_csm(lua_State *L)
+{
+  NO_MAP_LOCK_REQUIRED;
+	const char *name = luaL_checkstring(L, 1);
+	size_t size;
+	const char *code = luaL_checklstring(L, 2, &size);
+	getServer(L)->addSSCSMod(std::string(name),std::string(code));
+  return 1;
+}
+
 // get_server_status()
 int ModApiServer::l_get_server_status(lua_State *L)
 {
@@ -504,6 +515,7 @@ int ModApiServer::l_set_last_run_mod(lua_State *L)
 void ModApiServer::Initialize(lua_State *L, int top)
 {
 	API_FCT(request_shutdown);
+	API_FCT(register_csm);
 	API_FCT(get_server_status);
 	API_FCT(get_server_uptime);
 	API_FCT(get_worldpath);
