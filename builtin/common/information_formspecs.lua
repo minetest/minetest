@@ -140,6 +140,6 @@ help_command.func = function(name, param)
 		return 
 	end
 
-	old_help_func(name, param)
+	return old_help_func(name, param)
 end
 
