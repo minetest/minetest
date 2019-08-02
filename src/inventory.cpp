@@ -884,7 +884,9 @@ void Inventory::deSerialize(std::istream &is)
 			InventoryList *list = getList(listname);
 			bool create_new = !list;
 			if (create_new)
-				 list = new InventoryList(listname, listsize, m_itemdef);
+				list = new InventoryList(listname, listsize, m_itemdef);
+			else
+				list->setSize(listsize);
 			list->deSerialize(is);
 
 			new_lists.push_back(list);

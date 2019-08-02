@@ -1529,9 +1529,12 @@ void Server::SendNodeDef(session_t peer_id,
 
 void Server::SendInventory(PlayerSAO *sao, bool incremental)
 {
-	UpdateCrafting(sao->getPlayer());
+	RemotePlayer *player = sao->getPlayer();
+
 	// Do not send new format to old clients
-	incremental &= sao->getPlayer()->protocol_version >= 38;
+	incremental &= player->protocol_version >= 38;
+
+	UpdateCrafting(player);
 
 	/*
 		Serialize it
@@ -1539,12 +1542,12 @@ void Server::SendInventory(PlayerSAO *sao, bool incremental)
 
 	NetworkPacket pkt(TOCLIENT_INVENTORY, 0, sao->getPeerID());
 
-	std::ostringstream os;
-	sao->getInventory()->serialize(os, incremental);
+	std::ostringstream os(std::ios::binary);
+	sao->getInventory()->serialize(os, false);
 	sao->getInventory()->setModified(false);
+	player->setModified(true);
 
-	std::string s = os.str();
-
+	const std::string &s = os.str();
 	pkt.putRawString(s.c_str(), s.size());
 	Send(&pkt);
 }

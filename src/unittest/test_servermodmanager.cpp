@@ -20,6 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "test.h"
 #include <algorithm>
 #include "server/mods.h"
+#include "settings.h"
 #include "test_config.h"
 
 class TestServerModManager : public TestBase
@@ -85,6 +86,10 @@ void TestServerModManager::runTests(IGameDef *gamedef)
 
 void TestServerModManager::testCreation()
 {
+	std::string path = std::string(TEST_WORLDDIR) + DIR_DELIM + "world.mt";
+	Settings world_config;
+	world_config.set("gameid", "minimal");
+	UASSERTEQ(bool, world_config.updateConfigFile(path.c_str()), true);
 	ServerModManager sm(TEST_WORLDDIR);
 }
 

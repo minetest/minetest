@@ -36,7 +36,6 @@ public:
 	static const char *serialized_inventory_in;
 	static const char *serialized_inventory_out;
 	static const char *serialized_inventory_inc;
-	static const char *serialized_inventory_inc2;
 };
 
 static TestInventory g_test_instance;
@@ -68,12 +67,13 @@ void TestInventory::testSerializeDeserialize(IItemDefManager *idef)
 	UASSERTEQ(std::string, inv_os.str(), serialized_inventory_out);
 
 	inv.setModified(false);
+	inv_os.str("");
 	inv_os.clear();
 	inv.serialize(inv_os, true);
 	UASSERTEQ(std::string, inv_os.str(), serialized_inventory_inc);
 
 	ItemStack leftover = inv.getList("main")->takeItem(7, 99 - 12);
-	ItemStack wanted = ItemStack("default:dirt", 99 - 12, 0, nullptr);
+	ItemStack wanted = ItemStack("default:dirt", 99 - 12, 0, idef);
 	UASSERT(leftover == wanted);
 	leftover = inv.getList("main")->getItem(7);
 	wanted.count = 12;
@@ -96,6 +96,7 @@ const char *TestInventory::serialized_inventory_in =
 	"EndInventoryList\n"
 	"List abc 1\n"
 	"Item default:stick 3\n"
+	"Width 0\n"
 	"EndInventoryList\n"
 	"EndInventory\n";
 
@@ -114,6 +115,7 @@ const char *TestInventory::serialized_inventory_out =
 	"Empty\n"
 	"EndInventoryList\n"
 	"List abc 1\n"
+	"Width 0\n"
 	"Item default:stick 3\n"
 	"EndInventoryList\n"
 	"EndInventory\n";
@@ -122,21 +124,3 @@ const char *TestInventory::serialized_inventory_inc =
 	"KeepList main\n"
 	"KeepList abc\n"
 	"EndInventory\n";
-
-const char *TestInventory::serialized_inventory_inc2 =
-	"List main 12\n"
-	"Width 5\n"
-	"Empty\n"
-	"Empty\n"
-	"Keep\n"
-	"Empty\n"
-	"Empty\n"
-	"Keep\n"
-	"Empty\n"
-	"Item default:dirt 12\n"
-	"Keep\n"
-	"Empty\n"
-	"EndInventoryList\n"
-	"KeepList abc\n"
-	"EndInventory\n";
-
