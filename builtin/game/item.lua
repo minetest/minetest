@@ -260,7 +260,7 @@ function core.item_place_node(itemstack, placer, pointed_thing, param2,
 		prevent_after_place)
 	local def = itemstack:get_definition()
 	if def.type ~= "node" or pointed_thing.type ~= "node" then
-		return itemstack, false
+		return itemstack, nil
 	end
 
 	local under = pointed_thing.under
@@ -273,7 +273,7 @@ function core.item_place_node(itemstack, placer, pointed_thing, param2,
 	if not oldnode_under or not oldnode_above then
 		log("info", playername .. " tried to place"
 			.. " node in unloaded position " .. core.pos_to_string(above))
-		return itemstack, false
+		return itemstack, nil
 	end
 
 	local olddef_under = core.registered_nodes[oldnode_under.name]
@@ -285,7 +285,7 @@ function core.item_place_node(itemstack, placer, pointed_thing, param2,
 		log("info", playername .. " tried to place"
 			.. " node in invalid position " .. core.pos_to_string(above)
 			.. ", replacing " .. oldnode_above.name)
-		return itemstack, false
+		return itemstack, nil
 	end
 
 	-- Place above pointed node
@@ -303,7 +303,7 @@ function core.item_place_node(itemstack, placer, pointed_thing, param2,
 				.. " at protected position "
 				.. core.pos_to_string(place_to))
 		core.record_protection_violation(place_to, playername)
-		return itemstack
+		return itemstack, nil
 	end
 
 	log("action", playername .. " places node "
@@ -362,7 +362,7 @@ function core.item_place_node(itemstack, placer, pointed_thing, param2,
 		not builtin_shared.check_attached_node(place_to, newnode) then
 		log("action", "attached node " .. def.name ..
 			" can not be placed at " .. core.pos_to_string(place_to))
-		return itemstack, false
+		return itemstack, nil
 	end
 
 	-- Add node and update
@@ -396,7 +396,7 @@ function core.item_place_node(itemstack, placer, pointed_thing, param2,
 	if take_item then
 		itemstack:take_item()
 	end
-	return itemstack, true
+	return itemstack, place_to
 end
 
 function core.item_place_object(itemstack, placer, pointed_thing)
