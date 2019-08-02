@@ -182,7 +182,7 @@ void RemotePlayer::serialize(std::ostream &os)
 
 	os<<"PlayerArgsEnd\n";
 
-	inventory.serialize(os);
+	inventory.serialize(os, false);
 }
 
 const RemotePlayerChatResult RemotePlayer::canSendChatMessage()

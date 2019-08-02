@@ -274,9 +274,7 @@ public:
 
 	// Returns true if the inventory of the local player has been
 	// updated from the server. If it is true, it is set to false.
-	bool getLocalInventoryUpdated();
-	// Copies the inventory of the local player to parameter
-	void getLocalInventory(Inventory &dst);
+	bool updateWieldedItem();
 
 	/* InventoryManager interface */
 	Inventory* getInventory(const InventoryLocation &loc) override;
@@ -504,7 +502,7 @@ private:
 	// If 0, server init hasn't been received yet.
 	u16 m_proto_ver = 0;
 
-	bool m_inventory_updated = false;
+	bool m_update_wielded_item = false;
 	Inventory *m_inventory_from_server = nullptr;
 	float m_inventory_from_server_age = 0.0f;
 	PacketCounter m_packetcounter;

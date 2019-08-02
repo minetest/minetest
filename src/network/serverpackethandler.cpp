@@ -732,7 +732,7 @@ void Server::handleCommand_InventoryAction(NetworkPacket* pkt)
 	// Eat the action
 	delete a;
 
-	SendInventory(playersao);
+	SendInventory(playersao, true);
 }
 
 void Server::handleCommand_ChatMessage(NetworkPacket* pkt)
@@ -1310,7 +1310,7 @@ void Server::handleCommand_Interact(NetworkPacket *pkt)
 
 			// Apply returned ItemStack
 			if (playersao->setWieldedItem(item)) {
-				SendInventory(playersao);
+				SendInventory(playersao, true);
 			}
 		}
 
@@ -1346,7 +1346,7 @@ void Server::handleCommand_Interact(NetworkPacket *pkt)
 				item, playersao, pointed)) {
 			// Apply returned ItemStack
 			if (playersao->setWieldedItem(item)) {
-				SendInventory(playersao);
+				SendInventory(playersao, true);
 			}
 		}
 
@@ -1364,7 +1364,7 @@ void Server::handleCommand_Interact(NetworkPacket *pkt)
 		if (m_script->item_OnSecondaryUse(
 				item, playersao)) {
 			if( playersao->setWieldedItem(item)) {
-				SendInventory(playersao);
+				SendInventory(playersao, true);
 			}
 		}
 	} // action == INTERACT_ACTIVATE

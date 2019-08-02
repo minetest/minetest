@@ -1057,7 +1057,7 @@ PlayerSAO* Server::StageTwoClientInit(session_t peer_id)
 	SendPlayerInventoryFormspec(peer_id);
 
 	// Send inventory
-	SendInventory(playersao);
+	SendInventory(playersao, false);
 
 	// Send HP or death screen
 	if (playersao->isDead())
@@ -1253,7 +1253,7 @@ void Server::setInventoryModified(const InventoryLocation &loc, bool playerSend)
 		if(!playersao)
 			return;
 
-		SendInventory(playersao);
+		SendInventory(playersao, true);
 	}
 		break;
 	case InventoryLocation::NODEMETA:
@@ -1527,18 +1527,21 @@ void Server::SendNodeDef(session_t peer_id,
 	Non-static send methods
 */
 
-void Server::SendInventory(PlayerSAO* playerSAO)
+void Server::SendInventory(PlayerSAO *sao, bool incremental)
 {
-	UpdateCrafting(playerSAO->getPlayer());
+	UpdateCrafting(sao->getPlayer());
+	// Do not send new format to old clients
+	incremental &= sao->getPlayer()->protocol_version >= 38;
 
 	/*
 		Serialize it
 	*/
 
-	NetworkPacket pkt(TOCLIENT_INVENTORY, 0, playerSAO->getPeerID());
+	NetworkPacket pkt(TOCLIENT_INVENTORY, 0, sao->getPeerID());
 
 	std::ostringstream os;
-	playerSAO->getInventory()->serialize(os);
+	sao->getInventory()->serialize(os, incremental);
+	sao->getInventory()->setModified(false);
 
 	std::string s = os.str();
 
@@ -2591,7 +2594,8 @@ void Server::sendDetachedInventory(const std::string &name, session_t peer_id)
 
 		// Serialization & NetworkPacket isn't a love story
 		std::ostringstream os(std::ios_base::binary);
-		inv_it->second->serialize(os);
+		inv_it->second->serialize(os, false);
+		inv_it->second->setModified(false);
 
 		std::string os_str = os.str();
 		pkt << static_cast<u16>(os_str.size()); // HACK: to keep compatibility with 5.0.0 clients
@@ -2817,6 +2821,9 @@ void Server::UpdateCrafting(RemotePlayer *player)
 {
 	InventoryList *clist = player->inventory.getList("craft");
 	if (!clist || clist->getSize() == 0)
+		return;
+
+	if (!clist->checkModified())
 		return;
 
 	// Get a preview for crafting
