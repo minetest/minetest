@@ -897,8 +897,6 @@ void Inventory::deSerialize(std::istream &is)
 			std::getline(iss, listname, ' ');
 
 			InventoryList *list = getList(listname);
-			actionstream << "Inventory::deSerialize(): Skip list '" <<
-					listname << "'" << std::endl;
 			if (list)
 				new_lists.push_back(list);
 			else

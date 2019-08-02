@@ -332,9 +332,6 @@ void Client::handleCommand_Inventory(NetworkPacket* pkt)
 	assert(player != NULL);
 
 	player->inventory.deSerialize(is);
-	actionstream << "ClientInv: ";
-	for (const auto &list : player->inventory.getLists())
-		actionstream << list->getName() << ", ";
 	actionstream << std::endl;
 
 	m_update_wielded_item = true;
