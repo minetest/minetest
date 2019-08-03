@@ -899,11 +899,12 @@ void Inventory::deSerialize(std::istream &is)
 			std::getline(iss, listname, ' ');
 
 			InventoryList *list = getList(listname);
-			if (list)
+			if (list) {
 				new_lists.push_back(list);
-			else
+			} else {
 				errorstream << "Inventory::deSerialize(): Tried to keep list '" <<
 					listname << "' which is non-existent." << std::endl;
+			}
 		}
 		// Any additional fields will throw errors when received by a client
 		// older than PROTOCOL_VERSION 38

@@ -197,6 +197,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		Add TOCLIENT_PLAYER_SPEED
 	PROTOCOL VERSION 38:
 		Incremental inventory sending mode
+		Unknown inventory serialization fields no longer throw an error
 */
 
 #define LATEST_PROTOCOL_VERSION 38

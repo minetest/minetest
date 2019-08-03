@@ -58,7 +58,7 @@ void PlayerDatabaseFiles::serialize(std::ostringstream &os, RemotePlayer *player
 
 	os << "PlayerArgsEnd\n";
 
-	player->inventory.serialize(os, false);
+	player->inventory.serialize(os);
 }
 
 void PlayerDatabaseFiles::savePlayer(RemotePlayer *player)

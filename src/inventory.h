@@ -292,7 +292,7 @@ public:
 	}
 
 	// Never ever serialize to disk using "incremental"!
-	void serialize(std::ostream &os, bool incremental) const;
+	void serialize(std::ostream &os, bool incremental = false) const;
 	void deSerialize(std::istream &is);
 
 	InventoryList * addList(const std::string &name, u32 size);

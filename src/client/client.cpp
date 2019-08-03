@@ -1338,8 +1338,8 @@ void Client::setPlayerItem(u16 item)
 	Send(&pkt);
 }
 
-// Returns true if the inventory of the local player has been
-// updated from the server. If it is true, it is set to false.
+// Returns true once after the inventory of the local player
+// has been updated from the server.
 bool Client::updateWieldedItem()
 {
 	if (m_update_wielded_item) {

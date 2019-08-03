@@ -55,7 +55,7 @@ void NodeMetadata::serialize(std::ostream &os, u8 version, bool disk) const
 			writeU8(os, (priv) ? 1 : 0);
 	}
 
-	m_inventory->serialize(os, false);
+	m_inventory->serialize(os);
 }
 
 void NodeMetadata::deSerialize(std::istream &is, u8 version)

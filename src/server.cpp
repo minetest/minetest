@@ -1241,12 +1241,15 @@ void Server::setInventoryModified(const InventoryLocation &loc, bool playerSend)
 		break;
 	case InventoryLocation::PLAYER:
 	{
-		if (!playerSend)
-			return;
 
 		RemotePlayer *player = m_env->getPlayer(loc.name.c_str());
 
 		if (!player)
+			return;
+
+		player->setModified(true);
+
+		if (!playerSend)
 			return;
 
 		PlayerSAO *playersao = player->getPlayerSAO();
@@ -1543,7 +1546,7 @@ void Server::SendInventory(PlayerSAO *sao, bool incremental)
 	NetworkPacket pkt(TOCLIENT_INVENTORY, 0, sao->getPeerID());
 
 	std::ostringstream os(std::ios::binary);
-	sao->getInventory()->serialize(os, false);
+	sao->getInventory()->serialize(os, incremental);
 	sao->getInventory()->setModified(false);
 	player->setModified(true);
 
@@ -2597,10 +2600,10 @@ void Server::sendDetachedInventory(const std::string &name, session_t peer_id)
 
 		// Serialization & NetworkPacket isn't a love story
 		std::ostringstream os(std::ios_base::binary);
-		inv_it->second->serialize(os, false);
+		inv_it->second->serialize(os);
 		inv_it->second->setModified(false);
 
-		std::string os_str = os.str();
+		const std::string &os_str = os.str();
 		pkt << static_cast<u16>(os_str.size()); // HACK: to keep compatibility with 5.0.0 clients
 		pkt.putRawString(os_str);
 	}
@@ -2826,8 +2829,10 @@ void Server::UpdateCrafting(RemotePlayer *player)
 	if (!clist || clist->getSize() == 0)
 		return;
 
-	if (!clist->checkModified())
+	if (!clist->checkModified()) {
+		verbosestream << "Skip Server::UpdateCrafting(): list unmodified" << std::endl;
 		return;
+	}
 
 	// Get a preview for crafting
 	ItemStack preview;
