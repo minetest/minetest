@@ -996,11 +996,10 @@ int ModApiMainMenu::l_gettext(lua_State *L)
 int ModApiMainMenu::l_get_secure_settings(lua_State *L)
 {
 	if (ScriptApiSecurity::isSecure(L)) {
-		// We have to make sure that this function is being called directly by
-		// a mod, otherwise a malicious mod could override this function and
-		// steal its return value.
+		// We have to make sure that this function is being called by the correct
+		// whitelisted file, otherwise a malicious game script could change
+		// secure settings and escape the sandbox
 		lua_Debug info;
-		// Make sure there's only one item below this function on the stack...
 		if (lua_getstack(L, 6, &info)) {
 			return 0;
 		}
