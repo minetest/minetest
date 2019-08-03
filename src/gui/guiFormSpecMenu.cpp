@@ -325,8 +325,8 @@ void GUIFormSpecMenu::parseContainer(parserData* data, const std::string &elemen
 			parts[1] = parts[1].substr(0, parts[1].find(';'));
 
 		container_stack.push(pos_offset);
-		pos_offset.X += MYMAX(0, stof(parts[0]));
-		pos_offset.Y += MYMAX(0, stof(parts[1]));
+		pos_offset.X += stof(parts[0]);
+		pos_offset.Y += stof(parts[1]);
 		return;
 	}
 	errorstream<< "Invalid container start element (" << parts.size() << "): '" << element << "'"  << std::endl;
