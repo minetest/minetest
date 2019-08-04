@@ -81,7 +81,7 @@ void GameUI::init()
 	m_guitext_profiler = gui::StaticText::add(guienv, L"<Profiler>",
 		core::rect<s32>(0, 0, 0, 0), false, false, guiroot);
 	m_guitext_profiler->setOverrideFont(g_fontengine->getFont(
-		g_fontengine->getDefaultFontSize() * 0.8f, FM_Mono));
+		g_fontengine->getDefaultFontSize() * 0.9f, FM_Mono));
 	m_guitext_profiler->setBackgroundColor(video::SColor(120, 0, 0, 0));
 	m_guitext_profiler->setVisible(false);
 }

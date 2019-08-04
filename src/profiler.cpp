@@ -54,7 +54,6 @@ ScopeProfiler::~ScopeProfiler()
 	delete m_timer;
 }
 
-
 int Profiler::print(std::ostream &o, u32 page, u32 pagecount)
 {
 	GraphValues values;
@@ -62,9 +61,9 @@ int Profiler::print(std::ostream &o, u32 page, u32 pagecount)
 
 	for (const auto &i : values) {
 		o << "  " << i.first << ": ";
-		s32 clampsize = 50;
+		s32 clampsize = 44;
 		s32 space = clampsize - i.first.size();
-		for(s32 j = 0; j < space; j++) {
+		for (s32 j = 0; j < space; j++) {
 			if ((j & 1) && j < space - 1)
 				o << "-";
 			else
@@ -95,7 +94,7 @@ void Profiler::getPage(GraphValues &o, u32 page, u32 pagecount)
 		int avgcount = 1;
 		auto n = m_avgcounts.find(i.first);
 		if (n != m_avgcounts.end()) {
-			if(n->second >= 1)
+			if (n->second >= 1)
 				avgcount = n->second;
 		}
 		o[i.first] = i.second / avgcount;
