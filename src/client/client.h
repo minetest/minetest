@@ -232,7 +232,7 @@ public:
 
 	void Send(NetworkPacket* pkt);
 
-	void interact(u8 action, const PointedThing& pointed);
+	void interact(InteractAction action, const PointedThing &pointed);
 
 	void sendNodemetaFields(v3s16 p, const std::string &formname,
 		const StringMap &fields);

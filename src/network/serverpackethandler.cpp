@@ -974,7 +974,7 @@ bool Server::checkInteractDistance(RemotePlayer *player, const f32 d, const std:
 	return true;
 }
 
-void Server::handleCommand_Interact(NetworkPacket* pkt)
+void Server::handleCommand_Interact(NetworkPacket *pkt)
 {
 	/*
 		[0] u16 command
@@ -983,18 +983,14 @@ void Server::handleCommand_Interact(NetworkPacket* pkt)
 		[5] u32 length of the next item (plen)
 		[9] serialized PointedThing
 		[9 + plen] player position information
-		actions:
-		0: start digging (from undersurface) or use
-		1: stop digging (all parameters ignored)
-		2: digging completed
-		3: place block or item (to abovesurface)
-		4: use item
-		5: rightclick air ("activate")
 	*/
-	u8 action;
+
+	InteractAction action;
 	u16 item_i;
-	*pkt >> action;
+
+	*pkt >> (u8 &)action;
 	*pkt >> item_i;
+
 	std::istringstream tmp_is(pkt->readLongString(), std::ios::binary);
 	PointedThing pointed;
 	pointed.deSerialize(tmp_is);
@@ -1073,18 +1069,18 @@ void Server::handleCommand_Interact(NetworkPacket* pkt)
 		Make sure the player is allowed to do it
 	*/
 	if (!checkPriv(player->getName(), "interact")) {
-		actionstream<<player->getName()<<" attempted to interact with "
-				<<pointed.dump()<<" without 'interact' privilege"
-				<<std::endl;
+		actionstream << player->getName() << " attempted to interact with " <<
+				pointed.dump() << " without 'interact' privilege" << std::endl;
+
 		// Re-send block to revert change on client-side
 		RemoteClient *client = getClient(pkt->getPeerId());
 		// Digging completed -> under
-		if (action == 2) {
+		if (action == INTERACT_DIGGING_COMPLETED) {
 			v3s16 blockpos = getNodeBlockPos(floatToInt(pointed_pos_under, BS));
 			client->SetBlockNotSent(blockpos);
 		}
 		// Placement -> above
-		else if (action == 3) {
+		else if (action == INTERACT_PLACE) {
 			v3s16 blockpos = getNodeBlockPos(floatToInt(pointed_pos_above, BS));
 			client->SetBlockNotSent(blockpos);
 		}
@@ -1098,10 +1094,10 @@ void Server::handleCommand_Interact(NetworkPacket* pkt)
 	static thread_local const bool enable_anticheat =
 			!g_settings->getBool("disable_anticheat");
 
-	if ((action == 0 || action == 2 || action == 3 || action == 4) &&
+	if ((action == INTERACT_START_DIGGING || action == INTERACT_DIGGING_COMPLETED ||
+			action == INTERACT_PLACE || action == INTERACT_USE) &&
 			enable_anticheat && !isSingleplayer()) {
-		float d = playersao->getEyePosition()
-			.getDistanceFrom(pointed_pos_under);
+		float d = playersao->getEyePosition().getDistanceFrom(pointed_pos_under);
 
 		if (!checkInteractDistance(player, d, pointed.dump())) {
 			// Re-send block to revert change on client-side
@@ -1121,7 +1117,7 @@ void Server::handleCommand_Interact(NetworkPacket* pkt)
 	/*
 		0: start digging or punch object
 	*/
-	if (action == 0) {
+	if (action == INTERACT_START_DIGGING) {
 		if (pointed.type == POINTEDTHING_NODE) {
 			MapNode n(CONTENT_IGNORE);
 			bool pos_ok;
@@ -1174,18 +1170,18 @@ void Server::handleCommand_Interact(NetworkPacket* pkt)
 						PlayerHPChangeReason(PlayerHPChangeReason::PLAYER_PUNCH, pointed_object));
 		}
 
-	} // action == 0
+	} // action == INTERACT_START_DIGGING
 
 	/*
 		1: stop digging
 	*/
-	else if (action == 1) {
-	} // action == 1
+	else if (action == INTERACT_STOP_DIGGING) {
+	} // action == INTERACT_STOP_DIGGING
 
 	/*
 		2: Digging completed
 	*/
-	else if (action == 2) {
+	else if (action == INTERACT_DIGGING_COMPLETED) {
 		// Only digging of nodes
 		if (pointed.type == POINTEDTHING_NODE) {
 			bool pos_ok;
@@ -1281,12 +1277,12 @@ void Server::handleCommand_Interact(NetworkPacket* pkt)
 				client->ResendBlockIfOnWire(blockpos);
 			}
 		}
-	} // action == 2
+	} // action == INTERACT_DIGGING_COMPLETED
 
 	/*
 		3: place block or right-click object
 	*/
-	else if (action == 3) {
+	else if (action == INTERACT_PLACE) {
 		ItemStack item = playersao->getWieldedItem();
 
 		// Reset build time counter
@@ -1335,12 +1331,12 @@ void Server::handleCommand_Interact(NetworkPacket* pkt)
 				client->ResendBlockIfOnWire(blockpos2);
 			}
 		}
-	} // action == 3
+	} // action == INTERACT_PLACE
 
 	/*
 		4: use
 	*/
-	else if (action == 4) {
+	else if (action == INTERACT_USE) {
 		ItemStack item = playersao->getWieldedItem();
 
 		actionstream << player->getName() << " uses " << item.name
@@ -1354,12 +1350,12 @@ void Server::handleCommand_Interact(NetworkPacket* pkt)
 			}
 		}
 
-	} // action == 4
+	} // action == INTERACT_USE
 
 	/*
 		5: rightclick air
 	*/
-	else if (action == 5) {
+	else if (action == INTERACT_ACTIVATE) {
 		ItemStack item = playersao->getWieldedItem();
 
 		actionstream << player->getName() << " activates "
@@ -1371,7 +1367,7 @@ void Server::handleCommand_Interact(NetworkPacket* pkt)
 				SendInventory(playersao);
 			}
 		}
-	}
+	} // action == INTERACT_ACTIVATE
 
 
 	/*

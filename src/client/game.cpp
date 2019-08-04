@@ -2962,7 +2962,7 @@ void Game::processPlayerInteraction(f32 dtime, bool show_hud, bool show_debug)
 		shootline = core::line3d<f32>(player_eye_position,
 			player_eye_position + camera_direction * BS * d);
 	} else {
-	    // prevent player pointing anything in front-view
+		// prevent player pointing anything in front-view
 		shootline = core::line3d<f32>(camera_position, camera_position);
 	}
 
@@ -3002,7 +3002,7 @@ void Game::processPlayerInteraction(f32 dtime, bool show_hud, bool show_debug)
 	if (runData.digging) {
 		if (input->getLeftReleased()) {
 			infostream << "Left button released"
-			           << " (stopped digging)" << std::endl;
+					<< " (stopped digging)" << std::endl;
 			runData.digging = false;
 		} else if (pointed != runData.pointed_old) {
 			if (pointed.type == POINTEDTHING_NODE
@@ -3013,14 +3013,14 @@ void Game::processPlayerInteraction(f32 dtime, bool show_hud, bool show_debug)
 				// Don't reset.
 			} else {
 				infostream << "Pointing away from node"
-				           << " (stopped digging)" << std::endl;
+						<< " (stopped digging)" << std::endl;
 				runData.digging = false;
 				hud->updateSelectionMesh(camera_offset);
 			}
 		}
 
 		if (!runData.digging) {
-			client->interact(1, runData.pointed_old);
+			client->interact(INTERACT_STOP_DIGGING, runData.pointed_old);
 			client->setCrack(-1, v3s16(0, 0, 0));
 			runData.dig_time = 0.0;
 		}
@@ -3048,7 +3048,7 @@ void Game::processPlayerInteraction(f32 dtime, bool show_hud, bool show_debug)
 	if (selected_def.usable && input->getLeftState()) {
 		if (input->getLeftClicked() && (!client->moddingEnabled()
 				|| !client->getScript()->on_item_use(selected_item, pointed)))
-			client->interact(4, pointed);
+			client->interact(INTERACT_USE, pointed);
 	} else if (pointed.type == POINTEDTHING_NODE) {
 		handlePointingAtNode(pointed, selected_item, hand_item, dtime);
 	} else if (pointed.type == POINTEDTHING_OBJECT) {
@@ -3169,7 +3169,7 @@ void Game::handlePointingAtNothing(const ItemStack &playerItem)
 	infostream << "Right Clicked in Air" << std::endl;
 	PointedThing fauxPointed;
 	fauxPointed.type = POINTEDTHING_NOTHING;
-	client->interact(5, fauxPointed);
+	client->interact(INTERACT_ACTIVATE, fauxPointed);
 }
 
 
@@ -3216,7 +3216,7 @@ void Game::handlePointingAtNode(const PointedThing &pointed,
 				&& !isKeyDown(KeyType::SNEAK)) {
 			// Report right click to server
 			if (nodedef_manager->get(map.getNodeNoEx(nodepos)).rightclickable) {
-				client->interact(3, pointed);
+				client->interact(INTERACT_PLACE, pointed);
 			}
 
 			infostream << "Launching custom inventory view" << std::endl;
@@ -3246,7 +3246,7 @@ void Game::handlePointingAtNode(const PointedThing &pointed,
 
 			if (placed) {
 				// Report to server
-				client->interact(3, pointed);
+				client->interact(INTERACT_PLACE, pointed);
 				// Read the sound
 				soundmaker->m_player_rightpunch_sound =
 						def.sound_place;
@@ -3259,7 +3259,7 @@ void Game::handlePointingAtNode(const PointedThing &pointed,
 
 				if (def.node_placement_prediction.empty() ||
 						nodedef_manager->get(map.getNodeNoEx(nodepos)).rightclickable) {
-					client->interact(3, pointed); // Report to server
+					client->interact(INTERACT_PLACE, pointed); // Report to server
 				} else {
 					soundmaker->m_player_rightpunch_sound =
 						def.sound_place_failed;
@@ -3462,11 +3462,11 @@ void Game::handlePointingAtObject(const PointedThing &pointed,
 			runData.time_from_last_punch = 0;
 
 			if (!disable_send)
-				client->interact(0, pointed);
+				client->interact(INTERACT_START_DIGGING, pointed);
 		}
 	} else if (input->getRightClicked()) {
 		infostream << "Right-clicked object" << std::endl;
-		client->interact(3, pointed);  // place
+		client->interact(INTERACT_PLACE, pointed);  // place
 	}
 }
 
@@ -3509,7 +3509,7 @@ void Game::handleDigging(const PointedThing &pointed, const v3s16 &nodepos,
 		runData.dig_instantly = runData.dig_time_complete == 0;
 		if (client->moddingEnabled() && client->getScript()->on_punchnode(nodepos, n))
 			return;
-		client->interact(0, pointed);
+		client->interact(INTERACT_START_DIGGING, pointed);
 		runData.digging = true;
 		runData.ldown_for_dig = true;
 	}
@@ -3568,7 +3568,7 @@ void Game::handleDigging(const PointedThing &pointed, const v3s16 &nodepos,
 		MapNode wasnode = map.getNodeNoEx(nodepos, &is_valid_position);
 		if (is_valid_position) {
 			if (client->moddingEnabled() &&
-			    		client->getScript()->on_dignode(nodepos, wasnode)) {
+					client->getScript()->on_dignode(nodepos, wasnode)) {
 				return;
 			}
 
@@ -3584,7 +3584,7 @@ void Game::handleDigging(const PointedThing &pointed, const v3s16 &nodepos,
 			// implicit else: no prediction
 		}
 
-		client->interact(2, pointed);
+		client->interact(INTERACT_DIGGING_COMPLETED, pointed);
 
 		if (m_cache_enable_particles) {
 			const ContentFeatures &features =
