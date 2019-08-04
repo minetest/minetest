@@ -903,7 +903,7 @@ void writePlayerPos(LocalPlayer *myplayer, ClientMap *clientMap, NetworkPacket *
 	*pkt << fov << wanted_range;
 }
 
-void Client::interact(u8 action, const PointedThing& pointed)
+void Client::interact(InteractAction action, const PointedThing& pointed)
 {
 	if(m_state != LC_Ready) {
 		errorstream << "Client::interact() "
@@ -923,18 +923,11 @@ void Client::interact(u8 action, const PointedThing& pointed)
 		[5] u32 length of the next item (plen)
 		[9] serialized PointedThing
 		[9 + plen] player position information
-		actions:
-		0: start digging (from undersurface) or use
-		1: stop digging (all parameters ignored)
-		2: digging completed
-		3: place block or item (to abovesurface)
-		4: use item
-		5: perform secondary action of item
 	*/
 
 	NetworkPacket pkt(TOSERVER_INTERACT, 1 + 2 + 0);
 
-	pkt << action;
+	pkt << (u8)action;
 	pkt << (u16)getPlayerItem();
 
 	std::ostringstream tmp_os(std::ios::binary);
@@ -1195,7 +1188,7 @@ void Client::clearOutChatQueue()
 }
 
 void Client::sendChangePassword(const std::string &oldpassword,
-        const std::string &newpassword)
+	const std::string &newpassword)
 {
 	LocalPlayer *player = m_env.getLocalPlayer();
 	if (player == NULL)
