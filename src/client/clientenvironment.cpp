@@ -285,15 +285,14 @@ void ClientEnvironment::step(float dtime)
 	/*
 		Step and handle simple objects
 	*/
-	g_profiler->avg("CEnv: num of simple objects", m_simple_objects.size());
+	g_profiler->avg("ClientEnv: CSO count [#]", m_simple_objects.size());
 	for (auto i = m_simple_objects.begin(); i != m_simple_objects.end();) {
-		auto cur = i;
-		ClientSimpleObject *simple = *cur;
+		ClientSimpleObject *simple = *i;
 
 		simple->step(dtime);
 		if(simple->m_to_be_removed) {
 			delete simple;
-			i = m_simple_objects.erase(cur);
+			i = m_simple_objects.erase(i);
 		}
 		else {
 			++i;
