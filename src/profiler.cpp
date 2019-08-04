@@ -26,8 +26,9 @@ ScopeProfiler::ScopeProfiler(
 		m_profiler(profiler),
 		m_name(name), m_type(type)
 {
+	m_name.append(" [ms]");
 	if (m_profiler)
-		m_timer = new TimeTaker(m_name);
+		m_timer = new TimeTaker(m_name, nullptr, PRECISION_MILLI);
 }
 
 ScopeProfiler::~ScopeProfiler()
@@ -51,4 +52,52 @@ ScopeProfiler::~ScopeProfiler()
 		}
 	}
 	delete m_timer;
+}
+
+
+int Profiler::print(std::ostream &o, u32 page, u32 pagecount)
+{
+	GraphValues values;
+	getPage(values, page, pagecount);
+
+	for (const auto &i : values) {
+		o << "  " << i.first << ": ";
+		s32 clampsize = 50;
+		s32 space = clampsize - i.first.size();
+		for(s32 j = 0; j < space; j++) {
+			if ((j & 1) && j < space - 1)
+				o << "-";
+			else
+				o << " ";
+		}
+		o << i.second << std::endl;
+	}
+	return values.size();
+}
+
+void Profiler::getPage(GraphValues &o, u32 page, u32 pagecount)
+{
+	MutexAutoLock lock(m_mutex);
+
+	u32 minindex, maxindex;
+	paging(m_data.size(), page, pagecount, minindex, maxindex);
+
+	for (const auto &i : m_data) {
+		if (maxindex == 0)
+			break;
+		maxindex--;
+
+		if (minindex != 0) {
+			minindex--;
+			continue;
+		}
+
+		int avgcount = 1;
+		auto n = m_avgcounts.find(i.first);
+		if (n != m_avgcounts.end()) {
+			if(n->second >= 1)
+				avgcount = n->second;
+		}
+		o[i.first] = i.second / avgcount;
+	}
 }

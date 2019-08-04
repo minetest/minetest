@@ -29,8 +29,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/timetaker.h"
 #include "util/numeric.h"      // paging()
 
-#define MAX_PROFILER_TEXT_ROWS 20
-
 // Global profiler
 class Profiler;
 extern Profiler *g_profiler;
@@ -86,10 +84,6 @@ public:
 		m_avgcounts.clear();
 	}
 
-	void print(std::ostream &o)
-	{
-		printPage(o, 1, 1);
-	}
 
 	float getValue(const std::string &name) const
 	{
@@ -106,45 +100,12 @@ public:
 		return numerator->second;
 	}
 
-	void printPage(std::ostream &o, u32 page, u32 pagecount)
-	{
-		MutexAutoLock lock(m_mutex);
-
-		u32 minindex, maxindex;
-		paging(m_data.size(), page, pagecount, minindex, maxindex);
-
-		for (std::map<std::string, float>::const_iterator i = m_data.begin();
-				i != m_data.end(); ++i) {
-			if (maxindex == 0)
-				break;
-			maxindex--;
-
-			if (minindex != 0) {
-				minindex--;
-				continue;
-			}
-
-			int avgcount = 1;
-			std::map<std::string, int>::const_iterator n = m_avgcounts.find(i->first);
-			if (n != m_avgcounts.end()) {
-				if(n->second >= 1)
-					avgcount = n->second;
-			}
-			o << "  " << i->first << ": ";
-			s32 clampsize = 40;
-			s32 space = clampsize - i->first.size();
-			for(s32 j = 0; j < space; j++) {
-				if (j % 2 == 0 && j < space - 1)
-					o << "-";
-				else
-					o << " ";
-			}
-			o << (i->second / avgcount);
-			o << std::endl;
-		}
-	}
-
 	typedef std::map<std::string, float> GraphValues;
+
+	// Returns the line count
+	int print(std::ostream &o, u32 page = 1, u32 pagecount = 1);
+	void getPage(GraphValues &o, u32 page, u32 pagecount);
+
 
 	void graphAdd(const std::string &id, float value)
 	{
