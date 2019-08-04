@@ -565,10 +565,16 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 busytime, f32 tool_r
 void Camera::updateViewingRange()
 {
 	f32 viewing_range = g_settings->getFloat("viewing_range");
-	f32 near_plane = g_settings->getFloat("near_plane");
+
+	// Ignore near_plane setting on non-Android platforms to prevent abuse
+#ifdef __ANDROID__
+	m_cameranode->setNearValue(rangelim(
+		g_settings->getFloat("near_plane"), 0.0f, 0.25f) * BS);
+#else
+	m_cameranode->setNearValue(0.05f * BS);
+#endif
 
 	m_draw_control.wanted_range = std::fmin(adjustDist(viewing_range, getFovMax()), 4000);
-	m_cameranode->setNearValue(rangelim(near_plane, 0.0f, 0.5f) * BS);
 	if (m_draw_control.range_all) {
 		m_cameranode->setFarValue(100000.0);
 		return;
@@ -596,7 +602,7 @@ void Camera::wield(const ItemStack &item)
 
 void Camera::drawWieldedTool(irr::core::matrix4* translation)
 {
-	// Clear Z buffer so that the wielded tool stay in front of world geometry
+	// Clear Z buffer so that the wielded tool stays in front of world geometry
 	m_wieldmgr->getVideoDriver()->clearZBuffer();
 
 	// Draw the wielded node (in a separate scene manager)
