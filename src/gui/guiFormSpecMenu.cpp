@@ -2855,9 +2855,8 @@ void GUIFormSpecMenu::drawList(const ListDrawSpec &s, int layer,
 					rotation_kind);
 				// Draw tooltip
 				if (hovering && !m_selected_item) {
-					std::string tooltip = item.getDescription(m_client->idef());
-					if (m_tooltip_append_itemname)
-						tooltip += "\n[" + item.name + "]";
+					std::string tooltip = item.getDescription(m_client->idef(),
+							isShiftPressed, m_tooltip_append_itemname);
 					showTooltip(utf8_to_wide(tooltip), m_default_tooltip_color,
 							m_default_tooltip_bgcolor);
 				}
@@ -3599,6 +3598,9 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 			return true;
 		}
 
+		if (event.KeyInput.Key == KEY_LSHIFT)
+			isShiftPressed = event.KeyInput.PressedDown;
+
 		if (m_client != NULL && event.KeyInput.PressedDown &&
 				(kp == getKeySetting("keymap_screenshot"))) {
 			m_client->makeScreenshot();
@@ -3632,7 +3634,6 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 			}
 			return true;
 		}
-
 	}
 
 	/* Mouse event other than movement, or crossing the border of inventory

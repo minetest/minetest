@@ -247,12 +247,37 @@ std::string ItemStack::getItemString() const
 	return os.str();
 }
 
-std::string ItemStack::getDescription(IItemDefManager *itemdef) const
+std::string ItemStack::getDescription(IItemDefManager *itemdef, bool detailed,
+	bool append_itemname) const
 {
-	std::string desc = metadata.getString("description");
+	std::string desc;
+
+	if (detailed) {
+		// detailed_description...
+		// ...in meta
+		desc = metadata.getString("detailed_description");
+
+		// ...in definition
+		if (desc.empty())
+			desc = getDefinition(itemdef).detailed_description;
+	}
+
+	// normal description...
+	// ...in meta
+	if (desc.empty())
+		desc = metadata.getString("description");
+
+	// ...in definition
 	if (desc.empty())
 		desc = getDefinition(itemdef).description;
-	return desc.empty() ? name : desc;
+
+	// item name fallback / appendage
+	if (desc.empty())
+		desc = name;
+	else if (append_itemname)
+		desc += "\n[" + name + "]";
+
+	return desc;
 }
 
 

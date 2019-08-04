@@ -1877,6 +1877,8 @@ Some of the values in the key-value store are handled specially:
 
 * `description`: Set the item stack's description. Defaults to
   `idef.description`.
+* `detailed_description`: Set the item stack's detailed description.
+   Defaults to `idef.detailed_description`.
 * `color`: A `ColorString`, which sets the stack's color.
 * `palette_index`: If the item has a palette, this is used to get the
   current color from the palette.
@@ -6202,6 +6204,11 @@ Used by `minetest.register_node`, `minetest.register_craftitem`, and
 
     {
         description = "Steel Axe",
+
+        detailed_description = "Steel Axe\nIt helps you chopping down trees.",
+        -- If this is defined and not `""` and the user holds down the shift key
+        -- when hovering with the cursor over the item, this is shown instead of
+        -- `description`.
 
         groups = {},
         -- key = name, value = rating; rating = 1..3.

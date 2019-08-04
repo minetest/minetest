@@ -85,6 +85,8 @@ minetest.register_tool("default:pick_steel", {
 })
 minetest.register_tool("default:pick_mese", {
 	description = "Mese Pickaxe",
+	detailed_description = "Mese Pickaxe\n" ..
+		minetest.colorize("#ff0", "the fastest pickaxe"),
 	inventory_image = "default_tool_mesepick.png",
 	tool_capabilities = {
 		full_punch_interval = 1.0,
