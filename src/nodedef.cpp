@@ -1205,8 +1205,8 @@ inline void NodeDefManager::fixSelectionBoxIntUnion()
 void NodeDefManager::eraseIdFromGroups(content_t id)
 {
 	// For all groups in m_group_to_items...
-	for (std::unordered_map<std::string, std::vector<content_t>>::iterator iter_groups =
-			m_group_to_items.begin(); iter_groups != m_group_to_items.end();) {
+	for (auto iter_groups = m_group_to_items.begin();
+			iter_groups != m_group_to_items.end();) {
 		// Get the group items vector.
 		std::vector<content_t> &items = iter_groups->second;
 
@@ -1244,9 +1244,8 @@ content_t NodeDefManager::set(const std::string &name, const ContentFeatures &de
 	}
 
 	// If there is already ContentFeatures registered for this id, clear old groups
-	if (id < m_content_features.size()) {
+	if (id < m_content_features.size())
 		eraseIdFromGroups(id);
-	}
 
 	m_content_features[id] = def;
 	verbosestream << "NodeDefManager: registering content id \"" << id

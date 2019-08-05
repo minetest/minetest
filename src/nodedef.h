@@ -672,7 +672,7 @@ private:
 	 * Removes a content ID from all groups.
 	 * Erases content IDs from vectors in \ref m_group_to_items and
 	 * removes empty vectors.
-	 * @param i a content ID
+	 * @param id Content ID
 	 */
 	void eraseIdFromGroups(content_t id);
 
