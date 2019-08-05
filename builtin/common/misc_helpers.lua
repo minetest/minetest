@@ -20,6 +20,8 @@ local function basic_dump(o)
 	-- dump's output is intended for humans.
 	--elseif tp == "function" then
 	--	return string.format("loadstring(%q)", string.dump(o))
+	elseif tp == "userdata" then
+		return tostring(o)
 	else
 		return string.format("<%s>", tp)
 	end

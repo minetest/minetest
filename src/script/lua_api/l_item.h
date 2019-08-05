@@ -34,6 +34,9 @@ private:
 	// garbage collector
 	static int gc_object(lua_State *L);
 
+	// __tostring metamethod
+	static int mt_tostring(lua_State *L);
+
 	// is_empty(self) -> true/false
 	static int l_is_empty(lua_State *L);
 
