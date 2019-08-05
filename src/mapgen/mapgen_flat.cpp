@@ -143,26 +143,31 @@ void MapgenFlatParams::writeParams(Settings *settings) const
 
 int MapgenFlat::getSpawnLevelAtPoint(v2s16 p)
 {
-	s16 level_at_point = ground_level;
-	float n_terrain = 0.0f;
-	if ((spflags & MGFLAT_LAKES) || (spflags & MGFLAT_HILLS))
-		n_terrain = NoisePerlin2D(&noise_terrain->np, p.X, p.Y, seed);
+	s16 stone_level = ground_level;
+	float n_terrain = 
+		((spflags & MGFLAT_LAKES) || (spflags & MGFLAT_HILLS)) ?
+		NoisePerlin2D(&noise_terrain->np, p.X, p.Y, seed) :
+		0.0f;
 
 	if ((spflags & MGFLAT_LAKES) && n_terrain < lake_threshold) {
-		level_at_point = ground_level -
-			(lake_threshold - n_terrain) * lake_steepness;
+		s16 depress = (lake_threshold - n_terrain) * lake_steepness;
+		stone_level = ground_level - depress;
 	} else if ((spflags & MGFLAT_HILLS) && n_terrain > hill_threshold) {
-		level_at_point = ground_level +
-			(n_terrain - hill_threshold) * hill_steepness;
+		s16 rise = (n_terrain - hill_threshold) * hill_steepness;
+	 	stone_level = ground_level + rise;
 	}
 
-	if (ground_level < water_level)  // Ocean world, allow spawn in water
-		return MYMAX(level_at_point, water_level);
+	if (ground_level < water_level)
+		// Ocean world, may not have islands so allow spawn in water
+		return MYMAX(stone_level + 2, water_level);
 
-	if (level_at_point > water_level)
-		return level_at_point;  // Spawn on land
+	if (stone_level >= water_level)
+		// Spawn on land
+		// + 2 not + 1, to spawn above biome 'dust' nodes
+		return stone_level + 2;
 
-	return MAX_MAP_GENERATION_LIMIT;  // Unsuitable spawn point
+	// Unsuitable spawn point
+	return MAX_MAP_GENERATION_LIMIT;
 }
 
 
