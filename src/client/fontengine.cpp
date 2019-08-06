@@ -55,36 +55,7 @@ FontEngine::FontEngine(Settings* main_settings, gui::IGUIEnvironment* env) :
 	assert(m_env != NULL); // pre-condition
 	assert(m_env->getSkin() != NULL); // pre-condition
 
-	m_currentMode = FM_Simple;
-
-#if USE_FREETYPE
-	if (g_settings->getBool("freetype")) {
-		m_default_size[FM_Standard] = m_settings->getU16("font_size");
-		m_default_size[FM_Fallback] = m_settings->getU16("fallback_font_size");
-		m_default_size[FM_Mono]     = m_settings->getU16("mono_font_size");
-
-		if (is_yes(gettext("needs_fallback_font"))) {
-			m_currentMode = FM_Fallback;
-		}
-		else {
-			m_currentMode = FM_Standard;
-		}
-	}
-
-	// having freetype but not using it is quite a strange case so we need to do
-	// special handling for it
-	if (m_currentMode == FM_Simple) {
-		std::stringstream fontsize;
-		fontsize << DEFAULT_FONT_SIZE;
-		m_settings->setDefault("font_size", fontsize.str());
-		m_settings->setDefault("mono_font_size", fontsize.str());
-	}
-#endif
-
-	m_default_size[FM_Simple]       = m_settings->getU16("font_size");
-	m_default_size[FM_SimpleMono]   = m_settings->getU16("mono_font_size");
-
-	updateSkin();
+	readSettings();
 
 	if (m_currentMode == FM_Standard) {
 		m_settings->registerChangedCallback("font_size", font_setting_changed, NULL);
@@ -129,32 +100,26 @@ irr::gui::IGUIFont* FontEngine::getFont(unsigned int font_size, FontMode mode)
 {
 	if (mode == FM_Unspecified) {
 		mode = m_currentMode;
-	}
-	else if ((mode == FM_Mono) && (m_currentMode == FM_Simple)) {
-		mode = FM_SimpleMono;
+	} else if (m_currentMode == FM_Simple) {
+		// Freetype disabled -> Force simple mode
+		mode = (mode == FM_Mono || mode == FM_SimpleMono) ?
+				 FM_SimpleMono : FM_Simple;
 	}
 
-	if (font_size == FONT_SIZE_UNSPECIFIED) {
+	// Fallback to default size
+	if (font_size == FONT_SIZE_UNSPECIFIED)
 		font_size = m_default_size[mode];
+
+	const auto &cache = m_font_cache[mode];
+	if (cache.find(font_size) == cache.end()) {
+		if (mode == FM_Simple || mode == FM_SimpleMono)
+			initSimpleFont(font_size, mode);
+		else
+			initFont(font_size, mode);
 	}
 
-	if ((font_size == m_lastSize) && (mode == m_lastMode)) {
-		return m_lastFont;
-	}
-
-	if (m_font_cache[mode].find(font_size) == m_font_cache[mode].end()) {
-		initFont(font_size, mode);
-	}
-
-	if (m_font_cache[mode].find(font_size) == m_font_cache[mode].end()) {
-		return NULL;
-	}
-
-	m_lastSize = font_size;
-	m_lastMode = mode;
-	m_lastFont = m_font_cache[mode][font_size];
-
-	return m_font_cache[mode][font_size];
+	const auto &font = cache.find(font_size);
+	return font != cache.end() ? font->second : nullptr;
 }
 
 /******************************************************************************/
@@ -211,20 +176,17 @@ unsigned int FontEngine::getDefaultFontSize()
 /******************************************************************************/
 void FontEngine::readSettings()
 {
-#if USE_FREETYPE
-	if (g_settings->getBool("freetype")) {
+	if (USE_FREETYPE && g_settings->getBool("freetype")) {
 		m_default_size[FM_Standard] = m_settings->getU16("font_size");
 		m_default_size[FM_Fallback] = m_settings->getU16("fallback_font_size");
 		m_default_size[FM_Mono]     = m_settings->getU16("mono_font_size");
 
-		if (is_yes(gettext("needs_fallback_font"))) {
-			m_currentMode = FM_Fallback;
-		}
-		else {
-			m_currentMode = FM_Standard;
-		}
+		m_currentMode = is_yes(gettext("needs_fallback_font")) ?
+				FM_Fallback : FM_Standard;
+	} else {
+		m_currentMode = FM_Simple;
 	}
-#endif
+
 	m_default_size[FM_Simple]       = m_settings->getU16("font_size");
 	m_default_size[FM_SimpleMono]   = m_settings->getU16("mono_font_size");
 
@@ -260,176 +222,100 @@ void FontEngine::updateFontCache()
 {
 	/* the only font to be initialized is default one,
 	 * all others are re-initialized on demand */
-	initFont(m_default_size[m_currentMode], m_currentMode);
-
-	/* reset font quick access */
-	m_lastMode = FM_Unspecified;
-	m_lastSize = 0;
-	m_lastFont = NULL;
+	getFont(FONT_SIZE_UNSPECIFIED, FM_Unspecified);
 }
 
 /******************************************************************************/
 void FontEngine::initFont(unsigned int basesize, FontMode mode)
 {
-
-	std::string font_config_prefix;
-
-	if (mode == FM_Unspecified) {
-		mode = m_currentMode;
-	}
-
-	switch (mode) {
-
-		case FM_Standard:
-			font_config_prefix = "";
-			break;
-
-		case FM_Fallback:
-			font_config_prefix = "fallback_";
-			break;
-
-		case FM_Mono:
-			font_config_prefix = "mono_";
-			if (m_currentMode == FM_Simple)
-				mode = FM_SimpleMono;
-			break;
-
-		case FM_Simple: /* Fallthrough */
-		case FM_SimpleMono: /* Fallthrough */
-		default:
-			font_config_prefix = "";
-
-	}
+	assert(mode != FM_Unspecified);
+	assert(basesize != FONT_SIZE_UNSPECIFIED);
 
 	if (m_font_cache[mode].find(basesize) != m_font_cache[mode].end())
 		return;
 
-	if ((mode == FM_Simple) || (mode == FM_SimpleMono)) {
-		initSimpleFont(basesize, mode);
-		return;
+
+	std::string setting_prefix = "";
+
+	switch (mode) {
+		case FM_Fallback:
+			setting_prefix = "fallback_";
+			break;
+		case FM_Mono:
+		case FM_SimpleMono:
+			setting_prefix = "mono_";
+			break;
+		default:
+			break;
 	}
+
+	u32 size = std::floor(RenderingEngine::getDisplayDensity() *
+			m_settings->getFloat("gui_scaling") * basesize);
+	if (size == 0) {
+		errorstream << "FontEngine: attempt to use font size 0" << std::endl;
+		errorstream << "  display density: " << RenderingEngine::getDisplayDensity() << std::endl;
+		abort();
+	}
+
+	u16 font_shadow       = 0;
+	u16 font_shadow_alpha = 0;
+	g_settings->getU16NoEx(setting_prefix + "font_shadow", font_shadow);
+	g_settings->getU16NoEx(setting_prefix + "font_shadow_alpha", font_shadow_alpha);
+
+	std::string fallback_settings[] = {
+		m_settings->get(setting_prefix + "font_path"),
+		m_settings->get("fallback_font_path"),
+		m_settings->getDefault(setting_prefix + "font_path")
+	};
+
 #if USE_FREETYPE
-	else {
-		if (!is_yes(m_settings->get("freetype"))) {
-			return;
-		}
-		u32 size = std::floor(RenderingEngine::getDisplayDensity() *
-				m_settings->getFloat("gui_scaling") * basesize);
-		if (size == 0) {
-			errorstream << "FontEngine: attempt to use font size 0" << std::endl;
-			errorstream << "  display density: " << RenderingEngine::getDisplayDensity() << std::endl;
-			abort();
-		}
-		u32 font_shadow       = 0;
-		u32 font_shadow_alpha = 0;
-
-		try {
-			font_shadow =
-					g_settings->getU16(font_config_prefix + "font_shadow");
-		} catch (SettingNotFoundException&) {}
-		try {
-			font_shadow_alpha =
-					g_settings->getU16(font_config_prefix + "font_shadow_alpha");
-		} catch (SettingNotFoundException&) {}
-
-		std::string font_path = g_settings->get(font_config_prefix + "font_path");
-
-		irr::gui::IGUIFont* font = gui::CGUITTFont::createTTFont(m_env,
+	for (const std::string &font_path : fallback_settings) {
+		irr::gui::IGUIFont *font = gui::CGUITTFont::createTTFont(m_env,
 				font_path.c_str(), size, true, true, font_shadow,
 				font_shadow_alpha);
 
 		if (font) {
+			font->grab();
 			m_font_cache[mode][basesize] = font;
 			return;
 		}
 
-		if (font_config_prefix == "mono_") {
-			const std::string &mono_font_path = m_settings->getDefault("mono_font_path");
-
-			if (font_path != mono_font_path) {
-				// try original mono font
-				errorstream << "FontEngine: failed to load custom mono "
-						"font: " << font_path << ", trying to fall back to "
-						"original mono font" << std::endl;
-
-				font = gui::CGUITTFont::createTTFont(m_env,
-					mono_font_path.c_str(), size, true, true,
-					font_shadow, font_shadow_alpha);
-
-				if (font) {
-					m_font_cache[mode][basesize] = font;
-					return;
-				}
-			}
-		} else {
-			// try fallback font
-			errorstream << "FontEngine: failed to load: " << font_path <<
-					", trying to fall back to fallback font" << std::endl;
-
-			font_path = g_settings->get(font_config_prefix + "fallback_font_path");
-
-			font = gui::CGUITTFont::createTTFont(m_env,
-				font_path.c_str(), size, true, true, font_shadow,
-				font_shadow_alpha);
-
-			if (font) {
-				m_font_cache[mode][basesize] = font;
-				return;
-			}
-
-			const std::string &fallback_font_path = m_settings->getDefault("fallback_font_path");
-
-			if (font_path != fallback_font_path) {
-				// try original fallback font
-				errorstream << "FontEngine: failed to load custom fallback "
-						"font: " << font_path << ", trying to fall back to "
-						"original fallback font" << std::endl;
-
-				font = gui::CGUITTFont::createTTFont(m_env,
-					fallback_font_path.c_str(), size, true, true,
-					font_shadow, font_shadow_alpha);
-
-				if (font) {
-					m_font_cache[mode][basesize] = font;
-					return;
-				}
-			}
-		}
-
-		// give up
-		errorstream << "FontEngine: failed to load freetype font: "
-				<< font_path << std::endl;
-		errorstream << "minetest can not continue without a valid font. "
-				"Please correct the 'font_path' setting or install the font "
-				"file in the proper location" << std::endl;
-		abort();
+		errorstream << "FontEngine: Cannot load '" << font_path <<
+				"'. Trying to fall back to another path." << std::endl;
 	}
+
+
+	// give up
+	errorstream << "minetest can not continue without a valid font. "
+			"Please correct the 'font_path' setting or install the font "
+			"file in the proper location" << std::endl;
+#else
+	errorstream << "FontEngine: Tried to load freetype fonts but Minetest was"
+			" not compiled with that library." << std::endl;
 #endif
+	abort();
 }
 
 /** initialize a font without freetype */
 void FontEngine::initSimpleFont(unsigned int basesize, FontMode mode)
 {
-	assert(mode == FM_Simple || mode == FM_SimpleMono); // pre-condition
+	assert(mode == FM_Simple || mode == FM_SimpleMono);
 
-	std::string font_path;
-	if (mode == FM_Simple) {
-		font_path = m_settings->get("font_path");
-	} else {
-		font_path = m_settings->get("mono_font_path");
-	}
+	const std::string &font_path = m_settings->get(
+			(mode == FM_SimpleMono) ? "mono_font_path" : "font_path");
+
+	size_t pos_dot = font_path.find_last_of('.');
 	std::string basename = font_path;
-	std::string ending = font_path.substr(font_path.length() -4);
+	std::string ending = lowercase(font_path.substr(pos_dot));
 
 	if (ending == ".ttf") {
-		errorstream << "FontEngine: Not trying to open \"" << font_path
-				<< "\" which seems to be a truetype font." << std::endl;
+		errorstream << "FontEngine: Found font \"" << font_path
+				<< "\" but freetype is not available." << std::endl;
 		return;
 	}
 
-	if ((ending == ".xml") || (ending == ".png")) {
-		basename = font_path.substr(0,font_path.length()-4);
-	}
+	if (ending == ".xml" || ending == ".png")
+		basename = font_path.substr(0, pos_dot);
 
 	if (basesize == FONT_SIZE_UNSPECIFIED)
 		basesize = DEFAULT_FONT_SIZE;
@@ -439,59 +325,35 @@ void FontEngine::initSimpleFont(unsigned int basesize, FontMode mode)
 			m_settings->getFloat("gui_scaling") *
 			basesize);
 
-	irr::gui::IGUIFont* font = NULL;
+	irr::gui::IGUIFont *font = nullptr;
+	std::string font_extensions[] = { ".png", ".xml" };
 
-	for(unsigned int offset = 0; offset < MAX_FONT_SIZE_OFFSET; offset++) {
+	// Find nearest matching font scale
+	// Does a "zig-zag motion" (positibe/negative), from 0 to MAX_FONT_SIZE_OFFSET
+	for (s32 zoffset = 0; zoffset < MAX_FONT_SIZE_OFFSET * 2; zoffset++) {
+		std::stringstream path;
 
-		// try opening positive offset
-		std::stringstream fontsize_plus_png;
-		fontsize_plus_png << basename << "_" << (size + offset) << ".png";
+		// LSB to sign
+		s32 sign = (zoffset & 1) ? -1 : 1;
+		s32 offset = zoffset >> 1;
 
-		if (fs::PathExists(fontsize_plus_png.str())) {
-			font = m_env->getFont(fontsize_plus_png.str().c_str());
+		for (const std::string &ext : font_extensions) {
+			path.str(""); // Clear
+			path << basename << "_" << (size + offset * sign) << ext;
+
+			if (!fs::PathExists(path.str())) 
+				continue;
+
+			font = m_env->getFont(path.str().c_str());
 
 			if (font) {
-				verbosestream << "FontEngine: found font: " << fontsize_plus_png.str() << std::endl;
+				verbosestream << "FontEngine: found font: " << path.str() << std::endl;
 				break;
 			}
 		}
 
-		std::stringstream fontsize_plus_xml;
-		fontsize_plus_xml << basename << "_" << (size + offset) << ".xml";
-
-		if (fs::PathExists(fontsize_plus_xml.str())) {
-			font = m_env->getFont(fontsize_plus_xml.str().c_str());
-
-			if (font) {
-				verbosestream << "FontEngine: found font: " << fontsize_plus_xml.str() << std::endl;
-				break;
-			}
-		}
-
-		// try negative offset
-		std::stringstream fontsize_minus_png;
-		fontsize_minus_png << basename << "_" << (size - offset) << ".png";
-
-		if (fs::PathExists(fontsize_minus_png.str())) {
-			font = m_env->getFont(fontsize_minus_png.str().c_str());
-
-			if (font) {
-				verbosestream << "FontEngine: found font: " << fontsize_minus_png.str() << std::endl;
-				break;
-			}
-		}
-
-		std::stringstream fontsize_minus_xml;
-		fontsize_minus_xml << basename << "_" << (size - offset) << ".xml";
-
-		if (fs::PathExists(fontsize_minus_xml.str())) {
-			font = m_env->getFont(fontsize_minus_xml.str().c_str());
-
-			if (font) {
-				verbosestream << "FontEngine: found font: " << fontsize_minus_xml.str() << std::endl;
-				break;
-			}
-		}
+		if (font)
+			break;
 	}
 
 	// try name direct

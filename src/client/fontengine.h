@@ -112,15 +112,6 @@ private:
 	/** current font engine mode */
 	FontMode m_currentMode = FM_Standard;
 
-	/** font mode of last request */
-	FontMode m_lastMode;
-
-	/** size of last request */
-	unsigned int m_lastSize = 0;
-
-	/** last font returned */
-	irr::gui::IGUIFont* m_lastFont = nullptr;
-
 	DISABLE_CLASS_COPY(FontEngine);
 };
 

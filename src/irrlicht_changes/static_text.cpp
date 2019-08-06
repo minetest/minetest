@@ -109,10 +109,22 @@ void StaticText::draw()
 						font->getDimension(cText.c_str()).Width;
 				}
 
-				irr::gui::CGUITTFont *tmp = static_cast<irr::gui::CGUITTFont*>(font);
-				tmp->draw(cText, frameRect,
-					OverrideColorEnabled ? OverrideColor : skin->getColor(isEnabled() ? EGDC_BUTTON_TEXT : EGDC_GRAY_TEXT),
-					HAlign == EGUIA_CENTER, VAlign == EGUIA_CENTER, (RestrainTextInside ? &AbsoluteClippingRect : NULL));
+#if USE_FREETYPE
+				if (font->getType() == irr::gui::EGFT_CUSTOM) {
+					irr::gui::CGUITTFont *tmp = static_cast<irr::gui::CGUITTFont*>(font);
+					tmp->draw(cText, frameRect,
+						OverrideColorEnabled ? OverrideColor :
+							skin->getColor(isEnabled() ? EGDC_BUTTON_TEXT : EGDC_GRAY_TEXT),
+						HAlign == EGUIA_CENTER, VAlign == EGUIA_CENTER,
+						(RestrainTextInside ? &AbsoluteClippingRect : NULL));
+				} else
+#endif
+				{
+					font->draw(Text.c_str(), frameRect,
+						skin->getColor(EGDC_BUTTON_TEXT),
+						HAlign == EGUIA_CENTER, VAlign == EGUIA_CENTER,
+						(RestrainTextInside ? &AbsoluteClippingRect : NULL));
+				}
 			}
 			else
 			{
@@ -140,18 +152,29 @@ void StaticText::draw()
 							font->getDimension(BrokenText[i].c_str()).Width;
 					}
 
-					//std::vector<irr::video::SColor> colors;
-					//std::wstring str;
 					EnrichedString str = BrokenText[i];
 
 					//str = colorizeText(BrokenText[i].c_str(), colors, previous_color);
 					//if (!colors.empty())
 					//	previous_color = colors[colors.size() - 1];
 
-					irr::gui::CGUITTFont *tmp = static_cast<irr::gui::CGUITTFont*>(font);
-					tmp->draw(str, r,
-						previous_color, // FIXME
-						HAlign == EGUIA_CENTER, false, (RestrainTextInside ? &AbsoluteClippingRect : NULL));
+#if USE_FREETYPE
+					if (font->getType() == irr::gui::EGFT_CUSTOM) {
+						irr::gui::CGUITTFont *tmp = static_cast<irr::gui::CGUITTFont*>(font);
+						tmp->draw(str,
+							r, previous_color, // FIXME
+							HAlign == EGUIA_CENTER, false,
+							(RestrainTextInside ? &AbsoluteClippingRect : NULL));
+					} else
+#endif
+					{
+						// Draw non-colored text
+						font->draw(str.c_str(),
+							r, skin->getColor(EGDC_BUTTON_TEXT),
+							HAlign == EGUIA_CENTER, false,
+							(RestrainTextInside ? &AbsoluteClippingRect : NULL));
+					}
+
 
 					r.LowerRightCorner.Y += height;
 					r.UpperLeftCorner.Y += height;
