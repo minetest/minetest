@@ -281,13 +281,11 @@ end
 
 --------------------------------------------------------------------------------
 local function handle_settings_buttons(this, fields, tabname, tabdata)
-
 	if fields["btn_advanced_settings"] ~= nil then
 		local adv_settings_dlg = create_adv_settings_dlg()
 		adv_settings_dlg:set_parent(this)
 		this:hide()
 		adv_settings_dlg:show()
-		--mm_texture.update("singleplayer", current_game())
 		return true
 	end
 	if fields["cb_smooth_lighting"] then

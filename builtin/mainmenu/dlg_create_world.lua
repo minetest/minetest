@@ -22,11 +22,10 @@ local function create_world_formspec(dialogdata)
 
 	local current_seed = core.settings:get("fixed_map_seed") or ""
 	local current_mg   = core.settings:get("mg_name")
-	local gameid = core.settings:get("menu_last_game")
+	local gameid       = gamemenu.get_game_id()
 
 	local gameidx = 0
 	if gameid ~= nil then
-		local _
 		_, gameidx = pkgmgr.find_by_gameid(gameid)
 
 		if gameidx == nil then
@@ -126,14 +125,7 @@ local function create_world_buttonhandler(this, fields)
 			if message ~= nil then
 				gamedata.errormessage = message
 			else
-				core.settings:set("menu_last_game",pkgmgr.games[gameindex].id)
-				if this.data.update_worldlist_filter then
-					menudata.worldlist:set_filtercriteria(pkgmgr.games[gameindex].id)
-					mm_texture.update("singleplayer", pkgmgr.games[gameindex].id)
-				end
-				menudata.worldlist:refresh()
-				core.settings:set("mainmenu_last_selected_world",
-									menudata.worldlist:raw_index_by_uid(worldname))
+				gamemenu.set_game(pkgmgr.games[gameindex])
 			end
 		else
 			gamedata.errormessage = fgettext("No game selected")

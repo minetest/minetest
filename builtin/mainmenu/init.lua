@@ -37,7 +37,7 @@ dofile(basepath .. "fstk" .. DIR_DELIM .. "tabview_layouts.lua")
 dofile(basepath .. "fstk" .. DIR_DELIM .. "ui.lua")
 dofile(menupath .. DIR_DELIM .. "common.lua")
 dofile(menupath .. DIR_DELIM .. "pkgmgr.lua")
-dofile(menupath .. DIR_DELIM .. "textures.lua")
+dofile(menupath .. DIR_DELIM .. "gamemenu.lua")
 
 dofile(menupath .. DIR_DELIM .. "dlg_config_world.lua")
 dofile(menupath .. DIR_DELIM .. "dlg_settings_advanced.lua")
@@ -118,12 +118,7 @@ local function init_globals()
 		menudata.worldlist:add_sort_mechanism("alphabetic", sort_worlds_alphabetic)
 		menudata.worldlist:set_sortmode("alphabetic")
 
-		if not core.settings:get("menu_last_game") then
-			local default_game = core.settings:get("default_game") or "minetest"
-			core.settings:set("menu_last_game", default_game)
-		end
-
-		mm_texture.init()
+		gamemenu.init()
 	end
 
 	-- Create main tabview

@@ -16,11 +16,6 @@
 --51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 
-local function current_game()
-	local last_game_id = core.settings:get("menu_last_game")
-	return pkgmgr.find_by_gameid(last_game_id)
-end
-
 local function get_formspec(tabview, name, tabdata)
 	local retval = ""
 
@@ -146,13 +141,6 @@ local function main_button_handler(this, fields, name, tabdata)
 					core.settings:set("bind_address",fields["te_serveraddr"])
 				end
 
-				--update last game
-				local world = menudata.worldlist:get_raw_element(gamedata.selected_world)
-				if world then
-					local game = pkgmgr.find_by_gameid(world.gameid)
-					core.settings:set("menu_last_game", game.id)
-				end
-
 				core.start()
 			else
 				gamedata.errormessage =
@@ -175,7 +163,6 @@ local function main_button_handler(this, fields, name, tabdata)
 		create_world_dlg:set_parent(this)
 		this:hide()
 		create_world_dlg:show()
-		mm_texture.update("singleplayer", current_game())
 		return true
 	end
 
@@ -192,7 +179,6 @@ local function main_button_handler(this, fields, name, tabdata)
 				delete_world_dlg:set_parent(this)
 				this:hide()
 				delete_world_dlg:show()
-				mm_texture.update("singleplayer",current_game())
 			end
 		end
 
@@ -210,27 +196,10 @@ local function main_button_handler(this, fields, name, tabdata)
 				configdialog:set_parent(this)
 				this:hide()
 				configdialog:show()
-				mm_texture.update("singleplayer",current_game())
 			end
 		end
 
 		return true
-	end
-end
-
-local function on_change(type, old_tab, new_tab)
-	if type == "ENTER" then
-		local game = current_game()
-
-		if game then
-			menudata.worldlist:set_filtercriteria(game.id)
-			core.set_topleft_text(game.name)
-			mm_texture.update("singleplayer",game)
-		end
-	else
-		menudata.worldlist:set_filtercriteria(nil)
-		core.set_topleft_text("")
-		mm_texture.update(new_tab,nil)
 	end
 end
 
@@ -240,5 +209,4 @@ return {
 	caption = fgettext("Start Game"),
 	cbf_formspec = get_formspec,
 	cbf_button_handler = main_button_handler,
-	on_change = on_change
 }
