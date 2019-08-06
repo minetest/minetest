@@ -21,9 +21,9 @@ tabview_layouts = {}
 tabview_layouts.tabs = {
 	get = function(self, view)
 		local formspec = ""
+		local tsize = view.tablist[view.last_tab_index].tabsize or
+				{width=view.width, height=view.height}
 		if view.parent == nil then
-			local tsize = view.tablist[view.last_tab_index].tabsize or
-					{width=view.width, height=view.height}
 			formspec = formspec ..
 					string.format("size[%f,%f,%s]",tsize.width,tsize.height,
 							dump(view.fixed_size))
@@ -36,6 +36,11 @@ tabview_layouts.tabs = {
 						view.tablist[view.last_tab_index].tabdata,
 						view.tablist[view.last_tab_index].tabsize
 				)
+
+		formspec = formspec .. ([[
+			style[change_game;noclip=true]
+			button[%f,%f;3,0.8;change_game;%s]
+		]]):format(-0.3, tsize.height + 0.8, fgettext("Change Game"))
 
 		return formspec
 	end,
@@ -54,6 +59,14 @@ tabview_layouts.tabs = {
 	end,
 
 	handle_buttons = function(self, view, fields)
+		if fields.change_game then
+			local change_game_dlg = change_game_dlg()
+			change_game_dlg:set_parent(view)
+			view:hide()
+			change_game_dlg:show()
+			return true
+		end
+
 		--save tab selection to config file
 		if fields[view.name] then
 			local index = tonumber(fields[view.name])
