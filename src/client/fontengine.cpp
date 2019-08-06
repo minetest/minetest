@@ -338,7 +338,7 @@ void FontEngine::initSimpleFont(unsigned int basesize, FontMode mode)
 		s32 offset = zoffset >> 1;
 
 		for (const std::string &ext : font_extensions) {
-			path.str(std::string()); // Clear
+			path.str(""); // Clear
 			path << basename << "_" << (size + offset * sign) << ext;
 
 			if (!fs::PathExists(path.str())) 
