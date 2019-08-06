@@ -93,9 +93,9 @@ function render_serverlist_row(spec, is_favorite)
 		end
 	end
 
-	local details = ""
 	local grey_out = not is_server_protocol_compat(spec.proto_min, spec.proto_max)
 
+	local details
 	if is_favorite then
 		details = "1,"
 	else
@@ -118,11 +118,11 @@ function render_serverlist_row(spec, is_favorite)
 	end
 
 	if spec.clients and spec.clients_max then
-		local clients_color = ''
 		local clients_percent = 100 * spec.clients / spec.clients_max
 
 		-- Choose a color depending on how many clients are connected
 		-- (relatively to clients_max)
+		local clients_color
 		if     grey_out		      then clients_color = '#aaaaaa'
 		elseif spec.clients == 0      then clients_color = ''        -- 0 players: default/white
 		elseif clients_percent <= 60  then clients_color = '#a1e587' -- 0-60%: green
@@ -171,6 +171,7 @@ os.tempfolder = function()
 	local filetocheck = os.tmpname()
 	os.remove(filetocheck)
 
+	-- luacheck: ignore
 	-- https://blogs.msdn.microsoft.com/vcblog/2014/06/18/c-runtime-crt-features-fixes-and-breaking-changes-in-visual-studio-14-ctp1/
 	--   The C runtime (CRT) function called by os.tmpname is tmpnam.
 	--   Microsofts tmpnam implementation in older CRT / MSVC releases is defective.

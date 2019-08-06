@@ -117,7 +117,8 @@ end
 local function assert_can_be_called(func, func_name, level)
 	if not can_be_called(func) then
 		-- Then throw an *helpful* error, by pointing on our caller instead of us.
-		error(format("Invalid argument to %s. Expected function-like type instead of '%s'.", func_name, type(func)), level + 1)
+		error(format("Invalid argument to %s. Expected function-like type instead of '%s'.",
+				func_name, type(func)), level + 1)
 	end
 end
 

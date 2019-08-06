@@ -21,7 +21,7 @@ local current_game, singleplayer_refresh_gamebar
 if enable_gamebar then
 	function current_game()
 		local last_game_id = core.settings:get("menu_last_game")
-		local game, index = pkgmgr.find_by_gameid(last_game_id)
+		local game = pkgmgr.find_by_gameid(last_game_id)
 
 		return game
 	end
@@ -222,7 +222,7 @@ local function main_button_handler(this, fields, name, tabdata)
 				--update last game
 				local world = menudata.worldlist:get_raw_element(gamedata.selected_world)
 				if world then
-					local game, index = pkgmgr.find_by_gameid(world.gameid)
+					local game = pkgmgr.find_by_gameid(world.gameid)
 					core.settings:set("menu_last_game", game.id)
 				end
 

@@ -31,7 +31,6 @@ local mod_cmds = {}
 local function load_mod_command_tree()
 	mod_cmds = {}
 
-	local check_player_privs = core.check_player_privs
 	for name, def in pairs(core.registered_chatcommands) do
 		mod_cmds[def.mod_origin] = mod_cmds[def.mod_origin] or {}
 		local cmds = mod_cmds[def.mod_origin]
@@ -86,8 +85,8 @@ end
 
 local function build_privs_formspec(name)
 	local privs = {}
-	for name, def in pairs(core.registered_privileges) do
-		privs[#privs + 1] = { name, def }
+	for priv_name, def in pairs(core.registered_privileges) do
+		privs[#privs + 1] = { priv_name, def }
 	end
 	table.sort(privs, function(a, b) return a[1] < b[1] end)
 
@@ -137,7 +136,7 @@ help_command.func = function(name, param)
 	if param == "" or param == "all" then
 		core.show_formspec(name, "__builtin:help_cmds",
 			build_chatcommands_formspec(name))
-		return 
+		return
 	end
 
 	return old_help_func(name, param)
