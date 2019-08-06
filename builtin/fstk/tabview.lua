@@ -30,7 +30,7 @@
 local function add_tab(self,tab)
 	assert(tab.size == nil or (type(tab.size) == table and
 			tab.size.x ~= nil and tab.size.y ~= nil))
-	assert(tab.cbf_formspec ~= nil and type(tab.cbf_formspec) == "function")
+	assert(tab.show or tab.cbf_formspec ~= nil and type(tab.cbf_formspec) == "function")
 	assert(tab.cbf_button_handler == nil or
 			type(tab.cbf_button_handler) == "function")
 	assert(tab.cbf_events == nil or type(tab.cbf_events) == "function")
@@ -38,6 +38,7 @@ local function add_tab(self,tab)
 	local newtab = {
 		name = tab.name,
 		caption = tab.caption,
+		show = tab.show,
 		button_handler = tab.cbf_button_handler,
 		event_handler = tab.cbf_events,
 		get_formspec = tab.cbf_formspec,
@@ -58,135 +59,80 @@ end
 
 --------------------------------------------------------------------------------
 local function get_formspec(self)
-	local formspec = ""
-
 	if not self.hidden and (self.parent == nil or not self.parent.hidden) then
-
-		if self.parent == nil then
-			local tsize = self.tablist[self.last_tab_index].tabsize or
-					{width=self.width, height=self.height}
-			formspec = formspec ..
-					string.format("size[%f,%f,%s]",tsize.width,tsize.height,
-						dump(self.fixed_size))
-		end
-		formspec = formspec .. self:tab_header()
-		formspec = formspec ..
-				self.tablist[self.last_tab_index].get_formspec(
-					self,
-					self.tablist[self.last_tab_index].name,
-					self.tablist[self.last_tab_index].tabdata,
-					self.tablist[self.last_tab_index].tabsize
-					)
+		return self.layout:get(self)
+	else
+		return ""
 	end
-	return formspec
 end
 
 --------------------------------------------------------------------------------
-local function handle_buttons(self,fields)
-
+local function handle_buttons(self, fields)
 	if self.hidden then
 		return false
 	end
 
-	if self:handle_tab_buttons(fields) then
+	if self.layout:handle_buttons(self, fields) then
 		return true
 	end
 
 	if self.glb_btn_handler ~= nil and
-		self.glb_btn_handler(self,fields) then
+			self.glb_btn_handler(self,fields) then
 		return true
 	end
 
-	if self.tablist[self.last_tab_index].button_handler ~= nil then
-		return
-			self.tablist[self.last_tab_index].button_handler(
-					self,
-					fields,
-					self.tablist[self.last_tab_index].name,
-					self.tablist[self.last_tab_index].tabdata
-					)
+	local tab = self.tablist[self.last_tab_index]
+	if tab and tab.button_handler ~= nil then
+		return tab.button_handler(self, fields, tab.name, tab.tabdata)
 	end
 
 	return false
 end
 
 --------------------------------------------------------------------------------
-local function handle_events(self,event)
-
+local function handle_events(self, event)
 	if self.hidden then
 		return false
 	end
 
 	if self.glb_evt_handler ~= nil and
-		self.glb_evt_handler(self,event) then
+			self.glb_evt_handler(self,event) then
 		return true
 	end
 
-	if self.tablist[self.last_tab_index].evt_handler ~= nil then
-		return
-			self.tablist[self.last_tab_index].evt_handler(
-					self,
-					event,
-					self.tablist[self.last_tab_index].name,
-					self.tablist[self.last_tab_index].tabdata
-					)
+	local tab = self.tablist[self.last_tab_index]
+	if tab.evt_handler ~= nil then
+		return tab.evt_handler(self, event, tab.name, tab.tabdata)
 	end
 
 	return false
-end
-
-
---------------------------------------------------------------------------------
-local function tab_header(self)
-
-	local toadd = ""
-
-	for i=1,#self.tablist,1 do
-
-		if toadd ~= "" then
-			toadd = toadd .. ","
-		end
-
-		toadd = toadd .. self.tablist[i].caption
-	end
-	return string.format("tabheader[%f,%f;%s;%s;%i;true;false]",
-			self.header_x, self.header_y, self.name, toadd, self.last_tab_index);
 end
 
 --------------------------------------------------------------------------------
 local function switch_to_tab(self, index)
-	--first call on_change for tab to leave
-	if self.tablist[self.last_tab_index].on_change ~= nil then
-		self.tablist[self.last_tab_index].on_change("LEAVE",
-				self.current_tab, self.tablist[index].name)
+	local old_tab = self.tablist[self.last_tab_index]
+	local new_tab = self.tablist[index]
+
+	if old_tab and old_tab.on_change ~= nil then
+		old_tab.on_change("LEAVE", self.current_tab, new_tab and new_tab.name)
+	end
+
+	if new_tab and new_tab.show then
+		new_tab.show(old_tab and old_tab.name, new_tab.name, self)
+		return
 	end
 
 	--update tabview data
 	self.last_tab_index = index
-	local old_tab = self.current_tab
-	self.current_tab = self.tablist[index].name
+	self.current_tab = new_tab and new_tab.name
 
-	if (self.autosave_tab) then
-		core.settings:set(self.name .. "_LAST",self.current_tab)
+	if self.autosave_tab then
+		core.settings:set(self.name .. "_LAST", self.current_tab or "")
 	end
 
-	-- call for tab to enter
-	if self.tablist[index].on_change ~= nil then
-		self.tablist[index].on_change("ENTER",
-				old_tab,self.current_tab)
+	if new_tab and new_tab.on_change then
+		new_tab.on_change("ENTER", old_tab, self.current_tab)
 	end
-end
-
---------------------------------------------------------------------------------
-local function handle_tab_buttons(self,fields)
-	--save tab selection to config file
-	if fields[self.name] then
-		local index = tonumber(fields[self.name])
-		switch_to_tab(self, index)
-		return true
-	end
-
-	return false
 end
 
 --------------------------------------------------------------------------------
@@ -205,10 +151,10 @@ end
 local function hide_tabview(self)
 	self.hidden=true
 
+	local tab = self.tablist[self.last_tab_index]
 	--call on_change as we're not gonna show self tab any longer
-	if self.tablist[self.last_tab_index].on_change ~= nil then
-		self.tablist[self.last_tab_index].on_change("LEAVE",
-				self.current_tab, nil)
+	if tab and tab.on_change ~= nil then
+		tab.on_change("LEAVE", self.current_tab, nil)
 	end
 end
 
@@ -217,8 +163,9 @@ local function show_tabview(self)
 	self.hidden=false
 
 	-- call for tab to enter
-	if self.tablist[self.last_tab_index].on_change ~= nil then
-		self.tablist[self.last_tab_index].on_change("ENTER",
+	local tab = self.tablist[self.last_tab_index]
+	if tab and tab.on_change ~= nil then
+		tab.on_change("ENTER",
 				nil,self.current_tab)
 	end
 end
@@ -233,22 +180,21 @@ local tabview_metatable = {
 	delete                    = function(self) ui.delete(self) end,
 	set_parent                = function(self,parent) self.parent = parent end,
 	set_autosave_tab          =
-			function(self,value) self.autosave_tab = value end,
+	function(self,value) self.autosave_tab = value end,
 	set_tab                   = set_tab_by_name,
+	switch_to_tab             = switch_to_tab,
 	set_global_button_handler =
-			function(self,handler) self.glb_btn_handler = handler end,
+	function(self,handler) self.glb_btn_handler = handler end,
 	set_global_event_handler =
-			function(self,handler) self.glb_evt_handler = handler end,
+	function(self,handler) self.glb_evt_handler = handler end,
 	set_fixed_size =
-			function(self,state) self.fixed_size = state end,
-	tab_header = tab_header,
-	handle_tab_buttons = handle_tab_buttons
+	function(self,state) self.fixed_size = state end,
 }
 
 tabview_metatable.__index = tabview_metatable
 
 --------------------------------------------------------------------------------
-function tabview_create(name, size, tabheaderpos)
+function tabview_create(name, size, tabheaderpos, layout)
 	local self = {}
 
 	self.name     = name
@@ -257,6 +203,7 @@ function tabview_create(name, size, tabheaderpos)
 	self.height   = size.y
 	self.header_x = tabheaderpos.x
 	self.header_y = tabheaderpos.y
+	self.layout   = layout or tabview_layouts.tabs
 
 	setmetatable(self, tabview_metatable)
 
