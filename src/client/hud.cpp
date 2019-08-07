@@ -714,6 +714,16 @@ void drawItemStack(video::IVideoDriver *driver,
 		driver->setTransform(video::ETS_VIEW, oldViewMat);
 		driver->setTransform(video::ETS_PROJECTION, oldProjMat);
 		driver->setViewPort(oldViewPort);
+
+		// draw the inventory_overlay
+		if (def.type == ITEM_NODE && def.inventory_image.empty() &&
+				!def.inventory_overlay.empty()) {
+			ITextureSource *tsrc = client->getTextureSource();
+			video::ITexture *overlay_texture = tsrc->getTexture(def.inventory_overlay);
+			core::dimension2d<u32> dimens = overlay_texture->getOriginalSize();
+			core::rect<s32> srcrect(0, 0, dimens.Width, dimens.Height);
+			draw2DImageFilterScaled(driver, overlay_texture, rect, srcrect, clip, 0, true);
+		}
 	}
 
 	if(def.type == ITEM_TOOL && item.wear != 0)
