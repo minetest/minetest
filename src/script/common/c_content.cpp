@@ -1529,13 +1529,15 @@ void read_groups(lua_State *L, int index, ItemGroupList &result)
 		return;
 	result.clear();
 	lua_pushnil(L);
-	if(index < 0)
+	if (index < 0)
 		index -= 1;
-	while(lua_next(L, index) != 0){
+	while (lua_next(L, index) != 0) {
 		// key at index -2 and value at index -1
 		std::string name = luaL_checkstring(L, -2);
 		int rating = luaL_checkinteger(L, -1);
-		result[name] = rating;
+		// zero rating indicates not in the group
+		if (rating != 0)
+			result[name] = rating;
 		// removes value, keeps key for next iteration
 		lua_pop(L, 1);
 	}
