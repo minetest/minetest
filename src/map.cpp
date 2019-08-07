@@ -152,14 +152,8 @@ MapBlock * Map::getBlockNoCreate(v3s16 p3d)
 bool Map::isNodeUnderground(v3s16 p)
 {
 	v3s16 blockpos = getNodeBlockPos(p);
-	try{
-		MapBlock * block = getBlockNoCreate(blockpos);
-		return block->getIsUnderground();
-	}
-	catch(InvalidPositionException &e)
-	{
-		return false;
-	}
+	MapBlock *block = getBlockNoCreateNoEx(blockpos);
+	return block && block->getIsUnderground(); 
 }
 
 bool Map::isValidPosition(v3s16 p)
