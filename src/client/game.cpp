@@ -3835,7 +3835,7 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 		runData.update_draw_list_last_cam_dir = camera_direction;
 	}
 
-	m_game_ui->update(*stats, client, draw_control, cam, runData.pointed_old, dtime);
+	m_game_ui->update(*stats, client, draw_control, cam, runData.pointed_old, gui_chat_console, dtime);
 
 	/*
 	   make sure menu is on top
