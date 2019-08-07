@@ -1342,11 +1342,19 @@ void Client::setPlayerItem(u16 item)
 // has been updated from the server.
 bool Client::updateWieldedItem()
 {
-	if (m_update_wielded_item) {
-		m_update_wielded_item = false;
-		return true;
-	}
-	return false;
+	if (!m_update_wielded_item)
+		return false;
+
+	m_update_wielded_item = false;
+
+	LocalPlayer *player = m_env.getLocalPlayer();
+	assert(player);
+	if (auto *list = player->inventory.getList("main"))
+		list->setModified(false);
+	if (auto *list = player->inventory.getList("hand"))
+		list->setModified(false);
+
+	return true;
 }
 
 Inventory* Client::getInventory(const InventoryLocation &loc)
