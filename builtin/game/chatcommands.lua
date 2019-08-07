@@ -29,7 +29,7 @@ core.register_on_chat_message(function(name, message)
 		core.set_last_run_mod(cmd_def.mod_origin)
 		local _, result = cmd_def.func(name, param)
 		if result then
-			core.chat_send_player(name, message)
+			core.chat_send_player(name, result)
 		end
 	else
 		core.chat_send_player(name, "You don't have permission"
