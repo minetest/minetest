@@ -210,17 +210,13 @@ int ModApiClient::l_get_language(lua_State *L)
 int ModApiClient::l_get_wielded_item(lua_State *L)
 {
 	Client *client = getClient(L);
+	LocalPlayer *player = client->getEnv().getLocalPlayer();
+	if (!player)
+		return 0;
 
-	Inventory local_inventory(client->idef());
-	client->getLocalInventory(local_inventory);
-
-	InventoryList *mlist = local_inventory.getList("main");
-
-	if (mlist && client->getPlayerItem() < mlist->getSize()) {
-		LuaItemStack::create(L, mlist->getItem(client->getPlayerItem()));
-	} else {
-		LuaItemStack::create(L, ItemStack());
-	}
+	ItemStack selected_item;
+	player->getWieldedItem(&selected_item, nullptr);
+	LuaItemStack::create(L, selected_item);
 	return 1;
 }
 

@@ -173,6 +173,11 @@ public:
 	PlayerSettings &getPlayerSettings() { return m_player_settings; }
 	static void settingsChangedCallback(const std::string &name, void *data);
 
+	// Returns non-empty `selected` ItemStack. `hand` is a fallback, if specified
+	ItemStack &getWieldedItem(ItemStack *selected, ItemStack *hand) const;
+	void setWieldIndex(u16 index);
+	u16 getWieldIndex() const { return m_wield_index; }
+
 	u32 keyPressed = 0;
 
 	HudElement* getHud(u32 id);
@@ -185,6 +190,7 @@ public:
 protected:
 	char m_name[PLAYERNAME_SIZE];
 	v3f m_speed;
+	u16 m_wield_index = 0;
 
 	std::vector<HudElement *> hud;
 private:

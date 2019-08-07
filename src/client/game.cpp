@@ -744,12 +744,11 @@ protected:
 			bool look_for_object, const v3s16 &camera_offset);
 	void handlePointingAtNothing(const ItemStack &playerItem);
 	void handlePointingAtNode(const PointedThing &pointed,
-		const ItemDefinition &playeritem_def, const ItemStack &playeritem,
-		const ToolCapabilities &playeritem_toolcap, f32 dtime);
+			const ItemStack &selected_item, const ItemStack &hand_item, f32 dtime);
 	void handlePointingAtObject(const PointedThing &pointed, const ItemStack &playeritem,
 			const v3f &player_position, bool show_debug);
 	void handleDigging(const PointedThing &pointed, const v3s16 &nodepos,
-			const ToolCapabilities &playeritem_toolcap, f32 dtime);
+			const ItemStack &selected_item, const ItemStack &hand_item, f32 dtime);
 	void updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 			const CameraOrientation &cam);
 	void updateProfilerGraphs(ProfilerGraph *graph);
@@ -804,8 +803,8 @@ private:
 
 	void updateChat(f32 dtime, const v2u32 &screensize);
 
-	bool nodePlacementPrediction(const ItemDefinition &playeritem_def,
-		const ItemStack &playeritem, const v3s16 &nodepos, const v3s16 &neighbourpos);
+	bool nodePlacementPrediction(const ItemDefinition &selected_def,
+		const ItemStack &selected_item, const v3s16 &nodepos, const v3s16 &neighbourpos);
 	static const ClientEventHandler clientEventHandler[CLIENTEVENT_MAX];
 
 	InputHandler *input = nullptr;
@@ -837,7 +836,6 @@ private:
 	Camera *camera = nullptr;
 	Clouds *clouds = nullptr;	                  // Free using ->Drop()
 	Sky *sky = nullptr;                         // Free using ->Drop()
-	Inventory *local_inventory = nullptr;
 	Hud *hud = nullptr;
 	Minimap *mapper = nullptr;
 
@@ -951,7 +949,6 @@ Game::~Game()
 	delete server; // deleted first to stop all server threads
 
 	delete hud;
-	delete local_inventory;
 	delete camera;
 	delete quicktune;
 	delete eventmgr;
@@ -1349,10 +1346,8 @@ bool Game::createClient(const std::string &playername,
 	scsf->setSky(sky);
 	skybox = NULL;	// This is used/set later on in the main run loop
 
-	local_inventory = new Inventory(itemdef_manager);
-
-	if (!(sky && local_inventory)) {
-		*error_message = "Memory allocation error (sky or local inventory)";
+	if (!sky) {
+		*error_message = "Memory allocation error sky";
 		errorstream << *error_message << std::endl;
 		return false;
 	}
@@ -1384,7 +1379,7 @@ bool Game::createClient(const std::string &playername,
 	player->hurt_tilt_timer = 0;
 	player->hurt_tilt_strength = 0;
 
-	hud = new Hud(guienv, client, player, local_inventory);
+	hud = new Hud(guienv, client, player, &player->inventory);
 
 	if (!hud) {
 		*error_message = "Memory error: could not create HUD";
@@ -1977,7 +1972,7 @@ void Game::processItemSelection(u16 *new_playeritem)
 
 	/* Item selection using mouse wheel
 	 */
-	*new_playeritem = client->getPlayerItem();
+	*new_playeritem = player->getWieldIndex();
 
 	s32 wheel = input->getMouseWheel();
 	u16 max_item = MYMIN(PLAYER_INVENTORY_SIZE - 1,
@@ -2019,7 +2014,7 @@ void Game::dropSelectedItem(bool single_item)
 	a->count = single_item ? 1 : 0;
 	a->from_inv.setCurrentPlayer();
 	a->from_list = "main";
-	a->from_i = client->getPlayerItem();
+	a->from_i = client->getEnv().getLocalPlayer()->getWieldIndex();
 	client->inventoryAction(a);
 }
 
@@ -2847,18 +2842,9 @@ void Game::updateCamera(u32 busy_time, f32 dtime)
 	*/
 	ItemStack playeritem;
 	{
-		InventoryList *mlist = local_inventory->getList("main");
-
-		if (mlist && client->getPlayerItem() < mlist->getSize())
-			playeritem = mlist->getItem(client->getPlayerItem());
+		ItemStack selected, hand;
+		playeritem = player->getWieldedItem(&selected, &hand);
 	}
-
-	if (playeritem.getDefinition(itemdef_manager).name.empty()) { // override the hand
-		InventoryList *hlist = local_inventory->getList("hand");
-		if (hlist)
-			playeritem = hlist->getItem(0);
-	}
-
 
 	ToolCapabilities playeritem_toolcap =
 		playeritem.getToolCapabilities(itemdef_manager);
@@ -2949,20 +2935,6 @@ void Game::processPlayerInteraction(f32 dtime, bool show_hud, bool show_debug)
 {
 	LocalPlayer *player = client->getEnv().getLocalPlayer();
 
-	ItemStack playeritem;
-	{
-		InventoryList *mlist = local_inventory->getList("main");
-
-		if (mlist && client->getPlayerItem() < mlist->getSize())
-			playeritem = mlist->getItem(client->getPlayerItem());
-	}
-
-	const ItemDefinition &playeritem_def =
-			playeritem.getDefinition(itemdef_manager);
-	InventoryList *hlist = local_inventory->getList("hand");
-	const ItemDefinition &hand_def =
-		hlist ? hlist->getItem(0).getDefinition(itemdef_manager) : itemdef_manager->get("");
-
 	v3f player_position  = player->getPosition();
 	v3f player_eye_position = player->getEyePosition();
 	v3f camera_position  = camera->getPosition();
@@ -2978,13 +2950,11 @@ void Game::processPlayerInteraction(f32 dtime, bool show_hud, bool show_debug)
 		Calculate what block is the crosshair pointing to
 	*/
 
-	f32 d = playeritem_def.range; // max. distance
-	f32 d_hand = hand_def.range;
+	ItemStack selected_item, hand_item;
+	const ItemStack &tool_item = player->getWieldedItem(&selected_item, &hand_item);
 
-	if (d < 0 && d_hand >= 0)
-		d = d_hand;
-	else if (d < 0)
-		d = 4.0;
+	const ItemDefinition &selected_def = selected_item.getDefinition(itemdef_manager);
+	f32 d = BS * getToolRange(selected_def, hand_item.getDefinition(itemdef_manager));
 
 	core::line3d<f32> shootline;
 
@@ -3010,7 +2980,7 @@ void Game::processPlayerInteraction(f32 dtime, bool show_hud, bool show_debug)
 #endif
 
 	PointedThing pointed = updatePointedThing(shootline,
-			playeritem_def.liquids_pointable,
+			selected_def.liquids_pointable,
 			!runData.ldown_for_dig,
 			camera_offset);
 
@@ -3074,30 +3044,20 @@ void Game::processPlayerInteraction(f32 dtime, bool show_hud, bool show_debug)
 	else
 		runData.repeat_rightclick_timer = 0;
 
-	if (playeritem_def.usable && input->getLeftState()) {
+
+	if (selected_def.usable && input->getLeftState()) {
 		if (input->getLeftClicked() && (!client->moddingEnabled()
-				|| !client->getScript()->on_item_use(playeritem, pointed)))
+				|| !client->getScript()->on_item_use(selected_item, pointed)))
 			client->interact(4, pointed);
 	} else if (pointed.type == POINTEDTHING_NODE) {
-		ToolCapabilities playeritem_toolcap =
-				playeritem.getToolCapabilities(itemdef_manager);
-		if (playeritem.name.empty()) {
-			const ToolCapabilities *handToolcap = hlist
-				? &hlist->getItem(0).getToolCapabilities(itemdef_manager)
-				: itemdef_manager->get("").tool_capabilities;
-
-			if (handToolcap != nullptr)
-				playeritem_toolcap = *handToolcap;
-		}
-		handlePointingAtNode(pointed, playeritem_def, playeritem,
-			playeritem_toolcap, dtime);
+		handlePointingAtNode(pointed, selected_item, hand_item, dtime);
 	} else if (pointed.type == POINTEDTHING_OBJECT) {
-		handlePointingAtObject(pointed, playeritem, player_position, show_debug);
+		handlePointingAtObject(pointed, tool_item, player_position, show_debug);
 	} else if (input->getLeftState()) {
 		// When button is held down in air, show continuous animation
 		runData.left_punch = true;
 	} else if (input->getRightClicked()) {
-		handlePointingAtNothing(playeritem);
+		handlePointingAtNothing(selected_item);
 	}
 
 	runData.pointed_old = pointed;
@@ -3214,8 +3174,7 @@ void Game::handlePointingAtNothing(const ItemStack &playerItem)
 
 
 void Game::handlePointingAtNode(const PointedThing &pointed,
-	const ItemDefinition &playeritem_def, const ItemStack &playeritem,
-	const ToolCapabilities &playeritem_toolcap, f32 dtime)
+	const ItemStack &selected_item, const ItemStack &hand_item, f32 dtime)
 {
 	v3s16 nodepos = pointed.node_undersurface;
 	v3s16 neighbourpos = pointed.node_abovesurface;
@@ -3229,7 +3188,7 @@ void Game::handlePointingAtNode(const PointedThing &pointed,
 	if (runData.nodig_delay_timer <= 0.0 && input->getLeftState()
 			&& !runData.digging_blocked
 			&& client->checkPrivilege("interact")) {
-		handleDigging(pointed, nodepos, playeritem_toolcap, dtime);
+		handleDigging(pointed, nodepos, selected_item, hand_item, dtime);
 	}
 
 	// This should be done after digging handling
@@ -3281,7 +3240,8 @@ void Game::handlePointingAtNode(const PointedThing &pointed,
 
 			// If the wielded item has node placement prediction,
 			// make that happen
-			bool placed = nodePlacementPrediction(playeritem_def, playeritem, nodepos,
+			auto &def = selected_item.getDefinition(itemdef_manager);
+			bool placed = nodePlacementPrediction(def, selected_item, nodepos,
 				neighbourpos);
 
 			if (placed) {
@@ -3289,30 +3249,30 @@ void Game::handlePointingAtNode(const PointedThing &pointed,
 				client->interact(3, pointed);
 				// Read the sound
 				soundmaker->m_player_rightpunch_sound =
-						playeritem_def.sound_place;
+						def.sound_place;
 
 				if (client->moddingEnabled())
-					client->getScript()->on_placenode(pointed, playeritem_def);
+					client->getScript()->on_placenode(pointed, def);
 			} else {
 				soundmaker->m_player_rightpunch_sound =
 						SimpleSoundSpec();
 
-				if (playeritem_def.node_placement_prediction.empty() ||
+				if (def.node_placement_prediction.empty() ||
 						nodedef_manager->get(map.getNodeNoEx(nodepos)).rightclickable) {
 					client->interact(3, pointed); // Report to server
 				} else {
 					soundmaker->m_player_rightpunch_sound =
-						playeritem_def.sound_place_failed;
+						def.sound_place_failed;
 				}
 			}
 		}
 	}
 }
 
-bool Game::nodePlacementPrediction(const ItemDefinition &playeritem_def,
-	const ItemStack &playeritem, const v3s16 &nodepos, const v3s16 &neighbourpos)
+bool Game::nodePlacementPrediction(const ItemDefinition &selected_def,
+	const ItemStack &selected_item, const v3s16 &nodepos, const v3s16 &neighbourpos)
 {
-	std::string prediction = playeritem_def.node_placement_prediction;
+	std::string prediction = selected_def.node_placement_prediction;
 	const NodeDefManager *nodedef = client->ndef();
 	ClientMap &map = client->getEnv().getClientMap();
 	MapNode node;
@@ -3325,7 +3285,7 @@ bool Game::nodePlacementPrediction(const ItemDefinition &playeritem_def,
 	if (!prediction.empty() && !(nodedef->get(node).rightclickable &&
 			!isKeyDown(KeyType::SNEAK))) {
 		verbosestream << "Node placement prediction for "
-			<< playeritem_def.name << " is "
+			<< selected_item.name << " is "
 			<< prediction << std::endl;
 		v3s16 p = neighbourpos;
 
@@ -3348,7 +3308,7 @@ bool Game::nodePlacementPrediction(const ItemDefinition &playeritem_def,
 
 		if (!found) {
 			errorstream << "Node placement prediction failed for "
-				<< playeritem_def.name << " (places "
+				<< selected_item.name << " (places "
 				<< prediction
 				<< ") - Name not known" << std::endl;
 			return false;
@@ -3411,7 +3371,7 @@ bool Game::nodePlacementPrediction(const ItemDefinition &playeritem_def,
 		if ((predicted_f.param_type_2 == CPT2_COLOR
 			|| predicted_f.param_type_2 == CPT2_COLORED_FACEDIR
 			|| predicted_f.param_type_2 == CPT2_COLORED_WALLMOUNTED)) {
-			const std::string &indexstr = playeritem.metadata.getString(
+			const std::string &indexstr = selected_item.metadata.getString(
 				"palette_index", 0);
 			if (!indexstr.empty()) {
 				s32 index = mystoi(indexstr);
@@ -3450,7 +3410,7 @@ bool Game::nodePlacementPrediction(const ItemDefinition &playeritem_def,
 			}
 		} catch (InvalidPositionException &e) {
 			errorstream << "Node placement prediction failed for "
-				<< playeritem_def.name << " (places "
+				<< selected_item.name << " (places "
 				<< prediction
 				<< ") - Position not loaded" << std::endl;
 		}
@@ -3459,8 +3419,8 @@ bool Game::nodePlacementPrediction(const ItemDefinition &playeritem_def,
 	return false;
 }
 
-void Game::handlePointingAtObject(const PointedThing &pointed, const ItemStack &playeritem,
-		const v3f &player_position, bool show_debug)
+void Game::handlePointingAtObject(const PointedThing &pointed,
+		const ItemStack &tool_item, const v3f &player_position, bool show_debug)
 {
 	std::wstring infotext = unescape_translate(
 		utf8_to_wide(runData.selected_object->infoText()));
@@ -3496,16 +3456,9 @@ void Game::handlePointingAtObject(const PointedThing &pointed, const ItemStack &
 			// Report direct punch
 			v3f objpos = runData.selected_object->getPosition();
 			v3f dir = (objpos - player_position).normalize();
-			ItemStack item = playeritem;
-			if (playeritem.name.empty()) {
-				InventoryList *hlist = local_inventory->getList("hand");
-				if (hlist) {
-					item = hlist->getItem(0);
-				}
-			}
 
 			bool disable_send = runData.selected_object->directReportPunch(
-					dir, &item, runData.time_from_last_punch);
+					dir, &tool_item, runData.time_from_last_punch);
 			runData.time_from_last_punch = 0;
 
 			if (!disable_send)
@@ -3519,8 +3472,9 @@ void Game::handlePointingAtObject(const PointedThing &pointed, const ItemStack &
 
 
 void Game::handleDigging(const PointedThing &pointed, const v3s16 &nodepos,
-		const ToolCapabilities &playeritem_toolcap, f32 dtime)
+		const ItemStack &selected_item, const ItemStack &hand_item, f32 dtime)
 {
+	// See also: serverpackethandle.cpp, action == 2
 	LocalPlayer *player = client->getEnv().getLocalPlayer();
 	ClientMap &map = client->getEnv().getClientMap();
 	MapNode n = client->getEnv().getClientMap().getNodeNoEx(nodepos);
@@ -3529,17 +3483,12 @@ void Game::handleDigging(const PointedThing &pointed, const v3s16 &nodepos,
 	// cheat detection.
 	// Get digging parameters
 	DigParams params = getDigParams(nodedef_manager->get(n).groups,
-			&playeritem_toolcap);
+			&selected_item.getToolCapabilities(itemdef_manager));
 
 	// If can't dig, try hand
 	if (!params.diggable) {
-		InventoryList *hlist = local_inventory->getList("hand");
-		const ToolCapabilities *tp = hlist
-			? &hlist->getItem(0).getToolCapabilities(itemdef_manager)
-			: itemdef_manager->get("").tool_capabilities;
-
-		if (tp)
-			params = getDigParams(nodedef_manager->get(n).groups, tp);
+		params = getDigParams(nodedef_manager->get(n).groups,
+				&hand_item.getToolCapabilities(itemdef_manager));
 	}
 
 	if (!params.diggable) {
@@ -3793,29 +3742,20 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 		Inventory
 	*/
 
-	if (client->getPlayerItem() != runData.new_playeritem)
-		client->selectPlayerItem(runData.new_playeritem);
+	if (player->getWieldIndex() != runData.new_playeritem)
+		client->setPlayerItem(runData.new_playeritem);
 
 	// Update local inventory if it has changed
 	if (client->getLocalInventoryUpdated()) {
 		//infostream<<"Updating local inventory"<<std::endl;
-		client->getLocalInventory(*local_inventory);
 		runData.update_wielded_item_trigger = true;
 	}
 
 	if (runData.update_wielded_item_trigger) {
 		// Update wielded tool
-		InventoryList *mlist = local_inventory->getList("main");
-
-		if (mlist && (client->getPlayerItem() < mlist->getSize())) {
-			ItemStack item = mlist->getItem(client->getPlayerItem());
-			if (item.getDefinition(itemdef_manager).name.empty()) { // override the hand
-				InventoryList *hlist = local_inventory->getList("hand");
-				if (hlist)
-					item = hlist->getItem(0);
-			}
-			camera->wield(item);
-		}
+		ItemStack selected_item, hand_item;
+		ItemStack &tool_item = player->getWieldedItem(&selected_item, &hand_item);
+		camera->wield(tool_item);
 
 		runData.update_wielded_item_trigger = false;
 	}

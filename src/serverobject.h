@@ -170,9 +170,7 @@ public:
 	{}
 
 	// Inventory and wielded item
-	virtual Inventory* getInventory()
-	{ return NULL; }
-	virtual const Inventory* getInventory() const
+	virtual Inventory *getInventory() const
 	{ return NULL; }
 	virtual InventoryLocation getInventoryLocation() const
 	{ return InventoryLocation(); }
@@ -180,7 +178,7 @@ public:
 	{}
 	virtual std::string getWieldList() const
 	{ return ""; }
-	virtual int getWieldIndex() const
+	virtual u16 getWieldIndex() const
 	{ return 0; }
 	virtual ItemStack getWieldedItem() const;
 	virtual bool setWieldedItem(const ItemStack &item);

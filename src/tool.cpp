@@ -18,6 +18,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "tool.h"
+#include "itemdef.h"
 #include "itemgroup.h"
 #include "log.h"
 #include "inventory.h"
@@ -277,4 +278,16 @@ PunchDamageResult getPunchDamage(
 	return result;
 }
 
+f32 getToolRange(const ItemDefinition &def_selected, const ItemDefinition &def_hand)
+{
+	float max_d = def_selected.range;
+	float max_d_hand = def_hand.range;
+
+	if (max_d < 0 && max_d_hand >= 0)
+		max_d = max_d_hand;
+	else if (max_d < 0)
+		max_d = 4.0f;
+
+	return max_d;
+}
 

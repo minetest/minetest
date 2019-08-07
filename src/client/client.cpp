@@ -940,7 +940,7 @@ void Client::interact(u8 action, const PointedThing& pointed)
 	NetworkPacket pkt(TOSERVER_INTERACT, 1 + 2 + 0);
 
 	pkt << action;
-	pkt << (u16)getPlayerItem();
+	pkt << myplayer->getWieldIndex();
 
 	std::ostringstream tmp_os(std::ios::binary);
 	pointed.serialize(tmp_os);
@@ -1277,19 +1277,6 @@ void Client::sendPlayerPos()
 	Send(&pkt);
 }
 
-void Client::sendPlayerItem(u16 item)
-{
-	LocalPlayer *myplayer = m_env.getLocalPlayer();
-	if (!myplayer)
-		return;
-
-	NetworkPacket pkt(TOSERVER_PLAYERITEM, 2);
-
-	pkt << item;
-
-	Send(&pkt);
-}
-
 void Client::removeNode(v3s16 p)
 {
 	std::map<v3s16, MapBlock*> modified_blocks;
@@ -1349,11 +1336,14 @@ void Client::setPlayerControl(PlayerControl &control)
 	player->control = control;
 }
 
-void Client::selectPlayerItem(u16 item)
+void Client::setPlayerItem(u16 item)
 {
-	m_playeritem = item;
+	m_env.getLocalPlayer()->setWieldIndex(item);
 	m_inventory_updated = true;
-	sendPlayerItem(item);
+
+	NetworkPacket pkt(TOSERVER_PLAYERITEM, 2);
+	pkt << item;
+	Send(&pkt);
 }
 
 // Returns true if the inventory of the local player has been

@@ -896,18 +896,11 @@ PlayerSAO::PlayerSAO(ServerEnvironment *env_, RemotePlayer *player_, session_t p
 		m_armor_groups["immortal"] = 1;
 }
 
-PlayerSAO::~PlayerSAO()
-{
-	if(m_inventory != &m_player->inventory)
-		delete m_inventory;
-}
-
 void PlayerSAO::finalize(RemotePlayer *player, const std::set<std::string> &privs)
 {
 	assert(player);
 	m_player = player;
 	m_privs = privs;
-	m_inventory = &m_player->inventory;
 }
 
 v3f PlayerSAO::getEyeOffset() const
@@ -1365,13 +1358,9 @@ void PlayerSAO::setBreath(const u16 breath, bool send)
 		m_env->getGameDef()->SendPlayerBreath(this);
 }
 
-Inventory* PlayerSAO::getInventory()
+Inventory *PlayerSAO::getInventory() const
 {
-	return m_inventory;
-}
-const Inventory* PlayerSAO::getInventory() const
-{
-	return m_inventory;
+	return m_player ? &m_player->inventory : nullptr;
 }
 
 InventoryLocation PlayerSAO::getInventoryLocation() const
@@ -1381,59 +1370,25 @@ InventoryLocation PlayerSAO::getInventoryLocation() const
 	return loc;
 }
 
-std::string PlayerSAO::getWieldList() const
+u16 PlayerSAO::getWieldIndex() const
 {
-	return "main";
+	return m_player->getWieldIndex();
 }
 
 ItemStack PlayerSAO::getWieldedItem() const
 {
-	const Inventory *inv = getInventory();
-	ItemStack ret;
-	const InventoryList *mlist = inv->getList(getWieldList());
-	if (mlist && getWieldIndex() < (s32)mlist->getSize())
-		ret = mlist->getItem(getWieldIndex());
-	return ret;
-}
-
-ItemStack PlayerSAO::getWieldedItemOrHand() const
-{
-	const Inventory *inv = getInventory();
-	ItemStack ret;
-	const InventoryList *mlist = inv->getList(getWieldList());
-	if (mlist && getWieldIndex() < (s32)mlist->getSize())
-		ret = mlist->getItem(getWieldIndex());
-	if (ret.name.empty()) {
-		const InventoryList *hlist = inv->getList("hand");
-		if (hlist)
-			ret = hlist->getItem(0);
-	}
-	return ret;
+	ItemStack selected_item, hand_item;
+	return m_player->getWieldedItem(&selected_item, &hand_item);
 }
 
 bool PlayerSAO::setWieldedItem(const ItemStack &item)
 {
-	Inventory *inv = getInventory();
-	if (inv) {
-		InventoryList *mlist = inv->getList(getWieldList());
-		if (mlist) {
-			mlist->changeItem(getWieldIndex(), item);
-			return true;
-		}
+	InventoryList *mlist = m_player->inventory.getList(getWieldList());
+	if (mlist) {
+		mlist->changeItem(m_player->getWieldIndex(), item);
+		return true;
 	}
 	return false;
-}
-
-int PlayerSAO::getWieldIndex() const
-{
-	return m_wield_index;
-}
-
-void PlayerSAO::setWieldIndex(int i)
-{
-	if(i != m_wield_index) {
-		m_wield_index = i;
-	}
 }
 
 void PlayerSAO::disconnected()

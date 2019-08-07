@@ -923,7 +923,7 @@ void Server::handleCommand_PlayerItem(NetworkPacket* pkt)
 
 	*pkt >> item;
 
-	playersao->setWieldIndex(item);
+	playersao->getPlayer()->setWieldIndex(item);
 }
 
 void Server::handleCommand_Respawn(NetworkPacket* pkt)
@@ -954,20 +954,10 @@ void Server::handleCommand_Respawn(NetworkPacket* pkt)
 
 bool Server::checkInteractDistance(RemotePlayer *player, const f32 d, const std::string &what)
 {
-	PlayerSAO *playersao = player->getPlayerSAO();
-	const InventoryList *hlist = playersao->getInventory()->getList("hand");
-	const ItemDefinition &playeritem_def =
-		playersao->getWieldedItem().getDefinition(m_itemdef);
-	const ItemDefinition &hand_def =
-		hlist ? hlist->getItem(0).getDefinition(m_itemdef) : m_itemdef->get("");
-
-	float max_d = BS * playeritem_def.range;
-	float max_d_hand = BS * hand_def.range;
-
-	if (max_d < 0 && max_d_hand >= 0)
-		max_d = max_d_hand;
-	else if (max_d < 0)
-		max_d = BS * 4.0f;
+	ItemStack selected_item, hand_item;
+	player->getWieldedItem(&selected_item, &hand_item);
+	f32 max_d = BS * getToolRange(selected_item.getDefinition(m_itemdef),
+			hand_item.getDefinition(m_itemdef));
 
 	// Cube diagonal * 1.5 for maximal supported node extents:
 	// sqrt(3) * 1.5 ≅ 2.6
@@ -978,7 +968,7 @@ bool Server::checkInteractDistance(RemotePlayer *player, const f32 d, const std:
 				<< "d=" << d <<", max_d=" << max_d
 				<< ". ignoring." << std::endl;
 		// Call callbacks
-		m_script->on_cheat(playersao, "interacted_too_far");
+		m_script->on_cheat(player->getPlayerSAO(), "interacted_too_far");
 		return false;
 	}
 	return true;
@@ -1050,7 +1040,7 @@ void Server::handleCommand_Interact(NetworkPacket* pkt)
 	v3f player_pos = playersao->getLastGoodPosition();
 
 	// Update wielded item
-	playersao->setWieldIndex(item_i);
+	playersao->getPlayer()->setWieldIndex(item_i);
 
 	// Get pointed to node (undefined if not POINTEDTYPE_NODE)
 	v3s16 p_under = pointed.node_undersurface;
@@ -1156,7 +1146,7 @@ void Server::handleCommand_Interact(NetworkPacket* pkt)
 			if (pointed_object->isGone())
 				return;
 
-			ItemStack punchitem = playersao->getWieldedItemOrHand();
+			ItemStack punchitem = playersao->getWieldedItem();
 			ToolCapabilities toolcap =
 					punchitem.getToolCapabilities(m_itemdef);
 			v3f dir = (pointed_object->getBasePosition() -
@@ -1224,22 +1214,19 @@ void Server::handleCommand_Interact(NetworkPacket* pkt)
 					// Call callbacks
 					m_script->on_cheat(playersao, "finished_unknown_dig");
 				}
+
 				// Get player's wielded item
-				ItemStack playeritem = playersao->getWieldedItemOrHand();
-				ToolCapabilities playeritem_toolcap =
-						playeritem.getToolCapabilities(m_itemdef);
+				// See also: Game::handleDigging
+				ItemStack selected_item, hand_item;
+				playersao->getPlayer()->getWieldedItem(&selected_item, &hand_item);
+
 				// Get diggability and expected digging time
 				DigParams params = getDigParams(m_nodedef->get(n).groups,
-						&playeritem_toolcap);
+						&selected_item.getToolCapabilities(m_itemdef));
 				// If can't dig, try hand
 				if (!params.diggable) {
-					InventoryList *hlist = playersao->getInventory()->getList("hand");
-					const ToolCapabilities *tp = hlist
-						? &hlist->getItem(0).getToolCapabilities(m_itemdef)
-						: m_itemdef->get("").tool_capabilities;
-
-					if (tp)
-						params = getDigParams(m_nodedef->get(n).groups, tp);
+					params = getDigParams(m_nodedef->get(n).groups,
+						&hand_item.getToolCapabilities(m_itemdef));
 				}
 				// If can't dig, ignore dig
 				if (!params.diggable) {

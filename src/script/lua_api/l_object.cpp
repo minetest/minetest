@@ -308,8 +308,9 @@ int ObjectRef::l_get_wield_list(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
 	ServerActiveObject *co = getobject(ref);
-	if (co == NULL) return 0;
-	// Do it
+	if (!co)
+		return 0;
+
 	lua_pushstring(L, co->getWieldList().c_str());
 	return 1;
 }
@@ -320,8 +321,9 @@ int ObjectRef::l_get_wield_index(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
 	ServerActiveObject *co = getobject(ref);
-	if (co == NULL) return 0;
-	// Do it
+	if (!co)
+		return 0;
+
 	lua_pushinteger(L, co->getWieldIndex() + 1);
 	return 1;
 }
@@ -332,12 +334,12 @@ int ObjectRef::l_get_wielded_item(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
 	ServerActiveObject *co = getobject(ref);
-	if (co == NULL) {
+	if (!co) {
 		// Empty ItemStack
 		LuaItemStack::create(L, ItemStack());
 		return 1;
 	}
-	// Do it
+
 	LuaItemStack::create(L, co->getWieldedItem());
 	return 1;
 }
