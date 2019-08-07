@@ -3547,7 +3547,10 @@ v3f Server::findSpawnPos()
 			v3s16 blockpos = getNodeBlockPos(nodepos);
 			map.emergeBlock(blockpos, true);
 			content_t c = map.getNodeNoEx(nodepos).getContent();
-			if (c == CONTENT_AIR || c == CONTENT_IGNORE) {
+
+			// In generated mapblocks allow spawn in all 'airlike' drawtype nodes.
+			// In ungenerated mapblocks allow spawn in 'ignore' nodes.
+			if (m_nodedef->get(c).drawtype == NDT_AIRLIKE || c == CONTENT_IGNORE) {
 				air_count++;
 				if (air_count >= 2) {
 					// Spawn in lower empty node
