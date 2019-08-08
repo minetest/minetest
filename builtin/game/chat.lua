@@ -1,4 +1,29 @@
--- Minetest: builtin/game/chatcommands.lua
+-- Minetest: builtin/game/chat.lua
+
+--
+-- Chat message formatter
+--
+
+-- Implemented in Lua to allow redefinition
+function core.format_chat_message(name, message)
+	local str = core.settings:get("chat_message_format")
+	local error_str = "Invalid chat message format - missing %s"
+	local i
+
+	str, i = str:gsub("@name", name, 1)
+	if i == 0 then
+		error(error_str:format("@name"), 2)
+	end
+
+	str, i = str:gsub("@message", message, 1)
+	if i == 0 then
+		error(error_str:format("@message"), 2)
+	end
+
+	str = str:gsub("@timestamp", os.date("%H:%M:%S", os.time()), 1)
+
+	return str
+end
 
 --
 -- Chat command handler

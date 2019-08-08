@@ -356,6 +356,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("kick_msg_crash", "This server has experienced an internal error. You will now be disconnected.");
 	settings->setDefault("ask_reconnect_on_crash", "false");
 
+	settings->setDefault("chat_message_format", "<@name> @message");
 	settings->setDefault("profiler_print_interval", "0");
 	settings->setDefault("active_object_send_range_blocks", "4");
 	settings->setDefault("active_block_range", "3");

@@ -1277,6 +1277,11 @@
 #    type: bool
 # enable_rollback_recording = false
 
+#    Format of player chat messages. The following strings are valid placeholders:
+#    @name, @message, @timestamp (optional)
+#    type: string
+chat_message_format = <@name> @message
+
 #    A message to be displayed to all clients when the server shuts down.
 #    type: string
 # kick_msg_shutdown = Server shutting down.

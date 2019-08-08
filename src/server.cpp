@@ -1571,7 +1571,7 @@ void Server::SendChatMessage(session_t peer_id, const ChatMessage &message)
 }
 
 void Server::SendShowFormspecMessage(session_t peer_id, const std::string &formspec,
-                                     const std::string &formname)
+	const std::string &formname)
 {
 	NetworkPacket pkt(TOCLIENT_SHOW_FORMSPEC, 0 , peer_id);
 	if (formspec.empty()){
@@ -2863,28 +2863,28 @@ std::wstring Server::handleChat(const std::string &name, const std::wstring &wna
 {
 	// If something goes wrong, this player is to blame
 	RollbackScopeActor rollback_scope(m_rollback,
-		std::string("player:") + name);
+			std::string("player:") + name);
 
 	if (g_settings->getBool("strip_color_codes"))
 		wmessage = unescape_enriched(wmessage);
 
 	if (player) {
 		switch (player->canSendChatMessage()) {
-			case RPLAYER_CHATRESULT_FLOODING: {
-				std::wstringstream ws;
-				ws << L"You cannot send more messages. You are limited to "
-				   << g_settings->getFloat("chat_message_limit_per_10sec")
-				   << L" messages per 10 seconds.";
-				return ws.str();
-			}
-			case RPLAYER_CHATRESULT_KICK:
-				DenyAccess_Legacy(player->getPeerId(),
-						L"You have been kicked due to message flooding.");
-				return L"";
-			case RPLAYER_CHATRESULT_OK:
-				break;
-			default:
-				FATAL_ERROR("Unhandled chat filtering result found.");
+		case RPLAYER_CHATRESULT_FLOODING: {
+			std::wstringstream ws;
+			ws << L"You cannot send more messages. You are limited to "
+					<< g_settings->getFloat("chat_message_limit_per_10sec")
+					<< L" messages per 10 seconds.";
+			return ws.str();
+		}
+		case RPLAYER_CHATRESULT_KICK:
+			DenyAccess_Legacy(player->getPeerId(),
+					L"You have been kicked due to message flooding.");
+			return L"";
+		case RPLAYER_CHATRESULT_OK:
+			break;
+		default:
+			FATAL_ERROR("Unhandled chat filtering result found.");
 		}
 	}
 
@@ -2912,10 +2912,8 @@ std::wstring Server::handleChat(const std::string &name, const std::wstring &wna
 		line += L"-!- You don't have permission to shout.";
 		broadcast_line = false;
 	} else {
-		line += L"<";
-		line += wname;
-		line += L"> ";
-		line += wmessage;
+		line += narrow_to_wide(m_script->formatChatMessage(name,
+				wide_to_narrow(wmessage)));
 	}
 
 	/*
