@@ -21,7 +21,7 @@
 tags
 !tags/
 gtags.files
-.idea/*
+.idea
 # Codelite
 *.project
 # Visual Studio Code
