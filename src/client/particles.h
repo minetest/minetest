@@ -144,8 +144,7 @@ public:
 
 private:
 	void spawnParticle(ClientEnvironment *env, float radius,
-			bool is_attached, const v3f &attached_pos,
-			float attached_yaw);
+		const core::matrix4 *attached_absolute_pos_rot_matrix);
 
 	ParticleManager *m_particlemanager;
 	float m_time;

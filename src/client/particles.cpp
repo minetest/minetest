@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <cmath>
 #include "client.h"
 #include "collision.h"
+#include "client/content_cao.h"
 #include "client/clientevent.h"
 #include "client/renderingengine.h"
 #include "util/numeric.h"
@@ -38,9 +39,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 v3f random_v3f(v3f min, v3f max)
 {
-	return v3f( rand()/(float)RAND_MAX*(max.X-min.X)+min.X,
-			rand()/(float)RAND_MAX*(max.Y-min.Y)+min.Y,
-			rand()/(float)RAND_MAX*(max.Z-min.Z)+min.Z);
+	return v3f(
+		rand() / (float)RAND_MAX * (max.X - min.X) + min.X,
+		rand() / (float)RAND_MAX * (max.Y - min.Y) + min.Y,
+		rand() / (float)RAND_MAX * (max.Z - min.Z) + min.Z);
 }
 
 Particle::Particle(
@@ -299,16 +301,21 @@ ParticleSpawner::ParticleSpawner(
 }
 
 void ParticleSpawner::spawnParticle(ClientEnvironment *env, float radius,
-	bool is_attached, const v3f &attached_pos, float attached_yaw)
+	const core::matrix4 *attached_absolute_pos_rot_matrix)
 {
 	v3f ppos = m_player->getPosition() / BS;
 	v3f pos = random_v3f(m_minpos, m_maxpos);
 
 	// Need to apply this first or the following check
 	// will be wrong for attached spawners
-	if (is_attached) {
-		pos.rotateXZBy(attached_yaw);
-		pos += attached_pos;
+	if (attached_absolute_pos_rot_matrix) {
+		pos *= BS;
+		attached_absolute_pos_rot_matrix->transformVect(pos);
+		pos /= BS;
+		v3s16 camera_offset = m_particlemanager->m_env->getCameraOffset();
+		pos.X += camera_offset.X;
+		pos.Y += camera_offset.Y;
+		pos.Z += camera_offset.Z;
 	}
 
 	if (pos.getDistanceFrom(ppos) > radius)
@@ -317,18 +324,19 @@ void ParticleSpawner::spawnParticle(ClientEnvironment *env, float radius,
 	v3f vel = random_v3f(m_minvel, m_maxvel);
 	v3f acc = random_v3f(m_minacc, m_maxacc);
 
-	if (is_attached) {
-		// Apply attachment yaw
-		vel.rotateXZBy(attached_yaw);
-		acc.rotateXZBy(attached_yaw);
+	if (attached_absolute_pos_rot_matrix) {
+		// Apply attachment rotation
+		attached_absolute_pos_rot_matrix->rotateVect(vel);
+		attached_absolute_pos_rot_matrix->rotateVect(acc);
 	}
 
 	float exptime = rand() / (float)RAND_MAX
-			* (m_maxexptime - m_minexptime)
-			+ m_minexptime;
+		* (m_maxexptime - m_minexptime)
+		+ m_minexptime;
+
 	float size = rand() / (float)RAND_MAX
-			* (m_maxsize - m_minsize)
-			+ m_minsize;
+		* (m_maxsize - m_minsize)
+		+ m_minsize;
 
 	m_particlemanager->addParticle(new Particle(
 		m_gamedef,
@@ -359,14 +367,10 @@ void ParticleSpawner::step(float dtime, ClientEnvironment* env)
 			g_settings->getS16("max_block_send_distance") * MAP_BLOCKSIZE;
 
 	bool unloaded = false;
-	bool is_attached = false;
-	v3f attached_pos = v3f(0,0,0);
-	float attached_yaw = 0;
-	if (m_attached_id != 0) {
-		if (ClientActiveObject *attached = env->getActiveObject(m_attached_id)) {
-			attached_pos = attached->getPosition() / BS;
-			attached_yaw = attached->getYaw();
-			is_attached = true;
+	const core::matrix4 *attached_absolute_pos_rot_matrix = nullptr;
+	if (m_attached_id) {
+		if (GenericCAO *attached = dynamic_cast<GenericCAO *>(env->getActiveObject(m_attached_id))) {
+			attached_absolute_pos_rot_matrix = &attached->getAbsolutePosRotMatrix();
 		} else {
 			unloaded = true;
 		}
@@ -382,7 +386,7 @@ void ParticleSpawner::step(float dtime, ClientEnvironment* env)
 				// Pretend to, but don't actually spawn a particle if it is
 				// attached to an unloaded object or distant from player.
 				if (!unloaded)
-					spawnParticle(env, radius, is_attached, attached_pos, attached_yaw);
+					spawnParticle(env, radius, attached_absolute_pos_rot_matrix);
 
 				i = m_spawntimes.erase(i);
 			} else {
@@ -398,7 +402,7 @@ void ParticleSpawner::step(float dtime, ClientEnvironment* env)
 
 		for (int i = 0; i <= m_amount; i++) {
 			if (rand() / (float)RAND_MAX < dtime)
-				spawnParticle(env, radius, is_attached, attached_pos, attached_yaw);
+				spawnParticle(env, radius, attached_absolute_pos_rot_matrix);
 		}
 	}
 }
@@ -419,7 +423,7 @@ void ParticleManager::step(float dtime)
 	stepSpawners (dtime);
 }
 
-void ParticleManager::stepSpawners (float dtime)
+void ParticleManager::stepSpawners(float dtime)
 {
 	MutexAutoLock lock(m_spawner_list_lock);
 	for (auto i = m_particle_spawners.begin(); i != m_particle_spawners.end();) {
@@ -433,7 +437,7 @@ void ParticleManager::stepSpawners (float dtime)
 	}
 }
 
-void ParticleManager::stepParticles (float dtime)
+void ParticleManager::stepParticles(float dtime)
 {
 	MutexAutoLock lock(m_particle_list_lock);
 	for (auto i = m_particles.begin(); i != m_particles.end();) {
@@ -448,7 +452,7 @@ void ParticleManager::stepParticles (float dtime)
 	}
 }
 
-void ParticleManager::clearAll ()
+void ParticleManager::clearAll()
 {
 	MutexAutoLock lock(m_spawner_list_lock);
 	MutexAutoLock lock2(m_particle_list_lock);
@@ -457,9 +461,7 @@ void ParticleManager::clearAll ()
 		m_particle_spawners.erase(i++);
 	}
 
-	for(std::vector<Particle*>::iterator i =
-			m_particles.begin();
-			i != m_particles.end();)
+	for(auto i = m_particles.begin(); i != m_particles.end();)
 	{
 		(*i)->remove();
 		delete *i;
