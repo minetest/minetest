@@ -48,8 +48,7 @@ public:
 	virtual bool getCollisionBox(aabb3f *toset) const { return false; }
 	virtual bool getSelectionBox(aabb3f *toset) const { return false; }
 	virtual bool collideWithObjects() const { return false; }
-	virtual v3f getPosition(){ return v3f(0,0,0); }
-	virtual float getYaw() const { return 0; }
+	virtual const v3f getPosition() const { return v3f(0.0f); }
 	virtual scene::ISceneNode *getSceneNode() { return NULL; }
 	virtual scene::IAnimatedMeshSceneNode *getAnimatedMeshSceneNode() { return NULL; }
 	virtual bool isLocalPlayer() const {return false;}

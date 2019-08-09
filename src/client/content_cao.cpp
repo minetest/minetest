@@ -401,7 +401,7 @@ bool GenericCAO::getSelectionBox(aabb3f *toset) const
 	return true;
 }
 
-v3f GenericCAO::getPosition()
+const v3f GenericCAO::getPosition() const
 {
 	if (getParent() != nullptr) {
 		if (m_matrixnode)
