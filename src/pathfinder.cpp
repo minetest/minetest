@@ -780,7 +780,7 @@ PathCost Pathfinder::calcCost(v3s16 pos, v3s16 dir)
 
 	if (!ndef->get(node_at_pos2).walkable) {
 		MapNode node_below_pos2 =
-							m_env->getMap().getNodeNoEx(pos2 + v3s16(0, -1, 0));
+			m_env->getMap().getNodeNoEx(pos2 + v3s16(0, -1, 0));
 
 		//did we get information about node?
 		if (node_below_pos2.param0 == CONTENT_IGNORE ) {
