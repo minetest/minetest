@@ -18,6 +18,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "profiler.h"
+#include "porting.h"
 
 static Profiler main_profiler;
 Profiler *g_profiler = &main_profiler;
@@ -83,9 +84,15 @@ int Profiler::print(std::ostream &o, u32 page, u32 pagecount)
 {
 	GraphValues values;
 	getPage(values, page, pagecount);
+	char num_buf[50];
 
 	for (const auto &i : values) {
 		o << "  " << i.first << " ";
+		if (i.second == 0) {
+			o << std::endl;
+			continue;
+		}
+
 		s32 space = 44 - i.first.size();
 		for (s32 j = 0; j < space; j++) {
 			if ((j & 1) && j < space - 1)
@@ -93,8 +100,9 @@ int Profiler::print(std::ostream &o, u32 page, u32 pagecount)
 			else
 				o << " ";
 		}
-		o << getAvgCount(i.first) << "x ";
-		o << i.second << std::endl;
+		porting::mt_snprintf(num_buf, sizeof(num_buf), "% 4ix % 3g",
+				getAvgCount(i.first), i.second);
+		o << num_buf << std::endl;
 	}
 	return values.size();
 }
