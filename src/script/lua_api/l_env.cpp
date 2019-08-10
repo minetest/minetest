@@ -350,7 +350,7 @@ int ModApiEnvMod::l_get_node(lua_State *L)
 	// pos
 	v3s16 pos = read_v3s16(L, 1);
 	// Do it
-	MapNode n = env->getMap().getNodeNoEx(pos);
+	MapNode n = env->getMap().getNode(pos);
 	// Return node
 	pushnode(L, n, env->getGameDef()->ndef());
 	return 1;
@@ -366,7 +366,7 @@ int ModApiEnvMod::l_get_node_or_nil(lua_State *L)
 	v3s16 pos = read_v3s16(L, 1);
 	// Do it
 	bool pos_ok;
-	MapNode n = env->getMap().getNodeNoEx(pos, &pos_ok);
+	MapNode n = env->getMap().getNode(pos, &pos_ok);
 	if (pos_ok) {
 		// Return node
 		pushnode(L, n, env->getGameDef()->ndef());
@@ -392,7 +392,7 @@ int ModApiEnvMod::l_get_node_light(lua_State *L)
 	u32 dnr = time_to_daynight_ratio(time_of_day, true);
 
 	bool is_position_ok;
-	MapNode n = env->getMap().getNodeNoEx(pos, &is_position_ok);
+	MapNode n = env->getMap().getNode(pos, &is_position_ok);
 	if (is_position_ok) {
 		const NodeDefManager *ndef = env->getGameDef()->ndef();
 		lua_pushinteger(L, n.getLightBlend(dnr, ndef));
@@ -417,7 +417,7 @@ int ModApiEnvMod::l_place_node(lua_State *L)
 	MapNode n = readnode(L, 2, ndef);
 
 	// Don't attempt to load non-loaded area as of now
-	MapNode n_old = env->getMap().getNodeNoEx(pos);
+	MapNode n_old = env->getMap().getNode(pos);
 	if(n_old.getContent() == CONTENT_IGNORE){
 		lua_pushboolean(L, false);
 		return 1;
@@ -446,7 +446,7 @@ int ModApiEnvMod::l_dig_node(lua_State *L)
 	v3s16 pos = read_v3s16(L, 1);
 
 	// Don't attempt to load non-loaded area as of now
-	MapNode n = env->getMap().getNodeNoEx(pos);
+	MapNode n = env->getMap().getNode(pos);
 	if(n.getContent() == CONTENT_IGNORE){
 		lua_pushboolean(L, false);
 		return 1;
@@ -469,7 +469,7 @@ int ModApiEnvMod::l_punch_node(lua_State *L)
 	v3s16 pos = read_v3s16(L, 1);
 
 	// Don't attempt to load non-loaded area as of now
-	MapNode n = env->getMap().getNodeNoEx(pos);
+	MapNode n = env->getMap().getNode(pos);
 	if(n.getContent() == CONTENT_IGNORE){
 		lua_pushboolean(L, false);
 		return 1;
@@ -491,7 +491,7 @@ int ModApiEnvMod::l_get_node_max_level(lua_State *L)
 	}
 
 	v3s16 pos = read_v3s16(L, 1);
-	MapNode n = env->getMap().getNodeNoEx(pos);
+	MapNode n = env->getMap().getNode(pos);
 	lua_pushnumber(L, n.getMaxLevel(env->getGameDef()->ndef()));
 	return 1;
 }
@@ -506,7 +506,7 @@ int ModApiEnvMod::l_get_node_level(lua_State *L)
 	}
 
 	v3s16 pos = read_v3s16(L, 1);
-	MapNode n = env->getMap().getNodeNoEx(pos);
+	MapNode n = env->getMap().getNode(pos);
 	lua_pushnumber(L, n.getLevel(env->getGameDef()->ndef()));
 	return 1;
 }
@@ -522,7 +522,7 @@ int ModApiEnvMod::l_set_node_level(lua_State *L)
 	u8 level = 1;
 	if(lua_isnumber(L, 2))
 		level = lua_tonumber(L, 2);
-	MapNode n = env->getMap().getNodeNoEx(pos);
+	MapNode n = env->getMap().getNode(pos);
 	lua_pushnumber(L, n.setLevel(env->getGameDef()->ndef(), level));
 	env->setNode(pos, n);
 	return 1;
@@ -539,7 +539,7 @@ int ModApiEnvMod::l_add_node_level(lua_State *L)
 	u8 level = 1;
 	if(lua_isnumber(L, 2))
 		level = lua_tonumber(L, 2);
-	MapNode n = env->getMap().getNodeNoEx(pos);
+	MapNode n = env->getMap().getNode(pos);
 	lua_pushnumber(L, n.addLevel(env->getGameDef()->ndef(), level));
 	env->setNode(pos, n);
 	return 1;
@@ -780,7 +780,7 @@ int ModApiEnvMod::l_find_node_near(lua_State *L)
 		std::vector<v3s16> list = FacePositionCache::getFacePositions(d);
 		for (const v3s16 &i : list) {
 			v3s16 p = pos + i;
-			content_t c = env->getMap().getNodeNoEx(p).getContent();
+			content_t c = env->getMap().getNode(p).getContent();
 			if (CONTAINS(filter, c)) {
 				push_v3s16(L, p);
 				return 1;
@@ -832,7 +832,7 @@ int ModApiEnvMod::l_find_nodes_in_area(lua_State *L)
 	for (s16 y = minp.Y; y <= maxp.Y; y++)
 	for (s16 z = minp.Z; z <= maxp.Z; z++) {
 		v3s16 p(x, y, z);
-		content_t c = env->getMap().getNodeNoEx(p).getContent();
+		content_t c = env->getMap().getNode(p).getContent();
 
 		std::vector<content_t>::iterator it = std::find(filter.begin(), filter.end(), c);
 		if (it != filter.end()) {
@@ -898,10 +898,10 @@ int ModApiEnvMod::l_find_nodes_in_area_under_air(lua_State *L)
 	for (s16 z = minp.Z; z <= maxp.Z; z++) {
 		s16 y = minp.Y;
 		v3s16 p(x, y, z);
-		content_t c = env->getMap().getNodeNoEx(p).getContent();
+		content_t c = env->getMap().getNode(p).getContent();
 		for (; y <= maxp.Y; y++) {
 			v3s16 psurf(x, y + 1, z);
-			content_t csurf = env->getMap().getNodeNoEx(psurf).getContent();
+			content_t csurf = env->getMap().getNode(psurf).getContent();
 			if (c != CONTENT_AIR && csurf == CONTENT_AIR &&
 					CONTAINS(filter, c)) {
 				push_v3s16(L, v3s16(x, y, z));

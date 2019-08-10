@@ -529,7 +529,7 @@ void update_lighting_nodes(Map *map,
 					for (const v3s16 &neighbor_dir : neighbor_dirs) {
 						v3s16 p2 = p + neighbor_dir;
 						bool is_valid;
-						MapNode n2 = map->getNodeNoEx(p2, &is_valid);
+						MapNode n2 = map->getNode(p2, &is_valid);
 						if (is_valid) {
 							u8 spread = n2.getLight(bank, ndef);
 							// If it is sure that the neighbor won't be
@@ -566,7 +566,7 @@ void update_lighting_nodes(Map *map,
 
 						MapNode n2;
 
-						n2 = map->getNodeNoEx(n2pos, &is_valid_position);
+						n2 = map->getNode(n2pos, &is_valid_position);
 						if (!is_valid_position)
 							break;
 
@@ -598,7 +598,7 @@ void update_lighting_nodes(Map *map,
 
 						MapNode n2;
 
-						n2 = map->getNodeNoEx(n2pos, &is_valid_position);
+						n2 = map->getNode(n2pos, &is_valid_position);
 						if (!is_valid_position)
 							break;
 
@@ -668,7 +668,7 @@ bool is_light_locally_correct(Map *map, const NodeDefManager *ndef,
 	LightBank bank, v3s16 pos)
 {
 	bool is_valid_position;
-	MapNode n = map->getNodeNoEx(pos, &is_valid_position);
+	MapNode n = map->getNode(pos, &is_valid_position);
 	const ContentFeatures &f = ndef->get(n);
 	if (f.param_type != CPT_LIGHT) {
 		return true;
@@ -677,7 +677,7 @@ bool is_light_locally_correct(Map *map, const NodeDefManager *ndef,
 	assert(f.light_source <= LIGHT_MAX);
 	u8 brightest_neighbor = f.light_source + 1;
 	for (const v3s16 &neighbor_dir : neighbor_dirs) {
-		MapNode n2 = map->getNodeNoEx(pos + neighbor_dir,
+		MapNode n2 = map->getNode(pos + neighbor_dir,
 			&is_valid_position);
 		u8 light2 = n2.getLight(bank, ndef);
 		if (brightest_neighbor < light2) {

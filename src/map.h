@@ -191,7 +191,7 @@ public:
 	// Returns a CONTENT_IGNORE node if not found
 	// If is_valid_position is not NULL then this will be set to true if the
 	// position is valid, otherwise false
-	MapNode getNodeNoEx(v3s16 p, bool *is_valid_position = NULL);
+	MapNode getNode(v3s16 p, bool *is_valid_position = NULL);
 
 	/*
 		These handle lighting but not faces.

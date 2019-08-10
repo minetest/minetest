@@ -206,7 +206,7 @@ bool wouldCollideWithCeiling(
 static inline void getNeighborConnectingFace(const v3s16 &p,
 	const NodeDefManager *nodedef, Map *map, MapNode n, int v, int *neighbors)
 {
-	MapNode n2 = map->getNodeNoEx(p);
+	MapNode n2 = map->getNode(p);
 	if (nodedef->nodeboxConnects(n, n2, v))
 		*neighbors |= v;
 }
@@ -278,7 +278,7 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 	for (p.Y = min.Y; p.Y <= max.Y; p.Y++)
 	for (p.Z = min.Z; p.Z <= max.Z; p.Z++) {
 		bool is_position_valid;
-		MapNode n = map->getNodeNoEx(p, &is_position_valid);
+		MapNode n = map->getNode(p, &is_position_valid);
 
 		if (is_position_valid && n.getContent() != CONTENT_IGNORE) {
 			// Object collides into walkable nodes

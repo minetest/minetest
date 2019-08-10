@@ -181,7 +181,7 @@ void Particle::updateLight()
 		floor(m_pos.Y+0.5),
 		floor(m_pos.Z+0.5)
 	);
-	MapNode n = m_env->getClientMap().getNodeNoEx(p, &pos_ok);
+	MapNode n = m_env->getClientMap().getNode(p, &pos_ok);
 	if (pos_ok)
 		light = n.getLightBlend(m_env->getDayNightRatio(), m_gamedef->ndef());
 	else

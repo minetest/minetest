@@ -160,7 +160,7 @@ void ClientMap::updateDrawList()
 	// inside ground
 	bool occlusion_culling_enabled = true;
 	if (g_settings->getBool("free_move")) {
-		MapNode n = getNodeNoEx(cam_pos_nodes);
+		MapNode n = getNode(cam_pos_nodes);
 		if (n.getContent() == CONTENT_IGNORE ||
 				m_nodedef->get(n).solidness == 2)
 			occlusion_culling_enabled = false;
@@ -497,7 +497,7 @@ static bool getVisibleBrightness(Map *map, const v3f &p0, v3f dir, float step,
 	// Check content nearly at camera position
 	{
 		v3s16 p = floatToInt(p0 /*+ dir * 3*BS*/, BS);
-		MapNode n = map->getNodeNoEx(p);
+		MapNode n = map->getNode(p);
 		if(ndef->get(n).param_type == CPT_LIGHT &&
 				!ndef->get(n).sunlight_propagates)
 			allow_allowing_non_sunlight_propagates = true;
@@ -505,7 +505,7 @@ static bool getVisibleBrightness(Map *map, const v3f &p0, v3f dir, float step,
 	// If would start at CONTENT_IGNORE, start closer
 	{
 		v3s16 p = floatToInt(pf, BS);
-		MapNode n = map->getNodeNoEx(p);
+		MapNode n = map->getNode(p);
 		if(n.getContent() == CONTENT_IGNORE){
 			float newd = 2*BS;
 			pf = p0 + dir * 2*newd;
@@ -519,7 +519,7 @@ static bool getVisibleBrightness(Map *map, const v3f &p0, v3f dir, float step,
 		step *= step_multiplier;
 
 		v3s16 p = floatToInt(pf, BS);
-		MapNode n = map->getNodeNoEx(p);
+		MapNode n = map->getNode(p);
 		if (allow_allowing_non_sunlight_propagates && i == 0 &&
 				ndef->get(n).param_type == CPT_LIGHT &&
 				!ndef->get(n).sunlight_propagates) {
@@ -621,7 +621,7 @@ int ClientMap::getBackgroundBrightness(float max_d, u32 daylight_factor,
 
 	int ret = 0;
 	if(brightness_count == 0){
-		MapNode n = getNodeNoEx(floatToInt(m_camera_position, BS));
+		MapNode n = getNode(floatToInt(m_camera_position, BS));
 		if(m_nodedef->get(n).param_type == CPT_LIGHT){
 			ret = decode_light(n.getLightBlend(daylight_factor, m_nodedef));
 		} else {
@@ -640,7 +640,7 @@ void ClientMap::renderPostFx(CameraMode cam_mode)
 	// Sadly ISceneManager has no "post effects" render pass, in that case we
 	// could just register for that and handle it in renderMap().
 
-	MapNode n = getNodeNoEx(floatToInt(m_camera_position, BS));
+	MapNode n = getNode(floatToInt(m_camera_position, BS));
 
 	// - If the player is in a solid node, make everything black.
 	// - If the player is in liquid, draw a semi-transparent overlay.

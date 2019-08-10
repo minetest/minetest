@@ -136,7 +136,7 @@ void GameUI::update(const RunStats &stats, Client *client, MapDrawControl *draw_
 		if (pointed_old.type == POINTEDTHING_NODE) {
 			ClientMap &map = client->getEnv().getClientMap();
 			const NodeDefManager *nodedef = client->getNodeDefManager();
-			MapNode n = map.getNodeNoEx(pointed_old.node_undersurface);
+			MapNode n = map.getNode(pointed_old.node_undersurface);
 
 			if (n.getContent() != CONTENT_IGNORE && nodedef->get(n).name != "unknown") {
 				os << ", pointed: " << nodedef->get(n).name
