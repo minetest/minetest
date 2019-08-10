@@ -66,17 +66,17 @@ void Profiler::add(const std::string &name, float value)
 	{
 		/* No average shall have been used; mark add used as -2 */
 		std::map<std::string, int>::iterator n = m_avgcounts.find(name);
-		if(n == m_avgcounts.end())
+		if (n == m_avgcounts.end()) {
 			m_avgcounts[name] = -2;
-		else{
-			if(n->second == -1)
+		} else {
+			if (n->second == -1)
 				n->second = -2;
 			assert(n->second == -2);
 		}
 	}
 	{
 		std::map<std::string, float>::iterator n = m_data.find(name);
-		if(n == m_data.end())
+		if (n == m_data.end())
 			m_data[name] = value;
 		else
 			n->second += value;
@@ -110,7 +110,7 @@ float Profiler::getValue(const std::string &name) const
 		return 0.f;
 
 	auto denominator = m_avgcounts.find(name);
-	if (denominator != m_avgcounts.end()){
+	if (denominator != m_avgcounts.end()) {
 		if (denominator->second >= 1)
 			return numerator->second / denominator->second;
 	}
