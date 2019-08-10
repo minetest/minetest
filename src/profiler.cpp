@@ -54,21 +54,46 @@ ScopeProfiler::~ScopeProfiler()
 	delete m_timer;
 }
 
+float Profiler::getValue(const std::string &name) const
+{
+	auto numerator = m_data.find(name);
+	if (numerator == m_data.end())
+		return 0.f;
+
+	auto denominator = m_avgcounts.find(name);
+	if (denominator != m_avgcounts.end()){
+		if (denominator->second >= 1)
+			return numerator->second / denominator->second;
+	}
+
+	return numerator->second;
+}
+
+int Profiler::getAvgCount(const std::string &name) const
+{
+	auto n = m_avgcounts.find(name);
+
+	if (n != m_avgcounts.end() && n->second >= 1)
+		return n->second;
+
+	return 1;
+}
+
 int Profiler::print(std::ostream &o, u32 page, u32 pagecount)
 {
 	GraphValues values;
 	getPage(values, page, pagecount);
 
 	for (const auto &i : values) {
-		o << "  " << i.first << ": ";
-		s32 clampsize = 44;
-		s32 space = clampsize - i.first.size();
+		o << "  " << i.first << " ";
+		s32 space = 44 - i.first.size();
 		for (s32 j = 0; j < space; j++) {
 			if ((j & 1) && j < space - 1)
-				o << "-";
+				o << ".";
 			else
 				o << " ";
 		}
+		o << getAvgCount(i.first) << "x ";
 		o << i.second << std::endl;
 	}
 	return values.size();
@@ -91,12 +116,6 @@ void Profiler::getPage(GraphValues &o, u32 page, u32 pagecount)
 			continue;
 		}
 
-		int avgcount = 1;
-		auto n = m_avgcounts.find(i.first);
-		if (n != m_avgcounts.end()) {
-			if (n->second >= 1)
-				avgcount = n->second;
-		}
-		o[i.first] = i.second / avgcount;
+		o[i.first] = i.second / getAvgCount(i.first);
 	}
 }

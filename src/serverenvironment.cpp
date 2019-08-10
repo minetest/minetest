@@ -1432,7 +1432,6 @@ void ServerEnvironment::step(float dtime)
 		Manage active objects
 	*/
 	if (m_object_management_interval.step(dtime, 0.5)) {
-		ScopeProfiler sp(g_profiler, "SEnv: remove removed objs avg /.5s", SPT_AVG);
 		removeRemovedObjects();
 	}
 
@@ -1687,6 +1686,8 @@ u16 ServerEnvironment::addActiveObjectRaw(ServerActiveObject *object,
 */
 void ServerEnvironment::removeRemovedObjects()
 {
+	ScopeProfiler sp(g_profiler, "ServerEnvironment::removeRemovedObjects()", SPT_AVG);
+
 	auto clear_cb = [this] (ServerActiveObject *obj, u16 id) {
 		// This shouldn't happen but check it
 		if (!obj) {

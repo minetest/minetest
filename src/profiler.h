@@ -85,20 +85,8 @@ public:
 	}
 
 
-	float getValue(const std::string &name) const
-	{
-		std::map<std::string, float>::const_iterator numerator = m_data.find(name);
-		if (numerator == m_data.end())
-			return 0.f;
-
-		std::map<std::string, int>::const_iterator denominator = m_avgcounts.find(name);
-		if (denominator != m_avgcounts.end()){
-			if (denominator->second >= 1)
-				return numerator->second / denominator->second;
-		}
-
-		return numerator->second;
-	}
+	float getValue(const std::string &name) const;
+	int getAvgCount(const std::string &name) const;
 
 	typedef std::map<std::string, float> GraphValues;
 
