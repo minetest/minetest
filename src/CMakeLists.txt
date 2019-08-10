@@ -104,15 +104,17 @@ endif()
 
 option(ENABLE_GLES "Use OpenGL ES instead of OpenGL" FALSE)
 mark_as_advanced(ENABLE_GLES)
-if(ENABLE_GLES)
-	find_package(OpenGLES2 REQUIRED)
-elseif()
-	if(NOT WIN32) # Unix probably
-		set(OPENGL_GL_PREFERENCE "LEGACY" CACHE STRING
-			"See CMake Policy CMP0072 for reference. GLVND is broken on some nvidia setups")
-		set(OpenGL_GL_PREFERENCE ${OPENGL_GL_PREFERENCE})
+if(BUILD_CLIENT)
+	if(ENABLE_GLES)
+		find_package(OpenGLES2 REQUIRED)
+	else()
+		if(NOT WIN32) # Unix probably
+			set(OPENGL_GL_PREFERENCE "LEGACY" CACHE STRING
+				"See CMake Policy CMP0072 for reference. GLVND is broken on some nvidia setups")
+			set(OpenGL_GL_PREFERENCE ${OPENGL_GL_PREFERENCE})
 
-		find_package(OpenGL REQUIRED)
+			find_package(OpenGL REQUIRED)
+		endif()
 	endif()
 endif()
 
