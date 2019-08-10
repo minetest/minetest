@@ -80,6 +80,9 @@ struct CraftInput
 		method(method_), width(width_), items(items_)
 	{}
 
+	// Returns true if all items are empty.
+	bool empty() const;
+
 	std::string dump() const;
 };
 
@@ -431,9 +434,8 @@ public:
 	virtual std::vector<CraftDefinition*> getCraftRecipes(CraftOutput &output,
 			IGameDef *gamedef, unsigned limit=0) const=0;
 
-	virtual bool clearCraftRecipesByOutput(const CraftOutput &output, IGameDef *gamedef) = 0;
-	virtual bool clearCraftRecipesByInput(CraftMethod craft_method,
-			unsigned int craft_grid_width, const std::vector<std::string> &recipe, IGameDef *gamedef) = 0;
+	virtual bool clearCraftsByOutput(const CraftOutput &output, IGameDef *gamedef) = 0;
+	virtual bool clearCraftsByInput(const CraftInput &input, IGameDef *gamedef) = 0;
 
 	// Print crafting recipes for debugging
 	virtual std::string dump() const=0;
