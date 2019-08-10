@@ -55,6 +55,54 @@ ScopeProfiler::~ScopeProfiler()
 	delete m_timer;
 }
 
+Profiler::Profiler()
+{
+	m_start_time = porting::getTimeMs();
+}
+
+void Profiler::add(const std::string &name, float value)
+{
+	MutexAutoLock lock(m_mutex);
+	{
+		/* No average shall have been used; mark add used as -2 */
+		std::map<std::string, int>::iterator n = m_avgcounts.find(name);
+		if(n == m_avgcounts.end())
+			m_avgcounts[name] = -2;
+		else{
+			if(n->second == -1)
+				n->second = -2;
+			assert(n->second == -2);
+		}
+	}
+	{
+		std::map<std::string, float>::iterator n = m_data.find(name);
+		if(n == m_data.end())
+			m_data[name] = value;
+		else
+			n->second += value;
+	}
+}
+
+void Profiler::avg(const std::string &name, float value)
+{
+	MutexAutoLock lock(m_mutex);
+	int &count = m_avgcounts[name];
+
+	assert(count != -2);
+	count = MYMAX(count, 0) + 1;
+	m_data[name] += value;
+}
+
+void Profiler::clear()
+{
+	MutexAutoLock lock(m_mutex);
+	for (auto &it : m_data) {
+		it.second = 0;
+	}
+	m_avgcounts.clear();
+	m_start_time = porting::getTimeMs();
+}
+
 float Profiler::getValue(const std::string &name) const
 {
 	auto numerator = m_data.find(name);
@@ -78,6 +126,11 @@ int Profiler::getAvgCount(const std::string &name) const
 		return n->second;
 
 	return 1;
+}
+
+u64 Profiler::getElapsedMs() const
+{
+	return porting::getTimeMs() - m_start_time;
 }
 
 int Profiler::print(std::ostream &o, u32 page, u32 pagecount)

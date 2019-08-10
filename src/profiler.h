@@ -40,53 +40,15 @@ extern Profiler *g_profiler;
 class Profiler
 {
 public:
-	Profiler() = default;
+	Profiler();
 
-	void add(const std::string &name, float value)
-	{
-		MutexAutoLock lock(m_mutex);
-		{
-			/* No average shall have been used; mark add used as -2 */
-			std::map<std::string, int>::iterator n = m_avgcounts.find(name);
-			if(n == m_avgcounts.end())
-				m_avgcounts[name] = -2;
-			else{
-				if(n->second == -1)
-					n->second = -2;
-				assert(n->second == -2);
-			}
-		}
-		{
-			std::map<std::string, float>::iterator n = m_data.find(name);
-			if(n == m_data.end())
-				m_data[name] = value;
-			else
-				n->second += value;
-		}
-	}
-
-	void avg(const std::string &name, float value)
-	{
-		MutexAutoLock lock(m_mutex);
-		int &count = m_avgcounts[name];
-
-		assert(count != -2);
-		count = MYMAX(count, 0) + 1;
-		m_data[name] += value;
-	}
-
-	void clear()
-	{
-		MutexAutoLock lock(m_mutex);
-		for (auto &it : m_data) {
-			it.second = 0;
-		}
-		m_avgcounts.clear();
-	}
-
+	void add(const std::string &name, float value);
+	void avg(const std::string &name, float value);
+	void clear();
 
 	float getValue(const std::string &name) const;
 	int getAvgCount(const std::string &name) const;
+	u64 getElapsedMs() const;
 
 	typedef std::map<std::string, float> GraphValues;
 
@@ -124,6 +86,7 @@ private:
 	std::map<std::string, float> m_data;
 	std::map<std::string, int> m_avgcounts;
 	std::map<std::string, float> m_graphvalues;
+	u64 m_start_time;
 };
 
 enum ScopeProfilerType{

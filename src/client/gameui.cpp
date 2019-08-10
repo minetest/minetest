@@ -240,7 +240,8 @@ void GameUI::updateProfiler()
 {
 	if (m_profiler_current_page != 0) {
 		std::ostringstream os(std::ios_base::binary);
-		os << "   Profiler page " << (int)m_profiler_current_page << std::endl;
+		os << "   Profiler page " << (int)m_profiler_current_page <<
+				", elapsed: " << g_profiler->getElapsedMs() << " ms)" << std::endl;
 
 		int lines = g_profiler->print(os, m_profiler_current_page, m_profiler_max_page);
 		++lines;

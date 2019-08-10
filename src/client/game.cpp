@@ -1732,7 +1732,7 @@ void Game::updateProfilers(const RunStats &stats, const FpsControl &draw_times,
 
 	if (profiler_print_interval == 0) {
 		print_to_log = false;
-		profiler_print_interval = 2;
+		profiler_print_interval = 3;
 	}
 
 	if (profiler_interval.step(dtime, profiler_print_interval)) {
