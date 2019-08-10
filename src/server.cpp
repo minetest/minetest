@@ -3551,7 +3551,7 @@ v3f Server::findSpawnPos()
 		for (s32 i = 0; i < 8; i++) {
 			v3s16 blockpos = getNodeBlockPos(nodepos);
 			map.emergeBlock(blockpos, true);
-			content_t c = map.getNodeNoEx(nodepos).getContent();
+			content_t c = map.getNode(nodepos).getContent();
 
 			// In generated mapblocks allow spawn in all 'airlike' drawtype nodes.
 			// In ungenerated mapblocks allow spawn in 'ignore' nodes.

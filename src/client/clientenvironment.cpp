@@ -218,7 +218,7 @@ void ClientEnvironment::step(float dtime)
 		f32 post_factor = 1; // 1 hp per node/s
 		if (info.type == COLLISION_NODE) {
 			const ContentFeatures &f = m_client->ndef()->
-				get(m_map->getNodeNoEx(info.node_p));
+				get(m_map->getNode(info.node_p));
 			// Determine fall damage multiplier
 			int addp = itemgroup_get(f.groups, "fall_damage_add_percent");
 			pre_factor = 1.0f + (float)addp / 100.0f;
@@ -248,7 +248,7 @@ void ClientEnvironment::step(float dtime)
 		MapNode node_at_lplayer(CONTENT_AIR, 0x0f, 0);
 
 		v3s16 p = lplayer->getLightPosition();
-		node_at_lplayer = m_map->getNodeNoEx(p);
+		node_at_lplayer = m_map->getNode(p);
 
 		u16 light = getInteriorLight(node_at_lplayer, 0, m_client->ndef());
 		final_color_blend(&lplayer->light_color, light, day_night_ratio);
@@ -270,7 +270,7 @@ void ClientEnvironment::step(float dtime)
 
 			// Get node at head
 			v3s16 p = cao->getLightPosition();
-			MapNode n = this->m_map->getNodeNoEx(p, &pos_ok);
+			MapNode n = this->m_map->getNode(p, &pos_ok);
 			if (pos_ok)
 				light = n.getLightBlend(day_night_ratio, m_client->ndef());
 			else
@@ -351,7 +351,7 @@ u16 ClientEnvironment::addActiveObject(ClientActiveObject *object)
 
 	// Get node at head
 	v3s16 p = object->getLightPosition();
-	MapNode n = m_map->getNodeNoEx(p, &pos_ok);
+	MapNode n = m_map->getNode(p, &pos_ok);
 	if (pos_ok)
 		light = n.getLightBlend(getDayNightRatio(), m_client->ndef());
 	else

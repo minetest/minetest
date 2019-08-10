@@ -1122,7 +1122,7 @@ void Server::handleCommand_Interact(NetworkPacket *pkt)
 			MapNode n(CONTENT_IGNORE);
 			bool pos_ok;
 
-			n = m_env->getMap().getNodeNoEx(p_under, &pos_ok);
+			n = m_env->getMap().getNode(p_under, &pos_ok);
 			if (!pos_ok) {
 				infostream << "Server: Not punching: Node not found."
 						<< " Adding block to emerge queue."
@@ -1185,7 +1185,7 @@ void Server::handleCommand_Interact(NetworkPacket *pkt)
 		// Only digging of nodes
 		if (pointed.type == POINTEDTHING_NODE) {
 			bool pos_ok;
-			MapNode n = m_env->getMap().getNodeNoEx(p_under, &pos_ok);
+			MapNode n = m_env->getMap().getNode(p_under, &pos_ok);
 			if (!pos_ok) {
 				infostream << "Server: Not finishing digging: Node not found."
 						<< " Adding block to emerge queue."
@@ -1269,7 +1269,7 @@ void Server::handleCommand_Interact(NetworkPacket *pkt)
 			v3s16 blockpos = getNodeBlockPos(floatToInt(pointed_pos_under, BS));
 			RemoteClient *client = getClient(pkt->getPeerId());
 			// Send unusual result (that is, node not being removed)
-			if (m_env->getMap().getNodeNoEx(p_under).getContent() != CONTENT_AIR) {
+			if (m_env->getMap().getNode(p_under).getContent() != CONTENT_AIR) {
 				// Re-send block to revert change on client-side
 				client->SetBlockNotSent(blockpos);
 			}

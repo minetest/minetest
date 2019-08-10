@@ -512,7 +512,7 @@ static inline void getNeighborConnectingFace(
 	const v3s16 &p, const NodeDefManager *nodedef,
 	Map *map, MapNode n, u8 bitmask, u8 *neighbors)
 {
-	MapNode n2 = map->getNodeNoEx(p);
+	MapNode n2 = map->getNode(p);
 	if (nodedef->nodeboxConnects(n, n2, bitmask))
 		*neighbors |= bitmask;
 }

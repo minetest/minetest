@@ -412,7 +412,7 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 busytime, f32 tool_r
 			// Prevent camera positioned inside nodes
 			const NodeDefManager *nodemgr = m_client->ndef();
 			MapNode n = m_client->getEnv().getClientMap()
-				.getNodeNoEx(floatToInt(my_cp, BS));
+				.getNode(floatToInt(my_cp, BS));
 
 			const ContentFeatures& features = nodemgr->get(n);
 			if (features.walkable) {

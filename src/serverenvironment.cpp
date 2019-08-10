@@ -550,7 +550,7 @@ bool ServerEnvironment::line_of_sight(v3f pos1, v3f pos2, v3s16 *p)
 	// Iterate trough nodes on the line
 	voxalgo::VoxelLineIterator iterator(pos1 / BS, (pos2 - pos1) / BS);
 	do {
-		MapNode n = getMap().getNodeNoEx(iterator.m_current_node_pos);
+		MapNode n = getMap().getNode(iterator.m_current_node_pos);
 
 		// Return non-air
 		if (n.param0 != CONTENT_AIR) {
@@ -914,7 +914,7 @@ public:
 							c = n.getContent();
 						} else {
 							// otherwise consult the map
-							MapNode n = map->getNodeNoEx(p1 + block->getPosRelative());
+							MapNode n = map->getNode(p1 + block->getPosRelative());
 							c = n.getContent();
 						}
 						if (CONTAINS(aabm.required_neighbors, c))
@@ -1008,7 +1008,7 @@ void ServerEnvironment::addLoadingBlockModifierDef(LoadingBlockModifierDef *lbm)
 bool ServerEnvironment::setNode(v3s16 p, const MapNode &n)
 {
 	const NodeDefManager *ndef = m_server->ndef();
-	MapNode n_old = m_map->getNodeNoEx(p);
+	MapNode n_old = m_map->getNode(p);
 
 	const ContentFeatures &cf_old = ndef->get(n_old);
 
@@ -1041,7 +1041,7 @@ bool ServerEnvironment::setNode(v3s16 p, const MapNode &n)
 bool ServerEnvironment::removeNode(v3s16 p)
 {
 	const NodeDefManager *ndef = m_server->ndef();
-	MapNode n_old = m_map->getNodeNoEx(p);
+	MapNode n_old = m_map->getNode(p);
 
 	// Call destructor
 	if (ndef->get(n_old).has_on_destruct)

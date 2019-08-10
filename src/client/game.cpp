@@ -2926,7 +2926,7 @@ void Game::updateSound(f32 dtime)
 		soundmaker->step(dtime);
 
 	ClientMap &map = client->getEnv().getClientMap();
-	MapNode n = map.getNodeNoEx(player->getFootstepNodePos());
+	MapNode n = map.getNode(player->getFootstepNodePos());
 	soundmaker->m_player_step_sound = nodedef_manager->get(n).sound_footstep;
 }
 
@@ -3105,7 +3105,7 @@ PointedThing Game::updatePointedThing(
 		}
 	} else if (result.type == POINTEDTHING_NODE) {
 		// Update selection boxes
-		MapNode n = map.getNodeNoEx(result.node_undersurface);
+		MapNode n = map.getNode(result.node_undersurface);
 		std::vector<aabb3f> boxes;
 		n.getSelectionBoxes(nodedef, &boxes,
 			n.getNeighbors(result.node_undersurface, &map));
@@ -3132,12 +3132,12 @@ PointedThing Game::updatePointedThing(
 		v3s16 p = floatToInt(pf, BS);
 
 		// Get selection mesh light level
-		MapNode n = map.getNodeNoEx(p);
+		MapNode n = map.getNode(p);
 		u16 node_light = getInteriorLight(n, -1, nodedef);
 		u16 light_level = node_light;
 
 		for (const v3s16 &dir : g_6dirs) {
-			n = map.getNodeNoEx(p + dir);
+			n = map.getNode(p + dir);
 			node_light = getInteriorLight(n, -1, nodedef);
 			if (node_light > light_level)
 				light_level = node_light;
@@ -3198,7 +3198,7 @@ void Game::handlePointingAtNode(const PointedThing &pointed,
 		m_game_ui->setInfoText(unescape_translate(utf8_to_wide(
 			meta->getString("infotext"))));
 	} else {
-		MapNode n = map.getNodeNoEx(nodepos);
+		MapNode n = map.getNode(nodepos);
 
 		if (nodedef_manager->get(n).tiledef[0].name == "unknown_node.png") {
 			m_game_ui->setInfoText(L"Unknown node: " +
@@ -3215,7 +3215,7 @@ void Game::handlePointingAtNode(const PointedThing &pointed,
 		if (meta && !meta->getString("formspec").empty() && !random_input
 				&& !isKeyDown(KeyType::SNEAK)) {
 			// Report right click to server
-			if (nodedef_manager->get(map.getNodeNoEx(nodepos)).rightclickable) {
+			if (nodedef_manager->get(map.getNode(nodepos)).rightclickable) {
 				client->interact(INTERACT_PLACE, pointed);
 			}
 
@@ -3258,7 +3258,7 @@ void Game::handlePointingAtNode(const PointedThing &pointed,
 						SimpleSoundSpec();
 
 				if (def.node_placement_prediction.empty() ||
-						nodedef_manager->get(map.getNodeNoEx(nodepos)).rightclickable) {
+						nodedef_manager->get(map.getNode(nodepos)).rightclickable) {
 					client->interact(INTERACT_PLACE, pointed); // Report to server
 				} else {
 					soundmaker->m_player_rightpunch_sound =
@@ -3278,7 +3278,7 @@ bool Game::nodePlacementPrediction(const ItemDefinition &selected_def,
 	MapNode node;
 	bool is_valid_position;
 
-	node = map.getNodeNoEx(nodepos, &is_valid_position);
+	node = map.getNode(nodepos, &is_valid_position);
 	if (!is_valid_position)
 		return false;
 
@@ -3290,13 +3290,13 @@ bool Game::nodePlacementPrediction(const ItemDefinition &selected_def,
 		v3s16 p = neighbourpos;
 
 		// Place inside node itself if buildable_to
-		MapNode n_under = map.getNodeNoEx(nodepos, &is_valid_position);
+		MapNode n_under = map.getNode(nodepos, &is_valid_position);
 		if (is_valid_position)
 		{
 			if (nodedef->get(n_under).buildable_to)
 				p = nodepos;
 			else {
-				node = map.getNodeNoEx(p, &is_valid_position);
+				node = map.getNode(p, &is_valid_position);
 				if (is_valid_position &&!nodedef->get(node).buildable_to)
 					return false;
 			}
@@ -3363,7 +3363,7 @@ bool Game::nodePlacementPrediction(const ItemDefinition &selected_def,
 			else
 				pp = p + v3s16(0, -1, 0);
 
-			if (!nodedef->get(map.getNodeNoEx(pp)).walkable)
+			if (!nodedef->get(map.getNode(pp)).walkable)
 				return false;
 		}
 
@@ -3477,7 +3477,7 @@ void Game::handleDigging(const PointedThing &pointed, const v3s16 &nodepos,
 	// See also: serverpackethandle.cpp, action == 2
 	LocalPlayer *player = client->getEnv().getLocalPlayer();
 	ClientMap &map = client->getEnv().getClientMap();
-	MapNode n = client->getEnv().getClientMap().getNodeNoEx(nodepos);
+	MapNode n = client->getEnv().getClientMap().getNode(nodepos);
 
 	// NOTE: Similar piece of code exists on the server side for
 	// cheat detection.
@@ -3565,7 +3565,7 @@ void Game::handleDigging(const PointedThing &pointed, const v3s16 &nodepos,
 			runData.nodig_delay_timer = 0.15;
 
 		bool is_valid_position;
-		MapNode wasnode = map.getNodeNoEx(nodepos, &is_valid_position);
+		MapNode wasnode = map.getNode(nodepos, &is_valid_position);
 		if (is_valid_position) {
 			if (client->moddingEnabled() &&
 					client->getScript()->on_dignode(nodepos, wasnode)) {
