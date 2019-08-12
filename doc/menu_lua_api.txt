@@ -79,6 +79,8 @@ core.explode_table_event(string) -> table
 core.explode_textlist_event(string) -> table
 ^ returns e.g. {type="CHG", index=1}
 ^ type: "INV" (no row selected), "CHG" (selected) or "DCL" (double-click)
+core.set_formspec_prepend(formspec)
+^ string to be added to every mainmenu formspec, to be used for theming.
 
 GUI:
 core.set_background(type, texturepath,[tile],[minsize])

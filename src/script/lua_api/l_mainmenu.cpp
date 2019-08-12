@@ -107,6 +107,21 @@ int ModApiMainMenu::l_update_formspec(lua_State *L)
 }
 
 /******************************************************************************/
+int ModApiMainMenu::l_set_formspec_prepend(lua_State *L)
+{
+	GUIEngine *engine = getGuiEngine(L);
+	sanity_check(engine != NULL);
+
+	if (engine->m_startgame)
+		return 0;
+
+	std::string formspec(luaL_checkstring(L, 1));
+	engine->setFormspecPrepend(formspec);
+
+	return 0;
+}
+
+/******************************************************************************/
 int ModApiMainMenu::l_start(lua_State *L)
 {
 	GUIEngine* engine = getGuiEngine(L);
@@ -1041,6 +1056,7 @@ int ModApiMainMenu::l_do_async_callback(lua_State *L)
 void ModApiMainMenu::Initialize(lua_State *L, int top)
 {
 	API_FCT(update_formspec);
+	API_FCT(set_formspec_prepend);
 	API_FCT(set_clouds);
 	API_FCT(get_textlist_index);
 	API_FCT(get_table_index);

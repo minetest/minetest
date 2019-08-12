@@ -390,6 +390,15 @@ void GUIEngine::cloudPostProcess()
 }
 
 /******************************************************************************/
+void GUIEngine::setFormspecPrepend(const std::string &fs)
+{
+	if (m_menu) {
+		m_menu->setFormspecPrepend(fs);
+	}
+}
+
+
+/******************************************************************************/
 void GUIEngine::drawBackground(video::IVideoDriver *driver)
 {
 	v2u32 screensize = driver->getScreenSize();
@@ -610,4 +619,3 @@ unsigned int GUIEngine::queueAsync(const std::string &serialized_func,
 {
 	return m_script->queueAsync(serialized_func, serialized_params);
 }
-
