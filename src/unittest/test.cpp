@@ -650,13 +650,13 @@ struct TestMapSector: public TestBase
 		// Create one with no heightmaps
 		ServerMapSector sector(&parent, v2s16(1,1));
 
-		UASSERT(sector.getBlockNoCreateNoEx(0) == nullptr);
-		UASSERT(sector.getBlockNoCreateNoEx(1) == nullptr);
+		UASSERT(sector.getBlockNoCreate(0) == nullptr);
+		UASSERT(sector.getBlockNoCreate(1) == nullptr);
 
 		MapBlock * bref = sector.createBlankBlock(-2);
 
-		UASSERT(sector.getBlockNoCreateNoEx(0) == nullptr);
-		UASSERT(sector.getBlockNoCreateNoEx(-2) == bref);
+		UASSERT(sector.getBlockNoCreate(0) == nullptr);
+		UASSERT(sector.getBlockNoCreate(-2) == bref);
 
 		//TODO: Check for AlreadyExistsException
 

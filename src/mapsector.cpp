@@ -67,7 +67,7 @@ MapBlock * MapSector::getBlockBuffered(s16 y)
 	return block;
 }
 
-MapBlock * MapSector::getBlockNoCreateNoEx(s16 y)
+MapBlock * MapSector::getBlockNoCreate(s16 y)
 {
 	return getBlockBuffered(y);
 }

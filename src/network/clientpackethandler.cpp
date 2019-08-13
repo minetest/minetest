@@ -292,7 +292,7 @@ void Client::handleCommand_BlockData(NetworkPacket* pkt)
 
 	assert(sector->getPos() == p2d);
 
-	block = sector->getBlockNoCreateNoEx(p.Y);
+	block = sector->getBlockNoCreate(p.Y);
 	if (block) {
 		/*
 			Update an existing block

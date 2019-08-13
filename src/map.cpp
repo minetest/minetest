@@ -128,7 +128,7 @@ MapBlock * Map::getBlockNoCreate(v3s16 p3d)
 	MapSector * sector = getSectorNoGenerate(p2d);
 	if(sector == NULL)
 		return NULL;
-	MapBlock *block = sector->getBlockNoCreateNoEx(p3d.Y);
+	MapBlock *block = sector->getBlockNoCreate(p3d.Y);
 	return block;
 }
 
@@ -1567,7 +1567,7 @@ MapBlock * ServerMap::createBlock(v3s16 p)
 		Try to get a block from the sector
 	*/
 
-	MapBlock *block = sector->getBlockNoCreateNoEx(block_y);
+	MapBlock *block = sector->getBlockNoCreate(block_y);
 	if (block) {
 		if(block->isDummy())
 			block->unDummify();
@@ -1964,7 +1964,7 @@ void ServerMap::loadBlock(const std::string &sectordir, const std::string &block
 
 		MapBlock *block = NULL;
 		bool created_new = false;
-		block = sector->getBlockNoCreateNoEx(p3d.Y);
+		block = sector->getBlockNoCreate(p3d.Y);
 		if(block == NULL)
 		{
 			block = sector->createBlankBlockNoInsert(p3d.Y);
@@ -2025,7 +2025,7 @@ void ServerMap::loadBlock(std::string *blob, v3s16 p3d, MapSector *sector, bool 
 
 		MapBlock *block = NULL;
 		bool created_new = false;
-		block = sector->getBlockNoCreateNoEx(p3d.Y);
+		block = sector->getBlockNoCreate(p3d.Y);
 		if(block == NULL)
 		{
 			block = sector->createBlankBlockNoInsert(p3d.Y);
