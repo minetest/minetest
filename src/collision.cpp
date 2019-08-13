@@ -220,8 +220,8 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 {
 	static bool time_notification_done = false;
 	Map *map = &env->getMap();
-	//TimeTaker tt("collisionMoveSimple");
-	ScopeProfiler sp(g_profiler, "collisionMoveSimple avg", SPT_AVG);
+
+	ScopeProfiler sp(g_profiler, "collisionMoveSimple()", SPT_AVG);
 
 	collisionMoveResult result;
 
@@ -255,7 +255,7 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 	std::vector<NearbyCollisionInfo> cinfo;
 	{
 	//TimeTaker tt2("collisionMoveSimple collect boxes");
-	ScopeProfiler sp2(g_profiler, "collisionMoveSimple collect boxes avg", SPT_AVG);
+	ScopeProfiler sp2(g_profiler, "collisionMoveSimple(): collect boxes", SPT_AVG);
 
 	v3f newpos_f = *pos_f + *speed_f * dtime;
 	v3f minpos_f(
@@ -351,9 +351,6 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 
 	if(collideWithObjects)
 	{
-		ScopeProfiler sp2(g_profiler, "collisionMoveSimple objects avg", SPT_AVG);
-		//TimeTaker tt3("collisionMoveSimple collect object boxes");
-
 		/* add object boxes to cinfo */
 
 		std::vector<ActiveObject*> objects;
@@ -428,9 +425,6 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 	int loopcount = 0;
 
 	while(dtime > BS * 1e-10f) {
-		//TimeTaker tt3("collisionMoveSimple dtime loop");
-        	ScopeProfiler sp2(g_profiler, "collisionMoveSimple dtime loop avg", SPT_AVG);
-
 		// Avoid infinite loop
 		loopcount++;
 		if (loopcount >= 100) {

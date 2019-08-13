@@ -637,12 +637,8 @@ void *EmergeThread::run()
 			{
 				ScopeProfiler sp(g_profiler,
 					"EmergeThread: Mapgen::makeChunk", SPT_AVG);
-				TimeTaker t("mapgen::make_block()");
 
 				m_mapgen->makeChunk(&bmdata);
-
-				if (!enable_mapgen_debug_info)
-					t.stop(true); // Hide output
 			}
 
 			block = finishGen(pos, &bmdata, &modified_blocks);

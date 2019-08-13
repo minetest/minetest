@@ -849,8 +849,8 @@ void Peer::RTTStatistics(float rtt, const std::string &profiler_id,
 								jitter * (1/num_samples);
 
 		if (!profiler_id.empty()) {
-			g_profiler->graphAdd(profiler_id + "_rtt", rtt);
-			g_profiler->graphAdd(profiler_id + "_jitter", jitter);
+			g_profiler->graphAdd(profiler_id + " RTT [ms]", rtt * 1000.f);
+			g_profiler->graphAdd(profiler_id + " jitter [ms]", jitter * 1000.f);
 		}
 	}
 	/* save values required for next loop */

@@ -689,8 +689,8 @@ protected:
 	bool handleCallbacks();
 	void processQueues();
 	void updateProfilers(const RunStats &stats, const FpsControl &draw_times, f32 dtime);
-	void addProfilerGraphs(const RunStats &stats, const FpsControl &draw_times, f32 dtime);
 	void updateStats(RunStats *stats, const FpsControl &draw_times, f32 dtime);
+	void updateProfilerGraphs(ProfilerGraph *graph);
 
 	// Input related
 	void processUserInput(f32 dtime);
@@ -751,7 +751,6 @@ protected:
 			const ItemStack &selected_item, const ItemStack &hand_item, f32 dtime);
 	void updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 			const CameraOrientation &cam);
-	void updateProfilerGraphs(ProfilerGraph *graph);
 
 	// Misc
 	void limitFps(FpsControl *fps_timings, f32 *dtime);
@@ -1082,10 +1081,12 @@ void Game::run()
 			previous_screen_size = current_screen_size;
 		}
 
-		/* Must be called immediately after a device->run() call because it
-		 * uses device->getTimer()->getTime()
-		 */
+		// Calculate dtime =
+		//    RenderingEngine::run() from this iteration
+		//  + Sleep time until the wanted FPS are reached
 		limitFps(&draw_times, &dtime);
+		
+		// Prepare render data for next iteration
 
 		updateStats(&stats, draw_times, dtime);
 		updateInteractTimers(dtime);
@@ -1722,7 +1723,8 @@ void Game::processQueues()
 }
 
 
-void Game::updateProfilers(const RunStats &stats, const FpsControl &draw_times, f32 dtime)
+void Game::updateProfilers(const RunStats &stats, const FpsControl &draw_times,
+		f32 dtime)
 {
 	float profiler_print_interval =
 			g_settings->getFloat("profiler_print_interval");
@@ -1730,7 +1732,7 @@ void Game::updateProfilers(const RunStats &stats, const FpsControl &draw_times, 
 
 	if (profiler_print_interval == 0) {
 		print_to_log = false;
-		profiler_print_interval = 5;
+		profiler_print_interval = 3;
 	}
 
 	if (profiler_interval.step(dtime, profiler_print_interval)) {
@@ -1743,24 +1745,13 @@ void Game::updateProfilers(const RunStats &stats, const FpsControl &draw_times, 
 		g_profiler->clear();
 	}
 
-	addProfilerGraphs(stats, draw_times, dtime);
+	// Update update graphs
+	g_profiler->graphAdd("Time non-rendering [ms]",
+		draw_times.busy_time - stats.drawtime);
+
+	g_profiler->graphAdd("Sleep [ms]", draw_times.sleep_time);
+	g_profiler->graphAdd("FPS", 1.0f / dtime);
 }
-
-
-void Game::addProfilerGraphs(const RunStats &stats,
-		const FpsControl &draw_times, f32 dtime)
-{
-	g_profiler->graphAdd("mainloop_other",
-			draw_times.busy_time / 1000.0f - stats.drawtime / 1000.0f);
-
-	if (draw_times.sleep_time != 0)
-		g_profiler->graphAdd("mainloop_sleep", draw_times.sleep_time / 1000.0f);
-	g_profiler->graphAdd("mainloop_dtime", dtime);
-
-	g_profiler->add("Elapsed time", dtime);
-	g_profiler->avg("FPS", 1. / dtime);
-}
-
 
 void Game::updateStats(RunStats *stats, const FpsControl &draw_times,
 		f32 dtime)
@@ -3612,6 +3603,7 @@ void Game::handleDigging(const PointedThing &pointed, const v3s16 &nodepos,
 void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 		const CameraOrientation &cam)
 {
+	TimeTaker tt_update("Game::updateFrame()");
 	LocalPlayer *player = client->getEnv().getLocalPlayer();
 
 	/*
@@ -3636,7 +3628,6 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 		direct_brightness = time_brightness;
 		sunlight_seen = true;
 	} else {
-		ScopeProfiler sp(g_profiler, "Detecting background light", SPT_AVG);
 		float old_brightness = sky->getBrightness();
 		direct_brightness = client->getEnv().getClientMap()
 				.getBackgroundBrightness(MYMIN(runData.fog_range * 1.2, 60 * BS),
@@ -3810,7 +3801,7 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 	*/
 	const video::SColor &skycolor = sky->getSkyColor();
 
-	TimeTaker tt_draw("mainloop: draw");
+	TimeTaker tt_draw("Draw scene");
 	driver->beginScene(true, true, skycolor);
 
 	bool draw_wield_tool = (m_game_ui->m_flags.show_hud &&
@@ -3870,7 +3861,8 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 	driver->endScene();
 
 	stats->drawtime = tt_draw.stop(true);
-	g_profiler->graphAdd("mainloop_draw", stats->drawtime / 1000.0f);
+	g_profiler->avg("Game::updateFrame(): draw scene [ms]", stats->drawtime);
+	g_profiler->graphAdd("Update frame [ms]", tt_update.stop(true));
 }
 
 /* Log times and stuff for visualization */

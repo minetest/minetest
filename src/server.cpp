@@ -470,7 +470,6 @@ void Server::step(float dtime)
 
 void Server::AsyncRunStep(bool initial_step)
 {
-	g_profiler->add("Server::AsyncRunStep (num)", 1);
 
 	float dtime;
 	{
@@ -486,10 +485,7 @@ void Server::AsyncRunStep(bool initial_step)
 	if((dtime < 0.001) && !initial_step)
 		return;
 
-	g_profiler->add("Server::AsyncRunStep with dtime (num)", 1);
-
-	//infostream<<"Server steps "<<dtime<<std::endl;
-	//infostream<<"Server::AsyncRunStep(): dtime="<<dtime<<std::endl;
+	ScopeProfiler sp(g_profiler, "Server::AsyncRunStep()", SPT_AVG);
 
 	{
 		MutexAutoLock lock1(m_step_dtime_mutex);
@@ -535,8 +531,6 @@ void Server::AsyncRunStep(bool initial_step)
 		}
 		m_env->reportMaxLagEstimate(max_lag);
 		// Step environment
-		ScopeProfiler sp(g_profiler, "SEnv step");
-		ScopeProfiler sp2(g_profiler, "SEnv step avg", SPT_AVG);
 		m_env->step(dtime);
 	}
 
@@ -626,7 +620,7 @@ void Server::AsyncRunStep(bool initial_step)
 
 		m_clients.lock();
 		const RemoteClientMap &clients = m_clients.getClientList();
-		ScopeProfiler sp(g_profiler, "Server: checking added and deleted objs");
+		ScopeProfiler sp(g_profiler, "Server: update visible objects");
 
 		// Radius inside which objects are active
 		static thread_local const s16 radius =
@@ -762,7 +756,7 @@ void Server::AsyncRunStep(bool initial_step)
 	*/
 	{
 		MutexAutoLock envlock(m_env_mutex);
-		ScopeProfiler sp(g_profiler, "Server: sending object messages");
+		ScopeProfiler sp(g_profiler, "Server: send SAO messages");
 
 		// Key = object id
 		// Value = data sent by object
@@ -972,7 +966,7 @@ void Server::AsyncRunStep(bool initial_step)
 			counter = 0.0;
 			MutexAutoLock lock(m_env_mutex);
 
-			ScopeProfiler sp(g_profiler, "Server: saving stuff");
+			ScopeProfiler sp(g_profiler, "Server: map saving (sum)");
 
 			// Save ban file
 			if (m_banmanager->isModified()) {
@@ -1106,7 +1100,7 @@ void Server::ProcessData(NetworkPacket *pkt)
 	// Environment is locked first.
 	MutexAutoLock envlock(m_env_mutex);
 
-	ScopeProfiler sp(g_profiler, "Server::ProcessData");
+	ScopeProfiler sp(g_profiler, "Server: Process network packet (sum)");
 	u32 peer_id = pkt->getPeerId();
 
 	try {
@@ -2258,14 +2252,12 @@ void Server::SendBlocks(float dtime)
 	MutexAutoLock envlock(m_env_mutex);
 	//TODO check if one big lock could be faster then multiple small ones
 
-	ScopeProfiler sp(g_profiler, "Server: sel and send blocks to clients");
-
 	std::vector<PrioritySortedBlockTransfer> queue;
 
 	u32 total_sending = 0;
 
 	{
-		ScopeProfiler sp2(g_profiler, "Server: selecting blocks for sending");
+		ScopeProfiler sp2(g_profiler, "Server::SendBlocks(): Collect list");
 
 		std::vector<session_t> clients = m_clients.getClientIDs();
 
@@ -2294,6 +2286,7 @@ void Server::SendBlocks(float dtime)
 	u32 max_blocks_to_send = (m_env->getPlayerCount() + g_settings->getU32("max_users")) *
 		g_settings->getU32("max_simultaneous_block_sends_per_client") / 4 + 1;
 
+	ScopeProfiler sp(g_profiler, "Server::SendBlocks(): Send to clients");
 	for (const PrioritySortedBlockTransfer &block_to_send : queue) {
 		if (total_sending >= max_blocks_to_send)
 			break;
@@ -3697,10 +3690,7 @@ void dedicated_server_loop(Server &server, bool &kill)
 	for(;;) {
 		// This is kind of a hack but can be done like this
 		// because server.step() is very light
-		{
-			ScopeProfiler sp(g_profiler, "dedicated server sleep");
-			sleep_ms((int)(steplen*1000.0));
-		}
+		sleep_ms((int)(steplen*1000.0));
 		server.step(steplen);
 
 		if (server.isShutdownRequested() || kill)

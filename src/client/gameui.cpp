@@ -80,9 +80,10 @@ void GameUI::init()
 	// Profiler text (size is updated when text is updated)
 	m_guitext_profiler = gui::StaticText::add(guienv, L"<Profiler>",
 		core::rect<s32>(0, 0, 0, 0), false, false, guiroot);
+	m_guitext_profiler->setOverrideFont(g_fontengine->getFont(
+		g_fontengine->getDefaultFontSize() * 0.9f, FM_Mono));
 	m_guitext_profiler->setBackgroundColor(video::SColor(120, 0, 0, 0));
 	m_guitext_profiler->setVisible(false);
-	m_guitext_profiler->setWordWrap(true);
 }
 
 void GameUI::update(const RunStats &stats, Client *client, MapDrawControl *draw_control,
@@ -239,29 +240,21 @@ void GameUI::updateProfiler()
 {
 	if (m_profiler_current_page != 0) {
 		std::ostringstream os(std::ios_base::binary);
-		g_profiler->printPage(os, m_profiler_current_page, m_profiler_max_page);
+		os << "   Profiler page " << (int)m_profiler_current_page <<
+				", elapsed: " << g_profiler->getElapsedMs() << " ms)" << std::endl;
 
-		std::wstring text = translate_string(utf8_to_wide(os.str()));
+		int lines = g_profiler->print(os, m_profiler_current_page, m_profiler_max_page);
+		++lines;
+
+		std::wstring text = utf8_to_wide(os.str());
 		setStaticText(m_guitext_profiler, text.c_str());
 
-		s32 w = g_fontengine->getTextWidth(text);
-
-		if (w < 400)
-			w = 400;
-
-		u32 text_height = g_fontengine->getTextHeight();
-
-		core::position2di upper_left, lower_right;
-
-		upper_left.X  = 6;
-		upper_left.Y  = (text_height + 5) * 2;
-		lower_right.X = 12 + w;
-		lower_right.Y = upper_left.Y + (text_height + 1) * MAX_PROFILER_TEXT_ROWS;
-
-		s32 screen_height = RenderingEngine::get_video_driver()->getScreenSize().Height;
-
-		if (lower_right.Y > screen_height * 2 / 3)
-			lower_right.Y = screen_height * 2 / 3;
+		core::dimension2d<u32> size = m_guitext_profiler->getOverrideFont()->
+				getDimension(text.c_str());
+		core::position2di upper_left(6, 50);
+		core::position2di lower_right = upper_left;
+		lower_right.X += size.Width + 10;
+		lower_right.Y += size.Height; 
 
 		m_guitext_profiler->setRelativePosition(core::rect<s32>(upper_left, lower_right));
 	}

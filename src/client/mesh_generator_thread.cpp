@@ -98,7 +98,7 @@ void MeshUpdateQueue::addBlock(Map *map, v3s16 p, bool ack_block_to_server, bool
 					&cache_hit_counter);
 		cached_blocks.push_back(cached_block);
 	}
-	g_profiler->avg("MeshUpdateQueue MapBlock cache hit %",
+	g_profiler->avg("MeshUpdateQueue: MapBlocks from cache [%]",
 			100.0f * cache_hit_counter / cached_blocks.size());
 
 	/*
@@ -162,39 +162,36 @@ QueuedMeshUpdate *MeshUpdateQueue::pop()
 CachedMapBlockData* MeshUpdateQueue::cacheBlock(Map *map, v3s16 p, UpdateMode mode,
 			size_t *cache_hit_counter)
 {
+	CachedMapBlockData *cached_block = nullptr;
 	std::map<v3s16, CachedMapBlockData*>::iterator it =
 			m_cache.find(p);
+
 	if (it != m_cache.end()) {
-		// Already in cache
-		CachedMapBlockData *cached_block = it->second;
+		cached_block = it->second;
+
 		if (mode == SKIP_UPDATE_IF_ALREADY_CACHED) {
 			if (cache_hit_counter)
 				(*cache_hit_counter)++;
 			return cached_block;
 		}
-		MapBlock *b = map->getBlockNoCreateNoEx(p);
-		if (b) {
-			if (cached_block->data == NULL)
-				cached_block->data =
-						new MapNode[MAP_BLOCKSIZE * MAP_BLOCKSIZE * MAP_BLOCKSIZE];
-			memcpy(cached_block->data, b->getData(),
-					MAP_BLOCKSIZE * MAP_BLOCKSIZE * MAP_BLOCKSIZE * sizeof(MapNode));
-		} else {
-			delete[] cached_block->data;
-			cached_block->data = NULL;
-		}
-		return cached_block;
 	}
 
-	// Not yet in cache
-	CachedMapBlockData *cached_block = new CachedMapBlockData();
-	m_cache[p] = cached_block;
+	if (!cached_block) {
+		// Not yet in cache
+		cached_block = new CachedMapBlockData();
+		m_cache[p] = cached_block;
+	}
+
 	MapBlock *b = map->getBlockNoCreateNoEx(p);
 	if (b) {
-		cached_block->data =
-				new MapNode[MAP_BLOCKSIZE * MAP_BLOCKSIZE * MAP_BLOCKSIZE];
+		if (!cached_block->data)
+			cached_block->data =
+					new MapNode[MAP_BLOCKSIZE * MAP_BLOCKSIZE * MAP_BLOCKSIZE];
 		memcpy(cached_block->data, b->getData(),
 				MAP_BLOCKSIZE * MAP_BLOCKSIZE * MAP_BLOCKSIZE * sizeof(MapNode));
+	} else {
+		delete[] cached_block->data;
+		cached_block->data = nullptr;
 	}
 	return cached_block;
 }
@@ -292,7 +289,7 @@ void MeshUpdateThread::doUpdate()
 	while ((q = m_queue_in.pop())) {
 		if (m_generation_interval)
 			sleep_ms(m_generation_interval);
-		ScopeProfiler sp(g_profiler, "Client: Mesh making");
+		ScopeProfiler sp(g_profiler, "Client: Mesh making (sum)");
 
 		MapBlockMesh *mesh_new = new MapBlockMesh(q->data, m_camera_offset);
 
