@@ -96,7 +96,7 @@ void Map::dispatchEvent(MapEditEvent *event)
 	}
 }
 
-MapSector * Map::getSectorNoGenerateNoExNoLock(v2s16 p)
+MapSector * Map::getSectorNoGenerateNoLock(v2s16 p)
 {
 	if(m_sector_cache != NULL && p == m_sector_cache_p){
 		MapSector * sector = m_sector_cache;
@@ -117,24 +117,15 @@ MapSector * Map::getSectorNoGenerateNoExNoLock(v2s16 p)
 	return sector;
 }
 
-MapSector * Map::getSectorNoGenerateNoEx(v2s16 p)
-{
-	return getSectorNoGenerateNoExNoLock(p);
-}
-
 MapSector * Map::getSectorNoGenerate(v2s16 p)
 {
-	MapSector *sector = getSectorNoGenerateNoEx(p);
-	if(sector == NULL)
-		throw InvalidPositionException();
-
-	return sector;
+	return getSectorNoGenerateNoLock(p);
 }
 
 MapBlock * Map::getBlockNoCreateNoEx(v3s16 p3d)
 {
 	v2s16 p2d(p3d.X, p3d.Z);
-	MapSector * sector = getSectorNoGenerateNoEx(p2d);
+	MapSector * sector = getSectorNoGenerate(p2d);
 	if(sector == NULL)
 		return NULL;
 	MapBlock *block = sector->getBlockNoCreateNoEx(p3d.Y);
@@ -1404,7 +1395,7 @@ MapSector *ServerMap::createSector(v2s16 p2d)
 	/*
 		Check if it exists already in memory
 	*/
-	MapSector *sector = getSectorNoGenerateNoEx(p2d);
+	MapSector *sector = getSectorNoGenerate(p2d);
 	if (sector)
 		return sector;
 
@@ -2114,7 +2105,7 @@ MapBlock* ServerMap::loadBlock(v3s16 blockpos)
 		Make sure sector is loaded
 		 */
 
-		MapSector *sector = getSectorNoGenerateNoEx(p2d);
+		MapSector *sector = getSectorNoGenerate(p2d);
 
 		/*
 		Make sure file exists
@@ -2157,7 +2148,7 @@ bool ServerMap::deleteBlock(v3s16 blockpos)
 	MapBlock *block = getBlockNoCreateNoEx(blockpos);
 	if (block) {
 		v2s16 p2d(blockpos.X, blockpos.Z);
-		MapSector *sector = getSectorNoGenerateNoEx(p2d);
+		MapSector *sector = getSectorNoGenerate(p2d);
 		if (!sector)
 			return false;
 		sector->deleteBlock(block);
