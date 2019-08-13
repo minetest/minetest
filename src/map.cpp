@@ -166,7 +166,7 @@ MapNode Map::getNode(v3s16 p, bool *is_valid_position)
 }
 
 // returns false if not found
-bool Map::setNodeNoEx(v3s16 p, MapNode & n)
+bool Map::setNode(v3s16 p, MapNode & n)
 {
 	v3s16 blockpos = getNodeBlockPos(p);
 	MapBlock *block = getBlockNoCreate(blockpos);
@@ -184,13 +184,6 @@ bool Map::setNodeNoEx(v3s16 p, MapNode & n)
 	}
 	block->setNodeNoCheck(relpos, n);
 	return true;
-}
-
-// throws InvalidPositionException if not found
-void Map::setNode(v3s16 p, MapNode & n)
-{
-	if (!setNodeNoEx(p, n))
-		throw InvalidPositionException();
 }
 
 bool Map::addNodeAndUpdate(v3s16 p, MapNode n,
@@ -212,7 +205,7 @@ bool Map::addNodeAndUpdate(v3s16 p, MapNode n,
 	// Ignore light (because calling voxalgo::update_lighting_nodes)
 	n.setLight(LIGHTBANK_DAY, 0, m_nodedef);
 	n.setLight(LIGHTBANK_NIGHT, 0, m_nodedef);
-	if (!setNodeNoEx(p, n))
+	if (!setNode(p, n))
 		return false;
 
 	// Update lighting

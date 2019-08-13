@@ -184,9 +184,7 @@ public:
 	bool isValidPosition(v3s16 p);
 
 	// returns false if not found
-	bool setNodeNoEx(v3s16 p, MapNode & n);
-	// throws InvalidPositionException if not found
-	void setNode(v3s16 p, MapNode & n);
+	bool setNode(v3s16 p, MapNode & n);
 
 	// Returns a CONTENT_IGNORE node if not found
 	// If is_valid_position is not NULL then this will be set to true if the

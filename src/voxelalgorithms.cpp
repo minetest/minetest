@@ -577,7 +577,7 @@ bool update_lighting_nodes(Map *map,
 						}
 						// Remove sunlight and add to unlight queue.
 						n2.setLight(LIGHTBANK_DAY, 0, ndef);
-						if (!map->setNodeNoEx(n2pos, n2))
+						if (!map->setNode(n2pos, n2))
 							return false;
 						relative_v3 rel_pos2;
 						mapblock_v3 block_pos2;
