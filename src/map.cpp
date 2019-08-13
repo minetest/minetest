@@ -2214,19 +2214,14 @@ void MMVManip::initialEmerge(v3s16 blockpos_min, v3s16 blockpos_max,
 			continue;
 
 		bool block_data_inexistent = false;
-		try
 		{
 			TimeTaker timer2("emerge load", &emerge_load_time);
 
-			block = m_map->getBlockNoCreate(p);
-			if(block->isDummy())
+			block = m_map->getBlockNoCreateNoEx(p);
+			if (!block || block->isDummy())
 				block_data_inexistent = true;
 			else
 				block->copyTo(*this);
-		}
-		catch(InvalidPositionException &e)
-		{
-			block_data_inexistent = true;
 		}
 
 		if(block_data_inexistent)
