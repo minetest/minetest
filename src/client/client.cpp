@@ -1273,11 +1273,7 @@ void Client::removeNode(v3s16 p)
 {
 	std::map<v3s16, MapBlock*> modified_blocks;
 
-	try {
-		m_env.getMap().removeNodeAndUpdate(p, modified_blocks);
-	}
-	catch(InvalidPositionException &e) {
-	}
+	m_env.getMap().removeNodeAndUpdate(p, modified_blocks);
 
 	for (const auto &modified_block : modified_blocks) {
 		addUpdateMeshTaskWithEdge(modified_block.first, false, true);
@@ -1309,12 +1305,7 @@ void Client::addNode(v3s16 p, MapNode n, bool remove_metadata)
 
 	std::map<v3s16, MapBlock*> modified_blocks;
 
-	try {
-		//TimeTaker timer3("Client::addNode(): addNodeAndUpdate");
-		m_env.getMap().addNodeAndUpdate(p, n, modified_blocks, remove_metadata);
-	}
-	catch(InvalidPositionException &e) {
-	}
+	m_env.getMap().addNodeAndUpdate(p, n, modified_blocks, remove_metadata);
 
 	for (const auto &modified_block : modified_blocks) {
 		addUpdateMeshTaskWithEdge(modified_block.first, false, true);

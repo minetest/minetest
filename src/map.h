@@ -196,10 +196,10 @@ public:
 	/*
 		These handle lighting but not faces.
 	*/
-	void addNodeAndUpdate(v3s16 p, MapNode n,
+	bool addNodeAndUpdate(v3s16 p, MapNode n,
 			std::map<v3s16, MapBlock*> &modified_blocks,
 			bool remove_metadata = true);
-	void removeNodeAndUpdate(v3s16 p,
+	bool removeNodeAndUpdate(v3s16 p,
 			std::map<v3s16, MapBlock*> &modified_blocks);
 
 	/*

@@ -466,7 +466,7 @@ bool is_sunlight_above(Map *map, v3s16 pos, const NodeDefManager *ndef)
 
 static const LightBank banks[] = { LIGHTBANK_DAY, LIGHTBANK_NIGHT };
 
-void update_lighting_nodes(Map *map,
+bool update_lighting_nodes(Map *map,
 	std::vector<std::pair<v3s16, MapNode> > &oldnodes,
 	std::map<v3s16, MapBlock*> &modified_blocks)
 {
@@ -577,7 +577,8 @@ void update_lighting_nodes(Map *map,
 						}
 						// Remove sunlight and add to unlight queue.
 						n2.setLight(LIGHTBANK_DAY, 0, ndef);
-						map->setNode(n2pos, n2);
+						if (!map->setNodeNoEx(n2pos, n2))
+							return false;
 						relative_v3 rel_pos2;
 						mapblock_v3 block_pos2;
 						getNodeBlockPosWithOffset(n2pos, block_pos2, rel_pos2);
@@ -641,6 +642,8 @@ void update_lighting_nodes(Map *map,
 		// Spread lights.
 		spread_light(map, ndef, bank, light_sources, modified_blocks);
 	}
+
+	return true;
 }
 
 /*!

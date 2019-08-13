@@ -193,7 +193,7 @@ void Map::setNode(v3s16 p, MapNode & n)
 		throw InvalidPositionException();
 }
 
-void Map::addNodeAndUpdate(v3s16 p, MapNode n,
+bool Map::addNodeAndUpdate(v3s16 p, MapNode n,
 		std::map<v3s16, MapBlock*> &modified_blocks,
 		bool remove_metadata)
 {
@@ -212,12 +212,14 @@ void Map::addNodeAndUpdate(v3s16 p, MapNode n,
 	// Ignore light (because calling voxalgo::update_lighting_nodes)
 	n.setLight(LIGHTBANK_DAY, 0, m_nodedef);
 	n.setLight(LIGHTBANK_NIGHT, 0, m_nodedef);
-	setNode(p, n);
+	if (!setNodeNoEx(p, n))
+		return false;
 
 	// Update lighting
 	std::vector<std::pair<v3s16, MapNode> > oldnodes;
 	oldnodes.emplace_back(p, oldnode);
-	voxalgo::update_lighting_nodes(this, oldnodes, modified_blocks);
+	if (!voxalgo::update_lighting_nodes(this, oldnodes, modified_blocks))
+		return false;
 
 	for (auto &modified_block : modified_blocks) {
 		modified_block.second->expireDayNightDiff();
@@ -247,12 +249,14 @@ void Map::addNodeAndUpdate(v3s16 p, MapNode n,
 				n2.getContent() == CONTENT_AIR))
 			m_transforming_liquid.push_back(p2);
 	}
+
+	return true;
 }
 
-void Map::removeNodeAndUpdate(v3s16 p,
+bool Map::removeNodeAndUpdate(v3s16 p,
 		std::map<v3s16, MapBlock*> &modified_blocks)
 {
-	addNodeAndUpdate(p, MapNode(CONTENT_AIR), modified_blocks, true);
+	return addNodeAndUpdate(p, MapNode(CONTENT_AIR), modified_blocks, true);
 }
 
 bool Map::addNodeWithEvent(v3s16 p, MapNode n, bool remove_metadata)
@@ -262,18 +266,13 @@ bool Map::addNodeWithEvent(v3s16 p, MapNode n, bool remove_metadata)
 	event.p = p;
 	event.n = n;
 
-	bool succeeded = true;
-	try{
-		std::map<v3s16, MapBlock*> modified_blocks;
-		addNodeAndUpdate(p, n, modified_blocks, remove_metadata);
+	std::map<v3s16, MapBlock*> modified_blocks;
+	bool succeeded = addNodeAndUpdate(p, n, modified_blocks, remove_metadata);
 
-		// Copy modified_blocks to event
-		for (auto &modified_block : modified_blocks) {
+	// Copy modified_blocks to event if successfully added node
+	if (succeeded) {
+		for (auto &modified_block : modified_blocks)
 			event.modified_blocks.insert(modified_block.first);
-		}
-	}
-	catch(InvalidPositionException &e){
-		succeeded = false;
 	}
 
 	dispatchEvent(&event);
@@ -287,18 +286,13 @@ bool Map::removeNodeWithEvent(v3s16 p)
 	event.type = MEET_REMOVENODE;
 	event.p = p;
 
-	bool succeeded = true;
-	try{
-		std::map<v3s16, MapBlock*> modified_blocks;
-		removeNodeAndUpdate(p, modified_blocks);
+	std::map<v3s16, MapBlock*> modified_blocks;
+	bool succeeded = removeNodeAndUpdate(p, modified_blocks);
 
-		// Copy modified_blocks to event
-		for (auto &modified_block : modified_blocks) {
+	// Copy modified_blocks to event if successfully removed node
+	if (succeeded) {
+		for (auto &modified_block : modified_blocks)
 			event.modified_blocks.insert(modified_block.first);
-		}
-	}
-	catch(InvalidPositionException &e){
-		succeeded = false;
 	}
 
 	dispatchEvent(&event);
