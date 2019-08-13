@@ -2287,16 +2287,15 @@ void Server::SendBlocks(float dtime)
 		g_settings->getU32("max_simultaneous_block_sends_per_client") / 4 + 1;
 
 	ScopeProfiler sp(g_profiler, "Server::SendBlocks(): Send to clients");
+	Map &map = m_env->getMap();
+
 	for (const PrioritySortedBlockTransfer &block_to_send : queue) {
 		if (total_sending >= max_blocks_to_send)
 			break;
 
-		MapBlock *block = nullptr;
-		try {
-			block = m_env->getMap().getBlockNoCreate(block_to_send.pos);
-		} catch (const InvalidPositionException &e) {
+		MapBlock *block = map.getBlockNoCreateNoEx(block_to_send.pos);
+		if (!block)
 			continue;
-		}
 
 		RemoteClient *client = m_clients.lockedGetClientNoEx(block_to_send.peer_id,
 				CS_Active);
@@ -2314,10 +2313,7 @@ void Server::SendBlocks(float dtime)
 
 bool Server::SendBlock(session_t peer_id, const v3s16 &blockpos)
 {
-	MapBlock *block = nullptr;
-	try {
-		block = m_env->getMap().getBlockNoCreate(blockpos);
-	} catch (InvalidPositionException &e) {};
+	MapBlock *block = m_env->getMap().getBlockNoCreateNoEx(blockpos);
 	if (!block)
 		return false;
 
