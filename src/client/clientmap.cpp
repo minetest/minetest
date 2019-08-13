@@ -63,14 +63,13 @@ ClientMap::ClientMap(
 MapSector * ClientMap::emergeSector(v2s16 p2d)
 {
 	// Check that it doesn't exist already
-	try {
-		return getSectorNoGenerate(p2d);
-	} catch(InvalidPositionException &e) {
-	}
+	MapSector *sector = getSectorNoGenerate(p2d);
 
-	// Create a sector
-	MapSector *sector = new MapSector(this, p2d, m_gamedef);
-	m_sectors[p2d] = sector;
+	// Create it if it does not exist yet
+	if (!sector) {
+		sector = new MapSector(this, p2d, m_gamedef);
+		m_sectors[p2d] = sector;
+	}
 
 	return sector;
 }

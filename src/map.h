@@ -155,10 +155,8 @@ public:
 	void dispatchEvent(MapEditEvent *event);
 
 	// On failure returns NULL
-	MapSector * getSectorNoGenerateNoExNoLock(v2s16 p2d);
+	MapSector * getSectorNoGenerateNoLock(v2s16 p2d);
 	// Same as the above (there exists no lock anymore)
-	MapSector * getSectorNoGenerateNoEx(v2s16 p2d);
-	// On failure throws InvalidPositionException
 	MapSector * getSectorNoGenerate(v2s16 p2d);
 	// Gets an existing sector or creates an empty one
 	//MapSector * getSectorCreate(v2s16 p2d);
