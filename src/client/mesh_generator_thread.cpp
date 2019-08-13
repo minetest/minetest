@@ -182,7 +182,7 @@ CachedMapBlockData* MeshUpdateQueue::cacheBlock(Map *map, v3s16 p, UpdateMode mo
 		m_cache[p] = cached_block;
 	}
 
-	MapBlock *b = map->getBlockNoCreateNoEx(p);
+	MapBlock *b = map->getBlockNoCreate(p);
 	if (b) {
 		if (!cached_block->data)
 			cached_block->data =

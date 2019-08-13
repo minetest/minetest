@@ -285,7 +285,7 @@ void unspread_light(Map *map, const NodeDefManager *nodemgr, LightBank bank,
 			neighbor_block_pos = current.block_position;
 			MapBlock *neighbor_block;
 			if (step_rel_block_pos(i, neighbor_rel_pos, neighbor_block_pos)) {
-				neighbor_block = map->getBlockNoCreateNoEx(neighbor_block_pos);
+				neighbor_block = map->getBlockNoCreate(neighbor_block_pos);
 				if (neighbor_block == NULL) {
 					current.block->setLightingComplete(bank, i, false);
 					continue;
@@ -375,7 +375,7 @@ void spread_light(Map *map, const NodeDefManager *nodemgr, LightBank bank,
 			neighbor_block_pos = current.block_position;
 			MapBlock *neighbor_block;
 			if (step_rel_block_pos(i, neighbor_rel_pos, neighbor_block_pos)) {
-				neighbor_block = map->getBlockNoCreateNoEx(neighbor_block_pos);
+				neighbor_block = map->getBlockNoCreate(neighbor_block_pos);
 				if (neighbor_block == NULL) {
 					current.block->setLightingComplete(bank, i, false);
 					continue;
@@ -435,10 +435,10 @@ bool is_sunlight_above(Map *map, v3s16 pos, const NodeDefManager *ndef)
 	getNodeBlockPosWithOffset(pos + v3s16(0, 1, 0), source_block_pos,
 		source_rel_pos);
 	// If the node above has sunlight, this node also can get it.
-	MapBlock *source_block = map->getBlockNoCreateNoEx(source_block_pos);
+	MapBlock *source_block = map->getBlockNoCreate(source_block_pos);
 	if (source_block == NULL) {
 		// But if there is no node above, then use heuristics
-		MapBlock *node_block = map->getBlockNoCreateNoEx(getNodeBlockPos(pos));
+		MapBlock *node_block = map->getBlockNoCreate(getNodeBlockPos(pos));
 		if (node_block == NULL) {
 			sunlight = false;
 		} else {
@@ -502,7 +502,7 @@ void update_lighting_nodes(Map *map,
 			relative_v3 rel_pos;
 			mapblock_v3 block_pos;
 			getNodeBlockPosWithOffset(p, block_pos, rel_pos);
-			MapBlock *block = map->getBlockNoCreateNoEx(block_pos);
+			MapBlock *block = map->getBlockNoCreate(block_pos);
 			if (block == NULL || block->isDummy()) {
 				continue;
 			}
@@ -581,7 +581,7 @@ void update_lighting_nodes(Map *map,
 						relative_v3 rel_pos2;
 						mapblock_v3 block_pos2;
 						getNodeBlockPosWithOffset(n2pos, block_pos2, rel_pos2);
-						MapBlock *block2 = map->getBlockNoCreateNoEx(
+						MapBlock *block2 = map->getBlockNoCreate(
 							block_pos2);
 						disappearing_lights.push(LIGHT_SUN, rel_pos2,
 							block_pos2, block2,
@@ -614,7 +614,7 @@ void update_lighting_nodes(Map *map,
 						relative_v3 rel_pos2;
 						mapblock_v3 block_pos2;
 						getNodeBlockPosWithOffset(n2pos, block_pos2, rel_pos2);
-						MapBlock *block2 = map->getBlockNoCreateNoEx(
+						MapBlock *block2 = map->getBlockNoCreate(
 							block_pos2);
 						// Mark node for lighting.
 						light_sources.push(LIGHT_SUN, rel_pos2, block_pos2,
@@ -703,7 +703,7 @@ void update_block_border_lighting(Map *map, MapBlock *block,
 			// For each direction
 			// Get neighbor block
 			v3s16 otherpos = block->getPos() + neighbor_dirs[d];
-			MapBlock *other = map->getBlockNoCreateNoEx(otherpos);
+			MapBlock *other = map->getBlockNoCreate(otherpos);
 			if (other == NULL) {
 				continue;
 			}
@@ -841,7 +841,7 @@ void is_sunlight_above_block(ServerMap *map, mapblock_v3 pos,
 			|| !source_block->isGenerated()) {
 		// But if there is no block above, then use heuristics
 		bool sunlight = true;
-		MapBlock *node_block = map->getBlockNoCreateNoEx(pos);
+		MapBlock *node_block = map->getBlockNoCreate(pos);
 		if (node_block == NULL)
 			// This should not happen.
 			sunlight = false;
@@ -879,7 +879,7 @@ bool propagate_block_sunlight(Map *map, const NodeDefManager *ndef,
 {
 	bool modified = false;
 	// Get the block.
-	MapBlock *block = map->getBlockNoCreateNoEx(data->target_block);
+	MapBlock *block = map->getBlockNoCreate(data->target_block);
 	if (block == NULL || block->isDummy()) {
 		// The work is done if the block does not contain data.
 		data->data.clear();
@@ -1000,7 +1000,7 @@ void finish_bulk_light_update(Map *map, mapblock_v3 minblock,
 	for (blockpos.X = minblock.X; blockpos.X <= maxblock.X; blockpos.X++)
 	for (blockpos.Y = minblock.Y; blockpos.Y <= maxblock.Y; blockpos.Y++)
 	for (blockpos.Z = minblock.Z; blockpos.Z <= maxblock.Z; blockpos.Z++) {
-		MapBlock *block = map->getBlockNoCreateNoEx(blockpos);
+		MapBlock *block = map->getBlockNoCreate(blockpos);
 		if (!block || block->isDummy())
 			// Skip not existing blocks
 			continue;
@@ -1082,7 +1082,7 @@ void blit_back_with_light(ServerMap *map, MMVManip *vm,
 			if (propagate_block_sunlight(map, ndef, &data, &unlight[0],
 					&relight[0]))
 				(*modified_blocks)[data.target_block] =
-					map->getBlockNoCreateNoEx(data.target_block);
+					map->getBlockNoCreate(data.target_block);
 			// Step downwards.
 			data.target_block.Y--;
 		}
@@ -1098,7 +1098,7 @@ void blit_back_with_light(ServerMap *map, MMVManip *vm,
 	for (blockpos.X = minblock.X; blockpos.X <= maxblock.X; blockpos.X++)
 	for (blockpos.Y = minblock.Y; blockpos.Y <= maxblock.Y; blockpos.Y++)
 	for (blockpos.Z = minblock.Z; blockpos.Z <= maxblock.Z; blockpos.Z++) {
-		MapBlock *block = map->getBlockNoCreateNoEx(blockpos);
+		MapBlock *block = map->getBlockNoCreate(blockpos);
 		if (!block || block->isDummy())
 			// Skip not existing blocks.
 			continue;
@@ -1224,7 +1224,7 @@ void repair_block_light(ServerMap *map, MapBlock *block,
 		if (propagate_block_sunlight(map, ndef, &data, &unlight[0],
 				&relight[0]))
 			(*modified_blocks)[data.target_block] =
-				map->getBlockNoCreateNoEx(data.target_block);
+				map->getBlockNoCreate(data.target_block);
 		// Step downwards.
 		data.target_block.Y--;
 	}

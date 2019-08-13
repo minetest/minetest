@@ -483,7 +483,7 @@ void Client::step(float dtime)
 			bool do_mapper_update = true;
 
 			MeshUpdateResult r = m_mesh_update_thread.m_queue_out.pop_frontNoEx();
-			MapBlock *block = m_env.getMap().getBlockNoCreateNoEx(r.p);
+			MapBlock *block = m_env.getMap().getBlockNoCreate(r.p);
 			if (block) {
 				// Delete the old mesh
 				delete block->mesh;
@@ -1507,7 +1507,7 @@ void Client::addUpdateMeshTask(v3s16 p, bool ack_to_server, bool urgent)
 	// Check if the block exists to begin with. In the case when a non-existing
 	// neighbor is automatically added, it may not. In that case we don't want
 	// to tell the mesh update thread about it.
-	MapBlock *b = m_env.getMap().getBlockNoCreateNoEx(p);
+	MapBlock *b = m_env.getMap().getBlockNoCreate(p);
 	if (b == NULL)
 		return;
 

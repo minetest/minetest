@@ -525,7 +525,7 @@ EmergeAction EmergeThread::getBlockOrStartGen(
 	MutexAutoLock envlock(m_server->m_env_mutex);
 
 	// 1). Attempt to fetch block from memory
-	*block = m_map->getBlockNoCreateNoEx(pos);
+	*block = m_map->getBlockNoCreate(pos);
 	if (*block && !(*block)->isDummy()) {
 		if ((*block)->isGenerated())
 			return EMERGE_FROM_MEMORY;
@@ -558,7 +558,7 @@ MapBlock *EmergeThread::finishGen(v3s16 pos, BlockMakeData *bmdata,
 	*/
 	m_map->finishBlockMake(bmdata, modified_blocks);
 
-	MapBlock *block = m_map->getBlockNoCreateNoEx(pos);
+	MapBlock *block = m_map->getBlockNoCreate(pos);
 	if (!block) {
 		errorstream << "EmergeThread::finishGen: Couldn't grab block we "
 			"just generated: " << PP(pos) << std::endl;

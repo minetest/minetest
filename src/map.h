@@ -167,14 +167,14 @@ public:
 	*/
 	virtual MapSector * emergeSector(v2s16 p){ return NULL; }
 
-	// Returns InvalidPositionException if not found
-	MapBlock * getBlockNoCreate(v3s16 p);
 	// Returns NULL if not found
-	MapBlock * getBlockNoCreateNoEx(v3s16 p);
+	MapBlock * getBlockNoCreate(v3s16 p);
 
 	/* Server overrides */
 	virtual MapBlock * emergeBlock(v3s16 p, bool create_blank=true)
-	{ return getBlockNoCreateNoEx(p); }
+	{
+		return getBlockNoCreate(p);
+	}
 
 	inline const NodeDefManager * getNodeDefManager() { return m_nodedef; }
 
@@ -183,6 +183,8 @@ public:
 
 	bool isValidPosition(v3s16 p);
 
+	// returns false if not found
+	bool setNodeNoEx(v3s16 p, MapNode & n);
 	// throws InvalidPositionException if not found
 	void setNode(v3s16 p, MapNode & n);
 

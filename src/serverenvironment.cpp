@@ -825,7 +825,7 @@ public:
 			for(s16 y=-1; y<=1; y++)
 				for(s16 z=-1; z<=1; z++)
 				{
-					MapBlock *block2 = map->getBlockNoCreateNoEx(
+					MapBlock *block2 = map->getBlockNoCreate(
 						block->getPos() + v3s16(x,y,z));
 					if(block2==NULL){
 						wider_unknown_count++;
@@ -1133,7 +1133,7 @@ void ServerEnvironment::clearObjects(ClearObjectsMode mode)
 
 	// Grab a reference on each loaded block to avoid unloading it
 	for (v3s16 p : loaded_blocks) {
-		MapBlock *block = m_map->getBlockNoCreateNoEx(p);
+		MapBlock *block = m_map->getBlockNoCreate(p);
 		assert(block != NULL);
 		block->refGrab();
 	}
@@ -1186,7 +1186,7 @@ void ServerEnvironment::clearObjects(ClearObjectsMode mode)
 
 	// Drop references that were added above
 	for (v3s16 p : loaded_blocks) {
-		MapBlock *block = m_map->getBlockNoCreateNoEx(p);
+		MapBlock *block = m_map->getBlockNoCreate(p);
 		assert(block);
 		block->refDrop();
 	}
@@ -1278,7 +1278,7 @@ void ServerEnvironment::step(float dtime)
 		deactivateFarObjects(false);
 
 		for (const v3s16 &p: blocks_removed) {
-			MapBlock *block = m_map->getBlockNoCreateNoEx(p);
+			MapBlock *block = m_map->getBlockNoCreate(p);
 			if (!block)
 				continue;
 
@@ -1311,7 +1311,7 @@ void ServerEnvironment::step(float dtime)
 		float dtime = m_cache_nodetimer_interval;
 
 		for (const v3s16 &p: m_active_blocks.m_list) {
-			MapBlock *block = m_map->getBlockNoCreateNoEx(p);
+			MapBlock *block = m_map->getBlockNoCreate(p);
 			if (!block)
 				continue;
 
@@ -1365,7 +1365,7 @@ void ServerEnvironment::step(float dtime)
 		// The time budget for ABMs is 20%.
 		u32 max_time_ms = m_cache_abm_interval * 1000 / 5;
 		for (const v3s16 &p : output) {
-			MapBlock *block = m_map->getBlockNoCreateNoEx(p);
+			MapBlock *block = m_map->getBlockNoCreate(p);
 			if (!block)
 				continue;
 
@@ -1576,7 +1576,7 @@ void ServerEnvironment::getRemovedActiveObjects(PlayerSAO *playersao, s16 radius
 void ServerEnvironment::setStaticForActiveObjectsInBlock(
 	v3s16 blockpos, bool static_exists, v3s16 static_block)
 {
-	MapBlock *block = m_map->getBlockNoCreateNoEx(blockpos);
+	MapBlock *block = m_map->getBlockNoCreate(blockpos);
 	if (!block)
 		return;
 
@@ -2006,7 +2006,7 @@ void ServerEnvironment::deleteStaticFromBlock(
 
 	MapBlock *block;
 	if (no_emerge)
-		block = m_map->getBlockNoCreateNoEx(obj->m_static_block);
+		block = m_map->getBlockNoCreate(obj->m_static_block);
 	else
 		block = m_map->emergeBlock(obj->m_static_block, false);
 	if (!block) {

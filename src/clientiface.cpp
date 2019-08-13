@@ -307,7 +307,7 @@ void RemoteClient::GetNextBlocks (
 			/*
 				Check if map has this block
 			*/
-			MapBlock *block = env->getMap().getBlockNoCreateNoEx(p);
+			MapBlock *block = env->getMap().getBlockNoCreate(p);
 
 			bool surely_not_found_on_disk = false;
 			bool block_is_invalid = false;

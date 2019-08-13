@@ -122,7 +122,7 @@ MapSector * Map::getSectorNoGenerate(v2s16 p)
 	return getSectorNoGenerateNoLock(p);
 }
 
-MapBlock * Map::getBlockNoCreateNoEx(v3s16 p3d)
+MapBlock * Map::getBlockNoCreate(v3s16 p3d)
 {
 	v2s16 p2d(p3d.X, p3d.Z);
 	MapSector * sector = getSectorNoGenerate(p2d);
@@ -132,25 +132,17 @@ MapBlock * Map::getBlockNoCreateNoEx(v3s16 p3d)
 	return block;
 }
 
-MapBlock * Map::getBlockNoCreate(v3s16 p3d)
-{
-	MapBlock *block = getBlockNoCreateNoEx(p3d);
-	if(block == NULL)
-		throw InvalidPositionException();
-	return block;
-}
-
 bool Map::isNodeUnderground(v3s16 p)
 {
 	v3s16 blockpos = getNodeBlockPos(p);
-	MapBlock *block = getBlockNoCreateNoEx(blockpos);
+	MapBlock *block = getBlockNoCreate(blockpos);
 	return block && block->getIsUnderground(); 
 }
 
 bool Map::isValidPosition(v3s16 p)
 {
 	v3s16 blockpos = getNodeBlockPos(p);
-	MapBlock *block = getBlockNoCreateNoEx(blockpos);
+	MapBlock *block = getBlockNoCreate(blockpos);
 	return (block != NULL);
 }
 
@@ -158,7 +150,7 @@ bool Map::isValidPosition(v3s16 p)
 MapNode Map::getNode(v3s16 p, bool *is_valid_position)
 {
 	v3s16 blockpos = getNodeBlockPos(p);
-	MapBlock *block = getBlockNoCreateNoEx(blockpos);
+	MapBlock *block = getBlockNoCreate(blockpos);
 	if (block == NULL) {
 		if (is_valid_position != NULL)
 			*is_valid_position = false;
@@ -173,11 +165,13 @@ MapNode Map::getNode(v3s16 p, bool *is_valid_position)
 	return node;
 }
 
-// throws InvalidPositionException if not found
-void Map::setNode(v3s16 p, MapNode & n)
+// returns false if not found
+bool Map::setNodeNoEx(v3s16 p, MapNode & n)
 {
 	v3s16 blockpos = getNodeBlockPos(p);
 	MapBlock *block = getBlockNoCreate(blockpos);
+	if (!block)
+		return false;
 	v3s16 relpos = p - blockpos*MAP_BLOCKSIZE;
 	// Never allow placing CONTENT_IGNORE, it fucks up stuff
 	if(n.getContent() == CONTENT_IGNORE){
@@ -186,9 +180,17 @@ void Map::setNode(v3s16 p, MapNode & n)
 				<<" while trying to replace \""
 				<<m_nodedef->get(block->getNodeNoCheck(relpos, &temp_bool)).name
 				<<"\" at "<<PP(p)<<" (block "<<PP(blockpos)<<")"<<std::endl;
-		return;
+		return false;
 	}
 	block->setNodeNoCheck(relpos, n);
+	return true;
+}
+
+// throws InvalidPositionException if not found
+void Map::setNode(v3s16 p, MapNode & n)
+{
+	if (!setNodeNoEx(p, n))
+		throw InvalidPositionException();
 }
 
 void Map::addNodeAndUpdate(v3s16 p, MapNode n,
@@ -801,7 +803,7 @@ void Map::transformLiquids(std::map<v3s16, MapBlock*> &modified_blocks,
 		}
 
 		v3s16 blockpos = getNodeBlockPos(p0);
-		MapBlock *block = getBlockNoCreateNoEx(blockpos);
+		MapBlock *block = getBlockNoCreate(blockpos);
 		if (block != NULL) {
 			modified_blocks[blockpos] =  block;
 			changed_nodes.emplace_back(p0, n00);
@@ -900,7 +902,7 @@ std::vector<v3s16> Map::findNodesWithMetadata(v3s16 p1, v3s16 p2)
 	for (s16 x = bpmin.X; x <= bpmax.X; x++) {
 		v3s16 blockpos(x, y, z);
 
-		MapBlock *block = getBlockNoCreateNoEx(blockpos);
+		MapBlock *block = getBlockNoCreate(blockpos);
 		if (!block) {
 			verbosestream << "Map::getNodeMetadata(): Need to emerge "
 				<< PP(blockpos) << std::endl;
@@ -930,7 +932,7 @@ NodeMetadata *Map::getNodeMetadata(v3s16 p)
 {
 	v3s16 blockpos = getNodeBlockPos(p);
 	v3s16 p_rel = p - blockpos*MAP_BLOCKSIZE;
-	MapBlock *block = getBlockNoCreateNoEx(blockpos);
+	MapBlock *block = getBlockNoCreate(blockpos);
 	if(!block){
 		infostream<<"Map::getNodeMetadata(): Need to emerge "
 				<<PP(blockpos)<<std::endl;
@@ -949,7 +951,7 @@ bool Map::setNodeMetadata(v3s16 p, NodeMetadata *meta)
 {
 	v3s16 blockpos = getNodeBlockPos(p);
 	v3s16 p_rel = p - blockpos*MAP_BLOCKSIZE;
-	MapBlock *block = getBlockNoCreateNoEx(blockpos);
+	MapBlock *block = getBlockNoCreate(blockpos);
 	if(!block){
 		infostream<<"Map::setNodeMetadata(): Need to emerge "
 				<<PP(blockpos)<<std::endl;
@@ -968,7 +970,7 @@ void Map::removeNodeMetadata(v3s16 p)
 {
 	v3s16 blockpos = getNodeBlockPos(p);
 	v3s16 p_rel = p - blockpos*MAP_BLOCKSIZE;
-	MapBlock *block = getBlockNoCreateNoEx(blockpos);
+	MapBlock *block = getBlockNoCreate(blockpos);
 	if(block == NULL)
 	{
 		warningstream<<"Map::removeNodeMetadata(): Block not found"
@@ -982,7 +984,7 @@ NodeTimer Map::getNodeTimer(v3s16 p)
 {
 	v3s16 blockpos = getNodeBlockPos(p);
 	v3s16 p_rel = p - blockpos*MAP_BLOCKSIZE;
-	MapBlock *block = getBlockNoCreateNoEx(blockpos);
+	MapBlock *block = getBlockNoCreate(blockpos);
 	if(!block){
 		infostream<<"Map::getNodeTimer(): Need to emerge "
 				<<PP(blockpos)<<std::endl;
@@ -1003,7 +1005,7 @@ void Map::setNodeTimer(const NodeTimer &t)
 	v3s16 p = t.position;
 	v3s16 blockpos = getNodeBlockPos(p);
 	v3s16 p_rel = p - blockpos*MAP_BLOCKSIZE;
-	MapBlock *block = getBlockNoCreateNoEx(blockpos);
+	MapBlock *block = getBlockNoCreate(blockpos);
 	if(!block){
 		infostream<<"Map::setNodeTimer(): Need to emerge "
 				<<PP(blockpos)<<std::endl;
@@ -1022,7 +1024,7 @@ void Map::removeNodeTimer(v3s16 p)
 {
 	v3s16 blockpos = getNodeBlockPos(p);
 	v3s16 p_rel = p - blockpos*MAP_BLOCKSIZE;
-	MapBlock *block = getBlockNoCreateNoEx(blockpos);
+	MapBlock *block = getBlockNoCreate(blockpos);
 	if(block == NULL)
 	{
 		warningstream<<"Map::removeNodeTimer(): Block not found"
@@ -1376,7 +1378,7 @@ void ServerMap::finishBlockMake(BlockMakeData *data,
 	for (s16 x = bpmin.X; x <= bpmax.X; x++)
 	for (s16 z = bpmin.Z; z <= bpmax.Z; z++)
 	for (s16 y = bpmin.Y; y <= bpmax.Y; y++) {
-		MapBlock *block = getBlockNoCreateNoEx(v3s16(x, y, z));
+		MapBlock *block = getBlockNoCreate(v3s16(x, y, z));
 		if (!block)
 			continue;
 
@@ -1580,7 +1582,7 @@ MapBlock * ServerMap::createBlock(v3s16 p)
 MapBlock * ServerMap::emergeBlock(v3s16 p, bool create_blank)
 {
 	{
-		MapBlock *block = getBlockNoCreateNoEx(p);
+		MapBlock *block = getBlockNoCreate(p);
 		if (block && !block->isDummy())
 			return block;
 	}
@@ -1603,7 +1605,7 @@ MapBlock * ServerMap::emergeBlock(v3s16 p, bool create_blank)
 
 MapBlock *ServerMap::getBlockOrEmerge(v3s16 p3d)
 {
-	MapBlock *block = getBlockNoCreateNoEx(p3d);
+	MapBlock *block = getBlockNoCreate(p3d);
 	if (block == NULL)
 		m_emerge->enqueueBlockEmerge(PEER_ID_INEXISTENT, p3d, false);
 
@@ -2072,7 +2074,7 @@ void ServerMap::loadBlock(std::string *blob, v3s16 p3d, MapSector *sector, bool 
 
 MapBlock* ServerMap::loadBlock(v3s16 blockpos)
 {
-	bool created_new = (getBlockNoCreateNoEx(blockpos) == NULL);
+	bool created_new = (getBlockNoCreate(blockpos) == NULL);
 
 	v2s16 p2d(blockpos.X, blockpos.Z);
 
@@ -2121,7 +2123,7 @@ MapBlock* ServerMap::loadBlock(v3s16 blockpos)
 		loadBlock(sectordir, blockfilename, sector, true);
 	}
 
-	MapBlock *block = getBlockNoCreateNoEx(blockpos);
+	MapBlock *block = getBlockNoCreate(blockpos);
 	if (created_new && (block != NULL)) {
 		std::map<v3s16, MapBlock*> modified_blocks;
 		// Fix lighting if necessary
@@ -2145,7 +2147,7 @@ bool ServerMap::deleteBlock(v3s16 blockpos)
 	if (!dbase->deleteBlock(blockpos))
 		return false;
 
-	MapBlock *block = getBlockNoCreateNoEx(blockpos);
+	MapBlock *block = getBlockNoCreate(blockpos);
 	if (block) {
 		v2s16 p2d(blockpos.X, blockpos.Z);
 		MapSector *sector = getSectorNoGenerate(p2d);
@@ -2217,7 +2219,7 @@ void MMVManip::initialEmerge(v3s16 blockpos_min, v3s16 blockpos_max,
 		{
 			TimeTaker timer2("emerge load", &emerge_load_time);
 
-			block = m_map->getBlockNoCreateNoEx(p);
+			block = m_map->getBlockNoCreate(p);
 			if (!block || block->isDummy())
 				block_data_inexistent = true;
 			else
@@ -2272,7 +2274,7 @@ void MMVManip::blitBackAll(std::map<v3s16, MapBlock*> *modified_blocks,
 	*/
 	for (auto &loaded_block : m_loaded_blocks) {
 		v3s16 p = loaded_block.first;
-		MapBlock *block = m_map->getBlockNoCreateNoEx(p);
+		MapBlock *block = m_map->getBlockNoCreate(p);
 		bool existed = !(loaded_block.second & VMANIP_BLOCK_DATA_INEXIST);
 		if (!existed || (block == NULL) ||
 			(!overwrite_generated && block->isGenerated()))

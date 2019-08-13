@@ -887,7 +887,7 @@ void Server::AsyncRunStep(bool initial_step)
 					node_meta_updates.push_back(event->p);
 				}
 
-				if (MapBlock *block = m_env->getMap().getBlockNoCreateNoEx(
+				if (MapBlock *block = m_env->getMap().getBlockNoCreate(
 						getNodeBlockPos(event->p))) {
 					block->raiseModified(MOD_STATE_WRITE_NEEDED,
 						MOD_REASON_REPORT_META_CHANGE);
@@ -916,7 +916,7 @@ void Server::AsyncRunStep(bool initial_step)
 				std::map<v3s16, MapBlock*> modified_blocks2;
 				for (const v3s16 &modified_block : event->modified_blocks) {
 					modified_blocks2[modified_block] =
-							m_env->getMap().getBlockNoCreateNoEx(modified_block);
+							m_env->getMap().getBlockNoCreate(modified_block);
 				}
 
 				// Set blocks not sent
@@ -2293,7 +2293,7 @@ void Server::SendBlocks(float dtime)
 		if (total_sending >= max_blocks_to_send)
 			break;
 
-		MapBlock *block = map.getBlockNoCreateNoEx(block_to_send.pos);
+		MapBlock *block = map.getBlockNoCreate(block_to_send.pos);
 		if (!block)
 			continue;
 
@@ -2313,7 +2313,7 @@ void Server::SendBlocks(float dtime)
 
 bool Server::SendBlock(session_t peer_id, const v3s16 &blockpos)
 {
-	MapBlock *block = m_env->getMap().getBlockNoCreateNoEx(blockpos);
+	MapBlock *block = m_env->getMap().getBlockNoCreate(blockpos);
 	if (!block)
 		return false;
 
