@@ -2313,10 +2313,7 @@ void Server::SendBlocks(float dtime)
 
 bool Server::SendBlock(session_t peer_id, const v3s16 &blockpos)
 {
-	MapBlock *block = nullptr;
-	try {
-		block = m_env->getMap().getBlockNoCreate(blockpos);
-	} catch (InvalidPositionException &e) {};
+	MapBlock *block = m_env->getMap().getBlockNoCreateNoEx(blockpos);
 	if (!block)
 		return false;
 
