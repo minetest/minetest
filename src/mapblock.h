@@ -498,13 +498,11 @@ private:
 
 	/*
 		Used only internally, because changes can't be tracked
+		Before use check that isValidPosition(x, y. z) returns
+		"true".
 	*/
-
 	inline MapNode &getNodeRef(s16 x, s16 y, s16 z)
 	{
-		if (!isValidPosition(x, y, z))
-			throw InvalidPositionException();
-
 		return data[z * zstride + y * ystride + x];
 	}
 

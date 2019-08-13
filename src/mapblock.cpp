@@ -222,25 +222,17 @@ s16 MapBlock::getGroundLevel(v2s16 p2d)
 {
 	if(isDummy())
 		return -3;
-	try
-	{
-		s16 y = MAP_BLOCKSIZE-1;
-		for(; y>=0; y--)
-		{
-			MapNode n = getNodeRef(p2d.X, y, p2d.Y);
-			if (m_gamedef->ndef()->get(n).walkable) {
-				if(y == MAP_BLOCKSIZE-1)
-					return -2;
-
-				return y;
-			}
+	for (s16 y = MAP_BLOCKSIZE-1; y >= 0; y--) {
+		if (!isValidPosition(p2d.X, y, p2d.Y))
+			return -3;
+		MapNode n = getNodeRef(p2d.X, y, p2d.Y);
+		if (m_gamedef->ndef()->get(n).walkable) {
+			if (y == MAP_BLOCKSIZE-1)
+				return -2;
+			return y;
 		}
-		return -1;
 	}
-	catch(InvalidPositionException &e)
-	{
-		return -3;
-	}
+	return -1;
 }
 
 /*
