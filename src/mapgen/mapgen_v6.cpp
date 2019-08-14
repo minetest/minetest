@@ -773,21 +773,21 @@ void MapgenV6::addMud()
 
 void MapgenV6::flowMud(s16 &mudflow_minpos, s16 &mudflow_maxpos)
 {
-	// 340ms @cs=8
-	//TimeTaker timer1("flow mud");
-
-	// Iterate a few times
-	for (s16 k = 0; k < 3; k++) {
+	// Iterate twice
+	for (s16 k = 0; k < 2; k++) {
 		for (s16 z = mudflow_minpos; z <= mudflow_maxpos; z++)
 		for (s16 x = mudflow_minpos; x <= mudflow_maxpos; x++) {
-			// Invert coordinates every 2nd iteration
-			if (k % 2 == 0) {
-				x = mudflow_maxpos - (x - mudflow_minpos);
-				z = mudflow_maxpos - (z - mudflow_minpos);
+			// Node column position
+			v2s16 p2d;
+			// Invert coordinates on second iteration to process columns in
+			// opposite order, to avoid a directional bias.
+			if (k == 1) {
+				p2d = v2s16(node_min.X, node_min.Z) + v2s16(
+					mudflow_maxpos - (x - mudflow_minpos),
+					mudflow_maxpos - (z - mudflow_minpos));
+			} else {
+				p2d = v2s16(node_min.X, node_min.Z) + v2s16(x, z);
 			}
-
-			// Node position in 2d
-			v2s16 p2d = v2s16(node_min.X, node_min.Z) + v2s16(x, z);
 
 			const v3s16 &em = vm->m_area.getExtent();
 			u32 i = vm->m_area.index(p2d.X, node_max.Y, p2d.Y);
