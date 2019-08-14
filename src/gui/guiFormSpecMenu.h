@@ -27,7 +27,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "inventorymanager.h"
 #include "modalMenu.h"
 #include "guiTable.h"
-#include "guiScrollBar.h"
 #include "network/networkprotocol.h"
 #include "client/joystick_controller.h"
 #include "util/string.h"
@@ -462,7 +461,7 @@ private:
 	bool parseVersionDirect(const std::string &data);
 	bool parseSizeDirect(parserData* data, const std::string &element);
 	void parseScrollBar(parserData* data, const std::string &element);
-	void parseScrollBarOptions(parserData * data, const std::string &element);
+	void parseScrollBarOptions(parserData *data, const std::string &element);
 	bool parsePositionDirect(parserData *data, const std::string &element);
 	void parsePosition(parserData *data, const std::string &element);
 	bool parseAnchorDirect(parserData *data, const std::string &element);

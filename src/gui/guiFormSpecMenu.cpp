@@ -24,6 +24,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <sstream>
 #include <limits>
 #include "guiFormSpecMenu.h"
+#include "guiTable.h"
+#include "guiScrollBar.h"
 #include "constants.h"
 #include "gamedef.h"
 #include "client/keycode.h"
@@ -35,7 +37,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <IGUIStaticText.h>
 #include <IGUIFont.h>
 #include <IGUITabControl.h>
-#include "guiScrollBar.h"
 #include "client/renderingengine.h"
 #include "log.h"
 #include "client/tile.h" // ITextureSource
@@ -618,7 +619,7 @@ void GUIFormSpecMenu::parseScrollBar(parserData* data, const std::string &elemen
 		spec.ftype = f_ScrollBar;
 		spec.send  = true;
 		GUIScrollBar *e = new GUIScrollBar(Environment, this, spec.fid, rect,
-				is_horizontal, false);
+				is_horizontal, true);
 
 		auto style = getStyleForElement("scrollbar", name);
 		e->setNotClipped(style.getBool(StyleSpec::NOCLIP, false));
