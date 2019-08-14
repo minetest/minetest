@@ -26,6 +26,7 @@ local function create_world_formspec(dialogdata)
 
 	local gameidx = 0
 	if gameid ~= nil then
+		local _
 		_, gameidx = pkgmgr.find_by_gameid(gameid)
 
 		if gameidx == nil then
