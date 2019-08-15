@@ -252,13 +252,12 @@ public:
 
 	void print();
 	bool empty();
-	bool containsPacket(u16 seqnum);
 	RPBSearchResult notFound();
 	u32 size();
 
 
 private:
-	RPBSearchResult findPacket(u16 seqnum);
+	RPBSearchResult findPacket(u16 seqnum); // does not perform locking
 
 	std::list<BufferedPacket> m_list;
 
