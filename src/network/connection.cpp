@@ -417,6 +417,11 @@ SharedBuffer<u8> IncomingSplitBuffer::insert(const BufferedPacket &p, bool relia
 			<< std::endl;
 		return SharedBuffer<u8>();
 	}
+	if (chunk_num >= chunk_count) {
+		errorstream << "IncomingSplitBuffer::insert(): chunk_num=" << chunk_num
+				<< " >= chunk_count=" << chunk_count << std::endl;
+		return SharedBuffer<u8>();
+	}
 
 	// Add if doesn't exist
 	if (m_buf.find(seqnum) == m_buf.end()) {
@@ -425,10 +430,12 @@ SharedBuffer<u8> IncomingSplitBuffer::insert(const BufferedPacket &p, bool relia
 
 	IncomingSplitPacket *sp = m_buf[seqnum];
 
-	if (chunk_count != sp->chunk_count)
-		LOG(derr_con<<"Connection: WARNING: chunk_count="<<chunk_count
-				<<" != sp->chunk_count="<<sp->chunk_count
-				<<std::endl);
+	if (chunk_count != sp->chunk_count) {
+		errorstream << "IncomingSplitBuffer::insert(): chunk_count="
+				<< chunk_count << " != sp->chunk_count=" << sp->chunk_count
+				<< std::endl;
+		return SharedBuffer<u8>();
+	}
 	if (reliable != sp->reliable)
 		LOG(derr_con<<"Connection: WARNING: reliable="<<reliable
 				<<" != sp->reliable="<<sp->reliable
