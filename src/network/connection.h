@@ -121,16 +121,20 @@ struct IncomingSplitPacket
 
 	IncomingSplitPacket() = delete;
 
-	// Key is chunk number, value is data without headers
-	std::map<u16, SharedBuffer<u8>> chunks;
-	u32 chunk_count;
 	float time = 0.0f; // Seconds from adding
-	bool reliable = false; // If true, isn't deleted on timeout
+	u32 chunk_count;
+	bool reliable; // If true, isn't deleted on timeout
 
 	bool allReceived() const
 	{
 		return (chunks.size() == chunk_count);
 	}
+	bool insert(u32 chunk_num, SharedBuffer<u8> &chunkdata);
+	SharedBuffer<u8> reassemble();
+
+private:
+	// Key is chunk number, value is data without headers
+	std::map<u16, SharedBuffer<u8>> chunks;
 };
 
 /*
