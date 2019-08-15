@@ -240,7 +240,7 @@ public:
 
 	BufferedPacket popFirst();
 	BufferedPacket popSeqnum(u16 seqnum);
-	void insert(BufferedPacket &p,u16 next_expected);
+	void insert(BufferedPacket &p, u16 next_expected);
 
 	void incrementTimeouts(float dtime);
 	std::list<BufferedPacket> getTimedOuts(float timeout,
@@ -257,7 +257,6 @@ private:
 	RPBSearchResult findPacket(u16 seqnum);
 
 	std::list<BufferedPacket> m_list;
-	u32 m_list_size = 0;
 
 	u16 m_oldest_non_answered_ack;
 

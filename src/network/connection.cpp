@@ -169,6 +169,7 @@ void ReliablePacketBuffer::print()
 		index++;
 	}
 }
+
 bool ReliablePacketBuffer::empty()
 {
 	MutexAutoLock listlock(m_list_mutex);
@@ -177,7 +178,8 @@ bool ReliablePacketBuffer::empty()
 
 u32 ReliablePacketBuffer::size()
 {
-	return m_list_size;
+	MutexAutoLock listlock(m_list_mutex);
+	return m_list.size();
 }
 
 bool ReliablePacketBuffer::containsPacket(u16 seqnum)
@@ -198,17 +200,19 @@ RPBSearchResult ReliablePacketBuffer::findPacket(u16 seqnum)
 	}
 	return i;
 }
+
 RPBSearchResult ReliablePacketBuffer::notFound()
 {
 	return m_list.end();
 }
+
 bool ReliablePacketBuffer::getFirstSeqnum(u16& result)
 {
 	MutexAutoLock listlock(m_list_mutex);
 	if (m_list.empty())
 		return false;
-	BufferedPacket p = *m_list.begin();
-	result = readU16(&p.data[BASE_HEADER_SIZE+1]);
+	const BufferedPacket &p = *m_list.begin();
+	result = readU16(&p.data[BASE_HEADER_SIZE + 1]);
 	return true;
 }
 
@@ -219,16 +223,16 @@ BufferedPacket ReliablePacketBuffer::popFirst()
 		throw NotFoundException("Buffer is empty");
 	BufferedPacket p = *m_list.begin();
 	m_list.erase(m_list.begin());
-	--m_list_size;
 
-	if (m_list_size == 0) {
+	if (m_list.empty()) {
 		m_oldest_non_answered_ack = 0;
 	} else {
 		m_oldest_non_answered_ack =
-				readU16(&(*m_list.begin()).data[BASE_HEADER_SIZE+1]);
+				readU16(&m_list.begin()->data[BASE_HEADER_SIZE + 1]);
 	}
 	return p;
 }
+
 BufferedPacket ReliablePacketBuffer::popSeqnum(u16 seqnum)
 {
 	MutexAutoLock listlock(m_list_mutex);
@@ -249,15 +253,17 @@ BufferedPacket ReliablePacketBuffer::popSeqnum(u16 seqnum)
 	}
 
 	m_list.erase(r);
-	--m_list_size;
 
-	if (m_list_size == 0)
-	{ m_oldest_non_answered_ack = 0; }
-	else
-	{ m_oldest_non_answered_ack = readU16(&(*m_list.begin()).data[BASE_HEADER_SIZE+1]);	}
+	if (m_list.empty()) {
+		m_oldest_non_answered_ack = 0;
+	} else {
+		m_oldest_non_answered_ack =
+				readU16(&m_list.begin()->data[BASE_HEADER_SIZE + 1]);
+	}
 	return p;
 }
-void ReliablePacketBuffer::insert(BufferedPacket &p,u16 next_expected)
+
+void ReliablePacketBuffer::insert(BufferedPacket &p, u16 next_expected)
 {
 	MutexAutoLock listlock(m_list_mutex);
 	if (p.data.getSize() < BASE_HEADER_SIZE + 3) {
@@ -284,8 +290,7 @@ void ReliablePacketBuffer::insert(BufferedPacket &p,u16 next_expected)
 		return;
 	}
 
-	++m_list_size;
-	sanity_check(m_list_size <= SEQNUM_MAX+1);	// FIXME: Handle the error?
+	sanity_check(m_list.size() <= SEQNUM_MAX); // FIXME: Handle the error?
 
 	// Find the right place for the packet and insert it there
 	// If list is empty, just add it
@@ -324,8 +329,6 @@ void ReliablePacketBuffer::insert(BufferedPacket &p,u16 next_expected)
 	if (s == seqnum) {
 		/* nothing to do this seems to be a resent packet */
 		/* for paranoia reason data should be compared */
-		--m_list_size;
-
 		if (
 			(readU16(&(i->data[BASE_HEADER_SIZE+1])) != seqnum) ||
 			(i->data.getSize() != p.data.getSize()) ||
@@ -348,8 +351,7 @@ void ReliablePacketBuffer::insert(BufferedPacket &p,u16 next_expected)
 	/* insert or push back */
 	else if (i != m_list.end()) {
 		m_list.insert(i, p);
-	}
-	else {
+	} else {
 		m_list.push_back(p);
 	}
 
