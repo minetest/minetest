@@ -322,6 +322,10 @@ void ReliablePacketBuffer::insert(BufferedPacket &p,u16 next_expected)
 	}
 
 	if (s == seqnum) {
+		/* nothing to do this seems to be a resent packet */
+		/* for paranoia reason data should be compared */
+		--m_list_size;
+
 		if (
 			(readU16(&(i->data[BASE_HEADER_SIZE+1])) != seqnum) ||
 			(i->data.getSize() != p.data.getSize()) ||
@@ -340,10 +344,6 @@ void ReliablePacketBuffer::insert(BufferedPacket &p,u16 next_expected)
 					p.address.serializeString().c_str());
 			throw IncomingDataCorruption("duplicated packet isn't same as original one");
 		}
-
-		/* nothing to do this seems to be a resent packet */
-		/* for paranoia reason data should be compared */
-		--m_list_size;
 	}
 	/* insert or push back */
 	else if (i != m_list.end()) {
