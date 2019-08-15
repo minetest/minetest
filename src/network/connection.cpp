@@ -182,19 +182,12 @@ u32 ReliablePacketBuffer::size()
 	return m_list.size();
 }
 
-bool ReliablePacketBuffer::containsPacket(u16 seqnum)
-{
-	return !(findPacket(seqnum) == m_list.end());
-}
-
 RPBSearchResult ReliablePacketBuffer::findPacket(u16 seqnum)
 {
 	std::list<BufferedPacket>::iterator i = m_list.begin();
 	for(; i != m_list.end(); ++i)
 	{
 		u16 s = readU16(&(i->data[BASE_HEADER_SIZE+1]));
-		/*dout_con<<"findPacket(): finding seqnum="<<seqnum
-				<<", comparing to s="<<s<<std::endl;*/
 		if (s == seqnum)
 			break;
 	}
