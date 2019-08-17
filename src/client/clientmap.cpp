@@ -144,7 +144,7 @@ void ClientMap::updateDrawList()
 	// No occlusion culling when free_move is on and camera is
 	// inside ground
 	bool occlusion_culling_enabled = true;
-	if (g_settings->getBool("free_move")) {
+	if (g_settings->getBool("free_move") && g_settings->getBool("noclip")) {
 		MapNode n = getNode(cam_pos_nodes);
 		if (n.getContent() == CONTENT_IGNORE ||
 				m_nodedef->get(n).solidness == 2)
