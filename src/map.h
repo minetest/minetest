@@ -310,8 +310,8 @@ protected:
 	// This stores the properties of the nodes on the map.
 	const NodeDefManager *m_nodedef;
 
-	bool isOccluded(v3s16 p0, v3s16 p1, float step, float stepfac,
-			float start_off, float end_off, u32 needed_count);
+	bool isOccluded(v3s16 pos_origin, v3s16 pos_blockcenter, float step,
+		float stepfac, float start_offset, float end_offset, u32 needed_count);
 
 private:
 	f32 m_transforming_liquid_loop_count_multiplier = 1.0f;

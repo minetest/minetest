@@ -1032,24 +1032,23 @@ void Map::removeNodeTimer(v3s16 p)
 	block->m_node_timers.remove(p_rel);
 }
 
-bool Map::isOccluded(v3s16 p0, v3s16 p1, float step, float stepfac,
-		float start_off, float end_off, u32 needed_count)
+bool Map::isOccluded(v3s16 pos_origin, v3s16 pos_blockcenter, float step,
+	float stepfac, float offset, float end_offset, u32 needed_count)
 {
-	float d0 = (float)BS * p0.getDistanceFrom(p1);
-	v3s16 u0 = p1 - p0;
-	v3f uf = v3f(u0.X, u0.Y, u0.Z) * BS;
-	uf.normalize();
-	v3f p0f = v3f(p0.X, p0.Y, p0.Z) * BS;
+	float distance = BS * pos_origin.getDistanceFrom(pos_blockcenter);
+	v3f direction = intToFloat(pos_blockcenter - pos_origin, BS);
+	direction.normalize();
+	v3f pos_origin_f = intToFloat(pos_origin, BS);
+
 	u32 count = 0;
-	for(float s=start_off; s<d0+end_off; s+=step){
-		v3f pf = p0f + uf * s;
-		v3s16 p = floatToInt(pf, BS);
-		MapNode n = getNode(p);
-		const ContentFeatures &f = m_nodedef->get(n);
-		if(f.drawtype == NDT_NORMAL){
+	for (; offset < distance + end_offset; offset += step){
+		v3f pf = pos_origin_f + direction * offset;
+		v3s16 pos_node = floatToInt(pf, BS);
+		MapNode node = getNode(pos_node);
+		if (m_nodedef->get(node).drawtype == NDT_NORMAL) {
 			// not transparent, see ContentFeature::updateTextures
 			count++;
-			if(count >= needed_count)
+			if (count >= needed_count)
 				return true;
 		}
 		step *= stepfac;
@@ -1057,44 +1056,51 @@ bool Map::isOccluded(v3s16 p0, v3s16 p1, float step, float stepfac,
 	return false;
 }
 
-bool Map::isBlockOccluded(MapBlock *block, v3s16 cam_pos_nodes) {
-	v3s16 cpn = block->getPos() * MAP_BLOCKSIZE;
-	cpn += v3s16(MAP_BLOCKSIZE / 2, MAP_BLOCKSIZE / 2, MAP_BLOCKSIZE / 2);
+bool Map::isBlockOccluded(MapBlock *block, v3s16 cam_pos_nodes)
+{
+	static const s16 bs2 = MAP_BLOCKSIZE / 2 + 1;
+	static const v3s16 dir8[8] = {
+		v3s16( 1,  1,  1) * bs2,
+		v3s16( 1,  1, -1) * bs2,
+		v3s16( 1, -1,  1) * bs2,
+		v3s16( 1, -1, -1) * bs2,
+		v3s16(-1,  1,  1) * bs2,
+		v3s16(-1,  1, -1) * bs2,
+		v3s16(-1, -1,  1) * bs2,
+		v3s16(-1, -1, -1) * bs2,
+	};
+
+	v3s16 pos_blockcenter = block->getPos() * MAP_BLOCKSIZE;
+	pos_blockcenter += v3s16(MAP_BLOCKSIZE) / 2;
+
 	float step = BS * 1;
+	// Multiply step by each iteraction by 'stepfac' to reduce checks in distance
 	float stepfac = 1.1;
-	float startoff = BS * 1;
+
+	float start_offset = BS * 1;
 	// The occlusion search of 'isOccluded()' must stop short of the target
-	// point by distance 'endoff' (end offset) to not enter the target mapblock.
-	// For the 8 mapblock corners 'endoff' must therefore be the maximum diagonal
+	// point by distance 'end_offset' (end offset) to not enter the target mapblock.
+	// For the 8 mapblock corners 'end_offset' must therefore be the maximum diagonal
 	// of a mapblock, because we must consider all view angles.
 	// sqrt(1^2 + 1^2 + 1^2) = 1.732
-	float endoff = -BS * MAP_BLOCKSIZE * 1.732050807569;
-	s16 bs2 = MAP_BLOCKSIZE / 2 + 1;
+	float end_offset = -BS * MAP_BLOCKSIZE * 1.7321;
+
 	// to reduce the likelihood of falsely occluded blocks
 	// require at least two solid blocks
 	// this is a HACK, we should think of a more precise algorithm
 	u32 needed_count = 2;
 
-	return (
-		// For the central point of the mapblock 'endoff' can be halved
-		isOccluded(cam_pos_nodes, cpn,
-			step, stepfac, startoff, endoff / 2.0f, needed_count) &&
-		isOccluded(cam_pos_nodes, cpn + v3s16(bs2,bs2,bs2),
-			step, stepfac, startoff, endoff, needed_count) &&
-		isOccluded(cam_pos_nodes, cpn + v3s16(bs2,bs2,-bs2),
-			step, stepfac, startoff, endoff, needed_count) &&
-		isOccluded(cam_pos_nodes, cpn + v3s16(bs2,-bs2,bs2),
-			step, stepfac, startoff, endoff, needed_count) &&
-		isOccluded(cam_pos_nodes, cpn + v3s16(bs2,-bs2,-bs2),
-			step, stepfac, startoff, endoff, needed_count) &&
-		isOccluded(cam_pos_nodes, cpn + v3s16(-bs2,bs2,bs2),
-			step, stepfac, startoff, endoff, needed_count) &&
-		isOccluded(cam_pos_nodes, cpn + v3s16(-bs2,bs2,-bs2),
-			step, stepfac, startoff, endoff, needed_count) &&
-		isOccluded(cam_pos_nodes, cpn + v3s16(-bs2,-bs2,bs2),
-			step, stepfac, startoff, endoff, needed_count) &&
-		isOccluded(cam_pos_nodes, cpn + v3s16(-bs2,-bs2,-bs2),
-			step, stepfac, startoff, endoff, needed_count));
+	// For the central point of the mapblock 'end_offset' can be halved
+	if (!isOccluded(cam_pos_nodes, pos_blockcenter,
+			step, stepfac, start_offset, end_offset / 2.0f, needed_count))
+		return false;
+
+	for (const v3s16 &dir : dir8) {
+		if (!isOccluded(cam_pos_nodes, pos_blockcenter + dir,
+				step, stepfac, start_offset, end_offset, needed_count))
+			return false;
+	}
+	return true;
 }
 
 /*
