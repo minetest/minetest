@@ -55,7 +55,7 @@ public class MinetestAssetCopy extends Activity {
 	}
 	
 	@Override
-    	protected void onDestroy(){
+    	protected void onDestroy() {
 		super.onDestroy();
 		if (m_AssetCopy != null) {
 			m_AssetCopy.cancel(true);
