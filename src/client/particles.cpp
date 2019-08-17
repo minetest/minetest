@@ -101,8 +101,13 @@ Particle::Particle(
 	m_glow = glow;
 
 	// Irrlicht stuff
-	m_collisionbox = aabb3f
-			(-size/2,-size/2,-size/2,size/2,size/2,size/2);
+	m_collisionbox = aabb3f(
+		-size / 2,
+		-size / 2,
+		-size / 2,
+		 size / 2,
+		 size / 2,
+		 size / 2);
 	this->setAutomaticCulling(scene::EAC_OFF);
 
 	// Init lighting
@@ -122,7 +127,7 @@ void Particle::OnRegisterSceneNode()
 
 void Particle::render()
 {
-	video::IVideoDriver* driver = SceneManager->getVideoDriver();
+	video::IVideoDriver *driver = SceneManager->getVideoDriver();
 	driver->setMaterial(m_material);
 	driver->setTransform(video::ETS_WORLD, AbsoluteTransformation);
 
@@ -293,9 +298,9 @@ ParticleSpawner::ParticleSpawner(
 	m_animation = anim;
 	m_glow = glow;
 
-	for (u16 i = 0; i<=m_amount; i++)
+	for (u16 i = 0; i <= m_amount; i++)
 	{
-		float spawntime = (float)rand()/(float)RAND_MAX*m_spawntime;
+		float spawntime = (float)rand() / (float)RAND_MAX * m_spawntime;
 		m_spawntimes.push_back(spawntime);
 	}
 }
@@ -359,7 +364,7 @@ void ParticleSpawner::spawnParticle(ClientEnvironment *env, float radius,
 	));
 }
 
-void ParticleSpawner::step(float dtime, ClientEnvironment* env)
+void ParticleSpawner::step(float dtime, ClientEnvironment *env)
 {
 	m_time += dtime;
 
@@ -381,7 +386,7 @@ void ParticleSpawner::step(float dtime, ClientEnvironment* env)
 		for (std::vector<float>::iterator i = m_spawntimes.begin();
 				i != m_spawntimes.end();) {
 			if ((*i) <= m_time && m_amount > 0) {
-				m_amount--;
+				--m_amount;
 
 				// Pretend to, but don't actually spawn a particle if it is
 				// attached to an unloaded object or distant from player.
@@ -408,7 +413,7 @@ void ParticleSpawner::step(float dtime, ClientEnvironment* env)
 }
 
 
-ParticleManager::ParticleManager(ClientEnvironment* env) :
+ParticleManager::ParticleManager(ClientEnvironment *env) :
 	m_env(env)
 {}
 
@@ -570,7 +575,7 @@ void ParticleManager::handleParticleEvent(ClientEvent *event, Client *client,
 // The final burst of particles when a node is finally dug, *not* particles
 // spawned during the digging of a node.
 
-void ParticleManager::addDiggingParticles(IGameDef* gamedef,
+void ParticleManager::addDiggingParticles(IGameDef *gamedef,
 	LocalPlayer *player, v3s16 pos, const MapNode &n, const ContentFeatures &f)
 {
 	// No particles for "airlike" nodes
@@ -585,7 +590,7 @@ void ParticleManager::addDiggingParticles(IGameDef* gamedef,
 // During the digging of a node particles are spawned individually by this
 // function, called from Game::handleDigging() in game.cpp.
 
-void ParticleManager::addNodeParticle(IGameDef* gamedef,
+void ParticleManager::addNodeParticle(IGameDef *gamedef,
 	LocalPlayer *player, v3s16 pos, const MapNode &n, const ContentFeatures &f)
 {
 	// No particles for "airlike" nodes
@@ -637,7 +642,7 @@ void ParticleManager::addNodeParticle(IGameDef* gamedef,
 	else
 		n.getColor(f, &color);
 
-	Particle* toadd = new Particle(
+	Particle *toadd = new Particle(
 		gamedef,
 		player,
 		m_env,
@@ -660,7 +665,7 @@ void ParticleManager::addNodeParticle(IGameDef* gamedef,
 	addParticle(toadd);
 }
 
-void ParticleManager::addParticle(Particle* toadd)
+void ParticleManager::addParticle(Particle *toadd)
 {
 	MutexAutoLock lock(m_particle_list_lock);
 	m_particles.push_back(toadd);
