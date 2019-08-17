@@ -623,10 +623,10 @@ screen_h (Screen height) int 600
 #    Save window size automatically when modified.
 autosave_screensize (Autosave screen size) bool true
 
-#    Fullscreen mode.
+#    Fullscreen mode. (Ignored on Linux)
 fullscreen (Full screen) bool false
 
-#    Bits per pixel (aka color depth) in fullscreen mode.
+#    Bits per pixel (aka color depth) in fullscreen mode. (Ignored on Linux)
 fullscreen_bpp (Full screen BPP) int 24
 
 #    Vertical screen synchronization.

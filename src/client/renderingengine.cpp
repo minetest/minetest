@@ -82,13 +82,11 @@ RenderingEngine::RenderingEngine(IEventReceiver *receiver)
 	sanity_check(!s_singleton);
 
 	// Resolution selection
-	bool fullscreen = g_settings->getBool("fullscreen");
 	u16 screen_w = g_settings->getU16("screen_w");
 	u16 screen_h = g_settings->getU16("screen_h");
 
-	// bpp, fsaa, vsync
+	// fsaa, vsync
 	bool vsync = g_settings->getBool("vsync");
-	u16 bits = g_settings->getU16("fullscreen_bpp");
 	u16 fsaa = g_settings->getU16("fsaa");
 
 	// stereo buffer required for pageflip stereo
@@ -98,7 +96,7 @@ RenderingEngine::RenderingEngine(IEventReceiver *receiver)
 	video::E_DRIVER_TYPE driverType = video::EDT_OPENGL;
 	const std::string &driverstring = g_settings->get("video_driver");
 	std::vector<video::E_DRIVER_TYPE> drivers =
-			RenderingEngine::getSupportedVideoDrivers();
+		RenderingEngine::getSupportedVideoDrivers();
 	u32 i;
 	for (i = 0; i != drivers.size(); i++) {
 		if (!strcasecmp(driverstring.c_str(),
@@ -109,16 +107,23 @@ RenderingEngine::RenderingEngine(IEventReceiver *receiver)
 	}
 	if (i == drivers.size()) {
 		errorstream << "Invalid video_driver specified; "
-			       "defaulting to opengl"
-			    << std::endl;
+			"defaulting to OpenGL" << std::endl;
 	}
 
 	SIrrlichtCreationParameters params = SIrrlichtCreationParameters();
 	params.DriverType = driverType;
 	params.WindowSize = core::dimension2d<u32>(screen_w, screen_h);
-	params.Bits = bits;
 	params.AntiAlias = fsaa;
-	params.Fullscreen = fullscreen;
+
+	// Fullscreen is broken on Linux. It's recommended to use
+	// the windowing manager's borderless window option instead
+#ifdef __linux__
+	params.Fullscreen = false;
+#else
+	params.Fullscreen = g_settings->getBool("fullscreen");
+	params.Bits = g_settings->getU16("fullscreen_bpp");
+#endif
+
 	params.Stencilbuffer = false;
 	params.Stereobuffer = stereo_buffer;
 	params.Vsync = vsync;
