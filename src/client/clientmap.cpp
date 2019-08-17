@@ -151,6 +151,11 @@ void ClientMap::updateDrawList()
 			occlusion_culling_enabled = false;
 	}
 
+	// Uncomment to debug occluded blocks in the wireframe mode
+	// TODO: Include this as a flag for an extended debugging setting
+	//if (occlusion_culling_enabled && m_control.show_wireframe)
+	//    occlusion_culling_enabled = porting::getTimeS() & 1;
+
 	for (const auto &sector_it : m_sectors) {
 		MapSector *sector = sector_it.second;
 		v2s16 sp = sector->getPos();
