@@ -998,32 +998,43 @@ void Server::handleCommand_Interact(NetworkPacket *pkt)
 	verbosestream << "TOSERVER_INTERACT: action=" << (int)action << ", item="
 			<< item_i << ", pointed=" << pointed.dump() << std::endl;
 
-	RemotePlayer *player = m_env->getPlayer(pkt->getPeerId());
+	session_t peer_id = pkt->getPeerId();
+	RemotePlayer *player = m_env->getPlayer(peer_id);
 
 	if (player == NULL) {
 		errorstream << "Server::ProcessData(): Canceling: "
-				"No player for peer_id=" << pkt->getPeerId()
+				"No player for peer_id=" << peer_id
 				<< " disconnecting peer!" << std::endl;
-		DisconnectPeer(pkt->getPeerId());
+		DisconnectPeer(peer_id);
 		return;
 	}
 
 	PlayerSAO *playersao = player->getPlayerSAO();
 	if (playersao == NULL) {
 		errorstream << "Server::ProcessData(): Canceling: "
-				"No player object for peer_id=" << pkt->getPeerId()
+				"No player object for peer_id=" << peer_id
 				<< " disconnecting peer!" << std::endl;
-		DisconnectPeer(pkt->getPeerId());
+		DisconnectPeer(peer_id);
 		return;
 	}
+
+	// Get pointed to node, may be undefined
+	v3s16 p_under = pointed.node_undersurface;
+	v3s16 p_above = pointed.node_abovesurface;
+	/* Uncomment when players can place a node onto an object.
+	if (pointed.type == POINTEDTHING_OBJECT) {
+		p_under = floatToInt(pointed_object->getBasePosition(), BS);
+		p_above = p_above;
+	}
+	*/
 
 	if (playersao->isDead()) {
 		actionstream << "Server: NoCheat: " << player->getName()
 				<< " tried to interact while dead; ignoring." << std::endl;
 		if (pointed.type == POINTEDTHING_NODE) {
 			// Re-send block to revert change on client-side
-			RemoteClient *client = getClient(pkt->getPeerId());
-			v3s16 blockpos = getNodeBlockPos(pointed.node_undersurface);
+			RemoteClient *client = getClient(peer_id);
+			v3s16 blockpos = getNodeBlockPos(p_under);
 			client->SetBlockNotSent(blockpos);
 		}
 		// Call callbacks
@@ -1038,10 +1049,6 @@ void Server::handleCommand_Interact(NetworkPacket *pkt)
 	// Update wielded item
 	playersao->getPlayer()->setWieldIndex(item_i);
 
-	// Get pointed to node (undefined if not POINTEDTYPE_NODE)
-	v3s16 p_under = pointed.node_undersurface;
-	v3s16 p_above = pointed.node_abovesurface;
-
 	// Get pointed to object (NULL if not POINTEDTYPE_OBJECT)
 	ServerActiveObject *pointed_object = NULL;
 	if (pointed.type == POINTEDTHING_OBJECT) {
@@ -1054,17 +1061,6 @@ void Server::handleCommand_Interact(NetworkPacket *pkt)
 
 	}
 
-	v3f pointed_pos_under = player_pos;
-	v3f pointed_pos_above = player_pos;
-	if (pointed.type == POINTEDTHING_NODE) {
-		pointed_pos_under = intToFloat(p_under, BS);
-		pointed_pos_above = intToFloat(p_above, BS);
-	}
-	else if (pointed.type == POINTEDTHING_OBJECT) {
-		pointed_pos_under = pointed_object->getBasePosition();
-		pointed_pos_above = pointed_pos_under;
-	}
-
 	/*
 		Make sure the player is allowed to do it
 	*/
@@ -1073,15 +1069,15 @@ void Server::handleCommand_Interact(NetworkPacket *pkt)
 				pointed.dump() << " without 'interact' privilege" << std::endl;
 
 		// Re-send block to revert change on client-side
-		RemoteClient *client = getClient(pkt->getPeerId());
+		RemoteClient *client = getClient(peer_id);
 		// Digging completed -> under
 		if (action == INTERACT_DIGGING_COMPLETED) {
-			v3s16 blockpos = getNodeBlockPos(floatToInt(pointed_pos_under, BS));
+			v3s16 blockpos = getNodeBlockPos(p_under);
 			client->SetBlockNotSent(blockpos);
 		}
 		// Placement -> above
 		else if (action == INTERACT_PLACE) {
-			v3s16 blockpos = getNodeBlockPos(floatToInt(pointed_pos_above, BS));
+			v3s16 blockpos = getNodeBlockPos(p_above);
 			client->SetBlockNotSent(blockpos);
 		}
 		return;
@@ -1089,7 +1085,6 @@ void Server::handleCommand_Interact(NetworkPacket *pkt)
 
 	/*
 		Check that target is reasonably close
-		(only when digging or placing things)
 	*/
 	static thread_local const bool enable_anticheat =
 			!g_settings->getBool("disable_anticheat");
@@ -1097,12 +1092,18 @@ void Server::handleCommand_Interact(NetworkPacket *pkt)
 	if ((action == INTERACT_START_DIGGING || action == INTERACT_DIGGING_COMPLETED ||
 			action == INTERACT_PLACE || action == INTERACT_USE) &&
 			enable_anticheat && !isSingleplayer()) {
-		float d = playersao->getEyePosition().getDistanceFrom(pointed_pos_under);
+		v3f target_pos = player_pos;
+		if (pointed.type == POINTEDTHING_NODE) {
+			target_pos = intToFloat(p_under, BS);
+		} else if (pointed.type == POINTEDTHING_OBJECT) {
+			target_pos = pointed_object->getBasePosition();
+		}
+		float d = playersao->getEyePosition().getDistanceFrom(target_pos);
 
 		if (!checkInteractDistance(player, d, pointed.dump())) {
 			// Re-send block to revert change on client-side
-			RemoteClient *client = getClient(pkt->getPeerId());
-			v3s16 blockpos = getNodeBlockPos(floatToInt(pointed_pos_under, BS));
+			RemoteClient *client = getClient(peer_id);
+			v3s16 blockpos = getNodeBlockPos(p_under);
 			client->SetBlockNotSent(blockpos);
 			return;
 		}
@@ -1125,9 +1126,8 @@ void Server::handleCommand_Interact(NetworkPacket *pkt)
 			n = m_env->getMap().getNode(p_under, &pos_ok);
 			if (!pos_ok) {
 				infostream << "Server: Not punching: Node not found."
-						<< " Adding block to emerge queue."
-						<< std::endl;
-				m_emerge->enqueueBlockEmerge(pkt->getPeerId(),
+						<< " Adding block to emerge queue." << std::endl;
+				m_emerge->enqueueBlockEmerge(peer_id,
 					getNodeBlockPos(p_above), false);
 			}
 
@@ -1190,7 +1190,7 @@ void Server::handleCommand_Interact(NetworkPacket *pkt)
 				infostream << "Server: Not finishing digging: Node not found."
 						<< " Adding block to emerge queue."
 						<< std::endl;
-				m_emerge->enqueueBlockEmerge(pkt->getPeerId(),
+				m_emerge->enqueueBlockEmerge(peer_id,
 					getNodeBlockPos(p_above), false);
 			}
 
@@ -1266,16 +1266,14 @@ void Server::handleCommand_Interact(NetworkPacket *pkt)
 			if (is_valid_dig && n.getContent() != CONTENT_IGNORE)
 				m_script->node_on_dig(p_under, n, playersao);
 
-			v3s16 blockpos = getNodeBlockPos(floatToInt(pointed_pos_under, BS));
-			RemoteClient *client = getClient(pkt->getPeerId());
+			v3s16 blockpos = getNodeBlockPos(p_under);
+			RemoteClient *client = getClient(peer_id);
 			// Send unusual result (that is, node not being removed)
-			if (m_env->getMap().getNode(p_under).getContent() != CONTENT_AIR) {
+			if (m_env->getMap().getNode(p_under).getContent() != CONTENT_AIR)
 				// Re-send block to revert change on client-side
 				client->SetBlockNotSent(blockpos);
-			}
-			else {
+			else
 				client->ResendBlockIfOnWire(blockpos);
-			}
 		}
 	} // action == INTERACT_DIGGING_COMPLETED
 
@@ -1288,7 +1286,7 @@ void Server::handleCommand_Interact(NetworkPacket *pkt)
 		// Reset build time counter
 		if (pointed.type == POINTEDTHING_NODE &&
 				item.getDefinition(m_itemdef).type == ITEM_NODE)
-			getClient(pkt->getPeerId())->m_time_from_building = 0.0;
+			getClient(peer_id)->m_time_from_building = 0.0;
 
 		if (pointed.type == POINTEDTHING_OBJECT) {
 			// Right click object
@@ -1303,33 +1301,27 @@ void Server::handleCommand_Interact(NetworkPacket *pkt)
 
 			// Do stuff
 			pointed_object->rightClick(playersao);
-		}
-		else if (m_script->item_OnPlace(
-				item, playersao, pointed)) {
+		} else if (m_script->item_OnPlace(item, playersao, pointed)) {
 			// Placement was handled in lua
 
 			// Apply returned ItemStack
-			if (playersao->setWieldedItem(item)) {
+			if (playersao->setWieldedItem(item))
 				SendInventory(playersao);
-			}
 		}
 
 		// If item has node placement prediction, always send the
 		// blocks to make sure the client knows what exactly happened
-		RemoteClient *client = getClient(pkt->getPeerId());
-		v3s16 blockpos = getNodeBlockPos(floatToInt(pointed_pos_above, BS));
-		v3s16 blockpos2 = getNodeBlockPos(floatToInt(pointed_pos_under, BS));
+		RemoteClient *client = getClient(peer_id);
+		v3s16 blockpos = getNodeBlockPos(p_above);
+		v3s16 blockpos2 = getNodeBlockPos(p_under);
 		if (!item.getDefinition(m_itemdef).node_placement_prediction.empty()) {
 			client->SetBlockNotSent(blockpos);
-			if (blockpos2 != blockpos) {
+			if (blockpos2 != blockpos)
 				client->SetBlockNotSent(blockpos2);
-			}
-		}
-		else {
+		} else {
 			client->ResendBlockIfOnWire(blockpos);
-			if (blockpos2 != blockpos) {
+			if (blockpos2 != blockpos)
 				client->ResendBlockIfOnWire(blockpos2);
-			}
 		}
 	} // action == INTERACT_PLACE
 
@@ -1342,12 +1334,10 @@ void Server::handleCommand_Interact(NetworkPacket *pkt)
 		actionstream << player->getName() << " uses " << item.name
 				<< ", pointing at " << pointed.dump() << std::endl;
 
-		if (m_script->item_OnUse(
-				item, playersao, pointed)) {
+		if (m_script->item_OnUse(item, playersao, pointed)) {
 			// Apply returned ItemStack
-			if (playersao->setWieldedItem(item)) {
+			if (playersao->setWieldedItem(item))
 				SendInventory(playersao);
-			}
 		}
 
 	} // action == INTERACT_USE
@@ -1361,11 +1351,9 @@ void Server::handleCommand_Interact(NetworkPacket *pkt)
 		actionstream << player->getName() << " activates "
 				<< item.name << std::endl;
 
-		if (m_script->item_OnSecondaryUse(
-				item, playersao)) {
-			if( playersao->setWieldedItem(item)) {
+		if (m_script->item_OnSecondaryUse(item, playersao)) {
+			if (playersao->setWieldedItem(item))
 				SendInventory(playersao);
-			}
 		}
 	} // action == INTERACT_ACTIVATE
 
@@ -1374,8 +1362,7 @@ void Server::handleCommand_Interact(NetworkPacket *pkt)
 		Catch invalid actions
 	*/
 	else {
-		warningstream << "Server: Invalid action "
-				<< action << std::endl;
+		warningstream << "Server: Invalid action " << action << std::endl;
 	}
 }
 
