@@ -28,7 +28,13 @@ If you have any difficulty in understanding this, please read
 Startup
 -------
 Mods are loaded during client startup from the mod load paths by running
-the `init.lua` scripts in a shared environment.
+the `init.lua` scripts in a shared environment given 2 conditions :
+
+ 1) $path_user/minetest.conf contains "enable_client_modding = true" to allow starting client lua api
+ 
+ 2) for a mod eg called test_client sitting in $path_user/clientmods/test_client that
+$path_user/clientmods/mods.conf contains "load_mod_test_client = true" to allow selective
+module loading.
 
 Paths
 -----
