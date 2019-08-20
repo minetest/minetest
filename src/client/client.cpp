@@ -1249,7 +1249,7 @@ void Client::sendPlayerPos()
 	if (myplayer->isDead())
 		return;
 
-	if (myplayer->last_position        == myplayer->getPosition() &&
+	if (myplayer->last_position == myplayer->getPosition() &&
 			myplayer->last_speed        == myplayer->getSpeed()    &&
 			myplayer->last_pitch        == myplayer->getPitch()    &&
 			myplayer->last_yaw          == myplayer->getYaw()      &&
