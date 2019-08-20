@@ -3,7 +3,7 @@ Minetest Lua Modding API Reference
 
 * More information at <http://www.minetest.net/>
 * Developer Wiki: <http://dev.minetest.net/>
-* rubenwardy's "Minetest Modding Book": <https://rubenwardy.com/minetest_modding_book/en/index.html>
+* (Unofficial) Minetest Modding Book by rubenwardy: <https://rubenwardy.com/minetest_modding_book/>
 
 Introduction
 ------------
