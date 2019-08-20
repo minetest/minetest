@@ -252,7 +252,7 @@ msgstr "No tienes juegos instalados."
 
 #: builtin/mainmenu/dlg_delete_content.lua
 msgid "Are you sure you want to delete \"$1\"?"
-msgstr "¿Realmente desea borrar \"$1\"?"
+msgstr "¿Seguro que desea borrar \"$1\"?"
 
 #: builtin/mainmenu/dlg_delete_content.lua
 #: builtin/mainmenu/dlg_delete_world.lua builtin/mainmenu/tab_local.lua
@@ -366,7 +366,7 @@ msgstr "El valor debe ser mayor o igual que $1."
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "The value must not be larger than $1."
-msgstr "El valor no debe ser mayor que $1."
+msgstr "El valor no debe ser mayor a $1."
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "X"
@@ -622,7 +622,7 @@ msgstr "Ping"
 
 #: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
 msgid "PvP enabled"
-msgstr "PvP activado"
+msgstr "JvJ activado"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "2x"
@@ -643,7 +643,7 @@ msgstr "8x"
 #: builtin/mainmenu/tab_settings.lua
 #, fuzzy
 msgid "All Settings"
-msgstr "Ver toda la config."
+msgstr "Todos los ajustes"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Antialiasing:"
