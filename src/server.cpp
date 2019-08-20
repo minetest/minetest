@@ -2571,6 +2571,9 @@ void Server::sendDetachedInventory(const std::string &name, session_t peer_id)
 			player_it->second.empty()) {
 		// OK. Send to everyone
 	} else {
+		if (!m_env)
+			return; // Mods are not done loading
+
 		RemotePlayer *p = m_env->getPlayer(player_it->second.c_str());
 		if (!p)
 			return; // Player is offline
@@ -3366,7 +3369,9 @@ Inventory* Server::createDetachedInventory(const std::string &name, const std::s
 	Inventory *inv = new Inventory(m_itemdef);
 	sanity_check(inv);
 	m_detached_inventories[name] = inv;
-	m_detached_inventories_player[name] = player;
+	if (!player.empty())
+		m_detached_inventories_player[name] = player;
+
 	//TODO find a better way to do this
 	sendDetachedInventory(name,PEER_ID_INEXISTENT);
 	return inv;
@@ -3380,6 +3385,9 @@ bool Server::removeDetachedInventory(const std::string &name)
 
 	delete inv_it->second;
 	m_detached_inventories.erase(inv_it);
+
+	if (!m_env) // Mods are not done loading
+		return true;
 
 	const auto &player_it = m_detached_inventories_player.find(name);
 	if (player_it != m_detached_inventories_player.end()) {
