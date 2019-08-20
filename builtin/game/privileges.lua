@@ -28,6 +28,15 @@ function core.register_privilege(name, param)
 	core.registered_privileges[name] = def
 end
 
+function core.override_privilege(name, redefinition)
+	local privilege = core.registered_privileges[name]
+	assert(privilege, "Attempt to override non-existent privilege "..name)
+	for k, v in pairs(redefinition) do
+		rawset(privilege, k, v)
+	end
+	core.registered_privileges[name] = privilege
+end
+
 core.register_privilege("interact", "Can interact with things and modify the world")
 core.register_privilege("shout", "Can speak in chat")
 core.register_privilege("basic_privs", "Can modify 'shout' and 'interact' privileges")
