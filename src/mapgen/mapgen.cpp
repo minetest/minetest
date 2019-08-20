@@ -51,6 +51,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mapgen_singlenode.h"
 #include "cavegen.h"
 #include "dungeongen.h"
+#include "util/directiontables.h"
 
 FlagDesc flagdesc_mapgen[] = {
 	{"caves",       MG_CAVES},
@@ -437,42 +438,54 @@ void Mapgen::setLighting(u8 light, v3s16 nmin, v3s16 nmax)
 
 void Mapgen::lightSpread(VoxelArea &a, v3s16 p, u8 light)
 {
-	if (light <= 1 || !a.contains(p))
-		return;
+	std::deque<std::pair<v3s16, u8>> queue;
+	queue.emplace_back(std::make_pair(p, light));
 
-	u32 vi = vm->m_area.index(p);
-	MapNode &n = vm->m_data[vi];
+	/*
+		The loop contains a recursive algorithm, but the wrapping
+		code runs it iteratively so we don't hit stack limits.
+	*/
+	while (!queue.empty()) {
+		{
+			auto &item = queue.front();
+			p = item.first;
+			light = item.second;
+		}
+		queue.pop_front();
 
-	// Decay light in each of the banks separately
-	u8 light_day = light & 0x0F;
-	if (light_day > 0)
-		light_day -= 0x01;
+		if (light <= 1 || !a.contains(p))
+			continue;
 
-	u8 light_night = light & 0xF0;
-	if (light_night > 0)
-		light_night -= 0x10;
+		u32 vi = vm->m_area.index(p);
+		MapNode &n = vm->m_data[vi];
 
-	// Bail out only if we have no more light from either bank to propogate, or
-	// we hit a solid block that light cannot pass through.
-	if ((light_day  <= (n.param1 & 0x0F) &&
-		light_night <= (n.param1 & 0xF0)) ||
-		!ndef->get(n).light_propagates)
-		return;
+		// Decay light in each of the banks separately
+		u8 light_day = light & 0x0F;
+		if (light_day > 0)
+			light_day -= 0x01;
 
-	// Since this recursive function only terminates when there is no light from
-	// either bank left, we need to take the max of both banks into account for
-	// the case where spreading has stopped for one light bank but not the other.
-	light = MYMAX(light_day, n.param1 & 0x0F) |
-			MYMAX(light_night, n.param1 & 0xF0);
+		u8 light_night = light & 0xF0;
+		if (light_night > 0)
+			light_night -= 0x10;
 
-	n.param1 = light;
+		// Bail out only if we have no more light from either bank to propogate, or
+		// we hit a solid block that light cannot pass through.
+		if ((light_day <= (n.param1 & 0x0F) &&
+				light_night <= (n.param1 & 0xF0)) ||
+				!ndef->get(n).light_propagates)
+			continue;
 
-	lightSpread(a, p + v3s16(0, 0, 1), light);
-	lightSpread(a, p + v3s16(0, 1, 0), light);
-	lightSpread(a, p + v3s16(1, 0, 0), light);
-	lightSpread(a, p - v3s16(0, 0, 1), light);
-	lightSpread(a, p - v3s16(0, 1, 0), light);
-	lightSpread(a, p - v3s16(1, 0, 0), light);
+		// Since this recursive algorithm only terminates when there is no light from
+		// either bank left, we need to take the max of both banks into account for
+		// the case where spreading has stopped for one light bank but not the other.
+		light = MYMAX(light_day, n.param1 & 0x0F) |
+				MYMAX(light_night, n.param1 & 0xF0);
+
+		n.param1 = light;
+
+		for (const auto &dir : g_6dirs)
+			queue.emplace_back(std::make_pair(p + dir, light));
+	 }
 }
 
 
