@@ -3900,6 +3900,8 @@ Call these functions only at load time!
       by default.
     * To allow players with `basic_privs` to grant, see the `basic_privs`
       minetest.conf setting.
+* `minetest.override_privilege(name, redefinition)`
+    * Overrides fields of a privilege registered with `register_privilege`.      
 * `minetest.register_authentication_handler(authentication handler definition)`
     * Registers an auth handler that overrides the builtin one.
     * This function can be called by a single mod once only.
