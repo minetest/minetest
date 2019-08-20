@@ -30,7 +30,7 @@ end
 
 function core.override_privilege(name, redefinition)
 	local privilege = core.registered_privileges[name]
-	assert(privilege, "Attempt to override non-existent privilege "..name)
+	error(privilege, "Attempt to override non-existent privilege " .. name, 2)
 	for k, v in pairs(redefinition) do
 		rawset(privilege, k, v)
 	end
