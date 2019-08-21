@@ -435,7 +435,8 @@ void Mapgen::setLighting(u8 light, v3s16 nmin, v3s16 nmax)
 }
 
 
-void Mapgen::lightSpread(VoxelArea &a, v3s16 p, u8 light)
+void Mapgen::lightSpread(VoxelArea &a, std::queue<std::pair<v3s16, u8>> &queue,
+	v3s16 p, u8 light)
 {
 	if (light <= 1 || !a.contains(p))
 		return;
@@ -455,8 +456,8 @@ void Mapgen::lightSpread(VoxelArea &a, v3s16 p, u8 light)
 	// Bail out only if we have no more light from either bank to propogate, or
 	// we hit a solid block that light cannot pass through.
 	if ((light_day  <= (n.param1 & 0x0F) &&
-		light_night <= (n.param1 & 0xF0)) ||
-		!ndef->get(n).light_propagates)
+			light_night <= (n.param1 & 0xF0)) ||
+			!ndef->get(n).light_propagates)
 		return;
 
 	// Since this recursive function only terminates when there is no light from
@@ -467,12 +468,12 @@ void Mapgen::lightSpread(VoxelArea &a, v3s16 p, u8 light)
 
 	n.param1 = light;
 
-	lightSpread(a, p + v3s16(0, 0, 1), light);
-	lightSpread(a, p + v3s16(0, 1, 0), light);
-	lightSpread(a, p + v3s16(1, 0, 0), light);
-	lightSpread(a, p - v3s16(0, 0, 1), light);
-	lightSpread(a, p - v3s16(0, 1, 0), light);
-	lightSpread(a, p - v3s16(1, 0, 0), light);
+	queue.emplace(p + v3s16(0, 0, 1), light);
+	queue.emplace(p + v3s16(0, 1, 0), light);
+	queue.emplace(p + v3s16(1, 0, 0), light);
+	queue.emplace(p - v3s16(0, 0, 1), light);
+	queue.emplace(p - v3s16(0, 1, 0), light);
+	queue.emplace(p - v3s16(1, 0, 0), light);
 }
 
 
@@ -527,7 +528,8 @@ void Mapgen::propagateSunlight(v3s16 nmin, v3s16 nmax, bool propagate_shadow)
 
 void Mapgen::spreadLight(v3s16 nmin, v3s16 nmax)
 {
-	//TimeTaker t("spreadLight");
+	TimeTaker t("spreadLight");
+	std::queue<std::pair<v3s16, u8>> queue;
 	VoxelArea a(nmin, nmax);
 
 	for (int z = a.MinEdge.Z; z <= a.MaxEdge.Z; z++) {
@@ -551,18 +553,24 @@ void Mapgen::spreadLight(v3s16 nmin, v3s16 nmax)
 
 				u8 light = n.param1;
 				if (light) {
-					lightSpread(a, v3s16(x,     y,     z + 1), light);
-					lightSpread(a, v3s16(x,     y + 1, z    ), light);
-					lightSpread(a, v3s16(x + 1, y,     z    ), light);
-					lightSpread(a, v3s16(x,     y,     z - 1), light);
-					lightSpread(a, v3s16(x,     y - 1, z    ), light);
-					lightSpread(a, v3s16(x - 1, y,     z    ), light);
+					lightSpread(a, queue, v3s16(x,     y,     z + 1), light);
+					lightSpread(a, queue, v3s16(x,     y + 1, z    ), light);
+					lightSpread(a, queue, v3s16(x + 1, y,     z    ), light);
+					lightSpread(a, queue, v3s16(x,     y,     z - 1), light);
+					lightSpread(a, queue, v3s16(x,     y - 1, z    ), light);
+					lightSpread(a, queue, v3s16(x - 1, y,     z    ), light);
 				}
 			}
 		}
 	}
 
-	//printf("spreadLight: %dms\n", t.stop());
+	while (!queue.empty()) {
+		auto &i = queue.front();
+		lightSpread(a, queue, i.first, i.second);
+		queue.pop();
+	}
+
+	printf("spreadLight: %lums\n", t.stop());
 }
 
 
@@ -877,7 +885,7 @@ void MapgenBasic::generateDungeons(s16 max_stone_y)
 		return;
 
 	PseudoRandom ps(blockseed + 70033);
-	
+
 	DungeonParams dp;
 
 	dp.np_alt_wall =
