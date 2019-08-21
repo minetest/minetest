@@ -278,7 +278,7 @@ private:
 	/** do preprocessing for cloud subsystem */
 	void cloudPreProcess();
 	/** do postprocessing for cloud subsystem */
-	void cloudPostProcess();
+	void cloudPostProcess(u32 frametime_min, IrrlichtDevice *device);
 
 	/** internam data required for drawing clouds */
 	struct clouddata {
