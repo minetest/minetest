@@ -149,7 +149,7 @@ public:
 
 	bool getAutojump() const { return m_autojump; }
 
-	bool isDead() const { return hp <= 0; }
+	bool isDead() const;
 
 	inline void addVelocity(const v3f &vel)
 	{
