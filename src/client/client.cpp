@@ -1234,42 +1234,41 @@ void Client::sendReady()
 
 void Client::sendPlayerPos()
 {
-	LocalPlayer *myplayer = m_env.getLocalPlayer();
-	if (!myplayer)
+	LocalPlayer *player = m_env.getLocalPlayer();
+	if (!player)
 		return;
 
 	ClientMap &map = m_env.getClientMap();
-
-	u8 camera_fov    = map.getCameraFov();
-	u8 wanted_range  = map.getControl().wanted_range;
+	u8 camera_fov   = map.getCameraFov();
+	u8 wanted_range = map.getControl().wanted_range;
 
 	// Save bandwidth by only updating position when
 	// player is not dead and something changed
 
-	if (m_activeobjects_received && myplayer->isDead())
+	if (m_activeobjects_received && player->isDead())
 		return;
 
 	if (
-			myplayer->last_position     == myplayer->getPosition() &&
-			myplayer->last_speed        == myplayer->getSpeed()    &&
-			myplayer->last_pitch        == myplayer->getPitch()    &&
-			myplayer->last_yaw          == myplayer->getYaw()      &&
-			myplayer->last_keyPressed   == myplayer->keyPressed    &&
-			myplayer->last_camera_fov   == camera_fov              &&
-			myplayer->last_wanted_range == wanted_range)
+			player->last_position     == player->getPosition() &&
+			player->last_speed        == player->getSpeed()    &&
+			player->last_pitch        == player->getPitch()    &&
+			player->last_yaw          == player->getYaw()      &&
+			player->last_keyPressed   == player->keyPressed    &&
+			player->last_camera_fov   == camera_fov              &&
+			player->last_wanted_range == wanted_range)
 		return;
 
-	myplayer->last_position     = myplayer->getPosition();
-	myplayer->last_speed        = myplayer->getSpeed();
-	myplayer->last_pitch        = myplayer->getPitch();
-	myplayer->last_yaw          = myplayer->getYaw();
-	myplayer->last_keyPressed   = myplayer->keyPressed;
-	myplayer->last_camera_fov   = camera_fov;
-	myplayer->last_wanted_range = wanted_range;
+	player->last_position     = player->getPosition();
+	player->last_speed        = player->getSpeed();
+	player->last_pitch        = player->getPitch();
+	player->last_yaw          = player->getYaw();
+	player->last_keyPressed   = player->keyPressed;
+	player->last_camera_fov   = camera_fov;
+	player->last_wanted_range = wanted_range;
 
 	NetworkPacket pkt(TOSERVER_PLAYERPOS, 12 + 12 + 4 + 4 + 4 + 1 + 1);
 
-	writePlayerPos(myplayer, &map, &pkt);
+	writePlayerPos(player, &map, &pkt);
 
 	Send(&pkt);
 }
