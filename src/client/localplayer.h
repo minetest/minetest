@@ -158,13 +158,13 @@ public:
 
 private:
 	void accelerate(const v3f &target_speed, const f32 max_increase_H,
-			const f32 max_increase_V, const bool use_pitch);
+		const f32 max_increase_V, const bool use_pitch);
 	bool updateSneakNode(Map *map, const v3f &position, const v3f &sneak_max);
 	float getSlipFactor(Environment *env, const v3f &speedH);
 	void handleAutojump(f32 dtime, Environment *env,
-			const collisionMoveResult &result,
-			const v3f &position_before_move, const v3f &speed_before_move,
-			f32 pos_max_d);
+		const collisionMoveResult &result,
+		const v3f &position_before_move, const v3f &speed_before_move,
+		f32 pos_max_d);
 
 	v3f m_position;
 	v3s16 m_standing_node;
@@ -196,12 +196,14 @@ private:
 	f32 m_pitch = 0.0f;
 	bool camera_barely_in_ceiling = false;
 	aabb3f m_collisionbox = aabb3f(-BS * 0.30f, 0.0f, -BS * 0.30f, BS * 0.30f,
-			BS * 1.75f, BS * 0.30f);
+		BS * 1.75f, BS * 0.30f);
 	float m_eye_height = 1.625f;
 	float m_zoom_fov = 0.0f;
 	bool m_autojump = false;
 	float m_autojump_time = 0.0f;
-	v3f added_velocity = v3f(0.0f, 0.0f, 0.0f); // cleared on each move()
+
+	v3f added_velocity = v3f(0.0f); // cleared on each move()
+	// TODO: Rename to adhere to convention: added_velocity --> m_added_velocity
 
 	GenericCAO *m_cao = nullptr;
 	Client *m_client;
