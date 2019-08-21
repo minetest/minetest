@@ -61,6 +61,10 @@ class ServerScripting;
 class ServerEnvironment;
 struct SimpleSoundSpec;
 struct CloudParams;
+struct SkyboxParams;
+struct SunParams;
+struct MoonParams;
+struct StarParams;
 class ServerThread;
 class ServerModManager;
 
@@ -307,9 +311,11 @@ public:
 			f32 frame_speed);
 	void setPlayerEyeOffset(RemotePlayer *player, const v3f &first, const v3f &third);
 
-	void setSky(RemotePlayer *player, const video::SColor &bgcolor,
-			const std::string &type, const std::vector<std::string> &params,
-			bool &clouds);
+	void setSky(RemotePlayer *player, const SkyboxParams &params);
+	void setSun(RemotePlayer *player, const SunParams &params);
+	void setMoon(RemotePlayer *player, const MoonParams &params);
+	void setStars(RemotePlayer *player, const StarParams &params);
+
 	void setClouds(RemotePlayer *player, const CloudParams &params);
 
 	bool overrideDayNightRatio(RemotePlayer *player, bool do_override, float brightness);
@@ -413,9 +419,10 @@ private:
 	void SendHUDChange(session_t peer_id, u32 id, HudElementStat stat, void *value);
 	void SendHUDSetFlags(session_t peer_id, u32 flags, u32 mask);
 	void SendHUDSetParam(session_t peer_id, u16 param, const std::string &value);
-	void SendSetSky(session_t peer_id, const video::SColor &bgcolor,
-			const std::string &type, const std::vector<std::string> &params,
-			bool &clouds);
+	void SendSetSky(session_t peer_id, const SkyboxParams &params);
+	void SendSetSun(session_t peer_id, const SunParams &params);
+	void SendSetMoon(session_t peer_id, const MoonParams &params);
+	void SendSetStars(session_t peer_id, const StarParams &params);
 	void SendCloudParams(session_t peer_id, const CloudParams &params);
 	void SendOverrideDayNightRatio(session_t peer_id, bool do_override, float ratio);
 	void broadcastModChannelMessage(const std::string &channel,

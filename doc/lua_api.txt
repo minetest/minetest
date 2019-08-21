@@ -5964,15 +5964,82 @@ object you are working with still exists.
 * `hud_set_hotbar_selected_image(texturename)`
     * sets image for selected item of hotbar
 * `hud_get_hotbar_selected_image`: returns texturename
-* `set_sky(bgcolor, type, {texture names}, clouds)`
-    * `bgcolor`: ColorSpec, defaults to white
-    * `type`: Available types:
-        * `"regular"`: Uses 0 textures, `bgcolor` ignored
-        * `"skybox"`: Uses 6 textures, `bgcolor` used
-        * `"plain"`: Uses 0 textures, `bgcolor` used
-    * `clouds`: Boolean for whether clouds appear in front of `"skybox"` or
-      `"plain"` custom skyboxes (default: `true`)
-* `get_sky()`: returns bgcolor, type, table of textures, clouds
+* `set_sky(parameters)`
+    * `parameters` is a table with the following optional fields:
+        * `base_color`: ColorSpec, changes fog in "skybox" and "plain".
+        * `type`: Available types:
+            * `"regular"`: Uses 0 textures, `base_color` ignored
+            * `"skybox"`: Uses 6 textures, `base_color` used as fog.
+            * `"plain"`: Uses 0 textures, `base_color` used as both fog and sky.
+        * `textures`: A table containing up to six textures in the following
+            order: Y+ (top), Y- (bottom), X- (west), X+ (east), Z+ (north), Z- (south).
+        * `clouds`: Boolean for whether clouds appear. (default: `true`)
+        * `sky_color`: A table containing the following values, alpha is ignored:
+            * `day_sky`: ColorSpec, for the top half of the `"regular"`
+              skybox during the day. (default: `#8cbafa`)
+            * `day_horizon`: ColorSpec, for the bottom half of the 
+              `"regular"` skybox during the day. (default: `#9bc1f0`)
+            * `dawn_sky`: ColorSpec, for the top half of the `"regular"`
+              skybox during dawn/sunset. (default: `#b4bafa`)
+            * `dawn_horizon`: ColorSpec, for the bottom half of the `"regular"`
+              skybox during dawn/sunset. (default: `#bac1f0`)
+            * `night_sky`: ColorSpec, for the top half of the `"regular"`
+              skybox during the night. (default: `#006aff`)
+            * `night_horizon`: ColorSpec, for the bottom half of the `"regular"`
+              skybox during the night. (default: `#4090ff`)
+            * `indoors`: ColorSpec, for when you're either indoors or 
+              underground. Only applies to the `"regular"` skybox.
+              (default: `#646464`)
+            * `fog_sun_tint`: ColorSpec, changes the fog tinting for the sun
+              at sunrise and sunset.
+            * `fog_moon_tint`: ColorSpec, changes the fog tinting for the moon
+              at sunrise and sunset.
+            * `fog_tint_type`: string, changes which mode the directional fog
+                abides by, `"custom"` uses `sun_tint` and `moon_tint`, while
+                `"default"` uses the classic Minetest sun and moon tinting.
+                Will use tonemaps, if set to `"default"`. (default: `"default"`)
+* `get_sky()`: returns base_color, type, table of textures, clouds.
+* `get_sky_color()`: returns a table with the `sky_color` parameters as in
+    `set_sky`.
+* `set_sun(parameters)`:
+    * `parameters` is a table with the following optional fields:
+        * `visible`: Boolean for whether the sun is visible.
+            (default: `true`)
+        * `texture`: A regular texture for the sun. Setting to `""`
+            will re-enable the mesh sun. (default: `"sun.png"`)
+        * `tonemap`: A 512x1 texture containing the tonemap for the sun
+            (default: `"sun_tonemap.png"`)
+        * `sunrise`: A regular texture for the sunrise texture.
+            (default: `"sunrisebg.png"`)
+        * `sunrise_visible`: Boolean for whether the sunrise texture is visible.
+            (default: `true`)
+        * `scale`: Float controlling the overall size of the sun. (default: `1`)
+* `get_sun()`: returns a table with the current sun parameters as in
+    `set_sun`.
+* `set_moon(parameters)`:
+    * `parameters` is a table with the following optional fields:
+        * `visible`: Boolean for whether the moon is visible.
+            (default: `true`)
+        * `texture`: A regular texture for the moon. Setting to `""`
+            will re-enable the mesh moon. (default: `"moon.png"`)
+        * `tonemap`: A 512x1 texture containing the tonemap for the moon
+            (default: `"moon_tonemap.png"`)
+        * `scale`: Float controlling the overall size of the moon (default: `1`)
+* `get_moon()`: returns a table with the current moon parameters as in
+    `set_moon`.
+* `set_stars(parameters)`:
+    * `parameters` is a table with the following optional fields:
+        * `visible`: Boolean for whether the stars are visible.
+            (default: `true`)
+        * `count`: Integer number to set the number of stars in 
+            the skybox. Only applies to `"skybox"` and `"regular"` skyboxes.
+            (default: `1000`)
+        * `star_color`: ColorSpec, sets the colors of the stars,
+            alpha channel is used to set overall star brightness.
+            (default: `#ebebff69`)
+        * `size`: Float controlling the overall size of the stars (default: `1`)
+* `get_stars()`: returns a table with the current stars parameters as in
+    `set_stars`.
 * `set_clouds(parameters)`: set cloud parameters
     * `parameters` is a table with the following optional fields:
         * `density`: from `0` (no clouds) to `1` (full clouds) (default `0.4`)
