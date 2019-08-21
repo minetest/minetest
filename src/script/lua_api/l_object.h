@@ -324,6 +324,24 @@ private:
 	// get_sky(self)
 	static int l_get_sky(lua_State *L);
 
+	// set_sun(self, {visible, texture=, tonemap=, sunrise=, rotation=, scale=})
+	static int l_set_sun(lua_State *L);
+
+	// get_sun(self)
+	static int l_get_sun(lua_State *L);
+
+	// set_moon(self, {visible, texture=, tonemap=, rotation, scale=})
+	static int l_set_moon(lua_State *L);
+
+	// get_moon(self)
+	static int l_get_moon(lua_State *L);
+
+	// set_stars(self, {visible, count=, starcolor=, rotation, scale=})	
+	static int l_set_stars(lua_State *L);
+
+	// get_stars(self)
+	static int l_get_stars(lua_State *L);
+
 	// set_clouds(self, {density=, color=, ambient=, height=, thickness=, speed=})
 	static int l_set_clouds(lua_State *L);
 

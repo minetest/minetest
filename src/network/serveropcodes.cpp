@@ -203,9 +203,9 @@ const ClientCommandFactory clientCommandFactoryTable[TOCLIENT_NUM_MSG_TYPES] =
 	{ "TOCLIENT_MODCHANNEL_MSG",           0, true }, // 0x57
 	{ "TOCLIENT_MODCHANNEL_SIGNAL",        0, true }, // 0x58
 	{ "TOCLIENT_NODEMETA_CHANGED",         0, true }, // 0x59
-	null_command_factory,
-	null_command_factory,
-	null_command_factory,
+	{ "TOCLIENT_SET_SUN",                  0, true }, // 0x5a
+	{ "TOCLIENT_SET_MOON",                 0, true }, // 0x5b
+	{ "TOCLIENT_SET_STARS",                0, true }, // 0x5c
 	null_command_factory,
 	null_command_factory,
 	null_command_factory,

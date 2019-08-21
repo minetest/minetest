@@ -1221,28 +1221,128 @@ void Client::handleCommand_HudSetParam(NetworkPacket* pkt)
 
 void Client::handleCommand_HudSetSky(NetworkPacket* pkt)
 {
-	std::string datastring(pkt->getString(0), pkt->getSize());
-	std::istringstream is(datastring, std::ios_base::binary);
+	video::SColor bgcolor;
+	std::string type;
+	bool clouds;
+	u16 texture_count;
+	std::vector<std::string> params;
+	std::string texture;
+	
+	video::SColor day_sky;
+	video::SColor day_horizon;
+	video::SColor dawn_sky;
+	video::SColor dawn_horizon;
+	video::SColor night_sky;
+	video::SColor night_horizon;
+	video::SColor indoors;
+	video::SColor sun_tint;
+	video::SColor moon_tint;
+	std::string tint_type;
 
-	video::SColor *bgcolor           = new video::SColor(readARGB8(is));
-	std::string *type                = new std::string(deSerializeString(is));
-	u16 count                        = readU16(is);
-	std::vector<std::string> *params = new std::vector<std::string>;
+	*pkt >> bgcolor >> type >> clouds;
 
-	for (size_t i = 0; i < count; i++)
-		params->push_back(deSerializeString(is));
+	if (type == "skybox") {
+		*pkt >> texture_count;
 
-	bool clouds = true;
-	try {
-		clouds = readU8(is);
-	} catch (...) {}
+		for (int i = 0; i < texture_count; i++) {
+			*pkt >> texture;
+			params.emplace_back(texture);
+		}
+	} else if (type == "regular") {
+		*pkt >> day_sky >> day_horizon
+			>> dawn_sky >> dawn_horizon
+			>> night_sky >> night_horizon
+			>> indoors;
+	}
+	
+	*pkt >> sun_tint >> moon_tint >> tint_type;
 
 	ClientEvent *event = new ClientEvent();
-	event->type            = CE_SET_SKY;
-	event->set_sky.bgcolor = bgcolor;
-	event->set_sky.type    = type;
-	event->set_sky.params  = params;
-	event->set_sky.clouds  = clouds;
+	event->type                 = CE_SET_SKY;
+	event->set_sky.bgcolor           = new video::SColor(bgcolor);
+	event->set_sky.type              = new std::string(type);
+	event->set_sky.clouds            = clouds;
+	if (type == "skybox")
+		event->set_sky.params        = new std::vector<std::string>(params);
+	else if (type == "regular") {
+		event->set_sky.day_sky       = new video::SColor(day_sky);
+		event->set_sky.day_horizon   = new video::SColor(day_horizon);
+		event->set_sky.dawn_sky      = new video::SColor(dawn_sky);
+		event->set_sky.dawn_horizon  = new video::SColor(dawn_horizon);
+		event->set_sky.night_sky     = new video::SColor(night_sky);
+		event->set_sky.night_horizon = new video::SColor(night_horizon);
+		event->set_sky.indoors       = new video::SColor(indoors);
+	}
+	event->set_sky.sun_tint          = new video::SColor(sun_tint);
+	event->set_sky.moon_tint         = new video::SColor(moon_tint);
+	event->set_sky.tint_type         = new std::string(tint_type);
+	m_client_event_queue.push(event);
+}
+
+void Client::handleCommand_HudSetSun(NetworkPacket *pkt)
+{
+	bool visible;
+	std::string texture;
+	std::string tonemap;
+	std::string sunrise;
+	f32 rotation;
+	f32 scale;
+
+	*pkt >> visible >> texture >> tonemap >> sunrise
+		>> rotation >> scale;
+
+	ClientEvent *event = new ClientEvent();
+	event->type                = CE_SET_SUN;
+	event->sun_params.visible  = visible;
+	event->sun_params.texture  = new std::string(texture);
+	event->sun_params.tonemap  = new std::string(tonemap);
+	event->sun_params.sunrise  = new std::string(sunrise);
+	event->sun_params.scale = scale;
+	event->sun_params.rotation = rotation;
+	m_client_event_queue.push(event);
+
+}
+
+void Client::handleCommand_HudSetMoon(NetworkPacket *pkt)
+{
+	bool visible;
+	std::string texture;
+	std::string tonemap;
+	f32 rotation;
+	f32 scale;
+
+	*pkt >> visible >> texture >> tonemap
+		>> rotation >> scale;
+
+	ClientEvent *event = new ClientEvent();
+	event->type = CE_SET_MOON;
+	event->moon_params.visible = visible;
+	event->moon_params.texture = new std::string(texture);
+	event->moon_params.tonemap = new std::string(tonemap);
+	event->moon_params.rotation = rotation;
+	event->moon_params.scale  = scale;
+
+	m_client_event_queue.push(event);
+}
+
+void Client::handleCommand_HudSetStars(NetworkPacket *pkt)
+{
+	bool visible;
+	u32 count;
+	video::SColor starcolor;
+	f32 rotation;
+	f32 scale;
+
+	*pkt >> visible >> count >> starcolor >> rotation >> scale;
+
+	ClientEvent *event = new ClientEvent();
+	event->type =                CE_SET_STARS;
+	event->star_params.visible   = visible;
+	event->star_params.count     = count;
+	event->star_params.starcolor = starcolor.color;
+	event->star_params.rotation  = rotation;
+	event->star_params.scale     = scale;
+
 	m_client_event_queue.push(event);
 }
 

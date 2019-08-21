@@ -66,6 +66,36 @@ RemotePlayer::RemotePlayer(const char *name, IItemDefManager *idef):
 	m_cloud_params.height = 120.0f;
 	m_cloud_params.thickness = 16.0f;
 	m_cloud_params.speed = v2f(0.0f, -2.0f);
+
+	m_skybox_params.type = "regular";
+	m_skybox_params.clouds = true;
+	m_skybox_params.day_sky = video::SColor(255, 155, 193, 240);
+	m_skybox_params.day_horizon = video::SColor(255, 140, 186, 250);
+	m_skybox_params.dawn_sky = video::SColor(255, 186, 193, 240);
+	m_skybox_params.dawn_horizon = video::SColor(255, 180, 186, 250);
+	m_skybox_params.night_sky = video::SColor(255, 0, 107, 255);
+	m_skybox_params.night_horizon = video::SColor(255, 64, 144, 255);
+	m_skybox_params.indoors = video::SColor(255, 100, 100, 100);
+	m_skybox_params.sun_tint = video::SColor(255, 244, 125, 29);
+	m_skybox_params.moon_tint = video::SColorf(0.5, 0.6, 0.8, 1).toSColor();
+	m_skybox_params.tint_type = "default";
+
+	m_sun_params.visible = true;
+	m_sun_params.tonemap = "sun_tonemap.png";
+	m_sun_params.sunrise = "sunrisebg.png";
+	m_sun_params.rotation = 90;
+	m_sun_params.scale = 1;
+
+	m_moon_params.visible = true;
+	m_moon_params.tonemap = "moon_tonemap.png";
+	m_moon_params.rotation = 270;
+	m_moon_params.scale = 1;
+
+	m_star_params.visible = true;
+	m_star_params.count = 200;
+	m_star_params.starcolor = video::SColor(105, 235, 235, 255);
+	m_star_params.rotation = 0;
+	m_star_params.scale = 1;
 }
 
 void RemotePlayer::serializeExtraAttributes(std::string &output)
