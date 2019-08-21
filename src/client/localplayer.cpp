@@ -732,6 +732,11 @@ v3f LocalPlayer::getEyeOffset() const
 	return v3f(0, BS * eye_height, 0);
 }
 
+bool LocalPlayer::isDead() const
+{
+	return !getCAO()->isImmortal() && hp == 0;
+}
+
 // 3D acceleration
 void LocalPlayer::accelerate(const v3f &target_speed, const f32 max_increase_H,
 		const f32 max_increase_V, const bool use_pitch)
