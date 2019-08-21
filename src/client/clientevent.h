@@ -38,6 +38,9 @@ enum ClientEventType : u8
 	CE_HUDRM,
 	CE_HUDCHANGE,
 	CE_SET_SKY,
+	CE_SET_SUN,
+	CE_SET_MOON,
+	CE_SET_STARS,
 	CE_OVERRIDE_DAY_NIGHT_RATIO,
 	CE_CLOUD_PARAMS,
 	CLIENTEVENT_MAX,
@@ -152,6 +155,16 @@ struct ClientEvent
 			std::string *type;
 			std::vector<std::string> *params;
 			bool clouds;
+			video::SColor *day_sky;
+			video::SColor *day_horizon;
+			video::SColor *dawn_sky;
+			video::SColor *dawn_horizon;
+			video::SColor *night_sky;
+			video::SColor *night_horizon;
+			video::SColor *indoors;
+			video::SColor *sun_tint;
+			video::SColor *moon_tint;
+			std::string *tint_type;
 		} set_sky;
 		struct
 		{
@@ -168,5 +181,31 @@ struct ClientEvent
 			f32 speed_x;
 			f32 speed_y;
 		} cloud_params;
+		struct
+		{
+			bool visible;
+			std::string *texture;
+			std::string *tonemap;
+			std::string *sunrise;
+			bool sunrise_visible;
+			f32 rotation;
+			f32 scale;
+		} sun_params;
+		struct
+		{
+			bool visible;
+			std::string *texture;
+			std::string *tonemap;
+			f32 rotation;
+			f32 scale;
+		} moon_params;
+		struct
+		{
+			bool visible;
+			u32 count;
+			u32 starcolor;
+			f32 rotation;
+			f32 scale;
+		} star_params;
 	};
 };

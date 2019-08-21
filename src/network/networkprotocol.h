@@ -598,14 +598,22 @@ enum ToClientCommand
 
 	TOCLIENT_SET_SKY = 0x4f,
 	/*
-		u8[4] color (ARGB)
-		u8 len
-		u8[len] type
-		u16 count
-		foreach count:
-			u8 len
-			u8[len] param
-		u8 clouds (boolean)
+		u8[4] bgcolor (ARGB)
+		std::string type
+		int texture_count
+		std::string[6] param
+		bool clouds
+		bool bgcolor_fog
+		u8[4] day_sky (ARGB)
+		u8[4] day_horizon (ARGB)
+		u8[4] dawn_sky (ARGB)
+		u8[4] dawn_horizon (ARGB)
+		u8[4] night_sky (ARGB)
+		u8[4] night_horizon (ARGB)
+		u8[4] indoors (ARGB)
+		u8[4] sun_tint (ARGB)
+		u8[4] moon_tint (ARGB)		
+		std::string tint_type
 	*/
 
 	TOCLIENT_OVERRIDE_DAY_NIGHT_RATIO = 0x50,
@@ -679,6 +687,34 @@ enum ToClientCommand
 	TOCLIENT_NODEMETA_CHANGED = 0x59,
 	/*
 		serialized and compressed node metadata
+	*/
+
+	TOCLIENT_SET_SUN = 0x5a,
+	/*
+		bool visible
+		std::string texture
+		std::string tonemap
+		std::string sunrise
+		f32 rotation
+		f32 scale
+	*/
+
+	TOCLIENT_SET_MOON = 0x5b,
+	/*
+		bool visible
+		std::string texture
+		std::string tonemap
+		f32 rotation
+		f32 scale
+	*/
+
+	TOCLIENT_SET_STARS = 0x5c,
+	/*
+		bool visible
+		u32 count
+		u8[4] starcolor (ARGB)
+		f32 rotation
+		f32 scale
 	*/
 
 	TOCLIENT_SRP_BYTES_S_B = 0x60,
