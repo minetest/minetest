@@ -208,26 +208,10 @@ function core.get_node_drops(node, toolname)
 	local got_count = 0
 	for _, item in ipairs(drop.items) do
 		local good_rarity = true
-		local good_tool = true
 		if item.rarity ~= nil then
 			good_rarity = item.rarity < 1 or math.random(item.rarity) == 1
 		end
-		if item.tools ~= nil then
-			good_tool = false
-		end
-		if item.tools ~= nil and toolname then
-			for _, tool in ipairs(item.tools) do
-				if tool:sub(1, 1) == '~' then
-					good_tool = toolname:find(tool:sub(2)) ~= nil
-				else
-					good_tool = toolname == tool
-				end
-				if good_tool then
-					break
-				end
-			end
-		end
-		if good_rarity and good_tool then
+		if good_rarity then
 			got_count = got_count + 1
 			for _, add_item in ipairs(item.items) do
 				-- add color, if necessary
