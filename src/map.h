@@ -310,6 +310,8 @@ protected:
 	// This stores the properties of the nodes on the map.
 	const NodeDefManager *m_nodedef;
 
+	bool determineAdditionalOcclusionCheck(const v3s16 &pos_camera,
+		const core::aabbox3d<s16> &block_bounds, v3s16 &check);
 	bool isOccluded(const v3s16 &pos_camera, const v3s16 &pos_target,
 		float step, float stepfac, float start_offset, float end_offset,
 		u32 needed_count);
