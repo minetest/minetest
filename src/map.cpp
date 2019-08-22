@@ -1032,6 +1032,70 @@ void Map::removeNodeTimer(v3s16 p)
 	block->m_node_timers.remove(p_rel);
 }
 
+bool Map::determineAdditionalOcclusionCheck(const v3s16 &pos_camera,
+	const core::aabbox3d<s16> &block_bounds, v3s16 &check)
+{
+	/*
+		This functions determines the node inside the target block that is
+		closest to the camera position. This increases the occlusion culling
+		accuracy in straight and diagonal corridors.
+		The returned position will be occlusion checked first in addition to the
+		others (8 corners + center).
+		No position is returned if
+		- the closest node is a corner, corners are checked anyway.
+		- the camera is inside the target block, it will never be occluded.
+	*/
+#define CLOSEST_EDGE(pos, bounds, axis) \
+	((pos).axis <= (bounds).MinEdge.axis) ? (bounds).MinEdge.axis : \
+	(bounds).MaxEdge.axis
+
+	bool x_inside = (block_bounds.MinEdge.X <= pos_camera.X) &&
+			(pos_camera.X <= block_bounds.MaxEdge.X);
+	bool y_inside = (block_bounds.MinEdge.Y <= pos_camera.Y) &&
+			(pos_camera.Y <= block_bounds.MaxEdge.Y);
+	bool z_inside = (block_bounds.MinEdge.Z <= pos_camera.Z) &&
+			(pos_camera.Z <= block_bounds.MaxEdge.Z);
+
+	if (x_inside && y_inside && z_inside)
+		return false; // Camera inside target mapblock
+
+	// straight
+	if (x_inside && y_inside) {
+		check = v3s16(pos_camera.X, pos_camera.Y, 0);
+		check.Z = CLOSEST_EDGE(pos_camera, block_bounds, Z);
+		return true;
+	} else if (y_inside && z_inside) {
+		check = v3s16(0, pos_camera.Y, pos_camera.Z);
+		check.X = CLOSEST_EDGE(pos_camera, block_bounds, X);
+		return true;
+	} else if (x_inside && z_inside) {
+		check = v3s16(pos_camera.X, 0, pos_camera.Z);
+		check.Y = CLOSEST_EDGE(pos_camera, block_bounds, Y);
+		return true;
+	}
+
+	// diagonal
+	if (x_inside) {
+		check = v3s16(pos_camera.X, 0, 0);
+		check.Y = CLOSEST_EDGE(pos_camera, block_bounds, Y);
+		check.Z = CLOSEST_EDGE(pos_camera, block_bounds, Z);
+		return true;
+	} else if (y_inside) {
+		check = v3s16(0, pos_camera.Y, 0);
+		check.X = CLOSEST_EDGE(pos_camera, block_bounds, X);
+		check.Z = CLOSEST_EDGE(pos_camera, block_bounds, Z);
+		return true;
+	} else if (z_inside) {
+		check = v3s16(0, 0, pos_camera.Z);
+		check.X = CLOSEST_EDGE(pos_camera, block_bounds, X);
+		check.Y = CLOSEST_EDGE(pos_camera, block_bounds, Y);
+		return true;
+	}
+
+	// Closest node would be a corner, none returned
+	return false;
+}
+
 bool Map::isOccluded(const v3s16 &pos_camera, const v3s16 &pos_target,
 	float step, float stepfac, float offset, float end_offset, u32 needed_count)
 {
@@ -1101,6 +1165,15 @@ bool Map::isBlockOccluded(MapBlock *block, v3s16 cam_pos_nodes)
 	// require at least two solid blocks
 	// this is a HACK, we should think of a more precise algorithm
 	u32 needed_count = 2;
+
+	// Additional occlusion check, see comments in that function
+	v3s16 check;
+	if (determineAdditionalOcclusionCheck(cam_pos_nodes, block->getBox(), check)) {
+		// node is always on a side facing the camera, end_offset can be lower
+		if (!isOccluded(cam_pos_nodes, check, step, stepfac, start_offset,
+				-1.0f, needed_count))
+			return false;
+	}
 
 	for (const v3s16 &dir : dir9) {
 		if (!isOccluded(cam_pos_nodes, pos_blockcenter + dir, step, stepfac,
