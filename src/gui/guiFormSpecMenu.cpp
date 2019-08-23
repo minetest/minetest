@@ -2855,25 +2855,13 @@ void GUIFormSpecMenu::drawList(const ListDrawSpec &s, int layer,
 			}
 
 			// Draw tooltip
-			std::wstring tooltip_text;
 			if (hovering && !m_selected_item) {
-				const std::string &desc = item.metadata.getString("description");
-				if (desc.empty())
-					tooltip_text =
-						utf8_to_wide(item.getDefinition(m_client->idef()).description);
-				else
-					tooltip_text = utf8_to_wide(desc);
-
-				if (!item.name.empty()) {
-					if (tooltip_text.empty())
-						tooltip_text = utf8_to_wide(item.name);
-					else if (m_tooltip_append_itemname)
-						tooltip_text += utf8_to_wide("\n[" + item.name + "]");
+				std::string tooltip = item.getDescription(
+						m_tooltip_append_itemname, m_client->idef());
+				if (!tooltip.empty()) {
+					showTooltip(utf8_to_wide(tooltip), m_default_tooltip_color,
+							m_default_tooltip_bgcolor);
 				}
-			}
-			if (!tooltip_text.empty()) {
-				showTooltip(tooltip_text, m_default_tooltip_color,
-					m_default_tooltip_bgcolor);
 			}
 		}
 	}
