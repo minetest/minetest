@@ -774,6 +774,12 @@ void MapgenV6::addMud()
 void MapgenV6::flowMud(s16 &mudflow_minpos, s16 &mudflow_maxpos)
 {
 	const v3s16 &em = vm->m_area.getExtent();
+	static const v3s16 dirs4[4] = {
+		v3s16(0, 0, 1), // Back
+		v3s16(1, 0, 0), // Right
+		v3s16(0, 0, -1), // Front
+		v3s16(-1, 0, 0), // Left
+	};
 	
 	// Iterate twice
 	for (s16 k = 0; k < 2; k++) {
@@ -793,7 +799,7 @@ void MapgenV6::flowMud(s16 &mudflow_minpos, s16 &mudflow_maxpos)
 			while (y >= node_min.Y) {
 				for (;; y--) {
 					u32 i = vm->m_area.index(p2d.X, y, p2d.Y);
-					MapNode *n = NULL;
+					MapNode *n = nullptr;
 
 					// Find next mud node in mapchunk column
 					for (; y >= node_min.Y; y--) {
@@ -814,15 +820,13 @@ void MapgenV6::flowMud(s16 &mudflow_minpos, s16 &mudflow_maxpos)
 						n->setContent(c_dirt);
 						// Don't flow mud if the stuff under it is not mud,
 						// to leave at least 1 node of mud.
-						{
-							u32 i2 = i;
-							VoxelArea::add_y(em, i2, -1);
-							MapNode *n2 = &vm->m_data[i2];
-							if (n2->getContent() != c_dirt &&
-									n2->getContent() != c_dirt_with_grass)
-								// Find next mud node in column
-								continue;
-						}
+						u32 i2 = i;
+						VoxelArea::add_y(em, i2, -1);
+						MapNode *n2 = &vm->m_data[i2];
+						if (n2->getContent() != c_dirt &&
+								n2->getContent() != c_dirt_with_grass)
+							// Find next mud node in column
+							continue;
 					}
 
 					// Check if node above is walkable. If so, cancel
@@ -833,13 +837,6 @@ void MapgenV6::flowMud(s16 &mudflow_minpos, s16 &mudflow_maxpos)
 					if (ndef->get(*n3).walkable)
 						// Find next mud node in column
 						continue;
-
-					static const v3s16 dirs4[4] = {
-						v3s16(0, 0, 1), // Back
-						v3s16(1, 0, 0), // Right
-						v3s16(0, 0, -1), // Front
-						v3s16(-1, 0, 0), // Left
-					};
 
 					// Drop mud on one side
 					for (const v3s16 &dirp : dirs4) {
