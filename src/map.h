@@ -311,8 +311,8 @@ protected:
 	const NodeDefManager *m_nodedef;
 
 	bool isOccluded(const v3s16 &pos_camera, const v3s16 &pos_target,
-		const core::aabbox3d<s16> &block_bounds, float step, float stepfac,
-		float offset, u32 needed_count);
+		float step, float stepfac, float start_offset, float end_offset,
+		u32 needed_count);
 
 private:
 	f32 m_transforming_liquid_loop_count_multiplier = 1.0f;

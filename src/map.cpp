@@ -1033,20 +1033,10 @@ void Map::removeNodeTimer(v3s16 p)
 }
 
 bool Map::isOccluded(const v3s16 &pos_camera, const v3s16 &pos_target,
-	const core::aabbox3d<s16> &block_bounds, float step, float stepfac, float offset,
-	u32 needed_count)
+	float step, float stepfac, float offset, float end_offset, u32 needed_count)
 {
-	// Worst-case safety distance to keep to the target position
-	// Anything smaller than the mapblock diagonal could result in in self-occlusion
-	// Diagonal = sqrt(1*1 + 1*1 + 1*1)
-	const static float BLOCK_DIAGONAL = BS * MAP_BLOCKSIZE * 1.732f;
-
 	v3f direction = intToFloat(pos_target - pos_camera, BS);
 	float distance = direction.getLength();
-
-	// Disable occlusion culling for near mapblocks in underground
-	if (distance < BLOCK_DIAGONAL)
-		return false;
 
 	// Normalize direction vector
 	if (distance > 0.0f)
@@ -1056,16 +1046,9 @@ bool Map::isOccluded(const v3s16 &pos_camera, const v3s16 &pos_target,
 	u32 count = 0;
 	bool is_valid_position;
 
-	for (; offset < distance; offset += step) {
+	for (; offset < distance + end_offset; offset += step) {
 		v3f pos_node_f = pos_origin_f + direction * offset;
 		v3s16 pos_node = floatToInt(pos_node_f, BS);
-
-		if (offset > distance - BLOCK_DIAGONAL) {
-			// Do accurate position checks:
-			// Check whether the node is inside the current mapblock
-			if (block_bounds.isPointInside(pos_node))
-				return false;
-		}
 
 		MapNode node = getNode(pos_node, &is_valid_position);
 
@@ -1098,10 +1081,7 @@ bool Map::isBlockOccluded(MapBlock *block, v3s16 cam_pos_nodes)
 		v3s16(-1, -1, -1) * bs2,
 	};
 
-	// Minimal and maximal positions in the mapblock
-	core::aabbox3d<s16> block_bounds = block->getBox();
-
-	v3s16 pos_blockcenter = block_bounds.MinEdge + (MAP_BLOCKSIZE / 2);
+	v3s16 pos_blockcenter = block->getPosRelative() + (MAP_BLOCKSIZE / 2);
 
 	// Starting step size, value between 1m and sqrt(3)m
 	float step = BS * 1.2f;
@@ -1110,14 +1090,21 @@ bool Map::isBlockOccluded(MapBlock *block, v3s16 cam_pos_nodes)
 
 	float start_offset = BS * 1.0f;
 
+	// The occlusion search of 'isOccluded()' must stop short of the target
+	// point by distance 'end_offset' to not enter the target mapblock.
+	// For the 8 mapblock corners 'end_offset' must therefore be the maximum
+	// diagonal of a mapblock, because we must consider all view angles.
+	// sqrt(1^2 + 1^2 + 1^2) = 1.732
+	float end_offset = -BS * MAP_BLOCKSIZE * 1.732f;
+
 	// to reduce the likelihood of falsely occluded blocks
 	// require at least two solid blocks
 	// this is a HACK, we should think of a more precise algorithm
 	u32 needed_count = 2;
 
 	for (const v3s16 &dir : dir9) {
-		if (!isOccluded(cam_pos_nodes, pos_blockcenter + dir, block_bounds,
-				step, stepfac, start_offset, needed_count))
+		if (!isOccluded(cam_pos_nodes, pos_blockcenter + dir, step, stepfac,
+				start_offset, end_offset, needed_count))
 			return false;
 	}
 	return true;
