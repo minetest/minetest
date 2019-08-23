@@ -373,6 +373,7 @@ core.register_node(":ignore", {
 -- The hand (bare definition)
 core.register_item(":", {
 	type = "none",
+	wield_image = "wieldhand.png",
 	groups = {not_in_creative_inventory=1},
 })
 
