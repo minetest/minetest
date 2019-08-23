@@ -39,6 +39,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "serialization.h"
 #include "util/serialize.h"
 #include "util/numeric.h"
+#include "util/directiontables.h"
 #include "filesys.h"
 #include "log.h"
 #include "mapgen_carpathian.h"
@@ -436,7 +437,7 @@ void Mapgen::setLighting(u8 light, v3s16 nmin, v3s16 nmax)
 
 
 void Mapgen::lightSpread(VoxelArea &a, std::queue<std::pair<v3s16, u8>> &queue,
-	v3s16 p, u8 light)
+	const v3s16 &p, u8 light)
 {
 	if (light <= 1 || !a.contains(p))
 		return;
@@ -468,12 +469,10 @@ void Mapgen::lightSpread(VoxelArea &a, std::queue<std::pair<v3s16, u8>> &queue,
 
 	n.param1 = light;
 
-	queue.emplace(p + v3s16(0, 0, 1), light);
-	queue.emplace(p + v3s16(0, 1, 0), light);
-	queue.emplace(p + v3s16(1, 0, 0), light);
-	queue.emplace(p - v3s16(0, 0, 1), light);
-	queue.emplace(p - v3s16(0, 1, 0), light);
-	queue.emplace(p - v3s16(1, 0, 0), light);
+	// spread to all 6 neighbor nodes
+	for (u8 i = 0; i < 6; i++) {
+		queue.emplace(p + g_6dirs[i], light);
+	}
 }
 
 
@@ -526,7 +525,7 @@ void Mapgen::propagateSunlight(v3s16 nmin, v3s16 nmax, bool propagate_shadow)
 }
 
 
-void Mapgen::spreadLight(v3s16 nmin, v3s16 nmax)
+void Mapgen::spreadLight(const v3s16 &nmin, const v3s16 &nmax)
 {
 	TimeTaker t("spreadLight");
 	std::queue<std::pair<v3s16, u8>> queue;
@@ -553,19 +552,18 @@ void Mapgen::spreadLight(v3s16 nmin, v3s16 nmax)
 
 				u8 light = n.param1;
 				if (light) {
-					lightSpread(a, queue, v3s16(x,     y,     z + 1), light);
-					lightSpread(a, queue, v3s16(x,     y + 1, z    ), light);
-					lightSpread(a, queue, v3s16(x + 1, y,     z    ), light);
-					lightSpread(a, queue, v3s16(x,     y,     z - 1), light);
-					lightSpread(a, queue, v3s16(x,     y - 1, z    ), light);
-					lightSpread(a, queue, v3s16(x - 1, y,     z    ), light);
+					const v3s16 p(x, y, z);
+					// spread to all 6 neighbor nodes
+					for (u8 i = 0; i < 6; i++) {
+						lightSpread(a, queue, p + g_6dirs[i], light);
+					}
 				}
 			}
 		}
 	}
 
 	while (!queue.empty()) {
-		auto &i = queue.front();
+		const auto &i = queue.front();
 		lightSpread(a, queue, i.first, i.second);
 		queue.pop();
 	}
