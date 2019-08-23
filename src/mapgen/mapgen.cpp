@@ -469,9 +469,8 @@ void Mapgen::lightSpread(VoxelArea &a, std::queue<std::pair<v3s16, u8>> &queue,
 
 	n.param1 = light;
 
-	// spread to all 6 neighbor nodes
-	for (const auto &dir : g_6dirs)
-		queue.emplace(p + dir, light);
+	// add to queue
+	queue.emplace(p, light);
 }
 
 
@@ -562,7 +561,9 @@ void Mapgen::spreadLight(const v3s16 &nmin, const v3s16 &nmax)
 
 	while (!queue.empty()) {
 		const auto &i = queue.front();
-		lightSpread(a, queue, i.first, i.second);
+		// spread to all 6 neighbor nodes
+		for (const auto &dir : g_6dirs)
+			lightSpread(a, queue, i.first + dir, i.second);
 		queue.pop();
 	}
 
