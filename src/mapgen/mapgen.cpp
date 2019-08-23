@@ -526,7 +526,7 @@ void Mapgen::propagateSunlight(v3s16 nmin, v3s16 nmax, bool propagate_shadow)
 
 void Mapgen::spreadLight(const v3s16 &nmin, const v3s16 &nmax)
 {
-	TimeTaker t("spreadLight");
+	//TimeTaker t("spreadLight");
 	std::queue<std::pair<v3s16, u8>> queue;
 	VoxelArea a(nmin, nmax);
 
@@ -566,7 +566,7 @@ void Mapgen::spreadLight(const v3s16 &nmin, const v3s16 &nmax)
 		queue.pop();
 	}
 
-	printf("spreadLight: %lums\n", t.stop());
+	//printf("spreadLight: %lums\n", t.stop());
 }
 
 
