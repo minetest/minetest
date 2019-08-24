@@ -2844,20 +2844,17 @@ void GUIFormSpecMenu::drawList(const ListDrawSpec &s, int layer,
 		}
 
 		if (layer == 1) {
-			// Draw item stack
 			if (selected)
 				item.takeItem(m_selected_amount);
 
 			if (!item.empty()) {
+				// Draw item stack
 				drawItemStack(driver, m_font, item,
 					rect, &AbsoluteClippingRect, m_client,
 					rotation_kind);
-			}
-
-			// Draw tooltip
-			if (hovering && !m_selected_item) {
-				std::string tooltip = item.getDescription(m_client->idef());
-				if (!tooltip.empty()) {
+				// Draw tooltip
+				if (hovering && !m_selected_item) {
+					std::string tooltip = item.getDescription(m_client->idef());
 					if (m_tooltip_append_itemname)
 						tooltip += "\n[" + item.name + "]";
 					showTooltip(utf8_to_wide(tooltip), m_default_tooltip_color,
