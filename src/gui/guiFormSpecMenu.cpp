@@ -2856,9 +2856,10 @@ void GUIFormSpecMenu::drawList(const ListDrawSpec &s, int layer,
 
 			// Draw tooltip
 			if (hovering && !m_selected_item) {
-				std::string tooltip = item.getDescription(
-						m_tooltip_append_itemname, m_client->idef());
+				std::string tooltip = item.getDescription(m_client->idef());
 				if (!tooltip.empty()) {
+					if (m_tooltip_append_itemname)
+						tooltip += "\n[" + item.name + "]";
 					showTooltip(utf8_to_wide(tooltip), m_default_tooltip_color,
 							m_default_tooltip_bgcolor);
 				}

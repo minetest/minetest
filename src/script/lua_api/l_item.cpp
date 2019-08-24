@@ -180,7 +180,7 @@ int LuaItemStack::l_get_description(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 	LuaItemStack *o = checkobject(L, 1);
-	std::string desc = o->m_stack.getDescription(false, getGameDef(L)->idef());
+	std::string desc = o->m_stack.getDescription(getGameDef(L)->idef());
 	lua_pushstring(L, desc.c_str());
 	return 1;
 }
