@@ -23,9 +23,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "config.h"
 #include "porting.h"
 #include "filesys.h"
+#include "gettext.h"
 
 #if USE_FREETYPE
-#include "gettext.h"
 #include "irrlicht_changes/CGUITTFont.h"
 #endif
 
