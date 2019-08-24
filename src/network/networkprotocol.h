@@ -195,9 +195,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		ContentFeatures version 13
 		Add full Euler rotations instead of just yaw
 		Add TOCLIENT_PLAYER_SPEED
+	PROTOCOL VERSION 38:
+		Incremental inventory sending mode
+		Unknown inventory serialization fields no longer throw an error
 */
 
-#define LATEST_PROTOCOL_VERSION 37
+#define LATEST_PROTOCOL_VERSION 38
 #define LATEST_PROTOCOL_VERSION_STRING TOSTRING(LATEST_PROTOCOL_VERSION)
 
 // Server's supported network protocol range

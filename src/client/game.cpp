@@ -599,7 +599,6 @@ struct GameRunData {
 	bool dig_instantly;
 	bool digging_blocked;
 	bool left_punch;
-	bool update_wielded_item_trigger;
 	bool reset_jump_timer;
 	float nodig_delay_timer;
 	float dig_time;
@@ -1018,7 +1017,6 @@ bool Game::startup(bool *kill,
 	// Reinit runData
 	runData = GameRunData();
 	runData.time_from_last_punch = 10.0;
-	runData.update_wielded_item_trigger = true;
 
 	m_game_ui->initFlags();
 
@@ -3736,19 +3734,11 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 	if (player->getWieldIndex() != runData.new_playeritem)
 		client->setPlayerItem(runData.new_playeritem);
 
-	// Update local inventory if it has changed
-	if (client->getLocalInventoryUpdated()) {
-		//infostream<<"Updating local inventory"<<std::endl;
-		runData.update_wielded_item_trigger = true;
-	}
-
-	if (runData.update_wielded_item_trigger) {
+	if (client->updateWieldedItem()) {
 		// Update wielded tool
 		ItemStack selected_item, hand_item;
 		ItemStack &tool_item = player->getWieldedItem(&selected_item, &hand_item);
 		camera->wield(tool_item);
-
-		runData.update_wielded_item_trigger = false;
 	}
 
 	/*

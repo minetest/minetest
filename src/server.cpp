@@ -1057,7 +1057,7 @@ PlayerSAO* Server::StageTwoClientInit(session_t peer_id)
 	SendPlayerInventoryFormspec(peer_id);
 
 	// Send inventory
-	SendInventory(playersao);
+	SendInventory(playersao, false);
 
 	// Send HP or death screen
 	if (playersao->isDead())
@@ -1241,19 +1241,22 @@ void Server::setInventoryModified(const InventoryLocation &loc, bool playerSend)
 		break;
 	case InventoryLocation::PLAYER:
 	{
-		if (!playerSend)
-			return;
 
 		RemotePlayer *player = m_env->getPlayer(loc.name.c_str());
 
 		if (!player)
 			return;
 
+		player->setModified(true);
+
+		if (!playerSend)
+			return;
+
 		PlayerSAO *playersao = player->getPlayerSAO();
 		if(!playersao)
 			return;
 
-		SendInventory(playersao);
+		SendInventory(playersao, true);
 	}
 		break;
 	case InventoryLocation::NODEMETA:
@@ -1527,21 +1530,27 @@ void Server::SendNodeDef(session_t peer_id,
 	Non-static send methods
 */
 
-void Server::SendInventory(PlayerSAO* playerSAO)
+void Server::SendInventory(PlayerSAO *sao, bool incremental)
 {
-	UpdateCrafting(playerSAO->getPlayer());
+	RemotePlayer *player = sao->getPlayer();
+
+	// Do not send new format to old clients
+	incremental &= player->protocol_version >= 38;
+
+	UpdateCrafting(player);
 
 	/*
 		Serialize it
 	*/
 
-	NetworkPacket pkt(TOCLIENT_INVENTORY, 0, playerSAO->getPeerID());
+	NetworkPacket pkt(TOCLIENT_INVENTORY, 0, sao->getPeerID());
 
-	std::ostringstream os;
-	playerSAO->getInventory()->serialize(os);
+	std::ostringstream os(std::ios::binary);
+	sao->getInventory()->serialize(os, incremental);
+	sao->getInventory()->setModified(false);
+	player->setModified(true);
 
-	std::string s = os.str();
-
+	const std::string &s = os.str();
 	pkt.putRawString(s.c_str(), s.size());
 	Send(&pkt);
 }
@@ -2595,8 +2604,9 @@ void Server::sendDetachedInventory(const std::string &name, session_t peer_id)
 		// Serialization & NetworkPacket isn't a love story
 		std::ostringstream os(std::ios_base::binary);
 		inv_it->second->serialize(os);
+		inv_it->second->setModified(false);
 
-		std::string os_str = os.str();
+		const std::string &os_str = os.str();
 		pkt << static_cast<u16>(os_str.size()); // HACK: to keep compatibility with 5.0.0 clients
 		pkt.putRawString(os_str);
 	}
@@ -2821,6 +2831,11 @@ void Server::UpdateCrafting(RemotePlayer *player)
 	InventoryList *clist = player->inventory.getList("craft");
 	if (!clist || clist->getSize() == 0)
 		return;
+
+	if (!clist->checkModified()) {
+		verbosestream << "Skip Server::UpdateCrafting(): list unmodified" << std::endl;
+		return;
+	}
 
 	// Get a preview for crafting
 	ItemStack preview;

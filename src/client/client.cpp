@@ -557,8 +557,8 @@ void Client::step(float dtime)
 		if (count_after != count_before) {
 			// Do this every <interval> seconds after TOCLIENT_INVENTORY
 			// Reset the locally changed inventory to the authoritative inventory
-			m_env.getLocalPlayer()->inventory = *m_inventory_from_server;
-			m_inventory_updated = true;
+			player->inventory = *m_inventory_from_server;
+			m_update_wielded_item = true;
 		}
 	}
 
@@ -1331,28 +1331,30 @@ void Client::setPlayerControl(PlayerControl &control)
 void Client::setPlayerItem(u16 item)
 {
 	m_env.getLocalPlayer()->setWieldIndex(item);
-	m_inventory_updated = true;
+	m_update_wielded_item = true;
 
 	NetworkPacket pkt(TOSERVER_PLAYERITEM, 2);
 	pkt << item;
 	Send(&pkt);
 }
 
-// Returns true if the inventory of the local player has been
-// updated from the server. If it is true, it is set to false.
-bool Client::getLocalInventoryUpdated()
+// Returns true once after the inventory of the local player
+// has been updated from the server.
+bool Client::updateWieldedItem()
 {
-	bool updated = m_inventory_updated;
-	m_inventory_updated = false;
-	return updated;
-}
+	if (!m_update_wielded_item)
+		return false;
 
-// Copies the inventory of the local player to parameter
-void Client::getLocalInventory(Inventory &dst)
-{
+	m_update_wielded_item = false;
+
 	LocalPlayer *player = m_env.getLocalPlayer();
 	assert(player);
-	dst = player->inventory;
+	if (auto *list = player->inventory.getList("main"))
+		list->setModified(false);
+	if (auto *list = player->inventory.getList("hand"))
+		list->setModified(false);
+
+	return true;
 }
 
 Inventory* Client::getInventory(const InventoryLocation &loc)

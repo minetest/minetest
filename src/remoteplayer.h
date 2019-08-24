@@ -110,12 +110,7 @@ public:
 
 	bool checkModified() const { return m_dirty || inventory.checkModified(); }
 
-	void setModified(const bool x)
-	{
-		m_dirty = x;
-		if (!x)
-			inventory.setModified(x);
-	}
+	inline void setModified(const bool x) { m_dirty = x; }
 
 	void setLocalAnimations(v2s32 frames[4], float frame_speed)
 	{
