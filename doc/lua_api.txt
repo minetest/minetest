@@ -5254,6 +5254,7 @@ an itemstring, a table or `nil`.
 * `get_metadata()`: (DEPRECATED) Returns metadata (a string attached to an item
   stack).
 * `set_metadata(metadata)`: (DEPRECATED) Returns true.
+* `get_description()`: returns the description shown in inventory list tooltips.
 * `clear()`: removes all items from the stack, making it empty.
 * `replace(item)`: replace the contents of this stack.
     * `item` can also be an itemstring or table.

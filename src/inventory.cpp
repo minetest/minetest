@@ -246,6 +246,14 @@ std::string ItemStack::getItemString() const
 	return os.str();
 }
 
+std::string ItemStack::getDescription(IItemDefManager *itemdef) const
+{
+	std::string desc = metadata.getString("description");
+	if (desc.empty())
+		desc = getDefinition(itemdef).description;
+	return desc.empty() ? name : desc;
+}
+
 
 ItemStack ItemStack::addItem(ItemStack newitem, IItemDefManager *itemdef)
 {

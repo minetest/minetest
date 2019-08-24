@@ -47,6 +47,8 @@ struct ItemStack
 
 	// Returns the string used for inventory
 	std::string getItemString() const;
+	// Returns the tooltip
+	std::string getDescription(IItemDefManager *itemdef) const;
 
 	/*
 		Quantity methods
