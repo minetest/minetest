@@ -538,7 +538,7 @@ void MapgenV6::makeChunk(BlockMakeData *data)
 	updateHeightmap(node_min, node_max);
 
 	const s16 max_spread_amount = MAP_BLOCKSIZE;
-	// Limit dirt flow area by 1 because mud is flown into neighbors.
+	// Limit dirt flow area by 1 because mud is flowed into neighbors
 	s16 mudflow_minpos = -max_spread_amount + 1;
 	s16 mudflow_maxpos = central_area_size.X + max_spread_amount - 2;
 
@@ -773,6 +773,14 @@ void MapgenV6::addMud()
 
 void MapgenV6::flowMud(s16 &mudflow_minpos, s16 &mudflow_maxpos)
 {
+	const v3s16 &em = vm->m_area.getExtent();
+	static const v3s16 dirs4[4] = {
+		v3s16(0, 0, 1), // Back
+		v3s16(1, 0, 0), // Right
+		v3s16(0, 0, -1), // Front
+		v3s16(-1, 0, 0), // Left
+	};
+	
 	// Iterate twice
 	for (s16 k = 0; k < 2; k++) {
 		for (s16 z = mudflow_minpos; z <= mudflow_maxpos; z++)
@@ -781,119 +789,96 @@ void MapgenV6::flowMud(s16 &mudflow_minpos, s16 &mudflow_maxpos)
 			v2s16 p2d;
 			// Invert coordinates on second iteration to process columns in
 			// opposite order, to avoid a directional bias.
-			if (k == 1) {
-				p2d = v2s16(node_min.X, node_min.Z) + v2s16(
-					mudflow_maxpos - (x - mudflow_minpos),
-					mudflow_maxpos - (z - mudflow_minpos));
-			} else {
+			if (k == 1)
+				p2d = v2s16(node_max.X, node_max.Z) - v2s16(x, z);
+			else
 				p2d = v2s16(node_min.X, node_min.Z) + v2s16(x, z);
-			}
 
-			const v3s16 &em = vm->m_area.getExtent();
-			u32 i = vm->m_area.index(p2d.X, node_max.Y, p2d.Y);
 			s16 y = node_max.Y;
 
 			while (y >= node_min.Y) {
+				for (;; y--) {
+					u32 i = vm->m_area.index(p2d.X, y, p2d.Y);
+					MapNode *n = nullptr;
 
-			for (;; y--) {
-				MapNode *n = NULL;
-				// Find mud
-				for (; y >= node_min.Y; y--) {
-					n = &vm->m_data[i];
-					if (n->getContent() == c_dirt ||
-							n->getContent() == c_dirt_with_grass ||
-							n->getContent() == c_gravel)
+					// Find next mud node in mapchunk column
+					for (; y >= node_min.Y; y--) {
+						n = &vm->m_data[i];
+						if (n->getContent() == c_dirt ||
+								n->getContent() == c_dirt_with_grass ||
+								n->getContent() == c_gravel)
+							break;
+
+						VoxelArea::add_y(em, i, -1);
+					}
+					if (y < node_min.Y)
+						// No mud found in mapchunk column, process the next column
 						break;
 
-					VoxelArea::add_y(em, i, -1);
-				}
-
-				// Stop if out of area
-				//if(vmanip.m_area.contains(i) == false)
-				if (y < node_min.Y)
-					break;
-
-				if (n->getContent() == c_dirt ||
-						n->getContent() == c_dirt_with_grass) {
-					// Make it exactly mud
-					n->setContent(c_dirt);
-
-					// Don't flow it if the stuff under it is not mud
-					{
+					if (n->getContent() == c_dirt || n->getContent() == c_dirt_with_grass) {
+						// Convert dirt_with_grass to dirt
+						n->setContent(c_dirt);
+						// Don't flow mud if the stuff under it is not mud,
+						// to leave at least 1 node of mud.
 						u32 i2 = i;
 						VoxelArea::add_y(em, i2, -1);
-						// Cancel if out of area
-						if (!vm->m_area.contains(i2))
-							continue;
 						MapNode *n2 = &vm->m_data[i2];
 						if (n2->getContent() != c_dirt &&
 								n2->getContent() != c_dirt_with_grass)
+							// Find next mud node in column
 							continue;
 					}
-				}
 
-				static const v3s16 dirs4[4] = {
-					v3s16(0, 0, 1), // back
-					v3s16(1, 0, 0), // right
-					v3s16(0, 0, -1), // front
-					v3s16(-1, 0, 0), // left
-				};
-
-				// Check that upper is walkable. Cancel
-				// dropping if upper keeps it in place.
-				u32 i3 = i;
-				VoxelArea::add_y(em, i3, 1);
-				MapNode *n3 = NULL;
-
-				if (vm->m_area.contains(i3)) {
-					n3 = &vm->m_data[i3];
+					// Check if node above is walkable. If so, cancel
+					// flowing as if node above keeps it in place.
+					u32 i3 = i;
+					VoxelArea::add_y(em, i3, 1);
+					MapNode *n3 = &vm->m_data[i3];
 					if (ndef->get(*n3).walkable)
+						// Find next mud node in column
 						continue;
-				}
 
-				// Drop mud on side
-				for (const v3s16 &dirp : dirs4) {
-					u32 i2 = i;
-					// Move to side
-					VoxelArea::add_p(em, i2, dirp);
-					// Fail if out of area
-					if (!vm->m_area.contains(i2))
-						continue;
-					// Check that side is air
-					MapNode *n2 = &vm->m_data[i2];
-					if (ndef->get(*n2).walkable)
-						continue;
-					// Check that under side is air
-					VoxelArea::add_y(em, i2, -1);
-					if (!vm->m_area.contains(i2))
-						continue;
-					n2 = &vm->m_data[i2];
-					if (ndef->get(*n2).walkable)
-						continue;
-					// Loop further down until not air
-					bool dropped_to_unknown = false;
-					do {
+					// Drop mud on one side
+					for (const v3s16 &dirp : dirs4) {
+						u32 i2 = i;
+						// Move to side
+						VoxelArea::add_p(em, i2, dirp);
+						// Check that side is air
+						MapNode *n2 = &vm->m_data[i2];
+						if (ndef->get(*n2).walkable)
+							continue;
+
+						// Check that under side is air
 						VoxelArea::add_y(em, i2, -1);
 						n2 = &vm->m_data[i2];
-						// if out of known area
-						if (!vm->m_area.contains(i2) ||
-								n2->getContent() == CONTENT_IGNORE) {
-							dropped_to_unknown = true;
-							break;
+						if (ndef->get(*n2).walkable)
+							continue;
+
+						// Loop further down until not air
+						s16 y2 = y - 1; // y of i2
+						bool dropped_to_unknown = false;
+						do {
+							y2--;
+							VoxelArea::add_y(em, i2, -1);
+							n2 = &vm->m_data[i2];
+							// If out of area or in ungenerated world
+							if (y2 < full_node_min.Y || n2->getContent() == CONTENT_IGNORE) {
+								dropped_to_unknown = true;
+								break;
+							}
+						} while (!ndef->get(*n2).walkable);
+
+						if (!dropped_to_unknown) {
+							// Move up one so that we're in air
+							VoxelArea::add_y(em, i2, 1);
+							// Move mud to new place, and if outside mapchunk remove
+							// any decorations above removed or placed mud.
+							moveMud(i, i2, i3, p2d, em);
 						}
-					} while (!ndef->get(*n2).walkable);
-					// Loop one up so that we're in air
-					VoxelArea::add_y(em, i2, 1);
-
-					// Move mud to new place. Outside mapchunk remove
-					// any decorations above removed or placed mud.
-					if (!dropped_to_unknown)
-						moveMud(i, i2, i3, p2d, em);
-
-					// Done
-					break;
+						// Done, find next mud node in column
+						break;
+					}
 				}
-			}
 			}
 		}
 	}
