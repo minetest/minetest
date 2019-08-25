@@ -195,7 +195,7 @@ public:
 		Shall be called with the environment and the connection locked.
 	*/
 	Inventory* getInventory(const InventoryLocation &loc);
-	void setInventoryModified(const InventoryLocation &loc, bool playerSend = true);
+	void setInventoryModified(const InventoryLocation &loc);
 
 	// Connection must be locked when called
 	std::wstring getStatusString();
@@ -337,6 +337,8 @@ public:
 	void SendMovePlayer(session_t peer_id);
 	void SendPlayerSpeed(session_t peer_id, const v3f &added_vel);
 
+	void sendDetachedInventories(session_t peer_id, bool incremental);
+
 	virtual bool registerModStorage(ModMetadata *storage);
 	virtual void unregisterModStorage(const std::string &name);
 
@@ -443,7 +445,6 @@ private:
 			const std::vector<std::string> &tosend);
 
 	void sendDetachedInventory(const std::string &name, session_t peer_id);
-	void sendDetachedInventories(session_t peer_id);
 
 	// Adds a ParticleSpawner on peer with peer_id (PEER_ID_INEXISTENT == all)
 	void SendAddParticleSpawner(session_t peer_id, u16 protocol_version,

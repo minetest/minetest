@@ -1234,7 +1234,7 @@ Inventory* Server::getInventory(const InventoryLocation &loc)
 	return NULL;
 }
 
-void Server::setInventoryModified(const InventoryLocation &loc, bool playerSend)
+void Server::setInventoryModified(const InventoryLocation &loc)
 {
 	switch(loc.type){
 	case InventoryLocation::UNDEFINED:
@@ -1248,15 +1248,7 @@ void Server::setInventoryModified(const InventoryLocation &loc, bool playerSend)
 			return;
 
 		player->setModified(true);
-
-		if (!playerSend)
-			return;
-
-		PlayerSAO *playersao = player->getPlayerSAO();
-		if(!playersao)
-			return;
-
-		SendInventory(playersao, true);
+		// Updates are sent in ServerEnvironment::step()
 	}
 		break;
 	case InventoryLocation::NODEMETA:
@@ -1269,7 +1261,7 @@ void Server::setInventoryModified(const InventoryLocation &loc, bool playerSend)
 		break;
 	case InventoryLocation::DETACHED:
 	{
-		sendDetachedInventory(loc.name,PEER_ID_INEXISTENT);
+		// Updates are sent in ServerEnvironment::step()
 	}
 		break;
 	default:
@@ -2617,11 +2609,16 @@ void Server::sendDetachedInventory(const std::string &name, session_t peer_id)
 		Send(&pkt);
 }
 
-void Server::sendDetachedInventories(session_t peer_id)
+void Server::sendDetachedInventories(session_t peer_id, bool incremental)
 {
 	for (const auto &detached_inventory : m_detached_inventories) {
 		const std::string &name = detached_inventory.first;
-		//Inventory *inv = i->second;
+		if (incremental) {
+			Inventory *inv = detached_inventory.second;
+			if (!inv || !inv->checkModified())
+				continue;
+		}
+
 		sendDetachedInventory(name, peer_id);
 	}
 }
