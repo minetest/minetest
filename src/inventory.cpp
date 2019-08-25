@@ -685,6 +685,8 @@ ItemStack InventoryList::removeItem(const ItemStack &item)
 				break;
 		}
 	}
+	if (!removed.empty())
+		setModified();
 	return removed;
 }
 
@@ -936,15 +938,18 @@ InventoryList * Inventory::addList(const std::string &name, u32 size)
 		{
 			delete m_lists[i];
 			m_lists[i] = new InventoryList(name, size, m_itemdef);
+			m_lists[i]->setModified();
 		}
 		return m_lists[i];
 	}
 
 
 	//don't create list with invalid name
-	if (name.find(' ') != std::string::npos) return NULL;
+	if (name.find(' ') != std::string::npos)
+		return nullptr;
 
 	InventoryList *list = new InventoryList(name, size, m_itemdef);
+	list->setModified();
 	m_lists.push_back(list);
 	return list;
 }
