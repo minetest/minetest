@@ -1454,6 +1454,16 @@ void ServerEnvironment::step(float dtime)
 				++i;
 		}
 	}
+
+	// Send outdated player inventories
+	for (RemotePlayer *player : m_players) {
+		if (player->getPeerId() == PEER_ID_INEXISTENT)
+			continue;
+
+		PlayerSAO *sao = player->getPlayerSAO();
+		if (sao && player->inventory.checkModified())
+			m_server->SendInventory(sao, true);
+	}
 }
 
 u32 ServerEnvironment::addParticleSpawner(float exptime)

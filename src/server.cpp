@@ -1234,7 +1234,7 @@ Inventory* Server::getInventory(const InventoryLocation &loc)
 	return NULL;
 }
 
-void Server::setInventoryModified(const InventoryLocation &loc, bool playerSend)
+void Server::setInventoryModified(const InventoryLocation &loc)
 {
 	switch(loc.type){
 	case InventoryLocation::UNDEFINED:
@@ -1248,15 +1248,7 @@ void Server::setInventoryModified(const InventoryLocation &loc, bool playerSend)
 			return;
 
 		player->setModified(true);
-
-		if (!playerSend)
-			return;
-
-		PlayerSAO *playersao = player->getPlayerSAO();
-		if(!playersao)
-			return;
-
-		SendInventory(playersao, true);
+		// Updates are sent in ServerEnvironment::step()
 	}
 		break;
 	case InventoryLocation::NODEMETA:

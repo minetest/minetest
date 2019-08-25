@@ -569,6 +569,7 @@ ItemStack InventoryList::changeItem(u32 i, const ItemStack &newitem)
 	ItemStack olditem = m_items[i];
 	m_items[i] = newitem;
 	setModified();
+	std::cout << "changeItem " << m_name << std::endl;
 	return olditem;
 }
 
@@ -847,6 +848,8 @@ void Inventory::serialize(std::ostream &os, bool incremental) const
 		if (!incremental || list->checkModified()) {
 			os << "List " << list->getName() << " " << list->getSize() << "\n";
 			list->serialize(os, incremental);
+			if (incremental)
+				std::cout << "inv::serialize " << list->getName() << std::endl;
 		} else {
 			os << "KeepList " << list->getName() << "\n";
 		}
