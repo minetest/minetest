@@ -90,6 +90,9 @@ private:
 	// get_meta(pos)
 	static int l_get_meta(lua_State *L);
 
+	// get_block_meta(blockpos)
+	static int l_get_block_meta(lua_State *L);
+
 	// get_node_timer(pos)
 	static int l_get_node_timer(lua_State *L);
 

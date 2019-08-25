@@ -338,6 +338,7 @@ LOCAL_SRC_FILES += \
 		jni/src/script/lua_api/l_areastore.cpp    \
 		jni/src/script/lua_api/l_auth.cpp         \
 		jni/src/script/lua_api/l_base.cpp         \
+		jni/src/script/lua_api/l_blockmeta.cpp     \
 		jni/src/script/lua_api/l_camera.cpp       \
 		jni/src/script/lua_api/l_client.cpp       \
 		jni/src/script/lua_api/l_craft.cpp        \

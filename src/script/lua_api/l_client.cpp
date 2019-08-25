@@ -29,6 +29,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "cpp_api/s_base.h"
 #include "gettext.h"
 #include "l_internal.h"
+#include "lua_api/l_blockmeta.h"
 #include "lua_api/l_item.h"
 #include "lua_api/l_nodemeta.h"
 #include "gui/mainmenumanager.h"
@@ -229,6 +230,15 @@ int ModApiClient::l_get_meta(lua_State *L)
 	return 1;
 }
 
+// get_block_meta(blockpos)
+int ModApiClient::l_get_block_meta(lua_State *L)
+{
+	v3s16 bp = read_v3s16(L, 1);
+	NodeMetadata *meta = getClient(L)->getEnv().getMap().getBlockMetadata(bp);
+	BlockMetaRef::createClient(L, meta);
+	return 1;
+}
+
 int ModApiClient::l_sound_play(lua_State *L)
 {
 	ISoundManager *sound = getClient(L)->getSoundManager();
@@ -379,6 +389,7 @@ void ModApiClient::Initialize(lua_State *L, int top)
 	API_FCT(get_wielded_item);
 	API_FCT(disconnect);
 	API_FCT(get_meta);
+	API_FCT(get_block_meta);
 	API_FCT(sound_play);
 	API_FCT(sound_stop);
 	API_FCT(get_server_info);

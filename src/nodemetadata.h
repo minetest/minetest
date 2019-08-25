@@ -68,6 +68,7 @@ private:
 
 /*
 	List of metadata of all the nodes of a block
+	(also contains block meta at pos (-1, 0, 0))
 */
 
 typedef std::map<v3s16, NodeMetadata *> NodeMetadataMap;

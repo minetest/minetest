@@ -25,6 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "lua_api/l_areastore.h"
 #include "lua_api/l_auth.h"
 #include "lua_api/l_base.h"
+#include "lua_api/l_blockmeta.h"
 #include "lua_api/l_craft.h"
 #include "lua_api/l_env.h"
 #include "lua_api/l_inventory.h"
@@ -99,6 +100,7 @@ void ServerScripting::InitializeModApi(lua_State *L, int top)
 	LuaSecureRandom::Register(L);
 	LuaVoxelManip::Register(L);
 	NodeMetaRef::Register(L);
+	BlockMetaRef::Register(L);
 	NodeTimerRef::Register(L);
 	ObjectRef::Register(L);
 	PlayerMetaRef::Register(L);

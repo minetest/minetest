@@ -368,7 +368,7 @@ if map format version >= 23:
   u8 version (=1) -- Note the type is u8, while for map format version <= 22 it's u16
   u16 count of metadata
   foreach count:
-    u16 position (p.Z*MAP_BLOCKSIZE*MAP_BLOCKSIZE + p.Y*MAP_BLOCKSIZE + p.X)
+    u16 position (p.Z*MAP_BLOCKSIZE*MAP_BLOCKSIZE + p.Y*MAP_BLOCKSIZE + p.X) (if map format version >= 29, block meta is saved in 0xffff)
     u32 num_vars
     foreach num_vars:
       u16 key_len

@@ -894,6 +894,22 @@ void Server::AsyncRunStep(bool initial_step)
 				}
 				break;
 			}
+			case MEET_BLOCK_METADATA_CHANGED: { //hier
+				verbosestream << "Server: MEET_BLOCK_METADATA_CHANGED" << std::endl;
+				prof.add("MEET_BLOCK_METADATA_CHANGED", 1);
+				if (!event->is_private_change) {
+					// do not send at all, because this is so hard >_< todo
+					//~ // Don't send the change yet. Collect them to eliminate dupes.
+					//~ node_meta_updates.remove(event->p);
+					//~ node_meta_updates.push_back(event->p);
+				}
+
+				if (MapBlock *block = m_env->getMap().getBlockNoCreateNoEx(event->p)) {
+					block->raiseModified(MOD_STATE_WRITE_NEEDED,
+						MOD_REASON_REPORT_BLOCK_META_CHANGE);
+				}
+				break;
+			}
 			case MEET_OTHER:
 				infostream << "Server: MEET_OTHER" << std::endl;
 				prof.add("MEET_OTHER", 1);

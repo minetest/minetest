@@ -74,6 +74,9 @@ private:
 	// get_meta(pos)
 	static int l_get_meta(lua_State *L);
 
+	// get_block_meta(blockpos)
+	static int l_get_block_meta(lua_State *L);
+
 	static int l_sound_play(lua_State *L);
 
 	static int l_sound_stop(lua_State *L);

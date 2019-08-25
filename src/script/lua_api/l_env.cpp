@@ -17,6 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
+#include "lua_api/l_blockmeta.h"
 #include "lua_api/l_env.h"
 #include "lua_api/l_internal.h"
 #include "lua_api/l_nodemeta.h"
@@ -570,6 +571,17 @@ int ModApiEnvMod::l_get_meta(lua_State *L)
 	// Do it
 	v3s16 p = read_v3s16(L, 1);
 	NodeMetaRef::create(L, p, env);
+	return 1;
+}
+
+// get_block_meta(blockpos)
+int ModApiEnvMod::l_get_block_meta(lua_State *L)
+{
+	GET_ENV_PTR;
+
+	// Do it
+	v3s16 bp = read_v3s16(L, 1);
+	BlockMetaRef::create(L, bp, env);
 	return 1;
 }
 
@@ -1300,6 +1312,7 @@ void ModApiEnvMod::Initialize(lua_State *L, int top)
 	API_FCT(add_entity);
 	API_FCT(find_nodes_with_meta);
 	API_FCT(get_meta);
+	API_FCT(get_block_meta);
 	API_FCT(get_node_timer);
 	API_FCT(get_player_by_name);
 	API_FCT(get_objects_inside_radius);

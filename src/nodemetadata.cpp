@@ -179,11 +179,18 @@ void NodeMetadataList::deSerialize(std::istream &is,
 			p.Z = readS16(is);
 		} else {
 			u16 p16 = readU16(is);
-			p.X = p16 & (MAP_BLOCKSIZE - 1);
-			p16 /= MAP_BLOCKSIZE;
-			p.Y = p16 & (MAP_BLOCKSIZE - 1);
-			p16 /= MAP_BLOCKSIZE;
-			p.Z = p16;
+			if (p16 != 0xffff) {
+				p.X = p16 & (MAP_BLOCKSIZE - 1);
+				p16 /= MAP_BLOCKSIZE;
+				p.Y = p16 & (MAP_BLOCKSIZE - 1);
+				p16 /= MAP_BLOCKSIZE;
+				p.Z = p16;
+			} else {
+				// mapblock meta
+				p.X = -1;
+				p.Y = 0;
+				p.Z = 0;
+			}
 		}
 		if (m_data.find(p) != m_data.end()) {
 			warningstream << "NodeMetadataList::deSerialize(): "

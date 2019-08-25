@@ -4216,6 +4216,8 @@ Environment access
       {pos1, pos2}.
 * `minetest.get_meta(pos)`
     * Get a `NodeMetaRef` at that position
+* `minetest.get_block_meta(blockpos)`
+    * Get a `BlockMetaRef` at that block position
 * `minetest.get_node_timer(pos)`
     * Get `NodeTimerRef`
 
@@ -5350,6 +5352,21 @@ Can be obtained via `minetest.get_meta(pos)`.
 
 * All methods in MetaDataRef
 * `get_inventory()`: returns `InvRef`
+* `mark_as_private(name or {name1, name2, ...})`: Mark specific vars as private
+  This will prevent them from being sent to the client. Note that the "private"
+  status will only be remembered if an associated key-value pair exists,
+  meaning it's best to call this when initializing all other meta (e.g.
+  `on_construct`).
+
+`BlockMetaRef`
+-------------
+
+Node metadata: reference extra data and functionality stored in a mapblock.
+Can be obtained via `minetest.get_block_meta(blockpos)`.
+
+### Methods
+
+* All methods in MetaDataRef
 * `mark_as_private(name or {name1, name2, ...})`: Mark specific vars as private
   This will prevent them from being sent to the client. Note that the "private"
   status will only be remembered if an associated key-value pair exists,

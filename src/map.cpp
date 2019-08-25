@@ -144,7 +144,7 @@ bool Map::isNodeUnderground(v3s16 p)
 {
 	v3s16 blockpos = getNodeBlockPos(p);
 	MapBlock *block = getBlockNoCreateNoEx(blockpos);
-	return block && block->getIsUnderground(); 
+	return block && block->getIsUnderground();
 }
 
 bool Map::isValidPosition(v3s16 p)
@@ -976,6 +976,51 @@ void Map::removeNodeMetadata(v3s16 p)
 		return;
 	}
 	block->m_node_metadata.remove(p_rel);
+}
+
+NodeMetadata *Map::getBlockMetadata(v3s16 blockpos)//hier
+{
+	MapBlock *block = getBlockNoCreateNoEx(blockpos);
+	if (!block) {
+		infostream << "Map::getBlockMetadata(): Need to emerge "
+				<< PP(blockpos) << std::endl;
+		block = emergeBlock(blockpos, false);
+	}
+	if (!block) {
+		warningstream << "Map::getBlockMetadata(): Block not found"
+				<< std::endl;
+		return nullptr;
+	}
+	NodeMetadata *meta = block->m_node_metadata.get(v3s16(-1, 0, 0));
+	return meta;
+}
+
+bool Map::setBlockMetadata(v3s16 blockpos, NodeMetadata *meta)
+{
+	MapBlock *block = getBlockNoCreateNoEx(blockpos);
+	if (!block) {
+		infostream << "Map::setBlockMetadata(): Need to emerge "
+				<< PP(blockpos) << std::endl;
+		block = emergeBlock(blockpos, false);
+	}
+	if (!block) {
+		warningstream << "Map::setBlockMetadata(): Block not found"
+				<< std::endl;
+		return false;
+	}
+	block->m_node_metadata.set(v3s16(-1, 0, 0), meta);
+	return true;
+}
+
+void Map::removeBlockMetadata(v3s16 blockpos)
+{
+	MapBlock *block = getBlockNoCreateNoEx(blockpos);
+	if (!block) {
+		warningstream << "Map::removeBlockMetadata(): Block not found"
+				<< std::endl;
+		return;
+	}
+	block->m_node_metadata.remove(v3s16(-1, 0, 0));
 }
 
 NodeTimer Map::getNodeTimer(v3s16 p)

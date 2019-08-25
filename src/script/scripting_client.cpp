@@ -32,6 +32,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "lua_api/l_util.h"
 #include "lua_api/l_item.h"
 #include "lua_api/l_nodemeta.h"
+#include "lua_api/l_blockmeta.h"
 #include "lua_api/l_localplayer.h"
 #include "lua_api/l_camera.h"
 
@@ -70,6 +71,7 @@ void ClientScripting::InitializeModApi(lua_State *L, int top)
 	StorageRef::Register(L);
 	LuaMinimap::Register(L);
 	NodeMetaRef::RegisterClient(L);
+	BlockMetaRef::RegisterClient(L);
 	LuaLocalPlayer::Register(L);
 	LuaCamera::Register(L);
 	ModChannelRef::Register(L);

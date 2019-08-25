@@ -120,6 +120,7 @@ protected:
 	friend class InvRef;
 	friend class ObjectRef;
 	friend class NodeMetaRef;
+	friend class BlockMetaRef;
 	friend class ModApiBase;
 	friend class ModApiEnvMod;
 	friend class LuaVoxelManip;

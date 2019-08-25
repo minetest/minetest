@@ -65,6 +65,8 @@ enum MapEditEventType{
 	MEET_SWAPNODE,
 	// Node metadata changed
 	MEET_BLOCK_NODE_METADATA_CHANGED,
+	// Block metadata changed
+	MEET_BLOCK_METADATA_CHANGED,
 	// Anything else (modified_blocks are set unsent)
 	MEET_OTHER
 };
@@ -100,9 +102,11 @@ struct MapEditEvent
 		case MEET_SWAPNODE:
 			return VoxelArea(p);
 		case MEET_BLOCK_NODE_METADATA_CHANGED:
+			return VoxelArea(p);
+		case MEET_BLOCK_METADATA_CHANGED:
 		{
-			v3s16 np1 = p*MAP_BLOCKSIZE;
-			v3s16 np2 = np1 + v3s16(1,1,1)*MAP_BLOCKSIZE - v3s16(1,1,1);
+			v3s16 np1 = p * MAP_BLOCKSIZE;
+			v3s16 np2 = np1 + v3s16(1) * MAP_BLOCKSIZE - v3s16(1);
 			return VoxelArea(np1, np2);
 		}
 		case MEET_OTHER:
@@ -267,6 +271,29 @@ public:
 	 */
 	bool setNodeMetadata(v3s16 p, NodeMetadata *meta);
 	void removeNodeMetadata(v3s16 p);
+
+	/*
+		Block metadata
+	*/
+
+	NodeMetadata *getBlockMetadata(v3s16 blockpos);
+
+	/**
+	 * Sets metadata for a mapblock.
+	 * This method sets the metadata for a given mapblock.
+	 * On success, it returns @c true and the object pointed to
+	 * by @p meta is then managed by the system and should
+	 * not be deleted by the caller.
+	 *
+	 * In case of failure, the method returns @c false and the
+	 * caller is still responsible for deleting the object!
+	 *
+	 * @param blockpos block coordinates
+	 * @param meta pointer to @c NodeMetadata object
+	 * @return @c true on success, @c false on failure
+	 */
+	bool setBlockMetadata(v3s16 blockpos, NodeMetadata *meta);
+	void removeBlockMetadata(v3s16 blockpos);
 
 	/*
 		Node Timers
