@@ -178,12 +178,16 @@ core.register_entity(":__builtin:item", {
 		end
 
 		local node_this = core.get_node_or_nil(pos)
-		local def_this
+		local is_stuck = false
 		if node_this then
-			def_this = minetest.registered_nodes[node_this.name]
+			local sdef = minetest.registered_nodes[node_this.name]
+			is_stuck = (sdef.walkable == nil or sdef.walkable == true)
+				and (sdef.collision_box == nil or sdef.collision_box.type == "regular")
+				and (sdef.node_box == nil or sdef.node_box.type == "regular")
 		end
+
 		-- Push item out when stuck inside solid node
-		if def_this and def_this.walkable then
+		if is_stuck then
 			local shootdir
 			local cx = pos.x % 1
 			local cz = pos.z % 1
