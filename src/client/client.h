@@ -339,6 +339,8 @@ public:
 	{ return m_nodedef_received; }
 	bool mediaReceived()
 	{ return !m_media_downloader; }
+	const bool activeObjectsReceived() const
+	{ return m_activeobjects_received; }
 
 	u16 getProtoVersion()
 	{ return m_proto_ver; }
@@ -539,6 +541,7 @@ private:
 	std::queue<ClientEvent *> m_client_event_queue;
 	bool m_itemdef_received = false;
 	bool m_nodedef_received = false;
+	bool m_activeobjects_received = false;
 	bool m_mods_loaded = false;
 	ClientMediaDownloader *m_media_downloader;
 

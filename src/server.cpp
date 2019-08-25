@@ -620,124 +620,27 @@ void Server::AsyncRunStep(bool initial_step)
 
 		m_clients.lock();
 		const RemoteClientMap &clients = m_clients.getClientList();
-		ScopeProfiler sp(g_profiler, "Server: update visible objects");
-
-		// Radius inside which objects are active
-		static thread_local const s16 radius =
-			g_settings->getS16("active_object_send_range_blocks") * MAP_BLOCKSIZE;
-
-		// Radius inside which players are active
-		static thread_local const bool is_transfer_limited =
-			g_settings->exists("unlimited_player_transfer_distance") &&
-			!g_settings->getBool("unlimited_player_transfer_distance");
-		static thread_local const s16 player_transfer_dist =
-			g_settings->getS16("player_transfer_distance") * MAP_BLOCKSIZE;
-		s16 player_radius = player_transfer_dist;
-		if (player_radius == 0 && is_transfer_limited)
-			player_radius = radius;
+		ScopeProfiler sp(g_profiler, "Server: update objects within range");
 
 		for (const auto &client_it : clients) {
 			RemoteClient *client = client_it.second;
 
-			// If definitions and textures have not been sent, don't
-			// send objects either
 			if (client->getState() < CS_DefinitionsSent)
 				continue;
 
-			RemotePlayer *player = m_env->getPlayer(client->peer_id);
-			if (!player) {
-				// This can happen if the client timeouts somehow
+			// This can happen if the client times out somehow
+			if (!m_env->getPlayer(client->peer_id))
 				continue;
-			}
 
-			PlayerSAO *playersao = player->getPlayerSAO();
+			PlayerSAO *playersao = getPlayerSAO(client->peer_id);
 			if (!playersao)
 				continue;
 
-			s16 my_radius = MYMIN(radius, playersao->getWantedRange() * MAP_BLOCKSIZE);
-			if (my_radius <= 0) my_radius = radius;
-			//infostream << "Server: Active Radius " << my_radius << std::endl;
-
-			std::queue<u16> removed_objects;
-			std::queue<u16> added_objects;
-			m_env->getRemovedActiveObjects(playersao, my_radius, player_radius,
-					client->m_known_objects, removed_objects);
-			m_env->getAddedActiveObjects(playersao, my_radius, player_radius,
-					client->m_known_objects, added_objects);
-
-			// Ignore if nothing happened
-			if (removed_objects.empty() && added_objects.empty()) {
-				continue;
-			}
-
-			std::string data_buffer;
-
-			char buf[4];
-
-			// Handle removed objects
-			writeU16((u8*)buf, removed_objects.size());
-			data_buffer.append(buf, 2);
-			while (!removed_objects.empty()) {
-				// Get object
-				u16 id = removed_objects.front();
-				ServerActiveObject* obj = m_env->getActiveObject(id);
-
-				// Add to data buffer for sending
-				writeU16((u8*)buf, id);
-				data_buffer.append(buf, 2);
-
-				// Remove from known objects
-				client->m_known_objects.erase(id);
-
-				if(obj && obj->m_known_by_count > 0)
-					obj->m_known_by_count--;
-				removed_objects.pop();
-			}
-
-			// Handle added objects
-			writeU16((u8*)buf, added_objects.size());
-			data_buffer.append(buf, 2);
-			while (!added_objects.empty()) {
-				// Get object
-				u16 id = added_objects.front();
-				ServerActiveObject* obj = m_env->getActiveObject(id);
-
-				// Get object type
-				u8 type = ACTIVEOBJECT_TYPE_INVALID;
-				if (!obj)
-					warningstream << FUNCTION_NAME << ": NULL object" << std::endl;
-				else
-					type = obj->getSendType();
-
-				// Add to data buffer for sending
-				writeU16((u8*)buf, id);
-				data_buffer.append(buf, 2);
-				writeU8((u8*)buf, type);
-				data_buffer.append(buf, 1);
-
-				if(obj)
-					data_buffer.append(serializeLongString(
-							obj->getClientInitializationData(client->net_proto_version)));
-				else
-					data_buffer.append(serializeLongString(""));
-
-				// Add to known objects
-				client->m_known_objects.insert(id);
-
-				if(obj)
-					obj->m_known_by_count++;
-
-				added_objects.pop();
-			}
-
-			u32 pktSize = SendActiveObjectRemoveAdd(client->peer_id, data_buffer);
-			verbosestream << "Server: Sent object remove/add: "
-					<< removed_objects.size() << " removed, "
-					<< added_objects.size() << " added, "
-					<< "packet size is " << pktSize << std::endl;
+			SendActiveObjectRemoveAdd(client, playersao);
 		}
 		m_clients.unlock();
 
+		// Save mod storages if modified
 		m_mod_storage_save_timer -= dtime;
 		if (m_mod_storage_save_timer <= 0.0f) {
 			infostream << "Saving registered mod storages." << std::endl;
@@ -1089,9 +992,9 @@ PlayerSAO* Server::StageTwoClientInit(session_t peer_id)
 	return playersao;
 }
 
-inline void Server::handleCommand(NetworkPacket* pkt)
+inline void Server::handleCommand(NetworkPacket *pkt)
 {
-	const ToServerCommandHandler& opHandle = toServerCommandTable[pkt->getCommand()];
+	const ToServerCommandHandler &opHandle = toServerCommandTable[pkt->getCommand()];
 	(this->*opHandle.handler)(pkt);
 }
 
@@ -1925,12 +1828,106 @@ void Server::SendPlayerFormspecPrepend(session_t peer_id)
 	Send(&pkt);
 }
 
-u32 Server::SendActiveObjectRemoveAdd(session_t peer_id, const std::string &datas)
+void Server::SendActiveObjectRemoveAdd(RemoteClient *client, PlayerSAO *playersao)
 {
-	NetworkPacket pkt(TOCLIENT_ACTIVE_OBJECT_REMOVE_ADD, datas.size(), peer_id);
-	pkt.putRawString(datas.c_str(), datas.size());
+	// Radius inside which objects are active
+	static thread_local const s16 radius =
+		g_settings->getS16("active_object_send_range_blocks") * MAP_BLOCKSIZE;
+
+	// Radius inside which players are active
+	static thread_local const bool is_transfer_limited =
+		g_settings->exists("unlimited_player_transfer_distance") &&
+		!g_settings->getBool("unlimited_player_transfer_distance");
+
+	static thread_local const s16 player_transfer_dist =
+		g_settings->getS16("player_transfer_distance") * MAP_BLOCKSIZE;
+
+	s16 player_radius = player_transfer_dist == 0 && is_transfer_limited ?
+		radius : player_transfer_dist;
+
+	s16 my_radius = MYMIN(radius, playersao->getWantedRange() * MAP_BLOCKSIZE);
+	if (my_radius <= 0)
+		my_radius = radius;
+
+	std::queue<u16> removed_objects, added_objects;
+	m_env->getRemovedActiveObjects(playersao, my_radius, player_radius,
+		client->m_known_objects, removed_objects);
+	m_env->getAddedActiveObjects(playersao, my_radius, player_radius,
+		client->m_known_objects, added_objects);
+
+	int removed_count = removed_objects.size();
+	int added_count   = added_objects.size();
+
+	if (removed_objects.empty() && added_objects.empty())
+		return;
+
+	char buf[4];
+	std::string data;
+
+	// Handle removed objects
+	writeU16((u8*)buf, removed_objects.size());
+	data.append(buf, 2);
+	while (!removed_objects.empty()) {
+		// Get object
+		u16 id = removed_objects.front();
+		ServerActiveObject* obj = m_env->getActiveObject(id);
+
+		// Add to data buffer for sending
+		writeU16((u8*)buf, id);
+		data.append(buf, 2);
+
+		// Remove from known objects
+		client->m_known_objects.erase(id);
+
+		if (obj && obj->m_known_by_count > 0)
+			obj->m_known_by_count--;
+
+		removed_objects.pop();
+	}
+
+	// Handle added objects
+	writeU16((u8*)buf, added_objects.size());
+	data.append(buf, 2);
+	while (!added_objects.empty()) {
+		// Get object
+		u16 id = added_objects.front();
+		ServerActiveObject* obj = m_env->getActiveObject(id);
+
+		// Get object type
+		u8 type = ACTIVEOBJECT_TYPE_INVALID;
+		if (!obj)
+			warningstream << FUNCTION_NAME << ": NULL object" << std::endl;
+		else
+			type = obj->getSendType();
+
+		// Add to data buffer for sending
+		writeU16((u8*)buf, id);
+		data.append(buf, 2);
+		writeU8((u8*)buf, type);
+		data.append(buf, 1);
+
+		if (obj)
+			data.append(serializeLongString(
+				obj->getClientInitializationData(client->net_proto_version)));
+		else
+			data.append(serializeLongString(""));
+
+		// Add to known objects
+		client->m_known_objects.insert(id);
+
+		if (obj)
+			obj->m_known_by_count++;
+
+		added_objects.pop();
+	}
+
+	NetworkPacket pkt(TOCLIENT_ACTIVE_OBJECT_REMOVE_ADD, data.size(), client->peer_id);
+	pkt.putRawString(data.c_str(), data.size());
 	Send(&pkt);
-	return pkt.getSize();
+
+	verbosestream << "Server::SendActiveObjectRemoveAdd: "
+		<< removed_count << " removed, " << added_count << " added, "
+		<< "packet size is " << pkt.getSize() << std::endl;
 }
 
 void Server::SendActiveObjectMessages(session_t peer_id, const std::string &datas,
