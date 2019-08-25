@@ -298,9 +298,6 @@ void Server::handleCommand_Init2(NetworkPacket* pkt)
 	infostream << "Server: Sending content to "
 			<< getPlayerName(pkt->getPeerId()) << std::endl;
 
-	// Send player movement settings
-	SendMovement(pkt->getPeerId());
-
 	// Send item definitions
 	SendItemDef(pkt->getPeerId(), m_itemdef, protocol_version);
 
@@ -312,8 +309,24 @@ void Server::handleCommand_Init2(NetworkPacket* pkt)
 	// Send media announcement
 	sendMediaAnnouncement(pkt->getPeerId(), lang);
 
+	RemoteClient *client;
+	{
+		MutexAutoLock(m_con);
+		client = getClient(pkt->getPeerId(), CS_InitDone);
+	}
+
+	// Send active objects
+	{
+		PlayerSAO *sao = getPlayerSAO(pkt->getPeerId());
+		if (client && sao)
+			SendActiveObjectRemoveAdd(client, sao);
+	}
+
 	// Send detached inventories
 	sendDetachedInventories(pkt->getPeerId(), false);
+
+	// Send player movement settings
+	SendMovement(pkt->getPeerId());
 
 	// Send time of day
 	u16 time = m_env->getTimeOfDay();
@@ -323,11 +336,10 @@ void Server::handleCommand_Init2(NetworkPacket* pkt)
 	SendCSMRestrictionFlags(pkt->getPeerId());
 
 	// Warnings about protocol version can be issued here
-	if (getClient(pkt->getPeerId())->net_proto_version < LATEST_PROTOCOL_VERSION) {
+	if (client->net_proto_version < LATEST_PROTOCOL_VERSION) {
 		SendChatMessage(pkt->getPeerId(), ChatMessage(CHATMESSAGE_TYPE_SYSTEM,
-				L"# Server: WARNING: YOUR CLIENT'S VERSION MAY NOT BE FULLY COMPATIBLE "
-				L"WITH THIS SERVER!"));
-
+			L"# Server: WARNING: YOUR CLIENT'S VERSION MAY NOT BE FULLY COMPATIBLE "
+			L"WITH THIS SERVER!"));
 	}
 }
 
