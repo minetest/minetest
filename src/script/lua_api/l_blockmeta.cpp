@@ -24,6 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "map.h"
 #include "mapblock.h"
 #include "server.h"
+#include "blockmetadata.h"
 
 /*
 	BlockMetaRef
@@ -41,9 +42,9 @@ Metadata *BlockMetaRef::getmeta(bool auto_create)
 	if (m_is_local)
 		return m_meta;
 
-	NodeMetadata *meta = m_env->getMap().getBlockMetadata(m_bp);
+	BlockMetadata *meta = m_env->getMap().getBlockMetadata(m_bp);
 	if (!meta && auto_create) {
-		meta = new NodeMetadata(m_env->getGameDef()->idef());
+		meta = new BlockMetadata();
 		if (!m_env->getMap().setBlockMetadata(m_bp, meta)) {
 			delete meta;
 			return NULL;
@@ -59,9 +60,8 @@ void BlockMetaRef::clearMeta()
 
 void BlockMetaRef::reportMetadataChange(const std::string *name)
 {
-	// NOTE: This same code is in rollback_interface.cpp
 	// Inform other things that the metadata has changed
-	NodeMetadata *meta = dynamic_cast<NodeMetadata*>(m_meta);
+	BlockMetadata *meta = dynamic_cast<BlockMetadata*>(m_meta);
 
 	MapEditEvent event;
 	event.type = MEET_BLOCK_METADATA_CHANGED;
@@ -86,7 +86,7 @@ int BlockMetaRef::l_mark_as_private(lua_State *L)
 	MAP_LOCK_REQUIRED;
 
 	BlockMetaRef *ref = checkobject(L, 1);
-	NodeMetadata *meta = dynamic_cast<NodeMetadata*>(ref->getmeta(true));
+	BlockMetadata *meta = dynamic_cast<BlockMetadata*>(ref->getmeta(true));
 	assert(meta);
 
 	if (lua_istable(L, 2)) {

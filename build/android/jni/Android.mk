@@ -109,6 +109,7 @@ LOCAL_C_INCLUDES := \
 
 LOCAL_SRC_FILES := \
 		jni/src/ban.cpp                           \
+		jni/src/blockmetadata.cpp                 \
 		jni/src/chat.cpp                          \
 		jni/src/client/activeobjectmgr.cpp        \
 		jni/src/client/camera.cpp                 \

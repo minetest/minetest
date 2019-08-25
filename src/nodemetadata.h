@@ -29,6 +29,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	There are two interaction methods: inventory menu and text input.
 	Only one can be used for a single metadata, thus only inventory OR
 	text input should exist in a metadata.
+
+	^ That text is probably very outdated.
 */
 
 class Inventory;
@@ -68,7 +70,6 @@ private:
 
 /*
 	List of metadata of all the nodes of a block
-	(also contains block meta at pos (-1, 0, 0))
 */
 
 typedef std::map<v3s16, NodeMetadata *> NodeMetadataMap;

@@ -36,6 +36,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "map.h"
 #include "util/string.h"
 #include "nodedef.h"
+#include "blockmetadata.h"
 
 int ModApiClient::l_get_current_modname(lua_State *L)
 {
@@ -234,7 +235,7 @@ int ModApiClient::l_get_meta(lua_State *L)
 int ModApiClient::l_get_block_meta(lua_State *L)
 {
 	v3s16 bp = read_v3s16(L, 1);
-	NodeMetadata *meta = getClient(L)->getEnv().getMap().getBlockMetadata(bp);
+	BlockMetadata *meta = getClient(L)->getEnv().getMap().getBlockMetadata(bp);
 	BlockMetaRef::createClient(L, meta);
 	return 1;
 }

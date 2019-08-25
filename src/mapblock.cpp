@@ -24,6 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "light.h"
 #include "nodedef.h"
 #include "nodemetadata.h"
+#include "blockmetadata.h"
 #include "gamedef.h"
 #include "log.h"
 #include "nameidmapping.h"
@@ -409,10 +410,14 @@ void MapBlock::serialize(std::ostream &os, u8 version, bool disk)
 	}
 
 	/*
-		Node metadata
+		Node and block metadata
 	*/
 	std::ostringstream oss(std::ios_base::binary);
 	m_node_metadata.serialize(oss, version, disk);
+	if (m_block_metadata)
+		m_block_metadata->serialize(oss, version, disk);
+	else
+		writeU8(oss, 0);
 	compressZlib(oss.str(), os);
 
 	/*
@@ -489,25 +494,31 @@ void MapBlock::deSerialize(std::istream &is, u8 version, bool disk)
 			content_width, params_width, true);
 
 	/*
-		NodeMetadata
+		Node and block metadata
 	*/
-	TRACESTREAM(<<"MapBlock::deSerialize "<<PP(getPos())
-			<<": Node metadata"<<std::endl);
+	TRACESTREAM(<< "MapBlock::deSerialize " << PP(getPos())
+			<< ": Node and block metadata" << std::endl);
 	// Ignore errors
 	try {
 		std::ostringstream oss(std::ios_base::binary);
 		decompressZlib(is, oss);
 		std::istringstream iss(oss.str(), std::ios_base::binary);
-		if (version >= 23)
+		if (version >= 23) {
 			m_node_metadata.deSerialize(iss, m_gamedef->idef());
-		else
+			if (version >= 29) {
+				if (!m_block_metadata)
+					m_block_metadata = new BlockMetadata;
+				m_block_metadata->deSerialize(iss);
+			}
+		} else {
 			content_nodemeta_deserialize_legacy(iss,
 				&m_node_metadata, &m_node_timers,
 				m_gamedef->idef());
+		}
 	} catch(SerializationError &e) {
-		warningstream<<"MapBlock::deSerialize(): Ignoring an error"
-				<<" while deserializing node metadata at ("
-				<<PP(getPos())<<": "<<e.what()<<std::endl;
+		warningstream << "MapBlock::deSerialize(): Ignoring an error"
+				<< " while deserializing node and block metadata at ("
+				<< PP(getPos()) << ": " << e.what() << std::endl;
 	}
 
 	/*

@@ -37,6 +37,7 @@ class NodeMetadataList;
 class IGameDef;
 class MapBlockMesh;
 class VoxelManipulator;
+class BlockMetadata;
 
 #define BLOCK_TIMESTAMP_UNDEFINED 0xffffffff
 
@@ -524,6 +525,7 @@ public:
 #endif
 
 	NodeMetadataList m_node_metadata;
+	BlockMetadata *m_block_metadata = nullptr;
 	NodeTimerList m_node_timers;
 	StaticObjectList m_static_objects;
 

@@ -855,6 +855,7 @@ void Server::AsyncRunStep(bool initial_step)
 		Profiler prof;
 
 		std::list<v3s16> node_meta_updates;
+		std::list<v3s16> block_meta_updates;
 
 		while (!m_unsent_map_edit_queue.empty()) {
 			MapEditEvent* event = m_unsent_map_edit_queue.front();
@@ -898,10 +899,9 @@ void Server::AsyncRunStep(bool initial_step)
 				verbosestream << "Server: MEET_BLOCK_METADATA_CHANGED" << std::endl;
 				prof.add("MEET_BLOCK_METADATA_CHANGED", 1);
 				if (!event->is_private_change) {
-					// do not send at all, because this is so hard >_< todo
-					//~ // Don't send the change yet. Collect them to eliminate dupes.
-					//~ node_meta_updates.remove(event->p);
-					//~ node_meta_updates.push_back(event->p);
+					// Don't send the change yet. Collect them to eliminate dupes.
+					block_meta_updates.remove(event->p);
+					block_meta_updates.push_back(event->p);
 				}
 
 				if (MapBlock *block = m_env->getMap().getBlockNoCreateNoEx(event->p)) {
@@ -956,6 +956,8 @@ void Server::AsyncRunStep(bool initial_step)
 		// Send all metadata updates
 		if (node_meta_updates.size())
 			sendMetadataChanged(node_meta_updates);
+		if (block_meta_updates.size())
+			sendBlockMetadataChanged(block_meta_updates);
 	}
 
 	/*
@@ -2248,6 +2250,57 @@ void Server::sendMetadataChanged(const std::list<v3s16> &meta_updates, float far
 		m_clients.send(i, 0, &pkt, true);
 
 		meta_updates_list.clear();
+	}
+
+	m_clients.unlock();
+}
+
+void Server::sendBlockMetadataChanged(const std::list<v3s16> &meta_updates, float far_d_nodes)
+{
+	float maxdsq = far_d_nodes * BS;
+	maxdsq *= maxdsq;
+	//~ NodeMetadataList meta_updates_list(false); // todo: replace this with something else
+	std::vector<session_t> clients = m_clients.getClientIDs();
+
+	m_clients.lock();
+
+	for (session_t i : clients) {
+		RemoteClient *client = m_clients.lockedGetClientNoEx(i);
+		if (!client)
+			continue;
+
+		ServerActiveObject *player = m_env->getActiveObject(i);
+		v3f player_pos = player ? player->getBasePosition() : v3f();
+
+		for (const v3s16 &blockpos : meta_updates) {
+			BlockMetadata *meta = m_env->getMap().getBlockMetadata(blockpos);
+
+			if (!meta)
+				continue;
+
+			if (!client->isBlockSent(blockpos) || (player &&
+					player_pos.getDistanceFromSQ(intToFloat(blockpos, 1.0f)) > maxdsq)) {
+				client->SetBlockNotSent(blockpos);
+				continue;
+			}
+
+			//~ // Add the change to send list
+			//~ meta_updates_list.set(pos, meta);
+		}
+		//~ if (meta_updates_list.size() == 0)
+			//~ continue;
+
+		//~ // Send the meta changes; todo
+		//~ std::ostringstream os(std::ios::binary);
+		//~ meta_updates_list.serialize(os, client->net_proto_version, false, true);
+		//~ std::ostringstream oss(std::ios::binary);
+		//~ compressZlib(os.str(), oss);
+
+		//~ NetworkPacket pkt(TOCLIENT_NODEMETA_CHANGED, 0);
+		//~ pkt.putLongString(oss.str());
+		//~ m_clients.send(i, 0, &pkt, true);
+
+		//~ meta_updates_list.clear();
 	}
 
 	m_clients.unlock();

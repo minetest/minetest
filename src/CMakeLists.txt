@@ -363,6 +363,7 @@ set(common_SRCS
 	${server_SRCS}
 	${content_SRCS}
 	ban.cpp
+	blockmetadata.cpp
 	chat.cpp
 	clientiface.cpp
 	collision.cpp

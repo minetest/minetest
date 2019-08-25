@@ -26,6 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "porting.h"
 #include "serialization.h"
 #include "nodemetadata.h"
+#include "blockmetadata.h"
 #include "settings.h"
 #include "log.h"
 #include "profiler.h"
@@ -978,7 +979,7 @@ void Map::removeNodeMetadata(v3s16 p)
 	block->m_node_metadata.remove(p_rel);
 }
 
-NodeMetadata *Map::getBlockMetadata(v3s16 blockpos)//hier
+BlockMetadata *Map::getBlockMetadata(v3s16 blockpos)
 {
 	MapBlock *block = getBlockNoCreateNoEx(blockpos);
 	if (!block) {
@@ -991,11 +992,11 @@ NodeMetadata *Map::getBlockMetadata(v3s16 blockpos)//hier
 				<< std::endl;
 		return nullptr;
 	}
-	NodeMetadata *meta = block->m_node_metadata.get(v3s16(-1, 0, 0));
+	BlockMetadata *meta = block->m_block_metadata;
 	return meta;
 }
 
-bool Map::setBlockMetadata(v3s16 blockpos, NodeMetadata *meta)
+bool Map::setBlockMetadata(v3s16 blockpos, BlockMetadata *meta)
 {
 	MapBlock *block = getBlockNoCreateNoEx(blockpos);
 	if (!block) {
@@ -1008,7 +1009,9 @@ bool Map::setBlockMetadata(v3s16 blockpos, NodeMetadata *meta)
 				<< std::endl;
 		return false;
 	}
-	block->m_node_metadata.set(v3s16(-1, 0, 0), meta);
+	if (block->m_block_metadata)
+		delete block->m_block_metadata;
+	block->m_block_metadata = meta;
 	return true;
 }
 
@@ -1020,7 +1023,10 @@ void Map::removeBlockMetadata(v3s16 blockpos)
 				<< std::endl;
 		return;
 	}
-	block->m_node_metadata.remove(v3s16(-1, 0, 0));
+	if (block->m_block_metadata) {
+		delete block->m_block_metadata;
+		block->m_block_metadata = nullptr;
+	}
 }
 
 NodeTimer Map::getNodeTimer(v3s16 p)

@@ -42,6 +42,7 @@ class MapSector;
 class ServerMapSector;
 class MapBlock;
 class NodeMetadata;
+class BlockMetadata;
 class IGameDef;
 class IRollbackManager;
 class EmergeManager;
@@ -276,7 +277,7 @@ public:
 		Block metadata
 	*/
 
-	NodeMetadata *getBlockMetadata(v3s16 blockpos);
+	BlockMetadata *getBlockMetadata(v3s16 blockpos);
 
 	/**
 	 * Sets metadata for a mapblock.
@@ -292,7 +293,7 @@ public:
 	 * @param meta pointer to @c NodeMetadata object
 	 * @return @c true on success, @c false on failure
 	 */
-	bool setBlockMetadata(v3s16 blockpos, NodeMetadata *meta);
+	bool setBlockMetadata(v3s16 blockpos, BlockMetadata *meta);
 	void removeBlockMetadata(v3s16 blockpos);
 
 	/*
