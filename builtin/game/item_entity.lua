@@ -17,6 +17,26 @@ end
 local time_to_live = tonumber(core.settings:get("item_entity_ttl")) or 900
 local gravity = tonumber(core.settings:get("movement_gravity")) or 9.81
 
+local function enable_physics(object, luaentity)
+	if luaentity.physical_state == false then
+		luaentity.physical_state = true
+		object:set_properties({
+			physical = true
+		})
+		object:set_velocity({x=0,y=0,z=0})
+		object:set_acceleration({x=0,y=-gravity,z=0})
+	end
+end
+local function disable_physics(object, luaentity)
+	if luaentity.physical_state == true then
+		luaentity.physical_state = false
+		object:set_properties({
+			physical = false
+		})
+		object:set_velocity({x=0,y=0,z=0})
+		object:set_acceleration({x=0,y=0,z=0})
+	end
+end
 
 core.register_entity(":__builtin:item", {
 	initial_properties = {
@@ -35,7 +55,12 @@ core.register_entity(":__builtin:item", {
 	itemstring = "",
 	moving_state = true,
 	slippery_state = false,
+	physical_state = true,
 	age = 0,
+	-- Helper vars for pushing item out of solid nodes
+	force_out = nil,
+	force_out_start = nil,
+	force_out_timer = 0,
 
 	set_item = function(self, item)
 		local stack = ItemStack(item or self.itemstring)
@@ -152,6 +177,100 @@ core.register_entity(":__builtin:item", {
 			return
 		end
 
+		local node_this = core.get_node_or_nil(pos)
+		local def_this
+		if node_this then
+			def_this = minetest.registered_nodes[node_this.name]
+		end
+		-- Push item out when stuck inside solid node
+		if def_this and def_this.walkable then
+			local shootdir
+			local cx = pos.x % 1
+			local cz = pos.z % 1
+			local order = {}
+
+			-- First prepare the order in which the 4 sides are to be checked.
+			-- 1st: closest
+			-- 2nd: other direction
+			-- 3rd and 4th: other axis
+			local cxcz = function(o, cw, one, zero)
+				if cw > 0 then
+					table.insert(o, { [one]=1, y=0, [zero]=0 })
+					table.insert(o, { [one]=-1, y=0, [zero]=0 })
+				else
+					table.insert(o, { [one]=-1, y=0, [zero]=0 })
+					table.insert(o, { [one]=1, y=0, [zero]=0 })
+				end
+				return o
+			end
+			if math.abs(cx) > math.abs(cz) then
+				order = cxcz(order, cx, "x", "z")
+				order = cxcz(order, cz, "z", "x")
+			else
+				order = cxcz(order, cz, "z", "x")
+				order = cxcz(order, cx, "x", "z")
+			end
+
+			-- Check which one of the 4 sides is free
+			for o=1, #order do
+				local nn = minetest.get_node(vector.add(pos, order[o])).name
+				local def_side = minetest.registered_nodes[nn]
+				if def_side and def_side.walkable == false and nn ~= "ignore" then
+					shootdir = order[o]
+					break
+				end
+			end
+			-- If none of the 4 sides is free, shoot upwards
+			if shootdir == nil then
+				shootdir = { x=0, y=1, z=0 }
+				local nn = minetest.get_node(vector.add(pos, shootdir)).name
+				if nn == "ignore" then
+					-- Do not push into ignore
+					return
+				end
+			end
+
+			-- Set new item moving speed accordingly
+			local newv = vector.multiply(shootdir, 3)
+			self.object:set_acceleration({x = 0, y = 0, z = 0})
+			self.object:set_velocity(newv)
+
+			disable_physics(self.object, self)
+
+			if shootdir.y == 0 then
+				self.force_out = newv
+				self.force_out_start = vector.floor(pos)
+				self.force_out_timer = 1
+			end
+			return
+		end
+
+		-- This code is run after the entity got a push from above “push away” code.
+		-- It is responsible for making sure the entity is entirely outside the solid node
+		-- (with its full collision box), not just its center.
+		if self.force_out_timer > 0 then
+			local cbox = self.object:get_properties().collisionbox
+			local ok = false
+			if self.force_out.x > 0 and (pos.x > (self.force_out_start.x + 0.5 + (cbox[4] - cbox[1])/2)) then ok = true
+			elseif self.force_out.x < 0 and (pos.x < (self.force_out_start.x + 0.5 - (cbox[4] - cbox[1])/2)) then ok = true
+			elseif self.force_out.z > 0 and (pos.z > (self.force_out_start.z + 0.5 + (cbox[6] - cbox[3])/2)) then ok = true
+			elseif self.force_out.z < 0 and (pos.z < (self.force_out_start.z + 0.5 - (cbox[6] - cbox[3])/2)) then ok = true end
+			-- Item was successfully forced out. No more pushing
+			if ok then
+				self.force_out_timer = -1
+				self.force_out = nil
+				enable_physics(self.object, self)
+			else
+				self.force_out_timer = self.force_out_timer - dtime
+			end
+			return
+		elseif self.force_out or not self.physical_state then
+			self.force_out = nil
+			enable_physics(self.object, self)
+			return
+		end
+
+		-- Slide on slippery nodes
 		local vel = self.object:get_velocity()
 		local def = node and core.registered_nodes[node.name]
 		local is_moving = (def and not def.walkable) or
