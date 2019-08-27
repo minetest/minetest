@@ -895,7 +895,6 @@ local function handle_change_setting_buttons(this, fields)
 			local new_value = fields["te_setting_value"]
 			core.settings:set(setting.name, new_value)
 		end
-		core.settings:write()
 		this:delete()
 		return true
 	end
@@ -982,11 +981,11 @@ local function create_settings_formspec(tabview, _, tabdata)
 		formspec = formspec:sub(1, -2) -- remove trailing comma
 	end
 	formspec = formspec .. ";" .. selected_setting .. "]" ..
-			"button[0,4.9;4,1;btn_back;".. fgettext("< Back to Settings page") .. "]" ..
-			"button[10,4.9;2,1;btn_edit;" .. fgettext("Edit") .. "]" ..
-			"button[7,4.9;3,1;btn_restore;" .. fgettext("Restore Default") .. "]" ..
-			"checkbox[0,4.3;cb_tech_settings;" .. fgettext("Show technical names") .. ";"
-					.. dump(core.settings:get_bool("main_menu_technical_settings")) .. "]"
+		"button[0,4.9;4,1;btn_back;".. fgettext("< Back to Settings page") .. "]" ..
+		"button[10,4.9;2,1;btn_edit;" .. fgettext("Edit") .. "]" ..
+		"button[7,4.9;3,1;btn_restore;" .. fgettext("Restore Default") .. "]" ..
+		"checkbox[0,4.3;cb_tech_settings;" .. fgettext("Show technical names") .. ";"
+			.. dump(core.settings:get_bool("main_menu_technical_settings")) .. "]"
 
 	return formspec
 end
@@ -1001,7 +1000,6 @@ local function handle_settings_buttons(this, fields, tabname, tabdata)
 			if setting and setting.type == "bool" then
 				local current_value = get_current_value(setting)
 				core.settings:set_bool(setting.name, not core.is_yes(current_value))
-				core.settings:write()
 				return true
 			else
 				list_enter = true
@@ -1045,7 +1043,8 @@ local function handle_settings_buttons(this, fields, tabname, tabdata)
 		local setting = settings[selected_setting]
 		if setting and setting.type ~= "category" then
 			local edit_dialog = dialog_create("change_setting",
-					create_change_setting_formspec, handle_change_setting_buttons)
+				create_change_setting_formspec,
+				handle_change_setting_buttons)
 			edit_dialog:set_parent(this)
 			this:hide()
 			edit_dialog:show()
@@ -1057,7 +1056,6 @@ local function handle_settings_buttons(this, fields, tabname, tabdata)
 		local setting = settings[selected_setting]
 		if setting and setting.type ~= "category" then
 			core.settings:remove(setting.name)
-			core.settings:write()
 			core.update_formspec(this:get_formspec())
 		end
 		return true
@@ -1070,7 +1068,6 @@ local function handle_settings_buttons(this, fields, tabname, tabdata)
 
 	if fields["cb_tech_settings"] then
 		core.settings:set("main_menu_technical_settings", fields["cb_tech_settings"])
-		core.settings:write()
 		core.update_formspec(this:get_formspec())
 		return true
 	end
@@ -1080,11 +1077,18 @@ end
 
 function create_adv_settings_dlg()
 	local dlg = dialog_create("settings_advanced",
-				create_settings_formspec,
-				handle_settings_buttons,
-				nil)
+		create_settings_formspec,
+		handle_settings_buttons)
 
-				return dlg
+	-- Modify ui:delete to call core.settings:write() before
+	-- destroying the dialog and returning control to parent
+	local old_delete = dlg.delete
+	function dlg.delete(self)
+		core.settings:write()
+		old_delete(self)
+	end
+
+	return dlg
 end
 
 -- Uncomment to generate 'minetest.conf.example' and 'settings_translation_file.cpp'.
