@@ -510,7 +510,7 @@ Object types:
     u8[len] itemstring
 
 7: LuaEntity:
-  u8 version (=1)
+  u8 compatibility_byte (always 1)
   version 1:
     u16 len
     u8[len] entity name
