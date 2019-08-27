@@ -574,11 +574,11 @@ parallax_occlusion_bias (Parallax occlusion bias) float 0.04
 #    Requires shaders to be enabled.
 enable_waving_water (Waving water) bool false
 
-water_wave_height (Waving water height) float 1.0
+water_wave_height (Waving water wave height) float 1.0
 
-water_wave_length (Waving water length) float 20.0
+water_wave_length (Waving water wavelength) float 20.0
 
-water_wave_speed (Waving water speed) float 5.0
+water_wave_speed (Waving water wave speed) float 5.0
 
 #    Set to true enables waving leaves.
 #    Requires shaders to be enabled.
@@ -608,11 +608,11 @@ pause_on_lost_focus (Pause on lost window focus) bool false
 #    View distance in nodes.
 viewing_range (Viewing range) int 100 20 4000
 
-#   Camera near plane distance in nodes, between 0 and 0.5
+#   Camera 'near clipping plane' distance in nodes, between 0 and 0.5.
 #   Most users will not need to change this.
 #   Increasing can reduce artifacting on weaker GPUs.
 #   0.1 = Default, 0.25 = Good value for weaker tablets.
-near_plane (Near plane) float 0.1 0 0.5
+near_plane (Near clipping plane) float 0.1 0 0.5
 
 #    Width component of the initial window size.
 screen_w (Screen width) int 1024
@@ -1117,17 +1117,44 @@ chat_message_limit_trigger_kick (Chat message kick threshold) int 50
 
 [**Physics]
 
+#    Horizontal and vertical acceleration on ground or when climbing,
+#    in nodes per second per second.
 movement_acceleration_default (Default acceleration) float 3
+
+#    Horizontal acceleration in air when jumping or falling,
+#    in nodes per second per second.
 movement_acceleration_air (Acceleration in air) float 2
+
+#    Horizontal and vertical acceleration in fast mode,
+#    in nodes per second per second.
 movement_acceleration_fast (Fast mode acceleration) float 10
+
+#    Walking and flying speed, in nodes per second.
 movement_speed_walk (Walking speed) float 4
+
+#    Sneaking speed, in nodes per second.
 movement_speed_crouch (Sneaking speed) float 1.35
+
+#    Walking, flying and climbing speed in fast mode, in nodes per second.
 movement_speed_fast (Fast mode speed) float 20
+
+#    Vertical climbing speed, in nodes per second.
 movement_speed_climb (Climbing speed) float 3
+
+#    Initial vertical speed when jumping, in nodes per second.
 movement_speed_jump (Jumping speed) float 6.5
+
+#    Decrease this to increase liquid resistence to movement.
 movement_liquid_fluidity (Liquid fluidity) float 1
+
+#    Maximum liquid resistence. Controls deceleration when entering liquid at
+#    high speed.
 movement_liquid_fluidity_smooth (Liquid fluidity smoothing) float 0.5
-movement_liquid_sink (Liquid sinking speed) float 10
+
+#    Controls sinking speed in liquid.
+movement_liquid_sink (Liquid sinking) float 10
+
+#    Acceleration of gravity, in nodes per second per second.
 movement_gravity (Gravity) float 9.81
 
 [**Advanced]
@@ -1429,12 +1456,12 @@ mgv5_np_dungeons (Dungeon noise) noise_params_3d 0.9, 0.5, (500, 500, 500), 0, 2
 
 #    Map generation attributes specific to Mapgen v6.
 #    The 'snowbiomes' flag enables the new 5 biome system.
-#    When the new biome system is enabled jungles are automatically enabled and
+#    When the 'snowbiomes' flag is enabled jungles are automatically enabled and
 #    the 'jungles' flag is ignored.
-mgv6_spflags (Mapgen V6 specific flags) flags jungles,biomeblend,mudflow,snowbiomes,trees jungles,biomeblend,mudflow,snowbiomes,flat,trees,nojungles,nobiomeblend,nomudflow,nosnowbiomes,noflat,notrees
+mgv6_spflags (Mapgen V6 specific flags) flags jungles,biomeblend,mudflow,snowbiomes,noflat,trees jungles,biomeblend,mudflow,snowbiomes,flat,trees,nojungles,nobiomeblend,nomudflow,nosnowbiomes,noflat,notrees
 
 #    Deserts occur when np_biome exceeds this value.
-#    When the new biome system is enabled, this is ignored.
+#    When the 'snowbiomes' flag is enabled, this is ignored.
 mgv6_freq_desert (Desert noise threshold) float 0.45
 
 #    Sandy beaches occur when np_beach exceeds this value.
