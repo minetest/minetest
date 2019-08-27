@@ -27,6 +27,7 @@ local function enable_physics(object, luaentity)
 		object:set_acceleration({x=0,y=-gravity,z=0})
 	end
 end
+
 local function disable_physics(object, luaentity)
 	if luaentity.physical_state == true then
 		luaentity.physical_state = false
@@ -253,12 +254,19 @@ core.register_entity(":__builtin:item", {
 		-- It is responsible for making sure the entity is entirely outside the solid node
 		-- (with its full collision box), not just its center.
 		if self.force_out_timer > 0 then
-			local cbox = self.object:get_properties().collisionbox
+			local c = self.object:get_properties().collisionbox
+			local s = self.force_out_start
+			local f = self.force_out
 			local ok = false
-			if self.force_out.x > 0 and (pos.x > (self.force_out_start.x + 0.5 + (cbox[4] - cbox[1])/2)) then ok = true
-			elseif self.force_out.x < 0 and (pos.x < (self.force_out_start.x + 0.5 - (cbox[4] - cbox[1])/2)) then ok = true
-			elseif self.force_out.z > 0 and (pos.z > (self.force_out_start.z + 0.5 + (cbox[6] - cbox[3])/2)) then ok = true
-			elseif self.force_out.z < 0 and (pos.z < (self.force_out_start.z + 0.5 - (cbox[6] - cbox[3])/2)) then ok = true end
+			if f.x > 0 and (pos.x > (s.x + 0.5 + (c[4] - c[1])/2)) then
+				ok = true
+			elseif f.x < 0 and (pos.x < (s.x + 0.5 - (c[4] - c[1])/2)) then
+				ok = true
+			elseif f.z > 0 and (pos.z > (s.z + 0.5 + (c[6] - c[3])/2)) then
+				ok = true
+			elseif f.z < 0 and (pos.z < (s.z + 0.5 - (c[6] - c[3])/2)) then
+				ok = true
+			end
 			-- Item was successfully forced out. No more pushing
 			if ok then
 				self.force_out_timer = -1
