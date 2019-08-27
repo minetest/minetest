@@ -190,8 +190,8 @@ core.register_entity(":__builtin:item", {
 		-- Push item out when stuck inside solid node
 		if is_stuck then
 			local shootdir
-			local cx = pos.x % 1
-			local cz = pos.z % 1
+			local cx = (pos.x % 1) - 0.5
+			local cz = (pos.z % 1) - 0.5
 			local order = {}
 
 			-- First prepare the order in which the 4 sides are to be checked.
@@ -199,7 +199,7 @@ core.register_entity(":__builtin:item", {
 			-- 2nd: other direction
 			-- 3rd and 4th: other axis
 			local cxcz = function(o, cw, one, zero)
-				if cw > 0 then
+				if cw < 0 then
 					table.insert(o, { [one]=1, y=0, [zero]=0 })
 					table.insert(o, { [one]=-1, y=0, [zero]=0 })
 				else
@@ -208,7 +208,7 @@ core.register_entity(":__builtin:item", {
 				end
 				return o
 			end
-			if math.abs(cx) > math.abs(cz) then
+			if math.abs(cx) < math.abs(cz) then
 				order = cxcz(order, cx, "x", "z")
 				order = cxcz(order, cz, "z", "x")
 			else
