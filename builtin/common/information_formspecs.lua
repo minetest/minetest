@@ -131,12 +131,10 @@ help_command.func = function(name, param)
 	if param == "privs" then
 		core.show_formspec(name, "__builtin:help_privs",
 			build_privs_formspec(name))
-		return
 	end
 	if param == "" or param == "all" then
 		core.show_formspec(name, "__builtin:help_cmds",
 			build_chatcommands_formspec(name))
-		return
 	end
 
 	return old_help_func(name, param)
