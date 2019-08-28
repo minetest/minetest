@@ -47,7 +47,7 @@ Metadata *BlockMetaRef::getmeta(bool auto_create)
 		meta = new BlockMetadata();
 		if (!m_env->getMap().setBlockMetadata(m_bp, meta)) {
 			delete meta;
-			return NULL;
+			return nullptr;
 		}
 	}
 	return meta;

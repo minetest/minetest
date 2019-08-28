@@ -47,13 +47,13 @@ void BlockMetadata::serialize(std::ostream &os, u8 blockver, bool disk) const
 	}
 }
 
-void BlockMetadata::deSerialize(std::istream &is)
+bool BlockMetadata::deSerialize(std::istream &is)
 {
 	clear();
 
 	u8 version = readU8(is);
 	if (version == 0) {
-		return;
+		return false;
 	} else if (version > 1) {
 		std::string err_str = std::string(FUNCTION_NAME)
 			+ ": version " + itos(version) + " not supported";
@@ -62,6 +62,8 @@ void BlockMetadata::deSerialize(std::istream &is)
 	}
 
 	u32 num_vars = readU32(is);
+	if (num_vars == 0)
+		return false;
 	for (u32 i = 0; i < num_vars; i++) {
 		std::string name = deSerializeString(is);
 		std::string var = deSerializeLongString(is);
@@ -69,6 +71,7 @@ void BlockMetadata::deSerialize(std::istream &is)
 		if (readU8(is) == 1)
 			markPrivate(name, true);
 	}
+	return true;
 }
 
 void BlockMetadata::clear()

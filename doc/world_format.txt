@@ -381,14 +381,14 @@ if map format version >= 29: block meta
   u8 version
   if version == 0:
     (nothing else)
-  else:
+  if version == 1:
     u32 num_vars
     foreach num_vars:
       u16 key_len
       u8[key_len] key
       u32 val_len
       u8[val_len] value
-      u8 is_private -- only for version >= 2. 0 = not private, 1 = private
+      u8 is_private -- 0 = not private, 1 = private
 
 - Node timers
 if map format version == 23:

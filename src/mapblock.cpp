@@ -506,9 +506,16 @@ void MapBlock::deSerialize(std::istream &is, u8 version, bool disk)
 		if (version >= 23) {
 			m_node_metadata.deSerialize(iss, m_gamedef->idef());
 			if (version >= 29) {
-				if (!m_block_metadata)
-					m_block_metadata = new BlockMetadata;
-				m_block_metadata->deSerialize(iss);
+				if (!m_block_metadata) {
+					m_block_metadata = new BlockMetadata();
+					if (!m_block_metadata->deSerialize(iss)) {
+						// there is no metadata
+						delete m_block_metadata;
+						m_block_metadata = nullptr;
+					}
+				} else {
+					m_block_metadata->deSerialize(iss);
+				}
 			}
 		} else {
 			content_nodemeta_deserialize_legacy(iss,

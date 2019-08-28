@@ -33,7 +33,12 @@ public:
 	~BlockMetadata() = default;
 
 	void serialize(std::ostream &os, u8 blockver, bool disk=true) const;
-	void deSerialize(std::istream &is);
+	/*!
+	 * Deserialize block meta from a stream.
+	 *
+	 * @return @c true if block meta was found, else @c false.
+	 */
+	bool deSerialize(std::istream &is);
 
 	void clear();
 
