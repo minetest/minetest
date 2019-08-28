@@ -21,7 +21,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "lua_api/l_base.h"
 #include "lua_api/l_metadata.h"
-#include "irrlichttypes_bloated.h"
 
 class ServerEnvironment;
 

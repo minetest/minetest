@@ -19,11 +19,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "blockmetadata.h"
 #include "exceptions.h"
-#include "gamedef.h"
 #include "log.h"
 #include "util/serialize.h"
-#include "util/basic_macros.h"
-#include "constants.h" // MAP_BLOCKSIZE
 #include <sstream>
 
 /*
