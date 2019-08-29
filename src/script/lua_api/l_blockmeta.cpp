@@ -79,8 +79,8 @@ int BlockMetaRef::gc_object(lua_State *L)
 	return 0;
 }
 
-// mark_as_private(self, <string> or {<string>, <string>, ...})
-int BlockMetaRef::l_mark_as_private(lua_State *L)
+// mark_as_public(self, <string> or {<string>, <string>, ...})
+int BlockMetaRef::l_mark_as_public(lua_State *L)
 {
 	MAP_LOCK_REQUIRED;
 
@@ -93,12 +93,12 @@ int BlockMetaRef::l_mark_as_private(lua_State *L)
 		while (lua_next(L, 2) != 0) {
 			// key at index -2 and value at index -1
 			luaL_checktype(L, -1, LUA_TSTRING);
-			meta->markPrivate(readParam<std::string>(L, -1), true);
+			meta->markPrivate(readParam<std::string>(L, -1), false);
 			// removes value, keeps key for next iteration
 			lua_pop(L, 1);
 		}
 	} else if (lua_isstring(L, 2)) {
-		meta->markPrivate(readParam<std::string>(L, 2), true);
+		meta->markPrivate(readParam<std::string>(L, 2), false);
 	}
 	ref->reportMetadataChange();
 
@@ -188,7 +188,7 @@ const luaL_Reg BlockMetaRef::methodsServer[] = {
 	luamethod(MetaDataRef, set_float),
 	luamethod(MetaDataRef, to_table),
 	luamethod(MetaDataRef, from_table),
-	luamethod(BlockMetaRef, mark_as_private),
+	luamethod(BlockMetaRef, mark_as_public),
 	luamethod(MetaDataRef, equals),
 	{0,0}
 };

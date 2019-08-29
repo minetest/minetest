@@ -44,12 +44,12 @@ public:
 
 	inline bool isPrivate(const std::string &name) const
 	{
-		return m_privatevars.count(name) != 0;
+		return m_publicvars.count(name) == 0;
 	}
 	void markPrivate(const std::string &name, bool set);
 
 private:
 	u32 countNonPrivate() const;
 
-	std::unordered_set<std::string> m_privatevars;
+	std::unordered_set<std::string> m_publicvars;
 };

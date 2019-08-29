@@ -60,8 +60,8 @@ bool BlockMetadata::deSerialize(std::istream &is)
 		std::string name = deSerializeString(is);
 		std::string var = deSerializeLongString(is);
 		m_stringvars[name] = var;
-		if (readU8(is) == 1)
-			markPrivate(name, true);
+		if (readU8(is) != 1)
+			markPrivate(name, false);
 	}
 	return true;
 }
@@ -69,22 +69,22 @@ bool BlockMetadata::deSerialize(std::istream &is)
 void BlockMetadata::clear()
 {
 	Metadata::clear();
-	m_privatevars.clear();
+	m_publicvars.clear();
 }
 
 
 void BlockMetadata::markPrivate(const std::string &name, bool set)
 {
-	if (set)
-		m_privatevars.insert(name);
+	if (!set)
+		m_publicvars.insert(name);
 	else
-		m_privatevars.erase(name);
+		m_publicvars.erase(name);
 }
 
 u32 BlockMetadata::countNonPrivate() const
 {
-	// m_privatevars can contain names not actually present
-	// DON'T: return m_stringvars.size() - m_privatevars.size();
+	// m_publicvars can contain names not actually present
+	// DON'T: return m_publicvars.size();
 	u32 n = 0;
 	for (const auto &sv : m_stringvars) {
 		if (!isPrivate(sv.first))
