@@ -107,7 +107,7 @@ struct MapEditEvent
 		case MEET_BLOCK_METADATA_CHANGED:
 		{
 			v3s16 np1 = p * MAP_BLOCKSIZE;
-			v3s16 np2 = np1 + v3s16(1) * MAP_BLOCKSIZE - v3s16(1);
+			v3s16 np2 = np1 + v3s16(MAP_BLOCKSIZE - 1);
 			return VoxelArea(np1, np2);
 		}
 		case MEET_OTHER:

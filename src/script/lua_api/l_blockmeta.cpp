@@ -31,7 +31,8 @@ BlockMetaRef *BlockMetaRef::checkobject(lua_State *L, int narg)
 {
 	luaL_checktype(L, narg, LUA_TUSERDATA);
 	void *ud = luaL_checkudata(L, narg, className);
-	if (!ud) luaL_typerror(L, narg, className);
+	if (!ud)
+		luaL_typerror(L, narg, className);
 	return *(BlockMetaRef **)ud;  // unbox pointer
 }
 
@@ -59,7 +60,7 @@ void BlockMetaRef::clearMeta()
 void BlockMetaRef::reportMetadataChange(const std::string *name)
 {
 	// Inform other things that the metadata has changed
-	BlockMetadata *meta = dynamic_cast<BlockMetadata*>(m_meta);
+	BlockMetadata *meta = dynamic_cast<BlockMetadata *>(m_meta);
 
 	MapEditEvent event;
 	event.type = MEET_BLOCK_METADATA_CHANGED;

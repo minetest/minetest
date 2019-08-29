@@ -51,11 +51,6 @@ bool BlockMetadata::deSerialize(std::istream &is)
 	u8 version = readU8(is);
 	if (version == 0) {
 		return false;
-	} else if (version > 1) {
-		std::string err_str = std::string(FUNCTION_NAME)
-			+ ": version " + itos(version) + " not supported";
-		infostream << err_str << std::endl;
-		throw SerializationError(err_str);
 	}
 
 	u32 num_vars = readU32(is);
