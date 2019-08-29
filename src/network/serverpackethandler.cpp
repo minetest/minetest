@@ -1158,7 +1158,7 @@ void Server::handleCommand_Interact(NetworkPacket *pkt)
 					time_from_last_punch);
 			bool result = punchitem.addWear(wear, m_itemdef);
 			if (result && playersao->setWieldedItem(punchitem))
-				SendInventory(playersao);
+				SendInventory(playersao, true);
 
 			// If the object is a player and its HP changed
 			if (src_original_hp != pointed_object->getHP() &&
