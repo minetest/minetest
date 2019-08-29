@@ -29,7 +29,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "defaultsettings.h"
 #include "gettext.h"
 #include "log.h"
-#include "quicktune.h"
+#include "util/quicktune.h"
 #include "httpfetch.h"
 #include "gameparams.h"
 #include "database/database.h"
@@ -172,7 +172,7 @@ int main(int argc, char *argv[])
 		} else {
 			errorstream << "Invalid --worldlist value: "
 				<< cmd_args.get("worldlist") << std::endl;
-			return 1; 
+			return 1;
 		}
 		return 0;
 	}
@@ -426,7 +426,7 @@ static bool setup_log_params(const Settings &cmd_args)
 		} else {
 			errorstream << "Invalid color mode: " << color_mode << std::endl;
 			return false;
-		}			
+		}
 	}
 
 	// If trace is enabled, enable logging of certain things

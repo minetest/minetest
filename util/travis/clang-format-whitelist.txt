@@ -296,9 +296,6 @@ src/porting_android.h
 src/porting.cpp
 src/porting.h
 src/profiler.h
-src/quicktune.cpp
-src/quicktune.h
-src/quicktune_shortcutter.h
 src/raycast.cpp
 src/raycast.h
 src/reflowscan.cpp
@@ -464,6 +461,9 @@ src/util/numeric.h
 src/util/pointedthing.cpp
 src/util/pointedthing.h
 src/util/pointer.h
+src/util/quicktune.h
+src/util/quicktune_shortcutter.h
+src/util/quicktune.cpp
 src/util/serialize.cpp
 src/util/serialize.h
 src/util/sha1.cpp

@@ -406,7 +406,6 @@ set(common_SRCS
 	player.cpp
 	porting.cpp
 	profiler.cpp
-	quicktune.cpp
 	raycast.cpp
 	reflowscan.cpp
 	remoteplayer.cpp
@@ -739,7 +738,7 @@ if(WIN32)
 	if(VCPKG_APPLOCAL_DEPS)
 		# Collect the dll's from the output path
 		install(DIRECTORY ${EXECUTABLE_OUTPUT_PATH}/Release/
-				DESTINATION ${BINDIR} 
+				DESTINATION ${BINDIR}
 				CONFIGURATIONS Release
 				FILES_MATCHING PATTERN "*.dll")
 		install(DIRECTORY ${EXECUTABLE_OUTPUT_PATH}/Debug/
