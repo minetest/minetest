@@ -2864,12 +2864,13 @@ void Game::updateCamera(u32 busy_time, f32 dtime)
 	v3f camera_direction = camera->getDirection();
 	f32 camera_fov = camera->getFovMax();
 	v3s16 camera_offset = camera->getOffset();
+	v3f camera_up_vector = camera->getCameraNode()->getUpVector();
 
 	m_camera_offset_changed = (camera_offset != old_camera_offset);
 
 	if (!m_flags.disable_camera_update) {
 		client->getEnv().getClientMap().updateCamera(camera_position,
-				camera_direction, camera_fov, camera_offset);
+                               camera_direction, camera_fov, camera_offset, camera_up_vector);
 
 		if (m_camera_offset_changed) {
 			client->updateCameraOffset(camera_offset);

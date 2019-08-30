@@ -136,6 +136,12 @@ void RemoteClient::GetNextBlocks (
 	v3f camera_dir = v3f(0,0,1);
 	camera_dir.rotateYZBy(sao->getLookPitch());
 	camera_dir.rotateXZBy(sao->getRotation().Y);
+	v3f x = v3f(BS,0,0);
+	x.rotateYZBy(sao->getLookPitch());
+	x.rotateXZBy(sao->getRotation().Y);
+	v3f y = v3f(0,BS,0);
+	y.rotateYZBy(sao->getLookPitch());
+	y.rotateXZBy(sao->getRotation().Y);
 
 	/*infostream<<"camera_dir=("<<camera_dir.X<<","<<camera_dir.Y<<","
 			<<camera_dir.Z<<")"<<std::endl;*/
@@ -232,8 +238,6 @@ void RemoteClient::GetNextBlocks (
 	s32 nearest_emergefull_d = -1;
 	s32 nearest_sent_d = -1;
 	//bool queue_is_full = false;
-
-	const v3s16 cam_pos_nodes = floatToInt(camera_pos, BS);
 
 	s16 d;
 	for (d = d_start; d <= d_max; d++) {
@@ -337,7 +341,7 @@ void RemoteClient::GetNextBlocks (
 				}
 
 				if (m_occ_cull && !block_is_invalid &&
-						env->getMap().isBlockOccluded(block, cam_pos_nodes)) {
+					env->getMap().isBlockOccluded(block, camera_pos, x, y)) {
 					continue;
 				}
 			}

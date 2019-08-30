@@ -1128,8 +1128,11 @@ bool Map::isOccluded(const v3s16 &pos_camera, const v3s16 &pos_target,
 	return false;
 }
 
-bool Map::isBlockOccluded(MapBlock *block, v3s16 cam_pos_nodes)
+bool Map::isBlockOccluded(MapBlock *block, v3f camera_pos, v3f x, v3f y)
 {
+	x *= 1.33f; // account for aspect ratio
+	const v3s16 cam_pos_nodes = floatToInt(camera_pos, BS);
+
 	// Check occlusion for center and all 8 corners of the mapblock
 	// Overshoot a little for less flickering
 	static const s16 bs2 = MAP_BLOCKSIZE / 2 + 1;
@@ -1145,14 +1148,23 @@ bool Map::isBlockOccluded(MapBlock *block, v3s16 cam_pos_nodes)
 		v3s16(-1, -1, -1) * bs2,
 	};
 
+	// floatToInt convert the final vectors for precision
+	// (yes this materializes the actual vectors)
+	v3s16 points[5] = {cam_pos_nodes,
+					   floatToInt(camera_pos + x + y, BS),
+					   floatToInt(camera_pos - x + y, BS),
+					   floatToInt(camera_pos + x - y, BS),
+					   floatToInt(camera_pos - x - y, BS)};
+
 	v3s16 pos_blockcenter = block->getPosRelative() + (MAP_BLOCKSIZE / 2);
 
 	// Starting step size, value between 1m and sqrt(3)m
-	float step = BS * 1.2f;
+	float step = BS * 1.732f;
 	// Multiply step by each iteraction by 'stepfac' to reduce checks in distance
 	float stepfac = 1.05f;
 
-	float start_offset = BS * 1.0f;
+	// this worked well experimentally
+	float start_offset = -BS;
 
 	// The occlusion search of 'isOccluded()' must stop short of the target
 	// point by distance 'end_offset' to not enter the target mapblock.
@@ -1161,24 +1173,23 @@ bool Map::isBlockOccluded(MapBlock *block, v3s16 cam_pos_nodes)
 	// sqrt(1^2 + 1^2 + 1^2) = 1.732
 	float end_offset = -BS * MAP_BLOCKSIZE * 1.732f;
 
-	// to reduce the likelihood of falsely occluded blocks
-	// require at least two solid blocks
-	// this is a HACK, we should think of a more precise algorithm
-	u32 needed_count = 2;
-
 	// Additional occlusion check, see comments in that function
 	v3s16 check;
 	if (determineAdditionalOcclusionCheck(cam_pos_nodes, block->getBox(), check)) {
 		// node is always on a side facing the camera, end_offset can be lower
-		if (!isOccluded(cam_pos_nodes, check, step, stepfac, start_offset,
-				-1.0f, needed_count))
-			return false;
+		for (const v3s16 &p : points) {
+			if (!isOccluded(p, check, step, stepfac, start_offset,
+							-1.0f, 1))
+				return false;
+		}
 	}
 
-	for (const v3s16 &dir : dir9) {
-		if (!isOccluded(cam_pos_nodes, pos_blockcenter + dir, step, stepfac,
-				start_offset, end_offset, needed_count))
-			return false;
+	for (const v3s16 &p : points) {
+		for (const v3s16 &dir : dir9) {
+			if (!isOccluded(p, pos_blockcenter + dir, step, stepfac,
+							start_offset, end_offset, 1))
+				return false;
+		}
 	}
 	return true;
 }

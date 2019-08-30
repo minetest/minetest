@@ -125,6 +125,8 @@ void ClientMap::updateDrawList()
 	v3f camera_position = m_camera_position;
 	v3f camera_direction = m_camera_direction;
 	f32 camera_fov = m_camera_fov;
+	v3f y = m_camera_up * BS;
+	v3f x = m_camera_up.crossProduct(camera_direction) * BS;
 
 	// Use a higher fov to accomodate faster camera movements.
 	// Blocks are cropped better when they are drawn.
@@ -206,7 +208,7 @@ void ClientMap::updateDrawList()
 				Occlusion culling
 			*/
 			if ((!m_control.range_all && d > m_control.wanted_range * BS) ||
-					(occlusion_culling_enabled && isBlockOccluded(block, cam_pos_nodes))) {
+					(occlusion_culling_enabled && isBlockOccluded(block, camera_position, x, y))) {
 				blocks_occlusion_culled++;
 				continue;
 			}

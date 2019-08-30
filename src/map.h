@@ -288,7 +288,7 @@ public:
 
 	void transforming_liquid_add(v3s16 p);
 
-	bool isBlockOccluded(MapBlock *block, v3s16 cam_pos_nodes);
+	bool isBlockOccluded(MapBlock *block, v3f cam_pos, v3f x, v3f y);
 protected:
 	friend class LuaVoxelManip;
 
