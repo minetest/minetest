@@ -510,17 +510,20 @@ Object types:
     u8[len] itemstring
 
 7: LuaEntity:
-  u8 version
-  version 1:
-    u16 len
-    u8[len] entity name
-    u32 len
-    u8[len] static data
-    s16 hp
-    s32 velocity.x * 10000
-    s32 velocity.y * 10000
-    s32 velocity.z * 10000
-    s32 yaw * 1000
+  u8 compatibility_byte (always 1)
+  u16 len
+  u8[len] entity name
+  u32 len
+  u8[len] static data
+  s16 hp
+  s32 velocity.x * 10000
+  s32 velocity.y * 10000
+  s32 velocity.z * 10000
+  s32 yaw * 1000
+  if PROTOCOL_VERSION >= 37:
+    u8 version2 (=1)
+    s32 pitch * 1000
+    s32 roll * 1000
 
 Itemstring format
 ------------------
