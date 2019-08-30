@@ -1325,6 +1325,9 @@ For helper functions see [Spatial Vectors].
 
 * `{type="nothing"}`
 * `{type="node", under=pos, above=pos}`
+    * Indicates a pointed node selection box.
+    * `under` refers to the node position behind the pointed face.
+    * `above` refers to the node position in front of the pointed face.
 * `{type="object", ref=ObjectRef}`
 
 Exact pointing location (currently only `Raycast` supports these fields):
@@ -4543,7 +4546,10 @@ Item handling
 * `minetest.inventorycube(img1, img2, img3)`
     * Returns a string for making an image of a cube (useful as an item image)
 * `minetest.get_pointed_thing_position(pointed_thing, above)`
-    * Get position of a `pointed_thing` (that you can get from somewhere)
+    * Returns the position of a `pointed_thing` or `nil` if the `pointed_thing`
+      does not refer to a node or entity.
+    * If the optional `above` parameter is true and the `pointed_thing` refers
+      to a node, then it will return the `above` position of the `pointed_thing`.
 * `minetest.dir_to_facedir(dir, is6d)`
     * Convert a vector to a facedir value, used in `param2` for
       `paramtype2="facedir"`.
