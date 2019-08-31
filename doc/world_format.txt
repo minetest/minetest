@@ -365,7 +365,9 @@ if map format version <= 22:
     u16 content_size
     u8[content_size] content of metadata. Format depends on type_id, see below.
 if map format version >= 23:
-  u8 version (=1) -- Note the type is u8, while for map format version <= 22 it's u16
+  u8 version -- Note: type was u16 for map format version <= 22
+    -- = 1 for map format version < 28
+    -- = 2 since map format version 28
   u16 count of metadata
   foreach count:
     u16 position (p.Z*MAP_BLOCKSIZE*MAP_BLOCKSIZE + p.Y*MAP_BLOCKSIZE + p.X)
@@ -375,6 +377,7 @@ if map format version >= 23:
       u8[key_len] key
       u32 val_len
       u8[val_len] value
+      u8 is_private -- only for version >= 2. 0 = not private, 1 = private
     serialized inventory
 
 - Node timers
