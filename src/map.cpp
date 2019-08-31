@@ -1097,7 +1097,7 @@ bool Map::determineAdditionalOcclusionCheck(const v3s16 &pos_camera,
 }
 
 bool Map::isOccluded(const v3s16 &pos_camera, const v3s16 &pos_target,
-	float step, float stepfac, float offset, float end_offset, u32 needed_count)
+	float step, float stepfac, float offset, float end_offset)
 {
 	v3f direction = intToFloat(pos_target - pos_camera, BS);
 	float distance = direction.getLength();
@@ -1107,7 +1107,6 @@ bool Map::isOccluded(const v3s16 &pos_camera, const v3s16 &pos_target,
 		direction /= distance;
 
 	v3f pos_origin_f = intToFloat(pos_camera, BS);
-	u32 count = 0;
 	bool is_valid_position;
 
 	for (; offset < distance + end_offset; offset += step) {
@@ -1119,9 +1118,7 @@ bool Map::isOccluded(const v3s16 &pos_camera, const v3s16 &pos_target,
 		if (is_valid_position &&
 				!m_nodedef->get(node).light_propagates) {
 			// Cannot see through light-blocking nodes --> occluded
-			count++;
-			if (count >= needed_count)
-				return true;
+			return true;
 		}
 		step *= stepfac;
 	}
@@ -1147,9 +1144,9 @@ bool Map::isBlockOccluded(MapBlock *block, v3s16 cam_pos_nodes)
 
 	v3s16 pos_blockcenter = block->getPosRelative() + (MAP_BLOCKSIZE / 2);
 
-	// Starting step size, slightly > sqrt(3),
+	// Starting step size is sqrt(3),
 	// so that each node is hit at most once.
-	float step = BS * 1.7321f;
+	float step = BS * 1.732f;
 	// Multiply step by each iteraction by 'stepfac' to reduce checks in distance
 	float stepfac = 1.05f;
 
@@ -1166,14 +1163,13 @@ bool Map::isBlockOccluded(MapBlock *block, v3s16 cam_pos_nodes)
 	v3s16 check;
 	if (determineAdditionalOcclusionCheck(cam_pos_nodes, block->getBox(), check)) {
 		// node is always on a side facing the camera, end_offset can be lower
-		if (!isOccluded(cam_pos_nodes, check, step, stepfac, start_offset,
-				-1.0f, 1))
+		if (!isOccluded(cam_pos_nodes, check, step, stepfac, start_offset, -1.0f))
 			return false;
 	}
 
 	for (const v3s16 &dir : dir9) {
 		if (!isOccluded(cam_pos_nodes, pos_blockcenter + dir, step, stepfac,
-				start_offset, end_offset, 1))
+				start_offset, end_offset))
 			return false;
 	}
 	return true;
