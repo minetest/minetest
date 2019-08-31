@@ -1464,6 +1464,9 @@ void ServerEnvironment::step(float dtime)
 		if (sao && player->inventory.checkModified())
 			m_server->SendInventory(sao, true);
 	}
+
+	// Send outdated detached inventories
+	m_server->sendDetachedInventories(PEER_ID_INEXISTENT, true);
 }
 
 u32 ServerEnvironment::addParticleSpawner(float exptime)

@@ -313,7 +313,7 @@ void Server::handleCommand_Init2(NetworkPacket* pkt)
 	sendMediaAnnouncement(pkt->getPeerId(), lang);
 
 	// Send detached inventories
-	sendDetachedInventories(pkt->getPeerId());
+	sendDetachedInventories(pkt->getPeerId(), false);
 
 	// Send time of day
 	u16 time = m_env->getTimeOfDay();
@@ -730,8 +730,6 @@ void Server::handleCommand_InventoryAction(NetworkPacket* pkt)
 	a->apply(this, playersao, this);
 	// Eat the action
 	delete a;
-
-	SendInventory(playersao, true);
 }
 
 void Server::handleCommand_ChatMessage(NetworkPacket* pkt)
