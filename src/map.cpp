@@ -1130,8 +1130,7 @@ bool Map::isBlockOccluded(MapBlock *block, v3s16 cam_pos_nodes)
 	// Check occlusion for center and all 8 corners of the mapblock
 	// Overshoot a little for less flickering
 	static const s16 bs2 = MAP_BLOCKSIZE / 2 + 1;
-	static const v3s16 dir9[9] = {
-		v3s16( 0,  0,  0),
+	static const v3s16 dir8[8] = {
 		v3s16( 1,  1,  1) * bs2,
 		v3s16( 1,  1, -1) * bs2,
 		v3s16( 1, -1,  1) * bs2,
@@ -1167,7 +1166,13 @@ bool Map::isBlockOccluded(MapBlock *block, v3s16 cam_pos_nodes)
 			return false;
 	}
 
-	for (const v3s16 &dir : dir9) {
+	// Block center, end_offset can be halfed.
+	if (!isOccluded(cam_pos_nodes, pos_blockcenter, step, stepfac,
+			start_offset, end_offset / 2.0f))
+		return false;
+
+	// All the block's corners.
+	for (const v3s16 &dir : dir8) {
 		if (!isOccluded(cam_pos_nodes, pos_blockcenter + dir, step, stepfac,
 				start_offset, end_offset))
 			return false;
