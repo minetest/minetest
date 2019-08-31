@@ -23,7 +23,7 @@ functionality in the engine and API, and to document it here.
 Programming in Lua
 ------------------
 
-If you have any difficulttruey in understanding this, please read
+If you have any difficulty in understanding this, please read
 [Programming in Lua](http://www.lua.org/pil/).
 
 Startup
