@@ -6075,8 +6075,8 @@ gets loaded.
 
         run_at_every_load = false,
         -- Whether to run the LBM's action every time a block gets loaded,
-	-- and not only the first time the block gets loaded after the LBM
-	-- was introduced.
+        -- and not only the first time the block gets loaded after the LBM
+        -- was introduced.
 
         action = function(pos, node),
     }
