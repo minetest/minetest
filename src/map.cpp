@@ -1148,14 +1148,12 @@ bool Map::isBlockOccluded(MapBlock *block, v3s16 cam_pos_nodes)
 	v3s16 pos_blockcenter = block->getPosRelative() + (MAP_BLOCKSIZE / 2);
 
 	// Starting step size, slightly > sqrt(3),
-	// so that each block is hit at most once.
+	// so that each node is hit at most once.
 	float step = BS * 1.7321f;
 	// Multiply step by each iteraction by 'stepfac' to reduce checks in distance
 	float stepfac = 1.05f;
 
-	// Take the camera's front view plane into account, and start slighly back.
-	// (TODO: use near_plane config)
-	float start_offset = -BS * 0.1f;
+	float start_offset = BS * 1.0f;
 
 	// The occlusion search of 'isOccluded()' must stop short of the target
 	// point by distance 'end_offset' to not enter the target mapblock.
