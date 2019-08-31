@@ -6057,6 +6057,10 @@ LBM (LoadingBlockModifier) definition
 
 Used by `minetest.register_lbm`.
 
+A loading block modifier (LBM) is used to define a function that is called for
+specific nodes (defined by `nodenames`) when a mapblock which contains such nodes
+gets loaded.
+
     {
         label = "Upgrade legacy doors",
         -- Descriptive label for profiling purposes (optional).
@@ -6071,8 +6075,8 @@ Used by `minetest.register_lbm`.
 
         run_at_every_load = false,
         -- Whether to run the LBM's action every time a block gets loaded,
-        -- and not just for blocks that were saved last time before LBMs were
-        -- introduced to the world.
+	-- and not only the first time the block gets loaded after the LBM
+	-- was introduced.
 
         action = function(pos, node),
     }
