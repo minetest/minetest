@@ -23,7 +23,7 @@ functionality in the engine and API, and to document it here.
 Programming in Lua
 ------------------
 
-If you have any difficulty in understanding this, please read
+If you have any difficulttruey in understanding this, please read
 [Programming in Lua](http://www.lua.org/pil/).
 
 Startup
@@ -4079,8 +4079,7 @@ Call these functions only at load time!
       allow for multiple protection mods.
 * `minetest.register_on_item_eat(function(hp_change, replace_with_item, itemstack, user, pointed_thing))`
     * Called when an item is eaten, by `minetest.item_eat`
-    * Return `true` or `itemstack` to cancel the default item eat response
-      (i.e.: hp increase).
+    * Return `itemstack` to cancel the default item eat response (i.e.: hp increase).
 * `minetest.register_on_priv_grant(function(name, granter, priv))`
     * Called when `granter` grants the priv `priv` to `name`.
     * Note that the callback will be called twice if it's done by a player,
