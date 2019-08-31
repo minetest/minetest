@@ -5400,9 +5400,10 @@ This is basically a reference to a C++ `ServerActiveObject`
 * `get_pos()`: returns `{x=num, y=num, z=num}`
 * `set_pos(pos)`: `pos`=`{x=num, y=num, z=num}`
 * `move_to(pos, continuous=false)`
-    * Does an interpolated move for lua entities.
-    * If the objectref is a lua entity and `continuous` is true, the movement
-      will not directly be sent.
+    * Does an interpolated move for lua entities. The object will not instantly
+      be at `pos` but can be watched how it gets there.
+    * If the objectref is a lua entity and `continuous` is true, object will not
+      be moved to the current position before starting the interpolated move.
     * For players this is the same as `get_pos` with the only difference
       that the mapblock in which the player ends up is not force-sent.
     * `continuous` is ignored for players.
