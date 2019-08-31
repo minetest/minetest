@@ -6516,10 +6516,10 @@ Used by `minetest.register_node`.
         -- default: nil
 
         can_dig = function(pos, [player]),
-
-        on_punch = function(pos, node, puncher, pointed_thing),
         -- Returns true if node can be dug, or false if not.
         -- default: nil
+
+        on_punch = function(pos, node, puncher, pointed_thing),
         -- default: minetest.node_punch
         -- By default calls minetest.register_on_punchnode callbacks.
 
