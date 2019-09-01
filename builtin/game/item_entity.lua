@@ -192,7 +192,7 @@ core.register_entity(":__builtin:item", {
 			}
 
 			-- Check which one of the 4 sides is free
-			for o=1, #order do
+			for o = 1, #order do
 				local cnode = core.get_node(vector.add(pos, order[o])).name
 				local cdef = core.registered_nodes[cnode] or {}
 				if cnode ~= "ignore" and cdef.walkable == false then
@@ -235,6 +235,10 @@ core.register_entity(":__builtin:item", {
 				self.force_out = nil
 				enable_physics(self.object, self)
 			end
+		end
+
+		if not self.physical_state then
+			return -- Don't do anything
 		end
 
 		-- Slide on slippery nodes
