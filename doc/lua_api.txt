@@ -4079,8 +4079,7 @@ Call these functions only at load time!
       allow for multiple protection mods.
 * `minetest.register_on_item_eat(function(hp_change, replace_with_item, itemstack, user, pointed_thing))`
     * Called when an item is eaten, by `minetest.item_eat`
-    * Return `true` or `itemstack` to cancel the default item eat response
-      (i.e.: hp increase).
+    * Return `itemstack` to cancel the default item eat response (i.e.: hp increase).
 * `minetest.register_on_priv_grant(function(name, granter, priv))`
     * Called when `granter` grants the priv `priv` to `name`.
     * Note that the callback will be called twice if it's done by a player,
@@ -5400,7 +5399,11 @@ This is basically a reference to a C++ `ServerActiveObject`
 
 * `get_pos()`: returns `{x=num, y=num, z=num}`
 * `set_pos(pos)`: `pos`=`{x=num, y=num, z=num}`
-* `move_to(pos, continuous=false)`: interpolated move
+* `move_to(pos, continuous=false)`
+    * Does an interpolated move for Lua entities for visually smooth transitions.
+    * If `continuous` is true, the Lua entity will not be moved to the current
+      position before starting the interpolated move.
+    * For players this does the same as `set_pos`,`continuous` is ignored.
 * `punch(puncher, time_from_last_punch, tool_capabilities, direction)`
     * `puncher` = another `ObjectRef`,
     * `time_from_last_punch` = time since last punch action of the puncher
@@ -5409,7 +5412,7 @@ This is basically a reference to a C++ `ServerActiveObject`
 * `get_hp()`: returns number of hitpoints (2 * number of hearts)
 * `set_hp(hp, reason)`: set number of hitpoints (2 * number of hearts).
     * See reason in register_on_player_hpchange
-* `get_inventory()`: returns an `InvRef`
+* `get_inventory()`: returns an `InvRef` for players, otherwise returns `nil`
 * `get_wield_list()`: returns the name of the inventory list the wielded item
    is in.
 * `get_wield_index()`: returns the index of the wielded item
@@ -6058,6 +6061,10 @@ LBM (LoadingBlockModifier) definition
 
 Used by `minetest.register_lbm`.
 
+A loading block modifier (LBM) is used to define a function that is called for
+specific nodes (defined by `nodenames`) when a mapblock which contains such nodes
+gets loaded.
+
     {
         label = "Upgrade legacy doors",
         -- Descriptive label for profiling purposes (optional).
@@ -6072,8 +6079,8 @@ Used by `minetest.register_lbm`.
 
         run_at_every_load = false,
         -- Whether to run the LBM's action every time a block gets loaded,
-        -- and not just for blocks that were saved last time before LBMs were
-        -- introduced to the world.
+        -- and not only the first time the block gets loaded after the LBM
+        -- was introduced.
 
         action = function(pos, node),
     }
@@ -6516,10 +6523,10 @@ Used by `minetest.register_node`.
         -- default: nil
 
         can_dig = function(pos, [player]),
-
-        on_punch = function(pos, node, puncher, pointed_thing),
         -- Returns true if node can be dug, or false if not.
         -- default: nil
+
+        on_punch = function(pos, node, puncher, pointed_thing),
         -- default: minetest.node_punch
         -- By default calls minetest.register_on_punchnode callbacks.
 
