@@ -1097,7 +1097,7 @@ bool Map::determineAdditionalOcclusionCheck(const v3s16 &pos_camera,
 }
 
 bool Map::isOccluded(const v3s16 &pos_camera, const v3s16 &pos_target,
-	float step, float stepfac, float offset, float end_offset)
+	float step, float stepfac, float end_offset)
 {
 	v3f direction = intToFloat(pos_target - pos_camera, BS);
 	float distance = direction.getLength();
@@ -1109,7 +1109,7 @@ bool Map::isOccluded(const v3s16 &pos_camera, const v3s16 &pos_target,
 	v3f pos_origin_f = intToFloat(pos_camera, BS);
 	bool is_valid_position;
 
-	for (; offset < distance + end_offset; offset += step) {
+	for (float offset = 0.0f; offset < distance + end_offset; offset += step) {
 		v3f pos_node_f = pos_origin_f + direction * offset;
 		v3s16 pos_node = floatToInt(pos_node_f, BS);
 
@@ -1149,8 +1149,6 @@ bool Map::isBlockOccluded(MapBlock *block, v3s16 cam_pos_nodes)
 	// Multiply step by each iteraction by 'stepfac' to reduce checks in distance
 	float stepfac = 1.05f;
 
-	float start_offset = BS * 1.0f;
-
 	// The occlusion search of 'isOccluded()' must stop short of the target
 	// point by distance 'end_offset' to not enter the target mapblock.
 	// For the 8 mapblock corners 'end_offset' must therefore be the maximum
@@ -1162,19 +1160,17 @@ bool Map::isBlockOccluded(MapBlock *block, v3s16 cam_pos_nodes)
 	v3s16 check;
 	if (determineAdditionalOcclusionCheck(cam_pos_nodes, block->getBox(), check)) {
 		// node is always on a side facing the camera, end_offset can be lower
-		if (!isOccluded(cam_pos_nodes, check, step, stepfac, start_offset, -1.0f))
+		if (!isOccluded(cam_pos_nodes, check, step, stepfac, -1.0f))
 			return false;
 	}
 
 	// Block center, end_offset can be halfed.
-	if (!isOccluded(cam_pos_nodes, pos_blockcenter, step, stepfac,
-			start_offset, end_offset / 2.0f))
+	if (!isOccluded(cam_pos_nodes, pos_blockcenter, step, stepfac, end_offset / 2.0f))
 		return false;
 
 	// All the block's corners.
 	for (const v3s16 &dir : dir8) {
-		if (!isOccluded(cam_pos_nodes, pos_blockcenter + dir, step, stepfac,
-				start_offset, end_offset))
+		if (!isOccluded(cam_pos_nodes, pos_blockcenter + dir, step, stepfac, end_offset))
 			return false;
 	}
 	return true;
