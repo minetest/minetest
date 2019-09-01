@@ -216,37 +216,26 @@ core.register_entity(":__builtin:item", {
 				disable_physics(self.object, self)
 				self.object:set_velocity(newv)
 
-				if shootdir.y == 0 then
-					self.force_out = newv
-					self.force_out_start = vector.floor(pos)
-					self.force_out_timer = 1
-				end
+				self.force_out = newv
+				self.force_out_start = vector.floor(pos)
 				return
 			end
-		end
-
-		-- This code is run after the entity got a push from above "push away" code.
-		-- It is responsible for making sure the entity is entirely outside the solid node
-		if self.force_out_timer > 0 then
+		elseif self.force_out then
+			-- This code runs after the entity got a push from the above code.
+			-- It makes sure the entity is entirely outside the solid node
 			local c = self.object:get_properties().collisionbox
 			local s = self.force_out_start
 			local f = self.force_out
 			local ok = (f.x > 0 and pos.x + c[1] > s.x + 0.5) or
 				(f.x < 0 and pos.x + c[4] < s.x - 0.5) or
-				(f.z > 0 and pos.x + c[3] > s.z + 0.5) or
-				(f.z < 0 and pos.x + c[6] < s.z - 0.5)
-			-- Item was successfully forced out, no more pushing
+				(f.z > 0 and pos.z + c[3] > s.z + 0.5) or
+				(f.z < 0 and pos.z + c[6] < s.z - 0.5) or
+				(f.y > 0 and pos.y + c[2] > s.y + 0.5)
 			if ok then
-				self.force_out_timer = -1
+				-- Item was successfully forced out
 				self.force_out = nil
 				enable_physics(self.object, self)
-			else
-				self.force_out_timer = self.force_out_timer - dtime
-				return
 			end
-		elseif self.force_out then
-			self.force_out = nil
-			enable_physics(self.object, self)
 		end
 
 		-- Slide on slippery nodes
