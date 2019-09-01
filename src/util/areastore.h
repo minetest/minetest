@@ -37,15 +37,15 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 
 struct Area {
-	Area() = default;
+	Area(u32 area_id) : id(area_id) {}
 
-	Area(const v3s16 &mine, const v3s16 &maxe) :
-		minedge(mine), maxedge(maxe)
+	Area(const v3s16 &mine, const v3s16 &maxe, u32 area_id = U32_MAX) :
+		id(area_id), minedge(mine), maxedge(maxe)
 	{
 		sortBoxVerticies(minedge, maxedge);
 	}
 
-	u32 id = U32_MAX;
+	u32 id;
 	v3s16 minedge, maxedge;
 	std::string data;
 };

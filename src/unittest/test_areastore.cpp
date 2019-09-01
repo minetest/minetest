@@ -128,11 +128,11 @@ void TestAreaStore::testSerialization()
 	VectorAreaStore store;
 
 	Area a(v3s16(-1, 0, 1), v3s16(0, 1, 2));
-	a.data = "Area A";
+	a.data = "Area 1A";
 	store.insertArea(&a);
 
 	Area b(v3s16(123, 456, 789), v3s16(32000, 100, 10));
-	b.data = "Area B";
+	b.data = "Area 2B";
 	store.insertArea(&b);
 
 	std::ostringstream os;
@@ -143,20 +143,25 @@ void TestAreaStore::testSerialization()
 			"\x00\x02"  // Count
 			"\xFF\xFF\x00\x00\x00\x01"  // Area A min edge
 			"\x00\x00\x00\x01\x00\x02"  // Area A max edge
-			"\x00\x06"  // Area A data length
-			"Area A"  // Area A data
+			"\x00\x07"  // Area A data length
+			"Area 1A"   // Area A data
 			"\x00\x7B\x00\x64\x00\x0A"  // Area B min edge (last two swapped with max edge for sorting)
 			"\x7D\x00\x01\xC8\x03\x15"  // Area B max edge (^)
-			"\x00\x06"  // Area B data length
-			"Area B",  // Area B data
+			"\x00\x07"  // Area B data length
+			"Area 2B"   // Area B data
+			"\x00\x00\x00\x00"  // ID 1A
+			"\x00\x00\x00\x01", // ID 2B
 			1 + 2 +
-			6 + 6 + 2 + 6 +
-			6 + 6 + 2 + 6);
+			(6 + 6 + 2 + 7) * 2 + // min/max edge, length, data
+			2 * 4); // Area IDs
+
 	UASSERTEQ(const std::string &, str, str_wanted);
 
 	std::istringstream is(str);
 	store.deserialize(is);
 
-	UASSERTEQ(size_t, store.size(), 4);  // deserialize() doesn't clear the store
+	// deserialize() doesn't clear the store
+	// But existing IDs are overridden
+	UASSERTEQ(size_t, store.size(), 2);
 }
 
