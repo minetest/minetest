@@ -58,7 +58,6 @@ core.register_entity(":__builtin:item", {
 	-- Pushing item out of solid nodes
 	force_out = nil,
 	force_out_start = nil,
-	force_out_timer = 0,
 
 	set_item = function(self, item)
 		local stack = ItemStack(item or self.itemstring)
@@ -217,7 +216,7 @@ core.register_entity(":__builtin:item", {
 				self.object:set_velocity(newv)
 
 				self.force_out = newv
-				self.force_out_start = vector.floor(pos)
+				self.force_out_start = vector.round(pos)
 				return
 			end
 		elseif self.force_out then
@@ -227,10 +226,10 @@ core.register_entity(":__builtin:item", {
 			local s = self.force_out_start
 			local f = self.force_out
 			local ok = (f.x > 0 and pos.x + c[1] > s.x + 0.5) or
-				(f.x < 0 and pos.x + c[4] < s.x - 0.5) or
+				(f.y > 0 and pos.y + c[2] > s.y + 0.5) or
 				(f.z > 0 and pos.z + c[3] > s.z + 0.5) or
-				(f.z < 0 and pos.z + c[6] < s.z - 0.5) or
-				(f.y > 0 and pos.y + c[2] > s.y + 0.5)
+				(f.x < 0 and pos.x + c[4] < s.x - 0.5) or
+				(f.z < 0 and pos.z + c[6] < s.z - 0.5)
 			if ok then
 				-- Item was successfully forced out
 				self.force_out = nil
