@@ -39,6 +39,7 @@ public:
 	void setLargeStep(const s32 &step);
 	void setPos(const s32 &pos);
 	void setPageSize(const s32 &size);
+	void setArrowsVisible(u8 visible);
 
 private:
 	void refreshControls();
@@ -47,6 +48,7 @@ private:
 
 	IGUIButton *up_button;
 	IGUIButton *down_button;
+	u8 is_arrows_visible = 2;
 	bool is_dragging;
 	bool is_horizontal;
 	bool is_auto_scaling;

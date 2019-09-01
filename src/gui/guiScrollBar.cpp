@@ -316,6 +316,12 @@ void GUIScrollBar::setPageSize(const s32 &size)
 	setPos(scroll_pos);
 }
 
+void GUIScrollBar::setArrowsVisible(u8 visible)
+{
+	is_arrows_visible = visible;
+	refreshControls();
+}
+
 s32 GUIScrollBar::getPos() const
 {
 	return scroll_pos;
@@ -420,7 +426,22 @@ void GUIScrollBar::refreshControls()
 		down_button->setAlignment(EGUIA_UPPERLEFT, EGUIA_LOWERRIGHT,
 				EGUIA_LOWERRIGHT, EGUIA_LOWERRIGHT);
 	}
-	bool visible = (border_size != 0);
+
+	bool visible;
+	if (is_arrows_visible == 2)
+		visible = (border_size != 0);
+	else if (is_arrows_visible == 0) {
+		visible = false;
+		border_size = 0;
+	}
+	else {
+		visible = true;
+		if (is_horizontal)
+			border_size = RelativeRect.getHeight();
+		else
+			border_size = RelativeRect.getWidth();
+	}
+
 	up_button->setVisible(visible);
 	down_button->setVisible(visible);
 }

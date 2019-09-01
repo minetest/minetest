@@ -405,6 +405,7 @@ private:
 			s32 smallStep = 10;
 			s32 largeStep = 100;
 			s32 thumbSize = 1;
+			u8 showArrows = 2;
 		} scrollBarOptions;
 
 		// used to restore table selection/scroll/treeview state

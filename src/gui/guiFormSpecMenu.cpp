@@ -623,6 +623,7 @@ void GUIFormSpecMenu::parseScrollBar(parserData* data, const std::string &elemen
 
 		auto style = getStyleForElement("scrollbar", name);
 		e->setNotClipped(style.getBool(StyleSpec::NOCLIP, false));
+		e->setArrowsVisible(data->scrollBarOptions.showArrows);
 
 		s32 max = data->scrollBarOptions.max;
 		s32 min = data->scrollBarOptions.min;
@@ -647,7 +648,8 @@ void GUIFormSpecMenu::parseScrollBar(parserData* data, const std::string &elemen
 		m_fields.push_back(spec);
 		return;
 	}
-	errorstream<< "Invalid scrollbar element(" << parts.size() << "): '" << element << "'"  << std::endl;
+	errorstream << "Invalid scrollbar element(" << parts.size() << "): '" << element
+		<< "'" << std::endl;
 }
 
 void GUIFormSpecMenu::parseScrollBarOptions(parserData* data, const std::string &element)
@@ -669,26 +671,37 @@ void GUIFormSpecMenu::parseScrollBarOptions(parserData* data, const std::string 
 			continue; // Go to next option
 		}
 
-		int value = stoi(options[1]);
-
 		if (options[0] == "max") {
-			data->scrollBarOptions.max = value;
+			data->scrollBarOptions.max = stoi(options[1]);
 			continue;
 		}
-		if (options[0] == "min") {
-			data->scrollBarOptions.min = value;
+		else if (options[0] == "min") {
+			data->scrollBarOptions.min = stoi(options[1]);
 			continue;
 		}
-		if (options[0] == "smallstep") {
+		else if (options[0] == "smallstep") {
+			int value = stoi(options[1]);
 			data->scrollBarOptions.smallStep = value < 0 ? 10 : value;
 			continue;
 		}
-		if (options[0] == "largestep") {
+		else if (options[0] == "largestep") {
+			int value = stoi(options[1]);
 			data->scrollBarOptions.largeStep = value < 0 ? 100 : value;
 			continue;
 		}
-		if (options[0] == "thumbsize") {
+		else if (options[0] == "thumbsize") {
+			int value = stoi(options[1]);
 			data->scrollBarOptions.thumbSize = value <= 0 ? 1 : value;
+			continue;
+		}
+		else if (options[0] == "arrows") {
+			std::string value = trim(options[1]);
+			if (value == "hide")
+				data->scrollBarOptions.showArrows = 0;
+			else if (value == "show")
+				data->scrollBarOptions.showArrows = 1;
+			else // Auto hide/show
+				data->scrollBarOptions.showArrows = 2;
 			continue;
 		}
 

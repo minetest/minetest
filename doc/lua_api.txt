@@ -2376,6 +2376,9 @@ Elements
     * Example: If a scrollbar has a `min` of 1 and a `max` of 100, a thumbsize of 10
       would span a tenth of the scrollbar space.
     * If this is set to zero or less, the value will be reset to `1`.
+* `arrows=<show/hide/default>`
+    * Whether to show the arrow buttons on the scrollbar. `default` hides the arrows
+      when the scrollbar gets too small, but shows them otherwise.
 
 ### `table[<X>,<Y>;<W>,<H>;<name>;<cell 1>,<cell 2>,...,<cell n>;<selected idx>]`
 
