@@ -684,7 +684,7 @@ core.nodedef_default = {
 	inventory_image = "",
 	wield_image = "",
 	wield_scale = {x=1,y=1,z=1},
-	stack_max = 99,
+	stack_max = tonumber(minetest.settings:get("stacksize_default_node")) or 99,
 	usable = false,
 	liquids_pointable = false,
 	tool_capabilities = nil,
@@ -748,7 +748,7 @@ core.craftitemdef_default = {
 	inventory_image = "",
 	wield_image = "",
 	wield_scale = {x=1,y=1,z=1},
-	stack_max = 99,
+	stack_max = tonumber(minetest.settings:get("stacksize_default_item")) or 99,
 	liquids_pointable = false,
 	tool_capabilities = nil,
 
@@ -786,7 +786,7 @@ core.noneitemdef_default = {  -- This is used for the hand and unknown items
 	inventory_image = "",
 	wield_image = "",
 	wield_scale = {x=1,y=1,z=1},
-	stack_max = 99,
+	stack_max = tonumber(minetest.settings:get("stacksize_default_item")) or 99,
 	liquids_pointable = false,
 	tool_capabilities = nil,
 
