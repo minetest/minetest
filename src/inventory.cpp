@@ -680,7 +680,11 @@ ItemStack InventoryList::removeItem(const ItemStack &item)
 	for (auto i = m_items.rbegin(); i != m_items.rend(); ++i) {
 		if (i->name == item.name) {
 			u32 still_to_remove = item.count - removed.count;
-			removed.addItem(i->takeItem(still_to_remove), m_itemdef);
+			ItemStack leftover = removed.addItem(i->takeItem(still_to_remove),
+					m_itemdef);
+			// Allow oversized stacks
+			removed.count += leftover.count;
+
 			if (removed.count == item.count)
 				break;
 		}
