@@ -17,23 +17,6 @@ end
 local time_to_live = tonumber(core.settings:get("item_entity_ttl")) or 900
 local gravity = tonumber(core.settings:get("movement_gravity")) or 9.81
 
-local function enable_physics(object, luaentity)
-	if luaentity.physical_state == false then
-		luaentity.physical_state = true
-		object:set_properties({physical = true})
-		object:set_velocity({x=0, y=0, z=0})
-		object:set_acceleration({x=0, y=-gravity, z=0})
-	end
-end
-
-local function disable_physics(object, luaentity)
-	if luaentity.physical_state == true then
-		luaentity.physical_state = false
-		object:set_properties({physical = false})
-		object:set_velocity({x=0, y=0, z=0})
-		object:set_acceleration({x=0, y=0, z=0})
-	end
-end
 
 core.register_entity(":__builtin:item", {
 	initial_properties = {
@@ -153,6 +136,24 @@ core.register_entity(":__builtin:item", {
 		return true
 	end,
 
+	enable_physics = function(self)
+		if self.physical_state == false then
+			self.physical_state = true
+			self.object:set_properties({physical = true})
+			self.object:set_velocity({x=0, y=0, z=0})
+			self.object:set_acceleration({x=0, y=-gravity, z=0})
+		end
+	end,
+
+	disable_physics = function(self)
+		if self.physical_state == true then
+			self.physical_state = false
+			self.object:set_properties({physical = false})
+			self.object:set_velocity({x=0, y=0, z=0})
+			self.object:set_acceleration({x=0, y=0, z=0})
+		end
+	end,
+
 	on_step = function(self, dtime)
 		self.age = self.age + dtime
 		if time_to_live > 0 and self.age > time_to_live then
@@ -212,7 +213,7 @@ core.register_entity(":__builtin:item", {
 			if shootdir then
 				-- Set new item moving speed accordingly
 				local newv = vector.multiply(shootdir, 3)
-				disable_physics(self.object, self)
+				self:disable_physics()
 				self.object:set_velocity(newv)
 
 				self.force_out = newv
@@ -233,7 +234,7 @@ core.register_entity(":__builtin:item", {
 			if ok then
 				-- Item was successfully forced out
 				self.force_out = nil
-				enable_physics(self.object, self)
+				self:enable_physics()
 			end
 		end
 
