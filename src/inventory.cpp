@@ -717,27 +717,13 @@ void InventoryList::moveItemSomewhere(u32 i, InventoryList *dest, u32 count)
 	if (item1.empty())
 		return;
 
-	// Try to add the item to destination list
-	u32 dest_size = dest->getSize();
-	// First try all the non-empty slots
-	for (u32 dest_i = 0; dest_i < dest_size; dest_i++) {
-		if (!m_items[dest_i].empty()) {
-			item1 = dest->addItem(dest_i, item1);
-			if (item1.empty()) return;
-		}
-	}
+	ItemStack leftover;
+	leftover = dest->addItem(item1);
 
-	// Then try all the empty ones
-	for (u32 dest_i = 0; dest_i < dest_size; dest_i++) {
-		if (m_items[dest_i].empty()) {
-			item1 = dest->addItem(dest_i, item1);
-			if (item1.empty()) return;
-		}
+	if (!leftover.empty()) {
+		// Add the remaining part back to the source item
+		addItem(i, leftover);
 	}
-
-	// If we reach this, the item was not fully added
-	// Add the remaining part back to the source item
-	addItem(i, item1);
 }
 
 u32 InventoryList::moveItem(u32 i, InventoryList *dest, u32 dest_i,
