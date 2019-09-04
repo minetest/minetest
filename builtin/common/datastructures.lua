@@ -11,6 +11,15 @@ stack_mt = {
 			self.n = self.n-1
 			return v
 		end,
+		top = function(self)
+			return self[self.n]
+		end,
+		get = function(self, i)
+			if i <= 0 then
+				return self[self.n + i]
+			end
+			return self[i]
+		end,
 		is_empty = function(self)
 			return self.n == 0
 		end,
@@ -93,6 +102,14 @@ fifo_mt = {
 			self.source[1] = nil
 			self.p_out = 2
 			return v
+		end,
+		peek = function(self)
+			local p = self.p_out
+			if p <= self.n_out then
+				return self.source[p]
+			end
+			-- source is empty
+			return self.sink[1]
 		end,
 		is_empty = function(self)
 			return self.n_in == 0 and self.p_out == self.n_out+1

@@ -2878,7 +2878,11 @@ Data structures
 	  into a stack.
 	* Following methods are implemented:
     * `push(v)`: pushes the value `v` onto the stack; it can be `nil`
-    * `pop()`: pops an element from the stack
+    * `pop()`: removes the top element from the stack and returns it
+    * `top()`: returns the top element of the stack
+    * `get(i)`: returns an element of the stack
+      If `i` is negative, it returns the `-i+1`th element from the top;
+      if `i` is positive, it returns the `i`th element from the bottom
     * `is_empty()`: returns a boolean which is true iff the stack is empty
     * `size()`: returns the number of elements
     * `clone([copy_element])`: returns a duplicate of the stack
@@ -2898,7 +2902,8 @@ Data structures
 	  `mytable` should no longer be used for other purposes.
 	* Following methods are implemented:
     * `add(v)`: adds `v` to the queue, it can be `nil`
-    * `take()`: takes an element from the queue
+    * `take()`: removes the oldest element from the queue and returns it
+    * `peek()`: returns the oldest element from the queue
     * `is_empty()`: returns a boolean which is true iff the queue is empty
     * `size()`: returns the number of elements
     * `clone([copy_element])`: returns a duplicate of the queue
