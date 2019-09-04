@@ -32,11 +32,10 @@ the `init.lua` scripts in a shared environment.
 
 In order to load client-side mods in your worlds, you have 2 conditions :
 
- 1) $path_user/minetest.conf contains "enable_client_modding = true" to allow starting client lua api
- 
- 2) for a mod eg called test_client sitting in $path_user/clientmods/test_client that
-$path_user/clientmods/mods.conf contains "load_mod_test_client = true" to allow selective
-module loading*.
+ 1) $path_user/minetest.conf contains the setting `enable_client_modding = true`
+
+ 2) The client-side mod located in $path_user/clientmods/<modname> is added to
+    $path_user/clientmods/mods.conf as `load_mod_<modname> = true` in order to load*.
 
 * Note: Depending on the remote server's settings your client-side mods might not
 be loaded or have limited functionality. See setting `csm_restriction_flags` for reference.
