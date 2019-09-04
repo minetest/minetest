@@ -137,7 +137,7 @@ core.register_entity(":__builtin:item", {
 	end,
 
 	enable_physics = function(self)
-		if self.physical_state == false then
+		if not self.physical_state then
 			self.physical_state = true
 			self.object:set_properties({physical = true})
 			self.object:set_velocity({x=0, y=0, z=0})
@@ -146,7 +146,7 @@ core.register_entity(":__builtin:item", {
 	end,
 
 	disable_physics = function(self)
-		if self.physical_state == true then
+		if self.physical_state then
 			self.physical_state = false
 			self.object:set_properties({physical = false})
 			self.object:set_velocity({x=0, y=0, z=0})
@@ -202,7 +202,7 @@ core.register_entity(":__builtin:item", {
 				end
 			end
 			-- If none of the 4 sides is free, check upwards
-			if shootdir == nil then
+			if not shootdir then
 				shootdir = {x=0, y=1, z=0}
 				local cnode = core.get_node(vector.add(pos, shootdir)).name
 				if cnode == "ignore" then
