@@ -130,7 +130,7 @@ local function start_install(calling_dialog, package)
 	local new_dlg = dialog_create("store_downloading",
 		function(data)
 			return "size[7,2]label[0.25,0.75;" ..
-				fgettext("Downloading and installing $1, please wait...", data.title) .. "]"
+				fgettext("Downloading and installing $1, please wait…", data.title) .. "]"
 		end,
 		function(this,fields)
 			if fields["btn_hidden_close_download"] ~= nil then
