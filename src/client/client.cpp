@@ -1644,7 +1644,7 @@ void Client::afterContentReceived()
 	assert(m_nodedef_received); // pre-condition
 	assert(mediaReceived()); // pre-condition
 
-	const wchar_t* text = wgettext("Loading textures...");
+	const wchar_t* text = wgettext("Loading textures…");
 
 	// Clear cached pre-scaled 2D GUI images, as this cache
 	// might have images with the same name but different
