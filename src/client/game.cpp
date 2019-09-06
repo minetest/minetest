@@ -1244,7 +1244,7 @@ bool Game::initSound()
 bool Game::createSingleplayerServer(const std::string &map_dir,
 		const SubgameSpec &gamespec, u16 port, std::string *address)
 {
-	showOverlayMessage(N_("Creating server..."), 0, 5);
+	showOverlayMessage(N_("Creating server…"), 0, 5);
 
 	std::string bind_str = g_settings->get("bind_address");
 	Address bind_addr(0, 0, 0, 0, port);
@@ -1545,7 +1545,7 @@ bool Game::connectToServer(const std::string &playername,
 				}
 
 				// Update status
-				showOverlayMessage(N_("Connecting to server..."), dtime, 20);
+				showOverlayMessage(N_("Connecting to server…"), dtime, 20);
 			}
 		}
 	} catch (con::PeerNotFoundException &e) {
