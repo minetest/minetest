@@ -326,8 +326,8 @@ void FileLogOutput::setFile(const std::string &filename, s64 file_size_max)
 		std::string filename_secondary = filename + ".1";
 		actionstream << "The log file grew too big; it is moved to " <<
 			filename_secondary << std::endl;
-		std::remove(filename_secondary.c_str());
-		std::rename(filename.c_str(), filename_secondary.c_str());
+		remove(filename_secondary.c_str());
+		rename(filename.c_str(), filename_secondary.c_str());
 	}
 	m_stream.open(filename, std::ios::app | std::ios::ate);
 
