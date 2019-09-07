@@ -385,6 +385,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("ignore_world_load_errors", "false");
 	settings->setDefault("remote_media", "");
 	settings->setDefault("debug_log_level", "action");
+	settings->setDefault("debug_log_size_max", "50");
 	settings->setDefault("emergequeue_limit_total", "512");
 	settings->setDefault("emergequeue_limit_diskonly", "64");
 	settings->setDefault("emergequeue_limit_generate", "64");

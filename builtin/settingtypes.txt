@@ -1319,6 +1319,12 @@ language (Language) enum   ,be,ca,cs,da,de,dv,en,eo,es,et,fr,he,hu,id,it,ja,jbo,
 #    -    verbose
 debug_log_level (Debug log level) enum action ,none,error,warning,action,info,verbose
 
+#    If the file size of debug.txt exceeds the number of megabytes specified in
+#    this setting when it is opened, the file is moved to debug.txt.1,
+#    deleting an older debug.txt.1 if it exists.
+#    debug.txt is only moved if this setting is positive.
+debug_log_size_max (Debug log file size threshold) int 50
+
 #    IPv6 support.
 enable_ipv6 (IPv6) bool true
 
