@@ -14,6 +14,12 @@
 using namespace irr;
 using namespace gui;
 
+// Multiply with a color to get the default corresponding hovered color
+#define COLOR_HOVERED_MOD 1.25f
+
+// Multiply with a color to get the default corresponding pressed color
+#define COLOR_PRESSED_MOD 0.85f
+
 //! constructor
 GUIButton::GUIButton(IGUIEnvironment* environment, IGUIElement* parent,
 			s32 id, core::rect<s32> rectangle, bool noclip)
@@ -34,6 +40,14 @@ GUIButton::GUIButton(IGUIEnvironment* environment, IGUIElement* parent,
 	// PATCH
 	for (size_t i = 0; i < 4; i++) {
 		Colors[i] = Environment->getSkin()->getColor((EGUI_DEFAULT_COLOR)i);
+		HoveredColors[i] = irr::video::SColor(Colors[i].getAlpha(),
+			core::clamp<u32>(Colors[i].getRed() * COLOR_HOVERED_MOD, 0, 255),
+			core::clamp<u32>(Colors[i].getGreen() * COLOR_HOVERED_MOD, 0, 255),
+			core::clamp<u32>(Colors[i].getBlue() * COLOR_HOVERED_MOD, 0, 255));
+		PressedColors[i] = irr::video::SColor(Colors[i].getAlpha(),
+			core::clamp<u32>(Colors[i].getRed() * COLOR_PRESSED_MOD, 0, 255),
+			core::clamp<u32>(Colors[i].getGreen() * COLOR_PRESSED_MOD, 0, 255),
+			core::clamp<u32>(Colors[i].getBlue() * COLOR_PRESSED_MOD, 0, 255));
 	}
 	// END PATCH
 }
@@ -247,13 +261,15 @@ void GUIButton::draw()
 		if (!Pressed)
 		{
 			// PATCH
-			skin->drawColored3DButtonPaneStandard(this, AbsoluteRect, &AbsoluteClippingRect, Colors);
+			skin->drawColored3DButtonPaneStandard(this, AbsoluteRect, &AbsoluteClippingRect,
+				Environment->getHovered() == this ? HoveredColors : Colors);
 			// END PATCH
 		}
 		else
 		{
 			// PATCH
-			skin->drawColored3DButtonPanePressed(this, AbsoluteRect, &AbsoluteClippingRect, Colors);
+			skin->drawColored3DButtonPanePressed(this,
+					AbsoluteRect, &AbsoluteClippingRect, PressedColors);
 			// END PATCH
 		}
 	}
@@ -389,10 +405,11 @@ EGUI_BUTTON_IMAGE_STATE GUIButton::getImageState(bool pressed) const
 	// find a compatible state that has images
 	while ( state != EGBIS_IMAGE_UP && !ButtonImages[(u32)state].Texture )
 	{
+		// PATCH
 		switch ( state )
 		{
 			case EGBIS_IMAGE_UP_FOCUSED:
-				state = EGBIS_IMAGE_UP_MOUSEOVER;
+				state = EGBIS_IMAGE_UP;
 				break;
 			case EGBIS_IMAGE_UP_FOCUSED_MOUSEOVER:
 				state = EGBIS_IMAGE_UP_FOCUSED;
@@ -401,7 +418,7 @@ EGUI_BUTTON_IMAGE_STATE GUIButton::getImageState(bool pressed) const
 				state = EGBIS_IMAGE_DOWN;
 				break;
 			case EGBIS_IMAGE_DOWN_FOCUSED:
-				state = EGBIS_IMAGE_DOWN_MOUSEOVER;
+				state = EGBIS_IMAGE_DOWN;
 				break;
 			case EGBIS_IMAGE_DOWN_FOCUSED_MOUSEOVER:
 				state = EGBIS_IMAGE_DOWN_FOCUSED;
@@ -415,6 +432,7 @@ EGUI_BUTTON_IMAGE_STATE GUIButton::getImageState(bool pressed) const
 			default:
 				state = EGBIS_IMAGE_UP;
 		}
+		// END PATCH
 	}
 
 	return state;
@@ -489,6 +507,40 @@ void GUIButton::setImage(EGUI_BUTTON_IMAGE_STATE state, video::ITexture* image, 
 	ButtonImages[stateIdx].Texture = image;
 	ButtonImages[stateIdx].SourceRect = sourceRect;
 }
+
+// PATCH
+void GUIButton::setImage(video::ITexture* image)
+{
+	setImage(gui::EGBIS_IMAGE_UP, image);
+}
+
+void GUIButton::setImage(video::ITexture* image, const core::rect<s32>& pos)
+{
+	setImage(gui::EGBIS_IMAGE_UP, image, pos);
+}
+
+void GUIButton::setPressedImage(video::ITexture* image)
+{
+	setImage(gui::EGBIS_IMAGE_DOWN, image);
+}
+
+void GUIButton::setPressedImage(video::ITexture* image, const core::rect<s32>& pos)
+{
+	setImage(gui::EGBIS_IMAGE_DOWN, image, pos);
+}
+
+void GUIButton::setHoveredImage(video::ITexture* image)
+{
+	setImage(gui::EGBIS_IMAGE_UP_MOUSEOVER, image);
+	setImage(gui::EGBIS_IMAGE_UP_FOCUSED_MOUSEOVER, image);
+}
+
+void GUIButton::setHoveredImage(video::ITexture* image, const core::rect<s32>& pos)
+{
+	setImage(gui::EGBIS_IMAGE_UP_MOUSEOVER, image, pos);
+	setImage(gui::EGBIS_IMAGE_UP_FOCUSED_MOUSEOVER, image, pos);
+}
+// END PATCH
 
 //! Sets if the button should behave like a push button. Which means it
 //! can be in two states: Normal or Pressed. With a click on the button,
@@ -644,6 +696,30 @@ void GUIButton::setColor(video::SColor color)
 	for (size_t i = 0; i < 4; i++) {
 		video::SColor base = Environment->getSkin()->getColor((gui::EGUI_DEFAULT_COLOR)i);
 		Colors[i] = base.getInterpolated(color, d);
+		HoveredColors[i] = irr::video::SColor(Colors[i].getAlpha(),
+			core::clamp<u32>(Colors[i].getRed() * COLOR_HOVERED_MOD, 0, 255),
+			core::clamp<u32>(Colors[i].getGreen() * COLOR_HOVERED_MOD, 0, 255),
+			core::clamp<u32>(Colors[i].getBlue() * COLOR_HOVERED_MOD, 0, 255));
+		PressedColors[i] = irr::video::SColor(Colors[i].getAlpha(),
+			core::clamp<u32>(Colors[i].getRed() * COLOR_PRESSED_MOD, 0, 255),
+			core::clamp<u32>(Colors[i].getGreen() * COLOR_PRESSED_MOD, 0, 255),
+			core::clamp<u32>(Colors[i].getBlue() * COLOR_PRESSED_MOD, 0, 255));
+	}
+}
+void GUIButton::setHoveredColor(video::SColor color)
+{
+	float d = 0.65f;
+	for (size_t i = 0; i < 4; i++) {
+		video::SColor base = Environment->getSkin()->getColor((gui::EGUI_DEFAULT_COLOR)i);
+		HoveredColors[i] = base.getInterpolated(color, d);
+	}
+}
+void GUIButton::setPressedColor(video::SColor color)
+{
+	float d = 0.65f;
+	for (size_t i = 0; i < 4; i++) {
+		video::SColor base = Environment->getSkin()->getColor((gui::EGUI_DEFAULT_COLOR)i);
+		PressedColors[i] = base.getInterpolated(color, d);
 	}
 }
 // END PATCH

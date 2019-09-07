@@ -102,34 +102,30 @@ public:
 	//! Checks if an override color is enabled
 	virtual bool isOverrideColorEnabled(void) const;
 
+	// PATCH
 	//! Sets an image which should be displayed on the button when it is in the given state.
 	virtual void setImage(gui::EGUI_BUTTON_IMAGE_STATE state,
-			video::ITexture* image=0,
+			video::ITexture* image=nullptr,
 			const core::rect<s32>& sourceRect=core::rect<s32>(0,0,0,0));
 
 	//! Sets an image which should be displayed on the button when it is in normal state.
-	virtual void setImage(video::ITexture* image=0) override
-	{
-		setImage(gui::EGBIS_IMAGE_UP, image);
-	}
+	virtual void setImage(video::ITexture* image=nullptr) override;
 
 	//! Sets an image which should be displayed on the button when it is in normal state.
-	virtual void setImage(video::ITexture* image, const core::rect<s32>& pos) override
-	{
-		setImage(gui::EGBIS_IMAGE_UP, image, pos);
-	}
+	virtual void setImage(video::ITexture* image, const core::rect<s32>& pos) override;
 
 	//! Sets an image which should be displayed on the button when it is in pressed state.
-	virtual void setPressedImage(video::ITexture* image=0) override
-	{
-		setImage(gui::EGBIS_IMAGE_DOWN, image);
-	}
+	virtual void setPressedImage(video::ITexture* image=nullptr) override;
 
 	//! Sets an image which should be displayed on the button when it is in pressed state.
-	virtual void setPressedImage(video::ITexture* image, const core::rect<s32>& pos) override
-	{
-		setImage(gui::EGBIS_IMAGE_DOWN, image, pos);
-	}
+	virtual void setPressedImage(video::ITexture* image, const core::rect<s32>& pos) override;
+
+	//! Sets an image which should be displayed on the button when it is in hovered state.
+	virtual void setHoveredImage(video::ITexture* image=nullptr);
+	// END PATCH
+
+	//! Sets an image which should be displayed on the button when it is in hovered state.
+	virtual void setHoveredImage(video::ITexture* image, const core::rect<s32>& pos);
 
 	//! Sets the sprite bank used by the button
 	virtual void setSpriteBank(gui::IGUISpriteBank* bank=0) override;
@@ -215,6 +211,10 @@ public:
 
 
 	void setColor(video::SColor color);
+	// PATCH
+	void setHoveredColor(video::SColor color);
+	void setPressedColor(video::SColor color);
+	// END PATCH
 
 
 	//! Do not drop returned handle
@@ -307,4 +307,8 @@ private:
 	bool ScaleImage;
 
 	video::SColor Colors[4];
+	// PATCH
+	video::SColor HoveredColors[4];
+	video::SColor PressedColors[4];
+	// END PATCH
 };

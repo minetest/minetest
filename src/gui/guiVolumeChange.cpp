@@ -19,6 +19,7 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 #include "guiVolumeChange.h"
 #include "debug.h"
+#include "guiButton.h"
 #include "serialization.h"
 #include <string>
 #include <IGUICheckBox.h>
@@ -103,8 +104,7 @@ void GUIVolumeChange::regenerateGui(v2u32 screensize)
 		core::rect<s32> rect(0, 0, 80 * s, 30 * s);
 		rect = rect + v2s32(size.X / 2 - 80 * s / 2, size.Y / 2 + 55 * s);
 		const wchar_t *text = wgettext("Exit");
-		Environment->addButton(rect, this, ID_soundExitButton,
-			text);
+		GUIButton::addButton(Environment, rect, this, ID_soundExitButton, text);
 		delete[] text;
 	}
 	{

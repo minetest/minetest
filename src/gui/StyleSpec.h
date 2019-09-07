@@ -29,9 +29,12 @@ public:
 	{
 		TEXTCOLOR,
 		BGCOLOR,
+		BGCOLOR_HOVERED,
+		BGCOLOR_PRESSED,
 		NOCLIP,
 		BORDER,
 		BGIMG,
+		BGIMG_HOVERED,
 		BGIMG_PRESSED,
 		ALPHA,
 		NUM_PROPERTIES,
@@ -49,12 +52,18 @@ public:
 			return TEXTCOLOR;
 		} else if (name == "bgcolor") {
 			return BGCOLOR;
+		} else if (name == "bgcolor_hovered") {
+			return BGCOLOR_HOVERED;
+		} else if (name == "bgcolor_pressed") {
+			return BGCOLOR_PRESSED;
 		} else if (name == "noclip") {
 			return NOCLIP;
 		} else if (name == "border") {
 			return BORDER;
 		} else if (name == "bgimg") {
 			return BGIMG;
+		} else if (name == "bgimg_hovered") {
+			return BGIMG_HOVERED;
 		} else if (name == "bgimg_pressed") {
 			return BGIMG_PRESSED;
 		} else if (name == "alpha") {
