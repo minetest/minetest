@@ -312,8 +312,6 @@ void Logger::logToOutputs(LogLevel lev, const std::string &combined,
 
 void FileLogOutput::setFile(const std::string &filename, s64 file_size_max)
 {
-	actionstream << "Log messages are saved to " << filename << std::endl;
-
 	// Only move debug.txt if there is a valid maximum file size
 	bool is_too_large = false;
 	if (file_size_max > 0) {
