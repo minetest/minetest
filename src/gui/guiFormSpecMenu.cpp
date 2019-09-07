@@ -1403,7 +1403,8 @@ void GUIFormSpecMenu::parseLabel(parserData* data, const std::string &element)
 		std::vector<std::string> lines = split(text, '\n');
 
 		for (unsigned int i = 0; i != lines.size(); i++) {
-			std::wstring wlabel = utf8_to_wide(unescape_string(lines[i]));
+			std::wstring wlabel = unescape_translate(unescape_string(
+				utf8_to_wide(lines[i])));
 
 			core::rect<s32> rect;
 
