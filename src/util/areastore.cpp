@@ -108,11 +108,11 @@ void AreaStore::deserialize(std::istream &is)
 		delete [] data;
 	}
 
-	if (!is.good()) // EOF for old formats
-		return;
+	bool read_ids = is.good(); // EOF for old formats
 
 	for (auto &area : areas) {
-		area.id = readU32(is);
+		if (read_ids)
+			area.id = readU32(is);
 		insertArea(&area);
 	}
 }
