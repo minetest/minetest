@@ -154,7 +154,7 @@ The location of this directory can be fetched by using
 
 ### mod.conf
 
-A key-value store of mod details.
+A `Settings` file that provides meta information about the mod.
 
 * `name`: The mod name. Allows Minetest to determine the mod name even if the
           folder is wrongly named.
@@ -196,8 +196,9 @@ A file containing a description to be shown in the Mods tab of the main menu.
 
 ### `settingtypes.txt`
 
-A file in the same format as the one in builtin. It will be parsed by the
-settings menu and the settings will be displayed in the "Mods" category.
+The format is documented in `builtin/settingtypes.txt`.
+It is parsed by the main menu settings dialogue to list mod-specific
+settings in the "Mods" category.
 
 ### `init.lua`
 
@@ -856,6 +857,15 @@ A positional sound will only be heard by players that are within
 * e.g. `{name = "default_place_node", gain = 1.0, pitch = 1.0}`
 
 
+Special sound files
+-------------------
+
+These sound files are played back by the engine if provided.
+
+ * `main_menu`: Looped sound in the main menu (gain = 1.0)
+ * `player_damage`: Played when the local player takes damage (gain = 0.5)
+ * `player_falling_damage`: Played when the local player takes
+   damage by falling (gain = 0.5)
 
 
 Registered definitions
@@ -1537,35 +1547,58 @@ Another example: Make red wool from white wool and red dye:
 Special groups
 --------------
 
-* `immortal`: Skips all damage and breath handling for an object. This group
-  will also hide the integrated HUD status bars for players, and is
-  automatically set to all players when damage is disabled on the server.
-* `punch_operable`: For entities; disables the regular damage mechanism for
-  players punching it by hand or a non-tool item, so that it can do something
-  else than take damage.
+The asterisk `(*)` after a group name describes that there is no engine
+functionality bound to it, and implementation is left up as a suggestion
+to games.
+
+### Node, item and tool groups
+
+* `not_in_creative_inventory`: (*) Special group for inventory mods to indicate
+  that the item should be hidden in item lists.
+
+
+### Node-only groups
+
+* `attached_node`: if the node under it is not a walkable block the node will be
+  dropped as an item. If the node is wallmounted the wallmounted direction is
+  checked.
+* `bouncy`: value is bounce speed in percent
+* `connect_to_raillike`: makes nodes of raillike drawtype with same group value
+  connect to each other
+* `dig_immediate`: Player can always pick up node without reducing tool wear
+    * `2`: the node always gets the digging time 0.5 seconds (rail, sign)
+    * `3`: the node always gets the digging time 0 seconds (torch)
+* `disable_jump`: Player (and possibly other things) cannot jump from node
+* `fall_damage_add_percent`: damage speed = `speed * (1 + value/100)`
+* `falling_node`: if there is no walkable block under the node it will fall
+* `float`: the node will not fall through liquids
 * `level`: Can be used to give an additional sense of progression in the game.
      * A larger level will cause e.g. a weapon of a lower level make much less
        damage, and get worn out much faster, or not be able to get drops
        from destroyed nodes.
      * `0` is something that is directly accessible at the start of gameplay
      * There is no upper limit
-* `dig_immediate`: Player can always pick up node without reducing tool wear
-    * `2`: the node always gets the digging time 0.5 seconds (rail, sign)
-    * `3`: the node always gets the digging time 0 seconds (torch)
-* `disable_jump`: Player (and possibly other things) cannot jump from node
-* `fall_damage_add_percent`: damage speed = `speed * (1 + value/100)`
-* `bouncy`: value is bounce speed in percent
-* `falling_node`: if there is no walkable block under the node it will fall
-* `float`: the node will not fall through liquids
-* `attached_node`: if the node under it is not a walkable block the node will be
-  dropped as an item. If the node is wallmounted the wallmounted direction is
-  checked.
-* `connect_to_raillike`: makes nodes of raillike drawtype with same group value
-  connect to each other
+     * See also: `leveldiff` in [Tools]
 * `slippery`: Players and items will slide on the node.
   Slipperiness rises steadily with `slippery` value, starting at 1.
+
+
+### Tool-only groups
+
 * `disable_repair`: If set to 1 for a tool, it cannot be repaired using the
   `"toolrepair"` crafting recipe
+
+
+### `ObjectRef` groups
+
+* `immortal`: Skips all damage and breath handling for an object. This group
+  will also hide the integrated HUD status bars for players, and is
+  automatically set to all players when damage is disabled on the server.
+* `punch_operable`: For entities; disables the regular damage mechanism for
+  players punching it by hand or a non-tool item, so that it can do something
+  else than take damage.
+
+
 
 Known damage and digging time defining groups
 ---------------------------------------------
@@ -1656,6 +1689,8 @@ to implement this.
 Determines how many uses the tool has when it is used for digging a node,
 of this group, of the maximum level. For lower leveled nodes, the use count
 is multiplied by `3^leveldiff`.
+`leveldiff` is the difference of the tool's `maxlevel` `groupcaps` and the
+node's `level` group. The node cannot be dug if `leveldiff` is less than zero.
 
 * `uses=10, leveldiff=0`: actual uses: 10
 * `uses=10, leveldiff=1`: actual uses: 30
@@ -5303,7 +5338,8 @@ Can be obtained via `item:get_meta()`.
 `MetaDataRef`
 -------------
 
-See [`StorageRef`], [`NodeMetaRef`], [`ItemStackMetaRef`], and [`PlayerMetaRef`].
+Base class used by [`StorageRef`], [`NodeMetaRef`], [`ItemStackMetaRef`],
+and [`PlayerMetaRef`].
 
 ### Methods
 
@@ -5828,11 +5864,25 @@ It can be created via `Settings(filename)`.
     * Writes changes to file.
 * `to_table()`: returns `{[key1]=value1,...}`
 
+### Format
+
+The settings have the format `key = value`. Example:
+
+    foo = example text
+    bar = """
+    Multiline
+    value
+    """
+
+
 `StorageRef`
 ------------
 
 Mod metadata: per mod metadata, saved automatically.
 Can be obtained via `minetest.get_mod_storage()` during load time.
+
+WARNING: This storage backend is incaptable to save raw binary data due
+to restrictions of JSON.
 
 ### Methods
 
@@ -5848,6 +5898,9 @@ Object properties
 -----------------
 
 Used by `ObjectRef` methods. Part of an Entity definition.
+These properties are not persistent, but are applied automatically to the
+corresponding Lua entity using the given registration fields.
+Player properties need to be saved manually.
 
     {
         hp_max = 1,

@@ -111,9 +111,6 @@ The main Lua script. Running this script should register everything it
 wants to register. Subsequent execution depends on minetest calling the
 registered callbacks.
 
-`minetest.setting_get(name)` and `minetest.setting_getbool(name)` can be used
-to read custom or existing settings at load time, if necessary.
-
 ### `sounds`
 Media files (sounds) that will be transferred to the
 client and will be available for use by the mod.
