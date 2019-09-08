@@ -49,7 +49,8 @@ struct DungeonParams {
 	// 3D noise that determines which c_wall nodes are converted to c_alt_wall
 	NoiseParams np_alt_wall;
 
-	// Number of dungeons generated in mapchunk
+	// Number of dungeons generated in mapchunk. All will use the same set of
+	// dungeonparams.
 	u16 num_dungeons;
 	// Dungeons only generate in ground
 	bool only_in_ground;
@@ -68,11 +69,13 @@ struct DungeonParams {
 	u16 large_room_chance;
 	// Dimensions of 3D 'brush' that creates corridors.
 	// Dimensions are of the empty space, not including walls / floor / ceilng.
+	// Diagonal corridors must have hole width >=2 to be passable.
+	// Currently, hole width >= 3 causes stair corridor bugs.
 	v3s16 holesize;
 	// Corridor length random range
 	u16 corridor_len_min;
 	u16 corridor_len_max;
-	// Diagonal corridors are possible
+	// Diagonal corridors are possible, 1 in 4 corridors will be diagonal
 	bool diagonal_dirs;
 	// Usually 'GENNOTIFY_DUNGEON', but mapgen v6 uses 'GENNOTIFY_TEMPLE' for
 	// desert dungeons.
