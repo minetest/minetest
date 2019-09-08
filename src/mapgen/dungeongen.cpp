@@ -86,8 +86,6 @@ void DungeonGen::generate(MMVManip *vm, u32 bseed, v3s16 nmin, v3s16 nmax)
 
 	//TimeTaker t("gen dungeons");
 
-	static const bool preserve_ignore = !g_settings->getBool("projecting_dungeons");
-
 	this->vm = vm;
 	this->blockseed = bseed;
 	random.seed(bseed + 2);
@@ -96,9 +94,10 @@ void DungeonGen::generate(MMVManip *vm, u32 bseed, v3s16 nmin, v3s16 nmax)
 	vm->clearFlag(VMANIP_FLAG_DUNGEON_INSIDE | VMANIP_FLAG_DUNGEON_PRESERVE);
 
 	if (dp.only_in_ground) {
-		// Set all air and liquid drawtypes to be untouchable to make dungeons
-		// open to air and liquids.
-		// Optionally set ignore to be untouchable to prevent projecting dungeons.
+		// Set all air and liquid drawtypes to be untouchable to make dungeons generate
+		// in ground only.
+		// Set 'ignore' to be untouchable to prevent generation in ungenerated neighbor
+		// mapchunks, to avoid dungeon rooms generating outside ground.
 		// Like randomwalk caves, preserve nodes that have 'is_ground_content = false',
 		// to avoid dungeons that generate out beyond the edge of a mapchunk destroying
 		// nodes added by mods in 'register_on_generated()'.
@@ -109,8 +108,7 @@ void DungeonGen::generate(MMVManip *vm, u32 bseed, v3s16 nmin, v3s16 nmax)
 					content_t c = vm->m_data[i].getContent();
 					NodeDrawType dtype = ndef->get(c).drawtype;
 					if (dtype == NDT_AIRLIKE || dtype == NDT_LIQUID ||
-							(preserve_ignore && c == CONTENT_IGNORE) ||
-							!ndef->get(c).is_ground_content)
+							c == CONTENT_IGNORE || !ndef->get(c).is_ground_content)
 						vm->m_flags[i] |= VMANIP_FLAG_DUNGEON_PRESERVE;
 					i++;
 				}

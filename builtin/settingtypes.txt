@@ -1384,9 +1384,6 @@ mapgen_limit (Map generation limit) int 31000 0 31000
 #    and junglegrass, in all other mapgens this flag controls all decorations.
 mg_flags (Mapgen flags) flags caves,dungeons,light,decorations,biomes caves,dungeons,light,decorations,biomes,nocaves,nodungeons,nolight,nodecorations,nobiomes
 
-#    Whether dungeons occasionally project from the terrain.
-projecting_dungeons (Projecting dungeons) bool true
-
 [*Biome API temperature and humidity noise parameters]
 
 #    Temperature variation for biomes.

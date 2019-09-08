@@ -421,7 +421,6 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("mg_flags", "caves,dungeons,light,decorations,biomes");
 	settings->setDefault("fixed_map_seed", "");
 	settings->setDefault("max_block_generate_distance", "8");
-	settings->setDefault("projecting_dungeons", "true");
 	settings->setDefault("enable_mapgen_debug_info", "false");
 
 	// Server list announcing
