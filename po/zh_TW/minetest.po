@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-02-24 18:43+0100\n"
-"PO-Revision-Date: 2019-01-30 22:28+0000\n"
-"Last-Translator: Nore <nore@mesecons.net>\n"
+"PO-Revision-Date: 2019-08-13 11:23+0000\n"
+"Last-Translator: Yinan173 <op860624@gmail.com>\n"
 "Language-Team: Chinese (Traditional) <https://hosted.weblate.org/projects/"
 "minetest/minetest/zh_Hant/>\n"
 "Language: zh_TW\n"
@@ -12,24 +12,21 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 3.5-dev\n"
+"X-Generator: Weblate 3.8-dev\n"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "Respawn"
 msgstr "重生"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
-#, fuzzy
 msgid "You died"
-msgstr "您已經死亡。"
+msgstr "您已經死亡"
 
 #: builtin/fstk/ui.lua
-#, fuzzy
 msgid "An error occurred in a Lua script, such as a mod:"
 msgstr "在 Lua 指令稿中發生錯誤，如 mod："
 
 #: builtin/fstk/ui.lua
-#, fuzzy
 msgid "An error occurred:"
 msgstr "發生錯誤："
 
@@ -96,18 +93,16 @@ msgid "Disable all"
 msgstr "停用全部"
 
 #: builtin/mainmenu/dlg_config_world.lua
-#, fuzzy
 msgid "Disable modpack"
-msgstr "已停用"
+msgstr "已停用 Mod包"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Enable all"
 msgstr "啟用全部"
 
 #: builtin/mainmenu/dlg_config_world.lua
-#, fuzzy
 msgid "Enable modpack"
-msgstr "重新命名 Mod 包："
+msgstr "重新命名 Mod 包"
 
 #: builtin/mainmenu/dlg_config_world.lua
 #, fuzzy
@@ -123,18 +118,16 @@ msgid "Mod:"
 msgstr "Mod："
 
 #: builtin/mainmenu/dlg_config_world.lua
-#, fuzzy
 msgid "No game description provided."
-msgstr "找不到 mod 描述"
+msgstr "找不到 mod 描述。"
 
 #: builtin/mainmenu/dlg_config_world.lua
-#, fuzzy
 msgid "No modpack description provided."
-msgstr "找不到 mod 描述"
+msgstr "找不到 mod 描述。"
 
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/tab_content.lua
 msgid "Optional dependencies:"
-msgstr "可選依賴："
+msgstr "選用的相依元件:"
 
 #: builtin/mainmenu/dlg_config_world.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua src/gui/guiKeyChangeMenu.cpp
@@ -151,21 +144,19 @@ msgstr "已啟用"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "All packages"
-msgstr ""
+msgstr "所有套件"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Back"
 msgstr "Back"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Back to Main Menu"
 msgstr "主選單"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Downloading and installing $1, please wait..."
-msgstr "正在下載 $1，請稍候..."
+msgstr "正在下載 $1，請稍候……"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 #, fuzzy
@@ -188,11 +179,11 @@ msgstr "Mods"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "No packages could be retrieved"
-msgstr ""
+msgstr "無法取得任何套件"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "No results"
-msgstr ""
+msgstr "沒有搜尋到任何項目"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua builtin/mainmenu/tab_online.lua
@@ -211,7 +202,7 @@ msgstr "安裝"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Update"
-msgstr ""
+msgstr "更新"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "A world named \"$1\" already exists"
@@ -297,7 +288,7 @@ msgstr "重新命名 Mod 包："
 msgid ""
 "This modpack has an explicit name given in its modpack.conf which will "
 "override any renaming here."
-msgstr ""
+msgstr "這個Mod包有給定一個明確的名稱在它所屬的 modpack.conf 之中，可以在該檔案中複寫Mod包的名稱。"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "(No description of setting given)"
@@ -508,7 +499,7 @@ msgstr "已安裝的 Mod："
 
 #: builtin/mainmenu/tab_content.lua
 msgid "No dependencies."
-msgstr "無相依。"
+msgstr "無相依元件。"
 
 #: builtin/mainmenu/tab_content.lua
 #, fuzzy
@@ -890,7 +881,7 @@ msgstr "玩家名稱太長。"
 
 #: src/client/clientlauncher.cpp
 msgid "Please choose a name!"
-msgstr "請選擇名稱！"
+msgstr "請選擇名字!"
 
 #: src/client/clientlauncher.cpp
 msgid "Provided password file failed to open: "
@@ -1089,28 +1080,24 @@ msgid "Exit to OS"
 msgstr "離開到作業系統"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Fast mode disabled"
-msgstr "快速模式速度"
+msgstr "已停用快速模式"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Fast mode enabled"
-msgstr "快速模式速度"
+msgstr "已啟用快速模式"
 
 #: src/client/game.cpp
 msgid "Fast mode enabled (note: no 'fast' privilege)"
 msgstr ""
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Fly mode disabled"
-msgstr "快速模式速度"
+msgstr "已停用飛行模式"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Fly mode enabled"
-msgstr "已啟用傷害"
+msgstr "已啟用飛行模式"
 
 #: src/client/game.cpp
 msgid "Fly mode enabled (note: no 'fly' privilege)"

@@ -3,17 +3,17 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-02-24 18:43+0100\n"
-"PO-Revision-Date: 2019-02-14 17:18+0000\n"
-"Last-Translator: narrnika <narr13niki@gmail.com>\n"
+"PO-Revision-Date: 2019-05-10 11:34+0000\n"
+"Last-Translator: Andrei Stepanov <adem4ik@gmail.com>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/minetest/"
 "minetest/ru/>\n"
 "Language: ru\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
-"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 3.5-dev\n"
+"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<="
+"4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
+"X-Generator: Weblate 3.7-dev\n"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "Respawn"
@@ -179,7 +179,7 @@ msgstr "Моды"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "No packages could be retrieved"
-msgstr ""
+msgstr "Пакеты не могут быть получены"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "No results"
@@ -315,22 +315,20 @@ msgid "Enabled"
 msgstr "Включено"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
-#, fuzzy
 msgid "Lacunarity"
-msgstr "Безопасность"
+msgstr "Лакунарность"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Octaves"
-msgstr ""
+msgstr "Октавы"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua src/settings_translation_file.cpp
 msgid "Offset"
 msgstr "Смещение"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
-#, fuzzy
 msgid "Persistance"
-msgstr "Расстояние передачи игрока"
+msgstr "Персистенция"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Please enter a valid integer."
@@ -342,9 +340,7 @@ msgstr "Пожалуйста, введите число."
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Restore Default"
-msgstr ""
-"Восстановить\n"
-"значение по умолчанию"
+msgstr "Восстановить стандартные"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua src/settings_translation_file.cpp
 msgid "Scale"
@@ -372,49 +368,47 @@ msgstr "Значение не должно быть больше, чем $1."
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "X"
-msgstr ""
+msgstr "X"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "X spread"
-msgstr ""
+msgstr "Разброс по X"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Y"
-msgstr ""
+msgstr "Y"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Y spread"
-msgstr ""
+msgstr "Разброс по Y"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Z"
-msgstr ""
+msgstr "Z"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Z spread"
-msgstr ""
+msgstr "Разброс по Z"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "absvalue"
-msgstr ""
+msgstr "абсолютная величина"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
-#, fuzzy
 msgid "defaults"
-msgstr "Стандартная игра"
+msgstr "стандартные"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "eased"
-msgstr ""
+msgstr "облегчённый"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "$1 (Enabled)"
 msgstr "$1 (включено)"
 
 #: builtin/mainmenu/pkgmgr.lua
-#, fuzzy
 msgid "$1 mods"
-msgstr "3D режим"
+msgstr "$1 модов"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Failed to install $1 to $2"
@@ -493,9 +487,8 @@ msgid "Rename"
 msgstr "Переименовать"
 
 #: builtin/mainmenu/tab_content.lua
-#, fuzzy
 msgid "Select Package File:"
-msgstr "Выберите файл мода:"
+msgstr "Выберите файл дополнения:"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Uninstall Package"
@@ -772,9 +765,8 @@ msgid "Tone Mapping"
 msgstr "Тональное отображение"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Touchthreshold: (px)"
-msgstr "Чувствительность (пк)"
+msgstr "Порог чувствительности: (px)"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Trilinear Filter"
@@ -862,7 +854,7 @@ msgstr "Пожалуйста, выберите имя!"
 
 #: src/client/clientlauncher.cpp
 msgid "Provided password file failed to open: "
-msgstr ""
+msgstr "Не удалось открыть указанный файл с паролем: "
 
 #: src/client/clientlauncher.cpp
 msgid "Provided world path doesn't exist: "
@@ -870,7 +862,7 @@ msgstr "По этому пути мира нет: "
 
 #: src/client/fontengine.cpp
 msgid "needs_fallback_font"
-msgstr ""
+msgstr "no"
 
 #: src/client/game.cpp
 msgid ""
@@ -913,24 +905,20 @@ msgid "- Server Name: "
 msgstr "- Имя сервера: "
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Automatic forward disabled"
 msgstr "Автобег отключён"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Automatic forward enabled"
 msgstr "Автобег включён"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Camera update disabled"
-msgstr "Кнопка обновления камеры"
+msgstr "Обновление камеры отключено"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Camera update enabled"
-msgstr "Кнопка обновления камеры"
+msgstr "Обновление камеры включено"
 
 #: src/client/game.cpp
 msgid "Change Password"
@@ -1752,9 +1740,11 @@ msgid ""
 "If enabled, virtual joystick will also tap \"aux\" button when out of main "
 "circle."
 msgstr ""
+"(Android) Использовать виртуальный джойстик для активации кнопки \"aux\".\n"
+"Если включено, виртуальный джойстик также будет нажимать кнопку \"aux\", "
+"когда будет находиться за пределами основного колеса."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "(X,Y,Z) offset of fractal from world center in units of 'scale'.\n"
 "Can be used to move a desired point to (0, 0) to create a\n"
@@ -1766,9 +1756,12 @@ msgid ""
 "Range roughly -2 to 2. Multiply by 'scale' for offset in nodes."
 msgstr ""
 "Смещение (X, Y, Z) фрактала от центра мира в единицах «масштаба».\n"
-"Используется для перемещения зоны возрождения ближе к (0, 0).\n"
-"Значение по умолчанию подходит для множеств Мандельброта, для множеств Жюлиа "
-"его нужно отредактировать.\n"
+"Используется для перемещения зоны возрождения ближе к (0, 0),\n"
+"для создания подходящей точки возрождения или для разрешения\n"
+"«приближения» в нужную точку посредством «масштаба».\n"
+"Значение по умолчанию подходит для множеств Мандельброта\n"
+"со стандартными параметрами, для других ситуаций его нужно\n"
+"отредактировать.\n"
 "Диапазон примерно от -2 до 2. Умножьте на «масштаб», чтобы получить смещение "
 "в блоках."
 
@@ -1782,6 +1775,12 @@ msgid ""
 "Default is for a vertically-squashed shape suitable for\n"
 "an island, set all 3 numbers equal for the raw shape."
 msgstr ""
+"(Х,Y,Z) шкала фрактала в блоках.\n"
+"Фактический фрактальный размер будет в 2-3 раза больше.\n"
+"Эти числа могут быть очень большими, фракталу нет нужды заполнять мир.\n"
+"Увеличьте их, чтобы увеличить «масштаб» детали фрактала.\n"
+"Для вертикально сжатой фигуры, что подходит\n"
+"острову, сделайте все 3 числа равными для необработанной формы."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1793,27 +1792,32 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "2D noise that controls the shape/size of ridged mountains."
-msgstr ""
+msgstr "2D-шум, управляет формой / размером горных хребтов."
 
 #: src/settings_translation_file.cpp
 msgid "2D noise that controls the shape/size of rolling hills."
-msgstr ""
+msgstr "Двухмерный шум, контролирующий форму и размер холмов."
 
 #: src/settings_translation_file.cpp
 msgid "2D noise that controls the shape/size of step mountains."
-msgstr ""
+msgstr "Двухмерный шум, контролирующий форму и размер ступенчатых гор."
 
 #: src/settings_translation_file.cpp
 msgid "2D noise that controls the size/occurrence of ridged mountain ranges."
 msgstr ""
+"Двухмерный шум, контролирующий размер и распространение складчатых горных "
+"хребтов."
 
 #: src/settings_translation_file.cpp
 msgid "2D noise that controls the size/occurrence of rolling hills."
 msgstr ""
+"Двухмерный шум, контролирующий размер и распространение холмистой местности."
 
 #: src/settings_translation_file.cpp
 msgid "2D noise that controls the size/occurrence of step mountain ranges."
 msgstr ""
+"Двухмерный шум, контролирующий размер и распространение ступенчатых горных "
+"хребтов."
 
 #: src/settings_translation_file.cpp
 msgid "3D clouds"
@@ -1840,9 +1844,8 @@ msgid "3D noise defining structure of river canyon walls."
 msgstr "3D-шум, определяющий структуру стен речного каньона."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "3D noise defining terrain."
-msgstr "3D-шум, определяющий огромные пещеры."
+msgstr "Трёхмерный шум, определяющий рельеф местности."
 
 #: src/settings_translation_file.cpp
 msgid "3D noise for mountain overhangs, cliffs, etc. Usually small variations."
@@ -1955,7 +1958,7 @@ msgstr "Дополнительно"
 
 #: src/settings_translation_file.cpp
 msgid "Alters how mountain-type floatlands taper above and below midpoint."
-msgstr ""
+msgstr "Управляет сужением островов горного типа ниже средней точки."
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -2066,7 +2069,7 @@ msgstr "Запоминать размер окна"
 
 #: src/settings_translation_file.cpp
 msgid "Autoscaling mode"
-msgstr ""
+msgstr "Режим автомасштабирования"
 
 #: src/settings_translation_file.cpp
 msgid "Backward key"
@@ -2206,7 +2209,7 @@ msgstr "Предел пещеры"
 
 #: src/settings_translation_file.cpp
 msgid "Center of light curve mid-boost."
-msgstr ""
+msgstr "Центр среднего подъёма кривой света."
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -2284,7 +2287,7 @@ msgstr "Моддинг клиента"
 
 #: src/settings_translation_file.cpp
 msgid "Client side node lookup range restriction"
-msgstr ""
+msgstr "Ограничение диапазона поиска от клиента"
 
 #: src/settings_translation_file.cpp
 msgid "Climbing speed"
@@ -2368,7 +2371,7 @@ msgstr "Высота консоли"
 
 #: src/settings_translation_file.cpp
 msgid "ContentDB Flag Blacklist"
-msgstr ""
+msgstr "Чёрный список флагов ContentDB"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -2384,6 +2387,8 @@ msgid ""
 "Continuous forward movement, toggled by autoforward key.\n"
 "Press the autoforward key again or the backwards movement to disable."
 msgstr ""
+"Непрерывное движение вперёд, переключаемое клавишей «автоматический бег».\n"
+"Нажмите автоматический бег ещё раз либо движение назад, чтобы выключить."
 
 #: src/settings_translation_file.cpp
 msgid "Controls"
@@ -2663,11 +2668,11 @@ msgstr "Дамп отладочной информации генератора 
 
 #: src/settings_translation_file.cpp
 msgid "Dungeon maximum Y"
-msgstr ""
+msgstr "Максимальная Y подземелья"
 
 #: src/settings_translation_file.cpp
 msgid "Dungeon minimum Y"
-msgstr ""
+msgstr "Минимальная Y подземелья"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2713,7 +2718,7 @@ msgstr "Включить случайный ввод (используется �
 
 #: src/settings_translation_file.cpp
 msgid "Enable register confirmation"
-msgstr ""
+msgstr "Включить подтверждение регистрации"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3030,19 +3035,19 @@ msgstr "Формат скриншотов."
 
 #: src/settings_translation_file.cpp
 msgid "Formspec Default Background Color"
-msgstr ""
+msgstr "Стандартный цвет фона игровой консоли"
 
 #: src/settings_translation_file.cpp
 msgid "Formspec Default Background Opacity"
-msgstr ""
+msgstr "Стандартная непрозрачность фона игровой консоли"
 
 #: src/settings_translation_file.cpp
 msgid "Formspec Full-Screen Background Color"
-msgstr ""
+msgstr "Цвет фона игровой консоли в полноэкранном режиме"
 
 #: src/settings_translation_file.cpp
 msgid "Formspec Full-Screen Background Opacity"
-msgstr ""
+msgstr "Непрозрачность фона игровой консоли в полноэкранном режиме"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -3160,11 +3165,11 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Gradient of light curve at maximum light level."
-msgstr ""
+msgstr "Градиент кривой света на максимальном уровне освещённости."
 
 #: src/settings_translation_file.cpp
 msgid "Gradient of light curve at minimum light level."
-msgstr ""
+msgstr "Градиент кривой света на минимальном уровне освещённости."
 
 #: src/settings_translation_file.cpp
 msgid "Graphics"
@@ -4614,11 +4619,11 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Light curve mid boost"
-msgstr ""
+msgstr "Средний подъём кривой света"
 
 #: src/settings_translation_file.cpp
 msgid "Light curve mid boost center"
-msgstr ""
+msgstr "Центр среднего подъёма кривой света"
 
 #: src/settings_translation_file.cpp
 msgid "Light curve mid boost spread"
@@ -4626,7 +4631,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Lightness sharpness"
-msgstr ""
+msgstr "Резкость освещённости"
 
 #: src/settings_translation_file.cpp
 msgid "Limit of emerge queues on disk"
@@ -4764,7 +4769,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Map generation attributes specific to Mapgen v5."
-msgstr ""
+msgstr "Атрибуты генерации карт для Mapgen v5."
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -4786,6 +4791,8 @@ msgid ""
 "Map generation attributes specific to Mapgen v7.\n"
 "'ridges' enables the rivers."
 msgstr ""
+"Атрибуты генерации карт для Mapgen v7.\n"
+"«хребты» включают реки."
 
 #: src/settings_translation_file.cpp
 msgid "Map generation limit"
@@ -5008,13 +5015,15 @@ msgstr "Максимальное количество одновременных
 
 #: src/settings_translation_file.cpp
 msgid "Maximum size of the out chat queue"
-msgstr ""
+msgstr "Максимальный размер очереди исходящих сообщений"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Maximum size of the out chat queue.\n"
 "0 to disable queueing and -1 to make the queue size unlimited."
 msgstr ""
+"Максимальный размер очереди исходящих сообщений.\n"
+"0 для отключения очереди и -1 для неограниченного размера."
 
 #: src/settings_translation_file.cpp
 msgid "Maximum time in ms a file download (e.g. a mod download) may take."
@@ -5069,7 +5078,7 @@ msgstr "Mip-текстурирование (Мип-маппинг)"
 
 #: src/settings_translation_file.cpp
 msgid "Mod channels"
-msgstr ""
+msgstr "Каналы модификаций"
 
 #: src/settings_translation_file.cpp
 msgid "Modifies the size of the hudbar elements."
@@ -5248,7 +5257,7 @@ msgstr "Количество итераций Parallax Occlusion."
 
 #: src/settings_translation_file.cpp
 msgid "Online Content Repository"
-msgstr ""
+msgstr "Сетевой репозиторий"
 
 #: src/settings_translation_file.cpp
 msgid "Opaque liquids"
@@ -5406,7 +5415,7 @@ msgstr "Профилирование"
 
 #: src/settings_translation_file.cpp
 msgid "Projecting dungeons"
-msgstr ""
+msgstr "Проступающие подземелья"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5988,7 +5997,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "The URL for the content repository"
-msgstr ""
+msgstr "Адрес сетевого репозитория"
 
 #: src/settings_translation_file.cpp
 msgid ""

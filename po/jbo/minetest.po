@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-02-24 18:43+0100\n"
-"PO-Revision-Date: 2019-01-24 00:05+0000\n"
-"Last-Translator: Nore <nore@mesecons.net>\n"
+"PO-Revision-Date: 2019-06-16 18:26+0000\n"
+"Last-Translator: Ian Townsend <iantownsend@disroot.org>\n"
 "Language-Team: Lojban <https://hosted.weblate.org/projects/minetest/minetest/"
 "jbo/>\n"
 "Language: jbo\n"
@@ -12,55 +12,55 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 3.4\n"
+"X-Generator: Weblate 3.7-dev\n"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "Respawn"
-msgstr "gasnu lo nu mi tolcanci"
+msgstr "nu tolcanci"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
-#, fuzzy
 msgid "You died"
-msgstr ".i do pu morsi"
+msgstr ".i do morsi"
 
 #: builtin/fstk/ui.lua
 msgid "An error occurred in a Lua script, such as a mod:"
 msgstr ""
+".i da poi me la .luuas. ku samtci zo'u la'e di'e nabmi fi tu'a da noi la'a "
+"cu'i se samtcise'a"
 
 #: builtin/fstk/ui.lua
-#, fuzzy
 msgid "An error occurred:"
-msgstr "lo selsrera cu pu fasnu:"
+msgstr ".i la'e di'e nabmi"
 
 #: builtin/fstk/ui.lua
-#, fuzzy
 msgid "Main menu"
-msgstr "lo ralju"
+msgstr "ralju liste"
 
 #: builtin/fstk/ui.lua
 msgid "Ok"
 msgstr "je'e"
 
 #: builtin/fstk/ui.lua
-#, fuzzy
 msgid "Reconnect"
-msgstr "samjongau"
+msgstr "nu samjo'e"
 
 #: builtin/fstk/ui.lua
 msgid "The server has requested a reconnect:"
-msgstr "le samse'u cu pu cpedu lo nu samjongau"
+msgstr ".i lo samse'u cu cpedu lo nu za'u re'u co'a samjo'e"
 
 #: builtin/mainmenu/common.lua src/client/game.cpp
 msgid "Loading..."
 msgstr ".i ca'o samymo'i"
 
 #: builtin/mainmenu/common.lua
+#, fuzzy
 msgid "Protocol version mismatch. "
-msgstr "le ve judrnporte favatcini na mapti"
+msgstr "le ve judrnporte favatcini na mapti "
 
 #: builtin/mainmenu/common.lua
+#, fuzzy
 msgid "Server enforces protocol version $1. "
-msgstr "le samci'ejudri cu jitro lo du'u ve judrnporte favytcini li $1"
+msgstr "le samci'ejudri cu jitro lo du'u ve judrnporte favytcini li $1 "
 
 #: builtin/mainmenu/common.lua
 msgid "Server supports protocol versions between $1 and $2. "
@@ -69,6 +69,8 @@ msgstr ""
 #: builtin/mainmenu/common.lua
 msgid "Try reenabling public serverlist and check your internet connection."
 msgstr ""
+".i ko troci lo nu za'u re'u samymo'i lo liste be lo'i samse'u .i ko cipcta "
+"lo do te samjo'e"
 
 #: builtin/mainmenu/common.lua
 msgid "We only support protocol version $1."
@@ -86,31 +88,27 @@ msgstr ""
 #: src/gui/guiConfirmRegistration.cpp src/gui/guiKeyChangeMenu.cpp
 #: src/gui/guiPasswordChange.cpp
 msgid "Cancel"
-msgstr "fitytoltu'i"
+msgstr "nu sisti"
 
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/tab_content.lua
-#, fuzzy
 msgid "Dependencies:"
-msgstr "nitcu"
+msgstr "se nitcu"
 
 #: builtin/mainmenu/dlg_config_world.lua
-#, fuzzy
 msgid "Disable all"
-msgstr "selpli"
+msgstr "nu ro co'e cu ganda"
 
 #: builtin/mainmenu/dlg_config_world.lua
-#, fuzzy
 msgid "Disable modpack"
-msgstr "selpli"
+msgstr "nu lo se samtcise'a bakfu cu ganda"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Enable all"
-msgstr ""
+msgstr "nu ro co'e cu katci"
 
 #: builtin/mainmenu/dlg_config_world.lua
-#, fuzzy
 msgid "Enable modpack"
-msgstr "selpli"
+msgstr "nu lo se samtcise'a bakfu cu katci"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid ""
@@ -120,88 +118,87 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Mod:"
-msgstr ""
+msgstr "se samtcise'a"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "No game description provided."
-msgstr ""
+msgstr ".i no da skicu be lo se kelci ku vlapoi"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "No modpack description provided."
-msgstr ""
+msgstr ".i no da skicu be lo se samtcise'a ku vlapoi"
 
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/tab_content.lua
 msgid "Optional dependencies:"
-msgstr ""
+msgstr "na'e se nitcu"
 
 #: builtin/mainmenu/dlg_config_world.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua src/gui/guiKeyChangeMenu.cpp
 msgid "Save"
-msgstr "rejgau"
+msgstr "nu vreji"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "World:"
-msgstr ""
+msgstr "munje"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "enabled"
-msgstr "selpli"
+msgstr "katci"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "All packages"
-msgstr ""
+msgstr "cmima lu'i ro bakfu"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Back"
-msgstr ""
+msgstr "nu xruti"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Back to Main Menu"
-msgstr "lo ralju"
+msgstr "nu xruti fi tu'a lo ralju liste"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Downloading and installing $1, please wait..."
-msgstr ""
+msgstr ".i ca'o kibycpa la'o zoi. $1 .zoi je cu samtcise'a ri .i .e'o denpa"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Failed to download $1"
-msgstr ""
+msgstr ".i da nabmi fi lo nu kibycpa la'o zoi. $1 .zoi"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Games"
-msgstr ""
+msgstr "se kelci"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Install"
-msgstr ""
+msgstr "nu samtcise'a"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Mods"
-msgstr ""
+msgstr "se samtcise'a"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "No packages could be retrieved"
-msgstr ""
+msgstr ".i na kakne lo ka ce'u kibycpa su'o bakfu"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "No results"
-msgstr ""
+msgstr ".i no da ckaji lo se sisku"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua builtin/mainmenu/tab_online.lua
 msgid "Search"
-msgstr "sisku"
+msgstr "nu sisku"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Texture packs"
-msgstr ""
+msgstr "jvinu bakfu"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Uninstall"
-msgstr ""
+msgstr "nu to'e samtcise'a"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Update"
@@ -209,59 +206,60 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "A world named \"$1\" already exists"
-msgstr ".i lo munje me'e la'o gy.$1.gy. cu zasti"
+msgstr ".i pa munje xa'o cmene zoi zoi. $1 .zoi"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Create"
-msgstr "zbasu"
+msgstr "nu cupra"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Download a game, such as Minetest Game, from minetest.net"
 msgstr ""
+".i ko kibycpa pa se kelci be mu'u la .maintest. se kelci la'o zoi. "
+"minetest.net .zoi"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Download one from minetest.net"
-msgstr ""
+msgstr ".i ko kibycpa pa se kelci la'o zoi. minetest.net .zoi"
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
 msgid "Game"
-msgstr ""
+msgstr "se kelci"
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
 msgid "Mapgen"
-msgstr ""
+msgstr "te cupra lo munje"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "No game selected"
-msgstr "mu'e cuxna fi le'i se kuspe"
+msgstr ".i do cuxna no se kelci"
 
 #: builtin/mainmenu/dlg_create_world.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Seed"
-msgstr "le munje ke cunso namcu"
+msgstr "cunso jai krasi"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Warning: The minimal development test is meant for developers."
-msgstr ".i .e'unai la'o gy.Minimal Development Test.gy. cu tutci le finti"
+msgstr ".i la'o zoi. Minimal development test .zoi na'o selpli lo favgau .o'i"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "World name"
-msgstr "munje cmene"
+msgstr "cmene lo munje"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "You have no games installed."
-msgstr ""
+msgstr ".i do samtcise'a no se kelci"
 
 #: builtin/mainmenu/dlg_delete_content.lua
 msgid "Are you sure you want to delete \"$1\"?"
-msgstr ".i xu do je'u djica lo nu vimcu la'o gy.$1.gy."
+msgstr ".i .au ju'o pei do vimcu la'o zoi. $1 .zoi"
 
 #: builtin/mainmenu/dlg_delete_content.lua
 #: builtin/mainmenu/dlg_delete_world.lua builtin/mainmenu/tab_local.lua
 #: src/client/keycode.cpp
 msgid "Delete"
-msgstr "vimcu"
+msgstr "nu vimcu"
 
 #: builtin/mainmenu/dlg_delete_content.lua
 msgid "pkgmgr: failed to delete \"$1\""
@@ -273,15 +271,16 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_delete_world.lua
 msgid "Delete World \"$1\"?"
-msgstr ".i xu do djica lo nu vimcu lo munje be me'e zoi gy.$1.gy."
+msgstr ".i .au ju'o pei do vimcu la'o zoi. $1 .zoi"
 
 #: builtin/mainmenu/dlg_rename_modpack.lua
+#, fuzzy
 msgid "Accept"
 msgstr "fitytu'i"
 
 #: builtin/mainmenu/dlg_rename_modpack.lua
 msgid "Rename Modpack:"
-msgstr ""
+msgstr "nu basti fi lo ka ce'u cmene lo se samtcise'a bakfu"
 
 #: builtin/mainmenu/dlg_rename_modpack.lua
 msgid ""
@@ -306,18 +305,16 @@ msgid "Browse"
 msgstr ""
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
-#, fuzzy
 msgid "Disabled"
-msgstr "selpli"
+msgstr "ganda"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Edit"
-msgstr ""
+msgstr "nu bixygau"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
-#, fuzzy
 msgid "Enabled"
-msgstr "selpli"
+msgstr "katci"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Lacunarity"
@@ -341,25 +338,23 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Please enter a valid number."
-msgstr ""
+msgstr ".i ko samci'a pa namcu lerpoi poi drani"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Restore Default"
-msgstr ""
+msgstr "nu xruti fi lo zmiselcu'a"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua src/settings_translation_file.cpp
 msgid "Scale"
 msgstr ""
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
-#, fuzzy
 msgid "Select directory"
-msgstr "cuxna lo munje"
+msgstr "nu cuxna pa datnyveimei"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
-#, fuzzy
 msgid "Select file"
-msgstr "cuxna lo munje"
+msgstr "nu cuxna pa datnyvei"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Show technical names"
@@ -367,11 +362,11 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "The value must be at least $1."
-msgstr ""
+msgstr ".i lo namcu cu zmadu .ei li $1"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "The value must not be larger than $1."
-msgstr ""
+msgstr ".i lo namcu cu mleca .ei li $1"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "X"
@@ -410,17 +405,17 @@ msgid "eased"
 msgstr ""
 
 #: builtin/mainmenu/pkgmgr.lua
-#, fuzzy
 msgid "$1 (Enabled)"
-msgstr "selpli"
+msgstr "me la'o zoi. $1 .zoi noi katci"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "$1 mods"
-msgstr ""
+msgstr "se samtcise'a fi la'o zoi. $1 .zoi"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Failed to install $1 to $2"
 msgstr ""
+".i da nabmi fi lo nu $1 co'a cmima lo se datnyveimei be la'o zoi. $2 .zoi"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Install Mod: Unable to find real mod name for: $1"
@@ -463,33 +458,32 @@ msgid "Browse online content"
 msgstr ""
 
 #: builtin/mainmenu/tab_content.lua
-#, fuzzy
 msgid "Content"
-msgstr "ranji"
+msgstr "se samtcise'a"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Disable Texture Pack"
-msgstr ""
+msgstr "nu lo jvinu bakfu cu ganda"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Information:"
-msgstr ""
+msgstr "datni"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Installed Packages:"
-msgstr ""
+msgstr "ca'o mo'u se samtcise'a"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "No dependencies."
-msgstr ""
+msgstr ".i nitcu no da"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "No package description available"
-msgstr ""
+msgstr "to'i no da skicu be lo bakfu ku vlapoi toi"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Rename"
-msgstr ""
+msgstr "nu basti fi lo ka ce'u cmene"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Select Package File:"
@@ -584,9 +578,8 @@ msgid "Server Port"
 msgstr "lo samtcise'u judrnporte"
 
 #: builtin/mainmenu/tab_local.lua
-#, fuzzy
 msgid "Start Game"
-msgstr "cfari fa lo nu kelci"
+msgstr "nu co'a kelci"
 
 #: builtin/mainmenu/tab_online.lua
 #, fuzzy
@@ -614,9 +607,8 @@ msgid "Favorite"
 msgstr ""
 
 #: builtin/mainmenu/tab_online.lua
-#, fuzzy
 msgid "Join Game"
-msgstr "cfari fa lo nu kelci"
+msgstr "nu co'a kelci kansa"
 
 #: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
 #, fuzzy
@@ -658,7 +650,7 @@ msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Are you sure to reset your singleplayer world?"
-msgstr ".i xu do je'u djica lo nu kraga'igau le do za'e pavykelci munje"
+msgstr ".i .au ju'o pei do xruti lo do nonselkansa munje"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Autosave Screen Size"
