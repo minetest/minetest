@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-02-24 18:43+0100\n"
+"POT-Creation-Date: 2019-09-08 09:20+0200\n"
 "PO-Revision-Date: 2019-06-16 18:26+0000\n"
 "Last-Translator: Ian Townsend <iantownsend@disroot.org>\n"
 "Language-Team: Lojban <https://hosted.weblate.org/projects/minetest/minetest/"
@@ -23,7 +23,8 @@ msgid "You died"
 msgstr ".i do morsi"
 
 #: builtin/fstk/ui.lua
-msgid "An error occurred in a Lua script, such as a mod:"
+#, fuzzy
+msgid "An error occurred in a Lua script:"
 msgstr ""
 ".i da poi me la .luuas. ku samtci zo'u la'e di'e nabmi fi tu'a da noi la'a "
 "cu'i se samtcise'a"
@@ -121,12 +122,27 @@ msgid "Mod:"
 msgstr "se samtcise'a"
 
 #: builtin/mainmenu/dlg_config_world.lua
+#, fuzzy
+msgid "No (optional) dependencies"
+msgstr "na'e se nitcu"
+
+#: builtin/mainmenu/dlg_config_world.lua
 msgid "No game description provided."
 msgstr ".i no da skicu be lo se kelci ku vlapoi"
 
 #: builtin/mainmenu/dlg_config_world.lua
+#, fuzzy
+msgid "No hard dependencies"
+msgstr ".i nitcu no da"
+
+#: builtin/mainmenu/dlg_config_world.lua
 msgid "No modpack description provided."
 msgstr ".i no da skicu be lo se samtcise'a ku vlapoi"
+
+#: builtin/mainmenu/dlg_config_world.lua
+#, fuzzy
+msgid "No optional dependencies"
+msgstr "na'e se nitcu"
 
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/tab_content.lua
 msgid "Optional dependencies:"
@@ -215,8 +231,8 @@ msgstr "nu cupra"
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Download a game, such as Minetest Game, from minetest.net"
 msgstr ""
-".i ko kibycpa pa se kelci be mu'u la .maintest. se kelci la'o zoi. "
-"minetest.net .zoi"
+".i ko kibycpa pa se kelci be mu'u la .maintest. se kelci la'o zoi. minetest."
+"net .zoi"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Download one from minetest.net"
@@ -484,10 +500,6 @@ msgstr "to'i no da skicu be lo bakfu ku vlapoi toi"
 #: builtin/mainmenu/tab_content.lua
 msgid "Rename"
 msgstr "nu basti fi lo ka ce'u cmene"
-
-#: builtin/mainmenu/tab_content.lua
-msgid "Select Package File:"
-msgstr ""
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Uninstall Package"
@@ -795,12 +807,12 @@ msgstr "lo melbi pezli"
 
 #: builtin/mainmenu/tab_settings.lua
 #, fuzzy
-msgid "Waving Plants"
-msgstr "lo melbi pezli"
+msgid "Waving Liquids"
+msgstr ".i ca'o samymo'i lo me la'o gy.node.gy."
 
 #: builtin/mainmenu/tab_settings.lua
 #, fuzzy
-msgid "Waving Water"
+msgid "Waving Plants"
 msgstr "lo melbi pezli"
 
 #: builtin/mainmenu/tab_settings.lua
@@ -1538,11 +1550,11 @@ msgstr ""
 #: src/gui/guiConfirmRegistration.cpp
 #, c-format
 msgid ""
-"You are about to join the server at %1$s with the name \"%2$s\" for the "
-"first time. If you proceed, a new account using your credentials will be "
-"created on this server.\n"
-"Please retype your password and click Register and Join to confirm account "
-"creation or click Cancel to abort."
+"You are about to join this server with the name \"%s\" for the first time.\n"
+"If you proceed, a new account using your credentials will be created on this "
+"server.\n"
+"Please retype your password and click 'Register and Join' to confirm account "
+"creation, or click 'Cancel' to abort."
 msgstr ""
 
 #: src/gui/guiFormSpecMenu.cpp
@@ -1661,10 +1673,6 @@ msgid "Special"
 msgstr ""
 
 #: src/gui/guiKeyChangeMenu.cpp
-msgid "Toggle Cinematic"
-msgstr ""
-
-#: src/gui/guiKeyChangeMenu.cpp
 #, fuzzy
 msgid "Toggle HUD"
 msgstr "mu'e co'a jonai mo'u vofli"
@@ -1695,6 +1703,11 @@ msgstr "mu'e co'a jonai mo'u sutra"
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Toggle noclip"
 msgstr ""
+
+#: src/gui/guiKeyChangeMenu.cpp
+#, fuzzy
+msgid "Toggle pitchmove"
+msgstr "mu'e co'a jonai mo'u sutra"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "press key"
@@ -1804,6 +1817,10 @@ msgid "2D noise that controls the size/occurrence of step mountain ranges."
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "2D noise that locates the river valleys and channels."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 #, fuzzy
 msgid "3D clouds"
 msgstr "le bliku dilnu"
@@ -1832,6 +1849,10 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "3D noise for mountain overhangs, cliffs, etc. Usually small variations."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "3D noise that determines number of dungeons per mapchunk."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -1872,6 +1893,10 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Acceleration in air"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Acceleration of gravity, in nodes per second per second."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -2085,7 +2110,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Camera near plane distance in nodes, between 0 and 0.5\n"
+"Camera 'near clipping plane' distance in nodes, between 0 and 0.5.\n"
 "Most users will not need to change this.\n"
 "Increasing can reduce artifacting on weaker GPUs.\n"
 "0.1 = Default, 0.25 = Good value for weaker tablets."
@@ -2168,6 +2193,10 @@ msgstr "samta'a"
 
 #: src/settings_translation_file.cpp
 msgid "Chat message count limit"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Chat message format"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -2338,6 +2367,10 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "Controls sinking speed in liquid."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Controls steepness/depth of lake depressions."
 msgstr ""
 
@@ -2397,11 +2430,19 @@ msgid "Debug info toggle key"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "Debug log file size threshold"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Debug log level"
 msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Dec. volume key"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Decrease this to increase liquid resistence to movement."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -2486,7 +2527,19 @@ msgid "Defines the base ground level."
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "Defines the depth of the river channel."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Defines the maximal player transfer distance in blocks (0 = unlimited)."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Defines the width of the river channel."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Defines the width of the river valley."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -2512,6 +2565,12 @@ msgid "Deprecated Lua API handling"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Deprecated, define and locate cave liquids using biome definitions instead.\n"
+"Y of upper limit of lava in large caves."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Depth below which you'll find giant caverns."
 msgstr ""
 
@@ -2532,7 +2591,7 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid ""
 "Deserts occur when np_biome exceeds this value.\n"
-"When the new biome system is enabled, this is ignored."
+"When the 'snowbiomes' flag is enabled, this is ignored."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -2579,6 +2638,10 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Dungeon minimum Y"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Dungeon noise"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -2894,6 +2957,13 @@ msgid "Font size"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Format of player chat messages. The following strings are valid "
+"placeholders:\n"
+"@name, @message, @timestamp (optional)"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Format of screenshots."
 msgstr ""
 
@@ -3116,6 +3186,24 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Homepage of server, to be displayed in the serverlist."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Horizontal acceleration in air when jumping or falling,\n"
+"in nodes per second per second."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Horizontal and vertical acceleration in fast mode,\n"
+"in nodes per second per second."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Horizontal and vertical acceleration on ground or when climbing,\n"
+"in nodes per second per second."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3369,6 +3457,14 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid ""
+"If the file size of debug.txt exceeds the number of megabytes specified in\n"
+"this setting when it is opened, the file is moved to debug.txt.1,\n"
+"deleting an older debug.txt.1 if it exists.\n"
+"debug.txt is only moved if this setting is positive."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "If this is set, players will always (re)spawn at the given position."
 msgstr ""
 
@@ -3394,6 +3490,10 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Inc. volume key"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Initial vertical speed when jumping, in nodes per second."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -4164,7 +4264,7 @@ msgid "Liquid queue purge time"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Liquid sinking speed"
+msgid "Liquid sinking"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -4238,6 +4338,13 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid ""
 "Map generation attributes specific to Mapgen flat.\n"
+"'terrain' enables the generation of non-fractal terrain:\n"
+"ocean, islands and underground."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Map generation attributes specific to Mapgen flat.\n"
 "Occasional lakes and hills can be added to the flat world."
 msgstr ""
 
@@ -4249,7 +4356,7 @@ msgstr ""
 msgid ""
 "Map generation attributes specific to Mapgen v6.\n"
 "The 'snowbiomes' flag enables the new 5 biome system.\n"
-"When the new biome system is enabled jungles are automatically enabled and\n"
+"When the 'snowbiomes' flag is enabled jungles are automatically enabled and\n"
 "the 'jungles' flag is ignored."
 msgstr ""
 
@@ -4301,6 +4408,10 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen Fractal"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Mapgen Fractal specific flags"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -4381,6 +4492,12 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Maximum hotbar width"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Maximum liquid resistence. Controls deceleration when entering liquid at\n"
+"high speed."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -4571,10 +4688,8 @@ msgstr ""
 msgid ""
 "Name of map generator to be used when creating a new world.\n"
 "Creating a world in the main menu will override this.\n"
-"Current stable mapgens:\n"
-"v5, v6, v7 (except floatlands), singlenode.\n"
-"'stable' means the terrain shape in an existing world will not be changed\n"
-"in the future. Note that biomes are defined by games and may still change."
+"Current mapgens in a highly unstable state:\n"
+"-    The optional floatlands of v7 (disabled by default)."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -4590,7 +4705,7 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Near plane"
+msgid "Near clipping plane"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -4642,16 +4757,18 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid ""
 "Number of emerge threads to use.\n"
-"Empty or 0 value:\n"
+"WARNING: Currently there are multiple bugs that may cause crashes when\n"
+"'num_emerge_threads' is larger than 1. Until this warning is removed it is\n"
+"strongly recommended this value is set to the default '1'.\n"
+"Value 0:\n"
 "-    Automatic selection. The number of emerge threads will be\n"
 "-    'number of processors - 2', with a lower limit of 1.\n"
 "Any other value:\n"
 "-    Specifies the number of emerge threads, with a lower limit of 1.\n"
-"Warning: Increasing the number of emerge threads increases engine mapgen\n"
+"WARNING: Increasing the number of emerge threads increases engine mapgen\n"
 "speed, but this may harm game performance by interfering with other\n"
 "processes, especially in singleplayer and/or when running Lua code in\n"
-"'on_generated'.\n"
-"For many users the optimum setting may be '1'."
+"'on_generated'. For many users the optimum setting may be '1'."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -4893,6 +5010,14 @@ msgid "Rightclick repetition interval"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "River channel depth"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "River channel width"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "River depth"
 msgstr ""
 
@@ -4902,6 +5027,10 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "River size"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "River valley width"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5196,6 +5325,10 @@ msgstr "za'i masno cadzu"
 #, fuzzy
 msgid "Sneaking speed"
 msgstr "za'i masno cadzu"
+
+#: src/settings_translation_file.cpp
+msgid "Sneaking speed, in nodes per second."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Sound"
@@ -5614,6 +5747,10 @@ msgid "Varies steepness of cliffs."
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "Vertical climbing speed, in nodes per second."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Vertical screen synchronization."
 msgstr ""
 
@@ -5664,7 +5801,15 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "Walking and flying speed, in nodes per second."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Walking speed"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Walking, flying and climbing speed in fast mode, in nodes per second."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5694,16 +5839,19 @@ msgid "Waving water"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Waving water height"
-msgstr ""
+#, fuzzy
+msgid "Waving water wave height"
+msgstr "lo melbi pezli"
 
 #: src/settings_translation_file.cpp
-msgid "Waving water length"
-msgstr ""
+#, fuzzy
+msgid "Waving water wave speed"
+msgstr "lo melbi pezli"
 
 #: src/settings_translation_file.cpp
-msgid "Waving water speed"
-msgstr ""
+#, fuzzy
+msgid "Waving water wavelength"
+msgstr "lo melbi pezli"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5826,10 +5974,6 @@ msgid "Y of upper limit of large caves."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Y of upper limit of lava in large caves."
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid "Y-distance over which caverns expand to full size."
 msgstr ""
 
@@ -5873,77 +6017,77 @@ msgstr ""
 msgid "cURL timeout"
 msgstr ""
 
-#~ msgid "Page $1 of $2"
-#~ msgstr "$1 moi le'i papri poi ke'a $1 mei"
+#, fuzzy
+#~ msgid "Preload inventory textures"
+#~ msgstr ".i ca'o samymo'i le tengu datnyvei"
 
 #, fuzzy
-#~ msgid "Shortname:"
-#~ msgstr "tordu cmene"
+#~ msgid "If enabled, "
+#~ msgstr "selpli"
 
-#~ msgid "Unsorted"
-#~ msgstr "kalsa"
+#~ msgid "No!!!"
+#~ msgstr "nasai go'i"
+
+#~ msgid "No of course not!"
+#~ msgstr "nasai go'i"
+
+#~ msgid "Plus"
+#~ msgstr "su'i bu"
+
+#~ msgid "Period"
+#~ msgstr "denpa bu"
+
+#~ msgid "PA1"
+#~ msgstr "la'o gy.PA1.gy."
+
+#~ msgid "Minus"
+#~ msgstr "vu'u bu"
+
+#~ msgid "ExSel"
+#~ msgstr "la'o gy.ExSel.gy."
+
+#~ msgid "CrSel"
+#~ msgstr "la'o gy.CrSel.gy."
+
+#~ msgid "Comma"
+#~ msgstr "slaka bu"
+
+#~ msgid "Attn"
+#~ msgstr "la'o gy.Attn.gy."
 
 #, fuzzy
-#~ msgid "Local Game"
-#~ msgstr "cfari fa lo nu kelci"
-
-#, fuzzy
-#~ msgid "Normal Mapping"
-#~ msgstr "lo puvrmipmepi"
-
-#~ msgid "Use"
-#~ msgstr "mu'e pilno"
-
-#, fuzzy
-#~ msgid "Inventory image hack"
-#~ msgstr "lo dacti uidje"
-
-#, fuzzy
-#~ msgid "Main menu mod manager"
-#~ msgstr "lo ralju"
+#~ msgid "Water Features"
+#~ msgstr ".i ca'o samymo'i le dacti ke tengu datnyvei"
 
 #, fuzzy
 #~ msgid "Use key"
 #~ msgstr "ko da'ergau le batke"
 
 #, fuzzy
-#~ msgid "Water Features"
-#~ msgstr ".i ca'o samymo'i le dacti ke tengu datnyvei"
-
-#~ msgid "Attn"
-#~ msgstr "la'o gy.Attn.gy."
-
-#~ msgid "Comma"
-#~ msgstr "slaka bu"
-
-#~ msgid "CrSel"
-#~ msgstr "la'o gy.CrSel.gy."
-
-#~ msgid "ExSel"
-#~ msgstr "la'o gy.ExSel.gy."
-
-#~ msgid "Minus"
-#~ msgstr "vu'u bu"
-
-#~ msgid "PA1"
-#~ msgstr "la'o gy.PA1.gy."
-
-#~ msgid "Period"
-#~ msgstr "denpa bu"
-
-#~ msgid "Plus"
-#~ msgstr "su'i bu"
-
-#~ msgid "No of course not!"
-#~ msgstr "nasai go'i"
-
-#~ msgid "No!!!"
-#~ msgstr "nasai go'i"
+#~ msgid "Main menu mod manager"
+#~ msgstr "lo ralju"
 
 #, fuzzy
-#~ msgid "If enabled, "
-#~ msgstr "selpli"
+#~ msgid "Inventory image hack"
+#~ msgstr "lo dacti uidje"
+
+#~ msgid "Use"
+#~ msgstr "mu'e pilno"
 
 #, fuzzy
-#~ msgid "Preload inventory textures"
-#~ msgstr ".i ca'o samymo'i le tengu datnyvei"
+#~ msgid "Normal Mapping"
+#~ msgstr "lo puvrmipmepi"
+
+#, fuzzy
+#~ msgid "Local Game"
+#~ msgstr "cfari fa lo nu kelci"
+
+#~ msgid "Unsorted"
+#~ msgstr "kalsa"
+
+#, fuzzy
+#~ msgid "Shortname:"
+#~ msgstr "tordu cmene"
+
+#~ msgid "Page $1 of $2"
+#~ msgstr "$1 moi le'i papri poi ke'a $1 mei"

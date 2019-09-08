@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-02-24 18:43+0100\n"
+"POT-Creation-Date: 2019-09-08 09:20+0200\n"
 "PO-Revision-Date: 2019-06-24 13:00+0000\n"
 "Last-Translator: Morten Pedersen <moped47@gmail.com>\n"
 "Language-Team: Danish <https://hosted.weblate.org/projects/minetest/minetest/"
@@ -23,7 +23,8 @@ msgid "You died"
 msgstr "Du døde"
 
 #: builtin/fstk/ui.lua
-msgid "An error occurred in a Lua script, such as a mod:"
+#, fuzzy
+msgid "An error occurred in a Lua script:"
 msgstr "Der skete en fejl i Lua scriptet, muligvis af et mod:"
 
 #: builtin/fstk/ui.lua
@@ -119,13 +120,28 @@ msgid "Mod:"
 msgstr "Mod:"
 
 #: builtin/mainmenu/dlg_config_world.lua
+#, fuzzy
+msgid "No (optional) dependencies"
+msgstr "Valgfrie afhængigheder:"
+
+#: builtin/mainmenu/dlg_config_world.lua
 msgid "No game description provided."
 msgstr "Der er ikke nogen beskrivelse af tilgængelig af det valgte spil."
+
+#: builtin/mainmenu/dlg_config_world.lua
+#, fuzzy
+msgid "No hard dependencies"
+msgstr "Ingen afhængigheder."
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "No modpack description provided."
 msgstr ""
 "Der er ikke nogen beskrivelse af tilgængelig af den valgte samling af mods."
+
+#: builtin/mainmenu/dlg_config_world.lua
+#, fuzzy
+msgid "No optional dependencies"
+msgstr "Valgfrie afhængigheder:"
 
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/tab_content.lua
 msgid "Optional dependencies:"
@@ -489,10 +505,6 @@ msgid "Rename"
 msgstr "Omdøb"
 
 #: builtin/mainmenu/tab_content.lua
-msgid "Select Package File:"
-msgstr "Vælg pakke fil:"
-
-#: builtin/mainmenu/tab_content.lua
 msgid "Uninstall Package"
 msgstr "Afinstaller den valgte pakke"
 
@@ -785,12 +797,13 @@ msgid "Waving Leaves"
 msgstr "Bølgende blade"
 
 #: builtin/mainmenu/tab_settings.lua
-msgid "Waving Plants"
-msgstr "Bølgende planter"
+#, fuzzy
+msgid "Waving Liquids"
+msgstr "Bølgende blade"
 
 #: builtin/mainmenu/tab_settings.lua
-msgid "Waving Water"
-msgstr "Bølgende vand"
+msgid "Waving Plants"
+msgstr "Bølgende planter"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Yes"
@@ -1554,11 +1567,11 @@ msgstr ""
 #: src/gui/guiConfirmRegistration.cpp
 #, c-format
 msgid ""
-"You are about to join the server at %1$s with the name \"%2$s\" for the "
-"first time. If you proceed, a new account using your credentials will be "
-"created on this server.\n"
-"Please retype your password and click Register and Join to confirm account "
-"creation or click Cancel to abort."
+"You are about to join this server with the name \"%s\" for the first time.\n"
+"If you proceed, a new account using your credentials will be created on this "
+"server.\n"
+"Please retype your password and click 'Register and Join' to confirm account "
+"creation, or click 'Cancel' to abort."
 msgstr ""
 
 #: src/gui/guiFormSpecMenu.cpp
@@ -1681,10 +1694,6 @@ msgid "Special"
 msgstr ""
 
 #: src/gui/guiKeyChangeMenu.cpp
-msgid "Toggle Cinematic"
-msgstr "Aktiver filmisk"
-
-#: src/gui/guiKeyChangeMenu.cpp
 #, fuzzy
 msgid "Toggle HUD"
 msgstr "Omstil flyvning"
@@ -1715,6 +1724,11 @@ msgstr "Omstil fylde"
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Toggle noclip"
 msgstr "Omstil fylde"
+
+#: src/gui/guiKeyChangeMenu.cpp
+#, fuzzy
+msgid "Toggle pitchmove"
+msgstr "Omstil hurtig"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "press key"
@@ -1831,6 +1845,10 @@ msgid "2D noise that controls the size/occurrence of step mountain ranges."
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "2D noise that locates the river valleys and channels."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "3D clouds"
 msgstr "3D-skyer"
 
@@ -1861,6 +1879,10 @@ msgstr "3D-støj, der definerer kæmpe grotter."
 
 #: src/settings_translation_file.cpp
 msgid "3D noise for mountain overhangs, cliffs, etc. Usually small variations."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "3D noise that determines number of dungeons per mapchunk."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -1915,6 +1937,10 @@ msgstr "Absolut begrænsning af fremkomstkøer"
 #: src/settings_translation_file.cpp
 msgid "Acceleration in air"
 msgstr "Acceleration i luft"
+
+#: src/settings_translation_file.cpp
+msgid "Acceleration of gravity, in nodes per second per second."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Active Block Modifiers"
@@ -2142,7 +2168,7 @@ msgstr "Bumpmapping"
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Camera near plane distance in nodes, between 0 and 0.5\n"
+"Camera 'near clipping plane' distance in nodes, between 0 and 0.5.\n"
 "Most users will not need to change this.\n"
 "Increasing can reduce artifacting on weaker GPUs.\n"
 "0.1 = Default, 0.25 = Good value for weaker tablets."
@@ -2232,6 +2258,11 @@ msgstr "Snakketast"
 #: src/settings_translation_file.cpp
 msgid "Chat message count limit"
 msgstr ""
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Chat message format"
+msgstr "Nedbrudsbesked"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -2405,6 +2436,10 @@ msgstr ""
 "helst forbliver uændret."
 
 #: src/settings_translation_file.cpp
+msgid "Controls sinking speed in liquid."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Controls steepness/depth of lake depressions."
 msgstr "Kontrollerer hældning/dybe for sødybder."
 
@@ -2464,6 +2499,11 @@ msgid "Debug info toggle key"
 msgstr "Tast til aktivering af fejlsøgningsinfo"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Debug log file size threshold"
+msgstr "Ørkenstøjtærskel"
+
+#: src/settings_translation_file.cpp
 msgid "Debug log level"
 msgstr "Logniveau for fejlsøgning"
 
@@ -2471,6 +2511,10 @@ msgstr "Logniveau for fejlsøgning"
 #, fuzzy
 msgid "Dec. volume key"
 msgstr "Dec. lydstyrketasten"
+
+#: src/settings_translation_file.cpp
+msgid "Decrease this to increase liquid resistence to movement."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Dedicated server step"
@@ -2560,9 +2604,23 @@ msgid "Defines the base ground level."
 msgstr "Definerer træområder og trætæthed."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Defines the depth of the river channel."
+msgstr "Definerer træområder og trætæthed."
+
+#: src/settings_translation_file.cpp
 msgid "Defines the maximal player transfer distance in blocks (0 = unlimited)."
 msgstr ""
 "Definerer den maksimale spillerflytningsafstand i blokke (0 = ubegrænset)."
+
+#: src/settings_translation_file.cpp
+msgid "Defines the width of the river channel."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Defines the width of the river valley."
+msgstr "Definerer områder, hvor træerne har æbler."
 
 #: src/settings_translation_file.cpp
 msgid "Defines tree areas and tree density."
@@ -2585,6 +2643,12 @@ msgstr "Forsinkelse ved visning af værktøjsfif, angivet i millisekunder."
 #: src/settings_translation_file.cpp
 msgid "Deprecated Lua API handling"
 msgstr "Forældet Lua API-håndtering"
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Deprecated, define and locate cave liquids using biome definitions instead.\n"
+"Y of upper limit of lava in large caves."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -2610,7 +2674,7 @@ msgstr "Ørkenstøjtærskel"
 #: src/settings_translation_file.cpp
 msgid ""
 "Deserts occur when np_biome exceeds this value.\n"
-"When the new biome system is enabled, this is ignored."
+"When the 'snowbiomes' flag is enabled, this is ignored."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -2658,6 +2722,11 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Dungeon minimum Y"
 msgstr ""
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Dungeon noise"
+msgstr "Ridge støj"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3018,6 +3087,13 @@ msgid "Font size"
 msgstr "Skriftstørrelse"
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Format of player chat messages. The following strings are valid "
+"placeholders:\n"
+"@name, @message, @timestamp (optional)"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Format of screenshots."
 msgstr "Format for skærmbilleder."
 
@@ -3281,6 +3357,24 @@ msgstr "Varmestøj"
 #: src/settings_translation_file.cpp
 msgid "Homepage of server, to be displayed in the serverlist."
 msgstr "Hjemmeside for serveren, som vist i serverlisten."
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Horizontal acceleration in air when jumping or falling,\n"
+"in nodes per second per second."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Horizontal and vertical acceleration in fast mode,\n"
+"in nodes per second per second."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Horizontal and vertical acceleration on ground or when climbing,\n"
+"in nodes per second per second."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Hotbar next key"
@@ -3557,6 +3651,14 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid ""
+"If the file size of debug.txt exceeds the number of megabytes specified in\n"
+"this setting when it is opened, the file is moved to debug.txt.1,\n"
+"deleting an older debug.txt.1 if it exists.\n"
+"debug.txt is only moved if this setting is positive."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "If this is set, players will always (re)spawn at the given position."
 msgstr ""
 "Hvis aktiveret, så vil spillere altid (gen)starte ved den angivne position."
@@ -3588,6 +3690,10 @@ msgstr "Spillechat konsol højde, mellem 0,1 (10%) og 1,0 (100%)."
 #, fuzzy
 msgid "Inc. volume key"
 msgstr "Øg lydstyrketasten"
+
+#: src/settings_translation_file.cpp
+msgid "Initial vertical speed when jumping, in nodes per second."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4658,7 +4764,7 @@ msgstr "Køfjernelsestid for væske"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
-msgid "Liquid sinking speed"
+msgid "Liquid sinking"
 msgstr "Synkehastighed for væske"
 
 #: src/settings_translation_file.cpp
@@ -4738,6 +4844,18 @@ msgstr ""
 #, fuzzy
 msgid ""
 "Map generation attributes specific to Mapgen flat.\n"
+"'terrain' enables the generation of non-fractal terrain:\n"
+"ocean, islands and underground."
+msgstr ""
+"Kortoprettelsesattributter specifikke for Mapgen flat.\n"
+"Undtagelsesvis kan søer og bakker tilføjes til den flade verden.\n"
+"Flag som ikke er specificeret i flag-strengen ændres ikke fra standarden.\n"
+"Flag der starter med »no« bruges til eksplicit at deaktivere dem."
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid ""
+"Map generation attributes specific to Mapgen flat.\n"
 "Occasional lakes and hills can be added to the flat world."
 msgstr ""
 "Kortoprettelsesattributter specifikke for Mapgen flat.\n"
@@ -4754,7 +4872,7 @@ msgstr ""
 msgid ""
 "Map generation attributes specific to Mapgen v6.\n"
 "The 'snowbiomes' flag enables the new 5 biome system.\n"
-"When the new biome system is enabled jungles are automatically enabled and\n"
+"When the 'snowbiomes' flag is enabled jungles are automatically enabled and\n"
 "the 'jungles' flag is ignored."
 msgstr ""
 "Tilknyttes Mapgen v6 generation attributter specifikke.\n"
@@ -4820,6 +4938,11 @@ msgstr "Flade flag for Mapgen"
 #, fuzzy
 msgid "Mapgen Fractal"
 msgstr "Fraktral for Mapgen"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Mapgen Fractal specific flags"
+msgstr "Flade flag for Mapgen"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -4906,6 +5029,12 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Maximum hotbar width"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Maximum liquid resistence. Controls deceleration when entering liquid at\n"
+"high speed."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5098,10 +5227,8 @@ msgstr ""
 msgid ""
 "Name of map generator to be used when creating a new world.\n"
 "Creating a world in the main menu will override this.\n"
-"Current stable mapgens:\n"
-"v5, v6, v7 (except floatlands), singlenode.\n"
-"'stable' means the terrain shape in an existing world will not be changed\n"
-"in the future. Note that biomes are defined by games and may still change."
+"Current mapgens in a highly unstable state:\n"
+"-    The optional floatlands of v7 (disabled by default)."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5117,7 +5244,7 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Near plane"
+msgid "Near clipping plane"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5169,16 +5296,18 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid ""
 "Number of emerge threads to use.\n"
-"Empty or 0 value:\n"
+"WARNING: Currently there are multiple bugs that may cause crashes when\n"
+"'num_emerge_threads' is larger than 1. Until this warning is removed it is\n"
+"strongly recommended this value is set to the default '1'.\n"
+"Value 0:\n"
 "-    Automatic selection. The number of emerge threads will be\n"
 "-    'number of processors - 2', with a lower limit of 1.\n"
 "Any other value:\n"
 "-    Specifies the number of emerge threads, with a lower limit of 1.\n"
-"Warning: Increasing the number of emerge threads increases engine mapgen\n"
+"WARNING: Increasing the number of emerge threads increases engine mapgen\n"
 "speed, but this may harm game performance by interfering with other\n"
 "processes, especially in singleplayer and/or when running Lua code in\n"
-"'on_generated'.\n"
-"For many users the optimum setting may be '1'."
+"'on_generated'. For many users the optimum setting may be '1'."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5422,6 +5551,16 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 #, fuzzy
+msgid "River channel depth"
+msgstr "Floddybde"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "River channel width"
+msgstr "Floddybde"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
 msgid "River depth"
 msgstr "Floddybde"
 
@@ -5434,6 +5573,11 @@ msgstr "Flodstøj"
 #, fuzzy
 msgid "River size"
 msgstr "Flodstørrelse"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "River valley width"
+msgstr "Floddybde"
 
 #: src/settings_translation_file.cpp
 msgid "Rollback recording"
@@ -5752,6 +5896,10 @@ msgstr "Snigetast"
 #, fuzzy
 msgid "Sneaking speed"
 msgstr "Ganghastighed"
+
+#: src/settings_translation_file.cpp
+msgid "Sneaking speed, in nodes per second."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Sound"
@@ -6181,6 +6329,10 @@ msgid "Varies steepness of cliffs."
 msgstr "Varierer stejlhed af klipper."
 
 #: src/settings_translation_file.cpp
+msgid "Vertical climbing speed, in nodes per second."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Vertical screen synchronization."
 msgstr ""
 
@@ -6230,8 +6382,16 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "Walking and flying speed, in nodes per second."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Walking speed"
 msgstr "Ganghastighed"
+
+#: src/settings_translation_file.cpp
+msgid "Walking, flying and climbing speed in fast mode, in nodes per second."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Water level"
@@ -6258,16 +6418,19 @@ msgid "Waving water"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Waving water height"
-msgstr ""
+#, fuzzy
+msgid "Waving water wave height"
+msgstr "Bølgende vand"
 
 #: src/settings_translation_file.cpp
-msgid "Waving water length"
-msgstr ""
+#, fuzzy
+msgid "Waving water wave speed"
+msgstr "Bølgende blade"
 
 #: src/settings_translation_file.cpp
-msgid "Waving water speed"
-msgstr ""
+#, fuzzy
+msgid "Waving water wavelength"
+msgstr "Bølgende vand"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6391,10 +6554,6 @@ msgid "Y of upper limit of large caves."
 msgstr "Absolut begrænsning af fremkomstkøer"
 
 #: src/settings_translation_file.cpp
-msgid "Y of upper limit of lava in large caves."
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid "Y-distance over which caverns expand to full size."
 msgstr ""
 
@@ -6439,264 +6598,23 @@ msgid "cURL timeout"
 msgstr "cURL-tidsudløb"
 
 #, fuzzy
-#~ msgid "Content Store"
-#~ msgstr "Luk marked"
-
-#~ msgid "Disable MP"
-#~ msgstr "Deaktivér MP"
-
-#~ msgid "Enable MP"
-#~ msgstr "Aktivér MP"
-
-#~ msgid "No worldname given or no game selected"
-#~ msgstr "Intet navn på verden angivet eller intet spil valgt"
-
-#~ msgid "\"$1\" is not a valid flag."
-#~ msgstr "\"$1\" er ikke en gyldig indstilling."
-
-#~ msgid "Format is 3 numbers separated by commas and inside brackets."
-#~ msgstr "Formatet er 3 tal, adskilt af kommaer, og omgivet af parenteser."
-
 #~ msgid ""
-#~ "Format: <offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>), <seed>, "
-#~ "<octaves>, <persistence>"
-#~ msgstr ""
-#~ "Format: <forskydning>, <skalering>, (<udbredelseX>, <udbredelseY>, "
-#~ "<udbredelseZ>), <kim>, <oktaver>, <vedholdenhed>"
-
-#~ msgid "Optionally the lacunarity can be appended with a leading comma."
-#~ msgstr "Valgfrit kan »lacunarity'en« tilføjes med et foranstillet komma."
-
-#~ msgid "Please enter a comma seperated list of flags."
-#~ msgstr ""
-#~ "Indtast venligst en liste af indstillinger som er adskilt med kommaer."
-
-#~ msgid "Possible values are: "
-#~ msgstr "Mulige værdier er: "
-
-#~ msgid "Select path"
-#~ msgstr "Vælg sti"
-
-#~ msgid "Subgame Mods"
-#~ msgstr "Underspil-mods"
-
-#~ msgid "Page $1 of $2"
-#~ msgstr "Side $1 af $2"
-
-#~ msgid "Rating"
-#~ msgstr "Bedømmelse"
-
-#~ msgid "Shortname:"
-#~ msgstr "Kort navn:"
-
-#~ msgid "Successfully installed:"
-#~ msgstr "Succesfuldt installeret:"
-
-#~ msgid "Unsorted"
-#~ msgstr "Usorteret"
-
-#~ msgid "re-Install"
-#~ msgstr "geninstaller"
-
-#~ msgid "Local Game"
-#~ msgstr "Lokalt spil"
-
-#~ msgid "Uninstall selected modpack"
-#~ msgstr "Afinstaller den valgte modpack"
-
-#~ msgid "Play Online"
-#~ msgstr "Spil over nettet"
-
-#~ msgid "Normal Mapping"
-#~ msgstr "Normal oversættelse"
-
-#~ msgid "No information available"
-#~ msgstr "Der er ikke nogen information tilgængelig"
-
-#~ msgid "Volume changed to 0%"
-#~ msgstr "Lydstyrke ændret til 0 %"
-
-#~ msgid "Volume changed to 100%"
-#~ msgstr "Lydstyrke ændret til 100 %"
-
-#~ msgid "Print stacks"
-#~ msgstr "Udskriv stakke"
-
-#~ msgid "Use"
-#~ msgstr "Brug"
-
-#~ msgid "Next"
-#~ msgstr "Næste"
-
-#~ msgid "Prior"
-#~ msgstr "Foregående"
-
-#~ msgid "Active Block Modifier interval"
-#~ msgstr "Aktivt blokændringsinterval"
-
-#~ msgid ""
-#~ "Android systems only: Tries to create inventory textures from meshes\n"
-#~ "when no supported render was found."
-#~ msgstr ""
-#~ "Kun Android-systemer: Forsøger at generere lagerteksturer ud fra masker,\n"
-#~ "når der ikke blev fundet en understøttet render."
-
-#~ msgid ""
-#~ "Announce to this serverlist.\n"
-#~ "If you want to announce your ipv6 address, use  serverlist_url = v6."
-#~ "servers.minetest.net."
-#~ msgstr ""
-#~ "Meddel på denne serverliste\n"
-#~ "Hvis du ønsker at annoncere din ipv6-adresse, så brug serverlist_url = v6."
-#~ "servers.minetest.net."
-
-#~ msgid "Approximate (X,Y,Z) scale of fractal in nodes."
-#~ msgstr "Omtrentlig (X, Y, Z) fraktalskala i knudepunkter."
-
-#~ msgid "Autorun key"
-#~ msgstr "Tast til automatisk løb"
-
-#~ msgid "Caves and tunnels form at the intersection of the two noises"
-#~ msgstr "Huler og tunneler dannes ved skæringspunktet for de to støjkilder"
-
-#~ msgid "Cloud height"
-#~ msgstr "Skyhøjde"
-
-#~ msgid "Console key"
-#~ msgstr "Konsoltast"
-
-#~ msgid "Continuous forward movement (only used for testing)."
-#~ msgstr "Kontinuerlig bevægelse fremad (bruges kun til test)."
-
-#~ msgid ""
-#~ "Creates unpredictable lava features in caves.\n"
-#~ "These can make mining difficult. Zero disables them. (0-10)"
-#~ msgstr " "
-
-#~ msgid ""
-#~ "Creates unpredictable water features in caves.\n"
-#~ "These can make mining difficult. Zero disables them. (0-10)"
-#~ msgstr ""
-#~ "Opretter uforudsigelige vandfunktioner i huler.\n"
-#~ "Disse kan gøre vanskeliggøre minedrift. Nul deaktiverer dem (0-10)"
-
-#~ msgid "Crouch speed"
-#~ msgstr "Krybehastighed"
-
-#~ msgid "Depth below which you'll find massive caves."
-#~ msgstr "Dybde hvorunder du finder kæmpestore huler."
-
-#~ msgid "Descending speed"
-#~ msgstr "Faldende hastighed"
-
-#~ msgid "Disable escape sequences"
-#~ msgstr "Deaktiver undvigesekvenser"
-
-#~ msgid ""
-#~ "Disable escape sequences, e.g. chat coloring.\n"
-#~ "Use this if you want to run a server with pre-0.4.14 clients and you want "
-#~ "to disable\n"
-#~ "the escape sequences generated by mods."
-#~ msgstr ""
-#~ "Deaktiver undvigesekvenser, f.eks. snak-farvelægning.\n"
-#~ "Brug denne hvis du ønsker at afvikle en server med pre-0.4.14-klienter og "
-#~ "du ønsker\n"
-#~ "at deaktivere undvigesekvenserne oprettet af mod'er."
-
-#, fuzzy
-#~ msgid "Enable view bobbing"
-#~ msgstr "Aktivér visning af bobbing"
-
-#~ msgid "Field of view for zoom"
-#~ msgstr "Zoom for visningsområde"
-
-#~ msgid ""
-#~ "Field of view while zooming in degrees.\n"
-#~ "This requires the \"zoom\" privilege on the server."
-#~ msgstr ""
-#~ "Visningsområde under zoom i grader.\n"
-#~ "Dette kræver privilegiet »zoom« på serveren."
-
-#~ msgid ""
-#~ "From how far clients know about objects, stated in mapblocks (16 nodes)."
-#~ msgstr ""
-#~ "Fra hvor langt væk klinter ved om objekter, angivet i kortblokke (16 "
-#~ "knudepunkter)."
-
-#~ msgid "General"
-#~ msgstr "Generelt"
-
-#~ msgid "Height on which clouds are appearing."
-#~ msgstr "Højde hvor skyer fremkommer."
-
-#~ msgid ""
-#~ "How large area of blocks are subject to the active block stuff, stated in "
-#~ "mapblocks (16 nodes).\n"
-#~ "In active blocks objects are loaded and ABMs run."
-#~ msgstr ""
-#~ "Hvordan store områder af blokke påvirkes af det aktive blokindhold, "
-#~ "angivet i mapblocks (16 knudepunkter).\n"
-#~ "I aktive blokke bliver objekter indlæst og ABM'er afviklet."
-
-#, fuzzy
-#~ msgid "If enabled, show the server status message on player connection."
-#~ msgstr "Hvis aktiveret, viser serveren statusbesked på spiller forbindelse."
-
-#, fuzzy
-#~ msgid "Inventory image hack"
-#~ msgstr "Lager billede hack"
-
-#~ msgid ""
-#~ "Iterations of the recursive function.\n"
-#~ "Controls the amount of fine detail."
-#~ msgstr ""
-#~ "Gennemløb for den rekursive funktion.\n"
-#~ "Kontrollerer mængden af små detaljer."
-
-#~ msgid ""
-#~ "Key for opening the chat console.\n"
-#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
-#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
-#~ msgstr ""
-#~ "Tast til at åbne snakkekonsollen (chat).\n"
-#~ "Se http://irrlicht.sourceforge.net/docu/namespaceirr."
-#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#~ msgid ""
-#~ "Key for printing debug stacks. Used for development.\n"
-#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
-#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
-#~ msgstr ""
-#~ "Tast til at udskrive fejlsøgningsstakke. Brugt til udvikling.\n"
-#~ "Se http://irrlicht.sourceforge.net/docu/namespaceirr."
-#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#~ msgid "Lava Features"
-#~ msgstr "Lavafunktioner"
-
-#~ msgid "Main menu game manager"
-#~ msgstr "Hovedmenus spilhåndtering"
-
-#~ msgid "Main menu mod manager"
-#~ msgstr "Hovedmenus mod-håndtering"
-
-#~ msgid ""
-#~ "Map generation attributes specific to Mapgen Valleys.\n"
-#~ "'altitude_chill' makes higher elevations colder, which may cause biome "
-#~ "issues.\n"
-#~ "'humid_rivers' modifies the humidity around rivers and in areas where "
-#~ "water would tend to pool,\n"
-#~ "it may interfere with delicately adjusted biomes.\n"
-#~ "Flags that are not specified in the flag string are not modified from the "
-#~ "default.\n"
+#~ "Map generation attributes specific to Mapgen Carpathian.\n"
+#~ "Flags that are not enabled are not modified from the default.\n"
 #~ "Flags starting with 'no' are used to explicitly disable them."
 #~ msgstr ""
-#~ "Kortoprettelsesattributer specifik for Mapgen Valleys.\n"
-#~ "»altitude_chill« gør højere områder koldere, hvilket kan medføre "
-#~ "habitatproblemstillinger.\n"
-#~ "»humid_rivers« ændrer fugtighed omkring floder og i områder hvor vand har "
-#~ "tendens til at samle sig,\n"
-#~ "det kan influere med ømtålelige habitatter.\n"
+#~ "Kortoprettelsesattributter specifikek til Mapgen v5.\n"
+#~ "Flag som ikke er specificeret i flag-strengen ændres ikke fra "
+#~ "standarden.\n"
+#~ "Flag der starter med »no« bruges til eksplicit at deaktivere dem."
+
+#, fuzzy
+#~ msgid ""
+#~ "Map generation attributes specific to Mapgen v5.\n"
+#~ "Flags that are not enabled are not modified from the default.\n"
+#~ "Flags starting with 'no' are used to explicitly disable them."
+#~ msgstr ""
+#~ "Kortoprettelsesattributter specifikek til Mapgen v5.\n"
 #~ "Flag som ikke er specificeret i flag-strengen ændres ikke fra "
 #~ "standarden.\n"
 #~ "Flag der starter med »no« bruges til eksplicit at deaktivere dem."
@@ -6704,223 +6622,66 @@ msgstr "cURL-tidsudløb"
 #, fuzzy
 #~ msgid ""
 #~ "Map generation attributes specific to Mapgen v7.\n"
-#~ "The 'ridges' flag enables the rivers.\n"
-#~ "Floatlands are currently experimental and subject to change.\n"
-#~ "Flags that are not specified in the flag string are not modified from the "
-#~ "default.\n"
+#~ "'ridges' enables the rivers.\n"
+#~ "Flags that are not enabled are not modified from the default.\n"
 #~ "Flags starting with 'no' are used to explicitly disable them."
 #~ msgstr ""
-#~ "Kortoprettelsesattributter specifikek til Mapgen v7.\n"
-#~ "Flaget »ridges« kontroller floderne.\n"
+#~ "Kortoprettelsesattributter specifikek til Mapgen v5.\n"
 #~ "Flag som ikke er specificeret i flag-strengen ændres ikke fra "
 #~ "standarden.\n"
 #~ "Flag der starter med »no« bruges til eksplicit at deaktivere dem."
 
-#~ msgid "Support older servers"
-#~ msgstr "Understøt ældre servere"
-
-#~ msgid "Use key"
-#~ msgstr "Brug-tast"
-
-#~ msgid "Hide mp content"
-#~ msgstr "Skjul mp indhold"
-
-#~ msgid "Attn"
-#~ msgstr "Giv agt"
-
-#~ msgid "Capital"
-#~ msgstr "Store bogstaver"
-
-#~ msgid "Comma"
-#~ msgstr "Komma"
-
-#~ msgid "CrSel"
-#~ msgstr "CrSel"
-
-#~ msgid "ExSel"
-#~ msgstr "ExSel"
-
-#~ msgid "Final"
-#~ msgstr "Endelig"
-
-#~ msgid "Junja"
-#~ msgstr "Junja"
-
-#~ msgid "Kana"
-#~ msgstr "Kana"
-
-#~ msgid "Kanji"
-#~ msgstr "Kanji"
-
-#~ msgid "Minus"
-#~ msgstr "Minus"
-
-#~ msgid "PA1"
-#~ msgstr "PA1"
-
-#~ msgid "Period"
-#~ msgstr "Punktum"
-
-#~ msgid "Plus"
-#~ msgstr "Plus"
-
-#~ msgid ""
-#~ "Controls size of deserts and beaches in Mapgen v6.\n"
-#~ "When snowbiomes are enabled 'mgv6_freq_desert' is ignored."
-#~ msgstr ""
-#~ "Kontroller størrelse for ørkener og strande i Mapgen v6.\n"
-#~ "Når snebiomer er aktiveret ignoreres »mgv6_freq_desert«."
-
-#~ msgid ""
-#~ "Determines terrain shape.\n"
-#~ "The 3 numbers in brackets control the scale of the\n"
-#~ "terrain, the 3 numbers should be identical."
-#~ msgstr ""
-#~ "Bestemmer terrænform.\n"
-#~ "De tre tal i parenteser kontrollerer skalaen for\n"
-#~ "terrænet, de tre tal skal være identiske."
-
-#~ msgid "Mapgen biome heat noise parameters"
-#~ msgstr "Støjparametre til biotopvarme for Mapgen"
-
-#~ msgid "Mapgen biome humidity blend noise parameters"
-#~ msgstr "Støjparametre til biotopfugtighedsblanding for Mapgen"
-
-#~ msgid "Mapgen flat cave width"
-#~ msgstr "Mapgen - flad hulebredde"
-
-#~ msgid "Mapgen flat cave1 noise parameters"
-#~ msgstr "Støjparametre til flade cave1 for Mapgen"
-
-#~ msgid "Mapgen flat cave2 noise parameters"
-#~ msgstr "Støjparametre til flade cave2 for Mapgen"
-
-#~ msgid "Mapgen flat filler depth noise parameters"
-#~ msgstr "Mapgen - støjparametre for flad fyldstofdybde"
-
-#~ msgid "Mapgen flat large cave depth"
-#~ msgstr "Flad stor hule-dybde for Mapgen"
-
-#~ msgid "Mapgen flat terrain noise parameters"
-#~ msgstr "Støjparametre til flad terræn for Mapgen"
-
-#~ msgid "Mapgen fractal cave width"
-#~ msgstr "Mapgen - fraktal hulebredde"
-
-#~ msgid "Mapgen fractal cave1 noise parameters"
-#~ msgstr "Støjparametre for Mapgen fraktal grotte1"
-
-#~ msgid "Mapgen fractal cave2 noise parameters"
-#~ msgstr "Støjparametre for Mapgen fraktal grotte2"
-
-#~ msgid "Mapgen fractal filler depth noise parameters"
-#~ msgstr "Mapgen - støjparametre for fraktal fyldstofdybde"
-
-#~ msgid "Mapgen fractal fractal"
-#~ msgstr "Mapgen fraktal fraktal"
-
-#~ msgid "Mapgen fractal iterations"
-#~ msgstr "Mapgen fraktaliterationer"
-
-#~ msgid "Mapgen fractal julia w"
-#~ msgstr "Mapgen fraktal Julia w"
-
-#~ msgid "Mapgen fractal julia x"
-#~ msgstr "Mapgen fraktal Julia x"
-
-#~ msgid "Mapgen fractal julia y"
-#~ msgstr "Mapgen fraktal Julia y"
-
-#~ msgid "Mapgen fractal julia z"
-#~ msgstr "Mapgen fraktal Julia z"
-
-#~ msgid "Mapgen fractal offset"
-#~ msgstr "Mapgen fraktal forskydning"
-
-#~ msgid "Mapgen fractal scale"
-#~ msgstr "Mapgen fraktal skalering"
-
-#~ msgid "Mapgen fractal seabed noise parameters"
-#~ msgstr "Støjparametre for Mapgen fraktal havbund"
-
-#~ msgid "Mapgen fractal slice w"
-#~ msgstr "Mapgen fraktal udsnit w"
-
-#~ msgid "Mapgen v5 cave width"
-#~ msgstr "Mapgen v5 grottebredde"
-
-#~ msgid "Mapgen v5 cave1 noise parameters"
-#~ msgstr "Støjparametre for Mapgen v5 grotte1"
-
-#~ msgid "Mapgen v5 cave2 noise parameters"
-#~ msgstr "Støjparametre for Mapgen v5 grotte2"
-
-#~ msgid "Mapgen v5 factor noise parameters"
-#~ msgstr "Støjparametre for Mapgen v5 faktor"
-
-#~ msgid "Mapgen v5 filler depth noise parameters"
-#~ msgstr "Mapgen v5 - støjparametre for fyldstofdybde"
-
-#~ msgid "Mapgen v5 height noise parameters"
-#~ msgstr "Mapgen v5 – støjparametre for højde"
-
-#~ msgid "Mapgen v6 apple trees noise parameters"
-#~ msgstr "Mapgen v6 – støjparametre for æbletræer"
-
-#~ msgid "Mapgen v6 beach frequency"
-#~ msgstr "Mapgen v6 – strandhyppighed"
-
-#~ msgid "Mapgen v6 beach noise parameters"
-#~ msgstr "Mapgen v6 – støjparametre for strand"
-
-#~ msgid "Mapgen v6 biome noise parameters"
-#~ msgstr "Mapgen v6 – støjparametre for økosystem"
-
-#~ msgid "Mapgen v6 cave noise parameters"
-#~ msgstr "Mapgen v6 – støjparametre for grotter"
-
-#~ msgid "Mapgen v6 desert frequency"
-#~ msgstr "Mapgen v6 – ørkenhyppighed"
-
-#~ msgid "Mapgen v7 filler depth noise parameters"
-#~ msgstr "Mapgen v7 - støjparametre for fyldstofdybde"
-
-#~ msgid "Mapgen v7 height select noise parameters"
-#~ msgstr "Mapgen v7 – støjparametre for højdevalg"
-
-#~ msgid "No of course not!"
-#~ msgstr "Nej selvfølgelig ikke!"
-
-#~ msgid "Public Serverlist"
-#~ msgstr "Offentlig serverliste"
+#~ msgid "Advanced Settings"
+#~ msgstr "Avancerede indstillinger"
 
 #, fuzzy
-#~ msgid "If enabled, "
-#~ msgstr "aktiveret"
+#~ msgid "Downloading"
+#~ msgstr "Ned"
 
-#, fuzzy
-#~ msgid "Password"
-#~ msgstr "Gammelt kodeord"
+#~ msgid "Left click: Move all items, Right click: Move single item"
+#~ msgstr "Venstre klik: flyt alle enheder. Højre klik: flyt en enkelt enhed"
 
-#~ msgid "Preload item visuals"
-#~ msgstr "For-indlæs elementernes grafik"
+#~ msgid "is required by:"
+#~ msgstr "er påkrævet af:"
 
-#~ msgid ""
-#~ "Warning: Some mods are not configured yet.\n"
-#~ "They will be enabled by default when you save the configuration.  "
-#~ msgstr ""
-#~ "Advarsel: nogle modifikationer er endnu ikke konfigureret.\n"
-#~ "De vil blive aktiveret som standard når du gemmer konfigurationen.  "
+#~ msgid "Configuration saved.  "
+#~ msgstr "Konfiguration gemt.  "
 
-#~ msgid ""
-#~ "Warning: Some configured mods are missing.\n"
-#~ "Their setting will be removed when you save the configuration.  "
-#~ msgstr ""
-#~ "Advarsel: nogle konfigurerede modifikationer mangler.\n"
-#~ "Deres indstillinger vil blive fjernet når du gemmer konfigurationen.  "
+#~ msgid "Warning: Configuration not consistent.  "
+#~ msgstr "Advarsel: konfigurationen er ikke sammenhængende.  "
 
-#~ msgid "Delete map"
-#~ msgstr "Slet mappen"
+#~ msgid "Cannot create world: Name contains invalid characters"
+#~ msgstr "Kan ikke skabe verden: navnet indeholder ugyldige bogstaver"
+
+#~ msgid "Show Public"
+#~ msgstr "Vis offentlig"
+
+#~ msgid "Show Favorites"
+#~ msgstr "Vis favoritter"
+
+#~ msgid "Leave address blank to start a local server."
+#~ msgstr "Lad adresse-feltet være tomt for at starte en lokal server."
+
+#~ msgid "Create world"
+#~ msgstr "Skab verden"
+
+#~ msgid "Address required."
+#~ msgstr "Adresse påkrævet."
+
+#~ msgid "Cannot delete world: Nothing selected"
+#~ msgstr "Kan ikke slette verden: ingenting valgt"
+
+#~ msgid "Files to be deleted"
+#~ msgstr "Filer som slettes"
+
+#~ msgid "Cannot create world: No games found"
+#~ msgstr "Kan ikke skabe verden: ingen spil fundet"
+
+#~ msgid "Cannot configure world: Nothing selected"
+#~ msgstr "Kan ikke konfigurere verden: ingenting valgt"
+
+#~ msgid "Failed to delete all world files"
+#~ msgstr "Mislykkedes i at slette alle verdenens filer"
 
 #~ msgid ""
 #~ "Default Controls:\n"
@@ -6947,88 +6708,492 @@ msgstr "cURL-tidsudløb"
 #~ "- ESC: denne menu\n"
 #~ "- T: snak\n"
 
-#~ msgid "Failed to delete all world files"
-#~ msgstr "Mislykkedes i at slette alle verdenens filer"
+#~ msgid "Delete map"
+#~ msgstr "Slet mappen"
 
-#~ msgid "Cannot configure world: Nothing selected"
-#~ msgstr "Kan ikke konfigurere verden: ingenting valgt"
+#~ msgid ""
+#~ "Warning: Some configured mods are missing.\n"
+#~ "Their setting will be removed when you save the configuration.  "
+#~ msgstr ""
+#~ "Advarsel: nogle konfigurerede modifikationer mangler.\n"
+#~ "Deres indstillinger vil blive fjernet når du gemmer konfigurationen.  "
 
-#~ msgid "Cannot create world: No games found"
-#~ msgstr "Kan ikke skabe verden: ingen spil fundet"
+#~ msgid ""
+#~ "Warning: Some mods are not configured yet.\n"
+#~ "They will be enabled by default when you save the configuration.  "
+#~ msgstr ""
+#~ "Advarsel: nogle modifikationer er endnu ikke konfigureret.\n"
+#~ "De vil blive aktiveret som standard når du gemmer konfigurationen.  "
 
-#~ msgid "Files to be deleted"
-#~ msgstr "Filer som slettes"
-
-#~ msgid "Cannot delete world: Nothing selected"
-#~ msgstr "Kan ikke slette verden: ingenting valgt"
-
-#~ msgid "Address required."
-#~ msgstr "Adresse påkrævet."
-
-#~ msgid "Create world"
-#~ msgstr "Skab verden"
-
-#~ msgid "Leave address blank to start a local server."
-#~ msgstr "Lad adresse-feltet være tomt for at starte en lokal server."
-
-#~ msgid "Show Favorites"
-#~ msgstr "Vis favoritter"
-
-#~ msgid "Show Public"
-#~ msgstr "Vis offentlig"
-
-#~ msgid "Cannot create world: Name contains invalid characters"
-#~ msgstr "Kan ikke skabe verden: navnet indeholder ugyldige bogstaver"
-
-#~ msgid "Warning: Configuration not consistent.  "
-#~ msgstr "Advarsel: konfigurationen er ikke sammenhængende.  "
-
-#~ msgid "Configuration saved.  "
-#~ msgstr "Konfiguration gemt.  "
-
-#~ msgid "is required by:"
-#~ msgstr "er påkrævet af:"
-
-#~ msgid "Left click: Move all items, Right click: Move single item"
-#~ msgstr "Venstre klik: flyt alle enheder. Højre klik: flyt en enkelt enhed"
+#~ msgid "Preload item visuals"
+#~ msgstr "For-indlæs elementernes grafik"
 
 #, fuzzy
-#~ msgid "Downloading"
-#~ msgstr "Ned"
+#~ msgid "Password"
+#~ msgstr "Gammelt kodeord"
 
-#~ msgid "Advanced Settings"
-#~ msgstr "Avancerede indstillinger"
+#, fuzzy
+#~ msgid "If enabled, "
+#~ msgstr "aktiveret"
+
+#~ msgid "Public Serverlist"
+#~ msgstr "Offentlig serverliste"
+
+#~ msgid "No of course not!"
+#~ msgstr "Nej selvfølgelig ikke!"
+
+#~ msgid "Mapgen v7 height select noise parameters"
+#~ msgstr "Mapgen v7 – støjparametre for højdevalg"
+
+#~ msgid "Mapgen v7 filler depth noise parameters"
+#~ msgstr "Mapgen v7 - støjparametre for fyldstofdybde"
+
+#~ msgid "Mapgen v6 desert frequency"
+#~ msgstr "Mapgen v6 – ørkenhyppighed"
+
+#~ msgid "Mapgen v6 cave noise parameters"
+#~ msgstr "Mapgen v6 – støjparametre for grotter"
+
+#~ msgid "Mapgen v6 biome noise parameters"
+#~ msgstr "Mapgen v6 – støjparametre for økosystem"
+
+#~ msgid "Mapgen v6 beach noise parameters"
+#~ msgstr "Mapgen v6 – støjparametre for strand"
+
+#~ msgid "Mapgen v6 beach frequency"
+#~ msgstr "Mapgen v6 – strandhyppighed"
+
+#~ msgid "Mapgen v6 apple trees noise parameters"
+#~ msgstr "Mapgen v6 – støjparametre for æbletræer"
+
+#~ msgid "Mapgen v5 height noise parameters"
+#~ msgstr "Mapgen v5 – støjparametre for højde"
+
+#~ msgid "Mapgen v5 filler depth noise parameters"
+#~ msgstr "Mapgen v5 - støjparametre for fyldstofdybde"
+
+#~ msgid "Mapgen v5 factor noise parameters"
+#~ msgstr "Støjparametre for Mapgen v5 faktor"
+
+#~ msgid "Mapgen v5 cave2 noise parameters"
+#~ msgstr "Støjparametre for Mapgen v5 grotte2"
+
+#~ msgid "Mapgen v5 cave1 noise parameters"
+#~ msgstr "Støjparametre for Mapgen v5 grotte1"
+
+#~ msgid "Mapgen v5 cave width"
+#~ msgstr "Mapgen v5 grottebredde"
+
+#~ msgid "Mapgen fractal slice w"
+#~ msgstr "Mapgen fraktal udsnit w"
+
+#~ msgid "Mapgen fractal seabed noise parameters"
+#~ msgstr "Støjparametre for Mapgen fraktal havbund"
+
+#~ msgid "Mapgen fractal scale"
+#~ msgstr "Mapgen fraktal skalering"
+
+#~ msgid "Mapgen fractal offset"
+#~ msgstr "Mapgen fraktal forskydning"
+
+#~ msgid "Mapgen fractal julia z"
+#~ msgstr "Mapgen fraktal Julia z"
+
+#~ msgid "Mapgen fractal julia y"
+#~ msgstr "Mapgen fraktal Julia y"
+
+#~ msgid "Mapgen fractal julia x"
+#~ msgstr "Mapgen fraktal Julia x"
+
+#~ msgid "Mapgen fractal julia w"
+#~ msgstr "Mapgen fraktal Julia w"
+
+#~ msgid "Mapgen fractal iterations"
+#~ msgstr "Mapgen fraktaliterationer"
+
+#~ msgid "Mapgen fractal fractal"
+#~ msgstr "Mapgen fraktal fraktal"
+
+#~ msgid "Mapgen fractal filler depth noise parameters"
+#~ msgstr "Mapgen - støjparametre for fraktal fyldstofdybde"
+
+#~ msgid "Mapgen fractal cave2 noise parameters"
+#~ msgstr "Støjparametre for Mapgen fraktal grotte2"
+
+#~ msgid "Mapgen fractal cave1 noise parameters"
+#~ msgstr "Støjparametre for Mapgen fraktal grotte1"
+
+#~ msgid "Mapgen fractal cave width"
+#~ msgstr "Mapgen - fraktal hulebredde"
+
+#~ msgid "Mapgen flat terrain noise parameters"
+#~ msgstr "Støjparametre til flad terræn for Mapgen"
+
+#~ msgid "Mapgen flat large cave depth"
+#~ msgstr "Flad stor hule-dybde for Mapgen"
+
+#~ msgid "Mapgen flat filler depth noise parameters"
+#~ msgstr "Mapgen - støjparametre for flad fyldstofdybde"
+
+#~ msgid "Mapgen flat cave2 noise parameters"
+#~ msgstr "Støjparametre til flade cave2 for Mapgen"
+
+#~ msgid "Mapgen flat cave1 noise parameters"
+#~ msgstr "Støjparametre til flade cave1 for Mapgen"
+
+#~ msgid "Mapgen flat cave width"
+#~ msgstr "Mapgen - flad hulebredde"
+
+#~ msgid "Mapgen biome humidity blend noise parameters"
+#~ msgstr "Støjparametre til biotopfugtighedsblanding for Mapgen"
+
+#~ msgid "Mapgen biome heat noise parameters"
+#~ msgstr "Støjparametre til biotopvarme for Mapgen"
+
+#~ msgid ""
+#~ "Determines terrain shape.\n"
+#~ "The 3 numbers in brackets control the scale of the\n"
+#~ "terrain, the 3 numbers should be identical."
+#~ msgstr ""
+#~ "Bestemmer terrænform.\n"
+#~ "De tre tal i parenteser kontrollerer skalaen for\n"
+#~ "terrænet, de tre tal skal være identiske."
+
+#~ msgid ""
+#~ "Controls size of deserts and beaches in Mapgen v6.\n"
+#~ "When snowbiomes are enabled 'mgv6_freq_desert' is ignored."
+#~ msgstr ""
+#~ "Kontroller størrelse for ørkener og strande i Mapgen v6.\n"
+#~ "Når snebiomer er aktiveret ignoreres »mgv6_freq_desert«."
+
+#~ msgid "Plus"
+#~ msgstr "Plus"
+
+#~ msgid "Period"
+#~ msgstr "Punktum"
+
+#~ msgid "PA1"
+#~ msgstr "PA1"
+
+#~ msgid "Minus"
+#~ msgstr "Minus"
+
+#~ msgid "Kanji"
+#~ msgstr "Kanji"
+
+#~ msgid "Kana"
+#~ msgstr "Kana"
+
+#~ msgid "Junja"
+#~ msgstr "Junja"
+
+#~ msgid "Final"
+#~ msgstr "Endelig"
+
+#~ msgid "ExSel"
+#~ msgstr "ExSel"
+
+#~ msgid "CrSel"
+#~ msgstr "CrSel"
+
+#~ msgid "Comma"
+#~ msgstr "Komma"
+
+#~ msgid "Capital"
+#~ msgstr "Store bogstaver"
+
+#~ msgid "Attn"
+#~ msgstr "Giv agt"
+
+#~ msgid "Hide mp content"
+#~ msgstr "Skjul mp indhold"
+
+#~ msgid "Use key"
+#~ msgstr "Brug-tast"
+
+#~ msgid "Support older servers"
+#~ msgstr "Understøt ældre servere"
 
 #, fuzzy
 #~ msgid ""
 #~ "Map generation attributes specific to Mapgen v7.\n"
-#~ "'ridges' enables the rivers.\n"
-#~ "Flags that are not enabled are not modified from the default.\n"
+#~ "The 'ridges' flag enables the rivers.\n"
+#~ "Floatlands are currently experimental and subject to change.\n"
+#~ "Flags that are not specified in the flag string are not modified from the "
+#~ "default.\n"
 #~ "Flags starting with 'no' are used to explicitly disable them."
 #~ msgstr ""
-#~ "Kortoprettelsesattributter specifikek til Mapgen v5.\n"
+#~ "Kortoprettelsesattributter specifikek til Mapgen v7.\n"
+#~ "Flaget »ridges« kontroller floderne.\n"
 #~ "Flag som ikke er specificeret i flag-strengen ændres ikke fra "
 #~ "standarden.\n"
 #~ "Flag der starter med »no« bruges til eksplicit at deaktivere dem."
 
-#, fuzzy
 #~ msgid ""
-#~ "Map generation attributes specific to Mapgen v5.\n"
-#~ "Flags that are not enabled are not modified from the default.\n"
+#~ "Map generation attributes specific to Mapgen Valleys.\n"
+#~ "'altitude_chill' makes higher elevations colder, which may cause biome "
+#~ "issues.\n"
+#~ "'humid_rivers' modifies the humidity around rivers and in areas where "
+#~ "water would tend to pool,\n"
+#~ "it may interfere with delicately adjusted biomes.\n"
+#~ "Flags that are not specified in the flag string are not modified from the "
+#~ "default.\n"
 #~ "Flags starting with 'no' are used to explicitly disable them."
 #~ msgstr ""
-#~ "Kortoprettelsesattributter specifikek til Mapgen v5.\n"
+#~ "Kortoprettelsesattributer specifik for Mapgen Valleys.\n"
+#~ "»altitude_chill« gør højere områder koldere, hvilket kan medføre "
+#~ "habitatproblemstillinger.\n"
+#~ "»humid_rivers« ændrer fugtighed omkring floder og i områder hvor vand har "
+#~ "tendens til at samle sig,\n"
+#~ "det kan influere med ømtålelige habitatter.\n"
 #~ "Flag som ikke er specificeret i flag-strengen ændres ikke fra "
 #~ "standarden.\n"
 #~ "Flag der starter med »no« bruges til eksplicit at deaktivere dem."
 
-#, fuzzy
+#~ msgid "Main menu mod manager"
+#~ msgstr "Hovedmenus mod-håndtering"
+
+#~ msgid "Main menu game manager"
+#~ msgstr "Hovedmenus spilhåndtering"
+
+#~ msgid "Lava Features"
+#~ msgstr "Lavafunktioner"
+
 #~ msgid ""
-#~ "Map generation attributes specific to Mapgen Carpathian.\n"
-#~ "Flags that are not enabled are not modified from the default.\n"
-#~ "Flags starting with 'no' are used to explicitly disable them."
+#~ "Key for printing debug stacks. Used for development.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
 #~ msgstr ""
-#~ "Kortoprettelsesattributter specifikek til Mapgen v5.\n"
-#~ "Flag som ikke er specificeret i flag-strengen ændres ikke fra "
-#~ "standarden.\n"
-#~ "Flag der starter med »no« bruges til eksplicit at deaktivere dem."
+#~ "Tast til at udskrive fejlsøgningsstakke. Brugt til udvikling.\n"
+#~ "Se http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for opening the chat console.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Tast til at åbne snakkekonsollen (chat).\n"
+#~ "Se http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Iterations of the recursive function.\n"
+#~ "Controls the amount of fine detail."
+#~ msgstr ""
+#~ "Gennemløb for den rekursive funktion.\n"
+#~ "Kontrollerer mængden af små detaljer."
+
+#, fuzzy
+#~ msgid "Inventory image hack"
+#~ msgstr "Lager billede hack"
+
+#, fuzzy
+#~ msgid "If enabled, show the server status message on player connection."
+#~ msgstr "Hvis aktiveret, viser serveren statusbesked på spiller forbindelse."
+
+#~ msgid ""
+#~ "How large area of blocks are subject to the active block stuff, stated in "
+#~ "mapblocks (16 nodes).\n"
+#~ "In active blocks objects are loaded and ABMs run."
+#~ msgstr ""
+#~ "Hvordan store områder af blokke påvirkes af det aktive blokindhold, "
+#~ "angivet i mapblocks (16 knudepunkter).\n"
+#~ "I aktive blokke bliver objekter indlæst og ABM'er afviklet."
+
+#~ msgid "Height on which clouds are appearing."
+#~ msgstr "Højde hvor skyer fremkommer."
+
+#~ msgid "General"
+#~ msgstr "Generelt"
+
+#~ msgid ""
+#~ "From how far clients know about objects, stated in mapblocks (16 nodes)."
+#~ msgstr ""
+#~ "Fra hvor langt væk klinter ved om objekter, angivet i kortblokke (16 "
+#~ "knudepunkter)."
+
+#~ msgid ""
+#~ "Field of view while zooming in degrees.\n"
+#~ "This requires the \"zoom\" privilege on the server."
+#~ msgstr ""
+#~ "Visningsområde under zoom i grader.\n"
+#~ "Dette kræver privilegiet »zoom« på serveren."
+
+#~ msgid "Field of view for zoom"
+#~ msgstr "Zoom for visningsområde"
+
+#, fuzzy
+#~ msgid "Enable view bobbing"
+#~ msgstr "Aktivér visning af bobbing"
+
+#~ msgid ""
+#~ "Disable escape sequences, e.g. chat coloring.\n"
+#~ "Use this if you want to run a server with pre-0.4.14 clients and you want "
+#~ "to disable\n"
+#~ "the escape sequences generated by mods."
+#~ msgstr ""
+#~ "Deaktiver undvigesekvenser, f.eks. snak-farvelægning.\n"
+#~ "Brug denne hvis du ønsker at afvikle en server med pre-0.4.14-klienter og "
+#~ "du ønsker\n"
+#~ "at deaktivere undvigesekvenserne oprettet af mod'er."
+
+#~ msgid "Disable escape sequences"
+#~ msgstr "Deaktiver undvigesekvenser"
+
+#~ msgid "Descending speed"
+#~ msgstr "Faldende hastighed"
+
+#~ msgid "Depth below which you'll find massive caves."
+#~ msgstr "Dybde hvorunder du finder kæmpestore huler."
+
+#~ msgid "Crouch speed"
+#~ msgstr "Krybehastighed"
+
+#~ msgid ""
+#~ "Creates unpredictable water features in caves.\n"
+#~ "These can make mining difficult. Zero disables them. (0-10)"
+#~ msgstr ""
+#~ "Opretter uforudsigelige vandfunktioner i huler.\n"
+#~ "Disse kan gøre vanskeliggøre minedrift. Nul deaktiverer dem (0-10)"
+
+#~ msgid ""
+#~ "Creates unpredictable lava features in caves.\n"
+#~ "These can make mining difficult. Zero disables them. (0-10)"
+#~ msgstr " "
+
+#~ msgid "Continuous forward movement (only used for testing)."
+#~ msgstr "Kontinuerlig bevægelse fremad (bruges kun til test)."
+
+#~ msgid "Console key"
+#~ msgstr "Konsoltast"
+
+#~ msgid "Cloud height"
+#~ msgstr "Skyhøjde"
+
+#~ msgid "Caves and tunnels form at the intersection of the two noises"
+#~ msgstr "Huler og tunneler dannes ved skæringspunktet for de to støjkilder"
+
+#~ msgid "Autorun key"
+#~ msgstr "Tast til automatisk løb"
+
+#~ msgid "Approximate (X,Y,Z) scale of fractal in nodes."
+#~ msgstr "Omtrentlig (X, Y, Z) fraktalskala i knudepunkter."
+
+#~ msgid ""
+#~ "Announce to this serverlist.\n"
+#~ "If you want to announce your ipv6 address, use  serverlist_url = v6."
+#~ "servers.minetest.net."
+#~ msgstr ""
+#~ "Meddel på denne serverliste\n"
+#~ "Hvis du ønsker at annoncere din ipv6-adresse, så brug serverlist_url = v6."
+#~ "servers.minetest.net."
+
+#~ msgid ""
+#~ "Android systems only: Tries to create inventory textures from meshes\n"
+#~ "when no supported render was found."
+#~ msgstr ""
+#~ "Kun Android-systemer: Forsøger at generere lagerteksturer ud fra masker,\n"
+#~ "når der ikke blev fundet en understøttet render."
+
+#~ msgid "Active Block Modifier interval"
+#~ msgstr "Aktivt blokændringsinterval"
+
+#~ msgid "Prior"
+#~ msgstr "Foregående"
+
+#~ msgid "Next"
+#~ msgstr "Næste"
+
+#~ msgid "Use"
+#~ msgstr "Brug"
+
+#~ msgid "Print stacks"
+#~ msgstr "Udskriv stakke"
+
+#~ msgid "Volume changed to 100%"
+#~ msgstr "Lydstyrke ændret til 100 %"
+
+#~ msgid "Volume changed to 0%"
+#~ msgstr "Lydstyrke ændret til 0 %"
+
+#~ msgid "No information available"
+#~ msgstr "Der er ikke nogen information tilgængelig"
+
+#~ msgid "Normal Mapping"
+#~ msgstr "Normal oversættelse"
+
+#~ msgid "Play Online"
+#~ msgstr "Spil over nettet"
+
+#~ msgid "Uninstall selected modpack"
+#~ msgstr "Afinstaller den valgte modpack"
+
+#~ msgid "Local Game"
+#~ msgstr "Lokalt spil"
+
+#~ msgid "re-Install"
+#~ msgstr "geninstaller"
+
+#~ msgid "Unsorted"
+#~ msgstr "Usorteret"
+
+#~ msgid "Successfully installed:"
+#~ msgstr "Succesfuldt installeret:"
+
+#~ msgid "Shortname:"
+#~ msgstr "Kort navn:"
+
+#~ msgid "Rating"
+#~ msgstr "Bedømmelse"
+
+#~ msgid "Page $1 of $2"
+#~ msgstr "Side $1 af $2"
+
+#~ msgid "Subgame Mods"
+#~ msgstr "Underspil-mods"
+
+#~ msgid "Select path"
+#~ msgstr "Vælg sti"
+
+#~ msgid "Possible values are: "
+#~ msgstr "Mulige værdier er: "
+
+#~ msgid "Please enter a comma seperated list of flags."
+#~ msgstr ""
+#~ "Indtast venligst en liste af indstillinger som er adskilt med kommaer."
+
+#~ msgid "Optionally the lacunarity can be appended with a leading comma."
+#~ msgstr "Valgfrit kan »lacunarity'en« tilføjes med et foranstillet komma."
+
+#~ msgid ""
+#~ "Format: <offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>), <seed>, "
+#~ "<octaves>, <persistence>"
+#~ msgstr ""
+#~ "Format: <forskydning>, <skalering>, (<udbredelseX>, <udbredelseY>, "
+#~ "<udbredelseZ>), <kim>, <oktaver>, <vedholdenhed>"
+
+#~ msgid "Format is 3 numbers separated by commas and inside brackets."
+#~ msgstr "Formatet er 3 tal, adskilt af kommaer, og omgivet af parenteser."
+
+#~ msgid "\"$1\" is not a valid flag."
+#~ msgstr "\"$1\" er ikke en gyldig indstilling."
+
+#~ msgid "No worldname given or no game selected"
+#~ msgstr "Intet navn på verden angivet eller intet spil valgt"
+
+#~ msgid "Enable MP"
+#~ msgstr "Aktivér MP"
+
+#~ msgid "Disable MP"
+#~ msgstr "Deaktivér MP"
+
+#, fuzzy
+#~ msgid "Content Store"
+#~ msgstr "Luk marked"
+
+#~ msgid "Toggle Cinematic"
+#~ msgstr "Aktiver filmisk"
+
+#~ msgid "Select Package File:"
+#~ msgstr "Vælg pakke fil:"

@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-02-24 18:43+0100\n"
+"POT-Creation-Date: 2019-09-08 09:20+0200\n"
 "PO-Revision-Date: 2019-08-17 09:22+0000\n"
 "Last-Translator: tuxayo/Victor Grousset <victor@tuxayo.net>\n"
 "Language-Team: Esperanto <https://hosted.weblate.org/projects/minetest/"
@@ -23,7 +23,8 @@ msgid "You died"
 msgstr "Vi mortis"
 
 #: builtin/fstk/ui.lua
-msgid "An error occurred in a Lua script, such as a mod:"
+#, fuzzy
+msgid "An error occurred in a Lua script:"
 msgstr "Eraro okazis en Lua-skripto, kiel ekzemple modifaĵo:"
 
 #: builtin/fstk/ui.lua
@@ -118,12 +119,27 @@ msgid "Mod:"
 msgstr "Modifaĵo:"
 
 #: builtin/mainmenu/dlg_config_world.lua
+#, fuzzy
+msgid "No (optional) dependencies"
+msgstr "Malnepraj dependaĵoj:"
+
+#: builtin/mainmenu/dlg_config_world.lua
 msgid "No game description provided."
 msgstr "Neniu priskribo de ludo estas donita."
 
 #: builtin/mainmenu/dlg_config_world.lua
+#, fuzzy
+msgid "No hard dependencies"
+msgstr "Sen dependaĵoj."
+
+#: builtin/mainmenu/dlg_config_world.lua
 msgid "No modpack description provided."
 msgstr "Neniu priskrib ode modifaĵaro estas donita."
+
+#: builtin/mainmenu/dlg_config_world.lua
+#, fuzzy
+msgid "No optional dependencies"
+msgstr "Malnepraj dependaĵoj:"
 
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/tab_content.lua
 msgid "Optional dependencies:"
@@ -483,10 +499,6 @@ msgid "Rename"
 msgstr "Alinomi"
 
 #: builtin/mainmenu/tab_content.lua
-msgid "Select Package File:"
-msgstr "Elekti pakaĵan dosieron:"
-
-#: builtin/mainmenu/tab_content.lua
 msgid "Uninstall Package"
 msgstr "Malinstali pakaĵon"
 
@@ -771,12 +783,13 @@ msgid "Waving Leaves"
 msgstr "Ondantaj foliaĵoj"
 
 #: builtin/mainmenu/tab_settings.lua
-msgid "Waving Plants"
-msgstr "Ondantaj plantoj"
+#, fuzzy
+msgid "Waving Liquids"
+msgstr "Ondantaj monderoj"
 
 #: builtin/mainmenu/tab_settings.lua
-msgid "Waving Water"
-msgstr "Ondanta akvo"
+msgid "Waving Plants"
+msgstr "Ondantaj plantoj"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Yes"
@@ -1517,13 +1530,13 @@ msgid "Register and Join"
 msgstr "Registriĝi kaj aliĝi"
 
 #: src/gui/guiConfirmRegistration.cpp
-#, c-format
+#, fuzzy, c-format
 msgid ""
-"You are about to join the server at %1$s with the name \"%2$s\" for the "
-"first time. If you proceed, a new account using your credentials will be "
-"created on this server.\n"
-"Please retype your password and click Register and Join to confirm account "
-"creation or click Cancel to abort."
+"You are about to join this server with the name \"%s\" for the first time.\n"
+"If you proceed, a new account using your credentials will be created on this "
+"server.\n"
+"Please retype your password and click 'Register and Join' to confirm account "
+"creation, or click 'Cancel' to abort."
 msgstr ""
 "Ni estas aliĝonta al la servilo je %1$s kun la nomo « %2$s » unuafoje. Se vi "
 "daŭrigos, nova konto kreiĝos en la servilo per viaj salutiloj.\n"
@@ -1644,10 +1657,6 @@ msgid "Special"
 msgstr "Speciala"
 
 #: src/gui/guiKeyChangeMenu.cpp
-msgid "Toggle Cinematic"
-msgstr "Baskuligi glitan vidpunkton"
-
-#: src/gui/guiKeyChangeMenu.cpp
 msgid "Toggle HUD"
 msgstr "Baskuligi travidan fasadon"
 
@@ -1674,6 +1683,11 @@ msgstr "Baskuligi mapeton"
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Toggle noclip"
 msgstr "Baskuligi trapasan reĝimon"
+
+#: src/gui/guiKeyChangeMenu.cpp
+#, fuzzy
+msgid "Toggle pitchmove"
+msgstr "Baskuligi babilan protokolon"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "press key"
@@ -1805,6 +1819,11 @@ msgid "2D noise that controls the size/occurrence of step mountain ranges."
 msgstr "2d-a bruo, kiu regas la grandon/ofton de terasaj montaroj."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "2D noise that locates the river valleys and channels."
+msgstr "2d-a bruo, kiu regas la formon/grandon de larĝaj montetoj."
+
+#: src/settings_translation_file.cpp
 msgid "3D clouds"
 msgstr "3D nuboj"
 
@@ -1837,6 +1856,10 @@ msgid "3D noise for mountain overhangs, cliffs, etc. Usually small variations."
 msgstr ""
 "3d-a bruo por montaj superelstaraĵoj, rokmuroj, ktp. Plej ofte la etaj "
 "variaĵoj."
+
+#: src/settings_translation_file.cpp
+msgid "3D noise that determines number of dungeons per mapchunk."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1889,6 +1912,10 @@ msgstr "Plejgrando de mondestigaj vicoj"
 #: src/settings_translation_file.cpp
 msgid "Acceleration in air"
 msgstr "Akcelo en aero"
+
+#: src/settings_translation_file.cpp
+msgid "Acceleration of gravity, in nodes per second per second."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Active Block Modifiers"
@@ -1944,7 +1971,8 @@ msgstr "Specialaj"
 
 #: src/settings_translation_file.cpp
 msgid "Alters how mountain-type floatlands taper above and below midpoint."
-msgstr "Ŝanĝas kiel montecaj fluginsuloj maldikiĝas super kaj sub la mezpunkto."
+msgstr ""
+"Ŝanĝas kiel montecaj fluginsuloj maldikiĝas super kaj sub la mezpunkto."
 
 #: src/settings_translation_file.cpp
 msgid "Altitude chill"
@@ -2115,7 +2143,7 @@ msgstr "Mapado de elstaraĵoj"
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Camera near plane distance in nodes, between 0 and 0.5\n"
+"Camera 'near clipping plane' distance in nodes, between 0 and 0.5.\n"
 "Most users will not need to change this.\n"
 "Increasing can reduce artifacting on weaker GPUs.\n"
 "0.1 = Default, 0.25 = Good value for weaker tablets."
@@ -2198,6 +2226,11 @@ msgstr "Babila klavo"
 #: src/settings_translation_file.cpp
 msgid "Chat message count limit"
 msgstr "Supra limo de babilaj mesaĝoj"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Chat message format"
+msgstr "Plejlongo de babilaj mesaĝoj"
 
 #: src/settings_translation_file.cpp
 msgid "Chat message kick threshold"
@@ -2309,8 +2342,8 @@ msgid ""
 msgstr ""
 "Diskomita listo de fidataj modifaĵoj, kiuj rajtas aliri nesekurajn "
 "funkciojn\n"
-"eĉ kiam modifaĵa sekureco estas ŝaltita (per « request_insecure_environment()"
-" »)."
+"eĉ kiam modifaĵa sekureco estas ŝaltita (per "
+"« request_insecure_environment() »)."
 
 #: src/settings_translation_file.cpp
 msgid "Command key"
@@ -2375,6 +2408,10 @@ msgstr ""
 "72 = 20 minutoj, 360 = 4 minutoj, 1 = 24 horoj, 0 = restadas senŝanĝe."
 
 #: src/settings_translation_file.cpp
+msgid "Controls sinking speed in liquid."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Controls steepness/depth of lake depressions."
 msgstr "Regas krutecon/profundecon de lagaj profundaĵoj."
 
@@ -2436,12 +2473,21 @@ msgid "Debug info toggle key"
 msgstr "Sencimiga baskula klavo"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Debug log file size threshold"
+msgstr "Sojlo de dezerta bruo"
+
+#: src/settings_translation_file.cpp
 msgid "Debug log level"
 msgstr "Sencimiga protokola nivelo"
 
 #: src/settings_translation_file.cpp
 msgid "Dec. volume key"
 msgstr "Mallaŭtiga klavo"
+
+#: src/settings_translation_file.cpp
+msgid "Decrease this to increase liquid resistence to movement."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Dedicated server step"
@@ -2534,9 +2580,24 @@ msgid "Defines the base ground level."
 msgstr "Difinas la bazan ternivelon."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Defines the depth of the river channel."
+msgstr "Difinas la bazan ternivelon."
+
+#: src/settings_translation_file.cpp
 msgid "Defines the maximal player transfer distance in blocks (0 = unlimited)."
 msgstr ""
 "Difinas maksimuman distancon de ludanta moviĝo en monderoj (0 = senlima)."
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Defines the width of the river channel."
+msgstr "Difinas vastan sturkturon de akvovojo."
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Defines the width of the river valley."
+msgstr "Difinas zonojn kie arboj donas pomojn."
 
 #: src/settings_translation_file.cpp
 msgid "Defines tree areas and tree density."
@@ -2564,6 +2625,12 @@ msgid "Deprecated Lua API handling"
 msgstr "Traktado de evitinda Lua API"
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Deprecated, define and locate cave liquids using biome definitions instead.\n"
+"Y of upper limit of lava in large caves."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Depth below which you'll find giant caverns."
 msgstr "Profundo sub kiu troveblos grandegaj kavernoj."
 
@@ -2584,9 +2651,10 @@ msgid "Desert noise threshold"
 msgstr "Sojlo de dezerta bruo"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Deserts occur when np_biome exceeds this value.\n"
-"When the new biome system is enabled, this is ignored."
+"When the 'snowbiomes' flag is enabled, this is ignored."
 msgstr ""
 "Dezertoj estiĝas kiam ‹np_biome› superas ĉi tiun valoron.\n"
 "Kiam la nova klimata sistemo aktivas, ĉi tio estas malatentata."
@@ -2633,6 +2701,11 @@ msgstr "Maksimuma Y de forgeskelo"
 
 #: src/settings_translation_file.cpp
 msgid "Dungeon minimum Y"
+msgstr "Minimuma Y de forgeskeloj"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Dungeon noise"
 msgstr "Minimuma Y de forgeskeloj"
 
 #: src/settings_translation_file.cpp
@@ -2985,6 +3058,13 @@ msgid "Font size"
 msgstr "Tipara grandeco"
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Format of player chat messages. The following strings are valid "
+"placeholders:\n"
+"@name, @message, @timestamp (optional)"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Format of screenshots."
 msgstr "Dosierformo de ekrankopioj."
 
@@ -3063,8 +3143,8 @@ msgid ""
 "to maintain active objects up to this distance in the direction the\n"
 "player is looking. (This can avoid mobs suddenly disappearing from view)"
 msgstr ""
-"Ekde kia malproksimo klientoj ekkonas objektojn, en mapblokoj (16 monderoj)."
-"\n"
+"Ekde kia malproksimo klientoj ekkonas objektojn, en mapblokoj (16 "
+"monderoj).\n"
 "\n"
 "Agordo pli alta ol « active_block_range » ankaŭ kaŭzos, ke la servilo tenos\n"
 "aktivajn objektojn ĝis ĉi tiu distanco, en la direkto, kien la ludulo "
@@ -3217,6 +3297,24 @@ msgstr "Bruo de monteteco 4"
 
 #: src/settings_translation_file.cpp
 msgid "Homepage of server, to be displayed in the serverlist."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Horizontal acceleration in air when jumping or falling,\n"
+"in nodes per second per second."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Horizontal and vertical acceleration in fast mode,\n"
+"in nodes per second per second."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Horizontal and vertical acceleration on ground or when climbing,\n"
+"in nodes per second per second."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3481,6 +3579,14 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid ""
+"If the file size of debug.txt exceeds the number of megabytes specified in\n"
+"this setting when it is opened, the file is moved to debug.txt.1,\n"
+"deleting an older debug.txt.1 if it exists.\n"
+"debug.txt is only moved if this setting is positive."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "If this is set, players will always (re)spawn at the given position."
 msgstr "Ŝaltite, ludantoj ĉiam renaskiĝos je la donita loko."
 
@@ -3508,6 +3614,10 @@ msgstr "(Alteco de la enluda babila konzolo, inter 0.1 (10%) kaj 1.0 (100%)."
 #: src/settings_translation_file.cpp
 msgid "Inc. volume key"
 msgstr "Plilaŭtiga klavo"
+
+#: src/settings_translation_file.cpp
+msgid "Initial vertical speed when jumping, in nodes per second."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3735,8 +3845,8 @@ msgid ""
 msgstr ""
 "Klavo por movi la ludanton reen.\n"
 "Aktivigo ankaŭ malŝaltos memiradon.\n"
-"Vidu http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3825,8 +3935,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Klavo por elekti 11-an portaĵingon en la fulmobreto.\n"
-"Vidu http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3835,8 +3945,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Klavo por elekti 12-an portaĵingon en la fulmobreto.\n"
-"Vidu http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3845,8 +3955,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Klavo por elekti 13-an portaĵingon en la fulmobreto.\n"
-"Vidu http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3855,8 +3965,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Klavo por elekti 14-an portaĵingon en la fulmobreto.\n"
-"Vidu http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3865,8 +3975,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Klavo por elekti 15-an portaĵingon en la fulmobreto.\n"
-"Vidu http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3875,8 +3985,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Klavo por elekti 16-an portaĵingon en la fulmobreto.\n"
-"Vidu http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3885,8 +3995,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Klavo por elekti 17-an portaĵingon en la fulmobreto.\n"
-"Vidu http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3895,8 +4005,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Klavo por elekti 18-an portaĵingon en la fulmobreto.\n"
-"Vidu http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3905,8 +4015,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Klavo por elekti 19-an portaĵingon en la fulmobreto.\n"
-"Vidu http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3915,8 +4025,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Klavo por elekti 20-an portaĵingon en la fulmobreto.\n"
-"Vidu http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3925,8 +4035,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Klavo por elekti 21-an portaĵingon en la fulmobreto.\n"
-"Vidu http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3935,8 +4045,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Klavo por elekti 22-an portaĵingon en la fulmobreto.\n"
-"Vidu http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3945,8 +4055,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Klavo por elekti 23-an portaĵingon en la fulmobreto.\n"
-"Vidu http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3955,8 +4065,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Klavo por elekti 24-an portaĵingon en la fulmobreto.\n"
-"Vidu http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3965,8 +4075,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Klavo por elekti 25-an portaĵingon en la fulmobreto.\n"
-"Vidu http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3975,8 +4085,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Klavo por elekti 26-an portaĵingon en la fulmobreto.\n"
-"Vidu http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3985,8 +4095,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Klavo por elekti 27-an portaĵingon en la fulmobreto.\n"
-"Vidu http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3995,8 +4105,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Klavo por elekti 28-an portaĵingon en la fulmobreto.\n"
-"Vidu http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4005,8 +4115,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Klavo por elekti 29-an portaĵingon en la fulmobreto.\n"
-"Vidu http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4015,8 +4125,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Klavo por elekti 30-an portaĵingon en la fulmobreto.\n"
-"Vidu http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4025,8 +4135,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Klavo por elekti 31-an portaĵingon en la fulmobreto.\n"
-"Vidu http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4035,8 +4145,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Klavo por elekti 32-an portaĵingon en la fulmobreto.\n"
-"Vidu http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4045,8 +4155,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Klavo por elekti okan portaĵingon en la fulmobreto.\n"
-"Vidu http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4055,8 +4165,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Klavo por elekti kvinan portaĵingon en la fulmobreto.\n"
-"Vidu http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4065,8 +4175,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Klavo por elekti unuan portaĵingon en la fulmobreto.\n"
-"Vidu http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4075,8 +4185,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Klavo por elekti kvaran portaĵingon en la fulmobreto.\n"
-"Vidu http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4095,8 +4205,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Klavo por elekti naŭan portaĵingon en la fulmobreto.\n"
-"Vidu http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4115,8 +4225,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Klavo por elekti duan portaĵingon en la fulmobreto.\n"
-"Vidu http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4125,8 +4235,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Klavo por elekti sepan portaĵingon en la fulmobreto.\n"
-"Vidu http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4135,8 +4245,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Klavo por elekti sesan portaĵingon en la fulmobreto.\n"
-"Vidu http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4145,8 +4255,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Klavo por elekti dekan portaĵingon en la fulmobreto.\n"
-"Vidu http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4155,8 +4265,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Klavo por elekti trian portaĵingon en la fulmobreto.\n"
-"Vidu http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4169,8 +4279,8 @@ msgstr ""
 "Klavo por kaŝirado.\n"
 "Ankaŭ uzata por malsupreniro kaj malsuprennaĝo se ‹aux1_descends› estas "
 "malŝaltita.\n"
-"Vidu http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4199,8 +4309,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Baskula klavo por memirado.\n"
-"Vidu http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4209,8 +4319,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Baskula klavo por glita vidpunkto.\n"
-"Vidu http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4249,8 +4359,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Baskula klavo por trapasa reĝimo.\n"
-"Vidu http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4259,8 +4369,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Baskula klavo por celilsekva reĝimo.\n"
-"Vidu http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4269,8 +4379,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Baskula klavo por vidpunkta ĝisdatigo. Nur uzata por evoluigado.\n"
-"Vidu http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4279,8 +4389,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Baskula klavo por montri babilon.\n"
-"Vidu http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4299,8 +4409,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Baskula klavo por montri nebulon.\n"
-"Vidu http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4497,7 +4607,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 #, fuzzy
-msgid "Liquid sinking speed"
+msgid "Liquid sinking"
 msgstr "Rapideco de malsupreniro de likvo"
 
 #: src/settings_translation_file.cpp
@@ -4578,6 +4688,13 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid ""
 "Map generation attributes specific to Mapgen flat.\n"
+"'terrain' enables the generation of non-fractal terrain:\n"
+"ocean, islands and underground."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Map generation attributes specific to Mapgen flat.\n"
 "Occasional lakes and hills can be added to the flat world."
 msgstr ""
 
@@ -4589,7 +4706,7 @@ msgstr ""
 msgid ""
 "Map generation attributes specific to Mapgen v6.\n"
 "The 'snowbiomes' flag enables the new 5 biome system.\n"
-"When the new biome system is enabled jungles are automatically enabled and\n"
+"When the 'snowbiomes' flag is enabled jungles are automatically enabled and\n"
 "the 'jungles' flag is ignored."
 msgstr ""
 
@@ -4642,6 +4759,11 @@ msgstr "Parametroj specialaj por mondestigilo plata"
 #: src/settings_translation_file.cpp
 msgid "Mapgen Fractal"
 msgstr "Mondestigilo fraktala"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Mapgen Fractal specific flags"
+msgstr "Parametroj specialaj por mondestigilo plata"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen V5"
@@ -4722,6 +4844,12 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Maximum hotbar width"
 msgstr "Maksimuma larĝo de la fulmobreto"
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Maximum liquid resistence. Controls deceleration when entering liquid at\n"
+"high speed."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4925,20 +5053,15 @@ msgid "Mute sound"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Name of map generator to be used when creating a new world.\n"
 "Creating a world in the main menu will override this.\n"
-"Current stable mapgens:\n"
-"v5, v6, v7 (except floatlands), singlenode.\n"
-"'stable' means the terrain shape in an existing world will not be changed\n"
-"in the future. Note that biomes are defined by games and may still change."
+"Current mapgens in a highly unstable state:\n"
+"-    The optional floatlands of v7 (disabled by default)."
 msgstr ""
-"Nomo de mapestigilo uzota por krei novan mondon.\n"
-"Kreo de nova mondo en la ĉefmenuo transpasos ĉi tiun agordon.\n"
-"Nunaj stabilaj mapestigiloj estas:\n"
-"v5, v6, v7 (krom « floatlands »), singlenode.\n"
-"« Stabilaj » signifas, ke formo de tereno en jamaj mondoj ne ŝanĝiĝos\n"
-"ose. Klimatoj tamen povus ŝanĝiĝi, ĉar ilin difinas ludoj."
+"Nomo de map-estigilo uzota kreante novan mondon.\n"
+"Kreante mondon de ĉefmenuo oni transpasos ĉi tion."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4957,7 +5080,7 @@ msgid ""
 msgstr "Nomo de la servilo, montrota al ludantoj kaj en la listo de serviloj."
 
 #: src/settings_translation_file.cpp
-msgid "Near plane"
+msgid "Near clipping plane"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5012,16 +5135,18 @@ msgstr "Nombro da mondo-estigaj fadenoj"
 #: src/settings_translation_file.cpp
 msgid ""
 "Number of emerge threads to use.\n"
-"Empty or 0 value:\n"
+"WARNING: Currently there are multiple bugs that may cause crashes when\n"
+"'num_emerge_threads' is larger than 1. Until this warning is removed it is\n"
+"strongly recommended this value is set to the default '1'.\n"
+"Value 0:\n"
 "-    Automatic selection. The number of emerge threads will be\n"
 "-    'number of processors - 2', with a lower limit of 1.\n"
 "Any other value:\n"
 "-    Specifies the number of emerge threads, with a lower limit of 1.\n"
-"Warning: Increasing the number of emerge threads increases engine mapgen\n"
+"WARNING: Increasing the number of emerge threads increases engine mapgen\n"
 "speed, but this may harm game performance by interfering with other\n"
 "processes, especially in singleplayer and/or when running Lua code in\n"
-"'on_generated'.\n"
-"For many users the optimum setting may be '1'."
+"'on_generated'. For many users the optimum setting may be '1'."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5272,6 +5397,16 @@ msgid "Rightclick repetition interval"
 msgstr "Periodo inter ripetoj de dekstra klako"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "River channel depth"
+msgstr "Rivera profundo"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "River channel width"
+msgstr "Rivera profundo"
+
+#: src/settings_translation_file.cpp
 msgid "River depth"
 msgstr "Rivera profundo"
 
@@ -5283,6 +5418,11 @@ msgstr "Rivera bruo"
 #, fuzzy
 msgid "River size"
 msgstr "Rivera grandeco"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "River valley width"
+msgstr "Rivera profundo"
 
 #: src/settings_translation_file.cpp
 msgid "Rollback recording"
@@ -5588,6 +5728,10 @@ msgstr "Kaŝira klavo"
 #: src/settings_translation_file.cpp
 msgid "Sneaking speed"
 msgstr "Rapido de kaŝiro"
+
+#: src/settings_translation_file.cpp
+msgid "Sneaking speed, in nodes per second."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Sound"
@@ -6032,6 +6176,10 @@ msgid "Varies steepness of cliffs."
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "Vertical climbing speed, in nodes per second."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Vertical screen synchronization."
 msgstr ""
 
@@ -6081,8 +6229,16 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "Walking and flying speed, in nodes per second."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Walking speed"
 msgstr "Rapido de irado"
+
+#: src/settings_translation_file.cpp
+msgid "Walking, flying and climbing speed in fast mode, in nodes per second."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Water level"
@@ -6109,16 +6265,19 @@ msgid "Waving water"
 msgstr "Ondanta akvo"
 
 #: src/settings_translation_file.cpp
-msgid "Waving water height"
+#, fuzzy
+msgid "Waving water wave height"
 msgstr "Alto de ondanta akvo"
 
 #: src/settings_translation_file.cpp
-msgid "Waving water length"
-msgstr "Longo de ondanta akvo"
+#, fuzzy
+msgid "Waving water wave speed"
+msgstr "Rapido de ondanta akvo"
 
 #: src/settings_translation_file.cpp
-msgid "Waving water speed"
-msgstr "Rapido de ondanta akvo"
+#, fuzzy
+msgid "Waving water wavelength"
+msgstr "Longo de ondanta akvo"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6241,11 +6400,6 @@ msgid "Y of upper limit of large caves."
 msgstr "Y de supera limo de grandaj kavernoj."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
-msgid "Y of upper limit of lava in large caves."
-msgstr "Y de supera limo de grandaj kvazaŭ-hazardaj kavernoj."
-
-#: src/settings_translation_file.cpp
 msgid "Y-distance over which caverns expand to full size."
 msgstr ""
 
@@ -6289,9 +6443,327 @@ msgstr ""
 msgid "cURL timeout"
 msgstr "cURL tempolimo"
 
+#~ msgid "Advanced Settings"
+#~ msgstr "Pliaj Agordoj"
+
 #, fuzzy
-#~ msgid "Content Store"
-#~ msgstr "Fermi"
+#~ msgid "Preload inventory textures"
+#~ msgstr "Ŝargi teksturojn…"
+
+#~ msgid "Scaling factor applied to menu elements: "
+#~ msgstr "Skala faktoro por menuoj "
+
+#~ msgid "Touch free target"
+#~ msgstr "Sentuŝa celo"
+
+#~ msgid "Restart minetest for driver change to take effect"
+#~ msgstr "Restartigu Minetest-on por efikigi pelilan ŝanĝon"
+
+#, fuzzy
+#~ msgid "If enabled, "
+#~ msgstr "ŝaltita"
+
+#~ msgid "No!!!"
+#~ msgstr "Ne!!!"
+
+#~ msgid "Public Serverlist"
+#~ msgstr "Publika servilolisto"
+
+#~ msgid "No of course not!"
+#~ msgstr "Ne, memkompreneble!"
+
+#, fuzzy
+#~ msgid "Useful for mod developers."
+#~ msgstr "Eksaj kernprogramistoj"
+
+#, fuzzy
+#~ msgid "Mapgen v7 cave width"
+#~ msgstr "Mondogenerilo"
+
+#, fuzzy
+#~ msgid "Mapgen v5 cave width"
+#~ msgstr "Mondogenerilo"
+
+#, fuzzy
+#~ msgid "Mapgen fractal slice w"
+#~ msgstr "Mondogenerilo"
+
+#, fuzzy
+#~ msgid "Mapgen fractal scale"
+#~ msgstr "Mondogenerilo"
+
+#, fuzzy
+#~ msgid "Mapgen fractal offset"
+#~ msgstr "Mondogenerilo"
+
+#, fuzzy
+#~ msgid "Mapgen fractal iterations"
+#~ msgstr "Paralaksa Okludo"
+
+#, fuzzy
+#~ msgid "Mapgen fractal fractal"
+#~ msgstr "Mondogenerilo"
+
+#, fuzzy
+#~ msgid "Mapgen fractal cave width"
+#~ msgstr "Mondogenerilo"
+
+#, fuzzy
+#~ msgid "Mapgen flat cave width"
+#~ msgstr "Mondogenerilo"
+
+#~ msgid "Plus"
+#~ msgstr "Pluso"
+
+#~ msgid "Period"
+#~ msgstr "Punkto"
+
+#~ msgid "PA1"
+#~ msgstr "PA1"
+
+#~ msgid "Minus"
+#~ msgstr "Minuso"
+
+#~ msgid "Kanji"
+#~ msgstr "Kanji"
+
+#~ msgid "Kana"
+#~ msgstr "Kana"
+
+#~ msgid "Junja"
+#~ msgstr "Junja"
+
+#~ msgid "Final"
+#~ msgstr "Finalo"
+
+#~ msgid "ExSel"
+#~ msgstr "ExSel"
+
+#~ msgid "CrSel"
+#~ msgstr "CrSel"
+
+#~ msgid "Comma"
+#~ msgstr "Komo"
+
+#~ msgid "Capital"
+#~ msgstr "Fiksiĝema klavo"
+
+#~ msgid "Attn"
+#~ msgstr "Attn"
+
+#~ msgid "Hide mp content"
+#~ msgstr "Kaŝu modifarojn"
+
+#, fuzzy
+#~ msgid "Water Features"
+#~ msgstr "Aĵaj teksturoj…"
+
+#, fuzzy
+#~ msgid "Use key"
+#~ msgstr "premi klavon"
+
+#~ msgid "Support older servers"
+#~ msgstr "Subteno por malnovaj serviloj"
+
+#~ msgid "River noise -- rivers occur close to zero"
+#~ msgstr "Rivera bruo -- riveroj okazas preskaŭ neniam"
+
+#~ msgid "Maximum simultaneous block sends total"
+#~ msgstr "Maksimumaj samtempaj sendoj de mondopecoj entute"
+
+#~ msgid "Maximum number of blocks that are simultaneously sent per client."
+#~ msgstr "Maksimuma nombro da mondopecoj sendataj po unu kliento."
+
+#, fuzzy
+#~ msgid "Main menu mod manager"
+#~ msgstr "Ĉefmenuo"
+
+#~ msgid "Lava Features"
+#~ msgstr "Atributoj de lafo"
+
+#~ msgid ""
+#~ "Key for opening the chat console.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Klavo por malfermi la babilan konzolon.\n"
+#~ "Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Iterations of the recursive function.\n"
+#~ "Controls the amount of fine detail."
+#~ msgstr ""
+#~ "Ripetoj de la rikura funkcio.\n"
+#~ "Regas la kvanton da detaletoj."
+
+#, fuzzy
+#~ msgid "Inventory image hack"
+#~ msgstr "Inventaro"
+
+#~ msgid "If enabled, show the server status message on player connection."
+#~ msgstr "Montras al ludantoj konektitaj mesaĝon pri stato de la servilo."
+
+#~ msgid "General"
+#~ msgstr "Ĝenerala"
+
+#~ msgid ""
+#~ "From how far clients know about objects, stated in mapblocks (16 nodes)."
+#~ msgstr ""
+#~ "De kiu distanco klientoj scias pri objektoj, mapbloke (po 16 monderoj)."
+
+#~ msgid ""
+#~ "Field of view while zooming in degrees.\n"
+#~ "This requires the \"zoom\" privilege on the server."
+#~ msgstr ""
+#~ "Vidokampo zomante en gradoj.\n"
+#~ "Ĉi tio postulas la rajton «zomi» en la servilo."
+
+#~ msgid "Field of view for zoom"
+#~ msgstr "Vidokampo zome"
+
+#~ msgid "Enables view bobbing when walking."
+#~ msgstr "Ŝaltas balanciĝon dum irado."
+
+#~ msgid "Enable view bobbing"
+#~ msgstr "Ŝalti vidan balancadon"
+
+#~ msgid "Depth below which you'll find massive caves."
+#~ msgstr "Profundo sub kiu troveblos grandegaj kavernoj."
+
+#~ msgid "Crouch speed"
+#~ msgstr "Singardira rapido"
+
+#~ msgid ""
+#~ "Creates unpredictable water features in caves.\n"
+#~ "These can make mining difficult. Zero disables them. (0-10)"
+#~ msgstr ""
+#~ "Kreas neantaŭvideblaj akvejoj en kavernoj.\n"
+#~ "Tiuj povas malfaciligi fosadon. Nulo ilin malpermesas. (0-10)"
+
+#~ msgid ""
+#~ "Creates unpredictable lava features in caves.\n"
+#~ "These can make mining difficult. Zero disables them. (0-10)"
+#~ msgstr ""
+#~ "Kreas neantaŭvideblaj lafejoj en kavernoj.\n"
+#~ "Tiuj povas malfaciligi fosadon. Nulo ilin malpermesas. (0-10)"
+
+#~ msgid "Continuous forward movement (only used for testing)."
+#~ msgstr "Senĉesa moviĝo antaŭen (nur por testado)."
+
+#~ msgid "Console key"
+#~ msgstr "Konzola klavo"
+
+#~ msgid "Cloud height"
+#~ msgstr "Alteco de nuboj"
+
+#~ msgid ""
+#~ "Announce to this serverlist.\n"
+#~ "If you want to announce your ipv6 address, use  serverlist_url = v6."
+#~ "servers.minetest.net."
+#~ msgstr ""
+#~ "Enlistigi en ĉi tiun liston de serviloj.\n"
+#~ "Se vi volas enlistigi vian IPv6 adreson, uzu  serverlist_url = v6.servers."
+#~ "minetest.net."
+
+#~ msgid ""
+#~ "Android systems only: Tries to create inventory textures from meshes\n"
+#~ "when no supported render was found."
+#~ msgstr ""
+#~ "Nur por Android: Provos krei objektujajn teksturojn de maŝaro,\n"
+#~ "ne trovinte alian kongruan bildon."
+
+#, fuzzy
+#~ msgid "Active Block Modifier interval"
+#~ msgstr "Aktivblokmodifila Intervalo"
+
+#~ msgid "Prior"
+#~ msgstr "Antaŭe"
+
+#~ msgid "Next"
+#~ msgstr "Sekvanto"
+
+#~ msgid "Use"
+#~ msgstr "Uzi"
+
+#~ msgid "Print stacks"
+#~ msgstr "Presi stakojn"
+
+#~ msgid "Volume changed to 100%"
+#~ msgstr "Laŭteco agorditas al 100%"
+
+#~ msgid "Volume changed to 0%"
+#~ msgstr "Laŭteco agorditas al 0%"
+
+#~ msgid "No information available"
+#~ msgstr "Neniu informoj disponeblas"
+
+#~ msgid "Normal Mapping"
+#~ msgstr "Normalmapado"
+
+#~ msgid "Play Online"
+#~ msgstr "Ludi enrete"
+
+#~ msgid "Uninstall selected modpack"
+#~ msgstr "Malinstali selektan modifaron"
+
+#~ msgid "Local Game"
+#~ msgstr "Loka ludo"
+
+#~ msgid "re-Install"
+#~ msgstr "Instali denove"
+
+#~ msgid "Unsorted"
+#~ msgstr "Neordigita"
+
+#~ msgid "Successfully installed:"
+#~ msgstr "Instalis sukcese:"
+
+#~ msgid "Shortname:"
+#~ msgstr "Konciza nomo:"
+
+#~ msgid "Rating"
+#~ msgstr "Takso"
+
+#~ msgid "Page $1 of $2"
+#~ msgstr "Paĝo $1 de $2"
+
+#~ msgid "Subgame Mods"
+#~ msgstr "Subludaj modifoj"
+
+#~ msgid "Select path"
+#~ msgstr "Elektu indikon"
+
+#~ msgid "Possible values are: "
+#~ msgstr "Eblaj valoroj estas: "
+
+#~ msgid "Please enter a comma seperated list of flags."
+#~ msgstr "Bonvolu enigi diskoman liston de parametroj."
+
+#~ msgid "Optionally the lacunarity can be appended with a leading comma."
+#~ msgstr "Mankopleneco aldoneblas kun antaŭa komo."
+
+#~ msgid ""
+#~ "Format: <offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>), <seed>, "
+#~ "<octaves>, <persistence>"
+#~ msgstr ""
+#~ "Formato: <deŝovo>, <skalo>, (<sternoX>, <sternoY>, <sternoZ>), "
+#~ "<mondfonto>, <oktavoj>, <daŭreco>"
+
+#~ msgid "Format is 3 numbers separated by commas and inside brackets."
+#~ msgstr "Formato estas 3 diskomaj nombroj inter krampoj."
+
+#~ msgid "\"$1\" is not a valid flag."
+#~ msgstr "\"$1\" ne estas valida parametro."
+
+#~ msgid "No worldname given or no game selected"
+#~ msgstr "Neniu mondnomo donitis aŭ neniu ludon elektitis"
+
+#~ msgid "Enable MP"
+#~ msgstr "Ŝaltu modifaron"
+
+#~ msgid "Disable MP"
+#~ msgstr "Malŝaltu modifaron"
 
 #, fuzzy
 #~ msgid ""
@@ -6307,331 +6779,35 @@ msgstr "cURL tempolimo"
 #~ "la mapo,\n"
 #~ "kontraŭ iom cimaj kavernoj."
 
-#~ msgid "Disable MP"
-#~ msgstr "Malŝaltu modifaron"
-
-#~ msgid "Enable MP"
-#~ msgstr "Ŝaltu modifaron"
-
-#~ msgid "No worldname given or no game selected"
-#~ msgstr "Neniu mondnomo donitis aŭ neniu ludon elektitis"
-
-#~ msgid "\"$1\" is not a valid flag."
-#~ msgstr "\"$1\" ne estas valida parametro."
-
-#~ msgid "Format is 3 numbers separated by commas and inside brackets."
-#~ msgstr "Formato estas 3 diskomaj nombroj inter krampoj."
-
-#~ msgid ""
-#~ "Format: <offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>), <seed>, "
-#~ "<octaves>, <persistence>"
-#~ msgstr ""
-#~ "Formato: <deŝovo>, <skalo>, (<sternoX>, <sternoY>, <sternoZ>), "
-#~ "<mondfonto>, <oktavoj>, <daŭreco>"
-
-#~ msgid "Optionally the lacunarity can be appended with a leading comma."
-#~ msgstr "Mankopleneco aldoneblas kun antaŭa komo."
-
-#~ msgid "Please enter a comma seperated list of flags."
-#~ msgstr "Bonvolu enigi diskoman liston de parametroj."
-
-#~ msgid "Possible values are: "
-#~ msgstr "Eblaj valoroj estas: "
-
-#~ msgid "Select path"
-#~ msgstr "Elektu indikon"
-
-#~ msgid "Subgame Mods"
-#~ msgstr "Subludaj modifoj"
-
-#~ msgid "Page $1 of $2"
-#~ msgstr "Paĝo $1 de $2"
-
-#~ msgid "Rating"
-#~ msgstr "Takso"
-
-#~ msgid "Shortname:"
-#~ msgstr "Konciza nomo:"
-
-#~ msgid "Successfully installed:"
-#~ msgstr "Instalis sukcese:"
-
-#~ msgid "Unsorted"
-#~ msgstr "Neordigita"
-
-#~ msgid "re-Install"
-#~ msgstr "Instali denove"
-
-#~ msgid "Local Game"
-#~ msgstr "Loka ludo"
-
-#~ msgid "Uninstall selected modpack"
-#~ msgstr "Malinstali selektan modifaron"
-
-#~ msgid "Play Online"
-#~ msgstr "Ludi enrete"
-
-#~ msgid "Normal Mapping"
-#~ msgstr "Normalmapado"
-
-#~ msgid "No information available"
-#~ msgstr "Neniu informoj disponeblas"
-
-#~ msgid "Volume changed to 0%"
-#~ msgstr "Laŭteco agorditas al 0%"
-
-#~ msgid "Volume changed to 100%"
-#~ msgstr "Laŭteco agorditas al 100%"
-
-#~ msgid "Print stacks"
-#~ msgstr "Presi stakojn"
-
-#~ msgid "Use"
-#~ msgstr "Uzi"
-
-#~ msgid "Next"
-#~ msgstr "Sekvanto"
-
-#~ msgid "Prior"
-#~ msgstr "Antaŭe"
+#, fuzzy
+#~ msgid "Content Store"
+#~ msgstr "Fermi"
 
 #, fuzzy
-#~ msgid "Active Block Modifier interval"
-#~ msgstr "Aktivblokmodifila Intervalo"
-
-#~ msgid ""
-#~ "Android systems only: Tries to create inventory textures from meshes\n"
-#~ "when no supported render was found."
-#~ msgstr ""
-#~ "Nur por Android: Provos krei objektujajn teksturojn de maŝaro,\n"
-#~ "ne trovinte alian kongruan bildon."
-
-#~ msgid ""
-#~ "Announce to this serverlist.\n"
-#~ "If you want to announce your ipv6 address, use  serverlist_url = v6."
-#~ "servers.minetest.net."
-#~ msgstr ""
-#~ "Enlistigi en ĉi tiun liston de serviloj.\n"
-#~ "Se vi volas enlistigi vian IPv6 adreson, uzu  serverlist_url = v6.servers."
-#~ "minetest.net."
-
-#~ msgid "Cloud height"
-#~ msgstr "Alteco de nuboj"
-
-#~ msgid "Console key"
-#~ msgstr "Konzola klavo"
-
-#~ msgid "Continuous forward movement (only used for testing)."
-#~ msgstr "Senĉesa moviĝo antaŭen (nur por testado)."
-
-#~ msgid ""
-#~ "Creates unpredictable lava features in caves.\n"
-#~ "These can make mining difficult. Zero disables them. (0-10)"
-#~ msgstr ""
-#~ "Kreas neantaŭvideblaj lafejoj en kavernoj.\n"
-#~ "Tiuj povas malfaciligi fosadon. Nulo ilin malpermesas. (0-10)"
-
-#~ msgid ""
-#~ "Creates unpredictable water features in caves.\n"
-#~ "These can make mining difficult. Zero disables them. (0-10)"
-#~ msgstr ""
-#~ "Kreas neantaŭvideblaj akvejoj en kavernoj.\n"
-#~ "Tiuj povas malfaciligi fosadon. Nulo ilin malpermesas. (0-10)"
-
-#~ msgid "Crouch speed"
-#~ msgstr "Singardira rapido"
-
-#~ msgid "Depth below which you'll find massive caves."
-#~ msgstr "Profundo sub kiu troveblos grandegaj kavernoj."
-
-#~ msgid "Enable view bobbing"
-#~ msgstr "Ŝalti vidan balancadon"
-
-#~ msgid "Enables view bobbing when walking."
-#~ msgstr "Ŝaltas balanciĝon dum irado."
-
-#~ msgid "Field of view for zoom"
-#~ msgstr "Vidokampo zome"
-
-#~ msgid ""
-#~ "Field of view while zooming in degrees.\n"
-#~ "This requires the \"zoom\" privilege on the server."
-#~ msgstr ""
-#~ "Vidokampo zomante en gradoj.\n"
-#~ "Ĉi tio postulas la rajton «zomi» en la servilo."
-
-#~ msgid ""
-#~ "From how far clients know about objects, stated in mapblocks (16 nodes)."
-#~ msgstr ""
-#~ "De kiu distanco klientoj scias pri objektoj, mapbloke (po 16 monderoj)."
-
-#~ msgid "General"
-#~ msgstr "Ĝenerala"
-
-#~ msgid "If enabled, show the server status message on player connection."
-#~ msgstr "Montras al ludantoj konektitaj mesaĝon pri stato de la servilo."
-
-#, fuzzy
-#~ msgid "Inventory image hack"
-#~ msgstr "Inventaro"
-
-#~ msgid ""
-#~ "Iterations of the recursive function.\n"
-#~ "Controls the amount of fine detail."
-#~ msgstr ""
-#~ "Ripetoj de la rikura funkcio.\n"
-#~ "Regas la kvanton da detaletoj."
-
-#~ msgid ""
-#~ "Key for opening the chat console.\n"
-#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
-#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
-#~ msgstr ""
-#~ "Klavo por malfermi la babilan konzolon.\n"
-#~ "Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
-#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#~ msgid "Lava Features"
-#~ msgstr "Atributoj de lafo"
-
-#, fuzzy
-#~ msgid "Main menu mod manager"
-#~ msgstr "Ĉefmenuo"
-
-#~ msgid "Maximum number of blocks that are simultaneously sent per client."
-#~ msgstr "Maksimuma nombro da mondopecoj sendataj po unu kliento."
-
-#~ msgid "Maximum simultaneous block sends total"
-#~ msgstr "Maksimumaj samtempaj sendoj de mondopecoj entute"
+#~ msgid "Y of upper limit of lava in large caves."
+#~ msgstr "Y de supera limo de grandaj kvazaŭ-hazardaj kavernoj."
 
 #~ msgid ""
 #~ "Name of map generator to be used when creating a new world.\n"
-#~ "Creating a world in the main menu will override this."
+#~ "Creating a world in the main menu will override this.\n"
+#~ "Current stable mapgens:\n"
+#~ "v5, v6, v7 (except floatlands), singlenode.\n"
+#~ "'stable' means the terrain shape in an existing world will not be "
+#~ "changed\n"
+#~ "in the future. Note that biomes are defined by games and may still change."
 #~ msgstr ""
-#~ "Nomo de map-estigilo uzota kreante novan mondon.\n"
-#~ "Kreante mondon de ĉefmenuo oni transpasos ĉi tion."
+#~ "Nomo de mapestigilo uzota por krei novan mondon.\n"
+#~ "Kreo de nova mondo en la ĉefmenuo transpasos ĉi tiun agordon.\n"
+#~ "Nunaj stabilaj mapestigiloj estas:\n"
+#~ "v5, v6, v7 (krom « floatlands »), singlenode.\n"
+#~ "« Stabilaj » signifas, ke formo de tereno en jamaj mondoj ne ŝanĝiĝos\n"
+#~ "ose. Klimatoj tamen povus ŝanĝiĝi, ĉar ilin difinas ludoj."
 
-#~ msgid "River noise -- rivers occur close to zero"
-#~ msgstr "Rivera bruo -- riveroj okazas preskaŭ neniam"
+#~ msgid "Toggle Cinematic"
+#~ msgstr "Baskuligi glitan vidpunkton"
 
-#~ msgid "Support older servers"
-#~ msgstr "Subteno por malnovaj serviloj"
+#~ msgid "Waving Water"
+#~ msgstr "Ondanta akvo"
 
-#, fuzzy
-#~ msgid "Use key"
-#~ msgstr "premi klavon"
-
-#, fuzzy
-#~ msgid "Water Features"
-#~ msgstr "Aĵaj teksturoj…"
-
-#~ msgid "Hide mp content"
-#~ msgstr "Kaŝu modifarojn"
-
-#~ msgid "Attn"
-#~ msgstr "Attn"
-
-#~ msgid "Capital"
-#~ msgstr "Fiksiĝema klavo"
-
-#~ msgid "Comma"
-#~ msgstr "Komo"
-
-#~ msgid "CrSel"
-#~ msgstr "CrSel"
-
-#~ msgid "ExSel"
-#~ msgstr "ExSel"
-
-#~ msgid "Final"
-#~ msgstr "Finalo"
-
-#~ msgid "Junja"
-#~ msgstr "Junja"
-
-#~ msgid "Kana"
-#~ msgstr "Kana"
-
-#~ msgid "Kanji"
-#~ msgstr "Kanji"
-
-#~ msgid "Minus"
-#~ msgstr "Minuso"
-
-#~ msgid "PA1"
-#~ msgstr "PA1"
-
-#~ msgid "Period"
-#~ msgstr "Punkto"
-
-#~ msgid "Plus"
-#~ msgstr "Pluso"
-
-#, fuzzy
-#~ msgid "Mapgen flat cave width"
-#~ msgstr "Mondogenerilo"
-
-#, fuzzy
-#~ msgid "Mapgen fractal cave width"
-#~ msgstr "Mondogenerilo"
-
-#, fuzzy
-#~ msgid "Mapgen fractal fractal"
-#~ msgstr "Mondogenerilo"
-
-#, fuzzy
-#~ msgid "Mapgen fractal iterations"
-#~ msgstr "Paralaksa Okludo"
-
-#, fuzzy
-#~ msgid "Mapgen fractal offset"
-#~ msgstr "Mondogenerilo"
-
-#, fuzzy
-#~ msgid "Mapgen fractal scale"
-#~ msgstr "Mondogenerilo"
-
-#, fuzzy
-#~ msgid "Mapgen fractal slice w"
-#~ msgstr "Mondogenerilo"
-
-#, fuzzy
-#~ msgid "Mapgen v5 cave width"
-#~ msgstr "Mondogenerilo"
-
-#, fuzzy
-#~ msgid "Mapgen v7 cave width"
-#~ msgstr "Mondogenerilo"
-
-#, fuzzy
-#~ msgid "Useful for mod developers."
-#~ msgstr "Eksaj kernprogramistoj"
-
-#~ msgid "No of course not!"
-#~ msgstr "Ne, memkompreneble!"
-
-#~ msgid "Public Serverlist"
-#~ msgstr "Publika servilolisto"
-
-#~ msgid "No!!!"
-#~ msgstr "Ne!!!"
-
-#, fuzzy
-#~ msgid "If enabled, "
-#~ msgstr "ŝaltita"
-
-#~ msgid "Restart minetest for driver change to take effect"
-#~ msgstr "Restartigu Minetest-on por efikigi pelilan ŝanĝon"
-
-#~ msgid "Touch free target"
-#~ msgstr "Sentuŝa celo"
-
-#~ msgid "Scaling factor applied to menu elements: "
-#~ msgstr "Skala faktoro por menuoj "
-
-#, fuzzy
-#~ msgid "Preload inventory textures"
-#~ msgstr "Ŝargi teksturojn…"
-
-#~ msgid "Advanced Settings"
-#~ msgstr "Pliaj Agordoj"
+#~ msgid "Select Package File:"
+#~ msgstr "Elekti pakaĵan dosieron:"

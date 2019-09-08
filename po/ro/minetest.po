@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-02-24 18:43+0100\n"
+"POT-Creation-Date: 2019-09-08 09:20+0200\n"
 "PO-Revision-Date: 2019-01-24 00:05+0000\n"
 "Last-Translator: Nore <nore@mesecons.net>\n"
 "Language-Team: Romanian <https://hosted.weblate.org/projects/minetest/"
@@ -26,7 +26,7 @@ msgstr "Ai murit."
 
 #: builtin/fstk/ui.lua
 #, fuzzy
-msgid "An error occurred in a Lua script, such as a mod:"
+msgid "An error occurred in a Lua script:"
 msgstr "A apărut o eroare într-un script Lua, de exemplu un mod:"
 
 #: builtin/fstk/ui.lua
@@ -123,14 +123,27 @@ msgid "Mod:"
 msgstr "Mod:"
 
 #: builtin/mainmenu/dlg_config_world.lua
+msgid "No (optional) dependencies"
+msgstr ""
+
+#: builtin/mainmenu/dlg_config_world.lua
 #, fuzzy
 msgid "No game description provided."
 msgstr "Nici o descriere de mod disponibilă"
 
 #: builtin/mainmenu/dlg_config_world.lua
 #, fuzzy
+msgid "No hard dependencies"
+msgstr "Dependențe:"
+
+#: builtin/mainmenu/dlg_config_world.lua
+#, fuzzy
 msgid "No modpack description provided."
 msgstr "Nici o descriere de mod disponibilă"
+
+#: builtin/mainmenu/dlg_config_world.lua
+msgid "No optional dependencies"
+msgstr ""
 
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/tab_content.lua
 msgid "Optional dependencies:"
@@ -519,11 +532,6 @@ msgstr "Redenumiți"
 
 #: builtin/mainmenu/tab_content.lua
 #, fuzzy
-msgid "Select Package File:"
-msgstr "Selectează Fișierul Modului:"
-
-#: builtin/mainmenu/tab_content.lua
-#, fuzzy
 msgid "Uninstall Package"
 msgstr "Dezinstalaţi modul selectat"
 
@@ -828,12 +836,13 @@ msgid "Waving Leaves"
 msgstr "Frunze legănătoare"
 
 #: builtin/mainmenu/tab_settings.lua
-msgid "Waving Plants"
-msgstr "Plante legănătoare"
+#, fuzzy
+msgid "Waving Liquids"
+msgstr "Frunze legănătoare"
 
 #: builtin/mainmenu/tab_settings.lua
-msgid "Waving Water"
-msgstr "Apă ondulatoare"
+msgid "Waving Plants"
+msgstr "Plante legănătoare"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Yes"
@@ -1598,11 +1607,11 @@ msgstr ""
 #: src/gui/guiConfirmRegistration.cpp
 #, c-format
 msgid ""
-"You are about to join the server at %1$s with the name \"%2$s\" for the "
-"first time. If you proceed, a new account using your credentials will be "
-"created on this server.\n"
-"Please retype your password and click Register and Join to confirm account "
-"creation or click Cancel to abort."
+"You are about to join this server with the name \"%s\" for the first time.\n"
+"If you proceed, a new account using your credentials will be created on this "
+"server.\n"
+"Please retype your password and click 'Register and Join' to confirm account "
+"creation, or click 'Cancel' to abort."
 msgstr ""
 
 #: src/gui/guiFormSpecMenu.cpp
@@ -1727,11 +1736,6 @@ msgstr ""
 
 #: src/gui/guiKeyChangeMenu.cpp
 #, fuzzy
-msgid "Toggle Cinematic"
-msgstr "Intră pe rapid"
-
-#: src/gui/guiKeyChangeMenu.cpp
-#, fuzzy
 msgid "Toggle HUD"
 msgstr "Intră pe zbor"
 
@@ -1761,6 +1765,11 @@ msgstr "Intră pe noclip"
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Toggle noclip"
 msgstr "Intră pe noclip"
+
+#: src/gui/guiKeyChangeMenu.cpp
+#, fuzzy
+msgid "Toggle pitchmove"
+msgstr "Intră pe rapid"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "press key"
@@ -1870,6 +1879,10 @@ msgid "2D noise that controls the size/occurrence of step mountain ranges."
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "2D noise that locates the river valleys and channels."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 #, fuzzy
 msgid "3D clouds"
 msgstr "Nori 3D"
@@ -1898,6 +1911,10 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "3D noise for mountain overhangs, cliffs, etc. Usually small variations."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "3D noise that determines number of dungeons per mapchunk."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -1938,6 +1955,10 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Acceleration in air"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Acceleration of gravity, in nodes per second per second."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -2154,7 +2175,7 @@ msgstr "Mip Mapping"
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Camera near plane distance in nodes, between 0 and 0.5\n"
+"Camera 'near clipping plane' distance in nodes, between 0 and 0.5.\n"
 "Most users will not need to change this.\n"
 "Increasing can reduce artifacting on weaker GPUs.\n"
 "0.1 = Default, 0.25 = Good value for weaker tablets."
@@ -2239,6 +2260,11 @@ msgstr "Modifică tastele"
 #: src/settings_translation_file.cpp
 msgid "Chat message count limit"
 msgstr ""
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Chat message format"
+msgstr "Mapgen"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -2406,6 +2432,10 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "Controls sinking speed in liquid."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Controls steepness/depth of lake depressions."
 msgstr ""
 
@@ -2467,11 +2497,19 @@ msgid "Debug info toggle key"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "Debug log file size threshold"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Debug log level"
 msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Dec. volume key"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Decrease this to increase liquid resistence to movement."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -2557,7 +2595,19 @@ msgid "Defines the base ground level."
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "Defines the depth of the river channel."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Defines the maximal player transfer distance in blocks (0 = unlimited)."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Defines the width of the river channel."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Defines the width of the river valley."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -2583,6 +2633,12 @@ msgid "Deprecated Lua API handling"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Deprecated, define and locate cave liquids using biome definitions instead.\n"
+"Y of upper limit of lava in large caves."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Depth below which you'll find giant caverns."
 msgstr ""
 
@@ -2603,7 +2659,7 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid ""
 "Deserts occur when np_biome exceeds this value.\n"
-"When the new biome system is enabled, this is ignored."
+"When the 'snowbiomes' flag is enabled, this is ignored."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -2653,6 +2709,11 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Dungeon minimum Y"
 msgstr ""
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Dungeon noise"
+msgstr "Mapgen"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2972,6 +3033,13 @@ msgid "Font size"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Format of player chat messages. The following strings are valid "
+"placeholders:\n"
+"@name, @message, @timestamp (optional)"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Format of screenshots."
 msgstr ""
 
@@ -3200,6 +3268,24 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Homepage of server, to be displayed in the serverlist."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Horizontal acceleration in air when jumping or falling,\n"
+"in nodes per second per second."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Horizontal and vertical acceleration in fast mode,\n"
+"in nodes per second per second."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Horizontal and vertical acceleration on ground or when climbing,\n"
+"in nodes per second per second."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3453,6 +3539,14 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid ""
+"If the file size of debug.txt exceeds the number of megabytes specified in\n"
+"this setting when it is opened, the file is moved to debug.txt.1,\n"
+"deleting an older debug.txt.1 if it exists.\n"
+"debug.txt is only moved if this setting is positive."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "If this is set, players will always (re)spawn at the given position."
 msgstr ""
 
@@ -3481,6 +3575,10 @@ msgstr ""
 #, fuzzy
 msgid "Inc. volume key"
 msgstr "Consloă"
+
+#: src/settings_translation_file.cpp
+msgid "Initial vertical speed when jumping, in nodes per second."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4253,7 +4351,7 @@ msgid "Liquid queue purge time"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Liquid sinking speed"
+msgid "Liquid sinking"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -4327,6 +4425,13 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid ""
 "Map generation attributes specific to Mapgen flat.\n"
+"'terrain' enables the generation of non-fractal terrain:\n"
+"ocean, islands and underground."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Map generation attributes specific to Mapgen flat.\n"
 "Occasional lakes and hills can be added to the flat world."
 msgstr ""
 
@@ -4338,7 +4443,7 @@ msgstr ""
 msgid ""
 "Map generation attributes specific to Mapgen v6.\n"
 "The 'snowbiomes' flag enables the new 5 biome system.\n"
-"When the new biome system is enabled jungles are automatically enabled and\n"
+"When the 'snowbiomes' flag is enabled jungles are automatically enabled and\n"
 "the 'jungles' flag is ignored."
 msgstr ""
 
@@ -4395,6 +4500,11 @@ msgstr "Mapgen"
 #: src/settings_translation_file.cpp
 #, fuzzy
 msgid "Mapgen Fractal"
+msgstr "Mapgen"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Mapgen Fractal specific flags"
 msgstr "Mapgen"
 
 #: src/settings_translation_file.cpp
@@ -4486,6 +4596,12 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Maximum hotbar width"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Maximum liquid resistence. Controls deceleration when entering liquid at\n"
+"high speed."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -4677,10 +4793,8 @@ msgstr ""
 msgid ""
 "Name of map generator to be used when creating a new world.\n"
 "Creating a world in the main menu will override this.\n"
-"Current stable mapgens:\n"
-"v5, v6, v7 (except floatlands), singlenode.\n"
-"'stable' means the terrain shape in an existing world will not be changed\n"
-"in the future. Note that biomes are defined by games and may still change."
+"Current mapgens in a highly unstable state:\n"
+"-    The optional floatlands of v7 (disabled by default)."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -4696,7 +4810,7 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Near plane"
+msgid "Near clipping plane"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -4748,16 +4862,18 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid ""
 "Number of emerge threads to use.\n"
-"Empty or 0 value:\n"
+"WARNING: Currently there are multiple bugs that may cause crashes when\n"
+"'num_emerge_threads' is larger than 1. Until this warning is removed it is\n"
+"strongly recommended this value is set to the default '1'.\n"
+"Value 0:\n"
 "-    Automatic selection. The number of emerge threads will be\n"
 "-    'number of processors - 2', with a lower limit of 1.\n"
 "Any other value:\n"
 "-    Specifies the number of emerge threads, with a lower limit of 1.\n"
-"Warning: Increasing the number of emerge threads increases engine mapgen\n"
+"WARNING: Increasing the number of emerge threads increases engine mapgen\n"
 "speed, but this may harm game performance by interfering with other\n"
 "processes, especially in singleplayer and/or when running Lua code in\n"
-"'on_generated'.\n"
-"For many users the optimum setting may be '1'."
+"'on_generated'. For many users the optimum setting may be '1'."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5000,6 +5116,14 @@ msgid "Rightclick repetition interval"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "River channel depth"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "River channel width"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "River depth"
 msgstr ""
 
@@ -5010,6 +5134,10 @@ msgstr "Windows Dreapta"
 
 #: src/settings_translation_file.cpp
 msgid "River size"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "River valley width"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5307,6 +5435,10 @@ msgstr "Furișează"
 #, fuzzy
 msgid "Sneaking speed"
 msgstr "Furișează"
+
+#: src/settings_translation_file.cpp
+msgid "Sneaking speed, in nodes per second."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Sound"
@@ -5727,6 +5859,10 @@ msgid "Varies steepness of cliffs."
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "Vertical climbing speed, in nodes per second."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Vertical screen synchronization."
 msgstr ""
 
@@ -5777,7 +5913,15 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "Walking and flying speed, in nodes per second."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Walking speed"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Walking, flying and climbing speed in fast mode, in nodes per second."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5806,16 +5950,19 @@ msgid "Waving water"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Waving water height"
-msgstr ""
+#, fuzzy
+msgid "Waving water wave height"
+msgstr "Apă ondulatoare"
 
 #: src/settings_translation_file.cpp
-msgid "Waving water length"
-msgstr ""
+#, fuzzy
+msgid "Waving water wave speed"
+msgstr "Frunze legănătoare"
 
 #: src/settings_translation_file.cpp
-msgid "Waving water speed"
-msgstr ""
+#, fuzzy
+msgid "Waving water wavelength"
+msgstr "Apă ondulatoare"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5938,10 +6085,6 @@ msgid "Y of upper limit of large caves."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Y of upper limit of lava in large caves."
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid "Y-distance over which caverns expand to full size."
 msgstr ""
 
@@ -5985,157 +6128,91 @@ msgstr ""
 msgid "cURL timeout"
 msgstr ""
 
-#~ msgid "Disable MP"
-#~ msgstr "Dezactivează MP"
-
-#~ msgid "Enable MP"
-#~ msgstr "Activează MP"
-
-#~ msgid "No worldname given or no game selected"
-#~ msgstr "Jocul nu are nume, sau nu ai selectat un joc"
+#~ msgid "Advanced Settings"
+#~ msgstr "Setări avansate"
 
 #, fuzzy
-#~ msgid "Select path"
-#~ msgstr "Selectează"
-
-#~ msgid "Page $1 of $2"
-#~ msgstr "Pagina $1 din $2"
-
-#~ msgid "Rating"
-#~ msgstr "Notă"
+#~ msgid "Preload inventory textures"
+#~ msgstr "Se încarcă..."
 
 #, fuzzy
-#~ msgid "Shortname:"
-#~ msgstr "Numele lumii"
+#~ msgid "Downloading"
+#~ msgstr "Descarcă"
 
-#~ msgid "Successfully installed:"
-#~ msgstr "Instalat cu succes:"
+#~ msgid "Left click: Move all items, Right click: Move single item"
+#~ msgstr ""
+#~ "Click stânga: Mută toate obiectele, Click dreapta: Mută un singur obiect"
 
-#~ msgid "re-Install"
-#~ msgstr "Reinstalează"
+#~ msgid "Add mod:"
+#~ msgstr "Adăugaţi mod:"
 
-#, fuzzy
-#~ msgid "Local Game"
-#~ msgstr "Instalare locală"
+#~ msgid "MODS"
+#~ msgstr "MODURI"
 
-#~ msgid "Uninstall selected modpack"
-#~ msgstr "Dezinstalaţi Pachetul de moduri selectat"
+#~ msgid "TEXTURE PACKS"
+#~ msgstr "PACHETE DE TEXTURĂ"
 
-#~ msgid "Play Online"
-#~ msgstr "Joacă online"
+#~ msgid "SINGLE PLAYER"
+#~ msgstr "SINGLE PLAYER"
 
-#, fuzzy
-#~ msgid "Normal Mapping"
-#~ msgstr "Mip Mapping"
+#~ msgid "Finite Liquid"
+#~ msgstr "Lichid finit"
 
-#~ msgid "No information available"
-#~ msgstr "Nici o informație disponibilă"
+#~ msgid "Preload item visuals"
+#~ msgstr "Pre-încarcă imaginile obiectelor"
 
-#~ msgid "Print stacks"
-#~ msgstr "Salvează logurile"
+#~ msgid "SETTINGS"
+#~ msgstr "SETĂRI"
 
-#~ msgid "Use"
-#~ msgstr "Aleargă"
+#~ msgid "Password"
+#~ msgstr "Parolă"
 
-#~ msgid "Next"
-#~ msgstr "Următorul"
+#~ msgid "Name"
+#~ msgstr "Nume"
 
-#~ msgid "Prior"
-#~ msgstr "Anteriorul"
+#~ msgid "START SERVER"
+#~ msgstr "DESCHIDE SERVERUL"
 
-#~ msgid "Cloud height"
-#~ msgstr "înalţime nori"
+#~ msgid "CLIENT"
+#~ msgstr "CLIENT"
 
-#~ msgid "Console key"
-#~ msgstr "Tastă Consolă"
+#~ msgid "<<-- Add mod"
+#~ msgstr "<<-- Adaugă modul"
 
-#~ msgid "Continuous forward movement (only used for testing)."
-#~ msgstr "Mişcare continuă înainte (folosit doar pentru testare)."
+#~ msgid "Remove selected mod"
+#~ msgstr "Șterge modul selectat"
 
-#, fuzzy
-#~ msgid "Inventory image hack"
-#~ msgstr "Inventar"
+#~ msgid "EDIT GAME"
+#~ msgstr "MODIFICĂ JOCUL"
 
-#, fuzzy
-#~ msgid "Main menu mod manager"
-#~ msgstr "Meniul Principal"
+#~ msgid "new game"
+#~ msgstr "joc nou"
 
-#, fuzzy
-#~ msgid "Use key"
-#~ msgstr "apasă o tastă"
+#~ msgid "Mods:"
+#~ msgstr "Moduri:"
 
-#, fuzzy
-#~ msgid "Water Features"
-#~ msgstr "Texturi..."
+#~ msgid "GAMES"
+#~ msgstr "JOCURI"
 
-#~ msgid "Hide mp content"
-#~ msgstr "Ascunde conținutul mp"
-
-#~ msgid "Attn"
-#~ msgstr "Attn"
-
-#~ msgid "Capital"
-#~ msgstr "Capital"
-
-#~ msgid "Comma"
-#~ msgstr "Virgulă"
-
-#~ msgid "CrSel"
-#~ msgstr "CrSel"
-
-#~ msgid "ExSel"
-#~ msgstr "ExSel"
-
-#~ msgid "Final"
-#~ msgstr "Final"
-
-#~ msgid "Junja"
-#~ msgstr "Junja"
-
-#~ msgid "Kana"
-#~ msgstr "Kana"
-
-#~ msgid "Kanji"
-#~ msgstr "Kanji"
-
-#~ msgid "Minus"
-#~ msgstr "Minus"
-
-#~ msgid "PA1"
-#~ msgstr "PA1"
-
-#~ msgid "Period"
-#~ msgstr "Punct"
-
-#~ msgid "Plus"
-#~ msgstr "Plus"
+#~ msgid "Gamemgr: Unable to copy mod \"$1\" to game \"$2\""
+#~ msgstr "Gamemgr: Nu se poate copia modul \"$1\" în jocul \"$2\""
 
 #, fuzzy
-#~ msgid "Mapgen flat cave width"
-#~ msgstr "Mapgen"
+#~ msgid "If enabled, "
+#~ msgstr "activat"
+
+#~ msgid "Public Serverlist"
+#~ msgstr "Listă de servere publică"
+
+#~ msgid "No of course not!"
+#~ msgstr "Nu, sigur că nu!"
 
 #, fuzzy
-#~ msgid "Mapgen fractal cave width"
-#~ msgstr "Mapgen"
+#~ msgid "Useful for mod developers."
+#~ msgstr "Dezvoltatori de bază"
 
 #, fuzzy
-#~ msgid "Mapgen fractal fractal"
-#~ msgstr "Mapgen"
-
-#, fuzzy
-#~ msgid "Mapgen fractal iterations"
-#~ msgstr "Mapgen"
-
-#, fuzzy
-#~ msgid "Mapgen fractal offset"
-#~ msgstr "Mapgen"
-
-#, fuzzy
-#~ msgid "Mapgen fractal scale"
-#~ msgstr "Mapgen"
-
-#, fuzzy
-#~ msgid "Mapgen fractal slice w"
+#~ msgid "Mapgen v7 cave width"
 #~ msgstr "Mapgen"
 
 #, fuzzy
@@ -6143,88 +6220,162 @@ msgstr ""
 #~ msgstr "Mapgen"
 
 #, fuzzy
-#~ msgid "Mapgen v7 cave width"
+#~ msgid "Mapgen fractal slice w"
 #~ msgstr "Mapgen"
 
 #, fuzzy
-#~ msgid "Useful for mod developers."
-#~ msgstr "Dezvoltatori de bază"
-
-#~ msgid "No of course not!"
-#~ msgstr "Nu, sigur că nu!"
-
-#~ msgid "Public Serverlist"
-#~ msgstr "Listă de servere publică"
+#~ msgid "Mapgen fractal scale"
+#~ msgstr "Mapgen"
 
 #, fuzzy
-#~ msgid "If enabled, "
-#~ msgstr "activat"
-
-#~ msgid "Gamemgr: Unable to copy mod \"$1\" to game \"$2\""
-#~ msgstr "Gamemgr: Nu se poate copia modul \"$1\" în jocul \"$2\""
-
-#~ msgid "GAMES"
-#~ msgstr "JOCURI"
-
-#~ msgid "Mods:"
-#~ msgstr "Moduri:"
-
-#~ msgid "new game"
-#~ msgstr "joc nou"
-
-#~ msgid "EDIT GAME"
-#~ msgstr "MODIFICĂ JOCUL"
-
-#~ msgid "Remove selected mod"
-#~ msgstr "Șterge modul selectat"
-
-#~ msgid "<<-- Add mod"
-#~ msgstr "<<-- Adaugă modul"
-
-#~ msgid "CLIENT"
-#~ msgstr "CLIENT"
-
-#~ msgid "START SERVER"
-#~ msgstr "DESCHIDE SERVERUL"
-
-#~ msgid "Name"
-#~ msgstr "Nume"
-
-#~ msgid "Password"
-#~ msgstr "Parolă"
-
-#~ msgid "SETTINGS"
-#~ msgstr "SETĂRI"
-
-#~ msgid "Preload item visuals"
-#~ msgstr "Pre-încarcă imaginile obiectelor"
-
-#~ msgid "Finite Liquid"
-#~ msgstr "Lichid finit"
-
-#~ msgid "SINGLE PLAYER"
-#~ msgstr "SINGLE PLAYER"
-
-#~ msgid "TEXTURE PACKS"
-#~ msgstr "PACHETE DE TEXTURĂ"
-
-#~ msgid "MODS"
-#~ msgstr "MODURI"
-
-#~ msgid "Add mod:"
-#~ msgstr "Adăugaţi mod:"
-
-#~ msgid "Left click: Move all items, Right click: Move single item"
-#~ msgstr ""
-#~ "Click stânga: Mută toate obiectele, Click dreapta: Mută un singur obiect"
+#~ msgid "Mapgen fractal offset"
+#~ msgstr "Mapgen"
 
 #, fuzzy
-#~ msgid "Downloading"
-#~ msgstr "Descarcă"
+#~ msgid "Mapgen fractal iterations"
+#~ msgstr "Mapgen"
 
 #, fuzzy
-#~ msgid "Preload inventory textures"
-#~ msgstr "Se încarcă..."
+#~ msgid "Mapgen fractal fractal"
+#~ msgstr "Mapgen"
 
-#~ msgid "Advanced Settings"
-#~ msgstr "Setări avansate"
+#, fuzzy
+#~ msgid "Mapgen fractal cave width"
+#~ msgstr "Mapgen"
+
+#, fuzzy
+#~ msgid "Mapgen flat cave width"
+#~ msgstr "Mapgen"
+
+#~ msgid "Plus"
+#~ msgstr "Plus"
+
+#~ msgid "Period"
+#~ msgstr "Punct"
+
+#~ msgid "PA1"
+#~ msgstr "PA1"
+
+#~ msgid "Minus"
+#~ msgstr "Minus"
+
+#~ msgid "Kanji"
+#~ msgstr "Kanji"
+
+#~ msgid "Kana"
+#~ msgstr "Kana"
+
+#~ msgid "Junja"
+#~ msgstr "Junja"
+
+#~ msgid "Final"
+#~ msgstr "Final"
+
+#~ msgid "ExSel"
+#~ msgstr "ExSel"
+
+#~ msgid "CrSel"
+#~ msgstr "CrSel"
+
+#~ msgid "Comma"
+#~ msgstr "Virgulă"
+
+#~ msgid "Capital"
+#~ msgstr "Capital"
+
+#~ msgid "Attn"
+#~ msgstr "Attn"
+
+#~ msgid "Hide mp content"
+#~ msgstr "Ascunde conținutul mp"
+
+#, fuzzy
+#~ msgid "Water Features"
+#~ msgstr "Texturi..."
+
+#, fuzzy
+#~ msgid "Use key"
+#~ msgstr "apasă o tastă"
+
+#, fuzzy
+#~ msgid "Main menu mod manager"
+#~ msgstr "Meniul Principal"
+
+#, fuzzy
+#~ msgid "Inventory image hack"
+#~ msgstr "Inventar"
+
+#~ msgid "Continuous forward movement (only used for testing)."
+#~ msgstr "Mişcare continuă înainte (folosit doar pentru testare)."
+
+#~ msgid "Console key"
+#~ msgstr "Tastă Consolă"
+
+#~ msgid "Cloud height"
+#~ msgstr "înalţime nori"
+
+#~ msgid "Prior"
+#~ msgstr "Anteriorul"
+
+#~ msgid "Next"
+#~ msgstr "Următorul"
+
+#~ msgid "Use"
+#~ msgstr "Aleargă"
+
+#~ msgid "Print stacks"
+#~ msgstr "Salvează logurile"
+
+#~ msgid "No information available"
+#~ msgstr "Nici o informație disponibilă"
+
+#, fuzzy
+#~ msgid "Normal Mapping"
+#~ msgstr "Mip Mapping"
+
+#~ msgid "Play Online"
+#~ msgstr "Joacă online"
+
+#~ msgid "Uninstall selected modpack"
+#~ msgstr "Dezinstalaţi Pachetul de moduri selectat"
+
+#, fuzzy
+#~ msgid "Local Game"
+#~ msgstr "Instalare locală"
+
+#~ msgid "re-Install"
+#~ msgstr "Reinstalează"
+
+#~ msgid "Successfully installed:"
+#~ msgstr "Instalat cu succes:"
+
+#, fuzzy
+#~ msgid "Shortname:"
+#~ msgstr "Numele lumii"
+
+#~ msgid "Rating"
+#~ msgstr "Notă"
+
+#~ msgid "Page $1 of $2"
+#~ msgstr "Pagina $1 din $2"
+
+#, fuzzy
+#~ msgid "Select path"
+#~ msgstr "Selectează"
+
+#~ msgid "No worldname given or no game selected"
+#~ msgstr "Jocul nu are nume, sau nu ai selectat un joc"
+
+#~ msgid "Enable MP"
+#~ msgstr "Activează MP"
+
+#~ msgid "Disable MP"
+#~ msgstr "Dezactivează MP"
+
+#, fuzzy
+#~ msgid "Toggle Cinematic"
+#~ msgstr "Intră pe rapid"
+
+#, fuzzy
+#~ msgid "Select Package File:"
+#~ msgstr "Selectează Fișierul Modului:"
