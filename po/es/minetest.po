@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-02-24 18:43+0100\n"
-"PO-Revision-Date: 2019-02-23 11:18+0000\n"
-"Last-Translator: Diego Martínez <lkaezadl3@gmail.com>\n"
+"PO-Revision-Date: 2019-03-12 01:04+0000\n"
+"Last-Translator: Francisco T. <leviatan1@gmx.com>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/minetest/"
 "minetest/es/>\n"
 "Language: es\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 3.5-dev\n"
+"X-Generator: Weblate 3.5.1\n"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "Respawn"
@@ -2724,13 +2724,15 @@ msgstr "Habilitar entrada aleatoria (solo usar para pruebas)."
 
 #: src/settings_translation_file.cpp
 msgid "Enable register confirmation"
-msgstr ""
+msgstr "Habilitar confirmación de registro"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Enable register confirmation when connecting to server.\n"
 "If disabled, new account will be registered automatically."
 msgstr ""
+"Habilita la confirmación de registro cuando se conecte al servidor.\n"
+"Si está desactivada, la nueva cuenta se registrará automáticamente."
 
 #: src/settings_translation_file.cpp
 msgid ""

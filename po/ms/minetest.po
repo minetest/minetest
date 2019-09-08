@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-02-24 18:43+0100\n"
-"PO-Revision-Date: 2019-02-14 08:10+0000\n"
+"PO-Revision-Date: 2019-02-28 17:18+0000\n"
 "Last-Translator: Muhammad Nur Hidayat Yasuyoshi <mnh48mail@gmail.com>\n"
 "Language-Team: Malay <https://hosted.weblate.org/projects/minetest/minetest/"
 "ms/>\n"
@@ -900,12 +900,10 @@ msgid "- Server Name: "
 msgstr "- Nama Pelayan: "
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Automatic forward disabled"
 msgstr "Pergerakan automatik dilumpuhkan"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Automatic forward enabled"
 msgstr "Pergerakan automatik dibolehkan"
 
@@ -1799,19 +1797,16 @@ msgid "2D noise that controls the shape/size of step mountains."
 msgstr "Hingar 2D yang mengawal bentuk/saiz gunung curam."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "2D noise that controls the size/occurrence of ridged mountain ranges."
-msgstr "Hingar 2D yang mengawal saiz/kejadian jarak gunung rabung."
+msgstr "Hingar 2D yang mengawal saiz/kejadian gunung rabung berjarak."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "2D noise that controls the size/occurrence of rolling hills."
 msgstr "Hingar 2D yang mengawal saiz/kejadian bukit."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "2D noise that controls the size/occurrence of step mountain ranges."
-msgstr "Hingar 2D yang mengawal saiz/kejadian jarak gunung curam."
+msgstr "Hingar 2D yang mengawal saiz/kejadian gunung curam berjarak."
 
 #: src/settings_translation_file.cpp
 msgid "3D clouds"
@@ -2039,16 +2034,12 @@ msgstr ""
 "Nyatakan dalam unit blokpeta (16 nod)."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Automatic forward key"
 msgstr "Kekunci autopergerakan"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Automatically jump up single-node obstacles."
-msgstr ""
-"Lompat halangan satu-nod secara automatik.\n"
-"jenis: bool"
+msgstr "Lompat halangan satu-nod secara automatik."
 
 #: src/settings_translation_file.cpp
 msgid "Automatically report to the serverlist."
@@ -2199,7 +2190,6 @@ msgid "Center of light curve mid-boost."
 msgstr "Titik tengah tolakan-tengah lengkung cahaya."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Changes the main menu UI:\n"
 "-   Full:  Multiple singleplayer worlds, game choice, texture pack chooser, "
@@ -2209,12 +2199,11 @@ msgid ""
 "necessary for smaller screens."
 msgstr ""
 "Mengubah antara muka menu utama:\n"
-"-   Penuh:  Banyak dunia pemain perseorangan, pilihan permainan, pek tekstur "
-"dll.\n"
+"-   Penuh:  Banyak dunia pemain perseorangan, pilihan permainan, pek "
+"tekstur, dll.\n"
 "-   Mudah: Satu dunia pemain perseorangan, tiada pilihan permainan atau pek "
 "tekstur.\n"
-"Mungkin diperlukan untuk skrin yang lebih kecil.\n"
-"-   Auto: Mudah di Android, penuh di peranti lain."
+"Mungkin diperlukan untuk skrin yang lebih kecil."
 
 #: src/settings_translation_file.cpp
 msgid "Chat key"
@@ -2310,6 +2299,15 @@ msgid ""
 "These flags are independent from Minetest versions,\n"
 "so see a full list at https://content.minetest.net/help/content_flags/"
 msgstr ""
+"Senarai bendera yang ingin disembunyikan dalam repositori kandungan "
+"dipisahkan dengan koma.\n"
+"\"nonfree\" boleh digunakan untuk menyembunyikan pakej yang tidak layak "
+"digelar 'perisian bebas',\n"
+"seperti ditakrifkan oleh Yayasan Perisian Bebas (Free Software Foundation).\n"
+"Anda juga boleh menyatakan klasifikasi kandungan.\n"
+"Bendera-bendera ini tidak bersangkut paut dengan versi Minetest tertentu,\n"
+"jadi anda boleh lihat senarai penuh di https://content.minetest.net/help/"
+"content_flags/"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2358,12 +2356,11 @@ msgstr "Ketinggian konsol"
 
 #: src/settings_translation_file.cpp
 msgid "ContentDB Flag Blacklist"
-msgstr ""
+msgstr "Senarai Hitam Bendera ContentDB"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "ContentDB URL"
-msgstr "Kandungan"
+msgstr "URL ContentDB"
 
 #: src/settings_translation_file.cpp
 msgid "Continuous forward"
@@ -2699,13 +2696,15 @@ msgstr "Membolehkan input pengguna secara rawak (hanya untuk percubaan)."
 
 #: src/settings_translation_file.cpp
 msgid "Enable register confirmation"
-msgstr ""
+msgstr "Bolehkan pengesahan pendaftaran"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Enable register confirmation when connecting to server.\n"
 "If disabled, new account will be registered automatically."
 msgstr ""
+"Membolehkan pengesahan pendaftaran apabila menyambung kepada pelayan.\n"
+"Jika dilumpuhkan, akaun baru akan didaftarkan secara automatik."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3134,7 +3133,6 @@ msgid "Global callbacks"
 msgstr "Panggil balik sejagat"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Global map generation attributes.\n"
 "In Mapgen v6 the 'decorations' flag controls all decorations except trees\n"
@@ -3143,10 +3141,7 @@ msgstr ""
 "Atribut penjanaan peta sejagat.\n"
 "Dalam janapeta v6, bendera 'decorations' mengawal semua hiasan kecuali "
 "pokok\n"
-"dan rumput hutan, dalam janapeta lain pula bendera ini mengawal semua "
-"hiasan.\n"
-"Bendera yang tidak dibolehkan tidak diubah daripada nilai lalai.\n"
-"Bendera bermula dengan 'no' digunakan untuk betul-betul melumpuhkan mereka."
+"dan rumput hutan, dalam janapeta lain pula bendera ini mengawal semua hiasan."
 
 #: src/settings_translation_file.cpp
 msgid "Gradient of light curve at maximum light level."
@@ -3518,13 +3513,12 @@ msgstr ""
 "Hanya bolehkan tetapan ini jika anda tahu apa yang anda lakukan."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "If enabled, makes move directions relative to the player's pitch when flying "
 "or swimming."
 msgstr ""
-"Jika dibolehkan bersama-sama mod terbang, ia membuatkan arah pergerakan "
-"relatif dengan pic pemain."
+"Jika dibolehkan, ia membuatkan arah pergerakan relatif dengan pic pemain "
+"apabila terbang atau berenang."
 
 #: src/settings_translation_file.cpp
 msgid "If enabled, new players cannot join with an empty password."
@@ -4354,15 +4348,14 @@ msgstr ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Key for toggling pitch move mode.\n"
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
-"Kekunci untuk menogol mod terbang pic.\n"
-"Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
+"Kekunci untuk menogol mod pergerakan pic.\n"
+"Lihat http://irrlicht.sourceforge.net/docu/"
+"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4675,10 +4668,9 @@ msgstr "Direktori peta"
 
 #: src/settings_translation_file.cpp
 msgid "Map generation attributes specific to Mapgen Carpathian."
-msgstr ""
+msgstr "Atribut penjanaan peta khusus untuk janapeta Carpathian."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Map generation attributes specific to Mapgen Valleys.\n"
 "'altitude_chill': Reduces heat with altitude.\n"
@@ -4687,30 +4679,26 @@ msgid ""
 "to become shallower and occasionally dry.\n"
 "'altitude_dry': Reduces humidity with altitude."
 msgstr ""
-"Atribut penjanaan peta khusus untuk janapeta lembah (Valleys).\n"
+"Atribut penjanaan peta khusus untuk janapeta Valleys.\n"
 "'altitude_chill': Mengurangkan suhu seiring ketinggian.\n"
-"'humid_rivers': Menaikkan kelembapan sekitar sungai dan kolam air.\n"
-"'vary_river_depth': Jika dibolehkan, kelembapan rendah dan suhu tinggu\n"
+"'humid_rivers': Menaikkan kelembapan sekitar sungai.\n"
+"'vary_river_depth': Jika dibolehkan, kelembapan rendah dan suhu tinggi\n"
 "menyebabkan sungai menjadi cetek dan kadang-kala kering.\n"
 "'altitude_dry': Mengurangkan kelembapan seiring ketinggian."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Map generation attributes specific to Mapgen flat.\n"
 "Occasional lakes and hills can be added to the flat world."
 msgstr ""
 "Atribut penjanaan peta khusus untuk janapeta Flat.\n"
-"Kadang-kala tasik dan bukit boleh ditambah ke dunia rata.\n"
-"Bendera yang tidak dibolehkan tidak diubah daripada nilai lalai.\n"
-"Bendera bermula dengan 'no' digunakan untuk betul-betul melumpuhkan mereka."
+"Kadang-kala tasik dan bukit boleh ditambah ke dunia rata."
 
 #: src/settings_translation_file.cpp
 msgid "Map generation attributes specific to Mapgen v5."
-msgstr ""
+msgstr "Atribut penjanaan peta khusus untuk janapeta v5."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Map generation attributes specific to Mapgen v6.\n"
 "The 'snowbiomes' flag enables the new 5 biome system.\n"
@@ -4721,15 +4709,15 @@ msgstr ""
 "Bendera 'snowbiomes' membolehkan sistem 5 biom baharu.\n"
 "Apabila sistem biom baharu dibolehkan, hutan akan dibolehkan secara "
 "automatik dan\n"
-"bendera 'jungles' diabaikan.\n"
-"Bendera yang tidak dibolehkan tidak diubah daripada nilai lalai.\n"
-"Bendera bermula dengan 'no' digunakan untuk betul-betul melumpuhkan mereka."
+"bendera 'jungles' diabaikan."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Map generation attributes specific to Mapgen v7.\n"
 "'ridges' enables the rivers."
 msgstr ""
+"Atribut penjanaan peta khusus untuk Janapeta v7.\n"
+"'ridges' membolehkan sungai."
 
 #: src/settings_translation_file.cpp
 msgid "Map generation limit"
@@ -5059,7 +5047,6 @@ msgid "Mute sound"
 msgstr "Bisukan bunyi"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Name of map generator to be used when creating a new world.\n"
 "Creating a world in the main menu will override this.\n"
@@ -5071,7 +5058,7 @@ msgstr ""
 "Nama penjana peta untuk digunakan apabila mencipta dunia baru.\n"
 "Mencipta dunia dalam menu utama akan mengatasi tetapan ini.\n"
 "Janapeta stabil ketika ini:\n"
-"v5, v6, v7 (kecuali floatlands), flat, singlenode.\n"
+"v5, v6, v7 (kecuali floatlands), singlenode.\n"
 "'stabil' maksudnya bentuk rupa bumi dalam dunia sedia ada tidak akan berubah "
 "pada\n"
 "masa depan. Ambil perhatian bahawa biom ditakrifkan oleh permainan dan boleh "
@@ -5162,6 +5149,18 @@ msgid ""
 "'on_generated'.\n"
 "For many users the optimum setting may be '1'."
 msgstr ""
+"Jumlah jalur timbul untuk digunakan.\n"
+"Kosong atau nilai 0:\n"
+"-    Pemilihan automatik. Jumlah jalur timbul akan dikira berdasarkan\n"
+"-    'jumlah pemproses - 2', dengan had minimum 1.\n"
+"Sebarang nilai lain:\n"
+"-    Menetapkan jumlah jalur timbul, dengan had minimum 1.\n"
+"Amaran: Menaikkan jumlah jalur timbul meningkatkan kelajuan penjanaan\n"
+"peta enjin, tetapi ia boleh memberi kesan buruk kepada prestasi permainan\n"
+"dengan mengganggu proses-proses lain, terutamanya dalam mod pemain\n"
+"perseorangan dan/atau apabila menjalankan kod Lua dalam fungsi "
+"'on_generated'.\n"
+"Untuk kebanyakan pengguna, tetapan optimum ialah '1'."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5180,7 +5179,7 @@ msgstr "Jumlah lelaran oklusi paralaks."
 
 #: src/settings_translation_file.cpp
 msgid "Online Content Repository"
-msgstr ""
+msgstr "Repositori Kandungan Dalam Talian"
 
 #: src/settings_translation_file.cpp
 msgid "Opaque liquids"
@@ -5257,14 +5256,12 @@ msgid "Physics"
 msgstr "Ikut fizik"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Pitch move key"
-msgstr "Kekunci terbang pic"
+msgstr "Kekunci pergerakan pic"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Pitch move mode"
-msgstr "Mod pergerakan pic dibolehkan"
+msgstr "Mod pergerakan pic"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5392,7 +5389,6 @@ msgid "Report path"
 msgstr "Laluan laporan"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Restricts the access of certain client-side functions on servers.\n"
 "Combine the byteflags below to restrict client-side features, or set to 0\n"
@@ -5405,15 +5401,17 @@ msgid ""
 "csm_restriction_noderange)\n"
 "READ_PLAYERINFO: 32 (disable get_player_names call client-side)"
 msgstr ""
-"Hadkan akses sesetengah fungsi pihak klien di pelayan\n"
-"Gabungkan bendera bait di bawah ini untuk mengehadkan ciri-ciri pihak "
-"klien:\n"
-"LOAD_CLIENT_MODS: 1 (melumpuhkan pemuatan mods klien)\n"
+"Hadkan akses sesetengah fungsi pihak klien di pelayan.\n"
+"Gabungkan bendera bait di bawah ini untuk mengehadkan ciri-ciri pihak klien, "
+"atau\n"
+"tetapkan kepada 0 untuk tiada had:\n"
+"LOAD_CLIENT_MODS: 1 (melumpuhkan pemuatan mods pihak klien)\n"
 "CHAT_MESSAGES: 2 (melumpuhkan panggilan send_chat_message pihak klien)\n"
 "READ_ITEMDEFS: 4 (melumpuhkan panggilan get_item_def pihak klien)\n"
 "READ_NODEDEFS: 8 (melumpuhkan panggilan get_node_def pihak klien)\n"
 "LOOKUP_NODES_LIMIT: 16 (mengehadkan panggilan get_node pihak klien kepada\n"
-"csm_restriction_noderange)"
+"csm_restriction_noderange)\n"
+"READ_PLAYERINFO: 32 (melumpuhkan panggilan get_player_names pihak klien)"
 
 #: src/settings_translation_file.cpp
 msgid "Ridge mountain spread noise"
@@ -5937,7 +5935,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "The URL for the content repository"
-msgstr ""
+msgstr "URL untuk repositori kandungan"
 
 #: src/settings_translation_file.cpp
 msgid ""

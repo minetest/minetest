@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-02-14 07:46+0100\n"
-"PO-Revision-Date: 2019-02-20 07:24+0000\n"
-"Last-Translator: Fixer <artem.brz@gmail.com>\n"
+"PO-Revision-Date: 2019-07-03 09:00+0000\n"
+"Last-Translator: Valery <hmco@ukr.net>\n"
 "Language-Team: Ukrainian <https://hosted.weblate.org/projects/minetest/"
 "minetest/uk/>\n"
 "Language: uk\n"
@@ -13,7 +13,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<="
 "4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 3.5-dev\n"
+"X-Generator: Weblate 3.8-dev\n"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "Respawn"
@@ -368,7 +368,7 @@ msgstr "Значення має бути не більше $1."
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "X"
-msgstr ""
+msgstr "Х"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "X spread"

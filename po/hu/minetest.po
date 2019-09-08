@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-02-24 18:43+0100\n"
-"PO-Revision-Date: 2019-02-24 14:18+0000\n"
-"Last-Translator: Jatek R <rrjatek@gmail.com>\n"
+"PO-Revision-Date: 2019-07-17 18:04+0000\n"
+"Last-Translator: Hatlábú Farkas <hatlabufarkas@gmail.com>\n"
 "Language-Team: Hungarian <https://hosted.weblate.org/projects/minetest/"
 "minetest/hu/>\n"
 "Language: hu\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 3.5-dev\n"
+"X-Generator: Weblate 3.8-dev\n"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "Respawn"
@@ -27,7 +27,6 @@ msgid "An error occurred in a Lua script, such as a mod:"
 msgstr "Hiba történt egy Lua parancsfájlban (egy mod-ban):"
 
 #: builtin/fstk/ui.lua
-#, fuzzy
 msgid "An error occurred:"
 msgstr "Hiba történt:"
 
@@ -108,7 +107,6 @@ msgid "Enable modpack"
 msgstr "Modok engedélyezése"
 
 #: builtin/mainmenu/dlg_config_world.lua
-#, fuzzy
 msgid ""
 "Failed to enable mod \"$1\" as it contains disallowed characters. Only "
 "characters [a-z0-9_] are allowed."
@@ -213,7 +211,6 @@ msgid "Create"
 msgstr "Létrehozás"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Download a game, such as Minetest Game, from minetest.net"
 msgstr "Aljáték (mint a minetest_game) letöltése a minetest.net címről"
 
@@ -346,8 +343,9 @@ msgid "Restore Default"
 msgstr "Alapértelmezés visszaállítása"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua src/settings_translation_file.cpp
+#, fuzzy
 msgid "Scale"
-msgstr ""
+msgstr "mérték"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Select directory"
@@ -374,33 +372,35 @@ msgid "X"
 msgstr "X"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
+#, fuzzy
 msgid "X spread"
-msgstr ""
+msgstr "x méret"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Y"
 msgstr "Y"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
+#, fuzzy
 msgid "Y spread"
-msgstr ""
+msgstr "y méret"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Z"
 msgstr "Z"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
+#, fuzzy
 msgid "Z spread"
-msgstr ""
+msgstr "Z méret"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "absvalue"
 msgstr ""
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
-#, fuzzy
 msgid "defaults"
-msgstr "Alapértelmezett játék"
+msgstr "Alapértelmezettek"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "eased"
@@ -860,8 +860,9 @@ msgid "Provided world path doesn't exist: "
 msgstr "A megadott útvonalon nem létezik világ: "
 
 #: src/client/fontengine.cpp
+#, fuzzy
 msgid "needs_fallback_font"
-msgstr ""
+msgstr "tartalék szövegtipus kell"
 
 #: src/client/game.cpp
 msgid ""
@@ -904,7 +905,6 @@ msgid "- Server Name: "
 msgstr "- Kiszolgáló neve: "
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Automatic forward disabled"
 msgstr "automata elöre kikapcsolva"
 
@@ -2953,9 +2953,8 @@ msgid "Fog"
 msgstr "Köd"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Fog start"
-msgstr "Köd indítás"
+msgstr "Köd indító határa"
 
 #: src/settings_translation_file.cpp
 msgid "Fog toggle key"

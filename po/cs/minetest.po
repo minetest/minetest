@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-02-24 18:43+0100\n"
-"PO-Revision-Date: 2019-01-24 00:05+0000\n"
-"Last-Translator: Nore <nore@mesecons.net>\n"
+"PO-Revision-Date: 2019-07-15 12:00+0000\n"
+"Last-Translator: Roman Ondráček <ondracek.roman@centrum.cz>\n"
 "Language-Team: Czech <https://hosted.weblate.org/projects/minetest/minetest/"
 "cs/>\n"
 "Language: cs\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
-"X-Generator: Weblate 3.4\n"
+"X-Generator: Weblate 3.8-dev\n"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "Respawn"
@@ -29,7 +29,6 @@ msgid "An error occurred in a Lua script, such as a mod:"
 msgstr "Nastala chyba v Lua skriptu, což může být např. mod:"
 
 #: builtin/fstk/ui.lua
-#, fuzzy
 msgid "An error occurred:"
 msgstr "Nastala chyba:"
 
@@ -98,18 +97,16 @@ msgid "Disable all"
 msgstr "Vypnout vše"
 
 #: builtin/mainmenu/dlg_config_world.lua
-#, fuzzy
 msgid "Disable modpack"
-msgstr "Vypnuto"
+msgstr "Zakázat balíček modifikací"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Enable all"
 msgstr "Zapnout vše"
 
 #: builtin/mainmenu/dlg_config_world.lua
-#, fuzzy
 msgid "Enable modpack"
-msgstr "Přejmenovat balíček modů:"
+msgstr "Povolit balíček modifikací"
 
 #: builtin/mainmenu/dlg_config_world.lua
 #, fuzzy
@@ -153,7 +150,7 @@ msgstr "zapnuto"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "All packages"
-msgstr ""
+msgstr "Všechny balíčky"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Back"
@@ -165,14 +162,12 @@ msgid "Back to Main Menu"
 msgstr "Hlavní nabídka"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Downloading and installing $1, please wait..."
-msgstr "Stahuji $1, prosím čekejte..."
+msgstr "Stahuji a instaluji $1, prosím čekejte..."
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Failed to download $1"
-msgstr "Selhala instalace $1 do $2"
+msgstr "Selhalo stažení $1"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua
@@ -194,7 +189,7 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "No results"
-msgstr ""
+msgstr "Žádné výsledky"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua builtin/mainmenu/tab_online.lua
@@ -202,18 +197,16 @@ msgid "Search"
 msgstr "Hledat"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Texture packs"
-msgstr "Balíky textur"
+msgstr "Balíčky textur"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Uninstall"
-msgstr "Instalovat"
+msgstr "Odinstalovat"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Update"
-msgstr ""
+msgstr "Aktualizovat"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "A world named \"$1\" already exists"
@@ -375,7 +368,7 @@ msgstr "Vybrat soubor s modem:"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Show technical names"
-msgstr "Zohbrazit technické názvy"
+msgstr "Zobrazit technické názvy"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "The value must be at least $1."

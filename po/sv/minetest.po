@@ -3,9 +3,8 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-02-24 18:43+0100\n"
-"PO-Revision-Date: 2019-02-08 13:45+0000\n"
-"Last-Translator: Muhammad Rifqi Priyo Susanto "
-"<muhammadrifqipriyosusanto@gmail.com>\n"
+"PO-Revision-Date: 2019-02-28 17:19+0000\n"
+"Last-Translator: texmex <josefsahlberg+minetest@gmail.com>\n"
 "Language-Team: Swedish <https://hosted.weblate.org/projects/minetest/"
 "minetest/sv/>\n"
 "Language: sv\n"
@@ -17,20 +16,17 @@ msgstr ""
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "Respawn"
-msgstr "Återuppstå"
+msgstr "Återföds"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
-#, fuzzy
 msgid "You died"
-msgstr "Du dog."
+msgstr "Du dog"
 
 #: builtin/fstk/ui.lua
-#, fuzzy
 msgid "An error occurred in a Lua script, such as a mod:"
 msgstr "Ett fel uppstod i ett Lua-skript, såsom en mod:"
 
 #: builtin/fstk/ui.lua
-#, fuzzy
 msgid "An error occurred:"
 msgstr "Ett fel uppstod:"
 
@@ -90,7 +86,6 @@ msgid "Cancel"
 msgstr "Avbryt"
 
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/tab_content.lua
-#, fuzzy
 msgid "Dependencies:"
 msgstr "Beroenden:"
 
@@ -99,9 +94,8 @@ msgid "Disable all"
 msgstr "Inaktivera allt"
 
 #: builtin/mainmenu/dlg_config_world.lua
-#, fuzzy
 msgid "Disable modpack"
-msgstr "Inaktiverad"
+msgstr "Avaktivera modpaket"
 
 #: builtin/mainmenu/dlg_config_world.lua
 #, fuzzy
@@ -109,17 +103,15 @@ msgid "Enable all"
 msgstr "Aktivera alla"
 
 #: builtin/mainmenu/dlg_config_world.lua
-#, fuzzy
 msgid "Enable modpack"
-msgstr "Döp om modpaket:"
+msgstr "Aktivera modpaket"
 
 #: builtin/mainmenu/dlg_config_world.lua
-#, fuzzy
 msgid ""
 "Failed to enable mod \"$1\" as it contains disallowed characters. Only "
 "characters [a-z0-9_] are allowed."
 msgstr ""
-"Misslyckades aktivera mod \"$1\" eftersom det innehåller otillåtna tecken. "
+"Misslyckades aktivera mod \"$1\" eftersom den innehåller otillåtna tecken. "
 "Endast tecknen [a-z0-9_] är tillåtna."
 
 #: builtin/mainmenu/dlg_config_world.lua
@@ -127,14 +119,12 @@ msgid "Mod:"
 msgstr "Mod:"
 
 #: builtin/mainmenu/dlg_config_world.lua
-#, fuzzy
 msgid "No game description provided."
-msgstr "Ingen modbeskrivning tillgänglig"
+msgstr "Ingen spelbeskrivning tillgänglig."
 
 #: builtin/mainmenu/dlg_config_world.lua
-#, fuzzy
 msgid "No modpack description provided."
-msgstr "Ingen modbeskrivning tillgänglig"
+msgstr "Ingen modpaketsbeskrivning tillgänglig."
 
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/tab_content.lua
 msgid "Optional dependencies:"
@@ -155,26 +145,23 @@ msgstr "aktiverad"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "All packages"
-msgstr ""
+msgstr "Alla paket"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Back"
 msgstr "Tillbaka"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Back to Main Menu"
-msgstr "Huvudmeny"
+msgstr "Tillbaka till huvudmeny"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Downloading and installing $1, please wait..."
-msgstr "Laddar ner $1, var vänligen vänta..."
+msgstr "Laddar ner och installerar $1, vänligen vänta..."
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Failed to download $1"
-msgstr "Misslyckades installera $1 till $2"
+msgstr "Misslyckades ladda ner $1"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua
@@ -192,11 +179,11 @@ msgstr "Moddar"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "No packages could be retrieved"
-msgstr ""
+msgstr "Inga paket kunde hämtas"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "No results"
-msgstr ""
+msgstr "Inga resultat"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua builtin/mainmenu/tab_online.lua
@@ -209,13 +196,12 @@ msgid "Texture packs"
 msgstr "Texturpaket"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Uninstall"
-msgstr "Installera"
+msgstr "Avnstallera"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Update"
-msgstr ""
+msgstr "Uppdatera"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "A world named \"$1\" already exists"
@@ -226,9 +212,8 @@ msgid "Create"
 msgstr "Skapa"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Download a game, such as Minetest Game, from minetest.net"
-msgstr "Ladda ner ett underspel, såsom minetest_game, från minetest.net"
+msgstr "Ladda ner ett spel, såsom Minetest Game, från minetest.net"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Download one from minetest.net"
@@ -243,9 +228,8 @@ msgid "Mapgen"
 msgstr "Kartgenerator"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "No game selected"
-msgstr "Välj räckvidd"
+msgstr "Inget spel valt"
 
 #: builtin/mainmenu/dlg_create_world.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua
@@ -254,16 +238,15 @@ msgstr "Frö"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Warning: The minimal development test is meant for developers."
-msgstr "Varning: Minimala utvecklingstestet är endast avsett för utvecklare."
+msgstr "Varning: Minimala utvecklingstestet är avsett för utvecklare."
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "World name"
 msgstr "Världnamn"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "You have no games installed."
-msgstr "Du har inga underspel installerade."
+msgstr "Du har inga spel installerade."
 
 #: builtin/mainmenu/dlg_delete_content.lua
 msgid "Are you sure you want to delete \"$1\"?"
@@ -334,11 +317,11 @@ msgstr "Aktiverad"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Lacunarity"
-msgstr ""
+msgstr "Lacunaritet"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Octaves"
-msgstr ""
+msgstr "Oktaver"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua src/settings_translation_file.cpp
 msgid "Offset"
@@ -346,7 +329,7 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Persistance"
-msgstr ""
+msgstr "Persistens"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Please enter a valid integer."
@@ -362,7 +345,7 @@ msgstr "Återställ till Ursprungsvärden"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua src/settings_translation_file.cpp
 msgid "Scale"
-msgstr ""
+msgstr "Skala"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 #, fuzzy
@@ -388,27 +371,27 @@ msgstr "Värdet får vara högst $1."
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "X"
-msgstr ""
+msgstr "X"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "X spread"
-msgstr ""
+msgstr "X-spridning"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Y"
-msgstr ""
+msgstr "Y"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Y spread"
-msgstr ""
+msgstr "Y-spridning"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Z"
-msgstr ""
+msgstr "Z"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Z spread"
-msgstr ""
+msgstr "Z-spridning"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "absvalue"
