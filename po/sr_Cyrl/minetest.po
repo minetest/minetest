@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-02-24 18:43+0100\n"
+"POT-Creation-Date: 2019-09-08 09:20+0200\n"
 "PO-Revision-Date: 2019-02-13 13:11+0000\n"
 "Last-Translator: Muhammad Rifqi Priyo Susanto "
 "<muhammadrifqipriyosusanto@gmail.com>\n"
@@ -27,7 +27,7 @@ msgstr "Умро/ла си."
 
 #: builtin/fstk/ui.lua
 #, fuzzy
-msgid "An error occurred in a Lua script, such as a mod:"
+msgid "An error occurred in a Lua script:"
 msgstr "Догодила се грешка у Lua скрипти, у моду:"
 
 #: builtin/fstk/ui.lua
@@ -129,13 +129,28 @@ msgstr "Мод:"
 
 #: builtin/mainmenu/dlg_config_world.lua
 #, fuzzy
+msgid "No (optional) dependencies"
+msgstr "Необавезне зависности:"
+
+#: builtin/mainmenu/dlg_config_world.lua
+#, fuzzy
 msgid "No game description provided."
 msgstr "Није доступан опис мода"
 
 #: builtin/mainmenu/dlg_config_world.lua
 #, fuzzy
+msgid "No hard dependencies"
+msgstr "Нема зависности."
+
+#: builtin/mainmenu/dlg_config_world.lua
+#, fuzzy
 msgid "No modpack description provided."
 msgstr "Није доступан опис мода"
+
+#: builtin/mainmenu/dlg_config_world.lua
+#, fuzzy
+msgid "No optional dependencies"
+msgstr "Необавезне зависности:"
 
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/tab_content.lua
 msgid "Optional dependencies:"
@@ -528,11 +543,6 @@ msgstr "Преименуј"
 
 #: builtin/mainmenu/tab_content.lua
 #, fuzzy
-msgid "Select Package File:"
-msgstr "Изаберите фајл мода:"
-
-#: builtin/mainmenu/tab_content.lua
-#, fuzzy
 msgid "Uninstall Package"
 msgstr "Уклони изабрани мод"
 
@@ -824,12 +834,13 @@ msgid "Waving Leaves"
 msgstr "Лепршајуће лишће"
 
 #: builtin/mainmenu/tab_settings.lua
-msgid "Waving Plants"
-msgstr "Лепршајуће биљке"
+#, fuzzy
+msgid "Waving Liquids"
+msgstr "Лепршајуће лишће"
 
 #: builtin/mainmenu/tab_settings.lua
-msgid "Waving Water"
-msgstr "Веслајућа вода"
+msgid "Waving Plants"
+msgstr "Лепршајуће биљке"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Yes"
@@ -1590,11 +1601,11 @@ msgstr ""
 #: src/gui/guiConfirmRegistration.cpp
 #, c-format
 msgid ""
-"You are about to join the server at %1$s with the name \"%2$s\" for the "
-"first time. If you proceed, a new account using your credentials will be "
-"created on this server.\n"
-"Please retype your password and click Register and Join to confirm account "
-"creation or click Cancel to abort."
+"You are about to join this server with the name \"%s\" for the first time.\n"
+"If you proceed, a new account using your credentials will be created on this "
+"server.\n"
+"Please retype your password and click 'Register and Join' to confirm account "
+"creation, or click 'Cancel' to abort."
 msgstr ""
 
 #: src/gui/guiFormSpecMenu.cpp
@@ -1716,10 +1727,6 @@ msgid "Special"
 msgstr ""
 
 #: src/gui/guiKeyChangeMenu.cpp
-msgid "Toggle Cinematic"
-msgstr "Укључи/Искључи Cinematic мод"
-
-#: src/gui/guiKeyChangeMenu.cpp
 #, fuzzy
 msgid "Toggle HUD"
 msgstr "Укључи/Искључи летење"
@@ -1750,6 +1757,11 @@ msgstr "Укључи/искључи пролажење кроз препреке
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Toggle noclip"
 msgstr "Укључи/искључи пролажење кроз препреке"
+
+#: src/gui/guiKeyChangeMenu.cpp
+#, fuzzy
+msgid "Toggle pitchmove"
+msgstr "Укључи/Искључи трчање"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "press key"
@@ -1868,6 +1880,10 @@ msgid "2D noise that controls the size/occurrence of step mountain ranges."
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "2D noise that locates the river valleys and channels."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "3D clouds"
 msgstr "Тродимензионални облаци"
 
@@ -1895,6 +1911,10 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "3D noise for mountain overhangs, cliffs, etc. Usually small variations."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "3D noise that determines number of dungeons per mapchunk."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -1947,6 +1967,10 @@ msgstr "Абсолутни лимит emerge токова."
 #: src/settings_translation_file.cpp
 msgid "Acceleration in air"
 msgstr "Убрзање у ваздуху"
+
+#: src/settings_translation_file.cpp
+msgid "Acceleration of gravity, in nodes per second per second."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Active Block Modifiers"
@@ -2177,7 +2201,7 @@ msgstr "Рељефна тектура"
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Camera near plane distance in nodes, between 0 and 0.5\n"
+"Camera 'near clipping plane' distance in nodes, between 0 and 0.5.\n"
 "Most users will not need to change this.\n"
 "Increasing can reduce artifacting on weaker GPUs.\n"
 "0.1 = Default, 0.25 = Good value for weaker tablets."
@@ -2261,6 +2285,11 @@ msgstr "Кључ за чет"
 #: src/settings_translation_file.cpp
 msgid "Chat message count limit"
 msgstr ""
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Chat message format"
+msgstr "Порука после пада"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -2433,6 +2462,10 @@ msgstr ""
 "остаје непромењено."
 
 #: src/settings_translation_file.cpp
+msgid "Controls sinking speed in liquid."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Controls steepness/depth of lake depressions."
 msgstr "Контролише стрмину/дубину језерских депресија."
 
@@ -2494,11 +2527,20 @@ msgid "Debug info toggle key"
 msgstr "Кључ за укључивање debug информација"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Debug log file size threshold"
+msgstr "Граница семена за плаже"
+
+#: src/settings_translation_file.cpp
 msgid "Debug log level"
 msgstr "Ниво записивања у debug"
 
 #: src/settings_translation_file.cpp
 msgid "Dec. volume key"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Decrease this to increase liquid resistence to movement."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -2584,7 +2626,19 @@ msgid "Defines the base ground level."
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "Defines the depth of the river channel."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Defines the maximal player transfer distance in blocks (0 = unlimited)."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Defines the width of the river channel."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Defines the width of the river valley."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -2610,6 +2664,12 @@ msgid "Deprecated Lua API handling"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Deprecated, define and locate cave liquids using biome definitions instead.\n"
+"Y of upper limit of lava in large caves."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Depth below which you'll find giant caverns."
 msgstr ""
 
@@ -2630,7 +2690,7 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid ""
 "Deserts occur when np_biome exceeds this value.\n"
-"When the new biome system is enabled, this is ignored."
+"When the 'snowbiomes' flag is enabled, this is ignored."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -2677,6 +2737,11 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Dungeon minimum Y"
 msgstr ""
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Dungeon noise"
+msgstr "Семе пећина"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2992,6 +3057,13 @@ msgid "Font size"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Format of player chat messages. The following strings are valid "
+"placeholders:\n"
+"@name, @message, @timestamp (optional)"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Format of screenshots."
 msgstr ""
 
@@ -3215,6 +3287,24 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Homepage of server, to be displayed in the serverlist."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Horizontal acceleration in air when jumping or falling,\n"
+"in nodes per second per second."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Horizontal and vertical acceleration in fast mode,\n"
+"in nodes per second per second."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Horizontal and vertical acceleration on ground or when climbing,\n"
+"in nodes per second per second."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3470,6 +3560,14 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid ""
+"If the file size of debug.txt exceeds the number of megabytes specified in\n"
+"this setting when it is opened, the file is moved to debug.txt.1,\n"
+"deleting an older debug.txt.1 if it exists.\n"
+"debug.txt is only moved if this setting is positive."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "If this is set, players will always (re)spawn at the given position."
 msgstr ""
 
@@ -3495,6 +3593,10 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Inc. volume key"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Initial vertical speed when jumping, in nodes per second."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -4262,7 +4364,7 @@ msgid "Liquid queue purge time"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Liquid sinking speed"
+msgid "Liquid sinking"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -4335,6 +4437,13 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid ""
 "Map generation attributes specific to Mapgen flat.\n"
+"'terrain' enables the generation of non-fractal terrain:\n"
+"ocean, islands and underground."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Map generation attributes specific to Mapgen flat.\n"
 "Occasional lakes and hills can be added to the flat world."
 msgstr ""
 
@@ -4346,7 +4455,7 @@ msgstr ""
 msgid ""
 "Map generation attributes specific to Mapgen v6.\n"
 "The 'snowbiomes' flag enables the new 5 biome system.\n"
-"When the new biome system is enabled jungles are automatically enabled and\n"
+"When the 'snowbiomes' flag is enabled jungles are automatically enabled and\n"
 "the 'jungles' flag is ignored."
 msgstr ""
 
@@ -4400,6 +4509,11 @@ msgstr ""
 #: src/settings_translation_file.cpp
 #, fuzzy
 msgid "Mapgen Fractal"
+msgstr "Генератор мапе"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Mapgen Fractal specific flags"
 msgstr "Генератор мапе"
 
 #: src/settings_translation_file.cpp
@@ -4483,6 +4597,12 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Maximum hotbar width"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Maximum liquid resistence. Controls deceleration when entering liquid at\n"
+"high speed."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -4671,10 +4791,8 @@ msgstr ""
 msgid ""
 "Name of map generator to be used when creating a new world.\n"
 "Creating a world in the main menu will override this.\n"
-"Current stable mapgens:\n"
-"v5, v6, v7 (except floatlands), singlenode.\n"
-"'stable' means the terrain shape in an existing world will not be changed\n"
-"in the future. Note that biomes are defined by games and may still change."
+"Current mapgens in a highly unstable state:\n"
+"-    The optional floatlands of v7 (disabled by default)."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -4690,7 +4808,7 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Near plane"
+msgid "Near clipping plane"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -4742,16 +4860,18 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid ""
 "Number of emerge threads to use.\n"
-"Empty or 0 value:\n"
+"WARNING: Currently there are multiple bugs that may cause crashes when\n"
+"'num_emerge_threads' is larger than 1. Until this warning is removed it is\n"
+"strongly recommended this value is set to the default '1'.\n"
+"Value 0:\n"
 "-    Automatic selection. The number of emerge threads will be\n"
 "-    'number of processors - 2', with a lower limit of 1.\n"
 "Any other value:\n"
 "-    Specifies the number of emerge threads, with a lower limit of 1.\n"
-"Warning: Increasing the number of emerge threads increases engine mapgen\n"
+"WARNING: Increasing the number of emerge threads increases engine mapgen\n"
 "speed, but this may harm game performance by interfering with other\n"
 "processes, especially in singleplayer and/or when running Lua code in\n"
-"'on_generated'.\n"
-"For many users the optimum setting may be '1'."
+"'on_generated'. For many users the optimum setting may be '1'."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -4994,6 +5114,14 @@ msgid "Rightclick repetition interval"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "River channel depth"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "River channel width"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "River depth"
 msgstr ""
 
@@ -5004,6 +5132,10 @@ msgstr "Семе пећина"
 
 #: src/settings_translation_file.cpp
 msgid "River size"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "River valley width"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5309,6 +5441,10 @@ msgstr ""
 #, fuzzy
 msgid "Sneaking speed"
 msgstr "Брзина успона"
+
+#: src/settings_translation_file.cpp
+msgid "Sneaking speed, in nodes per second."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Sound"
@@ -5727,6 +5863,10 @@ msgid "Varies steepness of cliffs."
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "Vertical climbing speed, in nodes per second."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Vertical screen synchronization."
 msgstr ""
 
@@ -5776,7 +5916,15 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "Walking and flying speed, in nodes per second."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Walking speed"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Walking, flying and climbing speed in fast mode, in nodes per second."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5804,16 +5952,19 @@ msgid "Waving water"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Waving water height"
-msgstr ""
+#, fuzzy
+msgid "Waving water wave height"
+msgstr "Веслајућа вода"
 
 #: src/settings_translation_file.cpp
-msgid "Waving water length"
-msgstr ""
+#, fuzzy
+msgid "Waving water wave speed"
+msgstr "Лепршајуће лишће"
 
 #: src/settings_translation_file.cpp
-msgid "Waving water speed"
-msgstr ""
+#, fuzzy
+msgid "Waving water wavelength"
+msgstr "Веслајућа вода"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5937,10 +6088,6 @@ msgid "Y of upper limit of large caves."
 msgstr "Абсолутни лимит emerge токова."
 
 #: src/settings_translation_file.cpp
-msgid "Y of upper limit of lava in large caves."
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid "Y-distance over which caverns expand to full size."
 msgstr ""
 
@@ -5984,108 +6131,77 @@ msgstr ""
 msgid "cURL timeout"
 msgstr ""
 
+#~ msgid "Advanced Settings"
+#~ msgstr "Напредне поставке"
+
+#~ msgid "Plus"
+#~ msgstr "Плус"
+
+#~ msgid "Period"
+#~ msgstr "Тачка"
+
+#~ msgid "Minus"
+#~ msgstr "Минус"
+
+#~ msgid "Final"
+#~ msgstr "Крајњи"
+
+#~ msgid "ExSel"
+#~ msgstr "ЕхСел"
+
+#~ msgid "CrSel"
+#~ msgstr "ЦрСел"
+
+#~ msgid "Comma"
+#~ msgstr "Зарез"
+
+#~ msgid "Capital"
+#~ msgstr "Главно"
+
+#~ msgid "Attn"
+#~ msgstr "Аттн"
+
+#~ msgid "Hide mp content"
+#~ msgstr "Сакриј садржину мод-паковања"
+
 #, fuzzy
-#~ msgid "Content Store"
-#~ msgstr "Затвори складиште"
+#~ msgid "Inventory image hack"
+#~ msgstr "Инвентар"
 
-#~ msgid "Disable MP"
-#~ msgstr "Онемогући мод-паковање"
-
-#~ msgid "Enable MP"
-#~ msgstr "Омогући мод-паковање"
-
-#~ msgid "No worldname given or no game selected"
-#~ msgstr "Име није дато или ниједна игра није изабрана"
-
-#~ msgid "\"$1\" is not a valid flag."
-#~ msgstr "\"$1\" није валидна ознака."
-
-#~ msgid "Format is 3 numbers separated by commas and inside brackets."
-#~ msgstr "Формат су три броја унутар заграда раздвојени зарезима."
+#~ msgid "Crouch speed"
+#~ msgstr "Брзина при чучању"
 
 #~ msgid ""
-#~ "Format: <offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>), <seed>, "
-#~ "<octaves>, <persistence>"
+#~ "Creates unpredictable water features in caves.\n"
+#~ "These can make mining difficult. Zero disables them. (0-10)"
 #~ msgstr ""
-#~ "Формат:  <офсет>, <скала>, (<распонX>, <распонY>, <распонZ>), <семе>, "
-#~ "<октаве>, <упорност>"
-
-#~ msgid "Optionally the lacunarity can be appended with a leading comma."
-#~ msgstr "Опоцијоно, лацунарност се може додати са зарезом."
-
-#~ msgid "Please enter a comma seperated list of flags."
-#~ msgstr "Молим вас унесите листу ознака раздвојену зарезима."
-
-#~ msgid "Possible values are: "
-#~ msgstr "Могуће вредности су: "
-
-#~ msgid "Select path"
-#~ msgstr "Одабери локацију"
-
-#~ msgid "Subgame Mods"
-#~ msgstr "Модови под-игре"
-
-#~ msgid "Page $1 of $2"
-#~ msgstr "Страна $1 од $2"
-
-#~ msgid "Rating"
-#~ msgstr "Оцена"
-
-#~ msgid "Shortname:"
-#~ msgstr "Краће име:"
-
-#~ msgid "Successfully installed:"
-#~ msgstr "Успешно инсталиран:"
-
-#~ msgid "Unsorted"
-#~ msgstr "Нераспоређено"
-
-#~ msgid "re-Install"
-#~ msgstr "поново инсталирај"
-
-#~ msgid "Local Game"
-#~ msgstr "Локална игра"
-
-#~ msgid "Uninstall selected modpack"
-#~ msgstr "Уклони одабрано мод-паковање"
-
-#~ msgid "Play Online"
-#~ msgstr "Играј онлине"
-
-#~ msgid "Normal Mapping"
-#~ msgstr "Нормал-мапирање"
-
-#~ msgid "No information available"
-#~ msgstr "Нема доступних информација"
-
-#~ msgid "Volume changed to 0%"
-#~ msgstr "Јачина звука промењена на 0%"
-
-#~ msgid "Volume changed to 100%"
-#~ msgstr "Јачина звука промењена на 100%"
-
-#~ msgid "Print stacks"
-#~ msgstr "Прикажи stack-ове"
-
-#~ msgid "Use"
-#~ msgstr "Коришћење"
-
-#~ msgid "Next"
-#~ msgstr "Следеће"
-
-#~ msgid "Prior"
-#~ msgstr "Пре"
-
-#~ msgid "Active Block Modifier interval"
-#~ msgstr "Интервал модификатора активног блока"
+#~ "Ствара непредвидиве шеме воде у пећинама.\n"
+#~ "Ове могу чинити копање тежим. Нула их онемогућава. (0-10)"
 
 #~ msgid ""
-#~ "Android systems only: Tries to create inventory textures from meshes\n"
-#~ "when no supported render was found."
+#~ "Creates unpredictable lava features in caves.\n"
+#~ "These can make mining difficult. Zero disables them. (0-10)"
 #~ msgstr ""
-#~ "Само за Андроид системе: Покушава да направи текстуру у инвентару из "
-#~ "модела\n"
-#~ "када није пронађен ниједан подржани драјвер."
+#~ "Ствара непредвидиве шеме лаве у пећинама.\n"
+#~ "Ове могу чинити копање тежим. Нула их онемогућава. (0-10)"
+
+#~ msgid "Continuous forward movement (only used for testing)."
+#~ msgstr "Непрекидно кретање унапред (користи се само за тестирање)."
+
+#~ msgid "Console key"
+#~ msgstr "Кључ за конзолу"
+
+#~ msgid "Cloud height"
+#~ msgstr "Висина облака"
+
+#~ msgid "Caves and tunnels form at the intersection of the two noises"
+#~ msgstr "Пећине и тунели се формирају при укрштању два семена"
+
+#~ msgid "Autorun key"
+#~ msgstr "Кључ за аутоматско трчање"
+
+#~ msgid "Approximate (X,Y,Z) scale of fractal in nodes."
+#~ msgstr "Приближна величина (X,Y,Z) фрактала у блоковима."
 
 #~ msgid ""
 #~ "Announce to this serverlist.\n"
@@ -6096,74 +6212,112 @@ msgstr ""
 #~ "Ако желите да пријавите вашу ipv6 адресу, користите serverlist_url = v6."
 #~ "servers.minetest.net."
 
-#~ msgid "Approximate (X,Y,Z) scale of fractal in nodes."
-#~ msgstr "Приближна величина (X,Y,Z) фрактала у блоковима."
+#~ msgid ""
+#~ "Android systems only: Tries to create inventory textures from meshes\n"
+#~ "when no supported render was found."
+#~ msgstr ""
+#~ "Само за Андроид системе: Покушава да направи текстуру у инвентару из "
+#~ "модела\n"
+#~ "када није пронађен ниједан подржани драјвер."
 
-#~ msgid "Autorun key"
-#~ msgstr "Кључ за аутоматско трчање"
+#~ msgid "Active Block Modifier interval"
+#~ msgstr "Интервал модификатора активног блока"
 
-#~ msgid "Caves and tunnels form at the intersection of the two noises"
-#~ msgstr "Пећине и тунели се формирају при укрштању два семена"
+#~ msgid "Prior"
+#~ msgstr "Пре"
 
-#~ msgid "Cloud height"
-#~ msgstr "Висина облака"
+#~ msgid "Next"
+#~ msgstr "Следеће"
 
-#~ msgid "Console key"
-#~ msgstr "Кључ за конзолу"
+#~ msgid "Use"
+#~ msgstr "Коришћење"
 
-#~ msgid "Continuous forward movement (only used for testing)."
-#~ msgstr "Непрекидно кретање унапред (користи се само за тестирање)."
+#~ msgid "Print stacks"
+#~ msgstr "Прикажи stack-ове"
+
+#~ msgid "Volume changed to 100%"
+#~ msgstr "Јачина звука промењена на 100%"
+
+#~ msgid "Volume changed to 0%"
+#~ msgstr "Јачина звука промењена на 0%"
+
+#~ msgid "No information available"
+#~ msgstr "Нема доступних информација"
+
+#~ msgid "Normal Mapping"
+#~ msgstr "Нормал-мапирање"
+
+#~ msgid "Play Online"
+#~ msgstr "Играј онлине"
+
+#~ msgid "Uninstall selected modpack"
+#~ msgstr "Уклони одабрано мод-паковање"
+
+#~ msgid "Local Game"
+#~ msgstr "Локална игра"
+
+#~ msgid "re-Install"
+#~ msgstr "поново инсталирај"
+
+#~ msgid "Unsorted"
+#~ msgstr "Нераспоређено"
+
+#~ msgid "Successfully installed:"
+#~ msgstr "Успешно инсталиран:"
+
+#~ msgid "Shortname:"
+#~ msgstr "Краће име:"
+
+#~ msgid "Rating"
+#~ msgstr "Оцена"
+
+#~ msgid "Page $1 of $2"
+#~ msgstr "Страна $1 од $2"
+
+#~ msgid "Subgame Mods"
+#~ msgstr "Модови под-игре"
+
+#~ msgid "Select path"
+#~ msgstr "Одабери локацију"
+
+#~ msgid "Possible values are: "
+#~ msgstr "Могуће вредности су: "
+
+#~ msgid "Please enter a comma seperated list of flags."
+#~ msgstr "Молим вас унесите листу ознака раздвојену зарезима."
+
+#~ msgid "Optionally the lacunarity can be appended with a leading comma."
+#~ msgstr "Опоцијоно, лацунарност се може додати са зарезом."
 
 #~ msgid ""
-#~ "Creates unpredictable lava features in caves.\n"
-#~ "These can make mining difficult. Zero disables them. (0-10)"
+#~ "Format: <offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>), <seed>, "
+#~ "<octaves>, <persistence>"
 #~ msgstr ""
-#~ "Ствара непредвидиве шеме лаве у пећинама.\n"
-#~ "Ове могу чинити копање тежим. Нула их онемогућава. (0-10)"
+#~ "Формат:  <офсет>, <скала>, (<распонX>, <распонY>, <распонZ>), <семе>, "
+#~ "<октаве>, <упорност>"
 
-#~ msgid ""
-#~ "Creates unpredictable water features in caves.\n"
-#~ "These can make mining difficult. Zero disables them. (0-10)"
-#~ msgstr ""
-#~ "Ствара непредвидиве шеме воде у пећинама.\n"
-#~ "Ове могу чинити копање тежим. Нула их онемогућава. (0-10)"
+#~ msgid "Format is 3 numbers separated by commas and inside brackets."
+#~ msgstr "Формат су три броја унутар заграда раздвојени зарезима."
 
-#~ msgid "Crouch speed"
-#~ msgstr "Брзина при чучању"
+#~ msgid "\"$1\" is not a valid flag."
+#~ msgstr "\"$1\" није валидна ознака."
+
+#~ msgid "No worldname given or no game selected"
+#~ msgstr "Име није дато или ниједна игра није изабрана"
+
+#~ msgid "Enable MP"
+#~ msgstr "Омогући мод-паковање"
+
+#~ msgid "Disable MP"
+#~ msgstr "Онемогући мод-паковање"
 
 #, fuzzy
-#~ msgid "Inventory image hack"
-#~ msgstr "Инвентар"
+#~ msgid "Content Store"
+#~ msgstr "Затвори складиште"
 
-#~ msgid "Hide mp content"
-#~ msgstr "Сакриј садржину мод-паковања"
+#~ msgid "Toggle Cinematic"
+#~ msgstr "Укључи/Искључи Cinematic мод"
 
-#~ msgid "Attn"
-#~ msgstr "Аттн"
-
-#~ msgid "Capital"
-#~ msgstr "Главно"
-
-#~ msgid "Comma"
-#~ msgstr "Зарез"
-
-#~ msgid "CrSel"
-#~ msgstr "ЦрСел"
-
-#~ msgid "ExSel"
-#~ msgstr "ЕхСел"
-
-#~ msgid "Final"
-#~ msgstr "Крајњи"
-
-#~ msgid "Minus"
-#~ msgstr "Минус"
-
-#~ msgid "Period"
-#~ msgstr "Тачка"
-
-#~ msgid "Plus"
-#~ msgstr "Плус"
-
-#~ msgid "Advanced Settings"
-#~ msgstr "Напредне поставке"
+#, fuzzy
+#~ msgid "Select Package File:"
+#~ msgstr "Изаберите фајл мода:"

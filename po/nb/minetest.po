@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-02-24 18:43+0100\n"
+"POT-Creation-Date: 2019-09-08 09:20+0200\n"
 "PO-Revision-Date: 2019-08-11 06:23+0000\n"
 "Last-Translator: Allan Nordhøy <epost@anotheragency.no>\n"
 "Language-Team: Norwegian Bokmål <https://hosted.weblate.org/projects/"
@@ -23,7 +23,8 @@ msgid "You died"
 msgstr "Du døde"
 
 #: builtin/fstk/ui.lua
-msgid "An error occurred in a Lua script, such as a mod:"
+#, fuzzy
+msgid "An error occurred in a Lua script:"
 msgstr "Det oppstod en feil i et Lua-skriptet, for eksempel i en mod:"
 
 #: builtin/fstk/ui.lua
@@ -119,12 +120,27 @@ msgid "Mod:"
 msgstr "Mod:"
 
 #: builtin/mainmenu/dlg_config_world.lua
+#, fuzzy
+msgid "No (optional) dependencies"
+msgstr "Valgfrie avhengigheter:"
+
+#: builtin/mainmenu/dlg_config_world.lua
 msgid "No game description provided."
 msgstr "Mangler spillbeskrivelse."
 
 #: builtin/mainmenu/dlg_config_world.lua
+#, fuzzy
+msgid "No hard dependencies"
+msgstr "Ingen avhengigheter."
+
+#: builtin/mainmenu/dlg_config_world.lua
 msgid "No modpack description provided."
 msgstr "Ingen modpakke-beskrivelse tilgjengelig."
+
+#: builtin/mainmenu/dlg_config_world.lua
+#, fuzzy
+msgid "No optional dependencies"
+msgstr "Valgfrie avhengigheter:"
 
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/tab_content.lua
 msgid "Optional dependencies:"
@@ -482,10 +498,6 @@ msgid "Rename"
 msgstr "Gi nytt navn"
 
 #: builtin/mainmenu/tab_content.lua
-msgid "Select Package File:"
-msgstr "Velg pakkefil:"
-
-#: builtin/mainmenu/tab_content.lua
 msgid "Uninstall Package"
 msgstr "Avinstaller pakke"
 
@@ -770,12 +782,13 @@ msgid "Waving Leaves"
 msgstr "Bølgende blader"
 
 #: builtin/mainmenu/tab_settings.lua
-msgid "Waving Plants"
-msgstr "Bølgende planter"
+#, fuzzy
+msgid "Waving Liquids"
+msgstr "Bølgende blader"
 
 #: builtin/mainmenu/tab_settings.lua
-msgid "Waving Water"
-msgstr "Bølgende vann"
+msgid "Waving Plants"
+msgstr "Bølgende planter"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Yes"
@@ -1517,11 +1530,11 @@ msgstr "Registrer og logg inn"
 #: src/gui/guiConfirmRegistration.cpp
 #, c-format
 msgid ""
-"You are about to join the server at %1$s with the name \"%2$s\" for the "
-"first time. If you proceed, a new account using your credentials will be "
-"created on this server.\n"
-"Please retype your password and click Register and Join to confirm account "
-"creation or click Cancel to abort."
+"You are about to join this server with the name \"%s\" for the first time.\n"
+"If you proceed, a new account using your credentials will be created on this "
+"server.\n"
+"Please retype your password and click 'Register and Join' to confirm account "
+"creation, or click 'Cancel' to abort."
 msgstr ""
 
 #: src/gui/guiFormSpecMenu.cpp
@@ -1643,10 +1656,6 @@ msgid "Special"
 msgstr "Spesial"
 
 #: src/gui/guiKeyChangeMenu.cpp
-msgid "Toggle Cinematic"
-msgstr ""
-
-#: src/gui/guiKeyChangeMenu.cpp
 msgid "Toggle HUD"
 msgstr ""
 
@@ -1675,6 +1684,11 @@ msgstr "Aktiverer minikart."
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Toggle noclip"
 msgstr ""
+
+#: src/gui/guiKeyChangeMenu.cpp
+#, fuzzy
+msgid "Toggle pitchmove"
+msgstr "Farget tåke"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "press key"
@@ -1790,6 +1804,10 @@ msgid "2D noise that controls the size/occurrence of step mountain ranges."
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "2D noise that locates the river valleys and channels."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "3D clouds"
 msgstr "3D-skyer"
 
@@ -1817,6 +1835,10 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "3D noise for mountain overhangs, cliffs, etc. Usually small variations."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "3D noise that determines number of dungeons per mapchunk."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -1859,6 +1881,10 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Acceleration in air"
 msgstr "Akselerasjon i luft"
+
+#: src/settings_translation_file.cpp
+msgid "Acceleration of gravity, in nodes per second per second."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Active Block Modifiers"
@@ -2073,7 +2099,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Camera near plane distance in nodes, between 0 and 0.5\n"
+"Camera 'near clipping plane' distance in nodes, between 0 and 0.5.\n"
 "Most users will not need to change this.\n"
 "Increasing can reduce artifacting on weaker GPUs.\n"
 "0.1 = Default, 0.25 = Good value for weaker tablets."
@@ -2158,6 +2184,11 @@ msgstr "Skydretast"
 #: src/settings_translation_file.cpp
 msgid "Chat message count limit"
 msgstr ""
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Chat message format"
+msgstr "Kræsjmelding"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -2322,6 +2353,10 @@ msgstr ""
 "være, forblir uendret."
 
 #: src/settings_translation_file.cpp
+msgid "Controls sinking speed in liquid."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Controls steepness/depth of lake depressions."
 msgstr ""
 
@@ -2380,12 +2415,21 @@ msgid "Debug info toggle key"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Debug log file size threshold"
+msgstr "Strandlydsterskel"
+
+#: src/settings_translation_file.cpp
 msgid "Debug log level"
 msgstr "Loggingsnivå for feilsøking"
 
 #: src/settings_translation_file.cpp
 msgid "Dec. volume key"
 msgstr "Tast for senking av lydstyrke"
+
+#: src/settings_translation_file.cpp
+msgid "Decrease this to increase liquid resistence to movement."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Dedicated server step"
@@ -2469,8 +2513,22 @@ msgid "Defines the base ground level."
 msgstr "Definerer treområder og skogstetthet."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Defines the depth of the river channel."
+msgstr "Definerer treområder og skogstetthet."
+
+#: src/settings_translation_file.cpp
 msgid "Defines the maximal player transfer distance in blocks (0 = unlimited)."
 msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Defines the width of the river channel."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Defines the width of the river valley."
+msgstr "Definerer område der trær har epler."
 
 #: src/settings_translation_file.cpp
 msgid "Defines tree areas and tree density."
@@ -2495,6 +2553,12 @@ msgid "Deprecated Lua API handling"
 msgstr "Avleggs håndtering av Lua-API"
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Deprecated, define and locate cave liquids using biome definitions instead.\n"
+"Y of upper limit of lava in large caves."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Depth below which you'll find giant caverns."
 msgstr ""
 
@@ -2515,7 +2579,7 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid ""
 "Deserts occur when np_biome exceeds this value.\n"
-"When the new biome system is enabled, this is ignored."
+"When the 'snowbiomes' flag is enabled, this is ignored."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -2561,6 +2625,11 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Dungeon minimum Y"
 msgstr ""
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Dungeon noise"
+msgstr "Grottelyd"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2878,6 +2947,13 @@ msgid "Font size"
 msgstr "Skriftstørrelse"
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Format of player chat messages. The following strings are valid "
+"placeholders:\n"
+"@name, @message, @timestamp (optional)"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Format of screenshots."
 msgstr "Skjermavbildningsformat."
 
@@ -3105,6 +3181,24 @@ msgstr "Varmestøy"
 
 #: src/settings_translation_file.cpp
 msgid "Homepage of server, to be displayed in the serverlist."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Horizontal acceleration in air when jumping or falling,\n"
+"in nodes per second per second."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Horizontal and vertical acceleration in fast mode,\n"
+"in nodes per second per second."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Horizontal and vertical acceleration on ground or when climbing,\n"
+"in nodes per second per second."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3358,6 +3452,14 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid ""
+"If the file size of debug.txt exceeds the number of megabytes specified in\n"
+"this setting when it is opened, the file is moved to debug.txt.1,\n"
+"deleting an older debug.txt.1 if it exists.\n"
+"debug.txt is only moved if this setting is positive."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "If this is set, players will always (re)spawn at the given position."
 msgstr ""
 
@@ -3384,6 +3486,10 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Inc. volume key"
 msgstr "Inkluder lydstyrketast"
+
+#: src/settings_translation_file.cpp
+msgid "Initial vertical speed when jumping, in nodes per second."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3540,8 +3646,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Tast for å redusere synsrekkevidde.\n"
-"Se http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Se http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3570,8 +3676,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Tast for økning av synsrekkevidde.\n"
-"Se http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Se http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3622,8 +3728,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Tast for å bevege spilleren fremover.\n"
-"Se http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Se http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3632,8 +3738,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Tast for å bevege spilleren til venstre.\n"
-"Se http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Se http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3642,8 +3748,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Tast for å bevege spilleren til høyre.\n"
-"Se http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Se http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3687,8 +3793,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Tast for utvelging av ellevte hurtigplassfelt.\n"
-"Se http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Se http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3697,8 +3803,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Tast for utvelging av tolvte hurtigplassfelt.\n"
-"Se http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Se http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3707,8 +3813,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Tast for utvelging av trettende hurtigplassfelt.\n"
-"Se http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Se http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3717,8 +3823,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Tast for utvelging av fjortende hurtigplassfelt.\n"
-"Se http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Se http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3727,8 +3833,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Tast for utvelging av femtende hurtigplassfelt.\n"
-"Se http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Se http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3737,8 +3843,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Tast for utvelging sekstende hurtigplassfelt.\n"
-"Se http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Se http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3747,8 +3853,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Tast for utvelging av syttende hurtigplassfelt.\n"
-"Se http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Se http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3757,8 +3863,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Tast for utvelging av attende hurtigplassfelt.\n"
-"Se http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Se http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3767,8 +3873,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Tast for utvelging av nittende hurtigplassfelt.\n"
-"Se http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Se http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3777,8 +3883,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Tast for utvelging av tjuende hurtigplassfelt.\n"
-"Se http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Se http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3787,8 +3893,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Tast for utvelging av tjueførste hurtigplassfelt.\n"
-"Se http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Se http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3797,8 +3903,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Tast for utvelging av tjueandre hurtigplassfelt.\n"
-"Se http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Se http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3807,8 +3913,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Tast for utvelging av tjuetredje hurtigplassfelt.\n"
-"Se http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Se http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3817,8 +3923,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Tast for utvelging av tjuefjerde hurtigplassfelt.\n"
-"Se http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Se http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3827,8 +3933,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Tast for utvelging av tjuefemte hurtigplassfelt.\n"
-"Se http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Se http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3837,8 +3943,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Tast for utvelging av tjuesjette hurtigplassfelt.\n"
-"Se http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Se http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3847,8 +3953,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Tast for utvelging av tjuesyvende hurtigplassfelt.\n"
-"Se http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Se http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3857,8 +3963,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Tast for utvelging av tjueåttende hurtigplassfelt.\n"
-"Se http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Se http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3867,8 +3973,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Tast for utvelging av tjueniende hurtigplassfelt.\n"
-"Se http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Se http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3877,8 +3983,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Tast for utvelging av trettiende hurtigplassfelt.\n"
-"Se http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Se http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3887,8 +3993,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Tast for utvelging av trettiførste hurtigplassfelt.\n"
-"Se http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Se http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3897,8 +4003,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Tast for utvelging av trettiandre hurtigplassfelt.\n"
-"Se http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Se http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3907,8 +4013,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Tast for utvelging av åttende hurtigplassfelt.\n"
-"Se http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Se http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3917,8 +4023,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Tast for utvelging av femte hurtigplassfelt.\n"
-"Se http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Se http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3927,8 +4033,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Tast for utvelging av første hurtigplassfelt.\n"
-"Se http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Se http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3937,8 +4043,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Tast for utvelging av fjerde hurtigplassfelt.\n"
-"Se http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Se http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3947,8 +4053,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Tast for utvelging av neste element i hurtigfeltet.\n"
-"Se http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Se http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3957,8 +4063,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Tast for utvelging av niende hurtigplassfelt.\n"
-"Se http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Se http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3967,8 +4073,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Tast for utvelging av forrige element i hurtigfeltet.\n"
-"Se http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Se http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3977,8 +4083,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Tast for utvelging av andre hurtigplassfelt.\n"
-"Se http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Se http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3987,8 +4093,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Tast for utvelging av syvende hurtigplassfelt.\n"
-"Se http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Se http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3997,8 +4103,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Tast for utvelging av sjette hurtigplassfelt.\n"
-"Se http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Se http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4007,8 +4113,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Tast for utvelging av tiende hurtigplassfelt.\n"
-"Se http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Se http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4017,8 +4123,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Tast for utvelging av tredje hurtigplassfelt.\n"
-"Se http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Se http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4304,7 +4410,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 #, fuzzy
-msgid "Liquid sinking speed"
+msgid "Liquid sinking"
 msgstr "Hoppehastighet"
 
 #: src/settings_translation_file.cpp
@@ -4377,6 +4483,13 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid ""
 "Map generation attributes specific to Mapgen flat.\n"
+"'terrain' enables the generation of non-fractal terrain:\n"
+"ocean, islands and underground."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Map generation attributes specific to Mapgen flat.\n"
 "Occasional lakes and hills can be added to the flat world."
 msgstr ""
 
@@ -4388,7 +4501,7 @@ msgstr ""
 msgid ""
 "Map generation attributes specific to Mapgen v6.\n"
 "The 'snowbiomes' flag enables the new 5 biome system.\n"
-"When the new biome system is enabled jungles are automatically enabled and\n"
+"When the 'snowbiomes' flag is enabled jungles are automatically enabled and\n"
 "the 'jungles' flag is ignored."
 msgstr ""
 
@@ -4442,6 +4555,11 @@ msgstr ""
 #: src/settings_translation_file.cpp
 #, fuzzy
 msgid "Mapgen Fractal"
+msgstr "Mapgen"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Mapgen Fractal specific flags"
 msgstr "Mapgen"
 
 #: src/settings_translation_file.cpp
@@ -4526,6 +4644,12 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Maximum hotbar width"
 msgstr "Størst mulige hurtigfeltsbredde"
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Maximum liquid resistence. Controls deceleration when entering liquid at\n"
+"high speed."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4715,10 +4839,8 @@ msgstr ""
 msgid ""
 "Name of map generator to be used when creating a new world.\n"
 "Creating a world in the main menu will override this.\n"
-"Current stable mapgens:\n"
-"v5, v6, v7 (except floatlands), singlenode.\n"
-"'stable' means the terrain shape in an existing world will not be changed\n"
-"in the future. Note that biomes are defined by games and may still change."
+"Current mapgens in a highly unstable state:\n"
+"-    The optional floatlands of v7 (disabled by default)."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -4734,7 +4856,7 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Near plane"
+msgid "Near clipping plane"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -4786,16 +4908,18 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid ""
 "Number of emerge threads to use.\n"
-"Empty or 0 value:\n"
+"WARNING: Currently there are multiple bugs that may cause crashes when\n"
+"'num_emerge_threads' is larger than 1. Until this warning is removed it is\n"
+"strongly recommended this value is set to the default '1'.\n"
+"Value 0:\n"
 "-    Automatic selection. The number of emerge threads will be\n"
 "-    'number of processors - 2', with a lower limit of 1.\n"
 "Any other value:\n"
 "-    Specifies the number of emerge threads, with a lower limit of 1.\n"
-"Warning: Increasing the number of emerge threads increases engine mapgen\n"
+"WARNING: Increasing the number of emerge threads increases engine mapgen\n"
 "speed, but this may harm game performance by interfering with other\n"
 "processes, especially in singleplayer and/or when running Lua code in\n"
-"'on_generated'.\n"
-"For many users the optimum setting may be '1'."
+"'on_generated'. For many users the optimum setting may be '1'."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5036,6 +5160,16 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 #, fuzzy
+msgid "River channel depth"
+msgstr "Elvedybde"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "River channel width"
+msgstr "Elvedybde"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
 msgid "River depth"
 msgstr "Elvedybde"
 
@@ -5048,6 +5182,11 @@ msgstr "Elvestøy"
 #, fuzzy
 msgid "River size"
 msgstr "Elvestørrelse"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "River valley width"
+msgstr "Elvedybde"
 
 #: src/settings_translation_file.cpp
 msgid "Rollback recording"
@@ -5331,6 +5470,10 @@ msgstr ""
 #, fuzzy
 msgid "Sneaking speed"
 msgstr "Hoppehastighet"
+
+#: src/settings_translation_file.cpp
+msgid "Sneaking speed, in nodes per second."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Sound"
@@ -5750,6 +5893,10 @@ msgid "Varies steepness of cliffs."
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "Vertical climbing speed, in nodes per second."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Vertical screen synchronization."
 msgstr ""
 
@@ -5799,7 +5946,15 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "Walking and flying speed, in nodes per second."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Walking speed"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Walking, flying and climbing speed in fast mode, in nodes per second."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5827,16 +5982,19 @@ msgid "Waving water"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Waving water height"
-msgstr ""
+#, fuzzy
+msgid "Waving water wave height"
+msgstr "Bølgende vann"
 
 #: src/settings_translation_file.cpp
-msgid "Waving water length"
-msgstr ""
+#, fuzzy
+msgid "Waving water wave speed"
+msgstr "Bølgende blader"
 
 #: src/settings_translation_file.cpp
-msgid "Waving water speed"
-msgstr ""
+#, fuzzy
+msgid "Waving water wavelength"
+msgstr "Bølgende vann"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5959,10 +6117,6 @@ msgid "Y of upper limit of large caves."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Y of upper limit of lava in large caves."
-msgstr "Y-verdi for øvre grense for lava i store grotter."
-
-#: src/settings_translation_file.cpp
 msgid "Y-distance over which caverns expand to full size."
 msgstr "Y-avstand som en grotte kan øke i størrelse til full størrelse."
 
@@ -6006,120 +6160,17 @@ msgstr "Maksimal parallellisering i cURL"
 msgid "cURL timeout"
 msgstr "cURL-tidsgrense"
 
-#, fuzzy
-#~ msgid "Content Store"
-#~ msgstr "Lukk butikk"
+#~ msgid "View"
+#~ msgstr "Vis"
 
-#~ msgid "Disable MP"
-#~ msgstr "Fjern MP"
+#~ msgid "Advanced Settings"
+#~ msgstr "Avanserte innstillinger"
 
-#~ msgid "Enable MP"
-#~ msgstr "Aktiver MP"
+#~ msgid "is required by:"
+#~ msgstr "trengs av:"
 
-#~ msgid "No worldname given or no game selected"
-#~ msgstr "Mangler verdensnavn eller intet spill valgt"
-
-#~ msgid "\"$1\" is not a valid flag."
-#~ msgstr "\"$1\" er ikke en gyldig flagge."
-
-#~ msgid "Format is 3 numbers separated by commas and inside brackets."
-#~ msgstr "Formatet er 3 tall atskilt med komma og innenfor hakeparentesene."
-
-#~ msgid ""
-#~ "Format: <offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>), <seed>, "
-#~ "<octaves>, <persistence>"
-#~ msgstr ""
-#~ "Formattet: <forskyvning>, <skala>, (<spreX>, <spreY>, <spreZ>), <seed>, "
-#~ "<oktaver>, <utholdenhet>"
-
-#~ msgid "Optionally the lacunarity can be appended with a leading comma."
-#~ msgstr "Lacunarity kan eventuelt legges med ledende komma."
-
-#~ msgid "Please enter a comma seperated list of flags."
-#~ msgstr "Vennligst angi et komma separert liste av flagg."
-
-#~ msgid "Possible values are: "
-#~ msgstr "Mulige verdier er: "
-
-#~ msgid "Select path"
-#~ msgstr "Vis sti"
-
-#~ msgid "Page $1 of $2"
-#~ msgstr "Side $1 av $2"
-
-#~ msgid "Rating"
-#~ msgstr "Vurdering"
-
-#~ msgid "Shortname:"
-#~ msgstr "Kortnavnet:"
-
-#~ msgid "Successfully installed:"
-#~ msgstr "Installasjonen lyktes:"
-
-#~ msgid "Unsorted"
-#~ msgstr "Usortert"
-
-#~ msgid "re-Install"
-#~ msgstr "Reinstaller"
-
-#~ msgid "Local Game"
-#~ msgstr "Lokalt spill"
-
-#~ msgid "Uninstall selected modpack"
-#~ msgstr "Avinstaller valgt modpakke"
-
-#~ msgid "Play Online"
-#~ msgstr "Spill på nett"
-
-#~ msgid "Normal Mapping"
-#~ msgstr "Normal tilknytning"
-
-#~ msgid "No information available"
-#~ msgstr "Ingen informasjon tilgjengelig"
-
-#~ msgid "Volume changed to 0%"
-#~ msgstr "Lydstyrke endret til 0%"
-
-#~ msgid "Volume changed to 100%"
-#~ msgstr "Lydstyrke endret til 100%"
-
-#~ msgid "Use"
-#~ msgstr "Bruk"
-
-#~ msgid "Next"
-#~ msgstr "Neste"
-
-#~ msgid "Prior"
-#~ msgstr "Foregående"
-
-#~ msgid "Cloud height"
-#~ msgstr "Skyhøyde"
-
-#~ msgid "Console key"
-#~ msgstr "Konsolltast"
-
-#~ msgid "Crouch speed"
-#~ msgstr "Smygehastighet"
-
-#~ msgid "General"
-#~ msgstr "Generelt"
-
-#~ msgid "River noise -- rivers occur close to zero"
-#~ msgstr "Elvestøy -- elver dukker opp for verdier nær null"
-
-#~ msgid "Hide mp content"
-#~ msgstr "Skjul mp-innhold"
-
-#, fuzzy
-#~ msgid "If enabled, "
-#~ msgstr "aktivert"
-
-#~ msgid ""
-#~ "Warning: Some mods are not configured yet.\n"
-#~ "They will be enabled by default when you save the configuration.  "
-#~ msgstr ""
-#~ "Advarsel: Noen modifikasjoner er ikke konfigurert enda. \n"
-#~ "De vil bli aktivert som standard når du lagrer konfigurasjonen."
+#~ msgid "Configuration saved.  "
+#~ msgstr "Konfigurasjon lagret. "
 
 #~ msgid ""
 #~ "Warning: Some configured mods are missing.\n"
@@ -6128,14 +6179,123 @@ msgstr "cURL-tidsgrense"
 #~ "Advarsel: Noen konfigurerte modifikasjoner mangler. \n"
 #~ "Instillingene deres vil bli fjernet når du lagrer konfigurasjonen."
 
-#~ msgid "Configuration saved.  "
-#~ msgstr "Konfigurasjon lagret. "
+#~ msgid ""
+#~ "Warning: Some mods are not configured yet.\n"
+#~ "They will be enabled by default when you save the configuration.  "
+#~ msgstr ""
+#~ "Advarsel: Noen modifikasjoner er ikke konfigurert enda. \n"
+#~ "De vil bli aktivert som standard når du lagrer konfigurasjonen."
 
-#~ msgid "is required by:"
-#~ msgstr "trengs av:"
+#, fuzzy
+#~ msgid "If enabled, "
+#~ msgstr "aktivert"
 
-#~ msgid "Advanced Settings"
-#~ msgstr "Avanserte innstillinger"
+#~ msgid "Hide mp content"
+#~ msgstr "Skjul mp-innhold"
 
-#~ msgid "View"
-#~ msgstr "Vis"
+#~ msgid "River noise -- rivers occur close to zero"
+#~ msgstr "Elvestøy -- elver dukker opp for verdier nær null"
+
+#~ msgid "General"
+#~ msgstr "Generelt"
+
+#~ msgid "Crouch speed"
+#~ msgstr "Smygehastighet"
+
+#~ msgid "Console key"
+#~ msgstr "Konsolltast"
+
+#~ msgid "Cloud height"
+#~ msgstr "Skyhøyde"
+
+#~ msgid "Prior"
+#~ msgstr "Foregående"
+
+#~ msgid "Next"
+#~ msgstr "Neste"
+
+#~ msgid "Use"
+#~ msgstr "Bruk"
+
+#~ msgid "Volume changed to 100%"
+#~ msgstr "Lydstyrke endret til 100%"
+
+#~ msgid "Volume changed to 0%"
+#~ msgstr "Lydstyrke endret til 0%"
+
+#~ msgid "No information available"
+#~ msgstr "Ingen informasjon tilgjengelig"
+
+#~ msgid "Normal Mapping"
+#~ msgstr "Normal tilknytning"
+
+#~ msgid "Play Online"
+#~ msgstr "Spill på nett"
+
+#~ msgid "Uninstall selected modpack"
+#~ msgstr "Avinstaller valgt modpakke"
+
+#~ msgid "Local Game"
+#~ msgstr "Lokalt spill"
+
+#~ msgid "re-Install"
+#~ msgstr "Reinstaller"
+
+#~ msgid "Unsorted"
+#~ msgstr "Usortert"
+
+#~ msgid "Successfully installed:"
+#~ msgstr "Installasjonen lyktes:"
+
+#~ msgid "Shortname:"
+#~ msgstr "Kortnavnet:"
+
+#~ msgid "Rating"
+#~ msgstr "Vurdering"
+
+#~ msgid "Page $1 of $2"
+#~ msgstr "Side $1 av $2"
+
+#~ msgid "Select path"
+#~ msgstr "Vis sti"
+
+#~ msgid "Possible values are: "
+#~ msgstr "Mulige verdier er: "
+
+#~ msgid "Please enter a comma seperated list of flags."
+#~ msgstr "Vennligst angi et komma separert liste av flagg."
+
+#~ msgid "Optionally the lacunarity can be appended with a leading comma."
+#~ msgstr "Lacunarity kan eventuelt legges med ledende komma."
+
+#~ msgid ""
+#~ "Format: <offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>), <seed>, "
+#~ "<octaves>, <persistence>"
+#~ msgstr ""
+#~ "Formattet: <forskyvning>, <skala>, (<spreX>, <spreY>, <spreZ>), <seed>, "
+#~ "<oktaver>, <utholdenhet>"
+
+#~ msgid "Format is 3 numbers separated by commas and inside brackets."
+#~ msgstr "Formatet er 3 tall atskilt med komma og innenfor hakeparentesene."
+
+#~ msgid "\"$1\" is not a valid flag."
+#~ msgstr "\"$1\" er ikke en gyldig flagge."
+
+#~ msgid "No worldname given or no game selected"
+#~ msgstr "Mangler verdensnavn eller intet spill valgt"
+
+#~ msgid "Enable MP"
+#~ msgstr "Aktiver MP"
+
+#~ msgid "Disable MP"
+#~ msgstr "Fjern MP"
+
+#, fuzzy
+#~ msgid "Content Store"
+#~ msgstr "Lukk butikk"
+
+#~ msgid "Y of upper limit of lava in large caves."
+#~ msgstr "Y-verdi for øvre grense for lava i store grotter."
+
+#~ msgid "Select Package File:"
+#~ msgstr "Velg pakkefil:"
