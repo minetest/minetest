@@ -7023,10 +7023,11 @@ Privilege definition
 Used by `minetest.register_privilege`.
 
     {
-        description = "Can teleport",  -- Privilege description
+        description = "",
+        -- Privilege description
 
-        give_to_singleplayer = false,
-        -- Whether to grant the privilege to singleplayer (default true).
+        give_to_singleplayer = true,
+        -- Whether to grant the privilege to singleplayer.
 
         give_to_admin = true,
         -- Whether to grant the privilege to the server admin.
