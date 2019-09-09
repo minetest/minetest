@@ -98,6 +98,9 @@ struct DigParams
 };
 
 DigParams getDigParams(const ItemGroupList &groups,
+		const ToolCapabilities *tp, float time_from_last_punch);
+
+DigParams getDigParams(const ItemGroupList &groups,
 		const ToolCapabilities *tp);
 
 struct HitParams
