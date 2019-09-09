@@ -262,7 +262,7 @@ HitParams getHitParams(const ItemGroupList &armor_groups,
 		//infostream<<"f="<<f<<std::endl;
 		result_wear *= f;
 	}
-	u16 wear_i = 65535.0f * result_wear;
+	u16 wear_i = U16_MAX * result_wear;
 
 	return {damage, wear_i};
 }
