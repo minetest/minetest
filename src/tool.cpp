@@ -234,11 +234,6 @@ DigParams getDigParams(const ItemGroupList &groups,
 	return DigParams(result_diggable, result_time, wear_i, result_main_group);
 }
 
-DigParams getDigParams(const ItemGroupList &groups,
-		const ToolCapabilities *tp)
-{
-	return getDigParams(groups, tp, 1000000);
-}
 
 HitParams getHitParams(const ItemGroupList &armor_groups,
 		const ToolCapabilities *tp, float time_from_last_punch)
