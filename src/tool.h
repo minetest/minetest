@@ -98,7 +98,7 @@ struct DigParams
 };
 
 DigParams getDigParams(const ItemGroupList &groups,
-		const ToolCapabilities *tp, float time_from_last_punch);
+		const ToolCapabilities *tp, float time_from_last_punch = 1000000.0f);
 
 DigParams getDigParams(const ItemGroupList &groups,
 		const ToolCapabilities *tp);
