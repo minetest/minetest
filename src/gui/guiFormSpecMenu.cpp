@@ -57,6 +57,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client/guiscalingfilter.h"
 #include "guiEditBoxWithScrollbar.h"
 #include "intlGUIEditBox.h"
+#include "guiHyperText.h"
 
 #define MY_CHECKPOS(a,b)													\
 	if (v_pos.size() != 2) {												\
@@ -155,16 +156,15 @@ void GUIFormSpecMenu::removeChildren()
 {
 	const core::list<gui::IGUIElement*> &children = getChildren();
 
-	while(!children.empty()) {
+	while (!children.empty()) {
 		(*children.getLast())->remove();
 	}
 
-	if(m_tooltip_element) {
+	if (m_tooltip_element) {
 		m_tooltip_element->remove();
 		m_tooltip_element->drop();
-		m_tooltip_element = NULL;
+		m_tooltip_element = nullptr;
 	}
-
 }
 
 void GUIFormSpecMenu::setInitialFocus()
@@ -1318,7 +1318,6 @@ void GUIFormSpecMenu::parseSimpleField(parserData* data,
 void GUIFormSpecMenu::parseTextArea(parserData* data, std::vector<std::string>& parts,
 		const std::string &type)
 {
-
 	std::vector<std::string> v_pos = split(parts[0],',');
 	std::vector<std::string> v_geom = split(parts[1],',');
 	std::string name = parts[2];
@@ -1400,6 +1399,59 @@ void GUIFormSpecMenu::parseField(parserData* data, const std::string &element,
 		return;
 	}
 	errorstream<< "Invalid field element(" << parts.size() << "): '" << element << "'"  << std::endl;
+}
+
+void GUIFormSpecMenu::parseHyperText(parserData *data, const std::string &element)
+{
+	std::vector<std::string> parts = split(element, ';');
+
+	if (parts.size() != 4 && m_formspec_version < FORMSPEC_API_VERSION) {
+		errorstream << "Invalid text element(" << parts.size() << "): '" << element << "'"  << std::endl;
+		return;
+	}
+
+	std::vector<std::string> v_pos = split(parts[0], ',');
+	std::vector<std::string> v_geom = split(parts[1], ',');
+	std::string name = parts[2];
+	std::string text = parts[3];
+
+	MY_CHECKPOS("hypertext", 0);
+	MY_CHECKGEOM("hypertext", 1);
+
+	v2s32 pos;
+	v2s32 geom;
+
+	if (data->real_coordinates) {
+		pos = getRealCoordinateBasePos(false, v_pos);
+		geom = getRealCoordinateGeometry(v_geom);
+	} else {
+		pos = getElementBasePos(false, &v_pos);
+		pos -= padding;
+
+		pos.X += stof(v_pos[0]) * spacing.X;
+		pos.Y += stof(v_pos[1]) * spacing.Y + (m_btn_height * 2);
+
+		geom.X = (stof(v_geom[0]) * spacing.X) - (spacing.X - imgsize.X);
+		geom.Y = (stof(v_geom[1]) * imgsize.Y) - (spacing.Y - imgsize.Y);
+	}
+
+	core::rect<s32> rect = core::rect<s32>(pos.X, pos.Y, pos.X + geom.X, pos.Y + geom.Y);
+
+	if(m_form_src)
+		text = m_form_src->resolveText(text);
+
+	FieldSpec spec(
+		name,
+		utf8_to_wide(unescape_string(text)),
+		L"",
+		258 + m_fields.size()
+	);
+
+	spec.ftype = f_Unknown;
+	new GUIHyperText(
+		spec.flabel.c_str(), Environment, this, spec.fid, rect, m_client, m_tsrc);
+
+	m_fields.push_back(spec);
 }
 
 void GUIFormSpecMenu::parseLabel(parserData* data, const std::string &element)
@@ -2293,6 +2345,11 @@ void GUIFormSpecMenu::parseElement(parserData* data, const std::string &element)
 		return;
 	}
 
+	if (type == "hypertext") {
+		parseHyperText(data,description);
+		return;
+	}
+
 	if (type == "label") {
 		parseLabel(data,description);
 		return;
@@ -2879,8 +2936,8 @@ void GUIFormSpecMenu::drawList(const ListDrawSpec &s, int layer,
 			if (!item.empty()) {
 				// Draw item stack
 				drawItemStack(driver, m_font, item,
-					rect, &AbsoluteClippingRect, m_client,
-					rotation_kind);
+					rect, &AbsoluteClippingRect, m_client, rotation_kind);
+
 				// Draw tooltip
 				if (hovering && !m_selected_item) {
 					std::string tooltip = item.getDescription(m_client->idef());
@@ -2900,8 +2957,8 @@ void GUIFormSpecMenu::drawSelectedItem()
 
 	if (!m_selected_item) {
 		drawItemStack(driver, m_font, ItemStack(),
-			core::rect<s32>(v2s32(0, 0), v2s32(0, 0)),
-			NULL, m_client, IT_ROT_DRAGGED);
+				core::rect<s32>(v2s32(0, 0), v2s32(0, 0)), NULL,
+				m_client, IT_ROT_DRAGGED);
 		return;
 	}
 
@@ -3482,9 +3539,10 @@ bool GUIFormSpecMenu::preprocessEvent(const SEvent& event)
 			}
 		}
 	}
-	// Mouse wheel events: send to hovered element instead of focused
-	if(event.EventType==EET_MOUSE_INPUT_EVENT
-			&& event.MouseInput.Event == EMIE_MOUSE_WHEEL) {
+	// Mouse wheel and move events: send to hovered element instead of focused
+	if (event.EventType == EET_MOUSE_INPUT_EVENT &&
+			(event.MouseInput.Event == EMIE_MOUSE_WHEEL ||
+			 event.MouseInput.Event == EMIE_MOUSE_MOVED)) {
 		s32 x = event.MouseInput.X;
 		s32 y = event.MouseInput.Y;
 		gui::IGUIElement *hovered =
@@ -3492,7 +3550,7 @@ bool GUIFormSpecMenu::preprocessEvent(const SEvent& event)
 				core::position2d<s32>(x, y));
 		if (hovered && isMyChild(hovered)) {
 			hovered->OnEvent(event);
-			return true;
+			return event.MouseInput.Event == EMIE_MOUSE_WHEEL;
 		}
 	}
 
@@ -4041,8 +4099,8 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 		}
 		m_old_pointer = m_pointer;
 	}
-	if (event.EventType == EET_GUI_EVENT) {
 
+	if (event.EventType == EET_GUI_EVENT) {
 		if (event.GUIEvent.EventType == gui::EGET_TAB_CHANGED
 				&& isVisible()) {
 			// find the element that was clicked
@@ -4128,6 +4186,11 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 					s.fdefault = L"Changed";
 					acceptInput(quit_mode_no);
 					s.fdefault = L"";
+				} else if ((s.ftype == f_Unknown) &&
+						(s.fid == event.GUIEvent.Caller->getID())) {
+					s.send = true;
+					acceptInput();
+					s.send = false;
 				}
 			}
 		}

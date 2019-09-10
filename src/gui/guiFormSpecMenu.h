@@ -469,6 +469,7 @@ protected:
 	video::SColor m_default_tooltip_bgcolor;
 	video::SColor m_default_tooltip_color;
 
+	
 private:
 	IFormSource        *m_form_src;
 	TextDest           *m_text_dst;
@@ -529,6 +530,7 @@ private:
 	void parseSimpleField(parserData* data,std::vector<std::string> &parts);
 	void parseTextArea(parserData* data,std::vector<std::string>& parts,
 			const std::string &type);
+	void parseHyperText(parserData *data, const std::string &element);
 	void parseLabel(parserData* data, const std::string &element);
 	void parseVertLabel(parserData* data, const std::string &element);
 	void parseImageButton(parserData* data, const std::string &element,

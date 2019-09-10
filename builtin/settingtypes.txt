@@ -851,14 +851,9 @@ tooltip_append_itemname (Append item name) bool false
 #    If disabled, bitmap and XML vectors fonts are used instead.
 freetype (FreeType fonts) bool true
 
-#    Path to the default font.
-#    If “freetype” setting is enabled: Must be a TrueType font.
-#    If “freetype” setting is disabled: Must be a bitmap or XML vectors font.
-#    The fallback font will be used if the font cannot be loaded.
-font_path (Font path) filepath fonts/liberationsans.ttf
+font_bold (Font bold by default) bool false
 
-#    Font size of the default font in point (pt).
-font_size (Font size) int 16 1
+font_italic (Font italic by default) bool false
 
 #    Shadow offset (in pixels) of the default font. If 0, then shadow will not be drawn.
 font_shadow (Font shadow) int 1
@@ -866,20 +861,31 @@ font_shadow (Font shadow) int 1
 #    Opaqueness (alpha) of the shadow behind the default font, between 0 and 255.
 font_shadow_alpha (Font shadow alpha) int 127 0 255
 
-#    Path to the monospace font.
+#    Font size of the default font in point (pt).
+font_size (Font size) int 16 1
+
+#    Path to the default font.
 #    If “freetype” setting is enabled: Must be a TrueType font.
 #    If “freetype” setting is disabled: Must be a bitmap or XML vectors font.
-#    This font is used for e.g. the console and profiler screen.
-mono_font_path (Monospace font path) filepath fonts/liberationmono.ttf
+#    The fallback font will be used if the font cannot be loaded.
+font_path (Regular font path) filepath fonts/Arimo-Regular.ttf
+
+font_path_bold (Bold font path) filepath fonts/Arimo-Bold.ttf
+font_path_italic (Italic font path) filepath fonts/Arimo-Italic.ttf
+font_path_bolditalic (Bold and italic font path) filepath fonts/Arimo-BoldItalic.ttf
 
 #    Font size of the monospace font in point (pt).
 mono_font_size (Monospace font size) int 15 1
 
-#    Path of the fallback font.
+#    Path to the monospace font.
 #    If “freetype” setting is enabled: Must be a TrueType font.
 #    If “freetype” setting is disabled: Must be a bitmap or XML vectors font.
-#    This font will be used for certain languages or if the default font is unavailable.
-fallback_font_path (Fallback font path) filepath fonts/DroidSansFallbackFull.ttf
+#    This font is used for e.g. the console and profiler screen.
+mono_font_path (Monospace font path) filepath fonts/Cousine-Regular.ttf
+
+mono_font_path_bold (Bold monospace font path) filepath fonts/Cousine-Bold.ttf
+mono_font_path_italic (Italic monospace font path) filepath fonts/Cousine-Italic.ttf
+mono_font_path_bolditalic (Bold and italic monospace font path) filepath fonts/Cousine-BoldItalic.ttf
 
 #    Font size of the fallback font in point (pt).
 fallback_font_size (Fallback font size) int 15 1
@@ -889,6 +895,12 @@ fallback_font_shadow (Fallback font shadow) int 1
 
 #    Opaqueness (alpha) of the shadow behind the fallback font, between 0 and 255.
 fallback_font_shadow_alpha (Fallback font shadow alpha) int 128 0 255
+
+#    Path of the fallback font.
+#    If “freetype” setting is enabled: Must be a TrueType font.
+#    If “freetype” setting is disabled: Must be a bitmap or XML vectors font.
+#    This font will be used for certain languages or if the default font is unavailable.
+fallback_font_path (Fallback font path) filepath fonts/DroidSansFallbackFull.ttf
 
 #    Path to save screenshots at.
 screenshot_path (Screenshot folder) path
