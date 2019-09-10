@@ -258,7 +258,7 @@ HitParams getHitParams(const ItemGroupList &armor_groups,
 		const ToolGroupCap &cap = groupcap.second;
 
 		if (cap.uses != 0)
-			result_wear = 1.0f / cap.uses / pow(3.0f, (float)(cap.maxlevel - 1.0f));
+			result_wear = 1.0f / cap.uses / pow(3.0f, (double)(cap.maxlevel - 1.0f));
 		else
 			result_wear = 0.0f;
 	}
