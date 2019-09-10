@@ -387,10 +387,8 @@ void Server::handleCommand_ClientReady(NetworkPacket* pkt)
 			peer_id, major_ver, minor_ver, patch_ver,
 			full_ver);
 
-	if (pkt->getRemainingBytes() >= 2) {
+	if (pkt->getRemainingBytes() >= 2)
 		*pkt >> playersao->getPlayer()->formspec_version;
-		std::cout << "server: got version " << (int)playersao->getPlayer()->formspec_version << std::endl;
-	}
 
 	const std::vector<std::string> &players = m_clients.getPlayerNames();
 	NetworkPacket list_pkt(TOCLIENT_UPDATE_PLAYER_LIST, 0, peer_id);

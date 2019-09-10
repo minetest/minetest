@@ -2467,9 +2467,6 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 		}
 	}
 
-	std::cout << "GUIFormspec: formspec version " <<
-			(int)m_formspec_version << std::endl;
-
 	/* we need size first in order to calculate image scale */
 	mydata.explicit_size = false;
 	for (; i< elements.size(); i++) {
