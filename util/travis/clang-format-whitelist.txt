@@ -167,6 +167,8 @@ src/gui/guiEngine.h
 src/gui/guiFormSpecMenu.cpp
 src/gui/guiFormSpecMenu.h
 src/gui/guiKeyChangeMenu.cpp
+src/gui/guiHyperText.cpp
+src/gui/guiHyperText.h
 src/gui/guiMainMenu.h
 src/gui/guiPasswordChange.cpp
 src/gui/guiPathSelectMenu.cpp
