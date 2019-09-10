@@ -3819,6 +3819,7 @@ Utilities
           avg_jitter = 0.03,         -- average packet time jitter
           connection_uptime = 200,   -- seconds since client connected
           protocol_version = 32,     -- protocol version used by client
+          formspec_version = 2,      -- supported formspec version
           -- following information is available on debug build only!!!
           -- DO NOT USE IN MODS
           --ser_vers = 26,             -- serialization version used by client
