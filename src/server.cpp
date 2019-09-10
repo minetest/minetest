@@ -1568,7 +1568,7 @@ void Server::SendChatMessage(session_t peer_id, const ChatMessage &message)
 void Server::SendShowFormspecMessage(session_t peer_id, const std::string &formspec,
 	const std::string &formname)
 {
-	NetworkPacket pkt(TOCLIENT_SHOW_FORMSPEC, 0 , peer_id);
+	NetworkPacket pkt(TOCLIENT_SHOW_FORMSPEC, 0, peer_id);
 	if (formspec.empty()){
 		//the client should close the formspec
 		//but make sure there wasn't another one open in meantime
@@ -1579,7 +1579,7 @@ void Server::SendShowFormspecMessage(session_t peer_id, const std::string &forms
 		pkt.putLongString("");
 	} else {
 		m_formspec_state_data[peer_id] = formname;
-		pkt.putLongString(FORMSPEC_VERSION_STRING + formspec);
+		pkt.putLongString(formspec);
 	}
 	pkt << formname;
 
@@ -1908,7 +1908,8 @@ void Server::SendPlayerInventoryFormspec(session_t peer_id)
 		return;
 
 	NetworkPacket pkt(TOCLIENT_INVENTORY_FORMSPEC, 0, peer_id);
-	pkt.putLongString(FORMSPEC_VERSION_STRING + player->inventory_formspec);
+	pkt.putLongString(player->inventory_formspec);
+
 	Send(&pkt);
 }
 
@@ -1920,7 +1921,7 @@ void Server::SendPlayerFormspecPrepend(session_t peer_id)
 		return;
 
 	NetworkPacket pkt(TOCLIENT_FORMSPEC_PREPEND, 0, peer_id);
-	pkt << FORMSPEC_VERSION_STRING + player->formspec_prepend;
+	pkt << player->formspec_prepend;
 	Send(&pkt);
 }
 

@@ -1959,6 +1959,15 @@ Examples
 Elements
 --------
 
+### `formspec_version[<version>]`
+
+* Set the formspec version to a certain number. If not specified,
+  version 1 is assumed.
+* Must be specified before `size` element.
+* Clients older than this version can neither show newer elements nor display
+  elements with new arguments correctly.
+* Available since feature `formspec_version_element`.
+
 ### `size[<W>,<H>,<fixed_size>]`
 
 * Define the size of the menu in inventory slots
@@ -1995,6 +2004,7 @@ Elements
 
 ### `real_coordinates[<bool>]`
 
+* INFORMATION: Enable it automatically using `formspec_version` version 2 or newer.
 * When set to true, all following formspec elements will use the new coordinate system.
 * If used immediately after `size`, `position`, `anchor`, and `no_prepend` elements
   (if present), the form size will use the new coordinate system.
@@ -2114,6 +2124,7 @@ Elements
   image shall be sized 8 times 16px  times  4 times 16px
 * If `auto_clip` is `true`, the background is clipped to the formspec size
   (`x` and `y` are used as offset values, `w` and `h` are ignored)
+* Available since formspec version 2
 
 ### `pwdfield[<X>,<Y>;<W>,<H>;<name>;<label>]`
 
@@ -3788,6 +3799,8 @@ Utilities
           -- Specifies whether binary data can be uploaded or downloaded using
           -- the HTTP API (5.1.0)
           httpfetch_binary_data = true,
+          -- Whether formspec_version[<version>] may be used (5.1.0)
+          formspec_version_element = true,
       }
 
 * `minetest.has_feature(arg)`: returns `boolean, missing_features`
@@ -3807,6 +3820,7 @@ Utilities
           avg_jitter = 0.03,         -- average packet time jitter
           connection_uptime = 200,   -- seconds since client connected
           protocol_version = 32,     -- protocol version used by client
+          formspec_version = 2,      -- supported formspec version
           -- following information is available on debug build only!!!
           -- DO NOT USE IN MODS
           --ser_vers = 26,             -- serialization version used by client

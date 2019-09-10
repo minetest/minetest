@@ -13,6 +13,7 @@ core.features = {
 	object_use_texture_alpha = true,
 	object_independent_selectionbox = true,
 	httpfetch_binary_data = true,
+	formspec_version_element = true,
 }
 
 function core.has_feature(arg)

@@ -198,6 +198,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	PROTOCOL VERSION 38:
 		Incremental inventory sending mode
 		Unknown inventory serialization fields no longer throw an error
+		Mod-specific formspec version
 */
 
 #define LATEST_PROTOCOL_VERSION 38
@@ -219,7 +220,16 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define PASSWORD_SIZE 28       // Maximum password length. Allows for
                                // base64-encoded SHA-1 (27+\0).
 
-#define FORMSPEC_API_VERSION 1
+/*
+	Changes by FORMSPEC_API_VERSION:
+
+	FORMSPEC VERSION 1:
+		(too much)
+	FORMSPEC VERSION 2:
+		Forced real coordinates
+		background[]: 9-slice scaling parameters
+*/
+#define FORMSPEC_API_VERSION 2
 #define FORMSPEC_VERSION_STRING "formspec_version[" TOSTRING(FORMSPEC_API_VERSION) "]"
 
 #define TEXTURENAME_ALLOWED_CHARS "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_.-"

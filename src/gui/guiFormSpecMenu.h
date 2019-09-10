@@ -472,7 +472,7 @@ protected:
 private:
 	IFormSource        *m_form_src;
 	TextDest           *m_text_dst;
-	u32                 m_formspec_version = 0;
+	u16                 m_formspec_version = 1;
 	std::string         m_focused_element = "";
 	JoystickController *m_joystick;
 
@@ -591,7 +591,7 @@ public:
 
 	void setForm(const std::string &formspec)
 	{
-		m_formspec = FORMSPEC_VERSION_STRING + formspec;
+		m_formspec = formspec;
 	}
 
 	const std::string &getForm() const

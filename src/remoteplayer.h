@@ -130,6 +130,9 @@ public:
 
 	u16 protocol_version = 0;
 
+	// v1 for clients older than 5.1.0-dev
+	u16 formspec_version = 1;
+
 	session_t getPeerId() const { return m_peer_id; }
 
 	void setPeerId(session_t peer_id) { m_peer_id = peer_id; }
