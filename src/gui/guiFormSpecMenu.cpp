@@ -2467,6 +2467,9 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 		}
 	}
 
+	std::cout << "GUIFormspec: formspec version " <<
+			(int)m_formspec_version << std::endl;
+
 	/* we need size first in order to calculate image scale */
 	mydata.explicit_size = false;
 	for (; i< elements.size(); i++) {
@@ -2503,7 +2506,7 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 	}
 
 	/* Copy of the "real_coordinates" element for after the form size. */
-	mydata.real_coordinates = false;
+	mydata.real_coordinates = m_formspec_version >= 2;
 	for (; i < elements.size(); i++) {
 		std::vector<std::string> parts = split(elements[i], '[');
 		std::string name = trim(parts[0]);

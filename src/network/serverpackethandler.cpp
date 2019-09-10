@@ -265,11 +265,12 @@ void Server::handleCommand_Init(NetworkPacket* pkt)
 		<< auth_mechs << std::endl;
 
 	NetworkPacket resp_pkt(TOCLIENT_HELLO, 1 + 4
-		+ legacyPlayerNameCasing.size(), pkt->getPeerId());
+		+ legacyPlayerNameCasing.size() + 2, pkt->getPeerId());
 
 	u16 depl_compress_mode = NETPROTO_COMPRESSION_NONE;
 	resp_pkt << depl_serial_v << depl_compress_mode << net_proto_version
 		<< auth_mechs << legacyPlayerNameCasing;
+	resp_pkt << (u16)FORMSPEC_API_VERSION;
 
 	Send(&resp_pkt);
 
@@ -385,6 +386,11 @@ void Server::handleCommand_ClientReady(NetworkPacket* pkt)
 	m_clients.setClientVersion(
 			peer_id, major_ver, minor_ver, patch_ver,
 			full_ver);
+
+	if (pkt->getRemainingBytes() >= 2) {
+		*pkt >> playersao->getPlayer()->formspec_version;
+		std::cout << "server: got version " << (int)playersao->getPlayer()->formspec_version << std::endl;
+	}
 
 	const std::vector<std::string> &players = m_clients.getPlayerNames();
 	NetworkPacket list_pkt(TOCLIENT_UPDATE_PLAYER_LIST, 0, peer_id);
