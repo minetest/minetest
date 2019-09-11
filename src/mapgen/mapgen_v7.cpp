@@ -65,6 +65,9 @@ MapgenV7::MapgenV7(MapgenV7Params *params, EmergeManager *emerge)
 	cave_width           = params->cave_width;
 	large_cave_depth     = params->large_cave_depth;
 	lava_depth           = params->lava_depth;
+	large_cave_num_min   = params->large_cave_num_min;
+	large_cave_num_max   = params->large_cave_num_max;
+	large_cave_flooded   = params->large_cave_flooded;
 	cavern_limit         = params->cavern_limit;
 	cavern_taper         = params->cavern_taper;
 	cavern_threshold     = params->cavern_threshold;
@@ -173,6 +176,9 @@ void MapgenV7Params::readParams(const Settings *settings)
 	settings->getFloatNoEx("mgv7_cave_width",           cave_width);
 	settings->getS16NoEx("mgv7_large_cave_depth",       large_cave_depth);
 	settings->getS16NoEx("mgv7_lava_depth",             lava_depth);
+	settings->getU16NoEx("mgv7_large_cave_num_min",     large_cave_num_min);
+	settings->getU16NoEx("mgv7_large_cave_num_max",     large_cave_num_max);
+	settings->getFloatNoEx("mgv7_large_cave_flooded",   large_cave_flooded);
 	settings->getFloatNoEx("mgv7_float_mount_density",  float_mount_density);
 	settings->getFloatNoEx("mgv7_float_mount_height",   float_mount_height);
 	settings->getFloatNoEx("mgv7_float_mount_exponent", float_mount_exponent);
@@ -209,6 +215,9 @@ void MapgenV7Params::writeParams(Settings *settings) const
 	settings->setFloat("mgv7_cave_width",           cave_width);
 	settings->setS16("mgv7_large_cave_depth",       large_cave_depth);
 	settings->setS16("mgv7_lava_depth",             lava_depth);
+	settings->setU16("mgv7_large_cave_num_min",     large_cave_num_min);
+	settings->setU16("mgv7_large_cave_num_max",     large_cave_num_max);
+	settings->setFloat("mgv7_large_cave_flooded",   large_cave_flooded);
 	settings->setFloat("mgv7_float_mount_density",  float_mount_density);
 	settings->setFloat("mgv7_float_mount_height",   float_mount_height);
 	settings->setFloat("mgv7_float_mount_exponent", float_mount_exponent);

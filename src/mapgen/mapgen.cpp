@@ -847,11 +847,11 @@ void MapgenBasic::generateCavesRandomWalk(s16 max_stone_y, s16 large_cave_depth)
 		return;
 
 	PseudoRandom ps(blockseed + 21343);
-	u32 bruises_count = ps.range(0, 2);
+	u32 bruises_count = ps.range(large_cave_num_min, large_cave_num_max);
 
 	for (u32 i = 0; i < bruises_count; i++) {
 		CavesRandomWalk cave(ndef, &gennotify, seed, water_level,
-			c_water_source, c_lava_source, lava_depth, biomegen);
+			c_water_source, c_lava_source, large_cave_flooded, lava_depth, biomegen);
 
 		cave.makeCave(vm, node_min, node_max, &ps, true, max_stone_y,
 			heightmap);
