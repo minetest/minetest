@@ -265,12 +265,11 @@ void Server::handleCommand_Init(NetworkPacket* pkt)
 		<< auth_mechs << std::endl;
 
 	NetworkPacket resp_pkt(TOCLIENT_HELLO, 1 + 4
-		+ legacyPlayerNameCasing.size() + 2, pkt->getPeerId());
+		+ legacyPlayerNameCasing.size(), pkt->getPeerId());
 
 	u16 depl_compress_mode = NETPROTO_COMPRESSION_NONE;
 	resp_pkt << depl_serial_v << depl_compress_mode << net_proto_version
 		<< auth_mechs << legacyPlayerNameCasing;
-	resp_pkt << (u16)FORMSPEC_API_VERSION;
 
 	Send(&resp_pkt);
 

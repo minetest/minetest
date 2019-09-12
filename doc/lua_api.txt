@@ -2124,6 +2124,7 @@ Elements
   image shall be sized 8 times 16px  times  4 times 16px
 * If `auto_clip` is `true`, the background is clipped to the formspec size
   (`x` and `y` are used as offset values, `w` and `h` are ignored)
+* Available since formspec version 2
 
 ### `pwdfield[<X>,<Y>;<W>,<H>;<name>;<label>]`
 

@@ -227,6 +227,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		(too much)
 	FORMSPEC VERSION 2:
 		Forced real coordinates
+		background[]: 9-slice scaling parameters
 */
 #define FORMSPEC_API_VERSION 2
 #define FORMSPEC_VERSION_STRING "formspec_version[" TOSTRING(FORMSPEC_API_VERSION) "]"
