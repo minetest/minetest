@@ -333,11 +333,11 @@ public:
 	// disconnect client when CSM failed.
 	const std::string &accessDeniedReason() const { return m_access_denied_reason; }
 
-	bool itemdefReceived()
+	const bool itemdefReceived() const
 	{ return m_itemdef_received; }
-	bool nodedefReceived()
+	const bool nodedefReceived() const
 	{ return m_nodedef_received; }
-	bool mediaReceived()
+	const bool mediaReceived() const
 	{ return !m_media_downloader; }
 	const bool activeObjectsReceived() const
 	{ return m_activeobjects_received; }
