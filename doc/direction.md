@@ -68,6 +68,7 @@ The engine is designed for games which fit these rough limitations:
 * The world consists of a 3d grid of discrete positions, the distance between each position
   is called a unit length.
 * Each position is filled by exactly one node. Positions that appear to be empty are actually filled with airlike nodes.
+  Nodes may exceed their bounds, but still belong to one position.
 * The visible size of a unit length may change according to the game's requirements, but the engine does
   not aim to promise good performance for visible sizes far deviating the default.
 * Games will tend to define the unit length distance a meaning, for example, Minetest Game defines.
