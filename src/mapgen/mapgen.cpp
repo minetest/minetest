@@ -889,19 +889,21 @@ void MapgenBasic::generateDungeons(s16 max_stone_y)
 		NoiseParams(-0.4, 1.0, v3f(40.0, 40.0, 40.0), 32474, 6, 1.1, 2.0);
 
 	dp.seed                = seed;
-	dp.num_dungeons        = num_dungeons;
 	dp.only_in_ground      = true;
+	dp.num_dungeons        = num_dungeons;
+	dp.notifytype          = GENNOTIFY_DUNGEON;
 	dp.num_rooms           = ps.range(2, 16);
-	dp.room_size_min       = v3s16(6, 5, 6);
-	dp.room_size_max       = v3s16(10, 6, 10);
-	dp.room_size_large_min = v3s16(10, 8, 10);
-	dp.room_size_large_max = v3s16(18, 16, 18);
-	dp.large_room_chance   = (ps.range(1, 4) == 1) ? 1 : 0;
-	dp.holesize            = v3s16(2, 3, 2);
+	dp.room_size_min       = v3s16(5, 5, 5);
+	dp.room_size_max       = v3s16(12, 6, 12);
+	dp.room_size_large_min = v3s16(12, 6, 12);
+	dp.room_size_large_max = v3s16(16, 16, 16);
+	dp.large_room_chance   = (ps.range(1, 4) == 1) ? 8 : 0;
+	dp.diagonal_dirs       = ps.range(1, 8) == 1;
+	// Diagonal corridors must have 'hole' width >=2 to be passable
+	u8 holewidth           = (dp.diagonal_dirs) ? 2 : ps.range(1, 2);
+	dp.holesize            = v3s16(holewidth, 3, holewidth);
 	dp.corridor_len_min    = 1;
 	dp.corridor_len_max    = 13;
-	dp.diagonal_dirs       = ps.range(1, 12) == 1;
-	dp.notifytype          = GENNOTIFY_DUNGEON;
 
 	// Get biome at mapchunk midpoint
 	v3s16 chunk_mid = node_min + (node_max - node_min) / v3s16(2, 2, 2);
