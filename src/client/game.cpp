@@ -3981,7 +3981,7 @@ void Game::extendedResourceCleanup()
 void Game::showDeathFormspec()
 {
 	static std::string formspec_str =
-		std::string(FORMSPEC_VERSION_STRING) +
+		std::string("formspec_version[1]") +
 		SIZE_TAG
 		"bgcolor[#320000b4;true]"
 		"label[4.85,1.35;" + gettext("You died") + "]"
@@ -4055,7 +4055,7 @@ void Game::showPauseMenu()
 	float ypos = simple_singleplayer_mode ? 0.7f : 0.1f;
 	std::ostringstream os;
 
-	os << FORMSPEC_VERSION_STRING << SIZE_TAG
+	os << "formspec_version[1]" << SIZE_TAG
 		<< "button_exit[4," << (ypos++) << ";3,0.5;btn_continue;"
 		<< strgettext("Continue") << "]";
 
