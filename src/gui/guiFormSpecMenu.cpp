@@ -2651,7 +2651,7 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 	if (enable_prepends) {
 		// Backup the coordinates so that prepends can use the coordinates of choice.
 		bool rc_backup = mydata.real_coordinates;
-		bool version_backup = m_formspec_version;
+		u16 version_backup = m_formspec_version;
 		mydata.real_coordinates = false; // Old coordinates by default.
 
 		std::vector<std::string> prepend_elements = split(m_formspec_prepend, ']');
