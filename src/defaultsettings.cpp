@@ -194,7 +194,7 @@ void set_default_settings(Settings *settings)
 #endif
 	settings->setDefault("cinematic", "false");
 	settings->setDefault("camera_smoothing", "0");
-	settings->setDefault("camera_offset", "200");
+	settings->setDefault("camera_offset", "512");
 	settings->setDefault("cinematic_camera_smoothing", "0.7");
 	settings->setDefault("enable_clouds", "true");
 	settings->setDefault("view_bobbing_amount", "1.0");

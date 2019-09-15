@@ -617,7 +617,7 @@ near_plane (Near clipping plane) float 0.1 0 0.5
 #   Rendering glitches are possible at large distances from the center of the map.
 #   This setting forces a reset of the map at the specified distance.
 #   The max setting disables the logic.
-camera_offset (Camera offset) int 200 100 31000
+camera_offset (Camera offset) int 512 100 31000
 
 #    Width component of the initial window size.
 screen_w (Screen width) int 1024
