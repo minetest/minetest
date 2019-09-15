@@ -36,7 +36,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "fontengine.h"
 #include "script/scripting_client.h"
 
-#define CAMERA_OFFSET_STEP 200
+static thread_local const s16 CAMERA_OFFSET_STEP = g_settings->getS16("camera_offset");
 #define WIELDMESH_OFFSET_X 55.0f
 #define WIELDMESH_OFFSET_Y -35.0f
 
