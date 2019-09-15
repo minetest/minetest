@@ -2092,11 +2092,15 @@ Elements
 
 * Show an inventory image of registered item/node
 
-### `bgcolor[<color>;<fullscreen>]`
+### `bgcolor[<color>]`
 
 * Sets background color of formspec as `ColorString`
-* If `true`, the background color is drawn fullscreen (does not affect the size
-  of the formspec).
+
+### `bgcolor[<color>;<fullscreen>]`
+
+* If `color` is a valid `ColorString`, the fullscreen background color
+  is set to `color`.
+* If `fullscreen` is a true value, the fullscreen background color is drawn.
 
 ### `background[<X>,<Y>;<W>,<H>;<texture name>]`
 
