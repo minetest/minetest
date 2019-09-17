@@ -348,6 +348,13 @@ void IMoveAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 
 	/* If no items will be moved, don't go further */
 	if (count == 0) {
+		// Undo client prediction. See 'clientApply'
+		if (from_inv.type == InventoryLocation::PLAYER)
+			list_from->setModified();
+
+		if (to_inv.type == InventoryLocation::PLAYER)
+			list_to->setModified();
+
 		infostream<<"IMoveAction::apply(): move was completely disallowed:"
 				<<" count="<<old_count
 				<<" from inv=\""<<from_inv.dump()<<"\""
@@ -658,8 +665,10 @@ void IDropAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 
 		if (actually_dropped_count == 0) {
 			infostream<<"Actually dropped no items"<<std::endl;
-			// Revert client prediction
-			mgr->setInventoryModified(from_inv);
+
+			// Revert client prediction. See 'clientApply'
+			if (from_inv.type == InventoryLocation::PLAYER)
+				list_from->setModified();
 			return;
 		}
 

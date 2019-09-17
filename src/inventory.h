@@ -323,11 +323,14 @@ public:
 		return false;
 	}
 
-	inline void setModified(bool dirty)
+	inline void setModified(bool dirty = true)
 	{
 		m_dirty = dirty;
-		for (const auto &list : m_lists)
-			list->setModified(dirty);
+		// Set all as handled
+		if (!dirty) {
+			for (const auto &list : m_lists)
+				list->setModified(dirty);
+		}
 	}
 private:
 	// -1 if not found
