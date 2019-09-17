@@ -508,10 +508,11 @@ texture_min_size (Minimum texture size) int 64
 #    when set to higher number than 0.
 fsaa (FSAA) enum 0 0,1,2,4,8,16
 
-#    Undersampling is similar to using lower screen resolution, but it applies
+#    Undersampling is similar to using a lower screen resolution, but it applies
 #    to the game world only, keeping the GUI intact.
-#    It should give significant performance boost at the cost of less detailed image.
-undersampling (Undersampling) enum 0 0,2,3,4
+#    It should give a significant performance boost at the cost of less detailed image.
+#    Higher values result in a less detailed image.
+undersampling (Undersampling) int 1 1 8
 
 [**Shaders]
 
