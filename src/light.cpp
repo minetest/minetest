@@ -55,16 +55,16 @@ float decode_light_f(float x)
 void set_light_table(float gamma)
 {
 // Lighting curve derivatives
-	const float alpha = g_settings->getFloat("lighting_alpha");
-	const float beta  = g_settings->getFloat("lighting_beta");
+	const float alpha = rangelim(g_settings->getFloat("lighting_alpha"), 0.0f, 4.0f);
+	const float beta  = rangelim(g_settings->getFloat("lighting_beta"), 0.0f, 4.0f);
 // Lighting curve coefficients
 	params.a = alpha + beta - 2.0f;
 	params.b = 3.0f - 2.0f * alpha - beta;
 	params.c = alpha;
 // Mid boost
-	params.boost = g_settings->getFloat("lighting_boost");
-	params.center = g_settings->getFloat("lighting_boost_center");
-	params.sigma = g_settings->getFloat("lighting_boost_spread");
+	params.boost = rangelim(g_settings->getFloat("lighting_boost"), 0.0f, 1.0f);
+	params.center = rangelim(g_settings->getFloat("lighting_boost_center"), 0.0f, 1.0f);
+	params.sigma = rangelim(g_settings->getFloat("lighting_boost_spread"), 0.0f, 1.0f);
 // Gamma correction
 	params.gamma = rangelim(gamma, 0.5f, 10.0f);
 
@@ -74,8 +74,8 @@ void set_light_table(float gamma)
 
 	for (size_t i = 1; i < LIGHT_SUN; i++) {
 		float brightness = decode_light_f((float)i / LIGHT_SUN);
-		// Strictly speaking, rangelim is not necessary here—if the implementation
-		// is conforming. But we don’t want problems in any case.
+		// Strictly speaking, rangelim is not necessary here if the implementation
+		// is conforming. But we don't want problems in any case.
 		light_LUT[i] = rangelim((s32)(255.0f * brightness), 0, 255);
 		// Ensure light brightens with each level
 		if (i > 1 && light_LUT[i] <= light_LUT[i - 1])
