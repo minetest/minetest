@@ -646,8 +646,6 @@ void IDropAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 	if (src_can_take_count != -1 && src_can_take_count < take_count)
 		take_count = src_can_take_count;
 
-	int actually_dropped_count = 0;
-
 	// Update item due executed callbacks
 	src_item = list_from->getItem(from_i);
 
@@ -656,10 +654,12 @@ void IDropAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 	item1.count = take_count;
 	if(PLAYER_TO_SA(player)->item_OnDrop(item1, player,
 				player->getBasePosition())) {
-		actually_dropped_count = take_count - item1.count;
+		int actually_dropped_count = take_count - item1.count;
 
 		if (actually_dropped_count == 0) {
 			infostream<<"Actually dropped no items"<<std::endl;
+			// Revert client prediction
+			mgr->setInventoryModified(from_inv);
 			return;
 		}
 
@@ -670,9 +670,10 @@ void IDropAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 
 			if (item2.count != actually_dropped_count)
 				errorstream<<"Could not take dropped count of items"<<std::endl;
-
-			mgr->setInventoryModified(from_inv);
 		}
+
+		src_item.count = actually_dropped_count;
+		mgr->setInventoryModified(from_inv);
 	}
 
 	infostream<<"IDropAction::apply(): dropped "
@@ -681,7 +682,6 @@ void IDropAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 			<<" i="<<from_i
 			<<std::endl;
 
-	src_item.count = actually_dropped_count;
 
 	/*
 		Report drop to endpoints

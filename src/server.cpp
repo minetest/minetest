@@ -1151,6 +1151,7 @@ void Server::setInventoryModified(const InventoryLocation &loc)
 			return;
 
 		player->setModified(true);
+		player->inventory.setModified(true);
 		// Updates are sent in ServerEnvironment::step()
 	}
 		break;
