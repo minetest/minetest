@@ -785,17 +785,17 @@ Inventory::~Inventory()
 
 void Inventory::clear()
 {
-	m_dirty = true;
 	for (auto &m_list : m_lists) {
 		delete m_list;
 	}
 	m_lists.clear();
+	setModified();
 }
 
 Inventory::Inventory(IItemDefManager *itemdef)
 {
-	m_dirty = false;
 	m_itemdef = itemdef;
+	setModified();
 }
 
 Inventory::Inventory(const Inventory &other)
@@ -808,12 +808,12 @@ Inventory & Inventory::operator = (const Inventory &other)
 	// Gracefully handle self assignment
 	if(this != &other)
 	{
-		m_dirty = true;
 		clear();
 		m_itemdef = other.m_itemdef;
 		for (InventoryList *list : other.m_lists) {
 			m_lists.push_back(new InventoryList(*list));
 		}
+		setModified();
 	}
 	return *this;
 }
@@ -833,6 +833,7 @@ bool Inventory::operator == (const Inventory &other) const
 
 void Inventory::serialize(std::ostream &os, bool incremental) const
 {
+	//std::cout << "Serialize " << (int)incremental << ", n=" << m_lists.size() << std::endl;
 	for (const InventoryList *list : m_lists) {
 		if (!incremental || list->checkModified()) {
 			os << "List " << list->getName() << " " << list->getSize() << "\n";
@@ -867,7 +868,7 @@ void Inventory::deSerialize(std::istream &is)
 
 				delete list;
 				list = nullptr;
-				m_dirty = true;
+				setModified();
 			}
 			m_lists.erase(std::remove(m_lists.begin(), m_lists.end(),
 					nullptr), m_lists.end());
@@ -920,7 +921,7 @@ void Inventory::deSerialize(std::istream &is)
 
 InventoryList * Inventory::addList(const std::string &name, u32 size)
 {
-	m_dirty = true;
+	setModified();
 	s32 i = getListIndex(name);
 	if(i != -1)
 	{
@@ -966,7 +967,8 @@ bool Inventory::deleteList(const std::string &name)
 	s32 i = getListIndex(name);
 	if(i == -1)
 		return false;
-	m_dirty = true;
+
+	setModified();
 	delete m_lists[i];
 	m_lists.erase(m_lists.begin() + i);
 	return true;
