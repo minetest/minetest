@@ -2233,30 +2233,23 @@ void Game::toggleFog()
 
 void Game::toggleDebug()
 {
-	// Initial / 4x toggle: Chat only
+	// Initial / 3x toggle: Chat only
 	// 1x toggle: Debug text with chat
-	// 2x toggle: Debug text with profiler graph
-	// 3x toggle: Debug text and wireframe
+	// 2x toggle: Debug text with chat and wireframe
 	if (!m_game_ui->m_flags.show_debug) {
 		m_game_ui->m_flags.show_debug = true;
-		m_game_ui->m_flags.show_profiler_graph = false;
 		draw_control->show_wireframe = false;
 		m_game_ui->showTranslatedStatusText("Debug info shown");
-	} else if (!m_game_ui->m_flags.show_profiler_graph && !draw_control->show_wireframe) {
-		m_game_ui->m_flags.show_profiler_graph = true;
-		m_game_ui->showTranslatedStatusText("Profiler graph shown");
 	} else if (!draw_control->show_wireframe && client->checkPrivilege("debug")) {
-		m_game_ui->m_flags.show_profiler_graph = false;
 		draw_control->show_wireframe = true;
 		m_game_ui->showTranslatedStatusText("Wireframe shown");
 	} else {
 		m_game_ui->m_flags.show_debug = false;
-		m_game_ui->m_flags.show_profiler_graph = false;
 		draw_control->show_wireframe = false;
 		if (client->checkPrivilege("debug")) {
-			m_game_ui->showTranslatedStatusText("Debug info, profiler graph, and wireframe hidden");
+			m_game_ui->showTranslatedStatusText("Debug info and wireframe hidden");
 		} else {
-			m_game_ui->showTranslatedStatusText("Debug info and profiler graph hidden");
+			m_game_ui->showTranslatedStatusText("Debug info hidden");
 		}
 	}
 }

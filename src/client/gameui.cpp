@@ -288,6 +288,7 @@ void GameUI::toggleProfiler()
 	updateProfiler();
 
 	if (m_profiler_current_page != 0) {
+		m_flags.show_profiler_graph = true;
 		wchar_t buf[255];
 		const wchar_t* str = wgettext("Profiler shown (page %d of %d)");
 		swprintf(buf, sizeof(buf) / sizeof(wchar_t), str,
@@ -295,6 +296,7 @@ void GameUI::toggleProfiler()
 		delete[] str;
 		showStatusText(buf);
 	} else {
+		m_flags.show_profiler_graph = false;
 		showTranslatedStatusText("Profiler hidden");
 	}
 }
