@@ -908,17 +908,20 @@ bool Settings::setNoiseParams(const std::string &name,
 
 bool Settings::remove(const std::string &name)
 {
-	MutexAutoLock lock(m_mutex);
+	// Lock as short as possible, unlock before doCallbacks()
+	m_mutex.lock();
 
 	SettingEntries::iterator it = m_settings.find(name);
 	if (it != m_settings.end()) {
 		delete it->second.group;
 		m_settings.erase(it);
+		m_mutex.unlock();
 
 		doCallbacks(name);
 		return true;
 	}
 
+	m_mutex.unlock();
 	return false;
 }
 
