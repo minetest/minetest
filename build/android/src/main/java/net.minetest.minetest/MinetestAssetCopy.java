@@ -53,6 +53,14 @@ public class MinetestAssetCopy extends Activity {
 		super.onResume();
 		makeFullScreen();
 	}
+	
+	@Override
+    	protected void onDestroy() {
+		super.onDestroy();
+		if (m_AssetCopy != null) {
+			m_AssetCopy.cancel(true);
+		}
+    	}
 
 	public void makeFullScreen() {
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
@@ -77,7 +85,7 @@ public class MinetestAssetCopy extends Activity {
 		return this;
 	}
 
-	private class copyAssetTask extends AsyncTask<String, Integer, String> {
+	private static class copyAssetTask extends AsyncTask<String, Integer, String> {
 		boolean m_copy_started = false;
 		String m_Foldername = "media";
 		Vector<String> m_foldernames;
