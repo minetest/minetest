@@ -1113,7 +1113,7 @@ void Game::run()
 		updateCamera(draw_times.busy_time, dtime);
 		updateSound(dtime);
 		processPlayerInteraction(dtime, m_game_ui->m_flags.show_hud,
-			m_game_ui->m_flags.show_debug);
+			m_game_ui->m_flags.show_basic_debug);
 		updateFrame(&graph, &stats, dtime, cam_view);
 		updateProfilerGraphs(&graph);
 
@@ -2235,16 +2235,21 @@ void Game::toggleDebug()
 {
 	// Initial / 3x toggle: Chat only
 	// 1x toggle: Debug text with chat
-	// 2x toggle: Debug text with chat and wireframe
-	if (!m_game_ui->m_flags.show_debug) {
-		m_game_ui->m_flags.show_debug = true;
+	// 2x toggle: Debug text with chat and wireframe (needs "debug" priv)
+	if (!m_game_ui->m_flags.show_minimal_debug) {
+		m_game_ui->m_flags.show_minimal_debug = true;
+		if (client->checkPrivilege("debug")) {
+			m_game_ui->m_flags.show_basic_debug = true;
+		}
 		draw_control->show_wireframe = false;
 		m_game_ui->showTranslatedStatusText("Debug info shown");
 	} else if (!draw_control->show_wireframe && client->checkPrivilege("debug")) {
+		m_game_ui->m_flags.show_basic_debug = true;
 		draw_control->show_wireframe = true;
 		m_game_ui->showTranslatedStatusText("Wireframe shown");
 	} else {
-		m_game_ui->m_flags.show_debug = false;
+		m_game_ui->m_flags.show_minimal_debug = false;
+		m_game_ui->m_flags.show_basic_debug = false;
 		draw_control->show_wireframe = false;
 		if (client->checkPrivilege("debug")) {
 			m_game_ui->showTranslatedStatusText("Debug info and wireframe hidden");

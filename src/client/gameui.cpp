@@ -92,7 +92,8 @@ void GameUI::update(const RunStats &stats, Client *client, MapDrawControl *draw_
 {
 	v2u32 screensize = RenderingEngine::get_instance()->getWindowSize();
 
-	if (m_flags.show_debug) {
+	// Minimal debug text contains only info that can't give a gameplay advantage
+	if (m_flags.show_minimal_debug) {
 		static float drawtime_avg = 0;
 		drawtime_avg = drawtime_avg * 0.95 + stats.drawtime * 0.05;
 		u16 fps = 1.0 / stats.dtime_jitter.avg;
@@ -118,9 +119,10 @@ void GameUI::update(const RunStats &stats, Client *client, MapDrawControl *draw_
 	}
 
 	// Finally set the guitext visible depending on the flag
-	m_guitext->setVisible(m_flags.show_debug);
+	m_guitext->setVisible(m_flags.show_minimal_debug);
 
-	if (m_flags.show_debug) {
+	// Basic debug info contains stuff that might give a gameplay advantage
+	if (m_flags.show_basic_debug) {
 		LocalPlayer *player = client->getEnv().getLocalPlayer();
 		v3f player_position = player->getPosition();
 
@@ -153,7 +155,7 @@ void GameUI::update(const RunStats &stats, Client *client, MapDrawControl *draw_
 		));
 	}
 
-	m_guitext2->setVisible(m_flags.show_debug);
+	m_guitext2->setVisible(m_flags.show_basic_debug);
 
 	setStaticText(m_guitext_info, translate_string(m_infotext).c_str());
 	m_guitext_info->setVisible(m_flags.show_hud && g_menumgr.menuCount() == 0);
@@ -197,7 +199,7 @@ void GameUI::update(const RunStats &stats, Client *client, MapDrawControl *draw_
 void GameUI::initFlags()
 {
 	m_flags = GameUI::Flags();
-	m_flags.show_debug = g_settings->getBool("show_debug");
+	m_flags.show_minimal_debug = g_settings->getBool("show_debug");
 }
 
 void GameUI::showMinimap(bool show)
@@ -219,8 +221,10 @@ void GameUI::setChatText(const EnrichedString &chat_text, u32 recent_chat_count)
 	// Update gui element size and position
 	s32 chat_y = 5;
 
-	if (m_flags.show_debug)
-		chat_y += 2 * g_fontengine->getLineHeight();
+	if (m_flags.show_minimal_debug)
+		chat_y += g_fontengine->getLineHeight();
+	if (m_flags.show_basic_debug)
+		chat_y += g_fontengine->getLineHeight();
 
 	// first pass to calculate height of text to be set
 	const v2u32 &window_size = RenderingEngine::get_instance()->getWindowSize();
