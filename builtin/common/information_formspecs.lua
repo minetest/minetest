@@ -81,7 +81,7 @@ local function build_chatcommands_formspec(name, sel, copy)
 end
 
 
--- 	PRIVILEGES FORMSPEC
+-- PRIVILEGES FORMSPEC
 
 local function build_privs_formspec(name)
 	local privs = {}
@@ -128,15 +128,23 @@ local help_command = core.registered_chatcommands["help"]
 local old_help_func = help_command.func
 
 help_command.func = function(name, param)
+	local admin = core.settings:get("name")
+
+	-- If the admin ran help, put the output in the chat buffer as well to
+	-- work with the server terminal
 	if param == "privs" then
 		core.show_formspec(name, "__builtin:help_privs",
 			build_privs_formspec(name))
-		return
+		if name ~= admin then
+			return
+		end
 	end
 	if param == "" or param == "all" then
 		core.show_formspec(name, "__builtin:help_cmds",
 			build_chatcommands_formspec(name))
-		return
+		if name ~= admin then
+			return
+		end
 	end
 
 	return old_help_func(name, param)
