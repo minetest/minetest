@@ -309,11 +309,7 @@ void Server::handleCommand_Init2(NetworkPacket* pkt)
 	// Send media announcement
 	sendMediaAnnouncement(pkt->getPeerId(), lang);
 
-	RemoteClient *client;
-	{
-		MutexAutoLock(m_con);
-		client = getClient(pkt->getPeerId(), CS_InitDone);
-	}
+	RemoteClient *client = getClient(pkt->getPeerId(), CS_InitDone);
 
 	// Send active objects
 	{
