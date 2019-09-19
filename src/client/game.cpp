@@ -802,7 +802,8 @@ private:
 	void updateChat(f32 dtime, const v2u32 &screensize);
 
 	bool nodePlacement(const ItemDefinition &selected_def, const ItemStack &selected_item,
-		const v3s16 &nodepos, const v3s16 &neighbourpos, const PointedThing &pointed);
+		const v3s16 &nodepos, const v3s16 &neighbourpos, const PointedThing &pointed,
+		const NodeMetadata *meta);
 	static const ClientEventHandler clientEventHandler[CLIENTEVENT_MAX];
 
 	InputHandler *input = nullptr;
@@ -3199,50 +3200,26 @@ void Game::handlePointingAtNode(const PointedThing &pointed,
 		runData.repeat_rightclick_timer = 0;
 		infostream << "Ground right-clicked" << std::endl;
 
-		if (meta && !meta->getString("formspec").empty() && !random_input
-				&& !isKeyDown(KeyType::SNEAK)) {
-			// Report right click to server
-			if (nodedef_manager->get(map.getNode(nodepos)).rightclickable) {
-				client->interact(INTERACT_PLACE, pointed);
-			}
+		camera->setDigging(1);  // right click animation (always shown for feedback)
 
-			infostream << "Launching custom inventory view" << std::endl;
+		soundmaker->m_player_rightpunch_sound = SimpleSoundSpec();
 
-			InventoryLocation inventoryloc;
-			inventoryloc.setNodeMeta(nodepos);
+		// If the wielded item has node placement prediction,
+		// make that happen
+		// And also set the sound and send the interact
+		// But first check for meta formspec and rightclickable
+		auto &def = selected_item.getDefinition(itemdef_manager);
+		bool placed = nodePlacement(def, selected_item, nodepos, neighbourpos,
+			pointed, meta);
 
-			NodeMetadataFormSource *fs_src = new NodeMetadataFormSource(
-				&client->getEnv().getClientMap(), nodepos);
-			TextDest *txt_dst = new TextDestNodeMetadata(nodepos, client);
-
-			auto *&formspec = m_game_ui->updateFormspec("");
-			GUIFormSpecMenu::create(formspec, client, &input->joystick, fs_src,
-				txt_dst, client->getFormspecPrepend());
-
-			formspec->setFormSpec(meta->getString("formspec"), inventoryloc);
-		} else {
-			// Report right click to server
-
-			camera->setDigging(1);  // right click animation (always shown for feedback)
-
-			soundmaker->m_player_rightpunch_sound = SimpleSoundSpec();
-
-			// If the wielded item has node placement prediction,
-			// make that happen
-			// And also set the sound and send the interact
-			auto &def = selected_item.getDefinition(itemdef_manager);
-			bool placed = nodePlacement(def, selected_item, nodepos, neighbourpos,
-				pointed);
-
-			if (placed && client->modsLoaded())
-				client->getScript()->on_placenode(pointed, def);
-		}
+		if (placed && client->modsLoaded())
+			client->getScript()->on_placenode(pointed, def);
 	}
 }
 
 bool Game::nodePlacement(const ItemDefinition &selected_def,
 	const ItemStack &selected_item, const v3s16 &nodepos, const v3s16 &neighbourpos,
-	const PointedThing &pointed)
+	const PointedThing &pointed, const NodeMetadata *meta)
 {
 	std::string prediction = selected_def.node_placement_prediction;
 	const NodeDefManager *nodedef = client->ndef();
@@ -3256,6 +3233,31 @@ bool Game::nodePlacement(const ItemDefinition &selected_def,
 		return false;
 	}
 
+	// formspec in meta
+	if (meta && !meta->getString("formspec").empty() && !random_input
+			&& !isKeyDown(KeyType::SNEAK)) {
+		// on_rightclick callbacks are called anyway
+		if (nodedef_manager->get(map.getNode(nodepos)).rightclickable)
+			client->interact(INTERACT_PLACE, pointed);
+
+		infostream << "Launching custom inventory view" << std::endl;
+
+		InventoryLocation inventoryloc;
+		inventoryloc.setNodeMeta(nodepos);
+
+		NodeMetadataFormSource *fs_src = new NodeMetadataFormSource(
+			&client->getEnv().getClientMap(), nodepos);
+		TextDest *txt_dst = new TextDestNodeMetadata(nodepos, client);
+
+		auto *&formspec = m_game_ui->updateFormspec("");
+		GUIFormSpecMenu::create(formspec, client, &input->joystick, fs_src,
+			txt_dst, client->getFormspecPrepend());
+
+		formspec->setFormSpec(meta->getString("formspec"), inventoryloc);
+		return false;
+	}
+
+	// on_rightclick callback
 	if (prediction.empty() || (nodedef->get(node).rightclickable &&
 			!isKeyDown(KeyType::SNEAK))) {
 		// Report to server
