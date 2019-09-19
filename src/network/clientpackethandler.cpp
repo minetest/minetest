@@ -1258,7 +1258,7 @@ void Client::handleCommand_HudSetSky(NetworkPacket* pkt)
 	*pkt >> sun_tint >> moon_tint >> tint_type;
 
 	ClientEvent *event = new ClientEvent();
-	event->type                 = CE_SET_SKY;
+	event->type                      = CE_SET_SKY;
 	event->set_sky.bgcolor           = new video::SColor(bgcolor);
 	event->set_sky.type              = new std::string(type);
 	event->set_sky.clouds            = clouds;
@@ -1285,22 +1285,23 @@ void Client::handleCommand_HudSetSun(NetworkPacket *pkt)
 	std::string texture;
 	std::string tonemap;
 	std::string sunrise;
+	bool sunrise_visible;
 	f32 rotation;
 	f32 scale;
 
 	*pkt >> visible >> texture >> tonemap >> sunrise
-		>> rotation >> scale;
+		>> sunrise_visible >> rotation >> scale;
 
 	ClientEvent *event = new ClientEvent();
-	event->type                = CE_SET_SUN;
-	event->sun_params.visible  = visible;
-	event->sun_params.texture  = new std::string(texture);
-	event->sun_params.tonemap  = new std::string(tonemap);
-	event->sun_params.sunrise  = new std::string(sunrise);
-	event->sun_params.scale = scale;
-	event->sun_params.rotation = rotation;
+	event->type                       = CE_SET_SUN;
+	event->sun_params.visible         = visible;
+	event->sun_params.texture         = new std::string(texture);
+	event->sun_params.tonemap         = new std::string(tonemap);
+	event->sun_params.sunrise         = new std::string(sunrise);
+	event->sun_params.sunrise_visible = sunrise_visible;
+	event->sun_params.scale           = scale;
+	event->sun_params.rotation        = rotation;
 	m_client_event_queue.push(event);
-
 }
 
 void Client::handleCommand_HudSetMoon(NetworkPacket *pkt)
@@ -1316,11 +1317,11 @@ void Client::handleCommand_HudSetMoon(NetworkPacket *pkt)
 
 	ClientEvent *event = new ClientEvent();
 	event->type = CE_SET_MOON;
-	event->moon_params.visible = visible;
-	event->moon_params.texture = new std::string(texture);
-	event->moon_params.tonemap = new std::string(tonemap);
-	event->moon_params.rotation = rotation;
-	event->moon_params.scale  = scale;
+	event->moon_params.visible   = visible;
+	event->moon_params.texture   = new std::string(texture);
+	event->moon_params.tonemap   = new std::string(tonemap);
+	event->moon_params.rotation  = rotation;
+	event->moon_params.scale     = scale;
 
 	m_client_event_queue.push(event);
 }
@@ -1336,7 +1337,7 @@ void Client::handleCommand_HudSetStars(NetworkPacket *pkt)
 	*pkt >> visible >> count >> starcolor >> rotation >> scale;
 
 	ClientEvent *event = new ClientEvent();
-	event->type =                CE_SET_STARS;
+	event->type                  = CE_SET_STARS;
 	event->star_params.visible   = visible;
 	event->star_params.count     = count;
 	event->star_params.starcolor = starcolor.color;
