@@ -638,12 +638,13 @@ int LuaEntitySAO::punch(v3f dir,
 	FATAL_ERROR_IF(!puncher, "Punch action called without SAO");
 
 	s32 old_hp = getHP();
-	const ItemStack &punchitem = puncher->getWieldedItem();
+	ItemStack selected_item, hand_item;
+	ItemStack tool_item = puncher->getWieldedItem(&selected_item, &hand_item);
 
 	PunchDamageResult result = getPunchDamage(
 			m_armor_groups,
 			toolcap,
-			&punchitem,
+			&tool_item,
 			time_from_last_punch);
 
 	bool damage_handled = m_env->getScriptIface()->luaentity_Punch(m_id, puncher,
@@ -1376,10 +1377,9 @@ u16 PlayerSAO::getWieldIndex() const
 	return m_player->getWieldIndex();
 }
 
-ItemStack PlayerSAO::getWieldedItem() const
+ItemStack PlayerSAO::getWieldedItem(ItemStack *selected, ItemStack *hand) const
 {
-	ItemStack selected_item, hand_item;
-	return m_player->getWieldedItem(&selected_item, &hand_item);
+	return m_player->getWieldedItem(selected, hand);
 }
 
 bool PlayerSAO::setWieldedItem(const ItemStack &item)

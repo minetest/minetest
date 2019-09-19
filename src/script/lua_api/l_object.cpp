@@ -340,7 +340,9 @@ int ObjectRef::l_get_wielded_item(lua_State *L)
 		return 1;
 	}
 
-	LuaItemStack::create(L, co->getWieldedItem());
+	ItemStack selected_item;
+	co->getWieldedItem(&selected_item, nullptr);
+	LuaItemStack::create(L, selected_item);
 	return 1;
 }
 
