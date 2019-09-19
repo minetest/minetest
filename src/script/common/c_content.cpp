@@ -164,11 +164,7 @@ void push_item_definition_full(lua_State *L, const ItemDefinition &i)
 	lua_pushboolean(L, i.liquids_pointable);
 	lua_setfield(L, -2, "liquids_pointable");
 	if (i.type == ITEM_TOOL) {
-		push_tool_capabilities(L, ToolCapabilities(
-			i.tool_capabilities->full_punch_interval,
-			i.tool_capabilities->max_drop_level,
-			i.tool_capabilities->groupcaps,
-			i.tool_capabilities->damageGroups));
+		push_tool_capabilities(L, *i.tool_capabilities);
 		lua_setfield(L, -2, "tool_capabilities");
 	}
 	push_groups(L, i.groups);
@@ -1253,7 +1249,8 @@ void push_tool_capabilities(lua_State *L,
 {
 	lua_newtable(L);
 	setfloatfield(L, -1, "full_punch_interval", toolcap.full_punch_interval);
-		setintfield(L, -1, "max_drop_level", toolcap.max_drop_level);
+	setintfield(L, -1, "max_drop_level", toolcap.max_drop_level);
+	setintfield(L, -1, "punch_attack_uses", toolcap.punch_attack_uses);
 		// Create groupcaps table
 		lua_newtable(L);
 		// For each groupcap
@@ -1375,6 +1372,7 @@ ToolCapabilities read_tool_capabilities(
 	ToolCapabilities toolcap;
 	getfloatfield(L, table, "full_punch_interval", toolcap.full_punch_interval);
 	getintfield(L, table, "max_drop_level", toolcap.max_drop_level);
+	getintfield(L, table, "punch_attack_uses", toolcap.punch_attack_uses);
 	lua_getfield(L, table, "groupcaps");
 	if(lua_istable(L, -1)){
 		int table_groupcaps = lua_gettop(L);
