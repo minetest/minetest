@@ -80,11 +80,11 @@ Sky::Sky(s32 id, ITextureSource *tsrc) :
 		m_materials[3] = mat;
 		m_materials[3].setTexture(0, m_sun_texture);
 		m_materials[3].MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
-		// Settings to enable or disable texture filtering
-		// on a per-mod basis.
-		m_materials[3].setFlag(video::E_MATERIAL_FLAG(0x100), m_sun_billinear);
+		// Disables texture filtering
+		m_materials[3].setFlag(video::E_MATERIAL_FLAG(0x100), false);
 		m_materials[3].setFlag(video::E_MATERIAL_FLAG(0x200), false);
-		m_materials[3].setFlag(video::E_MATERIAL_FLAG(0x400), m_sun_antiso);
+		m_materials[3].setFlag(video::E_MATERIAL_FLAG(0x400), false);
+		// Use tonemaps if available
 		if (m_sun_tonemap)
 			m_materials[3].Lighting = true;
 	}
@@ -95,12 +95,12 @@ Sky::Sky(s32 id, ITextureSource *tsrc) :
 		m_materials[4] = mat;
 		m_materials[4].setTexture(0, m_moon_texture);
 		m_materials[4].MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
-		// Settings to enable or disable texture filtering
-		// on a per-mod basis.
+		// Disables texture filtering
 		m_materials[4].UseMipMaps = false;
-		m_materials[4].setFlag(video::E_MATERIAL_FLAG(0x100), m_moon_billinear);
+		m_materials[4].setFlag(video::E_MATERIAL_FLAG(0x100), false);
 		m_materials[4].setFlag(video::E_MATERIAL_FLAG(0x200), false);
-		m_materials[4].setFlag(video::E_MATERIAL_FLAG(0x400), m_moon_antiso);
+		m_materials[4].setFlag(video::E_MATERIAL_FLAG(0x400), false);
+		// Use tonemaps if available
 		if (m_moon_tonemap)
 			m_materials[4].Lighting = true;
 	}
@@ -719,7 +719,7 @@ void Sky::draw_moon(video::IVideoDriver *driver, float moonsize, const video::SC
 			video::SColor starcolor(f * m_starcolor.getAlpha(), m_starcolor.getRed(),
 				m_starcolor.getGreen(), m_starcolor.getBlue());
 
-			// Stars are only drawn when brighter than skycolor
+			// Stars are only drawn when not fully transparent
 			if (f * m_starcolor.getAlpha() < 1)
 				return;
 #if ENABLE_GLES

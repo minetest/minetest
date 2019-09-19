@@ -1699,7 +1699,8 @@ void Server::SendSetSun(session_t peer_id, const SunParams &params)
 	NetworkPacket pkt(TOCLIENT_SET_SUN, 0, peer_id);
 	pkt << params.visible << params.texture
 		<< params.tonemap << params.sunrise
-		<< params.rotation << params.scale;
+		<< params.sunrise_visible << params.rotation
+		<< params.scale;
 
 	Send(&pkt);
 }

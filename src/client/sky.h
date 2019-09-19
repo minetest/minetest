@@ -88,11 +88,10 @@ public:
 				m_materials[3].setTexture(0, m_sun_texture);
 				m_materials[3].MaterialType = video::
 					EMT_TRANSPARENT_ALPHA_CHANNEL;
-				// Settings to enable or disable texture filtering
-				// on a per-mod basis.
-				m_materials[3].setFlag(video::E_MATERIAL_FLAG(0x100), m_sun_billinear);
+				// Disables texture filtering
+				m_materials[3].setFlag(video::E_MATERIAL_FLAG(0x100), false);
 				m_materials[3].setFlag(video::E_MATERIAL_FLAG(0x200), false);
-				m_materials[3].setFlag(video::E_MATERIAL_FLAG(0x400), m_sun_antiso);
+				m_materials[3].setFlag(video::E_MATERIAL_FLAG(0x400), false);
 			}
 		} else {
 			m_sun_texture = nullptr;
@@ -146,11 +145,10 @@ public:
 				m_materials[4].setTexture(0, m_moon_texture);
 				m_materials[4].MaterialType = video::
 					EMT_TRANSPARENT_ALPHA_CHANNEL;
-				// Settings to enable or disable texture filtering
-				// on a per-mod basis.
-				m_materials[4].setFlag(video::E_MATERIAL_FLAG(0x100), m_moon_billinear);
+				// Disables texture filtering
+				m_materials[4].setFlag(video::E_MATERIAL_FLAG(0x100), false);
 				m_materials[4].setFlag(video::E_MATERIAL_FLAG(0x200), false);
-				m_materials[4].setFlag(video::E_MATERIAL_FLAG(0x400), m_moon_antiso);
+				m_materials[4].setFlag(video::E_MATERIAL_FLAG(0x400), false);
 			}
 		} else {
 			m_moon_texture = nullptr;
@@ -302,7 +300,6 @@ private:
 	video::SColorf m_cloudcolor_f;
 	
 	// Horizon colors
-	//video::SColorf m_bgcolor_day_f = video::SColor(255, 255, 0, 255);
 	video::SColorf m_bgcolor_day_f = video::SColor(255, 155, 193, 240);
 	video::SColorf m_bgcolor_indoor_f = video::SColor(255, 100, 100, 100);
 	video::SColorf m_bgcolor_dawn_f = video::SColor(255, 186, 193, 240);
@@ -331,8 +328,6 @@ private:
 	video::SColorf m_pointcolor_sun_f;
 	float m_sun_scale = 1;
 	f32 m_sun_rotation = 90;
-	bool m_sun_antiso = true;
-	bool m_sun_billinear = true;
 
 	bool m_moon_visible = true;
 	std::string m_moon_name = "moon.png";
@@ -340,8 +335,6 @@ private:
 	video::SColorf m_pointcolor_moon_f;
 	float m_moon_scale = 1;
 	f32 m_moon_rotation = -90;
-	bool m_moon_antiso = true;
-	bool m_moon_billinear = true;
 
 	bool m_stars_visible = true;
 	std::vector<v3f> m_stars;
