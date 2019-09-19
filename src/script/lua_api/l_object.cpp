@@ -187,7 +187,8 @@ int ObjectRef::l_punch(lua_State *L)
 	u16 dst_origin_hp = puncher->getHP();
 
 	// Do it
-	co->punch(dir, &toolcap, puncher, time_from_last_punch);
+	u16 wear = co->punch(dir, &toolcap, puncher, time_from_last_punch);
+	lua_pushnumber(L, wear);
 
 	// If the punched is a player, and its HP changed
 	if (src_original_hp != co->getHP() &&
@@ -202,7 +203,7 @@ int ObjectRef::l_punch(lua_State *L)
 		getServer(L)->SendPlayerHPOrDie((PlayerSAO *)puncher,
 				PlayerHPChangeReason(PlayerHPChangeReason::PLAYER_PUNCH, co));
 	}
-	return 0;
+	return 1;
 }
 
 // right_click(self, clicker); clicker = an another ObjectRef

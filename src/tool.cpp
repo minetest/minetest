@@ -227,16 +227,30 @@ HitParams getHitParams(const ItemGroupList &armor_groups,
 		const ToolCapabilities *tp, float time_from_last_punch)
 {
 	s16 damage = 0;
-	float full_punch_interval = tp->full_punch_interval;
+	float result_wear = 0.0f;
+	float punch_interval_multiplier =
+			rangelim(time_from_last_punch / tp->full_punch_interval, 0.0f, 1.0f);
 
 	for (const auto &damageGroup : tp->damageGroups) {
 		s16 armor = itemgroup_get(armor_groups, damageGroup.first);
-		damage += damageGroup.second
-				* rangelim(time_from_last_punch / full_punch_interval, 0.0, 1.0)
-				* armor / 100.0;
+		damage += damageGroup.second * punch_interval_multiplier * armor / 100.0;
 	}
 
-	return {damage, 0};
+	// Just pick the first group that gives an amount of uses
+	// This should eventually be replaced with a better mechanism.
+	for (const auto &groupcap : tp->groupcaps) {
+		const ToolGroupCap &cap = groupcap.second;
+		int level = cap.maxlevel - 1;
+		if (cap.uses == 0 || level < 0)
+			continue;
+
+		result_wear = 1.0f / cap.uses / powf(3.0f, level);
+		break;
+	}
+	result_wear *= punch_interval_multiplier;
+
+	u16 wear_i = U16_MAX * result_wear;
+	return {damage, wear_i};
 }
 
 HitParams getHitParams(const ItemGroupList &armor_groups,
