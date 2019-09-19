@@ -2755,7 +2755,17 @@ void Game::handleClientEvent_SetSky(ClientEvent *event, CameraOrientation *cam)
 			*event->set_sky.moon_tint,
 			*event->set_sky.tint_type
 		);
-		//sky->setFallbackBgColor(*event->set_sky.bgcolor);
+		// Clean up related data:
+		delete event->set_sky.day_sky;
+		delete event->set_sky.dawn_sky;
+		delete event->set_sky.night_sky;
+		delete event->set_sky.day_horizon;
+		delete event->set_sky.dawn_horizon;
+		delete event->set_sky.night_horizon;
+		delete event->set_sky.indoors;
+		delete event->set_sky.sun_tint;
+		delete event->set_sky.moon_tint;
+		delete event->set_sky.tint_type;
 	} else if (*event->set_sky.type == "skybox" &&
 		event->set_sky.params->size() == 6) {
 		sky->setVisible(false);
@@ -2767,6 +2777,11 @@ void Game::handleClientEvent_SetSky(ClientEvent *event, CameraOrientation *cam)
 		);
 		for (int i = 0; i < 6; i++)
 			sky->addTextureToSkybox((*event->set_sky.params)[i], i, texture_src);
+		// Clean up related data:
+		delete event->set_sky.params;
+		delete event->set_sky.sun_tint;
+		delete event->set_sky.moon_tint;
+		delete event->set_sky.tint_type;
 	} else {
 		// Handle everything else as plain color.
 		if (*event->set_sky.type != "plain")
@@ -2784,7 +2799,6 @@ void Game::handleClientEvent_SetSky(ClientEvent *event, CameraOrientation *cam)
 
 	delete event->set_sky.bgcolor;
 	delete event->set_sky.type;
-	delete event->set_sky.params;
 }
 
 void Game::handleClientEvent_SetSun(ClientEvent *event, CameraOrientation *cam)
@@ -2796,6 +2810,10 @@ void Game::handleClientEvent_SetSun(ClientEvent *event, CameraOrientation *cam)
 	sky->setSunScale(event->sun_params.scale);
 	sky->setSunriseVisible(event->sun_params.sunrise_visible);
 	sky->setSunriseTexture(*event->sun_params.sunrise, texture_src);
+	// Clean up related data:
+	delete event->sun_params.texture;
+	delete event->sun_params.tonemap;
+	delete event->sun_params.sunrise;
 }
 
 void Game::handleClientEvent_SetMoon(ClientEvent *event, CameraOrientation *cam)
@@ -2805,6 +2823,9 @@ void Game::handleClientEvent_SetMoon(ClientEvent *event, CameraOrientation *cam)
 		*event->moon_params.tonemap, texture_src);
 	sky->setMoonYaw(event->moon_params.rotation);
 	sky->setMoonScale(event->moon_params.scale);
+	// Clean up related data:
+	delete event->moon_params.texture;
+	delete event->moon_params.tonemap;
 }
 
 void Game::handleClientEvent_SetStars(ClientEvent *event, CameraOrientation *cam)
@@ -2813,8 +2834,7 @@ void Game::handleClientEvent_SetStars(ClientEvent *event, CameraOrientation *cam
 	sky->setStarCount(event->star_params.count);
 	sky->setStarColor(event->star_params.starcolor);
 	sky->setStarYaw(event->star_params.rotation);
-	sky->setStarScale(event->star_params.scale);
-}
+	sky->setStarScale(event->star_params.scale);}
 
 void Game::handleClientEvent_OverrideDayNigthRatio(ClientEvent *event,
 		CameraOrientation *cam)
