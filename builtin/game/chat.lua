@@ -186,7 +186,7 @@ local function handle_grant_command(caller, grantname, grantprivstr)
 		return false, privs_unknown
 	end
 	for priv, _ in pairs(grantprivs) do
-		-- call the on_grant callback
+		-- call the on_grant callbacks
 		core.run_priv_callbacks(grantname, priv, caller, "grant")
 	end
 	core.set_player_privs(grantname, privs)
