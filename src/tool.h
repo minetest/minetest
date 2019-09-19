@@ -103,9 +103,9 @@ DigParams getDigParams(const ItemGroupList &groups,
 struct HitParams
 {
 	s16 hp;
-	s16 wear;
+	u16 wear;
 
-	HitParams(s16 hp_=0, s16 wear_=0):
+	HitParams(s16 hp_ = 0, u16 wear_ = 0):
 		hp(hp_),
 		wear(wear_)
 	{}

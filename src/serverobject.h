@@ -133,10 +133,10 @@ public:
 	{return true;}
 
 	// Returns tool wear
-	virtual int punch(v3f dir,
-			const ToolCapabilities *toolcap=NULL,
-			ServerActiveObject *puncher=NULL,
-			float time_from_last_punch=1000000)
+	virtual u16 punch(v3f dir,
+			const ToolCapabilities *toolcap = nullptr,
+			ServerActiveObject *puncher = nullptr,
+			float time_from_last_punch = 1000000.0f)
 	{ return 0; }
 	virtual void rightClick(ServerActiveObject *clicker)
 	{}
