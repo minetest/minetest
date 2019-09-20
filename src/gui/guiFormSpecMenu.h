@@ -503,6 +503,8 @@ private:
 	fs_key_pendig current_keys_pending;
 	std::string current_field_enter_pending = "";
 
+	bool isShiftPressed = false;
+
 	void parseElement(parserData* data, const std::string &element);
 
 	void parseSize(parserData* data, const std::string &element);
