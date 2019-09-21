@@ -279,6 +279,7 @@ inline v3s16 floatToInt(v3f p, f32 d)
 
 /*
 	Returns integer position of node in given double precision position
+	with overflow testing
  */
 inline v3s16 doubleToInt(v3d p, double d)
 {
@@ -288,12 +289,10 @@ inline v3s16 doubleToInt(v3d p, double d)
 		(p.Y + (p.Y > 0 ? d / 2 : -d / 2)) / d,
 		(p.Z + (p.Z > 0 ? d / 2 : -d / 2)) / d);
 	// Do not overflow if p is outside map boundaries
-	const double s16_min = -32768.0;
-	const double s16_max = 32767.0;
 	return v3s16(
-		rangelim(p_adjusted.X, s16_min, s16_max),
-		rangelim(p_adjusted.Y, s16_min, s16_max),
-		rangelim(p_adjusted.Z, s16_min, s16_max));
+		rangelim(p_adjusted.X, S16_MIN, S16_MAX),
+		rangelim(p_adjusted.Y, S16_MIN, S16_MAX),
+		rangelim(p_adjusted.Z, S16_MIN, S16_MAX));
 }
 
 /*
