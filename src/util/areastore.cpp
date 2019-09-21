@@ -124,6 +124,19 @@ void AreaStore::invalidateCache()
 	}
 }
 
+u32 AreaStore::getNextId() const
+{
+	u32 free_id = 0;
+	for (const auto &area : areas_map) {
+		if (area.first > free_id)
+			return free_id; // Found gap
+
+		free_id = area.first + 1;
+	}
+	// End of map
+	return free_id;
+}
+
 void AreaStore::setCacheParams(bool enabled, u8 block_radius, size_t limit)
 {
 	m_cache_enabled = enabled;
