@@ -3804,6 +3804,8 @@ Utilities
           httpfetch_binary_data = true,
           -- Whether formspec_version[<version>] may be used (5.1.0)
           formspec_version_element = true,
+          -- Whether AreaStore's IDs are kept on save/load (5.1.0)
+          area_store_persistent_ids = true,
       }
 
 * `minetest.has_feature(arg)`: returns `boolean, missing_features`
@@ -5197,35 +5199,38 @@ A fast access data structure to store areas, and find areas near a given
 position or area.
 Every area has a `data` string attribute to store additional information.
 You can create an empty `AreaStore` by calling `AreaStore()`, or
-`AreaStore(type_name)`.
+`AreaStore(type_name)`. The mod decides where to save and load AreaStore.
 If you chose the parameter-less constructor, a fast implementation will be
 automatically chosen for you.
 
 ### Methods
 
-* `get_area(id, include_borders, include_data)`: returns the area with the id
-  `id`.
-  (optional) Boolean values `include_borders` and `include_data` control what's
-  copied.
-  Returns nil if specified area id does not exist.
-* `get_areas_for_pos(pos, include_borders, include_data)`: returns all areas
-  that contain the position `pos`.
-  (optional) Boolean values `include_borders` and `include_data` control what's
-  copied.
-* `get_areas_in_area(edge1, edge2, accept_overlap, include_borders, include_data)`:
-  returns all areas that contain all nodes inside the area specified by `edge1`
-  and `edge2` (inclusive).
-  If `accept_overlap` is true, also areas are returned that have nodes in
-  common with the specified area.
-  (optional) Boolean values `include_borders` and `include_data` control what's
-  copied.
+* `get_area(id, include_borders, include_data)`
+    * Returns the area information about the specified ID.
+    * Returned values are either of these:
+
+            nil  -- Area not found
+            true -- Without `include_borders` and `include_data`
+            {
+                min = pos, max = pos -- `include_borders == true`
+                data = string        -- `include_data == true`
+            }
+
+* `get_areas_for_pos(pos, include_borders, include_data)`
+    * Returns all areas as table, indexed by the area ID.
+    * Table values: see `get_area`.
+* `get_areas_in_area(edge1, edge2, accept_overlap, include_borders, include_data)`
+    * Returns all areas that contain all nodes inside the area specified by `edge1`
+      and `edge2` (inclusive).
+    * `accept_overlap`: if `true`, areas are returned that have nodes in
+      common (intersect) with the specified area.
+    * Returns the same values as `get_areas_for_pos`.
 * `insert_area(edge1, edge2, data, [id])`: inserts an area into the store.
-  Returns the new area's ID, or nil if the insertion failed.
-  The (inclusive) positions `edge1` and `edge2` describe the area.
-  `data` is a string stored with the area.  If passed, `id` will be used as the
-  internal area ID, it must be a unique number between 0 and 2^32-2. If you use
-  the `id` parameter you must always use it, or insertions are likely to fail
-  due to conflicts.
+    * Returns the new area's ID, or nil if the insertion failed.
+    * The (inclusive) positions `edge1` and `edge2` describe the area.
+    * `data` is a string stored with the area.
+    * `id` (optional): will be used as the internal area ID if it is an unique
+      number between 0 and 2^32-2.
 * `reserve(count)`: reserves resources for at most `count` many contained
   areas.
   Only needed for efficiency, and only some implementations profit.
