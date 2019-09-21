@@ -2556,8 +2556,7 @@ Player Inventory lists
 * `craftresult`: list containing the crafted output
 * `hand`: list containing an override for the empty hand
     * Is not created automatically, use `InvRef:set_size`
-
-
+    * Is only used to enhance the empty hand's tool capabilities
 
 
 Colors

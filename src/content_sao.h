@@ -277,7 +277,7 @@ public:
 	void setInventoryModified() {}
 	std::string getWieldList() const { return "main"; }
 	u16 getWieldIndex() const;
-	ItemStack getWieldedItem() const;
+	ItemStack getWieldedItem(ItemStack *selected, ItemStack *hand = nullptr) const;
 	bool setWieldedItem(const ItemStack &item);
 
 	/*

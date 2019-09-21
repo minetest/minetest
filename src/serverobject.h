@@ -180,7 +180,8 @@ public:
 	{ return ""; }
 	virtual u16 getWieldIndex() const
 	{ return 0; }
-	virtual ItemStack getWieldedItem() const;
+	virtual ItemStack getWieldedItem(ItemStack *selected,
+			ItemStack *hand = nullptr) const;
 	virtual bool setWieldedItem(const ItemStack &item);
 	inline void attachParticleSpawner(u32 id)
 	{
