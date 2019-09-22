@@ -990,7 +990,7 @@ core.register_chatcommand("clearobjects", {
 
 core.register_chatcommand("msg", {
 	params = "<name> <message>",
-	description = "Send a private message",
+	description = "Send a direct message to a player",
 	privs = {shout=true},
 	func = function(name, param)
 		local sendto, message = param:match("^(%S+)%s(.+)$")
@@ -1001,9 +1001,9 @@ core.register_chatcommand("msg", {
 			return false, "The player " .. sendto
 					.. " is not online."
 		end
-		core.log("action", "PM from " .. name .. " to " .. sendto
+		core.log("action", "DM from " .. name .. " to " .. sendto
 				.. ": " .. message)
-		core.chat_send_player(sendto, "PM from " .. name .. ": "
+		core.chat_send_player(sendto, "DM from " .. name .. ": "
 				.. message)
 		return true, "Message sent."
 	end,
