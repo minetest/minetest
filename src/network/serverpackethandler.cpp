@@ -1163,8 +1163,12 @@ void Server::handleCommand_Interact(NetworkPacket *pkt)
 			u16 src_original_hp = pointed_object->getHP();
 			u16 dst_origin_hp = playersao->getHP();
 
-			pointed_object->punch(dir, &toolcap, playersao,
+			u16 wear = pointed_object->punch(dir, &toolcap, playersao,
 					time_from_last_punch);
+
+			bool changed = punchitem.addWear(wear, m_itemdef);
+			if (changed)
+				playersao->setWieldedItem(punchitem);
 
 			// If the object is a player and its HP changed
 			if (src_original_hp != pointed_object->getHP() &&

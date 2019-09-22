@@ -624,7 +624,7 @@ void LuaEntitySAO::getStaticData(std::string *result) const
 	*result = os.str();
 }
 
-int LuaEntitySAO::punch(v3f dir,
+u16 LuaEntitySAO::punch(v3f dir,
 		const ToolCapabilities *toolcap,
 		ServerActiveObject *puncher,
 		float time_from_last_punch)
@@ -1273,7 +1273,7 @@ void PlayerSAO::setLookPitchAndSend(const float pitch)
 	m_env->getGameDef()->SendMovePlayer(m_peer_id);
 }
 
-int PlayerSAO::punch(v3f dir,
+u16 PlayerSAO::punch(v3f dir,
 	const ToolCapabilities *toolcap,
 	ServerActiveObject *puncher,
 	float time_from_last_punch)

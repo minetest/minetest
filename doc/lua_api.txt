@@ -6269,7 +6269,7 @@ Used by `minetest.register_node`, `minetest.register_craftitem`, and
 
         liquids_pointable = false,
 
-        -- See "Tools" section
+        -- See "Tools" section for an example including explanation
         tool_capabilities = {
             full_punch_interval = 1.0,
             max_drop_level = 0,
@@ -6279,6 +6279,14 @@ Used by `minetest.register_node`, `minetest.register_craftitem`, and
                          uses = 20, maxlevel = 2},
             },
             damage_groups = {groupname = damage},
+
+            punch_attack_uses = nil,
+            -- Amount of uses this tool has for attacking players and entities
+            -- by punching them (0 = infinite uses).
+            -- For compatibility, this is automatically set from the first
+            -- suitable groupcap using the forumla "uses * 3^(maxlevel - 1)".
+            -- It is recommend to set this explicitly instead of relying on the
+            -- fallback behavior.
         },
 
         node_placement_prediction = nil,
