@@ -64,7 +64,7 @@ std::string getImagePath(std::string path);
 
 	Utilizes a thread-safe cache.
 */
-std::string getTexturePath(const std::string &filename);
+std::string getTexturePath(const std::string &filename, bool *is_base_pack = nullptr);
 
 void clearTextureNameCache();
 
