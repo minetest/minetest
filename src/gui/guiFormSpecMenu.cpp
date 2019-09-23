@@ -1208,12 +1208,14 @@ void GUIFormSpecMenu::createTextField(parserData *data, FieldSpec &spec,
 			true, Environment, this, spec.fid, rect, is_editable, is_multiline);
 		e->drop();
 	} else {
-		if (is_multiline)
+		if (is_multiline) {
 			e = new GUIEditBoxWithScrollBar(spec.fdefault.c_str(), true,
 				Environment, this, spec.fid, rect, is_editable, true);
-		else if (is_editable)
+			e->drop();
+		} else if (is_editable) {
 			e = Environment->addEditBox(spec.fdefault.c_str(), rect, true,
 				this, spec.fid);
+		}
 	}
 
 	if (e) {
