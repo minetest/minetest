@@ -56,6 +56,7 @@ void read_item_definition(lua_State* L, int index,
 			es_ItemType, ITEM_NONE);
 	getstringfield(L, index, "name", def.name);
 	getstringfield(L, index, "description", def.description);
+	getstringfield(L, index, "short_description", def.short_description);
 	getstringfield(L, index, "inventory_image", def.inventory_image);
 	getstringfield(L, index, "inventory_overlay", def.inventory_overlay);
 	getstringfield(L, index, "wield_image", def.wield_image);
@@ -142,6 +143,8 @@ void push_item_definition_full(lua_State *L, const ItemDefinition &i)
 	lua_setfield(L, -2, "name");
 	lua_pushstring(L, i.description.c_str());
 	lua_setfield(L, -2, "description");
+	lua_pushstring(L, i.short_description.c_str());
+	lua_setfield(L, -2, "short_description");
 	lua_pushstring(L, type.c_str());
 	lua_setfield(L, -2, "type");
 	lua_pushstring(L, i.inventory_image.c_str());
