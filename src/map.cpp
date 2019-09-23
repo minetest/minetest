@@ -89,7 +89,7 @@ void Map::removeEventReceiver(MapEventReceiver *event_receiver)
 	m_event_receivers.erase(event_receiver);
 }
 
-void Map::dispatchEvent(MapEditEvent *event)
+void Map::dispatchEvent(const MapEditEvent &event)
 {
 	for (MapEventReceiver *event_receiver : m_event_receivers) {
 		event_receiver->onMapEditEvent(event);
@@ -274,7 +274,7 @@ bool Map::addNodeWithEvent(v3s16 p, MapNode n, bool remove_metadata)
 		succeeded = false;
 	}
 
-	dispatchEvent(&event);
+	dispatchEvent(event);
 
 	return succeeded;
 }
@@ -299,7 +299,7 @@ bool Map::removeNodeWithEvent(v3s16 p)
 		succeeded = false;
 	}
 
-	dispatchEvent(&event);
+	dispatchEvent(event);
 
 	return succeeded;
 }
@@ -2220,7 +2220,7 @@ MapBlock* ServerMap::loadBlock(v3s16 blockpos)
 			for (it = modified_blocks.begin();
 					it != modified_blocks.end(); ++it)
 				event.modified_blocks.insert(it->first);
-			dispatchEvent(&event);
+			dispatchEvent(event);
 		}
 	}
 	return block;
