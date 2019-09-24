@@ -306,6 +306,11 @@ Server::~Server()
 	for (auto &detached_inventory : m_detached_inventories) {
 		delete detached_inventory.second;
 	}
+
+	while (!m_unsent_map_edit_queue.empty()) {
+		delete m_unsent_map_edit_queue.front();
+		m_unsent_map_edit_queue.pop();
+	}
 }
 
 void Server::init()
@@ -1090,12 +1095,12 @@ void Server::setTimeOfDay(u32 time)
 	m_time_of_day_send_timer = 0;
 }
 
-void Server::onMapEditEvent(MapEditEvent *event)
+void Server::onMapEditEvent(const MapEditEvent &event)
 {
-	if (m_ignore_map_edit_events_area.contains(event->getArea()))
+	if (m_ignore_map_edit_events_area.contains(event.getArea()))
 		return;
-	MapEditEvent *e = event->clone();
-	m_unsent_map_edit_queue.push(e);
+
+	m_unsent_map_edit_queue.push(new MapEditEvent(event));
 }
 
 Inventory* Server::getInventory(const InventoryLocation &loc)
@@ -1160,7 +1165,7 @@ void Server::setInventoryModified(const InventoryLocation &loc)
 		MapEditEvent event;
 		event.type = MEET_BLOCK_NODE_METADATA_CHANGED;
 		event.p = loc.p;
-		m_env->getMap().dispatchEvent(&event);
+		m_env->getMap().dispatchEvent(event);
 	}
 		break;
 	case InventoryLocation::DETACHED:

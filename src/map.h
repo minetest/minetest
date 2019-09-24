@@ -79,18 +79,7 @@ struct MapEditEvent
 
 	MapEditEvent() = default;
 
-	MapEditEvent * clone()
-	{
-		MapEditEvent *event = new MapEditEvent();
-		event->type = type;
-		event->p = p;
-		event->n = n;
-		event->modified_blocks = modified_blocks;
-		event->is_private_change = is_private_change;
-		return event;
-	}
-
-	VoxelArea getArea()
+	VoxelArea getArea() const
 	{
 		switch(type){
 		case MEET_ADDNODE:
@@ -125,7 +114,7 @@ class MapEventReceiver
 {
 public:
 	// event shall be deleted by caller after the call.
-	virtual void onMapEditEvent(MapEditEvent *event) = 0;
+	virtual void onMapEditEvent(const MapEditEvent &event) = 0;
 };
 
 class Map /*: public NodeContainer*/
@@ -152,7 +141,7 @@ public:
 	void addEventReceiver(MapEventReceiver *event_receiver);
 	void removeEventReceiver(MapEventReceiver *event_receiver);
 	// event shall be deleted by caller after the call.
-	void dispatchEvent(MapEditEvent *event);
+	void dispatchEvent(const MapEditEvent &event);
 
 	// On failure returns NULL
 	MapSector * getSectorNoGenerateNoLock(v2s16 p2d);

@@ -1035,7 +1035,7 @@ int ModApiEnvMod::l_fix_light(lua_State *L)
 		for (auto &modified_block : modified_blocks)
 			event.modified_blocks.insert(modified_block.first);
 
-		map.dispatchEvent(&event);
+		map.dispatchEvent(event);
 	}
 	lua_pushboolean(L, success);
 
@@ -1144,7 +1144,7 @@ int ModApiEnvMod::l_delete_area(lua_State *L)
 		}
 	}
 
-	map.dispatchEvent(&event);
+	map.dispatchEvent(event);
 	lua_pushboolean(L, success);
 	return 1;
 }
