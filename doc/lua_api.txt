@@ -5673,8 +5673,8 @@ This is basically a reference to a C++ `ServerActiveObject`
         * `base_color`: ColorSpec, changes fog in certain skybox modes.
         * `type`: Available types:
             * `"regular"`: Uses 0 textures, `base_color` ignored
-            * `"skybox"`: Uses 6 textures, `base_color` used
-            * `"plain"`: Uses 0 textures, `base_color` used
+            * `"skybox"`: Uses 6 textures, `base_color` used as fog.
+            * `"plain"`: Uses 0 textures, `base_color` used as fog.
         * `textures`: A table containing up to six textures in the following
             order: top, bottom, left, right, front, back.
         * `clouds`: Boolean for whether clouds appear in front of 
@@ -5713,7 +5713,8 @@ This is basically a reference to a C++ `ServerActiveObject`
             will re-enable the mesh sun. (default: `"sun.png"`)
         * `tonemap`: A 512x1 texture containing the tonemap for the sun
             (default: `"sun_tonemap.png"`)
-        * `sunrise`: String 
+        * `sunrise`: A regular texture for the sunrise texture.
+            (default: `"sunrisebg.png"`)
         * `sunrise_visible`: Boolean for whether the sunrise is visible.
             (default: `true`)
         * `rotation`: Floating point value to set what direction the

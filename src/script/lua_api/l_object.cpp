@@ -1709,8 +1709,6 @@ int ObjectRef::l_set_sky(lua_State *L)
 	if (lua_istable(L, 2)) {
 		SkyboxParams skybox_params = player->getSkyParams();
 
-		// Prevent lack of background color
-		skybox_params.bgcolor = video::SColor(255, 255, 255, 255);
 		lua_getfield(L, 2, "base_color");
 		if (!lua_isnil(L, -1))
 			read_color(L, -1, &skybox_params.bgcolor);
@@ -1724,7 +1722,7 @@ int ObjectRef::l_set_sky(lua_State *L)
 		lua_getfield(L, 2, "textures");
 		skybox_params.params.clear();
 		if (!lua_istable(L, -1)) {
-			skybox_params.params.emplace_back("");
+			//skybox_params.params.emplace_back("");
 		} else {
 			lua_pushnil(L);
 			while (lua_next(L, -2) != 0) {
@@ -1741,7 +1739,8 @@ int ObjectRef::l_set_sky(lua_State *L)
 		However, we want to ensure that the skybox can be set to nil when
 		using "regular" or "plain" skybox modes as textures aren't needed.
 		*/
-		if (skybox_params.params.size() != 6 && skybox_params.params[0] != "")
+
+		if (skybox_params.params.size() != 6 && skybox_params.params.size() > 0)
 			throw LuaError("Skybox expects 6 textures!");
 
 		skybox_params.clouds = getboolfield_default(L, 2,
@@ -1883,8 +1882,7 @@ int ObjectRef::l_get_sky(lua_State *L)
 
 	// Add textures to a numerically indexed table for clean dump() prints
 	// We also don't want to show it when we're not using the textured skybox
-	if (skybox_params.params[0] == "" || skybox_params.type != "skybox") {
-		lua_pushnil(L);
+	if (skybox_params.params.size() != 6 || skybox_params.type != "skybox") {
 	} else {
 		lua_newtable(L);
 		for (int i = 0; i < 6; i++) {
@@ -1941,6 +1939,7 @@ int ObjectRef::l_set_sun(lua_State *L)
 		
 	if (!lua_istable(L, 2))
 		return 0;
+
 	SunParams sun_params = player->getSunParams();
 
 	sun_params.visible = getboolfield_default(L, 2,
@@ -2006,28 +2005,28 @@ int ObjectRef::l_set_moon(lua_State *L)
 	RemotePlayer *player = getplayer(ref);
 	if (!player)
 		return 0;
-	if (lua_istable(L, 2)) {
-		MoonParams moon_params = player->getMoonParams();
+	if (!lua_istable(L, 2))
+		return 0;
 
-		moon_params.visible = getboolfield_default(L, 2,
-			"visible", moon_params.visible);
-		
-		moon_params.texture = getstringfield_default(L, 2,
-			"texture", moon_params.texture);
+	MoonParams moon_params = player->getMoonParams();
 
-		moon_params.tonemap = getstringfield_default(L, 2,
-			"tonemap", moon_params.tonemap);
+	moon_params.visible = getboolfield_default(L, 2,
+		"visible", moon_params.visible);
 		
-		moon_params.rotation = getfloatfield_default(L, 2,
-			"rotation", moon_params.rotation);
+	moon_params.texture = getstringfield_default(L, 2,
+		"texture", moon_params.texture);
 
-		moon_params.scale = getfloatfield_default(L, 2,
-			"scale", moon_params.scale);
+	moon_params.tonemap = getstringfield_default(L, 2,
+		"tonemap", moon_params.tonemap);
 		
-		getServer(L)->setMoon(player, moon_params);
-		return 1;
-	}
-	return 0;
+	moon_params.rotation = getfloatfield_default(L, 2,
+		"rotation", moon_params.rotation);
+
+	moon_params.scale = getfloatfield_default(L, 2,
+		"scale", moon_params.scale);
+		
+	getServer(L)->setMoon(player, moon_params);
+	return 1;
 }
 
 // get_moon(self)
@@ -2063,31 +2062,30 @@ int ObjectRef::l_set_stars(lua_State *L)
 	RemotePlayer *player = getplayer(ref);
 	if (!player)
 		return 0;
-	if (lua_istable(L, 2)) {
-		StarParams star_params = player->getStarParams();
+	if (!lua_istable(L, 2))
+		return 0;
 
-		star_params.visible = getboolfield_default(L, 2,
-			"visible", star_params.visible);
+	StarParams star_params = player->getStarParams();
 
-		star_params.count = getintfield_default(L, 2,
-			"count", star_params.count);
+	star_params.visible = getboolfield_default(L, 2,
+		"visible", star_params.visible);
 
-		star_params.starcolor = video::SColor(255, 235, 235, 255);
-		lua_getfield(L, 2, "star_color");
-		if (!lua_isnil(L, -1))
-			read_color(L, -1, &star_params.starcolor);
-		lua_pop(L, 1);
+	star_params.count = getintfield_default(L, 2,
+		"count", star_params.count);
 
-		star_params.rotation = getfloatfield_default(L, 2,
-			"rotation", star_params.rotation);
+	lua_getfield(L, 2, "star_color");
+	if (!lua_isnil(L, -1))
+		read_color(L, -1, &star_params.starcolor);
+	lua_pop(L, 1);
+
+	star_params.rotation = getfloatfield_default(L, 2,
+		"rotation", star_params.rotation);
 		
-		star_params.scale = getfloatfield_default(L, 2,
-			"size", star_params.scale);
+	star_params.scale = getfloatfield_default(L, 2,
+		"size", star_params.scale);
 
-		getServer(L)->setStars(player, star_params);
-		return 1;
-	}
-	return 0;
+	getServer(L)->setStars(player, star_params);
+	return 1;
 }
 
 // get_stars(self)

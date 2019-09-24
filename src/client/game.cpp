@@ -2741,7 +2741,7 @@ void Game::handleClientEvent_SetSky(ClientEvent *event, CameraOrientation *cam)
 		// Shows the mesh skybox
 		sky->setVisible(true);
 		// Update mesh based skybox colours if applicable.
-		sky->updateSkyColors(
+		sky->setSkyColors(
 			*event->set_sky.day_sky,
 			*event->set_sky.dawn_sky,
 			*event->set_sky.night_sky,
@@ -2750,7 +2750,7 @@ void Game::handleClientEvent_SetSky(ClientEvent *event, CameraOrientation *cam)
 			*event->set_sky.night_horizon,
 			*event->set_sky.indoors
 		);
-		sky->updateHorizonTint(
+		sky->setHorizonTint(
 			*event->set_sky.sun_tint,
 			*event->set_sky.moon_tint,
 			*event->set_sky.tint_type
@@ -2770,7 +2770,7 @@ void Game::handleClientEvent_SetSky(ClientEvent *event, CameraOrientation *cam)
 		event->set_sky.params->size() == 6) {
 		sky->setVisible(false);
 		sky->setFallbackBgColor(*event->set_sky.bgcolor);
-		sky->updateHorizonTint(
+		sky->setHorizonTint(
 			*event->set_sky.sun_tint,
 			*event->set_sky.moon_tint,
 			*event->set_sky.tint_type
@@ -2790,7 +2790,7 @@ void Game::handleClientEvent_SetSky(ClientEvent *event, CameraOrientation *cam)
 		sky->setVisible(false);
 		sky->setFallbackBgColor(*event->set_sky.bgcolor);
 		// Disable directional sun/moon tinting on plain or invalid skyboxes.
-		sky->updateHorizonTint(
+		sky->setHorizonTint(
 			*event->set_sky.bgcolor,
 			*event->set_sky.bgcolor,
 			"custom"
@@ -2834,7 +2834,8 @@ void Game::handleClientEvent_SetStars(ClientEvent *event, CameraOrientation *cam
 	sky->setStarCount(event->star_params.count);
 	sky->setStarColor(event->star_params.starcolor);
 	sky->setStarYaw(event->star_params.rotation);
-	sky->setStarScale(event->star_params.scale);}
+	sky->setStarScale(event->star_params.scale);
+}
 
 void Game::handleClientEvent_OverrideDayNigthRatio(ClientEvent *event,
 		CameraOrientation *cam)

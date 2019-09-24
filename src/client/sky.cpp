@@ -32,6 +32,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "settings.h"
 #include "camera.h" // CameraModes
 #include "config.h"
+using namespace irr::core;
 
 Sky::Sky(s32 id, ITextureSource *tsrc) :
 		scene::ISceneNode(RenderingEngine::get_scene_manager()->getRootSceneNode(),
@@ -81,25 +82,22 @@ Sky::Sky(s32 id, ITextureSource *tsrc) :
 		m_materials[3].setTexture(0, m_sun_texture);
 		m_materials[3].MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
 		// Disables texture filtering
-		m_materials[3].setFlag(video::E_MATERIAL_FLAG(0x100), false);
-		m_materials[3].setFlag(video::E_MATERIAL_FLAG(0x200), false);
-		m_materials[3].setFlag(video::E_MATERIAL_FLAG(0x400), false);
+		m_materials[3].setFlag(video::E_MATERIAL_FLAG::EMF_BILINEAR_FILTER, false);
+		m_materials[3].setFlag(video::E_MATERIAL_FLAG::EMF_TRILINEAR_FILTER, false);
+		m_materials[3].setFlag(video::E_MATERIAL_FLAG::EMF_ANISOTROPIC_FILTER, false);
 		// Use tonemaps if available
 		if (m_sun_tonemap)
 			m_materials[3].Lighting = true;
 	}
-
-
 	
 	if (m_moon_texture) {
 		m_materials[4] = mat;
 		m_materials[4].setTexture(0, m_moon_texture);
 		m_materials[4].MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
 		// Disables texture filtering
-		m_materials[4].UseMipMaps = false;
-		m_materials[4].setFlag(video::E_MATERIAL_FLAG(0x100), false);
-		m_materials[4].setFlag(video::E_MATERIAL_FLAG(0x200), false);
-		m_materials[4].setFlag(video::E_MATERIAL_FLAG(0x400), false);
+		m_materials[4].setFlag(video::E_MATERIAL_FLAG::EMF_BILINEAR_FILTER, false);
+		m_materials[4].setFlag(video::E_MATERIAL_FLAG::EMF_TRILINEAR_FILTER, false);
+		m_materials[4].setFlag(video::E_MATERIAL_FLAG::EMF_ANISOTROPIC_FILTER, false);
 		// Use tonemaps if available
 		if (m_moon_tonemap)
 			m_materials[4].Lighting = true;
@@ -234,16 +232,17 @@ void Sky::render()
 					} else if (j == 6) { // Bottom texture
 						vertex.Pos.rotateYZBy(-90);
 						vertex.Pos.rotateXZBy(90);
-					} else if (j == 7) // Left texture
+					} else if (j == 7) { // Left texture
 						vertex.Pos.rotateXZBy(90);
-					else if (j == 8) // Right texture
+					} else if (j == 8) { // Right texture
 						vertex.Pos.rotateXZBy(-90);
-					else if (j == 9) // Front texture, do nothing
+					} else if (j == 9) { // Front texture, do nothing
 						// Irrlicht doesn't like it when vertexes are left
 						// alone and not rotated for some reason.
 						vertex.Pos.rotateXZBy(0);
-					else // Back texture
+					} else {// Back texture
 						vertex.Pos.rotateXZBy(180);
+					}
 				}
 				driver->drawIndexedTriangleFan(&vertices[0], 4, indices, 2);
 			}
@@ -711,8 +710,10 @@ void Sky::draw_moon(video::IVideoDriver *driver, float moonsize, const video::SC
 			// appears over the horizon.
 			// Also tune so that stars are at full brightness from time 20000
 			// to time 4000.
-			float starbrightness = MYMAX(0,	MYMIN(1, (0.25 - fabs(wicked_time_of_day < 0.5 ?
-				wicked_time_of_day : (1.0 - wicked_time_of_day))) *	20));
+			
+			float tod = wicked_time_of_day < 0.5f ? wicked_time_of_day : (1.0f - wicked_time_of_day);
+			float starbrightness = clamp((0.25f - fabs(tod)) * 20.0f, 0.0f, 1.0f);
+			
 			float f = starbrightness;
 			float d = (0.007 / 2) * m_star_scale;
 			
@@ -750,8 +751,6 @@ void Sky::draw_moon(video::IVideoDriver *driver, float moonsize, const video::SC
 				vertices[i * 3 + 1].Pos = p1;
 				vertices[i * 3 + 1].Color = starcolor;
 				vertices[i * 3 + 2].Pos = p2;
-				
-
 				vertices[i * 3 + 2].Color = starcolor;
 			}
 			driver->drawIndexedTriangleList(vertices.data(), m_star_count * 3,
@@ -803,35 +802,187 @@ void Sky::draw_moon(video::IVideoDriver *driver, float moonsize, const video::SC
 #endif
 	}
 
-	void Sky::draw_sky_body(std::array<video::S3DVertex, 4> &vertices, float pos_1, float pos_2, const video::SColor &c)
-	{
-		/*
-		 * Create an array of vertices with the dimensions specified.
-		 * pos_1, pos_2: position of the body's vertices
-		 * c: color of the body
-		 */
-
-		const f32 t = 1.0f;
-		const f32 o = 0.0f;
-		vertices[0] = video::S3DVertex(pos_1, pos_1, -1, 0, 0, 1, c, t, t);
-		vertices[1] = video::S3DVertex(pos_2, pos_1, -1, 0, 0, 1, c, o, t);
-		vertices[2] = video::S3DVertex(pos_2, pos_2, -1, 0, 0, 1, c, o, o);
-		vertices[3] = video::S3DVertex(pos_1, pos_2, -1, 0, 0, 1, c, t, o);
-	}
-
-
-	void Sky::place_sky_body(
-		std::array<video::S3DVertex, 4> &vertices, float horizon_position, float day_position)
+void Sky::draw_sky_body(std::array<video::S3DVertex, 4> &vertices, float pos_1, float pos_2, const video::SColor &c)
+{
 	/*
-	 * Place body in the sky.
-	 * vertices: The body as a rectangle of 4 vertices
-	 * horizon_position: turn the body around the Y axis
-	 * day_position: turn the body around the Z axis, to place it depending of the time of the day
-	 */
-	{
-		for (video::S3DVertex &vertex : vertices) {
-			// Body is directed to -Z (south) by default
-			vertex.Pos.rotateXZBy(horizon_position);
-			vertex.Pos.rotateXYBy(day_position);
-		}
+		* Create an array of vertices with the dimensions specified.
+		* pos_1, pos_2: position of the body's vertices
+		* c: color of the body
+		*/
+
+	const f32 t = 1.0f;
+	const f32 o = 0.0f;
+	vertices[0] = video::S3DVertex(pos_1, pos_1, -1, 0, 0, 1, c, t, t);
+	vertices[1] = video::S3DVertex(pos_2, pos_1, -1, 0, 0, 1, c, o, t);
+	vertices[2] = video::S3DVertex(pos_2, pos_2, -1, 0, 0, 1, c, o, o);
+	vertices[3] = video::S3DVertex(pos_1, pos_2, -1, 0, 0, 1, c, t, o);
+}
+
+
+void Sky::place_sky_body(
+	std::array<video::S3DVertex, 4> &vertices, float horizon_position, float day_position)
+/*
+	* Place body in the sky.
+	* vertices: The body as a rectangle of 4 vertices
+	* horizon_position: turn the body around the Y axis
+	* day_position: turn the body around the Z axis, to place it depending of the time of the day
+	*/
+{
+	for (video::S3DVertex &vertex : vertices) {
+		// Body is directed to -Z (south) by default
+		vertex.Pos.rotateXZBy(horizon_position);
+		vertex.Pos.rotateXYBy(day_position);
 	}
+}
+
+void Sky::setSunTexture(std::string sun_texture, 
+		std::string sun_tonemap, ITextureSource *tsrc)
+{
+	// Ignore matching textures (with modifiers) entirely,
+	// but lets at least update the tonemap before hand.
+	m_sun_tonemap_name = sun_tonemap;
+	m_sun_tonemap = tsrc->isKnownSourceImage(m_sun_tonemap_name) ?
+		tsrc->getTexture(m_sun_tonemap_name) : NULL;
+	if (m_sun_tonemap)
+		m_materials[3].Lighting = true;
+	else
+		m_materials[3].Lighting = false;
+		
+	if (m_sun_name == sun_texture)
+		return;
+	m_sun_name = sun_texture;
+
+	if (sun_texture != "") {
+		// We want to ensure the texture exists first.
+		m_sun_texture = tsrc->getTextureForMesh(m_sun_name);
+
+		if (m_sun_texture) {
+			m_materials[3] = m_materials[0];
+			m_materials[3].setTexture(0, m_sun_texture);
+			m_materials[3].MaterialType = video::
+				EMT_TRANSPARENT_ALPHA_CHANNEL;
+			// Disables texture filtering
+			m_materials[3].setFlag(
+				video::E_MATERIAL_FLAG::EMF_BILINEAR_FILTER, false);
+			m_materials[3].setFlag(
+				video::E_MATERIAL_FLAG::EMF_TRILINEAR_FILTER, false);
+			m_materials[3].setFlag(
+				video::E_MATERIAL_FLAG::EMF_ANISOTROPIC_FILTER, false);
+		}
+	} else {
+		m_sun_texture = nullptr;
+	}
+}
+
+void Sky::setSunriseTexture(std::string sunglow_texture, ITextureSource* tsrc)
+{
+	// Ignore matching textures (with modifiers) entirely.
+	if (m_sunrise_name == sunglow_texture)
+		return;
+	m_sunrise_name = sunglow_texture;
+	
+	m_materials[2].setTexture(0, tsrc->getTextureForMesh(
+		sunglow_texture.empty() ? "sunrisebg.png" : sunglow_texture)
+	);
+}
+
+void Sky::setMoonTexture(std::string moon_texture, 
+		std::string moon_tonemap, ITextureSource *tsrc)
+{
+	// Ignore matching textures (with modifiers) entirely,
+	// but lets at least update the tonemap before hand.
+	m_moon_tonemap_name = moon_tonemap;
+	m_moon_tonemap = tsrc->isKnownSourceImage(m_moon_tonemap_name) ?
+		tsrc->getTexture(m_moon_tonemap_name) : NULL;
+	if (m_moon_tonemap)
+		m_materials[4].Lighting = true;
+	else
+		m_materials[4].Lighting = false;
+
+	if (m_moon_name == moon_texture)
+		return;
+	m_moon_name = moon_texture;
+
+	if (moon_texture != "") {
+		// We want to ensure the texture exists first.
+		m_moon_texture = tsrc->getTextureForMesh(m_moon_name);
+			
+		if (m_moon_texture) {
+			m_materials[4] = m_materials[0];
+			m_materials[4].setTexture(0, m_moon_texture);
+			m_materials[4].MaterialType = video::
+				EMT_TRANSPARENT_ALPHA_CHANNEL;
+			// Disables texture filtering
+			m_materials[4].setFlag(
+				video::E_MATERIAL_FLAG::EMF_BILINEAR_FILTER, false);
+			m_materials[4].setFlag(
+				video::E_MATERIAL_FLAG::EMF_TRILINEAR_FILTER, false);
+			m_materials[4].setFlag(
+				video::E_MATERIAL_FLAG::EMF_ANISOTROPIC_FILTER, false);
+		}
+	} else {
+		m_moon_texture = nullptr;
+	}
+}
+
+void Sky::setStarCount(u16 star_count)
+{
+	// Ignore changing star count if the new value is identical
+	if (m_star_count == star_count)
+		return;
+
+	m_star_count = star_count;
+	m_stars.clear();
+	// Rebuild the stars surrounding the camera
+	for (u16 i=0; i < star_count; i++) {
+		v3f star = v3f(
+			myrand_range(-10000, 10000),
+			myrand_range(-10000, 10000),
+			myrand_range(-10000, 10000)
+		);
+
+		star.normalize();
+		m_stars.emplace_back(star);
+	}
+}
+
+void Sky::setSkyColors(video::SColor bg_day, video::SColor bg_dawn,
+	video::SColor bg_night, video::SColor sky_day,
+	video::SColor sky_dawn, video::SColor sky_night,
+	video::SColor bg_indoor) {
+
+	// Bottom half of the skybox
+	m_bgcolor_day_f = bg_day;
+	m_bgcolor_dawn_f = bg_dawn;
+	m_bgcolor_night_f = bg_night;
+	// Top half of the skybox
+	m_skycolor_day_f = sky_day;
+	m_skycolor_dawn_f = sky_dawn;
+	m_skycolor_night_f = sky_night;
+	// Indoors
+	m_bgcolor_indoor_f = bg_indoor;
+}
+
+void Sky::setHorizonTint(video::SColor sun_tint, video::SColor moon_tint,
+	std::string use_sun_tint) {
+	// Change sun and moon tinting:
+	m_pointcolor_sun_f = sun_tint;
+	m_pointcolor_moon_f = moon_tint;
+	// Faster than comparing strings every rendering frame
+	if (use_sun_tint == "default")
+		m_default_tint = true;
+	else if (use_sun_tint == "custom")
+		m_default_tint = false;
+	else
+		m_default_tint = true;
+}
+
+void Sky::addTextureToSkybox(std::string texture, int material_id,
+	ITextureSource *tsrc) {
+	// Keep a list of texture names handy.
+	m_skybox_textures.emplace_back(texture);
+	video::ITexture *result = tsrc->getTextureForMesh(texture);
+	m_materials[material_id+5] = m_materials[0];
+	m_materials[material_id+5].setTexture(0, result);
+	m_materials[material_id+5].MaterialType = video::EMT_SOLID;
+}

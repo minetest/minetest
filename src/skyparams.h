@@ -22,16 +22,16 @@ struct SkyboxParams
     std::string type;
     std::vector<std::string> params;
     bool clouds;
-	video::SColor day_sky;
-	video::SColor day_horizon;
-	video::SColor dawn_sky;
-	video::SColor dawn_horizon;
-	video::SColor night_sky;
-	video::SColor night_horizon;
-	video::SColor indoors;
-	video::SColor sun_tint;
-	video::SColor moon_tint;
-	std::string tint_type;
+    video::SColor day_sky;
+    video::SColor day_horizon;
+    video::SColor dawn_sky;
+    video::SColor dawn_horizon;
+    video::SColor night_sky;
+    video::SColor night_horizon;
+    video::SColor indoors;
+    video::SColor sun_tint;
+    video::SColor moon_tint;
+    std::string tint_type;
 };
 
 struct SunParams
@@ -40,7 +40,7 @@ struct SunParams
     std::string texture;
     std::string tonemap;
     std::string sunrise;
-	bool sunrise_visible;
+    bool sunrise_visible;
     f32 rotation;
     f32 scale;
 };
@@ -58,7 +58,7 @@ struct StarParams
 {
     bool visible;
     u32 count;
-	video::SColor starcolor;
+    video::SColor starcolor;
     f32 rotation;
     f32 scale;
 };

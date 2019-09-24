@@ -1251,11 +1251,11 @@ void Client::handleCommand_HudSetSky(NetworkPacket* pkt)
 	video::SColor moon_tint;
 	std::string tint_type;
 
-	*pkt >> bgcolor >> type >> clouds;
+	*pkt >> bgcolor >> type >> clouds >>
+		sun_tint >> moon_tint >> tint_type;
 
 	if (type == "skybox") {
 		*pkt >> texture_count;
-
 		for (int i = 0; i < texture_count; i++) {
 			*pkt >> texture;
 			params.emplace_back(texture);
@@ -1267,8 +1267,6 @@ void Client::handleCommand_HudSetSky(NetworkPacket* pkt)
 			>> indoors;
 	}
 	
-	*pkt >> sun_tint >> moon_tint >> tint_type;
-
 	ClientEvent *event = new ClientEvent();
 	event->type                      = CE_SET_SKY;
 	event->set_sky.bgcolor           = new video::SColor(bgcolor);
