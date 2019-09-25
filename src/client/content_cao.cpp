@@ -523,7 +523,9 @@ void GenericCAO::removeFromScene(bool permanent)
 	// Should be true when removing the object permanently
 	// and false when refreshing (eg: updating visuals)
 	if (m_env && permanent) {
-		clearChildAttachments();
+		// The client does not know whether this object does re-appear to
+		// a later time, thus do not clear child attachments.
+
 		clearParentAttachment();
 	}
 
@@ -1330,10 +1332,17 @@ void GenericCAO::updateAttachments()
 
 	m_attached_to_local = parent && parent->isLocalPlayer();
 
-	if (!parent && m_attachment_parent_id) {
-		//m_is_visible = false; maybe later. needs better handling
-		return;
-	}
+	/*
+	Following cases exist:
+		m_attachment_parent_id == 0 && !parent
+			This object is not attached
+		m_attachment_parent_id != 0 && parent
+			This object is attached
+		m_attachment_parent_id != 0 && !parent
+			This object will be attached as soon the parent is known
+		m_attachment_parent_id == 0 && parent
+			Impossible case
+	*/
 
 	if (!parent) { // Detach or don't attach
 		if (m_matrixnode) {

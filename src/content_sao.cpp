@@ -1109,7 +1109,7 @@ void PlayerSAO::step(float dtime, bool send_recommended)
 
 	// If the object is attached client-side, don't waste bandwidth sending its
 	// position or rotation to clients.
-	if (m_position_not_sent && !isAttached()) {
+	if (m_position_not_sent) {
 		m_position_not_sent = false;
 		float update_interval = m_env->getSendRecommendedInterval();
 		v3f pos;
