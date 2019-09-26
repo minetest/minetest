@@ -1889,12 +1889,14 @@ void GUIFormSpecMenu::parseBackgroundColor(parserData *data, const std::string &
 
 	if (((parts.size() == 1) || (parts.size() == 2)) ||
 			((parts.size() > 2) && (m_formspec_version > FORMSPEC_API_VERSION))) {
-		if (parts.size() == 1) {
-			parseColorString(parts[0], m_bgcolor, false);
-		} else if (parts.size() == 2) {
+		bool fullscreen = false;
+		if (parts.size() >= 2)
+			fullscreen = is_yes(parts[1]);
+
+		if (fullscreen)
 			parseColorString(parts[0], m_fullscreen_bgcolor, false);
-			m_bgfullscreen = is_yes(parts[1]);
-		}
+		else
+			parseColorString(parts[0], m_bgcolor, false);
 
 		return;
 	}
@@ -2414,8 +2416,6 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 	theme_by_name.clear();
 	theme_by_type.clear();
 
-	m_bgfullscreen = false;
-
 	{
 		v3f formspec_bgcolor = g_settings->getV3F("formspec_default_bg_color");
 		m_bgcolor = video::SColor(
@@ -2429,7 +2429,7 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 	{
 		v3f formspec_bgcolor = g_settings->getV3F("formspec_fullscreen_bg_color");
 		m_fullscreen_bgcolor = video::SColor(
-			(u8) clamp_u8(g_settings->getS32("formspec_fullscreen_bg_opacity")),
+			0,
 			clamp_u8(myround(formspec_bgcolor.X)),
 			clamp_u8(myround(formspec_bgcolor.Y)),
 			clamp_u8(myround(formspec_bgcolor.Z))
@@ -2921,8 +2921,9 @@ void GUIFormSpecMenu::drawMenu()
 	v2u32 screenSize = driver->getScreenSize();
 	core::rect<s32> allbg(0, 0, screenSize.X, screenSize.Y);
 
-	if (m_bgfullscreen)
+	if (m_fullscreen_bgcolor.getAlpha() > 0)
 		driver->draw2DRectangle(m_fullscreen_bgcolor, allbg, &allbg);
+
 	driver->draw2DRectangle(m_bgcolor, AbsoluteRect, &AbsoluteClippingRect);
 
 	m_tooltip_element->setVisible(false);
