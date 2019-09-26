@@ -699,7 +699,7 @@ void Server::AsyncRunStep(bool initial_step)
 			std::string unreliable_data;
 			// Go through all objects in message buffer
 			for (const auto &buffered_message : buffered_messages) {
-				// If object is not known by client, skip it
+				// If object does not exist or is not known by client, skip it
 				u16 id = buffered_message.first;
 				ServerActiveObject *sao = m_env->getActiveObject(id);
 				if (!sao || client->m_known_objects.find(id) == client->m_known_objects.end())
