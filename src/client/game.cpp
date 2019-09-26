@@ -413,6 +413,8 @@ class GameGlobalShaderConstantSetter : public IShaderConstantSetter
 	CachedPixelShaderSetting<float, 3> m_eye_position_pixel;
 	CachedVertexShaderSetting<float, 3> m_eye_position_vertex;
 	CachedPixelShaderSetting<float, 3> m_minimap_yaw;
+	CachedPixelShaderSetting<float, 3> m_camera_offset_pixel;
+	CachedPixelShaderSetting<float, 3> m_camera_offset_vertex;
 	CachedPixelShaderSetting<SamplerLayer_t> m_base_texture;
 	CachedPixelShaderSetting<SamplerLayer_t> m_normal_texture;
 	CachedPixelShaderSetting<SamplerLayer_t> m_texture_flags;
@@ -445,6 +447,8 @@ public:
 		m_eye_position_pixel("eyePosition"),
 		m_eye_position_vertex("eyePosition"),
 		m_minimap_yaw("yawVec"),
+		m_camera_offset_pixel("cameraOffset"),
+		m_camera_offset_vertex("cameraOffset"),
 		m_base_texture("baseTexture"),
 		m_normal_texture("normalTexture"),
 		m_texture_flags("textureFlags"),
@@ -493,7 +497,7 @@ public:
 			sunlight.b };
 		m_day_light.set(dnc, services);
 
-		u32 animation_timer = porting::getTimeMs() % 100000;
+		u32 animation_timer = porting::getTimeMs() % 1000000;
 		float animation_timer_f = (float)animation_timer / 100000.f;
 		m_animation_timer_vertex.set(&animation_timer_f, services);
 		m_animation_timer_pixel.set(&animation_timer_f, services);
@@ -522,6 +526,18 @@ public:
 #endif
 			m_minimap_yaw.set(minimap_yaw_array, services);
 		}
+
+		float camera_offset_array[3];
+		v3f offset = intToFloat(m_client->getCamera()->getOffset(), BS);
+#if (IRRLICHT_VERSION_MAJOR == 1 && IRRLICHT_VERSION_MINOR < 8)
+		camera_offset_array[0] = offset.X;
+		camera_offset_array[1] = offset.Y;
+		camera_offset_array[2] = offset.Z;
+#else
+		offset.getAs3Values(camera_offset_array);
+#endif
+		m_camera_offset_pixel.set(camera_offset_array, services);
+		m_camera_offset_vertex.set(camera_offset_array, services);
 
 		SamplerLayer_t base_tex = 0,
 				normal_tex = 1,
