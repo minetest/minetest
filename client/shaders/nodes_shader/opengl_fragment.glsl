@@ -6,7 +6,16 @@ uniform vec4 skyBgColor;
 uniform float fogDistance;
 uniform vec3 eyePosition;
 
+// The cameraOffset is the current center of the visible world.
+uniform vec3 cameraOffset;
+uniform float animationTimer;
+
 varying vec3 vPosition;
+// World position in the visible world (i.e. relative to the cameraOffset.)
+// This can be used for many shader effects without loss of precision.
+// If the absolute position is required it can be calculated with
+// cameraOffset + worldPosition (for large coordinates the limits of float
+// precision must be considered).
 varying vec3 worldPosition;
 varying float area_enable_parallax;
 
