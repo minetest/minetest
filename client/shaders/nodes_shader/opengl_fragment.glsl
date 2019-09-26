@@ -23,13 +23,48 @@ varying vec3 eyeVec;
 varying vec3 tsEyeVec;
 varying vec3 lightVec;
 varying vec3 tsLightVec;
+varying float nightRatio;
 
 bool normalTexturePresent = false;
 
 const float e = 2.718281828459;
 const float BS = 10.0;
 const float fogStart = FOG_START;
-const float fogShadingParameter = 1 / ( 1 - fogStart);
+float fogShadingParameter = 1 / ( 1 - fogStart);
+
+#ifdef ENABLE_FOG_NOISE
+//
+// Simple, fast noise function.
+// See: https://gist.github.com/patriciogonzalezvivo/670c22f3966e662d2f83
+//
+vec4 perm(vec4 x)
+{
+	return mod(((x * 34.0) + 1.0) * x, 289.0);
+}
+
+float snoise(vec3 p)
+{
+	vec3 a = floor(p);
+	vec3 d = p - a;
+	d = d * d * (3.0 - 2.0 * d);
+
+	vec4 b = a.xxyy + vec4(0.0, 1.0, 0.0, 1.0);
+	vec4 k1 = perm(b.xyxy);
+	vec4 k2 = perm(k1.xyxy + b.zzww);
+
+	vec4 c = k2 + a.zzzz;
+	vec4 k3 = perm(c);
+	vec4 k4 = perm(c + 1.0);
+
+	vec4 o1 = fract(k3 * (1.0 / 41.0));
+	vec4 o2 = fract(k4 * (1.0 / 41.0));
+
+	vec4 o3 = o2 * d.z + o1 * (1.0 - d.z);
+	vec2 o4 = o3.yw * d.x + o3.xz * (1.0 - d.x);
+
+	return o4.y * d.y + o4.x * (1.0 - d.y);
+}
+#endif
 
 #ifdef ENABLE_TONE_MAPPING
 
@@ -208,6 +243,20 @@ void main(void)
 	
 #ifdef ENABLE_TONE_MAPPING
 	col = applyToneMapping(col);
+#endif
+
+#ifdef ENABLE_FOG_NOISE
+	// Only do this with natural light (not in caves or under water.)
+	if (nightRatio < 0.99) {
+		// Add some noise to the haze/fog.
+		// Adjust the period to the fogDistance.
+		float noise = snoise((worldPosition + cameraOffset) /
+		                     (fogDistance / FOG_NOISE_FREQUENCY) +
+				     vec3(0,0,animationTimer * 10.0)) * FOG_NOISE_STRENGTH;
+
+		// 0.4 tested to roughly the same perceived fog distance.
+		fogShadingParameter += (noise - 0.4 * FOG_NOISE_STRENGTH) * (1 - nightRatio);
+	}
 #endif
 
 	// Due to a bug in some (older ?) graphics stacks (possibly in the glsl compiler ?),

@@ -589,6 +589,20 @@ enable_waving_leaves (Waving leaves) bool false
 #    Requires shaders to be enabled.
 enable_waving_plants (Waving plants) bool false
 
+[***Non-uniform Fog]
+#    Set to true to add a bit of noise to the fog.
+#    Requires shaders to be enabled.
+enable_fog_noise (Non-uniform Fog) bool false
+
+#    Frequency of the noise function.
+#    Larger values produce a finer and more
+#    visible pattern.
+fog_noise_frequency (Fog noise frequency) int 60 1 100
+
+#    The strenght of the fog effect
+#    Larger numbers produce a stronger effect.
+fog_noise_strength (Fog noise Strengh) float 0.25 0.0 1.0
+
 [**Advanced]
 
 #    Arm inertia, gives a more realistic movement of

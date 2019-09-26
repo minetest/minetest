@@ -686,6 +686,16 @@ ShaderInfo generate_shader(const std::string &name, u8 material_type, u8 drawtyp
 	if (g_settings->getBool("enable_bumpmapping"))
 		shaders_header += "#define ENABLE_BUMPMAPPING\n";
 
+	if (g_settings->getBool("enable_fog_noise")) {
+		shaders_header += "#define ENABLE_FOG_NOISE\n";
+		shaders_header += "#define FOG_NOISE_FREQUENCY ";
+		shaders_header += itos(g_settings->getU16("fog_noise_frequency") / 10);
+		shaders_header += "\n";
+		shaders_header += "#define FOG_NOISE_STRENGTH ";
+		shaders_header += ftos(g_settings->getFloat("fog_noise_strength") * 4.0f);
+		shaders_header += "\n";
+	}
+
 	if (g_settings->getBool("enable_parallax_occlusion")){
 		int mode = g_settings->getFloat("parallax_occlusion_mode");
 		float scale = g_settings->getFloat("parallax_occlusion_scale");

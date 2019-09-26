@@ -261,6 +261,9 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("water_wave_speed", "5.0");
 	settings->setDefault("enable_waving_leaves", "false");
 	settings->setDefault("enable_waving_plants", "false");
+	settings->setDefault("enable_fog_noise", "false");
+	settings->setDefault("fog_noise_frequency", "60");
+	settings->setDefault("fog_noise_strength", "0.25");
 
 
 	// Input

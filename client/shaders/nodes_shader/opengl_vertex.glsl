@@ -22,6 +22,7 @@ varying vec3 lightVec;
 varying vec3 tsEyeVec;
 varying vec3 tsLightVec;
 varying float area_enable_parallax;
+varying float nightRatio;
 
 // Color of the light emitted by the light sources.
 const vec3 artificialLight = vec3(1.04, 1.04, 1.04);
@@ -137,7 +138,7 @@ float disp_z;
 	// The pre-baked colors are halved to prevent overflow.
 	vec4 color;
 	// The alpha gives the ratio of sunlight in the incoming light.
-	float nightRatio = 1 - gl_Color.a;
+	nightRatio = 1 - gl_Color.a;
 	color.rgb = gl_Color.rgb * (gl_Color.a * dayLight.rgb + 
 		nightRatio * artificialLight.rgb) * 2;
 	color.a = 1;

@@ -174,7 +174,7 @@ end
 
 local function formspec(tabview, name, tabdata)
 	local tab_string =
-		"box[0,0;3.75,4.5;#999999]" ..
+		"box[0,0;3.75,4.7;#999999]" ..
 		"checkbox[0.25,0;cb_smooth_lighting;" .. fgettext("Smooth Lighting") .. ";"
 				.. dump(core.settings:get_bool("smooth_lighting")) .. "]" ..
 		"checkbox[0.25,0.5;cb_particles;" .. fgettext("Particles") .. ";"
@@ -189,7 +189,7 @@ local function formspec(tabview, name, tabdata)
 				.. getSettingIndex.NodeHighlighting() .. "]" ..
 		"dropdown[0.25,3.6;3.5;dd_leaves_style;" .. dd_options.leaves[1] .. ";"
 				.. getSettingIndex.Leaves() .. "]" ..
-		"box[4,0;3.75,4.5;#999999]" ..
+		"box[4,0;3.75,4.7;#999999]" ..
 		"label[4.25,0.1;" .. fgettext("Texturing:") .. "]" ..
 		"dropdown[4.25,0.55;3.5;dd_filters;" .. dd_options.filters[1] .. ";"
 				.. getSettingIndex.Filter() .. "]" ..
@@ -201,7 +201,7 @@ local function formspec(tabview, name, tabdata)
 		"label[4.25,3.45;" .. fgettext("Screen:") .. "]" ..
 		"checkbox[4.25,3.6;cb_autosave_screensize;" .. fgettext("Autosave Screen Size") .. ";"
 				.. dump(core.settings:get_bool("autosave_screensize")) .. "]" ..
-		"box[8,0;3.75,4.5;#999999]"
+		"box[8,0;3.75,4.7;#999999]"
 
 	local video_driver = core.settings:get("video_driver")
 	local shaders_supported = video_driver == "opengl"
@@ -257,7 +257,9 @@ local function formspec(tabview, name, tabdata)
 			"checkbox[8.25,3;cb_waving_leaves;" .. fgettext("Waving Leaves") .. ";"
 					.. dump(core.settings:get_bool("enable_waving_leaves")) .. "]" ..
 			"checkbox[8.25,3.5;cb_waving_plants;" .. fgettext("Waving Plants") .. ";"
-					.. dump(core.settings:get_bool("enable_waving_plants")) .. "]"
+					.. dump(core.settings:get_bool("enable_waving_plants")) .. "]" ..
+			"checkbox[8.25,4.0;cb_fog_noise;" .. fgettext("Non-uniform Fog") .. ";"
+					.. dump(core.settings:get_bool("enable_fog_noise")) .. "]"
 	else
 		tab_string = tab_string ..
 			"label[8.38,0.7;" .. core.colorize("#888888",
@@ -273,7 +275,9 @@ local function formspec(tabview, name, tabdata)
 			"label[8.38,3.2;" .. core.colorize("#888888",
 					fgettext("Waving Leaves")) .. "]" ..
 			"label[8.38,3.7;" .. core.colorize("#888888",
-					fgettext("Waving Plants")) .. "]"
+					fgettext("Waving Plants")) .. "]" ..
+			"label[8.38,4.2;" .. core.colorize("#888888",
+					fgettext("Non-uniform Fog")) .. "]"
 	end
 
 	return tab_string
@@ -342,6 +346,10 @@ local function handle_settings_buttons(this, fields, tabname, tabdata)
 	end
 	if fields["cb_waving_water"] then
 		core.settings:set("enable_waving_water", fields["cb_waving_water"])
+		return true
+	end
+	if fields["cb_fog_noise"] then
+		core.settings:set("enable_fog_noise", fields["cb_fog_noise"])
 		return true
 	end
 	if fields["cb_waving_leaves"] then
