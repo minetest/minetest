@@ -1615,7 +1615,7 @@ mgv7_np_dungeons (Dungeon noise) noise_params_3d 0.9, 0.5, (500, 500, 500), 0, 2
 [*Mapgen Carpathian]
 
 #    Map generation attributes specific to Mapgen Carpathian.
-mgcarpathian_spflags (Mapgen Carpathian specific flags) flags caverns,norivers caverns,nocaverns,rivers,norivers
+mgcarpathian_spflags (Mapgen Carpathian specific flags) flags caverns,norivers caverns,rivers,nocaverns,norivers
 
 #    Defines the base ground level.
 mgcarpathian_base_level (Base ground level) float 12.0
