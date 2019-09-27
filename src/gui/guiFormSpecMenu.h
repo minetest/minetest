@@ -32,6 +32,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/string.h"
 #include "util/enriched_string.h"
 #include "StyleSpec.h"
+#include "client/texture_pool.h"
 
 class InventoryManager;
 class ISimpleTextureSource;
@@ -182,6 +183,17 @@ class GUIFormSpecMenu : public GUIModalMenu
 		}
 
 		ImageDrawSpec(const std::string &a_name,
+				const v2s32 &a_pos, const v2s32 &a_geom, s32 a_texture_idx):
+			name(a_name),
+			parent_button(NULL),
+			pos(a_pos),
+			geom(a_geom),
+			texture_idx(a_texture_idx),
+			scale(true)
+		{
+		}
+
+		ImageDrawSpec(const std::string &a_name,
 				const v2s32 &a_pos, const v2s32 &a_geom, const core::rect<s32> &middle, bool clip=false):
 				name(a_name),
 				parent_button(NULL),
@@ -208,6 +220,7 @@ class GUIFormSpecMenu : public GUIModalMenu
 		gui::IGUIButton *parent_button;
 		v2s32 pos;
 		v2s32 geom;
+		s32 texture_idx;
 		core::rect<s32> middle;
 		bool scale;
 		bool clip;
@@ -424,11 +437,13 @@ protected:
 	std::string m_formspec_string;
 	std::string m_formspec_prepend;
 	InventoryLocation m_current_inventory_location;
+	TexturePool       m_texture_pool;
 
 	std::vector<ListDrawSpec> m_inventorylists;
 	std::vector<ListRingSpec> m_inventory_rings;
 	std::vector<ImageDrawSpec> m_backgrounds;
 	std::vector<ImageDrawSpec> m_images;
+	std::vector<ImageDrawSpec> m_animated_images;
 	std::vector<ImageDrawSpec> m_itemimages;
 	std::vector<BoxDrawSpec> m_boxes;
 	std::unordered_map<std::string, bool> field_close_on_enter;
@@ -512,6 +527,7 @@ private:
 	void parseListRing(parserData* data, const std::string &element);
 	void parseCheckbox(parserData* data, const std::string &element);
 	void parseImage(parserData* data, const std::string &element);
+	void parseAnimatedImage(parserData* data, const std::string &element);
 	void parseItemImage(parserData* data, const std::string &element);
 	void parseButton(parserData* data, const std::string &element,
 			const std::string &typ);

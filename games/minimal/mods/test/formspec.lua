@@ -27,19 +27,23 @@ local clip_fs = [[
 
 
 local style_fs = [[
-	style[one_btn1;bgcolor=red;textcolor=yellow]
+	style[one_btn1;bgcolor=red;textcolor=yellow;bgcolor_hovered=orange;
+		bgcolor_pressed=purple]
 	button[0,0;2.5,0.8;one_btn1;Button]
 
 	style[one_btn2;border=false;textcolor=cyan]
 	button[0,1.05;2.5,0.8;one_btn2;Text Button]
 
-	style[one_btn3;bgimg=bubble.png;bgimg_pressed=heart.png]
+	style[one_btn3;bgimg=bubble.png;bgimg_hovered=default_apple.png;
+		bgimg_pressed=heart.png]
 	button[0,2.1;1,1;one_btn3;Bor]
 
-	style[one_btn4;bgimg=bubble.png;bgimg_pressed=heart.png;border=false]
+	style[one_btn4;bgimg=bubble.png;bgimg_hovered=default_apple.png;
+		bgimg_pressed=heart.png;border=false]
 	button[1.25,2.1;1,1;one_btn4;Bub]
 
-	style[one_btn5;bgimg=bubble.png;bgimg_pressed=heart.png;border=false;alpha=false]
+	style[one_btn5;bgimg=bubble.png;bgimg_hovered=default_apple.png;
+		bgimg_pressed=heart.png;border=false;alpha=false]
 	button[0,3.35;1,1;one_btn5;Alph]
 
 	style[one_btn6;border=true]

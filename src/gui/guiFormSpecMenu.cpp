@@ -623,6 +623,44 @@ void GUIFormSpecMenu::parseImage(parserData* data, const std::string &element)
 	errorstream<< "Invalid image element(" << parts.size() << "): '" << element << "'"  << std::endl;
 }
 
+void GUIFormSpecMenu::parseAnimatedImage(parserData *data, const std::string &element)
+{
+	std::vector<std::string> parts = split(element, ';');
+
+	if ((parts.size() == 3) ||
+		((parts.size() > 3) && (m_formspec_version > FORMSPEC_API_VERSION)))
+	{
+		std::vector<std::string> v_pos   = split(parts[0], ',');
+		std::vector<std::string> v_geom  = split(parts[1], ',');
+		std::string name = unescape_string(parts[2]);
+
+		MY_CHECKPOS("animated_image", 0);
+		MY_CHECKGEOM("animated_image", 1);
+
+		v2s32 pos;
+		v2s32 geom;
+
+		if (data->real_coordinates) {
+			pos = getRealCoordinateBasePos(true, v_pos);
+			geom = getRealCoordinateGeometry(v_geom);
+		} else {
+			pos = getElementBasePos(true, &v_pos);
+			geom.X = stof(v_geom[0]) * (float)imgsize.X;
+			geom.Y = stof(v_geom[1]) * (float)imgsize.Y;
+		}
+
+		if (!data->explicit_size)
+			warningstream << "invalid use of image without a size[] element" << std::endl;
+
+		s32 texture_idx = 0;
+
+		m_animated_images.emplace_back(name, pos, geom, texture_idx);
+		return;
+	}
+
+	errorstream << "Invalid animated image element(" << parts.size() << "): '" << element << "'"  << std::endl;
+}
+
 void GUIFormSpecMenu::parseItemImage(parserData* data, const std::string &element)
 {
 	std::vector<std::string> parts = split(element,';');
@@ -2221,6 +2259,11 @@ void GUIFormSpecMenu::parseElement(parserData* data, const std::string &element)
 		return;
 	}
 
+	if (type == "animated_image") {
+		parseAnimatedImage(data, description);
+		return;
+	}
+
 	if (type == "item_image") {
 		parseItemImage(data, description);
 		return;
@@ -2399,6 +2442,7 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 
 	m_inventorylists.clear();
 	m_images.clear();
+	m_animated_images.clear();
 	m_backgrounds.clear();
 	m_itemimages.clear();
 	m_tables.clear();
@@ -3025,6 +3069,41 @@ void GUIFormSpecMenu::drawMenu()
 				NULL/*&AbsoluteClippingRect*/, colors, true);
 		}
 		else {
+			errorstream << "GUIFormSpecMenu::drawMenu() Draw images unable to load texture:" << std::endl;
+			errorstream << "\t" << spec.name << std::endl;
+		}
+	}
+
+	/*
+		Draw animated images
+	*/
+	m_texture_pool.step();
+
+	for (const GUIFormSpecMenu::ImageDrawSpec &spec : m_animated_images) {
+		s32 idx = spec.texture_idx;
+		video::ITexture *texture = m_texture_pool.getTexture(
+				spec.name, m_tsrc, idx);
+
+		if (texture) {
+			const core::dimension2d<u32> &img_origsize = texture->getOriginalSize();
+			// Image size on screen
+			core::rect<s32> imgrect;
+
+			if (spec.scale)
+				imgrect = core::rect<s32>(0,0, spec.geom.X, spec.geom.Y);
+			else
+				imgrect = core::rect<s32>(0,0, img_origsize.Width, img_origsize.Height);
+
+			// Image rectangle on screen
+			core::rect<s32> rect = imgrect + spec.pos;
+			const video::SColor color(255,255,255,255);
+			const video::SColor colors[] = {color,color,color,color};
+
+			draw2DImageFilterScaled(
+				driver, texture, rect,
+				core::rect<s32>(core::position2d<s32>(0,0), img_origsize),
+				NULL, colors, true);
+		} else {
 			errorstream << "GUIFormSpecMenu::drawMenu() Draw images unable to load texture:" << std::endl;
 			errorstream << "\t" << spec.name << std::endl;
 		}
