@@ -688,14 +688,16 @@ local function create_change_setting_formspec(dialogdata)
 		height = height - 1
 
 		local fields = {} -- To build formspec
-		for i, name in ipairs(setting.possible) do
+		local j = 1
+		for _, name in ipairs(setting.possible) do
 			if name:sub(1, 2) ~= "no" then
 				local x = 0.5
-				local y = height + i / 2 - 0.75
-				if i - 1 >= flags_count / 2 then -- 2nd column
+				local y = height + j / 2 - 0.75
+				if j - 1 >= flags_count / 2 then -- 2nd column
 					x = 5
 					y = y - max_height
 				end
+				j = j + 1;
 				local checkbox_name = "cb_" .. name
 				local is_enabled = flags[name] == true -- to get false if nil
 				checkboxes[checkbox_name] = is_enabled
