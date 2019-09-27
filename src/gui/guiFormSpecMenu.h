@@ -369,6 +369,7 @@ protected:
 	bool m_lock = false;
 	v2u32 m_lockscreensize;
 
+	bool m_bgnonfullscreen;
 	bool m_bgfullscreen;
 	bool m_slotborder;
 	video::SColor m_bgcolor;

@@ -2178,21 +2178,36 @@ void GUIFormSpecMenu::parseBox(parserData* data, const std::string &element)
 void GUIFormSpecMenu::parseBackgroundColor(parserData* data, const std::string &element)
 {
 	std::vector<std::string> parts = split(element,';');
+	const u32 parameter_count = parts.size();
 
-	if (((parts.size() == 1) || (parts.size() == 2)) ||
-			((parts.size() > 2) && (m_formspec_version > FORMSPEC_API_VERSION))) {
-		parseColorString(parts[0], m_bgcolor, false);
-
-		if (parts.size() == 2) {
-			std::string fullscreen = parts[1];
-			m_bgfullscreen = is_yes(fullscreen);
-		}
-
+	if ((parameter_count > 2 && m_formspec_version < 3) ||
+			(parameter_count > 3 && m_formspec_version <= FORMSPEC_API_VERSION)) {
+		errorstream << "Invalid bgcolor element(" << parameter_count << "): '"
+				<< element << "'" << std::endl;
 		return;
 	}
 
-	errorstream << "Invalid bgcolor element(" << parts.size() << "): '" << element << "'"
-			<< std::endl;
+	// bgcolor
+	if (parameter_count >= 1 && parts[0] != "")
+		parseColorString(parts[0], m_bgcolor, false);
+
+	// fullscreen
+	if (parameter_count >= 2) {
+		if (parts[1] == "both") {
+			m_bgnonfullscreen = true;
+			m_bgfullscreen = true;
+		} else if (parts[1] == "neither") {
+			m_bgnonfullscreen = false;
+			m_bgfullscreen = false;
+		} else if (parts[1] != "" || m_formspec_version < 3) {
+			m_bgfullscreen = is_yes(parts[1]);
+			m_bgnonfullscreen = !m_bgfullscreen;
+		}
+	}
+
+	// fbgcolor
+	if (parameter_count >= 3 && parts[2] != "")
+		parseColorString(parts[2], m_fullscreen_bgcolor, false);
 }
 
 void GUIFormSpecMenu::parseListColors(parserData* data, const std::string &element)
@@ -2735,6 +2750,7 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 	theme_by_name.clear();
 	theme_by_type.clear();
 
+	m_bgnonfullscreen = true;
 	m_bgfullscreen = false;
 
 	m_formspec_version = 1;
@@ -3312,7 +3328,7 @@ void GUIFormSpecMenu::drawMenu()
 
 	if (m_bgfullscreen)
 		driver->draw2DRectangle(m_fullscreen_bgcolor, allbg, &allbg);
-	else
+	if (m_bgnonfullscreen)
 		driver->draw2DRectangle(m_bgcolor, AbsoluteRect, &AbsoluteClippingRect);
 
 	/*
