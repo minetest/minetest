@@ -247,7 +247,7 @@ s32 GUIScrollBar::getPosFromMousePos(const core::position2di &pos) const
 		w = RelativeRect.getHeight() - border_size * 2 - thumb_size;
 		p = pos.Y - AbsoluteRect.UpperLeftCorner.Y - border_size - offset;
 	}
-	return core::isnotzero(range()) ? s32(f32(p) / f32(w) * range()) + min_pos : 0;
+	return core::isnotzero(range()) ? s32(f32(p) / f32(w) * range() + 0.5f) + min_pos : 0;
 }
 
 void GUIScrollBar::setPos(const s32 &pos)

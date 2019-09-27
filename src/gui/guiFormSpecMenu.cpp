@@ -125,7 +125,7 @@ GUIFormSpecMenu::~GUIFormSpecMenu()
 {
 	removeChildren();
 
-	for (auto &table_it : m_tables) {
+	for (auto &table_it : m_tables)
 		table_it.second->drop();
 	}
 	for (auto &inventorylist_it : m_inventorylists) {
@@ -142,10 +142,6 @@ GUIFormSpecMenu::~GUIFormSpecMenu()
 	}
 	for (auto &tooltip_rect_it : m_tooltip_rects) {
 		tooltip_rect_it.first->drop();
-	}
-
-	for (auto &scrollbar_it : m_scrollbars) {
-		scrollbar_it.second->drop();
 	}
 
 	delete m_selected_item;
@@ -2710,7 +2706,7 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 	// Remove children
 	removeChildren();
 
-	for (auto &table_it : m_tables) {
+	for (auto &table_it : m_tables)
 		table_it.second->drop();
 	}
 	for (auto &inventorylist_it : m_inventorylists) {
