@@ -2121,6 +2121,14 @@ Elements
 
 * Show an image
 
+### `animated_image[<X>,<Y>;<W>,<H>;<texture name>:<frame count>,<frame duration>]`
+
+* Show an animated image
+* `<texture name>` is the sole name without the file extension (`.png` is expected)
+* `<frame count>` is the number of frames animating the image
+  (ex.: `3` successively show `image_1.png`, `image_2.png`, `image_3.png`)
+* `<frame duration>` is in milliseconds
+
 ### `item_image[<X>,<Y>;<W>,<H>;<item name>]`
 
 * Show an inventory image of registered item/node

@@ -104,6 +104,10 @@ src/client/renderingengine.h
 src/client/client.cpp
 src/client/imagefilters.cpp
 src/client/clientlauncher.cpp
+src/client/texture.cpp
+src/client/texture.h
+src/client/texture_pool.cpp
+src/client/texture_pool.h
 src/clouds.cpp
 src/clouds.h
 src/collision.cpp
