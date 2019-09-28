@@ -147,6 +147,10 @@ For Debian/Ubuntu users:
 For Fedora users:
 
     sudo dnf install make automake gcc gcc-c++ kernel-devel cmake libcurl-devel openal-soft-devel libvorbis-devel libXxf86vm-devel libogg-devel freetype-devel mesa-libGL-devel zlib-devel jsoncpp-devel irrlicht-devel bzip2-libs gmp-devel sqlite-devel luajit-devel leveldb-devel ncurses-devel doxygen spatialindex-devel bzip2-devel
+    
+For Arch users:
+
+    sudo pacman -S base-devel gnucurl libcurl-gnutls cmake openal libvorbis vorbis-tools libxxf86vm irrlicht libpng libpng png++ glu mesa sqlite libspatialite libogg libvorbis openal freetype2 jsoncpp gmp luajit leveldb ncurses doxygen
 
 #### Download
 
