@@ -125,6 +125,9 @@ std::string getImagePath(std::string path)
 std::string getTexturePath(const std::string &filename, bool *is_base_pack)
 {
 	std::string fullpath;
+
+	// This can set a wrong value on cached textures, but is irrelevant because
+	// is_base_pack is only passed when initializing the textures the first time
 	if (is_base_pack)
 		*is_base_pack = false;
 	/*
