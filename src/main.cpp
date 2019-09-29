@@ -29,7 +29,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "defaultsettings.h"
 #include "gettext.h"
 #include "log.h"
-#include "quicktune.h"
+#include "util/quicktune.h"
 #include "httpfetch.h"
 #include "gameparams.h"
 #include "database/database.h"

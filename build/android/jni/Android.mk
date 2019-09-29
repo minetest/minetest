@@ -241,7 +241,6 @@ LOCAL_SRC_FILES := \
 		jni/src/porting_android.cpp               \
 		jni/src/porting.cpp                       \
 		jni/src/profiler.cpp                      \
-		jni/src/quicktune.cpp                     \
 		jni/src/raycast.cpp                       \
 		jni/src/reflowscan.cpp                    \
 		jni/src/remoteplayer.cpp                  \
@@ -290,6 +289,7 @@ LOCAL_SRC_FILES := \
 		jni/src/util/ieee_float.cpp               \
 		jni/src/util/numeric.cpp                  \
 		jni/src/util/pointedthing.cpp             \
+		jni/src/util/quicktune.cpp                \
 		jni/src/util/serialize.cpp                \
 		jni/src/util/sha1.cpp                     \
 		jni/src/util/srp.cpp                      \

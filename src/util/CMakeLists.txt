@@ -7,6 +7,7 @@ set(UTIL_SRCS
 	${CMAKE_CURRENT_SOURCE_DIR}/ieee_float.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/numeric.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/pointedthing.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/quicktune.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/serialize.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/sha1.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/sha256.c
@@ -14,4 +15,3 @@ set(UTIL_SRCS
 	${CMAKE_CURRENT_SOURCE_DIR}/srp.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/timetaker.cpp
 	PARENT_SCOPE)
-
