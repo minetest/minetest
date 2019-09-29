@@ -2231,8 +2231,8 @@ void GUIFormSpecMenu::parseElement(parserData* data, const std::string &element)
 		return;
 	}
 
-	if (type == "background") {
-		parseBackground(data,description);
+	if (type == "background" || type == "background9") {
+		parseBackground(data, description);
 		return;
 	}
 

@@ -2114,7 +2114,7 @@ Elements
 * If `auto_clip` is `true`, the background is clipped to the formspec size
   (`x` and `y` are used as offset values, `w` and `h` are ignored)
 
-### `background[<X>,<Y>;<W>,<H>;<texture name>;<auto_clip>;<middle>]`
+### `background9[<X>,<Y>;<W>,<H>;<texture name>;<auto_clip>;<middle>]`
 
 * 9-sliced background. See https://en.wikipedia.org/wiki/9-slice_scaling
 * Middle is a rect which defines the middle of the 9-slice.
