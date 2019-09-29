@@ -150,7 +150,7 @@ For Fedora users:
     
 For Arch users:
 
-    sudo pacman -S base-devel gnucurl libcurl-gnutls cmake openal libvorbis vorbis-tools libxxf86vm irrlicht libpng libpng png++ glu mesa sqlite libspatialite libogg libvorbis openal freetype2 jsoncpp gmp luajit leveldb ncurses doxygen
+    sudo pacman -S base-devel gnurl libcurl-gnutls cmake libxxf86vm irrlicht libpng sqlite libogg libvorbis openal freetype2 jsoncpp gmp luajit leveldb ncurses
 
 #### Download
 
