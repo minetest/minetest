@@ -1405,8 +1405,10 @@ void GUIFormSpecMenu::parseLabel(parserData* data, const std::string &element)
 		std::vector<std::string> lines = split(text, '\n');
 
 		for (unsigned int i = 0; i != lines.size(); i++) {
-			std::wstring wlabel = unescape_translate(unescape_string(
-				utf8_to_wide(lines[i])));
+			std::wstring wlabel_colors = translate_string(
+				utf8_to_wide(unescape_string(lines[i])));
+			// Without color escapes to get the font dimensions
+			std::wstring wlabel_plain = unescape_enriched(wlabel_colors);
 
 			core::rect<s32> rect;
 
@@ -1423,7 +1425,7 @@ void GUIFormSpecMenu::parseLabel(parserData* data, const std::string &element)
 
 				rect = core::rect<s32>(
 					pos.X, pos.Y,
-					pos.X + m_font->getDimension(wlabel.c_str()).Width,
+					pos.X + m_font->getDimension(wlabel_plain.c_str()).Width,
 					pos.Y + imgsize.Y);
 
 			} else {
@@ -1445,13 +1447,13 @@ void GUIFormSpecMenu::parseLabel(parserData* data, const std::string &element)
 
 				rect = core::rect<s32>(
 					pos.X, pos.Y - m_btn_height,
-					pos.X + m_font->getDimension(wlabel.c_str()).Width,
+					pos.X + m_font->getDimension(wlabel_plain.c_str()).Width,
 					pos.Y + m_btn_height);
 			}
 
 			FieldSpec spec(
 				"",
-				wlabel,
+				wlabel_colors,
 				L"",
 				258+m_fields.size()
 			);
