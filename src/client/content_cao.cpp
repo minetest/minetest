@@ -1555,7 +1555,7 @@ void GenericCAO::processMessage(const std::string &data)
 
 		if (damage > 0)
 		{
-			if (m_hp <= 0)
+			if (m_hp == 0)
 			{
 				// TODO: Execute defined fast response
 				// As there is no definition, make a smoke puff
@@ -1571,7 +1571,9 @@ void GenericCAO::processMessage(const std::string &data)
 					m_reset_textures_timer += 0.05 * damage;
 				updateTextures(m_current_texture_modifier + "^[brighten");
 			}
-		} else {
+		}
+
+		if (m_hp == 0) {
 			// Same as 'Server::DiePlayer'
 			clearParentAttachment();
 			// Same as 'ObjectRef::l_remove'
