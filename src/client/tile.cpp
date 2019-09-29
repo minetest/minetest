@@ -122,9 +122,14 @@ std::string getImagePath(std::string path)
 
 	Utilizes a thread-safe cache.
 */
-std::string getTexturePath(const std::string &filename)
+std::string getTexturePath(const std::string &filename, bool *is_base_pack)
 {
 	std::string fullpath;
+
+	// This can set a wrong value on cached textures, but is irrelevant because
+	// is_base_pack is only passed when initializing the textures the first time
+	if (is_base_pack)
+		*is_base_pack = false;
 	/*
 		Check from cache
 	*/
@@ -154,6 +159,8 @@ std::string getTexturePath(const std::string &filename)
 		std::string testpath = base_path + DIR_DELIM + filename;
 		// Check all filename extensions. Returns "" if not found.
 		fullpath = getImagePath(testpath);
+		if (is_base_pack && !fullpath.empty())
+			*is_base_pack = true;
 	}
 
 	// Add to cache (also an empty result is cached)
@@ -215,9 +222,11 @@ public:
 		bool need_to_grab = true;
 
 		// Try to use local texture instead if asked to
-		if (prefer_local){
-			std::string path = getTexturePath(name);
-			if (!path.empty()) {
+		if (prefer_local) {
+			bool is_base_pack;
+			std::string path = getTexturePath(name, &is_base_pack);
+			// Ignore base pack
+			if (!path.empty() && !is_base_pack) {
 				video::IImage *img2 = RenderingEngine::get_video_driver()->
 					createImageFromFile(path.c_str());
 				if (img2){
