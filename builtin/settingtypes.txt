@@ -112,7 +112,7 @@ always_fly_fast (Always fly and fast) bool true
 
 #    The time in seconds it takes between repeated right clicks when holding the right
 #    mouse button.
-repeat_rightclick_time (Rightclick repetition interval) float 0.25
+repeat_rightclick_time (Rightclick repetition interval) float 0.25 0.001
 
 #    Automatically jump up single-node obstacles.
 autojump (Automatic jumping) bool false
@@ -150,7 +150,7 @@ joystick_type (Joystick type) enum auto auto,generic,xbox
 
 #    The time in seconds it takes between repeated events
 #    when holding down a joystick button combination.
-repeat_joystick_button_time (Joystick button repetition interval) float 0.17
+repeat_joystick_button_time (Joystick button repetition interval) float 0.17 0.001
 
 #    The sensitivity of the joystick axes for moving the
 #    ingame view frustum around.
@@ -597,10 +597,10 @@ arm_inertia (Arm inertia) bool true
 
 #    If FPS would go higher than this, limit it by sleeping
 #    to not waste CPU power for no benefit.
-fps_max (Maximum FPS) int 60
+fps_max (Maximum FPS) int 60 1
 
 #    Maximum FPS when game is paused.
-pause_fps_max (FPS in pause menu) int 20
+pause_fps_max (FPS in pause menu) int 20 1
 
 #    Open the pause menu when the window's focus is lost. Does not pause if a formspec is
 #    open.
@@ -616,10 +616,10 @@ viewing_range (Viewing range) int 100 20 4000
 near_plane (Near clipping plane) float 0.1 0 0.5
 
 #    Width component of the initial window size.
-screen_w (Screen width) int 1024
+screen_w (Screen width) int 1024 1
 
 #    Height component of the initial window size.
-screen_h (Screen height) int 600
+screen_h (Screen height) int 600 1
 
 #    Save window size automatically when modified.
 autosave_screensize (Autosave screen size) bool true
@@ -806,7 +806,7 @@ menu_clouds (Clouds in menu) bool true
 #    This will smooth over some of the rough edges, and blend
 #    pixels when scaling down, at the cost of blurring some
 #    edge pixels when images are scaled by non-integer sizes.
-gui_scaling (GUI scaling) float 1.0
+gui_scaling (GUI scaling) float 1.0 0.001
 
 #    When gui_scaling_filter is true, all GUI images need to be
 #    filtered in software, but some images are generated directly
@@ -831,7 +831,7 @@ freetype (FreeType fonts) bool true
 #    Path to TrueTypeFont or bitmap.
 font_path (Font path) filepath fonts/liberationsans.ttf
 
-font_size (Font size) int 16
+font_size (Font size) int 16 1
 
 #    Font shadow offset, if 0 then shadow will not be drawn.
 font_shadow (Font shadow) int 1
@@ -841,11 +841,11 @@ font_shadow_alpha (Font shadow alpha) int 127 0 255
 
 mono_font_path (Monospace font path) filepath fonts/liberationmono.ttf
 
-mono_font_size (Monospace font size) int 15
+mono_font_size (Monospace font size) int 15 1
 
 #    This font will be used for certain languages.
 fallback_font_path (Fallback font) filepath fonts/DroidSansFallbackFull.ttf
-fallback_font_size (Fallback font size) int 15
+fallback_font_size (Fallback font size) int 15 1
 fallback_font_shadow (Fallback font shadow) int 1
 fallback_font_shadow_alpha (Fallback font shadow alpha) int 128 0 255
 
@@ -863,7 +863,7 @@ screenshot_quality (Screenshot quality) int 0 0 100
 [*Advanced]
 
 #    Adjust dpi configuration to your screen (non X11/Android only) e.g. for 4k screens.
-screen_dpi (DPI) int 72
+screen_dpi (DPI) int 72 1
 
 #    Windows systems only: Start Minetest with the command line window in the background.
 #    Contains the same information as the file debug.txt (default name).
