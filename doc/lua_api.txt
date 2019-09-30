@@ -6526,7 +6526,9 @@ Used by `minetest.register_node`.
         drop = "",
         -- Name of dropped item when dug.
         -- Default dropped item is the node itself.
-        -- Using a table allows multiple items, drop chances and tool filtering:
+        -- Using a table allows multiple items, drop chances and tool filtering.
+        -- Tool filtering was undocumented until recently, tool filtering by string
+        -- matching is deprecated.
         drop = {
             max_items = 1,
             -- Maximum number of item lists to drop.
@@ -6557,7 +6559,8 @@ Used by `minetest.register_node`.
                 },
                 {
                     -- Only drop if using a tool whose name contains
-                    -- "default:shovel_".
+                    -- "default:shovel_" (this tool filtering by string matching
+                    -- is deprecated).
                     tools = {"~default:shovel_"},
                     rarity = 2,
                     -- The item list dropped.
