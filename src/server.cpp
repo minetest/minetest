@@ -694,19 +694,33 @@ void Server::AsyncRunStep(bool initial_step)
 		// Route data to every client
 		for (const auto &client_it : clients) {
 			RemoteClient *client = client_it.second;
+			PlayerSAO *player = getPlayerSAO(client->peer_id);
 			std::string reliable_data;
 			std::string unreliable_data;
 			// Go through all objects in message buffer
 			for (const auto &buffered_message : buffered_messages) {
-				// If object is not known by client, skip it
+				// If object does not exist or is not known by client, skip it
 				u16 id = buffered_message.first;
-				if (client->m_known_objects.find(id) == client->m_known_objects.end())
+				ServerActiveObject *sao = m_env->getActiveObject(id);
+				if (!sao || client->m_known_objects.find(id) == client->m_known_objects.end())
 					continue;
 
 				// Get message list of object
 				std::vector<ActiveObjectMessage>* list = buffered_message.second;
 				// Go through every message
 				for (const ActiveObjectMessage &aom : *list) {
+					// Send position updates to players who do not see the attachment
+					if (aom.datastring[0] == GENERIC_CMD_UPDATE_POSITION) {
+						if (sao->getId() == player->getId())
+							continue;
+
+						// Do not send position updates for attached players
+						// as long the parent is known to the client
+						ServerActiveObject *parent = sao->getParent();
+						if (parent && client->m_known_objects.find(parent->getId()) !=
+								client->m_known_objects.end())
+							continue;
+					}
 					// Compose the full new data with header
 					std::string new_data;
 					// Add object id
@@ -1907,14 +1921,17 @@ void Server::SendActiveObjectRemoveAdd(RemoteClient *client, PlayerSAO *playersa
 	while (!added_objects.empty()) {
 		// Get object
 		u16 id = added_objects.front();
-		ServerActiveObject* obj = m_env->getActiveObject(id);
+		ServerActiveObject *obj = m_env->getActiveObject(id);
+		added_objects.pop();
+
+		if (!obj) {
+			warningstream << FUNCTION_NAME << ": NULL object id="
+				<< (int)id << std::endl;
+			continue;
+		}
 
 		// Get object type
-		u8 type = ACTIVEOBJECT_TYPE_INVALID;
-		if (!obj)
-			warningstream << FUNCTION_NAME << ": NULL object" << std::endl;
-		else
-			type = obj->getSendType();
+		u8 type = obj->getSendType();
 
 		// Add to data buffer for sending
 		writeU16((u8*)buf, id);
@@ -1922,19 +1939,13 @@ void Server::SendActiveObjectRemoveAdd(RemoteClient *client, PlayerSAO *playersa
 		writeU8((u8*)buf, type);
 		data.append(buf, 1);
 
-		if (obj)
-			data.append(serializeLongString(
-				obj->getClientInitializationData(client->net_proto_version)));
-		else
-			data.append(serializeLongString(""));
+		data.append(serializeLongString(
+			obj->getClientInitializationData(client->net_proto_version)));
 
 		// Add to known objects
 		client->m_known_objects.insert(id);
 
-		if (obj)
-			obj->m_known_by_count++;
-
-		added_objects.pop();
+		obj->m_known_by_count++;
 	}
 
 	NetworkPacket pkt(TOCLIENT_ACTIVE_OBJECT_REMOVE_ADD, data.size(), client->peer_id);

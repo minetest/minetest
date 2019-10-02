@@ -156,6 +156,11 @@ public:
 
 	const v3f getPosition() const;
 
+	void setPosition(const v3f &pos)
+	{
+		pos_translator.val_current = pos;
+	}
+
 	inline const v3f &getRotation() const { return m_rotation; }
 
 	const bool isImmortal();

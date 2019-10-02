@@ -1107,14 +1107,14 @@ void PlayerSAO::step(float dtime, bool send_recommended)
 	if (!send_recommended)
 		return;
 
-	// If the object is attached client-side, don't waste bandwidth sending its
-	// position or rotation to clients.
-	if (m_position_not_sent && !isAttached()) {
+	if (m_position_not_sent) {
 		m_position_not_sent = false;
 		float update_interval = m_env->getSendRecommendedInterval();
 		v3f pos;
-		if (isAttached()) // Just in case we ever do send attachment position too
-			pos = m_env->getActiveObject(m_attachment_parent_id)->getBasePosition();
+		// When attached, the position is only sent to clients where the
+		// parent isn't known
+		if (isAttached())
+			pos = m_last_good_position;
 		else
 			pos = m_base_position;
 
