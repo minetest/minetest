@@ -23,11 +23,13 @@ core.register_entity(":__builtin:falling_node", {
 	set_node = function(self, node, meta)
 		self.node = node
 		meta = meta or {}
-		if type(meta) ~= "table" then meta = meta:to_table() end
-		for k1, v1 in pairs(meta.inventory or {}) do
-			for k2, v2 in pairs(v1) do
-				if type(v2) == "userdata" then
-					v1[k2] = v2:to_string()
+		if type(meta.to_table) == "function" then
+			meta = meta:to_table()
+		end
+		for _, list in pairs(meta.inventory or {}) do
+			for i, stack in pairs(list) do
+				if type(stack) == "userdata" then
+					list[i] = stack:to_string()
 				end
 			end
 		end
