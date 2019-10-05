@@ -2095,8 +2095,8 @@ Elements
 ### `bgcolor[<color>;<fullscreen>]`
 
 * Sets background color of formspec as `ColorString`
-* If `true`, the background color is drawn fullscreen (does not affect the size
-  of the formspec).
+* If `true`, a fullscreen background is drawn and the color is ignored
+  (does not affect the size of the formspec)
 
 ### `background[<X>,<Y>;<W>,<H>;<texture name>]`
 
