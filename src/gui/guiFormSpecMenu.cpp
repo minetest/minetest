@@ -1885,17 +1885,17 @@ void GUIFormSpecMenu::parseBox(parserData* data, const std::string &element)
 	errorstream<< "Invalid Box element(" << parts.size() << "): '" << element << "'"  << std::endl;
 }
 
-void GUIFormSpecMenu::parseBackgroundColor(parserData *data, const std::string &element)
+void GUIFormSpecMenu::parseBackgroundColor(parserData* data, const std::string &element)
 {
 	std::vector<std::string> parts = split(element,';');
 
 	if (((parts.size() == 1) || (parts.size() == 2)) ||
 			((parts.size() > 2) && (m_formspec_version > FORMSPEC_API_VERSION))) {
-		if (parts.size() == 1) {
-			parseColorString(parts[0], m_bgcolor, false);
-		} else if (parts.size() == 2) {
-			parseColorString(parts[0], m_fullscreen_bgcolor, false);
-			m_bgfullscreen = is_yes(parts[1]);
+		parseColorString(parts[0], m_bgcolor, false);
+
+		if (parts.size() == 2) {
+			std::string fullscreen = parts[1];
+			m_bgfullscreen = is_yes(fullscreen);
 		}
 
 		return;
@@ -2925,7 +2925,8 @@ void GUIFormSpecMenu::drawMenu()
 
 	if (m_bgfullscreen)
 		driver->draw2DRectangle(m_fullscreen_bgcolor, allbg, &allbg);
-	driver->draw2DRectangle(m_bgcolor, AbsoluteRect, &AbsoluteClippingRect);
+	else
+		driver->draw2DRectangle(m_bgcolor, AbsoluteRect, &AbsoluteClippingRect);
 
 	m_tooltip_element->setVisible(false);
 
