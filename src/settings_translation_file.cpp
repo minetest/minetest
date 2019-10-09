@@ -231,7 +231,7 @@ fake_function() {
 	gettext("FSAA");
 	gettext("Experimental option, might cause visible spaces between blocks\nwhen set to higher number than 0.");
 	gettext("Undersampling");
-	gettext("Undersampling is similar to using lower screen resolution, but it applies\nto the game world only, keeping the GUI intact.\nIt should give significant performance boost at the cost of less detailed image.");
+	gettext("Undersampling is similar to using a lower screen resolution, but it applies\nto the game world only, keeping the GUI intact.\nIt should give a significant performance boost at the cost of less detailed image.\nHigher values result in a less detailed image.");
 	gettext("Shaders");
 	gettext("Shaders");
 	gettext("Shaders allow advanced visual effects and may increase performance on some video\ncards.\nThis only works with the OpenGL video backend.");
@@ -682,8 +682,6 @@ fake_function() {
 	gettext("Limit of map generation, in nodes, in all 6 directions from (0, 0, 0).\nOnly mapchunks completely within the mapgen limit are generated.\nValue is stored per-world.");
 	gettext("Mapgen flags");
 	gettext("Global map generation attributes.\nIn Mapgen v6 the 'decorations' flag controls all decorations except trees\nand junglegrass, in all other mapgens this flag controls all decorations.");
-	gettext("Projecting dungeons");
-	gettext("Whether dungeons occasionally project from the terrain.");
 	gettext("Biome API temperature and humidity noise parameters");
 	gettext("Heat noise");
 	gettext("Temperature variation for biomes.");
