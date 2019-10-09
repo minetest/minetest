@@ -77,7 +77,7 @@
 
 #    The time in seconds it takes between repeated right clicks when holding the right
 #    mouse button.
-#    type: float
+#    type: float min: 0.001
 # repeat_rightclick_time = 0.25
 
 #    Automatically jump up single-node obstacles.
@@ -126,7 +126,7 @@
 
 #    The time in seconds it takes between repeated events
 #    when holding down a joystick button combination.
-#    type: float
+#    type: float min: 0.001
 # repeat_joystick_button_time = 0.17
 
 #    The sensitivity of the joystick axes for moving the
@@ -573,11 +573,12 @@
 #    type: enum values: 0, 1, 2, 4, 8, 16
 # fsaa = 0
 
-#    Undersampling is similar to using lower screen resolution, but it applies
+#    Undersampling is similar to using a lower screen resolution, but it applies
 #    to the game world only, keeping the GUI intact.
-#    It should give significant performance boost at the cost of less detailed image.
-#    type: enum values: 0, 2, 3, 4
-# undersampling = 0
+#    It should give a significant performance boost at the cost of less detailed image.
+#    Higher values result in a less detailed image.
+#    type: int min: 1 max: 8
+# undersampling = 1
 
 ### Shaders
 
@@ -682,11 +683,11 @@
 
 #    If FPS would go higher than this, limit it by sleeping
 #    to not waste CPU power for no benefit.
-#    type: int
+#    type: int min: 1
 # fps_max = 60
 
 #    Maximum FPS when game is paused.
-#    type: int
+#    type: int min: 1
 # pause_fps_max = 20
 
 #    Open the pause menu when the window's focus is lost. Does not pause if a formspec is
@@ -706,11 +707,11 @@
 # near_plane = 0.1
 
 #    Width component of the initial window size.
-#    type: int
+#    type: int min: 1
 # screen_w = 1024
 
 #    Height component of the initial window size.
-#    type: int
+#    type: int min: 1
 # screen_h = 600
 
 #    Save window size automatically when modified.
@@ -945,7 +946,7 @@
 #    This will smooth over some of the rough edges, and blend
 #    pixels when scaling down, at the cost of blurring some
 #    edge pixels when images are scaled by non-integer sizes.
-#    type: float
+#    type: float min: 0.001
 # gui_scaling = 1.0
 
 #    When gui_scaling_filter is true, all GUI images need to be
@@ -977,7 +978,7 @@
 #    type: filepath
 # font_path = fonts/liberationsans.ttf
 
-#    type: int
+#    type: int min: 1
 # font_size = 16
 
 #    Font shadow offset, if 0 then shadow will not be drawn.
@@ -991,14 +992,14 @@
 #    type: filepath
 # mono_font_path = fonts/liberationmono.ttf
 
-#    type: int
+#    type: int min: 1
 # mono_font_size = 15
 
 #    This font will be used for certain languages.
 #    type: filepath
 # fallback_font_path = fonts/DroidSansFallbackFull.ttf
 
-#    type: int
+#    type: int min: 1
 # fallback_font_size = 15
 
 #    type: int
@@ -1024,7 +1025,7 @@
 ## Advanced
 
 #    Adjust dpi configuration to your screen (non X11/Android only) e.g. for 4k screens.
-#    type: int
+#    type: int min: 1
 # screen_dpi = 72
 
 #    Windows systems only: Start Minetest with the command line window in the background.
@@ -1682,10 +1683,6 @@
 #    type: flags possible values: caves, dungeons, light, decorations, biomes, nocaves, nodungeons, nolight, nodecorations, nobiomes
 # mg_flags = caves,dungeons,light,decorations,biomes
 
-#    Whether dungeons occasionally project from the terrain.
-#    type: bool
-# projecting_dungeons = true
-
 ## Biome API temperature and humidity noise parameters
 
 #    Temperature variation for biomes.
@@ -2325,7 +2322,7 @@
 ## Mapgen Carpathian
 
 #    Map generation attributes specific to Mapgen Carpathian.
-#    type: flags possible values: caverns, nocaverns, rivers, norivers
+#    type: flags possible values: caverns, rivers, nocaverns, norivers
 # mgcarpathian_spflags = caverns,norivers
 
 #    Defines the base ground level.
