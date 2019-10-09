@@ -2481,7 +2481,8 @@ void Game::updatePlayerControl(const CameraOrientation &cam)
 	}
 
 	// autoforward if set: simulate "up" key
-	if (player->getPlayerSettings().continuous_forward && !player->isDead()) {
+	if (player->getPlayerSettings().continuous_forward &&
+			client->activeObjectsReceived() && !player->isDead()) {
 		control.up = true;
 		keypress_bits |= 1U << 0;
 	}
