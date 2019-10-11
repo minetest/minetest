@@ -690,8 +690,8 @@ core.register_chatcommand("setnode", {
 				:format(name, nodename))
 		local player = core.get_player_by_name(name)
 		if not player then
-			core.log("error", "Unable to spawn node, player is nil")
-			return false, "Unable to spawn node, no player"
+			core.log("error", "Unable to place node, player is nil")
+			return false, "Unable to set node, no player"
 		end
 		if not core.registered_nodes[nodename] then
 			return false, "Cannot place an unknown node"
