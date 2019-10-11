@@ -677,12 +677,12 @@ core.register_chatcommand("spawnentity", {
 	end,
 })
 
-core.register_chatcommand("placenode", {
+core.register_chatcommand("setnode", {
 	params = "<NodeName> [<X>,<Y>,<Z>]",
 	description = "Places node at given (or your) position",
 	privs = {interact = true, server = true},
 	func = function(name, param)
-		local nodename, p = string.match(param, "^([^ ]+) *(.*)$")
+		local nodename, pos = string.match(param, "^([^ ]+) *(.*)$")
 		if not nodename then
 			return false, "Node name required"
 		end
@@ -696,16 +696,16 @@ core.register_chatcommand("placenode", {
 		if not core.registered_nodes[nodename] then
 			return false, "Cannot place an unknown node"
 		end
-		if p == "" then
-			p = player:get_pos()
+		if pos == "" then
+			pos = player:get_pos()
 		else
-			p = core.string_to_pos(p)
-			if not p then
+			pos = core.string_to_pos(pos)
+			if not pos then
 				return false, "Invalid parameters ('" .. param .. "')"
 			end
 		end
-		core.add_node(p, { name = nodename })
-		return true, ("%q placed at %s"):format(nodename, core.pos_to_string(p))
+		core.add_node(pos, { name = nodename })
+		return true, ("%q placed at %s"):format(nodename, core.pos_to_string(pos))
 	end
 })
 
