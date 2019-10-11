@@ -686,7 +686,7 @@ core.register_chatcommand("setnode", {
 		if not nodename then
 			return false, "Node name required"
 		end
-		core.log("action", ("%s invokes /placenode, nodename=%q")
+		core.log("action", ("%s invokes /setnode, nodename=%q")
 				:format(name, nodename))
 		local player = core.get_player_by_name(name)
 		if not player then
@@ -705,7 +705,7 @@ core.register_chatcommand("setnode", {
 			end
 		end
 		core.add_node(pos, { name = nodename })
-		return true, ("%q placed at %s"):format(nodename, core.pos_to_string(pos))
+		return true, ("%q setted at %s"):format(nodename, core.pos_to_string(pos))
 	end
 })
 
