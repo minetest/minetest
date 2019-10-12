@@ -16,12 +16,12 @@ set(CLANG_MINIMUM_VERSION "3.4")
 
 # Also remember to set PROTOCOL_VERSION in network/networkprotocol.h when releasing
 set(VERSION_MAJOR 5)
-set(VERSION_MINOR 1)
+set(VERSION_MINOR 2)
 set(VERSION_PATCH 0)
 set(VERSION_EXTRA "" CACHE STRING "Stuff to append to version string")
 
 # Change to false for releases
-set(DEVELOPMENT_BUILD FALSE)
+set(DEVELOPMENT_BUILD TRUE)
 
 set(VERSION_STRING "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}")
 if(VERSION_EXTRA)
