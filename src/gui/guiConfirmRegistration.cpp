@@ -20,6 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "guiConfirmRegistration.h"
 #include "client/client.h"
+#include "guiButton.h"
 #include <IGUICheckBox.h>
 #include <IGUIButton.h>
 #include <IGUIStaticText.h>
@@ -128,14 +129,14 @@ void GUIConfirmRegistration::regenerateGui(v2u32 screensize)
 		core::rect<s32> rect2(0, 0, 230 * s, 35 * s);
 		rect2 = rect2 + v2s32(size.X / 2 - 220 * s, ypos);
 		text = wgettext("Register and Join");
-		Environment->addButton(rect2, this, ID_confirm, text);
+		GUIButton::addButton(Environment, rect2, this, ID_confirm, text);
 		delete[] text;
 	}
 	{
 		core::rect<s32> rect2(0, 0, 120 * s, 35 * s);
 		rect2 = rect2 + v2s32(size.X / 2 + 70 * s, ypos);
 		text = wgettext("Cancel");
-		Environment->addButton(rect2, this, ID_cancel, text);
+		GUIButton::addButton(Environment, rect2, this, ID_cancel, text);
 		delete[] text;
 	}
 	{
