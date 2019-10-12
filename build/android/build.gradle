@@ -27,7 +27,7 @@ android {
 	compileSdkVersion 28
 
 	defaultConfig {
-		versionCode 23
+		versionCode 24
 		versionName "${System.env.VERSION_STR}.${versionCode}"
 		minSdkVersion 14
 		targetSdkVersion 28
