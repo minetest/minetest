@@ -364,9 +364,8 @@ void CavesRandomWalk::makeCave(MMVManip *vm, v3s16 nmin, v3s16 nmax,
 	// Area starting point in nodes
 	of = node_min;
 
-	// Allow a bit more
-	//(this should be more than the maximum radius of the tunnel)
-	const s16 insure = 10;
+	// Allow a bit more (this should be more than the maximum radius of the tunnel)
+	const s16 insure = 2;
 	s16 more = MYMAX(MAP_BLOCKSIZE - max_tunnel_diameter / 2 - insure, 1);
 	ar += v3s16(1, 0, 1) * more * 2;
 	of -= v3s16(1, 0, 1) * more;
