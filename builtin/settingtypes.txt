@@ -526,7 +526,10 @@ shader_path (Shader path) path
 
 [***Tone Mapping]
 
-#    Enables filmic tone mapping
+#    Enables Hable's 'Uncharted 2' filmic tone mapping.
+#    Simulates the tone curve of photographic film and how this approximates the
+#    appearance of high dynamic range images. Mid-range contrast is slightly
+#    enhanced, highlights and shadows are gradually compressed.
 tone_mapping (Filmic tone mapping) bool false
 
 [***Bumpmapping]
@@ -653,7 +656,7 @@ lighting_boost (Light curve mid boost) float 0.2 0.0 1.0
 lighting_boost_center (Light curve mid boost center) float 0.5 0.0 1.0
 
 #    Spread of light curve mid-boost.
-#    Standard deviation of the mid-boost gaussian.
+#    Standard deviation of the mid-boost Gaussian.
 lighting_boost_spread (Light curve mid boost spread) float 0.2 0.0 1.0
 
 #    Path to texture directory. All textures are first searched from here.
@@ -756,7 +759,7 @@ minimap_shape_round (Round minimap) bool true
 
 #    True = 256
 #    False = 128
-#    Useable to make minimap smoother on slower machines.
+#    Usable to make minimap smoother on slower machines.
 minimap_double_scan_height (Minimap scan height) bool true
 
 #    Make fog and sky colors depend on daytime (dawn/sunset) and view direction.
@@ -1145,10 +1148,10 @@ movement_speed_climb (Climbing speed) float 3
 #    Initial vertical speed when jumping, in nodes per second.
 movement_speed_jump (Jumping speed) float 6.5
 
-#    Decrease this to increase liquid resistence to movement.
+#    Decrease this to increase liquid resistance to movement.
 movement_liquid_fluidity (Liquid fluidity) float 1
 
-#    Maximum liquid resistence. Controls deceleration when entering liquid at
+#    Maximum liquid resistance. Controls deceleration when entering liquid at
 #    high speed.
 movement_liquid_fluidity_smooth (Liquid fluidity smoothing) float 0.5
 
@@ -1160,7 +1163,7 @@ movement_gravity (Gravity) float 9.81
 
 [**Advanced]
 
-#    Handling for deprecated lua api calls:
+#    Handling for deprecated Lua API calls:
 #    -    legacy: (try to) mimic old behaviour (default for release).
 #    -    log: mimic and log backtrace of deprecated call (default for debug).
 #    -    error: abort on usage of deprecated call (suggested for mod developers).
@@ -1709,7 +1712,7 @@ mgcarpathian_np_dungeons (Dungeon noise) noise_params_3d 0.9, 0.5, (500, 500, 50
 
 [*Mapgen Flat]
 
-#    Map generation attributes specific to Mapgen flat.
+#    Map generation attributes specific to Mapgen Flat.
 #    Occasional lakes and hills can be added to the flat world.
 mgflat_spflags (Mapgen Flat specific flags) flags nolakes,nohills lakes,hills,nolakes,nohills
 
@@ -1767,7 +1770,7 @@ mgflat_np_dungeons (Dungeon noise) noise_params_3d 0.9, 0.5, (500, 500, 500), 0,
 
 [*Mapgen Fractal]
 
-#    Map generation attributes specific to Mapgen flat.
+#    Map generation attributes specific to Mapgen Fractal.
 #    'terrain' enables the generation of non-fractal terrain:
 #    ocean, islands and underground.
 mgfractal_spflags (Mapgen Fractal specific flags) flags terrain terrain,noterrain
@@ -1789,24 +1792,24 @@ mgfractal_dungeon_ymin (Dungeon minimum Y) int -31000
 mgfractal_dungeon_ymax (Dungeon maximum Y) int 31000
 
 #    Selects one of 18 fractal types.
-#    1 = 4D "Roundy" mandelbrot set.
-#    2 = 4D "Roundy" julia set.
-#    3 = 4D "Squarry" mandelbrot set.
-#    4 = 4D "Squarry" julia set.
-#    5 = 4D "Mandy Cousin" mandelbrot set.
-#    6 = 4D "Mandy Cousin" julia set.
-#    7 = 4D "Variation" mandelbrot set.
-#    8 = 4D "Variation" julia set.
-#    9 = 3D "Mandelbrot/Mandelbar" mandelbrot set.
-#    10 = 3D "Mandelbrot/Mandelbar" julia set.
-#    11 = 3D "Christmas Tree" mandelbrot set.
-#    12 = 3D "Christmas Tree" julia set.
-#    13 = 3D "Mandelbulb" mandelbrot set.
-#    14 = 3D "Mandelbulb" julia set.
-#    15 = 3D "Cosine Mandelbulb" mandelbrot set.
-#    16 = 3D "Cosine Mandelbulb" julia set.
-#    17 = 4D "Mandelbulb" mandelbrot set.
-#    18 = 4D "Mandelbulb" julia set.
+#    1 = 4D "Roundy" Mandelbrot set.
+#    2 = 4D "Roundy" Julia set.
+#    3 = 4D "Squarry" Mandelbrot set.
+#    4 = 4D "Squarry" Julia set.
+#    5 = 4D "Mandy Cousin" Mandelbrot set.
+#    6 = 4D "Mandy Cousin" Julia set.
+#    7 = 4D "Variation" Mandelbrot set.
+#    8 = 4D "Variation" Julia set.
+#    9 = 3D "Mandelbrot/Mandelbar" Mandelbrot set.
+#    10 = 3D "Mandelbrot/Mandelbar" Julia set.
+#    11 = 3D "Christmas Tree" Mandelbrot set.
+#    12 = 3D "Christmas Tree" Julia set.
+#    13 = 3D "Mandelbulb" Mandelbrot set.
+#    14 = 3D "Mandelbulb" Julia set.
+#    15 = 3D "Cosine Mandelbulb" Mandelbrot set.
+#    16 = 3D "Cosine Mandelbulb" Julia set.
+#    17 = 4D "Mandelbulb" Mandelbrot set.
+#    18 = 4D "Mandelbulb" Julia set.
 mgfractal_fractal (Fractal type) int 1 1 18
 
 #    Iterations of the recursive function.
@@ -1828,7 +1831,7 @@ mgfractal_scale (Scale) v3f (4096.0, 1024.0, 4096.0)
 #    Can be used to move a desired point to (0, 0) to create a
 #    suitable spawn point, or to allow 'zooming in' on a desired
 #    point by increasing 'scale'.
-#    The default is tuned for a suitable spawn point for mandelbrot
+#    The default is tuned for a suitable spawn point for Mandelbrot
 #    sets with default parameters, it may need altering in other
 #    situations.
 #    Range roughly -2 to 2. Multiply by 'scale' for offset in nodes.
