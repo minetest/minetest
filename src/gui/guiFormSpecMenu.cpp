@@ -619,26 +619,22 @@ void GUIFormSpecMenu::parseScrollBar(parserData* data, const std::string &elemen
 
 		auto style = getStyleForElement("scrollbar", name);
 		e->setNotClipped(style.getBool(StyleSpec::NOCLIP, false));
-		e->setArrowsVisible(data->scrollBarOptions.showArrows);
+		e->setArrowsVisible(data->scrollbar_options.arrow_visiblity);
 
-		s32 max = data->scrollBarOptions.max;
-		s32 min = data->scrollBarOptions.min;
+		s32 max = data->scrollbar_options.max;
+		s32 min = data->scrollbar_options.min;
 
 		e->setMax(max);
 		e->setMin(min);
 
 		e->setPos(stoi(parts[4]));
 
-		e->setSmallStep(data->scrollBarOptions.smallStep);
-		e->setLargeStep(data->scrollBarOptions.largeStep);
+		e->setSmallStep(data->scrollbar_options.small_step);
+		e->setLargeStep(data->scrollbar_options.large_step);
 
-		s32 scrollbar_size;
-		if (is_horizontal)
-			scrollbar_size = dim.X;
-		else
-			scrollbar_size = dim.Y;
+		s32 scrollbar_size = is_horizontal ? dim.X : dim.Y;
 
-		e->setPageSize(scrollbar_size * (max-min+1) / data->scrollBarOptions.thumbSize);
+		e->setPageSize(scrollbar_size * (max - min + 1) / data->scrollbar_options.thumb_size);
 
 		m_scrollbars.emplace_back(spec,e);
 		m_fields.push_back(spec);
@@ -668,36 +664,31 @@ void GUIFormSpecMenu::parseScrollBarOptions(parserData* data, const std::string 
 		}
 
 		if (options[0] == "max") {
-			data->scrollBarOptions.max = stoi(options[1]);
+			data->scrollbar_options.max = stoi(options[1]);
 			continue;
-		}
-		else if (options[0] == "min") {
-			data->scrollBarOptions.min = stoi(options[1]);
+		} else if (options[0] == "min") {
+			data->scrollbar_options.min = stoi(options[1]);
 			continue;
-		}
-		else if (options[0] == "smallstep") {
+		} else if (options[0] == "smallstep") {
 			int value = stoi(options[1]);
-			data->scrollBarOptions.smallStep = value < 0 ? 10 : value;
+			data->scrollbar_options.small_step = value < 0 ? 10 : value;
 			continue;
-		}
-		else if (options[0] == "largestep") {
+		} else if (options[0] == "largestep") {
 			int value = stoi(options[1]);
-			data->scrollBarOptions.largeStep = value < 0 ? 100 : value;
+			data->scrollbar_options.large_step = value < 0 ? 100 : value;
 			continue;
-		}
-		else if (options[0] == "thumbsize") {
+		} else if (options[0] == "thumbsize") {
 			int value = stoi(options[1]);
-			data->scrollBarOptions.thumbSize = value <= 0 ? 1 : value;
+			data->scrollbar_options.thumb_size = value <= 0 ? 1 : value;
 			continue;
-		}
-		else if (options[0] == "arrows") {
+		} else if (options[0] == "arrows") {
 			std::string value = trim(options[1]);
 			if (value == "hide")
-				data->scrollBarOptions.showArrows = 0;
+				data->scrollbar_options.arrow_visiblity = HIDE;
 			else if (value == "show")
-				data->scrollBarOptions.showArrows = 1;
+				data->scrollbar_options.arrow_visiblity = SHOW;
 			else // Auto hide/show
-				data->scrollBarOptions.showArrows = 2;
+				data->scrollbar_options.arrow_visiblity = DEFAULT;
 			continue;
 		}
 

@@ -316,9 +316,9 @@ void GUIScrollBar::setPageSize(const s32 &size)
 	setPos(scroll_pos);
 }
 
-void GUIScrollBar::setArrowsVisible(u8 visible)
+void GUIScrollBar::setArrowsVisible(ScrollBarArrowVisibility visible)
 {
-	is_arrows_visible = visible;
+	arrow_visibility = visible;
 	refreshControls();
 }
 
@@ -428,13 +428,12 @@ void GUIScrollBar::refreshControls()
 	}
 
 	bool visible;
-	if (is_arrows_visible == 2)
+	if (arrow_visibility == DEFAULT)
 		visible = (border_size != 0);
-	else if (is_arrows_visible == 0) {
+	else if (arrow_visibility == HIDE) {
 		visible = false;
 		border_size = 0;
-	}
-	else {
+	} else {
 		visible = true;
 		if (is_horizontal)
 			border_size = RelativeRect.getHeight();

@@ -37,6 +37,7 @@ class InventoryManager;
 class ISimpleTextureSource;
 class Client;
 class GUIScrollBar;
+enum ScrollBarArrowVisibility;
 
 typedef enum {
 	f_Button,
@@ -402,11 +403,11 @@ private:
 		struct {
 			s32 max = 1000;
 			s32 min = 0;
-			s32 smallStep = 10;
-			s32 largeStep = 100;
-			s32 thumbSize = 1;
-			u8 showArrows = 2;
-		} scrollBarOptions;
+			s32 small_step = 10;
+			s32 large_step = 100;
+			s32 thumb_size = 1;
+			ScrollBarArrowVisibility arrow_visiblity = DEFAULT;
+		} scrollbar_options;
 
 		// used to restore table selection/scroll/treeview state
 		std::unordered_map<std::string, GUITable::DynamicData> table_dyndata;
