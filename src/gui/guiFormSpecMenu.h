@@ -37,7 +37,6 @@ class InventoryManager;
 class ISimpleTextureSource;
 class Client;
 class GUIScrollBar;
-enum ScrollBarArrowVisibility;
 
 typedef enum {
 	f_Button,
@@ -406,7 +405,7 @@ private:
 			s32 small_step = 10;
 			s32 large_step = 100;
 			s32 thumb_size = 1;
-			ScrollBarArrowVisibility arrow_visiblity = DEFAULT;
+			GUIScrollBar::ArrowVisibility arrow_visiblity = GUIScrollBar::DEFAULT;
 		} scrollbar_options;
 
 		// used to restore table selection/scroll/treeview state

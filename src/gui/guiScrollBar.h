@@ -17,17 +17,17 @@ the arrow buttons where there is insufficient space.
 using namespace irr;
 using namespace gui;
 
-enum ScrollBarArrowVisibility {
-	HIDE,
-	SHOW,
-	DEFAULT
-};
-
 class GUIScrollBar : public IGUIElement
 {
 public:
 	GUIScrollBar(IGUIEnvironment *environment, IGUIElement *parent, s32 id,
 			core::rect<s32> rectangle, bool horizontal, bool auto_scale);
+
+	enum ArrowVisibility {
+		HIDE,
+		SHOW,
+		DEFAULT
+	};
 
 	virtual void draw();
 	virtual void updateAbsolutePosition();
@@ -45,7 +45,7 @@ public:
 	void setLargeStep(const s32 &step);
 	void setPos(const s32 &pos);
 	void setPageSize(const s32 &size);
-	void setArrowsVisible(ScrollBarArrowVisibility visible);
+	void setArrowsVisible(ArrowVisibility visible);
 
 private:
 	void refreshControls();
@@ -54,7 +54,7 @@ private:
 
 	IGUIButton *up_button;
 	IGUIButton *down_button;
-	ScrollBarArrowVisibility arrow_visibility = DEFAULT;
+	ArrowVisibility arrow_visibility = DEFAULT;
 	bool is_dragging;
 	bool is_horizontal;
 	bool is_auto_scaling;

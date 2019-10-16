@@ -316,7 +316,7 @@ void GUIScrollBar::setPageSize(const s32 &size)
 	setPos(scroll_pos);
 }
 
-void GUIScrollBar::setArrowsVisible(ScrollBarArrowVisibility visible)
+void GUIScrollBar::setArrowsVisible(ArrowVisibility visible)
 {
 	arrow_visibility = visible;
 	refreshControls();

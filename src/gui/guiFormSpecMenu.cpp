@@ -684,11 +684,11 @@ void GUIFormSpecMenu::parseScrollBarOptions(parserData* data, const std::string 
 		} else if (options[0] == "arrows") {
 			std::string value = trim(options[1]);
 			if (value == "hide")
-				data->scrollbar_options.arrow_visiblity = HIDE;
+				data->scrollbar_options.arrow_visiblity = GUIScrollBar::HIDE;
 			else if (value == "show")
-				data->scrollbar_options.arrow_visiblity = SHOW;
+				data->scrollbar_options.arrow_visiblity = GUIScrollBar::SHOW;
 			else // Auto hide/show
-				data->scrollbar_options.arrow_visiblity = DEFAULT;
+				data->scrollbar_options.arrow_visiblity = GUIScrollBar::DEFAULT;
 			continue;
 		}
 
