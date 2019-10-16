@@ -454,12 +454,16 @@ function core.item_drop(itemstack, dropper, pos)
 end
 
 function core.do_item_eat(hp_change, replace_with_item, itemstack, user, pointed_thing)
+	-- Don't consume the item if the player is already at full health
+	if user:get_hp() >= user:get_properties().hp_max then return end
+
 	for _, callback in pairs(core.registered_on_item_eats) do
 		local result = callback(hp_change, replace_with_item, itemstack, user, pointed_thing)
 		if result then
 			return result
 		end
 	end
+
 	if itemstack:take_item() ~= nil then
 		user:set_hp(user:get_hp() + hp_change)
 
