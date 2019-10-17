@@ -96,11 +96,7 @@ public:
 
 		ValignType valign;
 
-#if USE_FREETYPE
-		gui::CGUITTFont *font;
-#else
 		gui::IGUIFont *font;
-#endif
 
 		irr::video::SColor color;
 		irr::video::SColor hovercolor;
