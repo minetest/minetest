@@ -71,14 +71,12 @@ void ParsedText::Element::setStyle(StyleList &style)
 	if (style["fontstyle"] == "mono")
 		font_mode = FM_Mono;
 
+	FontSpec spec(font_size, font_mode,
+		is_yes(style["bold"]), is_yes(style["italic"]));
+
 	// TODO: find a way to check font validity
 	// Build a new fontengine ?
-	this->font =
-#if USE_FREETYPE
-			(gui::CGUITTFont *)
-#endif
-					g_fontengine->getFont(font_size, font_mode,
-							is_yes(style["bold"]), is_yes(style["italic"]));
+	this->font = g_fontengine->getFont(spec);
 
 	if (!this->font)
 		printf("No font found ! Size=%d, mode=%d, bold=%s, italic=%s\n",
@@ -606,7 +604,10 @@ TextDrawer::TextDrawer(const wchar_t *text, Client *client,
 					e.dim.Width = e.font->getDimension(e.text.c_str()).Width;
 					e.dim.Height = e.font->getDimension(L"Yy").Height;
 #if USE_FREETYPE
-					e.baseline = e.dim.Height - 1 - e.font->getAscender()/64;
+					if (e.font->getType() == irr::gui::EGFT_CUSTOM) {
+						e.baseline = e.dim.Height - 1 -
+							((irr::gui::CGUITTFont *)e.font)->getAscender() / 64;
+					}
 #endif
 				} else {
 					e.dim = {0, 0};
@@ -666,7 +667,7 @@ ParsedText::Element *TextDrawer::getElementAt(core::position2d<s32> pos)
    It may be called each time width changes and resulting height can be
    retrieved using getHeight. See GUIHyperText constructor, it uses it once to
    test if text fits in window and eventually another time if width is reduced
-   m_floatingbecause of scrollbar added.
+   m_floating because of scrollbar added.
 */
 void TextDrawer::place(const core::rect<s32> &dest_rect)
 {

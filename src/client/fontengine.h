@@ -29,7 +29,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #define FONT_SIZE_UNSPECIFIED 0xFFFFFFFF
 
-enum FontMode {
+enum FontMode : u8 {
 	FM_Standard = 0,
 	FM_Mono,
 	FM_Fallback,
@@ -37,6 +37,24 @@ enum FontMode {
 	FM_SimpleMono,
 	FM_MaxMode,
 	FM_Unspecified
+};
+
+struct FontSpec {
+	FontSpec(unsigned int font_size, FontMode mode, bool bold, bool italic) :
+		size(font_size),
+		mode(mode),
+		bold(bold),
+		italic(italic) {}
+
+	u16 getHash()
+	{
+		return (mode << 2) | (bold << 1) | italic;
+	}
+
+	unsigned int size;
+	FontMode mode;
+	bool bold;
+	bool italic;
 };
 
 class FontEngine
@@ -47,62 +65,60 @@ public:
 
 	~FontEngine();
 
-	/** get Font */
-	irr::gui::IGUIFont *getFont(unsigned int font_size, FontMode mode,
-			bool bold, bool italic);
+	// Get best possible font specified by FontSpec
+	irr::gui::IGUIFont *getFont(FontSpec spec);
 
 	irr::gui::IGUIFont *getFont(unsigned int font_size=FONT_SIZE_UNSPECIFIED,
 			FontMode mode=FM_Unspecified)
 	{
-		return getFont(font_size, mode, m_default_bold, m_default_italic);
+		FontSpec spec(font_size, mode, m_default_bold, m_default_italic);
+		return getFont(spec);
 	}
 
 	/** get text height for a specific font */
-	unsigned int getTextHeight(unsigned int font_size, FontMode mode,
-			bool bold, bool italic);
+	unsigned int getTextHeight(const FontSpec &spec);
 
 	/** get text width if a text for a specific font */
 	unsigned int getTextHeight(
 			unsigned int font_size=FONT_SIZE_UNSPECIFIED,
 			FontMode mode=FM_Unspecified)
 	{
-		return getTextHeight(font_size, mode, m_default_bold, m_default_italic);
+		FontSpec spec(font_size, mode, m_default_bold, m_default_italic);
+		return getTextHeight(spec);
 	}
 
-	unsigned int getTextWidth(const std::wstring& text,
-			unsigned int font_size, FontMode mode, bool bold, bool italic);
+	unsigned int getTextWidth(const std::wstring &text, const FontSpec &spec);
 
 	/** get text width if a text for a specific font */
 	unsigned int getTextWidth(const std::wstring& text,
 			unsigned int font_size=FONT_SIZE_UNSPECIFIED,
 			FontMode mode=FM_Unspecified)
 	{
-		return getTextWidth(text, font_size, mode, m_default_bold,
-				m_default_italic);
+		FontSpec spec(font_size, mode, m_default_bold, m_default_italic);
+		return getTextWidth(text, spec);
 	}
 
-	unsigned int getTextWidth(const std::string& text,
-			unsigned int font_size, FontMode mode, bool bold, bool italic)
+	unsigned int getTextWidth(const std::string &text, const FontSpec &spec)
 	{
-		return getTextWidth(utf8_to_wide(text), font_size, mode, bold, italic);
+		return getTextWidth(utf8_to_wide(text), spec);
 	}
 
 	unsigned int getTextWidth(const std::string& text,
 			unsigned int font_size=FONT_SIZE_UNSPECIFIED,
 			FontMode mode=FM_Unspecified)
 	{
-		return getTextWidth(utf8_to_wide(text), font_size, mode, m_default_bold,
-				m_default_italic);
+		FontSpec spec(font_size, mode, m_default_bold, m_default_italic);
+		return getTextWidth(utf8_to_wide(text), spec);
 	}
 
 	/** get line height for a specific font (including empty room between lines) */
-	unsigned int getLineHeight(unsigned int font_size, FontMode mode, bool bold,
-			bool italic);
+	unsigned int getLineHeight(const FontSpec &spec);
 
 	unsigned int getLineHeight(unsigned int font_size=FONT_SIZE_UNSPECIFIED,
 			FontMode mode=FM_Unspecified)
 	{
-		return getLineHeight(font_size, mode, m_default_bold, m_default_italic);
+		FontSpec spec(font_size, mode, m_default_bold, m_default_italic);
+		return getLineHeight(spec);
 	}
 
 	/** get default font size */
@@ -119,14 +135,10 @@ private:
 	void updateFontCache();
 
 	/** initialize a new font */
-	void initFont(
-		unsigned int basesize,
-		FontMode mode,
-		bool bold,
-		bool italic);
+	gui::IGUIFont *initFont(const FontSpec &spec);
 
 	/** initialize a font without freetype */
-	void initSimpleFont(unsigned int basesize, FontMode mode);
+	gui::IGUIFont *initSimpleFont(const FontSpec &spec);
 
 	/** update current minetest skin with font changes */
 	void updateSkin();
@@ -147,8 +159,8 @@ private:
 	unsigned int m_default_size[FM_MaxMode];
 
 	/** default bold and italic */
-	bool m_default_bold;
-	bool m_default_italic;
+	bool m_default_bold = false;
+	bool m_default_italic = false;
 
 	/** current font engine mode */
 	FontMode m_currentMode = FM_Standard;
