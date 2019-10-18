@@ -1812,6 +1812,24 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 }
 
 /*
+	Calculate the color of a single pixel drawn on top of another pixel.
+
+	This is a little more complicated than just video::SColor::getInterpolated
+	because getInterpolated does not handle alpha correctly.  For example, a
+	pixel with alpha=64 drawn atop a pixel with alpha=128 should yield a
+	pixel with alpha=160, while getInterpolated would yield alpha=96.
+*/
+static inline video::SColor blitPixel(const video::SColor &src_c, const video::SColor &dst_c, u32 ratio)
+{
+	if (dst_c.getAlpha() == 0)
+		return src_c;
+	video::SColor out_c = src_c.getInterpolated(dst_c, (float)ratio / 255.0f);
+	out_c.setAlpha(dst_c.getAlpha() + (255 - dst_c.getAlpha()) *
+		src_c.getAlpha() * ratio / (255 * 255));
+	return out_c;
+}
+
+/*
 	Draw an image on top of an another one, using the alpha channel of the
 	source image
 
@@ -1830,7 +1848,7 @@ static void blit_with_alpha(video::IImage *src, video::IImage *dst,
 		s32 dst_y = dst_pos.Y + y0;
 		video::SColor src_c = src->getPixel(src_x, src_y);
 		video::SColor dst_c = dst->getPixel(dst_x, dst_y);
-		dst_c = src_c.getInterpolated(dst_c, (float)src_c.getAlpha()/255.0f);
+		dst_c = blitPixel(src_c, dst_c, src_c.getAlpha());
 		dst->setPixel(dst_x, dst_y, dst_c);
 	}
 }
@@ -1853,7 +1871,7 @@ static void blit_with_alpha_overlay(video::IImage *src, video::IImage *dst,
 		video::SColor dst_c = dst->getPixel(dst_x, dst_y);
 		if (dst_c.getAlpha() == 255 && src_c.getAlpha() != 0)
 		{
-			dst_c = src_c.getInterpolated(dst_c, (float)src_c.getAlpha()/255.0f);
+			dst_c = blitPixel(src_c, dst_c, src_c.getAlpha());
 			dst->setPixel(dst_x, dst_y, dst_c);
 		}
 	}
