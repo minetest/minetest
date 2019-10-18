@@ -1824,7 +1824,8 @@ static inline video::SColor blitPixel(const video::SColor &src_c, const video::S
 	if (dst_c.getAlpha() == 0)
 		return src_c;
 	video::SColor out_c = src_c.getInterpolated(dst_c, (float)ratio / 255.0f);
-	out_c.setAlpha(dst_c.getAlpha() + (255 - dst_c.getAlpha()) * src_c.getAlpha() * ratio / (255 * 255));
+	out_c.setAlpha(dst_c.getAlpha() + (255 - dst_c.getAlpha()) *
+		src_c.getAlpha() * ratio / (255 * 255));
 	return out_c;
 }
 
