@@ -639,25 +639,34 @@ vsync (VSync) bool false
 #    Field of view in degrees.
 fov (Field of view) int 72 45 160
 
-#    Adjust the gamma encoding for the light tables. Higher numbers are brighter.
-#    This setting is for the client only and is ignored by the server.
-display_gamma (Gamma) float 1.0 0.5 10.0
+#    Alters the light curve by applying 'gamma correction' to it.
+#    Higher values make middle and lower light levels brighter.
+#    Value '1.0' leaves the light curve unaltered.
+#    This only has significant effect on daylight and artificial
+#    light, it has very little effect on natural night light.
+display_gamma (Light curve gamma) float 1.0 0.33 3.0
 
 #    Gradient of light curve at minimum light level.
-lighting_alpha (Darkness sharpness) float 0.0 0.0 4.0
+#    Controls the contrast of the lowest light levels.
+lighting_alpha (Light curve low gradient) float 0.0 0.0 3.0
 
 #    Gradient of light curve at maximum light level.
-lighting_beta (Lightness sharpness) float 1.5 0.0 4.0
+#    Controls the contrast of the highest light levels.
+lighting_beta (Light curve high gradient) float 1.5 0.0 3.0
 
-#    Strength of light curve mid-boost.
-lighting_boost (Light curve mid boost) float 0.2 0.0 1.0
+#    Strength of light curve boost.
+#    The 3 'boost' parameters define a range of the light
+#    curve that is boosted in brightness.
+lighting_boost (Light curve boost) float 0.2 0.0 0.4
 
-#    Center of light curve mid-boost.
-lighting_boost_center (Light curve mid boost center) float 0.5 0.0 1.0
+#    Center of light curve boost range.
+#    Where 0.0 is minimum light level, 1.0 is maximum light level.
+lighting_boost_center (Light curve boost center) float 0.5 0.0 1.0
 
-#    Spread of light curve mid-boost.
-#    Standard deviation of the mid-boost Gaussian.
-lighting_boost_spread (Light curve mid boost spread) float 0.2 0.0 1.0
+#    Spread of light curve boost range.
+#    Controls the width of the range to be boosted.
+#    Standard deviation of the light curve boost Gaussian.
+lighting_boost_spread (Light curve boost spread) float 0.2 0.0 0.4
 
 #    Path to texture directory. All textures are first searched from here.
 texture_path (Texture path) path

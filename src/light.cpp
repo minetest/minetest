@@ -55,18 +55,18 @@ float decode_light_f(float x)
 void set_light_table(float gamma)
 {
 // Lighting curve derivatives
-	const float alpha = g_settings->getFloat("lighting_alpha");
-	const float beta  = g_settings->getFloat("lighting_beta");
+	const float alpha = rangelim(g_settings->getFloat("lighting_alpha"), 0.0f, 3.0f);
+	const float beta  = rangelim(g_settings->getFloat("lighting_beta"), 0.0f, 3.0f);
 // Lighting curve coefficients
 	params.a = alpha + beta - 2.0f;
 	params.b = 3.0f - 2.0f * alpha - beta;
 	params.c = alpha;
 // Mid boost
-	params.boost = g_settings->getFloat("lighting_boost");
-	params.center = g_settings->getFloat("lighting_boost_center");
-	params.sigma = g_settings->getFloat("lighting_boost_spread");
+	params.boost = rangelim(g_settings->getFloat("lighting_boost"), 0.0f, 0.4f);
+	params.center = rangelim(g_settings->getFloat("lighting_boost_center"), 0.0f, 1.0f);
+	params.sigma = rangelim(g_settings->getFloat("lighting_boost_spread"), 0.0f, 0.4f);
 // Gamma correction
-	params.gamma = rangelim(gamma, 0.5f, 10.0f);
+	params.gamma = rangelim(gamma, 0.33f, 3.0f);
 
 // Boundary values should be fixed
 	light_LUT[0] = 0;
