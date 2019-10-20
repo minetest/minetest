@@ -2433,6 +2433,8 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 
 	m_bgfullscreen = false;
 
+	m_formspec_version = 1;
+
 	{
 		v3f formspec_bgcolor = g_settings->getV3F("formspec_default_bg_color");
 		m_bgcolor = video::SColor(
