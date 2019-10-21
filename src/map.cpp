@@ -1762,13 +1762,6 @@ plan_b:
 	//return (s16)level;
 }
 
-bool ServerMap::loadFromFolders() {
-	if (!dbase->initialized() &&
-			!fs::PathExists(m_savedir + DIR_DELIM + "map.sqlite"))
-		return true;
-	return false;
-}
-
 void ServerMap::createDirs(const std::string &path)
 {
 	if (!fs::CreateAllDirs(path)) {
@@ -1776,80 +1769,6 @@ void ServerMap::createDirs(const std::string &path)
 				<<"\""<<path<<"\""<<std::endl;
 		throw BaseException("ServerMap failed to create directory");
 	}
-}
-
-std::string ServerMap::getSectorDir(v2s16 pos, int layout)
-{
-	char cc[9];
-	switch(layout)
-	{
-		case 1:
-			porting::mt_snprintf(cc, sizeof(cc), "%.4x%.4x",
-				(unsigned int) pos.X & 0xffff,
-				(unsigned int) pos.Y & 0xffff);
-
-			return m_savedir + DIR_DELIM + "sectors" + DIR_DELIM + cc;
-		case 2:
-			porting::mt_snprintf(cc, sizeof(cc), (std::string("%.3x") + DIR_DELIM + "%.3x").c_str(),
-				(unsigned int) pos.X & 0xfff,
-				(unsigned int) pos.Y & 0xfff);
-
-			return m_savedir + DIR_DELIM + "sectors2" + DIR_DELIM + cc;
-		default:
-			assert(false);
-			return "";
-	}
-}
-
-v2s16 ServerMap::getSectorPos(const std::string &dirname)
-{
-	unsigned int x = 0, y = 0;
-	int r;
-	std::string component;
-	fs::RemoveLastPathComponent(dirname, &component, 1);
-	if(component.size() == 8)
-	{
-		// Old layout
-		r = sscanf(component.c_str(), "%4x%4x", &x, &y);
-	}
-	else if(component.size() == 3)
-	{
-		// New layout
-		fs::RemoveLastPathComponent(dirname, &component, 2);
-		r = sscanf(component.c_str(), (std::string("%3x") + DIR_DELIM + "%3x").c_str(), &x, &y);
-		// Sign-extend the 12 bit values up to 16 bits...
-		if(x & 0x800) x |= 0xF000;
-		if(y & 0x800) y |= 0xF000;
-	}
-	else
-	{
-		r = -1;
-	}
-
-	FATAL_ERROR_IF(r != 2, "getSectorPos()");
-	v2s16 pos((s16)x, (s16)y);
-	return pos;
-}
-
-v3s16 ServerMap::getBlockPos(const std::string &sectordir, const std::string &blockfile)
-{
-	v2s16 p2d = getSectorPos(sectordir);
-
-	if(blockfile.size() != 4){
-		throw InvalidFilenameException("Invalid block filename");
-	}
-	unsigned int y;
-	int r = sscanf(blockfile.c_str(), "%4x", &y);
-	if(r != 1)
-		throw InvalidFilenameException("Invalid block filename");
-	return v3s16(p2d.X, y, p2d.Y);
-}
-
-std::string ServerMap::getBlockFilename(v3s16 p)
-{
-	char cc[5];
-	porting::mt_snprintf(cc, sizeof(cc), "%.4x", (unsigned int)p.Y&0xffff);
-	return cc;
 }
 
 void ServerMap::save(ModifiedState save_level)
@@ -1921,10 +1840,6 @@ void ServerMap::save(ModifiedState save_level)
 
 void ServerMap::listAllLoadableBlocks(std::vector<v3s16> &dst)
 {
-	if (loadFromFolders()) {
-		errorstream << "Map::listAllLoadableBlocks(): Result will be missing "
-				<< "all blocks that are stored in flat files." << std::endl;
-	}
 	dbase->listAllLoadableBlocks(dst);
 	if (dbase_ro)
 		dbase_ro->listAllLoadableBlocks(dst);
@@ -2018,83 +1933,6 @@ bool ServerMap::saveBlock(MapBlock *block, MapDatabase *db)
 	return ret;
 }
 
-void ServerMap::loadBlock(const std::string &sectordir, const std::string &blockfile,
-		MapSector *sector, bool save_after_load)
-{
-	std::string fullpath = sectordir + DIR_DELIM + blockfile;
-	try {
-		std::ifstream is(fullpath.c_str(), std::ios_base::binary);
-		if (!is.good())
-			throw FileNotGoodException("Cannot open block file");
-
-		v3s16 p3d = getBlockPos(sectordir, blockfile);
-		v2s16 p2d(p3d.X, p3d.Z);
-
-		assert(sector->getPos() == p2d);
-
-		u8 version = SER_FMT_VER_INVALID;
-		is.read((char*)&version, 1);
-
-		if(is.fail())
-			throw SerializationError("ServerMap::loadBlock(): Failed"
-					" to read MapBlock version");
-
-		/*u32 block_size = MapBlock::serializedLength(version);
-		SharedBuffer<u8> data(block_size);
-		is.read((char*)*data, block_size);*/
-
-		// This will always return a sector because we're the server
-		//MapSector *sector = emergeSector(p2d);
-
-		MapBlock *block = NULL;
-		bool created_new = false;
-		block = sector->getBlockNoCreateNoEx(p3d.Y);
-		if(block == NULL)
-		{
-			block = sector->createBlankBlockNoInsert(p3d.Y);
-			created_new = true;
-		}
-
-		// Read basic data
-		block->deSerialize(is, version, true);
-
-		// If it's a new block, insert it to the map
-		if (created_new) {
-			sector->insertBlock(block);
-			ReflowScan scanner(this, m_emerge->ndef);
-			scanner.scan(block, &m_transforming_liquid);
-		}
-
-		/*
-			Save blocks loaded in old format in new format
-		*/
-
-		if(version < SER_FMT_VER_HIGHEST_WRITE || save_after_load)
-		{
-			saveBlock(block);
-
-			// Should be in database now, so delete the old file
-			fs::RecursiveDelete(fullpath);
-		}
-
-		// We just loaded it from the disk, so it's up-to-date.
-		block->resetModified();
-
-	}
-	catch(SerializationError &e)
-	{
-		warningstream<<"Invalid block data on disk "
-				<<"fullpath="<<fullpath
-				<<" (SerializationError). "
-				<<"what()="<<e.what()
-				<<std::endl;
-				// Ignoring. A new one will be generated.
-		abort();
-
-		// TODO: Backup file; name is in fullpath.
-	}
-}
-
 void ServerMap::loadBlock(std::string *blob, v3s16 p3d, MapSector *sector, bool save_after_load)
 {
 	try {
@@ -2172,39 +2010,7 @@ MapBlock* ServerMap::loadBlock(v3s16 blockpos)
 			loadBlock(&ret, blockpos, createSector(p2d), false);
 		}
 	} else {
-		// Not found in database, try the files
-
-		// The directory layout we're going to load from.
-		//  1 - original sectors/xxxxzzzz/
-		//  2 - new sectors2/xxx/zzz/
-		//  If we load from anything but the latest structure, we will
-		//  immediately save to the new one, and remove the old.
-		std::string sectordir1 = getSectorDir(p2d, 1);
-		std::string sectordir;
-		if (fs::PathExists(sectordir1)) {
-			sectordir = sectordir1;
-		} else {
-			sectordir = getSectorDir(p2d, 2);
-		}
-
-		/*
-		Make sure sector is loaded
-		 */
-
-		MapSector *sector = getSectorNoGenerate(p2d);
-
-		/*
-		Make sure file exists
-		 */
-
-		std::string blockfilename = getBlockFilename(blockpos);
-		if (!fs::PathExists(sectordir + DIR_DELIM + blockfilename))
-			return NULL;
-
-		/*
-		Load block and save it to the database
-		 */
-		loadBlock(sectordir, blockfilename, sector, true);
+		return NULL;
 	}
 
 	MapBlock *block = getBlockNoCreateNoEx(blockpos);

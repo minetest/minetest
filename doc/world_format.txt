@@ -13,12 +13,6 @@ The block serialization version does not fully specify every aspect of this
 format; if compliance with this format is to be checked, it needs to be
 done by detecting if the files and data indeed follows it.
 
-Legacy stuff
-=============
-Data can, in theory, be contained in the flat file directory structure
-described below in Version 17, but it is not officially supported. Also you
-may stumble upon all kinds of oddities in not-so-recent formats.
-
 Files
 ======
 Everything is contained in a directory, the name of which is freeform, but
@@ -569,9 +563,9 @@ EndInventoryList
 EndInventory
 ---
 
-==============================================
-Minetest World Format used as of 2011-05 or so
-==============================================
+===========================================================
+Minetest World Format used as of 2011-05 or so (deprecated)
+===========================================================
 
 Map data serialization format version 17.
 
