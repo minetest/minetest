@@ -380,20 +380,11 @@ public:
 		names when saving
 	*/
 	void createDirs(const std::string &path);
-	// returns something like "map/sectors/xxxxxxxx"
-	std::string getSectorDir(v2s16 pos, int layout = 2);
-	// dirname: final directory name
-	v2s16 getSectorPos(const std::string &dirname);
-	v3s16 getBlockPos(const std::string &sectordir, const std::string &blockfile);
-	static std::string getBlockFilename(v3s16 p);
 
 	/*
 		Database functions
 	*/
 	static MapDatabase *createDatabase(const std::string &name, const std::string &savedir, Settings &conf);
-
-	// Returns true if the database file does not exist
-	bool loadFromFolders();
 
 	// Call these before and after saving of blocks
 	void beginSave();
@@ -407,9 +398,6 @@ public:
 
 	bool saveBlock(MapBlock *block);
 	static bool saveBlock(MapBlock *block, MapDatabase *db);
-	// This will generate a sector with getSector if not found.
-	void loadBlock(const std::string &sectordir, const std::string &blockfile,
-			MapSector *sector, bool save_after_load=false);
 	MapBlock* loadBlock(v3s16 p);
 	// Database version
 	void loadBlock(std::string *blob, v3s16 p3d, MapSector *sector, bool save_after_load=false);
