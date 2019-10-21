@@ -1165,7 +1165,7 @@ void intlGUIEditBox::breakText()
 	s32 lastLineStart = 0;
 	s32 size = Text.size();
 	s32 length = 0;
-	s32 elWidth = RelativeRect.getWidth() - 6;
+	s32 elWidth = RelativeRect.getWidth() - m_scrollbar_width - 10;
 	wchar_t c;
 
 	for (s32 i=0; i<size; ++i)
@@ -1477,8 +1477,6 @@ void intlGUIEditBox::createVScrollBar()
 			}
 		}
 	}
-
-	RelativeRect.LowerRightCorner.X -= m_scrollbar_width + 4;
 
 	irr::core::rect<s32> scrollbarrect = FrameRect;
 	scrollbarrect.UpperLeftCorner.X += FrameRect.getWidth() - m_scrollbar_width;
