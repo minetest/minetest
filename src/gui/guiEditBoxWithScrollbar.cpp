@@ -1112,7 +1112,7 @@ void GUIEditBoxWithScrollBar::breakText()
 // TODO: that function does interpret VAlign according to line-index (indexed line is placed on top-center-bottom)
 // but HAlign according to line-width (pixels) and not by row.
 // Intuitively I suppose HAlign handling is better as VScrollPos should handle the line-scrolling.
-// But please no one change this without also rewriting (and this time fucking testing!!!) autoscrolling (I noticed this when fixing the old autoscrolling).
+// But please no one change this without also rewriting (and this time testing!!!) autoscrolling (I noticed this when fixing the old autoscrolling).
 void GUIEditBoxWithScrollBar::setTextRect(s32 line)
 {
 	if (line < 0)
