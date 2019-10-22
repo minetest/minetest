@@ -1801,7 +1801,7 @@ function default.spawn_falling_node(p, nodename)
 	spawn_falling_node(p, nodename)
 end
 
--- Horrible crap to support old code
+-- Horrible stuff to support old code
 -- Don't use this and never do what this does, it's completely wrong!
 -- (More specifically, the client and the C++ code doesn't get the group)
 function default.register_falling_node(nodename, texture)
