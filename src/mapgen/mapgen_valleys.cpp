@@ -68,6 +68,8 @@ MapgenValleys::MapgenValleys(MapgenValleysParams *params, EmergeManager *emerge)
 	cave_width         = params->cave_width;
 	large_cave_depth   = params->large_cave_depth;
 	lava_depth         = params->lava_depth;
+	small_cave_num_min = params->small_cave_num_min;
+	small_cave_num_max = params->small_cave_num_max;
 	large_cave_num_min = params->large_cave_num_min;
 	large_cave_num_max = params->large_cave_num_max;
 	large_cave_flooded = params->large_cave_flooded;
@@ -131,6 +133,8 @@ void MapgenValleysParams::readParams(const Settings *settings)
 	settings->getU16NoEx("mgvalleys_altitude_chill",       altitude_chill);
 	settings->getS16NoEx("mgvalleys_large_cave_depth",     large_cave_depth);
 	settings->getS16NoEx("mgvalleys_lava_depth",           lava_depth);
+	settings->getU16NoEx("mgvalleys_small_cave_num_min",   small_cave_num_min);
+	settings->getU16NoEx("mgvalleys_small_cave_num_max",   small_cave_num_max);
 	settings->getU16NoEx("mgvalleys_large_cave_num_min",   large_cave_num_min);
 	settings->getU16NoEx("mgvalleys_large_cave_num_max",   large_cave_num_max);
 	settings->getFloatNoEx("mgvalleys_large_cave_flooded", large_cave_flooded);
@@ -164,6 +168,8 @@ void MapgenValleysParams::writeParams(Settings *settings) const
 	settings->setU16("mgvalleys_altitude_chill",       altitude_chill);
 	settings->setS16("mgvalleys_large_cave_depth",     large_cave_depth);
 	settings->setS16("mgvalleys_lava_depth",           lava_depth);
+	settings->setU16("mgvalleys_small_cave_num_min",   small_cave_num_min);
+	settings->setU16("mgvalleys_small_cave_num_max",   small_cave_num_max);
 	settings->setU16("mgvalleys_large_cave_num_min",   large_cave_num_min);
 	settings->setU16("mgvalleys_large_cave_num_max",   large_cave_num_max);
 	settings->setFloat("mgvalleys_large_cave_flooded", large_cave_flooded);

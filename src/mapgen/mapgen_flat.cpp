@@ -55,6 +55,8 @@ MapgenFlat::MapgenFlat(MapgenFlatParams *params, EmergeManager *emerge)
 	ground_level       = params->ground_level;
 	large_cave_depth   = params->large_cave_depth;
 	lava_depth         = params->lava_depth;
+	small_cave_num_min = params->small_cave_num_min;
+	small_cave_num_max = params->small_cave_num_max;
 	large_cave_num_min = params->large_cave_num_min;
 	large_cave_num_max = params->large_cave_num_max;
 	large_cave_flooded = params->large_cave_flooded;
@@ -103,6 +105,8 @@ void MapgenFlatParams::readParams(const Settings *settings)
 	settings->getS16NoEx("mgflat_ground_level",         ground_level);
 	settings->getS16NoEx("mgflat_large_cave_depth",     large_cave_depth);
 	settings->getS16NoEx("mgflat_lava_depth",           lava_depth);
+	settings->getU16NoEx("mgflat_small_cave_num_min",   small_cave_num_min);
+	settings->getU16NoEx("mgflat_small_cave_num_max",   small_cave_num_max);
 	settings->getU16NoEx("mgflat_large_cave_num_min",   large_cave_num_min);
 	settings->getU16NoEx("mgflat_large_cave_num_max",   large_cave_num_max);
 	settings->getFloatNoEx("mgflat_large_cave_flooded", large_cave_flooded);
@@ -128,6 +132,8 @@ void MapgenFlatParams::writeParams(Settings *settings) const
 	settings->setS16("mgflat_ground_level",         ground_level);
 	settings->setS16("mgflat_large_cave_depth",     large_cave_depth);
 	settings->setS16("mgflat_lava_depth",           lava_depth);
+	settings->setU16("mgflat_small_cave_num_min",   small_cave_num_min);
+	settings->setU16("mgflat_small_cave_num_max",   small_cave_num_max);
 	settings->setU16("mgflat_large_cave_num_min",   large_cave_num_min);
 	settings->setU16("mgflat_large_cave_num_max",   large_cave_num_max);
 	settings->setFloat("mgflat_large_cave_flooded", large_cave_flooded);

@@ -1417,6 +1417,12 @@ mgv5_large_cave_depth (Large cave depth) int -256
 #    Y of upper limit of lava in large caves.
 mgv5_lava_depth (Lava depth) int -256
 
+#    Minimum limit of random number of small caves per mapchunk.
+mgv5_small_cave_num_min (Small cave minimum number) int 0 0 256
+
+#    Maximum limit of random number of small caves per mapchunk.
+mgv5_small_cave_num_max (Small cave maximum number) int 0 0 256
+
 #    Minimum limit of random number of large caves per mapchunk.
 mgv5_large_cave_num_min (Large cave minimum number) int 0 0 64
 
@@ -1543,6 +1549,12 @@ mgv7_large_cave_depth (Large cave depth) int -33
 #    Y of upper limit of lava in large caves.
 mgv7_lava_depth (Lava depth) int -256
 
+#    Minimum limit of random number of small caves per mapchunk.
+mgv7_small_cave_num_min (Small cave minimum number) int 0 0 256
+
+#    Maximum limit of random number of small caves per mapchunk.
+mgv7_small_cave_num_max (Small cave maximum number) int 0 0 256
+
 #    Minimum limit of random number of large caves per mapchunk.
 mgv7_large_cave_num_min (Large cave minimum number) int 0 0 64
 
@@ -1660,6 +1672,12 @@ mgcarpathian_large_cave_depth (Large cave depth) int -33
 #    Y of upper limit of lava in large caves.
 mgcarpathian_lava_depth (Lava depth) int -256
 
+#    Minimum limit of random number of small caves per mapchunk.
+mgcarpathian_small_cave_num_min (Small cave minimum number) int 0 0 256
+
+#    Maximum limit of random number of small caves per mapchunk.
+mgcarpathian_small_cave_num_max (Small cave maximum number) int 0 0 256
+
 #    Minimum limit of random number of large caves per mapchunk.
 mgcarpathian_large_cave_num_min (Large cave minimum number) int 0 0 64
 
@@ -1753,6 +1771,12 @@ mgflat_large_cave_depth (Large cave depth) int -33
 #    Y of upper limit of lava in large caves.
 mgflat_lava_depth (Lava depth) int -256
 
+#    Minimum limit of random number of small caves per mapchunk.
+mgflat_small_cave_num_min (Small cave minimum number) int 0 0 256
+
+#    Maximum limit of random number of small caves per mapchunk.
+mgflat_small_cave_num_max (Small cave maximum number) int 0 0 256
+
 #    Minimum limit of random number of large caves per mapchunk.
 mgflat_large_cave_num_min (Large cave minimum number) int 0 0 64
 
@@ -1820,6 +1844,12 @@ mgfractal_large_cave_depth (Large cave depth) int -33
 #    Deprecated, define and locate cave liquids using biome definitions instead.
 #    Y of upper limit of lava in large caves.
 mgfractal_lava_depth (Lava depth) int -256
+
+#    Minimum limit of random number of small caves per mapchunk.
+mgfractal_small_cave_num_min (Small cave minimum number) int 0 0 256
+
+#    Maximum limit of random number of small caves per mapchunk.
+mgfractal_small_cave_num_max (Small cave maximum number) int 0 0 256
 
 #    Minimum limit of random number of large caves per mapchunk.
 mgfractal_large_cave_num_min (Large cave minimum number) int 0 0 64
@@ -1952,6 +1982,12 @@ mgvalleys_large_cave_depth (Large cave depth) int -33
 #    Deprecated, define and locate cave liquids using biome definitions instead.
 #    Y of upper limit of lava in large caves.
 mgvalleys_lava_depth (Lava depth) int 1
+
+#    Minimum limit of random number of small caves per mapchunk.
+mgvalleys_small_cave_num_min (Small cave minimum number) int 0 0 256
+
+#    Maximum limit of random number of small caves per mapchunk.
+mgvalleys_small_cave_num_max (Small cave maximum number) int 0 0 256
 
 #    Minimum limit of random number of large caves per mapchunk.
 mgvalleys_large_cave_num_min (Large cave minimum number) int 0 0 64
