@@ -152,7 +152,11 @@ Mod directory structure
     │   ├── models
     │   ├── textures
     │   │   ├── modname_stuff.png
-    │   │   └── modname_something_else.png
+    │   │   ├── modname_something_else.png
+    │   │   ├── subfolder_foo
+    │   │   │   ├── modname_more_stuff.png
+    │   │   │   └── another_subfolder
+    │   │   └── bar_subfolder
     │   ├── sounds
     │   ├── media
     │   ├── locale
@@ -221,18 +225,20 @@ registered callbacks.
 `minetest.settings` can be used to read custom or existing settings at load
 time, if necessary. (See [`Settings`])
 
-### `models`
-
-Models for entities or meshnodes.
-
-### `textures`, `sounds`, `media`
+### `textures`, `sounds`, `media`, `models`, `locale`
 
 Media files (textures, sounds, whatever) that will be transferred to the
-client and will be available for use by the mod.
+client and will be available for use by the mod and translation files for
+the clients (see [Translations]).
 
-### `locale`
+It is suggested to use the folders for the purpous they are thought for,
+eg. put textures into `textures`, translation files into `locale`,
+models for entities or meshnodes into `models` et cetera.
 
-Translation files for the clients. (See [Translations])
+These folders and subfolders can contain subfolders.
+Subfolders with names starting with `_` or `.` are ignored.
+If a subfolder contains a media file with the same name as a media file
+in one of its parents, the parent's file is used.
 
 Naming conventions
 ------------------
