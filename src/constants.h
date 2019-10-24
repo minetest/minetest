@@ -22,9 +22,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 /*
 	All kinds of constants.
 
-	Cross-platform compatibility crap should go in porting.h.
+	Cross-platform compatibility stuff should go in porting.h.
 
-    Some things here are legacy crap.
+    Some things here are legacy.
 */
 
 /*
