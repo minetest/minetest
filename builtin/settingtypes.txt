@@ -440,7 +440,8 @@ keymap_decrease_viewing_range_min (View range decrease key) key -
 
 [**Basic]
 
-#    Enable VBO
+#    Enable vertex buffer objects.
+#    This should greatly improve graphics performance.
 enable_vbo (VBO) bool true
 
 #    Whether to fog out the end of the visible area.
@@ -574,21 +575,30 @@ parallax_occlusion_bias (Parallax occlusion bias) float 0.04
 
 [***Waving Nodes]
 
-#    Set to true enables waving water.
+#    Set to true to enable waving liquids (like water).
 #    Requires shaders to be enabled.
-enable_waving_water (Waving water) bool false
+enable_waving_water (Waving liquids) bool false
 
-water_wave_height (Waving water wave height) float 1.0
+#    The maximum height of the surface of waving liquids.
+#    1.0 = Wave reaches the top of blocks.
+#    0.0 = Wave doesn't move at all.
+#    Requires waving liquids to be enabled.
+water_wave_height (Waving liquids wave height) float 1.0 0.0 1.0
 
-water_wave_length (Waving water wavelength) float 20.0
+#    Length of liquid waves.
+#    Requires waving liquids to be enabled.
+water_wave_length (Waving liquids wavelength) float 20.0 0.1
 
-water_wave_speed (Waving water wave speed) float 5.0
+#    How fast liquid waves will move. Higher = faster.
+#    If negative, liquid waves will move backwards.
+#    Requires waving liquids to be enabled.
+water_wave_speed (Waving liquids wave speed) float 5.0
 
-#    Set to true enables waving leaves.
+#    Set to true to enable waving leaves.
 #    Requires shaders to be enabled.
 enable_waving_leaves (Waving leaves) bool false
 
-#    Set to true enables waving plants.
+#    Set to true to enable waving plants.
 #    Requires shaders to be enabled.
 enable_waving_plants (Waving plants) bool false
 
@@ -838,27 +848,46 @@ tooltip_show_delay (Tooltip delay) int 400
 tooltip_append_itemname (Append item name) bool false
 
 #    Whether FreeType fonts are used, requires FreeType support to be compiled in.
+#    If disabled, bitmap and XML vectors fonts are used instead.
 freetype (FreeType fonts) bool true
 
-#    Path to TrueTypeFont or bitmap.
+#    Path to the default font.
+#    If “freetype” setting is enabled: Must be a TrueType font.
+#    If “freetype” setting is disabled: Must be a bitmap or XML vectors font.
+#    The fallback font will be used if the font cannot be loaded.
 font_path (Font path) filepath fonts/liberationsans.ttf
 
+#    Font size of the default font in point (pt).
 font_size (Font size) int 16 1
 
-#    Font shadow offset, if 0 then shadow will not be drawn.
+#    Shadow offset (in pixels) of the default font. If 0, then shadow will not be drawn.
 font_shadow (Font shadow) int 1
 
-#    Font shadow alpha (opaqueness, between 0 and 255).
+#    Opaqueness (alpha) of the shadow behind the default font, between 0 and 255.
 font_shadow_alpha (Font shadow alpha) int 127 0 255
 
+#    Path to the monospace font.
+#    If “freetype” setting is enabled: Must be a TrueType font.
+#    If “freetype” setting is disabled: Must be a bitmap or XML vectors font.
+#    This font is used for e.g. the console and profiler screen.
 mono_font_path (Monospace font path) filepath fonts/liberationmono.ttf
 
+#    Font size of the monospace font in point (pt).
 mono_font_size (Monospace font size) int 15 1
 
-#    This font will be used for certain languages.
-fallback_font_path (Fallback font) filepath fonts/DroidSansFallbackFull.ttf
+#    Path of the fallback font.
+#    If “freetype” setting is enabled: Must be a TrueType font.
+#    If “freetype” setting is disabled: Must be a bitmap or XML vectors font.
+#    This font will be used for certain languages or if the default font is unavailable.
+fallback_font_path (Fallback font path) filepath fonts/DroidSansFallbackFull.ttf
+
+#    Font size of the fallback font in point (pt).
 fallback_font_size (Fallback font size) int 15 1
+
+#    Shadow offset (in pixels) of the fallback font. If 0, then shadow will not be drawn.
 fallback_font_shadow (Fallback font shadow) int 1
+
+#    Opaqueness (alpha) of the shadow behind the fallback font, between 0 and 255.
 fallback_font_shadow_alpha (Fallback font shadow alpha) int 128 0 255
 
 #    Path to save screenshots at.
@@ -883,10 +912,20 @@ enable_console (Enable console window) bool false
 
 [Sound]
 
+#    Enables the sound system.
+#    If disabled, this completely disables all sounds everywhere and the in-game
+#    sound controls will be non-functional.
+#    Changing this setting requires a restart.
 enable_sound (Sound) bool true
 
+#    Volume of all sounds.
+#    Requires the sound system to be enabled.
 sound_volume (Volume) float 0.7 0.0 1.0
 
+#    Whether to mute sounds. You can unmute sounds at any time, unless the
+#    sound system is disabled (enable_sound=false).
+#    In-game, you can toggle the mute state with the mute key or by using the
+#    pause menu.
 mute_sound (Mute sound) bool false
 
 [Client]
@@ -987,6 +1026,7 @@ remote_media (Remote media) string
 
 #    Enable/disable running an IPv6 server.
 #    Ignored if bind_address is set.
+#    Needs enable_ipv6 to be enabled.
 ipv6_server (IPv6 server) bool false
 
 [**Advanced]
@@ -1338,7 +1378,8 @@ debug_log_level (Debug log level) enum action ,none,error,warning,action,info,ve
 #    debug.txt is only moved if this setting is positive.
 debug_log_size_max (Debug log file size threshold) int 50
 
-#    IPv6 support.
+#    Enable IPv6 support (for both client and server).
+#    Required for IPv6 connections to work at all.
 enable_ipv6 (IPv6) bool true
 
 [*Advanced]
