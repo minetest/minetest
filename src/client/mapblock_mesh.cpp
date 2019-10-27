@@ -661,10 +661,10 @@ static void makeFastFace(const TileSpec &tile, u16 li0, u16 li1, u16 li2, u16 li
 	TODO: Add 3: Both faces drawn with backface culling, remove equivalent
 */
 static u8 face_contents(content_t m1, content_t m2, bool *equivalent,
-                        const NodeDefManager *ndef, u16 tid1)
+	const NodeDefManager *ndef, u16 tid1)
 {
-    static thread_local const float enable_waving_water =
-        g_settings->getBool("enable_waving_water");
+	static thread_local const float enable_waving_water =
+		g_settings->getBool("enable_waving_water");
 
 	*equivalent = false;
 
@@ -699,15 +699,15 @@ static u8 face_contents(content_t m1, content_t m2, bool *equivalent,
 	}
 
 	if (c1 > c2) {
-        if (enable_waving_water && f2.isLiquid() && tid1 == 1) {
-            return 2;
-        }
+		if (enable_waving_water && f2.isLiquid() && tid1 == 1) {
+			return 2;
+		}
 		return 1;
-    }
+	}
 
-    if (enable_waving_water && f1.isLiquid() && tid1 == 0) {
-        return 1;
-    }
+	if (enable_waving_water && f1.isLiquid() && tid1 == 0) {
+		return 1;
+	}
 	return 2;
 }
 
@@ -733,36 +733,36 @@ void getNodeTileN(MapNode mn, const v3s16 &p, u8 tileindex, MeshMakeData *data, 
 
 static const u16 dir_to_tile[24 * 16] =
 {
-    // 0     +X    +Y    +Z           -Z    -Y    -X   ->   value=tile,rotation
-    0,0,  2,0 , 0,0 , 4,0 ,  0,0,  5,0 , 1,0 , 3,0 ,  // rotate around y+ 0 - 3
-    0,0,  4,0 , 0,3 , 3,0 ,  0,0,  2,0 , 1,1 , 5,0 ,
-    0,0,  3,0 , 0,2 , 5,0 ,  0,0,  4,0 , 1,2 , 2,0 ,
-    0,0,  5,0 , 0,1 , 2,0 ,  0,0,  3,0 , 1,3 , 4,0 ,
+	// 0     +X    +Y    +Z           -Z    -Y    -X   ->   value=tile,rotation
+	0,0,  2,0 , 0,0 , 4,0 ,  0,0,  5,0 , 1,0 , 3,0 ,  // rotate around y+ 0 - 3
+	0,0,  4,0 , 0,3 , 3,0 ,  0,0,  2,0 , 1,1 , 5,0 ,
+	0,0,  3,0 , 0,2 , 5,0 ,  0,0,  4,0 , 1,2 , 2,0 ,
+	0,0,  5,0 , 0,1 , 2,0 ,  0,0,  3,0 , 1,3 , 4,0 ,
 
-    0,0,  2,3 , 5,0 , 0,2 ,  0,0,  1,0 , 4,2 , 3,1 ,  // rotate around z+ 4 - 7
-    0,0,  4,3 , 2,0 , 0,1 ,  0,0,  1,1 , 3,2 , 5,1 ,
-    0,0,  3,3 , 4,0 , 0,0 ,  0,0,  1,2 , 5,2 , 2,1 ,
-    0,0,  5,3 , 3,0 , 0,3 ,  0,0,  1,3 , 2,2 , 4,1 ,
+	0,0,  2,3 , 5,0 , 0,2 ,  0,0,  1,0 , 4,2 , 3,1 ,  // rotate around z+ 4 - 7
+	0,0,  4,3 , 2,0 , 0,1 ,  0,0,  1,1 , 3,2 , 5,1 ,
+	0,0,  3,3 , 4,0 , 0,0 ,  0,0,  1,2 , 5,2 , 2,1 ,
+	0,0,  5,3 , 3,0 , 0,3 ,  0,0,  1,3 , 2,2 , 4,1 ,
 
-    0,0,  2,1 , 4,2 , 1,2 ,  0,0,  0,0 , 5,0 , 3,3 ,  // rotate around z- 8 - 11
-    0,0,  4,1 , 3,2 , 1,3 ,  0,0,  0,3 , 2,0 , 5,3 ,
-    0,0,  3,1 , 5,2 , 1,0 ,  0,0,  0,2 , 4,0 , 2,3 ,
-    0,0,  5,1 , 2,2 , 1,1 ,  0,0,  0,1 , 3,0 , 4,3 ,
+	0,0,  2,1 , 4,2 , 1,2 ,  0,0,  0,0 , 5,0 , 3,3 ,  // rotate around z- 8 - 11
+	0,0,  4,1 , 3,2 , 1,3 ,  0,0,  0,3 , 2,0 , 5,3 ,
+	0,0,  3,1 , 5,2 , 1,0 ,  0,0,  0,2 , 4,0 , 2,3 ,
+	0,0,  5,1 , 2,2 , 1,1 ,  0,0,  0,1 , 3,0 , 4,3 ,
 
-    0,0,  0,3 , 3,3 , 4,1 ,  0,0,  5,3 , 2,3 , 1,3 ,  // rotate around x+ 12 - 15
-    0,0,  0,2 , 5,3 , 3,1 ,  0,0,  2,3 , 4,3 , 1,0 ,
-    0,0,  0,1 , 2,3 , 5,1 ,  0,0,  4,3 , 3,3 , 1,1 ,
-    0,0,  0,0 , 4,3 , 2,1 ,  0,0,  3,3 , 5,3 , 1,2 ,
+	0,0,  0,3 , 3,3 , 4,1 ,  0,0,  5,3 , 2,3 , 1,3 ,  // rotate around x+ 12 - 15
+	0,0,  0,2 , 5,3 , 3,1 ,  0,0,  2,3 , 4,3 , 1,0 ,
+	0,0,  0,1 , 2,3 , 5,1 ,  0,0,  4,3 , 3,3 , 1,1 ,
+	0,0,  0,0 , 4,3 , 2,1 ,  0,0,  3,3 , 5,3 , 1,2 ,
 
-    0,0,  1,1 , 2,1 , 4,3 ,  0,0,  5,1 , 3,1 , 0,1 ,  // rotate around x- 16 - 19
-    0,0,  1,2 , 4,1 , 3,3 ,  0,0,  2,1 , 5,1 , 0,0 ,
-    0,0,  1,3 , 3,1 , 5,3 ,  0,0,  4,1 , 2,1 , 0,3 ,
-    0,0,  1,0 , 5,1 , 2,3 ,  0,0,  3,1 , 4,1 , 0,2 ,
+	0,0,  1,1 , 2,1 , 4,3 ,  0,0,  5,1 , 3,1 , 0,1 ,  // rotate around x- 16 - 19
+	0,0,  1,2 , 4,1 , 3,3 ,  0,0,  2,1 , 5,1 , 0,0 ,
+	0,0,  1,3 , 3,1 , 5,3 ,  0,0,  4,1 , 2,1 , 0,3 ,
+	0,0,  1,0 , 5,1 , 2,3 ,  0,0,  3,1 , 4,1 , 0,2 ,
 
-    0,0,  3,2 , 1,2 , 4,2 ,  0,0,  5,2 , 0,2 , 2,2 ,  // rotate around y- 20 - 23
-    0,0,  5,2 , 1,3 , 3,2 ,  0,0,  2,2 , 0,1 , 4,2 ,
-    0,0,  2,2 , 1,0 , 5,2 ,  0,0,  4,2 , 0,0 , 3,2 ,
-    0,0,  4,2 , 1,1 , 2,2 ,  0,0,  3,2 , 0,3 , 5,2
+	0,0,  3,2 , 1,2 , 4,2 ,  0,0,  5,2 , 0,2 , 2,2 ,  // rotate around y- 20 - 23
+	0,0,  5,2 , 1,3 , 3,2 ,  0,0,  2,2 , 0,1 , 4,2 ,
+	0,0,  2,2 , 1,0 , 5,2 ,  0,0,  4,2 , 0,0 , 3,2 ,
+	0,0,  4,2 , 1,1 , 2,2 ,  0,0,  3,2 , 0,3 , 5,2
 
 };
 
@@ -796,7 +796,7 @@ void getNodeTile(MapNode mn, const v3s16 &p, const v3s16 &dir, MeshMakeData *dat
 	// Get rotation for things like chests
 	u8 facedir = mn.getFaceDir(ndef, true);
 
-    const u16 tindex = tile_index(dir, facedir);
+	const u16 tindex = tile_index(dir, facedir);
 	getNodeTileN(mn, p, dir_to_tile[tindex], data, tile);
 	tile.rotation = tile.world_aligned ? 0 : dir_to_tile[tindex + 1];
 }
@@ -836,8 +836,8 @@ static void getTileInfo(
 	// This is hackish
 	bool equivalent = false;
 	u8 mf = face_contents(n0.getContent(), n1.getContent(),
-                          &equivalent, ndef,
-                          dir_to_tile[tile_index(face_dir, 0)]);
+			&equivalent, ndef,
+			dir_to_tile[tile_index(face_dir, 0)]);
 
 	if (mf == 0) {
 		makes_face = false;
