@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Swedish (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-10-09 22:02+0200\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"PO-Revision-Date: 2019-10-29 11:53+0000\n"
+"Last-Translator: Mattias Münster <mattiasmun@gmail.com>\n"
 "Language-Team: Swedish <https://hosted.weblate.org/projects/minetest/"
 "minetest/sv/>\n"
 "Language: sv\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 3.9-dev\n"
+"X-Generator: Weblate 3.9.1\n"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "Respawn"
@@ -99,7 +99,6 @@ msgid "Disable modpack"
 msgstr "Avaktivera modpaket"
 
 #: builtin/mainmenu/dlg_config_world.lua
-#, fuzzy
 msgid "Enable all"
 msgstr "Aktivera alla"
 
@@ -207,7 +206,6 @@ msgid "Search"
 msgstr "Sök"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Texture packs"
 msgstr "Texturpaket"
 
@@ -341,7 +339,7 @@ msgstr "Oktaver"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua src/settings_translation_file.cpp
 msgid "Offset"
-msgstr ""
+msgstr "Förskjutning"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Persistance"
@@ -364,9 +362,8 @@ msgid "Scale"
 msgstr "Skala"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
-#, fuzzy
 msgid "Select directory"
-msgstr "Välj modfil:"
+msgstr "Välj katalog"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 #, fuzzy
@@ -692,9 +689,8 @@ msgid "Bilinear Filter"
 msgstr "Bilinjärt filter"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Bump Mapping"
-msgstr "Bumpmappning"
+msgstr "Stötkartläggning"
 
 #: builtin/mainmenu/tab_settings.lua src/client/game.cpp
 msgid "Change Keys"
@@ -839,7 +835,6 @@ msgid "Start Singleplayer"
 msgstr "Starta Enspelarläge"
 
 #: src/client/client.cpp
-#, fuzzy
 msgid "Connection timed out."
 msgstr "Anslutningens tidsgräns nådd."
 
@@ -864,7 +859,6 @@ msgid "Rebuilding shaders..."
 msgstr "Rekonstruerar shaders..."
 
 #: src/client/clientlauncher.cpp
-#, fuzzy
 msgid "Connection error (timed out?)"
 msgstr "Anslutningsfel (tidsgräns nådd?)"
 
@@ -969,7 +963,6 @@ msgid "Camera update enabled"
 msgstr "Av/på-tangent för kamerauppdatering"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Change Password"
 msgstr "Ändra Lösenord"
 
@@ -996,7 +989,7 @@ msgid "Continue"
 msgstr "Fortsätt"
 
 #: src/client/game.cpp
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "Controls:\n"
 "- %s: move forwards\n"
@@ -1138,7 +1131,6 @@ msgid "Game paused"
 msgstr "Spel pausat"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Hosting server"
 msgstr "Arrangerar server"
 
@@ -1329,7 +1321,6 @@ msgid "Caps Lock"
 msgstr "Caps Lock"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Clear"
 msgstr "Rensa"
 
@@ -1342,7 +1333,6 @@ msgid "Down"
 msgstr "Ner"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "End"
 msgstr "Slut"
 
@@ -1351,7 +1341,6 @@ msgid "Erase EOF"
 msgstr "Radera EOF"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Execute"
 msgstr "Kör"
 
@@ -1360,7 +1349,6 @@ msgid "Help"
 msgstr "Hjälp"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Home"
 msgstr "Hem"
 
@@ -1369,7 +1357,6 @@ msgid "IME Accept"
 msgstr "Acceptera IME"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "IME Convert"
 msgstr "Konvertera IME"
 
@@ -1386,7 +1373,6 @@ msgid "IME Nonconvert"
 msgstr "Ickekonvertera IME"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Insert"
 msgstr "Insert"
 
@@ -1411,7 +1397,6 @@ msgid "Left Shift"
 msgstr "Vänster Shift"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Left Windows"
 msgstr "Vänster Windowstangent"
 
@@ -1428,17 +1413,14 @@ msgid "Num Lock"
 msgstr "Num Lock"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Numpad *"
 msgstr "Numpad *"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Numpad +"
 msgstr "Numpad +"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Numpad -"
 msgstr "Numpad -"
 
@@ -1447,57 +1429,46 @@ msgid "Numpad ."
 msgstr "Numpad ."
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Numpad /"
 msgstr "Numpad /"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Numpad 0"
 msgstr "Numpad 0"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Numpad 1"
 msgstr "Numpad 1"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Numpad 2"
 msgstr "Numpad 2"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Numpad 3"
 msgstr "Numpad 3"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Numpad 4"
 msgstr "Numpad 4"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Numpad 5"
 msgstr "Numpad 5"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Numpad 6"
 msgstr "Numpad 6"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Numpad 7"
 msgstr "Numpad 7"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Numpad 8"
 msgstr "Numpad 8"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Numpad 9"
 msgstr "Numpad 9"
 
@@ -1554,7 +1525,6 @@ msgid "Right Windows"
 msgstr "Höger Windowstangent"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Scroll Lock"
 msgstr "Scroll Lock"
 
@@ -1563,7 +1533,6 @@ msgid "Select"
 msgstr "Välj"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Shift"
 msgstr "Shift"
 
@@ -1572,17 +1541,14 @@ msgid "Sleep"
 msgstr "Sov"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Snapshot"
 msgstr "Snapshot"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Space"
 msgstr "Mellanslag"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Tab"
 msgstr "Tab"
 
@@ -1668,7 +1634,6 @@ msgid "Dec. volume"
 msgstr "Sänk volym"
 
 #: src/gui/guiKeyChangeMenu.cpp
-#, fuzzy
 msgid "Double tap \"jump\" to toggle fly"
 msgstr "Dubbeltryck \"hoppa\" för att slå på/av flygande"
 
@@ -1689,7 +1654,6 @@ msgid "Inc. volume"
 msgstr "Öka volym"
 
 #: src/gui/guiKeyChangeMenu.cpp
-#, fuzzy
 msgid "Inventory"
 msgstr "Förråd"
 
@@ -1750,7 +1714,6 @@ msgid "Toggle chat log"
 msgstr "Slå av/på snabb"
 
 #: src/gui/guiKeyChangeMenu.cpp
-#, fuzzy
 msgid "Toggle fast"
 msgstr "Slå av/på snabb"
 
@@ -1778,7 +1741,6 @@ msgid "Toggle pitchmove"
 msgstr "Slå av/på snabb"
 
 #: src/gui/guiKeyChangeMenu.cpp
-#, fuzzy
 msgid "press key"
 msgstr "tryck på tangent"
 
@@ -1862,7 +1824,6 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "0 = parallax occlusion with slope information (faster).\n"
 "1 = relief mapping (slower, more accurate)."
@@ -1907,9 +1868,8 @@ msgid "3D mode"
 msgstr "3D-läge"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "3D noise defining giant caverns."
-msgstr "3D oljudsdefinierade jättegrottor"
+msgstr "3D oljudsdefinierade jättegrottor."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1980,7 +1940,6 @@ msgid "ABM interval"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Absolute limit of emerge queues"
 msgstr "Absolut gräns av emerge kö"
 
