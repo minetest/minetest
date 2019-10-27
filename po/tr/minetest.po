@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Turkish (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-10-09 22:02+0200\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"PO-Revision-Date: 2019-10-27 21:50+0000\n"
+"Last-Translator: Oguz Ersen <oguzersen@protonmail.com>\n"
 "Language-Team: Turkish <https://hosted.weblate.org/projects/minetest/"
 "minetest/tr/>\n"
 "Language: tr\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 3.9-dev\n"
+"X-Generator: Weblate 3.9.1-dev\n"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "Respawn"
@@ -23,9 +23,8 @@ msgid "You died"
 msgstr "Öldün"
 
 #: builtin/fstk/ui.lua
-#, fuzzy
 msgid "An error occurred in a Lua script:"
-msgstr "Lua betiğinde, bir mod gibi, bir hata oluştu:"
+msgstr "Lua komut dosyasında bir hata oluştu:"
 
 #: builtin/fstk/ui.lua
 msgid "An error occurred:"
@@ -120,27 +119,24 @@ msgid "Mod:"
 msgstr "Mod:"
 
 #: builtin/mainmenu/dlg_config_world.lua
-#, fuzzy
 msgid "No (optional) dependencies"
-msgstr "İsteğe bağlı bağımlılıklar:"
+msgstr "(İsteğe bağlı) bağımlılık yok"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "No game description provided."
 msgstr "Verilen oyun açıklaması yok."
 
 #: builtin/mainmenu/dlg_config_world.lua
-#, fuzzy
 msgid "No hard dependencies"
-msgstr "Bağımlılık yok."
+msgstr "Katı bağımlılık yok"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "No modpack description provided."
 msgstr "Verilen mod paketi açıklaması yok."
 
 #: builtin/mainmenu/dlg_config_world.lua
-#, fuzzy
 msgid "No optional dependencies"
-msgstr "İsteğe bağlı bağımlılıklar:"
+msgstr "İsteğe bağlı bağımlılık yok"
 
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/tab_content.lua
 msgid "Optional dependencies:"
@@ -782,9 +778,8 @@ msgid "Waving Leaves"
 msgstr "Dalgalanan Yapraklar"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Waving Liquids"
-msgstr "Dalgalanan Nodlar"
+msgstr "Dalgalanan Sıvılar"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Waving Plants"
@@ -1529,7 +1524,7 @@ msgid "Register and Join"
 msgstr "Kaydol ve Katıl"
 
 #: src/gui/guiConfirmRegistration.cpp
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "You are about to join this server with the name \"%s\" for the first time.\n"
 "If you proceed, a new account using your credentials will be created on this "
@@ -1537,11 +1532,11 @@ msgid ""
 "Please retype your password and click 'Register and Join' to confirm account "
 "creation, or click 'Cancel' to abort."
 msgstr ""
-"\"%2$s\" adıyla %1$s adresindeki sunucuya ilk kez bağlanmak üzeresiniz. "
-"Devam ederseniz, bu sunucuda, bilgileriniz kullanılarak yeni bir hesap "
-"yaratılacak.\n"
-"Lütfen hesap yaratmayı onaylamak için parolanızı tekrar girin ve Kaydol ve "
-"Katıl'a tıklayın veya vaz geçmek İptal'e tıklayın."
+"Bu sunucuya \"%s\" adıyla ilk kez katılmak üzeresiniz.\n"
+"Devam ederseniz, kimlik bilgilerinizi kullanarak yeni bir hesap bu sunucuda "
+"oluşturulur.\n"
+"Lütfen şifrenizi tekrar yazın ve hesap oluşturmayı onaylamak için 'Kayıt Ol "
+"ve Katıl' düğmesini tıklayın veya iptal etmek için 'İptal'i tıklayın."
 
 #: src/gui/guiFormSpecMenu.cpp
 msgid "Proceed"
@@ -1684,9 +1679,8 @@ msgid "Toggle noclip"
 msgstr "Hayalet aç/kapa"
 
 #: src/gui/guiKeyChangeMenu.cpp
-#, fuzzy
 msgid "Toggle pitchmove"
-msgstr "Sohbet günlüğünü aç/kapa"
+msgstr "Pitchmove'u aç/kapa"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "press key"
@@ -1817,9 +1811,8 @@ msgid "2D noise that controls the size/occurrence of step mountain ranges."
 msgstr "Step dağ aralıklarının boyutunu/oluşumunu denetleyen 2D gürültü."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "2D noise that locates the river valleys and channels."
-msgstr "Yuvarlanan tepelerin şeklini/boyutunu denetleyen 2D gürültü."
+msgstr "Nehir vadilerini ve kanallarını belirleyen 2B gürültü."
 
 #: src/settings_translation_file.cpp
 msgid "3D clouds"
@@ -1857,7 +1850,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "3D noise that determines number of dungeons per mapchunk."
-msgstr ""
+msgstr "Mapchunk başına zindan sayısını belirleyen 3B gürültü."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1913,7 +1906,7 @@ msgstr "Havada hızlanma"
 
 #: src/settings_translation_file.cpp
 msgid "Acceleration of gravity, in nodes per second per second."
-msgstr ""
+msgstr "Yerçekimi ivmesi, saniyede saniye başına düğüm sayısı halinde."
 
 #: src/settings_translation_file.cpp
 msgid "Active Block Modifiers"
@@ -2143,17 +2136,16 @@ msgid "Bumpmapping"
 msgstr "Tümsek eşleme"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Camera 'near clipping plane' distance in nodes, between 0 and 0.5.\n"
 "Most users will not need to change this.\n"
 "Increasing can reduce artifacting on weaker GPUs.\n"
 "0.1 = Default, 0.25 = Good value for weaker tablets."
 msgstr ""
-"Nodlarda düzlem uzaklığına yakın kamera, 0 ile 0.5 arasında \n"
-"Çoğu kullanıcının bu değiştirmesi gerekmez.\n"
-"Artırmak, zayıf GPUlarda bozulmayı azaltabilir.\n"
-"0.1 = Öntanımlı, 0.25 = Zayıf tabletler için iyi değer."
+"Düğümlerde kamera 'düğüm düzlemine yakın' uzaklığı, 0 ile 0,5 arasında.\n"
+"Çoğu kullanıcının bunu değiştirmesi gerekmez.\n"
+"Artırma, zayıf GPU'larda görüntü bozulmalarını azaltabilir.\n"
+"0,1 = Varsayılan, 0,25 = Zayıf tabletler için iyi değer."
 
 #: src/settings_translation_file.cpp
 msgid "Camera smoothing"
@@ -2239,9 +2231,8 @@ msgid "Chat message count limit"
 msgstr "Sohbet ileti sayısı sınırı"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Chat message format"
-msgstr "Sohbet iletisi maksimum uzunluğu"
+msgstr "Sohbet mesajı formatı"
 
 #: src/settings_translation_file.cpp
 msgid "Chat message kick threshold"
@@ -2418,7 +2409,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Controls sinking speed in liquid."
-msgstr ""
+msgstr "Sıvıdaki batma hızını kontrol eder."
 
 #: src/settings_translation_file.cpp
 msgid "Controls steepness/depth of lake depressions."
@@ -2483,9 +2474,8 @@ msgid "Debug info toggle key"
 msgstr "Hata ayıklama bilgisi açma/kapama tuşu"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Debug log file size threshold"
-msgstr "Çöl gürültü eşiği"
+msgstr "Hata ayıklama log dosyası boyutu eşiği"
 
 #: src/settings_translation_file.cpp
 msgid "Debug log level"
@@ -2497,7 +2487,7 @@ msgstr "Ses alçaltma tuşu"
 
 #: src/settings_translation_file.cpp
 msgid "Decrease this to increase liquid resistence to movement."
-msgstr ""
+msgstr "Harekete karşı sıvı direncini artırmak için bunu azaltın."
 
 #: src/settings_translation_file.cpp
 msgid "Dedicated server step"
@@ -2590,9 +2580,8 @@ msgid "Defines the base ground level."
 msgstr "Taban yer seviyesini belirler."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Defines the depth of the river channel."
-msgstr "Taban yer seviyesini belirler."
+msgstr "Nehir kanalının derinliğini tanımlar."
 
 #: src/settings_translation_file.cpp
 msgid "Defines the maximal player transfer distance in blocks (0 = unlimited)."
@@ -2601,14 +2590,12 @@ msgstr ""
 "sınırsız)."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Defines the width of the river channel."
-msgstr "Geniş çaplı nehir kanal yapısını belirler."
+msgstr "Nehir kanalının genişliğini tanımlar."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Defines the width of the river valley."
-msgstr "Ağaçların elması olacağı alanları belirler."
+msgstr "Nehir vadisinin genişliğini tanımlar."
 
 #: src/settings_translation_file.cpp
 msgid "Defines tree areas and tree density."
@@ -2641,6 +2628,9 @@ msgid ""
 "Deprecated, define and locate cave liquids using biome definitions instead.\n"
 "Y of upper limit of lava in large caves."
 msgstr ""
+"Kullanılmıyor, bunun yerine biome tanımlarını kullanarak mağara sıvılarını "
+"tanımlayın ve bulun.\n"
+"Büyük mağaralarda lav üst sınırının Y'si."
 
 #: src/settings_translation_file.cpp
 msgid "Depth below which you'll find giant caverns."
@@ -2663,13 +2653,12 @@ msgid "Desert noise threshold"
 msgstr "Çöl gürültü eşiği"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Deserts occur when np_biome exceeds this value.\n"
 "When the 'snowbiomes' flag is enabled, this is ignored."
 msgstr ""
-"np_biome bu değeri aştığında Çöller oluşur.\n"
-"Yeni biyom sistemi etkinken, bu yok sayılır."
+"Çöller, np_biome bu değeri aştığında gerçekleşir.\n"
+"'Snowbiomes' bayrağı etkinleştirildiğinde, bu dikkate alınmaz."
 
 #: src/settings_translation_file.cpp
 msgid "Desynchronize block animation"
@@ -2716,9 +2705,8 @@ msgid "Dungeon minimum Y"
 msgstr "Zindan minimum Y"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Dungeon noise"
-msgstr "Zindan minimum Y"
+msgstr "Zindan gürültüsü"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3072,6 +3060,9 @@ msgid ""
 "placeholders:\n"
 "@name, @message, @timestamp (optional)"
 msgstr ""
+"Oyuncu sohbet mesajlarının formatı. Aşağıdaki stringler geçerli yer "
+"tutuculardır:\n"
+"@name, @message, @timestamp (isteğe bağlı)"
 
 #: src/settings_translation_file.cpp
 msgid "Format of screenshots."
@@ -3327,18 +3318,24 @@ msgid ""
 "Horizontal acceleration in air when jumping or falling,\n"
 "in nodes per second per second."
 msgstr ""
+"Atlarken veya düşerken havada yatay hızlanma,\n"
+"saniyede saniye başına düğüm sayısı halinde."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Horizontal and vertical acceleration in fast mode,\n"
 "in nodes per second per second."
 msgstr ""
+"Hızlı modda yatay ve dikey hızlanma,\n"
+"saniyede saniye başına düğüm sayısı halinde."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Horizontal and vertical acceleration on ground or when climbing,\n"
 "in nodes per second per second."
 msgstr ""
+"Zeminde veya tırmanırken yatay ve dikey hızlanma,\n"
+"saniyede saniye başına düğüm sayısı halinde."
 
 #: src/settings_translation_file.cpp
 msgid "Hotbar next key"
@@ -3625,6 +3622,10 @@ msgid ""
 "deleting an older debug.txt.1 if it exists.\n"
 "debug.txt is only moved if this setting is positive."
 msgstr ""
+"Debug.txt dosyasının boyutu, açıldığında bu ayarda belirtilen megabayt\n"
+"sayısını aşıyorsa, dosya varsa eski bir debug.txt.1 dosyasını\n"
+"silerek debug.txt.1 dosyasına taşınır.\n"
+"debug.txt yalnızca bu ayar pozitifse taşınır."
 
 #: src/settings_translation_file.cpp
 msgid "If this is set, players will always (re)spawn at the given position."
@@ -3658,7 +3659,7 @@ msgstr "Ses yükseltme tuşu"
 
 #: src/settings_translation_file.cpp
 msgid "Initial vertical speed when jumping, in nodes per second."
-msgstr ""
+msgstr "Atlama sırasında ilk dikey hız, saniyede düğümler halinde."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4684,9 +4685,8 @@ msgid "Liquid queue purge time"
 msgstr "Sıvı sırası silme zamanı"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Liquid sinking"
-msgstr "Sıvı inme hızı"
+msgstr "Sıvı batışı"
 
 #: src/settings_translation_file.cpp
 msgid "Liquid update interval in seconds."
@@ -4768,14 +4768,14 @@ msgstr ""
 "'altitude_dry': Nemi yükseklikle azaltır."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Map generation attributes specific to Mapgen flat.\n"
 "'terrain' enables the generation of non-fractal terrain:\n"
 "ocean, islands and underground."
 msgstr ""
-"Mapgen v7'ye özgü harita üretim özellikleri.\n"
-"'ridges' nehirleri etkinleştirir."
+"Mapgen düzlüğüne özgü harita oluşturma özellikleri.\n"
+"'terrain' fraktal olmayan arazi oluşumunu sağlar:\n"
+"okyanus, adalar ve yeraltı."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4790,17 +4790,17 @@ msgid "Map generation attributes specific to Mapgen v5."
 msgstr "Mapgen v5'e özgü harita üretim değerleri."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Map generation attributes specific to Mapgen v6.\n"
 "The 'snowbiomes' flag enables the new 5 biome system.\n"
 "When the 'snowbiomes' flag is enabled jungles are automatically enabled and\n"
 "the 'jungles' flag is ignored."
 msgstr ""
-"Mapgen v6'ya özgü harita üretim değerleri.\n"
-"'snowbiomes' bayrağı yeni 5 biyom sistemini etkinleştir.\n"
-"Yeni biyom sistemi etkinken cangıllar kendiliğinden etkinleştirilir ve\n"
-"'jungles' bayrağı yok sayılır."
+"Mapgen v6'ya özgü harita oluşturma özellikleri.\n"
+"'snowbiomes' bayrağı yeni 5 biome sistemini etkinleştirir.\n"
+"'snowbiomes' bayrağı etkinleştirildiğinde, ormanlar otomatik olarak "
+"etkinleştirilir ve\n"
+"'jungles' bayrağı dikkate alınmaz."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4855,9 +4855,8 @@ msgid "Mapgen Fractal"
 msgstr "Mapgen Fraktal"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Mapgen Fractal specific flags"
-msgstr "Mapgen Düz'e özgü bayraklar"
+msgstr "Mapgen Fractal'a özgü bayraklar"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen V5"
@@ -4944,6 +4943,8 @@ msgid ""
 "Maximum liquid resistence. Controls deceleration when entering liquid at\n"
 "high speed."
 msgstr ""
+"Maksimum sıvı direnci. Yüksek hızda sıvıya girerken yavaşlamayı\n"
+"kontrol eder."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5149,20 +5150,16 @@ msgid "Mute sound"
 msgstr "Sesi kapat"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Name of map generator to be used when creating a new world.\n"
 "Creating a world in the main menu will override this.\n"
 "Current mapgens in a highly unstable state:\n"
 "-    The optional floatlands of v7 (disabled by default)."
 msgstr ""
-"Yeni bir dünya yaratırken kullanılacak harita üretecinin adı.\n"
-"Ana menüde bir dünya yaratmak bunu etkisiz kılar.\n"
-"Şu anki kararlı harita üreteçleri:\n"
-"v5, v6, v7 (yüzenkaralar hariç), tek-nod.\n"
-"'kararlı', var olan bir dünyada arazi şekli gelecekte değişmeyecek "
-"demektir.\n"
-"Biyomların oyun tarafından belirlendiğini ve değişebileceğini unutmayın."
+"Yeni bir dünya oluştururken kullanılacak harita üreticisinin adı.\n"
+"Ana menüde bir dünya oluşturmak bunu geçersiz kılacaktır.\n"
+"Aşırı dengesiz durumdaki mevcut harita oluşturucular:\n"
+"-    İsteğe bağlı v7 yüzer alanları (varsayılan olarak devre dışıdır)."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5181,9 +5178,8 @@ msgstr ""
 "Oyuncular katılındığında ve sunucu listesinde görüntülenecek sunucu adı."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Near clipping plane"
-msgstr "Düzleme yakın"
+msgstr "Kırpma düzlemi yakınında"
 
 #: src/settings_translation_file.cpp
 msgid "Network"
@@ -5234,7 +5230,6 @@ msgid "Number of emerge threads"
 msgstr "Emerge iş sayısı"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Number of emerge threads to use.\n"
 "WARNING: Currently there are multiple bugs that may cause crashes when\n"
@@ -5251,15 +5246,20 @@ msgid ""
 "'on_generated'. For many users the optimum setting may be '1'."
 msgstr ""
 "Kullanılacak emerge iş parçacıklarının sayısı.\n"
-"Boş veya 0 değeri:\n"
-"-    Kendiliğinden seçim. İş parçacığı sayısı, 1 alt sınırıyla,\n"
-"-    'işlemci sayısı - 2' olur.\n"
+"UYARI: Şu anda 'num_emerge_threads' 1'den büyük olduğunda çökmelere neden\n"
+"olabilecek birden fazla hata var. Bu uyarı kaldırılıncaya kadar, bu değerin "
+"varsayılan\n"
+"'1' olarak ayarlanması şiddetle önerilir.\n"
+"Değer 0:\n"
+"-    Otomatik seçim. Ortaya çıkan emerge iş parçacıklarının sayısı\n"
+"-    alt limit 1 olmak üzere 'işlemci sayısı - 2' olacaktır.\n"
 "Başka bir değer:\n"
-"-    Emerge iş parçacığı sayısını, 1 alt sınırıyla, belirtir.\n"
-"Uyarı: Emerge iş parçacığı sayısını artırmak, motor mapgen hızını artırır,\n"
-"ancak bu oyun performansına, diğer işlemlere engel olarak, zarar verebilir,\n"
-"özellikle tek-oyunculuda ve/veya 'on_generated'da Lua kodu çalıştırırken.\n"
-"Bir çok kullanıcı için optimum değer  '1' olabilir."
+"-    Emerge iş parçacıklarının sayısını, alt sınır 1 olmak üzere belirtir.\n"
+"UYARI: Emerge iş parçacığı sayısının arttırılması, motor mapgen hızını "
+"arttırır, ancak\n"
+"bu, özellikle tek oyunculu ve/veya Lua kodunu 'on_generated' çalıştırırken,\n"
+"diğer işlemlere müdahale ederek oyun performansına zarar verebilir.\n"
+"Birçok kullanıcı için optimum ayar '1' olabilir."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5525,14 +5525,12 @@ msgid "Rightclick repetition interval"
 msgstr "Sağ tık tekrarlama aralığı"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "River channel depth"
-msgstr "Nehir derinliği"
+msgstr "Nehir kanal derinliği"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "River channel width"
-msgstr "Nehir derinliği"
+msgstr "Nehir kanal genişliği"
 
 #: src/settings_translation_file.cpp
 msgid "River depth"
@@ -5547,9 +5545,8 @@ msgid "River size"
 msgstr "Nehir boyutu"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "River valley width"
-msgstr "Nehir derinliği"
+msgstr "Nehir vadisi genişliği"
 
 #: src/settings_translation_file.cpp
 msgid "Rollback recording"
@@ -5890,7 +5887,7 @@ msgstr "Sızma hızı"
 
 #: src/settings_translation_file.cpp
 msgid "Sneaking speed, in nodes per second."
-msgstr ""
+msgstr "Sinsice ilerleme hızı, saniyede düğümler halinde."
 
 #: src/settings_translation_file.cpp
 msgid "Sound"
@@ -6269,7 +6266,6 @@ msgid "Undersampling"
 msgstr "Aşağı örnekleme"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Undersampling is similar to using a lower screen resolution, but it applies\n"
 "to the game world only, keeping the GUI intact.\n"
@@ -6277,10 +6273,11 @@ msgid ""
 "image.\n"
 "Higher values result in a less detailed image."
 msgstr ""
-"Aşağı örnekleme  daha düşük bir ekran çözünürlüğü kullanmaya benzer, ancak\n"
-"yalnızca oyun dünyasına uygulanır, GUI'ye dokunulmaz.\n"
-"Daha az ayrıntılı resimler pahasına belirgin bir performans artışı vermesi "
-"beklenir."
+"Alt örnekleme, daha düşük bir ekran çözünürlüğü kullanmaya benzer, ancak\n"
+"GUI'yi koruyarak, yalnızca oyun dünyasına uygulanır.\n"
+"Daha az ayrıntılı görüntü karşılığında önemli bir performans artışı "
+"sağlamalıdır.\n"
+"Daha yüksek değerler daha az ayrıntılı bir görüntü sağlar."
 
 #: src/settings_translation_file.cpp
 msgid "Unlimited player transfer distance"
@@ -6390,7 +6387,7 @@ msgstr "Uçurumların dikliğini değiştirir."
 
 #: src/settings_translation_file.cpp
 msgid "Vertical climbing speed, in nodes per second."
-msgstr ""
+msgstr "Dikey tırmanma hızı, saniyede düğümler halinde."
 
 #: src/settings_translation_file.cpp
 msgid "Vertical screen synchronization."
@@ -6448,7 +6445,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Walking and flying speed, in nodes per second."
-msgstr ""
+msgstr "Yürüme ve uçuş hızı, saniyede düğümler halinde."
 
 #: src/settings_translation_file.cpp
 msgid "Walking speed"
@@ -6456,7 +6453,7 @@ msgstr "Yürüme hızı"
 
 #: src/settings_translation_file.cpp
 msgid "Walking, flying and climbing speed in fast mode, in nodes per second."
-msgstr ""
+msgstr "Hızlı modda yürüme, uçma ve tırmanma hızı, saniyede düğümler halinde."
 
 #: src/settings_translation_file.cpp
 msgid "Water level"
@@ -6483,19 +6480,16 @@ msgid "Waving water"
 msgstr "Dalgalanan su"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Waving water wave height"
-msgstr "Dalgalanan su yüksekliği"
+msgstr "Sallanan su dalgası yüksekliği"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Waving water wave speed"
-msgstr "Dalgalanan su hızı"
+msgstr "Sallanan su dalgası hızı"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Waving water wavelength"
-msgstr "Dalgalanan su uzunluğu"
+msgstr "Sallanan su dalga boyu"
 
 #: src/settings_translation_file.cpp
 msgid ""
