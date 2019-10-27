@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Japanese (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-10-09 22:02+0200\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"PO-Revision-Date: 2019-10-29 11:53+0000\n"
+"Last-Translator: BreadW <toshiharu.uno@gmail.com>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/minetest/"
 "minetest/ja/>\n"
 "Language: ja\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 3.9-dev\n"
+"X-Generator: Weblate 3.9.1\n"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "Respawn"
@@ -23,9 +23,8 @@ msgid "You died"
 msgstr "死んでしまった"
 
 #: builtin/fstk/ui.lua
-#, fuzzy
 msgid "An error occurred in a Lua script:"
-msgstr "ModなどのLuaスクリプトでエラーが発生しました:"
+msgstr "Luaスクリプトでエラーが発生しました:"
 
 #: builtin/fstk/ui.lua
 msgid "An error occurred:"
@@ -87,7 +86,7 @@ msgstr "キャンセル"
 
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/tab_content.lua
 msgid "Dependencies:"
-msgstr "依存:"
+msgstr "依存関係:"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Disable all"
@@ -118,27 +117,24 @@ msgid "Mod:"
 msgstr "Mod:"
 
 #: builtin/mainmenu/dlg_config_world.lua
-#, fuzzy
 msgid "No (optional) dependencies"
-msgstr "任意:"
+msgstr "(任意)依存関係なし"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "No game description provided."
 msgstr "ゲームの説明がありません。"
 
 #: builtin/mainmenu/dlg_config_world.lua
-#, fuzzy
 msgid "No hard dependencies"
-msgstr "依存なし。"
+msgstr "依存関係なし"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "No modpack description provided."
 msgstr "Modパックの説明がありません。"
 
 #: builtin/mainmenu/dlg_config_world.lua
-#, fuzzy
 msgid "No optional dependencies"
-msgstr "任意:"
+msgstr "任意依存関係なし"
 
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/tab_content.lua
 msgid "Optional dependencies:"
@@ -780,9 +776,8 @@ msgid "Waving Leaves"
 msgstr "揺れる葉"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Waving Liquids"
-msgstr "揺れるノード"
+msgstr "揺れる液体"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Waving Plants"
@@ -1527,7 +1522,7 @@ msgid "Register and Join"
 msgstr "参加登録"
 
 #: src/gui/guiConfirmRegistration.cpp
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "You are about to join this server with the name \"%s\" for the first time.\n"
 "If you proceed, a new account using your credentials will be created on this "
@@ -1535,10 +1530,9 @@ msgid ""
 "Please retype your password and click 'Register and Join' to confirm account "
 "creation, or click 'Cancel' to abort."
 msgstr ""
-"あなたはサーバ %1$s に名前 \"%2$s\" で初めて参加しようとしています。続行する"
-"場合、\n"
-"あなたの名前とパスワードが新しいアカウントとしてこのサーバに作成されます。\n"
-"あなたのパスワードを再入力し参加登録をクリックしてアカウント作成するか、\n"
+"あなたはこのサーバ に名前 \"%s\" で初めて参加しようとしています。\n"
+"続行する場合、あなたの情報が新しいアカウントとしてこのサーバに作成されます。\n"
+"あなたのパスワードを再入力してから '参加登録' をクリックしてアカウント作成するか、\n"
 "キャンセルをクリックして中断してください。"
 
 #: src/gui/guiFormSpecMenu.cpp
@@ -1684,9 +1678,8 @@ msgid "Toggle noclip"
 msgstr "すり抜けモード切替"
 
 #: src/gui/guiKeyChangeMenu.cpp
-#, fuzzy
 msgid "Toggle pitchmove"
-msgstr "チャット表示切替"
+msgstr "ピッチ移動モード切替"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "press key"
@@ -1761,7 +1754,7 @@ msgstr ""
 "望みの点を (0,0) に移動して適切なスポーンポイントを作成したり、\n"
 "'スケール'を増やして望みの点に'ズームイン'できるようにするために\n"
 "使用できます。\n"
-"規定では規定のパラメータを持つマンデルブロー集合のための適切な\n"
+"既定では既定のパラメータを持つマンデルブロー集合のための適切な\n"
 "スポーンポイントに合わせて調整されます、他の状況で変更を必要とする\n"
 "かもしれません。\n"
 "範囲はおよそ -2～2 です。ノードのオフセットに 'scale' を掛けます。"
@@ -1781,7 +1774,7 @@ msgstr ""
 "これらの数字は非常に大きくすることができ、フラクタルは\n"
 "ワールドの中に収まる必要はありません。\n"
 "これらを増加してフラクタルの細部を'ズーム'します。\n"
-"規定値は島に適した垂直方向に押しつぶされた形状のためのもので、\n"
+"既定値は島に適した垂直方向に押しつぶされた形状のためのもので、\n"
 "加工していないの形状のためには3つの数字をすべて等しく設定します。"
 
 #: src/settings_translation_file.cpp
@@ -1817,9 +1810,8 @@ msgid "2D noise that controls the size/occurrence of step mountain ranges."
 msgstr "ステップマウンテン地帯の大きさ/出現を制御する2Dノイズ。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "2D noise that locates the river valleys and channels."
-msgstr "ゆるやかな丘の形状/大きさを制御する2Dノイズ。"
+msgstr "川の谷と水路を特定する2Dノイズ。"
 
 #: src/settings_translation_file.cpp
 msgid "3D clouds"
@@ -1855,7 +1847,7 @@ msgstr "山の張り出し、崖などの3Dノイズ。通常は小さな変化�
 
 #: src/settings_translation_file.cpp
 msgid "3D noise that determines number of dungeons per mapchunk."
-msgstr ""
+msgstr "マップチャンクごとのダンジョンの数を決定する3Dノイズ。"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1911,7 +1903,7 @@ msgstr "空中での加速"
 
 #: src/settings_translation_file.cpp
 msgid "Acceleration of gravity, in nodes per second per second."
-msgstr ""
+msgstr "重力加速度、1秒あたりのノード数/秒です。"
 
 #: src/settings_translation_file.cpp
 msgid "Active Block Modifiers"
@@ -2135,17 +2127,16 @@ msgid "Bumpmapping"
 msgstr "バンプマッピング"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Camera 'near clipping plane' distance in nodes, between 0 and 0.5.\n"
 "Most users will not need to change this.\n"
 "Increasing can reduce artifacting on weaker GPUs.\n"
 "0.1 = Default, 0.25 = Good value for weaker tablets."
 msgstr ""
-"0～0.5の間のノードでのカメラと近くの面の距離\n"
+"カメラと '近くのクリッピング面' の距離、0～0.5の間のノード数です。\n"
 "ほとんどのユーザーはこれを変更する必要はありません。\n"
 "増加すると、低性能GPUでの画像の乱れを減らすことができます。\n"
-"0.1 = 規定値、0.25 = 低性能タブレットに適した値です。"
+"0.1 = 既定値、0.25 = 低性能タブレットに適した値です。"
 
 #: src/settings_translation_file.cpp
 msgid "Camera smoothing"
@@ -2231,9 +2222,8 @@ msgid "Chat message count limit"
 msgstr "チャットメッセージ数の限度"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Chat message format"
-msgstr "チャットメッセージの最大長"
+msgstr "チャットメッセージの形式"
 
 #: src/settings_translation_file.cpp
 msgid "Chat message kick threshold"
@@ -2410,7 +2400,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Controls sinking speed in liquid."
-msgstr ""
+msgstr "液体中の沈降速度を制御します。"
 
 #: src/settings_translation_file.cpp
 msgid "Controls steepness/depth of lake depressions."
@@ -2473,9 +2463,8 @@ msgid "Debug info toggle key"
 msgstr "デバッグ情報切り替えキー"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Debug log file size threshold"
-msgstr "砂漠ノイズのしきい値"
+msgstr "デバッグログファイルのサイズのしきい値"
 
 #: src/settings_translation_file.cpp
 msgid "Debug log level"
@@ -2487,7 +2476,7 @@ msgstr "音量を下げるキー"
 
 #: src/settings_translation_file.cpp
 msgid "Decrease this to increase liquid resistence to movement."
-msgstr ""
+msgstr "この値を小さくすると、移動時の液体抵抗が増加します。"
 
 #: src/settings_translation_file.cpp
 msgid "Dedicated server step"
@@ -2495,7 +2484,7 @@ msgstr "専用サーバステップ"
 
 #: src/settings_translation_file.cpp
 msgid "Default acceleration"
-msgstr "規定の加速度"
+msgstr "既定の加速度"
 
 #: src/settings_translation_file.cpp
 msgid "Default game"
@@ -2506,7 +2495,7 @@ msgid ""
 "Default game when creating a new world.\n"
 "This will be overridden when creating a world from the main menu."
 msgstr ""
-"新しいワールドを作成する際の規定のゲーム。\n"
+"新しいワールドを作成する際の既定のゲーム。\n"
 "メインメニューからワールドを作成するときにこれは上書きされます。"
 
 #: src/settings_translation_file.cpp
@@ -2578,23 +2567,20 @@ msgid "Defines the base ground level."
 msgstr "基準地上レベルを定義します。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Defines the depth of the river channel."
-msgstr "基準地上レベルを定義します。"
+msgstr "河道の深さを定義します。"
 
 #: src/settings_translation_file.cpp
 msgid "Defines the maximal player transfer distance in blocks (0 = unlimited)."
 msgstr "最大プレイヤー転送距離をブロック数で定義します(0 = 無制限)。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Defines the width of the river channel."
-msgstr "大規模な河川構造を定義します。"
+msgstr "河道の幅を定義します。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Defines the width of the river valley."
-msgstr "木にリンゴがある地域を定義します。"
+msgstr "川の谷の幅を定義します。"
 
 #: src/settings_translation_file.cpp
 msgid "Defines tree areas and tree density."
@@ -2625,6 +2611,8 @@ msgid ""
 "Deprecated, define and locate cave liquids using biome definitions instead.\n"
 "Y of upper limit of lava in large caves."
 msgstr ""
+"廃止予定、代わりにバイオーム定義を使用して洞窟の液体を定義および特定します。\n"
+"大きな洞窟内の溶岩のY高さ上限。"
 
 #: src/settings_translation_file.cpp
 msgid "Depth below which you'll find giant caverns."
@@ -2645,13 +2633,12 @@ msgid "Desert noise threshold"
 msgstr "砂漠ノイズのしきい値"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Deserts occur when np_biome exceeds this value.\n"
 "When the 'snowbiomes' flag is enabled, this is ignored."
 msgstr ""
 "砂漠は np_biome がこの値を超えたときに出現します。\n"
-"新しいバイオームシステムを有効にすると、これは無視されます。"
+"'snowbiomes' フラグを有効にすると、これは無視されます。"
 
 #: src/settings_translation_file.cpp
 msgid "Desynchronize block animation"
@@ -2698,9 +2685,8 @@ msgid "Dungeon minimum Y"
 msgstr "ダンジョンの最小Y"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Dungeon noise"
-msgstr "ダンジョンの最小Y"
+msgstr "ダンジョンノイズ"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3053,6 +3039,8 @@ msgid ""
 "placeholders:\n"
 "@name, @message, @timestamp (optional)"
 msgstr ""
+"プレーヤーのチャットメッセージの形式。以下の文字列は有効なプレースホルダです。:\n"
+"@name, @message, @timestamp (任意)"
 
 #: src/settings_translation_file.cpp
 msgid "Format of screenshots."
@@ -3060,7 +3048,7 @@ msgstr "スクリーンショットのファイル形式です。"
 
 #: src/settings_translation_file.cpp
 msgid "Formspec Default Background Color"
-msgstr "フォームスペックの規定の背景色"
+msgstr "フォームスペックの既定の背景色"
 
 #: src/settings_translation_file.cpp
 msgid "Formspec Default Background Opacity"
@@ -3076,11 +3064,11 @@ msgstr "フォームスペックのフルスクリーンの背景不透明度"
 
 #: src/settings_translation_file.cpp
 msgid "Formspec default background color (R,G,B)."
-msgstr "フォームスペックの規定の背景色 (R,G,B)。"
+msgstr "フォームスペックの既定の背景色 (R,G,B)。"
 
 #: src/settings_translation_file.cpp
 msgid "Formspec default background opacity (between 0 and 255)."
-msgstr "フォームスペックの規定の背景不透明度 (0～255の間)。"
+msgstr "フォームスペックの既定の背景不透明度 (0～255の間)。"
 
 #: src/settings_translation_file.cpp
 msgid "Formspec full-screen background color (R,G,B)."
@@ -3232,9 +3220,8 @@ msgid ""
 "-    error: abort on usage of deprecated call (suggested for mod developers)."
 msgstr ""
 "廃止予定のLua API呼び出しの処理:\n"
-"-    legacy: 古い振る舞いを模倣する(試みる) (リリースの規定値)。\n"
-"-    log: 廃止予定の呼び出しを模倣してバックトレースを記録 (デバッグの規定"
-"値)。\n"
+"-    legacy: 古い振る舞いを模倣する(試みる) (リリースの既定値)。\n"
+"-    log: 廃止予定の呼び出しを模倣してバックトレースを記録 (デバッグの既定値)。\n"
 "-    error: 廃止予定の呼び出しの使用を中止する (Mod開発者に推奨)。"
 
 #: src/settings_translation_file.cpp
@@ -3308,18 +3295,24 @@ msgid ""
 "Horizontal acceleration in air when jumping or falling,\n"
 "in nodes per second per second."
 msgstr ""
+"ジャンプや落下時の空気中の水平加速度、\n"
+"1秒あたりのノード数/秒です。"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Horizontal and vertical acceleration in fast mode,\n"
 "in nodes per second per second."
 msgstr ""
+"高速移動モード中の水平および垂直加速度、\n"
+"1秒あたりのノード数/秒です。"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Horizontal and vertical acceleration on ground or when climbing,\n"
 "in nodes per second per second."
 msgstr ""
+"地面や登山時の水平および垂直加速度、\n"
+"1秒あたりのノード数/秒です。"
 
 #: src/settings_translation_file.cpp
 msgid "Hotbar next key"
@@ -3605,6 +3598,10 @@ msgid ""
 "deleting an older debug.txt.1 if it exists.\n"
 "debug.txt is only moved if this setting is positive."
 msgstr ""
+"debug.txt のファイルサイズが指定されたメガバイト数を超える場合、\n"
+"ファイルは debug.txt.1 に移動されます。\n"
+"古い debug.txt.1 が存在する場合は削除されます。\n"
+"debug.txt は、この設定が正の場合にのみ移動されます。"
 
 #: src/settings_translation_file.cpp
 msgid "If this is set, players will always (re)spawn at the given position."
@@ -3636,7 +3633,7 @@ msgstr "音量を上げるキー"
 
 #: src/settings_translation_file.cpp
 msgid "Initial vertical speed when jumping, in nodes per second."
-msgstr ""
+msgstr "ジャンプ時の初期垂直速度、1秒あたりのノード数です。"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4662,9 +4659,8 @@ msgid "Liquid queue purge time"
 msgstr "液体キューのパージ時間"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Liquid sinking"
-msgstr "液体の沈降速度"
+msgstr "液体中の沈降"
 
 #: src/settings_translation_file.cpp
 msgid "Liquid update interval in seconds."
@@ -4742,14 +4738,14 @@ msgstr ""
 "'altitude_dry': 高度とともに湿度を下げます。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Map generation attributes specific to Mapgen flat.\n"
 "'terrain' enables the generation of non-fractal terrain:\n"
 "ocean, islands and underground."
 msgstr ""
-"マップジェネレータ v7 に固有のマップ生成属性。\n"
-"'ridges' は川ができるようにします。"
+"マップジェネレータ fractal に固有のマップ生成属性。\n"
+"'terrain' は非フラクタルな地形ができるようにします:\n"
+"海、島そして地下。"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4764,7 +4760,6 @@ msgid "Map generation attributes specific to Mapgen v5."
 msgstr "マップジェネレータ v5 に固有のマップ生成属性。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Map generation attributes specific to Mapgen v6.\n"
 "The 'snowbiomes' flag enables the new 5 biome system.\n"
@@ -4773,7 +4768,7 @@ msgid ""
 msgstr ""
 "マップジェネレータ v6 に固有のマップ生成属性。\n"
 "'snowbiomes' フラグは新しい5つのバイオームシステムを有効にします。\n"
-"新しいバイオームシステムが有効になるとジャングルが自動的に有効になり、\n"
+"'snowbiomes' フラグを有効にすると、ジャングルが自動的に有効になり、\n"
 "'jungles' フラグは無視されます。"
 
 #: src/settings_translation_file.cpp
@@ -4829,9 +4824,8 @@ msgid "Mapgen Fractal"
 msgstr "マップジェネレータ Fractal"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Mapgen Fractal specific flags"
-msgstr "マップジェネレータ Flat 固有のフラグ"
+msgstr "マップジェネレータ Fractal 固有のフラグ"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen V5"
@@ -4917,7 +4911,7 @@ msgstr "ホットバー最大幅"
 msgid ""
 "Maximum liquid resistence. Controls deceleration when entering liquid at\n"
 "high speed."
-msgstr ""
+msgstr "最大の液体抵抗。高速で液体に入る際の減速を制御します。"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5120,7 +5114,6 @@ msgid "Mute sound"
 msgstr "消音"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Name of map generator to be used when creating a new world.\n"
 "Creating a world in the main menu will override this.\n"
@@ -5129,11 +5122,8 @@ msgid ""
 msgstr ""
 "新しいワールドを作成するときに使用されるマップジェネレータの名前。\n"
 "メインメニューでワールドを作成すると、これが上書きされます。\n"
-"現在安定しているマップジェネレータ：\n"
-"v5、v6、v7(浮遊大陸を除く)、singlenode。\n"
-"「安定している」とは、既存のワールドの地形が将来変更されないことを\n"
-"意味します。バイオームはゲームによって定義され、それによって変更\n"
-"される可能性があることに注意してください。"
+"現在非常に不安定な状態のマップジェネレータ:\n"
+"-    v7の浮遊大陸 (既定では無効)。"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5152,9 +5142,8 @@ msgid ""
 msgstr "プレイヤーが参加したときにサーバ一覧に表示されるサーバの名前。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Near clipping plane"
-msgstr "近くの面"
+msgstr "クリッピング面付近"
 
 #: src/settings_translation_file.cpp
 msgid "Network"
@@ -5205,7 +5194,6 @@ msgid "Number of emerge threads"
 msgstr "出現するスレッド数"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Number of emerge threads to use.\n"
 "WARNING: Currently there are multiple bugs that may cause crashes when\n"
@@ -5221,12 +5209,15 @@ msgid ""
 "processes, especially in singleplayer and/or when running Lua code in\n"
 "'on_generated'. For many users the optimum setting may be '1'."
 msgstr ""
-"使用する出現するスレッド数。\n"
-"空 または 0:\n"
-"-    自動選択。 出現するスレッド数は\n"
-"-    「プロセッサー数 - 2」、下限は 1 です。\n"
+"使用する出現スレッド数。\n"
+"警告: 'num_emerge_threads' が 1 より大きいときにクラッシュを引き起こす\n"
+"可能性のあるバグが現在複数あります。この警告が削除されるまでは\n"
+"この値を規定の '1' に設定することを強くお勧めします。\n"
+"値 0:\n"
+"-    自動選択。 出現スレッド数は\n"
+"-    'プロセッサー数 - 2'、下限は 1 です。\n"
 "その他の値:\n"
-"-    出現するスレッド数を指定します、下限は 1 です。\n"
+"-    出現スレッド数を指定します、下限は 1 です。\n"
 "警告: 出現するスレッド数を増やすとエンジンのマップ生成速度が\n"
 "上がりますが、特にシングルプレイヤーや 'on_generated' で\n"
 "Luaコードを実行している場合、他のプロセスと干渉してゲームの\n"
@@ -5310,7 +5301,7 @@ msgid ""
 "used."
 msgstr ""
 "シェーダーディレクトリへのパス。パスが定義されていない場合は、\n"
-"規定の場所が使用されます。"
+"既定の場所が使用されます。"
 
 #: src/settings_translation_file.cpp
 msgid "Path to texture directory. All textures are first searched from here."
@@ -5497,14 +5488,12 @@ msgid "Rightclick repetition interval"
 msgstr "右クリック繰り返しの間隔"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "River channel depth"
-msgstr "川の深さ"
+msgstr "河道の深さ"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "River channel width"
-msgstr "川の深さ"
+msgstr "河道の幅"
 
 #: src/settings_translation_file.cpp
 msgid "River depth"
@@ -5519,9 +5508,8 @@ msgid "River size"
 msgstr "川のサイズ"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "River valley width"
-msgstr "川の深さ"
+msgstr "川の谷の幅"
 
 #: src/settings_translation_file.cpp
 msgid "Rollback recording"
@@ -5857,7 +5845,7 @@ msgstr "スニーク時の速度"
 
 #: src/settings_translation_file.cpp
 msgid "Sneaking speed, in nodes per second."
-msgstr ""
+msgstr "スニーク時の速度、1秒あたりのノード数です。"
 
 #: src/settings_translation_file.cpp
 msgid "Sound"
@@ -6221,7 +6209,6 @@ msgid "Undersampling"
 msgstr "アンダーサンプリング"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Undersampling is similar to using a lower screen resolution, but it applies\n"
 "to the game world only, keeping the GUI intact.\n"
@@ -6230,9 +6217,9 @@ msgid ""
 "Higher values result in a less detailed image."
 msgstr ""
 "アンダーサンプリングは低い画面解像度を使用するのと似ていますが、\n"
-"GUIをそのままにしてゲームの世界にのみ適用されます。\n"
-"それほど詳細でないイメージを犠牲にしてパフォーマンスをかなり高める\n"
-"でしょう。"
+"GUIをそのままにしてゲームのワールドにのみ適用されます。\n"
+"より詳細なイメージを犠牲にしてパフォーマンスをかなり高めるでしょう。\n"
+"値を大きくすると、画像の詳細が少なくなります。"
 
 #: src/settings_translation_file.cpp
 msgid "Unlimited player transfer distance"
@@ -6343,7 +6330,7 @@ msgstr "崖の険しさが異なります。"
 
 #: src/settings_translation_file.cpp
 msgid "Vertical climbing speed, in nodes per second."
-msgstr ""
+msgstr "垂直方向の上る速度、1秒あたりのノード数です。"
 
 #: src/settings_translation_file.cpp
 msgid "Vertical screen synchronization."
@@ -6401,7 +6388,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Walking and flying speed, in nodes per second."
-msgstr ""
+msgstr "歩行と飛行速度、1秒あたりのノード数です。"
 
 #: src/settings_translation_file.cpp
 msgid "Walking speed"
@@ -6409,7 +6396,7 @@ msgstr "歩く速度"
 
 #: src/settings_translation_file.cpp
 msgid "Walking, flying and climbing speed in fast mode, in nodes per second."
-msgstr ""
+msgstr "高速移動モード中の歩行と飛行と上る速度、1秒あたりのノード数です。"
 
 #: src/settings_translation_file.cpp
 msgid "Water level"
@@ -6436,19 +6423,16 @@ msgid "Waving water"
 msgstr "揺れる水"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Waving water wave height"
-msgstr "水の揺れる高さ"
+msgstr "揺れる水の波の高さ"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Waving water wave speed"
-msgstr "水の揺れる速度"
+msgstr "揺れる水の波の速度"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Waving water wavelength"
-msgstr "水の揺れる丈"
+msgstr "揺れる水の波長"
 
 #: src/settings_translation_file.cpp
 msgid ""
