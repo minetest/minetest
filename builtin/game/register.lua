@@ -321,11 +321,11 @@ for name in pairs(forbidden_item_names) do
 end
 
 
--- Deprecated:
+-- Obsolete:
 -- Aliases for core.register_alias (how ironic...)
---core.alias_node = core.register_alias
---core.alias_tool = core.register_alias
---core.alias_craftitem = core.register_alias
+-- core.alias_node = core.register_alias
+-- core.alias_tool = core.register_alias
+-- core.alias_craftitem = core.register_alias
 
 --
 -- Built-in node definitions. Also defined in C.

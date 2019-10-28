@@ -83,7 +83,7 @@ void read_item_definition(lua_State* L, int index,
 	getboolfield(L, index, "liquids_pointable", def.liquids_pointable);
 
 	warn_if_field_exists(L, index, "tool_digging_properties",
-			"Deprecated; use tool_capabilities");
+			"Obsolete; use tool_capabilities");
 
 	lua_getfield(L, index, "tool_capabilities");
 	if(lua_istable(L, -1)){
@@ -643,19 +643,19 @@ ContentFeatures read_content_features(lua_State *L, int index)
 		warningstream << "Node " << f.name.c_str()
 			<< " has a palette, but not a suitable paramtype2." << std::endl;
 
-	// Warn about some deprecated fields
+	// Warn about some obsolete fields
 	warn_if_field_exists(L, index, "wall_mounted",
-			"Deprecated; use paramtype2 = 'wallmounted'");
+			"Obsolete; use paramtype2 = 'wallmounted'");
 	warn_if_field_exists(L, index, "light_propagates",
-			"Deprecated; determined from paramtype");
+			"Obsolete; determined from paramtype");
 	warn_if_field_exists(L, index, "dug_item",
-			"Deprecated; use 'drop' field");
+			"Obsolete; use 'drop' field");
 	warn_if_field_exists(L, index, "extra_dug_item",
-			"Deprecated; use 'drop' field");
+			"Obsolete; use 'drop' field");
 	warn_if_field_exists(L, index, "extra_dug_item_rarity",
-			"Deprecated; use 'drop' field");
+			"Obsolete; use 'drop' field");
 	warn_if_field_exists(L, index, "metadata_name",
-			"Deprecated; use on_add and metadata callbacks");
+			"Obsolete; use on_add and metadata callbacks");
 
 	// True for all ground-like things like stone and mud, false for eg. trees
 	getboolfield(L, index, "is_ground_content", f.is_ground_content);

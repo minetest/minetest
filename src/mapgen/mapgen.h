@@ -30,10 +30,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define MAPGEN_DEFAULT_NAME "v7"
 
 /////////////////// Mapgen flags
-#define MG_TREES       0x01  // Deprecated. Moved into mgv6 flags
+#define MG_TREES       0x01  // Obsolete. Moved into mgv6 flags
 #define MG_CAVES       0x02
 #define MG_DUNGEONS    0x04
-#define MG_FLAT        0x08  // Deprecated. Moved into mgv6 flags
+#define MG_FLAT        0x08  // Obsolete. Moved into mgv6 flags
 #define MG_LIGHT       0x10
 #define MG_DECORATIONS 0x20
 #define MG_BIOMES      0x40
