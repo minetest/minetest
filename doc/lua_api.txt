@@ -1317,7 +1317,14 @@ Displays distance to selected world position.
   text.
 * `world_pos`: World position of the waypoint.
 
+### `minimap`
 
+Displays a minimap on the HUD.
+
+* `size`: Size of the minimap to display. Minimap should be a square to avoid
+  anamorphosis.
+* `alignment`: The alignment of the minimap.
+* `offset`: offset in pixels from position.
 
 
 Representations of simple things
@@ -5671,6 +5678,19 @@ This is basically a reference to a C++ `ServerActiveObject`
 * `hud_set_hotbar_selected_image(texturename)`
     * sets image for selected item of hotbar
 * `hud_get_hotbar_selected_image`: returns texturename
+* `set_minimap_modes({modes}, selected_mode)`: Sets available minimap modes and
+  selected mode number (existing modes are replaced). Modes is a table of mode
+  descriptions. Mode description is a table with four fields :
+    * `type`: Available type:
+      * `off`: Minimap off
+      * `surface`: Minimap in surface mode
+      * `radar`: Minimap in radar mode
+      * `texture`: Texture to be displayed instead of terrain map
+    * `label`: Label associated with this mode (displayed on minimap mode toggle)
+    * `size`: Size of the terrain displayed in minimap (in map nodes)
+    * `texture`: Only for texture type, name of the texture to display
+  `selected_mode` is the mode index to be selected after modes have been changed
+  (0 is the fist mode).
 * `set_sky(bgcolor, type, {texture names}, clouds)`
     * `bgcolor`: ColorSpec, defaults to white
     * `type`: Available types:
@@ -7179,7 +7199,8 @@ Used by `Player:hud_add`. Returned by `Player:hud_get`.
 
     {
         hud_elem_type = "image",  -- See HUD element types
-        -- Type of element, can be "image", "text", "statbar", or "inventory"
+        -- Type of element, can be "image", "text", "statbar", "inventory" or
+        -- "minimap"
 
         position = {x=0.5, y=0.5},
         -- Left corner position of element

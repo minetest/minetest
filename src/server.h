@@ -109,6 +109,13 @@ struct ServerPlayingSound
 	std::unordered_set<session_t> clients; // peer ids
 };
 
+struct MinimapMode {
+	u16 type;
+	std::string label;
+	u16 size;
+	std::string extra;
+};
+
 class Server : public con::PeerHandler, public MapEventReceiver,
 		public InventoryManager, public IGameDef
 {
@@ -342,6 +349,9 @@ public:
 
 	virtual bool registerModStorage(ModMetadata *storage);
 	virtual void unregisterModStorage(const std::string &name);
+
+	void SendMinimapModes(session_t peer_id, std::vector<MinimapMode> modes,
+			size_t wanted_mode);
 
 	bool joinModChannel(const std::string &channel);
 	bool leaveModChannel(const std::string &channel);

@@ -200,6 +200,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		Unknown inventory serialization fields no longer throw an error
 		Mod-specific formspec version
 		Player FOV override API
+		Minimap modes
 */
 
 #define LATEST_PROTOCOL_VERSION 38
@@ -695,7 +696,18 @@ enum ToClientCommand
 		u8[len] formspec
 	*/
 
-	TOCLIENT_NUM_MSG_TYPES = 0x62,
+	TOCLIENT_MINIMAP_MODES = 0x62,
+	/*
+		u16 count // modes
+		u16 mode  // wanted current mode index after change
+		for each mode
+			u16 type
+			std::string label
+			u16 size
+			std::string extra
+	*/
+
+	TOCLIENT_NUM_MSG_TYPES = 0x63,
 };
 
 enum ToServerCommand
