@@ -879,7 +879,7 @@ int ModApiMapgen::l_set_mapgen_params(lua_State *L)
 		settingsmgr->setMapSetting("chunksize", readParam<std::string>(L, -1), true);
 
 	warn_if_field_exists(L, 1, "flagmask",
-		"Deprecated: flags field now includes unset flags.");
+		"Obsolete: flags field now includes unset flags.");
 
 	lua_getfield(L, 1, "flags");
 	if (lua_isstring(L, -1))

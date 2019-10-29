@@ -494,10 +494,10 @@ Static objects are persistent freely moving objects in the world.
 Object types:
 1: Test object
 2: Item
-3: Rat (deprecated)
-4: Oerkki (deprecated)
-5: Firefly (deprecated)
-6: MobV2 (deprecated)
+3: Rat (obsolete)
+4: Oerkki (obsolete)
+5: Firefly (obsolete)
+6: MobV2 (obsolete)
 7: LuaEntity
 
 1: Item:
