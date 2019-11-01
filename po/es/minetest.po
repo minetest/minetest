@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Spanish (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-10-09 22:02+0200\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"PO-Revision-Date: 2019-11-02 23:03+0000\n"
+"Last-Translator: Vicente Carrasco Alvarez <vicente.carrasco@usach.cl>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/minetest/"
 "minetest/es/>\n"
 "Language: es\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 3.9-dev\n"
+"X-Generator: Weblate 3.10-dev\n"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "Respawn"
@@ -791,9 +791,8 @@ msgid "Waving Leaves"
 msgstr "Movimiento de Hojas"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Waving Liquids"
-msgstr "Movimiento de hojas"
+msgstr "Movimiento de Líquidos"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Waving Plants"
@@ -922,9 +921,8 @@ msgid "- Server Name: "
 msgstr "- Nombre del servidor: "
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Automatic forward disabled"
-msgstr "Avance automático descativado"
+msgstr "Avance automático desactivado"
 
 #: src/client/game.cpp
 #, fuzzy
@@ -1882,7 +1880,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "3D noise that determines number of dungeons per mapchunk."
-msgstr ""
+msgstr "Ruido 3D que determina la cantidad de mazmorras por chunk."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2365,6 +2363,14 @@ msgid ""
 "These flags are independent from Minetest versions,\n"
 "so see a full list at https://content.minetest.net/help/content_flags/"
 msgstr ""
+"Lista de banderas a ocultar en el repositorio de contenido. La lista usa la "
+"coma como separador.\n"
+"Se puede usar la etiqueta \"nonfree\" para ocultar paquetes que no tienen "
+"licencia libre (tal como define la Funcación de software libre (FSF).\n"
+"También puedes especificar proporciones de contenido.\n"
+"Estas banderas son independientes de la versión de Minetest.\n"
+"Si quieres ver una lista completa visita https://content.minetest.net/help/"
+"content_flags/"
 
 #: src/settings_translation_file.cpp
 msgid ""
