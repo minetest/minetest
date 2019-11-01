@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Polish (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-10-09 22:02+0200\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"PO-Revision-Date: 2019-11-02 23:03+0000\n"
+"Last-Translator: Mateusz Mendel <mendelm9@gmail.com>\n"
 "Language-Team: Polish <https://hosted.weblate.org/projects/minetest/minetest/"
 "pl/>\n"
 "Language: pl\n"
@@ -13,7 +13,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 "
 "|| n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 3.9-dev\n"
+"X-Generator: Weblate 3.10-dev\n"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "Respawn"
@@ -1860,8 +1860,9 @@ msgid "3D noise for mountain overhangs, cliffs, etc. Usually small variations."
 msgstr "Szum 3D dla nawisów skalnych, klifów, itp. Zwykle mało zróżnicowany."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "3D noise that determines number of dungeons per mapchunk."
-msgstr ""
+msgstr "Szum 3D, który wpływa na liczbę lochów na jeden mapchunk."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1920,8 +1921,9 @@ msgid "Acceleration in air"
 msgstr "Przyspieszenie w powietrzu"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Acceleration of gravity, in nodes per second per second."
-msgstr ""
+msgstr "Przyśpieszenie grawitacyjne, w blokach na sekundę."
 
 #: src/settings_translation_file.cpp
 msgid "Active Block Modifiers"
@@ -2432,8 +2434,9 @@ msgstr ""
 "zostaje niezmienione."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Controls sinking speed in liquid."
-msgstr ""
+msgstr "Wpływa na prędkość zanurzania w płynie."
 
 #: src/settings_translation_file.cpp
 msgid "Controls steepness/depth of lake depressions."
@@ -2509,8 +2512,9 @@ msgid "Dec. volume key"
 msgstr "Klawisz zmniejszania głośności"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Decrease this to increase liquid resistence to movement."
-msgstr ""
+msgstr "Zmniejsz wartość, aby zwiększyć opór ruchu w cieczy."
 
 #: src/settings_translation_file.cpp
 msgid "Dedicated server step"
@@ -3088,11 +3092,14 @@ msgid "Font size"
 msgstr "Rozmiar czcionki"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Format of player chat messages. The following strings are valid "
 "placeholders:\n"
 "@name, @message, @timestamp (optional)"
 msgstr ""
+"Format wiadomości czatu graczy. Następujące ciągi są dozwolone: \n"
+"@name, @message, @timestamp (opcjonalne0"
 
 #: src/settings_translation_file.cpp
 msgid "Format of screenshots."
@@ -3355,22 +3362,31 @@ msgid "Homepage of server, to be displayed in the serverlist."
 msgstr "Główna strona serwera, wyświetlana na liście serwerów."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Horizontal acceleration in air when jumping or falling,\n"
 "in nodes per second per second."
 msgstr ""
+"Przyśpieszenie poziome podczas skoku lub upadku,\n"
+"w blokach na sekundę."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Horizontal and vertical acceleration in fast mode,\n"
 "in nodes per second per second."
 msgstr ""
+"Poziome i pionowe przyśpieszenie w trybie szybkim,\n"
+"w blokach na sekundę."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Horizontal and vertical acceleration on ground or when climbing,\n"
 "in nodes per second per second."
 msgstr ""
+"Poziome i pionowe przyśpieszenie na ziemi lub podczas wchodzenia,\n"
+"w blokach na sekunde."
 
 #: src/settings_translation_file.cpp
 msgid "Hotbar next key"
@@ -3721,8 +3737,9 @@ msgid "Inc. volume key"
 msgstr "Klawisz zwiększania głośności"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Initial vertical speed when jumping, in nodes per second."
-msgstr ""
+msgstr "Początkowa prędkość pionowa podczas skoku, w blokach na sekundę."
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -5067,10 +5084,13 @@ msgid "Maximum hotbar width"
 msgstr "Maksymalna długość hotbar"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Maximum liquid resistence. Controls deceleration when entering liquid at\n"
 "high speed."
 msgstr ""
+"Maksymalny opór cieczy. Wpływa na spowolnienie przy wejściu w ciecz \n"
+"z dużą prędkością."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6001,8 +6021,9 @@ msgid "Sneaking speed"
 msgstr "Szybkość skradania"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Sneaking speed, in nodes per second."
-msgstr ""
+msgstr "Prędkość skradania, w blokach na sekundę."
 
 #: src/settings_translation_file.cpp
 msgid "Sound"
@@ -6487,8 +6508,9 @@ msgid "Varies steepness of cliffs."
 msgstr "Kontroluje stromość/wysokość gór."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Vertical climbing speed, in nodes per second."
-msgstr ""
+msgstr "Pionowa prędkość wchodzenia, w blokach na sekundę."
 
 #: src/settings_translation_file.cpp
 msgid "Vertical screen synchronization."
@@ -6546,16 +6568,20 @@ msgstr ""
 "Jego zakres jest od -2 do 2"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Walking and flying speed, in nodes per second."
-msgstr ""
+msgstr "Prędkość chodzenia i latania, w blokach na sekundę."
 
 #: src/settings_translation_file.cpp
 msgid "Walking speed"
 msgstr "Szybkość chodzenia"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Walking, flying and climbing speed in fast mode, in nodes per second."
 msgstr ""
+"Prędkość chodzenia, latania i wchodzenia w trybie szybkiego chodzenia, w "
+"blokach na sekundę."
 
 #: src/settings_translation_file.cpp
 msgid "Water level"
