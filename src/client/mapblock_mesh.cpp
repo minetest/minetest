@@ -661,7 +661,8 @@ static void makeFastFace(const TileSpec &tile, u16 li0, u16 li1, u16 li2, u16 li
 	TODO: Add 3: Both faces drawn with backface culling, remove equivalent
 */
 static u8 face_contents(content_t m1, content_t m2, bool *equivalent,
-	const NodeDefManager *ndef, u16 tid1)
+	const NodeDefManager *ndef, u16 tid1,
+	int s1, int s2)
 {
 	static thread_local const float enable_waving_water =
 		g_settings->getBool("enable_waving_water");
@@ -699,12 +700,12 @@ static u8 face_contents(content_t m1, content_t m2, bool *equivalent,
 	}
 
 	if (c1 > c2) {
-		if (enable_waving_water && f2.isLiquid() && tid1 == 1)
+		if (s1 == 0 && enable_waving_water && f2.isLiquid() && tid1 == 1)
 			return 2;
 		return 1;
 	}
 
-	if (enable_waving_water && f1.isLiquid() && tid1 == 0)
+	if (s2 == 0 && enable_waving_water && f1.isLiquid() && tid1 == 0)
 		return 1;
 	return 2;
 }
@@ -831,11 +832,30 @@ static void getTileInfo(
 		return;
 	}
 
+	static const v3s16 dirs[] = {
+		{1, 0, 0},
+		{0, 0, 1},
+		{-1, 0, 0},
+		{0, 0, -1},
+	};
+
+	int s1 = 0;
+	int s2 = 0;
+	for (size_t i = 0; i < 4; ++i) {
+		const MapNode &m0 = vmanip.getNodeRefUnsafe(blockpos_nodes + p + dirs[i]);
+		const MapNode &m1 = vmanip.getNodeRefUnsafe(blockpos_nodes + p + face_dir + dirs[i]);
+		const ContentFeatures &f0 = ndef->get(m0.getContent());
+		const ContentFeatures &f1 = ndef->get(m1.getContent());
+		if (f0.isLiquid()) s1 += 1;
+		if (f1.isLiquid()) s2 += 1;
+	}
+
 	// This is hackish
 	bool equivalent = false;
 	u8 mf = face_contents(n0.getContent(), n1.getContent(),
 			&equivalent, ndef,
-			dir_to_tile[tile_index(face_dir, 0)]);
+			dir_to_tile[tile_index(face_dir, 0)],
+			s1, s2);
 
 	if (mf == 0) {
 		makes_face = false;
