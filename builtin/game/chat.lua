@@ -981,8 +981,8 @@ core.register_chatcommand("clearobjects", {
 
 		core.log("action", name .. " clears all objects ("
 				.. options.mode .. " mode).")
-		core.chat_send_all("Clearing all objects.  This may take long."
-				.. "  You may experience a timeout.  (by "
+		core.chat_send_all("Clearing all objects. This may take a long time."
+				.. " You may experience a timeout. (by "
 				.. name .. ")")
 		core.clear_objects(options)
 		core.log("action", "Object clearing done.")
