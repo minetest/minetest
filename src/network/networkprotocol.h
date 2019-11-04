@@ -563,6 +563,7 @@ enum ToClientCommand
 		v2f1000 offset
 		v3f1000 world_pos
 		v2s32 size
+		s16 z_index
 	*/
 
 	TOCLIENT_HUDRM = 0x4a,

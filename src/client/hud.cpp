@@ -283,10 +283,24 @@ void Hud::drawLuaElements(const v3s16 &camera_offset)
 {
 	u32 text_height = g_fontengine->getTextHeight();
 	irr::gui::IGUIFont* font = g_fontengine->getFont();
+
+	// Reorder elements by z_index
+	std::vector<size_t> ids;
+
 	for (size_t i = 0; i != player->maxHudId(); i++) {
 		HudElement *e = player->getHud(i);
 		if (!e)
 			continue;
+
+		auto it = ids.begin();
+		while (it != ids.end() && player->getHud(*it)->z_index <= e->z_index)
+			++it;
+
+		ids.insert(it, i);
+	}
+
+	for (size_t i : ids) {
+		HudElement *e = player->getHud(i);
 
 		v2s32 pos(floor(e->pos.X * (float) m_screensize.X + 0.5),
 				floor(e->pos.Y * (float) m_screensize.Y + 0.5));

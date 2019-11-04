@@ -74,7 +74,8 @@ enum HudElementStat {
 	HUD_STAT_ALIGN,
 	HUD_STAT_OFFSET,
 	HUD_STAT_WORLD_POS,
-	HUD_STAT_SIZE
+	HUD_STAT_SIZE,
+	HUD_STAT_Z_INDEX,
 };
 
 struct HudElement {
@@ -90,6 +91,7 @@ struct HudElement {
 	v2f offset;
 	v3f world_pos;
 	v2s32 size;
+	s16 z_index = 0;
 };
 
 extern const EnumString es_HudElementType[];

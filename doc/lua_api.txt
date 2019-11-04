@@ -1260,6 +1260,11 @@ precisely positioned items in the HUD.
 **Note**: `offset` _will_ adapt to screen DPI as well as user defined scaling
 factor!
 
+The `z_index` field specifies the order of HUD elements from back to front.
+Lower z-index elements are displayed behind higher z-index elements. Elements
+with same z-index are displayed in an arbitrary order. Default 0.
+Supports negative values.
+
 Below are the specific uses for fields in each type; fields not listed for that
 type are ignored.
 
@@ -7322,6 +7327,9 @@ Used by `Player:hud_add`. Returned by `Player:hud_get`.
 
         size = { x=100, y=100 },
         -- Size of element in pixels
+
+        z_index = 0,
+        -- Z index : lower z-index HUDs are displayed behind higher z-index HUDs
     }
 
 Particle definition
