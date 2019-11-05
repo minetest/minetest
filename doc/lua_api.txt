@@ -4896,13 +4896,16 @@ Server
 Bans
 ----
 
-* `minetest.get_ban_list()`: returns the ban list
-  (same as `minetest.get_ban_description("")`).
-* `minetest.get_ban_description(ip_or_name)`: returns ban description (string)
-* `minetest.ban_player(name)`: ban a player
-* `minetest.unban_player_or_ip(name)`: unban player or IP address
-* `minetest.kick_player(name, [reason])`: disconnect a player with a optional
+* `minetest.get_ban_list()`: returns a list of all bans formatted as string
+* `minetest.get_ban_description(ip_or_name)`: returns list of bans matching
+  IP address or name formatted as string
+* `minetest.ban_player(name)`: ban the IP of a currently connected player
+    * Returns boolean indicating success
+* `minetest.unban_player_or_ip(ip_or_name)`: remove ban record matching
+  IP address or name
+* `minetest.kick_player(name, [reason])`: disconnect a player with an optional
   reason.
+    * Returns boolean indicating success (false if player nonexistant)
 
 Particles
 ---------

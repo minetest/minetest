@@ -909,8 +909,8 @@ core.register_chatcommand("shutdown", {
 })
 
 core.register_chatcommand("ban", {
-	params = "[<name> | <IP_address>]",
-	description = "Ban player or show ban list",
+	params = "[<name>]",
+	description = "Ban the IP of a player or show the ban list",
 	privs = {ban=true},
 	func = function(name, param)
 		if param == "" then
@@ -922,7 +922,7 @@ core.register_chatcommand("ban", {
 			end
 		end
 		if not core.get_player_by_name(param) then
-			return false, "No such player."
+			return false, "Player is not online."
 		end
 		if not core.ban_player(param) then
 			return false, "Failed to ban player."
@@ -935,7 +935,7 @@ core.register_chatcommand("ban", {
 
 core.register_chatcommand("unban", {
 	params = "<name> | <IP_address>",
-	description = "Remove player ban",
+	description = "Remove IP ban belonging to a player/IP",
 	privs = {ban=true},
 	func = function(name, param)
 		if not core.unban_player_or_ip(param) then
