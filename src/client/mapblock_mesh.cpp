@@ -664,7 +664,7 @@ static u8 face_contents(content_t m1, content_t m2, bool *equivalent,
 	const NodeDefManager *ndef, u16 tid1,
 	int s1, int s2)
 {
-	static thread_local const float enable_waving_water =
+	static thread_local const bool enable_waving_water =
 		g_settings->getBool("enable_waving_water");
 
 	*equivalent = false;
