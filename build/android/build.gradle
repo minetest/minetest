@@ -4,7 +4,7 @@ buildscript {
 		jcenter()
 	}
 	dependencies {
-		classpath 'com.android.tools.build:gradle:3.4.2'
+		classpath 'com.android.tools.build:gradle:3.5.1'
 	}
 }
 
@@ -24,13 +24,14 @@ def sqlite3_version = "3240000"
 apply plugin: "com.android.application"
 
 android {
-	compileSdkVersion 28
+	compileSdkVersion 29
+	buildToolsVersion '29.0.2'
 
 	defaultConfig {
 		versionCode 24
 		versionName "${System.env.VERSION_STR}.${versionCode}"
 		minSdkVersion 14
-		targetSdkVersion 28
+		targetSdkVersion 29
 		applicationId "net.minetest.minetest"
 		manifestPlaceholders = [package: "net.minetest.minetest", project: project.name]
 		ndk {
@@ -39,6 +40,11 @@ android {
 			// abiFilters 'armeabi-v7a', 'arm64-v8a', 'x86', 'x86_64'
 			abiFilters 'armeabi-v7a', 'x86'
 		}
+	}
+
+	compileOptions {
+		sourceCompatibility JavaVersion.VERSION_1_8
+		targetCompatibility JavaVersion.VERSION_1_8
 	}
 
 	lintOptions {
@@ -165,5 +171,5 @@ task cleanAll(type: Delete, dependsOn: [clean, cleanAssets, cleanIconv,
 }
 
 dependencies {
-	implementation 'com.android.support:support-v4:28.0.0'
+	implementation 'androidx.core:core:1.1.0'
 }
