@@ -64,6 +64,9 @@ using namespace irr;
 
 #endif
 
+class ISimpleTextureSource;
+class StyleSpec;
+
 class GUIButton : public gui::IGUIButton
 {
 public:
@@ -214,6 +217,9 @@ public:
 	// PATCH
 	void setHoveredColor(video::SColor color);
 	void setPressedColor(video::SColor color);
+
+	//! Set element properties from a StyleSpec
+	virtual void setFromStyle(const StyleSpec& style, ISimpleTextureSource *tsrc);
 	// END PATCH
 
 
@@ -222,30 +228,10 @@ public:
 									IGUIElement* parent, s32 id, const wchar_t* text, const wchar_t *tooltiptext=L"");
 
 protected:
+	virtual void drawContent();
 	void drawSprite(gui::EGUI_BUTTON_STATE state, u32 startTime, const core::position2di& center);
 	gui::EGUI_BUTTON_IMAGE_STATE getImageState(bool pressed) const;
 
-private:
-
-	struct ButtonSprite
-	{
-		ButtonSprite() : Index(-1), Loop(false), Scale(false)
-		{
-		}
-
-		bool operator==(const ButtonSprite& other) const
-		{
-			return Index == other.Index && Color == other.Color && Loop == other.Loop && Scale == other.Scale;
-		}
-
-		s32 Index;
-		video::SColor Color;
-		bool Loop;
-		bool Scale;
-	};
-
-	ButtonSprite ButtonSprites[gui::EGBS_COUNT];
-	gui::IGUISpriteBank* SpriteBank;
 
 	struct ButtonImage
 	{
@@ -287,6 +273,30 @@ private:
 		video::ITexture* Texture;
 		core::rect<s32> SourceRect;
 	};
+
+	gui::EGUI_BUTTON_IMAGE_STATE getImageState(bool pressed, const ButtonImage* images) const;
+
+private:
+
+	struct ButtonSprite
+	{
+		ButtonSprite() : Index(-1), Loop(false), Scale(false)
+		{
+		}
+
+		bool operator==(const ButtonSprite& other) const
+		{
+			return Index == other.Index && Color == other.Color && Loop == other.Loop && Scale == other.Scale;
+		}
+
+		s32 Index;
+		video::SColor Color;
+		bool Loop;
+		bool Scale;
+	};
+
+	ButtonSprite ButtonSprites[gui::EGBS_COUNT];
+	gui::IGUISpriteBank* SpriteBank;
 
 	ButtonImage ButtonImages[gui::EGBIS_COUNT];
 

@@ -5,11 +5,14 @@
 #include "guiButton.h"
 
 
+#include "client/guiscalingfilter.h"
+#include "client/tile.h"
 #include "IGUISkin.h"
 #include "IGUIEnvironment.h"
 #include "IVideoDriver.h"
 #include "IGUIFont.h"
 #include "porting.h"
+#include "StyleSpec.h"
 
 using namespace irr;
 using namespace gui;
@@ -328,6 +331,10 @@ void GUIButton::draw()
 		}
 	}
 
+	// PATCH
+	drawContent();
+	// END PATCH
+
 	if (Text.size())
 	{
 		IGUIFont* font = getActiveFont();
@@ -346,6 +353,11 @@ void GUIButton::draw()
 	}
 
 	IGUIElement::draw();
+}
+
+void GUIButton::drawContent()
+{
+	// Nothing
 }
 
 void GUIButton::drawSprite(EGUI_BUTTON_STATE state, u32 startTime, const core::position2di& center)
@@ -371,6 +383,13 @@ void GUIButton::drawSprite(EGUI_BUTTON_STATE state, u32 startTime, const core::p
 }
 
 EGUI_BUTTON_IMAGE_STATE GUIButton::getImageState(bool pressed) const
+{
+	// PATCH
+	return getImageState(pressed, ButtonImages);
+	// END PATCH
+}
+
+EGUI_BUTTON_IMAGE_STATE GUIButton::getImageState(bool pressed, const ButtonImage* images) const
 {
 	// figure state we should have
 	EGUI_BUTTON_IMAGE_STATE state = EGBIS_IMAGE_DISABLED;
@@ -403,7 +422,7 @@ EGUI_BUTTON_IMAGE_STATE GUIButton::getImageState(bool pressed) const
 	}
 
 	// find a compatible state that has images
-	while ( state != EGBIS_IMAGE_UP && !ButtonImages[(u32)state].Texture )
+	while ( state != EGBIS_IMAGE_UP && !images[(u32)state].Texture )
 	{
 		// PATCH
 		switch ( state )
@@ -720,6 +739,44 @@ void GUIButton::setPressedColor(video::SColor color)
 	for (size_t i = 0; i < 4; i++) {
 		video::SColor base = Environment->getSkin()->getColor((gui::EGUI_DEFAULT_COLOR)i);
 		PressedColors[i] = base.getInterpolated(color, d);
+	}
+}
+
+//! Set element properties from a StyleSpec
+void GUIButton::setFromStyle(const StyleSpec& style, ISimpleTextureSource *tsrc)
+{
+	if (style.isNotDefault(StyleSpec::BGCOLOR)) {
+		setColor(style.getColor(StyleSpec::BGCOLOR));
+	}
+	if (style.isNotDefault(StyleSpec::BGCOLOR_HOVERED)) {
+		setHoveredColor(style.getColor(StyleSpec::BGCOLOR_HOVERED));
+	}
+	if (style.isNotDefault(StyleSpec::BGCOLOR_PRESSED)) {
+		setPressedColor(style.getColor(StyleSpec::BGCOLOR_PRESSED));
+	}
+
+	if (style.isNotDefault(StyleSpec::TEXTCOLOR)) {
+		setOverrideColor(style.getColor(StyleSpec::TEXTCOLOR));
+	}
+	setNotClipped(style.getBool(StyleSpec::NOCLIP, isNotClipped()));
+	setDrawBorder(style.getBool(StyleSpec::BORDER, DrawBorder));
+	setUseAlphaChannel(style.getBool(StyleSpec::ALPHA, true));
+
+	if (style.isNotDefault(StyleSpec::BGIMG)) {
+		video::ITexture *texture = style.getTexture(StyleSpec::BGIMG, tsrc);
+		video::ITexture *hovered_texture = style.getTexture(StyleSpec::BGIMG_HOVERED, tsrc, texture);
+		video::ITexture *pressed_texture = style.getTexture(StyleSpec::BGIMG_PRESSED, tsrc, texture);
+
+		const core::position2di buttonCenter(AbsoluteRect.getCenter());
+		core::position2d<s32> geom(buttonCenter);
+
+		setImage(guiScalingImageButton(
+					Environment->getVideoDriver(), texture, geom.X, geom.Y));
+		setHoveredImage(guiScalingImageButton(
+					Environment->getVideoDriver(), hovered_texture, geom.X, geom.Y));
+		setPressedImage(guiScalingImageButton(
+					Environment->getVideoDriver(), pressed_texture, geom.X, geom.Y));
+		setScaleImage(true);
 	}
 }
 // END PATCH
