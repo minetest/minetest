@@ -1,5 +1,6 @@
 package net.minetest.minetest;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.res.AssetFileDescriptor;
 import android.os.AsyncTask;
@@ -19,13 +20,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.util.Iterator;
 import java.util.Vector;
 
 public class MinetestAssetCopy extends Activity {
-	ProgressBar m_ProgressBar;
-	TextView m_Filename;
-	copyAssetTask m_AssetCopy;
+	private ProgressBar m_ProgressBar;
+	private TextView m_Filename;
+	private copyAssetTask m_AssetCopy;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -53,16 +53,16 @@ public class MinetestAssetCopy extends Activity {
 		super.onResume();
 		makeFullScreen();
 	}
-	
+
 	@Override
-    	protected void onDestroy() {
+	protected void onDestroy() {
 		super.onDestroy();
 		if (m_AssetCopy != null) {
 			m_AssetCopy.cancel(true);
 		}
-    	}
+	}
 
-	public void makeFullScreen() {
+	private void makeFullScreen() {
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
 			this.getWindow().getDecorView().setSystemUiVisibility(
 					View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
@@ -85,7 +85,8 @@ public class MinetestAssetCopy extends Activity {
 		return this;
 	}
 
-	private static class copyAssetTask extends AsyncTask<String, Integer, String> {
+	@SuppressLint("StaticFieldLeak")
+	private class copyAssetTask extends AsyncTask<String, Integer, String> {
 		boolean m_copy_started = false;
 		String m_Foldername = "media";
 		Vector<String> m_foldernames;
@@ -99,7 +100,7 @@ public class MinetestAssetCopy extends Activity {
 				InputStream src = getAssets().open(filename);
 				byte[] buf = new byte[4096];
 
-				int len = 0;
+				int len;
 				while ((len = src.read(buf)) > 0) {
 					size += len;
 				}
@@ -111,10 +112,10 @@ public class MinetestAssetCopy extends Activity {
 
 		@Override
 		protected String doInBackground(String... files) {
-			m_foldernames = new Vector<String>();
-			m_filenames = new Vector<String>();
-			m_tocopy = new Vector<String>();
-			m_asset_size_unknown = new Vector<String>();
+			m_foldernames = new Vector<>();
+			m_filenames = new Vector<>();
+			m_tocopy = new Vector<>();
+			m_asset_size_unknown = new Vector<>();
 			String baseDir =
 					Environment.getExternalStorageDirectory().getAbsolutePath()
 							+ "/";
@@ -128,9 +129,9 @@ public class MinetestAssetCopy extends Activity {
 			} else {
 				File[] todel = TempFolder.listFiles();
 
-				for (int i = 0; i < todel.length; i++) {
-					Log.v("MinetestAssetCopy", "deleting: " + todel[i].getAbsolutePath());
-					todel[i].delete();
+				for (File file : todel) {
+					Log.v("MinetestAssetCopy", "deleting: " + file.getAbsolutePath());
+					file.delete();
 				}
 			}
 
@@ -249,12 +250,10 @@ public class MinetestAssetCopy extends Activity {
 		protected void onProgressUpdate(Integer... progress) {
 
 			if (m_copy_started) {
-				boolean shortened = false;
 				String todisplay = m_tocopy.get(progress[0]);
 				m_ProgressBar.setProgress(progress[0]);
 				m_Filename.setText(todisplay);
 			} else {
-				boolean shortened = false;
 				String todisplay = m_Foldername;
 				String full_text = "scanning " + todisplay + " ...";
 				m_Filename.setText(full_text);
@@ -264,14 +263,11 @@ public class MinetestAssetCopy extends Activity {
 		/**
 		 * check all files and folders in filelist
 		 */
-		protected void ProcessFileList() {
+		void ProcessFileList() {
 			String FlashBaseDir =
 					Environment.getExternalStorageDirectory().getAbsolutePath();
 
-			Iterator itr = m_filenames.iterator();
-
-			while (itr.hasNext()) {
-				String current_path = (String) itr.next();
+			for (String current_path : m_filenames) {
 				String FlashPath = FlashBaseDir + "/" + current_path;
 
 				if (isAssetFolder(current_path)) {
@@ -300,7 +296,7 @@ public class MinetestAssetCopy extends Activity {
 				File testme = new File(FlashPath);
 
 				long asset_filesize = -1;
-				long stored_filesize = -1;
+				long stored_filesize;
 
 				if (testme.exists()) {
 					try {
@@ -308,7 +304,6 @@ public class MinetestAssetCopy extends Activity {
 						asset_filesize = fd.getLength();
 						fd.close();
 					} catch (IOException e) {
-						refresh = true;
 						m_asset_size_unknown.add(current_path);
 						Log.e("MinetestAssetCopy", "Failed to open asset file \"" +
 								FlashPath + "\" for size check");
@@ -331,7 +326,7 @@ public class MinetestAssetCopy extends Activity {
 		/**
 		 * read list of folders prepared on package build
 		 */
-		protected void BuildFolderList() {
+		void BuildFolderList() {
 			try {
 				InputStream is = getAssets().open("index.txt");
 				BufferedReader reader = new BufferedReader(new InputStreamReader(is));
@@ -351,7 +346,7 @@ public class MinetestAssetCopy extends Activity {
 		/**
 		 * read list of asset files prepared on package build
 		 */
-		protected void BuildFileList() {
+		void BuildFileList() {
 			long entrycount = 0;
 			try {
 				InputStream is = getAssets().open("filelist.txt");
@@ -374,7 +369,7 @@ public class MinetestAssetCopy extends Activity {
 			finish();
 		}
 
-		protected boolean isAssetFolder(String path) {
+		boolean isAssetFolder(String path) {
 			return m_foldernames.contains(path);
 		}
 	}
