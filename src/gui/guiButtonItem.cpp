@@ -56,8 +56,8 @@ void GUIButtonItem::drawContent()
 }
 
 GUIButtonItem *GUIButtonItem::addButton(IGUIEnvironment *environment,
-		const core::rect<s32>& rectangle, IGUIElement *parent,
-		s32 id, const wchar_t *text, std::string item, Client *client)
+		const core::rect<s32> &rectangle, IGUIElement *parent, s32 id,
+		const wchar_t *text, std::string item, Client *client)
 {
 	GUIButtonItem *button = new GUIButtonItem(environment,
 			parent ? parent : environment->getRootGUIElement(),

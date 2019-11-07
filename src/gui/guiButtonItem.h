@@ -34,8 +34,8 @@ public:
 
 	//! Do not drop returned handle
 	static GUIButtonItem *addButton(gui::IGUIEnvironment *environment,
-			const core::rect<s32>& rectangle, IGUIElement *parent,
-			s32 id, const wchar_t *text, std::string item, Client *client);
+			const core::rect<s32> &rectangle, IGUIElement *parent, s32 id,
+			const wchar_t *text, std::string item, Client *client);
 protected:
 	virtual void drawContent() override;
 

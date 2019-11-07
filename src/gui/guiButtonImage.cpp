@@ -28,8 +28,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 using namespace irr;
 using namespace gui;
 
-GUIButtonImage::GUIButtonImage(gui::IGUIEnvironment *environment, gui::IGUIElement *parent,
-		s32 id, core::rect<s32> rectangle, bool noclip)
+GUIButtonImage::GUIButtonImage(gui::IGUIEnvironment *environment,
+		gui::IGUIElement *parent, s32 id, core::rect<s32> rectangle, bool noclip)
 	: GUIButton (environment, parent, id, rectangle, noclip)
 {
 }
@@ -71,7 +71,7 @@ void GUIButtonImage::drawContent()
 }
 
 void GUIButtonImage::setForegroundImage(EGUI_BUTTON_IMAGE_STATE state,
-		video::ITexture *image, const core::rect<s32>& sourceRect)
+		video::ITexture *image, const core::rect<s32> &sourceRect)
 {
 	if (state >= EGBIS_COUNT)
 		return;
@@ -92,7 +92,7 @@ void GUIButtonImage::setForegroundImage(video::ITexture *image)
 	setForegroundImage(gui::EGBIS_IMAGE_UP, image);
 }
 
-void GUIButtonImage::setForegroundImage(video::ITexture *image, const core::rect<s32>& pos)
+void GUIButtonImage::setForegroundImage(video::ITexture *image, const core::rect<s32> &pos)
 {
 	setForegroundImage(gui::EGBIS_IMAGE_UP, image, pos);
 }
@@ -102,7 +102,7 @@ void GUIButtonImage::setPressedForegroundImage(video::ITexture *image)
 	setForegroundImage(gui::EGBIS_IMAGE_DOWN, image);
 }
 
-void GUIButtonImage::setPressedForegroundImage(video::ITexture *image, const core::rect<s32>& pos)
+void GUIButtonImage::setPressedForegroundImage(video::ITexture *image, const core::rect<s32> &pos)
 {
 	setForegroundImage(gui::EGBIS_IMAGE_DOWN, image, pos);
 }
@@ -113,13 +113,13 @@ void GUIButtonImage::setHoveredForegroundImage(video::ITexture *image)
 	setForegroundImage(gui::EGBIS_IMAGE_UP_FOCUSED_MOUSEOVER, image);
 }
 
-void GUIButtonImage::setHoveredForegroundImage(video::ITexture *image, const core::rect<s32>& pos)
+void GUIButtonImage::setHoveredForegroundImage(video::ITexture *image, const core::rect<s32> &pos)
 {
 	setForegroundImage(gui::EGBIS_IMAGE_UP_MOUSEOVER, image, pos);
 	setForegroundImage(gui::EGBIS_IMAGE_UP_FOCUSED_MOUSEOVER, image, pos);
 }
 
-void GUIButtonImage::setFromStyle(const StyleSpec& style, ISimpleTextureSource *tsrc)
+void GUIButtonImage::setFromStyle(const StyleSpec &style, ISimpleTextureSource *tsrc)
 {
 	GUIButton::setFromStyle(style, tsrc);
 
@@ -141,8 +141,8 @@ void GUIButtonImage::setFromStyle(const StyleSpec& style, ISimpleTextureSource *
 }
 
 GUIButtonImage *GUIButtonImage::addButton(IGUIEnvironment *environment,
-		const core::rect<s32>& rectangle, IGUIElement *parent,
-		s32 id, const wchar_t *text, const wchar_t *tooltiptext)
+		const core::rect<s32> &rectangle, IGUIElement *parent, s32 id,
+		const wchar_t *text, const wchar_t *tooltiptext)
 {
 	GUIButtonImage *button = new GUIButtonImage(environment,
 			parent ? parent : environment->getRootGUIElement(), id, rectangle);
@@ -151,7 +151,7 @@ GUIButtonImage *GUIButtonImage::addButton(IGUIEnvironment *environment,
 		button->setText(text);
 
 	if (tooltiptext)
-		button->setToolTipText (tooltiptext);
+		button->setToolTipText(tooltiptext);
 
 	button->drop();
 	return button;
