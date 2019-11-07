@@ -48,6 +48,7 @@ public:
 	static GUIButtonImage *addButton(gui::IGUIEnvironment *environment,
 			const core::rect<s32> &rectangle, IGUIElement *parent, s32 id,
 			const wchar_t *text, const wchar_t *tooltiptext = L"");
+
 protected:
 	virtual void drawContent() override;
 
