@@ -28,8 +28,8 @@ using namespace irr;
 using namespace gui;
 
 GUIButtonItem::GUIButtonItem(gui::IGUIEnvironment *environment, gui::IGUIElement *parent,
-	s32 id, core::rect<s32> rectangle, std::string item, Client *client, bool noclip)
-	: GUIButton (environment, parent, id, rectangle, noclip)
+		s32 id, core::rect<s32> rectangle, std::string item, Client *client, bool noclip)
+		: GUIButton (environment, parent, id, rectangle, noclip)
 {
 	m_item_name = item;
 	m_client = client;
@@ -37,7 +37,7 @@ GUIButtonItem::GUIButtonItem(gui::IGUIEnvironment *environment, gui::IGUIElement
 
 void GUIButtonItem::drawContent()
 {
-	GUISkin *skin = dynamic_cast<GUISkin*>(Environment->getSkin());
+	GUISkin *skin = dynamic_cast<GUISkin *>(Environment->getSkin());
 	video::IVideoDriver *driver = Environment->getVideoDriver();
 
 	IGUIFont *font = getActiveFont();
@@ -55,8 +55,9 @@ void GUIButtonItem::drawContent()
 	drawItemStack(driver, font, item, rect, &AbsoluteClippingRect, m_client, IT_ROT_NONE);
 }
 
-GUIButtonItem *GUIButtonItem::addButton(IGUIEnvironment *environment, const core::rect<s32>& rectangle,
-	IGUIElement *parent, s32 id, const wchar_t *text, std::string item, Client *client)
+GUIButtonItem *GUIButtonItem::addButton(IGUIEnvironment *environment,
+		const core::rect<s32>& rectangle, IGUIElement *parent,
+		s32 id, const wchar_t *text, std::string item, Client *client)
 {
 	GUIButtonItem *button = new GUIButtonItem(environment,
 			parent ? parent : environment->getRootGUIElement(),

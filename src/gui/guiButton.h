@@ -232,7 +232,6 @@ protected:
 	void drawSprite(gui::EGUI_BUTTON_STATE state, u32 startTime, const core::position2di& center);
 	gui::EGUI_BUTTON_IMAGE_STATE getImageState(bool pressed) const;
 
-
 	struct ButtonImage
 	{
 		ButtonImage() : Texture(0), SourceRect(core::rect<s32>(0,0,0,0))

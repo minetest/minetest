@@ -29,11 +29,13 @@ class GUIButtonItem : public GUIButton
 public:
 	//! constructor
 	GUIButtonItem(gui::IGUIEnvironment *environment, gui::IGUIElement *parent,
-		s32 id, core::rect<s32> rectangle, std::string item, Client *client, bool noclip=false);
+			s32 id, core::rect<s32> rectangle, std::string item,
+			Client *client, bool noclip = false);
 
 	//! Do not drop returned handle
-	static GUIButtonItem *addButton(gui::IGUIEnvironment *environment, const core::rect<s32>& rectangle,
-		IGUIElement *parent, s32 id, const wchar_t *text, std::string item, Client *client);
+	static GUIButtonItem *addButton(gui::IGUIEnvironment *environment,
+			const core::rect<s32>& rectangle, IGUIElement *parent,
+			s32 id, const wchar_t *text, std::string item, Client *client);
 protected:
 	virtual void drawContent() override;
 

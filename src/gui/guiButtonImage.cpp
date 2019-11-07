@@ -29,18 +29,18 @@ using namespace irr;
 using namespace gui;
 
 GUIButtonImage::GUIButtonImage(gui::IGUIEnvironment *environment, gui::IGUIElement *parent,
-	s32 id, core::rect<s32> rectangle, bool noclip)
+		s32 id, core::rect<s32> rectangle, bool noclip)
 	: GUIButton (environment, parent, id, rectangle, noclip)
 {
 }
 
 void GUIButtonImage::drawContent()
 {
-	GUISkin *skin = dynamic_cast<GUISkin*>(Environment->getSkin());
+	GUISkin *skin = dynamic_cast<GUISkin *>(Environment->getSkin());
 	video::IVideoDriver *driver = Environment->getVideoDriver();
 
 	EGUI_BUTTON_IMAGE_STATE imageState = getImageState(isPressed(), ButtonForegroundImages);
-	video::ITexture* texture = ButtonForegroundImages[(u32)imageState].Texture;
+	video::ITexture *texture = ButtonForegroundImages[(u32)imageState].Texture;
 
 	if (texture) {
 		core::rect<s32> sourceRect(ButtonForegroundImages[(u32)imageState].SourceRect);
@@ -70,7 +70,8 @@ void GUIButtonImage::drawContent()
 	}
 }
 
-void GUIButtonImage::setForegroundImage(EGUI_BUTTON_IMAGE_STATE state, video::ITexture *image, const core::rect<s32>& sourceRect)
+void GUIButtonImage::setForegroundImage(EGUI_BUTTON_IMAGE_STATE state,
+		video::ITexture *image, const core::rect<s32>& sourceRect)
 {
 	if (state >= EGBIS_COUNT)
 		return;
@@ -139,8 +140,9 @@ void GUIButtonImage::setFromStyle(const StyleSpec& style, ISimpleTextureSource *
 	}
 }
 
-GUIButtonImage *GUIButtonImage::addButton(IGUIEnvironment *environment, const core::rect<s32>& rectangle,
-	IGUIElement *parent, s32 id, const wchar_t *text, const wchar_t *tooltiptext)
+GUIButtonImage *GUIButtonImage::addButton(IGUIEnvironment *environment,
+		const core::rect<s32>& rectangle, IGUIElement *parent,
+		s32 id, const wchar_t *text, const wchar_t *tooltiptext)
 {
 	GUIButtonImage *button = new GUIButtonImage(environment,
 			parent ? parent : environment->getRootGUIElement(), id, rectangle);

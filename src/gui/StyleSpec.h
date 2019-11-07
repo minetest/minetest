@@ -117,7 +117,7 @@ public:
 		return color;
 	}
 
-	video::ITexture* getTexture(Property prop, ISimpleTextureSource* tsrc, video::ITexture* def) const
+	video::ITexture *getTexture(Property prop, ISimpleTextureSource *tsrc, video::ITexture *def) const
 	{
 		const auto &val = properties[prop];
 		if (val.empty()) {
@@ -129,7 +129,7 @@ public:
 		return texture;
 	}
 
-	video::ITexture* getTexture(Property prop, ISimpleTextureSource* tsrc) const
+	video::ITexture *getTexture(Property prop, ISimpleTextureSource *tsrc) const
 	{
 		const auto &val = properties[prop];
 		FATAL_ERROR_IF(val.empty(), "Unexpected missing property");

@@ -27,24 +27,27 @@ class GUIButtonImage : public GUIButton
 public:
 	//! constructor
 	GUIButtonImage(gui::IGUIEnvironment *environment, gui::IGUIElement *parent,
-			   s32 id, core::rect<s32> rectangle, bool noclip=false);
+			s32 id, core::rect<s32> rectangle, bool noclip=false);
 
-	void setForegroundImage(gui::EGUI_BUTTON_IMAGE_STATE state, video::ITexture *image=nullptr, const core::rect<s32>& sourceRect=core::rect<s32>(0,0,0,0));
+	void setForegroundImage(gui::EGUI_BUTTON_IMAGE_STATE state,
+			video::ITexture *image=nullptr,
+			const core::rect<s32>& sourceRect = core::rect<s32>(0,0,0,0));
 
-	void setForegroundImage(video::ITexture *image=nullptr);
+	void setForegroundImage(video::ITexture *image = nullptr);
 	void setForegroundImage(video::ITexture *image, const core::rect<s32>& pos);
 
-	void setPressedForegroundImage(video::ITexture *image=nullptr);
+	void setPressedForegroundImage(video::ITexture *image = nullptr);
 	void setPressedForegroundImage(video::ITexture *image, const core::rect<s32>& pos);
 
-	void setHoveredForegroundImage(video::ITexture *image=nullptr);
+	void setHoveredForegroundImage(video::ITexture *image = nullptr);
 	void setHoveredForegroundImage(video::ITexture *image, const core::rect<s32>& pos);
 
 	virtual void setFromStyle(const StyleSpec& style, ISimpleTextureSource *tsrc) override;
 
 	//! Do not drop returned handle
-	static GUIButtonImage *addButton(gui::IGUIEnvironment *environment, const core::rect<s32>& rectangle,
-									IGUIElement *parent, s32 id, const wchar_t *text, const wchar_t *tooltiptext=L"");
+	static GUIButtonImage *addButton(gui::IGUIEnvironment *environment,
+			const core::rect<s32>& rectangle, IGUIElement *parent,
+			s32 id, const wchar_t *text, const wchar_t *tooltiptext = L"");
 protected:
 	virtual void drawContent() override;
 
