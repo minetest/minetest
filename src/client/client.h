@@ -576,8 +576,6 @@ private:
 	// Storage for mesh data for creating multiple instances of the same mesh
 	StringMap m_mesh_data;
 
-	StringMap m_mod_files;
-
 	// own state
 	LocalClientState m_state;
 
@@ -588,11 +586,13 @@ private:
 	IntervalLimiter m_localdb_save_interval;
 	u16 m_cache_save_interval;
 
+	// Client modding
 	ClientScripting *m_script = nullptr;
 	bool m_modding_enabled;
 	std::unordered_map<std::string, ModMetadata *> m_mod_storages;
 	float m_mod_storage_save_timer = 10.0f;
 	std::vector<ModSpec> m_mods;
+	StringMap m_mod_vfs;
 
 	bool m_shutdown = false;
 

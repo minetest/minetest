@@ -200,14 +200,30 @@ void Client::scanModSubfolder(const std::string &mod_name, const std::string &mo
 	std::string full_path = mod_path + DIR_DELIM + mod_subpath;
 	std::vector<fs::DirListNode> mod = fs::GetDirListing(full_path);
 	for (const fs::DirListNode &j : mod) {
-		std::string filename = j.name;
 		if (j.dir) {
-			scanModSubfolder(mod_name, mod_path, mod_subpath
-					+ filename + DIR_DELIM);
+			scanModSubfolder(mod_name, mod_path, mod_subpath + j.name + DIR_DELIM);
 			continue;
 		}
-		std::replace( mod_subpath.begin(), mod_subpath.end(), DIR_DELIM_CHAR, '/');
-		m_mod_files[mod_name + ":" + mod_subpath + filename] = full_path  + filename;
+		std::replace(mod_subpath.begin(), mod_subpath.end(), DIR_DELIM_CHAR, '/');
+
+		std::string real_path = full_path + j.name;
+		std::string vfs_path = mod_name + ":" + mod_subpath + j.name;
+		infostream << "Client::scanModSubfolder(): Loading \"" << real_path
+				<< "\" as \"" << vfs_path << "\"." << std::endl;
+
+		std::ifstream is(real_path, std::ios::binary | std::ios::ate);
+		if(!is.good()) {
+			errorstream << "Client::scanModSubfolder(): Can't read file \""
+					<< real_path << "\"." << std::endl;
+			continue;
+		}
+		auto size = is.tellg();
+		std::string contents(size, '\0');
+		is.seekg(0);
+		is.read(&contents[0], size);
+
+		infostream << "  size: " << size << " bytes" << std::endl;
+		m_mod_vfs.emplace(vfs_path, contents);
 	}
 }
 
@@ -1866,12 +1882,9 @@ scene::IAnimatedMesh* Client::getMesh(const std::string &filename, bool cache)
 
 const std::string* Client::getModFile(const std::string &filename)
 {
-	StringMap::const_iterator it = m_mod_files.find(filename);
-	if (it == m_mod_files.end()) {
-		errorstream << "Client::getModFile(): File not found: \"" << filename
-			<< "\"" << std::endl;
-		return NULL;
-	}
+	StringMap::const_iterator it = m_mod_vfs.find(filename);
+	if (it == m_mod_vfs.end())
+		return nullptr;
 	return &it->second;
 }
 
