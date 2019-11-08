@@ -36,9 +36,20 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/string.h"
 #include "nodedef.h"
 
+// get_current_modname()
 int ModApiClient::l_get_current_modname(lua_State *L)
 {
 	lua_rawgeti(L, LUA_REGISTRYINDEX, CUSTOM_RIDX_CURRENT_MOD_NAME);
+	return 1;
+}
+
+// get_modpath(modname)
+int ModApiClient::l_get_modpath(lua_State *L)
+{
+	std::string modname = readParam<std::string>(L, 1);
+	// Client mods use a virtual filesystem, see Client::scanModSubfolder()
+	std::string path = modname + ":";
+	lua_pushstring(L, path.c_str());
 	return 1;
 }
 
@@ -365,6 +376,7 @@ int ModApiClient::l_get_builtin_path(lua_State *L)
 void ModApiClient::Initialize(lua_State *L, int top)
 {
 	API_FCT(get_current_modname);
+	API_FCT(get_modpath);
 	API_FCT(print);
 	API_FCT(display_chat_message);
 	API_FCT(send_chat_message);
