@@ -280,18 +280,20 @@ CavesRandomWalk::CavesRandomWalk(
 	int water_level,
 	content_t water_source,
 	content_t lava_source,
+	float large_cave_flooded,
 	int lava_depth,
 	BiomeGen *biomegen)
 {
 	assert(ndef);
 
-	this->ndef           = ndef;
-	this->gennotify      = gennotify;
-	this->seed           = seed;
-	this->water_level    = water_level;
-	this->np_caveliquids = &nparams_caveliquids;
-	this->lava_depth     = lava_depth;
-	this->bmgn           = biomegen;
+	this->ndef               = ndef;
+	this->gennotify          = gennotify;
+	this->seed               = seed;
+	this->water_level        = water_level;
+	this->np_caveliquids     = &nparams_caveliquids;
+	this->large_cave_flooded = large_cave_flooded;
+	this->lava_depth         = lava_depth;
+	this->bmgn               = biomegen;
 
 	c_water_source = water_source;
 	if (c_water_source == CONTENT_IGNORE)
@@ -322,7 +324,7 @@ void CavesRandomWalk::makeCave(MMVManip *vm, v3s16 nmin, v3s16 nmax,
 
 	this->ystride = nmax.X - nmin.X + 1;
 
-	flooded = ps->range(1, 2) == 2;
+	flooded = ps->range(1, 1000) <= large_cave_flooded * 1000.0f;
 
 	// If flooded:
 	// Get biome at mapchunk midpoint. If cave liquid defined for biome, use it.

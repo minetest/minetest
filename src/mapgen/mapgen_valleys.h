@@ -50,6 +50,11 @@ struct MapgenValleysParams : public MapgenParams {
 	float cave_width = 0.09f;
 	s16 large_cave_depth = -33;
 	s16 lava_depth = 1;
+	u16 small_cave_num_min = 0;
+	u16 small_cave_num_max = 0;
+	u16 large_cave_num_min = 0;
+	u16 large_cave_num_max = 2;
+	float large_cave_flooded = 0.5f;
 	s16 cavern_limit = -256;
 	s16 cavern_taper = 192;
 	float cavern_threshold = 0.6f;

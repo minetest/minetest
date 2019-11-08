@@ -58,15 +58,20 @@ MapgenCarpathian::MapgenCarpathian(MapgenCarpathianParams *params, EmergeManager
 	river_depth      = params->river_depth;
 	valley_width     = params->valley_width;
 
-	spflags          = params->spflags;
-	cave_width       = params->cave_width;
-	large_cave_depth = params->large_cave_depth;
-	lava_depth       = params->lava_depth;
-	cavern_limit     = params->cavern_limit;
-	cavern_taper     = params->cavern_taper;
-	cavern_threshold = params->cavern_threshold;
-	dungeon_ymin     = params->dungeon_ymin;
-	dungeon_ymax     = params->dungeon_ymax;
+	spflags            = params->spflags;
+	cave_width         = params->cave_width;
+	large_cave_depth   = params->large_cave_depth;
+	lava_depth         = params->lava_depth;
+	small_cave_num_min = params->small_cave_num_min;
+	small_cave_num_max = params->small_cave_num_max;
+	large_cave_num_min = params->large_cave_num_min;
+	large_cave_num_max = params->large_cave_num_max;
+	large_cave_flooded = params->large_cave_flooded;
+	cavern_limit       = params->cavern_limit;
+	cavern_taper       = params->cavern_taper;
+	cavern_threshold   = params->cavern_threshold;
+	dungeon_ymin       = params->dungeon_ymin;
+	dungeon_ymax       = params->dungeon_ymax;
 
 	grad_wl = 1 - water_level;
 
@@ -148,14 +153,19 @@ void MapgenCarpathianParams::readParams(const Settings *settings)
 	settings->getFloatNoEx("mgcarpathian_river_depth",  river_depth);
 	settings->getFloatNoEx("mgcarpathian_valley_width", valley_width);
 
-	settings->getFloatNoEx("mgcarpathian_cave_width",       cave_width);
-	settings->getS16NoEx("mgcarpathian_large_cave_depth",   large_cave_depth);
-	settings->getS16NoEx("mgcarpathian_lava_depth",         lava_depth);
-	settings->getS16NoEx("mgcarpathian_cavern_limit",       cavern_limit);
-	settings->getS16NoEx("mgcarpathian_cavern_taper",       cavern_taper);
-	settings->getFloatNoEx("mgcarpathian_cavern_threshold", cavern_threshold);
-	settings->getS16NoEx("mgcarpathian_dungeon_ymin",       dungeon_ymin);
-	settings->getS16NoEx("mgcarpathian_dungeon_ymax",       dungeon_ymax);
+	settings->getFloatNoEx("mgcarpathian_cave_width",         cave_width);
+	settings->getS16NoEx("mgcarpathian_large_cave_depth",     large_cave_depth);
+	settings->getS16NoEx("mgcarpathian_lava_depth",           lava_depth);
+	settings->getU16NoEx("mgcarpathian_small_cave_num_min",   small_cave_num_min);
+	settings->getU16NoEx("mgcarpathian_small_cave_num_max",   small_cave_num_max);
+	settings->getU16NoEx("mgcarpathian_large_cave_num_min",   large_cave_num_min);
+	settings->getU16NoEx("mgcarpathian_large_cave_num_max",   large_cave_num_max);
+	settings->getFloatNoEx("mgcarpathian_large_cave_flooded", large_cave_flooded);
+	settings->getS16NoEx("mgcarpathian_cavern_limit",         cavern_limit);
+	settings->getS16NoEx("mgcarpathian_cavern_taper",         cavern_taper);
+	settings->getFloatNoEx("mgcarpathian_cavern_threshold",   cavern_threshold);
+	settings->getS16NoEx("mgcarpathian_dungeon_ymin",         dungeon_ymin);
+	settings->getS16NoEx("mgcarpathian_dungeon_ymax",         dungeon_ymax);
 
 	settings->getNoiseParams("mgcarpathian_np_filler_depth",  np_filler_depth);
 	settings->getNoiseParams("mgcarpathian_np_height1",       np_height1);
@@ -186,14 +196,19 @@ void MapgenCarpathianParams::writeParams(Settings *settings) const
 	settings->setFloat("mgcarpathian_river_depth",  river_depth);
 	settings->setFloat("mgcarpathian_valley_width", valley_width);
 
-	settings->setFloat("mgcarpathian_cave_width",       cave_width);
-	settings->setS16("mgcarpathian_large_cave_depth",   large_cave_depth);
-	settings->setS16("mgcarpathian_lava_depth",         lava_depth);
-	settings->setS16("mgcarpathian_cavern_limit",       cavern_limit);
-	settings->setS16("mgcarpathian_cavern_taper",       cavern_taper);
-	settings->setFloat("mgcarpathian_cavern_threshold", cavern_threshold);
-	settings->setS16("mgcarpathian_dungeon_ymin",       dungeon_ymin);
-	settings->setS16("mgcarpathian_dungeon_ymax",       dungeon_ymax);
+	settings->setFloat("mgcarpathian_cave_width",         cave_width);
+	settings->setS16("mgcarpathian_large_cave_depth",     large_cave_depth);
+	settings->setS16("mgcarpathian_lava_depth",           lava_depth);
+	settings->setU16("mgcarpathian_small_cave_num_min",   small_cave_num_min);
+	settings->setU16("mgcarpathian_small_cave_num_max",   small_cave_num_max);
+	settings->setU16("mgcarpathian_large_cave_num_min",   large_cave_num_min);
+	settings->setU16("mgcarpathian_large_cave_num_max",   large_cave_num_max);
+	settings->setFloat("mgcarpathian_large_cave_flooded", large_cave_flooded);
+	settings->setS16("mgcarpathian_cavern_limit",         cavern_limit);
+	settings->setS16("mgcarpathian_cavern_taper",         cavern_taper);
+	settings->setFloat("mgcarpathian_cavern_threshold",   cavern_threshold);
+	settings->setS16("mgcarpathian_dungeon_ymin",         dungeon_ymin);
+	settings->setS16("mgcarpathian_dungeon_ymax",         dungeon_ymax);
 
 	settings->setNoiseParams("mgcarpathian_np_filler_depth",  np_filler_depth);
 	settings->setNoiseParams("mgcarpathian_np_height1",       np_height1);

@@ -51,21 +51,26 @@ FlagDesc flagdesc_mapgen_fractal[] = {
 MapgenFractal::MapgenFractal(MapgenFractalParams *params, EmergeManager *emerge)
 	: MapgenBasic(MAPGEN_FRACTAL, params, emerge)
 {
-	spflags          = params->spflags;
-	cave_width       = params->cave_width;
-	large_cave_depth = params->large_cave_depth;
-	lava_depth       = params->lava_depth;
-	dungeon_ymin     = params->dungeon_ymin;
-	dungeon_ymax     = params->dungeon_ymax;
-	fractal          = params->fractal;
-	iterations       = params->iterations;
-	scale            = params->scale;
-	offset           = params->offset;
-	slice_w          = params->slice_w;
-	julia_x          = params->julia_x;
-	julia_y          = params->julia_y;
-	julia_z          = params->julia_z;
-	julia_w          = params->julia_w;
+	spflags            = params->spflags;
+	cave_width         = params->cave_width;
+	large_cave_depth   = params->large_cave_depth;
+	lava_depth         = params->lava_depth;
+	small_cave_num_min = params->small_cave_num_min;
+	small_cave_num_max = params->small_cave_num_max;
+	large_cave_num_min = params->large_cave_num_min;
+	large_cave_num_max = params->large_cave_num_max;
+	large_cave_flooded = params->large_cave_flooded;
+	dungeon_ymin       = params->dungeon_ymin;
+	dungeon_ymax       = params->dungeon_ymax;
+	fractal            = params->fractal;
+	iterations         = params->iterations;
+	scale              = params->scale;
+	offset             = params->offset;
+	slice_w            = params->slice_w;
+	julia_x            = params->julia_x;
+	julia_y            = params->julia_y;
+	julia_z            = params->julia_z;
+	julia_w            = params->julia_w;
 
 	//// 2D noise
 	if (spflags & MGFRACTAL_TERRAIN)
@@ -105,21 +110,26 @@ MapgenFractalParams::MapgenFractalParams():
 
 void MapgenFractalParams::readParams(const Settings *settings)
 {
-	settings->getFlagStrNoEx("mgfractal_spflags",      spflags, flagdesc_mapgen_fractal);
-	settings->getFloatNoEx("mgfractal_cave_width",     cave_width);
-	settings->getS16NoEx("mgfractal_large_cave_depth", large_cave_depth);
-	settings->getS16NoEx("mgfractal_lava_depth",       lava_depth);
-	settings->getS16NoEx("mgfractal_dungeon_ymin",     dungeon_ymin);
-	settings->getS16NoEx("mgfractal_dungeon_ymax",     dungeon_ymax);
-	settings->getU16NoEx("mgfractal_fractal",          fractal);
-	settings->getU16NoEx("mgfractal_iterations",       iterations);
-	settings->getV3FNoEx("mgfractal_scale",            scale);
-	settings->getV3FNoEx("mgfractal_offset",           offset);
-	settings->getFloatNoEx("mgfractal_slice_w",        slice_w);
-	settings->getFloatNoEx("mgfractal_julia_x",        julia_x);
-	settings->getFloatNoEx("mgfractal_julia_y",        julia_y);
-	settings->getFloatNoEx("mgfractal_julia_z",        julia_z);
-	settings->getFloatNoEx("mgfractal_julia_w",        julia_w);
+	settings->getFlagStrNoEx("mgfractal_spflags", spflags, flagdesc_mapgen_fractal);
+	settings->getFloatNoEx("mgfractal_cave_width",         cave_width);
+	settings->getS16NoEx("mgfractal_large_cave_depth",     large_cave_depth);
+	settings->getS16NoEx("mgfractal_lava_depth",           lava_depth);
+	settings->getU16NoEx("mgfractal_small_cave_num_min",   small_cave_num_min);
+	settings->getU16NoEx("mgfractal_small_cave_num_max",   small_cave_num_max);
+	settings->getU16NoEx("mgfractal_large_cave_num_min",   large_cave_num_min);
+	settings->getU16NoEx("mgfractal_large_cave_num_max",   large_cave_num_max);
+	settings->getFloatNoEx("mgfractal_large_cave_flooded", large_cave_flooded);
+	settings->getS16NoEx("mgfractal_dungeon_ymin",         dungeon_ymin);
+	settings->getS16NoEx("mgfractal_dungeon_ymax",         dungeon_ymax);
+	settings->getU16NoEx("mgfractal_fractal",              fractal);
+	settings->getU16NoEx("mgfractal_iterations",           iterations);
+	settings->getV3FNoEx("mgfractal_scale",                scale);
+	settings->getV3FNoEx("mgfractal_offset",               offset);
+	settings->getFloatNoEx("mgfractal_slice_w",            slice_w);
+	settings->getFloatNoEx("mgfractal_julia_x",            julia_x);
+	settings->getFloatNoEx("mgfractal_julia_y",            julia_y);
+	settings->getFloatNoEx("mgfractal_julia_z",            julia_z);
+	settings->getFloatNoEx("mgfractal_julia_w",            julia_w);
 
 	settings->getNoiseParams("mgfractal_np_seabed",       np_seabed);
 	settings->getNoiseParams("mgfractal_np_filler_depth", np_filler_depth);
@@ -131,21 +141,26 @@ void MapgenFractalParams::readParams(const Settings *settings)
 
 void MapgenFractalParams::writeParams(Settings *settings) const
 {
-	settings->setFlagStr("mgfractal_spflags",      spflags, flagdesc_mapgen_fractal, U32_MAX);
-	settings->setFloat("mgfractal_cave_width",     cave_width);
-	settings->setS16("mgfractal_large_cave_depth", large_cave_depth);
-	settings->setS16("mgfractal_lava_depth",       lava_depth);
-	settings->setS16("mgfractal_dungeon_ymin",     dungeon_ymin);
-	settings->setS16("mgfractal_dungeon_ymax",     dungeon_ymax);
-	settings->setU16("mgfractal_fractal",          fractal);
-	settings->setU16("mgfractal_iterations",       iterations);
-	settings->setV3F("mgfractal_scale",            scale);
-	settings->setV3F("mgfractal_offset",           offset);
-	settings->setFloat("mgfractal_slice_w",        slice_w);
-	settings->setFloat("mgfractal_julia_x",        julia_x);
-	settings->setFloat("mgfractal_julia_y",        julia_y);
-	settings->setFloat("mgfractal_julia_z",        julia_z);
-	settings->setFloat("mgfractal_julia_w",        julia_w);
+	settings->setFlagStr("mgfractal_spflags", spflags, flagdesc_mapgen_fractal, U32_MAX);
+	settings->setFloat("mgfractal_cave_width",         cave_width);
+	settings->setS16("mgfractal_large_cave_depth",     large_cave_depth);
+	settings->setS16("mgfractal_lava_depth",           lava_depth);
+	settings->setU16("mgfractal_small_cave_num_min",   small_cave_num_min);
+	settings->setU16("mgfractal_small_cave_num_max",   small_cave_num_max);
+	settings->setU16("mgfractal_large_cave_num_min",   large_cave_num_min);
+	settings->setU16("mgfractal_large_cave_num_max",   large_cave_num_max);
+	settings->setFloat("mgfractal_large_cave_flooded", large_cave_flooded);
+	settings->setS16("mgfractal_dungeon_ymin",         dungeon_ymin);
+	settings->setS16("mgfractal_dungeon_ymax",         dungeon_ymax);
+	settings->setU16("mgfractal_fractal",              fractal);
+	settings->setU16("mgfractal_iterations",           iterations);
+	settings->setV3F("mgfractal_scale",                scale);
+	settings->setV3F("mgfractal_offset",               offset);
+	settings->setFloat("mgfractal_slice_w",            slice_w);
+	settings->setFloat("mgfractal_julia_x",            julia_x);
+	settings->setFloat("mgfractal_julia_y",            julia_y);
+	settings->setFloat("mgfractal_julia_z",            julia_z);
+	settings->setFloat("mgfractal_julia_w",            julia_w);
 
 	settings->setNoiseParams("mgfractal_np_seabed",       np_seabed);
 	settings->setNoiseParams("mgfractal_np_filler_depth", np_filler_depth);
