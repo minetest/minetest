@@ -1313,7 +1313,7 @@ void Client::removeNode(v3s16 p)
  * @param is_valid_position
  * @return
  */
-MapNode Client::getNode(v3s16 p, bool *is_valid_position)
+MapNode Client::CSMGetNode(v3s16 p, bool *is_valid_position)
 {
 	if (checkCSMRestrictionFlag(CSMRestrictionFlags::CSM_RF_LOOKUP_NODES)) {
 		v3s16 ppos = floatToInt(m_env.getLocalPlayer()->getPosition(), BS);
@@ -1323,6 +1323,18 @@ MapNode Client::getNode(v3s16 p, bool *is_valid_position)
 		}
 	}
 	return m_env.getMap().getNode(p, is_valid_position);
+}
+
+int Client::CSMClampRadius(v3s16 pos, int radius)
+{
+	if (!checkCSMRestrictionFlag(CSMRestrictionFlags::CSM_RF_LOOKUP_NODES))
+		return radius;
+	// This is approximate and will cause some allowed nodes to be excluded
+	v3s16 ppos = floatToInt(m_env.getLocalPlayer()->getPosition(), BS);
+	u32 distance = ppos.getDistanceFrom(pos);
+	if (distance >= m_csm_restriction_noderange)
+		return 0;
+	return std::min<int>(radius, m_csm_restriction_noderange - distance);
 }
 
 void Client::addNode(v3s16 p, MapNode n, bool remove_metadata)
