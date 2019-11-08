@@ -140,9 +140,12 @@ void LuaLBM::trigger(ServerEnvironment *env, v3s16 p, MapNode n)
 int LuaRaycast::l_next(lua_State *L)
 {
 	MAP_LOCK_REQUIRED;
-
-	ScriptApiItem *script = getScriptApi<ScriptApiItem>(L);
 	GET_ENV_PTR;
+
+	bool csm = false;
+#ifndef SERVER
+	csm = getClient(L) != nullptr;
+#endif
 
 	LuaRaycast *o = checkobject(L, 1);
 	PointedThing pointed;
@@ -150,7 +153,7 @@ int LuaRaycast::l_next(lua_State *L)
 	if (pointed.type == POINTEDTHING_NOTHING)
 		lua_pushnil(L);
 	else
-		script->pushPointedThing(pointed, true);
+		push_pointed_thing(L, pointed, csm, true);
 
 	return 1;
 }
@@ -793,10 +796,19 @@ int ModApiEnvMod::l_find_nodes_in_area(lua_State *L)
 {
 	GET_ENV_PTR;
 
-	const NodeDefManager *ndef = getServer(L)->ndef();
 	v3s16 minp = read_v3s16(L, 1);
 	v3s16 maxp = read_v3s16(L, 2);
 	sortBoxVerticies(minp, maxp);
+
+#ifndef SERVER
+	const NodeDefManager *ndef = getClient(L) ? getClient(L)->ndef() : getServer(L)->ndef();
+	if (getClient(L)) {
+		minp = getClient(L)->CSMClampPos(minp);
+		maxp = getClient(L)->CSMClampPos(maxp);
+	}
+#else
+	const NodeDefManager *ndef = getServer(L)->ndef();
+#endif
 
 	v3s16 cube = maxp - minp + 1;
 	// Volume limit equal to 8 default mapchunks, (80 * 2) ^ 3 = 4,096,000
@@ -861,10 +873,19 @@ int ModApiEnvMod::l_find_nodes_in_area_under_air(lua_State *L)
 
 	GET_ENV_PTR;
 
-	const NodeDefManager *ndef = getServer(L)->ndef();
 	v3s16 minp = read_v3s16(L, 1);
 	v3s16 maxp = read_v3s16(L, 2);
 	sortBoxVerticies(minp, maxp);
+
+#ifndef SERVER
+	const NodeDefManager *ndef = getClient(L) ? getClient(L)->ndef() : getServer(L)->ndef();
+	if (getClient(L)) {
+		minp = getClient(L)->CSMClampPos(minp);
+		maxp = getClient(L)->CSMClampPos(maxp);
+	}
+#else
+	const NodeDefManager *ndef = getServer(L)->ndef();
+#endif
 
 	v3s16 cube = maxp - minp + 1;
 	// Volume limit equal to 8 default mapchunks, (80 * 2) ^ 3 = 4,096,000
@@ -1326,8 +1347,14 @@ void ModApiEnvMod::Initialize(lua_State *L, int top)
 
 void ModApiEnvMod::InitializeClient(lua_State *L, int top)
 {
+	API_FCT(get_node_light);
 	API_FCT(get_timeofday);
 	API_FCT(get_node_max_level);
 	API_FCT(get_node_level);
+	API_FCT(find_nodes_with_meta);
 	API_FCT(find_node_near);
+	API_FCT(find_nodes_in_area);
+	API_FCT(find_nodes_in_area_under_air);
+	API_FCT(line_of_sight);
+	API_FCT(raycast);
 }

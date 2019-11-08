@@ -264,6 +264,7 @@ public:
 	// helpers to enforce CSM restrictions
 	MapNode CSMGetNode(v3s16 p, bool *is_valid_position);
 	int CSMClampRadius(v3s16 pos, int radius);
+	v3s16 CSMClampPos(v3s16 pos);
 
 	void addNode(v3s16 p, MapNode n, bool remove_metadata = true);
 

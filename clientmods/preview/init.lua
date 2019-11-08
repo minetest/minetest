@@ -65,6 +65,22 @@ core.register_on_item_use(function(itemstack, pointed_thing)
 	print("The local player used an item!")
 	print("pointed_thing :" .. dump(pointed_thing))
 	print("item = " .. itemstack:get_name())
+
+	local pos = vector.add(core.localplayer:get_pos(), core.camera:get_offset())
+	local pos2 = vector.add(pos, vector.multiply(core.camera:get_look_dir(), 100))
+
+	local rc = core.raycast(pos, pos2)
+	local i = rc:next()
+	print("[PREVIEW] raycast next: " .. dump(i))
+	if i then
+		print("[PREVIEW] line of sight: " .. (core.line_of_sight(pos, i.above) and "yes" or "no"))
+
+		local n1 = core.find_nodes_in_area(pos, i.under, {"default:stone"})
+		local n2 = core.find_nodes_in_area_under_air(pos, i.under, {"default:stone"})
+		print(("[PREVIEW] found %s nodes, %s nodes under air"):format(
+				n1 and #n1 or "?", n2 and #n2 or "?"))
+	end
+
 	return false
 end)
 
@@ -88,11 +104,6 @@ end)
 -- This is an example function to ensure it's working properly, should be removed before merge
 core.register_on_damage_taken(function(hp)
 	print("[PREVIEW] Damage taken " .. hp)
-end)
-
--- This is an example function to ensure it's working properly, should be removed before merge
-core.register_globalstep(function(dtime)
-	-- print("[PREVIEW] globalstep " .. dtime)
 end)
 
 -- This is an example function to ensure it's working properly, should be removed before merge

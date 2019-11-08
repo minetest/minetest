@@ -1337,6 +1337,19 @@ int Client::CSMClampRadius(v3s16 pos, int radius)
 	return std::min<int>(radius, m_csm_restriction_noderange - distance);
 }
 
+v3s16 Client::CSMClampPos(v3s16 pos)
+{
+	if (!checkCSMRestrictionFlag(CSMRestrictionFlags::CSM_RF_LOOKUP_NODES))
+		return pos;
+	v3s16 ppos = floatToInt(m_env.getLocalPlayer()->getPosition(), BS);
+	const int range = m_csm_restriction_noderange;
+	return v3s16(
+		core::clamp<int>(pos.X, (int)ppos.X - range, (int)ppos.X + range),
+		core::clamp<int>(pos.Y, (int)ppos.Y - range, (int)ppos.Y + range),
+		core::clamp<int>(pos.Z, (int)ppos.Z - range, (int)ppos.Z + range)
+	);
+}
+
 void Client::addNode(v3s16 p, MapNode n, bool remove_metadata)
 {
 	//TimeTaker timer1("Client::addNode()");

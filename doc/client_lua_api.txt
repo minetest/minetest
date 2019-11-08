@@ -742,11 +742,46 @@ Call these functions only at load time!
     * Returns the node at the given position as table in the format
       `{name="node_name", param1=0, param2=0}`, returns `nil`
       for unloaded areas or flavor limited areas.
+* `minetest.get_node_light(pos, timeofday)`
+    * Gets the light value at the given position. Note that the light value
+      "inside" the node at the given position is returned, so you usually want
+      to get the light value of a neighbor.
+    * `pos`: The position where to measure the light.
+    * `timeofday`: `nil` for current time, `0` for night, `0.5` for day
+    * Returns a number between `0` and `15` or `nil`
 * `minetest.find_node_near(pos, radius, nodenames, [search_center])`: returns pos or `nil`
     * `radius`: using a maximum metric
     * `nodenames`: e.g. `{"ignore", "group:tree"}` or `"default:dirt"`
     * `search_center` is an optional boolean (default: `false`)
       If true `pos` is also checked for the nodes
+* `minetest.find_nodes_in_area(pos1, pos2, nodenames)`: returns a list of
+  positions.
+    * `nodenames`: e.g. `{"ignore", "group:tree"}` or `"default:dirt"`
+    * First return value: Table with all node positions
+    * Second return value: Table with the count of each node with the node name
+      as index.
+    * Area volume is limited to 4,096,000 nodes
+* `minetest.find_nodes_in_area_under_air(pos1, pos2, nodenames)`: returns a
+  list of positions.
+    * `nodenames`: e.g. `{"ignore", "group:tree"}` or `"default:dirt"`
+    * Return value: Table with all node positions with a node air above
+    * Area volume is limited to 4,096,000 nodes
+* `minetest.line_of_sight(pos1, pos2)`: returns `boolean, pos`
+    * Checks if there is anything other than air between pos1 and pos2.
+    * Returns false if something is blocking the sight.
+    * Returns the position of the blocking node when `false`
+    * `pos1`: First position
+    * `pos2`: Second position
+* `minetest.raycast(pos1, pos2, objects, liquids)`: returns `Raycast`
+    * Creates a `Raycast` object.
+    * `pos1`: start of the ray
+    * `pos2`: end of the ray
+    * `objects`: if false, only nodes will be returned. Default is `true`.
+    * `liquids`: if false, liquid nodes won't be returned. Default is `false`.
+
+* `minetest.find_nodes_with_meta(pos1, pos2)`
+    * Get a table of positions of nodes that have metadata within a region
+      {pos1, pos2}.
 * `minetest.get_meta(pos)`
     * Get a `NodeMetaRef` at that position
 * `minetest.get_node_level(pos)`
@@ -1072,6 +1107,32 @@ Can be obtained via `minetest.get_meta(pos)`.
 * `to_table()`: returns `nil` or a table with keys:
     * `fields`: key-value storage
     * `inventory`: `{list1 = {}, ...}}`
+
+### `Raycast`
+
+A raycast on the map. It works with selection boxes.
+Can be used as an iterator in a for loop as:
+
+    local ray = Raycast(...)
+    for pointed_thing in ray do
+        ...
+    end
+
+The map is loaded as the ray advances. If the map is modified after the
+`Raycast` is created, the changes may or may not have an effect on the object.
+
+It can be created via `Raycast(pos1, pos2, objects, liquids)` or
+`minetest.raycast(pos1, pos2, objects, liquids)` where:
+
+* `pos1`: start of the ray
+* `pos2`: end of the ray
+* `objects`: if false, only nodes will be returned. Default is true.
+* `liquids`: if false, liquid nodes won't be returned. Default is false.
+
+#### Methods
+
+* `next()`: returns a `pointed_thing` with exact pointing location
+    * Returns the next thing pointed by the ray or nil.
 
 -----------------
 ### Definitions
