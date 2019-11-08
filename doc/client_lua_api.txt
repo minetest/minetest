@@ -30,7 +30,7 @@ Startup
 Mods are loaded during client startup from the mod load paths by running
 the `init.lua` scripts in a shared environment.
 
-In order to load client-side mods in a world, the following conditions need to be satisfied:
+In order to load client-side mods, the following conditions need to be satisfied:
 
 1) `$path_user/minetest.conf` contains the setting `enable_client_modding = true`
 
@@ -43,14 +43,10 @@ be loaded or have limited functionality. See setting `csm_restriction_flags` for
 Paths
 -----
 * `RUN_IN_PLACE=1` (Windows release, local build)
-    *  `$path_user`:
-        * Linux: `<build directory>`
-        * Windows: `<build directory>`
-    * `$path_share`
-        * Linux: `<build directory>`
-        * Windows:  `<build directory>`
+    * `$path_user`: `<build directory>`
+    * `$path_share`: `<build directory>`
 * `RUN_IN_PLACE=0`: (Linux release)
-    * `$path_share`
+    * `$path_share`:
         * Linux: `/usr/share/minetest`
         * Windows: `<install directory>/minetest-0.4.x`
     * `$path_user`:
@@ -75,7 +71,6 @@ On an installed version on Linux:
 
 Modpack support
 ----------------
-**NOTE: Not implemented yet.**
 
 Mods can be put in a subdirectory, if the parent directory, which otherwise
 should be a mod, contains a file named `modpack.conf`.
@@ -90,30 +85,36 @@ Mod directory structure
 
     clientmods
     ├── modname
-    |   ├── depends.txt
-    |   ├── init.lua
+    │   ├── mod.conf
+    │   ├── init.lua
     └── another
 
 ### modname
+
 The location of this directory.
 
-### depends.txt
-List of mods that have to be loaded before loading this mod.
+### mod.conf
 
-A single line contains a single modname.
+An (optional) settings file that provides meta information about the mod.
 
-Optional dependencies can be defined by appending a question mark
-to a single modname. Their meaning is that if the specified mod
-is missing, that does not prevent this mod from being loaded.
+* `name`: The mod name. Allows Minetest to determine the mod name even if the
+          folder is wrongly named.
+* `description`: Description of mod to be shown in the Mods tab of the main
+                 menu.
+* `depends`: A comma separated list of dependencies. These are mods that must be
+             loaded before this mod.
+* `optional_depends`: A comma separated list of optional dependencies.
+                      Like a dependency, but no error if the mod doesn't exist.
 
-### init.lua
+### `init.lua`
+
 The main Lua script. Running this script should register everything it
 wants to register. Subsequent execution depends on minetest calling the
 registered callbacks.
 
-### `sounds`
-Media files (sounds) that will be transferred to the
-client and will be available for use by the mod.
+**NOTE**: Client mods currently can't provide and textures, sounds or models by
+themselves. Any media referenced in function calls must already be loaded
+(provided by mods that exist on the server).
 
 Naming convention for registered textual names
 ----------------------------------------------
@@ -142,7 +143,7 @@ The `:` prefix can also be used for maintaining backwards compatibility.
 
 Sounds
 ------
-**NOTE: max_hear_distance and connecting to objects is not implemented.**
+**NOTE: Connecting sounds to objects is not implemented.**
 
 Only Ogg Vorbis files are supported.
 
@@ -182,13 +183,11 @@ Examples of sound parameter tables:
     {
         pos = {x = 1, y = 2, z = 3},
         gain = 1.0, -- default
-        max_hear_distance = 32, -- default, uses an euclidean metric
     }
     -- Play connected to an object, looped
     {
         object = <an ObjectRef>,
         gain = 1.0, -- default
-        max_hear_distance = 32, -- default, uses an euclidean metric
         loop = true,
     }
 
