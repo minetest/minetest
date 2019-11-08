@@ -1,9 +1,9 @@
-local modname = core.get_current_modname() or "??"
+local modname = assert(core.get_current_modname())
 local modstorage = core.get_mod_storage()
 local mod_channel
 
-dofile("preview:example.lua")
--- This is an example function to ensure it's working properly, should be removed before merge
+dofile(core.get_modpath(modname) .. "example.lua")
+
 core.register_on_shutdown(function()
 	print("[PREVIEW] shutdown client")
 end)
