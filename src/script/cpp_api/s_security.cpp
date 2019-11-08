@@ -627,16 +627,19 @@ int ScriptApiSecurity::sl_g_loadfile(lua_State *L)
 	ScriptApiBase *script = (ScriptApiBase *) lua_touserdata(L, -1);
 	lua_pop(L, 1);
 
+	// Client implementation
 	if (script->getType() == ScriptingType::Client) {
-		std::string display_path = readParam<std::string>(L, 1);
-		const std::string *path = script->getClient()->getModFile(display_path);
-		if (!path) {
-			std::string error_msg = "Coudln't find script called:" + display_path;
+		std::string path = readParam<std::string>(L, 1);
+		const std::string *contents = script->getClient()->getModFile(path);
+		if (!contents) {
+			std::string error_msg = "Coudln't find script called: " + path;
 			lua_pushnil(L);
 			lua_pushstring(L, error_msg.c_str());
 			return 2;
 		}
-		if (!safeLoadFile(L, path->c_str(), display_path.c_str())) {
+
+		std::string chunk_name = "@" + path;
+		if (!safeLoadString(L, *contents, chunk_name.c_str())) {
 			lua_pushnil(L);
 			lua_insert(L, -2);
 			return 2;
@@ -644,6 +647,8 @@ int ScriptApiSecurity::sl_g_loadfile(lua_State *L)
 		return 1;
 	}
 #endif
+
+	// Server implementation
 	const char *path = NULL;
 	if (lua_isstring(L, 1)) {
 		path = lua_tostring(L, 1);
