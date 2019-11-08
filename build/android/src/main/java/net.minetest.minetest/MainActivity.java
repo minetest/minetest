@@ -54,7 +54,7 @@ public class MainActivity extends Activity {
 
 	@Override
 	public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
-	                                       @NonNull int[] grantResults) {
+										   @NonNull int[] grantResults) {
 		if (requestCode == PERMISSIONS) {
 			for (int index = 0; index < permissions.length; index++) {
 				if (grantResults[index] != PackageManager.PERMISSION_GRANTED) {

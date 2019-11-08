@@ -59,7 +59,7 @@ public class MtNativeActivity extends NativeActivity {
 	}
 
 	public void showDialog(String acceptButton, String hint, String current,
-	                       int editType) {
+						   int editType) {
 
 		Intent intent = new Intent(this, MinetestTextEntry.class);
 		Bundle params = new Bundle();
@@ -97,7 +97,7 @@ public class MtNativeActivity extends NativeActivity {
 
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode,
-	                                Intent data) {
+									Intent data) {
 		if (requestCode == 101) {
 			if (resultCode == RESULT_OK) {
 				String text = data.getStringExtra("text");
