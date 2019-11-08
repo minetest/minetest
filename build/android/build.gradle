@@ -24,13 +24,14 @@ def sqlite3_version = "3240000"
 apply plugin: "com.android.application"
 
 android {
-	compileSdkVersion 28
+	compileSdkVersion 29
+	buildToolsVersion '29.0.2'
 
 	defaultConfig {
 		versionCode 24
 		versionName "${System.env.VERSION_STR}.${versionCode}"
 		minSdkVersion 14
-		targetSdkVersion 28
+		targetSdkVersion 29
 		applicationId "net.minetest.minetest"
 		manifestPlaceholders = [package: "net.minetest.minetest", project: project.name]
 		ndk {
@@ -170,5 +171,5 @@ task cleanAll(type: Delete, dependsOn: [clean, cleanAssets, cleanIconv,
 }
 
 dependencies {
-	implementation 'androidx.legacy:legacy-support-v4:1.0.0'
+	implementation 'androidx.core:core:1.1.0'
 }
