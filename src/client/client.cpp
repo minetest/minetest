@@ -155,6 +155,7 @@ void Client::loadMods()
 	// complain about mods with unsatisfied dependencies
 	if (!modconf.isConsistent()) {
 		modconf.printUnsatisfiedModsError();
+		return;
 	}
 
 	// Print mods
