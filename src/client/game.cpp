@@ -3061,6 +3061,9 @@ void Game::processPlayerInteraction(f32 dtime, bool show_hud, bool show_debug)
 	} else if (input->getLeftState()) {
 		// When button is held down in air, show continuous animation
 		runData.left_punch = true;
+		// Run callback even though item is not usable
+		if (input->getLeftClicked() && client->modsLoaded())
+			client->getScript()->on_item_use(selected_item, pointed);
 	} else if (input->getRightClicked()) {
 		handlePointingAtNothing(selected_item);
 	}
