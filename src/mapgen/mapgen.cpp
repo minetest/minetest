@@ -831,7 +831,9 @@ void MapgenBasic::dustTopNodes()
 
 void MapgenBasic::generateCavesNoiseIntersection(s16 max_stone_y)
 {
-	if (node_min.Y > max_stone_y)
+	// cave_width >= 10 is used to disable generation and avoid the intensive
+	// 3D noise calculations. Tunnels already have zero width when cave_width > 1.
+	if (node_min.Y > max_stone_y || cave_width >= 10.0f)
 		return;
 
 	CavesNoiseIntersection caves_noise(ndef, m_bmgr, csize,

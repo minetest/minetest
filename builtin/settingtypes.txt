@@ -1470,6 +1470,8 @@ mg_biome_np_humidity_blend (Humidity blend noise) noise_params_2d 0, 1.5, (8, 8,
 mgv5_spflags (Mapgen V5 specific flags) flags caverns caverns,nocaverns
 
 #    Controls width of tunnels, a smaller value creates wider tunnels.
+#    Value >= 10.0 completely disables generation of tunnels and avoids the
+#    intensive noise calculations.
 mgv5_cave_width (Cave width) float 0.09
 
 #    Y of upper limit of large caves.
@@ -1602,6 +1604,8 @@ mgv7_spflags (Mapgen V7 specific flags) flags mountains,ridges,nofloatlands,cave
 mgv7_mount_zero_level (Mountain zero level) int 0
 
 #    Controls width of tunnels, a smaller value creates wider tunnels.
+#    Value >= 10.0 completely disables generation of tunnels and avoids the
+#    intensive noise calculations.
 mgv7_cave_width (Cave width) float 0.09
 
 #    Y of upper limit of large caves.
@@ -1725,6 +1729,8 @@ mgcarpathian_river_depth (River channel depth) float 24.0
 mgcarpathian_valley_width (River valley width) float 0.25
 
 #    Controls width of tunnels, a smaller value creates wider tunnels.
+#    Value >= 10.0 completely disables generation of tunnels and avoids the
+#    intensive noise calculations.
 mgcarpathian_cave_width (Cave width) float 0.09
 
 #    Y of upper limit of large caves.
@@ -1849,6 +1855,8 @@ mgflat_large_cave_num_max (Large cave maximum number) int 2 0 64
 mgflat_large_cave_flooded (Large cave proportion flooded) float 0.5 0.0 1.0
 
 #    Controls width of tunnels, a smaller value creates wider tunnels.
+#    Value >= 10.0 completely disables generation of tunnels and avoids the
+#    intensive noise calculations.
 mgflat_cave_width (Cave width) float 0.09
 
 #    Terrain noise threshold for lakes.
@@ -1898,6 +1906,8 @@ mgflat_np_dungeons (Dungeon noise) noise_params_3d 0.9, 0.5, (500, 500, 500), 0,
 mgfractal_spflags (Mapgen Fractal specific flags) flags terrain terrain,noterrain
 
 #    Controls width of tunnels, a smaller value creates wider tunnels.
+#    Value >= 10.0 completely disables generation of tunnels and avoids the
+#    intensive noise calculations.
 mgfractal_cave_width (Cave width) float 0.09
 
 #    Y of upper limit of large caves.
@@ -2076,6 +2086,8 @@ mgvalleys_river_depth (River depth) int 4
 mgvalleys_river_size (River size) int 5
 
 #    Controls width of tunnels, a smaller value creates wider tunnels.
+#    Value >= 10.0 completely disables generation of tunnels and avoids the
+#    intensive noise calculations.
 mgvalleys_cave_width (Cave width) float 0.09
 
 #    Lower Y limit of dungeons.
