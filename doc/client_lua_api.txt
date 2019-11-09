@@ -734,8 +734,6 @@ Call these functions only at load time!
     * Optional: Variable number of arguments that are passed to `func`
 * `minetest.get_us_time()`
     * Returns time with microsecond precision. May not return wall time.
-* `minetest.get_day_count()`
-    * Returns number days elapsed since world was created, accounting for time changes.
 * `minetest.get_timeofday()`
     * Returns the time of day: `0` for midnight, `0.5` for midday
 

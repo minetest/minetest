@@ -1330,7 +1330,6 @@ void ModApiEnvMod::Initialize(lua_State *L, int top)
 void ModApiEnvMod::InitializeClient(lua_State *L, int top)
 {
 	API_FCT(get_timeofday);
-	API_FCT(get_day_count);
 	API_FCT(get_node_max_level);
 	API_FCT(get_node_level);
 	API_FCT(find_node_near);
