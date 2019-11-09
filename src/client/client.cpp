@@ -1913,7 +1913,7 @@ const std::string* Client::getModFile(std::string filename)
 	if (pos == std::string::npos)
 		return nullptr;
 	pos++;
-	auto pos2 = filename.find_first_not_of("/", pos);
+	auto pos2 = filename.find_first_not_of('/', pos);
 	if (pos2 > pos)
 		filename.erase(pos, pos2 - pos);
 
