@@ -155,6 +155,10 @@ src/genericobject.cpp
 src/genericobject.h
 src/gettext.cpp
 src/gettext.h
+src/gui/guiBackgroundImage.cpp
+src/gui/guiBackgroundImage.h
+src/gui/guiBox.cpp
+src/gui/guiBox.h
 src/gui/guiButton.cpp
 src/gui/guiButton.h
 src/gui/guiChatConsole.cpp
@@ -169,6 +173,8 @@ src/gui/guiFormSpecMenu.h
 src/gui/guiKeyChangeMenu.cpp
 src/gui/guiHyperText.cpp
 src/gui/guiHyperText.h
+src/gui/guiItemImage.cpp
+src/gui/guiItemImage.h
 src/gui/guiMainMenu.h
 src/gui/guiPasswordChange.cpp
 src/gui/guiPathSelectMenu.cpp
