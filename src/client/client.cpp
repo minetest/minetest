@@ -1881,8 +1881,17 @@ scene::IAnimatedMesh* Client::getMesh(const std::string &filename, bool cache)
 	return mesh;
 }
 
-const std::string* Client::getModFile(const std::string &filename)
+const std::string* Client::getModFile(std::string filename)
 {
+	// strip dir delimiter from beginning of path
+	auto pos = filename.find_first_of(':');
+	if (pos == std::string::npos)
+		return nullptr;
+	pos++;
+	auto pos2 = filename.find_first_not_of("/", pos);
+	if (pos2 > pos)
+		filename.erase(pos, pos2 - pos);
+
 	StringMap::const_iterator it = m_mod_vfs.find(filename);
 	if (it == m_mod_vfs.end())
 		return nullptr;
