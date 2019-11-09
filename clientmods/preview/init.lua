@@ -14,6 +14,9 @@ print("Server version: " .. server_info.protocol_version)
 print("Server ip: " .. server_info.ip)
 print("Server address: " .. server_info.address)
 print("Server port: " .. server_info.port)
+
+print("CSM restrictions: " .. dump(core.get_csm_restrictions()))
+
 mod_channel = core.mod_channel_join("experimental_preview")
 
 core.after(4, function()

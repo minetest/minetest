@@ -410,6 +410,11 @@ public:
 		return m_address_name;
 	}
 
+	inline u64 getCSMRestrictionFlags() const
+	{
+		return m_csm_restriction_flags;
+	}
+
 	inline bool checkCSMRestrictionFlag(CSMRestrictionFlags flag) const
 	{
 		return m_csm_restriction_flags & flag;

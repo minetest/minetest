@@ -649,6 +649,11 @@ Minetest namespace reference
 * `minetest.sha1(data, [raw])`: returns the sha1 hash of data
     * `data`: string of data to hash
     * `raw`: return raw bytes instead of hex digits, default: false
+* `minetest.get_csm_restrictions()`: returns a table of `Flags` indicating the
+   restrictions applied to the current mod.
+   * If a flag in this table is set to true, the feature is RESTRICTED.
+   * Possible flags: `load_client_mods`, `chat_messages`, `read_itemdefs`,
+                   `read_nodedefs`, `lookup_nodes`, `read_playerinfo`
 
 ### Logging
 * `minetest.debug(...)`

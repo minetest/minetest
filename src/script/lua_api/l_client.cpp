@@ -39,6 +39,27 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define checkCSMRestrictionFlag(flag) \
 	( getClient(L)->checkCSMRestrictionFlag(CSMRestrictionFlags::flag) )
 
+// Not the same as FlagDesc, which contains an `u32 flag`
+struct CSMFlagDesc {
+	const char *name;
+	u64 flag;
+};
+
+/*
+	FIXME: This should eventually be moved somewhere else
+	It also needs to be kept in sync with the definition of CSMRestrictionFlags
+	in network/networkprotocol.h
+*/
+const static CSMFlagDesc flagdesc_csm_restriction[] = {
+	{"load_client_mods",  CSM_RF_LOAD_CLIENT_MODS},
+	{"chat_messages",     CSM_RF_CHAT_MESSAGES},
+	{"read_itemdefs",     CSM_RF_READ_ITEMDEFS},
+	{"read_nodedefs",     CSM_RF_READ_NODEDEFS},
+	{"lookup_nodes",      CSM_RF_LOOKUP_NODES},
+	{"read_playerinfo",   CSM_RF_READ_PLAYERINFO},
+	{NULL,      0}
+};
+
 // get_current_modname()
 int ModApiClient::l_get_current_modname(lua_State *L)
 {
@@ -363,6 +384,19 @@ int ModApiClient::l_get_builtin_path(lua_State *L)
 	return 1;
 }
 
+// get_csm_restrictions()
+int ModApiClient::l_get_csm_restrictions(lua_State *L)
+{
+	u64 flags = getClient(L)->getCSMRestrictionFlags();
+	const CSMFlagDesc *flagdesc = flagdesc_csm_restriction;
+
+	lua_newtable(L);
+	for (int i = 0; flagdesc[i].name; i++) {
+		setboolfield(L, -1, flagdesc[i].name, !!(flags & flagdesc[i].flag));
+	}
+	return 1;
+}
+
 void ModApiClient::Initialize(lua_State *L, int top)
 {
 	API_FCT(get_current_modname);
@@ -389,4 +423,5 @@ void ModApiClient::Initialize(lua_State *L, int top)
 	API_FCT(get_privilege_list);
 	API_FCT(get_builtin_path);
 	API_FCT(get_language);
+	API_FCT(get_csm_restrictions);
 }
