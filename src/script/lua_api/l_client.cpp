@@ -230,9 +230,14 @@ int ModApiClient::l_get_node_or_nil(lua_State *L)
 
 int ModApiClient::l_get_language(lua_State *L)
 {
-	char *locale = setlocale(LC_ALL, "");
+	char *locale = setlocale(LC_MESSAGES, NULL);
+	std::string lang = gettext("LANG_CODE");
+	if (lang == "LANG_CODE")
+		lang = "";
+
 	lua_pushstring(L, locale);
-	return 1;
+	lua_pushstring(L, lang.c_str());
+	return 2;
 }
 
 int ModApiClient::l_get_wielded_item(lua_State *L)
