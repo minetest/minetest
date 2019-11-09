@@ -9,13 +9,18 @@ core.register_on_shutdown(function()
 end)
 local id = nil
 
-local server_info = core.get_server_info()
-print("Server version: " .. server_info.protocol_version)
-print("Server ip: " .. server_info.ip)
-print("Server address: " .. server_info.address)
-print("Server port: " .. server_info.port)
+do
+	local server_info = core.get_server_info()
+	print("Server version: " .. server_info.protocol_version)
+	print("Server ip: " .. server_info.ip)
+	print("Server address: " .. server_info.address)
+	print("Server port: " .. server_info.port)
 
-print("CSM restrictions: " .. dump(core.get_csm_restrictions()))
+	print("CSM restrictions: " .. dump(core.get_csm_restrictions()))
+
+	local l1, l2 = core.get_language()
+	print("Configured language: " .. l1 .. " / " .. l2)
+end
 
 mod_channel = core.mod_channel_join("experimental_preview")
 

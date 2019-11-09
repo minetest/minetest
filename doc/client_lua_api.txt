@@ -634,7 +634,9 @@ Minetest namespace reference
    the trailing separator. This is useful to load additional Lua files
    contained in your mod:
    e.g. `dofile(minetest.get_modpath(minetest.get_current_modname()) .. "stuff.lua")`
-* `minetest.get_language()`: returns the currently set gettext language.
+* `minetest.get_language()`: returns two strings
+   * the current gettext locale
+   * the current language code (the same as used for client-side translations)
 * `minetest.get_version()`: returns a table containing components of the
    engine version.  Components:
     * `project`: Name of the project, eg, "Minetest"
