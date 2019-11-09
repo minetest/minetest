@@ -143,8 +143,7 @@ core.after(5, function()
 		core.ui.minimap:show()
 	end
 
-	print("[PREVIEW] Day count: " .. core.get_day_count() ..
-		" time of day " .. core.get_timeofday())
+	print("[PREVIEW] Time of day " .. core.get_timeofday())
 
 	print("[PREVIEW] Node level: " .. core.get_node_level({x=0, y=20, z=0}) ..
 		" max level " .. core.get_node_max_level({x=0, y=20, z=0}))
