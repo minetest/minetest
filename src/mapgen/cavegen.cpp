@@ -366,11 +366,13 @@ void CavesRandomWalk::makeCave(MMVManip *vm, v3s16 nmin, v3s16 nmax,
 	// Area starting point in nodes
 	of = node_min;
 
-	// Allow a bit more (this should be more than the maximum radius of the tunnel)
+	// Allow caves to extend up to 16 nodes beyond the mapchunk edge, to allow
+	// connecting with caves of neighbor mapchunks.
+	// 'insure' is needed to avoid many 'out of voxelmanip' cave nodes.
 	const s16 insure = 2;
 	s16 more = MYMAX(MAP_BLOCKSIZE - max_tunnel_diameter / 2 - insure, 1);
-	ar += v3s16(1, 0, 1) * more * 2;
-	of -= v3s16(1, 0, 1) * more;
+	ar += v3s16(1, 1, 1) * more * 2;
+	of -= v3s16(1, 1, 1) * more;
 
 	route_y_min = 0;
 	// Allow half a diameter + 7 over stone surface
