@@ -237,6 +237,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		Formspec elements are drawn in the order of definition
 		bgcolor[]: use 3 parameters (bgcolor, formspec (now an enum), fbgcolor)
 		box[] and image[] elements enable clipping by default
+		new element: scroll_container[]
 */
 #define FORMSPEC_API_VERSION 3
 
