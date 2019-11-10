@@ -119,9 +119,8 @@ public:
 	s32 seed;
 	int water_level;
 	float large_cave_flooded;
-	// TODO 'lava_depth' and 'np_caveliquids' are deprecated and should be removed.
+	// TODO 'np_caveliquids' is deprecated and should eventually be removed.
 	// Cave liquids are now defined and located using biome definitions.
-	int lava_depth;
 	NoiseParams *np_caveliquids;
 
 	u16 ystride;
@@ -160,8 +159,7 @@ public:
 	CavesRandomWalk(const NodeDefManager *ndef, GenerateNotifier *gennotify =
 		NULL, s32 seed = 0, int water_level = 1, content_t water_source =
 		CONTENT_IGNORE, content_t lava_source = CONTENT_IGNORE,
-		float large_cave_flooded = 0.5f, int lava_depth = -256,
-		BiomeGen *biomegen = NULL);
+		float large_cave_flooded = 0.5f, BiomeGen *biomegen = NULL);
 
 	// vm and ps are mandatory parameters.
 	// If heightmap is NULL, the surface level at all points is assumed to

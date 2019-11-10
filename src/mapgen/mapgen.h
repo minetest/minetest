@@ -285,7 +285,4 @@ protected:
 	int large_cave_num_min;
 	int large_cave_num_max;
 	float large_cave_flooded;
-	// TODO 'lava_depth' is deprecated and should be removed. Cave liquids are
-	// now defined and located using biome definitions.
-	int lava_depth;
 };

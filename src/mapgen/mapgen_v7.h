@@ -45,7 +45,6 @@ struct MapgenV7Params : public MapgenParams {
 
 	float cave_width = 0.09f;
 	s16 large_cave_depth = -33;
-	s16 lava_depth = -256;
 	u16 small_cave_num_min = 0;
 	u16 small_cave_num_max = 0;
 	u16 large_cave_num_min = 0;

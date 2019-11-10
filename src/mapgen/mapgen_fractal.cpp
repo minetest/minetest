@@ -54,7 +54,6 @@ MapgenFractal::MapgenFractal(MapgenFractalParams *params, EmergeManager *emerge)
 	spflags            = params->spflags;
 	cave_width         = params->cave_width;
 	large_cave_depth   = params->large_cave_depth;
-	lava_depth         = params->lava_depth;
 	small_cave_num_min = params->small_cave_num_min;
 	small_cave_num_max = params->small_cave_num_max;
 	large_cave_num_min = params->large_cave_num_min;
@@ -113,7 +112,6 @@ void MapgenFractalParams::readParams(const Settings *settings)
 	settings->getFlagStrNoEx("mgfractal_spflags", spflags, flagdesc_mapgen_fractal);
 	settings->getFloatNoEx("mgfractal_cave_width",         cave_width);
 	settings->getS16NoEx("mgfractal_large_cave_depth",     large_cave_depth);
-	settings->getS16NoEx("mgfractal_lava_depth",           lava_depth);
 	settings->getU16NoEx("mgfractal_small_cave_num_min",   small_cave_num_min);
 	settings->getU16NoEx("mgfractal_small_cave_num_max",   small_cave_num_max);
 	settings->getU16NoEx("mgfractal_large_cave_num_min",   large_cave_num_min);
@@ -144,7 +142,6 @@ void MapgenFractalParams::writeParams(Settings *settings) const
 	settings->setFlagStr("mgfractal_spflags", spflags, flagdesc_mapgen_fractal, U32_MAX);
 	settings->setFloat("mgfractal_cave_width",         cave_width);
 	settings->setS16("mgfractal_large_cave_depth",     large_cave_depth);
-	settings->setS16("mgfractal_lava_depth",           lava_depth);
 	settings->setU16("mgfractal_small_cave_num_min",   small_cave_num_min);
 	settings->setU16("mgfractal_small_cave_num_max",   small_cave_num_max);
 	settings->setU16("mgfractal_large_cave_num_min",   large_cave_num_min);

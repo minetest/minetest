@@ -281,7 +281,6 @@ CavesRandomWalk::CavesRandomWalk(
 	content_t water_source,
 	content_t lava_source,
 	float large_cave_flooded,
-	int lava_depth,
 	BiomeGen *biomegen)
 {
 	assert(ndef);
@@ -292,7 +291,6 @@ CavesRandomWalk::CavesRandomWalk(
 	this->water_level        = water_level;
 	this->np_caveliquids     = &nparams_caveliquids;
 	this->large_cave_flooded = large_cave_flooded;
-	this->lava_depth         = lava_depth;
 	this->bmgn               = biomegen;
 
 	c_water_source = water_source;
@@ -530,12 +528,12 @@ void CavesRandomWalk::carveRoute(v3f vec, float f, bool randomize_xz)
 		if (use_biome_liquid) {
 			liquidnode = c_biome_liquid;
 		} else {
-			// TODO remove this. Cave liquids are now defined and located using biome
-			// definitions.
 			// If cave liquid not defined by biome, fallback to old hardcoded behaviour.
+			// TODO 'np_caveliquids' is deprecated and should eventually be removed.
+			// Cave liquids are now defined and located using biome definitions.
 			float nval = NoisePerlin3D(np_caveliquids, startp.X,
 				startp.Y, startp.Z, seed);
-			liquidnode = (nval < 0.40f && node_max.Y < lava_depth) ?
+			liquidnode = (nval < 0.40f && node_max.Y < water_level - 256) ?
 				lavanode : waternode;
 		}
 	}

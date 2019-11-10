@@ -61,7 +61,6 @@ MapgenCarpathian::MapgenCarpathian(MapgenCarpathianParams *params, EmergeManager
 	spflags            = params->spflags;
 	cave_width         = params->cave_width;
 	large_cave_depth   = params->large_cave_depth;
-	lava_depth         = params->lava_depth;
 	small_cave_num_min = params->small_cave_num_min;
 	small_cave_num_max = params->small_cave_num_max;
 	large_cave_num_min = params->large_cave_num_min;
@@ -155,7 +154,6 @@ void MapgenCarpathianParams::readParams(const Settings *settings)
 
 	settings->getFloatNoEx("mgcarpathian_cave_width",         cave_width);
 	settings->getS16NoEx("mgcarpathian_large_cave_depth",     large_cave_depth);
-	settings->getS16NoEx("mgcarpathian_lava_depth",           lava_depth);
 	settings->getU16NoEx("mgcarpathian_small_cave_num_min",   small_cave_num_min);
 	settings->getU16NoEx("mgcarpathian_small_cave_num_max",   small_cave_num_max);
 	settings->getU16NoEx("mgcarpathian_large_cave_num_min",   large_cave_num_min);
@@ -198,7 +196,6 @@ void MapgenCarpathianParams::writeParams(Settings *settings) const
 
 	settings->setFloat("mgcarpathian_cave_width",         cave_width);
 	settings->setS16("mgcarpathian_large_cave_depth",     large_cave_depth);
-	settings->setS16("mgcarpathian_lava_depth",           lava_depth);
 	settings->setU16("mgcarpathian_small_cave_num_min",   small_cave_num_min);
 	settings->setU16("mgcarpathian_small_cave_num_max",   small_cave_num_max);
 	settings->setU16("mgcarpathian_large_cave_num_min",   large_cave_num_min);
