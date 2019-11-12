@@ -701,12 +701,12 @@ static u8 face_contents(content_t m1, content_t m2, bool *equivalent,
 
 	if (c1 > c2) {
 		if (s1 == 0 && enable_waving_water && f2.isLiquid() && tid1 == 1)
-			return 2;
+			return 3;
 		return 1;
 	}
 
 	if (s2 == 0 && enable_waving_water && f1.isLiquid() && tid1 == 0)
-		return 1;
+		return 3;
 	return 2;
 }
 
@@ -806,11 +806,12 @@ static void getTileInfo(
 		const v3s16 &p,
 		const v3s16 &face_dir,
 		// Output:
-		bool &makes_face,
+		int &makes_face,
 		v3s16 &p_corrected,
 		v3s16 &face_dir_corrected,
 		u16 *lights,
-		TileSpec &tile
+		TileSpec &tile1,
+		TileSpec &tile2
 	)
 {
 	VoxelManipulator &vmanip = data->m_vmanip;
@@ -821,14 +822,14 @@ static void getTileInfo(
 
 	// Don't even try to get n1 if n0 is already CONTENT_IGNORE
 	if (n0.getContent() == CONTENT_IGNORE) {
-		makes_face = false;
+		makes_face = 0;
 		return;
 	}
 
 	const MapNode &n1 = vmanip.getNodeRefUnsafeCheckFlags(blockpos_nodes + p + face_dir);
 
 	if (n1.getContent() == CONTENT_IGNORE) {
-		makes_face = false;
+		makes_face = 0;
 		return;
 	}
 
@@ -852,42 +853,39 @@ static void getTileInfo(
 
 	// This is hackish
 	bool equivalent = false;
-	u8 mf = face_contents(n0.getContent(), n1.getContent(),
+	makes_face = face_contents(n0.getContent(), n1.getContent(),
 			&equivalent, ndef,
 			dir_to_tile[tile_index(face_dir, 0)],
 			s1, s2);
 
-	if (mf == 0) {
-		makes_face = false;
-		return;
-	}
-
-	makes_face = true;
+	if (makes_face == 0) return;
 
 	MapNode n = n0;
 
-	if (mf == 1) {
+	if (makes_face == 1) {
 		p_corrected = p;
 		face_dir_corrected = face_dir;
-	} else {
-		n = n1;
+	} else {					// makes_face == 3
 		p_corrected = p + face_dir;
 		face_dir_corrected = -face_dir;
+		n = n1;
 	}
 
-	getNodeTile(n, p_corrected, face_dir_corrected, data, tile);
+	getNodeTile(n, p_corrected, face_dir_corrected, data, tile1);
+	if (makes_face == 3) getNodeTile(n0, p, face_dir, data, tile2);
+
 	const ContentFeatures &f = ndef->get(n);
-	tile.emissive_light = f.light_source;
+	tile1.emissive_light = f.light_source;
 
 	// eg. water and glass
 	if (equivalent) {
-		for (TileLayer &layer : tile.layers)
+		for (TileLayer &layer : tile1.layers)
 			layer.material_flags |= MATERIAL_FLAG_BACKFACE_CULLING;
 	}
 
 	if (!data->m_smooth_lighting) {
 		lights[0] = lights[1] = lights[2] = lights[3] =
-				getFaceLight(n0, n1, face_dir, ndef);
+			getFaceLight(n0, n, face_dir, ndef);
 	} else {
 		v3s16 vertex_dirs[4];
 		getNodeVertexDirs(face_dir_corrected, vertex_dirs);
@@ -915,24 +913,24 @@ static void updateFastFaceRow(
 
 	u16 continuous_tiles_count = 1;
 
-	bool makes_face = false;
+	int makes_face = 0;
 	v3s16 p_corrected;
 	v3s16 face_dir_corrected;
 	u16 lights[4] = {0, 0, 0, 0};
-	TileSpec tile;
+	TileSpec tile, tile2;
 	getTileInfo(data, p, face_dir,
 			makes_face, p_corrected, face_dir_corrected,
-			lights, tile);
+			lights, tile, tile2);
 
 	// Unroll this variable which has a significant build cost
-	TileSpec next_tile;
+	TileSpec next_tile, next_tile2;
 	for (u16 j = 0; j < MAP_BLOCKSIZE; j++) {
 		// If tiling can be done, this is set to false in the next step
 		bool next_is_different = true;
 
 		v3s16 p_next;
 
-		bool next_makes_face = false;
+		int next_makes_face = 0;
 		v3s16 next_p_corrected;
 		v3s16 next_face_dir_corrected;
 		u16 next_lights[4] = {0, 0, 0, 0};
@@ -945,7 +943,7 @@ static void updateFastFaceRow(
 			getTileInfo(data, p_next, face_dir,
 					next_makes_face, next_p_corrected,
 					next_face_dir_corrected, next_lights,
-					next_tile);
+					next_tile, next_tile2);
 
 			if (next_makes_face == makes_face
 					&& next_p_corrected == p_corrected + translate_dir
@@ -977,6 +975,26 @@ static void updateFastFaceRow(
 
 				makeFastFace(tile, lights[0], lights[1], lights[2], lights[3],
 						pf, sp, face_dir_corrected, scale, dest);
+
+				if (makes_face == 3) {
+					// Floating point conversion of the position vector
+					v3f pf(p_corrected.X, p_corrected.Y, p_corrected.Z);
+					// Center point of face (kind of)
+					v3f sp = pf - ((f32)continuous_tiles_count * 0.5f - 0.5f)
+						* translate_dir_f;
+					v3f scale(1, 1, 1);
+
+					if (translate_dir.X != 0)
+						scale.X = continuous_tiles_count;
+					if (translate_dir.Y != 0)
+						scale.Y = continuous_tiles_count;
+					if (translate_dir.Z != 0)
+						scale.Z = continuous_tiles_count;
+
+					makeFastFace(tile2, lights[0], lights[1], lights[2], lights[3],
+								 pf, sp, face_dir_corrected, scale, dest);
+				}
+
 				g_profiler->avg("Meshgen: Tiles per face [#]", continuous_tiles_count);
 			}
 
@@ -987,8 +1005,10 @@ static void updateFastFaceRow(
 		p_corrected = next_p_corrected;
 		face_dir_corrected = next_face_dir_corrected;
 		std::memcpy(lights, next_lights, ARRLEN(lights) * sizeof(u16));
-		if (next_is_different)
+		if (next_is_different) {
 			tile = next_tile;
+			tile2 = next_tile2;
+		}
 		p = p_next;
 	}
 }
