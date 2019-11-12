@@ -172,9 +172,9 @@ void MapDatabasePostgreSQL::createDatabase()
 {
 	createTableIfNotExists("blocks",
 		"CREATE TABLE blocks ("
-			"posX INT NOT NULL,"
-			"posY INT NOT NULL,"
-			"posZ INT NOT NULL,"
+			"posX smallint NOT NULL,"
+			"posY smallint NOT NULL,"
+			"posZ smallint NOT NULL,"
 			"data BYTEA,"
 			"PRIMARY KEY (posX,posY,posZ)"
 			");"
@@ -187,31 +187,31 @@ void MapDatabasePostgreSQL::initStatements()
 {
 	prepareStatement("read_block",
 		"SELECT data FROM blocks "
-			"WHERE posX = $1::int4 AND posY = $2::int4 AND "
-			"posZ = $3::int4");
+			"WHERE posX = $1::smallint AND posY = $2::smallint AND "
+			"posZ = $3::smallint");
 
 	if (getPGVersion() < 90500) {
 		prepareStatement("write_block_insert",
 			"INSERT INTO blocks (posX, posY, posZ, data) SELECT "
-				"$1::int4, $2::int4, $3::int4, $4::bytea "
+				"$1::smallint, $2::smallint, $3::smallint, $4::bytea "
 				"WHERE NOT EXISTS (SELECT true FROM blocks "
-				"WHERE posX = $1::int4 AND posY = $2::int4 AND "
-				"posZ = $3::int4)");
+				"WHERE posX = $1::smallint AND posY = $2::smallint AND "
+				"posZ = $3::smallint)");
 
 		prepareStatement("write_block_update",
 			"UPDATE blocks SET data = $4::bytea "
-				"WHERE posX = $1::int4 AND posY = $2::int4 AND "
-				"posZ = $3::int4");
+				"WHERE posX = $1::smallint AND posY = $2::smallint AND "
+				"posZ = $3::smallint");
 	} else {
 		prepareStatement("write_block",
 			"INSERT INTO blocks (posX, posY, posZ, data) VALUES "
-				"($1::int4, $2::int4, $3::int4, $4::bytea) "
+				"($1::smallint, $2::smallint, $3::smallint, $4::bytea) "
 				"ON CONFLICT ON CONSTRAINT blocks_pkey DO "
 				"UPDATE SET data = $4::bytea");
 	}
 
 	prepareStatement("delete_block", "DELETE FROM blocks WHERE "
-		"posX = $1::int4 AND posY = $2::int4 AND posZ = $3::int4");
+		"posX = $1::smallint AND posY = $2::smallint AND posZ = $3::smallint");
 
 	prepareStatement("list_all_loadable_blocks",
 		"SELECT posX, posY, posZ FROM blocks");
