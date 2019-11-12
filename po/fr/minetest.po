@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: French (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-10-09 22:02+0200\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"PO-Revision-Date: 2019-11-13 16:04+0000\n"
+"Last-Translator: Julien Maulny <julien.maulny@protonmail.com>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/minetest/minetest/"
 "fr/>\n"
 "Language: fr\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 3.9-dev\n"
+"X-Generator: Weblate 3.10-dev\n"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "Respawn"
@@ -23,9 +23,8 @@ msgid "You died"
 msgstr "Vous êtes mort"
 
 #: builtin/fstk/ui.lua
-#, fuzzy
 msgid "An error occurred in a Lua script:"
-msgstr "Une erreur est survenue dans un script Lua (comme un mod) :"
+msgstr "Une erreur est survenue dans un script Lua :"
 
 #: builtin/fstk/ui.lua
 msgid "An error occurred:"
@@ -121,18 +120,16 @@ msgid "Mod:"
 msgstr "Mod :"
 
 #: builtin/mainmenu/dlg_config_world.lua
-#, fuzzy
 msgid "No (optional) dependencies"
-msgstr "Dépendances optionnelles :"
+msgstr "Pas de dépendances (optionnelles)"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "No game description provided."
 msgstr "Pas de description du jeu fournie."
 
 #: builtin/mainmenu/dlg_config_world.lua
-#, fuzzy
 msgid "No hard dependencies"
-msgstr "Pas de dépendances."
+msgstr "Pas de dépendances"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "No modpack description provided."
@@ -141,7 +138,7 @@ msgstr "Aucune description fournie pour le pack de mods."
 #: builtin/mainmenu/dlg_config_world.lua
 #, fuzzy
 msgid "No optional dependencies"
-msgstr "Dépendances optionnelles :"
+msgstr "Pas de dépendances optionnelles"
 
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/tab_content.lua
 msgid "Optional dependencies:"
@@ -789,9 +786,8 @@ msgid "Waving Leaves"
 msgstr "Feuilles ondulantes"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Waving Liquids"
-msgstr "Environnement mouvant"
+msgstr "Liquides ondulants"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Waving Plants"
@@ -1533,7 +1529,7 @@ msgid "Register and Join"
 msgstr "S'enregistrer et rejoindre"
 
 #: src/gui/guiConfirmRegistration.cpp
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "You are about to join this server with the name \"%s\" for the first time.\n"
 "If you proceed, a new account using your credentials will be created on this "
@@ -1541,12 +1537,13 @@ msgid ""
 "Please retype your password and click 'Register and Join' to confirm account "
 "creation, or click 'Cancel' to abort."
 msgstr ""
-"Vous allez rejoindre le serveur %1$s1 avec le nom \"%2$s2\" pour la première "
-"fois. Si vous continuez un nouveau compte avec ces identifiants sera créé "
+"Vous êtes sur le point de rejoindre ce serveur avec le nom \"%s\" pour la "
+"première fois.\n"
+"Si vous continuez, un nouveau compte utilisant vos identifiants sera créé "
 "sur ce serveur.\n"
-"Merci d'inscrire de nouveau votre mot de passe et de cliquer sur Enregistrer "
-"et rejoindre pour confirmer la création du coup. Auquel cas, cliquez sur "
-"Annuler pour retourner en arrière."
+"Veuillez retaper votre mot de passe et cliquer sur \"S'enregistrer et "
+"rejoindre\" pour confirmer la création de votre compte, ou cliquez sur \""
+"Annuler\"."
 
 #: src/gui/guiFormSpecMenu.cpp
 msgid "Proceed"
@@ -1925,7 +1922,7 @@ msgstr "Accélération en l'air"
 
 #: src/settings_translation_file.cpp
 msgid "Acceleration of gravity, in nodes per second per second."
-msgstr ""
+msgstr "Accélération de la gravité, en nœuds par seconde par seconde."
 
 #: src/settings_translation_file.cpp
 msgid "Active Block Modifiers"
@@ -2254,9 +2251,8 @@ msgid "Chat message count limit"
 msgstr "Limite du nombre de message de discussion"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Chat message format"
-msgstr "Longueur maximum d'un message de chat"
+msgstr "Format du message de chat"
 
 #: src/settings_translation_file.cpp
 msgid "Chat message kick threshold"
@@ -2503,9 +2499,8 @@ msgid "Debug info toggle key"
 msgstr "Infos de débogage"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Debug log file size threshold"
-msgstr "Limite de bruit pour le désert"
+msgstr "Seuil de la taille du fichier de logs"
 
 #: src/settings_translation_file.cpp
 msgid "Debug log level"
@@ -2518,6 +2513,7 @@ msgstr "Touche pour diminuer le volume"
 #: src/settings_translation_file.cpp
 msgid "Decrease this to increase liquid resistence to movement."
 msgstr ""
+"Diminuer cette valeur pour augmenter la résistance du liquide au mouvement."
 
 #: src/settings_translation_file.cpp
 msgid "Dedicated server step"
@@ -2735,9 +2731,8 @@ msgid "Dungeon minimum Y"
 msgstr "Minimum Y des donjons"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Dungeon noise"
-msgstr "Minimum Y des donjons"
+msgstr "Bruit de donjon"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3101,6 +3096,8 @@ msgid ""
 "placeholders:\n"
 "@name, @message, @timestamp (optional)"
 msgstr ""
+"Format des messages de chat des joueurs. Substituts valides :\n"
+"@name, @message, @timestamp (facultatif)"
 
 #: src/settings_translation_file.cpp
 msgid "Format of screenshots."
@@ -3362,12 +3359,16 @@ msgid ""
 "Horizontal acceleration in air when jumping or falling,\n"
 "in nodes per second per second."
 msgstr ""
+"Accélération horizontale dans l'air en sautant ou en tombant,\n"
+"en nœuds par seconde par seconde."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Horizontal and vertical acceleration in fast mode,\n"
 "in nodes per second per second."
 msgstr ""
+"Accélération horizontale et verticale en mode rapide,\n"
+"en nœuds par seconde par seconde."
 
 #: src/settings_translation_file.cpp
 msgid ""
