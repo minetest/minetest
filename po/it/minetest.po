@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Italian (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-10-09 22:02+0200\n"
-"PO-Revision-Date: 2019-11-10 15:04+0000\n"
-"Last-Translator: Krock <mk939@ymail.com>\n"
+"PO-Revision-Date: 2019-11-13 16:04+0000\n"
+"Last-Translator: Jacques Lagrange <Jacques.Reads@gmail.com>\n"
 "Language-Team: Italian <https://hosted.weblate.org/projects/minetest/"
 "minetest/it/>\n"
 "Language: it\n"
@@ -28,7 +28,7 @@ msgstr "Si è verificato un errore in uno script Lua:"
 
 #: builtin/fstk/ui.lua
 msgid "An error occurred:"
-msgstr "È successo un errore:"
+msgstr "Si è verificato un errore:"
 
 #: builtin/fstk/ui.lua
 msgid "Main menu"
@@ -245,7 +245,7 @@ msgstr "Nessun gioco selezionato"
 #: builtin/mainmenu/dlg_create_world.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Seed"
-msgstr "Seme"
+msgstr "Seme di generazione"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Warning: The minimal development test is meant for developers."
@@ -261,13 +261,13 @@ msgstr "Non hai nessun gioco installato."
 
 #: builtin/mainmenu/dlg_delete_content.lua
 msgid "Are you sure you want to delete \"$1\"?"
-msgstr "Sei sicuro di volere cancellare \"$1\"?"
+msgstr "Sei sicuro di volere eliminare \"$1\"?"
 
 #: builtin/mainmenu/dlg_delete_content.lua
 #: builtin/mainmenu/dlg_delete_world.lua builtin/mainmenu/tab_local.lua
 #: src/client/keycode.cpp
 msgid "Delete"
-msgstr "Cancella"
+msgstr "Elimina"
 
 #: builtin/mainmenu/dlg_delete_content.lua
 msgid "pkgmgr: failed to delete \"$1\""
@@ -279,7 +279,7 @@ msgstr "pkgmgr: percorso non valido \"$1\""
 
 #: builtin/mainmenu/dlg_delete_world.lua
 msgid "Delete World \"$1\"?"
-msgstr "Cancellare il mondo \"$1\"?"
+msgstr "Vuoi eliminare il mondo \"$1\"?"
 
 #: builtin/mainmenu/dlg_rename_modpack.lua
 msgid "Accept"
@@ -307,11 +307,11 @@ msgstr "Rumore 2D"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "< Back to Settings page"
-msgstr "< Torna alla Pag. impostazioni"
+msgstr "< Torna alle impostazioni"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Browse"
-msgstr "Mostra"
+msgstr "Scorri"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Disabled"
@@ -343,7 +343,7 @@ msgstr "Persistenza"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Please enter a valid integer."
-msgstr "Per favore inserisci un intero valido."
+msgstr "Per favore inserisci un numero intero valido."
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Please enter a valid number."
@@ -403,19 +403,19 @@ msgstr "Propagazione Z"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "absvalue"
-msgstr "val.ass."
+msgstr "'absvalue'"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "defaults"
-msgstr "predefiniti"
+msgstr "'defaults'"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "eased"
-msgstr "semplificato"
+msgstr "'eased'"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "$1 (Enabled)"
-msgstr "$1 (Abilitato)"
+msgstr "$1 (abilitato)"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "$1 mods"
@@ -427,12 +427,12 @@ msgstr "Impossibile installare $1 in $2"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Install Mod: Unable to find real mod name for: $1"
-msgstr "Installa mod: Impossibile trovare il nome reale del mod per: $1"
+msgstr "Installa mod: Impossibile trovare il vero nome del mod per: $1"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Install Mod: Unable to find suitable folder name for modpack $1"
 msgstr ""
-"Installa mod: Impossibile trovare un nome cartella adatto per il pacchetto "
+"Installa mod: Impossibile trovare un nome cartella corretto per il pacchetto "
 "mod $1"
 
 #: builtin/mainmenu/pkgmgr.lua
@@ -601,7 +601,7 @@ msgstr "Ferimento abilitato"
 
 #: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
 msgid "Del. Favorite"
-msgstr "Canc. preferito"
+msgstr "Elimina preferito"
 
 #: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
 msgid "Favorite"
@@ -653,7 +653,7 @@ msgstr "Sei sicuro di azzerare il tuo mondo locale?"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Autosave Screen Size"
-msgstr "Salvare dim. finestra"
+msgstr "Ricorda dim. finestra"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Bilinear Filter"
@@ -701,11 +701,11 @@ msgstr "Nessuna mipmap"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Node Highlighting"
-msgstr "Evidenz. nodo"
+msgstr "Evidenzia nodi"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Node Outlining"
-msgstr "Profilo nodo"
+msgstr "Profilo nodi"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "None"
@@ -753,7 +753,7 @@ msgstr "Foglie semplici"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Smooth Lighting"
-msgstr "Illuminaz. uniforme"
+msgstr "Luce uniforme"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Texturing:"
@@ -837,7 +837,7 @@ msgstr "Impossibile trovare o caricare il gioco \""
 
 #: src/client/clientlauncher.cpp
 msgid "Invalid gamespec."
-msgstr "Spec. gioco non valida."
+msgstr "Requisiti gioco non validi."
 
 #: src/client/clientlauncher.cpp
 msgid "Main Menu"
@@ -1682,9 +1682,8 @@ msgid "Toggle noclip"
 msgstr "Scegli incorporea"
 
 #: src/gui/guiKeyChangeMenu.cpp
-#, fuzzy
 msgid "Toggle pitchmove"
-msgstr "Scegli registro chat"
+msgstr "Modalità beccheggio"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "press key"
@@ -1824,9 +1823,8 @@ msgstr ""
 "Rumore 2D che controlla forma/comparsa delle file di montagne con dirupi."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "2D noise that locates the river valleys and channels."
-msgstr "Rumore 2D che controlla forma/dimensione delle colline in serie."
+msgstr "Rumore 2D che posiziona fiumi e canali."
 
 #: src/settings_translation_file.cpp
 msgid "3D clouds"
@@ -1864,7 +1862,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "3D noise that determines number of dungeons per mapchunk."
-msgstr ""
+msgstr "Rumore 3D che stabilisce il numero di segrete per blocco di mondo."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1922,7 +1920,7 @@ msgstr "Accelerazione in aria"
 
 #: src/settings_translation_file.cpp
 msgid "Acceleration of gravity, in nodes per second per second."
-msgstr ""
+msgstr "Accelerazione di gravità, in nodi per secondo al secondo."
 
 #: src/settings_translation_file.cpp
 msgid "Active Block Modifiers"
@@ -2153,14 +2151,14 @@ msgid "Bumpmapping"
 msgstr "Bumpmapping"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Camera 'near clipping plane' distance in nodes, between 0 and 0.5.\n"
 "Most users will not need to change this.\n"
 "Increasing can reduce artifacting on weaker GPUs.\n"
 "0.1 = Default, 0.25 = Good value for weaker tablets."
 msgstr ""
-"Distanza in nodi del piano vicino alla telecamera, tra 0 e 0.5\n"
+"Distanza in nodi del \"piano di ritaglio vicino\" alla telecamera, tra 0 e "
+"0.5.\n"
 "La maggior parte degli utenti non dovrà cambiarla.\n"
 "Aumentarla può ridurre l'artificialità sulle GPU più deboli.\n"
 "0.1 = predefinita, 0.25 = buon valore per tablet più deboli."
@@ -2250,9 +2248,8 @@ msgid "Chat message count limit"
 msgstr "Numero limite dei messaggi di chat"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Chat message format"
-msgstr "Lunghezza massima dei messaggi di chat"
+msgstr "Formato dei messaggi di chat"
 
 #: src/settings_translation_file.cpp
 msgid "Chat message kick threshold"
@@ -2433,7 +2430,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Controls sinking speed in liquid."
-msgstr ""
+msgstr "Controlla la velocità di affondamento nei liquidi."
 
 #: src/settings_translation_file.cpp
 msgid "Controls steepness/depth of lake depressions."
@@ -2498,9 +2495,8 @@ msgid "Debug info toggle key"
 msgstr "Tasto di scelta delle informazioni di debug"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Debug log file size threshold"
-msgstr "Soglia di rumore del deserto"
+msgstr "Dimensione del file di debug"
 
 #: src/settings_translation_file.cpp
 msgid "Debug log level"
@@ -2512,7 +2508,7 @@ msgstr "Tasto dim. volume"
 
 #: src/settings_translation_file.cpp
 msgid "Decrease this to increase liquid resistence to movement."
-msgstr ""
+msgstr "Va diminuito per aumentare la resistenza al movimento nel liquido."
 
 #: src/settings_translation_file.cpp
 msgid "Dedicated server step"
@@ -2606,9 +2602,8 @@ msgid "Defines the base ground level."
 msgstr "Definisce il livello base del terreno."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Defines the depth of the river channel."
-msgstr "Definisce il livello base del terreno."
+msgstr "Stabilisce la profondità del letto del fiume."
 
 #: src/settings_translation_file.cpp
 msgid "Defines the maximal player transfer distance in blocks (0 = unlimited)."
@@ -2617,14 +2612,12 @@ msgstr ""
 "= illimitata)."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Defines the width of the river channel."
-msgstr "Definisce la struttura dei canali fluviali di ampia scala."
+msgstr "Stabilisce la larghezza del fiume."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Defines the width of the river valley."
-msgstr "Definisce aree in cui gli alberi hanno le mele."
+msgstr "Stabilisce la larghezza della valle del fiume."
 
 #: src/settings_translation_file.cpp
 msgid "Defines tree areas and tree density."
@@ -2657,6 +2650,9 @@ msgid ""
 "Deprecated, define and locate cave liquids using biome definitions instead.\n"
 "Y of upper limit of lava in large caves."
 msgstr ""
+"Sconsigliato, va usata la definizione del bioma per definire e posizionare "
+"le caverne di liquido.\n"
+"Limite verticale della lava nelle caverne grandi."
 
 #: src/settings_translation_file.cpp
 msgid "Depth below which you'll find giant caverns."
@@ -2679,13 +2675,12 @@ msgid "Desert noise threshold"
 msgstr "Soglia di rumore del deserto"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Deserts occur when np_biome exceeds this value.\n"
 "When the 'snowbiomes' flag is enabled, this is ignored."
 msgstr ""
-"Quando np_biome eccede questo valore si verificano i deserti.\n"
-"Ciò viene ignorato quando è attivato il nuovo sistema di bioma."
+"I deserti si presentano quando np_biome supera questo valore.\n"
+"Quando è attivo il parametro 'snowbiomes', viene ignorato."
 
 #: src/settings_translation_file.cpp
 msgid "Desynchronize block animation"
@@ -2732,9 +2727,8 @@ msgid "Dungeon minimum Y"
 msgstr "Y minimo dei sotterranei"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Dungeon noise"
-msgstr "Y minimo dei sotterranei"
+msgstr "Rumore per le segrete"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3099,6 +3093,9 @@ msgid ""
 "placeholders:\n"
 "@name, @message, @timestamp (optional)"
 msgstr ""
+"Formato dei messaggi del giocatore. Le stringhe seguenti sono segnaposto "
+"validi:\n"
+"@name, @message, @timestamp (optional)"
 
 #: src/settings_translation_file.cpp
 msgid "Format of screenshots."
@@ -3359,18 +3356,24 @@ msgid ""
 "Horizontal acceleration in air when jumping or falling,\n"
 "in nodes per second per second."
 msgstr ""
+"Accelerazione orizzontale in aria quando si salta o si cade,\n"
+"in nodi al secondo per secondo."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Horizontal and vertical acceleration in fast mode,\n"
 "in nodes per second per second."
 msgstr ""
+"Accelerazione orizzontale e verticale in modalità veloce,\n"
+"in nodi al secondo per secondo."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Horizontal and vertical acceleration on ground or when climbing,\n"
 "in nodes per second per second."
 msgstr ""
+"Accelerazione orizzontale sul terreno o in scalata,\n"
+"in nodi al secondo per secondo."
 
 #: src/settings_translation_file.cpp
 msgid "Hotbar next key"
@@ -3659,6 +3662,11 @@ msgid ""
 "deleting an older debug.txt.1 if it exists.\n"
 "debug.txt is only moved if this setting is positive."
 msgstr ""
+"Se la dimensione del file debug.txt supera il numero di Mb indicati in\n"
+"questa impostazione quando viene aperto, il file viene rinominato in "
+"debug.txt.1,\n"
+"eliminando un eventuale debug.txt.1 più vecchio.\n"
+"debug.txt viene rinominato solo se c'è questa impostazione."
 
 #: src/settings_translation_file.cpp
 msgid "If this is set, players will always (re)spawn at the given position."
@@ -3692,7 +3700,7 @@ msgstr "Tasto aum. volume"
 
 #: src/settings_translation_file.cpp
 msgid "Initial vertical speed when jumping, in nodes per second."
-msgstr ""
+msgstr "Velocità verticale iniziale quando si salta, in nodi al secondo."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4733,9 +4741,8 @@ msgid "Liquid queue purge time"
 msgstr "Tempo di svuotamento della coda del liquido"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Liquid sinking"
-msgstr "Velocità di affondamento del liquido"
+msgstr "Velocità di affondamento nel liquido"
 
 #: src/settings_translation_file.cpp
 msgid "Liquid update interval in seconds."
@@ -4819,14 +4826,15 @@ msgstr ""
 "\"altitude_dry\": riduce l'umidità con l'altitudine."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Map generation attributes specific to Mapgen flat.\n"
 "'terrain' enables the generation of non-fractal terrain:\n"
 "ocean, islands and underground."
 msgstr ""
-"Attributi di generazione della mappa specifici del generatore di mappe v7.\n"
-"\"ridges\" abilita i fiumi."
+"Attributi di generazione della mappa specifici del generatore di mappe "
+"piatto.\n"
+"'terrain' abilita la generazione di terreno non-frattale:\n"
+"oceano, isole e sotterranei."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4843,7 +4851,6 @@ msgstr ""
 "Attributi di generazione della mappa specifici del generatore di mappe v5."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Map generation attributes specific to Mapgen v6.\n"
 "The 'snowbiomes' flag enables the new 5 biome system.\n"
@@ -4851,9 +4858,9 @@ msgid ""
 "the 'jungles' flag is ignored."
 msgstr ""
 "Attributi di generazione della mappa specifici del generatore di mappe v6.\n"
-"Il valore \"snowbiomes\" abilita il nuovo sistema di bioma 5.\n"
-"Quando è abilitato il nuovo sistema di bioma le giungle sono abilitate\n"
-"automaticamente e il valore \"jungles\" è ignorato."
+"Il valore \"snowbiomes\" abilita il nuovo sistema di 5 biomi.\n"
+"Quando è abilitato,le giungle sono abilitate automaticamente \n"
+"e il valore \"jungles\" viene ignorato."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4908,9 +4915,8 @@ msgid "Mapgen Fractal"
 msgstr "Generatore di mappe Fractal"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Mapgen Fractal specific flags"
-msgstr "Valori specifici del generatore di mappe Flat"
+msgstr "Valori specifici del generatore di mappe frattale"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen V5"
@@ -4997,6 +5003,8 @@ msgid ""
 "Maximum liquid resistence. Controls deceleration when entering liquid at\n"
 "high speed."
 msgstr ""
+"Resistenza massima dei liquidi. Gestisce la decelerazione \n"
+"quando si entra ad alta velocità in un liquido."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5209,7 +5217,6 @@ msgid "Mute sound"
 msgstr "Silenzia audio"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Name of map generator to be used when creating a new world.\n"
 "Creating a world in the main menu will override this.\n"
@@ -5217,12 +5224,9 @@ msgid ""
 "-    The optional floatlands of v7 (disabled by default)."
 msgstr ""
 "Nome del generatore mappa da usare alla creazione di un nuovo mondo.\n"
-"Creare un mondo nel menu principale lo scavalcherà.\n"
-"Generatori mappe attualmente stabili:\n"
-"v5, v6, v7 (eccetto terre fluttuanti), singlenode.\n"
-"\"Stabile\" significa che la forma del terreno in un mondo esistente non\n"
-"sarà cambiata in futuro. Si noti che i biomi sono determinati dai giochi\n"
-"e potrebbero ancora cambiare."
+"Non viene usato se si crea un mondo nel menu principale.\n"
+"Generatori mappe attualmente molto instabili:\n"
+"-    'floatlands' in v7 (disabilitato per impostazione predefinita)."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5243,9 +5247,8 @@ msgstr ""
 "dei server."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Near clipping plane"
-msgstr "Piano vicino"
+msgstr "Piano di ritaglio vicino"
 
 #: src/settings_translation_file.cpp
 msgid "Network"
@@ -5296,7 +5299,6 @@ msgid "Number of emerge threads"
 msgstr "Numero di thread emerge"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Number of emerge threads to use.\n"
 "WARNING: Currently there are multiple bugs that may cause crashes when\n"
@@ -5312,17 +5314,22 @@ msgid ""
 "processes, especially in singleplayer and/or when running Lua code in\n"
 "'on_generated'. For many users the optimum setting may be '1'."
 msgstr ""
-"Numero di thread emerge da usare.\n"
-"Vuoto o valore 0:\n"
-"-    Selezione automatica. Il numero di thread emerge sarà\n"
+"Numero di emerge thread da usare.\n"
+"Attenzione: Attualmente ci sono diversi bachi che possono provocare crash "
+"quando\n"
+"'num_emerge_threds' è maggiore di 1. Fintanto che questo avviso non viene "
+"rimosso \n"
+"si raccomanda vivamente di impostarlo al valore predefinito 1.\n"
+"Valore 0:\n"
+"-    Selezione automatica. Il numero di emerge thread sarà\n"
 "-    \"numero di processori - 2\", con un limite inferiore di 1.\n"
 "Qualunque altro valore:\n"
-"-    Specifica il numero di thread emerge, con un limite inferiore di 1.\n"
-"Avvertimento: aumentare il numero di thread emerge aumenta la\n"
+"-    Specifica il numero di emerge thread, con un limite inferiore di 1.\n"
+"Avvertimento: aumentare il numero di emerge thread aumenta la\n"
 "velocità del motore del generatore mappa, ma ciò potrebbe danneggiare\n"
 "le prestazioni del gioco interferendo con altri processi, specialmente in\n"
-"modalità giocatore singolo e/o quando si esegue codice Lua in \"on_generated"
-"\".\n"
+"modalità giocatore singolo e/o quando si esegue codice Lua in \""
+"on_generated\".\n"
 "Per molti utenti l'impostazione ottimale può essere \"1\"."
 
 #: src/settings_translation_file.cpp
@@ -5601,14 +5608,12 @@ msgid "Rightclick repetition interval"
 msgstr "Intervallo di ripetizione del click destro"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "River channel depth"
-msgstr "Profondità dei fiumi"
+msgstr "Profondità dell'alveo dei fiumi"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "River channel width"
-msgstr "Profondità dei fiumi"
+msgstr "Larghezza dell'alveo dei fiumi"
 
 #: src/settings_translation_file.cpp
 msgid "River depth"
@@ -5623,9 +5628,8 @@ msgid "River size"
 msgstr "Dimensione dei fiumi"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "River valley width"
-msgstr "Profondità dei fiumi"
+msgstr "Larghezza delle valli dei fiumi"
 
 #: src/settings_translation_file.cpp
 msgid "Rollback recording"
@@ -5974,7 +5978,7 @@ msgstr "Velocità di strisciamento"
 
 #: src/settings_translation_file.cpp
 msgid "Sneaking speed, in nodes per second."
-msgstr ""
+msgstr "Velocità furtiva, in nodi al secondo."
 
 #: src/settings_translation_file.cpp
 msgid "Sound"
@@ -6364,7 +6368,6 @@ msgid "Undersampling"
 msgstr "Sotto-campionamento"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Undersampling is similar to using a lower screen resolution, but it applies\n"
 "to the game world only, keeping the GUI intact.\n"
@@ -6372,12 +6375,13 @@ msgid ""
 "image.\n"
 "Higher values result in a less detailed image."
 msgstr ""
-"Il sotto-campionamento è simile all'uso di una risoluzione schermo "
+"Il sotto-campionamento è analogo all'uso di una risoluzione schermo "
 "inferiore,\n"
 "ma è applicato solo al mondo di gioco, mantenendo intatta l'interfaccia "
 "utente.\n"
 "Dovrebbe dare un aumento di prestazioni significativo al costo di immagini\n"
-"meno dettagliate."
+"meno dettagliate.\n"
+"Più si aumenta il valore, meno dettagliata sarà l'immagine."
 
 #: src/settings_translation_file.cpp
 msgid "Unlimited player transfer distance"
@@ -6493,7 +6497,7 @@ msgstr "Varia la ripidità dei dirupi."
 
 #: src/settings_translation_file.cpp
 msgid "Vertical climbing speed, in nodes per second."
-msgstr ""
+msgstr "Velocità di scalata, in nodi al secondo."
 
 #: src/settings_translation_file.cpp
 msgid "Vertical screen synchronization."
@@ -6551,7 +6555,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Walking and flying speed, in nodes per second."
-msgstr ""
+msgstr "Velocità a terra o in volo, in nodi al secondo."
 
 #: src/settings_translation_file.cpp
 msgid "Walking speed"
@@ -6560,6 +6564,8 @@ msgstr "Velocità di cammino"
 #: src/settings_translation_file.cpp
 msgid "Walking, flying and climbing speed in fast mode, in nodes per second."
 msgstr ""
+"Velocità sul terreno, in volo e in scalata con modalità rapida, in nodi al "
+"secondo."
 
 #: src/settings_translation_file.cpp
 msgid "Water level"
@@ -6586,19 +6592,16 @@ msgid "Waving water"
 msgstr "Acqua ondeggiante"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Waving water wave height"
-msgstr "Altezza dell'acqua ondeggiante"
+msgstr "Altezza di ondeggiamento dei liquidi"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Waving water wave speed"
-msgstr "Velocità di ondeggiamento dell'acqua"
+msgstr "Velocità di ondeggiamento dei liquidi"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Waving water wavelength"
-msgstr "Durata di ondeggiamento dell'acqua"
+msgstr "Durata di ondeggiamento dei liquidi"
 
 #: src/settings_translation_file.cpp
 msgid ""
