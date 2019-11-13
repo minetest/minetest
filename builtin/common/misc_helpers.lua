@@ -5,6 +5,7 @@
 local string_sub, string_find = string.sub, string.find
 
 --------------------------------------------------------------------------------
+
 function basic_dump(o)
 	local tp = type(o)
 	if tp == "number" then
@@ -642,6 +643,13 @@ function core.colorize(color, message)
 	return table.concat(lines, "\n") .. core.get_color_escape_sequence("#ffffff")
 end
 
+function core.colorize_chatcommand(cmd, param)
+	if param ~= nil and param ~= "" then
+		return core.colorize(core.COLOR_COMMAND, cmd) .. " " .. core.colorize(core.COLOR_PARAM, param)
+	else
+		return core.colorize(core.COLOR_COMMAND, cmd)
+	end
+end
 
 function core.strip_foreground_colors(str)
 	return (str:gsub(ESCAPE_CHAR .. "%(c@[^)]+%)", ""))

@@ -30,7 +30,11 @@ end
 
 core.register_privilege("interact", "Can interact with things and modify the world")
 core.register_privilege("shout", "Can speak in chat")
-core.register_privilege("basic_privs", "Can modify 'shout' and 'interact' privileges")
+core.register_privilege("basic_privs", "Can modify '"
+		.. core.colorize(core.COLOR_PRIV, "shout")
+		.. "' and '"
+		.. core.colorize(core.COLOR_PRIV, "interact")
+		.. "' privileges")
 core.register_privilege("privs", "Can modify privileges")
 
 core.register_privilege("teleport", {
@@ -42,7 +46,7 @@ core.register_privilege("bring", {
 	give_to_singleplayer = false,
 })
 core.register_privilege("settime", {
-	description = "Can set the time of day using /time",
+	description = "Can set the time of day using "..core.colorize_chatcommand("/time"),
 	give_to_singleplayer = false,
 })
 core.register_privilege("server", {
@@ -65,11 +69,17 @@ core.register_privilege("kick", {
 	give_to_admin = true,
 })
 core.register_privilege("give", {
-	description = "Can use /give and /giveme",
+	description = "Can use "
+			.. core.colorize_chatcommand("/give")
+			.. " and "
+			.. core.colorize_chatcommand("/giveme"),
 	give_to_singleplayer = false,
 })
 core.register_privilege("password", {
-	description = "Can use /setpassword and /clearpassword",
+	description = "Can use "
+			.. core.colorize_chatcommand("/setpassword")
+			.. " and "
+			.. core.colorize_chatcommand("/clearpassword"),
 	give_to_singleplayer = false,
 	give_to_admin = true,
 })

@@ -31,14 +31,19 @@ end
 
 local cmd_marker = "/"
 
+-- Dummy gettext function
 local function gettext(...)
 	return ...
 end
 
-local function gettext_replace(text, replace)
-	return text:gsub("$1", replace)
+-- Dummy gettext function which only supports up to 2 parameters
+local function gettext_replace(text, replace1, replace2)
+	local str = text:gsub("$1", replace1)
+	if replace2 then
+		str = str:gsub("$2", replace2)
+	end
+	return str
 end
-
 
 if INIT == "client" then
 	cmd_marker = "."
@@ -47,10 +52,13 @@ if INIT == "client" then
 end
 
 local function do_help_cmd(name, param)
-	local function format_help_line(cmd, def)
-		local msg = core.colorize("#00ffff", cmd_marker .. cmd)
-		if def.params and def.params ~= "" then
-			msg = msg .. " " .. def.params
+	local function format_help_line(cmd, def, is_privilege)
+			local msg
+			if is_privilege then
+				msg = core.colorize(core.COLOR_PRIV, cmd)
+			else
+				cmd = cmd_marker .. cmd
+				msg = core.colorize_chatcommand(cmd, def.params)
 		end
 		if def.description and def.description ~= "" then
 			msg = msg .. ": " .. def.description
@@ -65,9 +73,17 @@ local function do_help_cmd(name, param)
 			end
 		end
 		table.sort(cmds)
-		return true, gettext("Available commands: ") .. table.concat(cmds, " ") .. "\n"
-				.. gettext_replace("Use '$1help <cmd>' to get more information,"
-				.. " or '$1help all' to list everything.", cmd_marker)
+		-- Intentionally not translated because the cmd names are static
+		local help_cmd = core.colorize_chatcommand(
+				string.format("%shelp", cmd_marker), "<cmd>")
+		local help_all = core.colorize_chatcommand(
+				string.format("%shelp", cmd_marker), "all")
+		-- List available commands
+		return true, gettext("Available commands: ")
+				.. core.colorize(core.COLOR_COMMAND, table.concat(cmds, " "))
+				.. "\n"
+				.. gettext_replace("Use '$1' to get more information,"
+				.. " or '$2' to list everything.", help_cmd, help_all)
 	elseif param == "all" then
 		local cmds = {}
 		for cmd, def in pairs(core.registered_chatcommands) do
@@ -80,7 +96,7 @@ local function do_help_cmd(name, param)
 	elseif INIT == "game" and param == "privs" then
 		local privs = {}
 		for priv, def in pairs(core.registered_privileges) do
-			privs[#privs + 1] = priv .. ": " .. def.description
+			privs[#privs + 1] = format_help_line(priv, def, true)
 		end
 		table.sort(privs)
 		return true, "Available privileges:\n"..table.concat(privs, "\n")

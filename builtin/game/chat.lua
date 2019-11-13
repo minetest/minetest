@@ -1,5 +1,15 @@
 -- Minetest: builtin/game/chat.lua
 
+-- Pretty-print list of privileges
+local function format_privs(privs)
+	return core.colorize(core.COLOR_PRIV, core.privs_to_string(privs, ' '))
+end
+
+-- Pretty-print privileges of give player
+local function format_player_privs(name)
+	return format_privs(core.get_player_privs(name))
+end
+
 --
 -- Chat message formatter
 --
@@ -57,9 +67,14 @@ core.register_on_chat_message(function(name, message)
 			core.chat_send_player(name, result)
 		end
 	else
+		local privs = {}
+		for i=1, #missing_privs do
+			privs[missing_privs[i]] = true
+		end
+		local priv_string = format_privs(privs)
 		core.chat_send_player(name, "You don't have permission"
 				.. " to run this command (missing privileges: "
-				.. table.concat(missing_privs, ", ") .. ")")
+				.. priv_string .. ")")
 	end
 	return true  -- Handled chat message
 end)
@@ -96,7 +111,9 @@ end
 --
 core.register_chatcommand("me", {
 	params = "<action>",
-	description = "Show chat action (e.g., '/me orders a pizza' displays"
+	description = "Show chat action (e.g., '"
+			.. core.colorize_chatcommand("/me", "orders a pizza")
+			.. "' displays"
 			.. " '<player name> orders a pizza')",
 	privs = {shout=true},
 	func = function(name, param)
@@ -126,8 +143,7 @@ core.register_chatcommand("privs", {
 			return false, "Player " .. name .. " does not exist."
 		end
 		return true, "Privileges of " .. name .. ": "
-			.. core.privs_to_string(
-				core.get_player_privs(name), ' ')
+		.. format_player_privs(name)
 	end,
 })
 
@@ -194,11 +210,10 @@ local function handle_grant_command(caller, grantname, grantprivstr)
 	if grantname ~= caller then
 		core.chat_send_player(grantname, caller
 				.. " granted you privileges: "
-				.. core.privs_to_string(grantprivs, ' '))
+				.. format_privs(grantprivs))
 	end
 	return true, "Privileges of " .. grantname .. ": "
-		.. core.privs_to_string(
-			core.get_player_privs(grantname), ' ')
+	.. format_player_privs(grantname)
 end
 
 core.register_chatcommand("grant", {
@@ -207,7 +222,9 @@ core.register_chatcommand("grant", {
 	func = function(name, param)
 		local grantname, grantprivstr = string.match(param, "([^ ]+) (.+)")
 		if not grantname or not grantprivstr then
-			return false, "Invalid parameters (see /help grant)"
+			return false, "Invalid parameters (see "
+					.. core.colorize_chatcommand("/help", "grant")
+					.. ")"
 		end
 		return handle_grant_command(name, grantname, grantprivstr)
 	end,
@@ -218,7 +235,9 @@ core.register_chatcommand("grantme", {
 	description = "Grant privileges to yourself",
 	func = function(name, param)
 		if param == "" then
-			return false, "Invalid parameters (see /help grantme)"
+			return false, "Invalid parameters (see "
+					.. core.colorize_chatcommand("/help", "grantme")
+					.. ")"
 		end
 		return handle_grant_command(name, name, param)
 	end,
@@ -235,7 +254,9 @@ core.register_chatcommand("revoke", {
 		end
 		local revoke_name, revoke_priv_str = string.match(param, "([^ ]+) (.+)")
 		if not revoke_name or not revoke_priv_str then
-			return false, "Invalid parameters (see /help revoke)"
+			return false, "Invalid parameters (see "
+					.. core.colorize_chatcommand("/help", "grantme")
+					.. ")"
 		elseif not core.get_auth_handler().get_auth(revoke_name) then
 			return false, "Player " .. revoke_name .. " does not exist."
 		end
@@ -270,11 +291,10 @@ core.register_chatcommand("revoke", {
 		if revoke_name ~= name then
 			core.chat_send_player(revoke_name, name
 					.. " revoked privileges from you: "
-					.. core.privs_to_string(revoke_privs, ' '))
+					.. format_privs(revoke_privs))
 		end
 		return true, "Privileges of " .. revoke_name .. ": "
-			.. core.privs_to_string(
-				core.get_player_privs(revoke_name), ' ')
+		.. format_player_privs(revoke_name))
 	end,
 })
 
@@ -433,7 +453,8 @@ core.register_chatcommand("teleport", {
 		end
 
 		if not core.check_player_privs(name, {bring=true}) then
-			return false, "You don't have permission to teleport other players (missing bring privilege)"
+			return false, "You don't have permission to teleport other players (missing "
+			.. core.colorize(core.COLOR_PRIV, "bring") .. " privilege)"
 		end
 
 		teleportee = nil
@@ -472,7 +493,9 @@ core.register_chatcommand("teleport", {
 		end
 
 		return false, 'Invalid parameters ("' .. param
-				.. '") or player not found (see /help teleport)'
+		.. "') or player not found (see "
+		.. core.colorize_chatcommand("/help", "teleport")
+		.. ")"
 	end,
 })
 
@@ -490,7 +513,9 @@ core.register_chatcommand("set", {
 		setname, setvalue = string.match(param, "([^ ]+) (.+)")
 		if setname and setvalue then
 			if not core.settings:get(setname) then
-				return false, "Failed. Use '/set -n <name> <value>' to create a new setting."
+				return false, "Failed. Use '"..
+					core.colorize_chatcommand("/set", "-n <name> <value>")..
+					"' to create a new setting."
 			end
 			core.settings:set(setname, setvalue)
 			return true, setname .. " = " .. setvalue
@@ -505,7 +530,7 @@ core.register_chatcommand("set", {
 			return true, setname .. " = " .. setvalue
 		end
 
-		return false, "Invalid parameters (see /help set)."
+		return false, "Invalid parameters (see "..core.colorize_chatcommand("/help", "set")..")."
 	end,
 })
 
@@ -537,7 +562,11 @@ end
 core.register_chatcommand("emergeblocks", {
 	params = "(here [<radius>]) | (<pos1> <pos2>)",
 	description = "Load (or, if nonexistent, generate) map blocks "
-		.. "contained in area pos1 to pos2 (<pos1> and <pos2> must be in parentheses)",
+	.. "contained in area from "
+	.. core.colorize(core.COLOR_PARAM, "<pos1>").." to "
+	.. core.colorize(core.COLOR_PARAM, "<pos2>").." "
+	.. "(" .. core.colorize(core.COLOR_PARAM, "<pos1>").. " and "
+	.. core.colorize(core.COLOR_PARAM, "<pos2>").." must be in parentheses)",
 	privs = {server=true},
 	func = function(name, param)
 		local p1, p2 = parse_range_str(name, param)
@@ -562,8 +591,11 @@ core.register_chatcommand("emergeblocks", {
 
 core.register_chatcommand("deleteblocks", {
 	params = "(here [<radius>]) | (<pos1> <pos2>)",
-	description = "Delete map blocks contained in area pos1 to pos2 "
-		.. "(<pos1> and <pos2> must be in parentheses)",
+	description = "Delete map blocks contained in area from "
+		.. core.colorize(core.COLOR_PARAM, "<pos1>").." to "
+		.. core.colorize(core.COLOR_PARAM, "<pos2>").." "
+		.. "(" .. core.colorize(core.COLOR_PARAM, "<pos1>").. " and "
+		.. core.colorize(core.COLOR_PARAM, "<pos2>").." must be in parentheses)",
 	privs = {server=true},
 	func = function(name, param)
 		local p1, p2 = parse_range_str(name, param)
@@ -582,8 +614,11 @@ core.register_chatcommand("deleteblocks", {
 
 core.register_chatcommand("fixlight", {
 	params = "(here [<radius>]) | (<pos1> <pos2>)",
-	description = "Resets lighting in the area between pos1 and pos2 "
-		.. "(<pos1> and <pos2> must be in parentheses)",
+	description = "Resets lighting in the area from "
+		.. core.colorize(core.COLOR_PARAM, "<pos1>").." to "
+		.. core.colorize(core.COLOR_PARAM, "<pos2>").." "
+		.. "(" .. core.colorize(core.COLOR_PARAM, "<pos1>").. " and "
+		.. core.colorize(core.COLOR_PARAM, "<pos2>").." must be in parentheses)",
 	privs = {server = true},
 	func = function(name, param)
 		local p1, p2 = parse_range_str(name, param)
@@ -741,8 +776,11 @@ end)
 core.register_chatcommand("rollback_check", {
 	params = "[<range>] [<seconds>] [<limit>]",
 	description = "Check who last touched a node or a node near it"
-			.. " within the time specified by <seconds>. Default: range = 0,"
-			.. " seconds = 86400 = 24h, limit = 5",
+	.. " within the time specified by "..core.colorize(core.COLOR_PARAM, "<seconds>") .. ". "
+	.. "Defaults: "
+	.. core.colorize(core.COLOR_PARAM, "<range>") .. " = 0, "
+	.. core.colorize(core.COLOR_PARAM, "<seconds>") .. " = 86400, "
+	.. core.colorize(core.COLOR_PARAM, "<limit>") .. " = 5",
 	privs = {rollback=true},
 	func = function(name, param)
 		if not core.settings:get_bool("enable_rollback_recording") then
@@ -793,7 +831,9 @@ core.register_chatcommand("rollback_check", {
 
 core.register_chatcommand("rollback", {
 	params = "(<name> [<seconds>]) | (:<actor> [<seconds>])",
-	description = "Revert actions of a player. Default for <seconds> is 60",
+	description = "Revert actions of a player. Default for "
+			.. core.colorize(core.COLOR_PARAM, "<seconds>")
+			.. " is 60",
 	privs = {rollback=true},
 	func = function(name, param)
 		if not core.settings:get_bool("enable_rollback_recording") then
@@ -804,8 +844,11 @@ core.register_chatcommand("rollback", {
 			local player_name
 			player_name, seconds = string.match(param, "([^ ]+) *(%d*)")
 			if not player_name then
-				return false, "Invalid parameters. See /help rollback"
-						.. " and /help rollback_check."
+				return false, "Invalid parameters. See "
+						.. core.colorize_chatcommand("/help", "rollback")
+						.. " and "
+						.. core.colorize_chatcommand("/help", "rollback_check")
+						.. "."
 			end
 			target_name = "player:"..player_name
 		end
@@ -853,8 +896,8 @@ core.register_chatcommand("time", {
 		end
 		local player_privs = core.get_player_privs(name)
 		if not player_privs.settime then
-			return false, "You don't have permission to run this command " ..
-				"(missing privilege: settime)."
+			return false, "You don't have permission to set the time " ..
+				"(missing privilege: "..core.colorize(core.COLOR_PRIV, "settime")..")."
 		end
 		local hour, minute = param:match("^(%d+):(%d+)$")
 		if not hour then
@@ -889,7 +932,7 @@ core.register_chatcommand("days", {
 
 core.register_chatcommand("shutdown", {
 	params = "[<delay_in_seconds> | -1] [reconnect] [<message>]",
-	description = "Shutdown server (-1 cancels a delayed shutdown)",
+	description = "Shutdown server ("..core.colorize(core.COLOR_PARAM, "-1") .." cancels a delayed shutdown)",
 	privs = {server=true},
 	func = function(name, param)
 		local delay, reconnect, message
@@ -976,7 +1019,7 @@ core.register_chatcommand("clearobjects", {
 		elseif param == "full" then
 			options.mode = "full"
 		else
-			return false, "Invalid usage, see /help clearobjects."
+			return false, "Invalid usage, see "..core.colorize_chatcommand("/help", "clearobjects").."."
 		end
 
 		core.log("action", name .. " clears all objects ("
@@ -997,7 +1040,7 @@ core.register_chatcommand("msg", {
 	func = function(name, param)
 		local sendto, message = param:match("^(%S+)%s(.+)$")
 		if not sendto then
-			return false, "Invalid usage, see /help msg."
+			return false, "Invalid usage, see "..core.colorize_chatcommand("/help", "msg").."."
 		end
 		if not core.get_player_by_name(sendto) then
 			return false, "The player " .. sendto
@@ -1036,7 +1079,8 @@ core.register_chatcommand("clearinv", {
 		if param and param ~= "" and param ~= name then
 			if not core.check_player_privs(name, {server=true}) then
 				return false, "You don't have permission"
-						.. " to clear another player's inventory (missing privilege: server)"
+				.. " to clear to clear another player's inventory"
+				.. " (missing privilege: "..core.colorize(core.COLOR_PRIV, "server")..")."
 			end
 			player = core.get_player_by_name(param)
 			core.chat_send_player(param, name.." cleared your inventory.")
