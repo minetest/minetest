@@ -266,17 +266,18 @@ inline u64 getTime(TimePrecision prec)
 
 /**
  * Delta calculation function arguments.
+ * WARNING: To handle overflows correctly, provide u64 only (no cast)
  * @param old_time_ms old time for delta calculation
  * @param new_time_ms new time for delta calculation
  * @return positive delta value
  */
 inline u64 getDeltaMs(u64 old_time_ms, u64 new_time_ms)
 {
-	if (new_time_ms >= old_time_ms) {
-		return (new_time_ms - old_time_ms);
-	}
+	if (new_time_ms >= old_time_ms)
+		return new_time_ms - old_time_ms;
 
-	return (old_time_ms - new_time_ms);
+	// Compensate overflows
+	return ~old_time_ms + 1 + new_time_ms;
 }
 
 inline const char *getPlatformName()

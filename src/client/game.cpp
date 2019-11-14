@@ -1517,7 +1517,7 @@ bool Game::connectToServer(const std::string &playername,
 			client->step(dtime);
 
 			if (server != NULL)
-				server->step(dtime);
+				server->step();
 
 			// End condition
 			if (client->getState() == LC_Init) {
@@ -1591,7 +1591,7 @@ bool Game::getServerContent(bool *aborted)
 		client->step(dtime);
 
 		if (server != NULL)
-			server->step(dtime);
+			server->step();
 
 		// End condition
 		if (client->mediaReceived() && client->itemdefReceived() &&
@@ -2501,9 +2501,11 @@ inline void Game::step(f32 *dtime)
 
 	if (can_be_and_is_paused) { // This is for a singleplayer server
 		*dtime = 0;             // No time passes
+		if (server)
+			server->lockStep();
 	} else {
 		if (server)
-			server->step(*dtime);
+			server->step();
 
 		client->step(*dtime);
 	}

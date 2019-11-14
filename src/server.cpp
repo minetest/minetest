@@ -93,11 +93,26 @@ void *ServerThread::run()
 {
 	BEGIN_DEBUG_EXCEPTION_HANDLER
 
-	m_server->AsyncRunStep(true);
+	u64 step_ms = m_server->getStepSize() * 1000.0f;
+	u64 last_step = porting::getTimeMs();
+	u64 new_step = last_step;
 
 	while (!stopRequested()) {
+		new_step = porting::getTimeMs();
+		u64 dtime_ms = porting::getDeltaMs(last_step, new_step);
+
+		if (dtime_ms < step_ms) {
+			std::this_thread::sleep_for(std::chrono::milliseconds(
+				step_ms - dtime_ms));
+			continue;
+		}
+		if (m_server->isStepLocked()) {
+			last_step = new_step;
+			continue;
+		}
+
 		try {
-			m_server->AsyncRunStep();
+			m_server->AsyncRunStep(dtime_ms / 1000.0f);
 
 			m_server->Receive();
 
@@ -111,6 +126,8 @@ void *ServerThread::run()
 			m_server->setAsyncFatalError(
 					"ServerThread::run Lua: " + std::string(e.what()));
 		}
+
+		old_step += dtime_ms;
 	}
 
 	END_DEBUG_EXCEPTION_HANDLER
@@ -452,15 +469,10 @@ void Server::stop()
 	infostream<<"Server: Threads stopped"<<std::endl;
 }
 
-void Server::step(float dtime)
+void Server::step()
 {
-	// Limit a bit
-	if (dtime > 2.0)
-		dtime = 2.0;
-	{
-		MutexAutoLock lock(m_step_dtime_mutex);
-		m_step_dtime += dtime;
-	}
+	m_step_pause = false;
+
 	// Throw if fatal error occurred in thread
 	std::string async_err = m_async_fatal_error.get();
 	if (!async_err.empty()) {
@@ -473,29 +485,15 @@ void Server::step(float dtime)
 	}
 }
 
-void Server::AsyncRunStep(bool initial_step)
+void Server::AsyncRunStep(float dtime)
 {
-
-	float dtime;
-	{
-		MutexAutoLock lock1(m_step_dtime_mutex);
-		dtime = m_step_dtime;
-	}
 
 	{
 		// Send blocks to clients
 		SendBlocks(dtime);
 	}
 
-	if((dtime < 0.001) && !initial_step)
-		return;
-
 	ScopeProfiler sp(g_profiler, "Server::AsyncRunStep()", SPT_AVG);
-
-	{
-		MutexAutoLock lock1(m_step_dtime_mutex);
-		m_step_dtime -= dtime;
-	}
 
 	/*
 		Update uptime
@@ -3723,16 +3721,15 @@ void dedicated_server_loop(Server &server, bool &kill)
 
 	IntervalLimiter m_profiler_interval;
 
-	static thread_local const float steplen =
-			g_settings->getFloat("dedicated_server_step");
 	static thread_local const float profiler_print_interval =
 			g_settings->getFloat("profiler_print_interval");
 
 	for(;;) {
+		float steplen = server.getStepSize();
 		// This is kind of a hack but can be done like this
 		// because server.step() is very light
 		sleep_ms((int)(steplen*1000.0));
-		server.step(steplen);
+		server.step();
 
 		if (server.isShutdownRequested() || kill)
 			break;

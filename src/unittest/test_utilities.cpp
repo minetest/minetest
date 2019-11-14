@@ -22,6 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <cmath>
 #include "util/numeric.h"
 #include "util/string.h"
+#include "porting.h"
 
 class TestUtilities : public TestBase {
 public:
@@ -54,6 +55,7 @@ public:
 	void testMyround();
 	void testStringJoin();
 	void testEulerConversion();
+	void testGetDeltaMs();
 };
 
 static TestUtilities g_test_instance;
@@ -84,6 +86,7 @@ void TestUtilities::runTests(IGameDef *gamedef)
 	TEST(testMyround);
 	TEST(testStringJoin);
 	TEST(testEulerConversion);
+	TEST(testGetDeltaMs);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -507,4 +510,14 @@ void TestUtilities::testEulerConversion()
 	// ... however the rotation matrix is the same for both
 	setPitchYawRoll(m2, v2);
 	UASSERT(within(m1, m2, tolL));
+}
+
+void TestUtilities::testGetDeltaMs()
+{
+	u64 old_ms = 3UL;
+	u64 new_ms = 8UL;
+	UASSERT(porting::getDeltaMs(old_ms, new_ms) == 5);
+	old_ms = (u64)-4;
+	new_ms = 2;
+	UASSERT(porting::getDeltaMs(old_ms, new_ms) == 6);
 }

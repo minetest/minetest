@@ -133,11 +133,22 @@ public:
 	void stop();
 	// This is mainly a way to pass the time to the server.
 	// Actual processing is done in an another thread.
-	void step(float dtime);
+	void step();
 	// This is run by ServerThread and does the actual processing
-	void AsyncRunStep(bool initial_step=false);
+	void AsyncRunStep(float dtime);
 	void Receive();
 	PlayerSAO* StageTwoClientInit(session_t peer_id);
+
+	float getStepSize() const
+	{
+		static thread_local const float steplen =
+			g_settings->getFloat("dedicated_server_step");
+		return m_dedicated ? steplen : std::min(steplen, 0.02f);
+	}
+
+	// Lets ServerThread idle until Server::step() is called
+	void lockStep() { m_step_pause = true; }
+	bool isStepLocked() const { return m_step_pause; }
 
 	/*
 	 * Command Handlers
@@ -575,10 +586,7 @@ private:
 	/*
 		Threads
 	*/
-	// A buffer for time steps
-	// step() increments and AsyncRunStep() run by m_thread reads it.
-	float m_step_dtime = 0.0f;
-	std::mutex m_step_dtime_mutex;
+	bool m_step_pause = false;
 
 	// current server step lag counter
 	float m_lag;
