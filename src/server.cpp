@@ -93,6 +93,15 @@ void *ServerThread::run()
 {
 	BEGIN_DEBUG_EXCEPTION_HANDLER
 
+	/*
+	 * The real business of the server happens on the ServerThread.
+	 * How this works:
+	 * AsyncRunStep() runs an actual server step as soon as enough time has
+	 * passed (dedicated_server_loop keeps track of that).
+	 * Receive() blocks at least(!) 30ms waiting for a packet (so this loop
+	 * doesn't busy wait) and will process any remaining packets.
+	 */
+
 	m_server->AsyncRunStep(true);
 
 	while (!stopRequested()) {
@@ -101,7 +110,6 @@ void *ServerThread::run()
 
 			m_server->Receive();
 
-		} catch (con::NoIncomingDataException &e) {
 		} catch (con::PeerNotFoundException &e) {
 			infostream<<"Server: PeerNotFoundException"<<std::endl;
 		} catch (ClientNotFoundException &e) {
@@ -911,24 +919,43 @@ void Server::AsyncRunStep(bool initial_step)
 
 void Server::Receive()
 {
-	session_t peer_id = 0;
-	try {
-		NetworkPacket pkt;
-		m_con->Receive(&pkt);
-		peer_id = pkt.getPeerId();
-		ProcessData(&pkt);
-	} catch (const con::InvalidIncomingDataException &e) {
-		infostream << "Server::Receive(): InvalidIncomingDataException: what()="
-				<< e.what() << std::endl;
-	} catch (const SerializationError &e) {
-		infostream << "Server::Receive(): SerializationError: what()="
-				<< e.what() << std::endl;
-	} catch (const ClientStateError &e) {
-		errorstream << "ProcessData: peer=" << peer_id << e.what() << std::endl;
-		DenyAccess_Legacy(peer_id, L"Your client sent something server didn't expect."
-				L"Try reconnecting or updating your client");
-	} catch (const con::PeerNotFoundException &e) {
-		// Do nothing
+	NetworkPacket pkt;
+	session_t peer_id;
+	bool first = true;
+	for (;;) {
+		pkt.clear();
+		peer_id = 0;
+		try {
+			/*
+				In the first iteration *wait* for a packet, afterwards process
+				all packets that are immediately available (no waiting).
+			*/
+			if (first) {
+				m_con->Receive(&pkt);
+				first = false;
+			} else {
+				if (!m_con->TryReceive(&pkt))
+					return;
+			}
+
+			peer_id = pkt.getPeerId();
+			ProcessData(&pkt);
+		} catch (const con::InvalidIncomingDataException &e) {
+			infostream << "Server::Receive(): InvalidIncomingDataException: what()="
+					<< e.what() << std::endl;
+		} catch (const SerializationError &e) {
+			infostream << "Server::Receive(): SerializationError: what()="
+					<< e.what() << std::endl;
+		} catch (const ClientStateError &e) {
+			errorstream << "ProcessData: peer=" << peer_id << " what()="
+					 << e.what() << std::endl;
+			DenyAccess_Legacy(peer_id, L"Your client sent something server didn't expect."
+					L"Try reconnecting or updating your client");
+		} catch (const con::PeerNotFoundException &e) {
+			// Do nothing
+		} catch (const con::NoIncomingDataException &e) {
+			return;
+		}
 	}
 }
 
@@ -3727,6 +3754,11 @@ void dedicated_server_loop(Server &server, bool &kill)
 			g_settings->getFloat("dedicated_server_step");
 	static thread_local const float profiler_print_interval =
 			g_settings->getFloat("profiler_print_interval");
+
+	/*
+	 * The dedicated server loop only does time-keeping (in Server::step) and
+	 * provides a way to main.cpp to kill the server externally (bool &kill).
+	 */
 
 	for(;;) {
 		// This is kind of a hack but can be done like this

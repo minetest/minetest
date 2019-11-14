@@ -1323,16 +1323,21 @@ void Connection::Disconnect()
 	putCommand(c);
 }
 
-void Connection::Receive(NetworkPacket* pkt)
+bool Connection::Receive(NetworkPacket *pkt, u32 timeout)
 {
+	/*
+		Note that this function can potentially wait infinitely if non-data
+		events keep happening before the timeout expires.
+		This is not considered to be a problem (is it?)
+	*/
 	for(;;) {
-		ConnectionEvent e = waitEvent(m_bc_receive_timeout);
+		ConnectionEvent e = waitEvent(timeout);
 		if (e.type != CONNEVENT_NONE)
 			LOG(dout_con << getDesc() << ": Receive: got event: "
 					<< e.describe() << std::endl);
 		switch(e.type) {
 		case CONNEVENT_NONE:
-			throw NoIncomingDataException("No incoming data");
+			return false;
 		case CONNEVENT_DATA_RECEIVED:
 			// Data size is lesser than command size, ignoring packet
 			if (e.data.getSize() < 2) {
@@ -1340,7 +1345,7 @@ void Connection::Receive(NetworkPacket* pkt)
 			}
 
 			pkt->putRawPacket(*e.data, e.data.getSize(), e.peer_id);
-			return;
+			return true;
 		case CONNEVENT_PEER_ADDED: {
 			UDPPeer tmp(e.peer_id, e.address, this);
 			if (m_bc_peerhandler)
@@ -1358,7 +1363,19 @@ void Connection::Receive(NetworkPacket* pkt)
 					"(port already in use?)");
 		}
 	}
-	throw NoIncomingDataException("No incoming data");
+	return false;
+}
+
+void Connection::Receive(NetworkPacket *pkt)
+{
+	bool any = Receive(pkt, m_bc_receive_timeout);
+	if (!any)
+		throw NoIncomingDataException("No incoming data");
+}
+
+bool Connection::TryReceive(NetworkPacket *pkt)
+{
+	return Receive(pkt, 0);
 }
 
 void Connection::Send(session_t peer_id, u8 channelnum,
