@@ -127,22 +127,16 @@ GUIFormSpecMenu::~GUIFormSpecMenu()
 
 	for (auto &table_it : m_tables)
 		table_it.second->drop();
-	}
-	for (auto &inventorylist_it : m_inventorylists) {
+	for (auto &inventorylist_it : m_inventorylists)
 		inventorylist_it.e->drop();
-	}
-	for (auto &checkbox_it : m_checkboxes) {
+	for (auto &checkbox_it : m_checkboxes)
 		checkbox_it.second->drop();
-	}
-	for (auto &scrollbar_it : m_scrollbars) {
+	for (auto &scrollbar_it : m_scrollbars)
 		scrollbar_it.second->drop();
-	}
-	for (auto &background_it : m_backgrounds) {
+	for (auto &background_it : m_backgrounds)
 		background_it->drop();
-	}
-	for (auto &tooltip_rect_it : m_tooltip_rects) {
+	for (auto &tooltip_rect_it : m_tooltip_rects)
 		tooltip_rect_it.first->drop();
-	}
 
 	delete m_selected_item;
 	delete m_form_src;
@@ -2699,22 +2693,16 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 
 	for (auto &table_it : m_tables)
 		table_it.second->drop();
-	}
-	for (auto &inventorylist_it : m_inventorylists) {
+	for (auto &inventorylist_it : m_inventorylists)
 		inventorylist_it.e->drop();
-	}
-	for (auto &checkbox_it : m_checkboxes) {
+	for (auto &checkbox_it : m_checkboxes)
 		checkbox_it.second->drop();
-	}
-	for (auto &scrollbar_it : m_scrollbars) {
+	for (auto &scrollbar_it : m_scrollbars)
 		scrollbar_it.second->drop();
-	}
-	for (auto &background_it : m_backgrounds) {
+	for (auto &background_it : m_backgrounds)
 		background_it->drop();
-	}
-	for (auto &tooltip_rect_it : m_tooltip_rects) {
+	for (auto &tooltip_rect_it : m_tooltip_rects)
 		tooltip_rect_it.first->drop();
-	}
 
 	mydata.size= v2s32(100,100);
 	mydata.screensize = screensize;
