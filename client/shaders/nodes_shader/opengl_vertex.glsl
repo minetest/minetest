@@ -46,7 +46,9 @@ float smoothTriangleWave(float x)
 	return smoothCurve(triangleWave(x)) * 2.0 - 1.0;
 }
 
-#if (MATERIAL_TYPE == TILE_MATERIAL_WAVING_LIQUID_TRANSPARENT || MATERIAL_TYPE == TILE_MATERIAL_WAVING_LIQUID_OPAQUE || MATERIAL_TYPE == TILE_MATERIAL_WAVING_LIQUID_BASIC) && ENABLE_WAVING_WATER
+#if (MATERIAL_TYPE == TILE_MATERIAL_WAVING_LIQUID_TRANSPARENT || \
+	MATERIAL_TYPE == TILE_MATERIAL_WAVING_LIQUID_OPAQUE || \
+	MATERIAL_TYPE == TILE_MATERIAL_WAVING_LIQUID_BASIC) && ENABLE_WAVING_WATER
 
 //
 // Simple, fast noise function.
@@ -100,7 +102,8 @@ void main(void)
 
 float disp_x;
 float disp_z;
-#if (MATERIAL_TYPE == TILE_MATERIAL_WAVING_LEAVES && ENABLE_WAVING_LEAVES) || (MATERIAL_TYPE == TILE_MATERIAL_WAVING_PLANTS && ENABLE_WAVING_PLANTS)
+#if (MATERIAL_TYPE == TILE_MATERIAL_WAVING_LEAVES && ENABLE_WAVING_LEAVES) || \
+	(MATERIAL_TYPE == TILE_MATERIAL_WAVING_PLANTS && ENABLE_WAVING_PLANTS)
 	vec4 pos2 = mWorld * gl_Vertex;
 	float tOffset = (pos2.x + pos2.y) * 0.001 + pos2.z * 0.002;
 	disp_x = (smoothTriangleWave(animationTimer * 23.0 + tOffset) +
@@ -112,17 +115,20 @@ float disp_z;
 
 	worldPosition = (mWorld * gl_Vertex).xyz;
 
-#if (MATERIAL_TYPE == TILE_MATERIAL_WAVING_LIQUID_TRANSPARENT || MATERIAL_TYPE == TILE_MATERIAL_WAVING_LIQUID_OPAQUE || MATERIAL_TYPE == TILE_MATERIAL_WAVING_LIQUID_BASIC) && ENABLE_WAVING_WATER
+#if (MATERIAL_TYPE == TILE_MATERIAL_WAVING_LIQUID_TRANSPARENT || \
+	MATERIAL_TYPE == TILE_MATERIAL_WAVING_LIQUID_OPAQUE || \
+	MATERIAL_TYPE == TILE_MATERIAL_WAVING_LIQUID_BASIC) && ENABLE_WAVING_WATER
 	// Generate waves with Perlin-type noise.
 	// The constants are calibrated such that they roughly
 	// correspond to the old sine waves.
 	vec4 pos = gl_Vertex;
 	vec3 wavePos = worldPosition + cameraOffset;
+	// The waves are slightly stretched along the z-axis to get
+	// wave-fronts along the x-axis.
 	wavePos.x /= WATER_WAVE_LENGTH * 3;
 	wavePos.z /= WATER_WAVE_LENGTH * 2;
 	wavePos.z += animationTimer * WATER_WAVE_SPEED * 10;
-	pos.y += snoise(wavePos) *
-		WATER_WAVE_HEIGHT * 5 - WATER_WAVE_HEIGHT * 5;
+	pos.y += (snoise(wavePos) - 1) * WATER_WAVE_HEIGHT * 5;
 	gl_Position = mWorldViewProj * pos;
 #elif MATERIAL_TYPE == TILE_MATERIAL_WAVING_LEAVES && ENABLE_WAVING_LEAVES
 	vec4 pos = gl_Vertex;

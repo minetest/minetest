@@ -894,7 +894,7 @@ static void updateFastFaceRow(
 	TileSpec tile;
 	getTileInfo(data, p, face_dir,
 			makes_face, p_corrected, face_dir_corrected,
-		    lights, waving, tile);
+			lights, waving, tile);
 
 	// Unroll this variable which has a significant build cost
 	TileSpec next_tile;
@@ -924,7 +924,7 @@ static void updateFastFaceRow(
 					&& next_p_corrected == p_corrected + translate_dir
 					&& next_face_dir_corrected == face_dir_corrected
 					&& memcmp(next_lights, lights, ARRLEN(lights) * sizeof(u16)) == 0
-					// don't tile waving water if we trying to animate it
+					// Don't apply fast faces to waving water.
 					&& (waving != 3 || !waving_liquids)
 					&& next_tile.isTileable(tile)) {
 				next_is_different = false;
