@@ -2186,6 +2186,14 @@ bool ServerEnvironment::migratePlayersDatabase(const GameParams &game_params,
 AuthDatabase *ServerEnvironment::openAuthDatabase(
 		const std::string &name, const std::string &savedir, const Settings &conf)
 {
+#if USE_POSTGRESQL
+	if (name == "postgresql") {
+		std::string connect_string;
+		conf.getNoEx("pgsql_auth_connection", connect_string);
+		return new AuthDatabasePostgreSQL(connect_string);
+	}
+#endif
+
 	if (name == "sqlite3")
 		return new AuthDatabaseSQLite3(savedir);
 

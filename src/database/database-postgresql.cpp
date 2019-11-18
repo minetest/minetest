@@ -74,6 +74,20 @@ void Database_PostgreSQL::connectToDatabase()
 	m_pgversion = PQserverVersion(m_conn);
 
 	/*
+	* We are using CITEXT extension from PostgreSQL 8.4 where possible.
+	* It must be added to each database that wishes to use it and in most
+	* cases it is usually not done by default, so we do it here.
+	*/
+	if (m_pgversion >= 80400) {
+		std::string ext_query = "CREATE extension if not exists citext;";
+		checkResults(PQexec(m_conn, ext_query.c_str()));
+	} else {
+		warningstream << "Your PostgreSQL server lacks CITEXT "
+			<< "support. Use version 8.4 or better if possible."
+			<< std::endl;
+	}
+
+	/*
 	* We are using UPSERT feature from PostgreSQL 9.5
 	* to have the better performance where possible.
 	*/
@@ -629,6 +643,161 @@ void PlayerDatabasePostgreSQL::listPlayers(std::vector<std::string> &res)
 		res.emplace_back(PQgetvalue(results, row, 0));
 
 	PQclear(results);
+}
+
+/*
+ * Auth Database
+ */
+AuthDatabasePostgreSQL::AuthDatabasePostgreSQL(const std::string &connect_string):
+	Database_PostgreSQL(connect_string),
+	AuthDatabase()
+{
+	connectToDatabase();
+}
+
+void AuthDatabasePostgreSQL::createDatabase()
+{
+	if (getPGVersion() < 80400) {
+		createTableIfNotExists("auth",
+			"CREATE TABLE auth ("
+				"id SERIAL PRIMARY KEY,"
+				"name TEXT UNIQUE,"
+				"password VARCHAR(512),"
+				"privileges TEXT,"
+				"last_login INT"
+				");"
+		);
+	} else {
+		createTableIfNotExists("auth",
+			"CREATE TABLE auth ("
+				"id SERIAL PRIMARY KEY,"
+				"name CITEXT UNIQUE,"
+				"password VARCHAR(512),"
+				"privileges TEXT,"
+				"last_login INT"
+				");"
+		);
+	}
+
+
+infostream << "PostgreSQL: Authentication Database was initialized." << std::endl;
+}
+
+void AuthDatabasePostgreSQL::initStatements()
+{
+	if (getPGVersion() >= 80400) {
+		prepareStatement("auth_get",
+			"SELECT id, name, password, privileges, last_login FROM auth "
+				"WHERE name = $1 LIMIT 1"
+		);
+
+		prepareStatement("auth_delete",
+			"DELETE FROM auth WHERE name = $1"
+		);
+
+		prepareStatement("auth_save",
+			"UPDATE auth SET password = $2, privileges = $3, "
+				"last_login = $4::int WHERE name = $1"
+		);
+
+	} else {
+		prepareStatement("auth_get",
+			"SELECT id, name, password, privileges, last_login FROM auth "
+				"WHERE LOWER(name) = LOWER($1) LIMIT 1"
+		);
+
+		prepareStatement("auth_delete",
+			"DELETE FROM auth WHERE LOWER(name) = LOWER($1)"
+		);
+
+		prepareStatement("auth_save",
+			"UPDATE auth SET password = $2, privileges = $3, "
+				"last_login = $4::int WHERE LOWER(name) = LOWER($1)"
+		);
+	}
+
+	prepareStatement("auth_create",
+		"INSERT INTO auth(name, password, privileges, last_login) "
+			"VALUES ($1, $2, $3, $4::int)"
+	);
+
+	prepareStatement("auth_list_names",
+		"SELECT name FROM auth"
+	);
+
+}
+
+bool AuthDatabasePostgreSQL::getAuth(const std::string &name, AuthEntry &res)
+{
+	const char *values[] = { name.c_str() };
+	PGresult *results = execPrepared("auth_get", 1, values, false);
+
+	if (!PQntuples(results)) {
+		PQclear(results);
+		return false;
+	}
+
+	const std::string res_privileges = PQgetvalue(results, 0, 3);
+	std::vector<std::string> privileges = str_split(res_privileges, ',');
+
+	res.id = pg_to_int(results, 0, 0);
+	res.name = PQgetvalue(results, 0, 1);
+	res.password = PQgetvalue(results, 0, 2);
+	res.privileges = privileges;
+	res.last_login = pg_to_int(results, 0, 4);
+
+	PQclear(results);
+	return true;
+}
+
+bool AuthDatabasePostgreSQL::saveAuth(const AuthEntry &authEntry)
+{
+	const char *values[] = {
+		authEntry.name.c_str(),
+		authEntry.password.c_str(),
+		str_join(authEntry.privileges, ",").c_str(),
+		std::to_string(authEntry.last_login).c_str()
+	};
+	execPrepared("auth_save", 4, values, false);
+
+	return true;
+}
+
+bool AuthDatabasePostgreSQL::createAuth(AuthEntry &authEntry)
+{
+	const char *values[] = {
+		authEntry.name.c_str(),
+		authEntry.password.c_str(),
+		str_join(authEntry.privileges, ",").c_str(),
+		std::to_string(authEntry.last_login).c_str()
+	};
+	execPrepared("auth_create", 4, values, false);
+
+	return true;
+}
+
+bool AuthDatabasePostgreSQL::deleteAuth(const std::string &name)
+{
+	const char *values[] = { name.c_str() };
+	execPrepared("auth_delete", 1, values, false);
+
+	return true;
+}
+
+void AuthDatabasePostgreSQL::listNames(std::vector<std::string> &res)
+{
+	PGresult *results = execPrepared("auth_list_names", 0, NULL, false);
+
+	int numrows = PQntuples(results);
+	for (int row = 0; row < numrows; row++)
+		res.emplace_back(PQgetvalue(results, row, 0));
+
+	PQclear(results);
+}
+
+void AuthDatabasePostgreSQL::reload()
+{
+	// noop for PostgreSQL
 }
 
 #endif // USE_POSTGRESQL
