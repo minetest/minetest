@@ -35,7 +35,6 @@ struct MapgenFlatParams : public MapgenParams
 	u32 spflags = 0;
 	s16 ground_level = 8;
 	s16 large_cave_depth = -33;
-	s16 lava_depth = -256;
 	u16 small_cave_num_min = 0;
 	u16 small_cave_num_max = 0;
 	u16 large_cave_num_min = 0;
