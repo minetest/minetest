@@ -3,17 +3,17 @@ msgstr ""
 "Project-Id-Version: Belarusian (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-10-09 22:02+0200\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"PO-Revision-Date: 2019-11-19 23:04+0000\n"
+"Last-Translator: Viktar Vauchkevich <victorenator@gmail.com>\n"
 "Language-Team: Belarusian <https://hosted.weblate.org/projects/minetest/"
 "minetest/be/>\n"
 "Language: be\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
-"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 3.9-dev\n"
+"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<="
+"4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
+"X-Generator: Weblate 3.10-dev\n"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "Respawn"
@@ -24,9 +24,8 @@ msgid "You died"
 msgstr "Вы загінулі"
 
 #: builtin/fstk/ui.lua
-#, fuzzy
 msgid "An error occurred in a Lua script:"
-msgstr "Памылка ў скрыпце Lua, такая як у мадыфікацыі:"
+msgstr "Адбылася памылка ў Lua-скрыпце:"
 
 #: builtin/fstk/ui.lua
 msgid "An error occurred:"
@@ -121,27 +120,24 @@ msgid "Mod:"
 msgstr "Мадыфікацыя:"
 
 #: builtin/mainmenu/dlg_config_world.lua
-#, fuzzy
 msgid "No (optional) dependencies"
-msgstr "Неабавязковыя залежнасці:"
+msgstr "Няма (неабясковыя) залежнасцей"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "No game description provided."
 msgstr "Апісанне гульні адсутнічае."
 
 #: builtin/mainmenu/dlg_config_world.lua
-#, fuzzy
 msgid "No hard dependencies"
-msgstr "Залежнасці адсутнічаюць."
+msgstr "Няма жорсткіх залежнасцяў"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "No modpack description provided."
 msgstr "Апісанне мадыфікацыі адсутнічае."
 
 #: builtin/mainmenu/dlg_config_world.lua
-#, fuzzy
 msgid "No optional dependencies"
-msgstr "Неабавязковыя залежнасці:"
+msgstr "Няма неабавязковых залежнасцей"
 
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/tab_content.lua
 msgid "Optional dependencies:"
@@ -787,9 +783,8 @@ msgid "Waving Leaves"
 msgstr "Дрыготкае лісце"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Waving Liquids"
-msgstr "Калыханне блокаў"
+msgstr "Калыханне вадкасцяў"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Waving Plants"
@@ -916,14 +911,12 @@ msgid "- Server Name: "
 msgstr "- Назва сервера: "
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Automatic forward disabled"
-msgstr "Аўтаматычны рух адключаны"
+msgstr "Аўтаматычны рух наперад адключаны"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Automatic forward enabled"
-msgstr "Аўтаматычны рух уключаны"
+msgstr "Аўтаматычны рух наперад уключаны"
 
 #: src/client/game.cpp
 msgid "Camera update disabled"
@@ -1536,7 +1529,7 @@ msgid "Register and Join"
 msgstr "Зарэгістравацца і далучыцца"
 
 #: src/gui/guiConfirmRegistration.cpp
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "You are about to join this server with the name \"%s\" for the first time.\n"
 "If you proceed, a new account using your credentials will be created on this "
@@ -1544,10 +1537,11 @@ msgid ""
 "Please retype your password and click 'Register and Join' to confirm account "
 "creation, or click 'Cancel' to abort."
 msgstr ""
-"Вы хочаце першы раз увайсці на сервер %1$s як \"%2$s\". Калі вы працягнеце, "
-"то на серверы будзе створаны новы акаўнт з уведзенымі данымі. Калі ласка, "
-"ўвядзіце пароль яшчэ раз і націсніце \"Зарэгістравацца і далучыцца\", каб "
-"пацвердзіць стварэнне акаўнта альбо \"Скасаваць\", каб адмовіцца."
+"Вы хочаце першы раз увайсці на сервер з назвай «%s».\n"
+"Калі вы працягнеце, то на серверы будзе створаны новы конт з вашамі данымі.\n"
+"Калі ласка, ўвядзіце пароль яшчэ раз і націсніце «Зарэгістравацца і "
+"далучыцца», каб пацвердзіць стварэнне конта альбо \"Скасаваць\", каб "
+"адмовіцца."
 
 #: src/gui/guiFormSpecMenu.cpp
 msgid "Proceed"
@@ -1691,9 +1685,8 @@ msgid "Toggle noclip"
 msgstr "Рух скрозь сцены"
 
 #: src/gui/guiKeyChangeMenu.cpp
-#, fuzzy
 msgid "Toggle pitchmove"
-msgstr "Размова"
+msgstr "Нахіленне руху"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "press key"
@@ -1812,24 +1805,20 @@ msgid "2D noise that controls the shape/size of step mountains."
 msgstr "2D-шум, што кіруе формай/памерам сталовых гор."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "2D noise that controls the size/occurrence of ridged mountain ranges."
-msgstr "2D-шум, што кіруе памерам/месцазнаходжаннем горных ланцугоў."
+msgstr "2D-шум, што кіруе памерам/распаўсюдам складчатых горных ланцугоў."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "2D noise that controls the size/occurrence of rolling hills."
-msgstr "2D-шум, што кіруе памерам/месцазнаходжаннем пагоркаў."
+msgstr "2D-шум, што кіруе памерам/распаўсюдам пагоркаў."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "2D noise that controls the size/occurrence of step mountain ranges."
-msgstr "2D-шум, што кіруе памерам/месцазнаходжаннем горных ланцугоў."
+msgstr "2D-шум, што кіруе памерам/распаўсюдам ступенявых горных ланцугоў."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "2D noise that locates the river valleys and channels."
-msgstr "2D-шум, што кіруе памерам/месцазнаходжаннем горных ланцугоў."
+msgstr "2D-шум, што размяшчае поймы рэк і рэчышчы."
 
 #: src/settings_translation_file.cpp
 msgid "3D clouds"
@@ -1866,7 +1855,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "3D noise that determines number of dungeons per mapchunk."
-msgstr ""
+msgstr "3D-шум, што вызначае колькасць падзямелляў на кавалку мапы."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1922,7 +1911,7 @@ msgstr "Паскарэнне ў паветры"
 
 #: src/settings_translation_file.cpp
 msgid "Acceleration of gravity, in nodes per second per second."
-msgstr ""
+msgstr "Паскарэнне свабоднага падзення ў вузлах за секунду за секунду."
 
 #: src/settings_translation_file.cpp
 msgid "Active Block Modifiers"
@@ -2066,9 +2055,8 @@ msgstr ""
 "Прызначаецца ў блоках мапы (16 вузлоў)."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Automatic forward key"
-msgstr "Клавіша ўперад"
+msgstr "Клавіша аўта-ўперад"
 
 #: src/settings_translation_file.cpp
 msgid "Automatically jump up single-node obstacles."
@@ -2151,17 +2139,17 @@ msgid "Bumpmapping"
 msgstr "Рэльефнае тэкстураванне"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Camera 'near clipping plane' distance in nodes, between 0 and 0.5.\n"
 "Most users will not need to change this.\n"
 "Increasing can reduce artifacting on weaker GPUs.\n"
 "0.1 = Default, 0.25 = Good value for weaker tablets."
 msgstr ""
-"Адлегласць паміж камерай і плоскасцю, ад 0 да 0.5 блока. Большасці "
-"карыстальнікаў няма патрэбы змяняць гэты параметр. Павелічэнне параметра "
-"можа паменшыць колькасць артэфактаў на слабых графічных працэсарах.\n"
-"Прадвызначана - 0.1; 0.25 будзе добра для слабых планшэтаў."
+"Блізкая плоскаць адсячэння камеры ў вузлах ад 0 да 0.5.\n"
+"Большасці карыстальнікаў няма патрэбы змяняць гэты параметр.\n"
+"Павелічэнне можа паменшыць колькасць артэфактаў на слабых графічных "
+"працэсарах.\n"
+"Тыповае — 0.1, а 0.25 будзе добра для слабых планшэтаў."
 
 #: src/settings_translation_file.cpp
 msgid "Camera smoothing"
@@ -2248,9 +2236,8 @@ msgid "Chat message count limit"
 msgstr "Максімальная колькасць паведамленняў у размове"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Chat message format"
-msgstr "Максімальная працягласць паведамлення ў размове"
+msgstr "Фармат чат-паведамленняў"
 
 #: src/settings_translation_file.cpp
 msgid "Chat message kick threshold"
@@ -2393,12 +2380,11 @@ msgstr "Вышыня кансолі"
 
 #: src/settings_translation_file.cpp
 msgid "ContentDB Flag Blacklist"
-msgstr ""
+msgstr "Чорны спіс сцяжкоў ContentDB"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "ContentDB URL"
-msgstr "Змесціва"
+msgstr "URL ContentDB"
 
 #: src/settings_translation_file.cpp
 msgid "Continuous forward"
@@ -2427,7 +2413,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Controls sinking speed in liquid."
-msgstr ""
+msgstr "Кантралюе хуткасць сцякання вадкасці."
 
 #: src/settings_translation_file.cpp
 msgid "Controls steepness/depth of lake depressions."
@@ -2490,9 +2476,8 @@ msgid "Debug info toggle key"
 msgstr "Клавіша пераключэння адладачных даных"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Debug log file size threshold"
-msgstr "Парог шуму пустынь"
+msgstr "Парог памеру файла журнала адладкі"
 
 #: src/settings_translation_file.cpp
 msgid "Debug log level"
@@ -2504,7 +2489,7 @@ msgstr "Кнопка памяншэння гучнасці"
 
 #: src/settings_translation_file.cpp
 msgid "Decrease this to increase liquid resistence to movement."
-msgstr ""
+msgstr "Паменшыце гэта, каб павялічыць інерцыю вадкасці."
 
 #: src/settings_translation_file.cpp
 msgid "Dedicated server step"
@@ -2596,9 +2581,8 @@ msgid "Defines the base ground level."
 msgstr "Вызначае базавы ўзровень зямлі."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Defines the depth of the river channel."
-msgstr "Вызначае базавы ўзровень зямлі."
+msgstr "Вызначае глыбіню рэчышча."
 
 #: src/settings_translation_file.cpp
 msgid "Defines the maximal player transfer distance in blocks (0 = unlimited)."
@@ -2607,14 +2591,12 @@ msgstr ""
 "(0 — неабмежаваная)."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Defines the width of the river channel."
-msgstr "Вызначае буйнамаштабную структуру рэчышч."
+msgstr "Вызначае шырыню рэчышча."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Defines the width of the river valley."
-msgstr "Вызначае вобласці, дзе на дрэвах ёсць яблыкі."
+msgstr "Вызначае шырыню поймы ракі."
 
 #: src/settings_translation_file.cpp
 msgid "Defines tree areas and tree density."
@@ -2647,6 +2629,9 @@ msgid ""
 "Deprecated, define and locate cave liquids using biome definitions instead.\n"
 "Y of upper limit of lava in large caves."
 msgstr ""
+"Састарэлы. Вызначае і размяшчае пячорныя вадкасці з выкарыстаннем азначэнняў "
+"біёму.\n"
+"Y верхняй мяжы лавы ў вялікіх пячорах."
 
 #: src/settings_translation_file.cpp
 msgid "Depth below which you'll find giant caverns."
@@ -2668,13 +2653,12 @@ msgid "Desert noise threshold"
 msgstr "Парог шуму пустынь"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Deserts occur when np_biome exceeds this value.\n"
 "When the 'snowbiomes' flag is enabled, this is ignored."
 msgstr ""
 "Пустыні з'яўляюцца, калі np_biome перавысіць гэтае значэнне.\n"
-"Ігнаруецца, калі ўключаная новая сістэма біёмаў."
+"Ігнаруецца, калі ўключаны сцяжок snowbiomes."
 
 #: src/settings_translation_file.cpp
 msgid "Desynchronize block animation"
@@ -2721,9 +2705,8 @@ msgid "Dungeon minimum Y"
 msgstr "Мінімальная Y падзямелля"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Dungeon noise"
-msgstr "Мінімальная Y падзямелля"
+msgstr "Шум падзямелля"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3078,6 +3061,9 @@ msgid ""
 "placeholders:\n"
 "@name, @message, @timestamp (optional)"
 msgstr ""
+"Фармат чат-паведамленняў гульца. Наступныя радкі з'яўляюцца запаўняльнікамі:"
+"\n"
+"@name, @message і @timestamp (неабавязкова)"
 
 #: src/settings_translation_file.cpp
 msgid "Format of screenshots."
@@ -3202,18 +3188,15 @@ msgid "Global callbacks"
 msgstr "Глабальныя зваротныя выклікі"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Global map generation attributes.\n"
 "In Mapgen v6 the 'decorations' flag controls all decorations except trees\n"
 "and junglegrass, in all other mapgens this flag controls all decorations."
 msgstr ""
 "Глабальныя параметры генерацыі мапы.\n"
-"У генератары мапы 6 параметр \"decorations\" кіруе ўсімі дэкарацыямі,\n"
+"У генератары мапы 6 параметр «decorations» кіруе ўсімі дэкарацыямі,\n"
 "апроч дрэў і травы джунгляў, а ў астатніх генератарах гэты параметр\n"
-"кіруе ўсімі дэкарацыямі.\n"
-"Параметры, не вызначаныя ў радку, застаюцца з прадвызначанымі значэннямі.\n"
-"Параметры з \"no\" выключаюцца."
+"кіруе ўсімі дэкарацыямі."
 
 #: src/settings_translation_file.cpp
 msgid "Gradient of light curve at maximum light level."
@@ -3336,18 +3319,24 @@ msgid ""
 "Horizontal acceleration in air when jumping or falling,\n"
 "in nodes per second per second."
 msgstr ""
+"Гарызантальнае паскарэнне ў паветры пры скачках ці падзенні\n"
+"ў вузлах за секунду за секунду."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Horizontal and vertical acceleration in fast mode,\n"
 "in nodes per second per second."
 msgstr ""
+"Гарызантальнае паскарэнне ў хуткі рэжыме\n"
+"ў вузлах за секунду за секунду."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Horizontal and vertical acceleration on ground or when climbing,\n"
 "in nodes per second per second."
 msgstr ""
+"Гарызантальнае і вертыкальнае паскарэнне на зямлі ці пры карасканні\n"
+"ў вузлах за секунду за секунду."
 
 #: src/settings_translation_file.cpp
 msgid "Hotbar next key"
@@ -3487,7 +3476,7 @@ msgstr "Прадмет 9 панэлі хуткага доступу"
 
 #: src/settings_translation_file.cpp
 msgid "How deep to make rivers."
-msgstr "Якой глыбіні рабіць рэкі."
+msgstr "Наколькі глыбокімі рабіць рэкі."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3500,7 +3489,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "How wide to make rivers."
-msgstr "Якой шырыні рабіць рэкі."
+msgstr "Наколькі шырокімі рабіць рэкі."
 
 #: src/settings_translation_file.cpp
 msgid "Humidity blend noise"
@@ -3634,6 +3623,10 @@ msgid ""
 "deleting an older debug.txt.1 if it exists.\n"
 "debug.txt is only moved if this setting is positive."
 msgstr ""
+"Калі памер файла debug.txt пры адкрыцці перавысіць колькасць мегабайтаў,\n"
+"пазначаных гэтай наладай, файл будзе перамешчаны ў debug.txt.1,\n"
+"а стары debug.txt.1 будзе выдалены.\n"
+"debug.txt перамяшчаецца, калі гэтая значэнне станоўчае."
 
 #: src/settings_translation_file.cpp
 msgid "If this is set, players will always (re)spawn at the given position."
@@ -3665,7 +3658,7 @@ msgstr "Клавіша павелічэння гучнасці"
 
 #: src/settings_translation_file.cpp
 msgid "Initial vertical speed when jumping, in nodes per second."
-msgstr ""
+msgstr "Пачатковая вертыкальная хуткасць пры скоках у вызлах за секунду."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4694,9 +4687,8 @@ msgid "Liquid queue purge time"
 msgstr "Час ачышчэння чаргі вадкасцяў"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Liquid sinking"
-msgstr "Хуткасць апускання ў вадкасць"
+msgstr "Сцяканне вадкасці"
 
 #: src/settings_translation_file.cpp
 msgid "Liquid update interval in seconds."
@@ -4758,7 +4750,7 @@ msgstr "Каталог мапаў"
 
 #: src/settings_translation_file.cpp
 msgid "Map generation attributes specific to Mapgen Carpathian."
-msgstr ""
+msgstr "Атрыбуты генерацыі для генератара Карпат."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4770,11 +4762,11 @@ msgid ""
 "'altitude_dry': Reduces humidity with altitude."
 msgstr ""
 "Атрыбуты генерацыі мапы для генератара далін.\n"
-"'altitude_chill': памяншае цеплыню з ростам вышыні.\n"
-"'humid_rivers': павялічвае вільготнасць абапал рэк.\n"
-"Variable_river_depth: калі ўключана, то нізкая вільготнасць і высокая "
+"«altitude_chill»: памяншае цеплыню з ростам вышыні.\n"
+"«humid_rivers»: павялічвае вільготнасць абапал рэк.\n"
+"«vary_river_depth»: калі ўключана, то нізкая вільготнасць і высокая "
 "тэмпература ўплываюць на ўзровень вады ў рэках.\n"
-"'altitude_dry': памяншае вільготнасць з ростам вышыні."
+"«altitude_dry»: памяншае вільготнасць з ростам вышыні."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4782,24 +4774,23 @@ msgid ""
 "'terrain' enables the generation of non-fractal terrain:\n"
 "ocean, islands and underground."
 msgstr ""
+"Атрыбуты генерацыі для плоскага генератара.\n"
+"«terrain» уключае генерацыю не-фрактальнага рельефу:\n"
+"акіяны, выспы і падзямеллі."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Map generation attributes specific to Mapgen flat.\n"
 "Occasional lakes and hills can be added to the flat world."
 msgstr ""
 "Атрыбуты генерацыі мапы для генератара плоскасці.\n"
-"Выпадковыя азёры і пагоркі могуць дадавацца на плоскасць свету.\n"
-"Нявызначаныя атрыбуты прадвызначана не змяняюцца.\n"
-"Атрыбуты, што пачынаюцца з 'no' выкарыстоўваюцца для іх выключэння."
+"Часам азёры і пагоркі могуць дадавацца ў плоскі свет."
 
 #: src/settings_translation_file.cpp
 msgid "Map generation attributes specific to Mapgen v5."
-msgstr ""
+msgstr "Атрыбуты генерацыі для генератара 5."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Map generation attributes specific to Mapgen v6.\n"
 "The 'snowbiomes' flag enables the new 5 biome system.\n"
@@ -4808,16 +4799,16 @@ msgid ""
 msgstr ""
 "Атрыбуты генерацыі мапы для генератара мапы 6.\n"
 "Параметр «snowbiomes» (снежныя біёмы) ўключае новую сістэму з 5 біёмамі.\n"
-"Калі новая сістэма ўключаная, то аўтаматычна ўключаюцца \"джунглі\", а "
-"параметр \"jungles\" ігнаруецца.\n"
-"Нявызначаныя параметры прадвызначана не змяняюцца.\n"
-"Параметры, што пачынаюцца з \"no\", выкарыстоўваюцца для выключэння."
+"Калі «snowbiomes» ўключаны, то аўтаматычна ўключаюцца «джунглі»,\n"
+"а параметр «jungles» ігнаруецца."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Map generation attributes specific to Mapgen v7.\n"
 "'ridges' enables the rivers."
 msgstr ""
+"Атрыбуты генерацыі для генератара 7.\n"
+"«ridges» уключае рэкі."
 
 #: src/settings_translation_file.cpp
 msgid "Map generation limit"
@@ -4864,9 +4855,8 @@ msgid "Mapgen Fractal"
 msgstr "Генератар мапы: фракталы"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Mapgen Fractal specific flags"
-msgstr "Адмысловыя параметры генератара плоскасці мапы"
+msgstr "Адмысловыя параметры фрактальнага генератара мапы"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen V5"
@@ -4953,6 +4943,8 @@ msgid ""
 "Maximum liquid resistence. Controls deceleration when entering liquid at\n"
 "high speed."
 msgstr ""
+"Максімальная ўстойлівасць вадкасці. Кантралюе запавольванне\n"
+"пры паступленні вадкасці з высокай хуткасцю."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5159,21 +5151,17 @@ msgid "Mute sound"
 msgstr "Выключыць гук"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Name of map generator to be used when creating a new world.\n"
 "Creating a world in the main menu will override this.\n"
 "Current mapgens in a highly unstable state:\n"
 "-    The optional floatlands of v7 (disabled by default)."
 msgstr ""
-"Назва генератара мапы, што будзе выкарыстоўвацца для стварэння новага "
-"свету.\n"
-"Пры стварэнні свету ў галоўным меню гэта можна змяніць.\n"
-"Бягучыя стабільныя генератары:\n"
-"V5, V6, V7 (за выключэннем лятучых астравоў (floatlands)), плоскасці (flat), "
-"адзіночны блок (singlenode).\n"
-"\"Стабільны\" азначае, што форма ландшафту існага свету не зменіцца ў "
-"будучыні. Майце на ўвазе, што біёмы вызначаюцца гульцамі і могуць змяняцца."
+"Назва генератара мапы, што будзе выкарыстоўвацца для стварэння новага свету."
+"\n"
+"Гэта можна змяніць пры стварэнні свету ў галоўным меню.\n"
+"Цяперашнія вельмі нестабільныя генератары:\n"
+"-    Неабавясковыя плаваючыя выспы 7 (звычайна адключаны)."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5192,9 +5180,8 @@ msgid ""
 msgstr "Назва сервера, што будзе паказвацца пры падлучэнні і ў спісе сервераў."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Near clipping plane"
-msgstr "Адлегласць да плоскасці"
+msgstr "Блізкая плоскасць адсячэння"
 
 #: src/settings_translation_file.cpp
 msgid "Network"
@@ -5245,7 +5232,6 @@ msgid "Number of emerge threads"
 msgstr "Колькасць узнікаючых патокаў"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Number of emerge threads to use.\n"
 "WARNING: Currently there are multiple bugs that may cause crashes when\n"
@@ -5262,17 +5248,21 @@ msgid ""
 "'on_generated'. For many users the optimum setting may be '1'."
 msgstr ""
 "Колькасць узнікаючых патокаў.\n"
-"Пуста альбо 0:\n"
-"- аўтаматычны выбар. Колькасць узнікаючых патокаў будзе вызначацца як\n"
-"\"колькасць працэсараў - 2\" з ніжнім лімітам 1.\n"
+"УВАГА: Цяпер можа ўзнікаць мноства хібаў, калі «num_emerge_threads» больш за "
+"1.\n"
+"Строга рэкамендуецца ўстанавіць гэтае значэнне ў 1, пакуль гэта папярэджанне "
+"не знікне.\n"
+"Значэнне 0:\n"
+"-    аўтаматычны выбар. Колькасць узнікаючых патокаў будзе вызначацца\n"
+"як «колькасць працэсараў - 2» з ніжняй мяжой у 1.\n"
 "Любое іншае значэнне:\n"
-"- вызначае колькасць узнікаючых патокаў з ніжнім лімітам 1.\n"
-"Майце на ўвазе, што павелічэнне колькасці патокаў павялічвае хуткасць "
-"рухавіка генератара мапы, але можа ўплываць на прадукцыйнасць гульні, "
+"-    вызначае колькасць узнікаючых патокаў з ніжняй мяжой у 1.\n"
+"УВАГА: Майце на ўвазе, што павелічэнне колькасці патокаў павялічвае\n"
+"хуткасць рухавіка генератара мапы, але можа ўплываць на прадукцыйнасць "
+"гульні,\n"
 "замінаючы іншым працэсам, асабліва адзіночнай гульні і (альбо) запуску коду "
 "Lua у\n"
-"'On_generated.\n"
-"Для мноства карыстальнікаў найлепшым значэннем можа быць \"1\"."
+"'On_generated. Для большасці карыстальнікаў найлепшым значэннем можа быць 1."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5453,7 +5443,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Raises terrain to make valleys around the rivers."
-msgstr "Падымае мясцовасць, каб зрабіць даліны вакол рэк."
+msgstr "Падымае мясцовасць, каб зрабіць поймы ўздоўж рэк."
 
 #: src/settings_translation_file.cpp
 msgid "Random input"
@@ -5540,14 +5530,12 @@ msgid "Rightclick repetition interval"
 msgstr "Інтэрвал паўторнай пстрычкі правай кнопкі мышы"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "River channel depth"
-msgstr "Глыбіня рэк"
+msgstr "Глыбіня рэчышча"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "River channel width"
-msgstr "Глыбіня рэк"
+msgstr "Шырыня рэчышча"
 
 #: src/settings_translation_file.cpp
 msgid "River depth"
@@ -5562,9 +5550,8 @@ msgid "River size"
 msgstr "Памер рэк"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "River valley width"
-msgstr "Глыбіня рэк"
+msgstr "Шырыня поймы ракі"
 
 #: src/settings_translation_file.cpp
 msgid "Rollback recording"
@@ -5906,7 +5893,7 @@ msgstr "Хуткасць хады ўпотай"
 
 #: src/settings_translation_file.cpp
 msgid "Sneaking speed, in nodes per second."
-msgstr ""
+msgstr "Хуткасць крадкоў у вузлах за секунду."
 
 #: src/settings_translation_file.cpp
 msgid "Sound"
@@ -6282,7 +6269,6 @@ msgid "Undersampling"
 msgstr "Субдыскрэтызацыя"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Undersampling is similar to using a lower screen resolution, but it applies\n"
 "to the game world only, keeping the GUI intact.\n"
@@ -6293,7 +6279,9 @@ msgstr ""
 "Субдыскрэтызацыя падобная на выкарыстанне нізкай раздзяляльнай здольнасці "
 "экрана,\n"
 "але ўжываецца толькі да гульнявога свету, не кранаючы інтэрфейс.\n"
-"Гэта значна павялічыць працаздольнасць за кошт вываду менш падрабязнай выявы."
+"Гэта значна павялічвае працаздольнасць за кошт вываду менш падрабязнай выявы."
+"\n"
+"Высокія значэнні прыводзяць да менш дэталізаванай выявы."
 
 #: src/settings_translation_file.cpp
 msgid "Unlimited player transfer distance"
@@ -6407,7 +6395,7 @@ msgstr "Кіруе крутасцю гор."
 
 #: src/settings_translation_file.cpp
 msgid "Vertical climbing speed, in nodes per second."
-msgstr ""
+msgstr "Хуткасць вертыкальнага караскання ў вузлах за секунду."
 
 #: src/settings_translation_file.cpp
 msgid "Vertical screen synchronization."
@@ -6465,7 +6453,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Walking and flying speed, in nodes per second."
-msgstr ""
+msgstr "Хуткасць хады і палёту ў вузлах за секунду."
 
 #: src/settings_translation_file.cpp
 msgid "Walking speed"
@@ -6473,7 +6461,7 @@ msgstr "Хуткасць хады"
 
 #: src/settings_translation_file.cpp
 msgid "Walking, flying and climbing speed in fast mode, in nodes per second."
-msgstr ""
+msgstr "Хуткасць хады, палёту і караскання ў хуткі рэжыме ў вузлах за секунду."
 
 #: src/settings_translation_file.cpp
 msgid "Water level"
@@ -6500,17 +6488,14 @@ msgid "Waving water"
 msgstr "Хваляванне вады"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Waving water wave height"
 msgstr "Вышыня водных хваляў"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Waving water wave speed"
 msgstr "Хуткасць водных хваляў"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Waving water wavelength"
 msgstr "Даўжыня водных хваляў"
 
@@ -6531,10 +6516,10 @@ msgid ""
 "to the old scaling method, for video drivers that don't\n"
 "properly support downloading textures back from hardware."
 msgstr ""
-"Калі gui_scaling_filter_txr2img уключаны, скапіяваць гэтыя выявы з апаратуры "
-"ў праграмнае асяроддзе для маштабавання. Калі не, то вярнуцца да старога "
-"метаду маштабавання для відэадрайвераў, якія не падтрымліваюць перадачу "
-"тэкстур з апаратуры назад."
+"Калі gui_scaling_filter_txr2img уключаны, выявы капіююцца\n"
+"з апаратуры ў праграмнае асяроддзе для маштабавання.\n"
+"Калі не, то вярнуцца да старога метаду маштабавання для відэадрайвераў,\n"
+"якія не падтрымліваюць перадачу тэкстур з апаратуры назад."
 
 #: src/settings_translation_file.cpp
 msgid ""
