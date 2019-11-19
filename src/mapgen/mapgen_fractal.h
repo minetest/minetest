@@ -85,10 +85,6 @@ public:
 private:
 	u16 formula;
 	bool julia;
-
-	s16 large_cave_depth;
-	s16 dungeon_ymin;
-	s16 dungeon_ymax;
 	u16 fractal;
 	u16 iterations;
 	v3f scale;

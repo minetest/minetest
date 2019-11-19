@@ -100,10 +100,6 @@ private:
 	float river_depth_bed;
 	float river_size_factor;
 
-	s16 large_cave_depth;
-	s16 dungeon_ymin;
-	s16 dungeon_ymax;
-
 	Noise *noise_inter_valley_fill;
 	Noise *noise_inter_valley_slope;
 	Noise *noise_rivers;
