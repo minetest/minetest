@@ -453,7 +453,6 @@ private:
 			bool is_local_server);
 
 	void ReceiveAll();
-	void Receive();
 
 	void sendPlayerPos();
 

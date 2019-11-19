@@ -311,6 +311,7 @@ void Client::connect(Address address, bool is_local_server)
 {
 	initLocalMapSaving(address, m_address_name, is_local_server);
 
+	// Since we use TryReceive() a timeout here would be ineffective anyway
 	m_con->SetTimeoutMs(0);
 	m_con->Connect(address);
 }
@@ -795,34 +796,29 @@ void Client::initLocalMapSaving(const Address &address,
 
 void Client::ReceiveAll()
 {
+	NetworkPacket pkt;
 	u64 start_ms = porting::getTimeMs();
-	for(;;)
-	{
+	const u64 budget = 100;
+	for(;;) {
 		// Limit time even if there would be huge amounts of data to
 		// process
-		if(porting::getTimeMs() > start_ms + 100)
+		if (porting::getTimeMs() > start_ms + budget) {
+			infostream << "Client::ReceiveAll(): "
+					"Packet processing budget exceeded." << std::endl;
 			break;
+		}
 
+		pkt.clear();
 		try {
-			Receive();
-			g_profiler->graphAdd("client_received_packets", 1);
-		}
-		catch(con::NoIncomingDataException &e) {
-			break;
-		}
-		catch(con::InvalidIncomingDataException &e) {
-			infostream<<"Client::ReceiveAll(): "
+			if (!m_con->TryReceive(&pkt))
+				break;
+			ProcessData(&pkt);
+		} catch (const con::InvalidIncomingDataException &e) {
+			infostream << "Client::ReceiveAll(): "
 					"InvalidIncomingDataException: what()="
-					<<e.what()<<std::endl;
+					 << e.what() << std::endl;
 		}
 	}
-}
-
-void Client::Receive()
-{
-	NetworkPacket pkt;
-	m_con->Receive(&pkt);
-	ProcessData(&pkt);
 }
 
 inline void Client::handleCommand(NetworkPacket* pkt)
@@ -841,6 +837,7 @@ void Client::ProcessData(NetworkPacket *pkt)
 
 	//infostream<<"Client: received command="<<command<<std::endl;
 	m_packetcounter.add((u16)command);
+	g_profiler->graphAdd("client_received_packets", 1);
 
 	/*
 		If this check is removed, be sure to change the queue
