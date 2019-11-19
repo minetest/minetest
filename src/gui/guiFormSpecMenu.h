@@ -312,7 +312,7 @@ protected:
 	}
 	std::wstring getLabelByID(s32 id);
 	std::string getNameByID(s32 id);
-	FieldSpec *getSpecByID(s32 id);
+	const FieldSpec *getSpecByID(s32 id);
 	v2s32 getElementBasePos(const std::vector<std::string> *v_pos);
 	v2s32 getRealCoordinateBasePos(const std::vector<std::string> &v_pos);
 	v2s32 getRealCoordinateGeometry(const std::vector<std::string> &v_geom);

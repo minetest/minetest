@@ -3018,9 +3018,9 @@ void GUIFormSpecMenu::legacySortElements(core::list<IGUIElement *>::Iterator fro
 
 	// 2: Sort the container
 	std::sort(elements.begin(), elements.end(),
-			[=] (const IGUIElement *a, const IGUIElement *b) -> bool {
-		FieldSpec *spec_a = getSpecByID(a->getID());
-		FieldSpec *spec_b = getSpecByID(b->getID());
+			[this] (const IGUIElement *a, const IGUIElement *b) -> bool {
+		const FieldSpec *spec_a = getSpecByID(a->getID());
+		const FieldSpec *spec_b = getSpecByID(b->getID());
 		return spec_a && spec_b &&
 			spec_a->priority < spec_b->priority;
 	});
@@ -4393,7 +4393,7 @@ std::string GUIFormSpecMenu::getNameByID(s32 id)
 }
 
 
-GUIFormSpecMenu::FieldSpec *GUIFormSpecMenu::getSpecByID(s32 id)
+const GUIFormSpecMenu::FieldSpec *GUIFormSpecMenu::getSpecByID(s32 id)
 {
 	for (FieldSpec &spec : m_fields) {
 		if (spec.fid == id)
