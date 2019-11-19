@@ -93,10 +93,6 @@ private:
 	float river_depth;
 	float valley_width;
 
-	s16 large_cave_depth;
-	s16 dungeon_ymin;
-	s16 dungeon_ymax;
-
 	Noise *noise_height1;
 	Noise *noise_height2;
 	Noise *noise_height3;

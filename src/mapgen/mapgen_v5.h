@@ -74,10 +74,6 @@ public:
 	int generateBaseTerrain();
 
 private:
-	s16 large_cave_depth;
-	s16 dungeon_ymin;
-	s16 dungeon_ymax;
-
 	Noise *noise_factor;
 	Noise *noise_height;
 	Noise *noise_ground;

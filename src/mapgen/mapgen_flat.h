@@ -75,13 +75,10 @@ public:
 
 private:
 	s16 ground_level;
-	s16 large_cave_depth;
 	float lake_threshold;
 	float lake_steepness;
 	float hill_threshold;
 	float hill_steepness;
-	s16 dungeon_ymin;
-	s16 dungeon_ymax;
 
 	Noise *noise_terrain;
 };

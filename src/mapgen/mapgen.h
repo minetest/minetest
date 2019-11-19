@@ -285,4 +285,7 @@ protected:
 	int large_cave_num_min;
 	int large_cave_num_max;
 	float large_cave_flooded;
+	s16 large_cave_depth;
+	s16 dungeon_ymin;
+	s16 dungeon_ymax;
 };

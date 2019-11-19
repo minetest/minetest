@@ -108,10 +108,6 @@ private:
 	s16 floatland_level;
 	s16 shadow_limit;
 
-	s16 large_cave_depth;
-	s16 dungeon_ymin;
-	s16 dungeon_ymax;
-
 	Noise *noise_terrain_base;
 	Noise *noise_terrain_alt;
 	Noise *noise_terrain_persist;
