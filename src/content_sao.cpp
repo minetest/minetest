@@ -1325,6 +1325,15 @@ u16 PlayerSAO::punch(v3f dir,
 	return hitparams.wear;
 }
 
+void PlayerSAO::rightClick(ServerActiveObject *clicker)
+{
+	PlayerSAO *playersao = m_player->getPlayerSAO();
+
+	if (isAttached())
+		return;
+	m_env->getScriptIface()->on_rightclickplayer(playersao, clicker);
+}
+
 void PlayerSAO::setHP(s32 hp, const PlayerHPChangeReason &reason)
 {
 	s32 oldhp = m_hp;

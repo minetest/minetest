@@ -612,6 +612,7 @@ core.registered_on_modchannel_message, core.register_on_modchannel_message = mak
 core.registered_on_auth_fail, core.register_on_auth_fail = make_registration()
 core.registered_on_player_inventory_actions, core.register_on_player_inventory_action = make_registration()
 core.registered_allow_player_inventory_actions, core.register_allow_player_inventory_action = make_registration()
+core.registered_on_rightclickplayers, core.register_on_rightclickplayer = make_registration()
 
 --
 -- Compatibility for on_mapgen_init()
