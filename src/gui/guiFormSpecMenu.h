@@ -143,24 +143,27 @@ class GUIFormSpecMenu : public GUIModalMenu
 		FieldSpec() = default;
 
 		FieldSpec(const std::string &name, const std::wstring &label,
-				const std::wstring &default_text, int id) :
+				const std::wstring &default_text, s32 id, int priority = 0) :
 			fname(name),
 			flabel(label),
 			fdefault(unescape_enriched(translate_string(default_text))),
 			fid(id),
 			send(false),
 			ftype(f_Unknown),
-			is_exit(false)
+			is_exit(false),
+			priority(priority)
 		{
 		}
 
 		std::string fname;
 		std::wstring flabel;
 		std::wstring fdefault;
-		int fid;
+		s32 fid;
 		bool send;
 		FormspecFieldType ftype;
 		bool is_exit;
+		// Draw priority for formspec version < 3
+		int priority;
 		core::rect<s32> rect;
 	};
 
@@ -309,7 +312,7 @@ protected:
 	}
 	std::wstring getLabelByID(s32 id);
 	std::string getNameByID(s32 id);
-	FormspecFieldType getTypeByID(s32 id);
+	const FieldSpec *getSpecByID(s32 id);
 	v2s32 getElementBasePos(const std::vector<std::string> *v_pos);
 	v2s32 getRealCoordinateBasePos(const std::vector<std::string> &v_pos);
 	v2s32 getRealCoordinateGeometry(const std::vector<std::string> &v_geom);

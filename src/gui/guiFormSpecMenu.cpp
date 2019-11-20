@@ -21,8 +21,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <cstdlib>
 #include <algorithm>
 #include <iterator>
-#include <sstream>
 #include <limits>
+#include <sstream>
 #include "guiFormSpecMenu.h"
 #include "constants.h"
 #include "gamedef.h"
@@ -427,7 +427,8 @@ void GUIFormSpecMenu::parseList(parserData* data, const std::string &element)
 			"",
 			L"",
 			L"",
-			258 + m_fields.size()
+			258 + m_fields.size(),
+			3
 		);
 
 		v2s32 pos;
@@ -671,7 +672,8 @@ void GUIFormSpecMenu::parseImage(parserData* data, const std::string &element)
 			name,
 			L"",
 			L"",
-			258 + m_fields.size()
+			258 + m_fields.size(),
+			1
 		);
 		core::rect<s32> rect(pos, pos + geom);
 		gui::IGUIImage *e = Environment->addImage(rect, this, spec.fid, 0, true);
@@ -750,7 +752,8 @@ void GUIFormSpecMenu::parseItemImage(parserData* data, const std::string &elemen
 			"",
 			L"",
 			L"",
-			258 + m_fields.size()
+			258 + m_fields.size(),
+			2
 		);
 		spec.ftype = f_ItemImage;
 
@@ -1654,7 +1657,8 @@ void GUIFormSpecMenu::parseLabel(parserData* data, const std::string &element)
 				"",
 				wlabel_colors,
 				L"",
-				258 + m_fields.size()
+				258 + m_fields.size(),
+				4
 			);
 			gui::IGUIStaticText *e = gui::StaticText::add(Environment,
 					spec.flabel.c_str(), rect, false, false, this, spec.fid);
@@ -2015,7 +2019,8 @@ void GUIFormSpecMenu::parseItemImageButton(parserData* data, const std::string &
 			name,
 			utf8_to_wide(label),
 			utf8_to_wide(item_name),
-			258 + m_fields.size()
+			258 + m_fields.size(),
+			2
 		);
 
 		gui::IGUIButton *e_btn = GUIButton::addButton(Environment, rect, this, spec_btn.fid, L"");
@@ -2035,10 +2040,11 @@ void GUIFormSpecMenu::parseItemImageButton(parserData* data, const std::string &
 
 		// the spec for the item-image
 		FieldSpec spec_img(
-			"",
+			name,
 			L"",
 			L"",
-			258 + m_fields.size()
+			258 + m_fields.size(),
+			2
 		);
 
 		GUIItemImage *e_img = new GUIItemImage(Environment, e_btn, spec_img.fid,
@@ -2086,7 +2092,8 @@ void GUIFormSpecMenu::parseBox(parserData* data, const std::string &element)
 				"",
 				L"",
 				L"",
-				258 + m_fields.size()
+				258 + m_fields.size(),
+				-2
 			);
 			spec.ftype = f_Box;
 
@@ -2987,14 +2994,16 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 void GUIFormSpecMenu::legacySortElements(core::list<IGUIElement *>::Iterator from)
 {
 	/*
-	 * The order was:
-	 * (0. background colors and backgrounds)
-	 * 1. boxes
-	 * 2. all normal elements (like buttons)
-	 * 3. images
-	 * 4. item images
-	 * 5. item lists (TODO)
-	 */
+		Draw order for formspec_version <= 2:
+		-3  bgcolor
+		-2  background
+		-1  box
+		0   All other elements
+		1   image
+		2   item_image, item_image_button
+		3   list
+		4   label
+	*/
 
 	if (from == Children.end())
 		from = Children.begin();
@@ -3002,44 +3011,25 @@ void GUIFormSpecMenu::legacySortElements(core::list<IGUIElement *>::Iterator fro
 		from++;
 
 	core::list<IGUIElement *>::Iterator to = Children.end();
+	// 1: Copy into a sortable container
+	std::vector<IGUIElement *> elements;
+	for (auto it = from; it != to; ++it)
+		elements.emplace_back(*it);
 
-	// step 1: move all boxes to back and all images to front
-	// (drawn in back = drawn first = in front of list)
-	for (auto i = from; i != to;) {
-		if (getTypeByID((*i)->getID()) == f_Box && i != from) {
-			auto e = *i;
-			i = Children.erase(i);
-			Children.insert_before(from, e);
-		} else if ((*i)->hasType(gui::EGUIET_IMAGE)) {
-			auto e = *i;
-			i = Children.erase(i);
-			Children.push_back(e);
-			if (to == Children.end())
-				to = Children.getLast(); // do not touch sorted back
-			if (i == Children.end())
-				break;
-		} else {
-			i++;
-		}
+	// 2: Sort the container
+	std::sort(elements.begin(), elements.end(),
+			[this] (const IGUIElement *a, const IGUIElement *b) -> bool {
+		const FieldSpec *spec_a = getSpecByID(a->getID());
+		const FieldSpec *spec_b = getSpecByID(b->getID());
+		return spec_a && spec_b &&
+			spec_a->priority < spec_b->priority;
+	});
+
+	// 3: Re-assign the pointers
+	for (auto e : elements) {
+		*from = e;
+		from++;
 	}
-
-	// step 2: move all item images to front
-	for (auto i = from; i != to;) {
-		if (getTypeByID((*i)->getID()) == f_ItemImage) {
-			auto e = *i;
-			i = Children.erase(i);
-			Children.push_back(e);
-			if (to == Children.end())
-				to = Children.getLast(); // do not touch sorted back
-			if (i == Children.end())
-				break;
-		} else {
-			i++;
-		}
-	}
-
-	// step 3: move all item lists to front
-	// TODO when item lists are drawn in order
 }
 
 #ifdef __ANDROID__
@@ -4403,13 +4393,13 @@ std::string GUIFormSpecMenu::getNameByID(s32 id)
 }
 
 
-FormspecFieldType GUIFormSpecMenu::getTypeByID(s32 id)
+const GUIFormSpecMenu::FieldSpec *GUIFormSpecMenu::getSpecByID(s32 id)
 {
 	for (FieldSpec &spec : m_fields) {
 		if (spec.fid == id)
-			return spec.ftype;
+			return &spec;
 	}
-	return f_Unknown;
+	return nullptr;
 }
 
 /**
