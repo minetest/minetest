@@ -8,13 +8,17 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-10-09 22:02+0200\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: Automatically generated\n"
-"Language-Team: none\n"
+"PO-Revision-Date: 2019-11-22 06:11+0000\n"
+"Last-Translator: abidin toumi <abidin24@disroot.org>\n"
+"Language-Team: Arabic <https://hosted.weblate.org/projects/minetest/minetest/"
+"ar/>\n"
 "Language: ar\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 "
+"&& n%100<=10 ? 3 : n%100>=11 ? 4 : 5;\n"
+"X-Generator: Weblate 3.10-dev\n"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "You died"
@@ -22,7 +26,7 @@ msgstr ""
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "Respawn"
-msgstr ""
+msgstr "أعِد الإحياء"
 
 #: builtin/fstk/ui.lua
 msgid "The server has requested a reconnect:"
@@ -30,11 +34,11 @@ msgstr ""
 
 #: builtin/fstk/ui.lua
 msgid "Reconnect"
-msgstr ""
+msgstr "أعد الإتصال"
 
 #: builtin/fstk/ui.lua
 msgid "Main menu"
-msgstr ""
+msgstr "القائمة الرئيسية"
 
 #: builtin/fstk/ui.lua
 msgid "An error occurred in a Lua script:"
@@ -42,43 +46,43 @@ msgstr ""
 
 #: builtin/fstk/ui.lua
 msgid "An error occurred:"
-msgstr ""
+msgstr "حدث خطأ:"
 
 #: builtin/fstk/ui.lua
 msgid "Ok"
-msgstr ""
+msgstr "موافق"
 
 #: builtin/mainmenu/common.lua src/client/game.cpp
 msgid "Loading..."
-msgstr ""
+msgstr "يحمل..."
 
 #: builtin/mainmenu/common.lua
 msgid "Try reenabling public serverlist and check your internet connection."
-msgstr ""
+msgstr "جرب إعادة تمكين قائمة الحوادم العامة وتحقق من إتصالك بالانترنت."
 
 #: builtin/mainmenu/common.lua
 msgid "Server supports protocol versions between $1 and $2. "
-msgstr ""
+msgstr "الخادم يدعم نسخ الميفاق ما بين $1 و $2. "
 
 #: builtin/mainmenu/common.lua
 msgid "Server enforces protocol version $1. "
-msgstr ""
+msgstr "يفرظ الخادم إ ستخدام الميفاق $1. "
 
 #: builtin/mainmenu/common.lua
 msgid "We support protocol versions between version $1 and $2."
-msgstr ""
+msgstr "نحن ندعم نسخ الميفاق ما بين $1 و $2."
 
 #: builtin/mainmenu/common.lua
 msgid "We only support protocol version $1."
-msgstr ""
+msgstr "نحن ندعم نسخة الميفاق $1فقط."
 
 #: builtin/mainmenu/common.lua
 msgid "Protocol version mismatch. "
-msgstr ""
+msgstr "لا تتطابق نسخ الميفاق. "
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "World:"
-msgstr ""
+msgstr "العالم:"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "No modpack description provided."
@@ -86,7 +90,7 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "No game description provided."
-msgstr ""
+msgstr "لا يتوفر وصف للعبة."
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Mod:"
@@ -94,28 +98,28 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "No (optional) dependencies"
-msgstr ""
+msgstr "بدون إعتماديات إختيارية"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "No hard dependencies"
-msgstr ""
+msgstr "بدون إعتماديات لازمة"
 
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/tab_content.lua
 msgid "Optional dependencies:"
-msgstr ""
+msgstr "الإعتماديات الإختيارية:"
 
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/tab_content.lua
 msgid "Dependencies:"
-msgstr ""
+msgstr "الإعتماديات:"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "No optional dependencies"
-msgstr ""
+msgstr "بدون إعتماديات إختيارية"
 
 #: builtin/mainmenu/dlg_config_world.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua src/gui/guiKeyChangeMenu.cpp
 msgid "Save"
-msgstr ""
+msgstr "إحفظ"
 
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/dlg_create_world.lua
 #: builtin/mainmenu/dlg_delete_content.lua
@@ -125,7 +129,7 @@ msgstr ""
 #: src/gui/guiConfirmRegistration.cpp src/gui/guiKeyChangeMenu.cpp
 #: src/gui/guiPasswordChange.cpp
 msgid "Cancel"
-msgstr ""
+msgstr "ألغِ"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Disable modpack"
@@ -137,15 +141,15 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "enabled"
-msgstr ""
+msgstr "مُمَكن"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Disable all"
-msgstr ""
+msgstr "عطِل الكل"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Enable all"
-msgstr ""
+msgstr "مكِن الكل"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid ""
@@ -155,12 +159,12 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "All packages"
-msgstr ""
+msgstr "كل الحزم"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Games"
-msgstr ""
+msgstr "الألعاب"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua
@@ -173,40 +177,40 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Failed to download $1"
-msgstr ""
+msgstr "فشل تحميل $1"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Downloading and installing $1, please wait..."
-msgstr ""
+msgstr "تنزيل وتثبيت $1, يرجى الإنتظار..."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Back"
-msgstr ""
+msgstr "عُد"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Install"
-msgstr ""
+msgstr "ثبت"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Update"
-msgstr ""
+msgstr "حدِث"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Uninstall"
-msgstr ""
+msgstr "أزل"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua builtin/mainmenu/tab_online.lua
 msgid "Search"
-msgstr ""
+msgstr "إبحث"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Back to Main Menu"
-msgstr ""
+msgstr "عُد للقائمة الرئيسة"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "No results"
-msgstr ""
+msgstr "بدون نتائج"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "No packages could be retrieved"
@@ -214,7 +218,7 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "World name"
-msgstr ""
+msgstr "إسم العالم"
 
 #: builtin/mainmenu/dlg_create_world.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua
@@ -227,19 +231,19 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
 msgid "Game"
-msgstr ""
+msgstr "اللعبة"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Create"
-msgstr ""
+msgstr "أنشئ"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "You have no games installed."
-msgstr ""
+msgstr "ليس لديك لعبة مثبتت."
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Download one from minetest.net"
-msgstr ""
+msgstr "نزِّل لعبة من minetest.net"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Warning: The minimal development test is meant for developers."
@@ -247,41 +251,41 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Download a game, such as Minetest Game, from minetest.net"
-msgstr ""
+msgstr "نزِّل لعبة,مثل لعبة Minetest, من minetest.net"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "A world named \"$1\" already exists"
-msgstr ""
+msgstr "إسم العالم \"$1\" موجود مسبقاً"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "No game selected"
-msgstr ""
+msgstr "لم تحدد لعبة"
 
 #: builtin/mainmenu/dlg_delete_content.lua
 msgid "Are you sure you want to delete \"$1\"?"
-msgstr ""
+msgstr "هل تريد حذف \"$1\" ؟"
 
 #: builtin/mainmenu/dlg_delete_content.lua
 #: builtin/mainmenu/dlg_delete_world.lua builtin/mainmenu/tab_local.lua
 #: src/client/keycode.cpp
 msgid "Delete"
-msgstr ""
+msgstr "إحذف"
 
 #: builtin/mainmenu/dlg_delete_content.lua
 msgid "pkgmgr: failed to delete \"$1\""
-msgstr ""
+msgstr "مدير الحزم: فشل حذف \"$1\""
 
 #: builtin/mainmenu/dlg_delete_content.lua
 msgid "pkgmgr: invalid path \"$1\""
-msgstr ""
+msgstr "مدير الحزم: المسار \"$1\" غير صالح"
 
 #: builtin/mainmenu/dlg_delete_world.lua
 msgid "Delete World \"$1\"?"
-msgstr ""
+msgstr "حذف العالم \"$1\"؟"
 
 #: builtin/mainmenu/dlg_rename_modpack.lua
 msgid "Accept"
-msgstr ""
+msgstr "أقبل"
 
 #: builtin/mainmenu/dlg_rename_modpack.lua
 msgid ""
@@ -295,15 +299,15 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Disabled"
-msgstr ""
+msgstr "عطِّل"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Enabled"
-msgstr ""
+msgstr "مكِّن"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Browse"
-msgstr ""
+msgstr "استعرض"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua src/settings_translation_file.cpp
 msgid "Offset"
@@ -343,7 +347,7 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "defaults"
-msgstr ""
+msgstr "إفتراضي"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "eased"
