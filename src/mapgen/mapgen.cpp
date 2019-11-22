@@ -843,7 +843,7 @@ void MapgenBasic::generateCavesNoiseIntersection(s16 max_stone_y)
 }
 
 
-void MapgenBasic::generateCavesRandomWalk(s16 max_stone_y, s16 large_cave_depth)
+void MapgenBasic::generateCavesRandomWalk(s16 max_stone_y, s16 large_cave_ymax)
 {
 	if (node_min.Y > max_stone_y)
 		return;
@@ -858,10 +858,12 @@ void MapgenBasic::generateCavesRandomWalk(s16 max_stone_y, s16 large_cave_depth)
 		cave.makeCave(vm, node_min, node_max, &ps, false, max_stone_y, heightmap);
 	}
 
-	if (node_max.Y > large_cave_depth)
+	if (node_max.Y > large_cave_ymax)
 		return;
 
-	// Large randomwalk caves below 'large_cave_depth'
+	// Large randomwalk caves below 'large_cave_ymax'.
+	// 'large_cave_ymax' can differ from the 'large_cave_depth' mapgen parameter,
+	// it is set to world base to disable large caves in or near caverns.
 	u32 num_large_caves = ps.range(large_cave_num_min, large_cave_num_max);
 
 	for (u32 i = 0; i < num_large_caves; i++) {
