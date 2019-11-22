@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-10-09 22:02+0200\n"
-"PO-Revision-Date: 2019-11-22 06:11+0000\n"
+"PO-Revision-Date: 2019-11-23 18:04+0000\n"
 "Last-Translator: abidin toumi <abidin24@disroot.org>\n"
 "Language-Team: Arabic <https://hosted.weblate.org/projects/minetest/minetest/"
 "ar/>\n"
@@ -22,7 +22,7 @@ msgstr ""
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "You died"
-msgstr ""
+msgstr "مِت"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "Respawn"
@@ -30,7 +30,7 @@ msgstr "أعِد الإحياء"
 
 #: builtin/fstk/ui.lua
 msgid "The server has requested a reconnect:"
-msgstr ""
+msgstr "يطلب الخادم إعادة الإتصال:"
 
 #: builtin/fstk/ui.lua
 msgid "Reconnect"
@@ -141,7 +141,7 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "enabled"
-msgstr "مُمَكن"
+msgstr "مُفعل"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Disable all"
@@ -149,7 +149,7 @@ msgstr "عطِل الكل"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Enable all"
-msgstr "مكِن الكل"
+msgstr "فعِل الكل"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid ""
@@ -173,7 +173,7 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Texture packs"
-msgstr ""
+msgstr "حِزم الإكساء"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Failed to download $1"
@@ -227,7 +227,7 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
 msgid "Mapgen"
-msgstr ""
+msgstr "مولِد الخريطة"
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
 msgid "Game"
@@ -303,7 +303,7 @@ msgstr "عطِّل"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Enabled"
-msgstr "مكِّن"
+msgstr "مُفعل"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Browse"
@@ -375,51 +375,51 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Please enter a valid integer."
-msgstr ""
+msgstr "يرجى إدخال رقم صحيح صالح."
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "The value must be at least $1."
-msgstr ""
+msgstr "يحب أن لا تقل القيمة عن $1."
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "The value must not be larger than $1."
-msgstr ""
+msgstr "يحب أن لا تزيد القيمة عن $1."
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Please enter a valid number."
-msgstr ""
+msgstr "يرجى إدخال رقم صالح."
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Select directory"
-msgstr ""
+msgstr "إختر الدليل"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Select file"
-msgstr ""
+msgstr "إختر ملف"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "< Back to Settings page"
-msgstr ""
+msgstr "< عد لصفحة الإعدادات"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Edit"
-msgstr ""
+msgstr "حرر"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Restore Default"
-msgstr ""
+msgstr "إستعِد الإفتراضي"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Show technical names"
-msgstr ""
+msgstr "إعرض الأسماء التقنية"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "$1 (Enabled)"
-msgstr ""
+msgstr "$1 (مفعل)"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Unable to install a $1 as a texture pack"
-msgstr ""
+msgstr "فشل تثبيت $1 كحزمة إكساء"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Failed to install $1 to $2"
@@ -447,11 +447,11 @@ msgstr ""
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Unable to install a game as a $1"
-msgstr ""
+msgstr "فشل تثبيت اللعبة كـ $1"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Install: file: \"$1\""
-msgstr ""
+msgstr "ثبت: الملف: \"$1\""
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Install: Unsupported file type \"$1\" or broken archive"
