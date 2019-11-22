@@ -260,8 +260,7 @@ void MapgenValleys::makeChunk(BlockMakeData *data)
 	m_emerge->oremgr->placeAllOres(this, blockseed, node_min, node_max);
 
 	// Dungeon creation
-	if ((flags & MG_DUNGEONS) && full_node_min.Y >= dungeon_ymin &&
-			full_node_max.Y <= dungeon_ymax)
+	if (flags & MG_DUNGEONS)
 		generateDungeons(stone_surface_max_y);
 
 	// Generate the registered decorations
