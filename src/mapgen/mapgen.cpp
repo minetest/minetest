@@ -886,7 +886,8 @@ bool MapgenBasic::generateCavernsNoise(s16 max_stone_y)
 
 void MapgenBasic::generateDungeons(s16 max_stone_y)
 {
-	if (max_stone_y < node_min.Y)
+	if (node_min.Y > max_stone_y || node_min.Y > dungeon_ymax ||
+			node_max.Y < dungeon_ymin)
 		return;
 
 	u16 num_dungeons = std::fmax(std::floor(
