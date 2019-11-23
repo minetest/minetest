@@ -1996,26 +1996,6 @@ void GUIFormSpecMenu::parseItemImageButton(parserData* data, const std::string &
 		rect += data->basepos-padding;
 		spec_btn.rect = rect;
 		m_fields.push_back(spec_btn);
-
-// <<<<<<< HEAD
-// 		// the spec for the item-image
-// 		FieldSpec spec_img(
-// 			"",
-// 			L"",
-// 			L"",
-// 			258 + m_fields.size()
-// 		);
-//
-// 		GUIItemImage *e_img = new GUIItemImage(Environment, e_btn, spec_img.fid,
-// 				core::rect<s32>(0, 0, geom.X, geom.Y), item_name, m_font, m_client);
-//
-// 		e_img->setText(utf8_to_wide(label).c_str());
-//
-// 		e_img->drop();
-//
-// 		m_fields.push_back(spec_img);
-// =======
-// >>>>>>> Move image_button/item_image_button into GUIButton subclasses
 		return;
 	}
 	errorstream<< "Invalid ItemImagebutton element(" << parts.size() << "): '" << element << "'"  << std::endl;

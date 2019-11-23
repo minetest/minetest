@@ -29,6 +29,8 @@ public:
 	GUIButtonImage(gui::IGUIEnvironment *environment, gui::IGUIElement *parent,
 			s32 id, core::rect<s32> rectangle, bool noclip = false);
 
+	virtual bool OnEvent(const SEvent& event) override;
+
 	void setForegroundImage(gui::EGUI_BUTTON_IMAGE_STATE state,
 			video::ITexture *image = nullptr,
 			const core::rect<s32> &sourceRect = core::rect<s32>(0, 0, 0, 0));
@@ -44,14 +46,14 @@ public:
 
 	virtual void setFromStyle(const StyleSpec &style, ISimpleTextureSource *tsrc) override;
 
+	virtual void setScaleImage(bool scaleImage=true) override;
+
 	//! Do not drop returned handle
 	static GUIButtonImage *addButton(gui::IGUIEnvironment *environment,
 			const core::rect<s32> &rectangle, IGUIElement *parent, s32 id,
 			const wchar_t *text, const wchar_t *tooltiptext = L"");
 
-protected:
-	virtual void drawContent() override;
-
 private:
 	ButtonImage ButtonForegroundImages[gui::EGBIS_COUNT];
+	gui::IGUIImage *m_image;
 };

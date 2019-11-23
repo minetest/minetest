@@ -22,6 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client/guiscalingfilter.h"
 #include "debug.h"
 #include "IGUIEnvironment.h"
+#include "IGUIImage.h"
 #include "IVideoDriver.h"
 #include "StyleSpec.h"
 
@@ -32,42 +33,22 @@ GUIButtonImage::GUIButtonImage(gui::IGUIEnvironment *environment,
 		gui::IGUIElement *parent, s32 id, core::rect<s32> rectangle, bool noclip)
 	: GUIButton (environment, parent, id, rectangle, noclip)
 {
+	m_image = Environment->addImage(
+			core::rect<s32>(0,0,rectangle.getWidth(),rectangle.getHeight()), this);
+	m_image->setScaleImage(isScalingImage());
+	sendToBack(m_image);
 }
 
-void GUIButtonImage::drawContent()
+bool GUIButtonImage::OnEvent(const SEvent& event)
 {
-	GUISkin *skin = dynamic_cast<GUISkin *>(Environment->getSkin());
-	video::IVideoDriver *driver = Environment->getVideoDriver();
+	bool result = GUIButton::OnEvent(event);
 
 	EGUI_BUTTON_IMAGE_STATE imageState = getImageState(isPressed(), ButtonForegroundImages);
 	video::ITexture *texture = ButtonForegroundImages[(u32)imageState].Texture;
+	if (texture != nullptr)
+		m_image->setImage(texture);
 
-	if (texture) {
-		core::rect<s32> sourceRect(ButtonForegroundImages[(u32)imageState].SourceRect);
-		if (sourceRect.getWidth() == 0 && sourceRect.getHeight() == 0) {
-			sourceRect = core::rect<s32>(
-					core::position2di(0,0),
-					texture->getOriginalSize());
-		}
-
-		core::position2d<s32> pos(AbsoluteRect.getCenter());
-		pos.X -= sourceRect.getWidth() / 2;
-		pos.Y -= sourceRect.getHeight() / 2;
-
-		core::rect<s32> rect = isScalingImage()
-			? AbsoluteRect
-			: core::rect<s32>(pos, sourceRect.getSize());
-
-		if (isPressed() && isDrawingBorder()) {
-			rect += core::dimension2d<s32>(
-					skin->getSize(irr::gui::EGDS_BUTTON_PRESSED_IMAGE_OFFSET_X),
-					skin->getSize(irr::gui::EGDS_BUTTON_PRESSED_IMAGE_OFFSET_Y));
-		}
-
-		driver->draw2DImage(ButtonForegroundImages[(u32)imageState].Texture,
-				rect, sourceRect, &AbsoluteClippingRect,
-				0, isAlphaChannelUsed());
-	}
+	return result;
 }
 
 void GUIButtonImage::setForegroundImage(EGUI_BUTTON_IMAGE_STATE state,
@@ -85,6 +66,10 @@ void GUIButtonImage::setForegroundImage(EGUI_BUTTON_IMAGE_STATE state,
 
 	ButtonForegroundImages[stateIdx].Texture = image;
 	ButtonForegroundImages[stateIdx].SourceRect = sourceRect;
+
+	EGUI_BUTTON_IMAGE_STATE imageState = getImageState(isPressed(), ButtonForegroundImages);
+	if (imageState == stateIdx)
+		m_image->setImage(image);
 }
 
 void GUIButtonImage::setForegroundImage(video::ITexture *image)
@@ -138,6 +123,12 @@ void GUIButtonImage::setFromStyle(const StyleSpec &style, ISimpleTextureSource *
 		setPressedForegroundImage(guiScalingImageButton(driver, pressed_texture, geom.X, geom.Y));
 		setScaleImage(true);
 	}
+}
+
+void GUIButtonImage::setScaleImage(bool scaleImage)
+{
+	GUIButton::setScaleImage(scaleImage);
+	m_image->setScaleImage(scaleImage);
 }
 
 GUIButtonImage *GUIButtonImage::addButton(IGUIEnvironment *environment,

@@ -6,6 +6,8 @@
 
 #include "IrrCompileConfig.h"
 
+#include <IGUIStaticText.h>
+#include "irrlicht_changes/static_text.h"
 #include "IGUIButton.h"
 #include "IGUISpriteBank.h"
 #include "ITexture.h"
@@ -125,6 +127,9 @@ public:
 
 	//! Sets an image which should be displayed on the button when it is in hovered state.
 	virtual void setHoveredImage(video::ITexture* image=nullptr);
+
+	//! Sets the text displayed by the button
+	virtual void setText(const wchar_t* text) override;
 	// END PATCH
 
 	//! Sets an image which should be displayed on the button when it is in hovered state.
@@ -174,6 +179,11 @@ public:
 
 	//! Returns if the button is currently pressed
 	virtual bool isPressed() const override;
+
+	// PATCH
+	//! Returns if this element (or one of its direct children) is hovered
+	bool isHovered() const;
+	// END PATCH
 
 	//! Sets if the button should use the skin to draw its border
 	virtual void setDrawBorder(bool border=true) override;
@@ -319,5 +329,7 @@ private:
 	// PATCH
 	video::SColor HoveredColors[4];
 	video::SColor PressedColors[4];
+
+	gui::IGUIStaticText *StaticText;
 	// END PATCH
 };

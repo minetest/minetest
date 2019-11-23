@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "client/client.h"
 #include "client/hud.h" // drawItemStack
+#include "guiItemImage.h"
 #include "IGUIEnvironment.h"
 #include "itemdef.h"
 
@@ -31,28 +32,13 @@ GUIButtonItem::GUIButtonItem(gui::IGUIEnvironment *environment, gui::IGUIElement
 		s32 id, core::rect<s32> rectangle, std::string item, Client *client, bool noclip)
 		: GUIButton (environment, parent, id, rectangle, noclip)
 {
+	m_image = new GUIItemImage(environment, this, id,
+			core::rect<s32>(0,0,rectangle.getWidth(),rectangle.getHeight()),
+			item, getActiveFont(), client);
+	sendToBack(m_image);
+
 	m_item_name = item;
 	m_client = client;
-}
-
-void GUIButtonItem::drawContent()
-{
-	GUISkin *skin = dynamic_cast<GUISkin *>(Environment->getSkin());
-	video::IVideoDriver *driver = Environment->getVideoDriver();
-
-	IGUIFont *font = getActiveFont();
-
-	IItemDefManager *idef = m_client->idef();
-	ItemStack item;
-	item.deSerialize(m_item_name, idef);
-
-	core::rect<s32> rect = AbsoluteRect;
-	if (isPressed()) {
-		rect += core::dimension2d<s32>(
-				skin->getSize(irr::gui::EGDS_BUTTON_PRESSED_IMAGE_OFFSET_X),
-				skin->getSize(irr::gui::EGDS_BUTTON_PRESSED_IMAGE_OFFSET_Y));
-	}
-	drawItemStack(driver, font, item, rect, &AbsoluteClippingRect, m_client, IT_ROT_NONE);
 }
 
 GUIButtonItem *GUIButtonItem::addButton(IGUIEnvironment *environment,

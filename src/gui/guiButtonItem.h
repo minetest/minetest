@@ -23,6 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 using namespace irr;
 
 class Client;
+class GUIItemImage;
 
 class GUIButtonItem : public GUIButton
 {
@@ -37,10 +38,8 @@ public:
 			const core::rect<s32> &rectangle, IGUIElement *parent, s32 id,
 			const wchar_t *text, std::string item, Client *client);
 
-protected:
-	virtual void drawContent() override;
-
 private:
 	std::string m_item_name;
 	Client *m_client;
+	GUIItemImage *m_image;
 };
