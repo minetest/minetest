@@ -117,8 +117,7 @@ public:
 		return color;
 	}
 
-	video::ITexture *getTexture(Property prop,
-			ISimpleTextureSource *tsrc,
+	video::ITexture *getTexture(Property prop, ISimpleTextureSource *tsrc,
 			video::ITexture *def) const
 	{
 		const auto &val = properties[prop];
