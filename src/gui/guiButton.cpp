@@ -335,16 +335,7 @@ void GUIButton::draw()
 		}
 	}
 
-	// PATCH
-	drawContent();
-	// END PATCH
-
 	IGUIElement::draw();
-}
-
-void GUIButton::drawContent()
-{
-	// Nothing
 }
 
 void GUIButton::drawSprite(EGUI_BUTTON_STATE state, u32 startTime, const core::position2di& center)

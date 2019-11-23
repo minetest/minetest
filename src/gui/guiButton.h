@@ -238,7 +238,6 @@ public:
 									IGUIElement* parent, s32 id, const wchar_t* text, const wchar_t *tooltiptext=L"");
 
 protected:
-	virtual void drawContent();
 	void drawSprite(gui::EGUI_BUTTON_STATE state, u32 startTime, const core::position2di& center);
 	gui::EGUI_BUTTON_IMAGE_STATE getImageState(bool pressed) const;
 
