@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: Russian (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-10-09 22:02+0200\n"
-"PO-Revision-Date: 2019-11-22 06:11+0000\n"
+"PO-Revision-Date: 2019-11-25 09:46+0000\n"
 "Last-Translator: Andrei Stepanov <adem4ik@gmail.com>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/minetest/"
 "minetest/ru/>\n"
@@ -24,9 +24,8 @@ msgid "You died"
 msgstr "Вы умерли"
 
 #: builtin/fstk/ui.lua
-#, fuzzy
 msgid "An error occurred in a Lua script:"
-msgstr "Ошибка в скрипте Lua (например, в моде):"
+msgstr "Обнаружена ошибка в скрипте Lua:"
 
 #: builtin/fstk/ui.lua
 msgid "An error occurred:"
@@ -120,18 +119,16 @@ msgid "Mod:"
 msgstr "Мод:"
 
 #: builtin/mainmenu/dlg_config_world.lua
-#, fuzzy
 msgid "No (optional) dependencies"
-msgstr "Необязательные зависимости:"
+msgstr "Нет необязательных зависимостей"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "No game description provided."
 msgstr "Описание игры недоступно."
 
 #: builtin/mainmenu/dlg_config_world.lua
-#, fuzzy
 msgid "No hard dependencies"
-msgstr "Нет зависимостей."
+msgstr "Нет жёстких зависимостей"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "No modpack description provided."
