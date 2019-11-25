@@ -1,26 +1,40 @@
 -- Minetest: builtin/game/chat.lua
 
+-- Helper function that implements search and replace without pattern matching
+-- Returns the string and a boolean indicating whether or not the string was modified
+local function safe_gsub(s, replace, with)
+	local i1, i2 = s:find(replace, 1, true)
+	if not i1 then
+		return s, false
+	end
+
+	return s:sub(1, i1 - 1) .. with .. s:sub(i2 + 1), true
+end
+
 --
 -- Chat message formatter
 --
 
 -- Implemented in Lua to allow redefinition
 function core.format_chat_message(name, message)
-	local str = core.settings:get("chat_message_format")
 	local error_str = "Invalid chat message format - missing %s"
-	local i
+	local str = core.settings:get("chat_message_format")
+	local replaced
 
-	str, i = str:gsub("@name", name, 1)
-	if i == 0 then
+	-- Name
+	str, replaced = safe_gsub(str, "@name", name)
+	if not replaced then
 		error(error_str:format("@name"), 2)
 	end
 
-	str, i = str:gsub("@message", message, 1)
-	if i == 0 then
+	-- Timestamp
+	str = safe_gsub(str, "@timestamp", os.date("%H:%M:%S", os.time()))
+
+	-- Insert the message into the string only after finishing all other processing
+	str, replaced = safe_gsub(str, "@message", message)
+	if not replaced then
 		error(error_str:format("@message"), 2)
 	end
-
-	str = str:gsub("@timestamp", os.date("%H:%M:%S", os.time()), 1)
 
 	return str
 end
