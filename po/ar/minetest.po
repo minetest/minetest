@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-10-09 22:02+0200\n"
-"PO-Revision-Date: 2019-11-23 18:04+0000\n"
+"PO-Revision-Date: 2019-11-27 20:04+0000\n"
 "Last-Translator: abidin toumi <abidin24@disroot.org>\n"
 "Language-Team: Arabic <https://hosted.weblate.org/projects/minetest/minetest/"
 "ar/>\n"
@@ -723,11 +723,11 @@ msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Screen:"
-msgstr ""
+msgstr "الشاشة:"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Autosave Screen Size"
-msgstr ""
+msgstr "حفظ حجم الشاشة تلقائيا"
 
 #: builtin/mainmenu/tab_settings.lua src/settings_translation_file.cpp
 msgid "Shaders"
