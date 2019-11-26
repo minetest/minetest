@@ -107,9 +107,10 @@ template <> v2f LuaHelper::readParam(lua_State *L, int index)
 
 template <> std::string LuaHelper::readParam(lua_State *L, int index)
 {
+	size_t length;
 	std::string result;
-	const char *str = luaL_checkstring(L, index);
-	result.append(str);
+	const char *str = luaL_checklstring(L, index, &length);
+	result.assign(str, length);
 	return result;
 }
 

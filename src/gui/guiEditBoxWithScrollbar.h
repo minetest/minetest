@@ -7,7 +7,7 @@
 
 #include "IGUIEditBox.h"
 #include "IOSOperator.h"
-#include "IGUIScrollBar.h"
+#include "guiScrollBar.h"
 #include <vector>
 
 using namespace irr;
@@ -116,7 +116,7 @@ public:
 
 	//! Updates the absolute position, splits text if required
 	virtual void updateAbsolutePosition();
-	
+
 	virtual void setWritable(bool writable);
 
 	//! Change the background color
@@ -187,7 +187,7 @@ protected:
 	core::rect<s32> m_current_text_rect, m_frame_rect; // temporary values
 
 	u32 m_scrollbar_width;
-	IGUIScrollBar *m_vscrollbar;
+	GUIScrollBar *m_vscrollbar;
 	bool m_writable;
 
 	bool m_bg_color_used;

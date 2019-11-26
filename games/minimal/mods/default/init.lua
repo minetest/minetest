@@ -1801,7 +1801,7 @@ function default.spawn_falling_node(p, nodename)
 	spawn_falling_node(p, nodename)
 end
 
--- Horrible crap to support old code
+-- Horrible stuff to support old code
 -- Don't use this and never do what this does, it's completely wrong!
 -- (More specifically, the client and the C++ code doesn't get the group)
 function default.register_falling_node(nodename, texture)
@@ -1835,64 +1835,3 @@ minetest.register_on_dignode(on_dignode)
 function on_punchnode(p, node)
 end
 minetest.register_on_punchnode(on_punchnode)
-
---
--- Test some things
---
-
-local function test_get_craft_result()
-	minetest.log("info", "test_get_craft_result()")
-	-- normal
-	local input = {
-		method = "normal",
-		width = 2,
-		items = {"", "default:coal_lump", "", "default:stick"}
-	}
-	minetest.log("info", "torch crafting input: "..dump(input))
-	local output, decremented_input = minetest.get_craft_result(input)
-	minetest.log("info", "torch crafting output: "..dump(output))
-	minetest.log("info", "torch crafting decremented input: "..dump(decremented_input))
-	assert(output.item)
-	minetest.log("info", "torch crafting output.item:to_table(): "..dump(output.item:to_table()))
-	assert(output.item:get_name() == "default:torch")
-	assert(output.item:get_count() == 4)
-	-- fuel
-	local input = {
-		method = "fuel",
-		width = 1,
-		items = {"default:coal_lump"}
-	}
-	minetest.log("info", "coal fuel input: "..dump(input))
-	local output, decremented_input = minetest.get_craft_result(input)
-	minetest.log("info", "coal fuel output: "..dump(output))
-	minetest.log("info", "coal fuel decremented input: "..dump(decremented_input))
-	assert(output.time)
-	assert(output.time > 0)
-	-- cook
-	local input = {
-		method = "cooking",
-		width = 1,
-		items = {"default:cobble"}
-	}
-	minetest.log("info", "cobble cooking input: "..dump(output))
-	local output, decremented_input = minetest.get_craft_result(input)
-	minetest.log("info", "cobble cooking output: "..dump(output))
-	minetest.log("info", "cobble cooking decremented input: "..dump(decremented_input))
-	assert(output.time)
-	assert(output.time > 0)
-	assert(output.item)
-	minetest.log("info", "cobble cooking output.item:to_table(): "..dump(output.item:to_table()))
-	assert(output.item:get_name() == "default:stone")
-	assert(output.item:get_count() == 1)
-end
-test_get_craft_result()
-
---
--- Done, print some random stuff
---
-
---print("minetest.registered_entities:")
---dump2(minetest.registered_entities)
-
--- END
-

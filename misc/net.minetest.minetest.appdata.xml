@@ -3,6 +3,12 @@
 	<id>net.minetest.minetest.desktop</id>
 	<metadata_license>CC0-1.0</metadata_license>
 	<project_license>LGPL-2.1+ and CC-BY-SA-3.0 and MIT and Apache-2.0</project_license>
+	<content_rating type="oars-1.0">
+		<content_attribute id="violence-cartoon">mild</content_attribute>
+		<content_attribute id="violence-fantasy">mild</content_attribute>
+		<content_attribute id="social-chat">intense</content_attribute>
+		<content_attribute id="social-info">mild</content_attribute>
+	</content_rating>
 	<name>Minetest</name>
 	<summary>Multiplayer infinite-world block sandbox game</summary>
 	<description>
@@ -56,6 +62,6 @@
 	<translation type="gettext">minetest</translation>
 	<update_contact>sfan5@live.de</update_contact>
 	<releases>
-		<release date="2019-03-04" version="5.0.0"/>
+		<release date="2019-10-12" version="5.1.0"/>
 	</releases>
 </component>

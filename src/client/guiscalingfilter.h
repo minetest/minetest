@@ -23,7 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 /* Manually insert an image into the cache, useful to avoid texture-to-image
  * conversion whenever we can intercept it.
  */
-void guiScalingCache(io::path key, video::IVideoDriver *driver, video::IImage *value);
+void guiScalingCache(const io::path &key, video::IVideoDriver *driver, video::IImage *value);
 
 // Manually clear the cache, e.g. when switching to different worlds.
 void guiScalingCacheClear();
@@ -48,3 +48,10 @@ void draw2DImageFilterScaled(video::IVideoDriver *driver, video::ITexture *txr,
 		const core::rect<s32> &destrect, const core::rect<s32> &srcrect,
 		const core::rect<s32> *cliprect = 0, const video::SColor *const colors = 0,
 		bool usealpha = false);
+
+/*
+ * 9-slice / segment drawing
+ */
+void draw2DImage9Slice(video::IVideoDriver *driver, video::ITexture *texture,
+		const core::rect<s32> &rect, const core::rect<s32> &middle,
+		const core::rect<s32> *cliprect = nullptr);

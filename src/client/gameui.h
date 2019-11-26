@@ -21,12 +21,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #pragma once
 
 #include <IGUIEnvironment.h>
+#include "gui/guiFormSpecMenu.h"
 #include "util/enriched_string.h"
 #include "util/pointedthing.h"
 #include "game.h"
 
 using namespace irr;
 class Client;
+class GUIChatConsole;
 struct MapDrawControl;
 
 /*
@@ -62,7 +64,7 @@ public:
 	void init();
 	void update(const RunStats &stats, Client *client, MapDrawControl *draw_control,
 			const CameraOrientation &cam, const PointedThing &pointed_old,
-			float dtime);
+			const GUIChatConsole *chat_console, float dtime);
 
 	void initFlags();
 	const Flags &getFlags() const { return m_flags; }
@@ -80,6 +82,10 @@ public:
 	void showTranslatedStatusText(const char *str);
 	inline void clearStatusText() { m_statustext.clear(); }
 
+	const bool isChatVisible()
+	{
+		return m_flags.show_chat && m_recent_chat_count != 0 && m_profiler_current_page == 0;
+	}
 	void setChatText(const EnrichedString &chat_text, u32 recent_chat_count);
 
 	void updateProfiler();
@@ -87,6 +93,16 @@ public:
 	void toggleChat();
 	void toggleHud();
 	void toggleProfiler();
+
+	GUIFormSpecMenu *&updateFormspec(const std::string &formname)
+	{
+		m_formname = formname;
+		return m_formspec;
+	}
+
+	const std::string &getFormspecName() { return m_formname; }
+	GUIFormSpecMenu *&getFormspecGUI() { return m_formspec; }
+	void deleteFormspec();
 
 private:
 	Flags m_flags;
@@ -103,8 +119,14 @@ private:
 	video::SColor m_statustext_initial_color;
 
 	gui::IGUIStaticText *m_guitext_chat = nullptr; // Chat text
+	u32 m_recent_chat_count = 0;
 
 	gui::IGUIStaticText *m_guitext_profiler = nullptr; // Profiler text
 	u8 m_profiler_current_page = 0;
 	const u8 m_profiler_max_page = 3;
+
+	// Default: "". If other than "": Empty show_formspec packets will only
+	// close the formspec when the formname matches
+	std::string m_formname;
+	GUIFormSpecMenu *m_formspec = nullptr;
 };

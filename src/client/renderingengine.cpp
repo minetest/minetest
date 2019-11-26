@@ -35,6 +35,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "render/factory.h"
 #include "inputhandler.h"
 #include "gettext.h"
+#include "../gui/guiSkin.h"
 
 #if !defined(_WIN32) && !defined(__APPLE__) && !defined(__ANDROID__) && \
 		!defined(SERVER) && !defined(__HAIKU__)
@@ -44,13 +45,37 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 #include <X11/Xatom.h>
+
 #endif
 
-#ifdef __ANDROID__
+#if ENABLE_GLES
 #include "filesys.h"
 #endif
 
 RenderingEngine *RenderingEngine::s_singleton = nullptr;
+
+
+static gui::GUISkin *createSkin(gui::IGUIEnvironment *environment,
+		gui::EGUI_SKIN_TYPE type, video::IVideoDriver *driver)
+{
+	gui::GUISkin *skin = new gui::GUISkin(type, driver);
+
+	gui::IGUIFont *builtinfont = environment->getBuiltInFont();
+	gui::IGUIFontBitmap *bitfont = nullptr;
+	if (builtinfont && builtinfont->getType() == gui::EGFT_BITMAP)
+		bitfont = (gui::IGUIFontBitmap*)builtinfont;
+
+	gui::IGUISpriteBank *bank = 0;
+	skin->setFont(builtinfont);
+
+	if (bitfont)
+		bank = bitfont->getSpriteBank();
+
+	skin->setSpriteBank(bank);
+
+	return skin;
+}
+
 
 RenderingEngine::RenderingEngine(IEventReceiver *receiver)
 {
@@ -77,7 +102,7 @@ RenderingEngine::RenderingEngine(IEventReceiver *receiver)
 	u32 i;
 	for (i = 0; i != drivers.size(); i++) {
 		if (!strcasecmp(driverstring.c_str(),
-				    RenderingEngine::getVideoDriverName(drivers[i]))) {
+				RenderingEngine::getVideoDriverName(drivers[i]))) {
 			driverType = drivers[i];
 			break;
 		}
@@ -106,12 +131,22 @@ RenderingEngine::RenderingEngine(IEventReceiver *receiver)
 	params.OGLES2ShaderPath = std::string(porting::path_user + DIR_DELIM + "media" +
 		DIR_DELIM + "Shaders" + DIR_DELIM).c_str();
 	// clang-format on
+#elif ENABLE_GLES
+	// there is no standardized path for these on desktop
+	std::string rel_path = std::string("client") + DIR_DELIM
+			+ "shaders" + DIR_DELIM + "Irrlicht";
+	params.OGLES2ShaderPath = (porting::path_share + DIR_DELIM + rel_path + DIR_DELIM).c_str();
 #endif
 
 	m_device = createDeviceEx(params);
 	driver = m_device->getVideoDriver();
 
 	s_singleton = this;
+
+	auto skin = createSkin(m_device->getGUIEnvironment(),
+			gui::EGST_WINDOWS_METALLIC, driver);
+	m_device->getGUIEnvironment()->setSkin(skin);
+	skin->drop();
 }
 
 RenderingEngine::~RenderingEngine()
@@ -193,7 +228,7 @@ bool RenderingEngine::setupTopLevelWindow(const std::string &name)
 	// sort here that would call the correct toplevel setup methods for
 	// the environment Minetest is running in but for now not deviating
 	// from the original pattern.
-	
+
 	/* Setting Xorg properties for the top level window */
 	setupTopLevelXorgWindow(name);
 	/* Done with Xorg properties */
@@ -211,7 +246,7 @@ bool RenderingEngine::setupTopLevelWindow(const std::string &name)
 	/* Done with general properties */
 
 	// FIXME: setWindowIcon returns a bool result but it is unused.
-	// For now continue to return this result. 
+	// For now continue to return this result.
 	return result;
 }
 
@@ -223,7 +258,7 @@ void RenderingEngine::setupTopLevelXorgWindow(const std::string &name)
 	Display *x11_dpl = reinterpret_cast<Display *>(exposedData.OpenGLLinux.X11Display);
 	if (x11_dpl == NULL) {
 		warningstream << "Client: Could not find X11 Display in ExposedVideoData"
-			<< std::endl; 
+			<< std::endl;
 		return;
 	}
 
@@ -244,30 +279,30 @@ void RenderingEngine::setupTopLevelXorgWindow(const std::string &name)
 
 	// FIXME: In the future WMNormalHints should be set ... e.g see the
 	// gtk/gdk code (gdk/x11/gdksurface-x11.c) for the setup_top_level
-	// method. But for now (as it would require some significant changes) 
-	// leave the code as is. 
-	
+	// method. But for now (as it would require some significant changes)
+	// leave the code as is.
+
 	// The following is borrowed from the above gdk source for setting top
 	// level windows. The source indicates and the Xlib docs suggest that
-	// this will set the WM_CLIENT_MACHINE and WM_LOCAL_NAME. This will not 
-	// set the WM_CLIENT_MACHINE to a Fully Qualified Domain Name (FQDN) which is 
+	// this will set the WM_CLIENT_MACHINE and WM_LOCAL_NAME. This will not
+	// set the WM_CLIENT_MACHINE to a Fully Qualified Domain Name (FQDN) which is
 	// required by the Extended Window Manager Hints (EWMH) spec when setting
 	// the _NET_WM_PID (see further down) but running Minetest in an env
 	// where the window manager is on another machine from Minetest (therefore
 	// making the PID useless) is not expected to be a problem. Further
 	// more, using gtk/gdk as the model it would seem that not using a FQDN is
 	// not an issue for modern Xorg window managers.
-	
+
 	verbosestream << "Client: Setting Xorg window manager Properties"
 		<< std::endl;
 
 	XSetWMProperties (x11_dpl, x11_win, NULL, NULL, NULL, 0, NULL, NULL, NULL);
 
-	// Set the _NET_WM_PID window property according to the EWMH spec. _NET_WM_PID 
-	// (in conjunction with WM_CLIENT_MACHINE) can be used by window managers to 
-	// force a shutdown of an application if it doesn't respond to the destroy 
-	// window message. 
-    
+	// Set the _NET_WM_PID window property according to the EWMH spec. _NET_WM_PID
+	// (in conjunction with WM_CLIENT_MACHINE) can be used by window managers to
+	// force a shutdown of an application if it doesn't respond to the destroy
+	// window message.
+
 	verbosestream << "Client: Setting Xorg _NET_WM_PID extened window manager property"
 		<< std::endl;
 
@@ -277,12 +312,12 @@ void RenderingEngine::setupTopLevelXorgWindow(const std::string &name)
 	infostream << "Client: PID is '" << static_cast<long>(pid) << "'"
 		<< std::endl;
 
-	XChangeProperty(x11_dpl, x11_win, NET_WM_PID, 
-			XA_CARDINAL, 32, PropModeReplace, 
+	XChangeProperty(x11_dpl, x11_win, NET_WM_PID,
+			XA_CARDINAL, 32, PropModeReplace,
 			reinterpret_cast<unsigned char *>(&pid),1);
 
 	// Set the WM_CLIENT_LEADER window property here. Minetest has only one
-	// window and that window will always be the leader. 
+	// window and that window will always be the leader.
 
 	verbosestream << "Client: Setting Xorg WM_CLIENT_LEADER property"
 		<< std::endl;

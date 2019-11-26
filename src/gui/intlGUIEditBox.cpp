@@ -113,6 +113,9 @@ intlGUIEditBox::~intlGUIEditBox()
 
 	if (Operator)
 		Operator->drop();
+
+	if (m_vscrollbar)
+		m_vscrollbar->drop();
 }
 
 
@@ -1479,7 +1482,9 @@ void intlGUIEditBox::createVScrollBar()
 
 	irr::core::rect<s32> scrollbarrect = FrameRect;
 	scrollbarrect.UpperLeftCorner.X += FrameRect.getWidth() - m_scrollbar_width;
-	m_vscrollbar = Environment->addScrollBar(false, scrollbarrect, getParent(), getID());
+	m_vscrollbar = new GUIScrollBar(Environment, getParent(), -1,
+			scrollbarrect, false, true);
+
 	m_vscrollbar->setVisible(false);
 	m_vscrollbar->setSmallStep(3 * fontHeight);
 	m_vscrollbar->setLargeStep(10 * fontHeight);
@@ -1501,6 +1506,7 @@ void intlGUIEditBox::updateVScrollBar()
 		if (scrollymax != m_vscrollbar->getMax()) {
 			// manage a newline or a deleted line
 			m_vscrollbar->setMax(scrollymax);
+			m_vscrollbar->setPageSize(s32(getTextDimension().Height));
 			calculateScrollPos();
 		} else {
 			// manage a newline or a deleted line
@@ -1513,6 +1519,7 @@ void intlGUIEditBox::updateVScrollBar()
 		s32 scrollymax = getTextDimension().Height - FrameRect.getHeight();
 		if (scrollymax != m_vscrollbar->getMax()) {
 			m_vscrollbar->setMax(scrollymax);
+			m_vscrollbar->setPageSize(s32(getTextDimension().Height));
 		}
 
 		if (!m_vscrollbar->isVisible() && MultiLine) {
@@ -1527,6 +1534,7 @@ void intlGUIEditBox::updateVScrollBar()
 			VScrollPos = 0;
 			m_vscrollbar->setPos(0);
 			m_vscrollbar->setMax(1);
+			m_vscrollbar->setPageSize(s32(getTextDimension().Height));
 			m_vscrollbar->setVisible(false);
 		}
 	}

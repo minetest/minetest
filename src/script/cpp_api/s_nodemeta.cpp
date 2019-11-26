@@ -38,7 +38,7 @@ int ScriptApiNodemeta::nodemeta_inventory_AllowMove(
 	const NodeDefManager *ndef = getServer()->ndef();
 
 	// If node doesn't exist, we don't know what callback to call
-	MapNode node = getEnv()->getMap().getNodeNoEx(ma.to_inv.p);
+	MapNode node = getEnv()->getMap().getNode(ma.to_inv.p);
 	if (node.getContent() == CONTENT_IGNORE)
 		return 0;
 
@@ -76,7 +76,7 @@ int ScriptApiNodemeta::nodemeta_inventory_AllowPut(
 	const NodeDefManager *ndef = getServer()->ndef();
 
 	// If node doesn't exist, we don't know what callback to call
-	MapNode node = getEnv()->getMap().getNodeNoEx(ma.to_inv.p);
+	MapNode node = getEnv()->getMap().getNode(ma.to_inv.p);
 	if (node.getContent() == CONTENT_IGNORE)
 		return 0;
 
@@ -112,7 +112,7 @@ int ScriptApiNodemeta::nodemeta_inventory_AllowTake(
 	const NodeDefManager *ndef = getServer()->ndef();
 
 	// If node doesn't exist, we don't know what callback to call
-	MapNode node = getEnv()->getMap().getNodeNoEx(ma.from_inv.p);
+	MapNode node = getEnv()->getMap().getNode(ma.from_inv.p);
 	if (node.getContent() == CONTENT_IGNORE)
 		return 0;
 
@@ -148,7 +148,7 @@ void ScriptApiNodemeta::nodemeta_inventory_OnMove(
 	const NodeDefManager *ndef = getServer()->ndef();
 
 	// If node doesn't exist, we don't know what callback to call
-	MapNode node = getEnv()->getMap().getNodeNoEx(ma.from_inv.p);
+	MapNode node = getEnv()->getMap().getNode(ma.from_inv.p);
 	if (node.getContent() == CONTENT_IGNORE)
 		return;
 
@@ -181,7 +181,7 @@ void ScriptApiNodemeta::nodemeta_inventory_OnPut(
 	const NodeDefManager *ndef = getServer()->ndef();
 
 	// If node doesn't exist, we don't know what callback to call
-	MapNode node = getEnv()->getMap().getNodeNoEx(ma.to_inv.p);
+	MapNode node = getEnv()->getMap().getNode(ma.to_inv.p);
 	if (node.getContent() == CONTENT_IGNORE)
 		return;
 
@@ -212,7 +212,7 @@ void ScriptApiNodemeta::nodemeta_inventory_OnTake(
 	const NodeDefManager *ndef = getServer()->ndef();
 
 	// If node doesn't exist, we don't know what callback to call
-	MapNode node = getEnv()->getMap().getNodeNoEx(ma.from_inv.p);
+	MapNode node = getEnv()->getMap().getNode(ma.from_inv.p);
 	if (node.getContent() == CONTENT_IGNORE)
 		return;
 

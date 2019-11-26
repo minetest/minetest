@@ -20,6 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #pragma once
 
 #include "irrlichttypes_bloated.h"
+#include "irrString.h"
 #include <cstdlib>
 #include <string>
 #include <cstring>
@@ -723,3 +724,13 @@ inline std::string str_join(const std::vector<std::string> &list,
 	}
 	return oss.str();
 }
+
+/**
+ * Create a std::string from a irr::core::stringw.
+ */
+std::string strwtostr(const irr::core::stringw &str);
+
+/**
+ * Create a irr::core:stringw from a std::string.
+ */
+irr::core::stringw strtostrw(const std::string &str);

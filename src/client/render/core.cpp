@@ -86,7 +86,7 @@ void RenderingCore::drawHUD()
 	if (show_hud) {
 		if (draw_crosshair)
 			hud->drawCrosshair();
-		hud->drawHotbar(client->getPlayerItem());
+		hud->drawHotbar(client->getEnv().getLocalPlayer()->getWieldIndex());
 		hud->drawLuaElements(camera->getOffset());
 		camera->drawNametags();
 		if (mapper && show_minimap)

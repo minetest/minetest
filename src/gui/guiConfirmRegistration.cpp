@@ -20,6 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "guiConfirmRegistration.h"
 #include "client/client.h"
+#include "guiButton.h"
 #include <IGUICheckBox.h>
 #include <IGUIButton.h>
 #include <IGUIStaticText.h>
@@ -62,6 +63,7 @@ void GUIConfirmRegistration::removeChildren()
 	for (gui::IGUIElement *i : children_copy)
 		i->remove();
 }
+
 void GUIConfirmRegistration::regenerateGui(v2u32 screensize)
 {
 	acceptInput();
@@ -119,6 +121,7 @@ void GUIConfirmRegistration::regenerateGui(v2u32 screensize)
 		gui::IGUIEditBox *e = Environment->addEditBox(m_pass_confirm.c_str(),
 				rect2, true, this, ID_confirmPassword);
 		e->setPasswordBox(true);
+		Environment->setFocus(e);
 	}
 
 	ypos += 60 * s;
@@ -126,14 +129,14 @@ void GUIConfirmRegistration::regenerateGui(v2u32 screensize)
 		core::rect<s32> rect2(0, 0, 230 * s, 35 * s);
 		rect2 = rect2 + v2s32(size.X / 2 - 220 * s, ypos);
 		text = wgettext("Register and Join");
-		Environment->addButton(rect2, this, ID_confirm, text);
+		GUIButton::addButton(Environment, rect2, this, ID_confirm, text);
 		delete[] text;
 	}
 	{
 		core::rect<s32> rect2(0, 0, 120 * s, 35 * s);
 		rect2 = rect2 + v2s32(size.X / 2 + 70 * s, ypos);
 		text = wgettext("Cancel");
-		Environment->addButton(rect2, this, ID_cancel, text);
+		GUIButton::addButton(Environment, rect2, this, ID_cancel, text);
 		delete[] text;
 	}
 	{
@@ -218,8 +221,7 @@ bool GUIConfirmRegistration::OnEvent(const SEvent &event)
 
 	if (event.GUIEvent.EventType == gui::EGET_ELEMENT_FOCUS_LOST && isVisible()) {
 		if (!canTakeFocus(event.GUIEvent.Element)) {
-			dstream << "GUIConfirmRegistration: Not allowing focus "
-				   "change."
+			dstream << "GUIConfirmRegistration: Not allowing focus change."
 				<< std::endl;
 			// Returning true disables focus change
 			return true;

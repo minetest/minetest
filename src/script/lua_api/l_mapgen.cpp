@@ -405,7 +405,16 @@ Biome *read_biome_def(lua_State *L, int index, const NodeDefManager *ndef)
 	nn.push_back(getstringfield_default(L, index, "node_river_water",   ""));
 	nn.push_back(getstringfield_default(L, index, "node_riverbed",      ""));
 	nn.push_back(getstringfield_default(L, index, "node_dust",          ""));
-	nn.push_back(getstringfield_default(L, index, "node_cave_liquid",   ""));
+
+	size_t nnames = getstringlistfield(L, index, "node_cave_liquid", &nn);
+	// If no cave liquids defined, set list to "ignore" to trigger old hardcoded
+	// cave liquid behaviour.
+	if (nnames == 0) {
+		nn.emplace_back("ignore");
+		nnames = 1;
+	}
+	b->m_nnlistsizes.push_back(nnames);
+
 	nn.push_back(getstringfield_default(L, index, "node_dungeon",       ""));
 	nn.push_back(getstringfield_default(L, index, "node_dungeon_alt",   ""));
 	nn.push_back(getstringfield_default(L, index, "node_dungeon_stair", ""));
@@ -870,7 +879,7 @@ int ModApiMapgen::l_set_mapgen_params(lua_State *L)
 		settingsmgr->setMapSetting("chunksize", readParam<std::string>(L, -1), true);
 
 	warn_if_field_exists(L, 1, "flagmask",
-		"Deprecated: flags field now includes unset flags.");
+		"Obsolete: flags field now includes unset flags.");
 
 	lua_getfield(L, 1, "flags");
 	if (lua_isstring(L, -1))
@@ -1745,6 +1754,83 @@ int ModApiMapgen::l_serialize_schematic(lua_State *L)
 	return 1;
 }
 
+// read_schematic(schematic, options={...})
+int ModApiMapgen::l_read_schematic(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+
+	SchematicManager *schemmgr = getServer(L)->getEmergeManager()->schemmgr;
+
+	//// Read options
+	std::string write_yslice = getstringfield_default(L, 2, "write_yslice_prob", "all");
+
+	//// Get schematic
+	bool was_loaded = false;
+	Schematic *schem = (Schematic *)get_objdef(L, 1, schemmgr);
+	if (!schem) {
+		schem = load_schematic(L, 1, NULL, NULL);
+		was_loaded = true;
+	}
+	if (!schem) {
+		errorstream << "read_schematic: failed to get schematic" << std::endl;
+		return 0;
+	}
+	lua_pop(L, 2);
+
+	//// Create the Lua table
+	u32 numnodes = schem->size.X * schem->size.Y * schem->size.Z;
+	const std::vector<std::string> &names = schem->m_nodenames;
+
+	lua_createtable(L, 0, (write_yslice == "none") ? 2 : 3);
+
+	// Create the size field
+	push_v3s16(L, schem->size);
+	lua_setfield(L, 1, "size");
+
+	// Create the yslice_prob field
+	if (write_yslice != "none") {
+		lua_createtable(L, schem->size.Y, 0);
+		for (u16 y = 0; y != schem->size.Y; ++y) {
+			u8 probability = schem->slice_probs[y] & MTSCHEM_PROB_MASK;
+			if (probability < MTSCHEM_PROB_ALWAYS || write_yslice != "low") {
+				lua_createtable(L, 0, 2);
+				lua_pushinteger(L, y);
+				lua_setfield(L, 3, "ypos");
+				lua_pushinteger(L, probability * 2);
+				lua_setfield(L, 3, "prob");
+				lua_rawseti(L, 2, y + 1);
+			}
+		}
+		lua_setfield(L, 1, "yslice_prob");
+	}
+
+	// Create the data field
+	lua_createtable(L, numnodes, 0); // data table
+	for (u32 i = 0; i < numnodes; ++i) {
+		MapNode node = schem->schemdata[i];
+		u8 probability   = node.param1 & MTSCHEM_PROB_MASK;
+		bool force_place = node.param1 & MTSCHEM_FORCE_PLACE;
+		lua_createtable(L, 0, force_place ? 4 : 3);
+		lua_pushstring(L, names[schem->schemdata[i].getContent()].c_str());
+		lua_setfield(L, 3, "name");
+		lua_pushinteger(L, probability * 2);
+		lua_setfield(L, 3, "prob");
+		lua_pushinteger(L, node.param2);
+		lua_setfield(L, 3, "param2");
+		if (force_place) {
+			lua_pushboolean(L, 1);
+			lua_setfield(L, 3, "force_place");
+		}
+		lua_rawseti(L, 2, i + 1);
+	}
+	lua_setfield(L, 1, "data");
+
+	if (was_loaded)
+		delete schem;
+
+	return 1;
+}
+
 
 void ModApiMapgen::Initialize(lua_State *L, int top)
 {
@@ -1784,4 +1870,5 @@ void ModApiMapgen::Initialize(lua_State *L, int top)
 	API_FCT(place_schematic);
 	API_FCT(place_schematic_on_vmanip);
 	API_FCT(serialize_schematic);
+	API_FCT(read_schematic);
 }

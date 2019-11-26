@@ -77,7 +77,7 @@
 
 #    The time in seconds it takes between repeated right clicks when holding the right
 #    mouse button.
-#    type: float
+#    type: float min: 0.001
 # repeat_rightclick_time = 0.25
 
 #    Automatically jump up single-node obstacles.
@@ -126,7 +126,7 @@
 
 #    The time in seconds it takes between repeated events
 #    when holding down a joystick button combination.
-#    type: float
+#    type: float min: 0.001
 # repeat_joystick_button_time = 0.17
 
 #    The sensitivity of the joystick axes for moving the
@@ -573,11 +573,12 @@
 #    type: enum values: 0, 1, 2, 4, 8, 16
 # fsaa = 0
 
-#    Undersampling is similar to using lower screen resolution, but it applies
+#    Undersampling is similar to using a lower screen resolution, but it applies
 #    to the game world only, keeping the GUI intact.
-#    It should give significant performance boost at the cost of less detailed image.
-#    type: enum values: 0, 2, 3, 4
-# undersampling = 0
+#    It should give a significant performance boost at the cost of less detailed image.
+#    Higher values result in a less detailed image.
+#    type: int min: 1 max: 8
+# undersampling = 1
 
 ### Shaders
 
@@ -682,11 +683,11 @@
 
 #    If FPS would go higher than this, limit it by sleeping
 #    to not waste CPU power for no benefit.
-#    type: int
+#    type: int min: 1
 # fps_max = 60
 
 #    Maximum FPS when game is paused.
-#    type: int
+#    type: int min: 1
 # pause_fps_max = 20
 
 #    Open the pause menu when the window's focus is lost. Does not pause if a formspec is
@@ -698,7 +699,7 @@
 #    type: int min: 20 max: 4000
 # viewing_range = 100
 
-#    Camera near plane distance in nodes, between 0 and 0.5
+#    Camera 'near clipping plane' distance in nodes, between 0 and 0.5.
 #    Most users will not need to change this.
 #    Increasing can reduce artifacting on weaker GPUs.
 #    0.1 = Default, 0.25 = Good value for weaker tablets.
@@ -706,11 +707,11 @@
 # near_plane = 0.1
 
 #    Width component of the initial window size.
-#    type: int
+#    type: int min: 1
 # screen_w = 1024
 
 #    Height component of the initial window size.
-#    type: int
+#    type: int min: 1
 # screen_h = 600
 
 #    Save window size automatically when modified.
@@ -735,7 +736,7 @@
 
 #    Adjust the gamma encoding for the light tables. Higher numbers are brighter.
 #    This setting is for the client only and is ignored by the server.
-#    type: float min: 0.5 max: 3
+#    type: float min: 0.5 max: 10
 # display_gamma = 1.0
 
 #    Gradient of light curve at minimum light level.
@@ -945,7 +946,7 @@
 #    This will smooth over some of the rough edges, and blend
 #    pixels when scaling down, at the cost of blurring some
 #    edge pixels when images are scaled by non-integer sizes.
-#    type: float
+#    type: float min: 0.001
 # gui_scaling = 1.0
 
 #    When gui_scaling_filter is true, all GUI images need to be
@@ -977,7 +978,7 @@
 #    type: filepath
 # font_path = fonts/liberationsans.ttf
 
-#    type: int
+#    type: int min: 1
 # font_size = 16
 
 #    Font shadow offset, if 0 then shadow will not be drawn.
@@ -991,14 +992,14 @@
 #    type: filepath
 # mono_font_path = fonts/liberationmono.ttf
 
-#    type: int
+#    type: int min: 1
 # mono_font_size = 15
 
 #    This font will be used for certain languages.
 #    type: filepath
 # fallback_font_path = fonts/DroidSansFallbackFull.ttf
 
-#    type: int
+#    type: int min: 1
 # fallback_font_size = 15
 
 #    type: int
@@ -1024,7 +1025,7 @@
 ## Advanced
 
 #    Adjust dpi configuration to your screen (non X11/Android only) e.g. for 4k screens.
-#    type: int
+#    type: int min: 1
 # screen_dpi = 72
 
 #    Windows systems only: Start Minetest with the command line window in the background.
@@ -1277,6 +1278,11 @@
 #    type: bool
 # enable_rollback_recording = false
 
+#    Format of player chat messages. The following strings are valid placeholders:
+#    @name, @message, @timestamp (optional)
+#    type: string
+# chat_message_format = <@name> @message
+
 #    A message to be displayed to all clients when the server shuts down.
 #    type: string
 # kick_msg_shutdown = Server shutting down.
@@ -1291,7 +1297,7 @@
 # ask_reconnect_on_crash = false
 
 #    From how far clients know about objects, stated in mapblocks (16 nodes).
-#
+#    
 #    Setting this larger than active_block_range will also cause the server
 #    to maintain active objects up to this distance in the direction the
 #    player is looking. (This can avoid mobs suddenly disappearing from view)
@@ -1326,7 +1332,7 @@
 
 #    Time of day when a new world is started, in millihours (0-23999).
 #    type: int min: 0 max: 23999
-# world_start_time = 5250
+# world_start_time = 6125
 
 #    Interval of saving important changes in the world, stated in seconds.
 #    type: float
@@ -1346,39 +1352,55 @@
 
 ### Physics
 
+#    Horizontal and vertical acceleration on ground or when climbing,
+#    in nodes per second per second.
 #    type: float
 # movement_acceleration_default = 3
 
+#    Horizontal acceleration in air when jumping or falling,
+#    in nodes per second per second.
 #    type: float
 # movement_acceleration_air = 2
 
+#    Horizontal and vertical acceleration in fast mode,
+#    in nodes per second per second.
 #    type: float
 # movement_acceleration_fast = 10
 
+#    Walking and flying speed, in nodes per second.
 #    type: float
 # movement_speed_walk = 4
 
+#    Sneaking speed, in nodes per second.
 #    type: float
 # movement_speed_crouch = 1.35
 
+#    Walking, flying and climbing speed in fast mode, in nodes per second.
 #    type: float
 # movement_speed_fast = 20
 
+#    Vertical climbing speed, in nodes per second.
 #    type: float
 # movement_speed_climb = 3
 
+#    Initial vertical speed when jumping, in nodes per second.
 #    type: float
 # movement_speed_jump = 6.5
 
+#    Decrease this to increase liquid resistence to movement.
 #    type: float
 # movement_liquid_fluidity = 1
 
+#    Maximum liquid resistence. Controls deceleration when entering liquid at
+#    high speed.
 #    type: float
 # movement_liquid_fluidity_smooth = 0.5
 
+#    Controls sinking speed in liquid.
 #    type: float
 # movement_liquid_sink = 10
 
+#    Acceleration of gravity, in nodes per second per second.
 #    type: float
 # movement_gravity = 9.81
 
@@ -1580,6 +1602,13 @@
 #    type: enum values: , none, error, warning, action, info, verbose
 # debug_log_level = action
 
+#    If the file size of debug.txt exceeds the number of megabytes specified in
+#    this setting when it is opened, the file is moved to debug.txt.1,
+#    deleting an older debug.txt.1 if it exists.
+#    debug.txt is only moved if this setting is positive.
+#    type: int
+# debug_log_size_max = 50
+
 #    IPv6 support.
 #    type: bool
 # enable_ipv6 = true
@@ -1629,11 +1658,9 @@
 
 #    Name of map generator to be used when creating a new world.
 #    Creating a world in the main menu will override this.
-#    Current stable mapgens:
-#    v5, v6, v7 (except floatlands), singlenode.
-#    'stable' means the terrain shape in an existing world will not be changed
-#    in the future. Note that biomes are defined by games and may still change.
-#    type: enum values: v5, v6, v7, valleys, carpathian, fractal, flat, singlenode
+#    Current mapgens in a highly unstable state:
+#    -    The optional floatlands of v7 (disabled by default).
+#    type: enum values: v7, valleys, carpathian, v5, flat, fractal, singlenode, v6
 # mg_name = v7
 
 #    Water surface level of the world.
@@ -1655,10 +1682,6 @@
 #    and junglegrass, in all other mapgens this flag controls all decorations.
 #    type: flags possible values: caves, dungeons, light, decorations, biomes, nocaves, nodungeons, nolight, nodecorations, nobiomes
 # mg_flags = caves,dungeons,light,decorations,biomes
-
-#    Whether dungeons occasionally project from the terrain.
-#    type: bool
-# projecting_dungeons = true
 
 ## Biome API temperature and humidity noise parameters
 
@@ -1728,6 +1751,7 @@
 #    type: int
 # mgv5_large_cave_depth = -256
 
+#    Deprecated, define and locate cave liquids using biome definitions instead.
 #    Y of upper limit of lava in large caves.
 #    type: int
 # mgv5_lava_depth = -256
@@ -1804,7 +1828,7 @@
 #    octaves     = 3,
 #    persistence = 0.5,
 #    lacunarity  = 2.0,
-#    flags       =
+#    flags       = 
 # }
 
 #    Second of two 3D noises that together define tunnels.
@@ -1817,7 +1841,7 @@
 #    octaves     = 3,
 #    persistence = 0.5,
 #    lacunarity  = 2.0,
-#    flags       =
+#    flags       = 
 # }
 
 #    3D noise defining giant caverns.
@@ -1830,7 +1854,7 @@
 #    octaves     = 5,
 #    persistence = 0.63,
 #    lacunarity  = 2.0,
-#    flags       =
+#    flags       = 
 # }
 
 #    3D noise defining terrain.
@@ -1846,17 +1870,30 @@
 #    flags       = eased
 # }
 
+#    3D noise that determines number of dungeons per mapchunk.
+#    type: noise_params_3d
+# mgv5_np_dungeons = {
+#    offset      = 0.9,
+#    scale       = 0.5,
+#    spread      = (500, 500, 500),
+#    seed        = 0,
+#    octaves     = 2,
+#    persistence = 0.8,
+#    lacunarity  = 2.0,
+#    flags       = 
+# }
+
 ## Mapgen V6
 
 #    Map generation attributes specific to Mapgen v6.
 #    The 'snowbiomes' flag enables the new 5 biome system.
-#    When the new biome system is enabled jungles are automatically enabled and
+#    When the 'snowbiomes' flag is enabled jungles are automatically enabled and
 #    the 'jungles' flag is ignored.
 #    type: flags possible values: jungles, biomeblend, mudflow, snowbiomes, flat, trees, nojungles, nobiomeblend, nomudflow, nosnowbiomes, noflat, notrees
-# mgv6_spflags = jungles,biomeblend,mudflow,snowbiomes,trees
+# mgv6_spflags = jungles,biomeblend,mudflow,snowbiomes,noflat,trees
 
 #    Deserts occur when np_biome exceeds this value.
-#    When the new biome system is enabled, this is ignored.
+#    When the 'snowbiomes' flag is enabled, this is ignored.
 #    type: float
 # mgv6_freq_desert = 0.45
 
@@ -2036,6 +2073,7 @@
 #    type: int
 # mgv7_large_cave_depth = -33
 
+#    Deprecated, define and locate cave liquids using biome definitions instead.
 #    Y of upper limit of lava in large caves.
 #    type: int
 # mgv7_lava_depth = -256
@@ -2213,7 +2251,7 @@
 #    octaves     = 5,
 #    persistence = 0.63,
 #    lacunarity  = 2.0,
-#    flags       =
+#    flags       = 
 # }
 
 #    3D noise defining structure of river canyon walls.
@@ -2226,7 +2264,7 @@
 #    octaves     = 4,
 #    persistence = 0.75,
 #    lacunarity  = 2.0,
-#    flags       =
+#    flags       = 
 # }
 
 #    3D noise defining giant caverns.
@@ -2239,7 +2277,7 @@
 #    octaves     = 5,
 #    persistence = 0.63,
 #    lacunarity  = 2.0,
-#    flags       =
+#    flags       = 
 # }
 
 #    First of two 3D noises that together define tunnels.
@@ -2252,7 +2290,7 @@
 #    octaves     = 3,
 #    persistence = 0.5,
 #    lacunarity  = 2.0,
-#    flags       =
+#    flags       = 
 # }
 
 #    Second of two 3D noises that together define tunnels.
@@ -2265,18 +2303,43 @@
 #    octaves     = 3,
 #    persistence = 0.5,
 #    lacunarity  = 2.0,
-#    flags       =
+#    flags       = 
+# }
+
+#    3D noise that determines number of dungeons per mapchunk.
+#    type: noise_params_3d
+# mgv7_np_dungeons = {
+#    offset      = 0.9,
+#    scale       = 0.5,
+#    spread      = (500, 500, 500),
+#    seed        = 0,
+#    octaves     = 2,
+#    persistence = 0.8,
+#    lacunarity  = 2.0,
+#    flags       = 
 # }
 
 ## Mapgen Carpathian
 
 #    Map generation attributes specific to Mapgen Carpathian.
-#    type: flags possible values: caverns, nocaverns
-# mgcarpathian_spflags = caverns
+#    type: flags possible values: caverns, rivers, nocaverns, norivers
+# mgcarpathian_spflags = caverns,norivers
 
 #    Defines the base ground level.
 #    type: float
 # mgcarpathian_base_level = 12.0
+
+#    Defines the width of the river channel.
+#    type: float
+# mgcarpathian_river_width = 0.05
+
+#    Defines the depth of the river channel.
+#    type: float
+# mgcarpathian_river_depth = 24.0
+
+#    Defines the width of the river valley.
+#    type: float
+# mgcarpathian_valley_width = 0.25
 
 #    Controls width of tunnels, a smaller value creates wider tunnels.
 #    type: float
@@ -2286,6 +2349,7 @@
 #    type: int
 # mgcarpathian_large_cave_depth = -33
 
+#    Deprecated, define and locate cave liquids using biome definitions instead.
 #    Y of upper limit of lava in large caves.
 #    type: int
 # mgcarpathian_lava_depth = -256
@@ -2455,6 +2519,19 @@
 #    flags       = eased
 # }
 
+#    2D noise that locates the river valleys and channels.
+#    type: noise_params_2d
+# mgcarpathian_np_rivers = {
+#    offset      = 0,
+#    scale       = 1,
+#    spread      = (1000, 1000, 1000),
+#    seed        = 85039,
+#    octaves     = 5,
+#    persistence = 0.6,
+#    lacunarity  = 2.0,
+#    flags       = eased
+# }
+
 #    3D noise for mountain overhangs, cliffs, etc. Usually small variations.
 #    type: noise_params_3d
 # mgcarpathian_np_mnt_var = {
@@ -2465,7 +2542,7 @@
 #    octaves     = 5,
 #    persistence = 0.55,
 #    lacunarity  = 2.0,
-#    flags       =
+#    flags       = 
 # }
 
 #    First of two 3D noises that together define tunnels.
@@ -2478,7 +2555,7 @@
 #    octaves     = 3,
 #    persistence = 0.5,
 #    lacunarity  = 2.0,
-#    flags       =
+#    flags       = 
 # }
 
 #    Second of two 3D noises that together define tunnels.
@@ -2491,7 +2568,7 @@
 #    octaves     = 3,
 #    persistence = 0.5,
 #    lacunarity  = 2.0,
-#    flags       =
+#    flags       = 
 # }
 
 #    3D noise defining giant caverns.
@@ -2504,7 +2581,20 @@
 #    octaves     = 5,
 #    persistence = 0.63,
 #    lacunarity  = 2.0,
-#    flags       =
+#    flags       = 
+# }
+
+#    3D noise that determines number of dungeons per mapchunk.
+#    type: noise_params_3d
+# mgcarpathian_np_dungeons = {
+#    offset      = 0.9,
+#    scale       = 0.5,
+#    spread      = (500, 500, 500),
+#    seed        = 0,
+#    octaves     = 2,
+#    persistence = 0.8,
+#    lacunarity  = 2.0,
+#    flags       = 
 # }
 
 ## Mapgen Flat
@@ -2522,6 +2612,7 @@
 #    type: int
 # mgflat_large_cave_depth = -33
 
+#    Deprecated, define and locate cave liquids using biome definitions instead.
 #    Y of upper limit of lava in large caves.
 #    type: int
 # mgflat_lava_depth = -256
@@ -2596,7 +2687,7 @@
 #    octaves     = 3,
 #    persistence = 0.5,
 #    lacunarity  = 2.0,
-#    flags       =
+#    flags       = 
 # }
 
 #    Second of two 3D noises that together define tunnels.
@@ -2609,10 +2700,29 @@
 #    octaves     = 3,
 #    persistence = 0.5,
 #    lacunarity  = 2.0,
-#    flags       =
+#    flags       = 
+# }
+
+#    3D noise that determines number of dungeons per mapchunk.
+#    type: noise_params_3d
+# mgflat_np_dungeons = {
+#    offset      = 0.9,
+#    scale       = 0.5,
+#    spread      = (500, 500, 500),
+#    seed        = 0,
+#    octaves     = 2,
+#    persistence = 0.8,
+#    lacunarity  = 2.0,
+#    flags       = 
 # }
 
 ## Mapgen Fractal
+
+#    Map generation attributes specific to Mapgen flat.
+#    'terrain' enables the generation of non-fractal terrain:
+#    ocean, islands and underground.
+#    type: flags possible values: terrain, noterrain
+# mgfractal_spflags = terrain
 
 #    Controls width of tunnels, a smaller value creates wider tunnels.
 #    type: float
@@ -2622,6 +2732,7 @@
 #    type: int
 # mgfractal_large_cave_depth = -33
 
+#    Deprecated, define and locate cave liquids using biome definitions instead.
 #    Y of upper limit of lava in large caves.
 #    type: int
 # mgfractal_lava_depth = -256
@@ -2759,7 +2870,7 @@
 #    octaves     = 3,
 #    persistence = 0.5,
 #    lacunarity  = 2.0,
-#    flags       =
+#    flags       = 
 # }
 
 #    Second of two 3D noises that together define tunnels.
@@ -2772,7 +2883,20 @@
 #    octaves     = 3,
 #    persistence = 0.5,
 #    lacunarity  = 2.0,
-#    flags       =
+#    flags       = 
+# }
+
+#    3D noise that determines number of dungeons per mapchunk.
+#    type: noise_params_3d
+# mgfractal_np_dungeons = {
+#    offset      = 0.9,
+#    scale       = 0.5,
+#    spread      = (500, 500, 500),
+#    seed        = 0,
+#    octaves     = 2,
+#    persistence = 0.8,
+#    lacunarity  = 2.0,
+#    flags       = 
 # }
 
 ## Mapgen Valleys
@@ -2783,7 +2907,7 @@
 #    'vary_river_depth': If enabled, low humidity and high heat causes rivers
 #    to become shallower and occasionally dry.
 #    'altitude_dry': Reduces humidity with altitude.
-#    type: flags possible values: altitude_chill, noaltitude_chill, humid_rivers, nohumid_rivers, vary_river_depth, novary_river_depth, altitude_dry, noaltitude_dry
+#    type: flags possible values: altitude_chill, humid_rivers, vary_river_depth, altitude_dry, noaltitude_chill, nohumid_rivers, novary_river_depth, noaltitude_dry
 # mgvalleys_spflags = altitude_chill,humid_rivers,vary_river_depth,altitude_dry
 
 #    The vertical distance over which heat drops by 20 if 'altitude_chill' is
@@ -2796,6 +2920,7 @@
 #    type: int
 # mgvalleys_large_cave_depth = -33
 
+#    Deprecated, define and locate cave liquids using biome definitions instead.
 #    Y of upper limit of lava in large caves.
 #    type: int
 # mgvalleys_lava_depth = 1
@@ -2844,7 +2969,7 @@
 #    octaves     = 3,
 #    persistence = 0.5,
 #    lacunarity  = 2.0,
-#    flags       =
+#    flags       = 
 # }
 
 #    Second of two 3D noises that together define tunnels.
@@ -2857,7 +2982,7 @@
 #    octaves     = 3,
 #    persistence = 0.5,
 #    lacunarity  = 2.0,
-#    flags       =
+#    flags       = 
 # }
 
 #    The depth of dirt or other biome filler node.
@@ -2883,7 +3008,7 @@
 #    octaves     = 6,
 #    persistence = 0.63,
 #    lacunarity  = 2.0,
-#    flags       =
+#    flags       = 
 # }
 
 #    Defines large-scale river channel structure.
@@ -2935,7 +3060,7 @@
 #    octaves     = 6,
 #    persistence = 0.8,
 #    lacunarity  = 2.0,
-#    flags       =
+#    flags       = 
 # }
 
 #    Amplifies the valleys.
@@ -2962,6 +3087,19 @@
 #    persistence = 1.0,
 #    lacunarity  = 2.0,
 #    flags       = eased
+# }
+
+#    3D noise that determines number of dungeons per mapchunk.
+#    type: noise_params_3d
+# mgvalleys_np_dungeons = {
+#    offset      = 0.9,
+#    scale       = 0.5,
+#    spread      = (500, 500, 500),
+#    seed        = 0,
+#    octaves     = 2,
+#    persistence = 0.8,
+#    lacunarity  = 2.0,
+#    flags       = 
 # }
 
 ## Advanced
@@ -3025,3 +3163,4 @@
 #    so see a full list at https://content.minetest.net/help/content_flags/
 #    type: string
 # contentdb_flag_blacklist = nonfree, desktop_default
+

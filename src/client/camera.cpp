@@ -99,9 +99,9 @@ bool Camera::successfullyCreated(std::string &error_message)
 		error_message.clear();
 	}
 
-	if (g_settings->getBool("enable_client_modding")) {
+	if (m_client->modsLoaded())
 		m_client->getScript()->on_camera_ready(this);
-	}
+
 	return error_message.empty();
 }
 
@@ -412,7 +412,7 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 busytime, f32 tool_r
 			// Prevent camera positioned inside nodes
 			const NodeDefManager *nodemgr = m_client->ndef();
 			MapNode n = m_client->getEnv().getClientMap()
-				.getNodeNoEx(floatToInt(my_cp, BS));
+				.getNode(floatToInt(my_cp, BS));
 
 			const ContentFeatures& features = nodemgr->get(n);
 			if (features.walkable) {
@@ -448,12 +448,26 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 busytime, f32 tool_r
 	if (m_camera_mode != CAMERA_MODE_FIRST)
 		m_camera_position = my_cp;
 
-	// Get FOV
+	/*
+	 * Apply server-sent FOV. If server doesn't enforce FOV,
+	 * check for zoom and set to zoom FOV.
+	 * Otherwise, default to m_cache_fov
+	 */
+
 	f32 fov_degrees;
-	// Disable zoom with zoom FOV = 0
-	if (player->getPlayerControl().zoom && player->getZoomFOV() > 0.001f) {
+	PlayerFovSpec fov_spec = player->getFov();
+	if (fov_spec.fov > 0.0f) {
+		// If server-sent FOV is a multiplier, multiply
+		// it with m_cache_fov instead of overriding
+		if (fov_spec.is_multiplier)
+			fov_degrees = m_cache_fov * fov_spec.fov;
+		else
+			fov_degrees = fov_spec.fov;
+	} else if (player->getPlayerControl().zoom && player->getZoomFOV() > 0.001f) {
+		// Player requests zoom, apply zoom FOV
 		fov_degrees = player->getZoomFOV();
 	} else {
+		// Set to client's selected FOV
 		fov_degrees = m_cache_fov;
 	}
 	fov_degrees = rangelim(fov_degrees, 1.0f, 160.0f);

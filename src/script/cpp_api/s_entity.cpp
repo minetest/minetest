@@ -157,7 +157,7 @@ std::string ScriptApiEntity::luaentity_GetStaticdata(u16 id)
 }
 
 void ScriptApiEntity::luaentity_GetProperties(u16 id,
-		ObjectProperties *prop)
+		ServerActiveObject *self, ObjectProperties *prop)
 {
 	SCRIPTAPI_PRECHECKHEADER
 
@@ -170,11 +170,11 @@ void ScriptApiEntity::luaentity_GetProperties(u16 id,
 	prop->hp_max = 10;
 
 	// Deprecated: read object properties directly
-	read_object_properties(L, -1, prop, getServer()->idef());
+	read_object_properties(L, -1, self, prop, getServer()->idef());
 
 	// Read initial_properties
 	lua_getfield(L, -1, "initial_properties");
-	read_object_properties(L, -1, prop, getServer()->idef());
+	read_object_properties(L, -1, self, prop, getServer()->idef());
 	lua_pop(L, 1);
 }
 

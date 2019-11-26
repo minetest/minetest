@@ -18,6 +18,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include <ISceneNode.h>
+#include <array>
 #include "camera.h"
 #include "irrlichttypes_extrabloated.h"
 
@@ -145,4 +146,13 @@ private:
 	video::ITexture *m_moon_texture;
 	video::ITexture *m_sun_tonemap;
 	video::ITexture *m_moon_tonemap;
+	void draw_sun(video::IVideoDriver *driver, float sunsize, const video::SColor &suncolor,
+			const video::SColor &suncolor2, float wicked_time_of_day);
+	void draw_moon(video::IVideoDriver *driver, float moonsize, const video::SColor &mooncolor,
+			const video::SColor &mooncolor2, float wicked_time_of_day);
+	void draw_sky_body(std::array<video::S3DVertex, 4> &vertices,
+			float pos_1, float pos_2, const video::SColor &c);
+	void place_sky_body(
+			std::array<video::S3DVertex, 4> &vertices, float horizon_position,
+			float day_position);
 };

@@ -96,19 +96,16 @@ local function start_install(calling_dialog, package)
 
 				if conf_path then
 					local conf = Settings(conf_path)
-					local function set_def(key, value)
-						if conf:get(key) == nil then
-							conf:set(key, value)
-						end
-					end
 					if name_is_title then
-						set_def("name",    result.package.title)
+						conf:set("name",   result.package.title)
 					else
-						set_def("title",   result.package.title)
-						set_def("name",    result.package.name)
+						conf:set("title",  result.package.title)
+						conf:set("name",   result.package.name)
 					end
-					set_def("description", result.package.short_description)
-					set_def("author",      result.package.author)
+					if not conf:get("description") then
+						conf:set("description", result.package.short_description)
+					end
+					conf:set("author",     result.package.author)
 					conf:set("release",    result.package.release)
 					conf:write()
 				end
@@ -273,7 +270,6 @@ function store.load()
 	assert(core.create_dir(tmpdir))
 
 	local base_url     = core.settings:get("contentdb_url")
-	local show_nonfree = core.settings:get_bool("show_nonfree_packages")
 	local url = base_url ..
 		"/api/packages/?type=mod&type=game&type=txp&protocol_version=" ..
 		core.get_max_supp_proto()
@@ -299,9 +295,9 @@ function store.load()
 
 			local name_len = #package.name
 			if package.type == "game" and name_len > 5 and package.name:sub(name_len - 4) == "_game" then
-				package.id = package.author .. "/" .. package.name:sub(1, name_len - 5)
+				package.id = package.author:lower() .. "/" .. package.name:sub(1, name_len - 5)
 			else
-				package.id = package.author .. "/" .. package.name
+				package.id = package.author:lower() .. "/" .. package.name
 			end
 		end
 
@@ -317,22 +313,22 @@ function store.update_paths()
 	pkgmgr.refresh_globals()
 	for _, mod in pairs(pkgmgr.global_mods:get_list()) do
 		if mod.author then
-			mod_hash[mod.author .. "/" .. mod.name] = mod
+			mod_hash[mod.author:lower() .. "/" .. mod.name] = mod
 		end
 	end
 
 	local game_hash = {}
 	pkgmgr.update_gamelist()
 	for _, game in pairs(pkgmgr.games) do
-		if game.author then
-			game_hash[game.author .. "/" .. game.id] = game
+		if game.author ~= "" then
+			game_hash[game.author:lower() .. "/" .. game.id] = game
 		end
 	end
 
 	local txp_hash = {}
 	for _, txp in pairs(pkgmgr.get_texture_packs()) do
 		if txp.author then
-			txp_hash[txp.author .. "/" .. txp.name] = txp
+			txp_hash[txp.author:lower() .. "/" .. txp.name] = txp
 		end
 	end
 

@@ -669,6 +669,14 @@ private:
 	void addNameIdMapping(content_t i, std::string name);
 
 	/*!
+	 * Removes a content ID from all groups.
+	 * Erases content IDs from vectors in \ref m_group_to_items and
+	 * removes empty vectors.
+	 * @param id Content ID
+	 */
+	void eraseIdFromGroups(content_t id);
+
+	/*!
 	 * Recalculates m_selection_box_int_union based on
 	 * m_selection_box_union.
 	 */

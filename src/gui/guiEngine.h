@@ -221,6 +221,8 @@ private:
 	/** script basefolder */
 	std::string              m_scriptdir = "";
 
+	void setFormspecPrepend(const std::string &fs);
+
 	/**
 	 * draw background layer
 	 * @param driver to use for drawing
@@ -247,7 +249,7 @@ private:
 	 * @param layer draw layer to specify texture
 	 * @param texturepath full path of texture to load
 	 */
-	bool setTexture(texture_layer layer, std::string texturepath,
+	bool setTexture(texture_layer layer, const std::string &texturepath,
 			bool tile_image, unsigned int minsize);
 
 	/**
@@ -296,7 +298,7 @@ private:
 	clouddata   m_cloud;
 
 	/** start playing a sound and return handle */
-	s32 playSound(SimpleSoundSpec spec, bool looped);
+	s32 playSound(const SimpleSoundSpec &spec, bool looped);
 	/** stop playing a sound started with playSound() */
 	void stopSound(s32 handle);
 

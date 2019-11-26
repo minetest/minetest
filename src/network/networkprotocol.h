@@ -194,9 +194,15 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		New network float format
 		ContentFeatures version 13
 		Add full Euler rotations instead of just yaw
+		Add TOCLIENT_PLAYER_SPEED
+	PROTOCOL VERSION 38:
+		Incremental inventory sending mode
+		Unknown inventory serialization fields no longer throw an error
+		Mod-specific formspec version
+		Player FOV override API
 */
 
-#define LATEST_PROTOCOL_VERSION 37
+#define LATEST_PROTOCOL_VERSION 38
 #define LATEST_PROTOCOL_VERSION_STRING TOSTRING(LATEST_PROTOCOL_VERSION)
 
 // Server's supported network protocol range
@@ -215,8 +221,18 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define PASSWORD_SIZE 28       // Maximum password length. Allows for
                                // base64-encoded SHA-1 (27+\0).
 
-#define FORMSPEC_API_VERSION 1
-#define FORMSPEC_VERSION_STRING "formspec_version[" TOSTRING(FORMSPEC_API_VERSION) "]"
+/*
+	Changes by FORMSPEC_API_VERSION:
+
+	FORMSPEC VERSION 1:
+		(too much)
+	FORMSPEC VERSION 2:
+		Forced real coordinates
+		background9[]: 9-slice scaling parameters
+	FORMSPEC VERSION 3:
+		Formspec elements are drawn in the order of definition
+*/
+#define FORMSPEC_API_VERSION 3
 
 #define TEXTURENAME_ALLOWED_CHARS "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_.-"
 
@@ -295,6 +311,11 @@ enum ToClientCommand
 		u32 CSMRestrictionFlags byteflag
 	 */
 
+	TOCLIENT_PLAYER_SPEED = 0x2B,
+	/*
+		v3f added_vel
+	 */
+
 	// (oops, there is some gap here)
 
 	TOCLIENT_CHAT_MESSAGE = 0x2F,
@@ -352,7 +373,13 @@ enum ToClientCommand
 		wstring reason
 	*/
 
-	TOCLIENT_PLAYERITEM = 0x36, // Obsolete
+	TOCLIENT_FOV = 0x36,
+	/*
+		Sends an FOV override/multiplier to client.
+
+		float fov
+		bool is_multiplier
+	*/
 
 	TOCLIENT_DEATHSCREEN = 0x37,
 	/*
@@ -954,10 +981,20 @@ enum CSMRestrictionFlags : u64 {
 	// When those are complete, this should return to only being a restriction on the
 	// loading of client mods.
 	CSM_RF_LOAD_CLIENT_MODS = 0x00000001, // Don't load client-provided mods or 'builtin'
-	CSM_RF_CHAT_MESSAGES = 0x00000002, // Disable chat message sending from CSM
-	CSM_RF_READ_ITEMDEFS = 0x00000004, // Disable itemdef lookups
-	CSM_RF_READ_NODEDEFS = 0x00000008, // Disable nodedef lookups
-	CSM_RF_LOOKUP_NODES = 0x00000010, // Limit node lookups
-	CSM_RF_READ_PLAYERINFO = 0x00000020, // Disable player info lookups
+	CSM_RF_CHAT_MESSAGES = 0x00000002,    // Disable chat message sending from CSM
+	CSM_RF_READ_ITEMDEFS = 0x00000004,    // Disable itemdef lookups
+	CSM_RF_READ_NODEDEFS = 0x00000008,    // Disable nodedef lookups
+	CSM_RF_LOOKUP_NODES = 0x00000010,     // Limit node lookups
+	CSM_RF_READ_PLAYERINFO = 0x00000020,  // Disable player info lookups
 	CSM_RF_ALL = 0xFFFFFFFF,
+};
+
+enum InteractAction : u8
+{
+	INTERACT_START_DIGGING,     // 0: start digging (from undersurface) or use
+	INTERACT_STOP_DIGGING,      // 1: stop digging (all parameters ignored)
+	INTERACT_DIGGING_COMPLETED, // 2: digging completed
+	INTERACT_PLACE,             // 3: place block or item (to abovesurface)
+	INTERACT_USE,               // 4: use item
+	INTERACT_ACTIVATE           // 5: rightclick air ("activate")
 };

@@ -153,11 +153,6 @@ local function handle_buttons(tabview, fields, tabname, tabdata)
 		return true
 	end
 
-	if fields["btn_mod_mgr_install_local"] ~= nil then
-		core.show_file_open_dialog("mod_mgt_open_dlg", fgettext("Select Package File:"))
-		return true
-	end
-
 	if fields["btn_contentdb"] ~= nil then
 		local dlg = create_store_dlg()
 		dlg:set_parent(tabview)
@@ -198,12 +193,6 @@ local function handle_buttons(tabview, fields, tabname, tabdata)
 	if fields.btn_mod_mgr_disable_txp then
 		core.settings:set("texture_path", "")
 		packages = nil
-		return true
-	end
-
-	if fields["mod_mgt_open_dlg_accepted"] and
-			fields["mod_mgt_open_dlg_accepted"] ~= "" then
-		pkgmgr.install_mod(fields["mod_mgt_open_dlg_accepted"],nil)
 		return true
 	end
 

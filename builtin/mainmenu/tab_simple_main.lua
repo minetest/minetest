@@ -188,10 +188,10 @@ local function main_button_handler(tabview, fields, name, tabdata)
 
 		core.settings:set("address", fields.te_address)
 		core.settings:set("remote_port", fields.te_port)
-			
- 		core.start()		
- 		return true		
- 	end
+
+		core.start()
+		return true
+	end
 
 	if fields.btn_config_sp_world then
 		local configdialog = create_configure_world_dlg(1)

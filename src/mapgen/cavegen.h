@@ -116,13 +116,13 @@ public:
 	s16 *heightmap;
 	BiomeGen *bmgn;
 
-	// configurable parameters
 	s32 seed;
 	int water_level;
-	int lava_depth;
+	float large_cave_flooded;
+	// TODO 'np_caveliquids' is deprecated and should eventually be removed.
+	// Cave liquids are now defined and located using biome definitions.
 	NoiseParams *np_caveliquids;
 
-	// intermediate state variables
 	u16 ystride;
 
 	s16 min_tunnel_diameter;
@@ -133,6 +133,7 @@ public:
 	bool large_cave;
 	bool large_cave_is_flat;
 	bool flooded;
+	bool use_biome_liquid;
 
 	v3s16 node_min;
 	v3s16 node_max;
@@ -150,6 +151,7 @@ public:
 
 	content_t c_water_source;
 	content_t c_lava_source;
+	content_t c_biome_liquid;
 
 	// ndef is a mandatory parameter.
 	// If gennotify is NULL, generation events are not logged.
@@ -157,7 +159,7 @@ public:
 	CavesRandomWalk(const NodeDefManager *ndef, GenerateNotifier *gennotify =
 		NULL, s32 seed = 0, int water_level = 1, content_t water_source =
 		CONTENT_IGNORE, content_t lava_source = CONTENT_IGNORE,
-		int lava_depth = -256, BiomeGen *biomegen = NULL);
+		float large_cave_flooded = 0.5f, BiomeGen *biomegen = NULL);
 
 	// vm and ps are mandatory parameters.
 	// If heightmap is NULL, the surface level at all points is assumed to

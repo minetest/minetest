@@ -212,6 +212,12 @@ private:
 	// get_player_velocity(self)
 	static int l_get_player_velocity(lua_State *L);
 
+	// add_player_velocity(self, {x=num, y=num, z=num})
+	static int l_add_player_velocity(lua_State *L);
+
+	// get_fov(self)
+	static int l_get_fov(lua_State *L);
+
 	// get_look_dir(self)
 	static int l_get_look_dir(lua_State *L);
 
@@ -228,6 +234,9 @@ private:
 
 	// get_look_yaw2(self)
 	static int l_get_look_horizontal(lua_State *L);
+
+	// set_fov(self, degrees, is_multiplier)
+	static int l_set_fov(lua_State *L);
 
 	// set_look_vertical(self, radians)
 	static int l_set_look_vertical(lua_State *L);
@@ -351,4 +360,6 @@ private:
 	// get_nametag_attributes(self)
 	static int l_get_nametag_attributes(lua_State *L);
 
+	// send_mapblock(pos)
+	static int l_send_mapblock(lua_State *L);
 };

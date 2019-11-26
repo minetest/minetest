@@ -168,3 +168,25 @@ void ScriptApiServer::on_shutdown()
 	runCallbacks(0, RUN_CALLBACKS_MODE_FIRST);
 }
 
+std::string ScriptApiServer::formatChatMessage(const std::string &name,
+	const std::string &message)
+{
+	SCRIPTAPI_PRECHECKHEADER
+
+	// Push function onto stack
+	lua_getglobal(L, "core");
+	lua_getfield(L, -1, "format_chat_message");
+
+	// Push arguments onto stack
+	lua_pushstring(L, name.c_str());
+	lua_pushstring(L, message.c_str());
+
+	// Actually call the function
+	lua_call(L, 2, 1);
+
+	// Fetch return value
+	std::string ret = lua_tostring(L, -1);
+	lua_pop(L, 1);
+
+	return ret;
+}

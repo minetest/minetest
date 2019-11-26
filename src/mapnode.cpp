@@ -512,7 +512,7 @@ static inline void getNeighborConnectingFace(
 	const v3s16 &p, const NodeDefManager *nodedef,
 	Map *map, MapNode n, u8 bitmask, u8 *neighbors)
 {
-	MapNode n2 = map->getNodeNoEx(p);
+	MapNode n2 = map->getNode(p);
 	if (nodedef->nodeboxConnects(n, n2, bitmask))
 		*neighbors |= bitmask;
 }
@@ -846,7 +846,7 @@ void MapNode::deSerialize_pre22(const u8 *source, u8 version)
 	{
 		// In these versions, CONTENT_IGNORE and CONTENT_AIR
 		// are 255 and 254
-		// Version 19 is fucked up with sometimes the old values and sometimes not
+		// Version 19 is messed up with sometimes the old values and sometimes not
 		if(param0 == 255)
 			param0 = CONTENT_IGNORE;
 		else if(param0 == 254)

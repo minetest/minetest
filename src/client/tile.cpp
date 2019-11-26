@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include <algorithm>
 #include <ICameraSceneNode.h>
+#include <IrrCompileConfig.h>
 #include "util/string.h"
 #include "util/container.h"
 #include "util/thread.h"
@@ -34,8 +35,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "renderingengine.h"
 
 
-#ifdef __ANDROID__
+#if ENABLE_GLES
+#ifdef _IRR_COMPILE_WITH_OGLES1_
 #include <GLES/gl.h>
+#else
+#include <GLES2/gl2.h>
+#endif
 #endif
 
 /*
@@ -117,9 +122,14 @@ std::string getImagePath(std::string path)
 
 	Utilizes a thread-safe cache.
 */
-std::string getTexturePath(const std::string &filename)
+std::string getTexturePath(const std::string &filename, bool *is_base_pack)
 {
 	std::string fullpath;
+
+	// This can set a wrong value on cached textures, but is irrelevant because
+	// is_base_pack is only passed when initializing the textures the first time
+	if (is_base_pack)
+		*is_base_pack = false;
 	/*
 		Check from cache
 	*/
@@ -131,7 +141,8 @@ std::string getTexturePath(const std::string &filename)
 		Check from texture_path
 	*/
 	for (const auto &path : getTextureDirs()) {
-		std::string testpath = path + DIR_DELIM + filename;
+		std::string testpath = path + DIR_DELIM;
+		testpath.append(filename);
 		// Check all filename extensions. Returns "" if not found.
 		fullpath = getImagePath(testpath);
 		if (!fullpath.empty())
@@ -148,6 +159,8 @@ std::string getTexturePath(const std::string &filename)
 		std::string testpath = base_path + DIR_DELIM + filename;
 		// Check all filename extensions. Returns "" if not found.
 		fullpath = getImagePath(testpath);
+		if (is_base_pack && !fullpath.empty())
+			*is_base_pack = true;
 	}
 
 	// Add to cache (also an empty result is cached)
@@ -209,9 +222,11 @@ public:
 		bool need_to_grab = true;
 
 		// Try to use local texture instead if asked to
-		if (prefer_local){
-			std::string path = getTexturePath(name);
-			if (!path.empty()) {
+		if (prefer_local) {
+			bool is_base_pack;
+			std::string path = getTexturePath(name, &is_base_pack);
+			// Ignore base pack
+			if (!path.empty() && !is_base_pack) {
 				video::IImage *img2 = RenderingEngine::get_video_driver()->
 					createImageFromFile(path.c_str());
 				if (img2){
@@ -594,7 +609,7 @@ u32 TextureSource::generateTexture(const std::string &name)
 	video::ITexture *tex = NULL;
 
 	if (img != NULL) {
-#ifdef __ANDROID__
+#if ENABLE_GLES
 		img = Align2Npot2(img, driver);
 #endif
 		// Create texture from resulting image
@@ -751,7 +766,7 @@ void TextureSource::rebuildImagesAndTextures()
 	// Recreate textures
 	for (TextureInfo &ti : m_textureinfo_cache) {
 		video::IImage *img = generateImage(ti.name);
-#ifdef __ANDROID__
+#if ENABLE_GLES
 		img = Align2Npot2(img, driver);
 #endif
 		// Create texture from resulting image
@@ -988,8 +1003,30 @@ video::IImage* TextureSource::generateImage(const std::string &name)
 	return baseimg;
 }
 
-#ifdef __ANDROID__
-#include <GLES/gl.h>
+#if ENABLE_GLES
+
+
+static inline u16 get_GL_major_version()
+{
+	const GLubyte *gl_version = glGetString(GL_VERSION);
+	return (u16) (gl_version[0] - '0');
+}
+
+/**
+ * Check if hardware requires npot2 aligned textures
+ * @return true if alignment NOT(!) requires, false otherwise
+ */
+
+bool hasNPotSupport()
+{
+	// Only GLES2 is trusted to correctly report npot support
+	// Note: we cache the boolean result, the GL context will never change.
+	static const bool supported = get_GL_major_version() > 1 &&
+		glGetString(GL_EXTENSIONS) &&
+		strstr((char *)glGetString(GL_EXTENSIONS), "GL_OES_texture_npot");
+	return supported;
+}
+
 /**
  * Check and align image to npot2 if required by hardware
  * @param image image to check for npot2 alignment
@@ -997,53 +1034,33 @@ video::IImage* TextureSource::generateImage(const std::string &name)
  * @return image or copy of image aligned to npot2
  */
 
-inline u16 get_GL_major_version()
-{
-	const GLubyte *gl_version = glGetString(GL_VERSION);
-	return (u16) (gl_version[0] - '0');
-}
-
 video::IImage * Align2Npot2(video::IImage * image,
 		video::IVideoDriver* driver)
 {
-	if (image == NULL) {
+	if (image == NULL)
 		return image;
-	}
+
+	if (hasNPotSupport())
+		return image;
 
 	core::dimension2d<u32> dim = image->getDimension();
-
-	// Only GLES2 is trusted to correctly report npot support
-	// Note: we cache the boolean result. GL context will never change on Android.
-	static const bool hasNPotSupport = get_GL_major_version() > 1 &&
-		glGetString(GL_EXTENSIONS) &&
-		strstr((char *)glGetString(GL_EXTENSIONS), "GL_OES_texture_npot");
-
-	if (hasNPotSupport)
-		return image;
-
 	unsigned int height = npot2(dim.Height);
 	unsigned int width  = npot2(dim.Width);
 
-	if ((dim.Height == height) &&
-			(dim.Width == width)) {
+	if (dim.Height == height && dim.Width == width)
 		return image;
-	}
 
-	if (dim.Height > height) {
+	if (dim.Height > height)
 		height *= 2;
-	}
-
-	if (dim.Width > width) {
+	if (dim.Width > width)
 		width *= 2;
-	}
 
 	video::IImage *targetimage =
 			driver->createImage(video::ECF_A8R8G8B8,
 					core::dimension2d<u32>(width, height));
 
-	if (targetimage != NULL) {
+	if (targetimage != NULL)
 		image->copyToScaling(targetimage);
-	}
 	image->drop();
 	return targetimage;
 }
@@ -1077,7 +1094,7 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 	// Stuff starting with [ are special commands
 	if (part_of_name.empty() || part_of_name[0] != '[') {
 		video::IImage *image = m_sourcecache.getOrLoad(part_of_name);
-#ifdef __ANDROID__
+#if ENABLE_GLES
 		image = Align2Npot2(image, driver);
 #endif
 		if (image == NULL) {
@@ -1795,6 +1812,24 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 }
 
 /*
+	Calculate the color of a single pixel drawn on top of another pixel.
+
+	This is a little more complicated than just video::SColor::getInterpolated
+	because getInterpolated does not handle alpha correctly.  For example, a
+	pixel with alpha=64 drawn atop a pixel with alpha=128 should yield a
+	pixel with alpha=160, while getInterpolated would yield alpha=96.
+*/
+static inline video::SColor blitPixel(const video::SColor &src_c, const video::SColor &dst_c, u32 ratio)
+{
+	if (dst_c.getAlpha() == 0)
+		return src_c;
+	video::SColor out_c = src_c.getInterpolated(dst_c, (float)ratio / 255.0f);
+	out_c.setAlpha(dst_c.getAlpha() + (255 - dst_c.getAlpha()) *
+		src_c.getAlpha() * ratio / (255 * 255));
+	return out_c;
+}
+
+/*
 	Draw an image on top of an another one, using the alpha channel of the
 	source image
 
@@ -1813,7 +1848,7 @@ static void blit_with_alpha(video::IImage *src, video::IImage *dst,
 		s32 dst_y = dst_pos.Y + y0;
 		video::SColor src_c = src->getPixel(src_x, src_y);
 		video::SColor dst_c = dst->getPixel(dst_x, dst_y);
-		dst_c = src_c.getInterpolated(dst_c, (float)src_c.getAlpha()/255.0f);
+		dst_c = blitPixel(src_c, dst_c, src_c.getAlpha());
 		dst->setPixel(dst_x, dst_y, dst_c);
 	}
 }
@@ -1836,7 +1871,7 @@ static void blit_with_alpha_overlay(video::IImage *src, video::IImage *dst,
 		video::SColor dst_c = dst->getPixel(dst_x, dst_y);
 		if (dst_c.getAlpha() == 255 && src_c.getAlpha() != 0)
 		{
-			dst_c = src_c.getInterpolated(dst_c, (float)src_c.getAlpha()/255.0f);
+			dst_c = blitPixel(src_c, dst_c, src_c.getAlpha());
 			dst->setPixel(dst_x, dst_y, dst_c);
 		}
 	}

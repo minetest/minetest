@@ -13,12 +13,6 @@ The block serialization version does not fully specify every aspect of this
 format; if compliance with this format is to be checked, it needs to be
 done by detecting if the files and data indeed follows it.
 
-Legacy stuff
-=============
-Data can, in theory, be contained in the flat file directory structure
-described below in Version 17, but it is not officially supported. Also you
-may stumble upon all kinds of oddities in not-so-recent formats.
-
 Files
 ======
 Everything is contained in a directory, the name of which is freeform, but
@@ -365,7 +359,9 @@ if map format version <= 22:
     u16 content_size
     u8[content_size] content of metadata. Format depends on type_id, see below.
 if map format version >= 23:
-  u8 version (=1) -- Note the type is u8, while for map format version <= 22 it's u16
+  u8 version -- Note: type was u16 for map format version <= 22
+    -- = 1 for map format version < 28
+    -- = 2 since map format version 28
   u16 count of metadata
   foreach count:
     u16 position (p.Z*MAP_BLOCKSIZE*MAP_BLOCKSIZE + p.Y*MAP_BLOCKSIZE + p.X)
@@ -375,6 +371,7 @@ if map format version >= 23:
       u8[key_len] key
       u32 val_len
       u8[val_len] value
+      u8 is_private -- only for version >= 2. 0 = not private, 1 = private
     serialized inventory
 
 - Node timers
@@ -497,10 +494,10 @@ Static objects are persistent freely moving objects in the world.
 Object types:
 1: Test object
 2: Item
-3: Rat (deprecated)
-4: Oerkki (deprecated)
-5: Firefly (deprecated)
-6: MobV2 (deprecated)
+3: Rat (obsolete)
+4: Oerkki (obsolete)
+5: Firefly (obsolete)
+6: MobV2 (obsolete)
 7: LuaEntity
 
 1: Item:
@@ -510,17 +507,20 @@ Object types:
     u8[len] itemstring
 
 7: LuaEntity:
-  u8 version
-  version 1:
-    u16 len
-    u8[len] entity name
-    u32 len
-    u8[len] static data
-    s16 hp
-    s32 velocity.x * 10000
-    s32 velocity.y * 10000
-    s32 velocity.z * 10000
-    s32 yaw * 1000
+  u8 compatibility_byte (always 1)
+  u16 len
+  u8[len] entity name
+  u32 len
+  u8[len] static data
+  s16 hp
+  s32 velocity.x * 10000
+  s32 velocity.y * 10000
+  s32 velocity.z * 10000
+  s32 yaw * 1000
+  if PROTOCOL_VERSION >= 37:
+    u8 version2 (=1)
+    s32 pitch * 1000
+    s32 roll * 1000
 
 Itemstring format
 ------------------
@@ -562,107 +562,3 @@ Empty
 EndInventoryList
 EndInventory
 ---
-
-==============================================
-Minetest World Format used as of 2011-05 or so
-==============================================
-
-Map data serialization format version 17.
-
-0.3.1 does not use this format, but a more recent one. This exists here for
-historical reasons.
-
-Directory structure:
-sectors/XXXXZZZZ or sectors2/XXX/ZZZ
-XXXX, ZZZZ, XXX and ZZZ being the hexadecimal X and Z coordinates.
-Under these, the block files are stored, called YYYY.
-
-There also exists files map_meta.txt and chunk_meta, that are used by the
-generator. If they are not found or invalid, the generator will currently
-behave quite strangely.
-
-The MapBlock file format (sectors2/XXX/ZZZ/YYYY):
--------------------------------------------------
-
-NOTE: Byte order is MSB first.
-
-u8 version
-- map format version number, this one is version 17
-
-u8 flags
-- Flag bitmasks:
-  - 0x01: is_underground: Should be set to 0 if there will be no light
-    obstructions above the block. If/when sunlight of a block is updated and
-	there is no block above it, this value is checked for determining whether
-	sunlight comes from the top.
-  - 0x02: day_night_differs: Whether the lighting of the block is different on
-    day and night. Only blocks that have this bit set are updated when day
-	transforms to night.
-  - 0x04: lighting_expired: If true, lighting is invalid and should be updated.
-    If you can't calculate lighting in your generator properly, you could try
-	setting this 1 to everything and setting the uppermost block in every
-	sector as is_underground=0. I am quite sure it doesn't work properly,
-	though.
-
-zlib-compressed map data:
-- content:
-  u8[4096]: content types
-  u8[4096]: param1 values
-  u8[4096]: param2 values
-
-zlib-compressed node metadata
-- content:
-  u16 version (=1)
-  u16 count of metadata
-  foreach count:
-    u16 position (= p.Z*MAP_BLOCKSIZE*MAP_BLOCKSIZE + p.Y*MAP_BLOCKSIZE + p.X)
-	u16 type_id
-	u16 content_size
-	u8[content_size] misc. stuff contained in the metadata
-
-u16 mapblockobject_count
-- always write as 0.
-- if read != 0, just fail.
-
-foreach mapblockobject_count:
-  - deprecated, should not be used. Length of this data can only be known by
-    properly parsing it. Just hope not to run into any of this.
-
-u8 static object version:
-- currently 0
-
-u16 static_object_count
-
-foreach static_object_count:
-  u8 type (object type-id)
-  s32 pos_x * 1000
-  s32 pos_y * 1000
-  s32 pos_z * 1000
-  u16 data_size
-  u8[data_size] data
-
-u32 timestamp
-- Timestamp when last saved, as seconds from starting the game.
-- 0xffffffff = invalid/unknown timestamp, nothing will be done with the time
-               difference when loaded (recommended)
-
-Node metadata format:
----------------------
-
-Sign metadata:
-  u16 string_len
-  u8[string_len] string
-
-Furnace metadata:
-  TBD
-
-Chest metadata:
-  TBD
-
-Locking Chest metadata:
-  u16 string_len
-  u8[string_len] string
-  TBD
-
-// END
-

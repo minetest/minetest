@@ -62,14 +62,18 @@ MapgenV7::MapgenV7(MapgenV7Params *params, EmergeManager *emerge)
 	floatland_level      = params->floatland_level;
 	shadow_limit         = params->shadow_limit;
 
-	cave_width           = params->cave_width;
-	large_cave_depth     = params->large_cave_depth;
-	lava_depth           = params->lava_depth;
-	cavern_limit         = params->cavern_limit;
-	cavern_taper         = params->cavern_taper;
-	cavern_threshold     = params->cavern_threshold;
-	dungeon_ymin         = params->dungeon_ymin;
-	dungeon_ymax         = params->dungeon_ymax;
+	cave_width         = params->cave_width;
+	large_cave_depth   = params->large_cave_depth;
+	small_cave_num_min = params->small_cave_num_min;
+	small_cave_num_max = params->small_cave_num_max;
+	large_cave_num_min = params->large_cave_num_min;
+	large_cave_num_max = params->large_cave_num_max;
+	large_cave_flooded = params->large_cave_flooded;
+	cavern_limit       = params->cavern_limit;
+	cavern_taper       = params->cavern_taper;
+	cavern_threshold   = params->cavern_threshold;
+	dungeon_ymin       = params->dungeon_ymin;
+	dungeon_ymax       = params->dungeon_ymax;
 
 	// This is to avoid a divide-by-zero.
 	// Parameter will be saved to map_meta.txt in limited form.
@@ -113,9 +117,10 @@ MapgenV7::MapgenV7(MapgenV7Params *params, EmergeManager *emerge)
 			new Noise(&params->np_mountain, seed, csize.X, csize.Y + 2, csize.Z);
 
 	// 3D noise, 1 down overgeneration
-	MapgenBasic::np_cave1  = params->np_cave1;
-	MapgenBasic::np_cave2  = params->np_cave2;
-	MapgenBasic::np_cavern = params->np_cavern;
+	MapgenBasic::np_cave1    = params->np_cave1;
+	MapgenBasic::np_cave2    = params->np_cave2;
+	MapgenBasic::np_cavern   = params->np_cavern;
+	MapgenBasic::np_dungeons = params->np_dungeons;
 }
 
 
@@ -159,7 +164,8 @@ MapgenV7Params::MapgenV7Params():
 	np_ridge             (0.0,   1.0,   v3f(100,  100,  100),  6467,  4, 0.75, 2.0),
 	np_cavern            (0.0,   1.0,   v3f(384,  128,  384),  723,   5, 0.63, 2.0),
 	np_cave1             (0.0,   12.0,  v3f(61,   61,   61),   52534, 3, 0.5,  2.0),
-	np_cave2             (0.0,   12.0,  v3f(67,   67,   67),   10325, 3, 0.5,  2.0)
+	np_cave2             (0.0,   12.0,  v3f(67,   67,   67),   10325, 3, 0.5,  2.0),
+	np_dungeons          (0.9,   0.5,   v3f(500,  500,  500),  0,     2, 0.8,  2.0)
 {
 }
 
@@ -170,7 +176,11 @@ void MapgenV7Params::readParams(const Settings *settings)
 	settings->getS16NoEx("mgv7_mount_zero_level",       mount_zero_level);
 	settings->getFloatNoEx("mgv7_cave_width",           cave_width);
 	settings->getS16NoEx("mgv7_large_cave_depth",       large_cave_depth);
-	settings->getS16NoEx("mgv7_lava_depth",             lava_depth);
+	settings->getU16NoEx("mgv7_small_cave_num_min",     small_cave_num_min);
+	settings->getU16NoEx("mgv7_small_cave_num_max",     small_cave_num_max);
+	settings->getU16NoEx("mgv7_large_cave_num_min",     large_cave_num_min);
+	settings->getU16NoEx("mgv7_large_cave_num_max",     large_cave_num_max);
+	settings->getFloatNoEx("mgv7_large_cave_flooded",   large_cave_flooded);
 	settings->getFloatNoEx("mgv7_float_mount_density",  float_mount_density);
 	settings->getFloatNoEx("mgv7_float_mount_height",   float_mount_height);
 	settings->getFloatNoEx("mgv7_float_mount_exponent", float_mount_exponent);
@@ -196,6 +206,7 @@ void MapgenV7Params::readParams(const Settings *settings)
 	settings->getNoiseParams("mgv7_np_cavern",            np_cavern);
 	settings->getNoiseParams("mgv7_np_cave1",             np_cave1);
 	settings->getNoiseParams("mgv7_np_cave2",             np_cave2);
+	settings->getNoiseParams("mgv7_np_dungeons",          np_dungeons);
 }
 
 
@@ -205,7 +216,11 @@ void MapgenV7Params::writeParams(Settings *settings) const
 	settings->setS16("mgv7_mount_zero_level",       mount_zero_level);
 	settings->setFloat("mgv7_cave_width",           cave_width);
 	settings->setS16("mgv7_large_cave_depth",       large_cave_depth);
-	settings->setS16("mgv7_lava_depth",             lava_depth);
+	settings->setU16("mgv7_small_cave_num_min",     small_cave_num_min);
+	settings->setU16("mgv7_small_cave_num_max",     small_cave_num_max);
+	settings->setU16("mgv7_large_cave_num_min",     large_cave_num_min);
+	settings->setU16("mgv7_large_cave_num_max",     large_cave_num_max);
+	settings->setFloat("mgv7_large_cave_flooded",   large_cave_flooded);
 	settings->setFloat("mgv7_float_mount_density",  float_mount_density);
 	settings->setFloat("mgv7_float_mount_height",   float_mount_height);
 	settings->setFloat("mgv7_float_mount_exponent", float_mount_exponent);
@@ -231,6 +246,7 @@ void MapgenV7Params::writeParams(Settings *settings) const
 	settings->setNoiseParams("mgv7_np_cavern",            np_cavern);
 	settings->setNoiseParams("mgv7_np_cave1",             np_cave1);
 	settings->setNoiseParams("mgv7_np_cave2",             np_cave2);
+	settings->setNoiseParams("mgv7_np_dungeons",          np_dungeons);
 }
 
 
@@ -356,8 +372,7 @@ void MapgenV7::makeChunk(BlockMakeData *data)
 	m_emerge->oremgr->placeAllOres(this, blockseed, node_min, node_max);
 
 	// Generate dungeons
-	if ((flags & MG_DUNGEONS) && full_node_min.Y >= dungeon_ymin &&
-			full_node_max.Y <= dungeon_ymax)
+	if (flags & MG_DUNGEONS)
 		generateDungeons(stone_surface_max_y);
 
 	// Generate the registered decorations

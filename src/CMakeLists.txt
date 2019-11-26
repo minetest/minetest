@@ -102,10 +102,20 @@ if(BUILD_CLIENT AND ENABLE_SOUND)
 endif()
 
 
-option(ENABLE_GLES "Enable OpenGL ES support" FALSE)
+option(ENABLE_GLES "Use OpenGL ES instead of OpenGL" FALSE)
 mark_as_advanced(ENABLE_GLES)
-if(ENABLE_GLES)
-	find_package(OpenGLES2)
+if(BUILD_CLIENT)
+	if(ENABLE_GLES)
+		find_package(OpenGLES2 REQUIRED)
+	else()
+		if(NOT WIN32) # Unix probably
+			set(OPENGL_GL_PREFERENCE "LEGACY" CACHE STRING
+				"See CMake Policy CMP0072 for reference. GLVND is broken on some nvidia setups")
+			set(OpenGL_GL_PREFERENCE ${OPENGL_GL_PREFERENCE})
+
+			find_package(OpenGL REQUIRED)
+		endif()
+	endif()
 endif()
 
 
@@ -176,7 +186,7 @@ option(ENABLE_LEVELDB "Enable LevelDB backend" TRUE)
 set(USE_LEVELDB FALSE)
 
 if(ENABLE_LEVELDB)
-	find_library(LEVELDB_LIBRARY leveldb)
+	find_library(LEVELDB_LIBRARY NAMES leveldb libleveldb)
 	find_path(LEVELDB_INCLUDE_DIR db.h PATH_SUFFIXES leveldb)
 	if(LEVELDB_LIBRARY AND LEVELDB_INCLUDE_DIR)
 		set(USE_LEVELDB TRUE)
@@ -251,32 +261,23 @@ if(WIN32)
 	set(PLATFORM_LIBS ws2_32.lib version.lib shlwapi.lib ${PLATFORM_LIBS})
 
 	# Zlib stuff
-	set(ZLIB_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/../../zlib/zlib-1.2.5"
-			CACHE PATH "Zlib include directory")
-	set(ZLIB_LIBRARIES "${PROJECT_SOURCE_DIR}/../../zlib125dll/dll32/zlibwapi.lib"
-			CACHE FILEPATH "Path to zlib library (usually zlibwapi.lib)")
-	set(ZLIB_DLL "${PROJECT_SOURCE_DIR}/../../zlib125dll/dll32/zlibwapi.dll"
-			CACHE FILEPATH "Path to zlib DLL (for installation)")
-	set(ZLIBWAPI_DLL "" CACHE FILEPATH "Path to zlibwapi DLL")
-	set(IRRLICHT_SOURCE_DIR "${PROJECT_SOURCE_DIR}/../../irrlicht-1.7.2"
-			CACHE PATH "irrlicht dir")
-	if(USE_FREETYPE)
-		set(FREETYPE_INCLUDE_DIR_ft2build "${PROJECT_SOURCE_DIR}/../../freetype2/include/"
-				CACHE PATH "freetype include dir")
-		set(FREETYPE_INCLUDE_DIR_freetype2 "${PROJECT_SOURCE_DIR}/../../freetype2/include/freetype"
-				CACHE PATH "freetype include dir")
-		set(FREETYPE_LIBRARY "${PROJECT_SOURCE_DIR}/../../freetype2/objs/win32/vc2005/freetype247.lib"
-				CACHE FILEPATH "Path to freetype247.lib")
+	find_path(ZLIB_INCLUDE_DIR "zlib.h" DOC "Zlib include directory")
+	find_library(ZLIB_LIBRARIES "zlib" DOC "Path to zlib library")
+
+	# Dll's are automatically copied to the output directory by vcpkg when VCPKG_APPLOCAL_DEPS=ON
+	if(NOT VCPKG_APPLOCAL_DEPS)
+		find_file(ZLIB_DLL NAMES "zlib.dll" "zlib1.dll" DOC "Path to zlib.dll for installation (optional)")
+		if(ENABLE_SOUND)
+			set(OPENAL_DLL "" CACHE FILEPATH "Path to OpenAL32.dll for installation (optional)")
+			set(OGG_DLL "" CACHE FILEPATH "Path to libogg.dll for installation (optional)")
+			set(VORBIS_DLL "" CACHE FILEPATH "Path to libvorbis.dll for installation (optional)")
+			set(VORBISFILE_DLL "" CACHE FILEPATH "Path to libvorbisfile.dll for installation (optional)")
+		endif()
+		if(USE_LUAJIT)
+			set(LUA_DLL "" CACHE FILEPATH "Path to lua51.dll for installation (optional)")
+		endif()
 	endif()
-	if(ENABLE_SOUND)
-		set(OPENAL_DLL "" CACHE FILEPATH "Path to OpenAL32.dll for installation (optional)")
-		set(OGG_DLL "" CACHE FILEPATH "Path to libogg.dll for installation (optional)")
-		set(VORBIS_DLL "" CACHE FILEPATH "Path to libvorbis.dll for installation (optional)")
-		set(VORBISFILE_DLL "" CACHE FILEPATH "Path to libvorbisfile.dll for installation (optional)")
-	endif()
-	if(USE_LUAJIT)
-		set(LUA_DLL "" CACHE FILEPATH "Path to lua51.dll for installation (optional)")
-	endif()
+
 else()
 	# Unix probably
 	if(BUILD_CLIENT)
@@ -284,11 +285,6 @@ else()
 			find_package(X11 REQUIRED)
 		endif(NOT HAIKU)
 
-		set(OPENGL_GL_PREFERENCE "LEGACY" CACHE STRING
-			"See CMake Policy CMP0072 for reference. GLVND is broken on some nvidia setups")
-		set(OpenGL_GL_PREFERENCE ${OPENGL_GL_PREFERENCE})
-
-		find_package(OpenGL REQUIRED)
 		find_package(JPEG REQUIRED)
 		find_package(BZip2 REQUIRED)
 		find_package(PNG REQUIRED)
@@ -410,7 +406,6 @@ set(common_SRCS
 	player.cpp
 	porting.cpp
 	profiler.cpp
-	quicktune.cpp
 	raycast.cpp
 	reflowscan.cpp
 	remoteplayer.cpp
@@ -528,7 +523,6 @@ if(BUILD_CLIENT)
 		${PROJECT_NAME}
 		${ZLIB_LIBRARIES}
 		${IRRLICHT_LIBRARY}
-		${OPENGL_LIBRARIES}
 		${JPEG_LIBRARIES}
 		${BZIP2_LIBRARIES}
 		${PNG_LIBRARIES}
@@ -538,7 +532,6 @@ if(BUILD_CLIENT)
 		${LUA_LIBRARY}
 		${GMP_LIBRARY}
 		${JSON_LIBRARY}
-		${OPENGLES2_LIBRARIES}
 		${PLATFORM_LIBS}
 		${CLIENT_PLATFORM_LIBS}
 	)
@@ -550,6 +543,18 @@ if(BUILD_CLIENT)
 	else()
 		target_link_libraries(
 			${client_LIBS}
+		)
+	endif()
+	if(ENABLE_GLES)
+		target_link_libraries(
+			${PROJECT_NAME}
+			${OPENGLES2_LIBRARIES}
+			${EGL_LIBRARIES}
+		)
+	else()
+		target_link_libraries(
+			${PROJECT_NAME}
+			${OPENGL_LIBRARIES}
 		)
 	endif()
 	if(USE_GETTEXT)
@@ -703,12 +708,6 @@ else()
 		set(OTHER_FLAGS "${OTHER_FLAGS} -Wsign-compare")
 	endif()
 
-	if(WIN32 AND NOT ZLIBWAPI_DLL AND CMAKE_SIZEOF_VOID_P EQUAL 4)
-		set(OTHER_FLAGS "${OTHER_FLAGS} -DWIN32_NO_ZLIB_WINAPI")
-		message(WARNING "Defaulting to cdecl for zlib on win32 because ZLIBWAPI_DLL"
-			" isn't set, ensure that ZLIBWAPI_DLL is set if you want stdcall.")
-	endif()
-
 	if(MINGW)
 		set(OTHER_FLAGS "${OTHER_FLAGS} -mthreads -fexceptions")
 		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DWIN32_LEAN_AND_MEAN")
@@ -736,40 +735,58 @@ endif()
 # Installation
 
 if(WIN32)
-	if(USE_SOUND)
-		if(OPENAL_DLL)
-			install(FILES ${OPENAL_DLL} DESTINATION ${BINDIR})
+	if(VCPKG_APPLOCAL_DEPS)
+		# Collect the dll's from the output path
+		install(DIRECTORY ${EXECUTABLE_OUTPUT_PATH}/Release/
+				DESTINATION ${BINDIR}
+				CONFIGURATIONS Release
+				FILES_MATCHING PATTERN "*.dll")
+		install(DIRECTORY ${EXECUTABLE_OUTPUT_PATH}/Debug/
+				DESTINATION ${BINDIR}
+				CONFIGURATIONS Debug
+				FILES_MATCHING PATTERN "*.dll")
+		install(DIRECTORY ${EXECUTABLE_OUTPUT_PATH}/RelWithDebInfo/
+				DESTINATION ${BINDIR}
+				CONFIGURATIONS RelWithDebInfo
+				FILES_MATCHING PATTERN "*.dll")
+		install(DIRECTORY ${EXECUTABLE_OUTPUT_PATH}/MinSizeRel/
+				DESTINATION ${BINDIR}
+				CONFIGURATIONS RelWithDebInfo
+				FILES_MATCHING PATTERN "*.dll")
+	else()
+		# Use the old-style way to install dll's
+		if(USE_SOUND)
+			if(OPENAL_DLL)
+				install(FILES ${OPENAL_DLL} DESTINATION ${BINDIR})
+			endif()
+			if(OGG_DLL)
+				install(FILES ${OGG_DLL} DESTINATION ${BINDIR})
+			endif()
+			if(VORBIS_DLL)
+				install(FILES ${VORBIS_DLL} DESTINATION ${BINDIR})
+			endif()
+			if(VORBISFILE_DLL)
+				install(FILES ${VORBISFILE_DLL} DESTINATION ${BINDIR})
+			endif()
 		endif()
-		if(OGG_DLL)
-			install(FILES ${OGG_DLL} DESTINATION ${BINDIR})
+		if(CURL_DLL)
+			install(FILES ${CURL_DLL} DESTINATION ${BINDIR})
 		endif()
-		if(VORBIS_DLL)
-			install(FILES ${VORBIS_DLL} DESTINATION ${BINDIR})
+		if(ZLIB_DLL)
+			install(FILES ${ZLIB_DLL} DESTINATION ${BINDIR})
 		endif()
-		if(VORBISFILE_DLL)
-			install(FILES ${VORBISFILE_DLL} DESTINATION ${BINDIR})
+		if(FREETYPE_DLL)
+			install(FILES ${FREETYPE_DLL} DESTINATION ${BINDIR})
 		endif()
-	endif()
-	if(CURL_DLL)
-		install(FILES ${CURL_DLL} DESTINATION ${BINDIR})
-	endif()
-	if(ZLIB_DLL)
-		install(FILES ${ZLIB_DLL} DESTINATION ${BINDIR})
-	endif()
-	if(ZLIBWAPI_DLL)
-		install(FILES ${ZLIBWAPI_DLL} DESTINATION ${BINDIR})
-	endif()
-	if(FREETYPE_DLL)
-		install(FILES ${FREETYPE_DLL} DESTINATION ${BINDIR})
-	endif()
-	if(SQLITE3_DLL)
-		install(FILES ${SQLITE3_DLL} DESTINATION ${BINDIR})
-	endif()
-	if(LEVELDB_DLL)
-		install(FILES ${LEVELDB_DLL} DESTINATION ${BINDIR})
-	endif()
-	if(LUA_DLL)
-		install(FILES ${LUA_DLL} DESTINATION ${BINDIR})
+		if(SQLITE3_DLL)
+			install(FILES ${SQLITE3_DLL} DESTINATION ${BINDIR})
+		endif()
+		if(LEVELDB_DLL)
+			install(FILES ${LEVELDB_DLL} DESTINATION ${BINDIR})
+		endif()
+		if(LUA_DLL)
+			install(FILES ${LUA_DLL} DESTINATION ${BINDIR})
+		endif()
 	endif()
 endif()
 
@@ -806,15 +823,17 @@ if(BUILD_CLIENT)
 	endif()
 
 	if(WIN32)
-		if(DEFINED IRRLICHT_DLL)
-			install(FILES ${IRRLICHT_DLL} DESTINATION ${BINDIR})
-		endif()
-		if(USE_GETTEXT)
-			if(DEFINED GETTEXT_DLL)
-				install(FILES ${GETTEXT_DLL} DESTINATION ${BINDIR})
+		if(NOT VCPKG_APPLOCAL_DEPS)
+			if(DEFINED IRRLICHT_DLL)
+				install(FILES ${IRRLICHT_DLL} DESTINATION ${BINDIR})
 			endif()
-			if(DEFINED GETTEXT_ICONV_DLL)
-				install(FILES ${GETTEXT_ICONV_DLL} DESTINATION ${BINDIR})
+			if(USE_GETTEXT)
+				if(DEFINED GETTEXT_DLL)
+					install(FILES ${GETTEXT_DLL} DESTINATION ${BINDIR})
+				endif()
+				if(DEFINED GETTEXT_ICONV_DLL)
+					install(FILES ${GETTEXT_ICONV_DLL} DESTINATION ${BINDIR})
+				endif()
 			endif()
 		endif()
 	endif()

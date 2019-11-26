@@ -65,6 +65,7 @@ endif
 
 LOCAL_CFLAGS := -D_IRR_ANDROID_PLATFORM_      \
 		-DHAVE_TOUCHSCREENGUI         \
+		-DENABLE_GLES=1               \
 		-DUSE_CURL=1                  \
 		-DUSE_SOUND=1                 \
 		-DUSE_FREETYPE=1              \
@@ -177,14 +178,20 @@ LOCAL_SRC_FILES := \
 		jni/src/filesys.cpp                       \
 		jni/src/genericobject.cpp                 \
 		jni/src/gettext.cpp                       \
+		jni/src/gui/guiBackgroundImage.cpp        \
+		jni/src/gui/guiBox.cpp                    \
+		jni/src/gui/guiButton.cpp                 \
 		jni/src/gui/guiChatConsole.cpp            \
 		jni/src/gui/guiConfirmRegistration.cpp    \
 		jni/src/gui/guiEditBoxWithScrollbar.cpp   \
 		jni/src/gui/guiEngine.cpp                 \
 		jni/src/gui/guiFormSpecMenu.cpp           \
+		jni/src/gui/guiItemImage.cpp              \
 		jni/src/gui/guiKeyChangeMenu.cpp          \
 		jni/src/gui/guiPasswordChange.cpp         \
 		jni/src/gui/guiPathSelectMenu.cpp         \
+		jni/src/gui/guiScrollBar.cpp              \
+		jni/src/gui/guiSkin.cpp                   \
 		jni/src/gui/guiTable.cpp                  \
 		jni/src/gui/guiVolumeChange.cpp           \
 		jni/src/gui/intlGUIEditBox.cpp            \
@@ -237,7 +244,6 @@ LOCAL_SRC_FILES := \
 		jni/src/porting_android.cpp               \
 		jni/src/porting.cpp                       \
 		jni/src/profiler.cpp                      \
-		jni/src/quicktune.cpp                     \
 		jni/src/raycast.cpp                       \
 		jni/src/reflowscan.cpp                    \
 		jni/src/remoteplayer.cpp                  \
@@ -286,6 +292,7 @@ LOCAL_SRC_FILES := \
 		jni/src/util/ieee_float.cpp               \
 		jni/src/util/numeric.cpp                  \
 		jni/src/util/pointedthing.cpp             \
+		jni/src/util/quicktune.cpp                \
 		jni/src/util/serialize.cpp                \
 		jni/src/util/sha1.cpp                     \
 		jni/src/util/srp.cpp                      \

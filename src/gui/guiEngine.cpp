@@ -39,9 +39,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client/guiscalingfilter.h"
 #include "irrlicht_changes/static_text.h"
 
-#ifdef __ANDROID__
+#if ENABLE_GLES
 #include "client/tile.h"
-#include <GLES/gl.h>
 #endif
 
 
@@ -78,7 +77,7 @@ video::ITexture *MenuTextureSource::getTexture(const std::string &name, u32 *id)
 
 	m_to_delete.insert(name);
 
-#ifdef __ANDROID__
+#if ENABLE_GLES
 	video::ITexture *retval = m_driver->findTexture(name.c_str());
 	if (retval)
 		return retval;
@@ -391,6 +390,15 @@ void GUIEngine::cloudPostProcess()
 }
 
 /******************************************************************************/
+void GUIEngine::setFormspecPrepend(const std::string &fs)
+{
+	if (m_menu) {
+		m_menu->setFormspecPrepend(fs);
+	}
+}
+
+
+/******************************************************************************/
 void GUIEngine::drawBackground(video::IVideoDriver *driver)
 {
 	v2u32 screensize = driver->getScreenSize();
@@ -518,7 +526,7 @@ void GUIEngine::drawFooter(video::IVideoDriver *driver)
 }
 
 /******************************************************************************/
-bool GUIEngine::setTexture(texture_layer layer, std::string texturepath,
+bool GUIEngine::setTexture(texture_layer layer, const std::string &texturepath,
 		bool tile_image, unsigned int minsize)
 {
 	video::IVideoDriver *driver = RenderingEngine::get_video_driver();
@@ -593,7 +601,7 @@ void GUIEngine::updateTopLeftTextSize()
 }
 
 /******************************************************************************/
-s32 GUIEngine::playSound(SimpleSoundSpec spec, bool looped)
+s32 GUIEngine::playSound(const SimpleSoundSpec &spec, bool looped)
 {
 	s32 handle = m_sound_manager->playSound(spec, looped);
 	return handle;
@@ -611,4 +619,3 @@ unsigned int GUIEngine::queueAsync(const std::string &serialized_func,
 {
 	return m_script->queueAsync(serialized_func, serialized_params);
 }
-

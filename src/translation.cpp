@@ -149,6 +149,8 @@ void Translations::loadTranslation(const std::string &data)
 			            << wide_to_utf8(oword1) << "\"" << std::endl;
 		}
 
-		m_translations[textdomain + L"|" + oword1] = oword2;
+		std::wstring translation_index = textdomain + L"|";
+		translation_index.append(oword1);
+		m_translations[translation_index] = oword2;
 	}
 }

@@ -25,7 +25,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <cstring>
 #include <IGUISkin.h>
 #include <IGUIFont.h>
-#include <IGUIScrollBar.h>
 #include "client/renderingengine.h"
 #include "debug.h"
 #include "log.h"
@@ -62,12 +61,12 @@ GUITable::GUITable(gui::IGUIEnvironment *env,
 	}
 
 	const s32 s = skin->getSize(gui::EGDS_SCROLLBAR_SIZE);
-	m_scrollbar = Environment->addScrollBar(false,
+	m_scrollbar = new GUIScrollBar(Environment, this, -1,
 			core::rect<s32>(RelativeRect.getWidth() - s,
 					0,
 					RelativeRect.getWidth(),
 					RelativeRect.getHeight()),
-			this, -1);
+			false, true);
 	m_scrollbar->setSubElement(true);
 	m_scrollbar->setTabStop(false);
 	m_scrollbar->setAlignment(gui::EGUIA_LOWERRIGHT, gui::EGUIA_LOWERRIGHT,
@@ -99,7 +98,8 @@ GUITable::~GUITable()
 	if (m_font)
 		m_font->drop();
 
-	m_scrollbar->remove();
+	if (m_scrollbar)
+		m_scrollbar->drop();
 }
 
 GUITable::Option GUITable::splitOption(const std::string &str)
@@ -1075,6 +1075,7 @@ void GUITable::updateScrollBar()
 	m_scrollbar->setMax(scrollmax);
 	m_scrollbar->setSmallStep(m_rowheight);
 	m_scrollbar->setLargeStep(2 * m_rowheight);
+	m_scrollbar->setPageSize(totalheight);
 }
 
 void GUITable::sendTableEvent(s32 column, bool doubleclick)

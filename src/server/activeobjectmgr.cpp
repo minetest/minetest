@@ -44,8 +44,7 @@ void ActiveObjectMgr::clear(const std::function<bool(ServerActiveObject *, u16)>
 void ActiveObjectMgr::step(
 		float dtime, const std::function<void(ServerActiveObject *)> &f)
 {
-	g_profiler->avg("Server::ActiveObjectMgr: num of objects",
-			m_active_objects.size());
+	g_profiler->avg("ActiveObjectMgr: SAO count [#]", m_active_objects.size());
 	for (auto &ao_it : m_active_objects) {
 		f(ao_it.second);
 	}
@@ -115,11 +114,12 @@ void ActiveObjectMgr::removeObject(u16 id)
 void ActiveObjectMgr::getObjectsInsideRadius(
 		const v3f &pos, float radius, std::vector<u16> &result)
 {
+	float r2 = radius * radius;
 	for (auto &activeObject : m_active_objects) {
 		ServerActiveObject *obj = activeObject.second;
 		u16 id = activeObject.first;
 		const v3f &objectpos = obj->getBasePosition();
-		if (objectpos.getDistanceFrom(pos) > radius)
+		if (objectpos.getDistanceFromSQ(pos) > r2)
 			continue;
 		result.push_back(id);
 	}

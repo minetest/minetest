@@ -64,6 +64,11 @@ const Area *AreaStore::getArea(u32 id) const
 
 void AreaStore::serialize(std::ostream &os) const
 {
+	// WARNING:
+	// Before 5.1.0-dev: version != 0 throws SerializationError
+	// After 5.1.0-dev:  version >= 5 throws SerializationError
+	// Forwards-compatibility is assumed before version 5.
+
 	writeU8(os, 0); // Serialisation version
 
 	// TODO: Compression?
@@ -75,26 +80,40 @@ void AreaStore::serialize(std::ostream &os) const
 		writeU16(os, a.data.size());
 		os.write(a.data.data(), a.data.size());
 	}
+
+	// Serialize IDs
+	for (const auto &it : areas_map)
+		writeU32(os, it.second.id);
 }
 
 void AreaStore::deserialize(std::istream &is)
 {
 	u8 ver = readU8(is);
-	if (ver != 0)
+	// Assume forwards-compatibility before version 5
+	if (ver >= 5)
 		throw SerializationError("Unknown AreaStore "
 				"serialization version!");
 
 	u16 num_areas = readU16(is);
+	std::vector<Area> areas;
 	for (u32 i = 0; i < num_areas; ++i) {
-		Area a;
+		Area a(U32_MAX);
 		a.minedge = readV3S16(is);
 		a.maxedge = readV3S16(is);
 		u16 data_len = readU16(is);
 		char *data = new char[data_len];
 		is.read(data, data_len);
 		a.data = std::string(data, data_len);
-		insertArea(&a);
+		areas.emplace_back(a);
 		delete [] data;
+	}
+
+	bool read_ids = is.good(); // EOF for old formats
+
+	for (auto &area : areas) {
+		if (read_ids)
+			area.id = readU32(is);
+		insertArea(&area);
 	}
 }
 
@@ -103,6 +122,19 @@ void AreaStore::invalidateCache()
 	if (m_cache_enabled) {
 		m_res_cache.invalidate();
 	}
+}
+
+u32 AreaStore::getNextId() const
+{
+	u32 free_id = 0;
+	for (const auto &area : areas_map) {
+		if (area.first > free_id)
+			return free_id; // Found gap
+
+		free_id = area.first + 1;
+	}
+	// End of map
+	return free_id;
 }
 
 void AreaStore::setCacheParams(bool enabled, u8 block_radius, size_t limit)

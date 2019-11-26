@@ -89,14 +89,14 @@ void Map::removeEventReceiver(MapEventReceiver *event_receiver)
 	m_event_receivers.erase(event_receiver);
 }
 
-void Map::dispatchEvent(MapEditEvent *event)
+void Map::dispatchEvent(const MapEditEvent &event)
 {
 	for (MapEventReceiver *event_receiver : m_event_receivers) {
 		event_receiver->onMapEditEvent(event);
 	}
 }
 
-MapSector * Map::getSectorNoGenerateNoExNoLock(v2s16 p)
+MapSector * Map::getSectorNoGenerateNoLock(v2s16 p)
 {
 	if(m_sector_cache != NULL && p == m_sector_cache_p){
 		MapSector * sector = m_sector_cache;
@@ -117,24 +117,15 @@ MapSector * Map::getSectorNoGenerateNoExNoLock(v2s16 p)
 	return sector;
 }
 
-MapSector * Map::getSectorNoGenerateNoEx(v2s16 p)
-{
-	return getSectorNoGenerateNoExNoLock(p);
-}
-
 MapSector * Map::getSectorNoGenerate(v2s16 p)
 {
-	MapSector *sector = getSectorNoGenerateNoEx(p);
-	if(sector == NULL)
-		throw InvalidPositionException();
-
-	return sector;
+	return getSectorNoGenerateNoLock(p);
 }
 
 MapBlock * Map::getBlockNoCreateNoEx(v3s16 p3d)
 {
 	v2s16 p2d(p3d.X, p3d.Z);
-	MapSector * sector = getSectorNoGenerateNoEx(p2d);
+	MapSector * sector = getSectorNoGenerate(p2d);
 	if(sector == NULL)
 		return NULL;
 	MapBlock *block = sector->getBlockNoCreateNoEx(p3d.Y);
@@ -152,14 +143,8 @@ MapBlock * Map::getBlockNoCreate(v3s16 p3d)
 bool Map::isNodeUnderground(v3s16 p)
 {
 	v3s16 blockpos = getNodeBlockPos(p);
-	try{
-		MapBlock * block = getBlockNoCreate(blockpos);
-		return block->getIsUnderground();
-	}
-	catch(InvalidPositionException &e)
-	{
-		return false;
-	}
+	MapBlock *block = getBlockNoCreateNoEx(blockpos);
+	return block && block->getIsUnderground(); 
 }
 
 bool Map::isValidPosition(v3s16 p)
@@ -170,7 +155,7 @@ bool Map::isValidPosition(v3s16 p)
 }
 
 // Returns a CONTENT_IGNORE node if not found
-MapNode Map::getNodeNoEx(v3s16 p, bool *is_valid_position)
+MapNode Map::getNode(v3s16 p, bool *is_valid_position)
 {
 	v3s16 blockpos = getNodeBlockPos(p);
 	MapBlock *block = getBlockNoCreateNoEx(blockpos);
@@ -188,32 +173,13 @@ MapNode Map::getNodeNoEx(v3s16 p, bool *is_valid_position)
 	return node;
 }
 
-#if 0
-// Deprecated
-// throws InvalidPositionException if not found
-// TODO: Now this is deprecated, getNodeNoEx should be renamed
-MapNode Map::getNode(v3s16 p)
-{
-	v3s16 blockpos = getNodeBlockPos(p);
-	MapBlock *block = getBlockNoCreateNoEx(blockpos);
-	if (block == NULL)
-		throw InvalidPositionException();
-	v3s16 relpos = p - blockpos*MAP_BLOCKSIZE;
-	bool is_valid_position;
-	MapNode node = block->getNodeNoCheck(relpos, &is_valid_position);
-	if (!is_valid_position)
-		throw InvalidPositionException();
-	return node;
-}
-#endif
-
 // throws InvalidPositionException if not found
 void Map::setNode(v3s16 p, MapNode & n)
 {
 	v3s16 blockpos = getNodeBlockPos(p);
 	MapBlock *block = getBlockNoCreate(blockpos);
 	v3s16 relpos = p - blockpos*MAP_BLOCKSIZE;
-	// Never allow placing CONTENT_IGNORE, it fucks up stuff
+	// Never allow placing CONTENT_IGNORE, it causes problems
 	if(n.getContent() == CONTENT_IGNORE){
 		bool temp_bool;
 		errorstream<<"Map::setNode(): Not allowing to place CONTENT_IGNORE"
@@ -233,7 +199,7 @@ void Map::addNodeAndUpdate(v3s16 p, MapNode n,
 	RollbackNode rollback_oldnode(this, p, m_gamedef);
 
 	// This is needed for updating the lighting
-	MapNode oldnode = getNodeNoEx(p);
+	MapNode oldnode = getNode(p);
 
 	// Remove node metadata
 	if (remove_metadata) {
@@ -273,7 +239,7 @@ void Map::addNodeAndUpdate(v3s16 p, MapNode n,
 		v3s16 p2 = p + dir;
 
 		bool is_valid_position;
-		MapNode n2 = getNodeNoEx(p2, &is_valid_position);
+		MapNode n2 = getNode(p2, &is_valid_position);
 		if(is_valid_position &&
 				(m_nodedef->get(n2).isLiquid() ||
 				n2.getContent() == CONTENT_AIR))
@@ -308,7 +274,7 @@ bool Map::addNodeWithEvent(v3s16 p, MapNode n, bool remove_metadata)
 		succeeded = false;
 	}
 
-	dispatchEvent(&event);
+	dispatchEvent(event);
 
 	return succeeded;
 }
@@ -333,7 +299,7 @@ bool Map::removeNodeWithEvent(v3s16 p)
 		succeeded = false;
 	}
 
-	dispatchEvent(&event);
+	dispatchEvent(event);
 
 	return succeeded;
 }
@@ -585,7 +551,7 @@ void Map::transformLiquids(std::map<v3s16, MapBlock*> &modified_blocks,
 		v3s16 p0 = m_transforming_liquid.front();
 		m_transforming_liquid.pop_front();
 
-		MapNode n0 = getNodeNoEx(p0);
+		MapNode n0 = getNode(p0);
 
 		/*
 			Collect information about current node
@@ -645,7 +611,7 @@ void Map::transformLiquids(std::map<v3s16, MapBlock*> &modified_blocks,
 					break;
 			}
 			v3s16 npos = p0 + dirs[i];
-			NodeNeighbor nb(getNodeNoEx(npos), nt, npos);
+			NodeNeighbor nb(getNode(npos), nt, npos);
 			const ContentFeatures &cfnb = m_nodedef->get(nb.n);
 			switch (m_nodedef->get(nb.n.getContent()).liquid_type) {
 				case LIQUID_NONE:
@@ -1066,24 +1032,95 @@ void Map::removeNodeTimer(v3s16 p)
 	block->m_node_timers.remove(p_rel);
 }
 
-bool Map::isOccluded(v3s16 p0, v3s16 p1, float step, float stepfac,
-		float start_off, float end_off, u32 needed_count)
+bool Map::determineAdditionalOcclusionCheck(const v3s16 &pos_camera,
+	const core::aabbox3d<s16> &block_bounds, v3s16 &check)
 {
-	float d0 = (float)BS * p0.getDistanceFrom(p1);
-	v3s16 u0 = p1 - p0;
-	v3f uf = v3f(u0.X, u0.Y, u0.Z) * BS;
-	uf.normalize();
-	v3f p0f = v3f(p0.X, p0.Y, p0.Z) * BS;
+	/*
+		This functions determines the node inside the target block that is
+		closest to the camera position. This increases the occlusion culling
+		accuracy in straight and diagonal corridors.
+		The returned position will be occlusion checked first in addition to the
+		others (8 corners + center).
+		No position is returned if
+		- the closest node is a corner, corners are checked anyway.
+		- the camera is inside the target block, it will never be occluded.
+	*/
+#define CLOSEST_EDGE(pos, bounds, axis) \
+	((pos).axis <= (bounds).MinEdge.axis) ? (bounds).MinEdge.axis : \
+	(bounds).MaxEdge.axis
+
+	bool x_inside = (block_bounds.MinEdge.X <= pos_camera.X) &&
+			(pos_camera.X <= block_bounds.MaxEdge.X);
+	bool y_inside = (block_bounds.MinEdge.Y <= pos_camera.Y) &&
+			(pos_camera.Y <= block_bounds.MaxEdge.Y);
+	bool z_inside = (block_bounds.MinEdge.Z <= pos_camera.Z) &&
+			(pos_camera.Z <= block_bounds.MaxEdge.Z);
+
+	if (x_inside && y_inside && z_inside)
+		return false; // Camera inside target mapblock
+
+	// straight
+	if (x_inside && y_inside) {
+		check = v3s16(pos_camera.X, pos_camera.Y, 0);
+		check.Z = CLOSEST_EDGE(pos_camera, block_bounds, Z);
+		return true;
+	} else if (y_inside && z_inside) {
+		check = v3s16(0, pos_camera.Y, pos_camera.Z);
+		check.X = CLOSEST_EDGE(pos_camera, block_bounds, X);
+		return true;
+	} else if (x_inside && z_inside) {
+		check = v3s16(pos_camera.X, 0, pos_camera.Z);
+		check.Y = CLOSEST_EDGE(pos_camera, block_bounds, Y);
+		return true;
+	}
+
+	// diagonal
+	if (x_inside) {
+		check = v3s16(pos_camera.X, 0, 0);
+		check.Y = CLOSEST_EDGE(pos_camera, block_bounds, Y);
+		check.Z = CLOSEST_EDGE(pos_camera, block_bounds, Z);
+		return true;
+	} else if (y_inside) {
+		check = v3s16(0, pos_camera.Y, 0);
+		check.X = CLOSEST_EDGE(pos_camera, block_bounds, X);
+		check.Z = CLOSEST_EDGE(pos_camera, block_bounds, Z);
+		return true;
+	} else if (z_inside) {
+		check = v3s16(0, 0, pos_camera.Z);
+		check.X = CLOSEST_EDGE(pos_camera, block_bounds, X);
+		check.Y = CLOSEST_EDGE(pos_camera, block_bounds, Y);
+		return true;
+	}
+
+	// Closest node would be a corner, none returned
+	return false;
+}
+
+bool Map::isOccluded(const v3s16 &pos_camera, const v3s16 &pos_target,
+	float step, float stepfac, float offset, float end_offset, u32 needed_count)
+{
+	v3f direction = intToFloat(pos_target - pos_camera, BS);
+	float distance = direction.getLength();
+
+	// Normalize direction vector
+	if (distance > 0.0f)
+		direction /= distance;
+
+	v3f pos_origin_f = intToFloat(pos_camera, BS);
 	u32 count = 0;
-	for(float s=start_off; s<d0+end_off; s+=step){
-		v3f pf = p0f + uf * s;
-		v3s16 p = floatToInt(pf, BS);
-		MapNode n = getNodeNoEx(p);
-		const ContentFeatures &f = m_nodedef->get(n);
-		if(f.drawtype == NDT_NORMAL){
-			// not transparent, see ContentFeature::updateTextures
+	bool is_valid_position;
+
+	for (; offset < distance + end_offset; offset += step) {
+		v3f pos_node_f = pos_origin_f + direction * offset;
+		v3s16 pos_node = floatToInt(pos_node_f, BS);
+
+		MapNode node = getNode(pos_node, &is_valid_position);
+
+		if (is_valid_position &&
+				!m_nodedef->get(node).light_propagates) {
+			// Cannot see through light-blocking nodes --> occluded
 			count++;
-			if(count >= needed_count)
+			if (count >= needed_count)
 				return true;
 		}
 		step *= stepfac;
@@ -1091,44 +1128,59 @@ bool Map::isOccluded(v3s16 p0, v3s16 p1, float step, float stepfac,
 	return false;
 }
 
-bool Map::isBlockOccluded(MapBlock *block, v3s16 cam_pos_nodes) {
-	v3s16 cpn = block->getPos() * MAP_BLOCKSIZE;
-	cpn += v3s16(MAP_BLOCKSIZE / 2, MAP_BLOCKSIZE / 2, MAP_BLOCKSIZE / 2);
-	float step = BS * 1;
-	float stepfac = 1.1;
-	float startoff = BS * 1;
+bool Map::isBlockOccluded(MapBlock *block, v3s16 cam_pos_nodes)
+{
+	// Check occlusion for center and all 8 corners of the mapblock
+	// Overshoot a little for less flickering
+	static const s16 bs2 = MAP_BLOCKSIZE / 2 + 1;
+	static const v3s16 dir9[9] = {
+		v3s16( 0,  0,  0),
+		v3s16( 1,  1,  1) * bs2,
+		v3s16( 1,  1, -1) * bs2,
+		v3s16( 1, -1,  1) * bs2,
+		v3s16( 1, -1, -1) * bs2,
+		v3s16(-1,  1,  1) * bs2,
+		v3s16(-1,  1, -1) * bs2,
+		v3s16(-1, -1,  1) * bs2,
+		v3s16(-1, -1, -1) * bs2,
+	};
+
+	v3s16 pos_blockcenter = block->getPosRelative() + (MAP_BLOCKSIZE / 2);
+
+	// Starting step size, value between 1m and sqrt(3)m
+	float step = BS * 1.2f;
+	// Multiply step by each iteraction by 'stepfac' to reduce checks in distance
+	float stepfac = 1.05f;
+
+	float start_offset = BS * 1.0f;
+
 	// The occlusion search of 'isOccluded()' must stop short of the target
-	// point by distance 'endoff' (end offset) to not enter the target mapblock.
-	// For the 8 mapblock corners 'endoff' must therefore be the maximum diagonal
-	// of a mapblock, because we must consider all view angles.
+	// point by distance 'end_offset' to not enter the target mapblock.
+	// For the 8 mapblock corners 'end_offset' must therefore be the maximum
+	// diagonal of a mapblock, because we must consider all view angles.
 	// sqrt(1^2 + 1^2 + 1^2) = 1.732
-	float endoff = -BS * MAP_BLOCKSIZE * 1.732050807569;
-	s16 bs2 = MAP_BLOCKSIZE / 2 + 1;
+	float end_offset = -BS * MAP_BLOCKSIZE * 1.732f;
+
 	// to reduce the likelihood of falsely occluded blocks
 	// require at least two solid blocks
 	// this is a HACK, we should think of a more precise algorithm
 	u32 needed_count = 2;
 
-	return (
-		// For the central point of the mapblock 'endoff' can be halved
-		isOccluded(cam_pos_nodes, cpn,
-			step, stepfac, startoff, endoff / 2.0f, needed_count) &&
-		isOccluded(cam_pos_nodes, cpn + v3s16(bs2,bs2,bs2),
-			step, stepfac, startoff, endoff, needed_count) &&
-		isOccluded(cam_pos_nodes, cpn + v3s16(bs2,bs2,-bs2),
-			step, stepfac, startoff, endoff, needed_count) &&
-		isOccluded(cam_pos_nodes, cpn + v3s16(bs2,-bs2,bs2),
-			step, stepfac, startoff, endoff, needed_count) &&
-		isOccluded(cam_pos_nodes, cpn + v3s16(bs2,-bs2,-bs2),
-			step, stepfac, startoff, endoff, needed_count) &&
-		isOccluded(cam_pos_nodes, cpn + v3s16(-bs2,bs2,bs2),
-			step, stepfac, startoff, endoff, needed_count) &&
-		isOccluded(cam_pos_nodes, cpn + v3s16(-bs2,bs2,-bs2),
-			step, stepfac, startoff, endoff, needed_count) &&
-		isOccluded(cam_pos_nodes, cpn + v3s16(-bs2,-bs2,bs2),
-			step, stepfac, startoff, endoff, needed_count) &&
-		isOccluded(cam_pos_nodes, cpn + v3s16(-bs2,-bs2,-bs2),
-			step, stepfac, startoff, endoff, needed_count));
+	// Additional occlusion check, see comments in that function
+	v3s16 check;
+	if (determineAdditionalOcclusionCheck(cam_pos_nodes, block->getBox(), check)) {
+		// node is always on a side facing the camera, end_offset can be lower
+		if (!isOccluded(cam_pos_nodes, check, step, stepfac, start_offset,
+				-1.0f, needed_count))
+			return false;
+	}
+
+	for (const v3s16 &dir : dir9) {
+		if (!isOccluded(cam_pos_nodes, pos_blockcenter + dir, step, stepfac,
+				start_offset, end_offset, needed_count))
+			return false;
+	}
+	return true;
 }
 
 /*
@@ -1429,7 +1481,7 @@ MapSector *ServerMap::createSector(v2s16 p2d)
 	/*
 		Check if it exists already in memory
 	*/
-	MapSector *sector = getSectorNoGenerateNoEx(p2d);
+	MapSector *sector = getSectorNoGenerate(p2d);
 	if (sector)
 		return sector;
 
@@ -1660,7 +1712,7 @@ void ServerMap::updateVManip(v3s16 pos)
 		return;
 
 	s32 idx = vm->m_area.index(pos);
-	vm->m_data[idx] = getNodeNoEx(pos);
+	vm->m_data[idx] = getNode(pos);
 	vm->m_flags[idx] &= ~VOXELFLAG_NO_DATA;
 
 	vm->m_is_dirty = true;
@@ -1710,94 +1762,13 @@ plan_b:
 	//return (s16)level;
 }
 
-bool ServerMap::loadFromFolders() {
-	if (!dbase->initialized() &&
-			!fs::PathExists(m_savedir + DIR_DELIM + "map.sqlite"))
-		return true;
-	return false;
-}
-
-void ServerMap::createDirs(std::string path)
+void ServerMap::createDirs(const std::string &path)
 {
 	if (!fs::CreateAllDirs(path)) {
 		m_dout<<"ServerMap: Failed to create directory "
 				<<"\""<<path<<"\""<<std::endl;
 		throw BaseException("ServerMap failed to create directory");
 	}
-}
-
-std::string ServerMap::getSectorDir(v2s16 pos, int layout)
-{
-	char cc[9];
-	switch(layout)
-	{
-		case 1:
-			porting::mt_snprintf(cc, sizeof(cc), "%.4x%.4x",
-				(unsigned int) pos.X & 0xffff,
-				(unsigned int) pos.Y & 0xffff);
-
-			return m_savedir + DIR_DELIM + "sectors" + DIR_DELIM + cc;
-		case 2:
-			porting::mt_snprintf(cc, sizeof(cc), (std::string("%.3x") + DIR_DELIM + "%.3x").c_str(),
-				(unsigned int) pos.X & 0xfff,
-				(unsigned int) pos.Y & 0xfff);
-
-			return m_savedir + DIR_DELIM + "sectors2" + DIR_DELIM + cc;
-		default:
-			assert(false);
-			return "";
-	}
-}
-
-v2s16 ServerMap::getSectorPos(const std::string &dirname)
-{
-	unsigned int x = 0, y = 0;
-	int r;
-	std::string component;
-	fs::RemoveLastPathComponent(dirname, &component, 1);
-	if(component.size() == 8)
-	{
-		// Old layout
-		r = sscanf(component.c_str(), "%4x%4x", &x, &y);
-	}
-	else if(component.size() == 3)
-	{
-		// New layout
-		fs::RemoveLastPathComponent(dirname, &component, 2);
-		r = sscanf(component.c_str(), (std::string("%3x") + DIR_DELIM + "%3x").c_str(), &x, &y);
-		// Sign-extend the 12 bit values up to 16 bits...
-		if(x & 0x800) x |= 0xF000;
-		if(y & 0x800) y |= 0xF000;
-	}
-	else
-	{
-		r = -1;
-	}
-
-	FATAL_ERROR_IF(r != 2, "getSectorPos()");
-	v2s16 pos((s16)x, (s16)y);
-	return pos;
-}
-
-v3s16 ServerMap::getBlockPos(const std::string &sectordir, const std::string &blockfile)
-{
-	v2s16 p2d = getSectorPos(sectordir);
-
-	if(blockfile.size() != 4){
-		throw InvalidFilenameException("Invalid block filename");
-	}
-	unsigned int y;
-	int r = sscanf(blockfile.c_str(), "%4x", &y);
-	if(r != 1)
-		throw InvalidFilenameException("Invalid block filename");
-	return v3s16(p2d.X, y, p2d.Y);
-}
-
-std::string ServerMap::getBlockFilename(v3s16 p)
-{
-	char cc[5];
-	porting::mt_snprintf(cc, sizeof(cc), "%.4x", (unsigned int)p.Y&0xffff);
-	return cc;
 }
 
 void ServerMap::save(ModifiedState save_level)
@@ -1869,10 +1840,6 @@ void ServerMap::save(ModifiedState save_level)
 
 void ServerMap::listAllLoadableBlocks(std::vector<v3s16> &dst)
 {
-	if (loadFromFolders()) {
-		errorstream << "Map::listAllLoadableBlocks(): Result will be missing "
-				<< "all blocks that are stored in flat files." << std::endl;
-	}
 	dbase->listAllLoadableBlocks(dst);
 	if (dbase_ro)
 		dbase_ro->listAllLoadableBlocks(dst);
@@ -1966,83 +1933,6 @@ bool ServerMap::saveBlock(MapBlock *block, MapDatabase *db)
 	return ret;
 }
 
-void ServerMap::loadBlock(const std::string &sectordir, const std::string &blockfile,
-		MapSector *sector, bool save_after_load)
-{
-	std::string fullpath = sectordir + DIR_DELIM + blockfile;
-	try {
-		std::ifstream is(fullpath.c_str(), std::ios_base::binary);
-		if (!is.good())
-			throw FileNotGoodException("Cannot open block file");
-
-		v3s16 p3d = getBlockPos(sectordir, blockfile);
-		v2s16 p2d(p3d.X, p3d.Z);
-
-		assert(sector->getPos() == p2d);
-
-		u8 version = SER_FMT_VER_INVALID;
-		is.read((char*)&version, 1);
-
-		if(is.fail())
-			throw SerializationError("ServerMap::loadBlock(): Failed"
-					" to read MapBlock version");
-
-		/*u32 block_size = MapBlock::serializedLength(version);
-		SharedBuffer<u8> data(block_size);
-		is.read((char*)*data, block_size);*/
-
-		// This will always return a sector because we're the server
-		//MapSector *sector = emergeSector(p2d);
-
-		MapBlock *block = NULL;
-		bool created_new = false;
-		block = sector->getBlockNoCreateNoEx(p3d.Y);
-		if(block == NULL)
-		{
-			block = sector->createBlankBlockNoInsert(p3d.Y);
-			created_new = true;
-		}
-
-		// Read basic data
-		block->deSerialize(is, version, true);
-
-		// If it's a new block, insert it to the map
-		if (created_new) {
-			sector->insertBlock(block);
-			ReflowScan scanner(this, m_emerge->ndef);
-			scanner.scan(block, &m_transforming_liquid);
-		}
-
-		/*
-			Save blocks loaded in old format in new format
-		*/
-
-		if(version < SER_FMT_VER_HIGHEST_WRITE || save_after_load)
-		{
-			saveBlock(block);
-
-			// Should be in database now, so delete the old file
-			fs::RecursiveDelete(fullpath);
-		}
-
-		// We just loaded it from the disk, so it's up-to-date.
-		block->resetModified();
-
-	}
-	catch(SerializationError &e)
-	{
-		warningstream<<"Invalid block data on disk "
-				<<"fullpath="<<fullpath
-				<<" (SerializationError). "
-				<<"what()="<<e.what()
-				<<std::endl;
-				// Ignoring. A new one will be generated.
-		abort();
-
-		// TODO: Backup file; name is in fullpath.
-	}
-}
-
 void ServerMap::loadBlock(std::string *blob, v3s16 p3d, MapSector *sector, bool save_after_load)
 {
 	try {
@@ -2120,39 +2010,7 @@ MapBlock* ServerMap::loadBlock(v3s16 blockpos)
 			loadBlock(&ret, blockpos, createSector(p2d), false);
 		}
 	} else {
-		// Not found in database, try the files
-
-		// The directory layout we're going to load from.
-		//  1 - original sectors/xxxxzzzz/
-		//  2 - new sectors2/xxx/zzz/
-		//  If we load from anything but the latest structure, we will
-		//  immediately save to the new one, and remove the old.
-		std::string sectordir1 = getSectorDir(p2d, 1);
-		std::string sectordir;
-		if (fs::PathExists(sectordir1)) {
-			sectordir = sectordir1;
-		} else {
-			sectordir = getSectorDir(p2d, 2);
-		}
-
-		/*
-		Make sure sector is loaded
-		 */
-
-		MapSector *sector = getSectorNoGenerateNoEx(p2d);
-
-		/*
-		Make sure file exists
-		 */
-
-		std::string blockfilename = getBlockFilename(blockpos);
-		if (!fs::PathExists(sectordir + DIR_DELIM + blockfilename))
-			return NULL;
-
-		/*
-		Load block and save it to the database
-		 */
-		loadBlock(sectordir, blockfilename, sector, true);
+		return NULL;
 	}
 
 	MapBlock *block = getBlockNoCreateNoEx(blockpos);
@@ -2168,7 +2026,7 @@ MapBlock* ServerMap::loadBlock(v3s16 blockpos)
 			for (it = modified_blocks.begin();
 					it != modified_blocks.end(); ++it)
 				event.modified_blocks.insert(it->first);
-			dispatchEvent(&event);
+			dispatchEvent(event);
 		}
 	}
 	return block;
@@ -2182,7 +2040,7 @@ bool ServerMap::deleteBlock(v3s16 blockpos)
 	MapBlock *block = getBlockNoCreateNoEx(blockpos);
 	if (block) {
 		v2s16 p2d(blockpos.X, blockpos.Z);
-		MapSector *sector = getSectorNoGenerateNoEx(p2d);
+		MapSector *sector = getSectorNoGenerate(p2d);
 		if (!sector)
 			return false;
 		sector->deleteBlock(block);
@@ -2248,19 +2106,14 @@ void MMVManip::initialEmerge(v3s16 blockpos_min, v3s16 blockpos_max,
 			continue;
 
 		bool block_data_inexistent = false;
-		try
 		{
 			TimeTaker timer2("emerge load", &emerge_load_time);
 
-			block = m_map->getBlockNoCreate(p);
-			if(block->isDummy())
+			block = m_map->getBlockNoCreateNoEx(p);
+			if (!block || block->isDummy())
 				block_data_inexistent = true;
 			else
 				block->copyTo(*this);
-		}
-		catch(InvalidPositionException &e)
-		{
-			block_data_inexistent = true;
 		}
 
 		if(block_data_inexistent)

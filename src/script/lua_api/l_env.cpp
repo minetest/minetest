@@ -140,9 +140,12 @@ void LuaLBM::trigger(ServerEnvironment *env, v3s16 p, MapNode n)
 int LuaRaycast::l_next(lua_State *L)
 {
 	MAP_LOCK_REQUIRED;
-
-	ScriptApiItem *script = getScriptApi<ScriptApiItem>(L);
 	GET_ENV_PTR;
+
+	bool csm = false;
+#ifndef SERVER
+	csm = getClient(L) != nullptr;
+#endif
 
 	LuaRaycast *o = checkobject(L, 1);
 	PointedThing pointed;
@@ -150,7 +153,7 @@ int LuaRaycast::l_next(lua_State *L)
 	if (pointed.type == POINTEDTHING_NOTHING)
 		lua_pushnil(L);
 	else
-		script->pushPointedThing(pointed, true);
+		push_pointed_thing(L, pointed, csm, true);
 
 	return 1;
 }
@@ -350,7 +353,7 @@ int ModApiEnvMod::l_get_node(lua_State *L)
 	// pos
 	v3s16 pos = read_v3s16(L, 1);
 	// Do it
-	MapNode n = env->getMap().getNodeNoEx(pos);
+	MapNode n = env->getMap().getNode(pos);
 	// Return node
 	pushnode(L, n, env->getGameDef()->ndef());
 	return 1;
@@ -366,7 +369,7 @@ int ModApiEnvMod::l_get_node_or_nil(lua_State *L)
 	v3s16 pos = read_v3s16(L, 1);
 	// Do it
 	bool pos_ok;
-	MapNode n = env->getMap().getNodeNoEx(pos, &pos_ok);
+	MapNode n = env->getMap().getNode(pos, &pos_ok);
 	if (pos_ok) {
 		// Return node
 		pushnode(L, n, env->getGameDef()->ndef());
@@ -392,7 +395,7 @@ int ModApiEnvMod::l_get_node_light(lua_State *L)
 	u32 dnr = time_to_daynight_ratio(time_of_day, true);
 
 	bool is_position_ok;
-	MapNode n = env->getMap().getNodeNoEx(pos, &is_position_ok);
+	MapNode n = env->getMap().getNode(pos, &is_position_ok);
 	if (is_position_ok) {
 		const NodeDefManager *ndef = env->getGameDef()->ndef();
 		lua_pushinteger(L, n.getLightBlend(dnr, ndef));
@@ -417,7 +420,7 @@ int ModApiEnvMod::l_place_node(lua_State *L)
 	MapNode n = readnode(L, 2, ndef);
 
 	// Don't attempt to load non-loaded area as of now
-	MapNode n_old = env->getMap().getNodeNoEx(pos);
+	MapNode n_old = env->getMap().getNode(pos);
 	if(n_old.getContent() == CONTENT_IGNORE){
 		lua_pushboolean(L, false);
 		return 1;
@@ -446,7 +449,7 @@ int ModApiEnvMod::l_dig_node(lua_State *L)
 	v3s16 pos = read_v3s16(L, 1);
 
 	// Don't attempt to load non-loaded area as of now
-	MapNode n = env->getMap().getNodeNoEx(pos);
+	MapNode n = env->getMap().getNode(pos);
 	if(n.getContent() == CONTENT_IGNORE){
 		lua_pushboolean(L, false);
 		return 1;
@@ -469,7 +472,7 @@ int ModApiEnvMod::l_punch_node(lua_State *L)
 	v3s16 pos = read_v3s16(L, 1);
 
 	// Don't attempt to load non-loaded area as of now
-	MapNode n = env->getMap().getNodeNoEx(pos);
+	MapNode n = env->getMap().getNode(pos);
 	if(n.getContent() == CONTENT_IGNORE){
 		lua_pushboolean(L, false);
 		return 1;
@@ -491,7 +494,7 @@ int ModApiEnvMod::l_get_node_max_level(lua_State *L)
 	}
 
 	v3s16 pos = read_v3s16(L, 1);
-	MapNode n = env->getMap().getNodeNoEx(pos);
+	MapNode n = env->getMap().getNode(pos);
 	lua_pushnumber(L, n.getMaxLevel(env->getGameDef()->ndef()));
 	return 1;
 }
@@ -506,7 +509,7 @@ int ModApiEnvMod::l_get_node_level(lua_State *L)
 	}
 
 	v3s16 pos = read_v3s16(L, 1);
-	MapNode n = env->getMap().getNodeNoEx(pos);
+	MapNode n = env->getMap().getNode(pos);
 	lua_pushnumber(L, n.getLevel(env->getGameDef()->ndef()));
 	return 1;
 }
@@ -522,7 +525,7 @@ int ModApiEnvMod::l_set_node_level(lua_State *L)
 	u8 level = 1;
 	if(lua_isnumber(L, 2))
 		level = lua_tonumber(L, 2);
-	MapNode n = env->getMap().getNodeNoEx(pos);
+	MapNode n = env->getMap().getNode(pos);
 	lua_pushnumber(L, n.setLevel(env->getGameDef()->ndef(), level));
 	env->setNode(pos, n);
 	return 1;
@@ -539,7 +542,7 @@ int ModApiEnvMod::l_add_node_level(lua_State *L)
 	u8 level = 1;
 	if(lua_isnumber(L, 2))
 		level = lua_tonumber(L, 2);
-	MapNode n = env->getMap().getNodeNoEx(pos);
+	MapNode n = env->getMap().getNode(pos);
 	lua_pushnumber(L, n.addLevel(env->getGameDef()->ndef(), level));
 	env->setNode(pos, n);
 	return 1;
@@ -769,18 +772,15 @@ int ModApiEnvMod::l_find_node_near(lua_State *L)
 
 #ifndef SERVER
 	// Client API limitations
-	if (getClient(L) &&
-			getClient(L)->checkCSMRestrictionFlag(
-			CSMRestrictionFlags::CSM_RF_LOOKUP_NODES)) {
-		radius = std::max<int>(radius, getClient(L)->getCSMNodeRangeLimit());
-	}
+	if (getClient(L))
+		radius = getClient(L)->CSMClampRadius(pos, radius);
 #endif
 
 	for (int d = start_radius; d <= radius; d++) {
 		std::vector<v3s16> list = FacePositionCache::getFacePositions(d);
 		for (const v3s16 &i : list) {
 			v3s16 p = pos + i;
-			content_t c = env->getMap().getNodeNoEx(p).getContent();
+			content_t c = env->getMap().getNode(p).getContent();
 			if (CONTAINS(filter, c)) {
 				push_v3s16(L, p);
 				return 1;
@@ -796,10 +796,19 @@ int ModApiEnvMod::l_find_nodes_in_area(lua_State *L)
 {
 	GET_ENV_PTR;
 
-	const NodeDefManager *ndef = getServer(L)->ndef();
 	v3s16 minp = read_v3s16(L, 1);
 	v3s16 maxp = read_v3s16(L, 2);
 	sortBoxVerticies(minp, maxp);
+
+#ifndef SERVER
+	const NodeDefManager *ndef = getClient(L) ? getClient(L)->ndef() : getServer(L)->ndef();
+	if (getClient(L)) {
+		minp = getClient(L)->CSMClampPos(minp);
+		maxp = getClient(L)->CSMClampPos(maxp);
+	}
+#else
+	const NodeDefManager *ndef = getServer(L)->ndef();
+#endif
 
 	v3s16 cube = maxp - minp + 1;
 	// Volume limit equal to 8 default mapchunks, (80 * 2) ^ 3 = 4,096,000
@@ -832,7 +841,7 @@ int ModApiEnvMod::l_find_nodes_in_area(lua_State *L)
 	for (s16 y = minp.Y; y <= maxp.Y; y++)
 	for (s16 z = minp.Z; z <= maxp.Z; z++) {
 		v3s16 p(x, y, z);
-		content_t c = env->getMap().getNodeNoEx(p).getContent();
+		content_t c = env->getMap().getNode(p).getContent();
 
 		std::vector<content_t>::iterator it = std::find(filter.begin(), filter.end(), c);
 		if (it != filter.end()) {
@@ -864,10 +873,19 @@ int ModApiEnvMod::l_find_nodes_in_area_under_air(lua_State *L)
 
 	GET_ENV_PTR;
 
-	const NodeDefManager *ndef = getServer(L)->ndef();
 	v3s16 minp = read_v3s16(L, 1);
 	v3s16 maxp = read_v3s16(L, 2);
 	sortBoxVerticies(minp, maxp);
+
+#ifndef SERVER
+	const NodeDefManager *ndef = getClient(L) ? getClient(L)->ndef() : getServer(L)->ndef();
+	if (getClient(L)) {
+		minp = getClient(L)->CSMClampPos(minp);
+		maxp = getClient(L)->CSMClampPos(maxp);
+	}
+#else
+	const NodeDefManager *ndef = getServer(L)->ndef();
+#endif
 
 	v3s16 cube = maxp - minp + 1;
 	// Volume limit equal to 8 default mapchunks, (80 * 2) ^ 3 = 4,096,000
@@ -898,10 +916,10 @@ int ModApiEnvMod::l_find_nodes_in_area_under_air(lua_State *L)
 	for (s16 z = minp.Z; z <= maxp.Z; z++) {
 		s16 y = minp.Y;
 		v3s16 p(x, y, z);
-		content_t c = env->getMap().getNodeNoEx(p).getContent();
+		content_t c = env->getMap().getNode(p).getContent();
 		for (; y <= maxp.Y; y++) {
 			v3s16 psurf(x, y + 1, z);
-			content_t csurf = env->getMap().getNodeNoEx(psurf).getContent();
+			content_t csurf = env->getMap().getNode(psurf).getContent();
 			if (c != CONTENT_AIR && csurf == CONTENT_AIR &&
 					CONTAINS(filter, c)) {
 				push_v3s16(L, v3s16(x, y, z));
@@ -1035,7 +1053,7 @@ int ModApiEnvMod::l_fix_light(lua_State *L)
 		for (auto &modified_block : modified_blocks)
 			event.modified_blocks.insert(modified_block.first);
 
-		map.dispatchEvent(&event);
+		map.dispatchEvent(event);
 	}
 	lua_pushboolean(L, success);
 
@@ -1144,7 +1162,7 @@ int ModApiEnvMod::l_delete_area(lua_State *L)
 		}
 	}
 
-	map.dispatchEvent(&event);
+	map.dispatchEvent(event);
 	lua_pushboolean(L, success);
 	return 1;
 }
@@ -1329,9 +1347,14 @@ void ModApiEnvMod::Initialize(lua_State *L, int top)
 
 void ModApiEnvMod::InitializeClient(lua_State *L, int top)
 {
+	API_FCT(get_node_light);
 	API_FCT(get_timeofday);
-	API_FCT(get_day_count);
 	API_FCT(get_node_max_level);
 	API_FCT(get_node_level);
+	API_FCT(find_nodes_with_meta);
 	API_FCT(find_node_near);
+	API_FCT(find_nodes_in_area);
+	API_FCT(find_nodes_in_area_under_air);
+	API_FCT(line_of_sight);
+	API_FCT(raycast);
 }

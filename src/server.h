@@ -189,13 +189,13 @@ public:
 		This is accessed by the map, which is inside the environment,
 		so it shouldn't be a problem.
 	*/
-	void onMapEditEvent(MapEditEvent *event);
+	void onMapEditEvent(const MapEditEvent &event);
 
 	/*
 		Shall be called with the environment and the connection locked.
 	*/
 	Inventory* getInventory(const InventoryLocation &loc);
-	void setInventoryModified(const InventoryLocation &loc, bool playerSend = true);
+	void setInventoryModified(const InventoryLocation &loc);
 
 	// Connection must be locked when called
 	std::wstring getStatusString();
@@ -296,8 +296,8 @@ public:
 	bool hudChange(RemotePlayer *player, u32 id, HudElementStat stat, void *value);
 	bool hudSetFlags(RemotePlayer *player, u32 flags, u32 mask);
 	bool hudSetHotbarItemcount(RemotePlayer *player, s32 hotbar_itemcount);
-	void hudSetHotbarImage(RemotePlayer *player, std::string name);
-	void hudSetHotbarSelectedImage(RemotePlayer *player, std::string name);
+	void hudSetHotbarImage(RemotePlayer *player, const std::string &name);
+	void hudSetHotbarSelectedImage(RemotePlayer *player, const std::string &name);
 
 	Address getPeerAddress(session_t peer_id);
 
@@ -333,8 +333,12 @@ public:
 
 	void SendPlayerHPOrDie(PlayerSAO *player, const PlayerHPChangeReason &reason);
 	void SendPlayerBreath(PlayerSAO *sao);
-	void SendInventory(PlayerSAO* playerSAO);
+	void SendInventory(PlayerSAO *playerSAO, bool incremental);
 	void SendMovePlayer(session_t peer_id);
+	void SendPlayerSpeed(session_t peer_id, const v3f &added_vel);
+	void SendPlayerFov(session_t peer_id);
+
+	void sendDetachedInventories(session_t peer_id, bool incremental);
 
 	virtual bool registerModStorage(ModMetadata *storage);
 	virtual void unregisterModStorage(const std::string &name);
@@ -343,6 +347,9 @@ public:
 	bool leaveModChannel(const std::string &channel);
 	bool sendModChannelMessage(const std::string &channel, const std::string &message);
 	ModChannel *getModChannel(const std::string &channel);
+
+	// Send block to specific player only
+	bool SendBlock(session_t peer_id, const v3s16 &blockpos);
 
 	// Bind address
 	Address m_bind_addr;
@@ -439,7 +446,6 @@ private:
 			const std::vector<std::string> &tosend);
 
 	void sendDetachedInventory(const std::string &name, session_t peer_id);
-	void sendDetachedInventories(session_t peer_id);
 
 	// Adds a ParticleSpawner on peer with peer_id (PEER_ID_INEXISTENT == all)
 	void SendAddParticleSpawner(session_t peer_id, u16 protocol_version,
@@ -464,7 +470,7 @@ private:
 		bool vertical, const std::string &texture,
 		const struct TileAnimationParams &animation, u8 glow);
 
-	u32 SendActiveObjectRemoveAdd(session_t peer_id, const std::string &datas);
+	void SendActiveObjectRemoveAdd(RemoteClient *client, PlayerSAO *playersao);
 	void SendActiveObjectMessages(session_t peer_id, const std::string &datas,
 		bool reliable = true);
 	void SendCSMRestrictionFlags(session_t peer_id);
@@ -510,7 +516,6 @@ private:
 	/*
 		Variables
 	*/
-
 	// World directory
 	std::string m_path_world;
 	// Subgame specification
@@ -570,7 +575,6 @@ private:
 	/*
 		Threads
 	*/
-
 	// A buffer for time steps
 	// step() increments and AsyncRunStep() run by m_thread reads it.
 	float m_step_dtime = 0.0f;
@@ -585,14 +589,14 @@ private:
 	/*
 		Time related stuff
 	*/
-
 	// Timer for sending time of day over network
 	float m_time_of_day_send_timer = 0.0f;
 	// Uptime of server in seconds
 	MutexedVariable<double> m_uptime;
+
 	/*
-	 Client interface
-	 */
+	 	Client interface
+	*/
 	ClientInterface m_clients;
 
 	/*

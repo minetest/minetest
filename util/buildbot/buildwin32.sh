@@ -1,6 +1,13 @@
 #!/bin/bash
 set -e
 
+CORE_GIT=https://github.com/minetest/minetest
+CORE_BRANCH=master
+CORE_NAME=minetest
+GAME_GIT=https://github.com/minetest/minetest_game
+GAME_BRANCH=master
+GAME_NAME=minetest_game
+
 dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 if [ $# -ne 1 ]; then
 	echo "Usage: $0 <build directory>"
@@ -12,11 +19,22 @@ builddir="$( cd "$builddir" && pwd )"
 packagedir=$builddir/packages
 libdir=$builddir/libs
 
-toolchain_file=$dir/toolchain_mingw.cmake
+# Test which win32 compiler is present
+which i586-mingw32msvc-windres > /dev/null 2>&1 && toolchain_file=$dir/toolchain_i586-mingw32msvc.cmake
+which i686-w64-mingw32-windres > /dev/null 2>&1 && toolchain_file=$dir/toolchain_i646-w64-mingw32.cmake
+
+if [ -z "$toolchain_file" ]
+then
+	echo "Unable to determine which mingw32 compiler to use"
+	exit 1
+else
+	echo "Using $toolchain_file"
+fi
+
 irrlicht_version=1.8.4
 ogg_version=1.3.2
 vorbis_version=1.3.5
-curl_version=7.64.0
+curl_version=7.65.3
 gettext_version=0.19.8.1
 freetype_version=2.9.1
 sqlite3_version=3.27.2
@@ -70,22 +88,22 @@ cd $libdir
 # Get minetest
 cd $builddir
 if [ ! "x$EXISTING_MINETEST_DIR" = "x" ]; then
-	ln -s $EXISTING_MINETEST_DIR minetest
+	ln -s $EXISTING_MINETEST_DIR $CORE_NAME
 else
-	[ -d minetest ] && (cd minetest && git pull) || (git clone https://github.com/minetest/minetest)
+	[ -d $CORE_NAME ] && (cd $CORE_NAME && git pull) || (git clone -b $CORE_BRANCH $CORE_GIT)
 fi
-cd minetest
+cd $CORE_NAME
 git_hash=$(git rev-parse --short HEAD)
 
 # Get minetest_game
 cd games
 if [ "x$NO_MINETEST_GAME" = "x" ]; then
-	[ -d minetest_game ] && (cd minetest_game && git pull) || (git clone https://github.com/minetest/minetest_game)
+	[ -d $GAME_NAME ] && (cd $GAME_NAME && git pull) || (git clone -b $GAME_BRANCH $GAME_GIT)
 fi
 cd ../..
 
 # Build the thing
-cd minetest
+cd $CORE_NAME
 [ -d _build ] && rm -Rf _build/
 mkdir _build
 cd _build
@@ -149,7 +167,7 @@ cmake .. \
 	-DLEVELDB_LIBRARY=$libdir/leveldb/lib/libleveldb.dll.a \
 	-DLEVELDB_DLL=$libdir/leveldb/bin/libleveldb.dll
 
-make -j2
+make -j$(nproc)
 
 [ "x$NO_PACKAGE" = "x" ] && make package
 

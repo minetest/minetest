@@ -1202,6 +1202,26 @@ inline void NodeDefManager::fixSelectionBoxIntUnion()
 }
 
 
+void NodeDefManager::eraseIdFromGroups(content_t id)
+{
+	// For all groups in m_group_to_items...
+	for (auto iter_groups = m_group_to_items.begin();
+			iter_groups != m_group_to_items.end();) {
+		// Get the group items vector.
+		std::vector<content_t> &items = iter_groups->second;
+
+		// Remove any occurence of the id in the group items vector.
+		items.erase(std::remove(items.begin(), items.end(), id), items.end());
+
+		// If group is empty, erase its vector from the map.
+		if (items.empty())
+			iter_groups = m_group_to_items.erase(iter_groups);
+		else
+			++iter_groups;
+	}
+}
+
+
 // IWritableNodeDefManager
 content_t NodeDefManager::set(const std::string &name, const ContentFeatures &def)
 {
@@ -1222,19 +1242,24 @@ content_t NodeDefManager::set(const std::string &name, const ContentFeatures &de
 		assert(id != CONTENT_IGNORE);
 		addNameIdMapping(id, name);
 	}
+
+	// If there is already ContentFeatures registered for this id, clear old groups
+	if (id < m_content_features.size())
+		eraseIdFromGroups(id);
+
 	m_content_features[id] = def;
 	verbosestream << "NodeDefManager: registering content id \"" << id
 		<< "\": name=\"" << def.name << "\""<<std::endl;
 
 	getNodeBoxUnion(def.selection_box, def, &m_selection_box_union);
 	fixSelectionBoxIntUnion();
+
 	// Add this content to the list of all groups it belongs to
-	// FIXME: This should remove a node from groups it no longer
-	// belongs to when a node is re-registered
 	for (const auto &group : def.groups) {
 		const std::string &group_name = group.first;
 		m_group_to_items[group_name].push_back(id);
 	}
+
 	return id;
 }
 
@@ -1260,18 +1285,7 @@ void NodeDefManager::removeNode(const std::string &name)
 		m_name_id_mapping_with_aliases.erase(name);
 	}
 
-	// Erase node content from all groups it belongs to
-	for (std::unordered_map<std::string, std::vector<content_t>>::iterator iter_groups =
-			m_group_to_items.begin(); iter_groups != m_group_to_items.end();) {
-		std::vector<content_t> &items = iter_groups->second;
-		items.erase(std::remove(items.begin(), items.end(), id), items.end());
-
-		// Check if group is empty
-		if (items.empty())
-			m_group_to_items.erase(iter_groups++);
-		else
-			++iter_groups;
-	}
+	eraseIdFromGroups(id);
 }
 
 
@@ -1300,8 +1314,11 @@ void NodeDefManager::applyTextureOverrides(const std::string &override_filepath)
 	int line_c = 0;
 	while (std::getline(infile, line)) {
 		line_c++;
-		if (trim(line).empty())
+		// Also trim '\r' on DOS-style files
+		line = trim(line);
+		if (line.empty())
 			continue;
+
 		std::vector<std::string> splitted = str_split(line, ' ');
 		if (splitted.size() != 3) {
 			errorstream << override_filepath

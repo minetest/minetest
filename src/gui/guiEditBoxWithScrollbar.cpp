@@ -13,7 +13,6 @@
 #include "porting.h"
 #include "Keycodes.h"
 
-
 /*
 todo:
 optional scrollbars [done]
@@ -76,7 +75,8 @@ GUIEditBoxWithScrollBar::~GUIEditBoxWithScrollBar()
 	if (m_operator)
 		m_operator->drop();
 
-	m_vscrollbar->remove();
+	if (m_vscrollbar)
+		m_vscrollbar->drop();
 }
 
 
@@ -1109,10 +1109,13 @@ void GUIEditBoxWithScrollBar::breakText()
 	m_broken_text_positions.push_back(last_line_start);
 }
 
-// TODO: that function does interpret VAlign according to line-index (indexed line is placed on top-center-bottom)
-// but HAlign according to line-width (pixels) and not by row.
-// Intuitively I suppose HAlign handling is better as VScrollPos should handle the line-scrolling.
-// But please no one change this without also rewriting (and this time fucking testing!!!) autoscrolling (I noticed this when fixing the old autoscrolling).
+// TODO: that function does interpret VAlign according to line-index (indexed
+// line is placed on top-center-bottom) but HAlign according to line-width
+// (pixels) and not by row.
+// Intuitively I suppose HAlign handling is better as VScrollPos should handle
+// the line-scrolling.
+// But please no one change this without also rewriting (and this time
+// testing!!!) autoscrolling (I noticed this when fixing the old autoscrolling).
 void GUIEditBoxWithScrollBar::setTextRect(s32 line)
 {
 	if (line < 0)
@@ -1400,7 +1403,9 @@ void GUIEditBoxWithScrollBar::createVScrollBar()
 
 	irr::core::rect<s32> scrollbarrect = m_frame_rect;
 	scrollbarrect.UpperLeftCorner.X += m_frame_rect.getWidth() - m_scrollbar_width;
-	m_vscrollbar = Environment->addScrollBar(false, scrollbarrect, getParent(), getID());
+	m_vscrollbar = new GUIScrollBar(Environment, getParent(), -1,
+			scrollbarrect, false, true);
+
 	m_vscrollbar->setVisible(false);
 	m_vscrollbar->setSmallStep(1);
 	m_vscrollbar->setLargeStep(1);
@@ -1422,6 +1427,7 @@ void GUIEditBoxWithScrollBar::updateVScrollBar()
 		if (scrollymax != m_vscrollbar->getMax()) {
 			// manage a newline or a deleted line
 			m_vscrollbar->setMax(scrollymax);
+			m_vscrollbar->setPageSize(s32(getTextDimension().Height));
 			calculateScrollPos();
 		} else {
 			// manage a newline or a deleted line
@@ -1436,6 +1442,7 @@ void GUIEditBoxWithScrollBar::updateVScrollBar()
 		s32 scrollymax = getTextDimension().Height - m_frame_rect.getHeight();
 		if (scrollymax != m_vscrollbar->getMax()) {
 			m_vscrollbar->setMax(scrollymax);
+			m_vscrollbar->setPageSize(s32(getTextDimension().Height));
 		}
 
 		if (!m_vscrollbar->isVisible()) {
@@ -1448,9 +1455,9 @@ void GUIEditBoxWithScrollBar::updateVScrollBar()
 			m_vscroll_pos = 0;
 			m_vscrollbar->setPos(0);
 			m_vscrollbar->setMax(1);
+			m_vscrollbar->setPageSize(s32(getTextDimension().Height));
 		}
 	}
-
 
 }
 

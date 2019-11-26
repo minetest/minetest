@@ -54,52 +54,39 @@ end
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 
-local function wordwrap_quickhack(str)
-	local res = ""
-	local ar = str:split("\n")
-	for i = 1, #ar do
-		local text = ar[i]
-		-- Hack to add word wrapping.
-		-- TODO: Add engine support for wrapping in formspecs
-		while #text > 80 do
-			if res ~= "" then
-				res = res .. ","
-			end
-			res = res .. core.formspec_escape(string.sub(text, 1, 79))
-			text = string.sub(text, 80, #text)
-		end
-		if res ~= "" then
-			res = res .. ","
-		end
-		res = res .. core.formspec_escape(text)
-	end
-	return res
-end
-
---------------------------------------------------------------------------------
 function ui.update()
-	local formspec = ""
+	local formspec = {}
 
 	-- handle errors
 	if gamedata ~= nil and gamedata.reconnect_requested then
-		formspec = wordwrap_quickhack(gamedata.errormessage or "")
-		formspec = "size[12,5]" ..
-				"label[0.5,0;" .. fgettext("The server has requested a reconnect:") ..
-				"]textlist[0.2,0.8;11.5,3.5;;" .. formspec ..
-				"]button[6,4.6;3,0.5;btn_reconnect_no;" .. fgettext("Main menu") .. "]" ..
-				"button[3,4.6;3,0.5;btn_reconnect_yes;" .. fgettext("Reconnect") .. "]"
+		local error_message = core.formspec_escape(
+				gamedata.errormessage or "<none available>")
+		formspec = {
+			"size[14,8]",
+			"real_coordinates[true]",
+			"box[0.5,1.2;13,5;#000]",
+			("textarea[0.5,1.2;13,5;;%s;%s]"):format(
+				fgettext("The server has requested a reconnect:"), error_message),
+			"button[2,6.6;4,1;btn_reconnect_yes;" .. fgettext("Reconnect") .. "]",
+			"button[8,6.6;4,1;btn_reconnect_no;" .. fgettext("Main menu") .. "]"
+		}
 	elseif gamedata ~= nil and gamedata.errormessage ~= nil then
-		formspec = wordwrap_quickhack(gamedata.errormessage)
+		local error_message = core.formspec_escape(gamedata.errormessage)
+
 		local error_title
 		if string.find(gamedata.errormessage, "ModError") then
-			error_title = fgettext("An error occurred in a Lua script, such as a mod:")
+			error_title = fgettext("An error occurred in a Lua script:")
 		else
 			error_title = fgettext("An error occurred:")
 		end
-		formspec = "size[12,5]" ..
-				"label[0.5,0;" .. error_title ..
-				"]textlist[0.2,0.8;11.5,3.5;;" .. formspec ..
-				"]button[4.5,4.6;3,0.5;btn_error_confirm;" .. fgettext("Ok") .. "]"
+		formspec = {
+			"size[14,8]",
+			"real_coordinates[true]",
+			"box[0.5,1.2;13,5;#000]",
+			("textarea[0.5,1.2;13,5;;%s;%s]"):format(
+				error_title, error_message),
+			"button[5,6.6;4,1;btn_error_confirm;" .. fgettext("Ok") .. "]"
+		}
 	else
 		local active_toplevel_ui_elements = 0
 		for key,value in pairs(ui.childlist) do
@@ -107,8 +94,8 @@ function ui.update()
 				local retval = value:get_formspec()
 
 				if retval ~= nil and retval ~= "" then
-					active_toplevel_ui_elements = active_toplevel_ui_elements +1
-					formspec = formspec .. retval
+					active_toplevel_ui_elements = active_toplevel_ui_elements + 1
+					table.insert(formspec, retval)
 				end
 			end
 		end
@@ -120,7 +107,7 @@ function ui.update()
 					local retval = value:get_formspec()
 
 					if retval ~= nil and retval ~= "" then
-						formspec = formspec .. retval
+						table.insert(formspec, retval)
 					end
 				end
 			end
@@ -135,10 +122,10 @@ function ui.update()
 			core.log("warning", "no toplevel ui element "..
 					"active; switching to default")
 			ui.childlist[ui.default]:show()
-			formspec = ui.childlist[ui.default]:get_formspec()
+			formspec = {ui.childlist[ui.default]:get_formspec()}
 		end
 	end
-	core.update_formspec(formspec)
+	core.update_formspec(table.concat(formspec))
 end
 
 --------------------------------------------------------------------------------

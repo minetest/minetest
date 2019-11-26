@@ -35,7 +35,11 @@ struct MapgenFlatParams : public MapgenParams
 	u32 spflags = 0;
 	s16 ground_level = 8;
 	s16 large_cave_depth = -33;
-	s16 lava_depth = -256;
+	u16 small_cave_num_min = 0;
+	u16 small_cave_num_max = 0;
+	u16 large_cave_num_min = 0;
+	u16 large_cave_num_max = 2;
+	float large_cave_flooded = 0.5f;
 	float cave_width = 0.09f;
 	float lake_threshold = -0.45f;
 	float lake_steepness = 48.0f;
@@ -48,6 +52,7 @@ struct MapgenFlatParams : public MapgenParams
 	NoiseParams np_filler_depth;
 	NoiseParams np_cave1;
 	NoiseParams np_cave2;
+	NoiseParams np_dungeons;
 
 	MapgenFlatParams();
 	~MapgenFlatParams() = default;
@@ -70,13 +75,10 @@ public:
 
 private:
 	s16 ground_level;
-	s16 large_cave_depth;
 	float lake_threshold;
 	float lake_steepness;
 	float hill_threshold;
 	float hill_steepness;
-	s16 dungeon_ymin;
-	s16 dungeon_ymax;
 
 	Noise *noise_terrain;
 };

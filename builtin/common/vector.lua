@@ -71,12 +71,22 @@ function vector.direction(pos1, pos2)
 end
 
 function vector.angle(a, b)
-	local dotp = a.x * b.x + a.y * b.y + a.z * b.z
-	local cpx = a.y * b.z - a.z * b.y
-	local cpy = a.z * b.x - a.x * b.z
-	local cpz = a.x * b.y - a.y * b.x
-	local crossplen = math.sqrt(cpx ^ 2 + cpy ^ 2 + cpz ^ 2)
+	local dotp = vector.dot(a, b)
+	local cp = vector.cross(a, b)
+	local crossplen = vector.length(cp)
 	return math.atan2(crossplen, dotp)
+end
+
+function vector.dot(a, b)
+	return a.x * b.x + a.y * b.y + a.z * b.z
+end
+
+function vector.cross(a, b)
+	return {
+		x = a.y * b.z - a.z * b.y,
+		y = a.z * b.x - a.x * b.z,
+		z = a.x * b.y - a.y * b.x
+	}
 end
 
 function vector.add(a, b)

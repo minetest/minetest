@@ -32,6 +32,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define PLAYERNAME_ALLOWED_CHARS "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_"
 #define PLAYERNAME_ALLOWED_CHARS_USER_EXPL "'a' to 'z', 'A' to 'Z', '0' to '9', '-', '_'"
 
+struct PlayerFovSpec
+{
+	f32 fov;
+	bool is_multiplier;
+};
+
 struct PlayerControl
 {
 	PlayerControl() = default;
@@ -173,6 +179,21 @@ public:
 	PlayerSettings &getPlayerSettings() { return m_player_settings; }
 	static void settingsChangedCallback(const std::string &name, void *data);
 
+	// Returns non-empty `selected` ItemStack. `hand` is a fallback, if specified
+	ItemStack &getWieldedItem(ItemStack *selected, ItemStack *hand) const;
+	void setWieldIndex(u16 index);
+	u16 getWieldIndex() const { return m_wield_index; }
+
+	void setFov(const PlayerFovSpec &spec)
+	{
+		m_fov_spec = spec;
+	}
+
+	const PlayerFovSpec &getFov() const
+	{
+		return m_fov_spec;
+	}
+
 	u32 keyPressed = 0;
 
 	HudElement* getHud(u32 id);
@@ -182,9 +203,12 @@ public:
 
 	u32 hud_flags;
 	s32 hud_hotbar_itemcount;
+
 protected:
 	char m_name[PLAYERNAME_SIZE];
 	v3f m_speed;
+	u16 m_wield_index = 0;
+	PlayerFovSpec m_fov_spec = { 0.0f, false };
 
 	std::vector<HudElement *> hud;
 private:
