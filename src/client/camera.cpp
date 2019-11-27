@@ -285,9 +285,13 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 busytime, f32 tool_r
 	// Smooth the movement when walking up stairs
 	v3f old_player_position = m_playernode->getPosition();
 	v3f player_position = player->getPosition();
-	if (player->isAttached && player->parent)
-		player_position = player->parent->getPosition();
-	//if(player->touching_ground && player_position.Y > old_player_position.Y)
+
+	// This is worse than `LocalPlayer::getPosition()` but
+	// mods expect the player head to be at the parent's position
+	// plus eye height.
+	if (player->getParent())
+		player_position = player->getParent()->getPosition();
+
 	if(player->touching_ground &&
 			player_position.Y > old_player_position.Y)
 	{

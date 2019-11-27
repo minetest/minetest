@@ -165,9 +165,9 @@ public:
 
 	const bool isImmortal();
 
-	scene::ISceneNode *getSceneNode();
+	scene::ISceneNode *getSceneNode() const;
 
-	scene::IAnimatedMeshSceneNode *getAnimatedMeshSceneNode();
+	scene::IAnimatedMeshSceneNode *getAnimatedMeshSceneNode() const;
 
 	// m_matrixnode controls the position and rotation of the child node
 	// for all scene nodes, as a workaround for an Irrlicht problem with

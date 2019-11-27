@@ -403,13 +403,17 @@ bool GenericCAO::getSelectionBox(aabb3f *toset) const
 
 const v3f GenericCAO::getPosition() const
 {
-	if (getParent() != nullptr) {
-		if (m_matrixnode)
-			return m_matrixnode->getAbsolutePosition();
+	if (!getParent())
+		return pos_translator.val_current;
 
-		return m_position;
+	// Calculate real position in world based on MatrixNode
+	if (m_matrixnode) {
+		v3s16 camera_offset = m_env->getCameraOffset();
+		return m_matrixnode->getAbsolutePosition() +
+				intToFloat(camera_offset, BS);
 	}
-	return pos_translator.val_current;
+
+	return m_position;
 }
 
 const bool GenericCAO::isImmortal()
@@ -417,7 +421,7 @@ const bool GenericCAO::isImmortal()
 	return itemgroup_get(getGroups(), "immortal");
 }
 
-scene::ISceneNode* GenericCAO::getSceneNode()
+scene::ISceneNode *GenericCAO::getSceneNode() const
 {
 	if (m_meshnode) {
 		return m_meshnode;
@@ -437,7 +441,7 @@ scene::ISceneNode* GenericCAO::getSceneNode()
 	return NULL;
 }
 
-scene::IAnimatedMeshSceneNode* GenericCAO::getAnimatedMeshSceneNode()
+scene::IAnimatedMeshSceneNode *GenericCAO::getAnimatedMeshSceneNode() const
 {
 	return m_animated_meshnode;
 }
@@ -576,11 +580,15 @@ void GenericCAO::addToScene(ITextureSource *tsrc)
 	video::E_MATERIAL_TYPE material_type = (m_prop.use_texture_alpha) ?
 		video::EMT_TRANSPARENT_ALPHA_CHANNEL : video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
 
-	if (m_prop.visual == "sprite") {
-		infostream<<"GenericCAO::addToScene(): single_sprite"<<std::endl;
+	auto grabMatrixNode = [this] {
+		infostream << "GenericCAO::addToScene(): " << m_prop.visual << std::endl;
 		m_matrixnode = RenderingEngine::get_scene_manager()->
 				addDummyTransformationSceneNode();
 		m_matrixnode->grab();
+	};
+
+	if (m_prop.visual == "sprite") {
+		getMatrixNode();
 		m_spritenode = RenderingEngine::get_scene_manager()->addBillboardSceneNode(
 				m_matrixnode, v2f(1, 1), v3f(0,0,0), -1);
 		m_spritenode->grab();
@@ -601,6 +609,7 @@ void GenericCAO::addToScene(ITextureSource *tsrc)
 					txs, tys, 0, 0);
 		}
 	} else if (m_prop.visual == "upright_sprite") {
+		getMatrixNode();
 		scene::SMesh *mesh = new scene::SMesh();
 		double dx = BS * m_prop.visual_size.X / 2;
 		double dy = BS * m_prop.visual_size.Y / 2;
@@ -655,9 +664,6 @@ void GenericCAO::addToScene(ITextureSource *tsrc)
 			mesh->addMeshBuffer(buf);
 			buf->drop();
 		}
-		m_matrixnode = RenderingEngine::get_scene_manager()->
-			addDummyTransformationSceneNode();
-		m_matrixnode->grab();
 		m_meshnode = RenderingEngine::get_scene_manager()->
 			addMeshSceneNode(mesh, m_matrixnode);
 		m_meshnode->grab();
@@ -666,11 +672,8 @@ void GenericCAO::addToScene(ITextureSource *tsrc)
 		// This is needed for changing the texture in the future
 		m_meshnode->setReadOnlyMaterials(true);
 	} else if (m_prop.visual == "cube") {
-		infostream<<"GenericCAO::addToScene(): cube"<<std::endl;
+		getMatrixNode();
 		scene::IMesh *mesh = createCubeMesh(v3f(BS,BS,BS));
-		m_matrixnode = RenderingEngine::get_scene_manager()->
-			addDummyTransformationSceneNode(nullptr);
-		m_matrixnode->grab();
 		m_meshnode = RenderingEngine::get_scene_manager()->
 			addMeshSceneNode(mesh, m_matrixnode);
 		m_meshnode->grab();
@@ -685,12 +688,9 @@ void GenericCAO::addToScene(ITextureSource *tsrc)
 		m_meshnode->setMaterialType(material_type);
 		m_meshnode->setMaterialFlag(video::EMF_FOG_ENABLE, true);
 	} else if (m_prop.visual == "mesh") {
-		infostream<<"GenericCAO::addToScene(): mesh"<<std::endl;
+		getMatrixNode();
 		scene::IAnimatedMesh *mesh = m_client->getMesh(m_prop.mesh, true);
 		if (mesh) {
-			m_matrixnode = RenderingEngine::get_scene_manager()->
-				addDummyTransformationSceneNode(nullptr);
-			m_matrixnode->grab();
 			m_animated_meshnode = RenderingEngine::get_scene_manager()->
 				addAnimatedMeshSceneNode(mesh, m_matrixnode);
 			m_animated_meshnode->grab();
@@ -713,8 +713,8 @@ void GenericCAO::addToScene(ITextureSource *tsrc)
 		} else
 			errorstream<<"GenericCAO::addToScene(): Could not load mesh "<<m_prop.mesh<<std::endl;
 	} else if (m_prop.visual == "wielditem" || m_prop.visual == "item") {
+		getMatrixNode();
 		ItemStack item;
-		infostream << "GenericCAO::addToScene(): wielditem" << std::endl;
 		if (m_prop.wield_item.empty()) {
 			// Old format, only textures are specified.
 			infostream << "textures: " << m_prop.textures.size() << std::endl;
@@ -728,12 +728,8 @@ void GenericCAO::addToScene(ITextureSource *tsrc)
 			infostream << "serialized form: " << m_prop.wield_item << std::endl;
 			item.deSerialize(m_prop.wield_item, m_client->idef());
 		}
-		m_matrixnode = RenderingEngine::get_scene_manager()->
-			addDummyTransformationSceneNode(nullptr);
-		m_matrixnode->grab();
 		m_wield_meshnode = new WieldMeshSceneNode(
 			RenderingEngine::get_scene_manager(), -1);
-		m_wield_meshnode->setParent(m_matrixnode);
 		m_wield_meshnode->setItem(item, m_client,
 			(m_prop.visual == "wielditem"));
 
@@ -750,6 +746,9 @@ void GenericCAO::addToScene(ITextureSource *tsrc)
 		updateTextures(m_current_texture_modifier);
 
 	scene::ISceneNode *node = getSceneNode();
+
+	if (node && m_matrixnode)
+		node->setParent(m_matrixnode);
 
 	if (node && !m_prop.nametag.empty() && !m_is_local_player) {
 		// Add nametag
@@ -884,7 +883,7 @@ void GenericCAO::step(float dtime, ClientEnvironment *env)
 
 			// Apply animations if input detected and not attached
 			// or set idle animation
-			if ((new_anim.X + new_anim.Y) > 0 && !player->isAttached) {
+			if ((new_anim.X + new_anim.Y) > 0 && !getParent()) {
 				allow_update = true;
 				m_animation_range = new_anim;
 				m_animation_speed = new_speed;
@@ -946,12 +945,7 @@ void GenericCAO::step(float dtime, ClientEnvironment *env)
 		m_velocity = v3f(0,0,0);
 		m_acceleration = v3f(0,0,0);
 		pos_translator.val_current = m_position;
-
-		if(m_is_local_player) // Update local player attachment position
-		{
-			LocalPlayer *player = m_env->getLocalPlayer();
-			player->overridePosition = getParent()->getPosition();
-		}
+		pos_translator.val_target = m_position;
 	} else {
 		rot_translator.translate(dtime);
 		v3f lastpos = pos_translator.val_current;
@@ -975,16 +969,14 @@ void GenericCAO::step(float dtime, ClientEnvironment *env)
 
 			bool is_end_position = moveresult.collides;
 			pos_translator.update(m_position, is_end_position, dtime);
-			pos_translator.translate(dtime);
-			updateNodePos();
 		} else {
 			m_position += dtime * m_velocity + 0.5 * dtime * dtime * m_acceleration;
 			m_velocity += dtime * m_acceleration;
 			pos_translator.update(m_position, pos_translator.aim_is_end,
 					pos_translator.anim_time);
-			pos_translator.translate(dtime);
-			updateNodePos();
 		}
+		pos_translator.translate(dtime);
+		updateNodePos();
 
 		float moved = lastpos.getDistanceFrom(pos_translator.val_current);
 		m_step_distance_counter += moved;
@@ -1348,7 +1340,8 @@ void GenericCAO::updateAttachments()
 
 	if (!parent) { // Detach or don't attach
 		if (m_matrixnode) {
-			v3f old_pos = m_matrixnode->getAbsolutePosition();
+			v3f old_pos = getPosition();
+
 			m_matrixnode->setParent(m_smgr->getRootSceneNode());
 			getPosRotMatrix().setTranslation(old_pos);
 			m_matrixnode->updateAbsolutePosition();
@@ -1371,11 +1364,6 @@ void GenericCAO::updateAttachments()
 			getPosRotMatrix().setRotationDegrees(m_attachment_rotation);
 			m_matrixnode->updateAbsolutePosition();
 		}
-	}
-	if (m_is_local_player) {
-		LocalPlayer *player = m_env->getLocalPlayer();
-		player->isAttached = parent;
-		player->parent = parent;
 	}
 }
 
