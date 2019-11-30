@@ -797,10 +797,10 @@ void GUIFormSpecMenu::parseAnimatedImage(parserData *data, const std::string &el
 		v2s32 geom;
 
 		if (data->real_coordinates) {
-			pos = getRealCoordinateBasePos(true, v_pos);
+			pos = getRealCoordinateBasePos(v_pos) + AbsoluteRect.UpperLeftCorner;
 			geom = getRealCoordinateGeometry(v_geom);
 		} else {
-			pos = getElementBasePos(true, &v_pos);
+			pos = getElementBasePos(&v_pos) + AbsoluteRect.UpperLeftCorner;
 			geom.X = stof(v_geom[0]) * (float)imgsize.X;
 			geom.Y = stof(v_geom[1]) * (float)imgsize.Y;
 		}
