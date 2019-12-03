@@ -629,6 +629,11 @@ void GenericCAO::addToScene(ITextureSource *tsrc)
 			setBillboardTextureMatrix(m_spritenode,
 					txs, tys, 0, 0);
 		}
+		if (m_is_player) {
+			// Move minimal Y position to 0 (feet position)
+			double dy = BS * m_prop.visual_size.Y / 2;
+			m_spritenode->setPosition(v3f(0, dy, 0));
+		}
 	} else if (m_prop.visual == "upright_sprite") {
 		grabMatrixNode();
 		scene::SMesh *mesh = new scene::SMesh();
