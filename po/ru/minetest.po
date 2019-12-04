@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: Russian (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-10-09 22:02+0200\n"
-"PO-Revision-Date: 2019-12-02 20:16+0000\n"
+"PO-Revision-Date: 2019-12-04 01:07+0000\n"
 "Last-Translator: Andrei Stepanov <adem4ik@gmail.com>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/minetest/"
 "minetest/ru/>\n"
@@ -304,7 +304,7 @@ msgstr "(Нет описания)"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "2D Noise"
-msgstr "2D шум"
+msgstr "2D-шум"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "< Back to Settings page"
@@ -1214,12 +1214,12 @@ msgstr "Установлена видимость %dм"
 #: src/client/game.cpp
 #, c-format
 msgid "Viewing range is at maximum: %d"
-msgstr "Установлена максимальная видимость - %dм"
+msgstr "Видимость установлена на максимум: %d"
 
 #: src/client/game.cpp
 #, c-format
 msgid "Viewing range is at minimum: %d"
-msgstr "Установлена минимальная видимость - %dм"
+msgstr "Видимость установлена на минимум: %d"
 
 #: src/client/game.cpp
 #, c-format
@@ -1800,32 +1800,29 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "2D noise that controls the shape/size of ridged mountains."
-msgstr "2D-шум, управляет формой / размером горных хребтов."
+msgstr "2D-шум, управляющий формой и размером горных хребтов."
 
 #: src/settings_translation_file.cpp
 msgid "2D noise that controls the shape/size of rolling hills."
-msgstr "Двухмерный шум, контролирующий форму и размер холмов."
+msgstr "2D-шум, контролирующий форму и размер холмов."
 
 #: src/settings_translation_file.cpp
 msgid "2D noise that controls the shape/size of step mountains."
-msgstr "Двухмерный шум, контролирующий форму и размер ступенчатых гор."
+msgstr "2D-шум, контролирующий форму и размер ступенчатых гор."
 
 #: src/settings_translation_file.cpp
 msgid "2D noise that controls the size/occurrence of ridged mountain ranges."
 msgstr ""
-"Двухмерный шум, контролирующий размер и распространение складчатых горных "
-"хребтов."
+"2D-шум, контролирующий размер и распространение складчатых горных хребтов."
 
 #: src/settings_translation_file.cpp
 msgid "2D noise that controls the size/occurrence of rolling hills."
-msgstr ""
-"Двухмерный шум, контролирующий размер и распространение холмистой местности."
+msgstr "2D-шум, контролирующий размер и распространение холмистой местности."
 
 #: src/settings_translation_file.cpp
 msgid "2D noise that controls the size/occurrence of step mountain ranges."
 msgstr ""
-"Двухмерный шум, контролирующий размер и распространение ступенчатых горных "
-"хребтов."
+"2D-шум, контролирующий размер и распространение ступенчатых горных хребтов."
 
 #: src/settings_translation_file.cpp
 msgid "2D noise that locates the river valleys and channels."
@@ -1883,9 +1880,9 @@ msgid ""
 msgstr ""
 "Поддержка 3D.\n"
 "Сейчас поддерживаются:\n"
-"-    none: 3D отключён.\n"
+"-    none: 3D-режим отключён.\n"
 "-    anaglyph: голубой/пурпурный цвет в 3D.\n"
-"-    interlaced: чётные/нёчетные линии отображают два разных кадра для "
+"-    interlaced: чётные/нечётные линии отображают два разных кадра для "
 "экранов, поддерживающих поляризацию.\n"
 "-    topbottom: Разделение экрана верх/низ\n"
 "-    sidebyside: Разделение экрана право/лево.\n"
@@ -3121,7 +3118,7 @@ msgstr "Клавиша  вперёд"
 #: src/settings_translation_file.cpp
 msgid "Fourth of 4 2D noises that together define hill/mountain range height."
 msgstr ""
-"Четвертый из четырех 2D-шумов, определяющий диапазон высоты холмов и гор."
+"Четвёртый из четырёх 2D-шумов, определяющий диапазон высоты холмов и гор."
 
 #: src/settings_translation_file.cpp
 msgid "Fractal type"
@@ -5505,7 +5502,7 @@ msgid ""
 "csm_restriction_noderange)\n"
 "READ_PLAYERINFO: 32 (disable get_player_names call client-side)"
 msgstr ""
-"Ограничивает доступ к определенным клиентским функциям на серверах.\n"
+"Ограничивает доступ к определённым клиентским функциям на серверах.\n"
 "Суммируйте отметки байтов ниже для ограничения функций, либо введите 0,\n"
 "чтобы ничего не ограничивать:\n"
 "LOAD_CLIENT_MODS: 1 (отключить загрузку пользовательских модификаций)\n"
@@ -5652,7 +5649,7 @@ msgstr "Шум морского дна"
 #: src/settings_translation_file.cpp
 msgid "Second of 4 2D noises that together define hill/mountain range height."
 msgstr ""
-"Второй из четырех 2D-шумов, которые вместе определяют диапазон высот холмов "
+"Второй из четырёх 2D-шумов, которые вместе определяют диапазон высот холмов "
 "и гор."
 
 #: src/settings_translation_file.cpp
@@ -6048,9 +6045,9 @@ msgstr ""
 "Первый режим лучше подходит к таким вещам, как машины, мебель и т. д.,\n"
 "а во втором лестницы и микроблоки становятся более соответствующими среде.\n"
 "Однако это новая возможность, и её нельзя использовать на старых серверах,\n"
-"данный параметр позволяет принудительно применять к определенным типам "
+"данный параметр позволяет принудительно применять к определённым типам "
 "блоков.\n"
-"Замечение: этот режим ЭКСПЕРИМЕНТАЛЬНЫЙ и может работать ненадлежащим "
+"Замечание: этот режим ЭКСПЕРИМЕНТАЛЬНЫЙ и может работать ненадлежащим "
 "образом."
 
 #: src/settings_translation_file.cpp
@@ -6108,8 +6105,8 @@ msgid ""
 "maintained.\n"
 "This should be configured together with active_object_range."
 msgstr ""
-"Радиус объема блоков вокруг каждого игрока, в котором действуют\n"
-"активные блоки, определенные в блоках карты (16 блоков).\n"
+"Радиус объёма блоков вокруг каждого игрока, в котором действуют\n"
+"активные блоки, определённые в блоках карты (16 блоков).\n"
 "В активных блоках загружаются объекты и работает ABM.\n"
 "Также это минимальный диапазон, в котором обрабатываются активные объекты "
 "(мобы).\n"
@@ -6193,7 +6190,7 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Third of 4 2D noises that together define hill/mountain range height."
 msgstr ""
-"Третий из четырех 2D-шумов, которые вместе определяют диапазон высот холмов "
+"Третий из четырёх 2D-шумов, которые вместе определяют диапазон высот холмов "
 "и гор."
 
 #: src/settings_translation_file.cpp
@@ -6316,7 +6313,7 @@ msgstr "Верхний лимит Y для подземелий."
 
 #: src/settings_translation_file.cpp
 msgid "Use 3D cloud look instead of flat."
-msgstr "Объемные облака вместо плоских."
+msgstr "Объёмные облака вместо плоских."
 
 #: src/settings_translation_file.cpp
 msgid "Use a cloud animation for the main menu background."
@@ -6576,7 +6573,7 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Whether node texture animations should be desynchronized per mapblock."
 msgstr ""
-"Определяет необходимость рассинхронизиции анимации текстур блоков между "
+"Определяет необходимость рассинхронизации анимации текстур блоков между "
 "фрагментами."
 
 #: src/settings_translation_file.cpp
