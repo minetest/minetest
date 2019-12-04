@@ -27,4 +27,5 @@ typedef core::vector3df v3f;
 typedef core::vector3d<double> v3d;
 typedef core::vector3d<s16> v3s16;
 typedef core::vector3d<u16> v3u16;
+typedef core::vector3d<u8> v3u8;
 typedef core::vector3d<s32> v3s32;
