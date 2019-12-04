@@ -20,6 +20,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "cpp_api/s_server.h"
 #include "cpp_api/s_internal.h"
 #include "common/c_converter.h"
+#include "util/string.h"
+#include "gettime.h"
+#include "settings.h"
 
 bool ScriptApiServer::getAuth(const std::string &playername,
 		std::string *dst_password,
@@ -168,25 +171,26 @@ void ScriptApiServer::on_shutdown()
 	runCallbacks(0, RUN_CALLBACKS_MODE_FIRST);
 }
 
-std::string ScriptApiServer::formatChatMessage(const std::string &name,
-	const std::string &message)
+std::wstring ScriptApiServer::formatChatMessage(const std::wstring &name,
+	const std::wstring &message)
 {
-	SCRIPTAPI_PRECHECKHEADER
+	std::string error_prefix = "Invalid chat message format - missing ";
+	std::wstring str = narrow_to_wide(g_settings->get("chat_message_format"));
+	std::wstring new_str;
+	new_str = str;
 
-	// Push function onto stack
-	lua_getglobal(L, "core");
-	lua_getfield(L, -1, "format_chat_message");
+	str_replace(new_str, L"@name", name);
+	if (str.compare(new_str) == 0)
+		throw LuaError(error_prefix + "@name");
+	str = new_str;
 
-	// Push arguments onto stack
-	lua_pushstring(L, name.c_str());
-	lua_pushstring(L, message.c_str());
+	str_replace(new_str, L"@timestamp", narrow_to_wide(getTimestamp("%H:%M:%S")));
+	str = new_str;
 
-	// Actually call the function
-	lua_call(L, 2, 1);
+	str_replace(new_str, L"@message", message);
+	if (str.compare(new_str) == 0)
+		throw LuaError(error_prefix + "@message");
+	str = new_str;
 
-	// Fetch return value
-	std::string ret = lua_tostring(L, -1);
-	lua_pop(L, 1);
-
-	return ret;
+	return str;
 }

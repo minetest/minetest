@@ -36,9 +36,9 @@ public:
 	// Calls on_shutdown handlers
 	void on_shutdown();
 
-	// Calls core.format_chat_message
-	std::string formatChatMessage(const std::string &name,
-		const std::string &message);
+	// Calls format_chat_message
+	std::wstring formatChatMessage(const std::wstring &name,
+		const std::wstring &message);
 
 	/* auth */
 	bool getAuth(const std::string &playername,

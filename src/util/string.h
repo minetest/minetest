@@ -473,6 +473,23 @@ inline void str_replace(std::string &str, const std::string &pattern,
 	}
 }
 
+ /**
++ * Replace all occurrences of \p pattern in \p str with \p replacement.
++ *
++ * @param str String to replace pattern with replacement within.
++ * @param pattern The pattern to replace.
++ * @param replacement What to replace the pattern with.
++ */
+inline void str_replace(std::wstring &str, const std::wstring &pattern,
+		const std::wstring &replacement)
+{
+	std::wstring::size_type start = str.find(pattern, 0);
+	while (start != str.npos) {
+		str.replace(start, pattern.size(), replacement);
+		start = str.find(pattern, start + replacement.size());
+	}
+}
+
 /**
  * Escapes characters [ ] \ , ; that can not be used in formspecs
  */
