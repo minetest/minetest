@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: Russian (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-10-09 22:02+0200\n"
-"PO-Revision-Date: 2019-12-04 01:07+0000\n"
+"PO-Revision-Date: 2019-12-04 03:30+0000\n"
 "Last-Translator: Andrei Stepanov <adem4ik@gmail.com>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/minetest/"
 "minetest/ru/>\n"
@@ -165,11 +165,13 @@ msgstr "Назад"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Back to Main Menu"
-msgstr "В главное меню"
+msgstr "Назад в главное меню"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Downloading and installing $1, please wait..."
-msgstr "Загружается и устанавливается $1, пожалуйста, подождите..."
+msgstr ""
+"Загружается и устанавливается $1.\n"
+"Пожалуйста, подождите..."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Failed to download $1"
@@ -236,7 +238,7 @@ msgstr "Игра"
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
 msgid "Mapgen"
-msgstr "Генератор карты"
+msgstr "Картогенератор"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "No game selected"
@@ -320,7 +322,7 @@ msgstr "Отключено"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Edit"
-msgstr "Править"
+msgstr "Изменить"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Enabled"
@@ -690,7 +692,7 @@ msgstr "Мипмаппинг"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Mipmap + Aniso. Filter"
-msgstr "Мипмаппинг с анизотр. фильтром"
+msgstr "Мипмаппинг + аниз. фильтр"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "No"
@@ -981,7 +983,7 @@ msgstr ""
 "- %s: инвентарь\n"
 "- Мышь: поворот/обзор\n"
 "- ЛКМ: копать/удар\n"
-"- ПКМ: поставить/использовать\n"
+"- ПКМ: положить/использовать\n"
 "- Колесо мыши: выбор предмета\n"
 "- %s: чат\n"
 
@@ -1072,7 +1074,7 @@ msgstr "Режим полёта включён"
 
 #: src/client/game.cpp
 msgid "Fly mode enabled (note: no 'fly' privilege)"
-msgstr "Режим полёта включён (но: нет привилегии 'fly')"
+msgstr "Режим полёта включён (но: нет привилегии «fly»)"
 
 #: src/client/game.cpp
 msgid "Fog disabled"
@@ -1152,7 +1154,7 @@ msgstr "Режим прохождения сквозь стены включён
 
 #: src/client/game.cpp
 msgid "Noclip mode enabled (note: no 'noclip' privilege)"
-msgstr "Режим прохождения сквозь стены включён (но: нет привилегии 'noclip')"
+msgstr "Режим прохождения сквозь стены включён (но: нет привилегии «noclip»)"
 
 #: src/client/game.cpp
 msgid "Node definitions..."
@@ -1248,11 +1250,11 @@ msgstr "Отображение чата включено"
 
 #: src/client/gameui.cpp
 msgid "HUD hidden"
-msgstr "HUD скрыт"
+msgstr "Игровой интерфейс скрыт"
 
 #: src/client/gameui.cpp
 msgid "HUD shown"
-msgstr "Отображение HUD'а включено"
+msgstr "Игровой интерфейс отображается"
 
 #: src/client/gameui.cpp
 msgid "Profiler hidden"
@@ -1553,7 +1555,7 @@ msgstr "Продолжить"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "\"Special\" = climb down"
-msgstr "Использовать = Спуск"
+msgstr "Использовать = спуск"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Autoforward"
@@ -1593,7 +1595,7 @@ msgstr "Громкость -"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Double tap \"jump\" to toggle fly"
-msgstr "Двойной прыжок = Полёт"
+msgstr "Двойной прыжок = полёт"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Drop"
@@ -1663,7 +1665,7 @@ msgstr "Использовать"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Toggle HUD"
-msgstr "HUD"
+msgstr "Игровой интерфейс"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Toggle chat log"
@@ -1830,11 +1832,11 @@ msgstr "2D-шум, определяющие расположение пойм р
 
 #: src/settings_translation_file.cpp
 msgid "3D clouds"
-msgstr "3D облака"
+msgstr "Объёмные облака"
 
 #: src/settings_translation_file.cpp
 msgid "3D mode"
-msgstr "3D режим"
+msgstr "3D-режим"
 
 #: src/settings_translation_file.cpp
 msgid "3D noise defining giant caverns."
@@ -2138,7 +2140,7 @@ msgstr "Разрешить ставить блоки на месте игрок�
 
 #: src/settings_translation_file.cpp
 msgid "Builtin"
-msgstr "Встроен"
+msgstr "Встроенный"
 
 #: src/settings_translation_file.cpp
 msgid "Bumpmapping"
@@ -2692,7 +2694,7 @@ msgstr "Доменное имя сервера, отображаемое в сп
 
 #: src/settings_translation_file.cpp
 msgid "Double tap jump for fly"
-msgstr "Полет по двойному прыжку"
+msgstr "Полёт по двойному прыжку"
 
 #: src/settings_translation_file.cpp
 msgid "Double-tapping the jump key toggles fly mode."
@@ -2704,7 +2706,7 @@ msgstr "Кнопка выброса блока"
 
 #: src/settings_translation_file.cpp
 msgid "Dump the mapgen debug information."
-msgstr "Дамп отладочных данных генератора карты."
+msgstr "Записывать отладочные данные картогенератора."
 
 #: src/settings_translation_file.cpp
 msgid "Dungeon maximum Y"
@@ -2728,7 +2730,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Enable VBO"
-msgstr "Включить VBO"
+msgstr "Включить объекты буфера вершин (VBO)"
 
 #: src/settings_translation_file.cpp
 msgid "Enable console window"
@@ -2819,7 +2821,7 @@ msgid ""
 "Ignored if bind_address is set."
 msgstr ""
 "Включить/отключить запуск IPv6-сервера.\n"
-"Игнорируется, если задан bind_address."
+"Игнорируется, если задан «bind_address»."
 
 #: src/settings_translation_file.cpp
 msgid "Enables animation of inventory items."
@@ -2886,7 +2888,7 @@ msgstr "Кадровая частота во время паузы"
 
 #: src/settings_translation_file.cpp
 msgid "FSAA"
-msgstr "FSAA"
+msgstr "Полноэкранное сглаживание (FSAA)"
 
 #: src/settings_translation_file.cpp
 msgid "Factor noise"
@@ -3023,7 +3025,7 @@ msgstr "Высота гор на парящих островах"
 
 #: src/settings_translation_file.cpp
 msgid "Fly key"
-msgstr "Кнопка полёта"
+msgstr "Клавиша полёта"
 
 #: src/settings_translation_file.cpp
 msgid "Flying"
@@ -3183,7 +3185,7 @@ msgstr "Фильтр масштабирования интерфейса"
 
 #: src/settings_translation_file.cpp
 msgid "GUI scaling filter txr2img"
-msgstr "txr2img фильтр масштабирования интерфейса"
+msgstr "Фильтр txr2img для масштабирования интерфейса"
 
 #: src/settings_translation_file.cpp
 msgid "Gamma"
@@ -3204,7 +3206,7 @@ msgid ""
 "and junglegrass, in all other mapgens this flag controls all decorations."
 msgstr ""
 "Глобальные атрибуты генерации карт.\n"
-"В генераторе карт v6 флаг 'decorations' не влияет на деревья и траву в "
+"В картогенераторе v6 флаг 'decorations' не влияет на деревья и траву в "
 "джунглях,\n"
 "в остальных генераторах этот флаг контролирует все декорации."
 
@@ -3238,11 +3240,11 @@ msgstr "Моды HTTP"
 
 #: src/settings_translation_file.cpp
 msgid "HUD scale factor"
-msgstr "Коэффициент масштабирования HUD"
+msgstr "Масштаб игрового интерфейса"
 
 #: src/settings_translation_file.cpp
 msgid "HUD toggle key"
-msgstr "Клавиша переключения HUD"
+msgstr "Клавиша переключения игрового интерфейса"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3518,11 +3520,11 @@ msgstr "IPv6"
 
 #: src/settings_translation_file.cpp
 msgid "IPv6 server"
-msgstr "IPv6 сервер"
+msgstr "IPv6-сервер"
 
 #: src/settings_translation_file.cpp
 msgid "IPv6 support."
-msgstr "поддержка IPv6."
+msgstr "Поддержка IPv6."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3551,8 +3553,8 @@ msgid ""
 msgstr ""
 "Если включено, то сервер будет выполнять отсечение фрагментов, основываясь\n"
 "на положении глаз игрока. Это может уменьшить количество пересылаемых\n"
-"фрагментов на 50-80%. Клиент не будет получать большую часть невидимых\n"
-"фрагментов, поэтому режим noclip станет менее полезным."
+"блоков на 50-80%. Клиент не будет получать большую часть невидимого,\n"
+"поэтому режим прохождения сквозь стены станет менее полезным."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3560,9 +3562,9 @@ msgid ""
 "nodes.\n"
 "This requires the \"noclip\" privilege on the server."
 msgstr ""
-"Если включено одновременно с режимом полёта, игрок сможет летать через "
+"Если включено одновременно с режимом полёта, игрок может пролетать сквозь "
 "твёрдые блоки.\n"
-"Требует наличие привилегии 'noclip' на сервере."
+"Требует наличие привилегии «noclip» на сервере."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3570,7 +3572,7 @@ msgid ""
 "down and\n"
 "descending."
 msgstr ""
-"Если включено, то для спуска (в воде или при полёте) будет использоваться "
+"Если включено, то для спуска (в воде или при полёте) будет задействована "
 "клавиша «Использовать», а не «Красться»."
 
 #: src/settings_translation_file.cpp
@@ -3847,8 +3849,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Клавиша уменьшения зоны видимости.\n"
-"Смотрите http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
+"См. http://irrlicht.sourceforge.net/docu/"
+"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3866,9 +3868,9 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
-"Клавиша бросить выбранный предмет.\n"
-"Смотрите http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
+"Клавиша, чтобы выбросить выбранный предмет.\n"
+"См. http://irrlicht.sourceforge.net/docu/"
+"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3877,8 +3879,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Клавиша увеличения зоны видимости.\n"
-"Смотрите http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
+"См. http://irrlicht.sourceforge.net/docu/"
+"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3897,8 +3899,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Клавиша прыжка.\n"
-"Смотрите http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
+"См. http://irrlicht.sourceforge.net/docu/"
+"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3929,8 +3931,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Клавиша движения вперёд.\n"
-"Смотрите http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
+"См. http://irrlicht.sourceforge.net/docu/"
+"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3939,8 +3941,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Клавиша движения влево.\n"
-"Смотрите http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
+"См. http://irrlicht.sourceforge.net/docu/"
+"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3949,8 +3951,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Клавиша движения вправо.\n"
-"Смотрите http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
+"См. http://irrlicht.sourceforge.net/docu/"
+"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3969,8 +3971,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Клавиша открытия окна чата для ввода команды.\n"
-"Смотрите http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
+"См. http://irrlicht.sourceforge.net/docu/"
+"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3989,8 +3991,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Клавиша открытия окна чата.\n"
-"Смотрите http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
+"См. http://irrlicht.sourceforge.net/docu/"
+"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3999,8 +4001,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Клавиша открытия инвентаря.\n"
-"Смотрите http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
+"См. http://irrlicht.sourceforge.net/docu/"
+"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4259,7 +4261,7 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Клавиша выбора предмета 4 на горячей панели.\n"
-"Смотрите http://irrlicht.sourceforge.net/docu/"
+"См. http://irrlicht.sourceforge.net/docu/"
 "namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
@@ -4289,7 +4291,7 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Клавиша выбора предыдущего предмета на горячей панели.\n"
-"Смотрите http://irrlicht.sourceforge.net/docu/"
+"См. http://irrlicht.sourceforge.net/docu/"
 "namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
@@ -4350,11 +4352,11 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
-"Клавиша красться.\n"
-"Также используется для спуска и погружения под воду, если aux1_descends "
-"отключена.\n"
-"Смотрите http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
+"Клавиша, чтобы красться.\n"
+"Также используется для спуска и погружения под воду, если параметр "
+"aux1_descends отключён.\n"
+"См. http://irrlicht.sourceforge.net/docu/"
+"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4362,9 +4364,9 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
-"Клавиша переключения вида от первого и от третьего лица.\n"
-"Смотрите http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
+"Клавиша переключения вида от первого или от третьего лица.\n"
+"См. http://irrlicht.sourceforge.net/docu/"
+"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4373,8 +4375,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Клавиша снятия скриншота.\n"
-"Смотрите http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
+"См. http://irrlicht.sourceforge.net/docu/"
+"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4393,8 +4395,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Клавиша переключения кинематографического режима.\n"
-"Смотрите http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
+"См. http://irrlicht.sourceforge.net/docu/"
+"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4403,8 +4405,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Клавиша переключения отображения миникарты.\n"
-"Смотрите http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
+"См. http://irrlicht.sourceforge.net/docu/"
+"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4422,9 +4424,9 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
-"Клавиша переключения режима полета.\n"
-"Смотрите http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
+"Клавиша переключения режима полёта.\n"
+"См. http://irrlicht.sourceforge.net/docu/"
+"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4432,9 +4434,9 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
-"Клавиша переключения режима проверки столкновений.\n"
-"Смотрите http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
+"Клавиша переключения режима прохождения сквозь стены.\n"
+"См. http://irrlicht.sourceforge.net/docu/"
+"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4443,7 +4445,7 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Клавиша переключения режима движение вниз/вверх по направлению взгляда.\n"
-"Смотрите http://irrlicht.sourceforge.net/docu/"
+"См. http://irrlicht.sourceforge.net/docu/"
 "namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
@@ -4472,9 +4474,9 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
-"Клавиша переключения показа отладочной информации.\n"
-"Смотрите http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
+"Клавиша переключения отображения отладочной информации.\n"
+"См. http://irrlicht.sourceforge.net/docu/"
+"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4492,9 +4494,9 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
-"Клавиша переключения отображения HUD.\n"
-"Смотрите http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
+"Клавиша переключения отображения игрового интерфейса.\n"
+"См. http://irrlicht.sourceforge.net/docu/"
+"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4524,8 +4526,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Клавиша отключения ограничения зоны видимости.\n"
-"Смотрите http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
+"См. http://irrlicht.sourceforge.net/docu/"
+"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4781,8 +4783,8 @@ msgid ""
 "'terrain' enables the generation of non-fractal terrain:\n"
 "ocean, islands and underground."
 msgstr ""
-"Атрибуты генерации для генератора плоскости.\n"
-"«terrain» включает генерацию не-фрактального рельефа:\n"
+"Атрибуты генерации для картогенератора плоскости.\n"
+"«terrain» включает генерацию нефрактального рельефа:\n"
 "океаны, острова и подземелья."
 
 #: src/settings_translation_file.cpp
@@ -4790,7 +4792,7 @@ msgid ""
 "Map generation attributes specific to Mapgen flat.\n"
 "Occasional lakes and hills can be added to the flat world."
 msgstr ""
-"Атрибуты генерации карты для генератора плоскости.\n"
+"Атрибуты генерации для картогенератора плоскости.\n"
 "Иногда озера и холмы могут добавляться в плоский мир."
 
 #: src/settings_translation_file.cpp
@@ -4804,10 +4806,10 @@ msgid ""
 "When the 'snowbiomes' flag is enabled jungles are automatically enabled and\n"
 "the 'jungles' flag is ignored."
 msgstr ""
-"Атрибуты генерации карты для генератора карты v6.\n"
-"Параметр «snowbiomes» (снежные биомы) включает новую систему с 5 биомами.\n"
-"Если «snowbiomes» включён, то автоматически задействуются джунгли,\n"
-"а флаг «jungles» игнорируется."
+"Атрибуты генерации для капртогенератора v6.\n"
+"Параметр «snowbiomes» (снежные биомы) включает новую систему с 5 \n"
+"биомами. Если «snowbiomes» включён, то автоматически\n"
+"активируются джунгли, а флаг «jungles» игнорируется."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4843,7 +4845,7 @@ msgstr "Таймаут выгрузки блоков"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen Carpathian"
-msgstr "Генератор карты Карпаты"
+msgstr "Картогенератор Карпаты"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen Carpathian specific flags"
@@ -4883,7 +4885,7 @@ msgstr "Специальные флаги картогенератора V6"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen V7"
-msgstr "Картогенератора V7"
+msgstr "Картогенератор V7"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen V7 specific flags"
@@ -4891,7 +4893,7 @@ msgstr "Специальные флаги картогенератора V7"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen Valleys"
-msgstr "Генератор карты Valleys"
+msgstr "Картогенератор долин"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen Valleys specific flags"
@@ -4899,15 +4901,15 @@ msgstr "Специальные флаги картогенератора дол�
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen debug"
-msgstr "Дебаггинг генератора карты"
+msgstr "Отладка картогенератора"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen flags"
-msgstr "Флаги генератора карты"
+msgstr "Флаги картогенератора"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen name"
-msgstr "Название генератора карты"
+msgstr "Название картогенератора"
 
 #: src/settings_translation_file.cpp
 msgid "Max block generate distance"
@@ -5034,7 +5036,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Maximum simultaneous block sends per client"
-msgstr "Максимальное количество одновременных отправлений блоков на клиент"
+msgstr "Максимальное число одновременно отправляемых блоков на клиент"
 
 #: src/settings_translation_file.cpp
 msgid "Maximum size of the out chat queue"
@@ -5096,7 +5098,7 @@ msgstr "Минимальный размер текстуры"
 
 #: src/settings_translation_file.cpp
 msgid "Mipmapping"
-msgstr "Mip-текстурирование (Мип-маппинг)"
+msgstr "Мипмаппинг (MIP-текстурирование)"
 
 #: src/settings_translation_file.cpp
 msgid "Mod channels"
@@ -5167,9 +5169,9 @@ msgid ""
 msgstr ""
 "Название генератора карты, который будет использоваться при создании нового "
 "мира.\n"
-"Это значение переопределяется при создании мира через главное меню .\n"
+"Это значение переопределяется при создании мира через главное меню.\n"
 "Текущие крайне нестабильные картогенераторы:\n"
-"-    Дополнительные парящие острова v7 (выключено по умолчанию)."
+"-    Дополнительные парящие острова из v7 (выключено по умолчанию)."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5208,11 +5210,11 @@ msgstr "Новым пользователям нужно вводить этот
 
 #: src/settings_translation_file.cpp
 msgid "Noclip"
-msgstr "Отключить столкновения"
+msgstr "Проходить сквозь стены"
 
 #: src/settings_translation_file.cpp
 msgid "Noclip key"
-msgstr "Клавиша отключения столкновений"
+msgstr "Клавиша прохождения сквозь стены"
 
 #: src/settings_translation_file.cpp
 msgid "Node highlighting"
@@ -5263,12 +5265,11 @@ msgstr ""
 "-    «число процессоров - 2», минимально — 1.\n"
 "Любое другое значение:\n"
 "-    Указывает количество потоков, минимально — 1.\n"
-"ВНИМАНИЕ: Увеличение числа потоков улучшает быстродействие\n"
-"движка картогенератора, но может ухудшать на производительность игры, \n"
-"мешая другим процессам, особенно в одиночной игре и/или при запуске кода Lua "
-"в\n"
-"«on_generated». Для большинства пользователей наилучшим значением может быть "
-"1."
+"ВНИМАНИЕ: Увеличение числа потоков улучшает быстродействие движка\n"
+"картогенератора, но может снижать производительность игры, мешая другим\n"
+"процессам, особенно в одиночной игре и при запуске кода Lua в «on_generated»."
+"\n"
+"Для большинства пользователей наилучшим значением может быть «1»."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5821,7 +5822,7 @@ msgstr "Показывать отладочную информацию"
 
 #: src/settings_translation_file.cpp
 msgid "Show entity selection boxes"
-msgstr "Показывать выделение энтити"
+msgstr "Показывать область выделения объектов"
 
 #: src/settings_translation_file.cpp
 msgid "Shutdown message"
@@ -5836,15 +5837,14 @@ msgid ""
 "Altering this value is for special usage, leaving it unchanged is\n"
 "recommended."
 msgstr ""
-"Размер кусков карты, создаваемых картогенератором, указывает в блоках карты ("
-"16 узлов).\n"
-"ВНИМАНИЕ!: От изменения этого значения нет никакой пользы, и значение больше "
+"Размер кусков карты, выдаваемых картогенератором, указывается в блоках карты "
+"(16 узлов).\n"
+"ВНИМАНИЕ!: От изменения этого значения нет никакой пользы, а значение больше "
 "5\n"
 "может быть вредным.\n"
 "С уменьшением этого значения увеличится плотность расположения пещер и "
 "подземелий.\n"
-"Изменять это значение нужно только в особых ситуациях, а в обычных "
-"рекомендуется\n"
+"Изменять его нужно только в особых ситуациях, а в обычных рекомендуется\n"
 "оставить как есть."
 
 #: src/settings_translation_file.cpp
@@ -5853,7 +5853,7 @@ msgid ""
 "increase the cache hit %, reducing the data being copied from the main\n"
 "thread, thus reducing jitter."
 msgstr ""
-"Размер кэша блоков в генераторе мешей. Увеличение этого значения\n"
+"Размер кэша блоков карты в генераторе мешей. Увеличение этого значения\n"
 "увеличит процент попаданий в кэш, предотвращая копирование информации\n"
 "из основного потока игры, тем самым уменьшая колебания кадровой частоты."
 
@@ -6093,7 +6093,8 @@ msgid ""
 "See /privs in game for a full list on your server and mod configuration."
 msgstr ""
 "Привилегии, автоматически получаемые новым пользователем.\n"
-"Смотрите /privs для получения полного списка привилегий."
+"См. /privs для получения полного списка привилегий на своём сервере и при "
+"настройке мода."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6121,9 +6122,9 @@ msgid ""
 "On other platforms, OpenGL is recommended, and it’s the only driver with\n"
 "shader support currently."
 msgstr ""
-"Бэк-энд отрисовки для Irrlicht.\n"
+"Программный интерфейс визуализации для Irrlicht.\n"
 "После изменения этого параметра потребуется перезапуск.\n"
-"Примечание: На Андроиде, применяйте OGLES1, если не уверены, иначе\n"
+"Примечание: Если не уверены, используйте OGLES1 для Android, иначе\n"
 "приложение может не запуститься. На других платформах рекомендуется\n"
 "OpenGL, так как сейчас это единственный драйвер с поддержкой шейдеров."
 
@@ -6345,7 +6346,7 @@ msgstr "Использовать трилинейную фильтрацию д�
 
 #: src/settings_translation_file.cpp
 msgid "VBO"
-msgstr "VBO"
+msgstr "Объекты буфера вершин (VBO)"
 
 #: src/settings_translation_file.cpp
 msgid "VSync"
