@@ -30,6 +30,7 @@ class PlayerMetaRef : public MetaDataRef
 {
 private:
 	Metadata *metadata = nullptr;
+	bool m_is_copy;
 
 	static const char className[];
 	static const luaL_Reg methods[];
@@ -46,12 +47,21 @@ private:
 	static int gc_object(lua_State *L);
 
 public:
-	PlayerMetaRef(Metadata *metadata) : metadata(metadata) {}
-	~PlayerMetaRef() = default;
+	PlayerMetaRef(Metadata *metadata, bool copy);
+	~PlayerMetaRef();
 
 	// Creates an ItemStackMetaRef and leaves it on top of stack
 	// Not callable from Lua; all references are created on the C side.
-	static void create(lua_State *L, Metadata *metadata);
+	static void create(lua_State *L, Metadata *metadata, bool copy = false);
 
 	static void Register(lua_State *L);
+};
+
+class ModApiPlayerMeta : public ModApiBase
+{
+private:
+	static int l_get_player_meta(lua_State *L);
+
+public:
+	static void Initialize(lua_State *L, int top);
 };

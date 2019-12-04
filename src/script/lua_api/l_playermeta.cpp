@@ -21,10 +21,30 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "lua_api/l_playermeta.h"
 #include "lua_api/l_internal.h"
 #include "common/c_content.h"
+#include "database/database.h"
+#include "content_sao.h"
+#include "remoteplayer.h"
+#include "serverenvironment.h"
 
 /*
 	PlayerMetaRef
 */
+PlayerMetaRef::PlayerMetaRef(Metadata *metadata, bool copy)
+{
+	if (copy)
+		this->metadata = new Metadata(*metadata);
+	else
+		this->metadata = metadata;
+
+	m_is_copy = copy;
+}
+
+PlayerMetaRef::~PlayerMetaRef()
+{
+	if (m_is_copy)
+		delete metadata;
+}
+
 PlayerMetaRef *PlayerMetaRef::checkobject(lua_State *L, int narg)
 {
 	luaL_checktype(L, narg, LUA_TUSERDATA);
@@ -60,9 +80,9 @@ int PlayerMetaRef::gc_object(lua_State *L)
 
 // Creates an PlayerMetaRef and leaves it on top of stack
 // Not callable from Lua; all references are created on the C side.
-void PlayerMetaRef::create(lua_State *L, Metadata *metadata)
+void PlayerMetaRef::create(lua_State *L, Metadata *metadata, bool copy)
 {
-	PlayerMetaRef *o = new PlayerMetaRef(metadata);
+	PlayerMetaRef *o = new PlayerMetaRef(metadata, copy);
 	*(void **)(lua_newuserdata(L, sizeof(void *))) = o;
 	luaL_getmetatable(L, className);
 	lua_setmetatable(L, -2);
@@ -121,3 +141,36 @@ const luaL_Reg PlayerMetaRef::methods[] = {
 	{0,0}
 };
 // clang-format on
+
+// get_player_meta(name)
+int ModApiPlayerMeta::l_get_player_meta(lua_State *L)
+{
+	GET_ENV_PTR_NO_MAP_LOCK;
+
+	const char *name = luaL_checkstring(L, 1);
+
+	if (RemotePlayer *player = env->getPlayer(name)) {
+		lua_pushboolean(L, true);
+		PlayerMetaRef::create(L, &player->getPlayerSAO()->getMeta());
+		return 2;
+	}
+
+	RemotePlayer player(name, nullptr);
+	PlayerSAO sao(nullptr, &player, 15000, false);
+
+	// Load everything from database but we don't care
+	bool success = env->getPlayerDatabase()->loadPlayer(&player, &sao);
+
+	lua_pushboolean(L, false);
+	if (!success)
+		return 1;
+
+	PlayerMetaRef::create(L, &sao.getMeta(), true);
+	return 2;
+}
+
+
+void ModApiPlayerMeta::Initialize(lua_State *L, int top)
+{
+	API_FCT(get_player_meta);
+}

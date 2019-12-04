@@ -363,6 +363,7 @@ public:
 	static bool migratePlayersDatabase(const GameParams &game_params,
 			const Settings &cmd_args);
 
+	PlayerDatabase *getPlayerDatabase() { return m_player_database; }
 	AuthDatabase *getAuthDatabase() { return m_auth_database; }
 	static bool migrateAuthDatabase(const GameParams &game_params,
 			const Settings &cmd_args);
