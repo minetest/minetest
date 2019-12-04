@@ -4655,6 +4655,17 @@ Environment access
 * `minetest.add_item(pos, item)`: Spawn item
     * Returns `ObjectRef`, or `nil` if failed
 * `minetest.get_player_by_name(name)`: Get an `ObjectRef` to a player
+* `minetest.get_player_or_load(name)`
+    * Get an `ObjectRef` for an online or offline player
+    * Returns:
+        * `online`: boolean indicating whether the player is online
+        * `player`: `ObjectRef` or nil when the player does not exist
+    * If `online == false`:
+        * As long the `ObjectRef` is valid, the real player cannot join the
+	      server. Use `ObjectRef:close()` to unload the player after use.
+        * The returned `player` can only be used to modify player-bound
+          properties such as HP, inventory and MetaData.
+        * Use `ObjectRef:close(true)` to save changes
 * `minetest.get_objects_inside_radius(pos, radius)`: returns a list of
   ObjectRefs.
     * `radius`: using an euclidean metric
@@ -6224,6 +6235,9 @@ object you are working with still exists.
     * Returns `false` if failed.
     * Resource intensive - use sparsely
     * To get blockpos, integer divide pos by 16
+* `close(save)`
+    * Unloads a manually loaded player. No-op for online players.
+    * `save`: boolean, whether to save the player data
 
 `PcgRandom`
 -----------

@@ -25,6 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 /*
 	PlayerMetaRef
 */
+
 PlayerMetaRef *PlayerMetaRef::checkobject(lua_State *L, int narg)
 {
 	luaL_checktype(L, narg, LUA_TUSERDATA);

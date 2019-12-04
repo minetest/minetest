@@ -116,6 +116,7 @@ void ServerScripting::InitializeModApi(lua_State *L, int top)
 	ModApiParticles::Initialize(L, top);
 	ModApiRollback::Initialize(L, top);
 	ModApiServer::Initialize(L, top);
+	ModApiObjectRef::Initialize(L, top);
 	ModApiUtil::Initialize(L, top);
 	ModApiHttp::Initialize(L, top);
 	ModApiStorage::Initialize(L, top);

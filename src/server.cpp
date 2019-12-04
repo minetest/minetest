@@ -325,6 +325,12 @@ Server::~Server()
 		delete m_thread;
 	}
 
+	m_env->destructBeforeScripting();
+
+	// Deinitialize scripting before "m_env" to unload manually loaded players
+	infostream << "Server: Deinitializing scripting" << std::endl;
+	delete m_script;
+
 	// Delete things in the reverse order of creation
 	delete m_emerge;
 	delete m_env;
@@ -333,10 +339,6 @@ Server::~Server()
 	delete m_itemdef;
 	delete m_nodedef;
 	delete m_craftdef;
-
-	// Deinitialize scripting
-	infostream << "Server: Deinitializing scripting" << std::endl;
-	delete m_script;
 
 	// Delete detached inventories
 	for (auto &detached_inventory : m_detached_inventories) {

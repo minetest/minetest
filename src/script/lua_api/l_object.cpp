@@ -17,11 +17,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#include "lua_api/l_object.h"
-#include <cmath>
+#include "database/database.h" // get_player_or_load
+#include "common/c_content.h"
+#include "common/c_converter.h"
 #include "lua_api/l_internal.h"
 #include "lua_api/l_inventory.h"
 #include "lua_api/l_item.h"
+#include "lua_api/l_object.h"
 #include "lua_api/l_playermeta.h"
 #include "common/c_converter.h"
 #include "common/c_content.h"
@@ -33,6 +35,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "scripting_server.h"
 #include "server/luaentity_sao.h"
 #include "server/player_sao.h"
+#include <cmath>
 
 /*
 	ObjectRef
@@ -2200,17 +2203,63 @@ int ObjectRef::l_get_day_night_ratio(lua_State *L)
 	return 1;
 }
 
-ObjectRef::ObjectRef(ServerActiveObject *object):
-	m_object(object)
+// close(self)
+int ObjectRef::l_close(lua_State *L)
 {
-	//infostream<<"ObjectRef created for id="<<m_object->getId()<<std::endl;
+	/* As long the player is loaded, the real player cannot join the server.
+	Thus, this function will remove the PlayerSAO from ServerEnvironment before
+	the Lua garbage collector deletes the reference. */
+	NO_MAP_LOCK_REQUIRED;
+
+	ObjectRef *ref = checkobject(L, 1);
+	RemotePlayer *player = getplayer(ref);
+
+	// Saving regular players is handled by the server
+	if (!player || !ref->m_is_loaded_player)
+		return 0;
+
+	if (lua_toboolean(L, 2)) {
+		GET_ENV_PTR_NO_MAP_LOCK;
+		env->savePlayer(player);
+	}
+	ref->deleteLoadedPlayer();
+	return 0;
+}
+
+
+ObjectRef::ObjectRef(ServerActiveObject *object, bool is_loaded_player) :
+	m_object(object),
+	m_is_loaded_player(is_loaded_player)
+{
+	FATAL_ERROR_IF(is_loaded_player && (!object ||
+		object->getType() != ACTIVEOBJECT_TYPE_PLAYER), "Not a player");
+}
+
+ObjectRef::~ObjectRef()
+{
+	deleteLoadedPlayer();
+}
+
+void ObjectRef::deleteLoadedPlayer()
+{
+	if (!m_is_loaded_player)
+		return;
+
+	PlayerSAO *sao = (PlayerSAO *)m_object;
+	ServerEnvironment *env = sao->getEnv();
+	RemotePlayer *player = sao->getPlayer();
+	env->removePlayer(player);
+	delete sao;
+
+	m_object = nullptr;
+	m_is_loaded_player = false;
 }
 
 // Creates an ObjectRef and leaves it on top of stack
 // Not callable from Lua; all references are created on the C side.
-void ObjectRef::create(lua_State *L, ServerActiveObject *object)
+void ObjectRef::create(lua_State *L, ServerActiveObject *object, bool is_loaded_player)
 {
-	ObjectRef *o = new ObjectRef(object);
+	ObjectRef *o = new ObjectRef(object, is_loaded_player);
 	//infostream<<"ObjectRef::create: o="<<o<<std::endl;
 	*(void **)(lua_newuserdata(L, sizeof(void *))) = o;
 	luaL_getmetatable(L, className);
@@ -2356,5 +2405,49 @@ luaL_Reg ObjectRef::methods[] = {
 	luamethod(ObjectRef, set_eye_offset),
 	luamethod(ObjectRef, get_eye_offset),
 	luamethod(ObjectRef, send_mapblock),
+	luamethod(ObjectRef, close),
 	{0,0}
 };
+
+// get_player_or_load(name)
+int ModApiObjectRef::l_get_player_or_load(lua_State *L)
+{
+	GET_ENV_PTR_NO_MAP_LOCK;
+
+	const char *name = luaL_checkstring(L, 1);
+
+	if (RemotePlayer *player = env->getPlayer(name)) {
+		lua_pushboolean(L, true);
+		ObjectRef::create(L, player->getPlayerSAO());
+		return 2;
+	}
+
+	RemotePlayer *player = new RemotePlayer(name,
+		env->getGameDef()->getItemDefManager());
+	PlayerSAO *sao = new PlayerSAO(env, player, PEER_ID_INEXISTENT, false);
+
+	// Load everything from database but we don't care
+	bool success = env->getPlayerDatabase()->loadPlayer(player, sao);
+
+	lua_pushboolean(L, false);
+	if (!success) {
+		delete sao;
+		delete player;
+		lua_pushnil(L);
+		return 2;
+	}
+
+	sao->finalize(player, env->getGameDef()->getPlayerEffectivePrivs(name));
+	player->setPlayerSAO(sao);
+
+	// `player` ownership -> ServerEnvironment
+	env->addPlayer(player);
+	// `sao` ownership -> ObjectRef
+	ObjectRef::create(L, sao, true);
+	return 2;
+}
+
+void ModApiObjectRef::Initialize(lua_State *L, int top)
+{
+	API_FCT(get_player_or_load);
+}

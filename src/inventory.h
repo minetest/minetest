@@ -83,6 +83,7 @@ struct ItemStack
 	// Maximum size of a stack
 	u16 getStackMax(IItemDefManager *itemdef) const
 	{
+		assert(itemdef);
 		return itemdef->get(name).stack_max;
 	}
 

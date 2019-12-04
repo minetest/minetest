@@ -33,13 +33,14 @@ class RemotePlayer;
 
 class ObjectRef : public ModApiBase {
 public:
-	ObjectRef(ServerActiveObject *object);
+	ObjectRef(ServerActiveObject *object, bool is_loaded_player);
 
-	~ObjectRef() = default;
+	~ObjectRef();
 
 	// Creates an ObjectRef and leaves it on top of stack
 	// Not callable from Lua; all references are created on the C side.
-	static void create(lua_State *L, ServerActiveObject *object);
+	static void create(lua_State *L, ServerActiveObject *object,
+		bool is_loaded_player = false);
 
 	static void set_null(lua_State *L);
 
@@ -50,6 +51,7 @@ public:
 	static ServerActiveObject* getobject(ObjectRef *ref);
 private:
 	ServerActiveObject *m_object = nullptr;
+	bool m_is_loaded_player;
 	static const char className[];
 	static luaL_Reg methods[];
 
@@ -64,6 +66,8 @@ private:
 
 	// garbage collector
 	static int gc_object(lua_State *L);
+
+	void deleteLoadedPlayer();
 
 	// remove(self)
 	static int l_remove(lua_State *L);
@@ -383,4 +387,16 @@ private:
 
 	// send_mapblock(pos)
 	static int l_send_mapblock(lua_State *L);
+
+	// close(self, save)
+	static int l_close(lua_State *L);
+};
+
+class ModApiObjectRef : public ModApiBase
+{
+private:
+	static int l_get_player_or_load(lua_State *L);
+
+public:
+	static void Initialize(lua_State *L, int top);
 };

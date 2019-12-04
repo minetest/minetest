@@ -137,6 +137,9 @@ bool PlayerDatabaseFiles::removePlayer(const std::string &name)
 
 bool PlayerDatabaseFiles::loadPlayer(RemotePlayer *player, PlayerSAO *sao)
 {
+	if (strlen(player->getName()) == 0)
+		return false;
+
 	std::string players_path = m_savedir + DIR_DELIM;
 	std::string path = players_path + player->getName();
 

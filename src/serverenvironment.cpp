@@ -464,20 +464,9 @@ ServerEnvironment::ServerEnvironment(ServerMap *map,
 
 ServerEnvironment::~ServerEnvironment()
 {
-	// Clear active block list.
-	// This makes the next one delete all active objects.
-	m_active_blocks.clear();
-
-	// Convert all objects to static and delete the active objects
-	deactivateFarObjects(true);
 
 	// Drop/delete map
 	m_map->drop();
-
-	// Delete ActiveBlockModifiers
-	for (ABMWithState &m_abm : m_abms) {
-		delete m_abm.abm;
-	}
 
 	// Deallocate players
 	for (RemotePlayer *m_player : m_players) {
@@ -486,6 +475,26 @@ ServerEnvironment::~ServerEnvironment()
 
 	delete m_player_database;
 	delete m_auth_database;
+}
+
+void ServerEnvironment::destructBeforeScripting()
+{
+	// This function prepares for the server shutdown
+	// Delink everything from ServerScripting
+
+	// Clear active block list.
+	// This makes the next one delete all active objects.
+	m_active_blocks.clear();
+
+	// Convert all objects to static and delete the active objects
+	deactivateFarObjects(true);
+
+	// Delete ActiveBlockModifiers
+	for (ABMWithState &m_abm : m_abms) {
+		delete m_abm.abm;
+	}
+
+	m_script = nullptr;
 }
 
 Map & ServerEnvironment::getMap()
