@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: Russian (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-10-09 22:02+0200\n"
-"PO-Revision-Date: 2019-12-04 03:40+0000\n"
+"PO-Revision-Date: 2019-12-05 07:05+0000\n"
 "Last-Translator: Andrei Stepanov <adem4ik@gmail.com>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/minetest/"
 "minetest/ru/>\n"
@@ -92,7 +92,7 @@ msgstr "Зависимости:"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Disable all"
-msgstr "Отключить всё"
+msgstr "Отключить все"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Disable modpack"
@@ -100,7 +100,7 @@ msgstr "Отключить пакет"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Enable all"
-msgstr "Включить всё"
+msgstr "Включить все"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Enable modpack"
@@ -111,7 +111,7 @@ msgid ""
 "Failed to enable mod \"$1\" as it contains disallowed characters. Only "
 "characters [a-z0-9_] are allowed."
 msgstr ""
-"Не удалось включить мод \"$1\", так как он содержит недопустимые символы. "
+"Не удалось включить мод «$1», так как он содержит недопустимые символы. "
 "Разрешены только следующие символы: [a-z0-9_]."
 
 #: builtin/mainmenu/dlg_config_world.lua
@@ -218,7 +218,7 @@ msgstr "Обновить"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "A world named \"$1\" already exists"
-msgstr "Мир «$1» уже существует"
+msgstr "Мир с названием «$1» уже существует"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Create"
@@ -274,11 +274,11 @@ msgstr "Удалить"
 
 #: builtin/mainmenu/dlg_delete_content.lua
 msgid "pkgmgr: failed to delete \"$1\""
-msgstr "pkgmgr: невозможно удалить \"$1\""
+msgstr "pkgmgr: невозможно удалить «$1»"
 
 #: builtin/mainmenu/dlg_delete_content.lua
 msgid "pkgmgr: invalid path \"$1\""
-msgstr "pkgmgr: недопустимый путь \"$1\""
+msgstr "pkgmgr: недопустимый путь «$1»"
 
 #: builtin/mainmenu/dlg_delete_world.lua
 msgid "Delete World \"$1\"?"
@@ -302,7 +302,7 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "(No description of setting given)"
-msgstr "(Нет описания)"
+msgstr "(Нет описания настройки)"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "2D Noise"
@@ -346,11 +346,11 @@ msgstr "Персистенция"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Please enter a valid integer."
-msgstr "Введите целое число."
+msgstr "Пожалуйста, введите целое число."
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Please enter a valid number."
-msgstr "Пожалуйста, введите число."
+msgstr "Пожалуйста, введите допустимое число."
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Restore Default"
@@ -370,7 +370,7 @@ msgstr "Выбрать файл"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Show technical names"
-msgstr "Отобразить технические названия"
+msgstr "Показывать технические названия"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "The value must be at least $1."
@@ -426,16 +426,16 @@ msgstr "$1 модов"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Failed to install $1 to $2"
-msgstr "pkgmgr: невозможно установить $1 в $2"
+msgstr "Невозможно установить $1 в $2"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Install Mod: Unable to find real mod name for: $1"
-msgstr "Установка мода: не удаётся определить название мода для $1"
+msgstr "Установка мода: не удаётся определить название мода для «$1»"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Install Mod: Unable to find suitable folder name for modpack $1"
 msgstr ""
-"Установка мода: не удаётся найти подходящей каталог для пакета модов $1"
+"Установка мода: не удаётся найти подходящей каталог для пакета модов «$1»"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Install: Unsupported file type \"$1\" or broken archive"
@@ -616,7 +616,7 @@ msgstr "В избранные"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Join Game"
-msgstr "Присоединиться к игре"
+msgstr "Подключиться к игре"
 
 #: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
 msgid "Name / Password"
@@ -692,7 +692,7 @@ msgstr "Мипмаппинг"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Mipmap + Aniso. Filter"
-msgstr "Мипмаппинг + аниз. фильтр"
+msgstr "Мипмаппинг + анизотр. фильтр"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "No"
@@ -708,11 +708,11 @@ msgstr "Без мипмаппинга"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Node Highlighting"
-msgstr "Подсветка блоков"
+msgstr "Подсветка нод"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Node Outlining"
-msgstr "Обводка блоков"
+msgstr "Обводка нод"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "None"
@@ -820,11 +820,11 @@ msgstr "Готово!"
 
 #: src/client/client.cpp
 msgid "Initializing nodes"
-msgstr "Инициализация блоков"
+msgstr "Инициализация нод"
 
 #: src/client/client.cpp
 msgid "Initializing nodes..."
-msgstr "Инициализация блоков..."
+msgstr "Инициализация нод..."
 
 #: src/client/client.cpp
 msgid "Loading textures..."
@@ -1158,7 +1158,7 @@ msgstr "Режим прохождения сквозь стены включён
 
 #: src/client/game.cpp
 msgid "Node definitions..."
-msgstr "Описания блоков..."
+msgstr "Описания нод..."
 
 #: src/client/game.cpp
 msgid "Off"
@@ -1531,7 +1531,7 @@ msgstr "Пароли не совпадают!"
 
 #: src/gui/guiConfirmRegistration.cpp
 msgid "Register and Join"
-msgstr "Зарегистрироваться и подключиться"
+msgstr "Регистрация и подключение"
 
 #: src/gui/guiConfirmRegistration.cpp
 #, c-format
@@ -1545,9 +1545,9 @@ msgstr ""
 "Вы собираетесь впервые присоединиться к серверу под именем «%s».\n"
 "Если вы продолжите, на этом сервере будет создан новый аккаунт с вашими "
 "учётными данными.\n"
-"Пожалуйста, введите пароль ещё раз и нажмите «Зарегистрироваться и "
-"подключиться», чтобы подтвердить создание аккаунта, либо нажмите «Отмена», "
-"чтобы прервать операцию."
+"Пожалуйста, введите пароль ещё раз и нажмите «Регистрация и подключение», "
+"чтобы подтвердить создание аккаунта, либо нажмите «Отмена», чтобы прервать "
+"операцию."
 
 #: src/gui/guiFormSpecMenu.cpp
 msgid "Proceed"
@@ -1628,8 +1628,8 @@ msgstr "Клавиша уже используется"
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Keybindings. (If this menu screws up, remove stuff from minetest.conf)"
 msgstr ""
-"Сочетания клавиш (если это меню сломалось, удалите настройки из minetest."
-"conf)"
+"Привязки клавиш. (Если это меню сломается, удалите настройки из "
+"minetest.conf)"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Local command"
@@ -1693,7 +1693,7 @@ msgstr "Сквозь стены"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Toggle pitchmove"
-msgstr "По направлению взгляда"
+msgstr "По наклону взгляда"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "press key"
@@ -1773,7 +1773,7 @@ msgstr ""
 "со стандартными параметрами, для других ситуаций его нужно\n"
 "отредактировать.\n"
 "Диапазон примерно от -2 до 2. Умножьте на «масштаб», чтобы получить смещение "
-"в блоках."
+"в нодах."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1785,7 +1785,7 @@ msgid ""
 "Default is for a vertically-squashed shape suitable for\n"
 "an island, set all 3 numbers equal for the raw shape."
 msgstr ""
-"(Х,Y,Z) шкала фрактала в блоках.\n"
+"(Х,Y,Z) шкала фрактала в нодах.\n"
 "Фактический фрактальный размер будет в 2-3 раза больше.\n"
 "Эти числа могут быть очень большими, фракталу нет нужды заполнять мир.\n"
 "Увеличьте их, чтобы увеличить «масштаб» детали фрактала.\n"
@@ -1921,7 +1921,7 @@ msgstr "Ускорение в воздухе"
 
 #: src/settings_translation_file.cpp
 msgid "Acceleration of gravity, in nodes per second per second."
-msgstr "Ускорение свободного падения в узлах в секунду."
+msgstr "Ускорение свободного падения в нодах в секунду."
 
 #: src/settings_translation_file.cpp
 msgid "Active Block Modifiers"
@@ -1951,7 +1951,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Adds particles when digging a node."
-msgstr "Добавляет частицы при рытье блока."
+msgstr "Добавляет частицы при раскопке ноды."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2052,15 +2052,14 @@ msgid ""
 "optimization.\n"
 "Stated in mapblocks (16 nodes)."
 msgstr ""
-"На этом расстоянии сервер будет агрессивно оптимизировать то, какие блоки "
-"будут\n"
-"отправлены клиентам.\n"
+"На этом расстоянии сервер будет агрессивно оптимизировать то, какие\n"
+"блоки будут отправлены клиентам.\n"
 "Малые значения могут увеличить производительность за счёт заметных\n"
-"проблем отрисовки (некоторые фрагменты не будут отрисовываться под водой\n"
-"и в пещерах, а иногда и на суше).\n"
+"проблем визуализации (некоторые фрагменты не будут отрисовываться\n"
+"под водой, в пещерах, а иногда и на суше).\n"
 "Установка этого значения больше, чем max_block_send_distance\n"
 "отключит эту оптимизацию.\n"
-"Указывается в блоках карты (16 блоков)."
+"Указывается в блоках карты (16 нод)."
 
 #: src/settings_translation_file.cpp
 msgid "Automatic forward key"
@@ -2068,7 +2067,7 @@ msgstr "Клавиша авто-вперёд"
 
 #: src/settings_translation_file.cpp
 msgid "Automatically jump up single-node obstacles."
-msgstr "Автоматически запрыгивать на одноблочные препятствия."
+msgstr "Автоматически запрыгивать на препятствия высотой в одну ноду."
 
 #: src/settings_translation_file.cpp
 msgid "Automatically report to the serverlist."
@@ -2153,7 +2152,7 @@ msgid ""
 "Increasing can reduce artifacting on weaker GPUs.\n"
 "0.1 = Default, 0.25 = Good value for weaker tablets."
 msgstr ""
-"Расстояние между камерой и плоскостью отсечения в узлах от 0 до 0.5.\n"
+"Расстояние между камерой и плоскостью отсечения в нодах от 0 до 0.5.\n"
 "Большинству пользователей не потребуется менять этот параметр.\n"
 "Его увеличение может уменьшить количество артефактов на слабых графических "
 "процессорах.\n"
@@ -2296,7 +2295,7 @@ msgstr "Ограничения моддинга на стороне клиент
 
 #: src/settings_translation_file.cpp
 msgid "Client side node lookup range restriction"
-msgstr "Ограничение диапазона поиска от клиента"
+msgstr "Ограничение диапазона клиентского поиска нод"
 
 #: src/settings_translation_file.cpp
 msgid "Climbing speed"
@@ -2371,7 +2370,7 @@ msgstr "Подключение к внешнему медиасерверу"
 
 #: src/settings_translation_file.cpp
 msgid "Connects glass if supported by node."
-msgstr "Соединяет стекло, если поддерживается блоком."
+msgstr "Соединяет стекло, если поддерживается нодой."
 
 #: src/settings_translation_file.cpp
 msgid "Console alpha"
@@ -3139,15 +3138,14 @@ msgid ""
 "From how far blocks are generated for clients, stated in mapblocks (16 "
 "nodes)."
 msgstr ""
-"Насколько далеко фрагменты генерируются для клиентов. Указывается в "
-"фрагментах (16 блоков)."
+"Насколько далеко блоки генерируются для клиентов. Указывается в блоках карты "
+"(16 нод)."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "From how far blocks are sent to clients, stated in mapblocks (16 nodes)."
 msgstr ""
-"С какого расстояния фрагменты отправляются клиентам, в фрагментах (16 "
-"блоков)."
+"С какого расстояния блоки отправляются клиентам, в блоках карты (16 нод)."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3157,7 +3155,7 @@ msgid ""
 "to maintain active objects up to this distance in the direction the\n"
 "player is looking. (This can avoid mobs suddenly disappearing from view)"
 msgstr ""
-"Расстояние в блоках, на котором клиенты распознают объекты (16 узлов).\n"
+"Расстояние в блоках карты, на котором клиенты распознают объекты (16 нод).\n"
 "\n"
 "Если указать значение более active_block_range, то сервер будет запоминать\n"
 "движущиеся объекты на этом расстоянии в направлении взгляда игрока.\n"
@@ -3206,9 +3204,9 @@ msgid ""
 "and junglegrass, in all other mapgens this flag controls all decorations."
 msgstr ""
 "Глобальные атрибуты генерации карт.\n"
-"В картогенераторе v6 флаг 'decorations' не влияет на деревья и траву в "
-"джунглях,\n"
-"в остальных генераторах этот флаг контролирует все декорации."
+"В картогенераторе v6 флаг «decorations» не влияет на деревья\n"
+"и траву в джунглях, в остальных генераторах этот флаг\n"
+"контролирует все декорации."
 
 #: src/settings_translation_file.cpp
 msgid "Gradient of light curve at maximum light level."
@@ -3332,7 +3330,7 @@ msgid ""
 "in nodes per second per second."
 msgstr ""
 "Горизонтальное ускорение в воздухе при прыжке или падении\n"
-"в узлах в секунду."
+"в нодах в секунду."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3340,7 +3338,7 @@ msgid ""
 "in nodes per second per second."
 msgstr ""
 "Горизонтальное и вертикальное ускорение в режиме \n"
-"быстрого перемещения в узлах в секунду."
+"быстрого перемещения в нодах в секунду."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3348,7 +3346,7 @@ msgid ""
 "in nodes per second per second."
 msgstr ""
 "Горизонтальное и вертикальное ускорение на земле или при лазании\n"
-"в узлах за секунду."
+"в нодах за секунду."
 
 #: src/settings_translation_file.cpp
 msgid "Hotbar next key"
@@ -3563,7 +3561,7 @@ msgid ""
 "This requires the \"noclip\" privilege on the server."
 msgstr ""
 "Если включено одновременно с режимом полёта, игрок может пролетать сквозь "
-"твёрдые блоки.\n"
+"твёрдые ноды.\n"
 "Требует наличие привилегии «noclip» на сервере."
 
 #: src/settings_translation_file.cpp
@@ -3623,8 +3621,8 @@ msgid ""
 "limited\n"
 "to this distance from the player to the node."
 msgstr ""
-"Если ограничение CSM для диапазона узлов включено, вызовы\n"
-"get_node ограничиваются на это расстояние от игрока до узла."
+"Если ограничение CSM для диапазона нод включено, вызовы\n"
+"get_node ограничиваются на это расстояние от игрока до ноды."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3668,7 +3666,7 @@ msgstr "Клавиша увеличения громкости"
 
 #: src/settings_translation_file.cpp
 msgid "Initial vertical speed when jumping, in nodes per second."
-msgstr "Начальная вертикальная скорость при прыжках в узлах в секунду."
+msgstr "Начальная вертикальная скорость при прыжках в нодах в секунду."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4605,7 +4603,7 @@ msgstr "Время между циклами выполнения модифик
 
 #: src/settings_translation_file.cpp
 msgid "Length of time between NodeTimer execution cycles"
-msgstr "Время между циклами выполнения таймеров блоков"
+msgstr "Время между циклами выполнения таймеров нод"
 
 #: src/settings_translation_file.cpp
 msgid "Length of time between active block management cycles"
@@ -4661,7 +4659,8 @@ msgid ""
 "Only mapchunks completely within the mapgen limit are generated.\n"
 "Value is stored per-world."
 msgstr ""
-"Предел генерации карты, в блоках, во всех шести направлениях от (0, 0, 0).\n"
+"Предел генерации карты, в нодах, во всех шести направлениях, начиная от (0, "
+"0, 0).\n"
 "Генерируются только куски карты, которые умещаются в заданном пределе "
 "полностью.\n"
 "Значение сохраняется отдельно для каждого мира."
@@ -5202,7 +5201,7 @@ msgid ""
 "This value will be overridden when starting from the main menu."
 msgstr ""
 "Сетевой порт для прослушивания (UDP).\n"
-"Этот параметр будет переопределён, если запускать сервер с главного меню."
+"Этот параметр будет переопределён, если запустить сервер из главного меню."
 
 #: src/settings_translation_file.cpp
 msgid "New users need to input this password."
@@ -5218,11 +5217,11 @@ msgstr "Клавиша прохождения сквозь стены"
 
 #: src/settings_translation_file.cpp
 msgid "Node highlighting"
-msgstr "Подсветка блоков"
+msgstr "Подсветка нод"
 
 #: src/settings_translation_file.cpp
 msgid "NodeTimer interval"
-msgstr "Интервал обновления узлов"
+msgstr "Интервал таймера нод"
 
 #: src/settings_translation_file.cpp
 msgid "Noises"
@@ -5838,7 +5837,7 @@ msgid ""
 "recommended."
 msgstr ""
 "Размер кусков карты, выдаваемых картогенератором, указывается в блоках карты "
-"(16 узлов).\n"
+"(16 нод).\n"
 "ВНИМАНИЕ!: От изменения этого значения нет никакой пользы, а значение больше "
 "5\n"
 "может быть вредным.\n"
@@ -5905,7 +5904,7 @@ msgstr "Скорость скрытной ходьбы"
 
 #: src/settings_translation_file.cpp
 msgid "Sneaking speed, in nodes per second."
-msgstr "Скорость ходьбы украдкой в узлах в секунду."
+msgstr "Скорость ходьбы украдкой в нодах в секунду."
 
 #: src/settings_translation_file.cpp
 msgid "Sound"
@@ -6041,12 +6040,12 @@ msgid ""
 "this option allows enforcing it for certain node types. Note though that\n"
 "that is considered EXPERIMENTAL and may not work properly."
 msgstr ""
-"Текстуры блока можно выровнять либо относительно блока, либо мира.\n"
+"Текстуры ноды можно выровнять либо относительно самой ноды, либо "
+"относительно мира.\n"
 "Первый режим лучше подходит к таким вещам, как машины, мебель и т. д.,\n"
 "а во втором лестницы и микроблоки становятся более соответствующими среде.\n"
 "Однако это новая возможность, и её нельзя использовать на старых серверах,\n"
-"данный параметр позволяет принудительно применять к определённым типам "
-"блоков.\n"
+"данный параметр позволяет принудительно применять к определённым типам нод.\n"
 "Замечание: этот режим ЭКСПЕРИМЕНТАЛЬНЫЙ и может работать ненадлежащим "
 "образом."
 
@@ -6064,7 +6063,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "The depth of dirt or other biome filler node."
-msgstr "Глубина грунта или иного узла-заполнителя."
+msgstr "Глубина грунта или иной ноды-заполнителя."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6107,7 +6106,7 @@ msgid ""
 "This should be configured together with active_object_range."
 msgstr ""
 "Радиус объёма блоков вокруг каждого игрока, в котором действуют\n"
-"активные блоки, определённые в блоках карты (16 блоков).\n"
+"активные блоки, определённые в блоках карты (16 нод).\n"
 "В активных блоках загружаются объекты и работает ABM.\n"
 "Также это минимальный диапазон, в котором обрабатываются активные объекты "
 "(мобы).\n"
@@ -6143,7 +6142,7 @@ msgid ""
 "setting is 0.25 to 4.0 inclusive. If the value is out of range it will be\n"
 "set to the nearest valid value."
 msgstr ""
-"Сила глобального затенения узлов. Чем меньше, тем темнее,\n"
+"Сила глобального затенения нод. Чем меньше, тем темнее,\n"
 "и наоборот. Возможные значения параметра - от 0.25 до 4.0\n"
 "включительно. Если значение находится вне этого диапазона,\n"
 "то оно будет округлено до ближайшего подходящего."
@@ -6232,10 +6231,10 @@ msgid ""
 "This determines how long they are slowed down after placing or removing a "
 "node."
 msgstr ""
-"Чтобы уменьшить лаг, передача фрагментов карты замедляется, когда игрок что-"
-"то строит.\n"
-"Этот параметр определяет, насколько она замедляется после размещения или "
-"удаления блока."
+"Чтобы уменьшить задержку, передача блоков карты замедляется, когда игрок что-"
+"то\n"
+"строит. Этот параметр определяет замедление после размещения или удаления "
+"ноды."
 
 #: src/settings_translation_file.cpp
 msgid "Toggle camera mode key"
@@ -6379,7 +6378,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Variation of maximum mountain height (in nodes)."
-msgstr "Вариация максимальной высоты гор (в блоках)."
+msgstr "Вариация максимальной высоты гор (в нодах)."
 
 #: src/settings_translation_file.cpp
 msgid "Variation of number of caves."
@@ -6395,7 +6394,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Varies depth of biome surface nodes."
-msgstr "Меняет глубину поверхностных блоков биома."
+msgstr "Меняет глубину поверхностных нод биома."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6411,7 +6410,7 @@ msgstr "Регулирует крутизну утёсов."
 
 #: src/settings_translation_file.cpp
 msgid "Vertical climbing speed, in nodes per second."
-msgstr "Скорость вертикального лазания в узлах в секунду."
+msgstr "Скорость вертикального лазания в нодах в секунду."
 
 #: src/settings_translation_file.cpp
 msgid "Vertical screen synchronization."
@@ -6427,7 +6426,7 @@ msgstr "Коэффициент покачивания"
 
 #: src/settings_translation_file.cpp
 msgid "View distance in nodes."
-msgstr "Дальность отрисовки в блоках."
+msgstr "Дальность отрисовки в нодах."
 
 #: src/settings_translation_file.cpp
 msgid "View range decrease key"
@@ -6469,7 +6468,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Walking and flying speed, in nodes per second."
-msgstr "Скорость ходьбы и полёта в узлах в секунду."
+msgstr "Скорость ходьбы и полёта в нодах в секунду."
 
 #: src/settings_translation_file.cpp
 msgid "Walking speed"
@@ -6478,7 +6477,7 @@ msgstr "Скорость ходьбы"
 #: src/settings_translation_file.cpp
 msgid "Walking, flying and climbing speed in fast mode, in nodes per second."
 msgstr ""
-"Скорость ходьбы, полёта и лазания в режиме быстрого перемещения в узлах в "
+"Скорость ходьбы, полёта и лазания в режиме быстрого перемещения в нодах в "
 "секунду."
 
 #: src/settings_translation_file.cpp
@@ -6491,7 +6490,7 @@ msgstr "Уровень поверхности воды мира."
 
 #: src/settings_translation_file.cpp
 msgid "Waving Nodes"
-msgstr "Покачивание блоков"
+msgstr "Покачивание нод"
 
 #: src/settings_translation_file.cpp
 msgid "Waving leaves"
@@ -6526,7 +6525,7 @@ msgstr ""
 "Когда gui_scaling_filter установлен на true все изображения интерфейса "
 "должны быть\n"
 "отфильтрованы программно, но некоторые изображения генерируются напрямую\n"
-"аппаратно (прим. render-to-texture для блоков в инвентаре)."
+"аппаратно (прим. render-to-texture для нод в инвентаре)."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6561,7 +6560,7 @@ msgstr ""
 "чёткое, но требует больше памяти. Рекомендуется значение 2. Установка этого\n"
 "значения выше 1 может не иметь видимого эффекта, если не включена \n"
 "билинейная, трилинейная или анизотропная фильтрация.\n"
-"Также используется как размер текстуры базового блока для мирового\n"
+"Также используется как размер базовой текстуры ноды для мирового\n"
 "автомасштабирования текстур."
 
 #: src/settings_translation_file.cpp
@@ -6574,8 +6573,8 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Whether node texture animations should be desynchronized per mapblock."
 msgstr ""
-"Определяет необходимость рассинхронизации анимации текстур блоков между "
-"фрагментами."
+"Определяет необходимость рассинхронизации анимации текстур нод между блоками "
+"карты."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6612,7 +6611,7 @@ msgstr "Ширина компонента начального размера о
 
 #: src/settings_translation_file.cpp
 msgid "Width of the selection box lines around nodes."
-msgstr "Толщина обводки выделенных узлов."
+msgstr "Толщина обводки выделенных нод."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6646,7 +6645,7 @@ msgid ""
 "Warning: This option is EXPERIMENTAL!"
 msgstr ""
 "Выровненные по миру текстуры можно масштабировать так, чтобы они\n"
-"охватывали несколько блоков. Но сервер может не отправить нужный\n"
+"охватывали несколько нод. Но сервер может не отправить нужный\n"
 "масштаб, особенно если вы используете специально разработанный\n"
 "пакет текстур; с этим параметром клиент пытается определить масштаб\n"
 "автоматически на основании размера текстуры.\n"
