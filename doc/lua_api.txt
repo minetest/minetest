@@ -4395,6 +4395,12 @@ Environment access
 * `minetest.add_item(pos, item)`: Spawn item
     * Returns `ObjectRef`, or `nil` if failed
 * `minetest.get_player_by_name(name)`: Get an `ObjectRef` to a player
+* `minetest.get_player_meta(name)`
+    * Get a `PlayerMetaRef` for an online or offline player
+    * Returns:
+        * `online`: boolean indicating whether the player is online
+        * `meta`: `PlayerMetaRef` or nil when the player does not exist
+    * If `online == false`: `PlayerMetaRef` is a copy. Changes will be lost.
 * `minetest.get_objects_inside_radius(pos, radius)`: returns a list of
   ObjectRefs.
     * `radius`: using an euclidean metric
