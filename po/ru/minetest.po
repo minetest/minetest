@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: Russian (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-10-09 22:02+0200\n"
-"PO-Revision-Date: 2019-12-04 03:30+0000\n"
+"PO-Revision-Date: 2019-12-04 03:40+0000\n"
 "Last-Translator: Andrei Stepanov <adem4ik@gmail.com>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/minetest/"
 "minetest/ru/>\n"
@@ -506,7 +506,7 @@ msgstr "Удалить дополнение"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Use Texture Pack"
-msgstr "Включить пакет текстур"
+msgstr "Использовать пакет текстур"
 
 #: builtin/mainmenu/tab_credits.lua
 msgid "Active Contributors"
@@ -1693,7 +1693,7 @@ msgstr "Сквозь стены"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Toggle pitchmove"
-msgstr "Включить/отключить движение вниз/вверх по направлению взгляда"
+msgstr "По направлению взгляда"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "press key"
@@ -1988,7 +1988,7 @@ msgstr "Всегда включены полёт и ускорение"
 
 #: src/settings_translation_file.cpp
 msgid "Ambient occlusion gamma"
-msgstr "Гамма Ambient occlusion"
+msgstr "Гамма глобального затенения"
 
 #: src/settings_translation_file.cpp
 msgid "Amount of messages a player may send per 10 seconds."
@@ -2758,7 +2758,7 @@ msgstr "Включить получение игроками урона и их 
 
 #: src/settings_translation_file.cpp
 msgid "Enable random user input (only used for testing)."
-msgstr "Включить случайный ввод (используется только для тестирования)."
+msgstr "Включить случайный ввод пользователя (только для тестов)."
 
 #: src/settings_translation_file.cpp
 msgid "Enable register confirmation"
@@ -2777,7 +2777,7 @@ msgid ""
 "Enable smooth lighting with simple ambient occlusion.\n"
 "Disable for speed or for different looks."
 msgstr ""
-"Включить мягкое освещение с простым Ambient Occlusion.\n"
+"Включить мягкое освещение с простым глобальным затенением.\n"
 "Отключите для более высокой скорости или другого внешнего вида."
 
 #: src/settings_translation_file.cpp
@@ -6143,10 +6143,10 @@ msgid ""
 "setting is 0.25 to 4.0 inclusive. If the value is out of range it will be\n"
 "set to the nearest valid value."
 msgstr ""
-"Сила затенения Ambient Occlusion. Чем меньше, тем темнее,\n"
+"Сила глобального затенения узлов. Чем меньше, тем темнее,\n"
 "и наоборот. Возможные значения параметра - от 0.25 до 4.0\n"
 "включительно. Если значение находится вне этого диапазона,\n"
-"то оно будет округлено до ближайшего корректного."
+"то оно будет округлено до ближайшего подходящего."
 
 #: src/settings_translation_file.cpp
 msgid ""
