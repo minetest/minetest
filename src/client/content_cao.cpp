@@ -834,18 +834,19 @@ void GenericCAO::updateNodePos()
 
 void GenericCAO::step(float dtime, ClientEnvironment *env)
 {
-	// Handel model of local player instantly to prevent lags
+	// Handle model animations and update positions instantly to prevent lags
 	if (m_is_local_player) {
 		LocalPlayer *player = m_env->getLocalPlayer();
+		m_position = player->getPosition();
+		pos_translator.val_current = m_position;
+		m_rotation.Y = wrapDegrees_0_360(player->getYaw());
+		rot_translator.val_current = m_rotation;
+
 		if (m_is_visible) {
 			int old_anim = player->last_animation;
 			float old_anim_speed = player->last_animation_speed;
-			m_position = player->getPosition();
-			m_rotation.Y = wrapDegrees_0_360(player->getYaw());
 			m_velocity = v3f(0,0,0);
 			m_acceleration = v3f(0,0,0);
-			pos_translator.val_current = m_position;
-			rot_translator.val_current = m_rotation;
 			const PlayerControl &controls = player->getPlayerControl();
 
 			bool walking = false;
