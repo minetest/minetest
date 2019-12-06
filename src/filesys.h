@@ -58,6 +58,9 @@ bool IsDir(const std::string &path);
 
 bool IsDirDelimiter(char c);
 
+/// Checks whether the path exists and is a readable file
+bool IsReadableFile(const char *path);
+
 // Only pass full paths to this one. True on success.
 // NOTE: The WIN32 version returns always true.
 bool RecursiveDelete(const std::string &path);

@@ -749,5 +749,8 @@ bool Rename(const std::string &from, const std::string &to)
 	return rename(from.c_str(), to.c_str()) == 0;
 }
 
-} // namespace fs
+bool IsReadableFile(const char *path) {
+	return std::ifstream(path).good() && !IsDir(path);
+}
 
+} // namespace fs

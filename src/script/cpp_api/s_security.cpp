@@ -687,7 +687,7 @@ int ScriptApiSecurity::sl_g_loadstring(lua_State *L)
 }
 
 
-/* The following code section is taken from loadlib.c in the Lua PUC implementation
+// The following code section is taken from loadlib.c in the Lua PUC implementation
 /*
 *******************************************************************************
 * Copyright (C) 1994-2006 Lua.org, PUC-Rio.  All rights reserved.
@@ -746,7 +746,7 @@ static const char *findfile (lua_State *L, const char *name) {
 			lua_pop(L, 2);  /* remove path template and file name */
 			lua_pushfstring(L, "\n\tblocked by mod security " LUA_QS, filename);
 			lua_concat(L, 2);
-		} else if (std::ifstream(filename).good()) {
+		} else if (fs::IsReadableFile(filename)) {
 			return filename;
 		} else {
 			lua_pop(L, 2);  /* remove path template and file name */
@@ -788,11 +788,11 @@ int ScriptApiSecurity::sl_g_require(lua_State *L)
 	// Find library
 	const char *filename = findfile(L, name);
 	if (filename == NULL) {
+		printf("Not found\n");
 		luaL_error(L, "module " LUA_QS " not found:%s",	name, lua_tostring(L, -1));
 		return 1;  /* library not found in this path */
 	}
-
-	errorstream << filename << std::endl;
+	printf("Got file %s\n", filename);
 
 	// Load library
 	lua_pushcfunction(L, &ScriptApiSecurity::sl_g_loadfile);
