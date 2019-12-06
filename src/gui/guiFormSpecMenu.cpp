@@ -24,6 +24,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <limits>
 #include <sstream>
 #include "guiFormSpecMenu.h"
+#include "guiScrollBar.h"
+#include "guiTable.h"
 #include "constants.h"
 #include "gamedef.h"
 #include "client/keycode.h"
@@ -123,24 +125,18 @@ GUIFormSpecMenu::~GUIFormSpecMenu()
 {
 	removeChildren();
 
-	for (auto &table_it : m_tables) {
+	for (auto &table_it : m_tables)
 		table_it.second->drop();
-	}
-	for (auto &inventorylist_it : m_inventorylists) {
+	for (auto &inventorylist_it : m_inventorylists)
 		inventorylist_it.e->drop();
-	}
-	for (auto &checkbox_it : m_checkboxes) {
+	for (auto &checkbox_it : m_checkboxes)
 		checkbox_it.second->drop();
-	}
-	for (auto &scrollbar_it : m_scrollbars) {
+	for (auto &scrollbar_it : m_scrollbars)
 		scrollbar_it.second->drop();
-	}
-	for (auto &background_it : m_backgrounds) {
+	for (auto &background_it : m_backgrounds)
 		background_it->drop();
-	}
-	for (auto &tooltip_rect_it : m_tooltip_rects) {
+	for (auto &tooltip_rect_it : m_tooltip_rects)
 		tooltip_rect_it.first->drop();
-	}
 
 	delete m_selected_item;
 	delete m_form_src;
@@ -614,22 +610,86 @@ void GUIFormSpecMenu::parseScrollBar(parserData* data, const std::string &elemen
 		spec.ftype = f_ScrollBar;
 		spec.send  = true;
 		GUIScrollBar *e = new GUIScrollBar(Environment, this, spec.fid, rect,
-				is_horizontal, false);
+				is_horizontal, true);
 
 		auto style = getStyleForElement("scrollbar", name);
 		e->setNotClipped(style.getBool(StyleSpec::NOCLIP, false));
+		e->setArrowsVisible(data->scrollbar_options.arrow_visiblity);
 
-		e->setMax(1000);
-		e->setMin(0);
+		s32 max = data->scrollbar_options.max;
+		s32 min = data->scrollbar_options.min;
+
+		e->setMax(max);
+		e->setMin(min);
+
 		e->setPos(stoi(parts[4]));
-		e->setSmallStep(10);
-		e->setLargeStep(100);
+
+		e->setSmallStep(data->scrollbar_options.small_step);
+		e->setLargeStep(data->scrollbar_options.large_step);
+
+		s32 scrollbar_size = is_horizontal ? dim.X : dim.Y;
+
+		e->setPageSize(scrollbar_size * (max - min + 1) / data->scrollbar_options.thumb_size);
 
 		m_scrollbars.emplace_back(spec,e);
 		m_fields.push_back(spec);
 		return;
 	}
-	errorstream<< "Invalid scrollbar element(" << parts.size() << "): '" << element << "'"  << std::endl;
+	errorstream << "Invalid scrollbar element(" << parts.size() << "): '" << element
+		<< "'" << std::endl;
+}
+
+void GUIFormSpecMenu::parseScrollBarOptions(parserData* data, const std::string &element)
+{
+	std::vector<std::string> parts = split(element, ';');
+
+	if (parts.size() == 0) {
+		warningstream << "Invalid scrollbaroptions element(" << parts.size() << "): '" <<
+			element << "'"  << std::endl;
+		return;
+	}
+
+	for (const std::string &i : parts) {
+		std::vector<std::string> options = split(i, '=');
+
+		if (options.size() != 2) {
+			warningstream << "Invalid scrollbaroptions option syntax: '" <<
+				element << "'" << std::endl;
+			continue; // Go to next option
+		}
+
+		if (options[0] == "max") {
+			data->scrollbar_options.max = stoi(options[1]);
+			continue;
+		} else if (options[0] == "min") {
+			data->scrollbar_options.min = stoi(options[1]);
+			continue;
+		} else if (options[0] == "smallstep") {
+			int value = stoi(options[1]);
+			data->scrollbar_options.small_step = value < 0 ? 10 : value;
+			continue;
+		} else if (options[0] == "largestep") {
+			int value = stoi(options[1]);
+			data->scrollbar_options.large_step = value < 0 ? 100 : value;
+			continue;
+		} else if (options[0] == "thumbsize") {
+			int value = stoi(options[1]);
+			data->scrollbar_options.thumb_size = value <= 0 ? 1 : value;
+			continue;
+		} else if (options[0] == "arrows") {
+			std::string value = trim(options[1]);
+			if (value == "hide")
+				data->scrollbar_options.arrow_visiblity = GUIScrollBar::HIDE;
+			else if (value == "show")
+				data->scrollbar_options.arrow_visiblity = GUIScrollBar::SHOW;
+			else // Auto hide/show
+				data->scrollbar_options.arrow_visiblity = GUIScrollBar::DEFAULT;
+			continue;
+		}
+
+		warningstream << "Invalid scrollbaroptions option(" << options[0] <<
+			"): '" << element << "'" << std::endl;
+	}
 }
 
 void GUIFormSpecMenu::parseImage(parserData* data, const std::string &element)
@@ -2591,6 +2651,11 @@ void GUIFormSpecMenu::parseElement(parserData* data, const std::string &element)
 		return;
 	}
 
+	if (type == "scrollbaroptions") {
+		parseScrollBarOptions(data, description);
+		return;
+	}
+
 	// Ignore others
 	infostream << "Unknown DrawSpec: type=" << type << ", data=\"" << description << "\""
 			<< std::endl;
@@ -2633,24 +2698,18 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 	// Remove children
 	removeChildren();
 
-	for (auto &table_it : m_tables) {
+	for (auto &table_it : m_tables)
 		table_it.second->drop();
-	}
-	for (auto &inventorylist_it : m_inventorylists) {
+	for (auto &inventorylist_it : m_inventorylists)
 		inventorylist_it.e->drop();
-	}
-	for (auto &checkbox_it : m_checkboxes) {
+	for (auto &checkbox_it : m_checkboxes)
 		checkbox_it.second->drop();
-	}
-	for (auto &scrollbar_it : m_scrollbars) {
+	for (auto &scrollbar_it : m_scrollbars)
 		scrollbar_it.second->drop();
-	}
-	for (auto &background_it : m_backgrounds) {
+	for (auto &background_it : m_backgrounds)
 		background_it->drop();
-	}
-	for (auto &tooltip_rect_it : m_tooltip_rects) {
+	for (auto &tooltip_rect_it : m_tooltip_rects)
 		tooltip_rect_it.first->drop();
-	}
 
 	mydata.size= v2s32(100,100);
 	mydata.screensize = screensize;

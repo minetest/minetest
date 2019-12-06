@@ -379,7 +379,7 @@ protected:
 	video::SColor m_default_tooltip_bgcolor;
 	video::SColor m_default_tooltip_color;
 
-	
+
 private:
 	IFormSource        *m_form_src;
 	TextDest           *m_text_dst;
@@ -401,6 +401,16 @@ private:
 		std::string focused_fieldname;
 		GUITable::TableOptions table_options;
 		GUITable::TableColumns table_columns;
+
+		struct {
+			s32 max = 1000;
+			s32 min = 0;
+			s32 small_step = 10;
+			s32 large_step = 100;
+			s32 thumb_size = 1;
+			GUIScrollBar::ArrowVisibility arrow_visiblity = GUIScrollBar::DEFAULT;
+		} scrollbar_options;
+
 		// used to restore table selection/scroll/treeview state
 		std::unordered_map<std::string, GUITable::DynamicData> table_dyndata;
 	} parserData;
@@ -455,6 +465,7 @@ private:
 	bool parseVersionDirect(const std::string &data);
 	bool parseSizeDirect(parserData* data, const std::string &element);
 	void parseScrollBar(parserData* data, const std::string &element);
+	void parseScrollBarOptions(parserData *data, const std::string &element);
 	bool parsePositionDirect(parserData *data, const std::string &element);
 	void parsePosition(parserData *data, const std::string &element);
 	bool parseAnchorDirect(parserData *data, const std::string &element);

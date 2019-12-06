@@ -2351,15 +2351,39 @@ Elements
 
 ### `scrollbar[<X>,<Y>;<W>,<H>;<orientation>;<name>;<value>]`
 
-* Show a scrollbar
+* Show a scrollbar using options defined by the previous `scrollbaroptions[]`
 * There are two ways to use it:
     1. handle the changed event (only changed scrollbar is available)
     2. read the value on pressing a button (all scrollbars are available)
 * `orientation`:  `vertical`/`horizontal`
 * Fieldname data is transferred to Lua
-* Value this trackbar is set to (`0`-`1000`)
+* Value of this trackbar is set to (`0`-`1000`) by default
 * See also `minetest.explode_scrollbar_event`
   (main menu: `core.explode_scrollbar_event`).
+
+### `scrollbaroptions[opt1;opt2;...]`
+* Sets options for all following `scrollbar[]` elements
+* `min=<int>`
+    * Sets scrollbar minimum value, defaults to `0`.
+* `max=<int>`
+    * Sets scrollbar maximum value, defaults to `1000`.
+      If the max is equal to the min, the scrollbar will be disabled.
+* `smallstep=<int>`
+    * Sets scrollbar step value when the arrows are clicked or the mouse wheel is
+      scrolled.
+    * If this is set to a negative number, the value will be reset to `10`.
+* `largestep=<int>`
+    * Sets scrollbar step value used by page up and page down.
+    * If this is set to a negative number, the value will be reset to `100`.
+* `thumbsize=<int>`
+    * Sets size of the thumb on the scrollbar. Size is calculated in the number of
+      units the thumb spans out of the range of the scrollbar values.
+    * Example: If a scrollbar has a `min` of 1 and a `max` of 100, a thumbsize of 10
+      would span a tenth of the scrollbar space.
+    * If this is set to zero or less, the value will be reset to `1`.
+* `arrows=<show/hide/default>`
+    * Whether to show the arrow buttons on the scrollbar. `default` hides the arrows
+      when the scrollbar gets too small, but shows them otherwise.
 
 ### `table[<X>,<Y>;<W>,<H>;<name>;<cell 1>,<cell 2>,...,<cell n>;<selected idx>]`
 
