@@ -793,11 +793,9 @@ int ScriptApiSecurity::sl_g_require(lua_State *L)
 	// Find library
 	const char *filename = findfile(L, name);
 	if (filename == NULL) {
-		printf("Not found\n");
 		luaL_error(L, "module " LUA_QS " not found:%s",	name, lua_tostring(L, -1));
 		return 1;  /* library not found in this path */
 	}
-	printf("Got file %s\n", filename);
 
 	// Load library
 	lua_pushcfunction(L, &ScriptApiSecurity::sl_g_loadfile);
