@@ -403,9 +403,9 @@ function pkgmgr.enable_mod(this, toset)
 
 	-- Make a list of mod ids indexed by their names
 	local mod_ids = {}
-	for id, mod in pairs(list) do
-		if mod.type == "mod" and not mod.is_modpack then
-			mod_ids[mod.name] = id
+	for id, mod2 in pairs(list) do
+		if mod2.type == "mod" and not mod2.is_modpack then
+			mod_ids[mod2.name] = id
 		end
 	end
 
@@ -429,17 +429,17 @@ function pkgmgr.enable_mod(this, toset)
 
 		if not enabled_mods[name] then
 			enabled_mods[name] = true
-			local mod = list[mod_ids[name]]
-			if not mod then
+			local mod_to_enable = list[mod_ids[name]]
+			if not mod_to_enable then
 				minetest.log("warning", "Mod dependency \"" .. name ..
 					"\" not found!")
 			else
-				if mod.enabled == false then
-					mod.enabled = true
-					toggled_mods[#toggled_mods+1] = mod.name
+				if mod_to_enable.enabled == false then
+					mod_to_enable.enabled = true
+					toggled_mods[#toggled_mods+1] = mod_to_enable.name
 				end
 				-- Push the dependencies of the dependency onto the stack
-				local depends = pkgmgr.get_dependencies(mod.path)
+				local depends = pkgmgr.get_dependencies(mod_to_enable.path)
 				for i = 1, #depends do
 					if not enabled_mods[name] then
 						sp = sp+1
