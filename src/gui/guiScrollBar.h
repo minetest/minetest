@@ -23,7 +23,8 @@ public:
 	GUIScrollBar(IGUIEnvironment *environment, IGUIElement *parent, s32 id,
 			core::rect<s32> rectangle, bool horizontal, bool auto_scale);
 
-	enum ArrowVisibility {
+	enum ArrowVisibility
+	{
 		HIDE,
 		SHOW,
 		DEFAULT
