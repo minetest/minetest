@@ -384,6 +384,11 @@ bool ScriptApiSecurity::safeLoadString(lua_State *L, const std::string &code, co
 
 bool ScriptApiSecurity::safeLoadFile(lua_State *L, const char *path, const char *display_name)
 {
+	if (!fs::IsReadableFile(path)) {
+		lua_pushfstring(L, "File does not exist or is not readable: %s", path);
+		return false;
+	}
+
 	FILE *fp;
 	char *chunk_name;
 	if (!display_name)
