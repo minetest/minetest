@@ -57,7 +57,7 @@ public:
 			float pitch = 1.0f) = 0;
 	virtual void stopSound(int sound) = 0;
 	virtual bool soundExists(int sound) = 0;
-	virtual void updateSoundPosition(int sound, v3f pos) = 0;
+	virtual void updateSoundPosition(int sound, v3f pos, v3f vel) = 0;
 	virtual bool updateSoundGain(int id, float gain) = 0;
 	virtual float getSoundGain(int id) = 0;
 	virtual void step(float dtime) = 0;
@@ -100,7 +100,7 @@ public:
 	}
 	void stopSound(int sound) {}
 	bool soundExists(int sound) { return false; }
-	void updateSoundPosition(int sound, v3f pos) {}
+	void updateSoundPosition(int sound, v3f pos, v3f vel) {}
 	bool updateSoundGain(int id, float gain) { return false; }
 	float getSoundGain(int id) { return 0; }
 	void step(float dtime) {}

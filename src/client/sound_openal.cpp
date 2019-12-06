@@ -641,7 +641,7 @@ public:
 		return (m_sounds_playing.count(sound) != 0);
 	}
 
-	void updateSoundPosition(int id, v3f pos)
+	void updateSoundPosition(int id, v3f pos, v3f vel)
 	{
 		auto i = m_sounds_playing.find(id);
 		if (i == m_sounds_playing.end())
@@ -650,7 +650,7 @@ public:
 
 		alSourcei(sound->source_id, AL_SOURCE_RELATIVE, false);
 		alSource3f(sound->source_id, AL_POSITION, pos.X, pos.Y, pos.Z);
-		alSource3f(sound->source_id, AL_VELOCITY, 0, 0, 0);
+		alSource3f(sound->source_id, AL_VELOCITY, vel.X, vel.Y, vel.Z);
 		alSourcef(sound->source_id, AL_REFERENCE_DISTANCE, 30.0);
 	}
 

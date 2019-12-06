@@ -156,6 +156,8 @@ public:
 
 	const v3f getPosition() const;
 
+	const v3f getVelocity() const;
+
 	void setPosition(const v3f &pos)
 	{
 		pos_translator.val_current = pos;

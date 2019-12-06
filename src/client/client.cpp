@@ -28,6 +28,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "network/networkpacket.h"
 #include "threading/mutex_auto_lock.h"
 #include "client/clientevent.h"
+#include "client/content_cao.h"
 #include "client/gameui.h"
 #include "client/renderingengine.h"
 #include "client/sound.h"
@@ -585,10 +586,10 @@ void Client::step(float dtime)
 		for (auto &m_sounds_to_object : m_sounds_to_objects) {
 			int client_id = m_sounds_to_object.first;
 			u16 object_id = m_sounds_to_object.second;
-			ClientActiveObject *cao = m_env.getActiveObject(object_id);
+			GenericCAO *cao = m_env.getGenericCAO(object_id);
 			if (!cao)
 				continue;
-			m_sound->updateSoundPosition(client_id, cao->getPosition());
+			m_sound->updateSoundPosition(client_id, cao->getPosition(), cao->getVelocity());
 		}
 	}
 

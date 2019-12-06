@@ -412,6 +412,12 @@ const v3f GenericCAO::getPosition() const
 	return pos_translator.val_current;
 }
 
+const v3f GenericCAO::getVelocity() const
+{
+	/* TODO: handle attached entities */
+	return m_velocity;
+}
+
 const bool GenericCAO::isImmortal()
 {
 	return itemgroup_get(getGroups(), "immortal");
