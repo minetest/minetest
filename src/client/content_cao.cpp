@@ -588,7 +588,7 @@ void GenericCAO::addToScene(ITextureSource *tsrc)
 	};
 
 	if (m_prop.visual == "sprite") {
-		getMatrixNode();
+		grabMatrixNode();
 		m_spritenode = RenderingEngine::get_scene_manager()->addBillboardSceneNode(
 				m_matrixnode, v2f(1, 1), v3f(0,0,0), -1);
 		m_spritenode->grab();
@@ -609,7 +609,7 @@ void GenericCAO::addToScene(ITextureSource *tsrc)
 					txs, tys, 0, 0);
 		}
 	} else if (m_prop.visual == "upright_sprite") {
-		getMatrixNode();
+		grabMatrixNode();
 		scene::SMesh *mesh = new scene::SMesh();
 		double dx = BS * m_prop.visual_size.X / 2;
 		double dy = BS * m_prop.visual_size.Y / 2;
@@ -672,7 +672,7 @@ void GenericCAO::addToScene(ITextureSource *tsrc)
 		// This is needed for changing the texture in the future
 		m_meshnode->setReadOnlyMaterials(true);
 	} else if (m_prop.visual == "cube") {
-		getMatrixNode();
+		grabMatrixNode();
 		scene::IMesh *mesh = createCubeMesh(v3f(BS,BS,BS));
 		m_meshnode = RenderingEngine::get_scene_manager()->
 			addMeshSceneNode(mesh, m_matrixnode);
@@ -688,7 +688,7 @@ void GenericCAO::addToScene(ITextureSource *tsrc)
 		m_meshnode->setMaterialType(material_type);
 		m_meshnode->setMaterialFlag(video::EMF_FOG_ENABLE, true);
 	} else if (m_prop.visual == "mesh") {
-		getMatrixNode();
+		grabMatrixNode();
 		scene::IAnimatedMesh *mesh = m_client->getMesh(m_prop.mesh, true);
 		if (mesh) {
 			m_animated_meshnode = RenderingEngine::get_scene_manager()->
@@ -713,7 +713,7 @@ void GenericCAO::addToScene(ITextureSource *tsrc)
 		} else
 			errorstream<<"GenericCAO::addToScene(): Could not load mesh "<<m_prop.mesh<<std::endl;
 	} else if (m_prop.visual == "wielditem" || m_prop.visual == "item") {
-		getMatrixNode();
+		grabMatrixNode();
 		ItemStack item;
 		if (m_prop.wield_item.empty()) {
 			// Old format, only textures are specified.
