@@ -2104,11 +2104,19 @@ Elements
 
 * Show an inventory image of registered item/node
 
-### `bgcolor[<color>;<fullscreen>]`
+### `bgcolor[<bgcolor>;<fullscreen>;<fbgcolor>]`
 
-* Sets background color of formspec as `ColorString`
-* If `true`, a fullscreen background is drawn and the color is ignored
-  (does not affect the size of the formspec)
+* Sets background color of formspec.
+* `bgcolor` and `fbgcolor` (optional) are `ColorString`s, they define the color
+  of the non-fullscreen and the fullscreen background.
+* `fullscreen` (optional) can be one of the following:
+  * `false`: Only the non-fullscreen background color is drawn. (default)
+  * `true`: Only the fullscreen background color is drawn.
+  * `both`: The non-fullscreen and the fullscreen background color are drawn.
+  * `neither`: No background color is drawn.
+* Note: Leave a parameter empty to not modify the value.
+* Note: `fbgcolor`, leaving parameters empty and values for `fullscreen` that
+  are not bools are only available since formspec version 3.
 
 ### `background[<X>,<Y>;<W>,<H>;<texture name>]`
 
