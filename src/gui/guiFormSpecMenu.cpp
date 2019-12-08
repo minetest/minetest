@@ -1776,12 +1776,7 @@ void GUIFormSpecMenu::parseImageButton(parserData* data, const std::string &elem
 			spec.is_exit = true;
 
 		video::ITexture *texture = 0;
-		video::ITexture *pressed_texture = 0;
 		texture = m_tsrc->getTexture(image_name);
-		if (!pressed_image_name.empty())
-			pressed_texture = m_tsrc->getTexture(pressed_image_name);
-		else
-			pressed_texture = texture;
 
 		GUIButtonImage *e = GUIButtonImage::addButton(Environment, rect, this, spec.fid, spec.flabel.c_str());
 
@@ -1789,17 +1784,20 @@ void GUIFormSpecMenu::parseImageButton(parserData* data, const std::string &elem
 			Environment->setFocus(e);
 		}
 
-		e->setForegroundImage(guiScalingImageButton(
-			Environment->getVideoDriver(), texture, geom.X, geom.Y));
-		e->setPressedForegroundImage(guiScalingImageButton(
-			Environment->getVideoDriver(), pressed_texture, geom.X, geom.Y));
-		e->setScaleImage(true);
-
 		auto style = getStyleForElement("image_button", spec.fname);
 		e->setFromStyle(style, m_tsrc);
 
 		// We explicitly handle these arguments *after* the style properties in
-		// order to override them is they are provided
+		// order to override them if they are provided
+		e->setForegroundImage(guiScalingImageButton(
+			Environment->getVideoDriver(), texture, geom.X, geom.Y));
+		if (!pressed_image_name.empty()) {
+			video::ITexture *pressed_texture = m_tsrc->getTexture(pressed_image_name);
+			e->setPressedForegroundImage(guiScalingImageButton(
+						Environment->getVideoDriver(), pressed_texture, geom.X, geom.Y));
+		}
+		e->setScaleImage(true);
+
 		if (parts.size() >= 7) {
 			e->setNotClipped(noclip);
 			e->setDrawBorder(drawborder);

@@ -2539,6 +2539,7 @@ Some types may inherit styles from parent types.
     * fgimg - standard image. Defaults to none.
     * fgimg_hovered - image when hovered. Defaults to fgimg when not provided.
     * fgimg_pressed - image when pressed. Defaults to fgimg when not provided.
+	* NOTE: The parameters of any given image_button will take precedence over fgimg/fgimg_pressed
 * tabheader
     * noclip - boolean, set to true to allow the element to exceed formspec bounds.
     * textcolor - color. Default white.
